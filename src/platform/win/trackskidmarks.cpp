@@ -25,15 +25,12 @@ struct SkidMarkSegment {
 constexpr unsigned ACTIVE = 0x08000000;
 constexpr int SEGMENT_COUNT = 500;
 
-extern "C" {
 // @ghidraAddress BRD3D: 0x10277ea8
-extern SkidMarkSegment
-    g_aSkidMarkSegments[SKID_MARK_TRACK_COUNT][SEGMENT_COUNT] __asm__("_g_aSkidMarkSegments");
+SkidMarkSegment g_aSkidMarkSegments[SKID_MARK_TRACK_COUNT][SEGMENT_COUNT];
 // @ghidraAddress BRD3D: 0x100a65d8
-extern int g_anSkidMarkWheelIndices[4] __asm__("_g_anSkidMarkWheelIndices");
+int g_anSkidMarkWheelIndices[4] = {2, 1, 3, 0};
 // @ghidraAddress BRD3D: 0x118a9874
-extern unsigned g_dwSkidMarkTextureId __asm__("_g_dwSkidMarkTextureId");
-}
+unsigned g_dwSkidMarkTextureId;
 
 inline int PreviousSegment(int index) {
     return index > 0 ? index - 1 : SEGMENT_COUNT - 1;

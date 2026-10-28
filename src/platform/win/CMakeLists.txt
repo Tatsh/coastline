@@ -74,6 +74,8 @@ if(TGR_RENDERER STREQUAL "d3d")
             numericdata.c
             physicsdata.c
             renderdefaults.cpp
+            runtimebuffers.c
+            runtimebuffers.cpp
             settings.c
             d3d/ddutil.cpp
             d3d/devicecaps.cpp

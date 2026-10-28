@@ -23,6 +23,14 @@
 
 int g_dwRenderBackendMode;
 
+namespace {
+// @ghidraAddress BRD3D: 0x10575540
+// @ghidraAddress BRGlide: 0x104b16e8
+ConvertedModelVertex g_afModelVertexPool[32768];
+} // namespace
+
+ConvertedModelVertex *g_pModelDataPoolCursor = g_afModelVertexPool;
+
 const char *g_pszDebugMessage;
 
 [[noreturn]] void ShowDebugMessageFatalError(s32 unused) {

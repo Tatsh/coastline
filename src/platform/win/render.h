@@ -314,14 +314,6 @@ int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio, int 
 extern int g_dwConvertedVertexCount;
 
 /**
- * The pool of the data of the models the renderer draws.
- *
- * @ghidraAddress BRD3D: 0x10575540
- * @ghidraAddress BRGlide: 0x104b16e8
- */
-extern ConvertedModelVertex g_afModelVertexPool[];
-
-/**
  * The next free entry of g_afModelVertexPool.
  *
  * @ghidraAddress BRD3D: 0x100a81c8
