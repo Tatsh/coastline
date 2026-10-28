@@ -32,7 +32,9 @@ static bool HasDirectInput(void) {
 void GetDXVersion(unsigned *pdwVersion, unsigned *pdwPlatform) {
     OSVERSIONINFOA osVersion;
     HMODULE hDirectDraw;
+    HMODULE hDirectInput;
     DirectDrawCreateProc pfnDirectDrawCreate;
+    FARPROC pfnDirectInputCreate;
     IDirectDraw *pDirectDraw = nullptr;
     IDirectDraw2 *pDirectDraw2 = nullptr;
     IDirectDrawSurface *pSurface = nullptr;
@@ -100,9 +102,20 @@ void GetDXVersion(unsigned *pdwVersion, unsigned *pdwPlatform) {
     pDirectDraw2->Release();
 
     *pdwVersion = 0x200;
-    if (!HasDirectInput()) {
+    hDirectInput = LoadLibraryA("DINPUT.DLL");
+    if (hDirectInput == nullptr) {
+        OutputDebugStringA("Couldn't LoadLibrary DInput\r\n");
         pDirectDraw->Release();
         FreeLibrary(hDirectDraw);
+        return;
+    }
+    pfnDirectInputCreate = GetProcAddress(hDirectInput, "DirectInputCreateA");
+    FreeLibrary(hDirectInput);
+    if (pfnDirectInputCreate == nullptr) {
+        // DDRAW.DLL is freed before the DirectDraw object is released.
+        FreeLibrary(hDirectDraw);
+        pDirectDraw->Release();
+        OutputDebugStringA("Couldn't GetProcAddress DInputCreate\r\n");
         return;
     }
 
