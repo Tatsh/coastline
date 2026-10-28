@@ -1104,6 +1104,8 @@ void ProcessMultiplayerPackets(
             break;
         }
         default:
+            // Every return passes through the NullStub destructor of the stream.
+            NullStub();
             return;
         }
     }
@@ -1120,6 +1122,7 @@ void ProcessMultiplayerPackets(
             ProcessNetworkDataStream(pInfo, pData, dwSize, dpidFrom, dpidTo);
         }
     }
+    NullStub();
 }
 
 void CreateNetworkPlayerSlotMutexes(void) {
@@ -2315,7 +2318,9 @@ void ProcessNetworkDataStream(
     WaitForSingleObject(g_hNetReceiveMutex, INFINITE);
     bool receive = g_bNetReceiveEnabled != 0;
     ReleaseMutex(g_hNetReceiveMutex);
+    // Every return passes through the NullStub destructor of the stream.
     if (!receive) {
+        NullStub();
         return;
     }
     stream.StreamResetRead();
@@ -2330,6 +2335,7 @@ void ProcessNetworkDataStream(
         switch (header & 0xe0) {
         case 0: {
             if (dpidFrom != DPID_SERVERPLAYER) {
+                NullStub();
                 return;
             }
             int state = stream.StreamReadByte();
@@ -2384,6 +2390,7 @@ void ProcessNetworkDataStream(
         }
         case 0x20:
             if (dpidFrom != DPID_SERVERPLAYER) {
+                NullStub();
                 return;
             }
             WaitForSingleObject(g_hNetRaceOrderMutex, INFINITE);
@@ -2402,9 +2409,11 @@ void ProcessNetworkDataStream(
             break;
         case 0x60:
             HandleClientSessionMessage(static_cast<NetworkSessionMessage *>(pData), dpidFrom);
+            NullStub();
             return;
         case 0xc0: {
             if (dpidFrom != DPID_SERVERPLAYER) {
+                NullStub();
                 return;
             }
             unsigned localTime = GetHighResolutionTime();
@@ -2422,6 +2431,7 @@ void ProcessNetworkDataStream(
         }
         case 0xe0:
             if (dpidFrom != DPID_SERVERPLAYER) {
+                NullStub();
                 return;
             }
             g_dwLocalNetPlayerId = player;
@@ -2447,9 +2457,11 @@ void ProcessNetworkDataStream(
                          "Error: unknown command %02X received from server (player %d).\n",
                          header & 0xe0,
                          player);
+            NullStub();
             return;
         }
     }
+    NullStub();
 }
 
 void DestroyNetworkGroups(void) {
