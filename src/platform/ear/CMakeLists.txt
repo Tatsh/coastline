@@ -3,7 +3,7 @@ add_library(
   backend.c
   bank.c
   channel.cpp
-  configuration.c
+  configuration.cpp
   direction.c
   directionalmatrix.cpp
   directsoundoutput.cpp
