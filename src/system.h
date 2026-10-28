@@ -937,11 +937,11 @@ extern OSTask g_aGfxTask[2];
  */
 extern u64 g_aRspBootUcode[];
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
  * @ghidraAddress USA: 0x8026ead0
  * @ghidraAddress EUR: 0x80270aa0
  * @ghidraAddress JPN: 0x80270550
- * @ghidraAddress BRD3D: 0x118ab150
  */
 extern u64 g_aGspUcodeText[];
 
@@ -951,9 +951,9 @@ extern u64 g_aGspUcodeText[];
  * @ghidraAddress USA: 0x802abc00
  * @ghidraAddress EUR: 0x802ad8f0
  * @ghidraAddress JPN: 0x802ac330
- * @ghidraAddress BRD3D: 0x118ab160
  */
 extern u64 g_abRspUcodeData[];
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 /**
  * The memory of the matrix stack of the RSP, 16 bytes more than the stack to align it.

@@ -148,6 +148,14 @@ u32 g_dwTimingFrameStart;
 #define DISPLAY_LIST_START()                                                                       \
     (g_pDisplayListBase + g_dwFrameBufferIndex * DISPLAY_LIST_COMMANDS + DISPLAY_LIST_RESERVED)
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/* Windows records these addresses in task metadata without reading microcode. */
+/* @ghidraAddress BRD3D: 0x118ab150 */
+static u64 g_aGspUcodeText[1];
+/* @ghidraAddress BRD3D: 0x118ab160 */
+static u64 g_abRspUcodeData[1];
+#endif
+
 void FlushDisplayList(void) {
     OSTask *task;
 #if TGR_PLATFORM == TGR_PLATFORM_N64
