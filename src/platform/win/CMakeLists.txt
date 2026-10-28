@@ -65,6 +65,7 @@ if(TGR_RENDERER STREQUAL "d3d")
   target_sources(
     coastline_main
     PRIVATE assetnames.c
+            clockfields.c
             creditdata.c
             boot/shutdown.cpp
             frontenddata.cpp

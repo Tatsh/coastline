@@ -3,6 +3,17 @@
 #include "platform/win/assetnames.h"
 #include "race.h"
 
+RacePhaseStep g_aRacePhaseTable[RACE_PHASES] = {
+    {RACE_PHASE_HOLD, 0.0f},
+    {RACE_PHASE_WAIT, 2.2f},
+    {RACE_PHASE_COUNTDOWN, 2.3f},
+    {RACE_PHASE_GO, 2.0f},
+    {RACE_PHASE_RACING, 0.0f},
+    {RACE_PHASE_FINISHED, 2.0f},
+    {RACE_PHASE_AFTER, 2.0f},
+    {RACE_PHASE_LEAVE, 0.0f},
+};
+
 RaceCaption g_aCreditCaptions[] = {
     {g_szEmptyUiString, 4.0f, {g_szEmptyUiString, NULL, NULL, NULL, NULL, NULL}},
     {"Programmers", 4.0f, {"Brian Fehdrau", "Dan Chang", "Jim Norwood", "Richard Le", NULL, NULL}},
