@@ -24,16 +24,27 @@ protected:
     std::uint16_t AllocateEarEventId() override;
 
 private:
+protected:
     /** @ghidraAddress EAR: 0x1000b1c6 */
     void CloseRegisteredEarPlayback() override;
+
+private:
     /** @ghidraAddress EAR: 0x1000af76 */
     void RefillEarPlaybackStream() override;
+
+protected:
     /** @ghidraAddress EAR: 0x100129c9 */
     void CopyEarPlaybackSamplesToOutput() override;
+
+private:
     /** @ghidraAddress EAR: 0x1000b260 */
     void CompleteEarPlayback() override;
+
+protected:
     /** @ghidraAddress EAR: 0x10012b34 */
     int CheckEarPlaybackLoopCompletion() override;
+
+private:
     /** @ghidraAddress EAR: 0x10009ac0 */
     std::uint32_t GetEarPlaybackMediaLength() override;
 
@@ -184,16 +195,67 @@ private:
     DWORD durationMilliseconds;      /*!< The length of the tracks. */
 };
 
-class [[gnu::packed]] ImaAdpcmWaveStream : public EarPlayback {
+/** The state of the decoder of one channel of IMA ADPCM, from the header of each block. */
+struct ImaAdpcmChannelState {
+    std::int16_t predictor; /*!< The last sample decoded. */
+    std::int16_t stepIndex; /*!< The entry of the table of step sizes. */
+};
+
+/** A wave file of IMA ADPCM, decoded into 16-bit samples a half of the buffer at a time. */
+class [[gnu::packed]] ImaAdpcmWaveStream : public PcmWaveStream {
 public:
-    /**
-     * @ghidraAddress EAR: 0x10001000
-     * @stub
-     */
+    /** @ghidraAddress EAR: 0x10001000 */
     ImaAdpcmWaveStream();
 
 private:
-    [[maybe_unused]] std::uint8_t unknownAc[0x69]; /* +0xac */
+    /** @ghidraAddress EAR: 0x100010aa */
+    void ReleaseEarPlaybackResources() override;
+    /** @ghidraAddress EAR: 0x10001a16 */
+    int InitializeEarPlayback(const void *source, int streaming, int looping) override;
+    /** @ghidraAddress EAR: 0x10001bd7 */
+    void CloseRegisteredEarPlayback() override;
+    /** @ghidraAddress EAR: 0x10001c21 */
+    void RefillEarPlaybackStream() override;
+    /** @ghidraAddress EAR: 0x10001ea5 */
+    void CompleteEarPlayback() override;
+    /**
+     * Get the bytes of the encoded data.
+     *
+     * @return The bytes of the data chunk.
+     * @ghidraAddress EAR: 0x10003ae0
+     */
+    std::uint32_t GetEarPlaybackMediaLength() override;
+
+    /**
+     * Open a wave file of IMA ADPCM, from a path or from memory, read its format, and read the
+     * first blocks.
+     *
+     * @param source The path, or the wave file in memory.
+     * @return Whether the file was opened.
+     * @ghidraAddress EAR: 0x100010f3
+     */
+    int OpenImaAdpcmWaveStream(const void *source);
+
+    /**
+     * Decode the blocks of the half of the encoded buffer the stream fills next into the same half
+     * of the samples.
+     *
+     * @ghidraAddress EAR: 0x10001ee5
+     */
+    void DecodeImaAdpcmStreamBlocks();
+
+    IMAADPCMWAVEFORMAT adpcmFormat; /*!< The format of the file. */
+    std::uint8_t *blockBuffer;      /*!< The encoded blocks, or the part of them being streamed. */
+    DWORD adpcmDataBytes;           /*!< The bytes of the data chunk. */
+    DWORD blockBufferBytes;         /*!< The bytes of @ref blockBuffer. */
+    DWORD blockHalfBytes;           /*!< The encoded bytes each half of the buffer decodes. */
+    int decodedSample;              /*!< The sample the decoder produced last. */
+    int decodedDifference;          /*!< The difference the decoder added last. */
+    std::uint8_t decodedNibble;     /*!< The code the decoder read last. */
+    ImaAdpcmChannelState *channelStates; /*!< The state of the decoder of each channel. */
+    std::uint16_t blocksPerHalf;         /*!< The blocks each half of the buffer decodes. */
+    DWORD dataWordsPerBlock;             /*!< The words of codes of all the channels in a block. */
+    int memorySource;                    /*!< Whether the file is in memory, read in place. */
 };
 
 #endif /* COASTLINE_EAR_PLAYBACKIMPLEMENTATIONS_H */

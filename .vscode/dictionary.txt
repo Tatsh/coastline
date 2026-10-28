@@ -498,6 +498,8 @@ iconhand
 icsum
 idok
 ilse
+imaadpcmstream
+imaadpcmwaveformat
 immp
 imref
 incsrc

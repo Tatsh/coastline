@@ -13,6 +13,7 @@ add_library(
   error.c
   event.cpp
   exports.def
+  imaadpcmstream.cpp
   initialization.cpp
   memorybudget.c
   musicdevice.cpp
