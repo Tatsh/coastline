@@ -3418,7 +3418,9 @@ int ToggleMenuItemTextEditB(MenuWidget *pWidget) {
 static inline int RestoreSavedMenuText(MenuWidget *pWidget, MenuItemList *&list, int &named) {
     pWidget->GetScreen()->SetPanelActive(1, 0);
     named = 0;
-    if (g_dwMenuTextEditActive) {
+    const char *backup = g_szMenuItemTextBackup;
+    // The backup is never null, and the binaries test it all the same.
+    if (g_dwMenuTextEditActive && backup != nullptr) {
         list->GetFont(g_dwFileListSelectedSlot).SetText(g_szMenuItemTextBackup);
         strcpy(g_szMenuItemTextBackup, g_szEmptyUiString);
     }
