@@ -9,12 +9,17 @@
 #include <PR/os_cont.h>
 
 #include "carphysics.h"
+#include "model.h"
 #include "n64/decaleditor.h"
 #include "sdl/cartridgedata.h"
 #include "seasons.h"
 #include "vehicle.h"
 
 namespace coastline {
+
+/** A model, which the menus load from the cartridge later, so their data addresses none. */
+template <>
+struct CartridgeOnDemand<Model> : std::false_type {};
 
 /** The physics of a car, all 32-bit numbers. */
 template <>

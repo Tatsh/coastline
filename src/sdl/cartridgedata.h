@@ -72,6 +72,34 @@ public:
      * @return The address on the host, or null for 0 and for an address with no host definition.
      */
     static void *Relocate(std::uint32_t address, bool bytes);
+
+    /**
+     * @param address An address of the console.
+     * @return Whether a definition on the host covers the address.
+     */
+    static bool IsDefined(std::uint32_t address);
+
+    /**
+     * @param address An address of the console in the main segment.
+     * @return The bytes from the address to the next symbol of the release, or 0 for an address
+     * that is not the start of a symbol.
+     */
+    static std::size_t SymbolLength(std::uint32_t address);
+
+    /**
+     * Record the routine on the host of a routine of the release, for the pointers to routines of
+     * the data.
+     *
+     * @param name The name of the routine.
+     * @param host The routine on the host.
+     */
+    static void RegisterRoutine(std::string_view name, void (*host)());
+
+    /**
+     * @param address The address of a routine of the console stored in the data.
+     * @return The routine on the host, or null for 0 and for a routine not recorded.
+     */
+    static void (*RelocateRoutine(std::uint32_t address))();
 };
 
 /**
@@ -82,6 +110,13 @@ template <typename T>
 struct CartridgeWords : std::is_union<T> {};
 
 class BigEndianReader;
+
+/**
+ * Whether the data a pointer to T addresses is defined on the host when no definition covers it.
+ * A type the data only addresses with null pointers, such as a model loaded later, is not.
+ */
+template <typename T>
+struct CartridgeOnDemand : std::true_type {};
 
 /**
  * The layout of a type on the console, for the types Boost.PFR cannot read field by field, such as
@@ -192,20 +227,38 @@ public:
             value = std::bit_cast<T>(static_cast<std::uint32_t>(Word(4)));
         } else if constexpr (std::is_integral_v<T>) {
             value = static_cast<T>(Word(sizeof(T)));
+        } else if constexpr (std::is_pointer_v<T> && std::is_function_v<std::remove_pointer_t<T>>) {
+            value = reinterpret_cast<T>(
+                CartridgeData::RelocateRoutine(static_cast<std::uint32_t>(Word(4))));
         } else if constexpr (std::is_pointer_v<T>) {
             using Pointee = std::remove_cv_t<std::remove_pointer_t<T>>;
             constexpr bool bytes = std::is_void_v<Pointee> || std::is_same_v<Pointee, char> ||
                                    std::is_same_v<Pointee, signed char> ||
                                    std::is_same_v<Pointee, unsigned char>;
-            value = reinterpret_cast<T>(
-                CartridgeData::Relocate(static_cast<std::uint32_t>(Word(4)), bytes));
+            auto address = static_cast<std::uint32_t>(Word(4));
+            if constexpr (!bytes && requires {
+                              sizeof(Pointee);
+                              Pointee{};
+                          } && CartridgeOnDemand<Pointee>::value) {
+                if (address != 0 && !CartridgeData::IsDefined(address)) {
+                    DefineOnDemand<Pointee>(address);
+                }
+            }
+            value = reinterpret_cast<T>(CartridgeData::Relocate(address, bytes));
         } else if constexpr (std::is_array_v<T>) {
             for (auto &element : value) {
                 Read(element);
             }
         } else if constexpr (detail::OffsetPointer<T>) {
-            value.SetRaw(coastline::EncodePtr32(
-                CartridgeData::Relocate(static_cast<std::uint32_t>(Word(4)), false)));
+            using Pointee = std::remove_cv_t<std::remove_pointer_t<decltype(value.operator->())>>;
+            constexpr bool bytes = sizeof(Pointee) == 1;
+            auto address = static_cast<std::uint32_t>(Word(4));
+            if constexpr (!bytes && requires { Pointee{}; } && CartridgeOnDemand<Pointee>::value) {
+                if (address != 0 && !CartridgeData::IsDefined(address)) {
+                    DefineOnDemand<Pointee>(address);
+                }
+            }
+            value.SetRaw(coastline::EncodePtr32(CartridgeData::Relocate(address, bytes)));
         } else if constexpr (detail::WordType<T>) {
             static_assert(sizeof(T) % 4 == 0, "A type read as words has whole words.");
             std::uint32_t words[sizeof(T) / 4];
@@ -243,6 +296,22 @@ public:
 
 private:
     std::uint64_t Word(std::size_t size);
+
+    // Define on the host the data at an address no definition covers, which only other data
+    // addresses, as elements of T up to the next symbol of the release. The definition remains
+    // for the rest of the program.
+    template <typename T>
+    static void DefineOnDemand(std::uint32_t address) {
+        std::size_t consoleSize = ConsoleSizeOf<T>();
+        std::size_t count =
+            std::max<std::size_t>(1, CartridgeData::SymbolLength(address) / consoleSize);
+        auto *objects = new T[count]{};
+        CartridgeData::Register(address, objects, consoleSize, sizeof(T), count);
+        BigEndianReader reader(address);
+        for (std::size_t i = 0; i < count; ++i) {
+            reader.Read(objects[i]);
+        }
+    }
 
     std::uint32_t m_address;
 };

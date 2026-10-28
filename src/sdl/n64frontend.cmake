@@ -16,7 +16,7 @@ set_source_files_properties(${COASTLINE_N64_FRONTEND_SOURCES} PROPERTIES LANGUAG
 # n64frontenddata.cpp is written by tools/sdl/n64frontenddata.py from the symbols the front end
 # needs, with the extents of tools/sdl/n64frontend-extents.txt.
 add_library(coastline_n64frontend STATIC ${COASTLINE_N64_FRONTEND_SOURCES} n64frontenddata.cpp
-                                           n64system.cpp)
+                                           n64frontendroutines.cpp n64system.cpp)
 target_include_directories(coastline_n64frontend PRIVATE "${_src}" "${_src}/n64"
                                                          "${_src}/libultra/include")
 # The symbols both releases define, and the data whose types differ between them, are the front

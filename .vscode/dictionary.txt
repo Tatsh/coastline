@@ -457,6 +457,7 @@ frametimer
 freeable
 frontenddata
 frontendlayouts
+frontendroutines
 frontendstate
 frontwheel
 fsanitize

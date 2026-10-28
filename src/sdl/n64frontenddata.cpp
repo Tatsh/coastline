@@ -31,17 +31,6 @@
 #include "vehiclemodel.h"
 #include "vehiclerender.h"
 
-// CheatSetUnlockBit1000: no declaration or no length in the assembly.
-// CheatSetUnlockBit200: no declaration or no length in the assembly.
-// CheatSetUnlockBit400: no declaration or no length in the assembly.
-// CheatSetUnlockBit800: no declaration or no length in the assembly.
-// CheatSetUnlockBit8000: no declaration or no length in the assembly.
-// CheatToggleBilinearFilter: no declaration or no length in the assembly.
-// CheatToggleMultiplayerMode: no declaration or no length in the assembly.
-// CheatToggleRamView: no declaration or no length in the assembly.
-// CheatUnlockCars0To8: no declaration or no length in the assembly.
-// CheatUnlockTracks0To4: no declaration or no length in the assembly.
-// CheatUnlockTracks5To9: no declaration or no length in the assembly.
 // D_1CB410: no declaration or no length in the assembly.
 // D_80000000: no declaration or no length in the assembly.
 // D_80271E68: no declaration or no length in the assembly.
@@ -65,7 +54,6 @@
 // D_802AB3F0: no declaration or no length in the assembly.
 // D_802AB3F4: no declaration or no length in the assembly.
 // D_EBC00: no declaration or no length in the assembly.
-// ResetBrushAndSlotHistory: no declaration or no length in the assembly.
 s32 gControllerPakState;
 Texture g_ArrowLeftTextureDesc;
 Texture g_ArrowRightTextureDesc;
@@ -507,7 +495,10 @@ u16 g_wScreenFrameCount;
 Vec3f s_aPanelViewDirections[DECAL_SLOTS];
 u8 *s_pMirrorSource;
 
+void RegisterN64FrontEndRoutines(void);
+
 void ReadN64FrontEndData(void) {
+    RegisterN64FrontEndRoutines();
     coastline::RegisterCartridgeSymbol("gControllerPakState", gControllerPakState);
     coastline::RegisterCartridgeSymbol("g_ArrowLeftTextureDesc", g_ArrowLeftTextureDesc);
     coastline::RegisterCartridgeSymbol("g_ArrowRightTextureDesc", g_ArrowRightTextureDesc);

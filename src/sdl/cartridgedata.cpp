@@ -1,5 +1,6 @@
 #include "cartridgedata.h"
 
+#include <algorithm>
 #include <charconv>
 #include <iterator>
 #include <map>
@@ -32,6 +33,8 @@ std::vector<std::uint8_t> g_rom;
 std::vector<std::uint8_t> g_segment;
 std::unordered_map<std::string, std::uint32_t> g_symbols;
 std::map<std::uint32_t, HostDefinition> g_definitions;
+std::vector<std::uint32_t> g_symbolAddresses;
+std::unordered_map<std::uint32_t, void (*)()> g_routines;
 
 // Read the lines "name = 0xADDRESS; // ..." of the symbols of splat.
 void ReadSymbols() {
@@ -63,6 +66,10 @@ bool CartridgeData::Load(std::span<const std::uint8_t> rom) {
     g_segment.assign(rom.begin() + kSegmentRom, rom.begin() + kSegmentRom + size);
     if (g_symbols.empty()) {
         ReadSymbols();
+        for (const auto &[name, address] : g_symbols) {
+            g_symbolAddresses.push_back(address);
+        }
+        std::ranges::sort(g_symbolAddresses);
     }
     return true;
 }
@@ -89,6 +96,44 @@ void CartridgeData::Register(std::uint32_t address,
                              std::size_t hostElementSize,
                              std::size_t count) {
     g_definitions[address] = {host, consoleElementSize, hostElementSize, count};
+}
+
+bool CartridgeData::IsDefined(std::uint32_t address) {
+    auto found = g_definitions.upper_bound(address);
+    if (found == g_definitions.begin()) {
+        return false;
+    }
+    --found;
+    return address - found->first < found->second.consoleElementSize * found->second.count;
+}
+
+std::size_t CartridgeData::SymbolLength(std::uint32_t address) {
+    auto found = std::ranges::upper_bound(g_symbolAddresses, address);
+    if (found == g_symbolAddresses.begin() || *(found - 1) != address) {
+        return 0;
+    }
+    std::uint32_t end = found != g_symbolAddresses.end() ? *found : kSegmentEnd;
+    return end - address;
+}
+
+void CartridgeData::RegisterRoutine(std::string_view name, void (*host)()) {
+    if (std::uint32_t address = AddressOf(name); address != 0) {
+        g_routines[address] = host;
+    }
+}
+
+void (*CartridgeData::RelocateRoutine(std::uint32_t address))() {
+    if (address == 0) {
+        return nullptr;
+    }
+    auto found = g_routines.find(address);
+    if (found == g_routines.end()) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                    "The data addresses the routine 0x%08x, which has no routine on the host.",
+                    address);
+        return nullptr;
+    }
+    return found->second;
 }
 
 void *CartridgeData::Relocate(std::uint32_t address, bool bytes) {
