@@ -22,6 +22,7 @@
 #include "platform/win/frametimer.h"
 #include "platform/win/frontend.h"
 #include "platform/win/glide/device.h"
+#include "platform/win/glide/renderer.h"
 #include "platform/win/racesound.h"
 #include "platform/win/render.h"
 #include "platform/win/settings.h"
@@ -36,6 +37,7 @@ HINSTANCE g_hRallyMainInstance;
 HINSTANCE g_hRallyMainPrevInstance;
 LPSTR g_pszRallyMainCmdLine;
 int g_nRallyMainCmdShow;
+int g_dwGlideSstWindowState = GLIDE_SST_WINDOW_OPEN;
 
 namespace {
 /**

@@ -13,7 +13,7 @@ extern "C" {
 /** The values of g_dwGlideSstWindowState. */
 enum GlideSstWindowState {
     GLIDE_SST_WINDOW_CLOSED = 1, /*!< The application went behind and closed the Glide window. */
-    GLIDE_SST_WINDOW_OPEN = 2,   /*!< The Glide window was opened again. */
+    GLIDE_SST_WINDOW_OPEN = 2,   /*!< The Glide window is open, as it starts. */
 };
 
 /**
@@ -22,17 +22,6 @@ enum GlideSstWindowState {
  * @ghidraAddress BRGlide: 0x100a9354
  */
 extern int g_dwGlideSstWindowState;
-
-/**
- * Open the Glide window at the resolution of g_dwConfigFramebufferWidth and
- * g_dwConfigFramebufferHeight.
- *
- * @param nWidth The width, which the routine does not read.
- * @param nHeight The height, which the routine does not read.
- * @return Nonzero when the window opened.
- * @ghidraAddress BRGlide: 0x1001dd80
- */
-int OpenGlideWindowForResolution(int nWidth, int nHeight);
 
 #ifdef __cplusplus
 }
