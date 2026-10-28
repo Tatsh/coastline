@@ -327,8 +327,9 @@ char *GetIniSectionValue(LauncherIniSectionIterator *iterator, const char *key) 
     char *line;
     while ((line = GetNextIniSectionLine(file))) {
 #ifdef ENABLE_PATCHES
-        strncpy(g_szIniLineBuffer, line, sizeof(g_szIniLineBuffer) - 1);
-        g_szIniLineBuffer[sizeof(g_szIniLineBuffer) - 1] = '\0';
+        size_t length = strnlen(line, sizeof(g_szIniLineBuffer) - 1);
+        memcpy(g_szIniLineBuffer, line, length);
+        g_szIniLineBuffer[length] = '\0';
 #else
         strcpy(g_szIniLineBuffer, line);
 #endif
