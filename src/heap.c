@@ -1,6 +1,6 @@
 #include "heap.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if !TGR_PC
 #include <PR/os.h>
 #include <PR/os_libc.h>
 
@@ -18,7 +18,7 @@ void ResetHeap(void) {
     g_pHeapCurrent = HEAP_START;
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if !TGR_PC
 u8 *GetHeapCurrentAddress(void) {
     return g_pHeapCurrent;
 }
@@ -72,4 +72,4 @@ void ClearFramebuffersForNormalMode(void) {
     FlushDisplayList();
     g_dwKeepScreenBlanked = FALSE;
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
+#endif /* !TGR_PC */

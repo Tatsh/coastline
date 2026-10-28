@@ -1,6 +1,6 @@
 #include "fade.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if !TGR_PC
 #include "audio.h"
 #include "render.h"
 #include "system.h"
@@ -74,7 +74,7 @@ void FadeMusicTo(float target, float seconds) {
     }
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if !TGR_PC
 s32 HasSfxFadeFinished(void) {
     return g_fSfxFadeTarget == g_fSfxFadeCurrent;
 }
@@ -83,14 +83,14 @@ void SetSfxFadeLevelImmediate(float level) {
     g_fSfxFadeTarget = level;
     g_fSfxFadeCurrent = g_fSfxFadeTarget;
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
+#endif /* !TGR_PC */
 
 void SnapScreenFade(float level) {
     g_fFadeTarget = level;
     g_fFadeLevel = g_fFadeTarget;
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if !TGR_PC
 s32 IsFadingIn(void) {
     return g_fFadeRate > 0.0f && !g_dwFadeAutoReverse;
 }
@@ -108,7 +108,7 @@ s32 IsFadedToBlack(void) {
     return FADE_LESS(g_fFadeRate, 0.0f) && FADE_EQUAL(g_fFadeLevel, 0.0f) && !g_dwFadeAutoReverse;
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if !TGR_PC
 s32 IsFadedToWhite(void) {
     return g_fFadeRate > 0.0f && g_fFadeLevel == 1.0f && !g_dwFadeAutoReverse;
 }
@@ -151,4 +151,4 @@ void DrawScreenFadeOverlay(float level) {
     gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);
 }
 
-#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
+#endif /* !TGR_PC */
