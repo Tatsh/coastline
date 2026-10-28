@@ -442,6 +442,7 @@ fovy
 foxundermoon
 fpart
 fpcsr
+fpermissive
 fpshud
 frag
 framebegin
@@ -1231,6 +1232,7 @@ urlkey
 urllib
 urlopen
 userabort
+utgr
 vars
 vblankquery
 vecmath

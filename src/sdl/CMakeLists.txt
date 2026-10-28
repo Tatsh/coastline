@@ -80,6 +80,7 @@ endif()
 option(TGR_SDL_PC_GAME "Build the game code of the PC release into the SDL game." OFF)
 if(TGR_SDL_PC_GAME)
   include(pcgame.cmake)
+  include(n64frontend.cmake)
   target_compile_definitions(coastline_sdl PRIVATE COASTLINE_PC_GAME=1)
 endif()
 
