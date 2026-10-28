@@ -425,20 +425,29 @@ GbiCommand *HandleGbiSetScissorIntCoords(GbiCommand *pCommand) {
     return pCommand + 1;
 }
 
-// Round a coordinate on the screen to a quarter of a pixel through an integer.
+// Round a coordinate on the screen to a quarter of a pixel through an integer. The original stores
+// the integer with the rounding of the FPU, to nearest, not by truncation.
 static inline float SnapScreenCoordinate(float fCoordinate, int &nSnap) {
     float fScaled = fCoordinate * 4.0f;
-    nSnap = static_cast<int>(fScaled);
+    nSnap = static_cast<int>(std::lrint(fScaled));
     float fSnapped = static_cast<float>(nSnap);
     return fSnapped * 0.25f;
+}
+
+// Place a coordinate of a vertex on the screen. The x87 keeps the products and the sum in extended
+// precision until the coordinate is stored.
+static inline float
+ViewportCoordinate(float fCoordinate, float fScale, float fOneOverW, float fOffset) {
+    return static_cast<long double>(fCoordinate) * fScale * fOneOverW + fOffset;
 }
 
 void TransformVertexToScreen(
     GrVertex *pDest, const GbiVertexSource *pSource, float fRed, float fGreen, float fBlue) {
     float fOneOverW = 1.0f / pSource->fW;
     pDest->oow = fOneOverW;
-    pDest->x = pSource->fX * g_fViewportScaleX * fOneOverW + g_fViewportTranslateX;
-    pDest->y = pSource->fY * g_fViewportScaleY * pDest->oow + g_fViewportTranslateY;
+    pDest->x = ViewportCoordinate(pSource->fX, g_fViewportScaleX, fOneOverW, g_fViewportTranslateX);
+    pDest->y =
+        ViewportCoordinate(pSource->fY, g_fViewportScaleY, pDest->oow, g_fViewportTranslateY);
     pDest->r = fRed;
     pDest->g = fGreen;
     pDest->b = fBlue;
@@ -451,8 +460,9 @@ void TransformVertexToScreenNoZBuffer(
     int nSnap = 0;
     float fOneOverW = 1.0f / pSource->fW;
     pDest->oow = fOneOverW;
-    pDest->x = pSource->fX * g_fViewportScaleX * fOneOverW + g_fViewportTranslateX;
-    pDest->y = pSource->fY * g_fViewportScaleY * pDest->oow + g_fViewportTranslateY;
+    pDest->x = ViewportCoordinate(pSource->fX, g_fViewportScaleX, fOneOverW, g_fViewportTranslateX);
+    pDest->y =
+        ViewportCoordinate(pSource->fY, g_fViewportScaleY, pDest->oow, g_fViewportTranslateY);
     pDest->r = fRed;
     // The w of the position is replaced by that of the far plane once the position is known.
     pDest->oow = GLIDE_FAR_ONE_OVER_W;
@@ -465,10 +475,10 @@ void TransformVertexToScreenNoZBuffer(
 void ScaleVertexTexCoords(GrVertex *pVertex, const GbiVertexSource *pSource) {
     pVertex->tmuvtx[1].oow = pVertex->oow;
     pVertex->tmuvtx[0].oow = pVertex->oow;
-    float fSow = pSource->fS * g_fTexCoordScaleS * pVertex->oow;
+    float fSow = static_cast<long double>(pSource->fS) * g_fTexCoordScaleS * pVertex->oow;
     pVertex->tmuvtx[1].sow = fSow;
     pVertex->tmuvtx[0].sow = fSow;
-    float fTow = pSource->fT * g_fTexCoordScaleT * pVertex->oow;
+    float fTow = static_cast<long double>(pSource->fT) * g_fTexCoordScaleT * pVertex->oow;
     pVertex->tmuvtx[1].tow = fTow;
     pVertex->tmuvtx[0].tow = fTow;
 }
@@ -781,8 +791,10 @@ void DrawTextureRectangle(
 
 // The coordinate of a position of a vertex in the clip space of g_GbiMvpMatrix.
 static inline float TransformGbiVertexComponent(const Vec3f &position, int nColumn) {
-    return position.y * g_GbiMvpMatrix[1][nColumn] + position.z * g_GbiMvpMatrix[2][nColumn] +
-           position.x * g_GbiMvpMatrix[0][nColumn] + g_GbiMvpMatrix[3][nColumn];
+    return static_cast<long double>(position.y) * g_GbiMvpMatrix[1][nColumn] +
+           static_cast<long double>(position.z) * g_GbiMvpMatrix[2][nColumn] +
+           static_cast<long double>(position.x) * g_GbiMvpMatrix[0][nColumn] +
+           g_GbiMvpMatrix[3][nColumn];
 }
 
 static inline void TransformGbiVertexPosition(GbiVertexSource &source,
@@ -809,12 +821,15 @@ static void UpdateGlideDirectionalLight(void) {
         float x = light.dir[0];
         float y = light.dir[1];
         float z = light.dir[2];
-        g_GbiLight0Direction.x =
-            (matrix[0][0] * x + matrix[0][1] * y + matrix[0][2] * z) / GBI_LIGHT_SCALE;
-        g_GbiLight0Direction.y =
-            (matrix[1][0] * x + matrix[1][1] * y + matrix[1][2] * z) / GBI_LIGHT_SCALE;
-        g_GbiLight0Direction.z =
-            (matrix[2][0] * x + matrix[2][1] * y + matrix[2][2] * z) / GBI_LIGHT_SCALE;
+        auto row = [matrix, x, y, z](int nRow) -> float {
+            return (static_cast<long double>(matrix[nRow][0]) * x +
+                    static_cast<long double>(matrix[nRow][1]) * y +
+                    static_cast<long double>(matrix[nRow][2]) * z) /
+                   GBI_LIGHT_SCALE;
+        };
+        g_GbiLight0Direction.x = row(0);
+        g_GbiLight0Direction.y = row(1);
+        g_GbiLight0Direction.z = row(2);
         Vec3fNormalize(&g_GbiLight0Direction);
         const Light_t &ambient = g_aGbiLights[1].l;
         g_fGbiAmbientColorR = static_cast<float>(ambient.col[0]);
@@ -833,16 +848,18 @@ static inline void LightGlideVertex(const ConvertedModelVertex &input, GbiVertex
         source.fBlue = g_fGbiPrimColorB;
         return;
     }
-    float dot = input.normal.x * g_GbiLight0Direction.x +
-                (input.normal.y * g_GbiLight0Direction.y + input.normal.z * g_GbiLight0Direction.z);
-    if (dot < 0.0f) {
+    float dot = static_cast<long double>(input.normal.x) * g_GbiLight0Direction.x +
+                (static_cast<long double>(input.normal.y) * g_GbiLight0Direction.y +
+                 static_cast<long double>(input.normal.z) * g_GbiLight0Direction.z);
+    // The x87 comparison also takes the ambient colour for an unordered dot product.
+    if (!(dot >= 0.0f)) {
         source.fRed = g_fGbiAmbientColorR;
         source.fGreen = g_fGbiAmbientColorG;
         source.fBlue = g_fGbiAmbientColorB;
         return;
     }
     auto channel = [dot](float light, float ambient) {
-        float color = dot * light + ambient;
+        float color = static_cast<long double>(dot) * light + ambient;
         return color > GLIDE_COLOR_MAX ? GLIDE_COLOR_MAX : color;
     };
     source.fRed = channel(g_fGbiLight0ColorR, g_fGbiAmbientColorR);
