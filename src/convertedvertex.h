@@ -26,6 +26,7 @@ extern "C" {
  * @param dest The destination vertex.
  * @param source The source vertex.
  * @ghidraAddress BRD3D: 0x1002b930
+ * @ghidraAddress BRGlide: 0x100189a0
  */
 void CopyConvertedModelVertex(ConvertedModelVertex *dest, const ConvertedModelVertex *source);
 

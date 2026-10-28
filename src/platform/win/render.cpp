@@ -214,9 +214,6 @@ void RefreshScreenDimensions(void) {
     CopyConfigFramebufferSize();
 }
 
-// The number of words Copy8Dwords() copies.
-#define COPY_WORD_COUNT 8
-
 VertexConvCacheEntry g_aVertexConvCache[VERTEX_CONV_CACHE_SIZE];
 int g_dwVertexConvCacheCount;
 void *g_apRelocatedPointers[RELOCATED_POINTER_COUNT];
@@ -416,10 +413,6 @@ void SetPointerRelocationBase(unsigned dwOldBase, unsigned dwNewBase) {
     ResetVertexConversionCache();
     g_dwOldBaseAddress = dwOldBase;
     g_dwNewBaseAddress = dwNewBase;
-}
-
-void Copy8Dwords(void *pDest, const void *pSrc) {
-    memcpy(pDest, pSrc, COPY_WORD_COUNT * sizeof(unsigned));
 }
 
 void AddPointerToRelocatedList(void *pPointer) {

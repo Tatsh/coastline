@@ -1019,16 +1019,6 @@ void ResetVertexConversionCache(void);
 void SetPointerRelocationBase(unsigned dwOldBase, unsigned dwNewBase);
 
 /**
- * Copy eight words.
- *
- * @param pDest Receives the words.
- * @param pSrc The words.
- * @ghidraAddress BRD3D: 0x1002b930
- * @ghidraAddress BRGlide: 0x100189a0
- */
-void Copy8Dwords(void *pDest, const void *pSrc);
-
-/**
  * Empty the pool of the data of the models.
  *
  * @ghidraAddress BRD3D: 0x1002b950
