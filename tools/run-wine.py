@@ -48,7 +48,9 @@ def copy_file(source, destination):
 
 
 def initialise_prefix(options, prefix, installation, environment):
-    if (prefix / 'system.reg').is_file() and not options.configure_prefix:
+    required = (prefix / 'system.reg', prefix / 'drive_c/windows/system32/kernel32.dll',
+                prefix / 'drive_c/windows/explorer.exe')
+    if all(path.is_file() for path in required) and not options.configure_prefix:
         return
     winecfg = shutil.which(options.winecfg)
     if winecfg is None:
@@ -56,6 +58,9 @@ def initialise_prefix(options, prefix, installation, environment):
     print('Opening winecfg. Close its window when prefix configuration is complete.', flush=True)
     subprocess.run([str(Path(winecfg).resolve())], env=environment,
                    cwd=installation, check=True)
+    missing = [str(path) for path in required if not path.is_file()]
+    if missing:
+        raise ValueError('Wine prefix initialisation is incomplete:\n' + '\n'.join(missing))
 
 
 def stage(options):
@@ -116,14 +121,16 @@ def stage(options):
     (installation / '.windows-label').write_text('Boss Rally\n', encoding='ascii')
     devices = prefix / 'dosdevices'
     devices.mkdir(exist_ok=True)
-    drive = devices / 'd:'
-    if drive.is_symlink():
-        if drive.resolve() != installation:
-            raise ValueError(f'{drive} already maps another directory. Choose another --prefix.')
-    elif drive.exists():
-        raise ValueError(f'{drive} already exists. Choose another --prefix.')
-    else:
-        drive.symlink_to(installation, target_is_directory=True)
+    for letter, target in (('c:', prefix / 'drive_c'), ('z:', Path('/')),
+                           ('d:', installation)):
+        drive = devices / letter
+        if drive.is_symlink():
+            if drive.resolve() != target:
+                raise ValueError(f'{drive} already maps another directory. Choose another --prefix.')
+        elif drive.exists():
+            raise ValueError(f'{drive} already exists. Choose another --prefix.')
+        else:
+            drive.symlink_to(target, target_is_directory=True)
     print(f'Prepared {installation}', flush=True)
     return prefix, installation
 
