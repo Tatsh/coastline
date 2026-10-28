@@ -858,8 +858,12 @@ DisplayMode *DirectDrawDriver::FindDisplayModeForDevice(int nWidth,
             if (pMode->IsDisplayModeSupportedByDevice(pDevice)) {
                 return pMode;
             }
+        } else if (pMode->IsDisplayModeMatch(640, 480, 16)) {
+            // The two fallback branches differ only in the order of their tests.
+            if (ppFallback != nullptr && pMode->IsDisplayModeSupportedByDevice(pDevice)) {
+                *ppFallback = pMode;
+            }
         } else if (pMode->IsDisplayModeSupportedByDevice(pDevice) && ppFallback != nullptr) {
-            // The original tests a mode of 640 by 480 at 16 bits apart, to the same end.
             *ppFallback = pMode;
         }
         pMode = pNextMode;
