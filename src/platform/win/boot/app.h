@@ -66,6 +66,7 @@ extern size_t g_dwTotalPhysicalMemory;
  * The module of the game, set by InitializeApplication().
  *
  * @ghidraAddress BRD3D: 0x118abe20
+ * @ghidraAddress BRGlide: 0x118eef1c
  */
 extern HINSTANCE g_hAppInstance;
 
@@ -73,6 +74,7 @@ extern HINSTANCE g_hAppInstance;
  * The main window.
  *
  * @ghidraAddress BRD3D: 0x10680584
+ * @ghidraAddress BRGlide: 0x105bc72c
  */
 extern HWND g_hMainWindow;
 
@@ -88,6 +90,7 @@ extern HACCEL g_hAccelTable;
  * g_dwActivateState are set and g_dwActivateMinimized is not.
  *
  * @ghidraAddress BRD3D: 0x10680598
+ * @ghidraAddress BRGlide: 0x105bc740
  */
 extern WPARAM g_dwAppActive;
 
@@ -269,6 +272,7 @@ extern "C" {
  * @param lParam The second parameter of the message.
  * @return The result of the message.
  * @ghidraAddress BRD3D: 0x10079ca0
+ * @ghidraAddress BRGlide: 0x100194c0
  */
 LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
 
@@ -300,6 +304,7 @@ LRESULT HandleWindowActivate(HWND hWnd, WPARAM wParam, LPARAM lParam);
  * @param lParam The thread of the other application.
  * @return The result of the message.
  * @ghidraAddress BRD3D: 0x1007a090
+ * @ghidraAddress BRGlide: 0x10019350
  */
 LRESULT HandleWindowActivateApp(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
@@ -437,6 +442,7 @@ LRESULT HandleWindowSize(HWND hWnd, WPARAM wParam, LPARAM lParam);
  * @param lParam The position of the cursor.
  * @return The result of the message.
  * @ghidraAddress BRD3D: 0x1007a4e0
+ * @ghidraAddress BRGlide: 0x10019480
  */
 LRESULT HandleWindowSysCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
@@ -596,7 +602,6 @@ bool InitializeApplication(void);
  * @return Whether the window was created.
  * @ghidraAddress BRD3D: 0x100798f0
  * @ghidraAddress BRGlide: 0x10019670
- * @stub{BRGlide}
  */
 bool CreateMainWindow(void);
 
@@ -605,7 +610,6 @@ bool CreateMainWindow(void);
  *
  * @ghidraAddress BRD3D: 0x10079740
  * @ghidraAddress BRGlide: 0x10019730
- * @stub{BRGlide}
  */
 void RunMessageLoop(void);
 

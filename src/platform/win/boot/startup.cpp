@@ -51,8 +51,6 @@ void RefreshTotalPhysicalMemory(void) {
     g_dwTotalPhysicalMemory = status.dwTotalPhys;
 }
 
-// The Glide library reads a different set of keys.
-#if TGR_RENDERER == TGR_RENDERER_D3D
 // The value of a line of BossRally.ini that sets a key, the key given with its equals sign.
 static inline const char *GetIniValue(const char *pszLine, const char *pszKey) {
     size_t nLength = strlen(pszKey);
@@ -115,6 +113,7 @@ static inline void ApplyIniLine(const char *pszLine) {
         g_dwPlayMusicMode = atoi(pszValue);
     } else if ((pszValue = GetIniValue(pszLine, "PlaySFX=")) != nullptr) {
         g_bSoundEnabledIni = atoi(pszValue);
+#if TGR_RENDERER == TGR_RENDERER_D3D
     } else if ((pszValue = GetIniValue(pszLine, "D3DAlphaCompare=")) != nullptr) {
         g_bD3DAlphaCompare = atoi(pszValue);
     } else if ((pszValue = GetIniValue(pszLine, "D3DAlwaysSquareTextures=")) != nullptr) {
@@ -127,6 +126,7 @@ static inline void ApplyIniLine(const char *pszLine) {
         g_bD3DWaitFlipDone = atoi(pszValue);
     } else if ((pszValue = GetIniValue(pszLine, "D3DInvSrcAlpha=")) != nullptr) {
         g_dwD3DDestBlendMode = atoi(pszValue) != 0 ? D3DBLEND_INVSRCALPHA : D3DBLEND_ONE;
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
     }
 }
 
@@ -206,7 +206,6 @@ void LoadBossRallyIniSettings(const char *pszCmdLine) {
         ApplyCommandLine(pszCmdLine);
     }
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
 // The value of the second argument of ShowGlideSplashImage() for the splash image.

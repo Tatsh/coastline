@@ -581,9 +581,6 @@ void FlushDirtyRenderStates(void) {
 
 char g_szDebugOverlayText[DEBUG_OVERLAY_TEXT_SIZE];
 DWORD g_dwD3DAlphaFunc;
-int g_dwFpsSampleFrames = 5;
-int g_dwFpsFrameCountdown = -1;
-DWORD g_adwFpsFrameTimeSamples[FPS_FRAME_TIME_SAMPLE_COUNT];
 DWORD g_dwGbiLastFrameTime;
 DWORD g_dwGbiFrameDeltaTime;
 
