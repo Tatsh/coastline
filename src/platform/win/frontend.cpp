@@ -1974,7 +1974,7 @@ static inline void BuildCreateGameScreen(MenuScreen *screen) {
     BuildCreateGameMenuUI(screen);
 }
 
-int ShowCreateGameScreen(void) {
+int ShowCreateGameScreen(MenuWidget *) {
     return ShowCachedMenuScreen(g_pCachedMenu_CreateGame, BuildCreateGameScreen);
 }
 
@@ -2689,7 +2689,7 @@ int JoinSessionAndShowRaceSetup(void) {
     return 1;
 }
 
-int ShowHostRaceSetupScreen(void) {
+int ShowHostRaceSetupScreen(MenuWidget *) {
     g_dwLobbyIsHost = 1;
     g_dwNetworkPlayMode = 2;
     g_dwSessionEnumPending = 0;
@@ -2779,8 +2779,8 @@ void EnterNetworkLobbyScreen(void) {
     ShowMultiplayerConnectionScreen();
     ShowJoinCreateGameScreen();
     if (g_dwLobbyIsHost) {
-        ShowCreateGameScreen();
-        ShowHostRaceSetupScreen();
+        ShowCreateGameScreen(nullptr);
+        ShowHostRaceSetupScreen(nullptr);
     } else {
         LoadNetworkSettings();
         JoinSessionAndShowRaceSetup();
@@ -2812,8 +2812,8 @@ int ReturnToNetworkLobbyScreen(void) {
     ShowMultiplayerConnectionScreen();
     ShowJoinCreateGameScreen();
     if (g_dwLobbyIsHost) {
-        ShowCreateGameScreen();
-        ShowHostRaceSetupScreen();
+        ShowCreateGameScreen(nullptr);
+        ShowHostRaceSetupScreen(nullptr);
     } else {
         JoinSessionAndShowRaceSetup();
     }
@@ -2866,8 +2866,8 @@ int NetworkCarSetupUI::OnEscape(MenuWidget *pWidget) {
             g_pCachedMenu_RaceSetupNetwork->DestroyPanels();
             g_pCachedMenu_RaceSetupNetwork = nullptr;
         }
-        ShowCreateGameScreen();
-        ShowHostRaceSetupScreen();
+        ShowCreateGameScreen(nullptr);
+        ShowHostRaceSetupScreen(nullptr);
         ShowNetworkCarSetupScreen();
         g_dwNetworkEscapePending = 0;
         return 0;
@@ -4051,7 +4051,8 @@ int KeyConfigUI::PollKeyCapture(MenuWidget *) {
     if (!g_fCharInputSuppressed) {
         return 1;
     }
-    int code = GetFirstPressedKeyIndex();
+    char keyName[256];
+    int code = GetFirstPressedKeyIndex(keyName);
     g_dwCapturedKeyBindingValue = code;
     if (code == -1 && g_dwKeyCaptureWaitRelease) {
         g_dwLastWmCharParam = 0;
@@ -5216,10 +5217,6 @@ static inline int JoinCreateGameUI_OnJoin(MenuWidget *) {
     return JoinSessionAndShowRaceSetup();
 }
 
-static inline int JoinCreateGameUI_OnCreate(MenuWidget *) {
-    return ShowCreateGameScreen();
-}
-
 int BuildJoinCreateGameUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     ResetSessionSlotTable();
@@ -5276,7 +5273,7 @@ int BuildJoinCreateGameUI(MenuScreen *screen) {
     g_pNetworkSessionJoinMenu = widget;
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
-    int (*actions[2])(MenuWidget *) = {JoinCreateGameUI_OnCreate, JoinCreateGameUI::OnBack};
+    int (*actions[2])(MenuWidget *) = {ShowCreateGameScreen, JoinCreateGameUI::OnBack};
     for (int i = 0; i < 2; ++i) {
         widget = AddMenuWidget(
             panel,
@@ -6410,10 +6407,6 @@ int BuildAudioOptionsUI(MenuScreen *screen) {
     return 1;
 }
 
-static inline int CreateGameUI_OnHost(MenuWidget *) {
-    return ShowHostRaceSetupScreen();
-}
-
 int BuildCreateGameMenuUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     ResetSessionSlotTable();
@@ -6467,7 +6460,7 @@ int BuildCreateGameMenuUI(MenuScreen *screen) {
                            1,
                            -1);
     widget->SetIdleActionCallback(ValidateEntityState);
-    widget->SetActionCallback(CreateGameUI_OnHost);
+    widget->SetActionCallback(ShowHostRaceSetupScreen);
     SetMenuWidgetLabel(widget, 0x1e, &g_rcMenuCenterPanel);
     g_pCreateGameContinueItem = widget;
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);

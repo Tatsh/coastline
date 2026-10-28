@@ -3055,15 +3055,23 @@ void BuildSaveTimeAttackMenuUI(MenuScreen *pScreen);
 int ShowLoadGhostMenu(void);
 
 /**
+ * Host a session and show the race setup of the network game.
+ *
+ * @param pWidget The widget of the action. Not read, and the direct callers pass null.
+ * @return 0 when the screen cannot be allocated, otherwise 1.
  * @ghidraAddress BRD3D: 0x100443e0
  * @ghidraAddress BRGlide: 0x1003d930
  */
-int ShowHostRaceSetupScreen(void);
+int ShowHostRaceSetupScreen(MenuWidget *pWidget);
 /**
+ * Show the screen that creates a network game.
+ *
+ * @param pWidget The widget of the action. Not read, and the direct callers pass null.
+ * @return 0 when the screen cannot be allocated, otherwise 1.
  * @ghidraAddress BRD3D: 0x100440d0
  * @ghidraAddress BRGlide: 0x1003d620
  */
-int ShowCreateGameScreen(void);
+int ShowCreateGameScreen(MenuWidget *pWidget);
 
 /**
  * @param pWidget The item chosen, or null from the lobby; unread.

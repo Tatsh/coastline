@@ -704,11 +704,13 @@ void PollKeyboardState(void);
 /**
  * The first key of g_adwKeyPressedEdge pressed in this frame.
  *
+ * @param pszKeyName Not read. PollKeyCapture() passes a buffer of 256 bytes, and
+ * CheckForUserInput() passes nothing in the binaries.
  * @return The index of the key, or -1 when none was pressed.
  * @ghidraAddress BRD3D: 0x1005ffd0
  * @ghidraAddress BRGlide: 0x10059040
  */
-int GetFirstPressedKeyIndex(void);
+int GetFirstPressedKeyIndex(char *pszKeyName = nullptr);
 
 /**
  * Whether a button of the mouse was pressed or, outside the setup of the car of network play,

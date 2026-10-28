@@ -942,7 +942,7 @@ void PollKeyboardState(void) {
     }
 }
 
-int GetFirstPressedKeyIndex(void) {
+int GetFirstPressedKeyIndex(char *) {
     for (int i = 0; i < KEYBOARD_KEY_COUNT; i++) {
         if (g_adwKeyPressedEdge[i]) {
             return i;
