@@ -16,6 +16,7 @@
 #include "n64/mainmenu.h"
 #include "n64/weatherselect.h"
 #include "sdl/cartridgedata.h"
+#include "sdl/input.h"
 #include "sdl/music.h"
 #include "sdl/n64frontend.h"
 #include "seasons.h"
@@ -42,10 +43,16 @@ u8 g_abMenuMusicModule[MENU_MUSIC_MODULE_SIZE];
 namespace {
 // The player of the audio of the console, shared with the PC game.
 coastline::N64Audio *g_audio;
+// The controllers of the SDL game, which the front end reads as the controllers of the console.
+const coastline::InputBindings *g_input;
 } // namespace
 
 void SetN64FrontEndAudio(coastline::N64Audio *audio) {
     g_audio = audio;
+}
+
+void SetN64FrontEndInput(const coastline::InputBindings *input) {
+    g_input = input;
 }
 
 namespace {
@@ -169,10 +176,22 @@ s32 osMotorStop(OSPfs *pfs) {
 void osViBlack(u8 active) {
 }
 
-// The controllers are read by osContGetReadData() of the PC release, from DirectInput, so the read
-// it waits for has nothing to start.
+// The controllers are read from the bindings of the SDL game when the front end takes them.
 s32 osContStartReadData(OSMesgQueue *queue) {
     return 0;
+}
+
+void osContGetReadData(OSContPad *data) {
+    if (g_input == nullptr) {
+        return;
+    }
+    auto ports = g_input->Poll();
+    for (std::size_t i = 0; i < ports.size(); ++i) {
+        data[i].button = ports[i].buttons;
+        data[i].stick_x = ports[i].stickX;
+        data[i].stick_y = ports[i].stickY;
+        data[i].CONT_ERRNO = ports[i].connected ? 0 : CONT_NO_RESPONSE_ERROR;
+    }
 }
 
 void InitAudioSystem(void *module, void *work) {

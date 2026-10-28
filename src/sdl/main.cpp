@@ -444,6 +444,7 @@ int main(int argc, char *argv[]) {
                     return EXIT_FAILURE;
                 }
                 ReadN64FrontEndData();
+                SetN64FrontEndInput(&input);
                 SetN64FrontEndAudio(config.GetBoolean("Game", "PlayMusic", true) ? &audio :
                                                                                    nullptr);
                 coastline::StartPcGameForFrontEnd();

@@ -7,6 +7,8 @@
 
 #include <SDL3/SDL.h>
 
+#include "sdl/input.h"
+
 const DIDATAFORMAT c_dfDIKeyboard = {0};
 const DIDATAFORMAT c_dfDIMouse = {1};
 const DIDATAFORMAT c_dfDIJoystick2 = {2};
@@ -188,19 +190,7 @@ SDL_Scancode VirtualKeyScancode(int key) {
     return SDL_SCANCODE_UNKNOWN;
 }
 
-std::vector<int> g_scriptedKeys;
-
-// Whether a key is down on the keyboard or held by SetScriptedKeys().
-bool IsKeyDown(SDL_Scancode scancode) {
-    return SDL_GetKeyboardState(nullptr)[scancode] ||
-           std::ranges::find(g_scriptedKeys, static_cast<int>(scancode)) != g_scriptedKeys.end();
-}
-
 } // namespace
-
-void coastline::SetScriptedKeys(std::vector<int> scancodes) {
-    g_scriptedKeys = std::move(scancodes);
-}
 
 HRESULT IDirectInputEffect::SetParameters(const DIEFFECT *effect, DWORD flags) {
     if (effect->dwDuration != INFINITE_EFFECT) {
@@ -238,7 +228,7 @@ HRESULT IDirectInputDeviceA::GetDeviceState(DWORD size, LPVOID data) {
     if (m_kind == 0) {
         auto *state = static_cast<BYTE *>(data);
         for (const auto &[scancode, code] : KEY_CODES) {
-            if (code < size && IsKeyDown(scancode)) {
+            if (code < size && coastline::IsKeyDown(scancode)) {
                 state[code] = 0x80;
             }
         }
@@ -351,7 +341,7 @@ short GetAsyncKeyState(int key) {
     if (scancode == SDL_SCANCODE_UNKNOWN) {
         return 0;
     }
-    bool down = IsKeyDown(scancode);
+    bool down = coastline::IsKeyDown(scancode);
     bool pressed = down && !previous[scancode];
     previous[scancode] = down;
     return static_cast<short>((down ? 0x8000 : 0) | (pressed ? 1 : 0));

@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstdint>
+#include <vector>
 
 #include <SDL3/SDL.h>
 
@@ -69,5 +70,18 @@ private:
  * @return The stick value.
  */
 std::int8_t ScaleStickAxis(std::int16_t axis);
+
+/**
+ * Hold keys down as if the player held them, in addition to the keyboard, for tests.
+ *
+ * @param scancodes The SDL scancodes of the keys held, replacing those of the last call.
+ */
+void SetScriptedKeys(std::vector<int> scancodes);
+
+/**
+ * @param scancode The key.
+ * @return Whether the key is down on the keyboard or held by SetScriptedKeys().
+ */
+bool IsKeyDown(SDL_Scancode scancode);
 
 } // namespace coastline

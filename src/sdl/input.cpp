@@ -12,6 +12,8 @@ constexpr int STICK_RANGE = 80;
 constexpr int DEAD_ZONE = 7849;
 constexpr int C_BUTTON_THRESHOLD = 16384;
 
+std::vector<int> g_scriptedKeys;
+
 struct KeyBinding {
     SDL_Scancode key;
     std::uint16_t button;
@@ -83,15 +85,15 @@ void PollGamepad(SDL_Gamepad *gamepad, ControllerState &state) {
 }
 
 void PollKeyboard(ControllerState &state) {
-    const bool *keys = SDL_GetKeyboardState(nullptr);
     for (const auto &binding : KEY_BUTTONS) {
-        if (keys[binding.key]) {
+        if (IsKeyDown(binding.key)) {
             state.buttons |= binding.button;
         }
     }
-    int x =
-        (keys[SDL_SCANCODE_RIGHT] ? STICK_RANGE : 0) - (keys[SDL_SCANCODE_LEFT] ? STICK_RANGE : 0);
-    int y = (keys[SDL_SCANCODE_UP] ? STICK_RANGE : 0) - (keys[SDL_SCANCODE_DOWN] ? STICK_RANGE : 0);
+    int x = (IsKeyDown(SDL_SCANCODE_RIGHT) ? STICK_RANGE : 0) -
+            (IsKeyDown(SDL_SCANCODE_LEFT) ? STICK_RANGE : 0);
+    int y = (IsKeyDown(SDL_SCANCODE_UP) ? STICK_RANGE : 0) -
+            (IsKeyDown(SDL_SCANCODE_DOWN) ? STICK_RANGE : 0);
     if (x != 0) {
         state.stickX = static_cast<std::int8_t>(x);
     }
@@ -172,6 +174,15 @@ std::array<ControllerState, CONTROLLER_PORTS> InputBindings::Poll() const {
     ports[0].connected = true;
     PollKeyboard(ports[0]);
     return ports;
+}
+
+void SetScriptedKeys(std::vector<int> scancodes) {
+    g_scriptedKeys = std::move(scancodes);
+}
+
+bool IsKeyDown(SDL_Scancode scancode) {
+    return SDL_GetKeyboardState(nullptr)[scancode] ||
+           std::ranges::find(g_scriptedKeys, static_cast<int>(scancode)) != g_scriptedKeys.end();
 }
 
 } // namespace coastline

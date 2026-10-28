@@ -294,14 +294,3 @@ HRESULT DirectInputCreateA(HINSTANCE instance, DWORD version, IDirectInputA **in
  * @return 0x8000 while the key is down, with 1 for a new press.
  */
 short GetAsyncKeyState(int key);
-
-namespace coastline {
-
-/**
- * Hold keys down as if the player held them, in addition to the keyboard, for tests.
- *
- * @param scancodes The SDL scancodes of the keys held, replacing those of the last call.
- */
-void SetScriptedKeys(std::vector<int> scancodes);
-
-} // namespace coastline

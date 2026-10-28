@@ -79,10 +79,10 @@ extern "C" {
 #define CONT_NO_RESPONSE_ERROR 8
 
 /*
- * The name of the channel error of OSContStatus and OSContPad. The C runtime of Windows defines
- * errno as a macro, so the member takes another name there.
+ * The name of the channel error of OSContStatus and OSContPad. The C runtimes of the hosts define
+ * errno as a macro, and the member takes another name there.
  */
-#if TGR_PC
+#if TGR_PC || TGR_PLATFORM == TGR_PLATFORM_SDL
 #define CONT_ERRNO errnum
 #else
 #define CONT_ERRNO errno

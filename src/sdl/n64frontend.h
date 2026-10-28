@@ -13,8 +13,16 @@ void ReadN64FrontEndData(void);
 void LogN64FrontEndData(void);
 
 namespace coastline {
+class InputBindings;
 class N64Audio;
-}
+} // namespace coastline
+
+/**
+ * Set the bindings the front end reads its controllers from.
+ *
+ * @param input The bindings, or `nullptr` for no controllers.
+ */
+void SetN64FrontEndInput(const coastline::InputBindings *input);
 
 /**
  * Set the player the music the front end starts plays on.
