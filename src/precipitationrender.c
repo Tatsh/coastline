@@ -214,7 +214,7 @@ void RenderPrecipitationEffect(void) {
     /* The view without its translation, taking the axes of a particle to those of the world. */
     MtxInvert4x4(g_afMvpMatrix, (f32(*)[4])g_pActiveCamera);
     g_afMvpMatrix[3][2] = 0.0f;
-#if TGR_RENDERER == TGR_RENDERER_GLIDE
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE
     g_afMvpMatrix[3][1] = 0.0f;
     g_afMvpMatrix[3][0] = 0.0f;
 #endif
@@ -234,7 +234,7 @@ void RenderPrecipitationEffect(void) {
     g_afScratchMatrix[3][1] = 0.0f;
     g_afScratchMatrix[3][2] = 0.0f;
     g_afScratchMatrix[3][3] = 1.0f;
-#if TGR_RENDERER != TGR_RENDERER_GLIDE
+#if !(TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE)
     /* The other two terms of the translation are read back from the one cleared. */
     g_afMvpMatrix[3][0] = g_afMvpMatrix[3][1] = g_afMvpMatrix[3][2];
 #endif

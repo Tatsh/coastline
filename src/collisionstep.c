@@ -184,7 +184,7 @@ s32 TipBalancedVehicle(RigidBody *body) {
 #define OBB_SUM4_X(a, b, c, d) ((((a) + (b)) + (c)) + (d))
 #define OBB_SUM4_YZ(a, b, c, d) ((((a) + (b)) + (c)) + (d))
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
-#if TGR_RENDERER == TGR_RENDERER_GLIDE
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE
 /* BRGlide reduces each edge axis in an order of its own. */
 #define OBB_SUM4_X1(a, b, c, d) ((((c) + (a)) + (b)) + (d))
 #define OBB_SUM4_X2(a, b, c, d) ((((a) + (b)) + (d)) + (c))
@@ -199,7 +199,7 @@ s32 TipBalancedVehicle(RigidBody *body) {
 #define OBB_SUM4_YZ1 OBB_SUM4_YZ
 #define OBB_SUM4_YZ2 OBB_SUM4_YZ
 #define OBB_SUM4_YZ3 OBB_SUM4_YZ
-#endif /* TGR_RENDERER == TGR_RENDERER_GLIDE */
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE */
 
 s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *halfB) {
     f32 r[3][3];
