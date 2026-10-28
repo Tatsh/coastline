@@ -160,6 +160,7 @@ void InitializeRenderSubsystems(int nMode);
  */
 void ResetRenderSubsystems(int nMode, int nWidth, int nHeight, int nBitDepth, int nExtra);
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * Set a display mode, falling back to 640 by 480 with 16 bits when the device is lost, and reset
  * the routines of the device.
@@ -169,10 +170,23 @@ void ResetRenderSubsystems(int nMode, int nWidth, int nHeight, int nBitDepth, in
  * @param nBitDepth The bits of a pixel of the display mode.
  * @param nExtra The fourth value of the display mode.
  * @ghidraAddress BRD3D: 0x1001bb00
- * @ghidraAddress BRGlide: 0x1001e130
- * @stub{BRGlide}
  */
 void SetDisplayModeWithFallback(int nWidth, int nHeight, int nBitDepth, int nExtra);
+#else
+/**
+ * Set the size of the frame buffer. A size other than the current one closes the Glide window and
+ * opens one of the new size, or of 640 by 480 when that fails.
+ *
+ * @param nWidth The width of the display mode.
+ * @param nHeight The height of the display mode.
+ * @param nBitDepth The bits of a pixel of the display mode, not read.
+ * @param nExtra The fourth value of the display mode, not read.
+ * @return Whether a window of the size requested is open, or the result of opening the window of
+ * 640 by 480.
+ * @ghidraAddress BRGlide: 0x1001e130
+ */
+int SetDisplayModeWithFallback(int nWidth, int nHeight, int nBitDepth, int nExtra);
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /**
  * Set the level of damage of a texture the game loaded.
@@ -250,9 +264,11 @@ void ClearRenderTargetOnce(void);
 
 #else
 /**
- * Start the Glide device.
+ * Start the Glide device: set the routines that show a frame and shut the device down, find the
+ * hardware and its units of texture and its memory, and open the window of the size of the
+ * configuration.
  *
- * @return The result of the start. Its meaning is not recovered yet.
+ * @return Whether the hardware was found and the window opened.
  * @ghidraAddress BRGlide: 0x1001e080
  */
 int InitGlideRenderDevice(void);

@@ -135,6 +135,7 @@ colc
 collisionstep
 color
 colored
+colorformat
 colorkeyenable
 combkey
 completionthreads
@@ -220,6 +221,7 @@ declear
 decleared
 decomp
 denumret
+depthbuffer
 desrttr
 desrttrk
 destroyplayerorgroup
@@ -415,7 +417,9 @@ fsanitize
 ftofrac
 funclets
 funcs
+fxfalse
 fxmisc
+fxtrue
 gameinit
 gamesession
 gamestate
@@ -984,6 +988,7 @@ spritewh
 sptask
 sqrtf
 srcblt
+ssttype
 standardvgamode
 startlights
 startthread
@@ -1027,6 +1032,7 @@ tagfile
 tagfiles
 tarmc
 tatsh
+texelfx
 texrect
 textdetail
 textfilt
@@ -1063,6 +1069,7 @@ tlut
 tluts
 tlvertex
 tmsf
+tmuvtx
 tolower
 toolhelp
 toupper
@@ -1162,6 +1169,7 @@ waveformatex
 wavread
 wctype
 wdangling
+wdepthvalue
 weatherselect
 werror
 wettire

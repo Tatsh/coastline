@@ -130,6 +130,10 @@ else()
                           libultra/gu/mtxutil.c libultra/gu/scale.c libultra/gu/translate.c
                           libultra/gu/perspective.c libultra/gu/rotate.c libultra/io/controller.c libultra/os/getcount.c)
   target_link_libraries(coastline_game PRIVATE coastline_common)
+  # The game code includes the interpreter of the display lists, which the Glide headers define.
+  if(TARGET coastline_glide)
+    target_link_libraries(coastline_game PRIVATE coastline_glide)
+  endif()
   list(APPEND COASTLINE_LIBRARIES coastline_game)
 
   target_sources(coastline_game PRIVATE racerender.c raceload.c)

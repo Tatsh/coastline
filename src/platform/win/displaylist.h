@@ -8,6 +8,8 @@
 
 #include <array>
 
+#include <windows.h>
+
 #include "platform/win/framestatistics.h"
 #include "platform/win/gbicommand.h"
 #include "platform/win/textureupload.h"
@@ -15,7 +17,8 @@
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
 #include <d3d.h>
-#include <windows.h>
+#else
+#include <glide.h>
 #endif
 
 /** The number of entries of g_apGbiDisplayListReturnStack. */
@@ -109,7 +112,6 @@ extern "C" {
  * @param dwCombineLo The second word of the combine mode.
  * @ghidraAddress BRD3D: 0x1001c820
  * @ghidraAddress BRGlide: 0x1001e7a0
- * @stub{BRGlide}
  */
 void SelectVertexSubmitterForCombineMode(unsigned dwCombineHi, unsigned dwCombineLo);
 
@@ -119,7 +121,6 @@ void SelectVertexSubmitterForCombineMode(unsigned dwCombineHi, unsigned dwCombin
  *
  * @ghidraAddress BRD3D: 0x1001e7c0
  * @ghidraAddress BRGlide: 0x1001fd70
- * @stub{BRGlide}
  */
 void ApplyGeometryModeChanges(void);
 
@@ -218,7 +219,6 @@ extern unsigned g_dwGbiRenderMode;
  * @param dwRenderMode The render mode.
  * @ghidraAddress BRD3D: 0x10020fa0
  * @ghidraAddress BRGlide: 0x10021270
- * @stub{BRGlide}
  */
 void ApplyRdpRenderMode(unsigned dwRenderMode);
 
@@ -252,7 +252,6 @@ GbiCommand *HandleGbiSetOtherModeL(GbiCommand *pCommand);
  * @param nBottom The bottom edge.
  * @ghidraAddress BRD3D: 0x1001be90
  * @ghidraAddress BRGlide: 0x1001e380
- * @stub{BRGlide}
  */
 void DrawFillRectangle(int nLeft, int nTop, int nRight, int nBottom);
 
@@ -406,7 +405,6 @@ GbiCommand *HandleGbiSetEnvColor(GbiCommand *pCommand);
  * @param nTile The tile.
  * @ghidraAddress BRD3D: 0x10021560
  * @ghidraAddress BRGlide: 0x100215c0
- * @stub{BRGlide}
  */
 void DrawTextureRectangle(
     int nUpperLeftX, int nUpperLeftY, int nLowerRightX, int nLowerRightY, int nTile);
@@ -552,10 +550,16 @@ GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand);
  */
 extern float g_GbiMvpMatrix[4][4];
 
-/** @ghidraAddress BRD3D: 0x104bbec0 */
+/**
+ * @ghidraAddress BRD3D: 0x104bbec0
+ * @ghidraAddress BRGlide: 0x105ccd00
+ */
 extern float g_GbiProjectionMatrix[4][4];
 
-/** @ghidraAddress BRD3D: 0x104bbf10 */
+/**
+ * @ghidraAddress BRD3D: 0x104bbf10
+ * @ghidraAddress BRGlide: 0x105ccd50
+ */
 extern float g_aGbiModelViewStack[GBI_MATRIX_STACK_RESET_DEPTH][4][4];
 
 /**
@@ -711,6 +715,13 @@ struct GbiVertex {
     GbiVertexSource source; /*!< The vertex as the command loaded it. */
     int nRenderBufferIndex; /*!< The entry of g_renderBuffer of the vertex, -1 for none. */
 };
+#else
+/** A vertex of the display lists after its transform. */
+struct GbiVertex {
+    GrVertex vertex;        /*!< The vertex Glide draws, its colour from 0 to 255. */
+    int nClipFlags;         /*!< The planes of the view the vertex lies outside, a bit for each. */
+    GbiVertexSource source; /*!< The vertex as the command loaded it. */
+};
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /** @ghidraAddress BRD3D: 0x104c15d0 */
@@ -736,6 +747,7 @@ extern "C" {
  * Light a vertex normal with the first directional light and the ambient colour.
  *
  * @ghidraAddress BRD3D: 0x10022350
+ * @ghidraAddress BRGlide: 0x10022ac0
  */
 void ComputeVertexDirectionalLight(const ConvertedModelVertex *pVertex, GbiVertexSource *pDest);
 
@@ -752,6 +764,7 @@ extern float g_fDepthOffset;
 
 /**
  * @ghidraAddress BRD3D: 0x10022dc0
+ * @ghidraAddress BRGlide: 0x10022120
  */
 int ComputeVertexClipCodes(const GbiVertexSource *pVertex);
 
@@ -761,6 +774,20 @@ int ComputeVertexClipCodes(const GbiVertexSource *pVertex);
  */
 void TransformVertexToScreen(
     GbiVertex *pDest, const GbiVertexSource *pSource, float fRed, float fGreen, float fBlue);
+#else
+/**
+ * Take a vertex inside the view to the screen with a colour, its position snapped to a quarter of
+ * a pixel.
+ *
+ * @param pDest The vertex on the screen.
+ * @param pSource The vertex as it was loaded.
+ * @param fRed The red, from 0 to 255.
+ * @param fGreen The green, from 0 to 255.
+ * @param fBlue The blue, from 0 to 255.
+ * @ghidraAddress BRGlide: 0x10022070
+ */
+void TransformVertexToScreen(
+    GrVertex *pDest, const GbiVertexSource *pSource, float fRed, float fGreen, float fBlue);
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /** The number of entries of g_aGbiVertexCache and g_apVertexPool. */
@@ -768,10 +795,16 @@ void TransformVertexToScreen(
 
 #define GBI_CLIP_VERTEX_POOL_SIZE 64
 
-/** @ghidraAddress BRD3D: 0x104c01a8 */
+/**
+ * @ghidraAddress BRD3D: 0x104c01a8
+ * @ghidraAddress BRGlide: 0x105ccff0
+ */
 extern GbiVertexSource g_aClipVertexPool[GBI_CLIP_VERTEX_POOL_SIZE];
 
-/** @ghidraAddress BRD3D: 0x104c0bbc */
+/**
+ * @ghidraAddress BRD3D: 0x104c0bbc
+ * @ghidraAddress BRGlide: 0x105cda00
+ */
 extern GbiVertexSource *g_pVertexFreeList;
 
 /**
@@ -789,34 +822,62 @@ struct GbiClipPolygon {
     int nCount;
 };
 
-/** @ghidraAddress BRD3D: 0x1001d810 */
+/**
+ * @ghidraAddress BRD3D: 0x1001d810
+ * @ghidraAddress BRGlide: 0x1001f0d0
+ */
 void ClipPolygonPositiveWPlane(GbiClipPolygon *pPolygon);
-/** @ghidraAddress BRD3D: 0x1001d9f0 */
+/**
+ * @ghidraAddress BRD3D: 0x1001d9f0
+ * @ghidraAddress BRGlide: 0x1001f2b0
+ */
 void ClipPolygonLeftPlane(GbiClipPolygon *pPolygon);
-/** @ghidraAddress BRD3D: 0x1001db30 */
+/**
+ * @ghidraAddress BRD3D: 0x1001db30
+ * @ghidraAddress BRGlide: 0x1001f3f0
+ */
 void ClipPolygonRightPlane(GbiClipPolygon *pPolygon);
-/** @ghidraAddress BRD3D: 0x1001dc70 */
+/**
+ * @ghidraAddress BRD3D: 0x1001dc70
+ * @ghidraAddress BRGlide: 0x1001f530
+ */
 void ClipPolygonBottomPlane(GbiClipPolygon *pPolygon);
-/** @ghidraAddress BRD3D: 0x1001ddb0 */
+/**
+ * @ghidraAddress BRD3D: 0x1001ddb0
+ * @ghidraAddress BRGlide: 0x1001f670
+ */
 void ClipPolygonTopPlane(GbiClipPolygon *pPolygon);
-/** @ghidraAddress BRD3D: 0x1001def0 */
+/**
+ * @ghidraAddress BRD3D: 0x1001def0
+ * @ghidraAddress BRGlide: 0x1001f7b0
+ */
 void ClipPolygonNearZPlane(GbiClipPolygon *pPolygon);
-/** @ghidraAddress BRD3D: 0x1001e030 */
+/**
+ * @ghidraAddress BRD3D: 0x1001e030
+ * @ghidraAddress BRGlide: 0x1001f8f0
+ */
 void ClipPolygonFarZPlane(GbiClipPolygon *pPolygon);
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
-/** @ghidraAddress BRD3D: 0x104c5184 */
+/**
+ * Whether a render mode set the blend of the frame. The render modes after it do not change the
+ * blend.
+ *
+ * @ghidraAddress BRD3D: 0x104c5184
+ * @ghidraAddress BRGlide: 0x105d17d4
+ */
 extern int g_bRdpBlendStateOverride;
-
-/** The number of entries of g_renderBuffer and g_awRenderIndexBuffer. */
-#define RENDER_BUFFER_SIZE 512
 
 /**
  * The vertices the display lists loaded.
  *
  * @ghidraAddress BRD3D: 0x104c16d0
+ * @ghidraAddress BRGlide: 0x105ce318
  */
 extern GbiVertex g_aGbiVertexCache[GBI_VERTEX_CACHE_SIZE];
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
+/** The number of entries of g_renderBuffer and g_awRenderIndexBuffer. */
+#define RENDER_BUFFER_SIZE 512
 
 /**
  * The vertices of g_aGbiVertexCache copied into g_renderBuffer since the last flush.
@@ -935,11 +996,13 @@ int SubmitVertexToRenderBufferFogged(GbiVertex *pVertex);
  * @ghidraAddress BRD3D: 0x100a79ec
  */
 extern int (*g_pfnSubmitVertexToRenderBuffer)(GbiVertex *pVertex);
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /**
  * The scale from the s of a vertex to its u.
  *
  * @ghidraAddress BRD3D: 0x118aa08c
+ * @ghidraAddress BRGlide: 0x118ed1a4
  */
 extern float g_fTexCoordScaleS;
 
@@ -947,9 +1010,11 @@ extern float g_fTexCoordScaleS;
  * The scale from the t of a vertex to its v.
  *
  * @ghidraAddress BRD3D: 0x118aa090
+ * @ghidraAddress BRGlide: 0x118ed1a8
  */
 extern float g_fTexCoordScaleT;
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * Scale the texture coordinates of a vertex as it was loaded into those of the vertex.
  *
@@ -958,6 +1023,17 @@ extern float g_fTexCoordScaleT;
  * @ghidraAddress BRD3D: 0x1001e4b0
  */
 void ScaleVertexTexCoords(GbiVertex *pVertex, const GbiVertexSource *pSource);
+#else
+/**
+ * Scale the texture coordinates of a vertex as it was loaded into those of both units of the
+ * vertex, divided by its w.
+ *
+ * @param pVertex The vertex.
+ * @param pSource The vertex as it was loaded.
+ * @ghidraAddress BRGlide: 0x1001fcf0
+ */
+void ScaleVertexTexCoords(GrVertex *pVertex, const GbiVertexSource *pSource);
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /**
  * Clip a triangle to the planes of the view and submit what remains.
@@ -966,13 +1042,21 @@ void ScaleVertexTexCoords(GbiVertex *pVertex, const GbiVertexSource *pSource);
  * @param pVertex1 The second vertex.
  * @param pVertex2 The third vertex.
  * @ghidraAddress BRD3D: 0x1001d420
+ * @ghidraAddress BRGlide: 0x1001ee70
  */
 void ClipAndSubmitTriangle(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *pVertex2);
 
 /**
  * Clip and submit a triangle with one colour for all surviving vertices.
  *
+ * @param pVertex0 The first vertex.
+ * @param pVertex1 The second vertex.
+ * @param pVertex2 The third vertex.
+ * @param fRed The red of the triangle.
+ * @param fGreen The green of the triangle.
+ * @param fBlue The blue of the triangle.
  * @ghidraAddress BRD3D: 0x1001eeb0
+ * @ghidraAddress BRGlide: 0x10020190
  */
 void ClipPolygonAndSubmitFlat(GbiVertex *pVertex0,
                               GbiVertex *pVertex1,
@@ -984,7 +1068,14 @@ void ClipPolygonAndSubmitFlat(GbiVertex *pVertex0,
 /**
  * Clip and submit a triangle with one colour at the fixed far depth.
  *
+ * @param pVertex0 The first vertex.
+ * @param pVertex1 The second vertex.
+ * @param pVertex2 The third vertex.
+ * @param fRed The red of the triangle.
+ * @param fGreen The green of the triangle.
+ * @param fBlue The blue of the triangle.
  * @ghidraAddress BRD3D: 0x1001f7e0
+ * @ghidraAddress BRGlide: 0x10020690
  */
 void ClipPolygonAndSubmitDepthScaled(GbiVertex *pVertex0,
                                      GbiVertex *pVertex1,
@@ -992,6 +1083,19 @@ void ClipPolygonAndSubmitDepthScaled(GbiVertex *pVertex0,
                                      float fRed,
                                      float fGreen,
                                      float fBlue);
+
+/**
+ * Clip a triangle to the planes of the view and submit what remains at the far depth.
+ *
+ * @param pVertex0 The first vertex.
+ * @param pVertex1 The second vertex.
+ * @param pVertex2 The third vertex.
+ * @ghidraAddress BRD3D: 0x1001ff90
+ * @ghidraAddress BRGlide: 0x10020a80
+ */
+void ClipAndSubmitTriangleAtFarDepth(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *pVertex2);
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
 
 /**
  * Submit a triangle to g_renderBuffer, its vertices from the last, and draw the triangles waiting
@@ -1015,16 +1119,6 @@ void SubmitTriangleToRenderBuffer(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiV
  * @ghidraAddress BRD3D: 0x1001e5d0
  */
 void SubmitIndexedTriangle(int nVertex0, int nVertex1, int nVertex2);
-
-/**
- * Clip a triangle to the planes of the view and submit what remains at the far depth.
- *
- * @param pVertex0 The first vertex.
- * @param pVertex1 The second vertex.
- * @param pVertex2 The third vertex.
- * @ghidraAddress BRD3D: 0x1001ff90
- */
-void ClipAndSubmitTriangleAtFarDepth(GbiVertex *pVertex0, GbiVertex *pVertex1, GbiVertex *pVertex2);
 
 /**
  * Submit a triangle of g_aGbiVertexCache as SubmitIndexedTriangle() does, clipping one across a
@@ -1052,6 +1146,25 @@ void FlushIndexedRenderBuffer(void);
  */
 void FlushDirtyRenderStates(void);
 
+/**
+ * The comparison of the test of alpha the display lists start a frame with.
+ *
+ * @ghidraAddress BRD3D: 0x104bbe28
+ */
+extern DWORD g_dwD3DAlphaFunc;
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+
+/** The bytes of the display list of the text drawn over a frame. */
+#define OVERLAY_DISPLAY_LIST_SIZE 0x8000
+/** The size of the text drawn over a frame. */
+#define OVERLAY_TEXT_SIZE 20
+/** The left of the text drawn over a frame. */
+#define OVERLAY_TEXT_X 0
+/** The top of the text drawn over a frame. */
+#define OVERLAY_TEXT_Y 60
+/** The first word of the command that ends a display list. */
+#define GBI_END_DISPLAY_LIST_W0 0xb8000000
+
 /** The size of g_szDebugOverlayText, the room before the next datum. */
 #define DEBUG_OVERLAY_TEXT_SIZE 0x408
 
@@ -1062,14 +1175,6 @@ void FlushDirtyRenderStates(void);
  * @ghidraAddress BRGlide: 0x118ee590
  */
 extern char g_szDebugOverlayText[DEBUG_OVERLAY_TEXT_SIZE];
-
-/**
- * The comparison of the test of alpha the display lists start a frame with.
- *
- * @ghidraAddress BRD3D: 0x104bbe28
- * @ghidraAddress BRGlide: 0x105ccc70
- */
-extern DWORD g_dwD3DAlphaFunc;
 
 /**
  * The time the last frame was shown, in milliseconds.
@@ -1083,17 +1188,19 @@ extern DWORD g_dwGbiLastFrameTime;
  * The time between the last two frames shown, in milliseconds.
  *
  * @ghidraAddress BRD3D: 0x104c5198
+ * @ghidraAddress BRGlide: 0x105d17e0
  */
 extern DWORD g_dwGbiFrameDeltaTime;
 
 /**
- * Draw a frame of the game with Direct3D: start the scene, set the render states the display lists
- * start from, run the display list and the text over the frame, end the scene, show the frame, and
- * record its time. Surfaces lost are restored, and the frame is dropped when the scene cannot start
- * or end.
+ * Draw a frame of the game: set the render states the display lists start from, run the display
+ * list and the text over the frame, show the frame, and record its time. With Direct3D the frame
+ * is drawn in a scene, surfaces lost are restored, and the frame is dropped when the scene cannot
+ * start or end.
  *
  * @param pDisplayList The display list of the frame.
  * @ghidraAddress BRD3D: 0x10024550
+ * @ghidraAddress BRGlide: 0x10023b70
  */
 void RenderGbiDisplayListFrame(GbiCommand *pDisplayList);
 
@@ -1101,9 +1208,11 @@ void RenderGbiDisplayListFrame(GbiCommand *pDisplayList);
  * Bind a texture the game loaded, set by InitializeTextureSubsystem().
  *
  * @ghidraAddress BRD3D: 0x118aa0b4
+ * @ghidraAddress BRGlide: 0x118ed1cc
  */
 extern void (*g_pfnBindTextureEntry)(int nEntry);
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
 /**
  * The entry whose texture is bound, or -1 after texture initialization.
  *
@@ -1136,7 +1245,6 @@ extern "C" {
  * @return The command after those it replaces.
  * @ghidraAddress BRD3D: 0x1001bd70
  * @ghidraAddress BRGlide: 0x1001e2e0
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiBindTextureEntry(GbiCommand *pCommand);
 
@@ -1147,7 +1255,6 @@ GbiCommand *HandleGbiBindTextureEntry(GbiCommand *pCommand);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001cca0
  * @ghidraAddress BRGlide: 0x1001ea80
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiSetPrimColor(GbiCommand *pCommand);
 
@@ -1158,7 +1265,6 @@ GbiCommand *HandleGbiSetPrimColor(GbiCommand *pCommand);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001cc70
  * @ghidraAddress BRGlide: 0x1001ea60
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiSetFogColor(GbiCommand *pCommand);
 
@@ -1203,7 +1309,6 @@ extern int g_dwScissorBottom;
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001cda0
  * @ghidraAddress BRGlide: 0x1001eb50
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiSetScissor(GbiCommand *pCommand);
 
@@ -1215,7 +1320,6 @@ GbiCommand *HandleGbiSetScissor(GbiCommand *pCommand);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001ce70
  * @ghidraAddress BRGlide: 0x1001ebc0
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiSetScissorIntCoords(GbiCommand *pCommand);
 
@@ -1236,7 +1340,6 @@ GbiCommand *HandleGbiEndDisplayList(GbiCommand *pCommand);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x10020dc0
  * @ghidraAddress BRGlide: 0x10021080
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiMatrix(GbiCommand *pCommand);
 
@@ -1247,7 +1350,6 @@ GbiCommand *HandleGbiMatrix(GbiCommand *pCommand);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x10021bd0
  * @ghidraAddress BRGlide: 0x10021a20
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiVertexUnlit(GbiCommand *pCommand);
 
@@ -1259,7 +1361,6 @@ GbiCommand *HandleGbiVertexUnlit(GbiCommand *pCommand);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001cff0
  * @ghidraAddress BRGlide: 0x1001ecf0
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri1Smooth(GbiCommand *pCommand);
 
@@ -1271,7 +1372,6 @@ GbiCommand *HandleGbiTri1Smooth(GbiCommand *pCommand);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001e170
  * @ghidraAddress BRGlide: 0x1001fa30
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri2Smooth(GbiCommand *pCommand);
 
@@ -1281,6 +1381,7 @@ GbiCommand *HandleGbiTri2Smooth(GbiCommand *pCommand);
  * @param pCommand The command.
  * @return The next command.
  * @ghidraAddress BRD3D: 0x10021e80
+ * @ghidraAddress BRGlide: 0x10021c70
  */
 GbiCommand *HandleGbiVertexLit(GbiCommand *pCommand);
 
@@ -1291,7 +1392,6 @@ GbiCommand *HandleGbiVertexLit(GbiCommand *pCommand);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x10022480
  * @ghidraAddress BRGlide: 0x100221d0
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiVertexLitEnvColorModulated(GbiCommand *pCommand);
 
@@ -1302,7 +1402,6 @@ GbiCommand *HandleGbiVertexLitEnvColorModulated(GbiCommand *pCommand);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x100228f0
  * @ghidraAddress BRGlide: 0x10022600
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiVertexTexGen(GbiCommand *pCommand);
 
@@ -1333,7 +1432,6 @@ void GenerateGbiVertexTextureCoordinatesLinear(const ConvertedModelVertex *pInpu
  * @return The next command.
  * @ghidraAddress BRD3D: 0x100231d0
  * @ghidraAddress BRGlide: 0x10022bf0
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiVertexTexGenLinear(GbiCommand *pCommand);
 
@@ -1344,7 +1442,6 @@ GbiCommand *HandleGbiVertexTexGenLinear(GbiCommand *pCommand);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x10023cc0
  * @ghidraAddress BRGlide: 0x10023360
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiVertexLitNoZBuffer(GbiCommand *pCommand);
 
@@ -1355,7 +1452,6 @@ GbiCommand *HandleGbiVertexLitNoZBuffer(GbiCommand *pCommand);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x10023a10
  * @ghidraAddress BRGlide: 0x10023110
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiVertexUnlitNoZBuffer(GbiCommand *pCommand);
 
@@ -1367,7 +1463,6 @@ GbiCommand *HandleGbiVertexUnlitNoZBuffer(GbiCommand *pCommand);
  * @param nVertex2 The entry of the third vertex.
  * @ghidraAddress BRD3D: 0x1001ec20
  * @ghidraAddress BRGlide: 0x1001ff60
- * @stub{BRGlide}
  */
 void DrawFlatShadedTriangle(int nVertex0, int nVertex1, int nVertex2);
 
@@ -1380,7 +1475,6 @@ void DrawFlatShadedTriangle(int nVertex0, int nVertex1, int nVertex2);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001e980
  * @ghidraAddress BRGlide: 0x1001fef0
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri1Flat(GbiCommand *pCommand);
 
@@ -1392,7 +1486,6 @@ GbiCommand *HandleGbiTri1Flat(GbiCommand *pCommand);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x10020380
  * @ghidraAddress BRGlide: 0x10020cf0
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri2Flat(GbiCommand *pCommand);
 
@@ -1404,7 +1497,6 @@ GbiCommand *HandleGbiTri2Flat(GbiCommand *pCommand);
  * @param nVertex2 The entry of the third vertex.
  * @ghidraAddress BRD3D: 0x1001f550
  * @ghidraAddress BRGlide: 0x10020460
- * @stub{BRGlide}
  */
 void DrawFlatShadedTriangleDepthScaled(int nVertex0, int nVertex1, int nVertex2);
 
@@ -1417,7 +1509,6 @@ void DrawFlatShadedTriangleDepthScaled(int nVertex0, int nVertex1, int nVertex2)
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001fbe0
  * @ghidraAddress BRGlide: 0x10020900
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri1SmoothNoZBuffer(GbiCommand *pCommand);
 
@@ -1430,7 +1521,6 @@ GbiCommand *HandleGbiTri1SmoothNoZBuffer(GbiCommand *pCommand);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x10020860
  * @ghidraAddress BRGlide: 0x10020d70
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri2SmoothNoZBuffer(GbiCommand *pCommand);
 
@@ -1444,7 +1534,6 @@ GbiCommand *HandleGbiTri2SmoothNoZBuffer(GbiCommand *pCommand);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x1001f2b0
  * @ghidraAddress BRGlide: 0x100203f0
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri1FlatNoZBuffer(GbiCommand *pCommand);
 
@@ -1457,7 +1546,6 @@ GbiCommand *HandleGbiTri1FlatNoZBuffer(GbiCommand *pCommand);
  * @return The next command.
  * @ghidraAddress BRD3D: 0x100205f0
  * @ghidraAddress BRGlide: 0x10020d30
- * @stub{BRGlide}
  */
 GbiCommand *HandleGbiTri2FlatNoZBuffer(GbiCommand *pCommand);
 
@@ -1469,13 +1557,17 @@ GbiCommand *HandleGbiTri2FlatNoZBuffer(GbiCommand *pCommand);
  * @ghidraAddress BRGlide: 0x105ce2e0
  */
 extern DWORD g_dwD3DZFunc;
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /**
  * Whether the combine mode takes the routine that modulates the lighting by the environment colour.
  *
  * @ghidraAddress BRD3D: 0x104c0dc0
+ * @ghidraAddress BRGlide: 0x105cda04
  */
 extern int g_bCombineModeSpecialSubmitter;
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
 
 /**
  * The colour of the vertices of the combine modes that draw in one colour.

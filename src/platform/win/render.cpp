@@ -117,9 +117,9 @@ void SetDebugMessage(const char *message) {
 
 GbiVertexSource g_aClipVertexPool[GBI_CLIP_VERTEX_POOL_SIZE];
 GbiVertexSource *g_pVertexFreeList;
+int g_bRdpBlendStateOverride;
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
-int g_bRdpBlendStateOverride;
 
 void InitGbiD3DRenderer(void) {
     g_pfnRenderBackendSubmitDisplayList = RenderGbiDisplayListFrame;

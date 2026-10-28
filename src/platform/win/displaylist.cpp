@@ -27,6 +27,15 @@
 // The bits of the geometry mode of the console the handlers read.
 #define GBI_GEOMETRY_Z_BUFFER 0x1
 
+// The brightest channel of a lit vertex: Direct3D takes colours from 0 to 1, and Glide from 0 to
+// 255.
+#if TGR_RENDERER == TGR_RENDERER_D3D
+#define GBI_COLOR_MAX 1.0f
+#else
+#define GBI_COLOR_MAX 255.0f
+#endif
+
+#if TGR_RENDERER == TGR_RENDERER_D3D
 namespace {
 // @ghidraAddress BRD3D: 0x10277370
 DWORD g_dwDirtyRenderStateMask;
@@ -75,6 +84,7 @@ DWORD g_dwAppliedRS_AddressV;
 // @ghidraAddress BRD3D: 0x10277420
 DWORD g_dwAppliedRS_AlphaBlendEnable;
 } // namespace
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 #define GBI_GEOMETRY_SHADING_SMOOTH 0x200
 #define GBI_GEOMETRY_CULL_FRONT 0x1000
@@ -231,10 +241,18 @@ static GbiCommand *HandleFullTextureRectangle(GbiCommand *command) {
 }
 #endif /* ENABLE_PATCHES */
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
 float g_fViewportScaleX;
 float g_fViewportScaleY;
 float g_fViewportTranslateX;
 float g_fViewportTranslateY;
+#else
+// Glide starts the viewport over the whole frame buffer of the configuration.
+float g_fViewportScaleX = static_cast<float>(g_dwConfigFramebufferWidth / 2);
+float g_fViewportScaleY = static_cast<float>(g_dwConfigFramebufferHeight / 2);
+float g_fViewportTranslateX = static_cast<float>(g_dwConfigFramebufferWidth / 2);
+float g_fViewportTranslateY = static_cast<float>(g_dwConfigFramebufferHeight / 2);
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 // The pixels of a unit of a viewport of the console.
 #define GBI_VIEWPORT_UNIT 0.25f
@@ -487,6 +505,11 @@ GbiCommand *HandleGbiSetTileSize(GbiCommand *pCommand) {
 // The bits of the first word of a command that give the entry of a texture the game loaded.
 #define GBI_TEXTURE_ENTRY_MASK 0xffffff
 
+char g_szDebugOverlayText[DEBUG_OVERLAY_TEXT_SIZE];
+DWORD g_dwGbiLastFrameTime;
+DWORD g_dwGbiFrameDeltaTime;
+void (*g_pfnBindTextureEntry)(int nEntry);
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 GbiVertex g_aGbiVertexCache[GBI_VERTEX_CACHE_SIZE];
 GbiVertex *g_apVertexPool[GBI_VERTEX_CACHE_SIZE];
@@ -579,10 +602,7 @@ void FlushDirtyRenderStates(void) {
     g_dwDirtyRenderStateMask = 0;
 }
 
-char g_szDebugOverlayText[DEBUG_OVERLAY_TEXT_SIZE];
 DWORD g_dwD3DAlphaFunc;
-DWORD g_dwGbiLastFrameTime;
-DWORD g_dwGbiFrameDeltaTime;
 
 // The bytes of the display list of the text drawn over a frame.
 #define OVERLAY_DISPLAY_LIST_SIZE 0x8000
@@ -687,8 +707,6 @@ void RenderGbiDisplayListFrame(GbiCommand *pDisplayList) {
     RecordFrameTime();
 }
 
-void (*g_pfnBindTextureEntry)(int nEntry);
-
 GbiCommand *HandleGbiBindTextureEntry(GbiCommand *pCommand) {
     int nEntry = pCommand->w0 & GBI_TEXTURE_ENTRY_MASK;
     FlushIndexedRenderBuffer();
@@ -705,8 +723,14 @@ GbiCommand *HandleGbiLoadPreparedTexture(GbiCommand *pCommand) {
 }
 
 int g_dwScissorLeft;
+#if TGR_RENDERER == TGR_RENDERER_D3D
 int g_dwScissorTop;
 int g_dwScissorRight;
+#else
+// Glide starts the scissor over the whole frame buffer of the configuration.
+int g_dwScissorTop = g_dwConfigFramebufferHeight;
+int g_dwScissorRight = g_dwConfigFramebufferWidth;
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 int g_dwScissorBottom;
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
@@ -1123,7 +1147,7 @@ ShadeGbiVertex(const ConvertedModelVertex *pVertex, GbiVertexSource *pDest, bool
     }
     auto channel = [dot](float light, float ambient) {
         float color = static_cast<long double>(dot) * light + ambient;
-        return color > 1.0f ? 1.0f : color;
+        return color > GBI_COLOR_MAX ? GBI_COLOR_MAX : color;
     };
     pDest->fRed = channel(g_fGbiLight0ColorR, g_fGbiAmbientColorR);
     pDest->fGreen = channel(g_fGbiLight0ColorG, g_fGbiAmbientColorG);
