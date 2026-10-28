@@ -399,6 +399,7 @@ fixedh
 fogcolor
 fogenable
 fogtablemode
+fontatlas
 fontdata
 fourcc
 fovy

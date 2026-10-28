@@ -144,6 +144,7 @@ extern s32 g_dwTextCustomColor2B;
  * @ghidraAddress EUR: 0x8028e550
  * @ghidraAddress JPN: 0x8028dfa0
  * @ghidraAddress BRD3D: 0x100a74b8
+ * @ghidraAddress BRGlide: 0x100a6c78
  */
 extern u8 g_abLargeFontGradient[];
 
@@ -154,6 +155,7 @@ extern u8 g_abLargeFontGradient[];
  * @ghidraAddress EUR: 0x8028e690
  * @ghidraAddress JPN: 0x8028e0e0
  * @ghidraAddress BRD3D: 0x100a75f8
+ * @ghidraAddress BRGlide: 0x100a6db8
  */
 extern u8 g_abLargeFontShadowGradient[];
 
@@ -164,6 +166,7 @@ extern u8 g_abLargeFontShadowGradient[];
  * @ghidraAddress EUR: 0x8028e7d0
  * @ghidraAddress JPN: 0x8028e220
  * @ghidraAddress BRD3D: 0x100a7738
+ * @ghidraAddress BRGlide: 0x100a6ef8
  */
 extern u8 g_abSmallFontGradient[];
 
@@ -174,6 +177,7 @@ extern u8 g_abSmallFontGradient[];
  * @ghidraAddress EUR: 0x8028e910
  * @ghidraAddress JPN: 0x8028e360
  * @ghidraAddress BRD3D: 0x100a7878
+ * @ghidraAddress BRGlide: 0x100a7038
  */
 extern u8 g_abSmallFontShadowGradient[];
 
@@ -381,6 +385,7 @@ void LoadCachedGlyphTextures(void);
  * @ghidraAddress EUR: 0x8022f9f0
  * @ghidraAddress JPN: 0x8022f460
  * @ghidraAddress BRD3D: 0x10018590
+ * @ghidraAddress BRGlide: 0x10015b10
  */
 void RenderTextToDisplayList(const char *text);
 

@@ -14,7 +14,7 @@ default_install_hook_types:
 exclude: '^(3rdparty|asm)/'
 repos:
   - hooks:
-      - exclude: "^docs/cppreference\\.tags$|yarn-\\d+.*\\.cjs$"
+      - exclude: "^docs/cppreference\\.tags$|^src/platform/win/glide/fontatlas\\.c$|yarn-\\d+.*\\.cjs$"
         id: 'check-added-large-files'
       - id: 'check-ast'
       - id: 'check-builtin-literals'

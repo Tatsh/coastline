@@ -10,6 +10,9 @@
 #include "platform/win/fontdata.h"
 #include "platform/win/gbicommand.h"
 #include "platform/win/settings.h"
+#if TGR_RENDERER == TGR_RENDERER_GLIDE
+#include "platform/win/glide/fontatlas.h"
+#endif
 
 #undef gDisplayListWords
 #define gDisplayListWords(pkt, c0, c1)                                                             \
@@ -46,6 +49,19 @@ s32 g_dwTextCustomColor2B;
 #define TEXEL_STEP 0x400
 #define HALF_TEXEL 16
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE
+/* The glyphs of an atlas before this one have their offsets in the first table. */
+#define FIRST_TABLE_GLYPHS 28
+
+/*
+ * The Glide renderer reads the offsets of all 54 glyphs of an atlas through the first table. The
+ * second table follows the first in the original's data.
+ */
+static inline s32 GetAtlasGlyphOffset(const s32 *first, const s32 *second, s32 glyph) {
+    return glyph < FIRST_TABLE_GLYPHS ? first[glyph] : second[glyph - FIRST_TABLE_GLYPHS];
+}
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE */
+
 #if TGR_REGION != TGR_REGION_JP || TGR_PLATFORM == TGR_PLATFORM_WIN
 void RenderTextToDisplayList(const char *text) {
     const u8 *s = (const u8 *)text;
@@ -53,7 +69,11 @@ void RenderTextToDisplayList(const char *text) {
     s32 y = g_nTextDrawY - (size * ASCENT) / SIZE_UNITS;
     s32 x = g_nTextDrawX;
     s32 cell, padding, glyph, columns, width;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE
+    const s32 *nextOffsets;
+    u8 *atlas;
+    s32 atlasTexture, glyphBytes;
+#elif TGR_PLATFORM == TGR_PLATFORM_WIN
     unsigned *glyphTextures;
 #else
     s32 textureWidth, row, left, right, dsdx, dtdy, offset;
@@ -73,11 +93,18 @@ void RenderTextToDisplayList(const char *text) {
         size *= 2;
     }
     if (size < SMALL_FONT_MAX_SIZE
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_D3D
         || g_dwTextureQualityLevel > 1
 #endif
     ) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE
+        padding = 1;
+        offsets = g_adwHudFont2GlyphOffsets;
+        nextOffsets = g_adwHudFont3GlyphOffsets;
+        atlas = g_abSmallFontAtlas;
+        atlasTexture = g_dwSmallFontAtlasTextureId;
+        glyphBytes = SMALL_FONT_ATLAS_GLYPH_BYTES;
+#elif TGR_PLATFORM == TGR_PLATFORM_WIN
         padding = 1;
         offsets = g_adwHudFont2GlyphOffsets;
         glyphTextures = g_adwSmallFontGlyphTexturesA;
@@ -91,7 +118,14 @@ void RenderTextToDisplayList(const char *text) {
         shadowGradient = g_abSmallFontShadowGradient;
         cell = SMALL_FONT_CELL;
     } else {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE
+        padding = 1;
+        offsets = g_adwHudFont0GlyphOffsets;
+        nextOffsets = g_adwHudFont1GlyphOffsets;
+        atlas = g_abLargeFontAtlas;
+        atlasTexture = g_dwLargeFontAtlasTextureId;
+        glyphBytes = LARGE_FONT_ATLAS_GLYPH_BYTES;
+#elif TGR_PLATFORM == TGR_PLATFORM_WIN
         padding = 1;
         offsets = g_adwHudFont0GlyphOffsets;
         glyphTextures = g_adwLargeFontGlyphTexturesA;
@@ -333,6 +367,15 @@ void RenderTextToDisplayList(const char *text) {
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         glyph = (s8)g_abHudFontCharToGlyph[c - '!'];
+#if TGR_RENDERER == TGR_RENDERER_GLIDE
+        columns = GetAtlasGlyphOffset(offsets, nextOffsets, glyph + 1) -
+                  GetAtlasGlyphOffset(offsets, nextOffsets, glyph) + 1;
+        /* The texture of the atlas samples the glyph from its bytes in the atlas. */
+        gDisplayListWords(gDisplayListPtr++,
+                          0xdd000000 | ((u32)atlasTexture & 0xffffff),
+                          (u32)(atlas + glyphBytes * glyph));
+        gDisplayListWords(gDisplayListPtr++, 0xdc000000 | ((u32)atlasTexture & 0xffffff), 1);
+#else
         if (glyph >= 28) {
             offsets =
                 cell == SMALL_FONT_CELL ? g_adwHudFont3GlyphOffsets : g_adwHudFont1GlyphOffsets;
@@ -347,6 +390,7 @@ void RenderTextToDisplayList(const char *text) {
         }
         columns = offsets[glyph + 1] - offsets[glyph] + 1;
         gDisplayListWords(gDisplayListPtr++, 0xdc000000 | (glyphTextures[glyph] & 0xffffff), 1);
+#endif /* TGR_RENDERER == TGR_RENDERER_GLIDE */
         gDisplayListWords(gDisplayListPtr++, 0xde000000, 0x3f800000);
         gDisplayListWords(gDisplayListPtr++, 0xdf000000, 0xbf800000);
         gDPSetTileSize(

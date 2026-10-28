@@ -23,6 +23,9 @@
 #include "weather.h"
 
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
+#include <zlib.h>
+
+#include "platform/win/glide/fontatlas.h"
 #include "platform/win/glide/renderer.h"
 #include "platform/win/glide/texture.h"
 #include "platform/win/glide/texturecache.h"
@@ -983,6 +986,15 @@ void LoadHudGlyphTextureSets(void) {
             1,
             0);
     }
+#else
+    g_dwLargeFontAtlasTextureId =
+        CreateGlideTextureFromRawImage(g_abLargeFontAtlas, 64, 64, GR_TEXFMT_ALPHA_INTENSITY_44);
+    // The checksums of the atlases are computed and discarded.
+    uLong checksum = adler32(0, nullptr, 0);
+    checksum = adler32(checksum, g_abLargeFontAtlas, sizeof(g_abLargeFontAtlas));
+    g_dwSmallFontAtlasTextureId =
+        CreateGlideTextureFromRawImage(g_abSmallFontAtlas, 32, 32, GR_TEXFMT_ALPHA_INTENSITY_44);
+    adler32(checksum, g_abSmallFontAtlas, sizeof(g_abSmallFontAtlas));
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 }
 

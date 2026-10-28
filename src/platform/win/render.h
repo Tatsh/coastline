@@ -786,11 +786,11 @@ struct GbiCommand;
 void LoadHudOverlayTexture(void);
 
 /**
- * Load the textures of the sets of glyphs of the display of the race.
+ * Load the textures of the sets of glyphs of the display of the race. The Glide renderer loads one
+ * texture for each font atlas instead.
  *
  * @ghidraAddress BRD3D: 0x10073820
  * @ghidraAddress BRGlide: 0x1006c790
- * @stub{BRGlide}
  */
 void LoadHudGlyphTextureSets(void);
 

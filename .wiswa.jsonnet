@@ -152,12 +152,16 @@
   },
   pre_commit_config+: {
     exclude: '^(3rdparty|asm)/',
-    // The tag file of cppreference is an upstream file larger than the default limit.
+    // The tag file of cppreference is an upstream file larger than the default limit, and so are
+    // the font atlases of the Glide library as the bytes of the original.
     repos: [
       repo + (if std.objectHas(repo, 'hooks') then {
                 hooks: [
                   if hook.id == 'check-added-large-files' then
-                    hook { exclude: '^docs/cppreference\\.tags$|' + hook.exclude }
+                    hook {
+                      exclude: '^docs/cppreference\\.tags$|' +
+                               '^src/platform/win/glide/fontatlas\\.c$|' + hook.exclude,
+                    }
                   else hook
                   for hook in repo.hooks
                 ],

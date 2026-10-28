@@ -108,6 +108,7 @@ if(TGR_RENDERER STREQUAL "glide")
     coastline_main
     PRIVATE glide/displaylist.cpp
             glide/displaymode.cpp
+            glide/fontatlas.c
             glide/menusurface.cpp
             glide/renderer.cpp
             glide/rgb565image.c
