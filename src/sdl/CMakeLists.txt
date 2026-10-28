@@ -56,6 +56,7 @@ add_library(
   "${CMAKE_SOURCE_DIR}/tools/common/assetchain.cpp"
   "${CMAKE_SOURCE_DIR}/tools/common/sha1.cpp")
 target_include_directories(coastline_sdl PRIVATE "${CMAKE_SOURCE_DIR}/src"
+                                                 "${CMAKE_SOURCE_DIR}/src/libultra/include"
                                                  "${CMAKE_SOURCE_DIR}/tools/common"
                                                  "${CMAKE_CURRENT_BINARY_DIR}")
 add_dependencies(coastline_sdl coastline_shaders)
@@ -73,6 +74,12 @@ target_compile_options(coastline_sdl PRIVATE -Wall -Wextra)
 target_link_libraries(coastline_sdl PUBLIC SDL3::SDL3)
 if(WIN32)
   target_link_libraries(coastline_sdl PUBLIC shell32)
+endif()
+
+# The game code of the PC release, while its port to SDL is under way.
+option(TGR_SDL_PC_GAME "Build the game code of the PC release into the SDL game." OFF)
+if(TGR_SDL_PC_GAME)
+  include(pcgame.cmake)
 endif()
 
 add_executable(${CMAKE_PROJECT_NAME} main.cpp)
