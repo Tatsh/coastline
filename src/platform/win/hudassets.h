@@ -20,17 +20,32 @@ extern unsigned char g_abHudOverlayTextureData[4096];
  * @ghidraAddress BRGlide: 0x100b64b0
  */
 extern unsigned char g_abHudTexture64AData[4096];
-/** @ghidraAddress BRD3D: 0x100b9cb0 */
+/**
+ * @ghidraAddress BRD3D: 0x100b9cb0
+ * @ghidraAddress BRGlide: 0x100b94b8
+ */
 extern unsigned char g_abHudTexture32x64Data[1024];
-/** @ghidraAddress BRD3D: 0x100b94a8 */
+/**
+ * @ghidraAddress BRD3D: 0x100b94a8
+ * @ghidraAddress BRGlide: 0x100b8cb0
+ */
 extern unsigned char g_abHudTexture64BData[2048];
-/** @ghidraAddress BRD3D: 0x100b8ca0 */
+/**
+ * @ghidraAddress BRD3D: 0x100b8ca0
+ * @ghidraAddress BRGlide: 0x100b84a8
+ */
 extern unsigned char g_abFallbackEnvTextureData[2048];
 /** @ghidraAddress BRD3D: 0x100ba0b8 */
 extern unsigned char g_abTunnelReflectionTexture[2048];
-/** @ghidraAddress BRD3D: 0x118aa8f8 */
+/**
+ * @ghidraAddress BRD3D: 0x118aa8f8
+ * @ghidraAddress BRGlide: 0x118eda10
+ */
 extern unsigned char g_abDaySkyTexture[2048];
-/** @ghidraAddress BRD3D: 0x118aa0f8 */
+/**
+ * @ghidraAddress BRD3D: 0x118aa0f8
+ * @ghidraAddress BRGlide: 0x118ed210
+ */
 extern unsigned char g_abNightSkyTexture[2048];
 
 #ifdef __cplusplus

@@ -871,10 +871,12 @@ extern unsigned char g_abNightSkyPalette[32];
 
 /**
  * @ghidraAddress BRD3D: 0x10073ac0
+ * @ghidraAddress BRGlide: 0x1006c910
  */
 void CreateDaySkyTexture(void);
 /**
  * @ghidraAddress BRD3D: 0x10073b00
+ * @ghidraAddress BRGlide: 0x1006c950
  */
 void CreateNightSkyTexture(void);
 
@@ -941,7 +943,6 @@ void LoadParticleTexture(void);
  *
  * @ghidraAddress BRD3D: 0x10073980
  * @ghidraAddress BRGlide: 0x1006c820
- * @stub{BRGlide}
  */
 void LoadTireTrailTexture(void);
 
@@ -950,7 +951,6 @@ void LoadTireTrailTexture(void);
  *
  * @ghidraAddress BRD3D: 0x100739b0
  * @ghidraAddress BRGlide: 0x1006c850
- * @stub{BRGlide}
  */
 void LoadVehicleEnvMapTexture(void);
 
@@ -959,7 +959,6 @@ void LoadVehicleEnvMapTexture(void);
  *
  * @ghidraAddress BRD3D: 0x100739e0
  * @ghidraAddress BRGlide: 0x1006c880
- * @stub{BRGlide}
  */
 void CreateFallbackEnvironmentTexture(void);
 

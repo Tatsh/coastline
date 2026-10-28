@@ -139,6 +139,7 @@ public:
     MenuItemList();
     /**
      * @ghidraAddress BRD3D: 0x1005b8f0
+     * @ghidraAddress BRGlide: 0x10054710
      */
     virtual ~MenuItemList();
 
@@ -1383,11 +1384,13 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10040c00
+     * @ghidraAddress BRGlide: 0x1003a140
      */
     static int UpdateBestTimeLabel(MenuWidget *pWidget);
 
     /**
      * @ghidraAddress BRD3D: 0x10040d70
+     * @ghidraAddress BRGlide: 0x1003a2b0
      */
     static int UpdateBestLapLabel(MenuWidget *pWidget);
 };

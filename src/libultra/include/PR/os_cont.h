@@ -163,6 +163,7 @@ s32 osContStartReadData(OSMesgQueue *mq);
  * @ghidraAddress EUR: 0x80266084
  * @ghidraAddress JPN: 0x80265ab4
  * @ghidraAddress BRD3D: 0x10060e00
+ * @ghidraAddress BRGlide: 0x10059e70
  */
 void osContGetReadData(OSContPad *data);
 

@@ -34,6 +34,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x1005b0c0
+     * @ghidraAddress BRGlide: 0x10053ee0
      */
     virtual ~MenuFont();
 

@@ -79,6 +79,7 @@ DWORD GetFrameTickCounter(void);
  * counter.
  *
  * @ghidraAddress BRD3D: 0x10075240
+ * @ghidraAddress BRGlide: 0x1006e4a0
  */
 void EndHighResolutionTimerPeriod(void);
 
