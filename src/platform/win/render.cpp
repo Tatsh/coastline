@@ -19,7 +19,6 @@
 #include "platform/win/settings.h"
 #include "platform/win/texturescan.h"
 #include "platform/win/textureworkspace.h"
-#include "platform/win/uninitialized.h"
 #include "screen.h"
 #include "weather.h"
 
@@ -556,10 +555,14 @@ void CalculateTextureDimensions(int *pWidth, int *pHeight, int nLod, int nAspect
 #define RGBA32_BYTES_PER_TEXEL 4
 
 // An aspect ratio CalculateTextureDimensions() does not know leaves the size unset.
-BEGIN_ORIGINAL_UNINITIALIZED_READ
 int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio, int nPixelFormatId) {
+#ifdef ENABLE_PATCHES
+    int nWidth = 0;
+    int nHeight = 0;
+#else
     int nWidth;
     int nHeight;
+#endif /* ENABLE_PATCHES */
     int nBytes = 0;
 
     CalculateTextureDimensions(&nWidth, &nHeight, nLargeLod, nAspectRatio);
@@ -570,7 +573,6 @@ int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio, int 
     }
     return nBytes;
 }
-END_ORIGINAL_UNINITIALIZED_READ
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 void ResetRenderCommandBufferStack(void) {
@@ -1107,22 +1109,25 @@ void ShutdownTextureSubsystem(void) {
 }
 
 // An aspect ratio CalculateTextureDimensions() does not know leaves the size unset.
-BEGIN_ORIGINAL_UNINITIALIZED_READ
 void UploadTextureEntryToSurface(int nEntry, TextureUploadData payload) {
     if (nEntry == static_cast<int>(g_dwWeatherShadeTextureId)) {
         return;
     }
     const TextureEntry &entry = g_pTextureEntries[nEntry];
 #if TGR_RENDERER == TGR_RENDERER_D3D
+#ifdef ENABLE_PATCHES
+    int width = 0;
+    int height = 0;
+#else
     int width;
     int height;
+#endif /* ENABLE_PATCHES */
     CalculateTextureDimensions(&width, &height, entry.data.nLod, entry.data.nAspectRatio);
     g_ppTextureIdTable[entry.nTextureId]->UploadSurfaceToTexture(payload.pixels, width, height);
 #else
     DownloadGlideTextureMipMap(entry.nTextureId, payload.pixels, 0);
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 }
-END_ORIGINAL_UNINITIALIZED_READ
 
 void CreateDeviceTextureFromImageHeader(ModelTexture *pTexture, int nOption13) {
     if (!pTexture->image || (pTexture->textureFlags & 0x100000)) {
