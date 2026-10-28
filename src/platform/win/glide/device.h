@@ -17,6 +17,13 @@ enum GlideSstWindowState {
 };
 
 /**
+ * The megabytes of frame buffer memory of the board.
+ *
+ * @ghidraAddress BRGlide: 0x105ccc6c
+ */
+extern int g_dwGlideFbRamMB;
+
+/**
  * Whether the Glide window is open, one of #GlideSstWindowState.
  *
  * @ghidraAddress BRGlide: 0x100a9354

@@ -838,7 +838,14 @@ public:
      */
     static int UpdateModeSelection(MenuWidget *pWidget);
 
-    /** @ghidraAddress BRD3D: 0x1003ed40 */
+    /**
+     * Apply the chosen display mode to the configuration and return to the video options.
+     *
+     * @param pWidget The widget of the choice.
+     * @return 0.
+     * @ghidraAddress BRD3D: 0x1003ed40
+     * @ghidraAddress BRGlide: 0x100382d0
+     */
     static int OnSetMode(MenuWidget *pWidget);
 };
 
@@ -1924,6 +1931,14 @@ int GetSelectedSessionGuid(GUID *guid);
 extern int g_dwSelectedDisplayModeIndex;
 
 /**
+ * The entry of the list of display modes in use.
+ *
+ * @ghidraAddress BRD3D: 0x10aa2864
+ * @ghidraAddress BRGlide: 0x10ac5bbc
+ */
+extern int g_dwActiveDisplayModeIndex;
+
+/**
  * Open cached input options, building the screen on its first visit.
  *
  * @ghidraAddress BRD3D: 0x100452c0
@@ -2047,7 +2062,6 @@ int BuildGameOptionsUI(MenuScreen *pScreen);
  *
  * @ghidraAddress BRD3D: 0x1004d1f0
  * @ghidraAddress BRGlide: 0x10046620
- * @stub{BRGlide}
  */
 void BuildVideoOptionsUI(MenuScreen *pScreen);
 
@@ -2095,6 +2109,7 @@ int BuildModemConnectionUI(MenuScreen *pScreen);
  * Open display mode selection and populate its settings lists after successful creation.
  *
  * @ghidraAddress BRD3D: 0x10045520
+ * @ghidraAddress BRGlide: 0x1003e9b0
  */
 int ShowDisplayModeSelectMenu(void);
 
@@ -2102,13 +2117,16 @@ int ShowDisplayModeSelectMenu(void);
  * Build display mode selection on the supplied screen.
  *
  * @ghidraAddress BRD3D: 0x1004db00
+ * @ghidraAddress BRGlide: 0x100469b0
  */
 void BuildDisplayModeSelectUI(MenuScreen *pScreen);
 
 /**
- * Populate the video settings lists.
+ * Populate the video settings lists. The Glide library has no list of display devices.
  *
+ * @return Whether the lists were populated.
  * @ghidraAddress BRD3D: 0x1007ac00
+ * @ghidraAddress BRGlide: 0x10058f90
  */
 int PopulateVideoSettingsLists(void);
 
@@ -2122,16 +2140,22 @@ int PopulateDisplayDeviceList(void);
 /** @ghidraAddress BRD3D: 0x1007a710 */
 int CompareDisplayModes(const void *left, const void *right);
 
-/** @ghidraAddress BRD3D: 0x100ab528 */
+/**
+ * @ghidraAddress BRD3D: 0x100ab528
+ * @ghidraAddress BRGlide: 0x100aacc8
+ */
 extern RECT g_rcMenuDeviceListBox;
 
 /** @ghidraAddress BRD3D: 0x100ab538 */
 extern RECT g_rcMenuLoadSeasonListBox;
 
 /**
- * Populate available display modes for the selected device.
+ * Populate available display modes for the selected device. The Glide library lists the modes of
+ * BuildGlideDisplayModeList().
  *
+ * @return Whether a mode was listed.
  * @ghidraAddress BRD3D: 0x1007a940
+ * @ghidraAddress BRGlide: 0x10058e20
  */
 int PopulateDisplayModeList(void);
 
@@ -2139,8 +2163,6 @@ int PopulateDisplayModeList(void);
  * Open Direct3D device selection and populate its settings lists.
  *
  * @ghidraAddress BRD3D: 0x10045460
- * @ghidraAddress BRGlide: 0x1003e9b0
- * @stub{BRGlide}
  */
 int ShowD3DDeviceSelectMenu(void);
 
