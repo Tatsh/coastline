@@ -274,6 +274,7 @@ extern "C" {
  * @param lParam The second parameter of the message.
  * @return The result of the message.
  * @ghidraAddress BRD3D: 0x10079ca0
+ * @ghidraAddress BRGlide: 0x100194c0
  */
 LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
 
@@ -305,6 +306,7 @@ LRESULT HandleWindowActivate(HWND hWnd, WPARAM wParam, LPARAM lParam);
  * @param lParam The thread of the other application.
  * @return The result of the message.
  * @ghidraAddress BRD3D: 0x1007a090
+ * @ghidraAddress BRGlide: 0x10019350
  */
 LRESULT HandleWindowActivateApp(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
@@ -442,6 +444,7 @@ LRESULT HandleWindowSize(HWND hWnd, WPARAM wParam, LPARAM lParam);
  * @param lParam The position of the cursor.
  * @return The result of the message.
  * @ghidraAddress BRD3D: 0x1007a4e0
+ * @ghidraAddress BRGlide: 0x10019480
  */
 LRESULT HandleWindowSysCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 
@@ -601,7 +604,6 @@ bool InitializeApplication(void);
  * @return Whether the window was created.
  * @ghidraAddress BRD3D: 0x100798f0
  * @ghidraAddress BRGlide: 0x10019670
- * @stub{BRGlide}
  */
 bool CreateMainWindow(void);
 
@@ -610,7 +612,6 @@ bool CreateMainWindow(void);
  *
  * @ghidraAddress BRD3D: 0x10079740
  * @ghidraAddress BRGlide: 0x10019730
- * @stub{BRGlide}
  */
 void RunMessageLoop(void);
 

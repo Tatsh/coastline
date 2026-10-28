@@ -190,7 +190,6 @@ extern "C" {
  * @param pszCmdLine Command line the launcher received.
  * @ghidraAddress BRD3D: 0x10007bd0
  * @ghidraAddress BRGlide: 0x10007f40
- * @stub{BRGlide}
  */
 void LoadBossRallyIniSettings(const char *pszCmdLine);
 #ifdef __cplusplus

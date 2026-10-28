@@ -5,7 +5,12 @@
 #include <windows.h>
 
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
+#ifdef _MSC_VER
 extern BOOL(WINAPI *_pRawDllMain)(HINSTANCE, DWORD, LPVOID);
+#else
+/* The runtime of MSVC defines the raw entry point. mingw-w64 registers none. */
+BOOL(WINAPI *_pRawDllMain)(HINSTANCE, DWORD, LPVOID) = NULL;
+#endif
 #endif
 
 /**
