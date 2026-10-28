@@ -1,5 +1,7 @@
 #include "platform/win/buildinfo.h"
 
+#include <string.h>
+
 #include <windows.h>
 
 #include "platform/win/hudcanvas.h"
@@ -14,7 +16,7 @@ static const char banner[] =
     "github.com/Tatsh/coastline " COASTLINE_GIT_SHA " " __DATE__ " " __TIME__ "\n";
 #endif /* ENABLE_PATCHES */
 
-void PrintWineBuildIdentification(void) {
+void PrintWineDiagnostic(const char *message) {
 #ifdef ENABLE_PATCHES
     HMODULE ntdll = GetModuleHandleA("ntdll.dll");
     if (ntdll == nullptr || GetProcAddress(ntdll, "wine_get_version") == nullptr) {
@@ -23,9 +25,15 @@ void PrintWineBuildIdentification(void) {
     HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
     if (output != nullptr && output != INVALID_HANDLE_VALUE) {
         DWORD written;
-        WriteFile(output, banner, sizeof(banner) - 1, &written, nullptr);
+        WriteFile(output, message, (DWORD)strlen(message), &written, nullptr);
     }
 #endif /* ENABLE_PATCHES */
+}
+
+void PrintWineBuildIdentification(void) {
+#ifdef ENABLE_PATCHES
+    PrintWineDiagnostic(banner);
+#endif
 }
 
 void DrawRaceBuildIdentification(void) {

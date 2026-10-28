@@ -23,6 +23,7 @@
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
+#include "platform/win/buildinfo.h"
 #include "platform/win/configfile.h"
 #include "platform/win/directplay.h"
 #include "platform/win/ghost.h"
@@ -3499,7 +3500,9 @@ int ModemConnectionUI::OnAccept(MenuWidget *pWidget) {
 }
 
 int SaveSeasonUI::OnSlotNameEntered(MenuItemList *pList, int nStatus) {
+    PrintWineDiagnostic("coastline: Season name entry completed.\n");
     if (!g_dwSeasonLoaded) {
+        PrintWineDiagnostic("coastline: Save skipped because the season is not loaded.\n");
         return 0;
     }
     if (nStatus == -1) {
@@ -3524,8 +3527,12 @@ int SaveSeasonUI::OnSlotNameEntered(MenuItemList *pList, int nStatus) {
         memset(g_pPrimarySeasonSave->seasonTimes, 0, sizeof(g_pPrimarySeasonSave->seasonTimes));
     }
     // The slot is marked as named even when writing fails.
-    SaveSeasonSaveFile();
+    PrintWineDiagnostic("coastline: Writing season save file.\n");
+    const bool saved = SaveSeasonSaveFile();
+    PrintWineDiagnostic(saved ? "coastline: Season save written.\n" :
+                                "coastline: Season save write failed.\n");
     g_dwSaveSeasonSlotNamed = 1;
+    PrintWineDiagnostic("coastline: Save menu Continue enabled.\n");
     return 1;
 }
 
@@ -3942,7 +3949,9 @@ int SeasonProgressInfoUI::OnResetRound(MenuWidget *) {
 }
 
 int SaveSeasonUI::InvokeBackHandler(MenuWidget *pWidget) {
+    PrintWineDiagnostic("coastline: Returning from save menu.\n");
     g_pSaveSeasonBackHandlerMenu->GetActionCallback()(pWidget);
+    PrintWineDiagnostic("coastline: Save menu return completed.\n");
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     return 0;
 }
