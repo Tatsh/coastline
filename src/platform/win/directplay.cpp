@@ -27,7 +27,6 @@
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
 #include "platform/win/timer.h"
-#include "platform/win/uninitialized.h"
 #include "platform/win/vehicle.h"
 #include "trackselect.h"
 #include "vehiclecount.h"
@@ -931,10 +930,13 @@ static inline void ReadNetworkDeltaSnapshot(Slot &slot, NetStream &stream, unsig
     DeserializeKeyframeDelta(&slot.aSnapshots[oldest], &slot.aSnapshots[newest], &stream);
 }
 
-BEGIN_ORIGINAL_UNINITIALIZED_READ
 static inline void
 ReadHostSnapshot(NetPlayerSlot &slot, NetStream &stream, unsigned timestamp, bool delta) {
+#ifdef ENABLE_PATCHES
+    KeyframeState discarded = {};
+#else
     KeyframeState discarded;
+#endif /* ENABLE_PATCHES */
     if (!delta) {
         if (timestamp > slot.adwSnapshotTimes[slot.nCurrentSnapshot]) {
             slot.nCurrentSnapshot = FindOldestNetworkSnapshot(slot);
@@ -955,7 +957,6 @@ ReadHostSnapshot(NetPlayerSlot &slot, NetStream &stream, unsigned timestamp, boo
         DeserializeKeyframeDelta(&discarded, &discarded, &stream);
     }
 }
-END_ORIGINAL_UNINITIALIZED_READ
 
 static inline void PropagateNetworkStatusFlag(int flag) {
     for (NetPlayerSlot &slot : g_aNetPlayerSlots) {
@@ -2287,7 +2288,6 @@ static inline void ApplyLocalNetworkStatus(int state) {
     }
 }
 
-BEGIN_ORIGINAL_UNINITIALIZED_READ
 static inline void
 ReadClientSnapshot(NetPeerSlot &slot, NetStream &stream, unsigned timestamp, bool delta) {
     if ((slot.dwStatus & 0x3f) >= 2) {
@@ -2304,7 +2304,11 @@ ReadClientSnapshot(NetPeerSlot &slot, NetStream &stream, unsigned timestamp, boo
         slot.dwPingMs = static_cast<int>(static_cast<unsigned>(elapsed / 3) * 100 +
                                          static_cast<unsigned>(elapsed % 3) * 33);
     } else {
+#ifdef ENABLE_PATCHES
+        KeyframeState discarded = {};
+#else
         KeyframeState discarded;
+#endif /* ENABLE_PATCHES */
         if (delta) {
             // The original consumes an inactive peer's delta with an uninitialised reference.
             DeserializeKeyframeDelta(&discarded, &discarded, &stream);
@@ -2313,7 +2317,6 @@ ReadClientSnapshot(NetPeerSlot &slot, NetStream &stream, unsigned timestamp, boo
         }
     }
 }
-END_ORIGINAL_UNINITIALIZED_READ
 
 void ProcessNetworkDataStream(
     DirectPlayInfo *pInfo, void *pData, DWORD dwSize, DPID dpidFrom, DPID) {
