@@ -1594,7 +1594,8 @@ static inline D3DCOLOR VertexColor(const GbiVertex *pVertex) {
 }
 
 static inline D3DCOLOR VertexFog(const GbiVertex *pVertex) {
-    int nAlpha = static_cast<int>(g_fVertexFogRange * pVertex->fRhw);
+    // The truncation through 64 bits matches the MSVC runtime for a reciprocal w out of range.
+    int nAlpha = static_cast<int>(static_cast<long long>(g_fVertexFogRange * pVertex->fRhw));
     if (nAlpha < g_dwFogAlphaCutoff) {
         nAlpha = 0;
     }

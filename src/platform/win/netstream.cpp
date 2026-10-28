@@ -436,7 +436,8 @@ unsigned char *NetStream::StreamGetBufferPtr() {
 }
 
 static inline int RoundAndClamp(double dValue, int nMin, int nMax) {
-    int nResult = static_cast<int>(std::floor(dValue));
+    // The truncation through 64 bits matches the MSVC runtime, which gives 0 for NaN.
+    int nResult = static_cast<int>(static_cast<long long>(std::floor(dValue)));
     if (nResult < nMin) {
         nResult = nMin;
     }
