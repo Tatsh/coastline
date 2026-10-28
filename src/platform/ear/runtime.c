@@ -13,6 +13,20 @@ int32_t g_bEarInitializationComplete;
 int32_t g_bMixerAccessDisabled;
 int32_t g_bConfigurationValidationDisabled;
 
+BOOL WINAPI EarDllMain(HINSTANCE module, DWORD reason, LPVOID reserved) {
+    if (reason == DLL_PROCESS_ATTACH) {
+        g_bEarProcessAttached = 1;
+        DisableThreadLibraryCalls(module);
+    } else if (reason == DLL_PROCESS_DETACH) {
+        if (g_bEarProcessAttached) {
+            EarShutDownEarExportWrapper();
+            ExitProcess(0);
+        }
+        g_bEarCodeValidated = 0;
+    }
+    return TRUE;
+}
+
 int IsEarReady(void) {
     return g_bEarCodeValidated && g_bEarComponentsInitialized && g_bEarInitializationComplete;
 }

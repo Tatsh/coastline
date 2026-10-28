@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 
+#include <windows.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -63,6 +65,18 @@ extern int32_t g_bEarComponentsInitialized;
 
 /** @ghidraAddress EAR: 0x1003b7a8 */
 extern int32_t g_bEarInitializationComplete;
+
+/**
+ * Record the attachment of the process, or shut the library down and exit the process when the
+ * process detaches after attaching it.
+ *
+ * @param module The module of the library.
+ * @param reason The reason of the call.
+ * @param reserved Unused.
+ * @return TRUE.
+ * @ghidraAddress EAR: 0x100065aa
+ */
+BOOL WINAPI EarDllMain(HINSTANCE module, DWORD reason, LPVOID reserved);
 
 #ifdef __cplusplus
 }

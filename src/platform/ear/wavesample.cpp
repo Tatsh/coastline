@@ -2,10 +2,12 @@
 
 #include <cstdlib>
 #include <cstring>
+#include <new>
 
 #include <mmsystem.h>
 
 #include "error.h"
+#include "event.h"
 #include "memorybudget.h"
 #include "preset.h"
 #include "registry.h"
@@ -141,6 +143,43 @@ WAVEFORMATEX EarWaveSample::CopyWaveSampleFormat() const {
 
 int EarWaveSample::AcceptWaveSampleData() {
     return 1;
+}
+
+uint32_t __stdcall EarRegisterPresetExportWrapper(const void *source, uint32_t control) {
+    return EAR_DLL_RegisterPreset(source, control);
+}
+
+uint32_t __stdcall EAR_DLL_RegisterPreset(const void *source, uint32_t control) {
+    SetEarLastError(0);
+    if (!IsEarReady()) {
+        return 0;
+    }
+    g_PresetRegistry.GrowWhenFull();
+    EarWaveSampleSource kind = static_cast<EarWaveSampleSource>(control >> 16);
+    uint16_t handle = static_cast<uint16_t>(control);
+    EarWaveSample *sample;
+    if (handle) {
+        if (g_PresetRegistry.LookupWordPointerMapValue(handle, sample)) {
+            SetEarLastError(0x28);
+            return 0;
+        }
+    } else {
+        do {
+            handle = GenerateEarObjectHandle();
+        } while (g_PresetRegistry.LookupWordPointerMapValue(handle, sample));
+    }
+    void *storage = MfcAllocateWithNewHandler(sizeof(EarWaveSample));
+    sample = storage ? new (storage) EarWaveSample : nullptr;
+    if (sample == nullptr) {
+        SetEarLastError(0x10);
+        return 0;
+    }
+    if (!sample->LoadWaveSample(source, kind)) {
+        delete sample;
+        return 0;
+    }
+    g_PresetRegistry.SetWordPointerMapValue(handle, sample);
+    return handle;
 }
 
 int __stdcall EarShutDownPresetExportWrapper(uint32_t preset) {

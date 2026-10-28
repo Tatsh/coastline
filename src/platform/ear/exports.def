@@ -12,6 +12,7 @@ EXPORTS
     _EAR_DLL_RegisterChannel@16=EAR_DLL_RegisterChannel@16
     _EAR_DLL_RegisterEnvironment@4=EAR_DLL_RegisterEnvironment@4
     _EAR_DLL_RegisterMatrix@4=EAR_DLL_RegisterMatrix@4
+    _EAR_DLL_RegisterPreset@8=EAR_DLL_RegisterPreset@8
     _EAR_DLL_ResetEar@0=EAR_DLL_ResetEar@0
     _EAR_DLL_SetAttenuationLevel@8=EAR_DLL_SetAttenuationLevel@8
     _EAR_DLL_SetUserDistanceUnit@8=EAR_DLL_SetUserDistanceUnit@8

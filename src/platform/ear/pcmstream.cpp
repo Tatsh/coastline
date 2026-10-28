@@ -28,6 +28,12 @@ const double g_earPcmHalfBufferScale = 0.5;
 const double g_earPcmMillisecondScale = 0.001;
 // @ghidraAddress EAR: 0x1002e910
 const double g_earWaveAttachmentHalfBufferScale = 0.5;
+
+// The original leaves its result undefined; the only callers are compiled out.
+// @ghidraAddress EAR: 0x10012e40
+int IgnoreDirectSoundBufferDiagnostic(const char *diagnostic) {
+    return 0;
+}
 // @ghidraAddress EAR: 0x1002ea60
 const double g_earMemoryWaveHalfBufferScale = 0.5;
 // @ghidraAddress EAR: 0x1003b868
@@ -257,6 +263,9 @@ std::uint16_t PcmWaveStream::AllocateEarEventId() {
         std::memcpy(region2, sampleBuffer + region1Bytes, region2Bytes);
     }
     if (GetDirectSoundBuffer()->Unlock(region1, region1Bytes, region2, region2Bytes) != DS_OK) {
+        // A diagnostic the original compiled out behind a constant condition.
+        [[maybe_unused]] int diagnostic =
+            1 ? 0 : IgnoreDirectSoundBufferDiagnostic("Unlock failed!");
         return 0;
     }
     if (HasNonStreamingStartPosition()) {
@@ -264,6 +273,8 @@ std::uint16_t PcmWaveStream::AllocateEarEventId() {
             static_cast<long double>(GetPlaybackBufferBytes()) * GetPlaybackStartPosition();
         DWORD offset = TruncatePlaybackInteger(position);
         if (GetDirectSoundBuffer()->SetCurrentPosition(offset) != DS_OK) {
+            [[maybe_unused]] int diagnostic =
+                1 ? 0 : IgnoreDirectSoundBufferDiagnostic("SetCurrentPosition failed!");
             return 0;
         }
         ClearPlaybackStartPosition();
