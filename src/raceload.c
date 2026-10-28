@@ -190,8 +190,13 @@ void InitRace(void) {
     if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
         g_dwTrackMirrored = FALSE;
     } else {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
         g_dwTrackMirrored =
             (g_apTrackMenuItems[g_dwSelectedTrackId]->item.flags & MENU_ITEM_MIRRORED) != 0;
+#else
+        g_dwTrackMirrored =
+            (g_apTrackMenuItems[g_dwSelectedTrackId]->flags & MENU_ITEM_MIRRORED) != 0;
+#endif
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     ApplyWeather(g_dwCurrentWeather);
