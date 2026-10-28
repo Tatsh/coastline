@@ -55,6 +55,7 @@ bcar
 bcmp
 bcopy
 beetlestone
+behavior
 beql
 beqz
 berkin

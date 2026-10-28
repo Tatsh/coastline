@@ -1,12 +1,15 @@
 # The front end of the Nintendo 64 release, which takes the place of the menus of the PC release in
 # the SDL game. Its sources compile with the types of the Nintendo 64 release, as C++ for the
-# 32-bit offsets of Ptr32. The library is not linked yet: its data is still only in the assembly of
-# the cartridge.
+# 32-bit offsets of Ptr32. The library is not linked yet: it still lacks routines of other units and
+# the calls of the Controller Pak.
 set(_src "${CMAKE_SOURCE_DIR}/src")
 set(COASTLINE_N64_FRONTEND_SOURCES
-    controllerscreen.c carselect.c decaldraw.c decaleditor.c mainmenu.c options.c pakmenu.c
-    playerselect.c racemenu.c splash.c sprite.c text.c texrect.c weatherselect.c)
-list(TRANSFORM COASTLINE_N64_FRONTEND_SOURCES PREPEND "${_src}/n64/")
+    n64/controllerscreen.c n64/carselect.c n64/decaldraw.c n64/decaleditor.c n64/input.c
+    n64/mainmenu.c n64/options.c n64/pakmenu.c n64/playerselect.c n64/race.c n64/racemenu.c
+    n64/splash.c n64/sprite.c n64/text.c n64/texrect.c n64/timing.c n64/vehicle.c
+    n64/vehiclerender.c n64/vehiclesetup.c n64/weatherselect.c driving.c fade.c game.c heap.c
+    vehiclereset.c)
+list(TRANSFORM COASTLINE_N64_FRONTEND_SOURCES PREPEND "${_src}/")
 set_source_files_properties(${COASTLINE_N64_FRONTEND_SOURCES} PROPERTIES LANGUAGE CXX)
 
 # n64frontenddata.cpp is written by tools/sdl/n64frontenddata.py from the symbols the front end
@@ -14,8 +17,11 @@ set_source_files_properties(${COASTLINE_N64_FRONTEND_SOURCES} PROPERTIES LANGUAG
 add_library(coastline_n64frontend STATIC ${COASTLINE_N64_FRONTEND_SOURCES} n64frontenddata.cpp)
 target_include_directories(coastline_n64frontend PRIVATE "${_src}" "${_src}/n64"
                                                          "${_src}/libultra/include")
-# The data whose types differ between the two releases is the front end's own, under other names.
-set(_n64_renames g_aPlayerInputState g_aVehicleModels g_aVehicles g_SeasonTable)
+# The symbols both releases define, and the data whose types differ between them, are the front
+# end's own, under other names.
+file(STRINGS "${CMAKE_SOURCE_DIR}/tools/sdl/n64frontend-renames.txt" _n64_renames REGEX "^[^#]")
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+                                       "${CMAKE_SOURCE_DIR}/tools/sdl/n64frontend-renames.txt")
 list(TRANSFORM _n64_renames REPLACE "^(.+)$" "-D\\1=\\1N64")
 target_compile_options(
   coastline_n64frontend

@@ -8,11 +8,17 @@
 
 #include <PR/os_cont.h>
 
+#include "carphysics.h"
 #include "n64/decaleditor.h"
 #include "sdl/cartridgedata.h"
+#include "seasons.h"
 #include "vehicle.h"
 
 namespace coastline {
+
+/** The physics of a car, all 32-bit numbers. */
+template <>
+struct CartridgeWords<CarPhysicsSpec> : std::true_type {};
 
 /** A swatch of the decal editor: a rectangle of four words and three bytes of color. */
 template <>
@@ -23,6 +29,24 @@ struct CartridgeLayout<PaletteSwatch> {
     static void Read(BigEndianReader &reader, PaletteSwatch &value) {
         reader.Read(value.rect);
         reader.Read(value.color);
+        reader.Align(align);
+    }
+};
+
+/** A season of the championship: its names, its races, and the cars it unlocks. */
+template <>
+struct CartridgeLayout<Season> {
+    static constexpr std::size_t align = 4;
+    static constexpr std::size_t size = detail::AlignUp(20 + 2 * SEASON_RACES, align);
+
+    static void Read(BigEndianReader &reader, Season &value) {
+        reader.Read(value.name);
+        reader.Read(value.subtitle);
+        reader.Read(value.raceCount);
+        reader.Read(value.pointsNeeded);
+        reader.Read(value.cars);
+        reader.Read(value.unlocks);
+        reader.Read(value.races);
         reader.Align(align);
     }
 };

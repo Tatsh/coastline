@@ -115,7 +115,12 @@ def main() -> None:
     headers: set[str] = set()
     definitions: list[str] = []
     reads: list[tuple[str, bool]] = []
-    for symbol in args.symbols.read_text(encoding='utf-8').split():
+    for symbol in sorted({
+            # The front end renames some symbols with N64 appended, and the definitions take the
+            # names of the declarations, which the same renames reach.
+            name.removesuffix('N64')
+            for name in args.symbols.read_text(encoding='utf-8').split()
+    }):
         declaration = find_declaration(args.root, symbol)
         if declaration is None or symbol not in lengths:
             definitions.append(f'// {symbol}: no declaration or no length in the assembly.')
@@ -154,7 +159,9 @@ def main() -> None:
         *definitions,
         '',
         'void ReadN64FrontEndData(void) {',
-        *(f'    coastline::RegisterCartridgeSymbol("{s}", {s});' for s, _ in reads),
+        # The BSS is zero and is only addressed by code, so only the data the cartridge
+        # initializes is recorded and read.
+        *(f'    coastline::RegisterCartridgeSymbol("{s}", {s});' for s, bss in reads if not bss),
         *(f'    coastline::ReadCartridgeSymbol("{s}", {s});' for s, bss in reads if not bss),
         '}',
         '',

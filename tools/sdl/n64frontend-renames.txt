@@ -1,0 +1,36 @@
+# The symbols the front end of the Nintendo 64 release defines with the same names as the game code
+# of the PC release, or with other types. The front end takes them under the name with N64
+# appended. Read by src/sdl/n64frontend.cmake.
+AddTimingMarker
+ApplyWeather
+ClearVehicleDamageState
+FadeMusicTo
+FadeSfxTo
+g_aPlayerInputState
+g_aVehicleModels
+g_aVehicles
+g_pHeapCurrent
+g_SeasonTable
+InitControllersAndPaks
+InitGameAndShowMenus
+InitVehicleColorAndPhysics
+InitVehicleOrientationFromAngle
+InitVehiclePhysics
+IsFadeComplete
+IsFadedToBlack
+IsFadingOut
+ProcessSeasonResults
+ResetAllPlayers
+ResetHeap
+ResetVehicleEffects
+ResetVehicleState
+RespawnVehicle
+RotateVehicleByEuler
+SetFadeTarget
+SetVehicleFrameMatrix
+SetVehiclePosition
+SetVehicleTurnRate
+SetVehicleVelocity
+SnapScreenFade
+StartRaceWithPlayerCount
+UpdateAiVehicleBehavior
