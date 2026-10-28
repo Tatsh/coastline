@@ -5,6 +5,7 @@ add_library(
   channel.cpp
   configuration.c
   direction.c
+  directionalmatrix.cpp
   directsoundoutput.cpp
   distance.c
   earplayback.cpp

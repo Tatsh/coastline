@@ -26,6 +26,35 @@ public:
         value = static_cast<Value *>(entry);
         return TRUE;
     }
+    /** @ghidraAddress EAR: 0x10006750 */
+    void SetWordPointerMapValue(std::uint16_t key, Value *value) {
+        SetAt(key, value);
+    }
+    /** Copy the values into a larger hash table once the table holds one value a bucket. */
+    void GrowWhenFull() {
+        if (GetCount() != static_cast<int>(GetHashTableSize())) {
+            return;
+        }
+        EarWordPointerRegistry copy;
+        copy.InitHashTable(GetCount(), TRUE);
+        POSITION position = GetStartPosition();
+        do {
+            WORD key;
+            void *entry;
+            GetNextAssoc(position, key, entry);
+            copy.SetWordPointerMapValue(key, static_cast<Value *>(entry));
+        } while (position);
+        RemoveAll();
+        InitHashTable(copy.GetCount() + 10, TRUE);
+        position = copy.GetStartPosition();
+        do {
+            WORD key;
+            void *entry;
+            copy.GetNextAssoc(position, key, entry);
+            SetWordPointerMapValue(key, static_cast<Value *>(entry));
+        } while (position);
+        copy.RemoveAll();
+    }
 };
 
 template <typename Value>

@@ -10,6 +10,8 @@ EXPORTS
     _EAR_DLL_InitializeEar@4=EAR_DLL_InitializeEar@4
     _EAR_DLL_RegisterBank@8=EAR_DLL_RegisterBank@8
     _EAR_DLL_RegisterChannel@16=EAR_DLL_RegisterChannel@16
+    _EAR_DLL_RegisterEnvironment@4=EAR_DLL_RegisterEnvironment@4
+    _EAR_DLL_RegisterMatrix@4=EAR_DLL_RegisterMatrix@4
     _EAR_DLL_ResetEar@0=EAR_DLL_ResetEar@0
     _EAR_DLL_SetAttenuationLevel@8=EAR_DLL_SetAttenuationLevel@8
     _EAR_DLL_SetUserDistanceUnit@8=EAR_DLL_SetUserDistanceUnit@8
@@ -17,7 +19,10 @@ EXPORTS
     _EAR_DLL_ShutDownBank@4=EAR_DLL_ShutDownBank@4
     _EAR_DLL_ShutDownChannel@4=EAR_DLL_ShutDownChannel@4
     _EAR_DLL_ShutDownEar@0=EAR_DLL_ShutDownEar@0
+    _EAR_DLL_ShutDownEnvironment@4=EAR_DLL_ShutDownEnvironment@4
     _EAR_DLL_ShutDownEvent@8=EAR_DLL_ShutDownEvent@8
+    _EAR_DLL_ShutDownMatrix@4=EAR_DLL_ShutDownMatrix@4
+    _EAR_DLL_ShutDownPreset@4=EAR_DLL_ShutDownPreset@4
     _EAR_DLL_ShutDownTimer@0=EAR_DLL_ShutDownTimer@0
     _EAR_DLL_StartEvent@4=EAR_DLL_StartEvent@4
     _EAR_DLL_StartTimer@0=EAR_DLL_StartTimer@0

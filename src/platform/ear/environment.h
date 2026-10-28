@@ -3,25 +3,70 @@
 
 #include <cstdint>
 
+class EarEnvironment;
+class EarEnvironmentRegistration;
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /**
+ * Register the default environment as environment 1.
+ *
  * @ghidraAddress EAR: 0x100046bd
- * @stub
  */
 void RegisterDefaultEnvironment(void);
 
 /**
- * Shut down an environment, or every environment.
+ * Do nothing with the default environment once it is registered.
  *
+ * @param environment The default environment.
+ * @ghidraAddress EAR: 0x100100f6
+ */
+void __stdcall OnDefaultEnvironmentRegistered(EarEnvironment *environment);
+
+/**
+ * @param registration The registration of the environment.
+ * @return The handle of the environment, or 0.
+ * @ghidraAddress EAR: 0x1000e6c0
+ */
+uint16_t __stdcall
+EarRegisterEnvironmentExportWrapper(const EarEnvironmentRegistration *registration);
+
+/**
+ * Register an environment under the handle it requests, under a new handle for 0xffffffff, or as
+ * the default environment 1, which replaces the one registered. A handle already registered is
+ * refused with error 0x1e and returned all the same.
+ *
+ * @param registration The registration of the environment, of 0x40 bytes.
+ * @return The handle of the environment, or 0.
+ * @ghidraAddress EAR: 0x1000e6d0
+ */
+uint16_t __stdcall EAR_DLL_RegisterEnvironment(const EarEnvironmentRegistration *registration);
+
+/**
  * @param environment The environment, or 0 for every environment.
  * @return Whether the environment was shut down.
  * @ghidraAddress EAR: 0x1000f310
- * @stub
  */
 int __stdcall EarShutDownEnvironmentExportWrapper(uint32_t environment);
+
+/**
+ * Shut down an environment, or every environment. Shutting down the default environment or every
+ * environment registers the default environment again.
+ *
+ * @param environment The environment, or 0 for every environment.
+ * @return Whether the environment was shut down.
+ * @ghidraAddress EAR: 0x1000f320
+ */
+int __stdcall EAR_DLL_ShutDownEnvironment(uint32_t environment);
+
+/**
+ * Whether the default environment is registered.
+ *
+ * @ghidraAddress EAR: 0x100360f0
+ */
+extern int32_t g_bDefaultEnvironmentRegistered;
 #ifdef __cplusplus
 }
 #endif
@@ -87,7 +132,6 @@ public:
     /** @ghidraAddress EAR: 0x10007220 */
     void InitializeDefaultEnvironment();
 
-private:
     std::uint16_t size;
     std::uint16_t reservedRegistrationWord;
     std::uint16_t soundSpeed;

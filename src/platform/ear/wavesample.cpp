@@ -7,6 +7,9 @@
 
 #include "error.h"
 #include "memorybudget.h"
+#include "preset.h"
+#include "registry.h"
+#include "runtime.h"
 #include "wavechunks.h"
 
 EarWaveSample::EarWaveSample() {
@@ -138,4 +141,52 @@ WAVEFORMATEX EarWaveSample::CopyWaveSampleFormat() const {
 
 int EarWaveSample::AcceptWaveSampleData() {
     return 1;
+}
+
+int __stdcall EarShutDownPresetExportWrapper(uint32_t preset) {
+    return EAR_DLL_ShutDownPreset(preset);
+}
+
+int __stdcall EAR_DLL_ShutDownPreset(uint32_t preset) {
+    SetEarLastError(0);
+    if (!IsEarReady()) {
+        return 0;
+    }
+    if (g_PresetRegistry.IsEmpty()) {
+        if (preset != 0) {
+            SetEarLastError(0x29);
+        }
+        return 0;
+    }
+    int locked = 0;
+    int shutDown = 1;
+    while (g_bPlaybackUpdateLocked) {
+    }
+    if (!g_bRegistryMutationLocked) {
+        locked = 1;
+        g_bRegistryMutationLocked = locked;
+    }
+    if (preset != 0) {
+        EarWaveSample *found;
+        if (g_PresetRegistry.LookupWordPointerMapValue(static_cast<uint16_t>(preset), found)) {
+            delete found;
+            g_PresetRegistry.RemoveKey(static_cast<uint16_t>(preset));
+        } else {
+            SetEarLastError(0x29);
+            shutDown = 0;
+        }
+    } else {
+        POSITION position = g_PresetRegistry.GetStartPosition();
+        do {
+            WORD key;
+            void *value;
+            g_PresetRegistry.GetNextAssoc(position, key, value);
+            delete static_cast<EarWaveSample *>(value);
+        } while (position);
+        g_PresetRegistry.RemoveAll();
+    }
+    if (locked) {
+        g_bRegistryMutationLocked = 0;
+    }
+    return shutDown;
 }

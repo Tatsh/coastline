@@ -108,29 +108,6 @@ int EarChannel::EnsureChannelPlaybackCapacity(uint16_t priority, uint16_t attenu
     return 0;
 }
 
-/** Copy the channels into a larger hash table once the table holds one channel a bucket. */
-static void GrowChannelRegistry(void) {
-    CMapWordToPtr copy(10);
-    copy.InitHashTable(g_ChannelRegistry.GetCount(), TRUE);
-    POSITION position = g_ChannelRegistry.GetStartPosition();
-    do {
-        WORD key;
-        void *value;
-        g_ChannelRegistry.GetNextAssoc(position, key, value);
-        copy.SetAt(key, value);
-    } while (position);
-    g_ChannelRegistry.RemoveAll();
-    g_ChannelRegistry.InitHashTable(copy.GetCount() + 10, TRUE);
-    position = copy.GetStartPosition();
-    do {
-        WORD key;
-        void *value;
-        copy.GetNextAssoc(position, key, value);
-        g_ChannelRegistry.SetAt(key, value);
-    } while (position);
-    copy.RemoveAll();
-}
-
 int __stdcall EarRegisterChannelExportWrapper(uint32_t channel,
                                               uint32_t flags,
                                               uint32_t gainPercent,
@@ -150,9 +127,7 @@ int __stdcall EAR_DLL_RegisterChannel(uint32_t channel,
         SetEarLastError(0x24);
         return 0;
     }
-    if (g_ChannelRegistry.GetCount() == static_cast<int>(g_ChannelRegistry.GetHashTableSize())) {
-        GrowChannelRegistry();
-    }
+    g_ChannelRegistry.GrowWhenFull();
     EarChannel *registered;
     if (g_ChannelRegistry.LookupWordPointerMapValue(static_cast<uint16_t>(channel), registered)) {
         SetEarLastError(0x23);
@@ -223,7 +198,7 @@ int __stdcall EAR_DLL_RegisterChannel(uint32_t channel,
     }
     registered->SetChannelSmoothingStep(static_cast<uint16_t>(flags & 0x700));
     registered->events.InitHashTable(registered->maximumEvents + 5, TRUE);
-    g_ChannelRegistry.SetAt(static_cast<uint16_t>(channel), registered);
+    g_ChannelRegistry.SetWordPointerMapValue(static_cast<uint16_t>(channel), registered);
     return 1;
 }
 
