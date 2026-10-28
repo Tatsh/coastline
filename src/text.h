@@ -202,6 +202,7 @@ extern u8 g_aSmallFontTexture[];
  * @ghidraAddress EUR: 0x802a3f00
  * @ghidraAddress JPN: 0x802a39a0
  * @ghidraAddress BRD3D: 0x100a6010
+ * @ghidraAddress BRGlide: 0x100a5918
  */
 extern u8 g_abHudFontCharToGlyph[];
 
@@ -536,6 +537,7 @@ void DrawHudLabelAtFraction(const char *text, f32 x, f32 y, s32 unused);
  * @ghidraAddress EUR: 0x80230c30
  * @ghidraAddress JPN: 0x80230950
  * @ghidraAddress BRD3D: 0x100193c0
+ * @ghidraAddress BRGlide: 0x10016980
  */
 s32 MeasureTextWidth(const char *text, s32 size);
 
