@@ -80,7 +80,12 @@ void InitializeDashboardTextures(void) {
         s32 imageBytes = (model->gearCount + 2) * model->gearWidth * model->gearHeight;
         u8 *source = &model->dashboardImages[sizeof(model->dashboardImages) - imageBytes];
         u8 *destination = model->dashboardImages;
+#if TGR_RENDERER == TGR_RENDERER_GLIDE
+        // The gear images can overlap their new place at the end of the buffer.
+        memmove(source, gearImages, imageBytes);
+#else
         memcpy(source, gearImages, imageBytes);
+#endif
         for (s32 gear = 0; gear < model->gearCount + 2; gear++) {
             s32 decoded = g_pfnDecodeN64TextureToPixelBuffer(destination,
                                                              source,
