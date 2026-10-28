@@ -32,6 +32,10 @@ def arguments():
                         help='Prepare and configure the Wine prefix without starting the game.')
     parser.add_argument('--desktop-size', default='800x600',
                         help='Size of the Wine desktop window, such as 800x600.')
+    parser.add_argument('--no-desktop', action='store_true',
+                        help='Start BRally directly without a Wine Explorer desktop.')
+    parser.add_argument('--trace-wine', action='store_true',
+                        help='Record Wine process, desktop, and exception traces in wine-launch.log.')
     parser.add_argument('--wine', default=os.environ.get('WINE', 'wine'),
                         help='Wine executable; inherited Wine architecture settings are preserved.')
     parser.add_argument('--winecfg', default=os.environ.get('WINECFG', 'winecfg'),
@@ -197,17 +201,33 @@ def main():
     game_args = options.game_args
     if game_args and game_args[0] == '--':
         game_args = game_args[1:]
-    print(f'Starting BRally.exe in a {options.desktop_size} Wine desktop window.', flush=True)
+    if options.no_desktop:
+        command = [INSTALL_DIRECTORY + r'\BRally.exe', *game_args]
+        print('Starting BRally.exe directly without a Wine desktop.', flush=True)
+    else:
+        command = ['explorer', f'/desktop=BossRally,{options.desktop_size}',
+                   INSTALL_DIRECTORY + r'\BRally.exe', *game_args]
+        print(f'Starting BRally.exe in a {options.desktop_size} Wine desktop window.', flush=True)
     print(f'Application diagnostics append to {installation / "coastline.log"}', flush=True)
     print(f'Crash backtraces go to {installation / "wine-crash.log"}', flush=True)
-    run('explorer', f'/desktop=BossRally,{options.desktop_size}',
-        INSTALL_DIRECTORY + r'\BRally.exe', *game_args)
+    if options.trace_wine:
+        environment['WINEDEBUG'] = '+timestamp,+pid,+tid,+explorer,+process,+seh'
+        log_path = installation / 'wine-launch.log'
+        print(f'Wine startup trace goes to {log_path}', flush=True)
+        with log_path.open('wb') as log:
+            subprocess.run([wine, *command], env=environment, cwd=installation,
+                           stderr=log, check=True)
+    else:
+        run(*command)
     return 0
 
 
 if __name__ == '__main__':
     try:
         sys.exit(main())
+    except KeyboardInterrupt:
+        print('\nLaunch interrupted.', file=sys.stderr)
+        sys.exit(130)
     except (OSError, ValueError, subprocess.CalledProcessError) as error:
         print(f'Error: {error}', file=sys.stderr)
         sys.exit(1)
