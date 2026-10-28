@@ -86,6 +86,7 @@ bufferlost
 buffler
 buildinfo
 buildsystems
+bumpr
 bzero
 camerachange
 camerachase
@@ -455,6 +456,7 @@ hasm
 hbitmap
 hdlr
 hdwr
+headl
 headlightglare
 headtex
 hglobal
@@ -593,6 +595,7 @@ lsavercp
 lsaverest
 lsend
 lshift
+lside
 lstatus
 lstrcat
 lstrcpy
@@ -873,6 +876,7 @@ rombuilder
 routeposition
 routewalk
 rshift
+rside
 rtti
 runtimebuffers
 rxsize
@@ -927,7 +931,9 @@ shellformat
 shiftl
 shiftt
 showmaximized
+sideb
 sidegrip
+sidet
 signfailed
 siint
 simgr

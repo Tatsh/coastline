@@ -203,10 +203,11 @@ float g_fMenuListDragDeltaX;
 float g_fMenuListDragDeltaY;
 // @ghidraAddress BRD3D: 0x10aa2598
 // @ghidraAddress BRGlide: 0x10ac58f0
-unsigned g_dwUnlockedCarMask = 0x102;
+// The dynamic initializer also gives the season progress its default unlocks.
+unsigned g_dwUnlockedCarMask = g_SeasonProgress.unlocks = 0x102;
 // @ghidraAddress BRD3D: 0x100ab3d8
 // @ghidraAddress BRGlide: 0x100aab78
-int g_bAudioOptionsSfxSelected;
+int g_bAudioOptionsSfxSelected = 1;
 // @ghidraAddress BRD3D: 0x10aa29f8
 // @ghidraAddress BRGlide: 0x10ac5d50
 [[maybe_unused]] unsigned short g_wUnusedFrontEndWord0;

@@ -1807,8 +1807,8 @@ int CalculateTextureAspectRatio(int *pAspectRatio, int nWidth, int nHeight) {
     return ratio == 64 || ratio == 32 || ratio == 16 || (!wide && ratio == 8);
 }
 
-int g_dwCurrentMaxTextureWidth;
-int g_dwCurrentMaxTextureHeight;
+int g_dwCurrentMaxTextureWidth = 32;
+int g_dwCurrentMaxTextureHeight = 32;
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
 unsigned CreateTextureFromN64Image(const unsigned char *pImage,

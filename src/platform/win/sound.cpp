@@ -38,8 +38,8 @@ const int g_adwBgmVolumeLevels[VOLUME_LEVEL_COUNT] = {
     0x00, 0x1c, 0x38, 0x55, 0x71, 0x8d, 0xaa, 0xc6, 0xe2, 0xff};
 const int g_adwSfxVolumeLevels[VOLUME_LEVEL_COUNT] = {
     0x00, 0x55, 0x78, 0x93, 0xaa, 0xbe, 0xd0, 0xe1, 0xf0, 0xff};
-unsigned char g_bBgmVolume;
-unsigned char g_bSfxVolume;
+unsigned char g_bBgmVolume = 0xbf;
+unsigned char g_bSfxVolume = 0xff;
 
 // The track the music starts at, the first after the track of the data of the CD.
 #define FIRST_MUSIC_CD_TRACK 2
