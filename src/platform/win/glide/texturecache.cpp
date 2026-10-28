@@ -819,6 +819,166 @@ void DecodeTexturePixels(unsigned char *pDest,
                          unsigned primB,
                          unsigned primA,
                          unsigned nRowSwapMask) {
+    unsigned written = 0;
+    unsigned char *output = pDest;
+    unsigned environment[] = {envR & 0xff, envG & 0xff, envB & 0xff, envA & 0xff};
+    unsigned primitive[] = {primR & 0xff, primG & 0xff, primB & 0xff, primA & 0xff};
+    for (int tileIndex = nTileIndex; tileIndex < nTileLimit; tileIndex++) {
+        const TexScanTile &tile = pTiles[tileIndex];
+        const unsigned char *row =
+            pImage + static_cast<int>(static_cast<unsigned>(tile.nTmem) << 3);
+        bool indexOnly = false;
+        int texelBytes;
+        if (nTexelSize == G_IM_SIZ_4b && nFormat == G_IM_FMT_CI) {
+            // The paint of a vehicle keeps the indices of its second tile.
+            indexOnly = (flags & 2) && tileIndex == 1;
+            texelBytes = 2;
+        } else if (nTexelSize == G_IM_SIZ_4b && nFormat == G_IM_FMT_I) {
+            texelBytes = bColorCombine == 1 ? 2 : 1;
+        } else if (nTexelSize == G_IM_SIZ_8b && nFormat == G_IM_FMT_CI) {
+            texelBytes = 2;
+        } else if (nTexelSize == G_IM_SIZ_8b && nFormat == G_IM_FMT_IA) {
+            texelBytes = bColorCombine == 1 ? 2 : 1;
+        } else if (nTexelSize == G_IM_SIZ_8b && nFormat == G_IM_FMT_I) {
+            texelBytes = 1;
+        } else if (nTexelSize == G_IM_SIZ_16b && nFormat == G_IM_FMT_RGBA) {
+            texelBytes = 2;
+        } else {
+            continue;
+        }
+        // Write a texel and report whether the output is full.
+        auto emit = [&](unsigned texel, bool checkLimit = true) {
+            if (texelBytes == 2) {
+                auto value = static_cast<unsigned short>(texel);
+                std::memcpy(output, &value, sizeof(value));
+            } else {
+                *output = static_cast<unsigned char>(texel);
+            }
+            output += texelBytes;
+            written += static_cast<unsigned>(texelBytes);
+            return checkLimit && static_cast<int>(written) >= nSize;
+        };
+        auto loadTexel = [&](const unsigned char *pTexel) {
+            if (texelBytes == 2) {
+                unsigned short value;
+                std::memcpy(&value, pTexel, sizeof(value));
+                return static_cast<unsigned>(value);
+            }
+            return static_cast<unsigned>(*pTexel);
+        };
+        auto palette = [&](unsigned index) {
+            unsigned short color;
+            std::memcpy(&color, pPalette + index * 2, sizeof(color));
+            return ConvertN64Rgba5551ToArgb1555(color);
+        };
+        // ARGB1555 from an intensity between the primitive and the environment colors.
+        auto blendArgb1555 = [&](unsigned intensity) {
+            unsigned channels[4];
+            for (int channel = 0; channel < 4; channel++) {
+                int difference =
+                    static_cast<int>(environment[channel]) - static_cast<int>(primitive[channel]);
+                channels[channel] =
+                    static_cast<unsigned>(difference * static_cast<int>(intensity) / 255 +
+                                          static_cast<int>(primitive[channel]));
+            }
+            unsigned alpha = static_cast<unsigned>(static_cast<int>(channels[3]) >> 7) & 0xff;
+            unsigned red = static_cast<unsigned>(static_cast<int>(channels[0]) >> 3) & 0xff;
+            unsigned green = static_cast<unsigned>(static_cast<int>(channels[1]) >> 3) & 0xff;
+            unsigned blue = static_cast<unsigned>(static_cast<int>(channels[2]) >> 3) & 0xff;
+            return ((alpha << 5 | red) << 5 | green) << 5 | blue;
+        };
+        // ARGB4444 from an IA texel. The products are divided unsigned, including wrapped
+        // negative differences, and a channel that overflows its four bits is not masked.
+        auto blendArgb4444 = [&](unsigned texel) {
+            unsigned intensity = (texel & 0xf0) | (texel >> 4);
+            unsigned channels[3];
+            for (int channel = 0; channel < 3; channel++) {
+                unsigned difference = environment[channel] - primitive[channel];
+                channels[channel] = ((difference * intensity) / 255 + primitive[channel]) >> 4;
+            }
+            return (((texel & 0xf) << 4 | channels[0]) << 4 | channels[1]) << 4 | channels[2];
+        };
+        int width;
+        if (nTexelSize == G_IM_SIZ_4b) {
+            width = static_cast<int>(1u << ((static_cast<unsigned>(tile.nMaskS) - 1) & 31));
+        } else {
+            width = static_cast<int>(1u << (static_cast<unsigned>(tile.nMaskS) & 31));
+        }
+        int height = static_cast<int>(1u << (static_cast<unsigned>(tile.nMaskT) & 31));
+        int rowTexels = nTexelSize == G_IM_SIZ_4b ? width * 2 : width;
+        for (int y = 0; y < height; y++) {
+            unsigned swap = (static_cast<unsigned>(y) & nRowSwapMask) ? 4 : 0;
+            for (int x = 0; x < width; x++) {
+                if (nTexelSize == G_IM_SIZ_16b) {
+                    unsigned short color;
+                    std::memcpy(
+                        &color, row + ((static_cast<unsigned>(x) * 2) ^ swap), sizeof(color));
+                    // A swapped row checks its end before the output limit.
+                    if (emit(ConvertN64Rgba5551ToArgb1555(color), !swap || x + 1 < width)) {
+                        return;
+                    }
+                    continue;
+                }
+                unsigned texel = row[static_cast<unsigned>(x) ^ swap];
+                if (nTexelSize == G_IM_SIZ_4b) {
+                    unsigned high = texel >> 4;
+                    unsigned low = texel & 0xf;
+                    unsigned first, second;
+                    if (nFormat == G_IM_FMT_CI) {
+                        first = indexOnly ? high : palette(high);
+                        second = indexOnly ? low : palette(low);
+                    } else {
+                        first = (texel & 0xf0) | high;
+                        second = (texel << 4 | low) & 0xff;
+                        if (bColorCombine == 1) {
+                            first = blendArgb1555(first);
+                            second = blendArgb1555(second);
+                        }
+                    }
+                    if (emit(first) || emit(second)) {
+                        return;
+                    }
+                } else {
+                    unsigned value;
+                    if (nFormat == G_IM_FMT_CI) {
+                        value = palette(texel);
+                    } else if (nFormat == G_IM_FMT_IA) {
+                        value = bColorCombine == 1 ? blendArgb4444(texel) :
+                                                     ((texel << 4) | (texel >> 4)) & 0xff;
+                    } else {
+                        value = texel;
+                    }
+                    if (emit(value)) {
+                        return;
+                    }
+                }
+            }
+            if (bMirrorS) {
+                const unsigned char *source = output - texelBytes;
+                for (int x = 0; x < rowTexels; x++) {
+                    if (emit(loadTexel(source))) {
+                        return;
+                    }
+                    source -= texelBytes;
+                }
+            }
+            row += tile.nLineBytes;
+        }
+        if (bMirrorT) {
+            int mirroredTexels = bMirrorS ? rowTexels * 2 : rowTexels;
+            const unsigned char *rowStart = output;
+            for (int y = 0; y < height; y++) {
+                rowStart -= mirroredTexels * texelBytes;
+                const unsigned char *source = rowStart;
+                for (int x = 0; x < mirroredTexels; x++) {
+                    if (emit(loadTexel(source))) {
+                        return;
+                    }
+                    source += texelBytes;
+                }
+            }
+        }
+    }
 }
 
 // Set the level of detail and the aspect ratio of an image from a size, and its largest level

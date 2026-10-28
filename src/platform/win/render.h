@@ -1224,7 +1224,8 @@ extern unsigned g_dwTexturePixelByteCount;
 extern unsigned char g_abTextureResampleBuffer[TEXTURE_RESAMPLE_BUFFER_BYTES];
 
 /**
- * Decode captured N64 texture tiles into four-byte pixels.
+ * Decode captured N64 texture tiles into four-byte pixels. The Glide renderer decodes them into
+ * the 16-bit formats of Glide, and an intensity without the combine into bytes.
  *
  * @param pDest Receives decoded pixels.
  * @param nSize The output byte limit.
@@ -1250,7 +1251,6 @@ extern unsigned char g_abTextureResampleBuffer[TEXTURE_RESAMPLE_BUFFER_BYTES];
  * @param nRowSwapMask The row mask for swapped texture words.
  * @ghidraAddress BRD3D: 0x10025ab0
  * @ghidraAddress BRGlide: 0x100250d0
- * @stub{BRGlide}
  */
 void DecodeTexturePixels(unsigned char *pDest,
                          int nSize,
