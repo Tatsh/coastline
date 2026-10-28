@@ -821,8 +821,12 @@ D3DDeviceNode *DirectDrawDriver::FindRenderDevice(GUID *pGuid,
             if (pMode->IsDisplayModeSupportedByDevice(pDevice)) {
                 return pDevice;
             }
+        } else if (pDevice->IsHardwareDevice()) {
+            // A hardware device tests the fallback before the mode, and a software device after.
+            if (ppFallback != nullptr && pMode->IsDisplayModeSupportedByDevice(pDevice)) {
+                *ppFallback = pDevice;
+            }
         } else if (pMode->IsDisplayModeSupportedByDevice(pDevice) && ppFallback != nullptr) {
-            // The original tests a device of the hardware apart, to the same end.
             *ppFallback = pDevice;
         }
         pDevice = pNextDevice;
