@@ -41,6 +41,7 @@ typedef struct _MMIOINFO {
     LONG lDiskOffset; /*!< The offset of the end of the buffer in the file. */
 } MMIOINFO;
 
+#pragma pack(push, 1)
 /** The format of a wave, without the size of its extra data. */
 typedef struct waveformat_tag {
     WORD wFormatTag;       /*!< The format. */
@@ -55,6 +56,12 @@ typedef struct pcmwaveformat_tag {
     WAVEFORMAT wf;       /*!< The format. */
     WORD wBitsPerSample; /*!< The bits of a sample. */
 } PCMWAVEFORMAT;
+#pragma pack(pop)
+
+#ifdef __cplusplus
+static_assert(sizeof(PCMWAVEFORMAT) == 16, "PCMWAVEFORMAT has the 16 bytes of a fmt chunk.");
+static_assert(sizeof(WAVEFORMATEX) == 18, "WAVEFORMATEX has its 18 bytes on Windows.");
+#endif
 
 /**
  * @param path The file.

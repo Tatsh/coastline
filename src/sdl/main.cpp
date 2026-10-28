@@ -78,12 +78,8 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
 constexpr std::uint32_t USA_MUSIC_OFFSETS[] = {
     0x0EBC00, 0x113660, 0x12EAB0, 0x149C80, 0x164B60, 0x17FD10};
 
-std::optional<std::vector<std::uint8_t>> LoadMusicFromRom(const std::filesystem::path &data,
-                                                          int index) {
-    if (index < 0 || index >= static_cast<int>(std::size(USA_MUSIC_OFFSETS))) {
-        SDL_LogError(SDL_LOG_CATEGORY_AUDIO, "There is no music module %d.", index);
-        return std::nullopt;
-    }
+std::optional<std::vector<std::uint8_t>> LoadMusicModule(const std::filesystem::path &data,
+                                                         std::uint32_t offset) {
     std::ifstream file(data / "roms" / "usa.z64", std::ios::binary);
     if (!file) {
         SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
@@ -91,12 +87,21 @@ std::optional<std::vector<std::uint8_t>> LoadMusicFromRom(const std::filesystem:
         return std::nullopt;
     }
     std::vector<std::uint8_t> rom(std::istreambuf_iterator<char>(file), {});
-    auto module = coastline::ReadRomModule(rom, USA_MUSIC_OFFSETS[index]);
+    auto module = coastline::ReadRomModule(rom, offset);
     if (!module) {
         SDL_LogError(SDL_LOG_CATEGORY_AUDIO, "%s", module.error().c_str());
         return std::nullopt;
     }
     return std::move(*module);
+}
+
+std::optional<std::vector<std::uint8_t>> LoadMusicFromRom(const std::filesystem::path &data,
+                                                          int index) {
+    if (index < 0 || index >= static_cast<int>(std::size(USA_MUSIC_OFFSETS))) {
+        SDL_LogError(SDL_LOG_CATEGORY_AUDIO, "There is no music module %d.", index);
+        return std::nullopt;
+    }
+    return LoadMusicModule(data, USA_MUSIC_OFFSETS[index]);
 }
 
 coastline::TextureHandle CreateCheckerTexture(coastline::TlRenderer &renderer) {
@@ -347,6 +352,7 @@ int main(int argc, char *argv[]) {
             }
 #endif
             bool running = true;
+            std::uint32_t pcMusicModule = 0;
             for (int frame = 1; running; ++frame) {
                 SDL_Event event;
                 while (SDL_PollEvent(&event)) {
@@ -361,6 +367,13 @@ int main(int argc, char *argv[]) {
 #ifdef COASTLINE_PC_GAME
                     running =
                         coastline::RunPcGameFrame(capture ? &*screenshot : nullptr) && running;
+                    std::uint32_t module = coastline::PcGameMusicModule();
+                    if (music && module != 0 && module != pcMusicModule) {
+                        pcMusicModule = module;
+                        if (auto data = LoadMusicModule(paths->data, module)) {
+                            audio.Play(*data);
+                        }
+                    }
 #endif
                 } else if (renderer) {
                     DrawRendererTestScene(

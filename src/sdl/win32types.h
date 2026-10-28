@@ -75,6 +75,8 @@ typedef struct _GUID {
     BYTE Data4[8]; /*!< The last 64 bits. */
 } GUID;
 
+/* The wave formats are packed to the byte in the headers of Windows, as in the files. */
+#pragma pack(push, 1)
 /** The format of a wave, as the multimedia API describes PCM. */
 typedef struct tWAVEFORMATEX {
     WORD wFormatTag;       /*!< 1 for PCM. */
@@ -85,6 +87,7 @@ typedef struct tWAVEFORMATEX {
     WORD wBitsPerSample;   /*!< The bits of a sample. */
     WORD cbSize;           /*!< The bytes of extra format data. */
 } WAVEFORMATEX;
+#pragma pack(pop)
 
 /** A chunk of a RIFF file, as the multimedia I/O API reads one. */
 typedef struct _MMCKINFO {

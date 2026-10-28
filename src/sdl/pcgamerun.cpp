@@ -1,12 +1,16 @@
 #include "pcgamerun.h"
 
+#include <algorithm>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 #include <memory>
 
+#include "race.h"
 #include "sdl/d3dcompat.h"
 #include "sdl/gamefiles.h"
 #include "sdl/renderhost.h"
+#include "trackselect.h"
 #include "win32/boot/app.h"
 #include "win32/boot/rallyconfig.h"
 #include "win32/boot/strings.h"
@@ -76,6 +80,31 @@ bool RunPcGameFrame(const std::filesystem::path *capture) {
     g_device->Renderer().SetScreenSize(static_cast<std::uint32_t>(g_dwConfigFramebufferWidth),
                                        static_cast<std::uint32_t>(g_dwConfigFramebufferHeight));
     return DispatchGameStateFrame() != 0;
+}
+
+std::uint32_t PcGameMusicModule() {
+    // The modules g_adwTrackMusicRom of the USA cartridge lists for each track, and the module of
+    // its menus.
+    constexpr std::uint32_t trackModules[] = {0x113660,
+                                              0x12EAB0,
+                                              0x149C80,
+                                              0x164B60,
+                                              0x17FD10,
+                                              0x113660,
+                                              0x12EAB0,
+                                              0x149C80,
+                                              0x164B60,
+                                              0x17FD10,
+                                              0x19BC10,
+                                              0x12EAB0};
+    constexpr std::uint32_t menuModule = 0x0EBC00;
+    if (g_dwPlayMusicMode != 0) {
+        return 0;
+    }
+    if (!g_dwRaceInitialized) {
+        return menuModule;
+    }
+    return trackModules[std::min<std::size_t>(g_dwSelectedTrackId, std::size(trackModules) - 1)];
 }
 
 } // namespace coastline

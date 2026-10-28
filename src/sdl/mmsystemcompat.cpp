@@ -7,6 +7,8 @@
 #include <iterator>
 #include <vector>
 
+#include "gamefiles.h"
+
 namespace {
 
 struct MemoryFile {
@@ -45,7 +47,11 @@ bool ReadChunkHeader(MemoryFile &file, MMCKINFO *chunk) {
 extern "C" {
 
 HMMIO mmioOpenA(LPSTR path, MMIOINFO *info, DWORD flags) {
-    std::ifstream stream(path, std::ios::binary);
+    auto found = coastline::FindGameFile(path);
+    if (!found) {
+        return nullptr;
+    }
+    std::ifstream stream(*found, std::ios::binary);
     if (!stream) {
         return nullptr;
     }
