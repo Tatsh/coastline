@@ -844,28 +844,37 @@ f32 Atan2f(f32 x, f32 y) {
 #undef ATAN_LESS
 #undef ATAN_ZERO
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/* The x87 tests take an unordered product as outside the edge. */
+#define TRIANGLE_OUTSIDE(value) (!((value) >= 0.0f))
+#else
+#define TRIANGLE_OUTSIDE(value) ((value) < 0.0f)
+#endif
+
 s32 PointInTriangle3D(Vec3f *point, Vec3f *v0, Vec3f *v1, Vec3f *v2, Vec3f *normal) {
     Vec3f toV0, toV1, edge01, edge12, edge20, cross;
 
     Vec3fSubtract(&edge01, v1, v0);
     Vec3fSubtract(&toV1, point, v1);
     Vec3fCross(&cross, &edge01, &toV1);
-    if (Vec3fDot(&cross, normal) < 0.0f) {
+    if (TRIANGLE_OUTSIDE(Vec3fDot(&cross, normal))) {
         return FALSE;
     }
     Vec3fSubtract(&edge12, v2, v1);
     Vec3fCross(&cross, &edge12, &toV1);
-    if (Vec3fDot(&cross, normal) < 0.0f) {
+    if (TRIANGLE_OUTSIDE(Vec3fDot(&cross, normal))) {
         return FALSE;
     }
     Vec3fSubtract(&edge20, v0, v2);
     Vec3fSubtract(&toV0, point, v0);
     Vec3fCross(&cross, &edge20, &toV0);
-    if (Vec3fDot(&cross, normal) < 0.0f) {
+    if (TRIANGLE_OUTSIDE(Vec3fDot(&cross, normal))) {
         return FALSE;
     }
     return TRUE;
 }
+
+#undef TRIANGLE_OUTSIDE
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 s32 IsPointInsideTriangle(
