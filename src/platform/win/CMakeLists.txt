@@ -75,6 +75,7 @@ if(TGR_RENDERER STREQUAL "d3d")
             frontenddata.cpp
             fontdata.c
             hudassets.c
+            inputdefaults.cpp
             numericdata.c
             physicsdata.c
             renderdefaults.cpp
