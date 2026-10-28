@@ -276,6 +276,50 @@ int ScheduledEarEvent::IsScheduledEventPlaybackComplete() {
     return playback->IsBufferedEarPlaybackComplete();
 }
 
+std::uint32_t ScheduledEarEvent::GetScheduledEventMediaLength() {
+    return playback->GetEarPlaybackMediaLength();
+}
+
+void ScheduledEarEvent::MuteScheduledEventPlayback() {
+    playback->SetEarPlaybackMute(1);
+}
+
+void ScheduledEarEvent::UnmuteScheduledEventPlayback() {
+    playback->SetEarPlaybackMute(0);
+}
+
+void ScheduledEarEvent::PauseScheduledEventPlayback() {
+    playback->PauseEarPlayback();
+}
+
+int ScheduledEarEvent::ResumeScheduledEventPlayback() {
+    return playback->ResumeEarPlayback();
+}
+
+int ScheduledEarEvent::IsScheduledEventPlaybackActive() {
+    return playback->IsActive();
+}
+
+int ScheduledEarEvent::IsScheduledEventPlaybackMuted() {
+    return playback->GetEarPlaybackMute();
+}
+
+int ScheduledEarEvent::HasScheduledEventFrequencyOverride() {
+    return frequencyScaleOverrideEnabled;
+}
+
+int ScheduledEarEvent::IsScheduledEventPendingExpiryDisabled() {
+    return lifetimeCountdownSuppressed;
+}
+
+int ScheduledEarEvent::IsScheduledEventPlaybackStreaming() {
+    return playback->IsEarPlaybackStreaming();
+}
+
+int ScheduledEarEvent::IsScheduledEventStopping() {
+    return fadingOut;
+}
+
 void ScheduledEarEvent::RequestScheduledEventStop() {
     playback->SetEarPlaybackLooping(0);
     playback->MarkComplete();

@@ -37,6 +37,53 @@ public:
     /** @ghidraAddress EAR: 0x100088ea */
     void ApplyScheduledEventStopControl(std::uint16_t control);
 
+    /**
+     * @return The length of the media of the playback, in its own units.
+     * @ghidraAddress EAR: 0x1000c1d0
+     */
+    std::uint32_t GetScheduledEventMediaLength();
+    /** @ghidraAddress EAR: 0x1000c1f0 */
+    void MuteScheduledEventPlayback();
+    /** @ghidraAddress EAR: 0x1000c210 */
+    void UnmuteScheduledEventPlayback();
+    /** @ghidraAddress EAR: 0x1000c230 */
+    void PauseScheduledEventPlayback();
+    /**
+     * @return Whether the playback resumed, which is always.
+     * @ghidraAddress EAR: 0x1000c250
+     */
+    int ResumeScheduledEventPlayback();
+    /**
+     * @return Whether the playback is active.
+     * @ghidraAddress EAR: 0x1000c520
+     */
+    int IsScheduledEventPlaybackActive();
+    /**
+     * @return Whether the playback is muted.
+     * @ghidraAddress EAR: 0x1000c820
+     */
+    int IsScheduledEventPlaybackMuted();
+    /**
+     * @return Whether the event overrides the frequency scale.
+     * @ghidraAddress EAR: 0x1000c840
+     */
+    int HasScheduledEventFrequencyOverride();
+    /**
+     * @return Whether the countdown of the lifetime is suppressed.
+     * @ghidraAddress EAR: 0x1000c860
+     */
+    int IsScheduledEventPendingExpiryDisabled();
+    /**
+     * @return Whether the playback streams.
+     * @ghidraAddress EAR: 0x1000c880
+     */
+    int IsScheduledEventPlaybackStreaming();
+    /**
+     * @return Whether the event is fading out.
+     * @ghidraAddress EAR: 0x1000c8a0
+     */
+    int IsScheduledEventStopping();
+
 private:
     /** @ghidraAddress EAR: 0x10007dfc */
     int InitializeScheduledEarEventPlayback();

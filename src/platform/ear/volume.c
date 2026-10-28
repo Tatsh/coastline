@@ -38,3 +38,16 @@ int32_t __stdcall ConvertPercentGainToDirectSoundVolume(double gain) {
     sum += g_dGainToVolumeConstant;
     return TruncateVolume(sum * g_dGainToVolumeScale);
 }
+
+int32_t __stdcall ConvertPercentGainToLeftPan(double gain) {
+    return ConvertPercentGainToDirectSoundVolume(gain);
+}
+
+int32_t __stdcall ConvertPercentGainToRightPan(double gain) {
+    // The original adds and subtracts 10000 around the negation in 32-bit arithmetic.
+    uint32_t volume = (uint32_t)ConvertPercentGainToDirectSoundVolume(gain);
+    uint32_t pan = 10000u - (volume + 10000u);
+    int32_t result;
+    memcpy(&result, &pan, sizeof(result));
+    return result;
+}

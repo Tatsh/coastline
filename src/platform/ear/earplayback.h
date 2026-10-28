@@ -32,6 +32,20 @@ public:
     /** @ghidraAddress EAR: 0x1000ab99 */
     int IsEarPlaybackStreaming();
 
+    /**
+     * Withdraw a request to complete the playback.
+     *
+     * @return Whether the request was withdrawn, which is always.
+     * @ghidraAddress EAR: 0x10012530
+     */
+    int ResetPlaybackCompletion();
+    /**
+     * Withdraw a request to complete the playback.
+     *
+     * @ghidraAddress EAR: 0x1001254a
+     */
+    void ClearPlaybackCompletion();
+
 private:
     /** @ghidraAddress EAR: 0x10012570 */
     virtual void InitializeDirectSoundPlaybackState();
@@ -87,10 +101,16 @@ public:
 private:
     /** @ghidraAddress EAR: 0x10012860 */
     virtual int PlayDirectSoundEventBuffer();
+
+public:
     /** @ghidraAddress EAR: 0x1000a99f */
     virtual void PauseEarPlayback();
+
+private:
     /** @ghidraAddress EAR: 0x100128f8 */
     virtual int StopDirectSoundEventBuffer();
+
+public:
     /** @ghidraAddress EAR: 0x1000add8 */
     virtual int ResumeEarPlayback();
 
@@ -126,6 +146,8 @@ public:
 private:
     /** @ghidraAddress EAR: 0x100129bc */
     virtual void OnPlaybackWaveSampleAttached(EarWaveSample *sample);
+
+public:
     /** @ghidraAddress EAR: 0x100094e0 */
     virtual std::uint32_t GetEarPlaybackMediaLength();
 

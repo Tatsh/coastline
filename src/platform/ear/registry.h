@@ -32,9 +32,11 @@ template <typename Value>
     requires std::is_class_v<Value>
 class EarDwordPointerRegistry : public CMapPtrToPtr {
 public:
+    /** @ghidraAddress EAR: 0x100039e0 */
     void SetDwordPointerMapValue(DWORD key, Value *value) {
         SetAt(std::bit_cast<void *>(key), value);
     }
+    /** @ghidraAddress EAR: 0x10009500 */
     BOOL RemovePlaybackRegistryKey(DWORD key) {
         return RemoveKey(std::bit_cast<void *>(key));
     }

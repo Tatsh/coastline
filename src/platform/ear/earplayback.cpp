@@ -159,6 +159,15 @@ void EarPlayback::MarkComplete() {
     completionRequested = 1;
 }
 
+int EarPlayback::ResetPlaybackCompletion() {
+    completionRequested = 0;
+    return 1;
+}
+
+void EarPlayback::ClearPlaybackCompletion() {
+    completionRequested = 0;
+}
+
 void EarPlayback::SetEarPlaybackDirectionalMatrix(std::uint16_t direction, std::uint16_t matrix) {
     directionIndex = direction;
     matrixId = matrix;
