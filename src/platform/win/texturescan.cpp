@@ -351,7 +351,11 @@ int CreateTextureFromTmemShadow(unsigned char *pTmem) {
         image.nHeight = static_cast<int>(static_cast<unsigned>(image.nHeight) << 1);
     }
     image.nPixelFormatId = ChooseTexturePixelFormat(tile.nSize, tile.nFormat, image.bColorCombine);
+    // The library stores these defaults, which the calculations below always replace.
+    image.nLargestLod = 8;
+    image.nLod = 8;
     image.nOption3 = 2;
+    image.nAspectRatio = 3;
     image.bClampS = tile.bClampS != 0;
     image.bClampT = tile.bClampT != 0;
     int edgeWidth =
@@ -360,13 +364,21 @@ int CreateTextureFromTmemShadow(unsigned char *pTmem) {
     int edgeHeight =
         static_cast<int>(static_cast<unsigned>(tile.nLrt) - static_cast<unsigned>(tile.nUlt) + 4) >>
         2;
-    if (edgeWidth != image.nDecodedWidth && edgeWidth != image.nWidth && edgeWidth > image.nWidth &&
-        edgeWidth % image.nWidth == 0) {
-        image.bClampS = 0;
+    // An edge as wide as the mirrored texture sets the decoded width, which the decoded size set
+    // after the tiles are copied replaces.
+    if (edgeWidth != image.nDecodedWidth) {
+        if (edgeWidth == image.nWidth) {
+            image.nDecodedWidth = edgeWidth;
+        } else if (edgeWidth > image.nWidth && edgeWidth % image.nWidth == 0) {
+            image.bClampS = 0;
+        }
     }
-    if (edgeHeight != image.nDecodedHeight && edgeHeight != image.nHeight &&
-        edgeHeight > image.nHeight && edgeHeight % image.nHeight == 0) {
-        image.bClampT = 0;
+    if (edgeHeight != image.nDecodedHeight) {
+        if (edgeHeight == image.nHeight) {
+            image.nDecodedHeight = edgeHeight;
+        } else if (edgeHeight > image.nHeight && edgeHeight % image.nHeight == 0) {
+            image.bClampT = 0;
+        }
     }
     CalculateTextureLodFromDimensions(&image.nLod, image.nWidth, image.nHeight);
     bool invalidAspect =
