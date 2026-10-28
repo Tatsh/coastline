@@ -518,10 +518,14 @@ void HostNetworkSession(void);
 HRESULT UpdateNetworkSessionSettings(void);
 
 /**
+ * Create every mutex of network play and reset the state of the network.
+ *
+ * @param nReason Not read. The callers pass 1.
+ * @return Always true.
  * @ghidraAddress BRD3D: 0x10005b10
  * @ghidraAddress BRGlide: 0x10005e80
  */
-bool InitializeNetworkMutexes(void);
+bool InitializeNetworkMutexes(int nReason);
 
 /**
  * @ghidraAddress BRD3D: 0x10005960

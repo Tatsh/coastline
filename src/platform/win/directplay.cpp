@@ -2224,7 +2224,7 @@ bool ResetNetworkState(void) {
     return true;
 }
 
-bool InitializeNetworkMutexes(void) {
+bool InitializeNetworkMutexes(int) {
     for (NetPeerSlot &slot : g_aNetPeerSlots) {
         slot.hMutex = CreateMutexA(nullptr, false, nullptr);
     }
@@ -3232,7 +3232,7 @@ int JoinNetworkSession(void) {
             }
         }
         g_dwNetworkPlayMode = 1;
-        InitializeNetworkMutexes();
+        InitializeNetworkMutexes(1);
         LoadNetworkSettings();
     }
     return 1;
@@ -3256,7 +3256,7 @@ void HostNetworkSession(void) {
     }
     g_dwNetworkPlayMode = 2;
     InitializeNetworkThreading();
-    InitializeNetworkMutexes();
+    InitializeNetworkMutexes(1);
 }
 
 HRESULT UpdateNetworkSessionSettings(void) {
