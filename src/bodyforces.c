@@ -49,9 +49,12 @@ void SelectVehiclePhysicsTables(s32 model) {
 #define CONTACT_LESS(a, b) (!((a) >= (b)))
 
 #define FORCE_PRODUCT(a, b) ((long double)(a) * (b))
+/* The sqrtf of the libraries returns the root of its float argument unrounded. */
+#define FORCE_ROOT(value) sqrtl((f32)(value))
 #else
 #define CONTACT_LESS(a, b) ((a) < (b))
 #define FORCE_PRODUCT(a, b) ((a) * (b))
+#define FORCE_ROOT(value) sqrtf(value)
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #define CONTACT_ABS(a) ((a) < 0.0f ? -(a) : (a))
@@ -872,9 +875,9 @@ void ComputeDragForce(RigidBody *body, RigidBodyForce *force) {
     surface1 = body->wheels[1]->surface;
     surface2 = body->wheels[2]->surface;
     surface3 = body->wheels[3]->surface;
-    if (4.0f < sqrtf(FORCE_PRODUCT(body->state.velocity.z, body->state.velocity.z) +
-                     (FORCE_PRODUCT(body->state.velocity.x, body->state.velocity.x) +
-                      FORCE_PRODUCT(body->state.velocity.y, body->state.velocity.y))) &&
+    if (4.0f < FORCE_ROOT(FORCE_PRODUCT(body->state.velocity.z, body->state.velocity.z) +
+                          (FORCE_PRODUCT(body->state.velocity.x, body->state.velocity.x) +
+                           FORCE_PRODUCT(body->state.velocity.y, body->state.velocity.y))) &&
         g_dwCurrentWeather != WEATHER_SNOW &&
         (surface0 == TRACK_SURFACE_SLOW || surface1 == TRACK_SURFACE_SLOW ||
          surface2 == TRACK_SURFACE_SLOW || surface3 == TRACK_SURFACE_SLOW)) {

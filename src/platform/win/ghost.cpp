@@ -430,27 +430,30 @@ void MatrixToPositionQuaternion(QuaternionPose *pPose, f32 m[4][4]) {
 }
 
 void PositionQuaternionToMatrix4x4(f32 matrix[4][4], const QuaternionPose *pPose) {
+    // The squares, the sums, and the products stay on the x87 stack. Only the scale and the
+    // second product of each pair (and xy for matrix[0][1]) are stored and rounded first.
     const Quaternion &q = pPose->orientation;
-    const float xx = q.x * q.x;
-    const float yy = q.y * q.y;
-    const float zz = q.z * q.z;
-    const float magnitude = q.w * q.w + (zz + yy) + xx;
-    const float scale = IsKeyframeFlagSet(magnitude) ? 2.0f / magnitude : 0.0f;
-    const float xy = q.x * scale * q.y;
-    const float wz = q.z * scale * q.w;
-    const float xz = q.x * scale * q.z;
-    const float wy = q.y * scale * q.w;
-    const float yz = q.y * scale * q.z;
-    const float wx = q.x * scale * q.w;
-    matrix[0][0] = 1.0f - (yy + zz) * scale;
-    matrix[1][1] = 1.0f - (xx + zz) * scale;
-    matrix[2][2] = 1.0f - (xx + yy) * scale;
-    matrix[1][0] = xy - wz;
-    matrix[0][1] = xy + wz;
-    matrix[2][0] = xz + wy;
-    matrix[0][2] = xz - wy;
-    matrix[2][1] = yz - wx;
-    matrix[1][2] = yz + wx;
+    const long double xx = static_cast<long double>(q.x) * q.x;
+    const long double yy = static_cast<long double>(q.y) * q.y;
+    const long double zz = static_cast<long double>(q.z) * q.z;
+    const long double magnitude = static_cast<long double>(q.w) * q.w + (zz + yy) + xx;
+    const float scale =
+        magnitude > 0.0L || magnitude < 0.0L ? static_cast<float>(2.0f / magnitude) : 0.0f;
+    const long double xy = static_cast<long double>(q.x) * scale * q.y;
+    const float wz = static_cast<float>(static_cast<long double>(q.z) * scale * q.w);
+    const long double xz = static_cast<long double>(q.x) * scale * q.z;
+    const float wy = static_cast<float>(static_cast<long double>(q.y) * scale * q.w);
+    const long double yz = static_cast<long double>(q.y) * scale * q.z;
+    const float wx = static_cast<float>(static_cast<long double>(q.x) * scale * q.w);
+    matrix[0][0] = static_cast<float>(1.0f - (yy + zz) * scale);
+    matrix[1][1] = static_cast<float>(1.0f - (xx + zz) * scale);
+    matrix[2][2] = static_cast<float>(1.0f - (xx + yy) * scale);
+    matrix[1][0] = static_cast<float>(xy - wz);
+    matrix[0][1] = static_cast<float>(xy) + wz;
+    matrix[2][0] = static_cast<float>(xz + wy);
+    matrix[0][2] = static_cast<float>(xz - wy);
+    matrix[2][1] = static_cast<float>(yz - wx);
+    matrix[1][2] = static_cast<float>(yz + wx);
     matrix[3][0] = pPose->position.x;
     matrix[3][1] = pPose->position.y;
     matrix[3][2] = pPose->position.z;
@@ -593,12 +596,19 @@ void ApplyGhostKeyframeToVehicle(Vehicle *pVehicle, int nRecording) {
     if (g_adwGhostPlaybackFrame[nRecording] <
         static_cast<int>(g_adwGhostFrameCount[nRecording] - 2)) {
         DeserializeKeyframeState(&state, frame + GHOST_FRAME_SIZE);
+        // The differences stay on the x87 stack until each velocity is stored.
         VEHICLE_GET(pVehicle, Body).state.velocity.x =
-            (state.position.x - VEHICLE_GET(pVehicle, Body).state.position.x) * 30.0f;
+            static_cast<float>((static_cast<long double>(state.position.x) -
+                                VEHICLE_GET(pVehicle, Body).state.position.x) *
+                               30.0f);
         VEHICLE_GET(pVehicle, Body).state.velocity.y =
-            (state.position.y - VEHICLE_GET(pVehicle, Body).state.position.y) * 30.0f;
+            static_cast<float>((static_cast<long double>(state.position.y) -
+                                VEHICLE_GET(pVehicle, Body).state.position.y) *
+                               30.0f);
         VEHICLE_GET(pVehicle, Body).state.velocity.z =
-            (state.position.z - VEHICLE_GET(pVehicle, Body).state.position.z) * 30.0f;
+            static_cast<float>((static_cast<long double>(state.position.z) -
+                                VEHICLE_GET(pVehicle, Body).state.position.z) *
+                               30.0f);
     }
 }
 

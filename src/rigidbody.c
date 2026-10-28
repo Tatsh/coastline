@@ -18,9 +18,12 @@
 /* The libraries do not round a value on the x87 stack until the sum it joins is stored. */
 #define BODY_INTERMEDIATE(value) ((long double)(value))
 #define BODY_PRODUCT(a, b) ((long double)(a) * (b))
+/* The libraries round an accumulated product only when the sum is stored. */
+#define BODY_ACCUMULATE(sum, a, b) ((sum) = (f32)(BODY_PRODUCT(a, b) + (sum)))
 #else
 #define BODY_INTERMEDIATE(value) (value)
 #define BODY_PRODUCT(a, b) ((a) * (b))
+#define BODY_ACCUMULATE(sum, a, b) ((sum) += (a) * (b))
 #endif
 
 void StubPhysics1(void *data) {
@@ -274,7 +277,7 @@ void SetRigidBodyForce(
     for (i = 0; i < 3; i++) {                                                                      \
         (&(out)->x)[i] = 0.0f;                                                                     \
         for (k = 0; k < 3; k++) {                                                                  \
-            (&(out)->x)[i] += (m)[i][k] * (&(v)->x)[k];                                            \
+            BODY_ACCUMULATE((&(out)->x)[i], (m)[i][k], (&(v)->x)[k]);                              \
         }                                                                                          \
     }
 
@@ -289,7 +292,7 @@ void Mtx4fInverseRotate(Vec3f *out, f32 m[4][4], Vec3f *v) {
     for (i = 0; i < 3; i++) {                                                                      \
         (&(out)->x)[i] = 0.0f;                                                                     \
         for (k = 0; k < 3; k++) {                                                                  \
-            (&(out)->x)[i] += (m)[k][i] * (&(v)->x)[k];                                            \
+            BODY_ACCUMULATE((&(out)->x)[i], (m)[k][i], (&(v)->x)[k]);                              \
         }                                                                                          \
     }
 
@@ -394,8 +397,11 @@ void ApplyAllForcesToBody(RigidBody *body) {
 void InitRigidBody(RigidBody *body) {
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
     f32 boxShare;
+    f32 xx;
+#else
+    long double xx;
 #endif
-    f32 xx, yy, zz;
+    f32 yy, zz;
     s32 i, j;
 
     body->unreconstructed0 = 0;
@@ -421,11 +427,12 @@ void InitRigidBody(RigidBody *body) {
         zz = body->size.z * body->size.z;
         yy = body->size.y * body->size.y;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-        /* The libraries scale each sum by the mass before the share. */
-        xx = body->size.x * body->size.x;
-        body->inertia[0][0] = (zz + yy) * body->mass * BOX_INERTIA_SHARE;
-        body->inertia[1][1] = (zz + xx) * body->mass * BOX_INERTIA_SHARE;
-        body->inertia[2][2] = (yy + xx) * body->mass * BOX_INERTIA_SHARE;
+        /* The libraries scale each sum by the mass before the share. Only the square of x stays
+         * on the x87 stack unrounded. */
+        xx = BODY_PRODUCT(body->size.x, body->size.x);
+        body->inertia[0][0] = (f32)((BODY_INTERMEDIATE(zz) + yy) * body->mass * BOX_INERTIA_SHARE);
+        body->inertia[1][1] = (f32)((xx + zz) * body->mass * BOX_INERTIA_SHARE);
+        body->inertia[2][2] = (f32)((xx + yy) * body->mass * BOX_INERTIA_SHARE);
 #else
         boxShare = BOX_INERTIA_SHARE * body->mass;
         body->inertia[0][0] = (zz + yy) * boxShare;
@@ -494,7 +501,8 @@ void Mtx3fMultiply(f32 out[3][3], f32 a[3][3], f32 b[3][3]) {
 
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
-            out[i][j] = a[i][0] * b[0][j] + a[i][1] * b[1][j] + a[i][2] * b[2][j];
+            out[i][j] = (f32)(BODY_PRODUCT(a[i][0], b[0][j]) + BODY_PRODUCT(a[i][1], b[1][j]) +
+                              BODY_PRODUCT(a[i][2], b[2][j]));
         }
     }
 }
@@ -527,14 +535,37 @@ void MtxBuildScaledInverse(f32 m[4][4], f32 out[4][4], Vec3f *scale) {
     Mtx3x3MulVec3f((Vec3f *)out[3], out, &negated);
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+void SolveLinearSystem3x3(Vec3f *out, f32 a[3][3], Vec3f *b) {
+    /* The libraries store one cofactor and the products of the first sum to the stack, and keep
+     * the other products, the determinant, and its inverse on the x87 stack. */
+    f32 square = a[1][1] * a[2][2];
+    f32 cofactor = (f32)(BODY_PRODUCT(a[2][1], a[1][2]) - square);
+    long double p0122 = BODY_PRODUCT(a[0][1], a[2][2]);
+    long double p0221 = BODY_PRODUCT(a[0][2], a[2][1]);
+    f32 p0112 = a[0][1] * a[1][2];
+    long double p0211 = BODY_PRODUCT(a[0][2], a[1][1]);
+    long double inverse = 1.0f / (p0122 * a[1][0] + BODY_PRODUCT(a[0][0], cofactor) -
+                                  p0221 * a[1][0] - BODY_PRODUCT(p0112, a[2][0]) + p0211 * a[2][0]);
+
+    out->x = (f32)((BODY_PRODUCT(b->x, cofactor) + BODY_PRODUCT((f32)p0122, b->y) -
+                    BODY_PRODUCT((f32)p0221, b->y) - BODY_PRODUCT(p0112, b->z) +
+                    BODY_PRODUCT((f32)p0211, b->z)) *
+                   inverse);
+    out->y =
+        (f32) - (((BODY_PRODUCT(a[2][0], a[1][2]) - BODY_PRODUCT(a[1][0], a[2][2])) * b->x +
+                  BODY_PRODUCT(a[0][0], a[2][2]) * b->y - BODY_PRODUCT(a[2][0], a[0][2]) * b->y -
+                  BODY_PRODUCT(a[0][0], a[1][2]) * b->z + BODY_PRODUCT(a[1][0], a[0][2]) * b->z) *
+                 inverse);
+    out->z = (f32)(((BODY_PRODUCT(a[2][0], a[1][1]) - BODY_PRODUCT(a[1][0], a[2][1])) * b->x +
+                    BODY_PRODUCT(a[0][0], a[2][1]) * b->y - BODY_PRODUCT(a[2][0], a[0][1]) * b->y -
+                    BODY_PRODUCT(a[0][0], a[1][1]) * b->z + BODY_PRODUCT(a[1][0], a[0][1]) * b->z) *
+                   inverse);
+}
+#else
 /* A cofactor sum of Cramer's rule over the column b and six products of the other columns. */
 static f32 CramerSum(f32 b0, f32 b1, f32 b2, f32 p0, f32 p1, f32 p2, f32 p3, f32 p4, f32 p5) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-    /* The libraries factor the first column out of its two products. */
-    return b1 * p2 + b0 * (p1 - p0) - b1 * p3 - b2 * p4 + b2 * p5;
-#else
     return b2 * p5 + (-b0 * p0 + b0 * p1 + b1 * p2 - b1 * p3 - b2 * p4);
-#endif
 }
 
 void SolveLinearSystem3x3(Vec3f *out, f32 a[3][3], Vec3f *b) {
@@ -582,3 +613,4 @@ void SolveLinearSystem3x3(Vec3f *out, f32 a[3][3], Vec3f *b) {
                        a[1][0] * a[0][1]) *
              inverse;
 }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
