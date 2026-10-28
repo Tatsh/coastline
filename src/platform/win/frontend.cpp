@@ -2957,6 +2957,10 @@ int ReturnToMainMenuFromSeason(void) {
     g_dwGameMode = GAME_MODE_TIME_ATTACK;
     g_bRaceSetupShowCarSetup = 1;
     g_GhostRecordingInfo.track = -1;
+    if (!wasCached) {
+        // The original stores the flag again before it builds the menu.
+        g_bRaceSetupShowCarSetup = 1;
+    }
     if (!ShowCachedMenuScreen(g_pCachedMenu_MainMenu, BuildRaceSetupUI)) {
         return 0;
     }
