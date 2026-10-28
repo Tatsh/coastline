@@ -131,9 +131,9 @@ int PodArchive::FindPodIndexByName(const char *pszPath) {
     char szName[POD_ENTRY_NAME_SIZE];
 
     CleanupName(pszPath, szName);
-    for (int i = 0; i < header.nEntryCount; i++) {
+    for (unsigned i = 0; i < static_cast<unsigned>(header.nEntryCount); i++) {
         if (memcmp(pEntries[i].szName, szName, sizeof(szName)) == 0) {
-            return i;
+            return static_cast<int>(i);
         }
     }
     return -1;
