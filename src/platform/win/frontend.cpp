@@ -3029,7 +3029,7 @@ int GameOptionsUI::OnBack(MenuActionWidget *pItem) {
 }
 
 int InputOptionsUI::OnBack(MenuActionWidget *pItem) {
-    return ReturnFromCachedMenu(pItem, g_pCachedMenu_GameplaySettings, g_pCachedMenu_Options);
+    return ReturnFromCachedMenu(pItem, g_pCachedMenu_Credits, g_pCachedMenu_Options);
 }
 
 int LoadTimeAttackMenuUI::OnBack(MenuActionWidget *pItem) {
