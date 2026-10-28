@@ -6,10 +6,14 @@
  * threads that receive the messages and exchange the streams of a race.
  */
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/win32types.h"
+#else
 #include <windows.h>
 // The headers below need the types of windows.h.
 #include <dplay.h>
 #include <dplobby.h>
+#endif
 
 #include "win32/assetnames.h"
 #include "win32/ghost.h"

@@ -27,7 +27,11 @@ static inline bool IsUnitTrackScale(long double value) {
 void LoadTrackGeometryFromRom(s32 track) {
     LoadTrackTextureMap(track);
     constexpr unsigned originalBase = 0x80025c00u;
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    unsigned geometryBase = coastline::EncodePtr32(&g_abTrackGeometryBuffer[0]);
+#else
     unsigned geometryBase = std::bit_cast<unsigned>(&g_abTrackGeometryBuffer[0]);
+#endif
     g_dwTextureMapAddressBias = originalBase - geometryBase;
     SetPointerRelocationBase(originalBase, geometryBase);
     SetCopyTextureDataOnRelocate(1);

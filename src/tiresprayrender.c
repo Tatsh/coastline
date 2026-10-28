@@ -12,7 +12,7 @@ LoadSprayVertices(GbiCommand *command, const ConvertedModelVertex *vertices, u32
     gDisplayListWords(command,
                       ((u32)G_VTX << 24) | ((first * 2 & 0xff) << 16) | ((count & 0x3f) << 10) |
                           ((sizeof(ConvertedModelVertex) * count - 1) & 0x3ff),
-                      (u32)vertices);
+                      GBI_WORD1(vertices));
 }
 #define SPRAY_DRAW_LOAD_VERTICES LoadSprayVertices
 #else

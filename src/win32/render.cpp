@@ -13,7 +13,11 @@
 #include "screen.h"
 #include "weather.h"
 #include "win32/boot/app.h"
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/renderhost.h"
+#else
 #include "win32/d3d/renderer.h"
+#endif
 #include "win32/d3d/texture.h"
 #include "win32/displaylist.h"
 #include "win32/fileio.h"
@@ -305,6 +309,16 @@ static inline void SwapAndRelocateTexturePointer(T *&pPointer) {
     RelocatePointerValue(&dwAddress);
     pPointer = std::bit_cast<T *>(dwAddress);
 }
+
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+// The SDL game stores the pointers of a texture in 32 bits, and relocates the stored word.
+template <typename T>
+static inline void SwapAndRelocateTexturePointer(coastline::Ptr32<T> &pPointer) {
+    unsigned dwAddress = SwapDisplayListWord(pPointer.Raw());
+    RelocatePointerValue(&dwAddress);
+    pPointer.SetRaw(dwAddress);
+}
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 void ByteSwapTextureVariantTable(TextureAnimation *pAnimation) {
     if (pAnimation == nullptr) {
@@ -1062,6 +1076,12 @@ void CreateWeatherShadeTexture(void) {
 }
 
 #if TGR_BRD3D
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+unsigned QueryAvailableTextureMemory(void) {
+    // The GPU of the SDL game has room for every texture of the game at its full detail.
+    return 0x10000000;
+}
+#else
 unsigned QueryAvailableTextureMemory(void) {
     DDSCAPS caps;
     caps.dwCaps = DDSCAPS_TEXTURE;
@@ -1070,6 +1090,7 @@ unsigned QueryAvailableTextureMemory(void) {
     g_pRenderHost->GetRenderer()->GetDirectDraw2()->GetAvailableVidMem(&caps, &total, &available);
     return available;
 }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 namespace {
 // @ghidraAddress BRD3D: 0x10575424
@@ -1151,7 +1172,7 @@ void CreateDeviceTextureFromImageHeader(ModelTexture *pTexture, int nOption13) {
     int height = 1 << GetMipLevelFromDimension(pTexture->height);
     pTexture->textureEntry = g_pfnCreateTextureFromN64ImageAutoLoadSize(
         pTexture->image,
-        reinterpret_cast<const unsigned char *>(pTexture->palette),
+        reinterpret_cast<const unsigned char *>(static_cast<u16 *>(pTexture->palette)),
         width,
         height,
         size,

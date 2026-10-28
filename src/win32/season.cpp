@@ -16,7 +16,11 @@
 #include "win32/boot/rallyconfig.h"
 #include "win32/buildinfo.h"
 #include "win32/configfile.h"
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include "win32/frontend.h"
+#else
+#include "win32/frontendstate.h"
+#endif
 #include "win32/ghost.h"
 #include "win32/settings.h"
 
@@ -246,8 +250,11 @@ bool RestoreSeasonProgressState(void) {
     if (g_SeasonResumeState.season < 4 && g_SeasonResumeState.year < 1) {
         g_dwSeasonFailed = true;
     }
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
+    // The SDL game has no menus of the PC release to close.
     g_pActiveMenuScreen->SetRunning(false);
     g_pActiveMenuScreen->ShutdownFrontEnd(false);
+#endif
     return false;
 }
 
@@ -364,6 +371,9 @@ bool SaveSeasonSaveFile(void) {
     return true;
 }
 
+// The menus of the PC release load seasons through these, and the SDL game has the menus of the
+// Nintendo 64 release in their place.
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 static inline void ResetSeasonMenuForLoad(void) {
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     ResetMenuSelectionsToDefaults();
@@ -431,6 +441,7 @@ int LoadSeasonUI_OnSlotSelected(MenuItemList *pUnused, const int *pnSlot) {
     strcat(fileName, ".brf");
     return LoadSeasonMenuFile(fileName);
 }
+#endif /* TGR_PLATFORM != TGR_PLATFORM_SDL */
 
 void SaveAutoSaveSeason(void) {
     if (!g_pPrimarySeasonSave) {

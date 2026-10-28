@@ -5,6 +5,9 @@
 #include <string.h>
 
 #include "win32/fileio.h"
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/bitmap.h"
+#endif
 
 #define CAR_PAINT_SET(option, left, right, top, bottom, name)                                      \
     {{NULL, NULL, NULL, NULL}, option, left, right, top, bottom, name}
@@ -677,6 +680,23 @@ void *ConvertBitmap24ToRgba32(const BITMAP *pBitmap) {
     return pPixels;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+void *LoadBitmapFromFile(const char *pszPath) {
+    BITMAP bm;
+    void *pPixels;
+
+    if (!LoadGameBitmap(pszPath, &bm)) {
+        return nullptr;
+    }
+    if (bm.bmBitsPixel != PAINT_BITMAP_BITS) {
+        free(bm.bmBits);
+        return nullptr;
+    }
+    pPixels = ConvertBitmap24ToRgba32(&bm);
+    free(bm.bmBits);
+    return pPixels;
+}
+#else
 void *LoadBitmapFromFile(const char *pszPath) {
     HBITMAP hBitmap;
     BITMAP bm;
@@ -696,6 +716,7 @@ void *LoadBitmapFromFile(const char *pszPath) {
     DeleteObject(hBitmap);
     return pPixels;
 }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 void SetColorTintMultipliers(int nRed, int nGreen, int nBlue) {
     g_dwColorTintRed = nRed;

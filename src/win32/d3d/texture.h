@@ -6,9 +6,13 @@
  * files of RGBA 5551.
  */
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/d3dcompat.h"
+#else
 #include <windows.h>
 // The headers below need the types of windows.h.
 #include <ddraw.h>
+#endif
 
 #include "win32/textureworkspace.h"
 
@@ -16,6 +20,7 @@
 extern "C" {
 #endif
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 /** The number of entries of g_aTexturePixelFormats. */
 #define TEXTURE_PIXEL_FORMAT_COUNT 5
 
@@ -35,6 +40,7 @@ struct TexturePixelFormat {
  * @ghidraAddress BRD3D: 0x10009830
  */
 DDPIXELFORMAT *LookupPixelFormatById(int nId);
+#endif /* TGR_PLATFORM != TGR_PLATFORM_SDL */
 
 /**
  * Count the bits up to and including the highest set bit of a mask.

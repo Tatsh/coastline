@@ -214,7 +214,7 @@ static inline u32 DimLightPart(u8 part, f32 divisor) {
 
 void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     Vec3f toCamera, toVehicle, eye;
-    DisplayListCommand **displayLists;
+    TGR_PTR(DisplayListCommand) * displayLists;
     Hilite *hilite;
     LookAt *reflectLookAt, *hiliteLookAt;
 #if TGR_PC

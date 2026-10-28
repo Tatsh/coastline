@@ -12,8 +12,13 @@
  */
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
-/* The SDL game runs the music player and the mixers alone, without the game around them. */
+/* The SDL game includes the sound headers without the renderer and the vehicles. */
+#include "ambientsound.h"
 #include "audiomix.h"
+#include "soundchannel.h"
+#include "soundeffect.h"
+#include "soundpan.h"
+#include "soundsource.h"
 #include "types.h"
 #else
 #include <PR/os.h>
@@ -497,6 +502,27 @@ void AudioMixingThreadMain(void *arg);
  */
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 void StubSoundUpdate(CameraFrame *camera);
+#else
+/**
+ * InitSoundChannel() of the mixer of the Nintendo 64 release, which the SDL game has beside the
+ * routine of the same name of the PC release.
+ *
+ * @param channel The channel of the sound effects.
+ * @param sample The signed 8-bit samples.
+ * @param length The samples before the end.
+ * @param loopLength The samples the channel goes back at the end, or 0 to stop.
+ */
+void N64InitSoundChannel(s16 channel, s8 *sample, u32 length, u32 loopLength);
+
+/**
+ * StartSoundChannelMuted() of the mixer of the Nintendo 64 release.
+ *
+ * @param channel The channel of the sound effects.
+ * @param sample The signed 8-bit samples.
+ * @param length The samples before the end.
+ * @param loopLength The samples the channel goes back at the end, or 0 to stop.
+ */
+void N64StartSoundChannelMuted(s16 channel, s8 *sample, u32 length, u32 loopLength);
 #endif
 
 #ifdef __cplusplus

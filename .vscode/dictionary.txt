@@ -84,6 +84,7 @@ boxz
 brally
 brglide
 brielle
+brstring
 bsky
 bsuspension
 btire
@@ -203,6 +204,7 @@ dclipstatus
 dcmake
 dcmpfunc
 dcolor
+dcompat
 dcosf
 dcull
 ddbd
@@ -317,6 +319,7 @@ dpopen
 dpplayer
 dpreceive
 dpref
+dprimcaps
 dprimitivetype
 dpsend
 dpsession
@@ -438,6 +441,7 @@ frametime
 frametimer
 freeable
 frontenddata
+frontendstate
 frontwheel
 fsanitize
 ftofrac
@@ -914,6 +918,7 @@ regen
 reginfo
 renderbackend
 renderdefaults
+renderhost
 renderinit
 rendermode
 rendertile
@@ -1092,6 +1097,7 @@ stickx
 stickyfocus
 stkptr
 strequal
+stringresources
 strlwr
 strmiids
 strupr
@@ -1138,6 +1144,7 @@ textureworkspace
 tgmath
 thiscall
 timerintr
+timerr
 timingframe
 tiresmokespawn
 tirespray

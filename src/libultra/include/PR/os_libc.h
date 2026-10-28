@@ -10,6 +10,17 @@
 
 #include <PR/ultratypes.h>
 
+#if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_SDL
+/* The SDL game takes these from the C library of the host. */
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define bcopy(src, dst, n) memmove((dst), (src), (size_t)(n))
+#define bcmp(a, b, n) memcmp((a), (b), (size_t)(n))
+#define bzero(p, n) memset((p), 0, (size_t)(n))
+#else
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -139,5 +150,7 @@ lldiv_t lldiv(long long num, long long denom);
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 #endif /* PR_OS_LIBC_H */

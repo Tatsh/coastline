@@ -1,7 +1,11 @@
 #include "win32/frametimer.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/win32api.h"
+#else
 #include <mmsystem.h>
 #include <windows.h>
+#endif
 
 #include "win32/racepacing.h"
 #include "win32/snapshot.h"

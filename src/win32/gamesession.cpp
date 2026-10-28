@@ -1,7 +1,9 @@
 #include "win32/boot/app.h"
 #include "win32/boot/rallyconfig.h"
 #include "win32/buildinfo.h"
-#if TGR_BRD3D
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/renderhost.h"
+#elif TGR_BRD3D
 #include "win32/d3d/renderer.h"
 #endif
 #include "win32/directplay.h"

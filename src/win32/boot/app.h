@@ -8,7 +8,11 @@
 
 #include <cstddef>
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/win32api.h"
+#else
 #include <windows.h>
+#endif
 
 #include "screen.h"
 #include "win32/boot/fatalerror.h"

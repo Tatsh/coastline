@@ -8,13 +8,31 @@
 #include <zlib.h>
 
 #include "weather.h"
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/renderhost.h"
+#else
 #include "win32/d3d/renderer.h"
+#endif
 #include "win32/fileio.h"
 #include "win32/render.h"
 
 // The pixel format LoadRgba5551ImageFile() converts an image to.
 #define RGBA5551_IMAGE_PIXEL_FORMAT 0xb
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+// The textures of the SDL game have pixels of 32 bits, R, G, B, and A, in the order the game
+// produces them, and a colour-keyed pixel has the alpha below half the texture keys on.
+int ConvertRGBAToPixelFormat(void *pDest, const void *pSrc, int nSize, int nPixelFormatId) {
+    std::memcpy(pDest, pSrc, static_cast<size_t>(nSize));
+    return nSize;
+}
+
+int ConvertRGBAToPixelFormatWithColorKey(
+    void *pDest, const void *pSrc, int nSize, int nPixelFormatId, unsigned *pColorKey) {
+    *pColorKey = 1;
+    return ConvertRGBAToPixelFormat(pDest, pSrc, nSize, nPixelFormatId);
+}
+#else
 namespace {
 // @ghidraAddress BRD3D: 0x100a6230
 TexturePixelFormat g_aTexturePixelFormats[TEXTURE_PIXEL_FORMAT_COUNT] = {
@@ -215,6 +233,7 @@ int ConvertRGBAToPixelFormatWithColorKey(
     void *pDest, const void *pSrc, int nSize, int nPixelFormatId, unsigned *pColorKey) {
     return ConvertRGBAToPixelFormatImpl<true>(pDest, pSrc, nSize, nPixelFormatId, pColorKey);
 }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 void UnpackRgba5551ToRgba8(unsigned char *pDest, const unsigned short *pSrc, int nCount) {
     for (int i = 0; i < nCount; i++) {
         unsigned nPixel = *pSrc++;
@@ -299,6 +318,8 @@ void CopyTileColumnScaled(int nTileIndex, int nSrcX, int nSrcY, int nSrcRow) {
     }
 }
 
+// The SDL game has its textures in src/sdl/d3dcompat.cpp.
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 void InitializeAllTextureSurfaces(void) {
     for (unsigned i = 0; i < g_dwTextureEntryCount; i++) {
         // The result of each load is discarded.
@@ -485,3 +506,4 @@ bool D3DTexture::LoadSysMemTextureToDevice() {
     pSysMemTexture->Release();
     return hResult == D3D_OK;
 }
+#endif /* TGR_PLATFORM != TGR_PLATFORM_SDL */

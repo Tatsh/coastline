@@ -1,6 +1,10 @@
 #include <win32/boot/app.h>
 #include <win32/directplay.h>
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include <win32/frontend.h>
+#else
+#include <win32/frontendstate.h>
+#endif
 #include <win32/ghost.h>
 #include <win32/netstream.h>
 #include <win32/render.h>

@@ -14,6 +14,7 @@
 #include <PR/gbi.h>
 #include <PR/ultratypes.h>
 
+#include "ptr32.h"
 #include "render.h"
 #include "vecmath.h"
 
@@ -35,10 +36,13 @@ typedef struct {
 
 /** A section of the route. Its fields join this structure as they are reconstructed. */
 typedef struct TrackSection {
-    struct TrackSection *child;  /*!< The first section that branches from this one, or NULL. */
-    struct TrackSection *next;   /*!< The next branch of the same parent, or NULL. */
-    struct TrackSection *parent; /*!< The first preceding section, linked through reverseNext. */
-    struct TrackSection *reverseNext; /*!< The next section in a list of preceding sections. */
+    TGR_PTR(struct TrackSection)
+    child; /*!< The first section that branches from this one, or NULL. */
+    TGR_PTR(struct TrackSection) next; /*!< The next branch of the same parent, or NULL. */
+    TGR_PTR(struct TrackSection)
+    parent; /*!< The first preceding section, linked through reverseNext. */
+    TGR_PTR(struct TrackSection)
+    reverseNext;    /*!< The next section in a list of preceding sections. */
     u8 gridMinX;    /*!< The first column of the 32-unit grid of the track the section covers. */
     u8 gridMinY;    /*!< The first row of the grid the section covers. */
     u8 gridMaxX;    /*!< The last column of the grid the section covers, inclusive. */
@@ -66,7 +70,7 @@ typedef struct {
     };
     f32 invScale; /*!< One over the length of the x axis of the matrix, the inverse of the scale. */
 #if TGR_PC
-    GbiCommand *displayList; /*!< The display list that draws the model. */
+    TGR_PTR(GbiCommand) displayList; /*!< The display list that draws the model. */
 #else
     Gfx *displayList; /*!< The display list that draws the model. */
 #endif
@@ -162,8 +166,9 @@ enum {
 typedef struct {
     union {
         s32 instance; /*!< The index of the placed model. */
-        Vec3f *path;  /*!< The points of an edge of the path of the airplane, one for each node. */
-    } target;         /*!< The placed model, or for the path of the airplane its points. */
+        TGR_PTR(Vec3f)
+        path; /*!< The points of an edge of the path of the airplane, one for each node. */
+    } target; /*!< The placed model, or for the path of the airplane its points. */
     union {
         f32 spinAngle;  /*!< The angle a spinning model turns each frame, in degrees. */
         s32 pathLength; /*!< The number of nodes of the path of the airplane. */
@@ -183,17 +188,19 @@ typedef struct {
 /** The header of the loaded track. Its fields join this structure as they are reconstructed. */
 typedef struct {
     u32 size; /*!< The bytes of the track once decompressed, first written here by the loading. */
-    s32 headerSize;         /*!< The size of this header, which must be #TRACK_HEADER_SIZE. */
-    s32 surfaceCount;       /*!< The number of triangle surfaces. */
-    TrackSurface *surfaces; /*!< What each triangle belongs to, by its index. */
-    s32 vertexCount;        /*!< The number of triangle corners. */
-    Vec3f *vertices;        /*!< The corners of the triangles. */
-    s32 textureCount;       /*!< The number of textures. */
-    ModelTexture *textures; /*!< The textures of the placed models. */
-    u16 *gridTriangles;     /*!< The triangles of each cell of the 64 by 64 grid, cell by cell. */
-    u16 *gridCellStarts;    /*!< Where the list of each cell starts in gridTriangles, by cell. */
-    f32 minX;               /*!< The least x of the track. */
-    f32 maxX;               /*!< The greatest x of the track. */
+    s32 headerSize;   /*!< The size of this header, which must be #TRACK_HEADER_SIZE. */
+    s32 surfaceCount; /*!< The number of triangle surfaces. */
+    TGR_PTR(TrackSurface) surfaces; /*!< What each triangle belongs to, by its index. */
+    s32 vertexCount;                /*!< The number of triangle corners. */
+    TGR_PTR(Vec3f) vertices;        /*!< The corners of the triangles. */
+    s32 textureCount;               /*!< The number of textures. */
+    TGR_PTR(ModelTexture) textures; /*!< The textures of the placed models. */
+    TGR_PTR(u16)
+    gridTriangles; /*!< The triangles of each cell of the 64 by 64 grid, cell by cell. */
+    TGR_PTR(u16)
+    gridCellStarts; /*!< Where the list of each cell starts in gridTriangles, by cell. */
+    f32 minX;       /*!< The least x of the track. */
+    f32 maxX;       /*!< The greatest x of the track. */
     f32 minY;
     f32 maxY;
     f32 minZ;            /*!< The least z of the track, where lightning strikes from. */
@@ -201,29 +208,35 @@ typedef struct {
     Vec3f startPosition; /*!< The point the vehicles of the starting grid are placed from. */
     f32 startHeading;    /*!< The heading of the vehicles on the grid of the start, in radians. */
 #if TGR_PC
-    GbiCommand *skyDisplayList;
+    TGR_PTR(GbiCommand) skyDisplayList;
 #else
     Gfx *skyDisplayList; /*!< The display list of the sky, or NULL for a sky of the fog colour. */
 #endif
-    u8 *reservedSkyData[2];     /* +0x54 */
-    const char **instanceNames; /*!< The names of the placed models, by index, or NULL. */
-    TrackInstance *instances;   /*!< The placed models. */
-    s32 instanceCount;          /*!< The number of placed models. */
-    u16 *gridInstances; /*!< The placed models of each cell of the 64 by 64 grid, cell by cell. */
-    u16 *gridInstanceStarts;   /*!< Where the list of each cell starts in gridInstances, by cell. */
-    TrackSection *rootSection; /*!< The section at the start line, whose first point gives the
-                                    distance of a lap. */
-    u8 *reservedRouteData;     /* +0x74 */
-    TrackSection **sections;   /*!< Every section, for a search. */
-    s32 sectionCount;          /*!< The number of sections. */
+    TGR_PTR(u8) reservedSkyData[2]; /* +0x54 */
+    TGR_PTR(TGR_PTR(const char))
+    instanceNames;                    /*!< The names of the placed models, by index, or NULL. */
+    TGR_PTR(TrackInstance) instances; /*!< The placed models. */
+    s32 instanceCount;                /*!< The number of placed models. */
+    TGR_PTR(u16)
+    gridInstances; /*!< The placed models of each cell of the 64 by 64 grid, cell by cell. */
+    TGR_PTR(u16)
+    gridInstanceStarts; /*!< Where the list of each cell starts in gridInstances, by cell. */
+    TGR_PTR(TrackSection)
+    rootSection;                   /*!< The section at the start line, whose first point gives the
+                                distance of a lap. */
+    TGR_PTR(u8) reservedRouteData; /* +0x74 */
+    TGR_PTR(TGR_PTR(TrackSection)) sections; /*!< Every section, for a search. */
+    s32 sectionCount;                        /*!< The number of sections. */
     u8 fogColor[3]; /*!< The colour of the fog of the track, red, green, and blue from 0 to 255. */
     u8 unreconstructed83[0x84 - 0x83]; /*!< Not yet reconstructed. */
-    Vec3f *cameraPoints;  /*!< The points the trackside camera of a replay may stand at. */
-    s32 cameraPointCount; /*!< The number of cameraPoints. */
-    u16 *nearbyInstances; /*!< Lists of placed models near the triangles, each ending in 0. */
-    u16 *triangleNearbyInstances; /*!< Where in nearbyInstances the list of each triangle starts,
-                                       by its index. */
-    u8 *triangleFlags;            /*!< The flags of each triangle, its surface in the low 3 bits. */
+    TGR_PTR(Vec3f) cameraPoints; /*!< The points the trackside camera of a replay may stand at. */
+    s32 cameraPointCount;        /*!< The number of cameraPoints. */
+    TGR_PTR(u16)
+    nearbyInstances; /*!< Lists of placed models near the triangles, each ending in 0. */
+    TGR_PTR(u16)
+    triangleNearbyInstances;      /*!< Where in nearbyInstances the list of each triangle starts,
+                               by its index. */
+    TGR_PTR(u8) triangleFlags;    /*!< The flags of each triangle, its surface in the low 3 bits. */
     TrackGate gates[TRACK_GATES]; /*!< The gates of a lap in order, the first at the lap line. */
     s32 gateCount;                /*!< The number of gates. */
     TrackSpecial specials[TRACK_SPECIALS]; /*!< The objects of the track that move or sound. */

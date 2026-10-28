@@ -7,7 +7,11 @@
 
 #include "vehiclemodel.h"
 #include "win32/boot/app.h"
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/renderhost.h"
+#else
 #include "win32/d3d/renderer.h"
+#endif
 #include "win32/paintshop.h"
 #include "win32/render.h"
 #include "win32/settings.h"

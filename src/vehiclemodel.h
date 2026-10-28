@@ -3,6 +3,7 @@
 
 #include "carphysics.h"
 #include "displaylistops.h"
+#include "ptr32.h"
 #include "render.h"
 
 #if TGR_PC
@@ -92,39 +93,44 @@ typedef struct VehicleModel {
 
     u32 triangleCount; /*!< The triangles of the model, counted into the statistics of the frame. */
 #if TGR_PC
-    void *unreconstructed4; /* +0x8004 */
-    u32 unreconstructed8;   /* +0x8008 */
-    void *unreconstructedC; /* +0x800c */
+    TGR_PTR(void) unreconstructed4; /* +0x8004 */
+    u32 unreconstructed8;           /* +0x8008 */
+    TGR_PTR(void) unreconstructedC; /* +0x800c */
 #else
     u8 unreconstructed4[0x10 - 0x4]; /*!< Not read by the routines reconstructed so far. */
 #endif
-    s32 textureCount;       /*!< The number of textures of the model. */
-    ModelTexture *textures; /*!< The textures of the model, textureCount of them. */
-    DisplayListCommand *displayLists[VEHICLE_LODS][VEHICLE_DISPLAY_LISTS]; /*!< The display lists of
-                                                                 each level of detail, by the
-                                                                 VEHICLE_DL_ values. */
-    void *unreconstructed90; /*!< An offset turned into a pointer with the rest, not read by the
-                                  routines reconstructed so far. */
-    void *unreconstructed94; /*!< An offset turned into a pointer with the rest, not read by the
-                                  routines reconstructed so far. */
+    s32 textureCount;               /*!< The number of textures of the model. */
+    TGR_PTR(ModelTexture) textures; /*!< The textures of the model, textureCount of them. */
+    TGR_PTR(DisplayListCommand)
+    displayLists[VEHICLE_LODS][VEHICLE_DISPLAY_LISTS]; /*!< The display lists of
+                                     each level of detail, by the
+                                     VEHICLE_DL_ values. */
+    TGR_PTR(void)
+    unreconstructed90; /*!< An offset turned into a pointer with the rest, not read by the
+                    routines reconstructed so far. */
+    TGR_PTR(void)
+    unreconstructed94; /*!< An offset turned into a pointer with the rest, not read by the
+                    routines reconstructed so far. */
     u8 unreconstructed98[0xB0 - 0x98]; /*!< Not read by the routines reconstructed so far. */
     f32 cockpitForward; /*!< How far forward of the vehicle the cockpit camera sits. */
     f32 mirrorForward;  /*!< Half of how far forward of the vehicle the mirror camera sits. */
     f32 cockpitUp;      /*!< How far above the vehicle the cockpit and mirror cameras sit. */
-    DisplayListCommand *wheelDisplayLists[VEHICLE_LODS][VEHICLE_WHEEL_DISPLAY_LISTS]; /*!< The
-                                                                            display lists of a wheel
-                                                                            at each level of detail,
-                                                                            by the VEHICLE_WHEEL_DL_
-                                                                            values. */
+    TGR_PTR(DisplayListCommand)
+    wheelDisplayLists[VEHICLE_LODS][VEHICLE_WHEEL_DISPLAY_LISTS]; /*!< The
+                                                display lists of a wheel
+                                                at each level of detail,
+                                                by the VEHICLE_WHEEL_DL_
+                                                values. */
     Vec3f wheels[VEHICLE_WHEELS]; /*!< Where the four wheels are drawn. The physics takes the
                                        second and the third as a front and a rear wheel of one side
                                        and mirrors them across, and the shadow is sized by the x
                                        and y of the first. */
     u8 materialTextures[VEHICLE_MATERIALS]; /*!< The textures whose palettes the colours of the car
                                                  are set in, by the VEHICLE_MATERIAL_ values. */
-    u8 **decalMasks; /*!< The masks of the materials that the paint shop paints, one bit a texel
-                          with a set bit protecting it, or NULL where every texel can be
-                          painted. */
+    TGR_PTR(TGR_PTR(u8))
+    decalMasks; /*!< The masks of the materials that the paint shop paints, one bit a texel
+     with a set bit protecting it, or NULL where every texel can be
+     painted. */
     u8 unreconstructed120[0xDF88 - 0x120]; /*!< The rest of the loaded model, not read as fields by
                                                 the routines reconstructed so far. */
 } VehicleModel;

@@ -376,7 +376,7 @@ void RenderDashboardGauges(void) {
         gSPClearGeometryMode(gDisplayListPtr++, G_CULL_FRONT | G_CULL_BACK | G_FOG | G_LIGHTING);
         gSPSetGeometryMode(gDisplayListPtr++, G_SHADE);
 #if TGR_PC
-        gDisplayListWords(gDisplayListPtr++, 0x0400107f, (u32)verts);
+        gDisplayListWords(gDisplayListPtr++, 0x0400107f, GBI_WORD1(verts));
 #else
         gSPVertex(gDisplayListPtr++, verts, 4, 0);
 #endif

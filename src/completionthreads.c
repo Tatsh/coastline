@@ -3,6 +3,13 @@
 
 #define VBLANK_COUNTER_MASK 15
 
+/* The message each thread waits for, a word that is never read as an address. */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#define DUMMY_OS_MESG ((OSMesg)(uintptr_t)g_dwDummyOsMesg)
+#else
+#define DUMMY_OS_MESG ((OSMesg)g_dwDummyOsMesg)
+#endif
+
 #if TGR_PC
 /* Windows redirects the console hooks to its empty compatibility entry. */
 #define osCreateMesgQueue(...) NullStub()
@@ -16,21 +23,21 @@
 
 void RspDoneThread(void *arg) {
     osCreateMesgQueue(&g_RspEventMsgQueue, g_aRspEventMsgBuf, 1);
-    osSetEventMesg(OS_EVENT_SP, &g_RspEventMsgQueue, (OSMesg)g_dwDummyOsMesg);
+    osSetEventMesg(OS_EVENT_SP, &g_RspEventMsgQueue, DUMMY_OS_MESG);
     for (;;) {
         osRecvMesg(&g_RspEventMsgQueue, NULL, OS_MESG_BLOCK);
         AddTimingMarker(1, 0, 0, 0, 0xFF);
-        osSendMesg(&g_RspDoneMsgQueue, (OSMesg)g_dwDummyOsMesg, OS_MESG_BLOCK);
+        osSendMesg(&g_RspDoneMsgQueue, DUMMY_OS_MESG, OS_MESG_BLOCK);
     }
 }
 
 void RdpDoneThread(void *arg) {
     osCreateMesgQueue(&g_RdpEventMsgQueue, g_aRdpEventMsgBuf, 1);
-    osSetEventMesg(OS_EVENT_DP, &g_RdpEventMsgQueue, (OSMesg)g_dwDummyOsMesg);
+    osSetEventMesg(OS_EVENT_DP, &g_RdpEventMsgQueue, DUMMY_OS_MESG);
     for (;;) {
         osRecvMesg(&g_RdpEventMsgQueue, NULL, OS_MESG_BLOCK);
         AddTimingMarker(2, 0, 0, 0, 0xFF);
-        osSendMesg(&g_RdpDoneMsgQueue, (OSMesg)g_dwDummyOsMesg, OS_MESG_BLOCK);
+        osSendMesg(&g_RdpDoneMsgQueue, DUMMY_OS_MESG, OS_MESG_BLOCK);
     }
 }
 
@@ -39,7 +46,7 @@ void ViRetraceThread(void *arg) {
     osViSetEvent(&g_ViRetracePollMesgQueue, (OSMesg)g_dwDummyOsMesg, 1);
     for (;;) {
         osRecvMesg(&g_ViRetracePollMesgQueue, NULL, OS_MESG_BLOCK);
-        osSendMesg(&g_ViRetraceMesgQueue, (OSMesg)g_dwDummyOsMesg, OS_MESG_BLOCK);
+        osSendMesg(&g_ViRetraceMesgQueue, DUMMY_OS_MESG, OS_MESG_BLOCK);
         g_dwVblankCounter = RETRACE_INCREMENT(g_dwVblankCounter) & VBLANK_COUNTER_MASK;
     }
 }

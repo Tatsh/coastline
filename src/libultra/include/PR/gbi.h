@@ -76,27 +76,52 @@ typedef union {
     long long force_structure_alignment; /*!< Aligns the vertex to 8 bytes for the RSP. */
 } Vtx;
 
-#if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_SDL
-#include <stdint.h>
-
-/**
- * The two words of a display list command. The SDL game draws its display lists itself on a
- * 64-bit processor, and the second word holds a whole address.
- */
-typedef struct {
-    u32 w0;       /*!< The first word, with the opcode in its top byte. */
-    uintptr_t w1; /*!< The second word, often an address or an operand. */
-} Gwords;
-
-/** The second word of a command for x, an address or an operand. */
-#define GBI_WORD1(x) ((uintptr_t)(x))
-#else
 /** The two words of a display list command. */
 typedef struct {
     u32 w0; /*!< The first word, with the opcode in its top byte. */
     u32 w1; /*!< The second word, often a segmented address or an operand. */
 } Gwords;
 
+#if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_SDL && !defined(__cplusplus)
+/* The SDL game builds its display lists in C++, and a C source of it has no GBI_WORD1(). */
+#elif defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_SDL
+// This header declares C inside extern "C".
+extern "C++" {
+#include <type_traits>
+
+#include "ptr32.h"
+
+namespace coastline {
+
+/**
+ * The second word of a command for an address, which the SDL game stores as an offset of Ptr32 on
+ * a 64-bit processor.
+ *
+ * @param address The address.
+ * @return The offset.
+ */
+inline u32 GbiWord1(const volatile void *address) {
+    return EncodePtr32(address);
+}
+
+/**
+ * The second word of a command for an operand.
+ *
+ * @param value The operand.
+ * @return The operand in 32 bits.
+ */
+template <typename T>
+    requires(std::is_arithmetic_v<T> || std::is_enum_v<T>)
+inline u32 GbiWord1(T value) {
+    return static_cast<u32>(value);
+}
+
+} // namespace coastline
+}
+
+/** The second word of a command for x, an address or an operand. */
+#define GBI_WORD1(x) (coastline::GbiWord1(x))
+#else
 /** The second word of a command for x, an address or an operand. */
 #define GBI_WORD1(x) ((u32)(x))
 #endif /* defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_SDL */

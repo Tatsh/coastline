@@ -9,7 +9,11 @@
 #include "weather.h"
 
 #if TGR_PC
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/renderhost.h"
+#else
 #include "win32/d3d/renderer.h"
+#endif
 #include "win32/displaylist.h"
 #include "win32/ghost.h"
 #include "win32/render.h"
@@ -150,7 +154,7 @@ void RenderPrecipitationEffect(void) {
             gDisplayListPtr++,
             ((u32)GBI_OP_LOAD_PREPARED_TEXTURE << 24) |
                 ((u32)g_adwPrecipitationTextureIds[g_dwCurrentSplitScreenIndex] & 0xffffff),
-            (u32)g_abPrecipitationTextures[g_dwCurrentSplitScreenIndex]);
+            GBI_WORD1(g_abPrecipitationTextures[g_dwCurrentSplitScreenIndex]));
         gDisplayListWords(
             gDisplayListPtr++,
             ((u32)GBI_OP_BIND_TEXTURE_ENTRY << 24) |

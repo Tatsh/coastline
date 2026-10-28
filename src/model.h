@@ -9,6 +9,7 @@
 #include <PR/gbi.h>
 #include <PR/ultratypes.h>
 
+#include "ptr32.h"
 #include "vecmath.h"
 
 #if TGR_PC
@@ -22,7 +23,7 @@ extern "C" {
 /** A part of a model: its display list, how it is drawn, and where. */
 typedef struct {
 #if TGR_PC
-    GbiCommand *displayList;
+    TGR_PTR(GbiCommand) displayList;
 #else
     Gfx *displayList; /*!< The display list that draws the part, or NULL. */
 #endif
@@ -70,20 +71,20 @@ typedef struct {
 #else
     Vtx *vertices; /*!< The vertices the animation moves. */
 #endif
-    void *unreconstructed8; /*!< Turned into a pointer with the rest, and never read. */
-    s32 keyCount;           /*!< The number of keys. */
-    u16 flags;              /*!< The MODEL_ANIMATION_ flags. */
-    u16 startKey;           /*!< The key a search for the time starts from. */
-    f32 startTime;          /*!< The time the animation starts at, in seconds. */
-    f32 endTime;            /*!< The time the animation ends at, in seconds. */
-    f32 time;               /*!< The current time of the animation, in seconds. */
-    ModelKeyframe *keys[];  /*!< The keys, in order of time. */
+    TGR_PTR(void) unreconstructed8; /*!< Turned into a pointer with the rest, and never read. */
+    s32 keyCount;                   /*!< The number of keys. */
+    u16 flags;                      /*!< The MODEL_ANIMATION_ flags. */
+    u16 startKey;                   /*!< The key a search for the time starts from. */
+    f32 startTime;                  /*!< The time the animation starts at, in seconds. */
+    f32 endTime;                    /*!< The time the animation ends at, in seconds. */
+    f32 time;                       /*!< The current time of the animation, in seconds. */
+    TGR_PTR(ModelKeyframe) keys[];  /*!< The keys, in order of time. */
 } ModelAnimation;
 
 /** The animations of a model. */
 typedef struct {
-    s32 count;                 /*!< The number of animations. */
-    ModelAnimation *entries[]; /*!< The animations. */
+    s32 count;                         /*!< The number of animations. */
+    TGR_PTR(ModelAnimation) entries[]; /*!< The animations. */
 } ModelAnimationList;
 
 /**
@@ -97,8 +98,8 @@ typedef struct Model {
 #else
     u32 partCount; /*!< The number of parts. */
 #endif
-    ModelAnimationList *animations; /*!< The animations of the vertices of the model. */
-    ModelPart parts[];              /*!< The parts. */
+    TGR_PTR(ModelAnimationList) animations; /*!< The animations of the vertices of the model. */
+    ModelPart parts[];                      /*!< The parts. */
 } Model;
 
 /**

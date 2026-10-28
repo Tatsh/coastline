@@ -5,12 +5,16 @@
  * The control bindings and the DirectInput devices of the PC port.
  */
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/win32types.h"
+#else
 #ifndef DIRECTINPUT_VERSION
 #define DIRECTINPUT_VERSION 0x0500
 #endif
 #include <windows.h>
 // The headers below need the types of windows.h.
 #include <dinput.h>
+#endif
 
 #include "emulatedclock.h"
 #include "inputpoll.h"

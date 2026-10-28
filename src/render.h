@@ -10,6 +10,7 @@
 #include <PR/ultratypes.h>
 
 #include "displaylistptr.h"
+#include "ptr32.h"
 #include "screendraw.h"
 #include "vecmath.h"
 
@@ -62,16 +63,16 @@ typedef struct {
 typedef struct {
 #if TGR_PC
     union {
-        u8 *image;             /*!< The texels before device texture creation. */
+        TGR_PTR(u8) image;     /*!< The texels before device texture creation. */
         unsigned textureEntry; /*!< The loaded entry after device texture creation. */
     };
 #else
-    u8 *image; /*!< The texels. */
+    TGR_PTR(u8) image; /*!< The texels. */
 #endif
-    u16 *palette; /*!< The 16 colors of the palette, in RGBA 5551. */
+    TGR_PTR(u16) palette; /*!< The 16 colors of the palette, in RGBA 5551. */
     union {
         u32 paletteRomIndex; /*!< The palette offset, in units of 32 bytes in the low 12 bits. */
-        TextureAnimation *animation; /*!< The frames of an animated texture. */
+        TGR_PTR(TextureAnimation) animation; /*!< The frames of an animated texture. */
     } source;   /*!< The source of the palette, or of the frames of an animated texture. */
     u16 width;  /*!< The width in texels. */
     u16 height; /*!< The height in texels. */

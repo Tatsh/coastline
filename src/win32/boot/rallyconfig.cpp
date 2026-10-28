@@ -4,6 +4,11 @@
 #include <cstring>
 
 #include "win32/boot/app.h"
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include <string>
+
+#include "sdl/gamefiles.h"
+#endif
 
 // The first bytes of BossRally.cfg and the version of its layout.
 #define CONFIG_FILE_MAGIC "RCfg"
@@ -207,6 +212,17 @@ bool RallyConfig::SaveConfigToFile(const char *pszPath) {
     return bWritten;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+void ReadInstallDirectoryFromRegistry(void) {
+    // The SDL game writes what the PC release writes to its installation to the state directory.
+    std::string directory = coastline::WritableGameFile("").string();
+    if (directory.empty() || directory.back() != '/') {
+        directory += '/';
+    }
+    strncpy(g_szInstallDirectory, directory.c_str(), MAX_PATH - 1);
+    g_szInstallDirectory[MAX_PATH - 1] = '\0';
+}
+#else
 void ReadInstallDirectoryFromRegistry(void) {
     HKEY hKey;
     DWORD dwSize;
@@ -234,3 +250,4 @@ void ReadInstallDirectoryFromRegistry(void) {
     }
     strcpy(g_szInstallDirectory, "c:\\");
 }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */

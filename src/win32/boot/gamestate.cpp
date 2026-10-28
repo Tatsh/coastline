@@ -4,13 +4,20 @@
 #include "vehicle.h"
 #include "win32/boot/app.h"
 #include "win32/boot/rallyconfig.h"
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include "win32/frontend.h"
+#else
+#include "win32/frontendstate.h"
+#endif
 #include "win32/input.h"
 #include "win32/render.h"
 #include "win32/settings.h"
 #include "win32/sound.h"
 #include "win32/timer.h"
-#if TGR_BRD3D
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/renderhost.h"
+#include "sdl/scene.h"
+#elif TGR_BRD3D
 #include "win32/d3d/renderer.h"
 #endif
 
@@ -107,6 +114,25 @@ int GameState_ShowLoadingScreenAndInitGame(void) {
 #define MENU_SCREEN_HEIGHT 480
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+int GameState_RunFrontEnd(void) {
+    // The SDL game has no menus of the PC release, and starts the race of its command line as the
+    // benchmark does.
+    g_dwGameMode = g_SdlScene.gameMode;
+    g_dwSelectedTrackId = g_SdlScene.track;
+    g_dwChosenCar = g_SdlScene.car;
+    g_dwChosenWeather = g_SdlScene.weather;
+    g_GlobalRallyConfig.dwInputDeviceType = 0;
+    g_GlobalRallyConfig.pActiveInputBindings = g_GlobalRallyConfig.aInputBindingsKeyboard;
+    g_dwHandlingType = g_SdlScene.handling;
+    g_dwSuspensionType = g_SdlScene.suspension;
+    g_dwTireType = g_SdlScene.tires;
+    g_dwTransmissionType = g_SdlScene.transmission;
+    g_dwNullStubEnable = false;
+    g_dwGameState = GAME_STATE_LOAD_GAME;
+    return true;
+}
+#else
 int GameState_RunFrontEnd(void) {
     MenuScreen *pScreen = g_pActiveMenuScreen;
 
@@ -171,6 +197,7 @@ int GameState_RunFrontEnd(void) {
     }
     return true;
 }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 void SetGameStateFrontEnd(void) {
     g_dwNullStubEnable = true;
