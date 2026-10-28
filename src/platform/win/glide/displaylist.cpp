@@ -842,16 +842,19 @@ static void UpdateGlideDirectionalLight(void) {
 
 // Light a vertex with the first light and the ambient light, or give it the colour of the
 // primitive when the display lists set no light.
-static inline void LightGlideVertex(const ConvertedModelVertex &input, GbiVertexSource &source) {
+static inline void
+LightGlideVertex(const ConvertedModelVertex &input, GbiVertexSource &source, bool bSumXYFirst) {
     if (!g_dwGbiNumLights) {
         source.fRed = g_fGbiPrimColorR;
         source.fGreen = g_fGbiPrimColorG;
         source.fBlue = g_fGbiPrimColorB;
         return;
     }
-    float dot = static_cast<long double>(input.normal.x) * g_GbiLight0Direction.x +
-                (static_cast<long double>(input.normal.y) * g_GbiLight0Direction.y +
-                 static_cast<long double>(input.normal.z) * g_GbiLight0Direction.z);
+    long double x = static_cast<long double>(input.normal.x) * g_GbiLight0Direction.x;
+    long double y = static_cast<long double>(input.normal.y) * g_GbiLight0Direction.y;
+    long double z = static_cast<long double>(input.normal.z) * g_GbiLight0Direction.z;
+    // The handlers do not add the products in the same order.
+    float dot = bSumXYFirst ? (x + y) + z : x + (y + z);
     // The x87 comparison also takes the ambient colour for an unordered dot product.
     if (!(dot >= 0.0f)) {
         source.fRed = g_fGbiAmbientColorR;
@@ -929,7 +932,7 @@ static GbiCommand *LoadGlideVertices(GbiCommand *pCommand) {
                 vertex.source.fGreen = input.color.y;
                 vertex.source.fBlue = input.color.z;
             } else {
-                LightGlideVertex(input, vertex.source);
+                LightGlideVertex(input, vertex.source, Color == GlideVertexColor::LitEnvModulated);
             }
             if constexpr (Color == GlideVertexColor::LitEnvModulated) {
                 vertex.source.fRed = g_fGbiEnvColorR * vertex.source.fRed;
