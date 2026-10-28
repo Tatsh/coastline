@@ -737,14 +737,14 @@ void DrawTextureRectangle(
     float height = g_dwConfigFramebufferHeight;
     float halfWidth = width / 2.0f;
     float halfHeight = height / 2.0f;
-    auto xCoordinate = [halfWidth](int coordinate) {
-        return (static_cast<float>(static_cast<unsigned>(coordinate)) / 4.0f - halfWidth) /
-               halfWidth / g_fTexRectScaleW;
+    // Each coordinate is rounded to a float once, after both divisions.
+    auto xCoordinate = [halfWidth](int coordinate) -> float {
+        long double quarter = static_cast<float>(static_cast<unsigned>(coordinate));
+        return (quarter / 4 - halfWidth) / halfWidth / g_fTexRectScaleW;
     };
-    auto yCoordinate = [height, halfHeight](int coordinate) {
-        return (height - static_cast<float>(static_cast<unsigned>(coordinate)) / 4.0f -
-                halfHeight) /
-               halfHeight / g_fTexRectScaleW;
+    auto yCoordinate = [height, halfHeight](int coordinate) -> float {
+        long double quarter = static_cast<float>(static_cast<unsigned>(coordinate));
+        return (height - quarter / 4 - halfHeight) / halfHeight / g_fTexRectScaleW;
     };
     float left = xCoordinate(nUpperLeftX);
     float top = yCoordinate(nUpperLeftY);
