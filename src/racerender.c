@@ -7,6 +7,7 @@
 
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/boot/strings.h"
+#include "platform/win/buildinfo.h"
 #include "platform/win/hud.h"
 #include "platform/win/render.h"
 #include "platform/win/settings.h"
@@ -417,6 +418,7 @@ void RenderRaceView(RACE_VIEW_PARAMETERS s32 index) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     DrawFpsCounterOverlay();
     DrawViewOverlay(RACE_VIEW_ARGUMENTS index);
+    DrawRaceBuildIdentification();
 #else
     DrawViewOverlay();
 #endif

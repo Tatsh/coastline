@@ -1,8 +1,6 @@
 #ifndef COASTLINE_WIN_BUILDINFO_H
 #define COASTLINE_WIN_BUILDINFO_H
 
-#include <stdbool.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -10,8 +8,8 @@ extern "C" {
 /** Print the renderer build identity to inherited stdout under Wine. */
 void PrintWineBuildIdentification(void);
 
-/** Toggle and draw the build identity with Ctrl+Shift+B on the root menu. */
-void DrawMenuBuildIdentification(bool atRootMenu);
+/** Draw the build identity during a race while B is held. */
+void DrawRaceBuildIdentification(void);
 
 #ifdef __cplusplus
 }

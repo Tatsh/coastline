@@ -13,7 +13,7 @@ add_library(
   boot/rallyconfig.cpp
   boot/startup.cpp
   boot/strings.c
-  buildinfo.cpp
+  buildinfo.c
   configfile.cpp
   dashboardtextures.c
   directplay.cpp
