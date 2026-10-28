@@ -62,10 +62,13 @@ void MakeEnemyCarColorPanels(RacerSlot *slot) {
     }
     VehicleModel *model = VEHICLE_GET(vehicle, Model);
     u16 *palette = model->textures[model->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]].palette;
+#ifdef ENABLE_PATCHES
+    /* Restart cleanup frees every slot, including absent light textures. */
+    std::memset(RACER_SLOT_GET(slot, ColorPanels) + count, 0, 4 * sizeof(u8 *));
+#endif
     if (palette == nullptr || g_dwNullStubEnable) {
         return;
     }
-    /* Unused light-panel entries remain uninitialised, as in the original. */
     if (VEHICLE_GET(vehicle, Model)->lightTextureEntries[0] != 0) {
         SetVehicleLightPalette(palette, 0, g_dwNightMode || g_dwRainMode);
         CopyRacerColorPanel(slot,
