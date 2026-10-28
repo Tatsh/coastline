@@ -850,11 +850,17 @@ DisplayMode *DirectDrawDriver::FindDisplayModeForDevice(int nWidth,
         return nullptr;
     }
     pMode = pFirst != nullptr ? pFirst : pDisplayModesHead;
-    // The original reads the first mode of an empty list as well, and the test here does not.
+#ifdef ENABLE_PATCHES
     if (ppFallback != nullptr && pMode != nullptr &&
         pMode->IsDisplayModeSupportedByDevice(pDevice)) {
         *ppFallback = pMode;
     }
+#else
+    // The original reads the first mode of an empty list as well.
+    if (ppFallback != nullptr && pMode->IsDisplayModeSupportedByDevice(pDevice)) {
+        *ppFallback = pMode;
+    }
+#endif
     while (pMode != nullptr) {
         DisplayMode *pNextMode = pMode->GetNext();
 

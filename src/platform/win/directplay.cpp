@@ -1604,15 +1604,21 @@ void DisableNetworkReceive(void) {
 int g_dwLocalNetPlayerId = -1;
 
 unsigned WaitForPlayerIdAssignment(void) {
+#ifdef ENABLE_PATCHES
+    unsigned joined = 0;
+#else
+    // An id assigned between the store of -1 and the first test returns this unset.
+    unsigned joined;
+#endif
     g_dwLocalNetPlayerId = -1;
-    for (;;) {
-        int result = SendPlayerJoinPacket(&g_DirectPlayInfo,
-                                          static_cast<unsigned char>(g_dwLocalNetPlayerId),
-                                          VEHICLE_GET(&(g_aVehicles[0]), Color)[0],
-                                          VEHICLE_GET(&(g_aVehicles[0]), Color)[1],
-                                          VEHICLE_GET(&(g_aVehicles[0]), Color)[2],
-                                          g_GlobalRallyConfig.szPlayerName,
-                                          0);
+    while (g_dwLocalNetPlayerId == -1) {
+        joined = SendPlayerJoinPacket(&g_DirectPlayInfo,
+                                      static_cast<unsigned char>(g_dwLocalNetPlayerId),
+                                      VEHICLE_GET(&(g_aVehicles[0]), Color)[0],
+                                      VEHICLE_GET(&(g_aVehicles[0]), Color)[1],
+                                      VEHICLE_GET(&(g_aVehicles[0]), Color)[2],
+                                      g_GlobalRallyConfig.szPlayerName,
+                                      0) != -1;
         DWORD start = GetHighResolutionTime();
         if (g_DirectPlayInfo.bIsHost) {
             g_dwLocalNetPlayerId = 0;
@@ -1636,7 +1642,7 @@ unsigned WaitForPlayerIdAssignment(void) {
                                  0x10);
         }
         if (g_dwLocalNetPlayerId != -1) {
-            return result != -1;
+            break;
         }
         DWORD deadline = start + 2000;
         do {
@@ -1645,10 +1651,8 @@ unsigned WaitForPlayerIdAssignment(void) {
             }
             Sleep(0);
         } while (g_dwLocalNetPlayerId == -1);
-        if (g_dwLocalNetPlayerId != -1) {
-            return result != -1;
-        }
     }
+    return joined;
 }
 
 const RECT g_rcNetCarSetupPlayerList = {32, 370, 610, 467};
