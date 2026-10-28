@@ -19,10 +19,12 @@ void FinishWindowsGameSessionSetup(void);
 
 /**
  * @ghidraAddress BRD3D: 0x106c56d0
+ * @ghidraAddress BRGlide: 0x106ec760
  */
 extern s32 g_dwSavedSfxVolume;
 /**
  * @ghidraAddress BRD3D: 0x106c29a4
+ * @ghidraAddress BRGlide: 0x106e9a34
  */
 extern s32 g_dwSavedMusicVolume;
 /**

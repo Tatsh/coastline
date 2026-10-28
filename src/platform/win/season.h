@@ -41,6 +41,7 @@ void ExitRaceSessionToMenu(void);
  * Release the active race session and restore front-end display settings.
  *
  * @ghidraAddress BRD3D: 0x10035bd1
+ * @ghidraAddress BRGlide: 0x1002f282
  */
 void ShutdownGameSession(void);
 

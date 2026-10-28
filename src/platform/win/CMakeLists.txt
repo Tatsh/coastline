@@ -37,6 +37,7 @@ add_library(
   frontend.cpp
   frontenddata.cpp
   gameinit.cpp
+  gamesession.cpp
   ghost.cpp
   hud.c
   hudassets.c
@@ -97,7 +98,6 @@ if(TGR_RENDERER STREQUAL "d3d")
             d3d/driver.cpp
             d3d/renderer.cpp
             d3d/texture.cpp
-            gamesession-d3d.cpp
             winmain-d3d.cpp)
 endif()
 target_link_libraries(coastline_main PRIVATE coastline_common)
