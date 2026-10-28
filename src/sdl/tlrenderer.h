@@ -118,6 +118,19 @@ public:
                                 bool hasAlpha);
 
     /**
+     * Replace the pixels of a texture, at the size it was created with or a new size.
+     *
+     * @param texture The texture.
+     * @param width The width in texels.
+     * @param height The height in texels.
+     * @param rgba The texels, four bytes each in the order R, G, B, A.
+     */
+    void UpdateTexture(TextureHandle texture,
+                       std::uint32_t width,
+                       std::uint32_t height,
+                       std::span<const std::uint8_t> rgba);
+
+    /**
      * Start a scene. The frame texture and the depth buffer are cleared.
      *
      * @param clearColor The colour, 0xAARRGGBB.

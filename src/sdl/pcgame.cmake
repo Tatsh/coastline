@@ -19,14 +19,14 @@ set(COASTLINE_PC_C_SOURCES
     trackgrid.c trackvalid.c tricache.c util.c vblankquery.c vecmath.c vehiclemodel.c visgrid.c
     visiblecompare.c win32/airplanestate.c win32/assetnames.c win32/boot/strings.c
     win32/buildinfo.c win32/clockfields.c win32/convertedvertex.c win32/creditdata.c
-    win32/dashboardtextures.c win32/displaylistdata.c win32/effectdata.c win32/fileio.c
+    win32/dashboardtextures.c win32/displaylistdata.c win32/effectdata.c
     win32/fontdata.c win32/fpshud.c win32/framebuffer.c win32/framefields.c win32/hudassets.c
     win32/hud.c win32/hudcanvas.c win32/hudquad.c win32/numericdata.c win32/paintshop.c
     win32/particlesnapshot.c win32/physicsdata.c win32/raceglobals.c win32/racepacing.c
     win32/reflectiondata.c win32/runtimebuffers.c win32/settings.c win32/shadowproject.c
     win32/soundbank.c win32/soundsample.c win32/terrain.c win32/texturesampling.c
     win32/textureworkspace.c win32/timer.c win32/trackmenudata.c win32/vehiclemodelload.c
-    win32/visibilitydata.c win32/wavread.c wind.c)
+    win32/visibilitydata.c wind.c)
 set(COASTLINE_PC_CXX_SOURCES
     ambientsound.c billboardparticles.c camerachange.c camerachase.c cameracollision.c
     collisionstep.c controllerread.c dashboard.c displaylistops.c driving.c exhaustspawn.c fog.c
@@ -50,9 +50,26 @@ set(COASTLINE_PC_CXX_SOURCES
     win32/tracktexture.cpp win32/vehicle.cpp win32/vehiclesetup.cpp)
 list(TRANSFORM COASTLINE_PC_C_SOURCES PREPEND "${_src}/")
 list(TRANSFORM COASTLINE_PC_CXX_SOURCES PREPEND "${_src}/")
-set_source_files_properties(${COASTLINE_PC_CXX_SOURCES} PROPERTIES LANGUAGE CXX)
+# The SDL game compiles every source as C++, for the 32-bit offsets of Ptr32 in the structures
+# read from files.
+set_source_files_properties(${COASTLINE_PC_C_SOURCES} ${COASTLINE_PC_CXX_SOURCES}
+                            PROPERTIES LANGUAGE CXX)
+# These sources read no structure with a Ptr32 and convert from void * as C does.
+set_source_files_properties("${_src}/savestate.c" "${_src}/win32/paintshop.c" PROPERTIES LANGUAGE C)
 
-add_library(coastline_pcgame STATIC ${COASTLINE_PC_C_SOURCES} ${COASTLINE_PC_CXX_SOURCES})
+# The SDL game provides these in place of their Windows units.
+set(COASTLINE_PC_SDL_SOURCES bitmap.cpp d3dcompat.cpp fileio.cpp frontendstate.cpp renderhost.cpp
+                             stringresources.cpp)
+# The routines of the textures of BRD3D.dll that do not use DirectDraw.
+list(APPEND COASTLINE_PC_CXX_SOURCES "${_src}/win32/d3d/texture.cpp")
+
+add_library(coastline_pcgame STATIC ${COASTLINE_PC_C_SOURCES} ${COASTLINE_PC_CXX_SOURCES}
+                                    ${COASTLINE_PC_SDL_SOURCES})
 target_include_directories(coastline_pcgame PUBLIC "${_src}" "${_src}/libultra/include")
-target_compile_options(coastline_pcgame PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>"
-                                                -Wno-unused-parameter)
+target_link_libraries(coastline_pcgame PUBLIC SDL3::SDL3)
+# A cast between a pointer and a 32-bit integer loses half the pointer on a 64-bit processor, and
+# is an error so that every one is converted to Ptr32.
+target_compile_options(
+  coastline_pcgame PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>" -Wno-unused-parameter
+                           -Werror=int-to-pointer-cast
+                           "$<$<COMPILE_LANGUAGE:C>:-Werror=pointer-to-int-cast>")

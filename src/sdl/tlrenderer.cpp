@@ -238,6 +238,24 @@ TextureHandle TlRenderer::CreateTexture(std::uint32_t width,
     return static_cast<TextureHandle>(m_textures.size());
 }
 
+void TlRenderer::UpdateTexture(TextureHandle texture,
+                               std::uint32_t width,
+                               std::uint32_t height,
+                               std::span<const std::uint8_t> rgba) {
+    if (texture == 0 || texture > m_textures.size()) {
+        return;
+    }
+    bool hasAlpha = m_textures[texture - 1].hasAlpha;
+    TextureHandle replacement = CreateTexture(width, height, rgba, hasAlpha);
+    if (replacement == 0) {
+        return;
+    }
+    // The new texture takes the place of the old one, and its handle is retired.
+    SDL_ReleaseGPUTexture(m_window.Device(), m_textures[texture - 1].texture);
+    m_textures[texture - 1] = m_textures[replacement - 1];
+    m_textures.pop_back();
+}
+
 void TlRenderer::BeginScene(std::uint32_t clearColor) {
     m_clearColor = clearColor;
     m_vertices.clear();

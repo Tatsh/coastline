@@ -193,6 +193,10 @@ bool IsGameData(const std::filesystem::path &path) {
     if (lower(path.begin()->string()) == "directx") {
         return false;
     }
+    // The text of the game is in the string resources of BRString.dll, which the game reads.
+    if (lower(path.filename().string()) == "brstring.dll") {
+        return true;
+    }
     static constexpr std::array<std::string_view, 10> skipped{
         ".exe", ".dll", ".cab", ".ex_", ".inf", ".url", ".tag", ".ini", ".bin", ".hdr"};
     auto extension = lower(path.extension().string());

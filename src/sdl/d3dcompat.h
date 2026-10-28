@@ -145,6 +145,33 @@ struct DDSCAPS {
     DWORD dwCaps; /*!< The DDSCAPS_ flags. */
 };
 
+/** The capabilities of a device for primitives. */
+struct D3DPRIMCAPS {
+    DWORD dwTextureCaps; /*!< The D3DPTEXTURECAPS_ flags. */
+};
+
+/** The capabilities of a device. */
+struct D3DDEVICEDESC {
+    D3DPRIMCAPS dpcTriCaps;   /*!< The capabilities for triangles. */
+    DWORD dwMaxTextureWidth;  /*!< The widest texture, or 0 for no limit. */
+    DWORD dwMaxTextureHeight; /*!< The tallest texture, or 0 for no limit. */
+};
+
+/**
+ * The hardware device. The GPUs SDL drives take textures of any size the game makes, of any
+ * aspect.
+ *
+ * @ghidraAddress BRD3D: 0x10277480
+ */
+extern D3DDEVICEDESC g_D3DHalDeviceDesc;
+
+/**
+ * The emulated device.
+ *
+ * @ghidraAddress BRD3D: 0x10277580
+ */
+extern D3DDEVICEDESC g_D3DHelDeviceDesc;
+
 /**
  * The device of Direct3D 5 for the calls of the interpreter. Render states become states of the
  * renderer, and the scene draws when it ends.
@@ -225,3 +252,74 @@ private:
 
 /** The device of the game, created with the window. */
 extern IDirect3DDevice2 *g_pD3DDevice2;
+
+/**
+ * A texture of the device. The game gives it pixels of 32 bits, R, G, B, and A, and a texture
+ * with a colour key draws nothing where the alpha of a pixel is below half.
+ */
+class D3DTexture {
+public:
+    /**
+     * Create the texture with a colour key.
+     *
+     * @param device The device.
+     * @param pixels The pixels, R, G, B, A.
+     * @param width The width.
+     * @param height The height.
+     * @param pixelFormat The pixel format the PC release chose; the renderer stores 32 bits.
+     * @param colorKey The colour key, which is not 0.
+     * @return Whether the texture was created.
+     */
+    bool CreateD3DTexture(IDirect3DDevice2 *device,
+                          const unsigned char *pixels,
+                          int width,
+                          int height,
+                          int pixelFormat,
+                          unsigned colorKey);
+
+    /**
+     * Create the texture without a colour key.
+     *
+     * @param device The device.
+     * @param pixels The pixels, R, G, B, A.
+     * @param width The width.
+     * @param height The height.
+     * @param pixelFormat The pixel format the PC release chose; the renderer stores 32 bits.
+     * @return Whether the texture was created.
+     */
+    bool CreateD3DTextureDefault(IDirect3DDevice2 *device,
+                                 const unsigned char *pixels,
+                                 int width,
+                                 int height,
+                                 int pixelFormat);
+
+    /**
+     * Replace the pixels of the texture.
+     *
+     * @param pixels The pixels, R, G, B, A.
+     * @param width The width.
+     * @param height The height.
+     */
+    void UploadSurfaceToTexture(const void *pixels, int width, int height);
+
+    /** @return The texture of the renderer. */
+    D3DTEXTUREHANDLE GetTextureHandle() const {
+        return m_handle;
+    }
+
+    /** Release the texture, which the renderer retains until it ends. */
+    void ReleaseD3DTextureInterfaces() {
+        m_handle = 0;
+    }
+
+private:
+    D3DTEXTUREHANDLE m_handle = 0;
+    bool m_colorKey = false;
+};
+
+/**
+ * The textures of the device by identifier.
+ *
+ * @ghidraAddress BRD3D: 0x1057542c
+ */
+extern D3DTexture **g_ppTextureIdTable;

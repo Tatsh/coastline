@@ -75,6 +75,93 @@ typedef struct _GUID {
     BYTE Data4[8]; /*!< The last 64 bits. */
 } GUID;
 
+/** The format of a wave, as the multimedia API describes PCM. */
+typedef struct tWAVEFORMATEX {
+    WORD wFormatTag;       /*!< 1 for PCM. */
+    WORD nChannels;        /*!< The channels. */
+    DWORD nSamplesPerSec;  /*!< The frames a second. */
+    DWORD nAvgBytesPerSec; /*!< The bytes a second. */
+    WORD nBlockAlign;      /*!< The bytes of a frame. */
+    WORD wBitsPerSample;   /*!< The bits of a sample. */
+    WORD cbSize;           /*!< The bytes of extra format data. */
+} WAVEFORMATEX;
+
+/** A chunk of a RIFF file, as the multimedia I/O API reads one. */
+typedef struct _MMCKINFO {
+    DWORD ckid;         /*!< The identifier of the chunk. */
+    DWORD cksize;       /*!< The bytes of its data. */
+    DWORD fccType;      /*!< The form or list type. */
+    DWORD dwDataOffset; /*!< The offset of its data in the file. */
+    DWORD dwFlags;      /*!< The flags. */
+} MMCKINFO;
+
+typedef uintptr_t UINT_PTR; /*!< An unsigned integer the size of a pointer. */
+typedef char *HPSTR;        /*!< A string of the multimedia I/O API. */
+typedef void *HMENU;        /*!< A handle of a menu. */
+typedef void *HCURSOR;      /*!< A handle of a cursor. */
+typedef void *HACCEL;       /*!< A handle of an accelerator table. */
+
+/** A critical section of the Windows API, at its size on 64-bit Windows. */
+typedef struct _CRITICAL_SECTION {
+    void *DebugInfo;      /*!< The debugging information. */
+    LONG LockCount;       /*!< The lock count. */
+    LONG RecursionCount;  /*!< The recursion count. */
+    HANDLE OwningThread;  /*!< The owning thread. */
+    HANDLE LockSemaphore; /*!< The semaphore. */
+    UINT_PTR SpinCount;   /*!< The spin count. */
+} CRITICAL_SECTION;
+
+typedef void *HMMIO;      /*!< A file of the multimedia I/O API. */
+typedef UINT MCIDEVICEID; /*!< A device of the media control interface. */
+typedef DWORD MCIERROR;   /*!< An error of the media control interface. */
+typedef DWORD DPID;       /*!< A player of DirectPlay. */
+
+/*
+ * The DirectX interfaces and structures the declarations of the PC release name. The SDL game
+ * does not use them, and they are incomplete.
+ */
+struct IDirectInputDeviceA;
+struct IDirectInputDevice2A;
+struct IDirectSound;
+struct IDirectSoundBuffer;
+struct IDirectPlay3A;
+struct IDirectPlayLobby2A;
+struct DIDEVICEINSTANCEA;
+struct DIPROPDWORD;
+struct DIPROPRANGE;
+struct DIJOYSTATE2;
+struct DPNAME;
+struct DPSESSIONDESC2;
+struct DPMSG_GENERIC;
+struct DDSURFACEDESC;
+typedef struct DDSURFACEDESC DDSURFACEDESC;
+typedef struct IDirectInputDeviceA IDirectInputDeviceA;
+typedef struct IDirectInputDevice2A IDirectInputDevice2A;
+typedef struct IDirectSound IDirectSound;
+typedef struct IDirectSoundBuffer IDirectSoundBuffer;
+typedef struct IDirectPlay3A IDirectPlay3A;
+typedef struct IDirectPlayLobby2A IDirectPlayLobby2A;
+typedef struct DIDEVICEINSTANCEA DIDEVICEINSTANCEA;
+typedef struct DIPROPDWORD DIPROPDWORD;
+typedef struct DIPROPRANGE DIPROPRANGE;
+typedef struct DIJOYSTATE2 DIJOYSTATE2;
+typedef struct DPNAME DPNAME;
+typedef struct DPSESSIONDESC2 DPSESSIONDESC2;
+typedef struct DPMSG_GENERIC DPMSG_GENERIC;
+typedef const DPNAME *LPCDPNAME;                 /*!< A constant DirectPlay name. */
+typedef const DPSESSIONDESC2 *LPCDPSESSIONDESC2; /*!< A constant DirectPlay session. */
+/** The callback of the enumeration of the players of a DirectPlay session. */
+typedef BOOL (*LPDPENUMPLAYERSCALLBACK2)(
+    DPID dpId, DWORD dwPlayerType, LPCDPNAME lpName, DWORD dwFlags, LPVOID lpContext);
+#ifdef __cplusplus
+typedef const GUID &REFGUID; /*!< A constant reference to a GUID. */
+#else
+typedef const GUID *REFGUID; /*!< A constant pointer to a GUID. */
+#endif
+
+#define WINAPI   /*!< The calling convention of the Windows API. */
+#define CALLBACK /*!< The calling convention of a callback of the Windows API. */
+
 #ifndef TRUE
 #define TRUE 1  /*!< The value of a true condition. */
 #define FALSE 0 /*!< The value of a false condition. */
