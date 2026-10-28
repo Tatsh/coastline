@@ -533,7 +533,6 @@ extern s32 g_adwSavedResultLaps[SAVED_RESULTS];
  * @ghidraAddress USA: 0x80315db0
  * @ghidraAddress EUR: 0x80317aa0
  * @ghidraAddress JPN: 0x803164e0
- * @ghidraAddress BRD3D: 0x10680940
  */
 extern const char *g_apszSeasonResultMsgLines[];
 
