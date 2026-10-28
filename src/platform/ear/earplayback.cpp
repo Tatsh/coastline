@@ -458,7 +458,11 @@ void EarPlayback::UpdateDirectSoundPlaybackGainAndPan() {
     std::uint32_t step = static_cast<std::uint32_t>(static_cast<std::int64_t>(
         static_cast<long double>(delta) * g_adPlaybackSmoothingWeights[smoothingPass]));
     LONG pan = std::bit_cast<LONG>(static_cast<std::uint32_t>(previousMatrixEntry.pan) + step);
+#ifdef ENABLE_PATCHES
+    if (playbackHandle && directSound.GetBuffer() != nullptr) {
+#else
     if (playbackHandle) {
+#endif
         directSound.GetBuffer()->SetVolume(ConvertPercentGainToDirectSoundVolume(interpolated));
         directSound.GetBuffer()->SetPan(pan);
     }

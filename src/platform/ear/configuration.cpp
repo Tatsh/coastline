@@ -295,9 +295,21 @@ void __stdcall LoadEarConfiguration(uint32_t code) {
                         continue;
                     }
                     if (IsEarConfigurationKey(line, "[TITLE]", "[TITLE]")) {
+                        const char *title = line + std::strlen("[TITLE]");
+#ifdef ENABLE_PATCHES
+                        // The line break is dropped and the title is cut to fit and terminated.
+                        std::size_t length = std::strlen(title);
+                        if (length != 0) {
+                            --length;
+                        }
+                        if (length >= sizeof(g_szConfiguredTitle)) {
+                            length = sizeof(g_szConfiguredTitle) - 1;
+                        }
+                        std::memcpy(g_szConfiguredTitle, title, length);
+                        g_szConfiguredTitle[length] = '\0';
+#else
                         // The line break is dropped and the title is not terminated; an empty
                         // title copies with a count of -1, as in the original.
-                        const char *title = line + std::strlen("[TITLE]");
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wstringop-truncation"
@@ -306,6 +318,7 @@ void __stdcall LoadEarConfiguration(uint32_t code) {
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic pop
 #endif
+#endif /* ENABLE_PATCHES */
                     } else if (IsEarConfigurationKey(line, "[NOIAS]", "[NOIAS]")) {
                         g_bConfiguredTitleNoIas = ReadEarConfigurationFlag(line, "[NOIAS]");
                     } else if (IsEarConfigurationKey(line, "[ISDVD]", "[ISDVD]")) {

@@ -147,7 +147,12 @@ int PcmWaveStream::PreparePcmWaveStream(const void *source) {
     if (GetPlaybackStartMilliseconds()) {
         long double position = static_cast<long double>(format.nAvgBytesPerSec) *
                                GetPlaybackStartMilliseconds() * g_earPcmMillisecondsToSeconds;
+#ifdef ENABLE_PATCHES
+        // An empty data chunk starts at its only offset.
+        offset = dataBytes != 0 ? TruncatePlaybackInteger(position) % dataBytes : 0;
+#else
         offset = TruncatePlaybackInteger(position) % dataBytes;
+#endif
         SpecifyPlaybackStartPosition();
     }
     if (HasPlaybackStartPosition() && IsEarPlaybackStreaming()) {
@@ -257,7 +262,14 @@ std::uint16_t PcmWaveStream::AllocateEarEventId() {
             return 0;
         }
     }
+#ifdef ENABLE_PATCHES
+    if (result != DS_OK) {
+        SetEarLastError(0x13);
+        return 0;
+    }
+#else
     // Other initial lock failures still proceed through the native copy path.
+#endif
     std::memcpy(region1, sampleBuffer, region1Bytes);
     if (region2) {
         std::memcpy(region2, sampleBuffer + region1Bytes, region2Bytes);
@@ -333,7 +345,15 @@ void PcmWaveStream::CopyEarPlaybackSamplesToOutput() {
             return;
         }
     }
+#ifdef ENABLE_PATCHES
+    if (result != DS_OK) {
+        SetEarLastError(0x13);
+        MarkComplete();
+        return;
+    }
+#else
     // Other initial lock failures still proceed through the native copy path.
+#endif
     std::memcpy(g_pDirectSoundLockRegion1,
                 sampleBuffer + g_dwDirectSoundLockOffset,
                 g_dwDirectSoundLockRegion1Bytes);

@@ -221,7 +221,13 @@ int ScheduledEarEvent::CreateEarPlaybackImplementation(std::uint16_t flags) {
         playback = nullptr;
         return 0;
     }
+#ifdef ENABLE_PATCHES
+    if (playback == nullptr) {
+        return 0;
+    }
+#else
     // Native allocation failure still proceeds to the flags write.
+#endif
     playback->SetEarPlaybackFlags(flags);
     return 1;
 }
@@ -258,8 +264,10 @@ void ScheduledEarEvent::DeactivateScheduledEarEvent() {
     }
 }
 
+#ifndef ENABLE_PATCHES
 // A failed lookup of the environment leaves it unset, and the original reads it.
 BEGIN_ORIGINAL_UNINITIALIZED_READ
+#endif
 int ScheduledEarEvent::InitializeScheduledEarEventPlayback() {
     playbackInitialized = 1;
     // Native code clears a local that it never reads.
@@ -269,9 +277,19 @@ int ScheduledEarEvent::InitializeScheduledEarEventPlayback() {
         playback->SetBackendPlaybackOverrideEnabled(1);
     }
     if (suppressionEnabled) {
+#ifdef ENABLE_PATCHES
+        EarEnvironment *environment = nullptr;
+        if (!g_EnvironmentRegistry.LookupWordPointerMapValue(environmentId, environment) ||
+            environment == nullptr) {
+            playbackInitialized = 0;
+            DeactivateScheduledEarEvent();
+            return 0;
+        }
+#else
         EarEnvironment *environment;
         // Native suppression assumes a registered environment.
         g_EnvironmentRegistry.LookupWordPointerMapValue(environmentId, environment);
+#endif
         attenuation =
             TruncateGain(static_cast<long double>(environment->GetEnvironmentInitialGain()) *
                          g_earInitialEventAttenuationScale * g_earEventTimeUnitScale);
@@ -316,7 +334,9 @@ int ScheduledEarEvent::InitializeScheduledEarEventPlayback() {
     streaming = playback->IsEarPlaybackStreaming();
     return 1;
 }
+#ifndef ENABLE_PATCHES
 END_ORIGINAL_UNINITIALIZED_READ
+#endif
 
 int ScheduledEarEvent::GetScheduledEventPlaybackStatus() {
     return playback->GetStatus();
