@@ -14,6 +14,13 @@
 
 s32 g_bHudShowLapTimes = 1;
 
+namespace {
+
+// @ghidraAddress BRD3D: 0x104aff20
+char g_szGapToLeaderText[1 + 7 + 1 + 3 + 1 + 3 + 1];
+
+} // namespace
+
 void DrawLapTimeListHud(const ViewportRect *viewports) {
     if (g_bHudShowLapTimes != 0) {
         s32 x = (s32)((u32)g_dwConfigFramebufferWidth - 16);

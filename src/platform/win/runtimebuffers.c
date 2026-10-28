@@ -31,6 +31,7 @@ u8 g_abRspDramStackBuffer[SP_DRAM_STACK_SIZE8 + 16];
 alignas(8)
     DisplayListCommand g_abDisplayListMemory[2 * DISPLAY_LIST_COMMANDS + DISPLAY_LIST_RESERVED];
 u8 g_aabInputRecordings[INPUT_RECORDERS][0xF000];
+u8 g_abPlaybackRecording[RECORDING_HEADER_SIZE];
 
 SoundSourceTracking g_ClosestSoundSource;
 OSMesgQueue g_DmaMessageQueue;

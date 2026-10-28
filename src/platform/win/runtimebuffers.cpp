@@ -1,7 +1,10 @@
+#include <platform/win/boot/app.h>
+#include <platform/win/directplay.h>
 #include <platform/win/frontend.h>
 #include <platform/win/ghost.h>
 #include <platform/win/netstream.h>
 #include <platform/win/render.h>
+#include <platform/win/settings.h>
 #include <platform/win/snapshot.h>
 
 unsigned char g_abAlphaRampPixelStrip[64];
@@ -16,3 +19,11 @@ int g_adwKeyBindingDuplicateFlags[KEY_CONFIG_ENTRY_COUNT];
 float g_afKeyframeAccumMax[7];
 int g_anSkidMarkHead[SKID_MARK_TRACK_COUNT];
 int g_anSkidMarkTail[SKID_MARK_TRACK_COUNT];
+
+char g_szInstallDirectory[MAX_PATH + 1];
+char g_szConfigFilePath[MAX_PATH + sizeof("BossRally.cfg")];
+char g_szBossRallyIniPath[MAX_PATH + sizeof("BossRally.ini")];
+char g_szModemPhoneNumber[MAX_PATH];
+char g_szModemDeviceName[MAX_PATH];
+char g_szNetworkChatText[201];
+char g_szSessionName[80];
