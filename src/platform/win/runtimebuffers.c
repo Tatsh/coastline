@@ -1,3 +1,4 @@
+#include <camera.h>
 #include <effects.h>
 #include <fade.h>
 #include <hud.h>
@@ -24,6 +25,9 @@
 
 f32 (*g_apVehicleModelMatrix[MAX_VEHICLES])[4];
 f32 (*g_apVehicleLightMatrix[MAX_VEHICLES])[4];
+
+u16 g_awCameraRayNearbyInstances[RAY_INSTANCES];
+u8 g_abRspDramStackBuffer[SP_DRAM_STACK_SIZE8 + 16];
 
 SoundSourceTracking g_ClosestSoundSource;
 OSMesgQueue g_DmaMessageQueue;
