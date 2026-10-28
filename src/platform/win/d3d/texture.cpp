@@ -83,22 +83,25 @@ static inline bool HasMoreAlphaBits(const DDPIXELFORMAT &current, int nAlphaBits
 
 static bool IsBetterTextureFormat(const TexturePixelFormat &entry, const DDPIXELFORMAT &candidate) {
     const DDPIXELFORMAT &current = entry.ddpf;
-    int nAlphaBits = AlphaBitCount(candidate);
-    int nRed;
+    int nAlphaBits;
+    int nRed, nGreen, nBlue;
 
     switch (entry.nId) {
     case 2:
-        return HasMoreAlphaBits(current, nAlphaBits, 8);
+        return HasMoreAlphaBits(current, AlphaBitCount(candidate), 8);
     case 3:
+        // The alpha bits are counted and not used.
+        AlphaBitCount(candidate);
         if (!(candidate.dwFlags & DDPF_RGB)) {
             return false;
         }
         nRed = PopCount32(candidate.dwRBitMask);
+        nGreen = PopCount32(candidate.dwGBitMask);
+        nBlue = PopCount32(candidate.dwBBitMask);
         if (current.dwRGBBitCount == 0) {
             return true;
         }
-        if (nRed != PopCount32(candidate.dwGBitMask) || nRed != PopCount32(candidate.dwBBitMask) ||
-            nRed <= 0) {
+        if (nRed != nGreen || nRed != nBlue || nRed <= 0) {
             return false;
         }
         // A current format whose channels differ in width loses to one with equal channels.
@@ -109,8 +112,10 @@ static bool IsBetterTextureFormat(const TexturePixelFormat &entry, const DDPIXEL
         return nRed <= 8 && nRed > PopCount32(current.dwRBitMask);
     case 4:
     case 0xc:
+        nAlphaBits = AlphaBitCount(candidate);
         return (candidate.dwFlags & DDPF_RGB) && HasMoreAlphaBits(current, nAlphaBits, 32);
     case 0xb:
+        nAlphaBits = AlphaBitCount(candidate);
         if (!(candidate.dwFlags & DDPF_RGB)) {
             return false;
         }
