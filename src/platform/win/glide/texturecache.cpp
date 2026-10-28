@@ -107,7 +107,8 @@ int AllocateGlideTmuTexture(int nTmu,
     slot.nClampT = nClampT;
     slot.nUnknown30 = 0;
     slot.nUnknown34 = 0;
-    slot.dwLodBias = static_cast<unsigned>(fLodBias * 4.0f);
+    // The original truncates to a signed integer, whose bits the slot stores unsigned.
+    slot.dwLodBias = static_cast<unsigned>(static_cast<int>(fLodBias * 4.0f));
     slot.nSmallLod = nSmallLod;
     slot.nLargeLod = nLargeLod;
     slot.nTmu = nTmu;
