@@ -1,12 +1,12 @@
 #include <PR/os.h>
 
-#if !(TGR_PLATFORM == TGR_PLATFORM_WIN)
+#if !(TGR_PC)
 #include <ultra64.h>
 
 #include "osint.h"
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flag) {
     return 1;
 }
@@ -34,4 +34,4 @@ s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flag) {
     __osRestoreInt(saveMask);
     return 0;
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */

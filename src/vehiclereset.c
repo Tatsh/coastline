@@ -9,7 +9,7 @@
 #include "vehiclecount.h"
 #include "weather.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "screen.h"
 #include "win32/settings.h"
 #endif
@@ -22,7 +22,7 @@
 #include <string.h>
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define RESET_FREE(name) ::name
 #define SET_MODEL_SLOT(vehicle, slot) (vehicle)->SetVehicleModelSlot(slot)
 #else
@@ -172,7 +172,7 @@ void SetVehicleVelocity(Vehicle *vehicle, f32 x, f32 y, f32 z) {
 }
 
 void ResetVehicleState(Vehicle *vehicle) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     const VehicleModel *spec = VEHICLE_GET(vehicle, Model);
 #else
     const CarPhysicsSpec *spec = &g_aCarPhysicsSpecs[vehicle->carModel];
@@ -219,7 +219,7 @@ void ResetVehicleState(Vehicle *vehicle) {
     VEHICLE_GET(vehicle, Body).boxSize.z = spec->boxSize.z;
     VEHICLE_GET(vehicle, Body).boxCenterZ = spec->boxCenterZ;
     VEHICLE_SET(vehicle, TableIndex, spec->tableIndex);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     VEHICLE_SET(vehicle, Model, NULL);
 #endif
 }
@@ -425,7 +425,7 @@ void InitVehiclePhysics(Vehicle *vehicle) {
         VEHICLE_SET(vehicle, RearLoad, 0);
         VEHICLE_GET(vehicle, Forces)
         [VEHICLE_FORCE_DAMPER_3].next = &VEHICLE_GET(vehicle, Forces)[VEHICLE_FORCE_DRAG];
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         NullStub();
         NullStub();
         NullStub();
@@ -443,7 +443,7 @@ void InitVehiclePhysics(Vehicle *vehicle) {
 #define SPRAY_VERTEX_ALPHA 0xFF
 
 void ResetVehicleEffects(Vehicle *vehicle) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     ConvertedModelVertex *vertex;
 #else
     Vtx *vertex;
@@ -484,7 +484,7 @@ void ResetVehicleEffects(Vehicle *vehicle) {
         velocity[1] = velocity[2];
         velocity[0] = velocity[2];
         velocity += 3;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         vertex->position.x = 0.0f;
         vertex->position.y = 0.0f;
         vertex->position.z = 0.0f;
@@ -504,7 +504,7 @@ void ResetVehicleEffects(Vehicle *vehicle) {
         }
         vertex->v.cn[2] = 0;
         vertex->v.cn[3] = SPRAY_VERTEX_ALPHA;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         vertex++;
     }
 
@@ -520,7 +520,7 @@ void ResetVehicleEffects(Vehicle *vehicle) {
 #define RESPAWN_OPACITY 0.1f
 #define AI_START_GRACE -180
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define RESPAWN_INTERMEDIATE(value) ((long double)(value))
 #else
 #define RESPAWN_INTERMEDIATE(value) (value)
@@ -532,11 +532,11 @@ void RespawnVehicle(Vehicle *vehicle) {
           RESPAWN_INTERMEDIATE(g_LoadedTrack.minZ) - RESPAWN_FALL_DEPTH)) {
         return;
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     ResetVehicleEffects(vehicle);
 #endif
     InitVehiclePhysics(vehicle);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_REGION == TGR_REGION_US
+#if TGR_PC || TGR_REGION == TGR_REGION_US
     if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
 #else
     if (g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_DEMO) {
@@ -592,7 +592,7 @@ void RespawnVehicle(Vehicle *vehicle) {
 
 void InitVehicleColorAndPhysics(Vehicle *vehicle) {
     /* The Japanese release does not paint the model here. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_REGION != TGR_REGION_JP
+#if TGR_PC || TGR_REGION != TGR_REGION_JP
     SetMaterialColor(VEHICLE_GET(vehicle, Model),
                      VEHICLE_GET(vehicle, Color)[0] >> 3,
                      VEHICLE_GET(vehicle, Color)[1] >> 3,
@@ -601,7 +601,7 @@ void InitVehicleColorAndPhysics(Vehicle *vehicle) {
     InitVehiclePhysics(vehicle);
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void Vehicle::SetVehicleModelSlot(s32 slot) {
     Vehicle *vehicle = this;
 #else
@@ -625,13 +625,13 @@ void ClearVehicleDamageState(Vehicle *vehicle) {
 #define GRID_HEIGHT 0.1f
 #define QUARTER_TURN 1.570796371f
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define SELECTED_SETUP_TRACK() (g_apTrackMenuItems[g_dwSelectedTrackId])
 #else
 #define SELECTED_SETUP_TRACK() ((TrackMenuItem *)g_apTrackMenuItems[g_dwSelectedTrackId])
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void Vehicle::SetupVehicleForRaceStart(void) {
     Vehicle *vehicle = this;
 #else
@@ -643,7 +643,7 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
     f32 forwardX;
     f32 forwardY;
     f32 sideX;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double sideY;
     s32 gridIndex;
 #else
@@ -661,7 +661,7 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
         column = 0.5f;
     } else {
         SET_MODEL_SLOT(vehicle, VEHICLE_GET(vehicle, Index));
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         gridIndex =
             g_dwNetworkPlayMode ? VEHICLE_GET(vehicle, GridIndex) : VEHICLE_GET(vehicle, Index);
         row = (f32)(gridIndex >> 1);
@@ -674,12 +674,12 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
     forwardX = cosf(g_LoadedTrack.startHeading);
     forwardY = sinf(g_LoadedTrack.startHeading);
     sideX = cosf(g_LoadedTrack.startHeading + QUARTER_TURN);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     sideY = sinl((f32)(g_LoadedTrack.startHeading + QUARTER_TURN));
 #else
     sideY = sinf(g_LoadedTrack.startHeading + QUARTER_TURN);
 #endif
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     RESET_FREE(SetVehiclePosition)(
         vehicle,
         g_LoadedTrack.startPosition.x -
@@ -696,7 +696,7 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
         g_LoadedTrack.startPosition.y - sideY * GRID_COLUMN_SPACING * (column - 0.5f) -
             forwardY * GRID_ROW_SPACING * (row + 1.0f),
         g_LoadedTrack.startPosition.z + GRID_HEIGHT);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     VEHICLE_SET(vehicle, Distance, (row + 0.5f) * -GRID_ROW_SPACING);
     RESET_FREE(InitVehicleOrientationFromAngle)(vehicle, g_LoadedTrack.startHeading);
     VEHICLE_GET(vehicle, PreviousPosition) = VEHICLE_GET(vehicle, Frame).position;
@@ -741,7 +741,7 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
     if (VEHICLE_GET(vehicle, Index) < (s32)g_dwNumLocalPlayers ||
         g_dwGameMode == GAME_MODE_ARCADE || g_dwGameMode == GAME_MODE_TIME_ATTACK ||
         g_dwGameMode == GAME_MODE_DEMO
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         || g_dwGameMode == GAME_MODE_NETWORK
 #endif
     ) {

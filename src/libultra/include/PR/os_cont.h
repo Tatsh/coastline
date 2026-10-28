@@ -82,7 +82,7 @@ extern "C" {
  * The name of the channel error of OSContStatus and OSContPad. The C runtime of Windows defines
  * errno as a macro, so the member takes another name there.
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define CONT_ERRNO errnum
 #else
 #define CONT_ERRNO errno

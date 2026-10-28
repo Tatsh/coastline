@@ -1,6 +1,6 @@
 #include "volumecontrols.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/boot/rallyconfig.h"
 #include "win32/sound.h"
 #else
@@ -8,7 +8,7 @@
 #include "options.h"
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define BGM_LEVEL g_GlobalRallyConfig.dwMusicVolume
 #define SFX_LEVEL g_GlobalRallyConfig.dwSfxVolume
 #define EFFECT_VOLUME g_bSfxVolume
@@ -18,7 +18,7 @@
 #define SFX_LEVEL g_OptionSettings.sfxVolume
 #define EFFECT_VOLUME g_bSfxMasterVolume
 #define VOLUME_COUNT VOLUME_LEVELS
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 void IncreaseBgmVolume(void) {
     if (BGM_LEVEL < VOLUME_COUNT - 1) {

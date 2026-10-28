@@ -10,7 +10,7 @@
 #define GRID_CELL(column, row) ((u8)(column) + ((u8)(row) << GRID_ROW_SHIFT))
 
 /* Whether a point is off the grid, and the column or row of a coordinate on it. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define IS_OFF_GRID(x, y) (!((x) >= 0.0f && (x) < GRID_SIZE && (y) >= 0.0f && (y) < GRID_SIZE))
 #define GRID_INDEX(value) ((u32)(s64)((value) * GRID_CELL_SCALE))
 #else

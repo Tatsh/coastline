@@ -5,7 +5,7 @@
 #include "trackselect.h"
 #include "weather.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "instantreplay.h"
 #include "win32/renderbackend.h"
 #endif
@@ -42,7 +42,7 @@ void StreamAnimatedTrackTextures(void) {
             phase = (u32)g_dwElapsedTimeMs %
                     (animation->frames[frameCount - 1].time - animation->frames[0].time);
             if (frameCount == 2 && animation->frames[0].time == TEXTURE_ROM_NONE) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                 continue;
 #else
                 /* A texture of the snow, then the texture of the other weathers. */
@@ -52,10 +52,10 @@ void StreamAnimatedTrackTextures(void) {
                 frame = g_dwSnowMode == 0;
                 imageRom = frame ? TEXTURE_ROM_NONE : animation->frames[frame].imageRom;
                 paletteRom = animation->frames[frame].paletteRom;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
             } else {
                 if (g_dwRacePauseState
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                     || gInstantReplayActive == 2
 #endif
                 ) {
@@ -75,7 +75,7 @@ void StreamAnimatedTrackTextures(void) {
                 paletteRom = animation->frames[frame].paletteRom;
             }
             if (MODEL_TEXTURE_SIZE(texture) != 0 && imageRom != TEXTURE_ROM_NONE) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                 g_pfnAliasTextureEntrySurface((imageRom >> 16) & 0xffffu, imageRom & 0xffffu);
                 texture = &g_LoadedTrack.textures[i];
 #else
@@ -89,11 +89,11 @@ void StreamAnimatedTrackTextures(void) {
                              MODEL_TEXTURE_SIZE(texture),
                              &g_DmaMessageQueue);
                 texture = &g_LoadedTrack.textures[i];
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
             }
         }
         if (texture->palette != NULL && paletteRom != TEXTURE_ROM_NONE) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             /* The transfer stub ignores the allocated message and transfer arguments. */
             AllocIoMessage();
             osContInit(NULL, NULL, NULL);
@@ -108,7 +108,7 @@ void StreamAnimatedTrackTextures(void) {
                          MODEL_TEXTURE_FORMAT(texture) == TEXTURE_FORMAT_CI4 ? CI4_PALETTE_BYTES :
                                                                                PALETTE_BYTES,
                          &g_DmaMessageQueue);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         }
     }
     g_dwStreamedSnowMode = g_dwSnowMode;

@@ -2,21 +2,21 @@
 #include "vecmath.h"
 #include "weather.h"
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 #include <PR/gu.h>
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /** @ghidraAddress BRD3D: 0x104bbe0c */
 f32 g_fWindAngle;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #define RANDOM_TO_TWO (2.0f / 65535.0f)
 #define WIND_TURN 6.2831855f
 #define WIND_STRENGTH_MAX 1.0f
 #define WIND_STRENGTH_MIN 0.5f
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /* The x87 instructions preserve extended results and return large angles unchanged. */
 static inline long double WindCosine(f32 angle) {
     long double result;
@@ -29,10 +29,10 @@ static inline long double WindSine(f32 angle) {
     __asm__("fsin" : "=t"(result) : "0"((long double)angle));
     return result;
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 void UpdateWindDirection(void) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double updatedAngle;
     long double updatedStrength;
     long double cosine;
@@ -78,5 +78,5 @@ void UpdateWindDirection(void) {
     g_vWindVelocity.x = cosf(g_fWindAngle) * (g_fFrameDeltaTime * g_fWindStrength);
     g_vWindVelocity.y = sinf(g_fWindAngle) * (g_fFrameDeltaTime * g_fWindStrength);
     g_vWindVelocity.z = 0.0f;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 }

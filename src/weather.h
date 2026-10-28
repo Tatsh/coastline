@@ -135,7 +135,7 @@ extern s32 g_dwLightningFlashCounter;
 /** The side of the texture of the rain streaks, in texels. */
 #define RAIN_STREAK_TEXTURE_SIDE 64
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_PC && TGR_RENDERER == TGR_RENDERER_D3D
 #define RAIN_STREAK_TEXTURE_BYTES_PER_TEXEL 4
 #else
 #define RAIN_STREAK_TEXTURE_BYTES_PER_TEXEL 1
@@ -177,7 +177,7 @@ extern f32 g_fWindAngle;
  */
 extern f32 g_fWindStrength;
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * The speed of the camera of the last view through the rain, limited.
  *
@@ -188,9 +188,9 @@ extern f32 g_fWindStrength;
  * @ghidraAddress BRGlide: 0x104b15c8
  */
 extern f32 g_fRainCameraSpeed;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * The share of its movement the camera of the last view passes on to the rain.
  *
@@ -201,7 +201,7 @@ extern f32 g_fRainCameraSpeed;
  * @ghidraAddress BRGlide: 0x104ad6e8
  */
 extern f32 g_fRainCameraSpeedScale;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
 /**
  * Four times the depth of the lightning bolt being divided.
@@ -212,7 +212,7 @@ extern f32 g_fRainCameraSpeedScale;
  */
 extern s32 g_nLightningBoltDepth;
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * The time since the last strike, in 343 units a second.
  *
@@ -223,9 +223,9 @@ extern s32 g_nLightningBoltDepth;
  * @ghidraAddress BRGlide: 0x104add3c
  */
 extern f32 g_fLightningFlashTimer;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * Whether the rain particles have their first positions.
  *
@@ -236,7 +236,7 @@ extern f32 g_fLightningFlashTimer;
  * @ghidraAddress BRGlide: 0x104b15f4
  */
 extern s32 g_bRainParticlesInitialized;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
 /**
  * The texture of the snowflakes and other particles, 64 texels square.

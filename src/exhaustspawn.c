@@ -3,7 +3,7 @@
 
 #define RANDOM_SHARE (1.0f / 65535.0f)
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void Vehicle::SpawnExhaustParticle(void) {
     Vehicle *vehicle = this;
     volatile long double negativeRevs, timer, rawSize;
@@ -16,7 +16,7 @@ void SpawnExhaustParticle(Vehicle *vehicle) {
     u16 index;
 
     random = (f32)(AdvanceRng() & 0x1FFF);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     negativeRevs = (long double)vehicle->engineRpm * -0.001f;
     timer = (((long double)random * (1.0f / 65536.0f) - negativeRevs) - -1.0f) * g_fFrameDeltaTime +
             vehicle->exhaustTimer;
@@ -27,14 +27,14 @@ void SpawnExhaustParticle(Vehicle *vehicle) {
     revs = vehicle->engineRpm * 0.001f;
     vehicle->exhaustTimer += g_fFrameDeltaTime * (1.0f + revs + random * (1.0f / 65536.0f));
     if (!(vehicle->exhaustTimer > 0.25f)) {
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         return;
     }
     index = g_wParticleFreeListHead;
     if (index == 0) {
         return;
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     revs = (long double)vehicle->engineRpm * 0.001f;
 #endif
     vehicle->exhaustTimer = 0.0f;
@@ -42,7 +42,7 @@ void SpawnExhaustParticle(Vehicle *vehicle) {
     g_wParticleFreeListHead = particle->next;
     particle->next = g_wExhaustParticleListHead;
     g_wExhaustParticleListHead = index;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     Vec3fScale(&particle->velocity, &vehicle->frame.forward, (f32)(-1.5L - revs));
 #else
     Vec3fScale(&particle->velocity, &vehicle->frame.forward, -1.5f - revs);
@@ -57,7 +57,7 @@ void SpawnExhaustParticle(Vehicle *vehicle) {
     Vec3fMulAdd(&particle->position, &exhaust, &particle->position, random * random);
     vehicle->exhaustPosition = exhaust;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     rawSize = (long double)revs * 0.1f - -1.0f;
     size = rawSize;
     particle->size = rawSize * 0.15f;
@@ -66,6 +66,6 @@ void SpawnExhaustParticle(Vehicle *vehicle) {
     size = 1.0f + revs * 0.1f;
     particle->size = size * 0.15f;
     particle->fade = (u32)(1.0f / (Vec3fLength(&vehicle->placedVelocity) + size) * 255.0f);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     particle->alpha = 255;
 }

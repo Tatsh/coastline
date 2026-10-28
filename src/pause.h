@@ -19,7 +19,7 @@ enum {
     PAUSE_MUSIC,    /*!< The volume of the music, changed with left and right. */
     PAUSE_SOUND,    /*!< The volume of the sound effects, changed with left and right. */
     PAUSE_EXIT,     /*!< Exit to the main menu. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     PAUSE_CONFIRM_EXIT, /*!< Confirm leaving the game. */
 #endif
     PAUSE_ITEMS, /*!< The number of items. */

@@ -15,7 +15,7 @@
 #include "render.h"
 #include "vecmath.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/airplanestate.h"
 #endif
 
@@ -48,7 +48,7 @@ typedef struct {
 } RacePhaseStep;
 
 /** The lines of a caption of the credits. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define CAPTION_LINES 6
 #else
 #define CAPTION_LINES 5
@@ -60,7 +60,7 @@ typedef struct {
     f32 duration;      /*!< The time it shows, in seconds. */
     const char *lines[CAPTION_LINES]; /*!< The lines, ending with NULL when there are fewer than
                                            #CAPTION_LINES. */
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
     u8 unreconstructed1C[0x20 - 0x1C]; /*!< Not yet reconstructed. */
 #endif
 } RaceCaption;
@@ -133,7 +133,7 @@ extern s32 g_bStartLightsVisible;
  */
 extern f32 g_fStartLightsDrop;
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * The placed model of the airplane, or 0 when the track has none or it landed, and the model a
  * vehicle sends it off from on the lap g_dwAirplaneTriggerLap.
@@ -275,7 +275,7 @@ extern Vec3f g_vAirplaneDir;
  * @ghidraAddress BRGlide: 0x105bc804
  */
 extern Vec3f g_vAirplaneDirNext;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
 /**
  * The captions of the credits, ending with a NULL title.
@@ -352,7 +352,7 @@ extern s32 g_dwSaveAvailable;
  * @ghidraAddress BRD3D: 0x100aa210
  * @ghidraAddress BRGlide: 0x100a9560
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 extern u8 g_abRacePositionPoints[20];
 #else
 extern u8 g_abRacePositionPoints[];
@@ -431,7 +431,7 @@ extern s32 g_dwRaceFinishOrderCounter;
  */
 extern f32 g_fRacePhaseTimer;
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * The step of the countdown of the start lights.
  *
@@ -442,7 +442,7 @@ extern f32 g_fRacePhaseTimer;
  * @ghidraAddress BRGlide: 0x105ccb74
  */
 extern s32 g_dwStartLightsStep;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
 /**
  * The index of the phase in g_aRacePhaseTable.
@@ -503,7 +503,7 @@ extern f32 g_afSavedResultBestLapTimes[SAVED_RESULTS];
  * @ghidraAddress BRD3D: 0x10690950
  * @ghidraAddress BRGlide: 0x105ccaf8
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 extern f32 g_aafSavedResultLapTimes[SAVED_RESULTS][12];
 #else
 extern f32 g_aafSavedResultLapTimes[SAVED_RESULTS][5];
@@ -698,7 +698,7 @@ void ScrollTextUp(void);
  * @ghidraAddress BRD3D: 0x10015bd0
  * @ghidraAddress BRGlide: 0x10013140
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void DrawScrollingText(const ViewportRect *viewport);
 #else
 void DrawScrollingText(void);
@@ -714,7 +714,7 @@ void DrawScrollingText(void);
  * @ghidraAddress BRD3D: 0x10014a30
  * @ghidraAddress BRGlide: 0x10011fa0
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #ifdef __cplusplus
 extern "C"
 #endif
@@ -759,7 +759,7 @@ extern "C"
 #endif
     void SetTrackFromSeason(void);
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * @ghidraAddress BRD3D: 0x1002c500
  * @ghidraAddress BRGlide: 0x10019a70
@@ -768,7 +768,7 @@ extern "C"
 extern "C"
 #endif
     void RunRaceGameScreen(void);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /**
  * Score championship progress and unlock bonuses when the season's points qualify.

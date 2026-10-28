@@ -12,7 +12,7 @@ void CheckVehicleVisibility(Vehicle *vehicle) {
     f32 distance;
     Vec3f ahead;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (VEHICLE_GET(vehicle, Driver) == NULL) {
         return;
     }

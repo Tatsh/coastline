@@ -4,7 +4,7 @@
 #define SCATTER_DISTANCE_SQUARED 256.0f
 #define RANDOM_SHARE (1.0f / 65535.0f)
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 typedef long double SmokeRandom;
 /* Unordered distances also scatter the puff. */
 #define SMOKE_SCATTER(distance) (!((distance) >= SCATTER_DISTANCE_SQUARED))
@@ -13,7 +13,7 @@ typedef f32 SmokeRandom;
 #define SMOKE_SCATTER(distance) ((distance) < SCATTER_DISTANCE_SQUARED)
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void Vehicle::SpawnTireSmoke(void) {
     Vehicle *vehicle = this;
     volatile long double timer, groundOffset;
@@ -32,13 +32,13 @@ void SpawnTireSmoke(Vehicle *vehicle) {
     if (vehicle->body.skidding == 0 || !(vehicle->speedKph > 40.0f)) {
         return;
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     rate = (long double)g_fFrameDeltaTime * 0.5f - (long double)vehicle->speedKph * -0.00066006600f;
 #else
     rate = g_fFrameDeltaTime * 0.5f + vehicle->speedKph * 0.00066006600f;
 #endif
     for (wheel = 0; wheel < VEHICLE_WHEELS; wheel++) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         timer = ((long double)vehicle->body.skidding * 0.03f) * rate + vehicle->smokeTimers[wheel];
         vehicle->smokeTimers[wheel] = timer;
         /* Compare the unrounded sum after storing the timer. */
@@ -83,7 +83,7 @@ void SpawnTireSmoke(Vehicle *vehicle) {
                 &particle->velocity, &vehicle->frame.side, wheel == 0 ? 0.5f : -0.5f);
         }
         Vec3fSubtractInPlace(&particle->velocity, &vehicle->frame.forward);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         fade = 1.0L - 50.0f / ((long double)vehicle->speedKph - -50.0f);
 #else
         fade = 1.0f - 50.0f / (vehicle->speedKph + 50.0f);
@@ -92,7 +92,7 @@ void SpawnTireSmoke(Vehicle *vehicle) {
 
         Vec3fSubtract(
             &particle->position, &vehicle->wheelFrames[wheel].position, &vehicle->frame.forward);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         groundOffset = (long double)vehicle->groundDistance * -0.5f;
         particle->position.z = (long double)particle->position.z - groundOffset;
 #else
@@ -110,7 +110,7 @@ void SpawnTireSmoke(Vehicle *vehicle) {
         vehicle->smokePositions[wheel] = thrown;
         particle->size = 0.4f;
         particle->fade = 25;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         particle->alpha = (s64)(16.0L - (long double)fade * -167.3f);
 #else
         particle->alpha = (s32)(239.0f * fade * 0.7f + 16.0f);

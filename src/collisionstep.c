@@ -8,7 +8,7 @@
 #include "vehicleaccess.h"
 #include "vehiclecount.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include <math.h>
 #include <string.h>
 
@@ -18,16 +18,16 @@
 #include <PR/gu.h>
 #include <PR/os.h>
 #include <PR/os_libc.h>
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /** @ghidraAddress BRD3D: 0x11754e38 */
 CollisionTriangleNode *g_pCollisionTriangleList;
 /** @ghidraAddress BRD3D: 0x117554e4 */
 CollisionTriangleNode *g_pNextCollisionTriangleNode;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 
 #define osSyncPrintf(...) NullStub()
 #define COLLISION_PRODUCT(a, b) ((long double)(a) * (b))
@@ -36,15 +36,15 @@ TrackTriangle *g_pCollisionTriangle;
 #else
 #define COLLISION_PRODUCT(a, b) ((a) * (b))
 #define COLLISION_LESS(a, b) ((a) < (b))
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define AddTimingMarker(...) NullStub()
 #endif
 
 #define ABS(x) ((x) < 0.0f ? -(x) : (x))
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define COLLISION_DISTANCE_TYPE long double
 #define COLLISION_SIGN(x) (!((x) < 0.0f) && !((x) > 0.0f) ? 0.0L : ((x) > 0.0f ? 1.0L : -1.0L))
 #define COLLISION_NEAREST(a, b) ((a) >= (b))
@@ -87,7 +87,7 @@ s32 TipBalancedVehicle(RigidBody *body) {
         }
         touching++;
         wheel = body->wheels[i];
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         corner.x = (f32)(COLLISION_SIGN(wheel->state.position.x) *
                          COLLISION_PRODUCT(body->boxSize.x, 0.5f));
         corner.y = (f32)(COLLISION_SIGN(wheel->state.position.y) *
@@ -97,7 +97,7 @@ s32 TipBalancedVehicle(RigidBody *body) {
         corner.x = (f32)(SIGN(wheel->state.position.x) * (f64)(body->boxSize.x * 0.5f));
         corner.y = (f32)(SIGN(wheel->state.position.y) * (f64)(body->boxSize.y * 0.5f));
         corner.z = -body->boxSize.z * 0.5f + body->boxCenterZ;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         Mtx4x4TransformPoint(&point, body->orientation, &corner);
         distance = GroundDistance(wheel, &point);
         if (COLLISION_NEAREST(nearest, distance)) {
@@ -112,11 +112,11 @@ s32 TipBalancedVehicle(RigidBody *body) {
         return 0;
     }
     GetBodyPointVelocity(&velocity, body, &corner);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_PC && TGR_RENDERER == TGR_RENDERER_D3D
     along = (COLLISION_PRODUCT(wheel->groundNormal.z, velocity.z) +
              COLLISION_PRODUCT(wheel->groundNormal.y, velocity.y)) +
             COLLISION_PRODUCT(wheel->groundNormal.x, velocity.x);
-#elif TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE
+#elif TGR_PC && TGR_RENDERER == TGR_RENDERER_GLIDE
     along = (COLLISION_PRODUCT(wheel->groundNormal.x, velocity.x) +
              COLLISION_PRODUCT(wheel->groundNormal.y, velocity.y)) +
             COLLISION_PRODUCT(wheel->groundNormal.z, velocity.z);
@@ -130,7 +130,7 @@ s32 TipBalancedVehicle(RigidBody *body) {
         return 0;
     }
     /* Roll it towards the way its nose leans across the ground. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     tilt = (COLLISION_PRODUCT(body->groundNormal.y, body->orientation[0][1]) +
             COLLISION_PRODUCT(body->groundNormal.z, body->orientation[0][2])) +
            COLLISION_PRODUCT(body->groundNormal.x, body->orientation[0][0]);
@@ -151,7 +151,7 @@ s32 TipBalancedVehicle(RigidBody *body) {
     osSyncPrintf("-- Stand Point = %f\n", (f64)tilt);
     Mtx3x3MulVec3f(&point, body->orientation, &nudge);
     spin = &body->stepStates[0].angularVelocity;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     spin->x = spin->x - COLLISION_PRODUCT(point.x, -2.0f);
     spin->y = spin->y - COLLISION_PRODUCT(point.y, -2.0f);
     spin->z = spin->z - COLLISION_PRODUCT(point.z, -2.0f);
@@ -161,12 +161,12 @@ s32 TipBalancedVehicle(RigidBody *body) {
         spin->y = point.y + spin->y;
         spin->z = point.z + spin->z;
     }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     ComputeDeltaQuaternion(&body->stepStates[0]);
     return 1;
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /* The x87 reduction order differs between face axes and each group of edge axes. */
 #define OBB_ABS(x) (!((x) >= 0.0f) ? -(x) : (x))
 #define OBB_LEQ(a, b) (!((a) > (b)))
@@ -183,8 +183,8 @@ s32 TipBalancedVehicle(RigidBody *body) {
 #define OBB_DOT1(a, b, c) (((a) + (b)) + (c))
 #define OBB_SUM4_X(a, b, c, d) ((((a) + (b)) + (c)) + (d))
 #define OBB_SUM4_YZ(a, b, c, d) ((((a) + (b)) + (c)) + (d))
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE
+#endif /* TGR_PC */
+#if TGR_PC && TGR_RENDERER == TGR_RENDERER_GLIDE
 /* BRGlide reduces each edge axis in an order of its own. */
 #define OBB_SUM4_X1(a, b, c, d) ((((c) + (a)) + (b)) + (d))
 #define OBB_SUM4_X2(a, b, c, d) ((((a) + (b)) + (d)) + (c))
@@ -199,7 +199,7 @@ s32 TipBalancedVehicle(RigidBody *body) {
 #define OBB_SUM4_YZ1 OBB_SUM4_YZ
 #define OBB_SUM4_YZ2 OBB_SUM4_YZ
 #define OBB_SUM4_YZ3 OBB_SUM4_YZ
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE */
+#endif /* TGR_PC && TGR_RENDERER == TGR_RENDERER_GLIDE */
 
 s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *halfB) {
     f32 r[3][3];
@@ -347,7 +347,7 @@ void CollideVehicles(void) {
     Vec3f apart, offset, local, extents, shared, back;
     f32 transposeB[3][3], rotationA[3][3], relative[3][3];
     COLLISION_DISTANCE_TYPE speedA, speedB, mean, closing;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double highApartZ;
     f32 square;
 #endif
@@ -371,7 +371,7 @@ void CollideVehicles(void) {
             sb = &VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[j]), Vehicle), Body).state;
             apart.x = sa->position.x - sb->position.x;
             apart.y = sa->position.y - sb->position.y;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             highApartZ = (long double)sa->position.z - sb->position.z;
             apart.z = highApartZ;
             square = highApartZ * apart.z +
@@ -380,10 +380,10 @@ void CollideVehicles(void) {
 #else
             apart.z = sa->position.z - sb->position.z;
             if (!(sqrtf(apart.z * apart.z + (apart.x * apart.x + apart.y * apart.y)) < 5.0f)) {
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
                 continue;
             }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             extents.x = 2.5f;
             extents.y = 1.0f;
             extents.z = 1.0f;
@@ -406,7 +406,7 @@ void CollideVehicles(void) {
             }
             /* They share the mean of their speeds along the line between them. */
             Vec3fNormalizeFast(&apart);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             speedA = (COLLISION_PRODUCT(sa->velocity.x, apart.x) +
                       COLLISION_PRODUCT(sa->velocity.y, apart.y)) +
                      COLLISION_PRODUCT(apart.z, sa->velocity.z);
@@ -428,7 +428,7 @@ void CollideVehicles(void) {
             }
             if (VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle), Body)
                     .framesSinceVehicleImpact >= 41) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                 /* __ftol truncates through 64 bits, which gives 0 for a NaN closing speed. */
                 volume = (u32)(s64)(128.0L - closing * -4.70370388031005859375f);
 #else
@@ -446,7 +446,7 @@ void CollideVehicles(void) {
             back.z = apart.z * -1.0f;
             PushVehicle(&g_aRacerSlots[i], sa, &shared, &back, &apart);
             PushVehicle(&g_aRacerSlots[j], sb, &shared, &apart, &back);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             if (g_dwNetworkPlayMode) {
                 VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle), Body)
                     .stepStates[0]
@@ -458,7 +458,7 @@ void CollideVehicles(void) {
                     .stepStates[0]
                     .velocity.z = sa->velocity.z;
             }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         }
     }
 }
@@ -475,7 +475,7 @@ void CollideVehicles(void) {
 /* The original passes the spin flag to the bounce without setting it outside the demonstration. */
 /* The races of the demonstration that sort their contacts with the track: every one in the USA
  * release, the ones under the credits in the Japanese release, and none in the European release. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define SORTS_CONTACTS() (g_dwGameMode == GAME_MODE_DEMO)
 #elif TGR_REGION == TGR_REGION_JP
 #define SORTS_CONTACTS() (g_dwGameMode == GAME_MODE_DEMO && g_dwRaceSessionType)
@@ -488,7 +488,7 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
     TrackTriangle *triangle;
     Vec3f corners[3], normal, along, half, back;
     f32 distance;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double highPush, highBack[3];
 #else
     f32 push;
@@ -509,7 +509,7 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
         }
         Vec3fNormalizeFast(&normal);
         resist = 1;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         distance = (COLLISION_PRODUCT(normal.x, corners[0].x) +
                     COLLISION_PRODUCT(normal.y, corners[0].y)) +
                    COLLISION_PRODUCT(normal.z, corners[0].z);
@@ -518,7 +518,7 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
 #endif
         g_dwCollisionContactType = 0;
         hits++;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_REGION != TGR_REGION_EU
+#if TGR_PC || TGR_REGION != TGR_REGION_EU
         if (SORTS_CONTACTS()) {
             if (ABS(normal.x) > 0.999f || ABS(normal.y) > 0.999f || ABS(normal.z) > 0.999f) {
                 g_dwCollisionContactType = 1;
@@ -530,10 +530,10 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
                 g_dwCollisionContactType = 2;
             }
         }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_REGION != TGR_REGION_EU */
+#endif /* TGR_PC || TGR_REGION != TGR_REGION_EU */
         osSyncPrintf("Cube Edge to Triangle Face\n");
         /* The corner of the box towards the triangle. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         along.z = normal.z * distance;
         half.x = (f32)(COLLISION_LESS(COLLISION_PRODUCT(normal.x, distance), 0.0f) ? -1 : 1) * 0.5f;
         half.y = (f32)(COLLISION_LESS(COLLISION_PRODUCT(normal.y, distance), 0.0f) ? -1 : 1) * 0.5f;
@@ -545,7 +545,7 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
         half.x = (f32)(along.x < 0.0f ? -1 : 1) * 0.5f;
         half.y = (f32)(along.y < 0.0f ? -1 : 1) * 0.5f;
         half.z = (f32)(along.z < 0.0f ? -1 : 1) * 0.5f;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         g_vCollisionContact.x = half.x * body->boxSize.x;
         g_vCollisionContact.y = half.y * body->boxSize.y;
         g_vCollisionContact.z = half.z * body->boxSize.z + body->boxCenterZ;
@@ -566,7 +566,7 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
         if (moved) {
             hit = 1;
             /* Move the step back out along the normal by a tenth more than it moved in. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             highBack[0] =
                 (long double)body->stepStates[1].position.x - body->stepStates[0].position.x;
             highBack[1] =
@@ -595,7 +595,7 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
             body->stepStates[1].position.x = body->stepStates[1].position.x - back.x;
             body->stepStates[1].position.y = body->stepStates[1].position.y - back.y;
             body->stepStates[1].position.z = body->stepStates[1].position.z - back.z;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
             /* The original takes back three of the four parts of the orientation. */
             body->stepStates[1].orientation.w = body->stepStates[0].orientation.w;
             body->stepStates[1].orientation.y = body->stepStates[0].orientation.y;
@@ -612,7 +612,7 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
     return hit;
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void StepVehicleCollisions(Vehicle *vehicle, RigidBody *body) {
 #else
 void StepVehicleCollisions(RigidBody *body) {
@@ -622,7 +622,7 @@ void StepVehicleCollisions(RigidBody *body) {
     /* The original reserves stack for twelve bytes of locals it does not use. */
     f32 unused[3];
     f32 remaining, step;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double highRemaining, dx, dy, dz, displacement;
     f32 storedDx, storedDz;
 #endif
@@ -669,7 +669,7 @@ void StepVehicleCollisions(RigidBody *body) {
                 QuaternionToMatrix(body->orientation, &body->stepStates[1]);
             }
             memcpy(&body->stepStates[0], &body->stepStates[1], sizeof(RigidBodyState));
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             highRemaining = (long double)remaining - step;
             remaining = highRemaining;
         } while (0.002f < highRemaining);
@@ -681,7 +681,7 @@ void StepVehicleCollisions(RigidBody *body) {
     QuaternionToMatrix(body->orientation, &body->stepStates[1]);
     AddTimingMarker(0, 0x80, 0x80, 0, 0xFF);
     memcpy(&body->stepStates[0], &body->stepStates[1], sizeof(RigidBodyState));
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (VEHICLE_GET(vehicle, Driver) != AiVehicleControllerCallback) {
         if (COLLISION_LESS(body->orientation[2][2], UPRIGHT_LIMIT)) {
             if (body->uprightFrames < 0) {
@@ -703,7 +703,7 @@ void StepVehicleCollisions(RigidBody *body) {
             body->uprightFrames = 120;
         }
     } else
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     {
         if (COLLISION_LESS(body->orientation[2][2], UPRIGHT_LIMIT)) {
             if (body->uprightFrames < 0) {
@@ -714,7 +714,7 @@ void StepVehicleCollisions(RigidBody *body) {
             body->uprightFrames = UPRIGHT_FRAMES;
         }
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     VEHICLE_GET(vehicle, PreviousCollisionPosition).x = body->orientation[3][0];
     VEHICLE_GET(vehicle, PreviousCollisionPosition).y = body->orientation[3][1];
     VEHICLE_GET(vehicle, PreviousCollisionPosition).z = body->orientation[3][2];

@@ -1,4 +1,4 @@
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include <math.h>
 
 #include <PR/gu.h>
@@ -7,7 +7,7 @@
 #endif
 
 void guRotateF(float mf[4][4], float a, float x, float y, float z) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     float basis[4][4], transpose[4][4], rotation[4][4];
     long double angle;
     double cosineAngle;
@@ -76,10 +76,10 @@ void guRotateF(float mf[4][4], float a, float x, float y, float z) {
     mf[2][2] = t + cosine * (1.0f - t);
     mf[1][0] = ab - z * sine;
     mf[0][1] = ab + z * sine;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 }
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 void guRotate(Mtx *m, float a, float x, float y, float z) {
     float mf[4][4];
 

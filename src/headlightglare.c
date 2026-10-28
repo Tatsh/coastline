@@ -6,7 +6,7 @@
 #define GLARE_MIN_LEVEL 0.1f
 #define GLARE_MAX_LEVEL 0.7f
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define GLARE_LEVEL level
 #define GLARE_VIEWPORTS viewports
 #define GLARE_ALPHA(value) ((s32)(s64)((long double)255.0f * (value)))
@@ -16,14 +16,14 @@
 #define GLARE_VIEWPORTS g_aViewportRects
 #define GLARE_ALPHA(value) ((s32)(255.0f * (value)))
 #define GLARE_ADD(left, right) ((left) + (right))
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void RenderHeadlightGlare(const ViewportRect *viewports, f32 level) {
 #else
 void RenderHeadlightGlare(void) {
 #endif
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (!(level >= GLARE_MIN_LEVEL)) {
 #else
     if (GLARE_LEVEL < GLARE_MIN_LEVEL) {
@@ -49,7 +49,7 @@ void RenderHeadlightGlare(void) {
                                GLARE_VIEWPORTS[g_dwCurrentSplitScreenIndex].width),
                      GLARE_ADD(GLARE_VIEWPORTS[g_dwCurrentSplitScreenIndex].y,
                                GLARE_VIEWPORTS[g_dwCurrentSplitScreenIndex].height));
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     WriteFadeCombineMode(COMBINED);
 #endif
     gDPPipeSync(gDisplayListPtr++);

@@ -16,7 +16,7 @@
 #include "vehicleaccess.h"
 #include "weather.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/boot/rallyconfig.h"
 #include "win32/render.h"
 #include "win32/settings.h"
@@ -24,7 +24,7 @@
 #include "audiomix.h"
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 namespace {
     /**
      * Whether shadows include triangles outside their texture and extend beyond their vehicle's
@@ -38,14 +38,14 @@ namespace {
      */
     s32 g_bShadowCullDisabled;
 } // namespace
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /* The words of the display list of the shadows a placed model may fill. */
 #define SHADOW_LIST_WORDS 969
 
 /* The texture coordinates past which a vertex is off the texture of a shadow, in s and t. */
 #define SHADOW_TEXTURE_S 0x400
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define SHADOW_TEXTURE_T 0x400
 typedef ConvertedModelVertex ShadowVertex;
 #define SHADOW_PRODUCT(a, b) ((long double)(a) * (b))
@@ -55,7 +55,7 @@ typedef ConvertedModelVertex ShadowVertex;
 typedef Vtx ShadowVertex;
 #define SHADOW_PRODUCT(a, b) ((a) * (b))
 #define SHADOW_DIFFERENCE(a, b) ((a) - (b))
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /* The bits of a vertex off the texture: to the left, the right, above, and below. */
 #define SHADOW_OFF_LOW_S 0x1
@@ -80,7 +80,7 @@ typedef Vtx ShadowVertex;
 static inline u8 TriangleOffTexture(u8 *offTexture, u32 word) {
     u8 bits;
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
     word >>= 1;
 #endif
     bits = offTexture[word & 0x1F];
@@ -92,7 +92,7 @@ static inline u8 TriangleOffTexture(u8 *offTexture, u32 word) {
 }
 
 static inline s32 ShadowListHasRoom(DisplayListCommand *out) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     return (s32)((u32)(out - g_pShadowDisplayListStart) * sizeof(*out)) <= 0x13800;
 #else
     return (out - g_pShadowDisplayListStart) * 2 < SHADOW_LIST_WORDS;
@@ -100,7 +100,7 @@ static inline s32 ShadowListHasRoom(DisplayListCommand *out) {
 }
 
 static inline s32 UnusedShadowLoad(DisplayListCommand *out, DisplayListCommand *lastLoadEnd) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (g_bDisableCarShadow) {
         return FALSE;
     }
@@ -109,7 +109,7 @@ static inline s32 UnusedShadowLoad(DisplayListCommand *out, DisplayListCommand *
 }
 
 static inline ShadowVertex *ShadowVertexSource(DisplayListCommand *command) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     return command->vertexData.pConverted;
 #else
     return (Vtx *)command->words.w1;
@@ -117,14 +117,14 @@ static inline ShadowVertex *ShadowVertexSource(DisplayListCommand *command) {
 }
 
 static inline void SetShadowVertexSource(DisplayListCommand *command, ShadowVertex *vertex) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     command->vertexData.pConverted = vertex;
 #else
     command->words.w1 = (u32)vertex;
 #endif
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 static inline void ProjectShadowTriangleWord(TrackInstance *instance,
                                              Vehicle *vehicle,
                                              ShadowVertex *loaded,
@@ -144,7 +144,7 @@ void RenderTrackInstance(
 void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
     ViewportRect *viewports = g_aViewportRects;
     Vehicle *firstVehicle = g_aVehicles;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     TrackInstance *instance = &g_LoadedTrack.instances[index];
     DisplayListCommand *displayList = instance->displayList;
     DisplayListCommand *out = g_pShadowDisplayListWritePtr;
@@ -154,7 +154,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
     ShadowVertex *from, *savedVertex;
     Vehicle *vehicle;
     f32 *matrix;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     u8 offTexture[32];
     Vec2f direction;
     long double rawLength, rawWidth, rawS, rawT, sum;
@@ -167,7 +167,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
     f32 lengthScale, widthScale, alongX, alongY, acrossX, acrossY, scale, x, y, z;
     f32 m00, m10, m20, m30, m01, m11, m21, m31;
     s32 i, count;
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
     s32 s, t;
 #endif
     u32 w0;
@@ -176,7 +176,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
     if (vehicles == 0 ||
         g_pActiveCamera == &VEHICLE_GET(g_pActiveCameraVehicle, Cameras)[VEHICLE_CAMERA_MIRROR] ||
         (instance->flags & TRACK_INSTANCE_NO_SHADOW)
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         || !g_GlobalRallyConfig.bCarShadowSelection
 #endif
     ) {
@@ -187,7 +187,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
         g_dwStatVerticesDrawn += instance->vertexCount;
         g_dwStatPolygonsDrawn += instance->polygonCount;
     } else {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         NullStub();
 #else
         AddTimingMarker(0, 0x50, 0xFA, 0x50, 0xFF);
@@ -198,7 +198,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
         gSPDisplayList(gDisplayListPtr++, displayList);
 
         /* The shadows: the particle texture, clamped and doubled, in the colour of the fog. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         gDisplayListPtr->words.w0 = 0xdc000000 | (g_dwHudOverlayTextureId & 0xffffff);
         gDisplayListPtr->words.w1 = 1;
         gDisplayListPtr++;
@@ -237,7 +237,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
                    15);
         gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, 63 << 2, 63 << 2);
         gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         gDPSetTextureLOD(gDisplayListPtr++, G_TL_TILE);
         gDPSetPrimColor(gDisplayListPtr++, PRIM_MIN_LEVEL, 0, 0xFF, 0, 0, 0xFF);
         if (deferred && !g_dwNightMode && !g_dwRainMode) {
@@ -291,7 +291,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
         }
         gDPSetTextureLOD(gDisplayListPtr++, g_bTrackTextureLod ? G_TL_LOD : G_TL_TILE);
         gDPSetPrimColor(gDisplayListPtr++, PRIM_MIN_LEVEL, 0, 0xFF, 0, 0, 0xFF);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         gDPSetRenderMode(gDisplayListPtr++, 0, 0);
 #endif
         gDPSetCycleType(gDisplayListPtr++, G_CYC_2CYCLE);
@@ -318,14 +318,14 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
                 continue;
             }
             vehicle = &firstVehicle[i];
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             if (g_bDisableCarShadow) {
                 ResetRenderCommandBufferStack();
             }
             fogAlpha = (long double)VEHICLE_GET(vehicle, FogFactor) * 255.0f;
 #endif
             gDPPipeSync(out++);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             gDPSetEnvColor(out, g_bFogR, g_bFogG, g_bFogB, FloatToInt(fogAlpha));
 #else
             gDPSetEnvColor(out, g_bFogR, g_bFogG, g_bFogB, FloatToInt(vehicle->fogFactor * 255.0f));
@@ -334,7 +334,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
 
             /* The texture lies along the vehicle on the ground, centred under it. */
             g_vShadowForward = VEHICLE_GET(vehicle, Frame).forward;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             if (!(g_vShadowForward.x < 0.0f || g_vShadowForward.x > 0.0f) &&
                 !(g_vShadowForward.y < 0.0f || g_vShadowForward.y > 0.0f)) {
 #else
@@ -343,7 +343,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
                 g_vShadowForward = VEHICLE_GET(vehicle, Frame).up;
             }
             g_vShadowForward.z = 0.0f;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             direction.x = g_vShadowForward.x;
             direction.y = g_vShadowForward.y;
             rawLength = Vec2fLength(&direction);
@@ -373,7 +373,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
             /* The first wheel of the model sizes the shadow. */
             lengthScale = SHADOW_LENGTH_SCALE / vehicle->model->wheels[0].x / lengthScale;
             widthScale = SHADOW_WIDTH_SCALE / vehicle->model->wheels[0].y / widthScale;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
             Vec3fNormalize(&g_vShadowForward);
             alongX = SHADOW_PRODUCT(g_vShadowForward.x, lengthScale);
             alongY = SHADOW_PRODUCT(-g_vShadowForward.y, lengthScale);
@@ -401,7 +401,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
             g_afScratchMatrix[3][2] = 0.0f;
             g_afScratchMatrix[3][3] = 1.0f;
             Mtx4x4Multiply(g_afMvpMatrix, g_afMvpMatrix, g_afScratchMatrix);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             sum = (((long double)g_afMvpMatrix[0][3] + g_afMvpMatrix[1][3]) + g_afMvpMatrix[2][3]) +
                   g_afMvpMatrix[3][3];
             scale = !(sum < 0.0L || sum > 0.0L) ? 1.0f : 1.0L / sum;
@@ -463,7 +463,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
                     SetShadowVertexSource(out++, vertex);
                     lastLoadEnd = out;
                     for (flag = offTexture; count-- != 0; vertex++, from++) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                         CopyConvertedModelVertex(vertex, from);
                         x = vertex->position.x;
                         y = vertex->position.y;
@@ -509,7 +509,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
                         } else if (t >= SHADOW_TEXTURE_T) {
                             bits |= SHADOW_OFF_HIGH_T;
                         }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
                         *flag++ = bits;
                     }
                 } else if ((w0 >> 24) == G_TRI2) {
@@ -517,7 +517,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
                         *out = *source;
                         out++;
                         source++;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                     } else if (g_bDisableCarShadow) {
                         if (!TriangleOffTexture(offTexture, w0)) {
                             ProjectShadowTriangleWord(instance, vehicle, savedVertex, w0);
@@ -527,7 +527,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
                                 instance, vehicle, savedVertex, source->words.w1);
                         }
                         source++;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
                     } else if (TriangleOffTexture(offTexture, w0)) {
                         if (!TriangleOffTexture(offTexture, source->words.w1)) {
                             out->words.w0 = _SHIFTL(G_TRI1, 24, 8);
@@ -548,7 +548,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
                 } else if ((w0 >> 24) == G_ENDDL) {
                     break;
                 } else if ((w0 >> 24) == G_TRI1) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                     if (!g_bShadowCullDisabled && g_bDisableCarShadow) {
                         if (!TriangleOffTexture(offTexture, source->words.w1)) {
                             ProjectShadowTriangleWord(
@@ -574,7 +574,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
         }
         gSPEndDisplayList(out);
         out++;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         NullStub();
 #else
         AddTimingMarker(0, 0xFF, 0x80, 0x80, 0xFF);

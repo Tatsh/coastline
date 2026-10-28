@@ -22,10 +22,10 @@
 #include "win32/gameinit.h"
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /** @ghidraAddress BRD3D: 0x106805b8 */
 s32 g_dwRaceSessionType;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 
@@ -75,7 +75,7 @@ void MainMenuEntry(void) {
 
 void StartRaceWithPlayerCount(u32 players) {
     g_dwNumLocalPlayers = players;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     SetCurrentScreenCallback(NullStub);
 #else
     SetCurrentScreenCallback(ProcessTrackMenu);
@@ -94,7 +94,7 @@ void ResetAllPlayers(void) {
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 void InitGameAndShowMenus(void) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     PrepareWindowsGameSession();
 #endif
     InitRenderingSubsystem();
@@ -103,7 +103,7 @@ void InitGameAndShowMenus(void) {
     ResetAllPlayers();
     InitControllersAndPaks();
     SnapScreenFade(0.0f);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     PrepareWindowsGameMenus();
 #else
     SetCurrentScreenCallback(ProcessSplashScreens);
@@ -113,10 +113,10 @@ void InitGameAndShowMenus(void) {
     g_dwGhostRecordingSize = DmaReadAssetSize(ROM_GHOST_RECORDING);
     DecompressFromRom(g_abGhostRecording, ROM_GHOST_RECORDING, NULL);
     g_dwGhostRecordingSize = 8;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
     ResetHeap();
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     NullStub();
     while (!LoadWindowsMenuData(0)) {
     }
@@ -160,11 +160,11 @@ void InitGameAndShowMenus(void) {
     osSyncPrintf("sizeof(Vehicle)=%d\n", (int)sizeof(Vehicle));
     osSyncPrintf("sizeof(Enemy)=%d\n", 0x78);
 #endif
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
     GameModeMainLoop();
 }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void SetWeatherAndRefreshVehicleMaterials(u32 weather) {
     ApplyWeather(weather);
     ProcessAllDisplayLists();

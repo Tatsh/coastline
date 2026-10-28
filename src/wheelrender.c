@@ -13,7 +13,7 @@
     (Z_CMP | IM_RD | CVG_DST_FULL | ZMODE_XLU | FORCE_BL |                                         \
      GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA))
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 typedef f32 (*WheelMatrix)[4];
 #define WHEEL_MATRIX_ADDRESS(matrix) (matrix)
 #else
@@ -22,7 +22,7 @@ typedef Mtx *WheelMatrix;
 #endif
 
 static inline WheelMatrix CopyWheelMatrix(f32 matrix[4][4]) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     WheelMatrix block = AllocDisplayListBlock()->matrix;
     CopyMatrix4x4(matrix, block);
 #else
@@ -89,7 +89,7 @@ void RenderWheelModels(Vehicle *vehicle) {
         block = CopyWheelMatrix(g_mtxVehicleModelScaled);
         gSPMatrix(gDisplayListPtr++, block, G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
         guMtxCatF(g_mtxVehicleModelScaled, g_afViewProjMatrix, g_afMvpMatrix);
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
         NormalizeLightMatrix(g_afMvpMatrix);
 #endif
         block = CopyWheelMatrix(g_afMvpMatrix);

@@ -11,7 +11,7 @@
 
 #include "vecmath.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/gbicommand.h"
 #endif
 
@@ -21,13 +21,13 @@ extern "C" {
 
 /** A part of a model: its display list, how it is drawn, and where. */
 typedef struct {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     GbiCommand *displayList;
 #else
     Gfx *displayList; /*!< The display list that draws the part, or NULL. */
 #endif
     u16 flags; /*!< The MODEL_PART_ flags. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     u16 wUnknown6; /* +0x06 */
 #endif
     Vec3f position; /*!< Where the part is drawn, relative to the model. */
@@ -65,7 +65,7 @@ typedef struct {
 /** An animation of vertices of a model, blended between its keys. */
 typedef struct {
     s32 vertexCount; /*!< The number of vertices the animation moves. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     ModelVertexData vertices;
 #else
     Vtx *vertices; /*!< The vertices the animation moves. */
@@ -91,7 +91,7 @@ typedef struct {
  * fields join this structure as they are reconstructed.
  */
 typedef struct Model {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     u16 wUnknown0; /* +0x00 */
     u16 partCount;
 #else
@@ -197,7 +197,7 @@ void DrawModelAt(Model *model, f32 x, f32 y, f32 z, f32 angle, f32 scale);
  * @ghidraAddress BRD3D: 0x10036bd0
  * @ghidraAddress BRGlide: 0x10030270
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 Model *DecompressModel(void *dst, const char *source);
 #else
 Model *DecompressModel(void *dst, u32 source);

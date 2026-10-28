@@ -1,6 +1,6 @@
 #include "types.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "vehiclemodel.h"
 #else
 #include <PR/os.h>
@@ -10,9 +10,9 @@
 #include "render.h"
 #include "system.h"
 #include "vehicle.h"
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 
 VehicleModel g_aVehicleModels[16];
 VehicleModel *g_pTextureCaptureVehicleModel;
@@ -119,4 +119,4 @@ void LoadVehicleModelFromRom(VehicleModel *model, s32 car) {
 s32 IsVehicleModelValid(s32 car) {
     return g_aCarModels[car].modelRomEnd != 0;
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */

@@ -4,13 +4,13 @@
 #include "track.h"
 #include "types.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/gbicommand.h"
 #else
 #include <PR/gbi.h>
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 typedef GbiCommand DisplayListCommand;
 #else
 typedef Gfx DisplayListCommand;
@@ -96,7 +96,7 @@ extern DisplayListCommand g_aaDlGhostRenderModes[RENDER_MODE_ROWS][4];
  */
 extern DisplayListCommand g_aaDlGhostWheelRenderModes[RENDER_MODE_ROWS][4];
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * Whether ProcessDisplayList() tints the colour combines of the snow. It clears this.
  *
@@ -107,9 +107,9 @@ extern DisplayListCommand g_aaDlGhostWheelRenderModes[RENDER_MODE_ROWS][4];
  * @ghidraAddress BRGlide: 0x106ed6fc
  */
 extern s32 g_bDisplayListSnowTint;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * @ghidraAddress BRD3D: 0x10b501d4
  */

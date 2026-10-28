@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /** Look up a localised race message. */
 const char *GetRaceProgressMessage(s32 id);
 /** The empty message shown after a network finish. */
@@ -18,7 +18,7 @@ const char *GetNetworkRaceFinishMessage(void);
  * @ghidraAddress BRD3D: 0x100b3960
  */
 extern s32 g_anRaceProgressStringIds[RACER_SLOTS];
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #ifdef __cplusplus
 }

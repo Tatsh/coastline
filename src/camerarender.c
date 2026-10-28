@@ -6,7 +6,7 @@
 #include "util.h"
 #include "visgrid.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include <math.h>
 
 #include "win32/gbicommand.h"
@@ -14,7 +14,7 @@
 #include <PR/R4300.h>
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /** @ghidraAddress BRD3D: 0x100c129c */
 s32 g_bVehicleTrackCollisionCorrected;
 /** @ghidraAddress BRD3D: 0x106c1988 */
@@ -29,9 +29,9 @@ s32 g_dwReplayCameraSwitchTimer;
 s32 g_dwVehicleCullingDisabled;
 /** @ghidraAddress BRD3D: 0x106c2cf8 */
 Vehicle *g_pActiveCameraVehicle;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 
 f32 (*g_pProjectionMtx)[4];
 f32 g_ViewLookAtMtx[4][4];
@@ -46,10 +46,10 @@ Vec3f g_vFrustumHalfRight;
 Vec3f g_vFrustumHalfUp;
 f32 gFrustumFar;
 f32 g_fFrustumFovAngle;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /* The perspective of a camera: its near plane, the shape of the screen, and degrees a radian. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define CAMERA_NEAR 0.8f
 #else
 #define CAMERA_NEAR 2.4f
@@ -73,13 +73,13 @@ f32 g_fFrustumFovAngle;
 #define MENU_FAR 500.0
 
 /* The RSP takes physical addresses, which are the KSEG0 addresses less its base. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define TO_RSP_ADDRESS(p) (p)
 #else
 #define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define COPY_PROJECTION_MATRIX()                                                                   \
     {                                                                                              \
         g_pProjectionMtx = (f32(*)[4])AllocDisplayListBlock();                                     \
@@ -91,16 +91,16 @@ f32 g_fFrustumFovAngle;
         g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();                                         \
         guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);                                            \
     }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /* The share of the way from the camera to each corner of the far rectangle the frustum keeps. */
 #define FRUSTUM_CORNER_SHARE 0.75f
 
 void SetupFrustumCorners(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+#if TGR_PC && defined(ENABLE_PATCHES)
     f32 halfHeight = tanf(fov * 0.5f) * farDistance;
     f32 halfWidth = halfHeight * width / height;
-#elif TGR_PLATFORM == TGR_PLATFORM_WIN
+#elif TGR_PC
     long double sine;
     f32 halfWidth, halfHeight;
 
@@ -110,9 +110,9 @@ void SetupFrustumCorners(CameraFrame *camera, f32 fov, f32 farDistance, f32 widt
 #else
     f32 halfWidth = sinf(fov) * farDistance;
     f32 halfHeight = halfWidth * height / width;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN || !defined(ENABLE_PATCHES)
+#if !TGR_PC || !defined(ENABLE_PATCHES)
     if (g_dwNumViewports == 2) {
         halfHeight *= 0.5f;
     }
@@ -174,9 +174,9 @@ void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width,
     g_fCameraNearScale = CAMERA_NEAR;
     guPerspectiveF(g_afPerspectiveMatrix,
                    &g_wPerspNorm,
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+#if TGR_PC && defined(ENABLE_PATCHES)
                    fov * DEGREES_PER_RADIAN,
-#elif TGR_PLATFORM == TGR_PLATFORM_WIN
+#elif TGR_PC
                    (long double)fov * ASPECT_4_3 * ((long double)height / width) *
                        DEGREES_PER_RADIAN,
 #else
@@ -207,7 +207,7 @@ void SetupProjectionMatrix(f32 width, f32 height) {
 }
 
 void SetupMenuProjection(f32 width, f32 height) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     g_afViewProjMatrix[0][0] = 2.0f / width;
     g_afViewProjMatrix[0][1] = 0.0f;
     g_afViewProjMatrix[0][2] = 0.0f;
@@ -240,7 +240,7 @@ void SetupMenuProjection(f32 width, f32 height) {
                    g_fCameraFarDistance,
                    1.0f);
     guMtxCatF(g_ViewLookAtMtx, g_afPerspectiveMatrix, g_afViewProjMatrix);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     gSPPerspNormalize(gDisplayListPtr++, g_wPerspNorm);
     COPY_PROJECTION_MATRIX();
     gSPMatrix(gDisplayListPtr++,

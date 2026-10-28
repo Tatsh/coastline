@@ -1,7 +1,7 @@
 #include "displaylistptr.h"
 #include "screen.h"
 #include "text.h"
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/fontdata.h"
 #include "win32/gbicommand.h"
 #include "win32/settings.h"
@@ -11,7 +11,7 @@ u8 g_nTextAlignment;
 s32 g_nTextDrawX;
 s32 g_nTextDrawY;
 s32 g_nFontSize;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #define SMALL_FONT_MAX_SIZE 25
 #define SMALL_FONT_CELL 20
@@ -19,7 +19,7 @@ s32 g_nFontSize;
 #define LARGE_FONT_CELL 40
 #define LARGE_FONT_PADDING 7
 #define SIZE_UNITS 40
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define SPACE_ADVANCE 14
 #else
 #define SPACE_ADVANCE 12
@@ -65,7 +65,7 @@ void SetTextSize(s32 size) {
 }
 
 void DrawText(const char *text, s32 x, s32 y) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     gDisplayListPtr->w0 = 0xb6000000;
     gDisplayListPtr->w1 = 1;
     gDisplayListPtr++;
@@ -91,7 +91,7 @@ s32 MeasureTextWidth(const char *text, s32 size) {
     s32 *offsets;
     s32 c, next;
     s32 glyph;
-#if TGR_REGION == TGR_REGION_JP && TGR_PLATFORM != TGR_PLATFORM_WIN
+#if TGR_REGION == TGR_REGION_JP && !TGR_PC
     s32 japanese = FALSE;
 #endif
 
@@ -99,29 +99,29 @@ s32 MeasureTextWidth(const char *text, s32 size) {
         size *= 2;
     }
     if (size < SMALL_FONT_MAX_SIZE
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_PC && TGR_RENDERER == TGR_RENDERER_D3D
         || g_dwTextureQualityLevel > 1
 #endif
     ) {
         cell = SMALL_FONT_CELL;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         padding = 1;
 #else
         padding = SMALL_FONT_PADDING;
 #endif
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         offsets = g_adwHudFont2GlyphOffsets;
 #else
         offsets = g_adwSmallFontGlyphOffsets;
 #endif
     } else {
         cell = LARGE_FONT_CELL;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         padding = 1;
 #else
         padding = LARGE_FONT_PADDING;
 #endif
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         offsets = g_adwHudFont0GlyphOffsets;
 #else
         offsets = g_adwLargeFontGlyphOffsets;
@@ -129,7 +129,7 @@ s32 MeasureTextWidth(const char *text, s32 size) {
     }
     for (; *text != '\0'; text++) {
         c = (u8)*text;
-#if TGR_REGION == TGR_REGION_JP && TGR_PLATFORM != TGR_PLATFORM_WIN
+#if TGR_REGION == TGR_REGION_JP && !TGR_PC
         if ((c < '!' || c >= 0x80) && !japanese) {
 #else
         if (c < '!' || c >= 0x80) {
@@ -141,7 +141,7 @@ s32 MeasureTextWidth(const char *text, s32 size) {
             next = text[1];
             if (next == '%') {
                 text++;
-#if TGR_REGION == TGR_REGION_JP && TGR_PLATFORM != TGR_PLATFORM_WIN
+#if TGR_REGION == TGR_REGION_JP && !TGR_PC
             } else if (next == 'j') {
                 /* %j starts Japanese text and %e ends it. */
                 text++;
@@ -151,7 +151,7 @@ s32 MeasureTextWidth(const char *text, s32 size) {
                 text++;
                 japanese = FALSE;
                 continue;
-#endif /* TGR_REGION == TGR_REGION_JP && TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* TGR_REGION == TGR_REGION_JP && !TGR_PC */
             } else if (next == 'i' || next == 'n') {
                 text++;
                 continue;
@@ -160,14 +160,14 @@ s32 MeasureTextWidth(const char *text, s32 size) {
                 continue;
             }
         }
-#if TGR_REGION == TGR_REGION_JP && TGR_PLATFORM != TGR_PLATFORM_WIN
+#if TGR_REGION == TGR_REGION_JP && !TGR_PC
         /* Every Japanese glyph has the same advance. */
         if (japanese) {
             width += ((cell * JAPANESE_ADVANCE / SIZE_UNITS - padding) * size) / cell;
             continue;
         }
 #endif
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         glyph = (s8)g_abHudFontCharToGlyph[c - '!'];
         if (glyph >= 28) {
             s32 *secondRow =
@@ -178,7 +178,7 @@ s32 MeasureTextWidth(const char *text, s32 size) {
         }
 #else
         glyph = g_abHudFontCharToGlyph[c - '!'];
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         width += ((offsets[glyph + 1] - offsets[glyph] - padding + 1) * size) / cell;
     }
     if (g_dwScreenScaleShift) {

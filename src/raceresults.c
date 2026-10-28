@@ -3,7 +3,7 @@
 #include "race.h"
 #include "vehicleaccess.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "screen.h"
 #else
 #include <PR/os.h>
@@ -32,7 +32,7 @@ void RestoreRaceResultsFromSlots(void) {
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP && g_dwSavedResultsValid) {
         for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
             profile = VEHICLE_GET(&(g_aVehicles[i]), Profile);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             profile->seasonRacePoints[profile->season][profile->round] =
                 (s8)g_abRacePositionPoints[g_adwSavedResultPositions[i]];
 #else
@@ -44,7 +44,7 @@ void RestoreRaceResultsFromSlots(void) {
             profile = VEHICLE_GET(&(g_aVehicles[i]), Profile);
             profile->seasonTimes[profile->season][profile->round] = g_afSavedResultTimes[i];
             profile = VEHICLE_GET(&(g_aVehicles[i]), Profile);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             NullStub();
 #else
             osSyncPrintf("points = %d\n", profile->seasonPoints[profile->season]);

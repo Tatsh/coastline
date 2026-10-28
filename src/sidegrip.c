@@ -2,7 +2,7 @@
 #include "vehiclemodel.h"
 #include "weather.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include <math.h>
 #else
 #include <PR/gu.h>
@@ -21,7 +21,7 @@
 /* The weather of the grip of the dry surfaces, which fog and night share. */
 #define GRIP_WEATHER_DRY 0
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define GRIP_EXT long double
 #define GRIP_PRODUCT(a, b) ((long double)(a) * (b))
 #define GRIP_LESS(a, b) (!((a) >= (b)))
@@ -35,13 +35,13 @@
 #define GRIP_MAX_LOAD(weather, surface) g_afSurfaceMaxLoad[weather][surface]
 #define GRIP_SIGN(x) SIGN(x)
 #define ABS(x) ((x) < 0.0f ? -(x) : (x))
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #define SIGN(x) ((x) == 0.0f ? 0.0 : (0.0f < (x) ? 1.0 : -1.0))
 
 /* The slowing a brake gives a wheel against its spin. */
 static inline GRIP_EXT BrakeSlowing(RigidBody *wheel) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     return GRIP_SIGN(wheel->spinRate) * ABS(wheel->brake) * -2.0f / wheel->radius;
 #else
     return (f32)(SIGN(wheel->spinRate) * (f64)-ABS(wheel->brake) * 2.0) / wheel->radius;
@@ -51,7 +51,7 @@ static inline GRIP_EXT BrakeSlowing(RigidBody *wheel) {
 /* The retained share of a slide from surface grip and tyre load. */
 static inline f32 SlideShare(RigidBody *body, f32 grip, s32 weather, s32 surface, GRIP_EXT load) {
     GRIP_EXT clamped;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double highKeep;
 #endif
     f32 keep;
@@ -63,7 +63,7 @@ static inline f32 SlideShare(RigidBody *body, f32 grip, s32 weather, s32 surface
     if (GRIP_LESS(clamped, g_afSurfaceSlipLoad[weather][surface])) {
         clamped = g_afSurfaceSlipLoad[weather][surface];
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     highKeep = g_afSurfaceSlipLoad[weather][surface] / clamped * grip * 20.0f;
     keep = highKeep;
     if (!(body->wheels[2]->steerAngle < 0.0f) && !(body->wheels[2]->steerAngle > 0.0f)) {
@@ -81,11 +81,11 @@ static inline f32 SlideShare(RigidBody *body, f32 grip, s32 weather, s32 surface
     if (ABS(keep) > 1.0f) {
         keep = 1.0f;
     }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     return keep;
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define BODY_SPEED(body)                                                                           \
     sqrtl((f32)(GRIP_PRODUCT((body)->state.velocity.z, (body)->state.velocity.z) +                 \
                 (GRIP_PRODUCT((body)->state.velocity.x, (body)->state.velocity.x) +                \
@@ -97,11 +97,11 @@ static inline f32 SlideShare(RigidBody *body, f32 grip, s32 weather, s32 surface
           ((body)->state.velocity.x * (body)->state.velocity.x +                                   \
            (body)->state.velocity.y * (body)->state.velocity.y))
 
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /* The step the side grip works with: the step given in the USA release, and a fixed thirtieth of a
  * second in the European and Japanese releases. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_REGION == TGR_REGION_US
+#if TGR_PC || TGR_REGION == TGR_REGION_US
 #define GRIP_STEP(dt) (dt)
 #else
 #define GRIP_STEP(dt) 0.033333335f
@@ -118,7 +118,7 @@ void ApplySideGrip(
     f32 frontBrake, rearBrake, quarter, limit, grip, keep;
     f32 forward, side, yaw, lean, slowed, d;
     GRIP_EXT load, lateralSpeed, speed, slowGrip, target;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double highFrontBrake, highRearBrake, highLateral, highDot, highYaw;
     f32 square;
 #else
@@ -135,7 +135,7 @@ void ApplySideGrip(
     }
 
     /* The brakes slow the axles along the body, by step, no more than the speed of a step. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     highFrontBrake = BrakeSlowing(body->wheels[2]);
     highRearBrake = BrakeSlowing(body->wheels[0]);
     quarter = body->mass * 0.25f;
@@ -151,7 +151,7 @@ void ApplySideGrip(
     rearBrake = rearBrake / quarter;
     frontBrake = frontBrake * dt2;
     rearBrake = rearBrake * dt2;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     if (ABS(frontBrake) > 1.0f) {
         frontBrake = (f32)(GRIP_SIGN(frontBrake) * 1.5);
     }
@@ -192,7 +192,7 @@ void ApplySideGrip(
             limit = SLIDING_REAR_SLIDE_LOAD;
         }
         *rearSliding = 0;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         grip = g_pSteeringFrictionTableA[body->tireType][weather][rearSurface];
 #else
         grip =
@@ -205,7 +205,7 @@ void ApplySideGrip(
         } else {
             speed = BODY_SPEED(body);
             if (GRIP_LESS(speed, SLOW_GRIP_SPEED)) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                 slowGrip = (SLOW_GRIP_SPEED - speed) * 0.0037037038718760013580322265625f;
 #else
                 slowGrip = (SLOW_GRIP_SPEED - speed) * 0.1f / SLOW_GRIP_SPEED;
@@ -214,7 +214,7 @@ void ApplySideGrip(
                     keep = slowGrip;
                 }
             }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             highLateral = (long double)rear.y - GRIP_PRODUCT(rear.y, keep);
             rear.y = highLateral;
             skid = highLateral * keep;
@@ -223,7 +223,7 @@ void ApplySideGrip(
             skid = rear.y * keep;
 #endif
             *rearSliding = 1;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             lateralSpeed = highLateral;
 #else
             lateralSpeed = rear.y;
@@ -271,7 +271,7 @@ void ApplySideGrip(
         old.x = front.x;
         old.y = front.y;
         old.z = front.z;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         highDot = GRIP_PRODUCT(point.x, old.x) + GRIP_PRODUCT(point.y, old.y);
         d = highDot;
         front.x = point.x * highDot;
@@ -295,9 +295,9 @@ void ApplySideGrip(
         lateralSpeed =
             sqrtf(lateral.z * lateral.z + (lateral.x * lateral.x + lateral.y * lateral.y));
         load = ABS(*frontLoad) + lateralSpeed * body->mass / GRIP_STEP(dt);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         limit = SLIDE_LOAD;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         load = (f32)(load + 10000.0f * (f32)((f64)ABS(frontBrake) > 0.0001));
 #else
         load += 10000.0f * (f32)((f64)ABS(frontBrake) > 0.0001);
@@ -308,7 +308,7 @@ void ApplySideGrip(
         *frontSliding = 0;
         if (limit < load) {
             frontSurface = (frontSurfaceA + frontSurfaceB + 1) >> 1;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             grip = g_pSteeringFrictionTableA[body->tireType][weather][frontSurface];
 #else
             grip = g_afSurfaceGrip[weather][frontSurface] - 0.002f * (f32)(body->tireType - 1);
@@ -316,7 +316,7 @@ void ApplySideGrip(
             keep = SlideShare(body, grip, weather, frontSurface, load);
             speed = BODY_SPEED(body);
             if (GRIP_LESS(speed, SLOW_GRIP_SPEED)) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                 slowGrip = (SLOW_GRIP_SPEED - speed) * 0.0037037038718760013580322265625f;
 #else
                 slowGrip = (SLOW_GRIP_SPEED - speed) * 0.1f / SLOW_GRIP_SPEED;
@@ -325,7 +325,7 @@ void ApplySideGrip(
                     keep = slowGrip;
                 }
             }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             front.x = old.x - GRIP_PRODUCT(lateral.x, keep);
             front.y = old.y - GRIP_PRODUCT(lateral.y, keep);
             front.z = old.z - GRIP_PRODUCT(lateral.z, keep);
@@ -336,10 +336,10 @@ void ApplySideGrip(
             front.x = old.x - lateral.x;
             front.y = old.y - lateral.y;
             front.z = old.z - lateral.z;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
             *frontSliding = 1;
         }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         else {
             /* The libraries clear the flag a second time. */
             *frontSliding = 0;
@@ -349,7 +349,7 @@ void ApplySideGrip(
 
     /* Give the body the velocity and the turn that the axles now move by. */
     if (both) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         forward = ((long double)rear.x + front.x) * 0.5f;
         highYaw =
             ((long double)rear.y - front.y) /
@@ -361,7 +361,7 @@ void ApplySideGrip(
         yaw = (rear.y - front.y) /
               (body->wheels[0]->state.position.x - body->wheels[2]->state.position.x);
         side = rear.y - yaw * body->wheels[0]->state.position.x;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         Mtx4fInverseRotate(&local, body->orientation, &body->state.angularVelocity);
         local.z = yaw;
         Mtx3x3MulVec3f(&body->state.angularVelocity, body->orientation, &local);

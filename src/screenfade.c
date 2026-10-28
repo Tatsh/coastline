@@ -5,7 +5,7 @@
 
 #define BLACK_FRAMES 3
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define FADE_EQUAL(left, right) (!((left) < (right) || (left) > (right)))
 #define FADE_SHIFT(value) ((u32)(value) << ((u32)g_dwScreenScaleShift & 31))
 #define FADE_DECREMENT(value) ((s32)((u32)(value) - 1))
@@ -25,7 +25,7 @@
                      0,                                                                            \
                      ((right) << g_dwScreenScaleShift) - 1,                                        \
                      (g_dwScreenHeight << g_dwScreenScaleShift) - 1)
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 void ApplyScreenFade(void) {
     /* Two boot frames precede the normal three-frame clear. */
@@ -49,7 +49,7 @@ void ApplyScreenFade(void) {
                      FORCE_BL | GBL_c1(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1),
                      GBL_c2(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1));
     WriteFadeCombineMode(PRIMITIVE);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     /* The original shifts integer dimensions without rounding through a float. */
     gDisplayListWords(gDisplayListPtr++,
                       _SHIFTL(G_SETSCISSOR_INT_COORDS, 24, 8),
@@ -62,11 +62,11 @@ void ApplyScreenFade(void) {
                   0,
                   g_dwScreenWidth << g_dwScreenScaleShift,
                   g_dwScreenHeight << g_dwScreenScaleShift);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0, 0, 0, 0);
 
     if (g_dwFadeRectLeft) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         /* The covered edge of the other framebuffer is read and then discarded. */
         left = g_adwFadeRectLeftPerBuffer[g_dwFrameBufferIndex ^ 1];
         left = 0;
@@ -82,11 +82,11 @@ void ApplyScreenFade(void) {
         if (left) {
             left--;
         }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         if (IsFadedToBlack()) {
             g_dwScreenFadeFramesRemaining = BLACK_FRAMES;
         }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         gDPSetRenderMode(gDisplayListPtr++,
                          IM_RD | CVG_DST_SAVE | FORCE_BL |
                              GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),

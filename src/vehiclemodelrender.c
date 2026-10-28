@@ -11,7 +11,7 @@
 #include "vehiclerender.h"
 #include "weather.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/boot/app.h"
 #include "win32/boot/rallyconfig.h"
 #include "win32/render.h"
@@ -21,7 +21,7 @@
 #include "racerslot.h"
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 namespace {
     /**
      * Whether every vehicle is drawn in its other look, as Vehicle.otherLook draws one.
@@ -49,9 +49,9 @@ namespace {
      */
     u32 g_dwVehicleOtherModeLFlags;
 } // namespace
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /** @ghidraAddress BRD3D: 0x10277e14 */
 s32 g_dwVehicleFogAlpha;
 /** @ghidraAddress BRD3D: 0x10277e5c */
@@ -60,17 +60,17 @@ u32 g_dwVehicleOtherModeLBlend;
 s32 g_dwVehicleViewModeIndex;
 /** @ghidraAddress BRD3D: 0x106c3308 */
 VehicleModel *g_pCurrentVehicleModelData;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 static inline void BindVehicleTextureEntry(u32 entry) {
     gDisplayListPtr->words.w0 = 0xdc000000 | (entry & 0xffffff);
     gDisplayListPtr->words.w1 = 1;
     gDisplayListPtr++;
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 static inline s32 HasVehicleAltVariant(Vehicle *vehicle) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     return VEHICLE_GET(vehicle, CustomCarModel);
 #else
     return vehicle->otherLook;
@@ -78,7 +78,7 @@ static inline s32 HasVehicleAltVariant(Vehicle *vehicle) {
 }
 
 static inline s32 VehicleRenderEqual(f32 a, f32 b) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     return !(a < b || a > b);
 #else
     return a == b;
@@ -86,7 +86,7 @@ static inline s32 VehicleRenderEqual(f32 a, f32 b) {
 }
 
 static inline s8 VehicleHeadlightDirection(f32 direction) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     return (s8)(s64)((long double)direction * -120.0f);
 #else
     return -(s32)(direction * 120.0f);
@@ -152,7 +152,7 @@ DrawLitParts(u32 dir, u32 ambient, DisplayListCommand *displayList, s32 undersid
     gDPPipeSync(gDisplayListPtr++);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_2CYCLE);
     gDPSetRenderMode(gDisplayListPtr++, g_dwVehicleOtherModeLBlend, g_dwVehicleOtherModeLFlags);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (underside) {
         gDPSetCombineLERP(gDisplayListPtr++,
                           TEXEL0,
@@ -172,7 +172,7 @@ DrawLitParts(u32 dir, u32 ambient, DisplayListCommand *displayList, s32 undersid
                           SHADE,
                           0);
     } else
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     {
         gDPSetCombineLERP(gDisplayListPtr++,
                           TEXEL0,
@@ -204,7 +204,7 @@ static inline u32 PackLightColor(u32 red, u32 green, u32 blue) {
 }
 
 /** The colour of a light dimmed by a divisor, as a byte. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 static inline u32 DimLightPart(u8 part, long double divisor) {
 #else
 static inline u32 DimLightPart(u8 part, f32 divisor) {
@@ -217,7 +217,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     DisplayListCommand **displayLists;
     Hilite *hilite;
     LookAt *reflectLookAt, *hiliteLookAt;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     volatile f32 distance, length;
     long double rawDistance, rawLength, divisor;
     f32 nudgeX, nudgeZ;
@@ -226,19 +226,19 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
 #endif
     u32 dirColor, ambientColor, reflection;
     u8 ambient[3];
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
     u16 *palette;
     s32 closeRange, lit, i;
 #endif
     s32 lod, inTunnel;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     u32 offset;
 #else
     s32 offset;
 #endif
 
     inTunnel = FALSE;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (VEHICLE_GET(vehicle, Driver) == NULL || VEHICLE_GET(vehicle, Body).wheels[0] == NULL ||
         VEHICLE_GET(vehicle, Body).wheels[2] == NULL ||
         VEHICLE_GET(vehicle, Body).wheels[1] == NULL ||
@@ -249,14 +249,14 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     if (!g_adwVehicleInViewRange[VEHICLE_GET(vehicle, Index)]) {
         return;
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     rawDistance = Vec3fDistance(&VEHICLE_GET(vehicle, Frame).position, &g_pActiveCamera->position);
     distance = rawDistance;
 #else
     distance = Vec3fDistance(&VEHICLE_GET(vehicle, Frame).position, &g_pActiveCamera->position);
 #endif
     if (VEHICLE_GET(vehicle, GhostMode) == VEHICLE_GHOST) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         g_dwVehicleFogAlpha = (s32)(s64)((long double)VEHICLE_GET(vehicle, Opacity) * 255.0f);
 #else
         g_dwVehicleFogAlpha = (s32)(vehicle->opacity * 255.0f);
@@ -274,13 +274,13 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
 
     /* With the screen split in two, the far cars are drawn coarser. */
     if (g_dwNumViewports == 2) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         if (!(rawDistance >= SPLIT_LOD1_DISTANCE)) {
 #else
         if (distance < SPLIT_LOD1_DISTANCE) {
 #endif
             lod = 0;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         } else if (!(rawDistance >= SPLIT_LOD2_DISTANCE)) {
 #else
         } else if (distance < SPLIT_LOD2_DISTANCE) {
@@ -302,7 +302,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
 
     guScaleF(g_afScratchMatrix, 1.0f / 255.0f, 1.0f / 255.0f, 1.0f / 255.0f);
     guMtxCatF(g_afScratchMatrix, VEHICLE_GET(vehicle, Matrix), g_mtxVehicleModelScaled);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     g_apVehicleModelMatrix[VEHICLE_GET(vehicle, Index)] = AllocDisplayListBlock()->matrix;
     CopyMatrix4x4(g_mtxVehicleModelScaled, g_apVehicleModelMatrix[VEHICLE_GET(vehicle, Index)]);
 #else
@@ -311,7 +311,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
 #endif
     guMtxCatF(g_mtxVehicleModelScaled, g_afViewProjMatrix, g_afMvpMatrix);
     NormalizeLightMatrix(g_afMvpMatrix);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     g_apVehicleLightMatrix[VEHICLE_GET(vehicle, Index)] = AllocDisplayListBlock()->matrix;
     CopyMatrix4x4(g_afMvpMatrix, g_apVehicleLightMatrix[VEHICLE_GET(vehicle, Index)]);
 #else
@@ -331,7 +331,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     /* The light of the sun dims with the distance at night, and is gone in a tunnel. The ambient
      * colour is also stored in a local that is never read again. */
     if (g_dwNightMode) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         divisor = (long double)distance * 0.1f;
         if (!(divisor >= 1.0f)) {
 #else
@@ -381,7 +381,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     Vec3fNormalize(&g_vecVehicleLightDir);
     g_vecVehicleHiliteDir = g_vecVehicleLightDir;
     Vec3fSubtract(&toCamera, &g_pActiveCamera->position, &VEHICLE_GET(vehicle, Frame).position);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     rawLength = Vec3fLength(&toCamera);
     length = rawLength;
     if (!(rawLength < 0.0L || rawLength > 0.0L)) {
@@ -394,7 +394,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
         Vec3fDivideInPlace(&toCamera, length);
     }
     Vec3fMidpoint(&g_vecVehicleHiliteDir, &toCamera, &g_vecVehicleHiliteDir);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     rawLength = Vec3fLength(&g_vecVehicleHiliteDir);
     length = rawLength;
     if (!(rawLength < 0.0L || rawLength > 0.0L)) {
@@ -489,7 +489,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
                          g_dwTrackMirrored != g_dwViewportMirrored ? G_CULL_BACK : G_CULL_FRONT);
     if (VEHICLE_GET(vehicle, GhostMode) == VEHICLE_GHOST) {
         g_dwVehicleOtherModeLFlags = FLAGS_GHOST;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         gDPSetPrimColor(gDisplayListPtr++, 0, 0, 0, 0, 0, g_dwVehicleFogAlpha);
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
         /* BRGlide alone gives the ghost of a time attack at three eighths opacity this mode. */
@@ -501,7 +501,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
         }
 #endif
 #endif
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     } else if (!(rawDistance >= ANTIALIAS_DISTANCE)) {
 #else
     } else if (distance < ANTIALIAS_DISTANCE) {
@@ -589,7 +589,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
         SetModelTextures();
     }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (g_pCurrentVehicleModelData
                 ->textures[g_pCurrentVehicleModelData
                                ->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]]
@@ -652,7 +652,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
             palette[6] = 0xC631;
         }
     }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     gDPSetTextureLOD(gDisplayListPtr++, G_TL_LOD);
     gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     SetModelTiles();
@@ -664,7 +664,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
         DrawLitParts(dirColor, ambientColor, displayLists[VEHICLE_DL_UNDERSIDE], TRUE);
     }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     DrawTexturedTile(NEAR_DETAIL_TEXTURE, g_pCurrentVehicleModelData->textures);
     DrawLitParts(dirColor, ambientColor, displayLists[VEHICLE_DL_NEAR_DETAIL], FALSE);
 #else
@@ -678,10 +678,10 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
         DrawTexturedTile(NEAR_DETAIL_TEXTURE, g_pCurrentVehicleModelData->textures);
         DrawLitParts(dirColor, ambientColor, displayLists[VEHICLE_DL_NEAR_DETAIL], FALSE);
     }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
     /* The specular highlight, in a single view by day, or in a tunnel only at night. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (g_GlobalRallyConfig.bSpecularLightingSelection && !g_dwSnowMode && !g_dwRainMode &&
         (!inTunnel || g_dwNightMode) && !(g_dwNightMode && vehicle == g_pActiveCameraVehicle) &&
         !g_bForceVehicleAltVariant && !HasVehicleAltVariant(vehicle)) {
@@ -690,7 +690,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
         !g_dwSnowMode && !g_dwRainMode && (!inTunnel || g_dwNightMode) && closeRange &&
         !(g_dwNightMode && vehicle == g_pActiveCameraVehicle) && !g_bForceVehicleAltVariant &&
         !HasVehicleAltVariant(vehicle)) {
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         gDPPipeSync(gDisplayListPtr++);
         gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
         gSPSetGeometryMode(gDisplayListPtr++, G_TEXTURE_GEN);
@@ -714,7 +714,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
                           0,
                           0,
                           TEXEL0);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         gDPSetRenderMode(gDisplayListPtr++, 4, 0);
 #else
         gDPSetRenderMode(gDisplayListPtr++,
@@ -724,7 +724,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
 #endif
         gDPTileSync(gDisplayListPtr++);
         gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         BindVehicleTextureEntry(g_dwNightMode ? g_dwVehicleEnvMapTextureId :
                                                 g_dwFallbackEnvMapTextureId);
 #else
@@ -741,7 +741,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
                                6,
                                G_TX_NOLOD,
                                G_TX_NOLOD);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         gDPSetColorDither(gDisplayListPtr++, G_CD_DISABLE);
         gDPSetHilite1Tile(gDisplayListPtr++, G_TX_RENDERTILE, hilite, HILITE_SIZE, HILITE_SIZE);
         DrawModelDisplayList(displayLists[VEHICLE_DL_HIGHLIGHTED]);
@@ -783,7 +783,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     } else {
         gDPSetEnvColor(gDisplayListPtr++, g_bFogR, g_bFogG, g_bFogB, 0xFF);
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     gDPSetRenderMode(gDisplayListPtr++, 0, 0);
 #endif
     gDPSetRenderMode(gDisplayListPtr++, g_dwVehicleOtherModeLBlend, g_dwVehicleOtherModeLFlags);
@@ -791,7 +791,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
     reflection =
         g_abVehicleReflectionTexSelect[g_dwVehicleViewModeIndex][VEHICLE_GET(vehicle, InTunnel)];
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     BindVehicleTextureEntry(g_apVehicleReflectionTextures[reflection].entry);
 #else
     gDPLoadTextureBlock_4b(gDisplayListPtr++,
@@ -808,9 +808,9 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
                            15);
     gDPLoadSync(gDisplayListPtr++);
     gDPLoadTLUT_pal16(gDisplayListPtr++, 0, g_apVehicleReflectionTluts[reflection]);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     gDPSetTextureLUT(gDisplayListPtr++, G_TT_RGBA16);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     offset =
         0xffffffdfu - (u32)(s64)((long double)VEHICLE_GET(g_pActiveCameraVehicle, CameraHeading) *
                                  -20.3718318939209f);
@@ -819,7 +819,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
 #endif
     gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, offset + 2, 2, offset + 126, 510);
     gDPPipeSync(gDisplayListPtr++);
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
     SetVehicleLightColors(0, 0);
 #endif
     gSPLookAt(gDisplayListPtr++, reflectLookAt);
@@ -854,7 +854,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
                       0,
                       SHADE,
                       0);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     gDPSetRenderMode(gDisplayListPtr++, 3, 0);
 #endif
     g_dwStatVehicleTriangles += g_pCurrentVehicleModelData->triangleCount;

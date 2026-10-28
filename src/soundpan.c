@@ -1,6 +1,6 @@
 #include "soundpan.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 typedef long double PanReal;
 #define PAN_INTERMEDIATE(value) ((long double)(value))
 #define PAN_LESS(a, b) (!((a) >= (b)))
@@ -14,7 +14,7 @@ typedef f32 PanReal;
  * 60% of its remaining volume before full. A narrow pan moves 40% as far. */
 #define PAN_RANGE 10.0f
 #define PAN_NARROW 0.4f
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define PAN_LOUD 1.6f
 #else
 #define PAN_LOUD 1.7f
@@ -46,13 +46,13 @@ void ComputeStereoPan(
     if (narrow) {
         projected *= PAN_NARROW;
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     share = (projected + PAN_RANGE) * 0.05f;
 #else
     share = (projected + PAN_RANGE) / (PAN_RANGE + PAN_RANGE);
 #endif
     rest = PAN_INTERMEDIATE(1.0f) - share;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     /* Each bound passes an unordered value. */
     if (!(0.49f > share) && !(share > 0.51f) && !(0.49f > rest) && !(rest > 0.51f)) {
         share = 0.5f;

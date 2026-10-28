@@ -8,7 +8,7 @@
 #define SCATTER_DISTANCE_SQUARED 256.0f
 #define RANDOM_SHARE (1.0f / 65535.0f)
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 typedef ConvertedModelVertex SprayVertex;
 typedef long double SprayReal;
 #define SPRAY_NEGATIVE(value) (!((value) >= 0.0L))
@@ -28,9 +28,9 @@ typedef f32 SprayReal;
 #define SPRAY_INTEGER(value) ((s32)(value))
 #define SPRAY_COORDINATE(value) SPRAY_INTEGER(value)
 #define SPRAY_VERTEX(head, vertex, coordinate, field) ((head)[vertex].v.ob[coordinate])
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void Vehicle::EmitTireSpray(void) {
     Vehicle *vehicle = this;
 #else
@@ -41,7 +41,7 @@ void EmitTireSpray(Vehicle *vehicle) {
     s16(*velocities)[3];
     Vec3f velocity, position, thrown;
     f32 speedShare;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     /* Preserve the x87 sign change before multiplying a NaN. */
     volatile SprayReal forwardSpeed, negativeForwardSpeed;
 #else
@@ -64,7 +64,7 @@ void EmitTireSpray(Vehicle *vehicle) {
     bodies[1] = &vehicle->wheelBodies[1];
     bodies[2] = &vehicle->wheelBodies[0];
     bodies[3] = &vehicle->wheelBodies[2];
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     speedShare = (1.0L - 50.0f / ((long double)vehicle->speedKph - -50.0f)) * 3.0f;
 #else
     speedShare = (1.0f - 50.0f / (vehicle->speedKph + 50.0f)) * 3.0f;
@@ -73,14 +73,14 @@ void EmitTireSpray(Vehicle *vehicle) {
     if (SPRAY_NEGATIVE(forwardSpeed)) {
         forwardSpeed = -forwardSpeed;
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     negativeForwardSpeed = forwardSpeed * -2.24f;
     slide = (1.0L - 25.0f / (25.0L - negativeForwardSpeed)) * 3.0f;
 #endif
 
     for (wheel = 0; wheel < VEHICLE_WHEELS; wheel++) {
         /* A new segment begins four times a second; the spray is stationary between segments. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         vehicle->sprayPhases[wheel] =
             (long double)vehicle->sprayPhases[wheel] - (long double)g_fFrameDeltaTime * -4.0f;
 #else
@@ -148,7 +148,7 @@ void EmitTireSpray(Vehicle *vehicle) {
                     slide = (1.0f - 25.0f / (2.24f * forwardSpeed + 25.0f)) * 3.0f;
 #endif
                     Vec3fScaleInPlace(&velocity, slide);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                     if (SPRAY_NONZERO(slide)) {
 #else
                     if (slide != 0.0f) {

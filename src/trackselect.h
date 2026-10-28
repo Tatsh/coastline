@@ -19,7 +19,7 @@ enum {
     TRACK_COASTLINE,  /*!< The coastline. */
     TRACK_STRIP_MINE, /*!< The strip mine. */
     TRACK_JUNGLE,     /*!< The jungle. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     TRACK_MIRROR_DESERT = 6, /*!< The desert, mirrored. */
 #else
     TRACK_MIRROR_DESERT, /*!< The desert, mirrored. */
@@ -31,7 +31,7 @@ enum {
 };
 
 /** The places between a track and its mirrored version. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define TRACK_MIRRORED 6
 #else
 #define TRACK_MIRRORED 5

@@ -18,7 +18,7 @@
 extern "C" {
 #endif
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * Whether shadows include triangles outside their texture and extend beyond their vehicle's
  * screen rectangle.
@@ -30,7 +30,7 @@ extern "C" {
  * @ghidraAddress BRGlide: 0x106ed69c
  */
 extern s32 g_bShadowCullDisabled;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
 /** A cell of the grid of the track in view, and its squared distance from the camera in cells. */
 typedef struct {
@@ -52,7 +52,7 @@ typedef struct {
  */
 extern VisibleCell g_aVisibleCellTuples[VISIBLE_CELLS + 1];
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * Whether the cells in view were more than #VISIBLE_CELLS.
  *
@@ -62,7 +62,7 @@ extern VisibleCell g_aVisibleCellTuples[VISIBLE_CELLS + 1];
  * @ghidraAddress BRD3D: 0x102e5ed0
  */
 extern s32 g_bVisibleCellListOverflow;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
 /**
  * The placed models in view this frame.
@@ -117,7 +117,7 @@ extern s32 g_nVisibleCellIdxMid;
  */
 extern s32 g_nVisibleCellIdxFar;
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * Where the translucent models past g_nVisibleCellIdxMid start in the second pass, which draws
  * them without shadows, and 0x1000 until it is known.
@@ -129,9 +129,9 @@ extern s32 g_nVisibleCellIdxFar;
  * @ghidraAddress BRGlide: 0x102e0ca0
  */
 extern s32 g_nTrackTransparentStartIdx;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * Set to 0x1000 with g_nTrackTransparentStartIdx, and never read.
  *
@@ -142,9 +142,9 @@ extern s32 g_nTrackTransparentStartIdx;
  * @ghidraAddress BRGlide: 0x102e16bc
  */
 extern s32 g_nTrackTransparentStartIdxNear;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * @ghidraAddress USA: 0x8028c784
  * @ghidraAddress EUR: 0x8028eee4
@@ -153,9 +153,9 @@ extern s32 g_nTrackTransparentStartIdxNear;
  * @ghidraAddress BRGlide: 0x102e0c9c
  */
 extern s32 g_nTrackTransparentStartIdxFar;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * The last translucent model left for the second pass, or -1.
  *
@@ -164,9 +164,9 @@ extern s32 g_nTrackTransparentStartIdxFar;
  * @ghidraAddress JPN: 0x8028e8f8
  */
 extern s32 g_nDeferredInstanceLastIdx;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * The TRACK_INSTANCE_ flags of the placed models not drawn.
  *
@@ -175,7 +175,7 @@ extern s32 g_nDeferredInstanceLastIdx;
  * @ghidraAddress JPN: 0x8035e690
  */
 extern u32 g_dwInstanceHideFlags;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
 /**
  * The groups of placed models hidden from the camera.
@@ -188,7 +188,7 @@ extern u32 g_dwInstanceHideFlags;
  */
 extern u16 g_wActiveInstanceHideMask;
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * Whether g_nDebugHiddenInstanceIndex is left undrawn.
  *
@@ -199,7 +199,7 @@ extern u16 g_wActiveInstanceHideMask;
  * @ghidraAddress BRGlide: 0x10396eac
  */
 extern s32 g_bDebugHideInstance;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
 /**
  * The blender and the other bits of the render mode of the track.
@@ -221,7 +221,7 @@ extern u32 g_dwTrackOtherModeLBlend;
  */
 extern u32 g_dwTrackOtherModeLFlags;
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * The vehicles nearest the camera that cast shadows, nearest first.
  *
@@ -231,7 +231,7 @@ extern u32 g_dwTrackOtherModeLFlags;
  * @ghidraAddress BRD3D: 0x102e5ed8
  */
 extern s32 g_nNearbyVehicleCount;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
 /**
  * @ghidraAddress USA: 0x8035d4e8
@@ -261,7 +261,7 @@ extern f32 g_afNearbyVehicleDot[MAX_VEHICLES];
  */
 extern Vec3f g_vVehicleVisibilityDelta;
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * The largest absolute value of the first three rows of g_afViewProjMatrix.
  *
@@ -270,7 +270,7 @@ extern Vec3f g_vVehicleVisibilityDelta;
  * @ghidraAddress JPN: 0x8035e68c
  */
 extern f32 g_fViewMatrixMaxAbs;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
 /**
  * The look-at of the reflections of the track.
@@ -324,7 +324,7 @@ extern Vec3f g_vTrackLightDirection;
  */
 extern Vec3f g_vShadowForward;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * Project a point and its radius to screen bounds outside the near-camera interval.
  * @param viewports The records of the views.
@@ -351,9 +351,9 @@ void ProjectWorldToScreenRect(
  * @ghidraAddress JPN: 0x80235120
  */
 void ProjectWorldToScreenRect(const Vec3f *point, s32 size, s16 low[2], s16 high[2]);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * Draw a placed model, and on it the shadow of each vehicle in a mask, by its vertices taken to the
  * texture of the shadow and its triangles outside the texture omitted.
@@ -381,7 +381,7 @@ void RenderTrackInstance(
  * @ghidraAddress JPN: 0x80235360
  */
 void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /**
  * Order two cells in view by their distance from the camera.
@@ -397,7 +397,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred);
  */
 s32 CompareVisibleCellDistance(const void *a, const void *b);
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * Build visible instances, shadow receivers, lighting, and projected vehicle shadow bounds.
  * @param viewports The records of the views.
@@ -420,9 +420,9 @@ void BuildVisibleInstanceList(const ViewportRect *viewports,
  * @ghidraAddress JPN: 0x80236308
  */
 void BuildVisibleInstanceList(void);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * Draw track geometry, vehicle shadows, and skid marks from the supplied race arrays.
  *
@@ -448,7 +448,7 @@ void RenderTrackGeometry(const ViewportRect *viewports,
  * @ghidraAddress JPN: 0x80236ebc
  */
 void RenderTrackGeometry(s32 deferred);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #ifdef __cplusplus
 }

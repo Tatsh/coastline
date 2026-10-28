@@ -2,7 +2,7 @@
 
 #include <PR/os.h>
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include <stdio.h>
 
 #include "win32/boot/rallyconfig.h"
@@ -16,7 +16,7 @@
 #include <PR/os_libc.h>
 
 #include "options.h"
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #include "camera.h"
 #include "effects.h"
@@ -40,12 +40,12 @@
 #include "visgrid.h"
 #include "weather.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+#if TGR_PC && defined(ENABLE_PATCHES)
 #define g_dwScreenWidth GetHudCanvasWidth()
 #define g_dwScreenHeight GetHudCanvasHeight()
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 namespace {
     /**
      * @ghidraAddress USA: 0x8028aafc
@@ -74,9 +74,9 @@ namespace {
      */
     f32 g_fCameraRayGroundDistance;
 } // namespace
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 namespace {
     /**
      * @ghidraAddress BRD3D: 0x1039b740
@@ -134,7 +134,7 @@ namespace {
 #define RACE_VIEW_EXHAUST() RenderExhaustAndTireSpray()
 #define RACE_VIEW_GLARE() RenderHeadlightGlare()
 #define RACE_VIEW_MIRROR_GLARE() RenderHeadlightGlare()
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #define SCREEN_CENTER_X 160
 
@@ -233,7 +233,7 @@ static void RenderRearViewMirror(RACE_VIEW_PARAMETERS s32 index) {
     SetupFog();
     SetupWeatherLights();
     RenderRaceScene(RACE_VIEW_ARGUMENTS FALSE);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     {
         s32 i;
 
@@ -244,13 +244,13 @@ static void RenderRearViewMirror(RACE_VIEW_PARAMETERS s32 index) {
             }
         }
     }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     RACE_VIEW_TIMING(0, 0x80, 0x80, 0x80, 0xFF);
     RenderRacerVehicles(RACE_VIEW_ARGUMENTS TRUE);
     RACE_VIEW_MIRROR_GLARE();
     RACE_VIEW_TIMING(0, 0, 0x82, 0, 0xFF);
     VEHICLE_SET(g_pActiveCameraVehicle, ActiveCamera, saved);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     g_pActiveCamera = saved;
 #else
     g_pActiveCamera = VEHICLE_GET(g_pActiveCameraVehicle, ActiveCamera);
@@ -264,12 +264,12 @@ static void RenderRearViewMirror(RACE_VIEW_PARAMETERS s32 index) {
 }
 
 /* Draw the HUD of a view, or the text of the races the computer drives over it. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 static void DrawViewOverlay(RACE_VIEW_PARAMETERS s32 index) {
 #else
 static void DrawViewOverlay(void) {
 #endif
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     const ViewportRect *view;
 
     if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
@@ -355,7 +355,7 @@ static void DrawViewOverlay(void) {
                RACER_FINISHED) {
         DrawHudMessage();
     }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 }
 
 /* Draw a view of the race. */
@@ -433,7 +433,7 @@ void RenderRaceView(RACE_VIEW_PARAMETERS s32 index) {
         g_dwNumViewports == 1 && g_dwRearViewMirrorMode) {
         RenderRearViewMirror(RACE_VIEW_ARGUMENTS index);
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #ifdef ENABLE_PATCHES
     ViewportRect *hudViews = BeginRaceHudCanvas(views);
     SetupViewportAndScissor(0, 0, GetHudCanvasWidth(), GetHudCanvasHeight(), TRUE);
@@ -454,7 +454,7 @@ void RenderRaceView(RACE_VIEW_PARAMETERS s32 index) {
                        RACE_VIEW_RECTS[index].y,
                        RACE_VIEW_RECTS[index].width,
                        RACE_VIEW_RECTS[index].height);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #ifndef ENABLE_PATCHES
     DrawDebugOverlayBanner(views);
 #endif
@@ -465,13 +465,13 @@ void RenderRaceView(RACE_VIEW_PARAMETERS s32 index) {
 void DrawPauseMenu(RACE_VIEW_CONTEXT) {
     s32 x, y;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+#if TGR_PC && defined(ENABLE_PATCHES)
     views = BeginRaceHudCanvas(views);
     SetupViewportAndScissor(0, 0, GetHudCanvasWidth(), GetHudCanvasHeight(), TRUE);
 #endif
 
     x = (RACE_VIEW_RECTS[0].width >> 1) + RACE_VIEW_RECTS[0].x;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     NullStub();
 #else
     DrawScreenFadeOverlay(0.33f);
@@ -479,14 +479,14 @@ void DrawPauseMenu(RACE_VIEW_CONTEXT) {
     SetTextStyleNormal();
     SetTextAlignCenter();
     SetTextSize(40);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     DrawText(GetStringResource(245), x, RACE_VIEW_SCREEN_HEIGHT * 5 / 16);
 #else
     DrawText("%ryPAUSED", x, g_dwScreenHeight * 5 / 16);
 #endif
     y = RACE_VIEW_SCREEN_HEIGHT * 5 / 11;
     SetTextSize(20);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (g_dwRacePauseState == 2) {
         DrawText(GetStringResource(246), x, y);
         DrawText(GetStringResource(g_dwPauseMenuSelection == 0 ? 247 : 248), x, y + 40);
@@ -534,8 +534,8 @@ void DrawPauseMenu(RACE_VIEW_CONTEXT) {
              y);
     /* The original steps past the last item and does not use the result. */
     y += 20;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+#endif /* TGR_PC */
+#if TGR_PC && defined(ENABLE_PATCHES)
     EndRaceHudCanvas();
 #endif
 }
@@ -570,7 +570,7 @@ void DrawCreditCaption(void) {
                 break;
             }
         }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         top = (s32)g_dwScreenHeight / 2 - lines * 40 / 4 + 10;
 #else
         top = 132 - lines * 40 / 4;
@@ -579,7 +579,7 @@ void DrawCreditCaption(void) {
             top -= 5;
         }
         for (lines--; lines >= 0; lines--) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             const char *line = g_aCreditCaptions[g_dwRaceCaptionIndex].lines[lines];
 
             if (line[0] == '`') {
@@ -594,16 +594,16 @@ void DrawCreditCaption(void) {
             DrawText(g_aCreditCaptions[g_dwRaceCaptionIndex].lines[lines],
                      SCREEN_CENTER_X,
                      lines * 40 / 2 + top);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         }
         SetTextSize(15);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         DrawText(g_aCreditCaptions[g_dwRaceCaptionIndex].title, (s32)g_dwScreenWidth / 2, top - 20);
 #else
         DrawText(g_aCreditCaptions[g_dwRaceCaptionIndex].title, SCREEN_CENTER_X, top - 20);
 #endif
     }
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
     g_fRaceCaptionTimer += g_fFrameDeltaTime;
     if (g_aCreditCaptions[g_dwRaceCaptionIndex].duration < g_fRaceCaptionTimer) {
         g_fRaceCaptionTimer = 0.0f;

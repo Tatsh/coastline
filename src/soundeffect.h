@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 /** The sound effects of a race. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define SOUND_EFFECTS 25
 #else
 #define SOUND_EFFECTS 16
@@ -54,7 +54,7 @@ enum {
 
 /** A sound effect of a race, as LoadAllSoundEffects() loads it. */
 typedef struct {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     s32 sample; /*!< The sample of the sound in DirectSound. */
 #else
     s8 *sample; /*!< The samples, signed 8-bit, followed by guardLength samples of its start. */

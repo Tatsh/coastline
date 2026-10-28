@@ -3,7 +3,7 @@
 #include "race.h"
 #include "screen.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/boot/rallyconfig.h"
 #ifdef errno
 #undef errno
@@ -31,7 +31,7 @@
         (state)->buttons |= INPUT_BRAKE;                                                           \
     }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void PlayerInputState::TranslateControllerInput(void) {
     PlayerInputState *state = this;
 #else
@@ -95,7 +95,7 @@ void TranslateControllerInput(PlayerInputState *state) {
         state->buttons |= INPUT_C_LEFT;
     }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (IsCurrentScreen(RunRaceGameScreen)) {
         if (state->buttons & INPUT_L) {
             state->buttons |= INPUT_GEAR_DOWN;
@@ -267,20 +267,20 @@ void TranslateControllerInput(PlayerInputState *state) {
             }
             break;
         }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     }
 
     if (state->recordBuffers[0] != NULL || state->recordBuffers[1] != NULL) {
         for (i = 0; i < INPUT_RECORDERS; i++) {
             if (state->recordBuffers[i] != NULL &&
                 state->recordPositions[i] < state->recordLimits[i]) {
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
                 state->recordBuffers[i][state->recordPositions[i]] = state->steeringInput;
                 state->recordBuffers[i][state->recordPositions[i] + 1] =
                     (state->buttons & INPUT_RECORDED_ACTIONS) >> 16;
 #endif
                 if (!g_dwRacePauseState) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                     state->recordPositions[i] = (s32)((u32)state->recordPositions[i] + 2);
 #else
                     state->recordPositions[i] += 2;
@@ -289,7 +289,7 @@ void TranslateControllerInput(PlayerInputState *state) {
             }
         }
     } else if (state->playbackBuffer != NULL) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         /* The playback buffer is read and nothing is played back. */
 #else
         if (state->playbackPosition < state->playbackLimit) {
@@ -303,10 +303,10 @@ void TranslateControllerInput(PlayerInputState *state) {
             state->steeringInput = 0;
             state->buttons &= ~INPUT_RECORDED_ACTIONS;
         }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     state->stickX = state->pad->stick_x * (1.0f / STICK_RANGE);
     state->steering = state->steeringInput * (1.0f / STICK_RANGE);
     state->stickY = state->pad->stick_y * (1.0f / STICK_RANGE);
@@ -331,7 +331,7 @@ void TranslateControllerInput(PlayerInputState *state) {
         state->steering = -1.0f;
     }
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
     ProcessInputCommandBuffer(state);
 #endif
 }

@@ -3,7 +3,7 @@
 
 #include "displaylistops.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "convertedvertex.h"
 #endif
 
@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define SHADOW_COMMANDS 10000
 #else
 #define SHADOW_COMMANDS 500
@@ -27,7 +27,7 @@ extern "C" {
  */
 extern DisplayListCommand g_aShadowDisplayLists[2][SHADOW_COMMANDS];
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * @ghidraAddress BRD3D: 0x1038bcc0
  * @ghidraAddress BRGlide: 0x103874a8
@@ -60,7 +60,7 @@ extern ConvertedModelVertex *g_pTrackQuadVertexWritePtr;
  * @ghidraAddress JPN: 0x80356630
  */
 extern Vtx g_aShadowVertices[2][SHADOW_VERTICES];
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /**
  * Start the display lists and vertices of the shadows of the frame.
@@ -102,7 +102,7 @@ extern DisplayListCommand *g_pShadowDisplayListStart;
  * @ghidraAddress BRD3D: 0x10364304
  * @ghidraAddress BRGlide: 0x1035faec
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 extern ConvertedModelVertex *g_pShadowVertexWritePtr;
 #else
 extern Vtx *g_pShadowVertexWritePtr;
@@ -115,7 +115,7 @@ extern Vtx *g_pShadowVertexWritePtr;
  * @ghidraAddress BRD3D: 0x103643bc
  * @ghidraAddress BRGlide: 0x1035fba4
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 extern ConvertedModelVertex *g_pShadowVertexStart;
 #else
 extern Vtx *g_pShadowVertexStart;

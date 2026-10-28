@@ -55,7 +55,7 @@ void UpdateRacerSlotMotion(RacerSlot *slot) {
 #endif
 
     /* The vehicle is read from the racer at each use. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (IsNetworkRacerMotionDisabled(slot)) {
         return;
     }
@@ -67,7 +67,7 @@ void UpdateRacerSlotMotion(RacerSlot *slot) {
         VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Input)->steering = 0.0f;
     }
     if (g_dwRacePauseState) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         ClearRacerSoundChannels();
 #else
         for (i = 0; i != 5; i++) {

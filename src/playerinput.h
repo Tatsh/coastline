@@ -3,7 +3,7 @@
 
 #include "types.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(errno)
+#if TGR_PC && defined(errno)
 /* The C library macro would replace controller error fields. */
 #pragma push_macro("errno")
 #undef errno
@@ -16,7 +16,7 @@
 #endif
 
 /** Number of input slots. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define MAX_PLAYERS 16
 #else
 #define MAX_PLAYERS 4
@@ -56,7 +56,7 @@ typedef struct PlayerInputState {
     s32 playerIndex;  /*!< The player of the input, from 0 to #MAX_PLAYERS - 1. */
     OSContPad *pad;   /*!< The pad the controller reads fill. */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+#if TGR_PC && defined(__cplusplus)
     /**
      * @ghidraAddress BRD3D: 0x10035ce0
      * @ghidraAddress BRGlide: 0x1002f380
@@ -84,7 +84,7 @@ typedef struct PlayerInputState {
      * @ghidraAddress BRGlide: 0x1002f680
      */
     void InitPlayerInputState(void);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus) */
+#endif /* TGR_PC && defined(__cplusplus) */
 } PlayerInputState;
 
 #ifdef __cplusplus

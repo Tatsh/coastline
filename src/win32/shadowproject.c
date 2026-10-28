@@ -22,7 +22,7 @@ void ProjectShadowTextureCoordinates(ConvertedModelVertex *vertex) {
     f32 y = vertex->position.y;
     f32 z = vertex->position.z;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE
+#if TGR_PC && TGR_RENDERER == TGR_RENDERER_GLIDE
     /* BRGlide adds the products in the order of the rows, and BRD3D adds the z product second. */
     vertex->texture.x =
         (((long double)x * g_afMvpMatrix[0][0] + (long double)y * g_afMvpMatrix[1][0]) +

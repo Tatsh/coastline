@@ -5,7 +5,7 @@
 #include "trackselect.h"
 #include "vehicleaccess.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define TRACK_INTERMEDIATE(value) ((long double)(value))
 #define TRACK_LESS(a, b) (!((a) >= (b)))
 #define GRID_PATCH_SECOND_TRACK 9
@@ -15,7 +15,7 @@
 #define TRACK_LESS(a, b) ((a) < (b))
 #define GRID_PATCH_SECOND_TRACK 8
 #define TRACK_DISTANCE_SUM(vehicle, change) (VEHICLE_GET(vehicle, Distance) + (change))
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /* A vehicle that has not crossed out of its point of the route keeps it while this near. */
 #define POINT_KEEP_DISTANCE 64.0f
@@ -56,7 +56,7 @@ s32 UpdateVehicleTrackPosition(Vehicle *vehicle) {
     s32 i, p, count;
     u8 gridX = VEHICLE_GET(vehicle, GridX);
     u8 gridY = VEHICLE_GET(vehicle, GridY);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double rawSpan, rawDx, rawDy, rawDz, rawDistance, rawAlong;
     f32 squareXY;
 #endif
@@ -70,7 +70,7 @@ s32 UpdateVehicleTrackPosition(Vehicle *vehicle) {
         }
     }
     intoLap = TRACK_INTERMEDIATE(VEHICLE_GET(vehicle, Distance)) -
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
               TRACK_INTERMEDIATE(g_LoadedTrack.rootSection->points[0].distance) *
                   VEHICLE_GET(vehicle, DistanceLaps);
 #else
@@ -102,7 +102,7 @@ s32 UpdateVehicleTrackPosition(Vehicle *vehicle) {
     }
 
     /* The nearest point ahead of the vehicle, of the sections of its cell near it on the route. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     rawSpan = (long double)g_LoadedTrack.maxX - g_LoadedTrack.minX;
     best = rawSpan * rawSpan;
 #else
@@ -135,7 +135,7 @@ s32 UpdateVehicleTrackPosition(Vehicle *vehicle) {
         count = section->pointCount;
         for (p = 0; p < count; p++) {
             point = &section->points[p];
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             /* The y/z products use one rounded operand; the x/y sum spills before adding z. */
             rawDx = (long double)point->position.x - x;
             rawDy = (long double)point->position.y - y;
@@ -150,7 +150,7 @@ s32 UpdateVehicleTrackPosition(Vehicle *vehicle) {
             dz = point->position.z - z;
             distance = dx * dx + dy * dy + dz * dz;
             if (distance < best) {
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
                 TrackPointDirection(&direction, point);
                 Vec3fSubtract(&offset, &VEHICLE_GET(vehicle, Frame).position, &point->position);
                 if (0.0f <= Vec3fDot(&direction, &offset)) {
@@ -173,7 +173,7 @@ found:
     TrackPointDirection(&direction, point);
     Vec3fNormalize(&direction);
     Vec3fSubtract(&offset, &VEHICLE_GET(vehicle, Frame).position, &point->position);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     rawAlong = Vec3fDot(&direction, &offset);
     change = (((long double)g_LoadedTrack.rootSection->points[0].distance *
                    (s32)((u32)VEHICLE_GET(vehicle, DistanceLaps) + 1) -
@@ -185,7 +185,7 @@ found:
                                                   (f32)(VEHICLE_GET(vehicle, DistanceLaps) + 1) -
                                               point->distance);
     change -= VEHICLE_GET(vehicle, Distance);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     if (!checked || (-ROUTE_DISTANCE_WINDOW < change && change < ROUTE_DISTANCE_WINDOW)) {
         VEHICLE_SET(vehicle, Distance, TRACK_DISTANCE_SUM(vehicle, change));
     }

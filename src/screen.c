@@ -1,13 +1,13 @@
 #include "screen.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /** @ghidraAddress BRD3D: 0x106c299c */
 s32 g_dwScreenHeight;
 /** @ghidraAddress BRD3D: 0x106c0684 */
 s32 g_dwScreenWidth;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 ScreenCallback g_pfnCurrentScreen;
 ScreenCallback g_pfnNextScreen;
 ScreenCallback g_pfnSecondaryScreen;
@@ -19,7 +19,7 @@ void NullStub(void) {
 /* @ghidraAddress BRGlide: 0x1002e2de */
 [[maybe_unused]] static void StubUnusedCallback(void) {
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 void StubRenderCallback(void) {
 }

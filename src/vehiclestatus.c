@@ -9,7 +9,7 @@
 #include "vehicleaccess.h"
 #include "vehicletrackpos.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/boot/strings.h"
 #endif
 
@@ -19,7 +19,7 @@
 #define WRONG_WAY_FLASH 0x10
 #define WRONG_WAY_TIME 0.25f
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 typedef long double StatusReal;
 #define STATUS_TIME_SUM(value) ((long double)g_fFrameDeltaTime + (value))
 #define STATUS_NONZERO(value) ((value) < 0.0f || (value) > 0.0f)
@@ -38,10 +38,10 @@ typedef f32 StatusReal;
 #define STATUS_GRID_COORD(value) FloatToInt((value) / GRID_CELL)
 #define STATUS_COMPARE_TIME(field) VEHICLE_GET(vehicle, field)
 static const char sWrongWay[] = "%yyWRONG WAY";
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 void UpdateRaceTimers(Vehicle *vehicle) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     StatusReal remaining;
 #endif
 
@@ -55,11 +55,11 @@ void UpdateRaceTimers(Vehicle *vehicle) {
     VEHICLE_SET(vehicle, TotalTime, STATUS_TIME_SUM(VEHICLE_GET(vehicle, TotalTime)));
     VEHICLE_SET(vehicle, LapTime, STATUS_TIME_SUM(VEHICLE_GET(vehicle, LapTime)));
     if (g_dwGameMode == GAME_MODE_ARCADE
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         || g_dwGameMode == GAME_MODE_NETWORK
 #endif
     ) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         remaining = (StatusReal)VEHICLE_GET(vehicle, TimeLeft) - g_fFrameDeltaTime;
         VEHICLE_SET(vehicle, TimeLeft, remaining);
 #else
@@ -72,12 +72,12 @@ void UpdateRaceTimers(Vehicle *vehicle) {
 }
 
 void UpdateHudMessageTimers(Vehicle *vehicle) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     StatusReal remaining;
 #endif
 
     if (STATUS_NONZERO(VEHICLE_GET(vehicle, MessageTime))) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         remaining = (StatusReal)VEHICLE_GET(vehicle, MessageTime) - g_fFrameDeltaTime;
         VEHICLE_SET(vehicle, MessageTime, remaining);
 #else
@@ -88,7 +88,7 @@ void UpdateHudMessageTimers(Vehicle *vehicle) {
             VEHICLE_SET(vehicle, Message, NULL);
         }
     } else if (STATUS_NONZERO(VEHICLE_GET(vehicle, SubMessageTime))) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         remaining = (StatusReal)VEHICLE_GET(vehicle, SubMessageTime) - g_fFrameDeltaTime;
         VEHICLE_SET(vehicle, SubMessageTime, remaining);
 #else
@@ -108,7 +108,7 @@ void CheckWrongWayWarning(Vehicle *vehicle) {
         if (VEHICLE_GET(vehicle, Lap) < g_dwTotalLaps && !VEHICLE_GET(vehicle, FlyMode) &&
             STATUS_WRONG_DIRECTION(&VEHICLE_GET(vehicle, TrackDirection),
                                    &VEHICLE_GET(vehicle, Frame).forward)) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             warning = GetStringResource(0xf3);
             VEHICLE_SET(
                 vehicle, WrongWayFrames, (s32)((u32)VEHICLE_GET(vehicle, WrongWayFrames) + 1));

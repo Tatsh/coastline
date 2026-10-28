@@ -7,7 +7,7 @@
 #include "render.h"
 #include "screen.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/gbicommand.h"
 #include "win32/hudcanvas.h"
 #include "win32/settings.h"
@@ -19,18 +19,18 @@ s32 g_dwViewportScaleZ;
 s32 g_dwViewportTransZ;
 s32 g_dwTrackMirrored;
 s32 g_dwViewportMirrored;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+#if TGR_PC && defined(ENABLE_PATCHES)
 #define g_dwConfigFramebufferWidth GetHudCanvasWidth()
 #define g_dwConfigFramebufferHeight GetHudCanvasHeight()
 #define g_dwFadeRectLeft GetHudCanvasX(g_dwFadeRectLeft)
 #define g_dwFadeRectRight GetHudCanvasX(g_dwFadeRectRight)
 #define g_dwFadeRectTop GetHudCanvasY(g_dwFadeRectTop)
 #define g_dwFadeRectBottom GetHudCanvasY(g_dwFadeRectBottom)
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES) */
+#endif /* TGR_PC && defined(ENABLE_PATCHES) */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /* Screen coordinate operations retain the original 32-bit wrap. */
 #define COORD_ADD(a, b) ((s32)((u32)(a) + (u32)(b)))
 #define COORD_SUB(a, b) ((s32)((u32)(a) - (u32)(b)))
@@ -52,7 +52,7 @@ s32 g_dwViewportMirrored;
 /* A fill of the frame buffer with a colour of 8-bit components, as two pixels. */
 #define FILL_COLOR(red, green, blue)                                                               \
     ((u16)GPACK_RGBA5551(red, green, blue, 1) | (u32)(u16)GPACK_RGBA5551(red, green, blue, 1) << 16)
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /* A blend of the colour of the frame buffer and the colour drawn, by the alpha of the fog. */
 #define RENDER_MODE_FOG_BLEND_C1                                                                   \
@@ -109,7 +109,7 @@ void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor
         gDPPipeSync(gDisplayListPtr++);
         SetScissorRect(x, y, width < 0 ? COORD_NEGATE(width) : width, height);
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     /* The scissor is doubled at the high resolution and not read again. */
     if (g_dwScreenScaleShift) {
         x = COORD_DOUBLE(x);
@@ -117,7 +117,7 @@ void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor
         width = COORD_DOUBLE(width);
         height = COORD_DOUBLE(height);
     }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     g_dwViewportMirrored = FALSE;
     g_aViewports[g_dwViewportIndex].vp.vscale[0] = COORD_DOUBLE(VIEWPORT_BASE_WIDTH);
     g_aViewports[g_dwViewportIndex].vp.vscale[1] = COORD_DOUBLE(VIEWPORT_BASE_HEIGHT);
@@ -201,7 +201,7 @@ void SetScissorRect(s32 x, s32 y, s32 width, s32 height) {
         height = COORD_DOUBLE(height);
     }
     gDPPipeSync(gDisplayListPtr++);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+#if TGR_PC && defined(ENABLE_PATCHES)
     gDisplayListWords(gDisplayListPtr++, GBI_OP_FULL_SCISSOR << 24, (u32)x);
     gDisplayListWords(gDisplayListPtr++, (u32)y, (u32)COORD_ADD(x, width));
     gDisplayListWords(gDisplayListPtr++, (u32)COORD_ADD(y, height), 0);

@@ -104,7 +104,7 @@ typedef struct RigidBody {
     u8 framesSinceVehicleImpact; /*!< The steps since another vehicle was hit. */
     u8 unreconstructed202;       /*!< Of unknown use; the vehicle sounds clear it while no
                                       effect other than a skid or a roll plays. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     u8 unreconstructed203; /*!< An effect byte sampled by Windows replays. */
     u8 unreconstructed204; /*!< An effect byte sampled by Windows replays. */
     u8 replayEffects[3];   /*!< Additional effects sampled by Windows replays. */

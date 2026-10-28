@@ -16,7 +16,7 @@ void ExtractVehicleBaseColor(Vehicle *vehicle, VehicleModel *model) {
         red = ((color >> 13) & 7) | ((color >> 8) & 0xF8);
         green = ((color >> 8) & 7) | ((color >> 3) & 0xF8);
         blue = ((color >> 3) & 7) | ((color << 2) & 0xF8);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         vehicle->SetVehiclePaintColorRgb(red, green, blue);
 #else
         vehicle->color[2] = blue;

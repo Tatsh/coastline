@@ -1,4 +1,4 @@
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include <math.h>
 #include <stdio.h>
 
@@ -7,7 +7,7 @@
 #include <ultra64.h>
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 
 void guFrustumF(float mf[4][4],
                 float left,
@@ -43,11 +43,11 @@ void guFrustumF(float mf[4][4],
     mf[2][3] = -1.0f;
     mf[3][2] = -(((long double)far * near + (long double)far * near) / depth);
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 void guPerspectiveF(
     float mf[4][4], u16 *perspNorm, float fovy, float aspect, float near, float far, float scale) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double halfHeight = tanl((long double)fovy * 0.008726646259971648) * near;
     float top = halfHeight;
     float right = halfHeight * aspect;
@@ -85,10 +85,10 @@ void guPerspectiveF(
             }
         }
     }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 }
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 void guPerspective(
     Mtx *m, u16 *perspNorm, float fovy, float aspect, float near, float far, float scale) {
     float mf[4][4];

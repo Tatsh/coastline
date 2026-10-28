@@ -3,7 +3,7 @@
 #include "screen.h"
 #include "timing.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * Reset at the start of the frame.
  *
@@ -24,7 +24,7 @@ void AddTimingMarker(s32 bar, s32 red, s32 green, s32 blue, s32 alpha) {
     (void)blue;
     (void)alpha;
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 void BeginTimingFrame(void) {
     s32 bar;

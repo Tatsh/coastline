@@ -17,7 +17,7 @@ void InitPlayerProfileDefaults(PlayerProfile *profile, s32 trackCount) {
     profile->suspension = 1;
     profile->tires = 2;
     profile->controllerLayout = 0;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     /* The Windows initializer overwrites the common controller default. */
     profile->controllerLayout = 5;
 #endif

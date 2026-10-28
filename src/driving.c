@@ -28,7 +28,7 @@
 #define AddTimingMarker(...) NullStub()
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 typedef long double AiReal;
 #define AI_INTERMEDIATE(value) ((long double)(value))
 #define AI_LESS(a, b) (!((a) >= (b)))
@@ -40,7 +40,7 @@ typedef f32 AiReal;
 #define AI_LESS(a, b) ((a) < (b))
 #define AI_ZERO(value) ((value) == 0.0f)
 #define AI_ACTIVE_PROFILE g_pActiveProfile
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /* How far a computer looks ahead: 20, 3 more for each unit of speed, and at most 80. */
 #define AI_LOOK_BASE 20.0f
@@ -284,7 +284,7 @@ static f32 ReadAiLineAhead(Vehicle *vehicle) {
         Vec3fSubtract(&toLeft, &g_avBestLeftLane[i], &g_avBestCenterLine[i]);
         /* The boundary read follows the original data layout of each platform. */
         if (i + 1 == TRACE_DEPTH) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             Vec3fSubtract(&ahead, &g_avTraceCenterLine[0], &g_avBestCenterLine[i]);
 #else
             Vec3fSubtract(&ahead, &g_avBestRightLane[0], &g_avBestCenterLine[i]);
@@ -337,7 +337,7 @@ static f32 ShapeAiSteering(AiReal side, f32 steer) {
             }
         } else if (g_bAiNudgeRight) {
             if (AI_LESS(side, -threshold)) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                 side *= AI_INTERMEDIATE(steer) + 1.0f;
 #else
                 side += steer * side;
@@ -351,7 +351,7 @@ static f32 ShapeAiSteering(AiReal side, f32 steer) {
     }
     if (g_bAiNudgeLeft) {
         if (threshold < side) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             side *= AI_INTERMEDIATE(steer) + 1.0f;
 #else
             side += steer * side;
@@ -527,7 +527,7 @@ static void HoldAiToRoute(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, f32 f
                                     [RACER_SLOT_GET(VEHICLE_GET(vehicle, Racer), Straggler)]);
 #endif /* TGR_REGION == TGR_REGION_EU */
     } else if (g_dwGameMode == GAME_MODE_ARCADE
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                || g_dwGameMode == GAME_MODE_NETWORK
 #endif
     ) {
@@ -590,7 +590,7 @@ static void PlanAiDrive(Vehicle *vehicle) {
         Vec3fDot(&VEHICLE_GET(vehicle, PlacedVelocity), &VEHICLE_GET(vehicle, Frame).forward);
     Vec3fDirection(
         &direction, &VEHICLE_GET(vehicle, Frame).position, &VEHICLE_GET(vehicle, AiTarget));
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     up.x = 0.0f;
     up.y = 0.0f;
     up.z = 1.0f;

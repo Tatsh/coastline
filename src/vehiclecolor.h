@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void RefreshVehicleMaterialTextures(VehicleModel *model);
 
 static inline void SetVehicleLightPalette(u16 *palette, s32 variant, s32 dark) {
@@ -24,10 +24,10 @@ static inline void SetVehicleLightPalette(u16 *palette, s32 variant, s32 dark) {
     palette[9] = variant & 1 ? 0x04f9 : 0x01a0;
     palette[8] = variant & 1 ? 0x04f9 : palette[10];
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 static inline u16 PackMaterialPaletteColor(u16 color) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     return (color >> 8) | (color << 8);
 #else
     return color;
@@ -35,7 +35,7 @@ static inline u16 PackMaterialPaletteColor(u16 color) {
 }
 
 static inline s32 GetMaterialTextureFormat(const ModelTexture *texture) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     return (texture->textureFlags >> 24) & 0xf;
 #else
     return texture->format;

@@ -9,7 +9,7 @@
 #include "vehicleaccess.h"
 #include "vehiclereset.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include <math.h>
 #include <string.h>
 
@@ -19,7 +19,7 @@
 #include <PR/os_libc.h>
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 
 #define FRAME_PRODUCT(a, b) ((long double)(a) * (b))
 #define FRAME_LESS(a, b) (!((a) >= (b)))
@@ -28,7 +28,7 @@
 #else
 #define FRAME_LESS(a, b) ((a) < (b))
 #define SIGN_OF(x) ((x) == 0.0f ? 0.0f : (0.0f < (x) ? 1.0f : -1.0f))
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #define PHYSICS_STEP (1.0f / 30.0f)
 #define WHEEL_DRAW_DROP 0.254f
@@ -56,7 +56,7 @@
 /* The scale from the speed of a vehicle to the speed the display shows. */
 #define SPEED_TO_DISPLAY 2.24f
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 s32 Vehicle::CastGroundRay() {
     return CastRayAgainstTrack(&frame.position,
                                &frame.up,
@@ -107,7 +107,7 @@ void Vehicle::ApplyWheelSideGrip(RigidBody *body, f32 dt) {
                   &(vehicle)->frontLoad,                                                           \
                   &(vehicle)->rearSliding,                                                         \
                   &(vehicle)->frontSliding)
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
     RigidBody **wheels = VEHICLE_GET(vehicle, Body).wheels;
@@ -118,7 +118,7 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
 
     if (VEHICLE_GET(vehicle, FlyMode)) {
         /* Fly along the vehicle and turn with the controls. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         Vec3fScale(&step,
                    &VEHICLE_GET(vehicle, Frame).forward,
                    FRAME_PRODUCT(VEHICLE_GET(vehicle, Accelerator), g_fFrameDeltaTime) * FLY_SPEED);
@@ -135,7 +135,7 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
         SetVehicleVelocity(vehicle, 0.0f, 0.0f, 0.0f);
         SetVehicleTurnRate(vehicle, 0.0f, 0.0f, 0.0f);
         VEHICLE_SET(vehicle, EngineRpm, 0.0f);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         RotateVehicleByEuler(vehicle,
                              FRAME_PRODUCT(VEHICLE_GET(vehicle, Steering), g_fFrameDeltaTime) *
                                  1.256637096405029296875f,
@@ -149,7 +149,7 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
             vehicle->steering * FLY_TURN_RATE * FLY_TURN_SCALE * g_fFrameDeltaTime,
             vehicle->pitchInput * FLY_TURN_RATE * FLY_TURN_SCALE * g_fFrameDeltaTime,
             vehicle->rollInput * FLY_TURN_RATE * FLY_TURN_SCALE * g_fFrameDeltaTime);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         if (VEHICLE_GET(vehicle, Input)->buttons & INPUT_FLY_LEVEL) {
             VEHICLE_GET(vehicle, Frame).up.x = 0.0f;
             VEHICLE_GET(vehicle, Frame).up.y = 0.0f;
@@ -177,14 +177,14 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
             wheels[i]->brake = 0.0f;
         }
         if (0.0f < VEHICLE_GET(vehicle, Throttle)) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             if (VEHICLE_GET(vehicle, Input)->buttons & INPUT_REVERSE_TOGGLE) {
 #else
             if ((vehicle->input->buttons & INPUT_REVERSE_TOGGLE) && vehicle->gear == 1) {
 #endif
                 VEHICLE_SET(vehicle, Throttle, -VEHICLE_GET(vehicle, Throttle));
             }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             switch (VEHICLE_GET(vehicle, Model)->driveMode) {
             case 0:
                 wheels[0]->drive = VEHICLE_GET(vehicle, Throttle) * 0.1f;
@@ -215,7 +215,7 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
                     wheels[i]->drive = -vehicle->throttle;
                 }
             }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         }
         if (FRAME_LESS(VEHICLE_GET(vehicle, Brake), 0.0f)) {
             wheels[0]->brake = -VEHICLE_GET(vehicle, Brake);
@@ -228,7 +228,7 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
                 wheels[3]->brake = -VEHICLE_GET(vehicle, Brake);
             }
         }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         if (ShouldStepVehiclePhysics(vehicle)) {
             SimulateVehiclePhysicsSubstep(vehicle);
         }
@@ -237,7 +237,7 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
 #endif
     }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     FinishVehiclePhysicsFrame(vehicle);
 #else
     TransformAllWheelMatrices(vehicle);
@@ -245,7 +245,7 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
     /* The speed changes while the first front wheel is on the ground. */
     if (VEHICLE_GET(vehicle, WheelBodies)[1].contactFrames) {
         velocity = &VEHICLE_GET(vehicle, Body).state.velocity;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         VEHICLE_SET(vehicle,
                     SpeedKph,
                     sqrtl((f32)(FRAME_PRODUCT(velocity->z, velocity->z) +
@@ -256,9 +256,9 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
         vehicle->speedKph = sqrtf(velocity->z * velocity->z +
                                   (velocity->x * velocity->x + velocity->y * velocity->y)) *
                             SPEED_TO_DISPLAY;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (g_dwNetworkPlayMode) {
         return;
     }
@@ -312,7 +312,7 @@ void TransformAllWheelMatrices(Vehicle *vehicle) {
     f32 turn[4][4];
     f32 steer[4][4];
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     UpdateVehicleReplayPose(vehicle);
 #endif
     guRotateF(turn, VEHICLE_GET(vehicle, Body).rollAngle, 1.0f, 0.0f, 0.0f);
@@ -411,7 +411,7 @@ void SimulateVehiclePhysicsSubstep(Vehicle *vehicle) {
     /* The original updates the same step quaternion twice. */
     ComputeDeltaQuaternion(&body->stepStates[0]);
     ComputeDeltaQuaternion(&body->stepStates[0]);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     StepVehicleCollisions(vehicle, body);
 #else
     StepVehicleCollisions(body);

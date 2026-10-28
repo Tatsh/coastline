@@ -5,7 +5,7 @@
 #include "text.h"
 #include "vehicleaccess.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define HUD_MESSAGE_VIEWPORTS viewports
 #define HUD_MESSAGE_ADD(a, b) ((s32)((u32)(a) + (u32)(b)))
 void DrawHudMessage(const ViewportRect *viewports) {
@@ -19,7 +19,7 @@ void DrawHudMessage(void) {
     if (g_dwRacePauseState != 0) {
         return;
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (IsFadingOut()) {
         return;
     }

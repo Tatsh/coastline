@@ -6,7 +6,7 @@
  * The next command of the display list the game builds.
  */
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 #include <PR/gbi.h>
 #endif
 
@@ -23,7 +23,7 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x106c0680
  * @ghidraAddress BRGlide: 0x106e7710
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 extern struct GbiCommand *gDisplayListPtr;
 #else
 extern Gfx *gDisplayListPtr;

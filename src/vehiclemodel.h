@@ -5,7 +5,7 @@
 #include "displaylistops.h"
 #include "render.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/assetnames.h"
 #endif
 
@@ -52,7 +52,7 @@ enum {
  * reconstructed.
  */
 typedef struct VehicleModel {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     u8 abUnknown0[4]; /* +0x00 */
     s32 textureEntries[30];
     s32 textureEntryCount;
@@ -88,10 +88,10 @@ typedef struct VehicleModel {
     s32 gearImageBytes;
     u16 dashboardPalettes[2][256];
     u8 dashboardImages[0x7b00];
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
     u32 triangleCount; /*!< The triangles of the model, counted into the statistics of the frame. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     void *unreconstructed4; /* +0x8004 */
     u32 unreconstructed8;   /* +0x8008 */
     void *unreconstructedC; /* +0x800c */
@@ -210,7 +210,7 @@ void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue);
  */
 void FixupVehicleModelPointers(VehicleModel *model);
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 
 /**
  * @ghidraAddress BRD3D: 0x100370d0
@@ -259,7 +259,7 @@ void AppendVehicleModelTextureEntry(s32 entry);
  * @ghidraAddress BRGlide: 0x10030710
  */
 s32 IsVehicleMaterialPalette(const void *palette);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #ifdef __cplusplus
 }

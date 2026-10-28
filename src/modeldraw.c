@@ -5,19 +5,19 @@
 #include "system.h"
 #include "util.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/combine.h"
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /** @ghidraAddress BRD3D: 0x10690a1c */
 s32 g_dwDrawModelListNoZBuffer;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 void DrawModelList(Model *model, f32 m[4][4]) {
     ModelPart *part;
     LookAt *lookAt;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     f32(*block)[4];
 #else
     Mtx *block;
@@ -39,7 +39,7 @@ void DrawModelList(Model *model, f32 m[4][4]) {
                          AA_EN | Z_CMP | Z_UPD | CVG_DST_CLAMP | ZMODE_OPA | ALPHA_CVG_SEL |
                              GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_A_MEM));
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     PackCombineMode(gDisplayListPtr++,
                     1000 + G_CCMUX_TEXEL1,
                     1000 + G_CCMUX_TEXEL0,
@@ -75,7 +75,7 @@ void DrawModelList(Model *model, f32 m[4][4]) {
                       0,
                       0,
                       COMBINED);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     gDPSetBlendColor(gDisplayListPtr++, 0, 0, 0, 0);
     gDPSetTextureDetail(gDisplayListPtr++, G_TD_CLAMP);
     gDPSetTextureLOD(gDisplayListPtr++, G_TL_TILE);
@@ -102,12 +102,12 @@ void DrawModelList(Model *model, f32 m[4][4]) {
     guLookAtReflectF(
         g_afScratchMatrix, lookAt, 0.0f, -1.0f, 15.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f);
     gSPLookAt(gDisplayListPtr++, lookAt);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     block = AllocDisplayListBlock()->matrix;
 #else
     block = (Mtx *)AllocDisplayListBlock();
 #endif
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     CopyMatrix4x4(m, block);
 #else
     guMtxF2L(m, block);
@@ -144,13 +144,13 @@ void DrawModelList(Model *model, f32 m[4][4]) {
             }
             gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
             gDPTileSync(gDisplayListPtr++);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             block = AllocDisplayListBlock()->matrix;
 #else
             block = (Mtx *)AllocDisplayListBlock();
 #endif
             guTranslateF(g_afMvpMatrix, part->position.x, part->position.y, part->position.z);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             CopyMatrix4x4(g_afMvpMatrix, block);
 #else
             guMtxF2L(g_afMvpMatrix, block);

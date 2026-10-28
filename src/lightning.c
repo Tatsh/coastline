@@ -3,7 +3,7 @@
 #include "vecmath.h"
 #include "weather.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * The time since the last strike, in 343 units a second.
  *
@@ -14,7 +14,7 @@
  * @ghidraAddress BRGlide: 0x104add3c
  */
 static f32 g_fLightningFlashTimer;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #define LIGHTNING_TIMER_RATE 343.0f
 #define LIGHTNING_TIMER_LIMIT 2048.0
@@ -24,7 +24,7 @@ static f32 g_fLightningFlashTimer;
 
 void UpdateLightningFlash(void) {
     if (g_dwLightningFlashCounter >= 0) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         g_fLightningFlashTimer = (long double)g_fLightningFlashTimer -
                                  (long double)g_fFrameDeltaTime * -LIGHTNING_TIMER_RATE;
 #else

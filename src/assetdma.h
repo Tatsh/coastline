@@ -120,7 +120,7 @@ extern u32 g_dwDmaAssetSizeBuffer;
  */
 extern u32 g_dwDmaReadWordBuffer;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * @ghidraAddress BRD3D: 0x106c7c44
  * @ghidraAddress BRGlide: 0x106eecd4

@@ -4,7 +4,7 @@
 #include "screen.h"
 #include "text.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define CREDIT_ARITHMETIC u32
 #define CREDITS_SCREEN_CALLBACK RunRaceGameScreen
 #define CREDIT_SCREEN_CENTER (g_dwScreenWidth / 2)
@@ -14,7 +14,7 @@
 #define CREDITS_SCREEN_CALLBACK ProcessRacingScreen
 #define CREDIT_SCREEN_CENTER 160
 #define CREDIT_SCREEN_BOTTOM 280
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 void StartEndingCredits(void) {
     g_dwGameMode = GAME_MODE_DEMO;
@@ -27,7 +27,7 @@ void CalculateScrollPositions(void) {
     s32 i;
     s32 y, above, size;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     y = g_dwScreenHeight;
 #else
     y = 240;
@@ -47,7 +47,7 @@ void ScrollTextUp(void) {
     s32 i;
 
     for (i = 0; g_aCreditScrollLines[i].text != NULL; i++) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         g_aCreditScrollLines[i].y = (s32)((u32)g_aCreditScrollLines[i].y - 1);
 #else
         g_aCreditScrollLines[i].y--;
@@ -55,7 +55,7 @@ void ScrollTextUp(void) {
     }
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void DrawScrollingText(const ViewportRect *viewport) {
 #else
 void DrawScrollingText(void) {

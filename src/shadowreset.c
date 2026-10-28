@@ -1,7 +1,7 @@
 #include "shadowbuffers.h"
 #include "util.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /** @ghidraAddress BRD3D: 0x102e5ec8 */
 DisplayListCommand *g_pShadowDisplayListStart;
 /** @ghidraAddress BRD3D: 0x10363ff0 */
@@ -14,13 +14,13 @@ ConvertedModelVertex *g_pShadowVertexWritePtr;
 ConvertedModelVertex *g_pTrackQuadVertexStart;
 /** @ghidraAddress BRD3D: 0x10363ff4 */
 ConvertedModelVertex *g_pTrackQuadVertexWritePtr;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 void ResetShadowBuffers(void) {
     g_pShadowDisplayListWritePtr = g_pShadowDisplayListStart =
         g_aShadowDisplayLists[g_dwFrameBufferIndex];
     g_pShadowVertexWritePtr = g_pShadowVertexStart = g_aShadowVertices[g_dwFrameBufferIndex];
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     g_pTrackQuadVertexWritePtr = g_pTrackQuadVertexStart =
         g_aTrackQuadVertices[g_dwFrameBufferIndex];
 #endif

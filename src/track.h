@@ -17,7 +17,7 @@
 #include "render.h"
 #include "vecmath.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/gbicommand.h"
 #endif
 
@@ -65,7 +65,7 @@ typedef struct {
         } rows[4];
     };
     f32 invScale; /*!< One over the length of the x axis of the matrix, the inverse of the scale. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     GbiCommand *displayList; /*!< The display list that draws the model. */
 #else
     Gfx *displayList; /*!< The display list that draws the model. */
@@ -200,7 +200,7 @@ typedef struct {
     f32 maxZ;            /*!< The greatest z of the track. */
     Vec3f startPosition; /*!< The point the vehicles of the starting grid are placed from. */
     f32 startHeading;    /*!< The heading of the vehicles on the grid of the start, in radians. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     GbiCommand *skyDisplayList;
 #else
     Gfx *skyDisplayList; /*!< The display list of the sky, or NULL for a sky of the fog colour. */
@@ -309,7 +309,7 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
                         f32 *groundDistance,
                         s32 *groundSurface);
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+#if TGR_PC && defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -368,7 +368,7 @@ u32 LookupInstanceGridCell(s32 column, s32 row);
  * @ghidraAddress BRGlide: 0x10003280
  */
 u16 NextGridCellInstance(TrackGridCursor *cursor);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
+#if TGR_PC && defined(__cplusplus)
 }
 #endif
 
@@ -388,7 +388,7 @@ void LoadTrackGeometryFromRom(s32 track);
 #define TRACK_HEADER_SIZE 0x230
 
 /* The limits of a track. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define TRACK_MAX_SIZE 4000000
 #else
 #define TRACK_MAX_SIZE 0x171400 /*!< The most bytes a track may take. */
@@ -437,7 +437,7 @@ extern u8 g_abTrackSection2Data[TRACK_SECTION_DATA_SIZE];
  */
 extern u32 g_dwCurrentTrackRomOffset;
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * Where the textures of the loaded track are on the cartridge, after its compressed geometry.
  *
@@ -446,7 +446,7 @@ extern u32 g_dwCurrentTrackRomOffset;
  * @ghidraAddress JPN: 0x8028c550
  */
 extern u32 g_dwTrackTextureRomOffset;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
 /**
  * The segment of textures last streamed, or -1.

@@ -12,7 +12,7 @@
 
 #include "render.h"
 #include "texrect.h"
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "vehiclefwd.h"
 #endif
 
@@ -26,14 +26,14 @@ extern "C" {
 /** The colors of a palette of the dashboard. */
 #define DASHBOARD_PALETTE_COLORS 256
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * The gear cell each view has loaded.
  * @ghidraAddress BRD3D: 0x100a73a8
  * @ghidraAddress BRGlide: 0x100a6b68
  */
 extern s32 g_adwDashboardLoadedGear[DASHBOARD_VIEWS];
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
@@ -110,13 +110,13 @@ extern Vtx g_aGaugeNeedleVerts[2][DASHBOARD_VIEWS][4];
  * @ghidraAddress JPN: 0x80362da0
  * @ghidraAddress BRD3D: 0x104b0320
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 extern char g_szHudSpeedTextBuf[];
 #else
 extern char g_szHudSpeedTextBuf[16];
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * Whether to display the dashboard and speedometer.
  * @ghidraAddress BRD3D: 0x100bd3f4
@@ -139,7 +139,7 @@ void RenderDashboardGauges(const ViewportRect *viewports);
  * @ghidraAddress JPN: 0x80238990
  */
 void RenderDashboardGauges(void);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /**
  * Does nothing.
@@ -166,7 +166,7 @@ void StubDashboard(void);
  */
 void DrawLabelWithTime(const char *label, const char *color, f32 seconds, s32 x, s32 y);
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 
 /**
  * Whether to display completed lap times.
@@ -192,9 +192,9 @@ void DrawLapTimeListHud(const ViewportRect *viewports);
  */
 void DrawFormattedLapTimeText(const char *color, s32 lap, f32 seconds, s32 x, s32 y);
 
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * Whether to display the lap counter.
  * @ghidraAddress BRD3D: 0x100bd3e8
@@ -258,9 +258,9 @@ void DrawRaceTimerHud(void);
  * @ghidraAddress JPN: 0x80239ac8
  */
 void DrawLapCounterHud(void);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * Draw the active vehicle's message unless paused or fading out.
  * @param viewports The records of the views.
@@ -277,9 +277,9 @@ void DrawHudMessage(const ViewportRect *viewports);
  * @ghidraAddress JPN: 0x80239de4
  */
 void DrawHudMessage(void);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * Draw the dashboard, times, laps, messages, and speed for a viewport.
  * @param viewports The records of the views.
@@ -298,7 +298,7 @@ void DrawSpeedAndHudOverlay(const ViewportRect *viewports, const Vehicle *vehicl
  * @ghidraAddress JPN: 0x80239f40
  */
 void DrawSpeedAndHudOverlay(void);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /**
  * Whether the views draw the HUD and the help of the instant replay.

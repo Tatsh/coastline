@@ -1,7 +1,7 @@
 #include "driving.h"
 #include "vehicleaccess.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define ROUTE_LESS(a, b) (!((a) >= (b)))
 #else
 #define ROUTE_LESS(a, b) ((a) < (b))
@@ -26,7 +26,7 @@ void ComputeTrackPosition(Vehicle *vehicle) {
     f32 t;
     f32 t2;
     f32 t3;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double highT, highSquare, highCube, sideOffset;
     f32 negativeTwiceCube;
 #endif
@@ -91,7 +91,7 @@ void ComputeTrackPosition(Vehicle *vehicle) {
     fromAlong = Vec3fDot(&fromOffset, &fromTangent);
     toAlong = -Vec3fDot(&toOffset, &toTangent);
     length = Vec3fDistance(&fromMiddle, &toMiddle);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     /* Stores of t and its powers do not discard the extended values still on the x87 stack. */
     highT = (long double)fromAlong * length / ((long double)toAlong + fromAlong) / length;
     t = highT;
@@ -104,10 +104,10 @@ void ComputeTrackPosition(Vehicle *vehicle) {
     t = length * fromAlong / (fromAlong + toAlong) / length;
     t2 = t * t;
     t3 = t2 * t;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
     /* A Hermite curve between the middles of the two segments. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     Vec3fScale(&VEHICLE_GET(vehicle, TrackPoint),
                &fromMiddle,
                1.0L - (negativeTwiceCube - (long double)t2 * -3.0f));
@@ -122,7 +122,7 @@ void ComputeTrackPosition(Vehicle *vehicle) {
     Vec3fMulAddInPlace(&VEHICLE_GET(vehicle, TrackPoint), &toMiddle, -2.0f * t3 + 3.0f * t2);
     Vec3fMulAddInPlace(&VEHICLE_GET(vehicle, TrackPoint), &fromTangent, t3 - (t2 + t2) + t);
     Vec3fMulAddInPlace(&VEHICLE_GET(vehicle, TrackPoint), &toTangent, t3 - t2);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     Vec3fLerp(&VEHICLE_GET(vehicle, TrackForward), &toTangent, &fromTangent, t);
     Vec3fNormalize(&VEHICLE_GET(vehicle, TrackForward));
     Vec3fCross(&VEHICLE_GET(vehicle, TrackSide),
@@ -135,7 +135,7 @@ void ComputeTrackPosition(Vehicle *vehicle) {
     Vec3fSubtract(&VEHICLE_GET(vehicle, TrackOffset),
                   &VEHICLE_GET(vehicle, Frame).position,
                   &VEHICLE_GET(vehicle, TrackPoint));
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     sideOffset = Vec3fDot(&VEHICLE_GET(vehicle, TrackSide), &VEHICLE_GET(vehicle, TrackOffset));
     VEHICLE_SET(vehicle, TrackSideOffset, sideOffset);
     VEHICLE_SET(
@@ -148,5 +148,5 @@ void ComputeTrackPosition(Vehicle *vehicle) {
     } else {
         vehicle->trackSideDistance = vehicle->trackSideOffset;
     }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 }

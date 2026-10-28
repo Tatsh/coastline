@@ -8,7 +8,7 @@ void guScaleF(float mf[4][4], float x, float y, float z) {
     mf[3][3] = 1.0f;
 }
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 void guScale(Mtx *m, float x, float y, float z) {
     float mf[4][4];
 

@@ -3,7 +3,7 @@
 #include "vehicleaccess.h"
 
 #define TRACK_CLEARANCE 0.1f
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define TRACK_CAMERA_CLEARANCE 0.3f
 #define STORE_TRACK_VALUE(target, expression) (target) = (f32)(precise = (expression))
 #define PRECISE_TRACK_VALUE(value) precise
@@ -62,7 +62,7 @@ void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *
     Vec3f hitPoint, offset;
     TrackTriangle *hit, *triangle, *end;
     f32 limit, distance, newLength, facing, t;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double length, precise;
 #else
     f32 length;

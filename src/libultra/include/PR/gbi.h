@@ -397,7 +397,7 @@ typedef struct {
 } Lights1;
 
 /** Write a command of two words at pkt, which is evaluated once. */
-#if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN
+#if defined(TGR_PLATFORM) && TGR_PC
 #define gDisplayListWords(pkt, c0, c1)                                                             \
     {                                                                                              \
         Gwords *_g = &(pkt)->words;                                                                \
@@ -411,7 +411,7 @@ typedef struct {
         _g->words.w0 = (c0);                                                                       \
         _g->words.w1 = (c1);                                                                       \
     }
-#endif /* defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* defined(TGR_PLATFORM) && TGR_PC */
 
 /** Write command cmd with no parameters. */
 #define gDPNoParam(pkt, cmd) gDisplayListWords(pkt, _SHIFTL(cmd, 24, 8), 0)
@@ -444,7 +444,7 @@ typedef struct {
                           _SHIFTL(sizeof(Vtx) * (n) - 1, 0, 10),                                   \
                       (u32)(v))
 
-#if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN
+#if defined(TGR_PLATFORM) && TGR_PC
 #define __gsSP1Triangle_w1f(v0, v1, v2, flag)                                                      \
     ((flag) == 0 ? _SHIFTL(v0, 16, 8) | _SHIFTL(v1, 8, 8) | _SHIFTL(v2, 0, 8) :                    \
      (flag) == 1 ? _SHIFTL(v1, 16, 8) | _SHIFTL(v2, 8, 8) | _SHIFTL(v0, 0, 8) :                    \
@@ -454,7 +454,7 @@ typedef struct {
     ((flag) == 0 ? _SHIFTL((v0) * 2, 16, 8) | _SHIFTL((v1) * 2, 8, 8) | _SHIFTL((v2) * 2, 0, 8) :  \
      (flag) == 1 ? _SHIFTL((v1) * 2, 16, 8) | _SHIFTL((v2) * 2, 8, 8) | _SHIFTL((v0) * 2, 0, 8) :  \
                    _SHIFTL((v2) * 2, 16, 8) | _SHIFTL((v0) * 2, 8, 8) | _SHIFTL((v1) * 2, 0, 8))
-#endif /* defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* defined(TGR_PLATFORM) && TGR_PC */
 
 /** Draw two triangles of the vertex buffer. */
 #define gSP2Triangles(pkt, v00, v01, v02, flag0, v10, v11, v12, flag1)                             \
@@ -585,7 +585,7 @@ typedef struct {
     gDisplayListWords(pkt, _SHIFTL(G_SETPRIMDEPTH, 24, 8), _SHIFTL(z, 16, 16) | _SHIFTL(dz, 0, 16))
 
 /** Set the scissor rectangle: integer coordinates on Windows, 10.2 fixed point on N64. */
-#if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN
+#if defined(TGR_PLATFORM) && TGR_PC
 #define gDPSetScissor(pkt, mode, ulx, uly, lrx, lry)                                               \
     gDisplayListWords(                                                                             \
         pkt,                                                                                       \
@@ -599,7 +599,7 @@ typedef struct {
                           _SHIFTL((s32)((f32)(uly) * 4.0f), 0, 12),                                \
                       _SHIFTL(mode, 24, 2) | _SHIFTL((s32)((f32)(lrx) * 4.0f), 12, 12) |           \
                           _SHIFTL((s32)((f32)(lry) * 4.0f), 0, 12))
-#endif /* defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* defined(TGR_PLATFORM) && TGR_PC */
 /** Set the render mode from the modes of the first and second cycles. */
 #define gDPSetRenderMode(pkt, c0, c1)                                                              \
     gSPSetOtherMode(pkt, G_SETOTHERMODE_L, G_MDSFT_RENDERMODE, 29, (c0) | (c1))
@@ -662,7 +662,7 @@ typedef struct {
 /** Set the fill colour, a 32-bit word of one or two packed pixels. */
 #define gDPSetFillColor(pkt, d) gDisplayListWords(pkt, _SHIFTL(G_SETFILLCOLOR, 24, 8), (u32)(d))
 /** Fill a rectangle, its corners inclusive, with the fill colour. */
-#if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN
+#if defined(TGR_PLATFORM) && TGR_PC
 #define gDPFillRectangle(pkt, ulx, uly, lrx, lry)                                                  \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_FILLRECT_INT_COORDS, 24, 8) | _SHIFTL(lrx, 12, 12) |               \
@@ -673,7 +673,7 @@ typedef struct {
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_FILLRECT, 24, 8) | _SHIFTL(lrx, 14, 10) | _SHIFTL(lry, 2, 10),     \
                       _SHIFTL(ulx, 14, 10) | _SHIFTL(uly, 2, 10))
-#endif /* defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* defined(TGR_PLATFORM) && TGR_PC */
 /** Set the G_TT_* texture palette. */
 #define gDPSetTextureLUT(pkt, type) gSPSetOtherMode(pkt, G_SETOTHERMODE_H, G_MDSFT_TEXTLUT, 2, type)
 /** Set the G_TP_* texture perspective correction. */

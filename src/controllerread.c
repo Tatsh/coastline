@@ -3,7 +3,7 @@
 #include "input.h"
 #include "rumble.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 namespace {
     /**
      * Whether a read of the controllers is started and not yet received.
@@ -16,9 +16,9 @@ namespace {
      */
     s32 g_dwContReadPending;
 } // namespace
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void InitControllersAndPaks(void) {
 }
 #endif
@@ -27,7 +27,7 @@ void StartControllerRead(void) {
     if (!g_dwContReadPending) {
         g_dwContReadPending = TRUE;
         g_wSerialInterfaceIdle = FALSE;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         osContInit(&g_SiMesgQueue, NULL, NULL);
 #else
         osContStartReadData(&g_SiMesgQueue);
@@ -37,7 +37,7 @@ void StartControllerRead(void) {
 
 void ReadControllers(void) {
     StartControllerRead();
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     osContInit(&g_SiMesgQueue, NULL, NULL);
 #else
     osRecvMesg(&g_SiMesgQueue, NULL, OS_MESG_BLOCK);
@@ -51,12 +51,12 @@ void UpdateControllerState(void) {
     s32 i;
 
     ReadControllers();
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     for (i = 0; i < 1; i++) {
 #else
     for (i = 0; i < MAX_PLAYERS; i++) {
 #endif
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         g_aPlayerInputState[i].TranslateControllerInput();
         g_aPlayerInputState[i].ConsumeInputFlags();
 #else

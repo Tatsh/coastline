@@ -5,7 +5,7 @@
 #include "text.h"
 #include "vehicleaccess.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include <stdio.h>
 
 #include "win32/boot/strings.h"
@@ -17,7 +17,7 @@
 #endif
 
 #define TIME_TEXT_SIZE 15
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+#if TGR_PC && defined(ENABLE_PATCHES)
 #define g_dwConfigFramebufferWidth GetHudCanvasWidth()
 #endif
 #define LAP_TEXT_SIZE 15
@@ -26,7 +26,7 @@
 #define PLACE_TEXT_SIZE_SPLIT 26
 #define PLACE_SUFFIX_TEXT_SIZE_SPLIT 13
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 
 #undef DrawText
 
@@ -64,9 +64,9 @@ static inline void DrawHudTimeLabel(unsigned label, const char *color, f32 secon
 #define HUD_SUFFIX_RD "rd"
 #define HUD_SUFFIX_TH "th"
 #define DRAW_HUD_TIME DrawLabelWithTime
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void DrawRaceTimerHud(const ViewportRect *viewports) {
     if (!g_bHudShowRaceTimer) {
         return;
@@ -84,7 +84,7 @@ void DrawRaceTimerHud(void) {
     switch (g_dwGameMode) {
     case GAME_MODE_CHAMPIONSHIP:
     case GAME_MODE_TIME_ATTACK:
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     case GAME_MODE_ARCADE:
     case GAME_MODE_NETWORK:
 #endif
@@ -156,7 +156,7 @@ void DrawRaceTimerHud(void) {
     }
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void DrawLapCounterHud(const ViewportRect *viewports, const Vehicle *) {
     char text[256];
 #else
@@ -177,7 +177,7 @@ void DrawLapCounterHud(void) {
 
     /* The lap, at the left of the first view, unless the camera is on the bumper. */
     x = HUD_RACE_ADD(HUD_VIEWPORTS[0].x, 16);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (g_bHudShowLapCounter &&
 #else
     if (g_pActiveCamera != &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_BUMPER] &&
@@ -185,12 +185,12 @@ void DrawLapCounterHud(void) {
         (VEHICLE_GET(g_pActiveCameraVehicle, Lap) < g_dwTotalLaps || g_dwNumViewports == 1)) {
         y = HUD_RACE_ADD(HUD_VIEWPORTS[g_dwCurrentSplitScreenIndex].y, 5);
         if (VEHICLE_GET(g_pActiveCameraVehicle, Lap) < g_dwTotalLaps) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             const char *lapLabel = g_dwNumViewports == 2 ? "L" : HUD_LAP_LABEL;
 #endif
             sprintf(text,
                     "%%y1%s%d/%d",
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                     lapLabel,
 #else
                     g_dwNumViewports == 2 ? "L" : HUD_LAP_LABEL,
@@ -212,7 +212,7 @@ void DrawLapCounterHud(void) {
         DrawText(text, x, y);
     }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (!g_bHudShowPosition || g_bNetSpectator) {
         return;
     }

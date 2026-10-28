@@ -213,7 +213,7 @@ void guRotate(Mtx *m, float a, float x, float y, float z);
  */
 void guNormalize(float *x, float *y, float *z);
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * Build a floating-point frustum matrix. The scale parameter is unused.
  *
@@ -228,7 +228,7 @@ void guFrustumF(float mf[4][4],
                 float near,
                 float far,
                 float scale);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /**
  * Build a floating-point perspective projection.

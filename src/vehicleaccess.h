@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define VEHICLE_GET(vehicle, field) ((vehicle)->Get##field())
 #define VEHICLE_SET(vehicle, field, value) ((vehicle)->Set##field(value))
 #define VEHICLE_ADD(vehicle, field, value)                                                         \
@@ -217,7 +217,7 @@ extern "C" {
 #define VEHICLE_GET_WheelBodies(vehicle) ((vehicle)->wheelBodies)
 #define VEHICLE_GET_WheelFrames(vehicle) ((vehicle)->wheelFrames)
 #define VEHICLE_GET_WheelMatrices(vehicle) ((vehicle)->wheelMatrices)
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #ifdef __cplusplus
 }

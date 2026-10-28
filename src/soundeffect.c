@@ -2,10 +2,10 @@
 
 #include "soundchannel.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /** @ghidraAddress BRD3D: 0x10aa3470 */
 s32 g_dwChannel3PlayingSfxId;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 void PlaySoundEffect(s32 sound) {
     SoundEffect *effect = &g_aSoundEffects[sound];

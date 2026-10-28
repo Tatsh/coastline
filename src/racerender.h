@@ -9,7 +9,7 @@
 extern "C" {
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void RenderRaceView(ViewportRect *views, const RacerSlot *slots, Vehicle *vehicles, s32 index);
 void DrawPauseMenu(ViewportRect *views, const RacerSlot *slots, Vehicle *vehicles);
 #else

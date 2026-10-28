@@ -144,7 +144,7 @@ void SpawnExhaustParticle(Vehicle *vehicle);
 void EmitTireSpray(Vehicle *vehicle);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * Draw the supplied racers' tyre spray, including snow only on the coastline tracks.
  *
@@ -163,7 +163,7 @@ void DrawTireSpray(const RacerSlot *slots);
  * @ghidraAddress JPN: 0x8023cb60
  */
 void DrawTireSpray(void);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
@@ -223,7 +223,7 @@ void InitParticleSystem(void);
  */
 void UpdateAllVehicleEffects(void);
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * Draw snapshot particle puffs as rectangles in the current view.
  *
@@ -250,9 +250,9 @@ void RenderBillboardParticles(
  * @ghidraAddress JPN: 0x8023e144
  */
 void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * Set the billboard matrix and draw snapshot tyre smoke in the track colours, except at night.
  *
@@ -271,9 +271,9 @@ void RenderTireSmoke(const ViewportRect *viewports);
  * @ghidraAddress JPN: 0x8023e724
  */
 void RenderTireSmoke(void);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * Draw snapshot exhaust in snow, restore particle modes and draw the supplied racers' spray.
  *
@@ -292,7 +292,7 @@ void RenderExhaustAndTireSpray(const ViewportRect *viewports, const RacerSlot *s
  * @ghidraAddress JPN: 0x8023ebd0
  */
 void RenderExhaustAndTireSpray(void);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #ifdef __cplusplus
 }

@@ -1,6 +1,6 @@
 #include "types.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include <PR/os_cont.h>
 
 #include "win32/inputpoll.h"
@@ -9,7 +9,7 @@
 #include "siint.h"
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 
 void osContGetReadData(OSContPad *data) {
     int steering;
@@ -117,4 +117,4 @@ void __osPackReadData(void) {
     }
     *ptr = CONT_CMD_END;
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */

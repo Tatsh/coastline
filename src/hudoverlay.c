@@ -5,7 +5,7 @@
 #include "text.h"
 #include "vehicleaccess.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include <stdio.h>
 
 #include "win32/boot/strings.h"
@@ -18,9 +18,9 @@
 
 #include "input.h"
 #include "options.h"
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 
 #undef DrawText
 #define HUD_OVERLAY_ADD(a, b) ((s32)((u32)(a) + (u32)(b)))
@@ -37,10 +37,10 @@
 #define HUD_MPH_LABEL "%wwmph"
 #define HUD_KPH_LABEL "%wwkph"
 #define HUD_SPEED_Y (y - 3)
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /* The right edge of the times, the speed and the dashboard. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+#if TGR_PC && defined(ENABLE_PATCHES)
 #define g_dwConfigFramebufferWidth GetHudCanvasWidth()
 #endif
 
@@ -64,7 +64,7 @@
 /* The kilometres in a mile. */
 #define KM_PER_MILE 1.609344f
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void DrawSpeedAndHudOverlay(const ViewportRect *viewports, const Vehicle *vehicles) {
 #else
 void DrawSpeedAndHudOverlay(void) {
@@ -72,7 +72,7 @@ void DrawSpeedAndHudOverlay(void) {
     f32 speed = VEHICLE_GET(g_pActiveCameraVehicle, SpeedKph);
     s32 x, y;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     SetScissorRect(0,
                    viewports[g_dwCurrentSplitScreenIndex].y,
                    g_dwConfigFramebufferWidth,
@@ -85,7 +85,7 @@ void DrawSpeedAndHudOverlay(void) {
                    HUD_SCISSOR_RIGHT,
                    g_aViewportRects[g_dwCurrentSplitScreenIndex].height);
     if ((f64)speed < 0.0) {
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         speed = 0.0f;
     }
 #if TGR_PLATFORM == TGR_PLATFORM_N64
@@ -98,7 +98,7 @@ void DrawSpeedAndHudOverlay(void) {
 #else
     DrawLapTimeListHud(viewports);
 #endif
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     DrawLapCounterHud(viewports, vehicles);
 #else
     DrawLapCounterHud();
@@ -107,7 +107,7 @@ void DrawSpeedAndHudOverlay(void) {
     SetTextStyleNormal();
     SetTextAlignRight();
     if (HUD_SPEED_MPH) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         sprintf(
             g_szHudSpeedTextBuf, "%%yw%.0f", (double)((long double)speed * 0.6213712096214294f));
 #else
@@ -118,7 +118,7 @@ void DrawSpeedAndHudOverlay(void) {
     }
 
     /* Speed and its unit appear above the dashboard. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     x = HUD_OVERLAY_ADD(g_dwConfigFramebufferWidth, -16);
     y = HUD_OVERLAY_ADD(HUD_OVERLAY_ADD(viewports[g_dwCurrentSplitScreenIndex].y,
                                         viewports[g_dwCurrentSplitScreenIndex].height),
@@ -145,9 +145,9 @@ void DrawSpeedAndHudOverlay(void) {
         x = SPEED_DASHBOARD_RIGHT;
         y -= g_aDashboardTextures[g_dwCurrentSplitScreenIndex].height;
     }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     SetTextSize(SPEED_TEXT_SIZE);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     y = HUD_OVERLAY_ADD(y, -3);
 #endif
 #if TGR_PLATFORM == TGR_PLATFORM_N64 && TGR_REGION == TGR_REGION_JP

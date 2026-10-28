@@ -1,7 +1,7 @@
 #include "frametime.h"
 #include "model.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "convertedvertex.h"
 #define ANIMATION_HIGH(value) ((long double)(value))
 #define ANIMATION_LESS(a, b) (!((a) >= (b)))
@@ -16,7 +16,7 @@ static inline s32 BlendKeyComponent(s32 from, s32 to, s32 blend) {
 #define ANIMATION_HIGH(value) (value)
 #define ANIMATION_LESS(a, b) ((a) < (b))
 #define ANIMATION_LENGTH(animation, length) (length)
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /* The blend between two keys, in 4096ths. */
 #define BLEND_ONE 4096.0f
@@ -25,7 +25,7 @@ static inline s32 BlendKeyComponent(s32 from, s32 to, s32 blend) {
 /* Set the vertices of an animation between two keys, at a share from 0 to 1 of the way. */
 static void
 BlendModelKeys(ModelAnimation *animation, ModelKeyframe *from, ModelKeyframe *to, f32 share) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double scaled = (long double)share * BLEND_ONE;
     s32 blend = 0;
     s32 count = animation->vertexCount;
@@ -69,7 +69,7 @@ BlendModelKeys(ModelAnimation *animation, ModelKeyframe *from, ModelKeyframe *to
                 fromNormals[j][c] + ((toNormals[j][c] - fromNormals[j][c]) * blend >> BLEND_SHIFT);
         }
     }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 }
 
 /* Blend an animation at a time between the keys around it, searching from its start key. The

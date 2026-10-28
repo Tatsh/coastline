@@ -169,7 +169,7 @@ void StubUpdateCallback(void);
  */
 void StubRenderCallback(void);
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * Do nothing.
  *

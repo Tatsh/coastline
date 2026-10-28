@@ -12,10 +12,10 @@
 #include "vehicleaccess.h"
 #include "weather.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /** @ghidraAddress BRD3D: 0x10680940 */
 s32 g_dwWaterfallCount;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /* Find the special objects of the track: the airplane, its path and trigger, and the waterfalls. */
 void FindTrackSpecials(void) {
@@ -73,7 +73,7 @@ void FindTrackSpecials(void) {
     g_dwAirplaneTriggerLap = g_dwTotalLaps - 1;
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define RACE_SPECIAL_MATRIX g_afCameraRollMatrix
 #define RACE_INSTANCE_VECTOR(row) (&g_LoadedTrack.instances[g_dwAirplaneInstance].rows[row].vector)
 #else
@@ -86,25 +86,25 @@ void FindTrackSpecials(void) {
 static void FlyAirplane(void) {
     Vec3f a, b, c;
     f32 t;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     /* Preserve the negative factor before reverse subtraction, including NaN signs. */
     volatile f32 negativeSpeed;
 #endif
 
     if (g_dwSelectedTrackId == TRACK_MOUNTAIN || g_dwSelectedTrackId == TRACK_MIRROR_MOUNTAIN) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         negativeSpeed = -18.0f;
 #else
         g_fAirplaneDistance += g_fFrameDeltaTime * 18.0f;
 #endif
     } else {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         negativeSpeed = -50.0f;
 #else
         g_fAirplaneDistance += g_fFrameDeltaTime * 50.0f;
 #endif
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     g_fAirplaneDistance =
         (long double)g_fAirplaneDistance - (long double)g_fFrameDeltaTime * negativeSpeed;
 #endif
@@ -145,7 +145,7 @@ static void FlyAirplane(void) {
     if (!g_dwAirplaneInstance) {
         return;
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     t = (long double)g_fAirplaneDistance / g_fAirplaneSegmentLength;
 #else
     t = g_fAirplaneDistance / g_fAirplaneSegmentLength;

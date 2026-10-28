@@ -12,7 +12,7 @@
 
 #include "types.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(DrawText)
+#if TGR_PC && defined(DrawText)
 #undef DrawText
 #endif
 

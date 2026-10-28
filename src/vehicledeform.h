@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * The accumulated dent at which further mesh deformation stops.
  *

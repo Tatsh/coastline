@@ -5,7 +5,7 @@
 #include "track.h"
 #include "trianglebox.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * The count of the uses of the cache.
  *
@@ -16,13 +16,13 @@
  * @ghidraAddress BRGlide: 0x11778840
  */
 static u32 g_dwTriCacheLruCounter;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #define RAY_HEADROOM 1.5f
 #define RAY_NEARBY_DISTANCE 5.0f
 #define RAY_CEILING_DEPTH -1.0f
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define RAY_LESS(a, b) (!((a) >= (b)))
 #else
 #define RAY_LESS(a, b) ((a) < (b))
@@ -42,14 +42,14 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
     Vec3f groundNormal = {0.0f, 0.0f, 1.0f};
     Vec3f line, direction, toVertex, hit;
     f32 nearest, nearestCeiling, groundZ, ceilingZ, denominator, below;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double highRange, highBelow, highDenominator;
 #endif
     s32 slot, groundHits = 0, groundCount = 0, nearby = 0, j;
     s16 ceilingTriangle = 0;
     u16 ceilingInstance = 0, instance;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     highRange = (long double)g_LoadedTrack.maxZ - g_LoadedTrack.minZ;
     nearest = highRange;
     nearest = highRange * nearest + 1.0f;
@@ -76,7 +76,7 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
         if (RAY_LESS(triangle->normal.z, 0.0f)) {
             continue;
         }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         highDenominator = Vec3fDot(&direction, &triangle->normal);
         denominator = highDenominator;
         if (!(highDenominator < 0.0L) && !(highDenominator > 0.0L)) {
@@ -97,7 +97,7 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
         }
 
         /* Ground triangles are inserted with the nearest first. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         highBelow = (long double)origin->z + RAY_HEADROOM - hit.z;
         below = highBelow;
         if (0.0L <= highBelow) {
@@ -147,7 +147,7 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
         }
 
         /* Ceiling selection follows the original signed distance order. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         highBelow = (long double)below - RAY_HEADROOM;
         below = highBelow;
         if (!(highBelow > 0.0L) && RAY_LESS(below, nearestCeiling)) {
@@ -211,7 +211,7 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
     return groundHits;
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 s32 g_bTrackCollisionFrameToggle;
 #endif
 
@@ -244,7 +244,7 @@ s32 CollectTrianglesInBox(RigidBody *body, f32 box[4][4]) {
     return found;
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /* The original converts through 64 bits, so NaN and the infinities give the cell of 0. */
 #define GRID_COORDINATE(v) ((s32)(s64)(v))
 #else
@@ -254,7 +254,7 @@ s32 CollectTrianglesInBox(RigidBody *body, f32 box[4][4]) {
 
 #define ABS(x) ((x) < 0.0f ? -(x) : (x))
 #define COMPONENT(v, axis) ((&(v)->x)[axis])
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define TRI_PRODUCT(a, b) ((long double)(a) * (b))
 #else
 #define TRI_PRODUCT(a, b) ((a) * (b))
@@ -262,7 +262,7 @@ s32 CollectTrianglesInBox(RigidBody *body, f32 box[4][4]) {
 
 s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
     f32 u0, v0, pu, pv, au, av, bu, bv, beta;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double alpha, quotient;
 #else
     f32 alpha, quotient;
@@ -286,7 +286,7 @@ s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
     av = COMPONENT(triangle->vertices[1], i2) - v0;
     bu = COMPONENT(triangle->vertices[2], i1) - u0;
     bv = COMPONENT(triangle->vertices[2], i2) - v0;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     /* The libraries test equality through the flag an unordered comparison also sets. */
     if (!(au < 0.0f || au > 0.0f)) {
 #else
@@ -311,7 +311,7 @@ s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
 s16 BuildTrackTriangleCache(f32 x, f32 y) {
     TrackTriangle *triangle;
     TrackGridCursor cursor;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double e1[3], e2[3];
 #else
     f32 e1[3], e2[3];
@@ -359,7 +359,7 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
                 &g_LoadedTrack.vertices[g_LoadedTrack.surfaces[index].vertices[2]];
             triangle->index = index;
             triangle->surface = g_LoadedTrack.triangleFlags[index] & 7;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             e1[0] = (long double)triangle->vertices[1]->x - triangle->vertices[0]->x;
             e1[1] = (long double)triangle->vertices[1]->y - triangle->vertices[0]->y;
             e1[2] = (long double)triangle->vertices[1]->z - triangle->vertices[0]->z;
@@ -373,12 +373,12 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
             e2[0] = triangle->vertices[2]->x - triangle->vertices[0]->x;
             e2[1] = triangle->vertices[2]->y - triangle->vertices[0]->y;
             e2[2] = triangle->vertices[2]->z - triangle->vertices[0]->z;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
             triangle->normal.x = e1[1] * e2[2] - e2[1] * e1[2];
             triangle->normal.y = e1[2] * e2[0] - e2[2] * e1[0];
             triangle->normal.z = e1[0] * e2[1] - e2[0] * e1[1];
             Vec3fNormalizeFast(&triangle->normal);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             triangle->planeOffset = -((long double)triangle->vertices[0]->z * triangle->normal.z +
                                       ((long double)triangle->normal.x * triangle->vertices[0]->x +
                                        (long double)triangle->normal.y * triangle->vertices[0]->y));

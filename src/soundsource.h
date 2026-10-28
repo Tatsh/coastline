@@ -100,7 +100,7 @@ void UpdateWaterfallSound(s32 instance, Vec3f *position, CameraFrame *camera);
  * @ghidraAddress BRD3D: 0x10067ae0
  * @ghidraAddress BRGlide: 0x10060b50
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 long double
 #else
 f32

@@ -2,7 +2,7 @@
 
 #define COMPONENT(v, axis) ((&(v)->x)[axis])
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define CUBE_VALUE(a) ((long double)(a))
 #define CUBE_LESS(a, b) (!((a) >= (b)))
 #else
@@ -13,7 +13,7 @@
 s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal) {
     s32 sign[3];
     f32 sx, sy, sz, t;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double ratio;
 #endif
     Vec3f point;
@@ -31,7 +31,7 @@ s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal) {
     sx = (f32)sign[0];
     sy = (f32)sign[1];
     sz = (f32)sign[2];
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     ratio =
         (CUBE_VALUE(normal->x) * triangle[0].x +
          (CUBE_VALUE(normal->y) * triangle[0].y + CUBE_VALUE(normal->z) * triangle[0].z)) /
@@ -42,7 +42,7 @@ s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal) {
     t = (normal->x * triangle[0].x + normal->y * triangle[0].y + normal->z * triangle[0].z) /
         (sz * normal->z + (normal->x * sx + normal->y * sy));
     if (((f64)t - -0.5) * ((f64)t - 0.5) <= 0.0) {
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         point.x = sx * t;
         point.y = sy * t;
         point.z = sz * t;
@@ -97,7 +97,7 @@ s32 CountTriangleWinding(Vec3f triangle[3], Vec3f *normal, Vec3f *point) {
                     (CUBE_VALUE(b0) - a0) * ((f32)cross0 * (CUBE_VALUE(p1) - a1))) {
                     winding += cross0;
                 }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             } else if (!(a1 > p1)) {
 #else
             } else if (a1 <= p1) {
@@ -113,7 +113,7 @@ s32 DoesSegmentCrossUnitCube(Vec3f *start, Vec3f *end) {
     s32 i, j, k;
     s32 sign[3];
     f32 d[3];
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double across, reach;
     f32 storedAcross;
 #else
@@ -139,7 +139,7 @@ s32 DoesSegmentCrossUnitCube(Vec3f *start, Vec3f *end) {
     for (i = 0; i < 3; i++) {
         j = (i + 1) % 3;
         k = (i + 2) % 3;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         across = CUBE_VALUE(d[k]) * COMPONENT(start, j) - CUBE_VALUE(d[j]) * COMPONENT(start, k);
         reach = (CUBE_VALUE(d[k]) * sign[j] + CUBE_VALUE(d[j]) * sign[k]) * 0.5f;
         /* Only one factor of the squared cross term is rounded to float. */
@@ -149,7 +149,7 @@ s32 DoesSegmentCrossUnitCube(Vec3f *start, Vec3f *end) {
         across = d[k] * COMPONENT(start, j) - d[j] * COMPONENT(start, k);
         reach = (f32)((f64)(d[k] * (f32)sign[j] + d[j] * (f32)sign[k]) * 0.5);
         if (reach * reach < across * across) {
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
             return 0;
         }
     }
@@ -181,7 +181,7 @@ static inline s32 FaceOutcode(Vec3f *v) {
 /* The edges of the unit cube a point is outside, by the planes through them. */
 static inline s32 EdgeOutcode(Vec3f *v, s32 mask) {
     s32 code = 0;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double sum;
 #else
     f32 sum;
@@ -239,20 +239,20 @@ static inline s32 EdgeOutcode(Vec3f *v, s32 mask) {
 }
 
 /* The corners of the unit cube a point is outside, by the planes through them. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 s32 ComputeAabbCornerPlaneClipCode(Vec3f *v, s32 mask) {
 #else
 static inline s32 ComputeAabbCornerPlaneClipCode(Vec3f *v, s32 mask) {
 #endif
     s32 code = 0;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double sum;
 #else
     f32 sum;
 #endif
 
     if (mask & 0x3) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         sum = ((long double)v->y + v->z) + v->x;
 #else
         sum = v->z + (v->x + v->y);

@@ -7,7 +7,7 @@
 #include "weather.h"
 
 void SetTrackFromSeason(void) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     PlayerProfile *profile = VEHICLE_GET(&(g_aVehicles[0]), Profile);
 #else
     PlayerProfile *profile = g_pActiveProfile;

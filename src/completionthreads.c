@@ -3,7 +3,7 @@
 
 #define VBLANK_COUNTER_MASK 15
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /* Windows redirects the console hooks to its empty compatibility entry. */
 #define osCreateMesgQueue(...) NullStub()
 #define osSetEventMesg(...) NullStub()
@@ -12,7 +12,7 @@
 #define RETRACE_INCREMENT(value) ((s32)((u32)(value) + 1u))
 #else
 #define RETRACE_INCREMENT(value) ((value) + 1)
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 void RspDoneThread(void *arg) {
     osCreateMesgQueue(&g_RspEventMsgQueue, g_aRspEventMsgBuf, 1);

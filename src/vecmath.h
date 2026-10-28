@@ -26,7 +26,7 @@ typedef struct {
     f32 y; /*!< The component along the y axis. */
 } Vec2f;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /** A point or direction in space, in double precision. */
 typedef struct {
     f64 x; /*!< The component along the x axis. */
@@ -83,7 +83,7 @@ void Vec3fCross(Vec3f *out, Vec3f *a, Vec3f *b);
  * @ghidraAddress BRD3D: 0x1003ac90
  * @ghidraAddress BRGlide: 0x10034310
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 long double Vec3fDot(const Vec3f *a, const Vec3f *b);
 #else
 f32 Vec3fDot(const Vec3f *a, const Vec3f *b);
@@ -401,13 +401,13 @@ void Vec3fClear(Vec3f *v);
  * @ghidraAddress BRD3D: 0x1003b0a0
  * @ghidraAddress BRGlide: 0x10034720
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 long double Vec2fDistance(Vec2f *a, Vec2f *b);
 #else
 f32 Vec2fDistance(Vec2f *a, Vec2f *b);
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * The distance between two points, returned in extended precision.
  *
@@ -427,7 +427,7 @@ long double Vec3fDistance(Vec3f *a, Vec3f *b);
  * @ghidraAddress JPN: 0x802255a8
  */
 f32 Vec3fDistance(Vec3f *a, Vec3f *b);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 /**
  * The square of the distance between two points.
@@ -441,7 +441,7 @@ f32 Vec3fDistance(Vec3f *a, Vec3f *b);
  * @ghidraAddress BRD3D: 0x1003b130
  * @ghidraAddress BRGlide: 0x100347b0
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 long double Vec3fDistanceSquared(Vec3f *a, Vec3f *b);
 #else
 f32 Vec3fDistanceSquared(Vec3f *a, Vec3f *b);
@@ -458,7 +458,7 @@ f32 Vec3fDistanceSquared(Vec3f *a, Vec3f *b);
  * @ghidraAddress BRD3D: 0x1003b170
  * @ghidraAddress BRGlide: 0x100347f0
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 long double Vec3fLength(Vec3f *v);
 #else
 f32 Vec3fLength(Vec3f *v);
@@ -475,7 +475,7 @@ f32 Vec3fLength(Vec3f *v);
  * @ghidraAddress BRD3D: 0x1003b1c0
  * @ghidraAddress BRGlide: 0x10034840
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 long double Vec2fLength(Vec2f *v);
 #else
 f32 Vec2fLength(Vec2f *v);
@@ -609,7 +609,7 @@ void Mtx4fTranspose(f32 out[4][4], f32 in[4][4]);
  * @ghidraAddress BRD3D: 0x100307a0
  * @ghidraAddress BRGlide: 0x10029e50
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void CopyMatrix4x4(f32 in[4][4], f32 out[4][4]);
 #else
 void CopyMatrix4x4(f32 out[4][4], f32 in[4][4]);
@@ -640,7 +640,7 @@ s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]);
  * @ghidraAddress BRD3D: 0x10075340
  * @ghidraAddress BRGlide: 0x1006e5a0
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void __thiscall FinishFrameMatrix(f32 m[4][4]);
 #else
 void FinishFrameMatrix(f32 m[4][4]);
@@ -659,7 +659,7 @@ void FinishFrameMatrix(f32 m[4][4]);
  * @ghidraAddress BRD3D: 0x1003b7b0
  * @ghidraAddress BRGlide: 0x10034e30
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 long double Atan2f(f32 x, f32 y);
 #else
 f32 Atan2f(f32 x, f32 y);
@@ -756,7 +756,7 @@ void SetRngSeed(u32 seed);
  */
 u32 AdvanceRng(void);
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /**
  * The square of the length of a vector in double precision.
  *
@@ -808,7 +808,7 @@ long double Vec3dDot(Vec3d *a, Vec3d *b);
  * @ghidraAddress BRGlide: 0x1001dd00
  */
 void Vec3dCross(Vec3d *a, Vec3d *b, Vec3d *out);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #ifdef __cplusplus
 }

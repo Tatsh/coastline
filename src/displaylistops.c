@@ -9,7 +9,7 @@
 #include "vehiclecount.h"
 #include "weather.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 namespace {
     /**
      * Whether ProcessDisplayList() tints the colour combines of the snow. It clears this.
@@ -22,7 +22,7 @@ namespace {
      */
     s32 g_bDisplayListSnowTint;
 } // namespace
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #define ARRAY_COUNT(array) (s32)(sizeof(array) / sizeof((array)[0]))
 #define SNOW_PRIM_COLOR 0x60789000
@@ -91,7 +91,7 @@ s32 ProcessDisplayList(DisplayListCommand *displayList, DisplayListCommand table
 void ProcessTrackNodeDisplayList(TrackInstance *instance) {
     s32 snowTint;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     g_bDisplayListSnowTint = FALSE;
 #endif
     snowTint = g_dwSelectedTrackId != TRACK_COASTLINE &&
@@ -138,7 +138,7 @@ void ProcessAllDisplayLists(void) {
             }
         }
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     g_pfnRenderBackendUpdateFog();
 #endif
 }

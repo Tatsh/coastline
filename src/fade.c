@@ -7,7 +7,7 @@
 #include "util.h"
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /* The x87 queries accept unordered comparisons as less than or equal. */
 #define FADE_LESS(left, right) (!((left) >= (right)))
 #define FADE_EQUAL(left, right) (!((left) < (right) || (left) > (right)))
@@ -34,7 +34,7 @@ s32 g_dwSfxFadeSkipFrame;
 #define FADE_LESS_EQUAL(left, right) ((left) <= (right))
 #define FADE_VOLUME_LESS(left, right) FADE_LESS(left, right)
 #define FADE_REAL f32
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 void SetFadeTarget(float target, float seconds) {
     g_dwFadeSkipFrame = 1;

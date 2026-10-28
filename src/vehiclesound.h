@@ -17,7 +17,7 @@ extern "C" {
  */
 void UpdateVehicleSounds(Vehicle *vehicle);
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /** Clear frequency and stereo levels of a requested channel. */
 void ClearVehicleSoundChannel(s32 channel);
 /** Set frequency and stereo levels of a requested channel. */
@@ -28,7 +28,7 @@ s32 IsVehicleSoundChannelPlaying(s32 channel);
 void SetVehicleSoundEchoOffset(s32 offset);
 /** Play Windows impact and event sounds for a vehicle. */
 void PlayVehicleEventSounds(Vehicle *vehicle, CameraFrame *listener);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #ifdef __cplusplus
 }

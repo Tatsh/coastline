@@ -1,6 +1,6 @@
 #include "playerinput.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
 OSContPad g_aContPadData[MAXCONTROLLERS];
 #endif

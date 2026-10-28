@@ -13,7 +13,7 @@
 #include "visgrid.h"
 #include "weather.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include <stdlib.h>
 
 #include "win32/ghost.h"
@@ -21,7 +21,7 @@
 #include "audiomix.h"
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 namespace {
     /**
      * Whether the cells in view were more than #VISIBLE_CELLS.
@@ -42,9 +42,9 @@ namespace {
      */
     s32 g_nNearbyVehicleCount;
 } // namespace
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /** @ghidraAddress BRD3D: 0x1036439c */
 u32 g_dwTrackOtherModeLBlend;
 /** @ghidraAddress BRD3D: 0x103643a0 */
@@ -65,9 +65,9 @@ s32 g_nVisibleInstanceCount;
 LookAt *g_pTrackLookAt;
 /** @ghidraAddress BRD3D: 0x1039b6cc */
 u16 g_wActiveInstanceHideMask;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 
 #define VIS_FILL_MASK FillMemoryPatternBytes
 #define VIS_SORT qsort
@@ -78,13 +78,13 @@ u16 g_wActiveInstanceHideMask;
 #define VIS_SORT QuickSort
 #define VIS_INTERMEDIATE(value) (value)
 #define VIS_TRUNCATE(value) ((s32)(value))
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #define GRID_CELL_SIZE 32.0f
 #define GRID_CELLS 64
 #define NEAR_CELL_DISTANCE 9
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define VIS_SCREEN_ADD(a, b) ((s32)((u32)(a) + (u32)(b)))
 inline void Vehicle::UpdateShadowScreenRect(const ViewportRect *viewports) {
     Vec3f point;
@@ -126,9 +126,9 @@ inline void Vehicle::UpdateShadowScreenRect(const ViewportRect *viewports) {
                                              viewports[g_dwCurrentSplitScreenIndex].height);
     }
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 void BuildVisibleInstanceList(const ViewportRect *viewports,
                               const RacerSlot *slots,
                               const Vehicle *vehicles) {
@@ -142,7 +142,7 @@ void BuildVisibleInstanceList(void) {
     Vec3f point;
 #endif
     f32 *position;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double dot;
     f32 forwardX, forwardY;
 #else
@@ -183,7 +183,7 @@ terminate:
         cameraRow--;
     }
     for (i = 0; i < count; i++) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         columnDistance = (s32)((u32)g_aVisibleCellTuples[i].column - (u32)cameraColumn);
         rowDistance = (s32)((u32)g_aVisibleCellTuples[i].row - (u32)cameraRow);
         g_aVisibleCellTuples[i].distance =
@@ -193,7 +193,7 @@ terminate:
         rowDistance = g_aVisibleCellTuples[i].row - cameraRow;
         g_aVisibleCellTuples[i].distance =
             columnDistance * columnDistance + rowDistance * rowDistance;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     }
     VIS_SORT(g_aVisibleCellTuples, count, sizeof(VisibleCell), CompareVisibleCellDistance);
 
@@ -202,7 +202,7 @@ terminate:
     g_nVisibleCellIdxNear = -1;
     g_nVisibleCellIdxFar = -1;
     g_nVisibleCellIdxMid = -1;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     farDistance = VIS_TRUNCATE((long double)gFrustumFar * (-1.0f / GRID_CELL_SIZE));
     farDistance = (s32)(-3u - (u32)farDistance);
     farDistance = (s32)((u32)farDistance * (u32)farDistance);
@@ -215,7 +215,7 @@ terminate:
     farDistance *= farDistance;
     if (g_pActiveCameraVehicle->input->playbackBuffer != NULL &&
         g_pActiveCamera == &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_TRACKSIDE]) {
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         midDistance = NEAR_CELL_DISTANCE;
     } else {
         midDistance = 1;
@@ -256,7 +256,7 @@ terminate:
     /* The vehicles in view ahead of the camera, the nearest first, cast shadows. */
     g_nNearbyVehicleCount = 0;
     for (i = 0; i < g_dwNumActiveVehicles; i++) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         if (VEHICLE_GET(&vehicles[i], Driver) == NULL || !g_adwVehicleVisible[i]) {
             continue;
         }
@@ -279,7 +279,7 @@ terminate:
             continue;
         }
         for (j = g_nNearbyVehicleCount - 1; j >= 0 && dot < g_afNearbyVehicleDot[j]; j--) {
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
             g_afNearbyVehicleDot[j + 1] = g_afNearbyVehicleDot[j];
             g_anNearbyVehicleIdx[j + 1] = g_anNearbyVehicleIdx[j];
         }
@@ -291,7 +291,7 @@ terminate:
         g_nNearbyVehicleCount = 4;
     }
     for (i = 0; i < g_nNearbyVehicleCount; i++) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         bit = (u8)(1u << ((u32)g_anNearbyVehicleIdx[i] & 31));
         vehicles[g_anNearbyVehicleIdx[i]].MarkNearbyInstanceShadows(g_abInstanceVisibilityMask,
                                                                     bit);
@@ -301,7 +301,7 @@ terminate:
         for (j = 0; j < vehicle->nearbyInstanceCount; j++) {
             g_abInstanceVisibilityMask[vehicle->nearbyInstances[j]] |= bit;
         }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     }
 
     g_wActiveInstanceHideMask = 0;
@@ -313,7 +313,7 @@ terminate:
     /* The reflections look along the camera on the ground, which must not be straight down. */
     forwardX = g_pActiveCamera->forward.x;
     forwardY = g_pActiveCamera->forward.y;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (!(forwardX < 0.0f || forwardX > 0.0f) && !(forwardY < 0.0f || forwardY > 0.0f)) {
 #else
     if (forwardX == 0.0 && forwardY == 0.0) {
@@ -335,7 +335,7 @@ terminate:
 
     /* At night the light of the track comes from the headlights of the car in view. */
     if (g_dwNightMode) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         g_vTrackLightDirection.x =
             (long double)VEHICLE_GET(g_pActiveCameraVehicle, Frame).up.x -
             (long double)VEHICLE_GET(g_pActiveCameraVehicle, Frame).forward.x * 4.0f;
@@ -352,7 +352,7 @@ terminate:
             g_pActiveCameraVehicle->frame.forward.y * -4.0f + g_pActiveCameraVehicle->frame.up.y;
         g_vTrackLightDirection.z =
             g_pActiveCameraVehicle->frame.forward.z * -4.0f + g_pActiveCameraVehicle->frame.up.z;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     } else {
         g_vTrackLightDirection.x = g_afLightDirection[0];
         g_vTrackLightDirection.y = g_afLightDirection[1];
@@ -360,7 +360,7 @@ terminate:
     }
     Vec3fNormalize(&g_vTrackLightDirection);
     Vec3fScaleInPlace(&g_vTrackLightDirection, 120.0f);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     g_nTrackLightBufferIndex = (s32)((u32)g_nTrackLightBufferIndex + 1) % 4;
 #else
     g_nTrackLightBufferIndex = (g_nTrackLightBufferIndex + 1) % 4;
@@ -372,7 +372,7 @@ terminate:
 
     /* The rectangle of the screen the shadow of each vehicle covers, kept to the view. */
     for (i = 0; i < g_dwNumVehicles; i++) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         vehicle = RACER_SLOT_GET(&slots[i], Vehicle);
         if (vehicle != NULL) {
             vehicle->UpdateShadowScreenRect(viewports);
@@ -423,6 +423,6 @@ terminate:
             vehicle->shadowCorners[1][1] = g_aViewportRects[g_dwCurrentSplitScreenIndex].y +
                                            g_aViewportRects[g_dwCurrentSplitScreenIndex].height;
         }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     }
 }

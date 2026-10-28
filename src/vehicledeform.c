@@ -5,7 +5,7 @@
 #include "vehicleaccess.h"
 #include "vehiclemodel.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/gbicommand.h"
 #define MAX_DENT g_wVehicleDeformMaxDent
 #define DENT_LESS(value, limit) (!((value) >= (limit)))
@@ -18,7 +18,7 @@
 #define DENT_LESS(value, limit) ((value) < (limit))
 #define DENT_COORDINATE(vertex, index, field) ((vertex)->v.ob[index] + jitter)
 #define DENT_MOVE(vertex, index, field, offset) ((vertex)->v.ob[index] += (offset))
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #define UNDENTED_DISPLAY_LIST VEHICLE_DL_HIGHLIGHTED
 
@@ -31,7 +31,7 @@ static inline s32 DentOffset(s32 dent, s32 noise, s32 below, s32 above, s32 shif
 }
 
 void DeformVehicleMeshByImpact(Vehicle *vehicle, Vec3f *direction, s16 amount) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     GbiCommand *command;
     ConvertedModelVertex *vertex;
 #else
@@ -41,7 +41,7 @@ void DeformVehicleMeshByImpact(Vehicle *vehicle, Vec3f *direction, s16 amount) {
     s32 degrees, side, maxX, minX, maxY, minY, jitter, dentX, dentY, dentZ, count, lod, list;
     s16 x, y, z, xy;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     degrees = (s32)(s64)(Atan2f(direction->x, direction->y) * 57.2957763671875f);
 #else
     degrees = (s32)(Atan2f(direction->x, direction->y) * 180.0f / 3.141592741f);
@@ -84,7 +84,7 @@ void DeformVehicleMeshByImpact(Vehicle *vehicle, Vec3f *direction, s16 amount) {
         maxY = -0x40;
         side = 7;
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     amount = (s16)((u32)(s32)amount << 2);
     /* Texture damage precedes the maximum-dent check. */
     vehicle->ApplyImpactDamageTexture(side);
@@ -152,7 +152,7 @@ void DeformVehicleMeshByImpact(Vehicle *vehicle, Vec3f *direction, s16 amount) {
                     continue;
                 }
                 count = (command->words.w0 >> 10) & 0x3F;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                 vertex = command->vertexData.pConverted;
 #else
                 vertex = (Vtx *)command->words.w1;

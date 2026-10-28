@@ -63,7 +63,7 @@ extern u8 g_abPlaybackRecording[];
  */
 extern u8 g_aabInputRecordings[][0xF000];
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /**
  * The player whose recording the instant replay plays, and the length of that recording.
  *
@@ -74,7 +74,7 @@ extern u8 g_aabInputRecordings[][0xF000];
  * @ghidraAddress BRGlide: 0x105ccb70
  */
 extern s32 g_dwBestReplayLength;
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
 /**
  * @ghidraAddress USA: 0x80315e40
@@ -119,14 +119,14 @@ typedef struct {
 /**
  * Last-lap buffers share vehicle-model storage and descend through slots by local-player index.
  */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 extern LastLapBuffer g_aLastLapBuffers[] __asm__("_g_aVehicleModels");
 #else
 extern LastLapBuffer g_aLastLapBuffers[];
 #endif
 
 /** The slot of g_aLastLapBuffers of the first player; the others count down from it. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define LAST_LAP_FIRST_SLOT 15
 #else
 #define LAST_LAP_FIRST_SLOT 3
@@ -174,7 +174,7 @@ extern SaveField g_aPausedClockFields[];
  */
 extern u8 g_abPausedClockState[PAUSED_CLOCK_STATE_SIZE];
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
+#if !TGR_PC && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
 /**
  * Copy the variables of a list one after another into a buffer, and report when they overflow it.
  *
@@ -223,7 +223,7 @@ void SerializeSaveData(SaveField *fields, u8 *buffer, s32 capacity);
  */
 void DeserializeSaveData(SaveField *fields, u8 *buffer);
 #endif /*                                                                                          \
-        * TGR_PLATFORM != TGR_PLATFORM_WIN && (TGR_REGION == TGR_REGION_JP || TGR_REGION ==        \
+        * !TGR_PC && (TGR_REGION == TGR_REGION_JP || TGR_REGION ==                                 \
         * TGR_REGION_EU)                                                                           \
         */
 

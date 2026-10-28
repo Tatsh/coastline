@@ -38,7 +38,7 @@
 #include "visgrid.h"
 #include "weather.h"
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 #include <PR/os_libc.h>
 
 #include "carselect.h"
@@ -47,7 +47,7 @@
 #include "racemenu.h"
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include <string.h>
 
 #include "win32/boot/rallyconfig.h"
@@ -140,7 +140,7 @@ void Vehicle::PrepareEmptyRaceView(void) {
 #define AFTER_SEASON_TRACK 12
 #else
 #define AFTER_SEASON_TRACK 10
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #define FADE_SECONDS 0.2f
 #define ROM_START_LIGHTS ((u32)_startLightsSegmentRomStart)
@@ -151,7 +151,7 @@ void InitRace(void) {
     s32 i;
 
     g_dwKeepScreenBlanked = TRUE;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     NullStub();
     ClearSplitScreenRenderState();
     if (!gInstantReplayActive) {
@@ -183,11 +183,11 @@ void InitRace(void) {
 #endif /* TGR_REGION == TGR_REGION_US */
     StartLowResFrame();
     FlushDisplayList();
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     SetRngSeed(123);
     g_bReplayAfterRace = FALSE;
     if (g_dwGameMode != GAME_MODE_ARCADE
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         && g_dwGameMode != GAME_MODE_TIME_ATTACK && g_dwGameMode != GAME_MODE_NETWORK
 #endif
     ) {
@@ -199,7 +199,7 @@ void InitRace(void) {
     if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
         g_dwTrackMirrored = FALSE;
     } else {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         g_dwTrackMirrored =
             (g_apTrackMenuItems[g_dwSelectedTrackId]->item.flags & MENU_ITEM_MIRRORED) != 0;
 #else
@@ -207,11 +207,11 @@ void InitRace(void) {
             (g_apTrackMenuItems[g_dwSelectedTrackId]->flags & MENU_ITEM_MIRRORED) != 0;
 #endif
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     ApplyWeather(g_dwCurrentWeather);
 #endif
     if (g_dwGameMode != GAME_MODE_DEMO && !gInstantReplayActive) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         NullStub();
         NullStub();
 #else
@@ -220,7 +220,7 @@ void InitRace(void) {
 #endif
     }
     LoadAllSoundEffects();
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (!gInstantReplayActive) {
 #endif
         LoadTrackGeometryFromRom(g_dwGameMode == GAME_MODE_AFTER_SEASON ? AFTER_SEASON_TRACK :
@@ -228,7 +228,7 @@ void InitRace(void) {
         if (!gInstantReplayActive) {
             FindTrackSpecials();
         }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     }
 #endif
 
@@ -256,7 +256,7 @@ void InitRace(void) {
 #endif /* TGR_REGION == TGR_REGION_US */
     } else {
         for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             g_aVehicles[i].ConfigureRaceControls(true);
 #else
             g_aVehicles[i].chosenTransmission = g_aVehicles[i].profile->transmission;
@@ -270,14 +270,14 @@ void InitRace(void) {
          * vehicle after the first player whatever the number of players. */
         if (g_dwGameMode == GAME_MODE_TIME_ATTACK &&
             VEHICLE_GET(&g_aVehicles[1], Input)->playbackBuffer != NULL) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             g_aVehicles[1].SetupFromRecording();
 #else
             SetupFromRecording(&g_aVehicles[1]);
 #endif
         } else {
             for (; i < g_dwNumActiveVehicles; i++) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                 g_aVehicles[i].ConfigureRaceControls(false);
 #else
                 g_aVehicles[i].chosenTransmission = 1;
@@ -293,7 +293,7 @@ void InitRace(void) {
     if (!gInstantReplayActive) {
         g_dwSavedResultsValid = FALSE;
         for (i = 0; i < g_dwNumActiveVehicles; i++) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             g_aVehicles[i].PrepareRaceVehicle(i);
 #else
             g_aVehicles[i].opacity = 1.0f;
@@ -331,9 +331,9 @@ void InitRace(void) {
             g_aVehicles[i].flyMode = FALSE;
             g_aVehicles[i].message = NULL;
             g_aVehicles[i].subMessage = NULL;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         if (!g_dwNumActiveVehicles) {
             memset(&g_aVehicleModels[0], 0, sizeof(VehicleModel));
             g_aVehicles[0].PrepareEmptyRaceView();
@@ -341,7 +341,7 @@ void InitRace(void) {
         InitializeDashboardTextures();
 #endif
     } else {
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
         for (i = g_dwNumLocalPlayers; i < g_dwNumActiveVehicles; i++) {
             SetMaterialColor(g_aVehicles[i].model,
                              g_aVehicles[i].color[0] >> 3,
@@ -356,7 +356,7 @@ void InitRace(void) {
         g_dwRacePhaseIndex = 4;
     } else if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
         g_dwRacePhaseIndex = 4;
-#if TGR_PLATFORM != TGR_PLATFORM_WIN && TGR_REGION != TGR_REGION_US
+#if !TGR_PC && TGR_REGION != TGR_REGION_US
     } else if (g_dwGameMode == GAME_MODE_DEMO && !g_dwRaceSessionType) {
         /* The first demonstration race starts racing at once as well. */
         g_dwRacePhaseIndex = 4;
@@ -369,7 +369,7 @@ void InitRace(void) {
     if (!gInstantReplayActive) {
         g_dwRaceFinishOrderCounter = 0;
         for (i = 0; i < g_dwNumVehicles; i++) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             g_aRacerSlots[i].InitRacerSlot();
 #else
             InitRacerSlot(&g_aRacerSlots[i]);
@@ -377,7 +377,7 @@ void InitRace(void) {
         }
     }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     SetWeatherAndRefreshVehicleMaterials(g_dwCurrentWeather);
 #else
     ApplyWeather(g_dwCurrentWeather);
@@ -390,11 +390,11 @@ void InitRace(void) {
     SetFadeTarget(1.0f, FADE_SECONDS);
     FadeSfxTo(1.0f, FADE_SECONDS);
     FadeMusicTo(1.0f, FADE_SECONDS);
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
     g_dwScreenClearFrames = 2;
 #endif
     g_dwRaceInitialized = TRUE;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (!gInstantReplayActive) {
         g_pStartLightsModel = &g_abModelLightsBlobBuffer.model;
         DecompressModel(&g_abModelLightsBlobBuffer, g_szMiscModelLightsBlob);
@@ -405,12 +405,12 @@ void InitRace(void) {
     g_pStartLightsModel = (Model *)g_aDmaWorkBuffers;
     DmaReadAndFixupTrackModel(g_aDmaWorkBuffers, ROM_START_LIGHTS, ROM_START_LIGHTS_END);
     PlayModelAnimationsOnce(g_pStartLightsModel);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     InitParticleSystem();
     ResetCollisionCaches();
     g_dwRacePauseState = FALSE;
     g_dwRaceExitState = FALSE;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     g_dwRaceCaptionLast = -1;
 #else
     g_dwPrevViewportCount = -1;
@@ -426,7 +426,7 @@ void InitRace(void) {
     g_bDemoInterrupted = FALSE;
 #endif
     g_dwKeepScreenBlanked = FALSE;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (!gInstantReplayActive) {
         ResetGhostRecording();
         if (g_dwGameMode == GAME_MODE_DEMO) {
@@ -451,7 +451,7 @@ void InitRace(void) {
     InitFrameSnapshotSlots();
     NullStub();
     ResetFrameTimerState();
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 #if TGR_REGION != TGR_REGION_US
     g_dwReplayKeyframeFrameCount = -1;
 #endif

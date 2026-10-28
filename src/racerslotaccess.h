@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define RACER_SLOT_GET(slot, field) ((slot)->Get##field())
 #define RACER_SLOT_SET(slot, field, value) ((slot)->Set##field(value))
 #else
@@ -52,7 +52,7 @@ extern "C" {
 #define RACER_SLOT_SET_Status(slot, value) ((slot)->status = (value))
 #define RACER_SLOT_GET_Straggler(slot) ((slot)->straggler)
 #define RACER_SLOT_SET_Straggler(slot, value) ((slot)->straggler = (value))
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #ifdef __cplusplus
 }

@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /** Apply the control options from the current input recording. */
 void SetupFromRecording(Vehicle *vehicle);
 #endif

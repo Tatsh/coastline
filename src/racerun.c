@@ -26,7 +26,7 @@
 #include "vehiclecount.h"
 #include "weather.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/directplay.h"
 #include "win32/frametimer.h"
 #include "win32/ghost.h"
@@ -42,12 +42,12 @@
 #include "shadowbuffers.h"
 #include "splash.h"
 #include "text.h"
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #define FADE_SECONDS 0.2f
 #define DEMO_FADE_BYTES 30
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
 /* Fade the screen and the sounds out to leave the race, once. */
 static void LeaveRace(void) {
     if (!g_dwRaceExitState) {
@@ -93,9 +93,9 @@ static void CheckInstantReplayEnd(void) {
     }
 }
 
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define RACE_VEHICLE_CALL(vehicle, method) ((vehicle)->method())
 #define RACE_SLOT_CALL(slot, method) ((slot)->method())
 #define RACE_TIMING_MARKER(a, b, c, d, e) NullStub()
@@ -108,13 +108,13 @@ void ProcessRacingScreen(void) {
 #endif
     s32 paused, i;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     UpdateRaceFrameStatistics();
 #endif
     if (!g_dwRaceInitialized) {
         InitRace();
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     else if (g_dwNetworkPlayMode) {
         s32 slot = PopDepartedPlayerSlot();
         if (slot >= 0 && !gInstantReplayActive) {
@@ -123,7 +123,7 @@ void ProcessRacingScreen(void) {
     }
 #endif
     g_wRaceScreenLoopExited = FALSE;
-#if TGR_PLATFORM != TGR_PLATFORM_WIN && TGR_REGION != TGR_REGION_US
+#if !TGR_PC && TGR_REGION != TGR_REGION_US
     RestoreReplayKeyframeState();
 #endif
     if (g_dwRacePhase == RACE_PHASE_RACING) {
@@ -132,13 +132,13 @@ void ProcessRacingScreen(void) {
         }
     }
     if (g_dwGameMode != GAME_MODE_DEMO
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         && !g_dwRacePauseState
 #endif
     ) {
         g_bTrackCollisionFrameToggle ^= 1;
     }
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
     if (gInstantReplayActive && g_dwRacePhase == RACE_PHASE_RACING) {
         CheckInstantReplayEnd();
     }
@@ -158,7 +158,7 @@ void ProcessRacingScreen(void) {
     for (i = 0; i < g_dwNumVehicles; i++) {
         RACE_SLOT_CALL(&g_aRacerSlots[i], UpdateRacerSlotMotion);
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (g_dwNetworkPlayMode || gInstantReplayActive) {
         for (i = 0; i < g_dwNumVehicles; i++) {
             RACE_SLOT_CALL(&g_aRacerSlots[i], UpdateRemoteVehicleFrame);
@@ -175,7 +175,7 @@ void ProcessRacingScreen(void) {
     }
     SortRacersByPosition();
     if (!g_dwRacePauseState
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         && gInstantReplayActive != 2
 #endif
     ) {
@@ -191,7 +191,7 @@ void ProcessRacingScreen(void) {
     }
     ResetSoundSourceTracking();
     for (i = 0; i < g_dwNumViewports; i++) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         CameraFrame *camera = g_aVehicles[g_aViewportRects[i].vehicleIndex].GetActiveCamera();
         if (g_dwAirplaneInstance && g_bAirplaneFlying) {
             UpdateAirplaneSound(g_dwAirplaneInstance,
@@ -231,11 +231,11 @@ void ProcessRacingScreen(void) {
             }
         }
         StubSoundUpdate(g_pActiveCamera);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     }
     UpdateAmbientSoundChannel();
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     UpdateRaceAnimations();
     g_aFrameSnapshots[AcquireNextFrameSnapshotSlot()].Capture();
     PaceRaceFrames();
@@ -288,7 +288,7 @@ void ProcessRacingScreen(void) {
     }
 #endif /* TGR_REGION != TGR_REGION_US */
 
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
     if (g_dwRacePauseState) {
         paused = ProcessPauseMenu(paused);
@@ -297,7 +297,7 @@ void ProcessRacingScreen(void) {
     }
     if (g_dwGameMode == GAME_MODE_DEMO && g_dwRaceSessionType == RACE_SESSION_SCROLLING_CREDITS) {
         ScrollTextUp();
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
         DrawScrollingText();
     } else if (g_dwGameMode == GAME_MODE_DEMO &&
                g_dwRaceSessionType == RACE_SESSION_CREDIT_CAPTIONS &&
@@ -315,8 +315,8 @@ void ProcessRacingScreen(void) {
             g_dwRaceCaptionIndex = (s32)((u32)g_dwRaceCaptionIndex + 1u);
         }
     }
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#endif /* !TGR_PC */
+#if !TGR_PC
     ApplyScreenFade();
     if (g_dwHudDebugLevel >= 2) {
         SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
@@ -342,7 +342,7 @@ void ProcessRacingScreen(void) {
     }
 #endif /* TGR_REGION != TGR_REGION_US */
     FlushDisplayList();
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
     if (IsFadingOut() && IsFadeComplete()) {
         FinishRace();
     }
@@ -350,14 +350,14 @@ void ProcessRacingScreen(void) {
     if (g_dwRacePauseState != (u32)paused) {
         if (paused) {
             SaveClockForPause();
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             PauseMusicPlayback();
             MuteAllActiveSoundChannels();
             MuteVehicleSoundVoices();
 #endif
         } else {
             RestoreClockAfterPause();
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             if (g_bBgmVolume) {
                 UnpauseMusicPlayback();
                 DispatchMusicVolumeChange(g_bBgmVolume);
@@ -366,7 +366,7 @@ void ProcessRacingScreen(void) {
         }
         g_dwRacePauseState = paused;
     }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (g_dwGameMode == GAME_MODE_NETWORK) {
         ProcessPendingNetworkNotifications();
     }
@@ -392,5 +392,5 @@ void ProcessRacingScreen(void) {
         }
         ResetFrameTimer();
     }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 }

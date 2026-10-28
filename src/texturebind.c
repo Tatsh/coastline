@@ -2,13 +2,13 @@
 
 #include "render.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/gbicommand.h"
 #else
 #include "texrect.h"
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 
 void DrawTexturedTile(s32 index, ModelTexture *textures) {
     if (!MODEL_TEXTURE_ANIMATED(&textures[index])) {
@@ -109,4 +109,4 @@ void DrawTexturedTile(s32 index, ModelTexture *textures) {
                    texture->tileT1 * 4 + 2);
     gSPTexture(gDisplayListPtr++, scaleS, scaleT, 0, tile, G_ON);
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */

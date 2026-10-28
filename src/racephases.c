@@ -15,7 +15,7 @@
 #include "vehicleaccess.h"
 #include "vehiclecount.h"
 #include "weather.h"
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include <string.h>
 
 #include "win32/boot/strings.h"
@@ -27,9 +27,9 @@
 #include <PR/os_libc.h>
 
 #include "replay.h"
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 namespace {
     /**
      * The step of the countdown of the start lights.
@@ -41,9 +41,9 @@ namespace {
      */
     s32 g_dwStartLightsStep;
 } // namespace
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 /** @ghidraAddress BRD3D: 0x106909e0 */
 s32 gInstantReplayActive;
 /** @ghidraAddress BRD3D: 0x10680938 */
@@ -76,15 +76,15 @@ f32 g_fRacePhaseTimer;
 f32 g_fStartLightsDrop;
 /** @ghidraAddress BRD3D: 0x11782bc0 */
 s16 g_wRaceScreenLoopExited;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #define RACE_GHOST_TRACK ((u32)(s32)g_GhostRecordingInfo.track)
 #else
 #define RACE_GHOST_TRACK g_abGhostRecording[0]
 #endif
 #define FADE_SECONDS 0.2f
-#if TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_REGION == TGR_REGION_US
+#if TGR_PC || TGR_REGION == TGR_REGION_US
 #define ATTRACT_RACE_SECONDS 39.6f
 #define ENDING_RACE_SECONDS 140.0f
 #else
@@ -95,7 +95,7 @@ s16 g_wRaceScreenLoopExited;
 
 /* Go on to the next phase of the race. */
 void AdvanceRacePhase(void) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (!g_bNetRaceStartReached) {
         return;
     }
@@ -107,7 +107,7 @@ void AdvanceRacePhase(void) {
 
 /* Hold the vehicles and run the start lights before the race starts. */
 static void HoldBeforeStart(void) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     const TrackMenuItem *track;
 #else
     TrackMenuItem *track;
@@ -116,7 +116,7 @@ static void HoldBeforeStart(void) {
     s16 weather;
     s32 i;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (g_bNetRaceStartReached) {
         const s32 localPlayers = (s32)g_dwNumLocalPlayers;
         for (i = 0; i < localPlayers; i++) {
@@ -130,7 +130,7 @@ static void HoldBeforeStart(void) {
             VEHICLE_SET(&g_aVehicles[i], SubMessageTime, 0.01f);
         }
     }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     g_bStartLightsVisible = TRUE;
     for (i = 0; i < g_dwNumVehicles; i++) {
         RACER_SLOT_SET(
@@ -140,11 +140,11 @@ static void HoldBeforeStart(void) {
             continue;
         }
         if (g_dwGameMode == GAME_MODE_ARCADE
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             || g_dwGameMode == GAME_MODE_NETWORK
 #endif
         ) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             weather = (s16)((u32)g_dwCurrentWeather - 1);
 #else
             weather = g_dwCurrentWeather - 1;
@@ -152,7 +152,7 @@ static void HoldBeforeStart(void) {
             if (weather >= ARCADE_WEATHERS || weather < 0) {
                 weather = 0;
             }
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             track = g_apTrackMenuItems[g_dwSelectedTrackId];
 #else
             /* The descriptor of a track starts with its menu item. */
@@ -191,7 +191,7 @@ static void HoldBeforeStart(void) {
 /* Keep a time attack's recording of the first player when it beats the ghost, or when there is
  * none worth keeping. */
 static void KeepTimeAttackRecording(s32 player) {
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
     s32 j;
 
     osSyncPrintf("# Format SB BitSize 24 Rows %d Columns 1\n",
@@ -201,10 +201,10 @@ static void KeepTimeAttackRecording(s32 player) {
                      VEHICLE_GET(&g_aVehicles[player], Input)->recordBuffers[player][j],
                      VEHICLE_GET(&g_aVehicles[player], Input)->recordBuffers[player][j + 1]);
     }
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
     if (player == 0) {
         if (
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             VEHICLE_GET(&g_aVehicles[player], RacePosition) == 0 ||
             RACE_GHOST_TRACK != g_dwSelectedTrackId ||
 #else
@@ -225,7 +225,7 @@ static void KeepTimeAttackRecording(s32 player) {
                          g_dwGhostRecordingSize,
                          RECORDING_HEADER_SIZE,
                          (s32)g_dwGhostRecordingSize <= RECORDING_HEADER_SIZE);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             g_dwGhostRecordingSize = sizeof(g_GhostRecordingInfo);
             memcpy(&g_GhostRecordingInfo,
                    VEHICLE_GET(&g_aVehicles[player], Input)->recordBuffers[player],
@@ -238,8 +238,8 @@ static void KeepTimeAttackRecording(s32 player) {
             memcpy(g_abGhostRecording,
                    VEHICLE_GET(&g_aVehicles[player], Input)->recordBuffers[player],
                    g_dwGhostRecordingSize);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#endif /* TGR_PC */
+#if TGR_PC
             VEHICLE_SET(&g_aVehicles[player], Message, GetStringResource(0xef));
 #else
             VEHICLE_SET(&g_aVehicles[player], Message, "NEW RECORD!");
@@ -261,7 +261,7 @@ static s32 RunRacingPhase(void) {
     s32 allFinished, i, j;
 
     allFinished = TRUE;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_REGION == TGR_REGION_US
+#if TGR_PC || TGR_REGION == TGR_REGION_US
     if ((g_dwGameMode == GAME_MODE_DEMO &&
          ((g_dwRaceSessionType == RACE_SESSION_SCROLLING_CREDITS &&
            ENDING_RACE_SECONDS < VEHICLE_GET(&g_aVehicles[0], TotalTime)) ||
@@ -277,7 +277,7 @@ static s32 RunRacingPhase(void) {
           (g_dwRaceSessionType == RACE_SESSION_ATTRACT &&
            VEHICLE_GET(&g_aVehicles[0], Input)->playbackPosition ==
                VEHICLE_GET(&g_aVehicles[0], Input)->playbackLimit))) ||
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_REGION == TGR_REGION_US */
+#endif /* TGR_PC || TGR_REGION == TGR_REGION_US */
         (g_dwGameMode == GAME_MODE_AFTER_SEASON &&
          AFTER_SEASON_RACE_SECONDS < VEHICLE_GET(&g_aVehicles[0], TotalTime))) {
         if (!IsFadingOut()) {
@@ -298,7 +298,7 @@ static s32 RunRacingPhase(void) {
             VEHICLE_GET(&g_aVehicles[i], Input)->recordBuffers[i] != NULL) {
             KeepTimeAttackRecording(i);
         } else if (g_dwGameMode == GAME_MODE_ARCADE
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
                    || g_dwGameMode == GAME_MODE_NETWORK
 #endif
         ) {
@@ -312,7 +312,7 @@ static s32 RunRacingPhase(void) {
     if (allFinished) {
         return TRUE;
     }
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if !TGR_PC
     if (g_dwGameMode == GAME_MODE_ARCADE && g_dwNumLocalPlayers == 1 &&
         (f64)VEHICLE_GET(&g_aVehicles[0], TimeLeft) == 0.0) {
         g_bReplayAfterRace = FALSE;
@@ -321,14 +321,14 @@ static s32 RunRacingPhase(void) {
         g_aVehicles[0].messageTime = g_aVehicles[1].messageTime;
         return TRUE;
     }
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+#endif /* !TGR_PC */
     return FALSE;
 }
 
 /* Step the phases of the race. */
 void StepRacePhases(void) {
     s32 i;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     long double timer;
 #endif
 
@@ -337,7 +337,7 @@ void StepRacePhases(void) {
         HoldBeforeStart();
     tick:
         if (!g_dwRacePauseState) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
             timer = (long double)g_fRacePhaseTimer - g_fFrameDeltaTime;
             g_fRacePhaseTimer = (f32)timer;
             if (!(timer >= 0.0L)) {
@@ -357,7 +357,7 @@ void StepRacePhases(void) {
                 &g_aRacerSlots[i], Status, RACER_SLOT_GET(&g_aRacerSlots[i], Status) & ~RACER_HELD);
         }
         /* The lights rise away faster and faster through the phase. */
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
         {
             const long double share =
                 ((long double)g_aRacePhaseTable[g_dwRacePhaseIndex].seconds - g_fRacePhaseTimer) /
@@ -368,7 +368,7 @@ void StepRacePhases(void) {
         g_fStartLightsDrop = (g_aRacePhaseTable[g_dwRacePhaseIndex].seconds - g_fRacePhaseTimer) /
                              g_aRacePhaseTable[g_dwRacePhaseIndex].seconds;
         g_fStartLightsDrop = g_fStartLightsDrop * (15.0f * g_fStartLightsDrop);
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
         goto tick;
     } else if (g_dwRacePhase == RACE_PHASE_RACING) {
         if (RunRacingPhase()) {
@@ -377,7 +377,7 @@ void StepRacePhases(void) {
     } else if (g_dwRacePhase == RACE_PHASE_FINISHED) {
         if ((g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_ARCADE ||
              g_dwGameMode == GAME_MODE_CHAMPIONSHIP
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
              || g_dwGameMode == GAME_MODE_NETWORK
 #endif
              ) &&

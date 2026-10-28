@@ -5,7 +5,7 @@
 #include "vehicleaccess.h"
 #include "vehiclecount.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include <stdlib.h>
 
 #include "win32/directplay.h"
@@ -21,7 +21,7 @@ void SortRacersByPosition(void) {
     s32 count = 0;
     s32 i;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     if (g_dwNetworkPlayMode) {
         for (i = 0; i < g_dwNumActiveVehicles; i++) {
             VEHICLE_SET(&g_aVehicles[i],
@@ -30,7 +30,7 @@ void SortRacersByPosition(void) {
         }
         return;
     }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
     for (i = 0; i < g_dwNumVehicles; i++) {
         slot = &g_aRacerSlots[i];
         if (RACER_SLOT_GET(slot, Status) & RACER_FINISHED) {

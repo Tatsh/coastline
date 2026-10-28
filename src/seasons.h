@@ -15,7 +15,7 @@ extern "C" {
 
 /** A season of the championship. */
 typedef struct {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
     u32 nameStringId; /*!< The string of the name of the season. */
 #else
     const char *name;     /*!< The name of the season. */

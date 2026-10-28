@@ -3,7 +3,7 @@
 
 #include "render.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PC
 #include "win32/combine.h"
 
 #ifdef __cplusplus
@@ -52,6 +52,6 @@ extern "C" {
                       0,                                                                           \
                       0,                                                                           \
                       secondCycle)
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#endif /* TGR_PC */
 
 #endif /* COASTLINE_FADE_COMMANDS_H */
