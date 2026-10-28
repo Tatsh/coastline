@@ -14,6 +14,7 @@
 #include <SDL3/SDL.h>
 
 #include "sdl/gamefiles.h"
+#include "win32/diagnostics.h"
 
 namespace {
 
@@ -125,6 +126,12 @@ std::filesystem::path WritableGameFile(const char *path) {
 extern "C" {
 
 int g_bVerboseFileTrace;
+
+#ifdef ENABLE_PATCHES
+void WriteApplicationDiagnostic(const char *message) {
+    SDL_LogInfo(SDL_LOG_CATEGORY_APPLICATION, "%s", message);
+}
+#endif
 
 long GetFileLength(GameFile *pFile) {
     long nPosition = std::ftell(pFile->pFile);

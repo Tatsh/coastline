@@ -257,6 +257,14 @@ void TlRenderer::UpdateTexture(TextureHandle texture,
     m_textures.pop_back();
 }
 
+std::uint32_t TlRenderer::FrameWidth() const {
+    return m_window.FrameWidth();
+}
+
+std::uint32_t TlRenderer::FrameHeight() const {
+    return m_window.FrameHeight();
+}
+
 void TlRenderer::BeginScene(std::uint32_t clearColor) {
     m_clearColor = clearColor;
     m_vertices.clear();

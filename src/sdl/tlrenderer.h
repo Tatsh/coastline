@@ -180,6 +180,12 @@ public:
         m_screenHeight = height;
     }
 
+    /** @return The width of the frame of the window in pixels. */
+    std::uint32_t FrameWidth() const;
+
+    /** @return The height of the frame of the window in pixels. */
+    std::uint32_t FrameHeight() const;
+
 private:
     struct PipelineKey;
     struct Draw {

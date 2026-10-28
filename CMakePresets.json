@@ -124,7 +124,9 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "RelWithDebInfo",
         "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "TGR_ENABLE_PATCHES": "ON",
         "TGR_PLATFORM": "sdl",
+        "TGR_SDL_PC_GAME": "ON",
         "VCPKG_MANIFEST_FEATURES": "sdl"
       },
       "inherits": "base",

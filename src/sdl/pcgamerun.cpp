@@ -1,6 +1,7 @@
 #include "pcgamerun.h"
 
 #include <algorithm>
+#include <cmath>
 #include <cstdlib>
 #include <cstring>
 #include <iterator>
@@ -117,6 +118,15 @@ bool StartPcGame(TlRenderer &renderer,
     std::strcpy(g_szConfigFilePath, g_szInstallDirectory);
     std::strcat(g_szConfigFilePath, "BossRally.cfg");
     g_GlobalRallyConfig.LoadRallyConfigFile(g_szConfigFilePath);
+#ifdef ENABLE_PATCHES
+    // The screen of the race has the aspect ratio of the window at the height of the display mode,
+    // and the camera widens its view with it.
+    if (renderer.FrameHeight() != 0) {
+        g_GlobalRallyConfig.dwDisplayModeWidth = static_cast<int>(
+            std::lround(static_cast<double>(g_GlobalRallyConfig.dwDisplayModeHeight) *
+                        renderer.FrameWidth() / renderer.FrameHeight()));
+    }
+#endif
     InitializeTextureSubsystem();
     return true;
 }

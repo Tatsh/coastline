@@ -100,7 +100,13 @@ int ResetRenderDeviceCallbacks(void) {
     return true;
 }
 
-// The window of SDL has no display modes to change.
+// The window of SDL has no display modes. The mode becomes the size of the screen the game draws,
+// as RecordDisplayMode() of d3d/renderer.cpp records it, and the renderer scales the screen to the
+// window.
 void SetDisplayModeWithFallback(int nWidth, int nHeight, int nBitDepth, int nExtra) {
+    g_dwConfigFramebufferWidth = nWidth;
+    g_dwScreenWidth = nWidth;
+    g_dwConfigFramebufferHeight = nHeight;
+    g_dwScreenHeight = nHeight;
     ResetRenderDeviceCallbacks();
 }
