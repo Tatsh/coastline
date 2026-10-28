@@ -200,6 +200,7 @@ private:
 
     /**
      * @ghidraAddress BRD3D: 0x10061f70
+     * @ghidraAddress BRGlide: 0x1005aff0
      */
     void UpdateVehicleEngineAndGearbox(void);
 

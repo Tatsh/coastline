@@ -414,6 +414,7 @@ void BuildVisibleInstanceList(void);
  * @param slots The racers and their current vehicles.
  * @param vehicles The active vehicle array.
  * @ghidraAddress BRD3D: 0x10011590
+ * @ghidraAddress BRGlide: 0x1000eaf0
  */
 void RenderTrackGeometry(const ViewportRect *viewports,
                          s32 deferred,

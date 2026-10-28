@@ -12,6 +12,7 @@ extern "C" {
  * @param pnAcceleration Receives acceleration outside replay, pause, and early failure paths.
  * @return Action mask, also written to g_dwInputButtonMask.
  * @ghidraAddress BRD3D: 0x100773f0
+ * @ghidraAddress BRGlide: 0x100706d0
  */
 unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration);
 
