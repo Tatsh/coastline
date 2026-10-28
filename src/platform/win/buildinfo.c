@@ -2,6 +2,7 @@
 
 #include <windows.h>
 
+#include "platform/win/hudcanvas.h"
 #include "platform/win/settings.h"
 #include "text.h"
 
@@ -33,7 +34,7 @@ void DrawRaceBuildIdentification(void) {
         return;
     }
     const char *lines[] = {projectUri, revision, buildDate};
-    int y = g_dwConfigFramebufferHeight - 76;
+    int y = GetHudCanvasHeight() - 76;
     SetTextStyleNormal();
     SetTextAlignLeft();
     SetTextSize(15);

@@ -10,6 +10,7 @@
 #include "clipplane.h"
 #include "displaylistptr.h"
 #include "platform/win/boot/app.h"
+#include "platform/win/hudcanvas.h"
 #include "platform/win/render.h"
 #include "platform/win/settings.h"
 #include "platform/win/timer.h"
@@ -83,6 +84,24 @@ DWORD g_dwAppliedRS_AlphaBlendEnable;
 #define GBI_GEOMETRY_TEXTURE_GEN_LINEAR 0x80000
 
 float g_fTexRectScaleW = 1.0f;
+
+#ifdef ENABLE_PATCHES
+namespace {
+int renderCanvasWidth;
+int renderCanvasHeight;
+float canvasScaleX = 1.0f;
+float canvasScaleY = 1.0f;
+
+GbiCommand *HandleHudCanvas(GbiCommand *command) {
+    FlushIndexedRenderBuffer();
+    renderCanvasWidth = command->w1 >> 16;
+    renderCanvasHeight = command->w1 & 0xffff;
+    canvasScaleX = renderCanvasWidth ? (float)g_dwConfigFramebufferWidth / renderCanvasWidth : 1;
+    canvasScaleY = renderCanvasHeight ? (float)g_dwConfigFramebufferHeight / renderCanvasHeight : 1;
+    return command + 1;
+}
+} // namespace
+#endif /* ENABLE_PATCHES */
 float g_fTexRectDepth;
 unsigned g_dwGbiCombineModeHi;
 unsigned g_dwGbiCombineModeLo;
@@ -224,6 +243,14 @@ GbiCommand *HandleGbiSetViewport(GbiCommand *pCommand) {
     g_fViewportTranslateY =
         fHeight - static_cast<float>(pViewport->vp.vtrans[1]) * GBI_VIEWPORT_UNIT;
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#ifdef ENABLE_PATCHES
+    g_fViewportScaleX *= canvasScaleX;
+    g_fViewportScaleY *= canvasScaleY;
+    g_fViewportTranslateX *= canvasScaleX;
+#if TGR_RENDERER == TGR_RENDERER_D3D
+    g_fViewportTranslateY *= canvasScaleY;
+#endif
+#endif /* ENABLE_PATCHES */
     return pCommand + 1;
 }
 
@@ -692,6 +719,12 @@ int g_dwScissorBottom;
 #if TGR_RENDERER == TGR_RENDERER_D3D
 static inline void
 SetScissorAndClipStatus(int nUpperLeftX, int nUpperLeftY, int nLowerRightX, int nLowerRightY) {
+#ifdef ENABLE_PATCHES
+    nUpperLeftX = (int)(nUpperLeftX * canvasScaleX);
+    nUpperLeftY = (int)(nUpperLeftY * canvasScaleY);
+    nLowerRightX = (int)(nLowerRightX * canvasScaleX);
+    nLowerRightY = (int)(nLowerRightY * canvasScaleY);
+#endif
     D3DCLIPSTATUS clipStatus;
     int nHeight = g_dwConfigFramebufferHeight;
 
@@ -726,6 +759,14 @@ GbiCommand *HandleGbiSetScissorIntCoords(GbiCommand *pCommand) {
                             GbiField12(pCommand->w1, 0));
     return pCommand + 1;
 }
+
+#ifdef ENABLE_PATCHES
+static GbiCommand *HandleFullScissor(GbiCommand *command) {
+    SetScissorAndClipStatus(
+        (int)command->w1, (int)command[1].w0, (int)command[1].w1, (int)command[2].w0);
+    return command + 3;
+}
+#endif /* ENABLE_PATCHES */
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 GbiCommand *HandleGbiEndDisplayList(GbiCommand *pCommand) {
@@ -741,6 +782,12 @@ static constexpr std::array<GbiHandler, GBI_HANDLER_COUNT> MakeGbiHandlers() {
     for (GbiHandler &pfnHandler : apfnHandlers) {
         pfnHandler = HandleGbiNoOp;
     }
+#ifdef ENABLE_PATCHES
+    apfnHandlers[GBI_OP_HUD_CANVAS] = HandleHudCanvas;
+#if TGR_RENDERER == TGR_RENDERER_D3D
+    apfnHandlers[GBI_OP_FULL_SCISSOR] = HandleFullScissor;
+#endif
+#endif
     apfnHandlers[GBI_OP_MATRIX] = HandleGbiMatrix;
     apfnHandlers[GBI_OP_MOVE_MEM] = HandleGbiMoveMem;
     apfnHandlers[GBI_OP_VERTEX] = HandleGbiVertexUnlit;
@@ -936,6 +983,12 @@ void DrawTextureRectangle(
     int nUpperLeftX, int nUpperLeftY, int nLowerRightX, int nLowerRightY, int nTile) {
     float width = g_dwConfigFramebufferWidth;
     float height = g_dwConfigFramebufferHeight;
+#ifdef ENABLE_PATCHES
+    if (renderCanvasWidth && renderCanvasHeight) {
+        width = (float)renderCanvasWidth;
+        height = (float)renderCanvasHeight;
+    }
+#endif /* ENABLE_PATCHES */
     float halfWidth = static_cast<long double>(width) / 2.0f;
     float halfHeight = static_cast<long double>(height) / 2.0f;
     auto xCoordinate = [halfWidth](int coordinate) {
@@ -1737,6 +1790,12 @@ static unsigned char ConvertFillColorChannel(float fChannel) {
 }
 
 void DrawFillRectangle(int nLeft, int nTop, int nRight, int nBottom) {
+#ifdef ENABLE_PATCHES
+    nLeft = (int)(nLeft * canvasScaleX);
+    nTop = (int)(nTop * canvasScaleY);
+    nRight = (int)(nRight * canvasScaleX);
+    nBottom = (int)(nBottom * canvasScaleY);
+#endif
     if (nLeft < g_dwScissorLeft) {
         nLeft = g_dwScissorLeft;
     }

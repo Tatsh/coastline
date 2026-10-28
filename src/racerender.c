@@ -9,6 +9,7 @@
 #include "platform/win/boot/strings.h"
 #include "platform/win/buildinfo.h"
 #include "platform/win/hud.h"
+#include "platform/win/hudcanvas.h"
 #include "platform/win/render.h"
 #include "platform/win/settings.h"
 #else
@@ -38,6 +39,11 @@
 #include "vehiclerender.h"
 #include "visgrid.h"
 #include "weather.h"
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+#define g_dwScreenWidth GetHudCanvasWidth()
+#define g_dwScreenHeight GetHudCanvasHeight()
+#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 namespace {
@@ -416,9 +422,19 @@ void RenderRaceView(RACE_VIEW_PARAMETERS s32 index) {
         RenderRearViewMirror(RACE_VIEW_ARGUMENTS index);
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifdef ENABLE_PATCHES
+    ViewportRect *hudViews = BeginRaceHudCanvas(views);
+    SetupViewportAndScissor(0, 0, GetHudCanvasWidth(), GetHudCanvasHeight(), TRUE);
+    DrawFpsCounterOverlay();
+    DrawViewOverlay(hudViews, slots, vehicles, index);
+    DrawRaceBuildIdentification();
+    DrawDebugOverlayBanner(hudViews);
+    EndRaceHudCanvas();
+#else
     DrawFpsCounterOverlay();
     DrawViewOverlay(RACE_VIEW_ARGUMENTS index);
     DrawRaceBuildIdentification();
+#endif /* ENABLE_PATCHES */
 #else
     DrawViewOverlay();
 #endif
@@ -427,13 +443,20 @@ void RenderRaceView(RACE_VIEW_PARAMETERS s32 index) {
                        RACE_VIEW_RECTS[index].width,
                        RACE_VIEW_RECTS[index].height);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+#ifndef ENABLE_PATCHES
     DrawDebugOverlayBanner(views);
+#endif
 #endif
 }
 
 /* Draw the pause menu over the race. */
 void DrawPauseMenu(RACE_VIEW_CONTEXT) {
     s32 x, y;
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+    views = BeginRaceHudCanvas(views);
+    SetupViewportAndScissor(0, 0, GetHudCanvasWidth(), GetHudCanvasHeight(), TRUE);
+#endif
 
     x = (RACE_VIEW_RECTS[0].width >> 1) + RACE_VIEW_RECTS[0].x;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -500,6 +523,9 @@ void DrawPauseMenu(RACE_VIEW_CONTEXT) {
     /* The original steps past the last item and does not use the result. */
     y += 20;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+    EndRaceHudCanvas();
+#endif
 }
 
 #undef RACE_VIEW_CONTEXT

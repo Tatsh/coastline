@@ -31,6 +31,7 @@ add_library(
   hudnetwork.cpp
   hudquad.c
   hud.c
+  hudcanvas.c
   input.cpp
   menufont.cpp
   modelrelocation.cpp

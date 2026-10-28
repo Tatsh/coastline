@@ -9,6 +9,7 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/gbicommand.h"
+#include "platform/win/hudcanvas.h"
 #include "platform/win/settings.h"
 
 s32 g_dwScreenScaleShift;
@@ -19,6 +20,15 @@ s32 g_dwViewportTransZ;
 s32 g_dwTrackMirrored;
 s32 g_dwViewportMirrored;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+#define g_dwConfigFramebufferWidth GetHudCanvasWidth()
+#define g_dwConfigFramebufferHeight GetHudCanvasHeight()
+#define g_dwFadeRectLeft GetHudCanvasX(g_dwFadeRectLeft)
+#define g_dwFadeRectRight GetHudCanvasX(g_dwFadeRectRight)
+#define g_dwFadeRectTop GetHudCanvasY(g_dwFadeRectTop)
+#define g_dwFadeRectBottom GetHudCanvasY(g_dwFadeRectBottom)
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES) */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /* Screen coordinate operations retain the original 32-bit wrap. */
@@ -182,8 +192,14 @@ void SetScissorRect(s32 x, s32 y, s32 width, s32 height) {
         height = COORD_DOUBLE(height);
     }
     gDPPipeSync(gDisplayListPtr++);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+    gDisplayListWords(gDisplayListPtr++, GBI_OP_FULL_SCISSOR << 24, (u32)x);
+    gDisplayListWords(gDisplayListPtr++, (u32)y, (u32)COORD_ADD(x, width));
+    gDisplayListWords(gDisplayListPtr++, (u32)COORD_ADD(y, height), 0);
+#else
     gDPSetScissor(
         gDisplayListPtr++, G_SC_NON_INTERLACE, x, y, COORD_ADD(x, width), COORD_ADD(y, height));
+#endif
 }
 
 void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height) {

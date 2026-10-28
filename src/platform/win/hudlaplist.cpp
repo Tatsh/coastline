@@ -5,6 +5,7 @@
 #include "camera.h"
 #include "laptime.h"
 #include "platform/win/hud.h"
+#include "platform/win/hudcanvas.h"
 #include "platform/win/settings.h"
 #include "render.h"
 #include "text.h"
@@ -13,6 +14,10 @@
 #include "vehiclecount.h"
 
 s32 g_bHudShowLapTimes = 1;
+
+#ifdef ENABLE_PATCHES
+#define g_dwConfigFramebufferWidth GetHudCanvasWidth()
+#endif
 
 namespace {
 

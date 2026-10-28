@@ -10,12 +10,16 @@
 
 #include "platform/win/boot/strings.h"
 #include "platform/win/directplay.h"
+#include "platform/win/hudcanvas.h"
 #include "platform/win/settings.h"
 #else
 #include <PR/os_libc.h>
 #endif
 
 #define TIME_TEXT_SIZE 15
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+#define g_dwConfigFramebufferWidth GetHudCanvasWidth()
+#endif
 #define LAP_TEXT_SIZE 15
 #define PLACE_TEXT_SIZE 40
 #define PLACE_SUFFIX_TEXT_SIZE 20

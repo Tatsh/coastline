@@ -13,6 +13,7 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/directplay.h"
+#include "platform/win/hudcanvas.h"
 #include "platform/win/hudquad.h"
 #include "platform/win/render.h"
 #include "platform/win/settings.h"
@@ -25,6 +26,13 @@
 #include "system.h"
 #include "text.h"
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+#define g_dwConfigFramebufferWidth GetHudCanvasWidth()
+#define g_dwConfigFramebufferHeight GetHudCanvasHeight()
+#define g_dwScreenWidth GetHudCanvasWidth()
+#define g_dwScreenHeight GetHudCanvasHeight()
+#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define DASHBOARD_ADD(a, b) ((s32)((u32)(a) + (u32)(b)))

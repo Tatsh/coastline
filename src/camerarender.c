@@ -7,6 +7,8 @@
 #include "visgrid.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include <math.h>
+
 #include "platform/win/gbicommand.h"
 #else
 #include <PR/R4300.h>
@@ -95,7 +97,10 @@ f32 g_fFrustumFovAngle;
 #define FRUSTUM_CORNER_SHARE 0.75f
 
 void SetupFrustumCorners(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+    f32 halfHeight = tanf(fov * 0.5f) * farDistance;
+    f32 halfWidth = halfHeight * width / height;
+#elif TGR_PLATFORM == TGR_PLATFORM_WIN
     long double sine;
     f32 halfWidth, halfHeight;
 
@@ -107,9 +112,11 @@ void SetupFrustumCorners(CameraFrame *camera, f32 fov, f32 farDistance, f32 widt
     f32 halfHeight = halfWidth * height / width;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN || !defined(ENABLE_PATCHES)
     if (g_dwNumViewports == 2) {
         halfHeight *= 0.5f;
     }
+#endif
     g_avFrustumPoints[FRUSTUM_CAMERA].x = camera->position.x;
     g_avFrustumPoints[FRUSTUM_CAMERA].y = camera->position.y;
     g_avFrustumPoints[FRUSTUM_CAMERA].z = camera->position.z;
@@ -167,7 +174,9 @@ void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width,
     g_fCameraNearScale = CAMERA_NEAR;
     guPerspectiveF(g_afPerspectiveMatrix,
                    &g_wPerspNorm,
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+                   fov * DEGREES_PER_RADIAN,
+#elif TGR_PLATFORM == TGR_PLATFORM_WIN
                    (long double)fov * ASPECT_4_3 * ((long double)height / width) *
                        DEGREES_PER_RADIAN,
 #else

@@ -11,6 +11,7 @@
 #include "platform/win/boot/strings.h"
 #include "platform/win/configfile.h"
 #include "platform/win/directplay.h"
+#include "platform/win/hudcanvas.h"
 #include "platform/win/settings.h"
 #else
 #include <PR/os_libc.h>
@@ -39,6 +40,10 @@
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* The right edge of the times, the speed and the dashboard. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+#define g_dwConfigFramebufferWidth GetHudCanvasWidth()
+#endif
+
 #define HUD_RIGHT 296
 
 /* The left edge of the speed when the dashboard shows. */

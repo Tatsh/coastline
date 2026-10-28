@@ -3,10 +3,16 @@
 #include <hud.h>
 
 #include "platform/win/framestatistics.h"
+#include "platform/win/hudcanvas.h"
 #include "platform/win/settings.h"
 #include "text.h"
 
 #undef DrawText
+
+#ifdef ENABLE_PATCHES
+#define g_dwConfigFramebufferWidth GetHudCanvasWidth()
+#define g_dwConfigFramebufferHeight GetHudCanvasHeight()
+#endif
 
 /** @ghidraAddress BRD3D: 0x100a6cf0 */
 /* The original updates the game rate but draws only the renderer rate. */
