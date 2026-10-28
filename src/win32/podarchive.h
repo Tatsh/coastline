@@ -5,6 +5,7 @@
  * The archives of the game, the pod files that store its data.
  */
 
+#include <cstdint>
 #include <cstdio>
 
 /** The size of the name of an entry of a pod file. */
@@ -18,15 +19,15 @@
 
 /** The header at the start of a pod file. */
 struct PodHeader {
-    char szSignature[4];    /*!< "POD" in the first three bytes. */
-    int nVersion;           /*!< The version of the file. */
-    int nEntryCount;        /*!< The number of entries of the directory. */
-    long dwDirectoryOffset; /*!< The offset of the directory in the file. */
+    char szSignature[4];       /*!< "POD" in the first three bytes. */
+    int nVersion;              /*!< The version of the file. */
+    int nEntryCount;           /*!< The number of entries of the directory. */
+    int32_t dwDirectoryOffset; /*!< The offset of the directory in the file. */
 };
 
 /** An entry of the directory of a pod file. */
 struct PodEntry {
-    long dwOffset;                    /*!< The offset of the data in the file. */
+    int32_t dwOffset;                 /*!< The offset of the data in the file. */
     unsigned dwSize;                  /*!< The size of the data. */
     unsigned char bAttrA;             /*!< The first attribute the writer records. */
     unsigned char bAttrB;             /*!< The second attribute the writer records. */
