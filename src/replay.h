@@ -81,13 +81,13 @@ extern s32 g_dwBestReplayLength;
  */
 extern s32 g_dwBestReplayPlayer;
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
  * The recordings the instant replay gives each local player, and their lengths.
  *
  * @ghidraAddress USA: 0x80315e48
  * @ghidraAddress EUR: 0x80317b38
  * @ghidraAddress JPN: 0x80316578
- * @ghidraAddress BRD3D: 0x10680670
  */
 extern u8 *g_apReplayGhostPtrs[];
 
@@ -95,9 +95,9 @@ extern u8 *g_apReplayGhostPtrs[];
  * @ghidraAddress USA: 0x80315e58
  * @ghidraAddress EUR: 0x80317b48
  * @ghidraAddress JPN: 0x80316588
- * @ghidraAddress BRD3D: 0x106806e8
  */
 extern s32 g_adwReplayGhostSizes[];
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 /** The bytes of the recording of each local player's input over the last lap. */
 #define LAST_LAP_RECORDING_SIZE 0x3840
@@ -214,9 +214,10 @@ void SerializeSaveData(SaveField *fields, u8 *buffer, s32 capacity);
  * @ghidraAddress BRD3D: 0x10067900
  */
 void DeserializeSaveData(SaveField *fields, u8 *buffer);
-#endif /*
- * TGR_PLATFORM != TGR_PLATFORM_WIN && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
- */
+#endif /*                                                                                          \
+        * TGR_PLATFORM != TGR_PLATFORM_WIN && (TGR_REGION == TGR_REGION_JP || TGR_REGION ==        \
+        * TGR_REGION_EU)                                                                           \
+        */
 
 /**
  * Take a snapshot of the race into the buffer of a last lap.

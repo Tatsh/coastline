@@ -18,11 +18,14 @@ extern int g_dwGameFpsSampleFrames;
  */
 extern int g_dwGameFpsFrameCountdown;
 
+/** The number of game-loop durations in the native averaging window. */
+#define GAME_FPS_FRAME_TIME_SAMPLE_COUNT 5
+
 /**
  * Recent game-loop durations in milliseconds.
  * @ghidraAddress BRD3D: 0x10680758
  */
-extern DWORD g_adwGameFpsFrameTimeSamples[];
+extern DWORD g_adwGameFpsFrameTimeSamples[GAME_FPS_FRAME_TIME_SAMPLE_COUNT];
 
 /** The number of entries of g_adwFpsFrameTimeSamples. */
 #define FPS_FRAME_TIME_SAMPLE_COUNT 120

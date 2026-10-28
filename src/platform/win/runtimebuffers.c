@@ -4,6 +4,7 @@
 #include <hud.h>
 #include <physics.h>
 #include <platform/win/fontdata.h>
+#include <platform/win/framestatistics.h>
 #include <platform/win/trackrelocation.h>
 #include <race.h>
 #include <racers.h>
@@ -32,6 +33,7 @@ alignas(8)
     DisplayListCommand g_abDisplayListMemory[2 * DISPLAY_LIST_COMMANDS + DISPLAY_LIST_RESERVED];
 u8 g_aabInputRecordings[INPUT_RECORDERS][0xF000];
 u8 g_abPlaybackRecording[RECORDING_HEADER_SIZE];
+DWORD g_adwGameFpsFrameTimeSamples[GAME_FPS_FRAME_TIME_SAMPLE_COUNT];
 
 SoundSourceTracking g_ClosestSoundSource;
 OSMesgQueue g_DmaMessageQueue;

@@ -64,6 +64,13 @@ static volatile u8 g_bReturnToSeasonMenu;
 #define RACE_SOUND_CHANNELS 6
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/* @ghidraAddress BRD3D: 0x10680670 */
+static u8 *volatile g_apReplayGhostPtrs[INPUT_RECORDERS];
+/* @ghidraAddress BRD3D: 0x106806e8 */
+static volatile s32 g_adwReplayGhostSizes[INPUT_RECORDERS];
+#endif
+
 /* Choose the instant replay of the best recording of the players. */
 static void ChooseInstantReplay(void) {
     s32 i, j;
