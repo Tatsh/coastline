@@ -22,6 +22,9 @@
 #include <visgrid.h>
 #include <weather.h>
 
+f32 (*g_apVehicleModelMatrix[MAX_VEHICLES])[4];
+f32 (*g_apVehicleLightMatrix[MAX_VEHICLES])[4];
+
 SoundSourceTracking g_ClosestSoundSource;
 OSMesgQueue g_DmaMessageQueue;
 TrackHeader g_LoadedTrack;

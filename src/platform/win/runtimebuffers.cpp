@@ -1,4 +1,5 @@
 #include <platform/win/frontend.h>
+#include <platform/win/ghost.h>
 #include <platform/win/netstream.h>
 #include <platform/win/render.h>
 #include <platform/win/snapshot.h>
@@ -7,6 +8,7 @@ unsigned char g_abAlphaRampPixelStrip[64];
 unsigned char g_abAlphaRampRgba[16][4];
 unsigned char g_abDaySkyPalette[32];
 unsigned char g_abDaySkyTexture[2048];
+KeyframeState g_LastSentKeyframe;
 int g_abFrameSnapshotInUse[FRAME_SNAPSHOT_COUNT];
 unsigned char g_abNightSkyPalette[32];
 unsigned char g_abNightSkyTexture[2048];
