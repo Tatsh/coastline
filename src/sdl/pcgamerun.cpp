@@ -5,7 +5,10 @@
 #include <cstring>
 #include <iterator>
 #include <memory>
+#include <mutex>
+#include <vector>
 
+#include "pause.h"
 #include "race.h"
 #include "sdl/d3dcompat.h"
 #include "sdl/gamefiles.h"
@@ -17,6 +20,7 @@
 #include "win32/render.h"
 #include "win32/settings.h"
 #include "win32/snapshot.h"
+#include "win32/sound.h"
 
 // The anchor of the offsets of Ptr32. It is part of the static data of the program, and every
 // object a Ptr32 addresses is static data or comes from the pool of CHK_AllocateMemory().
@@ -39,14 +43,40 @@ namespace coastline {
 
 namespace {
 
+struct PostedMessage {
+    UINT message;
+    WPARAM wParam;
+    LPARAM lParam;
+};
+
 std::unique_ptr<IDirect3DDevice2> g_device;
 DirectDrawRenderer g_mainRenderWindow;
+std::mutex g_messageMutex;
+std::vector<PostedMessage> g_postedMessages;
+
+// Handle the messages of the window procedure of winmain-d3d.cpp that the SDL game posts.
+void DispatchPostedMessages() {
+    std::vector<PostedMessage> messages;
+    {
+        std::lock_guard lock(g_messageMutex);
+        messages.swap(g_postedMessages);
+    }
+    for (const PostedMessage &posted : messages) {
+        // A track of the CD audio that ends plays again, unless the race is paused.
+        if (posted.message == MM_MCINOTIFY && g_dwPlayMusicMode == 1 &&
+            static_cast<MCIDEVICEID>(posted.lParam) == g_dwMciCdAudioDeviceId &&
+            posted.wParam == MCI_NOTIFY_SUCCESSFUL && !g_dwRacePauseState) {
+            PlayCdAudioFromCurrentTrack();
+        }
+    }
+}
 
 } // namespace
 
 bool StartPcGame(TlRenderer &renderer,
                  const std::filesystem::path &data,
-                 const std::filesystem::path &state) {
+                 const std::filesystem::path &state,
+                 bool pcMusic) {
     SetGameDirectories(data, state);
     // The PC release opens its archive and other files by a path relative to the working
     // directory, its installation directory on Windows.
@@ -64,10 +94,9 @@ bool StartPcGame(TlRenderer &renderer,
     ReadInstallDirectoryFromRegistry();
     LoadStringTableFromDll();
     LoadBossRallyIniSettings("");
-    // ponytail: music mode 2 needs the EAR library, which the SDL game does not have yet.
-    if (g_dwPlayMusicMode == 2) {
-        g_dwPlayMusicMode = 0;
-    }
+    // Mode 1 plays the CD audio, and mode 0 leaves the music to the modules of the cartridge.
+    // ponytail: mode 2, the music of the EAR library, waits for EAR on SDL.
+    g_dwPlayMusicMode = pcMusic ? 1 : 0;
     std::strcpy(g_szConfigFilePath, g_szInstallDirectory);
     std::strcat(g_szConfigFilePath, "BossRally.cfg");
     g_GlobalRallyConfig.LoadRallyConfigFile(g_szConfigFilePath);
@@ -79,6 +108,7 @@ bool RunPcGameFrame(const std::filesystem::path *capture) {
     g_device->SetCapture(capture);
     g_device->Renderer().SetScreenSize(static_cast<std::uint32_t>(g_dwConfigFramebufferWidth),
                                        static_cast<std::uint32_t>(g_dwConfigFramebufferHeight));
+    DispatchPostedMessages();
     return DispatchGameStateFrame() != 0;
 }
 
@@ -108,3 +138,9 @@ std::uint32_t PcGameMusicModule() {
 }
 
 } // namespace coastline
+
+BOOL PostMessageA(HWND window, UINT message, WPARAM wParam, LPARAM lParam) {
+    std::lock_guard lock(coastline::g_messageMutex);
+    coastline::g_postedMessages.push_back({message, wParam, lParam});
+    return TRUE;
+}

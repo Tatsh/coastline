@@ -310,7 +310,8 @@ int main(int argc, char *argv[]) {
                                               {"Video", "VSync", "1"},
                                               {"Video", "GpuDriver", ""},
                                               {"Game", "PlayMusic", "1"},
-                                              {"Game", "PlaySFX", "1"}}) {
+                                              {"Game", "PlaySFX", "1"},
+                                              {"Game", "Music", "N64"}}) {
         if (!config.Get(section, key)) {
             config.Set(section, key, value);
         }
@@ -329,7 +330,9 @@ int main(int argc, char *argv[]) {
                                                               DisplayOptionsFrom(config, parser))) {
             coastline::InputBindings input;
             coastline::N64Audio audio;
-            if (music && config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice()) {
+            // The PC game chooses its modules, or plays its own music.
+            if (music && config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice() &&
+                parser.present("--scene") != "race") {
                 audio.Play(*music);
             }
             std::optional<std::filesystem::path> screenshot;
@@ -348,7 +351,9 @@ int main(int argc, char *argv[]) {
 #ifdef COASTLINE_PC_GAME
             if (parser.present("--scene") == "race") {
                 renderer = coastline::TlRenderer::Create(*window);
-                pcGame = renderer && coastline::StartPcGame(*renderer, paths->data, paths->state);
+                bool pcMusic = config.Get("Game", "Music").value_or("N64") == "PC";
+                pcGame = renderer &&
+                         coastline::StartPcGame(*renderer, paths->data, paths->state, pcMusic);
             }
 #endif
             bool running = true;

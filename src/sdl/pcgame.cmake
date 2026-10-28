@@ -70,7 +70,7 @@ list(APPEND COASTLINE_PC_CXX_SOURCES "${_src}/win32/d3d/texture.cpp" "${_src}/wi
 add_library(coastline_pcgame STATIC ${COASTLINE_PC_C_SOURCES} ${COASTLINE_PC_CXX_SOURCES}
                                     ${COASTLINE_PC_SDL_SOURCES})
 target_include_directories(coastline_pcgame PUBLIC "${_src}" "${_src}/libultra/include")
-target_link_libraries(coastline_pcgame PUBLIC SDL3::SDL3)
+target_link_libraries(coastline_pcgame PUBLIC SDL3::SDL3 PRIVATE FLAC::FLAC)
 # A cast between a pointer and a 32-bit integer loses half the pointer on a 64-bit processor, and
 # is an error so that every one is converted to Ptr32.
 # The data of a source is placed in the order of its definitions, as in the Windows libraries. Some

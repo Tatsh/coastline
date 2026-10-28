@@ -189,13 +189,16 @@ static inline void *GetProcAddress(HMODULE module, const char *name) {
 }
 
 /**
- * Post a message to a window. The SDL game has no window procedure, and the message is dropped.
+ * Post a message to the main window. The SDL game handles the messages of the window procedure
+ * of the PC release it needs at the start of its next frame. It is safe on any thread.
  *
+ * @param window Unused.
+ * @param message The message.
+ * @param wParam The first parameter.
+ * @param lParam The second parameter.
  * @return TRUE.
  */
-static inline BOOL PostMessageA(HWND window, UINT message, WPARAM wParam, LPARAM lParam) {
-    return TRUE;
-}
+BOOL PostMessageA(HWND window, UINT message, WPARAM wParam, LPARAM lParam);
 
 /**
  * @param name The name of the message.

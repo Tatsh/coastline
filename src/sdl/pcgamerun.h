@@ -13,11 +13,14 @@ namespace coastline {
  * @param renderer The renderer the device draws with.
  * @param data The data directory.
  * @param state The state directory.
+ * @param pcMusic Whether the music is the CD audio of the PC release, from FLAC files, rather
+ * than the modules of the cartridge.
  * @return Whether the game is ready.
  */
 bool StartPcGame(TlRenderer &renderer,
                  const std::filesystem::path &data,
-                 const std::filesystem::path &state);
+                 const std::filesystem::path &state,
+                 bool pcMusic);
 
 /**
  * Run one frame of the state machine of the game, as the message loop of the PC release does when

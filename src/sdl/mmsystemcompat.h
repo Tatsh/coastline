@@ -249,18 +249,18 @@ typedef struct tagMCI_PLAY_PARMS {
 } MCI_PLAY_PARMS;
 
 /**
- * Send a command to a device of the media control interface.
+ * Send a command to the CD audio device of the media control interface. The audio tracks of the
+ * CD are the files music/trackNN.flac of the game data, from track 2. MCI_PLAY plays the tracks
+ * from its first to its last, and with MCI_NOTIFY posts MM_MCINOTIFY to the window when they end.
  *
- * @param device The device.
- * @param message The command.
+ * @param device The device of MCI_OPEN.
+ * @param message MCI_OPEN, MCI_CLOSE, MCI_SET, MCI_STATUS, MCI_PLAY, MCI_PAUSE, or MCI_STOP.
  * @param flags The flags of the command.
  * @param parameters The parameters of the command.
- * @return MCIERR_DEVICE_NOT_READY. The SDL game has no CD audio device.
+ * @return 0, or MCIERR_DEVICE_NOT_READY when the game data has no audio track or SDL has no
+ * playback device.
  */
-static inline MCIERROR
-mciSendCommandA(MCIDEVICEID device, UINT message, DWORD_PTR flags, DWORD_PTR parameters) {
-    return MCIERR_DEVICE_NOT_READY;
-}
+MCIERROR mciSendCommandA(MCIDEVICEID device, UINT message, DWORD_PTR flags, DWORD_PTR parameters);
 
 /** Format a string, as sprintf() does. */
 #define wsprintfA sprintf
