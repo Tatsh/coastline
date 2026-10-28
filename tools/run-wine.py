@@ -26,6 +26,8 @@ def arguments():
                         help='CMake directory with the rebuilt DLL and launchers.')
     parser.add_argument('--ear-dll', type=Path, default=ROOT / '.wiswa-ci/earpds-unpacked.dll',
                         help='EAR sound DLL to copy beside the game as earpds.dll.')
+    parser.add_argument('--no-build', action='store_true',
+                        help='Copy the binaries in --build-dir without building them first.')
     parser.add_argument('--stage-only', action='store_true',
                         help='Copy files without Wine; configure the prefix on a later run.')
     parser.add_argument('--no-launch', action='store_true',
@@ -40,6 +42,9 @@ def arguments():
                         help='wineserver executable used to wait for prefix setup to finish.')
     parser.add_argument('--configure-prefix', action='store_true',
                         help='Open winecfg even when the prefix already exists.')
+    parser.add_argument('--debugger', action='store_true',
+                        help='Start BRally.exe under winedbg in this terminal. Type c to run it; '
+                        'at a fault, bt prints the backtrace.')
     parser.add_argument('game_args', nargs=argparse.REMAINDER,
                         help='Arguments after -- go to the game.')
     return parser.parse_args()
@@ -97,6 +102,14 @@ def stage(options):
         'earpds.dll': options.ear_dll.expanduser().resolve(),
     }
     cache = build / 'CMakeCache.txt'
+    if not cache.is_file():
+        raise ValueError(f'{build} is not configured. Configure it with a win-* preset first.')
+    if re.search(r'^TGR_ENABLE_PATCHES:BOOL=ON$', cache.read_text(), re.MULTILINE) is None:
+        print(f'Warning: {build} is built without TGR_ENABLE_PATCHES, so the game writes no '
+              'coastline.log and no crash dump.', file=sys.stderr, flush=True)
+    if not options.no_build:
+        print(f'Building {build}.', flush=True)
+        subprocess.run(['cmake', '--build', str(build)], check=True)
     compiler_match = re.search(r'^CMAKE_CXX_COMPILER:[^=]+=(.+)$',
                                cache.read_text(), re.MULTILINE)
     if compiler_match is None:
@@ -182,6 +195,16 @@ def main():
     game_args = options.game_args
     if game_args and game_args[0] == '--':
         game_args = game_args[1:]
+    if options.debugger:
+        # winedbg takes no desktop switch, so the prefix's default desktop is set instead.
+        run('reg', 'add', r'HKCU\Software\Wine\Explorer', '/v', 'Desktop', '/t', 'REG_SZ',
+            '/d', 'BossRally', '/f')
+        run('reg', 'add', r'HKCU\Software\Wine\Explorer\Desktops', '/v', 'BossRally',
+            '/t', 'REG_SZ', '/d', options.desktop_size, '/f')
+        print(f'Starting BRally.exe under winedbg in a {options.desktop_size} Wine desktop '
+              'window.', flush=True)
+        run('winedbg', INSTALL_DIRECTORY + r'\BRally.exe', *game_args)
+        return 0
     print(f'Starting BRally.exe in a {options.desktop_size} Wine desktop window.', flush=True)
     run('explorer', f'/desktop=BossRally,{options.desktop_size}',
         INSTALL_DIRECTORY + r'\BRally.exe', *game_args)
