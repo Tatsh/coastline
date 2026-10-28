@@ -1,7 +1,9 @@
 #include "platform/win/boot/app.h"
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/buildinfo.h"
+#if TGR_RENDERER == TGR_RENDERER_D3D
 #include "platform/win/d3d/renderer.h"
+#endif
 #include "platform/win/directplay.h"
 #include "platform/win/gameinit.h"
 #include "platform/win/input.h"
@@ -31,8 +33,10 @@ void ShutdownGameSession(void) {
     CloseHandle(g_hRenderMutex);
     g_hRenderMutex = nullptr;
     PrintWineDiagnostic("coastline: Restoring menu renderer.\n");
+#if TGR_RENDERER == TGR_RENDERER_D3D
     g_pMainRenderWindow->BeginRenderScene();
-    ResetRenderSubsystems(1, 640, 480, 16, 0);
+#endif
+    ResetRenderSubsystems(RENDER_BACKEND_MODE, 640, 480, 16, 0);
     PrintWineDiagnostic("coastline: Menu renderer restored; freeing paint textures.\n");
     FreeCarPaintTextures();
     PrintWineDiagnostic("coastline: Race session shutdown completed.\n");
