@@ -39,10 +39,12 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x1005b0d0
+     * @ghidraAddress BRGlide: 0x10053ef0
      */
     virtual void MeasureText();
     /**
      * @ghidraAddress BRD3D: 0x1005b160
+     * @ghidraAddress BRGlide: 0x10053f80
      */
     virtual void MeasureTextAltFont();
     /**

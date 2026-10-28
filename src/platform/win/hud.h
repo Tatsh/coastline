@@ -25,6 +25,7 @@ extern int g_bHideNetStandingsHud;
  * @param viewport The view whose origin positions the standings.
  * @param vehicles The active vehicle array.
  * @ghidraAddress BRD3D: 0x10017890
+ * @ghidraAddress BRGlide: 0x10014e00
  */
 void DrawNetworkRaceStandingsHud(const ViewportRect *viewport, const Vehicle *vehicles);
 

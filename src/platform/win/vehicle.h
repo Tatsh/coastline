@@ -211,7 +211,10 @@ private:
      */
     void SimulateVehiclePhysicsSubstep(void);
 
-    /** @ghidraAddress BRD3D: 0x10063ff0 */
+    /**
+     * @ghidraAddress BRD3D: 0x10063ff0
+     * @ghidraAddress BRGlide: 0x1005d060
+     */
     s32 TraceTrackSplineRecursive(s32 depth, s32 pointIndex, TrackSection *section);
 
     /**

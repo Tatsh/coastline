@@ -156,7 +156,6 @@ void StubPhysics2(void *data);
  * @ghidraAddress JPN: 0x80258fe0
  * @ghidraAddress BRD3D: 0x10074090
  * @ghidraAddress BRGlide: 0x1006d2e0
- * @stub{BRGlide}
  */
 void QuaternionMultiply(Quaternion *out, Quaternion *a, Quaternion *b);
 

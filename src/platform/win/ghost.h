@@ -182,6 +182,7 @@ unsigned GetGhostKeyframeDataSize(void);
  * @param bAllowFailure Whether a failed load returns success after clearing the metadata and times.
  * @return Whether loading succeeded or a permitted failure occurred.
  * @ghidraAddress BRD3D: 0x10070af0
+ * @ghidraAddress BRGlide: 0x10069a80
  */
 bool ReadGhostFileData(const char *pszPath, bool bAllowFailure);
 
@@ -200,6 +201,7 @@ bool LoadGhostFile(bool bAllowFailure);
  *
  * @return Whether the file opened and all checked writes completed.
  * @ghidraAddress BRD3D: 0x10070e80
+ * @ghidraAddress BRGlide: 0x10069de0
  */
 bool SaveGhostFile(void);
 

@@ -379,6 +379,7 @@ u16 NextGridCellInstance(TrackGridCursor *cursor);
  * @ghidraAddress EUR: 0x8021f05c
  * @ghidraAddress JPN: 0x8021e92c
  * @ghidraAddress BRD3D: 0x10037b10
+ * @ghidraAddress BRGlide: 0x100311c0
  */
 void LoadTrackGeometryFromRom(s32 track);
 

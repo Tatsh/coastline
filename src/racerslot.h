@@ -218,6 +218,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x100664c0
+     * @ghidraAddress BRGlide: 0x1005f530
      */
     void FreeEnemyCarColorPanels(void);
 

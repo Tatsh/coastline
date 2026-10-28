@@ -671,6 +671,7 @@ void DrawScrollingText(void);
  * @ghidraAddress EUR: 0x8020085c
  * @ghidraAddress JPN: 0x8020081c
  * @ghidraAddress BRD3D: 0x10014a30
+ * @ghidraAddress BRGlide: 0x10011fa0
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #ifdef __cplusplus
