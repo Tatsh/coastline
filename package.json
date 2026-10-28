@@ -123,10 +123,10 @@
   },
   "scripts": {
     "build": "cmake --preset=default -DBUILD_DOCS=ON && cmake --build build",
-    "check-formatting": "clang-format --dry-run --Werror $(git ls-files 'src/*.c' 'src/*.cpp' 'src/*.h' 'tests/*.c' 'tools/*.cpp' 'tools/*.h') && prettier --check . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2",
+    "check-formatting": "clang-format --dry-run --Werror $(git ls-files 'src/*.c' 'src/*.cpp' 'src/*.h' 'src/*.mm' 'tests/*.c' 'tests/*.cpp' 'tools/*.cpp' 'tools/*.h') && prettier --check . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2",
     "check-spelling": "cspell --no-progress .",
     "dict:update": "rm -f .vscode/dictionary.txt && cspell lint --no-progress --no-summary --unique --words-only | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C sort -u > .vscode/dictionary.txt",
-    "format": "clang-format -i $(git ls-files 'src/*.c' 'src/*.cpp' 'src/*.h' 'tests/*.c' 'tools/*.cpp' 'tools/*.h') && prettier --write . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2 --fix",
+    "format": "clang-format -i $(git ls-files 'src/*.c' 'src/*.cpp' 'src/*.h' 'src/*.mm' 'tests/*.c' 'tests/*.cpp' 'tools/*.cpp' 'tools/*.h') && prettier --write . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2 --fix",
     "qa": "yarn check-spelling && yarn check-formatting"
   },
   "version": "0.0.0"

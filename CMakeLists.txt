@@ -15,11 +15,12 @@ and win-glide, or all for the five. Empty builds the one variant TGR_PLATFORM, T
 TGR_RENDERER select.")
 set(TGR_PLATFORM
     "n64"
-    CACHE STRING "Platform to build: n64 for the Nintendo 64 ROM or win for the Windows library.")
-set_property(CACHE TGR_PLATFORM PROPERTY STRINGS n64 win)
+    CACHE STRING "Platform to build: n64 for the Nintendo 64 ROM, win for the Windows library, or \
+sdl for the stand-alone game.")
+set_property(CACHE TGR_PLATFORM PROPERTY STRINGS n64 win sdl)
 string(TOLOWER "${TGR_PLATFORM}" TGR_PLATFORM)
-if(NOT TGR_PLATFORM MATCHES "^(n64|win)$")
-  message(FATAL_ERROR "TGR_PLATFORM must be n64 or win.")
+if(NOT TGR_PLATFORM MATCHES "^(n64|win|sdl)$")
+  message(FATAL_ERROR "TGR_PLATFORM must be n64, win, or sdl.")
 endif()
 set(TGR_REGION
     "us"
@@ -36,7 +37,10 @@ set(TGR_RENDERER
     CACHE STRING "Windows library to build: d3d for BRD3D.dll or glide for BRGlide.dll.")
 set_property(CACHE TGR_RENDERER PROPERTY STRINGS d3d glide)
 string(TOLOWER "${TGR_RENDERER}" TGR_RENDERER)
-if(NOT TGR_RENDERER MATCHES "^(d3d|glide)$")
+# The SDL game draws through the GPU API of SDL, which selects Vulkan, Metal, or Direct3D 12.
+if(TGR_PLATFORM STREQUAL "sdl")
+  set(TGR_RENDERER "sdl")
+elseif(NOT TGR_RENDERER MATCHES "^(d3d|glide)$")
   message(FATAL_ERROR "TGR_RENDERER must be d3d or glide.")
 endif()
 
@@ -56,6 +60,7 @@ string(TOUPPER "${TGR_RENDERER}" _tgr_renderer)
 add_compile_definitions(
   TGR_PLATFORM_N64=1
   TGR_PLATFORM_WIN=2
+  TGR_PLATFORM_SDL=3
   TGR_PLATFORM=TGR_PLATFORM_${_tgr_platform}
   TGR_REGION_US=1
   TGR_REGION_JP=2
@@ -63,6 +68,7 @@ add_compile_definitions(
   TGR_REGION=TGR_REGION_${_tgr_region}
   TGR_RENDERER_D3D=1
   TGR_RENDERER_GLIDE=2
+  TGR_RENDERER_SDL=3
   TGR_RENDERER=TGR_RENDERER_${_tgr_renderer})
 
 # The changes of this project to the game. The commit is read when the build is configured, and is
@@ -143,7 +149,11 @@ if(NOT BUILD_DOCS_ONLY)
     include(cmake/tools.cmake)
     include(cmake/assets.cmake)
   endif()
-  add_subdirectory(src)
+  if(TGR_PLATFORM STREQUAL "sdl")
+    add_subdirectory(src/sdl)
+  else()
+    add_subdirectory(src)
+  endif()
   if(TGR_PLATFORM STREQUAL "n64")
     # The offsets of the structures the assembly reads, which need the 32-bit pointers of the
     # console and so are checked by the cross compiler. A wrong offset fails the build.

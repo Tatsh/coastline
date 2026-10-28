@@ -167,6 +167,15 @@ coastline_add_test(gu "${_src}/libultra/gu/sinf.c" "${_src}/libultra/gu/cosf.c"
 set_source_files_properties("${_src}/libultra/gu/sinf.c" PROPERTIES COMPILE_DEFINITIONS sinf=gu_sinf)
 set_source_files_properties("${_src}/libultra/gu/cosf.c" PROPERTIES COMPILE_DEFINITIONS cosf=gu_cosf)
 
+# The directories and the configuration file of the SDL game, which need neither SDL nor a display.
+enable_language(CXX)
+add_executable(sdl_test sdl_test.cpp "${_src}/sdl/config.cpp" "${_src}/sdl/paths.cpp")
+set_target_properties(sdl_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(sdl_test PRIVATE "${_src}/sdl")
+target_compile_options(sdl_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(sdl_test PRIVATE -fsanitize=address,undefined)
+add_test(NAME sdl COMMAND sdl_test)
+
 # The test of zlib inflates the assets extracted from a ROM, so it runs only when they are given.
 set(TGR_TEST_ASSETS
     ""

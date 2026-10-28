@@ -8,7 +8,7 @@
   want_codeql: false,
   want_tests: false,
   want_winget: false,
-  clang_format_args: "$(git ls-files 'src/*.c' 'src/*.cpp' 'src/*.h' 'tests/*.c' 'tools/*.cpp' 'tools/*.h')",
+  clang_format_args: "$(git ls-files 'src/*.c' 'src/*.cpp' 'src/*.h' 'src/*.mm' 'tests/*.c' 'tests/*.cpp' 'tools/*.cpp' 'tools/*.h')",
   clang_format+: {
     IncludeBlocks: 'Regroup',
     // The C and POSIX headers come before the SDK headers (ultra64.h and the others).
@@ -102,10 +102,21 @@
       { cacheVariables: { TGR_VARIANTS: 'all' }, inherits: 'base', name: 'all' },
       // The tests build for the host with the host compiler.
       { cacheVariables: { TGR_TESTS: 'ON' }, inherits: 'base', name: 'tests' },
+      // The stand-alone SDL game builds for the host, with its libraries from vcpkg.
+      {
+        cacheVariables: {
+          CMAKE_BUILD_TYPE: 'RelWithDebInfo',
+          CMAKE_TOOLCHAIN_FILE: '$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake',
+          TGR_PLATFORM: 'sdl',
+          VCPKG_MANIFEST_FEATURES: 'sdl',
+        },
+        inherits: 'base',
+        name: 'sdl',
+      },
     ],
     buildPresets: [
       { configurePreset: preset, name: preset }
-      for preset in variants + ['all', 'tests']
+      for preset in variants + ['all', 'tests', 'sdl']
     ],
     testPresets: [
       { configurePreset: 'tests', name: 'tests', output: { outputOnFailure: true } },
@@ -115,7 +126,7 @@
         name: preset,
         steps: [{ name: preset, type: 'configure' }, { name: preset, type: 'build' }],
       }
-      for preset in variants + ['all']
+      for preset in variants + ['all', 'sdl']
     ] + [
       {
         name: 'tests',
@@ -173,7 +184,8 @@
     '/3rdparty/** -text linguist-vendored',
     '/asm/** linguist-generated',
   ],
-  prettierignore+: ['/.claude/worktrees/', '/3rdparty/', '/asm/'],
+  // clang-format formats the Objective-C++ of the SDL game.
+  prettierignore+: ['*.mm', '/.claude/worktrees/', '/3rdparty/', '/asm/'],
   // The host tools under tools/ need these packages to build. The N64 build does not use vcpkg.
   vcpkg+: {
     dependencies: [

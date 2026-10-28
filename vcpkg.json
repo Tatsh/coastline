@@ -15,11 +15,31 @@
   ],
   "description": "Reconstructed source of the Nintendo 64 game Top Gear Rally.",
   "documentation": "https://coastline.readthedocs.org",
+  "features": {
+    "sdl": {
+      "dependencies": [
+        "argparse",
+        "drlibs",
+        "libflac",
+        {
+          "default-features": false,
+          "features": ["vulkan"],
+          "name": "sdl3"
+        },
+        {
+          "default-features": false,
+          "features": ["alsa", "wayland", "x11"],
+          "name": "sdl3",
+          "platform": "linux"
+        },
+        "zlib"
+      ],
+      "description": "Build the stand-alone SDL game."
+    }
+  },
   "homepage": "https://tatsh.github.io/coastline/",
   "license": "MIT",
-  "maintainers": [
-    "Andrew Udvare <audvare@gmail.com>"
-  ],
+  "maintainers": ["Andrew Udvare <audvare@gmail.com>"],
   "name": "coastline",
   "version": "0.0.0"
 }

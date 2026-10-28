@@ -27,6 +27,10 @@
     {
       "configurePreset": "tests",
       "name": "tests"
+    },
+    {
+      "configurePreset": "sdl",
+      "name": "sdl"
     }
   ],
   "configurePresets": [
@@ -115,6 +119,16 @@
       },
       "inherits": "base",
       "name": "tests"
+    },
+    {
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+        "TGR_PLATFORM": "sdl",
+        "VCPKG_MANIFEST_FEATURES": "sdl"
+      },
+      "inherits": "base",
+      "name": "sdl"
     }
   ],
   "testPresets": [
@@ -202,6 +216,19 @@
         },
         {
           "name": "all",
+          "type": "build"
+        }
+      ]
+    },
+    {
+      "name": "sdl",
+      "steps": [
+        {
+          "name": "sdl",
+          "type": "configure"
+        },
+        {
+          "name": "sdl",
           "type": "build"
         }
       ]

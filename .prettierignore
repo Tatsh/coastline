@@ -2,6 +2,7 @@
 *.kate-swp
 *.log
 *.min.js
+*.mm
 *.n64
 *.tsbuildinfo
 *.v64
