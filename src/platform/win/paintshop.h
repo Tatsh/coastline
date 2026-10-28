@@ -61,6 +61,7 @@ extern int g_nPaintTextureSetIndex;
  * @param nDamage The damage level.
  * @return The selected bitmap.
  * @ghidraAddress BRD3D: 0x10060f70
+ * @ghidraAddress BRGlide: 0x10059fe0
  */
 void *GetPaintImage(int nGroup, int nSet, int nDamage);
 
@@ -74,6 +75,7 @@ void *GetPaintImage(int nGroup, int nSet, int nDamage);
  * @param pTop Receives the top bound.
  * @param pBottom Receives the bottom bound.
  * @ghidraAddress BRD3D: 0x10060fb0
+ * @ghidraAddress BRGlide: 0x1005a020
  */
 void GetPaintRectangle(int nGroup, int nSet, int *pLeft, int *pRight, int *pTop, int *pBottom);
 
@@ -95,6 +97,7 @@ int GetSelectedPaintOption(void);
  * @param nBottom The bottom bound.
  * @return Whether a pixel has red zero and equal green and blue.
  * @ghidraAddress BRD3D: 0x100615b0
+ * @ghidraAddress BRGlide: 0x1005a630
  */
 int HasPaintTintPixels(const void *pImage, int nLeft, int nRight, int nTop, int nBottom);
 
@@ -111,6 +114,7 @@ int HasPaintTintPixels(const void *pImage, int nLeft, int nRight, int nTop, int 
  * @param nHeight The destination height.
  * @return Always 1, including a null image or an empty rectangle.
  * @ghidraAddress BRD3D: 0x10061480
+ * @ghidraAddress BRGlide: 0x1005a500
  */
 int BlitPaintImageToPixels(const void *pImage,
                            int nLeft,

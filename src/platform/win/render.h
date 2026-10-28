@@ -1006,6 +1006,7 @@ extern unsigned g_dwWeatherShadeTextureId;
  * Create a uniform intensity texture for the chosen weather.
  *
  * @ghidraAddress BRD3D: 0x1002a740
+ * @ghidraAddress BRGlide: 0x10029c70
  */
 void CreateWeatherShadeTexture(void);
 
@@ -1062,6 +1063,7 @@ int CalculateTextureLodFromDimensions(int *pLod, int width, int height);
  * @param bColorCombine The scan's color combine state.
  * @return The device pixel format identifier.
  * @ghidraAddress BRD3D: 0x10027b90
+ * @ghidraAddress BRGlide: 0x10027220
  */
 int ChooseTexturePixelFormat(int nSize, int nFormat, int bColorCombine);
 

@@ -49,6 +49,7 @@ long double ShadowTextureDistanceBottom(const ConvertedModelVertex *vertex);
  *
  * @param vertex The vertex to project.
  * @ghidraAddress BRD3D: 0x10010d10
+ * @ghidraAddress BRGlide: 0x1000e270
  */
 void ProjectShadowTextureCoordinates(ConvertedModelVertex *vertex);
 
@@ -77,6 +78,7 @@ void UpdateShadowCornerVertex(const TrackInstance *instance,
  * @param c The third vertex.
  * @param vehicleMatrix The vehicle frame.
  * @ghidraAddress BRD3D: 0x100106a0
+ * @ghidraAddress BRGlide: 0x1000dc00
  */
 void ProjectClippedShadowTriangle(const TrackInstance *instance,
                                   ConvertedModelVertex quad[4],

@@ -221,6 +221,7 @@ private:
     void BindPlayerInputToVehicle(void);
     /**
      * @ghidraAddress BRD3D: 0x10063420
+     * @ghidraAddress BRGlide: 0x1005c490
      */
     void ChooseVehicleCar(void);
 
@@ -261,6 +262,7 @@ private:
     void SetupVehicleForRaceStart(void);
     /**
      * @ghidraAddress BRD3D: 0x10065630
+     * @ghidraAddress BRGlide: 0x1005e6a0
      */
     void ResetVehicleEffects(void);
     /**
@@ -275,6 +277,7 @@ private:
     void UpdateCameraChase(CameraFrame *camera, f32 share);
     /**
      * @ghidraAddress BRD3D: 0x10001760
+     * @ghidraAddress BRGlide: 0x10001a80
      */
     void UpdateCameraLookAtTarget(void);
     /**

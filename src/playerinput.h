@@ -59,6 +59,7 @@ typedef struct PlayerInputState {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)
     /**
      * @ghidraAddress BRD3D: 0x10035ce0
+     * @ghidraAddress BRGlide: 0x1002f380
      */
     void TranslateControllerInput(void);
 

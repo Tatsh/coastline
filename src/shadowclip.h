@@ -60,6 +60,7 @@ LerpShadowClipVertex(const ShadowClipVertex *first, const ShadowClipVertex *seco
  * @param polygon The circular polygon to modify.
  * @param distance The signed distance callback.
  * @ghidraAddress BRD3D: 0x100109a0
+ * @ghidraAddress BRGlide: 0x1000df00
  */
 void ClipShadowPolygon(ShadowClipPolygon *polygon, ShadowClipDistance distance);
 

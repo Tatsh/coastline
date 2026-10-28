@@ -18,6 +18,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8022a888
  * @ghidraAddress JPN: 0x8022a040
  * @ghidraAddress BRD3D: 0x10066620
+ * @ghidraAddress BRGlide: 0x1005f690
  */
 s32 CompareRacerProgressAsc(const void *a, const void *b);
 

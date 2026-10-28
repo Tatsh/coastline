@@ -622,6 +622,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x100466c0
+     * @ghidraAddress BRGlide: 0x1003fb10
      */
     static int OnBackAndSave(MenuActionWidget *pItem);
 };
@@ -709,16 +710,19 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x1003f7f0
+     * @ghidraAddress BRGlide: 0x10038d30
      */
     static int UpdateTiresLabel(MenuWidget *pWidget);
 
     /**
      * @ghidraAddress BRD3D: 0x1003f720
+     * @ghidraAddress BRGlide: 0x10038c60
      */
     static int UpdateCarImage(MenuWidget *pWidget);
 
     /**
      * @ghidraAddress BRD3D: 0x100464e0
+     * @ghidraAddress BRGlide: 0x1003f980
      */
     static int OnBackToRaceSetup(MenuActionWidget *pItem);
 
@@ -734,11 +738,13 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10046cd0
+     * @ghidraAddress BRGlide: 0x10040120
      */
     static int OnBackToSeasonProgressInfo(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10046d20
+     * @ghidraAddress BRGlide: 0x10040170
      */
     static int OnBackToTimeAttack(MenuActionWidget *pItem);
 };
@@ -755,6 +761,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10046c90
+     * @ghidraAddress BRGlide: 0x100400e0
      */
     static int OnBack(MenuActionWidget *pItem);
 };
@@ -790,6 +797,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x100444c0
+     * @ghidraAddress BRGlide: 0x1003da10
      */
     static int OnBack(MenuActionWidget *pItem);
 };
@@ -906,6 +914,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10046710
+     * @ghidraAddress BRGlide: 0x1003fb60
      */
     static int OnBack(MenuActionWidget *pItem);
 };
@@ -938,6 +947,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x100465a0
+     * @ghidraAddress BRGlide: 0x1003fa40
      */
     static int OnBack(MenuActionWidget *pItem);
 };
@@ -952,6 +962,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10044ae0
+     * @ghidraAddress BRGlide: 0x1003e030
      */
     static int OnBack(MenuActionWidget *pItem);
 };
@@ -990,6 +1001,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10046560
+     * @ghidraAddress BRGlide: 0x1003fa00
      */
     static int OnBack(MenuActionWidget *pItem);
 };
@@ -1021,11 +1033,13 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10045090
+     * @ghidraAddress BRGlide: 0x1003e5e0
      */
     static int OnContinueSeason(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10046e10
+     * @ghidraAddress BRGlide: 0x10040260
      */
     static int OnBack(MenuActionWidget *pItem);
 };
@@ -1051,6 +1065,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10044de0
+     * @ghidraAddress BRGlide: 0x1003e330
      */
     static int OnBack(MenuActionWidget *pItem);
 };
@@ -1084,6 +1099,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10044b40
+     * @ghidraAddress BRGlide: 0x1003e090
      */
     static int OnBack(MenuActionWidget *pItem);
 };
@@ -1122,6 +1138,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x100463c0
+     * @ghidraAddress BRGlide: 0x1003f860
      */
     static int OnBack(MenuActionWidget *pItem);
 };
@@ -1143,11 +1160,13 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10044970
+     * @ghidraAddress BRGlide: 0x1003dec0
      */
     static int OnBackAsClient(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10044a30
+     * @ghidraAddress BRGlide: 0x1003df80
      */
     static int OnBackAsHost(MenuActionWidget *pItem);
 };
@@ -1189,16 +1208,19 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10043a00
+     * @ghidraAddress BRGlide: 0x1003cf50
      */
     static int OnRefreshSessionDesc(MenuWidget *pWidget);
 
     /**
      * @ghidraAddress BRD3D: 0x10043810
+     * @ghidraAddress BRGlide: 0x1003cd60
      */
     static int OnEscape(MenuWidget *pWidget);
 
     /**
      * @ghidraAddress BRD3D: 0x1003ebe0
+     * @ghidraAddress BRGlide: 0x100381d0
      */
     static int UpdateSelectedPlayer(MenuWidget *pWidget);
 };
@@ -1207,43 +1229,53 @@ class OptionsMenuUI {
 public:
     /**
      * @ghidraAddress BRD3D: 0x10046520
+     * @ghidraAddress BRGlide: 0x1003f9c0
      */
     static int OnBack(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10046bb0
+     * @ghidraAddress BRGlide: 0x10040000
      */
     static int OnBackToCarSetup(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10046750
+     * @ghidraAddress BRGlide: 0x1003fba0
      */
     static int OnBackToPreRaceInfo(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10046830
+     * @ghidraAddress BRGlide: 0x1003fc80
      */
     static int OnBackToSeasonProgressInfo(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10046910
+     * @ghidraAddress BRGlide: 0x1003fd60
      */
     static int OnBackToRaceResultsInfo(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x100469f0
+     * @ghidraAddress BRGlide: 0x1003fe40
      */
     static int OnBackToRaceResultsSummary(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10046ad0
+     * @ghidraAddress BRGlide: 0x1003ff20
      */
     static int OnBackToRaceResultsTotals(MenuActionWidget *pItem);
 };
 
 class OverwritePromptUI {
 public:
-    /** @ghidraAddress BRD3D: 0x1003e7a0 */
+    /**
+     * @ghidraAddress BRD3D: 0x1003e7a0
+     * @ghidraAddress BRGlide: 0x10037dc0
+     */
     static int DrawPromptBox(MenuWidget *pWidget);
 };
 
@@ -1265,6 +1297,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10043fc0
+     * @ghidraAddress BRGlide: 0x1003d510
      */
     static int OnBack(MenuActionWidget *pItem);
 };
@@ -1306,16 +1339,19 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10046dc0
+     * @ghidraAddress BRGlide: 0x10040210
      */
     static int OnBackToLoadSeason(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10046d70
+     * @ghidraAddress BRGlide: 0x100401c0
      */
     static int OnBackToChampionshipSeason(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10046f50
+     * @ghidraAddress BRGlide: 0x100403a0
      */
     static int OnBack(MenuActionWidget *pItem);
 
@@ -1340,6 +1376,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x100464a0
+     * @ghidraAddress BRGlide: 0x1003f940
      */
     static int OnBack(MenuActionWidget *pItem);
 };
@@ -1400,6 +1437,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x100470a0
+     * @ghidraAddress BRGlide: 0x100404f0
      */
     static int OnBack(MenuActionWidget *pItem);
 };
@@ -1432,6 +1470,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x100470e0
+     * @ghidraAddress BRGlide: 0x10040530
      */
     static int OnBack(MenuActionWidget *pItem);
 
@@ -1451,6 +1490,7 @@ public:
      * @param pItem The action item on the totals screen.
      * @return Zero.
      * @ghidraAddress BRD3D: 0x10047290
+     * @ghidraAddress BRGlide: 0x100406e0
      */
     static int OnContinue(MenuActionWidget *pItem);
 };
@@ -1504,11 +1544,13 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10046450
+     * @ghidraAddress BRGlide: 0x1003f8f0
      */
     static int OnBack(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10044cb0
+     * @ghidraAddress BRGlide: 0x1003e200
      */
     static int OnBackToTimeAttack(MenuActionWidget *pItem);
 };
@@ -1572,36 +1614,43 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10046bf0
+     * @ghidraAddress BRGlide: 0x10040040
      */
     static int OnBackToCarSetup(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10046790
+     * @ghidraAddress BRGlide: 0x1003fbe0
      */
     static int OnBackToPreRaceInfo(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10046870
+     * @ghidraAddress BRGlide: 0x1003fcc0
      */
     static int OnBackToSeasonProgressInfo(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10046eb0
+     * @ghidraAddress BRGlide: 0x10040300
      */
     static int OnBack(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10046950
+     * @ghidraAddress BRGlide: 0x1003fda0
      */
     static int OnBackToRaceResultsInfo(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10046a30
+     * @ghidraAddress BRGlide: 0x1003fe80
      */
     static int OnBackToRaceResultsSummary(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10046b10
+     * @ghidraAddress BRGlide: 0x1003ff60
      */
     static int OnBackToRaceResultsTotals(MenuActionWidget *pItem);
 };
@@ -1624,13 +1673,17 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10044f00
+     * @ghidraAddress BRGlide: 0x1003e450
      */
     static int OnBack(MenuActionWidget *pItem);
 };
 
 class SaveTimeAttackUI {
 public:
-    /** @ghidraAddress BRD3D: 0x1003ec30 */
+    /**
+     * @ghidraAddress BRD3D: 0x1003ec30
+     * @ghidraAddress BRGlide: 0x10038250
+     */
     static int UpdateSlotSelection(MenuWidget *pWidget);
 };
 
@@ -1714,6 +1767,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10047060
+     * @ghidraAddress BRGlide: 0x100404b0
      */
     static int OnBack(MenuActionWidget *pItem);
 };
@@ -1759,6 +1813,7 @@ class TimeAttackMenuUI {
 public:
     /**
      * @ghidraAddress BRD3D: 0x10044c70
+     * @ghidraAddress BRGlide: 0x1003e1c0
      */
     static int OnBack(MenuActionWidget *pItem);
 };
@@ -1784,6 +1839,7 @@ class VideoOptionsUI {
 public:
     /**
      * @ghidraAddress BRD3D: 0x100465e0
+     * @ghidraAddress BRGlide: 0x1003fa80
      */
     static int OnBack(MenuActionWidget *pItem);
 };

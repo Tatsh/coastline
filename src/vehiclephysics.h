@@ -24,6 +24,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle);
  *
  * @param vehicle The vehicle to update.
  * @ghidraAddress BRD3D: 0x10061be0
+ * @ghidraAddress BRGlide: 0x1005ac60
  */
 void UpdateVehicleWheelTransforms(Vehicle *vehicle);
 
