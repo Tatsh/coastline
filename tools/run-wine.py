@@ -190,9 +190,7 @@ def main():
     run('reg', 'add', r'HKCU\Software\Wine\WineDbg', '/v', 'ShowCrashDialog',
         '/t', 'REG_DWORD', '/d', '0', '/f')
     run('reg', 'add', r'HKCU\Software\Wine\Explorer', '/v', 'Desktop',
-        '/t', 'REG_SZ', '/d', 'BossRally', '/f')
-    run('reg', 'add', r'HKCU\Software\Wine\Explorer\Desktops', '/v', 'BossRally',
-        '/t', 'REG_SZ', '/d', options.desktop_size, '/f')
+        '/t', 'REG_SZ', '/d', '', '/f')
     if options.no_launch:
         print('Wine prefix configured. Run this script again to start the game.')
         return 0
@@ -202,7 +200,8 @@ def main():
     print(f'Starting BRally.exe in a {options.desktop_size} Wine desktop window.', flush=True)
     print(f'Application diagnostics append to {installation / "coastline.log"}', flush=True)
     print(f'Crash backtraces go to {installation / "wine-crash.log"}', flush=True)
-    run(INSTALL_DIRECTORY + r'\BRally.exe', *game_args)
+    run('explorer', f'/desktop=BossRally,{options.desktop_size}',
+        INSTALL_DIRECTORY + r'\BRally.exe', *game_args)
     return 0
 
 
