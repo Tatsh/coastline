@@ -22,6 +22,17 @@ void ProjectShadowTextureCoordinates(ConvertedModelVertex *vertex) {
     f32 y = vertex->position.y;
     f32 z = vertex->position.z;
 
+#if TGR_RENDERER == TGR_RENDERER_GLIDE
+    /* BRGlide adds the products in the order of the rows, and BRD3D adds the z product second. */
+    vertex->texture.x =
+        (((long double)x * g_afMvpMatrix[0][0] + (long double)y * g_afMvpMatrix[1][0]) +
+         (long double)z * g_afMvpMatrix[2][0]) +
+        g_afMvpMatrix[3][0];
+    vertex->texture.y =
+        (((long double)x * g_afMvpMatrix[0][1] + (long double)y * g_afMvpMatrix[1][1]) +
+         (long double)z * g_afMvpMatrix[2][1]) +
+        g_afMvpMatrix[3][1];
+#else
     vertex->texture.x =
         (((long double)x * g_afMvpMatrix[0][0] + (long double)z * g_afMvpMatrix[2][0]) +
          (long double)y * g_afMvpMatrix[1][0]) +
@@ -30,6 +41,7 @@ void ProjectShadowTextureCoordinates(ConvertedModelVertex *vertex) {
         (((long double)x * g_afMvpMatrix[0][1] + (long double)z * g_afMvpMatrix[2][1]) +
          (long double)y * g_afMvpMatrix[1][1]) +
         g_afMvpMatrix[3][1];
+#endif
 }
 
 void UpdateShadowCornerVertex(const TrackInstance *instance,
