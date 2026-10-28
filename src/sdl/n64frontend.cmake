@@ -17,7 +17,8 @@ set(COASTLINE_N64_FRONTEND_SOURCES
     playercontrol.c
     playerinput.c
     profileinit.c replay.c
-    rigidbody.c routeposition.c seasontrack.c tracetrack.c vehiclechoice.c vehiclemodel.c
+    rigidbody.c routeposition.c seasontrack.c textstyle.c tracetrack.c vehiclechoice.c
+    vehiclemodel.c
     vehiclemodelrender.c vehiclepaint.c vehiclephysics.c vehiclevisibility.c)
 list(TRANSFORM COASTLINE_N64_FRONTEND_SOURCES PREPEND "${_src}/")
 set_source_files_properties(${COASTLINE_N64_FRONTEND_SOURCES} PROPERTIES LANGUAGE CXX)

@@ -28,6 +28,7 @@
 #include "seasons.h"
 #include "splash.h"
 #include "system.h"
+#include "text.h"
 #include "timing.h"
 #include "track.h"
 #include "trackselect.h"
@@ -121,6 +122,8 @@ u8 g_abSavedSwatchColor[3];
 u8 g_abTrackSection1Header[TRACK_SECTION_HEADER_SIZE];
 s32 g_adwCarSelectModelSlots[2];
 s32 g_adwCarSelectState[2];
+s32 g_adwLargeFontGlyphOffsets[220 / coastline::ConsoleSizeOf<s32>()];
+s32 g_adwSmallFontGlyphOffsets[236 / coastline::ConsoleSizeOf<s32>()];
 u32 g_adwTrackMusicRom[12];
 f32 g_afCarSelectAngle[2];
 f32 g_afCarSelectSlide[2];
@@ -557,6 +560,8 @@ void ReadN64FrontEndData(void) {
     coastline::RegisterCartridgeSymbol("g_aVehicleNightHighlightTexture",
                                        g_aVehicleNightHighlightTexture);
     coastline::RegisterCartridgeSymbol("g_aabColorEditorBars", g_aabColorEditorBars);
+    coastline::RegisterCartridgeSymbol("g_adwLargeFontGlyphOffsets", g_adwLargeFontGlyphOffsets);
+    coastline::RegisterCartridgeSymbol("g_adwSmallFontGlyphOffsets", g_adwSmallFontGlyphOffsets);
     coastline::RegisterCartridgeSymbol("g_adwTrackMusicRom", g_adwTrackMusicRom);
     coastline::RegisterCartridgeSymbol("g_apControllerScreenItems", g_apControllerScreenItems);
     coastline::RegisterCartridgeSymbol("g_apDecalOptions", g_apDecalOptions);
@@ -776,6 +781,8 @@ void ReadN64FrontEndData(void) {
     coastline::ReadCartridgeSymbol("g_aVehicleNightHighlightTexture",
                                    g_aVehicleNightHighlightTexture);
     coastline::ReadCartridgeSymbol("g_aabColorEditorBars", g_aabColorEditorBars);
+    coastline::ReadCartridgeSymbol("g_adwLargeFontGlyphOffsets", g_adwLargeFontGlyphOffsets);
+    coastline::ReadCartridgeSymbol("g_adwSmallFontGlyphOffsets", g_adwSmallFontGlyphOffsets);
     coastline::ReadCartridgeSymbol("g_adwTrackMusicRom", g_adwTrackMusicRom);
     coastline::ReadCartridgeSymbol("g_apControllerScreenItems", g_apControllerScreenItems);
     coastline::ReadCartridgeSymbol("g_apDecalOptions", g_apDecalOptions);

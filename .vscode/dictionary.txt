@@ -153,6 +153,7 @@ color
 colored
 colorformat
 colorkeyenable
+colors
 combkey
 completionthreads
 configfile

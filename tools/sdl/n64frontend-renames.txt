@@ -18,9 +18,12 @@ ComputeTrackPosition
 ConsumeInputFlags
 CopyMatrix4x4To3x3
 DecompressFromRom
+DisableTextShadow
 DmaRead
 DmaReadAssetSize
 DmaReadWord
+DrawText
+EnableTextShadow
 ExtractVehicleBaseColor
 FadeMusicTo
 FadeSfxTo
@@ -48,6 +51,7 @@ IsFadingOut
 IsVehicleModelValid
 LoadVehicleModelFromRom
 MatrixToQuaternion
+MeasureTextWidth
 Mtx3fMultiply
 Mtx3fMulVec3f
 Mtx3x3MulVec3f
@@ -71,6 +75,12 @@ RespawnVehicle
 RotateVehicleByEuler
 SetFadeTarget
 SetRigidBodyForce
+SetTextAlignCenter
+SetTextAlignLeft
+SetTextAlignRight
+SetTextCustomColors
+SetTextSize
+SetTextStyleNormal
 SetTrackFromSeason
 SetupCameraMatrix
 SetupFrustumCorners
