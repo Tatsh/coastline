@@ -30,6 +30,7 @@
 #include "dinputcompat.h"
 #include "n64frontend.h"
 #include "pcgamerun.h"
+#include "renderhost.h"
 #include "scene.h"
 #endif
 
@@ -428,6 +429,42 @@ int main(int argc, char *argv[]) {
                 }
                 pcGame = renderer &&
                          coastline::StartPcGame(*renderer, paths->data, paths->state, pcMusic);
+            }
+            // The front end of the Nintendo 64 release runs its own loop, and the frames it
+            // presents pump the events, the keys of the script, and the screenshot.
+            if (parser.present("--scene") == "n64-frontend") {
+                renderer = coastline::TlRenderer::Create(*window);
+                std::ifstream file(paths->data / "roms" / "usa.z64", std::ios::binary);
+                std::vector<std::uint8_t> rom(std::istreambuf_iterator<char>(file), {});
+                if (!renderer || !coastline::CartridgeData::Load(rom) ||
+                    !coastline::StartPcGame(*renderer, paths->data, paths->state, false)) {
+                    return EXIT_FAILURE;
+                }
+                ReadN64FrontEndData();
+                coastline::StartPcGameForFrontEnd();
+                auto keys = ParseKeyScript(parser.present("--keys").value_or(""));
+                int frame = 0;
+                coastline::SetFramePump([&]() {
+                    ++frame;
+                    SDL_Event event;
+                    while (SDL_PollEvent(&event)) {
+                        if (event.type == SDL_EVENT_QUIT) {
+                            return false;
+                        }
+                        input.HandleEvent(event);
+                    }
+                    std::vector<int> held;
+                    for (const ScriptedKey &key : keys) {
+                        if (frame + 1 >= key.first && frame + 1 <= key.last) {
+                            held.push_back(key.scancode);
+                        }
+                    }
+                    coastline::SetScriptedKeys(std::move(held));
+                    coastline::SetPcGameCapture(
+                        screenshot && frame + 1 == screenshotFrame ? &*screenshot : nullptr);
+                    return !(quitAfterScreenshot && screenshot && frame >= screenshotFrame);
+                });
+                InitGameAndShowMenusN64();
             }
 #endif
             bool running = true;

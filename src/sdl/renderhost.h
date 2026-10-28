@@ -6,6 +6,8 @@
  * renderer.
  */
 
+#include <functional>
+
 #include "sdl/d3dcompat.h"
 #include "win32/textureentry.h"
 
@@ -142,3 +144,15 @@ extern "C" DirectDrawRenderer *g_pMainRenderWindow;
 
 /** The owner of the renderers. */
 extern RenderHost *g_pRenderHost;
+
+namespace coastline {
+
+/**
+ * Run a routine after each frame the game presents, for code that runs its own loop, such as the
+ * front end of the Nintendo 64 release. The game ends when the routine returns false.
+ *
+ * @param pump The routine, or an empty routine for none.
+ */
+void SetFramePump(std::function<bool()> pump);
+
+} // namespace coastline

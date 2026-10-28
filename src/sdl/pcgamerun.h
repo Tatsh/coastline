@@ -38,4 +38,19 @@ bool RunPcGameFrame(const std::filesystem::path *capture = nullptr);
  */
 std::uint32_t PcGameMusicModule();
 
+/**
+ * Start the renderer, DirectInput, and the keyboard of the PC release, which
+ * OpenBossRallyPodAndInit() starts for the race, for the front end of the Nintendo 64 release,
+ * which draws and reads the controllers without it.
+ */
+void StartPcGameForFrontEnd();
+
+/**
+ * Save the frames of the scenes that end after this call as a PNG image, for code that presents
+ * its frames itself.
+ *
+ * @param capture The image, or null for no image.
+ */
+void SetPcGameCapture(const std::filesystem::path *capture);
+
 } // namespace coastline

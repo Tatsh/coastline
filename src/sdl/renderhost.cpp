@@ -1,6 +1,9 @@
 #include "renderhost.h"
 
 #include <cmath>
+#include <cstdlib>
+#include <functional>
+#include <utility>
 
 #include "screen.h"
 #include "win32/render.h"
@@ -74,11 +77,20 @@ namespace {
 // The flag of d3d/renderer.cpp, set by the first clear of a frame and cleared by its present.
 bool g_bRenderTargetCleared;
 
+std::function<bool()> g_framePump;
+
 void PresentFrame(void) {
     g_bRenderTargetCleared = false;
+    if (g_framePump && !g_framePump()) {
+        std::exit(EXIT_SUCCESS);
+    }
 }
 
 } // namespace
+
+void coastline::SetFramePump(std::function<bool()> pump) {
+    g_framePump = std::move(pump);
+}
 
 void ClearRenderTargetOnce(void) {
     if (g_bRenderTargetCleared) {

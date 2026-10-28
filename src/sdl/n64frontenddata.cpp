@@ -2,6 +2,7 @@
 
 #include "assetdma.h"
 #include "cameraprojection.h"
+#include "debugtext.h"
 #include "driving.h"
 #include "heap.h"
 #include "input.h"
@@ -19,6 +20,7 @@
 #include "playerinput.h"
 #include "profile.h"
 #include "race.h"
+#include "render.h"
 #include "replay.h"
 #include "rumble.h"
 #include "sdl/cartridgedata.h"
@@ -27,9 +29,12 @@
 #include "splash.h"
 #include "system.h"
 #include "timing.h"
+#include "track.h"
+#include "trackselect.h"
 #include "vehicle.h"
 #include "vehiclemodel.h"
 #include "vehiclerender.h"
+#include "vehicleview.h"
 
 // D_1CB410: no declaration or no length in the assembly.
 // D_80000000: no declaration or no length in the assembly.
@@ -76,6 +81,8 @@ Mtx g_SpeedometerNeedleMtx;
 Ambient g_SplashAmbientLight;
 Light g_SplashDirectionalLight;
 Texture g_TitleBarTextureDesc;
+s16 g_aBitmapFontNarrow[BITMAP_FONT_GLYPHS][BITMAP_FONT_ROWS][BITMAP_FONT_NARROW_COLUMNS];
+s16 g_aBitmapFontWide[BITMAP_FONT_GLYPHS][BITMAP_FONT_ROWS][BITMAP_FONT_WIDE_COLUMNS];
 ScreenRect g_aBrushSizeButtonRects[BRUSH_SIZES];
 ScreenRect g_aBrushSizeRects[BRUSH_SIZES];
 CarModel g_aCarModels[CAR_MODELS];
@@ -99,8 +106,10 @@ Gfx g_aSpeedometerNeedleDisplayList[108 / coastline::ConsoleSizeOf<Gfx>()];
 Vtx g_aSpeedometerNeedleVertices[32];
 Gfx g_aTachometerDisplayList[232 / coastline::ConsoleSizeOf<Gfx>()];
 Gfx g_aTrackShadowDisplayList[104 / coastline::ConsoleSizeOf<Gfx>()];
+u8 g_aVehicleHighlightTexture[2056 / coastline::ConsoleSizeOf<u8>()];
 VehicleModelLoad g_aVehicleModelSlots[VEHICLE_MODEL_SLOTS];
 VehicleModel g_aVehicleModels[VEHICLE_MODEL_SLOTS];
+u8 g_aVehicleNightHighlightTexture[2056 / coastline::ConsoleSizeOf<u8>()];
 Vehicle g_aVehicles[MAX_VEHICLES];
 // g_aWeatherMenuItems: no declaration or no length in the assembly.
 u8 g_aabColorEditorBars[3][3];
@@ -109,6 +118,7 @@ MenuItem **g_aapCarSelectOptions[2];
 u8 g_abGhostRecording[0x8100];
 u8 g_abSavePakIdKnown[2];
 u8 g_abSavedSwatchColor[3];
+u8 g_abTrackSection1Header[TRACK_SECTION_HEADER_SIZE];
 s32 g_adwCarSelectModelSlots[2];
 s32 g_adwCarSelectState[2];
 u32 g_adwTrackMusicRom[12];
@@ -132,6 +142,7 @@ Sprite *g_apRectStyleIcons[4];
 MenuItem *g_apSuspensionOptions[4];
 MenuItem *g_apTiresOptions[4];
 MenuItem *g_apTransmissionOptions[3];
+u16 *g_apVehicleReflectionTluts[4];
 MenuItem *g_apWeatherMenuItems[6];
 const char *g_apszBrushStyleNames[2];
 const char *g_apszCarSelectCategory[2];
@@ -154,6 +165,7 @@ const char *g_apszTextStyleNames[2];
 // g_awCheatSeqUnlockBit400: no declaration or no length in the assembly.
 // g_awCheatSeqUnlockBit800: no declaration or no length in the assembly.
 // g_awCheatSeqUnlockBit8000: no declaration or no length in the assembly.
+s32 g_bBitmapTextNarrow;
 u8 g_bBrushSize;
 s32 g_bCarSelectDone;
 s32 g_bCarSelectInitialized;
@@ -174,6 +186,7 @@ u8 g_bDecalTextLength;
 u8 g_bDecalTextWidth;
 u8 g_bDecalWidth;
 u8 g_bEyedropperActive;
+s32 g_bForceVehicleAltVariant;
 u8 g_bKeyboardHoverKey;
 s32 g_bLoadConfigurationPending;
 s32 g_bMenuSpotlightBuilt;
@@ -237,9 +250,12 @@ u8 g_bUndoAvailable;
 u8 g_bUndoDecalSlot;
 s32 g_dwAnchorXInitialized;
 s32 g_dwAnchorYInitialized;
+s32 g_dwBitmapTextX;
+s32 g_dwBitmapTextY;
 s32 g_dwCarCount;
 s32 g_dwCarSelectStartTime;
 s32 g_dwCarSelectWeather;
+s32 g_dwContReadPending;
 s32 g_dwContinueFromResults;
 s32 g_dwDecalListCount;
 s32 g_dwGameFrameCount;
@@ -258,6 +274,7 @@ s32 g_dwMenuTitleImageWidth;
 s32 g_dwMenuTitleImageX;
 s32 g_dwMenuTitleImageY;
 s32 g_dwMultiplayerMode;
+s32 g_dwNumTracks;
 s32 g_dwPakChunkSize;
 s32 g_dwPakDataNoteIndex;
 s32 g_dwPakDialogActive;
@@ -301,6 +318,8 @@ s32 g_dwTrackMenuInitState;
 s32 g_dwTrackMenuItemCount;
 s32 g_dwTrackMenuSelection;
 s32 g_dwTransmissionOptionCount;
+s32 g_dwVehicleLodBias;
+u32 g_dwVehicleOtherModeLFlags;
 s32 g_eMainMenuSelection;
 f32 g_fScreenIdleTime;
 f32 g_fScreenIdleTimeout;
@@ -490,6 +509,7 @@ Sprite g_texPanelRightDoor;
 Sprite g_texPanelRightFrontFender;
 Sprite g_texPanelRightRearFender;
 Vec3f g_vUpAxis;
+u16 g_wBitmapTextColor;
 u16 g_wPakEmptySlotMask;
 u16 g_wScreenFrameCount;
 Vec3f s_aPanelViewDirections[DECAL_SLOTS];
@@ -516,6 +536,8 @@ void ReadN64FrontEndData(void) {
     coastline::RegisterCartridgeSymbol("g_SplashAmbientLight", g_SplashAmbientLight);
     coastline::RegisterCartridgeSymbol("g_SplashDirectionalLight", g_SplashDirectionalLight);
     coastline::RegisterCartridgeSymbol("g_TitleBarTextureDesc", g_TitleBarTextureDesc);
+    coastline::RegisterCartridgeSymbol("g_aBitmapFontNarrow", g_aBitmapFontNarrow);
+    coastline::RegisterCartridgeSymbol("g_aBitmapFontWide", g_aBitmapFontWide);
     coastline::RegisterCartridgeSymbol("g_aBrushSizeButtonRects", g_aBrushSizeButtonRects);
     coastline::RegisterCartridgeSymbol("g_aBrushSizeRects", g_aBrushSizeRects);
     coastline::RegisterCartridgeSymbol("g_aCarModels", g_aCarModels);
@@ -530,6 +552,9 @@ void ReadN64FrontEndData(void) {
                                        g_aSpeedometerNeedleDisplayList);
     coastline::RegisterCartridgeSymbol("g_aTachometerDisplayList", g_aTachometerDisplayList);
     coastline::RegisterCartridgeSymbol("g_aTrackShadowDisplayList", g_aTrackShadowDisplayList);
+    coastline::RegisterCartridgeSymbol("g_aVehicleHighlightTexture", g_aVehicleHighlightTexture);
+    coastline::RegisterCartridgeSymbol("g_aVehicleNightHighlightTexture",
+                                       g_aVehicleNightHighlightTexture);
     coastline::RegisterCartridgeSymbol("g_aabColorEditorBars", g_aabColorEditorBars);
     coastline::RegisterCartridgeSymbol("g_adwTrackMusicRom", g_adwTrackMusicRom);
     coastline::RegisterCartridgeSymbol("g_apControllerScreenItems", g_apControllerScreenItems);
@@ -545,6 +570,7 @@ void ReadN64FrontEndData(void) {
     coastline::RegisterCartridgeSymbol("g_apSuspensionOptions", g_apSuspensionOptions);
     coastline::RegisterCartridgeSymbol("g_apTiresOptions", g_apTiresOptions);
     coastline::RegisterCartridgeSymbol("g_apTransmissionOptions", g_apTransmissionOptions);
+    coastline::RegisterCartridgeSymbol("g_apVehicleReflectionTluts", g_apVehicleReflectionTluts);
     coastline::RegisterCartridgeSymbol("g_apWeatherMenuItems", g_apWeatherMenuItems);
     coastline::RegisterCartridgeSymbol("g_apszBrushStyleNames", g_apszBrushStyleNames);
     coastline::RegisterCartridgeSymbol("g_apszColorChannelNames", g_apszColorChannelNames);
@@ -554,6 +580,7 @@ void ReadN64FrontEndData(void) {
     coastline::RegisterCartridgeSymbol("g_apszPlaceNames", g_apszPlaceNames);
     coastline::RegisterCartridgeSymbol("g_apszRectStyleNames", g_apszRectStyleNames);
     coastline::RegisterCartridgeSymbol("g_apszTextStyleNames", g_apszTextStyleNames);
+    coastline::RegisterCartridgeSymbol("g_bBitmapTextNarrow", g_bBitmapTextNarrow);
     coastline::RegisterCartridgeSymbol("g_bBrushSize", g_bBrushSize);
     coastline::RegisterCartridgeSymbol("g_bCarSelectInitialized", g_bCarSelectInitialized);
     coastline::RegisterCartridgeSymbol("g_bColorEditorChannel", g_bColorEditorChannel);
@@ -573,6 +600,7 @@ void ReadN64FrontEndData(void) {
     coastline::RegisterCartridgeSymbol("g_bDecalTextWidth", g_bDecalTextWidth);
     coastline::RegisterCartridgeSymbol("g_bDecalWidth", g_bDecalWidth);
     coastline::RegisterCartridgeSymbol("g_bEyedropperActive", g_bEyedropperActive);
+    coastline::RegisterCartridgeSymbol("g_bForceVehicleAltVariant", g_bForceVehicleAltVariant);
     coastline::RegisterCartridgeSymbol("g_bKeyboardHoverKey", g_bKeyboardHoverKey);
     coastline::RegisterCartridgeSymbol("g_bMenuSpotlightBuilt", g_bMenuSpotlightBuilt);
     coastline::RegisterCartridgeSymbol("g_bPaintShopExiting", g_bPaintShopExiting);
@@ -608,7 +636,10 @@ void ReadN64FrontEndData(void) {
     coastline::RegisterCartridgeSymbol("g_bTrackMenuPakScreen", g_bTrackMenuPakScreen);
     coastline::RegisterCartridgeSymbol("g_bUndoAvailable", g_bUndoAvailable);
     coastline::RegisterCartridgeSymbol("g_bUndoDecalSlot", g_bUndoDecalSlot);
+    coastline::RegisterCartridgeSymbol("g_dwBitmapTextX", g_dwBitmapTextX);
+    coastline::RegisterCartridgeSymbol("g_dwBitmapTextY", g_dwBitmapTextY);
     coastline::RegisterCartridgeSymbol("g_dwCarCount", g_dwCarCount);
+    coastline::RegisterCartridgeSymbol("g_dwContReadPending", g_dwContReadPending);
     coastline::RegisterCartridgeSymbol("g_dwContinueFromResults", g_dwContinueFromResults);
     coastline::RegisterCartridgeSymbol("g_dwDecalListCount", g_dwDecalListCount);
     coastline::RegisterCartridgeSymbol("g_dwGameFrameCount", g_dwGameFrameCount);
@@ -625,6 +656,7 @@ void ReadN64FrontEndData(void) {
     coastline::RegisterCartridgeSymbol("g_dwMenuTitleImageX", g_dwMenuTitleImageX);
     coastline::RegisterCartridgeSymbol("g_dwMenuTitleImageY", g_dwMenuTitleImageY);
     coastline::RegisterCartridgeSymbol("g_dwMultiplayerMode", g_dwMultiplayerMode);
+    coastline::RegisterCartridgeSymbol("g_dwNumTracks", g_dwNumTracks);
     coastline::RegisterCartridgeSymbol("g_dwPakFileOffset", g_dwPakFileOffset);
     coastline::RegisterCartridgeSymbol("g_dwScreenPlayerIdx", g_dwScreenPlayerIdx);
     coastline::RegisterCartridgeSymbol("g_dwSeasonResultMsgLineCount",
@@ -636,6 +668,8 @@ void ReadN64FrontEndData(void) {
     coastline::RegisterCartridgeSymbol("g_dwTiresOptionCount", g_dwTiresOptionCount);
     coastline::RegisterCartridgeSymbol("g_dwTrackMenuInitState", g_dwTrackMenuInitState);
     coastline::RegisterCartridgeSymbol("g_dwTransmissionOptionCount", g_dwTransmissionOptionCount);
+    coastline::RegisterCartridgeSymbol("g_dwVehicleLodBias", g_dwVehicleLodBias);
+    coastline::RegisterCartridgeSymbol("g_dwVehicleOtherModeLFlags", g_dwVehicleOtherModeLFlags);
     coastline::RegisterCartridgeSymbol("g_fScreenIdleTimeout", g_fScreenIdleTimeout);
     coastline::RegisterCartridgeSymbol("g_fSeasonRecordsBlinkTime", g_fSeasonRecordsBlinkTime);
     coastline::RegisterCartridgeSymbol("g_nScreenLastActiveIndex", g_nScreenLastActiveIndex);
@@ -698,6 +732,7 @@ void ReadN64FrontEndData(void) {
     coastline::RegisterCartridgeSymbol("g_texPanelRightFrontFender", g_texPanelRightFrontFender);
     coastline::RegisterCartridgeSymbol("g_texPanelRightRearFender", g_texPanelRightRearFender);
     coastline::RegisterCartridgeSymbol("g_vUpAxis", g_vUpAxis);
+    coastline::RegisterCartridgeSymbol("g_wBitmapTextColor", g_wBitmapTextColor);
     coastline::RegisterCartridgeSymbol("g_wPakEmptySlotMask", g_wPakEmptySlotMask);
     coastline::RegisterCartridgeSymbol("g_wScreenFrameCount", g_wScreenFrameCount);
     coastline::RegisterCartridgeSymbol("s_aPanelViewDirections", s_aPanelViewDirections);
@@ -719,6 +754,8 @@ void ReadN64FrontEndData(void) {
     coastline::ReadCartridgeSymbol("g_SplashAmbientLight", g_SplashAmbientLight);
     coastline::ReadCartridgeSymbol("g_SplashDirectionalLight", g_SplashDirectionalLight);
     coastline::ReadCartridgeSymbol("g_TitleBarTextureDesc", g_TitleBarTextureDesc);
+    coastline::ReadCartridgeSymbol("g_aBitmapFontNarrow", g_aBitmapFontNarrow);
+    coastline::ReadCartridgeSymbol("g_aBitmapFontWide", g_aBitmapFontWide);
     coastline::ReadCartridgeSymbol("g_aBrushSizeButtonRects", g_aBrushSizeButtonRects);
     coastline::ReadCartridgeSymbol("g_aBrushSizeRects", g_aBrushSizeRects);
     coastline::ReadCartridgeSymbol("g_aCarModels", g_aCarModels);
@@ -733,6 +770,9 @@ void ReadN64FrontEndData(void) {
                                    g_aSpeedometerNeedleDisplayList);
     coastline::ReadCartridgeSymbol("g_aTachometerDisplayList", g_aTachometerDisplayList);
     coastline::ReadCartridgeSymbol("g_aTrackShadowDisplayList", g_aTrackShadowDisplayList);
+    coastline::ReadCartridgeSymbol("g_aVehicleHighlightTexture", g_aVehicleHighlightTexture);
+    coastline::ReadCartridgeSymbol("g_aVehicleNightHighlightTexture",
+                                   g_aVehicleNightHighlightTexture);
     coastline::ReadCartridgeSymbol("g_aabColorEditorBars", g_aabColorEditorBars);
     coastline::ReadCartridgeSymbol("g_adwTrackMusicRom", g_adwTrackMusicRom);
     coastline::ReadCartridgeSymbol("g_apControllerScreenItems", g_apControllerScreenItems);
@@ -748,6 +788,7 @@ void ReadN64FrontEndData(void) {
     coastline::ReadCartridgeSymbol("g_apSuspensionOptions", g_apSuspensionOptions);
     coastline::ReadCartridgeSymbol("g_apTiresOptions", g_apTiresOptions);
     coastline::ReadCartridgeSymbol("g_apTransmissionOptions", g_apTransmissionOptions);
+    coastline::ReadCartridgeSymbol("g_apVehicleReflectionTluts", g_apVehicleReflectionTluts);
     coastline::ReadCartridgeSymbol("g_apWeatherMenuItems", g_apWeatherMenuItems);
     coastline::ReadCartridgeSymbol("g_apszBrushStyleNames", g_apszBrushStyleNames);
     coastline::ReadCartridgeSymbol("g_apszColorChannelNames", g_apszColorChannelNames);
@@ -757,6 +798,7 @@ void ReadN64FrontEndData(void) {
     coastline::ReadCartridgeSymbol("g_apszPlaceNames", g_apszPlaceNames);
     coastline::ReadCartridgeSymbol("g_apszRectStyleNames", g_apszRectStyleNames);
     coastline::ReadCartridgeSymbol("g_apszTextStyleNames", g_apszTextStyleNames);
+    coastline::ReadCartridgeSymbol("g_bBitmapTextNarrow", g_bBitmapTextNarrow);
     coastline::ReadCartridgeSymbol("g_bBrushSize", g_bBrushSize);
     coastline::ReadCartridgeSymbol("g_bCarSelectInitialized", g_bCarSelectInitialized);
     coastline::ReadCartridgeSymbol("g_bColorEditorChannel", g_bColorEditorChannel);
@@ -776,6 +818,7 @@ void ReadN64FrontEndData(void) {
     coastline::ReadCartridgeSymbol("g_bDecalTextWidth", g_bDecalTextWidth);
     coastline::ReadCartridgeSymbol("g_bDecalWidth", g_bDecalWidth);
     coastline::ReadCartridgeSymbol("g_bEyedropperActive", g_bEyedropperActive);
+    coastline::ReadCartridgeSymbol("g_bForceVehicleAltVariant", g_bForceVehicleAltVariant);
     coastline::ReadCartridgeSymbol("g_bKeyboardHoverKey", g_bKeyboardHoverKey);
     coastline::ReadCartridgeSymbol("g_bMenuSpotlightBuilt", g_bMenuSpotlightBuilt);
     coastline::ReadCartridgeSymbol("g_bPaintShopExiting", g_bPaintShopExiting);
@@ -810,7 +853,10 @@ void ReadN64FrontEndData(void) {
     coastline::ReadCartridgeSymbol("g_bTrackMenuPakScreen", g_bTrackMenuPakScreen);
     coastline::ReadCartridgeSymbol("g_bUndoAvailable", g_bUndoAvailable);
     coastline::ReadCartridgeSymbol("g_bUndoDecalSlot", g_bUndoDecalSlot);
+    coastline::ReadCartridgeSymbol("g_dwBitmapTextX", g_dwBitmapTextX);
+    coastline::ReadCartridgeSymbol("g_dwBitmapTextY", g_dwBitmapTextY);
     coastline::ReadCartridgeSymbol("g_dwCarCount", g_dwCarCount);
+    coastline::ReadCartridgeSymbol("g_dwContReadPending", g_dwContReadPending);
     coastline::ReadCartridgeSymbol("g_dwContinueFromResults", g_dwContinueFromResults);
     coastline::ReadCartridgeSymbol("g_dwDecalListCount", g_dwDecalListCount);
     coastline::ReadCartridgeSymbol("g_dwGameFrameCount", g_dwGameFrameCount);
@@ -827,6 +873,7 @@ void ReadN64FrontEndData(void) {
     coastline::ReadCartridgeSymbol("g_dwMenuTitleImageX", g_dwMenuTitleImageX);
     coastline::ReadCartridgeSymbol("g_dwMenuTitleImageY", g_dwMenuTitleImageY);
     coastline::ReadCartridgeSymbol("g_dwMultiplayerMode", g_dwMultiplayerMode);
+    coastline::ReadCartridgeSymbol("g_dwNumTracks", g_dwNumTracks);
     coastline::ReadCartridgeSymbol("g_dwPakFileOffset", g_dwPakFileOffset);
     coastline::ReadCartridgeSymbol("g_dwScreenPlayerIdx", g_dwScreenPlayerIdx);
     coastline::ReadCartridgeSymbol("g_dwSeasonResultMsgLineCount", g_dwSeasonResultMsgLineCount);
@@ -837,6 +884,8 @@ void ReadN64FrontEndData(void) {
     coastline::ReadCartridgeSymbol("g_dwTiresOptionCount", g_dwTiresOptionCount);
     coastline::ReadCartridgeSymbol("g_dwTrackMenuInitState", g_dwTrackMenuInitState);
     coastline::ReadCartridgeSymbol("g_dwTransmissionOptionCount", g_dwTransmissionOptionCount);
+    coastline::ReadCartridgeSymbol("g_dwVehicleLodBias", g_dwVehicleLodBias);
+    coastline::ReadCartridgeSymbol("g_dwVehicleOtherModeLFlags", g_dwVehicleOtherModeLFlags);
     coastline::ReadCartridgeSymbol("g_fScreenIdleTimeout", g_fScreenIdleTimeout);
     coastline::ReadCartridgeSymbol("g_fSeasonRecordsBlinkTime", g_fSeasonRecordsBlinkTime);
     coastline::ReadCartridgeSymbol("g_nScreenLastActiveIndex", g_nScreenLastActiveIndex);
@@ -899,6 +948,7 @@ void ReadN64FrontEndData(void) {
     coastline::ReadCartridgeSymbol("g_texPanelRightFrontFender", g_texPanelRightFrontFender);
     coastline::ReadCartridgeSymbol("g_texPanelRightRearFender", g_texPanelRightRearFender);
     coastline::ReadCartridgeSymbol("g_vUpAxis", g_vUpAxis);
+    coastline::ReadCartridgeSymbol("g_wBitmapTextColor", g_wBitmapTextColor);
     coastline::ReadCartridgeSymbol("g_wPakEmptySlotMask", g_wPakEmptySlotMask);
     coastline::ReadCartridgeSymbol("g_wScreenFrameCount", g_wScreenFrameCount);
     coastline::ReadCartridgeSymbol("s_aPanelViewDirections", s_aPanelViewDirections);

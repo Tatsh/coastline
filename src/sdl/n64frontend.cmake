@@ -4,12 +4,20 @@
 # the calls of the Controller Pak.
 set(_src "${CMAKE_SOURCE_DIR}/src")
 set(COASTLINE_N64_FRONTEND_SOURCES
-    n64/controllerscreen.c n64/carselect.c n64/decaldraw.c n64/decaleditor.c n64/input.c
+    n64/controllerscreen.c n64/carselect.c n64/debugtext.c n64/decaldraw.c n64/decaleditor.c
+    n64/input.c
     n64/mainmenu.c n64/options.c n64/paintshop.c n64/pakmenu.c n64/playerselect.c n64/race.c
     n64/racemenu.c
     n64/splash.c n64/sprite.c n64/text.c n64/texrect.c n64/timing.c n64/vehicle.c
     n64/vehiclerender.c n64/vehiclesetup.c n64/weatherselect.c driving.c fade.c game.c heap.c
-    vehiclereset.c)
+    vehiclereset.c
+    # The shared units that work on the vehicles, the players, and their profiles, whose types
+    # differ between the releases.
+    camerachase.c camerarender.c controllerread.c frametime.c inputtranslate.c playercontrol.c
+    playerinput.c
+    profileinit.c replay.c
+    rigidbody.c routeposition.c seasontrack.c tracetrack.c vehiclechoice.c vehiclemodel.c
+    vehiclemodelrender.c vehiclepaint.c vehiclephysics.c vehiclevisibility.c)
 list(TRANSFORM COASTLINE_N64_FRONTEND_SOURCES PREPEND "${_src}/")
 set_source_files_properties(${COASTLINE_N64_FRONTEND_SOURCES} PROPERTIES LANGUAGE CXX)
 

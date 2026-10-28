@@ -18,6 +18,7 @@
 #include "win32/boot/app.h"
 #include "win32/boot/rallyconfig.h"
 #include "win32/boot/strings.h"
+#include "win32/input.h"
 #include "win32/render.h"
 #include "win32/settings.h"
 #include "win32/snapshot.h"
@@ -129,6 +130,16 @@ bool StartPcGame(TlRenderer &renderer,
 #endif
     InitializeTextureSubsystem();
     return true;
+}
+
+void StartPcGameForFrontEnd() {
+    InitializeRenderSubsystems(RENDER_BACKEND_MODE);
+    InitializeDirectInput();
+    InitializeKeyboardDevice();
+}
+
+void SetPcGameCapture(const std::filesystem::path *capture) {
+    g_device->SetCapture(capture);
 }
 
 bool RunPcGameFrame(const std::filesystem::path *capture) {

@@ -149,6 +149,12 @@ s32 osMotorStop(OSPfs *pfs) {
 void osViBlack(u8 active) {
 }
 
+// The controllers are read by osContGetReadData() of the PC release, from DirectInput, so the read
+// it waits for has nothing to start.
+s32 osContStartReadData(OSMesgQueue *queue) {
+    return 0;
+}
+
 void InitAudioSystem(void *module, void *work) {
 }
 
