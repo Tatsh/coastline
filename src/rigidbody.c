@@ -23,7 +23,11 @@ void StubPhysics2(void *data) {
 void MatrixToQuaternion(f32 m[4][4], Quaternion *q) {
     if (0.0f <= m[0][0]) {
         if (0.0f <= m[1][1] + m[2][2]) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+            q->w = m[0][0] + (m[1][1] + m[2][2]) + 1.0f;
+#else
             q->w = 1.0f + m[0][0] + m[1][1] + m[2][2];
+#endif
             q->x = m[1][2] - m[2][1];
             q->y = m[2][0] - m[0][2];
             q->z = m[0][1] - m[1][0];
@@ -33,7 +37,11 @@ void MatrixToQuaternion(f32 m[4][4], Quaternion *q) {
             q->y = m[0][1] + m[1][0];
             q->z = m[2][0] + m[0][2];
         }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    } else if (0.0f <= m[1][1] - m[2][2]) {
+#else
     } else if (m[2][2] <= m[1][1]) {
+#endif
         q->w = m[2][0] - m[0][2];
         q->x = m[0][1] + m[1][0];
         q->y = 1.0f - m[0][0] + m[1][1] - m[2][2];
@@ -42,7 +50,11 @@ void MatrixToQuaternion(f32 m[4][4], Quaternion *q) {
         q->w = m[0][1] - m[1][0];
         q->x = m[2][0] + m[0][2];
         q->y = m[1][2] + m[2][1];
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        q->z = m[2][2] - (m[0][0] + m[1][1] - 1.0f);
+#else
         q->z = 1.0f - m[0][0] - m[1][1] + m[2][2];
+#endif
     }
     QuaternionNormalize(q);
 }
@@ -58,7 +70,11 @@ void QuaternionMultiply(Quaternion *out, Quaternion *a, Quaternion *b) {
 }
 
 void QuaternionNormalize(Quaternion *q) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    f32 inverse = 1.0f / sqrtf(q->x * q->x + q->y * q->y + q->z * q->z + q->w * q->w);
+#else
     f32 inverse = 1.0f / sqrtf(q->z * q->z + (q->w * q->w + q->x * q->x + q->y * q->y));
+#endif
 
     q->w *= inverse;
     q->x *= inverse;
@@ -316,7 +332,10 @@ void ApplyAllForcesToBody(RigidBody *body) {
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 void InitRigidBody(RigidBody *body) {
-    f32 boxShare, xx, yy, zz;
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
+    f32 boxShare;
+#endif
+    f32 xx, yy, zz;
     s32 i, j;
 
     body->unreconstructed0 = 0;
@@ -341,11 +360,19 @@ void InitRigidBody(RigidBody *body) {
     if (body->kind == RIGID_BODY_BOX || body->kind == RIGID_BODY_BOX_1) {
         zz = body->size.z * body->size.z;
         yy = body->size.y * body->size.y;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        /* The libraries scale each sum by the mass before the share. */
+        xx = body->size.x * body->size.x;
+        body->inertia[0][0] = (zz + yy) * body->mass * BOX_INERTIA_SHARE;
+        body->inertia[1][1] = (zz + xx) * body->mass * BOX_INERTIA_SHARE;
+        body->inertia[2][2] = (yy + xx) * body->mass * BOX_INERTIA_SHARE;
+#else
         boxShare = BOX_INERTIA_SHARE * body->mass;
         body->inertia[0][0] = (zz + yy) * boxShare;
         xx = body->size.x * body->size.x;
         body->inertia[1][1] = (zz + xx) * boxShare;
         body->inertia[2][2] = (yy + xx) * boxShare;
+#endif
         StubPhysics1(body->inertia);
     }
     if (body->kind != RIGID_BODY_NO_ROTATION) {
@@ -442,7 +469,12 @@ void MtxBuildScaledInverse(f32 m[4][4], f32 out[4][4], Vec3f *scale) {
 
 /* A cofactor sum of Cramer's rule over the column b and six products of the other columns. */
 static f32 CramerSum(f32 b0, f32 b1, f32 b2, f32 p0, f32 p1, f32 p2, f32 p3, f32 p4, f32 p5) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    /* The libraries factor the first column out of its two products. */
+    return b1 * p2 + b0 * (p1 - p0) - b1 * p3 - b2 * p4 + b2 * p5;
+#else
     return b2 * p5 + (-b0 * p0 + b0 * p1 + b1 * p2 - b1 * p3 - b2 * p4);
+#endif
 }
 
 void SolveLinearSystem3x3(Vec3f *out, f32 a[3][3], Vec3f *b) {

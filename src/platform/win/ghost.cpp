@@ -434,7 +434,7 @@ void PositionQuaternionToMatrix4x4(f32 matrix[4][4], const QuaternionPose *pPose
     const float xx = q.x * q.x;
     const float yy = q.y * q.y;
     const float zz = q.z * q.z;
-    const float magnitude = q.w * q.w + xx + yy + zz;
+    const float magnitude = q.w * q.w + (zz + yy) + xx;
     const float scale = IsKeyframeFlagSet(magnitude) ? 2.0f / magnitude : 0.0f;
     const float xy = q.x * scale * q.y;
     const float wz = q.z * scale * q.w;
