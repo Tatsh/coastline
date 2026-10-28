@@ -130,6 +130,7 @@ void AddTimingMarker(s32 bar, s32 red, s32 green, s32 blue, s32 alpha);
  * @ghidraAddress EUR: 0x8022edbc
  * @ghidraAddress JPN: 0x8022e56c
  * @ghidraAddress BRD3D: 0x1002c210
+ * @ghidraAddress BRGlide: 0x100192d0
  */
 void BeginTimingFrame(void);
 
@@ -169,6 +170,7 @@ void SaveClockForPause(void);
  * @ghidraAddress EUR: 0x8022c310
  * @ghidraAddress JPN: 0x8022bac8
  * @ghidraAddress BRD3D: 0x100679a0
+ * @ghidraAddress BRGlide: 0x10060a10
  */
 void RestoreClockAfterPause(void);
 

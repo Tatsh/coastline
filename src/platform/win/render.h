@@ -363,7 +363,6 @@ extern int g_dwVertexConvCacheCount;
  * @param pFloatVerts The vertices converted.
  * @ghidraAddress BRD3D: 0x1002bf00
  * @ghidraAddress BRGlide: 0x10018fc0
- * @stub{BRGlide}
  */
 void AddVertexConversionCacheEntry(const Vtx *pSource,
                                    int nVertexCount,
@@ -1040,6 +1039,7 @@ void UploadTextureEntryToSurface(int nEntry, TextureUploadData payload);
  * @param pTexture The model texture descriptor.
  * @param nOption13 The final texture creation option.
  * @ghidraAddress BRD3D: 0x1002a280
+ * @ghidraAddress BRGlide: 0x100297f0
  */
 void CreateDeviceTextureFromImageHeader(ModelTexture *pTexture, int nOption13);
 
@@ -1080,6 +1080,7 @@ int GetTexturePixelSize(int nPixelFormatId);
  * @param pImage The image metadata to match.
  * @return The first matching entry, or -1.
  * @ghidraAddress BRD3D: 0x10028630
+ * @ghidraAddress BRGlide: 0x10027a70
  */
 int FindMatchingTextureEntry(const TextureImageData *pImage);
 

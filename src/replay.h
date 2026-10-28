@@ -202,6 +202,7 @@ s32 DeserializeSaveData(SaveField *fields, u8 *buffer, s32 offset);
  * @param capacity The bytes the buffer holds.
  * @ghidraAddress USA: 0x8022adcc
  * @ghidraAddress BRD3D: 0x10067880
+ * @ghidraAddress BRGlide: 0x100608f0
  */
 void SerializeSaveData(SaveField *fields, u8 *buffer, s32 capacity);
 
@@ -212,6 +213,7 @@ void SerializeSaveData(SaveField *fields, u8 *buffer, s32 capacity);
  * @param buffer The buffer.
  * @ghidraAddress USA: 0x8022ae70
  * @ghidraAddress BRD3D: 0x10067900
+ * @ghidraAddress BRGlide: 0x10060970
  */
 void DeserializeSaveData(SaveField *fields, u8 *buffer);
 #endif /*                                                                                          \
@@ -227,6 +229,7 @@ void DeserializeSaveData(SaveField *fields, u8 *buffer);
  * @ghidraAddress EUR: 0x8022c274
  * @ghidraAddress JPN: 0x8022ba2c
  * @ghidraAddress BRD3D: 0x10067940
+ * @ghidraAddress BRGlide: 0x100609b0
  */
 void SaveRaceSnapshot(LastLapBuffer *buffer);
 
@@ -238,6 +241,7 @@ void SaveRaceSnapshot(LastLapBuffer *buffer);
  * @ghidraAddress EUR: 0x8022c2ac
  * @ghidraAddress JPN: 0x8022ba64
  * @ghidraAddress BRD3D: 0x10067960
+ * @ghidraAddress BRGlide: 0x100609d0
  */
 void RestoreRaceSnapshot(LastLapBuffer *buffer);
 

@@ -479,10 +479,16 @@ struct NetworkJoinCredentials {
 /** @ghidraAddress BRD3D: 0x1022af1c */
 extern int g_bNetSpectator;
 
-/** @ghidraAddress BRD3D: 0x1003c260 */
+/**
+ * @ghidraAddress BRD3D: 0x1003c260
+ * @ghidraAddress BRGlide: 0x100358f0
+ */
 int JoinNetworkSession(void);
 
-/** @ghidraAddress BRD3D: 0x1003c740 */
+/**
+ * @ghidraAddress BRD3D: 0x1003c740
+ * @ghidraAddress BRGlide: 0x10035dd0
+ */
 HRESULT JoinDirectPlaySession(IDirectPlay3A *pDirectPlay,
                               const GUID *instance,
                               NetworkJoinCredentials *credentials,
@@ -490,6 +496,7 @@ HRESULT JoinDirectPlaySession(IDirectPlay3A *pDirectPlay,
 
 /**
  * @ghidraAddress BRD3D: 0x1003c5c0
+ * @ghidraAddress BRGlide: 0x10035c50
  */
 HRESULT CreateDirectPlaySession(IDirectPlay3A *pDirectPlay,
                                 NetworkSessionSettings *pSettings,
@@ -497,21 +504,25 @@ HRESULT CreateDirectPlaySession(IDirectPlay3A *pDirectPlay,
 
 /**
  * @ghidraAddress BRD3D: 0x1003c150
+ * @ghidraAddress BRGlide: 0x100357e0
  */
 void HostNetworkSession(void);
 
 /**
  * @ghidraAddress BRD3D: 0x1003cda0
+ * @ghidraAddress BRGlide: 0x10036430
  */
 HRESULT UpdateNetworkSessionSettings(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10005b10
+ * @ghidraAddress BRGlide: 0x10005e80
  */
 bool InitializeNetworkMutexes(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10005960
+ * @ghidraAddress BRGlide: 0x10005cd0
  */
 bool ResetNetworkState(void);
 
@@ -578,16 +589,23 @@ HRESULT CreateDirectPlayLobby(IDirectPlayLobby2A **ppLobby);
  * @param pDirectPlay The DirectPlay object.
  * @return The result of the enumeration.
  * @ghidraAddress BRD3D: 0x1003cc70
+ * @ghidraAddress BRGlide: 0x10036300
  */
 HRESULT RefreshNetworkSessionList(IDirectPlay3A *pDirectPlay);
 
-/** @ghidraAddress BRD3D: 0x1003cb10 */
+/**
+ * @ghidraAddress BRD3D: 0x1003cb10
+ * @ghidraAddress BRGlide: 0x100361a0
+ */
 HRESULT EnumerateNetworkPlayers(GUID *instance,
                                 LPDPENUMPLAYERSCALLBACK2 callback,
                                 void *context,
                                 DWORD flags);
 
-/** @ghidraAddress BRD3D: 0x1003cb90 */
+/**
+ * @ghidraAddress BRD3D: 0x1003cb90
+ * @ghidraAddress BRGlide: 0x10036220
+ */
 BOOL CALLBACK EnumSessionsCallback_AddSessionToList(LPCDPSESSIONDESC2 description,
                                                     DWORD *timeout,
                                                     DWORD flags,
@@ -691,7 +709,10 @@ bool RequestNetworkPause(void);
  */
 extern int g_nNetUnpauseRequestTicks;
 
-/** @ghidraAddress BRD3D: 0x10005090 */
+/**
+ * @ghidraAddress BRD3D: 0x10005090
+ * @ghidraAddress BRGlide: 0x10005400
+ */
 void TickNetworkUnpauseRequest(void);
 
 /**
@@ -765,6 +786,7 @@ int GetLocalPlayerIndex(void);
  * Send the request to pause of a network game.
  *
  * @ghidraAddress BRD3D: 0x10004fc0
+ * @ghidraAddress BRGlide: 0x10005330
  */
 void TickNetworkPauseRequest(void);
 
@@ -782,6 +804,7 @@ int CountActivePlayerSlots(void);
 
 /**
  * @ghidraAddress BRD3D: 0x100046d0
+ * @ghidraAddress BRGlide: 0x10004a40
  */
 int SendNetworkStreamReliable(DirectPlayInfo *pInfo, NetStream *pStream);
 
@@ -818,6 +841,7 @@ extern unsigned g_dwNetRaceStartTimeMs;
  * @param wParam The first parameter of the message.
  * @param lParam The second parameter of the message.
  * @ghidraAddress BRD3D: 0x1003c3a0
+ * @ghidraAddress BRGlide: 0x10035a30
  */
 LRESULT WINAPI HandleNetworkWindowMessage(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
 
@@ -891,16 +915,19 @@ extern int g_nPendingNetSoundEffect;
 
 /**
  * @ghidraAddress BRD3D: 0x10005e70
+ * @ghidraAddress BRGlide: 0x100061e0
  */
 char *GetSlotPlayerName(int nSlot);
 
 /**
  * @ghidraAddress BRD3D: 0x10004910
+ * @ghidraAddress BRGlide: 0x10004c80
  */
 int SendTimeSyncReply(DirectPlayInfo *pInfo, unsigned timestamp);
 
 /**
  * @ghidraAddress BRD3D: 0x100034a0
+ * @ghidraAddress BRGlide: 0x10003810
  */
 void SyncNetworkClockFromServer(unsigned serverFrame,
                                 unsigned localTime,
@@ -909,11 +936,13 @@ void SyncNetworkClockFromServer(unsigned serverFrame,
 
 /**
  * @ghidraAddress BRD3D: 0x100049c0
+ * @ghidraAddress BRGlide: 0x10004d30
  */
 void LoadNetworkPlayerColors(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10004590
+ * @ghidraAddress BRGlide: 0x10004900
  */
 int SendPlayerJoinPacket(DirectPlayInfo *pInfo,
                          unsigned char player,
@@ -923,7 +952,10 @@ int SendPlayerJoinPacket(DirectPlayInfo *pInfo,
                          const char *name,
                          unsigned char tag);
 
-/** @ghidraAddress BRD3D: 0x10004a90 */
+/**
+ * @ghidraAddress BRD3D: 0x10004a90
+ * @ghidraAddress BRGlide: 0x10004e00
+ */
 unsigned WaitForPlayerIdAssignment(void);
 
 /** The number of entries of g_aNetPeerSlots. */
@@ -1051,10 +1083,16 @@ unsigned ReadPlayerSlotColorRgb(int slotIndex,
                                 unsigned char *green,
                                 unsigned char *blue);
 
-/** @ghidraAddress BRD3D: 0x1002f130 */
+/**
+ * @ghidraAddress BRD3D: 0x1002f130
+ * @ghidraAddress BRGlide: 0x1001c6a0
+ */
 void AddNetworkPlayerSlot(int slotIndex);
 
-/** @ghidraAddress BRD3D: 0x1002f230 */
+/**
+ * @ghidraAddress BRD3D: 0x1002f230
+ * @ghidraAddress BRGlide: 0x1001c7a0
+ */
 void RemoveNetworkPlayerById(int slotIndex);
 
 /**
@@ -1253,7 +1291,6 @@ extern DWORD g_dwNetWorkerNextTickTime;
  *
  * @ghidraAddress BRD3D: 0x100716e0
  * @ghidraAddress BRGlide: 0x1006a650
- * @stub{BRGlide}
  */
 void PromoteReadyNetworkPlayersToStart(void);
 
@@ -1262,7 +1299,6 @@ void PromoteReadyNetworkPlayersToStart(void);
  *
  * @ghidraAddress BRD3D: 0x10071870
  * @ghidraAddress BRGlide: 0x1006a7e0
- * @stub{BRGlide}
  */
 void RankNetworkPlayersByProgress(void);
 
@@ -1271,7 +1307,6 @@ void RankNetworkPlayersByProgress(void);
  *
  * @ghidraAddress BRD3D: 0x10071b80
  * @ghidraAddress BRGlide: 0x1006aaf0
- * @stub{BRGlide}
  */
 void ResetAllNetworkPlayerStreams(void);
 
@@ -1280,7 +1315,6 @@ void ResetAllNetworkPlayerStreams(void);
  *
  * @ghidraAddress BRD3D: 0x10071c10
  * @ghidraAddress BRGlide: 0x1006ab80
- * @stub{BRGlide}
  */
 void BuildNetworkPlayerStatusPackets(void);
 
@@ -1290,7 +1324,6 @@ void BuildNetworkPlayerStatusPackets(void);
  * @param pInfo The session.
  * @ghidraAddress BRD3D: 0x10072170
  * @ghidraAddress BRGlide: 0x1006b0e0
- * @stub{BRGlide}
  */
 int FlushNetworkPlayerStreams(DirectPlayInfo *pInfo);
 
@@ -1310,12 +1343,12 @@ DWORD WINAPI NetworkWorkerThreadProc(LPVOID pParameter);
  *
  * @ghidraAddress BRD3D: 0x10071560
  * @ghidraAddress BRGlide: 0x1006a4d0
- * @stub{BRGlide}
  */
 void CreateNetworkPlayerSlotMutexes(void);
 
 /**
  * @ghidraAddress BRD3D: 0x100713c0
+ * @ghidraAddress BRGlide: 0x1006a330
  */
 void ResetAllPlayerSlots(void);
 
@@ -1331,6 +1364,7 @@ extern unsigned g_dwNetNextFinishPosition;
 
 /**
  * @ghidraAddress BRD3D: 0x1003db50
+ * @ghidraAddress BRGlide: 0x100371f0
  */
 HRESULT SendNetworkFinishPositionMessage(DirectPlayInfo *pInfo, DPID dpidPlayer, DWORD dwPosition);
 
@@ -1415,13 +1449,13 @@ void HandlePlayerDisconnect(DPID dpidPlayer);
  * @param dpidTo The receiver.
  * @ghidraAddress BRD3D: 0x100360f0
  * @ghidraAddress BRGlide: 0x1002f790
- * @stub{BRGlide}
  */
 void ProcessMultiplayerPackets(
     DirectPlayInfo *pInfo, void *pData, DWORD dwSize, DPID dpidFrom, DPID dpidTo);
 
 /**
  * @ghidraAddress BRD3D: 0x10036030
+ * @ghidraAddress BRGlide: 0x1002f6d0
  */
 int FindNetworkSlotByPlayerId(DPID dpidPlayer);
 
@@ -1589,7 +1623,6 @@ int GetNetworkPeerChannelStatus(int nSlot);
  *
  * @ghidraAddress BRD3D: 0x1003d070
  * @ghidraAddress BRGlide: 0x10036700
- * @stub{BRGlide}
  */
 void DestroyNetworkGroups(void);
 
@@ -1598,12 +1631,12 @@ void DestroyNetworkGroups(void);
  *
  * @ghidraAddress BRD3D: 0x1003c020
  * @ghidraAddress BRGlide: 0x100356b0
- * @stub{BRGlide}
  */
 void InitializeNetworkServiceProvider(void);
 
 /**
  * @ghidraAddress BRD3D: 0x1003d480
+ * @ghidraAddress BRGlide: 0x10036b20
  */
 HRESULT CreateServiceProviderAddress(void **ppAddress, DWORD *pdwSize);
 
@@ -1661,6 +1694,7 @@ extern SessionSlot g_aSessionSlots[SESSION_SLOT_COUNT];
 void MarkSessionListEntrySeen(DPID dpidPlayer);
 /**
  * @ghidraAddress BRD3D: 0x1003caa0
+ * @ghidraAddress BRGlide: 0x10036130
  */
 BOOL CALLBACK EnumPlayersCallback_AddPlayerToList(
     DPID dpidPlayer, DWORD dwPlayerType, LPCDPNAME pName, DWORD dwFlags, void *pContext);
@@ -1696,6 +1730,7 @@ extern char g_szNetworkChatText[];
 
 /**
  * @ghidraAddress BRD3D: 0x1003d210
+ * @ghidraAddress BRGlide: 0x100368a0
  */
 HRESULT SendNetworkChatMessage(HWND hWindow, DirectPlayInfo *pInfo, bool bNotice);
 
@@ -1716,6 +1751,7 @@ void HandleMultiplayerSessionMessage(
 
 /**
  * @ghidraAddress BRD3D: 0x1003d180
+ * @ghidraAddress BRGlide: 0x10036810
  */
 HRESULT GetDirectPlayPlayerName(IDirectPlay3A *pDirectPlay, DPID dpidPlayer, DPNAME **ppName);
 
@@ -1735,6 +1771,7 @@ extern int g_dwNetworkDataStreamActive;
 extern int g_dwNetworkEscapePending;
 /**
  * @ghidraAddress BRD3D: 0x10058700
+ * @ghidraAddress BRGlide: 0x100515b0
  */
 int ToggleSelectedSessionSlotFlag(void);
 
@@ -1783,6 +1820,7 @@ extern int g_dwDirectPlayInstanceCount;
  * Exit the session of DirectPlay.
  *
  * @ghidraAddress BRD3D: 0x1003bf60
+ * @ghidraAddress BRGlide: 0x100355f0
  */
 void DisconnectNetworkSession(void);
 #ifdef __cplusplus

@@ -62,7 +62,10 @@ typedef struct PlayerInputState {
      */
     void TranslateControllerInput(void);
 
-    /** @ghidraAddress BRD3D: 0x10035fa0 */
+    /**
+     * @ghidraAddress BRD3D: 0x10035fa0
+     * @ghidraAddress BRGlide: 0x1002f640
+     */
     void TransferFlags(u32 mask);
 
     /**
@@ -77,6 +80,7 @@ typedef struct PlayerInputState {
      * Reset recording pointers and bind the player index and controller pad.
      *
      * @ghidraAddress BRD3D: 0x10035fe0
+     * @ghidraAddress BRGlide: 0x1002f680
      */
     void InitPlayerInputState(void);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus) */

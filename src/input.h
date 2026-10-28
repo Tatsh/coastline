@@ -295,6 +295,7 @@ extern u8 g_bPakPort0Initialized;
  * @ghidraAddress EUR: 0x8021ba38
  * @ghidraAddress JPN: 0x8021b314
  * @ghidraAddress BRD3D: 0x10033780
+ * @ghidraAddress BRGlide: 0x1002ce31
  */
 void StartControllerRead(void);
 
@@ -305,6 +306,7 @@ void StartControllerRead(void);
  * @ghidraAddress EUR: 0x8021ba7c
  * @ghidraAddress JPN: 0x8021b358
  * @ghidraAddress BRD3D: 0x100337ae
+ * @ghidraAddress BRGlide: 0x1002ce5f
  */
 void ReadControllers(void);
 
@@ -315,6 +317,7 @@ void ReadControllers(void);
  * @ghidraAddress EUR: 0x8021bacc
  * @ghidraAddress JPN: 0x8021b3a8
  * @ghidraAddress BRD3D: 0x100337e9
+ * @ghidraAddress BRGlide: 0x1002ce9a
  */
 void UpdateControllerState(void);
 

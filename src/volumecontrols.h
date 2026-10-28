@@ -12,6 +12,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x80211730
  * @ghidraAddress JPN: 0x80211620
  * @ghidraAddress BRD3D: 0x10060d50
+ * @ghidraAddress BRGlide: 0x10059dc0
  */
 void IncreaseBgmVolume(void);
 
@@ -22,6 +23,7 @@ void IncreaseBgmVolume(void);
  * @ghidraAddress EUR: 0x8021176c
  * @ghidraAddress JPN: 0x8021165c
  * @ghidraAddress BRD3D: 0x10060d70
+ * @ghidraAddress BRGlide: 0x10059de0
  */
 void DecreaseBgmVolume(void);
 
@@ -32,6 +34,7 @@ void DecreaseBgmVolume(void);
  * @ghidraAddress EUR: 0x802117e8
  * @ghidraAddress JPN: 0x802116d8
  * @ghidraAddress BRD3D: 0x10060dc0
+ * @ghidraAddress BRGlide: 0x10059e30
  */
 void IncreaseSfxVolume(void);
 
@@ -42,6 +45,7 @@ void IncreaseSfxVolume(void);
  * @ghidraAddress EUR: 0x80211824
  * @ghidraAddress JPN: 0x80211714
  * @ghidraAddress BRD3D: 0x10060de0
+ * @ghidraAddress BRGlide: 0x10059e50
  */
 void DecreaseSfxVolume(void);
 

@@ -201,6 +201,7 @@ void InitCameraForVehicle(Vehicle *vehicle);
  * @ghidraAddress EUR: 0x8021c434
  * @ghidraAddress JPN: 0x8021bd04
  * @ghidraAddress BRD3D: 0x10033e83
+ * @ghidraAddress BRGlide: 0x1002d534
  */
 void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height);
 
@@ -292,6 +293,7 @@ extern Vec3f g_vFrustumHalfUp;
  * @ghidraAddress EUR: 0x8021c200
  * @ghidraAddress JPN: 0x8021bad0
  * @ghidraAddress BRD3D: 0x10033cb1
+ * @ghidraAddress BRGlide: 0x1002d362
  */
 void SetupFrustumCorners(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height);
 

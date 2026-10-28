@@ -17,6 +17,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x80218fd8
  * @ghidraAddress JPN: 0x80218928
  * @ghidraAddress BRD3D: 0x100314e8
+ * @ghidraAddress BRGlide: 0x1002ab99
  */
 void ClearScreen(s32 red, s32 green, s32 blue);
 
@@ -32,6 +33,7 @@ void ClearScreen(s32 red, s32 green, s32 blue);
  * @ghidraAddress EUR: 0x8021ac10
  * @ghidraAddress JPN: 0x8021a568
  * @ghidraAddress BRD3D: 0x10032a42
+ * @ghidraAddress BRGlide: 0x1002c0f3
  */
 void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
 
@@ -47,6 +49,7 @@ void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
  * @ghidraAddress EUR: 0x8021ae10
  * @ghidraAddress JPN: 0x8021a768
  * @ghidraAddress BRD3D: 0x10032c38
+ * @ghidraAddress BRGlide: 0x1002c2e9
  */
 void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
 
@@ -57,6 +60,7 @@ void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor
  * @ghidraAddress EUR: 0x8021af24
  * @ghidraAddress JPN: 0x8021a87c
  * @ghidraAddress BRD3D: 0x10032df2
+ * @ghidraAddress BRGlide: 0x1002c4a3
  */
 void RestoreCurrentViewport(void);
 
@@ -71,6 +75,7 @@ void RestoreCurrentViewport(void);
  * @ghidraAddress EUR: 0x8021aa98
  * @ghidraAddress JPN: 0x8021a3f0
  * @ghidraAddress BRD3D: 0x1003289f
+ * @ghidraAddress BRGlide: 0x1002bf50
  */
 void SetScissorRect(s32 x, s32 y, s32 width, s32 height);
 
@@ -98,6 +103,7 @@ extern s32 g_dwScreenScaleShift;
  * @ghidraAddress EUR: 0x80219124
  * @ghidraAddress JPN: 0x80218a74
  * @ghidraAddress BRD3D: 0x10031688
+ * @ghidraAddress BRGlide: 0x1002ad39
  */
 void DrawFilledRect(s32 x, s32 y, s32 width, s32 height, s32 red, s32 green, s32 blue);
 
@@ -112,6 +118,7 @@ void DrawFilledRect(s32 x, s32 y, s32 width, s32 height, s32 red, s32 green, s32
  * @ghidraAddress EUR: 0x8021af8c
  * @ghidraAddress JPN: 0x8021a8e4
  * @ghidraAddress BRD3D: 0x10032e58
+ * @ghidraAddress BRGlide: 0x1002c509
  */
 void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height);
 
@@ -127,6 +134,7 @@ void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height);
  * @ghidraAddress EUR: 0x8021b118
  * @ghidraAddress JPN: 0x8021aa70
  * @ghidraAddress BRD3D: 0x10032e5d
+ * @ghidraAddress BRGlide: 0x1002c50e
  */
 void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height);
 

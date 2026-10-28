@@ -89,6 +89,7 @@ private:
      * @param nUnused Not read.
      * @return One, including after reported file errors.
      * @ghidraAddress BRD3D: 0x1005cc20
+     * @ghidraAddress BRGlide: 0x10055a40
      */
     virtual int WriteSeasonDescFile(int nUnused);
 
@@ -98,6 +99,7 @@ private:
      * @param nSlot The signed slot index.
      * @return One, including when the file does not open.
      * @ghidraAddress BRD3D: 0x1005ccd0
+     * @ghidraAddress BRGlide: 0x10055af0
      */
     virtual int LoadSeasonDescription(short nSlot);
 
@@ -108,6 +110,7 @@ private:
      * @param pszDescription The description copied into the entry.
      * @return One.
      * @ghidraAddress BRD3D: 0x1005ce30
+     * @ghidraAddress BRGlide: 0x10055c50
      */
     virtual int SetEntryFromSaveFileName(const char *pszFileName, const char *pszDescription);
 };
@@ -127,6 +130,7 @@ class MenuItemList {
 public:
     /**
      * @ghidraAddress BRD3D: 0x1005b7f0
+     * @ghidraAddress BRGlide: 0x10054610
      */
     MenuItemList();
     /**
@@ -136,11 +140,13 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x1005bc10
+     * @ghidraAddress BRGlide: 0x10054a30
      */
     virtual int
     AddItem(const char *text, unsigned flags, unsigned char style, const RECT *bounds, bool full);
     /**
      * @ghidraAddress BRD3D: 0x1005b910
+     * @ghidraAddress BRGlide: 0x10054730
      */
     virtual int Initialize(unsigned flags,
                            const RECT *bounds,
@@ -150,6 +156,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x1005cb40
+     * @ghidraAddress BRGlide: 0x10055960
      */
     virtual int UpdateAndRenderMenuWidget(int selection);
     /**
@@ -160,11 +167,13 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x1005c200
+     * @ghidraAddress BRGlide: 0x10055020
      */
     virtual int SetItemData(const void *data, unsigned size, int index);
 
     /**
      * @ghidraAddress BRD3D: 0x1005c000
+     * @ghidraAddress BRGlide: 0x10054e20
      */
     virtual int RemoveItem(int index);
 
@@ -217,10 +226,12 @@ public:
 private:
     /**
      * @ghidraAddress BRD3D: 0x1005c270
+     * @ghidraAddress BRGlide: 0x10055090
      */
     virtual int BlitSurfaceById(unsigned short image, float x, float y);
     /**
      * @ghidraAddress BRD3D: 0x1005c2c0
+     * @ghidraAddress BRGlide: 0x100550e0
      */
     virtual int Draw(int selection);
     /**
@@ -230,10 +241,12 @@ private:
 
     /**
      * @ghidraAddress BRD3D: 0x1005c510
+     * @ghidraAddress BRGlide: 0x10055330
      */
     virtual int UpdateHoverInRect(const RECT *bounds);
     /**
      * @ghidraAddress BRD3D: 0x1005c590
+     * @ghidraAddress BRGlide: 0x100553b0
      */
     virtual int ProcessInput(int *selection);
 
@@ -283,6 +296,7 @@ class MenuWidget {
 public:
     /**
      * @ghidraAddress BRD3D: 0x100476c0
+     * @ghidraAddress BRGlide: 0x10040b10
      */
     MenuWidget();
     /**
@@ -307,16 +321,19 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x100479d0
+     * @ghidraAddress BRGlide: 0x10040e20
      */
     virtual int BlitSurfaceById(int nImage, int x, int y);
 
     /**
      * @ghidraAddress BRD3D: 0x10047eb0
+     * @ghidraAddress BRGlide: 0x10041300
      */
     virtual void
     SetText(const char *pszText, unsigned dwTextFlags, unsigned char bStyle, const RECT *pRect);
     /**
      * @ghidraAddress BRD3D: 0x10047fb0
+     * @ghidraAddress BRGlide: 0x10041400
      */
     virtual void Initialize(MenuScreen *pOwner,
                             float x,
@@ -448,15 +465,18 @@ private:
 
     /**
      * @ghidraAddress BRD3D: 0x10047a10
+     * @ghidraAddress BRGlide: 0x10040e60
      */
     virtual int DrawCurrentImage();
 
     /**
      * @ghidraAddress BRD3D: 0x10047980
+     * @ghidraAddress BRGlide: 0x10040dd0
      */
     virtual int DrawSpriteRegion(const RECT *pRect);
     /**
      * @ghidraAddress BRD3D: 0x10047930
+     * @ghidraAddress BRGlide: 0x10040d80
      */
     virtual int DrawSprite();
     /**
@@ -465,23 +485,28 @@ private:
     virtual bool UpdateHoverState();
     /**
      * @ghidraAddress BRD3D: 0x10047cb0
+     * @ghidraAddress BRGlide: 0x10041100
      */
     virtual int InitSlideAnimation(int nDuration);
     /**
      * @ghidraAddress BRD3D: 0x10047ce0
+     * @ghidraAddress BRGlide: 0x10041130
      */
     virtual long double ComputeSlideOffset(int nTicks);
     /**
      * @ghidraAddress BRD3D: 0x10047d10
+     * @ghidraAddress BRGlide: 0x10041160
      */
     virtual int StartSlideAnimation();
     /**
      * @ghidraAddress BRD3D: 0x10047d30
+     * @ghidraAddress BRGlide: 0x10041180
      */
     virtual int UpdateSlideAnimation();
 
     /**
      * @ghidraAddress BRD3D: 0x10048060
+     * @ghidraAddress BRGlide: 0x100414b0
      */
     virtual bool IsBlockedByModalDialog();
 
@@ -1814,10 +1839,16 @@ int ReturnToVideoOptionsFromResolution(MenuWidget *pWidget);
  */
 int ReturnToVideoOptionsFromDeviceSelect(MenuWidget *pWidget);
 
-/** @ghidraAddress BRD3D: 0x1003c9b0 */
+/**
+ * @ghidraAddress BRD3D: 0x1003c9b0
+ * @ghidraAddress BRGlide: 0x10036040
+ */
 void RefreshSessionListSlots(void);
 
-/** @ghidraAddress BRD3D: 0x1003d030 */
+/**
+ * @ghidraAddress BRD3D: 0x1003d030
+ * @ghidraAddress BRGlide: 0x100366c0
+ */
 int GetSelectedSessionGuid(GUID *guid);
 
 #if TGR_RENDERER == TGR_RENDERER_D3D
@@ -1854,16 +1885,21 @@ int SeasonRoundList_SetBrowsingFlag(MenuWidget *pWidget = nullptr);
  */
 int SeasonRoundList_ClearBrowsingFlag(MenuWidget *pWidget = nullptr);
 
-/** @ghidraAddress BRD3D: 0x1003f210 */
+/**
+ * @ghidraAddress BRD3D: 0x1003f210
+ * @ghidraAddress BRGlide: 0x10038750
+ */
 int OnSessionNameEdited(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x1003eef0
+ * @ghidraAddress BRGlide: 0x10038420
  */
 int OnPlayerNameEdited(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x1003ef90
+ * @ghidraAddress BRGlide: 0x100384c0
  */
 int OnModemPhoneNumberEdited(MenuWidget *pWidget);
 
@@ -1896,7 +1932,6 @@ int OnTcpIpPortEdited(MenuWidget *pWidget);
  *
  * @ghidraAddress BRD3D: 0x1004c4a0
  * @ghidraAddress BRGlide: 0x100458d0
- * @stub{BRGlide}
  */
 void BuildInputOptionsUI(MenuScreen *pScreen);
 
@@ -1910,28 +1945,38 @@ int ShowVideoOptionsMenu(void);
 
 /**
  * @ghidraAddress BRD3D: 0x100455e0
+ * @ghidraAddress BRGlide: 0x1003ea70
  */
 int ShowAudioOptionsMenu(void);
 
 /**
  * @ghidraAddress BRD3D: 0x100456b0
+ * @ghidraAddress BRGlide: 0x1003eb40
  */
 int ShowGameOptionsMenu(void);
 
 /**
  * @ghidraAddress BRD3D: 0x1004dfc0
+ * @ghidraAddress BRGlide: 0x10046e70
  */
 int BuildAudioOptionsUI(MenuScreen *pScreen);
 
-/** @ghidraAddress BRD3D: 0x1003e980 */
+/**
+ * @ghidraAddress BRD3D: 0x1003e980
+ * @ghidraAddress BRGlide: 0x10037fa0
+ */
 int DrawGameplaySliderA(MenuWidget *pWidget);
-/** @ghidraAddress BRD3D: 0x1003e9e0 */
+/**
+ * @ghidraAddress BRD3D: 0x1003e9e0
+ * @ghidraAddress BRGlide: 0x10038000
+ */
 int DrawGameplaySliderB(MenuWidget *pWidget);
 /** @ghidraAddress BRD3D: 0x100ab548 */
 extern RECT g_rcMenuAudioListBox;
 
 /**
  * @ghidraAddress BRD3D: 0x1004e830
+ * @ghidraAddress BRGlide: 0x100476e0
  */
 int BuildGameOptionsUI(MenuScreen *pScreen);
 
@@ -1957,7 +2002,6 @@ int ShowKeyConfigScreen(void);
  *
  * @ghidraAddress BRD3D: 0x1004cac0
  * @ghidraAddress BRGlide: 0x10045ef0
- * @stub{BRGlide}
  */
 void BuildKeyConfigUI(MenuScreen *pScreen);
 
@@ -1982,7 +2026,6 @@ int ReturnToMainMenuFromSeason(void);
  *
  * @ghidraAddress BRD3D: 0x10056a10
  * @ghidraAddress BRGlide: 0x1004f8c0
- * @stub{BRGlide}
  */
 int BuildModemConnectionUI(MenuScreen *pScreen);
 
@@ -2093,7 +2136,6 @@ int ShowCarSetupScreen(void);
 /**
  * @ghidraAddress BRD3D: 0x1004a580
  * @ghidraAddress BRGlide: 0x100439b0
- * @stub{BRGlide}
  */
 void BuildCarSetupUI(MenuScreen *pScreen);
 
@@ -2135,6 +2177,7 @@ int ProcessCheatInputAndValidateEntity(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100558a0
+ * @ghidraAddress BRGlide: 0x1004e750
  */
 void BuildMultiplayerConnectionUI(MenuScreen *pScreen);
 
@@ -2143,6 +2186,7 @@ void BuildMultiplayerConnectionUI(MenuScreen *pScreen);
  *
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10043cd0
+ * @ghidraAddress BRGlide: 0x1003d220
  */
 int ShowMultiplayerConnectionScreen(MenuWidget *pWidget = nullptr);
 
@@ -2286,11 +2330,13 @@ public:
      * Clear widget pointers and panel selections.
      *
      * @ghidraAddress BRD3D: 0x10048470
+     * @ghidraAddress BRGlide: 0x100418c0
      */
     MenuPanel();
 
     /**
      * @ghidraAddress BRD3D: 0x100484f0
+     * @ghidraAddress BRGlide: 0x10041940
      */
     int RestoreSelection();
 
@@ -2796,11 +2842,13 @@ extern int g_adwForceFeedbackLabelStrIds[];
 
 /**
  * @ghidraAddress BRD3D: 0x100446d0
+ * @ghidraAddress BRGlide: 0x1003dc20
  */
 int ShowNetworkCarSetupScreen(MenuWidget *pWidget = nullptr);
 
 /**
  * @ghidraAddress BRD3D: 0x10058750
+ * @ghidraAddress BRGlide: 0x10051600
  */
 void BuildNetworkCarSetupUI(MenuScreen *pScreen);
 
@@ -2816,6 +2864,7 @@ extern const int g_adwCarImageIds[32];
 
 /**
  * @ghidraAddress BRD3D: 0x1003e100
+ * @ghidraAddress BRGlide: 0x100377a0
  */
 int IsGameCdInDrive(int nDrive);
 
@@ -2826,113 +2875,138 @@ int FindGameCdDrive(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10045900
+ * @ghidraAddress BRGlide: 0x1003ed90
  */
 int ShowChampionshipSeasonMenu(void);
 
 /**
  * @ghidraAddress BRD3D: 0x1004f2b0
+ * @ghidraAddress BRGlide: 0x10048160
  */
 void BuildChampionshipSeasonUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x1005a6e0
+ * @ghidraAddress BRGlide: 0x10053590
  */
 void BuildSaveTimeAttackMenuUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10044d00
+ * @ghidraAddress BRGlide: 0x1003e250
  */
 int ShowLoadGhostMenu(void);
 
 /**
  * @ghidraAddress BRD3D: 0x100443e0
+ * @ghidraAddress BRGlide: 0x1003d930
  */
 int ShowHostRaceSetupScreen(void);
 /**
  * @ghidraAddress BRD3D: 0x100440d0
+ * @ghidraAddress BRGlide: 0x1003d620
  */
 int ShowCreateGameScreen(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10043bf0
+ * @ghidraAddress BRGlide: 0x1003d140
  */
 int ShowMultiplayerNameScreen(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10043e70
+ * @ghidraAddress BRGlide: 0x1003d3c0
  */
 int ShowJoinCreateGameScreen(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10045dc0
+ * @ghidraAddress BRGlide: 0x1003f260
  */
 int ShowSeasonProgressInfoScreen(MenuWidget *pWidget = nullptr);
 
 /**
  * @ghidraAddress BRD3D: 0x10044f50
+ * @ghidraAddress BRGlide: 0x1003e4a0
  */
 int ShowRaceSetupMenu(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10046170
+ * @ghidraAddress BRGlide: 0x1003f610
  */
 int ShowQuitGameConfirmMenu(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10059760
+ * @ghidraAddress BRGlide: 0x10052610
  */
 int BuildTimeAttackMenuUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10059bb0
+ * @ghidraAddress BRGlide: 0x10052a60
  */
 void BuildLoadTimeAttackMenuUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10057c10
+ * @ghidraAddress BRGlide: 0x10050ac0
  */
 void BuildMultiplayerGameSetupUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x100563e0
+ * @ghidraAddress BRGlide: 0x1004f290
  */
 int BuildPlayerNameEntryUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10056ff0
+ * @ghidraAddress BRGlide: 0x1004fea0
  */
 int BuildJoinCreateGameUI(MenuScreen *pScreen);
 
-/** @ghidraAddress BRD3D: 0x100575f0 */
+/**
+ * @ghidraAddress BRD3D: 0x100575f0
+ * @ghidraAddress BRGlide: 0x100504a0
+ */
 int BuildCreateGameMenuUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10044280
+ * @ghidraAddress BRGlide: 0x1003d7d0
  */
 int JoinSessionAndShowRaceSetup(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10052030
+ * @ghidraAddress BRGlide: 0x1004aee0
  */
 void BuildSeasonProgressInfoUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x1004b430
+ * @ghidraAddress BRGlide: 0x10044860
  */
 void BuildRaceSetupUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10049c20
+ * @ghidraAddress BRGlide: 0x10043050
  */
 int BuildQuitGameConfirmUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x100451e0
+ * @ghidraAddress BRGlide: 0x1003e730
  */
 int ShowOptionsMenu(void);
 
 /**
  * @ghidraAddress BRD3D: 0x1004bdc0
+ * @ghidraAddress BRGlide: 0x100451f0
  */
 int BuildOptionsMenuUI(MenuScreen *pScreen);
 
@@ -3125,7 +3199,6 @@ extern "C" {
  *
  * @ghidraAddress BRD3D: 0x10045ea0
  * @ghidraAddress BRGlide: 0x1003f340
- * @stub{BRGlide}
  */
 int ShowRaceResultsScreen(void);
 
@@ -3144,7 +3217,6 @@ int ReturnToNetworkLobbyScreen(void);
  * @return 0 when the menu cannot be created, 1 otherwise.
  * @ghidraAddress BRD3D: 0x10044b90
  * @ghidraAddress BRGlide: 0x1003e0e0
- * @stub{BRGlide}
  */
 int ShowTimeAttackMenu(int nUnused);
 
@@ -3155,7 +3227,6 @@ int ShowTimeAttackMenu(int nUnused);
  * @return 0 when the menu cannot be created, 1 otherwise.
  * @ghidraAddress BRD3D: 0x10044e20
  * @ghidraAddress BRGlide: 0x1003e370
- * @stub{BRGlide}
  */
 int ShowSaveGhostMenu(int nUnused);
 
@@ -3601,6 +3672,7 @@ void ShowErrorMessage(int nErrorCode);
  * @param lParam The second parameter of the message.
  * @return The result of the message for the front end.
  * @ghidraAddress BRD3D: 0x10060060
+ * @ghidraAddress BRGlide: 0x100590d0
  */
 LRESULT WINAPI
 FrontEndWindowProc(void *pUnused, HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
@@ -3668,6 +3740,7 @@ extern int g_adwTransmissionMenuIndexToType[2];
  * @param nTrack The track menu index.
  * @return Zero when unavailable, otherwise a nonzero mask or one.
  * @ghidraAddress BRD3D: 0x1003f2b0
+ * @ghidraAddress BRGlide: 0x100387f0
  */
 unsigned IsTrackSelectable(int nTrack);
 
@@ -3675,6 +3748,7 @@ unsigned IsTrackSelectable(int nTrack);
  * Restore menu choices, advance unavailable selections, and apply race settings.
  *
  * @ghidraAddress BRD3D: 0x1003e510
+ * @ghidraAddress BRGlide: 0x10037b20
  */
 void ResolveRaceSelections(void);
 
@@ -3687,31 +3761,37 @@ void ResetMenuSelectionsToDefaults(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10052f50
+ * @ghidraAddress BRGlide: 0x1004be00
  */
 void BuildRaceResultsInfoUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10053cf0
+ * @ghidraAddress BRGlide: 0x1004cba0
  */
 void BuildRaceResultsSummaryUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10054b50
+ * @ghidraAddress BRGlide: 0x1004da00
  */
 void BuildRaceResultsTotalsUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x1004a260
+ * @ghidraAddress BRGlide: 0x10043690
  */
 int BuildResultsSummaryExitSeasonConfirmUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10051990
+ * @ghidraAddress BRGlide: 0x1004a840
  */
 int BuildSeasonCongratsUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10051d30
+ * @ghidraAddress BRGlide: 0x1004abe0
  */
 int BuildNotEnoughPointsUI(MenuScreen *pScreen);
 
@@ -3720,6 +3800,7 @@ int BuildNotEnoughPointsUI(MenuScreen *pScreen);
  *
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10043260
+ * @ghidraAddress BRGlide: 0x1003c7b0
  */
 int ShowSeasonCongratsScreen(void);
 
@@ -3728,6 +3809,7 @@ int ShowSeasonCongratsScreen(void);
  *
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10043330
+ * @ghidraAddress BRGlide: 0x1003c880
  */
 int ShowNotEnoughPointsScreen(void);
 
@@ -3736,6 +3818,7 @@ int ShowNotEnoughPointsScreen(void);
  *
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x100460a0
+ * @ghidraAddress BRGlide: 0x1003f540
  */
 int ShowRaceResultsTotalsScreen(MenuWidget *pWidget = nullptr);
 
@@ -3744,16 +3827,19 @@ int ShowRaceResultsTotalsScreen(MenuWidget *pWidget = nullptr);
  *
  * @return Whether both initial allocations succeeded, or the summary was already cached.
  * @ghidraAddress BRD3D: 0x10045f70
+ * @ghidraAddress BRGlide: 0x1003f410
  */
 int ShowRaceResultsSummaryScreen(MenuWidget *pWidget = nullptr);
 
 /**
  * @ghidraAddress BRD3D: 0x100509f0
+ * @ghidraAddress BRGlide: 0x100498a0
  */
 void BuildPreRaceInfoUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10049f40
+ * @ghidraAddress BRGlide: 0x10043370
  */
 int BuildPreRaceExitSeasonConfirmUI(MenuScreen *pScreen);
 
@@ -3762,16 +3848,19 @@ int BuildPreRaceExitSeasonConfirmUI(MenuScreen *pScreen);
  *
  * @return Whether both initial allocations succeeded, or the information screen was cached.
  * @ghidraAddress BRD3D: 0x10045c90
+ * @ghidraAddress BRGlide: 0x1003f130
  */
 int ShowPreRaceInfoScreen(void);
 
 /**
  * @ghidraAddress BRD3D: 0x1004f700
+ * @ghidraAddress BRGlide: 0x100485b0
  */
 void BuildLoadSeasonUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10050060
+ * @ghidraAddress BRGlide: 0x10048f10
  */
 void BuildSaveSeasonUI(MenuScreen *pScreen);
 
@@ -3780,6 +3869,7 @@ void BuildSaveSeasonUI(MenuScreen *pScreen);
  *
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10045af0
+ * @ghidraAddress BRGlide: 0x1003ef90
  */
 int ShowLoadSeasonMenu(void);
 
@@ -3788,6 +3878,7 @@ int ShowLoadSeasonMenu(void);
  *
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10045bc0
+ * @ghidraAddress BRGlide: 0x1003f060
  */
 int ShowSaveSeasonScreen(void);
 #ifdef __cplusplus

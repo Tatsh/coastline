@@ -15,6 +15,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8021e4a0
  * @ghidraAddress JPN: 0x8021dd70
  * @ghidraAddress BRD3D: 0x10035452
+ * @ghidraAddress BRGlide: 0x1002eb03
  */
 void ExtractVehicleBaseColor(Vehicle *vehicle, VehicleModel *model);
 

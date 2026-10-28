@@ -14,6 +14,7 @@ extern "C" {
  * @param width The rectangle width.
  * @param height The rectangle height.
  * @ghidraAddress BRD3D: 0x10016a60
+ * @ghidraAddress BRGlide: 0x10013fd0
  */
 void EmitIndexedQuadDrawCommand(s32 textureEntry, s32 x, s32 y, s32 width, s32 height);
 #ifdef __cplusplus

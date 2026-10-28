@@ -386,6 +386,7 @@ void SetTextStyleBold(void);
  * @ghidraAddress EUR: 0x802309ec
  * @ghidraAddress JPN: 0x8023070c
  * @ghidraAddress BRD3D: 0x10019240
+ * @ghidraAddress BRGlide: 0x10016800
  */
 void EnableTextShadow(void);
 
@@ -396,6 +397,7 @@ void EnableTextShadow(void);
  * @ghidraAddress EUR: 0x802309fc
  * @ghidraAddress JPN: 0x8023071c
  * @ghidraAddress BRD3D: 0x10019250
+ * @ghidraAddress BRGlide: 0x10016810
  */
 void DisableTextShadow(void);
 
@@ -406,6 +408,7 @@ void DisableTextShadow(void);
  * @ghidraAddress EUR: 0x80230a08
  * @ghidraAddress JPN: 0x80230728
  * @ghidraAddress BRD3D: 0x10019260
+ * @ghidraAddress BRGlide: 0x10016820
  */
 void SetTextStyleNormal(void);
 
@@ -416,6 +419,7 @@ void SetTextStyleNormal(void);
  * @ghidraAddress EUR: 0x80230a14
  * @ghidraAddress JPN: 0x80230734
  * @ghidraAddress BRD3D: 0x10019270
+ * @ghidraAddress BRGlide: 0x10016830
  */
 void SetTextAlignCenter(void);
 
@@ -426,6 +430,7 @@ void SetTextAlignCenter(void);
  * @ghidraAddress EUR: 0x80230a24
  * @ghidraAddress JPN: 0x80230744
  * @ghidraAddress BRD3D: 0x10019280
+ * @ghidraAddress BRGlide: 0x10016840
  */
 void SetTextAlignLeft(void);
 
@@ -436,6 +441,7 @@ void SetTextAlignLeft(void);
  * @ghidraAddress EUR: 0x80230a30
  * @ghidraAddress JPN: 0x80230750
  * @ghidraAddress BRD3D: 0x10019290
+ * @ghidraAddress BRGlide: 0x10016850
  */
 void SetTextAlignRight(void);
 
@@ -452,6 +458,7 @@ void SetTextAlignRight(void);
  * @ghidraAddress EUR: 0x80230a40
  * @ghidraAddress JPN: 0x80230760
  * @ghidraAddress BRD3D: 0x100192a0
+ * @ghidraAddress BRGlide: 0x10016860
  */
 void SetTextCustomColors(s32 red, s32 green, s32 blue, s32 red2, s32 green2, s32 blue2);
 
@@ -475,7 +482,6 @@ void SetTextGradientColorsFromBytes(const u8 *color, const u8 *color2);
  * @ghidraAddress JPN: 0x80230800
  * @ghidraAddress BRD3D: 0x100192f0
  * @ghidraAddress BRGlide: 0x100168b0
- * @stub{BRGlide}
  */
 void SetTextSize(s32 size);
 
@@ -490,7 +496,6 @@ void SetTextSize(s32 size);
  * @ghidraAddress JPN: 0x8023080c
  * @ghidraAddress BRD3D: 0x10019300
  * @ghidraAddress BRGlide: 0x100168c0
- * @stub{BRGlide}
  */
 void DrawText(const char *text, s32 x, s32 y);
 

@@ -1,6 +1,6 @@
 # PC port game code from 0x10010000 to 0x10020000
 
-156 of 162 routines done.
+156 of 161 routines done.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -108,7 +108,6 @@ the same name, for a routine the port retained from the N64 game.
 | `DirectDrawDriver::FlushDirectDrawModeEnumerationList` |   ✅   |                 |      1 |    114 | `0x1001b3b0` |              | `void FlushDirectDrawModeEnumerationList(DirectDrawDriver * this)`                                                                                                                                                                           |
 | `HandleGbiSetFillColor`                                |   ✅   |                 |      1 |    110 | `0x1001cc00` | `0x1001e9f0` | `GbiCommand * HandleGbiSetFillColor(GbiCommand * pCommand)`                                                                                                                                                                                  |
 | `DisplayMode::GetSurfaceDescDimensions`                |   ✅   |                 |      8 |    109 | `0x1001ac80` |              | `long GetSurfaceDescDimensions(DisplayMode * this, int * pnWidth, int * pnHeight, int * pnBitDepth, int * pnRefreshRate)`                                                                                                                    |
-| `SetTrackFromSeasonRace`                               |        |                 |      3 |     96 |              | `0x1001c9d0` | `undefined SetTrackFromSeasonRace()`                                                                                                                                                                                                         |
 | `HandleGbiFillRectangle`                               |   ✅   |                 |      1 |     96 | `0x1001be30` | `0x1001e320` | `GbiCommand * HandleGbiFillRectangle(GbiCommand * pCommand)`                                                                                                                                                                                 |
 | `AppendDirect3DDeviceNode`                             |   ✅   |                 |      1 |     94 | `0x1001b630` |              | `long AppendDirect3DDeviceNode(void * this, D3DDeviceNode * pDevice)`                                                                                                                                                                        |
 | `FindDisplayModeWithFallback`                          |   ✅   |                 |      6 |     93 | `0x1001a570` |              | `DisplayMode * FindDisplayModeWithFallback(DirectDrawDriver * pDriver, int nWidth, int nHeight, int nBitDepth, int nUnknown, D3DDeviceNode * pDevice)`                                                                                       |

@@ -240,6 +240,7 @@ int ConvertFloatToFixedAngle(float fValue);
  * @param fValue Coordinate.
  * @return Quantised coordinate.
  * @ghidraAddress BRD3D: 0x100066e0
+ * @ghidraAddress BRGlide: 0x10006a50
  */
 int ConvertFloatToFixedAngleNoClamp(float fValue);
 
@@ -483,6 +484,7 @@ bool WritePlayerRankingPacket(NetStream *pStream, unsigned char bPlayer);
 
 /**
  * @ghidraAddress BRD3D: 0x10071f40
+ * @ghidraAddress BRGlide: 0x1006aeb0
  */
 bool WritePlayerStatusPacket(NetStream *pStream,
                              unsigned char bPlayer,
@@ -496,6 +498,7 @@ bool WritePlayerStatusPacket(NetStream *pStream,
 
 /**
  * @ghidraAddress BRD3D: 0x10072080
+ * @ghidraAddress BRGlide: 0x1006aff0
  */
 bool WriteGameSettingsPacket(NetStream *pStream, unsigned char bPlayer);
 
@@ -508,11 +511,13 @@ struct KeyframeState;
 
 /**
  * @ghidraAddress BRD3D: 0x10006ec0
+ * @ghidraAddress BRGlide: 0x10007230
  */
 void DeserializeVehicleState(KeyframeState *pState, NetStream *pStream);
 
 /**
  * @ghidraAddress BRD3D: 0x10005130
+ * @ghidraAddress BRGlide: 0x100054a0
  */
 unsigned SendLocalVehicleStateUpdate(KeyframeState *state);
 
@@ -532,31 +537,37 @@ extern int g_dwVehicleStateSendCounter;
 
 /**
  * @ghidraAddress BRD3D: 0x10004c60
+ * @ghidraAddress BRGlide: 0x10004fd0
  */
 unsigned SendKeyframePacket(KeyframeState *state);
 
 /**
  * @ghidraAddress BRD3D: 0x10004e50
+ * @ghidraAddress BRGlide: 0x100051c0
  */
 unsigned SendDeltaKeyframePacket(KeyframeState *state, KeyframeState *base);
 
 /**
  * @ghidraAddress BRD3D: 0x100061a0
+ * @ghidraAddress BRGlide: 0x10006510
  */
 void EncodeKeyframeBitstreamFull(NetStream *stream, KeyframeState *state);
 
 /**
  * @ghidraAddress BRD3D: 0x100054a0
+ * @ghidraAddress BRGlide: 0x10005810
  */
 unsigned GetInterpolatedRemoteVehicleState(KeyframeState *state, int slotIndex);
 
 /**
  * @ghidraAddress BRD3D: 0x10006830
+ * @ghidraAddress BRGlide: 0x10006ba0
  */
 void EncodeKeyframeBitstreamDelta(NetStream *stream, KeyframeState *state, KeyframeState *base);
 
 /**
  * @ghidraAddress BRD3D: 0x100073e0
+ * @ghidraAddress BRGlide: 0x10007750
  */
 void DeserializeKeyframeDelta(KeyframeState *pState,
                               const KeyframeState *pBase,

@@ -67,6 +67,7 @@ void ResetAllSoundState(void);
  * @ghidraAddress EUR: 0x8022ce64
  * @ghidraAddress JPN: 0x8022c61c
  * @ghidraAddress BRD3D: 0x10068180
+ * @ghidraAddress BRGlide: 0x100611f0
  */
 void UpdateAirplaneSound(s32 instance, Vec3f *position, CameraFrame *camera);
 
@@ -80,6 +81,7 @@ void UpdateAirplaneSound(s32 instance, Vec3f *position, CameraFrame *camera);
  * @ghidraAddress EUR: 0x8022cf20
  * @ghidraAddress JPN: 0x8022c6d8
  * @ghidraAddress BRD3D: 0x10068210
+ * @ghidraAddress BRGlide: 0x10061280
  */
 void UpdateWaterfallSound(s32 instance, Vec3f *position, CameraFrame *camera);
 
@@ -96,6 +98,7 @@ void UpdateWaterfallSound(s32 instance, Vec3f *position, CameraFrame *camera);
  * @ghidraAddress EUR: 0x8022c608
  * @ghidraAddress JPN: 0x8022bdc0
  * @ghidraAddress BRD3D: 0x10067ae0
+ * @ghidraAddress BRGlide: 0x10060b50
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 long double
@@ -120,6 +123,7 @@ ComputeDopplerFactor(Vec3f *source,
  * @ghidraAddress EUR: 0x8022c9a4
  * @ghidraAddress JPN: 0x8022c15c
  * @ghidraAddress BRD3D: 0x10067e50
+ * @ghidraAddress BRGlide: 0x10060ec0
  */
 void UpdateClosestSoundSource(
     s32 source, s32 sound, s32 volume, f32 frequency, Vec3f *position, CameraFrame *listener);

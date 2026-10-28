@@ -50,6 +50,7 @@ struct KeyframeState {
  * @param pBuffer Destination frame.
  * @param pState Pose and controls.
  * @ghidraAddress BRD3D: 0x10006bd0
+ * @ghidraAddress BRGlide: 0x10006f40
  */
 void PackKeyframeToCompactBuffer(u8 *pBuffer, const KeyframeState *pState);
 
@@ -59,6 +60,7 @@ void PackKeyframeToCompactBuffer(u8 *pBuffer, const KeyframeState *pState);
  * @param pState Destination pose and controls.
  * @param pBuffer Encoded frame.
  * @ghidraAddress BRD3D: 0x10007730
+ * @ghidraAddress BRGlide: 0x10007aa0
  */
 void DeserializeKeyframeState(KeyframeState *pState, const u8 *pBuffer);
 
@@ -70,6 +72,7 @@ void DeserializeKeyframeState(KeyframeState *pState, const u8 *pBuffer);
  * @param pFrom Initial frame.
  * @param pTo Target frame.
  * @ghidraAddress BRD3D: 0x100079e0
+ * @ghidraAddress BRGlide: 0x10007d50
  */
 void InterpolateKeyframeState(KeyframeState *pOut,
                               float fShare,
@@ -150,6 +153,7 @@ extern const unsigned g_dwGhostFileHeader;
  *
  * @return The recording buffer.
  * @ghidraAddress BRD3D: 0x1006ab90
+ * @ghidraAddress BRGlide: 0x10063b40
  */
 u8 *GetGhostKeyframeBuffer(void);
 
@@ -158,6 +162,7 @@ u8 *GetGhostKeyframeBuffer(void);
  *
  * @return The second recording buffer.
  * @ghidraAddress BRD3D: 0x1006adf0
+ * @ghidraAddress BRGlide: 0x10063da0
  */
 u8 *GetGhostPlaybackKeyframeBuffer(void);
 
@@ -166,6 +171,7 @@ u8 *GetGhostPlaybackKeyframeBuffer(void);
  *
  * @return The size in bytes.
  * @ghidraAddress BRD3D: 0x1006aba0
+ * @ghidraAddress BRGlide: 0x10063b50
  */
 unsigned GetGhostKeyframeDataSize(void);
 
@@ -185,6 +191,7 @@ bool ReadGhostFileData(const char *pszPath, bool bAllowFailure);
  * @param bAllowFailure Whether a failed load returns success.
  * @return The result of ReadGhostFileData().
  * @ghidraAddress BRD3D: 0x10070e60
+ * @ghidraAddress BRGlide: 0x10069dc0
  */
 bool LoadGhostFile(bool bAllowFailure);
 
@@ -235,6 +242,7 @@ void ResetGhostRecording(void);
  * Start ghost recording.
  *
  * @ghidraAddress BRD3D: 0x1006aa90
+ * @ghidraAddress BRGlide: 0x10063a40
  */
 void StartGhostRecording(void);
 
@@ -243,6 +251,7 @@ void StartGhostRecording(void);
  *
  * @return Recording flag without boolean conversion.
  * @ghidraAddress BRD3D: 0x1006aaa0
+ * @ghidraAddress BRGlide: 0x10063a50
  */
 int IsGhostRecordingActive(void);
 
@@ -257,6 +266,7 @@ extern int g_adwGhostPlaybackFrame[GHOST_RECORDING_COUNT];
  * Advance active recordings and the time attack or demonstration ghost playback.
  *
  * @ghidraAddress BRD3D: 0x1006ab20
+ * @ghidraAddress BRGlide: 0x10063ad0
  */
 void AdvanceGhostRecordFrame(void);
 
@@ -264,6 +274,7 @@ void AdvanceGhostRecordFrame(void);
  * Reset every ghost playback frame to zero.
  *
  * @ghidraAddress BRD3D: 0x1006abb0
+ * @ghidraAddress BRGlide: 0x10063b60
  */
 void ClearGhostPlaybackState(void);
 
@@ -271,6 +282,7 @@ void ClearGhostPlaybackState(void);
  * Translate replay controls into playback mode and bounded frame changes.
  *
  * @ghidraAddress BRD3D: 0x1006ad10
+ * @ghidraAddress BRGlide: 0x10063cc0
  */
 void UpdateReplayScrubControls(void);
 
@@ -307,6 +319,7 @@ void MatrixToPositionQuaternion(QuaternionPose *pPose, f32 m[4][4]);
  * @param matrix Destination matrix.
  * @param pPose Quaternion and position.
  * @ghidraAddress BRD3D: 0x100695d0
+ * @ghidraAddress BRGlide: 0x10062640
  */
 void PositionQuaternionToMatrix4x4(f32 matrix[4][4], const QuaternionPose *pPose);
 
@@ -316,11 +329,13 @@ void PositionQuaternionToMatrix4x4(f32 matrix[4][4], const QuaternionPose *pPose
  * @param pState Destination frame.
  * @param pVehicle Vehicle to sample.
  * @ghidraAddress BRD3D: 0x100607b0
+ * @ghidraAddress BRGlide: 0x10059820
  */
 void BuildVehicleKeyframe(KeyframeState *pState, Vehicle *pVehicle);
 
 /**
  * @ghidraAddress BRD3D: 0x100609e0
+ * @ghidraAddress BRGlide: 0x10059a50
  */
 void RecordVehicleKeyframe(Vehicle *vehicle);
 
@@ -336,6 +351,7 @@ unsigned ApplyRemoteVehicleState(Vehicle *vehicle, int slotIndex);
  * @param pVehicle Destination vehicle.
  * @param pState Frame to restore.
  * @ghidraAddress BRD3D: 0x10060a10
+ * @ghidraAddress BRGlide: 0x10059a80
  */
 void ApplyVehicleKeyframe(Vehicle *pVehicle, const KeyframeState *pState);
 
@@ -344,6 +360,7 @@ void ApplyVehicleKeyframe(Vehicle *pVehicle, const KeyframeState *pState);
  *
  * @param pVehicle Vehicle to record.
  * @ghidraAddress BRD3D: 0x1006aab0
+ * @ghidraAddress BRGlide: 0x10063a60
  */
 void RecordGhostKeyframe(Vehicle *pVehicle);
 
@@ -353,6 +370,7 @@ void RecordGhostKeyframe(Vehicle *pVehicle);
  * @param pVehicle Destination vehicle.
  * @param nRecording Recording slot.
  * @ghidraAddress BRD3D: 0x1006abd0
+ * @ghidraAddress BRGlide: 0x10063b80
  */
 void ApplyGhostKeyframeToVehicle(Vehicle *pVehicle, int nRecording);
 
@@ -361,6 +379,7 @@ void ApplyGhostKeyframeToVehicle(Vehicle *pVehicle, int nRecording);
  *
  * @param pVehicle Destination vehicle.
  * @ghidraAddress BRD3D: 0x1006acf0
+ * @ghidraAddress BRGlide: 0x10063ca0
  */
 void ApplyGhostKeyframeForVehicle(Vehicle *pVehicle);
 

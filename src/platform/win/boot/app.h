@@ -276,6 +276,7 @@ LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM 
  *
  * @param wParam The first parameter of `WM_ACTIVATE`.
  * @ghidraAddress BRD3D: 0x10077090
+ * @ghidraAddress BRGlide: 0x10070370
  */
 void UpdateAppActiveStateFromActivate(WPARAM wParam);
 

@@ -63,6 +63,7 @@ typedef struct RacerSlot {
      * Count crossed gates and laps and update race records.
      *
      * @ghidraAddress BRD3D: 0x10066e90
+     * @ghidraAddress BRGlide: 0x1005ff00
      */
     void UpdateRaceProgress(void);
 
@@ -84,6 +85,7 @@ public:
      * Update the assigned vehicle after its movement and contacts for a frame.
      *
      * @ghidraAddress BRD3D: 0x10069370
+     * @ghidraAddress BRGlide: 0x100623e0
      */
     void UpdateRacerSlotRaceState(void);
     Vec3f &GetPosition() {
@@ -263,6 +265,7 @@ void InitRacerSlot(RacerSlot *slot);
  * @ghidraAddress EUR: 0x8022a8c8
  * @ghidraAddress JPN: 0x8022a080
  * @ghidraAddress BRD3D: 0x10066510
+ * @ghidraAddress BRGlide: 0x1005f580
  */
 void SortRacersByPosition(void);
 
@@ -281,11 +284,13 @@ void UpdateRacerSlotRaceState(RacerSlot *slot);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * @ghidraAddress BRD3D: 0x10065d50
+ * @ghidraAddress BRGlide: 0x1005edc0
  */
 void MakeEnemyCarColorPanels(RacerSlot *slot);
 
 /**
  * @ghidraAddress BRD3D: 0x100661b0
+ * @ghidraAddress BRGlide: 0x1005f220
  */
 void ApplyEnemyCarColorPanels(Vehicle *vehicle, RacerSlot *slot);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

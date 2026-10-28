@@ -296,6 +296,7 @@ extern s32 g_nDebugHiddenInstanceIndex;
  * @ghidraAddress EUR: 0x80220680
  * @ghidraAddress JPN: 0x8021fe70
  * @ghidraAddress BRD3D: 0x100759d0
+ * @ghidraAddress BRGlide: 0x1006ec30
  */
 s32 CastRayAgainstTrack(Vec3f *outPoint,
                         Vec3f *outNormal,
@@ -322,6 +323,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8021f920
  * @ghidraAddress JPN: 0x8021f110
  * @ghidraAddress BRD3D: 0x10002de0
+ * @ghidraAddress BRGlide: 0x10003120
  */
 u32 LookupTrackGridCell(f32 x, f32 y);
 
@@ -334,6 +336,7 @@ u32 LookupTrackGridCell(f32 x, f32 y);
  * @ghidraAddress EUR: 0x8021fd90
  * @ghidraAddress JPN: 0x8021f580
  * @ghidraAddress BRD3D: 0x10002ef0
+ * @ghidraAddress BRGlide: 0x10003230
  */
 u16 NextGridCellTriangle(TrackGridCursor *cursor);
 
@@ -348,6 +351,7 @@ u16 NextGridCellTriangle(TrackGridCursor *cursor);
  * @ghidraAddress EUR: 0x8021fd0c
  * @ghidraAddress JPN: 0x8021f4fc
  * @ghidraAddress BRD3D: 0x10002e90
+ * @ghidraAddress BRGlide: 0x100031d0
  */
 u32 LookupInstanceGridCell(s32 column, s32 row);
 
@@ -360,6 +364,7 @@ u32 LookupInstanceGridCell(s32 column, s32 row);
  * @ghidraAddress EUR: 0x8021fddc
  * @ghidraAddress JPN: 0x8021f5cc
  * @ghidraAddress BRD3D: 0x10002f40
+ * @ghidraAddress BRGlide: 0x10003280
  */
 u16 NextGridCellInstance(TrackGridCursor *cursor);
 #if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(__cplusplus)

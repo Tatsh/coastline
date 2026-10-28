@@ -33,6 +33,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8021c868
  * @ghidraAddress JPN: 0x8021c138
  * @ghidraAddress BRD3D: 0x100341b3
+ * @ghidraAddress BRGlide: 0x1002d864
  */
 s32 ProcessDisplayList(DisplayListCommand *displayList, DisplayListCommand table[][4]);
 
@@ -116,11 +117,13 @@ extern void (*g_pfnRenderBackendUpdateFog)(void);
  * @ghidraAddress EUR: 0x8021cab8
  * @ghidraAddress JPN: 0x8021c388
  * @ghidraAddress BRD3D: 0x100344d7
+ * @ghidraAddress BRGlide: 0x1002db88
  */
 void ProcessAllDisplayLists(void);
 
 /**
  * @ghidraAddress BRD3D: 0x1003445a
+ * @ghidraAddress BRGlide: 0x1002db0b
  */
 void ProcessTrackNodeDisplayList(TrackInstance *instance);
 

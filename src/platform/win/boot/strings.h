@@ -66,6 +66,7 @@ char *GetStringResource(unsigned nResourceId);
  * Free the buffer of the strings.
  *
  * @ghidraAddress BRD3D: 0x10074050
+ * @ghidraAddress BRGlide: 0x1006d2a0
  */
 void FreeStringTable(void);
 #ifdef __cplusplus

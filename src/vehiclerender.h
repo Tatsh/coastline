@@ -271,6 +271,7 @@ void TransformWheelPositions(s32 index);
  * @ghidraAddress EUR: 0x802314c4
  * @ghidraAddress JPN: 0x802312c4
  * @ghidraAddress BRD3D: 0x1000c6e0
+ * @ghidraAddress BRGlide: 0x10009c10
  */
 void RenderWheelModels(Vehicle *vehicle);
 
@@ -282,6 +283,7 @@ void RenderWheelModels(Vehicle *vehicle);
  * @ghidraAddress EUR: 0x802318e4
  * @ghidraAddress JPN: 0x802316e4
  * @ghidraAddress BRD3D: 0x1000ca90
+ * @ghidraAddress BRGlide: 0x10009fc0
  */
 void CheckVehicleVisibility(Vehicle *vehicle);
 
@@ -307,6 +309,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset);
  * @ghidraAddress EUR: 0x802343e4
  * @ghidraAddress JPN: 0x802341e4
  * @ghidraAddress BRD3D: 0x1000e950
+ * @ghidraAddress BRGlide: 0x1000beb0
  */
 void RenderVehicleHeadlightBeams(Vehicle *vehicle);
 

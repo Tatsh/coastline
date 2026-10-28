@@ -64,10 +64,16 @@ extern float g_fFrameSnapshotBlendCarry;
 /** @ghidraAddress BRD3D: 0x104afd0c */
 extern unsigned g_dwFrameSnapshotBlendStartTime;
 
-/** @ghidraAddress BRD3D: 0x10016910 */
+/**
+ * @ghidraAddress BRD3D: 0x10016910
+ * @ghidraAddress BRGlide: 0x10013e80
+ */
 void InitFrameSnapshotSlots(void);
 
-/** @ghidraAddress BRD3D: 0x100169b0 */
+/**
+ * @ghidraAddress BRD3D: 0x100169b0
+ * @ghidraAddress BRGlide: 0x10013f20
+ */
 int AcquireNextFrameSnapshotSlot(void);
 
 /**

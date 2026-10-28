@@ -244,6 +244,7 @@ extern Vec3f g_vTraceHalfwayPoint;
  * @ghidraAddress EUR: 0x8021d008
  * @ghidraAddress JPN: 0x8021c8d8
  * @ghidraAddress BRD3D: 0x100347ba
+ * @ghidraAddress BRGlide: 0x1002de6b
  */
 void AddVehicleJolt(s32 index, f32 amount);
 
@@ -258,9 +259,7 @@ void AddVehicleJolt(s32 index, f32 amount);
  * @ghidraAddress JPN: 0x80226fc0
  */
 void ChooseReplayCamera(Vehicle *vehicle);
-#endif /*
- * TGR_PLATFORM == TGR_PLATFORM_N64 && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
- */
+#endif /* TGR_PLATFORM_N64 && (TGR_REGION_JP || TGR_REGION_EU) */
 
 /**
  * Read the controls of a vehicle, choose the view of a replay, and step the vehicle.

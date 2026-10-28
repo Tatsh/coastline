@@ -21,6 +21,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8022c6e4
  * @ghidraAddress JPN: 0x8022be9c
  * @ghidraAddress BRD3D: 0x10067bc0
+ * @ghidraAddress BRGlide: 0x10060c30
  */
 void ComputeStereoPan(
     Vec3f *source, CameraFrame *camera, f32 *upper, f32 *lower, s32 *volume, s32 narrow);

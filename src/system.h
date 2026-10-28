@@ -108,6 +108,7 @@ extern u32 g_dwScreenUnblankDelay;
  * @ghidraAddress EUR: 0x8021d068
  * @ghidraAddress JPN: 0x8021c938
  * @ghidraAddress BRD3D: 0x10034812
+ * @ghidraAddress BRGlide: 0x1002dec3
  */
 void InitRenderingSubsystem(void);
 
@@ -200,6 +201,7 @@ void StartLowResFrame(void);
  * @ghidraAddress EUR: 0x8021aa5c
  * @ghidraAddress JPN: 0x8021a3b4
  * @ghidraAddress BRD3D: 0x10032886
+ * @ghidraAddress BRGlide: 0x1002bf37
  */
 void StartHighResFrame(void);
 
@@ -210,6 +212,7 @@ void StartHighResFrame(void);
  * @ghidraAddress EUR: 0x8021bb20
  * @ghidraAddress JPN: 0x8021b3fc
  * @ghidraAddress BRD3D: 0x10033838
+ * @ghidraAddress BRGlide: 0x1002cee9
  */
 void FlushDisplayList(void);
 
@@ -220,6 +223,7 @@ void FlushDisplayList(void);
  * @ghidraAddress EUR: 0x80218cb4
  * @ghidraAddress JPN: 0x80218604
  * @ghidraAddress BRD3D: 0x100314de
+ * @ghidraAddress BRGlide: 0x1002ab8f
  */
 void ClearDepthBuffer(void);
 
@@ -230,6 +234,7 @@ void ClearDepthBuffer(void);
  * @ghidraAddress EUR: 0x8021d6a8
  * @ghidraAddress JPN: 0x8021cf78
  * @ghidraAddress BRD3D: 0x10034ad5
+ * @ghidraAddress BRGlide: 0x1002e186
  */
 void UpdateFrameTiming(void);
 
@@ -255,6 +260,7 @@ extern s32 g_bRaceScreenActive;
  * @ghidraAddress EUR: 0x80218e40
  * @ghidraAddress JPN: 0x80218790
  * @ghidraAddress BRD3D: 0x100314e3
+ * @ghidraAddress BRGlide: 0x1002ab94
  */
 void ClearZBufferRect(s32 x, s32 y, s32 width, s32 height);
 
@@ -265,6 +271,7 @@ void ClearZBufferRect(s32 x, s32 y, s32 width, s32 height);
  * @ghidraAddress EUR: 0x8021d660
  * @ghidraAddress JPN: 0x8021cf30
  * @ghidraAddress BRD3D: 0x10034a8a
+ * @ghidraAddress BRGlide: 0x1002e13b
  */
 void ResetFrameClock(void);
 
@@ -728,6 +735,7 @@ extern OSViMode g_ViModeMpalLan1;
  * @ghidraAddress EUR: 0x802182f0
  * @ghidraAddress JPN: 0x80217c40
  * @ghidraAddress BRD3D: 0x10031190
+ * @ghidraAddress BRGlide: 0x1002a840
  */
 OSIoMesg *AllocIoMessage(void);
 
@@ -765,6 +773,7 @@ extern "C"
  * @param arg Not read.
  * @ghidraAddress USA: 0x8021bbdc
  * @ghidraAddress BRD3D: 0x1003467f
+ * @ghidraAddress BRGlide: 0x1002dd30
  * @ghidraAddress EUR: 0x8021cd18
  * @ghidraAddress JPN: 0x8021c5e8
  */
@@ -776,6 +785,7 @@ void RspDoneThread(void *arg);
  * @param arg Not read.
  * @ghidraAddress USA: 0x8021bca8
  * @ghidraAddress BRD3D: 0x100346e9
+ * @ghidraAddress BRGlide: 0x1002dd9a
  * @ghidraAddress EUR: 0x8021cdc8
  * @ghidraAddress JPN: 0x8021c698
  */
@@ -821,6 +831,7 @@ void PreNmiResetHandlerThread(void *arg);
  * @param arg Not read.
  * @ghidraAddress USA: 0x8021bd68
  * @ghidraAddress BRD3D: 0x10034753
+ * @ghidraAddress BRGlide: 0x1002de04
  * @ghidraAddress EUR: 0x8021cf50
  * @ghidraAddress JPN: 0x8021c820
  */
@@ -896,6 +907,7 @@ void BootIdleThread(void *arg);
  * @ghidraAddress EUR: 0x8021a490
  * @ghidraAddress JPN: 0x80219de0
  * @ghidraAddress BRD3D: 0x100322e6
+ * @ghidraAddress BRGlide: 0x1002b997
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void BeginDisplayList(ViewportRect *views, s32 highRes);

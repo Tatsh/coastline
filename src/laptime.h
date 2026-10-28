@@ -16,6 +16,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8020cd24
  * @ghidraAddress JPN: 0x8020c91c
  * @ghidraAddress BRD3D: 0x100020d0
+ * @ghidraAddress BRGlide: 0x100023f0
  */
 void FormatLapTime(char *out, f32 seconds);
 

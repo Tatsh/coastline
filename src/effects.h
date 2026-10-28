@@ -144,6 +144,7 @@ void EmitTireSpray(Vehicle *vehicle);
  *
  * @param slots The racer slots supplying the current vehicle bindings.
  * @ghidraAddress BRD3D: 0x10013a40
+ * @ghidraAddress BRGlide: 0x10010fb0
  */
 void DrawTireSpray(const RacerSlot *slots);
 #else
@@ -178,6 +179,7 @@ void SpawnTireSmoke(Vehicle *vehicle);
  * @ghidraAddress EUR: 0x8023e10c
  * @ghidraAddress JPN: 0x8023dc0c
  * @ghidraAddress BRD3D: 0x1003a200
+ * @ghidraAddress BRGlide: 0x10033880
  */
 void UpdateExhaustParticles(void);
 
@@ -188,6 +190,7 @@ void UpdateExhaustParticles(void);
  * @ghidraAddress EUR: 0x8023e270
  * @ghidraAddress JPN: 0x8023dd70
  * @ghidraAddress BRD3D: 0x1003a340
+ * @ghidraAddress BRGlide: 0x100339c0
  */
 void UpdateTireSmoke(void);
 
@@ -198,6 +201,7 @@ void UpdateTireSmoke(void);
  * @ghidraAddress EUR: 0x8023e440
  * @ghidraAddress JPN: 0x8023df40
  * @ghidraAddress BRD3D: 0x1003a4d0
+ * @ghidraAddress BRGlide: 0x10033b50
  */
 void InitParticleSystem(void);
 
@@ -209,6 +213,7 @@ void InitParticleSystem(void);
  * @ghidraAddress EUR: 0x8023e4d4
  * @ghidraAddress JPN: 0x8023dfd4
  * @ghidraAddress BRD3D: 0x1003a530
+ * @ghidraAddress BRGlide: 0x10033bb0
  */
 void UpdateAllVehicleEffects(void);
 
@@ -222,6 +227,7 @@ void UpdateAllVehicleEffects(void);
  * @param green The green component.
  * @param blue The blue component.
  * @ghidraAddress BRD3D: 0x10013d90
+ * @ghidraAddress BRGlide: 0x10011300
  */
 void RenderBillboardParticles(
     const ViewportRect *viewports, u32 head, s32 red, s32 green, s32 blue);
@@ -246,6 +252,7 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue);
  *
  * @param viewports The records of the views supplied to the particle renderer.
  * @ghidraAddress BRD3D: 0x100140e0
+ * @ghidraAddress BRGlide: 0x10011650
  */
 void RenderTireSmoke(const ViewportRect *viewports);
 #else
@@ -267,6 +274,7 @@ void RenderTireSmoke(void);
  * @param viewports The records of the views for the billboard renderer.
  * @param slots The racers whose tyre spray is drawn.
  * @ghidraAddress BRD3D: 0x10014450
+ * @ghidraAddress BRGlide: 0x100119c0
  */
 void RenderExhaustAndTireSpray(const ViewportRect *viewports, const RacerSlot *slots);
 #else

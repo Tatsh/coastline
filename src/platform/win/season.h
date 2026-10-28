@@ -44,7 +44,10 @@ void ExitRaceSessionToMenu(void);
  */
 void ShutdownGameSession(void);
 
-/** @ghidraAddress BRD3D: 0x10002140 */
+/**
+ * @ghidraAddress BRD3D: 0x10002140
+ * @ghidraAddress BRGlide: 0x10002460
+ */
 void ExitRaceAndProcessSeasonResults(void);
 
 /** The year label's buffer size. */
@@ -294,6 +297,7 @@ bool SaveSeasonSaveFile(void);
  *
  * @return Always 1.
  * @ghidraAddress BRD3D: 0x1003e1d0
+ * @ghidraAddress BRGlide: 0x10037870
  */
 int ResetSeasonSaveBuffers(void);
 

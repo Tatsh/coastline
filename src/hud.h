@@ -125,6 +125,7 @@ extern s32 g_bHudShowSpeedometer;
  * Draw the current viewport's dashboard, gear, and tachometer.
  * @param viewports The records of the views.
  * @ghidraAddress BRD3D: 0x10016b40
+ * @ghidraAddress BRGlide: 0x100140b0
  */
 void RenderDashboardGauges(const ViewportRect *viewports);
 #else
@@ -159,6 +160,7 @@ void StubDashboard(void);
  * @ghidraAddress EUR: 0x80239c24
  * @ghidraAddress JPN: 0x80239724
  * @ghidraAddress BRD3D: 0x100171f0
+ * @ghidraAddress BRGlide: 0x10014760
  */
 void DrawLabelWithTime(const char *label, const char *color, f32 seconds, s32 x, s32 y);
 
@@ -175,6 +177,7 @@ extern s32 g_bHudShowLapTimes;
  * Draw the active vehicle's completed lap times in the current viewport.
  *
  * @ghidraAddress BRD3D: 0x10017f30
+ * @ghidraAddress BRGlide: 0x100154a0
  */
 void DrawLapTimeListHud(const ViewportRect *viewports);
 
@@ -182,6 +185,7 @@ void DrawLapTimeListHud(const ViewportRect *viewports);
  * Draw a numbered lap time in minutes, seconds, and hundredths.
  *
  * @ghidraAddress BRD3D: 0x10017fe0
+ * @ghidraAddress BRGlide: 0x10015550
  */
 void DrawFormattedLapTimeText(const char *color, s32 lap, f32 seconds, s32 x, s32 y);
 
@@ -211,12 +215,14 @@ extern s32 g_bShowFpsCounter;
 /**
  * Refresh game and renderer frame rates and draw the renderer rate.
  * @ghidraAddress BRD3D: 0x10014930
+ * @ghidraAddress BRGlide: 0x10011ea0
  */
 void DrawFpsCounterOverlay(void);
 /**
  * Draw the active vehicle's total and lap times for the current game mode.
  * @param viewports The records of the views.
  * @ghidraAddress BRD3D: 0x10017290
+ * @ghidraAddress BRGlide: 0x10014800
  */
 void DrawRaceTimerHud(const ViewportRect *viewports);
 /**
@@ -250,6 +256,7 @@ void DrawLapCounterHud(void);
  * Draw the active vehicle's message unless paused or fading out.
  * @param viewports The records of the views.
  * @ghidraAddress BRD3D: 0x10017790
+ * @ghidraAddress BRGlide: 0x10014d00
  */
 void DrawHudMessage(const ViewportRect *viewports);
 #else
@@ -269,6 +276,7 @@ void DrawHudMessage(void);
  * @param viewports The records of the views.
  * @param vehicles The vehicle array. The original lap counter ignores the forwarded argument.
  * @ghidraAddress BRD3D: 0x10017d90
+ * @ghidraAddress BRGlide: 0x10015300
  */
 void DrawSpeedAndHudOverlay(const ViewportRect *viewports, const Vehicle *vehicles);
 #else

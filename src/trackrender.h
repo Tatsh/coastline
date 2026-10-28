@@ -316,6 +316,7 @@ extern Vec3f g_vShadowForward;
  * @param low The left and lower screen bounds.
  * @param high The right and upper screen bounds.
  * @ghidraAddress BRD3D: 0x1000f480
+ * @ghidraAddress BRGlide: 0x1000c9e0
  */
 void ProjectWorldToScreenRect(
     const ViewportRect *viewports, const Vec3f *point, s32 size, s16 low[2], s16 high[2]);
@@ -346,6 +347,7 @@ void ProjectWorldToScreenRect(const Vec3f *point, s32 size, s16 low[2], s16 high
  * @param deferred Whether to draw shadows as translucent in the second pass.
  * @param firstVehicle The first vehicle in the shadow mask.
  * @ghidraAddress BRD3D: 0x1000f640
+ * @ghidraAddress BRGlide: 0x1000cba0
  */
 void RenderTrackInstance(
     const ViewportRect *viewports, s32 index, s32 vehicles, s32 deferred, Vehicle *firstVehicle);
@@ -374,6 +376,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred);
  * @ghidraAddress EUR: 0x802364d0
  * @ghidraAddress JPN: 0x802362d0
  * @ghidraAddress BRD3D: 0x10010d90
+ * @ghidraAddress BRGlide: 0x1000e2f0
  */
 s32 CompareVisibleCellDistance(const void *a, const void *b);
 
@@ -384,6 +387,7 @@ s32 CompareVisibleCellDistance(const void *a, const void *b);
  * @param slots The racers and their current vehicles.
  * @param vehicles The active vehicle array.
  * @ghidraAddress BRD3D: 0x10010dc0
+ * @ghidraAddress BRGlide: 0x1000e320
  */
 void BuildVisibleInstanceList(const ViewportRect *viewports,
                               const RacerSlot *slots,

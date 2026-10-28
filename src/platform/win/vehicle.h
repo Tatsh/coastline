@@ -189,10 +189,12 @@ private:
 
     /**
      * @ghidraAddress BRD3D: 0x10075360
+     * @ghidraAddress BRGlide: 0x1006e5c0
      */
     s32 UpdateVehicleTrackPosition();
     /**
      * @ghidraAddress BRD3D: 0x10064350
+     * @ghidraAddress BRGlide: 0x1005d3c0
      */
     void ComputeTrackPosition(void);
 
@@ -205,6 +207,7 @@ private:
      * Advance spring, tyre, damping, and collision calculations.
      *
      * @ghidraAddress BRD3D: 0x10061720
+     * @ghidraAddress BRGlide: 0x1005a7a0
      */
     void SimulateVehiclePhysicsSubstep(void);
 
@@ -213,6 +216,7 @@ private:
 
     /**
      * @ghidraAddress BRD3D: 0x10076c90
+     * @ghidraAddress BRGlide: 0x1006ff00
      */
     void BindPlayerInputToVehicle(void);
     /**
@@ -222,30 +226,37 @@ private:
 
     /**
      * @ghidraAddress BRD3D: 0x100767a0
+     * @ghidraAddress BRGlide: 0x1006fa10
      */
     void SetVehicleVelocity(f32 x, f32 y, f32 z);
     /**
      * @ghidraAddress BRD3D: 0x10076b20
+     * @ghidraAddress BRGlide: 0x1006fd90
      */
     void ResetVehicleState(void);
     /**
      * @ghidraAddress BRD3D: 0x10062c50
+     * @ghidraAddress BRGlide: 0x1005bcc0
      */
     void InitVehiclePhysics(void);
     /**
      * @ghidraAddress BRD3D: 0x10076a00
+     * @ghidraAddress BRGlide: 0x1006fc70
      */
     void InitVehicleColorAndPhysics(void);
     /**
      * @ghidraAddress BRD3D: 0x10076a40
+     * @ghidraAddress BRGlide: 0x1006fcb0
      */
     void SetVehicleModelSlot(s32 slot);
     /**
      * @ghidraAddress BRD3D: 0x10065710
+     * @ghidraAddress BRGlide: 0x1005e780
      */
     void ClearVehicleDamageState(void);
     /**
      * @ghidraAddress BRD3D: 0x10065740
+     * @ghidraAddress BRGlide: 0x1005e7b0
      */
     void SetupVehicleForRaceStart(void);
     /**
@@ -254,10 +265,12 @@ private:
     void ResetVehicleEffects(void);
     /**
      * @ghidraAddress BRD3D: 0x10063660
+     * @ghidraAddress BRGlide: 0x1005c6d0
      */
     void RespawnVehicle(void);
     /**
      * @ghidraAddress BRD3D: 0x100015d0
+     * @ghidraAddress BRGlide: 0x100018f0
      */
     void UpdateCameraChase(CameraFrame *camera, f32 share);
     /**
@@ -266,27 +279,33 @@ private:
     void UpdateCameraLookAtTarget(void);
     /**
      * @ghidraAddress BRD3D: 0x10001890
+     * @ghidraAddress BRGlide: 0x10001bb0
      */
     void ComputeCameraBasis(CameraFrame *camera);
     /**
      * @ghidraAddress BRD3D: 0x10001970
+     * @ghidraAddress BRGlide: 0x10001c90
      */
     void PlaceTrackCamera(void);
     /**
      * @ghidraAddress BRD3D: 0x10001ff0
+     * @ghidraAddress BRGlide: 0x10002310
      */
     void InitCameraForVehicle(void);
 
     /**
      * @ghidraAddress BRD3D: 0x100011f0
+     * @ghidraAddress BRGlide: 0x10001510
      */
     void ResolveVehicleTrackCollision(CameraFrame *camera, Vec3f *target);
     /**
      * @ghidraAddress BRD3D: 0x10076420
+     * @ghidraAddress BRGlide: 0x1006f680
      */
     void SetVehiclePosition(f32 x, f32 y, f32 z);
     /**
      * @ghidraAddress BRD3D: 0x100764c0
+     * @ghidraAddress BRGlide: 0x1006f720
      */
     void InitVehicleOrientationFromAngle(f32 angle);
     /**
@@ -296,16 +315,19 @@ private:
     void SetVehicleFrameMatrix(f32 m[4][4]);
     /**
      * @ghidraAddress BRD3D: 0x10076820
+     * @ghidraAddress BRGlide: 0x1006fa90
      */
     void RotateVehicleByEuler(f32 yaw, f32 pitch, f32 roll);
     /**
      * @ghidraAddress BRD3D: 0x100769a0
+     * @ghidraAddress BRGlide: 0x1006fc10
      */
     void SetVehicleTurnRate(f32 x, f32 y, f32 z);
 
 public:
     /**
      * @ghidraAddress BRD3D: 0x100683c0
+     * @ghidraAddress BRGlide: 0x10061430
      */
     void ClearCameraChanged(void);
 
@@ -313,6 +335,7 @@ public:
      * Assign computer vehicles to racers near this player.
      *
      * @ghidraAddress BRD3D: 0x10066650
+     * @ghidraAddress BRGlide: 0x1005f6c0
      */
     void ManageAiRacerSlots(void);
 
@@ -320,6 +343,7 @@ public:
      * Update engine, event, skid, and rolling sounds.
      *
      * @ghidraAddress BRD3D: 0x10068400
+     * @ghidraAddress BRGlide: 0x10061470
      */
     void UpdateVehicleSounds(void);
 
@@ -344,6 +368,7 @@ public:
     /**
      * Start last-lap input recording in spare vehicle-model storage and snapshot the race.
      * @ghidraAddress BRD3D: 0x100679c0
+     * @ghidraAddress BRGlide: 0x10060a30
      */
     void SaveLastLapSnapshot(void);
     void MarkNearbyInstanceShadows(u8 *mask, u8 bit) const {
@@ -355,14 +380,17 @@ public:
     void MoveTireSpraySegments(s32 step, s16 fall);
     /**
      * @ghidraAddress BRD3D: 0x10039020
+     * @ghidraAddress BRGlide: 0x100326a0
      */
     void SpawnExhaustParticle();
     /**
      * @ghidraAddress BRD3D: 0x10039f20
+     * @ghidraAddress BRGlide: 0x100335a0
      */
     void SpawnTireSmoke();
     /**
      * @ghidraAddress BRD3D: 0x10039200
+     * @ghidraAddress BRGlide: 0x10032880
      */
     void EmitTireSpray();
     void SetExhaustTimer(f32 value) {
@@ -392,17 +420,35 @@ public:
     f32 GetSubMessageTime() const {
         return subMessageTime;
     }
-    /** @ghidraAddress BRD3D: 0x10075780 */
+    /**
+     * @ghidraAddress BRD3D: 0x10075780
+     * @ghidraAddress BRGlide: 0x1006e9e0
+     */
     void UpdateRaceTimers();
-    /** @ghidraAddress BRD3D: 0x10075810 */
+    /**
+     * @ghidraAddress BRD3D: 0x10075810
+     * @ghidraAddress BRGlide: 0x1006ea70
+     */
     void UpdateHudMessageTimers();
-    /** @ghidraAddress BRD3D: 0x100758a0 */
+    /**
+     * @ghidraAddress BRD3D: 0x100758a0
+     * @ghidraAddress BRGlide: 0x1006eb00
+     */
     void CheckWrongWayWarning();
-    /** @ghidraAddress BRD3D: 0x10075960 */
+    /**
+     * @ghidraAddress BRD3D: 0x10075960
+     * @ghidraAddress BRGlide: 0x1006ebc0
+     */
     void UpdateVehicleGridPosition();
-    /** @ghidraAddress BRD3D: 0x10076a70 */
+    /**
+     * @ghidraAddress BRD3D: 0x10076a70
+     * @ghidraAddress BRGlide: 0x1006fce0
+     */
     void InstallVehicleModel(s32 slot, s32 car);
-    /** @ghidraAddress BRD3D: 0x1000ef80 */
+    /**
+     * @ghidraAddress BRD3D: 0x1000ef80
+     * @ghidraAddress BRGlide: 0x1000c4e0
+     */
     void DeformVehicleMeshByImpact(Vec3f *direction, s16 amount);
     void ApplyImpactDamageTexture(s32 side);
     s32 AdvanceSkidFrames() {
@@ -1130,7 +1176,10 @@ public:
     /** @ghidraAddress BRD3D: 0x10063840 */
     void ApplyPlayerVehicleInput(void);
 
-    /** @ghidraAddress BRD3D: 0x10075f10 */
+    /**
+     * @ghidraAddress BRD3D: 0x10075f10
+     * @ghidraAddress BRGlide: 0x1006f170
+     */
     void UpdateVehiclePhysicsFrame(void);
 
     /**
@@ -1145,6 +1194,7 @@ public:
      * Transform the body and wheel matrices for drawing.
      *
      * @ghidraAddress BRD3D: 0x10061c60
+     * @ghidraAddress BRGlide: 0x1005ace0
      */
     void TransformAllWheelMatrices(void);
 
@@ -1159,16 +1209,19 @@ public:
      * Initialise the player slot, profile defaults, and vehicle selection.
      *
      * @ghidraAddress BRD3D: 0x100634f0
+     * @ghidraAddress BRGlide: 0x1005c560
      */
     void InitPlayerVehicleSlot(void);
 
     /**
      * @ghidraAddress BRD3D: 0x10076ae0
+     * @ghidraAddress BRGlide: 0x1006fd50
      */
     void SetVehicleCarId(s32 carId);
 
     /**
      * @ghidraAddress BRD3D: 0x100019d0
+     * @ghidraAddress BRGlide: 0x10001cf0
      */
     void UpdateCameraSystem(void);
 };

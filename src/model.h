@@ -148,6 +148,7 @@ extern u32 g_adwModelShadeColors[4];
  * @ghidraAddress EUR: 0x80209b50
  * @ghidraAddress JPN: 0x80209750
  * @ghidraAddress BRD3D: 0x1002fb20
+ * @ghidraAddress BRGlide: 0x1001d1b0
  */
 void DrawModelList(Model *model, f32 m[4][4]);
 
@@ -192,6 +193,7 @@ void DrawModelAt(Model *model, f32 x, f32 y, f32 z, f32 angle, f32 scale);
  * @ghidraAddress EUR: 0x8021f02c
  * @ghidraAddress JPN: 0x8021e8fc
  * @ghidraAddress BRD3D: 0x10036bd0
+ * @ghidraAddress BRGlide: 0x10030270
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 Model *DecompressModel(void *dst, const char *source);
@@ -238,6 +240,7 @@ void FixupDisplayListPointers(Gfx *displayList, u32 lo, u32 hi, u32 base);
  * @ghidraAddress EUR: 0x8021ea28
  * @ghidraAddress JPN: 0x8021e2f8
  * @ghidraAddress BRD3D: 0x10035625
+ * @ghidraAddress BRGlide: 0x1002ecd6
  */
 void BounceModelAnimations(Model *model);
 
@@ -250,6 +253,7 @@ void BounceModelAnimations(Model *model);
  * @ghidraAddress EUR: 0x8021ee34
  * @ghidraAddress JPN: 0x8021e704
  * @ghidraAddress BRD3D: 0x10036c00
+ * @ghidraAddress BRGlide: 0x100302a0
  */
 void RelocateModelPointers(Model *model);
 
@@ -263,6 +267,7 @@ void RelocateModelPointers(Model *model);
  * @ghidraAddress EUR: 0x8021e8dc
  * @ghidraAddress JPN: 0x8021e1ac
  * @ghidraAddress BRD3D: 0x10035585
+ * @ghidraAddress BRGlide: 0x1002ec36
  */
 void SetModelAnimationFlags(Model *model, s32 set, s32 clear);
 
@@ -274,6 +279,7 @@ void SetModelAnimationFlags(Model *model, s32 set, s32 clear);
  * @ghidraAddress EUR: 0x8021ea04
  * @ghidraAddress JPN: 0x8021e2d4
  * @ghidraAddress BRD3D: 0x10035610
+ * @ghidraAddress BRGlide: 0x1002ecc1
  */
 void LoopModelAnimations(Model *model);
 
@@ -286,6 +292,7 @@ void LoopModelAnimations(Model *model);
  * @ghidraAddress EUR: 0x8021ea4c
  * @ghidraAddress JPN: 0x8021e31c
  * @ghidraAddress BRD3D: 0x1003563a
+ * @ghidraAddress BRGlide: 0x1002eceb
  */
 void AdvanceModelAnimations(Model *model);
 
@@ -297,6 +304,7 @@ void AdvanceModelAnimations(Model *model);
  * @ghidraAddress EUR: 0x8021e9e0
  * @ghidraAddress JPN: 0x8021e2b0
  * @ghidraAddress BRD3D: 0x100355fb
+ * @ghidraAddress BRGlide: 0x1002ecac
  */
 void PlayModelAnimationsOnce(Model *model);
 
