@@ -199,12 +199,12 @@ private:
     char szText[1024];
     short nWidth;
     short nHeight;
-    char abUnknown40e[2]; /* +0x40e */
+    [[maybe_unused]] char abUnknown40e[2]; /* +0x40e */
     float fX;
     float fY;
     float fZ;
     short nInputMaxWidth;
-    char abUnknown41e[2]; /* +0x41e */
+    [[maybe_unused]] char abUnknown41e[2]; /* +0x41e */
     int bDrawCaret;
     RECT rcBounds;
     unsigned dwItemData;

@@ -19,6 +19,7 @@
 #include "platform/win/settings.h"
 #include "platform/win/texturescan.h"
 #include "platform/win/textureworkspace.h"
+#include "platform/win/uninitialized.h"
 #include "screen.h"
 #include "weather.h"
 
@@ -55,7 +56,7 @@ unsigned g_dwAvailableTextureMemory;
  * @ghidraAddress BRD3D: 0x1067d550
  * @ghidraAddress BRGlide: 0x105b96f8
  */
-int g_dwConvertedVertexCount;
+[[maybe_unused, gnu::used]] int g_dwConvertedVertexCount;
 /**
  * The address the pointers are relocated to.
  *
@@ -565,6 +566,8 @@ void CalculateTextureDimensions(int *pWidth, int *pHeight, int nLod, int nAspect
 // The bytes of a texel of the textures of Direct3D.
 #define RGBA32_BYTES_PER_TEXEL 4
 
+// An aspect ratio CalculateTextureDimensions() does not know leaves the size unset.
+BEGIN_ORIGINAL_UNINITIALIZED_READ
 int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio, int nPixelFormatId) {
     int nWidth;
     int nHeight;
@@ -578,6 +581,7 @@ int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio, int 
     }
     return nBytes;
 }
+END_ORIGINAL_UNINITIALIZED_READ
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 void ResetRenderCommandBufferStack(void) {
@@ -1113,6 +1117,8 @@ void ShutdownTextureSubsystem(void) {
     g_pTextureEntries = nullptr;
 }
 
+// An aspect ratio CalculateTextureDimensions() does not know leaves the size unset.
+BEGIN_ORIGINAL_UNINITIALIZED_READ
 void UploadTextureEntryToSurface(int nEntry, TextureUploadData payload) {
     if (nEntry == static_cast<int>(g_dwWeatherShadeTextureId)) {
         return;
@@ -1127,6 +1133,7 @@ void UploadTextureEntryToSurface(int nEntry, TextureUploadData payload) {
     DownloadGlideTextureMipMap(entry.nTextureId, payload.pixels, 0);
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 }
+END_ORIGINAL_UNINITIALIZED_READ
 
 void CreateDeviceTextureFromImageHeader(ModelTexture *pTexture, int nOption13) {
     if (!pTexture->image || (pTexture->textureFlags & 0x100000)) {

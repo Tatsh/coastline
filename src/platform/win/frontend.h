@@ -275,7 +275,7 @@ private:
     short nScrollDownImage;
     short nBackgroundImage;
     short nScrollThumbImage;
-    char abUnknown1a93a[2]; /* +0x1a93a */
+    [[maybe_unused]] char abUnknown1a93a[2]; /* +0x1a93a */
     RECT rcBounds;
     RECT rcScrollUp;
     RECT rcScrollDown;
@@ -284,7 +284,7 @@ private:
     RECT rcScrollThumb;
     int bScrollUpHovered;
     int bScrollDownHovered;
-    char abUnknown1a9a4[8]; /* +0x1a9a4 */
+    [[maybe_unused]] char abUnknown1a9a4[8]; /* +0x1a9a4 */
     float fScrollThumbX;
     float fScrollThumbY;
     int bScrollDragging;
@@ -2441,7 +2441,7 @@ class MenuPanel {
     int (*pfnUpdate)(void);
     int nFlags;
     unsigned short wWidgetCount;
-    char abUnknown16[2];                            /* +0x16 */
+    [[maybe_unused]] char abUnknown16[2];           /* +0x16 */
     MenuWidget *apWidgets[MENU_PANEL_WIDGET_COUNT]; /*!< The items of the panel. */
     float fX;
     float fY;

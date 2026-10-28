@@ -1,5 +1,6 @@
 #include "platform/win/input.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -916,8 +917,8 @@ HRESULT ReadKeyboardState(unsigned char *pabState) {
 
 void ClearKeyboardStateBuffers(void) {
     memset(g_abKeyboardState, 0, sizeof(g_abKeyboardState));
-    memset(g_adwKeyPressedEdge, 0, KEY_EDGE_CLEAR_COUNT * sizeof(g_adwKeyPressedEdge[0]));
-    memset(g_adwKeyPrevDown, 0, KEY_EDGE_CLEAR_COUNT * sizeof(g_adwKeyPrevDown[0]));
+    std::fill_n(g_adwKeyPressedEdge, KEY_EDGE_CLEAR_COUNT, 0);
+    std::fill_n(g_adwKeyPrevDown, KEY_EDGE_CLEAR_COUNT, 0);
 }
 
 void UpdateKeyboardEdgeState(void) {

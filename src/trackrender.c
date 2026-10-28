@@ -59,7 +59,7 @@ namespace {
      * @ghidraAddress BRD3D: 0x10363fe8
      * @ghidraAddress BRGlide: 0x1035f7d0
      */
-    f32 g_fViewMatrixMaxAbs;
+    [[maybe_unused, gnu::used]] f32 g_fViewMatrixMaxAbs;
     /**
      * The last translucent model left for the second pass, or -1.
      *
@@ -86,7 +86,7 @@ namespace {
      * @ghidraAddress JPN: 0x8028e934
      * @ghidraAddress BRD3D: 0x102e54b4
      */
-    s32 g_nTrackTransparentStartIdxFar;
+    [[maybe_unused, gnu::used]] s32 g_nTrackTransparentStartIdxFar;
     /**
      * Set to 0x1000 with g_nTrackTransparentStartIdx, and never read.
      *
@@ -95,7 +95,7 @@ namespace {
      * @ghidraAddress JPN: 0x8028e92c
      * @ghidraAddress BRD3D: 0x102e5ed4
      */
-    s32 g_nTrackTransparentStartIdxNear;
+    [[maybe_unused, gnu::used]] s32 g_nTrackTransparentStartIdxNear;
 } // namespace
 
 #define PHYSICAL(address) ((u32)(address))

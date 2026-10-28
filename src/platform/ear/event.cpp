@@ -11,6 +11,7 @@
 #include "earplayback.h"
 #include "environment.h"
 #include "error.h"
+#include "platform/win/uninitialized.h"
 #include "registry.h"
 #include "runtime.h"
 #include "scheduledevent.h"
@@ -215,6 +216,8 @@ uint32_t __stdcall EarMixEventExportWrapper(const EarEventParams *params) {
     return EAR_DLL_MixEvent(params);
 }
 
+// The queue lookups leave their events unset when they fail, and the original reads them.
+BEGIN_ORIGINAL_UNINITIALIZED_READ
 uint32_t __stdcall EAR_DLL_MixEvent(const EarEventParams *params) {
     SetEarLastError(0);
     if (!IsEarReady()) {
@@ -441,6 +444,7 @@ fail:
     }
     return 0;
 }
+END_ORIGINAL_UNINITIALIZED_READ
 
 uint32_t __stdcall EarMoveEventExportWrapper(const EarEventParams *params) {
     return EAR_DLL_MoveEvent(params);

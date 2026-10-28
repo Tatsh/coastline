@@ -39,7 +39,10 @@ GameFile *CHK_FReadOpen(const char *pszPath) {
         pErrorFile = fopen("c:\\RallyError.txt", "w");
         sprintf(szMessage, "CHK_FReadOpen(): error opening file %s.\n", pFile->pszPath);
         // The original passes the message to fprintf() as the format.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-security"
         fprintf(pErrorFile, szMessage);
+#pragma GCC diagnostic pop
         OutputDebugStringA(szMessage);
         fclose(pErrorFile);
         exit(1);

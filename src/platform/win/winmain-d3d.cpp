@@ -41,7 +41,7 @@ namespace {
  *
  * @ghidraAddress BRD3D: 0x118ac234
  */
-int g_bWindowMaximized;
+[[maybe_unused, gnu::used]] int g_bWindowMaximized;
 /**
  * Whether the main window is minimised.
  *

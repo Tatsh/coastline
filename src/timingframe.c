@@ -13,7 +13,7 @@
  * @ghidraAddress BRD3D: 0x1067d57c
  * @ghidraAddress BRGlide: 0x105b9724
  */
-static u32 g_dwTimingFrameElapsed;
+[[maybe_unused, gnu::used]] static u32 g_dwTimingFrameElapsed;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void BeginTimingFrame(void) {

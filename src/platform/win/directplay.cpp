@@ -27,6 +27,7 @@
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
 #include "platform/win/timer.h"
+#include "platform/win/uninitialized.h"
 #include "platform/win/vehicle.h"
 #include "trackselect.h"
 #include "vehiclecount.h"
@@ -928,6 +929,7 @@ static inline void ReadNetworkDeltaSnapshot(Slot &slot, NetStream &stream, unsig
     DeserializeKeyframeDelta(&slot.aSnapshots[oldest], &slot.aSnapshots[newest], &stream);
 }
 
+BEGIN_ORIGINAL_UNINITIALIZED_READ
 static inline void
 ReadHostSnapshot(NetPlayerSlot &slot, NetStream &stream, unsigned timestamp, bool delta) {
     KeyframeState discarded;
@@ -951,6 +953,7 @@ ReadHostSnapshot(NetPlayerSlot &slot, NetStream &stream, unsigned timestamp, boo
         DeserializeKeyframeDelta(&discarded, &discarded, &stream);
     }
 }
+END_ORIGINAL_UNINITIALIZED_READ
 
 static inline void PropagateNetworkStatusFlag(int flag) {
     for (NetPlayerSlot &slot : g_aNetPlayerSlots) {
@@ -2269,6 +2272,7 @@ static inline void ApplyLocalNetworkStatus(int state) {
     }
 }
 
+BEGIN_ORIGINAL_UNINITIALIZED_READ
 static inline void
 ReadClientSnapshot(NetPeerSlot &slot, NetStream &stream, unsigned timestamp, bool delta) {
     if ((slot.dwStatus & 0x3f) >= 2) {
@@ -2294,6 +2298,7 @@ ReadClientSnapshot(NetPeerSlot &slot, NetStream &stream, unsigned timestamp, boo
         }
     }
 }
+END_ORIGINAL_UNINITIALIZED_READ
 
 void ProcessNetworkDataStream(
     DirectPlayInfo *pInfo, void *pData, DWORD dwSize, DPID dpidFrom, DPID) {

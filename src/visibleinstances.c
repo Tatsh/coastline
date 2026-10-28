@@ -31,7 +31,7 @@ namespace {
      * @ghidraAddress JPN: 0x8028e91c
      * @ghidraAddress BRD3D: 0x102e5ed0
      */
-    s32 g_bVisibleCellListOverflow;
+    [[maybe_unused, gnu::used]] s32 g_bVisibleCellListOverflow;
     /**
      * The vehicles nearest the camera that cast shadows, nearest first.
      *

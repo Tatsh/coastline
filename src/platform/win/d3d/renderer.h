@@ -12,6 +12,7 @@
 #include <windows.h>
 
 #include "platform/win/texturetile.h"
+#include "platform/win/uninitialized.h"
 
 /** A renderer told to take the screen back from GDI that had not given it. */
 #define RENDERER_E_NOT_IN_GDI_MODE static_cast<HRESULT>(0x88762711)
@@ -132,6 +133,8 @@ public:
         pNext = driver;
     }
 
+    // The constructor clears a bit of flags it never set, as the original does.
+    BEGIN_ORIGINAL_UNINITIALIZED_READ
     /** Start a driver that is not usable, with empty abilities. */
     DirectDrawDriver() : pPrev(nullptr), pNext(nullptr) {
         dwFlags &= ~DIRECTDRAW_DRIVER_USABLE;
@@ -146,6 +149,7 @@ public:
         pD3DDevicesHead = nullptr;
         pD3DDevicesTail = nullptr;
     }
+    END_ORIGINAL_UNINITIALIZED_READ
 
     /**
      * Add a display mode to the end of the modes of the driver.
@@ -336,6 +340,8 @@ public:
      */
     bool CompareD3DDeviceGuid(const GUID *pGuid);
 
+    // The constructor clears bits of flags it never set, as the original does.
+    BEGIN_ORIGINAL_UNINITIALIZED_READ
     /** Start a device without texts, with empty descriptions. */
     D3DDeviceNode()
         : pszDescription(nullptr), pszName(nullptr), nTextureFormatCount(0),
@@ -347,6 +353,7 @@ public:
         memset(&softwareDesc, 0, sizeof(softwareDesc));
         softwareDesc.dwSize = sizeof(softwareDesc);
     }
+    END_ORIGINAL_UNINITIALIZED_READ
 
     /**
      * Read a device Direct3D reports.

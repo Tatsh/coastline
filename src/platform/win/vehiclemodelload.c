@@ -27,7 +27,15 @@ void LoadVehicleModelFromRom(VehicleModel *model, s32 car) {
     ReadEntireFile(model, path, -1);
     if (memcmp(model, "RCar", 4) != 0) {
         /* The original error formatter reads its uninitialised destination as the filename. */
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wrestrict"
+#pragma GCC diagnostic ignored "-Wformat-overflow"
+#endif
         sprintf(error, "not a car file: %s", error);
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
         ShowFatalErrorScreen(error);
     }
     ByteSwapAndRelocateCarModel(model);

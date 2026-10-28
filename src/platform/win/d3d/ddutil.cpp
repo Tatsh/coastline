@@ -2,6 +2,8 @@
 
 #include <cstring>
 
+#include "platform/win/uninitialized.h"
+
 // Load a bitmap as a section of the game, or failing that from a file.
 static inline HBITMAP LoadBitmapImage(LPCSTR pszBitmap, int nWidth, int nHeight) {
     HBITMAP hBitmap = static_cast<HBITMAP>(LoadImageA(
@@ -101,6 +103,7 @@ DDCopyBitmap(IDirectDrawSurface *pSurface, HBITMAP hBitmap, int x, int y, int nW
     return hr;
 }
 
+BEGIN_ORIGINAL_UNINITIALIZED_READ
 DWORD DDColorMatch(IDirectDrawSurface *pSurface, COLORREF color) {
     COLORREF savedColor;
     HDC hdc;
@@ -131,6 +134,7 @@ DWORD DDColorMatch(IDirectDrawSurface *pSurface, COLORREF color) {
     }
     return dwPixel;
 }
+END_ORIGINAL_UNINITIALIZED_READ
 
 HRESULT DDSetColorKey(IDirectDrawSurface *pSurface, COLORREF color) {
     DDCOLORKEY key;

@@ -298,7 +298,14 @@ void __stdcall LoadEarConfiguration(uint32_t code) {
                         // The line break is dropped and the title is not terminated; an empty
                         // title copies with a count of -1, as in the original.
                         const char *title = line + std::strlen("[TITLE]");
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wstringop-truncation"
+#endif
                         std::strncpy(g_szConfiguredTitle, title, std::strlen(title) - 1);
+#if defined(__GNUC__) && !defined(__clang__)
+#pragma GCC diagnostic pop
+#endif
                     } else if (IsEarConfigurationKey(line, "[NOIAS]", "[NOIAS]")) {
                         g_bConfiguredTitleNoIas = ReadEarConfigurationFlag(line, "[NOIAS]");
                     } else if (IsEarConfigurationKey(line, "[ISDVD]", "[ISDVD]")) {

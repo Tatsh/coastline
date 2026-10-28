@@ -1236,11 +1236,14 @@ worktrees
 worley
 wrapu
 wrapv
+wrestrict
 writeback
 writebackdcache
 writebackdcacheall
 wrongway
+wsometimes
 wsprintf
+wstringop
 wtype
 wuninitialized
 wunused

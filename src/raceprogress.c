@@ -235,8 +235,15 @@ static void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f32 gapFallback) {
                         other, SubMessage, PROGRESS_MESSAGE("%ryYou're way behind!", 0x123));
                 }
                 /* The original treats the localised suffix as a format string. */
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-security"
+#endif
                 sprintf(VEHICLE_GET(other, MessageText) + strlen(VEHICLE_GET(other, MessageText)),
                         PROGRESS_MESSAGE(" Behind", 0x124));
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
 #if TGR_PLATFORM == TGR_PLATFORM_N64
             } else {
                 sprintf(other->messageText + strlen(other->messageText), " Ahead");

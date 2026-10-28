@@ -33,7 +33,8 @@ static int LoadRendererDll(const char *path) {
     if (!g_hRendererDll) {
         return 0;
     }
-    g_pfnRallyMain = (RallyMainProc)GetProcAddress(g_hRendererDll, "RallyMain");
+    /* GetProcAddress() returns a pointer of no particular type, which passes through void(void). */
+    g_pfnRallyMain = (RallyMainProc)(void (*)(void))GetProcAddress(g_hRendererDll, "RallyMain");
     return g_pfnRallyMain != nullptr;
 }
 
@@ -97,7 +98,7 @@ int WINAPI WinMain(HINSTANCE instance,
     if (!LoadRendererDll(rendererPath)) {
         WriteApplicationDiagnostic("Renderer DLL load failed.\n");
         char message[1024];
-        sprintf(message, "Error: failed to load %s.", rendererPath);
+        snprintf(message, sizeof(message), "Error: failed to load %s.", rendererPath);
         MessageBoxA(desktop, message, "Boss Rally", MB_ICONHAND);
         exit(1);
     }

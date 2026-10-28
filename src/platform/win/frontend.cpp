@@ -3564,7 +3564,7 @@ int SaveSeasonUI::OnSlotNameEntered(MenuItemList *pList, int nStatus) {
     }
     // The slot is marked as named even when writing fails.
     PrintWineDiagnostic("coastline: Writing season save file.\n");
-    const bool saved = SaveSeasonSaveFile();
+    [[maybe_unused]] const bool saved = SaveSeasonSaveFile();
     PrintWineDiagnostic(saved ? "coastline: Season save written.\n" :
                                 "coastline: Season save write failed.\n");
     g_dwSaveSeasonSlotNamed = 1;
