@@ -21,9 +21,22 @@ public:
     virtual void Dump(CDumpContext &context) const;
 };
 
+typedef struct __POSITION {
+} *POSITION;
+
 class CMapWordToPtr : public CObject {
 public:
+    explicit CMapWordToPtr(int blockSize = 10);
+    ~CMapWordToPtr() override;
+    int GetCount() const;
+    UINT GetHashTableSize() const;
+    BOOL IsEmpty() const;
     BOOL Lookup(WORD key, void *&value) const;
+    void SetAt(WORD key, void *value);
+    BOOL RemoveKey(WORD key);
+    void RemoveAll();
+    POSITION GetStartPosition() const;
+    void GetNextAssoc(POSITION &position, WORD &key, void *&value) const;
     void InitHashTable(UINT hashSize, BOOL allocate = TRUE);
 
 private:
@@ -32,6 +45,26 @@ private:
     UINT hashTableSize;
     int count;
     Association *freeAssociations;
+    CPlex *blocks;
+    int blockSize;
+};
+
+/** A list of words, as the CList template of MFC instantiates it. */
+class CWordList : public CObject {
+public:
+    explicit CWordList(int blockSize = 10);
+    ~CWordList() override;
+    BOOL IsEmpty() const;
+    WORD &GetHead();
+    POSITION AddHead(WORD value);
+    void RemoveAll();
+
+private:
+    struct Node;
+    Node *head;
+    Node *tail;
+    int count;
+    Node *freeNodes;
     CPlex *blocks;
     int blockSize;
 };

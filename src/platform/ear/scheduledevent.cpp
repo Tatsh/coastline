@@ -106,7 +106,7 @@ ScheduledEarEvent::ScheduledEarEvent(std::uint16_t flags, const void *incoming) 
     backendParameter = 0;
     notificationFlags = 0;
     std::memset(unknownCc, 0, sizeof(unknownCc));
-    std::memset(unknownD4, 0, sizeof(unknownD4));
+    priority = 0;
     notificationEvent = 0;
     // Native construction does not initialise reservedEventControl.
     allocatedSource = nullptr;

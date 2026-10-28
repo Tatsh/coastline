@@ -2,12 +2,15 @@ add_library(
   coastline_ear STATIC
   backend.c
   bank.c
+  channel.cpp
+  configuration.c
   direction.c
   directsoundoutput.cpp
   distance.c
   earplayback.cpp
   environment.cpp
   error.c
+  event.cpp
   exports.def
   initialization.cpp
   memorybudget.c

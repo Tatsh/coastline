@@ -51,11 +51,9 @@ public:
     BOOL IsEmpty() const {
         return count == 0;
     }
-    /**
-     * @ghidraAddress EAR: 0x10008ac0
-     * @stub
-     */
-    BOOL RemoveKey(std::uint16_t key);
+    BOOL Lookup(DWORD key, WORD &value) const;
+    void SetAt(DWORD key, WORD value);
+    BOOL RemoveKey(DWORD key);
 
 private:
     class Association;

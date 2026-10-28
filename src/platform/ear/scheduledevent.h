@@ -5,6 +5,7 @@
 
 #include <windows.h>
 
+class EarChannel;
 class EarPlayback;
 
 union EarEventSource {
@@ -85,6 +86,9 @@ public:
     int IsScheduledEventStopping();
 
 private:
+    // A channel compares the priority and the attenuation of its events directly.
+    friend class EarChannel;
+
     /** @ghidraAddress EAR: 0x10007dfc */
     int InitializeScheduledEarEventPlayback();
     /** @ghidraAddress EAR: 0x100080e8 */
@@ -148,7 +152,7 @@ private:
     std::uint32_t notificationFlags;
     [[maybe_unused]] std::uint8_t unknownCc[4]; /* +0xcc */
     std::uint32_t reservedEventControl;
-    [[maybe_unused]] std::uint8_t unknownD4[2]; /* +0xd4 */
+    std::uint16_t priority;
     std::uint16_t notificationEvent;
 };
 

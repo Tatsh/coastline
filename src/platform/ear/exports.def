@@ -1,15 +1,24 @@
 EXPORTS
+    _EAR_DLL_AAA_Validate@4=EAR_DLL_AAA_Validate@4
     _EAR_DLL_AssignHwnd@4=EAR_DLL_AssignHwnd@4
+    _EAR_DLL_ChangeChannelControl@8=EAR_DLL_ChangeChannelControl@8
+    _EAR_DLL_ClearChannel@8=EAR_DLL_ClearChannel@8
     _EAR_DLL_EarInactive@0=EAR_DLL_EarInactive@0
+    _EAR_DLL_GetEventStatus@8=EAR_DLL_GetEventStatus@8
     _EAR_DLL_GetLastError@0=EAR_DLL_GetLastError@0
     _EAR_DLL_GetVersion@0=EAR_DLL_GetVersion@0
     _EAR_DLL_InitializeEar@4=EAR_DLL_InitializeEar@4
     _EAR_DLL_RegisterBank@8=EAR_DLL_RegisterBank@8
+    _EAR_DLL_RegisterChannel@16=EAR_DLL_RegisterChannel@16
     _EAR_DLL_ResetEar@0=EAR_DLL_ResetEar@0
+    _EAR_DLL_SetAttenuationLevel@8=EAR_DLL_SetAttenuationLevel@8
     _EAR_DLL_SetUserDistanceUnit@8=EAR_DLL_SetUserDistanceUnit@8
     _EAR_DLL_ShowLastError@0=EAR_DLL_ShowLastError@0
     _EAR_DLL_ShutDownBank@4=EAR_DLL_ShutDownBank@4
+    _EAR_DLL_ShutDownChannel@4=EAR_DLL_ShutDownChannel@4
     _EAR_DLL_ShutDownEar@0=EAR_DLL_ShutDownEar@0
+    _EAR_DLL_ShutDownEvent@8=EAR_DLL_ShutDownEvent@8
     _EAR_DLL_ShutDownTimer@0=EAR_DLL_ShutDownTimer@0
+    _EAR_DLL_StartEvent@4=EAR_DLL_StartEvent@4
     _EAR_DLL_StartTimer@0=EAR_DLL_StartTimer@0
     _EAR_DLL_UpdateEar@0=EAR_DLL_UpdateEar@0
