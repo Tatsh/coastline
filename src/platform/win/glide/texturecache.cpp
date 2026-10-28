@@ -2,8 +2,11 @@
 
 #include <bit>
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
 #include <cstring>
+
+#include <zlib.h>
 
 #include "platform/win/d3d/renderer.h"
 #include "platform/win/displaylist.h"
@@ -16,6 +19,7 @@
 #include "platform/win/texturesampling.h"
 #include "platform/win/texturescan.h"
 #include "platform/win/textureworkspace.h"
+#include "vehiclemodel.h"
 
 GlideTmuMemory g_aGlideTmuMemory[GLIDE_TMU_COUNT];
 GlideTextureSlot g_aGlideTextureSlots[GLIDE_TEXTURE_SLOT_COUNT];
@@ -817,6 +821,193 @@ void DecodeTexturePixels(unsigned char *pDest,
                          unsigned nRowSwapMask) {
 }
 
+// Set the level of detail and the aspect ratio of an image from a size, and its largest level
+// from the tiles of the scan. Return whether the aspect ratio is not one Glide has.
+static bool UpdateTmemTextureLevels(TextureImageData &image, int width, int height) {
+    CalculateMipMapLevel(&image.nLod, width, height);
+    int exact = CalculateAspectRatioLevel(&image.nAspectRatio, width, height);
+    image.nLargestLod = image.nLod - g_dwTexScanRenderTileIndex + g_dwTexScanMaxTileIndex;
+    return !exact;
+}
+
+// The checksum of the texels of an image after it is uploaded.
+static uLong ChecksumTexturePixels(const unsigned char *pixels, int bytes) {
+    return adler32(adler32(0, nullptr, 0), pixels, static_cast<uInt>(bytes));
+}
+
 int CreateTextureFromTmemShadow(unsigned char *pTmem) {
-    return static_cast<int>(g_dwWeatherShadeTextureId);
+    TextureImageData image;
+    image.bColorCombine = g_bTexScanColorCombine;
+    image.pImage =
+        const_cast<unsigned char *>(static_cast<const unsigned char *>(g_pTexScanLoadBlockSource));
+    image.pPalette = static_cast<const unsigned char *>(g_pTexScanTlutAddress);
+    image.abEnvColor[0] = g_bTexScanEnvColorR;
+    image.abEnvColor[1] = g_bTexScanEnvColorG;
+    image.abEnvColor[2] = g_bTexScanEnvColorB;
+    image.abEnvColor[3] = g_bTexScanEnvColorA;
+    image.abPrimColor[0] = g_bTexScanPrimColorR;
+    image.abPrimColor[1] = g_bTexScanPrimColorG;
+    image.abPrimColor[2] = g_bTexScanPrimColorB;
+    image.abPrimColor[3] = g_bTexScanPrimColorA;
+    image.bOwnsPaintBuffers = 0;
+    int existing = FindMatchingTextureEntry(&image);
+    if (existing != -1) {
+        return existing;
+    }
+    image.nTileIndex = g_dwTexScanRenderTileIndex;
+    if (g_dwTexScanMaxTileIndex < image.nTileIndex) {
+        g_dwTexScanMaxTileIndex = image.nTileIndex;
+    }
+    image.nOption1 = g_nGlideNumTmus > 1;
+    image.nOption2 = 3;
+    const TexScanTile &tile = g_aTexScanTiles[image.nTileIndex];
+    image.nWidth = image.nDecodedWidth =
+        static_cast<int>(1u << (static_cast<unsigned>(tile.nMaskS) & 31));
+    image.nHeight = image.nDecodedHeight =
+        static_cast<int>(1u << (static_cast<unsigned>(tile.nMaskT) & 31));
+    if (g_dwTexScanMaxTileIndex > image.nTileIndex) {
+        int maskS = tile.nMaskS;
+        int maskT = tile.nMaskT;
+        for (int next = image.nTileIndex + 1; next <= g_dwTexScanMaxTileIndex; next++) {
+            maskS--;
+            if (g_aTexScanTiles[next].nMaskS != maskS || g_aTexScanTiles[next].nMaskT != --maskT) {
+                g_dwTexScanMaxTileIndex = next - 1;
+                break;
+            }
+        }
+    }
+    int mirrorS = tile.bMirrorS;
+    int mirrorT = tile.bMirrorT;
+    if (mirrorS) {
+        image.nWidth = static_cast<int>(static_cast<unsigned>(image.nWidth) << 1);
+    }
+    if (mirrorT) {
+        image.nHeight = static_cast<int>(static_cast<unsigned>(image.nHeight) << 1);
+    }
+    image.nPixelFormatId =
+        ChooseTexturePixelFormat(tile.nSize, tile.nFormat, g_bTexScanColorCombine);
+    // The levels and the aspect ratio are set before they are calculated.
+    image.nLargestLod = GR_LOD_1;
+    image.nLod = GR_LOD_1;
+    image.nOption3 = 2;
+    image.bClampS = tile.bClampS != 0;
+    image.nAspectRatio = GR_ASPECT_1x1;
+    image.bClampT = tile.bClampT != 0;
+    int edgeWidth =
+        static_cast<int>(static_cast<unsigned>(tile.nLrs) - static_cast<unsigned>(tile.nUls) + 4) >>
+        2;
+    int edgeHeight =
+        static_cast<int>(static_cast<unsigned>(tile.nLrt) - static_cast<unsigned>(tile.nUlt) + 4) >>
+        2;
+    if (edgeWidth != image.nDecodedWidth) {
+        if (edgeWidth == image.nWidth) {
+            image.nDecodedWidth = edgeWidth;
+        } else if (edgeWidth > image.nWidth && edgeWidth % image.nWidth == 0) {
+            image.bClampS = 0;
+        }
+    }
+    if (edgeHeight != image.nDecodedHeight) {
+        if (edgeHeight == image.nHeight) {
+            image.nDecodedHeight = edgeHeight;
+        } else if (edgeHeight > image.nHeight && edgeHeight % image.nHeight == 0) {
+            image.bClampT = 0;
+        }
+    }
+    CalculateMipMapLevel(&image.nLod, image.nWidth, image.nHeight);
+    bool invalidAspect =
+        !CalculateAspectRatioLevel(&image.nAspectRatio, image.nWidth, image.nHeight);
+    unsigned levelShift = static_cast<unsigned>(g_dwTexScanMaxTileIndex - image.nTileIndex) & 31;
+    CalculateMipMapLevel(
+        &image.nLargestLod, image.nWidth >> levelShift, image.nHeight >> levelShift);
+    if (g_dwTextureQualityLevel > 1) {
+        image.nLargestLod = image.nLod;
+        g_dwTexScanMaxTileIndex = g_dwTexScanRenderTileIndex;
+    }
+    image.nOption4 = 1;
+    image.nOption5 = 1;
+    image.dwOption6 = 0xc0000000;
+    image.nOption7 = 0;
+    image.nPixelBytes = static_cast<int>(grTexCalcMemRequired(
+        image.nLargestLod, image.nLod, image.nAspectRatio, image.nPixelFormatId));
+    if (image.nPixelBytes > 0x80000) {
+        image.nPixelBytes = 0x80000;
+    }
+    std::memcpy(image.aTiles, g_aTexScanTiles, sizeof(image.aTiles));
+    image.nTileLimit = g_dwTexScanMaxTileIndex + 1;
+    image.bMirrorS = mirrorS;
+    image.bMirrorT = mirrorT;
+    image.nRowSwapMask = 1;
+    image.nSourceWidth = image.nWidth;
+    image.nSourceHeight = image.nHeight;
+    // The decoded texels fill a square of the larger side.
+    image.nDecodedWidth = image.nDecodedHeight =
+        image.nWidth >= image.nHeight ? image.nWidth : image.nHeight;
+    if (invalidAspect || mirrorS || mirrorT) {
+        int width = image.nWidth;
+        int height = image.nHeight;
+        if (mirrorS && g_dwTextureQualityLevel > 1) {
+            width /= 2;
+            invalidAspect = UpdateTmemTextureLevels(image, width, height);
+        }
+        if (mirrorT && g_dwTextureQualityLevel > 1) {
+            height /= 2;
+            invalidAspect = UpdateTmemTextureLevels(image, width, height);
+        }
+        if (invalidAspect) {
+            int w = image.nWidth;
+            int h = image.nHeight;
+            if (w >= h) {
+                if (w > 1) {
+                    UpdateTmemTextureLevels(image, w / 2, h);
+                }
+            } else if (h > 1) {
+                UpdateTmemTextureLevels(image, w, h / 2);
+            }
+            CalculateTextureDimensions(&width, &height, image.nLod, image.nAspectRatio);
+        }
+        image.nWidth = width;
+        image.nHeight = height;
+    }
+    if (g_dwTextureQualityLevel > 1 &&
+        LookupTextureMapEntry(static_cast<unsigned>(reinterpret_cast<std::uintptr_t>(image.pImage)),
+                              &image.nWidth,
+                              &image.nHeight)) {
+        UpdateTmemTextureLevels(image, image.nWidth, image.nHeight);
+    }
+    image.dwFlags = g_dwTextureLoadCategory;
+    image.nDecodedBytes = image.nPixelBytes;
+    if ((image.dwFlags & 2) && image.nTileLimit == 2) {
+        image.dwFlags |= 0x80;
+    }
+    unsigned char *pixels = GetTextureImagePixels(&image);
+    int entry = CreateTextureFromImage(&image, pixels);
+    if (g_pTextureEntries[entry].data.bOwnsPaintBuffers) {
+        int option = GetSelectedPaintOption();
+        if (option >= 0 && option < DAMAGE_TEXTURE_COUNT) {
+            g_anDamageTextureEntries[option] = entry;
+        }
+    }
+    if (image.dwFlags & 2) {
+        if (image.bOwnsPaintBuffers) {
+            if (image.bHasTintPixels) {
+                AppendVehicleModelTextureEntry(entry);
+            }
+        } else if (IsVehicleMaterialPalette(image.pPalette)) {
+            // The first two colours of the palette are made white for one upload.
+            unsigned char *palette = const_cast<unsigned char *>(image.pPalette);
+            unsigned char firstColors[4];
+            std::memcpy(firstColors, palette, sizeof(firstColors));
+            std::memset(palette, 0xff, sizeof(firstColors));
+            pixels = GetTextureImagePixels(&image);
+            g_pfnUploadTextureEntryToSurface(entry, pixels);
+            uLong checksum = ChecksumTexturePixels(pixels, image.nPixelBytes);
+            std::memcpy(palette, firstColors, sizeof(firstColors));
+            pixels = GetTextureImagePixels(&image);
+            g_pfnUploadTextureEntryToSurface(entry, pixels);
+            if (ChecksumTexturePixels(pixels, image.nPixelBytes) != checksum) {
+                AppendVehicleModelTextureEntry(entry);
+            }
+        }
+    }
+    return entry;
 }
