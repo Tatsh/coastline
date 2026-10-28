@@ -841,7 +841,11 @@ void ComputeDampingForces(RigidBody *body) {
         }
         if (wheel->contactFrames == 0) {
             damping = 0.0f;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        } else if (!(velocity.z >= 0.0f)) {
+#else
         } else if (velocity.z < 0.0f) {
+#endif
             damping = 0.0f;
         } else {
             damping = velocity.z * body->damping;
