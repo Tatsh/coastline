@@ -3692,7 +3692,7 @@ int PreRaceExitSeasonConfirmUI::OnYes(MenuWidget *pWidget) {
         delete g_pCachedMenu_PreRaceInfo;
         g_pCachedMenu_PreRaceInfo = nullptr;
     }
-    g_pActiveMenuScreen = g_pCachedMenu_MainMenu;
+    g_pActiveMenuScreen = g_pRootMenuScreen;
     return 0;
 }
 
@@ -3710,7 +3710,7 @@ int ResultsSummaryExitSeasonConfirmUI::OnYes(MenuWidget *pWidget) {
     pWidget->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
     g_pPreRaceInfoMenuScreen = nullptr;
-    g_pActiveMenuScreen = g_pCachedMenu_MainMenu;
+    g_pActiveMenuScreen = g_pRootMenuScreen;
     return 0;
 }
 
@@ -4224,6 +4224,8 @@ int QuitGameConfirmUI::OnConfirmQuit(MenuWidget *pWidget) {
     pWidget->GetScreen()->ShutdownFrontEnd(0);
     ShutdownDirectPlaySession(g_pDirectPlayInfo);
     ShutdownApplication(0);
+    // ShutdownApplication() does not return, and the binaries still return 1 after it.
+    return 1;
 }
 
 int RaceSetupUI::UpdateTrackImage(MenuWidget *pWidget) {
