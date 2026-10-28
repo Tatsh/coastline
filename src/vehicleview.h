@@ -39,6 +39,7 @@ extern u16 *g_apVehicleReflectionTluts[4];
  * @ghidraAddress EUR: 0x8028ea8c
  * @ghidraAddress JPN: 0x8028e4dc
  * @ghidraAddress BRD3D: 0x100a64b8
+ * @ghidraAddress BRGlide: 0x100a5c78
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 extern s8 g_abVehicleReflectionTexSelect[][2];

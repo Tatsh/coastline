@@ -160,6 +160,7 @@ extern Vec3f g_vecVehicleHiliteDir;
  * @ghidraAddress EUR: 0x8028eaa0
  * @ghidraAddress JPN: 0x8028e4f0
  * @ghidraAddress BRD3D: 0x100a64c8
+ * @ghidraAddress BRGlide: 0x100a5c88
  */
 extern u16 g_awVehicleShadePalette[16];
 
@@ -304,6 +305,7 @@ void CheckVehicleVisibility(Vehicle *vehicle);
  * @ghidraAddress EUR: 0x80231a64
  * @ghidraAddress JPN: 0x80231864
  * @ghidraAddress BRD3D: 0x1000cbe0
+ * @ghidraAddress BRGlide: 0x1000a110
  */
 void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset);
 

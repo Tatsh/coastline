@@ -16,6 +16,10 @@
 #include "platform/win/boot/rallyconfig.h"
 #include "platform/win/render.h"
 #include "platform/win/renderbackend.h"
+#if TGR_RENDERER == TGR_RENDERER_GLIDE
+#include "game.h"
+#include "racerslot.h"
+#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 namespace {
@@ -487,6 +491,15 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
         g_dwVehicleOtherModeLFlags = FLAGS_GHOST;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         gDPSetPrimColor(gDisplayListPtr++, 0, 0, 0, 0, 0, g_dwVehicleFogAlpha);
+#if TGR_RENDERER == TGR_RENDERER_GLIDE
+        /* BRGlide alone gives the ghost of a time attack at three eighths opacity this mode. */
+        if (g_dwGameMode == GAME_MODE_TIME_ATTACK && VEHICLE_GET(vehicle, Racer) != NULL &&
+            VEHICLE_GET(vehicle, Racer)->GetIndex() != 0 &&
+            VEHICLE_GET(vehicle, Opacity) == 0.375f) {
+            g_dwVehicleOtherModeLBlend = 0;
+            g_dwVehicleOtherModeLFlags = 2;
+        }
+#endif
 #endif
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     } else if (!(rawDistance >= ANTIALIAS_DISTANCE)) {
