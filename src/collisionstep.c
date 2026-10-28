@@ -429,7 +429,8 @@ void CollideVehicles(void) {
             if (VEHICLE_GET(RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle), Body)
                     .framesSinceVehicleImpact >= 41) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-                volume = (u32)(128.0L - closing * -4.70370388031005859375f);
+                /* __ftol truncates through 64 bits, which gives 0 for a NaN closing speed. */
+                volume = (u32)(s64)(128.0L - closing * -4.70370388031005859375f);
 #else
                 volume = (u32)(127.0f * closing / MAX_IMPACT_SPEED + 128.0f);
 #endif
