@@ -739,10 +739,23 @@ int MenuWidget::DrawCurrentImage() {
     return 1;
 }
 
+// The text of a font is never null, and the binaries test it all the same before drawing.
+static inline void DrawFontTextIfSet(MenuFont *font) {
+    if (font->GetText() != nullptr) {
+        font->DrawText();
+    }
+}
+
+static inline void DrawFontTextAltFontIfSet(MenuFont *font) {
+    if (font->GetText() != nullptr) {
+        font->DrawTextAltFont();
+    }
+}
+
 int MenuWidget::Draw() {
     if (dwTertiaryFlags & 1) {
         if (dwFlags & 0x100000) {
-            fonts[0].DrawText();
+            DrawFontTextIfSet(&fonts[0]);
         } else if (!(dwFlags & 0x200000)) {
             if (!DrawCurrentImage()) {
                 return 0;
@@ -4139,7 +4152,7 @@ int ProcessMenuTextEditInput(MenuWidget *pWidget, short nFont) {
 
     font->MeasureText();
     if (!font->GetDrawCaret()) {
-        font->DrawText();
+        DrawFontTextIfSet(font);
         return 0;
     }
     signed char result = font->HandleTextInput();
@@ -4279,7 +4292,7 @@ int SeasonUI::UpdateSeasonNameLabel(MenuWidget *pWidget) {
     font->SetText(_strupr(GetStringResource(g_SeasonTable[season].nameStringId)));
 
     font->MeasureText();
-    font->DrawText();
+    DrawFontTextIfSet(font);
     return 1;
 }
 
@@ -4303,7 +4316,7 @@ int SeasonUI::UpdateYearOrdinalLabel(MenuWidget *pWidget) {
     font->SetText(text);
 
     font->MeasureText();
-    font->DrawText();
+    DrawFontTextIfSet(font);
     return 1;
 }
 
@@ -4331,10 +4344,7 @@ static inline void DrawAlternateMenuLabel(MenuWidget *pWidget, const char *text)
     font->SetText(text);
 
     font->MeasureTextAltFont();
-    // The text of a font is never null, and the binaries test it all the same.
-    if (font->GetText() != nullptr) {
-        font->DrawTextAltFont();
-    }
+    DrawFontTextAltFontIfSet(font);
 }
 
 static inline int DrawSeasonRoundValue(MenuWidget *pWidget, int value) {
@@ -4342,7 +4352,7 @@ static inline int DrawSeasonRoundValue(MenuWidget *pWidget, int value) {
     font->SetNumber(value);
 
     font->MeasureTextAltFont();
-    font->DrawTextAltFont();
+    DrawFontTextAltFontIfSet(font);
     return 1;
 }
 
@@ -4404,7 +4414,7 @@ static inline int DrawTimeAttackTimeLabel(MenuWidget *widget, float seconds) {
     MenuFont &font = widget->GetFont(0);
     font.SetText(_strupr(text));
     font.MeasureText();
-    font.DrawText();
+    DrawFontTextIfSet(&font);
     return 1;
 }
 
@@ -4508,7 +4518,7 @@ int SeasonProgressInfoUI::UpdateRoundLabel(MenuWidget *pWidget) {
     font->AppendText(g_szSeasonRoundLabel);
 
     font->MeasureText();
-    font->DrawText();
+    DrawFontTextIfSet(font);
     return 1;
 }
 
@@ -4673,7 +4683,7 @@ int RaceSetupUI::UpdateLapCountLabel(MenuWidget *pWidget) {
         font->SetNumber(g_dwTotalLaps);
 
         font->MeasureTextAltFont();
-        font->DrawTextAltFont();
+        DrawFontTextAltFontIfSet(font);
     }
     return 1;
 }
