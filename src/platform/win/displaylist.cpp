@@ -1362,11 +1362,6 @@ static void UpdateGbiDirectionalLight(LightTransformMode mode = LightTransformMo
         float x = light.dir[0];
         float y = light.dir[1];
         float z = light.dir[2];
-        if (mode == LightTransformMode::TexGenLinear) {
-            // This handler multiplies the second matrix column by the light's z byte.
-            y = light.dir[2];
-            z = light.dir[1];
-        }
         g_GbiLight0Direction.x = TransformGbiLightDirectionRow(
             matrix[0],
             x,
