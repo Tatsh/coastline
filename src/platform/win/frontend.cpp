@@ -209,12 +209,6 @@ unsigned g_dwUnlockedCarMask = 0x102;
 // @ghidraAddress BRD3D: 0x100ab3d8
 // @ghidraAddress BRGlide: 0x100aab78
 int g_bAudioOptionsSfxSelected;
-// @ghidraAddress BRD3D: 0x10a9e360
-// @ghidraAddress BRGlide: 0x10ac53e8
-MenuImage g_aMenuImages[MENU_IMAGE_COUNT];
-// @ghidraAddress BRD3D: 0x10aa28d4
-// @ghidraAddress BRGlide: 0x10ac5c2c
-unsigned short g_wMenuImageLoadedCount;
 // @ghidraAddress BRD3D: 0x10aa29f8
 // @ghidraAddress BRGlide: 0x10ac5d50
 [[maybe_unused]] unsigned short g_wUnusedFrontEndWord0;
@@ -477,6 +471,9 @@ const char *const s_apszMenuImageFiles[MENU_IMAGE_COUNT] = {
     "images\\tire2off.bmp",  "images\\listbox2.bmp",  "images\\trakQ.bmp",
     "images\\trakQ_.bmp"};
 } // namespace
+
+MenuImage g_aMenuImages[MENU_IMAGE_COUNT];
+unsigned short g_wMenuImageLoadedCount;
 
 // The string of the format of the default names of the saved files.
 #define SAVE_FILE_DEFAULT_NAME_STRING 0xbe

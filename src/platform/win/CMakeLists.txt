@@ -105,6 +105,7 @@ target_link_libraries(coastline_main PRIVATE coastline_common)
 # The Glide renderer and what differs from the Direct3D library belong to the Glide library alone.
 if(TGR_RENDERER STREQUAL "glide")
   target_sources(coastline_main PRIVATE glide/rgb565image.c glide/texture.c glide/winmain.cpp)
+  target_sources(coastline_main PRIVATE glide/menusurface.cpp)
 
   # The headers of the Glide 2.x SDK for the Voodoo 2, and the import library of glide2x.dll,
   # built from the routines the game imports.

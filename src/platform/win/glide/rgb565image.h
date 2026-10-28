@@ -38,6 +38,28 @@ Rgb565Image *CreateRgb565ImageFromBitmap(const BITMAP *bitmap);
 /** @ghidraAddress BRGlide: 0x10001290 */
 Rgb565Image *LoadBitmapToRgb565Image(const char *name, int width, int height);
 
+/** The flag of BlitRgb565ImageRegion() that skips the pixels of the colour key of the source. */
+#define RGB565_BLIT_COLOR_KEYED 0x1
+
+/**
+ * Copy a rectangle of an image into another at a position, clipped to the right and bottom edges
+ * of the destination.
+ *
+ * @param destination The image copied into.
+ * @param x The left of the copy in the destination.
+ * @param y The top of the copy in the destination.
+ * @param source The image copied from.
+ * @param rect The rectangle of the source.
+ * @param flags #RGB565_BLIT_COLOR_KEYED or 0.
+ * @ghidraAddress BRGlide: 0x10001320
+ */
+void BlitRgb565ImageRegion(Rgb565Image *destination,
+                           unsigned x,
+                           unsigned y,
+                           const Rgb565Image *source,
+                           const RECT *rect,
+                           DWORD flags);
+
 /** @ghidraAddress BRGlide: 0x100013f0 */
 void CopyRgb565Rect(void *destination,
                     int destinationStride,
@@ -57,6 +79,14 @@ void CopyRgb565RectColorKeyed(uint16_t *destination,
 
 /** @ghidraAddress BRGlide: 0x100014a0 */
 void SetRgb565ImageColorKey(Rgb565Image *image, COLORREF color);
+
+/**
+ * Write an image to the back buffer of Glide at its top left.
+ *
+ * @param image The image, its pixels in RGB 565.
+ * @ghidraAddress BRGlide: 0x100014e0
+ */
+void WriteRgb565ImageToGlideLfb(const Rgb565Image *image);
 
 #ifdef __cplusplus
 }

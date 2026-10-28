@@ -5,10 +5,11 @@
  */
 #include <cstring>
 
+#include <windows.h>
+// The headers below need the types of windows.h.
 #include <dbt.h>
 #include <glide.h>
 #include <objbase.h>
-#include <windows.h>
 
 #include "instantreplay.h"
 #include "laps.h"

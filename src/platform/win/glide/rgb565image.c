@@ -5,6 +5,8 @@ static_assert(sizeof(Rgb565Image) == 16, "The native image descriptor has sixtee
 #include <stdlib.h>
 #include <string.h>
 
+#include <glide.h>
+
 Rgb565Image *CreateRgb565Image(int width, int height) {
     Rgb565Image *image = malloc(sizeof(*image));
     if (image == NULL) {
@@ -77,6 +79,48 @@ Rgb565Image *LoadBitmapToRgb565Image(const char *name, int width, int height) {
     return image;
 }
 
+void BlitRgb565ImageRegion(Rgb565Image *destination,
+                           unsigned x,
+                           unsigned y,
+                           const Rgb565Image *source,
+                           const RECT *rect,
+                           DWORD flags) {
+    int width = rect->right - rect->left;
+    if (width < 0) {
+        return;
+    }
+    int height = rect->bottom - rect->top;
+    if (height < 0) {
+        return;
+    }
+    // The edges are compared unsigned, so a position past the image draws nothing.
+    if ((unsigned)width + x >= (unsigned)destination->width) {
+        if ((unsigned)destination->width < x) {
+            return;
+        }
+        width = destination->width - (int)x;
+    }
+    if ((unsigned)height + y >= (unsigned)destination->height) {
+        if ((unsigned)destination->height < y) {
+            return;
+        }
+        height = destination->height - (int)y;
+    }
+    uint16_t *target = destination->pixels + y * destination->width + x;
+    const uint16_t *pixels = source->pixels + source->width * rect->top + rect->left;
+    if (flags & RGB565_BLIT_COLOR_KEYED) {
+        CopyRgb565RectColorKeyed(target,
+                                 destination->width * 2,
+                                 width,
+                                 height,
+                                 pixels,
+                                 source->width * 2,
+                                 source->colorKey);
+    } else {
+        CopyRgb565Rect(target, destination->width * 2, width, height, pixels, source->width * 2);
+    }
+}
+
 void CopyRgb565Rect(void *destination,
                     int destinationStride,
                     unsigned width,
@@ -122,4 +166,16 @@ void CopyRgb565RectColorKeyed(uint16_t *destination,
 void SetRgb565ImageColorKey(Rgb565Image *image, COLORREF color) {
     image->colorKey =
         ((color & 0xf8u) << 8) | (((color >> 8) & 0xfcu) << 3) | ((color >> 19) & 0x1fu);
+}
+
+void WriteRgb565ImageToGlideLfb(const Rgb565Image *image) {
+    // The result is discarded.
+    grLfbWriteRegion(GR_BUFFER_BACKBUFFER,
+                     0,
+                     0,
+                     GR_LFB_SRC_FMT_565,
+                     image->width,
+                     image->height,
+                     image->width * 2,
+                     image->pixels);
 }

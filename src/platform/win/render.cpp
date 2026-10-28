@@ -23,6 +23,7 @@
 #include "weather.h"
 
 void (*g_pfnRenderBackendSubmitDisplayList)(GbiCommand *pDisplayList);
+void (*g_pfnPresentFrame)(void);
 void (*g_pfnRenderBackendInit)(void);
 void (*g_pfnRenderBackendShutdown)(void);
 void (*g_pfnRenderBackendUpdateFog)(void);

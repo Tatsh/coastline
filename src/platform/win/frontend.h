@@ -13,6 +13,7 @@
 #include <ddraw.h>
 
 #include "platform/win/assetnames.h"
+#include "platform/win/glide/rgb565image.h"
 #include "platform/win/menufont.h"
 
 /** The number of names of a SaveFileList. */
@@ -2502,12 +2503,11 @@ public:
      */
     virtual bool ActivateMenuScreen();
     /**
-     * Flip the frame to the display and wait for the flip to finish. The Glide library flips its
-     * own way.
+     * Flip the frame to the display and wait for the flip to finish. The Glide library writes
+     * g_pMenuFrameSurface to the frame buffer and shows it with g_pfnPresentFrame instead.
      *
      * @ghidraAddress BRD3D: 0x10048960
      * @ghidraAddress BRGlide: 0x10041db0
-     * @stub{BRGlide}
      */
     virtual void FlipAndWait();
     /**
@@ -2668,10 +2668,26 @@ struct MenuImage {
     IDirectDrawSurface *pSurface; /*!< The surface the image is loaded into. */
     DDSURFACEDESC desc;           /*!< The description of pSurface. */
 #else
-    char abUnknown0[4]; /* +0x00 */
+    Rgb565Image *pImage; /*!< The image loaded from the file. */
 #endif
     char *pszPath; /*!< The path of the file of the image, from new. */
 };
+
+/**
+ * The images of the menus.
+ *
+ * @ghidraAddress BRD3D: 0x10a9e360
+ * @ghidraAddress BRGlide: 0x10ac53e8
+ */
+extern MenuImage g_aMenuImages[MENU_IMAGE_COUNT];
+
+/**
+ * The number of entries of g_aMenuImages loaded.
+ *
+ * @ghidraAddress BRD3D: 0x10aa28d4
+ * @ghidraAddress BRGlide: 0x10ac5c2c
+ */
+extern unsigned short g_wMenuImageLoadedCount;
 
 /** A resource of the front end. Its layout is not recovered yet. */
 struct FrontEndResourceSlot {
@@ -3217,11 +3233,20 @@ bool InitMenuDirectDrawSurfaces(void);
 
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
 /**
- * Load every menu image.
+ * The frame the menus are drawn into, the size of the frame buffer.
  *
+ * @ghidraAddress BRGlide: 0x10ac5d84
+ */
+extern Rgb565Image *g_pMenuFrameSurface;
+
+/**
+ * Create g_pMenuFrameSurface, show the loading screen unless this is the first call, and load
+ * every menu image with its colour key.
+ *
+ * @return Whether every image loaded. The game exits when one does not.
  * @ghidraAddress BRGlide: 0x100583c0
  */
-void InitMenuSurfaces(void);
+bool InitMenuSurfaces(void);
 #endif
 
 #ifdef __cplusplus
@@ -3353,8 +3378,6 @@ extern int g_dwLobbyLaunchHandled;
  *
  * @return Always true.
  * @ghidraAddress BRD3D: 0x1005f4e0
- * @ghidraAddress BRGlide: 0x10001320
- * @stub{BRGlide}
  */
 bool RestoreMenuSurfaces(void);
 
@@ -3370,7 +3393,8 @@ bool ReleaseMenuSurfacesAndFail(HWND hWnd);
 
 /**
  * Draw a part of a menu image into the back buffer. The cursor is clipped to the screen of the
- * menus. A lost surface restores the menu images and the part is not drawn.
+ * menus. A lost surface restores the menu images and the part is not drawn. The Glide library
+ * copies the part into g_pMenuFrameSurface with BlitRgb565ImageRegion().
  *
  * @param nDestX The left to draw at.
  * @param nDestY The top to draw at.
@@ -3379,7 +3403,6 @@ bool ReleaseMenuSurfacesAndFail(HWND hWnd);
  * @param dwFlags The flags of BltFast(). DDBLTFAST_WAIT is added.
  * @ghidraAddress BRD3D: 0x1005f5a0
  * @ghidraAddress BRGlide: 0x10058380
- * @stub{BRGlide}
  */
 void BlitSurfaceRegion(int nDestX, int nDestY, WORD wImage, const RECT *pRect, DWORD dwFlags);
 
@@ -3389,7 +3412,6 @@ void BlitSurfaceRegion(int nDestX, int nDestY, WORD wImage, const RECT *pRect, D
  *
  * @ghidraAddress BRD3D: 0x1005f530
  * @ghidraAddress BRGlide: 0x10058300
- * @stub{BRGlide}
  */
 void ReleaseMenuSurfaces(void);
 

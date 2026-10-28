@@ -1526,13 +1526,6 @@ DisplayMode *FindDisplayModeWithFallback(DirectDrawDriver *pDriver,
 extern int g_dwScreenBitDepth;
 
 /**
- * Show the frame drawn, set by ResetRenderDeviceCallbacks().
- *
- * @ghidraAddress BRD3D: 0x10690a24
- */
-extern void (*g_pfnPresentFrame)(void);
-
-/**
  * Flip the frame of the main window.
  *
  * @ghidraAddress BRD3D: 0x1001bad0
