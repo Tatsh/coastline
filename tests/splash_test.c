@@ -393,7 +393,11 @@ int main(void) {
     Text(5, "c", 78, 190, 3);
     g_aPlayerInputState[0].buttons = 0xF00;
     Frame(20.0f);
+#ifdef ENABLE_PATCHES
+    Text(0, "github.com/Tatsh/coastline " COASTLINE_GIT_SHA " " __DATE__ " " __TIME__, 160, 40, 10);
+#else
     Text(0, "25Aug97 11:46:52", 160, 40, 10);
+#endif /* ENABLE_PATCHES */
     g_aPlayerInputState[0].buttons = 0;
     Frame(17.25f);
     assert(texts[0].alpha == (s32)((f64)(17.25f - 17.2f) * 255.0 * 4.0));
