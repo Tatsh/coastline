@@ -35,7 +35,13 @@ s32 UnusedTrackCollisionStub(void *body) {
 }
 
 /* The cell of the grid under a point, as its row times 64 plus its column. */
-#define GRID_SECTOR(x, y) ((s32)(y) / 32 * 64 + (s32)(x) / 32)
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/* The original converts through 64 bits, so NaN and the infinities give the cell of 0. */
+#define GRID_COORDINATE(v) ((s32)(s64)(v))
+#else
+#define GRID_COORDINATE(v) ((s32)(v))
+#endif
+#define GRID_SECTOR(x, y) (GRID_COORDINATE(y) / 32 * 64 + GRID_COORDINATE(x) / 32)
 
 s32 InvalidateTriCacheSectorAt(f32 x, f32 y) {
     s16 sector = GRID_SECTOR(x, y);

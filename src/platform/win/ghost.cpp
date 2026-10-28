@@ -44,6 +44,12 @@ static inline bool IsKeyframeFlagSet(float value) {
     return value > 0.0f || value < 0.0f;
 }
 
+// The original converts through a 64-bit integer and keeps its low half, so NaN, the
+// infinities, and values outside int give 0 or wrap rather than INT_MIN.
+static inline int KeyframeInteger(float value) {
+    return static_cast<int>(static_cast<long long>(value));
+}
+
 void PackKeyframeToCompactBuffer(u8 *pBuffer, const KeyframeState *pState) {
     CompactGhostFrame frame;
     frame.anOrientation[0] =
@@ -500,10 +506,10 @@ void ApplyVehicleKeyframe(Vehicle *pVehicle, const KeyframeState *pState) {
     for (int i = 0; i < 4; ++i) {
         RigidBody &wheel = VEHICLE_GET(pVehicle, WheelBodies)[wheels[i]];
         wheel.rollAngle = pState->afWheelAngle[i];
-        wheel.contactFrames = static_cast<int>(pState->afWheelContact[i]);
-        wheel.surface = static_cast<u8>(static_cast<int>(pState->afWheelSurface[i]));
+        wheel.contactFrames = KeyframeInteger(pState->afWheelContact[i]);
+        wheel.surface = static_cast<u8>(KeyframeInteger(pState->afWheelSurface[i]));
     }
-    VEHICLE_GET(pVehicle, Body).skidding = static_cast<u8>(static_cast<int>(pState->fGearControl));
+    VEHICLE_GET(pVehicle, Body).skidding = static_cast<u8>(KeyframeInteger(pState->fGearControl));
     if (IsKeyframeFlagSet(pState->fBraking)) {
         VEHICLE_GET(pVehicle, Input)->buttons |= 0x40000;
     } else {
@@ -516,21 +522,19 @@ void ApplyVehicleKeyframe(Vehicle *pVehicle, const KeyframeState *pState) {
     }
     VEHICLE_SET(pVehicle, EngineRpm, pState->fEngineRpm);
     VEHICLE_GET(pVehicle, Body).vehicleImpactVolume =
-        static_cast<u8>(static_cast<int>(pState->afLight[0]));
-    VEHICLE_GET(pVehicle, Body).impactVolume =
-        static_cast<u8>(static_cast<int>(pState->afLight[1]));
-    VEHICLE_GET(pVehicle, Body).landed =
-        static_cast<u8>(static_cast<int>(pState->afEffectFlags[0]));
+        static_cast<u8>(KeyframeInteger(pState->afLight[0]));
+    VEHICLE_GET(pVehicle, Body).impactVolume = static_cast<u8>(KeyframeInteger(pState->afLight[1]));
+    VEHICLE_GET(pVehicle, Body).landed = static_cast<u8>(KeyframeInteger(pState->afEffectFlags[0]));
     VEHICLE_GET(pVehicle, Body).unreconstructed202 =
-        static_cast<u8>(static_cast<int>(pState->afEffectFlags[1]));
+        static_cast<u8>(KeyframeInteger(pState->afEffectFlags[1]));
     VEHICLE_GET(pVehicle, Body).unreconstructed203 =
-        static_cast<u8>(static_cast<int>(pState->afEffectFlags[2]));
+        static_cast<u8>(KeyframeInteger(pState->afEffectFlags[2]));
     VEHICLE_GET(pVehicle, Body).unreconstructed204 =
-        static_cast<u8>(static_cast<int>(pState->afEffectFlags[3]));
+        static_cast<u8>(KeyframeInteger(pState->afEffectFlags[3]));
     VEHICLE_GET(pVehicle, Body).replayEffects[0] =
-        static_cast<u8>(static_cast<int>(pState->afEffectFlags[4]));
+        static_cast<u8>(KeyframeInteger(pState->afEffectFlags[4]));
     VEHICLE_GET(pVehicle, Body).replayEffects[1] =
-        static_cast<u8>(static_cast<int>(pState->afEffectFlags[5]));
+        static_cast<u8>(KeyframeInteger(pState->afEffectFlags[5]));
     ComputeDeltaQuaternion(&VEHICLE_GET(pVehicle, Body).state);
     VEHICLE_GET(pVehicle, Body).stepStates[0] = VEHICLE_GET(pVehicle, Body).state;
     VEHICLE_GET(pVehicle, Body).stepStates[1] = VEHICLE_GET(pVehicle, Body).state;
