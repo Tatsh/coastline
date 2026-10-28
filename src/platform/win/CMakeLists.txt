@@ -71,6 +71,7 @@ if(TGR_RENDERER STREQUAL "d3d")
             snapshotfields.cpp
             trackmenudata.c
             creditdata.c
+            displaylistdata.c
             effectdata.c
             boot/shutdown.cpp
             frontenddata.cpp
