@@ -1,6 +1,6 @@
 #include "rigidbody.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if !TGR_PC
 #include <PR/gu.h>
 #include <PR/os.h>
 #else
@@ -317,8 +317,8 @@ void Mtx3fMulVec3f(Vec3f *out, f32 m[3][3], Vec3f *v) {
     MTX_ROWS_MUL_VEC3F(out, m, v, i, k);
 }
 
-/* The routines under TGR_PLATFORM_N64 alone are absent from the PC libraries. */
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+/* The routines of the Nintendo 64 release alone are absent from the PC libraries. */
+#if !TGR_PC
 void ComputeRigidBodyAcceleration(RigidBody *body) {
     Vec3f local, angular;
 
@@ -393,7 +393,7 @@ void ApplyAllForcesToBody(RigidBody *body) {
         ApplySingleForceWithDebug(body, force);
     }
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
+#endif /* !TGR_PC */
 
 void InitRigidBody(RigidBody *body) {
 #if !TGR_PC

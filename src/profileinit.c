@@ -5,7 +5,7 @@ void InitPlayerProfileDefaults(PlayerProfile *profile, s32 trackCount) {
 
     profile->championshipFlags = 0;
     profile->season = 0;
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if !TGR_PC
     profile->seasonPoints[0] = 0;
 #endif
     profile->round = 0;
