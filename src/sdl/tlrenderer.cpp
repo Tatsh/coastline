@@ -1,5 +1,6 @@
 #include "tlrenderer.h"
 
+#include <algorithm>
 #include <cstring>
 
 #include "gpu.h"
@@ -346,9 +347,8 @@ SDL_GPUGraphicsPipeline *TlRenderer::Pipeline(const RenderStates &states) {
     info.vertex_input_state.num_vertex_attributes = 4;
     info.primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST;
     info.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
-    // The screen of Direct3D has y down and the device has y up, so a clockwise triangle on the
-    // screen is counter-clockwise for the device.
-    info.rasterizer_state.front_face = SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE;
+    // A triangle clockwise on the screen of Direct3D is a front face, which D3DCULL_CW removes.
+    info.rasterizer_state.front_face = SDL_GPU_FRONTFACE_CLOCKWISE;
     info.rasterizer_state.cull_mode = states.cull == CullMode::None      ? SDL_GPU_CULLMODE_NONE :
                                       states.cull == CullMode::Clockwise ? SDL_GPU_CULLMODE_FRONT :
                                                                            SDL_GPU_CULLMODE_BACK;
@@ -430,10 +430,19 @@ bool TlRenderer::EndScene(const std::filesystem::path *capture) {
     depth.stencil_store_op = SDL_GPU_STOREOP_DONT_CARE;
     SDL_GPURenderPass *pass = SDL_BeginGPURenderPass(commands, &target, 1, &depth);
     if (upload) {
-        float viewport[4] = {2.0f / static_cast<float>(m_window.FrameWidth()),
-                             2.0f / static_cast<float>(m_window.FrameHeight()),
-                             0.5f,
-                             0.5f};
+        auto frameWidth = static_cast<float>(m_window.FrameWidth());
+        auto frameHeight = static_cast<float>(m_window.FrameHeight());
+        float screenWidth = m_screenWidth != 0 ? static_cast<float>(m_screenWidth) : frameWidth;
+        float screenHeight = m_screenHeight != 0 ? static_cast<float>(m_screenHeight) : frameHeight;
+        float scale = std::min(frameWidth / screenWidth, frameHeight / screenHeight);
+        SDL_GPUViewport area{(frameWidth - screenWidth * scale) / 2.0f,
+                             (frameHeight - screenHeight * scale) / 2.0f,
+                             screenWidth * scale,
+                             screenHeight * scale,
+                             0.0f,
+                             1.0f};
+        SDL_SetGPUViewport(pass, &area);
+        float viewport[4] = {2.0f / screenWidth, 2.0f / screenHeight, 0.5f, 0.5f};
         SDL_PushGPUVertexUniformData(commands, 0, viewport, sizeof(viewport));
         SDL_GPUBufferBinding vertices{m_vertexBuffer, 0};
         SDL_GPUBufferBinding indices{m_indexBuffer, 0};

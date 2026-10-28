@@ -167,6 +167,19 @@ public:
      */
     bool EndScene(const std::filesystem::path *capture = nullptr);
 
+    /**
+     * Set the size of the screen the vertices are placed on. The screen is drawn into the largest
+     * rectangle of its aspect ratio at the centre of the frame. The size of the frame is the
+     * default.
+     *
+     * @param width The width in pixels, or 0 for the width of the frame.
+     * @param height The height in pixels, or 0 for the height of the frame.
+     */
+    void SetScreenSize(std::uint32_t width, std::uint32_t height) {
+        m_screenWidth = width;
+        m_screenHeight = height;
+    }
+
 private:
     struct PipelineKey;
     struct Draw {
@@ -188,6 +201,8 @@ private:
     bool EnsureBuffers(std::size_t vertexBytes, std::size_t indexBytes);
 
     GpuWindow &m_window;
+    std::uint32_t m_screenWidth = 0;
+    std::uint32_t m_screenHeight = 0;
     SDL_GPUShader *m_vertexShader = nullptr;
     SDL_GPUShader *m_fragmentShader = nullptr;
     SDL_GPUTexture *m_depth = nullptr;

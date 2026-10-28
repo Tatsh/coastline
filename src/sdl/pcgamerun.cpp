@@ -11,6 +11,7 @@
 #include "win32/boot/rallyconfig.h"
 #include "win32/boot/strings.h"
 #include "win32/render.h"
+#include "win32/settings.h"
 #include "win32/snapshot.h"
 
 // The anchor of the offsets of Ptr32. It is part of the static data of the program, and every
@@ -68,6 +69,8 @@ bool StartPcGame(TlRenderer &renderer,
 
 bool RunPcGameFrame(const std::filesystem::path *capture) {
     g_device->SetCapture(capture);
+    g_device->Renderer().SetScreenSize(static_cast<std::uint32_t>(g_dwConfigFramebufferWidth),
+                                       static_cast<std::uint32_t>(g_dwConfigFramebufferHeight));
     return DispatchGameStateFrame() != 0;
 }
 
