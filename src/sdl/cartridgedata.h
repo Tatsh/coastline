@@ -15,6 +15,7 @@
 #include <span>
 #include <string_view>
 #include <type_traits>
+#include <utility>
 
 #include <boost/pfr.hpp>
 
@@ -76,7 +77,19 @@ concept OffsetPointer = requires(T value) { value.SetRaw(0u); };
 
 // The alignment of a type on the console, where pointers have 4 bytes.
 template <typename T>
-std::size_t ConsoleAlignOf() {
+constexpr std::size_t ConsoleAlignOf();
+
+constexpr std::size_t AlignUp(std::size_t value, std::size_t align) {
+    return (value + align - 1) / align * align;
+}
+
+template <typename T, std::size_t... I>
+constexpr std::size_t FieldsAlignOf(std::index_sequence<I...>) {
+    return std::max({std::size_t{1}, ConsoleAlignOf<boost::pfr::tuple_element_t<I, T>>()...});
+}
+
+template <typename T>
+constexpr std::size_t ConsoleAlignOf() {
     if constexpr (std::is_pointer_v<T> || std::is_enum_v<T> || OffsetPointer<T>) {
         return 4;
     } else if constexpr (std::is_arithmetic_v<T>) {
@@ -84,23 +97,31 @@ std::size_t ConsoleAlignOf() {
     } else if constexpr (std::is_array_v<T>) {
         return ConsoleAlignOf<std::remove_extent_t<T>>();
     } else {
-        std::size_t align = 1;
-        boost::pfr::for_each_field(T{}, [&align](const auto &field) {
-            align = std::max(align, ConsoleAlignOf<std::remove_cvref_t<decltype(field)>>());
-        });
-        return align;
+        return FieldsAlignOf<T>(std::make_index_sequence<boost::pfr::tuple_size_v<T>>());
     }
-}
-
-inline std::size_t AlignUp(std::size_t value, std::size_t align) {
-    return (value + align - 1) / align * align;
 }
 
 } // namespace detail
 
 /** @return The bytes of a value of T on the console, with 32-bit pointers. */
 template <typename T>
-std::size_t ConsoleSizeOf() {
+constexpr std::size_t ConsoleSizeOf();
+
+namespace detail {
+
+template <typename T, std::size_t... I>
+constexpr std::size_t FieldsSizeOf(std::index_sequence<I...>) {
+    std::size_t size = 0;
+    ((size = AlignUp(size, ConsoleAlignOf<boost::pfr::tuple_element_t<I, T>>()) +
+             ConsoleSizeOf<boost::pfr::tuple_element_t<I, T>>()),
+     ...);
+    return AlignUp(size, ConsoleAlignOf<T>());
+}
+
+} // namespace detail
+
+template <typename T>
+constexpr std::size_t ConsoleSizeOf() {
     if constexpr (std::is_pointer_v<T> || std::is_enum_v<T> || detail::OffsetPointer<T>) {
         return 4;
     } else if constexpr (std::is_arithmetic_v<T>) {
@@ -108,12 +129,7 @@ std::size_t ConsoleSizeOf() {
     } else if constexpr (std::is_array_v<T>) {
         return std::extent_v<T> * ConsoleSizeOf<std::remove_extent_t<T>>();
     } else {
-        std::size_t size = 0;
-        boost::pfr::for_each_field(T{}, [&size](const auto &field) {
-            using Field = std::remove_cvref_t<decltype(field)>;
-            size = detail::AlignUp(size, detail::ConsoleAlignOf<Field>()) + ConsoleSizeOf<Field>();
-        });
-        return detail::AlignUp(size, detail::ConsoleAlignOf<T>());
+        return detail::FieldsSizeOf<T>(std::make_index_sequence<boost::pfr::tuple_size_v<T>>());
     }
 }
 
@@ -174,8 +190,28 @@ private:
 };
 
 /**
+ * Record the definition on the host of a symbol of the release for the pointers of other data,
+ * without reading it.
+ *
+ * @param name The name of the symbol.
+ * @param value The definition on the host, an object or an array.
+ * @return Whether the symbol is known.
+ */
+template <typename T>
+bool RegisterCartridgeSymbol(std::string_view name, T &value) {
+    std::uint32_t address = CartridgeData::AddressOf(name);
+    if (address == 0) {
+        return false;
+    }
+    using Element = std::remove_all_extents_t<T>;
+    CartridgeData::Register(
+        address, &value, ConsoleSizeOf<Element>(), sizeof(Element), sizeof(T) / sizeof(Element));
+    return true;
+}
+
+/**
  * Read a symbol of the release into its definition on the host, and record the definition for the
- * pointers of other data. Read every symbol a datum addresses before the datum.
+ * pointers of other data. Record every symbol a datum addresses before the datum is read.
  *
  * @param name The name of the symbol.
  * @param value The definition on the host, an object or an array.

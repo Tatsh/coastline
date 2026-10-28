@@ -417,6 +417,7 @@ excmask
 exhaustpos
 exhaustspawn
 exitmenuloop
+extern
 extraout
 fadeupdate
 familia
