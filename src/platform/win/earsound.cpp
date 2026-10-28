@@ -159,7 +159,7 @@ bool InitializeEarSound(HWND hWnd) {
     if (++g_dwEarSoundInitRefCount != 1) {
         return true;
     }
-    if (!LoadEarSoundDll(true)) {
+    if (!LoadEarSoundDll(g_dwEarSoundDllMode)) {
         MessageBoxA(hWnd, GetStringResource(0xfe), GetStringResource(0xfd), MB_ICONERROR);
         exit(1);
     }
