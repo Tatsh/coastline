@@ -279,7 +279,7 @@ void ApplySideGrip(
         front.z = 0.0f;
         lateral.x = old.x - front.x;
         lateral.y = old.y - front.y;
-        lateral.z = old.z;
+        lateral.z = old.z - front.z;
         square = GRIP_PRODUCT(lateral.z, lateral.z) +
                  (GRIP_PRODUCT(lateral.x, lateral.x) + GRIP_PRODUCT(lateral.y, lateral.y));
         load = (f32)(ABS(*frontLoad) + sqrtl(square) * body->mass / dt);
@@ -339,6 +339,12 @@ void ApplySideGrip(
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             *frontSliding = 1;
         }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        else {
+            /* The libraries clear the flag a second time. */
+            *frontSliding = 0;
+        }
+#endif
     }
 
     /* Give the body the velocity and the turn that the axles now move by. */

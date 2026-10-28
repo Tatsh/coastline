@@ -66,9 +66,9 @@ void SelectVehiclePhysicsTables(s32 model) {
 #define SIGN(x) ((x) == 0.0f ? 0.0 : (0.0f < (x) ? 1.0 : -1.0))
 
 void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 dt) {
-    Vec3f unitY, axle, forward, side, roll, velocity, push, local;
+    Vec3f unitY, axle, forward, side, roll, velocity, push, local, weight;
 #if TGR_PLATFORM == TGR_PLATFORM_N64
-    Vec3f slide, weight;
+    Vec3f slide;
 #endif
     Vec3f *normal = &wheel->groundNormal;
     f32 c, s, rollSpeed, drive, force;
@@ -154,6 +154,11 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
                     FORCE_PRODUCT(roll.z, velocity.z);
         highWeight = ((long double)body->mass - FORCE_PRODUCT(wheel->mass, -4.0f)) *
                      2.943000316619873046875f;
+        /* The original also stores the weight on the wheel and never reads it. */
+        weight.x = 0.0f;
+        weight.y = 0.0f;
+        weight.z = highWeight;
+        (void)weight;
         pressure = normal->z * highWeight;
 #else
         rollSpeed = roll.z * velocity.z + (velocity.x * roll.x + velocity.y * roll.y);
