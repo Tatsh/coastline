@@ -160,6 +160,7 @@ typedef union {
 #define G_RDPHALF_2 0xB3         /*!< The second extra word of a long command. */
 #define G_RDPHALF_1 0xB4         /*!< The first extra word of a long command. */
 #define G_TEXRECT 0xE4           /*!< Draw a textured rectangle. */
+#define G_TEXRECTFLIP 0xE5       /*!< Draw a textured rectangle with s and t exchanged. */
 #define G_RDPLOADSYNC 0xE6       /*!< Wait for a texture load to finish. */
 #define G_SETTILESIZE 0xF2       /*!< Set the extent of a tile. */
 #define G_LOADBLOCK 0xF3         /*!< Load a run of texels into texture memory. */
@@ -218,8 +219,10 @@ typedef union {
 #define G_CYC_1CYCLE (0 << G_MDSFT_CYCLETYPE)      /*!< One cycle per pixel. */
 #define G_CYC_FILL (3 << G_MDSFT_CYCLETYPE)        /*!< Fill with the fill colour. */
 #define G_CYC_2CYCLE (1 << G_MDSFT_CYCLETYPE)      /*!< Two cycles per pixel. */
+#define G_CYC_COPY (2 << G_MDSFT_CYCLETYPE)        /*!< Copy texels to the frame buffer. */
 #define G_CD_NOISE (2 << G_MDSFT_RGBDITHER)        /*!< Dither the colour with noise. */
 #define G_CD_DISABLE (3 << G_MDSFT_RGBDITHER)      /*!< Do not dither the colour. */
+#define G_AC_NONE (0 << G_MDSFT_ALPHACOMPARE)      /*!< Do not compare alpha. */
 #define G_AC_THRESHOLD (1 << G_MDSFT_ALPHACOMPARE) /*!< Compare alpha with the blend alpha. */
 #define G_AC_DITHER (3 << G_MDSFT_ALPHACOMPARE)    /*!< Compare alpha with a random value. */
 #define G_ZS_PIXEL (0 << G_MDSFT_ZSRCSEL)          /*!< Take the depth of each pixel. */
@@ -240,6 +243,7 @@ typedef union {
 #define G_CD_BAYER (1 << G_MDSFT_RGBDITHER)     /*!< Dither the colour with a Bayer matrix. */
 #define G_AD_PATTERN (0 << G_MDSFT_ALPHADITHER) /*!< Dither alpha with a pattern. */
 #define G_TT_RGBA16 (2 << G_MDSFT_TEXTLUT)      /*!< A palette of 16-bit RGBA colours. */
+#define G_TT_IA16 (3 << G_MDSFT_TEXTLUT)        /*!< A palette of 16-bit intensity and alpha. */
 
 /* The coverage, depth and blending bits of a render mode. */
 #define AA_EN 0x0008         /*!< Antialias. */

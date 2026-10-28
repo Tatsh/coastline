@@ -811,6 +811,7 @@ paintshop
 painttex
 pakmenu
 paks
+paletted
 paletteentry
 paletteindexed
 palettized
@@ -1153,6 +1154,7 @@ texel
 texelfx
 texfmt
 texrect
+texrectflip
 textdetail
 textfilt
 textlod

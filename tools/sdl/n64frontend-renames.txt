@@ -65,6 +65,7 @@ QuaternionMultiply
 QuaternionNormalize
 QuaternionToMatrix
 ReadControllers
+RenderTextToDisplayList
 RenderVehicleModel
 ResetAllPlayers
 ResetFrameClock
@@ -115,3 +116,8 @@ UpdatePhysicsStep
 UpdateVehiclePhysicsFrame
 UpdateVehicleWheelTransforms
 Vec3fNormalizeFast
+g_abHudFontCharToGlyph
+g_abLargeFontGradient
+g_abLargeFontShadowGradient
+g_abSmallFontGradient
+g_abSmallFontShadowGradient

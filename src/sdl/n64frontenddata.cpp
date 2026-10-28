@@ -94,6 +94,7 @@ DecalGlyph g_aDecalGlyphs[DECAL_GLYPHS];
 ScreenRect g_aDecalSlotRects[DECAL_SLOTS];
 PaletteSwatch g_aDecalSwatches[DECAL_SWATCHES];
 u8 g_aDmaWorkBuffers[65536 / coastline::ConsoleSizeOf<u8>()];
+u8 g_aLargeFontTexture[56320 / coastline::ConsoleSizeOf<u8>()];
 Gfx g_aMenuChoiceMarkerDisplayList[96 / coastline::ConsoleSizeOf<Gfx>()];
 Gfx g_aMenuSpotlightDisplayList[376 / coastline::ConsoleSizeOf<Gfx>()];
 Vtx g_aMenuSpotlightVertices[31];
@@ -103,6 +104,7 @@ OSPfsState g_aPakDirEntries[PAK_NOTES];
 OSPfsState g_aPakFileStates[PAK_NOTES];
 OSPfs g_aPakPfs[MAXCONTROLLERS];
 PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
+u8 g_aSmallFontTexture[9728 / coastline::ConsoleSizeOf<u8>()];
 Gfx g_aSpeedometerNeedleDisplayList[108 / coastline::ConsoleSizeOf<Gfx>()];
 Vtx g_aSpeedometerNeedleVertices[32];
 Gfx g_aTachometerDisplayList[232 / coastline::ConsoleSizeOf<Gfx>()];
@@ -117,8 +119,13 @@ u8 g_aabColorEditorBars[3][3];
 u8 g_aabSavePakIds[2][32];
 MenuItem **g_aapCarSelectOptions[2];
 u8 g_abGhostRecording[0x8100];
+u8 g_abHudFontCharToGlyph[96 / coastline::ConsoleSizeOf<u8>()];
+u8 g_abLargeFontGradient[320 / coastline::ConsoleSizeOf<u8>()];
+u8 g_abLargeFontShadowGradient[320 / coastline::ConsoleSizeOf<u8>()];
 u8 g_abSavePakIdKnown[2];
 u8 g_abSavedSwatchColor[3];
+u8 g_abSmallFontGradient[320 / coastline::ConsoleSizeOf<u8>()];
+u8 g_abSmallFontShadowGradient[39 / coastline::ConsoleSizeOf<u8>()];
 u8 g_abTrackSection1Header[TRACK_SECTION_HEADER_SIZE];
 s32 g_adwCarSelectModelSlots[2];
 s32 g_adwCarSelectState[2];
@@ -548,10 +555,12 @@ void ReadN64FrontEndData(void) {
     coastline::RegisterCartridgeSymbol("g_aCarPhysicsSpecs", g_aCarPhysicsSpecs);
     coastline::RegisterCartridgeSymbol("g_aCheatCodes", g_aCheatCodes);
     coastline::RegisterCartridgeSymbol("g_aDecalGlyphs", g_aDecalGlyphs);
+    coastline::RegisterCartridgeSymbol("g_aLargeFontTexture", g_aLargeFontTexture);
     coastline::RegisterCartridgeSymbol("g_aMenuChoiceMarkerDisplayList",
                                        g_aMenuChoiceMarkerDisplayList);
     coastline::RegisterCartridgeSymbol("g_aMenuSpotlightDisplayList", g_aMenuSpotlightDisplayList);
     coastline::RegisterCartridgeSymbol("g_aOptionsMenuItems", g_aOptionsMenuItems);
+    coastline::RegisterCartridgeSymbol("g_aSmallFontTexture", g_aSmallFontTexture);
     coastline::RegisterCartridgeSymbol("g_aSpeedometerNeedleDisplayList",
                                        g_aSpeedometerNeedleDisplayList);
     coastline::RegisterCartridgeSymbol("g_aTachometerDisplayList", g_aTachometerDisplayList);
@@ -560,6 +569,11 @@ void ReadN64FrontEndData(void) {
     coastline::RegisterCartridgeSymbol("g_aVehicleNightHighlightTexture",
                                        g_aVehicleNightHighlightTexture);
     coastline::RegisterCartridgeSymbol("g_aabColorEditorBars", g_aabColorEditorBars);
+    coastline::RegisterCartridgeSymbol("g_abHudFontCharToGlyph", g_abHudFontCharToGlyph);
+    coastline::RegisterCartridgeSymbol("g_abLargeFontGradient", g_abLargeFontGradient);
+    coastline::RegisterCartridgeSymbol("g_abLargeFontShadowGradient", g_abLargeFontShadowGradient);
+    coastline::RegisterCartridgeSymbol("g_abSmallFontGradient", g_abSmallFontGradient);
+    coastline::RegisterCartridgeSymbol("g_abSmallFontShadowGradient", g_abSmallFontShadowGradient);
     coastline::RegisterCartridgeSymbol("g_adwLargeFontGlyphOffsets", g_adwLargeFontGlyphOffsets);
     coastline::RegisterCartridgeSymbol("g_adwSmallFontGlyphOffsets", g_adwSmallFontGlyphOffsets);
     coastline::RegisterCartridgeSymbol("g_adwTrackMusicRom", g_adwTrackMusicRom);
@@ -769,10 +783,12 @@ void ReadN64FrontEndData(void) {
     coastline::ReadCartridgeSymbol("g_aCarPhysicsSpecs", g_aCarPhysicsSpecs);
     coastline::ReadCartridgeSymbol("g_aCheatCodes", g_aCheatCodes);
     coastline::ReadCartridgeSymbol("g_aDecalGlyphs", g_aDecalGlyphs);
+    coastline::ReadCartridgeSymbol("g_aLargeFontTexture", g_aLargeFontTexture);
     coastline::ReadCartridgeSymbol("g_aMenuChoiceMarkerDisplayList",
                                    g_aMenuChoiceMarkerDisplayList);
     coastline::ReadCartridgeSymbol("g_aMenuSpotlightDisplayList", g_aMenuSpotlightDisplayList);
     coastline::ReadCartridgeSymbol("g_aOptionsMenuItems", g_aOptionsMenuItems);
+    coastline::ReadCartridgeSymbol("g_aSmallFontTexture", g_aSmallFontTexture);
     coastline::ReadCartridgeSymbol("g_aSpeedometerNeedleDisplayList",
                                    g_aSpeedometerNeedleDisplayList);
     coastline::ReadCartridgeSymbol("g_aTachometerDisplayList", g_aTachometerDisplayList);
@@ -781,6 +797,11 @@ void ReadN64FrontEndData(void) {
     coastline::ReadCartridgeSymbol("g_aVehicleNightHighlightTexture",
                                    g_aVehicleNightHighlightTexture);
     coastline::ReadCartridgeSymbol("g_aabColorEditorBars", g_aabColorEditorBars);
+    coastline::ReadCartridgeSymbol("g_abHudFontCharToGlyph", g_abHudFontCharToGlyph);
+    coastline::ReadCartridgeSymbol("g_abLargeFontGradient", g_abLargeFontGradient);
+    coastline::ReadCartridgeSymbol("g_abLargeFontShadowGradient", g_abLargeFontShadowGradient);
+    coastline::ReadCartridgeSymbol("g_abSmallFontGradient", g_abSmallFontGradient);
+    coastline::ReadCartridgeSymbol("g_abSmallFontShadowGradient", g_abSmallFontShadowGradient);
     coastline::ReadCartridgeSymbol("g_adwLargeFontGlyphOffsets", g_adwLargeFontGlyphOffsets);
     coastline::ReadCartridgeSymbol("g_adwSmallFontGlyphOffsets", g_adwSmallFontGlyphOffsets);
     coastline::ReadCartridgeSymbol("g_adwTrackMusicRom", g_adwTrackMusicRom);

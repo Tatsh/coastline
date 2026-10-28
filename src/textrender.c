@@ -45,7 +45,12 @@ s32 g_dwTextCustomColor2B;
 #define SCREEN_WIDTH 320
 #define SCREEN_HEIGHT 240
 #define GRADIENT_TMEM 0x1B0
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/* The 320 bytes of a gradient, which the console loads twice over into the next gradient. */
+#define GRADIENT_LOAD_TEXELS 160
+#else
 #define GRADIENT_LOAD_TEXELS 320
+#endif
 #define TEXEL_STEP 0x400
 #define HALF_TEXEL 16
 
