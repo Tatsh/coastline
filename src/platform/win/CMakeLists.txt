@@ -69,6 +69,7 @@ if(TGR_RENDERER STREQUAL "d3d")
             clockfields.c
             framefields.c
             snapshotfields.cpp
+            soundsample.c
             trackmenudata.c
             creditdata.c
             displaylistdata.c

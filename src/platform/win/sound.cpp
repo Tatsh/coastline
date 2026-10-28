@@ -689,7 +689,7 @@ bool StopSoundVoice(int nSample, int nVoice) {
     if (!IsDirectSoundActive()) {
         return true;
     }
-    SoundBufferNode *pNode = g_aSoundChannelBuffers[nSample].apChannelBuffers[nVoice * 2];
+    SoundBufferNode *pNode = g_aSoundChannelBuffers[nSample].channelBuffers[nVoice * 2].buffer;
     if (pNode == nullptr) {
         return true;
     }
@@ -700,7 +700,7 @@ bool SetSoundChannelFrequency(int nSample, int nChannel, DWORD dwFrequency) {
     if (!IsDirectSoundActive()) {
         return true;
     }
-    return SetSoundBufferFrequency(g_aSoundChannelBuffers[nSample].apChannelBuffers[nChannel],
+    return SetSoundBufferFrequency(g_aSoundChannelBuffers[nSample].channelBuffers[nChannel].buffer,
                                    dwFrequency);
 }
 
@@ -766,7 +766,8 @@ bool AssignAudioChannel(int nSample, int nChannel) {
         // The result of the stop is discarded.
         StopAudioChannel(nChannel);
     }
-    g_apSoundChannelBuffer[nChannel] = g_aSoundChannelBuffers[nSample].apChannelBuffers[nChannel];
+    g_apSoundChannelBuffer[nChannel] =
+        g_aSoundChannelBuffers[nSample].channelBuffers[nChannel].buffer;
     return g_apSoundChannelBuffer[nChannel] != nullptr;
 }
 
@@ -797,7 +798,7 @@ bool StartSoundChannelPlayback(int nSample, int nChannel, int bLooping) {
     if (!IsDirectSoundActive()) {
         return true;
     }
-    pNode = g_aSoundChannelBuffers[nSample].apChannelBuffers[nChannel];
+    pNode = g_aSoundChannelBuffers[nSample].channelBuffers[nChannel].buffer;
     if (pNode == nullptr || PlaySoundBuffer(pNode, bLooping) != DS_OK) {
         return false;
     }
@@ -816,7 +817,7 @@ int g_bAltLoopingSoundSet;
 #define ALT_LOOPING_SAMPLE 25
 
 static inline void MoveLoopingSoundChannel(int nChannel, int nFromSample, int nToSample) {
-    SoundBufferNode *pNode = g_aSoundChannelBuffers[nFromSample].apChannelBuffers[nChannel];
+    SoundBufferNode *pNode = g_aSoundChannelBuffers[nFromSample].channelBuffers[nChannel].buffer;
 
     if (pNode == nullptr || pNode != g_apSoundChannelBuffer[nChannel]) {
         return;
@@ -894,7 +895,7 @@ bool SetStereoAndPlaySoundChannel(int nSample, int nChannel, DWORD dwLevels, int
     if (!IsDirectSoundActive()) {
         return true;
     }
-    pNode = g_aSoundChannelBuffers[nSample].apChannelBuffers[nChannel];
+    pNode = g_aSoundChannelBuffers[nSample].channelBuffers[nChannel].buffer;
     if (!SetSoundBufferStereoLevels(pNode, dwLevels)) {
         return false;
     }
@@ -913,8 +914,8 @@ bool SetSoundChannelStereo(int nSample, int nChannel, DWORD dwLevels) {
     if (!IsDirectSoundActive()) {
         return true;
     }
-    return SetSoundBufferStereoLevels(g_aSoundChannelBuffers[nSample].apChannelBuffers[nChannel],
-                                      dwLevels);
+    return SetSoundBufferStereoLevels(
+        g_aSoundChannelBuffers[nSample].channelBuffers[nChannel].buffer, dwLevels);
 }
 
 bool SetSoundVoiceStereo(int nSample, int nVoice, DWORD dwLevels) {
@@ -1013,24 +1014,24 @@ bool LoadSfxWaveVariants(int nEffect) {
 
     if (!g_bSoundEnabledIni || g_pDirectSound == nullptr || g_dwDirectSoundRefCount == 0 ||
         !g_SoundBankIndexTableA[0].anChannels[nChannel]) {
-        g_aSoundChannelBuffers[0].apChannelBuffers[nChannel] = nullptr;
-        g_SfxWaveVariantTable[nChannel] = nullptr;
-        g_LoopingSoundTable[nChannel] = nullptr;
+        g_aSoundChannelBuffers[0].channelBuffers[nChannel].buffer = nullptr;
+        g_SfxWaveVariantTable[nChannel].buffer = nullptr;
+        g_LoopingSoundTable[nChannel].buffer = nullptr;
         return bLoaded;
     }
-    g_aSoundChannelBuffers[0].apChannelBuffers[nChannel] = LoadSfxFile(
+    g_aSoundChannelBuffers[0].channelBuffers[nChannel].buffer = LoadSfxFile(
         szPath, g_apszSfxNamePrefixes[g_SoundBankIndexTableA[0].anChannels[nChannel]], ".wav");
-    if (g_aSoundChannelBuffers[0].apChannelBuffers[nChannel] == nullptr) {
+    if (g_aSoundChannelBuffers[0].channelBuffers[nChannel].buffer == nullptr) {
         bLoaded = false;
     }
-    g_SfxWaveVariantTable[nChannel] = LoadSfxFile(
+    g_SfxWaveVariantTable[nChannel].buffer = LoadSfxFile(
         szPath, g_apszSfxNamePrefixes[g_SoundBankIndexTableB.anChannels[nChannel]], "h.wav");
-    if (g_SfxWaveVariantTable[nChannel] == nullptr) {
+    if (g_SfxWaveVariantTable[nChannel].buffer == nullptr) {
         bLoaded = false;
     }
-    g_LoopingSoundTable[nChannel] = LoadSfxFile(
+    g_LoopingSoundTable[nChannel].buffer = LoadSfxFile(
         szPath, g_apszSfxNamePrefixes[g_SoundBankIndexTableC.anChannels[nChannel]], "r.wav");
-    if (g_LoopingSoundTable[nChannel] == nullptr) {
+    if (g_LoopingSoundTable[nChannel].buffer == nullptr) {
         return false;
     }
     return bLoaded;
@@ -1057,9 +1058,9 @@ bool LoadSoundSet(int nSet) {
                     bLoaded = false;
                 }
             } else {
-                g_aSoundChannelBuffers[0].apChannelBuffers[i] = nullptr;
-                g_SfxWaveVariantTable[i] = nullptr;
-                g_LoopingSoundTable[i] = nullptr;
+                g_aSoundChannelBuffers[0].channelBuffers[i].buffer = nullptr;
+                g_SfxWaveVariantTable[i].buffer = nullptr;
+                g_LoopingSoundTable[i].buffer = nullptr;
             }
         }
     } else {
@@ -1069,7 +1070,7 @@ bool LoadSoundSet(int nSet) {
     }
     for (int nSample = 1; nSample < g_dwLoadedSoundSampleCount - 1; nSample++) {
         for (int i = 0; i < SOUND_CHANNEL_COUNT; i++) {
-            SoundBufferNode *&pBuffer = g_aSoundChannelBuffers[nSample].apChannelBuffers[i];
+            SoundBufferNode *&pBuffer = g_aSoundChannelBuffers[nSample].channelBuffers[i].buffer;
 
             if (!g_SoundBankIndexTableA[nSample].anChannels[i]) {
                 pBuffer = nullptr;
@@ -1094,9 +1095,9 @@ bool ResetAudioSubsystem(void) {
     StopAllSoundBuffersInList(&g_SoundBufferListHead);
     FreeSoundBufferList(&g_SoundBufferListHead);
     for (int i = 0; i < g_dwLoadedSoundSampleCount; i++) {
-        memset(g_aSoundChannelBuffers[i].apChannelBuffers,
+        memset(g_aSoundChannelBuffers[i].channelBuffers,
                0,
-               sizeof(g_aSoundChannelBuffers[i].apChannelBuffers));
+               sizeof(g_aSoundChannelBuffers[i].channelBuffers));
     }
     memset(g_apSoundChannelBuffer, 0, sizeof(g_apSoundChannelBuffer));
     return true;

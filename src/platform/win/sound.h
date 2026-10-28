@@ -11,6 +11,7 @@
 #include <mmsystem.h>
 
 #include "platform/win/assetnames.h"
+#include "platform/win/soundsample.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -448,9 +449,6 @@ HRESULT ReleaseSoundBuffer(SoundBufferNode *pNode);
  */
 HRESULT StopSoundBuffer(SoundBufferNode *pNode);
 
-/** The number of entries of g_apSoundChannelBuffer. */
-#define SOUND_CHANNEL_COUNT 15
-
 /**
  * The sound buffers of the channels of the sound effects.
  *
@@ -545,21 +543,6 @@ void SetSoundBankEntryIndex(int nVoice, int nIndex);
  */
 void ResetSoundBankTables(void);
 
-/** A sound sample loaded into DirectSound. */
-struct SoundSample {
-    SoundBufferNode *apChannelBuffers[SOUND_CHANNEL_COUNT]; /*!< A buffer for each channel. */
-    char abUnknown3c[4];                                    /* +0x3c */
-    double dFrequencyScale; /*!< The scale of a frequency of a channel that plays the sample. */
-};
-
-/**
- * The sound samples loaded. The number of entries is not recovered yet.
- *
- * @ghidraAddress BRD3D: 0x100b5df0
- * @ghidraAddress BRGlide: 0x100b55f8
- */
-extern SoundSample g_aSoundChannelBuffers[];
-
 /**
  * The number of entries of g_aSoundChannelBuffers that are loaded.
  *
@@ -594,22 +577,6 @@ extern const char *const g_SoundSetTableA[SOUND_SET_RACE_COUNT];
  * @ghidraAddress BRGlide: 0x100b81a8
  */
 extern const char *const g_SoundSetTableB[SOUND_SET_FRONT_END_COUNT];
-
-/**
- * The variants of the waves of the sound effects of a race, one for each channel.
- *
- * @ghidraAddress BRD3D: 0x100b64b0
- * @ghidraAddress BRGlide: 0x100b5cb8
- */
-extern SoundBufferNode *g_SfxWaveVariantTable[SOUND_CHANNEL_COUNT];
-
-/**
- * The looping sounds of a race, one for each channel.
- *
- * @ghidraAddress BRD3D: 0x100b64f8
- * @ghidraAddress BRGlide: 0x100b5d00
- */
-extern SoundBufferNode *g_LoopingSoundTable[SOUND_CHANNEL_COUNT];
 
 /**
  * Add a node at the end of a list of sound buffers, not playing.
