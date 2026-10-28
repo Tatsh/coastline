@@ -1735,7 +1735,9 @@ int SendPlayerJoinPacket(DirectPlayInfo *pInfo,
             }
         }
     }
-    return SendNetworkStreamReliable(pInfo, &stream);
+    int result = SendNetworkStreamReliable(pInfo, &stream);
+    NullStub();
+    return result;
 }
 
 static inline void StoreOutgoingKeyframe(KeyframeState *state, unsigned type) {
