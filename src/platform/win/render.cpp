@@ -1270,6 +1270,15 @@ void ModulateRgbaByMask(unsigned char *pixels, int width, int height, const unsi
     }
 }
 
+namespace {
+
+// @ghidraAddress BRD3D: 0x104d51d0
+unsigned char g_abTextureResampleBuffer[0x80000];
+// @ghidraAddress BRD3D: 0x11829870
+unsigned char g_abDecodedTexturePixels[0x80000];
+
+} // namespace
+
 void ModulateTextureWithIntensityPlane(const TextureImageData *pImage, unsigned char *pPixels) {
     unsigned imageBytes = static_cast<unsigned>(pImage->nSourceWidth) *
                           static_cast<unsigned>(pImage->nSourceHeight) * 4;
