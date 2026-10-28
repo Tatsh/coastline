@@ -56,6 +56,11 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     options.height = static_cast<int>(config.GetInteger("Video", "Height", options.height));
     options.fullscreen = config.GetBoolean("Video", "Fullscreen", options.fullscreen);
     options.vsync = config.GetBoolean("Video", "VSync", options.vsync);
+    options.antialias =
+        static_cast<int>(config.GetInteger("Video", "Antialias", options.antialias));
+    if (auto antialias = parser.present<int>("--antialias")) {
+        options.antialias = *antialias;
+    }
     if (auto driver = config.Get("Video", "GpuDriver"); driver && !driver->empty()) {
         options.driver = *driver;
     }
@@ -258,6 +263,9 @@ int main(int argc, char *argv[]) {
     parser.add_argument("--height").help("height of the window in pixels").scan<'i', int>();
     parser.add_argument("--fullscreen").help("cover the display").flag();
     parser.add_argument("--windowed").help("draw in a window").flag();
+    parser.add_argument("--antialias")
+        .help("samples of each pixel for anti-aliasing: 1 for none, or 2, 4, or 8")
+        .scan<'i', int>();
     parser.add_argument("--no-vsync").help("present frames without waiting").flag();
     parser.add_argument("--gpu-driver")
         .help("SDL GPU driver, such as vulkan, metal, or direct3d12");

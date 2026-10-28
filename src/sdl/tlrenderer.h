@@ -214,6 +214,9 @@ private:
     SDL_GPUTexture *m_depth = nullptr;
     SDL_GPUTextureFormat m_depthFormat = SDL_GPU_TEXTUREFORMAT_INVALID;
     SDL_GPUTexture *m_white = nullptr;
+    // The target of the samples of each pixel when anti-aliasing, resolved into the frame texture.
+    SDL_GPUTexture *m_multisampled = nullptr;
+    SDL_GPUSampleCount m_sampleCount = SDL_GPU_SAMPLECOUNT_1;
     SDL_GPUBuffer *m_vertexBuffer = nullptr;
     SDL_GPUBuffer *m_indexBuffer = nullptr;
     SDL_GPUTransferBuffer *m_transfer = nullptr;

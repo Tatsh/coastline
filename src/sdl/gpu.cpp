@@ -48,6 +48,7 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
     }
     result->m_frameWidth = static_cast<Uint32>(options.width);
     result->m_frameHeight = static_cast<Uint32>(options.height);
+    result->m_antialias = options.antialias;
     SDL_GPUTextureCreateInfo frame{};
     frame.type = SDL_GPU_TEXTURETYPE_2D;
     frame.format = FRAME_FORMAT;

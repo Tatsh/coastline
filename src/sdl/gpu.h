@@ -15,6 +15,7 @@ struct DisplayOptions {
     int height = 720;        /*!< The height of the window in pixels. */
     bool fullscreen = false; /*!< Whether the window covers the display. */
     bool vsync = true;       /*!< Whether presentation waits for the vertical blank. */
+    int antialias = 1;       /*!< The samples of each pixel: 1 for none, or 2, 4, or 8. */
     std::optional<std::string>
         driver; /*!< An SDL GPU driver, such as vulkan, metal, or direct3d12. */
 };
@@ -86,6 +87,11 @@ public:
         return m_frameHeight;
     }
 
+    /** @return The samples of each pixel the options requested, 1 for no anti-aliasing. */
+    int Antialias() const {
+        return m_antialias;
+    }
+
 private:
     struct WindowDeleter {
         void operator()(SDL_Window *window) const {
@@ -106,6 +112,7 @@ private:
     SDL_GPUTexture *m_frame = nullptr;
     Uint32 m_frameWidth = 0;
     Uint32 m_frameHeight = 0;
+    int m_antialias = 1;
 };
 
 } // namespace coastline

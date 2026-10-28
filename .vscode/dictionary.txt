@@ -757,6 +757,8 @@ mtxcatf
 mtxcatl
 mtxutil
 mult
+multisample
+multisampled
 musicdevice
 musicplayback
 mypy
@@ -976,6 +978,7 @@ rside
 rtti
 runtimebuffers
 rxsize
+samplecount
 sampleraddressmode
 samplermipmapmode
 savd

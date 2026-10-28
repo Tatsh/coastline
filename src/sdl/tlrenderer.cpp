@@ -140,6 +140,35 @@ std::unique_ptr<TlRenderer> TlRenderer::Create(GpuWindow &window) {
             break;
         }
     }
+    // The highest sample count the request allows that the device supports for both targets.
+    for (auto [samples, count] : {std::pair{8, SDL_GPU_SAMPLECOUNT_8},
+                                  {4, SDL_GPU_SAMPLECOUNT_4},
+                                  {2, SDL_GPU_SAMPLECOUNT_2}}) {
+        if (window.Antialias() >= samples &&
+            SDL_GPUTextureSupportsSampleCount(device, GpuWindow::FrameFormat(), count) &&
+            SDL_GPUTextureSupportsSampleCount(device, renderer->m_depthFormat, count)) {
+            renderer->m_sampleCount = count;
+            break;
+        }
+    }
+    if (renderer->m_sampleCount != SDL_GPU_SAMPLECOUNT_1) {
+        SDL_GPUTextureCreateInfo color{};
+        color.type = SDL_GPU_TEXTURETYPE_2D;
+        color.format = GpuWindow::FrameFormat();
+        color.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET;
+        color.width = window.FrameWidth();
+        color.height = window.FrameHeight();
+        color.layer_count_or_depth = 1;
+        color.num_levels = 1;
+        color.sample_count = renderer->m_sampleCount;
+        renderer->m_multisampled = SDL_CreateGPUTexture(device, &color);
+        if (renderer->m_multisampled == nullptr) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_GPU,
+                        "The multisampled target was not created: %s",
+                        SDL_GetError());
+            renderer->m_sampleCount = SDL_GPU_SAMPLECOUNT_1;
+        }
+    }
     SDL_GPUTextureCreateInfo depth{};
     depth.type = SDL_GPU_TEXTURETYPE_2D;
     depth.format = renderer->m_depthFormat;
@@ -148,6 +177,7 @@ std::unique_ptr<TlRenderer> TlRenderer::Create(GpuWindow &window) {
     depth.height = window.FrameHeight();
     depth.layer_count_or_depth = 1;
     depth.num_levels = 1;
+    depth.sample_count = renderer->m_sampleCount;
     renderer->m_depth = SDL_CreateGPUTexture(device, &depth);
     if (renderer->m_depth == nullptr) {
         SDL_LogError(SDL_LOG_CATEGORY_GPU, "The depth buffer was not created: %s", SDL_GetError());
@@ -178,6 +208,9 @@ TlRenderer::~TlRenderer() {
     }
     if (m_transfer != nullptr) {
         SDL_ReleaseGPUTransferBuffer(device, m_transfer);
+    }
+    if (m_multisampled != nullptr) {
+        SDL_ReleaseGPUTexture(device, m_multisampled);
     }
     if (m_depth != nullptr) {
         SDL_ReleaseGPUTexture(device, m_depth);
@@ -370,6 +403,7 @@ SDL_GPUGraphicsPipeline *TlRenderer::Pipeline(const RenderStates &states) {
     info.target_info.num_color_targets = 1;
     info.target_info.depth_stencil_format = m_depthFormat;
     info.target_info.has_depth_stencil_target = true;
+    info.multisample_state.sample_count = m_sampleCount;
     SDL_GPUGraphicsPipeline *pipeline = SDL_CreateGPUGraphicsPipeline(m_window.Device(), &info);
     if (pipeline == nullptr) {
         SDL_LogError(SDL_LOG_CATEGORY_GPU, "A pipeline was not created: %s", SDL_GetError());
@@ -429,6 +463,12 @@ bool TlRenderer::EndScene(const std::filesystem::path *capture) {
     target.clear_color = ColorFromArgb(m_clearColor);
     target.load_op = SDL_GPU_LOADOP_CLEAR;
     target.store_op = SDL_GPU_STOREOP_STORE;
+    if (m_multisampled != nullptr) {
+        // The samples are drawn into their own target and averaged into the frame at the end.
+        target.texture = m_multisampled;
+        target.resolve_texture = m_window.FrameTexture();
+        target.store_op = SDL_GPU_STOREOP_RESOLVE;
+    }
     SDL_GPUDepthStencilTargetInfo depth{};
     depth.texture = m_depth;
     depth.clear_depth = 1.0f;
