@@ -131,7 +131,8 @@
   shared_ignore+: ['*.n64', '*.v64', '*.z64', '__pycache__/'],
   // The generated progress tables list every routine name and prototype, the assembly splat
   // generated is not prose, and the vendored sources retain their upstream style. The worktrees of
-  // agents are copies of the tree with their own build output.
+  // agents are copies of the tree with their own build output, and .wiswa-ci holds scratch builds
+  // too large for markdownlint to walk.
   package_json+: {
     cspell+: {
       ignorePaths+: [
@@ -144,7 +145,9 @@
       ],
     },
     'markdownlint-cli2'+: {
-      ignores: ['.claude/worktrees/**', '3rdparty/**'],
+      // Only the root .gitignore, not one in every directory of the scratch builds.
+      gitignore: '.gitignore',
+      ignores: ['.claude/worktrees/**', '.wiswa-ci/**', '3rdparty/**'],
     },
   },
   pre_commit_config+: {

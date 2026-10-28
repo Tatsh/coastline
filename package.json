@@ -75,9 +75,9 @@
         "tables": false
       }
     },
-    "gitignore": true,
+    "gitignore": ".gitignore",
     "globs": ["**/*.md", "**/*.mdc"],
-    "ignores": [".claude/worktrees/**", "3rdparty/**"],
+    "ignores": [".claude/worktrees/**", ".wiswa-ci/**", "3rdparty/**"],
     "noBanner": true,
     "showFound": true
   },
