@@ -690,6 +690,7 @@ mpmodem
 msacm
 mshft
 msvc
+msys
 msystem
 mthi
 mtlo
