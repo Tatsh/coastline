@@ -21,8 +21,8 @@ public:
      * Set the step the gain of the channel moves by each update, from the smoothing bits of a
      * control.
      *
-     * @param control The smoothing bits: 0x100, 0x300, or 0x700 for steps of 0.01, 0.03, and
-     * 0.05, and any other value for an immediate change.
+     * @param control The smoothing bits: 0x100, 0x300, or 0x700 for steps of 0.05, 0.03, and
+     * 0.01, and any other value for an immediate change.
      * @ghidraAddress EAR: 0x1000c270
      */
     void SetChannelSmoothingStep(uint16_t control);

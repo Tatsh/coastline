@@ -48,13 +48,13 @@ EarChannel::~EarChannel() = default;
 void EarChannel::SetChannelSmoothingStep(uint16_t control) {
     switch (control) {
     case 0x100:
-        gainStep = 0.01;
+        gainStep = 0.05;
         break;
     case 0x300:
         gainStep = 0.03;
         break;
     case 0x700:
-        gainStep = 0.05;
+        gainStep = 0.01;
         break;
     default:
         gainStep = 1;
