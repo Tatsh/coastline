@@ -6,7 +6,6 @@
 #include "error.h"
 #include "event.h"
 #include "musicdevice.h"
-#include "platform/win/uninitialized.h"
 #include "playbacksmoothing.h"
 #include "runtime.h"
 #include "scheduledevent.h"
@@ -63,8 +62,6 @@ void EarChannel::SetChannelSmoothingStep(uint16_t control) {
     }
 }
 
-// A failed lookup leaves the event unset, and the original reads it.
-BEGIN_ORIGINAL_UNINITIALIZED_READ
 int EarChannel::EnsureChannelPlaybackCapacity(uint16_t priority, uint16_t attenuation) {
     if (sequential) {
         return 1;
@@ -95,14 +92,24 @@ int EarChannel::EnsureChannelPlaybackCapacity(uint16_t priority, uint16_t attenu
         }
     } while (position);
     ScheduledEarEvent *event;
+#ifdef ENABLE_PATCHES
+    if (lowestPriority < priority && lowestPriorityEvent &&
+        events.LookupWordPointerMapValue(lowestPriorityEvent, event)) {
+#else
     if (lowestPriority < priority && lowestPriorityEvent) {
         // The lookup is not checked; the event came from the same map.
         events.LookupWordPointerMapValue(lowestPriorityEvent, event);
+#endif /* ENABLE_PATCHES */
         event->ReleaseScheduledEventPlayback();
         return 1;
     }
+#ifdef ENABLE_PATCHES
+    if (lowestAttenuation < attenuation && lowestAttenuationEvent &&
+        events.LookupWordPointerMapValue(lowestAttenuationEvent, event)) {
+#else
     if (lowestAttenuation < attenuation && lowestAttenuationEvent) {
         events.LookupWordPointerMapValue(lowestAttenuationEvent, event);
+#endif /* ENABLE_PATCHES */
         if (event->priority <= priority) {
             event->ReleaseScheduledEventPlayback();
             return 1;
@@ -110,7 +117,6 @@ int EarChannel::EnsureChannelPlaybackCapacity(uint16_t priority, uint16_t attenu
     }
     return 0;
 }
-END_ORIGINAL_UNINITIALIZED_READ
 
 int __stdcall EarRegisterChannelExportWrapper(uint32_t channel,
                                               uint32_t flags,
@@ -346,21 +352,17 @@ void __stdcall EAR_DLL_SetAttenuationLevel(uint32_t channel, uint32_t level) {
     if (!IsEarReady()) {
         return;
     }
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wtype-limits"
-#endif
     if (level > 10000) {
         SetEarLastError(0x24);
         level = 10000;
-    } else if (level < 0) {
+    }
+#ifndef ENABLE_PATCHES
+    else if (level < 0) {
         // The original tests the unsigned level against 0 as well, which never holds.
         SetEarLastError(0x24);
         level = 0;
     }
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
+#endif /* ENABLE_PATCHES */
     while (g_bPlaybackUpdateLocked) {
     }
     g_bPlaybackUpdateLocked = 1;

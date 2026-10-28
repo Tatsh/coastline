@@ -11,7 +11,6 @@
 #include "earplayback.h"
 #include "environment.h"
 #include "error.h"
-#include "platform/win/uninitialized.h"
 #include "registry.h"
 #include "runtime.h"
 #include "scheduledevent.h"
@@ -216,8 +215,6 @@ uint32_t __stdcall EarMixEventExportWrapper(const EarEventParams *params) {
     return EAR_DLL_MixEvent(params);
 }
 
-// The queue lookups leave their events unset when they fail, and the original reads them.
-BEGIN_ORIGINAL_UNINITIALIZED_READ
 uint32_t __stdcall EAR_DLL_MixEvent(const EarEventParams *params) {
     SetEarLastError(0);
     if (!IsEarReady()) {
@@ -388,9 +385,15 @@ uint32_t __stdcall EAR_DLL_MixEvent(const EarEventParams *params) {
             channel->recentEvents.AddHead(event->notificationEvent);
         } else if (mode == EAR_EVENT_QUEUE_NEXT || mode == EAR_EVENT_QUEUE_REPLACE) {
             ScheduledEarEvent *current;
+#ifdef ENABLE_PATCHES
+            if (!channel->events.LookupWordPointerMapValue(channel->recentEvents.GetHead(),
+                                                           current) ||
+                !current->IsScheduledEventPlaybackActive()) {
+#else
             // The result of the lookup is not read.
             channel->events.LookupWordPointerMapValue(channel->recentEvents.GetHead(), current);
             if (!current->IsScheduledEventPlaybackActive()) {
+#endif /* ENABLE_PATCHES */
                 channel->recentEvents.InsertBefore(channel->recentEvents.GetHeadPosition(),
                                                    event->notificationEvent);
             } else {
@@ -410,9 +413,18 @@ uint32_t __stdcall EAR_DLL_MixEvent(const EarEventParams *params) {
                 if (handle == target) {
                     found = 1;
                     ScheduledEarEvent *targetEvent;
+#ifdef ENABLE_PATCHES
+                    int targetFound =
+                        channel->events.LookupWordPointerMapValue(handle, targetEvent);
+#else
                     channel->events.LookupWordPointerMapValue(handle, targetEvent);
+#endif /* ENABLE_PATCHES */
                     if (mode == EAR_EVENT_QUEUE_BEFORE_EVENT) {
+#ifdef ENABLE_PATCHES
+                        if (targetFound && targetEvent->IsScheduledEventPlaybackActive()) {
+#else
                         if (targetEvent->IsScheduledEventPlaybackActive()) {
+#endif /* ENABLE_PATCHES */
                             mode = EAR_EVENT_QUEUE_AFTER_EVENT;
                         } else {
                             channel->recentEvents.InsertBefore(previous, event->notificationEvent);
@@ -444,7 +456,6 @@ fail:
     }
     return 0;
 }
-END_ORIGINAL_UNINITIALIZED_READ
 
 uint32_t __stdcall EarMoveEventExportWrapper(const EarEventParams *params) {
     return EAR_DLL_MoveEvent(params);

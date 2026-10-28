@@ -9,7 +9,6 @@
 #include "error.h"
 #include "event.h"
 #include "memorybudget.h"
-#include "platform/win/uninitialized.h"
 #include "preset.h"
 #include "registry.h"
 #include "runtime.h"
@@ -38,13 +37,15 @@ int EarWaveSample::LoadWaveSample(const void *source, EarWaveSampleSource kind) 
     return 1;
 }
 
-// The failure path tests the handle a bad header leaves unset.
-BEGIN_ORIGINAL_UNINITIALIZED_READ
 int EarWaveSample::ReadWaveSampleData(const void *source) {
     char header[16];
     MMIOINFO info;
+#ifdef ENABLE_PATCHES
+    HMMIO file = nullptr;
+#else
     // A header that is not of a wave file closes this handle before it is assigned.
     HMMIO file;
+#endif /* ENABLE_PATCHES */
     if (sourceKind == EAR_WAVE_SAMPLE_SOURCE_MEMORY) {
         std::memmove(header, source, sizeof(header));
         if (std::memcmp(header, "RIFF", 4) || std::memcmp(header + 8, "WAVEfmt ", 8)) {
@@ -131,7 +132,6 @@ fail:
     }
     return 0;
 }
-END_ORIGINAL_UNINITIALIZED_READ
 
 char *EarWaveSample::GetWaveSampleBuffer() const {
     return buffer;
