@@ -182,18 +182,21 @@ int g_adwKeyPrevDown[KEYBOARD_KEY_COUNT];
 /**
  * Input poll count, saturated at 32767.
  * @ghidraAddress BRD3D: 0x118abddc
+ * @ghidraAddress BRGlide: 0x118eeef4
  */
 int g_dwInputPollCounter;
 
 /**
  * Initial timestamp for benchmark frame rate measurement, in milliseconds.
  * @ghidraAddress BRD3D: 0x118abd00
+ * @ghidraAddress BRGlide: 0x118eee18
  */
 DWORD g_dwBenchmarkStartTime;
 
 /**
  * Initial interpolated frame count for benchmark measurement.
  * @ghidraAddress BRD3D: 0x118abd74
+ * @ghidraAddress BRGlide: 0x118eee8c
  */
 int g_dwBenchmarkStartFrameCount;
 

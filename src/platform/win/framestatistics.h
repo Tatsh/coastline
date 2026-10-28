@@ -9,12 +9,14 @@ extern "C" {
 /**
  * The number of game-loop durations averaged for the game frame rate.
  * @ghidraAddress BRD3D: 0x100aa008
+ * @ghidraAddress BRGlide: 0x100a9358
  */
 extern int g_dwGameFpsSampleFrames;
 
 /**
  * The game-loop sample written last, negative before the first loop.
  * @ghidraAddress BRD3D: 0x100aa00c
+ * @ghidraAddress BRGlide: 0x100a935c
  */
 extern int g_dwGameFpsFrameCountdown;
 
@@ -24,6 +26,7 @@ extern int g_dwGameFpsFrameCountdown;
 /**
  * Recent game-loop durations in milliseconds.
  * @ghidraAddress BRD3D: 0x10680758
+ * @ghidraAddress BRGlide: 0x105bc900
  */
 extern DWORD g_adwGameFpsFrameTimeSamples[GAME_FPS_FRAME_TIME_SAMPLE_COUNT];
 

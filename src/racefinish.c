@@ -53,11 +53,13 @@ s32 g_dwBestReplayPlayer;
 /**
  * An address used as the stopped-channel sample token; its contents are never read.
  * @ghidraAddress BRD3D: 0x118ac70c
+ * @ghidraAddress BRGlide: 0x118eef2c
  */
 static u8 g_bNoSoundSample;
 /**
  * A retained season-menu request without native readers.
  * @ghidraAddress BRD3D: 0x11782ddc
+ * @ghidraAddress BRGlide: 0x117a613c
  */
 static volatile u8 g_bReturnToSeasonMenu;
 #else

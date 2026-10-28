@@ -80,6 +80,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x80272834
  * @ghidraAddress JPN: 0x802722f4
  * @ghidraAddress BRD3D: 0x100bbae8
+ * @ghidraAddress BRGlide: 0x100bb2f0
  */
 extern TrackMenuItem g_aTrackDescriptors[];
 

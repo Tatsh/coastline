@@ -183,6 +183,7 @@ extern s32 g_bForceVehicleAltVariant;
  * @ghidraAddress EUR: 0x8029056c
  * @ghidraAddress JPN: 0x8029000c
  * @ghidraAddress BRD3D: 0x100a6380
+ * @ghidraAddress BRGlide: 0x100a5b40
  */
 extern s32 g_bVehicleEnvMapLinearTexGen;
 

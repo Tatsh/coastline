@@ -7,7 +7,10 @@ extern "C" {
 /** @ghidraAddress BRD3D: 0x100b89c8 */
 extern const char *g_apszBgmTrackNames[12];
 
-/** @ghidraAddress BRD3D: 0x100b80b8 */
+/**
+ * @ghidraAddress BRD3D: 0x100b80b8
+ * @ghidraAddress BRGlide: 0x100b78c0
+ */
 extern const char *g_apszTrackFilenames[15];
 
 /**
@@ -18,7 +21,10 @@ extern const char *g_apszTrackFilenames[15];
  */
 extern const char *const g_apszSfxNamePrefixes[17];
 
-/** @ghidraAddress BRD3D: 0x100b84f8 */
+/**
+ * @ghidraAddress BRD3D: 0x100b84f8
+ * @ghidraAddress BRGlide: 0x100b7d00
+ */
 #define g_apszCarModelPrefixes (g_apszSfxNamePrefixes + 1)
 
 /**

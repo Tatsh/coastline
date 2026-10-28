@@ -43,9 +43,15 @@ public:
 extern "C" {
 #endif
 
-/** @ghidraAddress BRD3D: 0x1039b760 */
+/**
+ * @ghidraAddress BRD3D: 0x1039b760
+ * @ghidraAddress BRGlide: 0x10396f48
+ */
 extern FrameSnapshot g_aFrameSnapshots[FRAME_SNAPSHOT_COUNT];
-/** @ghidraAddress BRD3D: 0x10481c10 */
+/**
+ * @ghidraAddress BRD3D: 0x10481c10
+ * @ghidraAddress BRGlide: 0x1047d3f8
+ */
 extern FrameSnapshot g_InterpolatedFrameSnapshot;
 
 /** @ghidraAddress BRD3D: 0x1039b728 */

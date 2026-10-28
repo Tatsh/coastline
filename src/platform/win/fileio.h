@@ -33,6 +33,7 @@ typedef struct GameFile {
  * Whether the routines write each file they open or close to the debugger.
  *
  * @ghidraAddress BRD3D: 0x10220ce0
+ * @ghidraAddress BRGlide: 0x1021c810
  * @ghidraAddress BRally: 0x00403218
  * @ghidraAddress SetVideo: 0x0040e000
  */

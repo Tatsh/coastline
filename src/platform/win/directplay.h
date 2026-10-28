@@ -476,7 +476,10 @@ struct NetworkJoinCredentials {
     char domain[200];
 };
 
-/** @ghidraAddress BRD3D: 0x1022af1c */
+/**
+ * @ghidraAddress BRD3D: 0x1022af1c
+ * @ghidraAddress BRGlide: 0x10226a4c
+ */
 extern int g_bNetSpectator;
 
 /**
@@ -832,6 +835,7 @@ int SendPlayerInfoPacket(DirectPlayInfo *pInfo,
 
 /**
  * @ghidraAddress BRD3D: 0x1022aefc
+ * @ghidraAddress BRGlide: 0x10226a2c
  */
 extern unsigned g_dwNetRaceStartTimeMs;
 
@@ -1791,6 +1795,7 @@ int ToggleSelectedSessionSlotFlag(void);
 
 /**
  * @ghidraAddress BRD3D: 0x100aac48
+ * @ghidraAddress BRGlide: 0x100aa3e8
  */
 extern const char *g_apszPlaceNames[8];
 

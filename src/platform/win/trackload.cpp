@@ -13,7 +13,10 @@
 #include "util.h"
 
 namespace {
-/** @ghidraAddress BRD3D: 0x106c56ec */
+/**
+ * @ghidraAddress BRD3D: 0x106c56ec
+ * @ghidraAddress BRGlide: 0x106ec77c
+ */
 unsigned g_dwTrackDataRelocationDelta;
 } // namespace
 

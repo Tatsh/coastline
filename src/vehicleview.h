@@ -54,6 +54,7 @@ extern u8 g_abVehicleReflectionTexSelect[4][2];
  * @ghidraAddress EUR: 0x8028ea88
  * @ghidraAddress JPN: 0x8028e4d8
  * @ghidraAddress BRD3D: 0x10277ea0
+ * @ghidraAddress BRGlide: 0x10273688
  */
 extern s32 g_dwVehicleViewModeIndex;
 

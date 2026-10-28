@@ -15,6 +15,7 @@ extern "C" {
 
 /**
  * @ghidraAddress BRD3D: 0x100b8c90
+ * @ghidraAddress BRGlide: 0x100b8498
  */
 extern int g_dwTextureQualityLevel;
 
@@ -22,6 +23,7 @@ extern int g_dwTextureQualityLevel;
  * Path of BossRally.ini, built from g_szInstallDirectory.
  *
  * @ghidraAddress BRD3D: 0x1022af48
+ * @ghidraAddress BRGlide: 0x10226a78
  */
 extern char g_szBossRallyIniPath[];
 
@@ -85,6 +87,7 @@ extern int g_dwTireType;
  * The directory of the tracks, from `TrackDir=`.
  *
  * @ghidraAddress BRD3D: 0x100b7cb8
+ * @ghidraAddress BRGlide: 0x100b74c0
  */
 extern char g_szTracks[];
 
@@ -92,6 +95,7 @@ extern char g_szTracks[];
  * The directory of the cars, from `CarDir=`.
  *
  * @ghidraAddress BRD3D: 0x100b80f8
+ * @ghidraAddress BRGlide: 0x100b7900
  */
 extern char g_szCarsDirPath[];
 
@@ -115,6 +119,7 @@ extern int g_bInterpolateFrames;
  * Whether speed reduces analogue steering lock, from `SpeedSensitive=`.
  *
  * @ghidraAddress BRD3D: 0x100b3664
+ * @ghidraAddress BRGlide: 0x100b2e6c
  */
 extern int g_bSpeedSensitiveSteering;
 

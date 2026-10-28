@@ -50,6 +50,7 @@ extern u8 _endingRecordingSegmentRomStart[];
  * frame buffers.
  *
  * @ghidraAddress BRD3D: 0x117554f0
+ * @ghidraAddress BRGlide: 0x11778850
  */
 extern u8 g_abPlaybackRecording[];
 
@@ -58,6 +59,7 @@ extern u8 g_abPlaybackRecording[];
  * places them, below and over the frame buffers.
  *
  * @ghidraAddress BRD3D: 0x117644f0
+ * @ghidraAddress BRGlide: 0x11787850
  */
 extern u8 g_aabInputRecordings[][0xF000];
 
@@ -69,6 +71,7 @@ extern u8 g_aabInputRecordings[][0xF000];
  * @ghidraAddress EUR: 0x80317b2c
  * @ghidraAddress JPN: 0x8031656c
  * @ghidraAddress BRD3D: 0x106909c8
+ * @ghidraAddress BRGlide: 0x105ccb70
  */
 extern s32 g_dwBestReplayLength;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -78,6 +81,7 @@ extern s32 g_dwBestReplayLength;
  * @ghidraAddress EUR: 0x80317b30
  * @ghidraAddress JPN: 0x80316570
  * @ghidraAddress BRD3D: 0x10680668
+ * @ghidraAddress BRGlide: 0x105bc810
  */
 extern s32 g_dwBestReplayPlayer;
 

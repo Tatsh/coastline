@@ -4,19 +4,40 @@
 #include "platform/win/snapshotops.h"
 #include "platform/win/timer.h"
 
-/** @ghidraAddress BRD3D: 0x106909e8 */
+/**
+ * @ghidraAddress BRD3D: 0x106909e8
+ * @ghidraAddress BRGlide: 0x105ccb90
+ */
 static DWORD g_dwLastFrameTimestamp;
-/** @ghidraAddress BRD3D: 0x106909d4 */
+/**
+ * @ghidraAddress BRD3D: 0x106909d4
+ * @ghidraAddress BRGlide: 0x105ccb7c
+ */
 static volatile DWORD g_dwRaceAccumulatedTime;
-/** @ghidraAddress BRD3D: 0x106805c4 */
+/**
+ * @ghidraAddress BRD3D: 0x106805c4
+ * @ghidraAddress BRGlide: 0x105bc76c
+ */
 static int g_nRacePacingInterval;
-/** @ghidraAddress BRD3D: 0x10680948 */
+/**
+ * @ghidraAddress BRD3D: 0x10680948
+ * @ghidraAddress BRGlide: 0x105bcaf0
+ */
 static DWORD g_dwNextRaceFrameTime;
-/** @ghidraAddress BRD3D: 0x106909f8 */
+/**
+ * @ghidraAddress BRD3D: 0x106909f8
+ * @ghidraAddress BRGlide: 0x105ccba0
+ */
 static int g_nRaceFramesWithoutRender;
-/** @ghidraAddress BRD3D: 0x106909fc */
+/**
+ * @ghidraAddress BRD3D: 0x106909fc
+ * @ghidraAddress BRGlide: 0x105ccba4
+ */
 static DWORD g_dwLastRaceRenderTime;
-/** @ghidraAddress BRD3D: 0x100aa268 */
+/**
+ * @ghidraAddress BRD3D: 0x100aa268
+ * @ghidraAddress BRGlide: 0x100a95b8
+ */
 static const DWORD g_adwRaceFrameIntervals[3] = {33, 33, 34};
 
 void UpdateRaceFrameStatistics(void) {

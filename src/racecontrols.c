@@ -36,6 +36,7 @@ u32 g_dwRacePauseState;
  * A retained clear-frame request written after unpausing, without any native readers.
  *
  * @ghidraAddress BRD3D: 0x106909bc
+ * @ghidraAddress BRGlide: 0x105ccb64
  */
 static volatile s32 g_dwUnpauseClearFrames;
 

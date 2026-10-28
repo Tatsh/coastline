@@ -29,6 +29,7 @@ union ConfigLoadArgument {
  * The first persisted configuration value, unused after loading.
  *
  * @ghidraAddress BRD3D: 0x100adf58
+ * @ghidraAddress BRGlide: 0x100ad760
  */
 extern int g_dwConfigValue0;
 
@@ -36,6 +37,7 @@ extern int g_dwConfigValue0;
  * The second persisted configuration value, unused after loading.
  *
  * @ghidraAddress BRD3D: 0x100adf5c
+ * @ghidraAddress BRGlide: 0x100ad764
  */
 extern int g_dwConfigValue1;
 
@@ -43,6 +45,7 @@ extern int g_dwConfigValue1;
  * Whether the speed display uses miles per hour.
  *
  * @ghidraAddress BRD3D: 0x100adf60
+ * @ghidraAddress BRGlide: 0x100ad768
  */
 extern int g_bSpeedUnitsMph;
 
@@ -50,6 +53,7 @@ extern int g_bSpeedUnitsMph;
  * The path used for binary configuration reads.
  *
  * @ghidraAddress BRD3D: 0x100b5dd0
+ * @ghidraAddress BRGlide: 0x100b55d8
  */
 extern const char g_szCRallyConfigDat[];
 

@@ -10,9 +10,15 @@
 #include "timing.h"
 
 namespace {
-/** @ghidraAddress BRD3D: 0x100a6cf8 */
+/**
+ * @ghidraAddress BRD3D: 0x100a6cf8
+ * @ghidraAddress BRGlide: 0x100a64b8
+ */
 int g_dwHudClearFramesRemaining = 2;
-/** @ghidraAddress BRD3D: 0x100a6cfc */
+/**
+ * @ghidraAddress BRD3D: 0x100a6cfc
+ * @ghidraAddress BRGlide: 0x100a64bc
+ */
 int g_dwHudLastViewportCount = -1;
 } // namespace
 

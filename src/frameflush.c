@@ -112,7 +112,10 @@ s32 g_dwAppliedScreenScaleShift;
 s32 g_dwDisplayModeChangeCountdown;
 /** @ghidraAddress BRD3D: 0x106c6598 */
 u32 g_dwFlushValueSource;
-/** @ghidraAddress BRD3D: 0x106c662c */
+/**
+ * @ghidraAddress BRD3D: 0x106c662c
+ * @ghidraAddress BRGlide: 0x106ed6bc
+ */
 s32 g_dwHudDebugLevel;
 /** @ghidraAddress BRD3D: 0x106c65f4 */
 u32 g_dwKeepScreenBlanked;

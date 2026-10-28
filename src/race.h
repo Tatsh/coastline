@@ -142,6 +142,7 @@ extern f32 g_fStartLightsDrop;
  * @ghidraAddress EUR: 0x80271f34
  * @ghidraAddress JPN: 0x802719e4
  * @ghidraAddress BRD3D: 0x10680618
+ * @ghidraAddress BRGlide: 0x105bc7c0
  */
 extern s32 g_dwAirplaneInstance;
 
@@ -150,6 +151,7 @@ extern s32 g_dwAirplaneInstance;
  * @ghidraAddress EUR: 0x80271f38
  * @ghidraAddress JPN: 0x802719e8
  * @ghidraAddress BRD3D: 0x1068061c
+ * @ghidraAddress BRGlide: 0x105bc7c4
  */
 extern s32 g_dwAirplaneTrigger;
 
@@ -158,6 +160,7 @@ extern s32 g_dwAirplaneTrigger;
  * @ghidraAddress EUR: 0x80271f3c
  * @ghidraAddress JPN: 0x802719ec
  * @ghidraAddress BRD3D: 0x10680620
+ * @ghidraAddress BRGlide: 0x105bc7c8
  */
 extern s32 g_dwAirplaneTriggerLap;
 
@@ -168,6 +171,7 @@ extern s32 g_dwAirplaneTriggerLap;
  * @ghidraAddress EUR: 0x80271f40
  * @ghidraAddress JPN: 0x802719f0
  * @ghidraAddress BRD3D: 0x10680624
+ * @ghidraAddress BRGlide: 0x105bc7cc
  */
 extern s32 g_bAirplaneFlying;
 
@@ -178,6 +182,7 @@ extern s32 g_bAirplaneFlying;
  * @ghidraAddress EUR: 0x80271f44
  * @ghidraAddress JPN: 0x802719f4
  * @ghidraAddress BRD3D: 0x10680628
+ * @ghidraAddress BRGlide: 0x105bc7d0
  */
 extern s32 g_dwAirplaneNode;
 
@@ -186,6 +191,7 @@ extern s32 g_dwAirplaneNode;
  * @ghidraAddress EUR: 0x80271f48
  * @ghidraAddress JPN: 0x802719f8
  * @ghidraAddress BRD3D: 0x1068062c
+ * @ghidraAddress BRGlide: 0x105bc7d4
  */
 extern s32 g_dwAirplaneNodeCount;
 
@@ -196,6 +202,7 @@ extern s32 g_dwAirplaneNodeCount;
  * @ghidraAddress EUR: 0x80271f4c
  * @ghidraAddress JPN: 0x802719fc
  * @ghidraAddress BRD3D: 0x10680630
+ * @ghidraAddress BRGlide: 0x105bc7d8
  */
 extern f32 g_fAirplaneScale;
 
@@ -206,6 +213,7 @@ extern f32 g_fAirplaneScale;
  * @ghidraAddress EUR: 0x80271f50
  * @ghidraAddress JPN: 0x80271a00
  * @ghidraAddress BRD3D: 0x10680634
+ * @ghidraAddress BRGlide: 0x105bc7dc
  */
 extern Vec3f *g_pAirplanePathLeft;
 
@@ -214,6 +222,7 @@ extern Vec3f *g_pAirplanePathLeft;
  * @ghidraAddress EUR: 0x80271f54
  * @ghidraAddress JPN: 0x80271a04
  * @ghidraAddress BRD3D: 0x10680638
+ * @ghidraAddress BRGlide: 0x105bc7e0
  */
 extern Vec3f *g_pAirplanePathRight;
 
@@ -224,6 +233,7 @@ extern Vec3f *g_pAirplanePathRight;
  * @ghidraAddress EUR: 0x80271f58
  * @ghidraAddress JPN: 0x80271a08
  * @ghidraAddress BRD3D: 0x1068063c
+ * @ghidraAddress BRGlide: 0x105bc7e4
  */
 extern f32 g_fAirplaneDistance;
 
@@ -232,6 +242,7 @@ extern f32 g_fAirplaneDistance;
  * @ghidraAddress EUR: 0x80271f5c
  * @ghidraAddress JPN: 0x80271a0c
  * @ghidraAddress BRD3D: 0x10680640
+ * @ghidraAddress BRGlide: 0x105bc7e8
  */
 extern f32 g_fAirplaneSegmentLength;
 
@@ -243,6 +254,7 @@ extern f32 g_fAirplaneSegmentLength;
  * @ghidraAddress EUR: 0x80271f60
  * @ghidraAddress JPN: 0x80271a10
  * @ghidraAddress BRD3D: 0x10680644
+ * @ghidraAddress BRGlide: 0x105bc7ec
  */
 extern Vec3f g_vAirplaneDirPrev;
 
@@ -251,6 +263,7 @@ extern Vec3f g_vAirplaneDirPrev;
  * @ghidraAddress EUR: 0x80271f6c
  * @ghidraAddress JPN: 0x80271a1c
  * @ghidraAddress BRD3D: 0x10680650
+ * @ghidraAddress BRGlide: 0x105bc7f8
  */
 extern Vec3f g_vAirplaneDir;
 
@@ -259,6 +272,7 @@ extern Vec3f g_vAirplaneDir;
  * @ghidraAddress EUR: 0x80271f78
  * @ghidraAddress JPN: 0x80271a28
  * @ghidraAddress BRD3D: 0x1068065c
+ * @ghidraAddress BRGlide: 0x105bc804
  */
 extern Vec3f g_vAirplaneDirNext;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -270,6 +284,7 @@ extern Vec3f g_vAirplaneDirNext;
  * @ghidraAddress EUR: 0x80271f84
  * @ghidraAddress JPN: 0x80271a34
  * @ghidraAddress BRD3D: 0x100aa018
+ * @ghidraAddress BRGlide: 0x100a9368
  */
 extern RaceCaption g_aCreditCaptions[];
 
@@ -291,6 +306,7 @@ extern CreditLine g_aCreditScrollLines[];
  * @ghidraAddress EUR: 0x8027275c
  * @ghidraAddress JPN: 0x8027220c
  * @ghidraAddress BRD3D: 0x106909e4
+ * @ghidraAddress BRGlide: 0x105ccb8c
  */
 extern s32 g_bReplayAfterRace;
 
@@ -312,6 +328,7 @@ extern s32 g_dwSavedResultsValid;
  * @ghidraAddress EUR: 0x80272764
  * @ghidraAddress JPN: 0x80272214
  * @ghidraAddress BRD3D: 0x100aa1f8
+ * @ghidraAddress BRGlide: 0x100a9548
  */
 extern f32 g_afStartLightThresholds[START_LIGHT_STEPS];
 
@@ -322,6 +339,7 @@ extern f32 g_afStartLightThresholds[START_LIGHT_STEPS];
  * @ghidraAddress EUR: 0x80272778
  * @ghidraAddress JPN: 0x80272228
  * @ghidraAddress BRD3D: 0x10680610
+ * @ghidraAddress BRGlide: 0x105bc7b8
  */
 extern s32 g_dwSaveAvailable;
 
@@ -354,6 +372,7 @@ extern s32 g_dwSeasonResultMsgLineCount;
  * @ghidraAddress EUR: 0x80272794
  * @ghidraAddress JPN: 0x80272244
  * @ghidraAddress BRD3D: 0x10680940
+ * @ghidraAddress BRGlide: 0x105bcae8
  */
 extern s32 g_dwWaterfallCount;
 
@@ -364,6 +383,7 @@ extern s32 g_dwWaterfallCount;
  * @ghidraAddress EUR: 0x8027279c
  * @ghidraAddress JPN: 0x8027224c
  * @ghidraAddress BRD3D: 0x106909ec
+ * @ghidraAddress BRGlide: 0x105ccb94
  */
 extern s32 g_dwRaceInitialized;
 
@@ -374,6 +394,7 @@ extern s32 g_dwRaceInitialized;
  * @ghidraAddress EUR: 0x802727a0
  * @ghidraAddress JPN: 0x80272250
  * @ghidraAddress BRD3D: 0x106909f0
+ * @ghidraAddress BRGlide: 0x105ccb98
  */
 extern s32 g_dwRaceExitState;
 
@@ -384,6 +405,7 @@ extern s32 g_dwRaceExitState;
  * @ghidraAddress EUR: 0x802727a4
  * @ghidraAddress JPN: 0x80272254
  * @ghidraAddress BRD3D: 0x100aa228
+ * @ghidraAddress BRGlide: 0x100a9578
  */
 extern RacePhaseStep g_aRacePhaseTable[RACE_PHASES];
 
@@ -394,6 +416,7 @@ extern RacePhaseStep g_aRacePhaseTable[RACE_PHASES];
  * @ghidraAddress EUR: 0x8028d5b0
  * @ghidraAddress JPN: 0x8028cfe0
  * @ghidraAddress BRD3D: 0x118ab470
+ * @ghidraAddress BRGlide: 0x118ee588
  */
 extern s32 g_dwRaceFinishOrderCounter;
 
@@ -404,6 +427,7 @@ extern s32 g_dwRaceFinishOrderCounter;
  * @ghidraAddress EUR: 0x802f9be4
  * @ghidraAddress JPN: 0x802f8624
  * @ghidraAddress BRD3D: 0x106806d8
+ * @ghidraAddress BRGlide: 0x105bc880
  */
 extern f32 g_fRacePhaseTimer;
 
@@ -415,6 +439,7 @@ extern f32 g_fRacePhaseTimer;
  * @ghidraAddress EUR: 0x802f9be8
  * @ghidraAddress JPN: 0x802f8628
  * @ghidraAddress BRD3D: 0x106909cc
+ * @ghidraAddress BRGlide: 0x105ccb74
  */
 extern s32 g_dwStartLightsStep;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -426,6 +451,7 @@ extern s32 g_dwStartLightsStep;
  * @ghidraAddress EUR: 0x802f9bec
  * @ghidraAddress JPN: 0x802f862c
  * @ghidraAddress BRD3D: 0x106805a8
+ * @ghidraAddress BRGlide: 0x105bc750
  */
 extern s32 g_dwRacePhaseIndex;
 
@@ -436,6 +462,7 @@ extern s32 g_dwRacePhaseIndex;
  * @ghidraAddress EUR: 0x802a738c
  * @ghidraAddress JPN: 0x802a6e2c
  * @ghidraAddress BRD3D: 0x11782bc0
+ * @ghidraAddress BRGlide: 0x117a5f20
  */
 extern s16 g_wRaceScreenLoopExited;
 
@@ -524,6 +551,7 @@ extern char g_szFormatBuffer[0x20];
  * @ghidraAddress EUR: 0x80317ae8
  * @ghidraAddress JPN: 0x80316528
  * @ghidraAddress BRD3D: 0x106805d0
+ * @ghidraAddress BRGlide: 0x105bc778
  */
 extern s32 g_adwWaterfallInstances[16];
 
@@ -543,6 +571,7 @@ extern s32 g_dwScreenClearFrames;
  * @ghidraAddress EUR: 0x80317b58
  * @ghidraAddress JPN: 0x80316598
  * @ghidraAddress BRD3D: 0x106806dc
+ * @ghidraAddress BRGlide: 0x105bc884
  */
 extern f32 g_fRaceCaptionTimer;
 
@@ -551,6 +580,7 @@ extern f32 g_fRaceCaptionTimer;
  * @ghidraAddress EUR: 0x80317b5c
  * @ghidraAddress JPN: 0x8031659c
  * @ghidraAddress BRD3D: 0x106805c0
+ * @ghidraAddress BRGlide: 0x105bc768
  */
 extern s32 g_dwRaceCaptionIndex;
 
@@ -562,6 +592,7 @@ extern s32 g_dwRaceCaptionIndex;
  * @ghidraAddress EUR: 0x80317b60
  * @ghidraAddress JPN: 0x803165a0
  * @ghidraAddress BRD3D: 0x10680938
+ * @ghidraAddress BRGlide: 0x105bcae0
  */
 extern s32 g_bDemoInterrupted;
 
@@ -581,6 +612,7 @@ extern s32 g_dwPrevViewportCount;
  * @ghidraAddress EUR: 0x802f9be0
  * @ghidraAddress JPN: 0x802f8620
  * @ghidraAddress BRD3D: 0x10680750
+ * @ghidraAddress BRGlide: 0x105bc8f8
  */
 extern s32 g_dwRacePhase;
 

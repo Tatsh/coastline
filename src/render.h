@@ -158,7 +158,10 @@ extern Mtx *g_pProjectionMtx;
 extern f32 g_afMvpMatrix[4][4];
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-/** @ghidraAddress BRD3D: 0x106c08e0 */
+/**
+ * @ghidraAddress BRD3D: 0x106c08e0
+ * @ghidraAddress BRGlide: 0x106e7970
+ */
 extern f32 g_afCameraRollMatrix[4][4];
 #endif
 

@@ -7,7 +7,10 @@
 extern "C" {
 #endif
 
-/** @ghidraAddress BRD3D: 0x106c8e78 */
+/**
+ * @ghidraAddress BRD3D: 0x106c8e78
+ * @ghidraAddress BRGlide: 0x106eff08
+ */
 extern u8 g_abTrackGeometryBuffer[TRACK_MAX_SIZE];
 
 /**

@@ -100,6 +100,7 @@ extern float g_afLastRaceLapTimes[12];
  * The place displayed for each round, from one.
  *
  * @ghidraAddress BRD3D: 0x10aa26e8
+ * @ghidraAddress BRGlide: 0x10ac5a40
  */
 extern u8 g_abSeasonRoundPlace[SEASON_RACES];
 
@@ -107,6 +108,7 @@ extern u8 g_abSeasonRoundPlace[SEASON_RACES];
  * The points displayed for each round.
  *
  * @ghidraAddress BRD3D: 0x10a9d068
+ * @ghidraAddress BRGlide: 0x10ac40f8
  */
 extern u16 g_awSeasonRoundPoints[SEASON_RACES];
 
@@ -130,6 +132,7 @@ extern int g_dwSeasonSavedRound;
  * The retained result value displayed with the last race.
  *
  * @ghidraAddress BRD3D: 0x10aa28c0
+ * @ghidraAddress BRGlide: 0x10ac5c18
  */
 extern int g_dwLastRaceResultField18;
 
@@ -153,6 +156,7 @@ extern PlayerProfile g_SeasonProgressPrev;
  * An unused value reset with championship menus.
  *
  * @ghidraAddress BRD3D: 0x10aa28bc
+ * @ghidraAddress BRGlide: 0x10ac5c14
  */
 extern int g_dwUnusedSeasonMenuValue;
 
@@ -176,6 +180,7 @@ extern int g_dwLoadSeasonSlotValid;
  * Whether the front end reports a failed season.
  *
  * @ghidraAddress BRD3D: 0x10aa28b0
+ * @ghidraAddress BRGlide: 0x10ac5c08
  */
 extern int g_dwSeasonFailed;
 
@@ -183,6 +188,7 @@ extern int g_dwSeasonFailed;
  * Whether the current class's round records were cleared for another attempt.
  *
  * @ghidraAddress BRD3D: 0x10aa28b4
+ * @ghidraAddress BRGlide: 0x10ac5c0c
  */
 extern int g_dwSeasonRoundQualified;
 
@@ -228,6 +234,7 @@ extern SeasonSaveSettings g_LoadedSeasonSettings;
  * The slot label copied for the second player after loading.
  *
  * @ghidraAddress BRD3D: 0x10ad34f8
+ * @ghidraAddress BRGlide: 0x10af6858
  */
 extern char g_szSecondarySeasonSaveSlotName[SEASON_SAVE_SLOT_NAME_SIZE];
 
@@ -235,6 +242,7 @@ extern char g_szSecondarySeasonSaveSlotName[SEASON_SAVE_SLOT_NAME_SIZE];
  * The player whose profile is being loaded, 0 or 1.
  *
  * @ghidraAddress BRD3D: 0x10690a18
+ * @ghidraAddress BRGlide: 0x105ccbc4
  */
 extern int g_dwSaveSlotPlayerIndex;
 
@@ -242,6 +250,7 @@ extern int g_dwSaveSlotPlayerIndex;
  * The shared buffer for profile and configuration file reads.
  *
  * @ghidraAddress BRD3D: 0x11782e28
+ * @ghidraAddress BRGlide: 0x117a6188
  */
 extern u8 g_abSaveFileReadBuffer[SEASON_SAVE_PAYLOAD_SIZE];
 
@@ -262,6 +271,7 @@ bool LoadSeasonSaveFile(int nMode, bool bAllowFailure);
  * The four-byte signature of a saved season.
  *
  * @ghidraAddress BRD3D: 0x100b5d94
+ * @ghidraAddress BRGlide: 0x100b559c
  */
 extern const char g_szSeasonSaveMagic[4];
 

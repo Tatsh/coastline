@@ -796,6 +796,7 @@ void LoadHudGlyphTextureSets(void);
 
 /**
  * @ghidraAddress BRD3D: 0x11829848
+ * @ghidraAddress BRGlide: 0x1186c960
  */
 extern unsigned g_dwHiResTextureMemoryThreshold;
 /**

@@ -34,6 +34,7 @@
  * The next of the two attract recordings to load.
  *
  * @ghidraAddress BRD3D: 0x106909f4
+ * @ghidraAddress BRGlide: 0x105ccb9c
  */
 static s32 g_dwAttractDemoIndex;
 #endif

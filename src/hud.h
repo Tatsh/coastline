@@ -198,6 +198,7 @@ void DrawFormattedLapTimeText(const char *color, s32 lap, f32 seconds, s32 x, s3
 /**
  * Whether to display the lap counter.
  * @ghidraAddress BRD3D: 0x100bd3e8
+ * @ghidraAddress BRGlide: 0x100bcbf0
  */
 extern s32 g_bHudShowLapCounter;
 /**
@@ -209,11 +210,13 @@ extern s32 g_bHudShowRaceTimer;
 /**
  * Whether to display race position.
  * @ghidraAddress BRD3D: 0x100bd3f8
+ * @ghidraAddress BRGlide: 0x100bcc00
  */
 extern s32 g_bHudShowPosition;
 /**
  * Whether to display the frame rate.
  * @ghidraAddress BRD3D: 0x10b501d8
+ * @ghidraAddress BRGlide: 0x10b73538
  */
 extern s32 g_bShowFpsCounter;
 /**

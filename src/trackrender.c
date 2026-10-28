@@ -47,6 +47,7 @@ namespace {
      * @ghidraAddress EUR: 0x8035fa20
      * @ghidraAddress JPN: 0x8035e690
      * @ghidraAddress BRD3D: 0x10363ff8
+     * @ghidraAddress BRGlide: 0x1035f7e0
      */
     u32 g_dwInstanceHideFlags;
     /**
@@ -56,6 +57,7 @@ namespace {
      * @ghidraAddress EUR: 0x8035fa1c
      * @ghidraAddress JPN: 0x8035e68c
      * @ghidraAddress BRD3D: 0x10363fe8
+     * @ghidraAddress BRGlide: 0x1035f7d0
      */
     f32 g_fViewMatrixMaxAbs;
     /**
@@ -65,6 +67,7 @@ namespace {
      * @ghidraAddress EUR: 0x8028eea8
      * @ghidraAddress JPN: 0x8028e8f8
      * @ghidraAddress BRD3D: 0x1036438c
+     * @ghidraAddress BRGlide: 0x1035fb74
      */
     s32 g_nDeferredInstanceLastIdx;
     /**

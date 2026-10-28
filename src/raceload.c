@@ -64,11 +64,20 @@ namespace {
         Model model;
         u8 bytes[0x10000];
     };
-    /** @ghidraAddress BRD3D: 0x10680950 */
+    /**
+     * @ghidraAddress BRD3D: 0x10680950
+     * @ghidraAddress BRGlide: 0x105bcaf8
+     */
     StartLightsStorage g_abModelLightsBlobBuffer;
-    /** @ghidraAddress BRD3D: 0x100b5d78 */
+    /**
+     * @ghidraAddress BRD3D: 0x100b5d78
+     * @ghidraAddress BRGlide: 0x100b5580
+     */
     const char g_szMiscModelLightsBlob[] = "misc\\modelLights.blob";
-    /** @ghidraAddress BRD3D: 0x106806e0 */
+    /**
+     * @ghidraAddress BRD3D: 0x106806e0
+     * @ghidraAddress BRGlide: 0x105bc888
+     */
     [[maybe_unused, gnu::used]] s32 g_dwRaceCaptionLast;
 }
 

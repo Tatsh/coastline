@@ -455,6 +455,7 @@ extern u32 g_dwTrackTextureRomOffset;
  * @ghidraAddress EUR: 0x8028cc84
  * @ghidraAddress JPN: 0x8028c754
  * @ghidraAddress BRD3D: 0x100aa89c
+ * @ghidraAddress BRGlide: 0x100aa02c
  */
 extern s32 g_dwStreamDmaPrevSegment;
 

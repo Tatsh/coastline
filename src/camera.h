@@ -68,6 +68,7 @@ extern s32 g_dwReplayCameraSwitchTimer;
  * @ghidraAddress EUR: 0x8028cd08
  * @ghidraAddress JPN: 0x8028c7d8
  * @ghidraAddress BRD3D: 0x106c1988
+ * @ghidraAddress BRGlide: 0x106e8a18
  */
 extern s32 g_dwCameraRayHitCount;
 
@@ -78,6 +79,7 @@ extern s32 g_dwCameraRayHitCount;
  * @ghidraAddress EUR: 0x8031d748
  * @ghidraAddress JPN: 0x8031c378
  * @ghidraAddress BRD3D: 0x106c6498
+ * @ghidraAddress BRGlide: 0x106ed528
  */
 extern u16 g_awCameraRayHitInstances[];
 

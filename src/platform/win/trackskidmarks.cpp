@@ -26,10 +26,13 @@ constexpr unsigned ACTIVE = 0x08000000;
 constexpr int SEGMENT_COUNT = 500;
 
 // @ghidraAddress BRD3D: 0x10277ea8
+// @ghidraAddress BRGlide: 0x10273690
 SkidMarkSegment g_aSkidMarkSegments[SKID_MARK_TRACK_COUNT][SEGMENT_COUNT];
 // @ghidraAddress BRD3D: 0x100a65d8
+// @ghidraAddress BRGlide: 0x100a5d98
 int g_anSkidMarkWheelIndices[4] = {2, 1, 3, 0};
 // @ghidraAddress BRD3D: 0x118a9874
+// @ghidraAddress BRGlide: 0x118ec98c
 unsigned g_dwSkidMarkTextureId;
 
 inline int PreviousSegment(int index) {

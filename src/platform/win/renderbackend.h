@@ -17,7 +17,10 @@ extern void (*g_pfnRenderBackendSubmitDisplayList)(struct GbiCommand *pDisplayLi
  */
 extern void (*g_pfnAliasTextureEntrySurface)(int nEntry, int nSourceEntry);
 
-/** @ghidraAddress BRD3D: 0x118aa0ac */
+/**
+ * @ghidraAddress BRD3D: 0x118aa0ac
+ * @ghidraAddress BRGlide: 0x118ed1c4
+ */
 extern unsigned (*g_pfnCreateTextureFromN64Image)(const unsigned char *image,
                                                   const unsigned char *palette,
                                                   int width,
@@ -34,7 +37,10 @@ extern unsigned (*g_pfnCreateTextureFromN64Image)(const unsigned char *image,
                                                   int option13,
                                                   int option14);
 
-/** @ghidraAddress BRD3D: 0x118aa0a8 */
+/**
+ * @ghidraAddress BRD3D: 0x118aa0a8
+ * @ghidraAddress BRGlide: 0x118ed1c0
+ */
 extern int (*g_pfnDecodeN64TextureToPixelBuffer)(void *destination,
                                                  const unsigned char *image,
                                                  const unsigned char *palette,

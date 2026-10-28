@@ -52,6 +52,7 @@ namespace {
      * @ghidraAddress EUR: 0x8028cd04
      * @ghidraAddress JPN: 0x8028c7d4
      * @ghidraAddress BRD3D: 0x106c56f0
+     * @ghidraAddress BRGlide: 0x106ec780
      */
     s32 g_dwCameraRayGroundSurface;
     /**
@@ -59,6 +60,7 @@ namespace {
      * @ghidraAddress EUR: 0x8028cd0c
      * @ghidraAddress JPN: 0x8028c7dc
      * @ghidraAddress BRD3D: 0x10690a34
+     * @ghidraAddress BRGlide: 0x106b7ac4
      */
     s32 g_dwCameraRayNearbyCount;
     /**
@@ -68,6 +70,7 @@ namespace {
      * @ghidraAddress EUR: 0x8028cd00
      * @ghidraAddress JPN: 0x8028c7d0
      * @ghidraAddress BRD3D: 0x106c01fc
+     * @ghidraAddress BRGlide: 0x106e728c
      */
     f32 g_fCameraRayGroundDistance;
 } // namespace
@@ -75,11 +78,20 @@ namespace {
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 namespace {
-    /** @ghidraAddress BRD3D: 0x1039b740 */
+    /**
+     * @ghidraAddress BRD3D: 0x1039b740
+     * @ghidraAddress BRGlide: 0x10396f28
+     */
     char g_szRaceHudTextBuffer[32];
-    /** @ghidraAddress BRD3D: 0x100a73a4 */
+    /**
+     * @ghidraAddress BRD3D: 0x100a73a4
+     * @ghidraAddress BRGlide: 0x100a6b64
+     */
     const char g_szTextCodeHighlight[] = "%y1";
-    /** @ghidraAddress BRD3D: 0x100a73a0 */
+    /**
+     * @ghidraAddress BRD3D: 0x100a73a0
+     * @ghidraAddress BRGlide: 0x100a6b60
+     */
     const char g_szTextCodeNormal[] = "%ry";
 }
 

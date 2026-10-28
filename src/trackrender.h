@@ -71,6 +71,7 @@ extern s32 g_bVisibleCellListOverflow;
  * @ghidraAddress EUR: 0x8028eea0
  * @ghidraAddress JPN: 0x8028e8f0
  * @ghidraAddress BRD3D: 0x103643a4
+ * @ghidraAddress BRGlide: 0x1035fb8c
  */
 extern s32 g_nVisibleInstanceCount;
 
@@ -82,6 +83,7 @@ extern s32 g_nVisibleInstanceCount;
  * @ghidraAddress EUR: 0x80354280
  * @ghidraAddress JPN: 0x80352ef0
  * @ghidraAddress BRD3D: 0x1038b4c0
+ * @ghidraAddress BRGlide: 0x10386ca8
  */
 extern u8 g_abInstanceVisibilityMask[];
 
@@ -93,6 +95,7 @@ extern u8 g_abInstanceVisibilityMask[];
  * @ghidraAddress EUR: 0x8028eed8
  * @ghidraAddress JPN: 0x8028e928
  * @ghidraAddress BRD3D: 0x10363fec
+ * @ghidraAddress BRGlide: 0x1035f7d4
  */
 extern s32 g_nVisibleCellIdxNear;
 
@@ -101,6 +104,7 @@ extern s32 g_nVisibleCellIdxNear;
  * @ghidraAddress EUR: 0x8028eee8
  * @ghidraAddress JPN: 0x8028e938
  * @ghidraAddress BRD3D: 0x102e5ec0
+ * @ghidraAddress BRGlide: 0x102e16a8
  */
 extern s32 g_nVisibleCellIdxMid;
 
@@ -109,6 +113,7 @@ extern s32 g_nVisibleCellIdxMid;
  * @ghidraAddress EUR: 0x8028eee0
  * @ghidraAddress JPN: 0x8028e930
  * @ghidraAddress BRD3D: 0x102e5f24
+ * @ghidraAddress BRGlide: 0x102e170c
  */
 extern s32 g_nVisibleCellIdxFar;
 
@@ -121,6 +126,7 @@ extern s32 g_nVisibleCellIdxFar;
  * @ghidraAddress EUR: 0x8028eeec
  * @ghidraAddress JPN: 0x8028e93c
  * @ghidraAddress BRD3D: 0x102e54b8
+ * @ghidraAddress BRGlide: 0x102e0ca0
  */
 extern s32 g_nTrackTransparentStartIdx;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -133,6 +139,7 @@ extern s32 g_nTrackTransparentStartIdx;
  * @ghidraAddress EUR: 0x8028eedc
  * @ghidraAddress JPN: 0x8028e92c
  * @ghidraAddress BRD3D: 0x102e5ed4
+ * @ghidraAddress BRGlide: 0x102e16bc
  */
 extern s32 g_nTrackTransparentStartIdxNear;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -143,6 +150,7 @@ extern s32 g_nTrackTransparentStartIdxNear;
  * @ghidraAddress EUR: 0x8028eee4
  * @ghidraAddress JPN: 0x8028e934
  * @ghidraAddress BRD3D: 0x102e54b4
+ * @ghidraAddress BRGlide: 0x102e0c9c
  */
 extern s32 g_nTrackTransparentStartIdxFar;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -176,6 +184,7 @@ extern u32 g_dwInstanceHideFlags;
  * @ghidraAddress EUR: 0x8028eed0
  * @ghidraAddress JPN: 0x8028e920
  * @ghidraAddress BRD3D: 0x1039b6cc
+ * @ghidraAddress BRGlide: 0x10396eb4
  */
 extern u16 g_wActiveInstanceHideMask;
 
@@ -187,6 +196,7 @@ extern u16 g_wActiveInstanceHideMask;
  * @ghidraAddress EUR: 0x8028eeb8
  * @ghidraAddress JPN: 0x8028e908
  * @ghidraAddress BRD3D: 0x1039b6c4
+ * @ghidraAddress BRGlide: 0x10396eac
  */
 extern s32 g_bDebugHideInstance;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -269,6 +279,7 @@ extern f32 g_fViewMatrixMaxAbs;
  * @ghidraAddress EUR: 0x8028eed4
  * @ghidraAddress JPN: 0x8028e924
  * @ghidraAddress BRD3D: 0x103643b8
+ * @ghidraAddress BRGlide: 0x1035fba0
  */
 extern LookAt *g_pTrackLookAt;
 
@@ -279,6 +290,7 @@ extern LookAt *g_pTrackLookAt;
  * @ghidraAddress EUR: 0x8028eda0
  * @ghidraAddress JPN: 0x8028e7f0
  * @ghidraAddress BRD3D: 0x100a64e8
+ * @ghidraAddress BRGlide: 0x100a5ca8
  */
 extern Lights1 g_aTrackLights[4];
 
@@ -287,6 +299,7 @@ extern Lights1 g_aTrackLights[4];
  * @ghidraAddress EUR: 0x8028ee00
  * @ghidraAddress JPN: 0x8028e850
  * @ghidraAddress BRD3D: 0x10364388
+ * @ghidraAddress BRGlide: 0x1035fb70
  */
 extern s32 g_nTrackLightBufferIndex;
 

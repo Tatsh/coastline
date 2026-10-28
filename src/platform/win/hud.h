@@ -11,12 +11,14 @@ extern "C" {
 /**
  * Whether to draw the network race standings.
  * @ghidraAddress BRD3D: 0x100bd3fc
+ * @ghidraAddress BRGlide: 0x100bcc04
  */
 extern int g_bHudShowNetworkStandings;
 
 /**
  * Whether the network standings include connection diagnostics.
  * @ghidraAddress BRD3D: 0x118abdc8
+ * @ghidraAddress BRGlide: 0x118eeee0
  */
 extern int g_bHideNetStandingsHud;
 

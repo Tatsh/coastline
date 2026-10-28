@@ -144,6 +144,7 @@ extern int g_dwLoadedGhostLapCount;
  * The four-byte signature of a ghost file.
  *
  * @ghidraAddress BRD3D: 0x100b5d9c
+ * @ghidraAddress BRGlide: 0x100b55a4
  */
 extern const char g_szGhostSaveMagic[4];
 

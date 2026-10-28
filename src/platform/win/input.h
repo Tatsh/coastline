@@ -357,6 +357,7 @@ extern unsigned g_dwInputButtonMask;
 /**
  * Whether the respawn binding was pressed.
  * @ghidraAddress BRD3D: 0x118abdcc
+ * @ghidraAddress BRGlide: 0x118eeee4
  */
 extern int g_bRespawnRequested;
 
@@ -377,6 +378,7 @@ extern int g_bNetGamePaused;
 /**
  * Movement ranges for the eight mouse sensitivity settings.
  * @ghidraAddress BRD3D: 0x100bd400
+ * @ghidraAddress BRGlide: 0x100bcc08
  */
 extern int g_anMouseAxisRanges[8];
 
