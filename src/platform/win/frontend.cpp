@@ -3289,6 +3289,14 @@ int GameOptionsUI::OnToggleSpecularLighting(MenuWidget *) {
     return 1;
 }
 
+namespace {
+
+// @ghidraAddress BRD3D: 0x10a9d078
+// @ghidraAddress BRGlide: 0x10ac4100
+char g_szMenuItemTextBackup[1024];
+
+} // namespace
+
 static inline int ToggleSavedMenuText(MenuWidget *pWidget, MenuItemList *&list) {
     pWidget->GetScreen()->SetPanelActive(1, 0);
     MenuFont &font = list->GetFont(g_dwFileListSelectedSlot);

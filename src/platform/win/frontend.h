@@ -2053,12 +2053,6 @@ int ShowD3DDeviceSelectMenu(void);
 void BuildD3DDeviceSelectUI(MenuScreen *pScreen);
 
 /**
- * @ghidraAddress BRD3D: 0x10a9d078
- * @ghidraAddress BRGlide: 0x10ac4100
- */
-extern char g_szMenuItemTextBackup[];
-
-/**
  * @ghidraAddress BRD3D: 0x10aa28ec
  * @ghidraAddress BRGlide: 0x10ac5c44
  */
