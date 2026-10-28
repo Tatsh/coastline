@@ -2,6 +2,7 @@
 
 #include <bit>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
 
 #include <zlib.h>
@@ -372,7 +373,7 @@ static inline void ResetSeasonMenuForLoad(void) {
 }
 
 static inline bool LoadSeasonMenuFile(const char *pszFileName) {
-    FILE *file = fopen(pszFileName, "rb");
+    FILE *file = fopen(pszFileName, "r");
     if (!file) {
         return false;
     }
@@ -425,7 +426,7 @@ int LoadSeasonUI_OnSlotSelected(MenuItemList *pUnused, const int *pnSlot) {
     char fileName[260];
     char number[8];
     strcpy(fileName, "RallySeason");
-    sprintf(number, "%d", *pnSlot);
+    _itoa(*pnSlot, number, 10);
     strcat(fileName, number);
     strcat(fileName, ".brf");
     return LoadSeasonMenuFile(fileName);
