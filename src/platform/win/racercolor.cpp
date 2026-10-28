@@ -99,19 +99,32 @@ void MakeEnemyCarColorPanels(RacerSlot *slot) {
     }
 }
 
+#ifdef ENABLE_PATCHES
+// The panels were made from the model of the straggler, which can differ from this vehicle's, and
+// light panels are absent when that model has no light palette.
+static void EnqueueRacerColorPanel(RacerSlot *slot, s32 panel, int entry) {
+    u8 **panels = RACER_SLOT_GET(slot, ColorPanels);
+    if (panels != nullptr && panel < RACER_SLOT_GET(slot, ColorPanelCount) && panels[panel]) {
+        EnqueueTextureUploadEntry(entry, panels[panel]);
+    }
+}
+#else
+// The original queues each panel without testing it.
+#define EnqueueRacerColorPanel(slot, panel, entry)                                                 \
+    EnqueueTextureUploadEntry((entry), RACER_SLOT_GET((slot), ColorPanels)[(panel)])
+#endif /* ENABLE_PATCHES */
+
 void ApplyEnemyCarColorPanels(Vehicle *vehicle, RacerSlot *slot) {
     VehicleModel *model = VEHICLE_GET(vehicle, Model);
     s32 count = model->textureEntryCount;
     for (s32 index = 0; index < count; index++) {
-        EnqueueTextureUploadEntry(model->textureEntries[index],
-                                  RACER_SLOT_GET(slot, ColorPanels)[index]);
+        EnqueueRacerColorPanel(slot, index, model->textureEntries[index]);
     }
     ModelTexture *lights = &model->textures[model->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]];
     if (lights->palette != nullptr && !g_dwNullStubEnable) {
         for (s32 index = 0; index < 4; index++) {
             if (model->lightTextureEntries[index] != 0) {
-                EnqueueTextureUploadEntry(model->lightTextureEntries[index],
-                                          RACER_SLOT_GET(slot, ColorPanels)[count + index]);
+                EnqueueRacerColorPanel(slot, count + index, model->lightTextureEntries[index]);
             }
         }
     }
