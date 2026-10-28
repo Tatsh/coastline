@@ -8,6 +8,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -47,6 +48,16 @@ def arguments():
 def copy_file(source, destination):
     if not destination.exists() or source.stat().st_mtime_ns != destination.stat().st_mtime_ns:
         shutil.copy2(source, destination)
+
+
+def replace_binary(source, destination):
+    with tempfile.NamedTemporaryFile(dir=destination.parent, delete=False) as temporary:
+        temporary_path = Path(temporary.name)
+    try:
+        shutil.copy2(source, temporary_path)
+        temporary_path.replace(destination)
+    finally:
+        temporary_path.unlink(missing_ok=True)
 
 
 def initialise_prefix(options, prefix, installation, environment):
@@ -119,7 +130,7 @@ def stage(options):
             destination.parent.mkdir(parents=True, exist_ok=True)
             copy_file(source, destination)
     for name, source in rebuilt.items():
-        shutil.copy2(source, installation / name)
+        replace_binary(source, installation / name)
         print(f'Copied {source} to {installation / name}', flush=True)
     ini = installation / 'BossRally.ini'
     if not ini.exists():
