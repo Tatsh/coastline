@@ -109,6 +109,15 @@ void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor
         gDPPipeSync(gDisplayListPtr++);
         SetScissorRect(x, y, width < 0 ? COORD_NEGATE(width) : width, height);
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    /* The scissor is doubled at the high resolution and not read again. */
+    if (g_dwScreenScaleShift) {
+        x = COORD_DOUBLE(x);
+        y = COORD_DOUBLE(y);
+        width = COORD_DOUBLE(width);
+        height = COORD_DOUBLE(height);
+    }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     g_dwViewportMirrored = FALSE;
     g_aViewports[g_dwViewportIndex].vp.vscale[0] = COORD_DOUBLE(VIEWPORT_BASE_WIDTH);
     g_aViewports[g_dwViewportIndex].vp.vscale[1] = COORD_DOUBLE(VIEWPORT_BASE_HEIGHT);
