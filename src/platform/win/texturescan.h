@@ -346,6 +346,7 @@ extern unsigned char g_bTexScanEnvColorA;
  *
  * @param pCommand The drawing command.
  * @ghidraAddress BRD3D: 0x10029410
+ * @ghidraAddress BRGlide: 0x10028b50
  */
 void FlushPendingTextureLoad(GbiCommand *pCommand);
 
@@ -363,6 +364,7 @@ int CreateTextureFromTmemShadow(unsigned char *pTmem);
  *
  * @param pCommand The first command, or null.
  * @ghidraAddress BRD3D: 0x100290e0
+ * @ghidraAddress BRGlide: 0x10028820
  */
 void PreprocessDisplayListTextures(GbiCommand *pCommand);
 

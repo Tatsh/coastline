@@ -30,6 +30,7 @@ extern u8 *g_pHeapCurrent;
  * @ghidraAddress EUR: 0x80243e50
  * @ghidraAddress JPN: 0x80243950
  * @ghidraAddress BRD3D: 0x10036020
+ * @ghidraAddress BRGlide: 0x1002f6c0
  */
 void ResetHeap(void);
 

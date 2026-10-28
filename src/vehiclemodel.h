@@ -89,6 +89,7 @@ typedef struct VehicleModel {
     u16 dashboardPalettes[2][256];
     u8 dashboardImages[0x7b00];
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
     u32 triangleCount; /*!< The triangles of the model, counted into the statistics of the frame. */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     void *unreconstructed4; /* +0x8004 */
@@ -189,6 +190,7 @@ void LoadVehicleModelFromRom(VehicleModel *model, s32 car);
  * @ghidraAddress EUR: 0x8021e340
  * @ghidraAddress JPN: 0x8021dc10
  * @ghidraAddress BRD3D: 0x100350ee
+ * @ghidraAddress BRGlide: 0x1002e79f
  */
 void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue);
 
@@ -206,7 +208,10 @@ void FixupVehicleModelPointers(VehicleModel *model);
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 
-/** @ghidraAddress BRD3D: 0x100370d0 */
+/**
+ * @ghidraAddress BRD3D: 0x100370d0
+ * @ghidraAddress BRGlide: 0x10030770
+ */
 void ByteSwapAndRelocateCarModel(VehicleModel *model);
 
 /**

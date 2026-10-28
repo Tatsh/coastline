@@ -22,7 +22,6 @@ extern "C" {
  * @ghidraAddress JPN: 0x80257240
  * @ghidraAddress BRD3D: 0x1002b920
  * @ghidraAddress BRGlide: 0x10018990
- * @stub{BRGlide}
  */
 s32 FloatToInt(float value);
 

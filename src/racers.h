@@ -83,6 +83,7 @@ extern const char *g_apszRaceProgressStrings[RACER_SLOTS];
  * @ghidraAddress EUR: 0x8022a1c4
  * @ghidraAddress JPN: 0x802299a0
  * @ghidraAddress BRD3D: 0x10065b20
+ * @ghidraAddress BRGlide: 0x1005eb90
  */
 void FindTrackRoutePoint(TrackSection *section, f32 distance);
 
@@ -98,6 +99,7 @@ void FindTrackRoutePoint(TrackSection *section, f32 distance);
  * @ghidraAddress EUR: 0x8022a43c
  * @ghidraAddress JPN: 0x80229c18
  * @ghidraAddress BRD3D: 0x10065c80
+ * @ghidraAddress BRGlide: 0x1005ecf0
  */
 void AdvanceAlongTrackRoute(TrackSection *section, s32 pointIndex, f32 fraction, f32 distance);
 

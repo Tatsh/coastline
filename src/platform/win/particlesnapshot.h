@@ -36,11 +36,13 @@ extern u16 g_wRenderPavedTireSmokeListHead;
 
 /**
  * @ghidraAddress BRD3D: 0x10013a10
+ * @ghidraAddress BRGlide: 0x10010f80
  */
 void LoadParticleListHeads(const ParticleSnapshot *snapshot);
 
 /**
  * @ghidraAddress BRD3D: 0x1003a610
+ * @ghidraAddress BRGlide: 0x10033c90
  */
 void SnapshotParticleState(ParticleSnapshot *snapshot);
 #ifdef __cplusplus

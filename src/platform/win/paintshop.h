@@ -161,6 +161,7 @@ extern int g_bCarPaintTexturesEnabled;
 
 /**
  * @ghidraAddress BRD3D: 0x10061010
+ * @ghidraAddress BRGlide: 0x1005a080
  */
 void LoadCarPaintTextures(int group, int damageVariants);
 

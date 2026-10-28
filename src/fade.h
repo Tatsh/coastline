@@ -235,6 +235,7 @@ extern s32 g_adwFadeRectRightPerBuffer[2];
  * @ghidraAddress EUR: 0x802247b0
  * @ghidraAddress JPN: 0x80223fa0
  * @ghidraAddress BRD3D: 0x1002aef0
+ * @ghidraAddress BRGlide: 0x10017f60
  */
 void ResetHeadlightGlare(void);
 
@@ -244,6 +245,7 @@ void ResetHeadlightGlare(void);
  * @param viewports The viewport array.
  * @param level The glare opacity, omitted below 0.1 or for an unordered value.
  * @ghidraAddress BRD3D: 0x1002af10
+ * @ghidraAddress BRGlide: 0x10017f80
  */
 void RenderHeadlightGlare(const ViewportRect *viewports, f32 level);
 #else
@@ -326,6 +328,7 @@ void SetSfxFadeLevelImmediate(float level);
  * @ghidraAddress EUR: 0x80224bdc
  * @ghidraAddress JPN: 0x802243cc
  * @ghidraAddress BRD3D: 0x1002b280
+ * @ghidraAddress BRGlide: 0x100182f0
  */
 void SnapScreenFade(float level);
 
@@ -399,6 +402,7 @@ void UnusedScreenFadeStub(void);
  * @ghidraAddress EUR: 0x80224db0
  * @ghidraAddress JPN: 0x802245a0
  * @ghidraAddress BRD3D: 0x1002b340
+ * @ghidraAddress BRGlide: 0x100183b0
  */
 void ApplyScreenFade(void);
 
@@ -420,6 +424,7 @@ void DrawScreenFadeOverlay(float level);
  * @ghidraAddress EUR: 0x80225294
  * @ghidraAddress JPN: 0x80224a84
  * @ghidraAddress BRD3D: 0x1002b670
+ * @ghidraAddress BRGlide: 0x100186e0
  */
 void UpdateFadeTransitions(void);
 

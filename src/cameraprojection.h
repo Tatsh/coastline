@@ -16,6 +16,7 @@ extern "C" {
  * @ghidraAddress USA: 0x8021b458
  * @ghidraAddress EUR: 0x8021c594
  * @ghidraAddress BRD3D: 0x10033f7e
+ * @ghidraAddress BRGlide: 0x1002d62f
  * @ghidraAddress JPN: 0x8021be64
  */
 void SetupProjectionMatrix(f32 width, f32 height);
@@ -29,6 +30,7 @@ void SetupProjectionMatrix(f32 width, f32 height);
  * @ghidraAddress USA: 0x8021b5a4
  * @ghidraAddress EUR: 0x8021c6e0
  * @ghidraAddress BRD3D: 0x1003407d
+ * @ghidraAddress BRGlide: 0x1002d72e
  * @ghidraAddress JPN: 0x8021bfb0
  */
 void SetupMenuProjection(f32 width, f32 height);

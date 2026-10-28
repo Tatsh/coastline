@@ -49,6 +49,7 @@ typedef long double (*ShadowClipDistance)(const ConvertedModelVertex *vertex);
  * @param fraction The weight of the second vertex.
  * @return The allocated node.
  * @ghidraAddress BRD3D: 0x10010b00
+ * @ghidraAddress BRGlide: 0x1000e060
  */
 ShadowClipVertex *
 LerpShadowClipVertex(const ShadowClipVertex *first, const ShadowClipVertex *second, f32 fraction);

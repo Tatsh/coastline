@@ -60,6 +60,7 @@ void *CHK_ReAllocateMemory(void *pMemory, size_t nSize, const char *szCaller);
  * @param pszPath The path of the file.
  * @return Whether the file opened.
  * @ghidraAddress BRD3D: 0x10003320
+ * @ghidraAddress BRGlide: 0x10003680
  * @ghidraAddress BRally: 0x00401050
  * @ghidraAddress SetVideo: 0x00401400
  */

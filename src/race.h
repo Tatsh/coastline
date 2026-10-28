@@ -622,6 +622,7 @@ void UpdateRaceAnimations(void);
  * @ghidraAddress EUR: 0x8020049c
  * @ghidraAddress JPN: 0x8020045c
  * @ghidraAddress BRD3D: 0x100147b0
+ * @ghidraAddress BRGlide: 0x10011d20
  */
 void RenderStartLights(void);
 
@@ -654,6 +655,7 @@ void ScrollTextUp(void);
  * @ghidraAddress EUR: 0x80200794
  * @ghidraAddress JPN: 0x80200754
  * @ghidraAddress BRD3D: 0x10015bd0
+ * @ghidraAddress BRGlide: 0x10013140
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void DrawScrollingText(const ViewportRect *viewport);
@@ -686,6 +688,7 @@ void ProcessRacingScreen(void);
  * @ghidraAddress EUR: 0x8020619c
  * @ghidraAddress JPN: 0x80206270
  * @ghidraAddress BRD3D: 0x1002f2a0
+ * @ghidraAddress BRGlide: 0x1001c810
  */
 void SaveRaceResultsToSlots(void);
 
@@ -696,6 +699,7 @@ void SaveRaceResultsToSlots(void);
  * @ghidraAddress EUR: 0x8020629c
  * @ghidraAddress JPN: 0x80206370
  * @ghidraAddress BRD3D: 0x1002f320
+ * @ghidraAddress BRGlide: 0x1001c890
  */
 void RestoreRaceResultsFromSlots(void);
 
@@ -730,6 +734,7 @@ extern "C"
  * @ghidraAddress EUR: 0x80206564
  * @ghidraAddress JPN: 0x80206638
  * @ghidraAddress BRD3D: 0x1002f4c0
+ * @ghidraAddress BRGlide: 0x1001ca30
  */
 void ProcessSeasonResults(void);
 

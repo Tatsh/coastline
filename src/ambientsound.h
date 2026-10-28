@@ -12,6 +12,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8022ca44
  * @ghidraAddress JPN: 0x8022c1fc
  * @ghidraAddress BRD3D: 0x10067ed0
+ * @ghidraAddress BRGlide: 0x10060f40
  */
 void UpdateAmbientSoundChannel(void);
 

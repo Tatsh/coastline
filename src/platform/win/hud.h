@@ -54,6 +54,7 @@ extern float g_fDebugOverlayMessageTimer;
  *
  * @param viewports The viewport array.
  * @ghidraAddress BRD3D: 0x10017690
+ * @ghidraAddress BRGlide: 0x10014c00
  */
 void DrawDebugOverlayBanner(const ViewportRect *viewports);
 
@@ -73,6 +74,7 @@ void TickDebugOverlayMessageTimer(void);
  * @param index The vehicle whose distance and speed are measured.
  * @return The distance gap divided by speed, zero for an equal distance, or 1000 at zero speed.
  * @ghidraAddress BRD3D: 0x10017cd0
+ * @ghidraAddress BRGlide: 0x10015240
  */
 long double ComputeTimeGapToLeader(const Vehicle *vehicles, int index);
 
@@ -83,6 +85,7 @@ long double ComputeTimeGapToLeader(const Vehicle *vehicles, int index);
  * @param index The vehicle whose gap is measured.
  * @return The shared gap text buffer.
  * @ghidraAddress BRD3D: 0x10017c80
+ * @ghidraAddress BRGlide: 0x100151f0
  */
 char *FormatGapToLeaderString(const Vehicle *vehicles, int index);
 #ifdef __cplusplus

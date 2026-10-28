@@ -28,6 +28,7 @@ class MenuFont {
 public:
     /**
      * @ghidraAddress BRD3D: 0x1005b050
+     * @ghidraAddress BRGlide: 0x10053e70
      */
     MenuFont();
 
@@ -46,23 +47,28 @@ public:
     virtual void MeasureTextAltFont();
     /**
      * @ghidraAddress BRD3D: 0x1005b390
+     * @ghidraAddress BRGlide: 0x100541b0
      */
     virtual void DrawMenuItemText(float x, float y);
     /**
      * @ghidraAddress BRD3D: 0x1005b2b0
+     * @ghidraAddress BRGlide: 0x100540d0
      */
     virtual void DrawText();
     /**
      * @ghidraAddress BRD3D: 0x1005b570
+     * @ghidraAddress BRGlide: 0x10054390
      */
     virtual signed char HandleTextInput();
 
     /**
      * @ghidraAddress BRD3D: 0x1005b200
+     * @ghidraAddress BRGlide: 0x10054020
      */
     virtual long double ComputeCenteredX();
     /**
      * @ghidraAddress BRD3D: 0x1005b460
+     * @ghidraAddress BRGlide: 0x10054280
      */
     virtual void DrawTextAltFont();
 
@@ -163,18 +169,22 @@ public:
 private:
     /**
      * @ghidraAddress BRD3D: 0x1005b730
+     * @ghidraAddress BRGlide: 0x10054550
      */
     virtual int DrawGlyph(short nImage, float x, float y, int nStyle);
     /**
      * @ghidraAddress BRD3D: 0x1005b7e0
+     * @ghidraAddress BRGlide: 0x10054600
      */
     virtual int DrawGlyphNoOp(short nImage, float x, float y);
     /**
      * @ghidraAddress BRD3D: 0x1005b7a0
+     * @ghidraAddress BRGlide: 0x100545c0
      */
     virtual int DrawGlyphAltFont(short nImage, float x, float y, int nStyle);
     /**
      * @ghidraAddress BRD3D: 0x1005b250
+     * @ghidraAddress BRGlide: 0x10054070
      */
     virtual void DrawThrottledMenuGlyph(float x, float y);
 

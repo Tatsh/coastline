@@ -722,6 +722,7 @@ extern s32 g_bGbiClipping;
  * @ghidraAddress EUR: 0x802183e8
  * @ghidraAddress JPN: 0x80217d38
  * @ghidraAddress BRD3D: 0x10031227
+ * @ghidraAddress BRGlide: 0x1002a8d7
  */
 void ClearRenderStats(void);
 
@@ -732,6 +733,7 @@ void ClearRenderStats(void);
  * @ghidraAddress EUR: 0x8021b630
  * @ghidraAddress JPN: 0x8021af0c
  * @ghidraAddress BRD3D: 0x10033493
+ * @ghidraAddress BRGlide: 0x1002cb44
  */
 void ClearFramebuffersLowRes(void);
 
@@ -744,6 +746,7 @@ void ClearFramebuffersLowRes(void);
  * @ghidraAddress EUR: 0x802184d4
  * @ghidraAddress JPN: 0x80217e24
  * @ghidraAddress BRD3D: 0x10031342
+ * @ghidraAddress BRGlide: 0x1002a9f2
  */
 void NormalizeLightMatrix(f32 m[4][4]);
 
@@ -768,6 +771,7 @@ void DrawTexturedTile(s32 index, ModelTexture *textures);
  * @ghidraAddress EUR: 0x80219cac
  * @ghidraAddress JPN: 0x802195fc
  * @ghidraAddress BRD3D: 0x10031d3f
+ * @ghidraAddress BRGlide: 0x1002b3f0
  */
 f32 ComputeFogFactorAtPoint(Vec3f *point);
 
@@ -780,6 +784,7 @@ f32 ComputeFogFactorAtPoint(Vec3f *point);
  * @ghidraAddress EUR: 0x80218440
  * @ghidraAddress JPN: 0x80217d90
  * @ghidraAddress BRD3D: 0x100312a7
+ * @ghidraAddress BRGlide: 0x1002a957
  */
 f32 GetMaxAbsValue12(f32 m[4][4]);
 
@@ -790,6 +795,7 @@ f32 GetMaxAbsValue12(f32 m[4][4]);
  * @ghidraAddress EUR: 0x80219d7c
  * @ghidraAddress JPN: 0x802196cc
  * @ghidraAddress BRD3D: 0x10031dcf
+ * @ghidraAddress BRGlide: 0x1002b480
  */
 void SetupWeatherLights(void);
 
@@ -801,6 +807,7 @@ void SetupWeatherLights(void);
  * @ghidraAddress EUR: 0x802192c8
  * @ghidraAddress JPN: 0x80218c18
  * @ghidraAddress BRD3D: 0x10031866
+ * @ghidraAddress BRGlide: 0x1002af17
  */
 void SetupFog(void);
 
@@ -854,6 +861,7 @@ void UnblankDisplay(void);
  * @ghidraAddress EUR: 0x8021b5b0
  * @ghidraAddress JPN: 0x8021ae8c
  * @ghidraAddress BRD3D: 0x1003348e
+ * @ghidraAddress BRGlide: 0x1002cb3f
  */
 void ClearFramebuffersHighRes(void);
 
@@ -865,6 +873,7 @@ void ClearFramebuffersHighRes(void);
  * @ghidraAddress EUR: 0x8021b6d0
  * @ghidraAddress JPN: 0x8021afac
  * @ghidraAddress BRD3D: 0x10033498
+ * @ghidraAddress BRGlide: 0x1002cb49
  */
 void StreamAnimatedTrackTextures(void);
 

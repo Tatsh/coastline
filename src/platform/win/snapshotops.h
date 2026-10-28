@@ -5,7 +5,10 @@
 extern "C" {
 #endif
 
-/** @ghidraAddress BRD3D: 0x10015c70 */
+/**
+ * @ghidraAddress BRD3D: 0x10015c70
+ * @ghidraAddress BRGlide: 0x100131e0
+ */
 int InterpolateFrameSnapshotsAndRender(int forceRender);
 
 /**

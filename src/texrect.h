@@ -106,6 +106,7 @@ void DrawTexturedRect(Texture *texture,
  * @ghidraAddress EUR: 0x80218634
  * @ghidraAddress JPN: 0x80217f84
  * @ghidraAddress BRD3D: 0x10031347
+ * @ghidraAddress BRGlide: 0x1002a9f7
  */
 void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits);
 

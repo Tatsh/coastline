@@ -30,6 +30,7 @@ extern PerFrameVariable g_aPerFrameVariables[];
  * @ghidraAddress EUR: 0x80227270
  * @ghidraAddress JPN: 0x80226a60
  * @ghidraAddress BRD3D: 0x100633e0
+ * @ghidraAddress BRGlide: 0x1005c450
  */
 void ClearPerFrameVariables(void);
 

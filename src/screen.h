@@ -79,6 +79,7 @@ extern ScreenCallback g_pfnSecondaryScreen;
  * @ghidraAddress EUR: 0x8021d8d8
  * @ghidraAddress JPN: 0x8021d1a8
  * @ghidraAddress BRD3D: 0x10034c66
+ * @ghidraAddress BRGlide: 0x1002e317
  */
 void SetCurrentScreenCallback(ScreenCallback callback);
 
@@ -91,6 +92,7 @@ void SetCurrentScreenCallback(ScreenCallback callback);
  * @ghidraAddress EUR: 0x8021d8ac
  * @ghidraAddress JPN: 0x8021d17c
  * @ghidraAddress BRD3D: 0x10034c37
+ * @ghidraAddress BRGlide: 0x1002e2e8
  */
 void SetNextScreenCallback(ScreenCallback callback);
 
@@ -103,6 +105,7 @@ void SetNextScreenCallback(ScreenCallback callback);
  * @ghidraAddress EUR: 0x8021d8c4
  * @ghidraAddress JPN: 0x8021d194
  * @ghidraAddress BRD3D: 0x10034c51
+ * @ghidraAddress BRGlide: 0x1002e302
  */
 s32 IsCurrentScreen(ScreenCallback callback);
 
@@ -114,6 +117,7 @@ s32 IsCurrentScreen(ScreenCallback callback);
  * @ghidraAddress EUR: 0x8021d8b8
  * @ghidraAddress JPN: 0x8021d188
  * @ghidraAddress BRD3D: 0x10034c44
+ * @ghidraAddress BRGlide: 0x1002e2f5
  */
 void SetSecondaryScreenCallback(ScreenCallback callback);
 
@@ -135,6 +139,7 @@ void CallCurrentGameMode(void);
  * @ghidraAddress EUR: 0x8021d90c
  * @ghidraAddress JPN: 0x8021d1dc
  * @ghidraAddress BRD3D: 0x10034c7e
+ * @ghidraAddress BRGlide: 0x1002e32f
  */
 void GameModeMainLoop(void);
 
@@ -145,6 +150,7 @@ void GameModeMainLoop(void);
  * @ghidraAddress EUR: 0x8021d940
  * @ghidraAddress JPN: 0x8021d210
  * @ghidraAddress BRD3D: 0x10034c83
+ * @ghidraAddress BRGlide: 0x1002e334
  */
 void StubUpdateCallback(void);
 
@@ -155,6 +161,7 @@ void StubUpdateCallback(void);
  * @ghidraAddress EUR: 0x8021d8a4
  * @ghidraAddress JPN: 0x8021d174
  * @ghidraAddress BRD3D: 0x10034c32
+ * @ghidraAddress BRGlide: 0x1002e2e3
  */
 void StubRenderCallback(void);
 

@@ -34,6 +34,7 @@ extern s32 g_dwSkyboxDisabled;
  * @ghidraAddress EUR: 0x80230e10
  * @ghidraAddress JPN: 0x80230c10
  * @ghidraAddress BRD3D: 0x10018070
+ * @ghidraAddress BRGlide: 0x100155f0
  */
 s32 IsSkyFogFilled(void);
 
@@ -43,6 +44,7 @@ s32 IsSkyFogFilled(void);
  *
  * @param viewports The records of the views, indexed by the current split-screen view.
  * @ghidraAddress BRD3D: 0x100180b0
+ * @ghidraAddress BRGlide: 0x10015630
  */
 void RenderSkybox(const ViewportRect *viewports);
 #else

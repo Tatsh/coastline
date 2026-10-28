@@ -43,6 +43,7 @@ void guMtxL2F(float mf[4][4], Mtx *m);
  * @ghidraAddress EUR: 0x80262460
  * @ghidraAddress JPN: 0x80261f10
  * @ghidraAddress BRD3D: 0x100307d0
+ * @ghidraAddress BRGlide: 0x10029e80
  */
 void guMtxIdentF(float mf[4][4]);
 
@@ -66,6 +67,7 @@ void guMtxIdent(Mtx *m);
  * @ghidraAddress EUR: 0x80261e40
  * @ghidraAddress JPN: 0x802618b0
  * @ghidraAddress BRD3D: 0x100306c0
+ * @ghidraAddress BRGlide: 0x10029d70
  */
 void guMtxCatF(float mf[4][4], float nf[4][4], float res[4][4]);
 
@@ -124,6 +126,7 @@ void guMtxXFML(Mtx *m, float x, float y, float z, float *ox, float *oy, float *o
  * @ghidraAddress EUR: 0x80261d00
  * @ghidraAddress JPN: 0x80261770
  * @ghidraAddress BRD3D: 0x100310f0
+ * @ghidraAddress BRGlide: 0x1002a7a0
  */
 void guScaleF(float mf[4][4], float x, float y, float z);
 
@@ -151,6 +154,7 @@ void guScale(Mtx *m, float x, float y, float z);
  * @ghidraAddress EUR: 0x802622c0
  * @ghidraAddress JPN: 0x80261d70
  * @ghidraAddress BRD3D: 0x10031140
+ * @ghidraAddress BRGlide: 0x1002a7f0
  */
 void guTranslateF(float mf[4][4], float x, float y, float z);
 
@@ -179,6 +183,7 @@ void guTranslate(Mtx *m, float x, float y, float z);
  * @ghidraAddress EUR: 0x80262050
  * @ghidraAddress JPN: 0x80261b00
  * @ghidraAddress BRD3D: 0x10030ee0
+ * @ghidraAddress BRGlide: 0x1002a590
  */
 void guRotateF(float mf[4][4], float a, float x, float y, float z);
 
@@ -213,6 +218,7 @@ void guNormalize(float *x, float *y, float *z);
  * Build a floating-point frustum matrix. The scale parameter is unused.
  *
  * @ghidraAddress BRD3D: 0x10030810
+ * @ghidraAddress BRGlide: 0x10029ec0
  */
 void guFrustumF(float mf[4][4],
                 float left,
@@ -239,6 +245,7 @@ void guFrustumF(float mf[4][4],
  * @ghidraAddress EUR: 0x80266910
  * @ghidraAddress JPN: 0x80266410
  * @ghidraAddress BRD3D: 0x10030930
+ * @ghidraAddress BRGlide: 0x10029fe0
  */
 void guPerspectiveF(
     float mf[4][4], u16 *perspNorm, float fovy, float aspect, float near, float far, float scale);
@@ -277,6 +284,7 @@ void guPerspective(
  * @ghidraAddress EUR: 0x802665e0
  * @ghidraAddress JPN: 0x802660e0
  * @ghidraAddress BRD3D: 0x100309a0
+ * @ghidraAddress BRGlide: 0x1002a050
  */
 void guLookAtF(float mf[4][4],
                float xEye,
@@ -335,6 +343,7 @@ void guLookAt(Mtx *m,
  * @ghidraAddress EUR: 0x802625e0
  * @ghidraAddress JPN: 0x80262080
  * @ghidraAddress BRD3D: 0x10030e20
+ * @ghidraAddress BRGlide: 0x1002a4d0
  */
 void guLookAtReflectF(float mf[4][4],
                       LookAt *l,
@@ -406,6 +415,7 @@ void guLookAtReflect(Mtx *m,
  * @ghidraAddress EUR: 0x802683d0
  * @ghidraAddress JPN: 0x80267e80
  * @ghidraAddress BRD3D: 0x10030b50
+ * @ghidraAddress BRGlide: 0x1002a200
  */
 void guLookAtHiliteF(float mf[4][4],
                      LookAt *l,

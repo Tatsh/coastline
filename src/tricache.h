@@ -108,6 +108,7 @@ s32 InvalidateTriCacheSectorAt(f32 x, f32 y);
  * @ghidraAddress EUR: 0x80260668
  * @ghidraAddress JPN: 0x80260118
  * @ghidraAddress BRD3D: 0x1006f720
+ * @ghidraAddress BRGlide: 0x100686d0
  */
 s16 BuildTrackTriangleCache(f32 x, f32 y);
 

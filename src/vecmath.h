@@ -68,7 +68,6 @@ f32 Powf(f32 base, f32 exponent);
  * @ghidraAddress JPN: 0x80224ecc
  * @ghidraAddress BRD3D: 0x1003ac30
  * @ghidraAddress BRGlide: 0x100342b0
- * @stub{BRGlide}
  */
 void Vec3fCross(Vec3f *out, Vec3f *a, Vec3f *b);
 
@@ -200,7 +199,6 @@ void Vec3fScaleByInverse(Vec3f *out, Vec3f *v, f32 divisor);
  * @ghidraAddress JPN: 0x802250c4
  * @ghidraAddress BRD3D: 0x1003ad70
  * @ghidraAddress BRGlide: 0x100343f0
- * @stub{BRGlide}
  */
 void Vec3fDivideInPlace(Vec3f *v, f32 divisor);
 
@@ -228,7 +226,6 @@ void Vec3fCopy(Vec3f *out, Vec3f *v);
  * @ghidraAddress JPN: 0x80225120
  * @ghidraAddress BRD3D: 0x1003ada0
  * @ghidraAddress BRGlide: 0x10034420
- * @stub{BRGlide}
  */
 void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to);
 
@@ -334,7 +331,6 @@ void Vec3fAddInPlace(Vec3f *v, Vec3f *b);
  * @ghidraAddress JPN: 0x8022542c
  * @ghidraAddress BRD3D: 0x1003afa0
  * @ghidraAddress BRGlide: 0x10034620
- * @stub{BRGlide}
  */
 void Vec3fLerp(Vec3f *out, Vec3f *a, Vec3f *b, f32 t);
 
@@ -350,7 +346,6 @@ void Vec3fLerp(Vec3f *out, Vec3f *a, Vec3f *b, f32 t);
  * @ghidraAddress JPN: 0x8022547c
  * @ghidraAddress BRD3D: 0x1003afe0
  * @ghidraAddress BRGlide: 0x10034660
- * @stub{BRGlide}
  */
 void Vec3fMulAdd(Vec3f *out, Vec3f *a, Vec3f *b, f32 scale);
 
@@ -365,7 +360,6 @@ void Vec3fMulAdd(Vec3f *out, Vec3f *a, Vec3f *b, f32 scale);
  * @ghidraAddress JPN: 0x802254c0
  * @ghidraAddress BRD3D: 0x1003b020
  * @ghidraAddress BRGlide: 0x100346a0
- * @stub{BRGlide}
  */
 void Vec3fMulAddInPlace(Vec3f *v, Vec3f *b, f32 scale);
 
@@ -407,7 +401,6 @@ void Vec3fClear(Vec3f *v);
  * @ghidraAddress JPN: 0x80225564
  * @ghidraAddress BRD3D: 0x1003b0a0
  * @ghidraAddress BRGlide: 0x10034720
- * @stub{BRGlide}
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 long double Vec2fDistance(Vec2f *a, Vec2f *b);
@@ -421,7 +414,6 @@ f32 Vec2fDistance(Vec2f *a, Vec2f *b);
  *
  * @ghidraAddress BRD3D: 0x1003b0e0
  * @ghidraAddress BRGlide: 0x10034760
- * @stub{BRGlide}
  */
 long double Vec3fDistance(Vec3f *a, Vec3f *b);
 #else
@@ -449,7 +441,6 @@ f32 Vec3fDistance(Vec3f *a, Vec3f *b);
  * @ghidraAddress JPN: 0x802255fc
  * @ghidraAddress BRD3D: 0x1003b130
  * @ghidraAddress BRGlide: 0x100347b0
- * @stub{BRGlide}
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 long double Vec3fDistanceSquared(Vec3f *a, Vec3f *b);
@@ -484,7 +475,6 @@ f32 Vec3fLength(Vec3f *v);
  * @ghidraAddress JPN: 0x80225678
  * @ghidraAddress BRD3D: 0x1003b1c0
  * @ghidraAddress BRGlide: 0x10034840
- * @stub{BRGlide}
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 long double Vec2fLength(Vec2f *v);
@@ -529,7 +519,6 @@ void Mtx4x4ProjectPoint(Vec3f *out, Vec3f *in, f32 m[4][4]);
  * @ghidraAddress JPN: 0x8022590c
  * @ghidraAddress BRD3D: 0x1003b2a0
  * @ghidraAddress BRGlide: 0x10034920
- * @stub{BRGlide}
  */
 void Vec3fTransformByMatrix(f32 out[4], const Vec3f *in, f32 m[4][4]);
 
@@ -597,7 +586,6 @@ void Mtx3x3TransformVec(Vec3f *out, Vec3f *in, f32 m[4][4]);
  * @ghidraAddress JPN: 0x80225cb0
  * @ghidraAddress BRD3D: 0x1003b470
  * @ghidraAddress BRGlide: 0x10034af0
- * @stub{BRGlide}
  */
 void Mtx4x4Multiply(f32 out[4][4], f32 a[4][4], f32 b[4][4]);
 
@@ -622,7 +610,6 @@ void Mtx4fTranspose(f32 out[4][4], f32 in[4][4]);
  * @ghidraAddress JPN: 0x80225e80
  * @ghidraAddress BRD3D: 0x100307a0
  * @ghidraAddress BRGlide: 0x10029e50
- * @stub{BRGlide}
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void CopyMatrix4x4(f32 in[4][4], f32 out[4][4]);
@@ -672,7 +659,6 @@ void FinishFrameMatrix(f32 m[4][4]);
  * @ghidraAddress JPN: 0x8022629c
  * @ghidraAddress BRD3D: 0x1003b7b0
  * @ghidraAddress BRGlide: 0x10034e30
- * @stub{BRGlide}
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 long double Atan2f(f32 x, f32 y);
@@ -727,7 +713,6 @@ s32 IsPointInsideTriangle(
  * @ghidraAddress JPN: 0x80226694
  * @ghidraAddress BRD3D: 0x1003ba70
  * @ghidraAddress BRGlide: 0x100350f0
- * @stub{BRGlide}
  */
 s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2);
 
@@ -745,7 +730,6 @@ s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2);
  * @ghidraAddress JPN: 0x8022694c
  * @ghidraAddress BRD3D: 0x1003bc90
  * @ghidraAddress BRGlide: 0x10035310
- * @stub{BRGlide}
  */
 s32 SegmentCrossesLine2D(const Vec3f *a, const Vec3f *b, const Vec3f *p, const Vec3f *q);
 

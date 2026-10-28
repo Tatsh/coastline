@@ -74,6 +74,7 @@ extern s32 g_dwRaceSessionType;
  * @ghidraAddress EUR: 0x80200050
  * @ghidraAddress JPN: 0x80200050
  * @ghidraAddress BRD3D: 0x10069740
+ * @ghidraAddress BRGlide: 0x100627b0
  */
 void ApplyWeather(u32 weather);
 
@@ -104,6 +105,7 @@ void MainMenuEntry(void);
  * @ghidraAddress EUR: 0x80200128
  * @ghidraAddress JPN: 0x80200128
  * @ghidraAddress BRD3D: 0x100697e0
+ * @ghidraAddress BRGlide: 0x10062850
  */
 void StartRaceWithPlayerCount(u32 players);
 
@@ -114,6 +116,7 @@ void StartRaceWithPlayerCount(u32 players);
  * @ghidraAddress EUR: 0x80200154
  * @ghidraAddress JPN: 0x80200154
  * @ghidraAddress BRD3D: 0x10069800
+ * @ghidraAddress BRGlide: 0x10062870
  */
 void ResetAllPlayers(void);
 
@@ -126,7 +129,6 @@ void ResetAllPlayers(void);
  * @ghidraAddress JPN: 0x802001b4
  * @ghidraAddress BRD3D: 0x10069840
  * @ghidraAddress BRGlide: 0x100628b0
- * @stub{BRGlide}
  */
 void InitGameAndShowMenus(void);
 

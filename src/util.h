@@ -118,6 +118,7 @@ typedef void (*SwapFunc)(void *a, void *b, u32 size);
  * @ghidraAddress EUR: 0x80257170
  * @ghidraAddress JPN: 0x80256b00
  * @ghidraAddress BRD3D: 0x10061660
+ * @ghidraAddress BRGlide: 0x1005a6e0
  */
 void MarkTrackSections(TrackSection *section);
 
@@ -129,6 +130,7 @@ void MarkTrackSections(TrackSection *section);
  * @ghidraAddress EUR: 0x80257220
  * @ghidraAddress JPN: 0x80256bb0
  * @ghidraAddress BRD3D: 0x100616c0
+ * @ghidraAddress BRGlide: 0x1005a740
  */
 void UnmarkTrackSections(TrackSection *section);
 
@@ -139,6 +141,7 @@ void UnmarkTrackSections(TrackSection *section);
  * @ghidraAddress EUR: 0x80257270
  * @ghidraAddress JPN: 0x80256c00
  * @ghidraAddress BRD3D: 0x10061700
+ * @ghidraAddress BRGlide: 0x1005a780
  */
 void PrepareTrackSections(void);
 
@@ -150,6 +153,7 @@ void PrepareTrackSections(void);
  * @ghidraAddress EUR: 0x802572a0
  * @ghidraAddress JPN: 0x80256c30
  * @ghidraAddress BRD3D: 0x10069490
+ * @ghidraAddress BRGlide: 0x10062500
  */
 DisplayListBlock *AllocDisplayListBlock(void);
 
@@ -161,6 +165,7 @@ DisplayListBlock *AllocDisplayListBlock(void);
  * @ghidraAddress EUR: 0x8025731c
  * @ghidraAddress JPN: 0x80256cac
  * @ghidraAddress BRD3D: 0x100694e0
+ * @ghidraAddress BRGlide: 0x10062550
  */
 Hilite *AllocHiliteBlock(void);
 
@@ -172,6 +177,7 @@ Hilite *AllocHiliteBlock(void);
  * @ghidraAddress EUR: 0x802573a8
  * @ghidraAddress JPN: 0x80256d38
  * @ghidraAddress BRD3D: 0x10069530
+ * @ghidraAddress BRGlide: 0x100625a0
  */
 LookAt *AllocLightBlock(void);
 
@@ -182,6 +188,7 @@ LookAt *AllocLightBlock(void);
  * @ghidraAddress EUR: 0x80257434
  * @ghidraAddress JPN: 0x80256dc4
  * @ghidraAddress BRD3D: 0x10069580
+ * @ghidraAddress BRGlide: 0x100625f0
  */
 void ResetFrameBlocks(void);
 

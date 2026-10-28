@@ -314,6 +314,7 @@ extern u8 g_abPrecipitationTextures[WEATHER_VIEWS][RAIN_STREAK_TEXTURE_SIDE *
  * @ghidraAddress EUR: 0x8023b200
  * @ghidraAddress JPN: 0x8023ad00
  * @ghidraAddress BRD3D: 0x10019490
+ * @ghidraAddress BRGlide: 0x10016a50
  */
 void InitRandomRainParticles(void);
 
@@ -324,6 +325,7 @@ void InitRandomRainParticles(void);
  * @ghidraAddress EUR: 0x8023b294
  * @ghidraAddress JPN: 0x8023ad94
  * @ghidraAddress BRD3D: 0x100194e0
+ * @ghidraAddress BRGlide: 0x10016aa0
  */
 void UpdateWindDirection(void);
 
@@ -346,6 +348,7 @@ void SubdivideLightningBolt(s32 index, s32 span);
  * @ghidraAddress EUR: 0x8023b5cc
  * @ghidraAddress JPN: 0x8023b0cc
  * @ghidraAddress BRD3D: 0x10019620
+ * @ghidraAddress BRGlide: 0x10016be0
  */
 void UpdateLightningFlash(void);
 
@@ -365,6 +368,7 @@ void StubWeatherUpdate(void);
  * @ghidraAddress EUR: 0x8023b6d8
  * @ghidraAddress JPN: 0x8023b1d8
  * @ghidraAddress BRD3D: 0x100196d0
+ * @ghidraAddress BRGlide: 0x10016c90
  */
 void UpdatePrecipitationParticles(void);
 
