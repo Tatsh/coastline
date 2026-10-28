@@ -19,6 +19,7 @@ add_library(
   musicdevice.cpp
   musicplayback.cpp
   pcmstream.cpp
+  playback.cpp
   playbacklifetime.cpp
   playbacksmoothing.c
   runtime.c

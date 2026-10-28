@@ -6,8 +6,11 @@ extern "C" {
 #endif
 
 /**
+ * Advance the gain of each channel towards its target, and the timers of each event of each
+ * channel that is not paused, then retire the events that completed, start those that may start,
+ * and update the others. A channel waiting to shut down shuts down once its gain arrives.
+ *
  * @ghidraAddress EAR: 0x10004d3b
- * @stub
  */
 void __stdcall UpdateEarPlaybackEngine(void);
 

@@ -55,6 +55,7 @@ public:
     explicit CWordList(int blockSize = 10);
     ~CWordList() override;
     BOOL IsEmpty() const;
+    int GetCount() const;
     WORD &GetHead();
     POSITION GetHeadPosition() const;
     WORD &GetNext(POSITION &position);
@@ -62,6 +63,7 @@ public:
     POSITION AddTail(WORD value);
     POSITION InsertBefore(POSITION position, WORD value);
     POSITION InsertAfter(POSITION position, WORD value);
+    void RemoveAt(POSITION position);
     void RemoveAll();
 
 private:

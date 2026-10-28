@@ -6,6 +6,7 @@
 #include <windows.h>
 
 #include "event.h"
+#include "playback.h"
 
 class EarChannel;
 class EarPlayback;
@@ -100,6 +101,8 @@ private:
     // Mixing and moving an event set its fields from the parameters directly.
     friend std::uint32_t __stdcall EAR_DLL_MixEvent(const EarEventParams *params);
     friend std::uint32_t __stdcall EAR_DLL_MoveEvent(const EarEventParams *params);
+    // The engine starts, updates, and retires the events of each channel.
+    friend void __stdcall UpdateEarPlaybackEngine(void);
 
     /** @ghidraAddress EAR: 0x10007dfc */
     int InitializeScheduledEarEventPlayback();
