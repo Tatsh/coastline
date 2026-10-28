@@ -583,7 +583,8 @@ int SaveFileList::ScanSaveFiles(const char *pszPattern) {
                 break;
             }
         }
-        FILE *file = fopen(found.name, "rb");
+        // The libraries read the description in text mode.
+        FILE *file = fopen(found.name, "r");
         fseek(file, 0, SEEK_END);
         const long descriptionOffset = ftell(file) - 128;
         fseek(file, descriptionOffset, SEEK_SET);
