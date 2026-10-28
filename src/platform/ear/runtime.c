@@ -1,5 +1,7 @@
 #include "runtime.h"
 
+#include <float.h>
+
 #include "error.h"
 #include "playback.h"
 
@@ -14,6 +16,12 @@ int32_t g_bMixerAccessDisabled;
 int32_t g_bConfigurationValidationDisabled;
 
 BOOL WINAPI EarDllMain(HINSTANCE module, DWORD reason, LPVOID reserved) {
+#ifndef _MSC_VER
+    // The start-up of the MSVC runtime sets 53-bit x87 precision before this; mingw-w64 does not.
+    if (reason == DLL_PROCESS_ATTACH) {
+        _controlfp(_PC_53, _MCW_PC);
+    }
+#endif
     if (reason == DLL_PROCESS_ATTACH) {
         g_bEarProcessAttached = 1;
         DisableThreadLibraryCalls(module);
