@@ -124,6 +124,16 @@ private:
     char szPath[POD_PATH_SIZE]; /*!< The path of the file. */
     unsigned dwDirectorySize;   /*!< The size of the directory in bytes. */
 
+public:
+    /**
+     * Do nothing.
+     *
+     * @ghidraAddress BRD3D: 0x100085e0
+     * @ghidraAddress BRGlide: 0x100087c0
+     */
+    virtual ~PodArchive();
+
+private:
     /**
      * Make the name of an entry from a path: the name of the file, in capitals, padded with zeros
      * to #POD_ENTRY_NAME_SIZE bytes. A longer name ends the game.
@@ -175,6 +185,19 @@ private:
      */
     virtual void ReadPodBytesFromFile(unsigned nIndex, void *pBuffer);
 
+public:
+    /**
+     * Read the data of the entry of a path.
+     *
+     * @param pszPath The path.
+     * @param pBuffer Receives the data.
+     * @return pBuffer.
+     * @ghidraAddress BRD3D: 0x100088b0
+     * @ghidraAddress BRGlide: 0x10008a90
+     */
+    virtual void *LoadPodByName(const char *pszPath, void *pBuffer);
+
+private:
     /**
      * Read the data of an entry.
      *
@@ -206,14 +229,17 @@ private:
      */
     virtual void *AllocAndLoadPodByIndex(unsigned nIndex);
 
+public:
     /**
-     * Open the file of szPath and read its header and directory. A file that is not a pod file
-     * ends the game.
+     * Open the pod file of the path to read, and read its header and directory. A file that is
+     * not a pod file ends the game.
      *
      * @ghidraAddress BRD3D: 0x100088d0
      * @ghidraAddress BRGlide: 0x10008ab0
      */
+    virtual void OpenPodFile();
 
+private:
     /**
      * Create a pod file to write, after the space of its header, and clear the entries of the
      * writer.
@@ -246,14 +272,15 @@ private:
      */
     virtual void FinalizePodFile();
 
+public:
     /**
-     * Close the file and free the directory.
+     * Close the file, free the directory, and clear the archive and its path.
      *
      * @ghidraAddress BRD3D: 0x10008970
      * @ghidraAddress BRGlide: 0x10008b50
      */
+    virtual void ClosePodFile();
 
-public:
     /**
      * An archive without a file.
      *
@@ -261,42 +288,6 @@ public:
      * @ghidraAddress BRGlide: 0x10008760
      */
     PodArchive();
-
-    /**
-     * Do nothing.
-     *
-     * @ghidraAddress BRD3D: 0x100085e0
-     * @ghidraAddress BRGlide: 0x100087c0
-     */
-    virtual ~PodArchive();
-
-    /**
-     * Read the data of the entry of a path.
-     *
-     * @param pszPath The path.
-     * @param pBuffer Receives the data.
-     * @return pBuffer.
-     * @ghidraAddress BRD3D: 0x100088b0
-     * @ghidraAddress BRGlide: 0x10008a90
-     */
-    virtual void *LoadPodByName(const char *pszPath, void *pBuffer);
-
-    /**
-     * Open the pod file of the path to read, and read its header and directory. A file that is
-     * not a pod file ends the game.
-     *
-     * @ghidraAddress BRD3D: 0x100088d0
-     * @ghidraAddress BRGlide: 0x10008ab0
-     */
-    virtual void OpenPodFile();
-
-    /**
-     * Close the file, free the directory, and clear the archive and its path.
-     *
-     * @ghidraAddress BRD3D: 0x10008970
-     * @ghidraAddress BRGlide: 0x10008b50
-     */
-    void ClosePodFile();
 
     /**
      * Set the path of the file of the archive.
