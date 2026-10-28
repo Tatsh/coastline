@@ -1,6 +1,11 @@
 #ifndef COASTLINE_PLATFORM_WIN_GLIDE_TEXTURE_H
 #define COASTLINE_PLATFORM_WIN_GLIDE_TEXTURE_H
 
+/**
+ * @file
+ * The sizes, the formats, and the colours of the textures of the Glide renderer.
+ */
+
 #ifdef __cplusplus
 extern "C" {
 #endif

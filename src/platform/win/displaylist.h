@@ -695,6 +695,9 @@ GbiCommand *HandleGbiLoadPreparedTexture(GbiCommand *pCommand);
 }
 #endif
 
+/** The vertex a command of the display lists loaded, named for C and for both renderers. */
+typedef struct GbiVertexSource GbiVertexSource;
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 /** The vertex a command of the display lists loaded. The layout is not recovered in full. */
 struct GbiVertexSource {

@@ -1,5 +1,11 @@
-#ifndef COASTLINE_WIN_RGB565IMAGE_H
-#define COASTLINE_WIN_RGB565IMAGE_H
+#ifndef COASTLINE_PLATFORM_WIN_GLIDE_RGB565IMAGE_H
+#define COASTLINE_PLATFORM_WIN_GLIDE_RGB565IMAGE_H
+
+/**
+ * @file
+ * The images of 16-bit RGB 565 pixels the Glide renderer loads from bitmaps and copies to the frame
+ * buffer, with a colour key.
+ */
 
 #include <stdint.h>
 
@@ -56,4 +62,4 @@ void SetRgb565ImageColorKey(Rgb565Image *image, COLORREF color);
 }
 #endif
 
-#endif /* COASTLINE_WIN_RGB565IMAGE_H */
+#endif /* COASTLINE_PLATFORM_WIN_GLIDE_RGB565IMAGE_H */
