@@ -639,7 +639,7 @@ private:
     IDirect3D2 *pDirect3D2;              /*!< The Direct3D interface of pDirectDraw. */
     IDirectDrawSurface *pPrimarySurface; /*!< The front buffer. */
     IDirectDrawPalette *pPrimaryPalette; /*!< The palette of the front buffer. */
-    int nPaletteEntryCount;              /*!< The entries of the two palette buffers. */
+    unsigned nPaletteEntryCount;         /*!< The entries of the two palette buffers. */
     PALETTEENTRY *pGdiPaletteEntries;    /*!< The palette of GDI, set while GDI has the screen. */
     PALETTEENTRY *pGamePaletteEntries;   /*!< The palette of the game, saved for GDI. */
     IDirectDrawSurface *pBackBuffer;     /*!< The surface the device draws into. */

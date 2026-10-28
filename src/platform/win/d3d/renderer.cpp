@@ -731,7 +731,7 @@ HRESULT DirectDrawRenderer::InitializePrimaryPalette() {
     }
     // The palette starts as the palette of the system, and a copy of it is saved for GDI.
     hdc = GetDC(nullptr);
-    nPaletteEntryCount = GetDeviceCaps(hdc, SIZEPALETTE);
+    nPaletteEntryCount = static_cast<unsigned>(GetDeviceCaps(hdc, SIZEPALETTE));
     if (nPaletteEntryCount != 0) {
         if (nPaletteEntryCount > MAX_PALETTE_ENTRIES) {
             nPaletteEntryCount = MAX_PALETTE_ENTRIES;
