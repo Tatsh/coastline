@@ -102,7 +102,8 @@ inline void RecordTrackSkidMarks(Vehicle *vehicle, int vehicleIndex) {
                         leftDeltaY * leftDeltaY + leftDeltaX * static_cast<float>(leftDeltaX);
                     long double rightDistance = rightDeltaY * static_cast<float>(rightDeltaY) +
                                                 rightDeltaX * static_cast<float>(rightDeltaX);
-                    if (leftDistance < 5.0f && rightDistance < 5.0f) {
+                    // The x87 test also takes an unordered distance as near.
+                    if (!(leftDistance >= 5.0f) && !(rightDistance >= 5.0f)) {
                         g_anSkidMarkHead[trail] = previous;
                     }
                 }
