@@ -600,7 +600,9 @@ void Mtx4x4Multiply(f32 out[4][4], f32 a[4][4], f32 b[4][4]) {
     for (row = 0; row < 4; row++) {
         for (column = 0; column < 4; column++) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-            total = 0.0L;
+            /* The sum starts from the cleared element, read back. */
+            product[row][column] = 0.0f;
+            total = product[row][column];
             for (i = 0; i < 4; i++) {
                 total += (long double)a[row][i] * b[i][column];
             }
