@@ -29,6 +29,21 @@ extern const char *const g_apszSfxNamePrefixes[17];
  */
 extern const char g_szEmptyUiString[];
 
+#define SOUND_SET_FRONT_END_COUNT 9
+#define SOUND_SET_RACE_COUNT 25
+
+/**
+ * @ghidraAddress BRD3D: 0x100b8938
+ * @ghidraAddress BRGlide: 0x100b8140
+ */
+extern const char *const g_SoundSetTableA[SOUND_SET_RACE_COUNT];
+
+/**
+ * @ghidraAddress BRD3D: 0x100b89a0
+ * @ghidraAddress BRGlide: 0x100b81a8
+ */
+extern const char *const g_SoundSetTableB[SOUND_SET_FRONT_END_COUNT];
+
 #ifdef __cplusplus
 }
 #endif

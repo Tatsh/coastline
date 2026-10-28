@@ -54,3 +54,43 @@ const char *const g_apszSfxNamePrefixes[17] = {
     "tr",
     "mn",
 };
+
+const char *const g_SoundSetTableA[SOUND_SET_RACE_COUNT] = {
+    NULL,
+    "hit-another-car1.wav",
+    "big-impact1.wav",
+    "bottom-out.wav",
+    "s_dirtz.wav",
+    "s_dirt.wav",
+    "s_snow.wav",
+    "s_tarmc.wav",
+    "rn_dirt.wav",
+    "rn_dirt.wav",
+    "rn_tarm.wav",
+    "rn_snow.wav",
+    "rn_watr.wav",
+    "beep.wav",
+    "beep2.wav",
+    "water.wav",
+    "hit-another-car2.wav",
+    "hit-another-car3.wav",
+    "big-impact2.wav",
+    "big-impact3.wav",
+    "taunt1.wav",
+    "taunt2.wav",
+    "taunt3.wav",
+    "taunt4.wav",
+    NULL,
+};
+
+const char *const g_SoundSetTableB[SOUND_SET_FRONT_END_COUNT] = {
+    NULL,
+    "front-end5.wav",
+    "DontQuit.wav",
+    "Quit.wav",
+    "taunt1.wav",
+    "taunt2.wav",
+    "taunt3.wav",
+    "taunt4.wav",
+    NULL,
+};

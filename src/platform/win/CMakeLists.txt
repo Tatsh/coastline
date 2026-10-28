@@ -70,6 +70,7 @@ if(TGR_RENDERER STREQUAL "d3d")
             framefields.c
             snapshotfields.cpp
             soundsample.c
+            soundbank.c
             trackmenudata.c
             creditdata.c
             displaylistdata.c

@@ -11,6 +11,7 @@
 #include <mmsystem.h>
 
 #include "platform/win/assetnames.h"
+#include "platform/win/soundbank.h"
 #include "platform/win/soundsample.h"
 
 #ifdef __cplusplus
@@ -489,42 +490,6 @@ bool StopAudioChannel(int nChannel);
 bool SetAudioChannelLooping(int nChannel, int bLooping);
 
 /**
- * A row of the banks of sounds: which channels of a sample of a set are loaded. The layout past
- * the channels is not recovered yet.
- */
-struct SoundBankRow {
-    int anChannels[SOUND_CHANNEL_COUNT]; /*!< Nonzero for each channel of the sample loaded. */
-    int anUnknown3c[3];                  /* +0x3c */
-};
-
-/**
- * The banks of sounds, a row for each sample of a set. g_SoundBankIndexTableB and
- * g_SoundBankIndexTableC follow as rows 24 and 25. The number of rows is not recovered yet.
- *
- * @ghidraAddress BRD3D: 0x100b6540
- * @ghidraAddress BRGlide: 0x100b5d48
- */
-extern SoundBankRow g_SoundBankIndexTableA[];
-
-/**
- * The row of the banks of sounds after the 24 rows of g_SoundBankIndexTableA: for each channel of
- * the sound effects of a race, the index in g_apszSfxNamePrefixes of the file of its variant.
- *
- * @ghidraAddress BRD3D: 0x100b6c00
- * @ghidraAddress BRGlide: 0x100b6408
- */
-extern SoundBankRow g_SoundBankIndexTableB;
-
-/**
- * The row of the banks of sounds after g_SoundBankIndexTableB: for each channel of the sound
- * effects of a race, the index in g_apszSfxNamePrefixes of the file of its looping sound.
- *
- * @ghidraAddress BRD3D: 0x100b6c48
- * @ghidraAddress BRGlide: 0x100b6450
- */
-extern SoundBankRow g_SoundBankIndexTableC;
-
-/**
  * Record a sound for the even channel of a voice in the first row of the banks and in the rows of
  * the variants and the looping sounds, as one more than its index.
  *
@@ -556,27 +521,6 @@ enum {
     SOUND_SET_FRONT_END, /*!< The sounds of the front end. */
     SOUND_SET_RACE,      /*!< The sounds of a race. */
 };
-
-/** The number of samples of the set of the front end. */
-#define SOUND_SET_FRONT_END_COUNT 9
-/** The number of samples of the set of a race. */
-#define SOUND_SET_RACE_COUNT 25
-
-/**
- * The files of the samples of the set of a race, under g_szSfxDirPath. The first is null.
- *
- * @ghidraAddress BRD3D: 0x100b8938
- * @ghidraAddress BRGlide: 0x100b8140
- */
-extern const char *const g_SoundSetTableA[SOUND_SET_RACE_COUNT];
-
-/**
- * The files of the samples of the set of the front end, under g_szSfxDirPath. The first is null.
- *
- * @ghidraAddress BRD3D: 0x100b89a0
- * @ghidraAddress BRGlide: 0x100b81a8
- */
-extern const char *const g_SoundSetTableB[SOUND_SET_FRONT_END_COUNT];
 
 /**
  * Add a node at the end of a list of sound buffers, not playing.
