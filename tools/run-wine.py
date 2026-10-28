@@ -23,6 +23,8 @@ def arguments():
                         help='Wine prefix, created when absent.')
     parser.add_argument('--build-dir', type=Path, default=ROOT / 'build/win-d3d',
                         help='CMake directory with the rebuilt DLL and launchers.')
+    parser.add_argument('--ear-dll', type=Path, default=ROOT / '.wiswa-ci/earpds-unpacked.dll',
+                        help='EAR sound DLL to copy beside the game as earpds.dll.')
     parser.add_argument('--stage-only', action='store_true',
                         help='Copy files without Wine; configure the prefix on a later run.')
     parser.add_argument('--no-launch', action='store_true',
@@ -69,11 +71,13 @@ def stage(options):
         'BRD3D.dll': build / 'src/BRD3D.dll',
         'BRally.exe': build / 'src/platform/win/launcher/BRally.exe',
         'BossRally.exe': build / 'src/platform/win/launcher/BossRally.exe',
+        'earpds.dll': options.ear_dll.expanduser().resolve(),
     }
     missing = [str(path) for path in rebuilt.values() if not path.is_file()]
     if missing:
-        raise ValueError('Rebuilt binaries are absent:\n' + '\n'.join(missing)
-                         + '\nBuild BRD3D, coastline_brally, and coastline_bossrally first.')
+        raise ValueError('Required binaries are absent:\n' + '\n'.join(missing)
+                         + '\nBuild BRD3D, coastline_brally, and coastline_bossrally first.'
+                         + '\nSelect the EAR sound DLL with --ear-dll.')
     installation = prefix / 'drive_c/BossRally'
     if data == installation or data in installation.parents or installation in data.parents:
         raise ValueError('The installation and extracted CD directories must be separate.')
