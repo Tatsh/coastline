@@ -9,11 +9,13 @@
 /* The cell at a column and row of the grid. */
 #define GRID_CELL(column, row) ((u8)(column) + ((u8)(row) << GRID_ROW_SHIFT))
 
-/* Whether a point is off the grid. */
+/* Whether a point is off the grid, and the column or row of a coordinate on it. */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define IS_OFF_GRID(x, y) (!((x) >= 0.0f && (x) < GRID_SIZE && (y) >= 0.0f && (y) < GRID_SIZE))
+#define GRID_INDEX(value) ((u32)(s64)((value) * GRID_CELL_SCALE))
 #else
 #define IS_OFF_GRID(x, y) ((x) < 0.0f || GRID_SIZE <= (x) || (y) < 0.0f || GRID_SIZE <= (y))
+#define GRID_INDEX(value) ((u32)((value) * GRID_CELL_SCALE))
 #endif
 
 /* Whether a column and row are off the grid. */
@@ -32,7 +34,7 @@ u32 LookupTrackGridCell(f32 x, f32 y) {
     if (IS_OFF_GRID(x, y)) {
         return 0;
     }
-    cell = GRID_CELL((u32)(x * GRID_CELL_SCALE), (u32)(y * GRID_CELL_SCALE));
+    cell = GRID_CELL(GRID_INDEX(x), GRID_INDEX(y));
     start = g_LoadedTrack.gridCellStarts[cell];
     return PACK_GRID_CELL(g_LoadedTrack.gridCellStarts, cell, start);
 }
@@ -45,7 +47,7 @@ u32 LookupInstanceCellAtPoint(f32 x, f32 y) {
     if (IS_OFF_GRID(x, y)) {
         return 0;
     }
-    cell = GRID_CELL((u32)(x * GRID_CELL_SCALE), (u32)(y * GRID_CELL_SCALE));
+    cell = GRID_CELL(GRID_INDEX(x), GRID_INDEX(y));
     start = g_LoadedTrack.gridInstanceStarts[cell];
     return PACK_GRID_CELL(g_LoadedTrack.gridInstanceStarts, cell, start);
 }

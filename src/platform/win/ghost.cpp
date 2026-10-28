@@ -84,11 +84,11 @@ void PackKeyframeToCompactBuffer(u8 *pBuffer, const KeyframeState *pState) {
     for (int pair = 0; pair < 2; ++pair) {
         const int first = pair * 2;
         const int second = first + 1;
-        frame.abWheelContactAndSurface[pair] = static_cast<unsigned char>(
-            (IsKeyframeFlagSet(pState->afWheelContact[first]) << 7) |
-            ((static_cast<int>(pState->afWheelSurface[first]) & 7) << 4) |
-            (IsKeyframeFlagSet(pState->afWheelContact[second]) << 3) |
-            (static_cast<int>(pState->afWheelSurface[second]) & 7));
+        frame.abWheelContactAndSurface[pair] =
+            static_cast<unsigned char>((IsKeyframeFlagSet(pState->afWheelContact[first]) << 7) |
+                                       ((KeyframeInteger(pState->afWheelSurface[first]) & 7) << 4) |
+                                       (IsKeyframeFlagSet(pState->afWheelContact[second]) << 3) |
+                                       (KeyframeInteger(pState->afWheelSurface[second]) & 7));
     }
     memcpy(pBuffer, &frame, GHOST_FRAME_SIZE - sizeof(frame.abReserved));
 }
