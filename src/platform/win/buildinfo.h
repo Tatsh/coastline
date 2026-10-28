@@ -5,10 +5,10 @@
 extern "C" {
 #endif
 
-/** Print the renderer build identity to inherited stdout under Wine. */
+/** Log the renderer build identity and also write to stdout under Wine. */
 void PrintWineBuildIdentification(void);
 
-/** Write a diagnostic to inherited stdout and coastline.log under Wine. */
+/** Append an application diagnostic and also write to stdout under Wine. */
 void PrintWineDiagnostic(const char *message);
 
 /** Draw the build identity during a race while B is held. */

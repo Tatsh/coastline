@@ -1,6 +1,9 @@
 enable_language(RC)
 
-add_executable(coastline_brally WIN32 brally.c brally.rc ini.c registry.c ../fileio.c)
+target_sources(coastline_main PRIVATE ../diagnostics.c)
+
+add_executable(coastline_brally WIN32 brally.c brally.rc ini.c registry.c ../fileio.c
+               ../diagnostics.c)
 set_target_properties(coastline_brally PROPERTIES OUTPUT_NAME BRally C_STANDARD 23)
 target_compile_options(coastline_brally PRIVATE -Wall -Wextra -Wno-unused-parameter)
 target_include_directories(coastline_brally PRIVATE "${CMAKE_SOURCE_DIR}/src")

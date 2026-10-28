@@ -6,6 +6,7 @@
 #include <windows.h>
 
 #include "ini.h"
+#include "platform/win/diagnostics.h"
 #include "platform/win/fileio.h"
 #include "registry.h"
 
@@ -60,7 +61,10 @@ int WINAPI WinMain(HINSTANCE instance,
                    HINSTANCE previousInstance,
                    LPSTR commandLine,
                    int showCommand) {
+    InitializeApplicationDiagnostics();
+    WriteApplicationDiagnostic("BRally entered WinMain; requesting desktop window.\n");
     HWND desktop = GetDesktopWindow();
+    WriteApplicationDiagnostic("Desktop window query completed; loading launcher configuration.\n");
     ReadInstallDirectoryFromRegistry();
     strcpy(g_szIniFilePath, g_szInstallDir);
     strcat(g_szIniFilePath, "BossRally.ini");
@@ -89,13 +93,18 @@ int WINAPI WinMain(HINSTANCE instance,
     if (!rendererPath[0]) {
         return 0;
     }
+    WriteApplicationDiagnostic("Loading renderer DLL.\n");
     if (!LoadRendererDll(rendererPath)) {
+        WriteApplicationDiagnostic("Renderer DLL load failed.\n");
         char message[1024];
         sprintf(message, "Error: failed to load %s.", rendererPath);
         MessageBoxA(desktop, message, "Boss Rally", MB_ICONHAND);
         exit(1);
     }
+    WriteApplicationDiagnostic("Calling renderer entry point.\n");
     int result = g_pfnRallyMain(instance, previousInstance, commandLine, showCommand);
+    WriteApplicationDiagnostic("Renderer returned; unloading DLL.\n");
     UnloadRendererDll();
+    ShutdownApplicationDiagnostics();
     return result;
 }

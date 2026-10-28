@@ -4,6 +4,7 @@
 
 #include <windows.h>
 
+#include "platform/win/diagnostics.h"
 #include "platform/win/hudcanvas.h"
 #include "platform/win/settings.h"
 #include "text.h"
@@ -18,8 +19,11 @@ static const char banner[] =
 
 void PrintWineDiagnostic(const char *message) {
 #ifdef ENABLE_PATCHES
+    DWORD savedError = GetLastError();
+    WriteApplicationDiagnostic(message);
     HMODULE ntdll = GetModuleHandleA("ntdll.dll");
     if (ntdll == nullptr || GetProcAddress(ntdll, "wine_get_version") == nullptr) {
+        SetLastError(savedError);
         return;
     }
     HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -27,18 +31,7 @@ void PrintWineDiagnostic(const char *message) {
         DWORD written;
         WriteFile(output, message, (DWORD)strlen(message), &written, nullptr);
     }
-    HANDLE log = CreateFileA("coastline.log",
-                             FILE_APPEND_DATA,
-                             FILE_SHARE_READ | FILE_SHARE_WRITE,
-                             nullptr,
-                             OPEN_ALWAYS,
-                             FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH,
-                             nullptr);
-    if (log != INVALID_HANDLE_VALUE) {
-        DWORD written;
-        WriteFile(log, message, (DWORD)strlen(message), &written, nullptr);
-        CloseHandle(log);
-    }
+    SetLastError(savedError);
 #endif /* ENABLE_PATCHES */
 }
 
