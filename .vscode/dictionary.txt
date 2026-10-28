@@ -303,6 +303,7 @@ dmaterialhandle
 dmawrite
 dmmx
 dndebug
+docdir
 docstrings
 donotclip
 donotupdateextents
