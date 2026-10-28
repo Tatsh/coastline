@@ -187,7 +187,7 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     for (column = 0; column < 4; column++) {
-#if TGR_RENDERER == TGR_RENDERER_GLIDE
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE
         mvp[3][column] =
             (f32)((((long double)vp[3][column] * m[3][3] + (long double)vp[0][column] * m[3][0]) +
                    (long double)vp[2][column] * m[3][2]) +
