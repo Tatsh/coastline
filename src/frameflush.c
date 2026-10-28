@@ -17,6 +17,11 @@
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+/* The Windows task stubs retain these legacy RSP addresses without dereferencing them. */
+/* @ghidraAddress BRD3D: 0x100aa728 */
+static u64 *g_pRdpOutputBuffer = (u64 *)0x803b1000;
+/* @ghidraAddress BRD3D: 0x100aa72c */
+static u64 *g_pRdpOutputBufferEnd = (u64 *)0x803c8000;
 /** @ghidraAddress BRD3D: 0x106c65e8 */
 s32 g_dwAppliedScreenScaleShift;
 /** @ghidraAddress BRD3D: 0x106c65e0 */

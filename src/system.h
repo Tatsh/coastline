@@ -969,7 +969,9 @@ extern u8 g_abRspDramStackBuffer[];
  * @ghidraAddress JPN: 0x8028c530
  * @ghidraAddress BRD3D: 0x100aa728
  */
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 extern u64 *g_pRdpOutputBuffer;
+#endif
 
 /**
  * @ghidraAddress USA: 0x8028a864
@@ -977,7 +979,9 @@ extern u64 *g_pRdpOutputBuffer;
  * @ghidraAddress JPN: 0x8028c534
  * @ghidraAddress BRD3D: 0x100aa72c
  */
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 extern u64 *g_pRdpOutputBufferEnd;
+#endif
 
 /**
  * The doublewords at the end of the output buffer the tasks do not use.

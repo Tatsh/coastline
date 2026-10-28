@@ -1,5 +1,9 @@
 #include "platform/win/settings.h"
 
+char g_szTracks[256] = "tracks/";
+char g_szCarsDirPath[256] = "cars/";
+char g_szSfxDirPath[256] = "sfx/";
+
 int g_bD3DAlphaCompare = 1;
 
 int g_bD3DWaitCanFlip = 1;

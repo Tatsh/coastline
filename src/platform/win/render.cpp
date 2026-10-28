@@ -55,6 +55,7 @@ ConvertedModelVertex g_afModelVertexPool[32768];
 } // namespace
 
 ConvertedModelVertex *g_pModelDataPoolCursor = g_afModelVertexPool;
+void (*g_pfnInitializeTextureSubsystem)(void) = InitializeTextureSubsystem;
 
 const char *g_pszDebugMessage;
 
