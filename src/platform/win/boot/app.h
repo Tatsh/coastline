@@ -233,12 +233,11 @@ bool OpenBossRallyPodAndInit(void);
 /**
  * Show an image of the Glide library over the whole screen.
  *
- * @param pszPath The path of the image.
- * @param nUnknown 0 for the loading image and 0x2ac7e58b for the splash image. Its meaning is not
- * recovered yet.
+ * @param pszPath The path of the image, ARGB1555 pixels after their width and height.
+ * @param nChecksum The Adler-32 the pixels must have, or 0 to skip the check. A mismatch exits.
  * @ghidraAddress BRGlide: 0x1006c990
  */
-void ShowGlideSplashImage(const char *pszPath, int nUnknown);
+void ShowGlideSplashImage(const char *pszPath, int nChecksum);
 #endif /* TGR_RENDERER == TGR_RENDERER_GLIDE */
 
 /**

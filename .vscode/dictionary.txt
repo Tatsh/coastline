@@ -1047,6 +1047,7 @@ textureaddressv
 textureanim
 texturebind
 texturecache
+textureclamp
 texturemag
 textureperspective
 texturesampling

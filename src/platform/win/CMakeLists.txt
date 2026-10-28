@@ -110,6 +110,7 @@ if(TGR_RENDERER STREQUAL "glide")
             glide/menusurface.cpp
             glide/renderer.cpp
             glide/rgb565image.c
+            glide/splash.cpp
             glide/texture.c
             glide/texturecache.cpp
             glide/winmain.cpp)
