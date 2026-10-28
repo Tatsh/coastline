@@ -67,6 +67,8 @@ void ApplyScreenFade(void) {
 
     if (g_dwFadeRectLeft) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+        /* The covered edge of the other framebuffer is read and then discarded. */
+        left = g_adwFadeRectLeftPerBuffer[g_dwFrameBufferIndex ^ 1];
         left = 0;
         right = g_dwFadeRectLeft;
 #else
