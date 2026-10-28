@@ -135,7 +135,7 @@ extern s32 g_dwLightningFlashCounter;
 /** The side of the texture of the rain streaks, in texels. */
 #define RAIN_STREAK_TEXTURE_SIDE 64
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_D3D
 #define RAIN_STREAK_TEXTURE_BYTES_PER_TEXEL 4
 #else
 #define RAIN_STREAK_TEXTURE_BYTES_PER_TEXEL 1
@@ -398,6 +398,7 @@ void UpdatePrecipitationParticles(void);
  * @ghidraAddress EUR: 0x8023bc94
  * @ghidraAddress JPN: 0x8023b794
  * @ghidraAddress BRD3D: 0x10019b50
+ * @ghidraAddress BRGlide: 0x10017110
  */
 void RenderPrecipitationEffect(void);
 
