@@ -70,6 +70,7 @@ if(TGR_RENDERER STREQUAL "d3d")
             framefields.c
             snapshotfields.cpp
             creditdata.c
+            effectdata.c
             boot/shutdown.cpp
             frontenddata.cpp
             fontdata.c

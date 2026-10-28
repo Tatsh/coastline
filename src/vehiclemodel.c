@@ -14,6 +14,7 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 
+VehicleModel g_aVehicleModels[16];
 VehicleModel *g_pTextureCaptureVehicleModel;
 s32 g_dwTextureCaptureOverflowCount;
 

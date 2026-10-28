@@ -300,14 +300,6 @@ extern "C" {
 LRESULT CALLBACK MainWindowProc(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
 
 /**
- * The laps the first vehicle has driven.
- *
- * @ghidraAddress BRD3D: 0x10acee50
- * @ghidraAddress BRGlide: 0x10af21b0
- */
-extern int g_aVehicles_LapCount;
-
-/**
  * Set whether the application is active from the state of `WM_ACTIVATE`.
  *
  * @param wParam The first parameter of `WM_ACTIVATE`.

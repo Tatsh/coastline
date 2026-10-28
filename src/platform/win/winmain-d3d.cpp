@@ -26,6 +26,7 @@
 #include "platform/win/settings.h"
 #include "platform/win/sound.h"
 #include "timing.h"
+#include "vehicle.h"
 
 // The resources of the main window in the library.
 #define IDI_MAIN_ICON 0x65
@@ -390,7 +391,7 @@ LRESULT HandleWindowActivateApp(HWND hWnd, WPARAM wParam, LPARAM lParam) {
             g_dwPauseMenuSelection = PAUSE_CONTINUE;
             // A network race that has started and not finished requests a pause from the others.
             if (g_dwNetworkPlayMode && g_bNetRaceStartReached && !gInstantReplayActive &&
-                g_aVehicles_LapCount < g_dwTotalLaps) {
+                g_aVehicles[0].GetLap() < g_dwTotalLaps) {
                 RequestNetworkPause();
                 TickNetworkPauseRequest();
             } else {
