@@ -3596,6 +3596,8 @@ int LoadTimeAttackMenuUI::OnSlotSelected(MenuItemList *, int *slot) {
     g_dwHandlingTypeMenuIndex = g_LoadedSeasonSettings.handling;
     g_dwSelectedTransmission = g_LoadedSeasonSettings.transmission;
     g_dwTotalLapsSetting = g_dwLoadedGhostLapCount;
+    // The original stores the lap count again after the profile copy.
+    g_dwTotalLaps = g_dwLoadedGhostLapCount;
     g_dwNumLocalPlayers = 1;
     g_dwTrackMenuIndex = g_GhostRecordingInfo.track;
     g_dwSelectedWeather = g_GhostRecordingInfo.weather;
