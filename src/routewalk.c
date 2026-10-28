@@ -36,7 +36,12 @@ TrackSection *g_pTrackRouteSection;
     }
 
 void FindTrackRoutePoint(TrackSection *section, f32 distance) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    /* The libraries hold the span unrounded through the comparison and the division. */
+    long double span;
+#else
     f32 span;
+#endif
     s32 next;
     s32 i;
 
@@ -49,7 +54,11 @@ void FindTrackRoutePoint(TrackSection *section, f32 distance) {
         }
         /* The last point of a section reads the point after it. */
         for (i = 0; i < section->pointCount; i++) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+            span = (long double)section->points[i].distance - section->points[i + 1].distance;
+#else
             span = section->points[i].distance - section->points[i + 1].distance;
+#endif
             if (span < distance) {
                 distance -= span;
                 COUNT_ROUTE_GATE(
