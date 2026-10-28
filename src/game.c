@@ -6,7 +6,7 @@
 #include "system.h"
 #include "weather.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if !TGR_PC
 #include <PR/os.h>
 
 #include "audio.h"
@@ -20,14 +20,14 @@
 #include "displaylistops.h"
 #include "screen.h"
 #include "win32/gameinit.h"
-#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
+#endif /* !TGR_PC */
 
 #if TGR_PC
 /** @ghidraAddress BRD3D: 0x106805b8 */
 s32 g_dwRaceSessionType;
 #endif /* TGR_PC */
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if !TGR_PC
 
 /* The cartridge offset of the music of the menus. */
 #define ROM_MENU_MUSIC ((u32)_menuMusicSegmentRomStart)
@@ -38,7 +38,7 @@ u32 g_dwNightMode;
 u32 g_dwSnowMode;
 u32 g_dwRainMode;
 u32 g_dwNumLocalPlayers = 1;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
+#endif /* !TGR_PC */
 
 void ApplyWeather(u32 weather) {
     g_dwNightMode = g_dwRainMode = g_dwSnowMode = 0;
@@ -62,12 +62,12 @@ void ApplyWeather(u32 weather) {
         g_dwNightMode = 1;
         break;
     }
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if !TGR_PC
     ProcessAllDisplayLists();
 #endif
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if !TGR_PC
 void MainMenuEntry(void) {
     ProcessMainMenu();
 }
@@ -82,7 +82,7 @@ void StartRaceWithPlayerCount(u32 players) {
 #endif
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if !TGR_PC
 void ResetAllPlayers(void) {
     int i;
 
@@ -91,7 +91,7 @@ void ResetAllPlayers(void) {
         InitPlayerInputState(&g_aPlayerInputState[i]);
     }
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
+#endif /* !TGR_PC */
 
 void InitGameAndShowMenus(void) {
 #if TGR_PC

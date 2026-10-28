@@ -15,7 +15,7 @@
 #include "vehiclereset.h"
 #include "weather.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if !TGR_PC
 #include <PR/gu.h>
 #include <PR/os_libc.h>
 
@@ -24,7 +24,7 @@
 #include "screen.h"
 #endif
 
-#if !(TGR_PLATFORM == TGR_PLATFORM_N64)
+#if TGR_PC
 #define AddTimingMarker(...) NullStub()
 #endif
 
