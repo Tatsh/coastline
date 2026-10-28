@@ -25,7 +25,7 @@ DWORD g_dwDirectSoundLockRegion1Bytes;
 // @ghidraAddress EAR: 0x1002ebc8
 const double g_earPcmHalfBufferScale = 0.5;
 // @ghidraAddress EAR: 0x1002ebd0
-const double g_earPcmMillisecondScale = 0.001;
+const double g_earPcmMillisecondsToSeconds = 0.001;
 // @ghidraAddress EAR: 0x1002e910
 const double g_earWaveAttachmentHalfBufferScale = 0.5;
 
@@ -146,7 +146,7 @@ int PcmWaveStream::PreparePcmWaveStream(const void *source) {
     }
     if (GetPlaybackStartMilliseconds()) {
         long double position = static_cast<long double>(format.nAvgBytesPerSec) *
-                               GetPlaybackStartMilliseconds() * g_earPcmMillisecondScale;
+                               GetPlaybackStartMilliseconds() * g_earPcmMillisecondsToSeconds;
         offset = TruncatePlaybackInteger(position) % dataBytes;
         SpecifyPlaybackStartPosition();
     }

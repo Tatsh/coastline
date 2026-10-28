@@ -386,7 +386,8 @@ void EarPlayback::UpdateDirectSoundPlaybackFrequency() {
     if (smoothed > 100000) {
         smoothed = 100000;
     }
-    directSound.GetBuffer()->SetFrequency(smoothed);
+    // Native code records the result in a local that it never reads.
+    [[maybe_unused]] HRESULT result = directSound.GetBuffer()->SetFrequency(smoothed);
 }
 
 int EarPlayback::PlayDirectSoundEventBuffer() {

@@ -21,7 +21,10 @@ void EarDirectSoundOutput::FailInitialization(std::uint32_t error) {
 }
 
 EarDirectSoundOutput::EarDirectSoundOutput() : device(nullptr), primaryBuffer(nullptr) {
+    // Native code records most results in a local that it never reads.
+    [[maybe_unused]] HRESULT result;
     if (!g_hEarNotifyWindow) {
+        result = E_FAIL;
         FailInitialization(0x21);
         return;
     }
@@ -34,8 +37,13 @@ EarDirectSoundOutput::EarDirectSoundOutput() : device(nullptr), primaryBuffer(nu
         FailInitialization(6);
         return;
     }
-    if (device->Initialize(nullptr) ||
-        device->SetCooperativeLevel(g_hEarNotifyWindow, DSSCL_EXCLUSIVE)) {
+    result = device->Initialize(nullptr);
+    if (result) {
+        FailInitialization(0x22);
+        return;
+    }
+    result = device->SetCooperativeLevel(g_hEarNotifyWindow, DSSCL_EXCLUSIVE);
+    if (result) {
         FailInitialization(0x22);
         return;
     }
@@ -59,11 +67,13 @@ EarDirectSoundOutput::EarDirectSoundOutput() : device(nullptr), primaryBuffer(nu
     DSBUFFERDESC description = {};
     description.dwSize = 20;
     description.dwFlags = DSBCAPS_PRIMARYBUFFER;
-    if (device->CreateSoundBuffer(&description, &primaryBuffer, nullptr)) {
+    result = device->CreateSoundBuffer(&description, &primaryBuffer, nullptr);
+    if (result) {
         FailInitialization(0x22);
         return;
     }
-    if (primaryBuffer->SetFormat(&format)) {
+    result = primaryBuffer->SetFormat(&format);
+    if (result) {
         FailInitialization(8);
         return;
     }
@@ -72,10 +82,12 @@ EarDirectSoundOutput::EarDirectSoundOutput() : device(nullptr), primaryBuffer(nu
         return;
     }
     if (format.nChannels != 2 || format.nSamplesPerSec != 22050 || format.wBitsPerSample != 16) {
+        result = DSERR_BADFORMAT;
         FailInitialization(8);
         return;
     }
-    if (primaryBuffer->Play(0, 0, DSBPLAY_LOOPING)) {
+    result = primaryBuffer->Play(0, 0, DSBPLAY_LOOPING);
+    if (result) {
         FailInitialization(0x14);
     }
 }
