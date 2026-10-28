@@ -5,6 +5,8 @@
 
 #include <windows.h>
 
+#include "event.h"
+
 class EarChannel;
 class EarPlayback;
 
@@ -17,6 +19,13 @@ class [[gnu::packed]] ScheduledEarEvent {
 public:
     /** @ghidraAddress EAR: 0x100077e0 */
     ScheduledEarEvent(std::uint16_t flags, const void *source);
+    /**
+     * Make the twin of an event, which plays the same source and never frees its path.
+     *
+     * @param other The event.
+     * @ghidraAddress EAR: 0x10007b56
+     */
+    ScheduledEarEvent(const ScheduledEarEvent &other);
     /** @ghidraAddress EAR: 0x10007d6a */
     ~ScheduledEarEvent();
 
@@ -88,6 +97,9 @@ public:
 private:
     // A channel compares the priority and the attenuation of its events directly.
     friend class EarChannel;
+    // Mixing and moving an event set its fields from the parameters directly.
+    friend std::uint32_t __stdcall EAR_DLL_MixEvent(const EarEventParams *params);
+    friend std::uint32_t __stdcall EAR_DLL_MoveEvent(const EarEventParams *params);
 
     /** @ghidraAddress EAR: 0x10007dfc */
     int InitializeScheduledEarEventPlayback();
@@ -121,7 +133,7 @@ private:
     int trackElapsedTime;
     std::uint32_t suppressionEnabled;
     std::uint16_t suppressionMarker;
-    [[maybe_unused]] std::uint8_t unknown46[2]; /* +0x46 */
+    std::uint16_t twinEventHandle;
     std::uint16_t attenuation;
     std::uint16_t directionIndex;
     std::uint16_t matrixId;

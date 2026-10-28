@@ -56,7 +56,12 @@ public:
     ~CWordList() override;
     BOOL IsEmpty() const;
     WORD &GetHead();
+    POSITION GetHeadPosition() const;
+    WORD &GetNext(POSITION &position);
     POSITION AddHead(WORD value);
+    POSITION AddTail(WORD value);
+    POSITION InsertBefore(POSITION position, WORD value);
+    POSITION InsertAfter(POSITION position, WORD value);
     void RemoveAll();
 
 private:

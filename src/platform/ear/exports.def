@@ -8,6 +8,8 @@ EXPORTS
     _EAR_DLL_GetLastError@0=EAR_DLL_GetLastError@0
     _EAR_DLL_GetVersion@0=EAR_DLL_GetVersion@0
     _EAR_DLL_InitializeEar@4=EAR_DLL_InitializeEar@4
+    _EAR_DLL_MixEvent@4=EAR_DLL_MixEvent@4
+    _EAR_DLL_MoveEvent@4=EAR_DLL_MoveEvent@4
     _EAR_DLL_RegisterBank@8=EAR_DLL_RegisterBank@8
     _EAR_DLL_RegisterChannel@16=EAR_DLL_RegisterChannel@16
     _EAR_DLL_RegisterEnvironment@4=EAR_DLL_RegisterEnvironment@4

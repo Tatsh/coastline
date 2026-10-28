@@ -20,6 +20,40 @@ uint16_t GenerateEarObjectHandle(void);
 /**
  * @param params The parameters of the event.
  * @return The handle of the event, or 0.
+ * @ghidraAddress EAR: 0x1000cc20
+ */
+uint32_t __stdcall EarMixEventExportWrapper(const EarEventParams *params);
+
+/**
+ * Make an event from its parameters and add it to its channel, by its distance, direction, gain,
+ * timing, and queue mode, without starting it. An event out of its distance is dropped.
+ *
+ * @param params The parameters of the event.
+ * @return The handle of the event, or 0.
+ * @ghidraAddress EAR: 0x1000cc30
+ */
+uint32_t __stdcall EAR_DLL_MixEvent(const EarEventParams *params);
+
+/**
+ * @param params The parameters of the event.
+ * @return The handle of the event, or 0.
+ * @ghidraAddress EAR: 0x1000d950
+ */
+uint32_t __stdcall EarMoveEventExportWrapper(const EarEventParams *params);
+
+/**
+ * Update an event of a channel from its parameters: its matrix, its pause and mute, its pitch,
+ * priority, and times, and its distance, delay, gain, and direction.
+ *
+ * @param params The parameters of the event.
+ * @return The handle of the event, or 0.
+ * @ghidraAddress EAR: 0x1000d960
+ */
+uint32_t __stdcall EAR_DLL_MoveEvent(const EarEventParams *params);
+
+/**
+ * @param params The parameters of the event.
+ * @return The handle of the event, or 0.
  * @ghidraAddress EAR: 0x1000f950
  */
 uint32_t __stdcall EarStartEventExportWrapper(const EarEventParams *params);

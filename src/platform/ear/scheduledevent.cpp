@@ -76,7 +76,7 @@ ScheduledEarEvent::ScheduledEarEvent(std::uint16_t flags, const void *incoming) 
     trackElapsedTime = 0;
     suppressionEnabled = 0;
     suppressionMarker = 0;
-    std::memset(unknown46, 0, sizeof(unknown46));
+    twinEventHandle = 0;
     attenuation = 10000;
     directionIndex = 0;
     matrixId = 16;
@@ -135,6 +135,50 @@ ScheduledEarEvent::ScheduledEarEvent(std::uint16_t flags, const void *incoming) 
         SetEarLastError(0x10);
         this->~ScheduledEarEvent();
     }
+}
+
+// The twin keeps the path of the event without owning it, and the original leaves the path, the
+// playback flags, the timers it does not copy, and the reserved control as the allocation held.
+ScheduledEarEvent::ScheduledEarEvent(const ScheduledEarEvent &other) {
+    sourceType = other.sourceType;
+    sourceFlags = other.sourceFlags;
+    // The result is discarded; a failed playback leaves the twin without one.
+    CreateEarPlaybackImplementation(sourceFlags);
+    source = other.source;
+    playbackInitialized = other.playbackInitialized;
+    looping = other.looping;
+    streaming = other.streaming;
+    frequencyScaleOverrideEnabled = other.frequencyScaleOverrideEnabled;
+    dopplerEnabled = other.dopplerEnabled;
+    lifetimeCountdownSuppressed = other.lifetimeCountdownSuppressed;
+    activeDurationLimitEnabled = other.activeDurationLimitEnabled;
+    attenuationRequired = other.attenuationRequired;
+    trackElapsedTime = other.trackElapsedTime;
+    suppressionEnabled = other.suppressionEnabled;
+    environmentId = other.environmentId;
+    std::memcpy(unknownA6, other.unknownA6, sizeof(unknownA6));
+    suppressionMarker = 1;
+    twinEventHandle = 0;
+    attenuation = other.attenuation;
+    directionIndex = other.directionIndex;
+    matrixId = other.matrixId;
+    startDelayMs = other.startDelayMs;
+    remainingLifetimeMs = other.remainingLifetimeMs;
+    remainingActiveTimeMs = other.remainingActiveTimeMs;
+    distance = other.distance;
+    previousDistance = other.previousDistance;
+    previousRadialSpeed = other.previousRadialSpeed;
+    previousDistanceTime = other.previousDistanceTime;
+    accumulatedDistance = other.accumulatedDistance;
+    accumulatedTime = other.accumulatedTime;
+    distanceSampleCount = other.distanceSampleCount;
+    frequencyScale = other.frequencyScale;
+    baseFrequencyScale = other.baseFrequencyScale;
+    backendParameter = other.backendParameter;
+    // The original copies the time of the previous distance a second time.
+    previousDistanceTime = other.previousDistanceTime;
+    notificationFlags = other.notificationFlags;
+    notificationEvent = 0;
 }
 
 ScheduledEarEvent::~ScheduledEarEvent() {
