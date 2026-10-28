@@ -17,9 +17,9 @@
 #include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/boot/rallyconfig.h"
-#include "platform/win/render.h"
-#include "platform/win/settings.h"
+#include "win32/boot/rallyconfig.h"
+#include "win32/render.h"
+#include "win32/settings.h"
 #else
 #include "audiomix.h"
 #endif

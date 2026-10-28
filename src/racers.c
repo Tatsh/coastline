@@ -8,8 +8,8 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <stdlib.h>
 
-#include "platform/win/directplay.h"
-#include "platform/win/settings.h"
+#include "win32/directplay.h"
+#include "win32/settings.h"
 #define QuickSort qsort
 #else
 #include "util.h"

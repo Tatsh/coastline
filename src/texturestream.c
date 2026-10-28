@@ -7,7 +7,7 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "instantreplay.h"
-#include "platform/win/renderbackend.h"
+#include "win32/renderbackend.h"
 #endif
 
 #define TEXTURE_ROM_NONE ((u32) - 1)

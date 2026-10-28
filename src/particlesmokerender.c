@@ -5,7 +5,7 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <string.h>
 
-#include "platform/win/particlesnapshot.h"
+#include "win32/particlesnapshot.h"
 #else
 #include <PR/os_libc.h>
 #endif

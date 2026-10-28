@@ -18,11 +18,11 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <string.h>
 
-#include "platform/win/boot/strings.h"
-#include "platform/win/directplay.h"
-#include "platform/win/ghost.h"
-#include "platform/win/input.h"
-#include "platform/win/settings.h"
+#include "win32/boot/strings.h"
+#include "win32/directplay.h"
+#include "win32/ghost.h"
+#include "win32/input.h"
+#include "win32/settings.h"
 #else
 #include <PR/os_libc.h>
 

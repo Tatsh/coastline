@@ -1,7 +1,7 @@
 #include "effects.h"
 #include "particlecommands.h"
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/particlesnapshot.h"
+#include "win32/particlesnapshot.h"
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

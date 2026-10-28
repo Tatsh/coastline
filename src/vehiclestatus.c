@@ -10,7 +10,7 @@
 #include "vehicletrackpos.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/boot/strings.h"
+#include "win32/boot/strings.h"
 #endif
 
 #define GRID_CELL 32

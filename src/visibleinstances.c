@@ -16,7 +16,7 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <stdlib.h>
 
-#include "platform/win/ghost.h"
+#include "win32/ghost.h"
 #else
 #include "audiomix.h"
 #endif

@@ -7,11 +7,11 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <stdio.h>
 
-#include "platform/win/fontdata.h"
-#include "platform/win/gbicommand.h"
-#include "platform/win/settings.h"
+#include "win32/fontdata.h"
+#include "win32/gbicommand.h"
+#include "win32/settings.h"
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
-#include "platform/win/glide/fontatlas.h"
+#include "win32/glide/fontatlas.h"
 #endif
 
 #undef gDisplayListWords

@@ -1,4 +1,4 @@
-/* Host check of src/input.c. */
+/* Host check of src/n64/input.c. */
 #include <assert.h>
 #include <stdio.h>
 

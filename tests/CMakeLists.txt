@@ -21,7 +21,7 @@ set(_vecmath "${_src}/vecmath.c")
 # Add a test from NAME_test.c and the sources after it.
 function(coastline_add_test name)
   add_executable(${name}_test ${name}_test.c ${ARGN})
-  target_include_directories(${name}_test PRIVATE "${_src}" "${_src}/libultra/include")
+  target_include_directories(${name}_test PRIVATE "${_src}" "${_src}/n64" "${_src}/libultra/include")
   # The routines a test does not reach are dropped, so they need no stubs.
   target_compile_options(${name}_test PRIVATE -w -fno-pie -fsanitize=address,undefined
                                               -ffunction-sections -fdata-sections)
@@ -36,11 +36,11 @@ coastline_add_test(audio)
 coastline_add_test(camera ${_vecmath} ${_gu} "${_src}/libultra/gu/lookat.c"
                    "${_src}/libultra/gu/perspective.c" "${_src}/camerarender.c")
 coastline_add_test(carselect stubs/carselect.c ${_vecmath} ${_gu} "${_src}/laptime.c")
-coastline_add_test(controllerscreen "${_src}/controllerscreen.c")
-coastline_add_test(debugtext "${_src}/debugtext.c" "${_src}/debuginstance.c")
-coastline_add_test(decaldraw "${_src}/decaldraw.c")
-coastline_add_test(decaleditor "${_src}/decaleditor.c" "${_src}/decaldraw.c")
-coastline_add_test(drawtexturedrect "${_src}/texrect.c")
+coastline_add_test(controllerscreen "${_src}/n64/controllerscreen.c")
+coastline_add_test(debugtext "${_src}/n64/debugtext.c" "${_src}/debuginstance.c")
+coastline_add_test(decaldraw "${_src}/n64/decaldraw.c")
+coastline_add_test(decaleditor "${_src}/n64/decaleditor.c" "${_src}/n64/decaldraw.c")
+coastline_add_test(drawtexturedrect "${_src}/n64/texrect.c")
 coastline_add_test(driving ${_vecmath} ${_common} "${_src}/frameclear.c" "${_src}/routeposition.c"
                    "${_src}/tracetrack.c")
 coastline_add_test(
@@ -65,7 +65,7 @@ coastline_add_test(
   "${_src}/hudoverlay.c"
   "${_src}/hudrace.c"
   "${_src}/hudtime.c")
-coastline_add_test(input "${_src}/input.c" "${_src}/controllerread.c" "${_src}/inputtranslate.c"
+coastline_add_test(input "${_src}/n64/input.c" "${_src}/controllerread.c" "${_src}/inputtranslate.c"
                    "${_src}/playerinput.c")
 coastline_add_test(
   model
@@ -75,8 +75,8 @@ coastline_add_test(
   "${_src}/modelrelocation.c"
   "${_src}/vehiclepaint.c")
 coastline_add_test(options "${_src}/volumecontrols.c")
-coastline_add_test(paintshop "${_src}/paintshop.c")
-coastline_add_test(pakmenu "${_src}/pakmenu.c")
+coastline_add_test(paintshop "${_src}/n64/paintshop.c")
+coastline_add_test(pakmenu "${_src}/n64/pakmenu.c")
 coastline_add_test(physics ${_common} "${_src}/rigidbody.c" "${_src}/cubeclip.c" "${_src}/tricache.c")
 coastline_add_test(
   race
@@ -110,7 +110,7 @@ coastline_add_test(rigidbody ${_common} "${_src}/rigidbody.c")
 coastline_add_test(sky ${_common} "${_src}/sky.c" "${_src}/skystate.c")
 coastline_add_test(sort "${_src}/util.c")
 coastline_add_test(splash ${_common})
-coastline_add_test(sprite "${_src}/sprite.c")
+coastline_add_test(sprite "${_src}/n64/sprite.c")
 coastline_add_test(
   system
   ${_vecmath}
@@ -130,9 +130,9 @@ coastline_add_test(
 target_link_options(
   system_test PRIVATE -Wl,--wrap=Vec2fDistance -Wl,--wrap=Vec3fNormalize
   -Wl,--wrap=Vec3fTransformByMatrix -Wl,--wrap=ResetFrameBlocks)
-coastline_add_test(texrect "${_src}/texrect.c")
-coastline_add_test(text "${_src}/text.c" "${_src}/textrender.c" "${_src}/textstyle.c")
-coastline_add_test(timing "${_src}/timing.c" "${_src}/timingframe.c")
+coastline_add_test(texrect "${_src}/n64/texrect.c")
+coastline_add_test(text "${_src}/n64/text.c" "${_src}/textrender.c" "${_src}/textstyle.c")
+coastline_add_test(timing "${_src}/n64/timing.c" "${_src}/timingframe.c")
 coastline_add_test(track ${_vecmath} ${_common} "${_src}/trackgrid.c" "${_src}/trackvalid.c")
 coastline_add_test(trackrender ${_vecmath} "${_src}/screenrect.c" "${_src}/shadowreset.c"
                    "${_src}/trackinstance.c" "${_src}/visiblecompare.c")

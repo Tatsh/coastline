@@ -1,6 +1,6 @@
 #include <PR/os.h>
 
-#include "platform/win/emulatedclock.h"
+#include "win32/emulatedclock.h"
 
 u64 osClockRate = 2165625000ULL;
 

@@ -1,5 +1,5 @@
-/* Test of src/model.c and src/vehiclemodel.c: the stepping and blending of animations, the remap of
- * a display list, and the paint of a car. */
+/* Test of src/n64/model.c and src/vehiclemodel.c: the stepping and blending of animations, the
+ * remap of a display list, and the paint of a car. */
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>

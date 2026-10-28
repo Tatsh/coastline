@@ -1,4 +1,4 @@
-/* Test of the grid lookups of src/track.c and the check of a track index. */
+/* Test of the grid lookups of src/n64/track.c and the check of a track index. */
 #include <assert.h>
 #include <stdio.h>
 

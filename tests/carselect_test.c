@@ -1,4 +1,4 @@
-/* Test of src/carselect.c against the branches and words of the disassembly of 0D460.s. */
+/* Test of src/n64/carselect.c against the branches and words of the disassembly of 0D460.s. */
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>

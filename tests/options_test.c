@@ -1,5 +1,5 @@
-/* Test of src/options.c against the branches of the disassembly of 12840.s, with a fake Controller
- * Pak. */
+/* Test of src/n64/options.c against the branches of the disassembly of 12840.s, with a fake
+ * Controller Pak. */
 #include <assert.h>
 #include <stdio.h>
 

@@ -1,4 +1,4 @@
-/* Host check of the control flow of src/controllerscreen.c. */
+/* Host check of the control flow of src/n64/controllerscreen.c. */
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>

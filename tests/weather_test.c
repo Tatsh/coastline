@@ -1,4 +1,4 @@
-/* Host check of src/weather.c with the random numbers and the matrix library stubbed. */
+/* Host check of src/n64/weather.c with the random numbers and the matrix library stubbed. */
 #include <assert.h>
 #include <math.h>
 #include <stdint.h>

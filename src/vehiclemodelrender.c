@@ -12,10 +12,10 @@
 #include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/boot/app.h"
-#include "platform/win/boot/rallyconfig.h"
-#include "platform/win/render.h"
-#include "platform/win/renderbackend.h"
+#include "win32/boot/app.h"
+#include "win32/boot/rallyconfig.h"
+#include "win32/render.h"
+#include "win32/renderbackend.h"
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
 #include "game.h"
 #include "racerslot.h"

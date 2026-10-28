@@ -1,4 +1,4 @@
-/* Host check of the texels src/decaldraw.c paints and the commands and pixels it draws. */
+/* Host check of the texels src/n64/decaldraw.c paints and the commands and pixels it draws. */
 #include <assert.h>
 #include <string.h>
 

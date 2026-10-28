@@ -26,10 +26,12 @@ endforeach()
 if(TGR_PLATFORM STREQUAL "win")
   target_compile_options(coastline_common INTERFACE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>")
   enable_language(CXX)
-  add_subdirectory(platform/ear)
-  add_subdirectory(platform/win)
+  add_subdirectory(ear)
+  add_subdirectory(win32)
 else()
-  add_library(coastline_main OBJECT main.s)
+  # The Nintendo 64 releases find their headers in n64 as well as here.
+  target_include_directories(coastline_common INTERFACE "${CMAKE_SOURCE_DIR}/src/n64")
+  add_library(coastline_main OBJECT n64/main.s)
   target_link_libraries(coastline_main PRIVATE coastline_common)
 endif()
 
@@ -76,8 +78,8 @@ if(TGR_PLATFORM STREQUAL "n64")
 
   # The game code of the Nintendo 64 releases. A routine joins this list when its body moves from
   # the assembly of the original into C.
-  set(_game_sources audio.c audiomix.s camera.c carselect.c controllerscreen.c debugtext.c decaldraw.c decaleditor.c driving.c effects.c fade.c game.c hud.c input.c heap.c mainmenu.c mathutil.c model.c options.c paintshop.c pakmenu.c physics.c playerselect.c race.c
-                    racemenu.c racers.c racesound.c replay.c rigidbody.c rumble.c sky.c snapshot.c splash.c sprite.c system.c text.c texrect.c timing.c track.c trackrender.c util.c vecmath.c vehicle.c vehiclemodel.c vehiclerender.c vehiclesetup.c visgrid.c weather.c weatherselect.c)
+  set(_game_sources n64/audio.c n64/audiomix.s n64/camera.c n64/carselect.c n64/controllerscreen.c n64/debugtext.c n64/decaldraw.c n64/decaleditor.c driving.c n64/effects.c fade.c game.c n64/hud.c n64/input.c heap.c n64/mainmenu.c mathutil.c n64/model.c n64/options.c n64/paintshop.c n64/pakmenu.c n64/physics.c n64/playerselect.c n64/race.c
+                    n64/racemenu.c racers.c n64/racesound.c replay.c rigidbody.c n64/rumble.c sky.c n64/snapshot.c n64/splash.c n64/sprite.c n64/system.c n64/text.c n64/texrect.c n64/timing.c n64/track.c trackrender.c util.c vecmath.c n64/vehicle.c vehiclemodel.c n64/vehiclerender.c n64/vehiclesetup.c visgrid.c n64/weather.c n64/weatherselect.c)
   list(APPEND _game_sources bodyforces.c camerachase.c cameracollision.c displaylistops.c
                            raceload.c racerender.c
                            frameclear.c playerinput.c profileinit.c renderinit.c screen.c seasontrack.c
@@ -85,8 +87,8 @@ if(TGR_PLATFORM STREQUAL "n64")
   # These sources write the Japanese text in UTF-8. The Japanese release compiles copies with the
   # text in the glyph codes of its font.
   if(TGR_REGION STREQUAL "jp")
-    foreach(_source carselect.c decaleditor.c options.c pakmenu.c paintshop.c playerselect.c splash.c
-                    text.c)
+    foreach(_source n64/carselect.c n64/decaleditor.c n64/options.c n64/pakmenu.c n64/paintshop.c
+                    n64/playerselect.c n64/splash.c n64/text.c)
       set(_encoded "${CMAKE_CURRENT_BINARY_DIR}/encoded/${_source}")
       add_custom_command(
         OUTPUT "${_encoded}"
@@ -229,9 +231,9 @@ if(TGR_PLATFORM STREQUAL "win")
   set_source_files_properties(vehicleeffects.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(vehiclemodelrender.c PROPERTIES LANGUAGE CXX)
   set_source_files_properties(trackinstance.c PROPERTIES LANGUAGE CXX)
-  target_sources(coastline_game PRIVATE convertedvertex.c)
-  target_sources(coastline_game PRIVATE shadowproject.c)
-  target_sources(coastline_game PRIVATE shadowclip.cpp)
+  target_sources(coastline_game PRIVATE win32/convertedvertex.c)
+  target_sources(coastline_game PRIVATE win32/shadowproject.c)
+  target_sources(coastline_game PRIVATE win32/shadowclip.cpp)
   target_sources(coastline_game PRIVATE libultra/io/contreaddata.c)
 endif()
 
@@ -261,7 +263,7 @@ else()
   if(COASTLINE_ASSETS_DIR AND COASTLINE_ASM_SYMBOLS)
     # The program is flattened into the bytes the IPL3 loads. build-rom puts the bytes after the
     # original header and IPL3, places the assets at their offsets, and writes the checksum.
-    set(_link_script "${CMAKE_CURRENT_SOURCE_DIR}/platform/n64/coastline-${TGR_REGION}.ld")
+    set(_link_script "${CMAKE_CURRENT_SOURCE_DIR}/n64/coastline-${TGR_REGION}.ld")
     # The archives come after the objects, in one group. Their routines call each other. An
     # archive member is not linked when an object already defines its routine (the assembly of a
     # vendored zlib routine, for one). libgcc provides the helpers GCC calls for the arithmetic the

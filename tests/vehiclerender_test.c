@@ -1,4 +1,4 @@
-/* Test of src/vehiclerender.c against the branches and words of the disassembly of 30EF0.s. */
+/* Test of src/n64/vehiclerender.c against the branches and words of the disassembly of 30EF0.s. */
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>

@@ -4,7 +4,7 @@
 #include "render.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/combine.h"
+#include "win32/combine.h"
 
 #ifdef __cplusplus
 extern "C" {

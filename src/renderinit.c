@@ -2,8 +2,8 @@
 #include "system.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/renderinit.h"
 #include "screen.h"
+#include "win32/renderinit.h"
 
 #pragma push_macro("errno")
 #undef errno

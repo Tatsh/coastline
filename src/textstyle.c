@@ -2,9 +2,9 @@
 #include "screen.h"
 #include "text.h"
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/fontdata.h"
-#include "platform/win/gbicommand.h"
-#include "platform/win/settings.h"
+#include "win32/fontdata.h"
+#include "win32/gbicommand.h"
+#include "win32/settings.h"
 
 u8 g_bTextStyleBold;
 u8 g_nTextAlignment;

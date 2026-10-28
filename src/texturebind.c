@@ -3,7 +3,7 @@
 #include "render.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/gbicommand.h"
+#include "win32/gbicommand.h"
 #else
 #include "texrect.h"
 #endif

@@ -8,7 +8,7 @@
 #include "vehiclestatus.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/input.h"
+#include "win32/input.h"
 #define VEHICLE_RACE_CALL(vehicle, method) ((vehicle)->method())
 #define RACER_RECIPROCAL(value) ((f32)(1.0L / (value)))
 

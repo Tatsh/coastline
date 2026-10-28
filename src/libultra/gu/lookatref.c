@@ -1,7 +1,7 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <PR/gu.h>
 
-#include "platform/win/packedvalue.h"
+#include "win32/packedvalue.h"
 #else
 #include "guint.h"
 #endif

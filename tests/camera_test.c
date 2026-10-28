@@ -1,4 +1,4 @@
-/* Host check of the frustum and projections in src/camera.c. */
+/* Host check of the frustum and projections in src/n64/camera.c. */
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>

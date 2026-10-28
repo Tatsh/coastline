@@ -1,4 +1,4 @@
-/* Host check of src/timing.c. */
+/* Host check of src/n64/timing.c. */
 #include <assert.h>
 #include <stdio.h>
 

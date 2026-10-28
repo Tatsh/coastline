@@ -10,8 +10,8 @@
 #include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/settings.h"
 #include "screen.h"
+#include "win32/settings.h"
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64

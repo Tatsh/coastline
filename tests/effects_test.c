@@ -1,4 +1,5 @@
-/* Host check of src/effects.c against the words and arithmetic of the disassembly of 3C130.s. */
+/* Host check of src/n64/effects.c against the words and arithmetic of the disassembly of 3C130.s.
+ */
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>

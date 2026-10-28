@@ -97,8 +97,8 @@ def stage(options):
             raise ValueError(f'{name} is absent from the extracted CD directory {data}.')
     rebuilt = {
         'BRD3D.dll': build / 'src/BRD3D.dll',
-        'BRally.exe': build / 'src/platform/win/launcher/BRally.exe',
-        'BossRally.exe': build / 'src/platform/win/launcher/BossRally.exe',
+        'BRally.exe': build / 'src/win32/launcher/BRally.exe',
+        'BossRally.exe': build / 'src/win32/launcher/BossRally.exe',
         'earpds.dll': options.ear_dll.expanduser().resolve(),
     }
     cache = build / 'CMakeCache.txt'

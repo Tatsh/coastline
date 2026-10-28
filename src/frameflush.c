@@ -11,7 +11,7 @@
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/renderbackend.h"
+#include "win32/renderbackend.h"
 #else
 #include "libultra/os/osint.h"
 #endif

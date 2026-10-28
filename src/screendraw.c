@@ -8,9 +8,9 @@
 #include "screen.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/gbicommand.h"
-#include "platform/win/hudcanvas.h"
-#include "platform/win/settings.h"
+#include "win32/gbicommand.h"
+#include "win32/hudcanvas.h"
+#include "win32/settings.h"
 
 s32 g_dwScreenScaleShift;
 Vp g_aViewports[VIEWPORTS];

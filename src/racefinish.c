@@ -14,12 +14,12 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <stdint.h>
 
-#include "platform/win/boot/app.h"
-#include "platform/win/boot/rallyconfig.h"
-#include "platform/win/gameinit.h"
-#include "platform/win/season.h"
-#include "platform/win/snapshot.h"
-#include "platform/win/sound.h"
+#include "win32/boot/app.h"
+#include "win32/boot/rallyconfig.h"
+#include "win32/gameinit.h"
+#include "win32/season.h"
+#include "win32/snapshot.h"
+#include "win32/sound.h"
 #else
 #include "audio.h"
 #include "audiomix.h"

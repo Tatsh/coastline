@@ -1,4 +1,5 @@
-/* Host check of src/vehicle.c with the physics, model loading and cache in the assembly stubbed. */
+/* Host check of src/n64/vehicle.c with the physics, model loading and cache in the assembly
+ * stubbed. */
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>

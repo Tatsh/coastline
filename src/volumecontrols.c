@@ -1,8 +1,8 @@
 #include "volumecontrols.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/boot/rallyconfig.h"
-#include "platform/win/sound.h"
+#include "win32/boot/rallyconfig.h"
+#include "win32/sound.h"
 #else
 #include "audio.h"
 #include "options.h"

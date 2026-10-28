@@ -1,5 +1,5 @@
-/* Host check of the input, the colors and the menus of src/decaleditor.c. It paints through
- * src/decaldraw.c, and the drawing to the screen is stubbed. */
+/* Host check of the input, the colors and the menus of src/n64/decaleditor.c. It paints through
+ * src/n64/decaldraw.c, and the drawing to the screen is stubbed. */
 #include <assert.h>
 #include <string.h>
 

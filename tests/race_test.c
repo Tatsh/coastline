@@ -1,4 +1,4 @@
-/* Test of src/race.c against the branches of the disassembly of 01320.s. */
+/* Test of src/n64/race.c against the branches of the disassembly of 01320.s. */
 #include <assert.h>
 #include <stdio.h>
 

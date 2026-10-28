@@ -3,7 +3,7 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <PR/os_cont.h>
 
-#include "platform/win/inputpoll.h"
+#include "win32/inputpoll.h"
 #else
 #include "controller.h"
 #include "siint.h"

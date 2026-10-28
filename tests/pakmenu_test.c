@@ -1,4 +1,4 @@
-/* Host check of the control flow of src/pakmenu.c with the Pak and drawing stubbed. */
+/* Host check of the control flow of src/n64/pakmenu.c with the Pak and drawing stubbed. */
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>

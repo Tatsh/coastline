@@ -13,8 +13,8 @@
 #include <math.h>
 #include <string.h>
 
-#include "platform/win/settings.h"
 #include "screen.h"
+#include "win32/settings.h"
 #else
 #include <PR/os_libc.h>
 #endif

@@ -6,7 +6,7 @@
 #include "render.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/assetnames.h"
+#include "win32/assetnames.h"
 #endif
 
 /** The wheels of a vehicle. */

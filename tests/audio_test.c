@@ -1,4 +1,4 @@
-/* Host check of src/audio.c on a small XM module, with libultra and the mixers stubbed. */
+/* Host check of src/n64/audio.c on a small XM module, with libultra and the mixers stubbed. */
 #include <assert.h>
 #include <setjmp.h>
 #include <stdint.h>

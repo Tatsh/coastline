@@ -1,5 +1,5 @@
-/* Test of src/system.c: the DMA in blocks, the pool of its messages, the clock of the frames, the
- * routines of the screen, and the commands of the frame, the fog, the lights, and the textures
+/* Test of src/n64/system.c: the DMA in blocks, the pool of its messages, the clock of the frames,
+ * the routines of the screen, and the commands of the frame, the fog, the lights, and the textures
  * against the words of the disassembly. */
 #include <assert.h>
 #include <stdio.h>

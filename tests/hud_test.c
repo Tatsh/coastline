@@ -1,4 +1,4 @@
-/* Host check of src/hud.c with the drawing of text and rectangles and the DMA logged. */
+/* Host check of src/n64/hud.c with the drawing of text and rectangles and the DMA logged. */
 #include <assert.h>
 #include <math.h>
 #include <stdint.h>

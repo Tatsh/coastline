@@ -160,7 +160,7 @@
                   if hook.id == 'check-added-large-files' then
                     hook {
                       exclude: '^docs/cppreference\\.tags$|' +
-                               '^src/platform/win/glide/fontatlas\\.c$|' + hook.exclude,
+                               '^src/win32/glide/fontatlas\\.c$|' + hook.exclude,
                     }
                   else hook
                   for hook in repo.hooks

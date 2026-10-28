@@ -1,5 +1,5 @@
 /*
- * Host check of src/racemenu.c against the branches and words of the disassembly of 09900.s.
+ * Host check of src/n64/racemenu.c against the branches and words of the disassembly of 09900.s.
  * Build with -no-pie so that the globals, which the display lists hold as 32-bit words, sit below
  * 4 GB.
  */

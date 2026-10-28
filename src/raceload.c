@@ -50,14 +50,14 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <string.h>
 
-#include "platform/win/boot/rallyconfig.h"
-#include "platform/win/dashboardtextures.h"
-#include "platform/win/frametimer.h"
-#include "platform/win/ghost.h"
-#include "platform/win/render.h"
-#include "platform/win/snapshot.h"
-#include "platform/win/sound.h"
-#include "platform/win/trackrelocation.h"
+#include "win32/boot/rallyconfig.h"
+#include "win32/dashboardtextures.h"
+#include "win32/frametimer.h"
+#include "win32/ghost.h"
+#include "win32/render.h"
+#include "win32/snapshot.h"
+#include "win32/sound.h"
+#include "win32/trackrelocation.h"
 
 namespace {
     union StartLightsStorage {

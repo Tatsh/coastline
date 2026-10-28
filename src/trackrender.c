@@ -23,8 +23,8 @@
 #include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/trackskidmarks.h"
 #include "vehiclecount.h"
+#include "win32/trackskidmarks.h"
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

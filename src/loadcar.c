@@ -1,7 +1,7 @@
 #include "vehiclemodel.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/boot/app.h"
+#include "win32/boot/app.h"
 #else
 #include <string.h>
 

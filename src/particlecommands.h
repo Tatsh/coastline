@@ -5,8 +5,8 @@
 #include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/displaylist.h"
-#include "platform/win/render.h"
+#include "win32/displaylist.h"
+#include "win32/render.h"
 #endif
 
 #ifdef __cplusplus

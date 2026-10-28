@@ -1,4 +1,4 @@
-/* Host check of src/splash.c with the drawing, the sounds, the fades and the loading logged. */
+/* Host check of src/n64/splash.c with the drawing, the sounds, the fades and the loading logged. */
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>

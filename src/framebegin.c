@@ -11,8 +11,8 @@
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/gbicommand.h"
-#include "platform/win/settings.h"
+#include "win32/gbicommand.h"
+#include "win32/settings.h"
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * The display list of g_aClipRatioDisplayLists a frame starts with.

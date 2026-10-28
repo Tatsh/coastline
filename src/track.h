@@ -18,7 +18,7 @@
 #include "vecmath.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/gbicommand.h"
+#include "win32/gbicommand.h"
 #endif
 
 #ifdef __cplusplus

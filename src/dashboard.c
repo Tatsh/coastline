@@ -12,11 +12,11 @@
 #include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/directplay.h"
-#include "platform/win/hudcanvas.h"
-#include "platform/win/hudquad.h"
-#include "platform/win/render.h"
-#include "platform/win/settings.h"
+#include "win32/directplay.h"
+#include "win32/hudcanvas.h"
+#include "win32/hudquad.h"
+#include "win32/render.h"
+#include "win32/settings.h"
 #else
 #include <PR/gu.h>
 #include <PR/os_libc.h>

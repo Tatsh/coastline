@@ -12,7 +12,7 @@
  */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/vehicle.h"
+#include "win32/vehicle.h"
 #else
 
 #include <PR/gbi.h>

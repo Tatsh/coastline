@@ -1,4 +1,4 @@
-/* Host check of src/physics.c, linked with src/rigidbody.c for the arithmetic of the bodies. */
+/* Host check of src/n64/physics.c, linked with src/rigidbody.c for the arithmetic of the bodies. */
 #include <assert.h>
 #include <math.h>
 #include <stdarg.h>

@@ -16,11 +16,11 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <string.h>
 
-#include "platform/win/boot/rallyconfig.h"
-#include "platform/win/directplay.h"
-#include "platform/win/ghost.h"
-#include "platform/win/settings.h"
-#include "platform/win/sound.h"
+#include "win32/boot/rallyconfig.h"
+#include "win32/directplay.h"
+#include "win32/ghost.h"
+#include "win32/settings.h"
+#include "win32/sound.h"
 
 #else
 #include <PR/os_libc.h>

@@ -5,7 +5,7 @@
 #include "types.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/gbicommand.h"
+#include "win32/gbicommand.h"
 #else
 #include <PR/gbi.h>
 #endif

@@ -1,4 +1,4 @@
-/* Host check of src/text.c against the command words of the disassembly. */
+/* Host check of src/n64/text.c against the command words of the disassembly. */
 #include <assert.h>
 #include <stdint.h>
 #include <stdio.h>

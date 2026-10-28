@@ -4,7 +4,7 @@
 #include "screen.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/boot/rallyconfig.h"
+#include "win32/boot/rallyconfig.h"
 #ifdef errno
 #undef errno
 #endif

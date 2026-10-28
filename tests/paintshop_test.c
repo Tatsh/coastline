@@ -1,4 +1,4 @@
-/* Host check of src/paintshop.c against the branches and command words of the disassembly. */
+/* Host check of src/n64/paintshop.c against the branches and command words of the disassembly. */
 #include <stdio.h>
 #include <string.h>
 

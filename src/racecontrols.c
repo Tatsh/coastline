@@ -12,12 +12,12 @@
 #include "volumecontrols.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/boot/app.h"
-#include "platform/win/directplay.h"
-#include "platform/win/input.h"
-#include "platform/win/settings.h"
-#include "platform/win/snapshot.h"
-#include "platform/win/sound.h"
+#include "win32/boot/app.h"
+#include "win32/directplay.h"
+#include "win32/input.h"
+#include "win32/settings.h"
+#include "win32/snapshot.h"
+#include "win32/sound.h"
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

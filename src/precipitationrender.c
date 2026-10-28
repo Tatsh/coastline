@@ -9,11 +9,11 @@
 #include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/d3d/renderer.h"
-#include "platform/win/displaylist.h"
-#include "platform/win/ghost.h"
-#include "platform/win/render.h"
-#include "platform/win/settings.h"
+#include "win32/d3d/renderer.h"
+#include "win32/displaylist.h"
+#include "win32/ghost.h"
+#include "win32/render.h"
+#include "win32/settings.h"
 #define StubWeatherUpdate NullStub
 #define AddTimingMarker(...) NullStub()
 #define PRECIPITATION_RENDER_REAL long double

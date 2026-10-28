@@ -8,7 +8,7 @@
 #include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/render.h"
+#include "win32/render.h"
 #else
 #include <PR/R4300.h>
 #endif

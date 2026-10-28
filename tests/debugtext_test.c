@@ -1,4 +1,4 @@
-/* Host check of DrawBitmapTextToFramebuffer() in src/debugtext.c. */
+/* Host check of DrawBitmapTextToFramebuffer() in src/n64/debugtext.c. */
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>

@@ -1,4 +1,4 @@
-/* Host check of src/texrect.c against the command words of the disassembly. */
+/* Host check of src/n64/texrect.c against the command words of the disassembly. */
 #include <stdio.h>
 
 #include "render.h"

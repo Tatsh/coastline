@@ -44,7 +44,7 @@ SourceForge repository. The imported files are the public headers of Glide 2.x f
 (`glide2x/cvg/glide/src/glide.h`, `glidesys.h`, and `glideutl.h`, and `glide2x/cvg/incsrc/sst1vid.h`),
 the `swlibs/fxmisc/3dfx.h` they include, and `glide2x/glide_license.txt`, the 3DFX GLIDE Source Code
 General Public License they are distributed under. The headers are not changed. The import library
-of `glide2x.dll` is built from `src/platform/win/glide/glide2x.def`.
+of `glide2x.dll` is built from `src/win32/glide/glide2x.def`.
 
 ## Verification
 

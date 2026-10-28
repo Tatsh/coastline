@@ -1,4 +1,5 @@
-/* Host check of DrawTexturedRect() in src/texrect.c against words worked out from the disassembly.
+/* Host check of DrawTexturedRect() in src/n64/texrect.c against words worked out from the
+ * disassembly.
  */
 #include <stdio.h>
 

@@ -9,7 +9,7 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <math.h>
 
-#include "platform/win/gbicommand.h"
+#include "win32/gbicommand.h"
 #else
 #include <PR/R4300.h>
 #endif

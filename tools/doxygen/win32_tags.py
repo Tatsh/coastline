@@ -487,7 +487,7 @@ def main() -> int:
   parser.add_argument('--sources',
                       type=Path,
                       nargs='+',
-                      default=[Path('src/platform/win')],
+                      default=[Path('src/win32')],
                       help='the directories whose identifiers are looked up')
   parser.add_argument('--declarations',
                       type=Path,

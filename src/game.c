@@ -18,8 +18,8 @@
 #include "vehicle.h"
 #else
 #include "displaylistops.h"
-#include "platform/win/gameinit.h"
 #include "screen.h"
+#include "win32/gameinit.h"
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

@@ -16,7 +16,7 @@
 #include "vecmath.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "platform/win/airplanestate.h"
+#include "win32/airplanestate.h"
 #endif
 
 #ifdef __cplusplus

@@ -149,7 +149,8 @@ if(NOT BUILD_DOCS_ONLY)
     # console and so are checked by the cross compiler. A wrong offset fails the build.
     add_library(coastline_layout OBJECT tests/layout.c)
     target_include_directories(
-      coastline_layout PRIVATE "${CMAKE_SOURCE_DIR}/src" "${CMAKE_SOURCE_DIR}/src/libultra/include"
+      coastline_layout PRIVATE "${CMAKE_SOURCE_DIR}/src" "${CMAKE_SOURCE_DIR}/src/n64"
+                               "${CMAKE_SOURCE_DIR}/src/libultra/include"
                                "${CMAKE_SOURCE_DIR}/3rdparty/zlib-1.0.4")
   endif()
 endif()
