@@ -2777,7 +2777,7 @@ void EnterNetworkLobbyScreen(void) {
     }
     ShowMultiplayerNameScreen(nullptr);
     ShowMultiplayerConnectionScreen();
-    ShowJoinCreateGameScreen();
+    ShowJoinCreateGameScreen(nullptr);
     if (g_dwLobbyIsHost) {
         ShowCreateGameScreen(nullptr);
         ShowHostRaceSetupScreen(nullptr);
@@ -2810,7 +2810,7 @@ int ReturnToNetworkLobbyScreen(void) {
     }
     ShowMultiplayerNameScreen(nullptr);
     ShowMultiplayerConnectionScreen();
-    ShowJoinCreateGameScreen();
+    ShowJoinCreateGameScreen(nullptr);
     if (g_dwLobbyIsHost) {
         ShowCreateGameScreen(nullptr);
         ShowHostRaceSetupScreen(nullptr);
@@ -2915,7 +2915,7 @@ static inline void BuildJoinCreateGameScreen(MenuScreen *screen) {
     BuildJoinCreateGameUI(screen);
 }
 
-int ShowJoinCreateGameScreen(void) {
+int ShowJoinCreateGameScreen(MenuWidget *) {
     if (!ShowCachedMenuScreen(g_pCachedMenu_JoinCreateGame, BuildJoinCreateGameScreen)) {
         return 0;
     }
@@ -3932,7 +3932,7 @@ int ProcessCheatInputAndValidateEntity(MenuWidget *pWidget) {
 
 int MultiplayerConnectionUI::OnSelectIpx(MenuWidget *pWidget) {
     g_dwServiceProviderIndex = 0;
-    ShowJoinCreateGameScreen();
+    ShowJoinCreateGameScreen(pWidget);
     return 1;
 }
 
@@ -3944,7 +3944,7 @@ int MultiplayerConnectionUI::UpdateIpxItem(MenuWidget *pWidget) {
 
 int MultiplayerConnectionUI::OnSelectTcpIp(MenuWidget *pWidget) {
     g_dwServiceProviderIndex = 1;
-    ShowJoinCreateGameScreen();
+    ShowJoinCreateGameScreen(pWidget);
     return 1;
 }
 
@@ -3956,7 +3956,7 @@ int MultiplayerConnectionUI::UpdateTcpIpItem(MenuWidget *pWidget) {
 
 int MultiplayerConnectionUI::OnSelectModem(MenuWidget *pWidget) {
     g_dwServiceProviderIndex = 2;
-    ShowJoinCreateGameScreen();
+    ShowJoinCreateGameScreen(pWidget);
     return 1;
 }
 

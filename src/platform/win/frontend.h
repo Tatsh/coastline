@@ -3090,10 +3090,12 @@ int ShowCreateGameScreen(MenuWidget *pWidget);
 int ShowMultiplayerNameScreen(MenuWidget *pWidget);
 
 /**
+ * @param pWidget The item of the chosen service provider, or null from the lobby; unread.
+ * @return 0 when the screen cannot be allocated, otherwise 1.
  * @ghidraAddress BRD3D: 0x10043e70
  * @ghidraAddress BRGlide: 0x1003d3c0
  */
-int ShowJoinCreateGameScreen(void);
+int ShowJoinCreateGameScreen(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x10045dc0
