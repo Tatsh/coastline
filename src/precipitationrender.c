@@ -70,7 +70,8 @@ static inline void WritePrecipitationRectangle(s32 left, s32 top, s32 width, s32
 void RenderPrecipitationEffect(void) {
     Vec3f fall;
     s16 *particle;
-#if TGR_PLATFORM == TGR_PLATFORM_N64 || TGR_RENDERER == TGR_RENDERER_GLIDE
+#if TGR_PLATFORM == TGR_PLATFORM_N64 ||                                                            \
+    (TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE)
     u8 *texel;
     u8 shade;
 #endif
@@ -230,11 +231,11 @@ void RenderPrecipitationEffect(void) {
 
     /* A streak along the fall of the rain on the screen, brighter towards its end. */
     if (g_dwRainMode) {
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_D3D
         FillMemoryPatternBytes(g_abPrecipitationTextures[g_dwCurrentSplitScreenIndex],
                                (u32)g_dwAlphaRampStripRowCount << 12,
                                0);
-#elif TGR_RENDERER == TGR_RENDERER_GLIDE
+#elif TGR_PLATFORM == TGR_PLATFORM_WIN
         FillMemoryPatternBytes(g_abPrecipitationTextures[g_dwCurrentSplitScreenIndex],
                                sizeof(g_abPrecipitationTextures[0]),
                                0);
@@ -277,7 +278,7 @@ void RenderPrecipitationEffect(void) {
 #endif
                 if (column >= STREAK_MARGIN && column < RAIN_STREAK_TEXTURE_SIDE - STREAK_MARGIN) {
                     /* A disc five texels across without its corners, a store for each texel. */
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_D3D
                     GetPrecipitationTextureDimensions(g_dwCurrentSplitScreenIndex);
 #else
                     shade = (step << 4) | step;

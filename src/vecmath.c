@@ -488,7 +488,7 @@ void Vec3fRotateAroundAxis(Vec3f *v, f32 angle, Vec3f *axis) {
 
 void Mtx4x4ProjectPoint(Vec3f *out, Vec3f *in, f32 m[4][4]) {
     f32 x = in->x, y = in->y, z = in->z;
-#if TGR_RENDERER == TGR_RENDERER_GLIDE
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE
     /* BRGlide keeps the reciprocal of w and every sum on the x87 until the stores. */
     long double inverseW =
         1.0L / ((((long double)y * m[1][3] + (long double)x * m[0][3]) + (long double)z * m[2][3]) +
@@ -552,7 +552,7 @@ void ProjectVec3fToScreen(Vec2f *out, Vec3f *in, f32 m[4][4]) {
 
 void Mtx4x4TransformNoTranslation(Vec3f *out, Vec3f *in, f32 m[4][4]) {
     f32 x = in->x, y = in->y, z = in->z;
-#if TGR_RENDERER == TGR_RENDERER_GLIDE
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE
     /* BRGlide adds the products in another order than BRD3D. */
     long double inverseW = 1.0L / (((long double)y * m[1][3] + (long double)x * m[0][3]) +
                                    (long double)z * m[2][3] + m[3][3]);
