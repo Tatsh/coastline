@@ -53,7 +53,8 @@ void ComputeStereoPan(
 #endif
     rest = PAN_INTERMEDIATE(1.0f) - share;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    if (0.49f <= share && share <= 0.51f && 0.49f <= rest && rest <= 0.51f) {
+    /* Each bound passes an unordered value. */
+    if (!(0.49f > share) && !(share > 0.51f) && !(0.49f > rest) && !(rest > 0.51f)) {
         share = 0.5f;
         rest = 0.5f;
     }
