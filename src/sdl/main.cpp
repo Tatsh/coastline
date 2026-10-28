@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <cstdio>
 #include <cstdlib>
 #include <exception>
 #include <filesystem>
@@ -25,7 +26,9 @@
 #include "paths.h"
 #include "tlrenderer.h"
 #ifdef COASTLINE_PC_GAME
+#include "dinputcompat.h"
 #include "pcgamerun.h"
+#include "scene.h"
 #endif
 
 namespace {
@@ -102,6 +105,40 @@ std::optional<std::vector<std::uint8_t>> LoadMusicFromRom(const std::filesystem:
         return std::nullopt;
     }
     return LoadMusicModule(data, USA_MUSIC_OFFSETS[index]);
+}
+
+// A key held over a range of frames, from a test script.
+struct ScriptedKey {
+    int scancode;
+    int first;
+    int last;
+};
+
+// Read a script such as SPACE@300-305,UP@320-900. An entry with one frame holds the key for that
+// frame.
+std::vector<ScriptedKey> ParseKeyScript(const std::string &script) {
+    std::vector<ScriptedKey> keys;
+    std::size_t start = 0;
+    while (start < script.size()) {
+        std::size_t end = script.find(',', start);
+        std::string entry = script.substr(start, end - start);
+        start = end == std::string::npos ? script.size() : end + 1;
+        std::size_t at = entry.find('@');
+        if (at == std::string::npos) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_INPUT, "The key %s has no frame.", entry.c_str());
+            continue;
+        }
+        SDL_Scancode scancode = SDL_GetScancodeFromName(entry.substr(0, at).c_str());
+        int first = 0;
+        int last = 0;
+        int count = std::sscanf(entry.c_str() + at + 1, "%d-%d", &first, &last);
+        if (scancode == SDL_SCANCODE_UNKNOWN || count < 1) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_INPUT, "The key %s is not valid.", entry.c_str());
+            continue;
+        }
+        keys.push_back({scancode, first, count == 2 ? last : first});
+    }
+    return keys;
 }
 
 coastline::TextureHandle CreateCheckerTexture(coastline::TlRenderer &renderer) {
@@ -236,7 +273,14 @@ int main(int argc, char *argv[]) {
         .help("length of the WAV file in seconds")
         .default_value(30)
         .scan<'i', int>();
-    parser.add_argument("--scene").help("scene to start in: renderer-test");
+    parser.add_argument("--scene").help("scene to start in: renderer-test or race");
+    for (const char *name : {"--game-mode", "--track", "--car", "--weather"}) {
+        parser.add_argument(name)
+            .help("choice of the race scene, as the menus number it")
+            .scan<'i', int>();
+    }
+    parser.add_argument("--keys").help(
+        "keys to hold in the race scene, such as SPACE@300-305,UP@320-900 for frame ranges");
     parser.add_argument("--screenshot").help("save a frame to this PNG file");
     parser.add_argument("--screenshot-frame")
         .help("number of the frame to save, from 1")
@@ -352,12 +396,21 @@ int main(int argc, char *argv[]) {
             if (parser.present("--scene") == "race") {
                 renderer = coastline::TlRenderer::Create(*window);
                 bool pcMusic = config.Get("Game", "Music").value_or("N64") == "PC";
+                for (auto [name, choice] : {std::pair{"--game-mode", &g_SdlScene.gameMode},
+                                            {"--track", &g_SdlScene.track},
+                                            {"--car", &g_SdlScene.car},
+                                            {"--weather", &g_SdlScene.weather}}) {
+                    if (auto value = parser.present<int>(name)) {
+                        *choice = *value;
+                    }
+                }
                 pcGame = renderer &&
                          coastline::StartPcGame(*renderer, paths->data, paths->state, pcMusic);
             }
 #endif
             bool running = true;
             std::uint32_t pcMusicModule = 0;
+            auto keyScript = ParseKeyScript(parser.present("--keys").value_or(""));
             for (int frame = 1; running; ++frame) {
                 SDL_Event event;
                 while (SDL_PollEvent(&event)) {
@@ -370,6 +423,13 @@ int main(int argc, char *argv[]) {
                 bool capture = screenshot && frame == screenshotFrame;
                 if (pcGame) {
 #ifdef COASTLINE_PC_GAME
+                    std::vector<int> held;
+                    for (const ScriptedKey &key : keyScript) {
+                        if (frame >= key.first && frame <= key.last) {
+                            held.push_back(key.scancode);
+                        }
+                    }
+                    coastline::SetScriptedKeys(std::move(held));
                     running =
                         coastline::RunPcGameFrame(capture ? &*screenshot : nullptr) && running;
                     std::uint32_t module = coastline::PcGameMusicModule();
