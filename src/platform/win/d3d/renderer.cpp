@@ -196,13 +196,19 @@ HRESULT RenderHost::RenderLoadingScreen(DirectDrawRenderer *pWindowRenderer,
             SetLoadingScreenVertex(&aVertices[0], fLeft, fTop, 0.0f, 0.0f);
             SetLoadingScreenVertex(&aVertices[1], fRight, fBottom, 1.0f, 1.0f);
             SetLoadingScreenVertex(&aVertices[2], fLeft, fBottom, 0.0f, 1.0f);
-            pDevice->DrawPrimitive(
-                D3DPT_TRIANGLELIST, D3DVT_TLVERTEX, aVertices, 3, D3DDP_WAIT | D3DDP_DONOTCLIP);
+            pDevice->DrawPrimitive(D3DPT_TRIANGLELIST,
+                                   D3DVT_TLVERTEX,
+                                   aVertices,
+                                   3,
+                                   D3DDP_WAIT | D3DDP_DONOTUPDATEEXTENTS);
             SetLoadingScreenVertex(&aVertices[0], fLeft, fTop, 0.0f, 0.0f);
             SetLoadingScreenVertex(&aVertices[1], fRight, fTop, 1.0f, 0.0f);
             SetLoadingScreenVertex(&aVertices[2], fRight, fBottom, 1.0f, 1.0f);
-            pDevice->DrawPrimitive(
-                D3DPT_TRIANGLELIST, D3DVT_TLVERTEX, aVertices, 3, D3DDP_WAIT | D3DDP_DONOTCLIP);
+            pDevice->DrawPrimitive(D3DPT_TRIANGLELIST,
+                                   D3DVT_TLVERTEX,
+                                   aVertices,
+                                   3,
+                                   D3DDP_WAIT | D3DDP_DONOTUPDATEEXTENTS);
             // A device that refuses Gouraud shading ends the screen with its scene open and its
             // texture not released.
             if (pDevice->SetRenderState(D3DRENDERSTATE_SHADEMODE, D3DSHADE_GOURAUD) != D3D_OK) {
