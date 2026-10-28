@@ -1,6 +1,7 @@
 #ifndef COASTLINE_WIN_BUILDINFO_H
 #define COASTLINE_WIN_BUILDINFO_H
 
+#ifdef ENABLE_PATCHES
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -17,5 +18,11 @@ void DrawRaceBuildIdentification(void);
 #ifdef __cplusplus
 }
 #endif
+
+#else
+#define PrintWineBuildIdentification()
+#define PrintWineDiagnostic(message)
+#define DrawRaceBuildIdentification()
+#endif /* ENABLE_PATCHES */
 
 #endif /* COASTLINE_WIN_BUILDINFO_H */

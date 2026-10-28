@@ -15,10 +15,8 @@ static const char revision[] = COASTLINE_GIT_SHA;
 static const char buildDate[] = __DATE__ " " __TIME__;
 static const char banner[] =
     "github.com/Tatsh/coastline " COASTLINE_GIT_SHA " " __DATE__ " " __TIME__ "\n";
-#endif /* ENABLE_PATCHES */
 
 void PrintWineDiagnostic(const char *message) {
-#ifdef ENABLE_PATCHES
     DWORD savedError = GetLastError();
     WriteApplicationDiagnostic(message);
     HMODULE ntdll = GetModuleHandleA("ntdll.dll");
@@ -32,17 +30,13 @@ void PrintWineDiagnostic(const char *message) {
         WriteFile(output, message, (DWORD)strlen(message), &written, nullptr);
     }
     SetLastError(savedError);
-#endif /* ENABLE_PATCHES */
 }
 
 void PrintWineBuildIdentification(void) {
-#ifdef ENABLE_PATCHES
     PrintWineDiagnostic(banner);
-#endif
 }
 
 void DrawRaceBuildIdentification(void) {
-#ifdef ENABLE_PATCHES
     if (!(GetAsyncKeyState('B') & 0x8000)) {
         return;
     }
@@ -55,5 +49,5 @@ void DrawRaceBuildIdentification(void) {
         DrawText(lines[index], 12, y);
         y += 20;
     }
-#endif /* ENABLE_PATCHES */
 }
+#endif /* ENABLE_PATCHES */

@@ -163,10 +163,8 @@ static LONG WINAPI ReportApplicationCrash(EXCEPTION_POINTERS *exception) {
     InterlockedExchange(&reportingCrash, 0);
     return previousFilter ? previousFilter(exception) : EXCEPTION_CONTINUE_SEARCH;
 }
-#endif /* ENABLE_PATCHES */
 
 void WriteApplicationDiagnostic(const char *message) {
-#ifdef ENABLE_PATCHES
     DWORD savedError = GetLastError();
     if (!logPath[0]) {
         SetDiagnosticPath(logPath, "coastline.log");
@@ -200,11 +198,9 @@ void WriteApplicationDiagnostic(const char *message) {
         CloseHandle(log);
     }
     SetLastError(savedError);
-#endif /* ENABLE_PATCHES */
 }
 
 void InitializeApplicationDiagnostics(void) {
-#ifdef ENABLE_PATCHES
     if (initialized) {
         return;
     }
@@ -221,11 +217,9 @@ void InitializeApplicationDiagnostics(void) {
     }
     WriteApplicationDiagnostic(writeDump ? "Crash minidump support ready.\n" :
                                            "Crash minidump support unavailable.\n");
-#endif /* ENABLE_PATCHES */
 }
 
 void ShutdownApplicationDiagnostics(void) {
-#ifdef ENABLE_PATCHES
     if (!initialized) {
         return;
     }
@@ -236,5 +230,5 @@ void ShutdownApplicationDiagnostics(void) {
     }
     writeDump = nullptr;
     initialized = false;
-#endif /* ENABLE_PATCHES */
 }
+#endif /* ENABLE_PATCHES */
