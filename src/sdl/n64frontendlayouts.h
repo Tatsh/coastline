@@ -152,4 +152,26 @@ struct CartridgeLayout<OSPfsState> {
     }
 };
 
+/** A light of the RSP, which is bytes in order and not the words of its union. */
+template <typename T>
+struct ByteLayout {
+    static constexpr std::size_t size = sizeof(T);
+    static constexpr std::size_t align = 8;
+
+    static void Read(BigEndianReader &reader, T &value) {
+        auto *bytes = reinterpret_cast<std::uint8_t *>(&value);
+        for (std::size_t i = 0; i < sizeof(T); ++i) {
+            reader.Read(bytes[i]);
+        }
+    }
+};
+
+/** A directional light, whose colours and direction are bytes. */
+template <>
+struct CartridgeLayout<Light> : ByteLayout<Light> {};
+
+/** An ambient light, whose colours are bytes. */
+template <>
+struct CartridgeLayout<Ambient> : ByteLayout<Ambient> {};
+
 } // namespace coastline

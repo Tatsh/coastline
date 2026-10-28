@@ -70,7 +70,15 @@ struct BakedTexture {
     std::uint32_t lastFrame = 0;         /*!< The frame the texture was drawn last in. */
 };
 
+struct Light {
+    float color[3] = {};     /*!< The red, green, and blue, from 0 to 1. */
+    float direction[3] = {}; /*!< The unit direction towards the light. */
+};
+
 struct RdpState {
+    std::array<Light, 8> lights{};
+    // The directional lights. The ambient light follows them.
+    int lightCount = 1;
     std::array<std::uint8_t, kTmemBytes> tmem{};
     std::array<std::uint16_t, 256> tlut{};
     std::array<Tile, 8> tiles{};
@@ -715,6 +723,71 @@ void LoadViewport(const GbiCommand *command) {
     }
 }
 
+void LoadLight(const GbiCommand *command) {
+    std::size_t index = ((command->w0 >> 16 & 0xff) - G_MV_L0) / 2;
+    const auto *light = static_cast<const std::uint8_t *>(coastline::DecodePtr32(command->w1));
+    if (light == nullptr || index >= g_rdp.lights.size()) {
+        return;
+    }
+    Light &out = g_rdp.lights[index];
+    float length = 0;
+    for (std::size_t i = 0; i < 3; ++i) {
+        out.color[i] = static_cast<float>(light[i]) / 255.0f;
+        out.direction[i] = static_cast<float>(static_cast<std::int8_t>(light[8 + i]));
+        length += out.direction[i] * out.direction[i];
+    }
+    if (length > 0) {
+        for (float &axis : out.direction) {
+            axis /= std::sqrt(length);
+        }
+    }
+}
+
+void MoveWord(const GbiCommand *command) {
+    std::uint32_t index = command->w0 & 0xff;
+    std::uint32_t offset = command->w0 >> 8 & 0xffff;
+    if (index == G_MW_NUMLIGHT) {
+        g_rdp.lightCount = std::clamp(static_cast<int>((command->w1 - 0x80000000u) / 32) - 1, 0, 7);
+    } else if (index == G_MW_LIGHTCOL && offset % 0x20 == 0 && offset / 0x20 < 8) {
+        Color color = Unpack8888(command->w1);
+        Light &light = g_rdp.lights[offset / 0x20];
+        light.color[0] = color.r;
+        light.color[1] = color.g;
+        light.color[2] = color.b;
+    }
+}
+
+// The colour the RSP lights a vertex with: the ambient light, and each directional light by the
+// cosine of its angle to the normal in the space of the modelview matrix.
+Color LightVertex(const Matrix &modelview, const std::int8_t *normal, float alpha) {
+    float transformed[3] = {};
+    float length = 0;
+    for (int j = 0; j < 3; ++j) {
+        for (int k = 0; k < 3; ++k) {
+            transformed[j] += static_cast<float>(normal[k]) * modelview[k][j];
+        }
+        length += transformed[j] * transformed[j];
+    }
+    if (length > 0) {
+        for (float &axis : transformed) {
+            axis /= std::sqrt(length);
+        }
+    }
+    const Light &ambient = g_rdp.lights[static_cast<std::size_t>(g_rdp.lightCount)];
+    float rgb[3] = {ambient.color[0], ambient.color[1], ambient.color[2]};
+    for (int i = 0; i < g_rdp.lightCount; ++i) {
+        const Light &light = g_rdp.lights[static_cast<std::size_t>(i)];
+        float intensity = transformed[0] * light.direction[0] +
+                          transformed[1] * light.direction[1] + transformed[2] * light.direction[2];
+        if (intensity > 0) {
+            for (int c = 0; c < 3; ++c) {
+                rgb[c] += intensity * light.color[c];
+            }
+        }
+    }
+    return {std::min(rgb[0], 1.0f), std::min(rgb[1], 1.0f), std::min(rgb[2], 1.0f), alpha};
+}
+
 void LoadVertices(const GbiCommand *command) {
     std::size_t first = (command->w0 >> 16 & 0xff) / 2;
     std::size_t count = command->w0 >> 10 & 0x3f;
@@ -745,7 +818,9 @@ void LoadVertices(const GbiCommand *command) {
         out.s = static_cast<float>(ReadHalf(vertex, 4, bigEndian)) * g_rdp.textureScaleS / 32.0f;
         out.t = static_cast<float>(ReadHalf(vertex, 5, bigEndian)) * g_rdp.textureScaleT / 32.0f;
         const std::uint8_t *color = vertex + 12;
-        out.shade = lighting ? Color{1, 1, 1, static_cast<float>(color[3]) / 255.0f} :
+        out.shade = lighting ? LightVertex(modelview,
+                                           reinterpret_cast<const std::int8_t *>(color),
+                                           static_cast<float>(color[3]) / 255.0f) :
                                Color{static_cast<float>(color[0]) / 255.0f,
                                      static_cast<float>(color[1]) / 255.0f,
                                      static_cast<float>(color[2]) / 255.0f,
@@ -854,7 +929,12 @@ void RunDisplayList(const GbiCommand *list) {
         case G_MOVEMEM:
             if ((command->w0 >> 16 & 0xff) == G_MV_VIEWPORT) {
                 LoadViewport(command);
+            } else if ((command->w0 >> 16 & 0xff) >= G_MV_L0) {
+                LoadLight(command);
             }
+            break;
+        case G_MOVEWORD:
+            MoveWord(command);
             break;
         case G_VTX:
             LoadVertices(command);
