@@ -161,7 +161,12 @@ void DrawLapCounterHud(const ViewportRect *viewports, const Vehicle *) {
     char text[256];
 #else
 void DrawLapCounterHud(void) {
+#ifdef ENABLE_PATCHES
+    /* The lap text needs 31 bytes for two numbers of any size. */
+    char text[32];
+#else
     char text[20];
+#endif /* ENABLE_PATCHES */
 #endif
     const char *suffix;
     s32 x, y, nudge, width;
