@@ -1500,17 +1500,17 @@ static void GenerateGbiTextureCoordinates(const ConvertedModelVertex *pInput,
         t = tDot;
     }
     long double generatedS =
-        (static_cast<long double>(s) * static_cast<float>(g_dwTileSizeWidth) + 128.0f) /
-        (static_cast<long double>(g_fTexCoordScaleS) * 256.0f -
-         static_cast<float>(g_dwTileSizeUls) * (bLinear ? 0.5L : 1.0L));
+        (static_cast<long double>(s) * static_cast<float>(g_dwTileSizeWidth) + 128.0f -
+         static_cast<float>(g_dwTileSizeUls) * (bLinear ? 0.5L : 1.0L)) /
+        (static_cast<long double>(g_fTexCoordScaleS) * 256.0f);
     if (g_dwTileSizeWidth < g_dwTileSizeHeight) {
         generatedS *= static_cast<float>(g_dwTileSizeHeight / g_dwTileSizeWidth);
     }
     pSource->fS = generatedS;
     long double generatedT =
-        (static_cast<long double>(t) * static_cast<float>(g_dwTileSizeHeight) + 128.0f) /
-        (static_cast<long double>(g_fTexCoordScaleT) * 256.0f -
-         static_cast<float>(g_dwTileSizeUlt) * (bLinear ? 0.5L : 1.0L));
+        (static_cast<long double>(t) * static_cast<float>(g_dwTileSizeHeight) + 128.0f -
+         static_cast<float>(g_dwTileSizeUlt) * (bLinear ? 0.5L : 1.0L)) /
+        (static_cast<long double>(g_fTexCoordScaleT) * 256.0f);
     if (g_dwTileSizeWidth > g_dwTileSizeHeight) {
         generatedT *= static_cast<float>(g_dwTileSizeWidth / g_dwTileSizeHeight);
     }
