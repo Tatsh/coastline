@@ -10,12 +10,11 @@
 // The headers below need the types of windows.h.
 #include <ddraw.h>
 
+#include "platform/win/textureworkspace.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/** The most pixels an image file of RGBA 5551 has, 256 by 256. */
-#define RGBA5551_IMAGE_PIXEL_COUNT 0x10000
 
 /** The number of entries of g_aTexturePixelFormats. */
 #define TEXTURE_PIXEL_FORMAT_COUNT 5
@@ -142,7 +141,7 @@ int ConvertRGBAToPixelFormatWithColorKey(
  * @param nAdlerExpected The Adler-32 checksum of the pixels, or 0 to skip the check.
  * @param pnWidth Receives the width of the image.
  * @param pnHeight Receives the height of the image.
- * @return The converted pixels, in g_abTextureDecodeBuffer.
+ * @return The converted pixels in the shared decoding workspace.
  * @ghidraAddress BRD3D: 0x10009ad0
  */
 void *

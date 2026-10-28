@@ -18,6 +18,7 @@
 #include "platform/win/paintshop.h"
 #include "platform/win/settings.h"
 #include "platform/win/texturescan.h"
+#include "platform/win/textureworkspace.h"
 #include "screen.h"
 #include "weather.h"
 
@@ -1274,8 +1275,6 @@ namespace {
 
 // @ghidraAddress BRD3D: 0x104d51d0
 unsigned char g_abTextureResampleBuffer[0x80000];
-// @ghidraAddress BRD3D: 0x11829870
-unsigned char g_abDecodedTexturePixels[0x80000];
 
 } // namespace
 
@@ -1324,7 +1323,7 @@ unsigned char *GetTextureImagePixels(TextureImageData *pImage) {
         g_dwTexturePixelByteCount = pImage->nPaintPixelBytes;
         return pixels ? pixels : pImage->apPaintBuffers[0];
     }
-    unsigned char *pixels = g_abDecodedTexturePixels;
+    unsigned char *pixels = GetTextureDecodeBuffer();
     if (!(pImage->dwFlags & 0x10)) {
         const TexScanTile &tile = pImage->aTiles[pImage->nTileIndex];
         DecodeTexturePixels(pixels,
@@ -1486,7 +1485,7 @@ int DecodeN64TextureToPixelBuffer(void *pDest,
     g_bTexScanEnvColorSet = 0;
     int format = ChooseTexturePixelFormat(nSize, nFormat, 0);
     int size = static_cast<int>(GetTexturePixelSize(format) * width * height);
-    DecodeTexturePixels(g_abDecodedTexturePixels,
+    DecodeTexturePixels(GetTextureDecodeBuffer(),
                         size,
                         nSize,
                         pImage,
@@ -1508,7 +1507,7 @@ int DecodeN64TextureToPixelBuffer(void *pDest,
                         0,
                         0,
                         0);
-    return ConvertRGBAToPixelFormat(pDest, g_abDecodedTexturePixels, size, format);
+    return ConvertRGBAToPixelFormat(pDest, GetTextureDecodeBuffer(), size, format);
 }
 
 decltype(g_pfnAliasTextureEntrySurface) g_pfnAliasTextureEntrySurface;
@@ -1580,10 +1579,10 @@ unsigned char *GetTextureEntryPixelsWithPaint(int nEntry, unsigned *pSize) {
                                    right,
                                    top,
                                    bottom,
-                                   g_abDecodedTexturePixels,
+                                   GetTextureDecodeBuffer(),
                                    sourceWidth,
                                    sourceHeight)) {
-            unsigned char *pixels = g_abDecodedTexturePixels;
+            unsigned char *pixels = GetTextureDecodeBuffer();
             if (sourceWidth != image.nWidth || sourceHeight != image.nHeight) {
                 ResizeTextureImage(g_abTextureResampleBuffer,
                                    image.nWidth,
@@ -1637,7 +1636,7 @@ int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage) {
     }
     bool enlarge = pImage->nSourceWidth == pImage->nWidth &&
                    pImage->nSourceHeight == pImage->nHeight && g_dwTextureQualityLevel <= 0;
-    unsigned char *paintPixels = enlarge ? g_abDecodedTexturePixels : g_abTextureResampleBuffer;
+    unsigned char *paintPixels = enlarge ? GetTextureDecodeBuffer() : g_abTextureResampleBuffer;
     auto blit = [&](const void *pixels) {
         return BlitPaintImageToPixels(
             pixels, left, right, top, bottom, paintPixels, sourceWidth, sourceHeight);
@@ -1661,7 +1660,7 @@ int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage) {
     pImage->bHasTintPixels = HasPaintTintPixels(paint, left, right, top, bottom);
     auto convert = [&]() {
         if (!enlarge) {
-            ResizeTextureImage(g_abDecodedTexturePixels,
+            ResizeTextureImage(GetTextureDecodeBuffer(),
                                pImage->nWidth,
                                pImage->nHeight,
                                g_abTextureResampleBuffer,
@@ -1671,14 +1670,14 @@ int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage) {
         }
         if (pImage->nColorKey) {
             pImage->nPaintPixelBytes =
-                ConvertRGBAToPixelFormatWithColorKey(g_abDecodedTexturePixels,
-                                                     g_abDecodedTexturePixels,
+                ConvertRGBAToPixelFormatWithColorKey(GetTextureDecodeBuffer(),
+                                                     GetTextureDecodeBuffer(),
                                                      pImage->nPixelBytes,
                                                      pImage->nPixelFormatId,
                                                      &pImage->nColorKey);
         } else {
-            pImage->nPaintPixelBytes = ConvertRGBAToPixelFormat(g_abDecodedTexturePixels,
-                                                                g_abDecodedTexturePixels,
+            pImage->nPaintPixelBytes = ConvertRGBAToPixelFormat(GetTextureDecodeBuffer(),
+                                                                GetTextureDecodeBuffer(),
                                                                 pImage->nPixelBytes,
                                                                 pImage->nPixelFormatId);
         }
@@ -1687,7 +1686,7 @@ int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage) {
         pImage->apPaintBuffers[damage] =
             static_cast<unsigned char *>(std::malloc(pImage->nPaintPixelBytes));
         std::memcpy(
-            pImage->apPaintBuffers[damage], g_abDecodedTexturePixels, pImage->nPaintPixelBytes);
+            pImage->apPaintBuffers[damage], GetTextureDecodeBuffer(), pImage->nPaintPixelBytes);
     };
     convert();
     if (GetSelectedPaintOption() < 0) {

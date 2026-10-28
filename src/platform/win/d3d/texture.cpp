@@ -19,8 +19,6 @@ namespace {
 // @ghidraAddress BRD3D: 0x100a6230
 TexturePixelFormat g_aTexturePixelFormats[TEXTURE_PIXEL_FORMAT_COUNT] = {
     {2, 0, {}, {}}, {3, 0, {}, {}}, {4, 0, {}, {}}, {0xb, 0, {}, {}}, {0xc, 0, {}, {}}};
-// @ghidraAddress BRD3D: 0x11849870
-unsigned short g_awRgba5551FileBuffer[RGBA5551_IMAGE_PIXEL_COUNT];
 } // namespace
 
 DDPIXELFORMAT *LookupPixelFormatById(int nId) {
@@ -212,12 +210,6 @@ int ConvertRGBAToPixelFormatWithColorKey(
     void *pDest, const void *pSrc, int nSize, int nPixelFormatId, unsigned *pColorKey) {
     return ConvertRGBAToPixelFormatImpl<true>(pDest, pSrc, nSize, nPixelFormatId, pColorKey);
 }
-namespace {
-// In the original, the file buffer overlaps the upper half of the decoded pixel buffer.
-// @ghidraAddress BRD3D: 0x11829870
-unsigned char g_abTextureDecodeBuffer[RGBA5551_IMAGE_PIXEL_COUNT * 4];
-} // namespace
-
 void UnpackRgba5551ToRgba8(unsigned char *pDest, const unsigned short *pSrc, int nCount) {
     for (int i = 0; i < nCount; i++) {
         unsigned nPixel = *pSrc++;
@@ -242,30 +234,30 @@ LoadRgba5551ImageFile(const char *pszPath, unsigned nAdlerExpected, int *pnWidth
     int nWidth;
     int nHeight;
     size_t nSize;
+    unsigned short *filePixels = GetRgba5551FileBuffer();
 
     pFile = CHK_FReadOpen(pszPath);
     CHK_FRead(&nWidth, sizeof(nWidth), 1, pFile);
     CHK_FRead(&nHeight, sizeof(nHeight), 1, pFile);
-    nSize = static_cast<size_t>(nHeight * nWidth) * sizeof(g_awRgba5551FileBuffer[0]);
+    nSize = static_cast<size_t>(nHeight * nWidth) * sizeof(filePixels[0]);
     // The word read here is overwritten by the clear below.
-    CHK_FRead(g_awRgba5551FileBuffer, 4, 1, pFile);
-    memset(g_awRgba5551FileBuffer, 0, sizeof(g_awRgba5551FileBuffer));
-    CHK_FRead(g_awRgba5551FileBuffer, nSize, 1, pFile);
+    CHK_FRead(filePixels, 4, 1, pFile);
+    memset(filePixels, 0, RGBA5551_IMAGE_PIXEL_COUNT * sizeof(filePixels[0]));
+    CHK_FRead(filePixels, nSize, 1, pFile);
     CHK_FClose(pFile);
     if (nAdlerExpected != 0 && adler32(adler32(0, nullptr, 0),
-                                       reinterpret_cast<const Bytef *>(g_awRgba5551FileBuffer),
+                                       reinterpret_cast<const Bytef *>(filePixels),
                                        static_cast<uInt>(nSize)) != nAdlerExpected) {
         exit(1);
     }
-    UnpackRgba5551ToRgba8(
-        g_abTextureDecodeBuffer, g_awRgba5551FileBuffer, RGBA5551_IMAGE_PIXEL_COUNT);
-    ConvertRGBAToPixelFormat(g_abTextureDecodeBuffer,
-                             g_abTextureDecodeBuffer,
-                             sizeof(g_abTextureDecodeBuffer),
+    UnpackRgba5551ToRgba8(GetTextureDecodeBuffer(), filePixels, RGBA5551_IMAGE_PIXEL_COUNT);
+    ConvertRGBAToPixelFormat(GetTextureDecodeBuffer(),
+                             GetTextureDecodeBuffer(),
+                             RGBA5551_IMAGE_PIXEL_COUNT * 4,
                              RGBA5551_IMAGE_PIXEL_FORMAT);
     *pnWidth = nWidth;
     *pnHeight = nHeight;
-    return g_abTextureDecodeBuffer;
+    return GetTextureDecodeBuffer();
 }
 
 unsigned GetAvailableTextureMemory(void) {
