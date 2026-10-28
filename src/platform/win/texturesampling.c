@@ -4,6 +4,17 @@
 #include <stdint.h>
 #include <string.h>
 
+static unsigned RoundSampledChannel(long double value, unsigned maximum) {
+    double rounded = floor((double)(value + 0.5L));
+    if (!(rounded >= 0.0)) {
+        return 0;
+    }
+    if (rounded > maximum) {
+        return maximum;
+    }
+    return (unsigned)rounded;
+}
+
 static unsigned SampleChannel(unsigned topLeft,
                               unsigned topRight,
                               unsigned bottomLeft,
@@ -13,15 +24,7 @@ static unsigned SampleChannel(unsigned topLeft,
                               unsigned maximum) {
     long double top = topLeft + ((long double)topRight - topLeft) * x;
     long double bottom = bottomLeft + ((long double)bottomRight - bottomLeft) * x;
-    long double value = top + (bottom - top) * y;
-    double rounded = floor((double)(value + 0.5L));
-    if (!(rounded >= 0.0)) {
-        return 0;
-    }
-    if (rounded > maximum) {
-        return maximum;
-    }
-    return (unsigned)rounded;
+    return RoundSampledChannel(top + (bottom - top) * y, maximum);
 }
 
 void SampleTexturePixelBilinear(unsigned char *pDest,
@@ -54,8 +57,10 @@ void BilinearInterpolate8bpp(unsigned char *destination,
                              const unsigned char *bottomRight,
                              float x,
                              float y) {
-    *destination =
-        (unsigned char)SampleChannel(*topLeft, *topRight, *bottomLeft, *bottomRight, x, y, 255);
+    // Only the top interpolation is rounded to a float before the vertical one.
+    float top = *topLeft + ((long double)*topRight - *topLeft) * x;
+    long double bottom = *bottomLeft + ((long double)*bottomRight - *bottomLeft) * x;
+    *destination = (unsigned char)RoundSampledChannel(top + (bottom - top) * y, 255);
 }
 
 static void SamplePackedPixel(unsigned char *destination,
