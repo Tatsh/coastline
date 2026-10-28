@@ -17,10 +17,12 @@
 #define CHASE_DISTANCE_AFTER_SEASON 13.0f
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-/* The x87 tests take an unordered length as equal to zero. */
+/* The x87 tests take an unordered value as equal to zero and as less. */
 #define CHASE_NONZERO(value) ((value) < 0.0f || (value) > 0.0f)
+#define CHASE_LESS(a, b) (!((a) >= (b)))
 #else
 #define CHASE_NONZERO(value) ((value) != 0.0f)
+#define CHASE_LESS(a, b) ((a) < (b))
 #endif
 
 void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share) {
@@ -120,7 +122,7 @@ void UpdateCameraLookAtTarget(Vehicle *vehicle) {
 
     /* The lead falls from 2 at a walk to nothing at speed. */
     target = 0.0f;
-    if (speed < LOOK_AHEAD_SLOW_SPEED) {
+    if (CHASE_LESS(speed, LOOK_AHEAD_SLOW_SPEED)) {
         target = LOOK_AHEAD_SLOW;
     } else if (speed < LOOK_AHEAD_FAST_SPEED) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -140,11 +142,11 @@ void UpdateCameraLookAtTarget(Vehicle *vehicle) {
 #endif
             VEHICLE_SET(vehicle, LookAhead, target);
         }
-    } else if (target < VEHICLE_GET(vehicle, LookAhead)) {
+    } else if (CHASE_LESS(target, VEHICLE_GET(vehicle, LookAhead))) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         adjusted = (long double)VEHICLE_GET(vehicle, LookAhead) - LOOK_AHEAD_STEP;
         VEHICLE_SET(vehicle, LookAhead, (f32)adjusted);
-        if (adjusted < target) {
+        if (CHASE_LESS(adjusted, target)) {
 #else
         vehicle->lookAhead -= LOOK_AHEAD_STEP;
         if (vehicle->lookAhead < target) {
