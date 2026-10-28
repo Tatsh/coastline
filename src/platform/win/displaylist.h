@@ -724,19 +724,40 @@ struct GbiVertex {
 };
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
-/** @ghidraAddress BRD3D: 0x104c15d0 */
+/**
+ * @ghidraAddress BRD3D: 0x104c15d0
+ * @ghidraAddress BRGlide: 0x105ce210
+ */
 extern float g_fGbiLight0ColorR;
-/** @ghidraAddress BRD3D: 0x104c15d4 */
+/**
+ * @ghidraAddress BRD3D: 0x104c15d4
+ * @ghidraAddress BRGlide: 0x105ce214
+ */
 extern float g_fGbiLight0ColorG;
-/** @ghidraAddress BRD3D: 0x104c15d8 */
+/**
+ * @ghidraAddress BRD3D: 0x104c15d8
+ * @ghidraAddress BRGlide: 0x105ce218
+ */
 extern float g_fGbiLight0ColorB;
-/** @ghidraAddress BRD3D: 0x104c15dc */
+/**
+ * @ghidraAddress BRD3D: 0x104c15dc
+ * @ghidraAddress BRGlide: 0x105ce21c
+ */
 extern Vec3f g_GbiLight0Direction;
-/** @ghidraAddress BRD3D: 0x104c15e8 */
+/**
+ * @ghidraAddress BRD3D: 0x104c15e8
+ * @ghidraAddress BRGlide: 0x105ce228
+ */
 extern float g_fGbiAmbientColorR;
-/** @ghidraAddress BRD3D: 0x104c15ec */
+/**
+ * @ghidraAddress BRD3D: 0x104c15ec
+ * @ghidraAddress BRGlide: 0x105ce22c
+ */
 extern float g_fGbiAmbientColorG;
-/** @ghidraAddress BRD3D: 0x104c15f0 */
+/**
+ * @ghidraAddress BRD3D: 0x104c15f0
+ * @ghidraAddress BRGlide: 0x105ce230
+ */
 extern float g_fGbiAmbientColorB;
 
 #ifdef __cplusplus

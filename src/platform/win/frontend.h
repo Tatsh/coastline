@@ -1459,11 +1459,13 @@ class RaceResultsSummaryUI {
 public:
     /**
      * @ghidraAddress BRD3D: 0x10045840
+     * @ghidraAddress BRGlide: 0x1003ecd0
      */
     static int OnOpenOptions(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10045860
+     * @ghidraAddress BRGlide: 0x1003ecf0
      */
     static int OnOpenSaveSeason(MenuActionWidget *pItem);
 

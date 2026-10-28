@@ -1157,7 +1157,8 @@ ShadeGbiVertex(const ConvertedModelVertex *pVertex, GbiVertexSource *pDest, bool
 }
 
 void ComputeVertexDirectionalLight(const ConvertedModelVertex *pVertex, GbiVertexSource *pDest) {
-    ShadeGbiVertex(pVertex, pDest, false);
+    // BRGlide sums the products in the order of the texture generation, which rounds differently.
+    ShadeGbiVertex(pVertex, pDest, TGR_RENDERER == TGR_RENDERER_GLIDE);
 }
 
 float g_GbiProjectionMatrix[4][4];
