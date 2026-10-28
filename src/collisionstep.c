@@ -386,9 +386,15 @@ void CollideVehicles(void) {
             }
             /* They share the mean of their speeds along the line between them. */
             Vec3fNormalizeFast(&apart);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+            speedA = (COLLISION_PRODUCT(sa->velocity.x, apart.x) +
+                      COLLISION_PRODUCT(sa->velocity.y, apart.y)) +
+                     COLLISION_PRODUCT(apart.z, sa->velocity.z);
+#else
             speedA = COLLISION_PRODUCT(apart.z, sa->velocity.z) +
                      (COLLISION_PRODUCT(sa->velocity.x, apart.x) +
                       COLLISION_PRODUCT(sa->velocity.y, apart.y));
+#endif
             speedB = OBB_DOT1(COLLISION_PRODUCT(sb->velocity.x, apart.x),
                               COLLISION_PRODUCT(sb->velocity.y, apart.y),
                               COLLISION_PRODUCT(sb->velocity.z, apart.z));
