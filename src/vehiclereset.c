@@ -520,9 +520,16 @@ void ResetVehicleEffects(Vehicle *vehicle) {
 #define RESPAWN_OPACITY 0.1f
 #define AI_START_GRACE -180
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define RESPAWN_INTERMEDIATE(value) ((long double)(value))
+#else
+#define RESPAWN_INTERMEDIATE(value) (value)
+#endif
+
 void RespawnVehicle(Vehicle *vehicle) {
     if (VEHICLE_GET(vehicle, Body).uprightFrames >= 0 &&
-        !(VEHICLE_GET(vehicle, Matrix)[3][2] < g_LoadedTrack.minZ - RESPAWN_FALL_DEPTH)) {
+        !(VEHICLE_GET(vehicle, Matrix)[3][2] <
+          RESPAWN_INTERMEDIATE(g_LoadedTrack.minZ) - RESPAWN_FALL_DEPTH)) {
         return;
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -544,7 +551,7 @@ void RespawnVehicle(Vehicle *vehicle) {
         SetVehiclePosition(
             vehicle,
             VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position.x +
-                (f32)VEHICLE_GET(vehicle, Index) * RESPAWN_SPREAD,
+                RESPAWN_INTERMEDIATE((f32)VEHICLE_GET(vehicle, Index)) * RESPAWN_SPREAD,
             VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position.y,
             VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].position.z +
                 RESPAWN_HEIGHT);
