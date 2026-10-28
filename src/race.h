@@ -706,6 +706,7 @@ void RestoreRaceResultsFromSlots(void);
  * @ghidraAddress EUR: 0x802064c4
  * @ghidraAddress JPN: 0x80206598
  * @ghidraAddress BRD3D: 0x1002f460
+ * @ghidraAddress BRGlide: 0x1001c9d0
  */
 #ifdef __cplusplus
 extern "C"
