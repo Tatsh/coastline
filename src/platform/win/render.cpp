@@ -220,6 +220,10 @@ void AddVertexConversionCacheEntry(const Vtx *pSource,
     entry.pFloatVerts = pFloatVerts;
 }
 
+static inline unsigned SwapDisplayListWord(unsigned dwWord) {
+    return dwWord << 24 | (dwWord << 8 & 0xff0000) | (dwWord >> 8 & 0xff00) | dwWord >> 24;
+}
+
 #if TGR_RENDERER == TGR_RENDERER_D3D
 static inline unsigned short SwapVertexHalfword(unsigned short nValue) {
     return nValue >> 8 | nValue << 8;
@@ -278,10 +282,6 @@ void RelocateGbiVertexCommand(GbiCommand *pCommand) {
     pCommand->w1 = (g_dwOldBaseAddress & 0xff000000) | (pCommand->w1 & 0xffffff);
     RelocatePointerValue(&pCommand->w1);
     ConvertN64VerticesCached(&pCommand->vertexData, pCommand->w0 >> 10 & 0x3f);
-}
-
-static inline unsigned SwapDisplayListWord(unsigned dwWord) {
-    return dwWord << 24 | (dwWord << 8 & 0xff0000) | (dwWord >> 8 & 0xff00) | dwWord >> 24;
 }
 
 template <typename T>
@@ -1520,6 +1520,7 @@ decltype(g_pfnCloneTextureEntryWithNewImageData) g_pfnCloneTextureEntryWithNewIm
 decltype(g_pfnUploadTrackTextureVariants) g_pfnUploadTrackTextureVariants;
 decltype(g_pfnShutdownTextureSubsystem) g_pfnShutdownTextureSubsystem;
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
 void InitializeTextureSubsystem(void) {
     g_pfnAliasTextureEntrySurface = AliasTextureEntrySurface;
     g_pfnDecodeN64TextureToPixelBuffer = DecodeN64TextureToPixelBuffer;
@@ -1551,6 +1552,7 @@ void InitializeTextureSubsystem(void) {
     CreateWeatherShadeTexture();
     InitializeTextureUploadQueue();
 }
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 unsigned char *GetTextureEntryPixelsWithPaint(int nEntry, unsigned *pSize) {
     TextureImageData &image = g_pTextureEntries[nEntry].data;
