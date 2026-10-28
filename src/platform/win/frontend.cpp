@@ -3499,8 +3499,26 @@ int ModemConnectionUI::OnAccept(MenuWidget *pWidget) {
     return 0;
 }
 
+#ifdef ENABLE_PATCHES
+namespace {
+void PrepareNewSeasonSave(int status) {
+    if (status == -1 || g_dwSeasonLoaded || g_dwGameMode != GAME_MODE_CHAMPIONSHIP) {
+        return;
+    }
+    SyncSeasonProgress();
+    ResetSeasonSaveBuffers();
+    *g_pPrimarySeasonSave = g_SeasonProgress;
+    g_dwSeasonLoaded = true;
+    PrintWineDiagnostic("coastline: New championship initialized for its first save.\n");
+}
+} // namespace
+#else
+#define PrepareNewSeasonSave(status)
+#endif /* ENABLE_PATCHES */
+
 int SaveSeasonUI::OnSlotNameEntered(MenuItemList *pList, int nStatus) {
     PrintWineDiagnostic("coastline: Season name entry completed.\n");
+    PrepareNewSeasonSave(nStatus);
     if (!g_dwSeasonLoaded) {
         PrintWineDiagnostic("coastline: Save skipped because the season is not loaded.\n");
         return 0;
