@@ -56,10 +56,16 @@ extern CollisionContactState g_CollisionContactState;
  */
 extern f32 g_fCollisionImpulseScale;
 
-/** @ghidraAddress BRD3D: 0x117554a8 */
+/**
+ * @ghidraAddress BRD3D: 0x117554a8
+ * @ghidraAddress BRGlide: 0x11778808
+ */
 extern f32 (*g_pSteeringFrictionTableA)[GRIP_WEATHERS][TRACK_SURFACES];
 
-/** @ghidraAddress BRD3D: 0x117554c0 */
+/**
+ * @ghidraAddress BRD3D: 0x117554c0
+ * @ghidraAddress BRGlide: 0x11778820
+ */
 extern f32 (*g_pSteeringFrictionTableB)[TRACK_SURFACES];
 
 /** @ghidraAddress BRD3D: 0x11750330 */

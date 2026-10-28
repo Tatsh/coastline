@@ -488,11 +488,28 @@ void Vec3fRotateAroundAxis(Vec3f *v, f32 angle, Vec3f *axis) {
 
 void Mtx4x4ProjectPoint(Vec3f *out, Vec3f *in, f32 m[4][4]) {
     f32 x = in->x, y = in->y, z = in->z;
+#if TGR_RENDERER == TGR_RENDERER_GLIDE
+    /* BRGlide keeps the reciprocal of w and every sum on the x87 until the stores. */
+    long double inverseW =
+        1.0L / ((((long double)y * m[1][3] + (long double)x * m[0][3]) + (long double)z * m[2][3]) +
+                m[3][3]);
+
+    out->x = ((((long double)y * m[1][0] + (long double)x * m[0][0]) + (long double)z * m[2][0]) +
+              m[3][0]) *
+             inverseW;
+    out->y = ((((long double)y * m[1][1] + (long double)x * m[0][1]) + (long double)z * m[2][1]) +
+              m[3][1]) *
+             inverseW;
+    out->z = ((((long double)y * m[1][2] + (long double)x * m[0][2]) + (long double)z * m[2][2]) +
+              m[3][2]) *
+             inverseW;
+#else
     f32 inverseW = 1.0f / (x * m[0][3] + y * m[1][3] + z * m[2][3] + m[3][3]);
 
     out->x = (x * m[0][0] + y * m[1][0] + z * m[2][0] + m[3][0]) * inverseW;
     out->y = (x * m[0][1] + y * m[1][1] + z * m[2][1] + m[3][1]) * inverseW;
     out->z = (x * m[0][2] + y * m[1][2] + z * m[2][2] + m[3][2]) * inverseW;
+#endif
 }
 
 void Vec3fTransformByMatrix(f32 out[4], const Vec3f *in, f32 m[4][4]) {
@@ -535,7 +552,18 @@ void ProjectVec3fToScreen(Vec2f *out, Vec3f *in, f32 m[4][4]) {
 
 void Mtx4x4TransformNoTranslation(Vec3f *out, Vec3f *in, f32 m[4][4]) {
     f32 x = in->x, y = in->y, z = in->z;
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_RENDERER == TGR_RENDERER_GLIDE
+    /* BRGlide adds the products in another order than BRD3D. */
+    long double inverseW = 1.0L / (((long double)y * m[1][3] + (long double)x * m[0][3]) +
+                                   (long double)z * m[2][3] + m[3][3]);
+
+    out->x = (((long double)y * m[1][0] + (long double)z * m[2][0]) + (long double)x * m[0][0]) *
+             inverseW;
+    out->y = (((long double)y * m[1][1] + (long double)x * m[0][1]) + (long double)z * m[2][1]) *
+             inverseW;
+    out->z = (((long double)y * m[1][2] + (long double)x * m[0][2]) + (long double)z * m[2][2]) *
+             inverseW;
+#elif TGR_PLATFORM == TGR_PLATFORM_WIN
     long double inverseW = 1.0L / (((long double)y * m[1][3] + (long double)z * m[2][3]) +
                                    (long double)x * m[0][3] + m[3][3]);
 
