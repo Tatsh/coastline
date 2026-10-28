@@ -27,7 +27,7 @@ unsigned g_dwGlideTextureSlotCount;
 int g_nBoundTextureTmu;
 
 // @ghidraAddress BRGlide: 0x100a9e5c
-static const char g_szOutOfTexMem[] = "Out of TexMem";
+static const char g_szOutOfTexMem[] = "Out of tex mem!";
 
 int ConvertRgba32ToArgb1555(unsigned char *pDest, const unsigned char *pSource, int nBytes) {
     unsigned char *output = pDest;
