@@ -18,6 +18,7 @@ void ReadAndRelocateTrackHeader(TrackHeader *track, GameFile *file);
 
 /**
  * @ghidraAddress BRD3D: 0x10037990
+ * @ghidraAddress BRGlide: 0x10031030
  */
 void LoadTextureMapFile(const char *path);
 

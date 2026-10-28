@@ -52,7 +52,11 @@ void ByteSwapTrackData(TrackHeader *track) {
 void LoadTextureMapFile(const char *path) {
     char line[1024];
     g_dwTextureMapEntryCount = 0;
+#if TGR_RENDERER == TGR_RENDERER_D3D
     g_dwHiResTextureMemoryThreshold = 0x300000;
+#else
+    g_dwHiResTextureMemoryThreshold = 0x200000;
+#endif
     if (CHK_FileExists(path)) {
         GameFile *file = CHK_FReadOpen(path);
         if (FileReadLine(line, sizeof(line), file) != nullptr) {
