@@ -1676,7 +1676,9 @@ int SendTimeSyncReply(DirectPlayInfo *pInfo, unsigned timestamp) {
     WriteTimestampToStream(&stream);
     stream.StreamWriteByte(static_cast<unsigned char>((g_dwLocalNetPlayerId & 0xf) | 0xd0));
     stream.StreamWriteInt24(timestamp);
-    return SendNetworkStreamReliable(pInfo, &stream);
+    int result = SendNetworkStreamReliable(pInfo, &stream);
+    NullStub();
+    return result;
 }
 
 void SyncNetworkClockFromServer(unsigned serverFrame,
