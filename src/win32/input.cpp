@@ -507,6 +507,11 @@ static inline void ReadMouseBindingState(void) {
     memcpy(state.abButtons, mouse.rgbButtons, sizeof(state.abButtons));
 }
 
+#ifdef ENABLE_PATCHES
+// The most milliseconds between the two presses that reset the car.
+#define RESPAWN_DOUBLE_PRESS_MS 500
+#endif
+
 static inline int ReadBindingAxisMagnitude(int nBinding) {
     const unsigned kind = g_GlobalRallyConfig.pActiveInputBindings[nBinding].wControl & 0xff00;
     if (kind < 0x8000 || kind > 0x8b00) {
@@ -618,10 +623,23 @@ unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration) {
         return mask;
     }
     if (IsInputBindingPressed(16)) {
+#ifdef ENABLE_PATCHES
+        // The car is reset by a second press within RESPAWN_DOUBLE_PRESS_MS of the first.
+        static DWORD dwLastRespawnPress;
+        const DWORD dwNow = GetHighResolutionTime();
+        const bool bDoublePress =
+            dwLastRespawnPress != 0 && dwNow - dwLastRespawnPress <= RESPAWN_DOUBLE_PRESS_MS;
+        dwLastRespawnPress = bDoublePress ? 0 : dwNow;
+        if (bDoublePress && !g_dwRacePauseState && g_dwGameMode != GAME_MODE_DEMO &&
+            g_dwGameMode != GAME_MODE_AFTER_SEASON) {
+            g_bRespawnRequested = 1;
+        }
+#else
         if (!g_dwRacePauseState && g_dwGameMode != GAME_MODE_DEMO &&
             g_dwGameMode != GAME_MODE_AFTER_SEASON) {
             g_bRespawnRequested = 1;
         }
+#endif /* ENABLE_PATCHES */
         if (g_dwNetworkPlayMode) {
             if (!g_bNetReadyToStartSent) {
                 SetNetworkReadyToStartFlag();
