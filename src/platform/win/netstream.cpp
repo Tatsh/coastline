@@ -554,8 +554,8 @@ int CompareNetworkPlayerProgressDescending(const void *pA, const void *pB) {
     const NetPlayerProgress *pFirst = static_cast<const NetPlayerProgress *>(pA);
     const NetPlayerProgress *pSecond = static_cast<const NetPlayerProgress *>(pB);
 
-    // A greater progress gives 0 as an equal one does, never -1.
-    return pFirst->fProgress < pSecond->fProgress ? 1 : 0;
+    // A greater progress gives 0 as an equal one does, never -1, and an unordered pair gives 1.
+    return !(pFirst->fProgress >= pSecond->fProgress) ? 1 : 0;
 }
 
 // The tags of the packets in the high bits of their first byte.
