@@ -13,7 +13,8 @@ extern "C" {
 /* The loudness of a hit at a speed, which the sound of a crash plays at. */
 static inline u8 ImpactVolume(f32 speed) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    return (u32)(128.0L - (long double)speed * -4.70370388031005859375f);
+    /* __ftol truncates through 64 bits, which gives 0 for a NaN speed. */
+    return (u32)(s64)(128.0L - (long double)speed * -4.70370388031005859375f);
 #else
     return (u32)(speed * 127.0f / MAX_IMPACT_SPEED + 128.0f);
 #endif
