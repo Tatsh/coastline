@@ -25,8 +25,15 @@ enum TexScanLoadState {
     TEX_SCAN_PIPE_SYNCED = 8,  /*!< ScanGbiPipeSync(). */
 };
 
-/** The size of g_abTmemShadow. */
+/**
+ * The size of g_abTmemShadow. The front end of the Nintendo 64 release on SDL loads blocks of up to
+ * the 4 KiB of the texture memory of the console.
+ */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#define TMEM_SHADOW_SIZE 0x1000
+#else
 #define TMEM_SHADOW_SIZE 0x800
+#endif
 
 /** The size of g_abTmemShadowTlut. */
 #define TMEM_SHADOW_TLUT_SIZE 0xf800

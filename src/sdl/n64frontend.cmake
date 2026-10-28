@@ -13,7 +13,8 @@ set(COASTLINE_N64_FRONTEND_SOURCES
     vehiclereset.c
     # The shared units that work on the vehicles, the players, and their profiles, whose types
     # differ between the releases.
-    camerachase.c camerarender.c controllerread.c frametime.c inputtranslate.c playercontrol.c
+    camerachase.c camerarender.c controllerread.c framebegin.c frametime.c inputtranslate.c
+    playercontrol.c
     playerinput.c
     profileinit.c replay.c
     rigidbody.c routeposition.c seasontrack.c tracetrack.c vehiclechoice.c vehiclemodel.c

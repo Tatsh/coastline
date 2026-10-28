@@ -40,7 +40,9 @@ u32 g_dwTextureFilterMode;
 #define TO_RSP_ADDRESS(p) (p)
 #define FRAME_SUB(a, b) ((s32)((u32)(a) - (u32)(b)))
 #else
-#ifdef __GNUC__
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#define TO_RSP_ADDRESS(p) (p)
+#elif defined(__GNUC__)
 #define TO_RSP_ADDRESS(p) ((u32)(p) - K0BASE)
 #else
 #define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
@@ -189,7 +191,7 @@ void BeginDisplayList(s32 highRes) {
     osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
     osViSetSpecialFeatures(OS_VI_DIVOT_ON);
     osViSetSpecialFeatures(g_dwViGammaEnabled ? OS_VI_GAMMA_ON : OS_VI_GAMMA_OFF);
-#else
+#elif TGR_PC
     NullStub();
     NullStub();
     NullStub();

@@ -134,6 +134,12 @@ bool StartPcGame(TlRenderer &renderer,
 }
 
 void StartPcGameForFrontEnd() {
+    // The front end draws a screen of 320 by 240, doubled at its high resolution, as the boot of
+    // the console sets it.
+    SetDisplayModeWithFallback(640, 480, 16, 0);
+    g_dwScreenWidth = 320;
+    g_dwScreenHeight = 240;
+    g_device->Renderer().SetScreenSize(640, 480);
     InitializeRenderSubsystems(RENDER_BACKEND_MODE);
     RenderN64DisplayLists();
     InitializeDirectInput();

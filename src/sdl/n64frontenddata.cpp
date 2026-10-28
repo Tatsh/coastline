@@ -255,6 +255,7 @@ s32 g_dwBitmapTextY;
 s32 g_dwCarCount;
 s32 g_dwCarSelectStartTime;
 s32 g_dwCarSelectWeather;
+s32 g_dwClipRatioIndex;
 s32 g_dwContReadPending;
 s32 g_dwContinueFromResults;
 s32 g_dwDecalListCount;
@@ -639,6 +640,7 @@ void ReadN64FrontEndData(void) {
     coastline::RegisterCartridgeSymbol("g_dwBitmapTextX", g_dwBitmapTextX);
     coastline::RegisterCartridgeSymbol("g_dwBitmapTextY", g_dwBitmapTextY);
     coastline::RegisterCartridgeSymbol("g_dwCarCount", g_dwCarCount);
+    coastline::RegisterCartridgeSymbol("g_dwClipRatioIndex", g_dwClipRatioIndex);
     coastline::RegisterCartridgeSymbol("g_dwContReadPending", g_dwContReadPending);
     coastline::RegisterCartridgeSymbol("g_dwContinueFromResults", g_dwContinueFromResults);
     coastline::RegisterCartridgeSymbol("g_dwDecalListCount", g_dwDecalListCount);
@@ -856,6 +858,7 @@ void ReadN64FrontEndData(void) {
     coastline::ReadCartridgeSymbol("g_dwBitmapTextX", g_dwBitmapTextX);
     coastline::ReadCartridgeSymbol("g_dwBitmapTextY", g_dwBitmapTextY);
     coastline::ReadCartridgeSymbol("g_dwCarCount", g_dwCarCount);
+    coastline::ReadCartridgeSymbol("g_dwClipRatioIndex", g_dwClipRatioIndex);
     coastline::ReadCartridgeSymbol("g_dwContReadPending", g_dwContReadPending);
     coastline::ReadCartridgeSymbol("g_dwContinueFromResults", g_dwContinueFromResults);
     coastline::ReadCartridgeSymbol("g_dwDecalListCount", g_dwDecalListCount);
