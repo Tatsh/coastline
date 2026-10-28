@@ -512,13 +512,13 @@ void RelocatePointerValue(unsigned *pdwPointer);
 void ByteSwapArray16(unsigned short *pData, int nCount);
 
 /**
- * Swap the two bytes of each of four halfwords.
+ * Swap the two bytes of each of the four halfwords of a triangle of the track.
  *
- * @param pData The halfwords.
+ * @param pData The triangle.
  * @ghidraAddress BRD3D: 0x1002ba20
  * @ghidraAddress BRGlide: 0x10018a90
  */
-void ByteSwapFourShorts(unsigned short *pData);
+void ByteSwapFourShorts(TrackSurface *pData);
 
 /**
  * Swap the bytes of each halfword of a run of groups of four halfwords.

@@ -440,21 +440,17 @@ void ByteSwapArray16(unsigned short *pData, int nCount) {
     }
 }
 
-#define SHORT_QUAD_COUNT 4
-
 void ByteSwapShortQuadArray(TrackSurface *pData, int nCount) {
     for (int i = 0; i < nCount; i++) {
-        for (unsigned short &vertex : pData[i].vertices) {
-            vertex = std::byteswap(vertex);
-        }
-        pData[i].instance = std::byteswap(pData[i].instance);
+        ByteSwapFourShorts(&pData[i]);
     }
 }
 
-void ByteSwapFourShorts(unsigned short *pData) {
-    for (int i = 0; i < SHORT_QUAD_COUNT; i++) {
-        pData[i] = static_cast<unsigned short>(pData[i] << 8 | pData[i] >> 8);
+void ByteSwapFourShorts(TrackSurface *pData) {
+    for (unsigned short &vertex : pData->vertices) {
+        vertex = std::byteswap(vertex);
     }
+    pData->instance = std::byteswap(pData->instance);
 }
 
 void ByteSwap3DWordsArray(Vec3f *pData, int nCount) {
