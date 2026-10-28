@@ -168,6 +168,18 @@ void ComputeCameraBasis(Vehicle *vehicle, CameraFrame *camera) {
     (void)unused;
     Vec3fSubtract(&direction, &VEHICLE_GET(vehicle, LookAt), &camera->position);
     length = Vec3fLength(&direction);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    if (CHASE_NONZERO(length)) {
+        Vec3fScaleByInverse(&camera->forward, &direction, length);
+    } else {
+        length = Vec3fLength(&camera->forward);
+        if (!CHASE_NONZERO(length)) {
+            camera->forward.x = VEHICLE_GET(vehicle, Frame).forward.x;
+            camera->forward.y = VEHICLE_GET(vehicle, Frame).forward.y;
+            camera->forward.z = VEHICLE_GET(vehicle, Frame).forward.z;
+        }
+    }
+#else
     if (length != 0.0f) {
         Vec3fScaleByInverse(&camera->forward, &direction, length);
     } else if (Vec3fLength(&camera->forward) == 0.0f) {
@@ -175,6 +187,7 @@ void ComputeCameraBasis(Vehicle *vehicle, CameraFrame *camera) {
         camera->forward.y = VEHICLE_GET(vehicle, Frame).forward.y;
         camera->forward.z = VEHICLE_GET(vehicle, Frame).forward.z;
     }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     if (VEHICLE_GET(vehicle, FlyMode)) {
         Vec3fCross(&camera->side, &VEHICLE_GET(vehicle, Frame).up, &camera->forward);
     } else {
