@@ -157,7 +157,7 @@ void DrawRaceTimerHud(void) {
 }
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-void DrawLapCounterHud(const ViewportRect *viewports) {
+void DrawLapCounterHud(const ViewportRect *viewports, const Vehicle *) {
     char text[256];
 #else
 void DrawLapCounterHud(void) {

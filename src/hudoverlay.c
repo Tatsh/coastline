@@ -98,7 +98,11 @@ void DrawSpeedAndHudOverlay(void) {
 #else
     DrawLapTimeListHud(viewports);
 #endif
-    HUD_OVERLAY_DRAW(DrawLapCounterHud);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    DrawLapCounterHud(viewports, vehicles);
+#else
+    DrawLapCounterHud();
+#endif
     HUD_OVERLAY_DRAW(DrawHudMessage);
     SetTextStyleNormal();
     SetTextAlignRight();
