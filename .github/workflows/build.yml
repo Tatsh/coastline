@@ -31,7 +31,7 @@ jobs:
           /opt/libdragon/bin/mips64-elf-gcc --version
           cmake --version
       - name: 'Configure'
-        run: cmake --preset "n64-$TGR_REGION" -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
+        run: cmake --preset "n64-$TGR_REGION" -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DTGR_ENABLE_PATCHES=ON
         env:
           BUILD_TYPE: '${{ matrix.build-type }}'
           N64_INST: '/opt/libdragon'
@@ -68,7 +68,7 @@ jobs:
           cmake --version
         shell: 'msys2 {0}'
       - name: 'Configure'
-        run: cmake --preset "win-$TGR_RENDERER" -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
+        run: cmake --preset "win-$TGR_RENDERER" -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DTGR_ENABLE_PATCHES=ON
         env:
           BUILD_TYPE: '${{ matrix.build-type }}'
           TGR_RENDERER: '${{ matrix.renderer }}'
