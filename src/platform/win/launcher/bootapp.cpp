@@ -18,6 +18,7 @@ char g_szDirectXMediaArgs[] = " -NQ -id:bossgame";
 } // namespace
 
 BEGIN_MESSAGE_MAP(CBootApp, CWinApp)
+ON_COMMAND(ID_HELP, CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
 CBootApp::CBootApp() : CWinApp(nullptr) {

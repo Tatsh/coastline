@@ -10,6 +10,7 @@
 BEGIN_MESSAGE_MAP(CBootDlg, CDialog)
 ON_WM_PAINT()
 ON_WM_QUERYDRAGICON()
+ON_BN_DOUBLECLICKED(1001, OnBnClickedInstallBossRally)
 ON_BN_CLICKED(1001, OnBnClickedInstallBossRally)
 ON_BN_CLICKED(1002, OnBnClickedExit)
 ON_BN_CLICKED(1000, OnBnClickedInstallDirectX)
