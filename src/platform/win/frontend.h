@@ -3025,10 +3025,12 @@ int IsGameCdInDrive(int nDrive);
 int FindGameCdDrive(void);
 
 /**
+ * @param pWidget The item chosen, unread.
+ * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10045900
  * @ghidraAddress BRGlide: 0x1003ed90
  */
-int ShowChampionshipSeasonMenu(void);
+int ShowChampionshipSeasonMenu(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x1004f2b0
@@ -3060,10 +3062,12 @@ int ShowHostRaceSetupScreen(void);
 int ShowCreateGameScreen(void);
 
 /**
+ * @param pWidget The item chosen, or null from the lobby; unread.
+ * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10043bf0
  * @ghidraAddress BRGlide: 0x1003d140
  */
-int ShowMultiplayerNameScreen(void);
+int ShowMultiplayerNameScreen(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x10043e70
@@ -3078,16 +3082,20 @@ int ShowJoinCreateGameScreen(void);
 int ShowSeasonProgressInfoScreen(MenuWidget *pWidget = nullptr);
 
 /**
+ * @param pWidget The item chosen, unread.
+ * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10044f50
  * @ghidraAddress BRGlide: 0x1003e4a0
  */
-int ShowRaceSetupMenu(void);
+int ShowRaceSetupMenu(MenuWidget *pWidget);
 
 /**
+ * @param pWidget The item chosen, unread.
+ * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10046170
  * @ghidraAddress BRGlide: 0x1003f610
  */
-int ShowQuitGameConfirmMenu(void);
+int ShowQuitGameConfirmMenu(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x10059760
@@ -3377,12 +3385,12 @@ int ReturnToNetworkLobbyScreen(void);
 /**
  * Show the menu of a finished time attack, when it is not shown already.
  *
- * @param nUnused Not read.
+ * @param pWidget The item chosen, or null after a race; unread.
  * @return 0 when the menu cannot be created, 1 otherwise.
  * @ghidraAddress BRD3D: 0x10044b90
  * @ghidraAddress BRGlide: 0x1003e0e0
  */
-int ShowTimeAttackMenu(int nUnused);
+int ShowTimeAttackMenu(MenuWidget *pWidget);
 
 /**
  * Show the menu to save the ghost car of a time attack, when it is not shown already.
@@ -3965,20 +3973,22 @@ int BuildNotEnoughPointsUI(MenuScreen *pScreen);
 /**
  * Show cached championship congratulations, building the screen on its first visit.
  *
+ * @param pWidget The item chosen, unread.
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10043260
  * @ghidraAddress BRGlide: 0x1003c7b0
  */
-int ShowSeasonCongratsScreen(void);
+int ShowSeasonCongratsScreen(MenuWidget *pWidget);
 
 /**
  * Show cached championship failure results, building the screen on its first visit.
  *
+ * @param pWidget The item chosen, unread.
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10043330
  * @ghidraAddress BRGlide: 0x1003c880
  */
-int ShowNotEnoughPointsScreen(void);
+int ShowNotEnoughPointsScreen(MenuWidget *pWidget);
 
 /**
  * Show cached race totals, building the screen on its first visit.

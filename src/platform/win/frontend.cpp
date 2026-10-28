@@ -2475,7 +2475,7 @@ int FindGameCdDrive(void) {
 #endif /* ENABLE_PATCHES */
 }
 
-int ShowChampionshipSeasonMenu(void) {
+int ShowChampionshipSeasonMenu(MenuWidget *) {
     if (!FindGameCdDrive()) {
         SetActiveMenuItemText(GetStringResource(13));
         return 0;
@@ -2635,7 +2635,7 @@ static inline void BuildTimeAttackMenuScreen(MenuScreen *screen) {
     BuildTimeAttackMenuUI(screen);
 }
 
-int ShowTimeAttackMenu(int) {
+int ShowTimeAttackMenu(MenuWidget *) {
     SetActiveMenuItemText(" ");
     return ShowCachedMenuScreen(g_pCachedMenu_TimeAttack, BuildTimeAttackMenuScreen);
 }
@@ -2761,7 +2761,7 @@ void EnterNetworkLobbyScreen(void) {
             g_DirectPlayInfo.pDirectPlay->SetSessionDesc(desc, 0);
         }
     }
-    ShowMultiplayerNameScreen();
+    ShowMultiplayerNameScreen(nullptr);
     ShowMultiplayerConnectionScreen();
     ShowJoinCreateGameScreen();
     if (g_dwLobbyIsHost) {
@@ -2794,7 +2794,7 @@ int ReturnToNetworkLobbyScreen(void) {
             g_DirectPlayInfo.pDirectPlay->SetSessionDesc(desc, 0);
         }
     }
-    ShowMultiplayerNameScreen();
+    ShowMultiplayerNameScreen(nullptr);
     ShowMultiplayerConnectionScreen();
     ShowJoinCreateGameScreen();
     if (g_dwLobbyIsHost) {
@@ -2891,7 +2891,7 @@ static inline void BuildPlayerNameEntryScreen(MenuScreen *screen) {
     BuildPlayerNameEntryUI(screen);
 }
 
-int ShowMultiplayerNameScreen(void) {
+int ShowMultiplayerNameScreen(MenuWidget *) {
     SetActiveMenuItemText(" ");
     ResolveRaceSelections();
     return ShowCachedMenuScreen(g_pCachedMenu_MultiplayerName, BuildPlayerNameEntryScreen);
@@ -2917,7 +2917,7 @@ int ShowSeasonProgressInfoScreen(MenuWidget *) {
     return ShowCachedMenuScreen(g_pCachedMenu_SeasonProgressInfo, BuildSeasonProgressInfoUI);
 }
 
-int ShowRaceSetupMenu(void) {
+int ShowRaceSetupMenu(MenuWidget *) {
     bool wasCached;
     SetActiveMenuItemText(" ");
     g_dwGameMode = GAME_MODE_ARCADE;
@@ -2959,7 +2959,7 @@ static inline void BuildQuitGameConfirmScreen(MenuScreen *screen) {
     BuildQuitGameConfirmUI(screen);
 }
 
-int ShowQuitGameConfirmMenu(void) {
+int ShowQuitGameConfirmMenu(MenuWidget *) {
     SetActiveMenuItemText(" ");
     PlaySoundChannelOneOnce(3, 0x200020);
     g_dwNetworkMenuState = 3;
@@ -4933,11 +4933,11 @@ static inline void BuildNotEnoughPointsScreen(MenuScreen *screen) {
     BuildNotEnoughPointsUI(screen);
 }
 
-int ShowSeasonCongratsScreen(void) {
+int ShowSeasonCongratsScreen(MenuWidget *) {
     return ShowCachedMenuScreen(g_pCachedMenu_SeasonCongrats, BuildSeasonCongratsScreen);
 }
 
-int ShowNotEnoughPointsScreen(void) {
+int ShowNotEnoughPointsScreen(MenuWidget *) {
     return ShowCachedMenuScreen(g_pCachedMenu_NotEnoughPoints, BuildNotEnoughPointsScreen);
 }
 
@@ -6046,16 +6046,6 @@ void BuildKeyConfigUI(MenuScreen *screen) {
         DetectDuplicateKeyBindings(g_adwInputDeviceMenuIndexToDevice[g_dwSelectedInputDevice]);
 }
 
-template <auto Action>
-    requires std::invocable<decltype(Action)> && std::same_as<decltype(Action()), int>
-static int InvokeRootMenuAction(MenuWidget *) {
-    return Action();
-}
-
-static inline int RootMenuUI_ShowTimeAttack(MenuWidget *) {
-    return ShowTimeAttackMenu(0);
-}
-
 void BuildFrontEndRootMenuUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     screen->SetPanelActive(screen->GetPanelCount(), 1);
@@ -6082,13 +6072,13 @@ void BuildFrontEndRootMenuUI(MenuScreen *screen) {
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     const float offsets[] = {0, 19, 38, 57, 76, 95, 114};
     const short images[] = {6, 7, 8, 10, 9};
-    int (*const actions[])(MenuWidget *) = {InvokeRootMenuAction<ShowChampionshipSeasonMenu>,
-                                            InvokeRootMenuAction<ShowMultiplayerNameScreen>,
-                                            RootMenuUI_ShowTimeAttack,
-                                            InvokeRootMenuAction<ShowRaceSetupMenu>,
+    int (*const actions[])(MenuWidget *) = {ShowChampionshipSeasonMenu,
+                                            ShowMultiplayerNameScreen,
+                                            ShowTimeAttackMenu,
+                                            ShowRaceSetupMenu,
                                             ShowOptionsMenu,
                                             MainMenuUI::OnPlayCredits,
-                                            InvokeRootMenuAction<ShowQuitGameConfirmMenu>};
+                                            ShowQuitGameConfirmMenu};
     int (*const idleActions[])(MenuWidget *) = {ValidateEntityState,
                                                 ValidateEntityStateAlwaysTrue,
                                                 ValidateEntityStateAlwaysTrue,
@@ -7559,10 +7549,10 @@ int RaceResultsTotalsUI::OnContinue(MenuActionWidget *pItem) {
         g_pCachedMenu_RaceResultsSummary = nullptr;
     }
     if (g_dwSeasonFailed) {
-        ShowSeasonCongratsScreen();
+        ShowSeasonCongratsScreen(pItem);
         g_dwSeasonFailed = 0;
     } else if (g_dwSeasonRoundQualified) {
-        ShowNotEnoughPointsScreen();
+        ShowNotEnoughPointsScreen(pItem);
         g_dwSeasonRoundQualified = 0;
     } else {
         ShowPreRaceInfoScreen(pItem);
@@ -7898,7 +7888,7 @@ void ProcessCheatCodeInput(void) {
 
 int EnterTimeAttackMode(void) {
     if (VEHICLE_GET(&(g_aVehicles[0]), Lap) >= g_dwTotalLaps) {
-        ShowTimeAttackMenu(0);
+        ShowTimeAttackMenu(nullptr);
         ShowSaveGhostMenu(0);
     }
     g_dwGameMode = GAME_MODE_TIME_ATTACK;
