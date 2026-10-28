@@ -59,7 +59,8 @@ set_source_files_properties("${_src}/savestate.c" "${_src}/win32/paintshop.c" PR
 
 # The SDL game provides these in place of their Windows units.
 set(COASTLINE_PC_SDL_SOURCES bitmap.cpp d3dcompat.cpp dinputcompat.cpp fileio.cpp frontendstate.cpp
-                             dsoundcompat.cpp mmsystemcompat.cpp network.cpp pcgamerun.cpp
+                             dsoundcompat.cpp mmsystemcompat.cpp n64displaylist.cpp network.cpp
+                             pcgamerun.cpp
                              renderhost.cpp stringresources.cpp)
 # The routines of the textures of BRD3D.dll that do not use DirectDraw, and the conversions of the
 # states of vehicles the network streams.

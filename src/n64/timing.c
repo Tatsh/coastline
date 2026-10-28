@@ -30,8 +30,13 @@
 #define BOX_COLOR 0x00010001
 #define TICK_COLOR 0xFFFFFFFF
 
-/* The RSP takes physical addresses, which are the KSEG0 addresses less its base. */
+/* The RSP takes physical addresses, which are the KSEG0 addresses less its base. The SDL game
+ * takes the address itself. */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#define TO_RSP_ADDRESS(p) (p)
+#else
 #define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
+#endif
 
 /* The left and top edges of the bars, read from the globals at every use. */
 #define BARS_LEFT ((g_dwScreenWidth - 16) << g_dwScreenScaleShift)

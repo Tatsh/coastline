@@ -107,6 +107,26 @@ bool CartridgeData::IsDefined(std::uint32_t address) {
     return address - found->first < found->second.consoleElementSize * found->second.count;
 }
 
+bool CartridgeData::IsSegmentCopy(const void *host) {
+    auto *byte = static_cast<const std::uint8_t *>(host);
+    return !g_segment.empty() && byte >= g_segment.data() &&
+           byte < g_segment.data() + g_segment.size();
+}
+
+bool CartridgeData::IsCartridgeData(const void *host) {
+    if (IsSegmentCopy(host)) {
+        return true;
+    }
+    auto *byte = static_cast<const std::uint8_t *>(host);
+    for (const auto &[address, definition] : g_definitions) {
+        auto *start = static_cast<const std::uint8_t *>(definition.host);
+        if (byte >= start && byte < start + definition.hostElementSize * definition.count) {
+            return true;
+        }
+    }
+    return false;
+}
+
 std::size_t CartridgeData::SymbolLength(std::uint32_t address) {
     auto found = std::ranges::upper_bound(g_symbolAddresses, address);
     if (found == g_symbolAddresses.begin() || *(found - 1) != address) {

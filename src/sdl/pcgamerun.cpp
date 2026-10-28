@@ -13,6 +13,7 @@
 #include "race.h"
 #include "sdl/d3dcompat.h"
 #include "sdl/gamefiles.h"
+#include "sdl/n64displaylist.h"
 #include "sdl/renderhost.h"
 #include "trackselect.h"
 #include "win32/boot/app.h"
@@ -134,6 +135,7 @@ bool StartPcGame(TlRenderer &renderer,
 
 void StartPcGameForFrontEnd() {
     InitializeRenderSubsystems(RENDER_BACKEND_MODE);
+    RenderN64DisplayLists();
     InitializeDirectInput();
     InitializeKeyboardDevice();
 }

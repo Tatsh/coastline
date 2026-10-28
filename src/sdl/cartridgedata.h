@@ -80,6 +80,19 @@ public:
     static bool IsDefined(std::uint32_t address);
 
     /**
+     * @param host An address on the host.
+     * @return Whether the address is in data read from the cartridge: a definition on the host or
+     * the copy of the segment, whose bytes are big-endian.
+     */
+    static bool IsCartridgeData(const void *host);
+
+    /**
+     * @param host An address on the host.
+     * @return Whether the address is in the copy of the segment, whose words are big-endian.
+     */
+    static bool IsSegmentCopy(const void *host);
+
+    /**
      * @param address An address of the console in the main segment.
      * @return The bytes from the address to the next symbol of the release, or 0 for an address
      * that is not the start of a symbol.
