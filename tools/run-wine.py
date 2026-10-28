@@ -73,6 +73,18 @@ def stage(options):
         'BossRally.exe': build / 'src/platform/win/launcher/BossRally.exe',
         'earpds.dll': options.ear_dll.expanduser().resolve(),
     }
+    cache = build / 'CMakeCache.txt'
+    compiler_match = re.search(r'^CMAKE_CXX_COMPILER:[^=]+=(.+)$',
+                               cache.read_text(), re.MULTILINE)
+    if compiler_match is None:
+        raise ValueError(f'CMAKE_CXX_COMPILER is absent from {cache}.')
+    compiler = Path(compiler_match.group(1))
+    target = compiler.name.removesuffix('-g++')
+    for name in ('libc++.dll', 'libunwind.dll'):
+        runtime_path = compiler.parent.parent / target / 'bin' / name
+        if not runtime_path.is_file():
+            raise ValueError(f'The build compiler could not locate {name}.')
+        rebuilt[name] = runtime_path
     missing = [str(path) for path in rebuilt.values() if not path.is_file()]
     if missing:
         raise ValueError('Required binaries are absent:\n' + '\n'.join(missing)
