@@ -10,9 +10,6 @@ static s32 __osPfsDeclearPage(OSPfs *pfs,
 static s32 __osClearPage(OSPfs *pfs, int page_no, u8 *data, u8 bank);
 
 /* The original reads the first page uninitialised when no bank is searched. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#pragma GCC diagnostic ignored "-Wuninitialized"
 s32 osPfsAllocateFile(OSPfs *pfs,
                       u16 company_code,
                       u32 game_code,
@@ -20,7 +17,12 @@ s32 osPfsAllocateFile(OSPfs *pfs,
                       u8 *ext_name,
                       int file_size_in_bytes,
                       s32 *file_no) {
+#ifdef ENABLE_PATCHES
+    /* A search of no bank then fails as inconsistent. */
+    int start_page = -1;
+#else
     int start_page;
+#endif /* ENABLE_PATCHES */
     int decleared;
     int last_page;
     int old_last_page = 0;
@@ -124,7 +126,6 @@ s32 osPfsAllocateFile(OSPfs *pfs,
         return PFS_ERR_INVALID;
     }
 }
-#pragma GCC diagnostic pop
 
 /* Claim free pages of one bank for a file, chaining and clearing them.
  * @ghidraAddress USA: 0x80263fb4

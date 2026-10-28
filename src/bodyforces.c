@@ -705,15 +705,14 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
 
 /* The original picks the wheel by a switch without a default, and retains the last one otherwise.
  */
-#pragma GCC diagnostic push
-#if !defined(__clang__)
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif
-#pragma GCC diagnostic ignored "-Wuninitialized"
 void UpdateWheelHeights(RigidBody *body) {
     /* The original reserves stack for sixteen bytes of locals it does not use. */
     f32 unused[4];
+#ifdef ENABLE_PATCHES
+    RigidBody *wheel = body->wheels[0];
+#else
     RigidBody *wheel;
+#endif /* ENABLE_PATCHES */
     f32 height;
     s32 i;
 
@@ -749,7 +748,6 @@ void UpdateWheelHeights(RigidBody *body) {
         }
     }
 }
-#pragma GCC diagnostic pop
 
 void ComputeSpringForces(RigidBody *body) {
     RigidBodyForce *force = body->forces;

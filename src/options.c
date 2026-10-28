@@ -424,9 +424,6 @@ void ProcessOptionsMenu(void) {
     }
 
 /* A choice out of range sets no note, and the EEPROM load declares a local it never uses. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#pragma GCC diagnostic ignored "-Wunused-variable"
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 /* The sum the checksum of the EEPROM starts from. */
 #define EEPROM_CHECKSUM_SEED 0x0BFED812
@@ -443,8 +440,12 @@ s32 LoadSaveDataFromEeprom(void) {
     s32 i;
     EepromSaveData *save = (EepromSaveData *)(g_pPakDataBuffer + 4);
     u32 sum;
+#ifdef ENABLE_PATCHES
+    /* The unused local of the original is dropped. */
+#else
     /* An unused local of the original, which the layout of its stack requires. */
     s32 unused;
+#endif /* ENABLE_PATCHES */
     s32 size = ((u8 *)save - g_pPakDataBuffer + sizeof(EepromSaveData) + 7) & ~7;
     u32 checksum;
 
@@ -654,8 +655,14 @@ void ProcessDataSaveLoadMenu(void) {
     u8 cursor;
 #endif /* TGR_REGION == TGR_REGION_US */
     PlayerProfile *other;
+#ifdef ENABLE_PATCHES
+    /* A choice out of range opens no note. */
+    u8 *noteName = NULL;
+    s32 noteSize = 0;
+#else
     u8 *noteName;
     s32 noteSize;
+#endif /* ENABLE_PATCHES */
     s32 equipment[EQUIPMENT_FIELDS];
     s32 freeBlocks;
     s32 compressedSize;
@@ -1961,7 +1968,6 @@ void ProcessDataSaveLoadMenu(void) {
     g_wSerialInterfaceIdle = FALSE;
 #endif /* TGR_REGION != TGR_REGION_US */
 }
-#pragma GCC diagnostic pop
 
 void PreparePakDataScreen(void) {
     LoadTextureFromRom(&g_texButtonA);
@@ -2053,9 +2059,6 @@ missing:
 }
 
 /* The original reads a byte of its stack that is never set, and other data types set no note. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wuninitialized"
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
     /* TOP GEAR SEASON, TOP GEAR GHOST and TOP GEAR OPTIONS in the font of the Controller Pak. */
     u8 seasonName[16] = {0x2D,
@@ -2108,13 +2111,23 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
                                 0x2C};
     u8 extension[4] = {0};
     PlayerProfile *other;
+#ifdef ENABLE_PATCHES
+    /* Another data type opens no note, and the offset of the prompt adds nothing. */
+    u8 *noteName = NULL;
+    s32 noteSize = 0;
+#else
     u8 *noteName;
     s32 noteSize;
+#endif /* ENABLE_PATCHES */
     s32 equipment[EQUIPMENT_FIELDS];
     s32 freeBlocks;
     s32 top;
     u8 plugged;
+#ifdef ENABLE_PATCHES
+    u8 unsetOffset = 0;
+#else
     u8 unsetOffset;
+#endif /* ENABLE_PATCHES */
 
     g_wSerialInterfaceIdle = FALSE;
     if (!g_bSaveLoadMenuInitialized) {
@@ -2615,4 +2628,3 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
     g_wSerialInterfaceIdle = TRUE;
     return FALSE;
 }
-#pragma GCC diagnostic pop

@@ -335,12 +335,14 @@ void ComputeRigidBodyAcceleration(RigidBody *body) {
 }
 
 /* The original adds an uninitialised stack vector for a force of another frame. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#pragma GCC diagnostic ignored "-Wuninitialized"
 void ApplySingleForceWithDebug(RigidBody *body, RigidBodyForce *force) {
     Vec3f arm;
+#ifdef ENABLE_PATCHES
+    /* A force of another frame adds nothing. */
+    f32 vector[3] = {0.0f, 0.0f, 0.0f};
+#else
     f32 vector[3];
+#endif /* ENABLE_PATCHES */
     f32 torque[3];
 
     switch (force->frame) {
@@ -383,7 +385,6 @@ void ApplySingleForceWithDebug(RigidBody *body, RigidBodyForce *force) {
                  body->torque.y,
                  body->torque.z);
 }
-#pragma GCC diagnostic pop
 
 void ApplyAllForcesToBody(RigidBody *body) {
     RigidBodyForce *force;

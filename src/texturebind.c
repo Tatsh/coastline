@@ -20,12 +20,15 @@ void DrawTexturedTile(s32 index, ModelTexture *textures) {
 #else
 
 /* The original sets the palette only for a 4-bit texture, and the others read it unset. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wuninitialized"
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 void DrawTexturedTile(s32 index, ModelTexture *textures) {
     ModelTexture *texture;
+#ifdef ENABLE_PATCHES
+    /* A texture of more than 4 bits takes palette 0. */
+    s32 width, height, scaleS, scaleT, maskS, maskT, cms, cmt, tmem, palette = 0, format, size,
+                                                                     tile;
+#else
     s32 width, height, scaleS, scaleT, maskS, maskT, cms, cmt, tmem, palette, format, size, tile;
+#endif /* ENABLE_PATCHES */
 
     texture = &textures[index];
     width = texture->width;
@@ -106,5 +109,4 @@ void DrawTexturedTile(s32 index, ModelTexture *textures) {
                    texture->tileT1 * 4 + 2);
     gSPTexture(gDisplayListPtr++, scaleS, scaleT, 0, tile, G_ON);
 }
-#pragma GCC diagnostic pop
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

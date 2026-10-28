@@ -63,14 +63,15 @@ static inline COLLISION_DISTANCE_TYPE GroundDistance(RigidBody *wheel, Vec3f *po
 }
 
 /* A touching wheel initialises the final corner and wheel used after the loop. */
-#pragma GCC diagnostic push
-#if !defined(__clang__)
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif
-#pragma GCC diagnostic ignored "-Wuninitialized"
 s32 TipBalancedVehicle(RigidBody *body) {
+#ifdef ENABLE_PATCHES
+    RigidBody *wheel = NULL;
+    Vec3f corner = {0.0f, 0.0f, 0.0f};
+    Vec3f point, velocity, nudge;
+#else
     RigidBody *wheel;
     Vec3f corner, point, velocity, nudge;
+#endif /* ENABLE_PATCHES */
     f32 nearest, along;
     COLLISION_DISTANCE_TYPE distance, tilt;
     s32 touching, i;
@@ -164,7 +165,6 @@ s32 TipBalancedVehicle(RigidBody *body) {
     ComputeDeltaQuaternion(&body->stepStates[0]);
     return 1;
 }
-#pragma GCC diagnostic pop
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /* The x87 reduction order differs between face axes and each group of edge axes. */
@@ -473,11 +473,6 @@ void CollideVehicles(void) {
 #define UPRIGHT_LIMIT 0.5f
 
 /* The original passes the spin flag to the bounce without setting it outside the demonstration. */
-#pragma GCC diagnostic push
-#if !defined(__clang__)
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif
-#pragma GCC diagnostic ignored "-Wuninitialized"
 /* The races of the demonstration that sort their contacts with the track: every one in the USA
  * release, the ones under the credits in the Japanese release, and none in the European release. */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -498,7 +493,11 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
 #else
     f32 push;
 #endif
+#ifdef ENABLE_PATCHES
+    s32 resist, spin = 0, moved;
+#else
     s32 resist, spin, moved;
+#endif /* ENABLE_PATCHES */
     s32 hit = 0;
     s16 hits = 0;
 
@@ -612,7 +611,6 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
     }
     return hit;
 }
-#pragma GCC diagnostic pop
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void StepVehicleCollisions(Vehicle *vehicle, RigidBody *body) {

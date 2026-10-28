@@ -1,15 +1,17 @@
 #include "controller.h"
 
 /* The original reads the page unset when the first bank of the chain is out of range. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wuninitialized"
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 s32 osPfsFileState(OSPfs *pfs, s32 file_no, OSPfsState *state) {
     s32 ret;
     int pages;
     __OSInode inode;
     __OSDir dir;
+#ifdef ENABLE_PATCHES
+    /* A first bank out of range leaves page 0 of bank 0, and the chain is inconsistent. */
+    __OSInodeUnit page = {{0, 0}};
+#else
     __OSInodeUnit page;
+#endif /* ENABLE_PATCHES */
     int j;
     u8 bank;
     u8 start;
@@ -69,4 +71,3 @@ s32 osPfsFileState(OSPfs *pfs, s32 file_no, OSPfsState *state) {
     }
     return 0;
 }
-#pragma GCC diagnostic pop

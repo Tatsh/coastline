@@ -114,8 +114,6 @@ s32 IsTrackUnlocked(s32 track) {
 }
 
 /* The original tests the unsigned season and round for being negative. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wtype-limits"
 void ValidateChampionshipProgress(void) {
     if (g_aVehicles[0].profile->championshipFlags < 0) {
         g_aVehicles[0].profile->championshipFlags = 0;
@@ -125,15 +123,23 @@ void ValidateChampionshipProgress(void) {
         g_aVehicles[0].profile->round = 0;
         g_aVehicles[0].profile->seasonPoints[g_aVehicles[0].profile->season] = 0;
     }
+#ifdef ENABLE_PATCHES
+    /* An unsigned season and round are never negative. */
+    if (g_aVehicles[0].profile->season >= SEASONS) {
+#else
     if (g_aVehicles[0].profile->season < 0 || g_aVehicles[0].profile->season >= SEASONS) {
+#endif /* ENABLE_PATCHES */
         goto resetSeason;
     }
+#ifdef ENABLE_PATCHES
+    if (g_aVehicles[0].profile->round >= g_SeasonTable[g_aVehicles[0].profile->season].raceCount) {
+#else
     if (g_aVehicles[0].profile->round < 0 ||
         g_aVehicles[0].profile->round >= g_SeasonTable[g_aVehicles[0].profile->season].raceCount) {
+#endif /* ENABLE_PATCHES */
         goto resetRound;
     }
 }
-#pragma GCC diagnostic pop
 
 void TrackMenuPostDraw(s32 item) {
     s32 needed, slot;
@@ -312,13 +318,17 @@ void SeasonRecordsPreDrawCallback(void) {
 }
 
 /* The original sets the named item only in the modes that restore its name at the end. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 void ProcessTrackMenu(void) {
     CameraFrame *camera;
     Vehicle *vehicle;
+#ifdef ENABLE_PATCHES
+    /* No item is named until a mode names one. */
+    const char *name = NULL;
+    s32 named = -1, result, i, selection;
+#else
     const char *name;
     s32 named, result, i, selection;
+#endif /* ENABLE_PATCHES */
 
     if (g_dwTrackMenuInitState <= 0) {
         ResetAndInitDisplay(g_apTrackMenuItems, &g_dwTrackMenuItemCount);
@@ -528,11 +538,14 @@ void ProcessTrackMenu(void) {
         }
         break;
     }
+#ifdef ENABLE_PATCHES
+    if (named >= 0) {
+#else
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP || g_dwGameMode == GAME_MODE_ARCADE) {
+#endif /* ENABLE_PATCHES */
         g_apTrackMenuItems[named]->name = name;
     }
 }
-#pragma GCC diagnostic pop
 
 void DrawRotatedModel(Model *model, f32 x, f32 y, f32 z, f32 angle) {
     if (g_dwViewportMirrored != g_dwTrackMirrored) {

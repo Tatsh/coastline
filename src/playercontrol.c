@@ -95,14 +95,14 @@ static void ChooseReplayCamera(Vehicle *vehicle);
 #endif
 
 /* The range test implies that a camera point was selected. */
-#pragma GCC diagnostic push
-#ifndef __clang__
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif
 void ChooseReplayCamera(Vehicle *vehicle) {
     CameraFrame *trackside = &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE];
     Vec3f *point = g_LoadedTrack.cameraPoints;
+#ifdef ENABLE_PATCHES
+    Vec3f chosen = {0.0f, 0.0f, 0.0f};
+#else
     Vec3f chosen;
+#endif /* ENABLE_PATCHES */
     f32 best = CAMERA_POINT_FAR;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     long double dx, dy, dz, distance;
@@ -156,7 +156,6 @@ void ChooseReplayCamera(Vehicle *vehicle) {
         g_bReplayCockpitNext = !g_bReplayCockpitNext;
     }
 }
-#pragma GCC diagnostic pop
 
 /* Choose the view a replay, a race of the computer, or a finished racer shows, and take the view a
  * player selects. */

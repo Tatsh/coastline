@@ -19,12 +19,12 @@ s32 g_dwStartLightsAnimation;
 
 /* The original saves the frame time only when the lights are held. A step that holds the lights
  * restores an uninitialised value. */
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif
 void AnimateStartLights(void) {
+#ifdef ENABLE_PATCHES
+    f32 delta = 0.0f;
+#else
     f32 delta;
+#endif /* ENABLE_PATCHES */
 
     if (g_dwStartLightsAnimation == 0) {
         return;
@@ -39,9 +39,6 @@ void AnimateStartLights(void) {
         g_fFrameDeltaTime = delta;
     }
 }
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
 
 void UpdateRaceAnimations(void) {
     if (g_dwRacePauseState) {
