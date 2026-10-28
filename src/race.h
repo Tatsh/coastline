@@ -15,6 +15,10 @@
 #include "render.h"
 #include "vecmath.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "platform/win/airplanestate.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -127,6 +131,7 @@ extern s32 g_bStartLightsVisible;
  */
 extern f32 g_fStartLightsDrop;
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The placed model of the airplane, or 0 when the track has none or it landed, and the model a
  * vehicle sends it off from on the lap g_dwAirplaneTriggerLap.
@@ -254,6 +259,7 @@ extern Vec3f g_vAirplaneDir;
  * @ghidraAddress BRD3D: 0x1068065c
  */
 extern Vec3f g_vAirplaneDirNext;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * The captions of the credits, ending with a NULL title.
