@@ -7,10 +7,17 @@
 #define TRACK_CAMERA_CLEARANCE 0.3f
 #define STORE_TRACK_VALUE(target, expression) (target) = (f32)(precise = (expression))
 #define PRECISE_TRACK_VALUE(value) precise
+/* The x87 tests take an unordered value as less, and as equal to zero. */
+#define TRACK_FACING_AWAY(value) ((value) >= 0.0f)
+#define TRACK_LESS(a, b) (!((a) >= (b)))
+#define TRACK_NONZERO(value) ((value) < 0.0f || (value) > 0.0f)
 #else
 #define TRACK_CAMERA_CLEARANCE TRACK_CLEARANCE
 #define STORE_TRACK_VALUE(target, expression) (target) = (expression)
 #define PRECISE_TRACK_VALUE(value) (value)
+#define TRACK_FACING_AWAY(value) (!((value) < 0.0f))
+#define TRACK_LESS(a, b) ((a) < (b))
+#define TRACK_NONZERO(value) ((value) != 0.0f)
 #endif
 
 /*
@@ -25,7 +32,7 @@
             end = triangle + g_awTriCacheTriCount[slots[i]];                                       \
             for (; triangle != end; triangle++) {                                                  \
                 STORE_TRACK_VALUE(facing, Vec3fDot(&direction, &triangle->normal));                \
-                if (!(PRECISE_TRACK_VALUE(facing) < 0.0f)) {                                       \
+                if (TRACK_FACING_AWAY(PRECISE_TRACK_VALUE(facing))) {                              \
                     continue;                                                                      \
                 }                                                                                  \
                 Vec3fSubtract(&toVertex, triangle->vertices[0], start);                            \
@@ -70,7 +77,7 @@ void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *
     /* The line from the look-at point to just beyond the camera. */
     Vec3fSubtract(&direction, &camera->position, &VEHICLE_GET(vehicle, LookAt));
     length = Vec3fLength(&direction);
-    limit = length != 0.0f ? (length + TRACK_CLEARANCE) / length : 1.0f;
+    limit = TRACK_NONZERO(length) ? (length + TRACK_CLEARANCE) / length : 1.0f;
     FIND_TRACK_HIT(&VEHICLE_GET(vehicle, LookAt));
     if (hit == NULL) {
         return;
@@ -87,7 +94,7 @@ void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *
     Vec3fMulAdd(&camera->position, &hitPoint, &hit->normal, TRACK_CAMERA_CLEARANCE);
     Vec3fSubtract(&offset, &camera->position, &VEHICLE_GET(vehicle, LookAt));
     newLength = Vec3fLength(&offset);
-    if (distance < newLength && newLength != 0.0f) {
+    if (TRACK_LESS(distance, newLength) && TRACK_NONZERO(newLength)) {
         Vec3fScaleInPlace(&offset, distance / newLength);
         Vec3fAdd(&camera->position, &VEHICLE_GET(vehicle, LookAt), &offset);
     }
