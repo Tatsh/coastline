@@ -240,6 +240,7 @@ void ShowGlideSplashImage(const char *pszPath, int nUnknown);
  * Free the colour buffers of each racer.
  *
  * @ghidraAddress BRD3D: 0x1002c4a0
+ * @ghidraAddress BRGlide: 0x10019a10
  */
 void FreeAllRacerColorPanels(void);
 #ifdef __cplusplus

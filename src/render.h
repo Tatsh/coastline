@@ -759,6 +759,7 @@ void NormalizeLightMatrix(f32 m[4][4]);
  * @ghidraAddress EUR: 0x80218754
  * @ghidraAddress JPN: 0x802180a4
  * @ghidraAddress BRD3D: 0x10031481
+ * @ghidraAddress BRGlide: 0x1002ab32
  */
 void DrawTexturedTile(s32 index, ModelTexture *textures);
 

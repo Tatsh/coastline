@@ -187,6 +187,7 @@ extern s32 g_dwElapsedTimeMs;
  * @ghidraAddress EUR: 0x8021aa3c
  * @ghidraAddress JPN: 0x8021a394
  * @ghidraAddress BRD3D: 0x10032873
+ * @ghidraAddress BRGlide: 0x1002bf24
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void StartLowResFrame(ViewportRect *views);

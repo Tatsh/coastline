@@ -241,6 +241,7 @@ extern s32 g_dwTextureCaptureOverflowCount;
  *
  * @param entry The captured texture entry.
  * @ghidraAddress BRD3D: 0x10037030
+ * @ghidraAddress BRGlide: 0x100306d0
  */
 void AppendVehicleModelTextureEntry(s32 entry);
 
@@ -250,6 +251,7 @@ void AppendVehicleModelTextureEntry(s32 entry);
  * @param palette The palette to find.
  * @return Whether a material uses the palette.
  * @ghidraAddress BRD3D: 0x10037070
+ * @ghidraAddress BRGlide: 0x10030710
  */
 s32 IsVehicleMaterialPalette(const void *palette);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

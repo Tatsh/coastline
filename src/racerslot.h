@@ -72,6 +72,7 @@ public:
      * Drive the assigned vehicle or advance this racer along the route.
      *
      * @ghidraAddress BRD3D: 0x10068ef0
+     * @ghidraAddress BRGlide: 0x10061f60
      */
     void UpdateRacerSlotMotion(void);
 
@@ -222,6 +223,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x100662a0
+     * @ghidraAddress BRGlide: 0x1005f310
      */
     void InitRacerSlot(void);
 
