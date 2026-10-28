@@ -135,7 +135,7 @@ GbiVertexSource g_aClipVertexPool[GBI_CLIP_VERTEX_POOL_SIZE];
 GbiVertexSource *g_pVertexFreeList;
 int g_bRdpBlendStateOverride;
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 
 void InitGbiD3DRenderer(void) {
     g_pfnRenderBackendSubmitDisplayList = RenderGbiDisplayListFrame;
@@ -161,11 +161,11 @@ void InitGbiD3DRenderer(void) {
 int GetRenderBackendMode(void) {
     return g_dwRenderBackendMode;
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 void SetRenderBackendMode(int nMode) {
     g_dwRenderBackendMode = nMode;
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     if (nMode == RENDER_BACKEND_MODE_D3D) {
         g_pfnRenderDeviceReset = ResetRenderDeviceCallbacks;
         g_pfnRenderBackendInit = InitGbiD3DRenderer;
@@ -177,7 +177,7 @@ void SetRenderBackendMode(int nMode) {
         g_pfnRenderBackendInit = InitGbiGlideRenderer;
         g_pfnInitializeTextureSubsystem = InitializeTextureSubsystem;
     }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 }
 
 void ResetRenderSubsystems(int nMode, int nWidth, int nHeight, int nBitDepth, int nExtra) {
@@ -185,7 +185,7 @@ void ResetRenderSubsystems(int nMode, int nWidth, int nHeight, int nBitDepth, in
         NullStub();
         g_pfnRenderBackendShutdown();
         g_pfnShutdownTextureSubsystem();
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
         g_pfnRenderDeviceShutdown();
 #endif
     }
@@ -550,7 +550,7 @@ void CalculateTextureDimensions(int *pWidth, int *pHeight, int nLod, int nAspect
     }
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 // The bytes of a texel of the textures of Direct3D.
 #define RGBA32_BYTES_PER_TEXEL 4
 
@@ -573,7 +573,7 @@ int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio, int 
     }
     return nBytes;
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 void ResetRenderCommandBufferStack(void) {
     ShadowClipVertex *pNext = nullptr;
@@ -763,7 +763,7 @@ void CreateGlobalEffectTextures(void) {
 }
 
 void SelectTextureQualityFromVideoMemory(void) {
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     if (g_dwAvailableTextureMemory > g_dwHiResTextureMemoryThreshold &&
         !g_dwD3DAlwaysSquareTextures) {
         g_dwTextureQualityLevel =
@@ -786,7 +786,7 @@ void SelectTextureQualityFromVideoMemory(void) {
     } else {
         g_dwTextureQualityLevel = 2;
     }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 }
 
 void AliasTextureEntrySurface(int nEntry, int nSourceEntry) {
@@ -843,7 +843,7 @@ unsigned CreateTextureFromN64ImageAutoLoadSize(const unsigned char *pImage,
                                           nOption13);
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 unsigned DuplicateTextureEntryHalfScale(unsigned nTexture) {
     unsigned nDuplicate = AllocateTextureEntry();
     g_pTextureEntries[nDuplicate] = g_pTextureEntries[nTexture];
@@ -851,12 +851,12 @@ unsigned DuplicateTextureEntryHalfScale(unsigned nTexture) {
     g_pTextureEntries[nDuplicate].fTextureScaleT *= 0.5f;
     return nDuplicate;
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 void LoadHudOverlayTexture(void) {
     g_dwHudOverlayTextureId = g_pfnCreateTextureFromN64ImageAutoLoadSize(
         g_abHudOverlayTextureData, nullptr, 64, 64, 1, 4, 0, 0, 1, 1, 15, 15, 1, 0);
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     g_dwHudOverlayHalfTextureId = DuplicateTextureEntryHalfScale(g_dwHudOverlayTextureId);
 #else
     g_dwHudOverlayHalfTextureId = g_dwHudOverlayTextureId;
@@ -864,7 +864,7 @@ void LoadHudOverlayTexture(void) {
 }
 
 void LoadParticleTexture(void) {
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     g_dwParticleTextureId = g_pfnCreateTextureFromN64ImageAutoLoadSize(
         g_abHudTexture64AData, nullptr, 64, 64, 1, 4, 0, 0, 1, 1, 0, 0, 1, 0);
 #else
@@ -893,7 +893,7 @@ void CreateAlphaRampTextures(void) {
         g_abPrecipitationTextures[0], nullptr, 64, 64, 1, 4, 0, 0, 1, 1, 0, 0, 1, 0);
     g_adwPrecipitationTextureIds[1] = g_pfnCreateTextureFromN64ImageAutoLoadSize(
         g_abPrecipitationTextures[1], nullptr, 64, 64, 1, 4, 0, 0, 1, 1, 0, 0, 1, 0);
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     for (int nAlpha = 0; nAlpha < 16; nAlpha++) {
         g_abAlphaRampRgba[nAlpha][0] = 255;
         g_abAlphaRampRgba[nAlpha][1] = 255;
@@ -902,11 +902,11 @@ void CreateAlphaRampTextures(void) {
     }
     g_dwAlphaRampStripRowCount =
         ConvertRGBAToPixelFormat(g_abAlphaRampPixelStrip, g_abAlphaRampRgba, 64, 2) / 16;
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 }
 
 void LoadHudGlyphTextureSets(void) {
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     if (g_dwTextureQualityLevel <= 1) {
         for (int nGlyph = 0; nGlyph < 27; nGlyph++) {
             g_adwLargeFontGlyphTexturesA[nGlyph] = g_pfnCreateTextureFromN64Image(
@@ -990,7 +990,7 @@ void LoadHudGlyphTextureSets(void) {
     g_dwSmallFontAtlasTextureId =
         CreateGlideTextureFromRawImage(g_abSmallFontAtlas, 32, 32, GR_TEXFMT_ALPHA_INTENSITY_44);
     adler32(checksum, g_abSmallFontAtlas, sizeof(g_abSmallFontAtlas));
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 }
 
 void CreateDaySkyTexture(void) {
@@ -1061,7 +1061,7 @@ void CreateWeatherShadeTexture(void) {
         g_abWeatherShadeTexture, nullptr, 4, 4, G_IM_SIZ_8b, G_IM_FMT_I, 0, 0, 1, 1, 0, 0, 1, 0);
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 unsigned QueryAvailableTextureMemory(void) {
     DDSCAPS caps;
     caps.dwCaps = DDSCAPS_TEXTURE;
@@ -1077,11 +1077,11 @@ unsigned g_dwTextureIdCount;
 // @ghidraAddress BRD3D: 0x10575428
 unsigned g_dwTextureIdCapacity;
 } // namespace
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 void ShutdownTextureSubsystem(void) {
     DestroyTextureUploadQueue();
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     for (unsigned i = 1; i <= g_dwTextureIdCount; i++) {
         g_ppTextureIdTable[i]->ReleaseD3DTextureInterfaces();
         ::operator delete(g_ppTextureIdTable[i]);
@@ -1090,7 +1090,7 @@ void ShutdownTextureSubsystem(void) {
     g_dwTextureIdCount = 0;
     g_dwTextureIdCapacity = 0;
     g_ppTextureIdTable = nullptr;
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
     for (unsigned i = 0; i < g_dwTextureEntryCount; i++) {
         TextureEntry &entry = g_pTextureEntries[i];
         if (entry.data.bOwnsPaintBuffers) {
@@ -1114,7 +1114,7 @@ void UploadTextureEntryToSurface(int nEntry, TextureUploadData payload) {
         return;
     }
     const TextureEntry &entry = g_pTextureEntries[nEntry];
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 #ifdef ENABLE_PATCHES
     int width = 0;
     int height = 0;
@@ -1126,7 +1126,7 @@ void UploadTextureEntryToSurface(int nEntry, TextureUploadData payload) {
     g_ppTextureIdTable[entry.nTextureId]->UploadSurfaceToTexture(payload.pixels, width, height);
 #else
     DownloadGlideTextureMipMap(entry.nTextureId, payload.pixels, 0);
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 }
 
 void CreateDeviceTextureFromImageHeader(ModelTexture *pTexture, int nOption13) {
@@ -1219,7 +1219,7 @@ unsigned RegisterTextureEntry(const TextureImageData *pImage, int nTextureId) {
     TextureEntry &entry = g_pTextureEntries[nEntry];
     entry.data = *pImage;
     entry.nTextureId = nTextureId;
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     entry.fTextureScaleS = (1.0L / 32.0L) / entry.data.nDecodedWidth;
     entry.fTextureScaleT = (1.0L / 32.0L) / entry.data.nDecodedHeight;
 #else
@@ -1231,7 +1231,7 @@ unsigned RegisterTextureEntry(const TextureImageData *pImage, int nTextureId) {
     entry.fTextureScaleT /= entry.data.nDecodedHeight;
     entry.fTextureScaleS *= 256.0f;
     entry.fTextureScaleT *= 256.0f;
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
     const TexScanTile &tile = pImage->aTiles[pImage->nTileIndex];
     if (tile.nShiftS) {
         entry.fTextureScaleS = TextureCoordinateShiftFactor(tile.nShiftS) * entry.fTextureScaleS;
@@ -1242,7 +1242,7 @@ unsigned RegisterTextureEntry(const TextureImageData *pImage, int nTextureId) {
     return nEntry;
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 static int FloorTextureSampleCoordinate(float coordinate) {
     long double value = floorl(static_cast<double>(coordinate));
     if (!(value >= -0x1p63L && value < 0x1p63L)) {
@@ -1302,14 +1302,14 @@ void ResizeTextureImage(unsigned char *pDest,
         y = static_cast<long double>(y) + yStep;
     }
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 void ReloadTextureEntryData(int nEntry) {
     unsigned char *pixels = GetTextureImagePixels(&g_pTextureEntries[nEntry].data);
     g_pfnUploadTextureEntryToSurface(nEntry, TextureUploadData(pixels));
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 unsigned ResizeTextureMipChain(unsigned char *pDest,
                                const unsigned char *pSource,
                                TextureImageData *pImage) {
@@ -1339,7 +1339,7 @@ unsigned ResizeTextureMipChain(unsigned char *pDest,
     }
     return bytes;
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 void ModulateRgbaByMask(unsigned char *pixels, int width, int height, const unsigned char *mask) {
     int count = static_cast<int>(static_cast<unsigned>(width) * static_cast<unsigned>(height));
@@ -1355,7 +1355,7 @@ void ModulateRgbaByMask(unsigned char *pixels, int width, int height, const unsi
 
 unsigned char g_abTextureResampleBuffer[TEXTURE_RESAMPLE_BUFFER_BYTES];
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 void ModulateTextureWithIntensityPlane(const TextureImageData *pImage, unsigned char *pPixels) {
     unsigned imageBytes = static_cast<unsigned>(pImage->nSourceWidth) *
                           static_cast<unsigned>(pImage->nSourceHeight) * 4;
@@ -1386,12 +1386,12 @@ void ModulateTextureWithIntensityPlane(const TextureImageData *pImage, unsigned 
         }
     }
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 unsigned g_dwTexturePixelByteCount;
 int g_bForceTextureClone;
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 const char g_szTidFromTextureAppendAmid[] = "TIDFromTextureAppend: amid";
 
 unsigned char *GetTextureImagePixels(TextureImageData *pImage) {
@@ -1449,7 +1449,7 @@ unsigned char *GetTextureImagePixels(TextureImageData *pImage) {
     }
     return pixels;
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 int CloneTextureEntryWithNewImageData(int nEntry,
                                       unsigned char *pImage,
@@ -1462,7 +1462,7 @@ int CloneTextureEntryWithNewImageData(int nEntry,
         image.nWidth /= 2;
         image.nHeight /= 2;
         image.nPixelBytes /= 4;
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
         CalculateTextureLodFromDimensions(&image.nLod, image.nWidth, image.nHeight);
 #else
         CalculateMipMapLevel(&image.nLod, image.nWidth, image.nHeight);
@@ -1476,7 +1476,7 @@ int CloneTextureEntryWithNewImageData(int nEntry,
     return entry;
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 int CreateTextureFromImage(TextureImageData *pImage, unsigned char *pPixels) {
     if (!g_bForceTextureClone) {
         int entry = FindMatchingTextureEntry(pImage);
@@ -1508,7 +1508,7 @@ int CreateTextureFromImage(TextureImageData *pImage, unsigned char *pPixels) {
     }
     return RegisterTextureEntry(pImage, textureId);
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 void UploadTrackTextureVariants(ModelTexture *pTextures, int nCount) {
     if (nCount <= 0) {
@@ -1550,7 +1550,7 @@ void UploadTrackTextureVariants(ModelTexture *pTextures, int nCount) {
     }
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 int DecodeN64TextureToPixelBuffer(void *pDest,
                                   const unsigned char *pImage,
                                   const unsigned char *pPalette,
@@ -1622,7 +1622,7 @@ int DecodeN64TextureToPixelBuffer(void *pDest,
     return ConvertRGBAToPixelFormat(
         pDest, GetTextureDecodeBuffer(), image.nPixelBytes, image.nPixelFormatId);
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 decltype(g_pfnAliasTextureEntrySurface) g_pfnAliasTextureEntrySurface;
 decltype(g_pfnDecodeN64TextureToPixelBuffer) g_pfnDecodeN64TextureToPixelBuffer;
@@ -1648,7 +1648,7 @@ void InitializeTextureSubsystem(void) {
     g_pfnCloneTextureEntryWithNewImageData = CloneTextureEntryWithNewImageData;
     g_pfnUploadTrackTextureVariants = UploadTrackTextureVariants;
     g_pfnShutdownTextureSubsystem = ShutdownTextureSubsystem;
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     g_dwTextureIdCount = 0;
     g_dwTextureIdCapacity = 0;
     std::free(g_ppTextureIdTable);
@@ -1661,7 +1661,7 @@ void InitializeTextureSubsystem(void) {
         g_dwAvailableTextureMemory += grTexMaxAddress(GR_TMU1) - grTexMinAddress(GR_TMU1);
     }
     g_nBoundTextureTmu = -1;
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
     SelectTextureQualityFromVideoMemory();
     g_nBoundTextureEntry = -1;
     g_dwTextureEntryCount = 0;
@@ -1675,7 +1675,7 @@ void InitializeTextureSubsystem(void) {
     InitializeTextureUploadQueue();
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 unsigned char *GetTextureEntryPixelsWithPaint(int nEntry, unsigned *pSize) {
     TextureImageData &image = g_pTextureEntries[nEntry].data;
     if (!image.bOwnsPaintBuffers) {
@@ -1833,7 +1833,7 @@ int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage) {
     }
     return 1;
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 int CalculateTextureAspectRatio(int *pAspectRatio, int nWidth, int nHeight) {
     bool wide = nWidth > nHeight;
@@ -1847,7 +1847,7 @@ int CalculateTextureAspectRatio(int *pAspectRatio, int nWidth, int nHeight) {
 int g_dwCurrentMaxTextureWidth = 32;
 int g_dwCurrentMaxTextureHeight = 32;
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 unsigned CreateTextureFromN64Image(const unsigned char *pImage,
                                    const unsigned char *pPalette,
                                    int nWidth,
@@ -2137,4 +2137,4 @@ void DecodeTexturePixels(unsigned char *pDest,
         }
     }
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */

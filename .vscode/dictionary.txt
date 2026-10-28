@@ -317,6 +317,7 @@ dpopen
 dpplayer
 dpreceive
 dpref
+dprimitivetype
 dpsend
 dpsession
 dpsessiondesc
@@ -339,6 +340,7 @@ dscaps
 dsdx
 dserr
 dshade
+dshademode
 dsinf
 dsll
 dsra
@@ -352,6 +354,7 @@ dtgr
 dtlvertex
 dvcpkg
 dvddrive
+dvertextype
 dwlp
 dxguid
 dxil
@@ -792,6 +795,7 @@ particlesmokerender
 particlesnapshot
 particleupdate
 pathlib
+pcgame
 pcmstream
 pcmwaveformat
 penm

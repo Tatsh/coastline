@@ -7,7 +7,11 @@
  */
 
 #include <PR/gbi.h>
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/win32types.h"
+#else
 #include <windows.h>
+#endif
 
 #include "../../render.h"
 #include "convertedvertex.h"
@@ -58,7 +62,7 @@ extern void (*g_pfnPresentFrame)(void);
 #define RENDER_BACKEND_MODE_GLIDE 3
 
 /** The mode of the renderer of the library being built. */
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 #define RENDER_BACKEND_MODE RENDER_BACKEND_MODE_D3D
 #else
 #define RENDER_BACKEND_MODE RENDER_BACKEND_MODE_GLIDE
@@ -161,7 +165,7 @@ void InitializeRenderSubsystems(int nMode);
  */
 void ResetRenderSubsystems(int nMode, int nWidth, int nHeight, int nBitDepth, int nExtra);
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 /**
  * Set a display mode, falling back to 640 by 480 with 16 bits when the device is lost, and reset
  * the routines of the device.
@@ -187,7 +191,7 @@ void SetDisplayModeWithFallback(int nWidth, int nHeight, int nBitDepth, int nExt
  * @ghidraAddress BRGlide: 0x1001e130
  */
 int SetDisplayModeWithFallback(int nWidth, int nHeight, int nBitDepth, int nExtra);
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 /**
  * Set the level of damage of a texture the game loaded.
@@ -237,7 +241,7 @@ void IncrementDamageTextureLevel(int nTexture, const int *pnEntries, int *pnLeve
  */
 void ApplyRandomAdjacentDamageTexture(int nTexture, const int *pnEntries, int *pnLevels);
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 /**
  * Set the routines of the Direct3D device: the flip of the main window shows a frame, and the
  * shutdown of the device does nothing.
@@ -279,7 +283,7 @@ int InitGlideRenderDevice(void);
  * @ghidraAddress BRGlide: 0x10023b10
  */
 void InitGbiGlideRenderer(void);
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 /**
  * Start the texture subsystem.
@@ -312,7 +316,7 @@ int GetMipLevelFromDimension(int nDimension);
  */
 void CalculateTextureDimensions(int *pWidth, int *pHeight, int nLod, int nAspectRatio);
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 /**
  * Get the bytes of the levels of a texture of four bytes a texel from one level of detail to
  * another, each level half the width and the height of the one before.
@@ -326,7 +330,7 @@ void CalculateTextureDimensions(int *pWidth, int *pHeight, int nLod, int nAspect
  * @ghidraAddress BRD3D: 0x10029e10
  */
 int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio, int nPixelFormatId);
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 /**
  * The next free entry of g_afModelVertexPool.

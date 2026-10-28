@@ -113,7 +113,7 @@ static inline void ApplyIniLine(const char *pszLine) {
         g_dwPlayMusicMode = atoi(pszValue);
     } else if ((pszValue = GetIniValue(pszLine, "PlaySFX=")) != nullptr) {
         g_bSoundEnabledIni = atoi(pszValue);
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     } else if ((pszValue = GetIniValue(pszLine, "D3DAlphaCompare=")) != nullptr) {
         g_bD3DAlphaCompare = atoi(pszValue);
     } else if ((pszValue = GetIniValue(pszLine, "D3DAlwaysSquareTextures=")) != nullptr) {
@@ -126,7 +126,7 @@ static inline void ApplyIniLine(const char *pszLine) {
         g_bD3DWaitFlipDone = atoi(pszValue);
     } else if ((pszValue = GetIniValue(pszLine, "D3DInvSrcAlpha=")) != nullptr) {
         g_dwD3DDestBlendMode = atoi(pszValue) != 0 ? D3DBLEND_INVSRCALPHA : D3DBLEND_ONE;
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
     }
 }
 

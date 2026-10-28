@@ -3,7 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/win32types.h"
+#else
 #include <windows.h>
+#endif
 
 #include "win32/fileio.h"
 

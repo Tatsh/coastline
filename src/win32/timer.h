@@ -6,7 +6,11 @@
  * The clock of the PC port.
  */
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/win32types.h"
+#else
 #include <windows.h>
+#endif
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif

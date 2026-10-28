@@ -5,7 +5,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/win32types.h"
+#else
 #include <windows.h>
+#endif
 
 // The size of the buffer of a message to the debugger.
 #define MESSAGE_SIZE 1024

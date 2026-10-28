@@ -289,7 +289,7 @@ void ComputeCollisionPenetration(
     } else {
         /* The face of the box by the middle of the triangle, signed by its x as the original. */
         for (i = 0; i < 3; i++) {
-#if TGR_PC && TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
             middle[i] = (((long double)COMPONENT(&triangle[0], i) + COMPONENT(&triangle[1], i)) +
                          COMPONENT(&triangle[2], i)) *
                         0.3333333432674407958984375f;

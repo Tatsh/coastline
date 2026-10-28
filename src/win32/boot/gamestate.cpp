@@ -10,7 +10,7 @@
 #include "win32/settings.h"
 #include "win32/sound.h"
 #include "win32/timer.h"
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 #include "win32/d3d/renderer.h"
 #endif
 
@@ -84,7 +84,7 @@ int GameState_RunGameMode(void) {
 
 int GameState_ShowLoadingScreenAndInitGame(void) {
     ResetConfiguredRenderSubsystems();
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     g_pRenderHost->RenderLoadingScreen(g_pMainRenderWindow, "loading.img", 0);
     ResetConfiguredRenderSubsystems();
 #else
@@ -145,7 +145,7 @@ int GameState_RunFrontEnd(void) {
         return true;
     }
     if (!pScreen->IsBuilt()) {
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
         DisplayMode *pMode = g_pMainRenderWindow->GetMode();
 
         if (pMode != nullptr) {
@@ -154,7 +154,7 @@ int GameState_RunFrontEnd(void) {
                                             &g_dwFrontEndSurfaceBitDepth,
                                             &g_dwFrontEndSurfaceRefreshRate);
         }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
         pScreen->ActivateMenuScreen();
     } else {
         pScreen->RunFrame();

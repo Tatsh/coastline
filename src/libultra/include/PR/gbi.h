@@ -76,11 +76,30 @@ typedef union {
     long long force_structure_alignment; /*!< Aligns the vertex to 8 bytes for the RSP. */
 } Vtx;
 
+#if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_SDL
+#include <stdint.h>
+
+/**
+ * The two words of a display list command. The SDL game draws its display lists itself on a
+ * 64-bit processor, and the second word holds a whole address.
+ */
+typedef struct {
+    u32 w0;       /*!< The first word, with the opcode in its top byte. */
+    uintptr_t w1; /*!< The second word, often an address or an operand. */
+} Gwords;
+
+/** The second word of a command for x, an address or an operand. */
+#define GBI_WORD1(x) ((uintptr_t)(x))
+#else
 /** The two words of a display list command. */
 typedef struct {
     u32 w0; /*!< The first word, with the opcode in its top byte. */
     u32 w1; /*!< The second word, often a segmented address or an operand. */
 } Gwords;
+
+/** The second word of a command for x, an address or an operand. */
+#define GBI_WORD1(x) ((u32)(x))
+#endif /* defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 /** A display list command for the Fast3D microcode. */
 typedef union {
@@ -416,25 +435,26 @@ typedef struct {
 /** Write command cmd with no parameters. */
 #define gDPNoParam(pkt, cmd) gDisplayListWords(pkt, _SHIFTL(cmd, 24, 8), 0)
 /** Write command cmd with data as its second word. */
-#define gImmp1(pkt, cmd, data) gDisplayListWords(pkt, _SHIFTL(cmd, 24, 8), (u32)(data))
+#define gImmp1(pkt, cmd, data) gDisplayListWords(pkt, _SHIFTL(cmd, 24, 8), GBI_WORD1(data))
 /** Write data to the word at offset in the microcode state of index. */
 #define gMoveWd(pkt, index, offset, data)                                                          \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_MOVEWORD, 24, 8) | _SHIFTL(offset, 8, 16) | _SHIFTL(index, 0, 8),  \
-                      (u32)(data))
+                      GBI_WORD1(data))
 /** Replace len bits of an other mode word from bit sft with data. */
 #define gSPSetOtherMode(pkt, cmd, sft, len, data)                                                  \
     gDisplayListWords(                                                                             \
-        pkt, _SHIFTL(cmd, 24, 8) | _SHIFTL(sft, 8, 8) | _SHIFTL(len, 0, 8), (u32)(data))
+        pkt, _SHIFTL(cmd, 24, 8) | _SHIFTL(sft, 8, 8) | _SHIFTL(len, 0, 8), GBI_WORD1(data))
 
 /** Load or multiply matrix m by the G_MTX_* flags of p. */
 #define gSPMatrix(pkt, m, p)                                                                       \
-    gDisplayListWords(                                                                             \
-        pkt, _SHIFTL(G_MTX, 24, 8) | _SHIFTL(p, 16, 8) | _SHIFTL(sizeof(Mtx), 0, 16), (u32)(m))
+    gDisplayListWords(pkt,                                                                         \
+                      _SHIFTL(G_MTX, 24, 8) | _SHIFTL(p, 16, 8) | _SHIFTL(sizeof(Mtx), 0, 16),     \
+                      GBI_WORD1(m))
 /** Pop the modelview matrix; n is the matrix stack. */
 #define gSPPopMatrix(pkt, n) gImmp1(pkt, G_POPMTX, n)
 /** Call display list dl. */
-#define gSPDisplayList(pkt, dl) gDisplayListWords(pkt, _SHIFTL(G_DL, 24, 8), (u32)(dl))
+#define gSPDisplayList(pkt, dl) gDisplayListWords(pkt, _SHIFTL(G_DL, 24, 8), GBI_WORD1(dl))
 /** End the display list. */
 #define gSPEndDisplayList(pkt) gDPNoParam(pkt, G_ENDDL)
 /** Load n vertices into the vertex buffer of the F3DEX microcode from index v0. */
@@ -442,7 +462,7 @@ typedef struct {
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_VTX, 24, 8) | _SHIFTL((v0) * 2, 16, 8) | _SHIFTL(n, 10, 6) |       \
                           _SHIFTL(sizeof(Vtx) * (n) - 1, 0, 10),                                   \
-                      (u32)(v))
+                      GBI_WORD1(v))
 
 #if defined(TGR_PLATFORM) && TGR_PC
 #define __gsSP1Triangle_w1f(v0, v1, v2, flag)                                                      \
@@ -498,7 +518,7 @@ typedef struct {
 /** Load a viewport. */
 #define gSPViewport(pkt, v)                                                                        \
     gDisplayListWords(                                                                             \
-        pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_VIEWPORT, 16, 8) | sizeof(Vp), (u32)(v))
+        pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_VIEWPORT, 16, 8) | sizeof(Vp), GBI_WORD1(v))
 
 /** Set the depths the fog starts and ends at, from 0 at the near plane to 1000 at the far. */
 #define gSPFogPosition(pkt, min, max)                                                              \
@@ -517,24 +537,27 @@ typedef struct {
         gDisplayListWords(pkt,                                                                     \
                           _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_LOOKATX, 16, 8) |               \
                               _SHIFTL(sizeof(Light), 0, 16),                                       \
-                          (u32)(la));                                                              \
+                          GBI_WORD1(la));                                                          \
         gDisplayListWords(pkt,                                                                     \
                           _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_LOOKATY, 16, 8) |               \
                               _SHIFTL(sizeof(Light), 0, 16),                                       \
-                          (u32)(la) + 16);                                                         \
+                          GBI_WORD1(la) + 16);                                                     \
     }
 
 /** Load a matrix as the product of the model view and the projection, a row pair at a time. */
 #define gSPForceMatrix(pkt, m)                                                                     \
     {                                                                                              \
         gDisplayListWords(                                                                         \
-            pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_MATRIX_1, 16, 8) | 16, (u32)(m));        \
-        gDisplayListWords(                                                                         \
-            pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_MATRIX_2, 16, 8) | 16, (u32)(m) + 16);   \
-        gDisplayListWords(                                                                         \
-            pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_MATRIX_3, 16, 8) | 16, (u32)(m) + 32);   \
-        gDisplayListWords(                                                                         \
-            pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_MATRIX_4, 16, 8) | 16, (u32)(m) + 48);   \
+            pkt, _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_MATRIX_1, 16, 8) | 16, GBI_WORD1(m));    \
+        gDisplayListWords(pkt,                                                                     \
+                          _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_MATRIX_2, 16, 8) | 16,          \
+                          GBI_WORD1(m) + 16);                                                      \
+        gDisplayListWords(pkt,                                                                     \
+                          _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_MATRIX_3, 16, 8) | 16,          \
+                          GBI_WORD1(m) + 32);                                                      \
+        gDisplayListWords(pkt,                                                                     \
+                          _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(G_MV_MATRIX_4, 16, 8) | 16,          \
+                          GBI_WORD1(m) + 48);                                                      \
     }
 
 /** Load a light into light slot n, from 1. The ambient light follows the directional ones. */
@@ -542,7 +565,7 @@ typedef struct {
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_MOVEMEM, 24, 8) | _SHIFTL(((n) - 1) * 2 + G_MV_L0, 16, 8) |        \
                           _SHIFTL(sizeof(Light), 0, 16),                                           \
-                      (u32)(l))
+                      GBI_WORD1(l))
 
 /** Wait for the RDP pipeline to drain before a mode changes. */
 #define gDPPipeSync(pkt) gDPNoParam(pkt, G_RDPPIPESYNC)
@@ -642,13 +665,13 @@ typedef struct {
 /** Wait for the RDP to finish the frame and raise its interrupt. */
 #define gDPFullSync(pkt) gDPNoParam(pkt, G_RDPFULLSYNC)
 /** Set the depth buffer to i. */
-#define gDPSetDepthImage(pkt, i) gDisplayListWords(pkt, _SHIFTL(G_SETZIMG, 24, 8), (u32)(i))
+#define gDPSetDepthImage(pkt, i) gDisplayListWords(pkt, _SHIFTL(G_SETZIMG, 24, 8), GBI_WORD1(i))
 /** Set the colour buffer to i, of format f, texel size s, and width w. */
 #define gDPSetColorImage(pkt, f, s, w, i)                                                          \
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_SETCIMG, 24, 8) | _SHIFTL(f, 21, 3) | _SHIFTL(s, 19, 2) |          \
                           _SHIFTL((w) - 1, 0, 12),                                                 \
-                      (u32)(i))
+                      GBI_WORD1(i))
 /** A colour of RGBA 5551 from components of 8 bits and an alpha of 1 bit. */
 #define GPACK_RGBA5551(r, g, b, a)                                                                 \
     ((((r) << 8) & 0xF800) | (((g) << 3) & 0x7C0) | (((b) >> 2) & 0x3E) | ((a) & 0x1))
@@ -689,7 +712,7 @@ typedef struct {
     gDisplayListWords(pkt,                                                                         \
                       _SHIFTL(G_SETTIMG, 24, 8) | _SHIFTL(f, 21, 3) | _SHIFTL(s, 19, 2) |          \
                           _SHIFTL((w) - 1, 0, 12),                                                 \
-                      (u32)(i))
+                      GBI_WORD1(i))
 /** Load texels uls to lrs of the texture image through a tile, with row step dxt. */
 #define gDPLoadBlock(pkt, tile, uls, ult, lrs, dxt)                                                \
     gDisplayListWords(                                                                             \

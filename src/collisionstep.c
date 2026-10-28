@@ -112,7 +112,7 @@ s32 TipBalancedVehicle(RigidBody *body) {
         return 0;
     }
     GetBodyPointVelocity(&velocity, body, &corner);
-#if TGR_PC && TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     along = (COLLISION_PRODUCT(wheel->groundNormal.z, velocity.z) +
              COLLISION_PRODUCT(wheel->groundNormal.y, velocity.y)) +
             COLLISION_PRODUCT(wheel->groundNormal.x, velocity.x);

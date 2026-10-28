@@ -18,7 +18,7 @@
 #define AddTimingMarker(...) NullStub()
 #define PRECIPITATION_RENDER_REAL long double
 #define PRECIPITATION_RENDER_INTEGER(value) ((s32)(s64)(value))
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 #define PRECIPITATION_STREAK_REAL f32
 #define WRITE_PRECIPITATION_TEXEL(dx, dy)                                                          \
     CopyTileColumnScaled(g_dwCurrentSplitScreenIndex, row + (dy), column + (dx), step)
@@ -26,7 +26,7 @@
 /* BRGlide holds the streak on the x87 stack and never rounds it to a float. */
 #define PRECIPITATION_STREAK_REAL long double
 #define WRITE_PRECIPITATION_TEXEL(dx, dy) (texel[(dy) * RAIN_STREAK_TEXTURE_SIDE + (dx)] = shade)
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 static inline void WritePrecipitationRectangle(s32 left, s32 top, s32 width, s32 height) {
     u32 right = ((u32)left + (u32)width) >> 2;
     u32 bottom = ((u32)top + (u32)height) >> 2;
@@ -241,7 +241,7 @@ void RenderPrecipitationEffect(void) {
 
     /* A streak along the fall of the rain on the screen, brighter towards its end. */
     if (g_dwRainMode) {
-#if TGR_PC && TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
         FillMemoryPatternBytes(g_abPrecipitationTextures[g_dwCurrentSplitScreenIndex],
                                (u32)g_dwAlphaRampStripRowCount << 12,
                                0);
@@ -288,7 +288,7 @@ void RenderPrecipitationEffect(void) {
 #endif
                 if (column >= STREAK_MARGIN && column < RAIN_STREAK_TEXTURE_SIDE - STREAK_MARGIN) {
                     /* A disc five texels across without its corners, a store for each texel. */
-#if TGR_PC && TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
                     GetPrecipitationTextureDimensions(g_dwCurrentSplitScreenIndex);
 #else
                     shade = (step << 4) | step;

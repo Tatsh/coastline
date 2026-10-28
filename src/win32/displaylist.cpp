@@ -20,7 +20,7 @@
 #undef DrawText
 #include "text.h"
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 #include "win32/d3d/renderer.h"
 #endif
 
@@ -29,13 +29,13 @@
 
 // The brightest channel of a lit vertex: Direct3D takes colours from 0 to 1, and Glide from 0 to
 // 255.
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 #define GBI_COLOR_MAX 1.0f
 #else
 #define GBI_COLOR_MAX 255.0f
 #endif
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 namespace {
 // @ghidraAddress BRD3D: 0x10277370
 DWORD g_dwDirtyRenderStateMask;
@@ -84,7 +84,7 @@ DWORD g_dwAppliedRS_AddressV;
 // @ghidraAddress BRD3D: 0x10277420
 DWORD g_dwAppliedRS_AlphaBlendEnable;
 } // namespace
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 #define GBI_GEOMETRY_SHADING_SMOOTH 0x200
 #define GBI_GEOMETRY_CULL_FRONT 0x1000
@@ -103,7 +103,7 @@ float canvasScaleX = 1.0f;
 float canvasScaleY = 1.0f;
 
 GbiCommand *HandleHudCanvas(GbiCommand *command) {
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     FlushIndexedRenderBuffer();
 #endif
     renderCanvasWidth = command->w1 >> 16;
@@ -193,7 +193,7 @@ GbiCommand *HandleGbiSetEnvColor(GbiCommand *pCommand) {
     return pCommand + 1;
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 GbiCommand *HandleGbiSetPrimColor(GbiCommand *pCommand) {
     SetGbiColorChannels(
         pCommand->w1, g_fGbiPrimColorR, g_fGbiPrimColorG, g_fGbiPrimColorB, g_fGbiPrimColorA);
@@ -243,7 +243,7 @@ static GbiCommand *HandleFullTextureRectangle(GbiCommand *command) {
 }
 #endif /* ENABLE_PATCHES */
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 float g_fViewportScaleX;
 float g_fViewportScaleY;
 float g_fViewportTranslateX;
@@ -254,14 +254,14 @@ float g_fViewportScaleX = static_cast<float>(g_dwConfigFramebufferWidth / 2);
 float g_fViewportScaleY = static_cast<float>(g_dwConfigFramebufferHeight / 2);
 float g_fViewportTranslateX = static_cast<float>(g_dwConfigFramebufferWidth / 2);
 float g_fViewportTranslateY = static_cast<float>(g_dwConfigFramebufferHeight / 2);
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 // The pixels of a unit of a viewport of the console.
 #define GBI_VIEWPORT_UNIT 0.25f
 
 GbiCommand *HandleGbiSetViewport(GbiCommand *pCommand) {
     const GbiViewport *pViewport = pCommand->pViewport;
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     g_fViewportScaleX = static_cast<float>(pViewport->vp.vscale[0]) * GBI_VIEWPORT_UNIT;
     g_fViewportScaleY = static_cast<float>(pViewport->vp.vscale[1]) * -GBI_VIEWPORT_UNIT;
     g_fViewportTranslateX = static_cast<float>(pViewport->vp.vtrans[0]) * GBI_VIEWPORT_UNIT;
@@ -273,12 +273,12 @@ GbiCommand *HandleGbiSetViewport(GbiCommand *pCommand) {
     g_fViewportTranslateX = static_cast<float>(pViewport->vp.vtrans[0]) * GBI_VIEWPORT_UNIT;
     g_fViewportTranslateY =
         fHeight - static_cast<float>(pViewport->vp.vtrans[1]) * GBI_VIEWPORT_UNIT;
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 #ifdef ENABLE_PATCHES
     g_fViewportScaleX *= canvasScaleX;
     g_fViewportScaleY *= canvasScaleY;
     g_fViewportTranslateX *= canvasScaleX;
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     g_fViewportTranslateY *= canvasScaleY;
 #endif
 #endif /* ENABLE_PATCHES */
@@ -308,7 +308,7 @@ GbiCommand *HandleGbiSetCombine(GbiCommand *pCommand) {
     return pCommand + 1;
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 GbiCommand *HandleGbiSetFogColor(GbiCommand *pCommand) {
     unsigned dwRgba = pCommand->w1;
     g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_FOGCOLOR, dwRgba << 24 | dwRgba >> 8);
@@ -520,7 +520,7 @@ DWORD g_dwGbiLastFrameTime;
 DWORD g_dwGbiFrameDeltaTime;
 void (*g_pfnBindTextureEntry)(int nEntry);
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 GbiVertex g_aGbiVertexCache[GBI_VERTEX_CACHE_SIZE];
 GbiVertex *g_apVertexPool[GBI_VERTEX_CACHE_SIZE];
 int g_nVertexPoolCount;
@@ -723,7 +723,7 @@ GbiCommand *HandleGbiBindTextureEntry(GbiCommand *pCommand) {
     g_pfnBindTextureEntry(nEntry);
     return pCommand + pCommand->w1;
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 void (*g_pfnUploadTextureEntryToSurface)(int nEntry, TextureUploadData payload);
 
@@ -733,17 +733,17 @@ GbiCommand *HandleGbiLoadPreparedTexture(GbiCommand *pCommand) {
 }
 
 int g_dwScissorLeft;
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 int g_dwScissorTop;
 int g_dwScissorRight;
 #else
 // Glide starts the scissor over the whole frame buffer of the configuration.
 int g_dwScissorTop = g_dwConfigFramebufferHeight;
 int g_dwScissorRight = g_dwConfigFramebufferWidth;
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 int g_dwScissorBottom;
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 static inline void
 SetScissorAndClipStatus(int nUpperLeftX, int nUpperLeftY, int nLowerRightX, int nLowerRightY) {
 #ifdef ENABLE_PATCHES
@@ -794,7 +794,7 @@ static GbiCommand *HandleFullScissor(GbiCommand *command) {
     return command + 3;
 }
 #endif /* ENABLE_PATCHES */
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 GbiCommand *HandleGbiEndDisplayList(GbiCommand *pCommand) {
     if (g_dwGbiDisplayListStackDepth == 0) {
@@ -812,7 +812,7 @@ static constexpr std::array<GbiHandler, GBI_HANDLER_COUNT> MakeGbiHandlers() {
 #ifdef ENABLE_PATCHES
     apfnHandlers[GBI_OP_HUD_CANVAS] = HandleHudCanvas;
     apfnHandlers[GBI_OP_FULL_TEXTURE_RECTANGLE] = HandleFullTextureRectangle;
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     apfnHandlers[GBI_OP_FULL_SCISSOR] = HandleFullScissor;
 #endif
 #endif
@@ -855,7 +855,7 @@ void ExecuteGbiDisplayList(GbiCommand *pCommand) {
     }
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 
 DWORD g_dwD3DZFunc;
 int g_bCombineModeSpecialSubmitter;
@@ -869,11 +869,11 @@ SetPendingRenderState(DWORD *pdwPending, DWORD dwApplied, DWORD dwValue, DWORD d
         g_dwDirtyRenderStateMask |= dwDirtyBit;
     }
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 int g_nBoundTextureEntry;
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 void BindTextureEntry(int nEntry) {
     if (nEntry == g_nBoundTextureEntry) {
         return;
@@ -1129,7 +1129,7 @@ void ApplyGeometryModeChanges(void) {
 D3DCOLOR g_dwVertexConstantColor;
 float g_fVertexFogRange;
 int g_dwFogAlphaCutoff;
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 float g_fGbiLight0ColorR;
 float g_fGbiLight0ColorG;
@@ -1228,7 +1228,7 @@ LerpVertexFromPool(const GbiVertexSource *pFirst, const GbiVertexSource *pSecond
     return pVertex;
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 void UpdateD3DFogRenderState(void) {
     if (g_dwWeatherActive) {
         g_fVertexFogRange = !g_dwRainMode && !g_dwSnowMode && g_dwNightMode ? 16384.0f : 8192.0f;
@@ -1239,7 +1239,7 @@ void UpdateD3DFogRenderState(void) {
         g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_FOGENABLE, false);
     }
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 static void RecycleClipVertex(GbiVertexSource *pVertex) {
     if (std::greater_equal<>{}(pVertex, g_aClipVertexPool) &&
@@ -1317,7 +1317,7 @@ int ComputeVertexClipCodes(const GbiVertexSource *pVertex) {
     return nFlags;
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 void TransformVertexToScreen(
     GbiVertex *pDest, const GbiVertexSource *pSource, float fRed, float fGreen, float fBlue) {
     // The x87 arithmetic retains extended precision until each float is stored.
@@ -1658,10 +1658,10 @@ int SubmitVertexToRenderBufferFogged(GbiVertex *pVertex) {
 }
 
 int (*g_pfnSubmitVertexToRenderBuffer)(GbiVertex *pVertex) = SubmitVertexToRenderBuffer;
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 float g_fTexCoordScaleS;
 float g_fTexCoordScaleT;
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 
 // The entries a triangle takes in each buffer.
 #define TRIANGLE_VERTICES 3
@@ -2108,4 +2108,4 @@ void SelectVertexSubmitterForCombineMode(unsigned dwCombineHi, unsigned dwCombin
         g_apfnGbiHandlers[GBI_OP_VERTEX] = HandleGbiVertexLit;
     }
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */

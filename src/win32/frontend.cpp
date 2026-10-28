@@ -39,14 +39,14 @@
 #include "win32/settings.h"
 #include "win32/sound.h"
 #include "win32/timer.h"
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 #include "win32/d3d/ddutil.h"
 #include "win32/d3d/renderer.h"
 #include "win32/render.h"
 #endif
 
 namespace {
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 /** @ghidraAddress BRD3D: 0x118ac244 */
 DisplayMode **g_apSortedDisplayModes;
 #endif
@@ -102,7 +102,7 @@ unsigned g_dwUnlockedTrackMask;
  * @ghidraAddress BRGlide: 0x10ac5d14
  */
 MenuWidget *g_pCreateGameContinueItem;
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 /**
  * The display mode chosen in the configuration.
  *
@@ -110,7 +110,7 @@ MenuWidget *g_pCreateGameContinueItem;
  */
 DisplayMode *g_pSelectedDisplayMode;
 #endif
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 /**
  * The Direct3D device chosen in the menus, or null.
  *
@@ -1642,7 +1642,7 @@ int g_dwLobbyLaunchHandled;
 bool MenuScreen::ActivateMenuScreen() {
     RestoreMenuSelections();
     if (!bBuilt) {
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
         InitMenuDirectDrawSurfaces();
 #else
         InitMenuSurfaces();
@@ -1788,7 +1788,7 @@ bool MenuScreen::RunFrame() {
     return true;
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 // The red of the background of the menus, 64 of 255.
 #define MENU_BACKGROUND_RED (64.0f / 255.0f)
 
@@ -1818,7 +1818,7 @@ HRESULT MenuScreen::ClearBackBuffer() {
 HRESULT MenuScreen::ClearBackBuffer() {
     return 0;
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 int g_dwMenuSurfaceInitCount;
 
@@ -1828,7 +1828,7 @@ bool ReleaseMenuSurfacesAndFail(HWND hWnd) {
     return false;
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 IDirectDraw2 *g_pMenuDirectDraw;
 
 // The image of the mouse cursor, which BlitSurfaceRegion() clips to the screen of the menus.
@@ -1939,7 +1939,7 @@ void MenuScreen::FlipAndWait() {
         Sleep(0);
     }
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 // The delays of the shutdown in milliseconds, in states 2 and 3 of g_dwNetworkMenuState.
 #define SHUTDOWN_DELAY_STATE_2_MS 4570
@@ -2081,7 +2081,7 @@ static inline void UpdateMenuListSelection(MenuWidget *pWidget, int &selection) 
     }
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 int D3DDeviceSelectUI::UpdateDeviceSelection(MenuWidget *pWidget) {
     UpdateMenuListSelection(pWidget, g_dwSelectedDisplayDeviceIndex);
     return 1;
@@ -2274,7 +2274,7 @@ int ShowDisplayModeSelectMenu(MenuWidget *) {
 }
 
 int PopulateVideoSettingsLists(void) {
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     if (!PopulateDisplayDeviceList()) {
         return 0;
     }
@@ -2282,7 +2282,7 @@ int PopulateVideoSettingsLists(void) {
     return PopulateDisplayModeList() != 0;
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 int CompareDisplayModes(const void *left, const void *right) {
     DisplayMode *leftMode = *static_cast<DisplayMode *const *>(left);
     DisplayMode *rightMode = *static_cast<DisplayMode *const *>(right);
@@ -2453,7 +2453,7 @@ int ShowD3DDeviceSelectMenu(MenuWidget *) {
     PopulateVideoSettingsLists();
     return 1;
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 int IsGameCdInDrive(int nDrive) {
     char szRoot[MAX_PATH];
@@ -4240,7 +4240,7 @@ int InputOptionsUI::OnRestoreDefaults(MenuWidget *) {
 }
 
 int QuitGameConfirmUI::OnConfirmQuit(MenuWidget *pWidget) {
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     QueryAvailableTextureMemory();
 #endif
     BackupMenuSelections();
@@ -5496,7 +5496,7 @@ static inline void BuildDisplaySelectionUI(MenuScreen *screen,
     }
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 void BuildD3DDeviceSelectUI(MenuScreen *screen) {
     BuildDisplaySelectionUI(screen,
                             0x2b,
@@ -5506,7 +5506,7 @@ void BuildD3DDeviceSelectUI(MenuScreen *screen) {
                             0x2c,
                             ReturnToVideoOptionsFromDeviceSelect);
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 void BuildDisplayModeSelectUI(MenuScreen *screen) {
     BuildDisplaySelectionUI(screen,
@@ -5539,7 +5539,7 @@ void BuildVideoOptionsUI(MenuScreen *screen) {
     AddMenuWidget(panel, screen, 80, 46, 9, 0, 9);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     // The Glide library has no choice of the display device.
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     const int strings[] = {0x29, 0x2a, 0xc};
     const float offsets[] = {0, 19, 114};
     int (*const actions[])(MenuWidget *) = {
@@ -8071,7 +8071,7 @@ void BackupMenuSelections(void) {
     pBackup[11] = g_dwSelectedCarClass;
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 void SelectConfiguredDisplayMode(void) {
     g_pSelectedDisplayDriver =
         FindDirectDrawDriverOrDefault(&g_GlobalRallyConfig.DisplayDriverGuid);
@@ -8082,7 +8082,7 @@ void SelectConfiguredDisplayMode(void) {
                                                          0,
                                                          g_pSelectedRenderDevice);
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 void RestoreMenuSelections(void) {
     const int *pBackup = g_GlobalRallyConfig.adwMenuSelectionBackup;
@@ -8096,7 +8096,7 @@ void RestoreMenuSelections(void) {
     g_dwOptionSpecularLighting = !g_GlobalRallyConfig.bSpecularLightingSelection;
     g_dwOptionSkidMarks = !g_GlobalRallyConfig.bSkidMarksSelection;
     strcpy(g_szModemPhoneNumber, g_GlobalRallyConfig.szSavedModemPhoneNumber);
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     SelectConfiguredDisplayMode();
 #else
     NullStub();

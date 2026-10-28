@@ -135,7 +135,7 @@ extern s32 g_dwLightningFlashCounter;
 /** The side of the texture of the rain streaks, in texels. */
 #define RAIN_STREAK_TEXTURE_SIDE 64
 
-#if TGR_PC && TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 #define RAIN_STREAK_TEXTURE_BYTES_PER_TEXEL 4
 #else
 #define RAIN_STREAK_TEXTURE_BYTES_PER_TEXEL 1

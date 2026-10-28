@@ -93,7 +93,7 @@ void RenderTextToDisplayList(const char *text) {
         size *= 2;
     }
     if (size < SMALL_FONT_MAX_SIZE
-#if TGR_PC && TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
         || g_dwTextureQualityLevel > 1
 #endif
     ) {

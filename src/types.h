@@ -8,6 +8,27 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 #include <PR/ultratypes.h>
+#elif TGR_PLATFORM == TGR_PLATFORM_SDL
+/*
+ * The SDL game includes the headers of libultra beside this one, and both declare the types the
+ * same way. uint64_t is unsigned long on 64-bit Unix, where libultra writes unsigned long long.
+ */
+#include <stddef.h>
+
+#include <PR/ultratypes.h>
+
+#ifndef TRUE
+#define TRUE 1  /*!< The value of a true condition. */
+#define FALSE 0 /*!< The value of a false condition. */
+#endif
+
+/* The calling conventions of 32-bit x86 do not exist on other processors. */
+#if !defined(_WIN32) || defined(_WIN64)
+#define __cdecl
+#define __stdcall
+#define __thiscall
+#define __fastcall
+#endif
 #else
 #include <stddef.h>
 #include <stdint.h>
@@ -38,6 +59,6 @@ typedef double f64; /*!< A 64-bit floating-point number. */
 }
 #endif
 
-#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
+#endif /* TGR_PLATFORM */
 
 #endif /* COASTLINE_TYPES_H */

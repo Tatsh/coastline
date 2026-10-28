@@ -52,7 +52,7 @@ void ByteSwapTrackData(TrackHeader *track) {
 void LoadTextureMapFile(const char *path) {
     char line[1024];
     g_dwTextureMapEntryCount = 0;
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     g_dwHiResTextureMemoryThreshold = 0x300000;
 #else
     g_dwHiResTextureMemoryThreshold = 0x200000;
@@ -85,11 +85,11 @@ void LoadTextureMapFile(const char *path) {
 void LoadTrackTextureMap(int track) {
     char path[1024];
     std::sprintf(path, "%s%s", g_szTracks, g_apszTrackFilenames[track]);
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     std::strcpy(std::strrchr(path, '.'), ".hnd");
 #else
     std::strcpy(std::strrchr(path, '.'), ".hnt");
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
     LoadTextureMapFile(path);
 }
 

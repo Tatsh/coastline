@@ -1,7 +1,7 @@
 #include "win32/boot/app.h"
 #include "win32/boot/rallyconfig.h"
 #include "win32/buildinfo.h"
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 #include "win32/d3d/renderer.h"
 #endif
 #include "win32/directplay.h"
@@ -33,7 +33,7 @@ void ShutdownGameSession(void) {
     CloseHandle(g_hRenderMutex);
     g_hRenderMutex = nullptr;
     PrintWineDiagnostic("coastline: Restoring menu renderer.\n");
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     g_pMainRenderWindow->BeginRenderScene();
 #endif
     ResetRenderSubsystems(RENDER_BACKEND_MODE, 640, 480, 16, 0);

@@ -1966,7 +1966,7 @@ void RefreshSessionListSlots(void);
  */
 int GetSelectedSessionGuid(GUID *guid);
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 
 #endif
 
@@ -2740,7 +2740,7 @@ extern void *g_pFrontEndScratchBuffer;
 
 /** An image of the menus and the file it is loaded from. */
 struct MenuImage {
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
     IDirectDrawSurface *pSurface; /*!< The surface the image is loaded into. */
     DDSURFACEDESC desc;           /*!< The description of pSurface. */
 #else
@@ -3302,7 +3302,7 @@ extern MenuSprite g_aMenuSprites[];
  */
 extern int g_dwMenuSurfaceInitCount;
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 /**
  * The DirectDraw interface the menu images are loaded with, while the menus are set up.
  *
@@ -3326,7 +3326,7 @@ bool InitMenuDirectDrawSurfaces(void);
 }
 #endif
 
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
 /**
@@ -3364,7 +3364,7 @@ void RestoreMenuSelections(void);
 }
 #endif
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -3442,9 +3442,9 @@ int EnterTimeAttackMode(void);
  */
 void EnterNetworkLobbyScreen(void);
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
 
 /**
  * Whether the screen of the setup of the car of network play shows.

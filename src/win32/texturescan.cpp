@@ -302,7 +302,7 @@ void PreprocessDisplayListTextures(GbiCommand *pCommand) {
     }
 }
 
-#if TGR_RENDERER == TGR_RENDERER_D3D
+#if TGR_BRD3D
 int CreateTextureFromTmemShadow(unsigned char *pTmem) {
     TextureImageData image;
     image.bColorCombine = g_bTexScanColorCombine;
@@ -530,4 +530,4 @@ int CreateTextureFromTmemShadow(unsigned char *pTmem) {
     }
     return entry;
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
+#endif /* TGR_BRD3D */
