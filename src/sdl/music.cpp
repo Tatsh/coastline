@@ -43,7 +43,7 @@ f32 g_afNoteFrequencies[MUSIC_NOTES] = {
     std::bit_cast<f32>(0x43F6F333u),
 };
 s32 g_dwMusicPatternRow;
-s8 g_SilenceSampleData[4];
+s8 g_SilenceSampleData[SILENCE_SAMPLE_BYTES];
 s32 g_dwAudioTickToggle;
 s32 g_dwAiDmaPrevLength;
 u32 g_dwSoundEffectMixOffset;

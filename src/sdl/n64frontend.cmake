@@ -5,7 +5,7 @@
 set(_src "${CMAKE_SOURCE_DIR}/src")
 set(COASTLINE_N64_FRONTEND_SOURCES
     n64/controllerscreen.c n64/carselect.c n64/debugtext.c n64/decaldraw.c n64/decaleditor.c
-    n64/input.c
+    n64/input.c n64/model.c
     n64/mainmenu.c n64/options.c n64/paintshop.c n64/pakmenu.c n64/playerselect.c n64/race.c
     n64/racemenu.c
     n64/splash.c n64/sprite.c n64/text.c n64/texrect.c n64/timing.c n64/vehicle.c
@@ -14,6 +14,7 @@ set(COASTLINE_N64_FRONTEND_SOURCES
     # The shared units that work on the vehicles, the players, and their profiles, whose types
     # differ between the releases.
     camerachase.c camerarender.c controllerread.c framebegin.c frametime.c inputtranslate.c
+    modelanimation.c modelanimationflags.c modeldraw.c
     playercontrol.c
     playerinput.c
     profileinit.c replay.c
@@ -26,7 +27,7 @@ set_source_files_properties(${COASTLINE_N64_FRONTEND_SOURCES} PROPERTIES LANGUAG
 # n64frontenddata.cpp is written by tools/sdl/n64frontenddata.py from the symbols the front end
 # needs, with the extents of tools/sdl/n64frontend-extents.txt.
 add_library(coastline_n64frontend STATIC ${COASTLINE_N64_FRONTEND_SOURCES} n64frontenddata.cpp
-                                           n64frontendroutines.cpp n64system.cpp)
+                                           n64frontendroutines.cpp n64model.cpp n64system.cpp)
 target_include_directories(coastline_n64frontend PRIVATE "${_src}" "${_src}/n64"
                                                          "${_src}/libultra/include")
 # The symbols both releases define, and the data whose types differ between them, are the front

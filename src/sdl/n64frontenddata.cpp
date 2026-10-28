@@ -340,6 +340,7 @@ f32 g_fScreenRotationAngle;
 f32 g_fScreenSlideOffset;
 f32 g_fSeasonRecordsBlinkTime;
 f32 g_fSplashTime;
+Mtx g_mtxIdentity;
 s32 g_nPaintAnchorX;
 s32 g_nPaintAnchorY;
 s32 g_nPakFilesUsed;
@@ -697,6 +698,7 @@ void ReadN64FrontEndData(void) {
     coastline::RegisterCartridgeSymbol("g_dwVehicleOtherModeLFlags", g_dwVehicleOtherModeLFlags);
     coastline::RegisterCartridgeSymbol("g_fScreenIdleTimeout", g_fScreenIdleTimeout);
     coastline::RegisterCartridgeSymbol("g_fSeasonRecordsBlinkTime", g_fSeasonRecordsBlinkTime);
+    coastline::RegisterCartridgeSymbol("g_mtxIdentity", g_mtxIdentity);
     coastline::RegisterCartridgeSymbol("g_nScreenLastActiveIndex", g_nScreenLastActiveIndex);
     coastline::RegisterCartridgeSymbol("g_nScreenPendingSelection", g_nScreenPendingSelection);
     coastline::RegisterCartridgeSymbol("g_pDecalMask", g_pDecalMask);
@@ -925,6 +927,7 @@ void ReadN64FrontEndData(void) {
     coastline::ReadCartridgeSymbol("g_dwVehicleOtherModeLFlags", g_dwVehicleOtherModeLFlags);
     coastline::ReadCartridgeSymbol("g_fScreenIdleTimeout", g_fScreenIdleTimeout);
     coastline::ReadCartridgeSymbol("g_fSeasonRecordsBlinkTime", g_fSeasonRecordsBlinkTime);
+    coastline::ReadCartridgeSymbol("g_mtxIdentity", g_mtxIdentity);
     coastline::ReadCartridgeSymbol("g_nScreenLastActiveIndex", g_nScreenLastActiveIndex);
     coastline::ReadCartridgeSymbol("g_nScreenPendingSelection", g_nScreenPendingSelection);
     coastline::ReadCartridgeSymbol("g_pDecalMask", g_pDecalMask);

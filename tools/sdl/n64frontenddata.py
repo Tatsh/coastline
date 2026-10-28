@@ -81,13 +81,37 @@ def symbol_lengths(root: Path) -> dict[str, tuple[int, bool, int]]:
 DECLARATION = r'extern\s+((?:const\s+)?[\w\s\*]+?)\s*\b{}\b\s*((?:\[[^\]]*\])*)\s*;'
 
 
+def without_pc_branches(text: str) -> str:
+    """Return the text without the lines of the ``#if TGR_PC`` branches, as the front end sees it."""
+    kept: list[str] = []
+    # For each open conditional, whether it tests TGR_PC, and whether its current branch is the
+    # branch of the PC release.
+    stack: list[tuple[bool, bool]] = []
+    for line in text.splitlines():
+        directive = line.strip()
+        if directive.startswith('#if'):
+            tests_pc = directive in {'#if TGR_PC', '#if !TGR_PC'}
+            stack.append((tests_pc, directive == '#if TGR_PC'))
+            continue
+        if directive.startswith('#else') and stack:
+            tests_pc, pc_branch = stack[-1]
+            stack[-1] = (tests_pc, tests_pc and not pc_branch)
+            continue
+        if directive.startswith('#endif') and stack:
+            stack.pop()
+            continue
+        if not any(pc_branch for _, pc_branch in stack):
+            kept.append(line)
+    return '\n'.join(kept)
+
+
 def find_declaration(root: Path, symbol: str) -> tuple[str, str, str] | None:
     """Return the header, the type, and the extents of the declaration of a symbol."""
     pattern = re.compile(DECLARATION.format(re.escape(symbol)))
     for header in sorted((root / 'src').rglob('*.h')):
         if 'win32' in header.parts or 'sdl' in header.parts:
             continue
-        if match := pattern.search(header.read_text(encoding='utf-8')):
+        if match := pattern.search(without_pc_branches(header.read_text(encoding='utf-8'))):
             return (str(header.relative_to(root / 'src')), ' '.join(match.group(1).split()),
                     match.group(2))
     return None

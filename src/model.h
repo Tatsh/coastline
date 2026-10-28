@@ -25,7 +25,7 @@ typedef struct {
 #if TGR_PC
     TGR_PTR(GbiCommand) displayList;
 #else
-    Gfx *displayList; /*!< The display list that draws the part, or NULL. */
+    TGR_PTR(Gfx) displayList; /*!< The display list that draws the part, or NULL. */
 #endif
     u16 flags; /*!< The MODEL_PART_ flags. */
 #if TGR_PC
@@ -69,7 +69,7 @@ typedef struct {
 #if TGR_PC
     ModelVertexData vertices;
 #else
-    Vtx *vertices; /*!< The vertices the animation moves. */
+    TGR_PTR(Vtx) vertices; /*!< The vertices the animation moves. */
 #endif
     TGR_PTR(void) unreconstructed8; /*!< Turned into a pointer with the rest, and never read. */
     s32 keyCount;                   /*!< The number of keys. */
@@ -234,6 +234,17 @@ void RemapPointer(u32 *pointer, u32 lo, u32 hi, u32 base);
  * @ghidraAddress BRGlide: 0x1002e73a
  */
 void FixupDisplayListPointers(Gfx *displayList, u32 lo, u32 hi, u32 base);
+
+#if TGR_PLATFORM == TGR_PLATFORM_SDL && !TGR_PC
+/**
+ * Turn a model of the console, as it inflates from the cartridge, into a model of the host: its
+ * fields in the order of the host and its offsets into pointers.
+ *
+ * @param model The model.
+ * @param size The bytes of the model.
+ */
+void ReadConsoleModel(Model *model, u32 size);
+#endif
 
 /**
  * Make every animation of a model repeat by turning back at its end.

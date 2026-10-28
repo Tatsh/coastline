@@ -197,7 +197,13 @@ extern s32 g_dwMusicPatternRow;
  * @ghidraAddress EUR: 0x802a71c8
  * @ghidraAddress JPN: 0x802a6c68
  */
-extern s8 g_SilenceSampleData[4];
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/* A channel set going on the silence reads a block of the mixer past it before it stops. */
+#define SILENCE_SAMPLE_BYTES 0x1000
+#else
+#define SILENCE_SAMPLE_BYTES 4
+#endif
+extern s8 g_SilenceSampleData[SILENCE_SAMPLE_BYTES];
 
 /**
  * Toggled each message of the timer. The music ticks when it is set.
