@@ -893,15 +893,15 @@ void LoadHudGlyphTextureSets(void) {
 }
 
 void CreateDaySkyTexture(void) {
-    g_apVehicleReflectionTextures[0] = g_pfnCreateTextureFromN64ImageAutoLoadSize(
+    g_apVehicleReflectionTextures[0].entry = g_pfnCreateTextureFromN64ImageAutoLoadSize(
         g_abDaySkyTexture, g_abDaySkyPalette, 32, 128, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0);
 }
 
 void CreateNightSkyTexture(void) {
     unsigned nTexture = g_pfnCreateTextureFromN64ImageAutoLoadSize(
         g_abNightSkyTexture, g_abNightSkyPalette, 32, 128, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0);
-    g_apVehicleReflectionTextures[2] = nTexture;
-    g_apVehicleReflectionTextures[1] = nTexture;
+    g_apVehicleReflectionTextures[2].entry = nTexture;
+    g_apVehicleReflectionTextures[1].entry = nTexture;
 }
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 

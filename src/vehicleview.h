@@ -16,7 +16,11 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x100a6498
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-extern unsigned g_apVehicleReflectionTextures[4];
+typedef union VehicleReflectionTexture {
+    u8 *image;
+    unsigned entry;
+} VehicleReflectionTexture;
+extern VehicleReflectionTexture g_apVehicleReflectionTextures[4];
 #else
 extern u8 *g_apVehicleReflectionTextures[4];
 #endif

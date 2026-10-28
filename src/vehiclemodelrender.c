@@ -749,7 +749,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     reflection =
         g_abVehicleReflectionTexSelect[g_dwVehicleViewModeIndex][VEHICLE_GET(vehicle, InTunnel)];
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    BindVehicleTextureEntry(g_apVehicleReflectionTextures[reflection]);
+    BindVehicleTextureEntry(g_apVehicleReflectionTextures[reflection].entry);
 #else
     gDPLoadTextureBlock_4b(gDisplayListPtr++,
                            g_apVehicleReflectionTextures[reflection],

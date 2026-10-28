@@ -81,6 +81,7 @@ if(TGR_RENDERER STREQUAL "d3d")
             inputdefaults.cpp
             numericdata.c
             physicsdata.c
+            reflectiondata.c
             renderdefaults.cpp
             runtimebuffers.c
             runtimebuffers.cpp

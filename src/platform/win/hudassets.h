@@ -23,6 +23,12 @@ extern unsigned char g_abHudTexture32x64Data[1024];
 extern unsigned char g_abHudTexture64BData[2048];
 /** @ghidraAddress BRD3D: 0x100b8ca0 */
 extern unsigned char g_abFallbackEnvTextureData[2048];
+/** @ghidraAddress BRD3D: 0x100ba0b8 */
+extern unsigned char g_abTunnelReflectionTexture[2048];
+/** @ghidraAddress BRD3D: 0x118aa8f8 */
+extern unsigned char g_abDaySkyTexture[2048];
+/** @ghidraAddress BRD3D: 0x118aa0f8 */
+extern unsigned char g_abNightSkyTexture[2048];
 
 #ifdef __cplusplus
 }

@@ -858,17 +858,9 @@ unsigned CreateTextureFromN64ImageAutoLoadSize(const unsigned char *pImage,
  */
 extern unsigned char g_abDaySkyPalette[32];
 /**
- * @ghidraAddress BRD3D: 0x118aa8f8
- */
-extern unsigned char g_abDaySkyTexture[2048];
-/**
  * @ghidraAddress BRD3D: 0x118ab0f8
  */
 extern unsigned char g_abNightSkyPalette[32];
-/**
- * @ghidraAddress BRD3D: 0x118aa0f8
- */
-extern unsigned char g_abNightSkyTexture[2048];
 
 /**
  * @ghidraAddress BRD3D: 0x10073ac0
