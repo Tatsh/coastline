@@ -16,7 +16,7 @@ void guMtxF2L(float mf[4][4], Mtx *m) {
             e1 = FTOFIX32(mf[i][j * 2]);
             e2 = FTOFIX32(mf[i][j * 2 + 1]);
             *(ai++) = (e1 & 0xFFFF0000) | ((e2 >> 16) & 0xFFFF);
-            *(af++) = ((e1 << 16) & 0xFFFF0000) | (e2 & 0xFFFF);
+            *(af++) = (((u32)e1 << 16) & 0xFFFF0000) | (e2 & 0xFFFF);
         }
     }
 }

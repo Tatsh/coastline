@@ -51,7 +51,7 @@ s32 g_dwViewportMirrored;
 #define COORD_SHIFT(value, shift) ((value) << (shift))
 /* A fill of the frame buffer with a colour of 8-bit components, as two pixels. */
 #define FILL_COLOR(red, green, blue)                                                               \
-    ((u16)GPACK_RGBA5551(red, green, blue, 1) | (u16)GPACK_RGBA5551(red, green, blue, 1) << 16)
+    ((u16)GPACK_RGBA5551(red, green, blue, 1) | (u32)(u16)GPACK_RGBA5551(red, green, blue, 1) << 16)
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /* A blend of the colour of the frame buffer and the colour drawn, by the alpha of the fog. */
