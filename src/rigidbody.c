@@ -501,8 +501,14 @@ void Mtx3fMultiply(f32 out[3][3], f32 a[3][3], f32 b[3][3]) {
 
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && TGR_RENDERER == TGR_RENDERER_GLIDE
+            /* BRGlide adds the third product before the second. */
+            out[i][j] = (f32)(BODY_PRODUCT(a[i][0], b[0][j]) + BODY_PRODUCT(a[i][2], b[2][j]) +
+                              BODY_PRODUCT(a[i][1], b[1][j]));
+#else
             out[i][j] = (f32)(BODY_PRODUCT(a[i][0], b[0][j]) + BODY_PRODUCT(a[i][1], b[1][j]) +
                               BODY_PRODUCT(a[i][2], b[2][j]));
+#endif
         }
     }
 }
