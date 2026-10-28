@@ -330,7 +330,11 @@ extern s32 g_dwSaveAvailable;
  * @ghidraAddress JPN: 0x8027222c
  * @ghidraAddress BRD3D: 0x100aa210
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+extern u8 g_abRacePositionPoints[20];
+#else
 extern u8 g_abRacePositionPoints[];
+#endif
 
 /**
  * @ghidraAddress USA: 0x802707c0

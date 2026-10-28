@@ -1213,4 +1213,4 @@ extern Vehicle g_aVehicles[MAX_VEHICLES];
 /**
  * @ghidraAddress BRD3D: 0x100b37d0
  */
-extern u8 g_abPlayerColorsRgb[][3];
+extern u8 g_abPlayerColorsRgb[20][3];

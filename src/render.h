@@ -258,7 +258,11 @@ extern s32 g_dwNumViewports;
  * @ghidraAddress JPN: 0x8031c3f8
  * @ghidraAddress BRD3D: 0x106c1628
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+extern ViewportRect g_aViewportRects[4];
+#else
 extern ViewportRect g_aViewportRects[];
+#endif
 
 /**
  * The view being drawn.
