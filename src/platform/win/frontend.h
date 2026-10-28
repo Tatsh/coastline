@@ -2250,10 +2250,12 @@ extern int g_adwKeyBindingDuplicateFlags[KEY_CONFIG_ENTRY_COUNT];
 int DetectDuplicateKeyBindings(int nDevice);
 
 /**
+ * @param pWidget The item chosen, unread.
+ * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10045110
  * @ghidraAddress BRGlide: 0x1003e660
  */
-int ShowCarSetupScreen(void);
+int ShowCarSetupScreen(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x1004a580
@@ -2538,6 +2540,25 @@ public:
      */
     virtual ~MenuScreen();
 
+private:
+    /**
+     * Start a frame of the screen.
+     *
+     * @return Always true.
+     * @ghidraAddress BRD3D: 0x100488b0
+     * @ghidraAddress BRGlide: 0x10041d00
+     */
+    virtual bool BeginFrame();
+    /**
+     * Finish a frame of the screen.
+     *
+     * @return Whether the frame finished.
+     * @ghidraAddress BRD3D: 0x100488c0
+     * @ghidraAddress BRGlide: 0x10041d10
+     */
+    virtual bool EndFrame();
+
+public:
     /**
      * @ghidraAddress BRD3D: 0x10043fa0
      * @ghidraAddress BRGlide: 0x1003d4f0
@@ -2646,23 +2667,6 @@ public:
     void ResetPanelActivation(unsigned short widgetIndex);
 
 private:
-    /**
-     * Start a frame of the screen.
-     *
-     * @return Always true.
-     * @ghidraAddress BRD3D: 0x100488b0
-     * @ghidraAddress BRGlide: 0x10041d00
-     */
-    virtual bool BeginFrame();
-    /**
-     * Finish a frame of the screen.
-     *
-     * @return Whether the frame finished.
-     * @ghidraAddress BRD3D: 0x100488c0
-     * @ghidraAddress BRGlide: 0x10041d10
-     */
-    virtual bool EndFrame();
-
     void (*pfnBuildMenu)(MenuScreen *pScreen); /*!< Builds the items of the screen. */
     int dwFlags;                  /*!< Options of the screen. Bit 0x10 stops EndFrame(). */
     int bBuilt;                   /*!< Whether pfnBuildMenu built the items of the screen. */
@@ -3146,10 +3150,12 @@ void BuildRaceSetupUI(MenuScreen *pScreen);
 int BuildQuitGameConfirmUI(MenuScreen *pScreen);
 
 /**
+ * @param pWidget The item chosen, unread.
+ * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x100451e0
  * @ghidraAddress BRGlide: 0x1003e730
  */
-int ShowOptionsMenu(void);
+int ShowOptionsMenu(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x1004bdc0
@@ -4007,11 +4013,12 @@ int BuildPreRaceExitSeasonConfirmUI(MenuScreen *pScreen);
 /**
  * Show cached pre-race information and build an exit confirmation on the first visit.
  *
+ * @param pWidget The item chosen, unread.
  * @return Whether both initial allocations succeeded, or the information screen was cached.
  * @ghidraAddress BRD3D: 0x10045c90
  * @ghidraAddress BRGlide: 0x1003f130
  */
-int ShowPreRaceInfoScreen(void);
+int ShowPreRaceInfoScreen(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x1004f700
@@ -4037,11 +4044,12 @@ int ShowLoadSeasonMenu(void);
 /**
  * Show cached season saving, building the screen on its first visit.
  *
+ * @param pWidget The item chosen, unread.
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10045bc0
  * @ghidraAddress BRGlide: 0x1003f060
  */
-int ShowSaveSeasonScreen(void);
+int ShowSaveSeasonScreen(MenuWidget *pWidget);
 #ifdef __cplusplus
 }
 #endif

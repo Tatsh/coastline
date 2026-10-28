@@ -2969,7 +2969,7 @@ static inline void BuildOptionsMenuScreen(MenuScreen *screen) {
     BuildOptionsMenuUI(screen);
 }
 
-int ShowOptionsMenu(void) {
+int ShowOptionsMenu(MenuWidget *) {
     SetActiveMenuItemText(" ");
     return ShowCachedMenuScreen(g_pCachedMenu_Options, BuildOptionsMenuScreen);
 }
@@ -3287,30 +3287,30 @@ int ResultsSummaryExitSeasonConfirmUI::OnNo(MenuWidget *) {
 
 int MenuScreen::OnReturnToMainMenu(MenuWidget *pWidget) {
     pWidget->GetScreen()->ShutdownFrontEnd(1);
-    g_pActiveMenuScreen = g_pCachedMenu_MainMenu;
+    g_pActiveMenuScreen = g_pRootMenuScreen;
     return 0;
 }
 
-int PreRaceInfoUI::OnOptions(MenuWidget *) {
-    ShowOptionsMenu();
+int PreRaceInfoUI::OnOptions(MenuWidget *pWidget) {
+    ShowOptionsMenu(pWidget);
     g_pOptionsSubMenu->SetActionCallback(OptionsMenuUI::OnBackToPreRaceInfo);
     return 1;
 }
 
-int PreRaceInfoUI::OnSaveSeason(MenuWidget *) {
-    ShowSaveSeasonScreen();
+int PreRaceInfoUI::OnSaveSeason(MenuWidget *pWidget) {
+    ShowSaveSeasonScreen(pWidget);
     g_pSaveSeasonBackHandlerMenu->SetActionCallback(SaveSeasonUI::OnBackToPreRaceInfo);
     return 1;
 }
 
-int SeasonProgressInfoUI::OnOptions(MenuWidget *) {
-    ShowOptionsMenu();
+int SeasonProgressInfoUI::OnOptions(MenuWidget *pWidget) {
+    ShowOptionsMenu(pWidget);
     g_pOptionsSubMenu->SetActionCallback(OptionsMenuUI::OnBackToSeasonProgressInfo);
     return 1;
 }
 
-int SeasonProgressInfoUI::OnSaveSeason(MenuWidget *) {
-    ShowSaveSeasonScreen();
+int SeasonProgressInfoUI::OnSaveSeason(MenuWidget *pWidget) {
+    ShowSaveSeasonScreen(pWidget);
     g_pSaveSeasonBackHandlerMenu->SetActionCallback(SaveSeasonUI::OnBackToSeasonProgressInfo);
     return 1;
 }
@@ -3464,11 +3464,11 @@ int MultiplayerGameSetupUI::OnEscape(MenuWidget *pWidget) {
     return 1;
 }
 
-int ChampionshipSeasonUI::OnStartNewSeason(MenuWidget *) {
+int ChampionshipSeasonUI::OnStartNewSeason(MenuWidget *pWidget) {
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     ResetMenuSelectionsToDefaults();
     g_aVehicles[0].SetProfile(nullptr);
-    ShowPreRaceInfoScreen();
+    ShowPreRaceInfoScreen(pWidget);
     g_pExitSeasonConfirmMenu->SetActionCallback(PreRaceInfoUI::OnBackToChampionshipSeason);
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     ResolveRaceSelections();
@@ -3728,22 +3728,22 @@ int MainMenuUI::OnPlayCredits(MenuWidget *pWidget) {
     return 0;
 }
 
-int ShowCarSetupScreen(void) {
+int ShowCarSetupScreen(MenuWidget *) {
     return ShowCachedMenuScreen(g_pCachedMenu_CarSetup, BuildCarSetupUI);
 }
 
-int SeasonProgressInfoUI::OnCarSetup(MenuWidget *) {
+int SeasonProgressInfoUI::OnCarSetup(MenuWidget *pWidget) {
     g_bRaceSetupShowCarSetup = 0;
-    ShowCarSetupScreen();
+    ShowCarSetupScreen(pWidget);
     g_bRaceSetupShowCarSetup = 1;
     g_pCarSetupMenu->SetActionCallback(CarSetupUI::OnBackToSeasonProgressInfo);
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     return 1;
 }
 
-int LoadTimeAttackMenuUI::OnCarSetup(MenuWidget *) {
+int LoadTimeAttackMenuUI::OnCarSetup(MenuWidget *pWidget) {
     g_bRaceSetupShowCarSetup = 0;
-    ShowCarSetupScreen();
+    ShowCarSetupScreen(pWidget);
     g_bRaceSetupShowCarSetup = 1;
     g_pCarSetupMenu->SetActionCallback(CarSetupUI::OnBackToTimeAttack);
     g_dwGameMode = GAME_MODE_TIME_ATTACK;
@@ -3757,16 +3757,16 @@ int NetworkCarSetupUI::OnBootPlayer(MenuWidget *) {
     return 1;
 }
 
-int LoadSeasonUI::OnLoadAutoSave(MenuWidget *) {
+int LoadSeasonUI::OnLoadAutoSave(MenuWidget *pWidget) {
     LoadAutoSaveSeason();
-    ShowPreRaceInfoScreen();
+    ShowPreRaceInfoScreen(pWidget);
     g_pExitSeasonConfirmMenu->SetActionCallback(PreRaceInfoUI::OnBackToLoadSeason);
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     return 1;
 }
 
 int OnListDialogItemSelected(MenuWidget *pWidget) {
-    ShowPreRaceInfoScreen();
+    ShowPreRaceInfoScreen(pWidget);
     pWidget->GetScreen()->DestroyPanels();
     delete g_pCachedMenu_NotEnoughPoints;
     g_pCachedMenu_NotEnoughPoints = nullptr;
@@ -3774,7 +3774,7 @@ int OnListDialogItemSelected(MenuWidget *pWidget) {
 }
 
 int OnPressAnyKeyContinue(MenuWidget *pWidget) {
-    ShowPreRaceInfoScreen();
+    ShowPreRaceInfoScreen(pWidget);
     if (g_SeasonProgress.championshipFlags > 0 && !g_SeasonProgress.season &&
         !g_SeasonProgress.round) {
         memset(g_SeasonProgress.seasonPlaces, 0, sizeof(g_SeasonProgress.seasonPlaces));
@@ -4812,21 +4812,21 @@ int CarSetupUI::OnBackToRaceSetup(MenuActionWidget *pItem) {
     return ReturnFromCachedMenu(pItem, g_pCachedMenu_CarSetup, g_pCachedMenu_MainMenu);
 }
 
-int LoadSeasonUI::OnContinueSeason(MenuActionWidget *) {
-    ShowPreRaceInfoScreen();
+int LoadSeasonUI::OnContinueSeason(MenuActionWidget *pWidget) {
+    ShowPreRaceInfoScreen(pWidget);
     g_pExitSeasonConfirmMenu->SetActionCallback(PreRaceInfoUI::OnBackToLoadSeason);
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     return 1;
 }
 
-int CarSetupUI::OnOpenOptions(MenuActionWidget *) {
-    ShowOptionsMenu();
+int CarSetupUI::OnOpenOptions(MenuActionWidget *pWidget) {
+    ShowOptionsMenu(pWidget);
     g_pOptionsSubMenu->SetActionCallback(OptionsMenuUI::OnBackToCarSetup);
     return 1;
 }
 
-int CarSetupUI::OnOpenSaveSeason(MenuActionWidget *) {
-    ShowSaveSeasonScreen();
+int CarSetupUI::OnOpenSaveSeason(MenuActionWidget *pWidget) {
+    ShowSaveSeasonScreen(pWidget);
     g_pSaveSeasonBackHandlerMenu->SetActionCallback(SaveSeasonUI::OnBackToCarSetup);
     return 1;
 }
@@ -4835,8 +4835,8 @@ int OptionsMenuUI::OnBackToRaceResultsInfo(MenuActionWidget *pItem) {
     return ReturnFromOptionsMenu(pItem, g_pCachedMenu_RaceResults);
 }
 
-int RaceResultsInfoUI::OnOpenOptions(MenuActionWidget *) {
-    ShowOptionsMenu();
+int RaceResultsInfoUI::OnOpenOptions(MenuActionWidget *pWidget) {
+    ShowOptionsMenu(pWidget);
     g_pOptionsSubMenu->SetActionCallback(OptionsMenuUI::OnBackToRaceResultsInfo);
     return 1;
 }
@@ -4845,8 +4845,8 @@ int SaveSeasonUI::OnBackToRaceResultsInfo(MenuActionWidget *pItem) {
     return ReturnFromSaveSeasonMenu(pItem, g_pCachedMenu_RaceResults);
 }
 
-int RaceResultsInfoUI::OnOpenSaveSeason(MenuActionWidget *) {
-    ShowSaveSeasonScreen();
+int RaceResultsInfoUI::OnOpenSaveSeason(MenuActionWidget *pWidget) {
+    ShowSaveSeasonScreen(pWidget);
     g_pSaveSeasonBackHandlerMenu->SetActionCallback(SaveSeasonUI::OnBackToRaceResultsInfo);
     return 1;
 }
@@ -4855,8 +4855,8 @@ int OptionsMenuUI::OnBackToRaceResultsSummary(MenuActionWidget *pItem) {
     return ReturnFromOptionsMenu(pItem, g_pCachedMenu_RaceResultsSummary);
 }
 
-int RaceResultsSummaryUI::OnOpenOptions(MenuActionWidget *) {
-    ShowOptionsMenu();
+int RaceResultsSummaryUI::OnOpenOptions(MenuActionWidget *pWidget) {
+    ShowOptionsMenu(pWidget);
     g_pOptionsSubMenu->SetActionCallback(OptionsMenuUI::OnBackToRaceResultsSummary);
     return 1;
 }
@@ -4865,8 +4865,8 @@ int SaveSeasonUI::OnBackToRaceResultsSummary(MenuActionWidget *pItem) {
     return ReturnFromSaveSeasonMenu(pItem, g_pCachedMenu_RaceResultsSummary);
 }
 
-int RaceResultsSummaryUI::OnOpenSaveSeason(MenuActionWidget *) {
-    ShowSaveSeasonScreen();
+int RaceResultsSummaryUI::OnOpenSaveSeason(MenuActionWidget *pWidget) {
+    ShowSaveSeasonScreen(pWidget);
     g_pSaveSeasonBackHandlerMenu->SetActionCallback(SaveSeasonUI::OnBackToRaceResultsSummary);
     return 1;
 }
@@ -4875,8 +4875,8 @@ int OptionsMenuUI::OnBackToRaceResultsTotals(MenuActionWidget *pItem) {
     return ReturnFromOptionsMenu(pItem, g_pCachedMenu_RaceResultsTotals);
 }
 
-int RaceResultsTotalsUI::OnOpenOptions(MenuActionWidget *) {
-    ShowOptionsMenu();
+int RaceResultsTotalsUI::OnOpenOptions(MenuActionWidget *pWidget) {
+    ShowOptionsMenu(pWidget);
     g_pOptionsSubMenu->SetActionCallback(OptionsMenuUI::OnBackToRaceResultsTotals);
     return 1;
 }
@@ -4885,8 +4885,8 @@ int SaveSeasonUI::OnBackToRaceResultsTotals(MenuActionWidget *pItem) {
     return ReturnFromSaveSeasonMenu(pItem, g_pCachedMenu_RaceResultsTotals);
 }
 
-int RaceResultsTotalsUI::OnOpenSaveSeason(MenuActionWidget *) {
-    ShowSaveSeasonScreen();
+int RaceResultsTotalsUI::OnOpenSaveSeason(MenuActionWidget *pWidget) {
+    ShowSaveSeasonScreen(pWidget);
     g_pSaveSeasonBackHandlerMenu->SetActionCallback(SaveSeasonUI::OnBackToRaceResultsTotals);
     return 1;
 }
@@ -4907,7 +4907,7 @@ int ShowLoadSeasonMenu(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_LoadSeason, BuildLoadSeasonUI);
 }
 
-int ShowSaveSeasonScreen(void) {
+int ShowSaveSeasonScreen(MenuWidget *) {
     return ShowCachedMenuScreen(g_pCachedMenu_SaveSeason, BuildSaveSeasonUI);
 }
 
@@ -6076,7 +6076,7 @@ void BuildFrontEndRootMenuUI(MenuScreen *screen) {
                                             InvokeRootMenuAction<ShowMultiplayerNameScreen>,
                                             RootMenuUI_ShowTimeAttack,
                                             InvokeRootMenuAction<ShowRaceSetupMenu>,
-                                            InvokeRootMenuAction<ShowOptionsMenu>,
+                                            ShowOptionsMenu,
                                             MainMenuUI::OnPlayCredits,
                                             InvokeRootMenuAction<ShowQuitGameConfirmMenu>};
     int (*const idleActions[])(MenuWidget *) = {ValidateEntityState,
@@ -7318,9 +7318,8 @@ void BuildRaceSetupUI(MenuScreen *screen) {
         panel->SetNavigationCount(panel->GetNavigationCount() + 1);
         offset = 19;
     }
-    int (*const actions[])(MenuWidget *) = {RaceSetupUI::OnCycleWeather,
-                                            RaceSetupUI::OnCycleLapCount,
-                                            InvokeRootMenuAction<ShowCarSetupScreen>};
+    int (*const actions[])(MenuWidget *) = {
+        RaceSetupUI::OnCycleWeather, RaceSetupUI::OnCycleLapCount, ShowCarSetupScreen};
     const int labels[] = {0x1c, 0x1d, 0x1e};
     const float spacing[] = {19, 57, 19};
     for (int index = 0; index < 3; index++) {
@@ -7532,7 +7531,7 @@ void BuildPreRaceInfoUI(MenuScreen *pScreen) {
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
 }
 
-int ShowPreRaceInfoScreen(void) {
+int ShowPreRaceInfoScreen(MenuWidget *) {
     return ShowCachedMenuWithExitConfirmation(g_pCachedMenu_PreRaceInfo,
                                               BuildPreRaceInfoUI,
                                               g_pPreRaceInfoMenuScreen,
@@ -7556,7 +7555,7 @@ int RaceResultsTotalsUI::OnContinue(MenuActionWidget *pItem) {
         ShowNotEnoughPointsScreen();
         g_dwSeasonRoundQualified = 0;
     } else {
-        ShowPreRaceInfoScreen();
+        ShowPreRaceInfoScreen(pItem);
     }
     pItem->GetScreen()->DestroyPanels();
     delete g_pCachedMenu_RaceResultsTotals;
