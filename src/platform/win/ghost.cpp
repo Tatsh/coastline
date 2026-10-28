@@ -517,7 +517,7 @@ void ApplyVehicleKeyframe(Vehicle *pVehicle, const KeyframeState *pState) {
     }
     VEHICLE_SET(pVehicle, Throttle, IsKeyframeFlagSet(pState->fReverse) ? -1.0f : 1.0f);
     if (!(VEHICLE_GET(pVehicle, Distance) > 0.0f) ||
-        VEHICLE_GET(pVehicle, Distance) + 1000.0f > pState->fProgress) {
+        static_cast<long double>(VEHICLE_GET(pVehicle, Distance)) + 1000.0f > pState->fProgress) {
         VEHICLE_SET(pVehicle, Distance, pState->fProgress);
     }
     VEHICLE_SET(pVehicle, EngineRpm, pState->fEngineRpm);
