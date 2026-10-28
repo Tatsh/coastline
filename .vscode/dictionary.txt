@@ -419,6 +419,7 @@ frontenddata
 frontwheel
 fsanitize
 ftofrac
+ftol
 funclets
 funcs
 fxfalse

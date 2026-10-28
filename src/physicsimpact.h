@@ -21,7 +21,12 @@ static inline u8 ImpactVolume(f32 speed) {
 
 /* Record a hard hit at a speed into a surface for its sound, and where it was. */
 static inline void RecordImpact(RigidBody *body, f32 speed) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    /* __ftol truncates through 64 bits, which gives 0 for a NaN speed. */
+    body->impactSpeed = (u32)(s64)speed;
+#else
     body->impactSpeed = (u32)speed;
+#endif
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
     if (body->impactSpeed < 10) {
         body->impactSpeed = 0;
