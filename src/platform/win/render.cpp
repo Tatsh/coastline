@@ -21,6 +21,13 @@
 #include "screen.h"
 #include "weather.h"
 
+void (*g_pfnRenderBackendSubmitDisplayList)(GbiCommand *pDisplayList);
+void (*g_pfnRenderBackendInit)(void);
+void (*g_pfnRenderBackendShutdown)(void);
+void (*g_pfnRenderBackendUpdateFog)(void);
+int (*g_pfnRenderDeviceReset)(void);
+void (*g_pfnRenderDeviceShutdown)(void);
+
 namespace {
 /**
  * @ghidraAddress BRD3D: 0x11829844

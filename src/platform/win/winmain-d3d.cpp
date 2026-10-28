@@ -28,6 +28,12 @@
 #include "timing.h"
 #include "vehicle.h"
 
+HINSTANCE g_hAppInstance;
+HWND g_hMainWindow;
+HACCEL g_hAccelTable;
+WPARAM g_dwAppActive;
+HCURSOR g_hArrowCursor;
+
 namespace {
 /**
  * Whether the main window is maximised.

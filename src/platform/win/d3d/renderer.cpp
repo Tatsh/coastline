@@ -12,6 +12,8 @@
 #include "platform/win/settings.h"
 #include "screen.h"
 
+void (*g_pfnPresentFrame)(void);
+
 namespace {
 /**
  * Whether the render target was cleared since the last flip.

@@ -17,6 +17,7 @@
 #include "platform/win/wavread.h"
 #include "soundchannel.h"
 
+MCIDEVICEID g_dwMciCdAudioDeviceId;
 IDirectSound *g_pDirectSound;
 int g_dwDirectSoundRefCount;
 IDirectSoundBuffer *g_pDirectSoundPrimaryBuffer;
