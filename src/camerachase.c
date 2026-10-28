@@ -16,6 +16,13 @@
 #define CHASE_HEIGHT 2.4f
 #define CHASE_DISTANCE_AFTER_SEASON 13.0f
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/* The x87 tests take an unordered length as equal to zero. */
+#define CHASE_NONZERO(value) ((value) < 0.0f || (value) > 0.0f)
+#else
+#define CHASE_NONZERO(value) ((value) != 0.0f)
+#endif
+
 void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share) {
     Vec3f offset;
     f32 previous[3];
@@ -50,7 +57,7 @@ void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share) {
     camera->position.z -= CHASE_HEIGHT;
     Vec3fSubtract(&offset, &camera->position, &VEHICLE_GET(vehicle, Frame).position);
     length = Vec3fLength(&offset);
-    if (length != 0.0f) {
+    if (CHASE_NONZERO(length)) {
         if (g_dwNumViewports == 1) {
             Vec3fScaleInPlace(&offset, CHASE_DISTANCE / length);
         } else {
@@ -69,7 +76,7 @@ void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share) {
         Vec3fScale(&camera->position, &VEHICLE_GET(vehicle, Frame).forward, -CHASE_DISTANCE);
     }
     length = Vec3fLength(&camera->position);
-    if (length != 0.0f) {
+    if (CHASE_NONZERO(length)) {
         Vec3fScaleInPlace(&camera->position, CHASE_DISTANCE / length);
     }
 
