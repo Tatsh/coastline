@@ -6986,7 +6986,7 @@ void BuildRaceResultsSummaryUI(MenuScreen *pScreen) {
     if (g_SeasonTable[g_bSeasonClass].raceCount > 0) {
         int round = 0;
         do {
-            char label[32];
+            char label[36];
             char number[32];
             strcpy(label, GetStringResource(0x37));
             strcat(label, g_szSpace);
@@ -8159,7 +8159,7 @@ bool InitializeFrontEndResources(void) {
     }
 
     memset(g_aFrontEndResourceSlots, 0xff, sizeof(g_aFrontEndResourceSlots));
-    memset(g_adwFrontEndResourceFlags, 0xff, sizeof(g_adwFrontEndResourceFlags));
+    memset(g_adwFrontEndResourceFlags, 0, sizeof(g_adwFrontEndResourceFlags));
     for (FrontEndResourceSlot &slot : g_aFrontEndResourceSlots) {
         slot.anValues[2] = 0;
     }
