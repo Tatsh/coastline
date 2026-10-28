@@ -6,7 +6,11 @@
  * Parameters with unknown types use integer arguments.
  */
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/win32api.h"
+#else
 #include <windows.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {

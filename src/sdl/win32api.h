@@ -159,6 +159,52 @@ static inline void Sleep(DWORD milliseconds) {
     SDL_Delay(milliseconds);
 }
 
+/**
+ * Find a library the process loaded. The SDL game loads none.
+ *
+ * @param name The name of the library.
+ * @return Null.
+ */
+static inline HMODULE GetModuleHandleA(const char *name) {
+    return nullptr;
+}
+
+/**
+ * Load a library. The SDL game has none of the libraries of the PC release.
+ *
+ * @param name The name of the library.
+ * @return Null.
+ */
+static inline HMODULE LoadLibraryA(const char *name) {
+    return nullptr;
+}
+
+/**
+ * @param module A library of LoadLibraryA().
+ * @param name The name of a routine.
+ * @return Null.
+ */
+static inline void *GetProcAddress(HMODULE module, const char *name) {
+    return nullptr;
+}
+
+/**
+ * Post a message to a window. The SDL game has no window procedure, and the message is dropped.
+ *
+ * @return TRUE.
+ */
+static inline BOOL PostMessageA(HWND window, UINT message, WPARAM wParam, LPARAM lParam) {
+    return TRUE;
+}
+
+/**
+ * @param name The name of the message.
+ * @return The first message number a window registers, 0xC000.
+ */
+static inline UINT RegisterWindowMessageA(const char *name) {
+    return 0xC000;
+}
+
 #ifdef __cplusplus
 }
 #endif

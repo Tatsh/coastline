@@ -137,6 +137,7 @@ chdrive
 cheryll
 chewbaca
 chnl
+chunknotfound
 ckid
 cksize
 cleargeometrymode
@@ -339,6 +340,7 @@ drlibs
 drytire
 dsbcaps
 dsbfrequency
+dsblock
 dsbpan
 dsbplay
 dsbstatus
@@ -351,6 +353,7 @@ dshade
 dshademode
 dsinf
 dsll
+dsoundcompat
 dsra
 dsref
 dsrl
@@ -396,6 +399,7 @@ endlabel
 engsound
 entermenuloop
 entersizemove
+entirebuffer
 enumvalue
 enya
 epirawdma
@@ -672,6 +676,7 @@ maximizebox
 maxz
 mbcs
 mcideviceid
+mcierr
 mcierror
 mcinotify
 mdebug
@@ -705,9 +710,11 @@ mixerlinecontrolsa
 mktemp
 mmckinfo
 mmio
+mmioerr
 mmioinfo
 mmresult
 mmsyserr
+mmsystemcompat
 mnrwd
 moddi
 modelanimation
@@ -1276,6 +1283,7 @@ waitforsingleobject
 wasstilldrawing
 watr
 wavechunks
+waveformat
 waveformatex
 wavesample
 wavread

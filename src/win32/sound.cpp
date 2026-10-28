@@ -3,11 +3,13 @@
 #include <cstdlib>
 #include <cstring>
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include <windows.h>
 // The headers below need the types of windows.h.
 #include <mmreg.h>
 #include <msacm.h>
 #include <objbase.h>
+#endif
 
 #include "soundchannel.h"
 #include "win32/boot/app.h"

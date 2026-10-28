@@ -3,7 +3,9 @@
 #include <cstdlib>
 #include <type_traits>
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include <windows.h>
+#endif
 
 #include "win32/boot/strings.h"
 #include "win32/sound.h"

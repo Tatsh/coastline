@@ -60,6 +60,10 @@ bool StartPcGame(TlRenderer &renderer,
     ReadInstallDirectoryFromRegistry();
     LoadStringTableFromDll();
     LoadBossRallyIniSettings("");
+    // ponytail: music mode 2 needs the EAR library, which the SDL game does not have yet.
+    if (g_dwPlayMusicMode == 2) {
+        g_dwPlayMusicMode = 0;
+    }
     std::strcpy(g_szConfigFilePath, g_szInstallDirectory);
     std::strcat(g_szConfigFilePath, "BossRally.cfg");
     g_GlobalRallyConfig.LoadRallyConfigFile(g_szConfigFilePath);
