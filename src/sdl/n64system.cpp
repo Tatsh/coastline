@@ -5,6 +5,7 @@
 // takes the place of these once the saves are written.
 
 #include <cstring>
+#include <unordered_map>
 
 #include <PR/os.h>
 #include <PR/os_cont.h>
@@ -36,7 +37,21 @@ void LogN64FrontEndData(void) {
             g_aCarModels[0].name);
 }
 
+u8 g_abMenuMusicModule[MENU_MUSIC_MODULE_SIZE];
+
 namespace {
+// The player of the audio of the console, shared with the PC game.
+coastline::N64Audio *g_audio;
+} // namespace
+
+void SetN64FrontEndAudio(coastline::N64Audio *audio) {
+    g_audio = audio;
+}
+
+namespace {
+
+// The bytes of each module inflated last, by its address, for the player of the music.
+std::unordered_map<const void *, std::size_t> g_moduleSizes;
 
 // A big-endian word of the cartridge, or 0 past its end.
 u32 RomWord(u32 romOffset) {
@@ -78,7 +93,12 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
                     data.error().c_str());
         return 0;
     }
+    if (dst == g_abMenuMusicModule && data->size() > sizeof(g_abMenuMusicModule)) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "The menu music does not fit its buffer.");
+        return 0;
+    }
     std::memcpy(dst, data->data(), data->size());
+    g_moduleSizes[dst] = data->size();
     if (job != nullptr) {
         job->dst = nullptr;
     }
@@ -156,6 +176,11 @@ s32 osContStartReadData(OSMesgQueue *queue) {
 }
 
 void InitAudioSystem(void *module, void *work) {
+    auto size = g_moduleSizes.find(module);
+    if (g_audio == nullptr || size == g_moduleSizes.end()) {
+        return;
+    }
+    g_audio->Play({static_cast<const std::uint8_t *>(module), size->second});
 }
 
 } // extern "C"

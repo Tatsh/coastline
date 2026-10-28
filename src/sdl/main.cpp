@@ -276,14 +276,16 @@ int main(int argc, char *argv[]) {
         .help("length of the WAV file in seconds")
         .default_value(30)
         .scan<'i', int>();
-    parser.add_argument("--scene").help("scene to start in: renderer-test or race");
+    parser.add_argument("--scene").help(
+        "scene to start in: renderer-test, race, n64-data, or n64-frontend");
     for (const char *name : {"--game-mode", "--track", "--car", "--weather"}) {
         parser.add_argument(name)
             .help("choice of the race scene, as the menus number it")
             .scan<'i', int>();
     }
     parser.add_argument("--keys").help(
-        "keys to hold in the race scene, such as SPACE@300-305,UP@320-900 for frame ranges");
+        "keys to hold in the race and n64-frontend scenes, such as SPACE@300-305,UP@320-900 for "
+        "frame ranges");
     parser.add_argument("--screenshot").help("save a frame to this PNG file");
     parser.add_argument("--screenshot-frame")
         .help("number of the frame to save, from 1")
@@ -398,7 +400,8 @@ int main(int argc, char *argv[]) {
             coastline::N64Audio audio;
             // The PC game chooses its modules, or plays its own music.
             if (music && config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice() &&
-                parser.present("--scene") != "race") {
+                parser.present("--scene") != "race" &&
+                parser.present("--scene") != "n64-frontend") {
                 audio.Play(*music);
             }
             std::optional<std::filesystem::path> screenshot;
@@ -441,9 +444,12 @@ int main(int argc, char *argv[]) {
                     return EXIT_FAILURE;
                 }
                 ReadN64FrontEndData();
+                SetN64FrontEndAudio(config.GetBoolean("Game", "PlayMusic", true) ? &audio :
+                                                                                   nullptr);
                 coastline::StartPcGameForFrontEnd();
                 auto keys = ParseKeyScript(parser.present("--keys").value_or(""));
                 int frame = 0;
+                std::optional<std::filesystem::path> framePath;
                 coastline::SetFramePump([&]() {
                     ++frame;
                     SDL_Event event;
@@ -460,8 +466,18 @@ int main(int argc, char *argv[]) {
                         }
                     }
                     coastline::SetScriptedKeys(std::move(held));
-                    coastline::SetPcGameCapture(
-                        screenshot && frame + 1 == screenshotFrame ? &*screenshot : nullptr);
+                    framePath.reset();
+                    if (screenshot && frame + 1 == screenshotFrame) {
+                        framePath = screenshot;
+                    } else if (screenshot && screenshotEvery > 0 &&
+                               (frame + 1) % screenshotEvery == 0) {
+                        char number[16];
+                        std::snprintf(number, sizeof(number), "-%06d", frame + 1);
+                        framePath =
+                            screenshot->parent_path() / (screenshot->stem().string() + number +
+                                                         screenshot->extension().string());
+                    }
+                    coastline::SetPcGameCapture(framePath ? &*framePath : nullptr);
                     return !(quitAfterScreenshot && screenshot && frame >= screenshotFrame);
                 });
                 InitGameAndShowMenusN64();

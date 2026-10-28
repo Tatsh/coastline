@@ -170,7 +170,14 @@ void InitGameAndShowMenus(void) {
 #endif
 #endif /* TGR_PC */
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL && !TGR_PC
+    /* The PC release builds GameModeMainLoop() empty. The frames presented end the program. */
+    for (;;) {
+        CallCurrentGameMode();
+    }
+#else
     GameModeMainLoop();
+#endif
 }
 #if TGR_PC
 void SetWeatherAndRefreshVehicleMaterials(u32 weather) {

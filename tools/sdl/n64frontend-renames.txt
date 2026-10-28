@@ -117,6 +117,8 @@ UpdateVehiclePhysicsFrame
 UpdateVehicleWheelTransforms
 Vec3fNormalizeFast
 g_abHudFontCharToGlyph
+g_adwBgmVolumeLevels
+g_adwSfxVolumeLevels
 g_abLargeFontGradient
 g_abLargeFontShadowGradient
 g_abSmallFontGradient

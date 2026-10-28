@@ -104,7 +104,13 @@ typedef struct {
  * @ghidraAddress EUR: 0x80025c00
  * @ghidraAddress JPN: 0x80025c00
  */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/* The bytes from the menu music up to the heap at 0x80096400 on the console. */
+#define MENU_MUSIC_MODULE_SIZE 0x70800
+extern u8 g_abMenuMusicModule[MENU_MUSIC_MODULE_SIZE];
+#else
 #define g_abMenuMusicModule ((u8 *)0x80025C00)
+#endif
 
 extern u8 _menuMusicSegmentRomStart[];
 extern u8 _scrollSoundSegmentRomStart[];

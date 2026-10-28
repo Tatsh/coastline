@@ -12,6 +12,17 @@ void ReadN64FrontEndData(void);
 /** Write some of the data of the front end to the log, to check it after ReadN64FrontEndData(). */
 void LogN64FrontEndData(void);
 
+namespace coastline {
+class N64Audio;
+}
+
+/**
+ * Set the player the music the front end starts plays on.
+ *
+ * @param audio The player, or `nullptr` for no music.
+ */
+void SetN64FrontEndAudio(coastline::N64Audio *audio);
+
 extern "C" {
 
 /** InitGameAndShowMenus() of the Nintendo 64 release: start the game at the splash screens. */
