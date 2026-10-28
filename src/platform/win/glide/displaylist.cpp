@@ -808,6 +808,7 @@ static inline void TransformGbiVertexPosition(GbiVertexSource &source,
 
 // Take the first light of the display lists into the space of the view, and its colour and that of
 // the second, the ambient light, from 0 to 255.
+template <bool UseZBuffer>
 static void UpdateGlideDirectionalLight(void) {
     if (g_bGbiLightsTransformed) {
         return;
@@ -823,10 +824,15 @@ static void UpdateGlideDirectionalLight(void) {
         float y = light.dir[1];
         float z = light.dir[2];
         auto row = [matrix, x, y, z](int nRow) -> float {
-            return (static_cast<long double>(matrix[nRow][0]) * x +
-                    static_cast<long double>(matrix[nRow][1]) * y +
-                    static_cast<long double>(matrix[nRow][2]) * z) /
-                   GBI_LIGHT_SCALE;
+            long double termX = static_cast<long double>(matrix[nRow][0]) * x;
+            long double termY = static_cast<long double>(matrix[nRow][1]) * y;
+            long double termZ = static_cast<long double>(matrix[nRow][2]) * z;
+            // The copy inlined into the loader without the depth buffer adds z before y.
+            if constexpr (UseZBuffer) {
+                return (termX + termY + termZ) / GBI_LIGHT_SCALE;
+            } else {
+                return (termX + termZ + termY) / GBI_LIGHT_SCALE;
+            }
         };
         g_GbiLight0Direction.x = row(0);
         g_GbiLight0Direction.y = row(1);
@@ -920,7 +926,7 @@ enum class GlideVertexColor { Unlit, Lit, LitEnvModulated, TexGen, TexGenLinear 
 template <GlideVertexColor Color, bool UseZBuffer>
 static GbiCommand *LoadGlideVertices(GbiCommand *pCommand) {
     if constexpr (Color != GlideVertexColor::Unlit) {
-        UpdateGlideDirectionalLight();
+        UpdateGlideDirectionalLight<UseZBuffer>();
     }
     int nFirst = pCommand->w0 >> 16 & 0xff;
     int nCount = pCommand->w0 >> 10 & 0x3f;
