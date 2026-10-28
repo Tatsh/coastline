@@ -18,6 +18,7 @@ namespace {
      * @ghidraAddress EUR: 0x8028d098
      * @ghidraAddress JPN: 0x8028cac8
      * @ghidraAddress BRD3D: 0x106c666c
+     * @ghidraAddress BRGlide: 0x106ed6fc
      */
     s32 g_bDisplayListSnowTint;
 } // namespace

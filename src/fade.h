@@ -27,6 +27,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8028d9f0
  * @ghidraAddress JPN: 0x8028d420
  * @ghidraAddress BRD3D: 0x10575508
+ * @ghidraAddress BRGlide: 0x104b16b0
  */
 extern s32 g_dwFadeRectLeft;
 
@@ -35,6 +36,7 @@ extern s32 g_dwFadeRectLeft;
  * @ghidraAddress EUR: 0x8028d9f4
  * @ghidraAddress JPN: 0x8028d424
  * @ghidraAddress BRD3D: 0x10575500
+ * @ghidraAddress BRGlide: 0x104b16a8
  */
 extern s32 g_dwFadeRectRight;
 
@@ -43,6 +45,7 @@ extern s32 g_dwFadeRectRight;
  * @ghidraAddress EUR: 0x8028d9f8
  * @ghidraAddress JPN: 0x8028d428
  * @ghidraAddress BRD3D: 0x1057550c
+ * @ghidraAddress BRGlide: 0x104b16b4
  */
 extern s32 g_dwFadeRectTop;
 
@@ -51,6 +54,7 @@ extern s32 g_dwFadeRectTop;
  * @ghidraAddress EUR: 0x8028d9fc
  * @ghidraAddress JPN: 0x8028d42c
  * @ghidraAddress BRD3D: 0x105754fc
+ * @ghidraAddress BRGlide: 0x104b16a4
  */
 extern s32 g_dwFadeRectBottom;
 
@@ -61,6 +65,7 @@ extern s32 g_dwFadeRectBottom;
  * @ghidraAddress EUR: 0x8028da00
  * @ghidraAddress JPN: 0x8028d430
  * @ghidraAddress BRD3D: 0x10575504
+ * @ghidraAddress BRGlide: 0x104b16ac
  */
 extern f32 g_fHeadlightGlare;
 
@@ -69,12 +74,14 @@ extern f32 g_fHeadlightGlare;
  * The glare from headlights facing along the camera direction.
  *
  * @ghidraAddress BRD3D: 0x105754f8
+ * @ghidraAddress BRGlide: 0x104b16a0
  */
 extern f32 g_fScreenFogPulse;
 
 /**
  * The effect fade level scaled to a byte, separate from the selected effect volume.
  * @ghidraAddress BRD3D: 0x100bbae4
+ * @ghidraAddress BRGlide: 0x100bb2ec
  */
 extern u8 g_bSfxFadeVolume;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
@@ -217,6 +224,7 @@ extern s32 g_dwFadeAutoReverse;
  * @ghidraAddress EUR: 0x8031d910
  * @ghidraAddress JPN: 0x8031c540
  * @ghidraAddress BRD3D: 0x105754f0
+ * @ghidraAddress BRGlide: 0x104b1698
  */
 extern s32 g_adwFadeRectLeftPerBuffer[2];
 
@@ -225,6 +233,7 @@ extern s32 g_adwFadeRectLeftPerBuffer[2];
  * @ghidraAddress EUR: 0x8031d918
  * @ghidraAddress JPN: 0x8031c548
  * @ghidraAddress BRD3D: 0x105754e8
+ * @ghidraAddress BRGlide: 0x104b1690
  */
 extern s32 g_adwFadeRectRightPerBuffer[2];
 

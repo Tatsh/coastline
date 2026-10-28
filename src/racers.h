@@ -25,6 +25,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8031dc50
  * @ghidraAddress JPN: 0x8031c880
  * @ghidraAddress BRD3D: 0x10af9b38
+ * @ghidraAddress BRGlide: 0x10b1ce98
  */
 extern Vec3f g_vTrackRoutePoint;
 
@@ -35,6 +36,7 @@ extern Vec3f g_vTrackRoutePoint;
  * @ghidraAddress EUR: 0x8028dad4
  * @ghidraAddress JPN: 0x8028d504
  * @ghidraAddress BRD3D: 0x10af988c
+ * @ghidraAddress BRGlide: 0x10b1cbec
  */
 extern TrackSection *g_pTrackRouteSection;
 
@@ -43,6 +45,7 @@ extern TrackSection *g_pTrackRouteSection;
  * @ghidraAddress EUR: 0x8028dad8
  * @ghidraAddress JPN: 0x8028d508
  * @ghidraAddress BRD3D: 0x10acd490
+ * @ghidraAddress BRGlide: 0x10af07f0
  */
 extern s32 g_dwTrackRoutePointIndex;
 
@@ -53,6 +56,7 @@ extern s32 g_dwTrackRoutePointIndex;
  * @ghidraAddress EUR: 0x8028dadc
  * @ghidraAddress JPN: 0x8028d50c
  * @ghidraAddress BRD3D: 0x10af96c0
+ * @ghidraAddress BRGlide: 0x10b1ca20
  */
 extern s32 g_dwTrackRouteGates;
 
@@ -61,6 +65,7 @@ extern s32 g_dwTrackRouteGates;
  * @ghidraAddress EUR: 0x8028dae0
  * @ghidraAddress JPN: 0x8028d510
  * @ghidraAddress BRD3D: 0x10af9b44
+ * @ghidraAddress BRGlide: 0x10b1cea4
  */
 extern s32 g_dwTrackRouteLaps;
 

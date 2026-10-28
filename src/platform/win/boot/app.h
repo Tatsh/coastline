@@ -66,6 +66,7 @@ extern size_t g_dwTotalPhysicalMemory;
  * The module of the game, set by InitializeApplication().
  *
  * @ghidraAddress BRD3D: 0x118abe20
+ * @ghidraAddress BRGlide: 0x118eef1c
  */
 extern HINSTANCE g_hAppInstance;
 
@@ -73,6 +74,7 @@ extern HINSTANCE g_hAppInstance;
  * The main window.
  *
  * @ghidraAddress BRD3D: 0x10680584
+ * @ghidraAddress BRGlide: 0x105bc72c
  */
 extern HWND g_hMainWindow;
 
@@ -88,6 +90,7 @@ extern HACCEL g_hAccelTable;
  * g_dwActivateState are set and g_dwActivateMinimized is not.
  *
  * @ghidraAddress BRD3D: 0x10680598
+ * @ghidraAddress BRGlide: 0x105bc740
  */
 extern WPARAM g_dwAppActive;
 
@@ -95,6 +98,7 @@ extern WPARAM g_dwAppActive;
  * How the main window is activated, `WA_INACTIVE`, `WA_ACTIVE`, or `WA_CLICKACTIVE`.
  *
  * @ghidraAddress BRD3D: 0x1068059c
+ * @ghidraAddress BRGlide: 0x105bc744
  */
 extern int g_dwActivateState;
 
@@ -102,6 +106,7 @@ extern int g_dwActivateState;
  * Whether the main window is minimised.
  *
  * @ghidraAddress BRD3D: 0x106805a0
+ * @ghidraAddress BRGlide: 0x105bc748
  */
 extern int g_dwActivateMinimized;
 

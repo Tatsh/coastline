@@ -81,6 +81,7 @@ extern u32 g_adwTriCacheLruStamp[TRI_CACHE_SLOTS];
  * @ghidraAddress EUR: 0x80380fa0
  * @ghidraAddress JPN: 0x8037fc10
  * @ghidraAddress BRD3D: 0x117554e0
+ * @ghidraAddress BRGlide: 0x11778840
  */
 extern u32 g_dwTriCacheLruCounter;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */

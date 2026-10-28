@@ -48,6 +48,7 @@ s32 ProcessDisplayList(DisplayListCommand *displayList, DisplayListCommand table
  * @ghidraAddress EUR: 0x8028ce38
  * @ghidraAddress JPN: 0x8028c868
  * @ghidraAddress BRD3D: 0x100aa8b8
+ * @ghidraAddress BRGlide: 0x100aa048
  */
 extern DisplayListCommand g_aDlClearCombinePatch[1][2];
 
@@ -58,6 +59,7 @@ extern DisplayListCommand g_aDlClearCombinePatch[1][2];
  * @ghidraAddress EUR: 0x8028ce48
  * @ghidraAddress JPN: 0x8028c878
  * @ghidraAddress BRD3D: 0x100aa8c8
+ * @ghidraAddress BRGlide: 0x100aa058
  */
 extern DisplayListCommand g_aDlSnowTintCombines[2];
 
@@ -68,6 +70,7 @@ extern DisplayListCommand g_aDlSnowTintCombines[2];
  * @ghidraAddress EUR: 0x8028ce58
  * @ghidraAddress JPN: 0x8028c888
  * @ghidraAddress BRD3D: 0x100aa8d8
+ * @ghidraAddress BRGlide: 0x100aa068
  */
 extern DisplayListCommand g_aaDlTrackRenderModes[RENDER_MODE_ROWS][4];
 
@@ -78,6 +81,7 @@ extern DisplayListCommand g_aaDlTrackRenderModes[RENDER_MODE_ROWS][4];
  * @ghidraAddress EUR: 0x8028cf18
  * @ghidraAddress JPN: 0x8028c948
  * @ghidraAddress BRD3D: 0x100aa998
+ * @ghidraAddress BRGlide: 0x100aa128
  */
 extern DisplayListCommand g_aaDlGhostRenderModes[RENDER_MODE_ROWS][4];
 
@@ -88,6 +92,7 @@ extern DisplayListCommand g_aaDlGhostRenderModes[RENDER_MODE_ROWS][4];
  * @ghidraAddress EUR: 0x8028cfd8
  * @ghidraAddress JPN: 0x8028ca08
  * @ghidraAddress BRD3D: 0x100aaa58
+ * @ghidraAddress BRGlide: 0x100aa1e8
  */
 extern DisplayListCommand g_aaDlGhostWheelRenderModes[RENDER_MODE_ROWS][4];
 
@@ -99,6 +104,7 @@ extern DisplayListCommand g_aaDlGhostWheelRenderModes[RENDER_MODE_ROWS][4];
  * @ghidraAddress EUR: 0x8028d098
  * @ghidraAddress JPN: 0x8028cac8
  * @ghidraAddress BRD3D: 0x106c666c
+ * @ghidraAddress BRGlide: 0x106ed6fc
  */
 extern s32 g_bDisplayListSnowTint;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */

@@ -11,6 +11,7 @@
  * @ghidraAddress EUR: 0x8028ef80
  * @ghidraAddress JPN: 0x8028e9d0
  * @ghidraAddress BRD3D: 0x104b255c
+ * @ghidraAddress BRGlide: 0x104add3c
  */
 static f32 g_fLightningFlashTimer;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

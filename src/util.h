@@ -41,6 +41,7 @@ typedef struct {
  * @ghidraAddress EUR: 0x8036d350
  * @ghidraAddress JPN: 0x8036bfc0
  * @ghidraAddress BRD3D: 0x10af9bc0
+ * @ghidraAddress BRGlide: 0x10b1cf20
  */
 extern DisplayListBlock g_aDisplayListBlocks[2][FRAME_DISPLAY_LIST_BLOCKS + 1];
 
@@ -49,6 +50,7 @@ extern DisplayListBlock g_aDisplayListBlocks[2][FRAME_DISPLAY_LIST_BLOCKS + 1];
  * @ghidraAddress EUR: 0x803753d0
  * @ghidraAddress JPN: 0x80374040
  * @ghidraAddress BRD3D: 0x10b02190
+ * @ghidraAddress BRGlide: 0x10b254f0
  */
 extern Hilite g_aHiliteBlocks[2][FRAME_HILITE_BLOCKS + 1];
 
@@ -57,6 +59,7 @@ extern Hilite g_aHiliteBlocks[2][FRAME_HILITE_BLOCKS + 1];
  * @ghidraAddress EUR: 0x80375670
  * @ghidraAddress JPN: 0x803742e0
  * @ghidraAddress BRD3D: 0x10b01c50
+ * @ghidraAddress BRGlide: 0x10b24fb0
  */
 extern LookAt g_aLightBlocks[2][FRAME_LIGHT_BLOCKS + 1];
 
@@ -68,6 +71,7 @@ extern LookAt g_aLightBlocks[2][FRAME_LIGHT_BLOCKS + 1];
  * @ghidraAddress EUR: 0x80290770
  * @ghidraAddress JPN: 0x80290210
  * @ghidraAddress BRD3D: 0x10b01c40
+ * @ghidraAddress BRGlide: 0x10b24fa0
  */
 extern s32 g_dwDisplayListBlockCount;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -78,6 +82,7 @@ extern s32 g_dwDisplayListBlockCount;
  * @ghidraAddress EUR: 0x80290774
  * @ghidraAddress JPN: 0x80290214
  * @ghidraAddress BRD3D: 0x10b01c48
+ * @ghidraAddress BRGlide: 0x10b24fa8
  */
 extern s32 g_dwHiliteBlockCount;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -88,6 +93,7 @@ extern s32 g_dwHiliteBlockCount;
  * @ghidraAddress EUR: 0x80290778
  * @ghidraAddress JPN: 0x80290218
  * @ghidraAddress BRD3D: 0x10b01c44
+ * @ghidraAddress BRGlide: 0x10b24fa4
  */
 extern s32 g_dwLightBlockCount;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -99,6 +105,7 @@ extern s32 g_dwLightBlockCount;
  * @ghidraAddress EUR: 0x8028ca5c
  * @ghidraAddress JPN: 0x8028c52c
  * @ghidraAddress BRD3D: 0x106c65ec
+ * @ghidraAddress BRGlide: 0x106ed67c
  */
 extern s32 g_dwFrameBufferIndex;
 

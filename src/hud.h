@@ -30,6 +30,7 @@ extern "C" {
 /**
  * The gear cell each view has loaded.
  * @ghidraAddress BRD3D: 0x100a73a8
+ * @ghidraAddress BRGlide: 0x100a6b68
  */
 extern s32 g_adwDashboardLoadedGear[DASHBOARD_VIEWS];
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
@@ -119,6 +120,7 @@ extern char g_szHudSpeedTextBuf[16];
 /**
  * Whether to display the dashboard and speedometer.
  * @ghidraAddress BRD3D: 0x100bd3f4
+ * @ghidraAddress BRGlide: 0x100bcbfc
  */
 extern s32 g_bHudShowSpeedometer;
 /**
@@ -170,6 +172,7 @@ void DrawLabelWithTime(const char *label, const char *color, f32 seconds, s32 x,
  * Whether to display completed lap times.
  *
  * @ghidraAddress BRD3D: 0x100bd3f0
+ * @ghidraAddress BRGlide: 0x100bcbf8
  */
 extern s32 g_bHudShowLapTimes;
 
@@ -200,6 +203,7 @@ extern s32 g_bHudShowLapCounter;
 /**
  * Whether to display the race timer.
  * @ghidraAddress BRD3D: 0x100bd3ec
+ * @ghidraAddress BRGlide: 0x100bcbf4
  */
 extern s32 g_bHudShowRaceTimer;
 /**

@@ -51,6 +51,7 @@ extern s32 g_dwKeepCustomClipPlanes;
  * @ghidraAddress USA: 0x8028a86c
  * @ghidraAddress EUR: 0x8028ca6c
  * @ghidraAddress BRD3D: 0x106c3360
+ * @ghidraAddress BRGlide: 0x106ea3f0
  * @ghidraAddress JPN: 0x8028c53c
  */
 extern f32 g_fCameraNearScale;
@@ -61,6 +62,7 @@ extern f32 g_fCameraNearScale;
  * @ghidraAddress USA: 0x8028a870
  * @ghidraAddress EUR: 0x8028ca70
  * @ghidraAddress BRD3D: 0x106c5ab4
+ * @ghidraAddress BRGlide: 0x106ecb44
  * @ghidraAddress JPN: 0x8028c540
  */
 extern f32 g_fCameraFarDistance;

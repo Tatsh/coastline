@@ -20,6 +20,7 @@ void UpdateAllVehicleEffects(void) {
      * @ghidraAddress EUR: 0x8028efa0
      * @ghidraAddress JPN: 0x8028e9f0
      * @ghidraAddress BRD3D: 0x10a9bbb8
+     * @ghidraAddress BRGlide: 0x10ac2c48
      */
     static s32 g_dwVehicleEffectsInitialized = FALSE;
     s32 i;

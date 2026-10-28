@@ -16,21 +16,25 @@ extern "C" {
 
 /**
  * @ghidraAddress BRD3D: 0x1039b71c
+ * @ghidraAddress BRGlide: 0x10396f04
  */
 extern const Particle *g_pParticleListData;
 
 /**
  * @ghidraAddress BRD3D: 0x1039b714
+ * @ghidraAddress BRGlide: 0x10396efc
  */
 extern u16 g_wRenderExhaustParticleListHead;
 
 /**
  * @ghidraAddress BRD3D: 0x1039b710
+ * @ghidraAddress BRGlide: 0x10396ef8
  */
 extern u16 g_wRenderTireSmokeListHead;
 
 /**
  * @ghidraAddress BRD3D: 0x1039b718
+ * @ghidraAddress BRGlide: 0x10396f00
  */
 extern u16 g_wRenderPavedTireSmokeListHead;
 

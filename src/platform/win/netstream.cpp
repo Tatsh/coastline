@@ -11,6 +11,7 @@
 namespace {
 /**
  * @ghidraAddress BRD3D: 0x1022af40
+ * @ghidraAddress BRGlide: 0x10226a70
  */
 int g_nKeyframeAccumFrames;
 } // namespace

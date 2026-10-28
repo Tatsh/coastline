@@ -20,6 +20,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8036c070
  * @ghidraAddress JPN: 0x8036ace0
  * @ghidraAddress BRD3D: 0x106c7c38
+ * @ghidraAddress BRGlide: 0x106eecc8
  */
 extern u8 *g_pHeapCurrent;
 

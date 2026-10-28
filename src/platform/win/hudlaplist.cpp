@@ -22,6 +22,7 @@ s32 g_bHudShowLapTimes = 1;
 namespace {
 
 // @ghidraAddress BRD3D: 0x104aff20
+// @ghidraAddress BRGlide: 0x104ab708
 char g_szGapToLeaderText[1 + 7 + 1 + 3 + 1 + 3 + 1];
 
 } // namespace

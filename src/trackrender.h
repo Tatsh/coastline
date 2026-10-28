@@ -27,6 +27,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8028cc68
  * @ghidraAddress JPN: 0x8028c738
  * @ghidraAddress BRD3D: 0x106c660c
+ * @ghidraAddress BRGlide: 0x106ed69c
  */
 extern s32 g_bShadowCullDisabled;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -197,6 +198,7 @@ extern s32 g_bDebugHideInstance;
  * @ghidraAddress EUR: 0x8028eeac
  * @ghidraAddress JPN: 0x8028e8fc
  * @ghidraAddress BRD3D: 0x1036439c
+ * @ghidraAddress BRGlide: 0x1035fb84
  */
 extern u32 g_dwTrackOtherModeLBlend;
 
@@ -205,6 +207,7 @@ extern u32 g_dwTrackOtherModeLBlend;
  * @ghidraAddress EUR: 0x8028eeb0
  * @ghidraAddress JPN: 0x8028e900
  * @ghidraAddress BRD3D: 0x103643a0
+ * @ghidraAddress BRGlide: 0x1035fb88
  */
 extern u32 g_dwTrackOtherModeLFlags;
 
@@ -304,6 +307,7 @@ extern Vec3f g_vTrackLightDirection;
  * @ghidraAddress EUR: 0x8035f6c0
  * @ghidraAddress JPN: 0x8035e330
  * @ghidraAddress BRD3D: 0x10364390
+ * @ghidraAddress BRGlide: 0x1035fb78
  */
 extern Vec3f g_vShadowForward;
 

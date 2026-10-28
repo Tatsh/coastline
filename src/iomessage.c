@@ -8,6 +8,7 @@
  * @ghidraAddress EUR: 0x80274f44
  * @ghidraAddress JPN: 0x80274a14
  * @ghidraAddress BRD3D: 0x106c65dc
+ * @ghidraAddress BRGlide: 0x106ed66c
  */
 static s32 g_dwIoMessagePendingCount;
 /**
@@ -17,6 +18,7 @@ static s32 g_dwIoMessagePendingCount;
  * @ghidraAddress EUR: 0x80274f40
  * @ghidraAddress JPN: 0x80274a10
  * @ghidraAddress BRD3D: 0x106c65d8
+ * @ghidraAddress BRGlide: 0x106ed668
  */
 static s32 g_dwIoMessagePoolIndex;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

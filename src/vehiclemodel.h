@@ -140,6 +140,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x803c8000
  * @ghidraAddress JPN: 0x803c8000
  * @ghidraAddress BRD3D: 0x100c12a0
+ * @ghidraAddress BRGlide: 0x100bcdd0
  */
 extern VehicleModel g_aVehicleModels[];
 
@@ -228,6 +229,7 @@ s32 IsVehicleModelValid(void);
  * The model whose material textures are being captured.
  *
  * @ghidraAddress BRD3D: 0x106c7c3c
+ * @ghidraAddress BRGlide: 0x106eeccc
  */
 extern VehicleModel *g_pTextureCaptureVehicleModel;
 

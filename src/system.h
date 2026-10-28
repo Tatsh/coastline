@@ -98,6 +98,7 @@ extern InflateAllocator g_inflateAllocator;
  * @ghidraAddress EUR: 0x8028ca88
  * @ghidraAddress JPN: 0x8028c558
  * @ghidraAddress BRD3D: 0x106c65f8
+ * @ghidraAddress BRGlide: 0x106ed688
  */
 extern u32 g_dwScreenUnblankDelay;
 
@@ -119,6 +120,7 @@ void InitRenderingSubsystem(void);
  * @ghidraAddress EUR: 0x8028ca84
  * @ghidraAddress JPN: 0x8028c554
  * @ghidraAddress BRD3D: 0x106c65f4
+ * @ghidraAddress BRGlide: 0x106ed684
  */
 extern u32 g_dwKeepScreenBlanked;
 
@@ -138,6 +140,7 @@ extern u16 g_wScreenFrameCount;
  * @ghidraAddress EUR: 0x8028caa4
  * @ghidraAddress JPN: 0x8028c574
  * @ghidraAddress BRD3D: 0x106c0688
+ * @ghidraAddress BRGlide: 0x106e7718
  */
 extern u32 g_dwColorDitherMode;
 
@@ -148,6 +151,7 @@ extern u32 g_dwColorDitherMode;
  * @ghidraAddress EUR: 0x8028caa0
  * @ghidraAddress JPN: 0x8028c570
  * @ghidraAddress BRD3D: 0x106c0920
+ * @ghidraAddress BRGlide: 0x106e79b0
  */
 extern u32 g_dwAlphaDitherMode;
 
@@ -167,6 +171,7 @@ extern u16 *g_apFramebuffers[2];
  * @ghidraAddress EUR: 0x8028cce4
  * @ghidraAddress JPN: 0x8028c7b4
  * @ghidraAddress BRD3D: 0x10690a30
+ * @ghidraAddress BRGlide: 0x106b7ac0
  */
 extern s32 g_dwFrameDeltaMs;
 
@@ -177,6 +182,7 @@ extern s32 g_dwFrameDeltaMs;
  * @ghidraAddress EUR: 0x8028ccdc
  * @ghidraAddress JPN: 0x8028c7ac
  * @ghidraAddress BRD3D: 0x106c56d8
+ * @ghidraAddress BRGlide: 0x106ec768
  */
 extern s32 g_dwElapsedTimeMs;
 
@@ -247,6 +253,7 @@ void UpdateFrameTiming(void);
  * @ghidraAddress EUR: 0x8028cd18
  * @ghidraAddress JPN: 0x8028c7e8
  * @ghidraAddress BRD3D: 0x106c6648
+ * @ghidraAddress BRGlide: 0x106ed6d8
  */
 extern s32 g_bRaceScreenActive;
 
@@ -283,6 +290,7 @@ void ResetFrameClock(void);
  * @ghidraAddress EUR: 0x8031c500
  * @ghidraAddress JPN: 0x8031b130
  * @ghidraAddress BRD3D: 0x106c29f0
+ * @ghidraAddress BRGlide: 0x106e9a80
  */
 extern OSIoMesg g_aIoMessagePool[32];
 
@@ -294,6 +302,7 @@ extern OSIoMesg g_aIoMessagePool[32];
  * @ghidraAddress EUR: 0x80274f44
  * @ghidraAddress JPN: 0x80274a14
  * @ghidraAddress BRD3D: 0x106c65dc
+ * @ghidraAddress BRGlide: 0x106ed66c
  */
 extern s32 g_dwIoMessagePendingCount;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -306,6 +315,7 @@ extern s32 g_dwIoMessagePendingCount;
  * @ghidraAddress EUR: 0x80274f40
  * @ghidraAddress JPN: 0x80274a10
  * @ghidraAddress BRD3D: 0x106c65d8
+ * @ghidraAddress BRGlide: 0x106ed668
  */
 extern s32 g_dwIoMessagePoolIndex;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -317,6 +327,7 @@ extern s32 g_dwIoMessagePoolIndex;
  * @ghidraAddress EUR: 0x8031c468
  * @ghidraAddress JPN: 0x8031b098
  * @ghidraAddress BRD3D: 0x106c64e0
+ * @ghidraAddress BRGlide: 0x106ed570
  */
 extern OSMesgQueue g_DmaMessageQueue;
 
@@ -332,6 +343,7 @@ extern OSMesg g_aDmaMsgBuf[32];
  *
  * @ghidraAddress USA: 0x8031a338
  * @ghidraAddress BRD3D: 0x106c65c0
+ * @ghidraAddress BRGlide: 0x106ed650
  * @ghidraAddress EUR: 0x8031c818
  * @ghidraAddress JPN: 0x8031b448
  */
@@ -340,6 +352,7 @@ extern OSMesgQueue g_RspEventMsgQueue;
 /**
  * @ghidraAddress USA: 0x8031a354
  * @ghidraAddress BRD3D: 0x106c0940
+ * @ghidraAddress BRGlide: 0x106e79d0
  * @ghidraAddress EUR: 0x8031c834
  * @ghidraAddress JPN: 0x8031b464
  */
@@ -350,6 +363,7 @@ extern OSMesg g_aRspEventMsgBuf[1];
  * @ghidraAddress EUR: 0x8031c800
  * @ghidraAddress JPN: 0x8031b430
  * @ghidraAddress BRD3D: 0x106c33a0
+ * @ghidraAddress BRGlide: 0x106ea430
  */
 extern OSMesgQueue g_RspDoneMsgQueue;
 
@@ -365,6 +379,7 @@ extern OSMesg g_aRspDoneMsgBuf[1];
  *
  * @ghidraAddress USA: 0x8031a370
  * @ghidraAddress BRD3D: 0x106c5ab8
+ * @ghidraAddress BRGlide: 0x106ecb48
  * @ghidraAddress EUR: 0x8031c850
  * @ghidraAddress JPN: 0x8031b480
  */
@@ -373,6 +388,7 @@ extern OSMesgQueue g_RdpEventMsgQueue;
 /**
  * @ghidraAddress USA: 0x8031a38c
  * @ghidraAddress BRD3D: 0x106c32f8
+ * @ghidraAddress BRGlide: 0x106ea388
  * @ghidraAddress EUR: 0x8031c86c
  * @ghidraAddress JPN: 0x8031b49c
  */
@@ -383,6 +399,7 @@ extern OSMesg g_aRdpEventMsgBuf[1];
  * @ghidraAddress EUR: 0x8031c838
  * @ghidraAddress JPN: 0x8031b468
  * @ghidraAddress BRD3D: 0x106c3380
+ * @ghidraAddress BRGlide: 0x106ea410
  */
 extern OSMesgQueue g_RdpDoneMsgQueue;
 
@@ -399,6 +416,7 @@ extern OSMesg g_aRdpDoneMsgBuf[1];
  *
  * @ghidraAddress USA: 0x8031a3b0
  * @ghidraAddress BRD3D: 0x106c5618
+ * @ghidraAddress BRGlide: 0x106ec6a8
  * @ghidraAddress EUR: 0x8031c8b0
  * @ghidraAddress JPN: 0x8031b4e0
  */
@@ -407,6 +425,7 @@ extern OSMesgQueue g_ViRetracePollMesgQueue;
 /**
  * @ghidraAddress USA: 0x8031a3c8
  * @ghidraAddress BRD3D: 0x106c29a0
+ * @ghidraAddress BRGlide: 0x106e9a30
  * @ghidraAddress EUR: 0x8031c8c8
  * @ghidraAddress JPN: 0x8031b4f8
  */
@@ -415,6 +434,7 @@ extern OSMesg g_ViRetracePollMesgBuf[1];
 /**
  * @ghidraAddress USA: 0x8031a390
  * @ghidraAddress BRD3D: 0x106c6540
+ * @ghidraAddress BRGlide: 0x106ed5d0
  * @ghidraAddress EUR: 0x8031c890
  * @ghidraAddress JPN: 0x8031b4c0
  */
@@ -432,6 +452,7 @@ extern OSMesg g_ViRetraceMesgBuf[1];
  *
  * @ghidraAddress USA: 0x8031a3cc
  * @ghidraAddress BRD3D: 0x106c06a8
+ * @ghidraAddress BRGlide: 0x106e7738
  * @ghidraAddress EUR: 0x8031c8cc
  * @ghidraAddress JPN: 0x8031b4fc
  */
@@ -442,6 +463,7 @@ extern u32 g_dwDummyOsMesg;
  *
  * @ghidraAddress USA: 0x8028adec
  * @ghidraAddress BRD3D: 0x106c6670
+ * @ghidraAddress BRGlide: 0x106ed700
  * @ghidraAddress EUR: 0x8028d09c
  * @ghidraAddress JPN: 0x8028cacc
  */
@@ -557,6 +579,7 @@ extern Gfx g_aGfxDisplayListPool[];
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * @ghidraAddress BRD3D: 0x10691018
+ * @ghidraAddress BRGlide: 0x106b80a8
  */
 extern DisplayListCommand g_abDisplayListMemory[];
 #define g_aGfxDisplayListPool g_abDisplayListMemory
@@ -569,6 +592,7 @@ extern DisplayListCommand g_abDisplayListMemory[];
  * @ghidraAddress EUR: 0x8028ca48
  * @ghidraAddress JPN: 0x8028c518
  * @ghidraAddress BRD3D: 0x106c0944
+ * @ghidraAddress BRGlide: 0x106e79d4
  */
 extern DisplayListCommand *g_pDisplayListBase;
 
@@ -579,6 +603,7 @@ extern DisplayListCommand *g_pDisplayListBase;
  * @ghidraAddress EUR: 0x8028cab4
  * @ghidraAddress JPN: 0x8028c584
  * @ghidraAddress BRD3D: 0x106c56e0
+ * @ghidraAddress BRGlide: 0x106ec770
  */
 extern f32 g_fCountsPerMillisecond;
 
@@ -589,6 +614,7 @@ extern f32 g_fCountsPerMillisecond;
  * @ghidraAddress EUR: 0x8031c8d0
  * @ghidraAddress JPN: 0x8031b500
  * @ghidraAddress BRD3D: 0x106c0928
+ * @ghidraAddress BRGlide: 0x106e79b8
  */
 extern OSContStatus g_aContStatus[MAXCONTROLLERS];
 
@@ -606,6 +632,7 @@ extern OSMesg g_aSiEventMesgBuf[1];
  * @ghidraAddress EUR: 0x8028d0a8
  * @ghidraAddress JPN: 0x8028cad8
  * @ghidraAddress BRD3D: 0x106c56b0
+ * @ghidraAddress BRGlide: 0x106ec740
  */
 extern u64 g_qwTimestampBase;
 
@@ -616,6 +643,7 @@ extern u64 g_qwTimestampBase;
  * @ghidraAddress EUR: 0x8028d0b0
  * @ghidraAddress JPN: 0x8028cae0
  * @ghidraAddress BRD3D: 0x106c0204
+ * @ghidraAddress BRGlide: 0x106e7294
  */
 extern u32 g_dwFrameTimestamp;
 
@@ -626,6 +654,7 @@ extern u32 g_dwFrameTimestamp;
  * @ghidraAddress EUR: 0x8028ccd8
  * @ghidraAddress JPN: 0x8028c7a8
  * @ghidraAddress BRD3D: 0x106c64f8
+ * @ghidraAddress BRGlide: 0x106ed588
  */
 extern s32 g_dwPrevElapsedTimeMs;
 
@@ -938,6 +967,7 @@ extern "C"
  * @ghidraAddress EUR: 0x8031cea8
  * @ghidraAddress JPN: 0x8031bad8
  * @ghidraAddress BRD3D: 0x106c1588
+ * @ghidraAddress BRGlide: 0x106e8618
  */
 extern OSTask g_aGfxTask[2];
 
@@ -975,6 +1005,7 @@ extern u64 g_abRspUcodeData[];
  * @ghidraAddress EUR: 0x8031ca98
  * @ghidraAddress JPN: 0x8031b6c8
  * @ghidraAddress BRD3D: 0x106c2d00
+ * @ghidraAddress BRGlide: 0x106e9d90
  */
 extern u8 g_abRspDramStackBuffer[];
 
@@ -985,6 +1016,7 @@ extern u8 g_abRspDramStackBuffer[];
  * @ghidraAddress EUR: 0x8028ca60
  * @ghidraAddress JPN: 0x8028c530
  * @ghidraAddress BRD3D: 0x100aa728
+ * @ghidraAddress BRGlide: 0x100a9eb8
  */
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
 extern u64 *g_pRdpOutputBuffer;
@@ -995,6 +1027,7 @@ extern u64 *g_pRdpOutputBuffer;
  * @ghidraAddress EUR: 0x8028ca64
  * @ghidraAddress JPN: 0x8028c534
  * @ghidraAddress BRD3D: 0x100aa72c
+ * @ghidraAddress BRGlide: 0x100a9ebc
  */
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
 extern u64 *g_pRdpOutputBufferEnd;
@@ -1007,6 +1040,7 @@ extern u64 *g_pRdpOutputBufferEnd;
  * @ghidraAddress EUR: 0x8028ce30
  * @ghidraAddress JPN: 0x8028c860
  * @ghidraAddress BRD3D: 0x106c6668
+ * @ghidraAddress BRGlide: 0x106ed6f8
  */
 extern s32 g_dwOutputBuffReserve;
 
@@ -1018,6 +1052,7 @@ extern s32 g_dwOutputBuffReserve;
  * @ghidraAddress EUR: 0x8028ce1c
  * @ghidraAddress JPN: 0x8028c84c
  * @ghidraAddress BRD3D: 0x106c1170
+ * @ghidraAddress BRGlide: 0x106e8200
  */
 extern s32 g_dwDisplayListCommandCount;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -1030,6 +1065,7 @@ extern s32 g_dwDisplayListCommandCount;
  * @ghidraAddress EUR: 0x8028ce20
  * @ghidraAddress JPN: 0x8028c850
  * @ghidraAddress BRD3D: 0x106c6658
+ * @ghidraAddress BRGlide: 0x106ed6e8
  */
 extern s32 g_dwPeakShadowCommandCount;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -1040,6 +1076,7 @@ extern s32 g_dwPeakShadowCommandCount;
  * @ghidraAddress EUR: 0x8028ce24
  * @ghidraAddress JPN: 0x8028c854
  * @ghidraAddress BRD3D: 0x106c665c
+ * @ghidraAddress BRGlide: 0x106ed6ec
  */
 extern s32 g_dwPeakShadowVertexCount;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -1050,6 +1087,7 @@ extern s32 g_dwPeakShadowVertexCount;
  * @ghidraAddress EUR: 0x8028ce28
  * @ghidraAddress JPN: 0x8028c858
  * @ghidraAddress BRD3D: 0x106c6660
+ * @ghidraAddress BRGlide: 0x106ed6f0
  */
 extern s32 g_dwPeakDisplayListCommands;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -1062,6 +1100,7 @@ extern s32 g_dwPeakDisplayListCommands;
  * @ghidraAddress EUR: 0x8028ce2c
  * @ghidraAddress JPN: 0x8028c85c
  * @ghidraAddress BRD3D: 0x106c6664
+ * @ghidraAddress BRGlide: 0x106ed6f4
  */
 extern s32 g_dwFirstFlushDone;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -1075,6 +1114,7 @@ extern s32 g_dwFirstFlushDone;
  * @ghidraAddress EUR: 0x8028ccf0
  * @ghidraAddress JPN: 0x8028c7c0
  * @ghidraAddress BRD3D: 0x106c020c
+ * @ghidraAddress BRGlide: 0x106e729c
  */
 extern u32 g_dwFlushDuration;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -1085,6 +1125,7 @@ extern u32 g_dwFlushDuration;
  * @ghidraAddress EUR: 0x8028cce8
  * @ghidraAddress JPN: 0x8028c7b8
  * @ghidraAddress BRD3D: 0x106c1620
+ * @ghidraAddress BRGlide: 0x106e86b0
  */
 extern u32 g_dwFlushInterval;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -1095,6 +1136,7 @@ extern u32 g_dwFlushInterval;
  * @ghidraAddress EUR: 0x8028ccec
  * @ghidraAddress JPN: 0x8028c7bc
  * @ghidraAddress BRD3D: 0x106c0208
+ * @ghidraAddress BRGlide: 0x106e7298
  */
 extern u32 g_dwFlushStartTime;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -1106,6 +1148,7 @@ extern u32 g_dwFlushStartTime;
  * @ghidraAddress EUR: 0x8028cc28
  * @ghidraAddress JPN: 0x8028c6f8
  * @ghidraAddress BRD3D: 0x106c6598
+ * @ghidraAddress BRGlide: 0x106ed628
  */
 extern u32 g_dwFlushValueSource;
 
@@ -1115,6 +1158,7 @@ extern u32 g_dwFlushValueSource;
  * @ghidraAddress EUR: 0x8028cc2c
  * @ghidraAddress JPN: 0x8028c6fc
  * @ghidraAddress BRD3D: 0x106c56e4
+ * @ghidraAddress BRGlide: 0x106ec774
  */
 extern u32 g_dwLastFlushValue;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -1126,6 +1170,7 @@ extern u32 g_dwLastFlushValue;
  * @ghidraAddress EUR: 0x8028ca4c
  * @ghidraAddress JPN: 0x8028c51c
  * @ghidraAddress BRD3D: 0x106c65e0
+ * @ghidraAddress BRGlide: 0x106ed670
  */
 extern s32 g_dwDisplayModeChangeCountdown;
 
@@ -1136,6 +1181,7 @@ extern s32 g_dwDisplayModeChangeCountdown;
  * @ghidraAddress EUR: 0x8028ca54
  * @ghidraAddress JPN: 0x8028c524
  * @ghidraAddress BRD3D: 0x106c65e8
+ * @ghidraAddress BRGlide: 0x106ed678
  */
 extern s32 g_dwAppliedScreenScaleShift;
 
@@ -1168,6 +1214,7 @@ extern OSViMode g_ViModePalLan1;
  * @ghidraAddress EUR: 0x8028cc54
  * @ghidraAddress JPN: 0x8028c724
  * @ghidraAddress BRD3D: 0x106c6604
+ * @ghidraAddress BRGlide: 0x106ed694
  */
 extern s32 g_dwViGammaEnabled;
 

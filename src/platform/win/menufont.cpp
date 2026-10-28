@@ -10,8 +10,10 @@
 
 namespace {
 // @ghidraAddress BRD3D: 0x10aa2a54
+// @ghidraAddress BRGlide: 0x10ac5dac
 int g_dwGlyphThrottleAccumMs;
 // @ghidraAddress BRD3D: 0x10aa2a58
+// @ghidraAddress BRGlide: 0x10ac5db0
 unsigned g_dwGlyphThrottleLastTick;
 } // namespace
 

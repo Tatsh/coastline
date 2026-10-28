@@ -34,6 +34,7 @@ void ApplyScreenFade(void) {
      * @ghidraAddress EUR: 0x8028da38
      * @ghidraAddress JPN: 0x8028d468
      * @ghidraAddress BRD3D: 0x100a81bc
+     * @ghidraAddress BRGlide: 0x100a7510
      */
     static s32 g_dwScreenFadeFramesRemaining = 2;
     s32 left;

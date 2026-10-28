@@ -503,6 +503,7 @@ bool WriteGameSettingsPacket(NetStream *pStream, unsigned char bPlayer);
 
 /**
  * @ghidraAddress BRD3D: 0x10221280
+ * @ghidraAddress BRGlide: 0x1021cdb0
  */
 extern int g_bNetGameSettingUnk_10221280;
 
@@ -522,15 +523,18 @@ unsigned SendLocalVehicleStateUpdate(KeyframeState *state);
 
 /**
  * @ghidraAddress BRD3D: 0x10220cf0
+ * @ghidraAddress BRGlide: 0x1021c820
  */
 extern KeyframeState g_LastSentKeyframe;
 /**
  * @ghidraAddress BRD3D: 0x10220e60
+ * @ghidraAddress BRGlide: 0x1021c990
  */
 extern float g_afKeyframeAccumMax[7];
 
 /**
  * @ghidraAddress BRD3D: 0x10094298
+ * @ghidraAddress BRGlide: 0x1007b268
  */
 extern int g_dwVehicleStateSendCounter;
 
@@ -577,5 +581,6 @@ void DeserializeKeyframeDelta(KeyframeState *pState,
 
 /**
  * @ghidraAddress BRD3D: 0x11828d14
+ * @ghidraAddress BRGlide: 0x1184c074
  */
 extern unsigned g_dwNetRaceStartCountdownTime;

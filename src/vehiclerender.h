@@ -25,6 +25,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8028cd10
  * @ghidraAddress JPN: 0x8028c7e0
  * @ghidraAddress BRD3D: 0x106c3308
+ * @ghidraAddress BRGlide: 0x106ea398
  */
 extern VehicleModel *g_pCurrentVehicleModelData;
 
@@ -35,6 +36,7 @@ extern VehicleModel *g_pCurrentVehicleModelData;
  * @ghidraAddress EUR: 0x803541c0
  * @ghidraAddress JPN: 0x80352e30
  * @ghidraAddress BRD3D: 0x10277d88
+ * @ghidraAddress BRGlide: 0x10273570
  */
 extern f32 g_mtxVehicleModelScaled[4][4];
 
@@ -45,6 +47,7 @@ extern f32 g_mtxVehicleModelScaled[4][4];
  * @ghidraAddress EUR: 0x8028ea60
  * @ghidraAddress JPN: 0x8028e4b0
  * @ghidraAddress BRD3D: 0x10277e5c
+ * @ghidraAddress BRGlide: 0x10273644
  */
 extern u32 g_dwVehicleOtherModeLBlend;
 
@@ -65,6 +68,7 @@ extern u32 g_dwVehicleOtherModeLFlags;
  * @ghidraAddress EUR: 0x80354200
  * @ghidraAddress JPN: 0x80352e70
  * @ghidraAddress BRD3D: 0x10277e14
+ * @ghidraAddress BRGlide: 0x102735fc
  */
 extern s32 g_dwVehicleFogAlpha;
 
@@ -75,6 +79,7 @@ extern s32 g_dwVehicleFogAlpha;
  * @ghidraAddress EUR: 0x80354180
  * @ghidraAddress JPN: 0x80352df0
  * @ghidraAddress BRD3D: 0x10277b68
+ * @ghidraAddress BRGlide: 0x10273350
  */
 extern s32 g_adwVehicleInViewRange[MAX_VEHICLES];
 
@@ -95,6 +100,7 @@ extern s32 g_anVehicleLod[MAX_VEHICLES];
  * @ghidraAddress EUR: 0x803541a0
  * @ghidraAddress JPN: 0x80352e10
  * @ghidraAddress BRD3D: 0x10277dc8
+ * @ghidraAddress BRGlide: 0x102735b0
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 extern f32 (*g_apVehicleModelMatrix[MAX_VEHICLES])[4];
@@ -109,6 +115,7 @@ extern Mtx *g_apVehicleModelMatrix[MAX_VEHICLES];
  * @ghidraAddress EUR: 0x803541b0
  * @ghidraAddress JPN: 0x80352e20
  * @ghidraAddress BRD3D: 0x10277e18
+ * @ghidraAddress BRGlide: 0x10273600
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 extern f32 (*g_apVehicleLightMatrix[MAX_VEHICLES])[4];

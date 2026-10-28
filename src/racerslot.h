@@ -247,6 +247,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x80325ea0
  * @ghidraAddress JPN: 0x80324ad0
  * @ghidraAddress BRD3D: 0x10acd498
+ * @ghidraAddress BRGlide: 0x10af07f8
  */
 extern RacerSlot g_aRacerSlots[RACER_SLOTS];
 

@@ -59,6 +59,7 @@ extern s32 g_bReplayCockpitNext;
  * @ghidraAddress EUR: 0x8031d6d8
  * @ghidraAddress JPN: 0x8031c308
  * @ghidraAddress BRD3D: 0x106c5468
+ * @ghidraAddress BRGlide: 0x106ec4f8
  */
 extern f32 g_afVehicleJolts[];
 
@@ -87,6 +88,7 @@ extern TrackSection *g_pBestTraceSection;
  * @ghidraAddress EUR: 0x8028dac0
  * @ghidraAddress JPN: 0x8028d4f0
  * @ghidraAddress BRD3D: 0x10af9528
+ * @ghidraAddress BRGlide: 0x10b1c888
  */
 extern s32 g_dwBestTracePoint;
 
@@ -214,6 +216,7 @@ extern Vec3f g_avTraceRightHalf[TRACE_DEPTH];
  * @ghidraAddress EUR: 0x8031dbd0
  * @ghidraAddress JPN: 0x8031c800
  * @ghidraAddress BRD3D: 0x10af97e8
+ * @ghidraAddress BRGlide: 0x10b1cb48
  */
 extern Vec3f g_avTraceRightLane[TRACE_DEPTH];
 

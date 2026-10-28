@@ -238,6 +238,7 @@ typedef struct {
  * @ghidraAddress EUR: 0x80025c00
  * @ghidraAddress JPN: 0x80025c00
  * @ghidraAddress BRD3D: 0x106c7c48
+ * @ghidraAddress BRGlide: 0x106eecd8
  */
 extern TrackHeader g_LoadedTrack;
 
@@ -464,6 +465,7 @@ extern s32 g_dwStreamDmaPrevSegment;
  * @ghidraAddress EUR: 0x8028cc90
  * @ghidraAddress JPN: 0x8028c760
  * @ghidraAddress BRD3D: 0x100aa8a0
+ * @ghidraAddress BRGlide: 0x100aa030
  */
 extern s32 g_dwStreamedSnowMode;
 

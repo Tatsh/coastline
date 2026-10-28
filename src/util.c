@@ -18,6 +18,7 @@
  * @ghidraAddress EUR: 0x80290770
  * @ghidraAddress JPN: 0x80290210
  * @ghidraAddress BRD3D: 0x10b01c40
+ * @ghidraAddress BRGlide: 0x10b24fa0
  */
 static s32 g_dwDisplayListBlockCount;
 /**
@@ -25,6 +26,7 @@ static s32 g_dwDisplayListBlockCount;
  * @ghidraAddress EUR: 0x80290774
  * @ghidraAddress JPN: 0x80290214
  * @ghidraAddress BRD3D: 0x10b01c48
+ * @ghidraAddress BRGlide: 0x10b24fa8
  */
 static s32 g_dwHiliteBlockCount;
 /**
@@ -32,6 +34,7 @@ static s32 g_dwHiliteBlockCount;
  * @ghidraAddress EUR: 0x80290778
  * @ghidraAddress JPN: 0x80290218
  * @ghidraAddress BRD3D: 0x10b01c44
+ * @ghidraAddress BRGlide: 0x10b24fa4
  */
 static s32 g_dwLightBlockCount;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

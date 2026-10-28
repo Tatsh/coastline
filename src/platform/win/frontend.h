@@ -2733,38 +2733,47 @@ extern MenuWidget *g_pMultiplayerGameSetupMenu;
 
 /**
  * @ghidraAddress BRD3D: 0x100ab448
+ * @ghidraAddress BRGlide: 0x100aabe8
  */
 extern RECT g_rcMenuCenterPanel;
 /**
  * @ghidraAddress BRD3D: 0x100ab508
+ * @ghidraAddress BRGlide: 0x100aaca8
  */
 extern RECT g_rcMenuTitleBar;
 /**
  * @ghidraAddress BRD3D: 0x100ab4d8
+ * @ghidraAddress BRGlide: 0x100aac78
  */
 extern RECT g_rcMenuListBox;
 /**
  * @ghidraAddress BRD3D: 0x100ab4b8
+ * @ghidraAddress BRGlide: 0x100aac58
  */
 extern RECT g_rcMenuLeftColumn;
 /**
  * @ghidraAddress BRD3D: 0x100ab478
+ * @ghidraAddress BRGlide: 0x100aac18
  */
 extern RECT g_rcMenuRightColumnWide;
 /**
  * @ghidraAddress BRD3D: 0x100ab3f8
+ * @ghidraAddress BRGlide: 0x100aab98
  */
 extern RECT g_rcMenuNetworkPlayers;
 /**
  * @ghidraAddress BRD3D: 0x100ab488
+ * @ghidraAddress BRGlide: 0x100aac28
  */
 extern RECT g_rcMenuRightColumn;
 /**
  * @ghidraAddress BRD3D: 0x100ab468
+ * @ghidraAddress BRGlide: 0x100aac08
  */
 extern RECT g_rcMenuRightLabel;
 /**
  * @ghidraAddress BRD3D: 0x100ad300
+ * @ghidraAddress BRGlide: 0x100acad8
  */
 extern const char g_szSpace[];
 /**
@@ -3085,11 +3094,13 @@ extern const RECT g_rcMenuRootTitleBar;
 
 /**
  * @ghidraAddress BRD3D: 0x10aa29c8
+ * @ghidraAddress BRGlide: 0x10ac5d20
  */
 extern MenuWidget *g_pOptionsSubMenu;
 
 /**
  * @ghidraAddress BRD3D: 0x100ab3f4
+ * @ghidraAddress BRGlide: 0x100aab94
  */
 extern int g_dwFileListSelectedSlot;
 
@@ -3767,31 +3778,37 @@ char LookupKeyCharacter(DWORD dwKey);
 
 /**
  * @ghidraAddress BRD3D: 0x100ac420
+ * @ghidraAddress BRGlide: 0x100abbc0
  */
 extern int g_adwCarMenuIndexToCarId[32];
 
 /**
  * @ghidraAddress BRD3D: 0x100ac4a0
+ * @ghidraAddress BRGlide: 0x100abc40
  */
 extern int g_adwTireMenuIndexToTireType[3];
 
 /**
  * @ghidraAddress BRD3D: 0x100ac4b0
+ * @ghidraAddress BRGlide: 0x100abc50
  */
 extern int g_adwSuspensionMenuIndexToType[3];
 
 /**
  * @ghidraAddress BRD3D: 0x100ac4c0
+ * @ghidraAddress BRGlide: 0x100abc60
  */
 extern int g_adwWeatherMenuIndexToWeather[5];
 
 /**
  * @ghidraAddress BRD3D: 0x100ac4d8
+ * @ghidraAddress BRGlide: 0x100abc78
  */
 extern int g_adwTrackMenuIndexToTrackId[15];
 
 /**
  * @ghidraAddress BRD3D: 0x100ac518
+ * @ghidraAddress BRGlide: 0x100abcb8
  */
 extern int g_adwTransmissionMenuIndexToType[2];
 

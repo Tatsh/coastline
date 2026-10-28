@@ -402,6 +402,7 @@ void ByteSwapAndRelocateDisplayList(GbiCommand *pCommands);
 
 /**
  * @ghidraAddress BRD3D: 0x10690bec
+ * @ghidraAddress BRGlide: 0x106b7c7c
  */
 extern unsigned char *g_pTrackTextureTable;
 
@@ -835,10 +836,12 @@ unsigned CreateTextureFromN64ImageAutoLoadSize(const unsigned char *pImage,
 
 /**
  * @ghidraAddress BRD3D: 0x118aa0d8
+ * @ghidraAddress BRGlide: 0x118ed1f0
  */
 extern unsigned char g_abDaySkyPalette[32];
 /**
  * @ghidraAddress BRD3D: 0x118ab0f8
+ * @ghidraAddress BRGlide: 0x118ee210
  */
 extern unsigned char g_abNightSkyPalette[32];
 
@@ -853,27 +856,33 @@ void CreateNightSkyTexture(void);
 
 /**
  * @ghidraAddress BRD3D: 0x11829110
+ * @ghidraAddress BRGlide: 0x1184c470
  */
 extern unsigned g_dwHudOverlayTextureId;
 /**
  * @ghidraAddress BRD3D: 0x1182931c
+ * @ghidraAddress BRGlide: 0x1184c478
  */
 extern unsigned g_dwHudOverlayHalfTextureId;
 /**
  * @ghidraAddress BRD3D: 0x11829328
+ * @ghidraAddress BRGlide: 0x1184c484
  */
 extern unsigned g_dwParticleTextureId;
 
 /**
  * @ghidraAddress BRD3D: 0x11829108
+ * @ghidraAddress BRGlide: 0x1184c468
  */
 extern unsigned g_dwTireTrailTextureId;
 /**
  * @ghidraAddress BRD3D: 0x11829314
+ * @ghidraAddress BRGlide: 0x1184c474
  */
 extern unsigned g_dwVehicleEnvMapTextureId;
 /**
  * @ghidraAddress BRD3D: 0x11829324
+ * @ghidraAddress BRGlide: 0x1184c480
  */
 extern unsigned g_dwFallbackEnvMapTextureId;
 

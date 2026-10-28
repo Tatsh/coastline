@@ -96,6 +96,7 @@ struct GhostRecordingInfo {
  * The metadata of the ghost recording.
  *
  * @ghidraAddress BRD3D: 0x10680738
+ * @ghidraAddress BRGlide: 0x105bc8e0
  */
 extern GhostRecordingInfo g_GhostRecordingInfo;
 
@@ -103,6 +104,7 @@ extern GhostRecordingInfo g_GhostRecordingInfo;
  * The number of metadata bytes written before the frames.
  *
  * @ghidraAddress BRD3D: 0x10680730
+ * @ghidraAddress BRGlide: 0x105bc8d8
  */
 extern unsigned g_dwGhostRecordingSize;
 
@@ -110,6 +112,7 @@ extern unsigned g_dwGhostRecordingSize;
  * The encoded frames of all ghost recordings.
  *
  * @ghidraAddress BRD3D: 0x10b50308
+ * @ghidraAddress BRGlide: 0x10b73668
  */
 extern u8 g_aGhostKeyframes[GHOST_RECORDING_COUNT][GHOST_MAX_FRAMES * GHOST_FRAME_SIZE];
 
@@ -117,6 +120,7 @@ extern u8 g_aGhostKeyframes[GHOST_RECORDING_COUNT][GHOST_MAX_FRAMES * GHOST_FRAM
  * The best race time of the ghost, in seconds.
  *
  * @ghidraAddress BRD3D: 0x10aa28c8
+ * @ghidraAddress BRGlide: 0x10ac5c20
  */
 extern float g_fGhostBestRaceTime;
 
@@ -124,6 +128,7 @@ extern float g_fGhostBestRaceTime;
  * The best lap time of the ghost, in seconds.
  *
  * @ghidraAddress BRD3D: 0x10aa28cc
+ * @ghidraAddress BRGlide: 0x10ac5c24
  */
 extern float g_fGhostBestLapTime;
 
@@ -131,6 +136,7 @@ extern float g_fGhostBestLapTime;
  * The lap-count option read from a ghost file.
  *
  * @ghidraAddress BRD3D: 0x10ad098c
+ * @ghidraAddress BRGlide: 0x10af3cec
  */
 extern int g_dwLoadedGhostLapCount;
 
@@ -261,6 +267,7 @@ int IsGhostRecordingActive(void);
  * Current playback frame of each recording.
  *
  * @ghidraAddress BRD3D: 0x11750310
+ * @ghidraAddress BRGlide: 0x11773670
  */
 extern int g_adwGhostPlaybackFrame[GHOST_RECORDING_COUNT];
 

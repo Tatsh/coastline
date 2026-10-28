@@ -12,13 +12,15 @@ namespace {
      * @ghidraAddress EUR: 0x8028ce18
      * @ghidraAddress JPN: 0x8028c848
      * @ghidraAddress BRD3D: 0x106c56e8
+     * @ghidraAddress BRGlide: 0x106ec778
      */
     s32 g_dwContReadPending;
 } // namespace
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-void InitControllersAndPaks(void) {}
+void InitControllersAndPaks(void) {
+}
 #endif
 
 void StartControllerRead(void) {

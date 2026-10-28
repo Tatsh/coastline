@@ -22,6 +22,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8028cc64
  * @ghidraAddress JPN: 0x8028c734
  * @ghidraAddress BRD3D: 0x106c6608
+ * @ghidraAddress BRGlide: 0x106ed698
  */
 extern s32 g_dwSkyboxDisabled;
 

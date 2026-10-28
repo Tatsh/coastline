@@ -1067,6 +1067,7 @@ extern char g_szDebugOverlayText[DEBUG_OVERLAY_TEXT_SIZE];
  * The comparison of the test of alpha the display lists start a frame with.
  *
  * @ghidraAddress BRD3D: 0x104bbe28
+ * @ghidraAddress BRGlide: 0x105ccc70
  */
 extern DWORD g_dwD3DAlphaFunc;
 
@@ -1465,6 +1466,7 @@ GbiCommand *HandleGbiTri2FlatNoZBuffer(GbiCommand *pCommand);
  * The comparison of depth of the geometry mode.
  *
  * @ghidraAddress BRD3D: 0x104c16a0
+ * @ghidraAddress BRGlide: 0x105ce2e0
  */
 extern DWORD g_dwD3DZFunc;
 

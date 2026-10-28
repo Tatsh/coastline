@@ -1266,11 +1266,13 @@ void PlayerVehicleControllerCallback(Vehicle *vehicle);
  * Vehicles of the Windows race.
  *
  * @ghidraAddress BRD3D: 0x10acdea8
+ * @ghidraAddress BRGlide: 0x10af1208
  */
 extern Vehicle g_aVehicles[MAX_VEHICLES];
 #endif
 
 /**
  * @ghidraAddress BRD3D: 0x100b37d0
+ * @ghidraAddress BRGlide: 0x100b2fd8
  */
 extern u8 g_abPlayerColorsRgb[20][3];

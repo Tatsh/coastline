@@ -78,6 +78,7 @@ extern u32 g_dwRainMode;
  * @ghidraAddress EUR: 0x8028cd28
  * @ghidraAddress JPN: 0x8028c7f8
  * @ghidraAddress BRD3D: 0x106c0260
+ * @ghidraAddress BRGlide: 0x106e72f0
  */
 extern u8 g_bFogR;
 
@@ -86,6 +87,7 @@ extern u8 g_bFogR;
  * @ghidraAddress EUR: 0x8028cd2c
  * @ghidraAddress JPN: 0x8028c7fc
  * @ghidraAddress BRD3D: 0x106c1614
+ * @ghidraAddress BRGlide: 0x106e86a4
  */
 extern u8 g_bFogG;
 
@@ -94,6 +96,7 @@ extern u8 g_bFogG;
  * @ghidraAddress EUR: 0x8028cd30
  * @ghidraAddress JPN: 0x8028c800
  * @ghidraAddress BRD3D: 0x106c0200
+ * @ghidraAddress BRGlide: 0x106e7290
  */
 extern u8 g_bFogB;
 
@@ -104,6 +107,7 @@ extern u8 g_bFogB;
  * @ghidraAddress EUR: 0x8028cd34
  * @ghidraAddress JPN: 0x8028c804
  * @ghidraAddress BRD3D: 0x10690be8
+ * @ghidraAddress BRGlide: 0x106b7c78
  */
 extern u8 g_bFogIntensity;
 
@@ -115,6 +119,7 @@ extern u8 g_bFogIntensity;
  * @ghidraAddress EUR: 0x8028ef78
  * @ghidraAddress JPN: 0x8028e9c8
  * @ghidraAddress BRD3D: 0x100a79cc
+ * @ghidraAddress BRGlide: 0x100a718c
  */
 extern s32 g_dwLightningFlashCounter;
 
@@ -146,6 +151,7 @@ extern s32 g_dwLightningFlashCounter;
  * @ghidraAddress EUR: 0x8028ef64
  * @ghidraAddress JPN: 0x8028e9b4
  * @ghidraAddress BRD3D: 0x104b2550
+ * @ghidraAddress BRGlide: 0x104add38
  */
 extern s32 g_dwRainParticleCount;
 
@@ -156,6 +162,7 @@ extern s32 g_dwRainParticleCount;
  * @ghidraAddress EUR: 0x8028ef68
  * @ghidraAddress JPN: 0x8028e9b8
  * @ghidraAddress BRD3D: 0x104bbe0c
+ * @ghidraAddress BRGlide: 0x104b15ec
  */
 extern f32 g_fWindAngle;
 
@@ -166,6 +173,7 @@ extern f32 g_fWindAngle;
  * @ghidraAddress EUR: 0x8028ef6c
  * @ghidraAddress JPN: 0x8028e9bc
  * @ghidraAddress BRD3D: 0x100a79c8
+ * @ghidraAddress BRGlide: 0x100a7188
  */
 extern f32 g_fWindStrength;
 
@@ -177,6 +185,7 @@ extern f32 g_fWindStrength;
  * @ghidraAddress EUR: 0x8028ef70
  * @ghidraAddress JPN: 0x8028e9c0
  * @ghidraAddress BRD3D: 0x104bbde8
+ * @ghidraAddress BRGlide: 0x104b15c8
  */
 extern f32 g_fRainCameraSpeed;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -189,6 +198,7 @@ extern f32 g_fRainCameraSpeed;
  * @ghidraAddress EUR: 0x8028ef74
  * @ghidraAddress JPN: 0x8028e9c4
  * @ghidraAddress BRD3D: 0x104b1f00
+ * @ghidraAddress BRGlide: 0x104ad6e8
  */
 extern f32 g_fRainCameraSpeedScale;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -210,6 +220,7 @@ extern s32 g_nLightningBoltDepth;
  * @ghidraAddress EUR: 0x8028ef80
  * @ghidraAddress JPN: 0x8028e9d0
  * @ghidraAddress BRD3D: 0x104b255c
+ * @ghidraAddress BRGlide: 0x104add3c
  */
 extern f32 g_fLightningFlashTimer;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -222,6 +233,7 @@ extern f32 g_fLightningFlashTimer;
  * @ghidraAddress EUR: 0x8028ef84
  * @ghidraAddress JPN: 0x8028e9d4
  * @ghidraAddress BRD3D: 0x104bbe14
+ * @ghidraAddress BRGlide: 0x104b15f4
  */
 extern s32 g_bRainParticlesInitialized;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -233,6 +245,7 @@ extern s32 g_bRainParticlesInitialized;
  * @ghidraAddress EUR: 0x802a5f50
  * @ghidraAddress JPN: 0x802a59f0
  * @ghidraAddress BRD3D: 0x100baac8
+ * @ghidraAddress BRGlide: 0x100ba2d0
  */
 extern u8 g_aParticleTexture[];
 
@@ -252,6 +265,7 @@ extern u8 g_aParticleTexture[];
  * @ghidraAddress EUR: 0x80364140
  * @ghidraAddress JPN: 0x80362db0
  * @ghidraAddress BRD3D: 0x104b2570
+ * @ghidraAddress BRGlide: 0x104add50
  */
 extern s16 g_awRainParticlePos[WEATHER_VIEWS][RAIN_PARTICLE_SLOTS][3];
 
@@ -262,6 +276,7 @@ extern s16 g_awRainParticlePos[WEATHER_VIEWS][RAIN_PARTICLE_SLOTS][3];
  * @ghidraAddress EUR: 0x803659b8
  * @ghidraAddress JPN: 0x80364628
  * @ghidraAddress BRD3D: 0x104b0688
+ * @ghidraAddress BRGlide: 0x104abe70
  */
 extern Vec3f g_avRainPrevCameraPos[WEATHER_VIEWS];
 
@@ -272,6 +287,7 @@ extern Vec3f g_avRainPrevCameraPos[WEATHER_VIEWS];
  * @ghidraAddress EUR: 0x803659d0
  * @ghidraAddress JPN: 0x80364640
  * @ghidraAddress BRD3D: 0x104b2560
+ * @ghidraAddress BRGlide: 0x104add40
  */
 extern Vec3f g_vWindVelocity;
 
@@ -282,6 +298,7 @@ extern Vec3f g_vWindVelocity;
  * @ghidraAddress EUR: 0x803659e0
  * @ghidraAddress JPN: 0x80364650
  * @ghidraAddress BRD3D: 0x104bbdf0
+ * @ghidraAddress BRGlide: 0x104b15d0
  */
 extern Vec3f g_avRainVelocity[WEATHER_VIEWS];
 
@@ -292,6 +309,7 @@ extern Vec3f g_avRainVelocity[WEATHER_VIEWS];
  * @ghidraAddress EUR: 0x803659f8
  * @ghidraAddress JPN: 0x80364668
  * @ghidraAddress BRD3D: 0x104b0378
+ * @ghidraAddress BRGlide: 0x104abb60
  */
 extern Vec3f g_avLightningBolt[LIGHTNING_BOLT_POINTS];
 
@@ -302,6 +320,7 @@ extern Vec3f g_avLightningBolt[LIGHTNING_BOLT_POINTS];
  * @ghidraAddress EUR: 0x80366f80
  * @ghidraAddress JPN: 0x80365bf0
  * @ghidraAddress BRD3D: 0x104b3de8
+ * @ghidraAddress BRGlide: 0x104af5c8
  */
 extern u8 g_abPrecipitationTextures[WEATHER_VIEWS][RAIN_STREAK_TEXTURE_SIDE *
                                                    RAIN_STREAK_TEXTURE_SIDE *

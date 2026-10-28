@@ -118,6 +118,7 @@ extern s32 g_dwStartLightsAnimation;
  * @ghidraAddress EUR: 0x80271f2c
  * @ghidraAddress JPN: 0x802719dc
  * @ghidraAddress BRD3D: 0x106909d0
+ * @ghidraAddress BRGlide: 0x105ccb78
  */
 extern s32 g_bStartLightsVisible;
 
@@ -128,6 +129,7 @@ extern s32 g_bStartLightsVisible;
  * @ghidraAddress EUR: 0x80271f30
  * @ghidraAddress JPN: 0x802719e0
  * @ghidraAddress BRD3D: 0x106805bc
+ * @ghidraAddress BRGlide: 0x105bc764
  */
 extern f32 g_fStartLightsDrop;
 
@@ -299,6 +301,7 @@ extern s32 g_bReplayAfterRace;
  * @ghidraAddress EUR: 0x80272760
  * @ghidraAddress JPN: 0x80272210
  * @ghidraAddress BRD3D: 0x106909b8
+ * @ghidraAddress BRGlide: 0x105ccb60
  */
 extern s32 g_dwSavedResultsValid;
 
@@ -329,6 +332,7 @@ extern s32 g_dwSaveAvailable;
  * @ghidraAddress EUR: 0x8027277c
  * @ghidraAddress JPN: 0x8027222c
  * @ghidraAddress BRD3D: 0x100aa210
+ * @ghidraAddress BRGlide: 0x100a9560
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 extern u8 g_abRacePositionPoints[20];
@@ -443,6 +447,7 @@ extern s16 g_wRaceScreenLoopExited;
  * @ghidraAddress EUR: 0x80317a50
  * @ghidraAddress JPN: 0x80316490
  * @ghidraAddress BRD3D: 0x106805c8
+ * @ghidraAddress BRGlide: 0x105bc770
  */
 extern s32 g_adwSavedResultPositions[SAVED_RESULTS];
 
@@ -451,6 +456,7 @@ extern s32 g_adwSavedResultPositions[SAVED_RESULTS];
  * @ghidraAddress EUR: 0x80317a58
  * @ghidraAddress JPN: 0x80316498
  * @ghidraAddress BRD3D: 0x10680728
+ * @ghidraAddress BRGlide: 0x105bc8d0
  */
 extern f32 g_afSavedResultTimes[SAVED_RESULTS];
 
@@ -459,6 +465,7 @@ extern f32 g_afSavedResultTimes[SAVED_RESULTS];
  * @ghidraAddress EUR: 0x80317a60
  * @ghidraAddress JPN: 0x803164a0
  * @ghidraAddress BRD3D: 0x106909c0
+ * @ghidraAddress BRGlide: 0x105ccb68
  */
 extern f32 g_afSavedResultBestLapTimes[SAVED_RESULTS];
 
@@ -467,6 +474,7 @@ extern f32 g_afSavedResultBestLapTimes[SAVED_RESULTS];
  * @ghidraAddress EUR: 0x80317a68
  * @ghidraAddress JPN: 0x803164a8
  * @ghidraAddress BRD3D: 0x10690950
+ * @ghidraAddress BRGlide: 0x105ccaf8
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 extern f32 g_aafSavedResultLapTimes[SAVED_RESULTS][12];
@@ -479,6 +487,7 @@ extern f32 g_aafSavedResultLapTimes[SAVED_RESULTS][5];
  * @ghidraAddress EUR: 0x80317a90
  * @ghidraAddress JPN: 0x803164d0
  * @ghidraAddress BRD3D: 0x10680748
+ * @ghidraAddress BRGlide: 0x105bc8f0
  */
 extern s32 g_adwSavedResultBestLaps[SAVED_RESULTS];
 
@@ -487,6 +496,7 @@ extern s32 g_adwSavedResultBestLaps[SAVED_RESULTS];
  * @ghidraAddress EUR: 0x80317a98
  * @ghidraAddress JPN: 0x803164d8
  * @ghidraAddress BRD3D: 0x106805b0
+ * @ghidraAddress BRGlide: 0x105bc758
  */
 extern s32 g_adwSavedResultLaps[SAVED_RESULTS];
 

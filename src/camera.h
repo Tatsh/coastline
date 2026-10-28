@@ -25,6 +25,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8028d9c0
  * @ghidraAddress JPN: 0x8028d3f0
  * @ghidraAddress BRD3D: 0x100c129c
+ * @ghidraAddress BRGlide: 0x100bcdcc
  */
 extern s32 g_bVehicleTrackCollisionCorrected;
 
@@ -35,6 +36,7 @@ extern s32 g_bVehicleTrackCollisionCorrected;
  * @ghidraAddress EUR: 0x8028ccf8
  * @ghidraAddress JPN: 0x8028c7c8
  * @ghidraAddress BRD3D: 0x106c2cf8
+ * @ghidraAddress BRGlide: 0x106e9d88
  */
 extern Vehicle *g_pActiveCameraVehicle;
 
@@ -45,6 +47,7 @@ extern Vehicle *g_pActiveCameraVehicle;
  * @ghidraAddress EUR: 0x8028daac
  * @ghidraAddress JPN: 0x8028d4dc
  * @ghidraAddress BRD3D: 0x10af9bb4
+ * @ghidraAddress BRGlide: 0x10b1cf14
  */
 extern s32 g_dwReplayCameraHoldTimer;
 
@@ -53,6 +56,7 @@ extern s32 g_dwReplayCameraHoldTimer;
  * @ghidraAddress EUR: 0x8028daa8
  * @ghidraAddress JPN: 0x8028d4d8
  * @ghidraAddress BRD3D: 0x10af9bb0
+ * @ghidraAddress BRGlide: 0x10b1cf10
  */
 extern s32 g_dwReplayCameraSwitchTimer;
 
@@ -258,6 +262,7 @@ extern u16 g_awCameraRayNearbyInstances[];
  * @ghidraAddress EUR: 0x8031d0f0
  * @ghidraAddress JPN: 0x8031bd20
  * @ghidraAddress BRD3D: 0x106c2990
+ * @ghidraAddress BRGlide: 0x106e9a20
  */
 extern Vec3f g_afFrustumCenter;
 
@@ -268,6 +273,7 @@ extern Vec3f g_afFrustumCenter;
  * @ghidraAddress EUR: 0x8031d0d0
  * @ghidraAddress JPN: 0x8031bd00
  * @ghidraAddress BRD3D: 0x106c56f8
+ * @ghidraAddress BRGlide: 0x106ec788
  */
 extern Vec3f g_vFrustumHalfRight;
 
@@ -278,6 +284,7 @@ extern Vec3f g_vFrustumHalfRight;
  * @ghidraAddress EUR: 0x8031d0e0
  * @ghidraAddress JPN: 0x8031bd10
  * @ghidraAddress BRD3D: 0x106c0690
+ * @ghidraAddress BRGlide: 0x106e7720
  */
 extern Vec3f g_vFrustumHalfUp;
 

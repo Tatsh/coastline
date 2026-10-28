@@ -11,6 +11,7 @@
  * @ghidraAddress EUR: 0x8028e508
  * @ghidraAddress JPN: 0x8028df38
  * @ghidraAddress BRD3D: 0x1067d57c
+ * @ghidraAddress BRGlide: 0x105b9724
  */
 static u32 g_dwTimingFrameElapsed;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

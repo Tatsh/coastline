@@ -15,6 +15,7 @@ namespace {
      * @ghidraAddress EUR: 0x8028ef84
      * @ghidraAddress JPN: 0x8028e9d4
      * @ghidraAddress BRD3D: 0x104bbe14
+     * @ghidraAddress BRGlide: 0x104b15f4
      */
     s32 g_bRainParticlesInitialized;
     /**
@@ -24,6 +25,7 @@ namespace {
      * @ghidraAddress EUR: 0x8028ef70
      * @ghidraAddress JPN: 0x8028e9c0
      * @ghidraAddress BRD3D: 0x104bbde8
+     * @ghidraAddress BRGlide: 0x104b15c8
      */
     f32 g_fRainCameraSpeed;
     /**
@@ -33,6 +35,7 @@ namespace {
      * @ghidraAddress EUR: 0x8028ef74
      * @ghidraAddress JPN: 0x8028e9c4
      * @ghidraAddress BRD3D: 0x104b1f00
+     * @ghidraAddress BRGlide: 0x104ad6e8
      */
     f32 g_fRainCameraSpeedScale;
 } // namespace

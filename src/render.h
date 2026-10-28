@@ -138,6 +138,7 @@ typedef struct {
  * @ghidraAddress EUR: 0x8028ca78
  * @ghidraAddress JPN: 0x8028c548
  * @ghidraAddress BRD3D: 0x106c32d0
+ * @ghidraAddress BRGlide: 0x106ea360
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 extern f32 (*g_pProjectionMtx)[4];
@@ -152,6 +153,7 @@ extern Mtx *g_pProjectionMtx;
  * @ghidraAddress EUR: 0x8031d010
  * @ghidraAddress JPN: 0x8031bc40
  * @ghidraAddress BRD3D: 0x106c0860
+ * @ghidraAddress BRGlide: 0x106e78f0
  */
 extern f32 g_afMvpMatrix[4][4];
 
@@ -167,6 +169,7 @@ extern f32 g_afCameraRollMatrix[4][4];
  * @ghidraAddress EUR: 0x8031cf90
  * @ghidraAddress JPN: 0x8031bbc0
  * @ghidraAddress BRD3D: 0x106c0218
+ * @ghidraAddress BRGlide: 0x106e72a8
  */
 extern f32 g_afPerspectiveMatrix[4][4];
 
@@ -177,6 +180,7 @@ extern f32 g_afPerspectiveMatrix[4][4];
  * @ghidraAddress EUR: 0x8031d050
  * @ghidraAddress JPN: 0x8031bc80
  * @ghidraAddress BRD3D: 0x106c08a0
+ * @ghidraAddress BRGlide: 0x106e7930
  */
 extern f32 g_afScratchMatrix[4][4];
 
@@ -187,6 +191,7 @@ extern f32 g_afScratchMatrix[4][4];
  * @ghidraAddress EUR: 0x8028ca9c
  * @ghidraAddress JPN: 0x8028c56c
  * @ghidraAddress BRD3D: 0x106c0258
+ * @ghidraAddress BRGlide: 0x106e72e8
  */
 extern u32 g_dwTextureFilterMode;
 
@@ -197,6 +202,7 @@ extern u32 g_dwTextureFilterMode;
  * @ghidraAddress EUR: 0x8028cab0
  * @ghidraAddress JPN: 0x8028c580
  * @ghidraAddress BRD3D: 0x106c3364
+ * @ghidraAddress BRGlide: 0x106ea3f4
  */
 extern s32 g_dwTrackMirrored;
 
@@ -207,6 +213,7 @@ extern s32 g_dwTrackMirrored;
  * @ghidraAddress EUR: 0x8028caac
  * @ghidraAddress JPN: 0x8028c57c
  * @ghidraAddress BRD3D: 0x106c1174
+ * @ghidraAddress BRGlide: 0x106e8204
  */
 extern s32 g_dwViewportMirrored;
 
@@ -217,6 +224,7 @@ extern s32 g_dwViewportMirrored;
  * @ghidraAddress EUR: 0x8028ccfc
  * @ghidraAddress JPN: 0x8028c7cc
  * @ghidraAddress BRD3D: 0x106c6490
+ * @ghidraAddress BRGlide: 0x106ed520
  */
 extern CameraFrame *g_pActiveCamera;
 
@@ -227,6 +235,7 @@ extern CameraFrame *g_pActiveCamera;
  * @ghidraAddress EUR: 0x8028ccc8
  * @ghidraAddress JPN: 0x8028c798
  * @ghidraAddress BRD3D: 0x100aa8ac
+ * @ghidraAddress BRGlide: 0x100aa03c
  */
 extern f32 g_fCameraFovRadians;
 
@@ -247,6 +256,7 @@ extern f32 g_fCameraProjectionScale;
  * @ghidraAddress EUR: 0x8028cd14
  * @ghidraAddress JPN: 0x8028c7e4
  * @ghidraAddress BRD3D: 0x100aa8b4
+ * @ghidraAddress BRGlide: 0x100aa044
  */
 extern s32 g_dwNumViewports;
 
@@ -257,6 +267,7 @@ extern s32 g_dwNumViewports;
  * @ghidraAddress EUR: 0x8031d7c8
  * @ghidraAddress JPN: 0x8031c3f8
  * @ghidraAddress BRD3D: 0x106c1628
+ * @ghidraAddress BRGlide: 0x106e86b8
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 extern ViewportRect g_aViewportRects[4];
@@ -271,6 +282,7 @@ extern ViewportRect g_aViewportRects[];
  * @ghidraAddress EUR: 0x8028ccf4
  * @ghidraAddress JPN: 0x8028c7c4
  * @ghidraAddress BRD3D: 0x106c5708
+ * @ghidraAddress BRGlide: 0x106ec798
  */
 extern s32 g_dwCurrentSplitScreenIndex;
 
@@ -281,6 +293,7 @@ extern s32 g_dwCurrentSplitScreenIndex;
  * @ghidraAddress EUR: 0x8028cd6c
  * @ghidraAddress JPN: 0x8028c83c
  * @ghidraAddress BRD3D: 0x106c62d8
+ * @ghidraAddress BRGlide: 0x106ed368
  */
 extern s32 g_dwViewportScaleZ;
 
@@ -291,6 +304,7 @@ extern s32 g_dwViewportScaleZ;
  * @ghidraAddress EUR: 0x8028cd70
  * @ghidraAddress JPN: 0x8028c840
  * @ghidraAddress BRD3D: 0x106c65b8
+ * @ghidraAddress BRGlide: 0x106ed648
  */
 extern s32 g_dwViewportTransZ;
 
@@ -301,6 +315,7 @@ extern s32 g_dwViewportTransZ;
  * @ghidraAddress EUR: 0x8031cf50
  * @ghidraAddress JPN: 0x8031bb80
  * @ghidraAddress BRD3D: 0x106c29a8
+ * @ghidraAddress BRGlide: 0x106e9a38
  */
 extern f32 g_afViewProjMatrix[4][4];
 
@@ -311,6 +326,7 @@ extern f32 g_afViewProjMatrix[4][4];
  * @ghidraAddress EUR: 0x8028ca74
  * @ghidraAddress JPN: 0x8028c544
  * @ghidraAddress BRD3D: 0x106c067c
+ * @ghidraAddress BRGlide: 0x106e770c
  */
 extern u16 g_wPerspNorm;
 
@@ -321,6 +337,7 @@ extern u16 g_wPerspNorm;
  * @ghidraAddress EUR: 0x8028ccd4
  * @ghidraAddress JPN: 0x8028c7a4
  * @ghidraAddress BRD3D: 0x106c0210
+ * @ghidraAddress BRGlide: 0x106e72a0
  */
 extern f32 gFrustumFar;
 
@@ -331,6 +348,7 @@ extern f32 gFrustumFar;
  * @ghidraAddress EUR: 0x8028cccc
  * @ghidraAddress JPN: 0x8028c79c
  * @ghidraAddress BRD3D: 0x106c53c0
+ * @ghidraAddress BRGlide: 0x106ec450
  */
 extern f32 g_fFrustumFovAngle;
 
@@ -341,6 +359,7 @@ extern f32 g_fFrustumFovAngle;
  * @ghidraAddress EUR: 0x8031cfd0
  * @ghidraAddress JPN: 0x8031bc00
  * @ghidraAddress BRD3D: 0x106c58c0
+ * @ghidraAddress BRGlide: 0x106ec950
  */
 extern f32 g_ViewLookAtMtx[4][4];
 
@@ -349,6 +368,7 @@ extern f32 g_ViewLookAtMtx[4][4];
  * @ghidraAddress EUR: 0x8028cac8
  * @ghidraAddress JPN: 0x8028c598
  * @ghidraAddress BRD3D: 0x100aa730
+ * @ghidraAddress BRGlide: 0x100a9ec0
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 extern f32 g_mtxIdentity[4][4];
@@ -363,6 +383,7 @@ extern Mtx g_mtxIdentity;
  * @ghidraAddress EUR: 0x8028cc10
  * @ghidraAddress JPN: 0x8028c6e0
  * @ghidraAddress BRD3D: 0x106c06a4
+ * @ghidraAddress BRGlide: 0x106e7734
  */
 extern s32 g_dwStatVerticesDrawn;
 
@@ -371,6 +392,7 @@ extern s32 g_dwStatVerticesDrawn;
  * @ghidraAddress EUR: 0x8028cc18
  * @ghidraAddress JPN: 0x8028c6e8
  * @ghidraAddress BRD3D: 0x106c069c
+ * @ghidraAddress BRGlide: 0x106e772c
  */
 extern s32 g_dwStatTrianglesDrawn;
 
@@ -379,6 +401,7 @@ extern s32 g_dwStatTrianglesDrawn;
  * @ghidraAddress EUR: 0x8028cc40
  * @ghidraAddress JPN: 0x8028c710
  * @ghidraAddress BRD3D: 0x106c1610
+ * @ghidraAddress BRGlide: 0x106e86a0
  */
 extern s32 g_dwStatPolygonsDrawn;
 
@@ -389,6 +412,7 @@ extern s32 g_dwStatPolygonsDrawn;
  * @ghidraAddress EUR: 0x8028cc4c
  * @ghidraAddress JPN: 0x8028c71c
  * @ghidraAddress BRD3D: 0x100aa87c
+ * @ghidraAddress BRGlide: 0x100aa00c
  */
 extern s32 g_bTrackTextureLod;
 
@@ -399,6 +423,7 @@ extern s32 g_bTrackTextureLod;
  * @ghidraAddress EUR: 0x8028cc50
  * @ghidraAddress JPN: 0x8028c720
  * @ghidraAddress BRD3D: 0x100aa880
+ * @ghidraAddress BRGlide: 0x100aa010
  */
 extern s32 g_bSmoothShading;
 
@@ -409,6 +434,7 @@ extern s32 g_bSmoothShading;
  * @ghidraAddress EUR: 0x8028cd60
  * @ghidraAddress JPN: 0x8028c830
  * @ghidraAddress BRD3D: 0x106c5ab0
+ * @ghidraAddress BRGlide: 0x106ecb40
  */
 extern u32 g_dwDirLightColor;
 
@@ -417,6 +443,7 @@ extern u32 g_dwDirLightColor;
  * @ghidraAddress EUR: 0x8028cd64
  * @ghidraAddress JPN: 0x8028c834
  * @ghidraAddress BRD3D: 0x106c29e8
+ * @ghidraAddress BRGlide: 0x106e9a78
  */
 extern u32 g_dwAmbientLightColor;
 
@@ -427,6 +454,7 @@ extern u32 g_dwAmbientLightColor;
  * @ghidraAddress EUR: 0x8028cbf8
  * @ghidraAddress JPN: 0x8028c6c8
  * @ghidraAddress BRD3D: 0x100aa860
+ * @ghidraAddress BRGlide: 0x100a9ff0
  */
 extern Lights1 g_DefaultLights;
 
@@ -437,6 +465,7 @@ extern Lights1 g_DefaultLights;
  * @ghidraAddress EUR: 0x8031d828
  * @ghidraAddress JPN: 0x8031c458
  * @ghidraAddress BRD3D: 0x106c0670
+ * @ghidraAddress BRGlide: 0x106e7700
  */
 extern f32 g_afLightDirection[3];
 
@@ -447,6 +476,7 @@ extern f32 g_afLightDirection[3];
  * @ghidraAddress EUR: 0x8031d858
  * @ghidraAddress JPN: 0x8031c488
  * @ghidraAddress BRD3D: 0x106c0950
+ * @ghidraAddress BRGlide: 0x106e79e0
  */
 extern u32 g_adwLightRampColors[4];
 
@@ -457,6 +487,7 @@ extern u32 g_adwLightRampColors[4];
  * @ghidraAddress EUR: 0x80354170
  * @ghidraAddress JPN: 0x80352de0
  * @ghidraAddress BRD3D: 0x10277e60
+ * @ghidraAddress BRGlide: 0x10273648
  */
 extern s32 g_adwVehicleVisible[];
 
@@ -467,6 +498,7 @@ extern s32 g_adwVehicleVisible[];
  * @ghidraAddress EUR: 0x8028cb08
  * @ghidraAddress JPN: 0x8028c5d8
  * @ghidraAddress BRD3D: 0x100aa770
+ * @ghidraAddress BRGlide: 0x100a9f00
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 extern GbiCommand g_aClipRatioDisplayLists[CLIP_RATIOS][5];
@@ -481,6 +513,7 @@ extern Gfx g_aClipRatioDisplayLists[CLIP_RATIOS][5];
  * @ghidraAddress EUR: 0x8028cd48
  * @ghidraAddress JPN: 0x8028c818
  * @ghidraAddress BRD3D: 0x106c1580
+ * @ghidraAddress BRGlide: 0x106e8610
  */
 extern u8 g_bDirLightR;
 
@@ -489,6 +522,7 @@ extern u8 g_bDirLightR;
  * @ghidraAddress EUR: 0x8028cd4c
  * @ghidraAddress JPN: 0x8028c81c
  * @ghidraAddress BRD3D: 0x106c335c
+ * @ghidraAddress BRGlide: 0x106ea3ec
  */
 extern u8 g_bDirLightG;
 
@@ -497,6 +531,7 @@ extern u8 g_bDirLightG;
  * @ghidraAddress EUR: 0x8028cd50
  * @ghidraAddress JPN: 0x8028c820
  * @ghidraAddress BRD3D: 0x106c0968
+ * @ghidraAddress BRGlide: 0x106e79f8
  */
 extern u8 g_bDirLightB;
 
@@ -507,6 +542,7 @@ extern u8 g_bDirLightB;
  * @ghidraAddress EUR: 0x8028cd54
  * @ghidraAddress JPN: 0x8028c824
  * @ghidraAddress BRD3D: 0x10690bf0
+ * @ghidraAddress BRGlide: 0x106b7c80
  */
 extern u8 g_bAmbientLightR;
 
@@ -515,6 +551,7 @@ extern u8 g_bAmbientLightR;
  * @ghidraAddress EUR: 0x8028cd58
  * @ghidraAddress JPN: 0x8028c828
  * @ghidraAddress BRD3D: 0x106c0960
+ * @ghidraAddress BRGlide: 0x106e79f0
  */
 extern u8 g_bAmbientLightG;
 
@@ -523,6 +560,7 @@ extern u8 g_bAmbientLightG;
  * @ghidraAddress EUR: 0x8028cd5c
  * @ghidraAddress JPN: 0x8028c82c
  * @ghidraAddress BRD3D: 0x106c65bc
+ * @ghidraAddress BRGlide: 0x106ed64c
  */
 extern u8 g_bAmbientLightB;
 
@@ -544,6 +582,7 @@ extern s32 g_dwVehicleLodBias;
  * @ghidraAddress EUR: 0x8028cc78
  * @ghidraAddress JPN: 0x8028c748
  * @ghidraAddress BRD3D: 0x106c6614
+ * @ghidraAddress BRGlide: 0x106ed6a4
  */
 extern s32 g_dwVehicleCullingDisabled;
 
@@ -554,6 +593,7 @@ extern s32 g_dwVehicleCullingDisabled;
  * @ghidraAddress EUR: 0x8028cc44
  * @ghidraAddress JPN: 0x8028c714
  * @ghidraAddress BRD3D: 0x106c161c
+ * @ghidraAddress BRGlide: 0x106e86ac
  */
 extern s32 g_dwStatVehicleTriangles;
 
@@ -564,6 +604,7 @@ extern s32 g_dwStatVehicleTriangles;
  * @ghidraAddress EUR: 0x8028cc14
  * @ghidraAddress JPN: 0x8028c6e4
  * @ghidraAddress BRD3D: 0x106c33b8
+ * @ghidraAddress BRGlide: 0x106ea448
  */
 extern s32 g_dwStatUnused0;
 
@@ -572,6 +613,7 @@ extern s32 g_dwStatUnused0;
  * @ghidraAddress EUR: 0x8028cc34
  * @ghidraAddress JPN: 0x8028c704
  * @ghidraAddress BRD3D: 0x106c1178
+ * @ghidraAddress BRGlide: 0x106e8208
  */
 extern s32 g_dwStatUnused1;
 
@@ -580,6 +622,7 @@ extern s32 g_dwStatUnused1;
  * @ghidraAddress EUR: 0x8028cc38
  * @ghidraAddress JPN: 0x8028c708
  * @ghidraAddress BRD3D: 0x106c56dc
+ * @ghidraAddress BRGlide: 0x106ec76c
  */
 extern s32 g_dwStatUnused2;
 
@@ -588,6 +631,7 @@ extern s32 g_dwStatUnused2;
  * @ghidraAddress EUR: 0x8028cc3c
  * @ghidraAddress JPN: 0x8028c70c
  * @ghidraAddress BRD3D: 0x106c32cc
+ * @ghidraAddress BRGlide: 0x106ea35c
  */
 extern s32 g_dwStatUnused3;
 
@@ -616,6 +660,7 @@ extern u32 g_dwTextureRenderTile;
  * @ghidraAddress EUR: 0x8028cd38
  * @ghidraAddress JPN: 0x8028c808
  * @ghidraAddress BRD3D: 0x106c3398
+ * @ghidraAddress BRGlide: 0x106ea428
  */
 extern s32 g_dwFogMinDistance;
 
@@ -624,6 +669,7 @@ extern s32 g_dwFogMinDistance;
  * @ghidraAddress EUR: 0x8028cd3c
  * @ghidraAddress JPN: 0x8028c80c
  * @ghidraAddress BRD3D: 0x106c64d8
+ * @ghidraAddress BRGlide: 0x106ed568
  */
 extern s32 g_dwFogMaxDistance;
 
@@ -635,6 +681,7 @@ extern s32 g_dwFogMaxDistance;
  * @ghidraAddress EUR: 0x8028cd40
  * @ghidraAddress JPN: 0x8028c810
  * @ghidraAddress BRD3D: 0x106c1618
+ * @ghidraAddress BRGlide: 0x106e86a8
  */
 extern s32 g_dwFogFactorOffset;
 
@@ -643,6 +690,7 @@ extern s32 g_dwFogFactorOffset;
  * @ghidraAddress EUR: 0x8028cd44
  * @ghidraAddress JPN: 0x8028c814
  * @ghidraAddress BRD3D: 0x106c2cf4
+ * @ghidraAddress BRGlide: 0x106e9d84
  */
 extern s32 g_dwFogFactorScale;
 
@@ -653,6 +701,7 @@ extern s32 g_dwFogFactorScale;
  * @ghidraAddress EUR: 0x8031d848
  * @ghidraAddress JPN: 0x8031c478
  * @ghidraAddress BRD3D: 0x10690ff8
+ * @ghidraAddress BRGlide: 0x106b8088
  */
 extern u8 g_abLightRampR[4];
 
@@ -661,6 +710,7 @@ extern u8 g_abLightRampR[4];
  * @ghidraAddress EUR: 0x8031d84c
  * @ghidraAddress JPN: 0x8031c47c
  * @ghidraAddress BRD3D: 0x106c6494
+ * @ghidraAddress BRGlide: 0x106ed524
  */
 extern u8 g_abLightRampG[4];
 
@@ -669,6 +719,7 @@ extern u8 g_abLightRampG[4];
  * @ghidraAddress EUR: 0x8031d850
  * @ghidraAddress JPN: 0x8031c480
  * @ghidraAddress BRD3D: 0x106c3358
+ * @ghidraAddress BRGlide: 0x106ea3e8
  */
 extern u8 g_abLightRampB[4];
 
@@ -680,6 +731,7 @@ extern u8 g_abLightRampB[4];
  * @ghidraAddress EUR: 0x8031c1b0
  * @ghidraAddress JPN: 0x8031adf8
  * @ghidraAddress BRD3D: 0x106c1788
+ * @ghidraAddress BRGlide: 0x106e8818
  */
 extern Vp g_aViewports[VIEWPORTS];
 
@@ -690,6 +742,7 @@ extern Vp g_aViewports[VIEWPORTS];
  * @ghidraAddress EUR: 0x8028cd68
  * @ghidraAddress JPN: 0x8028c838
  * @ghidraAddress BRD3D: 0x106c6654
+ * @ghidraAddress BRGlide: 0x106ed6e4
  */
 extern s32 g_dwViewportIndex;
 
@@ -701,6 +754,7 @@ extern s32 g_dwViewportIndex;
  * @ghidraAddress EUR: 0x8028caa8
  * @ghidraAddress JPN: 0x8028c578
  * @ghidraAddress BRD3D: 0x106c65fc
+ * @ghidraAddress BRGlide: 0x106ed68c
  */
 extern s32 g_dwClipRatioIndex;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
@@ -712,6 +766,7 @@ extern s32 g_dwClipRatioIndex;
  * @ghidraAddress EUR: 0x8028cc58
  * @ghidraAddress JPN: 0x8028c728
  * @ghidraAddress BRD3D: 0x100aa884
+ * @ghidraAddress BRGlide: 0x100aa014
  */
 extern s32 g_bGbiClipping;
 

@@ -91,6 +91,7 @@ extern SeasonRaceResult g_LastRaceResultCopy;
  * The lap times copied out of the most recent result.
  *
  * @ghidraAddress BRD3D: 0x10aa25a0
+ * @ghidraAddress BRGlide: 0x10ac58f8
  */
 extern float g_afLastRaceLapTimes[12];
 
@@ -119,6 +120,7 @@ extern char g_szSeasonYearLabel[SEASON_YEAR_LABEL_SIZE];
  * The round backed up when applying a profile.
  *
  * @ghidraAddress BRD3D: 0x10aa28ac
+ * @ghidraAddress BRGlide: 0x10ac5c04
  */
 extern int g_dwSeasonSavedRound;
 
@@ -133,6 +135,7 @@ extern int g_dwLastRaceResultField18;
  * The total points displayed for the current class.
  *
  * @ghidraAddress BRD3D: 0x10aa28c4
+ * @ghidraAddress BRGlide: 0x10ac5c1c
  */
 extern int g_dwSeasonTotalPoints;
 
@@ -140,6 +143,7 @@ extern int g_dwSeasonTotalPoints;
  * The profile before the race's progress was applied.
  *
  * @ghidraAddress BRD3D: 0x10a9dbd8
+ * @ghidraAddress BRGlide: 0x10ac4c60
  */
 extern PlayerProfile g_SeasonProgressPrev;
 
@@ -162,6 +166,7 @@ extern int g_dwRaceResultsSelectedLap;
  * Whether a saved championship slot has been opened.
  *
  * @ghidraAddress BRD3D: 0x10aa28e0
+ * @ghidraAddress BRGlide: 0x10ac5c38
  */
 extern int g_dwLoadSeasonSlotValid;
 
@@ -213,6 +218,7 @@ struct SeasonSaveSettings {
  * The settings read from the end of a season file.
  *
  * @ghidraAddress BRD3D: 0x10ad0978
+ * @ghidraAddress BRGlide: 0x10af3cd8
  */
 extern SeasonSaveSettings g_LoadedSeasonSettings;
 
@@ -261,6 +267,7 @@ extern const char g_szSeasonSaveMagic[4];
  * The path used for automatic season saves.
  *
  * @ghidraAddress BRD3D: 0x100ad310
+ * @ghidraAddress BRGlide: 0x100acae8
  */
 extern const char g_szAutoSaveBrf[];
 
@@ -268,6 +275,7 @@ extern const char g_szAutoSaveBrf[];
  * The label appended to a saved season.
  *
  * @ghidraAddress BRD3D: 0x10ad0990
+ * @ghidraAddress BRGlide: 0x10af3cf0
  */
 extern char g_szSeasonSaveSlotName[SEASON_SAVE_SLOT_NAME_SIZE];
 
@@ -285,6 +293,7 @@ bool SaveSeasonSaveFile(void);
  * The profile used to save progress for the first player.
  *
  * @ghidraAddress BRD3D: 0x10aced34
+ * @ghidraAddress BRGlide: 0x10af2094
  */
 #define g_pPrimarySeasonSave (g_aVehicles[0].GetProfile())
 
@@ -292,6 +301,7 @@ bool SaveSeasonSaveFile(void);
  * The profile used to save progress for the second player.
  *
  * @ghidraAddress BRD3D: 0x10ad189c
+ * @ghidraAddress BRGlide: 0x10af4bfc
  */
 #define g_pSecondarySeasonSave (g_aVehicles[1].GetProfile())
 

@@ -91,6 +91,7 @@ extern s32 g_dwMultiplayerMode;
  * @ghidraAddress EUR: 0x8028cc70
  * @ghidraAddress JPN: 0x8028c740
  * @ghidraAddress BRD3D: 0x100aa890
+ * @ghidraAddress BRGlide: 0x100aa020
  */
 extern s32 g_bBilinearFiltering;
 
@@ -275,6 +276,7 @@ void UpdateStickRepeat(PlayerInputState *state);
  * @ghidraAddress EUR: 0x8028ce18
  * @ghidraAddress JPN: 0x8028c848
  * @ghidraAddress BRD3D: 0x106c56e8
+ * @ghidraAddress BRGlide: 0x106ec778
  */
 extern s32 g_dwContReadPending;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */

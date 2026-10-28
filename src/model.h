@@ -126,6 +126,7 @@ extern Light g_MenuDirectionalLight;
  * @ghidraAddress EUR: 0x80273d78
  * @ghidraAddress JPN: 0x80273838
  * @ghidraAddress BRD3D: 0x10690a1c
+ * @ghidraAddress BRGlide: 0x105ccbc8
  */
 extern s32 g_dwDrawModelListNoZBuffer;
 
@@ -136,6 +137,7 @@ extern s32 g_dwDrawModelListNoZBuffer;
  * @ghidraAddress EUR: 0x80273d7c
  * @ghidraAddress JPN: 0x8027383c
  * @ghidraAddress BRD3D: 0x100aa5d0
+ * @ghidraAddress BRGlide: 0x100a9930
  */
 extern u32 g_adwModelShadeColors[4];
 

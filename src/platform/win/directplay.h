@@ -673,6 +673,7 @@ void InitializeDirectPlayForDesktopWindow(void);
  * Whether a DirectPlay session is open.
  *
  * @ghidraAddress BRD3D: 0x10a9cffc
+ * @ghidraAddress BRGlide: 0x10ac408c
  */
 extern int g_dwDirectPlaySessionActive;
 
@@ -848,11 +849,13 @@ LRESULT WINAPI HandleNetworkWindowMessage(HWND hWnd, UINT nMessage, WPARAM wPara
 
 /**
  * @ghidraAddress BRD3D: 0x100ab408
+ * @ghidraAddress BRGlide: 0x100aaba8
  */
 extern const RECT g_rcNetCarSetupPlayerList;
 
 /**
  * @ghidraAddress BRD3D: 0x10aa2888
+ * @ghidraAddress BRGlide: 0x10ac5be0
  */
 extern int g_dwNetworkCarSetupShown;
 
@@ -886,31 +889,37 @@ struct NetClockSample {
 
 /**
  * @ghidraAddress BRD3D: 0x1022aab0
+ * @ghidraAddress BRGlide: 0x102265e0
  */
 extern NetClockSample g_aNetClockSamples[8];
 
 /**
  * @ghidraAddress BRD3D: 0x1022af38
+ * @ghidraAddress BRGlide: 0x10226a68
  */
 extern int g_nNetClockSampleIndex;
 
 /**
  * @ghidraAddress BRD3D: 0x1022af3c
+ * @ghidraAddress BRGlide: 0x10226a6c
  */
 extern unsigned g_dwNetBestClockRoundTrip;
 
 /**
  * @ghidraAddress BRD3D: 0x1022aaf8
+ * @ghidraAddress BRGlide: 0x10226628
  */
 extern char g_szSlotPlayerNameBuffer[0x400];
 
 /**
  * @ghidraAddress BRD3D: 0x106909d8
+ * @ghidraAddress BRGlide: 0x105ccb80
  */
 extern int g_dwNetworkDataReceived;
 
 /**
  * @ghidraAddress BRD3D: 0x1022aef8
+ * @ghidraAddress BRGlide: 0x10226a28
  */
 extern int g_nPendingNetSoundEffect;
 
@@ -1355,11 +1364,13 @@ void ResetAllPlayerSlots(void);
 
 /**
  * @ghidraAddress BRD3D: 0x1178feec
+ * @ghidraAddress BRGlide: 0x117b324c
  */
 extern DWORD g_dwNetSlotResetTime;
 
 /**
  * @ghidraAddress BRD3D: 0x11826af8
+ * @ghidraAddress BRGlide: 0x11849e58
  */
 extern unsigned g_dwNetNextFinishPosition;
 
@@ -1596,6 +1607,7 @@ extern NetPlayerSlot g_aNetPeerSlotMatrix[NET_PLAYER_SLOT_COUNT][NET_PLAYER_SLOT
 
 /**
  * @ghidraAddress BRD3D: 0x1178fef0
+ * @ghidraAddress BRGlide: 0x117b3250
  */
 extern int g_bNetRaceStarted;
 
@@ -1726,6 +1738,7 @@ int GetSessionSlotFlag(DPID dpidPlayer);
 
 /**
  * @ghidraAddress BRD3D: 0x10a9dd28
+ * @ghidraAddress BRGlide: 0x10ac4db0
  */
 extern char g_szNetworkChatText[];
 
@@ -1763,6 +1776,7 @@ HRESULT FormatNetworkChatLine(
 
 /**
  * @ghidraAddress BRD3D: 0x10aa2894
+ * @ghidraAddress BRGlide: 0x10ac5bec
  */
 extern int g_dwNetworkDataStreamActive;
 /**

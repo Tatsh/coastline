@@ -350,6 +350,7 @@ unsigned char IsInputBindingHeld(int nBinding);
 /**
  * Most recent race or replay action mask.
  * @ghidraAddress BRD3D: 0x118abad0
+ * @ghidraAddress BRGlide: 0x118eebe8
  */
 extern unsigned g_dwInputButtonMask;
 
@@ -362,12 +363,14 @@ extern int g_bRespawnRequested;
 /**
  * Whether input polling sent network readiness.
  * @ghidraAddress BRD3D: 0x118abdc0
+ * @ghidraAddress BRGlide: 0x118eeed8
  */
 extern int g_bNetReadyToStartSent;
 
 /**
  * Whether local input requested a pause action.
  * @ghidraAddress BRD3D: 0x1022af20
+ * @ghidraAddress BRGlide: 0x10226a50
  */
 extern int g_bNetGamePaused;
 

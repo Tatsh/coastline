@@ -133,6 +133,7 @@ extern u8 g_bBgmVolume;
  * @ghidraAddress EUR: 0x802a7188
  * @ghidraAddress JPN: 0x802a6c28
  * @ghidraAddress BRD3D: 0x100bbadc
+ * @ghidraAddress BRGlide: 0x100bb2e4
  */
 extern u8 g_bMusicVolume;
 

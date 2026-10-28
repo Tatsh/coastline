@@ -10,6 +10,7 @@ extern "C" {
 
 /**
  * @ghidraAddress BRD3D: 0x106c6650
+ * @ghidraAddress BRGlide: 0x106ed6e0
  */
 extern HANDLE g_hRenderMutex;
 

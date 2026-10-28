@@ -19,6 +19,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x80271ed8
  * @ghidraAddress JPN: 0x80271988
  * @ghidraAddress BRD3D: 0x100b4050
+ * @ghidraAddress BRGlide: 0x100b3858
  */
 extern u32 g_dwNumLocalPlayers;
 

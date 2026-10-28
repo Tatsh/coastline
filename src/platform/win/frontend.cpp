@@ -97,6 +97,7 @@ int g_dwTimeAttackSaveSlotNamed;
  * The track mask used before loading a championship profile.
  *
  * @ghidraAddress BRD3D: 0x10a9d010
+ * @ghidraAddress BRGlide: 0x10ac40a0
  */
 unsigned g_dwUnlockedTrackMask;
 /**
@@ -185,18 +186,25 @@ int g_dwFileListSelectedSlot = -1;
 
 namespace {
 // @ghidraAddress BRD3D: 0x100ab4e8
+// @ghidraAddress BRGlide: 0x100aac88
 RECT g_rcMenuSessionListBox = {188, 130, 300, 197};
 // @ghidraAddress BRD3D: 0x100ab4c8
+// @ghidraAddress BRGlide: 0x100aac68
 RECT g_rcMenuWideColumn = {230, 0, 547, 0};
 // @ghidraAddress BRD3D: 0x10aa2a5c
+// @ghidraAddress BRGlide: 0x10ac5db4
 unsigned g_dwMenuListRepeatAccumMs;
 // @ghidraAddress BRD3D: 0x10aa2a60
+// @ghidraAddress BRGlide: 0x10ac5db8
 unsigned g_dwMenuListRepeatLastTick;
 // @ghidraAddress BRD3D: 0x10aa2a64
+// @ghidraAddress BRGlide: 0x10ac5dbc
 float g_fMenuListDragDeltaX;
 // @ghidraAddress BRD3D: 0x10aa2a68
+// @ghidraAddress BRGlide: 0x10ac5dc0
 float g_fMenuListDragDeltaY;
 // @ghidraAddress BRD3D: 0x10aa2598
+// @ghidraAddress BRGlide: 0x10ac58f0
 unsigned g_dwUnlockedCarMask = 0x102;
 // @ghidraAddress BRD3D: 0x100ab3d8
 // @ghidraAddress BRGlide: 0x100aab78
@@ -220,6 +228,7 @@ FrontEndResourceSlot g_aFrontEndResourceSlots[FRONT_END_RESOURCE_SLOT_COUNT];
 // @ghidraAddress BRGlide: 0x10ac5258
 int g_adwFrontEndResourceFlags[FRONT_END_RESOURCE_FLAG_COUNT];
 // @ghidraAddress BRD3D: 0x10aa2848
+// @ghidraAddress BRGlide: 0x10ac5ba0
 int g_dwSaveSlotListIsSaveMode;
 // @ghidraAddress BRD3D: 0x10a9da50
 // @ghidraAddress BRGlide: 0x10ac4ad8
@@ -300,6 +309,7 @@ MenuScreen *g_pCachedMenu_RaceResultsSummary;
 // @ghidraAddress BRGlide: 0x10ac5c94
 MenuScreen *g_pCachedMenu_RaceResultsTotals;
 // @ghidraAddress BRD3D: 0x10aa2978
+// @ghidraAddress BRGlide: 0x10ac5cd0
 MenuScreen *g_pRaceResultsSummaryMenuScreen;
 // @ghidraAddress BRD3D: 0x10aa2940
 // @ghidraAddress BRGlide: 0x10ac5c98
@@ -371,27 +381,36 @@ MenuWidget *g_pCarSetupMenu;
 // @ghidraAddress BRGlide: 0x10ac5d18
 MenuWidget *g_pSaveSeasonMenu;
 // @ghidraAddress BRD3D: 0x10aa2858
+// @ghidraAddress BRGlide: 0x10ac5bb0
 int g_dwModalDialogBlocking;
 // @ghidraAddress BRD3D: 0x10aa2870
+// @ghidraAddress BRGlide: 0x10ac5bc8
 unsigned short g_wMenuHoverIndexPrev;
 // @ghidraAddress BRD3D: 0x10aa284c
 // @ghidraAddress BRGlide: 0x10ac5ba4
 int g_dwMenuHoverActive;
 // @ghidraAddress BRD3D: 0x100ab4a8
+// @ghidraAddress BRGlide: 0x100aac48
 RECT g_rcMenuRightColumnMid = {330, 0, 447, 0};
 // @ghidraAddress BRD3D: 0x100ab4f8
+// @ghidraAddress BRGlide: 0x100aac98
 RECT g_rcMenuRightListBox = {440, 128, 540, 204};
 // @ghidraAddress BRD3D: 0x100ab498
+// @ghidraAddress BRGlide: 0x100aac38
 RECT g_rcMenuLeftColumnNarrow = {88, 0, 185, 0};
 // @ghidraAddress BRD3D: 0x100ab438
+// @ghidraAddress BRGlide: 0x100aabd8
 RECT g_rcMenuFullScreen = {0, 0, 639, 479};
 // @ghidraAddress BRD3D: 0x100ab458
+// @ghidraAddress BRGlide: 0x100aabf8
 RECT g_rcMenuSubPanel = {87, 61, 186, 132};
 // @ghidraAddress BRD3D: 0x100ad274
+// @ghidraAddress BRGlide: 0x100aca4c
 const char g_szMenuDigitOne[] = "1";
 // @ghidraAddress BRD3D: 0x100ab418
 RECT g_rcHoverTopLeft = {0, 0, 200, 200};
 // @ghidraAddress BRD3D: 0x100ab428
+// @ghidraAddress BRGlide: 0x100aabc8
 RECT g_rcHoverBottomLeft = {0, 380, 200, 480};
 // @ghidraAddress BRD3D: 0x10aa29cc
 // @ghidraAddress BRGlide: 0x10ac5d24

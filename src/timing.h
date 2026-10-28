@@ -31,6 +31,7 @@ typedef struct {
  * @ghidraAddress EUR: 0x80350eb0
  * @ghidraAddress JPN: 0x8034ef30
  * @ghidraAddress BRD3D: 0x1067d580
+ * @ghidraAddress BRGlide: 0x105b9728
  */
 extern TimingMarker g_aTimingMarkers[2][TIMING_BARS][TIMING_MARKERS];
 
@@ -39,6 +40,7 @@ extern TimingMarker g_aTimingMarkers[2][TIMING_BARS][TIMING_MARKERS];
  * @ghidraAddress EUR: 0x80353eb0
  * @ghidraAddress JPN: 0x80351f30
  * @ghidraAddress BRD3D: 0x1067d558
+ * @ghidraAddress BRGlide: 0x105b9700
  */
 extern s32 g_aTimingMarkerCounts[2][TIMING_BARS];
 
@@ -49,6 +51,7 @@ extern s32 g_aTimingMarkerCounts[2][TIMING_BARS];
  * @ghidraAddress EUR: 0x8028e500
  * @ghidraAddress JPN: 0x8028df30
  * @ghidraAddress BRD3D: 0x1067d570
+ * @ghidraAddress BRGlide: 0x105b9718
  */
 extern s32 g_dwTimingFrame;
 
@@ -59,6 +62,7 @@ extern s32 g_dwTimingFrame;
  * @ghidraAddress EUR: 0x8028e50c
  * @ghidraAddress JPN: 0x8028df3c
  * @ghidraAddress BRD3D: 0x1067d578
+ * @ghidraAddress BRGlide: 0x105b9720
  */
 extern u32 g_dwTimingFrameStart;
 
@@ -70,6 +74,7 @@ extern u32 g_dwTimingFrameStart;
  * @ghidraAddress EUR: 0x8028e508
  * @ghidraAddress JPN: 0x8028df38
  * @ghidraAddress BRD3D: 0x1067d57c
+ * @ghidraAddress BRGlide: 0x105b9724
  */
 extern u32 g_dwTimingFrameElapsed;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */

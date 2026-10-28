@@ -21,6 +21,7 @@
  * @ghidraAddress EUR: 0x8028caa8
  * @ghidraAddress JPN: 0x8028c578
  * @ghidraAddress BRD3D: 0x106c65fc
+ * @ghidraAddress BRGlide: 0x106ed68c
  */
 static s32 g_dwClipRatioIndex;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

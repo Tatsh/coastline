@@ -34,6 +34,7 @@ namespace {
      * @ghidraAddress EUR: 0x8028cc68
      * @ghidraAddress JPN: 0x8028c738
      * @ghidraAddress BRD3D: 0x106c660c
+     * @ghidraAddress BRGlide: 0x106ed69c
      */
     s32 g_bShadowCullDisabled;
 } // namespace

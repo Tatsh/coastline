@@ -152,6 +152,7 @@ extern SaveField g_aRaceSnapshotFields[];
  * @ghidraAddress EUR: 0x8028de78
  * @ghidraAddress JPN: 0x8028d8a8
  * @ghidraAddress BRD3D: 0x100b3a68
+ * @ghidraAddress BRGlide: 0x100b3270
  */
 extern SaveField g_aPausedClockFields[];
 
@@ -165,6 +166,7 @@ extern SaveField g_aPausedClockFields[];
  * @ghidraAddress EUR: 0x80326800
  * @ghidraAddress JPN: 0x80325430
  * @ghidraAddress BRD3D: 0x10af9848
+ * @ghidraAddress BRGlide: 0x10b1cba8
  */
 extern u8 g_abPausedClockState[PAUSED_CLOCK_STATE_SIZE];
 

@@ -298,46 +298,57 @@ void ScanGbiSetTile(GbiCommand *pCommand);
 
 /**
  * @ghidraAddress BRD3D: 0x10575448
+ * @ghidraAddress BRGlide: 0x106b7aac
  */
 extern int g_bTexScanColorCombine;
 /**
  * @ghidraAddress BRD3D: 0x10575444
+ * @ghidraAddress BRGlide: 0x106b7aa8
  */
 extern int g_bTexScanPrimColorSet;
 /**
  * @ghidraAddress BRD3D: 0x10575440
+ * @ghidraAddress BRGlide: 0x106b7aa4
  */
 extern int g_bTexScanEnvColorSet;
 /**
  * @ghidraAddress BRD3D: 0x10555400
+ * @ghidraAddress BRGlide: 0x10697a68
  */
 extern unsigned char g_bTexScanPrimColorR;
 /**
  * @ghidraAddress BRD3D: 0x10575410
+ * @ghidraAddress BRGlide: 0x106b7a78
  */
 extern unsigned char g_bTexScanPrimColorG;
 /**
  * @ghidraAddress BRD3D: 0x105553d8
+ * @ghidraAddress BRGlide: 0x10697a40
  */
 extern unsigned char g_bTexScanPrimColorB;
 /**
  * @ghidraAddress BRD3D: 0x105551d0
+ * @ghidraAddress BRGlide: 0x10661828
  */
 extern unsigned char g_bTexScanPrimColorA;
 /**
  * @ghidraAddress BRD3D: 0x104d51b0
+ * @ghidraAddress BRGlide: 0x105e1800
  */
 extern unsigned char g_bTexScanEnvColorR;
 /**
  * @ghidraAddress BRD3D: 0x105551d4
+ * @ghidraAddress BRGlide: 0x1066182c
  */
 extern unsigned char g_bTexScanEnvColorG;
 /**
  * @ghidraAddress BRD3D: 0x104d51a8
+ * @ghidraAddress BRGlide: 0x105e17f8
  */
 extern unsigned char g_bTexScanEnvColorB;
 /**
  * @ghidraAddress BRD3D: 0x104c51a0
+ * @ghidraAddress BRGlide: 0x105d17e8
  */
 extern unsigned char g_bTexScanEnvColorA;
 

@@ -29,6 +29,7 @@ extern char g_szBossRallyIniPath[];
  * The mode of network play, from `NetworkPlay=`.
  *
  * @ghidraAddress BRD3D: 0x1022af18
+ * @ghidraAddress BRGlide: 0x10226a48
  */
 extern int g_dwNetworkPlayMode;
 
@@ -98,6 +99,7 @@ extern char g_szCarsDirPath[];
  * The directory of the sound effects, from `SFXDir=`.
  *
  * @ghidraAddress BRD3D: 0x100b8538
+ * @ghidraAddress BRGlide: 0x100b7d40
  */
 extern char g_szSfxDirPath[];
 
@@ -105,6 +107,7 @@ extern char g_szSfxDirPath[];
  * Whether frames are interpolated, from `Interpolate=`.
  *
  * @ghidraAddress BRD3D: 0x100a66ec
+ * @ghidraAddress BRGlide: 0x100a5eac
  */
 extern int g_bInterpolateFrames;
 
@@ -119,6 +122,7 @@ extern int g_bSpeedSensitiveSteering;
  * Whether the shadow of a car is not drawn, the inverse of `D3DDrawCarShadow=`.
  *
  * @ghidraAddress BRD3D: 0x1039b6c8
+ * @ghidraAddress BRGlide: 0x10396eb0
  */
 extern int g_bDisableCarShadow;
 
@@ -134,6 +138,7 @@ extern int g_dwRunBenchmark;
  * How music plays, from `PlayMusic=`.
  *
  * @ghidraAddress BRD3D: 0x100940a4
+ * @ghidraAddress BRGlide: 0x1007b074
  */
 extern int g_dwPlayMusicMode;
 
@@ -192,6 +197,7 @@ extern int g_dwD3DDestBlendMode;
  * The most players of a network game, from `cPlayers=` on the command line.
  *
  * @ghidraAddress BRD3D: 0x102212c8
+ * @ghidraAddress BRGlide: 0x1021cdf8
  */
 extern int g_bNetMaxPlayers;
 
@@ -199,6 +205,7 @@ extern int g_bNetMaxPlayers;
  * The cars a network game allows, from `bcar=` on the command line.
  *
  * @ghidraAddress BRD3D: 0x10221320
+ * @ghidraAddress BRGlide: 0x1021ce50
  */
 extern int g_wNetAllowedCarsMask;
 
@@ -206,6 +213,7 @@ extern int g_wNetAllowedCarsMask;
  * The tires of a network game, from `btire=` on the command line.
  *
  * @ghidraAddress BRD3D: 0x1022af10
+ * @ghidraAddress BRGlide: 0x10226a40
  */
 extern int g_bNetTireSetting;
 
@@ -213,6 +221,7 @@ extern int g_bNetTireSetting;
  * The suspension of a network game, from `bsuspension=` on the command line.
  *
  * @ghidraAddress BRD3D: 0x1022af0c
+ * @ghidraAddress BRGlide: 0x10226a3c
  */
 extern int g_bNetSuspensionSetting;
 

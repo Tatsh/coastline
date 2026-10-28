@@ -120,6 +120,7 @@ void TransferFlags(PlayerInputState *state, u32 mask);
  * @ghidraAddress EUR: 0x8036cde0
  * @ghidraAddress JPN: 0x8036ba50
  * @ghidraAddress BRD3D: 0x106c6678
+ * @ghidraAddress BRGlide: 0x106ed708
  */
 extern PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
 
@@ -130,6 +131,7 @@ extern PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
  * @ghidraAddress EUR: 0x8031c8e0
  * @ghidraAddress JPN: 0x8031b510
  * @ghidraAddress BRD3D: 0x106c65a0
+ * @ghidraAddress BRGlide: 0x106ed630
  */
 extern OSContPad g_aContPadData[MAXCONTROLLERS];
 

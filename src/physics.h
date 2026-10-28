@@ -41,6 +41,7 @@ typedef union CollisionContactState {
  * The shared contact word.
  *
  * @ghidraAddress BRD3D: 0x1175549c
+ * @ghidraAddress BRGlide: 0x117787fc
  */
 extern CollisionContactState g_CollisionContactState;
 
@@ -51,6 +52,7 @@ extern CollisionContactState g_CollisionContactState;
  * The velocity retained before an old contact applies its impulse.
  *
  * @ghidraAddress BRD3D: 0x100b5968
+ * @ghidraAddress BRGlide: 0x100b5170
  */
 extern f32 g_fCollisionImpulseScale;
 
@@ -102,6 +104,7 @@ typedef struct CollisionTriangleNode {
 
 /**
  * @ghidraAddress BRD3D: 0x11754e50
+ * @ghidraAddress BRGlide: 0x117781b0
  * @ghidraAddress USA: 0x80379940
  * @ghidraAddress EUR: 0x8037be40
  * @ghidraAddress JPN: 0x8037aab0
@@ -112,6 +115,7 @@ extern CollisionTriangleNode g_aCollisionTriangleNodes[COLLISION_TRIANGLE_NODES]
  * The list, the latest first.
  *
  * @ghidraAddress BRD3D: 0x11754e38
+ * @ghidraAddress BRGlide: 0x11778198
  * @ghidraAddress USA: 0x802a4a20
  * @ghidraAddress EUR: 0x802a71e0
  * @ghidraAddress JPN: 0x802a6c80
@@ -122,6 +126,7 @@ extern CollisionTriangleNode *g_pCollisionTriangleList;
  * The next free node.
  *
  * @ghidraAddress BRD3D: 0x117554e4
+ * @ghidraAddress BRGlide: 0x11778844
  * @ghidraAddress USA: 0x802a4a24
  * @ghidraAddress EUR: 0x802a71e4
  * @ghidraAddress JPN: 0x802a6c84
@@ -147,6 +152,7 @@ extern s32 g_dwCollisionContactType;
  * @ghidraAddress EUR: 0x802a71ec
  * @ghidraAddress JPN: 0x802a6c8c
  * @ghidraAddress BRD3D: 0x11754e3c
+ * @ghidraAddress BRGlide: 0x1177819c
  */
 extern TrackTriangle *g_pCollisionTriangle;
 
@@ -157,6 +163,7 @@ extern TrackTriangle *g_pCollisionTriangle;
  * @ghidraAddress EUR: 0x802a71f0
  * @ghidraAddress JPN: 0x802a6c90
  * @ghidraAddress BRD3D: 0x117554e8
+ * @ghidraAddress BRGlide: 0x11778848
  */
 extern s32 g_bTrackCollisionFrameToggle;
 
@@ -182,6 +189,7 @@ extern f32 g_afSurfaceMaxLoad[GRIP_WEATHERS][TRACK_SURFACES];
  * @ghidraAddress EUR: 0x802a72b8
  * @ghidraAddress JPN: 0x802a6d58
  * @ghidraAddress BRD3D: 0x100b5970
+ * @ghidraAddress BRGlide: 0x100b5178
  */
 extern f32 g_afSurfaceSlipLoad[GRIP_WEATHERS][TRACK_SURFACES];
 
@@ -225,6 +233,7 @@ extern Vec3f g_vVehicleObbHalfExtents;
  * @ghidraAddress EUR: 0x80380fa8
  * @ghidraAddress JPN: 0x8037fc18
  * @ghidraAddress BRD3D: 0x11755490
+ * @ghidraAddress BRGlide: 0x117787f0
  */
 extern Vec3f g_vCollisionContact;
 
@@ -246,6 +255,7 @@ extern f32 g_fCollisionContactW;
  * @ghidraAddress EUR: 0x80380fc8
  * @ghidraAddress JPN: 0x8037fc38
  * @ghidraAddress BRD3D: 0x11754e40
+ * @ghidraAddress BRGlide: 0x117781a0
  */
 extern Vec3f g_vCollisionPenetration;
 

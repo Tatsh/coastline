@@ -86,6 +86,7 @@ void SetScissorRect(s32 x, s32 y, s32 width, s32 height);
  * @ghidraAddress EUR: 0x8028ca50
  * @ghidraAddress JPN: 0x8028c520
  * @ghidraAddress BRD3D: 0x106c65e4
+ * @ghidraAddress BRGlide: 0x106ed674
  */
 extern s32 g_dwScreenScaleShift;
 

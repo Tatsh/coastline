@@ -1248,6 +1248,7 @@ extern "C" void CopyTileColumnScaled(int nTileIndex, int nSrcX, int nSrcY, int n
  * The number of entries of g_pTextureEntries.
  *
  * @ghidraAddress BRD3D: 0x105553f0
+ * @ghidraAddress BRGlide: 0x10697a58
  */
 extern unsigned g_dwTextureEntryCount;
 
@@ -1255,6 +1256,7 @@ extern unsigned g_dwTextureEntryCount;
  * The textures the game loaded.
  *
  * @ghidraAddress BRD3D: 0x1057543c
+ * @ghidraAddress BRGlide: 0x106b7aa0
  */
 extern TextureEntry *g_pTextureEntries;
 

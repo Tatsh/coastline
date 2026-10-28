@@ -29,6 +29,7 @@ static u64 *g_pRdpOutputBufferEnd = (u64 *)0x803c8000;
  * @ghidraAddress EUR: 0x8028ce1c
  * @ghidraAddress JPN: 0x8028c84c
  * @ghidraAddress BRD3D: 0x106c1170
+ * @ghidraAddress BRGlide: 0x106e8200
  */
 static s32 g_dwDisplayListCommandCount;
 /**
@@ -38,6 +39,7 @@ static s32 g_dwDisplayListCommandCount;
  * @ghidraAddress EUR: 0x8028ce2c
  * @ghidraAddress JPN: 0x8028c85c
  * @ghidraAddress BRD3D: 0x106c6664
+ * @ghidraAddress BRGlide: 0x106ed6f4
  */
 static s32 g_dwFirstFlushDone;
 /**
@@ -48,6 +50,7 @@ static s32 g_dwFirstFlushDone;
  * @ghidraAddress EUR: 0x8028ccf0
  * @ghidraAddress JPN: 0x8028c7c0
  * @ghidraAddress BRD3D: 0x106c020c
+ * @ghidraAddress BRGlide: 0x106e729c
  */
 static u32 g_dwFlushDuration;
 /**
@@ -55,6 +58,7 @@ static u32 g_dwFlushDuration;
  * @ghidraAddress EUR: 0x8028cce8
  * @ghidraAddress JPN: 0x8028c7b8
  * @ghidraAddress BRD3D: 0x106c1620
+ * @ghidraAddress BRGlide: 0x106e86b0
  */
 static u32 g_dwFlushInterval;
 /**
@@ -62,6 +66,7 @@ static u32 g_dwFlushInterval;
  * @ghidraAddress EUR: 0x8028ccec
  * @ghidraAddress JPN: 0x8028c7bc
  * @ghidraAddress BRD3D: 0x106c0208
+ * @ghidraAddress BRGlide: 0x106e7298
  */
 static u32 g_dwFlushStartTime;
 /**
@@ -69,6 +74,7 @@ static u32 g_dwFlushStartTime;
  * @ghidraAddress EUR: 0x8028cc2c
  * @ghidraAddress JPN: 0x8028c6fc
  * @ghidraAddress BRD3D: 0x106c56e4
+ * @ghidraAddress BRGlide: 0x106ec774
  */
 static u32 g_dwLastFlushValue;
 /**
@@ -76,6 +82,7 @@ static u32 g_dwLastFlushValue;
  * @ghidraAddress EUR: 0x8028ce28
  * @ghidraAddress JPN: 0x8028c858
  * @ghidraAddress BRD3D: 0x106c6660
+ * @ghidraAddress BRGlide: 0x106ed6f0
  */
 static s32 g_dwPeakDisplayListCommands;
 /**
@@ -85,6 +92,7 @@ static s32 g_dwPeakDisplayListCommands;
  * @ghidraAddress EUR: 0x8028ce20
  * @ghidraAddress JPN: 0x8028c850
  * @ghidraAddress BRD3D: 0x106c6658
+ * @ghidraAddress BRGlide: 0x106ed6e8
  */
 static s32 g_dwPeakShadowCommandCount;
 /**
@@ -92,6 +100,7 @@ static s32 g_dwPeakShadowCommandCount;
  * @ghidraAddress EUR: 0x8028ce24
  * @ghidraAddress JPN: 0x8028c854
  * @ghidraAddress BRD3D: 0x106c665c
+ * @ghidraAddress BRGlide: 0x106ed6ec
  */
 static s32 g_dwPeakShadowVertexCount;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

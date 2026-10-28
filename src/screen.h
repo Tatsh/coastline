@@ -22,6 +22,7 @@ typedef void (*ScreenCallback)(void);
  * @ghidraAddress EUR: 0x8028ca50
  * @ghidraAddress JPN: 0x8028c520
  * @ghidraAddress BRD3D: 0x106c65e4
+ * @ghidraAddress BRGlide: 0x106ed674
  */
 extern s32 g_dwScreenScaleShift;
 
@@ -52,6 +53,7 @@ extern s32 g_dwScreenHeight;
  * @ghidraAddress EUR: 0x8031d818
  * @ghidraAddress JPN: 0x8031c448
  * @ghidraAddress BRD3D: 0x106c0964
+ * @ghidraAddress BRGlide: 0x106e79f4
  */
 extern ScreenCallback g_pfnCurrentScreen;
 
@@ -60,6 +62,7 @@ extern ScreenCallback g_pfnCurrentScreen;
  * @ghidraAddress EUR: 0x8031d81c
  * @ghidraAddress JPN: 0x8031c44c
  * @ghidraAddress BRD3D: 0x106c198c
+ * @ghidraAddress BRGlide: 0x106e8a1c
  */
 extern ScreenCallback g_pfnNextScreen;
 
@@ -68,6 +71,7 @@ extern ScreenCallback g_pfnNextScreen;
  * @ghidraAddress EUR: 0x8031d820
  * @ghidraAddress JPN: 0x8031c450
  * @ghidraAddress BRD3D: 0x106c1608
+ * @ghidraAddress BRGlide: 0x106e8698
  */
 extern ScreenCallback g_pfnSecondaryScreen;
 
