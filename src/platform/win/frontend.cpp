@@ -2498,10 +2498,11 @@ static inline void PostSelectionNotice(void) {
 template <std::predicate<int> Available>
 static inline void CycleAvailableMenuChoice(
     int &choice, int count, int step, Available available, bool skipWrappedStop) {
+    // Only the edge in the direction of the step wraps a choice.
     choice += step;
-    if (choice >= count) {
+    if (step > 0 && choice >= count) {
         choice = 0;
-    } else if (choice < 0) {
+    } else if (step < 0 && choice < 0) {
         choice = count - 1;
     }
     const int first = choice;
@@ -2511,10 +2512,10 @@ static inline void CycleAvailableMenuChoice(
     for (;;) {
         choice += step;
         bool wrapped = false;
-        if (choice >= count) {
+        if (step > 0 && choice >= count) {
             choice = 0;
             wrapped = true;
-        } else if (choice < 0) {
+        } else if (step < 0 && choice < 0) {
             choice = count - 1;
             wrapped = true;
         }
