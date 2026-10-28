@@ -107,8 +107,9 @@ int AllocateGlideTmuTexture(int nTmu,
     slot.nClampT = nClampT;
     slot.nUnknown30 = 0;
     slot.nUnknown34 = 0;
-    // The original truncates to a signed integer, whose bits the slot stores unsigned.
-    slot.dwLodBias = static_cast<unsigned>(static_cast<int>(fLodBias * 4.0f));
+    // The original truncates through 64 bits to a signed integer, whose low word the slot stores
+    // unsigned.
+    slot.dwLodBias = static_cast<unsigned>(static_cast<long long>(fLodBias * 4.0f));
     slot.nSmallLod = nSmallLod;
     slot.nLargeLod = nLargeLod;
     slot.nTmu = nTmu;
@@ -275,7 +276,8 @@ void ResizeTextureImage(unsigned char *pDest,
     float xStart = static_cast<long double>(xStep) * 0.5L - 0.5L;
     int maxY = sourceHeight - 1;
     for (int row = height; row; row--) {
-        int iy = static_cast<int>(std::floor(static_cast<double>(y)));
+        // The original truncates through 64 bits and keeps the low word, as the casts here do.
+        int iy = static_cast<int>(static_cast<long long>(std::floor(static_cast<double>(y))));
         float fractionY = static_cast<long double>(y) - iy;
         int y0 = iy > 0 ? iy : 0;
         int y1 = iy + 1;
@@ -285,7 +287,7 @@ void ResizeTextureImage(unsigned char *pDest,
         float x = xStart;
         int maxX = sourceWidth - 1;
         for (int column = width; column > 0; column--) {
-            int ix = static_cast<int>(std::floor(static_cast<double>(x)));
+            int ix = static_cast<int>(static_cast<long long>(std::floor(static_cast<double>(x))));
             float fractionX = static_cast<long double>(x) - ix;
             int x0 = ix > 0 ? ix : 0;
             int x1 = ix + 1;

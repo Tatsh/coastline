@@ -241,10 +241,11 @@ void DrawFillRectangle(int nLeft, int nTop, int nRight, int nBottom) {
     unsigned char alpha;
     if (g_dwGbiCombineModeHi == 0xfcffffff && g_dwGbiCombineModeLo == 0xfffdf6fb) {
         // The colour of the primitive is already from 0 to 255.
-        red = static_cast<unsigned char>(static_cast<long>(g_fGbiPrimColorR));
-        green = static_cast<unsigned char>(static_cast<long>(g_fGbiPrimColorG));
-        blue = static_cast<unsigned char>(static_cast<long>(g_fGbiPrimColorB));
-        alpha = static_cast<unsigned char>(static_cast<long>(g_fGbiPrimColorA));
+        // The original truncates through 64 bits and keeps the low byte.
+        red = static_cast<unsigned char>(static_cast<long long>(g_fGbiPrimColorR));
+        green = static_cast<unsigned char>(static_cast<long long>(g_fGbiPrimColorG));
+        blue = static_cast<unsigned char>(static_cast<long long>(g_fGbiPrimColorB));
+        alpha = static_cast<unsigned char>(static_cast<long long>(g_fGbiPrimColorA));
     } else {
         red = g_bGbiFillColorR;
         green = g_bGbiFillColorG;
