@@ -12,6 +12,7 @@
 
 #include <ddraw.h>
 
+#include "platform/win/assetnames.h"
 #include "platform/win/menufont.h"
 
 /** The number of names of a SaveFileList. */
@@ -1934,8 +1935,6 @@ int DrawGameplaySliderA(MenuWidget *pWidget);
 int DrawGameplaySliderB(MenuWidget *pWidget);
 /** @ghidraAddress BRD3D: 0x100ab548 */
 extern RECT g_rcMenuAudioListBox;
-/** @ghidraAddress BRD3D: 0x100b89c8 */
-extern const char *g_apszBgmTrackNames[12];
 
 /**
  * @ghidraAddress BRD3D: 0x1004e830

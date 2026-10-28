@@ -10,6 +10,8 @@
 #include <dsound.h>
 #include <mmsystem.h>
 
+#include "platform/win/assetnames.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -608,15 +610,6 @@ extern SoundBufferNode *g_SfxWaveVariantTable[SOUND_CHANNEL_COUNT];
  * @ghidraAddress BRGlide: 0x100b5d00
  */
 extern SoundBufferNode *g_LoopingSoundTable[SOUND_CHANNEL_COUNT];
-
-/**
- * The prefixes of the names of the files of the sound effects of a race, under g_szSfxDirPath. The
- * first is null, and the number of entries is not recovered yet.
- *
- * @ghidraAddress BRD3D: 0x100b84f4
- * @ghidraAddress BRGlide: 0x100b7cfc
- */
-extern const char *const g_apszSfxNamePrefixes[];
 
 /**
  * Add a node at the end of a list of sound buffers, not playing.

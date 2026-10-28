@@ -5,6 +5,10 @@
 #include "displaylistops.h"
 #include "render.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "platform/win/assetnames.h"
+#endif
+
 /** The wheels of a vehicle. */
 #define VEHICLE_WHEELS 4
 
@@ -201,9 +205,6 @@ void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue);
 void FixupVehicleModelPointers(VehicleModel *model);
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-
-/** @ghidraAddress BRD3D: 0x100b84f8 */
-extern const char *g_apszCarModelPrefixes[];
 
 /** @ghidraAddress BRD3D: 0x100370d0 */
 void ByteSwapAndRelocateCarModel(VehicleModel *model);

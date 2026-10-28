@@ -6,6 +6,7 @@
  */
 
 #include "game.h"
+#include "platform/win/assetnames.h"
 #include "trackselect.h"
 
 #ifdef __cplusplus
@@ -85,11 +86,6 @@ extern int g_dwTireType;
  * @ghidraAddress BRD3D: 0x100b7cb8
  */
 extern char g_szTracks[];
-
-/**
- * @ghidraAddress BRD3D: 0x100b80b8
- */
-extern const char *g_apszTrackFilenames[];
 
 /**
  * The directory of the cars, from `CarDir=`.

@@ -64,7 +64,9 @@ add_library(
 if(TGR_RENDERER STREQUAL "d3d")
   target_sources(
     coastline_main
-    PRIVATE boot/shutdown.cpp
+    PRIVATE assetnames.c
+            creditdata.c
+            boot/shutdown.cpp
             frontenddata.cpp
             hudassets.c
             numericdata.c

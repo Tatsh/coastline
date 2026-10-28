@@ -11,6 +11,7 @@
 #include <dplay.h>
 #include <dplobby.h>
 
+#include "platform/win/assetnames.h"
 #include "platform/win/ghost.h"
 
 /** The DirectPlay object of the game and its local player. */
@@ -308,14 +309,6 @@ extern char g_szModemPhoneNumber[];
  * @ghidraAddress BRGlide: 0x10ac3f88
  */
 extern char g_szModemDeviceName[];
-
-/**
- * The empty string of the user interface.
- *
- * @ghidraAddress BRD3D: 0x1039b720
- * @ghidraAddress BRGlide: 0x10396f08
- */
-extern const char g_szEmptyUiString[];
 
 /**
  * Whether a lobby launched the game.
