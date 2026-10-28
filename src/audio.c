@@ -2,9 +2,13 @@
 
 #include <stddef.h>
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/syncprintf.h"
+#else
 #include <PR/rcp.h>
 
 #include "rumble.h"
+#endif
 
 /* The fields of the header of an XM module. */
 #define XM_HEADER_SIZE 0x3C
@@ -441,6 +445,8 @@ void UpdateMusicPlayback(void) {
     }
 }
 
+/* The SDL game starts and drives the mixers from its audio stream in src/sdl/music.cpp. */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 void InitAudioSystem(void *module, void *work) {
     u32 elapsed;
     s32 frequency, i;
@@ -488,6 +494,7 @@ void InitAudioSystem(void *module, void *work) {
                    AUDIO_THREAD_PRIORITY);
     osStartThread(&g_AudioThread);
 }
+#endif /* TGR_PLATFORM != TGR_PLATFORM_SDL */
 
 void ResetMusicPlaybackState(void) {
     s32 i;
@@ -574,6 +581,7 @@ void CheckSoundEffectLoopPoints(void) {
     }
 }
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 void AudioMixingThreadMain(void *arg) {
     MixerChannel *channel;
     u32 levels, length, bytes, offset;
@@ -658,3 +666,4 @@ void AudioMixingThreadMain(void *arg) {
     }
     /* The original ends with an epilogue that the endless loop never arrives at. */
 }
+#endif /* TGR_PLATFORM != TGR_PLATFORM_SDL */

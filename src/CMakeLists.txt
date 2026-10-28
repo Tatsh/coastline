@@ -78,7 +78,7 @@ if(TGR_PLATFORM STREQUAL "n64")
 
   # The game code of the Nintendo 64 releases. A routine joins this list when its body moves from
   # the assembly of the original into C.
-  set(_game_sources n64/audio.c n64/audiomix.s n64/camera.c n64/carselect.c n64/controllerscreen.c n64/debugtext.c n64/decaldraw.c n64/decaleditor.c driving.c n64/effects.c fade.c game.c n64/hud.c n64/input.c heap.c n64/mainmenu.c mathutil.c n64/model.c n64/options.c n64/paintshop.c n64/pakmenu.c n64/physics.c n64/playerselect.c n64/race.c
+  set(_game_sources audio.c n64/audiomix.s n64/camera.c n64/carselect.c n64/controllerscreen.c n64/debugtext.c n64/decaldraw.c n64/decaleditor.c driving.c n64/effects.c fade.c game.c n64/hud.c n64/input.c heap.c n64/mainmenu.c mathutil.c n64/model.c n64/options.c n64/paintshop.c n64/pakmenu.c n64/physics.c n64/playerselect.c n64/race.c
                     n64/racemenu.c racers.c n64/racesound.c replay.c rigidbody.c n64/rumble.c sky.c n64/snapshot.c n64/splash.c n64/sprite.c n64/system.c n64/text.c n64/texrect.c n64/timing.c n64/track.c trackrender.c util.c vecmath.c n64/vehicle.c vehiclemodel.c n64/vehiclerender.c n64/vehiclesetup.c visgrid.c n64/weather.c n64/weatherselect.c)
   list(APPEND _game_sources bodyforces.c camerachase.c cameracollision.c displaylistops.c
                            raceload.c racerender.c

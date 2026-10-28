@@ -11,6 +11,11 @@
  * last message.
  */
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/* The SDL game runs the music player and the mixers alone, without the game around them. */
+#include "audiomix.h"
+#include "types.h"
+#else
 #include <PR/os.h>
 #include <PR/ultratypes.h>
 
@@ -23,6 +28,7 @@
 #include "soundsource.h"
 #include "vehicle.h"
 #include "vehiclesound.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -209,6 +215,7 @@ extern s32 g_dwAiDmaPrevLength;
  */
 extern u32 g_dwSoundEffectMixOffset;
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * The queue of the messages of the audio timer.
  *
@@ -233,6 +240,7 @@ extern OSMesg g_aAudioMsgBuf[2];
  * @ghidraAddress JPN: 0x80375880
  */
 extern OSTimer g_AudioTimer;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_SDL */
 
 /**
  * The stereo ring buffer the audio interface plays.
@@ -298,7 +306,9 @@ extern MusicPlayer g_MusicPlayer;
  * @ghidraAddress EUR: 0x8037b4b8
  * @ghidraAddress JPN: 0x8037a128
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern OSThread g_AudioThread;
+#endif
 
 /** The stack of the mixing thread, in doublewords. */
 #define AUDIO_THREAD_STACK_WORDS 0x80
@@ -485,7 +495,9 @@ void AudioMixingThreadMain(void *arg);
  * @ghidraAddress EUR: 0x8022cfa8
  * @ghidraAddress JPN: 0x8022c760
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 void StubSoundUpdate(CameraFrame *camera);
+#endif
 
 #ifdef __cplusplus
 }

@@ -7,7 +7,7 @@
  * channel records they read.
  */
 
-#include <PR/ultratypes.h>
+#include "types.h"
 
 #ifdef __cplusplus
 extern "C" {
