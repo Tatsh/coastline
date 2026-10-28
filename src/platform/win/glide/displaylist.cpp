@@ -444,7 +444,7 @@ ViewportCoordinate(float fCoordinate, float fScale, float fOneOverW, float fOffs
 
 void TransformVertexToScreen(
     GrVertex *pDest, const GbiVertexSource *pSource, float fRed, float fGreen, float fBlue) {
-    float fOneOverW = 1.0f / pSource->fW;
+    float fOneOverW = 1.0L / pSource->fW;
     pDest->oow = fOneOverW;
     pDest->x = ViewportCoordinate(pSource->fX, g_fViewportScaleX, fOneOverW, g_fViewportTranslateX);
     pDest->y =
@@ -459,7 +459,7 @@ void TransformVertexToScreen(
 void TransformVertexToScreenNoZBuffer(
     GrVertex *pDest, const GbiVertexSource *pSource, float fRed, float fGreen, float fBlue) {
     int nSnap = 0;
-    float fOneOverW = 1.0f / pSource->fW;
+    float fOneOverW = 1.0L / pSource->fW;
     pDest->oow = fOneOverW;
     pDest->x = ViewportCoordinate(pSource->fX, g_fViewportScaleX, fOneOverW, g_fViewportTranslateX);
     pDest->y =
