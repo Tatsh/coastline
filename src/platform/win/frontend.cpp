@@ -4326,7 +4326,10 @@ static inline void DrawAlternateMenuLabel(MenuWidget *pWidget, const char *text)
     font->SetText(text);
 
     font->MeasureTextAltFont();
-    font->DrawTextAltFont();
+    // The text of a font is never null, and the binaries test it all the same.
+    if (font->GetText() != nullptr) {
+        font->DrawTextAltFont();
+    }
 }
 
 static inline int DrawSeasonRoundValue(MenuWidget *pWidget, int value) {
