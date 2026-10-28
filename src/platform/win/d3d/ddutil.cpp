@@ -2,8 +2,6 @@
 
 #include <cstring>
 
-#include "platform/win/uninitialized.h"
-
 // Load a bitmap as a section of the game, or failing that from a file.
 static inline HBITMAP LoadBitmapImage(LPCSTR pszBitmap, int nWidth, int nHeight) {
     HBITMAP hBitmap = static_cast<HBITMAP>(LoadImageA(
@@ -103,9 +101,12 @@ DDCopyBitmap(IDirectDrawSurface *pSurface, HBITMAP hBitmap, int x, int y, int nW
     return hr;
 }
 
-BEGIN_ORIGINAL_UNINITIALIZED_READ
 DWORD DDColorMatch(IDirectDrawSurface *pSurface, COLORREF color) {
+#ifdef ENABLE_PATCHES
+    COLORREF savedColor = CLR_INVALID;
+#else
     COLORREF savedColor;
+#endif /* ENABLE_PATCHES */
     HDC hdc;
     DWORD dwPixel = CLR_INVALID;
     DDSURFACEDESC desc;
@@ -127,14 +128,18 @@ DWORD DDColorMatch(IDirectDrawSurface *pSurface, COLORREF color) {
         }
         pSurface->Unlock(nullptr);
     }
+#ifdef ENABLE_PATCHES
+    // Only a colour that was saved is put back.
+    if (savedColor != CLR_INVALID && pSurface->GetDC(&hdc) == DD_OK) {
+#else
     // The saved colour is read uninitialised when the first GetDC() fails, as in the original.
     if (color != CLR_INVALID && pSurface->GetDC(&hdc) == DD_OK) {
+#endif /* ENABLE_PATCHES */
         SetPixel(hdc, 0, 0, savedColor);
         pSurface->ReleaseDC(hdc);
     }
     return dwPixel;
 }
-END_ORIGINAL_UNINITIALIZED_READ
 
 HRESULT DDSetColorKey(IDirectDrawSurface *pSurface, COLORREF color) {
     DDCOLORKEY key;
