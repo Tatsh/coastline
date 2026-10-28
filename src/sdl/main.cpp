@@ -286,6 +286,10 @@ int main(int argc, char *argv[]) {
         .help("number of the frame to save, from 1")
         .default_value(60)
         .scan<'i', int>();
+    parser.add_argument("--screenshot-every")
+        .help("also save every this many frames, numbered after the name of --screenshot")
+        .default_value(0)
+        .scan<'i', int>();
     parser.add_argument("--quit-after-screenshot").help("exit once the frame is saved").flag();
     try {
         parser.parse_args(argc, argv);
@@ -384,6 +388,7 @@ int main(int argc, char *argv[]) {
                 screenshot = *path;
             }
             int screenshotFrame = parser.get<int>("--screenshot-frame");
+            int screenshotEvery = parser.get<int>("--screenshot-every");
             bool quitAfterScreenshot = parser.get<bool>("--quit-after-screenshot");
             std::unique_ptr<coastline::TlRenderer> renderer;
             coastline::TextureHandle testTexture = 0;
@@ -421,6 +426,15 @@ int main(int argc, char *argv[]) {
                 }
                 auto ports = input.Poll();
                 bool capture = screenshot && frame == screenshotFrame;
+                std::optional<std::filesystem::path> framePath;
+                if (capture) {
+                    framePath = screenshot;
+                } else if (screenshot && screenshotEvery > 0 && frame % screenshotEvery == 0) {
+                    char number[16];
+                    std::snprintf(number, sizeof(number), "-%06d", frame);
+                    framePath = screenshot->parent_path() / (screenshot->stem().string() + number +
+                                                             screenshot->extension().string());
+                }
                 if (pcGame) {
 #ifdef COASTLINE_PC_GAME
                     std::vector<int> held;
@@ -431,7 +445,7 @@ int main(int argc, char *argv[]) {
                     }
                     coastline::SetScriptedKeys(std::move(held));
                     running =
-                        coastline::RunPcGameFrame(capture ? &*screenshot : nullptr) && running;
+                        coastline::RunPcGameFrame(framePath ? &*framePath : nullptr) && running;
                     std::uint32_t module = coastline::PcGameMusicModule();
                     if (music && module != 0 && module != pcMusicModule) {
                         pcMusicModule = module;
@@ -442,7 +456,7 @@ int main(int argc, char *argv[]) {
 #endif
                 } else if (renderer) {
                     DrawRendererTestScene(
-                        *renderer, testTexture, frame, capture ? &*screenshot : nullptr);
+                        *renderer, testTexture, frame, framePath ? &*framePath : nullptr);
                 } else {
                     // The clear colour follows the stick of the first controller until the
                     // game draws its frames here.
@@ -450,7 +464,7 @@ int main(int argc, char *argv[]) {
                     float green = 0.5f + ports[0].stickY / 160.0f;
                     float blue = ports[0].buttons != 0 ? 0.6f : 0.2f;
                     window->PresentClear(SDL_FColor{red, green, blue, 1.0f},
-                                         capture ? &*screenshot : nullptr);
+                                         framePath ? &*framePath : nullptr);
                 }
                 if (capture && quitAfterScreenshot) {
                     running = false;
