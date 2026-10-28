@@ -3668,7 +3668,7 @@ int SaveSeasonUI::OnSlotSelected(MenuItemList *pList, int *pnSlot) {
     }
     g_pSaveSeasonEditMenu = pList;
     g_dwFileListSelectedSlot = slot;
-    char fileName[256];
+    char fileName[260];
     char number[4];
     strcpy(fileName, "RallySeason");
     _itoa(slot, number, 10);
