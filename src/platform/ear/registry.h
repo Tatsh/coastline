@@ -43,10 +43,12 @@ public:
 class EarActiveEventRegistry : public CObject {
 public:
     /**
+     * @return Whether the registry has no events.
      * @ghidraAddress EAR: 0x10006670
-     * @stub
      */
-    BOOL IsEmpty() const;
+    BOOL IsEmpty() const {
+        return count == 0;
+    }
     /**
      * @ghidraAddress EAR: 0x10008ac0
      * @stub

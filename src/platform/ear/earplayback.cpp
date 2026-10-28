@@ -213,7 +213,8 @@ void EarPlayback::SetCachedBackendPlaybackParameter(double value) {
 void EarPlayback::SetEarPlaybackFrequencyScale(double scale) {
     if (frequencyScale < scale || frequencyScale > scale) {
         double clamped = scale < g_earPlaybackScaleZero ? g_earPlaybackScaleZero : scale;
-        if (clamped > g_earPlaybackMaximumFrequencyScale) {
+        // An unordered scale also takes the maximum.
+        if (!(clamped <= g_earPlaybackMaximumFrequencyScale)) {
             clamped = g_earPlaybackMaximumFrequencyScale;
         }
         frequencyScale = clamped;
@@ -319,6 +320,9 @@ void EarPlayback::CopyEarPlaybackSamplesToOutput() {
 void EarPlayback::CompleteEarPlayback() {
 }
 
+void EarPlayback::ApplyPreset(const EarPreset *preset) {
+}
+
 void EarPlayback::OnBackendPlaybackParameterChanged() {
 }
 
@@ -361,6 +365,11 @@ void EarPlayback::UpdateDirectSoundPlaybackFrequency() {
         smoothed = previousFrequency + step;
     } else {
         smoothed = previousFrequency;
+    }
+    // Native code records whether the frequency exceeded the maximum and never reads the flag.
+    [[maybe_unused]] int exceededMaximum;
+    if (smoothed > 100000) {
+        exceededMaximum = 1;
     }
     if (smoothed < DSBFREQUENCY_MIN) {
         smoothed = DSBFREQUENCY_MIN;

@@ -12,6 +12,7 @@ class EarPreset;
 struct IDirectSound;
 struct _DSBUFFERDESC;
 
+// The virtual routines are declared in the order of the slots of the native table.
 class [[gnu::packed]] EarPlayback {
 public:
     /** @ghidraAddress EAR: 0x1000a84e */
@@ -31,6 +32,13 @@ public:
     /** @ghidraAddress EAR: 0x1000ab99 */
     int IsEarPlaybackStreaming();
 
+private:
+    /** @ghidraAddress EAR: 0x10012570 */
+    virtual void InitializeDirectSoundPlaybackState();
+    /** @ghidraAddress EAR: 0x10012596 */
+    virtual void FinalizeDirectSoundPlaybackState();
+
+public:
     /** @ghidraAddress EAR: 0x1000a86a */
     virtual void ReleaseEarPlaybackResources();
 
@@ -41,9 +49,19 @@ public:
     virtual void
     SetEarPlaybackDirectionalGain(std::uint16_t direction, double gain, std::uint16_t matrix);
 
+private:
+    /** @ghidraAddress EAR: 0x1001273a */
+    virtual void UpdateDirectSoundPlaybackGainAndPan();
+
+public:
     /** @ghidraAddress EAR: 0x1000ae0f */
     virtual void ProcessEarPlaybackSmoothing();
 
+private:
+    /** @ghidraAddress EAR: 0x1000aee1 */
+    virtual void ResetEarPlaybackSmoothingPass();
+
+public:
     /** @ghidraAddress EAR: 0x10003a70 */
     virtual void SetPlaybackSuppressionParameters(std::uint32_t enabled, std::uint16_t marker);
     /** @ghidraAddress EAR: 0x1000ad81 */
@@ -56,19 +74,62 @@ public:
     /** @ghidraAddress EAR: 0x1000aa14 */
     virtual int InitializeEarPlayback(const void *source, int streaming, int looping);
 
+private:
+    /** @ghidraAddress EAR: 0x10012715 */
+    virtual std::uint16_t AllocateEarEventId();
+    /** @ghidraAddress EAR: 0x100125fd */
+    virtual void UpdateDirectSoundPlaybackFrequency();
+
+public:
     /** @ghidraAddress EAR: 0x1000a9bf */
     virtual int StartEarPlayback();
 
+private:
+    /** @ghidraAddress EAR: 0x10012860 */
+    virtual int PlayDirectSoundEventBuffer();
+    /** @ghidraAddress EAR: 0x1000a99f */
+    virtual void PauseEarPlayback();
+    /** @ghidraAddress EAR: 0x100128f8 */
+    virtual int StopDirectSoundEventBuffer();
+    /** @ghidraAddress EAR: 0x1000add8 */
+    virtual int ResumeEarPlayback();
+
+protected:
+    /** @ghidraAddress EAR: 0x1000a88b */
+    virtual void CloseRegisteredEarPlayback();
+
+private:
+    /** @ghidraAddress EAR: 0x1001294f */
+    virtual void ReleaseDirectSoundEventBuffer();
+    /** @ghidraAddress EAR: 0x1000a880 */
+    virtual void RefillEarPlaybackStream();
+    /** @ghidraAddress EAR: 0x100125a1 */
+    virtual void CopyEarPlaybackSamplesToOutput();
+
+public:
     /** @ghidraAddress EAR: 0x1000a8e5 */
     virtual void CompleteEarPlayback();
 
+private:
+    /** @ghidraAddress EAR: 0x100129a3 */
+    virtual int CheckEarPlaybackLoopCompletion();
+
+public:
     /**
      * Native slot shares the empty CObject serialization body.
+     *
+     * @param preset The preset, unused.
      * @ghidraAddress EAR: 0x10006710
-     * @stub
      */
     virtual void ApplyPreset(const EarPreset *preset);
 
+private:
+    /** @ghidraAddress EAR: 0x100129bc */
+    virtual void OnPlaybackWaveSampleAttached(EarWaveSample *sample);
+    /** @ghidraAddress EAR: 0x100094e0 */
+    virtual std::uint32_t GetEarPlaybackMediaLength();
+
+public:
     /** @ghidraAddress EAR: 0x1000ab3f */
     virtual void SetEarPlaybackMute(int muted);
     /** @ghidraAddress EAR: 0x1000abaa */
@@ -80,9 +141,19 @@ public:
     /** @ghidraAddress EAR: 0x1000abf3 */
     virtual void SetCachedBackendPlaybackParameter(double value);
 
+private:
+    /** @ghidraAddress EAR: 0x10012e2b */
+    virtual void OnBackendPlaybackParameterChanged();
+
+public:
     /** @ghidraAddress EAR: 0x1000a8f0 */
     virtual int IsBufferedEarPlaybackComplete();
 
+protected:
+    /** @ghidraAddress EAR: 0x100126dd */
+    virtual int IsDirectSoundBufferStopped();
+
+public:
     /** @ghidraAddress EAR: 0x1000ad6b */
     virtual void SetEarPlaybackLooping(int enabled);
     /** @ghidraAddress EAR: 0x1000adb7 */
@@ -91,9 +162,6 @@ public:
 protected:
     /** @ghidraAddress EAR: 0x1000a6a0 */
     EarPlayback();
-
-    /** @ghidraAddress EAR: 0x1000a88b */
-    virtual void CloseRegisteredEarPlayback();
 
     void SetPlaybackBufferBytes(std::uint32_t bytes) {
         bufferBytes = bytes;
@@ -129,8 +197,6 @@ protected:
     std::uint32_t GetPlaybackHandle() const {
         return playbackHandle;
     }
-    /** @ghidraAddress EAR: 0x100126dd */
-    virtual int IsDirectSoundBufferStopped();
 
     HRESULT CreateDirectSoundPlaybackBuffer(IDirectSound *device, _DSBUFFERDESC *description);
     void ResetPlaybackBufferFrequency() {
@@ -189,49 +255,6 @@ private:
 
     /** @ghidraAddress EAR: 0x100125ac */
     DWORD GetDirectSoundPlaybackCursor();
-
-    /** @ghidraAddress EAR: 0x10012570 */
-    virtual void InitializeDirectSoundPlaybackState();
-    /** @ghidraAddress EAR: 0x10012596 */
-    virtual void FinalizeDirectSoundPlaybackState();
-
-    /** @ghidraAddress EAR: 0x1001273a */
-    virtual void UpdateDirectSoundPlaybackGainAndPan();
-
-    /** @ghidraAddress EAR: 0x1000aee1 */
-    virtual void ResetEarPlaybackSmoothingPass();
-
-    /** @ghidraAddress EAR: 0x10012715 */
-    virtual std::uint16_t AllocateEarEventId();
-    /** @ghidraAddress EAR: 0x100125fd */
-    virtual void UpdateDirectSoundPlaybackFrequency();
-
-    /** @ghidraAddress EAR: 0x10012860 */
-    virtual int PlayDirectSoundEventBuffer();
-    /** @ghidraAddress EAR: 0x1000a99f */
-    virtual void PauseEarPlayback();
-    /** @ghidraAddress EAR: 0x100128f8 */
-    virtual int StopDirectSoundEventBuffer();
-    /** @ghidraAddress EAR: 0x1000add8 */
-    virtual int ResumeEarPlayback();
-
-    /** @ghidraAddress EAR: 0x1001294f */
-    virtual void ReleaseDirectSoundEventBuffer();
-    /** @ghidraAddress EAR: 0x1000a880 */
-    virtual void RefillEarPlaybackStream();
-    /** @ghidraAddress EAR: 0x100125a1 */
-    virtual void CopyEarPlaybackSamplesToOutput();
-
-    /** @ghidraAddress EAR: 0x100129a3 */
-    virtual int CheckEarPlaybackLoopCompletion();
-
-    /** @ghidraAddress EAR: 0x100129bc */
-    virtual void OnPlaybackWaveSampleAttached(EarWaveSample *sample);
-    /** @ghidraAddress EAR: 0x100094e0 */
-    virtual std::uint32_t GetEarPlaybackMediaLength();
-
-    /** @ghidraAddress EAR: 0x10012e2b */
-    virtual void OnBackendPlaybackParameterChanged();
 
     std::uint32_t playbackHandle;
     std::uint32_t reservedEventControl;
