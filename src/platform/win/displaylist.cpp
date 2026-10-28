@@ -103,7 +103,9 @@ float canvasScaleX = 1.0f;
 float canvasScaleY = 1.0f;
 
 GbiCommand *HandleHudCanvas(GbiCommand *command) {
+#if TGR_RENDERER == TGR_RENDERER_D3D
     FlushIndexedRenderBuffer();
+#endif
     renderCanvasWidth = command->w1 >> 16;
     renderCanvasHeight = command->w1 & 0xffff;
     canvasScaleX = renderCanvasWidth ? (float)g_dwConfigFramebufferWidth / renderCanvasWidth : 1;
