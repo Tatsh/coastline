@@ -20,3 +20,19 @@ target_compile_options(
   PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>" -UTGR_PC -DTGR_PC=0 -UTGR_BRD3D -DTGR_BRD3D=0
           -fpermissive -Wno-unused-parameter ${_n64_renames})
 target_link_libraries(coastline_n64frontend PUBLIC SDL3::SDL3)
+
+# The data of the front end is read from the cartridge at start-up, by the symbols of splat.
+set(_symbols_header "${CMAKE_CURRENT_BINARY_DIR}/generated/symbol_addrs_us.h")
+add_custom_command(
+  OUTPUT "${_symbols_header}"
+  COMMAND "${CMAKE_COMMAND}" -E make_directory "${CMAKE_CURRENT_BINARY_DIR}/generated"
+  COMMAND "${CMAKE_COMMAND}" -DINPUT=${CMAKE_SOURCE_DIR}/tools/splat/symbol_addrs.us.txt
+          -DOUTPUT=${_symbols_header} -DNAME=SYMBOL_ADDRS_US -P "${CMAKE_SOURCE_DIR}/cmake/embed.cmake"
+  DEPENDS "${CMAKE_SOURCE_DIR}/tools/splat/symbol_addrs.us.txt" "${CMAKE_SOURCE_DIR}/cmake/embed.cmake"
+  COMMENT "Embedding the symbols of the USA release"
+  VERBATIM)
+find_package(Boost CONFIG REQUIRED COMPONENTS pfr)
+add_library(coastline_cartridgedata STATIC cartridgedata.cpp "${_symbols_header}")
+target_include_directories(coastline_cartridgedata PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}" "${_src}"
+                           PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
+target_link_libraries(coastline_cartridgedata PUBLIC Boost::pfr SDL3::SDL3)

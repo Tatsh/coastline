@@ -19,6 +19,7 @@
     "sdl": {
       "dependencies": [
         "argparse",
+        "boost-pfr",
         "drlibs",
         {
           "features": ["tools"],

@@ -120,6 +120,7 @@ carmodel
 carmt
 carphysics
 carselect
+cartridgedata
 cartrominit
 carwnoshad
 carwshad
@@ -866,6 +867,7 @@ playerready
 playerselect
 pminidump
 podarchive
+pointee
 ponchetti
 popmtx
 povey
