@@ -693,6 +693,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10042b30
+     * @ghidraAddress BRGlide: 0x1003c080
      */
     static int OnCycleCar(MenuActionWidget *pItem);
 
@@ -734,11 +735,13 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x100458c0
+     * @ghidraAddress BRGlide: 0x1003ed50
      */
     static int OnOpenOptions(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x100458e0
+     * @ghidraAddress BRGlide: 0x1003ed70
      */
     static int OnOpenSaveSeason(MenuActionWidget *pItem);
 
@@ -1073,7 +1076,10 @@ public:
      */
     static int OnCarSetup(MenuWidget *pWidget);
 
-    /** @ghidraAddress BRD3D: 0x10042880 */
+    /**
+     * @ghidraAddress BRD3D: 0x10042880
+     * @ghidraAddress BRGlide: 0x1003bde0
+     */
     static int OnSlotSelected(MenuItemList *pList, int *pnSlot);
 
     /**
@@ -1121,31 +1127,37 @@ class MultiplayerConnectionUI {
 public:
     /**
      * @ghidraAddress BRD3D: 0x10044010
+     * @ghidraAddress BRGlide: 0x1003d560
      */
     static int OnSelectIpx(MenuWidget *pWidget);
 
     /**
      * @ghidraAddress BRD3D: 0x10044030
+     * @ghidraAddress BRGlide: 0x1003d580
      */
     static int UpdateIpxItem(MenuWidget *pWidget);
 
     /**
      * @ghidraAddress BRD3D: 0x10044050
+     * @ghidraAddress BRGlide: 0x1003d5a0
      */
     static int OnSelectTcpIp(MenuWidget *pWidget);
 
     /**
      * @ghidraAddress BRD3D: 0x10044070
+     * @ghidraAddress BRGlide: 0x1003d5c0
      */
     static int UpdateTcpIpItem(MenuWidget *pWidget);
 
     /**
      * @ghidraAddress BRD3D: 0x10044090
+     * @ghidraAddress BRGlide: 0x1003d5e0
      */
     static int OnSelectModem(MenuWidget *pWidget);
 
     /**
      * @ghidraAddress BRD3D: 0x100440b0
+     * @ghidraAddress BRGlide: 0x1003d600
      */
     static int UpdateModemItem(MenuWidget *pWidget);
 
@@ -1168,6 +1180,7 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10044600
+     * @ghidraAddress BRGlide: 0x1003db50
      */
     static int OnCycleCarClass(MenuWidget *pWidget);
 
@@ -1422,16 +1435,19 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10045800
+     * @ghidraAddress BRGlide: 0x1003ec90
      */
     static int OnOpenOptions(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10045820
+     * @ghidraAddress BRGlide: 0x1003ecb0
      */
     static int OnOpenSaveSeason(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10040ee0
+     * @ghidraAddress BRGlide: 0x1003a420
      */
     static int UpdateSelectedTimeLabel(MenuWidget *pWidget);
 };
@@ -1489,11 +1505,13 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10045880
+     * @ghidraAddress BRGlide: 0x1003ed10
      */
     static int OnOpenOptions(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x100458a0
+     * @ghidraAddress BRGlide: 0x1003ed30
      */
     static int OnOpenSaveSeason(MenuActionWidget *pItem);
 
@@ -1530,16 +1548,19 @@ public:
 
     /**
      * @ghidraAddress BRD3D: 0x10042ee0
+     * @ghidraAddress BRGlide: 0x1003c430
      */
     static int OnCycleTrack(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x100430b0
+     * @ghidraAddress BRGlide: 0x1003c600
      */
     static int OnCycleLapCount(MenuActionWidget *pItem);
 
     /**
      * @ghidraAddress BRD3D: 0x10043180
+     * @ghidraAddress BRGlide: 0x1003c6d0
      */
     static int OnCycleWeather(MenuActionWidget *pItem);
 
@@ -1678,10 +1699,16 @@ public:
      */
     static int HandleTextEntry(MenuWidget *pWidget);
 
-    /** @ghidraAddress BRD3D: 0x10042740 */
+    /**
+     * @ghidraAddress BRD3D: 0x10042740
+     * @ghidraAddress BRGlide: 0x1003bca0
+     */
     static int OnSlotSelected(MenuItemList *pList, int *pnSlot);
 
-    /** @ghidraAddress BRD3D: 0x10042560 */
+    /**
+     * @ghidraAddress BRD3D: 0x10042560
+     * @ghidraAddress BRGlide: 0x1003bac0
+     */
     static int OnSlotNameEntered(MenuItemList *pList, int status);
 
     /**
@@ -1841,10 +1868,16 @@ public:
      */
     static int UpdateTrackImage(MenuWidget *pWidget);
 
-    /** @ghidraAddress BRD3D: 0x10041040 */
+    /**
+     * @ghidraAddress BRD3D: 0x10041040
+     * @ghidraAddress BRGlide: 0x1003a580
+     */
     static int UpdateRaceTimeLabel(MenuWidget *pWidget);
 
-    /** @ghidraAddress BRD3D: 0x10041180 */
+    /**
+     * @ghidraAddress BRD3D: 0x10041180
+     * @ghidraAddress BRGlide: 0x1003a6d0
+     */
     static int UpdateBestLapLabel(MenuWidget *pWidget);
 };
 

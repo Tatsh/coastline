@@ -1242,6 +1242,7 @@ extern "C" {
  *
  * @param vehicle The vehicle.
  * @ghidraAddress BRD3D: 0x10065620
+ * @ghidraAddress BRGlide: 0x1005e690
  */
 void AiVehicleControllerCallback(Vehicle *vehicle);
 
@@ -1256,6 +1257,7 @@ void UpdateVehicleSpeedAndPhysics(Vehicle *vehicle);
 
 /**
  * @ghidraAddress BRD3D: 0x10063fe0
+ * @ghidraAddress BRGlide: 0x1005d050
  */
 void PlayerVehicleControllerCallback(Vehicle *vehicle);
 #ifdef __cplusplus
