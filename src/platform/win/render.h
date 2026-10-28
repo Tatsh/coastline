@@ -13,6 +13,7 @@
 #include "convertedvertex.h"
 #include "platform/win/combine.h"
 #include "platform/win/fontdata.h"
+#include "platform/win/hudassets.h"
 #include "platform/win/texturesampling.h"
 #include "platform/win/textureupload.h"
 #include "renderbackend.h"
@@ -823,22 +824,6 @@ extern int g_dwMaxTexHeightLowQuality;
  * @ghidraAddress BRD3D: 0x1002a5a0
  */
 void SelectTextureQualityFromVideoMemory(void);
-/**
- * @ghidraAddress BRD3D: 0x1009b4c8
- */
-extern unsigned char g_abHudFont0GlyphPixels[];
-/**
- * @ghidraAddress BRD3D: 0x100946c8
- */
-extern unsigned char g_abHudFont1GlyphPixels[];
-/**
- * @ghidraAddress BRD3D: 0x100a4170
- */
-extern unsigned char g_abHudFont2GlyphPixels[];
-/**
- * @ghidraAddress BRD3D: 0x100a22d0
- */
-extern unsigned char g_abHudFont3GlyphPixels[];
 
 /**
  * @ghidraAddress BRD3D: 0x118aa0b0
@@ -902,26 +887,6 @@ void CreateDaySkyTexture(void);
  */
 void CreateNightSkyTexture(void);
 
-/**
- * @ghidraAddress BRD3D: 0x100baac8
- */
-extern unsigned char g_abHudOverlayTextureData[];
-/**
- * @ghidraAddress BRD3D: 0x100b6ca8
- */
-extern unsigned char g_abHudTexture64AData[];
-/**
- * @ghidraAddress BRD3D: 0x100b9cb0
- */
-extern unsigned char g_abHudTexture32x64Data[];
-/**
- * @ghidraAddress BRD3D: 0x100b94a8
- */
-extern unsigned char g_abHudTexture64BData[];
-/**
- * @ghidraAddress BRD3D: 0x100b8ca0
- */
-extern unsigned char g_abFallbackEnvTextureData[];
 /**
  * @ghidraAddress BRD3D: 0x11829110
  */

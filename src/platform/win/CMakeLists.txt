@@ -65,6 +65,12 @@ if(TGR_RENDERER STREQUAL "d3d")
   target_sources(
     coastline_main
     PRIVATE boot/shutdown.cpp
+            frontenddata.cpp
+            hudassets.c
+            numericdata.c
+            physicsdata.c
+            renderdefaults.cpp
+            settings.c
             d3d/ddutil.cpp
             d3d/devicecaps.cpp
             d3d/driver.cpp
