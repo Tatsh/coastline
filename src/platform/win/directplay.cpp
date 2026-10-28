@@ -1849,7 +1849,9 @@ int SendPlayerInfoPacket(DirectPlayInfo *pInfo,
     if (state == 4) {
         stream.StreamWriteInt24(g_dwNetRaceStartTimeMs);
     }
-    return SendNetworkStreamReliable(pInfo, &stream);
+    int result = SendNetworkStreamReliable(pInfo, &stream);
+    NullStub();
+    return result;
 }
 
 HRESULT GetDirectPlayPlayerName(IDirectPlay3A *pDirectPlay, DPID dpidPlayer, DPNAME **ppName) {
