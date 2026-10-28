@@ -516,7 +516,9 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    rawInto = Vec3fDot(normal, velocity);
+    /* The libraries add the y product last here, unlike Vec3fDot. */
+    rawInto = FORCE_PRODUCT(normal->x, velocity->x) + FORCE_PRODUCT(normal->z, velocity->z) +
+              FORCE_PRODUCT(normal->y, velocity->y);
     into = (f32)rawInto;
     if (0.0f <= rawInto) {
         return 0;
