@@ -286,7 +286,12 @@ s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
     av = COMPONENT(triangle->vertices[1], i2) - v0;
     bu = COMPONENT(triangle->vertices[2], i1) - u0;
     bv = COMPONENT(triangle->vertices[2], i2) - v0;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    /* The libraries test equality through the flag an unordered comparison also sets. */
+    if (!(au < 0.0f || au > 0.0f)) {
+#else
     if (au == 0.0f) {
+#endif
         beta = quotient = TRI_PRODUCT(pu, 1.0f) / bu;
         if (0.0f <= quotient && beta <= 1.0f) {
             alpha = (pv - TRI_PRODUCT(beta, bv)) / av;
