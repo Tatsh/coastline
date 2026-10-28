@@ -12,6 +12,7 @@
 #include <bit>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <span>
 #include <string_view>
 #include <type_traits>
@@ -70,10 +71,34 @@ public:
     static void *Relocate(std::uint32_t address, bool bytes);
 };
 
+/**
+ * Whether a type is read as 32-bit words at its size on the host, for the types Boost.PFR cannot
+ * read field by field, such as a structure with an anonymous union. Unions are read as words.
+ */
+template <typename T>
+struct CartridgeWords : std::is_union<T> {};
+
+class BigEndianReader;
+
+/**
+ * The layout of a type on the console, for the types Boost.PFR cannot read field by field, such as
+ * a structure with an array among its fields. A specialization has the members
+ * `static constexpr std::size_t size` and `align`, the bytes and the alignment on the console, and
+ * `static void Read(BigEndianReader &reader, T &value)`.
+ */
+template <typename T>
+struct CartridgeLayout;
+
 namespace detail {
 
 template <typename T>
+concept CustomLayout = requires { CartridgeLayout<T>::size; };
+
+template <typename T>
 concept OffsetPointer = requires(T value) { value.SetRaw(0u); };
+
+template <typename T>
+concept WordType = CartridgeWords<T>::value;
 
 // The alignment of a type on the console, where pointers have 4 bytes.
 template <typename T>
@@ -85,12 +110,17 @@ constexpr std::size_t AlignUp(std::size_t value, std::size_t align) {
 
 template <typename T, std::size_t... I>
 constexpr std::size_t FieldsAlignOf(std::index_sequence<I...>) {
-    return std::max({std::size_t{1}, ConsoleAlignOf<boost::pfr::tuple_element_t<I, T>>()...});
+    std::size_t align = 1;
+    ((align = std::max(align, ConsoleAlignOf<boost::pfr::tuple_element_t<I, T>>())), ...);
+    return align;
 }
 
 template <typename T>
 constexpr std::size_t ConsoleAlignOf() {
-    if constexpr (std::is_pointer_v<T> || std::is_enum_v<T> || OffsetPointer<T>) {
+    if constexpr (CustomLayout<T>) {
+        return CartridgeLayout<T>::align;
+    } else if constexpr (std::is_pointer_v<T> || std::is_enum_v<T> || OffsetPointer<T> ||
+                         WordType<T>) {
         return 4;
     } else if constexpr (std::is_arithmetic_v<T>) {
         return sizeof(T);
@@ -122,9 +152,11 @@ constexpr std::size_t FieldsSizeOf(std::index_sequence<I...>) {
 
 template <typename T>
 constexpr std::size_t ConsoleSizeOf() {
-    if constexpr (std::is_pointer_v<T> || std::is_enum_v<T> || detail::OffsetPointer<T>) {
+    if constexpr (detail::CustomLayout<T>) {
+        return CartridgeLayout<T>::size;
+    } else if constexpr (std::is_pointer_v<T> || std::is_enum_v<T> || detail::OffsetPointer<T>) {
         return 4;
-    } else if constexpr (std::is_arithmetic_v<T>) {
+    } else if constexpr (std::is_arithmetic_v<T> || detail::WordType<T>) {
         return sizeof(T);
     } else if constexpr (std::is_array_v<T>) {
         return std::extent_v<T> * ConsoleSizeOf<std::remove_extent_t<T>>();
@@ -148,7 +180,9 @@ public:
      */
     template <typename T>
     void Read(T &value) {
-        if constexpr (std::is_enum_v<T>) {
+        if constexpr (detail::CustomLayout<T>) {
+            CartridgeLayout<T>::Read(*this, value);
+        } else if constexpr (std::is_enum_v<T>) {
             value = static_cast<T>(Word(4));
         } else if constexpr (std::is_floating_point_v<T>) {
             static_assert(sizeof(T) == 4, "The console stores floats in 32 bits.");
@@ -169,6 +203,13 @@ public:
         } else if constexpr (detail::OffsetPointer<T>) {
             value.SetRaw(coastline::EncodePtr32(
                 CartridgeData::Relocate(static_cast<std::uint32_t>(Word(4)), false)));
+        } else if constexpr (detail::WordType<T>) {
+            static_assert(sizeof(T) % 4 == 0, "A type read as words has whole words.");
+            std::uint32_t words[sizeof(T) / 4];
+            for (auto &word : words) {
+                word = static_cast<std::uint32_t>(Word(4));
+            }
+            std::memcpy(&value, words, sizeof(T));
         } else {
             static_assert(std::is_aggregate_v<T>, "Only aggregates are read field by field.");
             boost::pfr::for_each_field(value, [this](auto &field) {
@@ -179,12 +220,26 @@ public:
         }
     }
 
-private:
-    std::uint64_t Word(std::size_t size);
-
+    /**
+     * Move to the next multiple of an alignment, as the console pads a field.
+     *
+     * @param align The alignment in bytes.
+     */
     void Align(std::size_t align) {
         m_address = static_cast<std::uint32_t>(detail::AlignUp(m_address, align));
     }
+
+    /**
+     * Skip bytes the host does not read.
+     *
+     * @param size The bytes.
+     */
+    void Skip(std::size_t size) {
+        m_address += static_cast<std::uint32_t>(size);
+    }
+
+private:
+    std::uint64_t Word(std::size_t size);
 
     std::uint32_t m_address;
 };

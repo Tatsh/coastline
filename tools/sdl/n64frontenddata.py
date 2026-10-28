@@ -134,6 +134,14 @@ def main() -> None:
         elif extents.startswith('[]'):
             element = f'{kind}{extents[2:]}'
             extents = f'[{length} / coastline::ConsoleSizeOf<{element}>()]{extents[2:]}'
+        if kind.startswith('const ') and '*' not in kind:
+            # A constant object of bytes, such as a table of characters, cannot be read into at
+            # start-up, so it takes the bytes of the cartridge as its initializer.
+            data = b''.join(
+                int(words[address + offset], 16).to_bytes(4, 'big')
+                for offset in range(0, length, 4))[:length].rstrip(b'\0')
+            definitions.append(f'{kind} {symbol} = {{{{{", ".join(hex(b) for b in data)}}}}};')
+            continue
         definitions.append(f'{kind} {symbol}{extents};')
         reads.append((symbol, bss))
     lines = [
@@ -141,6 +149,7 @@ def main() -> None:
         '',
         *(f'#include "{header}"' for header in sorted(headers)),
         '#include "sdl/cartridgedata.h"',
+        '#include "sdl/n64frontendlayouts.h"',
         '',
         *definitions,
         '',

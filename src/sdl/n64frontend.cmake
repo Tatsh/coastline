@@ -9,7 +9,9 @@ set(COASTLINE_N64_FRONTEND_SOURCES
 list(TRANSFORM COASTLINE_N64_FRONTEND_SOURCES PREPEND "${_src}/n64/")
 set_source_files_properties(${COASTLINE_N64_FRONTEND_SOURCES} PROPERTIES LANGUAGE CXX)
 
-add_library(coastline_n64frontend STATIC ${COASTLINE_N64_FRONTEND_SOURCES})
+# n64frontenddata.cpp is written by tools/sdl/n64frontenddata.py from the symbols the front end
+# needs, with the extents of tools/sdl/n64frontend-extents.txt.
+add_library(coastline_n64frontend STATIC ${COASTLINE_N64_FRONTEND_SOURCES} n64frontenddata.cpp)
 target_include_directories(coastline_n64frontend PRIVATE "${_src}" "${_src}/n64"
                                                          "${_src}/libultra/include")
 # The data whose types differ between the two releases is the front end's own, under other names.
@@ -19,7 +21,7 @@ target_compile_options(
   coastline_n64frontend
   PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>" -UTGR_PC -DTGR_PC=0 -UTGR_BRD3D -DTGR_BRD3D=0
           -fpermissive -Wno-unused-parameter ${_n64_renames})
-target_link_libraries(coastline_n64frontend PUBLIC SDL3::SDL3)
+target_link_libraries(coastline_n64frontend PUBLIC SDL3::SDL3 coastline_cartridgedata)
 
 # The data of the front end is read from the cartridge at start-up, by the symbols of splat.
 set(_symbols_header "${CMAKE_CURRENT_BINARY_DIR}/generated/symbol_addrs_us.h")
