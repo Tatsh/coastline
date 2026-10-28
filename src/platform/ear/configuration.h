@@ -36,10 +36,46 @@ extern uint16_t g_wConfiguredInterfaceTarget;
 extern uint16_t g_wConfiguredVersion;
 /** @ghidraAddress EAR: 0x1003b714 */
 extern int32_t g_bConfiguredGlobalNoIas;
+/**
+ * Whether the configuration records a DVD drive, from [DVDDRIVE].
+ *
+ * @ghidraAddress EAR: 0x1003b718
+ */
+extern int32_t g_bConfiguredDvdDrive;
+/**
+ * Whether the configuration records a CD changer, from [CHANGER].
+ *
+ * @ghidraAddress EAR: 0x1003b71c
+ */
+extern int32_t g_bConfiguredCdChanger;
+/**
+ * Whether the configuration records more than one disc, from [MULTI].
+ *
+ * @ghidraAddress EAR: 0x1003b720
+ */
+extern int32_t g_bConfiguredMultiDisc;
 /** @ghidraAddress EAR: 0x1003b724 */
 extern int32_t g_bTitleConfigurationFound;
+/**
+ * The title of the game in the configuration, from [TITLE], without its line break.
+ *
+ * @ghidraAddress EAR: 0x1003b728
+ */
+extern char g_szConfiguredTitle[80];
 /** @ghidraAddress EAR: 0x1003b778 */
 extern int32_t g_bConfiguredTitleNoIas;
+/**
+ * Whether the title is on a DVD, from [ISDVD].
+ *
+ * @ghidraAddress EAR: 0x1003b77c
+ */
+extern int32_t g_bConfiguredTitleIsDvd;
+/**
+ * The times the title was launched, from [TIMES], counted up and written back at each load.
+ *
+ * @ghidraAddress EAR: 0x1003b780
+ */
+extern uint32_t g_dwConfiguredLaunchCount;
 /** @ghidraAddress EAR: 0x1003b798 */
 extern uint16_t g_earAudioComponentValidationFlags;
 /** @ghidraAddress EAR: 0x1003b7b4 */
@@ -53,6 +89,10 @@ extern int32_t g_earAudioComponentsValidated;
 uint32_t __stdcall ValidateEarNumericCode(uint32_t code);
 
 /**
+ * Read the global section of config.ear in the system directory, then, unless the code reads only
+ * that section, the section of the title the code selects, and write its launch count back one
+ * higher.
+ *
  * @param code The code the game passes.
  * @ghidraAddress EAR: 0x100051a7
  */
