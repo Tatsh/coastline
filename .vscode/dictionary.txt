@@ -264,6 +264,7 @@ discl
 displaylist
 displaylistdata
 displaylistops
+displaymode
 displaymodelist
 divdi
 divremi

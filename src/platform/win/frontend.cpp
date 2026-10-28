@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <iterator>
 #include <new>
 
 #include <direct.h>
@@ -54,10 +55,6 @@ DisplayMode **g_apSortedDisplayModes;
  * @ghidraAddress BRGlide: 0x10ac5c00
  */
 unsigned char g_bSeasonRoundListBrowsing;
-#if TGR_RENDERER == TGR_RENDERER_D3D
-/** @ghidraAddress BRD3D: 0x10aa2864 */
-int g_dwActiveDisplayModeIndex;
-#endif
 /**
  * @ghidraAddress BRD3D: 0x10aa2850
  * @ghidraAddress BRGlide: 0x10ac5ba8
@@ -156,6 +153,7 @@ const int g_adwCarImageIds[32] = {31,  33,  39,  42,  43,  41,  37,  35,  36,  3
 int g_dwNetworkMenuState;
 int g_dwSelectedSessionIndex;
 int g_dwSelectedDisplayModeIndex;
+int g_dwActiveDisplayModeIndex;
 NetworkMenuWidget *g_pJoinCreateGameMenu;
 MenuScreen *g_pCachedMenu_RaceSetupNetwork;
 MenuScreen *g_pCachedMenu_GameplaySettings;
@@ -2260,9 +2258,11 @@ int ShowDisplayModeSelectMenu(void) {
 }
 
 int PopulateVideoSettingsLists(void) {
+#if TGR_RENDERER == TGR_RENDERER_D3D
     if (!PopulateDisplayDeviceList()) {
         return 0;
     }
+#endif
     return PopulateDisplayModeList() != 0;
 }
 
@@ -5421,6 +5421,7 @@ int BuildModemConnectionUI(MenuScreen *screen) {
 static inline int VideoOptionsUI_ShowDeviceSelect(MenuWidget *) {
     return ShowD3DDeviceSelectMenu();
 }
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 static inline void BuildDisplaySelectionUI(MenuScreen *screen,
                                            int title,
@@ -5477,6 +5478,7 @@ static inline void BuildDisplaySelectionUI(MenuScreen *screen,
     }
 }
 
+#if TGR_RENDERER == TGR_RENDERER_D3D
 void BuildD3DDeviceSelectUI(MenuScreen *screen) {
     BuildDisplaySelectionUI(screen,
                             0x2b,
@@ -5486,6 +5488,7 @@ void BuildD3DDeviceSelectUI(MenuScreen *screen) {
                             0x2c,
                             ReturnToVideoOptionsFromDeviceSelect);
 }
+#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 void BuildDisplayModeSelectUI(MenuScreen *screen) {
     BuildDisplaySelectionUI(screen,
@@ -5521,12 +5524,21 @@ void BuildVideoOptionsUI(MenuScreen *screen) {
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     AddMenuWidget(panel, screen, 80, 46, 9, 0, 9);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    // The Glide library has no choice of the display device.
+#if TGR_RENDERER == TGR_RENDERER_D3D
     const int strings[] = {0x29, 0x2a, 0xc};
     const float offsets[] = {0, 19, 114};
     int (*const actions[])(MenuWidget *) = {VideoOptionsUI_ShowDeviceSelect,
                                             VideoOptionsUI_ShowDisplayModeSelect,
                                             VideoOptionsUI::OnBack};
-    for (int index = 0; index < 3; index++) {
+#else
+    const int strings[] = {0x2a, 0xc};
+    const float offsets[] = {0, 114};
+    int (*const actions[])(MenuWidget *) = {VideoOptionsUI_ShowDisplayModeSelect,
+                                            VideoOptionsUI::OnBack};
+#endif
+    const int count = static_cast<int>(std::size(strings));
+    for (int index = 0; index < count; index++) {
         MenuWidget *widget = AddMenuWidget(
             panel,
             screen,
@@ -5540,14 +5552,13 @@ void BuildVideoOptionsUI(MenuScreen *screen) {
         widget->SetIdleActionCallback(ValidateEntityState);
         widget->SetActionCallback(actions[index]);
         SetMenuWidgetLabel(widget, strings[index], &g_rcMenuCenterPanel);
-        if (index == 2) {
+        if (index == count - 1) {
             g_pOptionsSubMenu = widget;
         }
         panel->SetWidgetCount(panel->GetWidgetCount() + 1);
         panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     }
 }
-#endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 static inline int LoadSeasonUI_SelectSlot(MenuItemList *list, int *slot) {
     return LoadSeasonUI_OnSlotSelected(list, slot);
