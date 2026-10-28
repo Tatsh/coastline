@@ -730,9 +730,15 @@ void LoadLight(const GbiCommand *command) {
         return;
     }
     Light &out = g_rdp.lights[index];
-    float length = 0;
     for (std::size_t i = 0; i < 3; ++i) {
         out.color[i] = static_cast<float>(light[i]) / 255.0f;
+    }
+    // The ambient light, after the directional lights, is an Ambient of 8 bytes with no direction.
+    if (index >= static_cast<std::size_t>(g_rdp.lightCount)) {
+        return;
+    }
+    float length = 0;
+    for (std::size_t i = 0; i < 3; ++i) {
         out.direction[i] = static_cast<float>(static_cast<std::int8_t>(light[8 + i]));
         length += out.direction[i] * out.direction[i];
     }
