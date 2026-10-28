@@ -6,93 +6,93 @@
 # library directly.
 add_library(
   coastline_main OBJECT
+  airplanestate.c
   assetfile.cpp
+  assetnames.c
   boot/app.cpp
   boot/displaymodelist.cpp
   boot/dxversion.cpp
   boot/gamestate.cpp
   boot/rallyconfig.cpp
+  boot/shutdown.cpp
   boot/startup.cpp
   boot/strings.c
   buildinfo.c
+  clockfields.c
   configfile.cpp
+  creditdata.c
   dashboardtextures.c
   directplay.cpp
   displaylist.cpp
+  displaylistdata.c
   dllmain.c
   earsound.cpp
+  effectdata.c
   fileio.c
-  frametimer.cpp
-  framebuffer.c
+  fontdata.c
   fpshud.c
+  framebuffer.c
+  framefields.c
+  frametimer.cpp
   frontend.cpp
+  frontenddata.cpp
   gameinit.cpp
   ghost.cpp
+  hud.c
+  hudassets.c
+  hudcanvas.c
   hudlaplist.cpp
   hudnetwork.cpp
   hudquad.c
-  hud.c
-  hudcanvas.c
   input.cpp
+  inputdefaults.cpp
   menufont.cpp
   modelrelocation.cpp
   netstream.cpp
+  numericdata.c
   paintshop.c
   particlesnapshot.c
+  physicsdata.c
   podarchive.cpp
-  racercolor.cpp
+  raceglobals.c
   racepacing.c
+  racercolor.cpp
   racerslot.cpp
-  racesound.cpp
   racescreen.cpp
+  racesound.cpp
+  reflectiondata.c
   render.cpp
+  renderdefaults.cpp
+  runtimebuffers.c
+  runtimebuffers.cpp
   season.cpp
+  settings.c
   snapshot.cpp
+  snapshotfields.cpp
   snapshotinterpolation.cpp
   sound.cpp
+  soundbank.c
+  soundsample.c
   terrain.c
   texturesampling.c
   texturescan.cpp
+  textureworkspace.c
+  timer.c
   trackanimation.cpp
   trackload.cpp
+  trackmenudata.c
   trackskidmarks.cpp
   tracktexture.cpp
-  timer.c
   vehicle.cpp
   vehiclemodelload.c
   vehiclesetup.cpp
+  visibilitydata.c
   wavread.c)
 # The DirectDraw and Direct3D renderer belongs to the Direct3D library alone.
 if(TGR_RENDERER STREQUAL "d3d")
   target_sources(
     coastline_main
-    PRIVATE assetnames.c
-            airplanestate.c
-            clockfields.c
-            framefields.c
-            snapshotfields.cpp
-            soundsample.c
-            soundbank.c
-            raceglobals.c
-            trackmenudata.c
-            visibilitydata.c
-            creditdata.c
-            displaylistdata.c
-            effectdata.c
-            boot/shutdown.cpp
-            frontenddata.cpp
-            fontdata.c
-            hudassets.c
-            inputdefaults.cpp
-            numericdata.c
-            physicsdata.c
-            reflectiondata.c
-            renderdefaults.cpp
-            runtimebuffers.c
-            runtimebuffers.cpp
-            settings.c
-            textureworkspace.c
-            d3d/ddutil.cpp
+    PRIVATE d3d/ddutil.cpp
             d3d/devicecaps.cpp
             d3d/driver.cpp
             d3d/renderer.cpp
