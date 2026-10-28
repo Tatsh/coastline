@@ -288,8 +288,10 @@ void TranslateControllerInput(PlayerInputState *state) {
                 }
             }
         }
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
     } else if (state->playbackBuffer != NULL) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+        /* The playback buffer is read and nothing is played back. */
+#else
         if (state->playbackPosition < state->playbackLimit) {
             state->steeringInput = state->playbackBuffer[state->playbackPosition];
             state->buttons = (state->buttons & ~INPUT_RECORDED_ACTIONS) |
@@ -301,10 +303,8 @@ void TranslateControllerInput(PlayerInputState *state) {
             state->steeringInput = 0;
             state->buttons &= ~INPUT_RECORDED_ACTIONS;
         }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     }
-#else
-    }
-#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     state->stickX = state->pad->stick_x * (1.0f / STICK_RANGE);
