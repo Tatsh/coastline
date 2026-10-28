@@ -137,6 +137,7 @@ typedef struct {
  * @ghidraAddress EUR: 0x802670a0
  * @ghidraAddress JPN: 0x80266ba0
  * @ghidraAddress BRD3D: 0x10042af0
+ * @ghidraAddress BRGlide: 0x100385e0
  */
 s32 osContInit(OSMesgQueue *mq, u8 *bitpattern, OSContStatus *data);
 

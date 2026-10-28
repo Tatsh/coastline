@@ -443,6 +443,7 @@ void osCreateMesgQueue(OSMesgQueue *mq, OSMesg *msg, s32 count);
  * @return 0, or -1 when the queue is full and flag is OS_MESG_NOBLOCK.
  * Windows returns 1 without accessing the queue or message.
  * @ghidraAddress BRD3D: 0x10042af0
+ * @ghidraAddress BRGlide: 0x100385e0
  * @ghidraAddress USA: 0x802654b0
  * @ghidraAddress EUR: 0x80266c40
  * @ghidraAddress JPN: 0x80266740
@@ -472,6 +473,7 @@ s32 osJamMesg(OSMesgQueue *mq, OSMesg msg, s32 flag);
  * @return 0, or -1 when the queue is empty and flag is OS_MESG_NOBLOCK.
  * Windows returns 1 without accessing the queue or message.
  * @ghidraAddress BRD3D: 0x10042af0
+ * @ghidraAddress BRGlide: 0x100385e0
  * @ghidraAddress USA: 0x802642e0
  * @ghidraAddress EUR: 0x80265a60
  * @ghidraAddress JPN: 0x80265500

@@ -239,6 +239,7 @@ private:
     virtual int Draw(int selection);
     /**
      * @ghidraAddress BRD3D: 0x10042af0
+     * @ghidraAddress BRGlide: 0x100385e0
      */
     virtual int ReturnOne();
 

@@ -1137,6 +1137,7 @@ FindDirectDrawDriverByGuid(GUID *pGuid, DirectDrawDriver **ppPrimary, DirectDraw
  *
  * @return 0.
  * @ghidraAddress BRD3D: 0x1007a1c0
+ * @ghidraAddress BRGlide: 0x10053e60
  */
 int ReturnZero(void);
 
