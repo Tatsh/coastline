@@ -78,8 +78,8 @@ VCPKG_ROOT=/path/to/vcpkg cmake --workflow --preset sdl
 cmake --install build/sdl --prefix ~/.local
 ```
 
-On Linux, the vcpkg build of SDL needs the development headers of ALSA, Wayland, xkbcommon, and
-the X11 extensions (Xcursor, Xfixes, Xi, Xrandr, Xss, Xtst), and autoconf-archive.
+On Linux, the vcpkg build of SDL needs the development headers of ALSA, EGL, Wayland, xkbcommon,
+and the X11 extensions (Xcursor, Xfixes, Xi, Xrandr, Xss, Xtst), and autoconf-archive.
 
 The game reads `BossRally.ini` from `~/.config/coastline`, its data from `~/.local/share/coastline`,
 and writes `game.log` to `~/.local/state/coastline`. The XDG Base Directory variables move these
