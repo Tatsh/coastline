@@ -45,8 +45,7 @@ unsigned char g_bSfxVolume = 0xff;
 #define FIRST_MUSIC_CD_TRACK 2
 
 // Prepare the state of the music for the first user of its device.
-static inline void ResetMusicTracks(HWND hWnd) {
-    g_hMusicNotifyWnd = hWnd;
+static inline void ResetMusicTracks(void) {
     srand(GetHighResolutionTime());
     g_nCurrentMusicTrack = FIRST_MUSIC_CD_TRACK;
     g_nMusicTrackMin = 0;
@@ -66,7 +65,8 @@ bool OpenCdaudioMci(HWND hWnd) {
     if (++g_nMusicDeviceRefCount != 1) {
         return true;
     }
-    ResetMusicTracks(hWnd);
+    g_hMusicNotifyWnd = hWnd;
+    ResetMusicTracks();
     g_bCdAudioPlaying = false;
     g_bMusicActive = false;
     open.lpstrDeviceType = "cdaudio";
@@ -188,7 +188,7 @@ bool InitSoftwareMusicStack(HWND hWnd) {
     if (++g_nMusicDeviceRefCount != 1) {
         return true;
     }
-    ResetMusicTracks(hWnd);
+    ResetMusicTracks();
     InitializeEarSound(hWnd);
     g_bMusicActive = false;
     g_bEarOutputInitialized = false;
