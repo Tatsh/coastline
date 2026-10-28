@@ -552,13 +552,13 @@ HRESULT EnumeratePlayerAddress(HWND hWnd, IDirectPlayLobby2A *pLobby) {
 }
 
 BOOL WINAPI EnumAddressCallback(REFGUID guidDataType, DWORD, const void *pData, void *) {
-    const char *pszPort = static_cast<const char *>(pData);
+    const char *pszModem = static_cast<const char *>(pData);
 
     // The strings are walked and none is used.
-    if (IsEqualGUID(guidDataType, DPAID_ComPort) && lstrlenA(pszPort) != 0) {
+    if (IsEqualGUID(guidDataType, DPAID_Modem) && lstrlenA(pszModem) != 0) {
         do {
-            pszPort += lstrlenA(pszPort) + 1;
-        } while (lstrlenA(pszPort) != 0);
+            pszModem += lstrlenA(pszModem) + 1;
+        } while (lstrlenA(pszModem) != 0);
     }
     return TRUE;
 }

@@ -551,7 +551,7 @@ void CopySessionNameToBuffer(NetworkSessionSettings *pSettings);
 HRESULT EnumeratePlayerAddress(HWND hWnd, IDirectPlayLobby2A *pLobby);
 
 /**
- * Walk the strings of the COM port part of an address, and skip any other part.
+ * Walk the strings of the modem part of an address, and skip any other part.
  *
  * @param guidDataType The type of the part.
  * @param dwDataSize Not read.
