@@ -1,4 +1,5 @@
 aabb
+abgr
 abicalls
 abiflags
 accel
@@ -21,6 +22,7 @@ alloconload
 allplayers
 alphablendenable
 alphadither
+alsa
 ambientsound
 anchorfile
 andi
@@ -37,6 +39,7 @@ arrowud
 arrowuu
 asciz
 ashft
+assetchain
 assetdma
 assetfile
 assetnames
@@ -61,6 +64,7 @@ bgtz
 bilerp
 bilinearly
 billboardparticles
+bindir
 bitspixel
 blez
 blit
@@ -168,6 +172,7 @@ createmesgqueue
 createplayerorgroup
 createthread
 creditdata
+csidl
 ctest
 ctrlfrequency
 ctrlpan
@@ -314,6 +319,7 @@ dptexturecaps
 drawtexturedrect
 drenderstate
 drenderstatetype
+drlibs
 drytire
 dsbcaps
 dsbfrequency
@@ -340,6 +346,7 @@ dvcpkg
 dvddrive
 dwlp
 dxguid
+dxil
 dxmedia
 dxsetup
 dxversion
@@ -433,6 +440,7 @@ gamesession
 gamestate
 gamewin
 gbicommand
+gdevice
 gelex
 genld
 getcontroldetailsf
@@ -558,6 +566,7 @@ ldblk
 ldiv
 ldtob
 ldunscale
+leftx
 leitch
 lenqueue
 leodiskinit
@@ -568,6 +577,7 @@ libc
 libdragon
 libdragon's
 libera
+libflac
 libgcc
 libglide
 libsonnet
@@ -741,6 +751,7 @@ oaevent
 oahwnd
 oatrue
 objcopy
+objcxx
 objdump
 obji
 offscreenplain
@@ -894,6 +905,8 @@ restartfrom
 rgbdither
 rgdw
 rgsz
+rightx
+righty
 rigidbody
 ripgreprc
 rledecompress
@@ -916,6 +929,7 @@ schemafile
 screendraw
 screenfade
 screenrect
+sdlcall
 seasn
 seasoncars
 seasondesc
@@ -948,6 +962,7 @@ settimg
 setvideo
 setzimg
 shademode
+shaderformat
 shadowclip
 shadowproject
 shadowreset
@@ -956,6 +971,7 @@ shayne
 sheffels
 shellcheck
 shellformat
+shgfp
 shiftl
 shiftt
 showmaximized
@@ -1005,6 +1021,8 @@ specon
 specularenable
 speedgate
 spimdisasm
+spir
+spirv
 spkr
 sprayadv
 sprayframes
@@ -1057,6 +1075,8 @@ subu
 sunweth
 superbuild
 surfacelost
+swapchain
+swapchaincomposition
 swlibs
 swwwwfgdafch
 syms
