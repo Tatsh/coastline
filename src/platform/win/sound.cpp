@@ -683,7 +683,9 @@ bool IsSoundBufferPlaying(SoundBufferNode *pNode) {
 }
 
 bool SetSoundVoiceFrequencyFloat(int nSample, int nVoice, float fFrequency) {
-    return SetSoundChannelFrequency(nSample, nVoice * 2, static_cast<DWORD>(fFrequency));
+    // The original truncates through 64 bits and keeps the low word, which turns a NaN into 0.
+    return SetSoundChannelFrequency(
+        nSample, nVoice * 2, static_cast<DWORD>(static_cast<long long>(fFrequency)));
 }
 
 bool StopSoundVoice(int nSample, int nVoice) {
@@ -781,10 +783,12 @@ bool SetAudioChannelFrequency(int nChannel, long long llFrequency) {
     if (!IsDirectSoundActive()) {
         return true;
     }
-    if (!SetSoundBufferFrequency(g_apSoundChannelBuffer[nChannel],
-                                 static_cast<DWORD>(static_cast<double>(llFrequency) *
-                                                    g_adChannelFrequencyScale[nChannel] *
-                                                    FREQUENCY_FRACTION_SCALE))) {
+    // The original truncates through 64 bits and keeps the low word, which turns a NaN into 0.
+    if (!SetSoundBufferFrequency(
+            g_apSoundChannelBuffer[nChannel],
+            static_cast<DWORD>(static_cast<long long>(static_cast<double>(llFrequency) *
+                                                      g_adChannelFrequencyScale[nChannel] *
+                                                      FREQUENCY_FRACTION_SCALE)))) {
         return false;
     }
     g_aSoundChannelState[nChannel].llFrequency = llFrequency;
