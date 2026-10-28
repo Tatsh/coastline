@@ -13,6 +13,7 @@ extern "C" {
  * @ghidraAddress EUR: 0x8021f3f4
  * @ghidraAddress JPN: 0x8021ecc4
  * @ghidraAddress BRD3D: 0x10035bba
+ * @ghidraAddress BRGlide: 0x1002f26b
  */
 void SetDebugMessage(const char *message);
 

@@ -31,6 +31,7 @@ extern "C" {
  *
  * @param unused Not read.
  * @ghidraAddress BRD3D: 0x10035ba7
+ * @ghidraAddress BRGlide: 0x1002f258
  */
 [[noreturn]] void ShowDebugMessageFatalError(int unused);
 

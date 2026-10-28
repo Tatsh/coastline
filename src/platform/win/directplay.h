@@ -1770,6 +1770,7 @@ HRESULT GetDirectPlayPlayerName(IDirectPlay3A *pDirectPlay, DPID dpidPlayer, DPN
 
 /**
  * @ghidraAddress BRD3D: 0x1003d3a0
+ * @ghidraAddress BRGlide: 0x10036a30
  */
 HRESULT FormatNetworkChatLine(
     IDirectPlay3A *pDirectPlay, DPID dpidPlayer, const char *text, char **ppLine, bool bNotice);

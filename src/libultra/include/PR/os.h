@@ -520,6 +520,7 @@ OSIntMask osSetIntMask(OSIntMask im);
  * @ghidraAddress EUR: 0x80266250
  * @ghidraAddress JPN: 0x80265c80
  * @ghidraAddress BRD3D: 0x10060e90
+ * @ghidraAddress BRGlide: 0x10059f00
  */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 u64 osGetCount(void);

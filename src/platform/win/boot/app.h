@@ -119,6 +119,7 @@ extern "C" {
  *
  * @param nExitCode The exit code of the process.
  * @ghidraAddress BRD3D: 0x10038f30
+ * @ghidraAddress BRGlide: 0x100325b0
  */
 [[noreturn]] void ShutdownApplication(int nExitCode);
 

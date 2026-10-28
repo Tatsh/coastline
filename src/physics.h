@@ -639,6 +639,7 @@ s32 TipBalancedVehicle(RigidBody *body);
  * @ghidraAddress EUR: 0x8025f29c
  * @ghidraAddress JPN: 0x8025ec2c
  * @ghidraAddress BRD3D: 0x1006e4c0
+ * @ghidraAddress BRGlide: 0x10067470
  */
 void ComputeCollisionPenetration(
     RigidBody *body, Vec3f *normal, f32 offset, Vec3f *contact, Vec3f triangle[3]);

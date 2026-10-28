@@ -132,6 +132,7 @@ void StubPhysics1(void *data);
  * @ghidraAddress EUR: 0x80221290
  * @ghidraAddress JPN: 0x80220a80
  * @ghidraAddress BRD3D: 0x100765e0
+ * @ghidraAddress BRGlide: 0x1006f840
  */
 void MatrixToQuaternion(f32 m[4][4], Quaternion *q);
 
@@ -422,7 +423,6 @@ void CopyMatrix4x4To3x3(f32 out[3][3], f32 m[4][4]);
  * @ghidraAddress JPN: 0x80259e58
  * @ghidraAddress BRD3D: 0x10074ac0
  * @ghidraAddress BRGlide: 0x1006dd20
- * @stub{BRGlide}
  */
 void Mtx3fMultiply(f32 out[3][3], f32 a[3][3], f32 b[3][3]);
 
