@@ -12,6 +12,21 @@
 #include "platform/win/settings.h"
 #include "screen.h"
 
+namespace {
+/**
+ * Whether the render target was cleared since the last flip.
+ *
+ * @ghidraAddress BRD3D: 0x102776a0
+ */
+int g_bRenderTargetCleared;
+/**
+ * The fourth value of the display mode set.
+ *
+ * @ghidraAddress BRD3D: 0x106c6644
+ */
+int g_dwCurrentDisplayModeBpp;
+} // namespace
+
 /** @ghidraAddress BRD3D: 0x10aa2860 */
 int g_dwActiveDisplayDeviceIndex;
 /** @ghidraAddress BRD3D: 0x10aa2a2c */

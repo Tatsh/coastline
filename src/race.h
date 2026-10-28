@@ -399,6 +399,7 @@ extern s32 g_dwRaceFinishOrderCounter;
  */
 extern f32 g_fRacePhaseTimer;
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The step of the countdown of the start lights.
  *
@@ -408,6 +409,7 @@ extern f32 g_fRacePhaseTimer;
  * @ghidraAddress BRD3D: 0x106909cc
  */
 extern s32 g_dwStartLightsStep;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * The index of the phase in g_aRacePhaseTable.

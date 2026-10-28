@@ -62,6 +62,7 @@ extern s32 g_dwTimingFrame;
  */
 extern u32 g_dwTimingFrameStart;
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * Reset at the start of the frame.
  *
@@ -71,6 +72,7 @@ extern u32 g_dwTimingFrameStart;
  * @ghidraAddress BRD3D: 0x1067d57c
  */
 extern u32 g_dwTimingFrameElapsed;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * The timer count the full length of the bars stands for.

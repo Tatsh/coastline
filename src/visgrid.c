@@ -3,6 +3,27 @@
 #include "mathutil.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * @ghidraAddress USA: 0x8028bd98
+ * @ghidraAddress EUR: 0x8028e4f8
+ * @ghidraAddress JPN: 0x8028df28
+ * @ghidraAddress BRD3D: 0x10a9bbc0
+ * @ghidraAddress BRGlide: 0x10ac2c50
+ */
+static s32 g_dwVisibleGridMaxCol;
+/**
+ * The bounds of the covered cells.
+ *
+ * @ghidraAddress USA: 0x8028bd90
+ * @ghidraAddress EUR: 0x8028e4f0
+ * @ghidraAddress JPN: 0x8028df20
+ * @ghidraAddress BRD3D: 0x10a9bbc8
+ * @ghidraAddress BRGlide: 0x10ac2c58
+ */
+static s32 g_dwVisibleGridMinCol;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /** @ghidraAddress BRD3D: 0x10a9bbc4 */
 s32 g_dwVisibleGridMaxRow;
 /** @ghidraAddress BRD3D: 0x10a9bbcc */

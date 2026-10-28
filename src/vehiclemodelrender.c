@@ -18,6 +18,36 @@
 #include "platform/win/renderbackend.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+namespace {
+    /**
+     * Whether every vehicle is drawn in its other look, as Vehicle.otherLook draws one.
+     *
+     * @ghidraAddress USA: 0x8028ddc8
+     * @ghidraAddress EUR: 0x80290568
+     * @ghidraAddress JPN: 0x80290008
+     * @ghidraAddress BRD3D: 0x10277b1c
+     */
+    s32 g_bForceVehicleAltVariant;
+    /**
+     * The least detailed level the vehicles are drawn at, from 0.
+     *
+     * @ghidraAddress USA: 0x8028aa9c
+     * @ghidraAddress EUR: 0x8028cca4
+     * @ghidraAddress JPN: 0x8028c774
+     * @ghidraAddress BRD3D: 0x106c6630
+     */
+    s32 g_dwVehicleLodBias;
+    /**
+     * @ghidraAddress USA: 0x8028c304
+     * @ghidraAddress EUR: 0x8028ea64
+     * @ghidraAddress JPN: 0x8028e4b4
+     * @ghidraAddress BRD3D: 0x10277e58
+     */
+    u32 g_dwVehicleOtherModeLFlags;
+} // namespace
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /** @ghidraAddress BRD3D: 0x10277e14 */
 s32 g_dwVehicleFogAlpha;
 /** @ghidraAddress BRD3D: 0x10277e5c */

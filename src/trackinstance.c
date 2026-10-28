@@ -24,6 +24,21 @@
 #include "audiomix.h"
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+namespace {
+    /**
+     * Whether shadows include triangles outside their texture and extend beyond their vehicle's
+     * screen rectangle.
+     *
+     * @ghidraAddress USA: 0x8028aa60
+     * @ghidraAddress EUR: 0x8028cc68
+     * @ghidraAddress JPN: 0x8028c738
+     * @ghidraAddress BRD3D: 0x106c660c
+     */
+    s32 g_bShadowCullDisabled;
+} // namespace
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 /* The words of the display list of the shadows a placed model may fill. */
 #define SHADOW_LIST_WORDS 969
 

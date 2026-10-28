@@ -43,6 +43,84 @@
 #include "platform/win/render.h"
 #endif
 
+namespace {
+#if TGR_RENDERER == TGR_RENDERER_D3D
+/** @ghidraAddress BRD3D: 0x118ac244 */
+DisplayMode **g_apSortedDisplayModes;
+#endif
+/**
+ * @ghidraAddress BRD3D: 0x10aa28a8
+ * @ghidraAddress BRGlide: 0x10ac5c00
+ */
+unsigned char g_bSeasonRoundListBrowsing;
+#if TGR_RENDERER == TGR_RENDERER_D3D
+/** @ghidraAddress BRD3D: 0x10aa2864 */
+int g_dwActiveDisplayModeIndex;
+#endif
+/**
+ * @ghidraAddress BRD3D: 0x10aa2850
+ * @ghidraAddress BRGlide: 0x10ac5ba8
+ */
+int g_dwKeyBindingDuplicatesFound;
+/**
+ * @ghidraAddress BRD3D: 0x10aa2a3c
+ * @ghidraAddress BRGlide: 0x10ac5d94
+ */
+int g_dwKeyCaptureComplete;
+/**
+ * @ghidraAddress BRD3D: 0x10aa2a38
+ * @ghidraAddress BRGlide: 0x10ac5d90
+ */
+int g_dwKeyCaptureWaitRelease;
+/**
+ * @ghidraAddress BRD3D: 0x10aa2840
+ * @ghidraAddress BRGlide: 0x10ac5b98
+ */
+int g_dwKeyConfigSelectedAction;
+/**
+ * @ghidraAddress BRD3D: 0x10a9dbd0
+ * @ghidraAddress BRGlide: 0x10ac4c58
+ */
+int g_dwRootMenuStringIndex;
+/**
+ * @ghidraAddress BRD3D: 0x10aa28e8
+ * @ghidraAddress BRGlide: 0x10ac5c40
+ */
+int g_dwTimeAttackLoadSelected;
+/**
+ * @ghidraAddress BRD3D: 0x10aa28ec
+ * @ghidraAddress BRGlide: 0x10ac5c44
+ */
+int g_dwTimeAttackSaveSlotNamed;
+/**
+ * The track mask used before loading a championship profile.
+ *
+ * @ghidraAddress BRD3D: 0x10a9d010
+ */
+unsigned g_dwUnlockedTrackMask;
+/**
+ * @ghidraAddress BRD3D: 0x10aa29bc
+ * @ghidraAddress BRGlide: 0x10ac5d14
+ */
+MenuWidget *g_pCreateGameContinueItem;
+#if TGR_RENDERER == TGR_RENDERER_D3D
+/**
+ * The display mode chosen in the configuration.
+ *
+ * @ghidraAddress BRD3D: 0x118ac240
+ */
+DisplayMode *g_pSelectedDisplayMode;
+#endif
+#if TGR_RENDERER == TGR_RENDERER_D3D
+/**
+ * The Direct3D device chosen in the menus, or null.
+ *
+ * @ghidraAddress BRD3D: 0x118ac23c
+ */
+D3DDeviceNode *g_pSelectedRenderDevice;
+#endif
+} // namespace
+
 /** @ghidraAddress BRD3D: 0x1022b34c */
 int g_dwChosenCar;
 /** @ghidraAddress BRD3D: 0x10aa285c */

@@ -25,6 +25,76 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "platform/win/trackskidmarks.h"
 #include "vehiclecount.h"
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+s32 g_nOpaqueVisibleInstanceCount;
+
+namespace {
+    /**
+     * Whether g_nDebugHiddenInstanceIndex is left undrawn.
+     *
+     * @ghidraAddress USA: 0x8028c758
+     * @ghidraAddress EUR: 0x8028eeb8
+     * @ghidraAddress JPN: 0x8028e908
+     * @ghidraAddress BRD3D: 0x1039b6c4
+     */
+    s32 g_bDebugHideInstance;
+    /**
+     * The TRACK_INSTANCE_ flags of the placed models not drawn.
+     *
+     * @ghidraAddress USA: 0x8035d520
+     * @ghidraAddress EUR: 0x8035fa20
+     * @ghidraAddress JPN: 0x8035e690
+     * @ghidraAddress BRD3D: 0x10363ff8
+     */
+    u32 g_dwInstanceHideFlags;
+    /**
+     * The largest absolute value of the first three rows of g_afViewProjMatrix.
+     *
+     * @ghidraAddress USA: 0x8035d51c
+     * @ghidraAddress EUR: 0x8035fa1c
+     * @ghidraAddress JPN: 0x8035e68c
+     * @ghidraAddress BRD3D: 0x10363fe8
+     */
+    f32 g_fViewMatrixMaxAbs;
+    /**
+     * The last translucent model left for the second pass, or -1.
+     *
+     * @ghidraAddress USA: 0x8028c748
+     * @ghidraAddress EUR: 0x8028eea8
+     * @ghidraAddress JPN: 0x8028e8f8
+     * @ghidraAddress BRD3D: 0x1036438c
+     */
+    s32 g_nDeferredInstanceLastIdx;
+    /**
+     * Where the translucent models past g_nVisibleCellIdxMid start in the second pass, which draws
+     * them without shadows, and 0x1000 until it is known.
+     *
+     * @ghidraAddress USA: 0x8028c78c
+     * @ghidraAddress EUR: 0x8028eeec
+     * @ghidraAddress JPN: 0x8028e93c
+     * @ghidraAddress BRD3D: 0x102e54b8
+     */
+    s32 g_nTrackTransparentStartIdx;
+    /**
+     * @ghidraAddress USA: 0x8028c784
+     * @ghidraAddress EUR: 0x8028eee4
+     * @ghidraAddress JPN: 0x8028e934
+     * @ghidraAddress BRD3D: 0x102e54b4
+     */
+    s32 g_nTrackTransparentStartIdxFar;
+    /**
+     * Set to 0x1000 with g_nTrackTransparentStartIdx, and never read.
+     *
+     * @ghidraAddress USA: 0x8028c77c
+     * @ghidraAddress EUR: 0x8028eedc
+     * @ghidraAddress JPN: 0x8028e92c
+     * @ghidraAddress BRD3D: 0x102e5ed4
+     */
+    s32 g_nTrackTransparentStartIdxNear;
+} // namespace
+
 #define PHYSICAL(address) ((u32)(address))
 #define TRACK_TIMING(bar, red, green, blue, alpha) NullStub()
 #define TRACK_WEATHER_EXCLUDED 8

@@ -22,6 +22,81 @@
 static u64 *g_pRdpOutputBuffer = (u64 *)0x803b1000;
 /* @ghidraAddress BRD3D: 0x100aa72c */
 static u64 *g_pRdpOutputBufferEnd = (u64 *)0x803c8000;
+/**
+ * The commands of the display list of the last frame.
+ *
+ * @ghidraAddress USA: 0x8028ab70
+ * @ghidraAddress EUR: 0x8028ce1c
+ * @ghidraAddress JPN: 0x8028c84c
+ * @ghidraAddress BRD3D: 0x106c1170
+ */
+static s32 g_dwDisplayListCommandCount;
+/**
+ * Whether a frame has been sent to the RSP.
+ *
+ * @ghidraAddress USA: 0x8028ab80
+ * @ghidraAddress EUR: 0x8028ce2c
+ * @ghidraAddress JPN: 0x8028c85c
+ * @ghidraAddress BRD3D: 0x106c6664
+ */
+static s32 g_dwFirstFlushDone;
+/**
+ * The counts of the CPU counter the end of a frame took, between the ends of two frames, and at
+ * the end of the last frame.
+ *
+ * @ghidraAddress USA: 0x8028aae8
+ * @ghidraAddress EUR: 0x8028ccf0
+ * @ghidraAddress JPN: 0x8028c7c0
+ * @ghidraAddress BRD3D: 0x106c020c
+ */
+static u32 g_dwFlushDuration;
+/**
+ * @ghidraAddress USA: 0x8028aae0
+ * @ghidraAddress EUR: 0x8028cce8
+ * @ghidraAddress JPN: 0x8028c7b8
+ * @ghidraAddress BRD3D: 0x106c1620
+ */
+static u32 g_dwFlushInterval;
+/**
+ * @ghidraAddress USA: 0x8028aae4
+ * @ghidraAddress EUR: 0x8028ccec
+ * @ghidraAddress JPN: 0x8028c7bc
+ * @ghidraAddress BRD3D: 0x106c0208
+ */
+static u32 g_dwFlushStartTime;
+/**
+ * @ghidraAddress USA: 0x8028aa24
+ * @ghidraAddress EUR: 0x8028cc2c
+ * @ghidraAddress JPN: 0x8028c6fc
+ * @ghidraAddress BRD3D: 0x106c56e4
+ */
+static u32 g_dwLastFlushValue;
+/**
+ * @ghidraAddress USA: 0x8028ab7c
+ * @ghidraAddress EUR: 0x8028ce28
+ * @ghidraAddress JPN: 0x8028c858
+ * @ghidraAddress BRD3D: 0x106c6660
+ */
+static s32 g_dwPeakDisplayListCommands;
+/**
+ * The most commands of a shadow, vertices of a shadow, and commands of a frame seen.
+ *
+ * @ghidraAddress USA: 0x8028ab74
+ * @ghidraAddress EUR: 0x8028ce20
+ * @ghidraAddress JPN: 0x8028c850
+ * @ghidraAddress BRD3D: 0x106c6658
+ */
+static s32 g_dwPeakShadowCommandCount;
+/**
+ * @ghidraAddress USA: 0x8028ab78
+ * @ghidraAddress EUR: 0x8028ce24
+ * @ghidraAddress JPN: 0x8028c854
+ * @ghidraAddress BRD3D: 0x106c665c
+ */
+static s32 g_dwPeakShadowVertexCount;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /** @ghidraAddress BRD3D: 0x106c65e8 */
 s32 g_dwAppliedScreenScaleShift;
 /** @ghidraAddress BRD3D: 0x106c65e0 */

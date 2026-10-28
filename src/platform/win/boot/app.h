@@ -84,13 +84,6 @@ extern HWND g_hMainWindow;
 extern HACCEL g_hAccelTable;
 
 /**
- * Name of the window class of the main window.
- *
- * @ghidraAddress BRD3D: 0x100bd594
- */
-extern const char *g_pszMainWindowClassName;
-
-/**
  * The first parameter of the last `WM_ACTIVATE`. A frame runs only while it and
  * g_dwActivateState are set and g_dwActivateMinimized is not.
  *
@@ -111,20 +104,6 @@ extern int g_dwActivateState;
  * @ghidraAddress BRD3D: 0x106805a0
  */
 extern int g_dwActivateMinimized;
-
-/**
- * Whether the main window is minimised.
- *
- * @ghidraAddress BRD3D: 0x118ac230
- */
-extern int g_bWindowMinimized;
-
-/**
- * Whether the main window is maximised.
- *
- * @ghidraAddress BRD3D: 0x118ac234
- */
-extern int g_bWindowMaximized;
 
 #ifdef __cplusplus
 extern "C" {
@@ -268,13 +247,6 @@ void FreeAllRacerColorPanels(void);
 #endif
 
 class DirectDrawRenderer;
-
-/**
- * Title of the main window.
- *
- * @ghidraAddress BRD3D: 0x100bd598
- */
-extern const char *g_pszMainWindowTitle;
 
 /**
  * The arrow cursor of the main window.

@@ -10,9 +10,6 @@ extern "C" {
 /** @ghidraAddress BRD3D: 0x106c8e78 */
 extern u8 g_abTrackGeometryBuffer[TRACK_MAX_SIZE];
 
-/** @ghidraAddress BRD3D: 0x106c56ec */
-extern unsigned g_dwTrackDataRelocationDelta;
-
 /** @ghidraAddress BRD3D: 0x10038510 */
 void ReadAndRelocateTrackHeader(TrackHeader *track, GameFile *file);
 

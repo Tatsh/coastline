@@ -3,6 +3,18 @@
 #include "screen.h"
 #include "timing.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * Reset at the start of the frame.
+ *
+ * @ghidraAddress USA: 0x8028bda8
+ * @ghidraAddress EUR: 0x8028e508
+ * @ghidraAddress JPN: 0x8028df38
+ * @ghidraAddress BRD3D: 0x1067d57c
+ */
+static u32 g_dwTimingFrameElapsed;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 void BeginTimingFrame(void) {
     s32 bar;
 

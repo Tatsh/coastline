@@ -522,6 +522,7 @@ extern u8 g_bAmbientLightG;
  */
 extern u8 g_bAmbientLightB;
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The least detailed level the vehicles are drawn at, from 0.
  *
@@ -530,6 +531,7 @@ extern u8 g_bAmbientLightB;
  * @ghidraAddress JPN: 0x8028c774
  */
 extern s32 g_dwVehicleLodBias;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * Whether the car of the camera is drawn from its cockpit and mirror cameras too.
@@ -687,6 +689,7 @@ extern Vp g_aViewports[VIEWPORTS];
  */
 extern s32 g_dwViewportIndex;
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The display list of g_aClipRatioDisplayLists a frame starts with.
  *
@@ -696,6 +699,7 @@ extern s32 g_dwViewportIndex;
  * @ghidraAddress BRD3D: 0x106c65fc
  */
 extern s32 g_dwClipRatioIndex;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * Whether the microcode clips the triangles.

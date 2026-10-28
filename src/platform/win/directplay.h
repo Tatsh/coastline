@@ -351,14 +351,6 @@ extern UINT_PTR g_dwNetworkTimerId;
 extern IDirectPlayLobby2A *g_pDirectPlayLobby;
 
 /**
- * The GUID of the game for DirectPlay.
- *
- * @ghidraAddress BRD3D: 0x1008f538
- * @ghidraAddress BRGlide: 0x10077500
- */
-extern const GUID g_BossRallyAppGuid;
-
-/**
  * Whether the critical section of DirectPlay sends exists.
  *
  * @ghidraAddress BRD3D: 0x10277b60

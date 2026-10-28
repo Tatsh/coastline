@@ -8,6 +8,13 @@
 #include "platform/win/terrain.h"
 #include "trackselect.h"
 
+namespace {
+/**
+ * @ghidraAddress BRD3D: 0x1022af40
+ */
+int g_nKeyframeAccumFrames;
+} // namespace
+
 NetStream g_aNetPlayerStreams[NET_PLAYER_STREAM_COUNT];
 
 static inline void PredictRemoteKeyframe(

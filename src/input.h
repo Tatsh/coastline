@@ -267,6 +267,7 @@ void CheckAnalogStickNegative(PlayerInputState *state, s32 *timer, f32 *axis, u3
  */
 void UpdateStickRepeat(PlayerInputState *state);
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * Whether a read of the controllers is started and not yet received.
  *
@@ -276,6 +277,7 @@ void UpdateStickRepeat(PlayerInputState *state);
  * @ghidraAddress BRD3D: 0x106c56e8
  */
 extern s32 g_dwContReadPending;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * Whether InitControllersAndPaks() has mounted the Controller Pak of the first controller.

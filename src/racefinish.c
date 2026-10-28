@@ -31,6 +31,20 @@
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+namespace {
+    /**
+     * The player whose recording the instant replay plays, and the length of that recording.
+     *
+     * @ghidraAddress USA: 0x80315e3c
+     * @ghidraAddress EUR: 0x80317b2c
+     * @ghidraAddress JPN: 0x8031656c
+     * @ghidraAddress BRD3D: 0x106909c8
+     */
+    s32 g_dwBestReplayLength;
+} // namespace
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /** @ghidraAddress BRD3D: 0x10680668 */
 s32 g_dwBestReplayPlayer;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

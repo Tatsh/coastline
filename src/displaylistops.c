@@ -9,6 +9,20 @@
 #include "vehiclecount.h"
 #include "weather.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+namespace {
+    /**
+     * Whether ProcessDisplayList() tints the colour combines of the snow. It clears this.
+     *
+     * @ghidraAddress USA: 0x8028ade8
+     * @ghidraAddress EUR: 0x8028d098
+     * @ghidraAddress JPN: 0x8028cac8
+     * @ghidraAddress BRD3D: 0x106c666c
+     */
+    s32 g_bDisplayListSnowTint;
+} // namespace
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 #define ARRAY_COUNT(array) (s32)(sizeof(array) / sizeof((array)[0]))
 #define SNOW_PRIM_COLOR 0x60789000
 #define SNOW_ENV_COLOR 0x8C9CA800

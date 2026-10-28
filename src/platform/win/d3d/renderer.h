@@ -1251,16 +1251,6 @@ extern "C" void CopyTileColumnScaled(int nTileIndex, int nSrcX, int nSrcY, int n
 extern unsigned g_dwTextureEntryCount;
 
 /**
- * @ghidraAddress BRD3D: 0x105553f4
- */
-extern unsigned g_dwTextureEntryCapacity;
-
-/**
- * @ghidraAddress BRD3D: 0x100a7e0c
- */
-extern char g_szAppendTextureAtdb[];
-
-/**
  * The textures the game loaded.
  *
  * @ghidraAddress BRD3D: 0x1057543c
@@ -1408,13 +1398,6 @@ extern D3DDEVICEDESC g_D3DHalDeviceDesc;
  */
 extern D3DDEVICEDESC g_D3DHelDeviceDesc;
 
-/**
- * The number of DirectDraw drivers found.
- *
- * @ghidraAddress BRD3D: 0x104bbe1c
- */
-extern int g_dwDirectDrawDriverCount;
-
 /** What the search of the DirectDraw drivers found. */
 struct DriverEnumContext {
     int bSucceeded; /*!< Whether each driver was recorded. */
@@ -1540,20 +1523,6 @@ DisplayMode *FindDisplayModeWithFallback(DirectDrawDriver *pDriver,
 extern int g_dwScreenBitDepth;
 
 /**
- * The fourth value of the display mode set.
- *
- * @ghidraAddress BRD3D: 0x106c6644
- */
-extern int g_dwCurrentDisplayModeBpp;
-
-/**
- * Whether the render target was cleared since the last flip.
- *
- * @ghidraAddress BRD3D: 0x102776a0
- */
-extern int g_bRenderTargetCleared;
-
-/**
  * Show the frame drawn, set by ResetRenderDeviceCallbacks().
  *
  * @ghidraAddress BRD3D: 0x10690a24
@@ -1622,22 +1591,3 @@ bool ApplySelectedDisplayMode(int nWidth, int nHeight, int nBitDepth, int nExtra
  * @ghidraAddress BRD3D: 0x118ac238
  */
 extern DirectDrawDriver *g_pSelectedDisplayDriver;
-
-/**
- * The Direct3D device chosen in the menus, or null.
- *
- * @ghidraAddress BRD3D: 0x118ac23c
- */
-extern D3DDeviceNode *g_pSelectedRenderDevice;
-
-/**
- * The display mode chosen in the configuration.
- *
- * @ghidraAddress BRD3D: 0x118ac240
- */
-extern DisplayMode *g_pSelectedDisplayMode;
-
-/** @ghidraAddress BRD3D: 0x118ac244 */
-extern DisplayMode **g_apSortedDisplayModes;
-/** @ghidraAddress BRD3D: 0x10aa2864 */
-extern int g_dwActiveDisplayModeIndex;

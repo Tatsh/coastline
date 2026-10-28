@@ -5,6 +5,18 @@
 #include "track.h"
 #include "trianglebox.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * The count of the uses of the cache.
+ *
+ * @ghidraAddress USA: 0x8037eaa0
+ * @ghidraAddress EUR: 0x80380fa0
+ * @ghidraAddress JPN: 0x8037fc10
+ * @ghidraAddress BRD3D: 0x117554e0
+ */
+static u32 g_dwTriCacheLruCounter;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 #define RAY_HEADROOM 1.5f
 #define RAY_NEARBY_DISTANCE 5.0f
 #define RAY_CEILING_DEPTH -1.0f

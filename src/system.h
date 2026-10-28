@@ -278,6 +278,7 @@ void ResetFrameClock(void);
  */
 extern OSIoMesg g_aIoMessagePool[32];
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The DMA started and not yet waited for.
  *
@@ -287,7 +288,9 @@ extern OSIoMesg g_aIoMessagePool[32];
  * @ghidraAddress BRD3D: 0x106c65dc
  */
 extern s32 g_dwIoMessagePendingCount;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The message of g_aIoMessagePool last handed out.
  *
@@ -297,6 +300,7 @@ extern s32 g_dwIoMessagePendingCount;
  * @ghidraAddress BRD3D: 0x106c65d8
  */
 extern s32 g_dwIoMessagePoolIndex;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * The queue a finished DMA sends to.
@@ -993,6 +997,7 @@ extern u64 *g_pRdpOutputBufferEnd;
  */
 extern s32 g_dwOutputBuffReserve;
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The commands of the display list of the last frame.
  *
@@ -1002,7 +1007,9 @@ extern s32 g_dwOutputBuffReserve;
  * @ghidraAddress BRD3D: 0x106c1170
  */
 extern s32 g_dwDisplayListCommandCount;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The most commands of a shadow, vertices of a shadow, and commands of a frame seen.
  *
@@ -1012,7 +1019,9 @@ extern s32 g_dwDisplayListCommandCount;
  * @ghidraAddress BRD3D: 0x106c6658
  */
 extern s32 g_dwPeakShadowCommandCount;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * @ghidraAddress USA: 0x8028ab78
  * @ghidraAddress EUR: 0x8028ce24
@@ -1020,7 +1029,9 @@ extern s32 g_dwPeakShadowCommandCount;
  * @ghidraAddress BRD3D: 0x106c665c
  */
 extern s32 g_dwPeakShadowVertexCount;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * @ghidraAddress USA: 0x8028ab7c
  * @ghidraAddress EUR: 0x8028ce28
@@ -1028,7 +1039,9 @@ extern s32 g_dwPeakShadowVertexCount;
  * @ghidraAddress BRD3D: 0x106c6660
  */
 extern s32 g_dwPeakDisplayListCommands;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * Whether a frame has been sent to the RSP.
  *
@@ -1038,7 +1051,9 @@ extern s32 g_dwPeakDisplayListCommands;
  * @ghidraAddress BRD3D: 0x106c6664
  */
 extern s32 g_dwFirstFlushDone;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The counts of the CPU counter the end of a frame took, between the ends of two frames, and at
  * the end of the last frame.
@@ -1049,7 +1064,9 @@ extern s32 g_dwFirstFlushDone;
  * @ghidraAddress BRD3D: 0x106c020c
  */
 extern u32 g_dwFlushDuration;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * @ghidraAddress USA: 0x8028aae0
  * @ghidraAddress EUR: 0x8028cce8
@@ -1057,7 +1074,9 @@ extern u32 g_dwFlushDuration;
  * @ghidraAddress BRD3D: 0x106c1620
  */
 extern u32 g_dwFlushInterval;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * @ghidraAddress USA: 0x8028aae4
  * @ghidraAddress EUR: 0x8028ccec
@@ -1065,6 +1084,7 @@ extern u32 g_dwFlushInterval;
  * @ghidraAddress BRD3D: 0x106c0208
  */
 extern u32 g_dwFlushStartTime;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * A word FlushDisplayList() copies each frame, and the copy. No other routine reads either.
@@ -1076,6 +1096,7 @@ extern u32 g_dwFlushStartTime;
  */
 extern u32 g_dwFlushValueSource;
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * @ghidraAddress USA: 0x8028aa24
  * @ghidraAddress EUR: 0x8028cc2c
@@ -1083,6 +1104,7 @@ extern u32 g_dwFlushValueSource;
  * @ghidraAddress BRD3D: 0x106c56e4
  */
 extern u32 g_dwLastFlushValue;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * The frames until the video mode changes to the resolution BeginDisplayList() was given, or 0.

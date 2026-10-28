@@ -69,6 +69,7 @@ extern u16 g_awTriCacheTriCount[TRI_CACHE_SLOTS];
  */
 extern u32 g_adwTriCacheLruStamp[TRI_CACHE_SLOTS];
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The count of the uses of the cache.
  *
@@ -78,6 +79,7 @@ extern u32 g_adwTriCacheLruStamp[TRI_CACHE_SLOTS];
  * @ghidraAddress BRD3D: 0x117554e0
  */
 extern u32 g_dwTriCacheLruCounter;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * Empty the slot that holds the cell under a point.

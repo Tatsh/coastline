@@ -40,6 +40,34 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 namespace {
+    /**
+     * @ghidraAddress USA: 0x8028aafc
+     * @ghidraAddress EUR: 0x8028cd04
+     * @ghidraAddress JPN: 0x8028c7d4
+     * @ghidraAddress BRD3D: 0x106c56f0
+     */
+    s32 g_dwCameraRayGroundSurface;
+    /**
+     * @ghidraAddress USA: 0x8028ab04
+     * @ghidraAddress EUR: 0x8028cd0c
+     * @ghidraAddress JPN: 0x8028c7dc
+     * @ghidraAddress BRD3D: 0x10690a34
+     */
+    s32 g_dwCameraRayNearbyCount;
+    /**
+     * What CastRayAgainstTrack() found below the camera of the view being drawn.
+     *
+     * @ghidraAddress USA: 0x8028aaf8
+     * @ghidraAddress EUR: 0x8028cd00
+     * @ghidraAddress JPN: 0x8028c7d0
+     * @ghidraAddress BRD3D: 0x106c01fc
+     */
+    f32 g_fCameraRayGroundDistance;
+} // namespace
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+namespace {
     /** @ghidraAddress BRD3D: 0x1039b740 */
     char g_szRaceHudTextBuffer[32];
     /** @ghidraAddress BRD3D: 0x100a73a4 */

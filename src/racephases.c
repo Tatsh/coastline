@@ -30,6 +30,20 @@
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+namespace {
+    /**
+     * The step of the countdown of the start lights.
+     *
+     * @ghidraAddress USA: 0x802f7ef4
+     * @ghidraAddress EUR: 0x802f9be8
+     * @ghidraAddress JPN: 0x802f8628
+     * @ghidraAddress BRD3D: 0x106909cc
+     */
+    s32 g_dwStartLightsStep;
+} // namespace
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /** @ghidraAddress BRD3D: 0x106909e0 */
 s32 gInstantReplayActive;
 /** @ghidraAddress BRD3D: 0x10680938 */

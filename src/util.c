@@ -11,6 +11,32 @@
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * The blocks the current frame has allocated.
+ *
+ * @ghidraAddress USA: 0x8028dfb0
+ * @ghidraAddress EUR: 0x80290770
+ * @ghidraAddress JPN: 0x80290210
+ * @ghidraAddress BRD3D: 0x10b01c40
+ */
+static s32 g_dwDisplayListBlockCount;
+/**
+ * @ghidraAddress USA: 0x8028dfb4
+ * @ghidraAddress EUR: 0x80290774
+ * @ghidraAddress JPN: 0x80290214
+ * @ghidraAddress BRD3D: 0x10b01c48
+ */
+static s32 g_dwHiliteBlockCount;
+/**
+ * @ghidraAddress USA: 0x8028dfb8
+ * @ghidraAddress EUR: 0x80290778
+ * @ghidraAddress JPN: 0x80290218
+ * @ghidraAddress BRD3D: 0x10b01c44
+ */
+static s32 g_dwLightBlockCount;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /** @ghidraAddress BRD3D: 0x106c65ec */
 s32 g_dwFrameBufferIndex;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

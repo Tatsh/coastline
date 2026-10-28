@@ -61,6 +61,7 @@ extern u8 g_abPlaybackRecording[];
  */
 extern u8 g_aabInputRecordings[][0xF000];
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The player whose recording the instant replay plays, and the length of that recording.
  *
@@ -70,6 +71,7 @@ extern u8 g_aabInputRecordings[][0xF000];
  * @ghidraAddress BRD3D: 0x106909c8
  */
 extern s32 g_dwBestReplayLength;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * @ghidraAddress USA: 0x80315e40

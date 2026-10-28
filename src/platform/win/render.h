@@ -306,14 +306,6 @@ int ComputeMipChainByteSize(int nSmallLod, int nLargeLod, int nAspectRatio, int 
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /**
- * The number of vertices converted into g_afModelVertexPool.
- *
- * @ghidraAddress BRD3D: 0x1067d550
- * @ghidraAddress BRGlide: 0x105b96f8
- */
-extern int g_dwConvertedVertexCount;
-
-/**
  * The next free entry of g_afModelVertexPool.
  *
  * @ghidraAddress BRD3D: 0x100a81c8
@@ -436,22 +428,6 @@ void NullStub2(void *pMemory);
  * @ghidraAddress BRGlide: 0x105b76f0
  */
 extern int g_dwRelocatedPointerCount;
-
-/**
- * The address the pointers to relocate are based at.
- *
- * @ghidraAddress BRD3D: 0x1057553c
- * @ghidraAddress BRGlide: 0x104b16e4
- */
-extern unsigned g_dwOldBaseAddress;
-
-/**
- * The address the pointers are relocated to.
- *
- * @ghidraAddress BRD3D: 0x10575538
- * @ghidraAddress BRGlide: 0x104b16e0
- */
-extern unsigned g_dwNewBaseAddress;
 
 /** The most entries of g_apRelocatedPointers. */
 #define RELOCATED_POINTER_COUNT 0x800
@@ -788,10 +764,6 @@ void LoadHudOverlayTexture(void);
 void LoadHudGlyphTextureSets(void);
 
 /**
- * @ghidraAddress BRD3D: 0x11829844
- */
-extern unsigned g_dwAvailableTextureMemory;
-/**
  * @ghidraAddress BRD3D: 0x11829848
  */
 extern unsigned g_dwHiResTextureMemoryThreshold;
@@ -883,6 +855,7 @@ extern unsigned g_dwHudOverlayHalfTextureId;
  * @ghidraAddress BRD3D: 0x11829328
  */
 extern unsigned g_dwParticleTextureId;
+
 /**
  * @ghidraAddress BRD3D: 0x11829108
  */

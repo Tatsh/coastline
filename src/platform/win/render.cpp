@@ -21,6 +21,44 @@
 #include "screen.h"
 #include "weather.h"
 
+namespace {
+/**
+ * @ghidraAddress BRD3D: 0x11829844
+ */
+unsigned g_dwAvailableTextureMemory;
+/**
+ * The number of vertices converted into g_afModelVertexPool.
+ *
+ * @ghidraAddress BRD3D: 0x1067d550
+ * @ghidraAddress BRGlide: 0x105b96f8
+ */
+int g_dwConvertedVertexCount;
+/**
+ * The address the pointers are relocated to.
+ *
+ * @ghidraAddress BRD3D: 0x10575538
+ * @ghidraAddress BRGlide: 0x104b16e0
+ */
+unsigned g_dwNewBaseAddress;
+/**
+ * The address the pointers to relocate are based at.
+ *
+ * @ghidraAddress BRD3D: 0x1057553c
+ * @ghidraAddress BRGlide: 0x104b16e4
+ */
+unsigned g_dwOldBaseAddress;
+/**
+ * @ghidraAddress BRD3D: 0x105553f4
+ */
+unsigned g_dwTextureEntryCapacity;
+/**
+ * @ghidraAddress BRD3D: 0x100a7e0c
+ */
+char g_szAppendTextureAtdb[20] = "AppendTexture: atdb";
+} // namespace
+
+unsigned g_dwParticleTextureId;
+
 /** @ghidraAddress BRD3D: 0x1039b6c8 */
 int g_bDisableCarShadow;
 /** @ghidraAddress BRD3D: 0x11829318 */

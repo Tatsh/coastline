@@ -3,6 +3,18 @@
 #include "vecmath.h"
 #include "weather.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * The time since the last strike, in 343 units a second.
+ *
+ * @ghidraAddress USA: 0x8028c820
+ * @ghidraAddress EUR: 0x8028ef80
+ * @ghidraAddress JPN: 0x8028e9d0
+ * @ghidraAddress BRD3D: 0x104b255c
+ */
+static f32 g_fLightningFlashTimer;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 #define LIGHTNING_TIMER_RATE 343.0f
 #define LIGHTNING_TIMER_LIMIT 2048.0
 #define LIGHTNING_CHANCE 0x80

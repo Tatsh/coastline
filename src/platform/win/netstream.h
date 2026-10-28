@@ -524,10 +524,7 @@ extern KeyframeState g_LastSentKeyframe;
  * @ghidraAddress BRD3D: 0x10220e60
  */
 extern float g_afKeyframeAccumMax[7];
-/**
- * @ghidraAddress BRD3D: 0x1022af40
- */
-extern int g_nKeyframeAccumFrames;
+
 /**
  * @ghidraAddress BRD3D: 0x10094298
  */

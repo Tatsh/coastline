@@ -31,6 +31,17 @@
 #include "trackselect.h"
 #include "vehiclecount.h"
 
+namespace {
+/**
+ * The GUID of the game for DirectPlay.
+ *
+ * @ghidraAddress BRD3D: 0x1008f538
+ * @ghidraAddress BRGlide: 0x10077500
+ */
+const GUID g_BossRallyAppGuid = {
+    0xaeb983e0, 0xc288, 0x11d2, {0xbf, 0xd5, 0x00, 0x60, 0x08, 0x16, 0x32, 0x11}};
+} // namespace
+
 /** @ghidraAddress BRD3D: 0x1022af1c */
 int g_bNetSpectator;
 /** @ghidraAddress BRD3D: 0x10a9cffc */

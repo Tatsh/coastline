@@ -214,6 +214,7 @@ void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width,
  */
 extern s32 g_dwRearViewMirrorMode;
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * What CastRayAgainstTrack() found below the camera of the view being drawn.
  *
@@ -222,20 +223,25 @@ extern s32 g_dwRearViewMirrorMode;
  * @ghidraAddress JPN: 0x8028c7d0
  */
 extern f32 g_fCameraRayGroundDistance;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * @ghidraAddress USA: 0x8028aafc
  * @ghidraAddress EUR: 0x8028cd04
  * @ghidraAddress JPN: 0x8028c7d4
  */
 extern s32 g_dwCameraRayGroundSurface;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * @ghidraAddress USA: 0x8028ab04
  * @ghidraAddress EUR: 0x8028cd0c
  * @ghidraAddress JPN: 0x8028c7dc
  */
 extern s32 g_dwCameraRayNearbyCount;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * @ghidraAddress USA: 0x8031b288

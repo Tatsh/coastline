@@ -90,6 +90,7 @@ extern DisplayListCommand g_aaDlGhostRenderModes[RENDER_MODE_ROWS][4];
  */
 extern DisplayListCommand g_aaDlGhostWheelRenderModes[RENDER_MODE_ROWS][4];
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * Whether ProcessDisplayList() tints the colour combines of the snow. It clears this.
  *
@@ -99,6 +100,7 @@ extern DisplayListCommand g_aaDlGhostWheelRenderModes[RENDER_MODE_ROWS][4];
  * @ghidraAddress BRD3D: 0x106c666c
  */
 extern s32 g_bDisplayListSnowTint;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**

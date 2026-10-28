@@ -1,6 +1,19 @@
 #include "debugtext.h"
 #include "track.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * The step StepDebugHiddenInstance() takes through the placed models, or 0 to stay.
+ *
+ * @ghidraAddress USA: 0x8028dde0
+ * @ghidraAddress EUR: 0x80290580
+ * @ghidraAddress JPN: 0x80290020
+ * @ghidraAddress BRD3D: 0x10277b20
+ * @ghidraAddress BRGlide: 0x10273308
+ */
+static s32 g_nDebugInstanceCycleStep;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 void StepDebugHiddenInstance(void) {
     s32 i;
     s32 step = g_nDebugInstanceCycleStep;

@@ -28,6 +28,33 @@
 #include "timing.h"
 #include "vehicle.h"
 
+namespace {
+/**
+ * Whether the main window is maximised.
+ *
+ * @ghidraAddress BRD3D: 0x118ac234
+ */
+int g_bWindowMaximized;
+/**
+ * Whether the main window is minimised.
+ *
+ * @ghidraAddress BRD3D: 0x118ac230
+ */
+int g_bWindowMinimized;
+/**
+ * Name of the window class of the main window.
+ *
+ * @ghidraAddress BRD3D: 0x100bd594
+ */
+const char *g_pszMainWindowClassName = "BossRally";
+/**
+ * Title of the main window.
+ *
+ * @ghidraAddress BRD3D: 0x100bd598
+ */
+const char *g_pszMainWindowTitle = "Boss Rally";
+} // namespace
+
 // The resources of the main window in the library.
 #define IDI_MAIN_ICON 0x65
 #define IDR_MAIN_MENU 0x66

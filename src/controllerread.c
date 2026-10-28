@@ -4,6 +4,20 @@
 #include "rumble.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+namespace {
+    /**
+     * Whether a read of the controllers is started and not yet received.
+     *
+     * @ghidraAddress USA: 0x8028ab6c
+     * @ghidraAddress EUR: 0x8028ce18
+     * @ghidraAddress JPN: 0x8028c848
+     * @ghidraAddress BRD3D: 0x106c56e8
+     */
+    s32 g_dwContReadPending;
+} // namespace
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 void InitControllersAndPaks(void) {}
 #endif
 

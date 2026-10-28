@@ -18,6 +18,7 @@
 extern "C" {
 #endif
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * Whether shadows include triangles outside their texture and extend beyond their vehicle's
  * screen rectangle.
@@ -28,6 +29,7 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x106c660c
  */
 extern s32 g_bShadowCullDisabled;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /** A cell of the grid of the track in view, and its squared distance from the camera in cells. */
 typedef struct {
@@ -49,6 +51,7 @@ typedef struct {
  */
 extern VisibleCell g_aVisibleCellTuples[VISIBLE_CELLS + 1];
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * Whether the cells in view were more than #VISIBLE_CELLS.
  *
@@ -58,6 +61,7 @@ extern VisibleCell g_aVisibleCellTuples[VISIBLE_CELLS + 1];
  * @ghidraAddress BRD3D: 0x102e5ed0
  */
 extern s32 g_bVisibleCellListOverflow;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * The placed models in view this frame.
@@ -107,6 +111,7 @@ extern s32 g_nVisibleCellIdxMid;
  */
 extern s32 g_nVisibleCellIdxFar;
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * Where the translucent models past g_nVisibleCellIdxMid start in the second pass, which draws
  * them without shadows, and 0x1000 until it is known.
@@ -117,7 +122,9 @@ extern s32 g_nVisibleCellIdxFar;
  * @ghidraAddress BRD3D: 0x102e54b8
  */
 extern s32 g_nTrackTransparentStartIdx;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * Set to 0x1000 with g_nTrackTransparentStartIdx, and never read.
  *
@@ -127,7 +134,9 @@ extern s32 g_nTrackTransparentStartIdx;
  * @ghidraAddress BRD3D: 0x102e5ed4
  */
 extern s32 g_nTrackTransparentStartIdxNear;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * @ghidraAddress USA: 0x8028c784
  * @ghidraAddress EUR: 0x8028eee4
@@ -135,7 +144,9 @@ extern s32 g_nTrackTransparentStartIdxNear;
  * @ghidraAddress BRD3D: 0x102e54b4
  */
 extern s32 g_nTrackTransparentStartIdxFar;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The last translucent model left for the second pass, or -1.
  *
@@ -144,7 +155,9 @@ extern s32 g_nTrackTransparentStartIdxFar;
  * @ghidraAddress JPN: 0x8028e8f8
  */
 extern s32 g_nDeferredInstanceLastIdx;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The TRACK_INSTANCE_ flags of the placed models not drawn.
  *
@@ -153,6 +166,7 @@ extern s32 g_nDeferredInstanceLastIdx;
  * @ghidraAddress JPN: 0x8035e690
  */
 extern u32 g_dwInstanceHideFlags;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * The groups of placed models hidden from the camera.
@@ -164,6 +178,7 @@ extern u32 g_dwInstanceHideFlags;
  */
 extern u16 g_wActiveInstanceHideMask;
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * Whether g_nDebugHiddenInstanceIndex is left undrawn.
  *
@@ -173,6 +188,7 @@ extern u16 g_wActiveInstanceHideMask;
  * @ghidraAddress BRD3D: 0x1039b6c4
  */
 extern s32 g_bDebugHideInstance;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * The blender and the other bits of the render mode of the track.
@@ -192,6 +208,7 @@ extern u32 g_dwTrackOtherModeLBlend;
  */
 extern u32 g_dwTrackOtherModeLFlags;
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The vehicles nearest the camera that cast shadows, nearest first.
  *
@@ -201,6 +218,7 @@ extern u32 g_dwTrackOtherModeLFlags;
  * @ghidraAddress BRD3D: 0x102e5ed8
  */
 extern s32 g_nNearbyVehicleCount;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * @ghidraAddress USA: 0x8035d4e8
@@ -230,6 +248,7 @@ extern f32 g_afNearbyVehicleDot[MAX_VEHICLES];
  */
 extern Vec3f g_vVehicleVisibilityDelta;
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The largest absolute value of the first three rows of g_afViewProjMatrix.
  *
@@ -238,6 +257,7 @@ extern Vec3f g_vVehicleVisibilityDelta;
  * @ghidraAddress JPN: 0x8035e68c
  */
 extern f32 g_fViewMatrixMaxAbs;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * The look-at of the reflections of the track.

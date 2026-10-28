@@ -12,6 +12,11 @@
 #include "trackmenuitem.h"
 #include "util.h"
 
+namespace {
+/** @ghidraAddress BRD3D: 0x106c56ec */
+unsigned g_dwTrackDataRelocationDelta;
+} // namespace
+
 static inline bool IsUnitTrackScale(long double value) {
     return !(value < 1.0L || value > 1.0L);
 }

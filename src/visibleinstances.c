@@ -22,6 +22,29 @@
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+namespace {
+    /**
+     * Whether the cells in view were more than #VISIBLE_CELLS.
+     *
+     * @ghidraAddress USA: 0x8028c76c
+     * @ghidraAddress EUR: 0x8028eecc
+     * @ghidraAddress JPN: 0x8028e91c
+     * @ghidraAddress BRD3D: 0x102e5ed0
+     */
+    s32 g_bVisibleCellListOverflow;
+    /**
+     * The vehicles nearest the camera that cast shadows, nearest first.
+     *
+     * @ghidraAddress USA: 0x8035d4fc
+     * @ghidraAddress EUR: 0x8035f9fc
+     * @ghidraAddress JPN: 0x8035e66c
+     * @ghidraAddress BRD3D: 0x102e5ed8
+     */
+    s32 g_nNearbyVehicleCount;
+} // namespace
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /** @ghidraAddress BRD3D: 0x1036439c */
 u32 g_dwTrackOtherModeLBlend;
 /** @ghidraAddress BRD3D: 0x103643a0 */

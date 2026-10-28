@@ -5,6 +5,15 @@
 
 #include "platform/win/d3d/renderer.h"
 
+namespace {
+/**
+ * The number of DirectDraw drivers found.
+ *
+ * @ghidraAddress BRD3D: 0x104bbe1c
+ */
+int g_dwDirectDrawDriverCount;
+} // namespace
+
 /** @ghidraAddress BRD3D: 0x104bbe18 */
 unsigned char g_bDirectDrawDriversEnumerated;
 

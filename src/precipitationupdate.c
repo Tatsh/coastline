@@ -6,6 +6,38 @@
 #include "vehicle.h"
 #include "weather.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+namespace {
+    /**
+     * Whether the rain particles have their first positions.
+     *
+     * @ghidraAddress USA: 0x8028c824
+     * @ghidraAddress EUR: 0x8028ef84
+     * @ghidraAddress JPN: 0x8028e9d4
+     * @ghidraAddress BRD3D: 0x104bbe14
+     */
+    s32 g_bRainParticlesInitialized;
+    /**
+     * The speed of the camera of the last view through the rain, limited.
+     *
+     * @ghidraAddress USA: 0x8028c810
+     * @ghidraAddress EUR: 0x8028ef70
+     * @ghidraAddress JPN: 0x8028e9c0
+     * @ghidraAddress BRD3D: 0x104bbde8
+     */
+    f32 g_fRainCameraSpeed;
+    /**
+     * The share of its movement the camera of the last view passes on to the rain.
+     *
+     * @ghidraAddress USA: 0x8028c814
+     * @ghidraAddress EUR: 0x8028ef74
+     * @ghidraAddress JPN: 0x8028e9c4
+     * @ghidraAddress BRD3D: 0x104b1f00
+     */
+    f32 g_fRainCameraSpeedScale;
+} // namespace
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
 #define RANDOM_TO_TWO (2.0f / 65535.0f)
 #define EYE_AHEAD 3.0f
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

@@ -48,6 +48,7 @@ extern f32 g_mtxVehicleModelScaled[4][4];
  */
 extern u32 g_dwVehicleOtherModeLBlend;
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * @ghidraAddress USA: 0x8028c304
  * @ghidraAddress EUR: 0x8028ea64
@@ -55,6 +56,7 @@ extern u32 g_dwVehicleOtherModeLBlend;
  * @ghidraAddress BRD3D: 0x10277e58
  */
 extern u32 g_dwVehicleOtherModeLFlags;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * The alpha of the fog colour that fades a ghost vehicle.
@@ -154,6 +156,7 @@ extern Vec3f g_vecVehicleHiliteDir;
  */
 extern u16 g_awVehicleShadePalette[16];
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * Whether every vehicle is drawn in its other look, as Vehicle.otherLook draws one.
  *
@@ -163,6 +166,7 @@ extern u16 g_awVehicleShadePalette[16];
  * @ghidraAddress BRD3D: 0x10277b1c
  */
 extern s32 g_bForceVehicleAltVariant;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * Whether the reflection of the sky takes its coordinates linearly from the normals.

@@ -1892,12 +1892,6 @@ int OnTcpIpAddressEdited(MenuWidget *pWidget);
 int OnTcpIpPortEdited(MenuWidget *pWidget);
 
 /**
- * @ghidraAddress BRD3D: 0x10aa29bc
- * @ghidraAddress BRGlide: 0x10ac5d14
- */
-extern MenuWidget *g_pCreateGameContinueItem;
-
-/**
  * Build input options on the supplied screen.
  *
  * @ghidraAddress BRD3D: 0x1004c4a0
@@ -2053,12 +2047,6 @@ int ShowD3DDeviceSelectMenu(void);
 void BuildD3DDeviceSelectUI(MenuScreen *pScreen);
 
 /**
- * @ghidraAddress BRD3D: 0x10aa28ec
- * @ghidraAddress BRGlide: 0x10ac5c44
- */
-extern int g_dwTimeAttackSaveSlotNamed;
-
-/**
  * @ghidraAddress BRD3D: 0x1003ee50
  * @ghidraAddress BRGlide: 0x10038380
  */
@@ -2079,34 +2067,10 @@ struct KeyConfigEntry {
 extern KeyConfigEntry g_aKeyConfigEntries[KEY_CONFIG_ENTRY_COUNT];
 
 /**
- * @ghidraAddress BRD3D: 0x10aa2840
- * @ghidraAddress BRGlide: 0x10ac5b98
- */
-extern int g_dwKeyConfigSelectedAction;
-
-/**
  * @ghidraAddress BRD3D: 0x100ac6a0
  * @ghidraAddress BRGlide: 0x100abe40
  */
 extern int g_dwCapturedKeyBindingValue;
-
-/**
- * @ghidraAddress BRD3D: 0x10aa2a38
- * @ghidraAddress BRGlide: 0x10ac5d90
- */
-extern int g_dwKeyCaptureWaitRelease;
-
-/**
- * @ghidraAddress BRD3D: 0x10aa2a3c
- * @ghidraAddress BRGlide: 0x10ac5d94
- */
-extern int g_dwKeyCaptureComplete;
-
-/**
- * @ghidraAddress BRD3D: 0x10aa2850
- * @ghidraAddress BRGlide: 0x10ac5ba8
- */
-extern int g_dwKeyBindingDuplicatesFound;
 
 /**
  * @ghidraAddress BRD3D: 0x10a9d5c0
@@ -2220,18 +2184,6 @@ extern const short g_awTrackImageIds[];
  * @ghidraAddress BRGlide: 0x100abd30
  */
 extern const signed char g_abWeatherImageIds[];
-
-/**
- * @ghidraAddress BRD3D: 0x10aa28a8
- * @ghidraAddress BRGlide: 0x10ac5c00
- */
-extern unsigned char g_bSeasonRoundListBrowsing;
-
-/**
- * @ghidraAddress BRD3D: 0x10aa28e8
- * @ghidraAddress BRGlide: 0x10ac5c40
- */
-extern int g_dwTimeAttackLoadSelected;
 
 /**
  * @ghidraAddress BRD3D: 0x100ac530
@@ -2991,12 +2943,6 @@ int BuildOptionsMenuUI(MenuScreen *pScreen);
 void SetActiveMenuItemText(const char *pszText);
 
 /**
- * @ghidraAddress BRD3D: 0x10a9dbd0
- * @ghidraAddress BRGlide: 0x10ac4c58
- */
-extern int g_dwRootMenuStringIndex;
-
-/**
  * @ghidraAddress BRD3D: 0x100ab558
  * @ghidraAddress BRGlide: 0x100aacf8
  */
@@ -3231,36 +3177,8 @@ int EnterTimeAttackMode(void);
  */
 void EnterNetworkLobbyScreen(void);
 
-/**
- * The width of the surface of the front end. The Glide library sets 640 as the game is set up.
- *
- * @ghidraAddress BRD3D: 0x10690a0c
- * @ghidraAddress BRGlide: 0x105ccbb4
- */
-extern int g_dwFrontEndSurfaceWidth;
-
-/**
- * The height of the surface of the front end. The Glide library sets 480 as the game is set up.
- *
- * @ghidraAddress BRD3D: 0x10690a08
- * @ghidraAddress BRGlide: 0x105ccbb0
- */
-extern int g_dwFrontEndSurfaceHeight;
-
 #if TGR_RENDERER == TGR_RENDERER_D3D
-/**
- * The bits of a pixel of the surface of the front end.
- *
- * @ghidraAddress BRD3D: 0x10690a00
- */
-extern int g_dwFrontEndSurfaceBitDepth;
 
-/**
- * The refresh rate of the surface of the front end, 0 for the default.
- *
- * @ghidraAddress BRD3D: 0x10690a04
- */
-extern int g_dwFrontEndSurfaceRefreshRate;
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
 
 /**
@@ -3713,13 +3631,6 @@ extern KeyCharacter g_KeyNameLookupTable[KEY_CHARACTER_COUNT];
  * @ghidraAddress BRGlide: 0x10054360
  */
 char LookupKeyCharacter(DWORD dwKey);
-
-/**
- * The track mask used before loading a championship profile.
- *
- * @ghidraAddress BRD3D: 0x10a9d010
- */
-extern unsigned g_dwUnlockedTrackMask;
 
 /**
  * @ghidraAddress BRD3D: 0x100ac420

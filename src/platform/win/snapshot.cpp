@@ -1,5 +1,10 @@
 #include "platform/win/snapshot.h"
 
+namespace {
+/** @ghidraAddress BRD3D: 0x104afd00 */
+int g_dwFrameSnapshotWriteSlot;
+} // namespace
+
 FrameSnapshot g_aFrameSnapshots[FRAME_SNAPSHOT_COUNT];
 FrameSnapshot g_InterpolatedFrameSnapshot;
 

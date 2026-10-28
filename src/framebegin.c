@@ -14,6 +14,18 @@
 #include "platform/win/gbicommand.h"
 #include "platform/win/settings.h"
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * The display list of g_aClipRatioDisplayLists a frame starts with.
+ *
+ * @ghidraAddress USA: 0x8028a8a4
+ * @ghidraAddress EUR: 0x8028caa8
+ * @ghidraAddress JPN: 0x8028c578
+ * @ghidraAddress BRD3D: 0x106c65fc
+ */
+static s32 g_dwClipRatioIndex;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /** @ghidraAddress BRD3D: 0x106c0680 */
 struct GbiCommand *gDisplayListPtr;
 /** @ghidraAddress BRD3D: 0x106c0920 */

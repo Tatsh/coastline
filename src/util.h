@@ -60,6 +60,7 @@ extern Hilite g_aHiliteBlocks[2][FRAME_HILITE_BLOCKS + 1];
  */
 extern LookAt g_aLightBlocks[2][FRAME_LIGHT_BLOCKS + 1];
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The blocks the current frame has allocated.
  *
@@ -69,7 +70,9 @@ extern LookAt g_aLightBlocks[2][FRAME_LIGHT_BLOCKS + 1];
  * @ghidraAddress BRD3D: 0x10b01c40
  */
 extern s32 g_dwDisplayListBlockCount;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * @ghidraAddress USA: 0x8028dfb4
  * @ghidraAddress EUR: 0x80290774
@@ -77,7 +80,9 @@ extern s32 g_dwDisplayListBlockCount;
  * @ghidraAddress BRD3D: 0x10b01c48
  */
 extern s32 g_dwHiliteBlockCount;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * @ghidraAddress USA: 0x8028dfb8
  * @ghidraAddress EUR: 0x80290778
@@ -85,6 +90,7 @@ extern s32 g_dwHiliteBlockCount;
  * @ghidraAddress BRD3D: 0x10b01c44
  */
 extern s32 g_dwLightBlockCount;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * The frame buffer the current frame draws into.

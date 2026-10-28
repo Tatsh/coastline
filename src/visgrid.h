@@ -34,6 +34,7 @@ extern "C" {
  */
 extern Vec3f g_avFrustumPoints[FRUSTUM_POINTS];
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * The bounds of the covered cells.
  *
@@ -44,6 +45,7 @@ extern Vec3f g_avFrustumPoints[FRUSTUM_POINTS];
  * @ghidraAddress BRGlide: 0x10ac2c58
  */
 extern s32 g_dwVisibleGridMinCol;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * @ghidraAddress USA: 0x8028bd94
@@ -54,6 +56,7 @@ extern s32 g_dwVisibleGridMinCol;
  */
 extern s32 g_dwVisibleGridMinRow;
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /**
  * @ghidraAddress USA: 0x8028bd98
  * @ghidraAddress EUR: 0x8028e4f8
@@ -62,6 +65,7 @@ extern s32 g_dwVisibleGridMinRow;
  * @ghidraAddress BRGlide: 0x10ac2c50
  */
 extern s32 g_dwVisibleGridMaxCol;
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
 
 /**
  * @ghidraAddress USA: 0x8028bd9c

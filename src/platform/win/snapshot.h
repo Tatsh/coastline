@@ -54,8 +54,7 @@ extern int g_abFrameSnapshotInUse[FRAME_SNAPSHOT_COUNT];
 extern int g_dwFrameSnapshotBlendFromSlot;
 /** @ghidraAddress BRD3D: 0x1039b75c */
 extern int g_nLastInterpolatedSnapshot;
-/** @ghidraAddress BRD3D: 0x104afd00 */
-extern int g_dwFrameSnapshotWriteSlot;
+
 /** @ghidraAddress BRD3D: 0x104afd04 */
 extern int g_dwFrameSnapshotCurrentSlot;
 /** @ghidraAddress BRD3D: 0x104afd18 */
