@@ -3,6 +3,8 @@
 #include <stdio.h>
 
 #include "race.c"
+#include "racephases.c"
+#include "racerun.c"
 
 int strcmp(const char *a, const char *b);
 

@@ -1,8 +1,9 @@
-/* Host check of src/fade.c. */
+/* Host check of the fades and the headlight glare. */
 #include <assert.h>
 #include <stdio.h>
 
 #include "fade.c"
+#include "screenfade.c"
 
 Gfx *gDisplayListPtr;
 static Gfx gfx[64];

@@ -5,13 +5,14 @@
 #include <stdio.h>
 
 #include "driving.c"
+#include "playercontrol.c"
 
 TrackHeader g_LoadedTrack;
 ViewportRect g_aViewportRects[2];
 s32 g_dwNumViewports, g_dwTrackMirrored, gInstantReplayActive;
 s32 g_dwReplayCameraSwitchTimer, g_dwReplayCameraHoldTimer;
 s32 g_dwGameMode;
-RacerSlot g_aRacerSlots[4];
+RacerSlot g_aRacerSlots[RACER_SLOTS];
 s32 g_dwNumVehicles;
 PlayerProfile *g_pActiveProfile;
 u32 g_dwCurrentWeather;

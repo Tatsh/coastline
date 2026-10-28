@@ -10,7 +10,6 @@ OSIoMesg g_aIoMessagePool[32];
 s32 g_dwIoMessagePendingCount, g_dwIoMessagePoolIndex;
 OSMesgQueue g_DmaMessageQueue;
 u32 g_dwDmaAssetSizeBuffer, g_dwDmaReadWordBuffer, g_dwDmaChunkSize;
-u64 g_qwTimestampBase;
 u32 g_dwFrameTimestamp;
 s32 g_dwElapsedTimeMs, g_dwPrevElapsedTimeMs, g_dwFrameDeltaMs, g_bRaceScreenActive;
 f32 g_fFrameDeltaTime;
@@ -121,13 +120,15 @@ s16 sins(u16 x) {
     sinCalls++;
     return 0;
 }
-f32 Vec2fDistance(Vec2f *a, Vec2f *b) {
+/* These stand in for the linked routines through -Wl,--wrap, so the calls of the other units are
+ * counted while the matrix routines of vecmath.c run as built. */
+f32 __wrap_Vec2fDistance(Vec2f *a, Vec2f *b) {
     return 300.0f;
 }
-void Vec3fNormalize(Vec3f *v) {
+void __wrap_Vec3fNormalize(Vec3f *v) {
     normalizeCalls++;
 }
-void Vec3fTransformByMatrix(f32 out[4], Vec3f *in, f32 m[4][4]) {
+void __wrap_Vec3fTransformByMatrix(f32 out[4], const Vec3f *in, f32 m[4][4]) {
     out[0] = in->x;
     out[1] = in->y;
     out[2] = in->z;
@@ -137,7 +138,7 @@ void AddTimingMarker(s32 bar, s32 red, s32 green, s32 blue, s32 alpha) {
 }
 void BeginTimingFrame(void) {
 }
-void ResetFrameBlocks(void) {
+void __wrap_ResetFrameBlocks(void) {
 }
 void osViSetSpecialFeatures(u32 func) {
     features |= func;

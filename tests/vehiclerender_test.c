@@ -3,6 +3,8 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "vehicledeform.c"
+#include "vehiclemodelrender.c"
 #include "vehiclerender.c"
 
 char *getenv(const char *name);
@@ -69,7 +71,8 @@ s32 IsPointVisible(f32 x, f32 y) {
 f32 ComputeFogFactorAtPoint(Vec3f *point) {
     return 0.25f;
 }
-void NormalizeLightMatrix(f32 m[4][4]) {
+/* This stands in for the routine of vecmath.c through -Wl,--wrap, leaving the matrices as set. */
+void __wrap_NormalizeLightMatrix(f32 m[4][4]) {
 }
 static int tiles;
 void DrawTexturedTile(s32 index, ModelTexture *textures) {

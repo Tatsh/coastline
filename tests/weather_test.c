@@ -5,7 +5,10 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "precipitationrender.c"
+#include "precipitationupdate.c"
 #include "weather.c"
+#include "wind.c"
 
 Gfx *gDisplayListPtr;
 u32 g_dwTextureFilterMode = 0x2000;

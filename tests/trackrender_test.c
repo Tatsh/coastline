@@ -8,6 +8,7 @@
 #include <stdio.h>
 
 #include "trackrender.c"
+#include "visibleinstances.c"
 
 Gfx *gDisplayListPtr;
 static Gfx gfx[512];
@@ -44,7 +45,7 @@ s32 g_dwVisibleGridMinRow, g_dwVisibleGridMaxRow;
 s32 g_adwVisibleGridRowMinCol[GRID_CELLS], g_adwVisibleGridRowMaxCol[GRID_CELLS];
 s32 g_dwCameraRayHitCount;
 u16 g_awCameraRayHitInstances[8];
-RacerSlot g_aRacerSlots[4];
+RacerSlot g_aRacerSlots[RACER_SLOTS];
 s32 g_dwNumVehicles, g_dwNumActiveVehicles;
 Vehicle g_aVehicles[MAX_VEHICLES];
 static PlayerInputState inputs[MAX_VEHICLES];
@@ -194,9 +195,6 @@ void osSyncPrintf(const char *fmt, ...) {
 }
 s32 FloatToInt(float value) {
     return (s32)value;
-}
-f32 GetMaxAbsValue12(f32 m[4][4]) {
-    return 1.0f;
 }
 
 static void Reset(void) {

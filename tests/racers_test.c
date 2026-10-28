@@ -4,8 +4,10 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "audiomix.h"
 #include "racers.c"
 #include "snapshot.c"
+#include "trackmenuitem.h"
 
 TrackHeader g_LoadedTrack;
 RacerSlot g_aRacerSlots[RACER_SLOTS];

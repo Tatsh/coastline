@@ -4,7 +4,10 @@
 #include <stdarg.h>
 #include <stdio.h>
 
+#include "bodyforces.c"
+#include "collisionstep.c"
 #include "physics.c"
+#include "sidegrip.c"
 
 /* The globals the file reads and writes. */
 TrackTriangle g_aTriCacheTriangles[TRI_CACHE_SLOTS][TRI_CACHE_TRIANGLES];
@@ -25,7 +28,7 @@ f32 g_fCollisionContactW;
 u32 g_dwCurrentWeather;
 s32 g_dwGameMode;
 TrackHeader g_LoadedTrack;
-RacerSlot g_aRacerSlots[4];
+RacerSlot g_aRacerSlots[RACER_SLOTS];
 s32 g_dwNumVehicles;
 
 static int prints, markers;

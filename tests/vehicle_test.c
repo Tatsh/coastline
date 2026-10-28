@@ -4,6 +4,9 @@
 #include <stdio.h>
 
 #include "vehicle.c"
+#include "vehiclephysics.c"
+#include "vehiclereset.c"
+#include "vehiclestatus.c"
 
 TrackHeader g_LoadedTrack;
 Vehicle g_aVehicles[MAX_VEHICLES];
@@ -19,16 +22,13 @@ s32 g_dwTotalLaps = 3, g_dwNumViewports = 1;
 f32 g_fFrameDeltaTime = 0.5f;
 ViewportRect g_aViewportRects[4];
 TrackTriangle g_aTriCacheTriangles[TRI_CACHE_SLOTS][TRI_CACHE_TRIANGLES];
-u16 g_awTriCacheTriCount[TRI_CACHE_SLOTS];
+u16 g_awTriCacheSectorId[TRI_CACHE_SLOTS], g_awTriCacheTriCount[TRI_CACHE_SLOTS];
+u32 g_adwTriCacheLruStamp[TRI_CACHE_SLOTS], g_dwTriCacheLruCounter;
 f32 g_fSteerLock, g_fSteerRate, g_fSteerGain, g_fSteerLockLoss;
 s16 g_wSteerGainSpeedShare;
 
 static s32 calls, cameraUpdates, materialColor[3], fixups, loads[3], transferred;
 static void *initBuffer;
-
-s16 BuildTrackTriangleCache(f32 x, f32 y) {
-    return 0;
-}
 
 /* The physics the frame of a vehicle runs, logged in the order it runs. */
 static char physicsLog[64];
@@ -302,6 +302,9 @@ int main(void) {
     starts[5] = 7;
     pool[7] = 21;
     pool[0] = 31;
+    /* The ray reads the slot the cache gives its point, which is the first while the cache is
+     * empty, and finds it again later by the sector of the point. */
+    assert(BuildTrackTriangleCache(point.x, point.y) == 0);
     g_aTriCacheTriangles[0][0] =
         (TrackTriangle){{0.0f, 0.0f, 1.0f}, 0.0f, {&vertexA[0], &vertexA[1], &vertexA[2]}, 3};
     g_aTriCacheTriangles[0][1] =

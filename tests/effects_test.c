@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "effects.c"
+#include "tiresprayemit.c"
 
 Gfx *gDisplayListPtr;
 static Gfx gfx[512];
@@ -22,7 +23,7 @@ TrackHeader g_LoadedTrack;
 static TrackInstance instances[4];
 Vec3f g_vWindVelocity;
 u8 g_aParticleTexture[64 * 64], g_aTireSprayTexture[32 * 64 / 2];
-RacerSlot g_aRacerSlots[4];
+RacerSlot g_aRacerSlots[RACER_SLOTS];
 s32 g_dwNumVehicles, g_dwNumActiveVehicles;
 Vehicle g_aVehicles[MAX_VEHICLES];
 Particle g_aParticlePool[PARTICLES];
