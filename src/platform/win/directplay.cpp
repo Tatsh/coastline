@@ -1985,7 +1985,8 @@ void HandleMultiplayerSessionMessage(
                 if (slot.dpidPlayer == 0xffffffff) {
                     slot.dpidPlayer = DPID_SERVERPLAYER;
                     slot.nFlag = true;
-                    std::sprintf(debug, "Host set ready message received %d", DPID_SERVERPLAYER);
+                    std::sprintf(
+                        debug, "Host set ready message received, ID: %d\n", DPID_SERVERPLAYER);
                     OutputDebugStringA(debug);
                     break;
                 }
