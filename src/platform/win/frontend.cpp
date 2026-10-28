@@ -2485,7 +2485,7 @@ int RaceSetupUI::OnCycleTrack(MenuActionWidget *) {
         sprintf(g_szNetworkChatText,
                 GetStringResource(0xb8),
                 GetStringResource(g_adwTrackNameStringIds[g_dwSelectedTrackId]));
-        if (g_apTrackMenuItems[g_dwSelectedTrackId]->flags & 0x10) {
+        if (g_apTrackMenuItems[g_dwSelectedTrackId]->item.flags & 0x10) {
             strcat(g_szNetworkChatText, GetStringResource(0xb0));
         }
         PostSelectionNotice();
@@ -4488,7 +4488,7 @@ int RaceSetupUI::UpdateTrackNameLabel(MenuWidget *pWidget) {
         strcpy(text, GetStringResource(g_adwTrackNameStringIds[g_dwTrackMenuIndex]));
         track = g_dwTrackMenuIndex;
     }
-    if (g_apTrackMenuItems[track]->flags & 0x10) {
+    if (g_apTrackMenuItems[track]->item.flags & 0x10) {
         float y = pWidget->GetY();
         pWidget->GetFont(0).SetY(130.0f);
         DrawPrimaryMenuLabel(pWidget, GetStringResource(0xb0));

@@ -13,8 +13,13 @@ typedef struct {
     const char *name;    /*!< The text of the item. */
     u32 flags;           /*!< The MENU_ITEM_* flags. */
     struct Model *model; /*!< The model of the item, or NULL to show its name. */
-    u32 romStart;        /*!< The cartridge offset of the model of the item. */
-    u32 romEnd;          /*!< The cartridge offset of the end of the model of the item. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    const u32 *romStart;
+    const u32 *romEnd;
+#else
+    u32 romStart; /*!< The cartridge offset of the model of the item. */
+    u32 romEnd;   /*!< The cartridge offset of the end of the model of the item. */
+#endif
 } MenuItem;
 
 /** The classes of cars an arcade race keeps times for, by the tableIndex of their physics. */
@@ -44,13 +49,13 @@ typedef struct {
  */
 typedef struct {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    u8 unreconstructed0[4]; /* +0x0 */
-    u32 flags;
-    u8 unreconstructed8[0x14]; /* +0x8 */
+    MenuItem item;
+    const u32 *trackRom;
+    const u32 *trackRomEnd;
     const SkyTextureFiles *daySkyFiles;
-    u8 unreconstructed20[4]; /* +0x20 */
+    const u32 *daySkyRomEnd;
     const SkyTextureFiles *nightSkyFiles;
-    u8 unreconstructed28[4]; /* +0x28 */
+    const u32 *nightSkyRomEnd;
 #else
     MenuItem item;      /*!< The item of the track menu. */
     u32 trackRom;       /*!< The cartridge offset of the compressed geometry. */
