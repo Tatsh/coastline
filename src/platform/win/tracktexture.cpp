@@ -85,11 +85,10 @@ void LoadTextureMapFile(const char *path) {
 void LoadTrackTextureMap(int track) {
     char path[1024];
     std::sprintf(path, "%s%s", g_szTracks, g_apszTrackFilenames[track]);
-    /* Extension replacement starts at the first dot in the complete path. */
 #if TGR_RENDERER == TGR_RENDERER_D3D
-    std::strcpy(std::strchr(path, '.'), ".hnd");
+    std::strcpy(std::strrchr(path, '.'), ".hnd");
 #else
-    std::strcpy(std::strchr(path, '.'), ".hnt");
+    std::strcpy(std::strrchr(path, '.'), ".hnt");
 #endif /* TGR_RENDERER == TGR_RENDERER_D3D */
     LoadTextureMapFile(path);
 }
