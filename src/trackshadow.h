@@ -14,6 +14,7 @@ extern "C" {
  * @param vertex The vertex measured.
  * @return The texture s coordinate.
  * @ghidraAddress BRD3D: 0x10010960
+ * @ghidraAddress BRGlide: 0x1000dec0
  */
 long double ShadowTextureDistanceLeft(const ConvertedModelVertex *vertex);
 
@@ -23,6 +24,7 @@ long double ShadowTextureDistanceLeft(const ConvertedModelVertex *vertex);
  * @param vertex The vertex measured.
  * @return 1024 minus the texture s coordinate.
  * @ghidraAddress BRD3D: 0x10010970
+ * @ghidraAddress BRGlide: 0x1000ded0
  */
 long double ShadowTextureDistanceRight(const ConvertedModelVertex *vertex);
 
@@ -32,6 +34,7 @@ long double ShadowTextureDistanceRight(const ConvertedModelVertex *vertex);
  * @param vertex The vertex measured.
  * @return The texture t coordinate.
  * @ghidraAddress BRD3D: 0x10010980
+ * @ghidraAddress BRGlide: 0x1000dee0
  */
 long double ShadowTextureDistanceTop(const ConvertedModelVertex *vertex);
 
@@ -41,6 +44,7 @@ long double ShadowTextureDistanceTop(const ConvertedModelVertex *vertex);
  * @param vertex The vertex measured.
  * @return 1024 minus the texture t coordinate.
  * @ghidraAddress BRD3D: 0x10010990
+ * @ghidraAddress BRGlide: 0x1000def0
  */
 long double ShadowTextureDistanceBottom(const ConvertedModelVertex *vertex);
 
