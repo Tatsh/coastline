@@ -642,10 +642,12 @@ static inline void PaintRectangle(void) {
 }
 
 /* The style is read again after the radius is taken, as the original reads it. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 static inline void PaintOval(void) {
+#ifdef ENABLE_PATCHES
+    s32 radius = 0;
+#else
     s32 radius;
+#endif /* ENABLE_PATCHES */
 
     /* The radius of a circle is taken before the style is tested again. */
     if (g_texPaintToolOval.style == OVAL_STYLE_FILLED_CIRCLE ||
@@ -669,7 +671,6 @@ static inline void PaintOval(void) {
         break;
     }
 }
-#pragma GCC diagnostic pop
 
 /* A press on the decal paints with the tool in use. Return whether the decal was pressed. */
 static inline s32 PaintWithTool(void) {

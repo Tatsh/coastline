@@ -103,13 +103,6 @@ typedef f32 EngineReal;
 
 #define ABS_OF(x) ((x) < 0.0f ? -(x) : (x))
 
-/* N64 reads an unset gain for an unknown steering mode. */
-#pragma GCC diagnostic push
-#ifndef __clang__
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif
-#pragma GCC diagnostic ignored "-Wuninitialized"
-
 /* Steer the front wheels towards the stick, faster back towards the middle. */
 static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
     Vec3f local;
@@ -225,6 +218,14 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
         g_wSteerGainSpeedShare = 0;
         share = g_wSteerGainSpeedShare;
         break;
+#ifdef ENABLE_PATCHES
+    default:
+        /* An unknown mode steers with the settings and the gain set last. */
+        gain = g_fSteerGain;
+        break;
+#else
+        /* An unknown mode reads an unset gain. */
+#endif /* ENABLE_PATCHES */
     }
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     rate = g_fSteerRate;
@@ -518,4 +519,3 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
         VEHICLE_SET(vehicle, Brake, -140000.0f);
     }
 }
-#pragma GCC diagnostic pop

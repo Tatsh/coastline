@@ -14,13 +14,8 @@
 /* The size of the length a channel starts with. */
 #define RLE_BLOCK_HEADER 4
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
-/* The first comparison of the first channel is against an uninitialised byte, and of each later
- * channel against the byte read past the end of the last. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#pragma GCC diagnostic ignored "-Wuninitialized"
-#endif
+/* On the console the first comparison of the first channel is against an uninitialised byte, and
+ * of each later channel against the byte read past the end of the last. */
 s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels) {
     s32 out = 0;
     s32 channel = 0;
@@ -52,7 +47,12 @@ s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels
         run = 0;
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         previous = -256;
-#endif
+#else
+#ifdef ENABLE_PATCHES
+        /* The first comparison is with the first byte of the channel. */
+        current = src[i];
+#endif /* ENABLE_PATCHES */
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         for (;;) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
             current = (s8)src[i];
@@ -127,6 +127,3 @@ s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels
     } while (channel < channels);
     return out;
 }
-#if TGR_PLATFORM == TGR_PLATFORM_N64
-#pragma GCC diagnostic pop
-#endif

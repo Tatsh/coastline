@@ -241,12 +241,14 @@ void FloodFill4Bit(s32 x, s32 y) {
     g_pDecalTexels = texels;
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#pragma GCC diagnostic ignored "-Wuninitialized"
 void StampTextOnDecal(s32 x, s32 y) {
     DecalGlyph **glyphs;
+#ifdef ENABLE_PATCHES
+    /* A first character missing from the font is drawn with the first glyph. */
+    s32 penX, i, entry, glyphIndex = 0, column, firstColumn, lastColumn, texelX, texelY;
+#else
     s32 penX, i, entry, glyphIndex, column, firstColumn, lastColumn, texelX, texelY;
+#endif /* ENABLE_PATCHES */
     u32 row;
 
     x = ScreenToTexelX(x) + 1;
@@ -299,7 +301,6 @@ void StampTextOnDecal(s32 x, s32 y) {
         }
     }
 }
-#pragma GCC diagnostic pop
 
 void DrawLine4Bit(s32 x0, s32 y0, s32 x1, s32 y1) {
     s32 radius, dx, dy, stepX, stepY, x, y, error, swap;
@@ -858,16 +859,18 @@ void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1) {
     }
 }
 
-/* With no dash drawn, the corners read the unset colour, as the original does. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#pragma GCC diagnostic ignored "-Wuninitialized"
 void DrawDashedRectangle(s32 x0, s32 y0, s32 x1, s32 y1) {
     s32 phase, x, y, swap;
     u8 color;
 
     phase = 0;
     AdvanceDashes();
+#ifdef ENABLE_PATCHES
+    /* With no dash drawn, the corners take the colour of the first phase. */
+    color = AlternateDashColor(phase);
+#else
+    /* With no dash drawn, the corners read the unset colour, as the original does. */
+#endif /* ENABLE_PATCHES */
     if (x1 < x0) {
         swap = x0;
         x0 = x1;
@@ -901,7 +904,6 @@ void DrawDashedRectangle(s32 x0, s32 y0, s32 x1, s32 y1) {
     }
     DrawFilledRectHiRes(x0, y1 - 1, 1, 2, color, color, color);
 }
-#pragma GCC diagnostic pop
 
 void DrawDashedRoundedRect(s32 x0, s32 y0, s32 x1, s32 y1) {
     s32 radius, i, j, error, a, b, x, y, swap;
@@ -1149,11 +1151,13 @@ void DrawDashedCircle(s32 x, s32 y, s32 radius) {
     } while (i <= j);
 }
 
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#pragma GCC diagnostic ignored "-Wuninitialized"
 void DrawDecalTextPreview(s32 x, s32 y) {
+#ifdef ENABLE_PATCHES
+    /* A first character missing from the font is drawn with the first glyph. */
+    s32 i, entry, glyphIndex = 0, left, bottom, glyphLeft, advance;
+#else
     s32 i, entry, glyphIndex, left, bottom, glyphLeft, advance;
+#endif /* ENABLE_PATCHES */
 
     left = x - ((g_bDecalTextWidth >> 1) << 2);
     bottom = y - (g_texDecalFont.height << 2);
@@ -1206,7 +1210,6 @@ void DrawDecalTextPreview(s32 x, s32 y) {
         }
     }
 }
-#pragma GCC diagnostic pop
 
 void SwapBytes(u8 *a, u8 *b) {
     u8 swap = *a;

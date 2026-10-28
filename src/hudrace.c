@@ -193,15 +193,12 @@ void DrawLapCounterHud(void) {
                     HUD_RACE_ADD(VEHICLE_GET(g_pActiveCameraVehicle, Lap), 1),
                     g_dwTotalLaps);
         } else {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wformat-security"
-            /* The original passes the resource directly as a format string. */
-#endif
+#ifdef ENABLE_PATCHES
+            sprintf(text, "%s", HUD_FINISHED);
+#else
+            /* The original passes the text directly as a format string. */
             sprintf(text, HUD_FINISHED);
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#pragma GCC diagnostic pop
-#endif
+#endif /* ENABLE_PATCHES */
         }
         y = HUD_RACE_ADD(y, LAP_TEXT_SIZE);
         SetTextStyleNormal();

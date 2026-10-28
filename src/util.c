@@ -44,20 +44,21 @@ static s32 g_dwLightBlockCount;
 s32 g_dwFrameBufferIndex;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
-/* The original stores the address of a local message for the debug display. */
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdangling-pointer"
-#endif
 void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits) {
+#ifdef ENABLE_PATCHES
+    /* The debug display retains the message, which needs 42 bytes for the largest size. */
+    static char message[48];
+#else
+    /* The original stores the address of a local message for the debug display. */
     char message[40];
+#endif /* ENABLE_PATCHES */
 
     /* The size becomes the largest coordinate. */
     size--;
     if (size >> 8) {
         if (size >> 10) {
-            /* The message may overrun the buffer, and the debug display retains a pointer to the
-             * stack this returns from. */
+            /* In the original the message may overrun the buffer, and the debug display retains a
+             * pointer to the stack this returns from. */
             sprintf(message, "ERROR: unhandled texture size: %d", size);
             SetDebugMessage(message);
         } else if (size >> 9) {
@@ -92,9 +93,6 @@ void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits) {
     }
     *scale = 0xFFFF;
 }
-#if defined(__GNUC__) && !defined(__clang__)
-#pragma GCC diagnostic pop
-#endif
 
 /* The first grid row extended to row 0 on the strip mine and its mirrored version. */
 #define TRACK_SECTION_ROW_EXTENDED 2

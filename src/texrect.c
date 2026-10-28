@@ -32,10 +32,6 @@ void LoadAndDecompressAsset(Texture *texture, AssetAllocator alloc) {
     DecompressFromRom(texture->pixels, texture->romStart, NULL);
 }
 
-/* A 32-bit texture reads the unset count of texels a word, as the original does. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#pragma GCC diagnostic ignored "-Wuninitialized"
 void DrawTexturedRect(Texture *texture,
                       s32 x,
                       s32 y,
@@ -164,7 +160,12 @@ void DrawTexturedRect(Texture *texture,
         texelsPerWord = 4;
         break;
     default:
+#ifdef ENABLE_PATCHES
+        /* A word holds two 32-bit texels. */
+        texelsPerWord = 2;
+#else
         /* A 32-bit texture does not set the count of texels a word, as in the original. */
+#endif /* ENABLE_PATCHES */
         break;
     }
     rowBytes = (texture->width + texelsPerWord - 1) / texelsPerWord * 8;
@@ -336,7 +337,6 @@ void DrawTexturedRect(Texture *texture,
     gDPPipeSync(gDisplayListPtr++);
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
 }
-#pragma GCC diagnostic pop
 
 void DrawRedIntensityRect(
     u8 *texture, s32 width, s32 height, s32 x, s32 y, s32 drawWidth, s32 drawHeight) {

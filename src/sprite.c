@@ -152,10 +152,6 @@ void DrawSpriteRegion(
     }
 }
 
-/* A depth the switch does not list leaves the format unset where the palette test reads it, as in
- * the original. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
 void DrawSpriteStrip(Sprite *sprite,
                      u8 *pixels,
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
@@ -173,7 +169,14 @@ void DrawSpriteStrip(Sprite *sprite,
     s32 mirrored = FALSE;
     s32 scaleS, maskS, scaleT, maskT;
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+#ifdef ENABLE_PATCHES
+    /* A depth the switch does not list is drawn without a palette. */
+    s32 format = G_IM_FMT_RGBA;
+#else
+    /* A depth the switch does not list leaves the format unset where the palette test reads
+     * it. */
     s32 format;
+#endif /* ENABLE_PATCHES */
 #endif
 
     if (drawWidth < 0) {
@@ -381,7 +384,6 @@ void DrawSpriteStrip(Sprite *sprite,
     gDPPipeSync(gDisplayListPtr++);
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
 }
-#pragma GCC diagnostic pop
 
 void DrawScaledTexturedRect(Sprite *sprite,
                             s32 srcX,

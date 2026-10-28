@@ -133,15 +133,22 @@ void CheckWrongWayWarning(Vehicle *vehicle) {
     }
 }
 
-/* The original tests the unsigned cells against zero as well. */
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wtype-limits"
 void UpdateVehicleGridPosition(Vehicle *vehicle) {
     if (g_LoadedTrack.rootSection == NULL) {
         return;
     }
     VEHICLE_SET(vehicle, GridX, STATUS_GRID_COORD(VEHICLE_GET(vehicle, Frame).position.x));
     VEHICLE_SET(vehicle, GridY, STATUS_GRID_COORD(VEHICLE_GET(vehicle, Frame).position.y));
+#ifdef ENABLE_PATCHES
+    /* The cells are unsigned, so only the upper bound applies. */
+    if (VEHICLE_GET(vehicle, GridX) >= GRID_CELLS) {
+        VEHICLE_SET(vehicle, GridX, GRID_CELLS - 1);
+    }
+    if (VEHICLE_GET(vehicle, GridY) >= GRID_CELLS) {
+        VEHICLE_SET(vehicle, GridY, GRID_CELLS - 1);
+    }
+#else
+    /* The original tests the unsigned cells against zero as well. */
     if (VEHICLE_GET(vehicle, GridX) < 0) {
         VEHICLE_SET(vehicle, GridX, 0);
     } else if (VEHICLE_GET(vehicle, GridX) >= GRID_CELLS) {
@@ -152,6 +159,6 @@ void UpdateVehicleGridPosition(Vehicle *vehicle) {
     } else if (VEHICLE_GET(vehicle, GridY) >= GRID_CELLS) {
         VEHICLE_SET(vehicle, GridY, GRID_CELLS - 1);
     }
+#endif /* ENABLE_PATCHES */
     UpdateVehicleTrackPosition(vehicle);
 }
-#pragma GCC diagnostic pop

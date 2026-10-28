@@ -308,12 +308,6 @@ s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
     return inside;
 }
 
-/* The original slot remains unset when every timestamp is at least 2^30. */
-#pragma GCC diagnostic push
-#if !defined(__clang__)
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif
-#pragma GCC diagnostic ignored "-Wuninitialized"
 s16 BuildTrackTriangleCache(f32 x, f32 y) {
     TrackTriangle *triangle;
     TrackGridCursor cursor;
@@ -325,7 +319,13 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
     u32 oldest, cell;
     s16 sector;
     s32 slot, count;
+#ifdef ENABLE_PATCHES
+    /* The first slot is replaced when every timestamp is at least 2^30. */
+    s32 best = 0;
+#else
+    /* The slot remains unset when every timestamp is at least 2^30. */
     s32 best;
+#endif /* ENABLE_PATCHES */
     u16 index;
 
     g_dwTriCacheLruCounter++;
@@ -394,7 +394,6 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
     g_awTriCacheTriCount[best] = count;
     return best;
 }
-#pragma GCC diagnostic pop
 
 void ResetCollisionCaches(void) {
     TrackTriangle *triangle;
