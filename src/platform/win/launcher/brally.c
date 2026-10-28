@@ -56,6 +56,13 @@ static BOOL UnloadRendererDll(void) {
 
 // @ghidraAddress BRally: 0x00401a70
 static void AppendSpawnArgument(const char *argument) {
+#ifdef ENABLE_PATCHES
+    // An argument without room, or past the last slot before the terminator, is dropped.
+    if (strlen(argument) + 1 > sizeof(g_szSpawnArgBuffer) - g_dwSpawnArgBufferUsed ||
+        g_dwSpawnArgCount + 1 >= sizeof(g_apszSpawnArgv) / sizeof(*g_apszSpawnArgv)) {
+        return;
+    }
+#endif
     char *destination = g_szSpawnArgBuffer + g_dwSpawnArgBufferUsed;
     strcpy(destination, argument);
     g_apszSpawnArgv[g_dwSpawnArgCount++] = destination;

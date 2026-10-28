@@ -40,9 +40,14 @@ bool ProbeInstallerCd(int drive) {
 DWORD RunInstallerProcess(const char *directory, const char *application, char *commandLine) {
     STARTUPINFOA startup = {0};
     PROCESS_INFORMATION process = {0};
+#ifdef ENABLE_PATCHES
+    // A process that does not start reports a failure to the callers, which test for nonzero.
+    DWORD exitCode = 1;
+#else
     // The original does not initialise the exit code, so a failed CreateProcessA() returns the
     // value the stack held.
     DWORD exitCode;
+#endif
     startup.cb = sizeof(startup);
     startup.wShowWindow = SW_SHOWNORMAL;
     if (CreateProcessA(application,

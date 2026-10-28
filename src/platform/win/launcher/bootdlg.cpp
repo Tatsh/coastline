@@ -101,7 +101,11 @@ bool CBootDlg::IsBossRallyInstalled() {
     // Directory storage remains published when later checks fail.
     g_pszInstallDir = static_cast<char *>(std::malloc(bytes));
     char *application = static_cast<char *>(std::malloc(bytes + std::strlen("\\brally.exe")));
+#ifdef ENABLE_PATCHES
+    if (!g_pszInstallDir || !application) {
+#else
     if (!g_pszInstallDir) {
+#endif
         RegCloseKey(key);
         return false;
     }

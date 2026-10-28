@@ -167,6 +167,12 @@ static int IsIncludeFileStackEmpty(void) {
  * @ghidraAddress SetVideo: 0x00401ad0
  */
 static void PushIncludeFile(FILE *file) {
+#ifdef ENABLE_PATCHES
+    if (g_dwIncludeFileDepth >= sizeof(g_apIncludeFileStack) / sizeof(*g_apIncludeFileStack)) {
+        printf("ReadList: too many nested #include files.\n");
+        exit(1);
+    }
+#endif
     g_apIncludeFileStack[g_dwIncludeFileDepth++] = file;
 }
 
@@ -275,6 +281,13 @@ static LauncherStringList *ReadStringListFile(const char *path) {
     }
     for (int index = 0; index < list->count;) {
         next = ReadNextListLine(buffer, 32767, file);
+#ifdef ENABLE_PATCHES
+        if (!next) {
+            // The file ended before the lines the first pass counted, and keeps those read.
+            list->count = index;
+            break;
+        }
+#endif
         if (strlen(buffer) > 1) {
             char *newline = strrchr(buffer, '\n');
             if (newline) {
@@ -313,7 +326,12 @@ char *GetIniSectionValue(LauncherIniSectionIterator *iterator, const char *key) 
     }
     char *line;
     while ((line = GetNextIniSectionLine(file))) {
+#ifdef ENABLE_PATCHES
+        strncpy(g_szIniLineBuffer, line, sizeof(g_szIniLineBuffer) - 1);
+        g_szIniLineBuffer[sizeof(g_szIniLineBuffer) - 1] = '\0';
+#else
         strcpy(g_szIniLineBuffer, line);
+#endif
         char *separator = strchr(g_szIniLineBuffer, '=');
         if (!separator) {
             printf("Unable to parse %s in section %s.\n",
