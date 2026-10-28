@@ -12,7 +12,6 @@
 #include <windows.h>
 
 #include "platform/win/texturetile.h"
-#include "platform/win/uninitialized.h"
 
 /** A renderer told to take the screen back from GDI that had not given it. */
 #define RENDERER_E_NOT_IN_GDI_MODE static_cast<HRESULT>(0x88762711)
@@ -133,11 +132,14 @@ public:
         pNext = driver;
     }
 
-    // The constructor clears a bit of flags it never set, as the original does.
-    BEGIN_ORIGINAL_UNINITIALIZED_READ
     /** Start a driver that is not usable, with empty abilities. */
     DirectDrawDriver() : pPrev(nullptr), pNext(nullptr) {
+#ifdef ENABLE_PATCHES
+        dwFlags = 0;
+#else
+        // The constructor clears a bit of flags it never set, as the original does.
         dwFlags &= ~DIRECTDRAW_DRIVER_USABLE;
+#endif /* ENABLE_PATCHES */
         memset(&hardwareCaps, 0, sizeof(hardwareCaps));
         hardwareCaps.dwSize = sizeof(hardwareCaps);
         memset(&softwareCaps, 0, sizeof(softwareCaps));
@@ -149,7 +151,6 @@ public:
         pD3DDevicesHead = nullptr;
         pD3DDevicesTail = nullptr;
     }
-    END_ORIGINAL_UNINITIALIZED_READ
 
     /**
      * Add a display mode to the end of the modes of the driver.
@@ -340,20 +341,22 @@ public:
      */
     bool CompareD3DDeviceGuid(const GUID *pGuid);
 
-    // The constructor clears bits of flags it never set, as the original does.
-    BEGIN_ORIGINAL_UNINITIALIZED_READ
     /** Start a device without texts, with empty descriptions. */
     D3DDeviceNode()
         : pszDescription(nullptr), pszName(nullptr), nTextureFormatCount(0),
           pTextureFormatsHead(nullptr), pTextureFormatsTail(nullptr), pPrev(nullptr),
           pNext(nullptr) {
+#ifdef ENABLE_PATCHES
+        dwFlags = 0;
+#else
+        // The constructor clears bits of flags it never set, as the original does.
         dwFlags &= ~3u;
+#endif /* ENABLE_PATCHES */
         memset(&hardwareDesc, 0, sizeof(hardwareDesc));
         hardwareDesc.dwSize = sizeof(hardwareDesc);
         memset(&softwareDesc, 0, sizeof(softwareDesc));
         softwareDesc.dwSize = sizeof(softwareDesc);
     }
-    END_ORIGINAL_UNINITIALIZED_READ
 
     /**
      * Read a device Direct3D reports.
