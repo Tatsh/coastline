@@ -95,11 +95,12 @@ typedef struct _MMCKINFO {
     DWORD dwFlags;      /*!< The flags. */
 } MMCKINFO;
 
-typedef uintptr_t UINT_PTR; /*!< An unsigned integer the size of a pointer. */
-typedef char *HPSTR;        /*!< A string of the multimedia I/O API. */
-typedef void *HMENU;        /*!< A handle of a menu. */
-typedef void *HCURSOR;      /*!< A handle of a cursor. */
-typedef void *HACCEL;       /*!< A handle of an accelerator table. */
+typedef uintptr_t UINT_PTR;  /*!< An unsigned integer the size of a pointer. */
+typedef uintptr_t DWORD_PTR; /*!< An unsigned integer the size of a pointer. */
+typedef char *HPSTR;         /*!< A string of the multimedia I/O API. */
+typedef void *HMENU;         /*!< A handle of a menu. */
+typedef void *HCURSOR;       /*!< A handle of a cursor. */
+typedef void *HACCEL;        /*!< A handle of an accelerator table. */
 
 /** A critical section of the Windows API, at its size on 64-bit Windows. */
 typedef struct _CRITICAL_SECTION {

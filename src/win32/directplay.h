@@ -7,7 +7,7 @@
  */
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/win32types.h"
+#include "sdl/win32api.h"
 #else
 #include <windows.h>
 // The headers below need the types of windows.h.

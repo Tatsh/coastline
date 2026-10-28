@@ -126,12 +126,6 @@ extern "C" {
 
 int g_bVerboseFileTrace;
 
-void ReadEntireFile(void *buffer, const char *path, int size) {
-    GameFile *file = CHK_FReadOpen(path);
-    CHK_FRead(buffer, 1, static_cast<size_t>(size), file);
-    CHK_FClose(file);
-}
-
 long GetFileLength(GameFile *pFile) {
     long nPosition = std::ftell(pFile->pFile);
     std::fseek(pFile->pFile, 0, SEEK_END);

@@ -2,9 +2,12 @@
 
 #include <cmath>
 
+#include "screen.h"
+#include "win32/render.h"
+#include "win32/settings.h"
+
 namespace {
 
-DirectDrawRenderer g_mainRenderWindow;
 RenderHost g_renderHost;
 
 std::uint32_t ColorChannel(float value) {
@@ -14,7 +17,6 @@ std::uint32_t ColorChannel(float value) {
 
 } // namespace
 
-DirectDrawRenderer *g_pMainRenderWindow = &g_mainRenderWindow;
 RenderHost *g_pRenderHost = &g_renderHost;
 
 void DisplayMode::GetSurfaceDescDimensions(int *pnWidth,
@@ -65,4 +67,40 @@ HRESULT RenderHost::RenderLoadingScreen(DirectDrawRenderer *pWindowRenderer,
                                         const char *pszImage,
                                         int nOption) {
     return D3D_OK;
+}
+
+namespace {
+
+// The flag of d3d/renderer.cpp, set by the first clear of a frame and cleared by its present.
+bool g_bRenderTargetCleared;
+
+void PresentFrame(void) {
+    g_bRenderTargetCleared = false;
+}
+
+} // namespace
+
+void ClearRenderTargetOnce(void) {
+    if (g_bRenderTargetCleared) {
+        return;
+    }
+    if (g_dwD3DClearZBuffer) {
+        D3DRECT rcClear = {{0}, {0}, {g_dwConfigFramebufferWidth}, {g_dwConfigFramebufferHeight}};
+        if (g_pMainRenderWindow->GetViewport()->Clear(
+                1, &rcClear, D3DCLEAR_TARGET | D3DCLEAR_ZBUFFER) != D3D_OK) {
+            return;
+        }
+    }
+    g_bRenderTargetCleared = true;
+}
+
+int ResetRenderDeviceCallbacks(void) {
+    g_pfnPresentFrame = PresentFrame;
+    g_pfnRenderDeviceShutdown = NullStub;
+    return true;
+}
+
+// The window of SDL has no display modes to change.
+void SetDisplayModeWithFallback(int nWidth, int nHeight, int nBitDepth, int nExtra) {
+    ResetRenderDeviceCallbacks();
 }

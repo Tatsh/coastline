@@ -58,10 +58,13 @@ set_source_files_properties(${COASTLINE_PC_C_SOURCES} ${COASTLINE_PC_CXX_SOURCES
 set_source_files_properties("${_src}/savestate.c" "${_src}/win32/paintshop.c" PROPERTIES LANGUAGE C)
 
 # The SDL game provides these in place of their Windows units.
-set(COASTLINE_PC_SDL_SOURCES bitmap.cpp d3dcompat.cpp fileio.cpp frontendstate.cpp renderhost.cpp
+set(COASTLINE_PC_SDL_SOURCES bitmap.cpp d3dcompat.cpp dinputcompat.cpp fileio.cpp frontendstate.cpp
+                             network.cpp pcgamerun.cpp renderhost.cpp sound.cpp
                              stringresources.cpp)
-# The routines of the textures of BRD3D.dll that do not use DirectDraw.
-list(APPEND COASTLINE_PC_CXX_SOURCES "${_src}/win32/d3d/texture.cpp")
+# The routines of the textures of BRD3D.dll that do not use DirectDraw, and the conversions of the
+# states of vehicles the network streams.
+list(APPEND COASTLINE_PC_CXX_SOURCES "${_src}/win32/d3d/texture.cpp" "${_src}/win32/netstream.cpp"
+     "${_src}/win32/boot/app.cpp" "${_src}/win32/boot/startup.cpp" "${_src}/win32/input.cpp")
 
 add_library(coastline_pcgame STATIC ${COASTLINE_PC_C_SOURCES} ${COASTLINE_PC_CXX_SOURCES}
                                     ${COASTLINE_PC_SDL_SOURCES})
@@ -69,7 +72,10 @@ target_include_directories(coastline_pcgame PUBLIC "${_src}" "${_src}/libultra/i
 target_link_libraries(coastline_pcgame PUBLIC SDL3::SDL3)
 # A cast between a pointer and a 32-bit integer loses half the pointer on a 64-bit processor, and
 # is an error so that every one is converted to Ptr32.
+# The data of a source is placed in the order of its definitions, as in the Windows libraries. Some
+# loads of the original write past an array into the one defined after it, such as the TMEM shadow
+# into the shadow of its palettes.
 target_compile_options(
   coastline_pcgame PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>" -Wno-unused-parameter
-                           -Werror=int-to-pointer-cast
+                           -fno-toplevel-reorder -Werror=int-to-pointer-cast
                            "$<$<COMPILE_LANGUAGE:C>:-Werror=pointer-to-int-cast>")

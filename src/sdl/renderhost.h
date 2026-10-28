@@ -138,7 +138,7 @@ public:
 };
 
 /** The renderer of the window. */
-extern DirectDrawRenderer *g_pMainRenderWindow;
+extern "C" DirectDrawRenderer *g_pMainRenderWindow;
 
 /** The owner of the renderers. */
 extern RenderHost *g_pRenderHost;

@@ -7,6 +7,7 @@
  */
 
 #include <cstdint>
+#include <filesystem>
 
 #include "sdl/tlrenderer.h"
 #include "sdl/win32types.h"
@@ -245,8 +246,18 @@ public:
         return m_renderer;
     }
 
+    /**
+     * Save the frame of the scenes that end after this call as a PNG image.
+     *
+     * @param path The image, or null for no image.
+     */
+    void SetCapture(const std::filesystem::path *path) {
+        m_capture = path;
+    }
+
 private:
     coastline::TlRenderer &m_renderer;
+    const std::filesystem::path *m_capture = nullptr;
     std::uint32_t m_clearColor = 0xFF000000;
 };
 

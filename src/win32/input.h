@@ -6,7 +6,8 @@
  */
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/win32types.h"
+#include "sdl/dinputcompat.h"
+#include "sdl/win32api.h"
 #else
 #ifndef DIRECTINPUT_VERSION
 #define DIRECTINPUT_VERSION 0x0500

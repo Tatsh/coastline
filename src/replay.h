@@ -119,7 +119,12 @@ typedef struct {
 /**
  * Last-lap buffers share vehicle-model storage and descend through slots by local-player index.
  */
-#if TGR_PC
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/* The symbol names of the SDL game have no leading underscore on every system, and a cast names
+ * the same storage. */
+#include "vehiclemodel.h"
+#define g_aLastLapBuffers ((LastLapBuffer *)g_aVehicleModels)
+#elif TGR_PC
 extern LastLapBuffer g_aLastLapBuffers[] __asm__("_g_aVehicleModels");
 #else
 extern LastLapBuffer g_aLastLapBuffers[];

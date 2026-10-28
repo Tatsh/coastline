@@ -24,6 +24,9 @@
 #include "music.h"
 #include "paths.h"
 #include "tlrenderer.h"
+#ifdef COASTLINE_PC_GAME
+#include "pcgamerun.h"
+#endif
 
 namespace {
 
@@ -332,10 +335,17 @@ int main(int argc, char *argv[]) {
             bool quitAfterScreenshot = parser.get<bool>("--quit-after-screenshot");
             std::unique_ptr<coastline::TlRenderer> renderer;
             coastline::TextureHandle testTexture = 0;
+            bool pcGame = false;
             if (parser.present("--scene") == "renderer-test") {
                 renderer = coastline::TlRenderer::Create(*window);
                 testTexture = renderer ? CreateCheckerTexture(*renderer) : 0;
             }
+#ifdef COASTLINE_PC_GAME
+            if (parser.present("--scene") == "race") {
+                renderer = coastline::TlRenderer::Create(*window);
+                pcGame = renderer && coastline::StartPcGame(*renderer, paths->data, paths->state);
+            }
+#endif
             bool running = true;
             for (int frame = 1; running; ++frame) {
                 SDL_Event event;
@@ -347,7 +357,12 @@ int main(int argc, char *argv[]) {
                 }
                 auto ports = input.Poll();
                 bool capture = screenshot && frame == screenshotFrame;
-                if (renderer) {
+                if (pcGame) {
+#ifdef COASTLINE_PC_GAME
+                    running =
+                        coastline::RunPcGameFrame(capture ? &*screenshot : nullptr) && running;
+#endif
+                } else if (renderer) {
                     DrawRendererTestScene(
                         *renderer, testTexture, frame, capture ? &*screenshot : nullptr);
                 } else {

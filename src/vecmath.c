@@ -10,6 +10,9 @@
 #include <string.h>
 #endif
 
+/* The declarations of NormalizeLightMatrix() and GetMaxAbsValue12() give them C linkage. */
+#include "render.h"
+
 #if TGR_PC
 /** @ghidraAddress BRD3D: 0x10a9bfd0 */
 u32 g_dwRandomSeed;

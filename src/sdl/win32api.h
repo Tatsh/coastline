@@ -68,6 +68,30 @@ static inline HANDLE CreateMutexA(void *attributes, BOOL initialOwner, const cha
     return &mutex;
 }
 
+#define LOWORD(value) ((WORD)((DWORD_PTR)(value) & 0xFFFF))         /*!< The low half. */
+#define HIWORD(value) ((WORD)(((DWORD_PTR)(value) >> 16) & 0xFFFF)) /*!< The high half. */
+#define WA_INACTIVE 0                                               /*!< A window deactivated. */
+#define MB_OK 0x00000000                                            /*!< An OK button. */
+#define MB_ICONERROR 0x00000010                                     /*!< An error icon. */
+
+/**
+ * Show a message to the player in a box of SDL.
+ *
+ * @param window Unused.
+ * @param text The message.
+ * @param caption The title.
+ * @param type MB_ICONERROR for an error.
+ * @return 1, IDOK.
+ */
+static inline int MessageBoxA(HWND window, const char *text, const char *caption, UINT type) {
+    SDL_ShowSimpleMessageBox((type & MB_ICONERROR) ? SDL_MESSAGEBOX_ERROR :
+                                                     SDL_MESSAGEBOX_INFORMATION,
+                             caption,
+                             text,
+                             nullptr);
+    return 1;
+}
+
 #define INFINITE 0xFFFFFFFF /*!< A wait without a time limit. */
 #define WAIT_OBJECT_0 0     /*!< The result of a wait that acquired the object. */
 
@@ -77,6 +101,16 @@ static inline HANDLE CreateMutexA(void *attributes, BOOL initialOwner, const cha
  * @return WAIT_OBJECT_0.
  */
 static inline DWORD WaitForSingleObject(HANDLE handle, DWORD milliseconds) {
+    return WAIT_OBJECT_0;
+}
+
+/**
+ * Wait for mutexes of CreateMutexA(), which one thread uses.
+ *
+ * @return WAIT_OBJECT_0.
+ */
+static inline DWORD
+WaitForMultipleObjects(DWORD count, const HANDLE *handles, BOOL all, DWORD milliseconds) {
     return WAIT_OBJECT_0;
 }
 
@@ -118,6 +152,11 @@ static inline char *_strupr(char *text) {
         *c = (char)toupper((unsigned char)*c);
     }
     return text;
+}
+
+/** @param milliseconds The milliseconds to wait. */
+static inline void Sleep(DWORD milliseconds) {
+    SDL_Delay(milliseconds);
 }
 
 #ifdef __cplusplus

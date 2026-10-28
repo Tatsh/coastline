@@ -4,7 +4,6 @@
 #include <vector>
 
 IDirect3DDevice2 *g_pD3DDevice2;
-D3DTexture **g_ppTextureIdTable;
 D3DDEVICEDESC g_D3DHalDeviceDesc;
 D3DDEVICEDESC g_D3DHelDeviceDesc;
 
@@ -176,6 +175,6 @@ HRESULT IDirect3DDevice2::BeginScene() {
 }
 
 HRESULT IDirect3DDevice2::EndScene() {
-    m_renderer.EndScene();
+    m_renderer.EndScene(m_capture);
     return D3D_OK;
 }

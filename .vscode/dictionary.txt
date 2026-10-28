@@ -113,6 +113,7 @@ cantcreatesession
 cantloadcapi
 cantloadsecuritypackage
 cantloadsspi
+capslock
 capsnotavailableyet
 cargfx
 carmodel
@@ -250,6 +251,7 @@ devmgr
 dfrac
 dialogs
 dicondition
+didataformat
 dideviceinstancea
 didevtype
 dieb
@@ -257,6 +259,7 @@ diedfl
 dieff
 dieffect
 dienum
+dienvelope
 diep
 dierr
 dijofs
@@ -264,11 +267,13 @@ dijoystate
 dimousestate
 dinline
 dinput
+dinputcompat
 diperiodic
 diph
 diprop
 dipropautocenter
 dipropdword
+dipropheader
 diproprange
 directionalmatrix
 directplay
@@ -416,6 +421,7 @@ fcntl
 fdata
 fehdrau
 fenv
+ffnominalmax
 ffreestanding
 ffunction
 finalrom
@@ -574,6 +580,7 @@ kemco
 keybd
 kseg
 kuseg
+lalt
 laprecords
 laptime
 laptimes
@@ -584,6 +591,7 @@ lbzero
 lcart
 lclear
 lcounter
+lctrl
 ldblk
 ldiv
 ldtob
@@ -628,6 +636,7 @@ lpanic
 lpcdpname
 lpcdpsessiondesc
 lpcstr
+lpdienumdevicescallbacka
 lpdpenumplayerscallback
 lpfn
 lprenmi
@@ -800,6 +809,7 @@ particlesnapshot
 particleupdate
 pathlib
 pcgame
+pcgamerun
 pcmstream
 pcmwaveformat
 penm
@@ -894,9 +904,11 @@ racesound
 racespecials
 raininit
 rallyconfig
+ralt
 ramarray
 ramreadformat
 raydone
+rctrl
 rdbread
 rdbwrite
 rdparty
@@ -957,6 +969,7 @@ schemafile
 screendraw
 screenfade
 screenrect
+scrolllock
 sdlcall
 seasn
 seasoncars
@@ -1160,10 +1173,12 @@ tlrenderer
 tlut
 tluts
 tlvertex
+tmem
 tmsf
 tmuvtx
 tolower
 toolhelp
+toplevel
 toupper
 tracetrack
 trackanimation
