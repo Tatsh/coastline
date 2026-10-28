@@ -17,9 +17,38 @@ ADDRESS = re.compile(r'/\* (?:[0-9A-F]+ )?(8[0-9A-F]{7})(?: [0-9A-F]+)? \*/ \.(\
 WIDTHS = {'word': 4, 'float': 4, 'half': 2, 'short': 2, 'byte': 1}
 
 
-def symbol_lengths(root: Path) -> dict[str, tuple[int, bool]]:
+def symbol_words(root: Path) -> dict[int, str]:
+    """Return the operand of each word of the data, by its address."""
+    words: dict[int, str] = {}
+    for line in (root / DATA_FILES[0]).read_text(encoding='utf-8').splitlines():
+        if (match := ADDRESS.search(line)) and match.group(2) == 'word':
+            words[int(match.group(1), 16)] = match.group(3)
+    return words
+
+
+def null_terminated_length(words: dict[int, str], address: int) -> int | None:
+    """Return the bytes of an array of pointers up to and with its null pointer."""
+    end = address
+    while end in words:
+        if int(words[end], 16) == 0 if words[end].startswith('0x') else False:
+            return end + 4 - address
+        end += 4
+    return None
+
+
+def symbol_run_length(words: dict[int, str], address: int, labels: set[int]) -> int:
+    """Return the bytes of the words from an address that each name a symbol, such as the
+    pointers of an array of strings, up to a number or the start of another symbol."""
+    end = address
+    while end in words and not words[end].startswith('0x') and (end == address or
+                                                                 end not in labels):
+        end += 4
+    return end - address
+
+
+def symbol_lengths(root: Path) -> dict[str, tuple[int, bool, int]]:
     """Return the bytes of each symbol of the assembly, and whether it is BSS."""
-    lengths: dict[str, tuple[int, bool]] = {}
+    lengths: dict[str, tuple[int, bool, int]] = {}
     for name in DATA_FILES:
         bss = name.endswith('bss.s')
         labels: list[tuple[str, int]] = []
@@ -45,7 +74,7 @@ def symbol_lengths(root: Path) -> dict[str, tuple[int, bool]]:
         real = [(label, address) for label, address in labels if not label.startswith('D_')]
         for index, (label, address) in enumerate(real):
             following = real[index + 1][1] if index + 1 < len(real) else end
-            lengths[label] = (following - address, bss)
+            lengths[label] = (following - address, bss, address)
     return lengths
 
 
@@ -75,6 +104,8 @@ def main() -> None:
                         'does not know, which replace the extents of the declaration')
     args = parser.parse_args()
     lengths = symbol_lengths(args.root)
+    words = symbol_words(args.root)
+    label_addresses = {address for _, _, address in lengths.values()}
     overrides: dict[str, str] = {}
     if args.extents is not None:
         for line in args.extents.read_text(encoding='utf-8').splitlines():
@@ -90,10 +121,16 @@ def main() -> None:
             definitions.append(f'// {symbol}: no declaration or no length in the assembly.')
             continue
         header, kind, extents = declaration
-        length, bss = lengths[symbol]
+        length, bss, address = lengths[symbol]
         headers.add(header)
         if symbol in overrides and extents.startswith('[]'):
             extents = overrides[symbol] + extents[2:]
+        elif extents == '[]' and kind == 'MenuItem *' and (
+                terminated := null_terminated_length(words, address)) is not None:
+            extents = f'[{terminated // 4}]'
+        elif extents == '[]' and kind == 'const char *' and (run := symbol_run_length(
+                words, address, label_addresses)) > 0:
+            extents = f'[{run // 4}]'
         elif extents.startswith('[]'):
             element = f'{kind}{extents[2:]}'
             extents = f'[{length} / coastline::ConsoleSizeOf<{element}>()]{extents[2:]}'

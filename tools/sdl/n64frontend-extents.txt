@@ -1,0 +1,12 @@
+# The lengths of the arrays of the front end whose length splat does not know, because labels with
+# other names fall inside them. Read by tools/sdl/n64frontenddata.py --extents.
+# 0x80307F00 to 0x80310000, with g_bGhostHeaderWeatherIndex at its second byte.
+g_abGhostRecording [0x8100]
+# 0x80315DB0 to g_szFormatBuffer at 0x80315DD8.
+g_apszSeasonResultMsgLines [10]
+# g_szPlace1st to g_szPlace20th, to g_apszEngineLayouts at 0x80272030.
+g_apszPlaceNames [20]
+# g_szFrontEngine, g_szMidEngine, and g_szRearEngine.
+g_apszEngineLayouts [3]
+# g_szDriveTypeFWD, g_szDriveTypeRWD, and g_szDriveType4WD.
+g_apszDriveTypes [3]
