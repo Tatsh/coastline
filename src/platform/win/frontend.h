@@ -316,6 +316,14 @@ public:
      */
     virtual int UpdateBlinkTimer();
 
+private:
+    /**
+     * @ghidraAddress BRD3D: 0x10048010
+     * @ghidraAddress BRGlide: 0x10041460
+     */
+    virtual int Draw();
+
+public:
     /**
      * Run a frame of the item.
      *
@@ -325,12 +333,58 @@ public:
      */
     virtual bool Update();
 
+private:
+    /**
+     * @ghidraAddress BRD3D: 0x10047a10
+     * @ghidraAddress BRGlide: 0x10040e60
+     */
+    virtual int DrawCurrentImage();
+
+public:
     /**
      * @ghidraAddress BRD3D: 0x100479d0
      * @ghidraAddress BRGlide: 0x10040e20
      */
     virtual int BlitSurfaceById(int nImage, int x, int y);
 
+private:
+    /**
+     * @ghidraAddress BRD3D: 0x10047980
+     * @ghidraAddress BRGlide: 0x10040dd0
+     */
+    virtual int DrawSpriteRegion(const RECT *pRect);
+    /**
+     * @ghidraAddress BRD3D: 0x10047930
+     * @ghidraAddress BRGlide: 0x10040d80
+     */
+    virtual int DrawSprite();
+    /**
+     * @ghidraAddress BRD3D: 0x10047a60
+     * @ghidraAddress BRGlide: 0x10040eb0
+     */
+    virtual bool UpdateHoverState();
+    /**
+     * @ghidraAddress BRD3D: 0x10047cb0
+     * @ghidraAddress BRGlide: 0x10041100
+     */
+    virtual int InitSlideAnimation(int nDuration);
+    /**
+     * @ghidraAddress BRD3D: 0x10047ce0
+     * @ghidraAddress BRGlide: 0x10041130
+     */
+    virtual long double ComputeSlideOffset(int nTicks);
+    /**
+     * @ghidraAddress BRD3D: 0x10047d10
+     * @ghidraAddress BRGlide: 0x10041160
+     */
+    virtual int StartSlideAnimation();
+    /**
+     * @ghidraAddress BRD3D: 0x10047d30
+     * @ghidraAddress BRGlide: 0x10041180
+     */
+    virtual int UpdateSlideAnimation();
+
+public:
     /**
      * @ghidraAddress BRD3D: 0x10047eb0
      * @ghidraAddress BRGlide: 0x10041300
@@ -350,6 +404,14 @@ public:
                             int nMode,
                             short nImage);
 
+private:
+    /**
+     * @ghidraAddress BRD3D: 0x10048060
+     * @ghidraAddress BRGlide: 0x100414b0
+     */
+    virtual bool IsBlockedByModalDialog();
+
+public:
     MenuScreen *GetScreen() const {
         return pScreen;
     }
@@ -463,60 +525,6 @@ public:
     }
 
 private:
-    /**
-     * @ghidraAddress BRD3D: 0x10048010
-     * @ghidraAddress BRGlide: 0x10041460
-     */
-    virtual int Draw();
-
-    /**
-     * @ghidraAddress BRD3D: 0x10047a10
-     * @ghidraAddress BRGlide: 0x10040e60
-     */
-    virtual int DrawCurrentImage();
-
-    /**
-     * @ghidraAddress BRD3D: 0x10047980
-     * @ghidraAddress BRGlide: 0x10040dd0
-     */
-    virtual int DrawSpriteRegion(const RECT *pRect);
-    /**
-     * @ghidraAddress BRD3D: 0x10047930
-     * @ghidraAddress BRGlide: 0x10040d80
-     */
-    virtual int DrawSprite();
-    /**
-     * @ghidraAddress BRD3D: 0x10047a60
-     * @ghidraAddress BRGlide: 0x10040eb0
-     */
-    virtual bool UpdateHoverState();
-    /**
-     * @ghidraAddress BRD3D: 0x10047cb0
-     * @ghidraAddress BRGlide: 0x10041100
-     */
-    virtual int InitSlideAnimation(int nDuration);
-    /**
-     * @ghidraAddress BRD3D: 0x10047ce0
-     * @ghidraAddress BRGlide: 0x10041130
-     */
-    virtual long double ComputeSlideOffset(int nTicks);
-    /**
-     * @ghidraAddress BRD3D: 0x10047d10
-     * @ghidraAddress BRGlide: 0x10041160
-     */
-    virtual int StartSlideAnimation();
-    /**
-     * @ghidraAddress BRD3D: 0x10047d30
-     * @ghidraAddress BRGlide: 0x10041180
-     */
-    virtual int UpdateSlideAnimation();
-
-    /**
-     * @ghidraAddress BRD3D: 0x10048060
-     * @ghidraAddress BRGlide: 0x100414b0
-     */
-    virtual bool IsBlockedByModalDialog();
-
     MenuWidget *LinkedMenuWidget(int index);
     bool UpdateMenuSlideAxis(int enabled,
                              signed char direction,
