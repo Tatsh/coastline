@@ -12,6 +12,16 @@ extern "C" {
  * @stub
  */
 void RegisterDefaultEnvironment(void);
+
+/**
+ * Shut down an environment, or every environment.
+ *
+ * @param environment The environment, or 0 for every environment.
+ * @return Whether the environment was shut down.
+ * @ghidraAddress EAR: 0x1000f310
+ * @stub
+ */
+int __stdcall EarShutDownEnvironmentExportWrapper(uint32_t environment);
 #ifdef __cplusplus
 }
 #endif

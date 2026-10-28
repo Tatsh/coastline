@@ -25,6 +25,16 @@ CopyDirectionalMatrixEntry(uint16_t matrix, uint16_t direction, EarDirectionalMa
  */
 int __stdcall EarRegisterMatrixExportWrapper(uint32_t flags);
 
+/**
+ * Shut down a directional matrix, or every matrix.
+ *
+ * @param matrix The matrix, or 0 for every matrix.
+ * @return Whether the matrix was shut down.
+ * @ghidraAddress EAR: 0x1000f5f0
+ * @stub
+ */
+int __stdcall EarShutDownMatrixExportWrapper(uint32_t matrix);
+
 #ifdef __cplusplus
 }
 #endif
