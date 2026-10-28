@@ -4,6 +4,10 @@
 AddTimingMarker
 ApplyWeather
 ClearVehicleDamageState
+DecompressFromRom
+DmaRead
+DmaReadAssetSize
+DmaReadWord
 FadeMusicTo
 FadeSfxTo
 g_aPlayerInputState

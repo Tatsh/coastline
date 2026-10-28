@@ -90,7 +90,7 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_sdl argparse::argparse)
 if(TGR_SDL_PC_GAME)
-  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_pcgame)
+  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_pcgame coastline_n64frontend)
   target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE COASTLINE_PC_GAME=1)
   target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/src")
 endif()

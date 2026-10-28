@@ -5,7 +5,8 @@
 set(_src "${CMAKE_SOURCE_DIR}/src")
 set(COASTLINE_N64_FRONTEND_SOURCES
     n64/controllerscreen.c n64/carselect.c n64/decaldraw.c n64/decaleditor.c n64/input.c
-    n64/mainmenu.c n64/options.c n64/pakmenu.c n64/playerselect.c n64/race.c n64/racemenu.c
+    n64/mainmenu.c n64/options.c n64/paintshop.c n64/pakmenu.c n64/playerselect.c n64/race.c
+    n64/racemenu.c
     n64/splash.c n64/sprite.c n64/text.c n64/texrect.c n64/timing.c n64/vehicle.c
     n64/vehiclerender.c n64/vehiclesetup.c n64/weatherselect.c driving.c fade.c game.c heap.c
     vehiclereset.c)
@@ -14,7 +15,8 @@ set_source_files_properties(${COASTLINE_N64_FRONTEND_SOURCES} PROPERTIES LANGUAG
 
 # n64frontenddata.cpp is written by tools/sdl/n64frontenddata.py from the symbols the front end
 # needs, with the extents of tools/sdl/n64frontend-extents.txt.
-add_library(coastline_n64frontend STATIC ${COASTLINE_N64_FRONTEND_SOURCES} n64frontenddata.cpp)
+add_library(coastline_n64frontend STATIC ${COASTLINE_N64_FRONTEND_SOURCES} n64frontenddata.cpp
+                                           n64system.cpp)
 target_include_directories(coastline_n64frontend PRIVATE "${_src}" "${_src}/n64"
                                                          "${_src}/libultra/include")
 # The symbols both releases define, and the data whose types differ between them, are the front
@@ -27,7 +29,8 @@ target_compile_options(
   coastline_n64frontend
   PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>" -UTGR_PC -DTGR_PC=0 -UTGR_BRD3D -DTGR_BRD3D=0
           -fpermissive -Wno-unused-parameter ${_n64_renames})
-target_link_libraries(coastline_n64frontend PUBLIC SDL3::SDL3 coastline_cartridgedata)
+target_link_libraries(coastline_n64frontend PUBLIC SDL3::SDL3 coastline_cartridgedata coastline_pcgame
+                                                    coastline_sdl)
 
 # The data of the front end is read from the cartridge at start-up, by the symbols of splat.
 set(_symbols_header "${CMAKE_CURRENT_BINARY_DIR}/generated/symbol_addrs_us.h")

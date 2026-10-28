@@ -28,6 +28,7 @@ struct HostDefinition {
     std::size_t count;
 };
 
+std::vector<std::uint8_t> g_rom;
 std::vector<std::uint8_t> g_segment;
 std::unordered_map<std::string, std::uint32_t> g_symbols;
 std::map<std::uint32_t, HostDefinition> g_definitions;
@@ -58,6 +59,7 @@ bool CartridgeData::Load(std::span<const std::uint8_t> rom) {
     if (rom.size() < kSegmentRom + size) {
         return false;
     }
+    g_rom.assign(rom.begin(), rom.end());
     g_segment.assign(rom.begin() + kSegmentRom, rom.begin() + kSegmentRom + size);
     if (g_symbols.empty()) {
         ReadSymbols();
@@ -70,6 +72,10 @@ const std::uint8_t *CartridgeData::Bytes(std::uint32_t address) {
         return nullptr;
     }
     return g_segment.data() + (address - kSegmentAddress);
+}
+
+std::span<const std::uint8_t> CartridgeData::Rom() {
+    return g_rom;
 }
 
 std::uint32_t CartridgeData::AddressOf(std::string_view name) {

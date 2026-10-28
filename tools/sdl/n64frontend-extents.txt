@@ -10,3 +10,5 @@ g_apszPlaceNames [20]
 g_apszEngineLayouts [3]
 # g_szDriveTypeFWD, g_szDriveTypeRWD, and g_szDriveType4WD.
 g_apszDriveTypes [3]
+# Outside the data of the assembly: the slots of the models of the cars.
+g_aVehicleModels [VEHICLE_MODEL_SLOTS]

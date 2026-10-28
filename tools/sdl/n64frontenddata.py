@@ -115,18 +115,29 @@ def main() -> None:
     headers: set[str] = set()
     definitions: list[str] = []
     reads: list[tuple[str, bool]] = []
-    for symbol in sorted({
-            # The front end renames some symbols with N64 appended, and the definitions take the
-            # names of the declarations, which the same renames reach.
-            name.removesuffix('N64')
-            for name in args.symbols.read_text(encoding='utf-8').split()
-    }):
+    # The front end renames some symbols with N64 appended, and the definitions take the names of
+    # the declarations, which the same renames reach.
+    symbols = {name.removesuffix('N64') for name in args.symbols.read_text(encoding='utf-8').split()}
+    # The data a datum addresses is defined too, so that its pointers have somewhere to go.
+    pending = list(symbols)
+    while pending:
+        symbol = pending.pop()
+        if symbol not in lengths:
+            continue
+        length, bss, address = lengths[symbol]
+        for offset in range(0, length if not bss else 0, 4):
+            operand = words.get(address + offset, '0x0')
+            if not operand.startswith('0x') and operand not in symbols:
+                symbols.add(operand)
+                pending.append(operand)
+    for symbol in sorted(symbols):
         declaration = find_declaration(args.root, symbol)
-        if declaration is None or symbol not in lengths:
+        if declaration is None or (symbol not in lengths and symbol not in overrides):
             definitions.append(f'// {symbol}: no declaration or no length in the assembly.')
             continue
         header, kind, extents = declaration
-        length, bss, address = lengths[symbol]
+        # A symbol outside the data of the assembly, given an extent, is zero like the BSS.
+        length, bss, address = lengths.get(symbol, (0, True, 0))
         headers.add(header)
         if symbol in overrides and extents.startswith('[]'):
             extents = overrides[symbol] + extents[2:]

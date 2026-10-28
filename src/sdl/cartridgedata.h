@@ -41,6 +41,9 @@ public:
      */
     static const std::uint8_t *Bytes(std::uint32_t address);
 
+    /** @return The whole cartridge image of Load(), big-endian. */
+    static std::span<const std::uint8_t> Rom();
+
     /**
      * @param name The name of a symbol of the release.
      * @return The address of the symbol on the console, or 0 when it is not known.

@@ -26,7 +26,9 @@
 #include "paths.h"
 #include "tlrenderer.h"
 #ifdef COASTLINE_PC_GAME
+#include "cartridgedata.h"
 #include "dinputcompat.h"
+#include "n64frontend.h"
 #include "pcgamerun.h"
 #include "scene.h"
 #endif
@@ -364,6 +366,21 @@ int main(int argc, char *argv[]) {
             config.Set(section, key, value);
         }
     }
+#ifdef COASTLINE_PC_GAME
+    // The data of the front end of the Nintendo 64 release, read and written to the log.
+    if (parser.present("--scene") == "n64-data") {
+        std::ifstream file(paths->data / "roms" / "usa.z64", std::ios::binary);
+        std::vector<std::uint8_t> rom(std::istreambuf_iterator<char>(file), {});
+        if (!coastline::CartridgeData::Load(rom)) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The USA cartridge has not been imported.");
+            return EXIT_FAILURE;
+        }
+        ReadN64FrontEndData();
+        LogN64FrontEndData();
+        SDL_Log("The front end starts at %p.", reinterpret_cast<void *>(&InitGameAndShowMenusN64));
+        return EXIT_SUCCESS;
+    }
+#endif
     int status = EXIT_FAILURE;
     {
         SdlSession sdl(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD);
