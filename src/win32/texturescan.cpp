@@ -91,9 +91,17 @@ void ScanGbiLoadSync(GbiCommand *pCommand) {
 }
 
 void ScanGbiLoadBlock(GbiCommand *pCommand) {
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    // The front end of the Nintendo 64 release loads a block right after setting its tile, with no
+    // load sync between them.
+    if (g_dwTexScanLoadState != TEX_SCAN_LOAD_SYNCED && g_dwTexScanLoadState != TEX_SCAN_TILE_SET) {
+        return;
+    }
+#else
     if (g_dwTexScanLoadState != TEX_SCAN_LOAD_SYNCED) {
         return;
     }
+#endif
     g_pTexScanLoadBlockSource = g_pTexScanImageAddress;
     g_dwTexScanLoadBlockSize =
         (TexScanField12(pCommand->w1, 12) - TexScanField12(pCommand->w0, 12)) * 2 + 2;
@@ -244,6 +252,10 @@ void PreprocessDisplayListTextures(GbiCommand *pCommand) {
         case GBI_OP_VERTEX:
         case GBI_OP_TRI2:
         case GBI_OP_TRI1:
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+        // The front end of the Nintendo 64 release draws its pictures with texture rectangles.
+        case G_TEXRECT:
+#endif
             FlushPendingTextureLoad(pCommand);
             break;
         case GBI_OP_END_DISPLAY_LIST:

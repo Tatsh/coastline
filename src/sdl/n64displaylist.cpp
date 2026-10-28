@@ -15,6 +15,7 @@
 #include "sdl/cartridgedata.h"
 #include "win32/displaylist.h"
 #include "win32/render.h"
+#include "win32/texturescan.h"
 
 namespace {
 
@@ -108,6 +109,9 @@ void PrepareDisplayList(GbiCommand *list) {
     if (cartridge && !g_readyLists.insert(list).second) {
         return;
     }
+    // The texture loads become the texture binds of the PC release, as for the display lists of
+    // its models.
+    PreprocessDisplayListTextures(list);
     for (GbiCommand *command = list;; ++command) {
         switch (command->w0 >> 24) {
         case G_ENDDL:
