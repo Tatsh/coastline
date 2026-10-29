@@ -109,7 +109,7 @@ OSPfsState g_aPakDirEntries[PAK_NOTES];
 OSPfsState g_aPakFileStates[PAK_NOTES];
 OSPfs g_aPakPfs[MAXCONTROLLERS];
 PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
-u8 g_aSmallFontTexture[9728 / coastline::ConsoleSizeOf<u8>()];
+u8 g_aSmallFontTexture[0x3D40];
 Gfx g_aSpeedometerNeedleDisplayList[108 / coastline::ConsoleSizeOf<Gfx>()];
 Vtx g_aSpeedometerNeedleVertices[32];
 Gfx g_aTachometerDisplayList[232 / coastline::ConsoleSizeOf<Gfx>()];

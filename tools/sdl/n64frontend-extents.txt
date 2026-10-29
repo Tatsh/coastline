@@ -10,5 +10,8 @@ g_apszPlaceNames [20]
 g_apszEngineLayouts [3]
 # g_szDriveTypeFWD, g_szDriveTypeRWD, and g_szDriveType4WD.
 g_apszDriveTypes [3]
+# 0x8029DA00 to g_abHudFontCharToGlyph at 0x802A1740, 392 texels by 40 rows, with
+# g_aOsAudioDataRegion at 0x802A0000.
+g_aSmallFontTexture [0x3D40]
 # Outside the data of the assembly: the slots of the models of the cars.
 g_aVehicleModels [VEHICLE_MODEL_SLOTS]
