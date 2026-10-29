@@ -9,7 +9,7 @@
 #include <windows.h>
 #endif
 
-#include "text.h"
+#include "common/text.h"
 #include "win32/diagnostics.h"
 #include "win32/hudcanvas.h"
 #include "win32/settings.h"

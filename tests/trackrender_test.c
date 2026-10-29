@@ -7,8 +7,8 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "trackrender.c"
-#include "visibleinstances.c"
+#include "common/trackrender.c"
+#include "common/visibleinstances.c"
 
 Gfx *gDisplayListPtr;
 static Gfx gfx[512];

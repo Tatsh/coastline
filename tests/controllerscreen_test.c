@@ -3,12 +3,12 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "common/heap.h"
+#include "common/system.h"
+#include "common/text.h"
+#include "common/vehicle.h"
 #include "controllerscreen.h"
-#include "heap.h"
 #include "options.h"
-#include "system.h"
-#include "text.h"
-#include "vehicle.h"
 
 Texture g_texControllerLayout0, g_texControllerLayout1, g_texControllerLayout2,
     g_texControllerLayout3, g_texControllerLayout4, g_TitleBarTextureDesc;

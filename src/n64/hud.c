@@ -1,4 +1,4 @@
-#include "hud.h"
+#include "common/hud.h"
 
 void StubDashboard(void) {
 }

@@ -184,7 +184,7 @@ void  zcfree (voidpf opaque, voidpf ptr)
 /* Game change: opaque is the bump allocator inflateInit2_() sets up. Allocations are aligned to
    8 bytes and not cleared, nothing is freed, and running out of heap stops the game. */
 #include <PR/os.h>
-#include "system.h"
+#include "common/system.h"
 
 /*
  * @ghidraAddress USA: 0x8024281c

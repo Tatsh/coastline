@@ -1,8 +1,8 @@
 #include <stddef.h>
 
-#include "driving.h"
-#include "frameclear.h"
-#include "racers.h"
+#include "common/driving.h"
+#include "common/frameclear.h"
+#include "common/racers.h"
 
 /* Native code clears these bytes each frame without reading their values. */
 /* @ghidraAddress BRD3D: 0x10af9b48 */

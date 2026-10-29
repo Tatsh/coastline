@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "rigidbody.h"
+#include "common/rigidbody.h"
 
 int osSyncPrintf(const char *format, ...) {
     return 0;

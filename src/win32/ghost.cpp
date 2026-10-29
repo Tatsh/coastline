@@ -5,12 +5,12 @@
 
 #include <zlib.h>
 
-#include "game.h"
-#include "instantreplay.h"
-#include "laps.h"
-#include "pause.h"
-#include "vehicleaccess.h"
-#include "vehiclephysics.h"
+#include "common/game.h"
+#include "common/instantreplay.h"
+#include "common/laps.h"
+#include "common/pause.h"
+#include "common/vehicleaccess.h"
+#include "common/vehiclephysics.h"
 #include "win32/directplay.h"
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include "sdl/ghostfile.h"

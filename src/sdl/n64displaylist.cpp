@@ -18,7 +18,7 @@
 #include <PR/gu.h>
 #include <SDL3/SDL.h>
 
-#include "screen.h"
+#include "common/screen.h"
 #include "sdl/cartridgedata.h"
 #include "sdl/d3dcompat.h"
 #include "sdl/renderhost.h"

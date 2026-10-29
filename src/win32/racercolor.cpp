@@ -1,12 +1,12 @@
 #include <cstring>
 
-#include "game.h"
-#include "racerslot.h"
-#include "racerslotaccess.h"
+#include "common/game.h"
+#include "common/racerslot.h"
+#include "common/racerslotaccess.h"
+#include "common/vehicleaccess.h"
+#include "common/vehiclecolor.h"
+#include "common/weather.h"
 #include "vehicle.h"
-#include "vehicleaccess.h"
-#include "vehiclecolor.h"
-#include "weather.h"
 #include "win32/boot/app.h"
 #include "win32/fileio.h"
 #include "win32/paintshop.h"

@@ -1,8 +1,8 @@
-#include "racerslot.h"
+#include "common/racerslot.h"
 
 #include <cstdlib>
 
-#include "vehicleaccess.h"
+#include "common/vehicleaccess.h"
 #include "win32/ghost.h"
 #include "win32/settings.h"
 

@@ -1,6 +1,6 @@
 #include "hudquad.h"
 
-#include "displaylistops.h"
+#include "common/displaylistops.h"
 
 void EmitIndexedQuadDrawCommand(s32 textureEntry, s32 x, s32 y, s32 width, s32 height) {
     gDisplayListWords(gDisplayListPtr++, 0xdc000000u | ((u32)textureEntry & 0xffffffu), 1);

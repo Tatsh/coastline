@@ -1,10 +1,10 @@
 #include "win32/hud.h"
 
-#include <fade.h>
-#include <render.h>
-#include <text.h>
+#include <common/fade.h>
+#include <common/render.h>
+#include <common/text.h>
 
-#include "frametime.h"
+#include "common/frametime.h"
 
 const char *g_pszDebugOverlayMessage;
 float g_fDebugOverlayMessageTimer;

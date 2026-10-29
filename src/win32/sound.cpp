@@ -11,7 +11,7 @@
 #include <objbase.h>
 #endif
 
-#include "soundchannel.h"
+#include "common/soundchannel.h"
 #include "win32/boot/app.h"
 #include "win32/boot/rallyconfig.h"
 #include "win32/earsound.h"

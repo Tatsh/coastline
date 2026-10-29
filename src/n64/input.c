@@ -1,15 +1,15 @@
-#include "input.h"
+#include "common/input.h"
 
 #include <PR/os.h>
 #include <PR/os_libc.h>
 
+#include "common/race.h"
+#include "common/rumble.h"
+#include "common/splash.h"
+#include "common/system.h"
+#include "common/vehicle.h"
 #include "options.h"
 #include "pakmenu.h"
-#include "race.h"
-#include "rumble.h"
-#include "splash.h"
-#include "system.h"
-#include "vehicle.h"
 
 /* The stick repeat: the axis to press, the axis to keep, and the delays in milliseconds. */
 #define STICK_PRESS 0.6f

@@ -1,8 +1,8 @@
 #include <stdio.h>
 
-#include <hud.h>
+#include <common/hud.h>
 
-#include "text.h"
+#include "common/text.h"
 #include "win32/framestatistics.h"
 #include "win32/hudcanvas.h"
 #include "win32/settings.h"

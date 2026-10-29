@@ -7,7 +7,7 @@
 
 #include <zlib.h>
 
-#include "weather.h"
+#include "common/weather.h"
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include "sdl/renderhost.h"
 #else

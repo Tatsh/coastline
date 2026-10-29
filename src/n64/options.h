@@ -9,8 +9,8 @@
 
 #include <PR/ultratypes.h>
 
+#include "common/volumecontrols.h"
 #include "racemenu.h"
-#include "volumecontrols.h"
 
 #ifdef __cplusplus
 extern "C" {

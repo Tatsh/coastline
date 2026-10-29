@@ -1,10 +1,10 @@
-#include "text.h"
+#include "common/text.h"
 
 #include <PR/gbi.h>
 
-#include "render.h"
-#include "replay.h"
-#include "system.h"
+#include "common/render.h"
+#include "common/replay.h"
+#include "common/system.h"
 
 /* Text smaller than this draws with the small font. */
 #define SMALL_FONT_MAX_SIZE 25

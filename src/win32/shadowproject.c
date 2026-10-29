@@ -1,5 +1,5 @@
-#include "../render.h"
-#include "trackshadow.h"
+#include "common/render.h"
+#include "common/trackshadow.h"
 
 long double ShadowTextureDistanceLeft(const ConvertedModelVertex *vertex) {
     return vertex->texture.x;

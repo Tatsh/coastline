@@ -1,6 +1,6 @@
 #include "win32/glide/renderer.h"
 
-#include "screen.h"
+#include "common/screen.h"
 #include "win32/render.h"
 #include "win32/settings.h"
 

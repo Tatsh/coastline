@@ -4,10 +4,10 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "common/vehiclephysics.c"
+#include "common/vehiclereset.c"
+#include "common/vehiclestatus.c"
 #include "vehicle.c"
-#include "vehiclephysics.c"
-#include "vehiclereset.c"
-#include "vehiclestatus.c"
 
 TrackHeader g_LoadedTrack;
 Vehicle g_aVehicles[MAX_VEHICLES];

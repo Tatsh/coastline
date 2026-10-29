@@ -78,12 +78,12 @@ if(TGR_PLATFORM STREQUAL "n64")
 
   # The game code of the Nintendo 64 releases. A routine joins this list when its body moves from
   # the assembly of the original into C.
-  set(_game_sources audio.c n64/audiomix.s n64/camera.c n64/carselect.c n64/controllerscreen.c n64/debugtext.c n64/decaldraw.c n64/decaleditor.c driving.c n64/effects.c fade.c game.c n64/hud.c n64/input.c heap.c n64/mainmenu.c mathutil.c n64/model.c n64/options.c n64/paintshop.c n64/pakmenu.c n64/physics.c n64/playerselect.c n64/race.c
-                    n64/racemenu.c racers.c n64/racesound.c replay.c rigidbody.c n64/rumble.c sky.c n64/snapshot.c n64/splash.c n64/sprite.c n64/system.c n64/text.c n64/texrect.c n64/timing.c n64/track.c trackrender.c util.c vecmath.c n64/vehicle.c vehiclemodel.c n64/vehiclerender.c n64/vehiclesetup.c visgrid.c n64/weather.c n64/weatherselect.c)
-  list(APPEND _game_sources bodyforces.c camerachase.c cameracollision.c displaylistops.c
-                           raceload.c racerender.c
-                           frameclear.c playerinput.c profileinit.c renderinit.c screen.c seasontrack.c
-                           vehiclechoice.c trackgrid.c tricache.c vehiclereset.c fog.c screendraw.c)
+  set(_game_sources common/audio.c n64/audiomix.s n64/camera.c n64/carselect.c n64/controllerscreen.c n64/debugtext.c n64/decaldraw.c n64/decaleditor.c common/driving.c n64/effects.c common/fade.c common/game.c n64/hud.c n64/input.c common/heap.c n64/mainmenu.c common/mathutil.c n64/model.c n64/options.c n64/paintshop.c n64/pakmenu.c n64/physics.c n64/playerselect.c n64/race.c
+                    n64/racemenu.c common/racers.c n64/racesound.c common/replay.c common/rigidbody.c n64/rumble.c common/sky.c n64/snapshot.c n64/splash.c n64/sprite.c n64/system.c n64/text.c n64/texrect.c n64/timing.c n64/track.c common/trackrender.c common/util.c common/vecmath.c n64/vehicle.c common/vehiclemodel.c n64/vehiclerender.c n64/vehiclesetup.c common/visgrid.c n64/weather.c n64/weatherselect.c)
+  list(APPEND _game_sources common/bodyforces.c common/camerachase.c common/cameracollision.c common/displaylistops.c
+                           common/raceload.c common/racerender.c
+                           common/frameclear.c common/playerinput.c common/profileinit.c common/renderinit.c common/screen.c common/seasontrack.c
+                           common/vehiclechoice.c common/trackgrid.c common/tricache.c common/vehiclereset.c common/fog.c common/screendraw.c)
   # These sources write the Japanese text in UTF-8. The Japanese release compiles copies with the
   # text in the glyph codes of its font.
   if(TGR_REGION STREQUAL "jp")
@@ -107,26 +107,26 @@ else()
   # The game code the PC port retained from the N64 releases. A source joins this list when every
   # routine of it that the PC libraries have compiles for them.
   set_source_files_properties(
-    camerachange.c camerachase.c cameracollision.c displaylistops.c fog.c headlight.c
-    playercontrol.c routeposition.c seasontrack.c tracetrack.c trackinstance.c vehiclechoice.c
-    vehiclemodelrender.c vehiclephysics.c vehiclereset.c vehiclesound.c vehiclevisibility.c
-    wheelrender.c vehiclestatus.c vehicletrackpos.c vehicledeform.c racerstate.c racers.c
-    exhaustspawn.c tiresmokespawn.c tiresprayemit.c tirespray.c vehiclepaint.c precipitationupdate.c
-    billboardparticles.c particlesmokerender.c particleexhaustrender.c tiresprayrender.c precipitationrender.c
-    sky.c hudrace.c hudmessage.c dashboard.c raceresults.c hudoverlay.c visibleinstances.c
-    lastlapsnapshot.c trackrender.c racerender.c raceload.c
+    common/camerachange.c common/camerachase.c common/cameracollision.c common/displaylistops.c common/fog.c common/headlight.c
+    common/playercontrol.c common/routeposition.c common/seasontrack.c common/tracetrack.c common/trackinstance.c common/vehiclechoice.c
+    common/vehiclemodelrender.c common/vehiclephysics.c common/vehiclereset.c common/vehiclesound.c common/vehiclevisibility.c
+    common/wheelrender.c common/vehiclestatus.c common/vehicletrackpos.c common/vehicledeform.c common/racerstate.c common/racers.c
+    common/exhaustspawn.c common/tiresmokespawn.c common/tiresprayemit.c common/tirespray.c common/vehiclepaint.c common/precipitationupdate.c
+    common/billboardparticles.c common/particlesmokerender.c common/particleexhaustrender.c common/tiresprayrender.c common/precipitationrender.c
+    common/sky.c common/hudrace.c common/hudmessage.c common/dashboard.c common/raceresults.c common/hudoverlay.c common/visibleinstances.c
+    common/lastlapsnapshot.c common/trackrender.c common/racerender.c common/raceload.c
     PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(controllerread.c inputtranslate.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(volumecontrols.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(ambientsound.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(racerinit.c racermotion.c racersharing.c raceprogress.c
-                              vehicleengine.c collisionstep.c driving.c PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(common/controllerread.c common/inputtranslate.c PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(common/volumecontrols.c PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(common/ambientsound.c PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(common/racerinit.c common/racermotion.c common/racersharing.c common/raceprogress.c
+                              common/vehicleengine.c common/collisionstep.c common/driving.c PROPERTIES LANGUAGE CXX)
   add_library(
-    coastline_game STATIC bodyforces.c camerachase.c cameracollision.c displaylistops.c fade.c racers.c
-                          fog.c frameclear.c game.c heap.c mathutil.c playerinput.c profileinit.c
-                          replay.c rigidbody.c renderinit.c screen.c screendraw.c seasontrack.c trackgrid.c tricache.c
-                          util.c vecmath.c
-                          vehiclechoice.c vehiclemodel.c vehiclereset.c visgrid.c
+    coastline_game STATIC common/bodyforces.c common/camerachase.c common/cameracollision.c common/displaylistops.c common/fade.c common/racers.c
+                          common/fog.c common/frameclear.c common/game.c common/heap.c common/mathutil.c common/playerinput.c common/profileinit.c
+                          common/replay.c common/rigidbody.c common/renderinit.c common/screen.c common/screendraw.c common/seasontrack.c common/trackgrid.c common/tricache.c
+                          common/util.c common/vecmath.c
+                          common/vehiclechoice.c common/vehiclemodel.c common/vehiclereset.c common/visgrid.c
                           libultra/gu/lookat.c libultra/gu/lookathil.c libultra/gu/lookatref.c
                           libultra/gu/mtxcatf.c
                           libultra/gu/mtxutil.c libultra/gu/scale.c libultra/gu/translate.c
@@ -138,7 +138,7 @@ else()
   endif()
   list(APPEND COASTLINE_LIBRARIES coastline_game)
 
-  target_sources(coastline_game PRIVATE racerender.c raceload.c)
+  target_sources(coastline_game PRIVATE common/racerender.c common/raceload.c)
 
   # The PC libraries link the checksum of the vendored zlib 1.0.4 and not its inflate side.
   set(_zlib "${CMAKE_SOURCE_DIR}/3rdparty/zlib-1.0.4")
@@ -151,86 +151,86 @@ else()
   list(APPEND COASTLINE_LIBRARIES coastline_zlib)
 endif()
 
-target_sources(coastline_game PRIVATE assetdma.c camerarender.c collisionstep.c cubeclip.c framebegin.c frameflush.c materialcolor.c
-                                     modelanimation.c modelanimationflags.c modelrelocation.c playercontrol.c racerinit.c routewalk.c sidegrip.c
-                                     rledecompress.c routeposition.c textrender.c textstyle.c timingframe.c
-                                     vehicleengine.c vehiclephysics.c)
+target_sources(coastline_game PRIVATE common/assetdma.c common/camerarender.c common/collisionstep.c common/cubeclip.c common/framebegin.c common/frameflush.c common/materialcolor.c
+                                     common/modelanimation.c common/modelanimationflags.c common/modelrelocation.c common/playercontrol.c common/racerinit.c common/routewalk.c common/sidegrip.c
+                                     common/rledecompress.c common/routeposition.c common/textrender.c common/textstyle.c common/timingframe.c
+                                     common/vehicleengine.c common/vehiclephysics.c)
 
-target_sources(coastline_game PRIVATE tracetrack.c iomessage.c texturestream.c soundeffect.c soundsource.c)
-target_sources(coastline_game PRIVATE completionthreads.c)
-target_sources(coastline_game PRIVATE precipitationupdate.c)
-target_sources(coastline_game PRIVATE billboardparticles.c)
-target_sources(coastline_game PRIVATE particlesmokerender.c)
-target_sources(coastline_game PRIVATE particleexhaustrender.c tiresprayrender.c)
-target_sources(coastline_game PRIVATE precipitationrender.c)
+target_sources(coastline_game PRIVATE common/tracetrack.c common/iomessage.c common/texturestream.c common/soundeffect.c common/soundsource.c)
+target_sources(coastline_game PRIVATE common/completionthreads.c)
+target_sources(coastline_game PRIVATE common/precipitationupdate.c)
+target_sources(coastline_game PRIVATE common/billboardparticles.c)
+target_sources(coastline_game PRIVATE common/particlesmokerender.c)
+target_sources(coastline_game PRIVATE common/particleexhaustrender.c common/tiresprayrender.c)
+target_sources(coastline_game PRIVATE common/precipitationrender.c)
 if(TGR_PLATFORM STREQUAL "win")
-  target_sources(coastline_game PRIVATE trackrender.c)
+  target_sources(coastline_game PRIVATE common/trackrender.c)
   target_sources(coastline_game PRIVATE libultra/os/recvmesg.c libultra/os/sendmesg.c)
   target_sources(coastline_game PRIVATE libultra/os/syncprintf.c)
-  target_sources(coastline_game PRIVATE sky.c)
+  target_sources(coastline_game PRIVATE common/sky.c)
 endif()
-target_sources(coastline_game PRIVATE soundpan.c)
-target_sources(coastline_game PRIVATE vehiclestatus.c)
-target_sources(coastline_game PRIVATE vehicletrackpos.c)
-target_sources(coastline_game PRIVATE vehicledeform.c)
-target_sources(coastline_game PRIVATE racerstate.c)
-target_sources(coastline_game PRIVATE exhaustspawn.c)
-target_sources(coastline_game PRIVATE tiresmokespawn.c)
-target_sources(coastline_game PRIVATE vehiclepaint.c)
-target_sources(coastline_game PRIVATE tiresprayemit.c)
-target_sources(coastline_game PRIVATE tirespray.c)
-target_sources(coastline_game PRIVATE vehiclesound.c)
-target_sources(coastline_game PRIVATE racersharing.c)
-target_sources(coastline_game PRIVATE racermotion.c frametime.c)
-target_sources(coastline_game PRIVATE raceprogress.c laptime.c)
-target_sources(coastline_game PRIVATE controllerread.c)
-target_sources(coastline_game PRIVATE inputtranslate.c)
-target_sources(coastline_game PRIVATE vehiclevisibility.c)
-target_sources(coastline_game PRIVATE debuginstance.c)
-target_sources(coastline_game PRIVATE shadowreset.c)
-target_sources(coastline_game PRIVATE savestate.c)
-target_sources(coastline_game PRIVATE volumecontrols.c)
-target_sources(coastline_game PRIVATE camerachange.c)
-target_sources(coastline_game PRIVATE ambientsound.c)
-target_sources(coastline_game PRIVATE lightning.c)
-target_sources(coastline_game PRIVATE hudtime.c)
-target_sources(coastline_game PRIVATE hudrace.c racephases.c racespecials.c raceinit.c)
-target_sources(coastline_game PRIVATE racecontrols.c racefinish.c racerun.c)
+target_sources(coastline_game PRIVATE common/soundpan.c)
+target_sources(coastline_game PRIVATE common/vehiclestatus.c)
+target_sources(coastline_game PRIVATE common/vehicletrackpos.c)
+target_sources(coastline_game PRIVATE common/vehicledeform.c)
+target_sources(coastline_game PRIVATE common/racerstate.c)
+target_sources(coastline_game PRIVATE common/exhaustspawn.c)
+target_sources(coastline_game PRIVATE common/tiresmokespawn.c)
+target_sources(coastline_game PRIVATE common/vehiclepaint.c)
+target_sources(coastline_game PRIVATE common/tiresprayemit.c)
+target_sources(coastline_game PRIVATE common/tirespray.c)
+target_sources(coastline_game PRIVATE common/vehiclesound.c)
+target_sources(coastline_game PRIVATE common/racersharing.c)
+target_sources(coastline_game PRIVATE common/racermotion.c common/frametime.c)
+target_sources(coastline_game PRIVATE common/raceprogress.c common/laptime.c)
+target_sources(coastline_game PRIVATE common/controllerread.c)
+target_sources(coastline_game PRIVATE common/inputtranslate.c)
+target_sources(coastline_game PRIVATE common/vehiclevisibility.c)
+target_sources(coastline_game PRIVATE common/debuginstance.c)
+target_sources(coastline_game PRIVATE common/shadowreset.c)
+target_sources(coastline_game PRIVATE common/savestate.c)
+target_sources(coastline_game PRIVATE common/volumecontrols.c)
+target_sources(coastline_game PRIVATE common/camerachange.c)
+target_sources(coastline_game PRIVATE common/ambientsound.c)
+target_sources(coastline_game PRIVATE common/lightning.c)
+target_sources(coastline_game PRIVATE common/hudtime.c)
+target_sources(coastline_game PRIVATE common/hudrace.c common/racephases.c common/racespecials.c common/raceinit.c)
+target_sources(coastline_game PRIVATE common/racecontrols.c common/racefinish.c common/racerun.c)
 if(TGR_PLATFORM STREQUAL "win")
-  set_source_files_properties(racephases.c racespecials.c raceinit.c racecontrols.c racefinish.c racerun.c
+  set_source_files_properties(common/racephases.c common/racespecials.c common/raceinit.c common/racecontrols.c common/racefinish.c common/racerun.c
                               PROPERTIES LANGUAGE CXX)
 endif()
-target_sources(coastline_game PRIVATE hudmessage.c)
-target_sources(coastline_game PRIVATE dashboard.c)
-target_sources(coastline_game PRIVATE raceresults.c)
-target_sources(coastline_game PRIVATE hudoverlay.c)
-target_sources(coastline_game PRIVATE screenrect.c)
-target_sources(coastline_game PRIVATE visibleinstances.c)
-target_sources(coastline_game PRIVATE modeldraw.c)
-target_sources(coastline_game PRIVATE headlightglare.c)
-target_sources(coastline_game PRIVATE fadeupdate.c)
-target_sources(coastline_game PRIVATE screenfade.c)
-target_sources(coastline_game PRIVATE lastlapsnapshot.c)
-target_sources(coastline_game PRIVATE skystate.c visiblecompare.c)
-target_sources(coastline_game PRIVATE raininit.c)
-target_sources(coastline_game PRIVATE wind.c)
-target_sources(coastline_game PRIVATE loadcar.c)
-target_sources(coastline_game PRIVATE particleinit.c)
-target_sources(coastline_game PRIVATE particleupdate.c)
-target_sources(coastline_game PRIVATE vehicleeffects.c)
-target_sources(coastline_game PRIVATE emptycallback.c racecredits.c startlights.c trackvalid.c vblankquery.c)
-target_sources(coastline_game PRIVATE wheelrender.c)
-target_sources(coastline_game PRIVATE texturebind.c)
-target_sources(coastline_game PRIVATE headlight.c)
-target_sources(coastline_game PRIVATE vehiclemodelrender.c)
-target_sources(coastline_game PRIVATE trackinstance.c)
+target_sources(coastline_game PRIVATE common/hudmessage.c)
+target_sources(coastline_game PRIVATE common/dashboard.c)
+target_sources(coastline_game PRIVATE common/raceresults.c)
+target_sources(coastline_game PRIVATE common/hudoverlay.c)
+target_sources(coastline_game PRIVATE common/screenrect.c)
+target_sources(coastline_game PRIVATE common/visibleinstances.c)
+target_sources(coastline_game PRIVATE common/modeldraw.c)
+target_sources(coastline_game PRIVATE common/headlightglare.c)
+target_sources(coastline_game PRIVATE common/fadeupdate.c)
+target_sources(coastline_game PRIVATE common/screenfade.c)
+target_sources(coastline_game PRIVATE common/lastlapsnapshot.c)
+target_sources(coastline_game PRIVATE common/skystate.c common/visiblecompare.c)
+target_sources(coastline_game PRIVATE common/raininit.c)
+target_sources(coastline_game PRIVATE common/wind.c)
+target_sources(coastline_game PRIVATE common/loadcar.c)
+target_sources(coastline_game PRIVATE common/particleinit.c)
+target_sources(coastline_game PRIVATE common/particleupdate.c)
+target_sources(coastline_game PRIVATE common/vehicleeffects.c)
+target_sources(coastline_game PRIVATE common/emptycallback.c common/racecredits.c common/startlights.c common/trackvalid.c common/vblankquery.c)
+target_sources(coastline_game PRIVATE common/wheelrender.c)
+target_sources(coastline_game PRIVATE common/texturebind.c)
+target_sources(coastline_game PRIVATE common/headlight.c)
+target_sources(coastline_game PRIVATE common/vehiclemodelrender.c)
+target_sources(coastline_game PRIVATE common/trackinstance.c)
 if(TGR_PLATFORM STREQUAL "win")
-  set_source_files_properties(loadcar.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(particleinit.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(particleupdate.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(vehicleeffects.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(vehiclemodelrender.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(trackinstance.c PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(common/loadcar.c PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(common/particleinit.c PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(common/particleupdate.c PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(common/vehicleeffects.c PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(common/vehiclemodelrender.c PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(common/trackinstance.c PROPERTIES LANGUAGE CXX)
   target_sources(coastline_game PRIVATE win32/convertedvertex.c)
   target_sources(coastline_game PRIVATE win32/shadowproject.c)
   target_sources(coastline_game PRIVATE win32/shadowclip.cpp)
@@ -238,7 +238,7 @@ if(TGR_PLATFORM STREQUAL "win")
 endif()
 
 if(TGR_PLATFORM STREQUAL "win")
-  target_sources(coastline_game PRIVATE driving.c)
+  target_sources(coastline_game PRIVATE common/driving.c)
 endif()
 
 add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES})

@@ -1,11 +1,11 @@
 #include "playerselect.h"
 
-#include "fade.h"
-#include "input.h"
+#include "common/fade.h"
+#include "common/input.h"
+#include "common/system.h"
+#include "common/text.h"
 #include "mainmenu.h"
 #include "racemenu.h"
-#include "system.h"
-#include "text.h"
 
 /* The item of the screen that the controllers can make unavailable. */
 #define ITEM_TWO_PLAYERS 1

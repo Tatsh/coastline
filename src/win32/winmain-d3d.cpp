@@ -11,10 +11,10 @@
 #include <dbt.h>
 #include <objbase.h>
 
-#include "instantreplay.h"
-#include "laps.h"
-#include "pause.h"
-#include "timing.h"
+#include "common/instantreplay.h"
+#include "common/laps.h"
+#include "common/pause.h"
+#include "common/timing.h"
 #include "vehicle.h"
 #include "win32/boot/app.h"
 #include "win32/boot/rallyconfig.h"

@@ -2,7 +2,7 @@
 
 #include <cmath>
 
-#include "trackselect.h"
+#include "common/trackselect.h"
 #include "win32/directplay.h"
 #include "win32/ghost.h"
 #include "win32/settings.h"

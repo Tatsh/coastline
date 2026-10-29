@@ -1,11 +1,11 @@
 #include "weatherselect.h"
 
 #include "carselect.h"
-#include "input.h"
+#include "common/input.h"
+#include "common/system.h"
+#include "common/trackselect.h"
+#include "common/weather.h"
 #include "racemenu.h"
-#include "system.h"
-#include "trackselect.h"
-#include "weather.h"
 
 s32 IsWeatherSelectable(s32 weather) {
     return weather != WEATHER_SUNNY ||

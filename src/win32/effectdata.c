@@ -1,4 +1,4 @@
-#include <soundeffect.h>
+#include <common/soundeffect.h>
 
 SoundEffect g_aSoundEffects[SOUND_EFFECTS] = {
     {0, 269179560u, 269179564u, 0u, -1, -1},

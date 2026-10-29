@@ -8,7 +8,7 @@
 
 #include <zlib.h>
 
-#include "vehiclemodel.h"
+#include "common/vehiclemodel.h"
 #include "win32/d3d/renderer.h"
 #include "win32/displaylist.h"
 #include "win32/frontend.h"

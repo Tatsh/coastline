@@ -4,22 +4,22 @@
 #include <PR/os_cont.h>
 #include <PR/os_libc.h>
 
-#include "audio.h"
+#include "common/audio.h"
+#include "common/fade.h"
+#include "common/game.h"
+#include "common/heap.h"
+#include "common/input.h"
+#include "common/render.h"
+#include "common/replay.h"
+#include "common/rumble.h"
+#include "common/system.h"
+#include "common/text.h"
+#include "common/trackselect.h"
+#include "common/vehicle.h"
 #include "controllerscreen.h"
-#include "fade.h"
-#include "game.h"
-#include "heap.h"
-#include "input.h"
 #include "mainmenu.h"
 #include "pakmenu.h"
-#include "render.h"
-#include "replay.h"
-#include "rumble.h"
 #include "sprite.h"
-#include "system.h"
-#include "text.h"
-#include "trackselect.h"
-#include "vehicle.h"
 
 /* The time the sounds and the screen take to fade, in seconds. */
 #define FADE_SECONDS 0.2f

@@ -17,8 +17,11 @@
 #include <PR/os_cont.h>
 #include <SDL3/SDL.h>
 
-#include "assetdma.h"
-#include "audio.h"
+#include "common/assetdma.h"
+#include "common/audio.h"
+#include "common/seasons.h"
+#include "common/texrect.h"
+#include "common/vehicle.h"
 #include "n64/mainmenu.h"
 #include "n64/pakmenu.h"
 #include "n64/sprite.h"
@@ -28,9 +31,6 @@
 #include "sdl/music.h"
 #include "sdl/n64frontend.h"
 #include "sdl/n64texture.h"
-#include "seasons.h"
-#include "texrect.h"
-#include "vehicle.h"
 
 void LogN64FrontEndData(void) {
     for (int i = 0; g_apWeatherMenuItems[i] != nullptr; ++i) {

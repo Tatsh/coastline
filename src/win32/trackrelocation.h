@@ -1,6 +1,6 @@
 #pragma once
 
-#include "track.h"
+#include "common/track.h"
 #include "win32/fileio.h"
 
 #ifdef __cplusplus

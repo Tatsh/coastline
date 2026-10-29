@@ -1,19 +1,19 @@
-#include "vehiclerender.h"
+#include "common/vehiclerender.h"
 
 #include <PR/gu.h>
 #include <PR/os_libc.h>
 
-#include "camera.h"
-#include "fade.h"
-#include "input.h"
-#include "mathutil.h"
-#include "modeldisplaylist.h"
+#include "common/camera.h"
+#include "common/fade.h"
+#include "common/input.h"
+#include "common/mathutil.h"
+#include "common/modeldisplaylist.h"
+#include "common/render.h"
+#include "common/track.h"
+#include "common/util.h"
+#include "common/visgrid.h"
+#include "common/weather.h"
 #include "racemenu.h"
-#include "render.h"
-#include "track.h"
-#include "util.h"
-#include "visgrid.h"
-#include "weather.h"
 
 /* The sides of a fan, and the radius of the needle fan in its units. */
 #define NEEDLE_FAN_POINTS 31

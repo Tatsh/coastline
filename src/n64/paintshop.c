@@ -5,23 +5,23 @@
 #include <PR/os_cont.h>
 #include <PR/os_libc.h>
 
-#include "camera.h"
+#include "common/camera.h"
+#include "common/fade.h"
+#include "common/game.h"
+#include "common/heap.h"
+#include "common/input.h"
+#include "common/render.h"
+#include "common/rumble.h"
+#include "common/system.h"
+#include "common/text.h"
+#include "common/timing.h"
+#include "common/vehiclerender.h"
+#include "common/visgrid.h"
+#include "common/weather.h"
 #include "decaldraw.h"
-#include "fade.h"
-#include "game.h"
-#include "heap.h"
-#include "input.h"
 #include "options.h"
 #include "pakmenu.h"
 #include "racemenu.h"
-#include "render.h"
-#include "rumble.h"
-#include "system.h"
-#include "text.h"
-#include "timing.h"
-#include "vehiclerender.h"
-#include "visgrid.h"
-#include "weather.h"
 
 /* The decal slot the paint shop opens on, and the brush and color it opens with. */
 #define DEFAULT_DECAL_SLOT 2

@@ -9,14 +9,14 @@
 #include <mutex>
 #include <vector>
 
-#include "instantreplay.h"
-#include "pause.h"
-#include "race.h"
+#include "common/instantreplay.h"
+#include "common/pause.h"
+#include "common/race.h"
+#include "common/trackselect.h"
 #include "sdl/d3dcompat.h"
 #include "sdl/gamefiles.h"
 #include "sdl/n64displaylist.h"
 #include "sdl/renderhost.h"
-#include "trackselect.h"
 #include "win32/boot/app.h"
 #include "win32/boot/rallyconfig.h"
 #include "win32/boot/strings.h"

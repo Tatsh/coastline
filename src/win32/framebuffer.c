@@ -1,6 +1,6 @@
-#include <render.h>
+#include <common/render.h>
 
-#include "system.h"
+#include "common/system.h"
 
 // The Windows backend clears buffers outside these compatibility entry points.
 void ClearDepthBuffer(void) {

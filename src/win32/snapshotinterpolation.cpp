@@ -1,11 +1,11 @@
 #include <cstring>
 #include <initializer_list>
 
-#include "race.h"
+#include "common/race.h"
+#include "common/vehiclecount.h"
 #include "settings.h"
 #include "snapshot.h"
 #include "timer.h"
-#include "vehiclecount.h"
 
 /** @ghidraAddress BRD3D: 0x104afd14 */
 int g_dwFrameSnapshotBlendFromSlot;

@@ -1,6 +1,6 @@
 #include <stddef.h>
 
-#include "trackmenuitem.h"
+#include "common/trackmenuitem.h"
 
 /* These native segment markers have only descriptor references and are never read. */
 /* @ghidraAddress BRD3D: 0x117824f0 */

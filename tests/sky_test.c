@@ -2,12 +2,12 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "input.h"
-#include "render.h"
-#include "sky.h"
-#include "track.h"
-#include "util.h"
-#include "weather.h"
+#include "common/input.h"
+#include "common/render.h"
+#include "common/sky.h"
+#include "common/track.h"
+#include "common/util.h"
+#include "common/weather.h"
 
 Gfx *gDisplayListPtr;
 Mtx *g_pProjectionMtx;

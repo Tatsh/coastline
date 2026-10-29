@@ -1,10 +1,10 @@
 #include "controllerscreen.h"
 
-#include "heap.h"
+#include "common/heap.h"
+#include "common/system.h"
+#include "common/text.h"
+#include "common/vehicle.h"
 #include "options.h"
-#include "system.h"
-#include "text.h"
-#include "vehicle.h"
 
 /* The size of the labels. */
 #define LABEL_TEXT_SIZE 8

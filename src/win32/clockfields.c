@@ -1,9 +1,9 @@
 #include <stddef.h>
 
-#include "frametime.h"
-#include "replay.h"
-#include "system.h"
-#include "vecmath.h"
+#include "common/frametime.h"
+#include "common/replay.h"
+#include "common/system.h"
+#include "common/vecmath.h"
 
 SaveField g_aPausedClockFields[] = {
     {&g_dwRandomSeed, sizeof(g_dwRandomSeed)},

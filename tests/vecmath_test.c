@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "vecmath.h"
+#include "common/vecmath.h"
 
 u32 g_dwRandomSeed;
 static const char *lastMessage;

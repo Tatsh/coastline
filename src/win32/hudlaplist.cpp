@@ -1,14 +1,14 @@
 #include <cmath>
 
-#include <hud.h>
+#include <common/hud.h>
 
-#include "camera.h"
-#include "laptime.h"
+#include "common/camera.h"
+#include "common/laptime.h"
+#include "common/text.h"
+#include "common/vehicleaccess.h"
+#include "common/vehiclecount.h"
 #include "render.h"
-#include "text.h"
 #include "vehicle.h"
-#include "vehicleaccess.h"
-#include "vehiclecount.h"
 #include "win32/hud.h"
 #include "win32/hudcanvas.h"
 #include "win32/settings.h"

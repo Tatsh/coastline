@@ -4,15 +4,15 @@
 #include <PR/os.h>
 #include <PR/os_libc.h>
 
+#include "common/fade.h"
+#include "common/input.h"
+#include "common/render.h"
+#include "common/system.h"
+#include "common/text.h"
+#include "common/vehicle.h"
+#include "common/vehiclerender.h"
 #include "decaldraw.h"
-#include "fade.h"
-#include "input.h"
 #include "pakmenu.h"
-#include "render.h"
-#include "system.h"
-#include "text.h"
-#include "vehicle.h"
-#include "vehiclerender.h"
 
 /* The buttons that pick and paint. */
 #define INPUT_PICK (INPUT_Z | INPUT_A)

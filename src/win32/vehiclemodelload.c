@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "vehiclemodel.h"
+#include "common/vehiclemodel.h"
 #include "win32/boot/fatalerror.h"
 #include "win32/fileio.h"
 #include "win32/paintshop.h"

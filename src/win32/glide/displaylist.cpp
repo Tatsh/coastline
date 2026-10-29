@@ -3,11 +3,11 @@
 #include <cmath>
 #include <functional>
 
-#include "convertedvertex.h"
-#include "displaylistops.h"
-#include "displaylistptr.h"
-#include "screen.h"
-#include "weather.h"
+#include "common/convertedvertex.h"
+#include "common/displaylistops.h"
+#include "common/displaylistptr.h"
+#include "common/screen.h"
+#include "common/weather.h"
 #include "win32/glide/renderer.h"
 #include "win32/render.h"
 #include "win32/settings.h"
@@ -15,7 +15,7 @@
 
 // Windows headers define DrawText as a GDI alias.
 #undef DrawText
-#include "text.h"
+#include "common/text.h"
 
 // The bits of the geometry mode of the console the handlers read.
 #define GBI_GEOMETRY_Z_BUFFER 0x1

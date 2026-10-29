@@ -1,15 +1,15 @@
 #include <PR/gu.h>
 
-#include "camera.h"
-#include "game.h"
-#include "input.h"
+#include "common/camera.h"
+#include "common/game.h"
+#include "common/input.h"
+#include "common/track.h"
+#include "common/trackselect.h"
+#include "common/vecmath.h"
+#include "common/vehicle.h"
+#include "common/vehiclechoice.h"
+#include "common/weather.h"
 #include "racemenu.h"
-#include "track.h"
-#include "trackselect.h"
-#include "vecmath.h"
-#include "vehicle.h"
-#include "vehiclechoice.h"
-#include "weather.h"
 
 /* The profiles a controller pak keeps, one for each of the first two players. */
 #define SAVED_PROFILES 2

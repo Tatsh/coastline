@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#include "trackshadow.h"
+#include "common/trackshadow.h"
 #include "win32/clipplane.h"
 
 #if TGR_PC

@@ -3,10 +3,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "debugtext.h"
-#include "system.h"
-#include "track.h"
-#include "util.h"
+#include "common/debugtext.h"
+#include "common/system.h"
+#include "common/track.h"
+#include "common/util.h"
 
 s16 g_aBitmapFontWide[BITMAP_FONT_GLYPHS][BITMAP_FONT_ROWS][BITMAP_FONT_WIDE_COLUMNS];
 s16 g_aBitmapFontNarrow[BITMAP_FONT_GLYPHS][BITMAP_FONT_ROWS][BITMAP_FONT_NARROW_COLUMNS];

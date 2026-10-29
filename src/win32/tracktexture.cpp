@@ -1,7 +1,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include "weather.h"
+#include "common/weather.h"
 #include "win32/fileio.h"
 #include "win32/render.h"
 #include "win32/settings.h"

@@ -6,7 +6,7 @@
  * and their saving and restoring.
  */
 
-#include "profile.h"
+#include "common/profile.h"
 #include "vehicle.h"
 
 class MenuItemList;

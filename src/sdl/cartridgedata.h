@@ -23,7 +23,7 @@
 
 #include <boost/pfr.hpp>
 
-#include "ptr32.h"
+#include "common/ptr32.h"
 
 namespace coastline {
 

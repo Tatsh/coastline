@@ -8,8 +8,8 @@
 #include <PR/gu.h>
 
 #include "clipplane.h"
-#include "displaylistptr.h"
-#include "weather.h"
+#include "common/displaylistptr.h"
+#include "common/weather.h"
 #include "win32/boot/app.h"
 #include "win32/hudcanvas.h"
 #include "win32/render.h"
@@ -18,7 +18,7 @@
 
 // Windows headers define DrawText as a GDI alias.
 #undef DrawText
-#include "text.h"
+#include "common/text.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include "sdl/renderhost.h"

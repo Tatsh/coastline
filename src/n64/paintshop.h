@@ -9,10 +9,10 @@
 
 #include <PR/ultratypes.h>
 
+#include "common/vecmath.h"
+#include "common/vehicle.h"
 #include "decaleditor.h"
 #include "sprite.h"
-#include "vecmath.h"
-#include "vehicle.h"
 
 #ifdef __cplusplus
 extern "C" {

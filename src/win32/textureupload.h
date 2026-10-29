@@ -1,7 +1,7 @@
 #ifndef COASTLINE_PLATFORM_WIN_TEXTUREUPLOAD_H
 #define COASTLINE_PLATFORM_WIN_TEXTUREUPLOAD_H
 
-#include "types.h"
+#include "common/types.h"
 
 /** A texture upload receives numeric command data or a pixel buffer. */
 typedef union TextureUploadData {

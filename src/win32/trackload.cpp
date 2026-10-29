@@ -4,9 +4,9 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "physics.h"
-#include "trackmenuitem.h"
-#include "util.h"
+#include "common/physics.h"
+#include "common/trackmenuitem.h"
+#include "common/util.h"
 #include "win32/fileio.h"
 #include "win32/render.h"
 #include "win32/settings.h"

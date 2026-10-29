@@ -5,7 +5,7 @@
 
 #include <zlib.h>
 
-#include "vehiclemodel.h"
+#include "common/vehiclemodel.h"
 #include "win32/boot/app.h"
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include "sdl/renderhost.h"

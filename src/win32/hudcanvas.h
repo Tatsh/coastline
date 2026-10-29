@@ -1,7 +1,7 @@
 #ifndef COASTLINE_WIN_HUDCANVAS_H
 #define COASTLINE_WIN_HUDCANVAS_H
 
-#include <render.h>
+#include <common/render.h>
 
 #define GBI_OP_HUD_CANVAS 0xd8
 #define GBI_OP_FULL_SCISSOR 0xd7

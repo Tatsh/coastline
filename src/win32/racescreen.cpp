@@ -1,13 +1,13 @@
-#include "fade.h"
-#include "game.h"
-#include "race.h"
-#include "racerender.h"
+#include "common/fade.h"
+#include "common/game.h"
+#include "common/race.h"
+#include "common/racerender.h"
+#include "common/shadowbuffers.h"
+#include "common/sky.h"
+#include "common/system.h"
+#include "common/timing.h"
 #include "render.h"
-#include "shadowbuffers.h"
-#include "sky.h"
 #include "snapshot.h"
-#include "system.h"
-#include "timing.h"
 
 namespace {
 /**

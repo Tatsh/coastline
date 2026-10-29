@@ -1,15 +1,15 @@
-#include "weather.h"
+#include "common/weather.h"
 
 #include <PR/gbi.h>
 #include <PR/gu.h>
 
-#include "audiomix.h"
-#include "camera.h"
-#include "render.h"
-#include "system.h"
-#include "timing.h"
-#include "track.h"
-#include "vehicle.h"
+#include "common/audiomix.h"
+#include "common/camera.h"
+#include "common/render.h"
+#include "common/system.h"
+#include "common/timing.h"
+#include "common/track.h"
+#include "common/vehicle.h"
 
 void SubdivideLightningBolt(s32 index, s32 span) {
     s32 mask = span * 8 - 1;

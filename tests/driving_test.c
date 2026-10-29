@@ -4,8 +4,8 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "driving.c"
-#include "playercontrol.c"
+#include "common/driving.c"
+#include "common/playercontrol.c"
 
 TrackHeader g_LoadedTrack;
 ViewportRect g_aViewportRects[2];

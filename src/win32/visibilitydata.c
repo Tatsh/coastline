@@ -1,7 +1,7 @@
-#include <camera.h>
-#include <track.h>
-#include <trackrender.h>
-#include <vehiclemodel.h>
+#include <common/camera.h>
+#include <common/track.h>
+#include <common/trackrender.h>
+#include <common/vehiclemodel.h>
 
 u8 g_abInstanceVisibilityMask[TRACK_MAX_INSTANCES];
 u16 g_awCameraRayHitInstances[RAY_INSTANCES];

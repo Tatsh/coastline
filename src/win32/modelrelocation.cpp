@@ -2,10 +2,10 @@
 #include <cstring>
 #include <type_traits>
 
-#include "displaylistops.h"
-#include "model.h"
-#include "vehiclecolor.h"
-#include "weather.h"
+#include "common/displaylistops.h"
+#include "common/model.h"
+#include "common/vehiclecolor.h"
+#include "common/weather.h"
 #include "win32/boot/app.h"
 #include "win32/render.h"
 #include "win32/texturescan.h"

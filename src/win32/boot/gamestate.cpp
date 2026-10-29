@@ -1,7 +1,7 @@
-#include "game.h"
-#include "screen.h"
-#include "trackselect.h"
-#include "vehicle.h"
+#include "common/game.h"
+#include "common/screen.h"
+#include "common/trackselect.h"
+#include "common/vehicle.h"
 #include "win32/boot/app.h"
 #include "win32/boot/rallyconfig.h"
 #if TGR_PLATFORM != TGR_PLATFORM_SDL

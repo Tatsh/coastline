@@ -3,9 +3,9 @@
  */
 #include <stdio.h>
 
-#include "render.h"
-#include "system.h"
-#include "texrect.h"
+#include "common/render.h"
+#include "common/system.h"
+#include "common/texrect.h"
 
 Gfx *gDisplayListPtr;
 u32 g_dwTextureFilterMode = 0x2000;

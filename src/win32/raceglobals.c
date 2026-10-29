@@ -1,4 +1,4 @@
-#include "race.h"
+#include "common/race.h"
 #include "vehicle.h"
 #include "win32/settings.h"
 

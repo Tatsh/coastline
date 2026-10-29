@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "util.h"
+#include "common/util.h"
 
 DisplayListBlock g_aDisplayListBlocks[2][FRAME_DISPLAY_LIST_BLOCKS + 1];
 Hilite g_aHiliteBlocks[2][FRAME_HILITE_BLOCKS + 1];

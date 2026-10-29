@@ -1,6 +1,6 @@
 #pragma once
 
-#include "effects.h"
+#include "common/effects.h"
 
 typedef struct ParticleSnapshot {
     u16 freeListHead;

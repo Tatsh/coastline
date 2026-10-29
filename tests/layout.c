@@ -2,20 +2,20 @@
 
 #include <PR/os_cont.h>
 
-#include "audiomix.h"
+#include "common/audiomix.h"
+#include "common/effects.h"
+#include "common/input.h"
+#include "common/model.h"
+#include "common/physics.h"
+#include "common/race.h"
+#include "common/track.h"
+#include "common/trackrender.h"
+#include "common/vehicle.h"
 #include "decaleditor.h"
-#include "effects.h"
-#include "input.h"
-#include "model.h"
 #include "options.h"
 #include "paintshop.h"
-#include "physics.h"
-#include "race.h"
 #include "racemenu.h"
 #include "sprite.h"
-#include "track.h"
-#include "trackrender.h"
-#include "vehicle.h"
 
 /* The layouts the physics reads, against the offsets in the disassembly. */
 

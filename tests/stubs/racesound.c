@@ -1,7 +1,7 @@
-#include "audio.h"
-#include "race.h"
-#include "rumble.h"
-#include "track.h"
+#include "common/audio.h"
+#include "common/race.h"
+#include "common/rumble.h"
+#include "common/track.h"
 MixerChannel g_aSoundEffectChannels[SOUND_EFFECT_CHANNELS];
 s32 g_dwSoundEffectEchoOffset;
 Vehicle g_aVehicles[MAX_VEHICLES];

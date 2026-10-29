@@ -10,12 +10,12 @@
 #include <PR/gbi.h>
 #include <PR/ultratypes.h>
 
-#include "model.h"
-#include "seasons.h"
-#include "texrect.h"
-#include "trackmenuitem.h"
-#include "vehicle.h"
-#include "vehicleview.h"
+#include "common/model.h"
+#include "common/seasons.h"
+#include "common/texrect.h"
+#include "common/trackmenuitem.h"
+#include "common/vehicle.h"
+#include "common/vehicleview.h"
 
 #ifdef __cplusplus
 extern "C" {

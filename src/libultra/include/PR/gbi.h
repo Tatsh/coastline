@@ -89,7 +89,7 @@ typedef struct {
 extern "C++" {
 #include <type_traits>
 
-#include "ptr32.h"
+#include "common/ptr32.h"
 
 namespace coastline {
 

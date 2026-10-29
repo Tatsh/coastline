@@ -1,5 +1,5 @@
-#include <driving.h>
-#include <physics.h>
+#include <common/driving.h>
+#include <common/physics.h>
 
 f32 g_aafAiVelocityRetention[SEASONS][SEASON_RACES][2] = {
     {{0.9955f, 0.998f}, {0.9955f, 0.998f}, {0.9955f, 0.998f}, {0.9955f, 0.998f}},

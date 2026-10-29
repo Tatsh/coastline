@@ -2,10 +2,10 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "render.h"
-#include "system.h"
-#include "timing.h"
-#include "util.h"
+#include "common/render.h"
+#include "common/system.h"
+#include "common/timing.h"
+#include "common/util.h"
 
 TimingMarker g_aTimingMarkers[2][TIMING_BARS][TIMING_MARKERS];
 s32 g_aTimingMarkerCounts[2][TIMING_BARS];

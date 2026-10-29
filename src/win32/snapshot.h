@@ -6,7 +6,7 @@
  * The snapshots of frames of the PC port.
  */
 
-#include "racerslot.h"
+#include "common/racerslot.h"
 #include "vehicle.h"
 #include "win32/particlesnapshot.h"
 #include "win32/snapshotops.h"

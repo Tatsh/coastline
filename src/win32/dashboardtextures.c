@@ -2,13 +2,13 @@
 
 #include <string.h>
 
-#include <hud.h>
+#include <common/hud.h>
 
 #include "boot/fatalerror.h"
 #include "boot/strings.h"
+#include "common/vehiclemodel.h"
+#include "common/weather.h"
 #include "renderbackend.h"
-#include "vehiclemodel.h"
-#include "weather.h"
 
 void InitializeDashboardTextures(void) {
     for (s32 index = 0; index < g_dwNumViewports; index++) {

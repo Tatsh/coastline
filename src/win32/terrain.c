@@ -1,7 +1,7 @@
 #include "win32/terrain.h"
 
-#include "physics.h"
-#include "tricache.h"
+#include "common/physics.h"
+#include "common/tricache.h"
 
 float RaycastTerrainHeight(Vec3f *position) {
     float nearest = 100.0f;

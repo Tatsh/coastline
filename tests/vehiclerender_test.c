@@ -3,8 +3,8 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "vehicledeform.c"
-#include "vehiclemodelrender.c"
+#include "common/vehicledeform.c"
+#include "common/vehiclemodelrender.c"
 #include "vehiclerender.c"
 
 char *getenv(const char *name);

@@ -1,7 +1,7 @@
-#include <render.h>
+#include <common/render.h>
 
-#include "displaylistops.h"
-#include "trackrender.h"
+#include "common/displaylistops.h"
+#include "common/trackrender.h"
 
 DisplayListCommand g_aClipRatioDisplayLists[6][5] = {
     {

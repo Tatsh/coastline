@@ -8,8 +8,8 @@
 
 #include <dirent.h>
 
+#include "common/system.h"
 #include "inftrees.h"
-#include "system.h"
 #include "zutil.h"
 
 uInt border[19] = {16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15};

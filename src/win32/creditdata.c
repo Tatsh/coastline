@@ -1,6 +1,6 @@
 #include <stddef.h>
 
-#include "race.h"
+#include "common/race.h"
 #include "win32/assetnames.h"
 
 RacePhaseStep g_aRacePhaseTable[RACE_PHASES] = {

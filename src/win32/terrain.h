@@ -1,6 +1,6 @@
 #pragma once
 
-#include "vecmath.h"
+#include "common/vecmath.h"
 
 #ifdef __cplusplus
 extern "C" {

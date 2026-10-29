@@ -1,9 +1,9 @@
 #include <cstdio>
 
-#include "instantreplay.h"
-#include "text.h"
+#include "common/instantreplay.h"
+#include "common/text.h"
+#include "common/vehiclecount.h"
 #include "vehicle.h"
-#include "vehiclecount.h"
 #include "win32/directplay.h"
 #include "win32/hud.h"
 #include "win32/settings.h"

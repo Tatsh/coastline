@@ -1,4 +1,4 @@
-#include "system.h"
+#include "common/system.h"
 
 #include <PR/R4300.h>
 #include <PR/gu.h>
@@ -6,27 +6,27 @@
 #include <PR/os_cont.h>
 #include <PR/os_libc.h>
 
-#include "audio.h"
-#include "camera.h"
-#include "debugtext.h"
-#include "fade.h"
-#include "game.h"
-#include "input.h"
+#include "common/audio.h"
+#include "common/camera.h"
+#include "common/debugtext.h"
+#include "common/fade.h"
+#include "common/game.h"
+#include "common/input.h"
+#include "common/race.h"
+#include "common/render.h"
+#include "common/rumble.h"
+#include "common/texrect.h"
+#include "common/text.h"
+#include "common/timing.h"
+#include "common/track.h"
+#include "common/trackrender.h"
+#include "common/trackselect.h"
+#include "common/util.h"
+#include "common/vecmath.h"
+#include "common/vehicle.h"
+#include "common/weather.h"
 #include "libultra/os/osint.h"
 #include "n64/boot.h"
-#include "race.h"
-#include "render.h"
-#include "rumble.h"
-#include "texrect.h"
-#include "text.h"
-#include "timing.h"
-#include "track.h"
-#include "trackrender.h"
-#include "trackselect.h"
-#include "util.h"
-#include "vecmath.h"
-#include "vehicle.h"
-#include "weather.h"
 #include "zlib.h"
 
 /* The messages of the DMA that may wait at once. */

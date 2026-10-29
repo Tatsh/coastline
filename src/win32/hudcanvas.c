@@ -1,6 +1,6 @@
 #include "win32/hudcanvas.h"
 
-#include "displaylistptr.h"
+#include "common/displaylistptr.h"
 #include "win32/gbicommand.h"
 #include "win32/settings.h"
 

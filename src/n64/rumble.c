@@ -1,9 +1,9 @@
-#include "rumble.h"
+#include "common/rumble.h"
 
-#include "game.h"
-#include "race.h"
-#include "system.h"
-#include "vehicle.h"
+#include "common/game.h"
+#include "common/race.h"
+#include "common/system.h"
+#include "common/vehicle.h"
 
 /* The motors are probed again every 64 calls. */
 #define RUMBLE_PROBE_INTERVAL 64

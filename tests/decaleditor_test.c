@@ -3,16 +3,16 @@
 #include <assert.h>
 #include <string.h>
 
+#include "common/fade.h"
+#include "common/input.h"
+#include "common/render.h"
+#include "common/system.h"
+#include "common/text.h"
+#include "common/vehicle.h"
+#include "common/vehiclerender.h"
 #include "decaldraw.h"
 #include "decaleditor.h"
-#include "fade.h"
-#include "input.h"
 #include "pakmenu.h"
-#include "render.h"
-#include "system.h"
-#include "text.h"
-#include "vehicle.h"
-#include "vehiclerender.h"
 
 Sprite g_texPaintToolBrush, g_texPaintToolText, g_texPaintToolRect, g_texPaintToolOval;
 Sprite g_texPaintToolClear, g_texPaintCursor, g_texKeyboardHighlight, g_texDecalFont;

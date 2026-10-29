@@ -5,7 +5,7 @@
 #include <cstring>
 #include <new>
 
-#include "screen.h"
+#include "common/screen.h"
 #include "win32/boot/app.h"
 #include "win32/boot/rallyconfig.h"
 #include "win32/d3d/texture.h"

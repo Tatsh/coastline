@@ -3,13 +3,13 @@
 // Parse the SDK error fields before Windows headers define the errno macro.
 #include <PR/os_cont.h>
 
-#include "displaylistptr.h"
-#include "shadowbuffers.h"
-#include "system.h"
-#include "trackrender.h"
+#include "common/displaylistptr.h"
+#include "common/shadowbuffers.h"
+#include "common/system.h"
+#include "common/trackrender.h"
+#include "common/vehiclecount.h"
+#include "common/weather.h"
 #include "vehicle.h"
-#include "vehiclecount.h"
-#include "weather.h"
 #include "win32/boot/rallyconfig.h"
 #include "win32/render.h"
 #include "win32/settings.h"

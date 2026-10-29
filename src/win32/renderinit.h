@@ -6,7 +6,7 @@
 #include <windows.h>
 #endif
 
-#include "types.h"
+#include "common/types.h"
 
 #ifdef __cplusplus
 extern "C" {

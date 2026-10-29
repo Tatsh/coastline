@@ -1,11 +1,11 @@
-#include "debugtext.h"
+#include "common/debugtext.h"
 
 #include <PR/os.h>
 
-#include "system.h"
-#include "timing.h"
-#include "track.h"
-#include "util.h"
+#include "common/system.h"
+#include "common/timing.h"
+#include "common/track.h"
+#include "common/util.h"
 
 /* The colour of the outline around each pixel of a glyph: opaque black. */
 #define OUTLINE_COLOR 0x0001

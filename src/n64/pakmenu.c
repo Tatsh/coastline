@@ -3,14 +3,14 @@
 #include <PR/os.h>
 #include <PR/os_libc.h>
 
-#include "fade.h"
-#include "game.h"
-#include "heap.h"
-#include "input.h"
-#include "render.h"
-#include "rumble.h"
-#include "system.h"
-#include "text.h"
+#include "common/fade.h"
+#include "common/game.h"
+#include "common/heap.h"
+#include "common/input.h"
+#include "common/render.h"
+#include "common/rumble.h"
+#include "common/system.h"
+#include "common/text.h"
 
 /* The step of the fades of the menu. */
 #define PAK_MENU_FADE_STEP 0.2f

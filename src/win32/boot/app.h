@@ -15,7 +15,7 @@
 #include <windows.h>
 #endif
 
-#include "screen.h"
+#include "common/screen.h"
 #include "win32/boot/fatalerror.h"
 
 /**

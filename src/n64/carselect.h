@@ -1,7 +1,7 @@
 #ifndef COASTLINE_CARSELECT_H
 #define COASTLINE_CARSELECT_H
 
-#include "laptime.h"
+#include "common/laptime.h"
 
 /**
  * @file
@@ -12,9 +12,9 @@
 #include <PR/gbi.h>
 #include <PR/ultratypes.h>
 
-#include "model.h"
+#include "common/model.h"
+#include "common/vehicle.h"
 #include "racemenu.h"
-#include "vehicle.h"
 
 #ifdef __cplusplus
 extern "C" {

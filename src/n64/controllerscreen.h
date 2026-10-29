@@ -8,8 +8,8 @@
 
 #include <PR/ultratypes.h>
 
+#include "common/texrect.h"
 #include "racemenu.h"
-#include "texrect.h"
 
 #ifdef __cplusplus
 extern "C" {

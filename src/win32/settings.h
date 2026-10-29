@@ -5,8 +5,8 @@
  * The settings of the PC port that BossRally.ini and the command line set.
  */
 
-#include "game.h"
-#include "trackselect.h"
+#include "common/game.h"
+#include "common/trackselect.h"
 #include "win32/assetnames.h"
 
 #ifdef __cplusplus

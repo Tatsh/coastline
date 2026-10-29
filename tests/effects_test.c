@@ -4,8 +4,8 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "common/tiresprayemit.c"
 #include "effects.c"
-#include "tiresprayemit.c"
 
 Gfx *gDisplayListPtr;
 static Gfx gfx[512];

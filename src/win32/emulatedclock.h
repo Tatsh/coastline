@@ -1,7 +1,7 @@
 #ifndef COASTLINE_WIN_EMULATEDCLOCK_H
 #define COASTLINE_WIN_EMULATEDCLOCK_H
 
-#include "types.h"
+#include "common/types.h"
 
 #ifdef __cplusplus
 extern "C" {

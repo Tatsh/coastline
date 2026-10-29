@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "replay.c"
+#include "common/replay.c"
 
 #define CHANNELS 2
 #define FRAMES 600

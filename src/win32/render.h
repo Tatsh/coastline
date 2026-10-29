@@ -13,13 +13,13 @@
 #include <windows.h>
 #endif
 
-#include "../../render.h"
-#include "convertedvertex.h"
+#include "common/convertedvertex.h"
+#include "common/render.h"
+#include "common/track.h"
+#include "common/vecmath.h"
+#include "common/vehicleview.h"
 #include "renderbackend.h"
 #include "shadowclip.h"
-#include "track.h"
-#include "vecmath.h"
-#include "vehicleview.h"
 #include "win32/combine.h"
 #include "win32/fontdata.h"
 #include "win32/hudassets.h"

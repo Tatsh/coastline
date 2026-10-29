@@ -6,7 +6,7 @@
 #include <fstream>
 
 extern "C" {
-#include "audio.h"
+#include "common/audio.h"
 }
 
 // The storage of the music player and the mixers. The console stores it in its BSS and data

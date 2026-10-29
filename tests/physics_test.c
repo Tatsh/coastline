@@ -4,10 +4,10 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "bodyforces.c"
-#include "collisionstep.c"
+#include "common/bodyforces.c"
+#include "common/collisionstep.c"
+#include "common/sidegrip.c"
 #include "physics.c"
-#include "sidegrip.c"
 
 /* The globals the file reads and writes. */
 TrackTriangle g_aTriCacheTriangles[TRI_CACHE_SLOTS][TRI_CACHE_TRIANGLES];

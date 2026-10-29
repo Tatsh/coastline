@@ -14,7 +14,7 @@
 #include <windows.h>
 #endif
 
-#include "vecmath.h"
+#include "common/vecmath.h"
 #include "win32/framestatistics.h"
 #include "win32/gbicommand.h"
 #include "win32/textureupload.h"

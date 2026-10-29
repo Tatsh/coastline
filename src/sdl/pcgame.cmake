@@ -4,20 +4,20 @@
 # provides what they did.
 set(_src "${CMAKE_SOURCE_DIR}/src")
 set(COASTLINE_PC_C_SOURCES
-    assetdma.c bodyforces.c camerarender.c completionthreads.c cubeclip.c debuginstance.c
-    emptycallback.c fade.c fadeupdate.c framebegin.c frameclear.c frameflush.c frametime.c game.c
-    headlightglare.c heap.c hudtime.c iomessage.c laptime.c libultra/gu/lookat.c
+    common/assetdma.c common/bodyforces.c common/camerarender.c common/completionthreads.c common/cubeclip.c common/debuginstance.c
+    common/emptycallback.c common/fade.c common/fadeupdate.c common/framebegin.c common/frameclear.c common/frameflush.c common/frametime.c common/game.c
+    common/headlightglare.c common/heap.c common/hudtime.c common/iomessage.c common/laptime.c libultra/gu/lookat.c
     libultra/gu/lookathil.c libultra/gu/lookatref.c libultra/gu/mtxcatf.c libultra/gu/mtxutil.c
     libultra/gu/perspective.c libultra/gu/rotate.c libultra/gu/scale.c libultra/gu/translate.c
     libultra/io/contreaddata.c libultra/io/controller.c libultra/os/getcount.c
-    libultra/os/recvmesg.c libultra/os/sendmesg.c libultra/os/syncprintf.c lightning.c
-    materialcolor.c mathutil.c modelanimation.c modelanimationflags.c modeldraw.c
-    modelrelocation.c playerinput.c profileinit.c racecredits.c raininit.c renderinit.c replay.c
-    rigidbody.c rledecompress.c routewalk.c savestate.c screen.c screendraw.c screenfade.c
-    screenrect.c shadowreset.c sidegrip.c skystate.c soundeffect.c soundpan.c soundsource.c
-    startlights.c textrender.c textstyle.c texturebind.c texturestream.c timingframe.c
-    trackgrid.c trackvalid.c tricache.c util.c vblankquery.c vecmath.c vehiclemodel.c visgrid.c
-    visiblecompare.c win32/airplanestate.c win32/assetnames.c win32/boot/strings.c
+    libultra/os/recvmesg.c libultra/os/sendmesg.c libultra/os/syncprintf.c common/lightning.c
+    common/materialcolor.c common/mathutil.c common/modelanimation.c common/modelanimationflags.c common/modeldraw.c
+    common/modelrelocation.c common/playerinput.c common/profileinit.c common/racecredits.c common/raininit.c common/renderinit.c common/replay.c
+    common/rigidbody.c common/rledecompress.c common/routewalk.c common/savestate.c common/screen.c common/screendraw.c common/screenfade.c
+    common/screenrect.c common/shadowreset.c common/sidegrip.c common/skystate.c common/soundeffect.c common/soundpan.c common/soundsource.c
+    common/startlights.c common/textrender.c common/textstyle.c common/texturebind.c common/texturestream.c common/timingframe.c
+    common/trackgrid.c common/trackvalid.c common/tricache.c common/util.c common/vblankquery.c common/vecmath.c common/vehiclemodel.c common/visgrid.c
+    common/visiblecompare.c win32/airplanestate.c win32/assetnames.c win32/boot/strings.c
     win32/buildinfo.c win32/clockfields.c win32/convertedvertex.c win32/creditdata.c
     win32/dashboardtextures.c win32/displaylistdata.c win32/effectdata.c
     win32/fontdata.c win32/fpshud.c win32/framebuffer.c win32/framefields.c win32/hudassets.c
@@ -26,20 +26,20 @@ set(COASTLINE_PC_C_SOURCES
     win32/reflectiondata.c win32/runtimebuffers.c win32/settings.c win32/shadowproject.c
     win32/soundbank.c win32/soundsample.c win32/terrain.c win32/texturesampling.c
     win32/textureworkspace.c win32/timer.c win32/trackmenudata.c win32/vehiclemodelload.c
-    win32/visibilitydata.c wind.c)
+    win32/visibilitydata.c common/wind.c)
 set(COASTLINE_PC_CXX_SOURCES
-    ambientsound.c billboardparticles.c camerachange.c camerachase.c cameracollision.c
-    collisionstep.c controllerread.c dashboard.c displaylistops.c driving.c exhaustspawn.c fog.c
-    headlight.c hudmessage.c hudoverlay.c hudrace.c inputtranslate.c lastlapsnapshot.c loadcar.c
-    particleexhaustrender.c particleinit.c particlesmokerender.c particleupdate.c playercontrol.c
-    precipitationrender.c precipitationupdate.c racecontrols.c racefinish.c raceinit.c raceload.c
-    racephases.c raceprogress.c racerender.c raceresults.c racerinit.c racermotion.c racers.c
-    racersharing.c racerstate.c racerun.c racespecials.c routeposition.c seasontrack.c sky.c
-    tiresmokespawn.c tirespray.c tiresprayemit.c tiresprayrender.c tracetrack.c trackinstance.c
-    trackrender.c vehiclechoice.c vehicledeform.c vehicleeffects.c vehicleengine.c
-    vehiclemodelrender.c vehiclepaint.c vehiclephysics.c vehiclereset.c vehiclesound.c
-    vehiclestatus.c vehicletrackpos.c vehiclevisibility.c visibleinstances.c volumecontrols.c
-    wheelrender.c win32/assetfile.cpp win32/boot/gamestate.cpp win32/boot/rallyconfig.cpp
+    common/ambientsound.c common/billboardparticles.c common/camerachange.c common/camerachase.c common/cameracollision.c
+    common/collisionstep.c common/controllerread.c common/dashboard.c common/displaylistops.c common/driving.c common/exhaustspawn.c common/fog.c
+    common/headlight.c common/hudmessage.c common/hudoverlay.c common/hudrace.c common/inputtranslate.c common/lastlapsnapshot.c common/loadcar.c
+    common/particleexhaustrender.c common/particleinit.c common/particlesmokerender.c common/particleupdate.c common/playercontrol.c
+    common/precipitationrender.c common/precipitationupdate.c common/racecontrols.c common/racefinish.c common/raceinit.c common/raceload.c
+    common/racephases.c common/raceprogress.c common/racerender.c common/raceresults.c common/racerinit.c common/racermotion.c common/racers.c
+    common/racersharing.c common/racerstate.c common/racerun.c common/racespecials.c common/routeposition.c common/seasontrack.c common/sky.c
+    common/tiresmokespawn.c common/tirespray.c common/tiresprayemit.c common/tiresprayrender.c common/tracetrack.c common/trackinstance.c
+    common/trackrender.c common/vehiclechoice.c common/vehicledeform.c common/vehicleeffects.c common/vehicleengine.c
+    common/vehiclemodelrender.c common/vehiclepaint.c common/vehiclephysics.c common/vehiclereset.c common/vehiclesound.c
+    common/vehiclestatus.c common/vehicletrackpos.c common/vehiclevisibility.c common/visibleinstances.c common/volumecontrols.c
+    common/wheelrender.c win32/assetfile.cpp win32/boot/gamestate.cpp win32/boot/rallyconfig.cpp
     win32/configfile.cpp win32/displaylist.cpp win32/frametimer.cpp win32/gameinit.cpp
     win32/gamesession.cpp win32/ghost.cpp win32/hudlaplist.cpp win32/hudnetwork.cpp
     win32/inputdefaults.cpp win32/modelrelocation.cpp win32/podarchive.cpp win32/racercolor.cpp
@@ -55,7 +55,7 @@ list(TRANSFORM COASTLINE_PC_CXX_SOURCES PREPEND "${_src}/")
 set_source_files_properties(${COASTLINE_PC_C_SOURCES} ${COASTLINE_PC_CXX_SOURCES}
                             PROPERTIES LANGUAGE CXX)
 # These sources read no structure with a Ptr32 and convert from void * as C does.
-set_source_files_properties("${_src}/savestate.c" "${_src}/win32/paintshop.c" PROPERTIES LANGUAGE C)
+set_source_files_properties("${_src}/common/savestate.c" "${_src}/win32/paintshop.c" PROPERTIES LANGUAGE C)
 
 # The SDL game provides these in place of their Windows units.
 set(COASTLINE_PC_SDL_SOURCES bitmap.cpp d3dcompat.cpp dinputcompat.cpp fileio.cpp frontendstate.cpp

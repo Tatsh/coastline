@@ -1,12 +1,12 @@
-#include "track.h"
+#include "common/track.h"
 
 #include <PR/os.h>
 #include <PR/os_libc.h>
 
+#include "common/system.h"
+#include "common/trackselect.h"
+#include "common/util.h"
 #include "racemenu.h"
-#include "system.h"
-#include "trackselect.h"
-#include "util.h"
 
 /* The room for the messages of the loading. */
 #define LOAD_MESSAGE_SIZE 0x50

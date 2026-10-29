@@ -1,21 +1,21 @@
 #pragma once
 
-#include <render.h>
+#include <common/render.h>
 
-#include "carphysics.h"
-#include "convertedvertex.h"
-#include "playerinput.h"
-#include "profile.h"
-#include "racerslot.h"
-#include "rigidbody.h"
-#include "track.h"
-#include "types.h"
-#include "vehiclecamera.h"
-#include "vehicleeffects.h"
-#include "vehicleforces.h"
-#include "vehiclefwd.h"
-#include "vehiclemodel.h"
-#include "wheelframe.h"
+#include "common/carphysics.h"
+#include "common/convertedvertex.h"
+#include "common/playerinput.h"
+#include "common/profile.h"
+#include "common/racerslot.h"
+#include "common/rigidbody.h"
+#include "common/track.h"
+#include "common/types.h"
+#include "common/vehiclecamera.h"
+#include "common/vehicleeffects.h"
+#include "common/vehicleforces.h"
+#include "common/vehiclefwd.h"
+#include "common/vehiclemodel.h"
+#include "common/wheelframe.h"
 
 #define VEHICLE_GHOST 2
 #define MAX_VEHICLES 16

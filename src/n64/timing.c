@@ -1,12 +1,12 @@
-#include "timing.h"
+#include "common/timing.h"
 
 #include <PR/R4300.h>
 #include <PR/gbi.h>
 #include <PR/os.h>
 
-#include "render.h"
-#include "system.h"
-#include "util.h"
+#include "common/render.h"
+#include "common/system.h"
+#include "common/util.h"
 
 /* The counts of the CPU timer in a frame at 60 Hz. */
 #define FRAME_COUNTS 781250

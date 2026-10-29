@@ -7,12 +7,12 @@
 /* libultra declares memcpy() and strlen(), and the host's string.h clashes with it. */
 #include <PR/os_libc.h>
 
+#include "common/text.h"
+#include "common/vehicle.h"
+#include "common/vehiclecamera.h"
+#include "common/vehiclemodel.h"
 #include "hud.c"
 #include "options.h"
-#include "text.h"
-#include "vehicle.h"
-#include "vehiclecamera.h"
-#include "vehiclemodel.h"
 
 static int Same(const char *a, const char *b) {
     return strlen(a) == strlen(b) && !__builtin_memcmp(a, b, strlen(a));

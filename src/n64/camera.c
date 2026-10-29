@@ -1,14 +1,14 @@
-#include "camera.h"
+#include "common/camera.h"
 
 #include <PR/R4300.h>
 #include <PR/gu.h>
 #include <PR/os_libc.h>
 
-#include "game.h"
-#include "system.h"
-#include "tricache.h"
-#include "util.h"
-#include "visgrid.h"
+#include "common/game.h"
+#include "common/system.h"
+#include "common/tricache.h"
+#include "common/util.h"
+#include "common/visgrid.h"
 
 /* The share of the way from the camera to each corner of the far rectangle the frustum keeps. */
 #define FRUSTUM_CORNER_SHARE 0.75f

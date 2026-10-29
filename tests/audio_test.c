@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "audio.c"
+#include "common/audio.c"
 
 u16 g_wAudioBufferWritePos;
 MixerChannel g_aMixerChannels[MIXER_CHANNELS];

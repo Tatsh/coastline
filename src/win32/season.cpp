@@ -7,12 +7,12 @@
 
 #include <zlib.h>
 
-#include "game.h"
-#include "profile.h"
-#include "race.h"
-#include "seasons.h"
-#include "trackselect.h"
-#include "weather.h"
+#include "common/game.h"
+#include "common/profile.h"
+#include "common/race.h"
+#include "common/seasons.h"
+#include "common/trackselect.h"
+#include "common/weather.h"
 #include "win32/boot/rallyconfig.h"
 #include "win32/buildinfo.h"
 #include "win32/configfile.h"

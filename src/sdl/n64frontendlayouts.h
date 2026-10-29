@@ -9,12 +9,12 @@
 #include <PR/gbi.h>
 #include <PR/os_cont.h>
 
-#include "carphysics.h"
-#include "model.h"
+#include "common/carphysics.h"
+#include "common/model.h"
+#include "common/seasons.h"
+#include "common/vehicle.h"
 #include "n64/decaleditor.h"
 #include "sdl/cartridgedata.h"
-#include "seasons.h"
-#include "vehicle.h"
 
 namespace coastline {
 

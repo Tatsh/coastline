@@ -2,8 +2,8 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "fade.c"
-#include "screenfade.c"
+#include "common/fade.c"
+#include "common/screenfade.c"
 
 Gfx *gDisplayListPtr;
 static Gfx gfx[64];

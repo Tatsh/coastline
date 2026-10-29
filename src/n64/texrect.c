@@ -1,9 +1,9 @@
-#include "texrect.h"
+#include "common/texrect.h"
 
 #include <PR/gbi.h>
 
-#include "render.h"
-#include "system.h"
+#include "common/render.h"
+#include "common/system.h"
 
 /* One texel in the 5.10 fixed point of a texture coordinate step. */
 #define TEXEL_STEP 0x400

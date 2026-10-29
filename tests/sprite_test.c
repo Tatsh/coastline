@@ -1,10 +1,10 @@
 /* Host check of src/n64/sprite.c against the command words of the disassembly. */
 #include <stdio.h>
 
+#include "common/render.h"
+#include "common/system.h"
 #include "pakmenu.h"
-#include "render.h"
 #include "sprite.h"
-#include "system.h"
 
 Gfx *gDisplayListPtr;
 u32 g_dwTextureFilterMode = 0x2000;

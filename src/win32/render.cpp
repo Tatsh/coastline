@@ -8,10 +8,10 @@
 #include <new>
 #include <type_traits>
 
-#include "debugmessage.h"
-#include "displaylistops.h"
-#include "screen.h"
-#include "weather.h"
+#include "common/debugmessage.h"
+#include "common/displaylistops.h"
+#include "common/screen.h"
+#include "common/weather.h"
 #include "win32/boot/app.h"
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include "sdl/renderhost.h"

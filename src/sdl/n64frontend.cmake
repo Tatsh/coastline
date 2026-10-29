@@ -9,18 +9,18 @@ set(COASTLINE_N64_FRONTEND_SOURCES
     n64/mainmenu.c n64/options.c n64/paintshop.c n64/pakmenu.c n64/playerselect.c n64/race.c
     n64/racemenu.c
     n64/splash.c n64/sprite.c n64/text.c n64/texrect.c n64/timing.c n64/vehicle.c
-    n64/vehiclerender.c n64/vehiclesetup.c n64/weatherselect.c driving.c fade.c game.c heap.c
-    vehiclereset.c
+    n64/vehiclerender.c n64/vehiclesetup.c n64/weatherselect.c common/driving.c common/fade.c common/game.c common/heap.c
+    common/vehiclereset.c
     # The shared units that work on the vehicles, the players, and their profiles, whose types
     # differ between the releases.
-    camerachase.c camerarender.c controllerread.c framebegin.c frametime.c inputtranslate.c
-    modelanimation.c modelanimationflags.c modeldraw.c
-    playercontrol.c
-    playerinput.c
-    profileinit.c replay.c
-    rigidbody.c routeposition.c seasontrack.c textrender.c textstyle.c tracetrack.c vehiclechoice.c
-    vehiclemodel.c
-    vehiclemodelrender.c vehiclepaint.c vehiclephysics.c vehiclevisibility.c)
+    common/camerachase.c common/camerarender.c common/controllerread.c common/framebegin.c common/frametime.c common/inputtranslate.c
+    common/modelanimation.c common/modelanimationflags.c common/modeldraw.c
+    common/playercontrol.c
+    common/playerinput.c
+    common/profileinit.c common/replay.c
+    common/rigidbody.c common/routeposition.c common/seasontrack.c common/textrender.c common/textstyle.c common/tracetrack.c common/vehiclechoice.c
+    common/vehiclemodel.c
+    common/vehiclemodelrender.c common/vehiclepaint.c common/vehiclephysics.c common/vehiclevisibility.c)
 list(TRANSFORM COASTLINE_N64_FRONTEND_SOURCES PREPEND "${_src}/")
 set_source_files_properties(${COASTLINE_N64_FRONTEND_SOURCES} PROPERTIES LANGUAGE CXX)
 

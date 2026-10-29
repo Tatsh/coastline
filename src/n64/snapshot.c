@@ -1,14 +1,14 @@
 #include <PR/os.h>
 #include <PR/os_libc.h>
 
-#include "camera.h"
-#include "driving.h"
-#include "game.h"
-#include "input.h"
-#include "race.h"
-#include "replay.h"
-#include "system.h"
-#include "timing.h"
+#include "common/camera.h"
+#include "common/driving.h"
+#include "common/game.h"
+#include "common/input.h"
+#include "common/race.h"
+#include "common/replay.h"
+#include "common/system.h"
+#include "common/timing.h"
 
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 #define KEYFRAME_MARKER 0xFF

@@ -7,18 +7,18 @@
 #include <initializer_list>
 #include <new>
 
-#include <hud.h>
+#include <common/hud.h>
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include <windows.h>
 #endif
 
-#include "game.h"
-#include "instantreplay.h"
-#include "laps.h"
-#include "pause.h"
-#include "playerinput.h"
+#include "common/game.h"
+#include "common/instantreplay.h"
+#include "common/laps.h"
+#include "common/pause.h"
+#include "common/playerinput.h"
+#include "common/vehicleaccess.h"
 #include "vehicle.h"
-#include "vehicleaccess.h"
 #include "win32/boot/app.h"
 #include "win32/boot/rallyconfig.h"
 #include "win32/boot/strings.h"

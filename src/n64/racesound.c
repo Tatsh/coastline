@@ -1,15 +1,15 @@
 #include <PR/os.h>
 
-#include "audio.h"
-#include "audiomix.h"
-#include "race.h"
-#include "rumble.h"
-#include "soundmix.h"
-#include "soundpan.h"
-#include "system.h"
-#include "track.h"
-#include "trackselect.h"
-#include "weather.h"
+#include "common/audio.h"
+#include "common/audiomix.h"
+#include "common/race.h"
+#include "common/rumble.h"
+#include "common/soundmix.h"
+#include "common/soundpan.h"
+#include "common/system.h"
+#include "common/track.h"
+#include "common/trackselect.h"
+#include "common/weather.h"
 
 /* The channels: two for each vehicle, the engine then its effects, and the track on 3. */
 #define CHANNELS_PER_VEHICLE 2

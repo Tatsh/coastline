@@ -3,7 +3,7 @@
 
 #include <PR/gu.h>
 
-#include "vecmath.h"
+#include "common/vecmath.h"
 #else
 #include "guint.h"
 #endif

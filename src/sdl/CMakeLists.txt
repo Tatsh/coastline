@@ -57,7 +57,7 @@ add_library(
   paths.cpp
   stringresources.cpp
   tlrenderer.cpp
-  "${CMAKE_SOURCE_DIR}/src/audio.c"
+  "${CMAKE_SOURCE_DIR}/src/common/audio.c"
   "${CMAKE_SOURCE_DIR}/tools/common/assetchain.cpp"
   "${CMAKE_SOURCE_DIR}/tools/common/sha1.cpp")
 target_include_directories(coastline_sdl PRIVATE "${CMAKE_SOURCE_DIR}/src"
@@ -67,7 +67,7 @@ target_include_directories(coastline_sdl PRIVATE "${CMAKE_SOURCE_DIR}/src"
 add_dependencies(coastline_sdl coastline_shaders)
 target_link_libraries(coastline_sdl PRIVATE FLAC::FLAC nlohmann_json::nlohmann_json ZLIB::ZLIB)
 # A reconstructed routine retains the parameters of the original, used or not.
-set_source_files_properties("${CMAKE_SOURCE_DIR}/src/audio.c" PROPERTIES COMPILE_OPTIONS
+set_source_files_properties("${CMAKE_SOURCE_DIR}/src/common/audio.c" PROPERTIES COMPILE_OPTIONS
                                                                          "-Wno-unused-parameter")
 if(APPLE)
   enable_language(OBJCXX)

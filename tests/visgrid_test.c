@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <stdio.h>
 
-#include "visgrid.h"
+#include "common/visgrid.h"
 
 Vec3f g_avFrustumPoints[FRUSTUM_POINTS] = {
     {100, 100, 0},

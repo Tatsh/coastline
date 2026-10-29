@@ -7,7 +7,7 @@
 #include <cstring>
 #include <unordered_set>
 
-#include "model.h"
+#include "common/model.h"
 #include "sdl/cartridgedata.h"
 
 namespace {

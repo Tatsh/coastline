@@ -1,16 +1,16 @@
-#include "physics.h"
+#include "common/physics.h"
 
 #include <PR/gu.h>
 #include <PR/os.h>
 #include <PR/os_libc.h>
 
-#include "game.h"
-#include "physicsimpact.h"
-#include "timing.h"
-#include "track.h"
-#include "trianglebox.h"
-#include "vehicle.h"
-#include "weather.h"
+#include "common/game.h"
+#include "common/physicsimpact.h"
+#include "common/timing.h"
+#include "common/track.h"
+#include "common/trianglebox.h"
+#include "common/vehicle.h"
+#include "common/weather.h"
 
 s32 UnusedCollisionResponseStub(void *body, void *normal, void *damp) {
     return 1;

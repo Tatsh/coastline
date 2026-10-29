@@ -2,11 +2,11 @@
 
 #include <cmath>
 
-#include "camerachange.h"
-#include "vehicleaccess.h"
-#include "vehicledeform.h"
-#include "vehiclestatus.h"
-#include "vehicletrackpos.h"
+#include "common/camerachange.h"
+#include "common/vehicleaccess.h"
+#include "common/vehicledeform.h"
+#include "common/vehiclestatus.h"
+#include "common/vehicletrackpos.h"
 
 Vehicle g_aVehicles[16];
 

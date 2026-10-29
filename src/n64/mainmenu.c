@@ -2,20 +2,20 @@
 
 #include <PR/os.h>
 
-#include "audio.h"
 #include "carselect.h"
+#include "common/audio.h"
+#include "common/game.h"
+#include "common/input.h"
+#include "common/race.h"
+#include "common/splash.h"
+#include "common/system.h"
+#include "common/trackselect.h"
+#include "common/vehicle.h"
+#include "common/weather.h"
 #include "controllerscreen.h"
-#include "game.h"
-#include "input.h"
 #include "options.h"
 #include "playerselect.h"
-#include "race.h"
 #include "racemenu.h"
-#include "splash.h"
-#include "system.h"
-#include "trackselect.h"
-#include "vehicle.h"
-#include "weather.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include "sdl/romsegments.h"

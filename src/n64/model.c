@@ -1,6 +1,6 @@
-#include "model.h"
+#include "common/model.h"
 
-#include "system.h"
+#include "common/system.h"
 
 /* The offsets a file holds are below this; the pointers they become are above it. */
 #define MODEL_OFFSET_LIMIT 0x7FFFFFFF

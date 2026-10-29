@@ -2,10 +2,10 @@
 #include <assert.h>
 #include <string.h>
 
+#include "common/render.h"
+#include "common/system.h"
 #include "decaldraw.h"
 #include "decaleditor.h"
-#include "render.h"
-#include "system.h"
 
 /* A decal of 16 by 16 texels shown at (100, 100), 4 pixels to a texel. */
 #define SIZE 16

@@ -3,9 +3,9 @@
 #include <PR/gbi.h>
 #include <PR/os_libc.h>
 
+#include "common/render.h"
+#include "common/system.h"
 #include "decaleditor.h"
-#include "render.h"
-#include "system.h"
 
 /* The bytes of the largest decal. The flood fill copies them whole. */
 #define DECAL_BYTES 0x800

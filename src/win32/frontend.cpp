@@ -11,21 +11,21 @@
 #include <io.h>
 #include <windows.h>
 
-#include "vehicleaccess.h"
-#include "vehicledeform.h"
+#include "common/vehicleaccess.h"
+#include "common/vehicledeform.h"
 
 #pragma push_macro("errno")
 #undef errno
 #include <PR/os_cont.h>
 #pragma pop_macro("errno")
 
-#include "game.h"
-#include "laps.h"
-#include "profile.h"
-#include "screen.h"
-#include "seasons.h"
-#include "trackmenuitem.h"
-#include "trackselect.h"
+#include "common/game.h"
+#include "common/laps.h"
+#include "common/profile.h"
+#include "common/screen.h"
+#include "common/seasons.h"
+#include "common/trackmenuitem.h"
+#include "common/trackselect.h"
 #include "vehicle.h"
 #include "win32/boot/app.h"
 #include "win32/boot/rallyconfig.h"

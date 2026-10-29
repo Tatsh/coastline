@@ -16,7 +16,7 @@ set(_gu
     "${_src}/libultra/gu/translate.c"
     "${_src}/libultra/gu/normalize.c")
 set(_common "${CMAKE_CURRENT_SOURCE_DIR}/stubs/common.c")
-set(_vecmath "${_src}/vecmath.c")
+set(_vecmath "${_src}/common/vecmath.c")
 
 # Add a test from NAME_test.c and the sources after it.
 function(coastline_add_test name)
@@ -34,124 +34,124 @@ endfunction()
 
 coastline_add_test(audio)
 coastline_add_test(camera ${_vecmath} ${_gu} "${_src}/libultra/gu/lookat.c"
-                   "${_src}/libultra/gu/perspective.c" "${_src}/camerarender.c")
-coastline_add_test(carselect stubs/carselect.c ${_vecmath} ${_gu} "${_src}/laptime.c")
+                   "${_src}/libultra/gu/perspective.c" "${_src}/common/camerarender.c")
+coastline_add_test(carselect stubs/carselect.c ${_vecmath} ${_gu} "${_src}/common/laptime.c")
 coastline_add_test(controllerscreen "${_src}/n64/controllerscreen.c")
-coastline_add_test(debugtext "${_src}/n64/debugtext.c" "${_src}/debuginstance.c")
+coastline_add_test(debugtext "${_src}/n64/debugtext.c" "${_src}/common/debuginstance.c")
 coastline_add_test(decaldraw "${_src}/n64/decaldraw.c")
 coastline_add_test(decaleditor "${_src}/n64/decaleditor.c" "${_src}/n64/decaldraw.c")
 coastline_add_test(drawtexturedrect "${_src}/n64/texrect.c")
-coastline_add_test(driving ${_vecmath} ${_common} "${_src}/frameclear.c" "${_src}/routeposition.c"
-                   "${_src}/tracetrack.c")
+coastline_add_test(driving ${_vecmath} ${_common} "${_src}/common/frameclear.c" "${_src}/common/routeposition.c"
+                   "${_src}/common/tracetrack.c")
 coastline_add_test(
   effects
   ${_vecmath}
-  "${_src}/billboardparticles.c"
-  "${_src}/exhaustspawn.c"
-  "${_src}/particleexhaustrender.c"
-  "${_src}/particleinit.c"
-  "${_src}/particlesmokerender.c"
-  "${_src}/particleupdate.c"
-  "${_src}/tiresmokespawn.c"
-  "${_src}/tirespray.c"
-  "${_src}/tiresprayrender.c"
-  "${_src}/vehicleeffects.c")
-coastline_add_test(fade ${_common} "${_src}/fadeupdate.c" "${_src}/headlight.c"
-                   "${_src}/headlightglare.c")
+  "${_src}/common/billboardparticles.c"
+  "${_src}/common/exhaustspawn.c"
+  "${_src}/common/particleexhaustrender.c"
+  "${_src}/common/particleinit.c"
+  "${_src}/common/particlesmokerender.c"
+  "${_src}/common/particleupdate.c"
+  "${_src}/common/tiresmokespawn.c"
+  "${_src}/common/tirespray.c"
+  "${_src}/common/tiresprayrender.c"
+  "${_src}/common/vehicleeffects.c")
+coastline_add_test(fade ${_common} "${_src}/common/fadeupdate.c" "${_src}/common/headlight.c"
+                   "${_src}/common/headlightglare.c")
 coastline_add_test(
   hud
-  "${_src}/dashboard.c"
-  "${_src}/hudmessage.c"
-  "${_src}/hudoverlay.c"
-  "${_src}/hudrace.c"
-  "${_src}/hudtime.c")
-coastline_add_test(input "${_src}/n64/input.c" "${_src}/controllerread.c" "${_src}/inputtranslate.c"
-                   "${_src}/playerinput.c")
+  "${_src}/common/dashboard.c"
+  "${_src}/common/hudmessage.c"
+  "${_src}/common/hudoverlay.c"
+  "${_src}/common/hudrace.c"
+  "${_src}/common/hudtime.c")
+coastline_add_test(input "${_src}/n64/input.c" "${_src}/common/controllerread.c" "${_src}/common/inputtranslate.c"
+                   "${_src}/common/playerinput.c")
 coastline_add_test(
   model
-  "${_src}/materialcolor.c"
-  "${_src}/modelanimation.c"
-  "${_src}/modelanimationflags.c"
-  "${_src}/modelrelocation.c"
-  "${_src}/vehiclepaint.c")
-coastline_add_test(options "${_src}/volumecontrols.c")
+  "${_src}/common/materialcolor.c"
+  "${_src}/common/modelanimation.c"
+  "${_src}/common/modelanimationflags.c"
+  "${_src}/common/modelrelocation.c"
+  "${_src}/common/vehiclepaint.c")
+coastline_add_test(options "${_src}/common/volumecontrols.c")
 coastline_add_test(paintshop "${_src}/n64/paintshop.c")
 coastline_add_test(pakmenu "${_src}/n64/pakmenu.c")
-coastline_add_test(physics ${_common} "${_src}/rigidbody.c" "${_src}/cubeclip.c" "${_src}/tricache.c")
+coastline_add_test(physics ${_common} "${_src}/common/rigidbody.c" "${_src}/common/cubeclip.c" "${_src}/common/tricache.c")
 coastline_add_test(
   race
   stubs/race.c
   ${_common}
   ${_vecmath}
   ${_gu}
-  "${_src}/racecontrols.c"
-  "${_src}/racecredits.c"
-  "${_src}/racefinish.c"
-  "${_src}/raceinit.c"
-  "${_src}/raceload.c"
-  "${_src}/racerender.c"
-  "${_src}/raceresults.c"
-  "${_src}/racespecials.c"
-  "${_src}/seasontrack.c"
-  "${_src}/startlights.c")
-coastline_add_test(racemenu stubs/racemenu.c ${_vecmath} ${_gu} "${_src}/modeldraw.c")
+  "${_src}/common/racecontrols.c"
+  "${_src}/common/racecredits.c"
+  "${_src}/common/racefinish.c"
+  "${_src}/common/raceinit.c"
+  "${_src}/common/raceload.c"
+  "${_src}/common/racerender.c"
+  "${_src}/common/raceresults.c"
+  "${_src}/common/racespecials.c"
+  "${_src}/common/seasontrack.c"
+  "${_src}/common/startlights.c")
+coastline_add_test(racemenu stubs/racemenu.c ${_vecmath} ${_gu} "${_src}/common/modeldraw.c")
 coastline_add_test(
   racers
   ${_vecmath}
   ${_common}
-  "${_src}/raceprogress.c"
-  "${_src}/racersharing.c"
-  "${_src}/routewalk.c"
-  "${_src}/savestate.c")
-coastline_add_test(racesound stubs/racesound.c ${_vecmath} ${_common} "${_src}/soundpan.c"
-                   "${_src}/soundsource.c")
-coastline_add_test(replay "${_src}/rledecompress.c")
-coastline_add_test(rigidbody ${_common} "${_src}/rigidbody.c")
-coastline_add_test(sky ${_common} "${_src}/sky.c" "${_src}/skystate.c")
-coastline_add_test(sort "${_src}/util.c")
+  "${_src}/common/raceprogress.c"
+  "${_src}/common/racersharing.c"
+  "${_src}/common/routewalk.c"
+  "${_src}/common/savestate.c")
+coastline_add_test(racesound stubs/racesound.c ${_vecmath} ${_common} "${_src}/common/soundpan.c"
+                   "${_src}/common/soundsource.c")
+coastline_add_test(replay "${_src}/common/rledecompress.c")
+coastline_add_test(rigidbody ${_common} "${_src}/common/rigidbody.c")
+coastline_add_test(sky ${_common} "${_src}/common/sky.c" "${_src}/common/skystate.c")
+coastline_add_test(sort "${_src}/common/util.c")
 coastline_add_test(splash ${_common})
 coastline_add_test(sprite "${_src}/n64/sprite.c")
 coastline_add_test(
   system
   ${_vecmath}
-  "${_src}/assetdma.c"
-  "${_src}/displaylistops.c"
-  "${_src}/fog.c"
-  "${_src}/framebegin.c"
-  "${_src}/frameflush.c"
-  "${_src}/frametime.c"
-  "${_src}/iomessage.c"
-  "${_src}/screen.c"
-  "${_src}/screendraw.c"
-  "${_src}/texturebind.c"
-  "${_src}/texturestream.c"
-  "${_src}/util.c")
+  "${_src}/common/assetdma.c"
+  "${_src}/common/displaylistops.c"
+  "${_src}/common/fog.c"
+  "${_src}/common/framebegin.c"
+  "${_src}/common/frameflush.c"
+  "${_src}/common/frametime.c"
+  "${_src}/common/iomessage.c"
+  "${_src}/common/screen.c"
+  "${_src}/common/screendraw.c"
+  "${_src}/common/texturebind.c"
+  "${_src}/common/texturestream.c"
+  "${_src}/common/util.c")
 # The test counts the calls the other units make to these through its own versions.
 target_link_options(
   system_test PRIVATE -Wl,--wrap=Vec2fDistance -Wl,--wrap=Vec3fNormalize
   -Wl,--wrap=Vec3fTransformByMatrix -Wl,--wrap=ResetFrameBlocks)
 coastline_add_test(texrect "${_src}/n64/texrect.c")
-coastline_add_test(text "${_src}/n64/text.c" "${_src}/textrender.c" "${_src}/textstyle.c")
-coastline_add_test(timing "${_src}/n64/timing.c" "${_src}/timingframe.c")
-coastline_add_test(track ${_vecmath} ${_common} "${_src}/trackgrid.c" "${_src}/trackvalid.c")
-coastline_add_test(trackrender ${_vecmath} "${_src}/screenrect.c" "${_src}/shadowreset.c"
-                   "${_src}/trackinstance.c" "${_src}/visiblecompare.c")
+coastline_add_test(text "${_src}/n64/text.c" "${_src}/common/textrender.c" "${_src}/common/textstyle.c")
+coastline_add_test(timing "${_src}/n64/timing.c" "${_src}/common/timingframe.c")
+coastline_add_test(track ${_vecmath} ${_common} "${_src}/common/trackgrid.c" "${_src}/common/trackvalid.c")
+coastline_add_test(trackrender ${_vecmath} "${_src}/common/screenrect.c" "${_src}/common/shadowreset.c"
+                   "${_src}/common/trackinstance.c" "${_src}/common/visiblecompare.c")
 coastline_add_test(vecmath ${_vecmath})
 coastline_add_test(
   vehicle
   ${_vecmath}
-  "${_src}/rigidbody.c"
-  "${_src}/mathutil.c"
-  "${_src}/trackgrid.c"
-  "${_src}/tricache.c"
-  "${_src}/vehicleengine.c"
-  "${_src}/vehicletrackpos.c")
-coastline_add_test(vehiclerender ${_vecmath} ${_gu} "${_src}/headlight.c"
-                   "${_src}/vehiclevisibility.c" "${_src}/wheelrender.c")
+  "${_src}/common/rigidbody.c"
+  "${_src}/common/mathutil.c"
+  "${_src}/common/trackgrid.c"
+  "${_src}/common/tricache.c"
+  "${_src}/common/vehicleengine.c"
+  "${_src}/common/vehicletrackpos.c")
+coastline_add_test(vehiclerender ${_vecmath} ${_gu} "${_src}/common/headlight.c"
+                   "${_src}/common/vehiclevisibility.c" "${_src}/common/wheelrender.c")
 # The test keeps the light matrices as it sets them through its own version of this routine.
 target_link_options(vehiclerender_test PRIVATE -Wl,--wrap=NormalizeLightMatrix)
-coastline_add_test(visgrid "${_src}/visgrid.c" "${_src}/mathutil.c")
-coastline_add_test(weather ${_common} "${_src}/lightning.c" "${_src}/raininit.c")
+coastline_add_test(visgrid "${_src}/common/visgrid.c" "${_src}/common/mathutil.c")
+coastline_add_test(weather ${_common} "${_src}/common/lightning.c" "${_src}/common/raininit.c")
 
 # The libultra C library, renamed apart from the host's.
 coastline_add_test(bcopy stubs/libc.c)

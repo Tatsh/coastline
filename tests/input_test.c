@@ -4,10 +4,10 @@
 
 #include <PR/os.h>
 
-#include "input.h"
-#include "race.h"
-#include "system.h"
-#include "vehicle.h"
+#include "common/input.h"
+#include "common/race.h"
+#include "common/system.h"
+#include "common/vehicle.h"
 
 PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
 OSContPad g_aContPadData[MAX_PLAYERS];

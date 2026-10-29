@@ -1,8 +1,8 @@
 #pragma once
 
-#include <render.h>
+#include <common/render.h>
 
-#include "vehiclefwd.h"
+#include "common/vehiclefwd.h"
 
 #ifdef __cplusplus
 extern "C" {

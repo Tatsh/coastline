@@ -1,6 +1,6 @@
 #include "win32/fontdata.h"
 
-#include "text.h"
+#include "common/text.h"
 
 MenuGlyph g_MenuFontGlyphTable[95] = {
     {-1, -1, -1, {0, 0, -72, -46, 10, 16}},  {8, 16, 42, {0, 0, -80, -46, 10, 16}},

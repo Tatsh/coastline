@@ -1,18 +1,18 @@
-#include "vehicle.h"
+#include "common/vehicle.h"
 
 #include <PR/gu.h>
 #include <PR/os_libc.h>
 
-#include "camera.h"
-#include "game.h"
-#include "mathutil.h"
-#include "physics.h"
-#include "race.h"
-#include "timing.h"
-#include "trackselect.h"
-#include "tricache.h"
-#include "vehiclestatus.h"
-#include "vehicletrackpos.h"
+#include "common/camera.h"
+#include "common/game.h"
+#include "common/mathutil.h"
+#include "common/physics.h"
+#include "common/race.h"
+#include "common/timing.h"
+#include "common/trackselect.h"
+#include "common/tricache.h"
+#include "common/vehiclestatus.h"
+#include "common/vehicletrackpos.h"
 
 /* The rows of a frame matrix whose last column FinishFrameMatrix() sets. */
 #define MATRIX_ROWS 4

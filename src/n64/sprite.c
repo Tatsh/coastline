@@ -2,10 +2,10 @@
 
 #include <PR/gbi.h>
 
+#include "common/render.h"
+#include "common/system.h"
+#include "common/texrect.h"
 #include "pakmenu.h"
-#include "render.h"
-#include "system.h"
-#include "texrect.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include "sdl/n64displaylist.h"

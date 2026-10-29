@@ -3,7 +3,7 @@
 
 #include <PR/gbi.h>
 
-#include "ptr32.h"
+#include "common/ptr32.h"
 
 #ifdef __cplusplus
 extern "C" {

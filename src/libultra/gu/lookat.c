@@ -1,7 +1,7 @@
 #if TGR_PC
 #include <PR/gu.h>
 
-#include "vecmath.h"
+#include "common/vecmath.h"
 #else
 #include <ultra64.h>
 #endif

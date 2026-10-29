@@ -1,9 +1,9 @@
 #include "win32/boot/app.h"
 
-#include "displaylistptr.h"
-#include "racerslot.h"
-#include "text.h"
-#include "vehiclecount.h"
+#include "common/displaylistptr.h"
+#include "common/racerslot.h"
+#include "common/text.h"
+#include "common/vehiclecount.h"
 #include "win32/displaylist.h"
 #include "win32/render.h"
 #include "win32/settings.h"

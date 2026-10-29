@@ -3,10 +3,10 @@
 
 #include "win32/frontendstate.h"
 
-#include "game.h"
+#include "common/game.h"
+#include "common/vehicledeform.h"
 #include "sdl/scene.h"
 #include "sdl/win32types.h"
-#include "vehicledeform.h"
 #include "win32/settings.h"
 
 char g_szSeasonSaveFileName[MAX_PATH];

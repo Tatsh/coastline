@@ -9,7 +9,7 @@
 /* Game change: the default allocator draws from a heap the game lends, or from the frame
    buffers while the display is blanked. */
 #include <PR/os.h>
-#include "system.h"
+#include "common/system.h"
 
 struct inflate_blocks_state {int dummy;}; /* for buggy compilers */
 

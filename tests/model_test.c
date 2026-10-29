@@ -4,8 +4,8 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "common/vehiclemodel.c"
 #include "model.c"
-#include "vehiclemodel.c"
 
 f32 g_fFrameDeltaTime;
 VehicleModel g_aVehicleModels[1];

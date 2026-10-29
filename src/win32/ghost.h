@@ -7,8 +7,8 @@
 
 #include <cstddef>
 
-#include "rigidbody.h"
-#include "vecmath.h"
+#include "common/rigidbody.h"
+#include "common/vecmath.h"
 #include "vehicle.h"
 
 #ifdef __cplusplus

@@ -5,7 +5,7 @@
 #include <functional>
 #include <utility>
 
-#include "screen.h"
+#include "common/screen.h"
 #include "win32/render.h"
 #include "win32/settings.h"
 

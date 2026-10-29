@@ -1,22 +1,22 @@
-#include "splash.h"
+#include "common/splash.h"
 
 #include <PR/gu.h>
 #include <PR/os.h>
 
-#include "audio.h"
-#include "audiomix.h"
-#include "fade.h"
-#include "game.h"
-#include "heap.h"
-#include "input.h"
+#include "common/audio.h"
+#include "common/audiomix.h"
+#include "common/fade.h"
+#include "common/game.h"
+#include "common/heap.h"
+#include "common/input.h"
+#include "common/render.h"
+#include "common/system.h"
+#include "common/text.h"
+#include "common/timing.h"
+#include "common/util.h"
 #include "mainmenu.h"
 #include "pakmenu.h"
-#include "render.h"
 #include "sprite.h"
-#include "system.h"
-#include "text.h"
-#include "timing.h"
-#include "util.h"
 
 /* Assets at fixed cartridge offsets. */
 #if TGR_REGION == TGR_REGION_EU

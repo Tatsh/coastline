@@ -4,16 +4,16 @@
 
 #include <PR/os_cont.h>
 
-#include "fade.h"
-#include "input.h"
+#include "common/fade.h"
+#include "common/input.h"
+#include "common/render.h"
+#include "common/rumble.h"
+#include "common/system.h"
+#include "common/text.h"
 #include "options.h"
 #include "paintshop.h"
 #include "pakmenu.h"
 #include "racemenu.h"
-#include "render.h"
-#include "rumble.h"
-#include "system.h"
-#include "text.h"
 
 Gfx *gDisplayListPtr;
 s32 g_dwScreenScaleShift = 1;
