@@ -10,10 +10,13 @@ endif()
 
 add_library(coastline_libultra_options INTERFACE)
 target_link_libraries(coastline_libultra_options INTERFACE coastline_options)
-# These routines are the C library, so GCC must not turn their loops into calls to memcpy or memset.
-target_compile_options(coastline_libultra_options INTERFACE -fno-tree-loop-distribute-patterns)
-# Data the SDK initialises, to zero included, belongs in the data, as the BSS may not grow.
-target_compile_options(coastline_libultra_options INTERFACE -fno-zero-initialized-in-bss)
+if(NOT TGR_IDO)
+  # These routines are the C library, so GCC must not turn their loops into calls to memcpy or
+  # memset.
+  target_compile_options(coastline_libultra_options INTERFACE -fno-tree-loop-distribute-patterns)
+  # Data the SDK initialises, to zero included, belongs in the data, as the BSS may not grow.
+  target_compile_options(coastline_libultra_options INTERFACE -fno-zero-initialized-in-bss)
+endif()
 
 add_subdirectory(gu)
 add_subdirectory(io)

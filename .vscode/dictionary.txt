@@ -437,6 +437,7 @@ ffunction
 finalrom
 finetune
 fixedh
+fnmatch
 fogcolor
 fogenable
 fogtablemode
@@ -680,6 +681,7 @@ mainpage
 makeintresourcea
 maptlbrdb
 maskt
+matchscan
 materialcolor
 math
 mathutil
@@ -934,6 +936,7 @@ rallyoutro
 ralt
 ramarray
 ramreadformat
+ranlib
 raydone
 rctrl
 rdbread

@@ -9,8 +9,11 @@
 # The settings every library of the game shares. An interface library provides them without
 # compiling anything itself.
 add_library(coastline_options INTERFACE)
-# A reconstructed routine retains the parameters of the original, used or not.
-target_compile_options(coastline_options INTERFACE -Wall -Wextra -Wno-unused-parameter)
+# A reconstructed routine retains the parameters of the original, used or not. IDO takes the flags
+# of tools/ido_flags.txt alone.
+if(NOT TGR_IDO)
+  target_compile_options(coastline_options INTERFACE -Wall -Wextra -Wno-unused-parameter)
+endif()
 target_include_directories(coastline_options INTERFACE "${CMAKE_SOURCE_DIR}/src"
                                                      "${CMAKE_SOURCE_DIR}/src/libultra/include")
 
@@ -83,6 +86,13 @@ else()
 endif()
 target_link_libraries(coastline_options INTERFACE coastline_zlib)
 list(APPEND COASTLINE_LIBRARIES coastline_zlib)
+
+if(TGR_IDO)
+  include("${CMAKE_SOURCE_DIR}/cmake/ido-flags.cmake")
+  foreach(_library ${COASTLINE_LIBRARIES})
+    coastline_apply_ido_flags(${_library})
+  endforeach()
+endif()
 
 add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES})
 if(TARGET coastline_ear)

@@ -165,9 +165,10 @@ if(NOT BUILD_DOCS_ONLY)
   else()
     add_subdirectory(src)
   endif()
-  if(TGR_PLATFORM STREQUAL "n64")
+  if(TGR_PLATFORM STREQUAL "n64" AND NOT TGR_IDO)
     # The offsets of the structures the assembly reads, which need the 32-bit pointers of the
-    # console and so are checked by the cross compiler. A wrong offset fails the build.
+    # console and so are checked by the cross compiler. A wrong offset fails the build. The checks
+    # are the static assertions of GCC.
     add_library(coastline_layout OBJECT tests/layout.c)
     target_include_directories(
       coastline_layout PRIVATE "${CMAKE_SOURCE_DIR}/src" "${CMAKE_SOURCE_DIR}/src/n64"
