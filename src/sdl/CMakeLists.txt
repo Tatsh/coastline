@@ -45,6 +45,7 @@ add_custom_target(coastline_shaders DEPENDS ${_shader_headers})
 # the Nintendo 64 release is shared C.
 add_library(
   coastline_sdl STATIC
+  carmodel.cpp
   config.cpp
   ghostfile.cpp
   gpu.cpp

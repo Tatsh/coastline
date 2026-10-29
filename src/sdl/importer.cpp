@@ -17,6 +17,7 @@
 #include <nlohmann/json.hpp>
 
 #include "assetchain.h"
+#include "sdl/carmodel.h"
 #include "sdl/ghostfile.h"
 #include "sdl/indexedimage.h"
 #include "sdl/stringresources.h"
@@ -384,6 +385,46 @@ std::optional<std::string> ConvertGhostRecordings(const std::filesystem::path &d
     return std::nullopt;
 }
 
+// Each car of cars as glTF of the same name and its buffer, in place of the .rca file once the
+// files written build the same bytes.
+std::optional<std::string> ConvertCarModels(const std::filesystem::path &dataDirectory) {
+    constexpr std::size_t RCA_HEADER = 0x8000;
+    std::error_code error;
+    std::vector<std::filesystem::path> cars;
+    for (const auto &entry : std::filesystem::directory_iterator(dataDirectory / "cars", error)) {
+        if (Lowercase(entry.path().extension().string()) == ".rca") {
+            cars.push_back(entry.path());
+        }
+    }
+    for (const auto &car : cars) {
+        auto bytes = ReadWholeFile(car);
+        if (!bytes) {
+            return std::format("{} cannot be read.", car.string());
+        }
+        auto gltfPath = std::filesystem::path(car).replace_extension(".gltf");
+        auto bufferPath = std::filesystem::path(car).replace_extension(".bin");
+        auto model = CarModelToGltf(*bytes, RCA_HEADER, bufferPath.filename().string());
+        if (!model) {
+            return std::format("{} is not a car ({}).", car.string(), model.error());
+        }
+        std::ofstream(gltfPath, std::ios::trunc) << model->json.dump(1) << '\n';
+        if (!WriteBytes(bufferPath, model->buffer)) {
+            return std::format("{} cannot be written.", bufferPath.string());
+        }
+        std::ifstream written(gltfPath);
+        auto parsed = nlohmann::ordered_json::parse(written, nullptr, false);
+        auto buffer = ReadWholeFile(bufferPath);
+        auto rebuilt = parsed.is_discarded() || !buffer ?
+                           std::unexpected(std::string("the files cannot be read")) :
+                           CarModelFromGltf(parsed, *buffer);
+        if (!rebuilt || *rebuilt != *bytes) {
+            return std::format("{} does not read back as {}.", gltfPath.string(), car.string());
+        }
+        std::filesystem::remove(car, error);
+    }
+    return std::nullopt;
+}
+
 // Each sky of cargfx, the 4-bit texels of a .ci4 file and the palette of the .lut4 file of the same
 // name, as an indexed PNG image of 32 texels a row, in place of the two files.
 std::optional<std::string> ConvertSkyImages(const std::filesystem::path &dataDirectory) {
@@ -712,6 +753,9 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         return std::unexpected(*failure);
     }
     if (auto failure = ConvertGhostRecordings(dataDirectory)) {
+        return std::unexpected(*failure);
+    }
+    if (auto failure = ConvertCarModels(dataDirectory)) {
         return std::unexpected(*failure);
     }
     for (const auto &track : tracks) {

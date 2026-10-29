@@ -55,7 +55,6 @@ bcar
 bcmp
 bcopy
 beetlestone
-behavior
 beql
 beqz
 berkin
@@ -115,14 +114,12 @@ cantcreatesession
 cantloadcapi
 cantloadsecuritypackage
 cantloadsspi
-capslock
 capsnotavailableyet
 cargfx
 carmodel
 carmt
 carphysics
 carselect
-cartridgedata
 cartrominit
 carwnoshad
 carwshad
@@ -140,7 +137,6 @@ chdrive
 cheryll
 chewbaca
 chnl
-chunknotfound
 ckid
 cksize
 cleargeometrymode
@@ -154,7 +150,6 @@ color
 colored
 colorformat
 colorkeyenable
-colors
 combkey
 completionthreads
 configfile
@@ -210,7 +205,6 @@ dclipstatus
 dcmake
 dcmpfunc
 dcolor
-dcompat
 dcosf
 dcull
 ddbd
@@ -256,7 +250,6 @@ devmgr
 dfrac
 dialogs
 dicondition
-didataformat
 dideviceinstancea
 didevtype
 dieb
@@ -264,7 +257,6 @@ diedfl
 dieff
 dieffect
 dienum
-dienvelope
 diep
 dierr
 dijofs
@@ -272,13 +264,11 @@ dijoystate
 dimousestate
 dinline
 dinput
-dinputcompat
 diperiodic
 diph
 diprop
 dipropautocenter
 dipropdword
-dipropheader
 diproprange
 directionalmatrix
 directplay
@@ -330,8 +320,6 @@ dpopen
 dpplayer
 dpreceive
 dpref
-dprimcaps
-dprimitivetype
 dpsend
 dpsession
 dpsessiondesc
@@ -345,7 +333,6 @@ drlibs
 drytire
 dsbcaps
 dsbfrequency
-dsblock
 dsbpan
 dsbplay
 dsbstatus
@@ -355,10 +342,8 @@ dscaps
 dsdx
 dserr
 dshade
-dshademode
 dsinf
 dsll
-dsoundcompat
 dsra
 dsref
 dsrl
@@ -370,7 +355,6 @@ dtgr
 dtlvertex
 dvcpkg
 dvddrive
-dvertextype
 dwlp
 dxguid
 dxil
@@ -404,7 +388,6 @@ endlabel
 engsound
 entermenuloop
 entersizemove
-entirebuffer
 enumvalue
 enya
 epirawdma
@@ -420,7 +403,6 @@ excmask
 exhaustpos
 exhaustspawn
 exitmenuloop
-extern
 extraout
 fadeupdate
 familia
@@ -431,7 +413,6 @@ fcntl
 fdata
 fehdrau
 fenv
-ffnominalmax
 ffreestanding
 ffunction
 finalrom
@@ -448,7 +429,6 @@ fovy
 foxundermoon
 fpart
 fpcsr
-fpermissive
 fpshud
 frag
 framebegin
@@ -459,10 +439,7 @@ frametime
 frametimer
 freeable
 frontenddata
-frontendlayouts
-frontendroutines
 frontendscreens
-frontendstate
 frontwheel
 fsanitize
 ftofrac
@@ -490,13 +467,13 @@ gfxtask
 ghidra
 ghnd
 ghostfile
-ghostrecording
 glabel
 glist
 globl
 glos
 glsl
 glslang
+gltf
 gmem
 gnoias
 gouraud
@@ -598,7 +575,6 @@ kemco
 keybd
 kseg
 kuseg
-lalt
 laprecords
 laptime
 laptimes
@@ -609,7 +585,6 @@ lbzero
 lcart
 lclear
 lcounter
-lctrl
 ldblk
 ldiv
 ldtob
@@ -654,7 +629,6 @@ lpanic
 lpcdpname
 lpcdpsessiondesc
 lpcstr
-lpdienumdevicescallbacka
 lpdpenumplayerscallback
 lpfn
 lprenmi
@@ -691,7 +665,6 @@ maximizebox
 maxz
 mbcs
 mcideviceid
-mcierr
 mcierror
 mcinotify
 mdebug
@@ -725,11 +698,9 @@ mixerlinecontrolsa
 mktemp
 mmckinfo
 mmio
-mmioerr
 mmioinfo
 mmresult
 mmsyserr
-mmsystemcompat
 mnrwd
 moddi
 modelanimation
@@ -821,7 +792,6 @@ paintshop
 painttex
 pakmenu
 paks
-paletted
 paletteentry
 paletteindexed
 palettized
@@ -834,8 +804,6 @@ particlesmokerender
 particlesnapshot
 particleupdate
 pathlib
-pcgame
-pcgamerun
 pcmstream
 pcmwaveformat
 penm
@@ -883,7 +851,6 @@ playerready
 playerselect
 pminidump
 podarchive
-pointee
 ponchetti
 popmtx
 povey
@@ -934,12 +901,10 @@ rallyconfig
 rallycredits
 rallyintro
 rallyoutro
-ralt
 ramarray
 ramreadformat
 ranlib
 raydone
-rctrl
 rdbread
 rdbwrite
 rdparty
@@ -961,7 +926,6 @@ regen
 reginfo
 renderbackend
 renderdefaults
-renderhost
 renderinit
 rendermode
 rendertile
@@ -981,7 +945,6 @@ rledecompress
 rmonspin
 rodata
 rombuilder
-romsegments
 routeposition
 routewalk
 rrggbb
@@ -1002,7 +965,6 @@ schemafile
 screendraw
 screenfade
 screenrect
-scrolllock
 sdlcall
 seasn
 seasoncars
@@ -1144,11 +1106,9 @@ stickyfocus
 stkptr
 strequal
 stringresources
-stringtable
 strlwr
 strmiids
 strupr
-substep
 subu
 sunweth
 superbuild
@@ -1194,7 +1154,6 @@ textureworkspace
 tgmath
 thiscall
 timerintr
-timerr
 timingframe
 tiresmokespawn
 tirespray
@@ -1210,12 +1169,10 @@ tlrenderer
 tlut
 tluts
 tlvertex
-tmem
 tmsf
 tmuvtx
 tolower
 toolhelp
-toplevel
 toupper
 tracetrack
 trackanimation
@@ -1260,7 +1217,6 @@ urlkey
 urllib
 urlopen
 userabort
-utgr
 vars
 vblankquery
 vecmath
@@ -1314,7 +1270,6 @@ waitforsingleobject
 wasstilldrawing
 watr
 wavechunks
-waveformat
 waveformatex
 wavesample
 wavread
