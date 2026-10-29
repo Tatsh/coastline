@@ -120,6 +120,12 @@ coastline::TlRenderer *g_renderer;
 std::filesystem::path g_textureDirectory;
 bool g_dumpTextures;
 
+// The width and height the front end draws on at its high resolution.
+constexpr float kConsoleScreenWidth = 640.0f;
+constexpr float kConsoleScreenHeight = 480.0f;
+// The space added at each side of the screen of the console to fill a wider frame.
+float g_screenOffsetX;
+
 Matrix Identity() {
     Matrix m{};
     for (int i = 0; i < 4; ++i) {
@@ -626,11 +632,18 @@ void SetSecondTile(coastline::CombinerState &combiner,
 
 void DrawQuad(float left, float top, float right, float bottom, std::uint32_t color) {
     float scale = ScreenScale();
+    float x0 = left * scale + g_screenOffsetX;
+    float x1 = right * scale + g_screenOffsetX;
+    // A fill across the whole screen of the console covers the whole width of a wider one.
+    if (left <= 0.0f && right * scale >= kConsoleScreenWidth - 1.0f) {
+        x0 = 0.0f;
+        x1 = kConsoleScreenWidth + 2.0f * g_screenOffsetX;
+    }
     const std::array<coastline::TlVertex, 4> quad = {{
-        {left * scale, top * scale, 0, 1, color, 0, 0, 0},
-        {right * scale, top * scale, 0, 1, color, 0, 1, 0},
-        {right * scale, bottom * scale, 0, 1, color, 0, 1, 1},
-        {left * scale, bottom * scale, 0, 1, color, 0, 0, 1},
+        {x0, top * scale, 0, 1, color, 0, 0, 0},
+        {x1, top * scale, 0, 1, color, 0, 1, 0},
+        {x1, bottom * scale, 0, 1, color, 0, 1, 1},
+        {x0, bottom * scale, 0, 1, color, 0, 0, 1},
     }};
     const std::array<std::uint16_t, 6> indices = {0, 1, 2, 0, 2, 3};
     g_renderer->DrawIndexed(quad, indices);
@@ -688,7 +701,7 @@ void DrawTextureRectangle(const GbiCommand *command, bool flip) {
     std::array<coastline::TlVertex, 4> quad{};
     const float offsets[4][2] = {{0, 0}, {w, 0}, {w, h}, {0, h}};
     for (std::size_t i = 0; i < 4; ++i) {
-        quad[i].sx = (upperLeftX + offsets[i][0]) * scale;
+        quad[i].sx = (upperLeftX + offsets[i][0]) * scale + g_screenOffsetX;
         quad[i].sy = (upperLeftY + offsets[i][1]) * scale;
         quad[i].rhw = 1;
         quad[i].color = 0xffffffff;
@@ -1086,7 +1099,8 @@ void DrawTriangle(std::size_t a, std::size_t b, std::size_t c) {
         const Vertex &vertex = *corners[i];
         float inverseW = 1.0f / vertex.w;
         out[i].sx =
-            (g_rdp.viewportTranslate[0] + vertex.x * inverseW * g_rdp.viewportScale[0]) * scale;
+            (g_rdp.viewportTranslate[0] + vertex.x * inverseW * g_rdp.viewportScale[0]) * scale +
+            g_screenOffsetX;
         out[i].sy =
             (g_rdp.viewportTranslate[1] - vertex.y * inverseW * g_rdp.viewportScale[1]) * scale;
         out[i].sz = std::clamp(vertex.z * inverseW * 0.5f + 0.5f, 0.0f, 1.0f);
@@ -1254,6 +1268,15 @@ void SubmitN64DisplayList(GbiCommand *list) {
     }
     g_renderer = &g_pD3DDevice2->Renderer();
     ++g_rdp.frame;
+    // The screen of the console keeps its height and widens to the shape of the frame, with the
+    // screen of the console at its centre.
+    float width =
+        std::max(kConsoleScreenWidth,
+                 std::round(kConsoleScreenHeight * static_cast<float>(g_renderer->FrameWidth()) /
+                            static_cast<float>(g_renderer->FrameHeight())));
+    g_screenOffsetX = (width - kConsoleScreenWidth) / 2.0f;
+    g_renderer->SetScreenSize(static_cast<std::uint32_t>(width),
+                              static_cast<std::uint32_t>(kConsoleScreenHeight));
     g_pD3DDevice2->BeginScene();
     RunDisplayList(list);
     g_pD3DDevice2->EndScene();

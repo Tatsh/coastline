@@ -1,5 +1,6 @@
 #include "gpu.h"
 
+#include <algorithm>
 #include <cstring>
 
 namespace coastline {
@@ -98,14 +99,23 @@ bool GpuWindow::Present(SDL_GPUCommandBuffer *commands, const std::filesystem::p
     if (SDL_WaitAndAcquireGPUSwapchainTexture(
             commands, m_window.get(), &swapchain, &width, &height) &&
         swapchain != nullptr) {
+        // The frame keeps its shape in a window of another shape, with black bars at the sides or
+        // at the top and bottom.
+        float scale = std::min(static_cast<float>(width) / static_cast<float>(m_frameWidth),
+                               static_cast<float>(height) / static_cast<float>(m_frameHeight));
+        auto fittedWidth = static_cast<Uint32>(static_cast<float>(m_frameWidth) * scale);
+        auto fittedHeight = static_cast<Uint32>(static_cast<float>(m_frameHeight) * scale);
         SDL_GPUBlitInfo blit{};
         blit.source.texture = m_frame;
         blit.source.w = m_frameWidth;
         blit.source.h = m_frameHeight;
         blit.destination.texture = swapchain;
-        blit.destination.w = width;
-        blit.destination.h = height;
-        blit.load_op = SDL_GPU_LOADOP_DONT_CARE;
+        blit.destination.x = (width - fittedWidth) / 2;
+        blit.destination.y = (height - fittedHeight) / 2;
+        blit.destination.w = fittedWidth;
+        blit.destination.h = fittedHeight;
+        blit.load_op = SDL_GPU_LOADOP_CLEAR;
+        blit.clear_color = SDL_FColor{0.0f, 0.0f, 0.0f, 1.0f};
         blit.filter = SDL_GPU_FILTER_LINEAR;
         SDL_BlitGPUTexture(commands, &blit);
     }
