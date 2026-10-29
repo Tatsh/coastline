@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <expected>
@@ -12,10 +13,21 @@
 
 namespace coastline {
 
-/** A glTF document and the bytes of its one buffer. */
+/** A texture of a glTF document, as the texels of the console. */
+struct GltfImage {
+    std::string uri;                  /*!< The URI the document gives the image. */
+    int width = 0;                    /*!< The width in texels. */
+    int height = 0;                   /*!< The height in texels. */
+    bool intensity = false;           /*!< Whether the texels are 8-bit intensities, not CI4. */
+    std::vector<std::uint8_t> texels; /*!< The texels row by row, two to a byte for CI4. */
+    std::array<std::uint8_t, 32> palette{}; /*!< The 16 colours of a CI4 image, RGBA 5551. */
+};
+
+/** A glTF document, the bytes of its one buffer, and its images. */
 struct GltfModel {
     nlohmann::ordered_json json;      /*!< The document. */
     std::vector<std::uint8_t> buffer; /*!< The bytes of the buffer the document refers to. */
+    std::vector<GltfImage> images;    /*!< The images the document refers to. */
 };
 
 /**

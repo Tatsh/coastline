@@ -429,6 +429,15 @@ std::optional<std::string> ConvertCarModels(const std::filesystem::path &dataDir
         if (!WriteBytes(bufferPath, model->buffer)) {
             return std::format("{} cannot be written.", bufferPath.string());
         }
+        for (const GltfImage &texture : model->images) {
+            auto path = car.parent_path() / texture.uri;
+            if (!(texture.intensity ?
+                      SaveIntensity8Png(path, texture.texels, texture.width, texture.height) :
+                      SaveIndexed4Png(
+                          path, texture.texels, texture.palette, texture.width, texture.height))) {
+                return std::format("{} does not read back as its texels.", path.string());
+            }
+        }
         std::ifstream written(gltfPath);
         auto parsed = nlohmann::ordered_json::parse(written, nullptr, false);
         auto buffer = ReadWholeFile(bufferPath);

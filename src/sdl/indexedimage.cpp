@@ -114,4 +114,56 @@ bool SaveIndexed4Png(const std::filesystem::path &path,
            std::ranges::equal(readTexels, texels) && std::ranges::equal(readPalette, palette);
 }
 
+bool SaveIntensity8Png(const std::filesystem::path &path,
+                       std::span<const std::uint8_t> texels,
+                       int width,
+                       int height) {
+    if (width <= 0 || height <= 0 ||
+        texels.size() != static_cast<std::size_t>(width) * static_cast<std::size_t>(height)) {
+        return false;
+    }
+    Surface surface(SDL_CreateSurface(width, height, SDL_PIXELFORMAT_INDEX8));
+    if (!surface) {
+        return false;
+    }
+    for (int y = 0; y < height; ++y) {
+        std::memcpy(static_cast<std::uint8_t *>(surface->pixels) +
+                        static_cast<std::size_t>(y) * static_cast<std::size_t>(surface->pitch),
+                    texels.data() + static_cast<std::size_t>(y) * static_cast<std::size_t>(width),
+                    static_cast<std::size_t>(width));
+    }
+    // Each index equals its intensity.
+    std::array<SDL_Color, 256> colors{};
+    for (std::size_t i = 0; i < colors.size(); ++i) {
+        auto level = static_cast<std::uint8_t>(i);
+        colors[i] = {level, level, level, 0xFF};
+    }
+    std::unique_ptr<SDL_Palette, decltype(&SDL_DestroyPalette)> surfacePalette(
+        SDL_CreatePalette(static_cast<int>(colors.size())), SDL_DestroyPalette);
+    if (!surfacePalette ||
+        !SDL_SetPaletteColors(
+            surfacePalette.get(), colors.data(), 0, static_cast<int>(colors.size())) ||
+        !SDL_SetSurfacePalette(surface.get(), surfacePalette.get()) ||
+        !SDL_SavePNG(surface.get(), path.string().c_str())) {
+        return false;
+    }
+    Surface read(SDL_LoadPNG(path.string().c_str()));
+    if (!read || read->w != width || read->h != height || SDL_BITSPERPIXEL(read->format) != 8) {
+        return false;
+    }
+    SDL_Palette *readColors = SDL_GetSurfacePalette(read.get());
+    for (int y = 0; y < height; ++y) {
+        const auto *row = static_cast<const std::uint8_t *>(read->pixels) +
+                          static_cast<std::size_t>(y) * static_cast<std::size_t>(read->pitch);
+        for (int x = 0; x < width; ++x) {
+            std::uint8_t level = readColors ? readColors->colors[row[x]].r : row[x];
+            if (level != texels[static_cast<std::size_t>(y) * static_cast<std::size_t>(width) +
+                                static_cast<std::size_t>(x)]) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 } // namespace coastline
