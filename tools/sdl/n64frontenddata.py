@@ -153,6 +153,8 @@ def main() -> None:
             encoding='utf-8').splitlines() if 'type:func' in line
     }
     routines: set[str] = set()
+    # The symbols a datum addresses, which includes symbols of the BSS.
+    addressed: set[str] = set()
     pending = list(symbols)
     while pending:
         symbol = pending.pop()
@@ -163,9 +165,11 @@ def main() -> None:
             operand = words.get(address + offset, '0x0')
             if operand in routines_of_release:
                 routines.add(operand)
-            elif not operand.startswith('0x') and operand not in symbols:
-                symbols.add(operand)
-                pending.append(operand)
+            elif not operand.startswith('0x'):
+                addressed.add(operand)
+                if operand not in symbols:
+                    symbols.add(operand)
+                    pending.append(operand)
     for symbol in sorted(symbols):
         declaration = find_declaration(args.root, symbol)
         if declaration is None or (symbol not in lengths and symbol not in overrides):
@@ -216,9 +220,10 @@ def main() -> None:
         '',
         'void ReadN64FrontEndData(void) {',
         '    RegisterN64FrontEndRoutines();',
-        # The BSS is zero and is only addressed by code, so only the data the cartridge
-        # initializes is recorded and read.
-        *(f'    coastline::RegisterCartridgeSymbol("{s}", {s});' for s, bss in reads if not bss),
+        # The BSS is zero, so only the data the cartridge initializes is read. A symbol of the BSS
+        # that a datum addresses, such as the matrix of a display list, is recorded for the pointer.
+        *(f'    coastline::RegisterCartridgeSymbol("{s}", {s});' for s, bss in reads
+          if not bss or s in addressed),
         *(f'    coastline::ReadCartridgeSymbol("{s}", {s});' for s, bss in reads if not bss),
         '}',
         '',

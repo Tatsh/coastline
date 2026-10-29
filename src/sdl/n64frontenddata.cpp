@@ -769,6 +769,12 @@ void ReadN64FrontEndData(void) {
     coastline::RegisterCartridgeSymbol("g_wScreenFrameCount", g_wScreenFrameCount);
     coastline::RegisterCartridgeSymbol("s_aPanelViewDirections", s_aPanelViewDirections);
     coastline::RegisterCartridgeSymbol("s_pMirrorSource", s_pMirrorSource);
+    coastline::RegisterCartridgeSymbol("g_MenuChoiceMarkerMtx", g_MenuChoiceMarkerMtx);
+    coastline::RegisterCartridgeSymbol("g_SpeedometerNeedleMtx", g_SpeedometerNeedleMtx);
+    coastline::RegisterCartridgeSymbol("g_aMenuSpotlightVertices", g_aMenuSpotlightVertices);
+    coastline::RegisterCartridgeSymbol("g_aSpeedometerNeedleVertices",
+                                       g_aSpeedometerNeedleVertices);
+    coastline::RegisterCartridgeSymbol("g_abTrackSection1Header", g_abTrackSection1Header);
     coastline::ReadCartridgeSymbol("gControllerPakState", gControllerPakState);
     coastline::ReadCartridgeSymbol("g_ArrowLeftTextureDesc", g_ArrowLeftTextureDesc);
     coastline::ReadCartridgeSymbol("g_ArrowRightTextureDesc", g_ArrowRightTextureDesc);
