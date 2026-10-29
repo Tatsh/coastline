@@ -23,8 +23,8 @@
 #include "common/weather.h"
 
 #if TGR_BOSS_RALLY
+#include "common/trackskidmarks.h"
 #include "common/vehiclecount.h"
-#include "win32/trackskidmarks.h"
 #endif /* TGR_BOSS_RALLY */
 
 #if TGR_BOSS_RALLY

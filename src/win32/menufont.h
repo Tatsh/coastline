@@ -5,7 +5,7 @@
 
 #include <windows.h>
 
-#include "win32/fontdata.h"
+#include "common/fontdata.h"
 
 #ifdef __cplusplus
 extern "C" {

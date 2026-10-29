@@ -9,7 +9,7 @@
 #if TGR_BOSS_RALLY
 #include <math.h>
 
-#include "win32/gbicommand.h"
+#include "common/gbicommand.h"
 #else
 #include <PR/R4300.h>
 #endif

@@ -2,9 +2,9 @@
 #include "common/screen.h"
 #include "common/text.h"
 #if TGR_BOSS_RALLY
+#include "common/fontdata.h"
+#include "common/gbicommand.h"
 #include "common/settings.h"
-#include "win32/fontdata.h"
-#include "win32/gbicommand.h"
 
 u8 g_bTextStyleBold;
 u8 g_nTextAlignment;

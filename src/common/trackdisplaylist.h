@@ -4,7 +4,7 @@
 #include "common/displaylistops.h"
 
 #if TGR_BOSS_RALLY
-#include "win32/combine.h"
+#include "common/combine.h"
 #endif
 
 #ifdef __cplusplus

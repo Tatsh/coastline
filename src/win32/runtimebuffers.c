@@ -1,6 +1,7 @@
 #include <common/camera.h>
 #include <common/effects.h>
 #include <common/fade.h>
+#include <common/fontdata.h>
 #include <common/hud.h>
 #include <common/physics.h>
 #include <common/race.h>
@@ -20,7 +21,6 @@
 #include <common/vehiclerender.h>
 #include <common/visgrid.h>
 #include <common/weather.h>
-#include <win32/fontdata.h>
 #include <win32/framestatistics.h>
 
 #include "shadowclip.h"

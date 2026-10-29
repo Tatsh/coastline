@@ -8,7 +8,7 @@
 #include "common/weather.h"
 
 #if TGR_BOSS_RALLY
-#include "win32/gbicommand.h"
+#include "common/gbicommand.h"
 #endif
 
 /* The y past which the fog of the desert turns grey. */

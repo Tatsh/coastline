@@ -11,8 +11,8 @@
 #endif
 
 #if TGR_BOSS_RALLY
+#include "common/gbicommand.h"
 #include "common/settings.h"
-#include "win32/gbicommand.h"
 #if TGR_BOSS_RALLY
 /**
  * The display list of g_aClipRatioDisplayLists a frame starts with.

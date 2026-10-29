@@ -1,5 +1,5 @@
-#ifndef COASTLINE_WIN_HUDCANVAS_H
-#define COASTLINE_WIN_HUDCANVAS_H
+#ifndef COASTLINE_HUDCANVAS_H
+#define COASTLINE_HUDCANVAS_H
 
 #include <common/render.h>
 
@@ -25,4 +25,4 @@ void EndRaceHudCanvas(void);
 }
 #endif
 
-#endif /* COASTLINE_WIN_HUDCANVAS_H */
+#endif /* COASTLINE_HUDCANVAS_H */

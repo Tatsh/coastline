@@ -6,7 +6,7 @@
 #include "common/vehiclemodel.h"
 
 #if TGR_BOSS_RALLY
-#include "win32/gbicommand.h"
+#include "common/gbicommand.h"
 #define MAX_DENT g_wVehicleDeformMaxDent
 #define DENT_LESS(value, limit) (!((value) >= (limit)))
 #define DENT_COORDINATE(vertex, index, field)                                                      \

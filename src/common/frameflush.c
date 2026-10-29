@@ -11,7 +11,7 @@
 #endif
 
 #if TGR_BOSS_RALLY
-#include "win32/renderbackend.h"
+#include "common/renderbackend.h"
 #else
 #include "common/libultra/os/osint.h"
 #endif

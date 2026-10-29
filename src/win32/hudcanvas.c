@@ -1,8 +1,8 @@
-#include "win32/hudcanvas.h"
+#include "common/hudcanvas.h"
 
 #include "common/displaylistptr.h"
+#include "common/gbicommand.h"
 #include "common/settings.h"
-#include "win32/gbicommand.h"
 
 static int canvasWidth;
 static int canvasHeight;

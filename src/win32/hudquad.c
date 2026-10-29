@@ -1,4 +1,4 @@
-#include "hudquad.h"
+#include "common/hudquad.h"
 
 #include "common/displaylistops.h"
 

@@ -3,6 +3,7 @@
 #include <common/hud.h>
 
 #include "common/camera.h"
+#include "common/hudcanvas.h"
 #include "common/laptime.h"
 #include "common/settings.h"
 #include "common/text.h"
@@ -11,7 +12,6 @@
 #include "common/vehiclecount.h"
 #include "render.h"
 #include "win32/hud.h"
-#include "win32/hudcanvas.h"
 
 s32 g_bHudShowLapTimes = 1;
 

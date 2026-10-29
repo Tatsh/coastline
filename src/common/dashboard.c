@@ -16,8 +16,8 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/directplay.h"
 #endif
-#include "win32/hudcanvas.h"
-#include "win32/hudquad.h"
+#include "common/hudcanvas.h"
+#include "common/hudquad.h"
 #include "win32/render.h"
 #else
 #include <PR/gu.h>

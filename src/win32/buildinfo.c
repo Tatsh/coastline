@@ -9,10 +9,10 @@
 #include <windows.h>
 #endif
 
+#include "common/hudcanvas.h"
 #include "common/settings.h"
 #include "common/text.h"
 #include "win32/diagnostics.h"
-#include "win32/hudcanvas.h"
 
 #ifdef ENABLE_PATCHES
 static const char projectUri[] = "github.com/Tatsh/coastline";

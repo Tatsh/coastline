@@ -2,10 +2,10 @@
 
 #include <common/hud.h>
 
+#include "common/hudcanvas.h"
 #include "common/settings.h"
 #include "common/text.h"
 #include "win32/framestatistics.h"
-#include "win32/hudcanvas.h"
 
 #undef DrawText
 

@@ -4,7 +4,7 @@
 #include "common/render.h"
 
 #if TGR_BOSS_RALLY
-#include "win32/combine.h"
+#include "common/combine.h"
 
 #ifdef __cplusplus
 extern "C" {

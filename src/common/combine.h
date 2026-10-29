@@ -1,7 +1,7 @@
-#ifndef COASTLINE_PLATFORM_WIN_COMBINE_H
-#define COASTLINE_PLATFORM_WIN_COMBINE_H
+#ifndef COASTLINE_COMBINE_H
+#define COASTLINE_COMBINE_H
 
-#include "win32/gbicommand.h"
+#include "common/gbicommand.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -54,4 +54,4 @@ void PackCombineMode(GbiCommand *pCommand,
 }
 #endif
 
-#endif /* COASTLINE_PLATFORM_WIN_COMBINE_H */
+#endif /* COASTLINE_COMBINE_H */

@@ -1,5 +1,5 @@
-#ifndef COASTLINE_WIN_RENDERBACKEND_H
-#define COASTLINE_WIN_RENDERBACKEND_H
+#ifndef COASTLINE_RENDERBACKEND_H
+#define COASTLINE_RENDERBACKEND_H
 
 struct GbiCommand;
 
@@ -61,4 +61,4 @@ extern int g_bForceTextureClone;
 }
 #endif
 
-#endif /* COASTLINE_WIN_RENDERBACKEND_H */
+#endif /* COASTLINE_RENDERBACKEND_H */

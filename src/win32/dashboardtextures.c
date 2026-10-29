@@ -1,14 +1,14 @@
-#include "dashboardtextures.h"
+#include "common/dashboardtextures.h"
 
 #include <string.h>
 
 #include <common/hud.h>
 
 #include "common/fatalerror.h"
+#include "common/renderbackend.h"
 #include "common/strings.h"
 #include "common/vehiclemodel.h"
 #include "common/weather.h"
-#include "renderbackend.h"
 
 void InitializeDashboardTextures(void) {
     for (s32 index = 0; index < g_dwNumViewports; index++) {

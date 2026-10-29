@@ -15,7 +15,7 @@
 #include "common/vecmath.h"
 
 #if TGR_BOSS_RALLY
-#include "win32/gbicommand.h"
+#include "common/gbicommand.h"
 #endif
 
 #ifdef __cplusplus

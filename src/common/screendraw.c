@@ -8,9 +8,9 @@
 #include "common/screen.h"
 
 #if TGR_BOSS_RALLY
+#include "common/gbicommand.h"
+#include "common/hudcanvas.h"
 #include "common/settings.h"
-#include "win32/gbicommand.h"
-#include "win32/hudcanvas.h"
 
 s32 g_dwScreenScaleShift;
 Vp g_aViewports[VIEWPORTS];

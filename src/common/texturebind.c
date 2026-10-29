@@ -3,7 +3,7 @@
 #include "common/render.h"
 
 #if TGR_BOSS_RALLY
-#include "win32/gbicommand.h"
+#include "common/gbicommand.h"
 #else
 #include "common/texrect.h"
 #endif

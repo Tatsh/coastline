@@ -17,7 +17,7 @@
 #include <common/vehiclerender.h>
 #include <common/weather.h>
 
-#include "win32/fontdata.h"
+#include "common/fontdata.h"
 #include "win32/framestatistics.h"
 
 int g_adwHudFont0GlyphOffsets[28] = {0,   26,  52,  78,  104, 130, 156, 182, 208, 234,

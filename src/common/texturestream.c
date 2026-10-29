@@ -7,7 +7,7 @@
 
 #if TGR_BOSS_RALLY
 #include "common/instantreplay.h"
-#include "win32/renderbackend.h"
+#include "common/renderbackend.h"
 #endif
 
 #define TEXTURE_ROM_NONE ((u32) - 1)
