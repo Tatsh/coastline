@@ -160,6 +160,8 @@ struct Material {
     std::optional<TextureKey> texture;
     std::uint32_t clampMirrorS = 0; // The cms of the tile, mirror in bit 0 and clamp in bit 1.
     std::uint32_t clampMirrorT = 0;
+    std::uint32_t tileWidth = 0; // The texels the tile spans, which clamping limits coordinates to.
+    std::uint32_t tileHeight = 0;
     std::uint32_t shiftS = 0;
     std::uint32_t shiftT = 0;
     std::uint32_t uls = 0;
@@ -289,6 +291,8 @@ private:
         const Tile &tile = m_tiles[(m_textureTile + (detail ? 1 : 0)) & 7];
         material.clampMirrorS = tile.cms;
         material.clampMirrorT = tile.cmt;
+        material.tileWidth = ((tile.lrs - tile.uls) >> 2) + 1;
+        material.tileHeight = ((tile.lrt - tile.ult) >> 2) + 1;
         material.shiftS = tile.shifts;
         material.shiftT = tile.shiftt;
         material.uls = tile.uls;
@@ -752,8 +756,13 @@ std::vector<std::uint8_t> DecodeTexture(std::span<const std::uint8_t> memory,
     return rgba;
 }
 
-int WrapMode(std::uint32_t clampMirror) {
-    return clampMirror & 2 ? CLAMP_TO_EDGE : clampMirror & 1 ? MIRRORED_REPEAT : REPEAT;
+// The wrap of glTF nearest to a tile. The RDP repeats a texture within the span of the tile and
+// clamps beyond it, so a tile wider than its texture repeats.
+int WrapMode(std::uint32_t clampMirror, std::uint32_t tileSize, std::uint32_t textureSize) {
+    if ((clampMirror & 2) != 0 && tileSize <= textureSize) {
+        return CLAMP_TO_EDGE;
+    }
+    return clampMirror & 1 ? MIRRORED_REPEAT : REPEAT;
 }
 
 // The scale of a texture coordinate by a shift of a tile: right by 1 to 10, left by 16 less 11
@@ -900,7 +909,6 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
     std::string stem(bufferUri.substr(0, bufferUri.rfind('.')));
     std::vector<std::optional<std::size_t>> textureOf(walk.Materials().size());
     std::map<TextureKey, std::size_t> imageOf;
-    std::vector<std::size_t> samplerMaterial;
     GltfModel model;
     for (std::size_t m = 0; m < walk.Materials().size(); ++m) {
         const auto &key = walk.Materials()[m].texture;
@@ -913,7 +921,6 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
                                     static_cast<int>(key->width),
                                     static_cast<int>(key->height),
                                     DecodeTexture(memory, *key)});
-            samplerMaterial.push_back(m);
         }
         textureOf[m] = imageOf[*key];
     }
@@ -940,7 +947,6 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
                                     static_cast<int>(key.width),
                                     static_cast<int>(key.height),
                                     DecodeTexture(scratch, key)});
-            samplerMaterial.push_back(samplerMaterial[index]);
             // The next frame starts from the texture as a race starts.
             for (auto [target, size] :
                  {std::pair{texture->texels, texture->size},
@@ -1122,15 +1128,27 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
     model.json["images"] = nlohmann::ordered_json::array();
     model.json["samplers"] = nlohmann::ordered_json::array();
     model.json["textures"] = nlohmann::ordered_json::array();
-    for (std::size_t i = 0; i < model.images.size(); ++i) {
-        const Material &material = walk.Materials()[samplerMaterial[i]];
-        model.json["images"].push_back({{"uri", model.images[i].uri}});
-        model.json["samplers"].push_back({{"magFilter", LINEAR},
-                                          {"minFilter", LINEAR},
-                                          {"wrapS", WrapMode(material.clampMirrorS)},
-                                          {"wrapT", WrapMode(material.clampMirrorT)}});
-        model.json["textures"].push_back({{"source", i}, {"sampler", i}});
+    for (const GltfImage &picture : model.images) {
+        model.json["images"].push_back({{"uri", picture.uri}});
     }
+    // A texture for each image and wrap the materials sample it with, and a sampler for each wrap.
+    std::map<std::pair<int, int>, std::size_t> samplerOf;
+    std::map<std::tuple<std::size_t, int, int>, std::size_t> gltfTextureOf;
+    auto gltfTexture = [&](std::size_t picture, const Material &material) {
+        int wrapS = WrapMode(material.clampMirrorS, material.tileWidth, material.texture->width);
+        int wrapT = WrapMode(material.clampMirrorT, material.tileHeight, material.texture->height);
+        auto [sampler, newSampler] = samplerOf.try_emplace({wrapS, wrapT}, samplerOf.size());
+        if (newSampler) {
+            model.json["samplers"].push_back(
+                {{"magFilter", LINEAR}, {"minFilter", LINEAR}, {"wrapS", wrapS}, {"wrapT", wrapT}});
+        }
+        auto [texture, newTexture] =
+            gltfTextureOf.try_emplace({picture, wrapS, wrapT}, gltfTextureOf.size());
+        if (newTexture) {
+            model.json["textures"].push_back({{"source", picture}, {"sampler", sampler->second}});
+        }
+        return texture->second;
+    };
     for (std::size_t m = 0; m < walk.Materials().size(); ++m) {
         const Material &source = walk.Materials()[m];
         nlohmann::ordered_json material{
@@ -1140,7 +1158,8 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
             material["doubleSided"] = true;
         }
         if (textureOf[m]) {
-            material["pbrMetallicRoughness"]["baseColorTexture"] = {{"index", *textureOf[m]}};
+            material["pbrMetallicRoughness"]["baseColorTexture"] = {
+                {"index", gltfTexture(*textureOf[m], source)}};
             // The frames the texture of the material shows, each from its time in milliseconds,
             // the frames of a texture of the snow with no time.
             if (auto animation = animationOf.find(*textureOf[m]); animation != animationOf.end()) {
