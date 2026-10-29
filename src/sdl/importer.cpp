@@ -367,6 +367,63 @@ std::optional<std::string> ConvertBitmap(const std::filesystem::path &bitmap) {
     return std::nullopt;
 }
 
+// A sound of the console, signed 8-bit samples, as a WAV file of the same name, in place of the
+// samples once the file reads back as them. The mixer of the sound effects writes each sample to
+// two frames of the 21998 Hz output, so a sound plays at half that rate.
+std::optional<std::string> ConvertConsoleSound(const std::filesystem::path &sound) {
+    constexpr std::uint32_t SOUND_RATE = 21998 / 2;
+    auto samples = ReadWholeFile(sound);
+    if (!samples) {
+        return std::format("{} cannot be read.", sound.string());
+    }
+    auto wav = std::filesystem::path(sound).replace_extension(".wav");
+    std::vector<std::uint8_t> file;
+    auto put = [&file](std::uint32_t value, int bytes) {
+        for (int i = 0; i < bytes; ++i) {
+            file.push_back(static_cast<std::uint8_t>(value >> (i * 8)));
+        }
+    };
+    auto size = static_cast<std::uint32_t>(samples->size());
+    file.insert(file.end(), {'R', 'I', 'F', 'F'});
+    put(36 + size, 4);
+    file.insert(file.end(), {'W', 'A', 'V', 'E', 'f', 'm', 't', ' '});
+    put(16, 4);
+    put(1, 2); // PCM
+    put(1, 2); // One channel.
+    put(SOUND_RATE, 4);
+    put(SOUND_RATE, 4);
+    put(1, 2);
+    put(8, 2);
+    file.insert(file.end(), {'d', 'a', 't', 'a'});
+    put(size, 4);
+    // A WAV file of 8 bits holds unsigned samples about 128.
+    for (std::uint8_t sample : *samples) {
+        file.push_back(static_cast<std::uint8_t>(sample ^ 0x80));
+    }
+    if (size % 2 != 0) {
+        file.push_back(0);
+    }
+    if (!WriteBytes(wav, file)) {
+        return std::format("{} cannot be written.", wav.string());
+    }
+    SDL_AudioSpec spec;
+    Uint8 *read = nullptr;
+    Uint32 length = 0;
+    bool same = SDL_LoadWAV(wav.string().c_str(), &spec, &read, &length) &&
+                spec.format == SDL_AUDIO_U8 && spec.channels == 1 &&
+                spec.freq == static_cast<int>(SOUND_RATE) && length == size &&
+                std::ranges::equal(std::span(read, length), *samples, {}, [](std::uint8_t value) {
+                    return static_cast<std::uint8_t>(value ^ 0x80);
+                });
+    SDL_free(read);
+    if (!same) {
+        return std::format("{} does not read back as {}.", wav.string(), sound.string());
+    }
+    std::error_code error;
+    std::filesystem::remove(sound, error);
+    return std::nullopt;
+}
+
 // Each ghost recording of the demos as JSON of the same name, in place of the file once the JSON
 // builds the same bytes.
 std::optional<std::string> ConvertGhostRecordings(const std::filesystem::path &dataDirectory) {
@@ -720,12 +777,36 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     }
     // Replaces each model of the splash screens with a glTF file of the same name.
     std::vector<std::filesystem::path> splashModels;
-    for (const auto &constant :
-         std::filesystem::directory_iterator(destination / "constants", carsError)) {
-        auto name = constant.path().stem().string();
-        if (name.starts_with("splash_") && !name.starts_with("splash_sound") &&
-            constant.path().extension() == ".bin") {
-            splashModels.push_back(constant.path());
+    std::vector<std::filesystem::path> sounds;
+    for (std::string_view name : {"splash_developer_logo",
+                                  "splash_first_logo",
+                                  "splash_producer_logo",
+                                  "splash_title_a",
+                                  "splash_title_b",
+                                  "splash_title_c",
+                                  "splash_title_d"}) {
+        // The Japanese release has no producer logo, and draws its title from a texture.
+        if (auto model = destination / "constants" / (std::string(name) + ".bin");
+            std::filesystem::exists(model)) {
+            splashModels.push_back(model);
+        }
+    }
+    for (std::string_view name : {"splash_sound_a", "splash_sound_b"}) {
+        if (auto sound = destination / "constants" / (std::string(name) + ".bin");
+            std::filesystem::exists(sound)) {
+            sounds.push_back(sound);
+        }
+    }
+    // The sounds of the splash screens and of the races as WAV files.
+    for (const auto &sound :
+         std::filesystem::directory_iterator(destination / "sounds", carsError)) {
+        if (sound.path().extension() == ".bin") {
+            sounds.push_back(sound.path());
+        }
+    }
+    for (const auto &sound : sounds) {
+        if (auto failure = ConvertConsoleSound(sound)) {
+            return std::unexpected(*failure);
         }
     }
     for (const auto &model : splashModels) {
