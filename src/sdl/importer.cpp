@@ -506,10 +506,11 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         }
         auto name = std::format("track{:02}.flac", track.number);
         if (progress) {
-            progress("music/" + name, static_cast<double>(written) / steps);
+            progress("music/default/" + name, static_cast<double>(written) / steps);
         }
         std::ifstream audio(track.file, std::ios::binary);
-        if (auto failure = EncodeAudioTrack(audio, track, dataDirectory / "music" / name)) {
+        if (auto failure =
+                EncodeAudioTrack(audio, track, dataDirectory / "music" / "default" / name)) {
             return std::unexpected(*failure);
         }
         ++written;

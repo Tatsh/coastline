@@ -250,8 +250,9 @@ typedef struct tagMCI_PLAY_PARMS {
 
 /**
  * Send a command to the CD audio device of the media control interface. The audio tracks of the
- * CD are the files music/trackNN.flac of the game data, from track 2. MCI_PLAY plays the tracks
- * from its first to its last, and with MCI_NOTIFY posts MM_MCINOTIFY to the window when they end.
+ * CD are the files music/default/trackNN.flac of the game data, from track 2. MCI_PLAY plays the
+ * tracks from its first to its last, and with MCI_NOTIFY posts MM_MCINOTIFY to the window when they
+ * end.
  *
  * @param device The device of MCI_OPEN.
  * @param message MCI_OPEN, MCI_CLOSE, MCI_SET, MCI_STATUS, MCI_PLAY, MCI_PAUSE, or MCI_STOP.

@@ -24,7 +24,7 @@ constexpr int kFirstAudioTrack = 2;
 
 std::string TrackPath(int track) {
     char name[32];
-    std::snprintf(name, sizeof(name), "music/track%02d.flac", track);
+    std::snprintf(name, sizeof(name), "music/default/track%02d.flac", track);
     return name;
 }
 

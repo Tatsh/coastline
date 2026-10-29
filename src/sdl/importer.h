@@ -67,9 +67,9 @@ struct CueTrack {
 std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::filesystem::path &cue);
 
 /**
- * Copy the game data of the Boss Rally disc to @p dataDirectory, and its CD audio tracks to
- * music/trackNN.flac. An ISO image has no audio tracks, and only the data is copied. The
- * installers, DirectX, and the Windows programs are skipped.
+ * Copy the files of the Boss Rally disc the game opens to @p dataDirectory, and its CD audio tracks
+ * to the music pack default as music/default/trackNN.flac. An ISO image has no audio tracks, and
+ * only the files are copied.
  *
  * @param disc A CUE sheet or an ISO image.
  * @param dataDirectory The data directory of the game.
