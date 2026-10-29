@@ -26,10 +26,12 @@ struct Layout {
     std::uint32_t base;
     std::size_t textureCountAt;
     std::size_t texturesAt;
+    bool streamsTextures; // Whether textures stream from a bank after the size in the first word.
+    bool lit;             // Whether the renderer turns G_LIGHTING on before the display lists.
 };
 
-constexpr Layout CAR_LAYOUT{0x803c8000, 0x10, 0x14};
-constexpr Layout TRACK_LAYOUT{0x80025c00, 0x18, 0x1c};
+constexpr Layout CAR_LAYOUT{0x803c8000, 0x10, 0x14, false, true};
+constexpr Layout TRACK_LAYOUT{0x80025c00, 0x18, 0x1c, true, false};
 
 constexpr int LODS = 3;
 constexpr int BODY_LISTS = 10;
@@ -52,7 +54,11 @@ constexpr std::array<const char *, BODY_LISTS> BODY_LIST_NAMES{"body0",
                                                                "body7",
                                                                "textured",
                                                                "highlighted"};
+constexpr int VEHICLE_DL_NEAR_DETAIL = 3;
 constexpr int VEHICLE_DL_HEADLIGHT_BEAMS = 5;
+constexpr int VEHICLE_DL_UNDERSIDE = 6;
+constexpr std::size_t NEAR_DETAIL_TEXTURE = 3;
+constexpr std::size_t UNDERSIDE_TEXTURE = 6;
 constexpr int VEHICLE_DL_HIGHLIGHTED = 9;
 constexpr std::array<const char *, WHEEL_LISTS> WHEEL_LIST_NAMES{"wheel", "wheel1", "wheelSnow"};
 
@@ -102,10 +108,19 @@ struct Material {
     std::uint32_t shiftT = 0;
     std::uint32_t uls = 0;
     std::uint32_t ult = 0;
+    // The entry of the texture table the renderer binds before the display list, until the list
+    // loads a texture.
+    std::optional<std::size_t> bound;
+    // Whether the colour bytes of a vertex are a normal, as under G_LIGHTING.
+    bool lit = false;
     std::string name;
 
     auto operator<=>(const Material &) const = default;
 };
+
+constexpr std::uint8_t OP_CLEARGEOMETRYMODE = 0xb6;
+constexpr std::uint8_t OP_SETGEOMETRYMODE = 0xb7;
+constexpr std::uint32_t G_LIGHTING = 0x20000;
 
 // A triangle, as offsets of its vertex records in the image, and the index of its material.
 struct Triangle {
@@ -122,9 +137,12 @@ public:
         : m_image(image), m_base(base) {
     }
 
-    std::optional<std::string> Walk(std::uint32_t address, Triangles &triangles) {
+    std::optional<std::string>
+    Walk(std::uint32_t address, Triangles &triangles, bool lit, std::optional<std::size_t> bound) {
         m_slots.fill(std::nullopt);
         m_current = {};
+        m_current.lit = lit;
+        m_current.bound = bound;
         return Run(address, triangles, 0);
     }
 
@@ -245,9 +263,16 @@ private:
             case OP_LOADBLOCK:
             case OP_LOADTILE:
                 m_current.image = m_textureImage;
+                m_current.bound = std::nullopt;
                 break;
             case OP_LOADTLUT:
                 m_current.palette = m_textureImage;
+                break;
+            case OP_SETGEOMETRYMODE:
+                m_current.lit = m_current.lit || (w1 & G_LIGHTING) != 0;
+                break;
+            case OP_CLEARGEOMETRYMODE:
+                m_current.lit = m_current.lit && (w1 & G_LIGHTING) == 0;
                 break;
             case OP_TEXTURE:
                 // A scale of 0xffff stands for 1.
@@ -295,6 +320,7 @@ constexpr int CLAMP_TO_EDGE = 33071;
 struct Texture {
     std::uint32_t image = 0;
     std::uint32_t palette = 0;
+    std::uint32_t source = 0;
     int width = 0;
     int height = 0;
     std::uint32_t format = 0;
@@ -302,8 +328,51 @@ struct Texture {
     bool mirrorT = false;
     bool clampS = false;
     bool clampT = false;
+    bool animated = false;
     bool cutout = false;
 };
+
+constexpr std::uint32_t ROM_NONE = 0xffffffff;
+constexpr std::size_t ANIMATION_FRAME_COUNT_AT = 2;
+constexpr std::size_t ANIMATION_FRAMES_AT = 8;
+constexpr std::size_t ANIMATION_FRAME_SIZE = 12;
+
+// Where the texels and the palette of a texture of a track are, as offsets in the image. The
+// textures of the bank after the geometry replace those of the geometry as the race streams
+// them: the first frame of an animation, the frame of the weathers other than snow for a texture
+// of the snow, and for a texture that is not animated, its palette.
+void StreamedTexture(std::span<const std::uint8_t> image,
+                     const Layout &layout,
+                     const Texture &texture,
+                     std::size_t &imageAt,
+                     std::size_t &paletteAt) {
+    std::uint32_t bank = Big32(image, 0);
+    auto inBank = [&](std::uint32_t rom) {
+        return rom != ROM_NONE && bank <= image.size() && rom < image.size() - bank;
+    };
+    if (!texture.animated) {
+        std::uint32_t rom = (texture.source & 0xfff) << 5;
+        if (texture.palette != 0 && inBank(rom)) {
+            paletteAt = bank + rom;
+        }
+        return;
+    }
+    std::size_t animation = texture.source - layout.base;
+    if (texture.source < layout.base || animation > image.size() ||
+        image.size() - animation < ANIMATION_FRAMES_AT + 2 * ANIMATION_FRAME_SIZE) {
+        return;
+    }
+    std::uint16_t frames = Big16(image, animation + ANIMATION_FRAME_COUNT_AT);
+    std::size_t first = animation + ANIMATION_FRAMES_AT;
+    std::size_t frame =
+        frames == 2 && Big32(image, first) == ROM_NONE ? first + ANIMATION_FRAME_SIZE : first;
+    if (std::uint32_t rom = Big32(image, frame + 4); inBank(rom)) {
+        imageAt = bank + rom;
+    }
+    if (std::uint32_t rom = Big32(image, frame + 8); texture.palette != 0 && inBank(rom)) {
+        paletteAt = bank + rom;
+    }
+}
 
 // The entry of the texture table that a material samples, and the texture. A CI4 texture matches
 // the palette the material loads where an entry does.
@@ -311,26 +380,38 @@ std::optional<std::pair<std::size_t, Texture>>
 FindTexture(std::span<const std::uint8_t> image, const Layout &layout, const Material &material) {
     std::uint32_t count = Big32(image, layout.textureCountAt);
     std::uint32_t table = Big32(image, layout.texturesAt) - layout.base;
-    if (material.image == 0 || table > image.size() ||
+    if ((material.image == 0 && !material.bound) || table > image.size() ||
         count > (image.size() - table) / TEXTURE_SIZE) {
         return std::nullopt;
     }
-    std::optional<std::pair<std::size_t, Texture>> found;
-    for (std::size_t entry = 0; entry < count; ++entry) {
+    auto read = [&](std::size_t entry) {
         std::size_t at = table + entry * TEXTURE_SIZE;
         std::uint32_t bits = Big32(image, at + 0x20);
-        Texture texture{.image = Big32(image, at),
-                        .palette = Big32(image, at + 4),
-                        .width = Big16(image, at + 12),
-                        .height = Big16(image, at + 14),
-                        .format = bits >> 24 & 0xf,
-                        .mirrorS = (bits >> 31 & 1) != 0,
-                        .mirrorT = (bits >> 30 & 1) != 0,
-                        .clampS = (bits >> 29 & 1) != 0,
-                        .clampT = (bits >> 28 & 1) != 0};
-        bool drawable = texture.format != FORMAT_CI4 || texture.width % 2 == 0;
-        if (texture.image != material.image || !drawable || texture.width < 2 ||
-            texture.height < 1) {
+        return Texture{.image = Big32(image, at),
+                       .palette = Big32(image, at + 4),
+                       .source = Big32(image, at + 8),
+                       .width = Big16(image, at + 12),
+                       .height = Big16(image, at + 14),
+                       .format = bits >> 24 & 0xf,
+                       .mirrorS = (bits >> 31 & 1) != 0,
+                       .mirrorT = (bits >> 30 & 1) != 0,
+                       .clampS = (bits >> 29 & 1) != 0,
+                       .clampT = (bits >> 28 & 1) != 0,
+                       .animated = (bits >> 20 & 1) != 0};
+    };
+    auto drawable = [](const Texture &texture) {
+        return texture.image != 0 && texture.width > 0 && texture.height > 0;
+    };
+    if (material.bound) {
+        if (*material.bound >= count || !drawable(read(*material.bound))) {
+            return std::nullopt;
+        }
+        return std::pair{*material.bound, read(*material.bound)};
+    }
+    std::optional<std::pair<std::size_t, Texture>> found;
+    for (std::size_t entry = 0; entry < count; ++entry) {
+        Texture texture = read(entry);
+        if (texture.image != material.image || !drawable(texture)) {
             continue;
         }
         if (texture.format != FORMAT_CI4 || texture.palette == material.palette) {
@@ -355,11 +436,15 @@ std::expected<GltfImage, std::string> DecodeTexture(std::span<const std::uint8_t
                                                     GltfImageFormat::Rgba5551;
     auto width = static_cast<std::size_t>(texture.width);
     auto height = static_cast<std::size_t>(texture.height);
-    std::size_t rowBytes = decoded.format == GltfImageFormat::Ci4        ? width / 2 :
+    std::size_t rowBytes = decoded.format == GltfImageFormat::Ci4        ? (width + 1) / 2 :
                            decoded.format == GltfImageFormat::Intensity8 ? width :
                                                                            width * 2;
     std::size_t stride = (rowBytes + 7) / 8 * 8;
     std::size_t at = texture.image - layout.base;
+    std::size_t paletteAt = texture.palette - layout.base;
+    if (layout.streamsTextures) {
+        StreamedTexture(image, layout, texture, at, paletteAt);
+    }
     if (texture.image < layout.base || at > image.size() || stride * height > image.size() - at) {
         return std::unexpected(std::format("the texture {} is outside the model", uri));
     }
@@ -371,8 +456,14 @@ std::expected<GltfImage, std::string> DecodeTexture(std::span<const std::uint8_t
             decoded.texels.push_back(image[at + y * stride + (y % 2 ? x ^ 4 : x)]);
         }
     }
+    if (decoded.format == GltfImageFormat::Ci4 && width % 2 != 0) {
+        // The low half of the last byte of an odd row is not a texel, and the residual retains it.
+        for (std::size_t y = 0; y < height; ++y) {
+            decoded.texels[y * rowBytes + rowBytes - 1] &= 0xf0;
+        }
+    }
     if (decoded.format == GltfImageFormat::Ci4) {
-        std::size_t palette = texture.palette - layout.base;
+        std::size_t palette = paletteAt;
         if (texture.palette < layout.base || palette > image.size() ||
             image.size() - palette < 32) {
             return std::unexpected(
@@ -381,8 +472,9 @@ std::expected<GltfImage, std::string> DecodeTexture(std::span<const std::uint8_t
         std::copy_n(
             image.begin() + static_cast<std::ptrdiff_t>(palette), 32, decoded.palette.begin());
         // A colour with an alpha of 0 cuts the texel out.
-        for (std::uint8_t pair : decoded.texels) {
-            for (unsigned index : {unsigned{pair} >> 4, unsigned{pair} & 0xfu}) {
+        for (std::size_t y = 0; y < height; ++y) {
+            for (std::size_t x = 0; x < width; ++x) {
+                unsigned index = decoded.texels[y * rowBytes + x / 2] >> (x % 2 == 0 ? 4 : 0) & 0xf;
                 texture.cutout |= (decoded.palette[index * 2 + 1] & 1) == 0;
             }
         }
@@ -464,6 +556,7 @@ struct Draw {
     std::uint32_t displayList;
     std::vector<Placement> placements;
     std::optional<std::size_t> scene;
+    std::optional<std::size_t> boundTexture = std::nullopt;
 };
 
 // The glTF of an image of the console: the meshes of the display lists of the draws, their
@@ -479,7 +572,8 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
     std::map<std::uint32_t, Triangles> lists;
     for (const Draw &draw : draws) {
         if (!lists.contains(draw.displayList)) {
-            if (auto failure = walk.Walk(draw.displayList, lists[draw.displayList])) {
+            if (auto failure = walk.Walk(
+                    draw.displayList, lists[draw.displayList], layout.lit, draw.boundTexture)) {
                 return std::unexpected(std::format("{} ({})", *failure, draw.name));
             }
         }
@@ -639,6 +733,36 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
          {"componentType", FLOAT},
          {"count", vertexCount},
          {"type", "VEC2"}});
+    // A lit vertex has a normal of signed bytes where an unlit one has its colour.
+    std::vector<float> normals;
+    for (std::size_t i = 0; i < vertexCount; ++i) {
+        std::array<float, 3> normal{};
+        float length = 0.0f;
+        for (std::size_t axis = 0; axis < 3; ++axis) {
+            normal[axis] = static_cast<std::int8_t>(columns.colors[i * 4 + axis]);
+            length += normal[axis] * normal[axis];
+        }
+        length = std::sqrt(length);
+        for (std::size_t axis = 0; axis < 3; ++axis) {
+            normals.push_back(length > 0.0f ? normal[axis] / length : (axis == 2 ? 1.0f : 0.0f));
+        }
+    }
+    nlohmann::ordered_json lit = drawn;
+    lit["NORMAL"] =
+        AddAccessor(model,
+                    {{"bufferView",
+                      AddView(model, normals.data(), normals.size() * sizeof(float), ARRAY_BUFFER)},
+                     {"componentType", FLOAT},
+                     {"count", vertexCount},
+                     {"type", "VEC3"}});
+    nlohmann::ordered_json shaded = drawn;
+    shaded["COLOR_0"] = AddAccessor(
+        model,
+        {{"bufferView", AddView(model, columns.colors.data(), columns.colors.size(), ARRAY_BUFFER)},
+         {"componentType", UNSIGNED_BYTE},
+         {"normalized", true},
+         {"count", vertexCount},
+         {"type", "VEC4"}});
     model.json["images"] = nlohmann::ordered_json::array();
     model.json["samplers"] = nlohmann::ordered_json::array();
     model.json["textures"] = nlohmann::ordered_json::array();
@@ -697,7 +821,7 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
                                                 {"componentType", UNSIGNED_INT},
                                                 {"count", list.size()},
                                                 {"type", "SCALAR"}});
-            primitives.push_back({{"attributes", drawn},
+            primitives.push_back({{"attributes", walk.Materials()[material].lit ? lit : shaded},
                                   {"indices", accessor},
                                   {"material", material},
                                   {"mode", TRIANGLES}});
@@ -791,10 +915,18 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
             // The highlight adds to the colours under it, and the beams draw at night or in the
             // rain. A viewer of the scene omits them.
             bool shown = list != VEHICLE_DL_HIGHLIGHTED && list != VEHICLE_DL_HEADLIGHT_BEAMS;
+            // The renderer loads a texture of the model before the underside and the near detail.
+            std::optional<std::size_t> bound;
+            if (list == VEHICLE_DL_UNDERSIDE) {
+                bound = UNDERSIDE_TEXTURE;
+            } else if (list == VEHICLE_DL_NEAR_DETAIL) {
+                bound = NEAR_DETAIL_TEXTURE;
+            }
             draws.push_back({name,
                              address,
                              {{name, scale}},
-                             shown ? std::optional<std::size_t>(lod) : std::nullopt});
+                             shown ? std::optional<std::size_t>(lod) : std::nullopt,
+                             bound});
         }
         for (int list = 0; list < WHEEL_LISTS; ++list) {
             std::uint32_t address = Big32(image, WHEEL_LISTS_AT + (lod * WHEEL_LISTS + list) * 4);

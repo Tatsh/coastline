@@ -698,6 +698,34 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
             return std::unexpected(*failure);
         }
     }
+    // The geometry of each track and the textures after it are the layout of a .trk file of the
+    // PC release, whose first word is the size of the geometry. The two are joined and replaced
+    // with track.gltf, its buffer track.bin, and its images.
+    for (const auto &track :
+         std::filesystem::directory_iterator(destination / "tracks", carsError)) {
+        auto geometry = ReadWholeFile(track.path() / "geometry.bin");
+        auto textures = ReadWholeFile(track.path() / "textures.bin");
+        if (!geometry || !textures) {
+            continue;
+        }
+        if (geometry->size() < 4 ||
+            (static_cast<std::size_t>((*geometry)[0]) << 24 | (*geometry)[1] << 16 |
+             (*geometry)[2] << 8 | (*geometry)[3]) != geometry->size()) {
+            return std::unexpected(std::format("{} does not begin with its size.",
+                                               (track.path() / "geometry.bin").string()));
+        }
+        auto joined = track.path() / "track.trk";
+        geometry->insert(geometry->end(), textures->begin(), textures->end());
+        if (!WriteBytes(joined, *geometry)) {
+            return std::unexpected(std::format("{} cannot be written.", joined.string()));
+        }
+        if (auto failure = ConvertModel(
+                joined, TrackToGltf, track.path() / "track.gltf", track.path() / "track.bin")) {
+            return std::unexpected(*failure);
+        }
+        std::filesystem::remove(track.path() / "geometry.bin", carsError);
+        std::filesystem::remove(track.path() / "textures.bin", carsError);
+    }
     std::error_code error;
     if (*release == RomRelease::Usa) {
         // The XM modules of the menus and of the tracks, as the music pack default.

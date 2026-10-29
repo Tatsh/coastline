@@ -36,9 +36,9 @@ bool LoadIndexed4Png(const std::filesystem::path &path,
     SDL_Palette *colors = SDL_GetSurfacePalette(surface.get());
     int bits = SDL_BITSPERPIXEL(surface->format);
     // SDL pads the palette it reads to 256 colours, and a texel must use one of the first 16.
+    auto rowBytes = (static_cast<std::size_t>(surface->w) + 1) / 2;
     if (colors == nullptr || (bits != 4 && bits != 8) ||
-        static_cast<std::size_t>(surface->w) * static_cast<std::size_t>(surface->h) !=
-            texels.size() * 2) {
+        rowBytes * static_cast<std::size_t>(surface->h) != texels.size()) {
         return false;
     }
     std::ranges::fill(palette, 0);
@@ -58,10 +58,8 @@ bool LoadIndexed4Png(const std::filesystem::path &path,
             if (index >= 16) {
                 return false;
             }
-            std::size_t texel = static_cast<std::size_t>(y) * static_cast<std::size_t>(surface->w) +
-                                static_cast<std::size_t>(x);
-            texels[texel / 2] |=
-                static_cast<std::uint8_t>((index & 0xF) << (texel % 2 == 0 ? 4 : 0));
+            texels[static_cast<std::size_t>(y) * rowBytes + static_cast<std::size_t>(x) / 2] |=
+                static_cast<std::uint8_t>((index & 0xF) << (x % 2 == 0 ? 4 : 0));
         }
     }
     return true;
@@ -72,8 +70,8 @@ bool SaveIndexed4Png(const std::filesystem::path &path,
                      std::span<const std::uint8_t, 32> palette,
                      int width,
                      int height) {
-    if (width <= 0 || height <= 0 || width % 2 != 0 ||
-        texels.size() != static_cast<std::size_t>(width) * static_cast<std::size_t>(height) / 2) {
+    auto rowBytes = (static_cast<std::size_t>(width) + 1) / 2;
+    if (width <= 0 || height <= 0 || texels.size() != rowBytes * static_cast<std::size_t>(height)) {
         return false;
     }
     // SDL writes the palette of an 8-bit surface, and not of a 4-bit one.
@@ -85,9 +83,9 @@ bool SaveIndexed4Png(const std::filesystem::path &path,
         auto *row = static_cast<std::uint8_t *>(surface->pixels) +
                     static_cast<std::size_t>(y) * static_cast<std::size_t>(surface->pitch);
         for (int x = 0; x < width; ++x) {
-            std::size_t texel = static_cast<std::size_t>(y) * static_cast<std::size_t>(width) +
-                                static_cast<std::size_t>(x);
-            row[x] = static_cast<std::uint8_t>(texels[texel / 2] >> (texel % 2 == 0 ? 4 : 0) & 0xF);
+            std::uint8_t pair =
+                texels[static_cast<std::size_t>(y) * rowBytes + static_cast<std::size_t>(x) / 2];
+            row[x] = static_cast<std::uint8_t>(pair >> (x % 2 == 0 ? 4 : 0) & 0xF);
         }
     }
     std::array<SDL_Color, 16> colors{};
