@@ -60,8 +60,22 @@ std::expected<GltfModel, std::string> TrackToGltf(std::span<const std::uint8_t> 
                                                   std::string_view bufferUri);
 
 /**
- * Build the file of a model or a track from its glTF, the inverse of CarModelToGltf() and
- * TrackToGltf(). The vertices come from the accessors of the document.
+ * Describe a model of the front end, such as a logo of the splash screens, as glTF. The document
+ * has one scene, with a node for each part at its place. Each key of each animation of the
+ * vertices is a morph target of every mesh, and the animation blends from each key to the next,
+ * with the flags and the span of time the game plays it by in its extras. The bytes of the file
+ * outside the vertices are retained in the buffer for ModelFromGltf().
+ *
+ * @param bytes The model as it inflates from the cartridge, its offsets from its first byte.
+ * @param bufferUri The URI the document gives its buffer.
+ * @return The glTF, or a description of why the file is not a model.
+ */
+std::expected<GltfModel, std::string> FrontEndModelToGltf(std::span<const std::uint8_t> bytes,
+                                                          std::string_view bufferUri);
+
+/**
+ * Build the file of a model or a track from its glTF, the inverse of CarModelToGltf(),
+ * TrackToGltf(), and FrontEndModelToGltf(). The vertices come from the accessors of the document.
  *
  * @param json The document.
  * @param buffer The bytes of its buffer.

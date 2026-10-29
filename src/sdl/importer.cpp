@@ -718,6 +718,25 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         std::filesystem::remove(track.path() / "geometry.bin", carsError);
         std::filesystem::remove(track.path() / "textures.bin", carsError);
     }
+    // Replaces each model of the splash screens with a glTF file of the same name.
+    std::vector<std::filesystem::path> splashModels;
+    for (const auto &constant :
+         std::filesystem::directory_iterator(destination / "constants", carsError)) {
+        auto name = constant.path().stem().string();
+        if (name.starts_with("splash_") && !name.starts_with("splash_sound") &&
+            constant.path().extension() == ".bin") {
+            splashModels.push_back(constant.path());
+        }
+    }
+    for (const auto &model : splashModels) {
+        auto stem = model.stem().string();
+        if (auto failure = ConvertModel(model,
+                                        FrontEndModelToGltf,
+                                        std::filesystem::path(model).replace_extension(".gltf"),
+                                        model.parent_path() / (stem + "-mesh.bin"))) {
+            return std::unexpected(*failure);
+        }
+    }
     std::error_code error;
     if (*release == RomRelease::Usa) {
         // The XM modules of the menus and of the tracks, as the music pack default.

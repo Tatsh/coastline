@@ -992,14 +992,35 @@ struct Draw {
     StartState start;
 };
 
+// A key of a vertex animation of a model: its time, and the offset of its positions, each
+// followed by the normals of every vertex.
+struct VertexKey {
+    float time;
+    std::size_t positions;
+};
+
+// An animation of the vertices of a model, which moves vertexCount records from vertices
+// between its keys.
+struct VertexAnimation {
+    std::size_t vertices;
+    std::size_t vertexCount;
+    std::uint16_t flags;
+    float startTime;
+    float endTime;
+    std::vector<VertexKey> keys;
+};
+
 // The glTF of an image of the console: the meshes of the display lists of the draws, their
 // textures and materials, a node for each place, and the bytes of the file outside the vertices.
-std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> bytes,
-                                                 std::size_t imageOffset,
-                                                 const Layout &layout,
-                                                 const std::vector<Draw> &draws,
-                                                 const std::vector<std::string> &scenes,
-                                                 std::string_view bufferUri) {
+// Each key of a vertex animation becomes a morph target of every mesh.
+std::expected<GltfModel, std::string>
+BuildModel(std::span<const std::uint8_t> bytes,
+           std::size_t imageOffset,
+           const Layout &layout,
+           const std::vector<Draw> &draws,
+           const std::vector<std::string> &scenes,
+           std::string_view bufferUri,
+           const std::vector<VertexAnimation> &animations = {}) {
     auto image = bytes.subspan(imageOffset);
     DisplayListWalk walk(image, layout.base);
     // A draw is walked once for each state it starts from.
@@ -1289,6 +1310,90 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
          {"normalized", true},
          {"count", drawnCount},
          {"type", "VEC4"}});
+
+    // A morph target for each key of each vertex animation: the displacement of the position and
+    // the normal of every drawn vertex of a record the animation moves, from its rest.
+    std::multimap<std::uint32_t, std::uint32_t> drawnOfRecord;
+    for (const auto &[drawnKey, index] : drawnOf) {
+        drawnOfRecord.emplace(std::get<0>(drawnKey), index);
+    }
+    auto sparseAccessor =
+        [&](const std::vector<std::pair<std::uint32_t, std::array<float, 3>>> &moved) {
+            std::vector<std::uint32_t> indices;
+            std::vector<float> values;
+            std::array<float, 3> low{0.0f, 0.0f, 0.0f};
+            std::array<float, 3> high{0.0f, 0.0f, 0.0f};
+            for (const auto &[index, value] : moved) {
+                indices.push_back(index);
+                for (std::size_t axis = 0; axis < 3; ++axis) {
+                    values.push_back(value[axis]);
+                    low[axis] = std::min(low[axis], value[axis]);
+                    high[axis] = std::max(high[axis], value[axis]);
+                }
+            }
+            nlohmann::ordered_json accessor{
+                {"componentType", FLOAT}, {"count", drawnCount}, {"type", "VEC3"}};
+            accessor["min"] = low;
+            accessor["max"] = high;
+            if (!moved.empty()) {
+                accessor["sparse"] = {
+                    {"count", moved.size()},
+                    {"indices",
+                     {{"bufferView",
+                       AddView(model, indices.data(), indices.size() * sizeof(std::uint32_t))},
+                      {"componentType", UNSIGNED_INT}}},
+                    {"values",
+                     {{"bufferView",
+                       AddView(model, values.data(), values.size() * sizeof(float))}}}};
+            }
+            return AddAccessor(model, std::move(accessor));
+        };
+    std::vector<std::pair<std::size_t, std::size_t>> positionAndNormalTargets;
+    std::vector<std::size_t> firstTargetOf;
+    for (const VertexAnimation &animation : animations) {
+        firstTargetOf.push_back(positionAndNormalTargets.size());
+        for (const VertexKey &key : animation.keys) {
+            std::vector<std::pair<std::uint32_t, std::array<float, 3>>> positions;
+            std::vector<std::pair<std::uint32_t, std::array<float, 3>>> normals;
+            std::size_t normalsAt = key.positions + animation.vertexCount * 6;
+            for (std::size_t vertex = 0; vertex < animation.vertexCount; ++vertex) {
+                auto record = indexOf.find(
+                    static_cast<std::uint32_t>(animation.vertices + vertex * VERTEX_SIZE));
+                std::size_t at = key.positions + vertex * 6;
+                if (record == indexOf.end() || normalsAt + vertex * 3 + 3 > image.size()) {
+                    continue;
+                }
+                std::array<float, 3> position{};
+                std::array<float, 3> normal{};
+                float length = 0.0f;
+                for (std::size_t axis = 0; axis < 3; ++axis) {
+                    position[axis] =
+                        static_cast<float>(static_cast<std::int16_t>(Big16(image, at + axis * 2)));
+                    normal[axis] = static_cast<float>(
+                        static_cast<std::int8_t>(image[normalsAt + vertex * 3 + axis]));
+                    length += normal[axis] * normal[axis];
+                }
+                length = std::sqrt(length);
+                auto [first, last] = drawnOfRecord.equal_range(record->second);
+                for (auto it = first; it != last; ++it) {
+                    std::array<float, 3> moved{};
+                    std::array<float, 3> turned{};
+                    for (std::size_t axis = 0; axis < 3; ++axis) {
+                        moved[axis] = position[axis] - drawnPositions[it->second * 3 + axis];
+                        turned[axis] = (length > 0.0f ? normal[axis] / length : 0.0f) -
+                                       drawnNormals[it->second * 3 + axis];
+                    }
+                    positions.push_back({it->second, moved});
+                    normals.push_back({it->second, turned});
+                }
+            }
+            std::ranges::sort(
+                positions, {}, &std::pair<std::uint32_t, std::array<float, 3>>::first);
+            std::ranges::sort(normals, {}, &std::pair<std::uint32_t, std::array<float, 3>>::first);
+            positionAndNormalTargets.push_back(
+                {sparseAccessor(positions), sparseAccessor(normals)});
+        }
+    }
     model.json["images"] = nlohmann::ordered_json::array();
     model.json["samplers"] = nlohmann::ordered_json::array();
     model.json["textures"] = nlohmann::ordered_json::array();
@@ -1388,12 +1493,29 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
                                                 {"componentType", UNSIGNED_INT},
                                                 {"count", list.size()},
                                                 {"type", "SCALAR"}});
-            primitives.push_back({{"attributes", walk.Materials()[material].lit ? lit : shaded},
-                                  {"indices", accessor},
-                                  {"material", material},
-                                  {"mode", TRIANGLES}});
+            bool litMaterial = walk.Materials()[material].lit;
+            nlohmann::ordered_json primitive{{"attributes", litMaterial ? lit : shaded},
+                                             {"indices", accessor},
+                                             {"material", material},
+                                             {"mode", TRIANGLES}};
+            if (!positionAndNormalTargets.empty()) {
+                nlohmann::ordered_json targets = nlohmann::ordered_json::array();
+                for (const auto &[position, normal] : positionAndNormalTargets) {
+                    nlohmann::ordered_json target{{"POSITION", position}};
+                    if (litMaterial) {
+                        target["NORMAL"] = normal;
+                    }
+                    targets.push_back(std::move(target));
+                }
+                primitive["targets"] = std::move(targets);
+            }
+            primitives.push_back(std::move(primitive));
         }
-        model.json["meshes"].push_back({{"name", name}, {"primitives", std::move(primitives)}});
+        nlohmann::ordered_json mesh{{"name", name}, {"primitives", std::move(primitives)}};
+        if (!positionAndNormalTargets.empty()) {
+            mesh["weights"] = std::vector<float>(positionAndNormalTargets.size(), 0.0f);
+        }
+        model.json["meshes"].push_back(std::move(mesh));
         meshOf[key] = model.json["meshes"].size() - 1;
     };
 
@@ -1424,6 +1546,56 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
                                        {"children", std::move(children[scene])}});
         model.json["scenes"].push_back(
             {{"name", scenes[scene]}, {"nodes", {model.json["nodes"].size() - 1}}});
+    }
+
+    // An animation of the weights of every node with a mesh for each vertex animation, from each
+    // key to the next. Its flags and its span of time are how the game plays it.
+    if (!animations.empty()) {
+        model.json["animations"] = nlohmann::ordered_json::array();
+    }
+    for (std::size_t a = 0; a < animations.size(); ++a) {
+        const VertexAnimation &animation = animations[a];
+        if (animation.keys.empty()) {
+            continue;
+        }
+        std::vector<float> times;
+        std::vector<float> weights;
+        for (std::size_t k = 0; k < animation.keys.size(); ++k) {
+            times.push_back(animation.keys[k].time);
+            for (std::size_t t = 0; t < positionAndNormalTargets.size(); ++t) {
+                weights.push_back(t == firstTargetOf[a] + k ? 1.0f : 0.0f);
+            }
+        }
+        std::size_t input =
+            AddAccessor(model,
+                        {{"bufferView", AddView(model, times.data(), times.size() * sizeof(float))},
+                         {"componentType", FLOAT},
+                         {"count", times.size()},
+                         {"type", "SCALAR"},
+                         {"min", {*std::ranges::min_element(times)}},
+                         {"max", {*std::ranges::max_element(times)}}});
+        std::size_t output = AddAccessor(
+            model,
+            {{"bufferView", AddView(model, weights.data(), weights.size() * sizeof(float))},
+             {"componentType", FLOAT},
+             {"count", weights.size()},
+             {"type", "SCALAR"}});
+        nlohmann::ordered_json channels = nlohmann::ordered_json::array();
+        for (std::size_t node = 0; node < model.json["nodes"].size(); ++node) {
+            if (model.json["nodes"][node].contains("mesh")) {
+                channels.push_back(
+                    {{"sampler", 0}, {"target", {{"node", node}, {"path", "weights"}}}});
+            }
+        }
+        model.json["animations"].push_back(
+            {{"name", std::format("vertices{}", a)},
+             {"samplers", {{{"input", input}, {"interpolation", "LINEAR"}, {"output", output}}}},
+             {"channels", std::move(channels)},
+             {"extras",
+              {{"coastlineVertexAnimation",
+                {{"flags", animation.flags},
+                 {"startTime", animation.startTime},
+                 {"endTime", animation.endTime}}}}}});
     }
 
     std::size_t residualView = AddView(model, residual.data(), residual.size());
@@ -1591,6 +1763,78 @@ std::expected<GltfModel, std::string> TrackToGltf(std::span<const std::uint8_t> 
                                                      bytes[TRACK_FOG_COLOR_AT + 2]}}};
     }
     return model;
+}
+
+std::expected<GltfModel, std::string> FrontEndModelToGltf(std::span<const std::uint8_t> bytes,
+                                                          std::string_view bufferUri) {
+    // The offsets of a model start from its first byte, and its textures are where its display
+    // lists load them from.
+    constexpr Layout MODEL_LAYOUT{0, 0, 0, false};
+    constexpr std::size_t PARTS_AT = 8;
+    constexpr std::size_t PART_SIZE = 20;
+    constexpr std::uint16_t PART_TWO_SIDED = 0x0004;
+    if (bytes.size() < PARTS_AT) {
+        return std::unexpected("the file is too short for a model");
+    }
+    std::uint32_t partCount = Big32(bytes, 0);
+    if (partCount > (bytes.size() - PARTS_AT) / PART_SIZE) {
+        return std::unexpected("the parts of the model are outside the file");
+    }
+    std::vector<Draw> draws;
+    for (std::uint32_t i = 0; i < partCount; ++i) {
+        std::size_t at = PARTS_AT + i * PART_SIZE;
+        std::uint32_t displayList = Big32(bytes, at);
+        std::uint16_t flags = Big16(bytes, at + 4);
+        // A part with no display list has an offset of 0.
+        if (displayList == 0) {
+            continue;
+        }
+        nlohmann::ordered_json translation = nlohmann::ordered_json::array();
+        for (std::size_t axis = 0; axis < 3; ++axis) {
+            translation.push_back(std::bit_cast<float>(Big32(bytes, at + 8 + axis * 4)));
+        }
+        auto name = std::format("part{}", i);
+        draws.push_back(
+            {name,
+             displayList,
+             {{name,
+               {{"translation", translation},
+                {"extras", {{"coastlinePart", {{"flags", flags}}}}}}}},
+             0,
+             {.lit = true, .twoSided = (flags & PART_TWO_SIDED) != 0, .bound = std::nullopt}});
+    }
+
+    // The animations of the vertices: their count, then a word for each, each a record of the
+    // vertices it moves, its keys, and how it plays.
+    std::vector<VertexAnimation> animations;
+    if (std::uint32_t list = Big32(bytes, 4); list != 0) {
+        if (list > bytes.size() - 4) {
+            return std::unexpected("the animations of the model are outside the file");
+        }
+        std::uint32_t count = Big32(bytes, list);
+        for (std::uint32_t i = 0; i < count && list + 8 + i * 4 <= bytes.size(); ++i) {
+            std::uint32_t at = Big32(bytes, list + 4 + i * 4);
+            if (at > bytes.size() || bytes.size() - at < 0x24) {
+                return std::unexpected("an animation of the model is outside the file");
+            }
+            VertexAnimation animation{.vertices = Big32(bytes, at + 4),
+                                      .vertexCount = Big32(bytes, at),
+                                      .flags = Big16(bytes, at + 0x10),
+                                      .startTime = std::bit_cast<float>(Big32(bytes, at + 0x14)),
+                                      .endTime = std::bit_cast<float>(Big32(bytes, at + 0x18)),
+                                      .keys = {}};
+            std::uint32_t keyCount = Big32(bytes, at + 0xc);
+            for (std::uint32_t k = 0; k < keyCount && at + 0x20 + k * 4 + 4 <= bytes.size(); ++k) {
+                std::uint32_t key = Big32(bytes, at + 0x20 + k * 4);
+                if (key > bytes.size() - 4) {
+                    return std::unexpected("a key of an animation is outside the file");
+                }
+                animation.keys.push_back({std::bit_cast<float>(Big32(bytes, key)), key + 4});
+            }
+            animations.push_back(std::move(animation));
+        }
+    }
+    return BuildModel(bytes, 0, MODEL_LAYOUT, draws, {"model"}, bufferUri, animations);
 }
 
 std::expected<std::vector<std::uint8_t>, std::string>
