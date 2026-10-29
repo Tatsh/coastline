@@ -136,6 +136,21 @@ int WriteN64TexturePack(const std::filesystem::path &directory) {
     return written;
 }
 
+const char *N64PictureName(const void *descriptor) {
+    static const auto s_names = [] {
+        std::unordered_map<const void *, std::string> names;
+        for (const auto &[name, sprite] : N64FrontEndSprites()) {
+            names.emplace(sprite, name);
+        }
+        for (const auto &[name, texture] : N64FrontEndTextures()) {
+            names.emplace(texture, name);
+        }
+        return names;
+    }();
+    auto found = s_names.find(descriptor);
+    return found != s_names.end() ? found->second.c_str() : nullptr;
+}
+
 void SetN64FrontEndInput(const coastline::InputBindings *input) {
     g_input = input;
 }

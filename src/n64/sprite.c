@@ -7,6 +7,11 @@
 #include "system.h"
 #include "texrect.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/n64displaylist.h"
+#include "sdl/n64frontend.h"
+#endif
+
 /* One texel in the 5.10 fixed point of a texture coordinate step. */
 #define TEXEL_STEP 0x400
 
@@ -178,6 +183,11 @@ void DrawSpriteStrip(Sprite *sprite,
     s32 format;
 #endif /* ENABLE_PATCHES */
 #endif
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    /* The picture of a texture pack is drawn in place of the texels, which are not loaded. */
+    const char *packName = N64PictureName(sprite);
+    s32 packed = packName != NULL && coastline::HasPackPicture(packName);
+#endif
 
     if (drawWidth < 0) {
         drawWidth = -drawWidth;
@@ -259,18 +269,21 @@ void DrawSpriteStrip(Sprite *sprite,
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
         }
 #endif
-        gDPLoadTextureBlock_4b(gDisplayListPtr++,
-                               pixels,
-                               STRIP_FORMAT(G_IM_FMT_I),
-                               width,
-                               height,
-                               0,
-                               G_TX_WRAP,
-                               G_TX_WRAP,
-                               maskS,
-                               maskT,
-                               G_TX_NOLOD,
-                               G_TX_NOLOD);
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+        if (!packed)
+#endif
+            gDPLoadTextureBlock_4b(gDisplayListPtr++,
+                                   pixels,
+                                   STRIP_FORMAT(G_IM_FMT_I),
+                                   width,
+                                   height,
+                                   0,
+                                   G_TX_WRAP,
+                                   G_TX_WRAP,
+                                   maskS,
+                                   maskT,
+                                   G_TX_NOLOD,
+                                   G_TX_NOLOD);
         break;
     case SPRITE_DEPTH_8:
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
@@ -314,19 +327,22 @@ void DrawSpriteStrip(Sprite *sprite,
                               TEXEL0);
         }
         gDPSetRenderMode(gDisplayListPtr++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-        gDPLoadTextureBlock(gDisplayListPtr++,
-                            pixels,
-                            G_IM_FMT_IA,
-                            G_IM_SIZ_8b,
-                            width,
-                            height,
-                            0,
-                            G_TX_WRAP,
-                            G_TX_WRAP,
-                            maskS,
-                            maskT,
-                            G_TX_NOLOD,
-                            G_TX_NOLOD);
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+        if (!packed)
+#endif
+            gDPLoadTextureBlock(gDisplayListPtr++,
+                                pixels,
+                                G_IM_FMT_IA,
+                                G_IM_SIZ_8b,
+                                width,
+                                height,
+                                0,
+                                G_TX_WRAP,
+                                G_TX_WRAP,
+                                maskS,
+                                maskT,
+                                G_TX_NOLOD,
+                                G_TX_NOLOD);
         break;
     case SPRITE_DEPTH_16:
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
@@ -335,19 +351,22 @@ void DrawSpriteStrip(Sprite *sprite,
         gDPSetCombineLERP(
             gDisplayListPtr++, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0);
         gDPSetRenderMode(gDisplayListPtr++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-        gDPLoadTextureBlock(gDisplayListPtr++,
-                            pixels,
-                            STRIP_FORMAT(sprite == &g_texLogo ? G_IM_FMT_IA : G_IM_FMT_RGBA),
-                            G_IM_SIZ_16b,
-                            width,
-                            height,
-                            0,
-                            G_TX_WRAP,
-                            G_TX_WRAP,
-                            maskS,
-                            maskT,
-                            G_TX_NOLOD,
-                            G_TX_NOLOD);
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+        if (!packed)
+#endif
+            gDPLoadTextureBlock(gDisplayListPtr++,
+                                pixels,
+                                STRIP_FORMAT(sprite == &g_texLogo ? G_IM_FMT_IA : G_IM_FMT_RGBA),
+                                G_IM_SIZ_16b,
+                                width,
+                                height,
+                                0,
+                                G_TX_WRAP,
+                                G_TX_WRAP,
+                                maskS,
+                                maskT,
+                                G_TX_NOLOD,
+                                G_TX_NOLOD);
         break;
     }
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
@@ -369,18 +388,37 @@ void DrawSpriteStrip(Sprite *sprite,
     }
     gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, red, green, blue, 0xFF);
     gDPSetEnvColor(gDisplayListPtr++, 0, 0, 0, 0xFF);
-    /* The rows run from the bottom of the texture up. */
-    gSPTextureRectangle(gDisplayListPtr++,
-                        x << 2,
-                        y << 2,
-                        (x + drawWidth) << 2,
-                        (y + drawHeight) << 2,
-                        G_TX_RENDERTILE,
-                        mirrored ? (width - 1) << 5 : 0,
-                        (height - 1) << 5,
-                        mirrored ? (TEXEL_STEP - (width << 10)) / drawWidth :
-                                   ((width << 10) - TEXEL_STEP) / drawWidth,
-                        (TEXEL_STEP - (height << 10)) / drawHeight);
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    if (packed) {
+        /* The strip is rows of the picture, whose texels run from the bottom row up and whose file
+         * in the pack is upright. */
+        u32 rowBytes = sprite->bitsPerTexel == SPRITE_DEPTH_4 ?
+                           (u32)width >> 1 :
+                           (u32)width * (sprite->bitsPerTexel >> 3);
+        s32 firstRow = (s32)((u32)(pixels - sprite->pixels) / rowBytes);
+        float pictureHeight = (float)sprite->height;
+        const float source[4] = {mirrored ? 1.0f : 0.0f,
+                                 (float)(sprite->height - firstRow - height) / pictureHeight,
+                                 mirrored ? 0.0f : 1.0f,
+                                 (float)(sprite->height - firstRow) / pictureHeight};
+        const float destination[4] = {(float)x, (float)y, (float)drawWidth, (float)drawHeight};
+        gDisplayListPtr->words.w0 = (u32)coastline::NATIVE_PICTURE_OPCODE << 24;
+        gDisplayListPtr->words.w1 = coastline::QueuePackPicture(packName, source, destination);
+        gDisplayListPtr++;
+    } else
+#endif
+        /* The rows run from the bottom of the texture up. */
+        gSPTextureRectangle(gDisplayListPtr++,
+                            x << 2,
+                            y << 2,
+                            (x + drawWidth) << 2,
+                            (y + drawHeight) << 2,
+                            G_TX_RENDERTILE,
+                            mirrored ? (width - 1) << 5 : 0,
+                            (height - 1) << 5,
+                            mirrored ? (TEXEL_STEP - (width << 10)) / drawWidth :
+                                       ((width << 10) - TEXEL_STEP) / drawWidth,
+                            (TEXEL_STEP - (height << 10)) / drawHeight);
     gDPPipeSync(gDisplayListPtr++);
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
 }

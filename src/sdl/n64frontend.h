@@ -29,6 +29,12 @@ class N64Audio;
 int WriteN64TexturePack(const std::filesystem::path &directory);
 
 /**
+ * @param descriptor A Sprite or a Texture of the front end.
+ * @return The name of its picture in a texture pack, or null for a descriptor of no picture.
+ */
+const char *N64PictureName(const void *descriptor);
+
+/**
  * Set the bindings the front end reads its controllers from.
  *
  * @param input The bindings, or `nullptr` for no controllers.

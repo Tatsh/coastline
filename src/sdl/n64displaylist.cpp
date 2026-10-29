@@ -121,6 +121,17 @@ std::filesystem::path g_textureDirectory;
 std::string g_texturePack = "default";
 bool g_dumpTextures;
 
+// The pictures of the texture packs on the GPU by name, or 0 for a picture no pack has.
+std::unordered_map<std::string, coastline::TextureHandle> g_packPictures;
+
+// A draw of a part of a picture of a pack that a command of the display list of this frame takes.
+struct QueuedPicture {
+    std::string name;
+    float source[4];
+    float destination[4];
+};
+std::vector<QueuedPicture> g_queuedPictures;
+
 // The width and height the front end draws on at its high resolution.
 constexpr float kConsoleScreenWidth = 640.0f;
 constexpr float kConsoleScreenHeight = 480.0f;
@@ -1061,6 +1072,52 @@ void ReplaceWithPng(std::vector<std::uint8_t> &rgba, std::uint32_t &width, std::
     SDL_DestroySurface(surface);
 }
 
+// The picture of a texture pack on the GPU, loaded once, or 0 when no pack has it.
+coastline::TextureHandle PackPictureTexture(const std::string &name) {
+    if (auto found = g_packPictures.find(name); found != g_packPictures.end()) {
+        return found->second;
+    }
+    coastline::TextureHandle handle = 0;
+    std::vector<std::uint8_t> rgba;
+    std::uint32_t width = 0;
+    std::uint32_t height = 0;
+    if (std::filesystem::path path = PackFile(name + ".png");
+        !path.empty() && LoadPng(path, rgba, width, height)) {
+        handle = g_renderer->CreateTexture(width, height, rgba, true);
+    }
+    g_packPictures[name] = handle;
+    return handle;
+}
+
+// Draw a part of a picture of a pack with the combiner, the colours, and the modes of the display
+// list.
+void DrawQueuedPicture(const QueuedPicture &picture) {
+    coastline::TextureHandle texture = PackPictureTexture(picture.name);
+    if (texture == 0) {
+        return;
+    }
+    float scale = ScreenScale();
+    float left = picture.destination[0] * scale + g_screenOffsetX;
+    float top = picture.destination[1] * scale;
+    float right = left + picture.destination[2] * scale;
+    float bottom = top + picture.destination[3] * scale;
+    const float *uv = picture.source;
+    const std::array<coastline::TlVertex, 4> quad = {{
+        {left, top, 0, 1, 0xffffffff, 0, uv[0], uv[1]},
+        {right, top, 0, 1, 0xffffffff, 0, uv[2], uv[1]},
+        {right, bottom, 0, 1, 0xffffffff, 0, uv[2], uv[3]},
+        {left, bottom, 0, 1, 0xffffffff, 0, uv[0], uv[3]},
+    }};
+    ApplyStates(true, false);
+    coastline::RenderStates &states = g_renderer->States();
+    states.linearFilter = FiltersTexels();
+    states.alphaTest = false;
+    g_renderer->SetTexture(texture);
+    g_renderer->SetCombiner(GpuCombiner(CycleType() == G_CYC_COPY));
+    const std::array<std::uint16_t, 6> indices = {0, 1, 2, 0, 2, 3};
+    g_renderer->DrawIndexed(quad, indices);
+}
+
 // The texture of the tile triangles sample, at the size of its mask or of the tile.
 coastline::TextureHandle TileTexture(int index, int &width, int &height) {
     const Tile &tile = g_rdp.tiles[static_cast<std::size_t>(index) & 7];
@@ -1280,6 +1337,11 @@ void RunDisplayList(const GbiCommand *list) {
         case G_SETZIMG:
             g_rdp.depthImage = coastline::DecodePtr32(command->w1);
             break;
+        case coastline::NATIVE_PICTURE_OPCODE:
+            if (command->w1 < g_queuedPictures.size()) {
+                DrawQueuedPicture(g_queuedPictures[command->w1]);
+            }
+            break;
         default:
             break;
         }
@@ -1304,6 +1366,7 @@ void SubmitN64DisplayList(GbiCommand *list) {
                               static_cast<std::uint32_t>(kConsoleScreenHeight));
     g_pD3DDevice2->BeginScene();
     RunDisplayList(list);
+    g_queuedPictures.clear();
     g_pD3DDevice2->EndScene();
     RetireIdleTextures();
     g_pfnPresentFrame();
@@ -1321,6 +1384,25 @@ void coastline::SetN64TextureDirectory(std::filesystem::path directory,
     g_textureDirectory = std::move(directory);
     g_texturePack = std::move(pack);
     g_dumpTextures = dump;
+}
+
+bool coastline::HasPackPicture(std::string_view name) {
+    static std::unordered_map<std::string, bool> s_found;
+    std::string key(name);
+    auto found = s_found.find(key);
+    if (found == s_found.end()) {
+        found = s_found.emplace(key, !PackFile(key + ".png").empty()).first;
+    }
+    return found->second;
+}
+
+std::uint32_t coastline::QueuePackPicture(std::string_view name,
+                                          const float source[4],
+                                          const float destination[4]) {
+    g_queuedPictures.push_back({std::string(name),
+                                {source[0], source[1], source[2], source[3]},
+                                {destination[0], destination[1], destination[2], destination[3]}});
+    return static_cast<std::uint32_t>(g_queuedPictures.size() - 1);
 }
 
 void coastline::RenderN64DisplayLists() {

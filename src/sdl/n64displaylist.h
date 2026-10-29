@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <string>
+#include <string_view>
 
 /**
  * @param host An address on the host.
@@ -30,6 +31,28 @@ namespace coastline {
  * drawn.
  */
 void SetN64TextureDirectory(std::filesystem::path directory, std::string pack, bool dump);
+
+/** The opcode of a command of a display list of the front end that draws a picture of a pack. */
+inline constexpr std::uint8_t NATIVE_PICTURE_OPCODE = 0xD9;
+
+/**
+ * @param name The name of a picture.
+ * @return Whether a texture pack has the picture.
+ */
+bool HasPackPicture(std::string_view name);
+
+/**
+ * Queue a draw of a part of a picture of a texture pack, for a command of NATIVE_PICTURE_OPCODE
+ * that draws it with the combiner, the colours, and the modes of the display list then.
+ *
+ * @param name The name of the picture.
+ * @param source The left, top, right, and bottom of the part, from 0 to 1 across the picture, with
+ * the left after the right for a part drawn mirrored.
+ * @param destination The left, top, width, and height on the screen of the console.
+ * @return The word the command takes.
+ */
+std::uint32_t
+QueuePackPicture(std::string_view name, const float source[4], const float destination[4]);
 
 /**
  * Make each display list the game submits ready for the renderer of the PC release first, for the
