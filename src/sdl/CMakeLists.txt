@@ -48,6 +48,7 @@ add_library(
   config.cpp
   gpu.cpp
   importer.cpp
+  indexedimage.cpp
   input.cpp
   log.cpp
   music.cpp

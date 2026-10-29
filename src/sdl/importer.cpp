@@ -17,6 +17,7 @@
 #include <nlohmann/json.hpp>
 
 #include "assetchain.h"
+#include "sdl/indexedimage.h"
 #include "sdl/stringresources.h"
 #include "sha1.h"
 
@@ -346,6 +347,38 @@ std::optional<std::string> ConvertBitmap(const std::filesystem::path &bitmap) {
     return std::nullopt;
 }
 
+// Each sky of cargfx, the 4-bit texels of a .ci4 file and the palette of the .lut4 file of the same
+// name, as an indexed PNG image of 32 texels a row, in place of the two files.
+std::optional<std::string> ConvertSkyImages(const std::filesystem::path &dataDirectory) {
+    constexpr int SKY_WIDTH = 32;
+    std::error_code error;
+    std::vector<std::filesystem::path> images;
+    for (const auto &entry : std::filesystem::directory_iterator(dataDirectory / "cargfx", error)) {
+        if (Lowercase(entry.path().extension().string()) == ".ci4") {
+            images.push_back(entry.path());
+        }
+    }
+    for (const auto &image : images) {
+        auto lut = std::filesystem::path(image).replace_extension(".lut4");
+        std::ifstream texelFile(image, std::ios::binary);
+        std::vector<std::uint8_t> texels(std::istreambuf_iterator<char>(texelFile), {});
+        std::ifstream paletteFile(lut, std::ios::binary);
+        std::vector<std::uint8_t> palette(std::istreambuf_iterator<char>(paletteFile), {});
+        if (palette.size() != 32 || texels.empty() || texels.size() % (SKY_WIDTH / 2) != 0) {
+            return std::format("{} and {} are not a sky image.", image.string(), lut.string());
+        }
+        auto png = std::filesystem::path(image).replace_extension(".png");
+        int height = static_cast<int>(texels.size() / (SKY_WIDTH / 2));
+        if (!coastline::SaveIndexed4Png(
+                png, texels, std::span<const std::uint8_t, 32>(palette), SKY_WIDTH, height)) {
+            return std::format("{} does not read back as {}.", png.string(), image.string());
+        }
+        std::filesystem::remove(image, error);
+        std::filesystem::remove(lut, error);
+    }
+    return std::nullopt;
+}
+
 // The strings of BRString.dll as strings/default/pc.json, by identifier, in place of the library.
 std::optional<std::string> ConvertStringLibrary(const std::filesystem::path &library,
                                                 const std::filesystem::path &dataDirectory) {
@@ -637,6 +670,9 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
             return std::unexpected(*failure);
         }
         ++written;
+    }
+    if (auto failure = ConvertSkyImages(dataDirectory)) {
+        return std::unexpected(*failure);
     }
     for (const auto &track : tracks) {
         if (!track.audio) {
