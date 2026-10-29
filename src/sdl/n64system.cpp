@@ -4,8 +4,12 @@
 // ponytail: no Pak; a file of 32 KiB a controller behind __osContRamRead() and __osContRamWrite()
 // takes the place of these once the saves are written.
 
+#include <algorithm>
 #include <cstring>
+#include <filesystem>
+#include <format>
 #include <unordered_map>
+#include <vector>
 
 #include <PR/os.h>
 #include <PR/os_cont.h>
@@ -14,12 +18,16 @@
 #include "assetdma.h"
 #include "audio.h"
 #include "n64/mainmenu.h"
+#include "n64/pakmenu.h"
+#include "n64/sprite.h"
 #include "n64/weatherselect.h"
 #include "sdl/cartridgedata.h"
 #include "sdl/input.h"
 #include "sdl/music.h"
 #include "sdl/n64frontend.h"
+#include "sdl/n64texture.h"
 #include "seasons.h"
+#include "texrect.h"
 #include "vehicle.h"
 
 void LogN64FrontEndData(void) {
@@ -49,6 +57,78 @@ const coastline::InputBindings *g_input;
 
 void SetN64FrontEndAudio(coastline::N64Audio *audio) {
     g_audio = audio;
+}
+
+std::vector<const Sprite *> N64FrontEndSprites(void);
+std::vector<const Texture *> N64FrontEndTextures(void);
+
+namespace {
+
+// Write a picture of the cartridge to the pack once, named after where it starts on the
+// cartridge.
+void WritePicture(const std::filesystem::path &directory,
+                  std::uint32_t romOffset,
+                  int width,
+                  int height,
+                  coastline::TexelFormat format,
+                  bool bottomUp,
+                  int &written) {
+    std::filesystem::path path = directory / std::format("{:06x}.png", romOffset);
+    std::error_code error;
+    if (width <= 0 || height <= 0 || std::filesystem::exists(path, error)) {
+        return;
+    }
+    auto texels = coastline::ReadRomModule(coastline::CartridgeData::Rom(), romOffset);
+    if (!texels) {
+        return;
+    }
+    std::vector<std::uint8_t> pixels = coastline::DecodeTexels(*texels, width, height, format);
+    if (pixels.size() != static_cast<std::size_t>(width) * height * 4) {
+        return;
+    }
+    if (bottomUp) {
+        std::size_t row = static_cast<std::size_t>(width) * 4;
+        for (int y = 0; y < height / 2; ++y) {
+            std::swap_ranges(pixels.begin() + static_cast<std::ptrdiff_t>(y * row),
+                             pixels.begin() + static_cast<std::ptrdiff_t>((y + 1) * row),
+                             pixels.begin() + static_cast<std::ptrdiff_t>((height - 1 - y) * row));
+        }
+    }
+    if (coastline::WritePng(path, pixels, width, height)) {
+        ++written;
+    }
+}
+
+} // namespace
+
+int WriteN64TexturePack(const std::filesystem::path &directory) {
+    int written = 0;
+    for (const Sprite *sprite : N64FrontEndSprites()) {
+        // The USA release draws the 8-bit sprites as intensity, the 16-bit sprites as colours, and
+        // the logo alone as intensity and alpha.
+        coastline::TexelFormat format =
+            sprite->bitsPerTexel == 4 ? coastline::TexelFormat::Intensity4 :
+            sprite->bitsPerTexel == 8 ? coastline::TexelFormat::Intensity8 :
+            sprite == &g_texLogo      ? coastline::TexelFormat::IntensityAlpha16 :
+                                        coastline::TexelFormat::Rgba16;
+        WritePicture(directory,
+                     sprite->romOffset,
+                     static_cast<int>(sprite->width),
+                     static_cast<int>(sprite->height),
+                     format,
+                     true,
+                     written);
+    }
+    for (const Texture *texture : N64FrontEndTextures()) {
+        WritePicture(directory,
+                     texture->romStart,
+                     texture->width,
+                     texture->height,
+                     coastline::TexelFormatOf(texture->format, texture->size),
+                     false,
+                     written);
+    }
+    return written;
 }
 
 void SetN64FrontEndInput(const coastline::InputBindings *input) {

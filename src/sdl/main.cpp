@@ -224,6 +224,20 @@ void DrawRendererTestScene(coastline::TlRenderer &renderer,
     renderer.EndScene(capture);
 }
 
+#ifdef COASTLINE_PC_GAME
+// The pictures of the front end, from the imported USA cartridge, as the texture pack default.
+void BuildDefaultTexturePack(const std::filesystem::path &data) {
+    std::ifstream file(data / "roms" / "usa.z64", std::ios::binary);
+    std::vector<std::uint8_t> rom(std::istreambuf_iterator<char>(file), {});
+    if (!coastline::CartridgeData::Load(rom)) {
+        return;
+    }
+    ReadN64FrontEndData();
+    int written = WriteN64TexturePack(data / "textures" / "default");
+    SDL_Log("Wrote %d textures to the texture pack default.", written);
+}
+#endif
+
 int ImportFromCommandLine(const argparse::ArgumentParser &parser,
                           const std::filesystem::path &data) {
     int status = EXIT_SUCCESS;
@@ -250,6 +264,9 @@ int ImportFromCommandLine(const argparse::ArgumentParser &parser,
             status = EXIT_FAILURE;
         }
     }
+#ifdef COASTLINE_PC_GAME
+    BuildDefaultTexturePack(data);
+#endif
     coastline::StopGameLog();
     return status;
 }
@@ -465,6 +482,11 @@ int main(int argc, char *argv[]) {
                     return EXIT_FAILURE;
                 }
                 ReadN64FrontEndData();
+                // An import from before the texture packs wrote none.
+                if (std::error_code error;
+                    !std::filesystem::exists(paths->data / "textures" / "default", error)) {
+                    WriteN64TexturePack(paths->data / "textures" / "default");
+                }
                 SetN64FrontEndInput(&input);
                 SetN64FrontEndAudio(playMusic ? &audio : nullptr);
                 coastline::SetN64TextureDirectory(paths->data / "textures",

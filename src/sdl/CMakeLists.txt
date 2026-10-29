@@ -50,6 +50,7 @@ add_library(
   input.cpp
   log.cpp
   music.cpp
+  n64texture.cpp
   paths.cpp
   tlrenderer.cpp
   "${CMAKE_SOURCE_DIR}/src/audio.c"

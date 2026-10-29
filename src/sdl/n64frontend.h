@@ -6,6 +6,8 @@
  * front end renames the symbols both releases define with N64 appended.
  */
 
+#include <filesystem>
+
 /** Record and read the data of the front end from the cartridge loaded in CartridgeData. */
 void ReadN64FrontEndData(void);
 
@@ -16,6 +18,15 @@ namespace coastline {
 class InputBindings;
 class N64Audio;
 } // namespace coastline
+
+/**
+ * Write the pictures of the front end that are not in a directory yet as PNG files there, named
+ * after where each starts on the cartridge. The data of the front end must be read first.
+ *
+ * @param directory The directory of the texture pack.
+ * @return The pictures written.
+ */
+int WriteN64TexturePack(const std::filesystem::path &directory);
 
 /**
  * Set the bindings the front end reads its controllers from.
