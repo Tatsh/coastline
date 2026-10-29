@@ -17,6 +17,10 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
+#if !defined(_WIN32)
+#include <sys/resource.h>
+#endif
+
 #include "config.h"
 #include "gpu.h"
 #include "importer.h"
@@ -233,6 +237,19 @@ void BuildDefaultTexturePack(const std::filesystem::path &data) {
 }
 #endif
 
+// Raise the soft limit of open files to the hard limit. The Vulkan driver of NVIDIA keeps a
+// descriptor for each allocation of GPU memory, and the textures of a race need more than the
+// usual soft limit of 1024.
+void RaiseOpenFileLimit() {
+#if !defined(_WIN32)
+    rlimit limit{};
+    if (getrlimit(RLIMIT_NOFILE, &limit) == 0 && limit.rlim_cur < limit.rlim_max) {
+        limit.rlim_cur = limit.rlim_max;
+        setrlimit(RLIMIT_NOFILE, &limit);
+    }
+#endif
+}
+
 int ImportFromCommandLine(const argparse::ArgumentParser &parser,
                           const std::filesystem::path &data) {
     int status = EXIT_SUCCESS;
@@ -269,6 +286,7 @@ int ImportFromCommandLine(const argparse::ArgumentParser &parser,
 } // namespace
 
 int main(int argc, char *argv[]) {
+    RaiseOpenFileLimit();
     argparse::ArgumentParser parser(APPLICATION, COASTLINE_VERSION);
     parser.add_description("Top Gear Rally and Boss Rally in one stand-alone game.");
     parser.add_argument("--data-dir").help("read the game data from this directory");

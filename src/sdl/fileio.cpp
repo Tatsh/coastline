@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <cctype>
+#include <cerrno>
 #include <cstdlib>
 #include <cstring>
 #include <optional>
@@ -163,6 +164,18 @@ GameFile *CHK_FReadOpen(const char *pszPath) {
     auto found = coastline::FindGameFile(pszPath);
     pFile->pFile = found ? std::fopen(found->string().c_str(), "rb") : nullptr;
     if (pFile->pFile == nullptr) {
+        if (found) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "%s cannot be opened: %s",
+                         found->string().c_str(),
+                         std::strerror(errno));
+        } else {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "%s is in neither %s nor %s.",
+                         pszPath,
+                         g_stateDirectory.string().c_str(),
+                         g_dataDirectory.string().c_str());
+        }
         std::snprintf(szMessage,
                       sizeof(szMessage),
                       "CHK_FReadOpen(): error opening file %s.\n",
