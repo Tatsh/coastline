@@ -85,38 +85,6 @@ extern int g_dwRenderBackendMode;
 extern int (*g_pfnRenderDeviceReset)(void);
 
 /**
- * Start the renderer of the backend, set by SetRenderBackendMode().
- *
- * @ghidraAddress BRD3D: 0x10b501c8
- * @ghidraAddress BRGlide: 0x10b73528
- */
-extern void (*g_pfnRenderBackendInit)(void);
-
-/**
- * Start the texture subsystem, set by SetRenderBackendMode().
- *
- * @ghidraAddress BRD3D: 0x100b8c94
- * @ghidraAddress BRGlide: 0x100b849c
- */
-extern void (*g_pfnInitializeTextureSubsystem)(void);
-
-/**
- * Release the renderer of the backend, if one is set.
- *
- * @ghidraAddress BRD3D: 0x10b501cc
- * @ghidraAddress BRGlide: 0x10b7352c
- */
-extern void (*g_pfnRenderBackendShutdown)(void);
-
-/**
- * Release the texture subsystem, if one is set.
- *
- * @ghidraAddress BRD3D: 0x118aa0d0
- * @ghidraAddress BRGlide: 0x118ed1e8
- */
-extern void (*g_pfnShutdownTextureSubsystem)(void);
-
-/**
  * Release the render device, if one is set. The Glide library does not call it.
  *
  * @ghidraAddress BRD3D: 0x10690a28
@@ -452,12 +420,6 @@ void ByteSwapAndRelocateTextureDescriptor(ModelTexture *pTexture);
 void ByteSwapTextureDescriptorArray(ModelTexture *pTextures, int nCount);
 
 /**
- * @ghidraAddress BRD3D: 0x10075330
- * @ghidraAddress BRGlide: 0x1006e590
- */
-void NullStub2(void *pMemory);
-
-/**
  * The number of pointers relocated.
  *
  * @ghidraAddress BRD3D: 0x1067b548
@@ -601,14 +563,6 @@ bool LookupTextureMapEntry(unsigned dwAddress, int *pnWidth, int *pnHeight);
  */
 void ByteSwap3DWordsArray(Vec3f *pData, int nCount);
 
-/**
- * Link every vertex of g_aShadowClipVertexPool into its free list, in order.
- *
- * @ghidraAddress BRD3D: 0x1000f460
- * @ghidraAddress BRGlide: 0x1000c9c0
- */
-void ResetRenderCommandBufferStack(void);
-
 /** The number of entries of g_anSkidMarkHead and g_anSkidMarkTail. */
 #define SKID_MARK_TRACK_COUNT 32
 
@@ -627,14 +581,6 @@ extern int g_anSkidMarkHead[SKID_MARK_TRACK_COUNT];
  * @ghidraAddress BRGlide: 0x1035f750
  */
 extern int g_anSkidMarkTail[SKID_MARK_TRACK_COUNT];
-
-/**
- * Clear the tracks of skid marks.
- *
- * @ghidraAddress BRD3D: 0x1000f620
- * @ghidraAddress BRGlide: 0x1000cb80
- */
-void ClearSplitScreenRenderState(void);
 
 /** The number of entries of g_aTextureUploadQueue. */
 #define TEXTURE_UPLOAD_QUEUE_SIZE 256
@@ -886,38 +832,6 @@ void CreateDaySkyTexture(void);
 void CreateNightSkyTexture(void);
 
 /**
- * @ghidraAddress BRD3D: 0x11829110
- * @ghidraAddress BRGlide: 0x1184c470
- */
-extern unsigned g_dwHudOverlayTextureId;
-/**
- * @ghidraAddress BRD3D: 0x1182931c
- * @ghidraAddress BRGlide: 0x1184c478
- */
-extern unsigned g_dwHudOverlayHalfTextureId;
-/**
- * @ghidraAddress BRD3D: 0x11829328
- * @ghidraAddress BRGlide: 0x1184c484
- */
-extern unsigned g_dwParticleTextureId;
-
-/**
- * @ghidraAddress BRD3D: 0x11829108
- * @ghidraAddress BRGlide: 0x1184c468
- */
-extern unsigned g_dwTireTrailTextureId;
-/**
- * @ghidraAddress BRD3D: 0x11829314
- * @ghidraAddress BRGlide: 0x1184c474
- */
-extern unsigned g_dwVehicleEnvMapTextureId;
-/**
- * @ghidraAddress BRD3D: 0x11829324
- * @ghidraAddress BRGlide: 0x1184c480
- */
-extern unsigned g_dwFallbackEnvMapTextureId;
-
-/**
  * @ghidraAddress BRD3D: 0x10024ae0
  */
 unsigned DuplicateTextureEntryHalfScale(unsigned nTexture);
@@ -930,10 +844,6 @@ extern unsigned char g_abAlphaRampRgba[16][4];
  * @ghidraAddress BRD3D: 0x11829118
  */
 extern unsigned char g_abAlphaRampPixelStrip[64];
-/**
- * @ghidraAddress BRD3D: 0x11829318
- */
-extern int g_dwAlphaRampStripRowCount;
 
 /**
  * Create the texture of the particles, 64 by 64 texels.
@@ -976,16 +886,6 @@ void CreateFallbackEnvironmentTexture(void);
 void CreateAlphaRampTextures(void);
 
 /**
- * Load and create the textures every race uses: the overlay and the glyphs of the display of the
- * race, the particles, the trails of the tyres, the maps of the environment, and the ramps of alpha
- * and precipitation.
- *
- * @ghidraAddress BRD3D: 0x10074dd0
- * @ghidraAddress BRGlide: 0x1006e030
- */
-void CreateGlobalEffectTextures(void);
-
-/**
  * Upload the next texture of the queue of textures to upload.
  *
  * @ghidraAddress BRD3D: 0x10074fc0
@@ -1021,14 +921,6 @@ void ResetVertexConversionCache(void);
  * @ghidraAddress BRGlide: 0x10018a10
  */
 void SetPointerRelocationBase(unsigned dwOldBase, unsigned dwNewBase);
-
-/**
- * Empty the pool of the data of the models.
- *
- * @ghidraAddress BRD3D: 0x1002b950
- * @ghidraAddress BRGlide: 0x100189c0
- */
-void ResetModelDataPool(void);
 
 /** @ghidraAddress BRD3D: 0x104d51c0 */
 extern unsigned char g_abWeatherShadeTexture[16];

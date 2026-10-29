@@ -8,9 +8,9 @@
 #include "common/buildinfo.h"
 #include "common/hudcanvas.h"
 #include "common/rallyconfig.h"
+#include "common/renderbackend.h"
 #include "common/settings.h"
 #include "common/strings.h"
-#include "win32/render.h"
 #else
 #include <PR/os_libc.h>
 

@@ -57,6 +57,135 @@ extern int (*g_pfnDecodeN64TextureToPixelBuffer)(void *destination,
  */
 extern int g_bForceTextureClone;
 
+/**
+ * Start the renderer of the backend, set by SetRenderBackendMode().
+ *
+ * @ghidraAddress BRD3D: 0x10b501c8
+ * @ghidraAddress BRGlide: 0x10b73528
+ */
+extern void (*g_pfnRenderBackendInit)(void);
+
+/**
+ * Start the texture subsystem, set by SetRenderBackendMode().
+ *
+ * @ghidraAddress BRD3D: 0x100b8c94
+ * @ghidraAddress BRGlide: 0x100b849c
+ */
+extern void (*g_pfnInitializeTextureSubsystem)(void);
+
+/**
+ * Release the renderer of the backend, if one is set.
+ *
+ * @ghidraAddress BRD3D: 0x10b501cc
+ * @ghidraAddress BRGlide: 0x10b7352c
+ */
+extern void (*g_pfnRenderBackendShutdown)(void);
+
+/**
+ * Release the texture subsystem, if one is set.
+ *
+ * @ghidraAddress BRD3D: 0x118aa0d0
+ * @ghidraAddress BRGlide: 0x118ed1e8
+ */
+extern void (*g_pfnShutdownTextureSubsystem)(void);
+
+/**
+ * Do nothing.
+ *
+ * @param pMemory Not read.
+ * @ghidraAddress BRD3D: 0x10075330
+ * @ghidraAddress BRGlide: 0x1006e590
+ */
+void NullStub2(void *pMemory);
+
+/**
+ * Link every vertex of g_aShadowClipVertexPool into its free list, in order.
+ *
+ * @ghidraAddress BRD3D: 0x1000f460
+ * @ghidraAddress BRGlide: 0x1000c9c0
+ */
+void ResetRenderCommandBufferStack(void);
+
+/**
+ * Clear the tracks of skid marks.
+ *
+ * @ghidraAddress BRD3D: 0x1000f620
+ * @ghidraAddress BRGlide: 0x1000cb80
+ */
+void ClearSplitScreenRenderState(void);
+
+/**
+ * The texture of the overlay of the HUD.
+ *
+ * @ghidraAddress BRD3D: 0x11829110
+ * @ghidraAddress BRGlide: 0x1184c470
+ */
+extern unsigned g_dwHudOverlayTextureId;
+
+/**
+ * The texture of the overlay of the HUD at half scale, or g_dwHudOverlayTextureId where the
+ * renderer does not scale it.
+ *
+ * @ghidraAddress BRD3D: 0x1182931c
+ * @ghidraAddress BRGlide: 0x1184c478
+ */
+extern unsigned g_dwHudOverlayHalfTextureId;
+
+/**
+ * The texture of the particles.
+ *
+ * @ghidraAddress BRD3D: 0x11829328
+ * @ghidraAddress BRGlide: 0x1184c484
+ */
+extern unsigned g_dwParticleTextureId;
+
+/**
+ * The texture of the trails of the tyres.
+ *
+ * @ghidraAddress BRD3D: 0x11829108
+ * @ghidraAddress BRGlide: 0x1184c468
+ */
+extern unsigned g_dwTireTrailTextureId;
+
+/**
+ * The texture of the map of the environment the vehicles reflect at night.
+ *
+ * @ghidraAddress BRD3D: 0x11829314
+ * @ghidraAddress BRGlide: 0x1184c474
+ */
+extern unsigned g_dwVehicleEnvMapTextureId;
+
+/**
+ * The texture of the map of the environment the vehicles reflect by day.
+ *
+ * @ghidraAddress BRD3D: 0x11829324
+ * @ghidraAddress BRGlide: 0x1184c480
+ */
+extern unsigned g_dwFallbackEnvMapTextureId;
+
+/**
+ * @ghidraAddress BRD3D: 0x11829318
+ */
+extern int g_dwAlphaRampStripRowCount;
+
+/**
+ * Load and create the textures every race uses: the overlay and the glyphs of the display of the
+ * race, the particles, the trails of the tyres, the maps of the environment, and the ramps of alpha
+ * and precipitation.
+ *
+ * @ghidraAddress BRD3D: 0x10074dd0
+ * @ghidraAddress BRGlide: 0x1006e030
+ */
+void CreateGlobalEffectTextures(void);
+
+/**
+ * Empty the pool of the data of the models.
+ *
+ * @ghidraAddress BRD3D: 0x1002b950
+ * @ghidraAddress BRGlide: 0x100189c0
+ */
+void ResetModelDataPool(void);
+
 #ifdef __cplusplus
 }
 #endif

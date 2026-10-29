@@ -8,7 +8,8 @@
 #include "common/weather.h"
 
 #if TGR_BOSS_RALLY
-#include "win32/render.h"
+#include "common/combine.h"
+#include "common/renderbackend.h"
 #else
 #include <PR/R4300.h>
 #endif

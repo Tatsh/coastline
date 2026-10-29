@@ -15,7 +15,6 @@
 #include "common/rallyconfig.h"
 #include "common/renderbackend.h"
 #include "common/session.h"
-#include "win32/render.h"
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
 #include "common/game.h"
 #include "common/racerslot.h"

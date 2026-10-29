@@ -18,8 +18,8 @@
 
 #if TGR_BOSS_RALLY
 #include "common/rallyconfig.h"
+#include "common/renderbackend.h"
 #include "common/settings.h"
-#include "win32/render.h"
 #else
 #include "common/audiomix.h"
 #endif

@@ -6,9 +6,9 @@
 #include "common/weather.h"
 
 #if TGR_BOSS_RALLY
+#include "common/gbicommand.h"
 #include "common/hudcanvas.h"
 #include "common/particlesnapshot.h"
-#include "win32/displaylist.h"
 #define BILLBOARD_INDEX u32
 #define BILLBOARD_PARTICLES g_pParticleListData
 #define BILLBOARD_ADD(a, b) ((s32)((u32)(a) + (u32)(b)))

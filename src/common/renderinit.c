@@ -3,7 +3,6 @@
 
 #if TGR_BOSS_RALLY
 #include "common/screen.h"
-#include "win32/renderinit.h"
 
 #pragma push_macro("errno")
 #undef errno

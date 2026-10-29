@@ -16,9 +16,10 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "common/network.h"
 #endif
+#include "common/combine.h"
 #include "common/hudcanvas.h"
 #include "common/hudquad.h"
-#include "win32/render.h"
+#include "common/renderbackend.h"
 #else
 #include <PR/gu.h>
 #include <PR/os_libc.h>
