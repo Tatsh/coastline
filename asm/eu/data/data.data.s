@@ -2426,11 +2426,6 @@ dlabel g_aTrackDescriptors
     /* 739A8 802729A8 41A80000 */ .word 0x41A80000
     /* 739AC 802729AC 42200000 */ .word 0x42200000
     /* 739B0 802729B0 802A9038 */ .word g_szMountain
-enddlabel g_aTrackDescriptors
-
-nonmatching g_bSaveLoadIoComplete
-
-dlabel g_bSaveLoadIoComplete
     /* 739B4 802729B4 00000000 */ .word 0x00000000
     /* 739B8 802729B8 00000000 */ .word 0x00000000
     /* 739BC 802729BC 0020AA70 */ .word 0x0020AA70
@@ -2525,18 +2520,7 @@ dlabel g_bSaveLoadIoComplete
     /* 73B20 80272B20 41A00000 */ .word 0x41A00000
     /* 73B24 80272B24 41200000 */ .word 0x41200000
     /* 73B28 80272B28 42700000 */ .word 0x42700000
-enddlabel g_bSaveLoadIoComplete
-
-nonmatching D_80272B2C
-
-dlabel D_80272B2C
     /* 73B2C 80272B2C 802A9044 */ .word g_szCoastline
-enddlabel D_80272B2C
-
-nonmatching g_bSaveLoadDmaComplete
-
-.balign 8
-dlabel g_bSaveLoadDmaComplete
     /* 73B30 80272B30 00000000 */ .word 0x00000000
     /* 73B34 80272B34 00000000 */ .word 0x00000000
     /* 73B38 80272B38 0020D7D0 */ .word 0x0020D7D0
@@ -2631,12 +2615,6 @@ dlabel g_bSaveLoadDmaComplete
     /* 73C9C 80272C9C 41600000 */ .word 0x41600000
     /* 73CA0 80272CA0 41600000 */ .word 0x41600000
     /* 73CA4 80272CA4 42200000 */ .word 0x42200000
-enddlabel g_bSaveLoadDmaComplete
-
-nonmatching D_80272CA8
-
-.balign 8
-dlabel D_80272CA8
     /* 73CA8 80272CA8 802A9050 */ .word g_szStripMine
     /* 73CAC 80272CAC 00000000 */ .word 0x00000000
     /* 73CB0 80272CB0 00000000 */ .word 0x00000000
@@ -2732,11 +2710,6 @@ dlabel D_80272CA8
     /* 73E18 80272E18 41200000 */ .word 0x41200000
     /* 73E1C 80272E1C 00000000 */ .word 0x00000000
     /* 73E20 80272E20 41F00000 */ .word 0x41F00000
-enddlabel D_80272CA8
-
-nonmatching D_80272E24
-
-dlabel D_80272E24
     /* 73E24 80272E24 802A905C */ .word g_szJungle
     /* 73E28 80272E28 00000000 */ .word 0x00000000
     /* 73E2C 80272E2C 00000000 */ .word 0x00000000
@@ -2832,12 +2805,6 @@ dlabel D_80272E24
     /* 73F94 80272F94 41B00000 */ .word 0x41B00000
     /* 73F98 80272F98 41980000 */ .word 0x41980000
     /* 73F9C 80272F9C 41F00000 */ .word 0x41F00000
-enddlabel D_80272E24
-
-nonmatching D_80272FA0
-
-.balign 8
-dlabel D_80272FA0
     /* 73FA0 80272FA0 802A9064 */ .word g_szMirrorDesert
     /* 73FA4 80272FA4 00000010 */ .word 0x00000010
     /* 73FA8 80272FA8 00000000 */ .word 0x00000000
@@ -2933,11 +2900,6 @@ dlabel D_80272FA0
     /* 74110 80273110 41B00000 */ .word 0x41B00000
     /* 74114 80273114 41A80000 */ .word 0x41A80000
     /* 74118 80273118 42200000 */ .word 0x42200000
-enddlabel D_80272FA0
-
-nonmatching D_8027311C
-
-dlabel D_8027311C
     /* 7411C 8027311C 802A9074 */ .word g_szMirrorMountain
     /* 74120 80273120 00000010 */ .word 0x00000010
     /* 74124 80273124 00000000 */ .word 0x00000000
@@ -3033,12 +2995,6 @@ dlabel D_8027311C
     /* 7428C 8027328C 41A00000 */ .word 0x41A00000
     /* 74290 80273290 41200000 */ .word 0x41200000
     /* 74294 80273294 42700000 */ .word 0x42700000
-enddlabel D_8027311C
-
-nonmatching D_80273298
-
-.balign 8
-dlabel D_80273298
     /* 74298 80273298 802A9084 */ .word g_szMirrorCoastline
     /* 7429C 8027329C 00000010 */ .word 0x00000010
     /* 742A0 802732A0 00000000 */ .word 0x00000000
@@ -3134,11 +3090,6 @@ dlabel D_80273298
     /* 74408 80273408 41600000 */ .word 0x41600000
     /* 7440C 8027340C 41600000 */ .word 0x41600000
     /* 74410 80273410 42200000 */ .word 0x42200000
-enddlabel D_80273298
-
-nonmatching D_80273414
-
-dlabel D_80273414
     /* 74414 80273414 802A9098 */ .word g_szMirrorStripMine
     /* 74418 80273418 00000010 */ .word 0x00000010
     /* 7441C 8027341C 00000000 */ .word 0x00000000
@@ -3234,12 +3185,6 @@ dlabel D_80273414
     /* 74584 80273584 41200000 */ .word 0x41200000
     /* 74588 80273588 00000000 */ .word 0x00000000
     /* 7458C 8027358C 41F00000 */ .word 0x41F00000
-enddlabel D_80273414
-
-nonmatching D_80273590
-
-.balign 8
-dlabel D_80273590
     /* 74590 80273590 802A90AC */ .word g_szMirrorJungle
     /* 74594 80273594 00000010 */ .word 0x00000010
     /* 74598 80273598 00000000 */ .word 0x00000000
@@ -3335,7 +3280,7 @@ dlabel D_80273590
     /* 74700 80273700 41B00000 */ .word 0x41B00000
     /* 74704 80273704 41980000 */ .word 0x41980000
     /* 74708 80273708 41F00000 */ .word 0x41F00000
-enddlabel D_80273590
+enddlabel g_aTrackDescriptors
 
 nonmatching g_pszLoadAndGamewin
 
@@ -3787,53 +3732,53 @@ enddlabel D_80273D00
 nonmatching D_80273D04
 
 dlabel D_80273D04
-    /* 74D04 80273D04 80272B2C */ .word D_80272B2C
+    /* 74D04 80273D04 80272B2C */ .word g_aTrackDescriptors + 0x2F8
 enddlabel D_80273D04
 
 nonmatching D_80273D08
 
 .balign 8
 dlabel D_80273D08
-    /* 74D08 80273D08 80272CA8 */ .word D_80272CA8
+    /* 74D08 80273D08 80272CA8 */ .word g_aTrackDescriptors + 0x474
 enddlabel D_80273D08
 
 nonmatching g_pRaceStateGfxHead
 
 dlabel g_pRaceStateGfxHead
-    /* 74D0C 80273D0C 80272E24 */ .word D_80272E24
+    /* 74D0C 80273D0C 80272E24 */ .word g_aTrackDescriptors + 0x5F0
 enddlabel g_pRaceStateGfxHead
 
 nonmatching g_pRaceStateGfxTail
 
 .balign 8
 dlabel g_pRaceStateGfxTail
-    /* 74D10 80273D10 80272FA0 */ .word D_80272FA0
+    /* 74D10 80273D10 80272FA0 */ .word g_aTrackDescriptors + 0x76C
 enddlabel g_pRaceStateGfxTail
 
 nonmatching g_pRaceStateRdpHead
 
 dlabel g_pRaceStateRdpHead
-    /* 74D14 80273D14 8027311C */ .word D_8027311C
+    /* 74D14 80273D14 8027311C */ .word g_aTrackDescriptors + 0x8E8
 enddlabel g_pRaceStateRdpHead
 
 nonmatching g_pRaceStateRdpTail
 
 .balign 8
 dlabel g_pRaceStateRdpTail
-    /* 74D18 80273D18 80273298 */ .word D_80273298
+    /* 74D18 80273D18 80273298 */ .word g_aTrackDescriptors + 0xA64
 enddlabel g_pRaceStateRdpTail
 
 nonmatching g_pRaceStateOpaqueHead
 
 dlabel g_pRaceStateOpaqueHead
-    /* 74D1C 80273D1C 80273414 */ .word D_80273414
+    /* 74D1C 80273D1C 80273414 */ .word g_aTrackDescriptors + 0xBE0
 enddlabel g_pRaceStateOpaqueHead
 
 nonmatching g_pRaceStateTransparentHead
 
 .balign 8
 dlabel g_pRaceStateTransparentHead
-    /* 74D20 80273D20 80273590 */ .word D_80273590
+    /* 74D20 80273D20 80273590 */ .word g_aTrackDescriptors + 0xD5C
 enddlabel g_pRaceStateTransparentHead
 
 nonmatching g_pRaceStateGfxPtr
@@ -36485,17 +36430,11 @@ nonmatching g_texDecalFont
 .balign 8
 dlabel g_texDecalFont
     /* 90A20 8028FA20 00000000 */ .word 0x00000000
-enddlabel g_texDecalFont
-
-nonmatching D_8028FA24
-
-/* Automatically generated and unreferenced pad */
-dlabel D_8028FA24
     /* 90A24 8028FA24 001C9C90 */ .word 0x001C9C90
     /* 90A28 8028FA28 001C9FE0 */ .word 0x001C9FE0
     /* 90A2C 8028FA2C 04000000 */ .word 0x04000000
     /* 90A30 8028FA30 00000320 */ .word 0x00000320
-enddlabel D_8028FA24
+enddlabel g_texDecalFont
 
 nonmatching D_8028FA34
 
