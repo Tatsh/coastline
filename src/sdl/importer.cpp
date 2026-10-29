@@ -17,6 +17,9 @@
 #include <nlohmann/json.hpp>
 
 #include "assetchain.h"
+#include "cartridge/eu.h"
+#include "cartridge/jp.h"
+#include "cartridge/us.h"
 #include "sdl/carmodel.h"
 #include "sdl/ghostfile.h"
 #include "sdl/indexedimage.h"
@@ -35,14 +38,15 @@ constexpr std::uint32_t SAMPLES_PER_SECTOR = RAW_SECTOR / 4;
 struct Release {
     RomRelease release;
     const char *sha1;
-    const char *directory;    // The directory of the release under n64/ in the data.
-    std::uint32_t assetStart; // Where the assets start on the cartridge.
+    const char *directory;                   // The directory of the release under n64/ in the data.
+    std::span<const unsigned char> manifest; // The assets, as tools/sdl/cartridgemanifest.py
+                                             // writes them.
 };
 
-constexpr std::array<Release, 3> RELEASES{{
-    {RomRelease::Usa, "bfc51f086ebdb78904dc24ad0c3a2d946e26d022", "usa", 0xad400},
-    {RomRelease::Jpn, "e0415b87c5a5b69ac581e79137406bdaa79b354a", "jpn", 0xadb30},
-    {RomRelease::Eur, "9fae5d98fe3464f00d59034690df90118646eb95", "eur", 0xaf0f0},
+const std::array<Release, 3> RELEASES{{
+    {RomRelease::Usa, "bfc51f086ebdb78904dc24ad0c3a2d946e26d022", "usa", CARTRIDGE_US},
+    {RomRelease::Jpn, "e0415b87c5a5b69ac581e79137406bdaa79b354a", "jpn", CARTRIDGE_JP},
+    {RomRelease::Eur, "9fae5d98fe3464f00d59034690df90118646eb95", "eur", CARTRIDGE_EU},
 }};
 
 // The main segment: its code and data at this offset of the cartridge, up to the end of its
@@ -57,51 +61,65 @@ bool WriteBytes(const std::filesystem::path &path, std::span<const std::uint8_t>
     return static_cast<bool>(out);
 }
 
-// Write the main segment and every asset of a cartridge, inflated, for CartridgeData::Load(). An
-// asset is a header of its length and its inflated length, then zlib chunks, each after its
-// length; the data between assets is raw and is written as it is.
-bool ExtractCartridge(std::span<const std::uint8_t> rom,
-                      std::uint32_t assetStart,
-                      const std::filesystem::path &directory) {
+// Write the main segment and every asset of the manifest of a cartridge as <name>.bin, a zlib
+// asset inflated. The manifest covers every byte from its first asset to the end of the image,
+// and the bytes of padding must be zero.
+std::optional<std::string> ExtractCartridge(std::span<const std::uint8_t> rom,
+                                            std::span<const unsigned char> manifest,
+                                            const std::filesystem::path &directory) {
     if (rom.size() < SEGMENT_ROM + SEGMENT_SIZE) {
-        return false;
+        return "the image is too short";
     }
     std::error_code error;
-    std::filesystem::create_directories(directory / "assets", error);
+    std::filesystem::create_directories(directory, error);
     if (!WriteBytes(directory / "segment.bin", rom.subspan(SEGMENT_ROM, SEGMENT_SIZE))) {
-        return false;
+        return std::format("{} cannot be written", (directory / "segment.bin").string());
     }
-    auto big32 = [&rom](std::size_t at) {
-        return static_cast<std::uint32_t>(rom[at]) << 24 |
-               static_cast<std::uint32_t>(rom[at + 1]) << 16 |
-               static_cast<std::uint32_t>(rom[at + 2]) << 8 | rom[at + 3];
-    };
-    auto end = static_cast<std::uint32_t>(rom.size());
-    std::uint32_t rawStart = assetStart;
-    bool written = true;
-    auto writeRaw = [&](std::uint32_t rawEnd) {
-        if (rawEnd > rawStart) {
-            written &= WriteBytes(directory / "assets" / std::format("{:06x}.raw", rawStart),
-                                  rom.subspan(rawStart, rawEnd - rawStart));
+    std::istringstream lines(std::string(manifest.begin(), manifest.end()));
+    std::optional<std::size_t> position;
+    std::string line;
+    while (std::getline(lines, line)) {
+        std::istringstream fields(line);
+        std::size_t offset = 0;
+        std::size_t size = 0;
+        std::string kind;
+        std::string name;
+        if (!(fields >> std::hex >> offset >> std::dec >> size >> kind >> name) ||
+            (position && offset != *position) || offset > rom.size() ||
+            size > rom.size() - offset) {
+            return std::format("the manifest does not fit the image at '{}'", line);
         }
-    };
-    for (std::uint32_t position = assetStart; position + 12 < end; position += 2) {
-        std::uint32_t total = big32(position);
-        if (total < 16 || total > end - position || big32(position + 4) == 0 ||
-            !Tools::Common::hasZlibHeader(rom, position + 12)) {
+        position = offset + size;
+        auto bytes = rom.subspan(offset, size);
+        if (name == "padding") {
+            if (std::ranges::any_of(bytes, [](std::uint8_t byte) { return byte != 0; })) {
+                return std::format("the padding at {:#x} is not zero", offset);
+            }
             continue;
         }
-        auto data = Tools::Common::decompress(rom.subspan(position, total));
-        if (!data) {
-            continue;
+        std::vector<std::uint8_t> inflated;
+        if (kind == "zlib") {
+            auto data = Tools::Common::decompress(bytes);
+            if (size < 4 || (static_cast<std::size_t>(bytes[0]) << 24 | bytes[1] << 16 |
+                             bytes[2] << 8 | bytes[3]) != size) {
+                return std::format("{} at {:#x} is not an asset of {} bytes", name, offset, size);
+            }
+            if (!data) {
+                return std::format("{} at {:#x} does not inflate", name, offset);
+            }
+            inflated = std::move(*data);
+            bytes = inflated;
         }
-        writeRaw(position);
-        written &= WriteBytes(directory / "assets" / std::format("{:06x}.bin", position), *data);
-        position += Tools::Common::padToEven(total) - 2;
-        rawStart = position + 2;
+        auto path = directory / (name + ".bin");
+        std::filesystem::create_directories(path.parent_path(), error);
+        if (!WriteBytes(path, bytes)) {
+            return std::format("{} cannot be written", path.string());
+        }
     }
-    writeRaw(end);
-    return written;
+    if (position != rom.size()) {
+        return "the manifest ends before the end of the image";
+    }
+    return std::nullopt;
 }
 
 std::optional<std::vector<std::uint8_t>> ReadWholeFile(const std::filesystem::path &path) {
@@ -600,8 +618,9 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     }
     const Release &known = *std::ranges::find(RELEASES, *release, &Release::release);
     auto destination = dataDirectory / "n64" / known.directory;
-    if (!ExtractCartridge(*bytes, known.assetStart, destination)) {
-        return std::unexpected(std::format("{} cannot be written.", destination.string()));
+    if (auto failure = ExtractCartridge(*bytes, known.manifest, destination)) {
+        return std::unexpected(
+            std::format("{} cannot be imported ({}).", image.string(), *failure));
     }
     std::error_code error;
     if (*release == RomRelease::Usa) {

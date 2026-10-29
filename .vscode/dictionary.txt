@@ -120,6 +120,7 @@ carmodel
 carmt
 carphysics
 carselect
+cartridgemanifest
 cartrominit
 carwnoshad
 carwshad
@@ -237,6 +238,7 @@ decaleditor
 declear
 decleared
 decomp
+decompressobj
 denumret
 depthbuffer
 desrttr
@@ -403,6 +405,7 @@ excmask
 exhaustpos
 exhaustspawn
 exitmenuloop
+extern
 extraout
 fadeupdate
 familia

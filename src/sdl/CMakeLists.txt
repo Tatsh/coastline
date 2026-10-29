@@ -41,6 +41,23 @@ foreach(_shader tl.vert tl.frag)
 endforeach()
 add_custom_target(coastline_shaders DEPENDS ${_shader_headers})
 
+# The manifests of the assets of each cartridge, embedded for the import.
+set(_manifest_headers)
+foreach(_release eu jp us)
+  string(TOUPPER "${_release}" _name)
+  set(_source "${CMAKE_CURRENT_SOURCE_DIR}/cartridge/${_release}.txt")
+  set(_header "${CMAKE_CURRENT_BINARY_DIR}/cartridge/${_release}.h")
+  add_custom_command(
+    OUTPUT "${_header}"
+    COMMAND "${CMAKE_COMMAND}" -DINPUT=${_source} -DOUTPUT=${_header} -DNAME=CARTRIDGE_${_name} -P
+            "${CMAKE_SOURCE_DIR}/cmake/embed.cmake"
+    DEPENDS "${_source}" "${CMAKE_SOURCE_DIR}/cmake/embed.cmake"
+    COMMENT "Embedding the manifest of the ${_release} cartridge"
+    VERBATIM)
+  list(APPEND _manifest_headers "${_header}")
+endforeach()
+add_custom_target(coastline_manifests DEPENDS ${_manifest_headers})
+
 # The SHA-1 and the asset chains of the host tools read the cartridge images. The music player of
 # the Nintendo 64 release is shared C.
 add_library(
@@ -64,7 +81,7 @@ target_include_directories(coastline_sdl PRIVATE "${CMAKE_SOURCE_DIR}/src"
                                                  "${CMAKE_SOURCE_DIR}/src/libultra/include"
                                                  "${CMAKE_SOURCE_DIR}/tools/common"
                                                  "${CMAKE_CURRENT_BINARY_DIR}")
-add_dependencies(coastline_sdl coastline_shaders)
+add_dependencies(coastline_sdl coastline_shaders coastline_manifests)
 target_link_libraries(coastline_sdl PRIVATE FLAC::FLAC nlohmann_json::nlohmann_json ZLIB::ZLIB)
 # A reconstructed routine retains the parameters of the original, used or not.
 set_source_files_properties("${CMAKE_SOURCE_DIR}/src/common/audio.c" PROPERTIES COMPILE_OPTIONS

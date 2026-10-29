@@ -152,6 +152,7 @@
         'asm/**',
         'docs/*.tags',
         'progress/**',
+        'src/sdl/cartridge/*.txt',
         'tools/splat/symbol_addrs.*.txt',
       ],
     },
