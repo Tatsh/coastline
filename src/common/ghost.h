@@ -9,7 +9,7 @@
 
 #include "common/rigidbody.h"
 #include "common/vecmath.h"
-#include "vehicle.h"
+#include "common/vehicle.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -16,6 +16,7 @@
 #include "common/settings.h"
 #include "common/strings.h"
 #include "common/trackselect.h"
+#include "common/vehicle.h"
 #include "common/vehicleaccess.h"
 #include "common/vehiclechoice.h"
 #include "common/vehiclephysics.h"
@@ -25,7 +26,6 @@
 #include "paintshop.h"
 #include "render.h"
 #include "sound.h"
-#include "vehicle.h"
 
 void AiVehicleControllerCallback(Vehicle *vehicle) {
     vehicle->ComputeAiVehicleInput();

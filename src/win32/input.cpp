@@ -19,8 +19,8 @@
 #include "common/playerinput.h"
 #include "common/rallyconfig.h"
 #include "common/strings.h"
+#include "common/vehicle.h"
 #include "common/vehicleaccess.h"
-#include "vehicle.h"
 #include "win32/app.h"
 #include "win32/directplay.h"
 #if TGR_PLATFORM != TGR_PLATFORM_SDL

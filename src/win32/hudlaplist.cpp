@@ -6,10 +6,10 @@
 #include "common/laptime.h"
 #include "common/settings.h"
 #include "common/text.h"
+#include "common/vehicle.h"
 #include "common/vehicleaccess.h"
 #include "common/vehiclecount.h"
 #include "render.h"
-#include "vehicle.h"
 #include "win32/hud.h"
 #include "win32/hudcanvas.h"
 

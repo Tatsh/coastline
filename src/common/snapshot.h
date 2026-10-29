@@ -9,7 +9,7 @@
 #include "common/particlesnapshot.h"
 #include "common/racerslot.h"
 #include "common/snapshotops.h"
-#include "vehicle.h"
+#include "common/vehicle.h"
 
 enum { FRAME_SNAPSHOT_COUNT = 5 };
 

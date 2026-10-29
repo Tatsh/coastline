@@ -7,7 +7,7 @@
  */
 
 #include "common/profile.h"
-#include "vehicle.h"
+#include "common/vehicle.h"
 
 class MenuItemList;
 

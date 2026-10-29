@@ -12,6 +12,7 @@
 // The headers below need the types of windows.h.
 #include <objbase.h>
 
+#include "common/bossrallyvehicle.h"
 #include "common/instantreplay.h"
 #include "common/laps.h"
 #include "common/pause.h"
@@ -29,7 +30,6 @@
 #include "win32/netstream.h"
 #include "win32/sound.h"
 #include "win32/timer.h"
-#include "win32/vehicle.h"
 
 namespace {
 /**

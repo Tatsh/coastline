@@ -6,10 +6,10 @@
 #include "common/soundeffect.h"
 #include "common/soundmix.h"
 #include "common/soundpan.h"
+#include "common/vehicle.h"
 #include "common/vehicleaccess.h"
 #include "common/vehiclecount.h"
 #include "common/vehiclesound.h"
-#include "vehicle.h"
 #include "win32/input.h"
 #include "win32/sound.h"
 

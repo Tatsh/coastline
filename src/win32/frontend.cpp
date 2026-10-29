@@ -32,7 +32,7 @@
 #include "common/strings.h"
 #include "common/trackmenuitem.h"
 #include "common/trackselect.h"
-#include "vehicle.h"
+#include "common/vehicle.h"
 #include "win32/app.h"
 #include "win32/buildinfo.h"
 #include "win32/directplay.h"

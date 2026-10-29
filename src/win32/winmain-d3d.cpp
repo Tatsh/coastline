@@ -18,7 +18,7 @@
 #include "common/settings.h"
 #include "common/strings.h"
 #include "common/timing.h"
-#include "vehicle.h"
+#include "common/vehicle.h"
 #include "win32/app.h"
 #include "win32/buildinfo.h"
 #include "win32/d3d/renderer.h"

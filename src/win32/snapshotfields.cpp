@@ -11,7 +11,7 @@
 #include "common/soundsource.h"
 #include "common/system.h"
 #include "common/vecmath.h"
-#include "vehicle.h"
+#include "common/vehicle.h"
 #include "win32/sound.h"
 
 namespace {
