@@ -68,6 +68,8 @@ using Matrix = std::array<std::array<float, 4>, 4>;
 struct BakedTexture {
     coastline::TextureHandle handle = 0; /*!< The texture of the renderer. */
     std::uint32_t lastFrame = 0;         /*!< The frame the texture was drawn last in. */
+    int width = 0;                       /*!< The width in texels. */
+    int height = 0;                      /*!< The height in texels. */
 };
 
 struct Light {
@@ -81,6 +83,8 @@ struct RdpState {
     int lightCount = 1;
     std::array<std::uint8_t, kTmemBytes> tmem{};
     std::array<std::uint16_t, 256> tlut{};
+    bool textureMemoryChanged = true;
+    std::uint64_t textureMemoryHash = 0;
     std::array<Tile, 8> tiles{};
     const std::uint8_t *image = nullptr;
     int imageSize = 0;
@@ -451,18 +455,49 @@ float ScreenScale() {
     return g_dwScreenScaleShift ? 1.0f : 2.0f;
 }
 
-// A texture of the renderer for pixels drawn this frame, reused while its pixels do not change.
-coastline::TextureHandle
-BakedTextureFor(const std::vector<std::uint8_t> &rgba, std::uint32_t width, std::uint32_t height) {
-    std::uint64_t hash = 0xcbf29ce484222325ull ^ (static_cast<std::uint64_t>(width) << 32 | height);
-    for (std::uint8_t byte : rgba) {
-        hash = (hash ^ byte) * 0x100000001b3ull;
+constexpr std::uint64_t kHashSeed = 0xcbf29ce484222325ull;
+
+std::uint64_t HashBytes(std::uint64_t hash, const void *data, std::size_t size) {
+    const auto *bytes = static_cast<const std::uint8_t *>(data);
+    for (std::size_t i = 0; i < size; ++i) {
+        hash = (hash ^ bytes[i]) * 0x100000001b3ull;
     }
-    auto found = g_rdp.textures.find(hash);
-    if (found != g_rdp.textures.end()) {
-        found->second.lastFrame = g_rdp.frame;
-        return found->second.handle;
+    return hash;
+}
+
+template <typename T>
+std::uint64_t Hash(std::uint64_t hash, const T &value) {
+    return HashBytes(hash, &value, sizeof(value));
+}
+
+// The hash of the texture memory and the palettes, computed again only after a load.
+std::uint64_t TextureMemoryHash() {
+    if (g_rdp.textureMemoryChanged) {
+        g_rdp.textureMemoryHash =
+            HashBytes(HashBytes(kHashSeed, g_rdp.tmem.data(), g_rdp.tmem.size()),
+                      g_rdp.tlut.data(),
+                      g_rdp.tlut.size() * sizeof(g_rdp.tlut[0]));
+        g_rdp.textureMemoryChanged = false;
     }
+    return g_rdp.textureMemoryHash;
+}
+
+// The texture made for the inputs a key hashes, or null when none is made yet.
+const BakedTexture *FindBakedTexture(std::uint64_t key) {
+    auto found = g_rdp.textures.find(key);
+    if (found == g_rdp.textures.end()) {
+        return nullptr;
+    }
+    found->second.lastFrame = g_rdp.frame;
+    return &found->second;
+}
+
+// A texture of the renderer for pixels made from the inputs a key hashes, reused while they do not
+// change.
+const BakedTexture &StoreBakedTexture(std::uint64_t key,
+                                      const std::vector<std::uint8_t> &rgba,
+                                      std::uint32_t width,
+                                      std::uint32_t height) {
     coastline::TextureHandle handle = 0;
     if (!g_rdp.idleHandles.empty()) {
         handle = g_rdp.idleHandles.back();
@@ -471,8 +506,8 @@ BakedTextureFor(const std::vector<std::uint8_t> &rgba, std::uint32_t width, std:
     } else {
         handle = g_renderer->CreateTexture(width, height, rgba, true);
     }
-    g_rdp.textures[hash] = {handle, g_rdp.frame};
-    return handle;
+    return g_rdp.textures[key] = {
+               handle, g_rdp.frame, static_cast<int>(width), static_cast<int>(height)};
 }
 
 void RetireIdleTextures() {
@@ -541,6 +576,33 @@ void DrawTextureRectangle(const GbiCommand *command, bool flip) {
     if (width <= 0 || height <= 0 || width > 2048 || height > 2048) {
         return;
     }
+    // Everything the pixels of the rectangle are made from.
+    std::uint64_t key = Hash(kHashSeed, TextureMemoryHash());
+    key = Hash(key, g_rdp.tiles[static_cast<std::size_t>(tile)]);
+    key = Hash(key, g_rdp.tiles[static_cast<std::size_t>(tile + 1) & 7]);
+    for (const std::uint32_t word : {command[0].w0,
+                                     command[0].w1,
+                                     command[1].w1,
+                                     command[2].w1,
+                                     g_rdp.combineHigh,
+                                     g_rdp.combineLow,
+                                     g_rdp.otherHigh,
+                                     g_rdp.otherLow,
+                                     static_cast<std::uint32_t>(flip)}) {
+        key = Hash(key, word);
+    }
+    key = Hash(Hash(Hash(Hash(key, g_rdp.primitive), g_rdp.environment), g_rdp.blend),
+               g_rdp.primitiveLodFraction);
+    ApplyStates(true, false);
+    if (const BakedTexture *baked = FindBakedTexture(key)) {
+        g_renderer->SetTexture(baked->handle);
+        DrawQuad(upperLeftX,
+                 upperLeftY,
+                 upperLeftX + static_cast<float>(width),
+                 upperLeftY + static_cast<float>(height),
+                 0xffffffff);
+        return;
+    }
     std::vector<std::uint8_t> rgba(static_cast<std::size_t>(width) * height * 4);
     bool opaque = !BlendsWithMemory() && !AlphaCompares() && !copy;
     Color white{1, 1, 1, 1};
@@ -564,9 +626,10 @@ void DrawTextureRectangle(const GbiCommand *command, bool flip) {
             out[3] = static_cast<std::uint8_t>(packed >> 24);
         }
     }
-    ApplyStates(true, false);
-    g_renderer->SetTexture(BakedTextureFor(
-        rgba, static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)));
+    g_renderer->SetTexture(
+        StoreBakedTexture(
+            key, rgba, static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height))
+            .handle);
     DrawQuad(upperLeftX,
              upperLeftY,
              upperLeftX + static_cast<float>(width),
@@ -618,6 +681,7 @@ void LoadBlock(const GbiCommand *command) {
         g_rdp.image +
         (static_cast<std::size_t>(upperLeftT) * g_rdp.imageWidth + upperLeftS) * bits / 8;
     std::memcpy(&g_rdp.tmem[start], source, bytes);
+    g_rdp.textureMemoryChanged = true;
     if (dxt == 0) {
         return;
     }
@@ -652,6 +716,7 @@ void LoadTile(const GbiCommand *command) {
             g_rdp.image +
             (static_cast<std::size_t>(upperLeftT + row) * g_rdp.imageWidth + upperLeftS) * bits / 8;
         std::memcpy(&g_rdp.tmem[start], source, count);
+        g_rdp.textureMemoryChanged = true;
         if (row & 1) {
             for (std::size_t word = 0; word + 8 <= count; word += 8) {
                 std::uint8_t *at = &g_rdp.tmem[start + word];
@@ -670,6 +735,7 @@ void LoadPalette(const GbiCommand *command) {
     }
     for (int i = 0; i < count && first + i < 256; ++i) {
         g_rdp.tlut[static_cast<std::size_t>(first + i)] = ReadBigEndianHalf(g_rdp.image + i * 2);
+        g_rdp.textureMemoryChanged = true;
     }
 }
 
@@ -841,6 +907,11 @@ coastline::TextureHandle TileTexture(int index, int &width, int &height) {
     height = tile.maskT ? 1 << tile.maskT : ((tile.lowerRightT - tile.upperLeftT) >> 2) + 1;
     width = std::clamp(width, 1, 1024);
     height = std::clamp(height, 1, 1024);
+    std::uint64_t key = Hash(Hash(kHashSeed, TextureMemoryHash()), tile);
+    key = Hash(key, g_rdp.otherHigh & (3u << G_MDSFT_TEXTLUT));
+    if (const BakedTexture *baked = FindBakedTexture(key)) {
+        return baked->handle;
+    }
     std::vector<std::uint8_t> rgba(static_cast<std::size_t>(width) * height * 4);
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
@@ -852,8 +923,9 @@ coastline::TextureHandle TileTexture(int index, int &width, int &height) {
             out[3] = static_cast<std::uint8_t>(packed >> 24);
         }
     }
-    return BakedTextureFor(
-        rgba, static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height));
+    return StoreBakedTexture(
+               key, rgba, static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height))
+        .handle;
 }
 
 void DrawTriangle(std::size_t a, std::size_t b, std::size_t c) {
