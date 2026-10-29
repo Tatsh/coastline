@@ -3,8 +3,10 @@
 // Parse the SDK error fields before Windows headers define the errno macro.
 #include <PR/os_cont.h>
 
+#include "common/combine.h"
 #include "common/displaylistptr.h"
 #include "common/rallyconfig.h"
+#include "common/renderbackend.h"
 #include "common/settings.h"
 #include "common/shadowbuffers.h"
 #include "common/system.h"
@@ -13,7 +15,6 @@
 #include "common/vehicle.h"
 #include "common/vehiclecount.h"
 #include "common/weather.h"
-#include "win32/render.h"
 
 namespace {
 struct SkidMarkSegment {

@@ -7,7 +7,6 @@
 #include "common/snapshot.h"
 #include "common/system.h"
 #include "common/timing.h"
-#include "render.h"
 
 namespace {
 /**

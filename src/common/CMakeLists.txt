@@ -152,11 +152,13 @@ else()
             hud.c
             hudassets.c
             hudcanvas.c
+            hudlaplist.cpp
             hudquad.c
             particlesnapshot.c
             physicsdata.c
             raceglobals.c
             racerslot.cpp
+            racescreen.cpp
             reflectiondata.c
             settings.c
             shadowclip.cpp
@@ -167,7 +169,9 @@ else()
             terrain.c
             texturesampling.c
             textureworkspace.c
+            trackanimation.cpp
             trackmenudata.c
+            trackskidmarks.cpp
             vehicle.cpp
             visibilitydata.c)
   # The PC port compiles these sources as C++, as the Windows libraries were built.

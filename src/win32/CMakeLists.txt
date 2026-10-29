@@ -28,7 +28,6 @@ add_library(
   gamesession.cpp
   gamestate.cpp
   ghost.cpp
-  hudlaplist.cpp
   hudnetwork.cpp
   input.cpp
   inputdefaults.cpp
@@ -40,7 +39,6 @@ add_library(
   podarchive.cpp
   racepacing.c
   racercolor.cpp
-  racescreen.cpp
   racesound.cpp
   rallyconfig.cpp
   render.cpp
@@ -56,9 +54,7 @@ add_library(
   strings.c
   texturescan.cpp
   timer.c
-  trackanimation.cpp
   trackload.cpp
-  trackskidmarks.cpp
   tracktexture.cpp
   vehiclemodelload.c
   vehiclesetup.cpp

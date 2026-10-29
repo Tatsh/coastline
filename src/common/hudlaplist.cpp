@@ -10,7 +10,6 @@
 #include "common/vehicle.h"
 #include "common/vehicleaccess.h"
 #include "common/vehiclecount.h"
-#include "render.h"
 
 s32 g_bHudShowLapTimes = 1;
 

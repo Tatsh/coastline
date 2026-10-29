@@ -41,12 +41,12 @@ set(COASTLINE_PC_CXX_SOURCES
     common/vehiclestatus.c common/vehicletrackpos.c common/vehiclevisibility.c common/visibleinstances.c common/volumecontrols.c
     common/wheelrender.c win32/assetfile.cpp win32/gamestate.cpp win32/rallyconfig.cpp
     win32/configfile.cpp win32/displaylist.cpp win32/frametimer.cpp win32/gameinit.cpp
-    win32/gamesession.cpp win32/ghost.cpp win32/hudlaplist.cpp win32/hudnetwork.cpp
+    win32/gamesession.cpp win32/ghost.cpp common/hudlaplist.cpp win32/hudnetwork.cpp
     win32/inputdefaults.cpp win32/modelrelocation.cpp win32/podarchive.cpp win32/racercolor.cpp
-    common/racerslot.cpp win32/racescreen.cpp win32/racesound.cpp win32/render.cpp
+    common/racerslot.cpp common/racescreen.cpp win32/racesound.cpp win32/render.cpp
     win32/renderdefaults.cpp win32/runtimebuffers.cpp win32/season.cpp common/shadowclip.cpp
     common/snapshot.cpp win32/snapshotfields.cpp win32/snapshotinterpolation.cpp
-    win32/texturescan.cpp win32/trackanimation.cpp win32/trackload.cpp win32/trackskidmarks.cpp
+    win32/texturescan.cpp common/trackanimation.cpp win32/trackload.cpp common/trackskidmarks.cpp
     win32/tracktexture.cpp common/vehicle.cpp win32/vehiclesetup.cpp)
 list(TRANSFORM COASTLINE_PC_C_SOURCES PREPEND "${_src}/")
 list(TRANSFORM COASTLINE_PC_CXX_SOURCES PREPEND "${_src}/")
