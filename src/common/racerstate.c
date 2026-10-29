@@ -8,7 +8,7 @@
 #include "common/vehiclestatus.h"
 
 #if TGR_BOSS_RALLY
-#include "win32/input.h"
+#include "common/inputpoll.h"
 #define VEHICLE_RACE_CALL(vehicle, method) ((vehicle)->method())
 #define RACER_RECIPROCAL(value) ((f32)(1.0L / (value)))
 

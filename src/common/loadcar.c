@@ -1,7 +1,7 @@
 #include "common/vehiclemodel.h"
 
 #if TGR_BOSS_RALLY
-#include "win32/app.h"
+#include "common/fatalerror.h"
 #else
 #include <string.h>
 

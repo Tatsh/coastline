@@ -27,15 +27,15 @@
 #include "common/weather.h"
 
 #if TGR_BOSS_RALLY
+#include "common/frameclock.h"
 #include "common/ghost.h"
+#include "common/inputpoll.h"
 #include "common/racepacing.h"
 #include "common/racesound.h"
 #include "common/settings.h"
 #include "common/snapshot.h"
 #include "win32/directplay.h"
-#include "win32/frametimer.h"
 #include "win32/hud.h"
-#include "win32/input.h"
 #include "win32/sound.h"
 #else
 #include "common/audiomix.h"

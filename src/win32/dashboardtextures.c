@@ -4,11 +4,11 @@
 
 #include <common/hud.h>
 
+#include "common/fatalerror.h"
 #include "common/strings.h"
 #include "common/vehiclemodel.h"
 #include "common/weather.h"
 #include "renderbackend.h"
-#include "win32/fatalerror.h"
 
 void InitializeDashboardTextures(void) {
     for (s32 index = 0; index < g_dwNumViewports; index++) {

@@ -1313,9 +1313,9 @@ void UpdateForceFeedbackForce(int bReduceForce, int bEnableForce, int nForce) {
     }
 }
 
-void SetForceFeedbackDirection(LONG lDirection) {
+void SetForceFeedbackDirection(int nDirection) {
     if (IsForceFeedbackInUse()) {
-        g_adwForceFeedbackDirection[0] = lDirection;
+        g_adwForceFeedbackDirection[0] = nDirection;
     }
 }
 

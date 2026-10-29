@@ -12,11 +12,11 @@
 #include "common/volumecontrols.h"
 
 #if TGR_BOSS_RALLY
+#include "common/inputpoll.h"
+#include "common/session.h"
 #include "common/settings.h"
 #include "common/snapshot.h"
-#include "win32/app.h"
 #include "win32/directplay.h"
-#include "win32/input.h"
 #include "win32/sound.h"
 #endif
 

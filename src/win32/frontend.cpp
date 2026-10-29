@@ -19,6 +19,7 @@
 #include <PR/os_cont.h>
 #pragma pop_macro("errno")
 
+#include "common/buildinfo.h"
 #include "common/configfile.h"
 #include "common/game.h"
 #include "common/ghost.h"
@@ -34,7 +35,6 @@
 #include "common/trackselect.h"
 #include "common/vehicle.h"
 #include "win32/app.h"
-#include "win32/buildinfo.h"
 #include "win32/directplay.h"
 #include "win32/input.h"
 #include "win32/sound.h"

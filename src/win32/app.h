@@ -15,8 +15,9 @@
 #include <windows.h>
 #endif
 
+#include "common/fatalerror.h"
 #include "common/screen.h"
-#include "win32/fatalerror.h"
+#include "common/session.h"
 
 /**
  * Exit code RallyMain() returns to the launcher.
@@ -33,14 +34,6 @@ extern int g_dwAppExitCode;
  * @ghidraAddress BRGlide: 0x10b73540
  */
 extern char g_szInstallDirectory[];
-
-/**
- * Path of BossRally.cfg, built from g_szInstallDirectory.
- *
- * @ghidraAddress BRD3D: 0x10b4fbe8
- * @ghidraAddress BRGlide: 0x10b72f48
- */
-extern char g_szConfigFilePath[];
 
 /**
  * Arguments of WinMain() as the launcher passed them to RallyMain(). Only the Glide library
@@ -118,15 +111,6 @@ extern int g_dwActivateMinimized;
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/**
- * Release every subsystem of the game and end the process.
- *
- * @param nExitCode The exit code of the process.
- * @ghidraAddress BRD3D: 0x10038f30
- * @ghidraAddress BRGlide: 0x100325b0
- */
-[[noreturn]] void ShutdownApplication(int nExitCode);
 
 /** The states of the game, in the order of g_apfnGameStateHandlers. */
 enum {
@@ -246,13 +230,6 @@ bool OpenBossRallyPodAndInit(void);
 void ShowGlideSplashImage(const char *pszPath, int nChecksum);
 #endif /* TGR_RENDERER == TGR_RENDERER_GLIDE */
 
-/**
- * Free the colour buffers of each racer.
- *
- * @ghidraAddress BRD3D: 0x1002c4a0
- * @ghidraAddress BRGlide: 0x10019a10
- */
-void FreeAllRacerColorPanels(void);
 #ifdef __cplusplus
 }
 #endif
@@ -548,15 +525,6 @@ int DestroyMainWindow(void);
  * @ghidraAddress BRGlide: 0x1001cf80
  */
 int DispatchGameStateFrame(void);
-
-/**
- * Whether the front end is up. MenuScreen::ShutdownFrontEnd() clears it, notices of network play
- * are posted only while it is set, and NullStub() is called after the textures are loaded again.
- *
- * @ghidraAddress BRD3D: 0x100ac300
- * @ghidraAddress BRGlide: 0x100abaa0
- */
-extern int g_dwNullStubEnable;
 
 /**
  * Query the installed DirectX version by creating its objects in turn.

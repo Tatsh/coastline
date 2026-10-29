@@ -19,10 +19,10 @@
 #include <string.h>
 
 #include "common/ghost.h"
+#include "common/inputpoll.h"
 #include "common/settings.h"
 #include "common/strings.h"
 #include "win32/directplay.h"
-#include "win32/input.h"
 #else
 #include <PR/os_libc.h>
 

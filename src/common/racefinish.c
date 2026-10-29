@@ -17,8 +17,8 @@
 #include "common/gameinit.h"
 #include "common/rallyconfig.h"
 #include "common/season.h"
+#include "common/session.h"
 #include "common/snapshot.h"
-#include "win32/app.h"
 #include "win32/sound.h"
 #else
 #include "common/audio.h"

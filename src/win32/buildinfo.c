@@ -1,4 +1,4 @@
-#include "win32/buildinfo.h"
+#include "common/buildinfo.h"
 
 #include <string.h>
 

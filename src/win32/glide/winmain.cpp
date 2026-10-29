@@ -11,6 +11,7 @@
 #include <glide.h>
 #include <objbase.h>
 
+#include "common/buildinfo.h"
 #include "common/instantreplay.h"
 #include "common/laps.h"
 #include "common/pause.h"
@@ -21,7 +22,6 @@
 #include "common/timing.h"
 #include "common/vehicle.h"
 #include "win32/app.h"
-#include "win32/buildinfo.h"
 #include "win32/directplay.h"
 #include "win32/frametimer.h"
 #include "win32/frontend.h"
