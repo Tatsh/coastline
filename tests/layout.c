@@ -17,6 +17,19 @@
 #include "racemenu.h"
 #include "sprite.h"
 
+#ifdef __sgi
+/*
+ * IDO is C89, where a condition that fails gives a bit-field of a negative width, which IDO
+ * rejects. An array of a negative size is only a warning to IDO.
+ */
+#define LAYOUT_JOIN(a, b) a##b
+#define LAYOUT_NAME(line) LAYOUT_JOIN(layout_check_, line)
+#define _Static_assert(condition, message)                                                         \
+    typedef struct {                                                                               \
+        int field : (condition) ? 1 : -1;                                                          \
+    } LAYOUT_NAME(__LINE__)
+#endif
+
 /* The layouts the physics reads, against the offsets in the disassembly. */
 
 _Static_assert(sizeof(RigidBody) == 0x208, "body");

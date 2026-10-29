@@ -1,5 +1,8 @@
 #include <ultra64.h>
 
+/* Code IDO compiles calls the routines of ll.c for 64-bit division, and none of these. */
+#ifndef __sgi
+
 /*
  * GCC calls these for 64-bit division under the 32-bit ABI. The software versions of libgcc are
  * several kilobytes, while the VR4300 divides 64-bit registers in one instruction, as the code of
@@ -42,3 +45,4 @@ s64 __divdi3(s64 a, s64 b) {
 s64 __moddi3(s64 a, s64 b) {
     return DIV64("ddiv", "mfhi", a, b);
 }
+#endif /* __sgi */

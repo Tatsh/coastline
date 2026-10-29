@@ -4,8 +4,7 @@ add_library(
           bcmp.s
           bcopy.s
           bzero.s
-          # The 64-bit division GCC calls, which code IDO compiles calls in ll.c instead.
-          $<$<NOT:$<BOOL:${TGR_IDO}>>:divdi3.c>
+          divdi3.c
           ldiv.c
           ll.c
           llcvt.c
