@@ -15,6 +15,7 @@
 #endif
 
 #include "common/gbicommand.h"
+#include "common/renderdevice.h"
 #include "common/textureupload.h"
 #include "common/vecmath.h"
 #include "win32/framestatistics.h"
@@ -924,7 +925,7 @@ extern int g_nVertexPoolCount;
  *
  * @ghidraAddress BRD3D: 0x104bc1a0
  */
-extern D3DTLVERTEX g_renderBuffer[RENDER_BUFFER_SIZE];
+extern DeviceVertex g_renderBuffer[RENDER_BUFFER_SIZE];
 
 /**
  * The number of entries of g_renderBuffer in use.

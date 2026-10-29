@@ -961,6 +961,7 @@ regen
 reginfo
 renderbackend
 renderdefaults
+renderdevice
 renderhost
 renderinit
 rendermode

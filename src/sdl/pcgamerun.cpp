@@ -20,6 +20,7 @@
 #include "sdl/d3dcompat.h"
 #include "sdl/gamefiles.h"
 #include "sdl/n64displaylist.h"
+#include "sdl/renderdevice.h"
 #include "sdl/renderhost.h"
 #include "sdl/scene.h"
 #include "win32/app.h"
@@ -110,6 +111,7 @@ bool StartPcGame(TlRenderer &renderer,
     }
     g_device = std::make_unique<IDirect3DDevice2>(renderer);
     g_pD3DDevice2 = g_device.get();
+    SetDeviceRenderer(&renderer);
     g_pMainRenderWindow = &g_mainRenderWindow;
     // RallyMain() of BRD3D.dll without COM, the version of DirectX, the window of the PC release,
     // and DirectPlay.
