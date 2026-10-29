@@ -1437,7 +1437,9 @@ static inline GbiCommand *LoadGbiVertices(GbiCommand *pCommand,
         } else if (nTexGen == 1) {
             GenerateGbiVertexTextureCoordinates(&input, &vertex.source);
         }
-        if (bLighting) {
+        if (bLighting && nTexGen == 0) {
+            ComputeVertexDirectionalLight(&input, &vertex.source);
+        } else if (bLighting) {
             ShadeGbiVertex(&input, &vertex.source, nTexGen == 1);
         } else {
             vertex.source.fRed = static_cast<long double>(input.normal.x) * (1.0f / 255.0f);
