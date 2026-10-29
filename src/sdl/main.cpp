@@ -90,7 +90,8 @@ std::optional<std::vector<std::uint8_t>> LoadMusicModule(const std::filesystem::
     if (module == std::end(coastline::USA_MUSIC_MODULES)) {
         return std::nullopt;
     }
-    std::ifstream file(data / "music" / "default" / (std::string(module->name) + ".xm"),
+    std::ifstream file(coastline::DefaultAssets(data) / "music" /
+                           (std::string(module->name) + ".xm"),
                        std::ios::binary);
     if (!file) {
         SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
@@ -200,7 +201,7 @@ int ImportFromCommandLine(const argparse::ArgumentParser &parser,
                           const std::filesystem::path &data) {
     int status = EXIT_SUCCESS;
     for (const auto &rom : parser.get<std::vector<std::string>>("--import-rom")) {
-        if (auto release = coastline::ImportRom(rom, data)) {
+        if (auto release = coastline::ImportRom(rom, coastline::DefaultAssets(data))) {
             static constexpr const char *names[] = {"USA", "Japanese", "European"};
             SDL_Log("Imported the %s cartridge from %s.",
                     names[static_cast<int>(*release)],
@@ -211,8 +212,8 @@ int ImportFromCommandLine(const argparse::ArgumentParser &parser,
         }
     }
     if (auto disc = parser.present("--import-disc")) {
-        auto written =
-            coastline::ImportDisc(*disc, data, [](const std::string &step, double fraction) {
+        auto written = coastline::ImportDisc(
+            *disc, coastline::DefaultAssets(data), [](const std::string &step, double fraction) {
                 SDL_Log("[%3d%%] %s", static_cast<int>(fraction * 100), step.c_str());
             });
         if (written) {

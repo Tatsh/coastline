@@ -47,4 +47,15 @@ std::optional<GamePaths> ResolveGamePaths(const std::string &application);
  */
 bool CreateGamePaths(const GamePaths &paths);
 
+/**
+ * The directory the import writes the game data to, the default pack. A mod pack is a directory
+ * beside it under assets.
+ *
+ * @param data The data directory of the game.
+ * @return The directory of the default pack.
+ */
+inline std::filesystem::path DefaultAssets(const std::filesystem::path &data) {
+    return data / "assets" / "defaults";
+}
+
 } // namespace coastline

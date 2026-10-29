@@ -55,11 +55,11 @@ inline constexpr UsaMusicModule USA_MUSIC_MODULES[] = {{0x0EBC00, "menu"},
 
 /**
  * Check a cartridge image and extract its main segment and its assets, inflated, to
- * n64/usa, n64/jpn, or n64/eur under @p dataDirectory. The USA cartridge also gives the music pack
- * default its XM modules.
+ * n64/usa, n64/jpn, or n64/eur under @p dataDirectory. The USA cartridge also gives the pack its
+ * XM modules in music.
  *
  * @param image The cartridge image.
- * @param dataDirectory The data directory of the game.
+ * @param dataDirectory The directory of the pack to write, assets/defaults of the data directory.
  * @return The release, or a message.
  */
 std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &image,
@@ -86,11 +86,10 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
 
 /**
  * Copy the files of the Boss Rally disc the game opens to @p dataDirectory, and its CD audio tracks
- * to the music pack default as music/default/trackNN.flac. An ISO image has no audio tracks, and
- * only the files are copied.
+ * as music/trackNN.flac. An ISO image has no audio tracks, and only the files are copied.
  *
  * @param disc A CUE sheet or an ISO image.
- * @param dataDirectory The data directory of the game.
+ * @param dataDirectory The directory of the pack to write, assets/defaults of the data directory.
  * @param progress Called as each file and track is written.
  * @return The number of files written, or a message.
  */

@@ -528,7 +528,7 @@ std::optional<std::string> ConvertSkyImages(const std::filesystem::path &dataDir
     return std::nullopt;
 }
 
-// The strings of BRString.dll as strings/default/pc.json, by identifier, in place of the library.
+// The strings of BRString.dll as strings/pc.json, by identifier, in place of the library.
 std::optional<std::string> ConvertStringLibrary(const std::filesystem::path &library,
                                                 const std::filesystem::path &dataDirectory) {
     std::ifstream in(library, std::ios::binary);
@@ -541,7 +541,7 @@ std::optional<std::string> ConvertStringLibrary(const std::filesystem::path &lib
     for (const auto &[id, text] : strings) {
         json[std::to_string(id)] = text;
     }
-    auto destination = dataDirectory / "strings" / "default" / "pc.json";
+    auto destination = dataDirectory / "strings" / "pc.json";
     std::error_code error;
     std::filesystem::create_directories(destination.parent_path(), error);
     std::ofstream out(destination, std::ios::trunc);
@@ -726,7 +726,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
             if (!module) {
                 return std::unexpected(module.error().message);
             }
-            auto path = dataDirectory / "music" / "default" / (std::string(entry.name) + ".xm");
+            auto path = dataDirectory / "music" / (std::string(entry.name) + ".xm");
             std::filesystem::create_directories(path.parent_path(), error);
             std::ofstream xm(path, std::ios::binary | std::ios::trunc);
             xm.write(reinterpret_cast<const char *>(module->data()),
@@ -882,11 +882,10 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         }
         auto name = std::format("track{:02}.flac", track.number);
         if (progress) {
-            progress("music/default/" + name, static_cast<double>(written) / steps);
+            progress("music/" + name, static_cast<double>(written) / steps);
         }
         std::ifstream audio(track.file, std::ios::binary);
-        if (auto failure =
-                EncodeAudioTrack(audio, track, dataDirectory / "music" / "default" / name)) {
+        if (auto failure = EncodeAudioTrack(audio, track, dataDirectory / "music" / name)) {
             return std::unexpected(*failure);
         }
         ++written;

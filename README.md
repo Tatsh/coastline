@@ -88,7 +88,8 @@ Application Support, Caches, and Logs in the library of the user.
 
 The data comes from a Boss Rally disc image and a Top Gear Rally cartridge image. The import
 checks the cartridge against the SHA-1 of each release, and converts the CD audio of a CUE sheet
-to FLAC. An ISO image has no CD audio.
+to FLAC. An ISO image has no CD audio. The import writes every file to `assets/defaults` in the
+data directory, and a mod pack is a directory of its own beside it in `assets`.
 
 ```shell
 coastline --import-disc 'Boss Rally.cue' --import-rom usa.z64 --import-rom jpn.z64
