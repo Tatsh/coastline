@@ -235,17 +235,6 @@ void RemapPointer(u32 *pointer, u32 lo, u32 hi, u32 base);
  */
 void FixupDisplayListPointers(Gfx *displayList, u32 lo, u32 hi, u32 base);
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL && !TGR_BOSS_RALLY
-/**
- * Turn a model of the console, as it inflates from the cartridge, into a model of the host: its
- * fields in the order of the host and its offsets into pointers.
- *
- * @param model The model.
- * @param size The bytes of the model.
- */
-void ReadConsoleModel(Model *model, u32 size);
-#endif
-
 /**
  * Make every animation of a model repeat by turning back at its end.
  *

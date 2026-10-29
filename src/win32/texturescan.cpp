@@ -5,14 +5,10 @@
 
 #include <zlib.h>
 
+#include "common/settings.h"
 #include "common/vehiclemodel.h"
 #include "win32/app.h"
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/renderhost.h"
-#else
 #include "win32/d3d/renderer.h"
-#endif
-#include "common/settings.h"
 #include "win32/paintshop.h"
 #include "win32/render.h"
 

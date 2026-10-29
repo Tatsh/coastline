@@ -5,17 +5,10 @@
  * The sound and music of the PC port.
  */
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#ifdef __cplusplus
-#include "sdl/dsoundcompat.h"
-#endif
-#include "sdl/mmsystemcompat.h"
-#else
 #include <windows.h>
 // The headers below need the types of windows.h.
 #include <dsound.h>
 #include <mmsystem.h>
-#endif
 
 #include "common/assetnames.h"
 #include "common/soundbank.h"

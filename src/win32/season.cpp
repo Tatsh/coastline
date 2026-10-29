@@ -10,19 +10,15 @@
 #include "common/buildinfo.h"
 #include "common/configfile.h"
 #include "common/game.h"
+#include "common/ghost.h"
 #include "common/profile.h"
 #include "common/race.h"
 #include "common/rallyconfig.h"
 #include "common/seasons.h"
+#include "common/settings.h"
 #include "common/trackselect.h"
 #include "common/weather.h"
-#if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include "win32/frontend.h"
-#else
-#include "win32/frontendstate.h"
-#endif
-#include "common/ghost.h"
-#include "common/settings.h"
 
 void ProcessSeasonResults(void) {
     if (g_dwGameMode != GAME_MODE_CHAMPIONSHIP || !g_dwSavedResultsValid) {
@@ -250,11 +246,8 @@ bool RestoreSeasonProgressState(void) {
     if (g_SeasonResumeState.season < 4 && g_SeasonResumeState.year < 1) {
         g_dwSeasonFailed = true;
     }
-#if TGR_PLATFORM != TGR_PLATFORM_SDL
-    // The SDL game has no menus of the PC release to close.
     g_pActiveMenuScreen->SetRunning(false);
     g_pActiveMenuScreen->ShutdownFrontEnd(false);
-#endif
     return false;
 }
 
@@ -371,9 +364,6 @@ bool SaveSeasonSaveFile(void) {
     return true;
 }
 
-// The menus of the PC release load seasons through these, and the SDL game has the menus of the
-// Nintendo 64 release in their place.
-#if TGR_PLATFORM != TGR_PLATFORM_SDL
 static inline void ResetSeasonMenuForLoad(void) {
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     ResetMenuSelectionsToDefaults();
@@ -441,7 +431,6 @@ int LoadSeasonUI_OnSlotSelected(MenuItemList *pUnused, const int *pnSlot) {
     strcat(fileName, ".brf");
     return LoadSeasonMenuFile(fileName);
 }
-#endif /* TGR_PLATFORM != TGR_PLATFORM_SDL */
 
 void SaveAutoSaveSeason(void) {
     if (!g_pPrimarySeasonSave) {

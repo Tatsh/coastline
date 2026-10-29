@@ -23,11 +23,7 @@ void ReadEntireFile(void *buffer, const char *path, int size) {
 Model *DecompressModel(void *dst, const char *source) {
     Model *model =
         static_cast<Model *>(g_BossRallyPodArchive.PodArchive::LoadPodByName(source, dst));
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-    SetPointerRelocationBase(0, coastline::EncodePtr32(model));
-#else
     SetPointerRelocationBase(0, reinterpret_cast<unsigned>(model));
-#endif
     RelocateModelPointers(model);
     return model;
 }

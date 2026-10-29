@@ -919,7 +919,7 @@ void FaultThread(void *arg);
 void BootIdleThread(void *arg);
 
 /** The commands of the display list of each frame. */
-#if TGR_BOSS_RALLY || TGR_PLATFORM == TGR_PLATFORM_SDL
+#if TGR_BOSS_RALLY
 #define DISPLAY_LIST_COMMANDS 12000
 #else
 #define DISPLAY_LIST_COMMANDS 6000

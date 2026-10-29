@@ -9,18 +9,11 @@
 #include "common/instantreplay.h"
 #include "common/laps.h"
 #include "common/pause.h"
+#include "common/season.h"
 #include "common/vehicleaccess.h"
 #include "common/vehiclephysics.h"
 #include "win32/directplay.h"
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/ghostfile.h"
-#endif
-#if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include "win32/frontend.h"
-#else
-#include "win32/frontendstate.h"
-#endif
-#include "common/season.h"
 #include "win32/input.h"
 #include "win32/netstream.h"
 
@@ -282,11 +275,7 @@ static inline bool ReadGhostPayload(FILE *pFile, unsigned *pnLayout, unsigned *p
 }
 
 bool ReadGhostFileData(const char *pszPath, bool bAllowFailure) {
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-    FILE *pFile = OpenGhostRecording(pszPath);
-#else
     FILE *pFile = fopen(pszPath, "rb");
-#endif
     unsigned nLayout;
     unsigned nSize;
     if (!pFile || !ReadGhostPayload(pFile, &nLayout, &nSize)) {

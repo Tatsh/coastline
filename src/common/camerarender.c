@@ -73,7 +73,7 @@ f32 g_fFrustumFovAngle;
 #define MENU_FAR 500.0
 
 /* The RSP takes physical addresses, which are the KSEG0 addresses less its base. */
-#if TGR_BOSS_RALLY || TGR_PLATFORM == TGR_PLATFORM_SDL
+#if TGR_BOSS_RALLY
 #define TO_RSP_ADDRESS(p) (p)
 #else
 #define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))

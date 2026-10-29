@@ -495,10 +495,6 @@ void guLookAtHilite(Mtx *m,
  * @ghidraAddress EUR: 0x80262aa0
  * @ghidraAddress JPN: 0x80262540
  */
-#if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_SDL
-/* The SDL game follows the PC release, which takes the three from the C library. */
-#include <math.h>
-#else
 float sinf(float x);
 
 /**
@@ -522,7 +518,6 @@ float cosf(float x);
  * @ghidraAddress JPN: 0x80267c60
  */
 float sqrtf(float x);
-#endif /* defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 /**
  * Return the sine of an angle where 0x10000 is a full turn, in s1.15 fixed point.

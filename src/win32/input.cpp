@@ -8,29 +8,23 @@
 #include <new>
 
 #include <common/hud.h>
-#if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include <windows.h>
-#endif
 
 #include "common/game.h"
+#include "common/ghost.h"
 #include "common/instantreplay.h"
 #include "common/laps.h"
 #include "common/pause.h"
 #include "common/playerinput.h"
 #include "common/rallyconfig.h"
+#include "common/settings.h"
+#include "common/snapshot.h"
 #include "common/strings.h"
 #include "common/vehicle.h"
 #include "common/vehicleaccess.h"
 #include "win32/app.h"
 #include "win32/directplay.h"
-#if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include "win32/frontend.h"
-#else
-#include "win32/frontendstate.h"
-#endif
-#include "common/ghost.h"
-#include "common/settings.h"
-#include "common/snapshot.h"
 #include "win32/sound.h"
 #include "win32/timer.h"
 
@@ -1178,8 +1172,6 @@ bool MouseDevice::CreateMouseDevice(HWND hWnd) {
     return true;
 }
 
-// The menus of the PC release take the mouse while they are built, and the SDL game has none.
-#if TGR_PLATFORM != TGR_PLATFORM_SDL
 void MouseDevice::SyncMouseAcquireState(HWND hWnd) {
     IDirectInputDeviceA *device = pDevice;
     if (device && g_pActiveMenuScreen->IsBuilt()) {
@@ -1190,7 +1182,6 @@ void MouseDevice::SyncMouseAcquireState(HWND hWnd) {
         }
     }
 }
-#endif /* TGR_PLATFORM != TGR_PLATFORM_SDL */
 
 void MouseDevice::ReleaseMouseDevice() {
     if (pDevice != nullptr) {

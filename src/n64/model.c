@@ -39,20 +39,12 @@ void RelocateModelPointers(Model *model) {
 
 Model *DmaReadAndFixupTrackModel(void *dst, u32 romStart, u32 romEnd) {
     DmaRead(dst, romStart, romEnd - romStart);
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-    ReadConsoleModel(dst, romEnd - romStart);
-#else
     RelocateModelPointers(dst);
-#endif
     return dst;
 }
 
 Model *DecompressModel(void *dst, u32 romOffset) {
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-    ReadConsoleModel(dst, DecompressFromRom(dst, romOffset, NULL));
-#else
     DecompressFromRom(dst, romOffset, NULL);
     RelocateModelPointers(dst);
-#endif
     return dst;
 }

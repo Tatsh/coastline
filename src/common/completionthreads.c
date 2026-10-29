@@ -4,11 +4,7 @@
 #define VBLANK_COUNTER_MASK 15
 
 /* The message each thread waits for, a word that is never read as an address. */
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#define DUMMY_OS_MESG ((OSMesg)(uintptr_t)g_dwDummyOsMesg)
-#else
 #define DUMMY_OS_MESG ((OSMesg)g_dwDummyOsMesg)
-#endif
 
 #if TGR_BOSS_RALLY
 /* Windows redirects the console hooks to its empty compatibility entry. */

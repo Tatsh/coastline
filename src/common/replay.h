@@ -12,9 +12,6 @@
 #include "common/recordingformat.h"
 #include "common/rle.h"
 #include "common/vehicle.h"
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "common/romsegments.h"
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -43,11 +40,7 @@ extern u8 _creditsRecordingSegmentRomStart[];
 extern u8 _endingRecordingSegmentRomStart[];
 
 /** The cartridge offset of the ghost recording, which the race after the splash screens replays. */
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#define ROM_GHOST_RECORDING USA_GHOST_RECORDING_ROM
-#else
 #define ROM_GHOST_RECORDING ((u32)_ghostRecordingSegmentRomStart)
-#endif
 
 /** The size of the buffer a player's input is recorded into. */
 #define RECORDING_CAPACITY 0xDE5C
@@ -126,12 +119,7 @@ typedef struct {
 /**
  * Last-lap buffers share vehicle-model storage and descend through slots by local-player index.
  */
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-/* The symbol names of the SDL game have no leading underscore on every system, and a cast names
- * the same storage. */
-#include "common/vehiclemodel.h"
-#define g_aLastLapBuffers ((LastLapBuffer *)g_aVehicleModels)
-#elif TGR_BOSS_RALLY
+#if TGR_BOSS_RALLY
 extern LastLapBuffer g_aLastLapBuffers[] __asm__("_g_aVehicleModels");
 #else
 extern LastLapBuffer g_aLastLapBuffers[];

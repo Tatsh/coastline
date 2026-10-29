@@ -29,16 +29,6 @@ static inline void RelocateModelPointer(T *&pointer) {
     pointer = std::bit_cast<T *>(word);
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-// The SDL game stores the pointers of a model in 32 bits, and relocates the stored word.
-template <typename T>
-static inline void RelocateModelPointer(coastline::Ptr32<T> &pointer) {
-    unsigned word = pointer.Raw();
-    RelocatePointerValue(&word);
-    pointer.SetRaw(word);
-}
-#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
-
 template <size_t Size>
     requires(Size % sizeof(u32) == 0)
 static inline void SwapModelWords(u8 (&bytes)[Size]) {
@@ -88,11 +78,7 @@ static inline void CreateCarLightTextures(VehicleModel *model) {
 }
 
 void ByteSwapAndRelocateCarModel(VehicleModel *model) {
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-    SetPointerRelocationBase(0x803c8000, coastline::EncodePtr32(&model->triangleCount));
-#else
     SetPointerRelocationBase(0x803c8000, std::bit_cast<unsigned>(&model->triangleCount));
-#endif
     SetCopyTextureDataOnRelocate(0);
     g_pTextureCaptureVehicleModel = model;
     model->textureEntryCount = 0;

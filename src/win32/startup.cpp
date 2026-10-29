@@ -1,13 +1,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/d3dcompat.h"
-#include "sdl/win32api.h"
-#else
 #include <d3dtypes.h>
 #include <windows.h>
-#endif
 
 #include "common/fileio.h"
 #include "common/podarchive.h"
@@ -24,16 +19,6 @@
 
 size_t g_dwTotalPhysicalMemory;
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-bool FocusExistingBossRallyInstance(void) {
-    // Each SDL game has its own window, and instances do not look for each other.
-    return true;
-}
-
-void RefreshTotalPhysicalMemory(void) {
-    g_dwTotalPhysicalMemory = static_cast<size_t>(SDL_GetSystemRAM()) * 1024 * 1024;
-}
-#else
 bool FocusExistingBossRallyInstance(void) {
     HWND hWindow;
     HWND hForeground;
@@ -65,7 +50,6 @@ void RefreshTotalPhysicalMemory(void) {
     GlobalMemoryStatus(&status);
     g_dwTotalPhysicalMemory = status.dwTotalPhys;
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 // The value of a line of BossRally.ini that sets a key, the key given with its equals sign.
 static inline const char *GetIniValue(const char *pszLine, const char *pszKey) {

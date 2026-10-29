@@ -8,12 +8,7 @@
 
 #include <cstddef>
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/dinputcompat.h"
-#include "sdl/win32api.h"
-#else
 #include <windows.h>
-#endif
 
 #include "common/fatalerror.h"
 #include "common/screen.h"

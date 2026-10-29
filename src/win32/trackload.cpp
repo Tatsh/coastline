@@ -11,12 +11,6 @@
 #include "common/trackrelocation.h"
 #include "common/util.h"
 #include "win32/render.h"
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include <filesystem>
-
-#include "sdl/gamefiles.h"
-#include "sdl/indexedimage.h"
-#endif
 
 namespace {
 /**
@@ -26,19 +20,6 @@ namespace {
 [[maybe_unused, gnu::used]] unsigned g_dwTrackDataRelocationDelta;
 } // namespace
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-static void LoadSkyImage(unsigned char (&texels)[2048],
-                         unsigned char (&palette)[32],
-                         const SkyTextureFiles *files) {
-    std::filesystem::path png = std::filesystem::path(files->image).replace_extension(".png");
-    auto found = coastline::FindGameFile(png.string().c_str());
-    if (!found || !coastline::LoadIndexed4Png(*found, texels, palette)) {
-        std::printf("%s cannot be read.\n", png.string().c_str());
-        std::exit(1);
-    }
-}
-#endif
-
 static inline bool IsUnitTrackScale(long double value) {
     return !(value < 1.0L || value > 1.0L);
 }
@@ -46,11 +27,7 @@ static inline bool IsUnitTrackScale(long double value) {
 void LoadTrackGeometryFromRom(s32 track) {
     LoadTrackTextureMap(track);
     constexpr unsigned originalBase = 0x80025c00u;
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-    unsigned geometryBase = coastline::EncodePtr32(&g_abTrackGeometryBuffer[0]);
-#else
     unsigned geometryBase = std::bit_cast<unsigned>(&g_abTrackGeometryBuffer[0]);
-#endif
     g_dwTextureMapAddressBias = originalBase - geometryBase;
     SetPointerRelocationBase(originalBase, geometryBase);
     SetCopyTextureDataOnRelocate(1);
@@ -73,17 +50,10 @@ void LoadTrackGeometryFromRom(s32 track) {
               file);
     CHK_FClose(file);
     ByteSwapTrackAnimationTable(&g_LoadedTrack);
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-    // The import converts each palette and image of a sky to one indexed PNG image.
-    LoadSkyImage(g_abDaySkyTexture, g_abDaySkyPalette, g_aTrackDescriptors[track].daySkyFiles);
-    LoadSkyImage(
-        g_abNightSkyTexture, g_abNightSkyPalette, g_aTrackDescriptors[track].nightSkyFiles);
-#else
     ReadEntireFile(g_abDaySkyPalette, g_aTrackDescriptors[track].daySkyFiles->palette, 32);
     ReadEntireFile(g_abDaySkyTexture, g_aTrackDescriptors[track].daySkyFiles->image, -1);
     ReadEntireFile(g_abNightSkyPalette, g_aTrackDescriptors[track].nightSkyFiles->palette, 32);
     ReadEntireFile(g_abNightSkyTexture, g_aTrackDescriptors[track].nightSkyFiles->image, -1);
-#endif
     CreateDaySkyTexture();
     CreateNightSkyTexture();
     g_pTrackTextureTable = g_abTrackGeometryBuffer + g_LoadedTrack.size;

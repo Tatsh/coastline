@@ -6,14 +6,10 @@
  * The reading of wave files through the multimedia I/O of Windows.
  */
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/mmsystemcompat.h"
-#else
 #include <windows.h>
 // The headers below need the types of windows.h.
 #include <mmreg.h>
 #include <mmsystem.h>
-#endif
 
 #ifdef __cplusplus
 extern "C" {

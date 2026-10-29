@@ -8,19 +8,14 @@
 
 #include <array>
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/d3dcompat.h"
-#else
 #include <windows.h>
-#endif
 
 #include "common/gbicommand.h"
 #include "common/textureupload.h"
 #include "common/vecmath.h"
 #include "win32/framestatistics.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#elif TGR_BRD3D
+#if TGR_BRD3D
 #include <d3d.h>
 #else
 #include <glide.h>

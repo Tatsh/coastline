@@ -98,11 +98,7 @@ namespace {
     [[maybe_unused, gnu::used]] s32 g_nTrackTransparentStartIdxNear;
 } // namespace
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#define PHYSICAL(address) (coastline::EncodePtr32(address))
-#else
 #define PHYSICAL(address) ((u32)(address))
-#endif
 #define TRACK_TIMING(bar, red, green, blue, alpha) NullStub()
 #define TRACK_WEATHER_EXCLUDED 8
 #else

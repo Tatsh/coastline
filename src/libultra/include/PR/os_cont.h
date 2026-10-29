@@ -82,7 +82,7 @@ extern "C" {
  * The name of the channel error of OSContStatus and OSContPad. The C runtimes of the hosts define
  * errno as a macro, and the member takes another name there.
  */
-#if TGR_BOSS_RALLY || TGR_PLATFORM == TGR_PLATFORM_SDL
+#if TGR_BOSS_RALLY
 #define CONT_ERRNO errnum
 #else
 #define CONT_ERRNO errno

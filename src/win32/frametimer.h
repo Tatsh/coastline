@@ -5,11 +5,7 @@
  * The timing of the frames of the PC port, at 30 frames a second.
  */
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/win32types.h"
-#else
 #include <windows.h>
-#endif
 
 #include "common/frameclock.h"
 

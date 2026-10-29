@@ -22,10 +22,6 @@
 #include "common/screen.h"
 #endif /* !TGR_BOSS_RALLY */
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "common/romsegments.h"
-#endif
-
 #if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x106805b8 */
 s32 g_dwRaceSessionType;
@@ -34,11 +30,7 @@ s32 g_dwRaceSessionType;
 #if !TGR_BOSS_RALLY
 
 /* The cartridge offset of the music of the menus. */
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#define ROM_MENU_MUSIC USA_MENU_MUSIC_ROM
-#else
 #define ROM_MENU_MUSIC ((u32)_menuMusicSegmentRomStart)
-#endif
 #else
 
 u32 g_dwWeatherActive;
@@ -173,14 +165,7 @@ void InitGameAndShowMenus(void) {
 #endif
 #endif /* TGR_BOSS_RALLY */
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL && !TGR_BOSS_RALLY
-    /* The PC release builds GameModeMainLoop() empty. The frames presented end the program. */
-    for (;;) {
-        CallCurrentGameMode();
-    }
-#else
     GameModeMainLoop();
-#endif
 }
 #if TGR_BOSS_RALLY
 void SetWeatherAndRefreshVehicleMaterials(u32 weather) {

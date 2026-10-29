@@ -188,11 +188,7 @@ void FlushDisplayList(void) {
     task->t.ucode_size = SP_UCODE_SIZE;
     task->t.output_buff_size = g_pRdpOutputBufferEnd - g_dwOutputBuffReserve;
     task->t.ucode_data_size = SP_UCODE_DATA_SIZE;
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-    task->t.dram_stack = (u64 *)(((uintptr_t)g_abRspDramStackBuffer + 15) & ~(uintptr_t)15);
-#else
     task->t.dram_stack = (u64 *)(((u32)g_abRspDramStackBuffer + 15) & ~15);
-#endif
     task->t.dram_stack_size = SP_DRAM_STACK_SIZE8;
 #if TGR_PLATFORM == TGR_PLATFORM_N64
     task->t.ucode_boot = g_aRspBootUcode;

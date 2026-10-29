@@ -2,12 +2,7 @@
 
 #include <string.h>
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/dinputcompat.h"
-#include "sdl/win32types.h"
-#else
 #include <windows.h>
-#endif
 
 #include "common/hudcanvas.h"
 #include "common/settings.h"
@@ -21,11 +16,6 @@ static const char buildDate[] = __DATE__ " " __TIME__;
 static const char banner[] =
     "github.com/Tatsh/coastline " COASTLINE_GIT_SHA " " __DATE__ " " __TIME__ "\n";
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-void PrintWineDiagnostic(const char *message) {
-    WriteApplicationDiagnostic(message);
-}
-#else
 void PrintWineDiagnostic(const char *message) {
     DWORD savedError = GetLastError();
     WriteApplicationDiagnostic(message);
@@ -41,7 +31,6 @@ void PrintWineDiagnostic(const char *message) {
     }
     SetLastError(savedError);
 }
-#endif
 
 void PrintWineBuildIdentification(void) {
     PrintWineDiagnostic(banner);

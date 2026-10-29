@@ -1,9 +1,7 @@
 #include "common/buildinfo.h"
 #include "common/rallyconfig.h"
 #include "win32/app.h"
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/renderhost.h"
-#elif TGR_BRD3D
+#if TGR_BRD3D
 #include "win32/d3d/renderer.h"
 #endif
 #include "common/gameinit.h"

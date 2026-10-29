@@ -7,11 +7,7 @@
  */
 
 #include <PR/gbi.h>
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/win32types.h"
-#else
 #include <windows.h>
-#endif
 
 #include "common/combine.h"
 #include "common/convertedvertex.h"

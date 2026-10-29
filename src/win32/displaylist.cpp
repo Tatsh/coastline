@@ -20,9 +20,7 @@
 #undef DrawText
 #include "common/text.h"
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/renderhost.h"
-#elif TGR_BRD3D
+#if TGR_BRD3D
 #include "win32/d3d/renderer.h"
 #endif
 
@@ -730,12 +728,7 @@ GbiCommand *HandleGbiBindTextureEntry(GbiCommand *pCommand) {
 void (*g_pfnUploadTextureEntryToSurface)(int nEntry, TextureUploadData payload);
 
 GbiCommand *HandleGbiLoadPreparedTexture(GbiCommand *pCommand) {
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-    g_pfnUploadTextureEntryToSurface(pCommand->w0 & GBI_TEXTURE_ENTRY_MASK,
-                                     static_cast<const u8 *>(coastline::DecodePtr32(pCommand->w1)));
-#else
     g_pfnUploadTextureEntryToSurface(pCommand->w0 & GBI_TEXTURE_ENTRY_MASK, pCommand->w1);
-#endif
     return pCommand + 1;
 }
 

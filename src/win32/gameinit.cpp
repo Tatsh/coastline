@@ -17,9 +17,6 @@
 #include "win32/input.h"
 #include "win32/renderinit.h"
 #include "win32/sound.h"
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/win32api.h"
-#endif
 
 s32 g_dwSavedSfxVolume;
 s32 g_dwSavedMusicVolume;

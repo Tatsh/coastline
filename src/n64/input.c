@@ -174,11 +174,6 @@ void InitControllersAndPaks(void) {
     u8 plugged;
 
     UpdateControllerState();
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-    /* The game saves to files, and the keyboard stands in for a missing controller. */
-    g_wSerialInterfaceIdle = TRUE;
-    return;
-#endif
     g_wSerialInterfaceIdle = FALSE;
     if (g_aPlayerInputState[0].controllerMissing) {
         WarnAboutController(CONTROLLER_WARNING_NO_CONTROLLER);
