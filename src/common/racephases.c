@@ -22,7 +22,6 @@
 #include "common/inputpoll.h"
 #include "common/settings.h"
 #include "common/strings.h"
-#include "win32/directplay.h"
 #else
 #include <PR/os_libc.h>
 

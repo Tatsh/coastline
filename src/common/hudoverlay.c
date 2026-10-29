@@ -11,7 +11,9 @@
 #include "common/configfile.h"
 #include "common/settings.h"
 #include "common/strings.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/directplay.h"
+#endif
 #include "win32/hudcanvas.h"
 #else
 #include <PR/os_libc.h>
@@ -123,7 +125,12 @@ void DrawSpeedAndHudOverlay(void) {
     y = HUD_OVERLAY_ADD(HUD_OVERLAY_ADD(viewports[g_dwCurrentSplitScreenIndex].y,
                                         viewports[g_dwCurrentSplitScreenIndex].height),
                         -4);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    /* A spectator of a network game has no car of its own. */
     if (g_bNetSpectator || !g_bHudShowSpeedometer) {
+#else
+    if (!g_bHudShowSpeedometer) {
+#endif
         return;
     }
     x = HUD_OVERLAY_ADD(x, -30);

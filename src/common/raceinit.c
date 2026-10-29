@@ -20,7 +20,9 @@
 #include "common/rallyconfig.h"
 #include "common/settings.h"
 #include "common/soundsystem.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/directplay.h"
+#endif
 
 #else
 #include <PR/os_libc.h>
@@ -117,7 +119,8 @@ void SetupRaceVehicles(void) {
         g_bReplayAfterRace = gInstantReplayActive == 0;
         break;
 
-#if TGR_BOSS_RALLY
+#if TGR_BOSS_RALLY && TGR_PLATFORM == TGR_PLATFORM_WIN
+    /* Network play joins a session of DirectPlay, which only the Windows libraries have. */
     case GAME_MODE_NETWORK:
         if (gInstantReplayActive) {
             goto replays;
@@ -145,7 +148,7 @@ void SetupRaceVehicles(void) {
             }
         }
         goto replays;
-#endif /* TGR_BOSS_RALLY */
+#endif /* TGR_BOSS_RALLY && TGR_PLATFORM == TGR_PLATFORM_WIN */
     case GAME_MODE_AFTER_SEASON:
         g_dwNumLocalPlayers = 1;
         g_dwNumVehicles = 1;

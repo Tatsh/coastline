@@ -13,11 +13,14 @@
 
 #if TGR_BOSS_RALLY
 #include "common/inputpoll.h"
+#include "common/racephases.h"
 #include "common/session.h"
 #include "common/settings.h"
 #include "common/snapshot.h"
 #include "common/soundsystem.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/directplay.h"
+#endif
 #endif
 
 #if TGR_BOSS_RALLY
@@ -41,9 +44,13 @@ u32 g_dwRacePauseState;
 static volatile s32 g_dwUnpauseClearFrames;
 
 static s32 ResumeRace(s32 paused) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    /* A network game asks the other players to resume through DirectPlay. */
     if (g_dwNetworkPlayMode && g_bRaceStartReached) {
         RequestNetworkUnpause();
-    } else {
+    } else
+#endif
+    {
         FadeSfxTo(1.0f, FADE_SECONDS);
         FadeMusicTo(1.0f, FADE_SECONDS);
         g_dwUnpauseClearFrames = 2;
@@ -53,6 +60,7 @@ static s32 ResumeRace(s32 paused) {
 }
 
 static s32 ApplyUnpauseAcknowledgement(s32 paused) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     if (g_dwNetworkDataReceived) {
         g_dwNetworkDataReceived = FALSE;
         FadeSfxTo(1.0f, FADE_SECONDS);
@@ -60,6 +68,7 @@ static s32 ApplyUnpauseAcknowledgement(s32 paused) {
         g_dwUnpauseClearFrames = 2;
         paused = FALSE;
     }
+#endif
     return paused;
 }
 #else
@@ -152,10 +161,12 @@ s32 ProcessPauseMenu(s32 paused) {
                     UnpauseMusicPlayback();
                     DispatchMusicVolumeChange(g_bBgmVolume);
                 }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
                 if (g_dwGameMode == GAME_MODE_NETWORK) {
                     SendNetworkMessage6ToSession();
                     DisableNetworkReceive();
                 }
+#endif
 #endif /* TGR_BOSS_RALLY */
                 break;
 #if TGR_BOSS_RALLY
@@ -234,9 +245,11 @@ s32 ProcessPauseMenu(s32 paused) {
     }
 #if TGR_BOSS_RALLY
 networkTick:
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     if (g_dwNetworkPlayMode && g_bRaceStartReached) {
         TickNetworkUnpauseRequest();
     }
+#endif
 #else
     DrawPauseMenu();
 #endif

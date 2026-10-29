@@ -9,7 +9,9 @@
 #include <stdlib.h>
 
 #include "common/settings.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/directplay.h"
+#endif
 #define QuickSort qsort
 #else
 #include "common/util.h"
@@ -21,7 +23,8 @@ void SortRacersByPosition(void) {
     s32 count = 0;
     s32 i;
 
-#if TGR_BOSS_RALLY
+#if TGR_BOSS_RALLY && TGR_PLATFORM == TGR_PLATFORM_WIN
+    /* The host of a network game decides the order of the race. */
     if (g_dwNetworkPlayMode) {
         for (i = 0; i < g_dwNumActiveVehicles; i++) {
             VEHICLE_SET(&g_aVehicles[i],
@@ -30,7 +33,7 @@ void SortRacersByPosition(void) {
         }
         return;
     }
-#endif /* TGR_BOSS_RALLY */
+#endif /* TGR_BOSS_RALLY && TGR_PLATFORM == TGR_PLATFORM_WIN */
     for (i = 0; i < g_dwNumVehicles; i++) {
         slot = &g_aRacerSlots[i];
         if (RACER_SLOT_GET(slot, Status) & RACER_FINISHED) {

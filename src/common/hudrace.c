@@ -10,7 +10,9 @@
 
 #include "common/settings.h"
 #include "common/strings.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/directplay.h"
+#endif
 #include "win32/hudcanvas.h"
 #else
 #include <PR/os_libc.h>
@@ -213,7 +215,12 @@ void DrawLapCounterHud(void) {
     }
 
 #if TGR_BOSS_RALLY
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    /* A spectator of a network game has no car of its own. */
     if (!g_bHudShowPosition || g_bNetSpectator) {
+#else
+    if (!g_bHudShowPosition) {
+#endif
         return;
     }
 #endif

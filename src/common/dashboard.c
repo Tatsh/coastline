@@ -13,7 +13,9 @@
 
 #if TGR_BOSS_RALLY
 #include "common/settings.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/directplay.h"
+#endif
 #include "win32/hudcanvas.h"
 #include "win32/hudquad.h"
 #include "win32/render.h"
@@ -110,7 +112,12 @@ s32 g_bHudShowSpeedometer = 1;
 
 #if TGR_BOSS_RALLY
 void RenderDashboardGauges(const ViewportRect *viewports) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    /* A spectator of a network game has no car of its own. */
     if (!g_bHudShowSpeedometer || g_bNetSpectator) {
+#else
+    if (!g_bHudShowSpeedometer) {
+#endif
         return;
     }
     const VehicleModel *car =

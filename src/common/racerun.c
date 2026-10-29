@@ -31,11 +31,14 @@
 #include "common/ghost.h"
 #include "common/inputpoll.h"
 #include "common/racepacing.h"
+#include "common/racephases.h"
 #include "common/racesound.h"
 #include "common/settings.h"
 #include "common/snapshot.h"
 #include "common/soundsystem.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/directplay.h"
+#endif
 #include "win32/hud.h"
 #else
 #include "common/audiomix.h"
@@ -114,7 +117,7 @@ void ProcessRacingScreen(void) {
     if (!g_dwRaceInitialized) {
         InitRace();
     }
-#if TGR_BOSS_RALLY
+#if TGR_BOSS_RALLY && TGR_PLATFORM == TGR_PLATFORM_WIN
     else if (g_dwNetworkPlayMode) {
         s32 slot = PopDepartedPlayerSlot();
         if (slot >= 0 && !gInstantReplayActive) {
@@ -367,9 +370,11 @@ void ProcessRacingScreen(void) {
         g_dwRacePauseState = paused;
     }
 #if TGR_BOSS_RALLY
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     if (g_dwGameMode == GAME_MODE_NETWORK) {
         ProcessPendingNetworkNotifications();
     }
+#endif
     {
         const Vehicle *vehicle = &g_aVehicles[0];
         const RigidBody *body = &vehicle->GetBody();
@@ -387,9 +392,11 @@ void ProcessRacingScreen(void) {
     TickDebugOverlayMessageTimer();
     AdvanceFrameTickCounter();
     if (!g_bRaceStartReached) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
         if (g_dwNetworkPlayMode) {
             CheckNetworkRaceStartTime();
         }
+#endif
         ResetFrameTimer();
     }
 #endif /* TGR_BOSS_RALLY */
