@@ -186,6 +186,39 @@ void CreateGlobalEffectTextures(void);
  */
 void ResetModelDataPool(void);
 
+/** The number of entries of g_adwPrecipitationTextureIds. */
+#define PRECIPITATION_TEXTURE_COUNT 2
+
+/**
+ * The entries of g_pTextureEntries of the textures of precipitation.
+ *
+ * @ghidraAddress BRD3D: 0x11829100
+ * @ghidraAddress BRGlide: 0x1184c460
+ */
+extern int g_adwPrecipitationTextureIds[PRECIPITATION_TEXTURE_COUNT];
+
+#if TGR_BRD3D
+/**
+ * Read the size of a texture of precipitation into g_dwPrecipTextureWidth and
+ * g_dwPrecipTextureHeight.
+ *
+ * @param nIndex The entry of g_adwPrecipitationTextureIds.
+ * @ghidraAddress BRD3D: 0x1001a4b0
+ */
+void GetPrecipitationTextureDimensions(int nIndex);
+
+/**
+ * Copy one converted ramp texel into a scaled precipitation texture position.
+ *
+ * @param nTileIndex The texture page.
+ * @param nSrcX The coordinate scaled by texture height.
+ * @param nSrcY The coordinate scaled by texture width.
+ * @param nSrcRow The converted ramp texel.
+ * @ghidraAddress BRD3D: 0x1001a4d0
+ */
+void CopyTileColumnScaled(int nTileIndex, int nSrcX, int nSrcY, int nSrcRow);
+#endif /* TGR_BRD3D */
+
 #ifdef __cplusplus
 }
 #endif

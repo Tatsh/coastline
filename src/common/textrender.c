@@ -11,7 +11,7 @@
 #include "common/gbicommand.h"
 #include "common/settings.h"
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
-#include "win32/glide/fontatlas.h"
+#include "common/fontatlas.h"
 #endif
 
 #undef gDisplayListWords

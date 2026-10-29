@@ -29,7 +29,7 @@
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
 #include <zlib.h>
 
-#include "win32/glide/fontatlas.h"
+#include "common/fontatlas.h"
 #include "win32/glide/renderer.h"
 #include "win32/glide/texture.h"
 #include "win32/glide/texturecache.h"

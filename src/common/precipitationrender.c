@@ -9,11 +9,6 @@
 #include "common/weather.h"
 
 #if TGR_BOSS_RALLY
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/renderhost.h"
-#else
-#include "win32/d3d/renderer.h"
-#endif
 #include "common/combine.h"
 #include "common/gbicommand.h"
 #include "common/ghost.h"

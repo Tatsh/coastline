@@ -2,8 +2,8 @@
  * @file
  * The atlases of the HUD fonts of the Glide renderer and their textures.
  */
-#ifndef COASTLINE_PLATFORM_WIN_GLIDE_FONTATLAS_H
-#define COASTLINE_PLATFORM_WIN_GLIDE_FONTATLAS_H
+#ifndef COASTLINE_FONTATLAS_H
+#define COASTLINE_FONTATLAS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -50,4 +50,4 @@ extern int g_dwSmallFontAtlasTextureId;
 }
 #endif
 
-#endif /* COASTLINE_PLATFORM_WIN_GLIDE_FONTATLAS_H */
+#endif /* COASTLINE_FONTATLAS_H */
