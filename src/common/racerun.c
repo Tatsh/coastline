@@ -39,7 +39,6 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "common/network.h"
 #endif
-#include "win32/hud.h"
 #else
 #include "common/audiomix.h"
 #include "common/shadowbuffers.h"

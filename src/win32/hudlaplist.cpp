@@ -11,7 +11,6 @@
 #include "common/vehicleaccess.h"
 #include "common/vehiclecount.h"
 #include "render.h"
-#include "win32/hud.h"
 
 s32 g_bHudShowLapTimes = 1;
 

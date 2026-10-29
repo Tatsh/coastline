@@ -10,7 +10,6 @@
 #include "common/rallyconfig.h"
 #include "common/settings.h"
 #include "common/strings.h"
-#include "win32/hud.h"
 #include "win32/render.h"
 #else
 #include <PR/os_libc.h>

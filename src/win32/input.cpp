@@ -31,7 +31,6 @@
 #include "common/ghost.h"
 #include "common/settings.h"
 #include "common/snapshot.h"
-#include "win32/hud.h"
 #include "win32/sound.h"
 #include "win32/timer.h"
 

@@ -1,4 +1,4 @@
-#include "win32/hud.h"
+#include "common/hud.h"
 
 #include <common/fade.h>
 #include <common/render.h>

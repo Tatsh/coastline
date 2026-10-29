@@ -13,6 +13,7 @@
 #include <objbase.h>
 
 #include "common/bossrallyvehicle.h"
+#include "common/hud.h"
 #include "common/instantreplay.h"
 #include "common/laps.h"
 #include "common/pause.h"
@@ -25,7 +26,6 @@
 #include "win32/app.h"
 #include "win32/frametimer.h"
 #include "win32/frontend.h"
-#include "win32/hud.h"
 #include "win32/input.h"
 #include "win32/netstream.h"
 #include "win32/sound.h"
