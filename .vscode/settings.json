@@ -1,5 +1,8 @@
 {
   "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
+  "C_Cpp.files.exclude": {
+    "**/.wiswa-ci": true
+  },
   "[**/vcpkg*.json]": {
     "files.insertFinalNewline": false
   },
@@ -38,6 +41,12 @@
   "files.insertFinalNewline": true,
   "files.trimFinalNewlines": true,
   "files.trimTrailingWhitespace": true,
+  "files.watcherExclude": {
+    "**/.wiswa-ci/**": true
+  },
+  "search.exclude": {
+    "**/.wiswa-ci": true
+  },
   "shellformat.flag": "i 2 -ci -sr",
   "sortJSON.excludedFiles": [],
   "sortJSON.excludedPaths": [],

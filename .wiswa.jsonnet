@@ -260,6 +260,12 @@
       env: {},
       version: 4,
     },
-    settings+: { 'cmake.useCMakePresets': 'always' },
+    settings+: {
+      // The scratch builds and data of .wiswa-ci are not part of the project.
+      'C_Cpp.files.exclude': { '**/.wiswa-ci': true },
+      'cmake.useCMakePresets': 'always',
+      'files.watcherExclude': { '**/.wiswa-ci/**': true },
+      'search.exclude': { '**/.wiswa-ci': true },
+    },
   },
 }
