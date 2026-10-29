@@ -339,8 +339,10 @@ int main(int argc, char *argv[]) {
         std::cerr << "The home directory is not known, and the game cannot find its files.\n";
         return EXIT_FAILURE;
     }
+    // The game moves to the data directory, and a relative directory would then name another.
     if (auto dataDirectory = parser.present("--data-dir")) {
-        paths->data = *dataDirectory;
+        std::error_code error;
+        paths->data = std::filesystem::absolute(*dataDirectory, error);
     }
     if (!coastline::CreateGamePaths(*paths)) {
         std::cerr << "The directories of the game cannot be created.\n";
