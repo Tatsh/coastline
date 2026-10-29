@@ -159,8 +159,7 @@ bool RunPcGameFrame(const std::filesystem::path *capture) {
 }
 
 std::uint32_t PcGameMusicModule() {
-    // The modules g_adwTrackMusicRom of the USA cartridge lists for each track, and the module of
-    // its menus.
+    // The modules g_adwTrackMusicRom of the USA cartridge lists for each track.
     constexpr std::uint32_t trackModules[] = {0x113660,
                                               0x12EAB0,
                                               0x149C80,
@@ -173,12 +172,10 @@ std::uint32_t PcGameMusicModule() {
                                               0x17FD10,
                                               0x19BC10,
                                               0x12EAB0};
-    constexpr std::uint32_t menuModule = 0x0EBC00;
-    if (g_dwPlayMusicMode != 0) {
+    // The front end of the console plays the music of the menus, and the module of the race plays
+    // on through the instant replay.
+    if (g_dwPlayMusicMode != 0 || !g_dwRaceInitialized) {
         return 0;
-    }
-    if (!g_dwRaceInitialized) {
-        return menuModule;
     }
     return trackModules[std::min<std::size_t>(g_dwSelectedTrackId, std::size(trackModules) - 1)];
 }

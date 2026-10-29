@@ -32,9 +32,9 @@ bool StartPcGame(TlRenderer &renderer,
 bool RunPcGameFrame(const std::filesystem::path *capture = nullptr);
 
 /**
- * @return The offset in the USA cartridge of the music module for the state of the game, the
- * module of the track in a race and the module of the menus elsewhere, or 0 when the music of the
- * PC release plays instead.
+ * @return The offset in the USA cartridge of the music module of the track of the race, or 0
+ * while a race loads, before the instant replay, and when the music of the PC release plays
+ * instead.
  */
 std::uint32_t PcGameMusicModule();
 
