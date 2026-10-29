@@ -207,10 +207,3 @@ void SetGameStateFrontEnd(void) {
 int DispatchGameStateFrame(void) {
     return g_apfnGameStateHandlers[g_dwGameState]();
 }
-
-void ResetAllPlayers(void) {
-    for (int player = 0; player < MAX_PLAYERS; ++player) {
-        g_aVehicles[player].InitPlayerVehicleSlot();
-        g_aPlayerInputState[player].InitPlayerInputState();
-    }
-}

@@ -149,6 +149,7 @@ else()
     driving.c
     exhaustspawn.c
     fog.c
+    game.c
     headlight.c
     hudmessage.c
     hudoverlay.c

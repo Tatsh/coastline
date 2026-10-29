@@ -3,7 +3,9 @@
 #include "common/fade.h"
 #include "common/heap.h"
 #include "common/input.h"
+#include "common/playerinput.h"
 #include "common/system.h"
+#include "common/vehicle.h"
 #include "common/weather.h"
 
 #if !TGR_BOSS_RALLY
@@ -14,7 +16,6 @@
 #include "common/optionsettings.h"
 #include "common/replay.h"
 #include "common/splash.h"
-#include "common/vehicle.h"
 #else
 #include "common/displaylistops.h"
 #include "common/gameinit.h"
@@ -89,16 +90,19 @@ void StartRaceWithPlayerCount(u32 players) {
 #endif
 }
 
-#if !TGR_BOSS_RALLY
 void ResetAllPlayers(void) {
     int i;
 
     for (i = 0; i < MAX_PLAYERS; i++) {
+#if TGR_BOSS_RALLY
+        g_aVehicles[i].InitPlayerVehicleSlot();
+        g_aPlayerInputState[i].InitPlayerInputState();
+#else
         InitPlayerVehicleSlot(&g_aVehicles[i]);
         InitPlayerInputState(&g_aPlayerInputState[i]);
+#endif
     }
 }
-#endif /* !TGR_BOSS_RALLY */
 
 void InitGameAndShowMenus(void) {
 #if TGR_BOSS_RALLY
