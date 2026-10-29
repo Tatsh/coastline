@@ -403,25 +403,19 @@ std::optional<std::string> ConvertGhostRecordings(const std::filesystem::path &d
     return std::nullopt;
 }
 
-// Each car of cars as glTF of the same name and its buffer, in place of the .rca file once the
-// files written build the same bytes.
-std::optional<std::string> ConvertCarModels(const std::filesystem::path &dataDirectory) {
-    constexpr std::size_t RCA_HEADER = 0x8000;
+// Writes the model of a car as glTF with its buffer and images, and removes the model once the
+// written files build the same bytes.
+std::optional<std::string> ConvertCarModel(const std::filesystem::path &car,
+                                           std::size_t header,
+                                           const std::filesystem::path &gltfPath,
+                                           const std::filesystem::path &bufferPath) {
     std::error_code error;
-    std::vector<std::filesystem::path> cars;
-    for (const auto &entry : std::filesystem::directory_iterator(dataDirectory / "cars", error)) {
-        if (Lowercase(entry.path().extension().string()) == ".rca") {
-            cars.push_back(entry.path());
-        }
-    }
-    for (const auto &car : cars) {
+    {
         auto bytes = ReadWholeFile(car);
         if (!bytes) {
             return std::format("{} cannot be read.", car.string());
         }
-        auto gltfPath = std::filesystem::path(car).replace_extension(".gltf");
-        auto bufferPath = std::filesystem::path(car).replace_extension(".bin");
-        auto model = CarModelToGltf(*bytes, RCA_HEADER, bufferPath.filename().string());
+        auto model = CarModelToGltf(*bytes, header, bufferPath.filename().string());
         if (!model) {
             return std::format("{} is not a car ({}).", car.string(), model.error());
         }
@@ -447,7 +441,28 @@ std::optional<std::string> ConvertCarModels(const std::filesystem::path &dataDir
         if (!rebuilt || *rebuilt != *bytes) {
             return std::format("{} does not read back as {}.", gltfPath.string(), car.string());
         }
-        std::filesystem::remove(car, error);
+    }
+    std::filesystem::remove(car, error);
+    return std::nullopt;
+}
+
+// Replaces each .rca file of cars with a glTF file of the same name.
+std::optional<std::string> ConvertCarModels(const std::filesystem::path &dataDirectory) {
+    constexpr std::size_t RCA_HEADER = 0x8000;
+    std::error_code error;
+    std::vector<std::filesystem::path> cars;
+    for (const auto &entry : std::filesystem::directory_iterator(dataDirectory / "cars", error)) {
+        if (Lowercase(entry.path().extension().string()) == ".rca") {
+            cars.push_back(entry.path());
+        }
+    }
+    for (const auto &car : cars) {
+        if (auto failure = ConvertCarModel(car,
+                                           RCA_HEADER,
+                                           std::filesystem::path(car).replace_extension(".gltf"),
+                                           std::filesystem::path(car).replace_extension(".bin"))) {
+            return failure;
+        }
     }
     return std::nullopt;
 }
@@ -630,6 +645,18 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     if (auto failure = ExtractCartridge(*bytes, known.manifest, destination)) {
         return std::unexpected(
             std::format("{} cannot be imported ({}).", image.string(), *failure));
+    }
+    // Replaces the model.bin of each car with model.gltf, its buffer mesh.bin, and its images.
+    std::error_code carsError;
+    for (const auto &car : std::filesystem::directory_iterator(destination / "cars", carsError)) {
+        auto model = car.path() / "model.bin";
+        if (!std::filesystem::exists(model)) {
+            continue;
+        }
+        if (auto failure =
+                ConvertCarModel(model, 0, car.path() / "model.gltf", car.path() / "mesh.bin")) {
+            return std::unexpected(*failure);
+        }
     }
     std::error_code error;
     if (*release == RomRelease::Usa) {
