@@ -28,6 +28,7 @@
 #ifdef COASTLINE_PC_GAME
 #include "cartridgedata.h"
 #include "dinputcompat.h"
+#include "n64displaylist.h"
 #include "n64frontend.h"
 #include "pcgamerun.h"
 #include "renderhost.h"
@@ -263,6 +264,9 @@ int main(int argc, char *argv[]) {
     parser.add_argument("--height").help("height of the window in pixels").scan<'i', int>();
     parser.add_argument("--fullscreen").help("cover the display").flag();
     parser.add_argument("--windowed").help("draw in a window").flag();
+    parser.add_argument("--dump-textures")
+        .help("write each texture of the front end to the textures directory as a PNG file")
+        .flag();
     parser.add_argument("--antialias")
         .help("samples of each pixel for anti-aliasing: 1 for none, or 2, 4, or 8")
         .scan<'i', int>();
@@ -463,6 +467,8 @@ int main(int argc, char *argv[]) {
                 ReadN64FrontEndData();
                 SetN64FrontEndInput(&input);
                 SetN64FrontEndAudio(playMusic ? &audio : nullptr);
+                coastline::SetN64TextureDirectory(paths->data / "textures",
+                                                  parser.get<bool>("--dump-textures"));
                 coastline::StartPcGameForFrontEnd();
                 auto keys = ParseKeyScript(parser.present("--keys").value_or(""));
                 int frame = 0;

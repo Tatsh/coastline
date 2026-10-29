@@ -10,11 +10,13 @@
 #include <array>
 #include <cmath>
 #include <cstring>
+#include <format>
 #include <unordered_map>
 #include <vector>
 
 #include <PR/gbi.h>
 #include <PR/gu.h>
+#include <SDL3/SDL.h>
 
 #include "screen.h"
 #include "sdl/cartridgedata.h"
@@ -115,6 +117,8 @@ struct RdpState {
 
 RdpState g_rdp;
 coastline::TlRenderer *g_renderer;
+std::filesystem::path g_textureDirectory;
+bool g_dumpTextures;
 
 Matrix Identity() {
     Matrix m{};
@@ -966,6 +970,59 @@ void LoadVertices(const GbiCommand *command) {
     }
 }
 
+// Replace decoded pixels with the PNG file of the same pixels in the directory of the textures, or
+// write the file there when dumping. A replacement may have any size, as the coordinates of the
+// draws span the texture.
+void ReplaceWithPng(std::vector<std::uint8_t> &rgba, std::uint32_t &width, std::uint32_t &height) {
+    if (g_textureDirectory.empty()) {
+        return;
+    }
+    std::uint64_t hash = HashBytes(kHashSeed, rgba.data(), rgba.size());
+    std::filesystem::path path =
+        g_textureDirectory / std::format("{}x{}-{:016x}.png", width, height, hash);
+    std::error_code error;
+    if (std::filesystem::exists(path, error)) {
+        SDL_Surface *loaded = SDL_LoadPNG(path.string().c_str());
+        SDL_Surface *converted =
+            loaded != nullptr ? SDL_ConvertSurface(loaded, SDL_PIXELFORMAT_RGBA32) : nullptr;
+        if (converted != nullptr) {
+            width = static_cast<std::uint32_t>(converted->w);
+            height = static_cast<std::uint32_t>(converted->h);
+            rgba.resize(static_cast<std::size_t>(width) * height * 4);
+            for (std::uint32_t row = 0; row < height; ++row) {
+                std::memcpy(&rgba[static_cast<std::size_t>(row) * width * 4],
+                            static_cast<const std::uint8_t *>(converted->pixels) +
+                                static_cast<std::size_t>(row) * converted->pitch,
+                            static_cast<std::size_t>(width) * 4);
+            }
+        } else {
+            SDL_LogWarn(SDL_LOG_CATEGORY_RENDER,
+                        "The texture %s was not read: %s",
+                        path.string().c_str(),
+                        SDL_GetError());
+        }
+        SDL_DestroySurface(converted);
+        SDL_DestroySurface(loaded);
+        return;
+    }
+    if (!g_dumpTextures) {
+        return;
+    }
+    std::filesystem::create_directories(g_textureDirectory, error);
+    SDL_Surface *surface = SDL_CreateSurfaceFrom(static_cast<int>(width),
+                                                 static_cast<int>(height),
+                                                 SDL_PIXELFORMAT_RGBA32,
+                                                 rgba.data(),
+                                                 static_cast<int>(width * 4));
+    if (surface == nullptr || !SDL_SavePNG(surface, path.string().c_str())) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_RENDER,
+                    "The texture %s was not written: %s",
+                    path.string().c_str(),
+                    SDL_GetError());
+    }
+    SDL_DestroySurface(surface);
+}
+
 // The texture of the tile triangles sample, at the size of its mask or of the tile.
 coastline::TextureHandle TileTexture(int index, int &width, int &height) {
     const Tile &tile = g_rdp.tiles[static_cast<std::size_t>(index) & 7];
@@ -996,9 +1053,10 @@ coastline::TextureHandle TileTexture(int index, int &width, int &height) {
             out[3] = static_cast<std::uint8_t>(packed >> 24);
         }
     }
-    return StoreBakedTexture(
-               key, rgba, static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height))
-        .handle;
+    std::uint32_t uploadWidth = static_cast<std::uint32_t>(width);
+    std::uint32_t uploadHeight = static_cast<std::uint32_t>(height);
+    ReplaceWithPng(rgba, uploadWidth, uploadHeight);
+    return StoreBakedTexture(key, rgba, uploadWidth, uploadHeight).handle;
 }
 
 void DrawTriangle(std::size_t a, std::size_t b, std::size_t c) {
@@ -1207,6 +1265,11 @@ void SubmitN64DisplayList(GbiCommand *list) {
 
 bool CartridgeDataIsBigEndian(const void *host) {
     return coastline::CartridgeData::IsSegmentCopy(host);
+}
+
+void coastline::SetN64TextureDirectory(std::filesystem::path directory, bool dump) {
+    g_textureDirectory = std::move(directory);
+    g_dumpTextures = dump;
 }
 
 void coastline::RenderN64DisplayLists() {
