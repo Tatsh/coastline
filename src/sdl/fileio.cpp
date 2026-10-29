@@ -14,6 +14,7 @@
 #include <SDL3/SDL.h>
 
 #include "sdl/gamefiles.h"
+#include "sdl/log.h"
 #include "win32/diagnostics.h"
 
 namespace {
@@ -23,6 +24,13 @@ constexpr int MESSAGE_SIZE = 1024;
 
 std::filesystem::path g_dataDirectory;
 std::filesystem::path g_stateDirectory;
+
+// End the game, as the PC release does on an error of a file. The destructors of the program do
+// not run while the threads of the audio and of SDL still run.
+[[noreturn]] void ExitOnFileError() {
+    coastline::StopGameLog();
+    std::_Exit(1);
+}
 
 void WriteDebugMessage(const char *message) {
     SDL_LogDebug(SDL_LOG_CATEGORY_APPLICATION, "%s", message);
@@ -167,7 +175,7 @@ GameFile *CHK_FReadOpen(const char *pszPath) {
             std::fclose(pErrorFile);
         }
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", szMessage);
-        std::exit(1);
+        ExitOnFileError();
     }
     return pFile;
 }
@@ -189,7 +197,7 @@ GameFile *CHK_FWriteOpen(const char *path, const char *mode) {
         std::snprintf(
             message, sizeof(message), "CHK_FWriteOpen(): error creating file %s.\n", file->pszPath);
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", message);
-        std::exit(1);
+        ExitOnFileError();
     }
     return file;
 }
@@ -200,7 +208,7 @@ void CHK_FPutS(const char *text, GameFile *file) {
         std::snprintf(
             message, sizeof(message), "CHK_FPutS(): error writing file %s.\n", file->pszPath);
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", message);
-        std::exit(1);
+        ExitOnFileError();
     }
 }
 
@@ -220,7 +228,7 @@ bool FCHK_FRead(void *pBuffer, size_t nSize, size_t nCount, GameFile *pFile) {
                       static_cast<int>(nSize * nCount),
                       static_cast<int>(nRead * nSize));
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", szMessage);
-        std::exit(1);
+        ExitOnFileError();
     }
     return true;
 }
@@ -233,7 +241,7 @@ void *CHK_FRead(void *pBuffer, size_t nSize, size_t nCount, GameFile *pFile) {
                       "CHK_FRead(): trying to read %u bytes, but got EOF.\n",
                       static_cast<unsigned>(nCount * nSize));
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", szMessage);
-        std::exit(1);
+        ExitOnFileError();
     }
     return pBuffer;
 }
@@ -278,7 +286,7 @@ void CHK_FClose(GameFile *pFile) {
         std::snprintf(
             szMessage, sizeof(szMessage), "CHK_FClose(): error closing file %s.\n", pFile->pszPath);
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", szMessage);
-        std::exit(1);
+        ExitOnFileError();
     }
     std::free(pFile->pszPath);
     std::free(pFile);
@@ -305,7 +313,7 @@ void *CHK_AllocateMemory(size_t nSize, const char *szCaller) {
                       "CHK_AllocateMemory(): Out of memory: couldn't allocate %s\n",
                       szCaller);
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", szMessage);
-        std::exit(1);
+        ExitOnFileError();
     }
     return pMemory;
 }
@@ -323,7 +331,7 @@ void *CHK_ReAllocateMemory(void *pMemory, size_t nSize, const char *szCaller) {
                       "CHK_ReAllocateMemory(): Out of memory: couldn't reallocate %s\n",
                       szCaller);
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", szMessage);
-        std::exit(1);
+        ExitOnFileError();
     }
     return pResizedMemory;
 }
