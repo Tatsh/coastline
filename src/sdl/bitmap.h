@@ -8,12 +8,13 @@ extern "C" {
 #endif
 
 /**
- * Read a bitmap file of the game as LoadImageA() reads one into a DIB section and GetObjectA()
- * describes it: the rows as the file stores them, from the bottom, each a multiple of four bytes.
+ * Read the PNG image the import converted from a bitmap file of the game, as LoadImageA() reads
+ * the bitmap into a DIB section and GetObjectA() describes it: 24-bit BGR rows from the bottom,
+ * each a multiple of four bytes.
  *
- * @param path The path of the PC release.
+ * @param path The path of the bitmap in the PC release, whose extension is replaced with .png.
  * @param bitmap Receives the description, whose bmBits is allocated with malloc().
- * @return Whether the file is a bitmap the game reads.
+ * @return Whether the image exists and can be read.
  */
 BOOL LoadGameBitmap(const char *path, BITMAP *bitmap);
 

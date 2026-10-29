@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <cctype>
+#include <cstring>
 #include <format>
 #include <fstream>
 #include <iterator>
@@ -12,6 +13,7 @@
 #include <sstream>
 
 #include <FLAC/stream_encoder.h>
+#include <SDL3/SDL.h>
 #include <nlohmann/json.hpp>
 
 #include "assetchain.h"
@@ -249,14 +251,15 @@ std::expected<std::vector<IsoEntry>, std::string> ListIso(SectorReader &reader) 
     return entries;
 }
 
+std::string Lowercase(std::string text) {
+    std::ranges::transform(text, text.begin(), [](unsigned char c) { return std::tolower(c); });
+    return text;
+}
+
 // The files of the disc the game opens. The video, the installers, DirectX, the programs, and the
 // pictures of the menus of the Windows release, which the front end of the Nintendo 64 release
 // replaces, are left on the disc.
 bool IsGameData(const std::filesystem::path &path) {
-    auto lower = [](std::string text) {
-        std::ranges::transform(text, text.begin(), [](unsigned char c) { return std::tolower(c); });
-        return text;
-    };
     static constexpr std::array<std::string_view, 6> directories{
         "cargfx", "cars", "images", "paint", "sfx", "tracks"};
     // The text of the game is in the string resources of BRString.dll.
@@ -267,7 +270,7 @@ bool IsGameData(const std::filesystem::path &path) {
                                                            "rallyintro1.dat",
                                                            "rallyintro2.dat",
                                                            "rallyoutro.dat"};
-    std::string first = lower(path.begin()->string());
+    std::string first = Lowercase(path.begin()->string());
     if (std::next(path.begin()) != path.end()) {
         return std::ranges::find(directories, first) != directories.end();
     }
@@ -295,6 +298,52 @@ CopyIsoFile(SectorReader &reader, const IsoEntry &entry, const std::filesystem::
     }
     return out ? std::nullopt :
                  std::optional(std::format("{} was not written.", destination.string()));
+}
+
+struct SurfaceDeleter {
+    void operator()(SDL_Surface *surface) const {
+        SDL_DestroySurface(surface);
+    }
+};
+using Surface = std::unique_ptr<SDL_Surface, SurfaceDeleter>;
+
+// Whether two surfaces have the same size and the same pixels, as RGB24.
+bool SamePixels(SDL_Surface *a, SDL_Surface *b) {
+    Surface first(SDL_ConvertSurface(a, SDL_PIXELFORMAT_RGB24));
+    Surface second(SDL_ConvertSurface(b, SDL_PIXELFORMAT_RGB24));
+    if (!first || !second || first->w != second->w || first->h != second->h) {
+        return false;
+    }
+    for (int row = 0; row < first->h; ++row) {
+        if (std::memcmp(static_cast<const char *>(first->pixels) +
+                            static_cast<std::size_t>(row) * static_cast<std::size_t>(first->pitch),
+                        static_cast<const char *>(second->pixels) +
+                            static_cast<std::size_t>(row) * static_cast<std::size_t>(second->pitch),
+                        static_cast<std::size_t>(first->w) * 3) != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+// A bitmap as a PNG image of the same name, in place of the bitmap once the image reads back with
+// the same pixels.
+std::optional<std::string> ConvertBitmap(const std::filesystem::path &bitmap) {
+    auto png = std::filesystem::path(bitmap).replace_extension(".png");
+    Surface original(SDL_LoadBMP(bitmap.string().c_str()));
+    if (!original) {
+        return std::format("{} cannot be read: {}", bitmap.string(), SDL_GetError());
+    }
+    if (!SDL_SavePNG(original.get(), png.string().c_str())) {
+        return std::format("{} cannot be written: {}", png.string(), SDL_GetError());
+    }
+    Surface converted(SDL_LoadPNG(png.string().c_str()));
+    if (!converted || !SamePixels(original.get(), converted.get())) {
+        return std::format("{} does not read back as {}.", png.string(), bitmap.string());
+    }
+    std::error_code error;
+    std::filesystem::remove(bitmap, error);
+    return std::nullopt;
 }
 
 // The strings of BRString.dll as strings/default/pc.json, by identifier, in place of the library.
@@ -538,10 +587,7 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
                                                    const std::filesystem::path &dataDirectory,
                                                    const ImportProgress &progress) {
     std::vector<CueTrack> tracks;
-    auto extension = disc.extension().string();
-    std::ranges::transform(
-        extension, extension.begin(), [](unsigned char c) { return std::tolower(c); });
-    if (extension == ".cue") {
+    if (Lowercase(disc.extension().string()) == ".cue") {
         auto parsed = ParseCueSheet(disc);
         if (!parsed) {
             return std::unexpected(parsed.error());
@@ -580,14 +626,15 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         if (auto failure = CopyIsoFile(reader, entry, dataDirectory / entry.path)) {
             return std::unexpected(*failure);
         }
-        if (entry.path.filename().string().size() == 12 &&
-            std::ranges::equal(
-                entry.path.filename().string(),
-                std::string_view("brstring.dll"),
-                [](unsigned char a, unsigned char b) { return std::tolower(a) == b; })) {
-            if (auto failure = ConvertStringLibrary(dataDirectory / entry.path, dataDirectory)) {
-                return std::unexpected(*failure);
-            }
+        std::string name = Lowercase(entry.path.filename().string());
+        std::optional<std::string> failure;
+        if (name == "brstring.dll") {
+            failure = ConvertStringLibrary(dataDirectory / entry.path, dataDirectory);
+        } else if (name.ends_with(".bmp")) {
+            failure = ConvertBitmap(dataDirectory / entry.path);
+        }
+        if (failure) {
+            return std::unexpected(*failure);
         }
         ++written;
     }
