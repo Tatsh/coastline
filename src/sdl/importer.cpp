@@ -424,6 +424,161 @@ std::optional<std::string> ConvertConsoleSound(const std::filesystem::path &soun
     return std::nullopt;
 }
 
+// The addresses of the fonts of a release in its main segment, which starts at 0x80200000.
+struct FontAddresses {
+    std::uint32_t largeAtlas;
+    std::uint32_t smallAtlas;
+    std::uint32_t largeGradient;
+    std::uint32_t largeShadowGradient;
+    std::uint32_t smallGradient;
+    std::uint32_t smallShadowGradient;
+    std::uint32_t charToGlyph;
+    std::uint32_t largeOffsets;
+    std::uint32_t smallOffsets;
+};
+
+constexpr FontAddresses USA_FONTS{0x8028FE00,
+                                  0x8029DA00,
+                                  0x8028BDF0,
+                                  0x8028BF30,
+                                  0x8028C070,
+                                  0x8028C1B0,
+                                  0x802A1740,
+                                  0x802A17A0,
+                                  0x802A187C};
+constexpr FontAddresses EUR_FONTS{0x802925C0,
+                                  0x802A01C0,
+                                  0x8028E550,
+                                  0x8028E690,
+                                  0x8028E7D0,
+                                  0x8028E910,
+                                  0x802A3F00,
+                                  0x802A3F60,
+                                  0x802A403C};
+constexpr FontAddresses JPN_FONTS{0x80292060,
+                                  0x8029FC60,
+                                  0x8028DFA0,
+                                  0x8028E0E0,
+                                  0x8028E220,
+                                  0x8028E360,
+                                  0x802A39A0,
+                                  0x802A3A00,
+                                  0x802A3ADC};
+
+// The two fonts of the menus as PNG images of their glyphs and of the gradients that colour them,
+// and fonts.json with the layout of the glyphs. The glyphs are 4-bit intensity and alpha, two
+// rows of cells, and each gradient is 8 texels across and 40 down.
+std::optional<std::string> ConvertConsoleFonts(const std::filesystem::path &destination,
+                                               RomRelease release) {
+    constexpr std::uint32_t SEGMENT_BASE = 0x80200000;
+    constexpr int LARGE_WIDTH = 704;
+    constexpr int LARGE_CELL = 40;
+    constexpr int SMALL_WIDTH = 392;
+    constexpr int SMALL_CELL = 20;
+    constexpr int GRADIENT_WIDTH = 8;
+    constexpr int GRADIENT_HEIGHT = 40;
+    constexpr std::size_t OFFSETS = 55;
+    constexpr std::size_t CHARACTERS = 96;
+    const FontAddresses &fonts = release == RomRelease::Usa ? USA_FONTS :
+                                 release == RomRelease::Eur ? EUR_FONTS :
+                                                              JPN_FONTS;
+    auto segment = ReadWholeFile(destination / "segment.bin");
+    if (!segment) {
+        return std::format("{} cannot be read.", (destination / "segment.bin").string());
+    }
+    auto bytesAt = [&](std::uint32_t address,
+                       std::size_t size) -> std::optional<std::span<const std::uint8_t>> {
+        if (address < SEGMENT_BASE || address - SEGMENT_BASE > segment->size() ||
+            size > segment->size() - (address - SEGMENT_BASE)) {
+            return std::nullopt;
+        }
+        return std::span<const std::uint8_t>(*segment).subspan(address - SEGMENT_BASE, size);
+    };
+    auto fontsDirectory = destination / "fonts";
+    std::error_code error;
+    std::filesystem::create_directories(fontsDirectory, error);
+    auto writeImage = [&](std::string_view name,
+                          std::uint32_t address,
+                          int width,
+                          int height) -> std::optional<std::string> {
+        auto texels = bytesAt(address, static_cast<std::size_t>(width) * height);
+        if (!texels) {
+            return std::format("The texels of {} are outside the main segment.", name);
+        }
+        // The console holds the rows from the bottom up, and draws them with a negative step.
+        std::vector<std::uint8_t> rgba;
+        rgba.reserve(texels->size() * 4);
+        for (int row = height - 1; row >= 0; --row) {
+            for (int column = 0; column < width; ++column) {
+                std::uint8_t texel = (*texels)[static_cast<std::size_t>(row) * width + column];
+                auto intensity = static_cast<std::uint8_t>((texel >> 4) * 17);
+                rgba.insert(rgba.end(),
+                            {intensity,
+                             intensity,
+                             intensity,
+                             static_cast<std::uint8_t>((texel & 0xf) * 17)});
+            }
+        }
+        auto path = fontsDirectory / (std::string(name) + ".png");
+        if (!SaveRgba8Png(path, rgba, width, height)) {
+            return std::format("{} does not read back as its texels.", path.string());
+        }
+        return std::nullopt;
+    };
+    for (auto [name, address, width, height] :
+         {std::tuple{"large", fonts.largeAtlas, LARGE_WIDTH, 2 * LARGE_CELL},
+          {"small", fonts.smallAtlas, SMALL_WIDTH, 2 * SMALL_CELL},
+          {"large-gradient", fonts.largeGradient, GRADIENT_WIDTH, GRADIENT_HEIGHT},
+          {"large-shadow-gradient", fonts.largeShadowGradient, GRADIENT_WIDTH, GRADIENT_HEIGHT},
+          {"small-gradient", fonts.smallGradient, GRADIENT_WIDTH, GRADIENT_HEIGHT},
+          {"small-shadow-gradient", fonts.smallShadowGradient, GRADIENT_WIDTH, GRADIENT_HEIGHT}}) {
+        if (auto failure = writeImage(name, address, width, height)) {
+            return failure;
+        }
+    }
+    auto words = [&](std::uint32_t address) -> std::optional<nlohmann::ordered_json> {
+        auto bytes = bytesAt(address, OFFSETS * 4);
+        if (!bytes) {
+            return std::nullopt;
+        }
+        nlohmann::ordered_json list = nlohmann::ordered_json::array();
+        for (std::size_t i = 0; i < OFFSETS; ++i) {
+            list.push_back(
+                static_cast<std::int32_t>((*bytes)[i * 4] << 24 | (*bytes)[i * 4 + 1] << 16 |
+                                          (*bytes)[i * 4 + 2] << 8 | (*bytes)[i * 4 + 3]));
+        }
+        return list;
+    };
+    auto glyphs = bytesAt(fonts.charToGlyph, CHARACTERS);
+    auto largeOffsets = words(fonts.largeOffsets);
+    auto smallOffsets = words(fonts.smallOffsets);
+    if (!glyphs || !largeOffsets || !smallOffsets) {
+        return std::string("The glyph tables of the fonts are outside the main segment.");
+    }
+    // The glyph of each character from '!', and where each glyph starts in its row. The images are
+    // upright, and the first row of glyphs is the upper row of cells.
+    nlohmann::ordered_json layout{
+        {"firstCharacter", "!"},
+        {"glyphOfCharacter", std::vector<int>(glyphs->begin(), glyphs->end())},
+        {"firstRowGlyphs", 27},
+        {"large",
+         {{"image", "large.png"},
+          {"cell", LARGE_CELL},
+          {"padding", 7},
+          {"gradient", "large-gradient.png"},
+          {"shadowGradient", "large-shadow-gradient.png"},
+          {"glyphStarts", *largeOffsets}}},
+        {"small",
+         {{"image", "small.png"},
+          {"cell", SMALL_CELL},
+          {"padding", 4},
+          {"gradient", "small-gradient.png"},
+          {"shadowGradient", "small-shadow-gradient.png"},
+          {"glyphStarts", *smallOffsets}}}};
+    std::ofstream(fontsDirectory / "fonts.json", std::ios::trunc) << layout.dump(1) << '\n';
+    return std::nullopt;
+}
+
 // Each ghost recording of the demos as JSON of the same name, in place of the file once the JSON
 // builds the same bytes.
 std::optional<std::string> ConvertGhostRecordings(const std::filesystem::path &dataDirectory) {
@@ -808,6 +963,9 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         if (auto failure = ConvertConsoleSound(sound)) {
             return std::unexpected(*failure);
         }
+    }
+    if (auto failure = ConvertConsoleFonts(destination, *release)) {
+        return std::unexpected(*failure);
     }
     for (const auto &model : splashModels) {
         auto stem = model.stem().string();
