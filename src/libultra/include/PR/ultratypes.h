@@ -1,6 +1,11 @@
 #ifndef PR_ULTRATYPES_H
 #define PR_ULTRATYPES_H
 
+/* IDO 5.3 compiles C89 and spells the inline of C99 as __inline. */
+#if defined(__sgi) && !defined(inline)
+#define inline __inline
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
