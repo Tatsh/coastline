@@ -442,6 +442,11 @@ std::optional<std::string> ConvertModel(const std::filesystem::path &car,
         if (!rebuilt || *rebuilt != *bytes) {
             return std::format("{} does not read back as {}.", gltfPath.string(), car.string());
         }
+        const auto &coverage = model->json["extras"]["coastlineCoverage"];
+        SDL_Log("%s draws %zu of %zu triangles with state glTF expresses.",
+                gltfPath.filename().string().c_str(),
+                coverage["exactTriangles"].get<std::size_t>(),
+                coverage["triangles"].get<std::size_t>());
     }
     std::filesystem::remove(car, error);
     return std::nullopt;

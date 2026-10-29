@@ -93,9 +93,23 @@ constexpr std::uint8_t OP_SETENVCOLOR = 0xfb;
 constexpr std::uint8_t OP_SETCOMBINE = 0xfc;
 constexpr std::uint8_t OP_SETTIMG = 0xfd;
 
-// The inputs of the colour combiner that are the primitive and the environment colour.
+constexpr std::uint8_t OP_RDPLOADSYNC = 0xe6;
+constexpr std::uint8_t OP_RDPPIPESYNC = 0xe7;
+constexpr std::uint8_t OP_RDPTILESYNC = 0xe8;
+constexpr std::uint8_t OP_RDPFULLSYNC = 0xe9;
+
+// The inputs of the colour combiner the coverage reads, and the codes of 0 and 1 of each slot.
+constexpr std::uint32_t G_CCMUX_TEXEL0 = 1;
 constexpr std::uint32_t G_CCMUX_PRIMITIVE = 3;
+constexpr std::uint32_t G_CCMUX_SHADE = 4;
 constexpr std::uint32_t G_CCMUX_ENVIRONMENT = 5;
+constexpr std::uint32_t CC_A_ONE = 6;
+constexpr std::uint32_t CC_A_B_ZERO = 15;
+constexpr std::uint32_t CC_C_ZERO = 31;
+constexpr std::uint32_t CC_D_ZERO = 7;
+constexpr std::uint32_t G_FOG = 0x10000;
+constexpr std::uint32_t G_MDSFT_CYCLETYPE = 20;
+constexpr std::uint32_t G_CYC_2CYCLE = 1;
 
 std::array<std::uint8_t, 4> Color(std::uint32_t rgba) {
     return {static_cast<std::uint8_t>(rgba >> 24),
@@ -266,6 +280,27 @@ public:
         return m_materials;
     }
 
+    // What of the display lists glTF does not express: the commands the walk does not follow,
+    // by opcode, and the triangles drawn with a combiner other than a product of a texel, the
+    // shade, and a constant colour, with fog, or in two cycles.
+    nlohmann::ordered_json Coverage() const {
+        nlohmann::ordered_json commands = nlohmann::ordered_json::object();
+        for (const auto &[opcode, count] : m_ignored) {
+            commands[std::format("{:#04x}", opcode)] = count;
+        }
+        nlohmann::ordered_json combiners = nlohmann::ordered_json::object();
+        for (const auto &[combiner, count] : m_combiners) {
+            combiners[std::format("{:06x}:{:08x}", combiner >> 32, combiner & 0xffffffff)] = count;
+        }
+        std::size_t inexact = m_inexact;
+        return {{"triangles", m_triangles},
+                {"exactTriangles", m_triangles - inexact},
+                {"fogTriangles", m_fogTriangles},
+                {"twoCycleTriangles", m_twoCycleTriangles},
+                {"combiners", std::move(combiners)},
+                {"ignoredCommands", std::move(commands)}};
+    }
+
 private:
     std::optional<std::uint32_t> Offset(std::uint32_t address, std::size_t size) const {
         if (address < m_base || address - m_base > m_image.size() ||
@@ -368,6 +403,34 @@ private:
         return material;
     }
 
+    // Counts a triangle by whether glTF expresses the state it is drawn with. The colour of the
+    // first cycle, (a - b) * c + d, is a product glTF expresses where b and d are 0 and a and c
+    // are each a texel, the shade, a constant colour, or 1.
+    void Tally() {
+        ++m_triangles;
+        std::uint32_t a = m_combineHigh >> 20 & 0xf;
+        std::uint32_t b = m_combineLow >> 28 & 0xf;
+        std::uint32_t c = m_combineHigh >> 15 & 0x1f;
+        std::uint32_t d = m_combineLow >> 15 & 7;
+        bool product = b == CC_A_B_ZERO && d == CC_D_ZERO &&
+                       (a == G_CCMUX_TEXEL0 || a == G_CCMUX_PRIMITIVE || a == G_CCMUX_SHADE ||
+                        a == G_CCMUX_ENVIRONMENT || a == CC_A_ONE) &&
+                       (c == G_CCMUX_TEXEL0 || c == G_CCMUX_PRIMITIVE || c == G_CCMUX_SHADE ||
+                        c == G_CCMUX_ENVIRONMENT);
+        bool constant = a == CC_A_B_ZERO && b == CC_A_B_ZERO && c == CC_C_ZERO &&
+                        (d == G_CCMUX_TEXEL0 || d == G_CCMUX_PRIMITIVE || d == G_CCMUX_SHADE ||
+                         d == G_CCMUX_ENVIRONMENT);
+        bool fog = (m_geometryMode & G_FOG) != 0;
+        bool twoCycle = (m_otherModeH >> G_MDSFT_CYCLETYPE & 3) == G_CYC_2CYCLE;
+        bool combiner = m_combineHigh != 0 || m_combineLow != 0;
+        if (combiner && !product && !constant) {
+            ++m_combiners[static_cast<std::uint64_t>(m_combineHigh) << 32 | m_combineLow];
+        }
+        m_fogTriangles += fog ? 1 : 0;
+        m_twoCycleTriangles += twoCycle ? 1 : 0;
+        m_inexact += (combiner && !product && !constant) || fog || twoCycle ? 1 : 0;
+    }
+
     std::optional<std::string> Triangle(std::uint32_t packed, Triangles &triangles) {
         std::array<std::uint32_t, 3> corners{};
         for (int i = 0; i < 3; ++i) {
@@ -377,6 +440,7 @@ private:
             }
             corners[static_cast<std::size_t>(i)] = *m_slots[slot];
         }
+        Tally();
         Material material = Current();
         auto found = std::ranges::find(m_materials, material);
         if (found == m_materials.end()) {
@@ -527,7 +591,13 @@ private:
                 m_tmem[m_tiles[w1 >> 24 & 7].tmem] = m_textureImage;
                 m_bound = std::nullopt;
                 break;
+            case OP_RDPLOADSYNC:
+            case OP_RDPPIPESYNC:
+            case OP_RDPTILESYNC:
+            case OP_RDPFULLSYNC:
+                break;
             default:
+                ++m_ignored[static_cast<std::uint8_t>(w0 >> 24)];
                 break;
             }
         }
@@ -547,6 +617,12 @@ private:
     std::uint32_t m_envColor = 0xffffffff;
     std::uint32_t m_combineHigh = 0;
     std::uint32_t m_combineLow = 0;
+    std::map<std::uint8_t, std::size_t> m_ignored;
+    std::map<std::uint64_t, std::size_t> m_combiners;
+    std::size_t m_triangles = 0;
+    std::size_t m_inexact = 0;
+    std::size_t m_fogTriangles = 0;
+    std::size_t m_twoCycleTriangles = 0;
     bool m_textureOn = true;
     std::uint32_t m_textureTile = 0;
     double m_scaleS = 1.0;
@@ -1292,7 +1368,8 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
                              {{"imageOffset", imageOffset},
                               {"vertexRuns", std::move(runs)},
                               {"residualBufferView", residualView},
-                              {"attributes", attributes}}}};
+                              {"attributes", attributes}}},
+                            {"coastlineCoverage", walk.Coverage()}};
     model.json["buffers"].push_back({{"uri", bufferUri}, {"byteLength", model.buffer.size()}});
     return model;
 }
