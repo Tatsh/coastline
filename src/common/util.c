@@ -10,7 +10,7 @@
 #include <stdio.h>
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * The blocks the current frame has allocated.
  *
@@ -37,12 +37,12 @@ static s32 g_dwHiliteBlockCount;
  * @ghidraAddress BRGlide: 0x10b24fa4
  */
 static s32 g_dwLightBlockCount;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x106c65ec */
 s32 g_dwFrameBufferIndex;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits) {
 #ifdef ENABLE_PATCHES

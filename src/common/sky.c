@@ -7,16 +7,16 @@
 #include "common/util.h"
 #include "common/weather.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/render.h"
 #else
 #include <PR/R4300.h>
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x106c6608 */
 s32 g_dwSkyboxDisabled;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 /* The sky sits just inside the far end of the view along the depth of the camera. */
 #define SKY_DEPTH_SCALE 0.99f
@@ -27,7 +27,7 @@ s32 g_dwSkyboxDisabled;
 #define FLASH_BLUE 0xFF
 
 /* The RSP takes physical addresses, which are the KSEG0 addresses less its base. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define TO_RSP_ADDRESS(p) (p)
 
 static inline void WriteSkyCombineMode(void) {
@@ -58,7 +58,7 @@ void RenderSkybox(const ViewportRect *viewports) {
 void RenderSkybox(void) {
     ViewportRect *rect;
     Mtx *mtx;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
     gSPClipRatio(gDisplayListPtr++, FRUSTRATIO_1);
     if (g_dwSkyboxDisabled) {
@@ -66,7 +66,7 @@ void RenderSkybox(void) {
     }
 
     if (IsSkyFogFilled()) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         rect = &viewports[g_dwCurrentSplitScreenIndex];
 #else
         rect = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
@@ -90,7 +90,7 @@ void RenderSkybox(void) {
                  g_pActiveCamera->position.x,
                  g_pActiveCamera->position.y,
                  g_pActiveCamera->position.z * SKY_DEPTH_SCALE);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     mtx = AllocDisplayListBlock()->matrix;
     CopyMatrix4x4(g_afMvpMatrix, mtx);
 #else
@@ -105,7 +105,7 @@ void RenderSkybox(void) {
     gDPPipeSync(gDisplayListPtr++);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
     if (g_dwWeatherActive) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         WriteSkyCombineMode();
 #else
         /* Blend the sky towards the fog colour by the intensity of the fog. */
@@ -126,10 +126,10 @@ void RenderSkybox(void) {
                           0,
                           0,
                           TEXEL0);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         gDPSetEnvColor(gDisplayListPtr++, g_bFogR, g_bFogG, g_bFogB, g_bFogIntensity);
     } else {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         WriteSkyCombineMode();
 #else
         gDPSetCombineLERP(
@@ -143,7 +143,7 @@ void RenderSkybox(void) {
     gSPClearGeometryMode(gDisplayListPtr++,
                          G_ZBUFFER | G_SHADE | G_SHADING_SMOOTH | G_FOG | G_LIGHTING |
                              G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (g_dwWeatherActive) {
         gSPSetGeometryMode(gDisplayListPtr++, G_FOG);
     }

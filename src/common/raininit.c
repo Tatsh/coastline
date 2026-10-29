@@ -1,10 +1,10 @@
 #include "common/vecmath.h"
 #include "common/weather.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x104b2550 */
 s32 g_dwRainParticleCount;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 void InitRandomRainParticles(void) {
     s32 view, i;

@@ -2,7 +2,7 @@
 #include "common/game.h"
 #include "common/vehicleaccess.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <math.h>
 #include <string.h>
 #else
@@ -16,7 +16,7 @@
 #define CHASE_HEIGHT 2.4f
 #define CHASE_DISTANCE_AFTER_SEASON 13.0f
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /* The x87 tests take an unordered value as equal to zero and as less. */
 #define CHASE_NONZERO(value) ((value) < 0.0f || (value) > 0.0f)
 #define CHASE_LESS(a, b) (!((a) >= (b)))
@@ -30,7 +30,7 @@ void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share) {
     f32 previous[3];
     /* The original reserves stack for eight bytes of locals it does not use. */
     f32 unused[2];
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double length;
 #else
     f32 length;
@@ -99,7 +99,7 @@ void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share) {
 
 void UpdateCameraLookAtTarget(Vehicle *vehicle) {
     f32 speed;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double target, adjusted;
 #else
     f32 target;
@@ -125,14 +125,14 @@ void UpdateCameraLookAtTarget(Vehicle *vehicle) {
     if (CHASE_LESS(speed, LOOK_AHEAD_SLOW_SPEED)) {
         target = LOOK_AHEAD_SLOW;
     } else if (speed < LOOK_AHEAD_FAST_SPEED) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         target = 4.0f - (long double)speed * LOOK_AHEAD_SLOPE;
 #else
         target = 4.0f - speed * LOOK_AHEAD_SLOPE;
 #endif
     }
     if (VEHICLE_GET(vehicle, LookAhead) < target) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         adjusted = (long double)VEHICLE_GET(vehicle, LookAhead) + LOOK_AHEAD_STEP;
         VEHICLE_SET(vehicle, LookAhead, (f32)adjusted);
         if (target < adjusted) {
@@ -143,7 +143,7 @@ void UpdateCameraLookAtTarget(Vehicle *vehicle) {
             VEHICLE_SET(vehicle, LookAhead, target);
         }
     } else if (CHASE_LESS(target, VEHICLE_GET(vehicle, LookAhead))) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         adjusted = (long double)VEHICLE_GET(vehicle, LookAhead) - LOOK_AHEAD_STEP;
         VEHICLE_SET(vehicle, LookAhead, (f32)adjusted);
         if (CHASE_LESS(adjusted, target)) {
@@ -168,7 +168,7 @@ void ComputeCameraBasis(Vehicle *vehicle, CameraFrame *camera) {
     (void)unused;
     Vec3fSubtract(&direction, &VEHICLE_GET(vehicle, LookAt), &camera->position);
     length = Vec3fLength(&direction);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (CHASE_NONZERO(length)) {
         Vec3fScaleByInverse(&camera->forward, &direction, length);
     } else {
@@ -187,7 +187,7 @@ void ComputeCameraBasis(Vehicle *vehicle, CameraFrame *camera) {
         camera->forward.y = VEHICLE_GET(vehicle, Frame).forward.y;
         camera->forward.z = VEHICLE_GET(vehicle, Frame).forward.z;
     }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     if (VEHICLE_GET(vehicle, FlyMode)) {
         Vec3fCross(&camera->side, &VEHICLE_GET(vehicle, Frame).up, &camera->forward);
     } else {
@@ -284,7 +284,7 @@ void InitCameraForVehicle(Vehicle *vehicle) {
 
 /* The cockpit camera looks along a point this far behind the vehicle, reversed. */
 #define COCKPIT_AIM_DISTANCE -20.0f
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define BUMPER_FORWARD 0.6f
 #else
 #define BUMPER_FORWARD 0.5f
@@ -300,7 +300,7 @@ void InitCameraForVehicle(Vehicle *vehicle) {
 #define TRACKSIDE_MID 51.0f
 #define TRACKSIDE_DISTANCE_SCALE 0.004f
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define COCKPIT_POSITION(axis)                                                                     \
     (((long double)model->cockpitUp * VEHICLE_GET(vehicle, Frame).up.axis +                        \
       (long double)model->cockpitForward * VEHICLE_GET(vehicle, Frame).forward.axis) +             \
@@ -319,7 +319,7 @@ void InitCameraForVehicle(Vehicle *vehicle) {
      (VEHICLE_GET(vehicle, Frame).position.axis +                                                  \
       (VEHICLE_GET(vehicle, Frame).forward.axis * model->mirrorForward +                           \
        VEHICLE_GET(vehicle, Frame).forward.axis * model->mirrorForward)))
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64 && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
 void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera) {
@@ -360,7 +360,7 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     Vec3f target;
     VehicleModel *model;
     f32 lagSource, lag, lagNumerator, pull;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double speed, chaseTerm, lagTerm, smoothedLag, adjusted, zoom;
     f32 distance;
 #else
@@ -387,7 +387,7 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     if (VEHICLE_GET(vehicle, ChaseSpeed) < speed) {
         VEHICLE_SET(vehicle, ChaseSpeed, speed);
     } else {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         VEHICLE_SET(vehicle,
                     ChaseSpeed,
                     (long double)VEHICLE_GET(vehicle, ChaseSpeed) * CHASE_KEEP + speed * CHASE_NEW);
@@ -395,7 +395,7 @@ void UpdateCameraSystem(Vehicle *vehicle) {
         vehicle->chaseSpeed = vehicle->chaseSpeed * CHASE_KEEP + speed * CHASE_NEW;
 #endif
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     smoothedLag =
         (long double)VEHICLE_GET(vehicle, ChaseLag) * CHASE_KEEP + (long double)lag * CHASE_NEW;
     VEHICLE_SET(vehicle, ChaseLag, (f32)smoothedLag);
@@ -409,14 +409,14 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     [VEHICLE_CAMERA_CHASE].position.y = VEHICLE_GET(vehicle, ChasePosition).y;
     VEHICLE_GET(vehicle, Cameras)
     [VEHICLE_CAMERA_CHASE].position.z = VEHICLE_GET(vehicle, ChasePosition).z;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     VEHICLE_SET(vehicle, ChaseLag, smoothedLag * (1.0f - (long double)pull * CHASE_PULL_SCALE));
 #else
     vehicle->chaseLag = vehicle->chaseLag * (1.0f - pull * CHASE_PULL_SCALE);
 #endif
 
     lagNumerator = gInstantReplayActive ? CHASE_LAG_NUMERATOR_REPLAY : CHASE_LAG_NUMERATOR;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     chaseTerm = (long double)VEHICLE_GET(vehicle, ChaseSpeed) * CHASE_SPEED_COEFF;
     lagTerm = ((long double)lagNumerator * 0.0318309888f) * VEHICLE_GET(vehicle, ChaseLag);
 #else
@@ -428,7 +428,7 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     } else {
         UpdateCameraChase(vehicle,
                           &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE],
-#if TGR_PC
+#if TGR_BOSS_RALLY
                           lagTerm - (((long double)pull + chaseTerm) - CHASE_THRESHOLD));
 #else
                           ((CHASE_THRESHOLD - pull) - chaseTerm) + lagTerm);
@@ -473,7 +473,7 @@ void UpdateCameraSystem(Vehicle *vehicle) {
             if (g_dwReplayCameraHoldTimer != 0) {
                 g_dwReplayCameraHoldTimer--;
             }
-#if TGR_PC
+#if TGR_BOSS_RALLY
             adjusted = (long double)VEHICLE_GET(vehicle, CollisionPull) - PULL_DECAY;
             VEHICLE_SET(vehicle, CollisionPull, (f32)adjusted);
             if (adjusted < 0.0f) {
@@ -544,7 +544,7 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     Vec3fCross(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].up,
                &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].forward,
                &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].side);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (!(TRACKSIDE_NEAR < distance)) {
 #else
     if (distance <= TRACKSIDE_NEAR) {
@@ -555,7 +555,7 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     } else {
         distance -= TRACKSIDE_NEAR;
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     zoom =
         cosl((f32)(((long double)distance - 1.0f) * TRACKSIDE_COS_SCALE)) * TRACKSIDE_COS_WEIGHT -
         ((long double)TRACKSIDE_MID - distance) * -TRACKSIDE_DISTANCE_SCALE;

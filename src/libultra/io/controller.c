@@ -1,4 +1,4 @@
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <PR/os_cont.h>
 #else
 #include "controller.h"
@@ -9,7 +9,7 @@
 #endif
 
 s32 osContInit(OSMesgQueue *mq, u8 *bitpattern, OSContStatus *data) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     return 1;
 #else
     OSMesg dummy;
@@ -45,7 +45,7 @@ s32 osContInit(OSMesgQueue *mq, u8 *bitpattern, OSContStatus *data) {
     __osSiCreateAccessQueue();
     osCreateMesgQueue(&__osEepromTimerQ, &__osEepromTimerMsg, 1);
     return ret;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 }
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64

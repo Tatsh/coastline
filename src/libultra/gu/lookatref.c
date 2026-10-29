@@ -1,4 +1,4 @@
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <PR/gu.h>
 
 #include "win32/packedvalue.h"
@@ -17,7 +17,7 @@ void guLookAtReflectF(float mf[4][4],
                       float xUp,
                       float yUp,
                       float zUp) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     guLookAtF(mf, xEye, yEye, zEye, xAt, yAt, zAt, xUp, yUp, zUp);
     l->l[0].l.dir[0] = ConvertDoubleToSignedByte(mf[0][0]);
     l->l[0].l.dir[1] = ConvertDoubleToSignedByte(mf[1][0]);
@@ -99,10 +99,10 @@ void guLookAtReflectF(float mf[4][4],
     mf[1][3] = 0.0f;
     mf[2][3] = 0.0f;
     mf[3][3] = 1.0f;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 }
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 void guLookAtReflect(Mtx *m,
                      LookAt *l,
                      float xEye,
@@ -119,4 +119,4 @@ void guLookAtReflect(Mtx *m,
     guLookAtReflectF(mf, l, xEye, yEye, zEye, xAt, yAt, zAt, xUp, yUp, zUp);
     guMtxF2L(mf, m);
 }
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */

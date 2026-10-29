@@ -1,6 +1,6 @@
 #include "common/system.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * The DMA started and not yet waited for.
  *
@@ -21,11 +21,11 @@ static s32 g_dwIoMessagePendingCount;
  * @ghidraAddress BRGlide: 0x106ed668
  */
 static s32 g_dwIoMessagePoolIndex;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #define IO_MESSAGES 32
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define IO_INCREMENT(value) ((s32)((u32)(value) + 1u))
 #else
 #define IO_INCREMENT(value) ((value) + 1)
@@ -34,7 +34,7 @@ static s32 g_dwIoMessagePoolIndex;
 OSIoMesg *AllocIoMessage(void) {
     if (g_dwIoMessagePendingCount == IO_MESSAGES) {
         /* With every message in flight, one finished DMA frees its message. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
         osContInit(&g_DmaMessageQueue, NULL, NULL);
 #else
         osRecvMesg(&g_DmaMessageQueue, NULL, OS_MESG_BLOCK);
@@ -49,7 +49,7 @@ OSIoMesg *AllocIoMessage(void) {
 void WaitForDmaMessages(void) {
     if (g_dwIoMessagePendingCount != 0) {
         do {
-#if TGR_PC
+#if TGR_BOSS_RALLY
             osContInit(&g_DmaMessageQueue, NULL, NULL);
             g_dwIoMessagePendingCount = (s32)((u32)g_dwIoMessagePendingCount - 1u);
 #else
@@ -61,7 +61,7 @@ void WaitForDmaMessages(void) {
 }
 
 void WaitForVblankMessage(void) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     osContInit(&g_ViRetraceMesgQueue, NULL, NULL);
 #else
     osRecvMesg(&g_ViRetraceMesgQueue, NULL, OS_MESG_BLOCK);

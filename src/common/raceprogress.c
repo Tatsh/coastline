@@ -3,7 +3,7 @@
 #include "common/racerslotaccess.h"
 #include "common/vehicleaccess.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <stdio.h>
 #include <string.h>
 #endif
@@ -72,7 +72,7 @@
     }
 
 /* The arcade times of the selected track. The descriptor of a track starts with its menu item. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define SELECTED_TRACK_ITEM() (g_apTrackMenuItems[g_dwSelectedTrackId])
 #else
 #define SELECTED_TRACK_ITEM() ((TrackMenuItem *)g_apTrackMenuItems[g_dwSelectedTrackId])
@@ -112,7 +112,7 @@ static void FinishRacer(RacerSlot *slot, Vehicle *vehicle) {
             vehicle, TotalTime, VEHICLE_GET(vehicle, TotalTime) - (RACER_SLOT_GET(slot, LapTime)));
         RACER_SLOT_SET(slot, LapTime, 0.0f);
         VEHICLE_SET(vehicle, RacePosition, g_dwRaceFinishOrderCounter);
-#if TGR_PC
+#if TGR_BOSS_RALLY
         VEHICLE_SET(
             vehicle,
             Message,
@@ -121,7 +121,7 @@ static void FinishRacer(RacerSlot *slot, Vehicle *vehicle) {
                 GetRaceProgressMessage(g_anRaceProgressStringIds[g_dwRaceFinishOrderCounter]));
 #else
         vehicle->message = g_apszRaceProgressStrings[g_dwRaceFinishOrderCounter];
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         VEHICLE_SET(vehicle, MessageTime, FINISH_MESSAGE_TIME);
         if (RACER_SLOT_GET(slot, Index) < (s32)g_dwNumLocalPlayers &&
             g_dwTotalLaps == RECORD_LAPS) {
@@ -141,7 +141,7 @@ static void FinishRacer(RacerSlot *slot, Vehicle *vehicle) {
 /* Add the time of an arcade checkpoint to the players, and show it with how far behind they are. */
 static void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f32 gapFallback) {
     Vehicle *other;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double gap;
     long double speed;
     s32 bestPosition;
@@ -155,7 +155,7 @@ static void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f32 gapFallback) {
     if (!gInstantReplayActive) {
         PlayBeepSound();
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (g_dwGameMode == GAME_MODE_ARCADE) {
         gap = (long double)VEHICLE_GET(&(g_aVehicles[0]), Distance) -
               VEHICLE_GET(&(g_aVehicles[1]), Distance);
@@ -172,11 +172,11 @@ static void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f32 gapFallback) {
     }
 #else
     gap = g_aVehicles[0].distance - g_aVehicles[1].distance;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     if (PROGRESS_LESS(gap, 0.0f)) {
         gap = -gap;
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     speed = (long double)VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), SpeedKph) * 0.44642857f;
     if (PROGRESS_ZERO(speed)) {
         pace = NO_PACE;
@@ -193,10 +193,10 @@ static void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f32 gapFallback) {
     } else {
         pace = gap / pace;
     }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
         other = RACER_SLOT_GET(&(g_aRacerSlots[i]), Vehicle);
-#if TGR_PC
+#if TGR_BOSS_RALLY
         if (VEHICLE_GET(other, Message) == VEHICLE_GET(other, MessageText)) {
             strcpy(VEHICLE_GET(other, CheckpointMessageText), VEHICLE_GET(other, MessageText));
             VEHICLE_SET(other, Message, VEHICLE_GET(other, CheckpointMessageText));
@@ -222,7 +222,7 @@ static void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f32 gapFallback) {
         } else
 #endif
             if (!PROGRESS_ZERO(VEHICLE_GET(other, TotalTime))
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 && g_dwNumActiveVehicles > 1
 #endif
             ) {
@@ -299,7 +299,7 @@ ReachNewGate(RacerSlot *slot, Vehicle *vehicle, s32 next, f32 lapTime, f32 gapFa
             } else if (vehicle != NULL) {
                 /* Show the lap the racer starts and its record. */
                 osSyncPrintf("******* LAP #%d ********\n", slot->lap);
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 if (RACER_SLOT_GET(slot, Lap) == g_dwTotalLaps - 1) {
                     strcpy(VEHICLE_GET(vehicle, MessageText), GetRaceProgressMessage(0x10b));
                 } else
@@ -322,7 +322,7 @@ ReachNewGate(RacerSlot *slot, Vehicle *vehicle, s32 next, f32 lapTime, f32 gapFa
             return;
         }
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if ((g_dwGameMode == GAME_MODE_ARCADE || g_dwGameMode == GAME_MODE_NETWORK ||
          g_dwGameMode == GAME_MODE_TIME_ATTACK) &&
         RACER_SLOT_GET(slot, Index) < (s32)g_dwNumLocalPlayers) {
@@ -397,7 +397,7 @@ void UpdateRaceProgress(RacerSlot *slot) {
     s32 current;
     s32 next;
     f32 lapTime;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     union {
         s32 hundredths;
         f32 gapFallback;
@@ -421,7 +421,7 @@ void UpdateRaceProgress(RacerSlot *slot) {
     }
     current = GateInLap(RACER_SLOT_GET(slot, Gate), g_LoadedTrack.gateCount);
     next = (current + 1) % g_LoadedTrack.gateCount;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     timer.hundredths = FloatToInt(RACER_SLOT_GET(slot, LapTime) * LAP_TIME_SCALE);
     lapTime = (long double)timer.hundredths * 0.01f;
 #else
@@ -475,7 +475,7 @@ void UpdateRaceProgress(RacerSlot *slot) {
                     vehicle,
                     next,
                     lapTime,
-#if TGR_PC
+#if TGR_BOSS_RALLY
                     /* With one active vehicle, the original reuses the integer timer bits. */
                     timer.gapFallback
 #else

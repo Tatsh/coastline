@@ -6,7 +6,7 @@
 #include "common/ptr32.h"
 #include "common/render.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/assetnames.h"
 #endif
 
@@ -53,7 +53,7 @@ enum {
  * reconstructed.
  */
 typedef struct VehicleModel {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     u8 abUnknown0[4]; /* +0x00 */
     s32 textureEntries[30];
     s32 textureEntryCount;
@@ -89,10 +89,10 @@ typedef struct VehicleModel {
     s32 gearImageBytes;
     u16 dashboardPalettes[2][256];
     u8 dashboardImages[0x7b00];
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
     u32 triangleCount; /*!< The triangles of the model, counted into the statistics of the frame. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     TGR_PTR(void) unreconstructed4; /* +0x8004 */
     u32 unreconstructed8;           /* +0x8008 */
     TGR_PTR(void) unreconstructedC; /* +0x800c */
@@ -216,7 +216,7 @@ void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue);
  */
 void FixupVehicleModelPointers(VehicleModel *model);
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 
 /**
  * @ghidraAddress BRD3D: 0x100370d0
@@ -265,7 +265,7 @@ void AppendVehicleModelTextureEntry(s32 entry);
  * @ghidraAddress BRGlide: 0x10030710
  */
 s32 IsVehicleMaterialPalette(const void *palette);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #ifdef __cplusplus
 }

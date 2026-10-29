@@ -7,7 +7,7 @@
 #endif
 
 void FormatLapTime(char *out, f32 seconds) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double scaled = (long double)seconds * 100.0f;
     s32 hundredths = scaled >= -0x1p63L && scaled < 0x1p63L ? (s32)(s64)scaled : 0;
 #else
@@ -16,7 +16,7 @@ void FormatLapTime(char *out, f32 seconds) {
     s32 whole = hundredths / 100;
 
     sprintf(out,
-#if TGR_PC
+#if TGR_BOSS_RALLY
             "%d:%02d.%02d",
 #else
             "%d'%02d\"%02d",

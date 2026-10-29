@@ -2,7 +2,7 @@
 
 #include "common/mathutil.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * @ghidraAddress USA: 0x8028bd98
  * @ghidraAddress EUR: 0x8028e4f8
@@ -21,14 +21,14 @@ static s32 g_dwVisibleGridMaxCol;
  * @ghidraAddress BRGlide: 0x10ac2c58
  */
 static s32 g_dwVisibleGridMinCol;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x10a9bbc4 */
 s32 g_dwVisibleGridMaxRow;
 /** @ghidraAddress BRD3D: 0x10a9bbcc */
 s32 g_dwVisibleGridMinRow;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 /* The size of a cell in track units, and its reciprocal. */
 #define CELL_SIZE 32.0f

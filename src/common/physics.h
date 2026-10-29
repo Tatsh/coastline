@@ -17,7 +17,7 @@
 #include "common/tricache.h"
 #include "common/vecmath.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "common/vehiclefwd.h"
 #endif
 
@@ -31,7 +31,7 @@ extern "C" {
 /** The surfaces of the track. */
 #define TRACK_SURFACES 8
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 typedef union CollisionContactState {
     s32 type; /*!< The contact classification before correction. */
     f32 w;    /*!< The same word scaled as a float during correction. */
@@ -97,7 +97,7 @@ extern f32 g_afVehiclePhysicsTableC1[3][GRIP_WEATHERS][TRACK_SURFACES];
  * @ghidraAddress BRGlide: 0x10069530
  */
 void SelectVehiclePhysicsTables(s32 model);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 /** A node of the list of the triangles that cross the box of a body. */
 typedef struct CollisionTriangleNode {
@@ -139,7 +139,7 @@ extern CollisionTriangleNode *g_pCollisionTriangleList;
  */
 extern CollisionTriangleNode *g_pNextCollisionTriangleNode;
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * How the last collision with a triangle is resolved: 1 against its plane alone, 2 at the face of
  * the box nearest the triangle, otherwise at the corner of the box.
@@ -149,7 +149,7 @@ extern CollisionTriangleNode *g_pNextCollisionTriangleNode;
  * @ghidraAddress JPN: 0x802a6c88
  */
 extern s32 g_dwCollisionContactType;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 /**
  * The triangle of the last collision.
@@ -243,7 +243,7 @@ extern Vec3f g_vVehicleObbHalfExtents;
  */
 extern Vec3f g_vCollisionContact;
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * The word after g_vCollisionContact, which ComputeCollisionPenetration() scales.
  *
@@ -252,7 +252,7 @@ extern Vec3f g_vCollisionContact;
  * @ghidraAddress JPN: 0x8037fc24
  */
 extern f32 g_fCollisionContactW;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 /**
  * How far the last collision put the body into the triangle.
@@ -433,7 +433,7 @@ s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point);
  * @ghidraAddress BRD3D: 0x1006c9a0
  * @ghidraAddress BRGlide: 0x10065950
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 long double PlaneDistance(Vec3f *normal, f32 offset, Vec3f *point);
 #else
 f32 PlaneDistance(Vec3f *normal, f32 offset, Vec3f *point);
@@ -509,7 +509,7 @@ void PushCollisionTriangle(TrackTriangle *triangle);
  */
 void PrintCollisionTriangleCount(void);
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * Classify a point against selected planes through the corners of the unit cube.
  *
@@ -520,7 +520,7 @@ void PrintCollisionTriangleCount(void);
  * @ghidraAddress BRGlide: 0x100664f0
  */
 s32 ComputeAabbCornerPlaneClipCode(Vec3f *v, s32 mask);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 /**
  * Sort out a triangle against the unit cube by its corners and its edges.
@@ -665,7 +665,7 @@ void ComputeCollisionPenetration(
  */
 s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]);
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * Step the body of a vehicle through the time of a frame in parts, colliding it with the track
  * and the other vehicles, and count how long it has been upside down.
@@ -686,7 +686,7 @@ void StepVehicleCollisions(Vehicle *vehicle, RigidBody *body);
  * @ghidraAddress JPN: 0x8025f4e8
  */
 void StepVehicleCollisions(RigidBody *body);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 /**
  * Set a force to the drag on the body of a vehicle, which grows on the surface that slows it.
  *

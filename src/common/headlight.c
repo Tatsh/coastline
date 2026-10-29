@@ -11,14 +11,14 @@
 
 void ResetHeadlightGlare(void) {
     g_fHeadlightGlare = 0.0f;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     g_fScreenFogPulse = 0.0f;
 #endif
 }
 
 void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
     Vec3f toCamera, beam;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     volatile f32 distance, along;
     long double rawDistance, glare;
 #else
@@ -65,7 +65,7 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
         Vec3fAdd(
             &toCamera, &VEHICLE_GET(vehicle, Frame).position, &VEHICLE_GET(vehicle, Frame).forward);
         Vec3fSubtract(&toCamera, &g_pActiveCamera->position, &toCamera);
-#if TGR_PC
+#if TGR_BOSS_RALLY
         rawDistance = Vec3fLength(&toCamera);
         distance = rawDistance;
         if (rawDistance != 0.0L && rawDistance == rawDistance) {
@@ -74,20 +74,20 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
         if (distance != 0.0f) {
 #endif
             Vec3fDivideInPlace(&toCamera, distance);
-#if TGR_PC
+#if TGR_BOSS_RALLY
             if (!(Vec3fDot(&toCamera, &g_pActiveCamera->forward) >= 0.0L)) {
 #else
             if (Vec3fDot(&toCamera, &g_pActiveCamera->forward) < 0.0f) {
 #endif
                 Vec3fScale(&beam, &VEHICLE_GET(vehicle, Frame).forward, 1.0f);
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 Vec3fMulAddInPlace(&beam, &VEHICLE_GET(vehicle, Frame).up, 0.0f);
 #else
                 /* The beam tilt multiplies the up axis by negative zero. */
                 Vec3fMulAddInPlace(&beam, &VEHICLE_GET(vehicle, Frame).up, -0.0f);
 #endif
                 along = Vec3fDot(&toCamera, &beam);
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 glare = -(Vec3fDot(&toCamera, &g_pActiveCamera->forward) * along);
                 if (0.95f < glare) {
                     distance = (long double)distance * distance;
@@ -98,9 +98,9 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
                 if (0.95f < glare) {
                     g_fHeadlightGlare += 750.0f * (glare - 0.95f) / (distance * distance);
                 }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
             }
-#if TGR_PC
+#if TGR_BOSS_RALLY
             if (Vec3fDot(&toCamera, &g_pActiveCamera->forward) > 0.95f) {
                 Vec3fScale(&beam, &VEHICLE_GET(vehicle, Frame).forward, 1.0f);
                 Vec3fMulAddInPlace(&beam, &VEHICLE_GET(vehicle, Frame).up, 0.0f);
@@ -111,7 +111,7 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
                         750.0f * (glare - 0.95f) / ((long double)distance * distance);
                 }
             }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         }
     }
     gDPPipeSync(gDisplayListPtr++);

@@ -1,6 +1,6 @@
 #include "common/rigidbody.h"
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 #include <PR/gu.h>
 #include <PR/os.h>
 #else
@@ -14,7 +14,7 @@
 /* The steering angle a body starts with, about 10 degrees. */
 #define DEFAULT_STEER_ANGLE 0.174f
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /* The libraries do not round a value on the x87 stack until the sum it joins is stored. */
 #define BODY_INTERMEDIATE(value) ((long double)(value))
 #define BODY_PRODUCT(a, b) ((long double)(a) * (b))
@@ -35,7 +35,7 @@ void StubPhysics2(void *data) {
 void MatrixToQuaternion(f32 m[4][4], Quaternion *q) {
     if (0.0f <= m[0][0]) {
         if (0.0f <= m[1][1] + m[2][2]) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
             q->w = m[0][0] + (BODY_INTERMEDIATE(m[1][1]) + m[2][2]) + 1.0f;
 #else
             q->w = 1.0f + m[0][0] + m[1][1] + m[2][2];
@@ -49,7 +49,7 @@ void MatrixToQuaternion(f32 m[4][4], Quaternion *q) {
             q->y = m[0][1] + m[1][0];
             q->z = m[2][0] + m[0][2];
         }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     } else if (0.0f <= m[1][1] - m[2][2]) {
 #else
     } else if (m[2][2] <= m[1][1]) {
@@ -62,7 +62,7 @@ void MatrixToQuaternion(f32 m[4][4], Quaternion *q) {
         q->w = m[0][1] - m[1][0];
         q->x = m[2][0] + m[0][2];
         q->y = m[1][2] + m[2][1];
-#if TGR_PC
+#if TGR_BOSS_RALLY
         q->z = m[2][2] - (BODY_INTERMEDIATE(m[0][0]) + m[1][1] - 1.0f);
 #else
         q->z = 1.0f - m[0][0] - m[1][1] + m[2][2];
@@ -86,7 +86,7 @@ void QuaternionMultiply(Quaternion *out, Quaternion *a, Quaternion *b) {
 }
 
 void QuaternionNormalize(Quaternion *q) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     f32 square = BODY_PRODUCT(q->x, q->x) + BODY_PRODUCT(q->y, q->y) + BODY_PRODUCT(q->z, q->z) +
                  BODY_PRODUCT(q->w, q->w);
     /* The sqrtf of the libraries returns the root unrounded. */
@@ -102,7 +102,7 @@ void QuaternionNormalize(Quaternion *q) {
 }
 
 void Vec3fNormalizeFast(Vec3f *v) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double inverse = 1.0f / Vec3fLength(v);
     f32 rounded = (f32)inverse;
 
@@ -115,7 +115,7 @@ void Vec3fNormalizeFast(Vec3f *v) {
     v->x *= inverse;
     v->y *= inverse;
     v->z *= inverse;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 }
 
 void ComputeDeltaQuaternion(RigidBodyState *state) {
@@ -138,7 +138,7 @@ void ComputeDeltaQuaternion(RigidBodyState *state) {
 }
 
 void ApplyRigidBodyImpulse(RigidBodyState *state, RigidBody *body, f32 dt) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     /* The libraries round the product for z alone, where the x87 stack is full. */
     state->velocity.x = BODY_PRODUCT(body->force.x, dt) + state->velocity.x;
     state->velocity.y = BODY_PRODUCT(body->force.y, dt) + state->velocity.y;
@@ -179,7 +179,7 @@ void QuaternionToMatrix(f32 out[4][4], RigidBodyState *state) {
     wy2 = q->y * (q->w + q->w);
     yz2 = q->z * (q->y + q->y);
     wx2 = q->x * (q->w + q->w);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     /* The libraries round the squares and ww - xx, but not the other sums or three products. */
     out[0][0] = (long double)ww + xx - yy - zz;
     out[0][1] = (long double)q->z * (q->w + q->w) + xy2;
@@ -215,7 +215,7 @@ void QuaternionToMatrix(f32 out[4][4], RigidBodyState *state) {
 }
 
 void IntegrateRigidBodyState(RigidBodyState *out, RigidBodyState *in, f32 dt) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     /* The libraries round the products for position.z, orientation.x, and orientation.z alone. */
     out->position.x = BODY_PRODUCT(in->velocity.x, dt) + in->position.x;
     out->position.y = BODY_PRODUCT(in->velocity.y, dt) + in->position.y;
@@ -318,7 +318,7 @@ void Mtx3fMulVec3f(Vec3f *out, f32 m[3][3], Vec3f *v) {
 }
 
 /* The routines of the Nintendo 64 release alone are absent from the PC libraries. */
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 void ComputeRigidBodyAcceleration(RigidBody *body) {
     Vec3f local, angular;
 
@@ -393,10 +393,10 @@ void ApplyAllForcesToBody(RigidBody *body) {
         ApplySingleForceWithDebug(body, force);
     }
 }
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 void InitRigidBody(RigidBody *body) {
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
     f32 boxShare;
     f32 xx;
 #else
@@ -427,7 +427,7 @@ void InitRigidBody(RigidBody *body) {
     if (body->kind == RIGID_BODY_BOX || body->kind == RIGID_BODY_BOX_1) {
         zz = body->size.z * body->size.z;
         yy = body->size.y * body->size.y;
-#if TGR_PC
+#if TGR_BOSS_RALLY
         /* The libraries scale each sum by the mass before the share. Only the square of x stays
          * on the x87 stack unrounded. */
         xx = BODY_PRODUCT(body->size.x, body->size.x);
@@ -502,7 +502,7 @@ void Mtx3fMultiply(f32 out[3][3], f32 a[3][3], f32 b[3][3]) {
 
     for (i = 0; i < 3; i++) {
         for (j = 0; j < 3; j++) {
-#if TGR_PC && TGR_RENDERER == TGR_RENDERER_GLIDE
+#if TGR_BOSS_RALLY && TGR_RENDERER == TGR_RENDERER_GLIDE
             /* BRGlide adds the third product before the second. */
             out[i][j] = (f32)(BODY_PRODUCT(a[i][0], b[0][j]) + BODY_PRODUCT(a[i][2], b[2][j]) +
                               BODY_PRODUCT(a[i][1], b[1][j]));
@@ -542,7 +542,7 @@ void MtxBuildScaledInverse(f32 m[4][4], f32 out[4][4], Vec3f *scale) {
     Mtx3x3MulVec3f((Vec3f *)out[3], out, &negated);
 }
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 void SolveLinearSystem3x3(Vec3f *out, f32 a[3][3], Vec3f *b) {
     /* The libraries store one cofactor and the products of the first sum to the stack, and keep
      * the other products, the determinant, and its inverse on the x87 stack. */
@@ -620,4 +620,4 @@ void SolveLinearSystem3x3(Vec3f *out, f32 a[3][3], Vec3f *b) {
                        a[1][0] * a[0][1]) *
              inverse;
 }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */

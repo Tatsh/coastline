@@ -12,7 +12,7 @@ void CheckVehicleVisibility(Vehicle *vehicle) {
     f32 distance;
     Vec3f ahead;
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (VEHICLE_GET(vehicle, Driver) == NULL) {
         return;
     }

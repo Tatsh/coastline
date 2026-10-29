@@ -12,7 +12,7 @@
 
 #include "common/types.h"
 
-#if TGR_PC && defined(DrawText)
+#if TGR_BOSS_RALLY && defined(DrawText)
 #undef DrawText
 #endif
 

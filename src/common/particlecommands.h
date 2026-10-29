@@ -4,7 +4,7 @@
 #include "common/system.h"
 #include "common/weather.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/displaylist.h"
 #include "win32/render.h"
 #endif
@@ -49,7 +49,7 @@ extern "C" {
     gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);                                                \
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE)
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 static inline void WriteParticleCombineMode(void) {
     PackCombineMode(gDisplayListPtr++,
                     0,
@@ -119,7 +119,7 @@ static inline void ConfigureExhaustParticleTexture(void) {
     LoadParticleTextureImage()
 #define ConfigureExhaustParticleTexture() ConfigureParticleTexture()
 
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 /* Put back the modes the rest of the frame draws with. */
 #define RestoreParticleModes()                                                                     \

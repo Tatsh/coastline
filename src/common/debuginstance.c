@@ -1,7 +1,7 @@
 #include "common/debugtext.h"
 #include "common/track.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * The step StepDebugHiddenInstance() takes through the placed models, or 0 to stay.
  *
@@ -12,7 +12,7 @@
  * @ghidraAddress BRGlide: 0x10273308
  */
 static s32 g_nDebugInstanceCycleStep;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 void StepDebugHiddenInstance(void) {
     s32 i;
@@ -26,7 +26,7 @@ void StepDebugHiddenInstance(void) {
     instanceCount = g_LoadedTrack.instanceCount;
     visibleCount = g_nOpaqueVisibleInstanceCount;
     for (;;) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         g_nDebugHiddenInstanceIndex = (s32)((u32)g_nDebugHiddenInstanceIndex + (u32)step);
 #else
         g_nDebugHiddenInstanceIndex += step;
@@ -35,7 +35,7 @@ void StepDebugHiddenInstance(void) {
             g_nDebugHiddenInstanceIndex = 0;
         }
         if (g_nDebugHiddenInstanceIndex < 0) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
             g_nDebugHiddenInstanceIndex = (s32)((u32)instanceCount - 1);
 #else
             g_nDebugHiddenInstanceIndex = instanceCount - 1;

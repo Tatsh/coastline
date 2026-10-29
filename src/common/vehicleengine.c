@@ -12,7 +12,7 @@
 #include <PR/gu.h>
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <math.h>
 #define RACER_HELD 0x1
 
@@ -68,7 +68,7 @@ static void SteerVehicleByAnalogueInput(Vehicle *vehicle, f32 stick) {
     }
     VEHICLE_SET(vehicle, SteerAngle, target);
 }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #define PI_F 3.141592741f
 #define TWO_PI_F 6.283185482f
@@ -89,7 +89,7 @@ static void SteerVehicleByAnalogueInput(Vehicle *vehicle, f32 stick) {
 #define MAX_RPM_CHANGE 400.0f
 
 /* The sign of a value: 0, 1 or -1. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 typedef long double EngineReal;
 #define ENGINE_LESS(a, b) (!((a) >= (b)))
 #define ENGINE_ZERO(x) (!((x) < 0.0f) && !((x) > 0.0f))
@@ -99,7 +99,7 @@ typedef f32 EngineReal;
 #define ENGINE_LESS(a, b) ((a) < (b))
 #define ENGINE_ZERO(x) ((x) == 0.0f)
 #define SIGN_OF(x) ((x) == 0.0f ? 0.0f : (0.0f < (x) ? 1.0f : -1.0f))
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #define ABS_OF(x) ((x) < 0.0f ? -(x) : (x))
 
@@ -151,7 +151,7 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
         kph = 340.0f;
     }
     kph = kph - 140.0f;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     switch (VEHICLE_GET(vehicle, SteeringMode)) {
     case 0:
         g_fSteerRate = 0.008f;
@@ -227,11 +227,11 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
         /* An unknown mode reads an unset gain. */
 #endif /* ENABLE_PATCHES */
     }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     rate = g_fSteerRate;
 
     /* The lock narrows with the speed; a hard push takes all of it, a soft one the gain. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     lock =
         g_fSteerLock - (long double)forward * 0.011111111380159854888916015625f * g_fSteerLockLoss;
 #define ENGINE_RADIANS 0.01745329238474369049072265625f
@@ -266,7 +266,7 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
         most = lock * PI_F / 180.0f;
         least = -lock * PI_F / 180.0f;
     }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     if (most < target) {
         target = most;
     }
@@ -323,7 +323,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
 #endif
     EngineReal extra, torque, change, shiftDown = SHIFT_DOWN_RPM;
     f32 shiftUp = SHIFT_UP_RPM;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     s32 analogueThrottle = IsVehicleControlAnalogue(2);
     EngineReal multiplier = 7.0L, limit;
     f32 leader, distance;
@@ -332,7 +332,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
     u32 buttons;
     s32 gear;
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (IsVehicleControlAnalogue(0) || IsVehicleControlAnalogue(1)) {
         SteerVehicleByAnalogueInput(vehicle, stick);
     } else {
@@ -349,14 +349,14 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
         SteerByStick(vehicle, stick);
     }
 
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     previous = VEHICLE_GET(vehicle, EngineRpm);
     if (ENGINE_LESS(VEHICLE_GET(vehicle, EngineRpm), IDLE_RPM)) {
         VEHICLE_SET(vehicle, EngineRpm, IDLE_RPM);
     }
     if (VEHICLE_GET(vehicle, Transmission)) {
         /* The automatic gearbox changes down and up by the revolutions, not up in reverse. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
         if (analogueThrottle && input->stickY > 0.4f) {
             shiftDown = 4000.0L - (long double)input->stickY * -2000.0f;
             shiftUp = shiftDown;
@@ -385,7 +385,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
     /* Arcade catch-up torque depends on distance behind the first racer. */
     extra = 0.0f;
     rpm = VEHICLE_GET(vehicle, EngineRpm);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (g_dwGameMode == GAME_MODE_ARCADE && VEHICLE_GET(vehicle, RacePosition) != 0) {
         leader = 0.0f;
         for (i = 0; i < g_dwNumVehicles; i++) {
@@ -439,11 +439,11 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
     if (!vehicle->transmission) {
         torque = (f32)((f64)torque * 1.03);
     }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     if (!(buttons & INPUT_ACCELERATE)) {
         torque = 0.0f;
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (analogueThrottle && input->stickY > 0.0f) {
         multiplier = (long double)input->stickY * 7.0f;
     }
@@ -463,7 +463,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
     }
     if (gear) {
         /* In gear the engine turns with the first front wheel. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
         if (buttons & INPUT_REVERSE) {
             gear = 1;
         }
@@ -478,7 +478,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
         vehicle->engineRpm = VEHICLE_GET(vehicle, GearRatios)[gear] *
                              (-(VEHICLE_GET(vehicle, WheelBodies)[1].spinRate / TWO_PI_F) * 60.0f *
                               vehicle->finalDrive);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     } else {
         if (VEHICLE_GET(vehicle, Input)->buttons & INPUT_ACCELERATE) {
             VEHICLE_SET(vehicle, EngineRpm, VEHICLE_GET(vehicle, EngineRpm) + 300.0f);
@@ -498,7 +498,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
     if (MAX_RPM < VEHICLE_GET(vehicle, EngineRpm)) {
         VEHICLE_SET(vehicle, EngineRpm, MAX_RPM);
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (analogueThrottle && VEHICLE_GET(vehicle, Gear) == 0) {
         limit = (long double)input->stickY * MAX_RPM;
         if (ENGINE_LESS(limit, MIN_RPM)) {
@@ -508,7 +508,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
             VEHICLE_SET(vehicle, EngineRpm, limit);
         }
     }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     change = (EngineReal)VEHICLE_GET(vehicle, EngineRpm) - previous;
     if (MAX_RPM_CHANGE < ABS_OF(change)) {
         change = SIGN_OF(change) * MAX_RPM_CHANGE;

@@ -3,7 +3,7 @@
 #include "common/input.h"
 #include "common/rumble.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 namespace {
     /**
      * Whether a read of the controllers is started and not yet received.
@@ -16,9 +16,9 @@ namespace {
      */
     s32 g_dwContReadPending;
 } // namespace
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 void InitControllersAndPaks(void) {
 }
 #endif
@@ -27,7 +27,7 @@ void StartControllerRead(void) {
     if (!g_dwContReadPending) {
         g_dwContReadPending = TRUE;
         g_wSerialInterfaceIdle = FALSE;
-#if TGR_PC
+#if TGR_BOSS_RALLY
         osContInit(&g_SiMesgQueue, NULL, NULL);
 #else
         osContStartReadData(&g_SiMesgQueue);
@@ -37,7 +37,7 @@ void StartControllerRead(void) {
 
 void ReadControllers(void) {
     StartControllerRead();
-#if TGR_PC
+#if TGR_BOSS_RALLY
     osContInit(&g_SiMesgQueue, NULL, NULL);
 #else
     osRecvMesg(&g_SiMesgQueue, NULL, OS_MESG_BLOCK);
@@ -51,12 +51,12 @@ void UpdateControllerState(void) {
     s32 i;
 
     ReadControllers();
-#if TGR_PC
+#if TGR_BOSS_RALLY
     for (i = 0; i < 1; i++) {
 #else
     for (i = 0; i < MAX_PLAYERS; i++) {
 #endif
-#if TGR_PC
+#if TGR_BOSS_RALLY
         g_aPlayerInputState[i].TranslateControllerInput();
         g_aPlayerInputState[i].ConsumeInputFlags();
 #else

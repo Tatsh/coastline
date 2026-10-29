@@ -10,10 +10,10 @@
 #include "common/text.h"
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/gbicommand.h"
 #include "win32/settings.h"
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * The display list of g_aClipRatioDisplayLists a frame starts with.
  *
@@ -24,9 +24,9 @@
  * @ghidraAddress BRGlide: 0x106ed68c
  */
 static s32 g_dwClipRatioIndex;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x106c0680 */
 struct GbiCommand *gDisplayListPtr;
 /** @ghidraAddress BRD3D: 0x106c0920 */
@@ -35,7 +35,7 @@ u32 g_dwAlphaDitherMode;
 u32 g_dwColorDitherMode;
 /** @ghidraAddress BRD3D: 0x106c0258 */
 u32 g_dwTextureFilterMode;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #define TO_RSP_ADDRESS(p) (p)
 #define FRAME_SUB(a, b) ((s32)((u32)(a) - (u32)(b)))
@@ -48,13 +48,13 @@ u32 g_dwTextureFilterMode;
 #define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
 #endif
 #define FRAME_SUB(a, b) ((a) - (b))
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #define VIEWPORT_MARGIN 8
 #define DISPLAY_LIST_START()                                                                       \
     (g_pDisplayListBase + g_dwFrameBufferIndex * DISPLAY_LIST_COMMANDS + DISPLAY_LIST_RESERVED)
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 s32 g_dwStatUnused3;
 s32 g_dwStatUnused2;
 s32 g_dwStatUnused1;
@@ -63,7 +63,7 @@ s32 g_dwStatPolygonsDrawn;
 s32 g_dwStatUnused0;
 s32 g_dwStatVerticesDrawn;
 s32 g_dwStatTrianglesDrawn;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 void ClearRenderStats(void) {
     g_dwStatUnused1 = g_dwStatUnused2 = g_dwStatUnused3 = 0;
@@ -71,7 +71,7 @@ void ClearRenderStats(void) {
     g_dwStatTrianglesDrawn = g_dwStatVerticesDrawn = g_dwStatUnused0 = 0;
 }
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 void BeginDisplayList(ViewportRect *views, s32 highRes) {
 #else
 void BeginDisplayList(s32 highRes) {
@@ -81,7 +81,7 @@ void BeginDisplayList(s32 highRes) {
         g_dwDisplayModeChangeCountdown = 1;
         g_dwScreenScaleShift = highRes;
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     NullStub();
 #else
     AddTimingMarker(0, 0, 0x82, 0, 0xFF);
@@ -91,7 +91,7 @@ void BeginDisplayList(s32 highRes) {
 #endif
     switch (g_dwNumViewports) {
     case 1:
-#if TGR_PC
+#if TGR_BOSS_RALLY
         views[0].x = 0;
         views[0].y = 0;
         views[0].width = g_dwConfigFramebufferWidth;
@@ -101,7 +101,7 @@ void BeginDisplayList(s32 highRes) {
         views[0].y = VIEWPORT_MARGIN;
         views[0].width = g_dwScreenWidth - 2 * VIEWPORT_MARGIN;
         views[0].height = g_dwScreenHeight - 2 * VIEWPORT_MARGIN;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         break;
     case 2:
         /* The two views stop 88 pixels short of the right of the screen. */
@@ -191,14 +191,14 @@ void BeginDisplayList(s32 highRes) {
     osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
     osViSetSpecialFeatures(OS_VI_DIVOT_ON);
     osViSetSpecialFeatures(g_dwViGammaEnabled ? OS_VI_GAMMA_ON : OS_VI_GAMMA_OFF);
-#elif TGR_PC
+#elif TGR_BOSS_RALLY
     NullStub();
     NullStub();
     NullStub();
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 }
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 void StartLowResFrame(ViewportRect *views) {
     BeginDisplayList(views, 0);
 }
@@ -209,7 +209,7 @@ void StartLowResFrame(void) {
 #endif
 
 void StartHighResFrame(void) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     BeginDisplayList(g_aViewportRects, 1);
 #else
     BeginDisplayList(1);

@@ -82,16 +82,16 @@ DECLARATION = r'extern\s+((?:const\s+)?[\w\s\*]+?)\s*\b{}\b\s*((?:\[[^\]]*\])*)\
 
 
 def without_pc_branches(text: str) -> str:
-    """Return the text without the lines of the ``#if TGR_PC`` branches, as the front end sees it."""
+    """Return the text without the lines of the ``#if TGR_BOSS_RALLY`` branches, as the front end sees it."""
     kept: list[str] = []
-    # For each open conditional, whether it tests TGR_PC, and whether its current branch is the
+    # For each open conditional, whether it tests TGR_BOSS_RALLY, and whether its current branch is the
     # branch of the PC release.
     stack: list[tuple[bool, bool]] = []
     for line in text.splitlines():
         directive = line.strip()
         if directive.startswith('#if'):
-            tests_pc = directive in {'#if TGR_PC', '#if !TGR_PC'}
-            stack.append((tests_pc, directive == '#if TGR_PC'))
+            tests_pc = directive in {'#if TGR_BOSS_RALLY', '#if !TGR_BOSS_RALLY'}
+            stack.append((tests_pc, directive == '#if TGR_BOSS_RALLY'))
             continue
         if directive.startswith('#else') and stack:
             tests_pc, pc_branch = stack[-1]

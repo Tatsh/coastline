@@ -176,7 +176,7 @@ static void ChooseRollEffect(Vehicle *vehicle, s32 surface) {
         }
     }
     VEHICLE_SET(vehicle, EffectPriority, PRIORITY_ROLL);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     {
         long double volume = Vec3fLength(&VEHICLE_GET(vehicle, PlacedVelocity)) *
                              ((f32)ROLL_MAX_VOLUME / ROLL_FULL_SPEED);
@@ -186,7 +186,7 @@ static void ChooseRollEffect(Vehicle *vehicle, s32 surface) {
 #else
     vehicle->effectVolume = (s32)(Vec3fLength(&VEHICLE_GET(vehicle, PlacedVelocity)) *
                                   (f32)ROLL_MAX_VOLUME / ROLL_FULL_SPEED);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     if (VEHICLE_GET(vehicle, EffectVolume) > ROLL_MAX_VOLUME) {
         VEHICLE_SET(vehicle, EffectVolume, ROLL_MAX_VOLUME);
     }
@@ -199,7 +199,7 @@ ChooseVehicleEffect(Vehicle *vehicle, s32 channel, s32 previousSound, CameraFram
     s32 surface;
     s32 skid;
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (!IsVehicleSoundChannelPlaying(channel + 1) ||
 #else
     if (g_aSoundEffectChannels[channel + 1].step == 0 ||
@@ -209,7 +209,7 @@ ChooseVehicleEffect(Vehicle *vehicle, s32 channel, s32 previousSound, CameraFram
         VEHICLE_SET(vehicle, EffectVolume, 0);
         VEHICLE_SET(vehicle, EffectPriority, 0);
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     PlayVehicleEventSounds(vehicle, listener);
 #else
     TakeHitEffect(vehicle,
@@ -236,7 +236,7 @@ ChooseVehicleEffect(Vehicle *vehicle, s32 channel, s32 previousSound, CameraFram
                   2,
                   20);
     VEHICLE_GET(vehicle, Body).landed = 0;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
     sound = VEHICLE_GET(vehicle, EffectSound);
     if (sound != SOUND_EFFECT_NONE && !IsSkidSound(sound) && !IsRollSound(sound)) {
@@ -277,12 +277,12 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
     f32 upper;
     f32 lower;
     SoundReal frequency;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     f32 roundedFrequency;
 #endif
 
     if (g_dwRacePauseState || VEHICLE_GET(vehicle, Racer) == NULL) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         ClearVehicleSoundChannel(channel);
 #else
         g_aSoundEffectChannels[channel].volume = 0;
@@ -312,7 +312,7 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
     ComputeStereoPan(
         &VEHICLE_GET(vehicle, Frame).position, listener, &upper, &lower, &volume, FALSE);
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     frequency = (long double)VEHICLE_GET(vehicle, EngineRpm) *
                 (0.0f < VEHICLE_GET(vehicle, EngineRpm) ? 0.5f : -0.5f) * 15.714286f *
                 VEHICLE_GET(vehicle, DopplerFactor);
@@ -323,12 +323,12 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
         frequency = vehicle->engineRpm * -0.5f * ENGINE_RPM_SCALE * SAMPLE_RATE;
     }
     frequency = vehicle->dopplerFactor * frequency;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     if (ENGINE_MAX_FREQUENCY < frequency) {
         /* Too high, the engine falls silent. */
         frequency = 0.0f;
     } else if (
-#if TGR_PC
+#if TGR_BOSS_RALLY
         !(frequency >= 0.0f)
 #else
         frequency < 0.0f
@@ -337,7 +337,7 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
         frequency = 0.0f;
     }
     if (VEHICLE_GET(vehicle, Index) == 0) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         SetVehicleSoundEchoOffset(
             g_LoadedTrack.instances[VEHICLE_GET(vehicle, GroundInstances)[0]].flags &
                     TRACK_INSTANCE_SHELTER ?
@@ -350,10 +350,10 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
         } else {
             g_dwSoundEffectEchoOffset = 0;
         }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     }
     if (!changed) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         SetVehicleSoundChannel(channel, FrequencyStep(frequency), PackVolume(volume, upper, lower));
 #else
         g_aSoundEffectChannels[channel].step = FrequencyStep(frequency);
@@ -367,7 +367,7 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
     /* Only the first vehicle plays its effects. */
     if (VEHICLE_GET(vehicle, EffectSound) == SOUND_EFFECT_NONE) {
         if (channel == 0) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
             ClearVehicleSoundChannel(channel + 1);
 #else
             g_aSoundEffectChannels[channel + 1].volume = 0;
@@ -375,7 +375,7 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
 #endif
         }
     } else {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         frequency = (long double)VEHICLE_GET(vehicle, DopplerFactor) * SAMPLE_RATE;
         roundedFrequency = frequency;
         if (EFFECT_MAX_FREQUENCY < frequency || !(roundedFrequency >= 0.0f)) {
@@ -389,7 +389,7 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
         } else if (frequency < 0.0f) {
             frequency = 0.0f;
         }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         if (previousSound != VEHICLE_GET(vehicle, EffectSound) && channel == 0) {
             effect = &g_aSoundEffects[VEHICLE_GET(vehicle, EffectSound)];
             StartSoundChannelMuted(
@@ -397,7 +397,7 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
         }
         if (!changed && channel == 0) {
             effectVolume = (s32)((u32)VEHICLE_GET(vehicle, EffectVolume) * (u32)volume) >> 7;
-#if TGR_PC
+#if TGR_BOSS_RALLY
             SetVehicleSoundChannel(
                 channel + 1, FrequencyStep(frequency), PackVolume(effectVolume, upper, lower));
 #else

@@ -11,7 +11,7 @@
 #include "common/vehicleaccess.h"
 #include "common/vehiclecount.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <stdint.h>
 
 #include "win32/app.h"
@@ -28,9 +28,9 @@
 #include "mainmenu.h"
 #include "options.h"
 #include "racemenu.h"
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 namespace {
     /**
      * The player whose recording the instant replay plays, and the length of that recording.
@@ -42,14 +42,14 @@ namespace {
      */
     s32 g_dwBestReplayLength;
 } // namespace
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x10680668 */
 s32 g_dwBestReplayPlayer;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * An address used as the stopped-channel sample token; its contents are never read.
  * @ghidraAddress BRD3D: 0x118ac70c
@@ -64,9 +64,9 @@ static u8 g_bNoSoundSample;
 static volatile u8 g_bReturnToSeasonMenu;
 #else
 #define RACE_SOUND_CHANNELS 6
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /* @ghidraAddress BRD3D: 0x10680670 */
 static u8 *volatile g_apReplayGhostPtrs[INPUT_RECORDERS];
 /* @ghidraAddress BRD3D: 0x106806e8 */
@@ -114,7 +114,7 @@ void FinishRace(void) {
                 VEHICLE_GET(&g_aVehicles[i], Input)->recordPositions[j];
         }
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     g_bAltLoopingSoundSet = FALSE;
     for (i = 0; i < SOUND_CHANNEL_COUNT; i++) {
         g_aSoundChannelRequested[i].dwReserved = 0;
@@ -131,7 +131,7 @@ void FinishRace(void) {
         g_aSoundEffectChannels[i].step = 0;
         g_aSoundEffectChannels[i].sample = g_SilenceSampleData;
     }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     g_bRaceScreenActive = FALSE;
     if (g_dwRaceExitState) {
         if (g_bReplayAfterRace) {
@@ -144,13 +144,13 @@ void FinishRace(void) {
             g_dwTrackMirrored = FALSE;
             if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
                 if (VEHICLE_GET(&g_aVehicles[0], Profile)->season) {
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
                 season:
 #endif
                     /* After the race of a season or the credits, the championship goes on. */
                     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
                     SetTrackFromSeason();
-#if TGR_PC
+#if TGR_BOSS_RALLY
                     g_bReturnToSeasonMenu = TRUE;
                     SetCurrentScreenCallback(ShutdownGameSessionToSeasonMenu);
 #else
@@ -164,7 +164,7 @@ void FinishRace(void) {
             } else if (g_dwGameMode == GAME_MODE_DEMO &&
                        g_dwRaceSessionType == RACE_SESSION_SCROLLING_CREDITS) {
                 /* The credits share the return to the championship of the race after a season. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 SetCurrentScreenCallback(ExitRaceSessionToMenu);
 #else
                 goto season;
@@ -172,32 +172,32 @@ void FinishRace(void) {
             } else if (g_dwSavedResultsValid &&
                        (g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_ARCADE ||
                         g_dwGameMode == GAME_MODE_CHAMPIONSHIP
-#if TGR_PC
+#if TGR_BOSS_RALLY
                         || g_dwGameMode == GAME_MODE_NETWORK
 #endif
                         )) {
                 RestoreRaceResultsFromSlots();
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 SetCurrentScreenCallback(ExitRaceAndProcessSeasonResults);
 #else
                 SetCurrentScreenCallback(ProcessRaceResultsScreen);
 #endif
             } else if (g_dwGameMode == GAME_MODE_DEMO &&
                        g_dwRaceSessionType == RACE_SESSION_CREDIT_CAPTIONS) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 SetCurrentScreenCallback(ExitRaceSessionToMenu);
 #else
                 SetCurrentScreenCallback(ProcessOptionsMenu);
 #endif
             } else if (g_dwGameMode == GAME_MODE_DEMO &&
                        g_dwRaceSessionType == RACE_SESSION_ATTRACT && !g_bDemoInterrupted) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 SetCurrentScreenCallback(ExitRaceSessionToMenu);
 #else
                 SetCurrentScreenCallback(ProcessSplashScreens);
 #endif
             } else {
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 if (g_dwRaceExitState == 2) {
                     if (g_dwSavedSfxVolume != g_GlobalRallyConfig.GetSfxVolume() ||
                         g_dwSavedMusicVolume != g_GlobalRallyConfig.GetMusicVolume()) {
@@ -208,12 +208,12 @@ void FinishRace(void) {
                 SetCurrentScreenCallback(ExitRaceSessionToMenu);
 #else
                 SetCurrentScreenCallback(ProcessMainMenu);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
             }
             gInstantReplayActive = FALSE;
         }
         g_dwRaceInitialized = FALSE;
-#if TGR_PC
+#if TGR_BOSS_RALLY
         if (!gInstantReplayActive) {
             FreeAllRacerColorPanels();
         }

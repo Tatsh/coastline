@@ -7,7 +7,7 @@ void guTranslateF(float mf[4][4], float x, float y, float z) {
     mf[3][2] = z;
 }
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 void guTranslate(Mtx *m, float x, float y, float z) {
     float mf[4][4];
 

@@ -10,7 +10,7 @@ extern "C" {
 /** Drive an assigned vehicle or advance an unassigned racer along the route. */
 void UpdateRacerSlotMotion(RacerSlot *slot);
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** Whether network play disables an unassigned racer. */
 s32 IsNetworkRacerMotionDisabled(RacerSlot *slot);
 /** Clear frequency and stereo levels for the first five requested sound channels. */

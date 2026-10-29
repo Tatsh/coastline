@@ -10,14 +10,14 @@
 #include "common/vehicleaccess.h"
 #include "common/vehiclecount.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/sound.h"
 #else
 #include "common/audio.h"
 #include "common/audiomix.h"
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define AMBIENT_CHANNEL_STATE SoundChannelState
 #define AMBIENT_CHANNELS g_aSoundChannelRequested
 #define AMBIENT_STEP llFrequency
@@ -31,7 +31,7 @@
 #define AMBIENT_VOLUME volume
 #define AMBIENT_MIX_VOLUME mixVolume
 #define FREQUENCY_NEGATIVE(value) ((value) < 0.0f)
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #define TRACK_SOUND_CHANNEL 3
 #define VOLUME_HALVES_MASK 0x7FFF7FFF
@@ -54,7 +54,7 @@ void UpdateAmbientSoundChannel(void) {
     s32 volume;
     s32 source;
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     u32 levels;
 
     if (g_dwNumActiveVehicles == 0) {
@@ -93,7 +93,7 @@ void UpdateAmbientSoundChannel(void) {
                                           &g_ClosestSoundSource.position,
                                           &g_ClosestSoundSource.listener->position,
                                           &g_ClosestSoundSource.previousListenerPosition);
-#if TGR_PC
+#if TGR_BOSS_RALLY
             frequency = -(factor * g_ClosestSoundSource.frequency);
 #else
             frequency = -g_ClosestSoundSource.frequency * factor;
@@ -126,7 +126,7 @@ void UpdateAmbientSoundChannel(void) {
         }
         if (!IsAnyViewCameraChanged()) {
             channel->AMBIENT_STEP = FrequencyStep(frequency);
-#if TGR_PC
+#if TGR_BOSS_RALLY
             levels = PackVolume(volume, upper, lower);
             if (channel->AMBIENT_VOLUME == 0) {
                 levels = ((s32)levels >> 1) & VOLUME_HALVES_MASK;
@@ -141,7 +141,7 @@ void UpdateAmbientSoundChannel(void) {
             } else {
                 channel->AMBIENT_VOLUME = PackVolume(volume, upper, lower);
             }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         }
         g_ClosestSoundSource.previousPosition.x = g_ClosestSoundSource.position.x;
         g_ClosestSoundSource.previousPosition.y = g_ClosestSoundSource.position.y;

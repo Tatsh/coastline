@@ -51,7 +51,7 @@ void UpdateWaterfallSound(s32 instance, Vec3f *position, CameraFrame *camera) {
     }
 }
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 long double
 #else
 f32
@@ -65,7 +65,7 @@ ComputeDopplerFactor(Vec3f *source,
     Vec3f sourceStep;
     Vec3f listenerStep;
     f32 approach;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double listenerSpeed;
     long double rawLength;
 #else
@@ -75,7 +75,7 @@ ComputeDopplerFactor(Vec3f *source,
     Vec3fSubtract(&direction, source, listener);
     Vec3fSubtract(&listenerStep, listener, previousListener);
     Vec3fSubtract(&sourceStep, source, previousSource);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     rawLength = Vec3fLength(&direction);
     length = rawLength;
     if (rawLength < 0.0L || rawLength > 0.0L) {
@@ -87,7 +87,7 @@ ComputeDopplerFactor(Vec3f *source,
     }
     approach = -Vec3fDot(&sourceStep, &direction) / g_fFrameDeltaTime;
     listenerSpeed = Vec3fDot(&listenerStep, &direction) / g_fFrameDeltaTime;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     return (1.0L - listenerSpeed * -0x1.7e2256p-9f) /
            (1.0L - (long double)approach * 0x1.7e2256p-9f);
 #else
@@ -97,13 +97,13 @@ ComputeDopplerFactor(Vec3f *source,
 
 void UpdateClosestSoundSource(
     s32 source, s32 sound, s32 volume, f32 frequency, Vec3f *position, CameraFrame *listener) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double distance = Vec3fDistance(position, &listener->position);
 #else
     f32 distance = Vec3fDistance(position, &listener->position);
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (!(distance >= g_ClosestSoundSource.distance)) {
 #else
     if (distance < g_ClosestSoundSource.distance) {

@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 struct GbiCommand;
 #endif
 
@@ -30,7 +30,7 @@ typedef struct {
     u32 dram_stack_size;   /*!< The size of the matrix stack, in bytes. */
     u64 *output_buff;      /*!< The start of the buffer the RSP writes RDP commands to. */
     u64 *output_buff_size; /*!< The end of the output buffer, despite the name. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     struct GbiCommand *data_ptr; /*!< The display list the backend runs. */
 #else
     u64 *data_ptr; /*!< The display list or command list the task runs. */

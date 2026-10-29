@@ -1,7 +1,7 @@
 #include "common/rumble.h"
 #include "common/system.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "common/screen.h"
 #include "win32/renderinit.h"
 
@@ -22,7 +22,7 @@ DisplayListCommand *g_pDisplayListBase;
 f32 g_fCountsPerMillisecond;
 OSContStatus g_aContStatus[MAXCONTROLLERS];
 u8 g_abRumblePakPresent[MAXCONTROLLERS];
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #define IO_MESSAGES 32
 #define COUNTS_PER_MILLISECOND 46875.0f
@@ -105,11 +105,11 @@ void InitRenderingSubsystem(void) {
             osMotorStop(&g_aContPfs[i]);
         }
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     CreateWindowsRenderMutex();
 #endif
 }
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #pragma pop_macro("errno")
 #endif

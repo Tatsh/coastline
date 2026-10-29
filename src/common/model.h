@@ -12,7 +12,7 @@
 #include "common/ptr32.h"
 #include "common/vecmath.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/gbicommand.h"
 #endif
 
@@ -22,13 +22,13 @@ extern "C" {
 
 /** A part of a model: its display list, how it is drawn, and where. */
 typedef struct {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     TGR_PTR(GbiCommand) displayList;
 #else
     TGR_PTR(Gfx) displayList; /*!< The display list that draws the part, or NULL. */
 #endif
     u16 flags; /*!< The MODEL_PART_ flags. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     u16 wUnknown6; /* +0x06 */
 #endif
     Vec3f position; /*!< Where the part is drawn, relative to the model. */
@@ -66,7 +66,7 @@ typedef struct {
 /** An animation of vertices of a model, blended between its keys. */
 typedef struct {
     s32 vertexCount; /*!< The number of vertices the animation moves. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     ModelVertexData vertices;
 #else
     TGR_PTR(Vtx) vertices; /*!< The vertices the animation moves. */
@@ -92,7 +92,7 @@ typedef struct {
  * fields join this structure as they are reconstructed.
  */
 typedef struct Model {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     u16 wUnknown0; /* +0x00 */
     u16 partCount;
 #else
@@ -198,7 +198,7 @@ void DrawModelAt(Model *model, f32 x, f32 y, f32 z, f32 angle, f32 scale);
  * @ghidraAddress BRD3D: 0x10036bd0
  * @ghidraAddress BRGlide: 0x10030270
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 Model *DecompressModel(void *dst, const char *source);
 #else
 Model *DecompressModel(void *dst, u32 source);
@@ -235,7 +235,7 @@ void RemapPointer(u32 *pointer, u32 lo, u32 hi, u32 base);
  */
 void FixupDisplayListPointers(Gfx *displayList, u32 lo, u32 hi, u32 base);
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL && !TGR_PC
+#if TGR_PLATFORM == TGR_PLATFORM_SDL && !TGR_BOSS_RALLY
 /**
  * Turn a model of the console, as it inflates from the cartridge, into a model of the host: its
  * fields in the order of the host and its offsets into pointers.

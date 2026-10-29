@@ -1,6 +1,6 @@
 #include "common/vehiclemodel.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/app.h"
 #else
 #include <string.h>
@@ -12,7 +12,7 @@ void LoadCar(s32 slot, s32 car, void *source) {
     if (source == NULL) {
         LoadVehicleModelFromRom(&g_aVehicleModels[slot], car);
     } else {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         ShowFatalErrorScreen("LoadCar()");
 #else
         /* The source must be a model not yet remapped, whose addresses are of the first slot. */

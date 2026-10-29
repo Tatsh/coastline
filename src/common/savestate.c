@@ -4,14 +4,14 @@
 #include "common/replay.h"
 #include "common/timing.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <stdio.h>
 #include <string.h>
 #else
 #include <PR/os_libc.h>
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 static void CopySnapshotBytes(u8 *destination, const void *sourceData, u32 size) {
     const u8 *source = sourceData;
     u32 word;
@@ -31,12 +31,12 @@ static void CopySnapshotBytes(u8 *destination, const void *sourceData, u32 size)
 #define SNAPSHOT_COPY CopySnapshotBytes
 #else
 #define SNAPSHOT_COPY memcpy
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 /* The room for the message of an overflow. */
 #define OVERFLOW_MESSAGE_SIZE 0x50
 
-#if !TGR_PC && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
+#if !TGR_BOSS_RALLY && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
 /* The marker of a keyframe in a recording of the input. */
 #define KEYFRAME_MARKER 0xFF
 
@@ -97,11 +97,11 @@ void DeserializeSaveData(SaveField *fields, u8 *buffer) {
         buffer += fields[i].size;
     }
 }
-#endif /* !TGR_PC && (TGR_REGION_JP || TGR_REGION_EU) */
+#endif /* !TGR_BOSS_RALLY && (TGR_REGION_JP || TGR_REGION_EU) */
 
 void SaveRaceSnapshot(LastLapBuffer *buffer) {
 /* The capacity given is that of the whole buffer, not of the room after the recordings. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     SERIALIZE(g_aRaceSnapshotFields, buffer->snapshot, 0x15f88);
 #else
     SERIALIZE(g_aRaceSnapshotFields, buffer->snapshot, sizeof(LastLapBuffer));

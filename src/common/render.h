@@ -14,7 +14,7 @@
 #include "common/screendraw.h"
 #include "common/vecmath.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/gbicommand.h"
 #endif
 
@@ -61,7 +61,7 @@ typedef struct {
  * A texture of a model and its palette. Its fields join this structure as they are reconstructed.
  */
 typedef struct {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     union {
         TGR_PTR(u8) image;     /*!< The texels before device texture creation. */
         unsigned textureEntry; /*!< The loaded entry after device texture creation. */
@@ -81,7 +81,7 @@ typedef struct {
     s16 tileT1; /*!< The last texel row the tile covers. */
     s16 tileS1; /*!< The last texel column the tile covers. */
     u8 unreconstructed18[0x20 - 0x18]; /*!< Bytes not yet reconstructed. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     u32 textureFlags;
 #else
     unsigned mirrorS : 1;  /*!< Whether the texture repeats mirrored in s. */
@@ -93,10 +93,10 @@ typedef struct {
     unsigned animated : 1; /*!< Whether source points to the frames of an animated texture. */
     unsigned : 2;          /*!< Bits not yet reconstructed. */
     unsigned size : 18;    /*!< The length of the texels in bytes. */
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 } ModelTexture;
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define MODEL_TEXTURE_ANIMATED(texture) (((texture)->textureFlags >> 20) & 1u)
 #define MODEL_TEXTURE_FORMAT(texture) (((texture)->textureFlags >> 24) & 0xfu)
 #define MODEL_TEXTURE_SIZE(texture) ((texture)->textureFlags & 0x3ffffu)
@@ -126,7 +126,7 @@ typedef struct {
     s32 width;        /*!< The width, in screen pixels. */
     s32 height;       /*!< The height, in screen pixels. */
     s32 vehicleIndex; /*!< The vehicle of the player the view follows. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     s32 dashboardTextureEntries[16];
     s32 dashboardGearTextureEntry;
 #endif
@@ -141,7 +141,7 @@ typedef struct {
  * @ghidraAddress BRD3D: 0x106c32d0
  * @ghidraAddress BRGlide: 0x106ea360
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 extern f32 (*g_pProjectionMtx)[4];
 #else
 extern Mtx *g_pProjectionMtx;
@@ -158,7 +158,7 @@ extern Mtx *g_pProjectionMtx;
  */
 extern f32 g_afMvpMatrix[4][4];
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * @ghidraAddress BRD3D: 0x106c08e0
  * @ghidraAddress BRGlide: 0x106e7970
@@ -273,7 +273,7 @@ extern s32 g_dwNumViewports;
  * @ghidraAddress BRD3D: 0x106c1628
  * @ghidraAddress BRGlide: 0x106e86b8
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 extern ViewportRect g_aViewportRects[4];
 #else
 extern ViewportRect g_aViewportRects[];
@@ -374,7 +374,7 @@ extern f32 g_ViewLookAtMtx[4][4];
  * @ghidraAddress BRD3D: 0x100aa730
  * @ghidraAddress BRGlide: 0x100a9ec0
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 extern f32 g_mtxIdentity[4][4];
 #else
 extern Mtx g_mtxIdentity;
@@ -504,7 +504,7 @@ extern s32 g_adwVehicleVisible[];
  * @ghidraAddress BRD3D: 0x100aa770
  * @ghidraAddress BRGlide: 0x100a9f00
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 extern GbiCommand g_aClipRatioDisplayLists[CLIP_RATIOS][5];
 #else
 extern Gfx g_aClipRatioDisplayLists[CLIP_RATIOS][5];
@@ -568,7 +568,7 @@ extern u8 g_bAmbientLightG;
  */
 extern u8 g_bAmbientLightB;
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * The least detailed level the vehicles are drawn at, from 0.
  *
@@ -577,7 +577,7 @@ extern u8 g_bAmbientLightB;
  * @ghidraAddress JPN: 0x8028c774
  */
 extern s32 g_dwVehicleLodBias;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 /**
  * Whether the car of the camera is drawn from its cockpit and mirror cameras too.
@@ -750,7 +750,7 @@ extern Vp g_aViewports[VIEWPORTS];
  */
 extern s32 g_dwViewportIndex;
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * The display list of g_aClipRatioDisplayLists a frame starts with.
  *
@@ -761,7 +761,7 @@ extern s32 g_dwViewportIndex;
  * @ghidraAddress BRGlide: 0x106ed68c
  */
 extern s32 g_dwClipRatioIndex;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 /**
  * Whether the microcode clips the triangles.

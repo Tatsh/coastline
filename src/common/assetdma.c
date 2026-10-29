@@ -12,7 +12,7 @@ u32 g_dwDmaReadWordBuffer;
 #define ASSET_HEADER_WORD 4
 
 void DmaRead(void *dst, u32 romOffset, s32 size) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     g_dwDmaReadPending = 1;
 #else
     osInvalDCache(dst, size);
@@ -31,7 +31,7 @@ void DmaRead(void *dst, u32 romOffset, s32 size) {
     osPiStartDma(
         AllocIoMessage(), OS_MESG_PRI_NORMAL, OS_READ, romOffset, dst, size, &g_DmaMessageQueue);
     WaitForDmaMessages();
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 }
 
 u32 DmaReadAssetSize(u32 romOffset) {
@@ -49,7 +49,7 @@ void InitDmaRequest(DecompressJob *job, u8 *buffer) {
     job->buffer = buffer;
 }
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
     return 0;
 }

@@ -195,7 +195,7 @@ extern s32 g_dwElapsedTimeMs;
  * @ghidraAddress BRD3D: 0x10032873
  * @ghidraAddress BRGlide: 0x1002bf24
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 void StartLowResFrame(ViewportRect *views);
 #else
 void StartLowResFrame(void);
@@ -294,7 +294,7 @@ void ResetFrameClock(void);
  */
 extern OSIoMesg g_aIoMessagePool[32];
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * The DMA started and not yet waited for.
  *
@@ -305,9 +305,9 @@ extern OSIoMesg g_aIoMessagePool[32];
  * @ghidraAddress BRGlide: 0x106ed66c
  */
 extern s32 g_dwIoMessagePendingCount;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * The message of g_aIoMessagePool last handed out.
  *
@@ -318,7 +318,7 @@ extern s32 g_dwIoMessagePendingCount;
  * @ghidraAddress BRGlide: 0x106ed668
  */
 extern s32 g_dwIoMessagePoolIndex;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 /**
  * The queue a finished DMA sends to.
@@ -576,7 +576,7 @@ extern u32 g_adwFaultThreadStack[FAULT_STACK_WORDS];
  */
 extern Gfx g_aGfxDisplayListPool[];
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * @ghidraAddress BRD3D: 0x10691018
  * @ghidraAddress BRGlide: 0x106b80a8
@@ -919,7 +919,7 @@ void FaultThread(void *arg);
 void BootIdleThread(void *arg);
 
 /** The commands of the display list of each frame. */
-#if TGR_PC || TGR_PLATFORM == TGR_PLATFORM_SDL
+#if TGR_BOSS_RALLY || TGR_PLATFORM == TGR_PLATFORM_SDL
 #define DISPLAY_LIST_COMMANDS 12000
 #else
 #define DISPLAY_LIST_COMMANDS 6000
@@ -939,7 +939,7 @@ void BootIdleThread(void *arg);
  * @ghidraAddress BRD3D: 0x100322e6
  * @ghidraAddress BRGlide: 0x1002b997
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 void BeginDisplayList(ViewportRect *views, s32 highRes);
 #else
 void BeginDisplayList(s32 highRes);
@@ -1018,7 +1018,7 @@ extern u8 g_abRspDramStackBuffer[];
  * @ghidraAddress BRD3D: 0x100aa728
  * @ghidraAddress BRGlide: 0x100a9eb8
  */
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 extern u64 *g_pRdpOutputBuffer;
 #endif
 
@@ -1029,7 +1029,7 @@ extern u64 *g_pRdpOutputBuffer;
  * @ghidraAddress BRD3D: 0x100aa72c
  * @ghidraAddress BRGlide: 0x100a9ebc
  */
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 extern u64 *g_pRdpOutputBufferEnd;
 #endif
 
@@ -1044,7 +1044,7 @@ extern u64 *g_pRdpOutputBufferEnd;
  */
 extern s32 g_dwOutputBuffReserve;
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * The commands of the display list of the last frame.
  *
@@ -1055,9 +1055,9 @@ extern s32 g_dwOutputBuffReserve;
  * @ghidraAddress BRGlide: 0x106e8200
  */
 extern s32 g_dwDisplayListCommandCount;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * The most commands of a shadow, vertices of a shadow, and commands of a frame seen.
  *
@@ -1068,9 +1068,9 @@ extern s32 g_dwDisplayListCommandCount;
  * @ghidraAddress BRGlide: 0x106ed6e8
  */
 extern s32 g_dwPeakShadowCommandCount;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * @ghidraAddress USA: 0x8028ab78
  * @ghidraAddress EUR: 0x8028ce24
@@ -1079,9 +1079,9 @@ extern s32 g_dwPeakShadowCommandCount;
  * @ghidraAddress BRGlide: 0x106ed6ec
  */
 extern s32 g_dwPeakShadowVertexCount;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * @ghidraAddress USA: 0x8028ab7c
  * @ghidraAddress EUR: 0x8028ce28
@@ -1090,9 +1090,9 @@ extern s32 g_dwPeakShadowVertexCount;
  * @ghidraAddress BRGlide: 0x106ed6f0
  */
 extern s32 g_dwPeakDisplayListCommands;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * Whether a frame has been sent to the RSP.
  *
@@ -1103,9 +1103,9 @@ extern s32 g_dwPeakDisplayListCommands;
  * @ghidraAddress BRGlide: 0x106ed6f4
  */
 extern s32 g_dwFirstFlushDone;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * The counts of the CPU counter the end of a frame took, between the ends of two frames, and at
  * the end of the last frame.
@@ -1117,9 +1117,9 @@ extern s32 g_dwFirstFlushDone;
  * @ghidraAddress BRGlide: 0x106e729c
  */
 extern u32 g_dwFlushDuration;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * @ghidraAddress USA: 0x8028aae0
  * @ghidraAddress EUR: 0x8028cce8
@@ -1128,9 +1128,9 @@ extern u32 g_dwFlushDuration;
  * @ghidraAddress BRGlide: 0x106e86b0
  */
 extern u32 g_dwFlushInterval;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * @ghidraAddress USA: 0x8028aae4
  * @ghidraAddress EUR: 0x8028ccec
@@ -1139,7 +1139,7 @@ extern u32 g_dwFlushInterval;
  * @ghidraAddress BRGlide: 0x106e7298
  */
 extern u32 g_dwFlushStartTime;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 /**
  * A word FlushDisplayList() copies each frame, and the copy. No other routine reads either.
@@ -1152,7 +1152,7 @@ extern u32 g_dwFlushStartTime;
  */
 extern u32 g_dwFlushValueSource;
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * @ghidraAddress USA: 0x8028aa24
  * @ghidraAddress EUR: 0x8028cc2c
@@ -1161,7 +1161,7 @@ extern u32 g_dwFlushValueSource;
  * @ghidraAddress BRGlide: 0x106ec774
  */
 extern u32 g_dwLastFlushValue;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 /**
  * The frames until the video mode changes to the resolution BeginDisplayList() was given, or 0.

@@ -42,7 +42,7 @@ list(APPEND _n64_renames -DInitSoundChannel=N64InitSoundChannel
      -DStartSoundChannelMuted=N64StartSoundChannelMuted)
 target_compile_options(
   coastline_n64frontend
-  PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>" -UTGR_PC -DTGR_PC=0 -UTGR_BRD3D -DTGR_BRD3D=0
+  PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>" -UTGR_BOSS_RALLY -DTGR_BOSS_RALLY=0 -UTGR_BRD3D -DTGR_BRD3D=0
           -fpermissive -Wno-unused-parameter ${_n64_renames})
 target_link_libraries(coastline_n64frontend PUBLIC SDL3::SDL3 coastline_cartridgedata coastline_pcgame
                                                     coastline_sdl)

@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** Look up a localised race message. */
 const char *GetRaceProgressMessage(s32 id);
 /** The empty message shown after a network finish. */
@@ -18,7 +18,7 @@ const char *GetNetworkRaceFinishMessage(void);
  * @ghidraAddress BRD3D: 0x100b3960
  */
 extern s32 g_anRaceProgressStringIds[RACER_SLOTS];
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #ifdef __cplusplus
 }

@@ -6,7 +6,7 @@
 #include "common/system.h"
 #include "common/weather.h"
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 #include <PR/os.h>
 
 #include "common/audio.h"
@@ -20,18 +20,18 @@
 #include "common/displaylistops.h"
 #include "common/screen.h"
 #include "win32/gameinit.h"
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include "sdl/romsegments.h"
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x106805b8 */
 s32 g_dwRaceSessionType;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 
 /* The cartridge offset of the music of the menus. */
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
@@ -46,7 +46,7 @@ u32 g_dwNightMode;
 u32 g_dwSnowMode;
 u32 g_dwRainMode;
 u32 g_dwNumLocalPlayers = 1;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 void ApplyWeather(u32 weather) {
     g_dwNightMode = g_dwRainMode = g_dwSnowMode = 0;
@@ -70,12 +70,12 @@ void ApplyWeather(u32 weather) {
         g_dwNightMode = 1;
         break;
     }
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
     ProcessAllDisplayLists();
 #endif
 }
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 void MainMenuEntry(void) {
     ProcessMainMenu();
 }
@@ -83,14 +83,14 @@ void MainMenuEntry(void) {
 
 void StartRaceWithPlayerCount(u32 players) {
     g_dwNumLocalPlayers = players;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     SetCurrentScreenCallback(NullStub);
 #else
     SetCurrentScreenCallback(ProcessTrackMenu);
 #endif
 }
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 void ResetAllPlayers(void) {
     int i;
 
@@ -99,10 +99,10 @@ void ResetAllPlayers(void) {
         InitPlayerInputState(&g_aPlayerInputState[i]);
     }
 }
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 void InitGameAndShowMenus(void) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     PrepareWindowsGameSession();
 #endif
     InitRenderingSubsystem();
@@ -111,7 +111,7 @@ void InitGameAndShowMenus(void) {
     ResetAllPlayers();
     InitControllersAndPaks();
     SnapScreenFade(0.0f);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     PrepareWindowsGameMenus();
 #else
     SetCurrentScreenCallback(ProcessSplashScreens);
@@ -121,10 +121,10 @@ void InitGameAndShowMenus(void) {
     g_dwGhostRecordingSize = DmaReadAssetSize(ROM_GHOST_RECORDING);
     DecompressFromRom(g_abGhostRecording, ROM_GHOST_RECORDING, NULL);
     g_dwGhostRecordingSize = 8;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
     ResetHeap();
-#if TGR_PC
+#if TGR_BOSS_RALLY
     NullStub();
     while (!LoadWindowsMenuData(0)) {
     }
@@ -168,9 +168,9 @@ void InitGameAndShowMenus(void) {
     osSyncPrintf("sizeof(Vehicle)=%d\n", (int)sizeof(Vehicle));
     osSyncPrintf("sizeof(Enemy)=%d\n", 0x78);
 #endif
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL && !TGR_PC
+#if TGR_PLATFORM == TGR_PLATFORM_SDL && !TGR_BOSS_RALLY
     /* The PC release builds GameModeMainLoop() empty. The frames presented end the program. */
     for (;;) {
         CallCurrentGameMode();
@@ -179,7 +179,7 @@ void InitGameAndShowMenus(void) {
     GameModeMainLoop();
 #endif
 }
-#if TGR_PC
+#if TGR_BOSS_RALLY
 void SetWeatherAndRefreshVehicleMaterials(u32 weather) {
     ApplyWeather(weather);
     ProcessAllDisplayLists();

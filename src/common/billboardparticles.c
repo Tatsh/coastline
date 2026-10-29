@@ -5,7 +5,7 @@
 #include "common/system.h"
 #include "common/weather.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/displaylist.h"
 #include "win32/hudcanvas.h"
 #include "win32/particlesnapshot.h"
@@ -61,9 +61,9 @@ static inline s32 ClampToScreen(s32 coordinate) {
     return clamped > 0 ? clamped : 0;
 }
 
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 void RenderBillboardParticles(
     const ViewportRect *viewports, u32 head, s32 red, s32 green, s32 blue) {
 #else
@@ -73,7 +73,7 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue) {
     const Particle *particle;
     f32 clip[4];
     f32 span, scaleX, inverse, size, edge;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     s32 centerX, centerY, height, halfWidth, halfHeight, x, y;
     BILLBOARD_INDEX index;
     long double rawInverse, rawDepth, rawSize, rawEdge, rawY, heightPixels;
@@ -83,7 +83,7 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue) {
     BILLBOARD_INDEX index;
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     view = &viewports[g_dwCurrentSplitScreenIndex];
     centerX = BILLBOARD_ADD(BILLBOARD_ADD(view->x, view->x), view->width);
     centerX = BILLBOARD_ADD(centerX, centerX);
@@ -99,7 +99,7 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue) {
     span = (f32)(view->width * 2);
     height = view->height;
     scaleX = g_dwViewportMirrored != g_dwTrackMirrored ? -span : span;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
     for (index = head; index != 0; index = particle->next) {
         particle = &BILLBOARD_PARTICLES[index];
@@ -107,7 +107,7 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue) {
         if (clip[3] <= 0.001f && clip[3] >= -0.001f) {
             continue;
         }
-#if TGR_PC
+#if TGR_BOSS_RALLY
         rawInverse = 1.0L / clip[3];
         inverse = rawInverse;
         rawDepth = rawInverse * clip[2];
@@ -182,7 +182,7 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue) {
         }
         x = (s32)(clip[0] * scaleX) + centerX;
         y = (s32)(clip[1] * (f32)(height * 2)) + centerY;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
         gDPPipeSync(gDisplayListPtr++);
         gDPSetPrimColor(gDisplayListPtr++,
@@ -192,7 +192,7 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue) {
                         green,
                         blue,
                         (particle->alpha * particle->fade) >> 8);
-#if TGR_PC
+#if TGR_BOSS_RALLY
         gSPClearGeometryMode(gDisplayListPtr++, G_CULL_BOTH);
         gDisplayListPtr->w0 = (u32)GBI_OP_SET_TEX_RECT_W << 24;
         gDisplayListPtr++->f1 = inverse;
@@ -219,6 +219,6 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue) {
                             PARTICLE_TEXTURE_LAST_T - t,
                             stepS,
                             stepT);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     }
 }

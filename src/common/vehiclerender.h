@@ -51,7 +51,7 @@ extern f32 g_mtxVehicleModelScaled[4][4];
  */
 extern u32 g_dwVehicleOtherModeLBlend;
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * @ghidraAddress USA: 0x8028c304
  * @ghidraAddress EUR: 0x8028ea64
@@ -59,7 +59,7 @@ extern u32 g_dwVehicleOtherModeLBlend;
  * @ghidraAddress BRD3D: 0x10277e58
  */
 extern u32 g_dwVehicleOtherModeLFlags;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 /**
  * The alpha of the fog colour that fades a ghost vehicle.
@@ -102,7 +102,7 @@ extern s32 g_anVehicleLod[MAX_VEHICLES];
  * @ghidraAddress BRD3D: 0x10277dc8
  * @ghidraAddress BRGlide: 0x102735b0
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 extern f32 (*g_apVehicleModelMatrix[MAX_VEHICLES])[4];
 #else
 extern Mtx *g_apVehicleModelMatrix[MAX_VEHICLES];
@@ -117,7 +117,7 @@ extern Mtx *g_apVehicleModelMatrix[MAX_VEHICLES];
  * @ghidraAddress BRD3D: 0x10277e18
  * @ghidraAddress BRGlide: 0x10273600
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 extern f32 (*g_apVehicleLightMatrix[MAX_VEHICLES])[4];
 #else
 extern Mtx *g_apVehicleLightMatrix[MAX_VEHICLES];
@@ -164,7 +164,7 @@ extern Vec3f g_vecVehicleHiliteDir;
  */
 extern u16 g_awVehicleShadePalette[16];
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * Whether every vehicle is drawn in its other look, as Vehicle.otherLook draws one.
  *
@@ -174,7 +174,7 @@ extern u16 g_awVehicleShadePalette[16];
  * @ghidraAddress BRD3D: 0x10277b1c
  */
 extern s32 g_bForceVehicleAltVariant;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 /**
  * Whether the reflection of the sky takes its coordinates linearly from the normals.

@@ -15,7 +15,7 @@ extern "C" {
 
 /** A season of the championship. */
 typedef struct {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     u32 nameStringId; /*!< The string of the name of the season. */
 #else
     const char *name;     /*!< The name of the season. */

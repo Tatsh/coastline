@@ -31,7 +31,7 @@ enum {
     GAME_MODE_PRACTICE,         /*!< Free driving on a track, counting no laps. */
     GAME_MODE_DEMO,             /*!< The race the computer drives after the splash screens. */
     GAME_MODE_AFTER_SEASON = 5, /*!< The race that follows the results of a finished season. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     GAME_MODE_NETWORK = 6, /*!< A race of network play. */
 #endif
 };
@@ -79,7 +79,7 @@ extern s32 g_dwRaceSessionType;
  */
 void ApplyWeather(u32 weather);
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * Set weather flags and refresh vehicle materials.
  *

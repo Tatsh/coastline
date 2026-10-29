@@ -2,7 +2,7 @@
 #include "common/particlecommands.h"
 #include "common/trackselect.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <string.h>
 
 #include "win32/particlesnapshot.h"
@@ -10,7 +10,7 @@
 #include <PR/os_libc.h>
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 
 #define SMOKE_LIST_HEAD g_wRenderTireSmokeListHead
 #define PAVED_SMOKE_LIST_HEAD g_wRenderPavedTireSmokeListHead
@@ -20,9 +20,9 @@
 #define SMOKE_LIST_HEAD g_wTireSmokeListHead
 #define PAVED_SMOKE_LIST_HEAD g_wPavedTireSmokeListHead
 #define RENDER_SMOKE_LIST(head, red, green, blue) RenderBillboardParticles(head, red, green, blue)
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 void RenderTireSmoke(const ViewportRect *viewports) {
 #else
 void RenderTireSmoke(void) {

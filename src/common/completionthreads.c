@@ -10,7 +10,7 @@
 #define DUMMY_OS_MESG ((OSMesg)g_dwDummyOsMesg)
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /* Windows redirects the console hooks to its empty compatibility entry. */
 #define osCreateMesgQueue(...) NullStub()
 #define osSetEventMesg(...) NullStub()
@@ -19,7 +19,7 @@
 #define RETRACE_INCREMENT(value) ((s32)((u32)(value) + 1u))
 #else
 #define RETRACE_INCREMENT(value) ((value) + 1)
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 void RspDoneThread(void *arg) {
     osCreateMesgQueue(&g_RspEventMsgQueue, g_aRspEventMsgBuf, 1);

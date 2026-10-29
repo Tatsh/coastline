@@ -3,7 +3,7 @@
 
 #include "common/displaylistops.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/combine.h"
 #endif
 
@@ -13,7 +13,7 @@ extern "C" {
 
 /** Set the combiner of the track: the two levels of a texture mixed and then shaded. */
 static inline void SetTrackCombiner(DisplayListCommand *pkt) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     PackCombineMode(pkt,
                     1000 + G_CCMUX_TEXEL1,
                     1000 + G_CCMUX_TEXEL0,
@@ -49,7 +49,7 @@ static inline void SetTrackCombiner(DisplayListCommand *pkt) {
                       0,
                       0,
                       COMBINED);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 }
 
 #ifdef __cplusplus

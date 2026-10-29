@@ -1,4 +1,4 @@
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <math.h>
 
 #include <PR/gu.h>
@@ -8,7 +8,7 @@
 #include "guint.h"
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 
 static u32 TruncateHiliteCoordinate(long double value) {
     if (!(value >= -0x1p63L && value < 0x1p63L)) {
@@ -64,7 +64,7 @@ void guLookAtHiliteF(float mf[4][4],
                      float zl2,
                      int twidth,
                      int theight) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     Vec3d lights[2] = {{xl1, yl1, zl1}, {xl2, yl2, zl2}};
     s32 width = (s32)((u32)twidth * 4);
     s32 height = (s32)((u32)theight * 4);
@@ -171,10 +171,10 @@ void guLookAtHiliteF(float mf[4][4],
     mf[1][3] = 0.0f;
     mf[2][3] = 0.0f;
     mf[3][3] = 1.0f;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 }
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 void guLookAtHilite(Mtx *m,
                     LookAt *l,
                     Hilite *h,
@@ -219,4 +219,4 @@ void guLookAtHilite(Mtx *m,
                     theight);
     guMtxF2L(mf, m);
 }
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */

@@ -12,7 +12,7 @@
 extern "C" {
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * Play a sample on a sound effect channel at its own rate and the full levels.
  *
@@ -66,7 +66,7 @@ void InitSoundChannel(s16 channel, s8 *sample, u32 length, u32 loopLength);
  * @ghidraAddress JPN: 0x80258ad8
  */
 void StartSoundChannelMuted(s16 channel, s8 *sample, u32 length, u32 loopLength);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #ifdef __cplusplus
 }

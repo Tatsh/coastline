@@ -31,7 +31,7 @@ void UpdateVehicleWheelTransforms(Vehicle *vehicle);
 /** Transform the body and wheel matrices for drawing. */
 void TransformAllWheelMatrices(Vehicle *vehicle);
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** Whether the selected binding for a driving control is an axis. */
 s32 IsVehicleControlAnalogue(s32 control);
 
@@ -46,7 +46,7 @@ s32 ShouldStepVehiclePhysics(Vehicle *vehicle);
 
 /** Update drawing transforms or send the local driver's motion. */
 void FinishVehiclePhysicsFrame(Vehicle *vehicle);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #ifdef __cplusplus
 }

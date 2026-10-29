@@ -274,7 +274,7 @@ void ChooseReplayCamera(Vehicle *vehicle);
  */
 void ProcessVehicleInputAndPhysics(Vehicle *vehicle);
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** Apply effect bytes requested by the current input mask. */
 void ApplyPlayerVehicleEffects(Vehicle *vehicle);
 /** Consume the input poll's respawn request. */

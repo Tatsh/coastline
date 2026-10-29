@@ -9,7 +9,7 @@
 #include "common/track.h"
 #include "common/vecmath.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 Model *g_pStartLightsModel;
 s32 g_dwStartLightsAnimation;
 #define ANIMATION_MARKER(bar, red, green, blue, alpha) NullStub()
@@ -51,14 +51,14 @@ void UpdateRaceAnimations(void) {
     ANIMATION_MARKER(0, 0, 0x82, 0, 0xFF);
 }
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define START_LIGHT_ROW(index) (&matrix.rows[index].vector)
 #else
 #define START_LIGHT_ROW(index) ((Vec3f *)m[index])
 #endif
 
 void RenderStartLights(void) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     union {
         f32 values[4][4];
         struct {
@@ -69,7 +69,7 @@ void RenderStartLights(void) {
     f32(*m)[4] = matrix.values;
 #else
     f32 m[4][4];
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
     if (!g_bStartLightsVisible || g_LoadedTrack.rootSection == NULL) {
         return;
@@ -89,7 +89,7 @@ void RenderStartLights(void) {
     Vec3fCross(START_LIGHT_ROW(1), START_LIGHT_ROW(2), START_LIGHT_ROW(0));
     m[3][0] = g_LoadedTrack.rootSection->points[0].position.x;
     m[3][1] = g_LoadedTrack.rootSection->points[0].position.y;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     m[3][2] =
         ((long double)g_LoadedTrack.rootSection->points[0].position.z + g_fStartLightsDrop) + 2.0f;
 #else

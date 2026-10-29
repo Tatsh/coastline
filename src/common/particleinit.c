@@ -2,7 +2,7 @@
 #include "common/vehicleaccess.h"
 #include "common/vehiclecount.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x10a99bb0 */
 u16 g_wExhaustParticleListHead;
 /** @ghidraAddress BRD3D: 0x10a99ba8 */
@@ -11,9 +11,9 @@ u16 g_wParticleFreeListHead;
 u16 g_wPavedTireSmokeListHead;
 /** @ghidraAddress BRD3D: 0x10a99bac */
 u16 g_wTireSmokeListHead;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define PARTICLE_ACTIVE_VEHICLES activeVehicles
 #else
 #define PARTICLE_ACTIVE_VEHICLES g_dwNumActiveVehicles
@@ -21,14 +21,14 @@ u16 g_wTireSmokeListHead;
 
 void InitParticleSystem(void) {
     s32 i;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     s32 activeVehicles;
 #endif
 
     for (i = 1; i < PARTICLES; i++) {
         g_aParticlePool[i].next = i + 1;
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     activeVehicles = g_dwNumActiveVehicles;
 #endif
     /* The loop links the last puff past the pool, and this ends the list there. */

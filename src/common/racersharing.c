@@ -23,7 +23,7 @@
 
 #define RACER_KINDS 2
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 typedef long double SharingReal;
 #define SHARING_INTERMEDIATE(value) ((long double)(value))
 #define SHARING_ZERO(value) (!((value) < 0.0f) && !((value) > 0.0f))
@@ -59,7 +59,7 @@ s32 CompareRacerProgressAsc(const void *a, const void *b) {
     if (second->progress < first->progress) {
         return 1;
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (!(first->progress >= second->progress)) {
 #else
     if (first->progress < second->progress) {
@@ -193,7 +193,7 @@ static void AcquireRacerVehicle(RacerSlot *slot, Vehicle *vehicle) {
     VEHICLE_GET(vehicle, Color)[0] = RACER_SLOT_GET(slot, Color)[0];
     VEHICLE_GET(vehicle, Color)[1] = RACER_SLOT_GET(slot, Color)[1];
     VEHICLE_GET(vehicle, Color)[2] = RACER_SLOT_GET(slot, Color)[2];
-#if TGR_PC
+#if TGR_BOSS_RALLY
     ApplyEnemyCarColorPanels(vehicle, slot);
 #else
     SetMaterialColor(vehicle->model, slot->color[0] >> 3, slot->color[1] >> 3, slot->color[2] >> 3);

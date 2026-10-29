@@ -1,6 +1,6 @@
 #include "common/types.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <PR/os_cont.h>
 
 #include "win32/inputpoll.h"
@@ -9,7 +9,7 @@
 #include "siint.h"
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 
 void osContGetReadData(OSContPad *data) {
     int steering;
@@ -117,4 +117,4 @@ void __osPackReadData(void) {
     }
     *ptr = CONT_CMD_END;
 }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */

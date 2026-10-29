@@ -6,7 +6,7 @@
 typedef struct ConvertedModelVertex {
     Vec3f position;
     Vec2f texture;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     union {
         Vec3f normal;
         Vec3f color;

@@ -22,12 +22,12 @@
 #include "common/visgrid.h"
 #include "common/weather.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "common/vehiclecount.h"
 #include "win32/trackskidmarks.h"
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 s32 g_nOpaqueVisibleInstanceCount;
 
 namespace {
@@ -110,7 +110,7 @@ namespace {
 #define PHYSICAL(address) ((u32)(address) + 0x80000000)
 #define TRACK_TIMING(bar, red, green, blue, alpha) AddTimingMarker(bar, red, green, blue, alpha)
 #define TRACK_WEATHER_EXCLUDED 7
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 /* The minimum level of detail of the primitive colour, and the colour itself. */
 #define PRIM_MIN_LEVEL 0x17
@@ -180,7 +180,7 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
     f32(*vp)[4] = g_afViewProjMatrix;
     f32(*mvp)[4] = g_afMvpMatrix;
     f32(*m)[4] = instance->matrix;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     f32(*block)[4];
     f32 scale, high, low;
 #else
@@ -189,9 +189,9 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
 #endif
     s32 row, column;
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     for (column = 0; column < 4; column++) {
-#if TGR_PC && TGR_RENDERER == TGR_RENDERER_GLIDE
+#if TGR_BOSS_RALLY && TGR_RENDERER == TGR_RENDERER_GLIDE
         mvp[3][column] =
             (f32)((((long double)vp[3][column] * m[3][3] + (long double)vp[0][column] * m[3][0]) +
                    (long double)vp[2][column] * m[3][2]) +
@@ -217,13 +217,13 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
             scale;
     }
     scale *= m[0][0];
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     for (row = 0; row < 3; row++) {
         for (column = 0; column < 4; column++) {
             mvp[row][column] = vp[row][column] * scale;
         }
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     block = AllocDisplayListBlock()->matrix;
 #else
     block = (Mtx *)AllocDisplayListBlock();
@@ -235,7 +235,7 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
         if (high <= mvp[3][column]) {
             high = mvp[3][column];
         }
-#if TGR_PC
+#if TGR_BOSS_RALLY
         if (!(mvp[3][column] > low)) {
 #else
         if (mvp[3][column] <= low) {
@@ -243,12 +243,12 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
             low = mvp[3][column];
         }
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (FIXED_MATRIX_MAX < (f64)high || !((f64)low >= -FIXED_MATRIX_MAX)) {
 #else
     if (FIXED_MATRIX_MAX < (f64)high || (f64)low < -FIXED_MATRIX_MAX) {
 #endif
-#if TGR_PC || TGR_REGION != TGR_REGION_JP
+#if TGR_BOSS_RALLY || TGR_REGION != TGR_REGION_JP
         /* Only the second model in view reports its overflow. */
         if (listIndex == 1) {
             osSyncPrintf("Bad Final Matrix: in=%d (%s), s=%f\n-------------\n"
@@ -308,7 +308,7 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
                          mvp[3][2],
                          mvp[3][3]);
         }
-#endif /* TGR_PC || TGR_REGION != TGR_REGION_JP */
+#endif /* TGR_BOSS_RALLY || TGR_REGION != TGR_REGION_JP */
         scale = -low < high ? FIXED_MATRIX_MAX / high : -FIXED_MATRIX_MAX / low;
         for (row = 0; row < 4; row++) {
             for (column = 0; column < 4; column++) {
@@ -316,7 +316,7 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
             }
         }
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     CopyMatrix4x4(g_afMvpMatrix, block);
 #else
     guMtxF2L(g_afMvpMatrix, block);
@@ -324,7 +324,7 @@ static inline void ForceUnrotatedMatrix(TrackInstance *instance, s32 index, s32 
     gSPForceMatrix(gDisplayListPtr++, block);
 }
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 void RenderTrackGeometry(const ViewportRect *viewports,
                          s32 deferred,
                          const RacerSlot *slots,
@@ -333,7 +333,7 @@ void RenderTrackGeometry(const ViewportRect *viewports,
 void RenderTrackGeometry(s32 deferred) {
 #endif
     TrackInstance *instance;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     f32(*block)[4];
 #else
     Mtx *block;
@@ -344,7 +344,7 @@ void RenderTrackGeometry(s32 deferred) {
     clear = !g_dwNightMode && !g_dwRainMode;
     matrixLoaded = FALSE;
     if (!deferred) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         for (i = 0; i < g_dwNumActiveVehicles; ++i) {
             ConvertedModelVertex *quad = vehicles[i].GetShadowQuad();
             quad[0].texture.x = 1024.0f;
@@ -363,7 +363,7 @@ void RenderTrackGeometry(s32 deferred) {
         BuildVisibleInstanceList(viewports, slots, vehicles);
 #else
         BuildVisibleInstanceList();
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         g_nDeferredInstanceLastIdx = -1;
         deferredLast = -1;
         g_nOpaqueVisibleInstanceCount = opaqueCount = g_nVisibleInstanceCount;
@@ -372,7 +372,7 @@ void RenderTrackGeometry(s32 deferred) {
         if (clear) {
             g_dwInstanceHideFlags = TRACK_INSTANCE_DARK_OR_WET;
         }
-#if TGR_PC
+#if TGR_BOSS_RALLY
         if (g_dwGameMode != GAME_MODE_ARCADE && g_dwGameMode != GAME_MODE_NETWORK &&
             (g_dwGameMode != GAME_MODE_AFTER_SEASON || vehicles[0].GetProfile()->season != 0)) {
 #else
@@ -504,7 +504,7 @@ void RenderTrackGeometry(s32 deferred) {
             ForceUnrotatedMatrix(instance, index, i);
         } else {
             matrixLoaded = FALSE;
-#if TGR_PC
+#if TGR_BOSS_RALLY
             block = AllocDisplayListBlock()->matrix;
             CopyMatrix4x4(instance->matrix, block);
 #else
@@ -543,7 +543,7 @@ void RenderTrackGeometry(s32 deferred) {
         if (g_nVisibleCellIdxMid < i && i < g_nTrackTransparentStartIdx) {
             DrawPlainInstance(instance);
         } else {
-#if TGR_PC
+#if TGR_BOSS_RALLY
             RenderTrackInstance(
                 viewports, index, g_abInstanceVisibilityMask[index], deferred, vehicles);
 #else
@@ -571,7 +571,7 @@ void RenderTrackGeometry(s32 deferred) {
         }
     }
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (deferred) {
         DrawTrackShadows(vehicles);
     }

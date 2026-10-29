@@ -8,7 +8,7 @@
 #include "common/vehiclecount.h"
 #include "common/weather.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <string.h>
 #else
 #include <PR/os_libc.h>
@@ -21,7 +21,7 @@
 #define SPRAY_TEXTURE_FAR 0x410
 #define SPRAY_TEXTURE_SEGMENT_SHIFT 11
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 typedef ConvertedModelVertex SprayMoveVertex;
 typedef long double SprayMoveReal;
 static inline f32 &SprayColor(SprayMoveVertex *vertices, s32 vertex, s32 channel) {
@@ -70,7 +70,7 @@ typedef f32 SprayMoveReal;
     (SPRAY_POSITION(segment, vertex, coordinate, field) =                                          \
          SPRAY_POSITION(segment, vertex, coordinate, field) +                                      \
          (((velocity) * step) >> SPRAY_STEP_SHIFT) + (shift))
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 /** Set the colours of the two drawn vertices of the newest segment of a spray. */
 static inline void SetSprayColors(
@@ -87,7 +87,7 @@ static inline void SetSprayColors(
  * Colour the newest segment of a spray by its surface, the track, and the weather; a segment
  * without a spraying surface preserves the previous colours and has surface -1.
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 inline void Vehicle::ColorSpraySegment(s32 wheel) {
     Vehicle *vehicle = this;
 #else
@@ -146,7 +146,7 @@ static inline void ColorSpraySegment(Vehicle *vehicle, s32 wheel) {
 }
 
 /** Copy a segment of a spray over the next older one. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 inline void Vehicle::AgeSpraySegment(s32 wheel, s32 age) {
     Vehicle *vehicle = this;
 #else
@@ -161,7 +161,7 @@ static inline void AgeSpraySegment(Vehicle *vehicle, s32 wheel, s32 age) {
     vehicle->spraySegmentSurfaces[wheel][age] = vehicle->spraySegmentSurfaces[wheel][age - 1];
 }
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 void Vehicle::MoveTireSpraySegments(s32 step, s16 fall) {
     Vehicle *vehicle = this;
     f32 scale[4][4];
@@ -191,7 +191,7 @@ void MoveTireSpray(void) {
             continue;
         }
 
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     /* The origin moves to the vehicle in whole units of the vertices, which move back. */
     shiftX = SPRAY_MOVE_INTEGER(
         ((SprayMoveReal)vehicle->sprayOrigin.x - vehicle->frame.position.x) * SPRAY_UNITS);
@@ -261,7 +261,7 @@ void MoveTireSpray(void) {
                 SPRAY_POSITION(segment, 0, 2, z) += shiftZ;
                 SPRAY_MOVE_POSITION(segment, 1, 0, x, velocities[1][0], shiftX);
                 SPRAY_MOVE_POSITION(segment, 1, 1, y, velocities[1][1], shiftY);
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 topZ = (long double)(SPRAY_VELOCITY(velocities[1][2], step) + shiftZ) +
                        SPRAY_POSITION(segment, 1, 2, z);
                 SPRAY_POSITION(segment, 1, 2, z) = topZ;
@@ -280,18 +280,18 @@ void MoveTireSpray(void) {
                     } else {
                         velocities[1][2] -= fall;
                     }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
             }
         }
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
 }
 #else
     }
 }
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 void MoveTireSpray(void) {
     s32 step = (s32)(s64)((long double)g_fFrameDeltaTime * (1 << SPRAY_STEP_SHIFT));
     s16 fall = (s16)(s64)((long double)g_fFrameDeltaTime * 9.81f * SPRAY_UNITS);
@@ -307,4 +307,4 @@ void MoveTireSpray(void) {
         }
     }
 }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */

@@ -11,7 +11,7 @@
 #include "common/vehiclecount.h"
 #include "common/volumecontrols.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/app.h"
 #include "win32/directplay.h"
 #include "win32/input.h"
@@ -20,16 +20,16 @@
 #include "win32/sound.h"
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x10680734 */
 s32 g_dwPauseMenuSelection;
 /** @ghidraAddress BRD3D: 0x106909b4 */
 u32 g_dwRacePauseState;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #define FADE_SECONDS 0.2f
 #define CONFIRM_BUTTONS (INPUT_A | INPUT_START | INPUT_Z)
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define RACE_TRANSFER_INPUT(state, mask) ((state)->TransferFlags(mask))
 
 /**
@@ -64,13 +64,13 @@ static s32 ApplyUnpauseAcknowledgement(s32 paused) {
 }
 #else
 #define RACE_TRANSFER_INPUT(state, mask) TransferFlags(state, mask)
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 /* Take the input of the pause menu, and tell whether the race stays paused. */
 s32 ProcessPauseMenu(s32 paused) {
     s32 i;
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (g_dwRacePauseState == 2) {
         if (g_dwInputButtonMask & 0x8000) {
             if (g_dwPauseMenuSelection == 0) {
@@ -92,9 +92,9 @@ s32 ProcessPauseMenu(s32 paused) {
         paused = ApplyUnpauseAcknowledgement(paused);
         goto networkTick;
     }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
         UpdateStickRepeat(VEHICLE_GET(&g_aVehicles[i], Input));
         if (VEHICLE_GET(&g_aVehicles[i], Input)->buttons & INPUT_B) {
             RACE_TRANSFER_INPUT(VEHICLE_GET(&g_aVehicles[i], Input), INPUT_B);
@@ -103,9 +103,9 @@ s32 ProcessPauseMenu(s32 paused) {
             g_dwScreenClearFrames = 2;
             paused = FALSE;
         }
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
         if (
-#if TGR_PC
+#if TGR_BOSS_RALLY
             (g_dwInputButtonMask & 0x8000) ||
             (g_dwPauseMenuSelection == PAUSE_CONTINUE && (g_dwInputButtonMask & 4) &&
              !(g_dwInputButtonMask & 0x3000) && !(g_dwInputButtonMask & 3))
@@ -120,7 +120,7 @@ s32 ProcessPauseMenu(s32 paused) {
             }
             switch (g_dwPauseMenuSelection) {
             case PAUSE_CONTINUE:
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 paused = ResumeRace(paused);
 #else
                 FadeSfxTo(1.0f, FADE_SECONDS);
@@ -134,7 +134,7 @@ s32 ProcessPauseMenu(s32 paused) {
                 g_dwRaceExitState = FALSE;
                 g_bReplayAfterRace = FALSE;
                 g_dwRaceInitialized = FALSE;
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 FreeAllRacerColorPanels();
                 g_bNetRaceStartReached = FALSE;
                 ResetAudioSubsystem();
@@ -147,7 +147,7 @@ s32 ProcessPauseMenu(s32 paused) {
                 FadeMusicTo(0.0f, FADE_SECONDS);
                 g_bReplayAfterRace = FALSE;
                 g_dwRaceExitState = TRUE;
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 if (g_bBgmVolume) {
                     UnpauseMusicPlayback();
                     DispatchMusicVolumeChange(g_bBgmVolume);
@@ -156,9 +156,9 @@ s32 ProcessPauseMenu(s32 paused) {
                     SendNetworkMessage6ToSession();
                     DisableNetworkReceive();
                 }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
                 break;
-#if TGR_PC
+#if TGR_BOSS_RALLY
             case PAUSE_CONFIRM_EXIT:
                 paused = 2;
                 g_dwRacePauseState = 2;
@@ -167,7 +167,7 @@ s32 ProcessPauseMenu(s32 paused) {
 #endif
             }
         }
-#if TGR_PC
+#if TGR_BOSS_RALLY
         paused = ApplyUnpauseAcknowledgement(paused);
         if (g_dwInputButtonMask & 0x1000) {
             g_dwPauseMenuSelection =
@@ -230,9 +230,9 @@ s32 ProcessPauseMenu(s32 paused) {
                 IncreaseSfxVolume();
             }
         }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
 networkTick:
     if (g_dwNetworkPlayMode && g_bNetRaceStartReached) {
         TickNetworkUnpauseRequest();
@@ -254,7 +254,7 @@ s32 ProcessRaceButtons(s32 paused) {
         /* Either controller ends a race the computer drives. */
         for (i = 0; i < 2; i++) {
             if (
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 g_dwInputButtonMask & 0x4000
 #else
                 g_aPlayerInputState[i].buttons & CONFIRM_BUTTONS
@@ -270,7 +270,7 @@ s32 ProcessRaceButtons(s32 paused) {
         }
         return paused;
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if ((s32)g_dwNumLocalPlayers > 0 && g_bNetGamePaused) {
         g_bNetGamePaused = FALSE;
         if (gInstantReplayActive) {
@@ -315,6 +315,6 @@ s32 ProcessRaceButtons(s32 paused) {
             return paused;
         }
     }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     return paused;
 }

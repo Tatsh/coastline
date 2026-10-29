@@ -6,11 +6,11 @@
 #include "common/vehiclemodel.h"
 #include "common/weather.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <math.h>
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 f32 g_fCollisionImpulseScale = 1.0f;
 CollisionContactState g_CollisionContactState;
 Vec3f g_vCollisionContact;
@@ -55,7 +55,7 @@ void SelectVehiclePhysicsTables(s32 model) {
 #define CONTACT_LESS(a, b) ((a) < (b))
 #define FORCE_PRODUCT(a, b) ((a) * (b))
 #define FORCE_ROOT(value) sqrtf(value)
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #define CONTACT_ABS(a) ((a) < 0.0f ? -(a) : (a))
 #define COMPONENT(v, axis) ((&(v)->x)[axis])
@@ -72,14 +72,14 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
 #endif
     Vec3f *normal = &wheel->groundNormal;
     f32 c, s, rollSpeed, drive, force;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double highForward[3], highWeight, highSpin, highAngle, pressure, grip;
     s16 weather;
 #else
     f32 pressure, grip, ratio;
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     unitY.x = 0.0f;
     unitY.y = 1.0f;
     unitY.z = 0.0f;
@@ -89,7 +89,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
     if (!wheel->ground) {
         return;
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (!(normal->z >= 0.7)) {
 #else
     if ((f64)normal->z < 0.7) {
@@ -98,7 +98,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
     }
     /* The ways the wheel rolls and slides on the ground. */
     Mtx3x3MulVec3f(&axle, body->orientation, &unitY);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     highForward[0] = FORCE_PRODUCT(axle.y, normal->z) - FORCE_PRODUCT(normal->y, axle.z);
     highForward[1] = FORCE_PRODUCT(axle.z, normal->x) - FORCE_PRODUCT(normal->z, axle.x);
     highForward[2] = FORCE_PRODUCT(axle.x, normal->y) - FORCE_PRODUCT(normal->x, axle.y);
@@ -115,13 +115,13 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
     side.x = normal->y * forward.z - forward.y * normal->z;
     side.y = normal->z * forward.x - forward.z * normal->x;
     side.z = normal->x * forward.y - forward.x * normal->y;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     c = cosf(wheel->steerAngle);
     s = sinf(wheel->steerAngle);
     roll.x = forward.x * c;
     roll.y = forward.y * c;
     roll.z = forward.z * c;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     roll.x = FORCE_PRODUCT(side.x, s) + roll.x;
     roll.y = FORCE_PRODUCT(side.y, s) + roll.y;
     roll.z = FORCE_PRODUCT(side.z, s) + roll.z;
@@ -144,12 +144,12 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
     slide.z = forward.z + slide.z;
     (void)slide;
 
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
     if (body->wheels[0]->contactFrames && body->wheels[2]->contactFrames &&
         body->wheels[1]->contactFrames && body->wheels[3]->contactFrames) {
         GetWheelWorldVelocity(&velocity, body, wheel);
-#if TGR_PC
+#if TGR_BOSS_RALLY
         rollSpeed = (FORCE_PRODUCT(velocity.x, roll.x) + FORCE_PRODUCT(velocity.y, roll.y)) +
                     FORCE_PRODUCT(roll.z, velocity.z);
         highWeight = ((long double)body->mass - FORCE_PRODUCT(wheel->mass, -4.0f)) *
@@ -168,21 +168,21 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
         weight.z = (body->mass + 4.0f * wheel->mass) * WHEEL_WEIGHT_SHARE +
                    (f32)((f64)wheel->state.position.z - -0.97) * 0.0f;
         pressure = normal->z * weight.z + (weight.x * normal->x + weight.y * normal->y);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         drive = wheel->drive;
         force = drive / wheel->radius;
-#if TGR_PC
+#if TGR_BOSS_RALLY
         grip = pressure * 3.5f;
 #else
         grip = pressure * 3.0f;
 #endif
-#if TGR_PC
+#if TGR_BOSS_RALLY
         *load = *load + FORCE_PRODUCT(force, 0.5f);
 #else
         *load = *load + force / 2.0f;
 #endif
         if (*sliding) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
             weather = g_dwCurrentWeather - 1;
             if (weather >= GRIP_WEATHERS || weather < 0) {
                 weather = 0;
@@ -191,9 +191,9 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
                                   force);
 #else
             force = (f32)((f64)force * 0.9);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         }
-#if TGR_PC
+#if TGR_BOSS_RALLY
         if (ABS(grip) < ABS(force)) {
             force = (ABS(grip / force) * force) * 0.1f;
         }
@@ -202,7 +202,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
             ratio = grip / force;
             force = (f32)((f64)force * ((f64)ABS(ratio) * 0.1));
         }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         push.x = roll.x * -force;
         push.y = roll.y * -force;
         push.z = roll.z * -force;
@@ -211,7 +211,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
         wheel->forces->vector.y = local.y + wheel->forces->vector.y;
         wheel->forces->vector.z = local.z + wheel->forces->vector.z;
         /* The drive spins the wheel against its push, and the ground turns it to the speed. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
         highSpin =
             wheel->spinRate + ((long double)drive - FORCE_PRODUCT(wheel->radius, force)) * dt;
         highSpin -= (wheel->radius * highSpin + rollSpeed) * 0.4f;
@@ -222,9 +222,9 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
         if (ABS(wheel->spinRate) > MAX_SPIN_RATE) {
             wheel->spinRate = (f32)(SIGN(wheel->spinRate) * 300.0);
         }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     } else {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         highSpin = wheel->spinRate + FORCE_PRODUCT(wheel->drive, dt);
 #else
         wheel->spinRate = wheel->spinRate + wheel->drive * dt;
@@ -233,7 +233,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
         }
 #endif
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     wheel->spinRate = highSpin;
     if (ABS(highSpin) > MAX_SPIN_RATE) {
         wheel->spinRate = highSpin > 0.0L ? MAX_SPIN_RATE : -MAX_SPIN_RATE;
@@ -241,7 +241,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
 #endif
 
     /* Turn the wheel by its spin, within a turn. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     highAngle = wheel->rollAngle - FORCE_PRODUCT(wheel->spinRate, 57.29577637f) * dt;
     wheel->rollAngle = highAngle;
     if (!isfinite((double)highAngle) || !(wheel->rollAngle >= -36000.0) ||
@@ -270,7 +270,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
     while ((f64)wheel->rollAngle < 0.0) {
         wheel->rollAngle = wheel->rollAngle + 360.0f;
     }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 }
 
 void ComputeCollisionPenetration(
@@ -280,7 +280,7 @@ void ComputeCollisionPenetration(
     s32 i;
 
     if (g_dwCollisionContactType != 2) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         distance = Vec3fDot(normal, contact) - offset;
 #else
         distance =
@@ -293,7 +293,7 @@ void ComputeCollisionPenetration(
             middle[i] = (((long double)COMPONENT(&triangle[0], i) + COMPONENT(&triangle[1], i)) +
                          COMPONENT(&triangle[2], i)) *
                         0.3333333432674407958984375f;
-#elif TGR_PC && TGR_RENDERER == TGR_RENDERER_GLIDE
+#elif TGR_BOSS_RALLY && TGR_RENDERER == TGR_RENDERER_GLIDE
             middle[i] = (((long double)COMPONENT(&triangle[0], i) + COMPONENT(&triangle[2], i)) +
                          COMPONENT(&triangle[1], i)) *
                         0.3333333432674407958984375f;
@@ -302,7 +302,7 @@ void ComputeCollisionPenetration(
                         (COMPONENT(&triangle[0], i) + COMPONENT(&triangle[1], i));
             /* The original stores the sum before dividing it. */
             middle[i] = middle[i] / 3.0f;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         }
         if (CONTACT_LESS(CONTACT_ABS(middle[0]), CONTACT_ABS(middle[1]))) {
             if (CONTACT_LESS(CONTACT_ABS(middle[0]), CONTACT_ABS(middle[2]))) {
@@ -323,7 +323,7 @@ void ComputeCollisionPenetration(
             g_vCollisionContact.x = g_vCollisionContact.y;
             g_vCollisionContact.z = (f32)(CONTACT_LESS(middle[0], 0.0f) ? -1 : 1) * 0.5f;
         }
-#if TGR_PC
+#if TGR_BOSS_RALLY
         distance = Vec3fDot(normal, &g_vCollisionContact) - offset;
 #else
         distance = g_vCollisionContact.z * normal->z +
@@ -345,7 +345,7 @@ s32 ApplyCollisionImpulse(
     Vec3f *angular = &body->stepStates[1].angularVelocity;
     f32 transpose[3][3], rotation[3][3], skew[3][3], a[3][3], b[3][3], k[3][3], unit[3][3];
     Vec3f arm, copy, motion, across, target, impulse, linear, turn, spin;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double rawInto, highMotion[3], acrossX, slide[3], bounce;
     f32 inverseMass;
 #else
@@ -355,7 +355,7 @@ s32 ApplyCollisionImpulse(
     f32 into, speed;
     s32 i, j;
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
     /* The original copies the unit vector along z and never reads the copy. */
     unitZ = g_vecUnitZ;
     (void)unitZ;
@@ -366,7 +366,7 @@ s32 ApplyCollisionImpulse(
     TransposeCopyMatrix3x3(transpose, rotation, body->orientation);
     Mtx3fMulVec3f(&arm, transpose, &copy);
     /* How the point moves. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     highMotion[0] =
         FORCE_PRODUCT(angular->y, arm.z) - FORCE_PRODUCT(arm.y, angular->z) + velocity->x;
     highMotion[1] =
@@ -393,7 +393,7 @@ s32 ApplyCollisionImpulse(
         return 0;
     }
 
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
     /* The mass the point moves with along each axis. */
     BuildSkewSymmetricMatrix(skew, &arm);
@@ -409,7 +409,7 @@ s32 ApplyCollisionImpulse(
     unit[2][2] = unit[1][1] = unit[0][0] = 1.0f / body->mass;
     SubtractMatrix3x3(k, unit, a);
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     into = Vec3fDot(normal, &motion);
     acrossX = FORCE_PRODUCT(normal->x, into);
 #else
@@ -423,13 +423,13 @@ s32 ApplyCollisionImpulse(
         speed = MAX_IMPACT_SPEED;
     }
     RecordImpact(body, speed);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (body->framesSinceImpact >= 11 && !(restitution >= 0.0001f)) {
 #else
     if (body->framesSinceImpact >= 11 && restitution < 0.0001f) {
 #endif
         RecordImpactVolume(body, speed);
-#if TGR_PC
+#if TGR_BOSS_RALLY
         velocity->x *= g_fCollisionImpulseScale;
         velocity->y *= g_fCollisionImpulseScale;
         velocity->z *= g_fCollisionImpulseScale;
@@ -444,7 +444,7 @@ s32 ApplyCollisionImpulse(
         motion.z = motion.z * 0.9f;
     }
     /* Stop the point moving into the surface, and retain a part of its slide along it. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     slide[0] = motion.x - acrossX;
     slide[1] = (long double)motion.y - across.y;
     slide[2] = (long double)motion.z - across.z;
@@ -470,9 +470,9 @@ s32 ApplyCollisionImpulse(
     target.x = across.x + slide.x;
     target.y = across.y + slide.y;
     target.z = across.z + slide.z;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     SolveLinearSystem3x3(&impulse, k, &target);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     inverseMass = 1.0f / body->mass;
     linear.x = impulse.x * inverseMass;
     linear.y = impulse.y * inverseMass;
@@ -487,9 +487,9 @@ s32 ApplyCollisionImpulse(
     turn.x = arm.y * impulse.z - impulse.y * arm.z;
     turn.y = arm.z * impulse.x - impulse.z * arm.x;
     turn.z = arm.x * impulse.y - impulse.x * arm.y;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     Mtx3fMulVec3f(&spin, b, &turn);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     bounce = (long double)restitution - -1.05f;
     velocity->x = velocity->x - linear.x * bounce;
     velocity->y = velocity->y - linear.y * bounce;
@@ -511,7 +511,7 @@ s32 ApplyCollisionImpulse(
     angular->x = angular->x - spin.x;
     angular->y = angular->y - spin.y;
     angular->z = angular->z - spin.z;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     return 1;
 }
 
@@ -521,13 +521,13 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
     Vec3f impulse, pivot, scale, turn;
     f32 basis[4][4];
     f32 into, damping, speed;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double bounce, rawInto, reflected[3], tangent[3];
 #else
     f64 bounce;
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     /* The libraries add the y product last here, unlike Vec3fDot. */
     rawInto = FORCE_PRODUCT(normal->x, velocity->x) + FORCE_PRODUCT(normal->z, velocity->z) +
               FORCE_PRODUCT(normal->y, velocity->y);
@@ -542,11 +542,11 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
         return 0;
     }
     bounce = (f64)into * 1.05;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     impulse.x = (f32)((f64)normal->x * bounce);
     impulse.y = (f32)((f64)normal->y * bounce);
     impulse.z = (f32)((f64)normal->z * bounce);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     reflected[0] = (long double)velocity->x - impulse.x;
     reflected[1] = (long double)velocity->y - impulse.y;
     reflected[2] = (long double)velocity->z - impulse.z;
@@ -557,7 +557,7 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
     velocity->x = velocity->x - impulse.x;
     velocity->y = velocity->y - impulse.y;
     velocity->z = velocity->z - impulse.z;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     if (body->framesSinceImpact < 10) {
         damping = 0.9f;
     } else {
@@ -568,7 +568,7 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
         RecordImpact(body, speed);
         RecordImpactVolume(body, speed);
         damping = 0.9f;
-#if TGR_PC
+#if TGR_BOSS_RALLY
         velocity->x = reflected[0] * damping;
         velocity->y = reflected[1] * damping;
         velocity->z = reflected[2] * damping;
@@ -591,7 +591,7 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
     pivot.x = normal->y;
     pivot.y = normal->z;
     pivot.z = normal->x;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     tangent[0] = FORCE_PRODUCT(normal->y, pivot.z) - FORCE_PRODUCT(pivot.y, normal->z);
     tangent[1] = FORCE_PRODUCT(normal->z, pivot.x) - FORCE_PRODUCT(pivot.z, normal->x);
     tangent[2] = FORCE_PRODUCT(normal->x, pivot.y) - FORCE_PRODUCT(pivot.x, normal->y);
@@ -609,7 +609,7 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
     basis[2][0] = normal->y * basis[1][2] - basis[1][1] * normal->z;
     basis[2][1] = normal->z * basis[1][0] - basis[1][2] * normal->x;
     basis[2][2] = normal->x * basis[1][1] - basis[1][0] * normal->y;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     basis[0][0] = normal->x;
     basis[0][1] = normal->y;
     basis[0][2] = normal->z;
@@ -626,14 +626,14 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
     TrackTriangle *triangle;
     Vec3f down, start, origin, direction, hit;
     f32 nearest;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double distance, facing;
 #else
     f32 distance, facing;
 #endif
     s32 slot, count, i;
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     down.x = 0.0f;
     down.y = 0.0f;
     down.z = -1.0f;
@@ -655,7 +655,7 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
         if (!(distance > -2.0) || !(distance < 2.0)) {
             continue;
         }
-#if TGR_PC
+#if TGR_BOSS_RALLY
         facing = Vec3fDot(&triangle->normal, &direction);
 #else
         facing = direction.z * triangle->normal.z +
@@ -664,7 +664,7 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
         if (!((facing < 0 ? -facing : facing) > 0.001)) {
             continue;
         }
-#if TGR_PC
+#if TGR_BOSS_RALLY
         distance =
             (f32)(-PlaneDistance(&triangle->normal, triangle->planeOffset, &origin) / facing);
         hit.x = FORCE_PRODUCT(direction.x, distance) + origin.x;
@@ -682,7 +682,7 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
         hit.x = origin.x + hit.x;
         hit.y = origin.y + hit.y;
         hit.z = origin.z + hit.z;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         if (!((f64)distance > -2.0) || !((f64)distance < 2.0) || !(distance < nearest)) {
             continue;
         }
@@ -737,7 +737,7 @@ void UpdateWheelHeights(RigidBody *body) {
         if ((f64)height > 0.0) {
             height = 0.0f;
         }
-#if TGR_PC
+#if TGR_BOSS_RALLY
         if (!(height >= -0.4f)) {
 #else
         if ((f64)height < -0.4) {
@@ -752,7 +752,7 @@ void UpdateWheelHeights(RigidBody *body) {
 void ComputeSpringForces(RigidBody *body) {
     RigidBodyForce *force = body->forces;
     RigidBody *wheel;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double extension, compression;
 #else
     f64 extension;
@@ -784,7 +784,7 @@ void ComputeSpringForces(RigidBody *body) {
         }
         /* A wheel hanging at full droop is off the ground. */
         extension = (f64)wheel->suspension;
-#if TGR_PC
+#if TGR_BOSS_RALLY
         if (!(extension > -0.3999000134110451)) {
 #else
         if (extension <= -0.3999) {
@@ -795,19 +795,19 @@ void ComputeSpringForces(RigidBody *body) {
         if (0.0 < extension) {
             extension = (f64)0.0f;
         }
-#if TGR_PC
+#if TGR_BOSS_RALLY
         compression = extension - -0.3f;
 #else
         compression = (f32)(extension - -0.3);
 #endif
-#if TGR_PC
+#if TGR_BOSS_RALLY
         if (!(compression >= 0.0f)) {
 #else
         if (compression < 0.0f) {
 #endif
             compression = 0.0f;
         }
-#if TGR_PC
+#if TGR_BOSS_RALLY
         force->vector.z = compression * compression * body->springRate;
 #else
         force->vector.z =
@@ -853,7 +853,7 @@ void ComputeDampingForces(RigidBody *body) {
         }
         if (wheel->contactFrames == 0) {
             damping = 0.0f;
-#if TGR_PC
+#if TGR_BOSS_RALLY
         } else if (!(velocity.z >= 0.0f)) {
 #else
         } else if (velocity.z < 0.0f) {
@@ -869,7 +869,7 @@ void ComputeDampingForces(RigidBody *body) {
 
 void ComputeDragForce(RigidBody *body, RigidBodyForce *force) {
     s32 surface0, surface1, surface2, surface3;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double extra[3];
 #else
     f32 extra[3];
@@ -901,7 +901,7 @@ void SumBodyForces(RigidBody *body) {
     RigidBodyForce *force;
     Vec3f vector;
     Vec3f arm;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double torque[3];
 #else
     f32 torque[3];
@@ -938,7 +938,7 @@ void SumWheelForces(RigidBody *body, RigidBody *wheel) {
     Vec3f along, flat;
     Vec3f local;
     Vec3f position, arm;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double torque[3];
 #else
     f32 torque[3];
@@ -989,7 +989,7 @@ void ComputeVehicleAccelerations(RigidBody *body) {
     body->force.z = local.z;
     /* The wheels move the body along the ground, not up and down. The acceleration reuses the
      * vector of the local force. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     local.x = ((long double)body->wheels[2]->force.x + body->wheels[1]->force.x +
                body->wheels[0]->force.x + body->wheels[3]->force.x + body->force.x) /
               body->mass;
@@ -1003,7 +1003,7 @@ void ComputeVehicleAccelerations(RigidBody *body) {
     local.y = (body->force.y + body->wheels[0]->force.y + body->wheels[1]->force.y +
                body->wheels[2]->force.y + body->wheels[3]->force.y) /
               body->mass;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     local.z = body->force.z / body->mass;
     Mtx3x3MulVec3f(&body->force, body->orientation, &local);
     Mtx4fInverseRotate(&angular, body->orientation, &body->torque);
@@ -1055,7 +1055,7 @@ void ComputeVehicleForces(RigidBody *body) {
 
 void ComputeWheelLocalVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel) {
     Vec3f point;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double turn[3];
 #else
     f32 turn[3];
@@ -1076,7 +1076,7 @@ void ComputeWheelLocalVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel) {
 
 void GetWheelWorldVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel) {
     Vec3f point;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double turn[3];
 #else
     f32 turn[3];
@@ -1094,7 +1094,7 @@ void GetWheelWorldVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel) {
     out->z = turn[2] + out->z;
 }
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 long double PlaneDistance(Vec3f *normal, f32 offset, Vec3f *point) {
     return Vec3fDot(normal, point) + offset;
 }
@@ -1103,11 +1103,11 @@ f32 PlaneDistance(Vec3f *normal, f32 offset, Vec3f *point) {
     return point->z * normal->z + (normal->x * point->x + normal->y * point->y) + offset;
 }
 
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point) {
     Vec3f copy;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double turn[3];
 #else
     f32 turn[3];

@@ -3,7 +3,7 @@
 #include "common/screen.h"
 #include "common/timing.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * Reset at the start of the frame.
  *
@@ -24,7 +24,7 @@ void AddTimingMarker(s32 bar, s32 red, s32 green, s32 blue, s32 alpha) {
     (void)blue;
     (void)alpha;
 }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 void BeginTimingFrame(void) {
     s32 bar;

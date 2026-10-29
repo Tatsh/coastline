@@ -24,7 +24,7 @@ s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels
     s32 i;
     s32 literal;
     s32 run;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     s32 current;
     s32 previous;
 #else
@@ -34,7 +34,7 @@ s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels
 
     do {
         header = out;
-#if TGR_PC
+#if TGR_BOSS_RALLY
         if (dstSize < (s32)((u32)out + RLE_BLOCK_HEADER)) {
 #else
         if ((u32)dstSize < (u32)(out + RLE_BLOCK_HEADER)) {
@@ -45,16 +45,16 @@ s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels
         i = 0;
         literal = 0;
         run = 0;
-#if TGR_PC
+#if TGR_BOSS_RALLY
         previous = -256;
 #else
 #ifdef ENABLE_PATCHES
         /* The first comparison is with the first byte of the channel. */
         current = src[i];
 #endif /* ENABLE_PATCHES */
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         for (;;) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
             current = (s8)src[i];
 #else
             /* The scan starts at the second byte, and its last read is past the end. */
@@ -64,7 +64,7 @@ s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels
 #endif
             if (current == previous && i - run <= channels * RLE_MAX_RUN &&
                 i - literal <= channels * RLE_MAX_LITERAL && i < srcSize) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 goto advanceByte;
 #else
                 continue;
@@ -73,7 +73,7 @@ s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels
             if (i - run < channels * RLE_MIN_RUN) {
                 run = i;
                 if (i < srcSize) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
                     goto advanceByte;
 #else
                     continue;
@@ -85,7 +85,7 @@ s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels
             /* The bytes before the run, as a negative count and the bytes. The limit of 128 is
              * checked only while bytes repeat, so a longer stretch with no run of three overflows
              * the count. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
             if ((s32)((u32)out + (u32)((run - literal) / channels) + 1u) > dstSize) {
 #else
             if (out + (run - literal) / channels >= dstSize) {
@@ -100,7 +100,7 @@ s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels
             literal = i;
             if (run != i) {
                 /* The run, as its count less 3 and the byte. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 if (dstSize < (s32)((u32)out + 2u)) {
 #else
                 if (dstSize < out + 2) {
@@ -114,7 +114,7 @@ s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels
             if (i >= srcSize) {
                 break;
             }
-#if TGR_PC
+#if TGR_BOSS_RALLY
         advanceByte:
             previous = current;
             i += channels;

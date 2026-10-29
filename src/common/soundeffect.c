@@ -2,10 +2,10 @@
 
 #include "common/soundchannel.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x10aa3470 */
 s32 g_dwChannel3PlayingSfxId;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 void PlaySoundEffect(s32 sound) {
     SoundEffect *effect = &g_aSoundEffects[sound];

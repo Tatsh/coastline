@@ -7,7 +7,7 @@
 #include "common/vehicleaccess.h"
 #include "common/weather.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/gbicommand.h"
 #endif
 
@@ -17,7 +17,7 @@
 /* A colour of a light, as the microcode reads it. */
 #define LIGHT_COLOR(red, green, blue) ((u32)(red) << 24 | (u32)(green) << 16 | (u32)(blue) << 8)
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 f32 g_afViewProjMatrix[4][4];
 s32 g_dwFogFactorOffset;
 s32 g_dwFogFactorScale;
@@ -49,12 +49,12 @@ static s32 FogTruncateToWord(long double value) {
     }
     return (s32)(u32)(s64)value;
 }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 void SetupFog(void) {
     Vehicle *vehicle;
     f32 flash, haze, y;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double level;
 #else
     f32 fade;
@@ -94,7 +94,7 @@ void SetupFog(void) {
             flash = 100.0f / (Vec2fDistance((Vec2f *)&g_pActiveCamera->position,
                                             (Vec2f *)g_avLightningBolt) +
                               100.0f);
-#if TGR_PC
+#if TGR_BOSS_RALLY
             g_bFogR = FogTruncateToWord((1.0L - flash) * g_bFogR + 240.0L * flash);
             g_bFogG = FogTruncateToWord((1.0L - flash) * g_bFogG + 248.0L * flash);
             g_bFogB = FogTruncateToWord((1.0L - flash) * g_bFogB + 255.0L * flash);
@@ -103,7 +103,7 @@ void SetupFog(void) {
             g_bFogR = g_bFogR * fade + 240.0f * flash;
             g_bFogG = g_bFogG * fade + 248.0f * flash;
             g_bFogB = g_bFogB * fade + 255.0f * flash;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         }
         if (g_dwNumLocalPlayers == 2) {
             g_dwFogMinDistance = 930;
@@ -115,7 +115,7 @@ void SetupFog(void) {
     } else if (g_dwWeatherActive) {
         /* The intensity follows the height of the vehicle of the view within the track. */
         vehicle = g_pActiveCameraVehicle;
-#if TGR_PC
+#if TGR_BOSS_RALLY
         level = ((long double)VEHICLE_GET(vehicle, Frame).position.z - g_LoadedTrack.minZ) /
                 ((long double)g_LoadedTrack.maxZ - g_LoadedTrack.minZ) * 255.0L;
         intensity = FogTruncateToWord(level);
@@ -133,7 +133,7 @@ void SetupFog(void) {
             /* Past a y of 1024, the fog of the desert turns grey by an amount with no limit. */
             y = g_pActiveCamera->position.y;
             if (DESERT_HAZE_Y < y) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 haze = ((long double)g_pActiveCamera->position.x * 0.00043945311f) *
                        (((long double)y - DESERT_HAZE_Y) * 0.00087890622f);
 #else
@@ -143,7 +143,7 @@ void SetupFog(void) {
             } else {
                 haze = 0.0f;
             }
-#if TGR_PC
+#if TGR_BOSS_RALLY
             g_bFogR = FogTruncateToWord((1.0L - haze) * g_LoadedTrack.fogColor[0] + 160.0L * haze);
             g_bFogG = FogTruncateToWord((1.0L - haze) * g_LoadedTrack.fogColor[1] + 160.0L * haze);
             g_bFogB = FogTruncateToWord((1.0L - haze) * g_LoadedTrack.fogColor[2] + 160.0L * haze);
@@ -153,7 +153,7 @@ void SetupFog(void) {
             g_bFogR = g_LoadedTrack.fogColor[0] * fade + haze;
             g_bFogG = g_LoadedTrack.fogColor[1] * fade + haze;
             g_bFogB = g_LoadedTrack.fogColor[2] * fade + haze;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         } else {
             g_bFogR = g_LoadedTrack.fogColor[0];
             g_bFogG = g_LoadedTrack.fogColor[1];
@@ -193,7 +193,7 @@ f32 ComputeFogFactorAtPoint(Vec3f *point) {
     Vec3fTransformByMatrix(clip, point, g_afViewProjMatrix);
     depth = clip[2];
     depth /= clip[3];
-#if TGR_PC
+#if TGR_BOSS_RALLY
     fog = ((long double)depth * (f32)g_dwFogFactorScale + (f32)g_dwFogFactorOffset) *
           (f32)(1.0 / 255.0);
     if (!(fog >= 0.0f)) {
@@ -205,7 +205,7 @@ f32 ComputeFogFactorAtPoint(Vec3f *point) {
     if (fog < 0.0f) {
         return 0.0f;
     }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     if (1.0f < fog) {
         return 1.0f;
     }

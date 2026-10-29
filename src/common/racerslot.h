@@ -21,7 +21,7 @@ struct TrackSection;
  * A racer of a race. A racer with a vehicle copies the progress of the vehicle; one without moves
  * along the route by itself, and keeps the progress a vehicle takes up when it gets one.
  */
-#if TGR_PC && defined(__cplusplus)
+#if TGR_BOSS_RALLY && defined(__cplusplus)
 class RacerSlot {
 private:
 #else
@@ -53,7 +53,7 @@ typedef struct RacerSlot {
     s32 straggler; /*!< Set for a racer past the thirteenth after the players. The championship
                         slows the vehicle of a straggler more, and the racers of each kind share
                         separate vehicles. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     u8 **colorPanels;
     s32 colorPanelCount;
 
@@ -229,8 +229,8 @@ public:
     void InitRacerSlot(void);
 
 #endif /* __cplusplus */
-#endif /* TGR_PC */
-#if TGR_PC && defined(__cplusplus)
+#endif /* TGR_BOSS_RALLY */
+#if TGR_BOSS_RALLY && defined(__cplusplus)
 };
 #else
 } RacerSlot;
@@ -285,7 +285,7 @@ void SortRacersByPosition(void);
 void UpdateRacerSlotRaceState(RacerSlot *slot);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * @ghidraAddress BRD3D: 0x10065d50
  * @ghidraAddress BRGlide: 0x1005edc0
@@ -297,7 +297,7 @@ void MakeEnemyCarColorPanels(RacerSlot *slot);
  * @ghidraAddress BRGlide: 0x1005f220
  */
 void ApplyEnemyCarColorPanels(Vehicle *vehicle, RacerSlot *slot);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #ifdef __cplusplus
 }

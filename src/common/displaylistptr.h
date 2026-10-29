@@ -6,7 +6,7 @@
  * The next command of the display list the game builds.
  */
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 #include <PR/gbi.h>
 #endif
 
@@ -23,7 +23,7 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x106c0680
  * @ghidraAddress BRGlide: 0x106e7710
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 extern struct GbiCommand *gDisplayListPtr;
 #else
 extern Gfx *gDisplayListPtr;

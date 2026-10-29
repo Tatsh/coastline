@@ -1,7 +1,7 @@
 #include "common/racers.h"
 #include "common/types.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x10af96c0 */
 s32 g_dwTrackRouteGates;
 /** @ghidraAddress BRD3D: 0x10af9b44 */
@@ -10,7 +10,7 @@ s32 g_dwTrackRouteLaps;
 s32 g_dwTrackRoutePointIndex;
 /** @ghidraAddress BRD3D: 0x10af988c */
 TrackSection *g_pTrackRouteSection;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 /* Whether a segment crosses a gate, seen from above. The original hands the positions themselves
  * to the flat test, which reads only x and y. */
@@ -36,7 +36,7 @@ TrackSection *g_pTrackRouteSection;
     }
 
 void FindTrackRoutePoint(TrackSection *section, f32 distance) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     /* The libraries hold the span unrounded through the comparison and the division. */
     long double span;
 #else
@@ -54,7 +54,7 @@ void FindTrackRoutePoint(TrackSection *section, f32 distance) {
         }
         /* The last point of a section reads the point after it. */
         for (i = 0; i < section->pointCount; i++) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
             span = (long double)section->points[i].distance - section->points[i + 1].distance;
 #else
             span = section->points[i].distance - section->points[i + 1].distance;

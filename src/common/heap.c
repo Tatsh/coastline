@@ -1,6 +1,6 @@
 #include "common/heap.h"
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 #include <PR/os.h>
 #include <PR/os_libc.h>
 
@@ -10,7 +10,7 @@
 u8 *g_pHeapCurrent;
 #endif
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL && !TGR_PC
+#if TGR_PLATFORM == TGR_PLATFORM_SDL && !TGR_BOSS_RALLY
 /* The interface heap of the front end of the SDL game, of the size the console gives it. */
 alignas(8) static u8 s_abInterfaceHeap[0x800D4000 - 0x80096400];
 #define HEAP_START (&s_abInterfaceHeap[0])
@@ -25,7 +25,7 @@ void ResetHeap(void) {
     g_pHeapCurrent = HEAP_START;
 }
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 u8 *GetHeapCurrentAddress(void) {
     return g_pHeapCurrent;
 }
@@ -83,4 +83,4 @@ void ClearFramebuffersForNormalMode(void) {
     FlushDisplayList();
     g_dwKeepScreenBlanked = FALSE;
 }
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */

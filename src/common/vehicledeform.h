@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * The accumulated dent at which further mesh deformation stops.
  *

@@ -2,7 +2,7 @@
 #include "common/vehiclecount.h"
 #include "common/weather.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define EFFECT_VEHICLE(index) g_aRacerSlots[index].GetVehicle()
 #define EMIT_EXHAUST(vehicle) (vehicle)->SpawnExhaustParticle()
 #define EMIT_SMOKE(vehicle) (vehicle)->SpawnTireSmoke()
@@ -12,7 +12,7 @@
 #define EMIT_EXHAUST(vehicle) SpawnExhaustParticle(vehicle)
 #define EMIT_SMOKE(vehicle) SpawnTireSmoke(vehicle)
 #define EMIT_SPRAY(vehicle) EmitTireSpray(vehicle)
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 void UpdateAllVehicleEffects(void) {
     /**

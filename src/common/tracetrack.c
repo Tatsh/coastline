@@ -1,13 +1,13 @@
 #include "common/driving.h"
 #include "common/vehicleaccess.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <string.h>
 #else
 #include <PR/os_libc.h>
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define TRACE_REAL(value) ((long double)(value))
 
 s32 g_dwBestTraceDepth;
@@ -31,7 +31,7 @@ Vec3f g_vTraceFarPoint;
 Vec3f g_vTraceHalfwayPoint;
 #else
 #define TRACE_REAL(value) (value)
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #define TRACE_LANE_SHARE 0.2f
 
@@ -50,7 +50,7 @@ s32 TraceTrackSplineRecursive(Vehicle *vehicle, s32 depth, s32 pointIndex, Track
     }
     if (depth == 0) {
         g_dwBestTraceDepth = 0;
-#if TGR_PC
+#if TGR_BOSS_RALLY
         g_dwTraceUnusedA = 0;
         g_dwTraceUnusedB = 0;
 #else

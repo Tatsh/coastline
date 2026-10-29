@@ -1,6 +1,6 @@
 #include "common/playerinput.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
 OSContPad g_aContPadData[MAXCONTROLLERS];
 #endif

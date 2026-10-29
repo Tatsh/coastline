@@ -3,7 +3,7 @@
 #include "common/trackselect.h"
 #include "common/vehiclecount.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define SPRAY_DRAW_MATRIX(vehicle) ((vehicle)->GetSprayMatrix())
 #define SPRAY_DRAW_VERTICES(vehicle) ((vehicle)->GetSprayVertices())
 #define SPRAY_DRAW_VELOCITIES(vehicle) ((vehicle)->GetSprayVelocities())
@@ -20,9 +20,9 @@ LoadSprayVertices(GbiCommand *command, const ConvertedModelVertex *vertices, u32
 #define SPRAY_DRAW_VERTICES(vehicle) ((vehicle)->sprayVertices)
 #define SPRAY_DRAW_VELOCITIES(vehicle) ((vehicle)->sprayVelocities)
 #define SPRAY_DRAW_LOAD_VERTICES gSPVertex
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 void DrawTireSpray(const RacerSlot *slots) {
     const Vehicle *vehicle;
     const s16(*velocities)[SPRAY_SEGMENT_VERTICES][3];
@@ -32,7 +32,7 @@ void DrawTireSpray(void) {
     RacerSlot *slot;
     Vehicle *vehicle;
     s16(*velocities)[SPRAY_SEGMENT_VERTICES][3];
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     s32 wheel, first;
 
     if (g_dwSnowMode && g_dwSelectedTrackId != TRACK_COASTLINE &&
@@ -41,7 +41,7 @@ void DrawTireSpray(void) {
     }
     gDPPipeSync(gDisplayListPtr++);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_2CYCLE);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     PackCombineMode(gDisplayListPtr++,
                     0,
                     0,
@@ -77,7 +77,7 @@ void DrawTireSpray(void) {
                       0,
                       0,
                       COMBINED);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     gDPSetRenderMode(gDisplayListPtr++,
                      GBL_c1(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1),
                      Z_CMP | IM_RD | CVG_DST_FULL | ZMODE_XLU | FORCE_BL |
@@ -85,7 +85,7 @@ void DrawTireSpray(void) {
     gSPSetGeometryMode(gDisplayListPtr++, G_SHADE);
     gSPClearGeometryMode(gDisplayListPtr++, G_CULL_FRONT | G_CULL_BACK | G_LIGHTING);
     gSPMatrix(gDisplayListPtr++, g_pProjectionMtx, G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     gDisplayListWords(gDisplayListPtr++,
                       ((u32)GBI_OP_BIND_TEXTURE_ENTRY << 24) | (g_dwTireTrailTextureId & 0xffffff),
                       1);
@@ -122,11 +122,11 @@ void DrawTireSpray(void) {
                G_TX_NOLOD);
     gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, 31 << 2, 63 << 2);
     /* The size is set again half a texel in, which replaces the first. */
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, 2, 2, (31 << 2) + 2, (63 << 2) + 2);
     gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     for (slotIndex = 0; slotIndex < g_dwNumVehicles; slotIndex++) {
         vehicle = slots[slotIndex].GetVehicle();
 #else

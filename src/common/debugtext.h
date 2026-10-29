@@ -77,7 +77,7 @@ extern s32 g_bBitmapTextNarrow;
  */
 extern u16 g_wBitmapTextColor;
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * The step StepDebugHiddenInstance() takes through the placed models, or 0 to stay.
  *
@@ -88,7 +88,7 @@ extern u16 g_wBitmapTextColor;
  * @ghidraAddress BRGlide: 0x10273308
  */
 extern s32 g_nDebugInstanceCycleStep;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 /**
  * A per-frame debug hook with an empty body.

@@ -98,7 +98,7 @@
       "defines": [
         "COASTLINE_PC_GAME=1",
         "ENABLE_PATCHES",
-        "TGR_PC=1",
+        "TGR_BOSS_RALLY=1",
         "TGR_PLATFORM=3",
         "TGR_PLATFORM_N64=1",
         "TGR_PLATFORM_SDL=3",

@@ -3,13 +3,13 @@
 #include "common/input.h"
 #include "common/system.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "common/screen.h"
 #else
 #include "common/debugtext.h"
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x106c6648 */
 s32 g_bRaceScreenActive;
 /** @ghidraAddress BRD3D: 0x106c56d8 */
@@ -22,7 +22,7 @@ u32 g_dwFrameTimestamp;
 s32 g_dwPrevElapsedTimeMs;
 /** @ghidraAddress BRD3D: 0x106c2cfc */
 f32 g_fFrameDeltaTime;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 /* A race advances by 1/30 of a second, or 1/25 at console PAL rates. */
 #if TGR_PLATFORM == TGR_PLATFORM_N64 && TGR_REGION == TGR_REGION_EU
@@ -44,7 +44,7 @@ void ResetFrameClock(void) {
 void UpdateFrameTiming(void) {
     u32 now;
     u32 delta;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     volatile f32 roundedDelta;
 #endif
 
@@ -59,14 +59,14 @@ void UpdateFrameTiming(void) {
         g_qwTimestampBase = g_dwFrameTimestamp = osGetCount();
     }
     g_dwPrevElapsedTimeMs = g_dwElapsedTimeMs;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     /* Windows discards the upper microsecond word before converting to milliseconds. */
     g_dwElapsedTimeMs = (u32)(g_qwTimestampBase * 1000000 / osClockRate) / 1000;
 #else
     g_dwElapsedTimeMs = g_qwTimestampBase * 1000000 / osClockRate / 1000;
 #endif
     UpdateControllerState();
-#if TGR_PC
+#if TGR_BOSS_RALLY
     NullStub();
     NullStub();
     delta = (u32)g_dwElapsedTimeMs - (u32)g_dwPrevElapsedTimeMs;
@@ -77,6 +77,6 @@ void UpdateFrameTiming(void) {
     DebugFrameStubB();
     delta = g_dwElapsedTimeMs - g_dwPrevElapsedTimeMs;
     g_fFrameDeltaTime = (f32)delta / 1000.0f;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     g_dwFrameDeltaMs = delta;
 }

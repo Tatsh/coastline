@@ -1,4 +1,4 @@
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <PR/gu.h>
 
 #include "common/vecmath.h"
@@ -16,7 +16,7 @@ void guLookAtF(float mf[4][4],
                float xUp,
                float yUp,
                float zUp) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     Vec3d look = {(long double)xEye - xAt, (long double)yEye - yAt, (long double)zEye - zAt};
     Vec3d up = {xUp, yUp, zUp};
     Vec3d right;
@@ -97,10 +97,10 @@ void guLookAtF(float mf[4][4],
     mf[1][3] = 0.0f;
     mf[2][3] = 0.0f;
     mf[3][3] = 1.0f;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 }
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 void guLookAt(Mtx *m,
               float xEye,
               float yEye,
@@ -116,4 +116,4 @@ void guLookAt(Mtx *m,
     guLookAtF(mf, xEye, yEye, zEye, xAt, yAt, zAt, xUp, yUp, zUp);
     guMtxF2L(mf, m);
 }
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */

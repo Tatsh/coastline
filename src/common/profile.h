@@ -17,7 +17,7 @@ extern "C" {
 #define SEASON_RACES 4 /*!< The most races of a season. */
 
 /** Profiles record fourteen Windows tracks or five N64 tracks and their mirrored versions. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define PROFILE_RECORD_TRACKS 14
 #else
 #define PROFILE_RECORD_TRACKS 10
@@ -35,7 +35,7 @@ typedef struct {
     u8 round;              /*!< The race of the season being raced, from 0. */
     u8 seasonPlaces[SEASONS][SEASON_RACES]; /*!< The place of each race of each season, from 0 for
                                                  the winner. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     u16 seasonRacePoints[SEASONS][SEASON_RACES]; /*!< The points scored in each race. */
     u8 unreconstructed4E[0x50 - 0x4E];           /*!< Padding before seasonTimes. */
 #else
@@ -46,7 +46,7 @@ typedef struct {
                                                  seconds. */
     f32 lapRecords[PROFILE_RECORD_TRACKS];  /*!< The best lap on each track, in seconds, or 0 when
                                                  none was set. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     u8 abUnknownE8[8]; /* +0xe8 */
 #else
     u8 unreconstructedB4[0xCC - 0xB4]; /*!< Not read by the routines reconstructed so far. */
@@ -67,7 +67,7 @@ typedef struct {
     s32 controllerLayout; /*!< The button layout the player chose on the controller screen. */
     f32 raceRecords[PROFILE_RECORD_TRACKS]; /*!< The best race on each track, in seconds, or 0 when
                                                  none was set. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     u8 abUnknown144[8]; /* +0x144 */
 #else
     u8 unreconstructed110[0x128 - 0x110]; /*!< Not read by the routines reconstructed so far. */
@@ -97,7 +97,7 @@ extern PlayerProfile *g_pActiveProfile;
  */
 extern PlayerProfile g_aSeasonSaveBuffers[2];
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * The profile of the player being played.
  *

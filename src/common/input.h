@@ -218,7 +218,7 @@ void CheatToggleBilinearFilter(void);
  */
 void ProcessInputCommandBuffer(PlayerInputState *state);
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * Read the pad of a player into buttons, race actions for the button layout, and the stick, record
  * the input or replay a recording in its place, and check the cheats.
@@ -229,7 +229,7 @@ void ProcessInputCommandBuffer(PlayerInputState *state);
  * @ghidraAddress JPN: 0x80256080
  */
 void TranslateControllerInput(PlayerInputState *state);
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 /**
  * Press a direction when a stick axis passes 0.6, then again after half a second and every 0.2
@@ -268,7 +268,7 @@ void CheckAnalogStickNegative(PlayerInputState *state, s32 *timer, f32 *axis, u3
  */
 void UpdateStickRepeat(PlayerInputState *state);
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * Whether a read of the controllers is started and not yet received.
  *
@@ -279,7 +279,7 @@ void UpdateStickRepeat(PlayerInputState *state);
  * @ghidraAddress BRGlide: 0x106ec778
  */
 extern s32 g_dwContReadPending;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 /**
  * Whether InitControllersAndPaks() has mounted the Controller Pak of the first controller.

@@ -1,12 +1,12 @@
 #include <PR/os.h>
 
-#if !(TGR_PC)
+#if !(TGR_BOSS_RALLY)
 #include <ultra64.h>
 
 #include "osint.h"
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 s32 osSendMesg(OSMesgQueue *mq, OSMesg msg, s32 flag) {
     return 1;
 }
@@ -34,4 +34,4 @@ s32 osSendMesg(OSMesgQueue *mq, OSMesg msg, s32 flag) {
     __osRestoreInt(saveMask);
     return 0;
 }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */

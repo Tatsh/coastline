@@ -5,7 +5,7 @@ void InitPlayerProfileDefaults(PlayerProfile *profile, s32 trackCount) {
 
     profile->championshipFlags = 0;
     profile->season = 0;
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
     profile->seasonPoints[0] = 0;
 #endif
     profile->round = 0;
@@ -17,7 +17,7 @@ void InitPlayerProfileDefaults(PlayerProfile *profile, s32 trackCount) {
     profile->suspension = 1;
     profile->tires = 2;
     profile->controllerLayout = 0;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     /* The Windows initializer overwrites the common controller default. */
     profile->controllerLayout = 5;
 #endif

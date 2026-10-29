@@ -15,7 +15,7 @@ extern "C" {
  * @ghidraAddress JPN: 0x8028e4b8
  * @ghidraAddress BRD3D: 0x100a6498
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 typedef union VehicleReflectionTexture {
     u8 *image;
     unsigned entry;
@@ -41,7 +41,7 @@ extern u16 *g_apVehicleReflectionTluts[4];
  * @ghidraAddress BRD3D: 0x100a64b8
  * @ghidraAddress BRGlide: 0x100a5c78
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 extern s8 g_abVehicleReflectionTexSelect[][2];
 #else
 extern u8 g_abVehicleReflectionTexSelect[4][2];

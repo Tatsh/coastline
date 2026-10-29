@@ -10,13 +10,13 @@
 #include "common/text.h"
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/renderbackend.h"
 #else
 #include "libultra/os/osint.h"
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /* The Windows task stubs retain these legacy RSP addresses without dereferencing them. */
 /* @ghidraAddress BRD3D: 0x100aa728 */
 static u64 *g_pRdpOutputBuffer = (u64 *)0x803b1000;
@@ -103,9 +103,9 @@ static s32 g_dwPeakShadowCommandCount;
  * @ghidraAddress BRGlide: 0x106ed6ec
  */
 static s32 g_dwPeakShadowVertexCount;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x106c65e8 */
 s32 g_dwAppliedScreenScaleShift;
 /** @ghidraAddress BRD3D: 0x106c65e0 */
@@ -127,9 +127,9 @@ u32 g_dwScreenUnblankDelay;
 s32 g_dwTimingFrame;
 /** @ghidraAddress BRD3D: 0x1067d578 */
 u32 g_dwTimingFrameStart;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define FRAME_WRITEBACK() NullStub()
 #define FRAME_TIMING_MARKER(bar, red, green, blue, alpha) NullStub()
 /* Windows maps queue waits to the controller stub that returns 1. */
@@ -141,7 +141,7 @@ u32 g_dwTimingFrameStart;
     AddTimingMarker(bar, red, green, blue, alpha)
 #define FRAME_WAIT_QUEUE(queue) osRecvMesg(queue, NULL, OS_MESG_BLOCK)
 #define FRAME_DECREMENT(value) (--(value))
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #if TGR_REGION == TGR_REGION_US
 #define VI_MODE_LAN1_MPAL g_ViModeMpalLan1
@@ -160,7 +160,7 @@ u32 g_dwTimingFrameStart;
 #define DISPLAY_LIST_START()                                                                       \
     (g_pDisplayListBase + g_dwFrameBufferIndex * DISPLAY_LIST_COMMANDS + DISPLAY_LIST_RESERVED)
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /* Windows records these addresses in task metadata without reading microcode. */
 /* @ghidraAddress BRD3D: 0x118ab150 */
 static u64 g_aGspUcodeText[1];
@@ -321,7 +321,7 @@ void FlushDisplayList(void) {
     g_dwLastFlushValue = g_dwFlushValueSource;
     FRAME_TIMING_MARKER(2, 0xC8, 0, 0, 0xFF);
     FRAME_TIMING_MARKER(1, 0xC8, 0x64, 0, 0xFF);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     g_pfnRenderBackendSubmitDisplayList(task->t.data_ptr);
 #else
     osSpTaskLoad(task);

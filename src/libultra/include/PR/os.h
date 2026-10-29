@@ -522,7 +522,7 @@ OSIntMask osSetIntMask(OSIntMask im);
  * @ghidraAddress BRD3D: 0x10060e90
  * @ghidraAddress BRGlide: 0x10059f00
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 u64 osGetCount(void);
 #else
 u32 osGetCount(void);

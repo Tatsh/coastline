@@ -10,7 +10,7 @@ extern "C" {
 /* Move a triangle into the unit cube of a box, and find its normal there. */
 static inline void TriangleInBox(Vec3f corners[3], Vec3f *normal, f32 box[4][4], TrackTriangle *t) {
     Vec3f e1, e2;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double highE2[3];
 #endif
 
@@ -20,7 +20,7 @@ static inline void TriangleInBox(Vec3f corners[3], Vec3f *normal, f32 box[4][4],
     e1.x = corners[1].x - corners[0].x;
     e1.y = corners[1].y - corners[0].y;
     e1.z = corners[1].z - corners[0].z;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     highE2[0] = (long double)corners[2].x - corners[0].x;
     highE2[1] = (long double)corners[2].y - corners[0].y;
     highE2[2] = (long double)corners[2].z - corners[0].z;
@@ -31,8 +31,8 @@ static inline void TriangleInBox(Vec3f corners[3], Vec3f *normal, f32 box[4][4],
     e2.x = corners[2].x - corners[0].x;
     e2.y = corners[2].y - corners[0].y;
     e2.z = corners[2].z - corners[0].z;
-#endif /* TGR_PC */
-#if TGR_PC
+#endif /* TGR_BOSS_RALLY */
+#if TGR_BOSS_RALLY
     /* The normal mixes retained second-edge values with their stored float copies. */
     normal->x = e1.y * highE2[2] - highE2[1] * e1.z;
     normal->y = e1.z * highE2[0] - (long double)e2.z * e1.x;
@@ -41,7 +41,7 @@ static inline void TriangleInBox(Vec3f corners[3], Vec3f *normal, f32 box[4][4],
     normal->x = e1.y * e2.z - e2.y * e1.z;
     normal->y = e1.z * e2.x - e2.z * e1.x;
     normal->z = e1.x * e2.y - e2.x * e1.y;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 }
 
 #ifdef __cplusplus

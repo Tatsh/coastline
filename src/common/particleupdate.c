@@ -5,7 +5,7 @@
 #define PARTICLE_MIN_SHARE (1.0f / 32.0f)
 #define PARTICLE_SHARE (1.0f / 65280.0f)
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 typedef long double ParticleReal;
 #define PARTICLE_RISE(value) ((value) - -0.8f)
 #define PARTICLE_FALLING(value) (!((value) >= -30.0f))
@@ -20,14 +20,14 @@ void UpdateExhaustParticles(void) {
     u16 *link;
     s32 index;
     u16 next;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     /* Preserve x87 rounding before float stores, including subnormal results. */
     volatile ParticleReal growth, size;
 #endif
     f32 grow, step;
     ParticleReal share;
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
     growth = (ParticleReal)0.3f * g_fFrameDeltaTime;
     grow = growth;
 #else
@@ -39,7 +39,7 @@ void UpdateExhaustParticles(void) {
         step = g_fFrameDeltaTime;
         next = particle->next;
         share = (ParticleReal)(particle->alpha * particle->fade) * PARTICLE_SHARE;
-#if TGR_PC
+#if TGR_BOSS_RALLY
         size = (ParticleReal)grow + particle->size;
         particle->size = size;
         particle->position.x =
@@ -56,7 +56,7 @@ void UpdateExhaustParticles(void) {
         particle->position.y += g_vWindVelocity.y + particle->velocity.y * share * step;
         particle->position.z += g_vWindVelocity.z + (particle->velocity.z * share + 0.8f) * step;
         particle->fade = (s32)(5.7375f / (particle->size * particle->size));
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         if (share < PARTICLE_MIN_SHARE) {
             *link = particle->next;
             particle->next = g_wParticleFreeListHead;
@@ -75,7 +75,7 @@ void UpdateTireSmoke(void) {
     s32 list;
     ParticleReal grow, share;
     f32 step, rise;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     /* A stored fall prevents negating a NaN while folding the subtraction. */
     volatile ParticleReal fall;
 #endif
@@ -96,7 +96,7 @@ void UpdateTireSmoke(void) {
             next = particle->next;
             share = (ParticleReal)(particle->alpha * particle->fade) * PARTICLE_SHARE;
             particle->size += grow;
-#if TGR_PC
+#if TGR_BOSS_RALLY
             particle->position.x =
                 particle->velocity.x * share * step + g_vWindVelocity.x + particle->position.x;
             particle->position.y =
@@ -112,7 +112,7 @@ void UpdateTireSmoke(void) {
             particle->position.z += g_vWindVelocity.z + (rise * share + 0.8f) * step;
             particle->velocity.z = rise - step * 19.62f;
             particle->fade = (s32)(102.0f / particle->size);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
             if (share < PARTICLE_MIN_SHARE || PARTICLE_FALLING(particle->velocity.z)) {
                 *link = particle->next;
                 particle->next = g_wParticleFreeListHead;

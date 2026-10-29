@@ -1,13 +1,13 @@
 #include "common/fade.h"
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 #include "common/audio.h"
 #include "common/render.h"
 #include "common/system.h"
 #include "common/util.h"
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /* The x87 queries accept unordered comparisons as less than or equal. */
 #define FADE_LESS(left, right) (!((left) >= (right)))
 #define FADE_EQUAL(left, right) (!((left) < (right) || (left) > (right)))
@@ -34,7 +34,7 @@ s32 g_dwSfxFadeSkipFrame;
 #define FADE_LESS_EQUAL(left, right) ((left) <= (right))
 #define FADE_VOLUME_LESS(left, right) FADE_LESS(left, right)
 #define FADE_REAL f32
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 void SetFadeTarget(float target, float seconds) {
     g_dwFadeSkipFrame = 1;
@@ -74,7 +74,7 @@ void FadeMusicTo(float target, float seconds) {
     }
 }
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 s32 HasSfxFadeFinished(void) {
     return g_fSfxFadeTarget == g_fSfxFadeCurrent;
 }
@@ -83,14 +83,14 @@ void SetSfxFadeLevelImmediate(float level) {
     g_fSfxFadeTarget = level;
     g_fSfxFadeCurrent = g_fSfxFadeTarget;
 }
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 void SnapScreenFade(float level) {
     g_fFadeTarget = level;
     g_fFadeLevel = g_fFadeTarget;
 }
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 s32 IsFadingIn(void) {
     return g_fFadeRate > 0.0f && !g_dwFadeAutoReverse;
 }
@@ -108,7 +108,7 @@ s32 IsFadedToBlack(void) {
     return FADE_LESS(g_fFadeRate, 0.0f) && FADE_EQUAL(g_fFadeLevel, 0.0f) && !g_dwFadeAutoReverse;
 }
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 s32 IsFadedToWhite(void) {
     return g_fFadeRate > 0.0f && g_fFadeLevel == 1.0f && !g_dwFadeAutoReverse;
 }
@@ -151,4 +151,4 @@ void DrawScreenFadeOverlay(float level) {
     gDPSetColorDither(gDisplayListPtr++, g_dwColorDitherMode);
 }
 
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */

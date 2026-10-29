@@ -4,7 +4,7 @@
 #include "common/screen.h"
 #include "common/util.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x105754fc */
 s32 g_dwFadeRectBottom;
 /** @ghidraAddress BRD3D: 0x10575508 */
@@ -17,11 +17,11 @@ s32 g_dwFadeRectTop;
 f32 g_fHeadlightGlare;
 /** @ghidraAddress BRD3D: 0x105754f8 */
 f32 g_fScreenFogPulse;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #define MAX_VOLUME 255.0
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define FADE_LESS(left, right) (!((left) >= (right)))
 #define FADE_DIFFERENT(left, right) ((left) < (right) || (left) > (right))
 #define FADE_REAL long double
@@ -39,7 +39,7 @@ f32 g_fScreenFogPulse;
 #define FADE_SUB(left, right) ((left) - (right))
 #define FADE_VOLUME(value) ((s32)((f64)(value) * MAX_VOLUME))
 #define FADE_SFX_VOLUME g_bSfxVolume
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 void UpdateFadeTransitions(void) {
     f32 rate;

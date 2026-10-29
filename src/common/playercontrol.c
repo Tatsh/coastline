@@ -7,15 +7,15 @@
 #include "common/vehiclephysics.h"
 #include "common/vehiclereset.h"
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 #include <PR/gu.h>
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <math.h>
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define CONTROL_REAL long double
 #define CONTROL_LESS(a, b) (!((a) >= (b)))
 #define CONTROL_NONZERO(x) ((x) < 0.0L || (x) > 0.0L)
@@ -34,7 +34,7 @@ static f32 ReadVehicleControlAxis(f32 value, f32 offset, f32 scale, s32 negative
 #define CONTROL_LESS(a, b) ((a) < (b))
 #define CONTROL_NONZERO(x) ((x) != 0.0f)
 #define CONTROL_EQUAL(a, b) ((a) == (b))
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 /* The dead zone of the steering and of the stick that drives, and the share of the stick past
  * each. */
@@ -88,7 +88,7 @@ static s32 IsVehicleViewed(Vehicle *vehicle) {
             VEHICLE_GET(vehicle, Index) == g_aViewportRects[1].vehicleIndex);
 }
 
-#if TGR_PC || TGR_REGION == TGR_REGION_US
+#if TGR_BOSS_RALLY || TGR_REGION == TGR_REGION_US
 /* Stand the trackside camera at the nearest point of the track, or switch away from it when no
  * point is close enough. The USA release compiles the routine into its caller. */
 static void ChooseReplayCamera(Vehicle *vehicle);
@@ -104,7 +104,7 @@ void ChooseReplayCamera(Vehicle *vehicle) {
     Vec3f chosen;
 #endif /* ENABLE_PATCHES */
     f32 best = CAMERA_POINT_FAR;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double dx, dy, dz, distance;
     f32 storedX, storedY;
 #else
@@ -117,7 +117,7 @@ void ChooseReplayCamera(Vehicle *vehicle) {
         dy = (CONTROL_REAL)VEHICLE_GET(vehicle, Frame).position.y - point->y;
         dz = (CONTROL_REAL)VEHICLE_GET(vehicle, Frame).position.z - point->z;
         if (!(CAMERA_POINT_MAX_DROP < dz)) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
             storedX = dx;
             storedY = dy;
             distance = (dz * dz + dy * storedY) + dx * storedX;
@@ -217,7 +217,7 @@ static void ReadVehicleControls(Vehicle *vehicle) {
     u32 buttons;
 
     if (STEER_DEAD_ZONE < steering) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         VEHICLE_SET(
             vehicle,
             Steering,
@@ -227,7 +227,7 @@ static void ReadVehicleControls(Vehicle *vehicle) {
         vehicle->steering = vehicle->steering * -vehicle->steering;
 #endif
     } else if (CONTROL_LESS(steering, -STEER_DEAD_ZONE)) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         VEHICLE_SET(
             vehicle,
             Steering,
@@ -244,7 +244,7 @@ static void ReadVehicleControls(Vehicle *vehicle) {
 
     stickY = VEHICLE_GET(vehicle, Input)->stickY;
     if (DRIVE_DEAD_ZONE < stickY) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         VEHICLE_SET(
             vehicle,
             Accelerator,
@@ -254,7 +254,7 @@ static void ReadVehicleControls(Vehicle *vehicle) {
         vehicle->accelerator = vehicle->accelerator * vehicle->accelerator;
 #endif
     } else if (CONTROL_LESS(stickY, -DRIVE_DEAD_ZONE)) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
         VEHICLE_SET(
             vehicle,
             Accelerator,
@@ -349,7 +349,7 @@ static void SwingJoltWeight(Vehicle *vehicle) {
     Vec3f corner;
     Vec3f predicted;
     Vec3f previousOffset;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double length, jolt;
     f32 distance;
 #else
@@ -369,7 +369,7 @@ static void SwingJoltWeight(Vehicle *vehicle) {
         Vec3fScaleInPlace(&VEHICLE_GET(vehicle, JoltOffset), length / (1.0f + length) / length);
     }
     /* The root of a distance, not of its square. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     distance = Vec3fDistance(&VEHICLE_GET(vehicle, JoltOffset), &previousOffset);
     distance = sqrtf(distance);
     jolt = distance / (Vec3fLength(&VEHICLE_GET(vehicle, JoltVelocity)) + 1.0f);
@@ -397,14 +397,14 @@ void ProcessVehicleInputAndPhysics(Vehicle *vehicle) {
     if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
         DriveAfterSeason(vehicle);
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     ApplyPlayerVehicleEffects(vehicle);
 #endif
     UpdateVehiclePhysicsFrame(vehicle);
     if (!VEHICLE_GET(vehicle, FlyMode)) {
         SwingJoltWeight(vehicle);
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     ApplyPlayerVehicleRespawnRequest(vehicle);
 #endif
     RespawnVehicle(vehicle);

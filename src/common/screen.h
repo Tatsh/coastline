@@ -169,7 +169,7 @@ void StubUpdateCallback(void);
  */
 void StubRenderCallback(void);
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * Do nothing.
  *

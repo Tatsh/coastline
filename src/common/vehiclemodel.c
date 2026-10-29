@@ -1,6 +1,6 @@
 #include "common/types.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "common/vehiclemodel.h"
 #else
 #include <PR/os.h>
@@ -10,9 +10,9 @@
 #include "common/render.h"
 #include "common/system.h"
 #include "common/vehicle.h"
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 
 VehicleModel g_aVehicleModels[16];
 VehicleModel *g_pTextureCaptureVehicleModel;
@@ -119,4 +119,4 @@ void LoadVehicleModelFromRom(VehicleModel *model, s32 car) {
 s32 IsVehicleModelValid(s32 car) {
     return g_aCarModels[car].modelRomEnd != 0;
 }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */

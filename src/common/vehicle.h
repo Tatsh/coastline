@@ -11,7 +11,7 @@
  * The vehicles of a race, the cars they are, and their place on the track.
  */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/vehicle.h"
 #else
 
@@ -773,6 +773,6 @@ void UpdateRacerSlotMotion(RacerSlot *slot);
 }
 #endif
 
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #endif /* COASTLINE_VEHICLE_H */

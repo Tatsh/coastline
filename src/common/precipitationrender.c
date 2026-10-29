@@ -8,7 +8,7 @@
 #include "common/track.h"
 #include "common/weather.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include "sdl/renderhost.h"
 #else
@@ -44,7 +44,7 @@ static inline void WritePrecipitationRectangle(s32 left, s32 top, s32 width, s32
 #define PRECIPITATION_STREAK_REAL f32
 #define PRECIPITATION_RENDER_INTEGER(value) ((s32)(value))
 #define WRITE_PRECIPITATION_TEXEL(dx, dy) (texel[(dy) * RAIN_STREAK_TEXTURE_SIDE + (dx)] = shade)
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 /* The scale from a particle position back to the units of the world. */
 #define PARTICLE_SCALE 6.10370189e-05f
@@ -57,7 +57,7 @@ static inline void WritePrecipitationRectangle(s32 left, s32 top, s32 width, s32
 #define STREAK_MARGIN 2
 
 /* The size of a particle a unit away, for snow and rain. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define SNOW_PARTICLE_WIDTH 96.0f
 #define SNOW_PARTICLE_HEIGHT 144.0f
 #else
@@ -78,14 +78,14 @@ static inline void WritePrecipitationRectangle(s32 left, s32 top, s32 width, s32
 void RenderPrecipitationEffect(void) {
     Vec3f fall;
     s16 *particle;
-#if TGR_PLATFORM == TGR_PLATFORM_N64 || (TGR_PC && TGR_RENDERER == TGR_RENDERER_GLIDE)
+#if TGR_PLATFORM == TGR_PLATFORM_N64 || (TGR_BOSS_RALLY && TGR_RENDERER == TGR_RENDERER_GLIDE)
     u8 *texel;
     u8 shade;
 #endif
     s32 i, step, row, column, sizeX, sizeY, x, y;
     PRECIPITATION_STREAK_REAL u, v, du, dv;
     f32 width, height, halfWidth, px, py, pz, clipX, clipY, clipW, scale;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double updatedU, rawW, rawScale, rawProjected;
     f32 screenHeight;
 #endif
@@ -107,7 +107,7 @@ void RenderPrecipitationEffect(void) {
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
     gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
     gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);
-#if TGR_PC
+#if TGR_BOSS_RALLY
     PackCombineMode(gDisplayListPtr++,
                     0,
                     0,
@@ -143,12 +143,12 @@ void RenderPrecipitationEffect(void) {
                       0,
                       0,
                       TEXEL0);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     gDPSetRenderMode(gDisplayListPtr++,
                      FORCE_BL | CVG_DST_FULL | IM_RD |
                          GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
                      GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (g_dwRainMode) {
         gDisplayListWords(
             gDisplayListPtr++,
@@ -207,7 +207,7 @@ void RenderPrecipitationEffect(void) {
     gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, 63 << 2, 63 << 2);
     gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     if (g_dwSnowMode) {
         gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0xE0, 0xE0, 0xFF, 0xFF);
     } else {
@@ -217,7 +217,7 @@ void RenderPrecipitationEffect(void) {
     /* The view without its translation, taking the axes of a particle to those of the world. */
     MtxInvert4x4(g_afMvpMatrix, (f32(*)[4])g_pActiveCamera);
     g_afMvpMatrix[3][2] = 0.0f;
-#if TGR_PC && TGR_RENDERER == TGR_RENDERER_GLIDE
+#if TGR_BOSS_RALLY && TGR_RENDERER == TGR_RENDERER_GLIDE
     g_afMvpMatrix[3][1] = 0.0f;
     g_afMvpMatrix[3][0] = 0.0f;
 #endif
@@ -237,7 +237,7 @@ void RenderPrecipitationEffect(void) {
     g_afScratchMatrix[3][1] = 0.0f;
     g_afScratchMatrix[3][2] = 0.0f;
     g_afScratchMatrix[3][3] = 1.0f;
-#if !(TGR_PC && TGR_RENDERER == TGR_RENDERER_GLIDE)
+#if !(TGR_BOSS_RALLY && TGR_RENDERER == TGR_RENDERER_GLIDE)
     /* The other two terms of the translation are read back from the one cleared. */
     g_afMvpMatrix[3][0] = g_afMvpMatrix[3][1] = g_afMvpMatrix[3][2];
 #endif
@@ -249,7 +249,7 @@ void RenderPrecipitationEffect(void) {
         FillMemoryPatternBytes(g_abPrecipitationTextures[g_dwCurrentSplitScreenIndex],
                                (u32)g_dwAlphaRampStripRowCount << 12,
                                0);
-#elif TGR_PC
+#elif TGR_BOSS_RALLY
         FillMemoryPatternBytes(g_abPrecipitationTextures[g_dwCurrentSplitScreenIndex],
                                sizeof(g_abPrecipitationTextures[0]),
                                0);
@@ -264,7 +264,7 @@ void RenderPrecipitationEffect(void) {
         if (g_dwViewportMirrored != g_dwTrackMirrored) {
             fall.x = -fall.x;
         }
-#if TGR_PC
+#if TGR_BOSS_RALLY
         u = STREAK_CENTER - (long double)fall.x * STREAK_START;
         v = STREAK_CENTER - (long double)fall.y * -STREAK_START;
         du = (long double)fall.x * STREAK_STEP;
@@ -274,10 +274,10 @@ void RenderPrecipitationEffect(void) {
         v = fall.y * STREAK_START + STREAK_CENTER;
         du = fall.x * STREAK_STEP;
         dv = -fall.y * STREAK_STEP;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         v = (PRECIPITATION_RENDER_REAL)v + dv;
         for (step = 0; step < STREAK_STEPS; step++) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
             updatedU = (long double)u + du;
             u = updatedU;
 #else
@@ -285,7 +285,7 @@ void RenderPrecipitationEffect(void) {
 #endif
             row = PRECIPITATION_RENDER_INTEGER(v);
             if (row >= STREAK_MARGIN && row < RAIN_STREAK_TEXTURE_SIDE - STREAK_MARGIN) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
                 column = PRECIPITATION_RENDER_INTEGER(updatedU);
 #else
                 column = (s32)u;
@@ -335,7 +335,7 @@ void RenderPrecipitationEffect(void) {
         width = RAIN_PARTICLE_SIZE;
         height = RAIN_PARTICLE_SIZE;
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     halfWidth = (long double)(g_dwViewportMirrored != g_dwTrackMirrored ?
                                   (s32)(0u - (u32)g_dwConfigFramebufferWidth) :
                                   g_dwConfigFramebufferWidth) *
@@ -350,7 +350,7 @@ void RenderPrecipitationEffect(void) {
         px = particle[0];
         py = particle[1];
         pz = particle[2];
-#if TGR_PC
+#if TGR_BOSS_RALLY
         rawW = (((long double)pz * g_afMvpMatrix[2][3] + (long double)py * g_afMvpMatrix[1][3]) +
                 (long double)px * g_afMvpMatrix[0][3]) +
                g_afMvpMatrix[3][3];
@@ -428,7 +428,7 @@ void RenderPrecipitationEffect(void) {
                             PARTICLE_TEXTURE_LAST_T,
                             PARTICLE_TEXTURE_STEPS / sizeX,
                             -PARTICLE_TEXTURE_STEPS / sizeY);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     }
 
     gDPPipeSync(gDisplayListPtr++);

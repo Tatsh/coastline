@@ -7,7 +7,7 @@
 extern "C" {
 #endif
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /** Apply the control options from the current input recording. */
 void SetupFromRecording(Vehicle *vehicle);
 #endif

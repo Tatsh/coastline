@@ -13,7 +13,7 @@ typedef struct {
     const char *name;    /*!< The text of the item. */
     u32 flags;           /*!< The MENU_ITEM_* flags. */
     struct Model *model; /*!< The model of the item, or NULL to show its name. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
     const u32 *romStart;
     const u32 *romEnd;
 #else
@@ -34,7 +34,7 @@ typedef struct {
     f32 startTime;      /*!< The time the race starts with, in seconds. */
 } ArcadeTimes;
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** The adjacent palette and image filenames for a sky texture. */
 typedef struct {
     char palette[32];
@@ -48,7 +48,7 @@ typedef struct {
  * exist.
  */
 typedef struct {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     MenuItem item;
     const u32 *trackRom;
     const u32 *trackRomEnd;
@@ -64,7 +64,7 @@ typedef struct {
     u32 sectionARomEnd; /*!< The cartridge offset of the end of the first section of route. */
     u32 sectionBRom;    /*!< The cartridge offset of the second section of route. */
     u32 sectionBRomEnd; /*!< The cartridge offset of the end of the second section of route. */
-#endif                                                            /* TGR_PC */
+#endif                                                            /* TGR_BOSS_RALLY */
     ArcadeTimes arcadeTimes[ARCADE_CAR_CLASSES][ARCADE_WEATHERS]; /*!< The arcade times by car
                                                                      class and by weather less 1. */
 } TrackMenuItem;
@@ -92,7 +92,7 @@ extern TrackMenuItem g_aTrackDescriptors[];
  * @ghidraAddress JPN: 0x802737bc
  * @ghidraAddress BRD3D: 0x100bd2a8
  */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 extern TrackMenuItem *g_apTrackMenuItems[];
 #else
 extern MenuItem *g_apTrackMenuItems[];

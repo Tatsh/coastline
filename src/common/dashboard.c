@@ -11,7 +11,7 @@
 #include "common/vehicleaccess.h"
 #include "common/weather.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/directplay.h"
 #include "win32/hudcanvas.h"
 #include "win32/hudquad.h"
@@ -25,16 +25,16 @@
 #include "common/system.h"
 #include "common/text.h"
 #include "options.h"
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC && defined(ENABLE_PATCHES)
+#if TGR_BOSS_RALLY && defined(ENABLE_PATCHES)
 #define g_dwConfigFramebufferWidth GetHudCanvasWidth()
 #define g_dwConfigFramebufferHeight GetHudCanvasHeight()
 #define g_dwScreenWidth GetHudCanvasWidth()
 #define g_dwScreenHeight GetHudCanvasHeight()
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define DASHBOARD_ADD(a, b) ((s32)((u32)(a) + (u32)(b)))
 #define DASHBOARD_AXIS_0 x
 #define DASHBOARD_AXIS_1 y
@@ -66,7 +66,7 @@ s32 g_bHudShowSpeedometer = 1;
 #define DASHBOARD_COORD(value) ((s32)(value))
 #define DASHBOARD_COS cosf
 #define DASHBOARD_SIN sinf
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 /* The right edge of the times, the speed and the dashboard. */
 #define HUD_RIGHT 296
@@ -108,7 +108,7 @@ s32 g_bHudShowSpeedometer = 1;
 #define DASHBOARD_GEAR g_aDashboardGearTextures[g_dwCurrentSplitScreenIndex]
 #define ACTIVE_CAR_MODEL g_aCarModels[g_pActiveCameraVehicle->carModel]
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 void RenderDashboardGauges(const ViewportRect *viewports) {
     if (!g_bHudShowSpeedometer || g_bNetSpectator) {
         return;
@@ -272,9 +272,9 @@ void RenderDashboardGauges(void) {
                          TEXRECT_BLEND_TEXTURE);
     }
 
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
     jitter = g_dwRacePauseState ? NEEDLE_JITTER_PAUSED : AdvanceRng() & NEEDLE_JITTER_MASK;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     rpm = (long double)jitter + VEHICLE_GET(g_pActiveCameraVehicle, EngineRpm);
 #else
     rpm = (f32)jitter + VEHICLE_GET(g_pActiveCameraVehicle, EngineRpm);
@@ -283,7 +283,7 @@ void RenderDashboardGauges(void) {
     if (car->tachometer == TACHOMETER_NEEDLE) {
         verts = g_aGaugeNeedleVerts[g_dwFrameBufferIndex][g_dwCurrentSplitScreenIndex];
         if (g_dwNumViewports == 2) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
             x = DASHBOARD_ADD(x, car->needleX * 3 / 4);
             y = DASHBOARD_ADD(y, car->needleY * 3 / 4);
 #else
@@ -293,7 +293,7 @@ void RenderDashboardGauges(void) {
             tipLength = NEEDLE_TIP_LENGTH_SPLIT;
             baseLength = NEEDLE_BASE_LENGTH_SPLIT;
         } else {
-#if TGR_PC
+#if TGR_BOSS_RALLY
             x = DASHBOARD_ADD(x, car->needleX);
             y = DASHBOARD_ADD(y, car->needleY);
 #else
@@ -303,7 +303,7 @@ void RenderDashboardGauges(void) {
             tipLength = NEEDLE_TIP_LENGTH;
             baseLength = NEEDLE_BASE_LENGTH;
         }
-#if TGR_PC
+#if TGR_BOSS_RALLY
         y = (s32)((u32)g_dwConfigFramebufferHeight - (u32)y);
         needleX = (f32)x;
         needleY = (f32)y;
@@ -313,10 +313,10 @@ void RenderDashboardGauges(void) {
         y = SCREEN_HEIGHT - y;
 #define DASHBOARD_NEEDLE_X x
 #define DASHBOARD_NEEDLE_Y y
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         angle = car->needleRestAngle;
         if (rpm > 0.0f) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
             angle = (long double)car->needleRestAngle -
                     ((long double)car->needleRestAngle - car->needleFullAngle) * rpm *
                         0.0001250000059371814f;
@@ -348,7 +348,7 @@ void RenderDashboardGauges(void) {
             DASHBOARD_SIN(angle - NEEDLE_BASE_HALF) * baseLength + DASHBOARD_NEEDLE_Y);
         DASHBOARD_VERTEX(verts[3], 2) = 0;
         for (i = 0; i < 4; i++) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
             verts[i].color.x = 0.0f;
             verts[i].color.y = 255.0f;
             verts[i].color.z = 0.0f;
@@ -357,11 +357,11 @@ void RenderDashboardGauges(void) {
             verts[i].v.cn[1] = 0xFF;
             verts[i].v.cn[2] = 0;
             verts[i].v.cn[3] = 0xFF;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         }
         gDPPipeSync(gDisplayListPtr++);
         gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-#if TGR_PC
+#if TGR_BOSS_RALLY
         PackCombineMode(
             gDisplayListPtr++, 0, 0, 0, 1004, 0, 0, 0, 1004, 0, 0, 0, 1004, 0, 0, 0, 1004);
         gDisplayListWords(gDisplayListPtr++, 0xb900031d, 0x00552048);
@@ -372,16 +372,16 @@ void RenderDashboardGauges(void) {
                          AA_EN | IM_RD | ALPHA_CVG_SEL |
                              GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_A_MEM),
                          GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_A_MEM));
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         gSPClearGeometryMode(gDisplayListPtr++, G_CULL_FRONT | G_CULL_BACK | G_FOG | G_LIGHTING);
         gSPSetGeometryMode(gDisplayListPtr++, G_SHADE);
-#if TGR_PC
+#if TGR_BOSS_RALLY
         gDisplayListWords(gDisplayListPtr++, 0x0400107f, GBI_WORD1(verts));
 #else
         gSPVertex(gDisplayListPtr++, verts, 4, 0);
 #endif
         gSP2Triangles(gDisplayListPtr++, 0, 1, 2, 0, 0, 2, 3, 0);
-#if TGR_PC
+#if TGR_BOSS_RALLY
         gSPSetGeometryMode(gDisplayListPtr++, G_ZBUFFER);
 #endif
         gDPPipeSync(gDisplayListPtr++);

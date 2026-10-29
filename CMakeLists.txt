@@ -71,15 +71,15 @@ add_compile_definitions(
   TGR_RENDERER_SDL=3
   TGR_RENDERER=TGR_RENDERER_${_tgr_renderer})
 # The Windows libraries and the SDL game share the code of the PC release, which the shared
-# sources select with TGR_PC.
+# sources select with TGR_BOSS_RALLY.
 # TGR_BRD3D selects where the shared code of BRD3D.dll differs from that of BRGlide.dll, which the
 # SDL game follows.
 if(TGR_PLATFORM STREQUAL "n64")
-  add_compile_definitions(TGR_PC=0 TGR_BRD3D=0)
+  add_compile_definitions(TGR_BOSS_RALLY=0 TGR_BRD3D=0)
 elseif(TGR_RENDERER STREQUAL "glide")
-  add_compile_definitions(TGR_PC=1 TGR_BRD3D=0)
+  add_compile_definitions(TGR_BOSS_RALLY=1 TGR_BRD3D=0)
 else()
-  add_compile_definitions(TGR_PC=1 TGR_BRD3D=1)
+  add_compile_definitions(TGR_BOSS_RALLY=1 TGR_BRD3D=1)
 endif()
 
 # The changes of this project to the game. The commit is read when the build is configured, and is

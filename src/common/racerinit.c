@@ -7,7 +7,7 @@
 #include "common/vehicleaccess.h"
 #include "common/vehiclecount.h"
 #include "common/weather.h"
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 #include <PR/os.h>
 
 #include "common/input.h"
@@ -19,7 +19,7 @@
 #define STRAGGLER_START 7760
 #define RACER_SPACING 550
 #define NARROW_RACER_SPACING 520
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define SELECTED_TRACK_ITEM() (g_apTrackMenuItems[g_dwSelectedTrackId])
 #else
 #define SELECTED_TRACK_ITEM() ((TrackMenuItem *)g_apTrackMenuItems[g_dwSelectedTrackId])
@@ -39,7 +39,7 @@ void InitRacerSlot(RacerSlot *slot) {
     case GAME_MODE_ARCADE:
         count = ARCADE_VEHICLES;
         break;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     case GAME_MODE_NETWORK:
         count = 9999;
         break;
@@ -61,7 +61,7 @@ void InitRacerSlot(RacerSlot *slot) {
     if (RACER_SLOT_GET(slot, Index) < count) {
         RACER_SLOT_SET(slot, Vehicle, &g_aVehicles[RACER_SLOT_GET(slot, Index)]);
         VEHICLE_SET(RACER_SLOT_GET(slot, Vehicle), Racer, slot);
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
         return;
 #endif
     } else {
@@ -88,7 +88,7 @@ void InitRacerSlot(RacerSlot *slot) {
         RACER_SLOT_SET(slot, PointIndex, g_dwTrackRoutePointIndex);
         RACER_SLOT_SET(slot, MaxGate, RACER_SLOT_SET(slot, Gate, g_dwTrackRouteGates));
         RACER_SLOT_SET(slot, Lap, RACER_SLOT_SET(slot, DistanceLaps, g_dwTrackRouteLaps));
-#if TGR_PC
+#if TGR_BOSS_RALLY
         NullStub();
 #elif TGR_REGION != TGR_REGION_JP
         osSyncPrintf("Initial lap.gate for %d(%d): %d.%d (dist=%f)\n",
@@ -97,7 +97,7 @@ void InitRacerSlot(RacerSlot *slot) {
                      slot->lap,
                      slot->gate,
                      (double)slot->distance);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         RACER_SLOT_GET(slot, PreviousPosition).x = RACER_SLOT_GET(slot, Position).x;
         RACER_SLOT_GET(slot, PreviousPosition).y = RACER_SLOT_GET(slot, Position).y;
         RACER_SLOT_GET(slot, PreviousPosition).z = RACER_SLOT_GET(slot, Position).z;
@@ -112,7 +112,7 @@ void InitRacerSlot(RacerSlot *slot) {
                            .startTime);
         RACER_SLOT_SET(slot, RacePosition, g_dwNumVehicles - RACER_SLOT_GET(slot, Index) - 1);
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     if (RACER_SLOT_GET(slot, Index) < (s32)g_dwNumLocalPlayers) {
         RACER_SLOT_SET(slot, ColorPanels, NULL);
         RACER_SLOT_SET(slot, ColorPanelCount, 0);

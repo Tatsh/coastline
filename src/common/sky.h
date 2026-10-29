@@ -7,7 +7,7 @@
  */
 
 #include <PR/ultratypes.h>
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "common/render.h"
 #endif
 
@@ -39,7 +39,7 @@ extern s32 g_dwSkyboxDisabled;
  */
 s32 IsSkyFogFilled(void);
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /**
  * Draw the current sky or fog fill and set the frame's clipping ratio.
  *
@@ -57,7 +57,7 @@ void RenderSkybox(const ViewportRect *viewports);
  * @ghidraAddress JPN: 0x80230c78
  */
 void RenderSkybox(void);
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #ifdef __cplusplus
 }

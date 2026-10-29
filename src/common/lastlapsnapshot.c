@@ -6,7 +6,7 @@
 #include "common/replay.h"
 #include "common/vehicleaccess.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <string.h>
 
 #include "win32/ghost.h"
@@ -31,9 +31,9 @@ static inline void StoreLastLapBuffer(u8 **destination, u8 *value) {
 #define LAST_LAP_RECORDING_ACTIVE() (vehicle->input->recordBuffers[vehicle->index] != NULL)
 #define LAST_LAP_STORE_INTEGER(field, value) ((field) = (value))
 #define LAST_LAP_STORE_BUFFER(field, value) ((field) = (value))
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 void Vehicle::SaveLastLapSnapshot(void) {
 #else
 void SaveLastLapSnapshot(Vehicle *vehicle) {
@@ -46,7 +46,7 @@ void SaveLastLapSnapshot(Vehicle *vehicle) {
         return;
     }
     osSyncPrintf("SAVING LAST LAP INFO\n");
-#if TGR_PC
+#if TGR_BOSS_RALLY
     StartGhostRecording();
 #endif
     for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {

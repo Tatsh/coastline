@@ -3,7 +3,7 @@
 #include "common/race.h"
 #include "common/vehicleaccess.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "common/screen.h"
 #else
 #include <PR/os.h>
@@ -32,7 +32,7 @@ void RestoreRaceResultsFromSlots(void) {
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP && g_dwSavedResultsValid) {
         for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
             profile = VEHICLE_GET(&(g_aVehicles[i]), Profile);
-#if TGR_PC
+#if TGR_BOSS_RALLY
             profile->seasonRacePoints[profile->season][profile->round] =
                 (s8)g_abRacePositionPoints[g_adwSavedResultPositions[i]];
 #else
@@ -44,7 +44,7 @@ void RestoreRaceResultsFromSlots(void) {
             profile = VEHICLE_GET(&(g_aVehicles[i]), Profile);
             profile->seasonTimes[profile->season][profile->round] = g_afSavedResultTimes[i];
             profile = VEHICLE_GET(&(g_aVehicles[i]), Profile);
-#if TGR_PC
+#if TGR_BOSS_RALLY
             NullStub();
 #else
             osSyncPrintf("points = %d\n", profile->seasonPoints[profile->season]);

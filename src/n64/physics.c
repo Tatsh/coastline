@@ -35,7 +35,7 @@ s32 UnusedTrackCollisionStub(void *body) {
 }
 
 /* The cell of the grid under a point, as its row times 64 plus its column. */
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /* The original converts through 64 bits, so NaN and the infinities give the cell of 0. */
 #define GRID_COORDINATE(v) ((s32)(s64)(v))
 #else

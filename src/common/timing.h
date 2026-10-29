@@ -66,7 +66,7 @@ extern s32 g_dwTimingFrame;
  */
 extern u32 g_dwTimingFrameStart;
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * Reset at the start of the frame.
  *
@@ -77,7 +77,7 @@ extern u32 g_dwTimingFrameStart;
  * @ghidraAddress BRGlide: 0x105b9724
  */
 extern u32 g_dwTimingFrameElapsed;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 /**
  * The timer count the full length of the bars stands for.

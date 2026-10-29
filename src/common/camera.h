@@ -83,7 +83,7 @@ extern s32 g_dwCameraRayHitCount;
  */
 extern u16 g_awCameraRayHitInstances[];
 
-#if TGR_PC && defined(__cplusplus)
+#if TGR_BOSS_RALLY && defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -144,7 +144,7 @@ void ComputeCameraBasis(Vehicle *vehicle, CameraFrame *camera);
  * @ghidraAddress JPN: 0x80221c38
  */
 void PlaceTrackCamera(Vehicle *vehicle);
-#if TGR_PC && defined(__cplusplus)
+#if TGR_BOSS_RALLY && defined(__cplusplus)
 }
 #endif
 
@@ -161,7 +161,7 @@ void PlaceTrackCamera(Vehicle *vehicle);
 void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera);
 #endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
-#if TGR_PC && defined(__cplusplus)
+#if TGR_BOSS_RALLY && defined(__cplusplus)
 extern "C" {
 #endif
 /**
@@ -173,11 +173,11 @@ extern "C" {
  * @ghidraAddress JPN: 0x80221df0
  */
 void UpdateCameraSystem(Vehicle *vehicle);
-#if TGR_PC && defined(__cplusplus)
+#if TGR_BOSS_RALLY && defined(__cplusplus)
 }
 #endif
 
-#if TGR_PC && defined(__cplusplus)
+#if TGR_BOSS_RALLY && defined(__cplusplus)
 extern "C" {
 #endif
 
@@ -190,7 +190,7 @@ extern "C" {
  * @ghidraAddress JPN: 0x80222394
  */
 void InitCameraForVehicle(Vehicle *vehicle);
-#if TGR_PC && defined(__cplusplus)
+#if TGR_BOSS_RALLY && defined(__cplusplus)
 }
 #endif
 
@@ -221,7 +221,7 @@ void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width,
  */
 extern s32 g_dwRearViewMirrorMode;
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * What CastRayAgainstTrack() found below the camera of the view being drawn.
  *
@@ -230,25 +230,25 @@ extern s32 g_dwRearViewMirrorMode;
  * @ghidraAddress JPN: 0x8028c7d0
  */
 extern f32 g_fCameraRayGroundDistance;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * @ghidraAddress USA: 0x8028aafc
  * @ghidraAddress EUR: 0x8028cd04
  * @ghidraAddress JPN: 0x8028c7d4
  */
 extern s32 g_dwCameraRayGroundSurface;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 /**
  * @ghidraAddress USA: 0x8028ab04
  * @ghidraAddress EUR: 0x8028cd0c
  * @ghidraAddress JPN: 0x8028c7dc
  */
 extern s32 g_dwCameraRayNearbyCount;
-#endif /* !TGR_PC */
+#endif /* !TGR_BOSS_RALLY */
 
 /**
  * @ghidraAddress USA: 0x8031b288

@@ -15,7 +15,7 @@ VehicleCarChoice ChooseVehicleCarId(Vehicle *vehicle, s32 *carId) {
     }
     if (VEHICLE_GET(vehicle, Index) >= (s32)g_dwNumLocalPlayers) {
         if (g_dwGameMode == GAME_MODE_ARCADE
-#if TGR_PC
+#if TGR_BOSS_RALLY
             || g_dwGameMode == GAME_MODE_NETWORK
 #endif
         ) {
@@ -42,7 +42,7 @@ VehicleCarChoice ChooseVehicleCarId(Vehicle *vehicle, s32 *carId) {
     } else {
         return CAR_CHOICE_UNCHANGED;
     }
-#if TGR_PC
+#if TGR_BOSS_RALLY
     car = (s8)car;
 #endif
     *carId = car;

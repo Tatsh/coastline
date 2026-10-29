@@ -6,7 +6,7 @@
 #include "common/vehicle.h"
 #include "common/weather.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 namespace {
     /**
      * Whether the rain particles have their first positions.
@@ -39,11 +39,11 @@ namespace {
      */
     f32 g_fRainCameraSpeedScale;
 } // namespace
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #define RANDOM_TO_TWO (2.0f / 65535.0f)
 #define EYE_AHEAD 3.0f
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define RAIN_MIN_CAMERA_SPEED 0.2777777910232544f
 #define RAIN_CAMERA_SPEED_MUL 3.5999999046325684f
 #else
@@ -55,7 +55,7 @@ namespace {
 #define PARTICLE_UNITS 16383.5
 #define DRIFT_HOLD_MASK 0xF
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #define PRECIPITATION_REAL long double
 #define PRECIPITATION_PARTICLE_REAL long double
 #define PRECIPITATION_INTEGER(value) ((s64)(value))
@@ -67,7 +67,7 @@ namespace {
 #define PRECIPITATION_INTEGER(value) ((s32)(value))
 #define PRECIPITATION_CAMERA(view) g_aVehicles[view].activeCamera
 #define NEGATE_DRIFT(value) (-(value))
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 void UpdatePrecipitationParticles(void) {
     CameraFrame *camera;
@@ -77,7 +77,7 @@ void UpdatePrecipitationParticles(void) {
     s16 driftX, driftY, moveX, moveY, moveZ;
     s32 view, i, holdX, holdY;
     f32 dx, dy, dz, driftStepX, driftStepY;
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double rawX, rawY, rawZ, speed, rawScale, cosine, rawSine;
     volatile long double snowFall;
 #else
@@ -104,7 +104,7 @@ void UpdatePrecipitationParticles(void) {
 
         /* The rain moves with the camera, by less than the camera when it is fast. */
         previous = &g_avRainPrevCameraPos[view];
-#if TGR_PC
+#if TGR_BOSS_RALLY
         rawX = (long double)eye.x - previous->x;
         rawY = (long double)eye.y - previous->y;
         rawZ = (long double)eye.z - previous->z;
@@ -145,10 +145,10 @@ void UpdatePrecipitationParticles(void) {
             g_fRainCameraSpeedScale = 1.0f;
         }
 
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         /* Snow falls slowly. Rain falls faster and blows with the wind. */
         if (g_dwSnowMode) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
             snowFall = (long double)g_fFrameDeltaTime * -SNOW_FALL_RATE;
             dz = (long double)dz - snowFall;
 #else
@@ -156,7 +156,7 @@ void UpdatePrecipitationParticles(void) {
 #endif
         } else {
             velocity = &g_avRainVelocity[view];
-#if TGR_PC
+#if TGR_BOSS_RALLY
             __asm__("fcos" : "=t"(cosine) : "0"((long double)g_fWindAngle));
             __asm__("fsin" : "=t"(rawSine) : "0"((long double)g_fWindAngle));
             velocity->x = cosine * g_fWindStrength * g_fFrameDeltaTime;
@@ -169,7 +169,7 @@ void UpdatePrecipitationParticles(void) {
             move.y = dy;
             move.z = dz;
             dz = (PRECIPITATION_REAL)dz + velocity->z;
-#if TGR_PC
+#if TGR_BOSS_RALLY
             velocity->y = rawSine * g_fWindStrength * g_fFrameDeltaTime;
 #else
             velocity->y = sine * (g_fFrameDeltaTime * g_fWindStrength);

@@ -4,7 +4,7 @@
 #include "common/render.h"
 #include "common/screen.h"
 #include "common/text.h"
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include <stdio.h>
 
 #include "win32/fontdata.h"
@@ -30,7 +30,7 @@ s32 g_dwTextCustomColor2G;
 s32 g_dwTextCustomColor2B;
 #else
 #define SPACE_ADVANCE 12
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #define SMALL_FONT_MAX_SIZE 25
 #define SMALL_FONT_CELL 20
@@ -54,7 +54,7 @@ s32 g_dwTextCustomColor2B;
 #define TEXEL_STEP 0x400
 #define HALF_TEXEL 16
 
-#if TGR_PC && TGR_RENDERER == TGR_RENDERER_GLIDE
+#if TGR_BOSS_RALLY && TGR_RENDERER == TGR_RENDERER_GLIDE
 /* The glyphs of an atlas before this one have their offsets in the first table. */
 #define FIRST_TABLE_GLYPHS 28
 
@@ -65,20 +65,20 @@ s32 g_dwTextCustomColor2B;
 static inline s32 GetAtlasGlyphOffset(const s32 *first, const s32 *second, s32 glyph) {
     return glyph < FIRST_TABLE_GLYPHS ? first[glyph] : second[glyph - FIRST_TABLE_GLYPHS];
 }
-#endif /* TGR_PC && TGR_RENDERER == TGR_RENDERER_GLIDE */
+#endif /* TGR_BOSS_RALLY && TGR_RENDERER == TGR_RENDERER_GLIDE */
 
-#if TGR_REGION != TGR_REGION_JP || TGR_PC
+#if TGR_REGION != TGR_REGION_JP || TGR_BOSS_RALLY
 void RenderTextToDisplayList(const char *text) {
     const u8 *s = (const u8 *)text;
     s32 size = g_nFontSize;
     s32 y = g_nTextDrawY - (size * ASCENT) / SIZE_UNITS;
     s32 x = g_nTextDrawX;
     s32 cell, padding, glyph, columns, width;
-#if TGR_PC && TGR_RENDERER == TGR_RENDERER_GLIDE
+#if TGR_BOSS_RALLY && TGR_RENDERER == TGR_RENDERER_GLIDE
     const s32 *nextOffsets;
     u8 *atlas;
     s32 atlasTexture, glyphBytes;
-#elif TGR_PC
+#elif TGR_BOSS_RALLY
     unsigned *glyphTextures;
 #else
     s32 textureWidth, row, left, right, dsdx, dtdy, offset;
@@ -87,7 +87,7 @@ void RenderTextToDisplayList(const char *text) {
 #endif
     s32 *offsets;
     u8 *gradient, *shadowGradient;
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
     u8 *texture;
 #endif
     u8 c;
@@ -102,14 +102,14 @@ void RenderTextToDisplayList(const char *text) {
         || g_dwTextureQualityLevel > 1
 #endif
     ) {
-#if TGR_PC && TGR_RENDERER == TGR_RENDERER_GLIDE
+#if TGR_BOSS_RALLY && TGR_RENDERER == TGR_RENDERER_GLIDE
         padding = 1;
         offsets = g_adwHudFont2GlyphOffsets;
         nextOffsets = g_adwHudFont3GlyphOffsets;
         atlas = g_abSmallFontAtlas;
         atlasTexture = g_dwSmallFontAtlasTextureId;
         glyphBytes = SMALL_FONT_ATLAS_GLYPH_BYTES;
-#elif TGR_PC
+#elif TGR_BOSS_RALLY
         padding = 1;
         offsets = g_adwHudFont2GlyphOffsets;
         glyphTextures = g_adwSmallFontGlyphTexturesA;
@@ -118,19 +118,19 @@ void RenderTextToDisplayList(const char *text) {
         offsets = g_adwSmallFontGlyphOffsets;
         textureWidth = SMALL_FONT_WIDTH;
         texture = g_aSmallFontTexture;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         gradient = g_abSmallFontGradient;
         shadowGradient = g_abSmallFontShadowGradient;
         cell = SMALL_FONT_CELL;
     } else {
-#if TGR_PC && TGR_RENDERER == TGR_RENDERER_GLIDE
+#if TGR_BOSS_RALLY && TGR_RENDERER == TGR_RENDERER_GLIDE
         padding = 1;
         offsets = g_adwHudFont0GlyphOffsets;
         nextOffsets = g_adwHudFont1GlyphOffsets;
         atlas = g_abLargeFontAtlas;
         atlasTexture = g_dwLargeFontAtlasTextureId;
         glyphBytes = LARGE_FONT_ATLAS_GLYPH_BYTES;
-#elif TGR_PC
+#elif TGR_BOSS_RALLY
         padding = 1;
         offsets = g_adwHudFont0GlyphOffsets;
         glyphTextures = g_adwLargeFontGlyphTexturesA;
@@ -139,7 +139,7 @@ void RenderTextToDisplayList(const char *text) {
         offsets = g_adwLargeFontGlyphOffsets;
         textureWidth = LARGE_FONT_WIDTH;
         texture = g_aLargeFontTexture;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         gradient = g_abLargeFontGradient;
         shadowGradient = g_abLargeFontShadowGradient;
         cell = LARGE_FONT_CELL;
@@ -267,7 +267,7 @@ void RenderTextToDisplayList(const char *text) {
             } else if (s[1] == 'i' || s[1] == 'n') {
                 s++;
                 continue;
-#if TGR_PC
+#if TGR_BOSS_RALLY
             } else if (s[1] == 'x') {
                 unsigned red, green, blue;
                 sscanf((const char *)s + 2, "%02x%02x%02x", &red, &green, &blue);
@@ -287,7 +287,7 @@ void RenderTextToDisplayList(const char *text) {
                 gDPSetEnvColor(gDisplayListPtr++, red, green, blue, 0xFF);
                 s += 7;
                 continue;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
             } else if (s[2] != '\0') {
                 gDPPipeSync(gDisplayListPtr++);
                 switch (s[1]) {
@@ -370,7 +370,7 @@ void RenderTextToDisplayList(const char *text) {
             continue;
         }
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
         glyph = (s8)g_abHudFontCharToGlyph[c - '!'];
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
         columns = GetAtlasGlyphOffset(offsets, nextOffsets, glyph + 1) -
@@ -515,7 +515,7 @@ void RenderTextToDisplayList(const char *text) {
                                 dsdx,
                                 dtdy);
         }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
         x += ((columns - padding) * size) / cell;
     }
 
@@ -523,4 +523,4 @@ void RenderTextToDisplayList(const char *text) {
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
 }
-#endif /* TGR_REGION != TGR_REGION_JP || TGR_PC */
+#endif /* TGR_REGION != TGR_REGION_JP || TGR_BOSS_RALLY */

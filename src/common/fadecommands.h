@@ -3,7 +3,7 @@
 
 #include "common/render.h"
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 #include "win32/combine.h"
 
 #ifdef __cplusplus
@@ -52,6 +52,6 @@ extern "C" {
                       0,                                                                           \
                       0,                                                                           \
                       secondCycle)
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #endif /* COASTLINE_FADE_COMMANDS_H */

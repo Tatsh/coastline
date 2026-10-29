@@ -2,21 +2,21 @@
 #include "common/vecmath.h"
 #include "common/weather.h"
 
-#if !TGR_PC
+#if !TGR_BOSS_RALLY
 #include <PR/gu.h>
 #endif
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x104bbe0c */
 f32 g_fWindAngle;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 #define RANDOM_TO_TWO (2.0f / 65535.0f)
 #define WIND_TURN 6.2831855f
 #define WIND_STRENGTH_MAX 1.0f
 #define WIND_STRENGTH_MIN 0.5f
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 /* The x87 instructions preserve extended results and return large angles unchanged. */
 static inline long double WindCosine(f32 angle) {
     long double result;
@@ -29,10 +29,10 @@ static inline long double WindSine(f32 angle) {
     __asm__("fsin" : "=t"(result) : "0"((long double)angle));
     return result;
 }
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 
 void UpdateWindDirection(void) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double updatedAngle;
     long double updatedStrength;
     long double cosine;
@@ -78,5 +78,5 @@ void UpdateWindDirection(void) {
     g_vWindVelocity.x = cosf(g_fWindAngle) * (g_fFrameDeltaTime * g_fWindStrength);
     g_vWindVelocity.y = sinf(g_fWindAngle) * (g_fFrameDeltaTime * g_fWindStrength);
     g_vWindVelocity.z = 0.0f;
-#endif /* TGR_PC */
+#endif /* TGR_BOSS_RALLY */
 }

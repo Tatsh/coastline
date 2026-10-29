@@ -10,7 +10,7 @@ extern "C" {
 #define SAMPLE_RATE 11000.0f
 #define STEP_ONE 4294967296.0
 
-#if TGR_PC
+#if TGR_BOSS_RALLY
 typedef long double SoundReal;
 #else
 typedef f32 SoundReal;
@@ -18,7 +18,7 @@ typedef f32 SoundReal;
 
 /* The step of a channel that plays a frequency. */
 static inline u64 FrequencyStep(SoundReal frequency) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double scaled = frequency * (1.0f / SAMPLE_RATE) * STEP_ONE;
     return scaled >= -0x1p63L && scaled < 0x1p63L ? (u64)(s64)scaled : ((u64)1 << 63);
 #else
@@ -33,7 +33,7 @@ static inline f32 UpperVolume(s32 volume, f32 upper) {
 
 /* Pack a volume panned between the two halves of the volume of a channel. */
 static inline u32 PackVolume(s32 volume, f32 upper, f32 lower) {
-#if TGR_PC
+#if TGR_BOSS_RALLY
     long double upperProduct = (long double)volume * upper;
     long double lowerProduct = (long double)volume * lower;
     u32 upperWord = upperProduct >= -0x1p63L && upperProduct < 0x1p63L ? (u32)(s64)upperProduct : 0;
