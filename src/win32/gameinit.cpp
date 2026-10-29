@@ -34,9 +34,6 @@ s32 ReturnZero(void) {
     return 0;
 }
 
-void InitControllersAndPaks(void) {
-}
-
 void PrepareWindowsGameSession(void) {
     g_dwSavedSfxVolume = g_GlobalRallyConfig.dwSfxVolume;
     g_dwSavedMusicVolume = g_GlobalRallyConfig.dwMusicVolume;

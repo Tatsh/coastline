@@ -38,13 +38,6 @@ int IgnoreDirectSoundBufferDiagnostic(const char *diagnostic) {
 const double g_earMemoryWaveHalfBufferScale = 0.5;
 // @ghidraAddress EAR: 0x1003b868
 char g_earMemoryWaveHeaderPrefix[16];
-
-static inline std::uint32_t TruncatePlaybackInteger(long double value) {
-    // Invalid x87 integer conversions produce zero in the low 32 bits.
-    return value >= -0x1p63L && value < 0x1p63L ?
-               static_cast<std::uint32_t>(static_cast<std::int64_t>(value)) :
-               0;
-}
 } // namespace
 PcmWaveStream::PcmWaveStream() {
     sampleBuffer = nullptr;

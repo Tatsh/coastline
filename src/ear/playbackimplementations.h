@@ -258,4 +258,18 @@ private:
     int memorySource;                    /*!< Whether the file is in memory, read in place. */
 };
 
+/**
+ * Convert a value to an integer as the x87 instruction of the original does, retaining the low 32
+ * bits.
+ *
+ * @param value The value to convert.
+ * @return The low 32 bits of the integer, or 0 where the conversion is invalid.
+ */
+inline std::uint32_t TruncatePlaybackInteger(long double value) {
+    // Invalid x87 integer conversions produce zero in the low 32 bits.
+    return value >= -0x1p63L && value < 0x1p63L ?
+               static_cast<std::uint32_t>(static_cast<std::int64_t>(value)) :
+               0;
+}
+
 #endif /* COASTLINE_EAR_PLAYBACKIMPLEMENTATIONS_H */

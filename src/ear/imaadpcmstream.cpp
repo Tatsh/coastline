@@ -29,13 +29,6 @@ const int g_aiImaAdpcmStepSizes[89] = {
 // The bytes of the header of each channel at the start of a block.
 constexpr int IMA_ADPCM_HEADER_BYTES = 4;
 constexpr int IMA_ADPCM_LAST_STEP_INDEX = 88;
-
-static inline std::uint32_t TruncatePlaybackInteger(long double value) {
-    // Invalid x87 integer conversions produce zero in the low 32 bits.
-    return value >= -0x1p63L && value < 0x1p63L ?
-               static_cast<std::uint32_t>(static_cast<std::int64_t>(value)) :
-               0;
-}
 } // namespace
 
 ImaAdpcmWaveStream::ImaAdpcmWaveStream() {
