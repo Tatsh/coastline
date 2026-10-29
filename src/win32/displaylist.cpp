@@ -313,7 +313,7 @@ GbiCommand *HandleGbiSetCombine(GbiCommand *pCommand) {
 #if TGR_BRD3D
 GbiCommand *HandleGbiSetFogColor(GbiCommand *pCommand) {
     unsigned dwRgba = pCommand->w1;
-    SetDeviceRenderState(D3DRENDERSTATE_FOGCOLOR, dwRgba << 24 | dwRgba >> 8);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_FOGCOLOR, dwRgba << 24 | dwRgba >> 8);
     return pCommand + 1;
 }
 #endif
@@ -526,7 +526,7 @@ void (*g_pfnBindTextureEntry)(int nEntry);
 GbiVertex g_aGbiVertexCache[GBI_VERTEX_CACHE_SIZE];
 GbiVertex *g_apVertexPool[GBI_VERTEX_CACHE_SIZE];
 int g_nVertexPoolCount;
-DeviceVertex g_renderBuffer[RENDER_BUFFER_SIZE];
+D3DTLVERTEX g_renderBuffer[RENDER_BUFFER_SIZE];
 int g_nRenderBufferIndex;
 WORD g_awRenderIndexBuffer[RENDER_BUFFER_SIZE];
 int g_nRenderIndexCount;
@@ -544,8 +544,13 @@ void FlushIndexedRenderBuffer(void) {
     if (g_nRenderIndexCount == 0) {
         return;
     }
-    DrawDeviceIndexedTriangles(
-        g_renderBuffer, g_nRenderBufferIndex, g_awRenderIndexBuffer, g_nRenderIndexCount);
+    g_pD3DDevice2->DrawIndexedPrimitive(D3DPT_TRIANGLELIST,
+                                        D3DVT_TLVERTEX,
+                                        g_renderBuffer,
+                                        g_nRenderBufferIndex,
+                                        g_awRenderIndexBuffer,
+                                        g_nRenderIndexCount,
+                                        D3DDP_DONOTCLIP | D3DDP_DONOTUPDATEEXTENTS);
     ResetRenderBufferAndVertexPool();
 }
 
@@ -554,7 +559,7 @@ static inline void ApplyDirtyRenderState(DWORD dwDirtyBit,
                                          DWORD dwPending,
                                          DWORD *pdwApplied) {
     if (g_dwDirtyRenderStateMask & dwDirtyBit) {
-        SetDeviceRenderState(nState, dwPending);
+        g_pD3DDevice2->SetRenderState(nState, dwPending);
         *pdwApplied = dwPending;
     }
 }
@@ -646,19 +651,19 @@ static inline void ResetFrameRenderStates(void) {
     g_dwDirtyRenderStateMask = 0xffffffff;
     FlushDirtyRenderStates();
     g_dwGbiGeometryMode = GBI_GEOMETRY_Z_BUFFER | GBI_GEOMETRY_CULL_BACK;
-    SetDeviceRenderState(D3DRENDERSTATE_SPECULARENABLE, false);
-    SetDeviceRenderState(D3DRENDERSTATE_ZENABLE, true);
-    SetDeviceRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
-    SetDeviceRenderState(D3DRENDERSTATE_DITHERENABLE, true);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_SPECULARENABLE, false);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_ZENABLE, true);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_DITHERENABLE, true);
     if (!g_bD3DAlphaCompare) {
-        SetDeviceRenderState(D3DRENDERSTATE_COLORKEYENABLE, true);
+        g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_COLORKEYENABLE, true);
     }
-    SetDeviceRenderState(D3DRENDERSTATE_SHADEMODE, D3DSHADE_GOURAUD);
-    SetDeviceRenderState(D3DRENDERSTATE_WRAPU, false);
-    SetDeviceRenderState(D3DRENDERSTATE_WRAPV, false);
-    SetDeviceRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, true);
-    SetDeviceRenderState(D3DRENDERSTATE_TEXTUREMIN, D3DFILTER_LINEAR);
-    SetDeviceRenderState(D3DRENDERSTATE_TEXTUREMAG, D3DFILTER_LINEAR);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_SHADEMODE, D3DSHADE_GOURAUD);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_WRAPU, false);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_WRAPV, false);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_TEXTUREPERSPECTIVE, true);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_TEXTUREMIN, D3DFILTER_LINEAR);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_TEXTUREMAG, D3DFILTER_LINEAR);
 }
 
 static inline void RecordFrameTime(void) {
@@ -881,8 +886,8 @@ void BindTextureEntry(int nEntry) {
         return;
     }
     const TextureEntry &entry = g_pTextureEntries[nEntry];
-    SetDeviceRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
-                         g_ppTextureIdTable[entry.nTextureId]->GetTextureHandle());
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE,
+                                  g_ppTextureIdTable[entry.nTextureId]->GetTextureHandle());
     SetPendingRenderState(&g_dwPendingRS_AddressU,
                           g_dwAppliedRS_AddressU,
                           entry.data.bClampS == 1 ? D3DTADDRESS_CLAMP : D3DTADDRESS_WRAP,
@@ -1235,10 +1240,10 @@ void UpdateD3DFogRenderState(void) {
     if (g_dwWeatherActive) {
         g_fVertexFogRange = !g_dwRainMode && !g_dwSnowMode && g_dwNightMode ? 16384.0f : 8192.0f;
         g_dwFogAlphaCutoff = 8;
-        SetDeviceRenderState(D3DRENDERSTATE_FOGENABLE, true);
-        SetDeviceRenderState(D3DRENDERSTATE_FOGTABLEMODE, 0);
+        g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_FOGENABLE, true);
+        g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_FOGTABLEMODE, 0);
     } else {
-        SetDeviceRenderState(D3DRENDERSTATE_FOGENABLE, false);
+        g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_FOGENABLE, false);
     }
 }
 #endif /* TGR_BRD3D */
@@ -1566,7 +1571,7 @@ GbiCommand *HandleGbiVertexTexGenLinear(GbiCommand *pCommand) {
 #define VERTEX_COLOR_SCALE 255.0f
 
 // Take an entry of g_renderBuffer for a vertex, or report the entry it already has.
-static inline DeviceVertex *ClaimRenderBufferEntry(GbiVertex *pVertex, int *pnIndex) {
+static inline D3DTLVERTEX *ClaimRenderBufferEntry(GbiVertex *pVertex, int *pnIndex) {
     if (std::greater_equal<>{}(pVertex, g_aGbiVertexCache) &&
         std::less<>{}(pVertex, g_aGbiVertexCache + GBI_VERTEX_CACHE_SIZE)) {
         if (pVertex->nRenderBufferIndex != -1) {
@@ -1580,14 +1585,14 @@ static inline DeviceVertex *ClaimRenderBufferEntry(GbiVertex *pVertex, int *pnIn
     return &g_renderBuffer[*pnIndex];
 }
 
-static inline void CopyVertexPosition(DeviceVertex *pOut, const GbiVertex *pVertex) {
+static inline void CopyVertexPosition(D3DTLVERTEX *pOut, const GbiVertex *pVertex) {
     pOut->sx = pVertex->fX;
     pOut->sy = pVertex->fY;
     pOut->sz = pVertex->fZ;
     pOut->rhw = pVertex->fRhw;
 }
 
-static inline void CopyVertexTexCoords(DeviceVertex *pOut, const GbiVertex *pVertex) {
+static inline void CopyVertexTexCoords(D3DTLVERTEX *pOut, const GbiVertex *pVertex) {
     pOut->tu = pVertex->fU;
     pOut->tv = pVertex->fV;
 }
@@ -1615,7 +1620,7 @@ static inline D3DCOLOR VertexFog(const GbiVertex *pVertex) {
 
 int SubmitVertexToRenderBuffer(GbiVertex *pVertex) {
     int nIndex;
-    DeviceVertex *pOut = ClaimRenderBufferEntry(pVertex, &nIndex);
+    D3DTLVERTEX *pOut = ClaimRenderBufferEntry(pVertex, &nIndex);
     if (pOut != nullptr) {
         CopyVertexPosition(pOut, pVertex);
         pOut->color = VertexColor(pVertex);
@@ -1626,7 +1631,7 @@ int SubmitVertexToRenderBuffer(GbiVertex *pVertex) {
 
 int SubmitVertexToRenderBufferEx(GbiVertex *pVertex) {
     int nIndex;
-    DeviceVertex *pOut = ClaimRenderBufferEntry(pVertex, &nIndex);
+    D3DTLVERTEX *pOut = ClaimRenderBufferEntry(pVertex, &nIndex);
     if (pOut != nullptr) {
         CopyVertexPosition(pOut, pVertex);
         pOut->color = VertexColor(pVertex);
@@ -1638,7 +1643,7 @@ int SubmitVertexToRenderBufferEx(GbiVertex *pVertex) {
 
 int SubmitVertexToRenderBufferConstColor(GbiVertex *pVertex) {
     int nIndex;
-    DeviceVertex *pOut = ClaimRenderBufferEntry(pVertex, &nIndex);
+    D3DTLVERTEX *pOut = ClaimRenderBufferEntry(pVertex, &nIndex);
     if (pOut != nullptr) {
         CopyVertexPosition(pOut, pVertex);
         pOut->color = g_dwVertexConstantColor;
@@ -1649,7 +1654,7 @@ int SubmitVertexToRenderBufferConstColor(GbiVertex *pVertex) {
 
 int SubmitVertexToRenderBufferFogged(GbiVertex *pVertex) {
     int nIndex;
-    DeviceVertex *pOut = ClaimRenderBufferEntry(pVertex, &nIndex);
+    D3DTLVERTEX *pOut = ClaimRenderBufferEntry(pVertex, &nIndex);
     if (pOut != nullptr) {
         CopyVertexPosition(pOut, pVertex);
         pOut->color = g_dwVertexConstantColor;
@@ -1909,10 +1914,10 @@ void DrawFillRectangle(int nLeft, int nTop, int nRight, int nBottom) {
     FlushDirtyRenderStates();
     D3DCOLOR color = static_cast<D3DCOLOR>(alpha) << 24 | static_cast<D3DCOLOR>(red) << 16 |
                      static_cast<D3DCOLOR>(green) << 8 | blue;
-    SetDeviceRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
-    SetDeviceRenderState(D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_TEXTUREHANDLE, 0);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_CULLMODE, D3DCULL_NONE);
     auto makeVertex = [color](float x, float y, float u, float v) {
-        DeviceVertex vertex;
+        D3DTLVERTEX vertex;
         vertex.sx = x;
         vertex.sy = y;
         vertex.sz = 0.0f;
@@ -1923,14 +1928,16 @@ void DrawFillRectangle(int nLeft, int nTop, int nRight, int nBottom) {
         vertex.tv = v;
         return vertex;
     };
-    DeviceVertex triangle[3] = {makeVertex(nLeft, nScreenTop, 0, 0),
-                                makeVertex(nRight, nScreenBottom, 1, 1),
-                                makeVertex(nLeft, nScreenBottom, 0, 1)};
-    DrawDeviceTriangles(triangle, 3);
+    D3DTLVERTEX triangle[3] = {makeVertex(nLeft, nScreenTop, 0, 0),
+                               makeVertex(nRight, nScreenBottom, 1, 1),
+                               makeVertex(nLeft, nScreenBottom, 0, 1)};
+    g_pD3DDevice2->DrawPrimitive(
+        D3DPT_TRIANGLELIST, D3DVT_TLVERTEX, triangle, 3, D3DDP_WAIT | D3DDP_DONOTUPDATEEXTENTS);
     triangle[1] = makeVertex(nRight, nScreenTop, 1, 0);
     triangle[2] = makeVertex(nRight, nScreenBottom, 1, 1);
-    DrawDeviceTriangles(triangle, 3);
-    SetDeviceRenderState(D3DRENDERSTATE_CULLMODE, g_dwAppliedRS_CullMode);
+    g_pD3DDevice2->DrawPrimitive(
+        D3DPT_TRIANGLELIST, D3DVT_TLVERTEX, triangle, 3, D3DDP_WAIT | D3DDP_DONOTUPDATEEXTENTS);
+    g_pD3DDevice2->SetRenderState(D3DRENDERSTATE_CULLMODE, g_dwAppliedRS_CullMode);
 }
 
 // A routine that clips a triangle of g_aGbiVertexCache and submits what remains.

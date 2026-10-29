@@ -186,6 +186,48 @@ public:
     }
 
     /**
+     * Set a render state.
+     *
+     * @param state The state.
+     * @param value The value, in the units of Direct3D.
+     * @return D3D_OK.
+     */
+    HRESULT SetRenderState(D3DRENDERSTATETYPE state, DWORD value);
+
+    /**
+     * Draw a triangle list.
+     *
+     * @param type D3DPT_TRIANGLELIST.
+     * @param vertexType D3DVT_TLVERTEX.
+     * @param vertices The vertices.
+     * @param count The vertices, three for each triangle.
+     * @param flags The D3DDP_ flags, which do not change the drawing.
+     * @return D3D_OK.
+     */
+    HRESULT DrawPrimitive(
+        D3DPRIMITIVETYPE type, D3DVERTEXTYPE vertexType, void *vertices, DWORD count, DWORD flags);
+
+    /**
+     * Draw an indexed triangle list.
+     *
+     * @param type D3DPT_TRIANGLELIST.
+     * @param vertexType D3DVT_TLVERTEX.
+     * @param vertices The vertices.
+     * @param vertexCount The vertices.
+     * @param indices Three indices for each triangle.
+     * @param indexCount The indices.
+     * @param flags The D3DDP_ flags, which do not change the drawing.
+     * @return D3D_OK.
+     */
+    HRESULT DrawIndexedPrimitive(D3DPRIMITIVETYPE type,
+                                 D3DVERTEXTYPE vertexType,
+                                 void *vertices,
+                                 DWORD vertexCount,
+                                 WORD *indices,
+                                 DWORD indexCount,
+                                 DWORD flags);
+
+    /**
      * Record the clip status, which the renderer does not use.
      *
      * @param status The clip status.

@@ -10,14 +10,21 @@
 
 #include <SDL3/SDL.h>
 
-#include "common/renderdevice.h"
-
 namespace coastline {
 
 class GpuWindow;
 
 /** A vertex the game transformed and lit, laid out as D3DTLVERTEX. */
-using TlVertex = ::DeviceVertex;
+struct TlVertex {
+    float sx;               /*!< The screen x in pixels. */
+    float sy;               /*!< The screen y in pixels. */
+    float sz;               /*!< The depth, from 0 to 1. */
+    float rhw;              /*!< The reciprocal of the homogeneous w. */
+    std::uint32_t color;    /*!< The diffuse colour, 0xAARRGGBB. */
+    std::uint32_t specular; /*!< The specular colour, with the fog share in its alpha. */
+    float tu;               /*!< The texture u. */
+    float tv;               /*!< The texture v. */
+};
 static_assert(sizeof(TlVertex) == 32, "TlVertex has the 32 bytes of D3DTLVERTEX.");
 
 /** The comparison functions of Direct3D, with their D3DCMPFUNC values. */
