@@ -6,10 +6,10 @@
 #include <io.h>
 
 #include "ear/error.h"
-#include "mfc.h"
+#include "ear/mfc.h"
+#include "ear/registry.h"
 #include "musicdevice.h"
 #include "playbackimplementations.h"
-#include "registry.h"
 #include "window.h"
 
 namespace {

@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "ear/backend.h"
+#include "ear/configuration.h"
 #include "error.h"
 
 // @ghidraAddress EAR: 0x1002ebe0

@@ -3,11 +3,11 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "ear/mfc.h"
+#include "ear/registry.h"
 #include "error.h"
 #include "wavechunks.h"
-#include "win32/ear/mfc.h"
 #include "win32/ear/playbackimplementations.h"
-#include "win32/ear/registry.h"
 
 namespace {
 // @ghidraAddress EAR: 0x1002e638

@@ -2,11 +2,11 @@
 
 #include <cstring>
 
+#include "ear/mfc.h"
+#include "ear/registry.h"
 #include "error.h"
 #include "event.h"
 #include "runtime.h"
-#include "win32/ear/mfc.h"
-#include "win32/ear/registry.h"
 
 /** The size EarEnvironmentRegistration::size must give. */
 #define EAR_ENVIRONMENT_REGISTRATION_SIZE 0x40

@@ -7,10 +7,10 @@
 
 #include <windows.h>
 
+#include "ear/mfc.h"
 #include "error.h"
 #include "runtime.h"
 #include "version.h"
-#include "win32/ear/mfc.h"
 #include "win32/ear/musicdevice.h"
 #include "win32/ear/window.h"
 

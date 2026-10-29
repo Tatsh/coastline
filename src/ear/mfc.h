@@ -100,6 +100,8 @@ private:
 
 class CMapPtrToPtr : public CObject {
 public:
+    explicit CMapPtrToPtr(int blockSize = 10);
+    ~CMapPtrToPtr() override;
     int GetCount() const;
     UINT GetHashTableSize() const;
     void SetAt(void *key, void *value);

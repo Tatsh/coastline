@@ -12,9 +12,11 @@ add_library(
   imaadpcmstream.cpp
   initialization.cpp
   memorybudget.c
+  mfc.cpp
   playback.cpp
   playbacklifetime.cpp
   playbacksmoothing.c
+  registry.cpp
   runtime.c
   scheduledevent.cpp
   shutdown.cpp

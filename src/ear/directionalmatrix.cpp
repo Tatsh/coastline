@@ -3,11 +3,11 @@
 #include <cstring>
 #include <new>
 
+#include "ear/mfc.h"
+#include "ear/registry.h"
 #include "error.h"
 #include "runtime.h"
 #include "volume.h"
-#include "win32/ear/mfc.h"
-#include "win32/ear/registry.h"
 
 /** The pan of the left side. */
 #define EAR_PAN_LEFT (-10000)

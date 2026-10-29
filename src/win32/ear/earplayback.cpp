@@ -7,8 +7,8 @@
 #include <dsound.h>
 
 #include "ear/error.h"
+#include "ear/registry.h"
 #include "ear/volume.h"
-#include "registry.h"
 #include "window.h"
 
 std::uint16_t g_wEarObjectHandleCounter = 1;

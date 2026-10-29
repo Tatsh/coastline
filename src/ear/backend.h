@@ -24,12 +24,6 @@ int RejectUnsupportedInitializationFeature4000(void);
 /** @ghidraAddress EAR: 0x10010104 */
 int RejectUnsupportedInitializationFeature2000(void);
 
-/** @ghidraAddress EAR: 0x1003b7b4 */
-extern int32_t g_earAudioComponentsValidated;
-
-/** @ghidraAddress EAR: 0x1003b798 */
-extern uint16_t g_earAudioComponentValidationFlags;
-
 #ifdef __cplusplus
 }
 #endif

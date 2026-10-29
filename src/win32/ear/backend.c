@@ -6,10 +6,8 @@
 #include <windows.h>
 #include <winver.h>
 
+#include "ear/configuration.h"
 #include "ear/error.h"
-
-int32_t g_earAudioComponentsValidated;
-uint16_t g_earAudioComponentValidationFlags;
 
 // @ghidraAddress EAR: 0x1003b7d0
 [[maybe_unused, gnu::used]] static uint32_t g_dwEarReservedInitializationOption;

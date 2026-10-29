@@ -5,7 +5,7 @@
 #include <objbase.h>
 
 #include "ear/error.h"
-#include "mfc.h"
+#include "ear/mfc.h"
 #include "window.h"
 
 EarDirectSoundOutput *g_pEarDirectSoundOutput;

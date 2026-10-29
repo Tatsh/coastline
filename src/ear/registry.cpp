@@ -1,0 +1,8 @@
+#include "ear/registry.h"
+
+EarWordPointerRegistry<EarEnvironment> g_EnvironmentRegistry;
+EarWordPointerRegistry<EarWaveSample> g_PresetRegistry;
+EarActiveEventRegistry g_ActiveEventRegistry;
+EarDwordPointerRegistry<EarPlayback> g_PlaybackRegistry;
+EarWordPointerRegistry<EarChannel> g_ChannelRegistry;
+EarWordPointerRegistry<EarPresetTable> g_MatrixRegistry;

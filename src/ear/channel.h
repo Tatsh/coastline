@@ -4,8 +4,8 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-#include "win32/ear/mfc.h"
-#include "win32/ear/registry.h"
+#include "ear/mfc.h"
+#include "ear/registry.h"
 
 class ScheduledEarEvent;
 

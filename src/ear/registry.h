@@ -5,7 +5,7 @@
 #include <cstdint>
 #include <type_traits>
 
-#include "mfc.h"
+#include "ear/mfc.h"
 
 class EarEnvironment;
 class EarWaveSample;
@@ -73,6 +73,9 @@ public:
 
 class EarActiveEventRegistry : public CObject {
 public:
+    explicit EarActiveEventRegistry(int blockSize = 10);
+    ~EarActiveEventRegistry() override;
+
     /**
      * @return Whether the registry has no events.
      * @ghidraAddress EAR: 0x10006670

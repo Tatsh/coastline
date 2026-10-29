@@ -6,13 +6,13 @@
 
 #include <mmsystem.h>
 
+#include "ear/registry.h"
 #include "error.h"
 #include "event.h"
 #include "memorybudget.h"
 #include "preset.h"
 #include "runtime.h"
 #include "wavechunks.h"
-#include "win32/ear/registry.h"
 
 EarWaveSample::EarWaveSample() {
     buffer = nullptr;

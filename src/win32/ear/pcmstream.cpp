@@ -6,10 +6,10 @@
 
 #include "directsoundoutput.h"
 #include "ear/error.h"
+#include "ear/registry.h"
 #include "ear/wavechunks.h"
 #include "ear/wavesample.h"
 #include "playbackimplementations.h"
-#include "registry.h"
 
 namespace {
 // @ghidraAddress EAR: 0x1003b9a4

@@ -7,10 +7,10 @@
 #include <mmsystem.h>
 
 #include "channel.h"
+#include "ear/registry.h"
 #include "error.h"
 #include "runtime.h"
 #include "scheduledevent.h"
-#include "win32/ear/registry.h"
 #include "win32/ear/timer.h"
 
 namespace {
