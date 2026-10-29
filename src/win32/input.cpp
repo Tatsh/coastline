@@ -566,6 +566,21 @@ unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration) {
         }
         RequestNetworkPause();
     }
+#ifdef ENABLE_PATCHES
+    // Until the start binding begins a race, every other binding but the pause is ignored.
+    if (!g_bRaceStartReached && !g_dwNetworkPlayMode && !gInstantReplayActive) {
+        if (IsInputBindingPressed(16)) {
+            g_bRaceStartReached = 1;
+            if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
+                StartGhostRecording();
+            }
+        }
+        *pnSteering = 0;
+        *pnAcceleration = 0;
+        g_dwInputButtonMask = 0;
+        return 0;
+    }
+#endif /* ENABLE_PATCHES */
     int *toggles[6] = {&g_bHudShowLapCounter,
                        &g_bHudShowRaceTimer,
                        &g_bHudShowLapTimes,
