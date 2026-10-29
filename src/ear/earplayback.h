@@ -8,8 +8,6 @@
 #include "ear/playbacksmoothing.h"
 
 class EarWaveSample;
-struct IDirectSound;
-struct _DSBUFFERDESC;
 
 // The virtual routines are declared in the order of the slots of the native table.
 class [[gnu::packed]] EarPlayback {
@@ -219,7 +217,11 @@ protected:
         return playbackHandle;
     }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     HRESULT CreateDirectSoundPlaybackBuffer(IDirectSound *device, _DSBUFFERDESC *description);
+#else
+    bool CreateDirectSoundPlaybackBuffer(const EarWaveFormat &format, DWORD bytes);
+#endif
     void ResetPlaybackBufferFrequency() {
         frequency = baseFrequency;
     }
@@ -236,7 +238,7 @@ protected:
         startPositionSpecified = 0;
         startPosition = 0;
     }
-    IDirectSoundBuffer *GetDirectSoundBuffer() const {
+    EarDirectSoundPlaybackState::Buffer *GetDirectSoundBuffer() const {
         return directSound.GetBuffer();
     }
     std::uint32_t IncrementLoopDrainCount() {

@@ -1,12 +1,15 @@
 #ifndef COASTLINE_EAR_PLAYBACKIMPLEMENTATIONS_H
 #define COASTLINE_EAR_PLAYBACKIMPLEMENTATIONS_H
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
 // Multimedia declarations require the core Windows SDK types first.
 #include <mmreg.h>
 #include <mmsystem.h>
+#endif
 
 #include "ear/earplayback.h"
+#include "ear/wavechunks.h"
 
 class [[gnu::packed]] PcmWaveStream : public EarPlayback {
 public:
@@ -60,13 +63,13 @@ protected:
     /** @ghidraAddress EAR: 0x10012e1b */
     int CheckWavePlaybackDeviceAccess();
 
-    HMMIO file;              /*!< The file the samples stream from. */
+    EarWaveFile file;        /*!< The file the samples stream from. */
     DWORD readOffset;        /*!< The bytes of the data read so far. */
     LONG dataStartOffset;    /*!< The offset of the data in the file. */
     LONG originalFileOffset; /*!< The offset of a file the caller opened, restored on close. */
     char *sampleBuffer;      /*!< The samples, or the part of them being streamed. */
     DWORD dataBytes;         /*!< The bytes of the data. */
-    WAVEFORMATEX format;     /*!< The format of the samples. */
+    EarWaveFormat format;    /*!< The format of the samples. */
     DWORD writeOffset;       /*!< The offset in the buffer the next samples are written at. */
 };
 
@@ -111,6 +114,7 @@ private:
     void ApplyPreset(EarWaveSample *preset) override;
 };
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /** A playback of a MIDI file through the MCI sequencer, its volume set through the mixer. */
 class [[gnu::packed]] MidiPlayback : public EarPlayback {
 public:
@@ -194,6 +198,7 @@ private:
     int wholeDisc;                   /*!< Whether every audio track plays, positions then tracks. */
     DWORD durationMilliseconds;      /*!< The length of the tracks. */
 };
+#endif
 
 /** The state of the decoder of one channel of IMA ADPCM, from the header of each block. */
 struct ImaAdpcmChannelState {
@@ -244,14 +249,14 @@ private:
      */
     void DecodeImaAdpcmStreamBlocks();
 
-    IMAADPCMWAVEFORMAT adpcmFormat; /*!< The format of the file. */
-    std::uint8_t *blockBuffer;      /*!< The encoded blocks, or the part of them being streamed. */
-    DWORD adpcmDataBytes;           /*!< The bytes of the data chunk. */
-    DWORD blockBufferBytes;         /*!< The bytes of @ref blockBuffer. */
-    DWORD blockHalfBytes;           /*!< The encoded bytes each half of the buffer decodes. */
-    int decodedSample;              /*!< The sample the decoder produced last. */
-    int decodedDifference;          /*!< The difference the decoder added last. */
-    std::uint8_t decodedNibble;     /*!< The code the decoder read last. */
+    EarImaAdpcmWaveFormat adpcmFormat; /*!< The format of the file. */
+    std::uint8_t *blockBuffer;  /*!< The encoded blocks, or the part of them being streamed. */
+    DWORD adpcmDataBytes;       /*!< The bytes of the data chunk. */
+    DWORD blockBufferBytes;     /*!< The bytes of @ref blockBuffer. */
+    DWORD blockHalfBytes;       /*!< The encoded bytes each half of the buffer decodes. */
+    int decodedSample;          /*!< The sample the decoder produced last. */
+    int decodedDifference;      /*!< The difference the decoder added last. */
+    std::uint8_t decodedNibble; /*!< The code the decoder read last. */
     ImaAdpcmChannelState *channelStates; /*!< The state of the decoder of each channel. */
     std::uint16_t blocksPerHalf;         /*!< The blocks each half of the buffer decodes. */
     DWORD dataWordsPerBlock;             /*!< The words of codes of all the channels in a block. */

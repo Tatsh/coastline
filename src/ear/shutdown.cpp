@@ -27,7 +27,9 @@ void __stdcall EAR_DLL_ShutDownEar(void) {
         EarShutDownMatrixExportWrapper(0);
         EarShutDownEnvironmentExportWrapper(0);
         EarShutDownPresetExportWrapper(0);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
         ShutdownMusicDevicesAndRestoreMixer();
+#endif
     }
     ShutdownDirectSoundOutput();
     // The original clears the flags in a chain, each from the one cleared before it.

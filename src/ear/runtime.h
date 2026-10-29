@@ -3,7 +3,9 @@
 
 #include <stdint.h>
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -66,6 +68,7 @@ extern int32_t g_bEarComponentsInitialized;
 /** @ghidraAddress EAR: 0x1003b7a8 */
 extern int32_t g_bEarInitializationComplete;
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * Record the attachment of the process, or shut the library down and exit the process when the
  * process detaches after attaching it.
@@ -77,6 +80,7 @@ extern int32_t g_bEarInitializationComplete;
  * @ghidraAddress EAR: 0x100065aa
  */
 BOOL WINAPI EarDllMain(HINSTANCE module, DWORD reason, LPVOID reserved);
+#endif
 
 #ifdef __cplusplus
 }

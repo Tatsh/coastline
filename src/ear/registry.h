@@ -63,11 +63,20 @@ class EarDwordPointerRegistry : public CMapPtrToPtr {
 public:
     /** @ghidraAddress EAR: 0x100039e0 */
     void SetDwordPointerMapValue(DWORD key, Value *value) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
         SetAt(std::bit_cast<void *>(key), value);
+#else
+        // A pointer of the map is wider than the key on a 64-bit processor.
+        SetAt(std::bit_cast<void *>(static_cast<std::uintptr_t>(key)), value);
+#endif
     }
     /** @ghidraAddress EAR: 0x10009500 */
     BOOL RemovePlaybackRegistryKey(DWORD key) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
         return RemoveKey(std::bit_cast<void *>(key));
+#else
+        return RemoveKey(std::bit_cast<void *>(static_cast<std::uintptr_t>(key)));
+#endif
     }
 };
 

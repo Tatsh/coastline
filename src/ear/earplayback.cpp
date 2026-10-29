@@ -4,12 +4,22 @@
 #include <cstring>
 #include <memory>
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <dsound.h>
+#endif
 
 #include "ear/error.h"
 #include "ear/registry.h"
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#include "ear/sdlmixer.h"
+#endif
 #include "ear/volume.h"
 #include "ear/window.h"
+
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
+// The lowest frequency of a buffer of DirectSound.
+#define DSBFREQUENCY_MIN 100
+#endif
 
 std::uint16_t g_wEarObjectHandleCounter = 1;
 
@@ -77,10 +87,16 @@ std::uint16_t EarPlayback::AllocateEarEventId() {
     return g_wEarObjectHandleCounter++;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 HRESULT EarPlayback::CreateDirectSoundPlaybackBuffer(IDirectSound *device,
                                                      _DSBUFFERDESC *description) {
     return directSound.CreateBuffer(device, description);
 }
+#else
+bool EarPlayback::CreateDirectSoundPlaybackBuffer(const EarWaveFormat &format, DWORD bytes) {
+    return directSound.CreateBuffer(format, bytes);
+}
+#endif
 
 void EarPlayback::CloseRegisteredEarPlayback() {
     if (!playbackHandle) {
@@ -341,6 +357,7 @@ void EarDirectSoundPlaybackState::Initialize() {
     playCursor = 0;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 HRESULT EarDirectSoundPlaybackState::CreateBuffer(IDirectSound *device,
                                                   _DSBUFFERDESC *description) {
     // A packed member cannot be bound to the pointer the call writes, so the call writes a copy.
@@ -349,13 +366,25 @@ HRESULT EarDirectSoundPlaybackState::CreateBuffer(IDirectSound *device,
     buffer = created;
     return result;
 }
+#else
+bool EarDirectSoundPlaybackState::CreateBuffer(const EarWaveFormat &format, DWORD bytes) {
+    buffer = EarSdlVoice::Create(format, bytes);
+    return buffer != nullptr;
+}
+#endif
 
 void EarDirectSoundPlaybackState::UpdateCursors() {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     DWORD play = playCursor;
     DWORD write = writeCursor;
     buffer->GetCurrentPosition(&play, &write);
     playCursor = play;
     writeCursor = write;
+#else
+    // The mixer reads each frame as it plays it, and the write cursor is the play cursor.
+    playCursor = buffer->GetPlayCursor();
+    writeCursor = playCursor;
+#endif
 }
 
 void EarPlayback::InitializeDirectSoundPlaybackState() {
@@ -394,8 +423,12 @@ void EarPlayback::UpdateDirectSoundPlaybackFrequency() {
     if (smoothed > 100000) {
         smoothed = 100000;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     // Native code records the result in a local that it never reads.
     [[maybe_unused]] HRESULT result = directSound.GetBuffer()->SetFrequency(smoothed);
+#else
+    directSound.GetBuffer()->SetFrequency(smoothed);
+#endif
 }
 
 int EarPlayback::PlayDirectSoundEventBuffer() {
@@ -406,11 +439,15 @@ int EarPlayback::PlayDirectSoundEventBuffer() {
     if (suppressionEnabled && suppressionMarker == 1) {
         return TRUE;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     DWORD flags = looping || streaming ? DSBPLAY_LOOPING : 0;
     if (directSound.GetBuffer()->Play(0, 0, flags) != DS_OK) {
         SetEarLastError(20);
         return FALSE;
     }
+#else
+    directSound.GetBuffer()->Play(looping || streaming);
+#endif
     return TRUE;
 }
 
@@ -418,10 +455,16 @@ int EarPlayback::StopDirectSoundEventBuffer() {
     if (!directSound.GetBuffer()) {
         return FALSE;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     if (active && directSound.GetBuffer()->Stop() != DS_OK) {
         SetEarLastError(37);
         return FALSE;
     }
+#else
+    if (active) {
+        directSound.GetBuffer()->Stop();
+    }
+#endif
     return TRUE;
 }
 
@@ -434,9 +477,13 @@ void EarPlayback::ReleaseDirectSoundEventBuffer() {
 }
 
 int EarPlayback::IsDirectSoundBufferStopped() {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     DWORD bufferStatus;
     directSound.GetBuffer()->GetStatus(&bufferStatus);
     return (bufferStatus & DSBSTATUS_PLAYING) == 0;
+#else
+    return !directSound.GetBuffer()->IsPlaying();
+#endif
 }
 
 void EarPlayback::UpdateDirectSoundPlaybackGainAndPan() {

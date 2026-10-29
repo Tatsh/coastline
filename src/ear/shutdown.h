@@ -23,12 +23,14 @@ void __stdcall EarResetEarExportWrapper(void);
  */
 void __stdcall EAR_DLL_ResetEar(void);
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * Close the CD audio and MIDI devices and restore the mixer controls.
  *
  * @ghidraAddress EAR: 0x10004d27
  */
 void ShutdownMusicDevicesAndRestoreMixer(void);
+#endif
 
 #ifdef __cplusplus
 }

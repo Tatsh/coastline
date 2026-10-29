@@ -2,9 +2,11 @@
 
 #include <cmath>
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
 // Multimedia declarations require the core Windows SDK types first.
 #include <mmsystem.h>
+#endif
 
 #include "channel.h"
 #include "ear/registry.h"
@@ -56,7 +58,11 @@ void __stdcall UpdateEarPlaybackEngine(void) {
     WORD eventHandle = 0;
     // The original clears a second handle that it never reads.
     [[maybe_unused]] WORD unusedHandle = 0;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     g_dwPlaybackUpdateTimeMs = timeGetTime();
+#else
+    g_dwPlaybackUpdateTimeMs = GetEarTimeMilliseconds();
+#endif
     g_dwPlaybackElapsedTimeMs = g_dwPlaybackUpdateTimeMs - g_dwPreviousPlaybackUpdateTimeMs;
     g_dwPreviousPlaybackUpdateTimeMs = g_dwPlaybackUpdateTimeMs;
     if (g_ChannelRegistry.IsEmpty()) {

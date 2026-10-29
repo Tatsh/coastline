@@ -5,13 +5,23 @@
 #include <cstring>
 #include <new>
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <mmsystem.h>
+#endif
 
 #include "ear/earplayback.h"
 #include "ear/playbackimplementations.h"
 #include "ear/registry.h"
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#include "ear/timer.h"
+#endif
 #include "environment.h"
 #include "error.h"
+
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
+// An event cuts its path to the bytes of a path on Windows.
+#define MAX_PATH 260
+#endif
 
 namespace {
 static inline void ReleasePlaybackStorage(EarPlayback *playback) {
@@ -207,12 +217,14 @@ int ScheduledEarEvent::CreateEarPlaybackImplementation(std::uint16_t flags) {
     case 3:
         playback = AllocatePlaybackImplementation<SampleWavePlayback>();
         break;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     case 6:
         playback = AllocatePlaybackImplementation<MidiPlayback>();
         break;
     case 30:
         playback = AllocatePlaybackImplementation<CdAudioPlayback>();
         break;
+#endif
     case 31:
         playback = AllocatePlaybackImplementation<ImaAdpcmWaveStream>();
         break;
@@ -324,7 +336,11 @@ int ScheduledEarEvent::InitializeScheduledEarEventPlayback() {
     }
     if (dopplerEnabled) {
         startDelayMs = AddTimer(startDelayMs, 50);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
         previousDistanceTime = timeGetTime();
+#else
+        previousDistanceTime = GetEarTimeMilliseconds();
+#endif
     }
     streaming = playback->IsEarPlaybackStreaming();
     return 1;
@@ -450,7 +466,11 @@ long double ScheduledEarEvent::CalculateScheduledEventDopplerScale() {
     if (!dopplerEnabled) {
         return frequencyScale;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     DWORD now = timeGetTime();
+#else
+    DWORD now = GetEarTimeMilliseconds();
+#endif
     if (!previousDistance || !previousDistanceTime) {
         previousDistance = distance;
         previousDistanceTime = now;

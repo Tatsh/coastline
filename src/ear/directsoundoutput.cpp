@@ -1,13 +1,20 @@
 #include "ear/directsoundoutput.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <new>
 
 #include <objbase.h>
+#endif
 
 #include "ear/error.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "ear/mfc.h"
 #include "ear/window.h"
+#else
+#include "ear/sdlmixer.h"
+#endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 EarDirectSoundOutput *g_pEarDirectSoundOutput;
 
 void EarDirectSoundOutput::FailInitialization(std::uint32_t error) {
@@ -129,3 +136,17 @@ int InitializeDirectSoundOutput() {
     }
     return 1;
 }
+#else
+void ShutdownDirectSoundOutput() {
+    EarCloseSdlMixer();
+}
+
+int InitializeDirectSoundOutput() {
+    // SDL has no cooperative level, and the output does not need the window of the game.
+    if (!EarOpenSdlMixer()) {
+        SetEarLastError(3);
+        return 0;
+    }
+    return 1;
+}
+#endif

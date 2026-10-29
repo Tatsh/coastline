@@ -62,6 +62,7 @@ int ImaAdpcmWaveStream::OpenImaAdpcmWaveStream(const void *source) {
             SetEarLastError(0x0f);
             goto fail;
         }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
         // The rest of the information is left as the stack holds it, as the original does.
         MMIOINFO info;
         info.pIOProc = nullptr;
@@ -70,23 +71,40 @@ int ImaAdpcmWaveStream::OpenImaAdpcmWaveStream(const void *source) {
         std::memcpy(&info.cchBuffer, header + 4, sizeof(info.cchBuffer));
         info.adwInfo[0] = 0;
         file = mmioOpenA(nullptr, &info, MMIO_READWRITE);
+#else
+        // The size of the memory is the size of the RIFF chunk, without its 8-byte header.
+        LONG memoryBytes;
+        std::memcpy(&memoryBytes, header + 4, sizeof(memoryBytes));
+        file = EarRiffOpenMemory(source, memoryBytes);
+#endif
     } else {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
         file = mmioOpenA(static_cast<LPSTR>(const_cast<void *>(source)), nullptr, 0);
+#else
+        file = EarRiffOpenPath(static_cast<const char *>(source));
+#endif
     }
     if (!file) {
         SetEarLastError(0x0d);
         goto fail;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     if (mmioDescend(file, &g_RiffWaveChunk, nullptr, 0)) {
+#else
+    if (EarRiffDescend(file, &g_RiffWaveChunk, nullptr, 0)) {
+#endif
         SetEarLastError(0x0e);
         goto fail;
     }
-    if (g_RiffWaveChunk.ckid != FOURCC_RIFF ||
-        g_RiffWaveChunk.fccType != mmioFOURCC('W', 'A', 'V', 'E')) {
+    if (g_RiffWaveChunk.ckid != EAR_RIFF_ID || g_RiffWaveChunk.fccType != EAR_WAVE_ID) {
         SetEarLastError(0x0f);
         goto fail;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     if (mmioDescend(file, &g_WaveFormatChunk, &g_RiffWaveChunk, MMIO_FINDCHUNK)) {
+#else
+    if (EarRiffDescend(file, &g_WaveFormatChunk, &g_RiffWaveChunk, EAR_RIFF_FIND_CHUNK)) {
+#endif
         SetEarLastError(0x0e);
         goto fail;
     }
@@ -94,14 +112,19 @@ int ImaAdpcmWaveStream::OpenImaAdpcmWaveStream(const void *source) {
         // The error is recorded, but the chunk is read whatever its size.
         SetEarLastError(0x0f);
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     if (mmioRead(file,
                  static_cast<HPSTR>(static_cast<void *>(&adpcmFormat)),
                  std::bit_cast<LONG>(g_WaveFormatChunk.cksize)) !=
         std::bit_cast<LONG>(g_WaveFormatChunk.cksize)) {
+#else
+    if (EarRiffRead(file, &adpcmFormat, std::bit_cast<LONG>(g_WaveFormatChunk.cksize)) !=
+        std::bit_cast<LONG>(g_WaveFormatChunk.cksize)) {
+#endif
         SetEarLastError(0x0e);
         goto fail;
     }
-    if (adpcmFormat.wfx.wFormatTag != WAVE_FORMAT_IMA_ADPCM) {
+    if (adpcmFormat.wfx.wFormatTag != EAR_WAVE_FORMAT_IMA_ADPCM) {
         SetEarLastError(0x0f);
         goto fail;
     }
@@ -113,11 +136,19 @@ int ImaAdpcmWaveStream::OpenImaAdpcmWaveStream(const void *source) {
         SetEarLastError(0x17);
         goto fail;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     if (mmioAscend(file, &g_WaveFormatChunk, 0)) {
+#else
+    if (EarRiffAscend(file, &g_WaveFormatChunk)) {
+#endif
         SetEarLastError(0x0e);
         goto fail;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     if (mmioDescend(file, &g_WaveDataChunk, &g_RiffWaveChunk, MMIO_FINDCHUNK)) {
+#else
+    if (EarRiffDescend(file, &g_WaveDataChunk, &g_RiffWaveChunk, EAR_RIFF_FIND_CHUNK)) {
+#endif
         SetEarLastError(0x0e);
         goto fail;
     }
@@ -127,7 +158,7 @@ int ImaAdpcmWaveStream::OpenImaAdpcmWaveStream(const void *source) {
     // The samples are decoded to 16-bit PCM of the same channels and rate.
     format.nChannels = adpcmFormat.wfx.nChannels;
     format.nSamplesPerSec = adpcmFormat.wfx.nSamplesPerSec;
-    format.wFormatTag = WAVE_FORMAT_PCM;
+    format.wFormatTag = EAR_WAVE_FORMAT_PCM;
     format.wBitsPerSample = 16;
     format.nBlockAlign = static_cast<WORD>(format.nChannels * format.wBitsPerSample / 8);
     format.nAvgBytesPerSec = format.nSamplesPerSec * format.nBlockAlign;
@@ -167,7 +198,11 @@ int ImaAdpcmWaveStream::OpenImaAdpcmWaveStream(const void *source) {
     } else {
         SetStreamHalfBytes(GetPlaybackBufferBytes());
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     dataStartOffset = mmioSeek(file, 0, SEEK_CUR);
+#else
+    dataStartOffset = EarRiffSeek(file, 0, SEEK_CUR);
+#endif
     if (dataStartOffset == -1) {
         SetEarLastError(0x0e);
         goto fail;
@@ -193,33 +228,53 @@ int ImaAdpcmWaveStream::OpenImaAdpcmWaveStream(const void *source) {
                                              GetPlaybackStartPosition());
             offset = offset / adpcmFormat.wfx.nBlockAlign * adpcmFormat.wfx.nBlockAlign;
             readOffset = offset;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
             if (mmioSeek(file,
                          std::bit_cast<LONG>(static_cast<DWORD>(dataStartOffset) + readOffset),
                          SEEK_SET) == -1) {
+#else
+            if (EarRiffSeek(file,
+                            std::bit_cast<LONG>(static_cast<DWORD>(dataStartOffset) + readOffset),
+                            SEEK_SET) == -1) {
+#endif
                 SetEarLastError(0x0e);
                 goto fail;
             }
             ClearPlaybackStartPosition();
         }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
         readOffset +=
             static_cast<DWORD>(mmioRead(file,
                                         static_cast<HPSTR>(static_cast<void *>(blockBuffer)),
                                         std::bit_cast<LONG>(blockBufferBytes)));
+#else
+        readOffset += static_cast<DWORD>(
+            EarRiffRead(file, blockBuffer, std::bit_cast<LONG>(blockBufferBytes)));
+#endif
         if (readOffset != blockBufferBytes + offset) {
             if (readOffset == offset - 1) {
                 SetEarLastError(0x0e);
                 goto fail;
             }
             if (IsPlaybackLooping()) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
                 if (mmioSeek(file, dataStartOffset, SEEK_SET) == -1) {
+#else
+                if (EarRiffSeek(file, dataStartOffset, SEEK_SET) == -1) {
+#endif
                     SetEarLastError(0x0e);
                     goto fail;
                 }
                 offset = readOffset - offset;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
                 readOffset = static_cast<DWORD>(
                     mmioRead(file,
                              static_cast<HPSTR>(static_cast<void *>(blockBuffer + offset)),
                              std::bit_cast<LONG>(blockBufferBytes - offset)));
+#else
+                readOffset = static_cast<DWORD>(EarRiffRead(
+                    file, blockBuffer + offset, std::bit_cast<LONG>(blockBufferBytes - offset)));
+#endif
                 if (readOffset != blockBufferBytes - offset) {
                     SetEarLastError(0x0e);
                     goto fail;
@@ -230,7 +285,11 @@ int ImaAdpcmWaveStream::OpenImaAdpcmWaveStream(const void *source) {
         }
     }
     if (!IsEarPlaybackStreaming()) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
         mmioClose(file, 0);
+#else
+        EarRiffClose(file);
+#endif
         file = nullptr;
     }
     return 1;
@@ -245,7 +304,11 @@ fail:
     }
     blockBuffer = nullptr;
     if (file) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
         mmioClose(file, 0);
+#else
+        EarRiffClose(file);
+#endif
         file = nullptr;
     }
     return 0;
@@ -313,10 +376,15 @@ void ImaAdpcmWaveStream::RefillEarPlaybackStream() {
     }
     DWORD remaining = adpcmDataBytes - readOffset;
     DWORD requested = remaining < blockHalfBytes ? remaining : blockHalfBytes;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     DWORD read = static_cast<DWORD>(
         mmioRead(file,
                  static_cast<HPSTR>(static_cast<void *>(blockBuffer + writeOffset)),
                  std::bit_cast<LONG>(requested)));
+#else
+    DWORD read = static_cast<DWORD>(
+        EarRiffRead(file, blockBuffer + writeOffset, std::bit_cast<LONG>(requested)));
+#endif
     if (read != blockHalfBytes) {
         if (read == 0xffffffff) {
             SetEarLastError(0x0e);
@@ -325,16 +393,27 @@ void ImaAdpcmWaveStream::RefillEarPlaybackStream() {
         }
         if (read == requested) {
             if (IsPlaybackLooping()) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
                 if (mmioSeek(file, dataStartOffset, SEEK_SET) == -1) {
+#else
+                if (EarRiffSeek(file, dataStartOffset, SEEK_SET) == -1) {
+#endif
                     SetEarLastError(0x0e);
                     CompleteEarPlayback();
                     return;
                 }
                 readOffset = 0;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
                 readOffset += static_cast<DWORD>(mmioRead(
                     file,
                     static_cast<HPSTR>(static_cast<void *>(blockBuffer + writeOffset + read)),
                     std::bit_cast<LONG>(blockHalfBytes - read)));
+#else
+                readOffset +=
+                    static_cast<DWORD>(EarRiffRead(file,
+                                                   blockBuffer + writeOffset + read,
+                                                   std::bit_cast<LONG>(blockHalfBytes - read)));
+#endif
                 if (readOffset != blockHalfBytes - read) {
                     SetEarLastError(0x0e);
                     CompleteEarPlayback();
@@ -343,7 +422,11 @@ void ImaAdpcmWaveStream::RefillEarPlaybackStream() {
                 read = 0;
             } else {
                 if (!(GetPlaybackSourceFlags() & 0x6000)) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
                     mmioClose(file, 0);
+#else
+                    EarRiffClose(file);
+#endif
                 }
                 file = nullptr;
             }

@@ -14,6 +14,7 @@
  * same way. uint64_t is unsigned long on 64-bit Unix, where libultra writes unsigned long long.
  */
 #include <stddef.h>
+#include <stdint.h>
 
 #include <PR/ultratypes.h>
 
@@ -21,6 +22,13 @@
 #define TRUE 1  /*!< The value of a true condition. */
 #define FALSE 0 /*!< The value of a false condition. */
 #endif
+
+/* The integer types of Windows that the code of the PC release uses, at their 32-bit widths. */
+typedef int BOOL;            /*!< A condition, TRUE or FALSE. */
+typedef unsigned short WORD; /*!< An unsigned 16-bit integer. */
+typedef uint32_t DWORD;      /*!< An unsigned 32-bit integer. */
+typedef unsigned int UINT;   /*!< An unsigned integer. */
+typedef int32_t LONG;        /*!< A signed 32-bit integer. */
 
 /* The calling conventions of 32-bit x86 do not exist on other processors. */
 #if !defined(_WIN32) || defined(_WIN64)

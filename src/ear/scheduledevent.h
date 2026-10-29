@@ -3,7 +3,11 @@
 
 #include <cstdint>
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
+#else
+#include "common/types.h"
+#endif
 
 #include "event.h"
 #include "playback.h"

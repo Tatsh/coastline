@@ -3,8 +3,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
 #include <winver.h>
+#else
+#include <SDL3/SDL.h>
+
+#include "common/types.h"
+#endif
 
 #include "ear/configuration.h"
 #include "ear/error.h"
@@ -33,6 +39,7 @@ int RejectUnsupportedInitializationFeature2000(void) {
     return 0;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 // @ghidraAddress EAR: 0x1003b9a0
 static const char g_earEmptyVersionPrefix[] = "";
 // @ghidraAddress EAR: 0x1003722c
@@ -87,11 +94,13 @@ static inline void GetExpectedDirectSoundVersion(DWORD *versionMS, DWORD *versio
         }
     }
 }
+#endif
 
 int __stdcall GetDirectSoundVersion(void) {
     return QueryDirectSoundProductVersion();
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #ifdef ENABLE_PATCHES
 // Read the next component of a version string, or 0 when the string has no more components.
 static uint16_t ReadVersionComponent(char *text, const char *delimiters) {
@@ -154,3 +163,21 @@ int __stdcall QueryDirectSoundProductVersion(void) {
     GlobalFree(memory);
     return result;
 }
+#else
+int __stdcall QueryDirectSoundProductVersion(void) {
+    // The SDL game outputs through SDL, and expects the version of SDL it was built with.
+    int linked = SDL_GetVersion();
+    if (linked == SDL_VERSION) {
+        return TRUE;
+    }
+    // The original compares major and minor independently.
+    if (SDL_VERSIONNUM_MAJOR(linked) < SDL_MAJOR_VERSION ||
+        SDL_VERSIONNUM_MINOR(linked) < SDL_MINOR_VERSION) {
+        g_earAudioComponentValidationFlags |= 8;
+    } else if (SDL_VERSIONNUM_MAJOR(linked) > SDL_MAJOR_VERSION ||
+               SDL_VERSIONNUM_MINOR(linked) > SDL_MINOR_VERSION) {
+        g_earAudioComponentValidationFlags |= 2;
+    }
+    return FALSE;
+}
+#endif

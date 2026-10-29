@@ -72,7 +72,13 @@ static int CopyEarEventParams(const EarEventParams *params, EarEventParams *copy
         SetEarLastError(0x1d);
         return 0;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     std::memmove(copy, params, EAR_EVENT_PARAMS_SIZE);
+#else
+    // The source is a pointer of 64 bits here, so the parameters are larger than the size the
+    // caller gives, and every field is copied.
+    std::memmove(copy, params, sizeof(EarEventParams));
+#endif
     return 1;
 }
 

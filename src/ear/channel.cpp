@@ -3,7 +3,9 @@
 #include <cmath>
 #include <new>
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "ear/musicdevice.h"
+#endif
 #include "ear/timer.h"
 #include "error.h"
 #include "event.h"
@@ -159,6 +161,7 @@ int __stdcall EAR_DLL_RegisterChannel(uint32_t channel,
         }
         registered->flag01 = 1;
         registered->sequential = 1;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
         OpenEarMusicDevice(1);
         if (!g_bCdAudioInitialized) {
             SetEarLastError(0x2b);
@@ -166,6 +169,12 @@ int __stdcall EAR_DLL_RegisterChannel(uint32_t channel,
             return 0;
         }
         g_dwCdAudioChannelId = channel;
+#else
+        // The SDL game plays the CD audio outside EAR, and EAR has no CD audio device.
+        SetEarLastError(0x2b);
+        delete registered;
+        return 0;
+#endif
     }
     if ((flags & 0xa) == 0xa) {
         if (g_dwMidiChannelId) {
@@ -175,6 +184,7 @@ int __stdcall EAR_DLL_RegisterChannel(uint32_t channel,
         }
         registered->flag01 = 1;
         registered->sequential = 1;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
         OpenEarMusicDevice(0);
         if (!g_bMidiSequencerInitialized) {
             SetEarLastError(0x2c);
@@ -182,6 +192,12 @@ int __stdcall EAR_DLL_RegisterChannel(uint32_t channel,
             return 0;
         }
         g_dwMidiChannelId = channel;
+#else
+        // EAR has no MIDI sequencer in the SDL game.
+        SetEarLastError(0x2c);
+        delete registered;
+        return 0;
+#endif
     }
     // The original multiplies the percentage as an unsigned 64-bit integer, twice.
     registered->gain =
@@ -250,6 +266,7 @@ int __stdcall EAR_DLL_ShutDownChannel(uint32_t channel) {
                 found->targetGain = 0;
             } else {
                 EarClearChannelExportWrapper(handle, 0);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
                 if (handle == g_dwCdAudioChannelId) {
                     CloseCdAudioDevice();
                     g_dwCdAudioChannelId = 0;
@@ -258,6 +275,7 @@ int __stdcall EAR_DLL_ShutDownChannel(uint32_t channel) {
                     CloseMidiMusicDevice();
                     g_dwMidiChannelId = 0;
                 }
+#endif
                 delete found;
                 g_ChannelRegistry.RemoveKey(handle);
             }
@@ -417,6 +435,7 @@ static uint32_t QueryChannelEvent(uint32_t channel, uint32_t control, EarChannel
     return 0;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /** Answer a control with 0x10000000, a control of the CD audio. */
 static int ControlCdAudio(uint32_t control, uint32_t *result) {
     if ((control & 0x10000010) == 0x10000010) {
@@ -438,6 +457,7 @@ static int ControlCdAudio(uint32_t control, uint32_t *result) {
     }
     return 1;
 }
+#endif
 
 uint32_t __stdcall EAR_DLL_ChangeChannelControl(uint32_t channel, uint32_t control) {
     SetEarLastError(0);
@@ -502,11 +522,13 @@ uint32_t __stdcall EAR_DLL_ChangeChannelControl(uint32_t channel, uint32_t contr
         if ((control & 0x40020000) == 0x40020000) {
             return (uint32_t)(int64_t)((long double)found->gain * g_earChannelControlTimeUnitScale);
         }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     } else if ((control & 0x10000000) == 0x10000000) {
         uint32_t result;
         if (ControlCdAudio(control, &result)) {
             return result;
         }
+#endif
     }
     if ((control & 0xc) == 0xc) {
         pauseChanged = found->paused == 1;

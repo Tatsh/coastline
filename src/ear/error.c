@@ -3,6 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#include <SDL3/SDL.h>
+#endif
+
 #include "ear/window.h"
 
 uint32_t g_bShowEarErrors;
@@ -89,10 +93,21 @@ void __stdcall EAR_DLL_ShowLastError(void) {
         return;
     }
     strcpy(g_earLastErrorDialogCaption, g_szEarErrorPrefix);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     _itoa((int)g_dwEarLastError, g_earLastErrorDecimalText, 10);
+#else
+    SDL_itoa((int)g_dwEarLastError, g_earLastErrorDecimalText, 10);
+#endif
     strcat(g_earLastErrorDialogCaption, g_earLastErrorDecimalText);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     MessageBoxA(g_hEarNotifyWindow,
                 g_earErrorMessages[g_dwEarLastError],
                 g_earLastErrorDialogCaption,
                 MB_OK);
+#else
+    SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_INFORMATION,
+                             g_earLastErrorDialogCaption,
+                             g_earErrorMessages[g_dwEarLastError],
+                             g_hEarNotifyWindow);
+#endif
 }

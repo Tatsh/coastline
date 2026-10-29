@@ -22,6 +22,7 @@
 #endif
 
 #include "config.h"
+#include "earsound.h"
 #include "gpu.h"
 #include "importer.h"
 #include "input.h"
@@ -227,6 +228,33 @@ int ImportFromCommandLine(const argparse::ArgumentParser &parser,
     return status;
 }
 
+// A sound named relative to the data takes its file from the default assets.
+int PlaySoundFromCommandLine(const argparse::ArgumentParser &parser,
+                             const std::filesystem::path &data) {
+    std::filesystem::path path = parser.get<std::string>("--play-sound");
+    std::error_code error;
+    if (path.is_relative() && !std::filesystem::exists(path, error)) {
+        path = coastline::DefaultAssets(data) / path;
+    }
+    coastline::EarSoundOptions options;
+    options.direction = parser.get<int>("--sound-direction");
+    options.whole = parser.get<bool>("--sound-whole");
+    if (auto wav = parser.present("--sound-wav")) {
+        options.output = *wav;
+    }
+    int status = EXIT_FAILURE;
+    {
+        SdlSession sdl(SDL_INIT_EVENTS);
+        if (!sdl.ready) {
+            SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "SDL did not start: %s", SDL_GetError());
+        } else if (coastline::PlayEarSound(path, options)) {
+            status = EXIT_SUCCESS;
+        }
+    }
+    coastline::StopGameLog();
+    return status;
+}
+
 } // namespace
 
 int main(int argc, char *argv[]) {
@@ -259,6 +287,17 @@ int main(int argc, char *argv[]) {
         .help("length of the WAV file in seconds")
         .default_value(30)
         .scan<'i', int>();
+    parser.add_argument("--play-sound")
+        .help("play a wave file through EAR, from the default assets when relative, and exit");
+    parser.add_argument("--sound-wav")
+        .help("write the mix of --play-sound to this WAV file in place of the device");
+    parser.add_argument("--sound-direction")
+        .help("direction of --play-sound: 0 for the centre, 3 for the left, or 5 for the right")
+        .default_value(0)
+        .scan<'i', int>();
+    parser.add_argument("--sound-whole")
+        .help("read the whole file of --play-sound before it plays, rather than streaming it")
+        .flag();
     parser.add_argument("--scene").help(
         "scene to start in: renderer-test, model:FILE.gltf for a converted model or track, or "
         "none for the default");
@@ -313,6 +352,9 @@ int main(int argc, char *argv[]) {
 
     if (parser.is_used("--import-disc") || parser.is_used("--import-rom")) {
         return ImportFromCommandLine(parser, paths->data);
+    }
+    if (parser.is_used("--play-sound")) {
+        return PlaySoundFromCommandLine(parser, paths->data);
     }
     auto music = LoadMusicByIndex(paths->data, parser.get<int>("--music"));
     if (auto wav = parser.present("--music-wav")) {

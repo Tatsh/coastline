@@ -3,9 +3,7 @@
 
 #include <cstdint>
 
-#include <windows.h>
-// Multimedia declarations require the core Windows SDK types first.
-#include <mmreg.h>
+#include "ear/wavechunks.h"
 
 /** The source of a wave sample, as RegisterPreset passes it. */
 enum EarWaveSampleSource : std::uint16_t {
@@ -47,7 +45,7 @@ public:
      * @return The format of the samples.
      * @ghidraAddress EAR: 0x100098d2
      */
-    WAVEFORMATEX CopyWaveSampleFormat() const;
+    EarWaveFormat CopyWaveSampleFormat() const;
 
 private:
     /**
@@ -69,7 +67,7 @@ private:
 
     char *buffer;                             /*!< The samples, allocated with malloc(). */
     DWORD byteCount;                          /*!< The bytes of the samples. */
-    WAVEFORMATEX format;                      /*!< The format, as the file gives it. */
+    EarWaveFormat format;                     /*!< The format, as the file gives it. */
     EarWaveSampleSource sourceKind;           /*!< How the file was given. */
     std::uint32_t unknown1c;                  /*!< Cleared on construction. */
     [[maybe_unused]] std::uint32_t unknown20; /* +0x20 */

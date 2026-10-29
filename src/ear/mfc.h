@@ -3,7 +3,11 @@
 
 #include <cstddef>
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
+#else
+#include "common/types.h"
+#endif
 
 class CArchive;
 class CDumpContext;
@@ -76,6 +80,7 @@ private:
     int blockSize;
 };
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 class CFileException;
 
 class CFile : public CObject {
@@ -102,6 +107,7 @@ private:
     char *fileName;
 #endif /* ENABLE_PATCHES */
 };
+#endif
 
 class CMapPtrToPtr : public CObject {
 public:

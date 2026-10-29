@@ -5,10 +5,19 @@
 #include <cstring>
 #include <new>
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
+#else
+#include <filesystem>
+#include <string>
+
+#include <SDL3/SDL.h>
+#endif
 
 #include "ear/mfc.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "ear/musicdevice.h"
+#endif
 #include "ear/window.h"
 #include "error.h"
 #include "runtime.h"
@@ -127,7 +136,11 @@ static void ReadEarCodeKey(const uint16_t *groups, char *key) {
         key[group] = g_earErrorMessages[message][offset - 1];
     }
     key[EAR_CODE_GROUP_COUNT] = '\0';
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     _strlwr(key);
+#else
+    SDL_strlwr(key);
+#endif
 }
 
 uint32_t __stdcall ValidateEarNumericCode(uint32_t code) {
@@ -135,7 +148,11 @@ uint32_t __stdcall ValidateEarNumericCode(uint32_t code) {
     uint16_t groups[EAR_CODE_GROUP_COUNT];
     char expected[EAR_CODE_GROUP_COUNT + 1];
     char received[EAR_CODE_GROUP_COUNT + 1];
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     _itoa((int)code, digits, 10);
+#else
+    SDL_itoa((int)code, digits, 10);
+#endif
     // The original does not check the allocation, and leaks it when a group is too small.
     char *group = static_cast<char *>(MfcAllocateWithNewHandler(3));
     for (uint16_t index = 0; index < EAR_CODE_GROUP_COUNT; ++index) {
@@ -192,16 +209,32 @@ static long ReadEarConfigurationNumber(const char *line, const char *key, int ba
 // The original reads the file through the CStdioFile of MFC: a read and write open becomes the
 // text stream r+t, and a write open becomes a stream that writes where it seeks, as r+t does.
 void __stdcall LoadEarConfiguration(uint32_t code) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     char path[MAX_PATH];
+#endif
     char line[EAR_CONFIGURATION_LINE + 1];
     // The digits of the code, then the key of the title; the bytes after the digits are read as
     // the stack holds them when the code has fewer than eight.
     char codeText[0x1c];
     uint8_t digits[8];
     char titleKeyAlphabets[2][12];
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     GetSystemDirectoryA(path, MAX_PATH);
     std::strcat(path, g_szEarConfigFileSuffix);
     FILE *file = std::fopen(path, "r+t");
+#else
+    // The SDL game has no system directory, and reads the file from the directory SDL gives the
+    // preferences of the game. The suffix starts with the separator of Windows.
+    char *preferences = SDL_GetPrefPath(nullptr, "coastline");
+    std::string pathText =
+        preferences ?
+            (std::filesystem::path(preferences) / (g_szEarConfigFileSuffix + 1)).string() :
+            std::string();
+    SDL_free(preferences);
+    const char *path = pathText.c_str();
+    // A stream of POSIX has no text mode, and the file is read as it is.
+    FILE *file = !pathText.empty() ? std::fopen(path, "r+") : nullptr;
+#endif
     if (!file) {
         return;
     }
@@ -232,11 +265,16 @@ void __stdcall LoadEarConfiguration(uint32_t code) {
                 } else if (IsEarConfigurationKey(line, "[GNOIAS]", "[GNOIAS]")) {
                     g_bConfiguredGlobalNoIas = ReadEarConfigurationFlag(line, "[GNOIAS]");
                 } else if (IsEarConfigurationKey(line, "[CDMIXER]", "[CDMIXER]")) {
+                    // The mixers of the music devices exist only on Windows.
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
                     g_uConfiguredCdMixerId =
                         static_cast<UINT>(ReadEarConfigurationNumber(line, "[CDMIXER]", 10));
+#endif
                 } else if (IsEarConfigurationKey(line, "[MIDIMIXER]", "[MIDIMIXER]")) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
                     g_uConfiguredMidiMixerId =
                         static_cast<UINT>(ReadEarConfigurationNumber(line, "[MIDIMIXER]", 10));
+#endif
                 } else if (IsEarConfigurationKey(line, "[DVDDRIVE]", "[DVDDRIVE]")) {
                     g_bConfiguredDvdDrive = ReadEarConfigurationFlag(line, "[DVDDRIVE]");
                 } else if (IsEarConfigurationKey(line, "[CHANGER]", "[CHANGER]")) {
@@ -244,11 +282,15 @@ void __stdcall LoadEarConfiguration(uint32_t code) {
                 } else if (IsEarConfigurationKey(line, "[MULTI]", "[MULTI]")) {
                     g_bConfiguredMultiDisc = ReadEarConfigurationFlag(line, "[MULTI]");
                 } else if (IsEarConfigurationKey(line, "[CDLINE]", "[CDLINE]")) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
                     g_dwConfiguredCdMixerLineId =
                         static_cast<DWORD>(ReadEarConfigurationNumber(line, "[CDLINE]", 10));
+#endif
                 } else if (IsEarConfigurationKey(line, "[MIDILINE]", "[MIDILINE]")) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
                     g_dwConfiguredMidiMixerLineId =
                         static_cast<DWORD>(ReadEarConfigurationNumber(line, "[MIDILINE]", 10));
+#endif
                 } else if (IsEarConfigurationKey(line, "<END GLOBAL>", "<END GLOBAL>")) {
                     endOfGlobal = 1;
                 }
@@ -260,7 +302,11 @@ void __stdcall LoadEarConfiguration(uint32_t code) {
         std::fclose(file);
         return;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     _itoa(static_cast<int>(code), codeText, 10);
+#else
+    SDL_itoa(static_cast<int>(code), codeText, 10);
+#endif
     for (uint8_t digit = 0; digit < 8; ++digit) {
         char single[2];
         std::strncpy(single, &codeText[digit], 1);
@@ -279,7 +325,11 @@ void __stdcall LoadEarConfiguration(uint32_t code) {
     }
     codeText[9] = '>';
     codeText[10] = '\0';
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     _strupr(codeText);
+#else
+    SDL_strupr(codeText);
+#endif
     int32_t titleFound = 0;
     int endOfTitle = 0;
     long launchCountPosition = 0;
@@ -334,18 +384,31 @@ void __stdcall LoadEarConfiguration(uint32_t code) {
     if (!launchCountPosition || !g_bTitleConfigurationFound) {
         return;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     file = std::fopen(path, "r+t");
+#else
+    file = std::fopen(path, "r+");
+#endif
     if (!file) {
         return;
     }
     std::fseek(file, launchCountPosition - EAR_LAUNCH_COUNT_LINE_BYTES, SEEK_SET);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     _itoa(static_cast<int>(g_dwConfiguredLaunchCount), codeText, 10);
+#else
+    SDL_itoa(static_cast<int>(g_dwConfiguredLaunchCount), codeText, 10);
+#endif
     std::strcpy(line, "[TIMES]");
     for (unsigned zero = 0; zero < 4 - std::strlen(codeText); ++zero) {
         std::strcat(line, "0");
     }
     std::strcat(line, codeText);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     std::strcat(line, "\n");
+#else
+    // The text stream of Windows writes the line break as two bytes.
+    std::strcat(line, "\r\n");
+#endif
     std::fputs(line, file);
     std::fclose(file);
 }

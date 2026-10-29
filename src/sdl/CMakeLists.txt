@@ -11,6 +11,9 @@ find_package(FLAC CONFIG REQUIRED)
 find_package(nlohmann_json CONFIG REQUIRED)
 find_package(ZLIB REQUIRED)
 
+# EAR, the sound engine of the PC release, on SDL audio.
+add_subdirectory("${CMAKE_SOURCE_DIR}/src/ear" "${CMAKE_BINARY_DIR}/src/ear")
+
 # The shaders are GLSL, compiled to SPIR-V for Vulkan and translated to MSL for Metal by the host
 # tools of vcpkg, and embedded in the executable.
 set(_host_tools "${VCPKG_INSTALLED_DIR}/${VCPKG_HOST_TRIPLET}/tools")
@@ -63,6 +66,7 @@ add_custom_target(coastline_manifests DEPENDS ${_manifest_headers})
 add_library(
   coastline_sdl STATIC
   config.cpp
+  earsound.cpp
   ghostfile.cpp
   gpu.cpp
   importer.cpp
@@ -94,7 +98,7 @@ if(APPLE)
 endif()
 target_include_directories(coastline_sdl PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_compile_options(coastline_sdl PRIVATE -Wall -Wextra)
-target_link_libraries(coastline_sdl PUBLIC SDL3::SDL3)
+target_link_libraries(coastline_sdl PUBLIC SDL3::SDL3 coastline_ear)
 if(WIN32)
   target_link_libraries(coastline_sdl PUBLIC shell32)
 endif()

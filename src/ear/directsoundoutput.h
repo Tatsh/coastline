@@ -1,6 +1,7 @@
 #ifndef COASTLINE_EAR_DIRECTSOUNDOUTPUT_H
 #define COASTLINE_EAR_DIRECTSOUNDOUTPUT_H
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <cstdint>
 
 #include <dsound.h>
@@ -24,6 +25,7 @@ private:
 
 /** @ghidraAddress EAR: 0x1003b99c */
 extern EarDirectSoundOutput *g_pEarDirectSoundOutput;
+#endif
 
 #ifdef __cplusplus
 extern "C" {

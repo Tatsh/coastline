@@ -1,6 +1,10 @@
 #include "memorybudget.h"
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
+#else
+#include <SDL3/SDL.h>
+#endif
 
 #include "error.h"
 
@@ -15,6 +19,7 @@ int InitializeSampleMemoryBudget(void) {
     if (g_earSampleMemoryBudgetBytes > 0) {
         return 1;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     MEMORYSTATUS status;
     GlobalMemoryStatus(&status);
     if (status.dwAvailPageFile < 512000) {
@@ -22,6 +27,17 @@ int InitializeSampleMemoryBudget(void) {
         return 0;
     }
     uint32_t blocks = status.dwAvailPageFile / 512000;
+#else
+    // The memory of the computer stands for the free page file, counted in 32 bits as Windows
+    // counts it.
+    uint64_t memory = (uint64_t)SDL_GetSystemRAM() * 1048576;
+    uint32_t available = memory > UINT32_MAX ? UINT32_MAX : (uint32_t)memory;
+    if (available < 512000) {
+        SetEarLastError(0x10);
+        return 0;
+    }
+    uint32_t blocks = available / 512000;
+#endif
     int level = 3;
     bool complete = false;
     uint32_t threshold;
