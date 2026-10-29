@@ -487,6 +487,8 @@ gettime
 gfxtask
 ghidra
 ghnd
+ghostfile
+ghostrecording
 glabel
 glist
 globl

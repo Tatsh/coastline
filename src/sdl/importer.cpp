@@ -15,9 +15,9 @@
 #include <FLAC/stream_encoder.h>
 #include <SDL3/SDL.h>
 #include <nlohmann/json.hpp>
-#include <zlib.h>
 
 #include "assetchain.h"
+#include "sdl/ghostfile.h"
 #include "sdl/indexedimage.h"
 #include "sdl/stringresources.h"
 #include "sha1.h"
@@ -259,15 +259,14 @@ std::string Lowercase(std::string text) {
 }
 
 // The files of the disc the game opens. The video, the installers, DirectX, the programs, and the
-// pictures of the menus of the Windows release, which the front end of the Nintendo 64 release
-// replaces, are left on the disc.
+// pictures of the menus and the loading screen of the Windows release, which the front end of the
+// Nintendo 64 release replaces, are left on the disc.
 bool IsGameData(const std::filesystem::path &path) {
     static constexpr std::array<std::string_view, 5> directories{
         "cargfx", "cars", "paint", "sfx", "tracks"};
     // The text of the game is in the string resources of BRString.dll.
-    static constexpr std::array<std::string_view, 7> files{"bossrally.pod",
+    static constexpr std::array<std::string_view, 6> files{"bossrally.pod",
                                                            "brstring.dll",
-                                                           "loading.img",
                                                            "rallycredits.dat",
                                                            "rallyintro1.dat",
                                                            "rallyintro2.dat",
@@ -348,84 +347,40 @@ std::optional<std::string> ConvertBitmap(const std::filesystem::path &bitmap) {
     return std::nullopt;
 }
 
-// A PNG chunk of Latin-1 text, inserted before the last chunk (IEND) of an image.
-bool AddPngText(const std::filesystem::path &png, std::string_view key, std::string_view text) {
-    std::ifstream in(png, std::ios::binary);
-    std::vector<std::uint8_t> bytes(std::istreambuf_iterator<char>(in), {});
-    in.close();
-    constexpr std::size_t IEND_SIZE = 12;
-    if (bytes.size() < 8 + IEND_SIZE) {
-        return false;
-    }
-    std::vector<std::uint8_t> chunk{'t', 'E', 'X', 't'};
-    chunk.insert(chunk.end(), key.begin(), key.end());
-    chunk.push_back(0);
-    chunk.insert(chunk.end(), text.begin(), text.end());
-    auto length = static_cast<std::uint32_t>(chunk.size() - 4);
-    auto crc = static_cast<std::uint32_t>(crc32(0, chunk.data(), static_cast<uInt>(chunk.size())));
-    std::vector<std::uint8_t> encoded{static_cast<std::uint8_t>(length >> 24),
-                                      static_cast<std::uint8_t>(length >> 16),
-                                      static_cast<std::uint8_t>(length >> 8),
-                                      static_cast<std::uint8_t>(length)};
-    encoded.insert(encoded.end(), chunk.begin(), chunk.end());
-    for (int shift = 24; shift >= 0; shift -= 8) {
-        encoded.push_back(static_cast<std::uint8_t>(crc >> shift));
-    }
-    bytes.insert(bytes.end() - IEND_SIZE, encoded.begin(), encoded.end());
-    std::ofstream out(png, std::ios::binary | std::ios::trunc);
-    out.write(reinterpret_cast<const char *>(bytes.data()),
-              static_cast<std::streamsize>(bytes.size()));
-    return static_cast<bool>(out);
-}
-
-// loading.img, the size of the picture, a word the game reads over, and its pixels in ARGB1555, as
-// loading.png with the word in a text chunk, in place of the file once the pixels read back.
-std::optional<std::string> ConvertLoadingImage(const std::filesystem::path &dataDirectory) {
-    auto image = dataDirectory / "loading.img";
-    auto png = dataDirectory / "loading.png";
-    std::ifstream in(image, std::ios::binary);
-    std::vector<std::uint8_t> bytes(std::istreambuf_iterator<char>(in), {});
-    in.close();
-    auto word = [&bytes](std::size_t offset) {
-        return static_cast<std::uint32_t>(bytes[offset] | bytes[offset + 1] << 8 |
-                                          bytes[offset + 2] << 16 |
-                                          static_cast<std::uint32_t>(bytes[offset + 3]) << 24);
-    };
-    if (bytes.size() < 12) {
-        return std::format("{} is not a picture.", image.string());
-    }
-    std::uint32_t width = word(0);
-    std::uint32_t height = word(4);
-    if (width == 0 || height == 0 || width > 4096 || height > 4096 ||
-        bytes.size() != 12 + static_cast<std::size_t>(width) * height * 2) {
-        return std::format("{} is not a picture.", image.string());
-    }
-    Surface pixels(SDL_CreateSurfaceFrom(static_cast<int>(width),
-                                         static_cast<int>(height),
-                                         SDL_PIXELFORMAT_ARGB1555,
-                                         bytes.data() + 12,
-                                         static_cast<int>(width * 2)));
-    if (!pixels || !SDL_SavePNG(pixels.get(), png.string().c_str()) ||
-        !AddPngText(png, "ReadOverWord", std::format("0x{:08x}", word(8)))) {
-        return std::format("{} cannot be written: {}", png.string(), SDL_GetError());
-    }
-    Surface loaded(SDL_LoadPNG(png.string().c_str()));
-    Surface converted(loaded ? SDL_ConvertSurface(loaded.get(), SDL_PIXELFORMAT_ARGB1555) :
-                               nullptr);
-    if (!converted || converted->w != pixels->w || converted->h != pixels->h) {
-        return std::format("{} does not read back as {}.", png.string(), image.string());
-    }
-    for (int row = 0; row < converted->h; ++row) {
-        if (std::memcmp(static_cast<const std::uint8_t *>(converted->pixels) +
-                            static_cast<std::size_t>(row) *
-                                static_cast<std::size_t>(converted->pitch),
-                        bytes.data() + 12 + static_cast<std::size_t>(row) * width * 2,
-                        static_cast<std::size_t>(width) * 2) != 0) {
-            return std::format("{} does not read back as {}.", png.string(), image.string());
+// Each ghost recording of the demos as JSON of the same name, in place of the file once the JSON
+// builds the same bytes.
+std::optional<std::string> ConvertGhostRecordings(const std::filesystem::path &dataDirectory) {
+    std::error_code error;
+    std::vector<std::filesystem::path> recordings;
+    for (const auto &entry : std::filesystem::directory_iterator(dataDirectory, error)) {
+        std::string name = Lowercase(entry.path().filename().string());
+        if (name.starts_with("rally") && name.ends_with(".dat")) {
+            recordings.push_back(entry.path());
         }
     }
-    std::error_code error;
-    std::filesystem::remove(image, error);
+    for (const auto &recording : recordings) {
+        std::ifstream in(recording, std::ios::binary);
+        std::vector<std::uint8_t> bytes(std::istreambuf_iterator<char>(in), {});
+        in.close();
+        auto json = coastline::GhostToJson(bytes);
+        auto rebuilt = json ? coastline::GhostFromJson(*json) : std::nullopt;
+        if (!rebuilt || *rebuilt != bytes) {
+            return std::format("{} does not convert to JSON without loss.", recording.string());
+        }
+        auto destination = std::filesystem::path(recording).replace_extension(".json");
+        std::ofstream out(destination, std::ios::trunc);
+        out << coastline::FormatGhostJson(*json);
+        out.close();
+        // The text written is read back and must build the same bytes.
+        std::ifstream written(destination);
+        auto parsed = nlohmann::ordered_json::parse(written, nullptr, false);
+        auto reread = parsed.is_discarded() ? std::nullopt : coastline::GhostFromJson(parsed);
+        if (!reread || *reread != bytes) {
+            return std::format(
+                "{} does not read back as {}.", destination.string(), recording.string());
+        }
+        std::filesystem::remove(recording, error);
+    }
     return std::nullopt;
 }
 
@@ -756,7 +711,7 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
     if (auto failure = ConvertSkyImages(dataDirectory)) {
         return std::unexpected(*failure);
     }
-    if (auto failure = ConvertLoadingImage(dataDirectory)) {
+    if (auto failure = ConvertGhostRecordings(dataDirectory)) {
         return std::unexpected(*failure);
     }
     for (const auto &track : tracks) {

@@ -12,6 +12,9 @@
 #include "vehicleaccess.h"
 #include "vehiclephysics.h"
 #include "win32/directplay.h"
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/ghostfile.h"
+#endif
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include "win32/frontend.h"
 #else
@@ -279,7 +282,11 @@ static inline bool ReadGhostPayload(FILE *pFile, unsigned *pnLayout, unsigned *p
 }
 
 bool ReadGhostFileData(const char *pszPath, bool bAllowFailure) {
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    FILE *pFile = OpenGhostRecording(pszPath);
+#else
     FILE *pFile = fopen(pszPath, "rb");
+#endif
     unsigned nLayout;
     unsigned nSize;
     if (!pFile || !ReadGhostPayload(pFile, &nLayout, &nSize)) {

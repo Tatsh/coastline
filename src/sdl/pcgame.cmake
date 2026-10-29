@@ -59,6 +59,7 @@ set_source_files_properties("${_src}/savestate.c" "${_src}/win32/paintshop.c" PR
 
 # The SDL game provides these in place of their Windows units.
 set(COASTLINE_PC_SDL_SOURCES bitmap.cpp d3dcompat.cpp dinputcompat.cpp fileio.cpp frontendstate.cpp
+                             ghostrecording.cpp
                              dsoundcompat.cpp mmsystemcompat.cpp n64displaylist.cpp network.cpp
                              pcgamerun.cpp
                              renderhost.cpp stringtable.cpp)

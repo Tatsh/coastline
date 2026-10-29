@@ -46,6 +46,7 @@ add_custom_target(coastline_shaders DEPENDS ${_shader_headers})
 add_library(
   coastline_sdl STATIC
   config.cpp
+  ghostfile.cpp
   gpu.cpp
   importer.cpp
   indexedimage.cpp
