@@ -95,7 +95,12 @@ public:
 private:
     UINT file;
     BOOL closeOnDelete;
+#ifdef ENABLE_PATCHES
+    // The name keeps the layout of the class of MFC, and no routine reads it.
+    [[maybe_unused]] char *fileName;
+#else
     char *fileName;
+#endif /* ENABLE_PATCHES */
 };
 
 class CMapPtrToPtr : public CObject {
