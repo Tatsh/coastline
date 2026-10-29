@@ -19,12 +19,12 @@
 #include "common/hudassets.h"
 #include "common/render.h"
 #include "common/renderbackend.h"
+#include "common/shadowclip.h"
 #include "common/texturesampling.h"
+#include "common/textureupload.h"
 #include "common/track.h"
 #include "common/vecmath.h"
 #include "common/vehicleview.h"
-#include "shadowclip.h"
-#include "win32/textureupload.h"
 
 #ifdef __cplusplus
 extern "C" {

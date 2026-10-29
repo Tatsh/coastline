@@ -1,5 +1,5 @@
-#ifndef COASTLINE_PLATFORM_WIN_TEXTUREUPLOAD_H
-#define COASTLINE_PLATFORM_WIN_TEXTUREUPLOAD_H
+#ifndef COASTLINE_TEXTUREUPLOAD_H
+#define COASTLINE_TEXTUREUPLOAD_H
 
 #include "common/types.h"
 
@@ -35,4 +35,4 @@ extern u8 *(*g_pfnGetTextureEntryPixelsWithPaint)(int nEntry, unsigned *pSize);
 }
 #endif
 
-#endif /* COASTLINE_PLATFORM_WIN_TEXTUREUPLOAD_H */
+#endif /* COASTLINE_TEXTUREUPLOAD_H */

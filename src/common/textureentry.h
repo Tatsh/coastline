@@ -1,7 +1,7 @@
 #pragma once
 
 #include "common/renderbackend.h"
-#include "win32/texturetile.h"
+#include "common/texturetile.h"
 
 /** The bits of g_dwDirtyRenderStateMask, one for each render state the game caches. */
 enum RenderStateDirtyBit {

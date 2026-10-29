@@ -4,6 +4,7 @@
 #include "common/game.h"
 #include "common/racerslot.h"
 #include "common/racerslotaccess.h"
+#include "common/textureupload.h"
 #include "common/vehicle.h"
 #include "common/vehicleaccess.h"
 #include "common/vehiclecolor.h"
@@ -11,7 +12,6 @@
 #include "win32/app.h"
 #include "win32/paintshop.h"
 #include "win32/render.h"
-#include "win32/textureupload.h"
 
 void RefreshVehicleMaterialTextures(VehicleModel *model) {
     for (s32 index = 0; index < model->textureEntryCount; index++) {

@@ -10,12 +10,12 @@
 #endif
 
 #include "common/fileio.h"
+#include "common/podarchive.h"
 #include "common/rallyconfig.h"
 #include "common/settings.h"
 #include "win32/app.h"
 #include "win32/input.h"
 #include "win32/paintshop.h"
-#include "win32/podarchive.h"
 #include "win32/render.h"
 #include "win32/sound.h"
 

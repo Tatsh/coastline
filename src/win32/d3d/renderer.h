@@ -11,8 +11,8 @@
 #include <ddraw.h>
 #include <windows.h>
 
-#include "win32/textureentry.h"
-#include "win32/texturetile.h"
+#include "common/textureentry.h"
+#include "common/texturetile.h"
 
 /** A renderer told to take the screen back from GDI that had not given it. */
 #define RENDERER_E_NOT_IN_GDI_MODE static_cast<HRESULT>(0x88762711)

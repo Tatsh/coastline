@@ -1,9 +1,9 @@
-#include "shadowclip.h"
+#include "common/shadowclip.h"
 
 #include <functional>
 
+#include "common/clipplane.h"
 #include "common/trackshadow.h"
-#include "win32/clipplane.h"
 
 #if TGR_BOSS_RALLY
 /** @ghidraAddress BRD3D: 0x102e5ecc */

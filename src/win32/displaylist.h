@@ -15,9 +15,9 @@
 #endif
 
 #include "common/gbicommand.h"
+#include "common/textureupload.h"
 #include "common/vecmath.h"
 #include "win32/framestatistics.h"
-#include "win32/textureupload.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #elif TGR_BRD3D

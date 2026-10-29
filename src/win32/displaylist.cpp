@@ -7,7 +7,7 @@
 
 #include <PR/gu.h>
 
-#include "clipplane.h"
+#include "common/clipplane.h"
 #include "common/displaylistptr.h"
 #include "common/hudcanvas.h"
 #include "common/settings.h"

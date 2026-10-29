@@ -8,8 +8,8 @@
 
 #include <functional>
 
+#include "common/textureentry.h"
 #include "sdl/d3dcompat.h"
-#include "win32/textureentry.h"
 
 typedef DWORD D3DMATERIALHANDLE; /*!< A material of the device. */
 

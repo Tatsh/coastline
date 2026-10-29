@@ -5,8 +5,8 @@
  * The scan of the display lists of the game in the PC port for the textures they load.
  */
 
+#include "common/texturetile.h"
 #include "win32/displaylist.h"
-#include "win32/texturetile.h"
 
 #ifdef __cplusplus
 extern "C" {

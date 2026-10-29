@@ -43,13 +43,11 @@ add_library(
   racescreen.cpp
   racesound.cpp
   rallyconfig.cpp
-  reflectiondata.c
   render.cpp
   renderdefaults.cpp
   runtimebuffers.c
   runtimebuffers.cpp
   season.cpp
-  shadowclip.cpp
   shutdown.cpp
   snapshotfields.cpp
   snapshotinterpolation.cpp

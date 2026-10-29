@@ -23,7 +23,7 @@ set(COASTLINE_PC_C_SOURCES
     common/fontdata.c win32/fpshud.c common/framebuffer.c common/framefields.c common/hudassets.c
     common/hud.c common/hudcanvas.c common/hudquad.c win32/numericdata.c win32/paintshop.c
     common/particlesnapshot.c common/physicsdata.c common/raceglobals.c win32/racepacing.c
-    win32/reflectiondata.c win32/runtimebuffers.c common/settings.c common/shadowproject.c
+    common/reflectiondata.c win32/runtimebuffers.c common/settings.c common/shadowproject.c
     common/soundbank.c common/soundsample.c common/terrain.c common/texturesampling.c
     common/textureworkspace.c win32/timer.c common/trackmenudata.c win32/vehiclemodelload.c
     common/visibilitydata.c common/wind.c)
@@ -44,7 +44,7 @@ set(COASTLINE_PC_CXX_SOURCES
     win32/gamesession.cpp win32/ghost.cpp win32/hudlaplist.cpp win32/hudnetwork.cpp
     win32/inputdefaults.cpp win32/modelrelocation.cpp win32/podarchive.cpp win32/racercolor.cpp
     common/racerslot.cpp win32/racescreen.cpp win32/racesound.cpp win32/render.cpp
-    win32/renderdefaults.cpp win32/runtimebuffers.cpp win32/season.cpp win32/shadowclip.cpp
+    win32/renderdefaults.cpp win32/runtimebuffers.cpp win32/season.cpp common/shadowclip.cpp
     common/snapshot.cpp win32/snapshotfields.cpp win32/snapshotinterpolation.cpp
     win32/texturescan.cpp win32/trackanimation.cpp win32/trackload.cpp win32/trackskidmarks.cpp
     win32/tracktexture.cpp common/vehicle.cpp win32/vehiclesetup.cpp)

@@ -23,7 +23,7 @@
 #include <common/weather.h>
 #include <win32/framestatistics.h>
 
-#include "shadowclip.h"
+#include "common/shadowclip.h"
 
 f32 (*g_apVehicleModelMatrix[MAX_VEHICLES])[4];
 f32 (*g_apVehicleLightMatrix[MAX_VEHICLES])[4];

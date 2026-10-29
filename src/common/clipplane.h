@@ -1,5 +1,5 @@
-#ifndef COASTLINE_WIN_CLIP_PLANE_H
-#define COASTLINE_WIN_CLIP_PLANE_H
+#ifndef COASTLINE_CLIP_PLANE_H
+#define COASTLINE_CLIP_PLANE_H
 
 #include <concepts>
 #include <type_traits>
@@ -78,4 +78,4 @@ static inline void ClipLinkedPolygonPlane(Polygon *pPolygon,
     }
 }
 
-#endif /* COASTLINE_WIN_CLIP_PLANE_H */
+#endif /* COASTLINE_CLIP_PLANE_H */

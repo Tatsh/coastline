@@ -157,7 +157,9 @@ else()
             physicsdata.c
             raceglobals.c
             racerslot.cpp
+            reflectiondata.c
             settings.c
+            shadowclip.cpp
             shadowproject.c
             snapshot.cpp
             soundbank.c
