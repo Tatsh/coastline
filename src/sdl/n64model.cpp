@@ -100,6 +100,7 @@ constexpr std::uint8_t OP_RDPFULLSYNC = 0xe9;
 
 // The inputs of the colour combiner the coverage reads, and the codes of 0 and 1 of each slot.
 constexpr std::uint32_t G_CCMUX_TEXEL0 = 1;
+constexpr std::uint32_t G_CCMUX_TEXEL1 = 2;
 constexpr std::uint32_t G_CCMUX_PRIMITIVE = 3;
 constexpr std::uint32_t G_CCMUX_SHADE = 4;
 constexpr std::uint32_t G_CCMUX_ENVIRONMENT = 5;
@@ -201,6 +202,17 @@ struct Material {
     Alpha alpha = Alpha::Opaque;
     // The primitive or environment colour the colour combiner reads, red, green, blue, and alpha.
     std::optional<std::array<std::uint8_t, 4>> color;
+    // The state of the RDP the triangle is drawn with, for a renderer to draw it as the console
+    // does: the words of the combiner, the other modes, the geometry mode, the primitive and the
+    // environment colour, and the texture of the tile after the render tile.
+    std::uint32_t combineHigh = 0;
+    std::uint32_t combineLow = 0;
+    std::uint32_t otherModeH = 0;
+    std::uint32_t otherModeL = 0;
+    std::uint32_t geometryMode = 0;
+    std::uint32_t primColor = 0;
+    std::uint32_t envColor = 0;
+    std::optional<TextureKey> texture1;
     std::string name;
 
     auto operator<=>(const Material &) const = default;
@@ -297,6 +309,7 @@ public:
                 {"exactTriangles", m_triangles - inexact},
                 {"fogTriangles", m_fogTriangles},
                 {"twoCycleTriangles", m_twoCycleTriangles},
+                {"rendererTexelTriangles", m_rendererTexelTriangles},
                 {"combiners", std::move(combiners)},
                 {"ignoredCommands", std::move(commands)}};
     }
@@ -349,6 +362,13 @@ private:
         material.name = m_name;
         material.scaleS = m_scaleS;
         material.scaleT = m_scaleT;
+        material.combineHigh = m_combineHigh;
+        material.combineLow = m_combineLow;
+        material.otherModeH = m_otherModeH;
+        material.otherModeL = m_otherModeL;
+        material.geometryMode = m_geometryMode;
+        material.primColor = m_primColor;
+        material.envColor = m_envColor;
         if (!m_textureOn || (m_geometryMode & G_TEXTURE_GEN) != 0) {
             return material;
         }
@@ -363,17 +383,26 @@ private:
         material.shiftT = tile.shiftt;
         material.uls = tile.uls;
         material.ult = tile.ult;
-        if (m_bound) {
-            material.texture = m_bound;
-            return material;
+        // The second texel of a combiner that reads it samples the tile after the render tile.
+        auto readsTexel1 = [this] {
+            return (m_combineHigh >> 20 & 0xf) == G_CCMUX_TEXEL1 ||
+                   (m_combineHigh >> 15 & 0x1f) == G_CCMUX_TEXEL1 ||
+                   (m_combineLow >> 28 & 0xf) == G_CCMUX_TEXEL1 ||
+                   (m_combineLow >> 15 & 7) == G_CCMUX_TEXEL1;
+        };
+        if (readsTexel1()) {
+            material.texture1 = TileTexture(m_tiles[(m_textureTile + (detail ? 2 : 1)) & 7]);
         }
+        material.texture = m_bound ? m_bound : TileTexture(tile);
+        return material;
+    }
+
+    // The texture a tile samples, from the loads into the texture memory.
+    std::optional<TextureKey> TileTexture(const Tile &tile) const {
         auto image = Lookup(tile.tmem);
-        if (!image) {
-            return material;
-        }
-        auto address = Offset(*image, 1);
+        auto address = image ? Offset(*image, 1) : std::nullopt;
         if (!address) {
-            return material;
+            return std::nullopt;
         }
         TextureKey key{.address = *address,
                        .palette = std::nullopt,
@@ -392,15 +421,14 @@ private:
             auto palette = Lookup(PALETTE_TMEM + (tile.palette << 4));
             auto at = palette ? Offset(*palette, 1) : std::nullopt;
             if (!at) {
-                return material;
+                return std::nullopt;
             }
             key.palette = *at;
         }
         if (key.width == 0 || key.height == 0 || key.width > 1024 || key.height > 1024) {
-            return material;
+            return std::nullopt;
         }
-        material.texture = key;
-        return material;
+        return key;
     }
 
     // Counts a triangle by whether glTF expresses the state it is drawn with. The colour of the
@@ -442,6 +470,12 @@ private:
         }
         Tally();
         Material material = Current();
+        // A second texel no load of the display lists provides comes from the renderer.
+        bool readsTexel1 = (m_combineHigh >> 20 & 0xf) == G_CCMUX_TEXEL1 ||
+                           (m_combineHigh >> 15 & 0x1f) == G_CCMUX_TEXEL1 ||
+                           (m_combineLow >> 28 & 0xf) == G_CCMUX_TEXEL1 ||
+                           (m_combineLow >> 15 & 7) == G_CCMUX_TEXEL1;
+        m_rendererTexelTriangles += readsTexel1 && !material.texture1 ? 1 : 0;
         auto found = std::ranges::find(m_materials, material);
         if (found == m_materials.end()) {
             m_materials.push_back(std::move(material));
@@ -623,6 +657,7 @@ private:
     std::size_t m_inexact = 0;
     std::size_t m_fogTriangles = 0;
     std::size_t m_twoCycleTriangles = 0;
+    std::size_t m_rendererTexelTriangles = 0;
     bool m_textureOn = true;
     std::uint32_t m_textureTile = 0;
     double m_scaleS = 1.0;
@@ -1031,19 +1066,26 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
     std::vector<std::optional<std::size_t>> textureOf(walk.Materials().size());
     std::map<TextureKey, std::size_t> imageOf;
     GltfModel model;
+    auto imageFor = [&](const TextureKey &key) {
+        if (!imageOf.contains(key)) {
+            imageOf[key] = model.images.size();
+            model.images.push_back({std::format("{}-{}.png", stem, model.images.size()),
+                                    static_cast<int>(key.width),
+                                    static_cast<int>(key.height),
+                                    DecodeTexture(memory, key)});
+        }
+        return imageOf[key];
+    };
+    std::vector<std::optional<std::size_t>> texture1Of(walk.Materials().size());
     for (std::size_t m = 0; m < walk.Materials().size(); ++m) {
+        if (const auto &key = walk.Materials()[m].texture1) {
+            texture1Of[m] = imageFor(*key);
+        }
         const auto &key = walk.Materials()[m].texture;
         if (!key) {
             continue;
         }
-        if (!imageOf.contains(*key)) {
-            imageOf[*key] = model.images.size();
-            model.images.push_back({std::format("{}-{}.png", stem, model.images.size()),
-                                    static_cast<int>(key->width),
-                                    static_cast<int>(key->height),
-                                    DecodeTexture(memory, *key)});
-        }
-        textureOf[m] = imageOf[*key];
+        textureOf[m] = imageFor(*key);
     }
 
     // An image of each frame of an animated texture, and the frames by the image of the texture.
@@ -1275,6 +1317,26 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
         nlohmann::ordered_json material{
             {"name", source.name.empty() ? std::format("material{}", m) : source.name},
             {"pbrMetallicRoughness", {{"metallicFactor", 0.0}, {"roughnessFactor", 1.0}}}};
+        // The state of the RDP a renderer draws the material with.
+        nlohmann::ordered_json rdp{{"combine", {source.combineHigh, source.combineLow}},
+                                   {"otherModeH", source.otherModeH},
+                                   {"otherModeL", source.otherModeL},
+                                   {"geometryMode", source.geometryMode},
+                                   {"primColor", source.primColor},
+                                   {"envColor", source.envColor},
+                                   {"tile",
+                                    {{"clampMirrorS", source.clampMirrorS},
+                                     {"clampMirrorT", source.clampMirrorT},
+                                     {"shiftS", source.shiftS},
+                                     {"shiftT", source.shiftT},
+                                     {"uls", source.uls},
+                                     {"ult", source.ult},
+                                     {"width", source.tileWidth},
+                                     {"height", source.tileHeight}}}};
+        if (texture1Of[m]) {
+            rdp["texel1Image"] = *texture1Of[m];
+        }
+        material["extras"]["coastlineRdp"] = std::move(rdp);
         if (source.color) {
             // glTF takes the base colour in linear light, and the console colour is sRGB.
             nlohmann::ordered_json factor = nlohmann::ordered_json::array();
@@ -1295,7 +1357,7 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
             // The frames the texture of the material shows, each from its time in milliseconds,
             // the frames of a texture of the snow with no time.
             if (auto animation = animationOf.find(*textureOf[m]); animation != animationOf.end()) {
-                material["extras"] = {{"coastlineAnimation", animation->second}};
+                material["extras"]["coastlineAnimation"] = animation->second;
             }
         }
         if (source.alpha == Alpha::Blend) {
