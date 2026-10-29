@@ -15,6 +15,8 @@
 #include <stdbool.h>
 #endif
 
+#include "common/frameclock.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -51,17 +53,6 @@ extern int g_bHasPerfCounter;
  * @ghidraAddress BRGlide: 0x118ee248
  */
 extern DWORD g_dwPerfCounterBaseMs;
-
-/**
- * The time since the first call, from the performance counter in milliseconds rounded to the
- * nearest, or the time of the system when there is no counter. The first call divides by the
- * frequency of the counter without checking it, as the original does.
- *
- * @return The time in milliseconds.
- * @ghidraAddress BRD3D: 0x10075020
- * @ghidraAddress BRGlide: 0x1006e280
- */
-DWORD GetHighResolutionTime(void);
 
 #ifdef __cplusplus
 }

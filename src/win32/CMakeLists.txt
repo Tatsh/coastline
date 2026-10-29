@@ -12,7 +12,6 @@ add_library(
   app.cpp
   assetfile.cpp
   buildinfo.c
-  configfile.cpp
   diagnostics.c
   directplay.cpp
   displaylist.cpp
@@ -30,11 +29,9 @@ add_library(
   ghost.cpp
   hudnetwork.cpp
   input.cpp
-  inputdefaults.cpp
   menufont.cpp
   modelrelocation.cpp
   netstream.cpp
-  numericdata.c
   paintshop.c
   podarchive.cpp
   racepacing.c
@@ -47,8 +44,6 @@ add_library(
   runtimebuffers.cpp
   season.cpp
   shutdown.cpp
-  snapshotfields.cpp
-  snapshotinterpolation.cpp
   sound.cpp
   startup.cpp
   strings.c

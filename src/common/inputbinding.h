@@ -15,3 +15,35 @@ struct InputBinding {
     /** More controls of the defaults that select the binding, 0 where another binding uses one. */
     unsigned short awAlternateControls[2];
 };
+
+/**
+ * The default bindings of the keyboard.
+ *
+ * @ghidraAddress BRD3D: 0x100b4098
+ * @ghidraAddress BRGlide: 0x100b38a0
+ */
+extern struct InputBinding g_awDefaultKeyBindingsDevice0[INPUT_BINDING_COUNT];
+
+/**
+ * The default bindings of the first game controller.
+ *
+ * @ghidraAddress BRD3D: 0x100b4140
+ * @ghidraAddress BRGlide: 0x100b3948
+ */
+extern struct InputBinding g_awDefaultKeyBindingsDevice1[INPUT_BINDING_COUNT];
+
+/**
+ * The default bindings of the second game controller.
+ *
+ * @ghidraAddress BRD3D: 0x100b41e8
+ * @ghidraAddress BRGlide: 0x100b39f0
+ */
+extern struct InputBinding g_awDefaultKeyBindingsDevice2[INPUT_BINDING_COUNT];
+
+/**
+ * The default bindings of the third game controller.
+ *
+ * @ghidraAddress BRD3D: 0x100b4290
+ * @ghidraAddress BRGlide: 0x100b3a98
+ */
+extern struct InputBinding g_awDefaultKeyBindingsDevice3[INPUT_BINDING_COUNT];

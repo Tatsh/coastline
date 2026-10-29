@@ -21,7 +21,7 @@ set(COASTLINE_PC_C_SOURCES
     win32/buildinfo.c common/clockfields.c common/convertedvertex.c common/creditdata.c
     common/dashboardtextures.c common/displaylistdata.c common/effectdata.c
     common/fontdata.c win32/fpshud.c common/framebuffer.c common/framefields.c common/hudassets.c
-    common/hud.c common/hudcanvas.c common/hudquad.c win32/numericdata.c win32/paintshop.c
+    common/hud.c common/hudcanvas.c common/hudquad.c common/numericdata.c win32/paintshop.c
     common/particlesnapshot.c common/physicsdata.c common/raceglobals.c win32/racepacing.c
     common/reflectiondata.c win32/runtimebuffers.c common/settings.c common/shadowproject.c
     common/soundbank.c common/soundsample.c common/terrain.c common/texturesampling.c
@@ -40,12 +40,12 @@ set(COASTLINE_PC_CXX_SOURCES
     common/vehiclemodelrender.c common/vehiclepaint.c common/vehiclephysics.c common/vehiclereset.c common/vehiclesound.c
     common/vehiclestatus.c common/vehicletrackpos.c common/vehiclevisibility.c common/visibleinstances.c common/volumecontrols.c
     common/wheelrender.c win32/assetfile.cpp win32/gamestate.cpp win32/rallyconfig.cpp
-    win32/configfile.cpp win32/displaylist.cpp win32/frametimer.cpp win32/gameinit.cpp
+    common/configfile.cpp win32/displaylist.cpp win32/frametimer.cpp win32/gameinit.cpp
     win32/gamesession.cpp win32/ghost.cpp common/hudlaplist.cpp win32/hudnetwork.cpp
-    win32/inputdefaults.cpp win32/modelrelocation.cpp win32/podarchive.cpp win32/racercolor.cpp
+    common/inputdefaults.cpp win32/modelrelocation.cpp win32/podarchive.cpp win32/racercolor.cpp
     common/racerslot.cpp common/racescreen.cpp win32/racesound.cpp win32/render.cpp
     win32/renderdefaults.cpp win32/runtimebuffers.cpp win32/season.cpp common/shadowclip.cpp
-    common/snapshot.cpp win32/snapshotfields.cpp win32/snapshotinterpolation.cpp
+    common/snapshot.cpp common/snapshotfields.cpp common/snapshotinterpolation.cpp
     win32/texturescan.cpp common/trackanimation.cpp win32/trackload.cpp common/trackskidmarks.cpp
     win32/tracktexture.cpp common/vehicle.cpp win32/vehiclesetup.cpp)
 list(TRANSFORM COASTLINE_PC_C_SOURCES PREPEND "${_src}/")

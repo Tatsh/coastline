@@ -20,7 +20,7 @@ static inline DWORD CounterToMilliseconds(LARGE_INTEGER count) {
     return (DWORD)((count.QuadPart * 1000 + 500) / g_liPerfCounterFrequency.QuadPart);
 }
 
-DWORD GetHighResolutionTime(void) {
+u32 GetHighResolutionTime(void) {
     LARGE_INTEGER count;
 
     if (g_bHighResTimerFirstCall) {

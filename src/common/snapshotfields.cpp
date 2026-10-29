@@ -9,10 +9,10 @@
 #include "common/replay.h"
 #include "common/soundeffect.h"
 #include "common/soundsource.h"
+#include "common/soundsystem.h"
 #include "common/system.h"
 #include "common/vecmath.h"
 #include "common/vehicle.h"
-#include "win32/sound.h"
 
 namespace {
 /* Native code accesses these bytes only through the snapshot field list. */

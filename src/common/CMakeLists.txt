@@ -141,6 +141,7 @@ else()
     PRIVATE airplanestate.c
             assetnames.c
             clockfields.c
+            configfile.cpp
             convertedvertex.c
             creditdata.c
             dashboardtextures.c
@@ -154,6 +155,8 @@ else()
             hudcanvas.c
             hudlaplist.cpp
             hudquad.c
+            inputdefaults.cpp
+            numericdata.c
             particlesnapshot.c
             physicsdata.c
             raceglobals.c
@@ -164,6 +167,8 @@ else()
             shadowclip.cpp
             shadowproject.c
             snapshot.cpp
+            snapshotfields.cpp
+            snapshotinterpolation.cpp
             soundbank.c
             soundsample.c
             terrain.c

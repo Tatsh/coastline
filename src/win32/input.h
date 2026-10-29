@@ -250,38 +250,6 @@ HRESULT SetJoystickAxisRange(IDirectInputDevice2A *pDevice,
 extern MouseDevice *g_pMouseDevice;
 
 /**
- * The default bindings of the keyboard.
- *
- * @ghidraAddress BRD3D: 0x100b4098
- * @ghidraAddress BRGlide: 0x100b38a0
- */
-extern InputBinding g_awDefaultKeyBindingsDevice0[INPUT_BINDING_COUNT];
-
-/**
- * The default bindings of the first game controller.
- *
- * @ghidraAddress BRD3D: 0x100b4140
- * @ghidraAddress BRGlide: 0x100b3948
- */
-extern InputBinding g_awDefaultKeyBindingsDevice1[INPUT_BINDING_COUNT];
-
-/**
- * The default bindings of the second game controller.
- *
- * @ghidraAddress BRD3D: 0x100b41e8
- * @ghidraAddress BRGlide: 0x100b39f0
- */
-extern InputBinding g_awDefaultKeyBindingsDevice2[INPUT_BINDING_COUNT];
-
-/**
- * The default bindings of the third game controller.
- *
- * @ghidraAddress BRD3D: 0x100b4290
- * @ghidraAddress BRGlide: 0x100b3a98
- */
-extern InputBinding g_awDefaultKeyBindingsDevice3[INPUT_BINDING_COUNT];
-
-/**
  * Drop a user of the game controller device. The last user releases the effects of force feedback
  * and the device. A count that falls below 0 is set back to 0.
  *

@@ -4,8 +4,8 @@
 #include <cstring>
 
 #include "common/ghost.h"
+#include "common/screen.h"
 #include "common/season.h"
-#include "win32/app.h"
 
 int g_dwConfigValue0 = 9;
 int g_dwConfigValue1 = 9;

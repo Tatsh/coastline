@@ -18,7 +18,7 @@
 #include <common/weather.h>
 
 #include "common/fontdata.h"
-#include "win32/framestatistics.h"
+#include "common/frameclock.h"
 
 int g_adwHudFont0GlyphOffsets[28] = {0,   26,  52,  78,  104, 130, 156, 182, 208, 234,
                                      260, 274, 290, 315, 332, 381, 407, 437, 462, 488,

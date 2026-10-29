@@ -5,9 +5,36 @@
  * The ticks of the frames of a race of the Boss Rally release, at 30 frames a second.
  */
 
+#include "common/types.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+/**
+ * The time since the first call, from the performance counter in milliseconds rounded to the
+ * nearest, or the time of the system when there is no counter. The first call divides by the
+ * frequency of the counter without checking it, as the original does.
+ *
+ * @return The time in milliseconds.
+ * @ghidraAddress BRD3D: 0x10075020
+ * @ghidraAddress BRGlide: 0x1006e280
+ */
+u32 GetHighResolutionTime(void);
+
+/**
+ * The number of game-loop durations averaged for the game frame rate.
+ * @ghidraAddress BRD3D: 0x100aa008
+ * @ghidraAddress BRGlide: 0x100a9358
+ */
+extern int g_dwGameFpsSampleFrames;
+
+/**
+ * The game-loop sample written last, negative before the first loop.
+ * @ghidraAddress BRD3D: 0x100aa00c
+ * @ghidraAddress BRGlide: 0x100a935c
+ */
+extern int g_dwGameFpsFrameCountdown;
 
 /**
  * Advance the ticks by one, the time of the current tick by the milliseconds of its phase.

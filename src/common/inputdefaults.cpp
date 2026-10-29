@@ -1,4 +1,4 @@
-#include "win32/input.h"
+#include "common/inputbinding.h"
 
 InputBinding g_awDefaultKeyBindingsDevice0[INPUT_BINDING_COUNT] = {
     {203, {75, 203}}, {205, {77, 205}}, {200, {72, 200}}, {157, {157, 29}}, {208, {80, 208}},
