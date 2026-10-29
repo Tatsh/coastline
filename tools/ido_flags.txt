@@ -6,6 +6,9 @@ src/libultra/libc/llcvt.c -O1 -mips3 -32
 src/libultra/libc/* -O3
 src/libultra/io/* -O1
 src/common/libultra/os/syncprintf.c -O2
+src/common/libultra/os/* -O1
+src/common/libultra/io/* -O1
+src/common/libultra/gu/* -O3
 src/libultra/os/* -O1
 src/libultra/gu/* -O3
 src/libultra/* -O1 | -O2 | -O3 | -O2 -g3 | -O1 -mips1
