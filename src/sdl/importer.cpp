@@ -12,6 +12,7 @@
 
 #include <FLAC/stream_encoder.h>
 
+#include "music.h"
 #include "sha1.h"
 
 namespace coastline {
@@ -358,6 +359,25 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
               static_cast<std::streamsize>(bytes->size()));
     if (!out) {
         return std::unexpected(std::format("{} cannot be written.", destination.string()));
+    }
+    if (*release == RomRelease::Usa) {
+        // The XM modules of the menus and of the tracks, as the music pack default.
+        constexpr std::uint32_t modules[] = {
+            0x0EBC00, 0x113660, 0x12EAB0, 0x149C80, 0x164B60, 0x17FD10, 0x19BC10};
+        for (std::uint32_t offset : modules) {
+            auto module = ReadRomModule(*bytes, offset);
+            if (!module) {
+                return std::unexpected(module.error());
+            }
+            auto path = dataDirectory / "music" / "default" / std::format("{:06x}.xm", offset);
+            std::filesystem::create_directories(path.parent_path(), error);
+            std::ofstream xm(path, std::ios::binary | std::ios::trunc);
+            xm.write(reinterpret_cast<const char *>(module->data()),
+                     static_cast<std::streamsize>(module->size()));
+            if (!xm) {
+                return std::unexpected(std::format("{} cannot be written.", path.string()));
+            }
+        }
     }
     return release;
 }
