@@ -88,6 +88,41 @@
       ],
       "intelliSenseMode": "windows-gcc-x86",
       "name": "Windows (Glide)"
+    },
+    {
+      "cStandard": "c23",
+      "compileCommands": "${workspaceFolder}/build/sdl/compile_commands.json",
+      "compilerPath": "/usr/bin/g++",
+      "configurationProvider": "ms-vscode.cmake-tools",
+      "cppStandard": "c++23",
+      "defines": [
+        "COASTLINE_PC_GAME=1",
+        "ENABLE_PATCHES",
+        "TGR_PC=1",
+        "TGR_PLATFORM=3",
+        "TGR_PLATFORM_N64=1",
+        "TGR_PLATFORM_SDL=3",
+        "TGR_PLATFORM_WIN=2",
+        "TGR_REGION=1",
+        "TGR_REGION_EU=3",
+        "TGR_REGION_JP=2",
+        "TGR_REGION_US=1",
+        "TGR_RENDERER=3",
+        "TGR_RENDERER_D3D=1",
+        "TGR_RENDERER_GLIDE=2",
+        "TGR_RENDERER_SDL=3"
+      ],
+      "includePath": [
+        "${workspaceFolder}/build/sdl/src/sdl",
+        "${workspaceFolder}/build/sdl/src/sdl/generated",
+        "${workspaceFolder}/build/sdl/vcpkg_installed/x64-linux/include",
+        "${workspaceFolder}/src",
+        "${workspaceFolder}/src/libultra/include",
+        "${workspaceFolder}/src/sdl",
+        "${workspaceFolder}/tools/common"
+      ],
+      "intelliSenseMode": "linux-gcc-x64",
+      "name": "SDL"
     }
   ],
   "env": {},
