@@ -176,6 +176,13 @@ s32 osMotorStop(OSPfs *pfs) {
 void osViBlack(u8 active) {
 }
 
+// The count of the processor clock of the console, from the time of the host. The emulated clock
+// of the PC release steps once each call, and the front end calls it more than once a frame.
+u32 osGetCount(void) {
+    return static_cast<u32>(static_cast<unsigned __int128>(SDL_GetTicksNS()) * osClockRate /
+                            1000000000u);
+}
+
 // The controllers are read from the bindings of the SDL game when the front end takes them.
 s32 osContStartReadData(OSMesgQueue *queue) {
     return 0;

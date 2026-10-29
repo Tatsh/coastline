@@ -45,6 +45,7 @@ g_aVehicles
 g_dwNumTracks
 g_mtxIdentity
 osContGetReadData
+osGetCount
 g_pHeapCurrent
 g_qwTimestampBase
 g_SeasonTable
