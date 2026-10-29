@@ -3371,7 +3371,7 @@ void CopySessionNameToBuffer(NetworkSessionSettings *pSettings) {
 // The player count of GetDirectPlaySessionPlayerCount() without a description.
 #define SESSION_PLAYER_COUNT_UNKNOWN 0xffff
 
-u32 GetDirectPlaySessionPlayerCount(void) {
+DWORD GetDirectPlaySessionPlayerCount(void) {
     DPSESSIONDESC2 *pDesc = nullptr;
 
     if (FAILED(GetDirectPlaySessionDesc(g_DirectPlayInfo.pDirectPlay, &pDesc))) {

@@ -21,7 +21,7 @@
 #include "common/settings.h"
 #include "common/soundsystem.h"
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "common/network.h"
+#include "win32/directplay.h"
 #endif
 
 #else

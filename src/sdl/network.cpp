@@ -28,7 +28,7 @@ void DisableNetworkReceive(void) {
 void EnableNetworkReceive(void) {
 }
 
-u32 GetDirectPlaySessionPlayerCount(void) {
+DWORD GetDirectPlaySessionPlayerCount(void) {
     return 0;
 }
 

@@ -10,7 +10,7 @@
 
 #include "common/settings.h"
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "common/network.h"
+#include "win32/directplay.h"
 #endif
 #define QuickSort qsort
 #else
