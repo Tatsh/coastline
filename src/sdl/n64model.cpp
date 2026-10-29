@@ -78,6 +78,7 @@ constexpr std::uint8_t OP_TRI2 = 0xb1;
 constexpr std::uint8_t OP_CLEARGEOMETRYMODE = 0xb6;
 constexpr std::uint8_t OP_SETGEOMETRYMODE = 0xb7;
 constexpr std::uint8_t OP_ENDDL = 0xb8;
+constexpr std::uint8_t OP_SETOTHERMODE_L = 0xb9;
 constexpr std::uint8_t OP_SETOTHERMODE_H = 0xba;
 constexpr std::uint8_t OP_TEXTURE = 0xbb;
 constexpr std::uint8_t OP_TRI1 = 0xbf;
@@ -138,6 +139,21 @@ struct TextureKey {
     auto operator<=>(const TextureKey &) const = default;
 };
 
+// How the render mode of the RDP draws the alpha of a texel.
+enum class Alpha {
+    Opaque,
+    Cut,
+    Blend,
+};
+
+// The bits of the low word of the other modes the walk follows.
+constexpr std::uint32_t G_AC_MASK = 3;
+constexpr std::uint32_t G_AC_THRESHOLD = 1;
+constexpr std::uint32_t CVG_X_ALPHA = 0x1000;
+constexpr std::uint32_t FORCE_BL = 0x4000;
+constexpr std::uint32_t G_BL_A_IN = 0;
+constexpr std::uint32_t G_BL_CLR_MEM = 1;
+
 // What a triangle is drawn with: its texture, how its texture coordinates map to it, whether it
 // is lit and drawn from both sides, and the name the display list gives its material.
 struct Material {
@@ -152,6 +168,7 @@ struct Material {
     double scaleT = 1.0;
     bool lit = false;
     bool twoSided = false;
+    Alpha alpha = Alpha::Opaque;
     std::string name;
 
     auto operator<=>(const Material &) const = default;
@@ -207,6 +224,7 @@ public:
         m_tmem.clear();
         m_geometryMode = (start.lit ? G_LIGHTING : 0) | (start.twoSided ? 0 : G_CULL_BACK);
         m_otherModeH = 0;
+        m_otherModeL = 0;
         m_textureOn = true;
         m_textureTile = 0;
         m_scaleS = 1.0;
@@ -250,6 +268,16 @@ private:
         Material material;
         material.lit = (m_geometryMode & G_LIGHTING) != 0;
         material.twoSided = (m_geometryMode & (G_CULL_BACK | G_CULL_FRONT)) == 0;
+        // The render mode cuts texels out by their alpha, or blends them over the frame by it.
+        auto blendsByAlpha = [this](std::uint32_t cycle) {
+            std::uint32_t bits = m_otherModeL >> (cycle == 1 ? 18 : 16);
+            return (bits >> 8 & 3) == G_BL_A_IN && (bits >> 4 & 3) == G_BL_CLR_MEM;
+        };
+        if ((m_otherModeL & G_AC_MASK) == G_AC_THRESHOLD || (m_otherModeL & CVG_X_ALPHA) != 0) {
+            material.alpha = Alpha::Cut;
+        } else if ((m_otherModeL & FORCE_BL) != 0 && (blendsByAlpha(1) || blendsByAlpha(2))) {
+            material.alpha = Alpha::Blend;
+        }
         material.name = m_name;
         material.scaleS = m_scaleS;
         material.scaleT = m_scaleT;
@@ -404,11 +432,13 @@ private:
             case OP_CLEARGEOMETRYMODE:
                 m_geometryMode &= ~w1;
                 break;
-            case OP_SETOTHERMODE_H: {
+            case OP_SETOTHERMODE_H:
+            case OP_SETOTHERMODE_L: {
                 std::uint32_t shift = w0 >> 8 & 0xff;
                 std::uint32_t length = w0 & 0xff;
                 std::uint32_t mask = length >= 32 ? 0xffffffff : ((1u << length) - 1) << shift;
-                m_otherModeH = (m_otherModeH & ~mask) | (w1 & mask);
+                std::uint32_t &mode = (w0 >> 24) == OP_SETOTHERMODE_H ? m_otherModeH : m_otherModeL;
+                mode = (mode & ~mask) | (w1 & mask);
                 break;
             }
             case OP_TEXTURE:
@@ -467,6 +497,7 @@ private:
     std::map<std::uint32_t, std::uint32_t> m_tmem;
     std::uint32_t m_geometryMode = 0;
     std::uint32_t m_otherModeH = 0;
+    std::uint32_t m_otherModeL = 0;
     bool m_textureOn = true;
     std::uint32_t m_textureTile = 0;
     double m_scaleS = 1.0;
@@ -529,16 +560,80 @@ TableTexture(std::span<const std::uint8_t> image, const Layout &layout, std::siz
     return key;
 }
 
-// The image of a track as a race starts, with the textures of the bank after the geometry copied
-// over the textures of the geometry as the game streams them: the first frame of an animation,
-// the frame of the weathers other than snow for a texture of the snow, and each palette.
-std::vector<std::uint8_t> StreamTextures(std::span<const std::uint8_t> image,
-                                         const Layout &layout) {
-    std::vector<std::uint8_t> memory(image.begin(), image.end());
+// A frame of an animated texture: the time it starts at, in milliseconds, and where its texels and
+// its palette are in the bank, or ROM_NONE for those of the geometry.
+struct AnimationFrame {
+    std::uint32_t time;
+    std::uint32_t imageRom;
+    std::uint32_t paletteRom;
+};
+
+// A texture of a track whose texels or palette stream from the bank after the geometry.
+struct StreamedTexture {
+    std::uint32_t texels;  // The address of its texels in the geometry.
+    std::uint32_t palette; // The address of its palette in the geometry, or 0.
+    std::size_t size;      // The size of its texels.
+    std::size_t paletteSize;
+    std::uint32_t paletteRom; // Where the palette of a texture that is not animated is in the bank.
+    std::vector<AnimationFrame> frames; // The frames of an animated texture, or none.
+    bool snow = false; // Whether the frames are a texture of the snow and then of other weathers.
+};
+
+std::vector<StreamedTexture> ReadStreamedTextures(std::span<const std::uint8_t> image,
+                                                  const Layout &layout) {
+    std::vector<StreamedTexture> textures;
     std::uint32_t bank = Big32(image, 0);
-    if (bank > image.size()) {
-        return memory;
+    std::uint32_t count = Big32(image, layout.textureCountAt);
+    std::uint32_t table = Big32(image, layout.texturesAt) - layout.base;
+    if (bank > image.size() || table > bank || count > (bank - table) / TEXTURE_SIZE) {
+        return textures;
     }
+    for (std::size_t entry = 0; entry < count; ++entry) {
+        std::size_t at = table + entry * TEXTURE_SIZE;
+        std::uint32_t source = Big32(image, at + 8);
+        std::uint32_t bits = Big32(image, at + 0x20);
+        StreamedTexture texture{.texels = Big32(image, at),
+                                .palette = Big32(image, at + 4),
+                                .size = bits & 0x3ffff,
+                                .paletteSize = (bits >> 24 & 0xf) == TEXTURE_FORMAT_CI4 ?
+                                                   CI4_PALETTE_BYTES :
+                                                   PALETTE_BYTES,
+                                .paletteRom = (source & 0xfff) << 5,
+                                .frames = {},
+                                .snow = false};
+        if (texture.texels == 0) {
+            continue;
+        }
+        if ((bits & TEXTURE_ANIMATED) != 0) {
+            std::size_t animation = source - layout.base;
+            if (source < layout.base || animation > bank ||
+                bank - animation < ANIMATION_FRAMES_AT + 2 * ANIMATION_FRAME_SIZE) {
+                continue;
+            }
+            std::uint16_t frames = Big16(image, animation + ANIMATION_FRAME_COUNT_AT);
+            std::size_t first = animation + ANIMATION_FRAMES_AT;
+            for (std::size_t frame = 0;
+                 frame < frames && first + (frame + 1) * ANIMATION_FRAME_SIZE <= bank;
+                 ++frame) {
+                std::size_t record = first + frame * ANIMATION_FRAME_SIZE;
+                texture.frames.push_back(
+                    {Big32(image, record), Big32(image, record + 4), Big32(image, record + 8)});
+            }
+            texture.snow = frames == 2 && Big32(image, first) == ROM_NONE;
+        }
+        textures.push_back(std::move(texture));
+    }
+    return textures;
+}
+
+// Copies the texels and the palette of a frame, or of a texture that is not animated, from the
+// bank over those of the geometry.
+void CopyFrame(std::span<const std::uint8_t> image,
+               const Layout &layout,
+               const StreamedTexture &texture,
+               const AnimationFrame *frame,
+               std::vector<std::uint8_t> &memory) {
+    std::uint32_t bank = Big32(image, 0);
     auto stream = image.subspan(bank);
     auto copy = [&](std::uint32_t rom, std::uint32_t target, std::size_t size) {
         std::size_t at = target - layout.base;
@@ -548,40 +643,32 @@ std::vector<std::uint8_t> StreamTextures(std::span<const std::uint8_t> image,
         }
         std::copy_n(stream.begin() + rom, size, memory.begin() + static_cast<std::ptrdiff_t>(at));
     };
-    std::uint32_t count = Big32(image, layout.textureCountAt);
-    std::uint32_t table = Big32(image, layout.texturesAt) - layout.base;
-    if (table > bank || count > (bank - table) / TEXTURE_SIZE) {
-        return memory;
+    std::uint32_t paletteRom = texture.paletteRom;
+    if (frame != nullptr) {
+        copy(frame->imageRom, texture.texels, texture.size);
+        paletteRom = frame->paletteRom;
     }
-    for (std::size_t entry = 0; entry < count; ++entry) {
-        std::size_t at = table + entry * TEXTURE_SIZE;
-        std::uint32_t texels = Big32(image, at);
-        std::uint32_t palette = Big32(image, at + 4);
-        std::uint32_t source = Big32(image, at + 8);
-        std::uint32_t bits = Big32(image, at + 0x20);
-        if (texels == 0) {
-            continue;
-        }
-        std::size_t paletteSize =
-            (bits >> 24 & 0xf) == TEXTURE_FORMAT_CI4 ? CI4_PALETTE_BYTES : PALETTE_BYTES;
-        std::uint32_t paletteRom = (source & 0xfff) << 5;
-        if ((bits & TEXTURE_ANIMATED) != 0) {
-            std::size_t animation = source - layout.base;
-            if (source < layout.base || animation > bank ||
-                bank - animation < ANIMATION_FRAMES_AT + 2 * ANIMATION_FRAME_SIZE) {
-                continue;
-            }
-            std::uint16_t frames = Big16(image, animation + ANIMATION_FRAME_COUNT_AT);
-            std::size_t first = animation + ANIMATION_FRAMES_AT;
-            std::size_t frame = frames == 2 && Big32(image, first) == ROM_NONE ?
-                                    first + ANIMATION_FRAME_SIZE :
-                                    first;
-            copy(Big32(image, frame + 4), texels, bits & 0x3ffff);
-            paletteRom = Big32(image, frame + 8);
-        }
-        if (palette != 0) {
-            copy(paletteRom, palette, paletteSize);
-        }
+    if (texture.palette != 0) {
+        copy(paletteRom, texture.palette, texture.paletteSize);
+    }
+}
+
+// The frame a race starts with: the first, or for a texture of the snow, that of other weathers.
+const AnimationFrame *StartFrame(const StreamedTexture &texture) {
+    if (texture.frames.empty()) {
+        return nullptr;
+    }
+    return texture.snow ? &texture.frames[1] : &texture.frames[0];
+}
+
+// The image of a track as a race starts, with the textures of the bank after the geometry copied
+// over the textures of the geometry as the game streams them.
+std::vector<std::uint8_t> StreamTextures(std::span<const std::uint8_t> image,
+                                         const Layout &layout,
+                                         const std::vector<StreamedTexture> &textures) {
+    std::vector<std::uint8_t> memory(image.begin(), image.end());
+    for (const StreamedTexture &texture : textures) {
+        CopyFrame(image, layout, texture, StartFrame(texture), memory);
     }
     return memory;
 }
@@ -803,9 +890,11 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
 
     // The image of each texture the materials sample, decoded from the memory as a race starts.
     std::vector<std::uint8_t> streamed;
+    std::vector<StreamedTexture> streamedTextures;
     std::span<const std::uint8_t> memory = image;
     if (layout.streamsTextures) {
-        streamed = StreamTextures(image, layout);
+        streamedTextures = ReadStreamedTextures(image, layout);
+        streamed = StreamTextures(image, layout, streamedTextures);
         memory = streamed;
     }
     std::string stem(bufferUri.substr(0, bufferUri.rfind('.')));
@@ -829,30 +918,106 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
         textureOf[m] = imageOf[*key];
     }
 
-    // The texture coordinates of each vertex in its texture, from the first material that draws
-    // it.
-    std::vector<float> uv(vertexCount * 2, 0.0f);
-    std::vector<bool> placed(vertexCount, false);
-    for (const auto &[address, triangles] : lists) {
+    // An image of each frame of an animated texture, and the frames by the image of the texture.
+    std::map<std::size_t, nlohmann::ordered_json> animationOf;
+    std::vector<std::uint8_t> scratch = streamed;
+    for (const auto &[key, index] : std::map<TextureKey, std::size_t>(imageOf)) {
+        auto texture = std::ranges::find_if(streamedTextures, [&](const StreamedTexture &found) {
+            return !found.frames.empty() && found.texels - layout.base == key.address;
+        });
+        if (texture == streamedTextures.end()) {
+            continue;
+        }
+        nlohmann::ordered_json frames = nlohmann::ordered_json::array();
+        for (std::size_t f = 0; f < texture->frames.size(); ++f) {
+            const AnimationFrame &frame = texture->frames[f];
+            CopyFrame(image, layout, *texture, &frame, scratch);
+            frames.push_back({{"time",
+                               frame.time == ROM_NONE ? nlohmann::ordered_json(nullptr) :
+                                                        nlohmann::ordered_json(frame.time)},
+                              {"image", model.images.size()}});
+            model.images.push_back({std::format("{}-{}-{}.png", stem, index, f),
+                                    static_cast<int>(key.width),
+                                    static_cast<int>(key.height),
+                                    DecodeTexture(scratch, key)});
+            samplerMaterial.push_back(samplerMaterial[index]);
+            // The next frame starts from the texture as a race starts.
+            for (auto [target, size] :
+                 {std::pair{texture->texels, texture->size},
+                  std::pair{texture->palette, texture->palette ? texture->paletteSize : 0}}) {
+                std::size_t at = target - layout.base;
+                if (size != 0 && target >= layout.base && at + size <= scratch.size()) {
+                    std::copy_n(streamed.begin() + static_cast<std::ptrdiff_t>(at),
+                                size,
+                                scratch.begin() + static_cast<std::ptrdiff_t>(at));
+                }
+            }
+        }
+        animationOf[index] = {{"snow", texture->snow}, {"frames", std::move(frames)}};
+    }
+
+    // The vertices a viewer draws: each record once for each texture coordinate the materials that
+    // draw it give it. A lit vertex has a normal of signed bytes where an unlit one has its colour.
+    std::vector<float> drawnPositions;
+    std::vector<float> drawnNormals;
+    std::vector<float> drawnUv;
+    std::vector<std::uint8_t> drawnColors;
+    std::map<std::tuple<std::uint32_t, float, float>, std::uint32_t> drawnOf;
+    auto drawnVertex = [&](std::uint32_t corner, const Material &material) {
+        std::uint32_t record = indexOf.at(corner);
+        float u = 0.0f;
+        float v = 0.0f;
+        if (material.texture) {
+            double s = static_cast<std::int16_t>(Big16(image, corner + 8)) / 32.0 *
+                           material.scaleS * ShiftScale(material.shiftS) -
+                       material.uls / 4.0;
+            double t = static_cast<std::int16_t>(Big16(image, corner + 10)) / 32.0 *
+                           material.scaleT * ShiftScale(material.shiftT) -
+                       material.ult / 4.0;
+            u = static_cast<float>(s / material.texture->width);
+            v = static_cast<float>(t / material.texture->height);
+        }
+        auto [found, added] =
+            drawnOf.try_emplace({record, u, v}, static_cast<std::uint32_t>(drawnOf.size()));
+        if (added) {
+            float length = 0.0f;
+            std::array<float, 3> normal{};
+            for (std::size_t axis = 0; axis < 3; ++axis) {
+                drawnPositions.push_back(columns.positions[record * 3 + axis]);
+                normal[axis] = static_cast<std::int8_t>(columns.colors[record * 4 + axis]);
+                length += normal[axis] * normal[axis];
+            }
+            length = std::sqrt(length);
+            for (std::size_t axis = 0; axis < 3; ++axis) {
+                drawnNormals.push_back(length > 0.0f ? normal[axis] / length :
+                                                       (axis == 2 ? 1.0f : 0.0f));
+            }
+            for (std::size_t i = 0; i < 4; ++i) {
+                drawnColors.push_back(columns.colors[record * 4 + i]);
+            }
+            drawnUv.push_back(u);
+            drawnUv.push_back(v);
+        }
+        return found->second;
+    };
+    // The triangles of each display list by material, in the order the list first draws each.
+    std::map<std::pair<std::uint32_t, std::size_t>,
+             std::vector<std::pair<std::size_t, std::vector<std::uint32_t>>>>
+        primitivesOf;
+    for (const auto &[key, triangles] : lists) {
+        auto &primitives = primitivesOf[key];
         for (const Triangle &triangle : triangles) {
-            const Material &material = walk.Materials()[triangle.material];
-            if (!material.texture) {
-                continue;
+            auto primitive =
+                std::ranges::find(primitives,
+                                  triangle.material,
+                                  &std::pair<std::size_t, std::vector<std::uint32_t>>::first);
+            if (primitive == primitives.end()) {
+                primitives.push_back({triangle.material, {}});
+                primitive = std::prev(primitives.end());
             }
             for (std::uint32_t corner : triangle.corners) {
-                std::uint32_t vertex = indexOf.at(corner);
-                if (placed[vertex]) {
-                    continue;
-                }
-                placed[vertex] = true;
-                double s = static_cast<std::int16_t>(Big16(image, corner + 8)) / 32.0 *
-                               material.scaleS * ShiftScale(material.shiftS) -
-                           material.uls / 4.0;
-                double t = static_cast<std::int16_t>(Big16(image, corner + 10)) / 32.0 *
-                               material.scaleT * ShiftScale(material.shiftT) -
-                           material.ult / 4.0;
-                uv[vertex * 2] = static_cast<float>(s / material.texture->width);
-                uv[vertex * 2 + 1] = static_cast<float>(t / material.texture->height);
+                primitive->second.push_back(
+                    drawnVertex(corner, walk.Materials()[triangle.material]));
             }
         }
     }
@@ -914,43 +1079,45 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
                       {"count", vertexCount},
                       {"type", "VEC4"}})}};
 
-    // The texture coordinates are derived for viewers, and a rebuild does not read them.
-    nlohmann::ordered_json drawn = attributes;
-    drawn["TEXCOORD_0"] = AddAccessor(
-        model,
-        {{"bufferView", AddView(model, uv.data(), uv.size() * sizeof(float), ARRAY_BUFFER)},
-         {"componentType", FLOAT},
-         {"count", vertexCount},
-         {"type", "VEC2"}});
-    // A lit vertex has a normal of signed bytes where an unlit one has its colour.
-    std::vector<float> normals;
-    for (std::size_t i = 0; i < vertexCount; ++i) {
-        std::array<float, 3> normal{};
-        float length = 0.0f;
-        for (std::size_t axis = 0; axis < 3; ++axis) {
-            normal[axis] = static_cast<std::int8_t>(columns.colors[i * 4 + axis]);
-            length += normal[axis] * normal[axis];
-        }
-        length = std::sqrt(length);
-        for (std::size_t axis = 0; axis < 3; ++axis) {
-            normals.push_back(length > 0.0f ? normal[axis] / length : (axis == 2 ? 1.0f : 0.0f));
-        }
-    }
+    // The attributes of the vertices a viewer draws, derived from the records, which a rebuild
+    // does not read.
+    std::size_t drawnCount = drawnOf.size();
+    nlohmann::ordered_json drawn{
+        {"POSITION",
+         AddAccessor(model,
+                     {{"bufferView",
+                       AddView(model,
+                               drawnPositions.data(),
+                               drawnPositions.size() * sizeof(float),
+                               ARRAY_BUFFER)},
+                      {"componentType", FLOAT},
+                      {"count", drawnCount},
+                      {"type", "VEC3"},
+                      {"min", low},
+                      {"max", high}})},
+        {"TEXCOORD_0",
+         AddAccessor(
+             model,
+             {{"bufferView",
+               AddView(model, drawnUv.data(), drawnUv.size() * sizeof(float), ARRAY_BUFFER)},
+              {"componentType", FLOAT},
+              {"count", drawnCount},
+              {"type", "VEC2"}})}};
     nlohmann::ordered_json lit = drawn;
-    lit["NORMAL"] =
-        AddAccessor(model,
-                    {{"bufferView",
-                      AddView(model, normals.data(), normals.size() * sizeof(float), ARRAY_BUFFER)},
-                     {"componentType", FLOAT},
-                     {"count", vertexCount},
-                     {"type", "VEC3"}});
+    lit["NORMAL"] = AddAccessor(
+        model,
+        {{"bufferView",
+          AddView(model, drawnNormals.data(), drawnNormals.size() * sizeof(float), ARRAY_BUFFER)},
+         {"componentType", FLOAT},
+         {"count", drawnCount},
+         {"type", "VEC3"}});
     nlohmann::ordered_json shaded = drawn;
     shaded["COLOR_0"] = AddAccessor(
         model,
-        {{"bufferView", AddView(model, columns.colors.data(), columns.colors.size(), ARRAY_BUFFER)},
+        {{"bufferView", AddView(model, drawnColors.data(), drawnColors.size(), ARRAY_BUFFER)},
          {"componentType", UNSIGNED_BYTE},
          {"normalized", true},
-         {"count", vertexCount},
+         {"count", drawnCount},
          {"type", "VEC4"}});
     model.json["images"] = nlohmann::ordered_json::array();
     model.json["samplers"] = nlohmann::ordered_json::array();
@@ -974,19 +1141,16 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
         }
         if (textureOf[m]) {
             material["pbrMetallicRoughness"]["baseColorTexture"] = {{"index", *textureOf[m]}};
-            // Texels of no alpha cut the texture out, and partial alpha blends it.
-            const auto &rgba = model.images[*textureOf[m]].rgba;
-            bool cut = false;
-            bool partial = false;
-            for (std::size_t i = 3; i < rgba.size(); i += 4) {
-                cut = cut || rgba[i] == 0;
-                partial = partial || (rgba[i] != 0 && rgba[i] != 0xff);
+            // The frames the texture of the material shows, each from its time in milliseconds,
+            // the frames of a texture of the snow with no time.
+            if (auto animation = animationOf.find(*textureOf[m]); animation != animationOf.end()) {
+                material["extras"] = {{"coastlineAnimation", animation->second}};
             }
-            if (partial) {
-                material["alphaMode"] = "BLEND";
-            } else if (cut) {
-                material["alphaMode"] = "MASK";
-            }
+        }
+        if (source.alpha == Alpha::Blend) {
+            material["alphaMode"] = "BLEND";
+        } else if (source.alpha == Alpha::Cut) {
+            material["alphaMode"] = "MASK";
         }
         model.json["materials"].push_back(std::move(material));
     }
@@ -995,24 +1159,12 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
     // first draws it.
     std::map<std::pair<std::uint32_t, std::size_t>, std::optional<std::size_t>> meshOf;
     auto addMesh = [&](std::pair<std::uint32_t, std::size_t> key, const std::string &name) {
-        const Triangles &triangles = lists.at(key);
-        if (triangles.empty()) {
+        if (lists.at(key).empty()) {
             meshOf[key] = std::nullopt;
             return;
         }
-        std::vector<std::size_t> order;
-        std::map<std::size_t, std::vector<std::uint32_t>> indices;
-        for (const auto &triangle : triangles) {
-            if (!indices.contains(triangle.material)) {
-                order.push_back(triangle.material);
-            }
-            for (std::uint32_t corner : triangle.corners) {
-                indices[triangle.material].push_back(indexOf.at(corner));
-            }
-        }
         nlohmann::ordered_json primitives = nlohmann::ordered_json::array();
-        for (std::size_t material : order) {
-            const auto &list = indices[material];
+        for (const auto &[material, list] : primitivesOf.at(key)) {
             std::size_t accessor = AddAccessor(model,
                                                {{"bufferView",
                                                  AddView(model,
