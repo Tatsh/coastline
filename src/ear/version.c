@@ -2,8 +2,8 @@
 
 #include <math.h>
 
+#include "ear/backend.h"
 #include "error.h"
-#include "win32/ear/backend.h"
 
 // @ghidraAddress EAR: 0x1002ebe0
 static const double g_earVersionUnity = 1;
