@@ -11,7 +11,7 @@
 #include "common/settings.h"
 #include "common/strings.h"
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "win32/directplay.h"
+#include "common/network.h"
 #endif
 #include "common/hudcanvas.h"
 #else
