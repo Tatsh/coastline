@@ -44,6 +44,14 @@ TrackTriangle *g_pCollisionTriangle;
 
 #define ABS(x) ((x) < 0.0f ? -(x) : (x))
 
+#ifdef ENABLE_PATCHES
+/* Twice the distance from the centre of a box of half extents 2.5, 1, and 1 to its corner. Cars
+ * meeting corner to corner touch with their centres up to this far apart. */
+#define VEHICLE_PAIR_REACH 5.75f
+#else
+#define VEHICLE_PAIR_REACH 5.0f
+#endif /* ENABLE_PATCHES */
+
 #if TGR_BOSS_RALLY
 #define COLLISION_DISTANCE_TYPE long double
 #define COLLISION_SIGN(x) (!((x) < 0.0f) && !((x) > 0.0f) ? 0.0L : ((x) > 0.0f ? 1.0L : -1.0L))
@@ -376,10 +384,11 @@ void CollideVehicles(void) {
             apart.z = highApartZ;
             square = highApartZ * apart.z +
                      (COLLISION_PRODUCT(apart.x, apart.x) + COLLISION_PRODUCT(apart.y, apart.y));
-            if (!COLLISION_LESS(sqrtl(square), 5.0f)) {
+            if (!COLLISION_LESS(sqrtl(square), VEHICLE_PAIR_REACH)) {
 #else
             apart.z = sa->position.z - sb->position.z;
-            if (!(sqrtf(apart.z * apart.z + (apart.x * apart.x + apart.y * apart.y)) < 5.0f)) {
+            if (!(sqrtf(apart.z * apart.z + (apart.x * apart.x + apart.y * apart.y)) <
+                  VEHICLE_PAIR_REACH)) {
 #endif /* TGR_BOSS_RALLY */
                 continue;
             }
@@ -402,7 +411,12 @@ void CollideVehicles(void) {
             offset.z = sa->position.z - sb->position.z;
             Mtx3fMulVec3f(&local, rotationA, &offset);
             if (!TestObbIntersection(relative, &local, &extents, &extents)) {
+#ifdef ENABLE_PATCHES
+                continue;
+#else
+                /* A near miss ends the tests of every remaining pair for the substep. */
                 return;
+#endif /* ENABLE_PATCHES */
             }
             /* They share the mean of their speeds along the line between them. */
             Vec3fNormalizeFast(&apart);
