@@ -186,9 +186,6 @@ void NullStub(void);
  * @ghidraAddress BRGlide: 0x10053e60
  */
 s32 ReturnZero(void);
-
-/** Create the mutex used by the rendering session. */
-void CreateWindowsRenderMutex(void);
 #endif
 
 #ifdef __cplusplus

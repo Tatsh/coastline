@@ -420,7 +420,7 @@ void LoadAutoSaveSeason(void) {
     LoadSeasonMenuFile(fileName);
 }
 
-int LoadSeasonUI_OnSlotSelected(MenuItemList *pUnused, const int *pnSlot) {
+int LoadSeasonUI_OnSlotSelected(MenuItemList *pUnused, int *pnSlot) {
     g_dwLoadSeasonSlotValid = 0;
     ResetSeasonMenuForLoad();
     char fileName[260];

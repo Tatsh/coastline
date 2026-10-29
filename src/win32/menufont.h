@@ -7,6 +7,8 @@
 
 #include "common/fontdata.h"
 
+#undef DrawText
+
 #ifdef __cplusplus
 extern "C" {
 #endif

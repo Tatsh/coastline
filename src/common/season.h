@@ -427,7 +427,7 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10042170
  * @ghidraAddress BRGlide: 0x1003b6d0
  */
-int LoadSeasonUI_OnSlotSelected(MenuItemList *pUnused, const int *pnSlot);
+int LoadSeasonUI_OnSlotSelected(MenuItemList *pUnused, int *pnSlot);
 #ifdef __cplusplus
 }
 #endif

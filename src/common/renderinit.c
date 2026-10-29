@@ -3,6 +3,9 @@
 
 #if TGR_BOSS_RALLY
 #include "common/screen.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "win32/renderinit.h"
+#endif
 
 #pragma push_macro("errno")
 #undef errno
@@ -104,8 +107,8 @@ void InitRenderingSubsystem(void) {
             osMotorStop(&g_aContPfs[i]);
         }
     }
-#if TGR_BOSS_RALLY
-    CreateWindowsRenderMutex();
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    g_hRenderMutex = CreateMutexA(NULL, FALSE, NULL);
 #endif
 }
 

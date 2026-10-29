@@ -410,6 +410,8 @@ void ProcessVehicleInputAndPhysics(Vehicle *vehicle) {
     RespawnVehicle(vehicle);
 }
 
+#if !TGR_BOSS_RALLY
 void UpdatePhysicsStep(Vehicle *vehicle) {
     ProcessVehicleInputAndPhysics(vehicle);
 }
+#endif

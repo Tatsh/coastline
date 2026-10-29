@@ -653,6 +653,8 @@ void UpdateAiVehicleBehavior(Vehicle *vehicle) {
     RespawnVehicle(vehicle);
 }
 
+#if !TGR_BOSS_RALLY
 void DriveAiVehicle(Vehicle *vehicle) {
     UpdateAiVehicleBehavior(vehicle);
 }
+#endif

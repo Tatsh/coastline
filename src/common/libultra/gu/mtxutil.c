@@ -4,6 +4,7 @@
 #define FTOFIX32(x) (s32)((x) * (float)0x00010000)
 #define FIX32TOF(x) ((float)(x) / (float)0x00010000)
 
+#if !TGR_BOSS_RALLY
 void guMtxF2L(float mf[4][4], Mtx *m) {
     int i, j;
     s32 e1, e2;
@@ -40,6 +41,7 @@ void guMtxL2F(float mf[4][4], Mtx *m) {
         }
     }
 }
+#endif /* !TGR_BOSS_RALLY */
 
 void guMtxIdentF(float mf[4][4]) {
     int i, j;
@@ -51,9 +53,11 @@ void guMtxIdentF(float mf[4][4]) {
     }
 }
 
+#if !TGR_BOSS_RALLY
 void guMtxIdent(Mtx *m) {
     float mf[4][4];
 
     guMtxIdentF(mf);
     guMtxF2L(mf, m);
 }
+#endif /* !TGR_BOSS_RALLY */

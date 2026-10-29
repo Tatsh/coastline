@@ -17,9 +17,24 @@
 #include "common/replay.h"
 #include "common/splash.h"
 #else
+#include "common/configfile.h"
 #include "common/displaylistops.h"
 #include "common/gameinit.h"
+#include "common/ghost.h"
+#include "common/hud.h"
+#include "common/inputpoll.h"
+#include "common/race.h"
+#include "common/racephases.h"
+#include "common/rallyconfig.h"
 #include "common/screen.h"
+#include "common/settings.h"
+#include "common/vehicleaccess.h"
+#include "common/vehiclecount.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "win32/directplay.h"
+#include "win32/input.h"
+#include "win32/sound.h"
+#endif
 #endif /* !TGR_BOSS_RALLY */
 
 #if TGR_BOSS_RALLY
@@ -98,7 +113,12 @@ void ResetAllPlayers(void) {
 
 void InitGameAndShowMenus(void) {
 #if TGR_BOSS_RALLY
-    PrepareWindowsGameSession();
+    g_dwSavedSfxVolume = g_GlobalRallyConfig.dwSfxVolume;
+    g_dwSavedMusicVolume = g_GlobalRallyConfig.dwMusicVolume;
+    ResetMouseState();
+    g_bRaceStartReached = g_dwGameMode == GAME_MODE_DEMO;
+    g_bNetReadyToStartSent = false;
+    g_dwNetworkDataReceived = false;
 #endif
     InitRenderingSubsystem();
     StubUpdateCallback();
@@ -107,7 +127,22 @@ void InitGameAndShowMenus(void) {
     InitControllersAndPaks();
     SnapScreenFade(0.0f);
 #if TGR_BOSS_RALLY
-    PrepareWindowsGameMenus();
+    if (g_dwGameMode == GAME_MODE_ARCADE || g_dwGameMode == GAME_MODE_NETWORK) {
+        VEHICLE_GET(&(g_aVehicles[0]), Profile)->unlockedTracks = 0xffff;
+        VEHICLE_GET(&(g_aVehicles[0]), Profile)->unlocks = 0xffff;
+        VEHICLE_GET(&(g_aVehicles[0]), Profile)->unlockedWeathers = 0xffff;
+    }
+    StartRaceWithPlayerCount(1);
+    SetCurrentScreenCallback(NullStub);
+    g_dwUnk_InitGameAndShowMenus_106c664c = 0;
+    g_dwUnk_InitGameAndShowMenus_10b4df28 = 0;
+    g_dwNumActiveVehicles = 2;
+    g_dwNumLocalPlayers = 1;
+    g_dwCurrentWeather = 1;
+    g_pszDebugOverlayMessage = NULL;
+    g_fDebugOverlayMessageTimer = 0.0f;
+    SetCurrentScreenCallback(RunRaceGameScreen);
+    g_dwGhostRecordingSize = 8;
 #else
     SetCurrentScreenCallback(ProcessSplashScreens);
 
@@ -121,14 +156,29 @@ void InitGameAndShowMenus(void) {
     ResetHeap();
 #if TGR_BOSS_RALLY
     NullStub();
-    while (!LoadWindowsMenuData(0)) {
+    while (!LoadConfigData(0, true)) {
     }
     ResetHeap();
     NullStub();
-    while (!LoadWindowsMenuData(2)) {
+    while (!LoadConfigData(2, true)) {
     }
-    ApplyWindowsMenuVolumeSettings();
-    FinishWindowsGameSessionSetup();
+    ApplyAudioVolumeSettings();
+    if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+        SetTrackFromSeason();
+    }
+    if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP || g_dwGameMode == GAME_MODE_TIME_ATTACK) {
+        g_dwNumLocalPlayers = 1;
+    }
+    g_dwCurrentWeather = g_dwChosenWeather;
+    VEHICLE_GET(&(g_aVehicles[0]), Profile)->handling = g_dwHandlingType;
+    VEHICLE_GET(&(g_aVehicles[0]), Profile)->transmission = g_dwTransmissionType;
+    VEHICLE_GET(&(g_aVehicles[0]), Profile)->suspension = g_dwSuspensionType;
+    VEHICLE_GET(&(g_aVehicles[0]), Profile)->tires = g_dwTireType;
+    /* The Windows build retains the disabled audio and debug calls. */
+    NullStub();
+    NullStub();
+    NullStub();
+    NullStub();
 #else
     /* Load the season data and the configuration from a Controller Pak, if one holds them. The
      * European and Japanese releases read the EEPROM of the cartridge first and use a Controller

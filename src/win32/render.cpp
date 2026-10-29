@@ -1166,11 +1166,13 @@ void CreateDeviceTextureFromImageHeader(ModelTexture *pTexture, int nOption13) {
         nOption13);
 }
 
+#if TGR_BRD3D
 int CalculateTextureLodFromDimensions(int *pLod, int width, int height) {
     int dimension = width > height ? width : height;
     *pLod = TEXTURE_LOD_MAX - GetMipLevelFromDimension(dimension);
     return dimension <= TEXTURE_LOD_0_SIZE;
 }
+#endif /* TGR_BRD3D */
 
 int ChooseTexturePixelFormat(int nSize, int nFormat, int bColorCombine) {
     if (nSize == G_IM_SIZ_4b && nFormat == G_IM_FMT_I) {
@@ -1187,9 +1189,11 @@ int ChooseTexturePixelFormat(int nSize, int nFormat, int bColorCombine) {
     return 0xb;
 }
 
+#if TGR_BRD3D
 int GetTexturePixelSize(int nPixelFormatId) {
     return 4;
 }
+#endif /* TGR_BRD3D */
 
 int FindMatchingTextureEntry(const TextureImageData *pImage) {
     for (unsigned i = 0; i < g_dwTextureEntryCount; i++) {
@@ -1404,7 +1408,7 @@ unsigned char *GetTextureImagePixels(TextureImageData *pImage) {
         g_dwTexturePixelByteCount = pImage->nPaintPixelBytes;
         return pixels ? pixels : pImage->apPaintBuffers[0];
     }
-    unsigned char *pixels = GetTextureDecodeBuffer();
+    unsigned char *pixels = g_TextureDecodeWorkspace.decoded;
     if (!(pImage->dwFlags & 0x10)) {
         const TexScanTile &tile = pImage->aTiles[pImage->nTileIndex];
         DecodeTexturePixels(pixels,
@@ -1597,7 +1601,7 @@ int DecodeN64TextureToPixelBuffer(void *pDest,
     image.pPalette = pPalette;
     image.bMirrorS = 0;
     image.bMirrorT = 0;
-    DecodeTexturePixels(GetTextureDecodeBuffer(),
+    DecodeTexturePixels(g_TextureDecodeWorkspace.decoded,
                         image.nPixelBytes,
                         tile.nSize,
                         pImage,
@@ -1620,7 +1624,7 @@ int DecodeN64TextureToPixelBuffer(void *pDest,
                         image.abPrimColor[3],
                         image.nRowSwapMask);
     return ConvertRGBAToPixelFormat(
-        pDest, GetTextureDecodeBuffer(), image.nPixelBytes, image.nPixelFormatId);
+        pDest, g_TextureDecodeWorkspace.decoded, image.nPixelBytes, image.nPixelFormatId);
 }
 #endif /* TGR_BRD3D */
 
@@ -1703,10 +1707,10 @@ unsigned char *GetTextureEntryPixelsWithPaint(int nEntry, unsigned *pSize) {
                                    right,
                                    top,
                                    bottom,
-                                   GetTextureDecodeBuffer(),
+                                   g_TextureDecodeWorkspace.decoded,
                                    sourceWidth,
                                    sourceHeight)) {
-            unsigned char *pixels = GetTextureDecodeBuffer();
+            unsigned char *pixels = g_TextureDecodeWorkspace.decoded;
             if (sourceWidth != image.nWidth || sourceHeight != image.nHeight) {
                 ResizeTextureImage(g_abTextureResampleBuffer,
                                    image.nWidth,
@@ -1760,7 +1764,8 @@ int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage) {
     }
     bool enlarge = pImage->nSourceWidth == pImage->nWidth &&
                    pImage->nSourceHeight == pImage->nHeight && g_dwTextureQualityLevel <= 0;
-    unsigned char *paintPixels = enlarge ? GetTextureDecodeBuffer() : g_abTextureResampleBuffer;
+    unsigned char *paintPixels =
+        enlarge ? g_TextureDecodeWorkspace.decoded : g_abTextureResampleBuffer;
     auto blit = [&](const void *pixels) {
         return BlitPaintImageToPixels(
             pixels, left, right, top, bottom, paintPixels, sourceWidth, sourceHeight);
@@ -1784,7 +1789,7 @@ int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage) {
     pImage->bHasTintPixels = HasPaintTintPixels(paint, left, right, top, bottom);
     auto convert = [&]() {
         if (!enlarge) {
-            ResizeTextureImage(GetTextureDecodeBuffer(),
+            ResizeTextureImage(g_TextureDecodeWorkspace.decoded,
                                pImage->nWidth,
                                pImage->nHeight,
                                g_abTextureResampleBuffer,
@@ -1794,14 +1799,14 @@ int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage) {
         }
         if (pImage->nColorKey) {
             pImage->nPaintPixelBytes =
-                ConvertRGBAToPixelFormatWithColorKey(GetTextureDecodeBuffer(),
-                                                     GetTextureDecodeBuffer(),
+                ConvertRGBAToPixelFormatWithColorKey(g_TextureDecodeWorkspace.decoded,
+                                                     g_TextureDecodeWorkspace.decoded,
                                                      pImage->nPixelBytes,
                                                      pImage->nPixelFormatId,
                                                      &pImage->nColorKey);
         } else {
-            pImage->nPaintPixelBytes = ConvertRGBAToPixelFormat(GetTextureDecodeBuffer(),
-                                                                GetTextureDecodeBuffer(),
+            pImage->nPaintPixelBytes = ConvertRGBAToPixelFormat(g_TextureDecodeWorkspace.decoded,
+                                                                g_TextureDecodeWorkspace.decoded,
                                                                 pImage->nPixelBytes,
                                                                 pImage->nPixelFormatId);
         }
@@ -1809,8 +1814,9 @@ int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage) {
     auto save = [&](int damage) {
         pImage->apPaintBuffers[damage] =
             static_cast<unsigned char *>(std::malloc(pImage->nPaintPixelBytes));
-        std::memcpy(
-            pImage->apPaintBuffers[damage], GetTextureDecodeBuffer(), pImage->nPaintPixelBytes);
+        std::memcpy(pImage->apPaintBuffers[damage],
+                    g_TextureDecodeWorkspace.decoded,
+                    pImage->nPaintPixelBytes);
     };
     convert();
     if (GetSelectedPaintOption() < 0) {
@@ -1833,7 +1839,6 @@ int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage) {
     }
     return 1;
 }
-#endif /* TGR_BRD3D */
 
 int CalculateTextureAspectRatio(int *pAspectRatio, int nWidth, int nHeight) {
     bool wide = nWidth > nHeight;
@@ -1843,6 +1848,7 @@ int CalculateTextureAspectRatio(int *pAspectRatio, int nWidth, int nHeight) {
     *pAspectRatio = wide ? level : 6 - level;
     return ratio == 64 || ratio == 32 || ratio == 16 || (!wide && ratio == 8);
 }
+#endif /* TGR_BRD3D */
 
 int g_dwCurrentMaxTextureWidth = 32;
 int g_dwCurrentMaxTextureHeight = 32;

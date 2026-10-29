@@ -6,6 +6,8 @@
 #else
 #include <math.h>
 #include <stddef.h>
+
+#include "common/renderbackend.h"
 #endif
 
 /* The inertia of a box about an axis is this share of its mass times the squares of the sides. */
@@ -26,8 +28,10 @@
 #define BODY_ACCUMULATE(sum, a, b) ((sum) += (a) * (b))
 #endif
 
+#if !TGR_BOSS_RALLY
 void StubPhysics1(void *data) {
 }
+#endif
 
 void StubPhysics2(void *data) {
 }
@@ -441,7 +445,11 @@ void InitRigidBody(RigidBody *body) {
         body->inertia[1][1] = (zz + xx) * boxShare;
         body->inertia[2][2] = (yy + xx) * boxShare;
 #endif
+#if TGR_BOSS_RALLY
+        NullStub2(body->inertia);
+#else
         StubPhysics1(body->inertia);
+#endif
     }
     if (body->kind != RIGID_BODY_NO_ROTATION) {
         body->inverseInertia[0][0] = 1.0f / body->inertia[0][0];

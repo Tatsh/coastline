@@ -375,7 +375,7 @@ unsigned char *GetTextureImagePixels(TextureImageData *pImage) {
         g_dwTexturePixelByteCount = pImage->nDecodedBytes;
         return pImage->pImage;
     }
-    unsigned char *pixels = GetTextureDecodeBuffer();
+    unsigned char *pixels = g_TextureDecodeWorkspace.decoded;
     if (pImage->bOwnsPaintBuffers) {
         if (pImage->apPaintBuffers[pImage->nDamageLevel]) {
             g_dwTexturePixelByteCount = pImage->nPaintPixelBytes;
@@ -445,7 +445,7 @@ int PreparePaintTexture(int *pWidth, int *pHeight, TextureImageData *pImage) {
     }
     int sourceWidth = pImage->nSourceWidth << 1;
     int sourceHeight = pImage->nSourceHeight << 1;
-    unsigned char *decoded = GetTextureDecodeBuffer();
+    unsigned char *decoded = g_TextureDecodeWorkspace.decoded;
     auto save = [&](int damage) {
         pImage->apPaintBuffers[damage] =
             static_cast<unsigned char *>(std::malloc(pImage->nPaintPixelBytes));
@@ -556,7 +556,7 @@ int CreateTextureFromImage(TextureImageData *pImage, unsigned char *pPixels) {
     int width;
     int height;
     unsigned char *pixels =
-        PreparePaintTexture(&width, &height, pImage) ? GetTextureDecodeBuffer() : pPixels;
+        PreparePaintTexture(&width, &height, pImage) ? g_TextureDecodeWorkspace.decoded : pPixels;
     auto allocate = [pImage](int tmu) {
         return AllocateGlideTmuTexture(tmu,
                                        pImage->nOption2,
@@ -599,7 +599,7 @@ unsigned char *GetTextureEntryPixelsWithPaint(int nEntry, unsigned *pSize) {
         *pSize = g_dwTexturePixelByteCount;
         return pixels;
     }
-    unsigned char *pixels = GetTextureDecodeBuffer();
+    unsigned char *pixels = g_TextureDecodeWorkspace.decoded;
     int right = nEntry;
     void *paint = GetPaintImage(image.nPaintGroup, image.nPaintSet, image.nDamageLevel);
     if (paint) {

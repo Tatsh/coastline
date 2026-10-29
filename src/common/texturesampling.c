@@ -27,6 +27,7 @@ static unsigned SampleChannel(unsigned topLeft,
     return RoundSampledChannel(top + (bottom - top) * y, maximum);
 }
 
+#if TGR_BRD3D
 void SampleTexturePixelBilinear(unsigned char *pDest,
                                 const unsigned char *pTopLeft,
                                 const unsigned char *pTopRight,
@@ -49,7 +50,7 @@ void SampleTexturePixelBilinear(unsigned char *pDest,
     }
     memcpy(pDest, result, sizeof(result));
 }
-
+#else
 void BilinearInterpolate8bpp(unsigned char *destination,
                              const unsigned char *topLeft,
                              const unsigned char *topRight,
@@ -113,3 +114,4 @@ void BilinearInterpolateArgb4444(unsigned char *destination,
                                  float y) {
     SamplePackedPixel(destination, topLeft, topRight, bottomLeft, bottomRight, x, y, 4, 4);
 }
+#endif /* TGR_BRD3D */

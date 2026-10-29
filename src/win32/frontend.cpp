@@ -1945,7 +1945,7 @@ void MenuScreen::FlipAndWait() {
 #define SHUTDOWN_DELAY_STATE_2_MS 4570
 #define SHUTDOWN_DELAY_STATE_3_MS 1540
 
-static inline int ShowCachedMenuScreen(MenuScreen *&pScreen, void (*pfnBuild)(MenuScreen *)) {
+static inline int ShowCachedMenuScreen(MenuScreen *&pScreen, int (*pfnBuild)(MenuScreen *)) {
     if (!pScreen) {
         pScreen = new (std::nothrow) MenuScreen();
         g_pActiveMenuScreen = pScreen;
@@ -1962,7 +1962,7 @@ static inline int ShowCachedMenuScreen(MenuScreen *&pScreen, void (*pfnBuild)(Me
     return 1;
 }
 
-int ShowInputOptionsMenu(void) {
+int ShowInputOptionsMenu(MenuWidget *) {
     return ShowCachedMenuScreen(g_pCachedMenu_Credits, BuildInputOptionsUI);
 }
 
@@ -1970,12 +1970,8 @@ int ShowMultiplayerConnectionScreen(MenuWidget *) {
     return ShowCachedMenuScreen(g_pCachedMenu_MultiplayerConnection, BuildMultiplayerConnectionUI);
 }
 
-static inline void BuildCreateGameScreen(MenuScreen *screen) {
-    BuildCreateGameMenuUI(screen);
-}
-
 int ShowCreateGameScreen(MenuWidget *) {
-    return ShowCachedMenuScreen(g_pCachedMenu_CreateGame, BuildCreateGameScreen);
+    return ShowCachedMenuScreen(g_pCachedMenu_CreateGame, BuildCreateGameMenuUI);
 }
 
 int SeasonRoundList_SetBrowsingFlag(MenuWidget *) {
@@ -2233,36 +2229,24 @@ int OnModemPhoneNumberEdited(MenuWidget *pWidget) {
     return 1;
 }
 
-int ShowVideoOptionsMenu(void) {
+int ShowVideoOptionsMenu(MenuWidget *) {
     return ShowCachedMenuScreen(g_pCachedMenu_InputConfig, BuildVideoOptionsUI);
 }
 
-static inline void BuildAudioOptionsScreen(MenuScreen *screen) {
-    BuildAudioOptionsUI(screen);
+int ShowAudioOptionsMenu(MenuWidget *) {
+    return ShowCachedMenuScreen(g_pCachedMenu_GameplaySettings, BuildAudioOptionsUI);
 }
 
-static inline void BuildGameOptionsScreen(MenuScreen *screen) {
-    BuildGameOptionsUI(screen);
+int ShowGameOptionsMenu(MenuWidget *) {
+    return ShowCachedMenuScreen(g_pCachedMenu_Championship, BuildGameOptionsUI);
 }
 
-int ShowAudioOptionsMenu(void) {
-    return ShowCachedMenuScreen(g_pCachedMenu_GameplaySettings, BuildAudioOptionsScreen);
-}
-
-int ShowGameOptionsMenu(void) {
-    return ShowCachedMenuScreen(g_pCachedMenu_Championship, BuildGameOptionsScreen);
-}
-
-int ShowKeyConfigScreen(void) {
+int ShowKeyConfigScreen(MenuWidget *) {
     return ShowCachedMenuScreen(g_pCachedMenu_KeyConfig, BuildKeyConfigUI);
 }
 
-static inline void BuildModemConnectionScreen(MenuScreen *screen) {
-    BuildModemConnectionUI(screen);
-}
-
-int ShowModemDialUpScreen(void) {
-    return ShowCachedMenuScreen(g_pCachedMenu_ModemDialUp, BuildModemConnectionScreen);
+int ShowModemDialUpScreen(MenuWidget *) {
+    return ShowCachedMenuScreen(g_pCachedMenu_ModemDialUp, BuildModemConnectionUI);
 }
 
 int ShowDisplayModeSelectMenu(MenuWidget *) {
@@ -2645,22 +2629,18 @@ int RaceSetupUI::OnCycleWeather(MenuActionWidget *) {
     return 1;
 }
 
-static inline void BuildTimeAttackMenuScreen(MenuScreen *screen) {
-    BuildTimeAttackMenuUI(screen);
-}
-
 int ShowTimeAttackMenu(MenuWidget *) {
     SetActiveMenuItemText(" ");
-    return ShowCachedMenuScreen(g_pCachedMenu_TimeAttack, BuildTimeAttackMenuScreen);
+    return ShowCachedMenuScreen(g_pCachedMenu_TimeAttack, BuildTimeAttackMenuUI);
 }
 
-int ShowLoadGhostMenu(void) {
+int ShowLoadGhostMenu(MenuWidget *) {
     g_fGhostBestRaceTime = 0.0f;
     g_fGhostBestLapTime = 0.0f;
     return ShowCachedMenuScreen(g_pCachedMenu_LoadGhost, BuildLoadTimeAttackMenuUI);
 }
 
-int JoinSessionAndShowRaceSetup(void) {
+int JoinSessionAndShowRaceSetup(MenuWidget *) {
     g_dwLobbyIsHost = 0;
     g_dwSessionEnumPending = 0;
     bool ready = g_dwMenuScreenActivated != 0;
@@ -2901,22 +2881,14 @@ int NetworkCarSetupUI::OnEscape(MenuWidget *pWidget) {
     return 1;
 }
 
-static inline void BuildPlayerNameEntryScreen(MenuScreen *screen) {
-    BuildPlayerNameEntryUI(screen);
-}
-
 int ShowMultiplayerNameScreen(MenuWidget *) {
     SetActiveMenuItemText(" ");
     ResolveRaceSelections();
-    return ShowCachedMenuScreen(g_pCachedMenu_MultiplayerName, BuildPlayerNameEntryScreen);
-}
-
-static inline void BuildJoinCreateGameScreen(MenuScreen *screen) {
-    BuildJoinCreateGameUI(screen);
+    return ShowCachedMenuScreen(g_pCachedMenu_MultiplayerName, BuildPlayerNameEntryUI);
 }
 
 int ShowJoinCreateGameScreen(MenuWidget *) {
-    if (!ShowCachedMenuScreen(g_pCachedMenu_JoinCreateGame, BuildJoinCreateGameScreen)) {
+    if (!ShowCachedMenuScreen(g_pCachedMenu_JoinCreateGame, BuildJoinCreateGameUI)) {
         return 0;
     }
     if (!g_dwDirectPlaySessionActive && !g_dwLaunchedFromLobby &&
@@ -2948,7 +2920,7 @@ int ShowRaceSetupMenu(MenuWidget *) {
     return 1;
 }
 
-int ReturnToMainMenuFromSeason(void) {
+int ReturnToMainMenuFromSeason(MenuWidget *) {
     g_dwGameMode = GAME_MODE_TIME_ATTACK;
     ResetMenuSelectionsToDefaults();
     bool wasCached = g_pCachedMenu_MainMenu != nullptr;
@@ -2973,24 +2945,16 @@ int ReturnToMainMenuFromSeason(void) {
     return 1;
 }
 
-static inline void BuildQuitGameConfirmScreen(MenuScreen *screen) {
-    BuildQuitGameConfirmUI(screen);
-}
-
 int ShowQuitGameConfirmMenu(MenuWidget *) {
     SetActiveMenuItemText(" ");
     PlaySoundChannelOneOnce(3, 0x200020);
     g_dwNetworkMenuState = 3;
-    return ShowCachedMenuScreen(g_pCachedMenu_MainMenuAlternate, BuildQuitGameConfirmScreen);
-}
-
-static inline void BuildOptionsMenuScreen(MenuScreen *screen) {
-    BuildOptionsMenuUI(screen);
+    return ShowCachedMenuScreen(g_pCachedMenu_MainMenuAlternate, BuildQuitGameConfirmUI);
 }
 
 int ShowOptionsMenu(MenuWidget *) {
     SetActiveMenuItemText(" ");
-    return ShowCachedMenuScreen(g_pCachedMenu_Options, BuildOptionsMenuScreen);
+    return ShowCachedMenuScreen(g_pCachedMenu_Options, BuildOptionsMenuUI);
 }
 
 static inline int ReturnFromOptionsMenu(MenuActionWidget *pItem, MenuScreen *&pTarget) {
@@ -3518,6 +3482,7 @@ int ReturnToVideoOptionsFromResolution(MenuWidget *pWidget) {
     return 0;
 }
 
+#if TGR_BRD3D
 int ReturnToVideoOptionsFromDeviceSelect(MenuWidget *pWidget) {
     pWidget->GetScreen()->DestroyPanels();
     delete g_pActiveMenuScreen;
@@ -3527,6 +3492,7 @@ int ReturnToVideoOptionsFromDeviceSelect(MenuWidget *pWidget) {
     g_pActiveMenuScreen = screen;
     return 0;
 }
+#endif /* TGR_BRD3D */
 
 int ModemConnectionUI::OnAccept(MenuWidget *pWidget) {
     g_dwServiceProviderIndex = 2;
@@ -4929,7 +4895,7 @@ int ShowRaceResultsScreen(void) {
     return ShowCachedMenuScreen(g_pCachedMenu_RaceResults, BuildRaceResultsInfoUI);
 }
 
-int ShowLoadSeasonMenu(void) {
+int ShowLoadSeasonMenu(MenuWidget *) {
     return ShowCachedMenuScreen(g_pCachedMenu_LoadSeason, BuildLoadSeasonUI);
 }
 
@@ -4941,34 +4907,18 @@ int ShowRaceResultsTotalsScreen(MenuWidget *) {
     return ShowCachedMenuScreen(g_pCachedMenu_RaceResultsTotals, BuildRaceResultsTotalsUI);
 }
 
-static inline void BuildSeasonCongratsScreen(MenuScreen *screen) {
-    BuildSeasonCongratsUI(screen);
-}
-
-static inline void BuildNotEnoughPointsScreen(MenuScreen *screen) {
-    BuildNotEnoughPointsUI(screen);
-}
-
 int ShowSeasonCongratsScreen(MenuWidget *) {
-    return ShowCachedMenuScreen(g_pCachedMenu_SeasonCongrats, BuildSeasonCongratsScreen);
+    return ShowCachedMenuScreen(g_pCachedMenu_SeasonCongrats, BuildSeasonCongratsUI);
 }
 
 int ShowNotEnoughPointsScreen(MenuWidget *) {
-    return ShowCachedMenuScreen(g_pCachedMenu_NotEnoughPoints, BuildNotEnoughPointsScreen);
-}
-
-static inline void BuildPreRaceExitSeasonConfirmScreen(MenuScreen *screen) {
-    BuildPreRaceExitSeasonConfirmUI(screen);
-}
-
-static inline void BuildResultsSummaryExitSeasonConfirmScreen(MenuScreen *screen) {
-    BuildResultsSummaryExitSeasonConfirmUI(screen);
+    return ShowCachedMenuScreen(g_pCachedMenu_NotEnoughPoints, BuildNotEnoughPointsUI);
 }
 
 static inline int ShowCachedMenuWithExitConfirmation(MenuScreen *&pScreen,
-                                                     void (*pfnBuild)(MenuScreen *),
+                                                     int (*pfnBuild)(MenuScreen *),
                                                      MenuScreen *&pConfirmation,
-                                                     void (*pfnBuildConfirmation)(MenuScreen *)) {
+                                                     int (*pfnBuildConfirmation)(MenuScreen *)) {
     const bool wasCached = pScreen != nullptr;
     if (!ShowCachedMenuScreen(pScreen, pfnBuild)) {
         return 0;
@@ -4989,12 +4939,11 @@ int ShowRaceResultsSummaryScreen(MenuWidget *) {
     return ShowCachedMenuWithExitConfirmation(g_pCachedMenu_RaceResultsSummary,
                                               BuildRaceResultsSummaryUI,
                                               g_pRaceResultsSummaryMenuScreen,
-                                              BuildResultsSummaryExitSeasonConfirmScreen);
+                                              BuildResultsSummaryExitSeasonConfirmUI);
 }
 
-static inline int CompleteConnectionTextEdit(MenuWidget *) {
-    /* The text callback shares the controller initialiser's constant return. */
-    return osContInit(nullptr, nullptr, nullptr);
+int CompleteConnectionTextEdit(MenuWidget *) {
+    return 1;
 }
 
 static inline MenuWidget *AddMenuWidget(
@@ -5129,14 +5078,6 @@ int BuildNotEnoughPointsUI(MenuScreen *screen) {
     return 1;
 }
 
-static inline int TimeAttackMenuUI_OnStart(MenuWidget *) {
-    return ReturnToMainMenuFromSeason();
-}
-
-static inline int TimeAttackMenuUI_OnLoadGhost(MenuWidget *) {
-    return ShowLoadGhostMenu();
-}
-
 int BuildTimeAttackMenuUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     screen->SetPanelActive(screen->GetPanelCount(), 1);
@@ -5158,7 +5099,7 @@ int BuildTimeAttackMenuUI(MenuScreen *screen) {
     const float offsets[3] = {0, 19, 114};
     const int labels[3] = {107, 108, 12};
     int (*actions[3])(MenuWidget *) = {
-        TimeAttackMenuUI_OnStart, TimeAttackMenuUI_OnLoadGhost, TimeAttackMenuUI::OnBack};
+        ReturnToMainMenuFromSeason, ShowLoadGhostMenu, TimeAttackMenuUI::OnBack};
     for (int i = 0; i < 3; ++i) {
         float y = static_cast<float>(static_cast<long double>(panel->GetY()) + offsets[i]);
         widget = AddMenuWidget(panel, screen, panel->GetX(), y, 0x102001, 1, -1);
@@ -5209,14 +5150,6 @@ int BuildResultsSummaryExitSeasonConfirmUI(MenuScreen *screen) {
                                true);
 }
 
-static inline int JoinCreateGameUI_OnDial(MenuWidget *) {
-    return ShowModemDialUpScreen();
-}
-
-static inline int JoinCreateGameUI_OnJoin(MenuWidget *) {
-    return JoinSessionAndShowRaceSetup();
-}
-
 int BuildJoinCreateGameUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     ResetSessionSlotTable();
@@ -5253,7 +5186,7 @@ int BuildJoinCreateGameUI(MenuScreen *screen) {
                                1,
                                -1);
         widget->SetIdleActionCallback(ValidateEntityState);
-        widget->SetActionCallback(JoinCreateGameUI_OnDial);
+        widget->SetActionCallback(ShowModemDialUpScreen);
         SetMenuWidgetLabel(widget, 0x5e, &g_rcMenuCenterPanel);
         panel->SetWidgetCount(panel->GetWidgetCount() + 1);
         panel->SetNavigationCount(panel->GetNavigationCount() + 1);
@@ -5267,7 +5200,7 @@ int BuildJoinCreateGameUI(MenuScreen *screen) {
                            1,
                            -1);
     widget->SetIdleActionCallback(ValidateEntityState);
-    widget->SetActionCallback(JoinCreateGameUI_OnJoin);
+    widget->SetActionCallback(JoinSessionAndShowRaceSetup);
     widget->SetSpriteId(2);
     widget->SetText(GetStringResource(0x60), 1, canJoin ? 1 : 0, &g_rcMenuCenterPanel);
     g_pNetworkSessionJoinMenu = widget;
@@ -5294,22 +5227,6 @@ int BuildJoinCreateGameUI(MenuScreen *screen) {
     return 1;
 }
 
-static inline int OptionsMenuUI_OnInput(MenuWidget *) {
-    return ShowInputOptionsMenu();
-}
-
-static inline int OptionsMenuUI_OnVideo(MenuWidget *) {
-    return ShowVideoOptionsMenu();
-}
-
-static inline int OptionsMenuUI_OnAudio(MenuWidget *) {
-    return ShowAudioOptionsMenu();
-}
-
-static inline int OptionsMenuUI_OnGame(MenuWidget *) {
-    return ShowGameOptionsMenu();
-}
-
 int BuildOptionsMenuUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     screen->SetPanelActive(screen->GetPanelCount(), 1);
@@ -5328,10 +5245,10 @@ int BuildOptionsMenuUI(MenuScreen *screen) {
     SetMenuWidgetLabel(
         AddMenuWidget(panel, screen, panel->GetX(), 10, 0x100009, 1, -1), 6, &g_rcMenuTitleBar);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
-    int (*actions[5])(MenuWidget *) = {OptionsMenuUI_OnInput,
-                                       OptionsMenuUI_OnVideo,
-                                       OptionsMenuUI_OnAudio,
-                                       OptionsMenuUI_OnGame,
+    int (*actions[5])(MenuWidget *) = {ShowInputOptionsMenu,
+                                       ShowVideoOptionsMenu,
+                                       ShowAudioOptionsMenu,
+                                       ShowGameOptionsMenu,
                                        OptionsMenuUI::OnBack};
     for (int i = 0; i < 5; ++i) {
         int spacing = i < 4 ? 19 * i : 114;
@@ -5497,7 +5414,7 @@ static inline void BuildDisplaySelectionUI(MenuScreen *screen,
 }
 
 #if TGR_BRD3D
-void BuildD3DDeviceSelectUI(MenuScreen *screen) {
+int BuildD3DDeviceSelectUI(MenuScreen *screen) {
     BuildDisplaySelectionUI(screen,
                             0x2b,
                             D3DDeviceSelectUI::UpdateDeviceSelection,
@@ -5505,10 +5422,11 @@ void BuildD3DDeviceSelectUI(MenuScreen *screen) {
                             D3DDeviceSelectUI::OnSetDriver,
                             0x2c,
                             ReturnToVideoOptionsFromDeviceSelect);
+    return 1;
 }
 #endif /* TGR_BRD3D */
 
-void BuildDisplayModeSelectUI(MenuScreen *screen) {
+int BuildDisplayModeSelectUI(MenuScreen *screen) {
     BuildDisplaySelectionUI(screen,
                             0x2a,
                             DisplayModeSelectUI::UpdateModeSelection,
@@ -5516,9 +5434,10 @@ void BuildDisplayModeSelectUI(MenuScreen *screen) {
                             DisplayModeSelectUI::OnSetMode,
                             0x2d,
                             ReturnToVideoOptionsFromResolution);
+    return 1;
 }
 
-void BuildVideoOptionsUI(MenuScreen *screen) {
+int BuildVideoOptionsUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     screen->SetPanelActive(screen->GetPanelCount(), 1);
     MenuPanel *panel = new (std::nothrow) MenuPanel();
@@ -5570,10 +5489,7 @@ void BuildVideoOptionsUI(MenuScreen *screen) {
         panel->SetWidgetCount(panel->GetWidgetCount() + 1);
         panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     }
-}
-
-static inline int LoadSeasonUI_SelectSlot(MenuItemList *list, int *slot) {
-    return LoadSeasonUI_OnSlotSelected(list, slot);
+    return 1;
 }
 
 static inline void BuildSeasonFilePreview(MenuPanel *panel, MenuScreen *screen) {
@@ -5597,7 +5513,7 @@ static inline void BuildSeasonFilePreview(MenuPanel *panel, MenuScreen *screen) 
     }
 }
 
-void BuildLoadSeasonUI(MenuScreen *screen) {
+int BuildLoadSeasonUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     g_dwFileListSelectedSlot = -1;
     g_dwSaveSlotListIsSaveMode = 1;
@@ -5624,7 +5540,7 @@ void BuildLoadSeasonUI(MenuScreen *screen) {
     MenuItemList &list = widget->GetItemList();
     list.SetVerticalScrollbar(1);
     list.Initialize(0x40001, &g_rcMenuLoadSeasonListBox, 4, 0, -1);
-    list.SetSelectionChangedCallback(LoadSeasonUI_SelectSlot);
+    list.SetSelectionChangedCallback(LoadSeasonUI_OnSlotSelected);
     for (int index = 0; index < SAVE_FILE_NAME_COUNT; index++) {
         const char *name = g_pRootMenuScreen->GetFileList(0)->GetName(index);
         if (name) {
@@ -5680,9 +5596,10 @@ void BuildLoadSeasonUI(MenuScreen *screen) {
     AddMenuWidget(panel, screen, 80, 46, 9, 0, 6);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     BuildSeasonFilePreview(panel, screen);
+    return 1;
 }
 
-void BuildSaveSeasonUI(MenuScreen *screen) {
+int BuildSaveSeasonUI(MenuScreen *screen) {
     g_dwSaveSlotListIsSaveMode = 1;
     g_pRootMenuScreen->GetFileList(0)->ScanSaveFiles("RallySeason*.BRF");
     g_dwSaveSlotListIsSaveMode = 0;
@@ -5767,6 +5684,7 @@ void BuildSaveSeasonUI(MenuScreen *screen) {
     SetMenuWidgetLabel(widget, 0x3a, &g_rcMenuFullScreen);
     g_pSaveSeasonMenu = widget;
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
 }
 
 static inline void BuildTimeAttackFilePreview(MenuPanel *panel, MenuScreen *screen) {
@@ -5788,7 +5706,7 @@ static inline void BuildTimeAttackFilePreview(MenuPanel *panel, MenuScreen *scre
     }
 }
 
-void BuildLoadTimeAttackMenuUI(MenuScreen *screen) {
+int BuildLoadTimeAttackMenuUI(MenuScreen *screen) {
     g_pRootMenuScreen->GetFileList(1)->ScanSaveFiles("TimeAttack*.GRF");
     screen->SetCurrentPanelIndex(0);
     g_dwTimeAttackLoadSelected = 0;
@@ -5887,9 +5805,10 @@ void BuildLoadTimeAttackMenuUI(MenuScreen *screen) {
         AddMenuWidget(panel, screen, 106, 115, 0x100001, 1, -1), 0x1d, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     BuildTimeAttackFilePreview(panel, screen);
+    return 1;
 }
 
-void BuildSaveTimeAttackMenuUI(MenuScreen *screen) {
+int BuildSaveTimeAttackMenuUI(MenuScreen *screen) {
     g_pRootMenuScreen->GetFileList(1)->ScanSaveFiles("TimeAttack*.GRF");
     screen->SetCurrentPanelIndex(0);
     g_dwFileListSelectedSlot = -1;
@@ -5958,9 +5877,10 @@ void BuildSaveTimeAttackMenuUI(MenuScreen *screen) {
     SetMenuWidgetLabel(widget, 0x70, &g_rcMenuFullScreen);
     g_pSaveTimeAttackMenu = widget;
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
 }
 
-void BuildKeyConfigUI(MenuScreen *screen) {
+int BuildKeyConfigUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     screen->SetPanelActive(screen->GetPanelCount(), 1);
     MenuPanel *panel = new (std::nothrow) MenuPanel();
@@ -6044,9 +5964,10 @@ void BuildKeyConfigUI(MenuScreen *screen) {
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     g_dwKeyBindingDuplicatesFound =
         DetectDuplicateKeyBindings(g_adwInputDeviceMenuIndexToDevice[g_dwSelectedInputDevice]);
+    return 1;
 }
 
-void BuildFrontEndRootMenuUI(MenuScreen *screen) {
+int BuildFrontEndRootMenuUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     screen->SetPanelActive(screen->GetPanelCount(), 1);
     MenuPanel *panel = new (std::nothrow) MenuPanel();
@@ -6116,13 +6037,10 @@ void BuildFrontEndRootMenuUI(MenuScreen *screen) {
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuRootTitleBar);
     g_dwRootMenuStringIndex = panel->GetWidgetCount();
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
 }
 
-static inline int ChampionshipSeasonUI_ShowLoadSeason(MenuWidget *) {
-    return ShowLoadSeasonMenu();
-}
-
-void BuildChampionshipSeasonUI(MenuScreen *screen) {
+int BuildChampionshipSeasonUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     screen->SetPanelActive(screen->GetPanelCount(), 1);
     MenuPanel *panel = new (std::nothrow) MenuPanel();
@@ -6142,9 +6060,8 @@ void BuildChampionshipSeasonUI(MenuScreen *screen) {
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     const int strings[] = {10, 11, 12};
     const float offsets[] = {0, 19, 114};
-    int (*const actions[])(MenuWidget *) = {ChampionshipSeasonUI_ShowLoadSeason,
-                                            ChampionshipSeasonUI::OnStartNewSeason,
-                                            ChampionshipSeasonUI::OnBack};
+    int (*const actions[])(MenuWidget *) = {
+        ShowLoadSeasonMenu, ChampionshipSeasonUI::OnStartNewSeason, ChampionshipSeasonUI::OnBack};
     for (int index = 0; index < 3; index++) {
         MenuWidget *widget = AddMenuWidget(
             panel,
@@ -6164,13 +6081,10 @@ void BuildChampionshipSeasonUI(MenuScreen *screen) {
     }
     AddMenuWidget(panel, screen, 80, 46, 9, 0, 6);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
 }
 
-static inline int InputOptionsUI_ShowKeyConfig(MenuWidget *) {
-    return ShowKeyConfigScreen();
-}
-
-void BuildInputOptionsUI(MenuScreen *screen) {
+int BuildInputOptionsUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     screen->SetPanelActive(screen->GetPanelCount(), 1);
     MenuPanel *panel = new (std::nothrow) MenuPanel();
@@ -6191,7 +6105,7 @@ void BuildInputOptionsUI(MenuScreen *screen) {
     const int strings[] = {0x23, 0x24, 0x25, 0xc};
     const float offsets[] = {0, 19, 38, 114};
     int (*const actions[])(MenuWidget *) = {InputOptionsUI::OnCycleInputDevice,
-                                            InputOptionsUI_ShowKeyConfig,
+                                            ShowKeyConfigScreen,
                                             InputOptionsUI::OnRestoreDefaults,
                                             InputOptionsUI::OnBack};
     for (int index = 0; index < 4; index++) {
@@ -6226,6 +6140,7 @@ void BuildInputOptionsUI(MenuScreen *screen) {
     widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuWideColumn);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
 }
 
 int BuildGameOptionsUI(MenuScreen *screen) {
@@ -6606,7 +6521,7 @@ static inline void BuildCarSetupPreview(MenuPanel *panel, MenuScreen *screen) {
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
 }
 
-void BuildNetworkCarSetupUI(MenuScreen *pScreen) {
+int BuildNetworkCarSetupUI(MenuScreen *pScreen) {
     pScreen->SetCurrentPanelIndex(0);
     g_dwGameMode = 6;
     BackupMenuSelections();
@@ -6703,6 +6618,7 @@ void BuildNetworkCarSetupUI(MenuScreen *pScreen) {
     font->SetText(g_szSessionName);
     font->MeasureText();
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
 }
 
 static inline void AddMenuActionButtons(MenuPanel *panel,
@@ -6735,7 +6651,7 @@ static inline void AddMenuActionButtons(MenuPanel *panel,
     }
 }
 
-void BuildCarSetupUI(MenuScreen *screen) {
+int BuildCarSetupUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     screen->SetPanelActive(screen->GetPanelCount(), 1);
     MenuPanel *panel = new (std::nothrow) MenuPanel();
@@ -6785,9 +6701,10 @@ void BuildCarSetupUI(MenuScreen *screen) {
                          CarSetupUI::OnOpenOptions,
                          g_dwGameMode == GAME_MODE_CHAMPIONSHIP);
     BuildCarSetupPreview(panel, screen);
+    return 1;
 }
 
-void BuildRaceResultsTotalsUI(MenuScreen *pScreen) {
+int BuildRaceResultsTotalsUI(MenuScreen *pScreen) {
     pScreen->SetCurrentPanelIndex(0);
     pScreen->SetPanelActive(pScreen->GetPanelCount(), 1);
     MenuPanel *panel = new (std::nothrow) MenuPanel();
@@ -6864,9 +6781,10 @@ void BuildRaceResultsTotalsUI(MenuScreen *pScreen) {
     widget->SetSpriteId(5);
     widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightColumnWide);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
 }
 
-void BuildRaceResultsInfoUI(MenuScreen *pScreen) {
+int BuildRaceResultsInfoUI(MenuScreen *pScreen) {
     pScreen->SetCurrentPanelIndex(0);
     g_dwSeasonSavedRound = g_dwSeasonRound;
     pScreen->SetPanelActive(pScreen->GetPanelCount(), 1);
@@ -6946,9 +6864,10 @@ void BuildRaceResultsInfoUI(MenuScreen *pScreen) {
     widget->SetSpriteId(5);
     widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightColumnWide);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
 }
 
-void BuildRaceResultsSummaryUI(MenuScreen *pScreen) {
+int BuildRaceResultsSummaryUI(MenuScreen *pScreen) {
     pScreen->SetCurrentPanelIndex(0);
     g_dwSeasonSavedRound = g_dwSeasonRound;
     pScreen->SetPanelActive(pScreen->GetPanelCount(), 1);
@@ -7057,9 +6976,10 @@ void BuildRaceResultsSummaryUI(MenuScreen *pScreen) {
     widget->SetSpriteId(5);
     widget->SetText(g_szEmptyUiString, 1, 3, &g_rcMenuRightColumnWide);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
 }
 
-void BuildSeasonProgressInfoUI(MenuScreen *pScreen) {
+int BuildSeasonProgressInfoUI(MenuScreen *pScreen) {
     pScreen->SetCurrentPanelIndex(0);
     pScreen->SetPanelActive(pScreen->GetPanelCount(), 1);
     MenuPanel *panel = new (std::nothrow) MenuPanel();
@@ -7157,9 +7077,10 @@ void BuildSeasonProgressInfoUI(MenuScreen *pScreen) {
     widget->SetSpriteId(0x34);
     widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuCenterPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
 }
 
-void BuildMultiplayerConnectionUI(MenuScreen *pScreen) {
+int BuildMultiplayerConnectionUI(MenuScreen *pScreen) {
     pScreen->SetCurrentPanelIndex(0);
     g_dwGameMode = 6;
     pScreen->SetPanelActive(pScreen->GetPanelCount(), 1);
@@ -7248,6 +7169,7 @@ void BuildMultiplayerConnectionUI(MenuScreen *pScreen) {
     widget->SetSpriteId(3);
     widget->SetText(g_szSpace, 1, 1, &g_rcMenuRightColumnMid);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
 }
 
 static inline void
@@ -7284,7 +7206,7 @@ BuildRaceSetupPreview(MenuPanel *panel, MenuScreen *screen, bool conditionalTrac
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
 }
 
-void BuildRaceSetupUI(MenuScreen *screen) {
+int BuildRaceSetupUI(MenuScreen *screen) {
     screen->SetCurrentPanelIndex(0);
     float offset = 0;
     screen->SetPanelActive(screen->GetPanelCount(), 1);
@@ -7351,9 +7273,10 @@ void BuildRaceSetupUI(MenuScreen *screen) {
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
     panel->SetNavigationCount(panel->GetNavigationCount() + 1);
     BuildRaceSetupPreview(panel, screen, true);
+    return 1;
 }
 
-void BuildMultiplayerGameSetupUI(MenuScreen *pScreen) {
+int BuildMultiplayerGameSetupUI(MenuScreen *pScreen) {
     pScreen->SetCurrentPanelIndex(0);
     pScreen->SetPanelActive(pScreen->GetPanelCount(), 1);
     MenuPanel *panel = new (std::nothrow) MenuPanel();
@@ -7408,9 +7331,10 @@ void BuildMultiplayerGameSetupUI(MenuScreen *pScreen) {
     widget = add(476, 224, 1, 1, -1);
     widget->SetUpdateCallback(MultiplayerSetupUI::UpdateCarGroupSubImage);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
 }
 
-void BuildPreRaceInfoUI(MenuScreen *pScreen) {
+int BuildPreRaceInfoUI(MenuScreen *pScreen) {
     pScreen->SetCurrentPanelIndex(0);
     pScreen->SetPanelActive(pScreen->GetPanelCount(), 1);
     MenuPanel *panel = new (std::nothrow) MenuPanel();
@@ -7525,13 +7449,14 @@ void BuildPreRaceInfoUI(MenuScreen *pScreen) {
     widget->SetSpriteId(0x34);
     widget->SetText(g_szEmptyUiString, 1, 4, &g_rcMenuSubPanel);
     panel->SetWidgetCount(panel->GetWidgetCount() + 1);
+    return 1;
 }
 
 int ShowPreRaceInfoScreen(MenuWidget *) {
     return ShowCachedMenuWithExitConfirmation(g_pCachedMenu_PreRaceInfo,
                                               BuildPreRaceInfoUI,
                                               g_pPreRaceInfoMenuScreen,
-                                              BuildPreRaceExitSeasonConfirmScreen);
+                                              BuildPreRaceExitSeasonConfirmUI);
 }
 
 int RaceResultsTotalsUI::OnContinue(MenuActionWidget *pItem) {

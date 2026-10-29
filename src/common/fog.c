@@ -42,7 +42,7 @@ u8 g_bFogG;
 u8 g_bFogB;
 u8 g_bFogIntensity;
 
-static s32 FogTruncateToWord(long double value) {
+static inline s32 FogTruncateToWord(long double value) {
     /* The runtime converts to signed 64-bit; fog uses its low word, even on failure. */
     if (!(value >= -9223372036854775808.0L && value < 9223372036854775808.0L)) {
         return 0;

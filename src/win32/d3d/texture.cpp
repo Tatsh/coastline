@@ -240,7 +240,7 @@ LoadRgba5551ImageFile(const char *pszPath, unsigned nAdlerExpected, int *pnWidth
     int nWidth;
     int nHeight;
     size_t nSize;
-    unsigned short *filePixels = GetRgba5551FileBuffer();
+    unsigned short *filePixels = g_TextureDecodeWorkspace.rgba5551 + RGBA5551_IMAGE_PIXEL_COUNT;
 
     pFile = CHK_FReadOpen(pszPath);
     CHK_FRead(&nWidth, sizeof(nWidth), 1, pFile);
@@ -256,14 +256,14 @@ LoadRgba5551ImageFile(const char *pszPath, unsigned nAdlerExpected, int *pnWidth
                                        static_cast<uInt>(nSize)) != nAdlerExpected) {
         exit(1);
     }
-    UnpackRgba5551ToRgba8(GetTextureDecodeBuffer(), filePixels, RGBA5551_IMAGE_PIXEL_COUNT);
-    ConvertRGBAToPixelFormat(GetTextureDecodeBuffer(),
-                             GetTextureDecodeBuffer(),
+    UnpackRgba5551ToRgba8(g_TextureDecodeWorkspace.decoded, filePixels, RGBA5551_IMAGE_PIXEL_COUNT);
+    ConvertRGBAToPixelFormat(g_TextureDecodeWorkspace.decoded,
+                             g_TextureDecodeWorkspace.decoded,
                              RGBA5551_IMAGE_PIXEL_COUNT * 4,
                              RGBA5551_IMAGE_PIXEL_FORMAT);
     *pnWidth = nWidth;
     *pnHeight = nHeight;
-    return GetTextureDecodeBuffer();
+    return g_TextureDecodeWorkspace.decoded;
 }
 
 D3DTexture **g_ppTextureIdTable;

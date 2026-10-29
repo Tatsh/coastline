@@ -10,7 +10,7 @@
 
 #if TGR_BOSS_RALLY
 
-static u32 TruncateHiliteCoordinate(long double value) {
+static inline u32 TruncateHiliteCoordinate(long double value) {
     if (!(value >= -0x1p63L && value < 0x1p63L)) {
         return 0;
     }

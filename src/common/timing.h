@@ -125,6 +125,8 @@ extern u32 g_dwTimingBarsRenderMode1;
  * @ghidraAddress USA: 0x8022d7e0
  * @ghidraAddress EUR: 0x8022ecf0
  * @ghidraAddress JPN: 0x8022e4a0
+ * @ghidraAddress BRD3D: 0x10008b80
+ * @ghidraAddress BRGlide: 0x10008d60
  */
 void AddTimingMarker(s32 bar, s32 red, s32 green, s32 blue, s32 alpha);
 

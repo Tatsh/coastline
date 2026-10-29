@@ -752,12 +752,6 @@ s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]) {
 }
 
 #if TGR_BOSS_RALLY
-static inline long double AtanSine(f32 angle) {
-    long double result;
-    __asm__("fsin" : "=t"(result) : "0"((long double)angle));
-    return result;
-}
-
 #define ATAN_LESS(a, b) (!((a) >= (b)))
 #define ATAN_ZERO(value) (!((value) < 0.0L) && !((value) > 0.0L))
 long double Atan2f(f32 x, f32 y) {
@@ -807,11 +801,7 @@ f32 Atan2f(f32 x, f32 y) {
     angle = EIGHTH_PI_F;
     step = angle * 0.5f;
     for (i = 0; i < ATAN2_STEPS;) {
-#if TGR_BOSS_RALLY
-        s = AtanSine(angle);
-#else
         s = sinf(angle);
-#endif
         i++;
         if (ATAN_LESS(s, y)) {
             if (ATAN_LESS(y - s, ATAN2_TOLERANCE)) {

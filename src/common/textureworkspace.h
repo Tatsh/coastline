@@ -9,11 +9,18 @@
 extern "C" {
 #endif
 
-/** Return the shared decoded-pixel workspace. */
-unsigned char *GetTextureDecodeBuffer(void);
+/** The shared workspace of decoded pixels. */
+typedef union {
+    unsigned char decoded[TEXTURE_DECODE_WORKSPACE_BYTES]; /*!< The decoded pixels. */
+    /** The workspace as RGBA5551 pixels, with file pixels from RGBA5551_IMAGE_PIXEL_COUNT. */
+    unsigned short rgba5551[TEXTURE_DECODE_WORKSPACE_BYTES / sizeof(unsigned short)];
+} TextureDecodeWorkspace;
 
-/** Return the RGBA5551 input view within the decoded-pixel workspace. */
-unsigned short *GetRgba5551FileBuffer(void);
+/**
+ * @ghidraAddress BRD3D: 0x11829870
+ * @ghidraAddress BRGlide: 0x1186c988
+ */
+extern TextureDecodeWorkspace g_TextureDecodeWorkspace;
 
 #ifdef __cplusplus
 }

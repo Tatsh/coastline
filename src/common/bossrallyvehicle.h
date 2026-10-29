@@ -1180,7 +1180,10 @@ public:
         return wheelMatrices;
     }
 
-    /** @ghidraAddress BRD3D: 0x10063840 */
+    /**
+     * @ghidraAddress BRD3D: 0x10063840
+     * @ghidraAddress BRGlide: 0x1005c8b0
+     */
     void ApplyPlayerVehicleInput(void);
 
     /**
@@ -1209,6 +1212,7 @@ public:
      * Drive the vehicle with its computer controller.
      *
      * @ghidraAddress BRD3D: 0x10064700
+     * @ghidraAddress BRGlide: 0x1005d770
      */
     void ComputeAiVehicleInput(void);
 

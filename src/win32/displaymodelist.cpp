@@ -5,6 +5,7 @@ class DisplayModeList {
 public:
     /** @ghidraAddress BRD3D: 0x1001ba00 */
     DisplayModeList();
+    /** @ghidraAddress BRD3D: 0x10008b80 */
     ~DisplayModeList();
 
 private:

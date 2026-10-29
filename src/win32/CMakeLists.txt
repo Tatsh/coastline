@@ -15,7 +15,6 @@ add_library(
   diagnostics.c
   directplay.cpp
   displaylist.cpp
-  displaymodelist.cpp
   dxversion.cpp
   earsound.cpp
   fileio.c
@@ -59,6 +58,7 @@ target_link_libraries(coastline_win32 PRIVATE coastline_options)
 if(TGR_RENDERER STREQUAL "d3d")
   # RallyMain of the Direct3D library.
   target_sources(coastline_main PRIVATE winmain-d3d.cpp)
+  target_sources(coastline_win32 PRIVATE displaymodelist.cpp)
   add_subdirectory(d3d)
 else()
   add_subdirectory(glide)

@@ -918,6 +918,7 @@ void osInitialize(void);
  * @ghidraAddress EUR: 0x80261cdc
  * @ghidraAddress JPN: 0x80261a3c
  * @ghidraAddress BRD3D: 0x10008b80
+ * @ghidraAddress BRGlide: 0x10008d60
  */
 void osSyncPrintf(const char *fmt, ...);
 

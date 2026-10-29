@@ -1988,10 +1988,11 @@ extern int g_dwActiveDisplayModeIndex;
 /**
  * Open cached input options, building the screen on its first visit.
  *
+ * @param pWidget Not read.
  * @ghidraAddress BRD3D: 0x100452c0
  * @ghidraAddress BRGlide: 0x1003e810
  */
-int ShowInputOptionsMenu(void);
+int ShowInputOptionsMenu(MenuWidget *pWidget);
 
 /**
  * Select saved-round browsing for season previews.
@@ -2054,30 +2055,34 @@ int OnTcpIpPortEdited(MenuWidget *pWidget);
 /**
  * Build input options on the supplied screen.
  *
+ * @return 1.
  * @ghidraAddress BRD3D: 0x1004c4a0
  * @ghidraAddress BRGlide: 0x100458d0
  */
-void BuildInputOptionsUI(MenuScreen *pScreen);
+int BuildInputOptionsUI(MenuScreen *pScreen);
 
 /**
  * Open cached video options, building the screen on its first visit.
  *
+ * @param pWidget Not read.
  * @ghidraAddress BRD3D: 0x10045390
  * @ghidraAddress BRGlide: 0x1003e8e0
  */
-int ShowVideoOptionsMenu(void);
+int ShowVideoOptionsMenu(MenuWidget *pWidget);
 
 /**
+ * @param pWidget Not read.
  * @ghidraAddress BRD3D: 0x100455e0
  * @ghidraAddress BRGlide: 0x1003ea70
  */
-int ShowAudioOptionsMenu(void);
+int ShowAudioOptionsMenu(MenuWidget *pWidget);
 
 /**
+ * @param pWidget Not read.
  * @ghidraAddress BRD3D: 0x100456b0
  * @ghidraAddress BRGlide: 0x1003eb40
  */
-int ShowGameOptionsMenu(void);
+int ShowGameOptionsMenu(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x1004dfc0
@@ -2107,42 +2112,47 @@ int BuildGameOptionsUI(MenuScreen *pScreen);
 /**
  * Build video options on the supplied screen.
  *
+ * @return 1.
  * @ghidraAddress BRD3D: 0x1004d1f0
  * @ghidraAddress BRGlide: 0x10046620
  */
-void BuildVideoOptionsUI(MenuScreen *pScreen);
+int BuildVideoOptionsUI(MenuScreen *pScreen);
 
 /**
  * Open cached key configuration, building the screen on its first visit.
  *
+ * @param pWidget Not read.
  * @ghidraAddress BRD3D: 0x100434c0
  * @ghidraAddress BRGlide: 0x1003ca10
  */
-int ShowKeyConfigScreen(void);
+int ShowKeyConfigScreen(MenuWidget *pWidget);
 
 /**
  * Build key configuration on the supplied screen.
  *
+ * @return 1.
  * @ghidraAddress BRD3D: 0x1004cac0
  * @ghidraAddress BRGlide: 0x10045ef0
  */
-void BuildKeyConfigUI(MenuScreen *pScreen);
+int BuildKeyConfigUI(MenuScreen *pScreen);
 
 /**
  * Open cached modem connection options, building the screen on its first visit.
  *
+ * @param pWidget Not read.
  * @ghidraAddress BRD3D: 0x10043da0
  * @ghidraAddress BRGlide: 0x1003d2f0
  */
-int ShowModemDialUpScreen(void);
+int ShowModemDialUpScreen(MenuWidget *pWidget);
 
 /**
  * Reset time attack choices and restore race setup after a season.
  *
+ * @param pWidget Not read.
  * @ghidraAddress BRD3D: 0x10046260
  * @ghidraAddress BRGlide: 0x1003f700
  */
-int ReturnToMainMenuFromSeason(void);
+int ReturnToMainMenuFromSeason(MenuWidget *pWidget);
 
 /**
  * Build modem connection options on the supplied screen.
@@ -2165,10 +2175,11 @@ int ShowDisplayModeSelectMenu(MenuWidget *pWidget);
 /**
  * Build display mode selection on the supplied screen.
  *
+ * @return 1.
  * @ghidraAddress BRD3D: 0x1004db00
  * @ghidraAddress BRGlide: 0x100469b0
  */
-void BuildDisplayModeSelectUI(MenuScreen *pScreen);
+int BuildDisplayModeSelectUI(MenuScreen *pScreen);
 
 /**
  * Populate the video settings lists. The Glide library has no list of display devices.
@@ -2220,9 +2231,10 @@ int ShowD3DDeviceSelectMenu(MenuWidget *pWidget);
 /**
  * Build Direct3D device selection on the supplied screen.
  *
+ * @return 1.
  * @ghidraAddress BRD3D: 0x1004d640
  */
-void BuildD3DDeviceSelectUI(MenuScreen *pScreen);
+int BuildD3DDeviceSelectUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x1003ee50
@@ -2271,7 +2283,7 @@ int ShowCarSetupScreen(MenuWidget *pWidget);
  * @ghidraAddress BRD3D: 0x1004a580
  * @ghidraAddress BRGlide: 0x100439b0
  */
-void BuildCarSetupUI(MenuScreen *pScreen);
+int BuildCarSetupUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x100ac304
@@ -2313,7 +2325,7 @@ int ProcessCheatInputAndValidateEntity(MenuWidget *pWidget);
  * @ghidraAddress BRD3D: 0x100558a0
  * @ghidraAddress BRGlide: 0x1004e750
  */
-void BuildMultiplayerConnectionUI(MenuScreen *pScreen);
+int BuildMultiplayerConnectionUI(MenuScreen *pScreen);
 
 /**
  * Open cached connection settings, building the screen on its first visit.
@@ -2623,13 +2635,14 @@ public:
      *
      * @return 0, or E_FAIL when the renderer has no device or viewport.
      * @ghidraAddress BRD3D: 0x1005afa0
+     * @ghidraAddress BRGlide: 0x10053e60
      */
     virtual HRESULT ClearBackBuffer();
 
     auto GetBuildCallback() const {
         return pfnBuildMenu;
     }
-    void SetBuildCallback(void (*callback)(MenuScreen *)) {
+    void SetBuildCallback(int (*callback)(MenuScreen *)) {
         pfnBuildMenu = callback;
     }
     bool IsBuilt() const {
@@ -2677,7 +2690,7 @@ public:
     void ResetPanelActivation(unsigned short widgetIndex);
 
 private:
-    void (*pfnBuildMenu)(MenuScreen *pScreen); /*!< Builds the items of the screen. */
+    int (*pfnBuildMenu)(MenuScreen *pScreen); /*!< Builds the items of the screen. */
     int dwFlags;                  /*!< Options of the screen. Bit 0x10 stops EndFrame(). */
     int bBuilt;                   /*!< Whether pfnBuildMenu built the items of the screen. */
     unsigned short wPanelCount;   /*!< The number of entries of apPanels in use. */
@@ -3010,7 +3023,18 @@ int ShowNetworkCarSetupScreen(MenuWidget *pWidget = nullptr);
  * @ghidraAddress BRD3D: 0x10058750
  * @ghidraAddress BRGlide: 0x10051600
  */
-void BuildNetworkCarSetupUI(MenuScreen *pScreen);
+int BuildNetworkCarSetupUI(MenuScreen *pScreen);
+
+/**
+ * Accept the edited text of a connection field. The linker folds the routine with the other
+ * routines that return 1.
+ *
+ * @param pWidget Not read.
+ * @return 1.
+ * @ghidraAddress BRD3D: 0x10042af0
+ * @ghidraAddress BRGlide: 0x100385e0
+ */
+int CompleteConnectionTextEdit(MenuWidget *pWidget);
 
 /**
  * @ghidraAddress BRD3D: 0x100ac348
@@ -3046,19 +3070,20 @@ int ShowChampionshipSeasonMenu(MenuWidget *pWidget);
  * @ghidraAddress BRD3D: 0x1004f2b0
  * @ghidraAddress BRGlide: 0x10048160
  */
-void BuildChampionshipSeasonUI(MenuScreen *pScreen);
+int BuildChampionshipSeasonUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x1005a6e0
  * @ghidraAddress BRGlide: 0x10053590
  */
-void BuildSaveTimeAttackMenuUI(MenuScreen *pScreen);
+int BuildSaveTimeAttackMenuUI(MenuScreen *pScreen);
 
 /**
+ * @param pWidget Not read.
  * @ghidraAddress BRD3D: 0x10044d00
  * @ghidraAddress BRGlide: 0x1003e250
  */
-int ShowLoadGhostMenu(void);
+int ShowLoadGhostMenu(MenuWidget *pWidget);
 
 /**
  * Host a session and show the race setup of the network game.
@@ -3127,13 +3152,13 @@ int BuildTimeAttackMenuUI(MenuScreen *pScreen);
  * @ghidraAddress BRD3D: 0x10059bb0
  * @ghidraAddress BRGlide: 0x10052a60
  */
-void BuildLoadTimeAttackMenuUI(MenuScreen *pScreen);
+int BuildLoadTimeAttackMenuUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10057c10
  * @ghidraAddress BRGlide: 0x10050ac0
  */
-void BuildMultiplayerGameSetupUI(MenuScreen *pScreen);
+int BuildMultiplayerGameSetupUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x100563e0
@@ -3154,22 +3179,23 @@ int BuildJoinCreateGameUI(MenuScreen *pScreen);
 int BuildCreateGameMenuUI(MenuScreen *pScreen);
 
 /**
+ * @param pWidget Not read.
  * @ghidraAddress BRD3D: 0x10044280
  * @ghidraAddress BRGlide: 0x1003d7d0
  */
-int JoinSessionAndShowRaceSetup(void);
+int JoinSessionAndShowRaceSetup(MenuWidget *pWidget = nullptr);
 
 /**
  * @ghidraAddress BRD3D: 0x10052030
  * @ghidraAddress BRGlide: 0x1004aee0
  */
-void BuildSeasonProgressInfoUI(MenuScreen *pScreen);
+int BuildSeasonProgressInfoUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x1004b430
  * @ghidraAddress BRGlide: 0x10044860
  */
-void BuildRaceSetupUI(MenuScreen *pScreen);
+int BuildRaceSetupUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10049c20
@@ -3219,10 +3245,11 @@ extern int g_dwFileListSelectedSlot;
  * Build the items of the root screen of the front end.
  *
  * @param pScreen The screen.
+ * @return 1.
  * @ghidraAddress BRD3D: 0x100491b0
  * @ghidraAddress BRGlide: 0x100425e0
  */
-void BuildFrontEndRootMenuUI(MenuScreen *pScreen);
+int BuildFrontEndRootMenuUI(MenuScreen *pScreen);
 
 /** The number of entries of g_aMenuGlyphRects. */
 #define MENU_GLYPH_RECT_COUNT 68
@@ -3870,19 +3897,19 @@ void ResetMenuSelectionsToDefaults(void);
  * @ghidraAddress BRD3D: 0x10052f50
  * @ghidraAddress BRGlide: 0x1004be00
  */
-void BuildRaceResultsInfoUI(MenuScreen *pScreen);
+int BuildRaceResultsInfoUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10053cf0
  * @ghidraAddress BRGlide: 0x1004cba0
  */
-void BuildRaceResultsSummaryUI(MenuScreen *pScreen);
+int BuildRaceResultsSummaryUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10054b50
  * @ghidraAddress BRGlide: 0x1004da00
  */
-void BuildRaceResultsTotalsUI(MenuScreen *pScreen);
+int BuildRaceResultsTotalsUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x1004a260
@@ -3944,7 +3971,7 @@ int ShowRaceResultsSummaryScreen(MenuWidget *pWidget = nullptr);
  * @ghidraAddress BRD3D: 0x100509f0
  * @ghidraAddress BRGlide: 0x100498a0
  */
-void BuildPreRaceInfoUI(MenuScreen *pScreen);
+int BuildPreRaceInfoUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10049f40
@@ -3966,22 +3993,23 @@ int ShowPreRaceInfoScreen(MenuWidget *pWidget);
  * @ghidraAddress BRD3D: 0x1004f700
  * @ghidraAddress BRGlide: 0x100485b0
  */
-void BuildLoadSeasonUI(MenuScreen *pScreen);
+int BuildLoadSeasonUI(MenuScreen *pScreen);
 
 /**
  * @ghidraAddress BRD3D: 0x10050060
  * @ghidraAddress BRGlide: 0x10048f10
  */
-void BuildSaveSeasonUI(MenuScreen *pScreen);
+int BuildSaveSeasonUI(MenuScreen *pScreen);
 
 /**
  * Show cached season loading, building the screen on its first visit.
  *
+ * @param pWidget Not read.
  * @return Whether the screen was allocated or already cached.
  * @ghidraAddress BRD3D: 0x10045af0
  * @ghidraAddress BRGlide: 0x1003ef90
  */
-int ShowLoadSeasonMenu(void);
+int ShowLoadSeasonMenu(MenuWidget *pWidget);
 
 /**
  * Show cached season saving, building the screen on its first visit.
