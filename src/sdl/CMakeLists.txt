@@ -53,7 +53,6 @@ add_library(
   input.cpp
   log.cpp
   music.cpp
-  n64texture.cpp
   paths.cpp
   stringresources.cpp
   tlrenderer.cpp
@@ -81,24 +80,11 @@ if(WIN32)
   target_link_libraries(coastline_sdl PUBLIC shell32)
 endif()
 
-# The game code of the PC release, while its port to SDL is under way.
-option(TGR_SDL_PC_GAME "Build the game code of the PC release into the SDL game." OFF)
-if(TGR_SDL_PC_GAME)
-  include(pcgame.cmake)
-  include(n64frontend.cmake)
-  target_compile_definitions(coastline_sdl PRIVATE COASTLINE_PC_GAME=1)
-endif()
-
 add_executable(${CMAKE_PROJECT_NAME} main.cpp)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
                            COASTLINE_VERSION="${CMAKE_PROJECT_VERSION}")
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_sdl argparse::argparse)
-if(TGR_SDL_PC_GAME)
-  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_pcgame coastline_n64frontend)
-  target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE COASTLINE_PC_GAME=1)
-  target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/src")
-endif()
 
 install(TARGETS ${CMAKE_PROJECT_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 # A shared SDL is installed beside the game on Windows, and in the library directory elsewhere. A

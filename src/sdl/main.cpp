@@ -29,15 +29,6 @@
 #include "music.h"
 #include "paths.h"
 #include "tlrenderer.h"
-#ifdef COASTLINE_PC_GAME
-#include "cartridgedata.h"
-#include "dinputcompat.h"
-#include "n64displaylist.h"
-#include "n64frontend.h"
-#include "pcgamerun.h"
-#include "renderhost.h"
-#include "scene.h"
-#endif
 
 namespace {
 
@@ -117,40 +108,6 @@ std::optional<std::vector<std::uint8_t>> LoadMusicByIndex(const std::filesystem:
     return LoadMusicModule(data, coastline::USA_MUSIC_MODULES[index].offset);
 }
 
-// A key held over a range of frames, from a test script.
-struct ScriptedKey {
-    int scancode;
-    int first;
-    int last;
-};
-
-// Read a script such as SPACE@300-305,UP@320-900. An entry with one frame holds the key for that
-// frame.
-std::vector<ScriptedKey> ParseKeyScript(const std::string &script) {
-    std::vector<ScriptedKey> keys;
-    std::size_t start = 0;
-    while (start < script.size()) {
-        std::size_t end = script.find(',', start);
-        std::string entry = script.substr(start, end - start);
-        start = end == std::string::npos ? script.size() : end + 1;
-        std::size_t at = entry.find('@');
-        if (at == std::string::npos) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_INPUT, "The key %s has no frame.", entry.c_str());
-            continue;
-        }
-        SDL_Scancode scancode = SDL_GetScancodeFromName(entry.substr(0, at).c_str());
-        int first = 0;
-        int last = 0;
-        int count = std::sscanf(entry.c_str() + at + 1, "%d-%d", &first, &last);
-        if (scancode == SDL_SCANCODE_UNKNOWN || count < 1) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_INPUT, "The key %s is not valid.", entry.c_str());
-            continue;
-        }
-        keys.push_back({scancode, first, count == 2 ? last : first});
-    }
-    return keys;
-}
-
 coastline::TextureHandle CreateCheckerTexture(coastline::TlRenderer &renderer) {
     constexpr std::uint32_t SIZE = 64;
     std::vector<std::uint8_t> texels(SIZE * SIZE * 4);
@@ -225,18 +182,6 @@ void DrawRendererTestScene(coastline::TlRenderer &renderer,
     renderer.EndScene(capture);
 }
 
-#ifdef COASTLINE_PC_GAME
-// The pictures of the front end, from the imported USA cartridge, as the texture pack default.
-void BuildDefaultTexturePack(const std::filesystem::path &data) {
-    if (!coastline::CartridgeData::Load(data / "n64" / "usa")) {
-        return;
-    }
-    ReadN64FrontEndData();
-    int written = WriteN64TexturePack(data / "textures" / "default");
-    SDL_Log("Wrote %d textures to the texture pack default.", written);
-}
-#endif
-
 // Raise the soft limit of open files to the hard limit. The Vulkan driver of NVIDIA keeps a
 // descriptor for each allocation of GPU memory, and the textures of a race need more than the
 // usual soft limit of 1024.
@@ -276,9 +221,6 @@ int ImportFromCommandLine(const argparse::ArgumentParser &parser,
             status = EXIT_FAILURE;
         }
     }
-#ifdef COASTLINE_PC_GAME
-    BuildDefaultTexturePack(data);
-#endif
     coastline::StopGameLog();
     return status;
 }
@@ -294,9 +236,6 @@ int main(int argc, char *argv[]) {
     parser.add_argument("--height").help("height of the window in pixels").scan<'i', int>();
     parser.add_argument("--fullscreen").help("cover the display").flag();
     parser.add_argument("--windowed").help("draw in a window").flag();
-    parser.add_argument("--dump-textures")
-        .help("write each texture of the front end to the textures directory as a PNG file")
-        .flag();
     parser.add_argument("--antialias")
         .help("samples of each pixel for anti-aliasing: 1 for none, or 2, 4, or 8")
         .scan<'i', int>();
@@ -319,15 +258,7 @@ int main(int argc, char *argv[]) {
         .default_value(30)
         .scan<'i', int>();
     parser.add_argument("--scene").help(
-        "scene to start in: n64-frontend (the default), race, renderer-test, or n64-data");
-    for (const char *name : {"--game-mode", "--track", "--car", "--weather"}) {
-        parser.add_argument(name)
-            .help("choice of the race scene, as the menus number it")
-            .scan<'i', int>();
-    }
-    parser.add_argument("--keys").help(
-        "keys to hold in the race and n64-frontend scenes, such as SPACE@300-305,UP@320-900 for "
-        "frame ranges");
+        "scene to start in: renderer-test, or none for the default");
     parser.add_argument("--screenshot").help("save a frame to this PNG file");
     parser.add_argument("--screenshot-frame")
         .help("number of the frame to save, from 1")
@@ -413,21 +344,7 @@ int main(int argc, char *argv[]) {
             config.Set(section, key, value);
         }
     }
-    // The game starts at the front end of the Nintendo 64 release unless a test scene is chosen.
-    const std::string scene = parser.present("--scene").value_or("n64-frontend");
-#ifdef COASTLINE_PC_GAME
-    // The data of the front end of the Nintendo 64 release, read and written to the log.
-    if (scene == "n64-data") {
-        if (!coastline::CartridgeData::Load(paths->data / "n64" / "usa")) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The USA cartridge has not been imported.");
-            return EXIT_FAILURE;
-        }
-        ReadN64FrontEndData();
-        LogN64FrontEndData();
-        SDL_Log("The front end starts at %p.", reinterpret_cast<void *>(&InitGameAndShowMenusN64));
-        return EXIT_SUCCESS;
-    }
-#endif
+    const std::string scene = parser.present("--scene").value_or("");
     int status = EXIT_FAILURE;
     {
         SdlSession sdl(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD);
@@ -443,8 +360,7 @@ int main(int argc, char *argv[]) {
             coastline::InputBindings input;
             coastline::N64Audio audio;
             bool playMusic = config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice();
-            // The PC game and the front end choose their modules.
-            if (music && playMusic && scene != "race" && scene != "n64-frontend") {
+            if (music && playMusic) {
                 audio.Play(*music);
             }
             std::optional<std::filesystem::path> screenshot;
@@ -456,94 +372,11 @@ int main(int argc, char *argv[]) {
             bool quitAfterScreenshot = parser.get<bool>("--quit-after-screenshot");
             std::unique_ptr<coastline::TlRenderer> renderer;
             coastline::TextureHandle testTexture = 0;
-            bool pcGame = false;
             if (scene == "renderer-test") {
                 renderer = coastline::TlRenderer::Create(*window);
                 testTexture = renderer ? CreateCheckerTexture(*renderer) : 0;
             }
-#ifdef COASTLINE_PC_GAME
-            if (scene == "race") {
-                renderer = coastline::TlRenderer::Create(*window);
-                bool pcMusic = config.Get("Game", "Music").value_or("N64") == "PC";
-                for (auto [name, choice] : {std::pair{"--game-mode", &g_SdlScene.gameMode},
-                                            {"--track", &g_SdlScene.track},
-                                            {"--car", &g_SdlScene.car},
-                                            {"--weather", &g_SdlScene.weather}}) {
-                    if (auto value = parser.present<int>(name)) {
-                        *choice = *value;
-                    }
-                }
-                pcGame = renderer &&
-                         coastline::StartPcGame(*renderer, paths->data, paths->state, pcMusic);
-            }
-            // The front end of the Nintendo 64 release runs its own loop, and the frames it
-            // presents pump the events, the keys of the script, and the screenshot.
-            if (scene == "n64-frontend") {
-                renderer = coastline::TlRenderer::Create(*window);
-                if (!renderer) {
-                    return EXIT_FAILURE;
-                }
-                if (!coastline::CartridgeData::Load(paths->data / "n64" / "usa")) {
-                    SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION,
-                                    "The USA cartridge has not been imported. Run coastline "
-                                    "--import-rom with the image of the USA release.");
-                    return EXIT_FAILURE;
-                }
-                if (!coastline::StartPcGame(*renderer, paths->data, paths->state, false)) {
-                    return EXIT_FAILURE;
-                }
-                ReadN64FrontEndData();
-                // An import from before the texture packs wrote none.
-                if (std::error_code error;
-                    !std::filesystem::exists(paths->data / "textures" / "default", error)) {
-                    WriteN64TexturePack(paths->data / "textures" / "default");
-                }
-                SetN64FrontEndInput(&input);
-                SetN64FrontEndAudio(playMusic ? &audio : nullptr);
-                coastline::SetN64TextureDirectory(
-                    paths->data / "textures",
-                    config.Get("Video", "TexturePack").value_or("default"),
-                    parser.get<bool>("--dump-textures"));
-                coastline::StartPcGameForFrontEnd();
-                auto keys = ParseKeyScript(parser.present("--keys").value_or(""));
-                int frame = 0;
-                std::optional<std::filesystem::path> framePath;
-                coastline::SetFramePump([&]() {
-                    ++frame;
-                    SDL_Event event;
-                    while (SDL_PollEvent(&event)) {
-                        if (event.type == SDL_EVENT_QUIT) {
-                            return false;
-                        }
-                        input.HandleEvent(event);
-                    }
-                    std::vector<int> held;
-                    for (const ScriptedKey &key : keys) {
-                        if (frame + 1 >= key.first && frame + 1 <= key.last) {
-                            held.push_back(key.scancode);
-                        }
-                    }
-                    coastline::SetScriptedKeys(std::move(held));
-                    framePath.reset();
-                    if (screenshot && frame + 1 == screenshotFrame) {
-                        framePath = screenshot;
-                    } else if (screenshot && screenshotEvery > 0 &&
-                               (frame + 1) % screenshotEvery == 0) {
-                        char number[16];
-                        std::snprintf(number, sizeof(number), "-%06d", frame + 1);
-                        framePath =
-                            screenshot->parent_path() / (screenshot->stem().string() + number +
-                                                         screenshot->extension().string());
-                    }
-                    coastline::SetPcGameCapture(framePath ? &*framePath : nullptr);
-                    return !(quitAfterScreenshot && screenshot && frame >= screenshotFrame);
-                });
-                InitGameAndShowMenusN64();
-            }
-#endif
             bool running = true;
-            std::uint32_t pcMusicModule = 0;
-            auto keyScript = ParseKeyScript(parser.present("--keys").value_or(""));
             for (int frame = 1; running; ++frame) {
                 SDL_Event event;
                 while (SDL_PollEvent(&event)) {
@@ -563,31 +396,7 @@ int main(int argc, char *argv[]) {
                     framePath = screenshot->parent_path() / (screenshot->stem().string() + number +
                                                              screenshot->extension().string());
                 }
-                if (pcGame) {
-#ifdef COASTLINE_PC_GAME
-                    std::vector<int> held;
-                    for (const ScriptedKey &key : keyScript) {
-                        if (frame >= key.first && frame <= key.last) {
-                            held.push_back(key.scancode);
-                        }
-                    }
-                    coastline::SetScriptedKeys(std::move(held));
-                    running =
-                        coastline::RunPcGameFrame(framePath ? &*framePath : nullptr) && running;
-                    std::uint32_t module = coastline::PcGameMusicModule();
-                    // A restart stops the module, which then plays again from its start.
-                    if (module == 0 && pcMusicModule != 0) {
-                        pcMusicModule = 0;
-                        audio.Stop();
-                    }
-                    if (music && module != 0 && module != pcMusicModule) {
-                        pcMusicModule = module;
-                        if (auto data = LoadMusicModule(paths->data, module)) {
-                            audio.Play(*data);
-                        }
-                    }
-#endif
-                } else if (renderer) {
+                if (renderer) {
                     DrawRendererTestScene(
                         *renderer, testTexture, frame, framePath ? &*framePath : nullptr);
                 } else {

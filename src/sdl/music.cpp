@@ -18,13 +18,9 @@ u64 g_qwSoundEffectSampleMask;
 MixerChannel g_aSoundEffectChannels[SOUND_EFFECT_CHANNELS];
 s32 g_dwSoundEffectEchoOffset;
 s32 g_nAudioChannelCount;
-#ifndef COASTLINE_PC_GAME
-// The game code of the PC release defines these in sound.cpp and numericdata.c, with the volumes
-// of its options.
 u8 g_bBgmVolume = 0x24;
 u8 g_bMusicVolume = 0xFF;
 u8 g_bSfxVolume = 0xFF;
-#endif
 u8 g_bSfxMasterVolume = 0xFF;
 f32 g_afNoteFrequencies[MUSIC_NOTES] = {
     std::bit_cast<f32>(0x4382D99Au),

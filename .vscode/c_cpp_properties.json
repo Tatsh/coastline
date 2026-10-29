@@ -96,7 +96,6 @@
       "configurationProvider": "ms-vscode.cmake-tools",
       "cppStandard": "c++23",
       "defines": [
-        "COASTLINE_PC_GAME=1",
         "ENABLE_PATCHES",
         "TGR_BOSS_RALLY=1",
         "TGR_PLATFORM=3",
