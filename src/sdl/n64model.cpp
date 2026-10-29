@@ -65,6 +65,7 @@ constexpr std::size_t TRACK_SKY_AT = 0x50;
 constexpr std::size_t TRACK_INSTANCE_NAMES_AT = 0x5c;
 constexpr std::size_t TRACK_INSTANCES_AT = 0x60;
 constexpr std::size_t TRACK_INSTANCE_COUNT_AT = 0x64;
+constexpr std::size_t TRACK_FOG_COLOR_AT = 0x80;
 constexpr std::size_t TRACK_HEADER_END = 0x230;
 constexpr std::size_t TRACK_INSTANCE_SIZE = 0x54;
 constexpr std::size_t TRACK_INSTANCE_DISPLAY_LIST_AT = 0x44;
@@ -1581,7 +1582,15 @@ std::expected<GltfModel, std::string> TrackToGltf(std::span<const std::uint8_t> 
         draws.push_back(
             {"sky", sky, {{"sky", nlohmann::ordered_json::object()}}, std::nullopt, {}});
     }
-    return BuildModel(bytes, 0, TRACK_LAYOUT, draws, {"track"}, bufferUri);
+    auto model = BuildModel(bytes, 0, TRACK_LAYOUT, draws, {"track"}, bufferUri);
+    if (model) {
+        // The fog colour of the track, which the race also tints the lights of its weathers by.
+        model->json["extras"]["coastlineTrack"] = {{"fogColor",
+                                                    {bytes[TRACK_FOG_COLOR_AT],
+                                                     bytes[TRACK_FOG_COLOR_AT + 1],
+                                                     bytes[TRACK_FOG_COLOR_AT + 2]}}};
+    }
+    return model;
 }
 
 std::expected<std::vector<std::uint8_t>, std::string>
