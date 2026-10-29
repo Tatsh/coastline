@@ -13,12 +13,16 @@ layout(set = 2, binding = 1) uniform sampler2D textureMap1;
 // material, whose vertices have normals, z is 1 for a textured material, and w is 1 where the
 // combiner of the RDP is given. combine holds its two words, and prim and env the primitive and
 // the environment colour.
+// lightDirection points toward the light in the space of the normals, and the light of a lit
+// vertex is the ambient colour and the directional colour by the cosine of its angle to it.
 layout(set = 3, binding = 0) uniform Material {
     vec4 flags;
     vec4 lightDirection;
     uvec4 combine;
     vec4 prim;
     vec4 env;
+    vec4 ambient;
+    vec4 directional;
 };
 
 // The inputs of the first cycle of the colour combiner, as the RDP numbers them.
@@ -62,8 +66,8 @@ void main() {
     vec4 t1 = texture(textureMap1, inTexCoord);
     vec4 shade = inColor;
     if (flags.y > 0.5) {
-        float diffuse = max(dot(normalize(inNormal), -lightDirection.xyz), 0.0);
-        shade = vec4(vec3(0.45 + 0.55 * diffuse), 1.0);
+        float diffuse = max(dot(normalize(inNormal), lightDirection.xyz), 0.0);
+        shade = vec4(min(ambient.rgb + directional.rgb * diffuse, vec3(1.0)), inColor.a);
     }
     vec4 color = t0 * shade;
     if (flags.w > 0.5) {

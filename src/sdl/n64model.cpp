@@ -1566,13 +1566,16 @@ std::expected<GltfModel, std::string> TrackToGltf(std::span<const std::uint8_t> 
         }
         auto name = nameOf(i);
         // The renderer lights the placed models, and draws a two-sided one without culling.
-        bool twoSided =
-            (Big16(bytes, at + TRACK_INSTANCE_FLAGS_AT) & TRACK_INSTANCE_TWO_SIDED) != 0;
-        draws.push_back({name,
-                         displayList,
-                         {{name, {{"matrix", matrix}}}},
-                         0,
-                         {.lit = true, .twoSided = twoSided, .bound = std::nullopt}});
+        std::uint16_t flags = Big16(bytes, at + TRACK_INSTANCE_FLAGS_AT);
+        bool twoSided = (flags & TRACK_INSTANCE_TWO_SIDED) != 0;
+        // The flags choose the light of the model, its fog, and its shading as the race draws it.
+        draws.push_back(
+            {name,
+             displayList,
+             {{name,
+               {{"matrix", matrix}, {"extras", {{"coastlineInstance", {{"flags", flags}}}}}}}},
+             0,
+             {.lit = true, .twoSided = twoSided, .bound = std::nullopt}});
     }
     if (std::uint32_t sky = Big32(bytes, TRACK_SKY_AT); sky != 0) {
         draws.push_back(

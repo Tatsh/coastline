@@ -115,7 +115,37 @@ std::array<float, 4> Rgba(std::uint32_t value) {
 struct Placed {
     std::size_t mesh;
     Matrix matrix;
+    std::array<float, 4> ambient;
+    std::array<float, 4> directional;
 };
+
+// The lights of a clear day as the race sets them up: a directional light of 255, 255, 204 from
+// 15, 10, 20 and an ambient light of 102, 102, 119. A placed model with a ramped light has no
+// directional light, and an ambient light of a quarter, a half, three quarters, or all of the
+// directional colour by the low bits of its flags.
+constexpr std::array<int, 3> DIRECTIONAL{255, 255, 204};
+constexpr std::array<int, 3> AMBIENT{102, 102, 119};
+// The direction toward the light, 15, 10, 20 of the console, which is z up, normalised in the y
+// up space of glTF.
+constexpr std::array<float, 3> LIGHT_DIRECTION{0.5571f, 0.7428f, -0.3714f};
+constexpr std::uint32_t TRACK_INSTANCE_LIGHT_RAMP = 0x0003;
+constexpr std::uint32_t TRACK_INSTANCE_RAMPED = 0x0400;
+
+std::pair<std::array<float, 4>, std::array<float, 4>> Lights(std::uint32_t flags) {
+    std::array<float, 4> ambient{};
+    std::array<float, 4> directional{};
+    for (std::size_t i = 0; i < 3; ++i) {
+        int full = DIRECTIONAL[i];
+        if ((flags & TRACK_INSTANCE_RAMPED) != 0) {
+            std::array<int, 4> ramp{full >> 2, full >> 1, (full >> 1) + (full >> 2), full};
+            ambient[i] = static_cast<float>(ramp[flags & TRACK_INSTANCE_LIGHT_RAMP]) / 255.0f;
+        } else {
+            ambient[i] = static_cast<float>(AMBIENT[i]) / 255.0f;
+            directional[i] = static_cast<float>(full) / 255.0f;
+        }
+    }
+    return {ambient, directional};
+}
 
 struct VertexUniforms {
     Matrix viewProjection;
@@ -128,6 +158,8 @@ struct FragmentUniforms {
     std::uint32_t combine[4];
     float prim[4];
     float env[4];
+    float ambient[4];
+    float directional[4];
 };
 
 SDL_GPUShader *CreateShader(SDL_GPUDevice *device,
@@ -599,7 +631,12 @@ std::unique_ptr<ModelView> ModelView::Create(GpuWindow &window, const std::files
         Matrix matrix = Multiply(parent, NodeMatrix(node));
         if (node.contains("mesh")) {
             std::size_t mesh = node["mesh"].get<std::size_t>();
-            state->placed.push_back({mesh, matrix});
+            std::uint32_t flags = 0;
+            if (node.contains("extras") && node["extras"].contains("coastlineInstance")) {
+                flags = node["extras"]["coastlineInstance"]["flags"].get<std::uint32_t>();
+            }
+            auto [ambient, directional] = Lights(flags);
+            state->placed.push_back({mesh, matrix, ambient, directional});
             for (const auto &p : meshPositions[mesh]) {
                 auto world = Transform(matrix, p.data());
                 for (std::size_t axis = 0; axis < 3; ++axis) {
@@ -726,13 +763,15 @@ void ModelView::Draw(const std::filesystem::path *capture) {
                      primitive.lit ? 1.0f : 0.0f,
                      primitive.texture ? 1.0f : 0.0f,
                      primitive.combine ? 1.0f : 0.0f},
-                    {-0.4f, -0.8f, -0.4f, 0.0f},
+                    {LIGHT_DIRECTION[0], LIGHT_DIRECTION[1], LIGHT_DIRECTION[2], 0.0f},
                     {primitive.combine ? (*primitive.combine)[0] : 0u,
                      primitive.combine ? (*primitive.combine)[1] : 0u,
                      0u,
                      0u},
                     {primitive.prim[0], primitive.prim[1], primitive.prim[2], primitive.prim[3]},
-                    {primitive.env[0], primitive.env[1], primitive.env[2], primitive.env[3]}};
+                    {primitive.env[0], primitive.env[1], primitive.env[2], primitive.env[3]},
+                    {placed.ambient[0], placed.ambient[1], placed.ambient[2], 1.0f},
+                    {placed.directional[0], placed.directional[1], placed.directional[2], 1.0f}};
                 SDL_PushGPUFragmentUniformData(
                     commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
                 std::array<SDL_GPUTextureSamplerBinding, 2> bindings{
