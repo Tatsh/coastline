@@ -559,7 +559,7 @@ unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration) {
     }
     ReadMouseBindingState();
     if (IsInputBindingPressed(15)) {
-        if (!g_dwNetworkPlayMode || !g_bNetRaceStartReached || gInstantReplayActive ||
+        if (!g_dwNetworkPlayMode || !g_bRaceStartReached || gInstantReplayActive ||
             VEHICLE_GET(&(g_aVehicles[0]), Lap) >= g_dwTotalLaps) {
             g_bNetGamePaused = 1;
             g_dwInputButtonMask = 0x4000;
@@ -646,7 +646,7 @@ unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration) {
                 g_bNetReadyToStartSent = 1;
             }
         } else {
-            g_bNetRaceStartReached = 1;
+            g_bRaceStartReached = 1;
             if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
                 StartGhostRecording();
             }

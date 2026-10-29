@@ -177,7 +177,7 @@ std::uint32_t PcGameMusicModule() {
     // The front end of the console plays the music of the menus, and the module of the race starts
     // when the player starts the race or the instant replay begins.
     if (g_dwPlayMusicMode != 0 || !g_dwRaceInitialized ||
-        (!g_bNetRaceStartReached && !gInstantReplayActive)) {
+        (!g_bRaceStartReached && !gInstantReplayActive)) {
         return 0;
     }
     return trackModules[std::min<std::size_t>(g_dwSelectedTrackId, std::size(trackModules) - 1)];

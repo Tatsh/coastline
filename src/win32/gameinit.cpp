@@ -44,7 +44,7 @@ void PrepareWindowsGameSession(void) {
     g_dwSavedSfxVolume = g_GlobalRallyConfig.dwSfxVolume;
     g_dwSavedMusicVolume = g_GlobalRallyConfig.dwMusicVolume;
     ResetMouseState();
-    g_bNetRaceStartReached = g_dwGameMode == GAME_MODE_DEMO;
+    g_bRaceStartReached = g_dwGameMode == GAME_MODE_DEMO;
     g_bNetReadyToStartSent = false;
     g_dwNetworkDataReceived = false;
 }

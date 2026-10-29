@@ -96,7 +96,7 @@ s16 g_wRaceScreenLoopExited;
 /* Go on to the next phase of the race. */
 void AdvanceRacePhase(void) {
 #if TGR_BOSS_RALLY
-    if (!g_bNetRaceStartReached) {
+    if (!g_bRaceStartReached) {
         return;
     }
 #endif
@@ -117,7 +117,7 @@ static void HoldBeforeStart(void) {
     s32 i;
 
 #if TGR_BOSS_RALLY
-    if (g_bNetRaceStartReached) {
+    if (g_bRaceStartReached) {
         const s32 localPlayers = (s32)g_dwNumLocalPlayers;
         for (i = 0; i < localPlayers; i++) {
             VEHICLE_SET(&g_aVehicles[i], SubMessage, NULL);

@@ -41,7 +41,7 @@ u32 g_dwRacePauseState;
 static volatile s32 g_dwUnpauseClearFrames;
 
 static s32 ResumeRace(s32 paused) {
-    if (g_dwNetworkPlayMode && g_bNetRaceStartReached) {
+    if (g_dwNetworkPlayMode && g_bRaceStartReached) {
         RequestNetworkUnpause();
     } else {
         FadeSfxTo(1.0f, FADE_SECONDS);
@@ -136,7 +136,7 @@ s32 ProcessPauseMenu(s32 paused) {
                 g_dwRaceInitialized = FALSE;
 #if TGR_BOSS_RALLY
                 FreeAllRacerColorPanels();
-                g_bNetRaceStartReached = FALSE;
+                g_bRaceStartReached = FALSE;
                 ResetAudioSubsystem();
                 InvalidateFrameSnapshotSlots();
 #endif
@@ -234,7 +234,7 @@ s32 ProcessPauseMenu(s32 paused) {
     }
 #if TGR_BOSS_RALLY
 networkTick:
-    if (g_dwNetworkPlayMode && g_bNetRaceStartReached) {
+    if (g_dwNetworkPlayMode && g_bRaceStartReached) {
         TickNetworkUnpauseRequest();
     }
 #else

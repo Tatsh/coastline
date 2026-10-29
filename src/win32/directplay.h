@@ -17,6 +17,7 @@
 
 #include "common/assetnames.h"
 #include "common/ghost.h"
+#include "common/racephases.h"
 
 /** The DirectPlay object of the game and its local player. */
 struct DirectPlayInfo {
@@ -687,14 +688,6 @@ void InitializeDirectPlayForDesktopWindow(void);
  * @ghidraAddress BRGlide: 0x10ac408c
  */
 extern int g_dwDirectPlaySessionActive;
-
-/**
- * Whether the race of a network game has started.
- *
- * @ghidraAddress BRD3D: 0x1022af14
- * @ghidraAddress BRGlide: 0x10226a44
- */
-extern int g_bNetRaceStartReached;
 
 /**
  * The ticks a request of a pause of a network game has waited, 0 for no request.

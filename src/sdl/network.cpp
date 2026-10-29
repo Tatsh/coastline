@@ -10,7 +10,7 @@
 int g_bNetSpectator;
 int g_dwNetworkPlayMode;
 const char g_szEmptyUiString[1] = {0};
-int g_bNetRaceStartReached;
+int g_bRaceStartReached;
 int g_dwNetworkDataReceived;
 
 void AddNetworkPlayerSlot(int slotIndex) {

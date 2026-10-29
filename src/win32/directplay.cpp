@@ -197,12 +197,12 @@ void WriteTimestampToStream(NetStream *pStream) {
 }
 
 unsigned g_dwNetRaceStartFrame;
-int g_bNetRaceStartReached;
+int g_bRaceStartReached;
 
 void CheckNetworkRaceStartTime(void) {
     WaitForSingleObject(g_hNetRaceStartMutex, INFINITE);
     if (GetElapsedFrameCount() >= g_dwNetRaceStartFrame) {
-        g_bNetRaceStartReached = true;
+        g_bRaceStartReached = true;
     }
     ReleaseMutex(g_hNetRaceStartMutex);
 }
@@ -1523,7 +1523,7 @@ void TickNetworkPauseRequest(void) {
         }
     }
     ReleaseMutex(g_hNetPauseMutex);
-    if (ticks != 0 && g_dwNetworkPlayMode && g_bNetRaceStartReached && !gInstantReplayActive &&
+    if (ticks != 0 && g_dwNetworkPlayMode && g_bRaceStartReached && !gInstantReplayActive &&
         VEHICLE_GET(&(g_aVehicles[0]), Lap) < g_dwTotalLaps) {
         int state = GetSlotStatusThreadSafe(g_dwLocalNetPlayerId);
         state = (state & ~0x40) | 0x80;

@@ -386,7 +386,7 @@ void ProcessRacingScreen(void) {
     }
     TickDebugOverlayMessageTimer();
     AdvanceFrameTickCounter();
-    if (!g_bNetRaceStartReached) {
+    if (!g_bRaceStartReached) {
         if (g_dwNetworkPlayMode) {
             CheckNetworkRaceStartTime();
         }

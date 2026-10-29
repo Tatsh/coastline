@@ -244,7 +244,7 @@ LRESULT HandleWindowActivateApp(HWND hWnd, WPARAM wParam, LPARAM lParam) {
             MuteVehicleSoundVoices();
             g_dwPauseMenuSelection = PAUSE_CONTINUE;
             // A network race that has started and not finished requests a pause from the others.
-            if (g_dwNetworkPlayMode && g_bNetRaceStartReached && !gInstantReplayActive &&
+            if (g_dwNetworkPlayMode && g_bRaceStartReached && !gInstantReplayActive &&
                 g_aVehicles[0].GetLap() < g_dwTotalLaps) {
                 RequestNetworkPause();
                 TickNetworkPauseRequest();

@@ -144,7 +144,7 @@ s32 ShouldStepVehiclePhysics(Vehicle *vehicle) {
         return 0;
     }
     return g_dwGameMode == GAME_MODE_DEMO || g_dwGameMode == GAME_MODE_AFTER_SEASON ||
-           g_bNetRaceStartReached || VEHICLE_GET(vehicle, WheelBodies)[1].contactFrames <= 90;
+           g_bRaceStartReached || VEHICLE_GET(vehicle, WheelBodies)[1].contactFrames <= 90;
 }
 
 void FinishVehiclePhysicsFrame(Vehicle *vehicle) {
