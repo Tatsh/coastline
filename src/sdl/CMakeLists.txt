@@ -17,7 +17,7 @@ set(_host_tools "${VCPKG_INSTALLED_DIR}/${VCPKG_HOST_TRIPLET}/tools")
 find_program(GLSLANG_VALIDATOR glslangValidator HINTS "${_host_tools}/glslang" REQUIRED)
 find_program(SPIRV_CROSS spirv-cross HINTS "${_host_tools}/spirv-cross" REQUIRED)
 set(_shader_headers)
-foreach(_shader tl.vert tl.frag)
+foreach(_shader model.frag model.vert tl.frag tl.vert)
   string(REPLACE "." "_" _stem "${_shader}")
   string(TOUPPER "${_stem}" _name)
   set(_source "${CMAKE_CURRENT_SOURCE_DIR}/shaders/${_shader}")
@@ -69,6 +69,7 @@ add_library(
   indexedimage.cpp
   input.cpp
   log.cpp
+  modelview.cpp
   music.cpp
   n64model.cpp
   paths.cpp

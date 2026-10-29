@@ -88,7 +88,21 @@ constexpr std::uint8_t OP_SETTILESIZE = 0xf2;
 constexpr std::uint8_t OP_LOADBLOCK = 0xf3;
 constexpr std::uint8_t OP_LOADTILE = 0xf4;
 constexpr std::uint8_t OP_SETTILE = 0xf5;
+constexpr std::uint8_t OP_SETPRIMCOLOR = 0xfa;
+constexpr std::uint8_t OP_SETENVCOLOR = 0xfb;
+constexpr std::uint8_t OP_SETCOMBINE = 0xfc;
 constexpr std::uint8_t OP_SETTIMG = 0xfd;
+
+// The inputs of the colour combiner that are the primitive and the environment colour.
+constexpr std::uint32_t G_CCMUX_PRIMITIVE = 3;
+constexpr std::uint32_t G_CCMUX_ENVIRONMENT = 5;
+
+std::array<std::uint8_t, 4> Color(std::uint32_t rgba) {
+    return {static_cast<std::uint8_t>(rgba >> 24),
+            static_cast<std::uint8_t>(rgba >> 16),
+            static_cast<std::uint8_t>(rgba >> 8),
+            static_cast<std::uint8_t>(rgba)};
+}
 
 // The bits of the geometry mode of F3DEX the walk follows.
 constexpr std::uint32_t G_CULL_FRONT = 0x1000;
@@ -171,6 +185,8 @@ struct Material {
     bool lit = false;
     bool twoSided = false;
     Alpha alpha = Alpha::Opaque;
+    // The primitive or environment colour the colour combiner reads, red, green, blue, and alpha.
+    std::optional<std::array<std::uint8_t, 4>> color;
     std::string name;
 
     auto operator<=>(const Material &) const = default;
@@ -227,6 +243,10 @@ public:
         m_geometryMode = (start.lit ? G_LIGHTING : 0) | (start.twoSided ? 0 : G_CULL_BACK);
         m_otherModeH = 0;
         m_otherModeL = 0;
+        m_primColor = 0xffffffff;
+        m_envColor = 0xffffffff;
+        m_combineHigh = 0;
+        m_combineLow = 0;
         m_textureOn = true;
         m_textureTile = 0;
         m_scaleS = 1.0;
@@ -270,6 +290,17 @@ private:
         Material material;
         material.lit = (m_geometryMode & G_LIGHTING) != 0;
         material.twoSided = (m_geometryMode & (G_CULL_BACK | G_CULL_FRONT)) == 0;
+        // A combiner that reads the primitive or the environment colour into the colour of the
+        // first cycle colours the material with it.
+        std::array<std::uint32_t, 4> inputs{m_combineHigh >> 20 & 0xf,
+                                            m_combineLow >> 28 & 0xf,
+                                            m_combineHigh >> 15 & 0x1f,
+                                            m_combineLow >> 15 & 7};
+        if (std::ranges::contains(inputs, G_CCMUX_PRIMITIVE)) {
+            material.color = Color(m_primColor);
+        } else if (std::ranges::contains(inputs, G_CCMUX_ENVIRONMENT)) {
+            material.color = Color(m_envColor);
+        }
         // The render mode cuts texels out by their alpha, or blends them over the frame by it.
         auto blendsByAlpha = [this](std::uint32_t cycle) {
             std::uint32_t bits = m_otherModeL >> (cycle == 1 ? 18 : 16);
@@ -455,6 +486,16 @@ private:
             case OP_SETTIMG:
                 m_textureImage = w1;
                 break;
+            case OP_SETPRIMCOLOR:
+                m_primColor = w1;
+                break;
+            case OP_SETENVCOLOR:
+                m_envColor = w1;
+                break;
+            case OP_SETCOMBINE:
+                m_combineHigh = w0 & 0xffffff;
+                m_combineLow = w1;
+                break;
             case OP_SETTILE: {
                 Tile &tile = m_tiles[w1 >> 24 & 7];
                 tile.format = w0 >> 21 & 7;
@@ -502,6 +543,10 @@ private:
     std::uint32_t m_geometryMode = 0;
     std::uint32_t m_otherModeH = 0;
     std::uint32_t m_otherModeL = 0;
+    std::uint32_t m_primColor = 0xffffffff;
+    std::uint32_t m_envColor = 0xffffffff;
+    std::uint32_t m_combineHigh = 0;
+    std::uint32_t m_combineLow = 0;
     bool m_textureOn = true;
     std::uint32_t m_textureTile = 0;
     double m_scaleS = 1.0;
@@ -1154,6 +1199,17 @@ std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> b
         nlohmann::ordered_json material{
             {"name", source.name.empty() ? std::format("material{}", m) : source.name},
             {"pbrMetallicRoughness", {{"metallicFactor", 0.0}, {"roughnessFactor", 1.0}}}};
+        if (source.color) {
+            // glTF takes the base colour in linear light, and the console colour is sRGB.
+            nlohmann::ordered_json factor = nlohmann::ordered_json::array();
+            for (std::size_t i = 0; i < 4; ++i) {
+                double value = (*source.color)[i] / 255.0;
+                factor.push_back(i == 3           ? value :
+                                 value <= 0.04045 ? value / 12.92 :
+                                                    std::pow((value + 0.055) / 1.055, 2.4));
+            }
+            material["pbrMetallicRoughness"]["baseColorFactor"] = std::move(factor);
+        }
         if (source.twoSided) {
             material["doubleSided"] = true;
         }

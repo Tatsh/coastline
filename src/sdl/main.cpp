@@ -26,6 +26,7 @@
 #include "importer.h"
 #include "input.h"
 #include "log.h"
+#include "modelview.h"
 #include "music.h"
 #include "paths.h"
 #include "tlrenderer.h"
@@ -258,7 +259,8 @@ int main(int argc, char *argv[]) {
         .default_value(30)
         .scan<'i', int>();
     parser.add_argument("--scene").help(
-        "scene to start in: renderer-test, or none for the default");
+        "scene to start in: renderer-test, model:FILE.gltf for a converted model or track, or "
+        "none for the default");
     parser.add_argument("--screenshot").help("save a frame to this PNG file");
     parser.add_argument("--screenshot-frame")
         .help("number of the frame to save, from 1")
@@ -371,10 +373,13 @@ int main(int argc, char *argv[]) {
             int screenshotEvery = parser.get<int>("--screenshot-every");
             bool quitAfterScreenshot = parser.get<bool>("--quit-after-screenshot");
             std::unique_ptr<coastline::TlRenderer> renderer;
+            std::unique_ptr<coastline::ModelView> modelView;
             coastline::TextureHandle testTexture = 0;
             if (scene == "renderer-test") {
                 renderer = coastline::TlRenderer::Create(*window);
                 testTexture = renderer ? CreateCheckerTexture(*renderer) : 0;
+            } else if (scene.starts_with("model:")) {
+                modelView = coastline::ModelView::Create(*window, scene.substr(6));
             }
             bool running = true;
             for (int frame = 1; running; ++frame) {
@@ -396,7 +401,9 @@ int main(int argc, char *argv[]) {
                     framePath = screenshot->parent_path() / (screenshot->stem().string() + number +
                                                              screenshot->extension().string());
                 }
-                if (renderer) {
+                if (modelView) {
+                    modelView->Draw(framePath ? &*framePath : nullptr);
+                } else if (renderer) {
                     DrawRendererTestScene(
                         *renderer, testTexture, frame, framePath ? &*framePath : nullptr);
                 } else {
