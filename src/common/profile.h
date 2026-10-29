@@ -78,15 +78,6 @@ typedef struct {
 void InitPlayerProfileDefaults(PlayerProfile *profile, s32 trackCount);
 
 /**
- * The profile of the player being played.
- *
- * @ghidraAddress USA: 0x8031c5bc
- * @ghidraAddress EUR: 0x8031eabc
- * @ghidraAddress JPN: 0x8031d6ec
- */
-extern PlayerProfile *g_pActiveProfile;
-
-/**
  * The profiles of the two players a controller pak saves.
  *
  * @ghidraAddress USA: 0x80324300

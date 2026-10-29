@@ -26,7 +26,6 @@ u32 g_dwNumLocalPlayers = 1, g_dwCurrentWeather, g_dwSelectedTrackId;
 s32 g_dwGameMode;
 u32 g_dwWeatherActive, g_dwNightMode, g_dwRainMode, g_dwSnowMode;
 u8 g_bSaveLoadEntryPoint, g_abRacePositionPoints[8] = {9, 6, 5, 3, 2, 1};
-PlayerProfile *g_pActiveProfile;
 static PlayerProfile profile;
 static PlayerInputState inputs[2];
 ViewportRect g_aViewportRects[4];
@@ -98,7 +97,7 @@ static void CheckSmall(void) {
 
     FormatLapTime(text, 83.456f);
     assert(strcmp(text, "1'23\"45") == 0);
-    g_pActiveProfile = &profile;
+    g_aVehicles[0].profile = &profile;
     profile.unlocks = 0x0FFF;
     g_dwIsPaintMode = TRUE;
     assert(IsCarUnlocked(8) && !IsCarUnlocked(9));
@@ -206,8 +205,8 @@ static void CheckResults(void) {
     assert(g_adwCarSelectState[0] == CAR_SELECT_READY);
 
     /* Leaving the results of a championship race in the same season saves. */
-    g_pActiveProfile->season = 0;
-    g_pActiveProfile->round = 1;
+    g_aVehicles[0].profile->season = 0;
+    g_aVehicles[0].profile->round = 1;
     g_dwResultsSeason = 0;
     fadingOut = fadeComplete = 1;
     Frame(0);

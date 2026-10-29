@@ -377,7 +377,7 @@ void RenderTrackGeometry(s32 deferred) {
             (g_dwGameMode != GAME_MODE_AFTER_SEASON || vehicles[0].GetProfile()->season != 0)) {
 #else
         if (g_dwGameMode != GAME_MODE_ARCADE &&
-            (g_dwGameMode != GAME_MODE_AFTER_SEASON || g_pActiveProfile->season != 0)) {
+            (g_dwGameMode != GAME_MODE_AFTER_SEASON || g_aVehicles[0].profile->season != 0)) {
 #endif
             g_dwInstanceHideFlags |= TRACK_INSTANCE_ARCADE;
         }

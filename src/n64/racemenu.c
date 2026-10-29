@@ -110,7 +110,7 @@ s32 IsTrackUnlocked(s32 track) {
         (track == g_dwNumTracks || track == g_dwNumTracks + 2)) {
         return TRUE;
     }
-    return (g_pActiveProfile->unlockedTracks & (1 << track)) && IsTrackIndexValid(track);
+    return (g_aVehicles[0].profile->unlockedTracks & (1 << track)) && IsTrackIndexValid(track);
 }
 
 /* The original tests the unsigned season and round for being negative. */
@@ -156,8 +156,8 @@ void TrackMenuPostDraw(s32 item) {
         SetTextSize(10);
         SetTextStyleNormal();
         SetTextAlignCenter();
-        needed = g_SeasonTable[g_pActiveProfile->season].pointsNeeded -
-                 g_pActiveProfile->seasonPoints[g_pActiveProfile->season];
+        needed = g_SeasonTable[g_aVehicles[0].profile->season].pointsNeeded -
+                 g_aVehicles[0].profile->seasonPoints[g_aVehicles[0].profile->season];
         if (needed <= 0) {
 #if TGR_REGION == TGR_REGION_JP
             sprintf(g_szTrackSelectPointsTextBuf, "%%wwYOU ARE READY TO NEXT SEASON");
@@ -186,12 +186,12 @@ void TrackMenuPostDraw(s32 item) {
         if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
             ValidateChampionshipProgress();
             StartChampionshipRace();
-            LOAD_SEASON_CARS(g_pActiveProfile, slot);
+            LOAD_SEASON_CARS(g_aVehicles[0].profile, slot);
             g_bSeasonFirstRace = TRUE;
         } else if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
             StartTimeAttack();
             /* The loaded ghost picks its track when that track is unlocked. */
-            if (g_pActiveProfile->unlockedTracks & (1 << g_abGhostRecording[0])) {
+            if (g_aVehicles[0].profile->unlockedTracks & (1 << g_abGhostRecording[0])) {
                 g_dwSelectedTrackId = g_abGhostRecording[0];
             }
         }
@@ -211,9 +211,9 @@ void SeasonRecordsPreDrawCallback(void) {
     while (BLINK_PERIOD < g_fSeasonRecordsBlinkTime) {
         g_fSeasonRecordsBlinkTime -= BLINK_PERIOD;
     }
-    round = g_pActiveProfile->round;
-    seasonIndex = g_pActiveProfile->season;
-    flags = g_pActiveProfile->championshipFlags;
+    round = g_aVehicles[0].profile->round;
+    seasonIndex = g_aVehicles[0].profile->season;
+    flags = g_aVehicles[0].profile->championshipFlags;
     SetTextStyleNormal();
     SetTextAlignCenter();
     SetTextSize(20);
@@ -260,16 +260,16 @@ void SeasonRecordsPreDrawCallback(void) {
                 g_apWeatherMenuItems[season->races[race][1]]->name);
         DrawText(g_szTrackSelectRecordTextBuf, g_dwScreenWidth * 8 / 32 - shift + 4, y);
         SetTextAlignRight();
-        if (g_pActiveProfile->raceRecords[track] == 0.0f) {
+        if (g_aVehicles[0].profile->raceRecords[track] == 0.0f) {
             sprintf(g_szTrackSelectRecordTextBuf, "--    ");
         } else {
-            FormatLapTime(g_szTrackSelectRecordTextBuf, g_pActiveProfile->raceRecords[track]);
+            FormatLapTime(g_szTrackSelectRecordTextBuf, g_aVehicles[0].profile->raceRecords[track]);
         }
         DrawText(g_szTrackSelectRecordTextBuf, g_dwScreenWidth * 23 / 32 + shift - 1, y);
-        if (g_pActiveProfile->lapRecords[track] == 0.0f) {
+        if (g_aVehicles[0].profile->lapRecords[track] == 0.0f) {
             sprintf(g_szTrackSelectRecordTextBuf, "--    ");
         } else {
-            FormatLapTime(g_szTrackSelectRecordTextBuf, g_pActiveProfile->lapRecords[track]);
+            FormatLapTime(g_szTrackSelectRecordTextBuf, g_aVehicles[0].profile->lapRecords[track]);
         }
         DrawText(g_szTrackSelectRecordTextBuf, g_dwScreenWidth * 28 / 32 + shift, y);
     }

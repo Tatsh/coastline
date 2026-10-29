@@ -38,7 +38,7 @@ typedef f32 AiReal;
 #define AI_INTERMEDIATE(value) (value)
 #define AI_LESS(a, b) ((a) < (b))
 #define AI_ZERO(value) ((value) == 0.0f)
-#define AI_ACTIVE_PROFILE g_pActiveProfile
+#define AI_ACTIVE_PROFILE (g_aVehicles[0].profile)
 #endif /* TGR_BOSS_RALLY */
 
 /* How far a computer looks ahead: 20, 3 more for each unit of speed, and at most 80. */

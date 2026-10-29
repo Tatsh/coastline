@@ -7,11 +7,7 @@
 #include "common/weather.h"
 
 void SetTrackFromSeason(void) {
-#if TGR_BOSS_RALLY
     PlayerProfile *profile = VEHICLE_GET(&(g_aVehicles[0]), Profile);
-#else
-    PlayerProfile *profile = g_pActiveProfile;
-#endif
 
     g_dwSelectedTrackId = g_SeasonTable[profile->season].races[profile->round][0];
     if (profile->championshipFlags & 1) {

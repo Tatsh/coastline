@@ -68,7 +68,6 @@ VehicleModel g_aVehicleModels[1];
 LastLapBuffer g_aLastLapBuffers[4];
 MenuItem *g_apTrackMenuItems[10];
 PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
-PlayerProfile *g_pActiveProfile;
 OptionSettings g_OptionSettings;
 u8 g_bSaveLoadEntryPoint;
 Gfx *gDisplayListPtr;
@@ -133,7 +132,7 @@ static void Reset(void) {
         g_aVehicles[i].index = i;
         g_aRacerSlots[i].vehicle = &g_aVehicles[i];
     }
-    g_pActiveProfile = &profiles[0];
+    g_aVehicles[0].profile = &profiles[0];
 }
 
 static void TestSeasons(void) {

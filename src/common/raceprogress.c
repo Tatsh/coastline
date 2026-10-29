@@ -22,7 +22,7 @@
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 #include <PR/os_libc.h>
-#define PROGRESS_PROFILE g_pActiveProfile
+#define PROGRESS_PROFILE (g_aVehicles[0].profile)
 #define PROGRESS_MESSAGE(text, id) (text)
 #define PROGRESS_ZERO(value) ((value) == 0.0f)
 #define PROGRESS_LESS(a, b) ((a) < (b))

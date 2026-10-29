@@ -151,7 +151,7 @@ s32 IsCarUnlocked(s32 car) {
 #else
     return (!g_dwIsPaintMode || car < PAINT_SHOP_CARS) &&
 #endif
-           (g_pActiveProfile->unlocks & (1 << car)) != 0 && IsVehicleModelValid(car) != 0;
+           (g_aVehicles[0].profile->unlocks & (1 << car)) != 0 && IsVehicleModelValid(car) != 0;
 }
 
 /** Light a model on a stage, from an eye, with the four lights of the stage and its ambient light.
@@ -623,7 +623,7 @@ static inline void DrawRaceResults(s32 player, char *time) {
         SetTextAlignLeft();
         if (lap == g_dwTotalLaps) {
             y += 2;
-            if (vehicle->totalTime == g_pActiveProfile->raceRecords[g_dwResultsTrack]) {
+            if (vehicle->totalTime == g_aVehicles[0].profile->raceRecords[g_dwResultsTrack]) {
                 DrawText("  %yyRECORD TIME!", g_dwScreenWidth * 11 / 16, y);
             }
             sprintf(g_szResultsBuf, "Race time:");
@@ -638,7 +638,7 @@ static inline void DrawRaceResults(s32 player, char *time) {
         }
         DrawText(g_szResultsBuf, g_dwScreenWidth * 5 / 16, y);
         if (lap < vehicle->lap && lap == vehicle->bestLap) {
-            if (vehicle->bestLapTime == g_pActiveProfile->lapRecords[g_dwResultsTrack]) {
+            if (vehicle->bestLapTime == g_aVehicles[0].profile->lapRecords[g_dwResultsTrack]) {
                 DrawText("  %yyRECORD LAP!", g_dwScreenWidth * 11 / 16, y);
             } else {
                 DrawText("  %yyBEST LAP!", g_dwScreenWidth * 11 / 16, y);
@@ -693,13 +693,14 @@ static inline void DrawSeasonResults(void) {
 #endif /* TGR_REGION == TGR_REGION_JP */
         SetTextAlignCenter();
         if (race <= g_dwResultsRound) {
-            FormatLapTime(g_szResultsBuf, g_pActiveProfile->seasonTimes[g_dwResultsSeason][race]);
+            FormatLapTime(g_szResultsBuf,
+                          g_aVehicles[0].profile->seasonTimes[g_dwResultsSeason][race]);
         } else {
             sprintf(g_szResultsBuf, "--");
         }
         DrawText(g_szResultsBuf, g_dwScreenWidth * 17 / 32 + shift, y);
         if (race <= g_dwResultsRound) {
-            place = g_apszPlaceNames[g_pActiveProfile->seasonPlaces[g_dwResultsSeason][race]];
+            place = g_apszPlaceNames[g_aVehicles[0].profile->seasonPlaces[g_dwResultsSeason][race]];
         } else {
             place = "--";
         }
@@ -707,10 +708,10 @@ static inline void DrawSeasonResults(void) {
         SetTextAlignRight();
         /* A race not yet run shows the dashes of its time again. */
         if (race <= g_dwResultsRound) {
-            position = g_pActiveProfile->seasonPlaces[g_dwResultsSeason][race];
+            position = g_aVehicles[0].profile->seasonPlaces[g_dwResultsSeason][race];
             sprintf(g_szResultsBuf, "%d PTS", g_abRacePositionPoints[position]);
-            total +=
-                g_abRacePositionPoints[g_pActiveProfile->seasonPlaces[g_dwResultsSeason][race]];
+            total += g_abRacePositionPoints[g_aVehicles[0]
+                                                .profile->seasonPlaces[g_dwResultsSeason][race]];
         }
         DrawText(g_szResultsBuf, g_dwScreenWidth * 13 / 16 + shift, y);
     }
@@ -949,8 +950,8 @@ static inline void LeaveCarSelect(void) {
             if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
                 /* The next race of the season, or after its last race, the end of the season. */
                 g_dwNumLocalPlayers = 1;
-                g_dwContinueFromResults = g_pActiveProfile->round != 0;
-                if (g_dwResultsSeason == g_pActiveProfile->season) {
+                g_dwContinueFromResults = g_aVehicles[0].profile->round != 0;
+                if (g_dwResultsSeason == g_aVehicles[0].profile->season) {
                     SetTrackFromSeason();
                     g_bSaveLoadEntryPoint = SAVE_LOAD_FROM_SEASON;
                     SetCurrentScreenCallback(ProcessDataSaveLoadMenu);

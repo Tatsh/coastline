@@ -15,7 +15,6 @@ s32 g_dwNumVehicles, g_dwNumActiveVehicles;
 u32 g_dwNumLocalPlayers, g_dwCurrentWeather, g_dwSelectedTrackId;
 s32 g_dwGameMode;
 Vehicle g_aVehicles[MAX_VEHICLES];
-PlayerProfile *g_pActiveProfile;
 u8 g_abPlayerColorsRgb[RACER_SLOTS][3];
 MenuItem *g_apTrackMenuItems[10];
 s32 gInstantReplayActive, g_dwTotalLaps, g_dwRaceFinishOrderCounter;

@@ -14,7 +14,6 @@ s32 g_dwReplayCameraSwitchTimer, g_dwReplayCameraHoldTimer;
 s32 g_dwGameMode;
 RacerSlot g_aRacerSlots[RACER_SLOTS];
 s32 g_dwNumVehicles;
-PlayerProfile *g_pActiveProfile;
 u32 g_dwCurrentWeather;
 f32 g_fFrameDeltaTime;
 PerFrameVariable g_aPerFrameVariables[2];

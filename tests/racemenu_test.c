@@ -24,7 +24,6 @@ s32 g_dwNumTracks = 10;
 Vehicle g_aVehicles[MAX_VEHICLES];
 static PlayerProfile profile;
 static PlayerInputState inputs[MAX_VEHICLES];
-PlayerProfile *g_pActiveProfile = &profile;
 s32 g_dwDrawModelListNoZBuffer;
 u32 g_adwModelShadeColors[4] = {0x11111100, 0x22222200, 0x33333300, 0x44444400};
 s32 g_dwScreenWidth = 320, g_dwScreenHeight = 240;
@@ -273,6 +272,7 @@ static void CheckScreen(void) {
 }
 
 int main(void) {
+    g_aVehicles[0].profile = &profile;
     CheckTrackUnlocked();
     CheckValidate();
     CheckDrawModelList();

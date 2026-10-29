@@ -50,7 +50,6 @@ s32 g_dwNumVehicles, g_dwNumActiveVehicles;
 Vehicle g_aVehicles[MAX_VEHICLES];
 static PlayerInputState inputs[MAX_VEHICLES];
 static PlayerProfile profile;
-PlayerProfile *g_pActiveProfile = &profile;
 static VehicleModel model;
 u32 g_dwRandomSeed;
 
@@ -241,6 +240,8 @@ int main(void) {
     Gfx *shadow;
     f32 scale;
     s32 i;
+
+    g_aVehicles[0].profile = &profile;
 
     g_LoadedTrack.instances = instances;
     g_LoadedTrack.gridInstances = gridInstances;

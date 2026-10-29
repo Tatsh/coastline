@@ -353,7 +353,6 @@ s32 g_nPrevScreenSelection;
 s32 g_nScreenCursor;
 s32 g_nScreenLastActiveIndex;
 s32 g_nScreenPendingSelection;
-PlayerProfile *g_pActiveProfile;
 u8 *g_pDecalMask;
 u16 *g_pDecalPalette;
 u8 *g_pDecalScratchTexels;
