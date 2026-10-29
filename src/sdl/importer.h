@@ -42,14 +42,16 @@ struct UsaMusicModule {
     const char *name;     /*!< The name of its file in a pack, without the extension .xm. */
 };
 
-/** The music modules of the USA cartridge: the menus, then the modules of the tracks. */
+/**
+ * The music modules of the USA cartridge: the menus, then the modules of the tracks. The table of
+ * the tracks also lists 0x19BC10 for track 10, a sound sample rather than a module.
+ */
 inline constexpr UsaMusicModule USA_MUSIC_MODULES[] = {{0x0EBC00, "menu"},
                                                        {0x113660, "race1"},
                                                        {0x12EAB0, "race2"},
                                                        {0x149C80, "race3"},
                                                        {0x164B60, "race4"},
-                                                       {0x17FD10, "race5"},
-                                                       {0x19BC10, "race6"}};
+                                                       {0x17FD10, "race5"}};
 
 /**
  * Check a cartridge image and extract its main segment and its assets, inflated, to
