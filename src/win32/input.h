@@ -17,8 +17,8 @@
 #include <dinput.h>
 #endif
 
+#include "common/inputpoll.h"
 #include "emulatedclock.h"
-#include "inputpoll.h"
 
 /** The mouse of the game. The layout is not recovered past the members below. */
 class MouseDevice {

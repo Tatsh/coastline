@@ -1,4 +1,4 @@
-#include "win32/ghost.h"
+#include "common/ghost.h"
 
 #include <cstdio>
 #include <cstring>
@@ -20,9 +20,9 @@
 #else
 #include "win32/frontendstate.h"
 #endif
+#include "common/season.h"
 #include "win32/input.h"
 #include "win32/netstream.h"
-#include "win32/season.h"
 
 unsigned g_adwGhostFrameCount[GHOST_RECORDING_COUNT];
 int g_bGhostRecordingActive;

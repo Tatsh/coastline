@@ -1,7 +1,7 @@
 #pragma once
 
+#include "common/fileio.h"
 #include "common/track.h"
-#include "win32/fileio.h"
 
 #ifdef __cplusplus
 extern "C" {

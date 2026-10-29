@@ -12,6 +12,9 @@
 #include "common/instantreplay.h"
 #include "common/pause.h"
 #include "common/race.h"
+#include "common/settings.h"
+#include "common/snapshot.h"
+#include "common/strings.h"
 #include "common/trackselect.h"
 #include "sdl/d3dcompat.h"
 #include "sdl/gamefiles.h"
@@ -22,10 +25,7 @@
 #include "win32/input.h"
 #include "win32/rallyconfig.h"
 #include "win32/render.h"
-#include "win32/settings.h"
-#include "win32/snapshot.h"
 #include "win32/sound.h"
-#include "win32/strings.h"
 
 // The anchor of the offsets of Ptr32. It is part of the static data of the program, and every
 // object a Ptr32 addresses is static data or comes from the pool of CHK_AllocateMemory().

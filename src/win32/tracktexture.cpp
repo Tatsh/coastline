@@ -1,12 +1,12 @@
 #include <cstdio>
 #include <cstring>
 
+#include "common/fileio.h"
+#include "common/settings.h"
+#include "common/trackrelocation.h"
 #include "common/weather.h"
-#include "win32/fileio.h"
 #include "win32/render.h"
-#include "win32/settings.h"
 #include "win32/texturescan.h"
-#include "win32/trackrelocation.h"
 
 void ByteSwapTrackData(TrackHeader *track) {
     ByteSwap3DWordsArray(track->vertices, track->vertexCount);

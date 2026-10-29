@@ -16,7 +16,7 @@
 #if TGR_BOSS_RALLY
 #include <stdlib.h>
 
-#include "win32/ghost.h"
+#include "common/ghost.h"
 #else
 #include "common/audiomix.h"
 #endif

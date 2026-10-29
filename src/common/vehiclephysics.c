@@ -14,7 +14,7 @@
 #include <string.h>
 
 #include "common/screen.h"
-#include "win32/settings.h"
+#include "common/settings.h"
 #else
 #include <PR/os_libc.h>
 #endif

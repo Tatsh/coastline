@@ -13,6 +13,7 @@
 #include <common/system.h>
 #include <common/timing.h>
 #include <common/track.h>
+#include <common/trackrelocation.h>
 #include <common/trackrender.h>
 #include <common/tricache.h>
 #include <common/util.h>
@@ -21,7 +22,6 @@
 #include <common/weather.h>
 #include <win32/fontdata.h>
 #include <win32/framestatistics.h>
-#include <win32/trackrelocation.h>
 
 #include "shadowclip.h"
 

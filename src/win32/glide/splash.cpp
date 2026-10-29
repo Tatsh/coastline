@@ -2,12 +2,12 @@
 
 #include <zlib.h>
 
+#include "common/fileio.h"
+#include "common/settings.h"
 #include "win32/app.h"
 #include "win32/d3d/renderer.h"
-#include "win32/fileio.h"
 #include "win32/glide/texturecache.h"
 #include "win32/render.h"
-#include "win32/settings.h"
 
 namespace {
 

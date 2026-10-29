@@ -2,10 +2,10 @@
 
 #include <cmath>
 
+#include "common/ghost.h"
+#include "common/settings.h"
 #include "common/trackselect.h"
 #include "win32/directplay.h"
-#include "win32/ghost.h"
-#include "win32/settings.h"
 #include "win32/terrain.h"
 
 namespace {

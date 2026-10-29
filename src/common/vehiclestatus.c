@@ -10,7 +10,7 @@
 #include "common/vehicletrackpos.h"
 
 #if TGR_BOSS_RALLY
-#include "win32/strings.h"
+#include "common/strings.h"
 #endif
 
 #define GRID_CELL 32

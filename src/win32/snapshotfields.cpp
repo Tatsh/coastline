@@ -1,5 +1,6 @@
 #include <cstddef>
 
+#include "common/airplanestate.h"
 #include "common/frametime.h"
 #include "common/physics.h"
 #include "common/playerinput.h"
@@ -11,7 +12,6 @@
 #include "common/system.h"
 #include "common/vecmath.h"
 #include "vehicle.h"
-#include "win32/airplanestate.h"
 #include "win32/sound.h"
 
 namespace {

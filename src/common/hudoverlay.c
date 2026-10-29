@@ -8,11 +8,11 @@
 #if TGR_BOSS_RALLY
 #include <stdio.h>
 
-#include "win32/configfile.h"
+#include "common/configfile.h"
+#include "common/settings.h"
+#include "common/strings.h"
 #include "win32/directplay.h"
 #include "win32/hudcanvas.h"
-#include "win32/settings.h"
-#include "win32/strings.h"
 #else
 #include <PR/os_libc.h>
 

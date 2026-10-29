@@ -13,7 +13,7 @@
 #else
 #include "win32/d3d/renderer.h"
 #endif
-#include "win32/fileio.h"
+#include "common/fileio.h"
 #include "win32/render.h"
 
 // The pixel format LoadRgba5551ImageFile() converts an image to.

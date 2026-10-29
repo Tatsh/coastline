@@ -2,12 +2,12 @@
 
 #include "common/displaylistptr.h"
 #include "common/racerslot.h"
+#include "common/settings.h"
+#include "common/snapshot.h"
 #include "common/text.h"
 #include "common/vehiclecount.h"
 #include "win32/displaylist.h"
 #include "win32/render.h"
-#include "win32/settings.h"
-#include "win32/snapshot.h"
 
 /** @ghidraAddress BRD3D: 0x106805a0 */
 int g_dwActivateMinimized;

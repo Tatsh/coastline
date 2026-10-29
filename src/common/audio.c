@@ -3,7 +3,7 @@
 #include <stddef.h>
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/syncprintf.h"
+#include "common/syncprintf.h"
 
 /* The sound system of the PC release has channels of the same names, and the SDL game has both. */
 #define InitSoundChannel N64InitSoundChannel

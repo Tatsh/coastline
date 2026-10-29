@@ -1,4 +1,4 @@
-#include "win32/particlesnapshot.h"
+#include "common/particlesnapshot.h"
 
 #include <string.h>
 

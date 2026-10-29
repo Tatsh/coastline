@@ -12,7 +12,7 @@
 
 #include <ddraw.h>
 
-#include "win32/assetnames.h"
+#include "common/assetnames.h"
 #include "win32/frontendstate.h"
 #include "win32/glide/rgb565image.h"
 #include "win32/menufont.h"

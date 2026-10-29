@@ -1,4 +1,4 @@
-#include "win32/racesound.h"
+#include "common/racesound.h"
 
 #include "common/screen.h"
 #include "common/soundchannel.h"

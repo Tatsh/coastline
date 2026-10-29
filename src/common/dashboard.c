@@ -12,11 +12,11 @@
 #include "common/weather.h"
 
 #if TGR_BOSS_RALLY
+#include "common/settings.h"
 #include "win32/directplay.h"
 #include "win32/hudcanvas.h"
 #include "win32/hudquad.h"
 #include "win32/render.h"
-#include "win32/settings.h"
 #else
 #include <PR/gu.h>
 #include <PR/os_libc.h>

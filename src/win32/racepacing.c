@@ -1,7 +1,7 @@
-#include "win32/racepacing.h"
+#include "common/racepacing.h"
 
+#include "common/snapshotops.h"
 #include "win32/framestatistics.h"
-#include "win32/snapshotops.h"
 #include "win32/timer.h"
 
 /**

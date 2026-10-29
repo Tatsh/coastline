@@ -4,13 +4,13 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "common/fileio.h"
 #include "common/physics.h"
+#include "common/settings.h"
 #include "common/trackmenuitem.h"
+#include "common/trackrelocation.h"
 #include "common/util.h"
-#include "win32/fileio.h"
 #include "win32/render.h"
-#include "win32/settings.h"
-#include "win32/trackrelocation.h"
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include <filesystem>
 

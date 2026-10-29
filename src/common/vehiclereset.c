@@ -11,7 +11,7 @@
 
 #if TGR_BOSS_RALLY
 #include "common/screen.h"
-#include "win32/settings.h"
+#include "common/settings.h"
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64

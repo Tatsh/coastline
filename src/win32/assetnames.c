@@ -1,4 +1,4 @@
-#include "win32/assetnames.h"
+#include "common/assetnames.h"
 
 #include <stddef.h>
 

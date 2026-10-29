@@ -4,9 +4,9 @@
 
 #include <windows.h>
 
+#include "common/fileio.h"
 #include "ini.h"
 #include "registry.h"
-#include "win32/fileio.h"
 
 typedef struct VideoSelection {
     int initialIndex;

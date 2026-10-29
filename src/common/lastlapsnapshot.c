@@ -9,7 +9,7 @@
 #if TGR_BOSS_RALLY
 #include <string.h>
 
-#include "win32/ghost.h"
+#include "common/ghost.h"
 #define LAST_LAP_SELF(field) (field)
 #define LAST_LAP_NOT_STARTING() (lap != (s32)((u32)g_dwTotalLaps - 1) && g_dwTotalLaps >= 2)
 #define LAST_LAP_RECORDING_ACTIVE() IsGhostRecordingActive()

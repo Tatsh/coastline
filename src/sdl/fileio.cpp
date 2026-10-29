@@ -1,7 +1,7 @@
 // The file routines of the PC release on the directories of the SDL game. The behaviour of each
 // routine, its messages, and its exits follow src/win32/fileio.c.
 
-#include "win32/fileio.h"
+#include "common/fileio.h"
 
 #include <algorithm>
 #include <cctype>

@@ -7,10 +7,10 @@
 #include "common/displaylistops.h"
 #include "common/displaylistptr.h"
 #include "common/screen.h"
+#include "common/settings.h"
 #include "common/weather.h"
 #include "win32/glide/renderer.h"
 #include "win32/render.h"
-#include "win32/settings.h"
 #include "win32/timer.h"
 
 // Windows headers define DrawText as a GDI alias.

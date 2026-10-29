@@ -8,6 +8,7 @@
 
 #include <zlib.h>
 
+#include "common/settings.h"
 #include "common/vehiclemodel.h"
 #include "win32/d3d/renderer.h"
 #include "win32/displaylist.h"
@@ -16,7 +17,6 @@
 #include "win32/glide/texture.h"
 #include "win32/paintshop.h"
 #include "win32/render.h"
-#include "win32/settings.h"
 #include "win32/texturesampling.h"
 #include "win32/texturescan.h"
 #include "win32/textureworkspace.h"

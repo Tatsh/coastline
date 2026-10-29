@@ -5,11 +5,11 @@
 #else
 #include <win32/frontendstate.h>
 #endif
-#include <win32/ghost.h>
+#include <common/ghost.h>
+#include <common/settings.h>
+#include <common/snapshot.h>
 #include <win32/netstream.h>
 #include <win32/render.h>
-#include <win32/settings.h>
-#include <win32/snapshot.h>
 
 unsigned char g_abAlphaRampPixelStrip[64];
 unsigned char g_abAlphaRampRgba[16][4];

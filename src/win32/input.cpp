@@ -17,21 +17,21 @@
 #include "common/laps.h"
 #include "common/pause.h"
 #include "common/playerinput.h"
+#include "common/strings.h"
 #include "common/vehicleaccess.h"
 #include "vehicle.h"
 #include "win32/app.h"
 #include "win32/directplay.h"
 #include "win32/rallyconfig.h"
-#include "win32/strings.h"
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include "win32/frontend.h"
 #else
 #include "win32/frontendstate.h"
 #endif
-#include "win32/ghost.h"
+#include "common/ghost.h"
+#include "common/settings.h"
+#include "common/snapshot.h"
 #include "win32/hud.h"
-#include "win32/settings.h"
-#include "win32/snapshot.h"
 #include "win32/sound.h"
 #include "win32/timer.h"
 

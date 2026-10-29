@@ -1,7 +1,7 @@
 #include "common/effects.h"
 #include "common/particlecommands.h"
 #if TGR_BOSS_RALLY
-#include "win32/particlesnapshot.h"
+#include "common/particlesnapshot.h"
 #endif
 
 #if TGR_BOSS_RALLY

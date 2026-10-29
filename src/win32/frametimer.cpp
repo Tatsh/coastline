@@ -7,8 +7,8 @@
 #include <windows.h>
 #endif
 
-#include "win32/racepacing.h"
-#include "win32/snapshot.h"
+#include "common/racepacing.h"
+#include "common/snapshot.h"
 #include "win32/timer.h"
 
 namespace {

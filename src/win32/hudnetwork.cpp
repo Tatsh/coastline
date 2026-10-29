@@ -1,12 +1,12 @@
 #include <cstdio>
 
 #include "common/instantreplay.h"
+#include "common/settings.h"
 #include "common/text.h"
 #include "common/vehiclecount.h"
 #include "vehicle.h"
 #include "win32/directplay.h"
 #include "win32/hud.h"
-#include "win32/settings.h"
 
 #undef DrawText
 

@@ -1,5 +1,6 @@
 #include <cstring>
 
+#include "common/fileio.h"
 #include "common/game.h"
 #include "common/racerslot.h"
 #include "common/racerslotaccess.h"
@@ -8,7 +9,6 @@
 #include "common/weather.h"
 #include "vehicle.h"
 #include "win32/app.h"
-#include "win32/fileio.h"
 #include "win32/paintshop.h"
 #include "win32/render.h"
 #include "win32/textureupload.h"

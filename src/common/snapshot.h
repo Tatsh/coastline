@@ -6,10 +6,10 @@
  * The snapshots of frames of the PC port.
  */
 
+#include "common/particlesnapshot.h"
 #include "common/racerslot.h"
+#include "common/snapshotops.h"
 #include "vehicle.h"
-#include "win32/particlesnapshot.h"
-#include "win32/snapshotops.h"
 
 enum { FRAME_SNAPSHOT_COUNT = 5 };
 

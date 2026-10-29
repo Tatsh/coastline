@@ -18,11 +18,11 @@
 #else
 #include "win32/d3d/renderer.h"
 #endif
+#include "common/fileio.h"
+#include "common/settings.h"
 #include "win32/d3d/texture.h"
 #include "win32/displaylist.h"
-#include "win32/fileio.h"
 #include "win32/paintshop.h"
-#include "win32/settings.h"
 #include "win32/texturescan.h"
 #include "win32/textureworkspace.h"
 

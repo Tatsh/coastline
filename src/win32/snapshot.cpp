@@ -1,4 +1,4 @@
-#include "win32/snapshot.h"
+#include "common/snapshot.h"
 
 namespace {
 /** @ghidraAddress BRD3D: 0x104afd00 */

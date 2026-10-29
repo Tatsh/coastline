@@ -14,10 +14,10 @@
 #else
 #include "win32/d3d/renderer.h"
 #endif
+#include "common/ghost.h"
+#include "common/settings.h"
 #include "win32/displaylist.h"
-#include "win32/ghost.h"
 #include "win32/render.h"
-#include "win32/settings.h"
 #define StubWeatherUpdate NullStub
 #define AddTimingMarker(...) NullStub()
 #define PRECIPITATION_RENDER_REAL long double

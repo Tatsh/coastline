@@ -6,14 +6,14 @@
 #elif TGR_BRD3D
 #include "win32/d3d/renderer.h"
 #endif
+#include "common/gameinit.h"
+#include "common/season.h"
+#include "common/settings.h"
 #include "win32/directplay.h"
-#include "win32/gameinit.h"
 #include "win32/input.h"
 #include "win32/paintshop.h"
 #include "win32/render.h"
 #include "win32/renderinit.h"
-#include "win32/season.h"
-#include "win32/settings.h"
 #include "win32/sound.h"
 
 void ShutdownGameSession(void) {

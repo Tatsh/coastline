@@ -1,4 +1,4 @@
-#include "win32/strings.h"
+#include "common/strings.h"
 
 #include <stdlib.h>
 #include <string.h>
@@ -9,7 +9,7 @@
 #include <windows.h>
 #endif
 
-#include "win32/fileio.h"
+#include "common/fileio.h"
 
 // The language resource library, beside the game.
 #define STRING_LIBRARY "BRString.dll"

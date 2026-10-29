@@ -1,11 +1,11 @@
-#include "win32/configfile.h"
+#include "common/configfile.h"
 
 #include <cstdio>
 #include <cstring>
 
+#include "common/ghost.h"
+#include "common/season.h"
 #include "win32/app.h"
-#include "win32/ghost.h"
-#include "win32/season.h"
 
 int g_dwConfigValue0 = 9;
 int g_dwConfigValue1 = 9;

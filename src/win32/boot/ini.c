@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "win32/fileio.h"
+#include "common/fileio.h"
 
 /**
  * @ghidraAddress BRally: 0x0040308c

@@ -6,10 +6,10 @@
 #include <process.h>
 #include <windows.h>
 
+#include "common/fileio.h"
 #include "ini.h"
 #include "registry.h"
 #include "win32/diagnostics.h"
-#include "win32/fileio.h"
 
 typedef int(__cdecl *RallyMainProc)(HINSTANCE, HINSTANCE, LPSTR, int);
 

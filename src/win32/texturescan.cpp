@@ -12,9 +12,9 @@
 #else
 #include "win32/d3d/renderer.h"
 #endif
+#include "common/settings.h"
 #include "win32/paintshop.h"
 #include "win32/render.h"
-#include "win32/settings.h"
 
 int g_dwTexScanLoadState;
 GbiCommand *g_pTexScanCmdBlockStart;

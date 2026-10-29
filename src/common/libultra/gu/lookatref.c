@@ -1,7 +1,7 @@
 #if TGR_BOSS_RALLY
 #include <PR/gu.h>
 
-#include "win32/packedvalue.h"
+#include "common/packedvalue.h"
 #else
 #include "common/libultra/gu/guint.h"
 #endif

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "win32/fileio.h"
+#include "common/fileio.h"
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include "sdl/bitmap.h"
 #endif

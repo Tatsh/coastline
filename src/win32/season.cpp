@@ -1,4 +1,4 @@
-#include "win32/season.h"
+#include "common/season.h"
 
 #include <bit>
 #include <cstdio>
@@ -7,6 +7,7 @@
 
 #include <zlib.h>
 
+#include "common/configfile.h"
 #include "common/game.h"
 #include "common/profile.h"
 #include "common/race.h"
@@ -14,15 +15,14 @@
 #include "common/trackselect.h"
 #include "common/weather.h"
 #include "win32/buildinfo.h"
-#include "win32/configfile.h"
 #include "win32/rallyconfig.h"
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include "win32/frontend.h"
 #else
 #include "win32/frontendstate.h"
 #endif
-#include "win32/ghost.h"
-#include "win32/settings.h"
+#include "common/ghost.h"
+#include "common/settings.h"
 
 void ProcessSeasonResults(void) {
     if (g_dwGameMode != GAME_MODE_CHAMPIONSHIP || !g_dwSavedResultsValid) {

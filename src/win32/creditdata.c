@@ -1,7 +1,7 @@
 #include <stddef.h>
 
+#include "common/assetnames.h"
 #include "common/race.h"
-#include "win32/assetnames.h"
 
 RacePhaseStep g_aRacePhaseTable[RACE_PHASES] = {
     {RACE_PHASE_HOLD, 0.0f},

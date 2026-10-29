@@ -15,8 +15,8 @@
 #include <dplobby.h>
 #endif
 
-#include "win32/assetnames.h"
-#include "win32/ghost.h"
+#include "common/assetnames.h"
+#include "common/ghost.h"
 
 /** The DirectPlay object of the game and its local player. */
 struct DirectPlayInfo {

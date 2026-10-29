@@ -18,11 +18,11 @@
 #if TGR_BOSS_RALLY
 #include <string.h>
 
+#include "common/ghost.h"
+#include "common/settings.h"
+#include "common/strings.h"
 #include "win32/directplay.h"
-#include "win32/ghost.h"
 #include "win32/input.h"
-#include "win32/settings.h"
-#include "win32/strings.h"
 #else
 #include <PR/os_libc.h>
 

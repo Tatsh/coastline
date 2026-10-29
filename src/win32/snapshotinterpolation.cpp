@@ -2,9 +2,9 @@
 #include <initializer_list>
 
 #include "common/race.h"
+#include "common/settings.h"
+#include "common/snapshot.h"
 #include "common/vehiclecount.h"
-#include "settings.h"
-#include "snapshot.h"
 #include "timer.h"
 
 /** @ghidraAddress BRD3D: 0x104afd14 */

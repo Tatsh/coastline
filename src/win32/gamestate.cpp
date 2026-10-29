@@ -9,9 +9,9 @@
 #else
 #include "win32/frontendstate.h"
 #endif
+#include "common/settings.h"
 #include "win32/input.h"
 #include "win32/render.h"
-#include "win32/settings.h"
 #include "win32/sound.h"
 #include "win32/timer.h"
 #if TGR_PLATFORM == TGR_PLATFORM_SDL

@@ -17,7 +17,7 @@
 #include <mmsystem.h>
 #endif
 
-#include "win32/assetnames.h"
+#include "common/assetnames.h"
 #include "win32/soundbank.h"
 #include "win32/soundsample.h"
 

@@ -14,6 +14,8 @@
 #include "common/instantreplay.h"
 #include "common/laps.h"
 #include "common/pause.h"
+#include "common/settings.h"
+#include "common/strings.h"
 #include "common/timing.h"
 #include "vehicle.h"
 #include "win32/app.h"
@@ -26,9 +28,7 @@
 #include "win32/rallyconfig.h"
 #include "win32/render.h"
 #include "win32/renderinit.h"
-#include "win32/settings.h"
 #include "win32/sound.h"
-#include "win32/strings.h"
 
 HINSTANCE g_hAppInstance;
 HWND g_hMainWindow;

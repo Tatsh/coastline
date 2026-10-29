@@ -5,11 +5,11 @@
  */
 #include <cstdio>
 
+#include "common/settings.h"
 #include "win32/app.h"
 #include "win32/frontend.h"
 #include "win32/glide/rgb565image.h"
 #include "win32/render.h"
-#include "win32/settings.h"
 
 // The colour key of the menu images.
 #define MENU_IMAGE_COLOR_KEY RGB(0, 0xff, 0)

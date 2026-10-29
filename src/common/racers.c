@@ -8,8 +8,8 @@
 #if TGR_BOSS_RALLY
 #include <stdlib.h>
 
+#include "common/settings.h"
 #include "win32/directplay.h"
-#include "win32/settings.h"
 #define QuickSort qsort
 #else
 #include "common/util.h"

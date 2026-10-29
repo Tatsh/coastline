@@ -4,10 +4,10 @@
 #include "common/racerender.h"
 #include "common/shadowbuffers.h"
 #include "common/sky.h"
+#include "common/snapshot.h"
 #include "common/system.h"
 #include "common/timing.h"
 #include "render.h"
-#include "snapshot.h"
 
 namespace {
 /**

@@ -18,7 +18,7 @@
 #include "racemenu.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/romsegments.h"
+#include "common/romsegments.h"
 #endif
 
 /* Assets at fixed cartridge offsets. */

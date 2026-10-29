@@ -1,4 +1,4 @@
-#include "win32/settings.h"
+#include "common/settings.h"
 
 char g_szTracks[256] = "tracks/";
 char g_szCarsDirPath[256] = "cars/";

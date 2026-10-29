@@ -31,7 +31,7 @@
 #include "weatherselect.h"
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/romsegments.h"
+#include "common/romsegments.h"
 #endif
 
 /* The sounds of moving the cursor and of choosing, on the cartridge. */

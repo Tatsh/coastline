@@ -1,6 +1,6 @@
 #include "common/race.h"
+#include "common/settings.h"
 #include "vehicle.h"
-#include "win32/settings.h"
 
 int g_dwChosenWeather;
 int g_bNetMaxPlayers;

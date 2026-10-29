@@ -18,12 +18,12 @@
 #include "racemenu.h"
 #else
 #include "common/displaylistops.h"
+#include "common/gameinit.h"
 #include "common/screen.h"
-#include "win32/gameinit.h"
 #endif /* !TGR_BOSS_RALLY */
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/romsegments.h"
+#include "common/romsegments.h"
 #endif
 
 #if TGR_BOSS_RALLY

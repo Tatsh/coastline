@@ -8,10 +8,10 @@
 
 #include <nlohmann/json.hpp>
 
+#include "common/fileio.h"
+#include "common/strings.h"
 #include "sdl/stringresources.h"
 #include "sdl/win32types.h"
-#include "win32/fileio.h"
-#include "win32/strings.h"
 
 namespace {
 

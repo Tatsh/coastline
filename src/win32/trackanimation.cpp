@@ -2,8 +2,8 @@
 #include <cstring>
 #include <type_traits>
 
+#include "common/trackrelocation.h"
 #include "win32/render.h"
-#include "win32/trackrelocation.h"
 
 template <typename T>
     requires(std::is_trivially_copyable_v<T> && sizeof(T) == sizeof(unsigned))

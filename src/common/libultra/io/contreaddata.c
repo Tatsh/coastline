@@ -3,7 +3,7 @@
 #if TGR_BOSS_RALLY
 #include <PR/os_cont.h>
 
-#include "win32/inputpoll.h"
+#include "common/inputpoll.h"
 #else
 #include "common/libultra/io/controller.h"
 #include "common/libultra/io/siint.h"

@@ -1,8 +1,8 @@
 #include "win32/glide/renderer.h"
 
 #include "common/screen.h"
+#include "common/settings.h"
 #include "win32/render.h"
-#include "win32/settings.h"
 
 // The size of the window SetDisplayModeWithFallback() opens when the size requested fails.
 #define FALLBACK_MODE_WIDTH 640

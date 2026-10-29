@@ -7,9 +7,9 @@
 #if TGR_BOSS_RALLY
 #include <stdio.h>
 
+#include "common/settings.h"
 #include "win32/fontdata.h"
 #include "win32/gbicommand.h"
-#include "win32/settings.h"
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
 #include "win32/glide/fontatlas.h"
 #endif

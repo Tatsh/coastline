@@ -13,7 +13,7 @@
 #include "common/rle.h"
 #include "common/vehicle.h"
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/romsegments.h"
+#include "common/romsegments.h"
 #endif
 
 #ifdef __cplusplus

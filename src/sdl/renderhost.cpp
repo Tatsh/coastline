@@ -6,8 +6,8 @@
 #include <utility>
 
 #include "common/screen.h"
+#include "common/settings.h"
 #include "win32/render.h"
-#include "win32/settings.h"
 
 namespace {
 

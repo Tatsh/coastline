@@ -4,12 +4,12 @@
 
 #include "common/displaylistops.h"
 #include "common/model.h"
+#include "common/trackrelocation.h"
 #include "common/vehiclecolor.h"
 #include "common/weather.h"
 #include "win32/app.h"
 #include "win32/render.h"
 #include "win32/texturescan.h"
-#include "win32/trackrelocation.h"
 
 template <typename T>
     requires(std::is_trivially_copyable_v<T> && (sizeof(T) == 2 || sizeof(T) == 4))

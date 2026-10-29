@@ -2,9 +2,9 @@
 
 #include <cstdlib>
 
+#include "common/ghost.h"
+#include "common/settings.h"
 #include "common/vehicleaccess.h"
-#include "win32/ghost.h"
-#include "win32/settings.h"
 
 RacerSlot g_aRacerSlots[RACER_SLOTS];
 

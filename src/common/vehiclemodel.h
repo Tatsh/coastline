@@ -7,7 +7,7 @@
 #include "common/render.h"
 
 #if TGR_BOSS_RALLY
-#include "win32/assetnames.h"
+#include "common/assetnames.h"
 #endif
 
 /** The wheels of a vehicle. */
