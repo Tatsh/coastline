@@ -101,7 +101,7 @@ PaletteSwatch g_aDecalSwatches[DECAL_SWATCHES];
 u8 g_aDmaWorkBuffers[65536 / coastline::ConsoleSizeOf<u8>()];
 u8 g_aLargeFontTexture[56320 / coastline::ConsoleSizeOf<u8>()];
 Gfx g_aMenuChoiceMarkerDisplayList[96 / coastline::ConsoleSizeOf<Gfx>()];
-Gfx g_aMenuSpotlightDisplayList[376 / coastline::ConsoleSizeOf<Gfx>()];
+Gfx g_aMenuSpotlightDisplayList[23];
 Vtx g_aMenuSpotlightVertices[31];
 MenuItem g_aOptionsMenuItems[OPTIONS_ITEMS];
 ScreenRect g_aPaintToolButtonRects[PAINT_TOOLS];

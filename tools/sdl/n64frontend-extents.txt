@@ -15,3 +15,6 @@ g_apszDriveTypes [3]
 g_aSmallFontTexture [0x3D40]
 # Outside the data of the assembly: the slots of the models of the cars.
 g_aVehicleModels [VEHICLE_MODEL_SLOTS]
+# 0x80271DB0 to the vertices of the marker of the menu choices at 0x80271E68, which the marker
+# loads as big-endian vertices.
+g_aMenuSpotlightDisplayList [23]
