@@ -79,7 +79,7 @@ namespace {
     [[maybe_unused, gnu::used]] s32 g_dwRaceCaptionLast;
 }
 
-void Vehicle::ConfigureRaceControls(bool localPlayer) {
+inline void Vehicle::ConfigureRaceControls(bool localPlayer) {
     if (localPlayer) {
         chosenTransmission = profile->transmission;
         suspensionStiffness = profile->suspension;
@@ -101,7 +101,7 @@ void Vehicle::ConfigureRaceControls(bool localPlayer) {
     }
 }
 
-void Vehicle::PrepareRaceVehicle(s32 vehicleIndex) {
+inline void Vehicle::PrepareRaceVehicle(s32 vehicleIndex) {
     opacity = 1.0f;
     if (vehicleIndex < (s32)g_dwNumLocalPlayers) {
         driver = PlayerVehicleControllerCallback;
@@ -128,7 +128,7 @@ void Vehicle::PrepareRaceVehicle(s32 vehicleIndex) {
     subMessage = NULL;
 }
 
-void Vehicle::PrepareEmptyRaceView(void) {
+inline void Vehicle::PrepareEmptyRaceView(void) {
     SetVehicleModelSlot(0);
     SetupVehicleForRaceStart();
     UpdateCameraSystem();

@@ -7,6 +7,13 @@
 
 #if TGR_BOSS_RALLY
 #include "common/gbicommand.h"
+#endif
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "win32/paintshop.h"
+#include "win32/render.h"
+#endif
+
+#if TGR_BOSS_RALLY
 #define MAX_DENT g_wVehicleDeformMaxDent
 #define DENT_LESS(value, limit) (!((value) >= (limit)))
 #define DENT_COORDINATE(vertex, index, field)                                                      \
@@ -21,6 +28,13 @@
 #endif /* TGR_BOSS_RALLY */
 
 #define UNDENTED_DISPLAY_LIST VEHICLE_DL_HIGHLIGHTED
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+inline void Vehicle::ApplyImpactDamageTexture(s32 side) {
+    SetColorTintMultipliers(color[0], color[1], color[2]);
+    ApplyRandomAdjacentDamageTexture(side, damageTextureEntries, damageTextureLevels);
+}
+#endif
 
 /** How much a coordinate of a vertex moves, by the low bits of another coordinate as noise. */
 static inline s32 DentOffset(s32 dent, s32 noise, s32 below, s32 above, s32 shift) {

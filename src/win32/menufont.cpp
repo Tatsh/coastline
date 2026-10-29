@@ -33,7 +33,7 @@ MenuFont::MenuFont() {
     bStyle = 1;
 }
 
-void MenuFont::MeasureMenuText(bool alternate) {
+inline void MenuFont::MeasureMenuText(bool alternate) {
     MenuFont *pFont = this;
     unsigned short width = 0;
     short height = pFont->nHeight;
@@ -127,7 +127,7 @@ void MenuFont::DrawThrottledMenuGlyph(float x, float y) {
     }
 }
 
-void MenuFont::DrawMenuText(float x, float y, bool alternate, bool useFontY) {
+inline void MenuFont::DrawMenuText(float x, float y, bool alternate, bool useFontY) {
     MenuFont *pFont = this;
     if (pFont->dwFlags & 1) {
         x = pFont->ComputeCenteredX();

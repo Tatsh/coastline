@@ -72,25 +72,7 @@ void Vehicle::UpdateVehicleSounds(void) {
     ::UpdateVehicleSounds(this);
 }
 
-void ClearVehicleSoundChannel(s32 channel) {
-    g_aSoundChannelRequested[channel].dwStereoLevels = 0;
-    g_aSoundChannelRequested[channel].llFrequency = 0;
-}
-
-void SetVehicleSoundChannel(s32 channel, u64 step, u32 levels) {
-    g_aSoundChannelRequested[channel].llFrequency = static_cast<long long>(step);
-    g_aSoundChannelRequested[channel].dwStereoLevels = levels;
-}
-
-s32 IsVehicleSoundChannelPlaying(s32 channel) {
-    return g_aSoundChannelRequested[channel].llFrequency != 0;
-}
-
-void SetVehicleSoundEchoOffset(s32 offset) {
-    g_bAltLoopingSoundSet = offset;
-}
-
-static u32 VehicleEventLevels(Vehicle *vehicle, CameraFrame *listener, s32 mono) {
+static inline u32 VehicleEventLevels(Vehicle *vehicle, CameraFrame *listener, s32 mono) {
     f32 upper;
     f32 lower;
     s32 volume;

@@ -3,15 +3,24 @@
 
 #include "common/racers.h"
 
+#if TGR_BOSS_RALLY
+#include "common/assetnames.h"
+#include "common/strings.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #if TGR_BOSS_RALLY
 /** Look up a localised race message. */
-const char *GetRaceProgressMessage(s32 id);
+static inline const char *GetRaceProgressMessage(s32 id) {
+    return GetStringResource(id);
+}
 /** The empty message shown after a network finish. */
-const char *GetNetworkRaceFinishMessage(void);
+static inline const char *GetNetworkRaceFinishMessage(void) {
+    return g_szEmptyUiString;
+}
 /**
  * The resource identifiers for the finishing places.
  *

@@ -35,8 +35,9 @@ public:
         return *vehicles[0].GetActiveCamera();
     }
     void Capture();
-    void RenderRacingScreen();
-    void InterpolateFrom(const FrameSnapshot &from, const FrameSnapshot &to, long double share);
+    inline void RenderRacingScreen();
+    inline void
+    InterpolateFrom(const FrameSnapshot &from, const FrameSnapshot &to, long double share);
 };
 
 #ifdef __cplusplus

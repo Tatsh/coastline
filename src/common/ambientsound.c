@@ -37,7 +37,7 @@
 #define VOLUME_HALVES_MASK 0x7FFF7FFF
 
 /* Whether the camera of a view changed this frame, which keeps the old pitch and volume. */
-static s32 IsAnyViewCameraChanged(void) {
+static BOSS_RALLY_INLINE s32 IsAnyViewCameraChanged(void) {
     return VEHICLE_GET(&(g_aVehicles[g_aViewportRects[0].vehicleIndex]), CameraChanged) ||
            (g_dwNumViewports != 1 &&
             VEHICLE_GET(&(g_aVehicles[g_aViewportRects[1].vehicleIndex]), CameraChanged));

@@ -92,6 +92,10 @@ s16 g_wRaceScreenLoopExited;
 #endif
 #define AFTER_SEASON_RACE_SECONDS 16.0f
 
+#if TGR_BOSS_RALLY
+static inline void AdvanceRacePhase(void);
+#endif
+
 /* Go on to the next phase of the race. */
 void AdvanceRacePhase(void) {
 #if TGR_BOSS_RALLY
@@ -105,7 +109,7 @@ void AdvanceRacePhase(void) {
 }
 
 /* Hold the vehicles and run the start lights before the race starts. */
-static void HoldBeforeStart(void) {
+static BOSS_RALLY_INLINE void HoldBeforeStart(void) {
 #if TGR_BOSS_RALLY
     const TrackMenuItem *track;
 #else
@@ -189,7 +193,7 @@ static void HoldBeforeStart(void) {
 
 /* Keep a time attack's recording of the first player when it beats the ghost, or when there is
  * none worth keeping. */
-static void KeepTimeAttackRecording(s32 player) {
+static BOSS_RALLY_INLINE void KeepTimeAttackRecording(s32 player) {
 #if !TGR_BOSS_RALLY
     s32 j;
 
@@ -256,7 +260,7 @@ static void KeepTimeAttackRecording(s32 player) {
 }
 
 /* Run the race, and tell whether to go on to the next phase. */
-static s32 RunRacingPhase(void) {
+static BOSS_RALLY_INLINE s32 RunRacingPhase(void) {
     s32 allFinished, i, j;
 
     allFinished = TRUE;

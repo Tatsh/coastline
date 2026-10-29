@@ -484,7 +484,7 @@ void ScaleVertexTexCoords(GrVertex *pVertex, const GbiVertexSource *pSource) {
     pVertex->tmuvtx[0].tow = fTow;
 }
 
-static void RecycleClipVertex(GbiVertexSource *pVertex) {
+static inline void RecycleClipVertex(GbiVertexSource *pVertex) {
     if (std::greater_equal<>{}(pVertex, g_aClipVertexPool) &&
         std::less<>{}(pVertex, g_aClipVertexPool + GBI_CLIP_VERTEX_POOL_SIZE)) {
         pVertex->pNext = g_pVertexFreeList;
@@ -493,12 +493,12 @@ static void RecycleClipVertex(GbiVertexSource *pVertex) {
 }
 
 template <bool FarDepth, bool FlatColor>
-static void ClipAndSubmitTriangleImpl(GbiVertex *pVertex0,
-                                      GbiVertex *pVertex1,
-                                      GbiVertex *pVertex2,
-                                      float fRed = 0,
-                                      float fGreen = 0,
-                                      float fBlue = 0) {
+static inline void ClipAndSubmitTriangleImpl(GbiVertex *pVertex0,
+                                             GbiVertex *pVertex1,
+                                             GbiVertex *pVertex2,
+                                             float fRed = 0,
+                                             float fGreen = 0,
+                                             float fBlue = 0) {
     pVertex2->source.pNext = nullptr;
     pVertex1->source.pNext = &pVertex2->source;
     pVertex0->source.pNext = &pVertex1->source;
@@ -602,16 +602,16 @@ DrawIndexedTriangle(int nVertex0, int nVertex1, int nVertex2, TriangleClipper pf
     grDrawTriangle(&pVertex0->vertex, &pVertex1->vertex, &pVertex2->vertex);
 }
 
-static void DrawIndexedTriangleSmooth(int nVertex0, int nVertex1, int nVertex2) {
+static inline void DrawIndexedTriangleSmooth(int nVertex0, int nVertex1, int nVertex2) {
     DrawIndexedTriangle(nVertex0, nVertex1, nVertex2, ClipAndSubmitTriangle);
 }
 
-static void DrawIndexedTriangleSmoothNoZBuffer(int nVertex0, int nVertex1, int nVertex2) {
+static inline void DrawIndexedTriangleSmoothNoZBuffer(int nVertex0, int nVertex1, int nVertex2) {
     DrawIndexedTriangle(nVertex0, nVertex1, nVertex2, ClipAndSubmitTriangleAtFarDepth);
 }
 
 template <bool FarDepth>
-static void DrawFlatShadedTriangleImpl(int nVertex0, int nVertex1, int nVertex2) {
+static inline void DrawFlatShadedTriangleImpl(int nVertex0, int nVertex1, int nVertex2) {
     GbiVertex *pVertex0 = &g_aGbiVertexCache[nVertex0];
     GbiVertex *pVertex1 = &g_aGbiVertexCache[nVertex1];
     GbiVertex *pVertex2 = &g_aGbiVertexCache[nVertex2];
@@ -809,7 +809,7 @@ static inline void TransformGbiVertexPosition(GbiVertexSource &source,
 // Take the first light of the display lists into the space of the view, and its colour and that of
 // the second, the ambient light, from 0 to 255.
 template <bool UseZBuffer>
-static void UpdateGlideDirectionalLight(void) {
+static inline void UpdateGlideDirectionalLight(void) {
     if (g_bGbiLightsTransformed) {
         return;
     }
@@ -924,7 +924,7 @@ static inline void GenerateGlideTextureCoordinates(const ConvertedModelVertex &i
 enum class GlideVertexColor { Unlit, Lit, LitEnvModulated, TexGen, TexGenLinear };
 
 template <GlideVertexColor Color, bool UseZBuffer>
-static GbiCommand *LoadGlideVertices(GbiCommand *pCommand) {
+static inline GbiCommand *LoadGlideVertices(GbiCommand *pCommand) {
     if constexpr (Color != GlideVertexColor::Unlit) {
         UpdateGlideDirectionalLight<UseZBuffer>();
     }

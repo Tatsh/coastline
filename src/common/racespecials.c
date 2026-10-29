@@ -83,7 +83,7 @@ void FindTrackSpecials(void) {
 #endif
 
 /* Fly the airplane along its path and orient it along the legs of the path. */
-static void FlyAirplane(void) {
+static BOSS_RALLY_INLINE void FlyAirplane(void) {
     Vec3f a, b, c;
     f32 t;
 #if TGR_BOSS_RALLY

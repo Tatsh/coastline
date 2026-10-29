@@ -33,7 +33,7 @@
 #define GRID_PATCH_Y 25
 
 /* The direction along the track at a point, across from its left edge to its right. */
-static void TrackPointDirection(Vec3f *out, TrackPoint *point) {
+static BOSS_RALLY_INLINE void TrackPointDirection(Vec3f *out, TrackPoint *point) {
     out->x = point->left.y - point->right.y;
     out->y = point->right.x - point->left.x;
     out->z = 0.0f;

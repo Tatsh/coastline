@@ -356,9 +356,9 @@ public:
 
     /** Apply the control options from the current input recording. */
     void SetupFromRecording(void);
-    void ConfigureRaceControls(bool localPlayer);
-    void PrepareRaceVehicle(s32 vehicleIndex);
-    void PrepareEmptyRaceView(void);
+    inline void ConfigureRaceControls(bool localPlayer);
+    inline void PrepareRaceVehicle(s32 vehicleIndex);
+    inline void PrepareEmptyRaceView(void);
 
     void SetCustomDecals(s32 value) {
         customDecals = value;
@@ -384,7 +384,7 @@ public:
         }
     }
     inline void UpdateShadowScreenRect(const ViewportRect *viewports);
-    void MoveTireSpraySegments(s32 step, s16 fall);
+    inline void MoveTireSpraySegments(s32 step, s16 fall);
     /**
      * @ghidraAddress BRD3D: 0x10039020
      * @ghidraAddress BRGlide: 0x100326a0
@@ -457,14 +457,14 @@ public:
      * @ghidraAddress BRGlide: 0x1000c4e0
      */
     void DeformVehicleMeshByImpact(Vec3f *direction, s16 amount);
-    void ApplyImpactDamageTexture(s32 side);
+    inline void ApplyImpactDamageTexture(s32 side);
     s32 AdvanceSkidFrames() {
         return skidFrames++;
     }
-    s32 CastGroundRay();
-    void DriveRearWheel(RigidBody *body, RigidBody *wheel, f32 dt);
-    void DriveFrontWheel(RigidBody *body, RigidBody *wheel, f32 dt);
-    void ApplyWheelSideGrip(RigidBody *body, f32 dt);
+    inline s32 CastGroundRay();
+    inline void DriveRearWheel(RigidBody *body, RigidBody *wheel, f32 dt);
+    inline void DriveFrontWheel(RigidBody *body, RigidBody *wheel, f32 dt);
+    inline void ApplyWheelSideGrip(RigidBody *body, f32 dt);
     f32 GetAccelerator() const {
         return accelerator;
     }

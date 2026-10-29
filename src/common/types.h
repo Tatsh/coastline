@@ -69,4 +69,14 @@ typedef double f64; /*!< A 64-bit floating-point number. */
 
 #endif /* TGR_PLATFORM */
 
+/*
+ * Marks a shared helper the compiler of Boss Rally inlined into its caller. The Nintendo 64 build
+ * compiles the helper as an ordinary function.
+ */
+#if TGR_BOSS_RALLY
+#define BOSS_RALLY_INLINE inline
+#else
+#define BOSS_RALLY_INLINE
+#endif
+
 #endif /* COASTLINE_TYPES_H */

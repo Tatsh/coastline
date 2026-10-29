@@ -79,7 +79,7 @@
 #endif
 
 /* The gate a gate count is at, within a lap. */
-static s32 GateInLap(s32 gate, s32 count) {
+static BOSS_RALLY_INLINE s32 GateInLap(s32 gate, s32 count) {
     if (gate < 0) {
         return (count - (-1 - gate) % count - 1) % count;
     }
@@ -87,7 +87,7 @@ static s32 GateInLap(s32 gate, s32 count) {
 }
 
 /* Practice returns a racer to lap 0 after the first lap. */
-static void LapBack(RacerSlot *slot, const char *format) {
+static BOSS_RALLY_INLINE void LapBack(RacerSlot *slot, const char *format) {
     osSyncPrintf(format, slot->index);
     RACER_SLOT_SET(slot, Lap, RACER_SLOT_GET(slot, Lap) - 1);
     RACER_SLOT_SET(slot, DistanceLaps, RACER_SLOT_GET(slot, DistanceLaps) - 1);
@@ -102,7 +102,7 @@ static void LapBack(RacerSlot *slot, const char *format) {
 }
 
 /* Finish the race of a racer, with its place and a course record of a player. */
-static void FinishRacer(RacerSlot *slot, Vehicle *vehicle) {
+static BOSS_RALLY_INLINE void FinishRacer(RacerSlot *slot, Vehicle *vehicle) {
     f32 *record;
 
     RACER_SLOT_SET(slot, Status, RACER_SLOT_GET(slot, Status) | (RACER_FINISHED));
@@ -139,7 +139,7 @@ static void FinishRacer(RacerSlot *slot, Vehicle *vehicle) {
 }
 
 /* Add the time of an arcade checkpoint to the players, and show it with how far behind they are. */
-static void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f32 gapFallback) {
+static BOSS_RALLY_INLINE void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f32 gapFallback) {
     Vehicle *other;
 #if TGR_BOSS_RALLY
     long double gap;
@@ -256,7 +256,7 @@ static void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f32 gapFallback) {
 }
 
 /* A racer crossed the next gate for the first time. */
-static void
+static BOSS_RALLY_INLINE void
 ReachNewGate(RacerSlot *slot, Vehicle *vehicle, s32 next, f32 lapTime, f32 gapFallback) {
     const char *message;
     f32 *record;
@@ -335,7 +335,8 @@ ReachNewGate(RacerSlot *slot, Vehicle *vehicle, s32 next, f32 lapTime, f32 gapFa
 }
 
 /* A racer crossed a previously counted gate; the line of the lap still counts the lap. */
-static void ReachGateAgain(RacerSlot *slot, Vehicle *vehicle, TrackGate *gate, f32 lapTime) {
+static BOSS_RALLY_INLINE void
+ReachGateAgain(RacerSlot *slot, Vehicle *vehicle, TrackGate *gate, f32 lapTime) {
     const char *message;
     f32 *record;
 

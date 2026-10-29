@@ -138,7 +138,7 @@ namespace {
 #define SCREEN_CENTER_X 160
 
 /* Draw the vehicles of the racers that are, or are not, ghosts. */
-static void RenderRacerVehicles(RACE_VIEW_PARAMETERS s32 ghosts) {
+static BOSS_RALLY_INLINE void RenderRacerVehicles(RACE_VIEW_PARAMETERS s32 ghosts) {
     s32 i;
 
     for (i = 0; i < g_dwNumVehicles; i++) {
@@ -152,7 +152,7 @@ static void RenderRacerVehicles(RACE_VIEW_PARAMETERS s32 ghosts) {
 
 /* Draw the track and the vehicles the camera sees, for the view or for its rear-view mirror, which
  * leaves out the start lights and the smoke of the tires after the track in the snow. */
-static void RenderRaceScene(RACE_VIEW_PARAMETERS s32 mainView) {
+static BOSS_RALLY_INLINE void RenderRaceScene(RACE_VIEW_PARAMETERS s32 mainView) {
     s32 i;
 
     RACE_VIEW_TIMING(0, 0, 0x82, 0, 0xFF);
@@ -197,7 +197,7 @@ static void RenderRaceScene(RACE_VIEW_PARAMETERS s32 mainView) {
 }
 
 /* Draw the rear-view mirror over a view whose camera is the bumper camera. */
-static void RenderRearViewMirror(RACE_VIEW_PARAMETERS s32 index) {
+static BOSS_RALLY_INLINE void RenderRearViewMirror(RACE_VIEW_PARAMETERS s32 index) {
     CameraFrame *saved;
     s32 x, y, width, height;
 
@@ -264,7 +264,7 @@ static void RenderRearViewMirror(RACE_VIEW_PARAMETERS s32 index) {
 
 /* Draw the HUD of a view, or the text of the races the computer drives over it. */
 #if TGR_BOSS_RALLY
-static void DrawViewOverlay(RACE_VIEW_PARAMETERS s32 index) {
+static inline void DrawViewOverlay(RACE_VIEW_PARAMETERS s32 index) {
 #else
 static void DrawViewOverlay(void) {
 #endif

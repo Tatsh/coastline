@@ -162,7 +162,7 @@ static inline void AgeSpraySegment(Vehicle *vehicle, s32 wheel, s32 age) {
 }
 
 #if TGR_BOSS_RALLY
-void Vehicle::MoveTireSpraySegments(s32 step, s16 fall) {
+inline void Vehicle::MoveTireSpraySegments(s32 step, s16 fall) {
     Vehicle *vehicle = this;
     f32 scale[4][4];
     SprayMoveVertex *segment;

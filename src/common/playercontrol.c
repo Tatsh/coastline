@@ -24,7 +24,7 @@
 s32 g_bReplayCockpitNext;
 f32 g_afVehicleJolts[4];
 
-static f32 ReadVehicleControlAxis(f32 value, f32 offset, f32 scale, s32 negative) {
+static inline f32 ReadVehicleControlAxis(f32 value, f32 offset, f32 scale, s32 negative) {
     long double amount = ((long double)value + offset) * scale;
     amount *= amount;
     return negative ? -amount : amount;
@@ -82,7 +82,7 @@ void AddVehicleJolt(s32 index, f32 amount) {
 }
 
 /* Whether a viewport follows the vehicle. */
-static s32 IsVehicleViewed(Vehicle *vehicle) {
+static BOSS_RALLY_INLINE s32 IsVehicleViewed(Vehicle *vehicle) {
     return VEHICLE_GET(vehicle, Index) == g_aViewportRects[0].vehicleIndex ||
            (g_dwNumViewports >= 2 &&
             VEHICLE_GET(vehicle, Index) == g_aViewportRects[1].vehicleIndex);
@@ -91,7 +91,7 @@ static s32 IsVehicleViewed(Vehicle *vehicle) {
 #if TGR_BOSS_RALLY || TGR_REGION == TGR_REGION_US
 /* Stand the trackside camera at the nearest point of the track, or switch away from it when no
  * point is close enough. The USA release compiles the routine into its caller. */
-static void ChooseReplayCamera(Vehicle *vehicle);
+static BOSS_RALLY_INLINE void ChooseReplayCamera(Vehicle *vehicle);
 #endif
 
 /* The range test implies that a camera point was selected. */
@@ -159,7 +159,7 @@ void ChooseReplayCamera(Vehicle *vehicle) {
 
 /* Choose the view a replay, a race of the computer, or a finished racer shows, and take the view a
  * player selects. */
-static void ChooseVehicleView(Vehicle *vehicle) {
+static BOSS_RALLY_INLINE void ChooseVehicleView(Vehicle *vehicle) {
     s32 choose = FALSE;
     s32 hold = FALSE;
 
@@ -211,7 +211,7 @@ static void ChooseVehicleView(Vehicle *vehicle) {
 }
 
 /* Read the steering, the stick and the buttons into the controls of a vehicle. */
-static void ReadVehicleControls(Vehicle *vehicle) {
+static BOSS_RALLY_INLINE void ReadVehicleControls(Vehicle *vehicle) {
     f32 steering = VEHICLE_GET(vehicle, Input)->steering;
     f32 stickY;
     u32 buttons;
@@ -303,7 +303,7 @@ static void ReadVehicleControls(Vehicle *vehicle) {
 }
 
 /* Drive the vehicle of the race after a season along the middle of the route to a stop. */
-static void DriveAfterSeason(Vehicle *vehicle) {
+static BOSS_RALLY_INLINE void DriveAfterSeason(Vehicle *vehicle) {
     Vec3f ahead;
     Vec3f velocity;
 
@@ -345,7 +345,7 @@ static void DriveAfterSeason(Vehicle *vehicle) {
 
 /* Swing the weight on the spring at the front left corner of a vehicle, and jolt the vehicle when
  * it swings hard. */
-static void SwingJoltWeight(Vehicle *vehicle) {
+static BOSS_RALLY_INLINE void SwingJoltWeight(Vehicle *vehicle) {
     Vec3f corner;
     Vec3f predicted;
     Vec3f previousOffset;

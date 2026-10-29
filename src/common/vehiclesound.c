@@ -42,7 +42,7 @@
 #define SNOW_WEATHER WEATHER_SNOW
 
 /* Rumble the controller of a local player's vehicle. */
-static void Rumble(Vehicle *vehicle, s16 onFrames, s16 offFrames, s16 frames) {
+static BOSS_RALLY_INLINE void Rumble(Vehicle *vehicle, s16 onFrames, s16 offFrames, s16 frames) {
     if (VEHICLE_GET(vehicle, Index) < (s32)g_dwNumLocalPlayers) {
         g_awRumbleCounter[VEHICLE_GET(vehicle, Index)] = 0;
         g_awRumbleMotorOn[VEHICLE_GET(vehicle, Index)] = 0;
@@ -54,7 +54,7 @@ static void Rumble(Vehicle *vehicle, s16 onFrames, s16 offFrames, s16 frames) {
 }
 
 /* Rumble for a skid, unless the controller already rumbles. */
-static void RumbleSkid(Vehicle *vehicle, s16 offFrames, s16 frames) {
+static BOSS_RALLY_INLINE void RumbleSkid(Vehicle *vehicle, s16 offFrames, s16 frames) {
     if (VEHICLE_GET(vehicle, Index) < (s32)g_dwNumLocalPlayers &&
         !g_awRumbleActive[VEHICLE_GET(vehicle, Index)]) {
         Rumble(vehicle, 1, offFrames, frames);
@@ -81,17 +81,17 @@ static void TakeHitEffect(Vehicle *vehicle,
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 /* Whether an effect is a skid. */
-static s32 IsSkidSound(s32 sound) {
+static BOSS_RALLY_INLINE s32 IsSkidSound(s32 sound) {
     return sound >= SOUND_EFFECT_FIRST_SKID && sound < SOUND_EFFECT_FIRST_ROLL;
 }
 
 /* Whether an effect is rolling. */
-static s32 IsRollSound(s32 sound) {
+static BOSS_RALLY_INLINE s32 IsRollSound(s32 sound) {
     return sound >= SOUND_EFFECT_FIRST_ROLL && sound < SOUND_EFFECT_ROLL_END;
 }
 
 /* Choose the skid of a vehicle on a surface, louder the longer it lasts. */
-static void ChooseSkidEffect(Vehicle *vehicle, s32 surface, s32 skid) {
+static BOSS_RALLY_INLINE void ChooseSkidEffect(Vehicle *vehicle, s32 surface, s32 skid) {
     VEHICLE_SET(vehicle, EffectVolume, skid);
     if (g_dwCurrentWeather == SNOW_WEATHER) {
         switch (surface) {
@@ -139,7 +139,7 @@ static void ChooseSkidEffect(Vehicle *vehicle, s32 surface, s32 skid) {
 }
 
 /* Choose the rolling of a vehicle on a surface, louder the faster it goes. */
-static void ChooseRollEffect(Vehicle *vehicle, s32 surface) {
+static BOSS_RALLY_INLINE void ChooseRollEffect(Vehicle *vehicle, s32 surface) {
     if (g_dwCurrentWeather == SNOW_WEATHER) {
         switch (surface) {
         case 0:
@@ -193,7 +193,7 @@ static void ChooseRollEffect(Vehicle *vehicle, s32 surface) {
 }
 
 /* Choose the effect of a vehicle from its hits, skids and rolling. */
-static void
+static BOSS_RALLY_INLINE void
 ChooseVehicleEffect(Vehicle *vehicle, s32 channel, s32 previousSound, CameraFrame *listener) {
     s32 sound;
     s32 surface;

@@ -193,8 +193,8 @@ private:
      */
     virtual void DrawThrottledMenuGlyph(float x, float y);
 
-    void MeasureMenuText(bool alternate);
-    void DrawMenuText(float x, float y, bool alternate, bool useFontY);
+    inline void MeasureMenuText(bool alternate);
+    inline void DrawMenuText(float x, float y, bool alternate, bool useFontY);
 
     unsigned dwFlags;
     unsigned char bStyle;

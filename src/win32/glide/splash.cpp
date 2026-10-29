@@ -17,10 +17,10 @@ unsigned char g_abGlideSplashPixels[0x20000];
 // The side of the square texture of the image, in texels.
 constexpr int SPLASH_TEXTURE_SIZE = 256;
 
-void DrawGlideSplashQuad(GrVertex &topLeft,
-                         GrVertex &topRight,
-                         GrVertex &bottomLeft,
-                         GrVertex &bottomRight) {
+inline void DrawGlideSplashQuad(GrVertex &topLeft,
+                                GrVertex &topRight,
+                                GrVertex &bottomLeft,
+                                GrVertex &bottomRight) {
     grClipWindow(0, 0, g_dwConfigFramebufferWidth, g_dwConfigFramebufferHeight);
     grBufferClear(0, 0, 0xffff);
     grDrawTriangle(&topLeft, &topRight, &bottomLeft);

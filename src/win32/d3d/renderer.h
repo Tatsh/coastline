@@ -654,8 +654,9 @@ private:
     RECT rcViewport;                     /*!< The rectangle of the viewport. */
     RenderHost *pHost;                   /*!< The host told when the device changes. */
 
-    void RecordDisplayMode(int nWidth, int nHeight, int nBitDepth);
-    HRESULT CreateDepthBuffer(const D3DDEVICEDESC *pDesc, DWORD dwMemoryCaps, bool *pbAttached);
+    inline void RecordDisplayMode(int nWidth, int nHeight, int nBitDepth);
+    inline HRESULT
+    CreateDepthBuffer(const D3DDEVICEDESC *pDesc, DWORD dwMemoryCaps, bool *pbAttached);
 
     /**
      * Tell the window that the objects are going and release them.

@@ -35,7 +35,7 @@ LerpShadowClipVertex(const ShadowClipVertex *first, const ShadowClipVertex *seco
     return result;
 }
 
-static void RecycleShadowClipVertex(ShadowClipVertex *vertex) {
+static inline void RecycleShadowClipVertex(ShadowClipVertex *vertex) {
     if (std::greater_equal<>{}(vertex, g_aShadowClipVertexPool) &&
         std::less<>{}(vertex, g_aShadowClipVertexPool + SHADOW_CLIP_VERTEX_COUNT)) {
         vertex->pNext = g_pShadowClipVertexFreeList;

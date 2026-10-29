@@ -96,9 +96,9 @@ void FrameSnapshot::Capture() {
     SnapshotParticleState(&particles);
 }
 
-void FrameSnapshot::InterpolateFrom(const FrameSnapshot &from,
-                                    const FrameSnapshot &to,
-                                    long double share) {
+inline void FrameSnapshot::InterpolateFrom(const FrameSnapshot &from,
+                                           const FrameSnapshot &to,
+                                           long double share) {
     for (int i = 0; i < g_dwNumVehicles; ++i) {
         std::memcpy(&racers[i], &from.racers[i], sizeof(racers[i]));
         if (const auto vehicle = from.racers[i].GetVehicle()) {

@@ -12,7 +12,7 @@
 #endif
 
 #if TGR_BOSS_RALLY
-static void CopySnapshotBytes(u8 *destination, const void *sourceData, u32 size) {
+static inline void CopySnapshotBytes(u8 *destination, const void *sourceData, u32 size) {
     const u8 *source = sourceData;
     u32 word;
 

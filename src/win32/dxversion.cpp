@@ -11,7 +11,7 @@ typedef HRESULT(WINAPI *DirectDrawCreateProc)(GUID *pGuid,
                                               IUnknown *pOuter);
 
 // Only whether DINPUT.DLL exports DirectInputCreateA is checked.
-static bool HasDirectInput(void) {
+static inline bool HasDirectInput(void) {
     HMODULE hDirectInput;
     FARPROC pfnDirectInputCreate;
 

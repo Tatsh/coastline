@@ -94,7 +94,7 @@ typedef f32 AiReal;
 #define AI_MAX_SPIN 1.0f
 
 /* 1 above the dead zone of the computer's tests, -1 below it, and 0 within. */
-static s32 AiSign(AiReal value) {
+static BOSS_RALLY_INLINE s32 AiSign(AiReal value) {
     if (AI_SIGN_DEAD_ZONE < value) {
         return 1;
     }
@@ -105,7 +105,7 @@ static s32 AiSign(AiReal value) {
 }
 
 /* The point of the route a computer looks ahead to, farther the faster it goes. */
-static void FindAiLookPoint(Vehicle *vehicle, Vec3f *out) {
+static BOSS_RALLY_INLINE void FindAiLookPoint(Vehicle *vehicle, Vec3f *out) {
     TrackSection *section = VEHICLE_GET(vehicle, Section);
     s32 index = VEHICLE_GET(vehicle, PointIndex);
     TrackPoint *point;
@@ -145,7 +145,7 @@ static void FindAiLookPoint(Vehicle *vehicle, Vec3f *out) {
 
 /* Set the axes of the route at the point of a computer's vehicle and its offset from the middle a
  * moment ahead. Return the offset to the left. */
-static f32 MeasureAiRoutePosition(Vehicle *vehicle) {
+static BOSS_RALLY_INLINE f32 MeasureAiRoutePosition(Vehicle *vehicle) {
     /* The point is read again from the vehicle at each use. */
     Vec3fDirection(
         &VEHICLE_GET(vehicle, TrackForward),
@@ -172,12 +172,12 @@ static f32 MeasureAiRoutePosition(Vehicle *vehicle) {
 }
 
 /* Correct a computer that strays from the route or skids across it. Return how hard it corrects. */
-static f32 CorrectAiLine(Vehicle *vehicle,
-                         f32 sideOffset,
-                         f32 sideDistance,
-                         f32 heading,
-                         AiReal rawHalfWidth,
-                         Vec3f *across) {
+static BOSS_RALLY_INLINE f32 CorrectAiLine(Vehicle *vehicle,
+                                           f32 sideOffset,
+                                           f32 sideDistance,
+                                           f32 heading,
+                                           AiReal rawHalfWidth,
+                                           Vec3f *across) {
     f32 halfWidth = rawHalfWidth;
     AiReal limit;
     f32 steer = 0.0f;
@@ -270,7 +270,7 @@ static f32 CorrectAiLine(Vehicle *vehicle,
 
 /* Read how hard the line ahead turns against the velocity of a computer's vehicle, braking for a
  * hard turn. Return how much more it should steer. */
-static f32 ReadAiLineAhead(Vehicle *vehicle) {
+static BOSS_RALLY_INLINE f32 ReadAiLineAhead(Vehicle *vehicle) {
     Vec3f toLeft;
     Vec3f ahead;
     Vec3f normal;
@@ -320,7 +320,7 @@ static f32 ReadAiLineAhead(Vehicle *vehicle) {
 }
 
 /* Shape the steering of a computer, easing it to the side it is nudged to. */
-static f32 ShapeAiSteering(AiReal side, f32 steer) {
+static BOSS_RALLY_INLINE f32 ShapeAiSteering(AiReal side, f32 steer) {
     f32 threshold;
 
     if (AI_LESS(steer, 0.01f)) {
@@ -371,7 +371,7 @@ static f32 ShapeAiSteering(AiReal side, f32 steer) {
 
 /* Drive a computer forward with the steering, or back out of where it is stuck, and brake when it
  * rolls the wrong way. */
-static void ApplyAiDrive(Vehicle *vehicle, f32 side, f32 forwardSpeed) {
+static BOSS_RALLY_INLINE void ApplyAiDrive(Vehicle *vehicle, f32 side, f32 forwardSpeed) {
     f32 speed = Vec3fLength(&VEHICLE_GET(vehicle, PlacedVelocity));
     s32 reverse;
 
@@ -432,7 +432,7 @@ static void ApplyAiDrive(Vehicle *vehicle, f32 side, f32 forwardSpeed) {
 
 /* Move a computer aside for the nearest vehicle ahead of it. Return the offset to the left it
  * aims for. */
-static f32 PassAiVehicles(Vehicle *vehicle, f32 sideOffset) {
+static BOSS_RALLY_INLINE f32 PassAiVehicles(Vehicle *vehicle, f32 sideOffset) {
     Vehicle *other;
     f32 best = AI_PASS_RANGE;
     f32 push = 0.0f;
@@ -487,7 +487,8 @@ static f32 PassAiVehicles(Vehicle *vehicle, f32 sideOffset) {
 
 /* Constrain a computer's vehicle to the route by removing its speed across it, and slow it by the
  * mode. */
-static void HoldAiToRoute(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, f32 forwardSpeed) {
+static BOSS_RALLY_INLINE void
+HoldAiToRoute(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, f32 forwardSpeed) {
     Vec3f *velocity = &VEHICLE_GET(vehicle, Body).state.velocity;
     AiReal hold;
     f32 along;
@@ -543,7 +544,7 @@ static void HoldAiToRoute(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, f32 f
 }
 
 /* Plan the frame of a computer's vehicle. */
-static void PlanAiDrive(Vehicle *vehicle) {
+static BOSS_RALLY_INLINE void PlanAiDrive(Vehicle *vehicle) {
     Vec3f target;
     Vec3f direction;
     Vec3f up;

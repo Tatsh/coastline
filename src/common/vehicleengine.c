@@ -26,7 +26,7 @@ f32 g_fSteerLockLoss = 10.0f;
 s16 g_wSteerGainSpeedShare;
 
 /* Axis bindings use the high bit of the control word. */
-static void SteerVehicleByAnalogueInput(Vehicle *vehicle, f32 stick) {
+static inline void SteerVehicleByAnalogueInput(Vehicle *vehicle, f32 stick) {
     f32 factor = 1.0f;
     f32 amount = stick < 0.0f ? -stick : stick;
     long double target,

@@ -3,6 +3,16 @@
 
 #include "common/vehicle.h"
 
+#if TGR_BOSS_RALLY
+#include "common/game.h"
+#include "common/ghost.h"
+#include "common/instantreplay.h"
+#include "common/racephases.h"
+#include "common/rallyconfig.h"
+#include "common/settings.h"
+#include "common/vehicleaccess.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -33,19 +43,55 @@ void TransformAllWheelMatrices(Vehicle *vehicle);
 
 #if TGR_BOSS_RALLY
 /** Whether the selected binding for a driving control is an axis. */
-s32 IsVehicleControlAnalogue(s32 control);
+static inline s32 IsVehicleControlAnalogue(s32 control) {
+    return (g_GlobalRallyConfig.pActiveInputBindings[control].wControl & 0x8000) != 0;
+}
 
 /** Whether speed reduces analogue steering lock. */
-s32 IsVehicleSteeringSpeedSensitive(void);
+static inline s32 IsVehicleSteeringSpeedSensitive(void) {
+    return g_bSpeedSensitiveSteering;
+}
 
 /** Restore replay motion or record the current pose before drawing. */
-void UpdateVehicleReplayPose(Vehicle *vehicle);
+static inline void UpdateVehicleReplayPose(Vehicle *vehicle) {
+    if (gInstantReplayActive ||
+        (g_dwGameMode == GAME_MODE_TIME_ATTACK && VEHICLE_GET(vehicle, Index) == 1 &&
+         VEHICLE_GET(vehicle, Input)->playbackBuffer)) {
+        ApplyGhostKeyframeForVehicle(vehicle);
+        UpdateVehicleWheelTransforms(vehicle);
+    } else if (g_dwGameMode == GAME_MODE_DEMO && VEHICLE_GET(vehicle, Index) == 0 &&
+               VEHICLE_GET(vehicle, Input)->playbackBuffer) {
+        ApplyGhostKeyframeToVehicle(vehicle, 1);
+        UpdateVehicleWheelTransforms(vehicle);
+    } else {
+        RecordGhostKeyframe(vehicle);
+    }
+}
 
 /** Whether replay and race conditions permit a physics step. */
-s32 ShouldStepVehiclePhysics(Vehicle *vehicle);
+static inline s32 ShouldStepVehiclePhysics(Vehicle *vehicle) {
+    if (gInstantReplayActive ||
+        (g_dwGameMode == GAME_MODE_TIME_ATTACK && VEHICLE_GET(vehicle, Index) == 1 &&
+         VEHICLE_GET(vehicle, Input)->playbackBuffer) ||
+        (g_dwGameMode == GAME_MODE_DEMO && VEHICLE_GET(vehicle, Index) == 0 &&
+         VEHICLE_GET(vehicle, Input)->playbackBuffer)) {
+        return 0;
+    }
+    return g_dwGameMode == GAME_MODE_DEMO || g_dwGameMode == GAME_MODE_AFTER_SEASON ||
+           g_bRaceStartReached || VEHICLE_GET(vehicle, WheelBodies)[1].contactFrames <= 90;
+}
 
 /** Update drawing transforms or send the local driver's motion. */
-void FinishVehiclePhysicsFrame(Vehicle *vehicle);
+static inline void FinishVehiclePhysicsFrame(Vehicle *vehicle) {
+    if (g_dwNetworkPlayMode) {
+        if (VEHICLE_GET(vehicle, Driver) == PlayerVehicleControllerCallback &&
+            !gInstantReplayActive) {
+            RecordVehicleKeyframe(vehicle);
+        }
+    } else if (!gInstantReplayActive) {
+        vehicle->TransformAllWheelMatrices();
+    }
+}
 #endif /* TGR_BOSS_RALLY */
 
 #ifdef __cplusplus

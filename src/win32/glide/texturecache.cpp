@@ -648,16 +648,16 @@ namespace {
 
 // Fill the fields of an image of one tile that CreateTextureFromN64Image() and
 // DecodeN64TextureToPixelBuffer() both set.
-void InitializeN64Image(TextureImageData &image,
-                        const unsigned char *pImage,
-                        const unsigned char *pPalette,
-                        int nWidth,
-                        int nHeight,
-                        int nLineBytes,
-                        int nSize,
-                        int nFormat,
-                        int paddedWidth,
-                        int paddedHeight) {
+inline void InitializeN64Image(TextureImageData &image,
+                               const unsigned char *pImage,
+                               const unsigned char *pPalette,
+                               int nWidth,
+                               int nHeight,
+                               int nLineBytes,
+                               int nSize,
+                               int nFormat,
+                               int paddedWidth,
+                               int paddedHeight) {
     image.nOption1 = g_nGlideNumTmus > 1;
     image.nOption2 = GR_MIPMAPLEVELMASK_BOTH;
     image.nWidth = nWidth;
@@ -983,7 +983,7 @@ void DecodeTexturePixels(unsigned char *pDest,
 
 // Set the level of detail and the aspect ratio of an image from a size, and its largest level
 // from the tiles of the scan. Return whether the aspect ratio is not one Glide has.
-static bool UpdateTmemTextureLevels(TextureImageData &image, int width, int height) {
+static inline bool UpdateTmemTextureLevels(TextureImageData &image, int width, int height) {
     CalculateMipMapLevel(&image.nLod, width, height);
     int exact = CalculateAspectRatioLevel(&image.nAspectRatio, width, height);
     image.nLargestLod = image.nLod - g_dwTexScanRenderTileIndex + g_dwTexScanMaxTileIndex;
@@ -991,7 +991,7 @@ static bool UpdateTmemTextureLevels(TextureImageData &image, int width, int heig
 }
 
 // The checksum of the texels of an image after it is uploaded.
-static uLong ChecksumTexturePixels(const unsigned char *pixels, int bytes) {
+static inline uLong ChecksumTexturePixels(const unsigned char *pixels, int bytes) {
     return adler32(adler32(0, nullptr, 0), pixels, static_cast<uInt>(bytes));
 }
 

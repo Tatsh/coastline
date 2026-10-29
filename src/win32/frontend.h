@@ -526,12 +526,12 @@ public:
     }
 
 private:
-    MenuWidget *LinkedMenuWidget(int index);
-    bool UpdateMenuSlideAxis(int enabled,
-                             signed char direction,
-                             const float &saved,
-                             const float &target,
-                             float &current);
+    inline MenuWidget *LinkedMenuWidget(int index);
+    inline bool UpdateMenuSlideAxis(int enabled,
+                                    signed char direction,
+                                    const float &saved,
+                                    const float &target,
+                                    float &current);
 
     int (*pfnUpdate)(MenuWidget *);
     int (*pfnAction)(MenuActionWidget *);
@@ -2687,7 +2687,7 @@ public:
     unsigned short GetPanelResetWidgetIndex() const {
         return wPanelResetWidgetIndex;
     }
-    void ResetPanelActivation(unsigned short widgetIndex);
+    inline void ResetPanelActivation(unsigned short widgetIndex);
 
 private:
     int (*pfnBuildMenu)(MenuScreen *pScreen); /*!< Builds the items of the screen. */

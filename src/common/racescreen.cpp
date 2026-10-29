@@ -21,7 +21,7 @@ int g_dwHudClearFramesRemaining = 2;
 int g_dwHudLastViewportCount = -1;
 } // namespace
 
-void FrameSnapshot::RenderRacingScreen() {
+inline void FrameSnapshot::RenderRacingScreen() {
     LoadParticleListHeads(&particles);
     UpdateFadeTransitions();
     StartLowResFrame(&viewport);

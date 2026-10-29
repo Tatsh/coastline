@@ -593,7 +593,7 @@ HRESULT DirectDrawRenderer::SetCooperativeLevel() {
 #define FALLBACK_MODE_BIT_DEPTH 16
 
 // Record the display mode that was set and the viewport that covers it.
-void DirectDrawRenderer::RecordDisplayMode(int nWidth, int nHeight, int nBitDepth) {
+inline void DirectDrawRenderer::RecordDisplayMode(int nWidth, int nHeight, int nBitDepth) {
     rcViewport.left = 0;
     rcViewport.top = 0;
     rcViewport.right = nWidth;
@@ -807,9 +807,9 @@ int DirectDrawRenderer::ReleasePrimaryPalette() {
 }
 
 // Create a depth buffer of the size of the back buffer and attach it. Return whether it was.
-HRESULT DirectDrawRenderer::CreateDepthBuffer(const D3DDEVICEDESC *pDesc,
-                                              DWORD dwMemoryCaps,
-                                              bool *pbAttached) {
+inline HRESULT DirectDrawRenderer::CreateDepthBuffer(const D3DDEVICEDESC *pDesc,
+                                                     DWORD dwMemoryCaps,
+                                                     bool *pbAttached) {
     DDSURFACEDESC backDesc;
     DDSURFACEDESC depthDesc;
     HRESULT hr;

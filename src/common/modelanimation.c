@@ -23,7 +23,7 @@ static inline s32 BlendKeyComponent(s32 from, s32 to, s32 blend) {
 #define BLEND_SHIFT 12
 
 /* Set the vertices of an animation between two keys, at a share from 0 to 1 of the way. */
-static void
+static BOSS_RALLY_INLINE void
 BlendModelKeys(ModelAnimation *animation, ModelKeyframe *from, ModelKeyframe *to, f32 share) {
 #if TGR_BOSS_RALLY
     long double scaled = (long double)share * BLEND_ONE;
@@ -74,7 +74,7 @@ BlendModelKeys(ModelAnimation *animation, ModelKeyframe *from, ModelKeyframe *to
 
 /* Blend an animation at a time between the keys around it, searching from its start key. The
  * search past the last key reads one past the array. */
-static void BlendModelAnimationAt(ModelAnimation *animation, f32 time) {
+static BOSS_RALLY_INLINE void BlendModelAnimationAt(ModelAnimation *animation, f32 time) {
     ModelKeyframe *from;
     ModelKeyframe *to;
     s32 k;
@@ -93,7 +93,7 @@ static void BlendModelAnimationAt(ModelAnimation *animation, f32 time) {
 }
 
 /* Run an animation backwards for a frame. */
-static void AdvanceReversingAnimation(ModelAnimation *animation) {
+static BOSS_RALLY_INLINE void AdvanceReversingAnimation(ModelAnimation *animation) {
     f32 time;
 
     animation->time -= g_fFrameDeltaTime;
@@ -116,7 +116,7 @@ static void AdvanceReversingAnimation(ModelAnimation *animation) {
 }
 
 /* Run an animation forwards for a frame, wrapping or turning it back past its end. */
-static void AdvanceForwardAnimation(ModelAnimation *animation) {
+static BOSS_RALLY_INLINE void AdvanceForwardAnimation(ModelAnimation *animation) {
     f32 time;
     f32 length;
     f32 span;

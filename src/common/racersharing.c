@@ -70,7 +70,7 @@ s32 CompareRacerProgressAsc(const void *a, const void *b) {
 }
 
 /* Bring a distance along the route within half a lap. */
-static f32 WrapHalfLap(SharingReal rawDistance, f32 lapLength) {
+static BOSS_RALLY_INLINE f32 WrapHalfLap(SharingReal rawDistance, f32 lapLength) {
     f32 distance = rawDistance;
 
     if (SHARING_INTERMEDIATE(lapLength) * 0.5f < rawDistance) {
@@ -82,7 +82,7 @@ static f32 WrapHalfLap(SharingReal rawDistance, f32 lapLength) {
 }
 
 /* The key a racer sorts by when vehicles are shared out: near the player first. */
-static f32 RacerSharingKey(RacerSlot *slot, Vehicle *player, f32 lapLength) {
+static BOSS_RALLY_INLINE f32 RacerSharingKey(RacerSlot *slot, Vehicle *player, f32 lapLength) {
     Vehicle *vehicle = RACER_SLOT_GET(slot, Vehicle);
     f32 gap;
     SharingReal rawGap;
@@ -123,7 +123,7 @@ static f32 RacerSharingKey(RacerSlot *slot, Vehicle *player, f32 lapLength) {
 }
 
 /* Transfer the vehicle's progress to its racer before detaching the vehicle. */
-static void ReleaseRacerVehicle(RacerSlot *slot, Vehicle *vehicle, f32 key) {
+static BOSS_RALLY_INLINE void ReleaseRacerVehicle(RacerSlot *slot, Vehicle *vehicle, f32 key) {
 #if TGR_PLATFORM == TGR_PLATFORM_N64
     osSyncPrintf("enemy %d loses slot %d (dist=%f)\n", slot->index, vehicle->index, (double)key);
 #endif
@@ -150,7 +150,7 @@ static void ReleaseRacerVehicle(RacerSlot *slot, Vehicle *vehicle, f32 key) {
 }
 
 /* Give a racer a vehicle, placed on the route where the racer is, facing along it. */
-static void AcquireRacerVehicle(RacerSlot *slot, Vehicle *vehicle) {
+static BOSS_RALLY_INLINE void AcquireRacerVehicle(RacerSlot *slot, Vehicle *vehicle) {
     Vec3f left;
     Vec3f nextLeft;
 

@@ -1139,7 +1139,7 @@ float g_fGbiAmbientColorR;
 float g_fGbiAmbientColorG;
 float g_fGbiAmbientColorB;
 
-static void
+static inline void
 ShadeGbiVertex(const ConvertedModelVertex *pVertex, GbiVertexSource *pDest, bool bTexGen) {
     if (!g_dwGbiNumLights) {
         pDest->fRed = g_fGbiPrimColorR;
@@ -1241,7 +1241,7 @@ void UpdateD3DFogRenderState(void) {
 }
 #endif /* TGR_BRD3D */
 
-static void RecycleClipVertex(GbiVertexSource *pVertex) {
+static inline void RecycleClipVertex(GbiVertexSource *pVertex) {
     if (std::greater_equal<>{}(pVertex, g_aClipVertexPool) &&
         std::less<>{}(pVertex, g_aClipVertexPool + GBI_CLIP_VERTEX_POOL_SIZE)) {
         pVertex->pNext = g_pVertexFreeList;
@@ -1342,7 +1342,7 @@ static inline float TransformGbiVertexComponent(const Vec3f &position, int nColu
 
 enum class LightTransformMode { Standard, EnvModulated, NoZBuffer, TexGen, TexGenLinear };
 
-static float
+static inline float
 TransformGbiLightDirectionRow(const float row[4], float x, float y, float z, int nLast) {
     long double mx = static_cast<long double>(row[0]) * x;
     long double my = static_cast<long double>(row[1]) * y;
@@ -1358,7 +1358,8 @@ TransformGbiLightDirectionRow(const float row[4], float x, float y, float z, int
     return sum / 128.0f;
 }
 
-static void UpdateGbiDirectionalLight(LightTransformMode mode = LightTransformMode::Standard) {
+static inline void
+UpdateGbiDirectionalLight(LightTransformMode mode = LightTransformMode::Standard) {
     if (g_bGbiLightsTransformed) {
         return;
     }
@@ -1474,9 +1475,9 @@ static inline GbiCommand *LoadGbiVertices(GbiCommand *pCommand,
     return pCommand + 1;
 }
 
-static void GenerateGbiTextureCoordinates(const ConvertedModelVertex *pInput,
-                                          GbiVertexSource *pSource,
-                                          bool bLinear) {
+static inline void GenerateGbiTextureCoordinates(const ConvertedModelVertex *pInput,
+                                                 GbiVertexSource *pSource,
+                                                 bool bLinear) {
     const float (*matrix)[4] =
         g_dwGbiMatrixStackDepth != 0 ? g_aGbiModelViewStack[g_dwGbiMatrixStackDepth - 1] : nullptr;
     Vec3f normal;
@@ -1814,7 +1815,7 @@ void DrawFlatShadedTriangleDepthScaled(int nVertex0, int nVertex1, int nVertex2)
     DrawFlatShadedTriangleImpl<true>(nVertex0, nVertex1, nVertex2);
 }
 
-static unsigned char ConvertFillColorChannel(float fChannel) {
+static inline unsigned char ConvertFillColorChannel(float fChannel) {
     long double value = static_cast<long double>(fChannel) * 255.0f;
     if (!(value >= -0x1p63L && value < 0x1p63L)) {
         return 0;

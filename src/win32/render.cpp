@@ -1210,7 +1210,7 @@ int FindMatchingTextureEntry(const TextureImageData *pImage) {
     return -1;
 }
 
-static long double TextureCoordinateShiftFactor(int shift) {
+static inline long double TextureCoordinateShiftFactor(int shift) {
     if (static_cast<unsigned>(shift) <= 10) {
         return static_cast<long double>(1024 >> shift) * (1.0f / 1024.0f);
     }
@@ -1247,7 +1247,7 @@ unsigned RegisterTextureEntry(const TextureImageData *pImage, int nTextureId) {
 }
 
 #if TGR_BRD3D
-static int FloorTextureSampleCoordinate(float coordinate) {
+static inline int FloorTextureSampleCoordinate(float coordinate) {
     long double value = floorl(static_cast<double>(coordinate));
     if (!(value >= -0x1p63L && value < 0x1p63L)) {
         return 0;

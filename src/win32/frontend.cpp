@@ -771,7 +771,7 @@ static inline void PlayMenuActionSound(int sample) {
     g_dwNetworkMenuState = sample;
 }
 
-MenuWidget *MenuWidget::LinkedMenuWidget(int index) {
+inline MenuWidget *MenuWidget::LinkedMenuWidget(int index) {
     return pScreen->GetCurrentPanel()->GetWidget(anLinkedWidgetIndices[index]);
 }
 
@@ -1536,7 +1536,7 @@ int MenuWidget::StartSlideAnimation() {
     return 1;
 }
 
-bool MenuWidget::UpdateMenuSlideAxis(
+inline bool MenuWidget::UpdateMenuSlideAxis(
     int bEnabled, signed char direction, const float &saved, const float &target, float &current) {
     if (!bEnabled || direction == 0) {
         return true;
@@ -1748,7 +1748,7 @@ static inline void StopMenuScreen(MenuScreen *pScreen) {
     pScreen->ShutdownFrontEnd(false);
 }
 
-void MenuScreen::ResetPanelActivation(unsigned short widgetIndex) {
+inline void MenuScreen::ResetPanelActivation(unsigned short widgetIndex) {
     wPanelResetWidgetIndex = widgetIndex;
     memset(anPanelActive, 0, sizeof(anPanelActive));
     anPanelActive[0] = 1;

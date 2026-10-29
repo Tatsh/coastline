@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <string.h>
 
-static unsigned RoundSampledChannel(long double value, unsigned maximum) {
+static inline unsigned RoundSampledChannel(long double value, unsigned maximum) {
     double rounded = floor((double)(value + 0.5L));
     if (!(rounded >= 0.0)) {
         return 0;
@@ -15,13 +15,13 @@ static unsigned RoundSampledChannel(long double value, unsigned maximum) {
     return (unsigned)rounded;
 }
 
-static unsigned SampleChannel(unsigned topLeft,
-                              unsigned topRight,
-                              unsigned bottomLeft,
-                              unsigned bottomRight,
-                              float x,
-                              float y,
-                              unsigned maximum) {
+static inline unsigned SampleChannel(unsigned topLeft,
+                                     unsigned topRight,
+                                     unsigned bottomLeft,
+                                     unsigned bottomRight,
+                                     float x,
+                                     float y,
+                                     unsigned maximum) {
     long double top = topLeft + ((long double)topRight - topLeft) * x;
     long double bottom = bottomLeft + ((long double)bottomRight - bottomLeft) * x;
     return RoundSampledChannel(top + (bottom - top) * y, maximum);
@@ -64,15 +64,15 @@ void BilinearInterpolate8bpp(unsigned char *destination,
     *destination = (unsigned char)RoundSampledChannel(top + (bottom - top) * y, 255);
 }
 
-static void SamplePackedPixel(unsigned char *destination,
-                              const unsigned char *topLeft,
-                              const unsigned char *topRight,
-                              const unsigned char *bottomLeft,
-                              const unsigned char *bottomRight,
-                              float x,
-                              float y,
-                              unsigned colorBits,
-                              unsigned alphaBits) {
+static inline void SamplePackedPixel(unsigned char *destination,
+                                     const unsigned char *topLeft,
+                                     const unsigned char *topRight,
+                                     const unsigned char *bottomLeft,
+                                     const unsigned char *bottomRight,
+                                     float x,
+                                     float y,
+                                     unsigned colorBits,
+                                     unsigned alphaBits) {
     uint16_t pixels[4];
     uint16_t result = 0;
     unsigned channel;

@@ -72,7 +72,7 @@ static volatile s32 g_adwReplayGhostSizes[INPUT_RECORDERS];
 #endif
 
 /* Choose the instant replay of the best recording of the players. */
-static void ChooseInstantReplay(void) {
+static BOSS_RALLY_INLINE void ChooseInstantReplay(void) {
     s32 i, j;
 
     g_dwBestReplayLength = VEHICLE_GET(&g_aVehicles[0], Input)->recordPositions[0];

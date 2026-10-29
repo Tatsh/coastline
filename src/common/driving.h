@@ -15,6 +15,11 @@
 #include "common/vecmath.h"
 #include "common/vehicle.h"
 
+#if TGR_BOSS_RALLY
+#include "common/inputpoll.h"
+#include "common/vehicleaccess.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -275,8 +280,26 @@ void ChooseReplayCamera(Vehicle *vehicle);
 void ProcessVehicleInputAndPhysics(Vehicle *vehicle);
 
 #if TGR_BOSS_RALLY
+#ifdef __cplusplus
 /** Apply effect bytes requested by the current input mask. */
-void ApplyPlayerVehicleEffects(Vehicle *vehicle);
+static inline void ApplyPlayerVehicleEffects(Vehicle *vehicle) {
+    if (g_dwInputButtonMask & 0x10000) {
+        VEHICLE_GET(vehicle, Body).unreconstructed202 = 0x80;
+    }
+    if (g_dwInputButtonMask & 0x20000) {
+        VEHICLE_GET(vehicle, Body).unreconstructed203 = 0x80;
+    }
+    if (g_dwInputButtonMask & 0x40000) {
+        VEHICLE_GET(vehicle, Body).unreconstructed204 = 0x80;
+    }
+    if (g_dwInputButtonMask & 0x80000) {
+        VEHICLE_GET(vehicle, Body).replayEffects[0] = 0x80;
+    }
+    if (g_dwInputButtonMask & 0x80) {
+        VEHICLE_GET(vehicle, Body).replayEffects[1] = 0x80;
+    }
+}
+#endif /* __cplusplus */
 /** Consume the input poll's respawn request. */
 void ApplyPlayerVehicleRespawnRequest(Vehicle *vehicle);
 #endif

@@ -57,7 +57,7 @@
 #define SPEED_TO_DISPLAY 2.24f
 
 #if TGR_BOSS_RALLY
-s32 Vehicle::CastGroundRay() {
+inline s32 Vehicle::CastGroundRay() {
     return CastRayAgainstTrack(&frame.position,
                                &frame.up,
                                &frame.position,
@@ -69,15 +69,15 @@ s32 Vehicle::CastGroundRay() {
                                &groundSurface);
 }
 
-void Vehicle::DriveRearWheel(RigidBody *body, RigidBody *wheel, f32 dt) {
+inline void Vehicle::DriveRearWheel(RigidBody *body, RigidBody *wheel, f32 dt) {
     DriveWheel(body, wheel, &rearLoad, &rearSliding, dt);
 }
 
-void Vehicle::DriveFrontWheel(RigidBody *body, RigidBody *wheel, f32 dt) {
+inline void Vehicle::DriveFrontWheel(RigidBody *body, RigidBody *wheel, f32 dt) {
     DriveWheel(body, wheel, &frontLoad, &frontSliding, dt);
 }
 
-void Vehicle::ApplyWheelSideGrip(RigidBody *body, f32 dt) {
+inline void Vehicle::ApplyWheelSideGrip(RigidBody *body, f32 dt) {
     ApplySideGrip(body, dt, &rearLoad, &frontLoad, &rearSliding, &frontSliding);
 }
 

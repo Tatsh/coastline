@@ -14,10 +14,11 @@ extern "C" {
  * @ghidraAddress BRGlide: 0x10226a44
  */
 extern int g_bRaceStartReached;
-#endif /* TGR_BOSS_RALLY */
-
+#else
 /** Advance the race phase when network readiness permits it. */
 void AdvanceRacePhase(void);
+#endif /* TGR_BOSS_RALLY */
+
 /** Update the countdown, racing, results, and exit phases. */
 void StepRacePhases(void);
 

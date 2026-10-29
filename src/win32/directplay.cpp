@@ -2912,7 +2912,7 @@ void HandlePlayerDisconnect(DPID dpidPlayer) {
 }
 
 // A notice of a player is formatted into locked global memory.
-static char *FormatPlayerNotice(const char *pszFormat, const char *pszName) {
+static inline char *FormatPlayerNotice(const char *pszFormat, const char *pszName) {
     char *pszNotice;
 
     if (pszName == nullptr) {

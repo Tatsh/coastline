@@ -43,7 +43,7 @@ u32 g_dwRacePauseState;
  */
 static volatile s32 g_dwUnpauseClearFrames;
 
-static s32 ResumeRace(s32 paused) {
+static inline s32 ResumeRace(s32 paused) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     /* A network game asks the other players to resume through DirectPlay. */
     if (g_dwNetworkPlayMode && g_bRaceStartReached) {
@@ -59,7 +59,7 @@ static s32 ResumeRace(s32 paused) {
     return paused;
 }
 
-static s32 ApplyUnpauseAcknowledgement(s32 paused) {
+static inline s32 ApplyUnpauseAcknowledgement(s32 paused) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     if (g_dwNetworkDataReceived) {
         g_dwNetworkDataReceived = FALSE;

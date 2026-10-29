@@ -81,7 +81,8 @@ static inline bool HasMoreAlphaBits(const DDPIXELFORMAT &current, int nAlphaBits
     return nAlphaBits > PopCount32(current.dwRGBAlphaBitMask) && nAlphaBits <= nLimit;
 }
 
-static bool IsBetterTextureFormat(const TexturePixelFormat &entry, const DDPIXELFORMAT &candidate) {
+static inline bool IsBetterTextureFormat(const TexturePixelFormat &entry,
+                                         const DDPIXELFORMAT &candidate) {
     const DDPIXELFORMAT &current = entry.ddpf;
     int nAlphaBits;
     int nRed, nGreen, nBlue;

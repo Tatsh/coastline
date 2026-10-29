@@ -14,7 +14,7 @@ int g_bHudShowNetworkStandings = 1;
 int g_bHideNetStandingsHud;
 
 namespace {
-s32 RowPosition(s32 y, s32 position) {
+inline s32 RowPosition(s32 y, s32 position) {
     return (s32)((u32)y + ((u32)position << 4) + 20);
 }
 } // namespace
