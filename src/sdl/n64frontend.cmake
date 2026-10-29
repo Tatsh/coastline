@@ -36,6 +36,10 @@ file(STRINGS "${CMAKE_SOURCE_DIR}/tools/sdl/n64frontend-renames.txt" _n64_rename
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
                                        "${CMAKE_SOURCE_DIR}/tools/sdl/n64frontend-renames.txt")
 list(TRANSFORM _n64_renames REPLACE "^(.+)$" "-D\\1=\\1N64")
+# The channels of the sound effects of the console, which src/audio.c names as it does here, beside
+# the channels of the same names of the PC release.
+list(APPEND _n64_renames -DInitSoundChannel=N64InitSoundChannel
+     -DStartSoundChannelMuted=N64StartSoundChannelMuted)
 target_compile_options(
   coastline_n64frontend
   PRIVATE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>" -UTGR_PC -DTGR_PC=0 -UTGR_BRD3D -DTGR_BRD3D=0
