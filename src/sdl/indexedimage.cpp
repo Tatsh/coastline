@@ -112,97 +112,38 @@ bool SaveIndexed4Png(const std::filesystem::path &path,
            std::ranges::equal(readTexels, texels) && std::ranges::equal(readPalette, palette);
 }
 
-bool SaveIntensity8Png(const std::filesystem::path &path,
-                       std::span<const std::uint8_t> texels,
-                       int width,
-                       int height) {
-    if (width <= 0 || height <= 0 ||
-        texels.size() != static_cast<std::size_t>(width) * static_cast<std::size_t>(height)) {
-        return false;
-    }
-    Surface surface(SDL_CreateSurface(width, height, SDL_PIXELFORMAT_INDEX8));
-    if (!surface) {
-        return false;
-    }
-    for (int y = 0; y < height; ++y) {
-        std::memcpy(static_cast<std::uint8_t *>(surface->pixels) +
-                        static_cast<std::size_t>(y) * static_cast<std::size_t>(surface->pitch),
-                    texels.data() + static_cast<std::size_t>(y) * static_cast<std::size_t>(width),
-                    static_cast<std::size_t>(width));
-    }
-    // Each index equals its intensity.
-    std::array<SDL_Color, 256> colors{};
-    for (std::size_t i = 0; i < colors.size(); ++i) {
-        auto level = static_cast<std::uint8_t>(i);
-        colors[i] = {level, level, level, 0xFF};
-    }
-    std::unique_ptr<SDL_Palette, decltype(&SDL_DestroyPalette)> surfacePalette(
-        SDL_CreatePalette(static_cast<int>(colors.size())), SDL_DestroyPalette);
-    if (!surfacePalette ||
-        !SDL_SetPaletteColors(
-            surfacePalette.get(), colors.data(), 0, static_cast<int>(colors.size())) ||
-        !SDL_SetSurfacePalette(surface.get(), surfacePalette.get()) ||
-        !SDL_SavePNG(surface.get(), path.string().c_str())) {
-        return false;
-    }
-    Surface read(SDL_LoadPNG(path.string().c_str()));
-    if (!read || read->w != width || read->h != height || SDL_BITSPERPIXEL(read->format) != 8) {
-        return false;
-    }
-    SDL_Palette *readColors = SDL_GetSurfacePalette(read.get());
-    for (int y = 0; y < height; ++y) {
-        const auto *row = static_cast<const std::uint8_t *>(read->pixels) +
-                          static_cast<std::size_t>(y) * static_cast<std::size_t>(read->pitch);
-        for (int x = 0; x < width; ++x) {
-            std::uint8_t level = readColors ? readColors->colors[row[x]].r : row[x];
-            if (level != texels[static_cast<std::size_t>(y) * static_cast<std::size_t>(width) +
-                                static_cast<std::size_t>(x)]) {
-                return false;
-            }
-        }
-    }
-    return true;
-}
-
-bool SaveRgba5551Png(const std::filesystem::path &path,
-                     std::span<const std::uint8_t> texels,
-                     int width,
-                     int height) {
-    auto count = static_cast<std::size_t>(width) * static_cast<std::size_t>(height);
-    if (width <= 0 || height <= 0 || texels.size() != count * 2) {
+bool SaveRgba8Png(const std::filesystem::path &path,
+                  std::span<const std::uint8_t> rgba,
+                  int width,
+                  int height) {
+    auto rowBytes = static_cast<std::size_t>(width) * 4;
+    if (width <= 0 || height <= 0 || rgba.size() != rowBytes * static_cast<std::size_t>(height)) {
         return false;
     }
     Surface surface(SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGBA32));
     if (!surface) {
         return false;
     }
-    for (std::size_t i = 0; i < count; ++i) {
-        unsigned half = static_cast<unsigned>(texels[i * 2]) << 8 | texels[i * 2 + 1];
-        auto *pixel =
-            static_cast<std::uint8_t *>(surface->pixels) +
-            i / static_cast<std::size_t>(width) * static_cast<std::size_t>(surface->pitch) +
-            i % static_cast<std::size_t>(width) * 4;
-        pixel[0] = Widen5(half >> 11 & 0x1F);
-        pixel[1] = Widen5(half >> 6 & 0x1F);
-        pixel[2] = Widen5(half >> 1 & 0x1F);
-        pixel[3] = half & 1 ? 0xFF : 0;
+    for (int y = 0; y < height; ++y) {
+        std::memcpy(static_cast<std::uint8_t *>(surface->pixels) +
+                        static_cast<std::size_t>(y) * static_cast<std::size_t>(surface->pitch),
+                    rgba.data() + static_cast<std::size_t>(y) * rowBytes,
+                    rowBytes);
     }
     if (!SDL_SavePNG(surface.get(), path.string().c_str())) {
         return false;
     }
     Surface read(SDL_LoadPNG(path.string().c_str()));
-    Surface rgba(read ? SDL_ConvertSurface(read.get(), SDL_PIXELFORMAT_RGBA32) : nullptr);
-    if (!rgba || rgba->w != width || rgba->h != height) {
+    Surface converted(read ? SDL_ConvertSurface(read.get(), SDL_PIXELFORMAT_RGBA32) : nullptr);
+    if (!converted || converted->w != width || converted->h != height) {
         return false;
     }
-    for (std::size_t i = 0; i < count; ++i) {
-        const auto *pixel =
-            static_cast<const std::uint8_t *>(rgba->pixels) +
-            i / static_cast<std::size_t>(width) * static_cast<std::size_t>(rgba->pitch) +
-            i % static_cast<std::size_t>(width) * 4;
-        auto half = static_cast<unsigned>((pixel[0] >> 3) << 11 | (pixel[1] >> 3) << 6 |
-                                          (pixel[2] >> 3) << 1 | (pixel[3] >= 0x80 ? 1 : 0));
-        if (half != (static_cast<unsigned>(texels[i * 2]) << 8 | texels[i * 2 + 1])) {
+    for (int y = 0; y < height; ++y) {
+        if (std::memcmp(static_cast<const std::uint8_t *>(converted->pixels) +
+                            static_cast<std::size_t>(y) *
+                                static_cast<std::size_t>(converted->pitch),
+                        rgba.data() + static_cast<std::size_t>(y) * rowBytes,
+                        rowBytes) != 0) {
             return false;
         }
     }

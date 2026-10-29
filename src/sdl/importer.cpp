@@ -429,20 +429,7 @@ std::optional<std::string> ConvertModel(const std::filesystem::path &car,
         }
         for (const GltfImage &texture : model->images) {
             auto path = car.parent_path() / texture.uri;
-            bool saved = false;
-            switch (texture.format) {
-            case GltfImageFormat::Ci4:
-                saved = SaveIndexed4Png(
-                    path, texture.texels, texture.palette, texture.width, texture.height);
-                break;
-            case GltfImageFormat::Intensity8:
-                saved = SaveIntensity8Png(path, texture.texels, texture.width, texture.height);
-                break;
-            case GltfImageFormat::Rgba5551:
-                saved = SaveRgba5551Png(path, texture.texels, texture.width, texture.height);
-                break;
-            }
-            if (!saved) {
+            if (!SaveRgba8Png(path, texture.rgba, texture.width, texture.height)) {
                 return std::format("{} does not read back as its texels.", path.string());
             }
         }

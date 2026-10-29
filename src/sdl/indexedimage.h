@@ -37,31 +37,17 @@ bool LoadIndexed4Png(const std::filesystem::path &path,
                      std::span<std::uint8_t, 32> palette);
 
 /**
- * Write 8-bit intensity texels as a PNG image, and read it back to check it.
+ * Write 8-bit RGBA texels as a PNG image, and read it back to check it.
  *
  * @param path The image to write.
- * @param texels The texels, a byte each, row by row.
+ * @param rgba The texels, red, green, blue, and alpha each, row by row from the top.
  * @param width The width in texels.
  * @param height The height in texels.
  * @return Whether the image was written and reads back as the same texels.
  */
-bool SaveIntensity8Png(const std::filesystem::path &path,
-                       std::span<const std::uint8_t> texels,
-                       int width,
-                       int height);
-
-/**
- * Write RGBA 5551 texels as a PNG image of 8 bits a channel, and read it back to check it.
- *
- * @param path The image to write.
- * @param texels The texels, two big-endian bytes each, row by row.
- * @param width The width in texels.
- * @param height The height in texels.
- * @return Whether the image was written and reads back as the same texels.
- */
-bool SaveRgba5551Png(const std::filesystem::path &path,
-                     std::span<const std::uint8_t> texels,
-                     int width,
-                     int height);
+bool SaveRgba8Png(const std::filesystem::path &path,
+                  std::span<const std::uint8_t> rgba,
+                  int width,
+                  int height);
 
 } // namespace coastline

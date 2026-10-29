@@ -13,21 +13,12 @@
 
 namespace coastline {
 
-/** The texels of a texture of a glTF document. */
-enum class GltfImageFormat {
-    Ci4,        /*!< 4-bit indices of a palette of 16 colours, two to a byte. */
-    Intensity8, /*!< 8-bit intensities. */
-    Rgba5551,   /*!< 16-bit colours, red, green, and blue of 5 bits and an alpha bit, big-endian. */
-};
-
-/** A texture of a glTF document, as the texels of the console. */
+/** A texture of a glTF document, as the RDP samples it. */
 struct GltfImage {
-    std::string uri;                        /*!< The URI the document gives the image. */
-    int width = 0;                          /*!< The width in texels. */
-    int height = 0;                         /*!< The height in texels. */
-    GltfImageFormat format{};               /*!< The format of the texels. */
-    std::vector<std::uint8_t> texels;       /*!< The texels row by row, without padding. */
-    std::array<std::uint8_t, 32> palette{}; /*!< The 16 colours of a CI4 image, RGBA 5551. */
+    std::string uri;                /*!< The URI the document gives the image. */
+    int width = 0;                  /*!< The width in texels. */
+    int height = 0;                 /*!< The height in texels. */
+    std::vector<std::uint8_t> rgba; /*!< The texels as 8-bit RGBA, row by row from the top. */
 };
 
 /** A glTF document, the bytes of its one buffer, and its images. */
