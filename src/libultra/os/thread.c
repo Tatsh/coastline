@@ -1,4 +1,4 @@
-#include "osint.h"
+#include "common/libultra/os/osint.h"
 
 void __osDequeueThread(OSThread **queue, OSThread *t) {
     /* The queue head stands in for a thread whose next field is the first in the queue. */

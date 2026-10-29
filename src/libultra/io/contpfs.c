@@ -1,4 +1,4 @@
-#include "controller.h"
+#include "common/libultra/io/controller.h"
 
 u16 __osSumcalc(u8 *ptr, int length) {
     int i;

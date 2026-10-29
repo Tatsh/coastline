@@ -30,7 +30,8 @@ add_subdirectory(common)
 add_subdirectory(libultra)
 
 # Every archive the build produces, for a target that builds all of them at once.
-set(COASTLINE_LIBRARIES coastline_main coastline_common ${COASTLINE_LIBULTRA_LIBRARIES})
+set(COASTLINE_LIBRARIES coastline_main coastline_common ${COASTLINE_COMMON_LIBULTRA_LIBRARIES}
+                        ${COASTLINE_LIBULTRA_LIBRARIES})
 if(TGR_PLATFORM STREQUAL "win")
   list(APPEND COASTLINE_LIBRARIES coastline_win32)
   if(TGR_RENDERER STREQUAL "d3d")

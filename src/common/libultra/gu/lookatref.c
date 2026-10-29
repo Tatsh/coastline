@@ -3,7 +3,7 @@
 
 #include "win32/packedvalue.h"
 #else
-#include "guint.h"
+#include "common/libultra/gu/guint.h"
 #endif
 
 void guLookAtReflectF(float mf[4][4],

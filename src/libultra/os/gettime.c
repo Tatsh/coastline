@@ -1,6 +1,6 @@
 #include <ultra64.h>
 
-#include "osint.h"
+#include "common/libultra/os/osint.h"
 
 OSTime osGetTime(void) {
     u32 tmptime;

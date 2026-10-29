@@ -3,7 +3,7 @@
 
 #include <PR/gu.h>
 #else
-#include "guint.h"
+#include "common/libultra/gu/guint.h"
 #endif
 
 void guRotateF(float mf[4][4], float a, float x, float y, float z) {

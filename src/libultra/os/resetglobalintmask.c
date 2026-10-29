@@ -1,4 +1,4 @@
-#include "osint.h"
+#include "common/libultra/os/osint.h"
 
 void __osResetGlobalIntMask(u32 mask) {
     register u32 saveMask = __osDisableInt();

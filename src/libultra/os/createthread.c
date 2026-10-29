@@ -1,6 +1,6 @@
 #include <ultra64.h>
 
-#include "osint.h"
+#include "common/libultra/os/osint.h"
 
 void osCreateThread(OSThread *t, OSId id, void (*entry)(void *), void *arg, void *sp, OSPri pri) {
     register OSIntMask saveMask;

@@ -12,6 +12,7 @@
 #include "common/fade.h"
 #include "common/game.h"
 #include "common/input.h"
+#include "common/libultra/os/osint.h"
 #include "common/race.h"
 #include "common/render.h"
 #include "common/rumble.h"
@@ -25,7 +26,6 @@
 #include "common/vecmath.h"
 #include "common/vehicle.h"
 #include "common/weather.h"
-#include "libultra/os/osint.h"
 #include "n64/boot.h"
 #include "zlib.h"
 

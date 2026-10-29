@@ -1,7 +1,8 @@
-# The operating system: threads, messages, interrupts and exceptions, timers, and the caches.
+# The operating system: threads, messages, interrupts and exceptions, timers, and the caches. The
+# messages and the debug output every release links are in src/common/libultra/os.
 if(NOT TGR_PLATFORM STREQUAL "n64")
-  # The messages, the count, and the debug output the PC port retained.
-  add_library(coastline_libultra_os STATIC getcount.c recvmesg.c sendmesg.c syncprintf.c)
+  # The count of the PC port, from the clock of the system.
+  add_library(coastline_libultra_os STATIC getcount.c)
   target_link_libraries(coastline_libultra_os PRIVATE coastline_options)
   return()
 endif()
@@ -22,9 +23,7 @@ add_library(
           jammesg.c
           maptlbrdb.s
           probetlb.s
-          recvmesg.c
           resetglobalintmask.c
-          sendmesg.c
           setcompare.s
           seteventmesg.c
           setfpccsr.s
@@ -34,7 +33,6 @@ add_library(
           setthreadpri.c
           settimer.c
           startthread.c
-          syncprintf.c
           thread.c
           timerintr.c
           virtualtophysical.c

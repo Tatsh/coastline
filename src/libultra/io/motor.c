@@ -1,5 +1,5 @@
-#include "controller.h"
-#include "siint.h"
+#include "common/libultra/io/controller.h"
+#include "common/libultra/io/siint.h"
 
 s32 osMotorStop(OSPfs *pfs) {
     int i;

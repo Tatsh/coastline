@@ -1,4 +1,4 @@
-#include "controller.h"
+#include "common/libultra/io/controller.h"
 
 s32 osPfsRepairId(OSPfs *pfs) {
     int k;

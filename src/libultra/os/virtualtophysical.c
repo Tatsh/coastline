@@ -1,4 +1,4 @@
-#include "osint.h"
+#include "common/libultra/os/osint.h"
 
 u32 osVirtualToPhysical(void *addr) {
     if (IS_KSEG0(addr)) {

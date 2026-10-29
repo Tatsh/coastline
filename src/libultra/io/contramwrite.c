@@ -1,5 +1,5 @@
-#include "controller.h"
-#include "siint.h"
+#include "common/libultra/io/controller.h"
+#include "common/libultra/io/siint.h"
 
 s32 __osContRamWrite(OSMesgQueue *mq, int channel, u16 address, u8 *buffer, int force) {
     s32 ret = 0;

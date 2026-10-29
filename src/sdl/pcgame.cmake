@@ -6,11 +6,11 @@ set(_src "${CMAKE_SOURCE_DIR}/src")
 set(COASTLINE_PC_C_SOURCES
     common/assetdma.c common/bodyforces.c common/camerarender.c common/completionthreads.c common/cubeclip.c common/debuginstance.c
     common/emptycallback.c common/fade.c common/fadeupdate.c common/framebegin.c common/frameclear.c common/frameflush.c common/frametime.c common/game.c
-    common/headlightglare.c common/heap.c common/hudtime.c common/iomessage.c common/laptime.c libultra/gu/lookat.c
-    libultra/gu/lookathil.c libultra/gu/lookatref.c libultra/gu/mtxcatf.c libultra/gu/mtxutil.c
-    libultra/gu/perspective.c libultra/gu/rotate.c libultra/gu/scale.c libultra/gu/translate.c
-    libultra/io/contreaddata.c libultra/io/controller.c libultra/os/getcount.c
-    libultra/os/recvmesg.c libultra/os/sendmesg.c libultra/os/syncprintf.c common/lightning.c
+    common/headlightglare.c common/heap.c common/hudtime.c common/iomessage.c common/laptime.c common/libultra/gu/lookat.c
+    common/libultra/gu/lookathil.c common/libultra/gu/lookatref.c common/libultra/gu/mtxcatf.c common/libultra/gu/mtxutil.c
+    common/libultra/gu/perspective.c common/libultra/gu/rotate.c common/libultra/gu/scale.c common/libultra/gu/translate.c
+    common/libultra/io/contreaddata.c common/libultra/io/controller.c libultra/os/getcount.c
+    common/libultra/os/recvmesg.c common/libultra/os/sendmesg.c common/libultra/os/syncprintf.c common/lightning.c
     common/materialcolor.c common/mathutil.c common/modelanimation.c common/modelanimationflags.c common/modeldraw.c
     common/modelrelocation.c common/playerinput.c common/profileinit.c common/racecredits.c common/raininit.c common/renderinit.c common/replay.c
     common/rigidbody.c common/rledecompress.c common/routewalk.c common/savestate.c common/screen.c common/screendraw.c common/screenfade.c

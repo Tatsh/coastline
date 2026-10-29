@@ -1,5 +1,5 @@
-#include "controller.h"
-#include "siint.h"
+#include "common/libultra/io/controller.h"
+#include "common/libultra/io/siint.h"
 
 s32 osEepromWrite(OSMesgQueue *mq, u8 address, u8 *buffer) {
     s32 ret = 0;

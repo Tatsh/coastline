@@ -1,6 +1,6 @@
 #include <ultra64.h>
 
-#include "../os/osint.h"
+#include "common/libultra/os/osint.h"
 #include "viint.h"
 
 void osViBlack(u8 active) {

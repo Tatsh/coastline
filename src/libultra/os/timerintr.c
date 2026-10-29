@@ -1,6 +1,6 @@
 #include <ultra64.h>
 
-#include "osint.h"
+#include "common/libultra/os/osint.h"
 
 OSTimer __osBaseTimer;
 OSTime __osCurrentTime;

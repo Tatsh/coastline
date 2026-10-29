@@ -13,7 +13,7 @@
 #if TGR_BOSS_RALLY
 #include "win32/renderbackend.h"
 #else
-#include "libultra/os/osint.h"
+#include "common/libultra/os/osint.h"
 #endif
 
 #if TGR_BOSS_RALLY

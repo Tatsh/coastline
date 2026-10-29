@@ -1,6 +1,6 @@
 #include <ultra64.h>
 
-#include "osint.h"
+#include "common/libultra/os/osint.h"
 
 void osSetEventMesg(OSEvent e, OSMesgQueue *mq, OSMesg m) {
     register OSIntMask saveMask = __osDisableInt();

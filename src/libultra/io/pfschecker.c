@@ -1,4 +1,4 @@
-#include "controller.h"
+#include "common/libultra/io/controller.h"
 
 /* The map entry of a page is its group of four pages within the bank's 32 groups, and the bank
  * picks one of 8 rows. */

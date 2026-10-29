@@ -1,6 +1,6 @@
 #include <ultra64.h>
 
-#include "../os/osint.h"
+#include "common/libultra/os/osint.h"
 #include "piint.h"
 
 OSPiHandle LeoDiskHandle;

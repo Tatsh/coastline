@@ -1,11 +1,6 @@
 # The input and output managers: audio, the cartridge and disk interfaces, the controllers and
-# their Paks, the serial interface, the signal processor, and video.
-if(NOT TGR_PLATFORM STREQUAL "n64")
-  # The reading of the controllers the PC port retained.
-  add_library(coastline_libultra_io STATIC contreaddata.c controller.c)
-  target_link_libraries(coastline_libultra_io PRIVATE coastline_options)
-  return()
-endif()
+# their Paks, the serial interface, the signal processor, and video. The reading of the controllers
+# every release links is in src/common/libultra/io.
 add_library(
   coastline_libultra_io STATIC
           ai.c
@@ -13,8 +8,6 @@ add_library(
           contpfs.c
           contramread.c
           contramwrite.c
-          contreaddata.c
-          controller.c
           crc.c
           devmgr.c
           epirawdma.c

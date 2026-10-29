@@ -3,7 +3,7 @@
 #if !(TGR_BOSS_RALLY)
 #include <ultra64.h>
 
-#include "osint.h"
+#include "common/libultra/os/osint.h"
 #endif
 
 #if TGR_BOSS_RALLY

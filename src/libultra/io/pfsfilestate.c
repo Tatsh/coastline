@@ -1,4 +1,4 @@
-#include "controller.h"
+#include "common/libultra/io/controller.h"
 
 /* The original reads the page unset when the first bank of the chain is out of range. */
 s32 osPfsFileState(OSPfs *pfs, s32 file_no, OSPfsState *state) {

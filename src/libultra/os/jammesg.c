@@ -1,6 +1,6 @@
 #include <ultra64.h>
 
-#include "osint.h"
+#include "common/libultra/os/osint.h"
 
 s32 osJamMesg(OSMesgQueue *mq, OSMesg msg, s32 flag) {
     register OSIntMask saveMask = __osDisableInt();

@@ -1,6 +1,6 @@
 #include <ultra64.h>
 
-#include "osint.h"
+#include "common/libultra/os/osint.h"
 
 void osCreateMesgQueue(OSMesgQueue *mq, OSMesg *msg, s32 count) {
     mq->mtqueue = (OSThread *)&__osThreadTail;

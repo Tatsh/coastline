@@ -1,4 +1,4 @@
-#include "guint.h"
+#include "common/libultra/gu/guint.h"
 
 float sinf(float x) {
     double dx, xsq, poly, dn, result;

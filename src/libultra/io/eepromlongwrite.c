@@ -1,4 +1,4 @@
-#include "controller.h"
+#include "common/libultra/io/controller.h"
 
 s32 osEepromLongWrite(OSMesgQueue *mq, u8 address, u8 *buffer, int length) {
     s32 ret = 0;

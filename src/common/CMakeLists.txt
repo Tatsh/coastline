@@ -209,3 +209,6 @@ else()
     target_link_libraries(coastline_common PRIVATE coastline_glide)
   endif()
 endif()
+
+add_subdirectory(libultra)
+set(COASTLINE_COMMON_LIBULTRA_LIBRARIES ${COASTLINE_COMMON_LIBULTRA_LIBRARIES} PARENT_SCOPE)

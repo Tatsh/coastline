@@ -5,7 +5,7 @@
 
 #include "common/vecmath.h"
 #else
-#include "guint.h"
+#include "common/libultra/gu/guint.h"
 #endif
 
 #if TGR_BOSS_RALLY

@@ -2,13 +2,9 @@
 # A routine joins its list when its body moves from the assembly of the original into C. The SDK's
 # file names are retained.
 if(NOT TGR_PLATFORM STREQUAL "n64")
-  # The PC port retained a few routines of the graphics utilities, the controllers, and the
-  # operating system, and none of the C library.
-  add_subdirectory(gu)
-  add_subdirectory(io)
+  # Of the routines every release does not share, the PC port has only its count.
   add_subdirectory(os)
-  set(COASTLINE_LIBULTRA_LIBRARIES coastline_libultra_gu coastline_libultra_io coastline_libultra_os
-      PARENT_SCOPE)
+  set(COASTLINE_LIBULTRA_LIBRARIES coastline_libultra_os PARENT_SCOPE)
   return()
 endif()
 

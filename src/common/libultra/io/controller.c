@@ -1,8 +1,8 @@
 #if TGR_BOSS_RALLY
 #include <PR/os_cont.h>
 #else
-#include "controller.h"
-#include "siint.h"
+#include "common/libultra/io/controller.h"
+#include "common/libultra/io/siint.h"
 
 /* The controllers need half a second after power on before they answer. */
 #define CONT_POWER_UP_USEC 500000

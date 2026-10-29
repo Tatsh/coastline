@@ -4,7 +4,7 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "libultra/gu/guint.h"
+#include "common/libultra/gu/guint.h"
 const s16 sintable[0x400];
 const double g_adSinfP[5] = {1.0,
                              -0.166666595504277565,

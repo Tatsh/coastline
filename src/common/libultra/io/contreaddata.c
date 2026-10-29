@@ -5,8 +5,8 @@
 
 #include "win32/inputpoll.h"
 #else
-#include "controller.h"
-#include "siint.h"
+#include "common/libultra/io/controller.h"
+#include "common/libultra/io/siint.h"
 #endif
 
 #if TGR_BOSS_RALLY

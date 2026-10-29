@@ -1,4 +1,4 @@
-#include "controller.h"
+#include "common/libultra/io/controller.h"
 
 /* Whether a page table entry names a page of the Pak that a file may use. */
 #define VALID_PAGE(pfs, unit)                                                                      \
