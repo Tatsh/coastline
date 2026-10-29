@@ -85,6 +85,25 @@ struct RenderStates {
 using TextureHandle = std::uint32_t;
 
 /**
+ * The colour combiner of the RDP of the Nintendo 64, for the draws of its display lists. Each cycle
+ * computes (a - b) * c + d for the colour and for the alpha, from the texels of two tiles, the
+ * colour of the vertex as the shade, and the primitive and environment colours.
+ */
+struct CombinerState {
+    bool enabled = false;          /*!< Whether the draws combine; otherwise they draw as D3D 5. */
+    bool twoCycles = false;        /*!< Whether the second cycle combines the first. */
+    std::int32_t color[2][4] = {}; /*!< The a, b, c, and d of the colour of each cycle. */
+    std::int32_t alpha[2][4] = {}; /*!< The a, b, c, and d of the alpha of each cycle. */
+    float primitive[4] = {};       /*!< The primitive colour, from 0 to 1. */
+    float environment[4] = {};     /*!< The environment colour, from 0 to 1. */
+    float lodFraction = 0;         /*!< The primitive level of detail fraction. */
+    float alphaThreshold = -1;     /*!< The alpha a pixel needs, or -1 for no compare. */
+    TextureHandle texture1 = 0;    /*!< The texture of the second tile, or 0 for the first. */
+    /** The scale and offset that take the coordinates of the first tile to the second. */
+    float texture1Transform[4] = {1, 1, 0, 0};
+};
+
+/**
  * The immediate mode of Direct3D 5 on the SDL GPU API: triangles of transformed vertices under the
  * render states the game sets. A scene records its draws, and EndScene() uploads their vertices
  * once and draws them into the frame texture of the window.
@@ -152,6 +171,15 @@ public:
     }
 
     /**
+     * Combine the next draws as the RDP does, or draw them as Direct3D 5 does.
+     *
+     * @param combiner The combiner, disabled for Direct3D 5.
+     */
+    void SetCombiner(const CombinerState &combiner) {
+        m_combiner = combiner;
+    }
+
+    /**
      * Draw a triangle list of indexed vertices.
      *
      * @param vertices The vertices.
@@ -194,6 +222,7 @@ private:
         std::uint32_t firstIndex;
         std::uint32_t indexCount;
         std::int32_t vertexOffset;
+        CombinerState combiner;
     };
     struct Texture {
         SDL_GPUTexture *texture;
@@ -227,6 +256,7 @@ private:
     std::vector<Texture> m_textures;
     RenderStates m_states;
     TextureHandle m_texture = 0;
+    CombinerState m_combiner;
     std::uint32_t m_clearColor = 0;
     std::vector<TlVertex> m_vertices;
     std::vector<std::uint16_t> m_indices;

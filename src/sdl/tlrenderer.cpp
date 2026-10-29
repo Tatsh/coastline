@@ -1,6 +1,7 @@
 #include "tlrenderer.h"
 
 #include <algorithm>
+#include <array>
 #include <cstring>
 
 #include "gpu.h"
@@ -18,6 +19,16 @@ struct PixelUniforms {
     std::int32_t flags[4];
     std::int32_t modes[4];
     float alphaReference[4];
+    // The combiner of the RDP: the selectors of each cycle, whether it is enabled, two cycles, and
+    // a second texture, the colours, the fraction and the threshold, and the coordinates of the
+    // second texture.
+    std::int32_t combineColor[2][4];
+    std::int32_t combineAlpha[2][4];
+    std::int32_t combineFlags[4];
+    float primitive[4];
+    float environment[4];
+    float combineValues[4];
+    float texture1Transform[4];
 };
 
 SDL_FColor ColorFromArgb(std::uint32_t argb) {
@@ -125,7 +136,7 @@ std::unique_ptr<TlRenderer> TlRenderer::Create(GpuWindow &window) {
     renderer->m_vertexShader =
         CreateShader(device, SDL_GPU_SHADERSTAGE_VERTEX, 0, TL_VERT_SPIRV, TL_VERT_MSL);
     renderer->m_fragmentShader =
-        CreateShader(device, SDL_GPU_SHADERSTAGE_FRAGMENT, 1, TL_FRAG_SPIRV, TL_FRAG_MSL);
+        CreateShader(device, SDL_GPU_SHADERSTAGE_FRAGMENT, 2, TL_FRAG_SPIRV, TL_FRAG_MSL);
     if (renderer->m_vertexShader == nullptr || renderer->m_fragmentShader == nullptr) {
         return nullptr;
     }
@@ -314,7 +325,8 @@ void TlRenderer::DrawIndexed(std::span<const TlVertex> vertices,
                        m_texture,
                        static_cast<std::uint32_t>(m_indices.size()),
                        static_cast<std::uint32_t>(indices.size() / 3 * 3),
-                       static_cast<std::int32_t>(m_vertices.size())});
+                       static_cast<std::int32_t>(m_vertices.size()),
+                       m_combiner});
     m_vertices.insert(m_vertices.end(), vertices.begin(), vertices.end());
     m_indices.insert(m_indices.end(),
                      indices.begin(),
@@ -503,21 +515,40 @@ bool TlRenderer::EndScene(const std::filesystem::path *capture) {
             }
             SDL_BindGPUGraphicsPipeline(pass, pipeline);
             bool textured = draw.texture != 0 && draw.texture <= m_textures.size();
-            SDL_GPUTextureSamplerBinding binding{
-                textured ? m_textures[draw.texture - 1].texture : m_white, Sampler(draw.states)};
-            SDL_BindGPUFragmentSamplers(pass, 0, &binding, 1);
+            const CombinerState &combiner = draw.combiner;
+            bool textured1 = combiner.texture1 != 0 && combiner.texture1 <= m_textures.size();
+            SDL_GPUTexture *texture0 = textured ? m_textures[draw.texture - 1].texture : m_white;
+            const std::array<SDL_GPUTextureSamplerBinding, 2> bindings = {{
+                {texture0, Sampler(draw.states)},
+                {textured1 ? m_textures[combiner.texture1 - 1].texture : texture0,
+                 Sampler(draw.states)},
+            }};
+            SDL_BindGPUFragmentSamplers(pass, 0, bindings.data(), 2);
             SDL_FColor fog = ColorFromArgb(draw.states.fogColor);
-            PixelUniforms uniforms{
-                {fog.r, fog.g, fog.b, 1.0f},
-                {textured,
-                 textured && m_textures[draw.texture - 1].hasAlpha,
-                 draw.states.colorKey,
-                 draw.states.specular},
-                {draw.states.fog,
-                 draw.states.alphaTest ? static_cast<std::int32_t>(draw.states.alphaFunction) : 0,
-                 0,
-                 0},
-                {static_cast<float>(draw.states.alphaReference) / 255.0f, 0.0f, 0.0f, 0.0f}};
+            PixelUniforms uniforms{};
+            uniforms.fogColor[0] = fog.r;
+            uniforms.fogColor[1] = fog.g;
+            uniforms.fogColor[2] = fog.b;
+            uniforms.fogColor[3] = 1.0f;
+            uniforms.flags[0] = textured;
+            uniforms.flags[1] = textured && m_textures[draw.texture - 1].hasAlpha;
+            uniforms.flags[2] = draw.states.colorKey;
+            uniforms.flags[3] = draw.states.specular;
+            uniforms.modes[0] = draw.states.fog;
+            uniforms.modes[1] =
+                draw.states.alphaTest ? static_cast<std::int32_t>(draw.states.alphaFunction) : 0;
+            uniforms.alphaReference[0] = static_cast<float>(draw.states.alphaReference) / 255.0f;
+            std::memcpy(uniforms.combineColor, combiner.color, sizeof(uniforms.combineColor));
+            std::memcpy(uniforms.combineAlpha, combiner.alpha, sizeof(uniforms.combineAlpha));
+            uniforms.combineFlags[0] = combiner.enabled;
+            uniforms.combineFlags[1] = combiner.twoCycles;
+            std::memcpy(uniforms.primitive, combiner.primitive, sizeof(uniforms.primitive));
+            std::memcpy(uniforms.environment, combiner.environment, sizeof(uniforms.environment));
+            uniforms.combineValues[0] = combiner.lodFraction;
+            uniforms.combineValues[1] = combiner.alphaThreshold;
+            std::memcpy(uniforms.texture1Transform,
+                        combiner.texture1Transform,
+                        sizeof(uniforms.texture1Transform));
             SDL_PushGPUFragmentUniformData(commands, 0, &uniforms, sizeof(uniforms));
             SDL_DrawGPUIndexedPrimitives(
                 pass, draw.indexCount, 1, draw.firstIndex, draw.vertexOffset, 0);

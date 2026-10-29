@@ -265,12 +265,10 @@ float ShiftCoordinate(float value, int shift, int upperLeft) {
     return value - static_cast<float>(upperLeft) / 4.0f;
 }
 
-Color SampleTile(int index, float s, float t) {
-    const Tile &tile = g_rdp.tiles[static_cast<std::size_t>(index) & 7];
-    return ReadTexel(
-        tile,
-        static_cast<int>(std::floor(ShiftCoordinate(s, tile.shiftS, tile.upperLeftS))),
-        static_cast<int>(std::floor(ShiftCoordinate(t, tile.shiftT, tile.upperLeftT))));
+// Whether the other modes filter the texels, which the copy mode never does.
+bool FiltersTexels() {
+    return (g_rdp.otherHigh & (3u << G_MDSFT_TEXTFILT)) != G_TF_POINT &&
+           (g_rdp.otherHigh & (3u << G_MDSFT_CYCLETYPE)) != G_CYC_COPY;
 }
 
 struct CombineInputs {
@@ -542,6 +540,86 @@ void ApplyStates(bool textured, bool depth) {
     states.wrapV = false;
 }
 
+coastline::TextureHandle TileTexture(int index, int &width, int &height);
+
+// The colour combiner of the display list, for the shader of the renderer. The copy mode writes the
+// texel unchanged.
+coastline::CombinerState GpuCombiner(bool copy) {
+    coastline::CombinerState combiner;
+    combiner.enabled = true;
+    if (copy) {
+        // The selectors take 0 for a, b, and c, and the first texel for d.
+        combiner.color[0][0] = combiner.color[0][1] = 15;
+        combiner.color[0][2] = 31;
+        combiner.color[0][3] = G_CCMUX_TEXEL0;
+        combiner.alpha[0][0] = combiner.alpha[0][1] = combiner.alpha[0][2] = 7;
+        combiner.alpha[0][3] = 1;
+        combiner.alphaThreshold = AlphaCompares() ? 1.0f / 255.0f : -1.0f;
+        return combiner;
+    }
+    for (int cycle = 0; cycle < 2; ++cycle) {
+        CycleSelectors s = Selectors(cycle);
+        const std::int32_t color[4] = {s.a, s.b, s.c, s.d};
+        const std::int32_t alpha[4] = {s.alphaA, s.alphaB, s.alphaC, s.alphaD};
+        std::memcpy(combiner.color[cycle], color, sizeof(color));
+        std::memcpy(combiner.alpha[cycle], alpha, sizeof(alpha));
+    }
+    combiner.twoCycles = CycleType() == G_CYC_2CYCLE;
+    const Color colors[2] = {g_rdp.primitive, g_rdp.environment};
+    float *targets[2] = {combiner.primitive, combiner.environment};
+    for (int i = 0; i < 2; ++i) {
+        targets[i][0] = colors[i].r;
+        targets[i][1] = colors[i].g;
+        targets[i][2] = colors[i].b;
+        targets[i][3] = colors[i].a;
+    }
+    combiner.lodFraction = g_rdp.primitiveLodFraction;
+    combiner.alphaThreshold = AlphaCompares() ? g_rdp.blend.a : -1.0f;
+    return combiner;
+}
+
+// An axis of a tile as texel = coordinate * scale - offset, after its shift and from its start.
+struct TileAxis {
+    float scale;
+    float offset;
+};
+
+TileAxis AxisOf(const Tile &tile, bool s) {
+    int shift = s ? tile.shiftS : tile.shiftT;
+    float scale = 1.0f;
+    if (shift > 0 && shift <= 10) {
+        scale = 1.0f / static_cast<float>(1 << shift);
+    } else if (shift > 10) {
+        scale = static_cast<float>(1 << (16 - shift));
+    }
+    return {scale, static_cast<float>(s ? tile.upperLeftS : tile.upperLeftT) / 4.0f};
+}
+
+// The scale and offset that take the texture coordinates of one tile to those of the next, as both
+// sample the same s and t.
+void SetSecondTile(coastline::CombinerState &combiner,
+                   int index,
+                   int width0,
+                   int height0,
+                   coastline::TextureHandle texture1,
+                   int width1,
+                   int height1) {
+    const Tile &tile0 = g_rdp.tiles[static_cast<std::size_t>(index) & 7];
+    const Tile &tile1 = g_rdp.tiles[static_cast<std::size_t>(index + 1) & 7];
+    const int sizes0[2] = {width0, height0};
+    const int sizes1[2] = {width1, height1};
+    for (int axis = 0; axis < 2; ++axis) {
+        TileAxis a0 = AxisOf(tile0, axis == 0);
+        TileAxis a1 = AxisOf(tile1, axis == 0);
+        float ratio = a1.scale / a0.scale;
+        combiner.texture1Transform[axis] =
+            static_cast<float>(sizes0[axis]) * ratio / static_cast<float>(sizes1[axis]);
+        combiner.texture1Transform[2 + axis] =
+            (a0.offset * ratio - a1.offset) / static_cast<float>(sizes1[axis]);
+    }
+    combiner.texture1 = texture1;
+}
+
 void DrawQuad(float left, float top, float right, float bottom, std::uint32_t color) {
     float scale = ScreenScale();
     const std::array<coastline::TlVertex, 4> quad = {{
@@ -576,65 +654,52 @@ void DrawTextureRectangle(const GbiCommand *command, bool flip) {
     if (width <= 0 || height <= 0 || width > 2048 || height > 2048) {
         return;
     }
-    // Everything the pixels of the rectangle are made from.
-    std::uint64_t key = Hash(kHashSeed, TextureMemoryHash());
-    key = Hash(key, g_rdp.tiles[static_cast<std::size_t>(tile)]);
-    key = Hash(key, g_rdp.tiles[static_cast<std::size_t>(tile + 1) & 7]);
-    for (const std::uint32_t word : {command[0].w0,
-                                     command[0].w1,
-                                     command[1].w1,
-                                     command[2].w1,
-                                     g_rdp.combineHigh,
-                                     g_rdp.combineLow,
-                                     g_rdp.otherHigh,
-                                     g_rdp.otherLow,
-                                     static_cast<std::uint32_t>(flip)}) {
-        key = Hash(key, word);
+    int width0 = 1;
+    int height0 = 1;
+    int width1 = 1;
+    int height1 = 1;
+    coastline::TextureHandle texture0 = TileTexture(tile, width0, height0);
+    coastline::CombinerState combiner = GpuCombiner(copy);
+    if (!copy) {
+        coastline::TextureHandle texture1 = TileTexture(tile + 1, width1, height1);
+        SetSecondTile(combiner, tile, width0, height0, texture1, width1, height1);
     }
-    key = Hash(Hash(Hash(Hash(key, g_rdp.primitive), g_rdp.environment), g_rdp.blend),
-               g_rdp.primitiveLodFraction);
+    const Tile &tiled = g_rdp.tiles[static_cast<std::size_t>(tile)];
+    TileAxis axisS = AxisOf(tiled, true);
+    TileAxis axisT = AxisOf(tiled, false);
+    // The coordinates at a corner of the rectangle. A pixel samples at its centre, and the RDP
+    // steps from the first coordinate at the left edge of the first pixel, so the corners take half
+    // a step back.
+    auto corner = [&](float dx, float dy, float &u, float &v) {
+        float across = flip ? dy : dx;
+        float down = flip ? dx : dy;
+        float sCoordinate = s + dsdx * (across - 0.5f);
+        float tCoordinate = t + dtdy * (down - 0.5f);
+        u = (sCoordinate * axisS.scale - axisS.offset) / static_cast<float>(width0);
+        v = (tCoordinate * axisT.scale - axisT.offset) / static_cast<float>(height0);
+    };
+    float w = static_cast<float>(width);
+    float h = static_cast<float>(height);
+    float scale = ScreenScale();
+    std::array<coastline::TlVertex, 4> quad{};
+    const float offsets[4][2] = {{0, 0}, {w, 0}, {w, h}, {0, h}};
+    for (std::size_t i = 0; i < 4; ++i) {
+        quad[i].sx = (upperLeftX + offsets[i][0]) * scale;
+        quad[i].sy = (upperLeftY + offsets[i][1]) * scale;
+        quad[i].rhw = 1;
+        quad[i].color = 0xffffffff;
+        corner(offsets[i][0], offsets[i][1], quad[i].tu, quad[i].tv);
+    }
     ApplyStates(true, false);
-    if (const BakedTexture *baked = FindBakedTexture(key)) {
-        g_renderer->SetTexture(baked->handle);
-        DrawQuad(upperLeftX,
-                 upperLeftY,
-                 upperLeftX + static_cast<float>(width),
-                 upperLeftY + static_cast<float>(height),
-                 0xffffffff);
-        return;
-    }
-    std::vector<std::uint8_t> rgba(static_cast<std::size_t>(width) * height * 4);
-    bool opaque = !BlendsWithMemory() && !AlphaCompares() && !copy;
-    Color white{1, 1, 1, 1};
-    for (int y = 0; y < height; ++y) {
-        for (int x = 0; x < width; ++x) {
-            float sx = s + dsdx * static_cast<float>(flip ? y : x);
-            float ty = t + dtdy * static_cast<float>(flip ? x : y);
-            Color texel0 = SampleTile(tile, sx, ty);
-            Color pixel = copy ? texel0 : Combine(texel0, SampleTile(tile + 1, sx, ty), white);
-            if (AlphaCompares() && !copy && pixel.a < g_rdp.blend.a) {
-                pixel.a = 0;
-            }
-            if (opaque) {
-                pixel.a = 1;
-            }
-            std::uint32_t packed = PackColor(pixel);
-            std::uint8_t *out = &rgba[(static_cast<std::size_t>(y) * width + x) * 4];
-            out[0] = static_cast<std::uint8_t>(packed >> 16);
-            out[1] = static_cast<std::uint8_t>(packed >> 8);
-            out[2] = static_cast<std::uint8_t>(packed);
-            out[3] = static_cast<std::uint8_t>(packed >> 24);
-        }
-    }
-    g_renderer->SetTexture(
-        StoreBakedTexture(
-            key, rgba, static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height))
-            .handle);
-    DrawQuad(upperLeftX,
-             upperLeftY,
-             upperLeftX + static_cast<float>(width),
-             upperLeftY + static_cast<float>(height),
-             0xffffffff);
+    coastline::RenderStates &states = g_renderer->States();
+    states.wrapU = tiled.maskS != 0 && !(tiled.clampS & G_TX_CLAMP);
+    states.wrapV = tiled.maskT != 0 && !(tiled.clampT & G_TX_CLAMP);
+    states.linearFilter = FiltersTexels();
+    states.alphaTest = false;
+    g_renderer->SetTexture(texture0);
+    g_renderer->SetCombiner(combiner);
+    const std::array<std::uint16_t, 6> indices = {0, 1, 2, 0, 2, 3};
+    g_renderer->DrawIndexed(quad, indices);
 }
 
 void DrawFillRectangle(const GbiCommand *command) {
@@ -661,6 +726,7 @@ void DrawFillRectangle(const GbiCommand *command) {
     }
     ApplyStates(false, false);
     g_renderer->SetTexture(0);
+    g_renderer->SetCombiner({});
     DrawQuad(upperLeftX, upperLeftY, lowerRightX, lowerRightY, PackColor(color));
 }
 
@@ -905,6 +971,13 @@ coastline::TextureHandle TileTexture(int index, int &width, int &height) {
     const Tile &tile = g_rdp.tiles[static_cast<std::size_t>(index) & 7];
     width = tile.maskS ? 1 << tile.maskS : ((tile.lowerRightS - tile.upperLeftS) >> 2) + 1;
     height = tile.maskT ? 1 << tile.maskT : ((tile.lowerRightT - tile.upperLeftT) >> 2) + 1;
+    // A mirrored axis repeats every two masks, and the texture holds both halves.
+    if (tile.maskS && (tile.clampS & G_TX_MIRROR)) {
+        width *= 2;
+    }
+    if (tile.maskT && (tile.clampT & G_TX_MIRROR)) {
+        height *= 2;
+    }
     width = std::clamp(width, 1, 1024);
     height = std::clamp(height, 1, 1024);
     std::uint64_t key = Hash(Hash(kHashSeed, TextureMemoryHash()), tile);
@@ -941,6 +1014,13 @@ void DrawTriangle(std::size_t a, std::size_t b, std::size_t c) {
     int width = 1;
     int height = 1;
     coastline::TextureHandle texture = textured ? TileTexture(g_rdp.textureTile, width, height) : 0;
+    coastline::CombinerState combiner = GpuCombiner(false);
+    if (textured) {
+        int width1 = 1;
+        int height1 = 1;
+        coastline::TextureHandle texture1 = TileTexture(g_rdp.textureTile + 1, width1, height1);
+        SetSecondTile(combiner, g_rdp.textureTile, width, height, texture1, width1, height1);
+    }
     const Tile &tile = g_rdp.tiles[static_cast<std::size_t>(g_rdp.textureTile) & 7];
     float scale = ScreenScale();
     std::array<coastline::TlVertex, 3> out{};
@@ -953,8 +1033,7 @@ void DrawTriangle(std::size_t a, std::size_t b, std::size_t c) {
             (g_rdp.viewportTranslate[1] - vertex.y * inverseW * g_rdp.viewportScale[1]) * scale;
         out[i].sz = std::clamp(vertex.z * inverseW * 0.5f + 0.5f, 0.0f, 1.0f);
         out[i].rhw = inverseW;
-        Color white{1, 1, 1, 1};
-        out[i].color = PackColor(Combine(white, white, vertex.shade));
+        out[i].color = PackColor(vertex.shade);
         out[i].specular = 0;
         out[i].tu =
             ShiftCoordinate(vertex.s, tile.shiftS, tile.upperLeftS) / static_cast<float>(width);
@@ -965,8 +1044,10 @@ void DrawTriangle(std::size_t a, std::size_t b, std::size_t c) {
     coastline::RenderStates &states = g_renderer->States();
     states.wrapU = !(tile.clampS & G_TX_CLAMP);
     states.wrapV = !(tile.clampT & G_TX_CLAMP);
-    states.alphaTest = AlphaCompares();
+    states.linearFilter = FiltersTexels();
+    states.alphaTest = false;
     g_renderer->SetTexture(texture);
+    g_renderer->SetCombiner(combiner);
     const std::array<std::uint16_t, 3> indices = {0, 1, 2};
     g_renderer->DrawIndexed(out, indices);
 }

@@ -1155,6 +1155,7 @@ tarmc
 tatsh
 texel
 texelfx
+texels
 texfmt
 texrect
 texrectflip
