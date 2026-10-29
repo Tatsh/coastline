@@ -6,13 +6,10 @@
 #include "common/libultra/os/osint.h"
 #endif
 
+s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flag) {
 #if TGR_BOSS_RALLY
-s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flag) {
     return 1;
-}
 #else
-
-s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flag) {
     register OSIntMask saveMask = __osDisableInt();
 
     while (MQ_IS_EMPTY(mq)) {
@@ -33,5 +30,5 @@ s32 osRecvMesg(OSMesgQueue *mq, OSMesg *msg, s32 flag) {
     }
     __osRestoreInt(saveMask);
     return 0;
-}
 #endif /* TGR_BOSS_RALLY */
+}
