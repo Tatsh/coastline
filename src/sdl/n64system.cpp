@@ -104,11 +104,11 @@ void WritePicture(const std::filesystem::path &directory,
 int WriteN64TexturePack(const std::filesystem::path &directory) {
     int written = 0;
     for (const Sprite *sprite : N64FrontEndSprites()) {
-        // The USA release draws the 8-bit sprites as intensity, the 16-bit sprites as colours, and
-        // the logo alone as intensity and alpha.
+        // The game loads the 8-bit sprites as intensity and alpha, draws the 16-bit sprites as
+        // colours, and the logo alone as intensity and alpha.
         coastline::TexelFormat format =
             sprite->bitsPerTexel == 4 ? coastline::TexelFormat::Intensity4 :
-            sprite->bitsPerTexel == 8 ? coastline::TexelFormat::Intensity8 :
+            sprite->bitsPerTexel == 8 ? coastline::TexelFormat::IntensityAlpha8 :
             sprite == &g_texLogo      ? coastline::TexelFormat::IntensityAlpha16 :
                                         coastline::TexelFormat::Rgba16;
         WritePicture(directory,
