@@ -1,8 +1,6 @@
 #include "stringresources.h"
 
-#include <cstdint>
 #include <optional>
-#include <span>
 
 namespace {
 
@@ -115,9 +113,9 @@ private:
     std::size_t m_resources = 0;
 };
 
-// Windows-1252 for the characters of UTF-16 the library can use; others become '?', as the default
-// character of WideCharToMultiByte() does.
-char ToWindows1252(std::uint32_t c) {
+// Windows-1252 for a character; others become '?', as the default character of
+// WideCharToMultiByte() does.
+char ToWindows1252Character(std::uint32_t c) {
     if (c < 0x80 || (c >= 0xA0 && c <= 0xFF)) {
         return static_cast<char>(c);
     }
@@ -133,62 +131,104 @@ char ToWindows1252(std::uint32_t c) {
     return '?';
 }
 
+void AppendUtf8(std::string &text, std::uint32_t c) {
+    if (c < 0x80) {
+        text += static_cast<char>(c);
+    } else if (c < 0x800) {
+        text += static_cast<char>(0xC0 | c >> 6);
+        text += static_cast<char>(0x80 | (c & 0x3F));
+    } else if (c < 0x10000) {
+        text += static_cast<char>(0xE0 | c >> 12);
+        text += static_cast<char>(0x80 | (c >> 6 & 0x3F));
+        text += static_cast<char>(0x80 | (c & 0x3F));
+    } else {
+        text += static_cast<char>(0xF0 | c >> 18);
+        text += static_cast<char>(0x80 | (c >> 12 & 0x3F));
+        text += static_cast<char>(0x80 | (c >> 6 & 0x3F));
+        text += static_cast<char>(0x80 | (c & 0x3F));
+    }
+}
+
 } // namespace
 
-extern "C" int LoadLibraryString(
-    const unsigned char *image, size_t imageSize, unsigned id, char *buffer, int bufferSize) {
-    if (bufferSize <= 0) {
-        return 0;
-    }
-    buffer[0] = '\0';
-    PeImage pe(std::span<const std::uint8_t>(image, imageSize));
+namespace coastline {
+
+std::map<unsigned, std::string> ReadLibraryStrings(std::span<const std::uint8_t> image) {
+    std::map<unsigned, std::string> strings;
+    PeImage pe(image);
     if (!pe.Parse()) {
-        return 0;
+        return strings;
     }
-    // RT_STRING, then the block of sixteen strings, then the first language.
+    // RT_STRING, then each block of sixteen strings, then its first language.
     std::size_t root = pe.Resources();
     auto types = pe.Entry(root, RT_STRING);
     if (!types || !(*types & SUBDIRECTORY)) {
-        return 0;
+        return strings;
     }
-    auto blocks = pe.Entry(root + (*types & ~SUBDIRECTORY), id / 16 + 1);
-    if (!blocks || !(*blocks & SUBDIRECTORY)) {
-        return 0;
+    std::size_t blocks = root + (*types & ~SUBDIRECTORY);
+    auto named = pe.U16(blocks + 12);
+    auto numbered = pe.U16(blocks + 14);
+    if (!named || !numbered) {
+        return strings;
     }
-    auto languages = pe.Entry(root + (*blocks & ~SUBDIRECTORY), std::nullopt);
-    if (!languages || (*languages & SUBDIRECTORY)) {
-        return 0;
-    }
-    std::size_t dataEntry = root + *languages;
-    auto rva = pe.U32(dataEntry);
-    if (!rva) {
-        return 0;
-    }
-    auto offset = pe.FileOffset(*rva);
-    if (!offset) {
-        return 0;
-    }
-    // Each string of the block is a count of UTF-16 units and the units.
-    std::size_t position = *offset;
-    for (unsigned index = 0; index < id % 16; ++index) {
-        auto length = pe.U16(position);
-        if (!length) {
-            return 0;
+    for (std::uint32_t i = 0; i < *named + *numbered; ++i) {
+        auto block = pe.U32(blocks + 16 + i * 8);
+        auto target = pe.U32(blocks + 16 + i * 8 + 4);
+        if (!block || !target || !(*target & SUBDIRECTORY) || *block == 0) {
+            continue;
         }
-        position += 2 + *length * 2;
-    }
-    auto length = pe.U16(position);
-    if (!length || *length == 0) {
-        return 0;
-    }
-    int copied = 0;
-    for (std::uint32_t i = 0; i < *length && copied < bufferSize - 1; ++i) {
-        auto unit = pe.U16(position + 2 + i * 2);
-        if (!unit) {
-            break;
+        auto language = pe.Entry(root + (*target & ~SUBDIRECTORY), std::nullopt);
+        if (!language || (*language & SUBDIRECTORY)) {
+            continue;
         }
-        buffer[copied++] = ToWindows1252(*unit);
+        auto rva = pe.U32(root + *language);
+        auto offset = rva ? pe.FileOffset(*rva) : std::nullopt;
+        if (!offset) {
+            continue;
+        }
+        // Each string of the block is a count of UTF-16 units and the units.
+        std::size_t position = *offset;
+        for (unsigned index = 0; index < 16; ++index) {
+            auto length = pe.U16(position);
+            if (!length) {
+                break;
+            }
+            std::string text;
+            for (std::uint32_t unit = 0; unit < *length; ++unit) {
+                auto c = pe.U16(position + 2 + unit * 2);
+                auto low = pe.U16(position + 4 + unit * 2);
+                if (!c) {
+                    break;
+                }
+                if (*c >= 0xD800 && *c < 0xDC00 && low && *low >= 0xDC00 && *low < 0xE000) {
+                    AppendUtf8(text, 0x10000 + ((*c - 0xD800) << 10) + (*low - 0xDC00));
+                    ++unit;
+                } else {
+                    AppendUtf8(text, *c);
+                }
+            }
+            if (*length != 0) {
+                strings[(*block - 1) * 16 + index] = std::move(text);
+            }
+            position += 2 + *length * 2;
+        }
     }
-    buffer[copied] = '\0';
-    return copied;
+    return strings;
 }
+
+std::string ToWindows1252(std::string_view text) {
+    std::string converted;
+    for (std::size_t i = 0; i < text.size();) {
+        auto lead = static_cast<unsigned char>(text[i]);
+        int extra = lead < 0x80 ? 0 : lead < 0xE0 ? 1 : lead < 0xF0 ? 2 : 3;
+        std::uint32_t c = extra == 0 ? lead : lead & (0x3F >> extra);
+        for (int j = 1; j <= extra && i + j < text.size(); ++j) {
+            c = c << 6 | (static_cast<unsigned char>(text[i + j]) & 0x3F);
+        }
+        converted += ToWindows1252Character(c);
+        i += static_cast<std::size_t>(extra) + 1;
+    }
+    return converted;
+}
+
+} // namespace coastline

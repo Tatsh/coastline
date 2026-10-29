@@ -768,6 +768,7 @@ neff
 negu
 ngre
 nicolle
+nlohmann
 noadv
 noat
 noffstik
@@ -1135,6 +1136,7 @@ stickyfocus
 stkptr
 strequal
 stringresources
+stringtable
 strlwr
 strmiids
 strupr

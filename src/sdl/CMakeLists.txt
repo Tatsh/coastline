@@ -8,6 +8,7 @@ set(CMAKE_C_STANDARD 23)
 find_package(SDL3 CONFIG REQUIRED)
 find_package(argparse CONFIG REQUIRED)
 find_package(FLAC CONFIG REQUIRED)
+find_package(nlohmann_json CONFIG REQUIRED)
 find_package(ZLIB REQUIRED)
 
 # The shaders are GLSL, compiled to SPIR-V for Vulkan and translated to MSL for Metal by the host
@@ -52,6 +53,7 @@ add_library(
   music.cpp
   n64texture.cpp
   paths.cpp
+  stringresources.cpp
   tlrenderer.cpp
   "${CMAKE_SOURCE_DIR}/src/audio.c"
   "${CMAKE_SOURCE_DIR}/tools/common/assetchain.cpp"
@@ -61,7 +63,7 @@ target_include_directories(coastline_sdl PRIVATE "${CMAKE_SOURCE_DIR}/src"
                                                  "${CMAKE_SOURCE_DIR}/tools/common"
                                                  "${CMAKE_CURRENT_BINARY_DIR}")
 add_dependencies(coastline_sdl coastline_shaders)
-target_link_libraries(coastline_sdl PRIVATE FLAC::FLAC ZLIB::ZLIB)
+target_link_libraries(coastline_sdl PRIVATE FLAC::FLAC nlohmann_json::nlohmann_json ZLIB::ZLIB)
 # A reconstructed routine retains the parameters of the original, used or not.
 set_source_files_properties("${CMAKE_SOURCE_DIR}/src/audio.c" PROPERTIES COMPILE_OPTIONS
                                                                          "-Wno-unused-parameter")

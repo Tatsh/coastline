@@ -61,7 +61,7 @@ set_source_files_properties("${_src}/savestate.c" "${_src}/win32/paintshop.c" PR
 set(COASTLINE_PC_SDL_SOURCES bitmap.cpp d3dcompat.cpp dinputcompat.cpp fileio.cpp frontendstate.cpp
                              dsoundcompat.cpp mmsystemcompat.cpp n64displaylist.cpp network.cpp
                              pcgamerun.cpp
-                             renderhost.cpp stringresources.cpp)
+                             renderhost.cpp stringtable.cpp)
 # The routines of the textures of BRD3D.dll that do not use DirectDraw, and the conversions of the
 # states of vehicles the network streams.
 list(APPEND COASTLINE_PC_CXX_SOURCES "${_src}/win32/d3d/texture.cpp" "${_src}/win32/netstream.cpp"
@@ -71,7 +71,8 @@ list(APPEND COASTLINE_PC_CXX_SOURCES "${_src}/win32/d3d/texture.cpp" "${_src}/wi
 add_library(coastline_pcgame STATIC ${COASTLINE_PC_C_SOURCES} ${COASTLINE_PC_CXX_SOURCES}
                                     ${COASTLINE_PC_SDL_SOURCES})
 target_include_directories(coastline_pcgame PUBLIC "${_src}" "${_src}/libultra/include")
-target_link_libraries(coastline_pcgame PUBLIC SDL3::SDL3 PRIVATE FLAC::FLAC)
+target_link_libraries(coastline_pcgame PUBLIC SDL3::SDL3 PRIVATE FLAC::FLAC
+                                                                 nlohmann_json::nlohmann_json)
 # A cast between a pointer and a 32-bit integer loses half the pointer on a 64-bit processor, and
 # is an error so that every one is converted to Ptr32.
 # The data of a source is placed in the order of its definitions, as in the Windows libraries. Some

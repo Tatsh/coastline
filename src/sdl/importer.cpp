@@ -12,8 +12,10 @@
 #include <sstream>
 
 #include <FLAC/stream_encoder.h>
+#include <nlohmann/json.hpp>
 
 #include "assetchain.h"
+#include "sdl/stringresources.h"
 #include "sha1.h"
 
 namespace coastline {
@@ -295,6 +297,31 @@ CopyIsoFile(SectorReader &reader, const IsoEntry &entry, const std::filesystem::
                  std::optional(std::format("{} was not written.", destination.string()));
 }
 
+// The strings of BRString.dll as strings/default/pc.json, by identifier, in place of the library.
+std::optional<std::string> ConvertStringLibrary(const std::filesystem::path &library,
+                                                const std::filesystem::path &dataDirectory) {
+    std::ifstream in(library, std::ios::binary);
+    std::vector<std::uint8_t> image(std::istreambuf_iterator<char>(in), {});
+    auto strings = coastline::ReadLibraryStrings(image);
+    if (strings.empty()) {
+        return std::format("{} has no strings.", library.string());
+    }
+    nlohmann::ordered_json json = nlohmann::ordered_json::object();
+    for (const auto &[id, text] : strings) {
+        json[std::to_string(id)] = text;
+    }
+    auto destination = dataDirectory / "strings" / "default" / "pc.json";
+    std::error_code error;
+    std::filesystem::create_directories(destination.parent_path(), error);
+    std::ofstream out(destination, std::ios::trunc);
+    out << json.dump(2) << '\n';
+    if (!out) {
+        return std::format("{} cannot be written.", destination.string());
+    }
+    std::filesystem::remove(library, error);
+    return std::nullopt;
+}
+
 struct EncoderDeleter {
     void operator()(FLAC__StreamEncoder *encoder) const {
         FLAC__stream_encoder_delete(encoder);
@@ -552,6 +579,15 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         }
         if (auto failure = CopyIsoFile(reader, entry, dataDirectory / entry.path)) {
             return std::unexpected(*failure);
+        }
+        if (entry.path.filename().string().size() == 12 &&
+            std::ranges::equal(
+                entry.path.filename().string(),
+                std::string_view("brstring.dll"),
+                [](unsigned char a, unsigned char b) { return std::tolower(a) == b; })) {
+            if (auto failure = ConvertStringLibrary(dataDirectory / entry.path, dataDirectory)) {
+                return std::unexpected(*failure);
+            }
         }
         ++written;
     }

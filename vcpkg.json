@@ -27,6 +27,7 @@
           "name": "glslang"
         },
         "libflac",
+        "nlohmann-json",
         {
           "default-features": false,
           "features": ["vulkan"],

@@ -1,28 +1,29 @@
-#ifndef COASTLINE_SDL_STRINGRESOURCES_H
-#define COASTLINE_SDL_STRINGRESOURCES_H
+#pragma once
 
-#include <stddef.h>
+#include <cstdint>
+#include <map>
+#include <span>
+#include <string>
+#include <string_view>
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+namespace coastline {
 
 /**
- * Read a string resource of a Windows library as LoadStringA() does: the UTF-16 string of the
- * RT_STRING resource converted to Windows-1252, truncated to the buffer, and terminated.
+ * Read the string resources of a Windows library.
  *
  * @param image The bytes of the library file.
- * @param imageSize The size of the file.
- * @param id The identifier of the string.
- * @param buffer The buffer for the string.
- * @param bufferSize The size of the buffer, at least 1.
- * @return The characters copied without the terminator, or 0 when the library has no such string.
+ * @return The strings of the RT_STRING resources as UTF-8, by identifier. A library that is not a
+ * PE image or has no string resources gives none.
  */
-int LoadLibraryString(
-    const unsigned char *image, size_t imageSize, unsigned id, char *buffer, int bufferSize);
+std::map<unsigned, std::string> ReadLibraryStrings(std::span<const std::uint8_t> image);
 
-#ifdef __cplusplus
-}
-#endif
+/**
+ * Convert UTF-8 text to Windows-1252, as WideCharToMultiByte() converts the strings LoadStringA()
+ * returns. A character Windows-1252 does not have becomes '?'.
+ *
+ * @param text The UTF-8 text.
+ * @return The Windows-1252 text.
+ */
+std::string ToWindows1252(std::string_view text);
 
-#endif /* COASTLINE_SDL_STRINGRESOURCES_H */
+} // namespace coastline
