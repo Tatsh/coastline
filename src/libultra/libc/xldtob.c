@@ -152,16 +152,20 @@ static s16 _Ldunscale(s16 *pex, _Pft *px) {
 }
 
 void _Ldtob(_Pft *px, char code) {
-#ifdef ENABLE_PATCHES
-    char buff[BUFF_LEN] = {0};
-#else
     char buff[BUFF_LEN];
-#endif /* ENABLE_PATCHES */
     char *p = buff;
     double ldval = px->v.ld;
     s16 err;
     s16 nsig;
     s16 xexp;
+#ifdef ENABLE_PATCHES
+    s16 i;
+
+    /* A loop, as an initialiser compiles to a call to memset, which the console does not link. */
+    for (i = 0; i < BUFF_LEN; i++) {
+        buff[i] = 0;
+    }
+#endif /* ENABLE_PATCHES */
 
     if (px->prec < 0) {
         px->prec = 6;

@@ -46,8 +46,13 @@ s32 g_dwFrameBufferIndex;
 
 void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits) {
 #ifdef ENABLE_PATCHES
-    /* The debug display retains the message, which needs 42 bytes for the largest size. */
+    /* The debug display retains the message, which needs 42 bytes for the largest size. The console
+     * BSS may not grow, so the buffer is placed in the data. */
+#if defined(__GNUC__) && TGR_PLATFORM == TGR_PLATFORM_N64
+    static char message[48] __attribute__((section(".data")));
+#else
     static char message[48];
+#endif
 #else
     /* The original stores the address of a local message for the debug display. */
     char message[40];
