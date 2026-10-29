@@ -5,8 +5,6 @@
 #include <cstring>
 #include <fstream>
 
-#include "assetchain.h"
-
 extern "C" {
 #include "audio.h"
 }
@@ -227,18 +225,6 @@ void MixSoundEffectChannels(s16 *ring, u32 bytes, u32 offset) {
 } // extern "C"
 
 namespace coastline {
-
-std::expected<std::vector<std::uint8_t>, std::string>
-ReadRomModule(std::span<const std::uint8_t> rom, std::uint32_t offset) {
-    if (offset >= rom.size()) {
-        return std::unexpected("The module is past the end of the image.");
-    }
-    auto data = Tools::Common::decompress(rom.subspan(offset));
-    if (!data) {
-        return std::unexpected(data.error().message);
-    }
-    return std::move(*data);
-}
 
 N64Audio::N64Audio() {
     // InitAudioSystem() of the console, without the interface and the thread.

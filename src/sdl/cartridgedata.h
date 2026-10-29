@@ -13,10 +13,13 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <filesystem>
+#include <optional>
 #include <span>
 #include <string_view>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include <boost/pfr.hpp>
 
@@ -28,12 +31,15 @@ namespace coastline {
 class CartridgeData {
 public:
     /**
-     * Copy the main segment of the cartridge and read the symbols of the release.
+     * Load the main segment and the assets of the USA cartridge that the import extracted, and
+     * read the symbols of the release.
      *
-     * @param rom The USA cartridge image, big-endian.
-     * @return Whether the image holds the main segment.
+     * @param directory The directory of the extracted release: segment.bin, and in assets/ each
+     * asset named after where it starts on the cartridge, <offset>.bin inflated and <offset>.raw
+     * for raw data.
+     * @return Whether the directory holds the main segment.
      */
-    static bool Load(std::span<const std::uint8_t> rom);
+    static bool Load(const std::filesystem::path &directory);
 
     /**
      * @param address An address of the console in the main segment.
@@ -41,8 +47,21 @@ public:
      */
     static const std::uint8_t *Bytes(std::uint32_t address);
 
-    /** @return The whole cartridge image of Load(), big-endian. */
-    static std::span<const std::uint8_t> Rom();
+    /**
+     * @param romOffset Where a compressed asset starts on the cartridge.
+     * @return The inflated asset, or nothing when no asset starts there.
+     */
+    static std::optional<std::vector<std::uint8_t>> Asset(std::uint32_t romOffset);
+
+    /**
+     * Read raw data of the cartridge.
+     *
+     * @param destination Where the bytes go.
+     * @param romOffset Where they start on the cartridge.
+     * @param size The bytes.
+     * @return Whether raw data holds every byte.
+     */
+    static bool ReadRaw(void *destination, std::uint32_t romOffset, std::size_t size);
 
     /**
      * @param name The name of a symbol of the release.

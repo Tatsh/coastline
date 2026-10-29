@@ -36,9 +36,25 @@ bool NormalizeRomByteOrder(std::span<std::uint8_t> image);
  */
 std::expected<RomRelease, std::string> IdentifyRom(std::span<const std::uint8_t> image);
 
+/** A music module of the USA cartridge and its name in a music pack. */
+struct UsaMusicModule {
+    std::uint32_t offset; /*!< Where the module starts on the cartridge. */
+    const char *name;     /*!< The name of its file in a pack, without the extension .xm. */
+};
+
+/** The music modules of the USA cartridge: the menus, then the modules of the tracks. */
+inline constexpr UsaMusicModule USA_MUSIC_MODULES[] = {{0x0EBC00, "menu"},
+                                                       {0x113660, "race1"},
+                                                       {0x12EAB0, "race2"},
+                                                       {0x149C80, "race3"},
+                                                       {0x164B60, "race4"},
+                                                       {0x17FD10, "race5"},
+                                                       {0x19BC10, "race6"}};
+
 /**
- * Check a cartridge image and copy it, big-endian, to roms/usa.z64, jpn.z64, or eur.z64 under
- * @p dataDirectory.
+ * Check a cartridge image and extract its main segment and its assets, inflated, to
+ * n64/usa, n64/jpn, or n64/eur under @p dataDirectory. The USA cartridge also gives the music pack
+ * default its XM modules.
  *
  * @param image The cartridge image.
  * @param dataDirectory The data directory of the game.

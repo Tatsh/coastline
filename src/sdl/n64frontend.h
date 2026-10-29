@@ -21,7 +21,7 @@ class N64Audio;
 
 /**
  * Write the pictures of the front end that are not in a directory yet as PNG files there, named
- * after where each starts on the cartridge. The data of the front end must be read first.
+ * after their symbols, which every release shares. The data of the front end must be read first.
  *
  * @param directory The directory of the texture pack.
  * @return The pictures written.

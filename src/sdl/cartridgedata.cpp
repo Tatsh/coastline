@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <charconv>
+#include <format>
+#include <fstream>
 #include <iterator>
 #include <map>
 #include <string>
@@ -29,7 +31,9 @@ struct HostDefinition {
     std::size_t count;
 };
 
-std::vector<std::uint8_t> g_rom;
+std::filesystem::path g_assetDirectory;
+// The raw data of the cartridge: the bytes of each span by where it starts.
+std::map<std::uint32_t, std::uint32_t> g_rawSpans;
 std::vector<std::uint8_t> g_segment;
 std::unordered_map<std::string, std::uint32_t> g_symbols;
 std::map<std::uint32_t, HostDefinition> g_definitions;
@@ -57,13 +61,25 @@ void ReadSymbols() {
 
 } // namespace
 
-bool CartridgeData::Load(std::span<const std::uint8_t> rom) {
+bool CartridgeData::Load(const std::filesystem::path &directory) {
     std::size_t size = kSegmentEnd - kSegmentAddress;
-    if (rom.size() < kSegmentRom + size) {
+    std::ifstream file(directory / "segment.bin", std::ios::binary);
+    std::vector<std::uint8_t> segment(std::istreambuf_iterator<char>(file), {});
+    if (segment.size() != size) {
         return false;
     }
-    g_rom.assign(rom.begin(), rom.end());
-    g_segment.assign(rom.begin() + kSegmentRom, rom.begin() + kSegmentRom + size);
+    g_segment = std::move(segment);
+    g_assetDirectory = directory / "assets";
+    g_rawSpans.clear();
+    std::error_code error;
+    for (const auto &entry : std::filesystem::directory_iterator(g_assetDirectory, error)) {
+        std::uint32_t offset = 0;
+        std::string stem = entry.path().stem().string();
+        if (entry.path().extension() == ".raw" &&
+            std::from_chars(stem.data(), stem.data() + stem.size(), offset, 16).ec == std::errc()) {
+            g_rawSpans[offset] = static_cast<std::uint32_t>(entry.file_size(error));
+        }
+    }
     if (g_symbols.empty()) {
         ReadSymbols();
         for (const auto &[name, address] : g_symbols) {
@@ -81,8 +97,27 @@ const std::uint8_t *CartridgeData::Bytes(std::uint32_t address) {
     return g_segment.data() + (address - kSegmentAddress);
 }
 
-std::span<const std::uint8_t> CartridgeData::Rom() {
-    return g_rom;
+std::optional<std::vector<std::uint8_t>> CartridgeData::Asset(std::uint32_t romOffset) {
+    std::ifstream file(g_assetDirectory / std::format("{:06x}.bin", romOffset), std::ios::binary);
+    if (!file) {
+        return std::nullopt;
+    }
+    return std::vector<std::uint8_t>(std::istreambuf_iterator<char>(file), {});
+}
+
+bool CartridgeData::ReadRaw(void *destination, std::uint32_t romOffset, std::size_t size) {
+    auto span = g_rawSpans.upper_bound(romOffset);
+    if (span == g_rawSpans.begin()) {
+        return false;
+    }
+    --span;
+    if (romOffset - span->first + size > span->second) {
+        return false;
+    }
+    std::ifstream file(g_assetDirectory / std::format("{:06x}.raw", span->first), std::ios::binary);
+    file.seekg(romOffset - span->first);
+    file.read(static_cast<char *>(destination), static_cast<std::streamsize>(size));
+    return static_cast<bool>(file);
 }
 
 std::uint32_t CartridgeData::AddressOf(std::string_view name) {

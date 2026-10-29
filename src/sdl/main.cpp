@@ -86,34 +86,31 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     return options;
 }
 
-// The music modules of the USA cartridge: the menus, then the modules g_adwTrackMusicRom lists.
-constexpr std::uint32_t USA_MUSIC_OFFSETS[] = {
-    0x0EBC00, 0x113660, 0x12EAB0, 0x149C80, 0x164B60, 0x17FD10};
-
+// The XM module of the music pack default for a module of the USA cartridge.
 std::optional<std::vector<std::uint8_t>> LoadMusicModule(const std::filesystem::path &data,
                                                          std::uint32_t offset) {
-    std::ifstream file(data / "roms" / "usa.z64", std::ios::binary);
+    const auto *module =
+        std::ranges::find(coastline::USA_MUSIC_MODULES, offset, &coastline::UsaMusicModule::offset);
+    if (module == std::end(coastline::USA_MUSIC_MODULES)) {
+        return std::nullopt;
+    }
+    std::ifstream file(data / "music" / "default" / (std::string(module->name) + ".xm"),
+                       std::ios::binary);
     if (!file) {
         SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
                     "The USA cartridge has not been imported, and the music is silent.");
         return std::nullopt;
     }
-    std::vector<std::uint8_t> rom(std::istreambuf_iterator<char>(file), {});
-    auto module = coastline::ReadRomModule(rom, offset);
-    if (!module) {
-        SDL_LogError(SDL_LOG_CATEGORY_AUDIO, "%s", module.error().c_str());
-        return std::nullopt;
-    }
-    return std::move(*module);
+    return std::vector<std::uint8_t>(std::istreambuf_iterator<char>(file), {});
 }
 
-std::optional<std::vector<std::uint8_t>> LoadMusicFromRom(const std::filesystem::path &data,
+std::optional<std::vector<std::uint8_t>> LoadMusicByIndex(const std::filesystem::path &data,
                                                           int index) {
-    if (index < 0 || index >= static_cast<int>(std::size(USA_MUSIC_OFFSETS))) {
+    if (index < 0 || index >= static_cast<int>(std::size(coastline::USA_MUSIC_MODULES))) {
         SDL_LogError(SDL_LOG_CATEGORY_AUDIO, "There is no music module %d.", index);
         return std::nullopt;
     }
-    return LoadMusicModule(data, USA_MUSIC_OFFSETS[index]);
+    return LoadMusicModule(data, coastline::USA_MUSIC_MODULES[index].offset);
 }
 
 // A key held over a range of frames, from a test script.
@@ -227,9 +224,7 @@ void DrawRendererTestScene(coastline::TlRenderer &renderer,
 #ifdef COASTLINE_PC_GAME
 // The pictures of the front end, from the imported USA cartridge, as the texture pack default.
 void BuildDefaultTexturePack(const std::filesystem::path &data) {
-    std::ifstream file(data / "roms" / "usa.z64", std::ios::binary);
-    std::vector<std::uint8_t> rom(std::istreambuf_iterator<char>(file), {});
-    if (!coastline::CartridgeData::Load(rom)) {
+    if (!coastline::CartridgeData::Load(data / "n64" / "usa")) {
         return;
     }
     ReadN64FrontEndData();
@@ -365,7 +360,7 @@ int main(int argc, char *argv[]) {
     if (parser.is_used("--import-disc") || parser.is_used("--import-rom")) {
         return ImportFromCommandLine(parser, paths->data);
     }
-    auto music = LoadMusicFromRom(paths->data, parser.get<int>("--music"));
+    auto music = LoadMusicByIndex(paths->data, parser.get<int>("--music"));
     if (auto wav = parser.present("--music-wav")) {
         if (!music) {
             coastline::StopGameLog();
@@ -403,9 +398,7 @@ int main(int argc, char *argv[]) {
 #ifdef COASTLINE_PC_GAME
     // The data of the front end of the Nintendo 64 release, read and written to the log.
     if (scene == "n64-data") {
-        std::ifstream file(paths->data / "roms" / "usa.z64", std::ios::binary);
-        std::vector<std::uint8_t> rom(std::istreambuf_iterator<char>(file), {});
-        if (!coastline::CartridgeData::Load(rom)) {
+        if (!coastline::CartridgeData::Load(paths->data / "n64" / "usa")) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The USA cartridge has not been imported.");
             return EXIT_FAILURE;
         }
@@ -467,12 +460,10 @@ int main(int argc, char *argv[]) {
             // presents pump the events, the keys of the script, and the screenshot.
             if (scene == "n64-frontend") {
                 renderer = coastline::TlRenderer::Create(*window);
-                std::ifstream file(paths->data / "roms" / "usa.z64", std::ios::binary);
-                std::vector<std::uint8_t> rom(std::istreambuf_iterator<char>(file), {});
                 if (!renderer) {
                     return EXIT_FAILURE;
                 }
-                if (!coastline::CartridgeData::Load(rom)) {
+                if (!coastline::CartridgeData::Load(paths->data / "n64" / "usa")) {
                     SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION,
                                     "The USA cartridge has not been imported. Run coastline "
                                     "--import-rom with the image of the USA release.");
@@ -489,8 +480,10 @@ int main(int argc, char *argv[]) {
                 }
                 SetN64FrontEndInput(&input);
                 SetN64FrontEndAudio(playMusic ? &audio : nullptr);
-                coastline::SetN64TextureDirectory(paths->data / "textures",
-                                                  parser.get<bool>("--dump-textures"));
+                coastline::SetN64TextureDirectory(
+                    paths->data / "textures",
+                    config.Get("Video", "TexturePack").value_or("default"),
+                    parser.get<bool>("--dump-textures"));
                 coastline::StartPcGameForFrontEnd();
                 auto keys = ParseKeyScript(parser.present("--keys").value_or(""));
                 int frame = 0;

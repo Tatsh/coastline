@@ -205,6 +205,9 @@ def main() -> None:
         '#include "sdl/cartridgedata.h"',
         '#include "sdl/n64frontendlayouts.h"',
         '',
+        '#include <iterator>',
+        '#include <string>',
+        '#include <utility>',
         '#include <vector>',
         '',
         *definitions,
@@ -220,12 +223,16 @@ def main() -> None:
         '}',
         '',
     ]
+    # Each picture takes the name of its symbol without the g_ prefix, the same in every release,
+    # and an element of an array its index after the name.
     for kind, entries in pictures.items():
         lines += [
-            f'std::vector<const {kind} *> N64FrontEnd{kind}s(void) {{',
-            f'    std::vector<const {kind} *> pictures;',
-            *(f'    for (const auto &picture : {s}) {{\n        pictures.push_back(&picture);\n'
-              '    }' if array else f'    pictures.push_back(&{s});' for s, array in entries),
+            f'std::vector<std::pair<std::string, const {kind} *>> N64FrontEnd{kind}s(void) {{',
+            f'    std::vector<std::pair<std::string, const {kind} *>> pictures;',
+            *(f'    for (std::size_t i = 0; i < std::size({s}); ++i) {{\n'
+              f'        pictures.emplace_back("{s.removeprefix("g_")}" + std::to_string(i), '
+              f'&{s}[i]);\n    }}' if array else
+              f'    pictures.emplace_back("{s.removeprefix("g_")}", &{s});' for s, array in entries),
             '    return pictures;',
             '}',
             '',

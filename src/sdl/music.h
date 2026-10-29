@@ -16,16 +16,6 @@ namespace coastline {
 inline constexpr int N64_AUDIO_RATE = 21998;
 
 /**
- * Read and decompress a music module of a cartridge image.
- *
- * @param rom The big-endian image.
- * @param offset The offset of the asset in the image.
- * @return The XM module, or a message.
- */
-std::expected<std::vector<std::uint8_t>, std::string>
-ReadRomModule(std::span<const std::uint8_t> rom, std::uint32_t offset);
-
-/**
  * The music player and the mixers of the Nintendo 64 release, fed by an emulated audio interface.
  * Each tick runs what the mixing thread of the console runs each 10 milliseconds, and the bytes
  * the interface would have played in that time go to the output.

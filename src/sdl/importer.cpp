@@ -8,11 +8,12 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <span>
 #include <sstream>
 
 #include <FLAC/stream_encoder.h>
 
-#include "music.h"
+#include "assetchain.h"
 #include "sha1.h"
 
 namespace coastline {
@@ -27,14 +28,74 @@ constexpr std::uint32_t SAMPLES_PER_SECTOR = RAW_SECTOR / 4;
 struct Release {
     RomRelease release;
     const char *sha1;
-    const char *file;
+    const char *directory;    // The directory of the release under n64/ in the data.
+    std::uint32_t assetStart; // Where the assets start on the cartridge.
 };
 
 constexpr std::array<Release, 3> RELEASES{{
-    {RomRelease::Usa, "bfc51f086ebdb78904dc24ad0c3a2d946e26d022", "usa.z64"},
-    {RomRelease::Jpn, "e0415b87c5a5b69ac581e79137406bdaa79b354a", "jpn.z64"},
-    {RomRelease::Eur, "9fae5d98fe3464f00d59034690df90118646eb95", "eur.z64"},
+    {RomRelease::Usa, "bfc51f086ebdb78904dc24ad0c3a2d946e26d022", "usa", 0xad400},
+    {RomRelease::Jpn, "e0415b87c5a5b69ac581e79137406bdaa79b354a", "jpn", 0xadb30},
+    {RomRelease::Eur, "9fae5d98fe3464f00d59034690df90118646eb95", "eur", 0xaf0f0},
 }};
+
+// The main segment: its code and data at this offset of the cartridge, up to the end of its
+// read-only data.
+constexpr std::size_t SEGMENT_ROM = 0x1000;
+constexpr std::size_t SEGMENT_SIZE = 0xAC400;
+
+bool WriteBytes(const std::filesystem::path &path, std::span<const std::uint8_t> bytes) {
+    std::ofstream out(path, std::ios::binary | std::ios::trunc);
+    out.write(reinterpret_cast<const char *>(bytes.data()),
+              static_cast<std::streamsize>(bytes.size()));
+    return static_cast<bool>(out);
+}
+
+// Write the main segment and every asset of a cartridge, inflated, for CartridgeData::Load(). An
+// asset is a header of its length and its inflated length, then zlib chunks, each after its
+// length; the data between assets is raw and is written as it is.
+bool ExtractCartridge(std::span<const std::uint8_t> rom,
+                      std::uint32_t assetStart,
+                      const std::filesystem::path &directory) {
+    if (rom.size() < SEGMENT_ROM + SEGMENT_SIZE) {
+        return false;
+    }
+    std::error_code error;
+    std::filesystem::create_directories(directory / "assets", error);
+    if (!WriteBytes(directory / "segment.bin", rom.subspan(SEGMENT_ROM, SEGMENT_SIZE))) {
+        return false;
+    }
+    auto big32 = [&rom](std::size_t at) {
+        return static_cast<std::uint32_t>(rom[at]) << 24 |
+               static_cast<std::uint32_t>(rom[at + 1]) << 16 |
+               static_cast<std::uint32_t>(rom[at + 2]) << 8 | rom[at + 3];
+    };
+    auto end = static_cast<std::uint32_t>(rom.size());
+    std::uint32_t rawStart = assetStart;
+    bool written = true;
+    auto writeRaw = [&](std::uint32_t rawEnd) {
+        if (rawEnd > rawStart) {
+            written &= WriteBytes(directory / "assets" / std::format("{:06x}.raw", rawStart),
+                                  rom.subspan(rawStart, rawEnd - rawStart));
+        }
+    };
+    for (std::uint32_t position = assetStart; position + 12 < end; position += 2) {
+        std::uint32_t total = big32(position);
+        if (total < 16 || total > end - position || big32(position + 4) == 0 ||
+            !Tools::Common::hasZlibHeader(rom, position + 12)) {
+            continue;
+        }
+        auto data = Tools::Common::decompress(rom.subspan(position, total));
+        if (!data) {
+            continue;
+        }
+        writeRaw(position);
+        written &= WriteBytes(directory / "assets" / std::format("{:06x}.bin", position), *data);
+        position += Tools::Common::padToEven(total) - 2;
+        rawStart = position + 2;
+    }
+    writeRaw(end);
+    return written;
+}
 
 std::optional<std::vector<std::uint8_t>> ReadWholeFile(const std::filesystem::path &path) {
     std::ifstream file(path, std::ios::binary);
@@ -350,26 +411,20 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     if (!release) {
         return release;
     }
-    auto destination =
-        dataDirectory / "roms" / std::ranges::find(RELEASES, *release, &Release::release)->file;
-    std::error_code error;
-    std::filesystem::create_directories(destination.parent_path(), error);
-    std::ofstream out(destination, std::ios::binary | std::ios::trunc);
-    out.write(reinterpret_cast<const char *>(bytes->data()),
-              static_cast<std::streamsize>(bytes->size()));
-    if (!out) {
+    const Release &known = *std::ranges::find(RELEASES, *release, &Release::release);
+    auto destination = dataDirectory / "n64" / known.directory;
+    if (!ExtractCartridge(*bytes, known.assetStart, destination)) {
         return std::unexpected(std::format("{} cannot be written.", destination.string()));
     }
+    std::error_code error;
     if (*release == RomRelease::Usa) {
         // The XM modules of the menus and of the tracks, as the music pack default.
-        constexpr std::uint32_t modules[] = {
-            0x0EBC00, 0x113660, 0x12EAB0, 0x149C80, 0x164B60, 0x17FD10, 0x19BC10};
-        for (std::uint32_t offset : modules) {
-            auto module = ReadRomModule(*bytes, offset);
+        for (const UsaMusicModule &entry : USA_MUSIC_MODULES) {
+            auto module = Tools::Common::decompress(std::span(*bytes).subspan(entry.offset));
             if (!module) {
-                return std::unexpected(module.error());
+                return std::unexpected(module.error().message);
             }
-            auto path = dataDirectory / "music" / "default" / std::format("{:06x}.xm", offset);
+            auto path = dataDirectory / "music" / "default" / (std::string(entry.name) + ".xm");
             std::filesystem::create_directories(path.parent_path(), error);
             std::ofstream xm(path, std::ios::binary | std::ios::trunc);
             xm.write(reinterpret_cast<const char *>(module->data()),

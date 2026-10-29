@@ -118,6 +118,7 @@ struct RdpState {
 RdpState g_rdp;
 coastline::TlRenderer *g_renderer;
 std::filesystem::path g_textureDirectory;
+std::string g_texturePack = "default";
 bool g_dumpTextures;
 
 // The width and height the front end draws on at its high resolution.
@@ -983,45 +984,69 @@ void LoadVertices(const GbiCommand *command) {
     }
 }
 
-// Replace decoded pixels with the PNG file of the same pixels in the directory of the textures, or
-// write the file there when dumping. A replacement may have any size, as the coordinates of the
+// The file of a texture in the chosen pack, or else in the pack default, or an empty path.
+std::filesystem::path PackFile(const std::string &name) {
+    if (g_textureDirectory.empty()) {
+        return {};
+    }
+    for (const std::string &pack : {g_texturePack, std::string("default")}) {
+        std::filesystem::path path = g_textureDirectory / pack / name;
+        std::error_code error;
+        if (std::filesystem::exists(path, error)) {
+            return path;
+        }
+    }
+    return {};
+}
+
+// The pixels of a PNG file in the byte order R, G, B, A.
+bool LoadPng(const std::filesystem::path &path,
+             std::vector<std::uint8_t> &rgba,
+             std::uint32_t &width,
+             std::uint32_t &height) {
+    SDL_Surface *loaded = SDL_LoadPNG(path.string().c_str());
+    SDL_Surface *converted =
+        loaded != nullptr ? SDL_ConvertSurface(loaded, SDL_PIXELFORMAT_RGBA32) : nullptr;
+    if (converted != nullptr) {
+        width = static_cast<std::uint32_t>(converted->w);
+        height = static_cast<std::uint32_t>(converted->h);
+        rgba.resize(static_cast<std::size_t>(width) * height * 4);
+        for (std::uint32_t row = 0; row < height; ++row) {
+            std::memcpy(&rgba[static_cast<std::size_t>(row) * width * 4],
+                        static_cast<const std::uint8_t *>(converted->pixels) +
+                            static_cast<std::size_t>(row) * converted->pitch,
+                        static_cast<std::size_t>(width) * 4);
+        }
+    } else {
+        SDL_LogWarn(SDL_LOG_CATEGORY_RENDER,
+                    "The texture %s was not read: %s",
+                    path.string().c_str(),
+                    SDL_GetError());
+    }
+    SDL_DestroySurface(converted);
+    SDL_DestroySurface(loaded);
+    return converted != nullptr;
+}
+
+// Replace decoded pixels with the PNG file of the same pixels in a texture pack, or write the file
+// to the pack default when dumping. A replacement may have any size, as the coordinates of the
 // draws span the texture.
 void ReplaceWithPng(std::vector<std::uint8_t> &rgba, std::uint32_t &width, std::uint32_t &height) {
     if (g_textureDirectory.empty()) {
         return;
     }
     std::uint64_t hash = HashBytes(kHashSeed, rgba.data(), rgba.size());
-    std::filesystem::path path =
-        g_textureDirectory / std::format("{}x{}-{:016x}.png", width, height, hash);
-    std::error_code error;
-    if (std::filesystem::exists(path, error)) {
-        SDL_Surface *loaded = SDL_LoadPNG(path.string().c_str());
-        SDL_Surface *converted =
-            loaded != nullptr ? SDL_ConvertSurface(loaded, SDL_PIXELFORMAT_RGBA32) : nullptr;
-        if (converted != nullptr) {
-            width = static_cast<std::uint32_t>(converted->w);
-            height = static_cast<std::uint32_t>(converted->h);
-            rgba.resize(static_cast<std::size_t>(width) * height * 4);
-            for (std::uint32_t row = 0; row < height; ++row) {
-                std::memcpy(&rgba[static_cast<std::size_t>(row) * width * 4],
-                            static_cast<const std::uint8_t *>(converted->pixels) +
-                                static_cast<std::size_t>(row) * converted->pitch,
-                            static_cast<std::size_t>(width) * 4);
-            }
-        } else {
-            SDL_LogWarn(SDL_LOG_CATEGORY_RENDER,
-                        "The texture %s was not read: %s",
-                        path.string().c_str(),
-                        SDL_GetError());
-        }
-        SDL_DestroySurface(converted);
-        SDL_DestroySurface(loaded);
+    std::string name = std::format("{}x{}-{:016x}.png", width, height, hash);
+    if (std::filesystem::path found = PackFile(name); !found.empty()) {
+        LoadPng(found, rgba, width, height);
         return;
     }
     if (!g_dumpTextures) {
         return;
     }
-    std::filesystem::create_directories(g_textureDirectory, error);
+    std::filesystem::path path = g_textureDirectory / "default" / name;
+    std::error_code error;
+    std::filesystem::create_directories(path.parent_path(), error);
     SDL_Surface *surface = SDL_CreateSurfaceFrom(static_cast<int>(width),
                                                  static_cast<int>(height),
                                                  SDL_PIXELFORMAT_RGBA32,
@@ -1290,8 +1315,11 @@ bool CartridgeDataIsBigEndian(const void *host) {
     return coastline::CartridgeData::IsSegmentCopy(host);
 }
 
-void coastline::SetN64TextureDirectory(std::filesystem::path directory, bool dump) {
+void coastline::SetN64TextureDirectory(std::filesystem::path directory,
+                                       std::string pack,
+                                       bool dump) {
     g_textureDirectory = std::move(directory);
+    g_texturePack = std::move(pack);
     g_dumpTextures = dump;
 }
 

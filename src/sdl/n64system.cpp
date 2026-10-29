@@ -8,7 +8,9 @@
 #include <cstring>
 #include <filesystem>
 #include <format>
+#include <string>
 #include <unordered_map>
+#include <utility>
 #include <vector>
 
 #include <PR/os.h>
@@ -59,26 +61,27 @@ void SetN64FrontEndAudio(coastline::N64Audio *audio) {
     g_audio = audio;
 }
 
-std::vector<const Sprite *> N64FrontEndSprites(void);
-std::vector<const Texture *> N64FrontEndTextures(void);
+std::vector<std::pair<std::string, const Sprite *>> N64FrontEndSprites(void);
+std::vector<std::pair<std::string, const Texture *>> N64FrontEndTextures(void);
 
 namespace {
 
-// Write a picture of the cartridge to the pack once, named after where it starts on the
-// cartridge.
+// Write a picture of the cartridge to the pack once, named after its symbol, which every release
+// shares.
 void WritePicture(const std::filesystem::path &directory,
+                  const std::string &name,
                   std::uint32_t romOffset,
                   int width,
                   int height,
                   coastline::TexelFormat format,
                   bool bottomUp,
                   int &written) {
-    std::filesystem::path path = directory / std::format("{:06x}.png", romOffset);
+    std::filesystem::path path = directory / (name + ".png");
     std::error_code error;
     if (width <= 0 || height <= 0 || std::filesystem::exists(path, error)) {
         return;
     }
-    auto texels = coastline::ReadRomModule(coastline::CartridgeData::Rom(), romOffset);
+    auto texels = coastline::CartridgeData::Asset(romOffset);
     if (!texels) {
         return;
     }
@@ -103,7 +106,7 @@ void WritePicture(const std::filesystem::path &directory,
 
 int WriteN64TexturePack(const std::filesystem::path &directory) {
     int written = 0;
-    for (const Sprite *sprite : N64FrontEndSprites()) {
+    for (const auto &[name, sprite] : N64FrontEndSprites()) {
         // The game loads the 8-bit sprites as intensity and alpha, draws the 16-bit sprites as
         // colours, and the logo alone as intensity and alpha.
         coastline::TexelFormat format =
@@ -112,6 +115,7 @@ int WriteN64TexturePack(const std::filesystem::path &directory) {
             sprite == &g_texLogo      ? coastline::TexelFormat::IntensityAlpha16 :
                                         coastline::TexelFormat::Rgba16;
         WritePicture(directory,
+                     name,
                      sprite->romOffset,
                      static_cast<int>(sprite->width),
                      static_cast<int>(sprite->height),
@@ -119,8 +123,9 @@ int WriteN64TexturePack(const std::filesystem::path &directory) {
                      true,
                      written);
     }
-    for (const Texture *texture : N64FrontEndTextures()) {
+    for (const auto &[name, texture] : N64FrontEndTextures()) {
         WritePicture(directory,
+                     name,
                      texture->romStart,
                      texture->width,
                      texture->height,
@@ -140,26 +145,26 @@ namespace {
 // The bytes of each module inflated last, by its address, for the player of the music.
 std::unordered_map<const void *, std::size_t> g_moduleSizes;
 
-// A big-endian word of the cartridge, or 0 past its end.
+// A big-endian word of the raw data of the cartridge, or 0 outside it.
 u32 RomWord(u32 romOffset) {
-    auto rom = coastline::CartridgeData::Rom();
-    if (romOffset + 4 > rom.size()) {
+    std::uint8_t bytes[4] = {};
+    if (!coastline::CartridgeData::ReadRaw(bytes, romOffset, sizeof(bytes))) {
         return 0;
     }
-    return static_cast<u32>(rom[romOffset]) << 24 | static_cast<u32>(rom[romOffset + 1]) << 16 |
-           static_cast<u32>(rom[romOffset + 2]) << 8 | rom[romOffset + 3];
+    return static_cast<u32>(bytes[0]) << 24 | static_cast<u32>(bytes[1]) << 16 |
+           static_cast<u32>(bytes[2]) << 8 | bytes[3];
 }
 
 } // namespace
 
 extern "C" {
 
-// The reads of the cartridge, by its bytes. The front end has these under the names with N64
-// appended, and the game code of the PC release keeps its own, which read nothing.
+// The reads of the cartridge, from the data the import extracted from it. The front end has these
+// under the names with N64 appended, and the game code of the PC release keeps its own, which read
+// nothing.
 void DmaRead(void *dst, u32 romOffset, s32 size) {
-    auto rom = coastline::CartridgeData::Rom();
-    if (size > 0 && romOffset + static_cast<u32>(size) <= rom.size()) {
-        std::memcpy(dst, rom.data() + romOffset, static_cast<std::size_t>(size));
+    if (size > 0) {
+        coastline::CartridgeData::ReadRaw(dst, romOffset, static_cast<std::size_t>(size));
     }
 }
 
@@ -167,17 +172,18 @@ u32 DmaReadWord(u32 romOffset) {
     return RomWord(romOffset);
 }
 
+// The inflated length of an asset, which its header records.
 u32 DmaReadAssetSize(u32 romOffset) {
-    return RomWord(romOffset + 4);
+    auto data = coastline::CartridgeData::Asset(romOffset);
+    return data ? static_cast<u32>(data->size()) : 0;
 }
 
 u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
-    auto data = coastline::ReadRomModule(coastline::CartridgeData::Rom(), romOffset);
+    auto data = coastline::CartridgeData::Asset(romOffset);
     if (!data) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                    "The asset at 0x%06x does not inflate: %s",
-                    static_cast<unsigned>(romOffset),
-                    data.error().c_str());
+                    "No asset was extracted at 0x%06x.",
+                    static_cast<unsigned>(romOffset));
         return 0;
     }
     if (dst == g_abMenuMusicModule && data->size() > sizeof(g_abMenuMusicModule)) {

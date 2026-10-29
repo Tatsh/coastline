@@ -6,7 +6,9 @@
  * the console draw them.
  */
 
+#include <cstdint>
 #include <filesystem>
+#include <string>
 
 /**
  * @param host An address on the host.
@@ -17,13 +19,17 @@ bool CartridgeDataIsBigEndian(const void *host);
 namespace coastline {
 
 /**
- * Set where the textures of the front end are read from and written to as PNG files, named after
- * the hash of their pixels. A file there replaces the texture, at any size.
+ * Set the texture packs of the front end. A pack is a directory of PNG files: the pictures of the
+ * cartridge, named after where each starts on the cartridge, and the other textures, named after
+ * their size and the hash of their pixels. A file of the chosen pack, or else of the pack default,
+ * replaces the texture, at any size.
  *
- * @param directory The directory.
- * @param dump Whether each texture not in the directory is written to it when first drawn.
+ * @param directory The directory of the packs.
+ * @param pack The chosen pack.
+ * @param dump Whether each other texture no pack has is written to the pack default when first
+ * drawn.
  */
-void SetN64TextureDirectory(std::filesystem::path directory, bool dump);
+void SetN64TextureDirectory(std::filesystem::path directory, std::string pack, bool dump);
 
 /**
  * Make each display list the game submits ready for the renderer of the PC release first, for the
