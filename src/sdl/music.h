@@ -41,6 +41,9 @@ public:
      */
     void Play(std::span<const std::uint8_t> module);
 
+    /** Stop the module and silence its channels. */
+    void Stop();
+
     /**
      * Render stereo 16-bit frames without a device, as the device would receive them.
      *

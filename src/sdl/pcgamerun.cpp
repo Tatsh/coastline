@@ -9,6 +9,7 @@
 #include <mutex>
 #include <vector>
 
+#include "instantreplay.h"
 #include "pause.h"
 #include "race.h"
 #include "sdl/d3dcompat.h"
@@ -19,6 +20,7 @@
 #include "win32/boot/app.h"
 #include "win32/boot/rallyconfig.h"
 #include "win32/boot/strings.h"
+#include "win32/directplay.h"
 #include "win32/input.h"
 #include "win32/render.h"
 #include "win32/settings.h"
@@ -172,9 +174,10 @@ std::uint32_t PcGameMusicModule() {
                                               0x17FD10,
                                               0x19BC10,
                                               0x12EAB0};
-    // The front end of the console plays the music of the menus, and the module of the race plays
-    // on through the instant replay.
-    if (g_dwPlayMusicMode != 0 || !g_dwRaceInitialized) {
+    // The front end of the console plays the music of the menus, and the module of the race starts
+    // when the player starts the race or the instant replay begins.
+    if (g_dwPlayMusicMode != 0 || !g_dwRaceInitialized ||
+        (!g_bNetRaceStartReached && !gInstantReplayActive)) {
         return 0;
     }
     return trackModules[std::min<std::size_t>(g_dwSelectedTrackId, std::size(trackModules) - 1)];

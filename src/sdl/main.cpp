@@ -575,6 +575,11 @@ int main(int argc, char *argv[]) {
                     running =
                         coastline::RunPcGameFrame(framePath ? &*framePath : nullptr) && running;
                     std::uint32_t module = coastline::PcGameMusicModule();
+                    // A restart stops the module, which then plays again from its start.
+                    if (module == 0 && pcMusicModule != 0) {
+                        pcMusicModule = 0;
+                        audio.Stop();
+                    }
                     if (music && module != 0 && module != pcMusicModule) {
                         pcMusicModule = module;
                         if (auto data = LoadMusicModule(paths->data, module)) {

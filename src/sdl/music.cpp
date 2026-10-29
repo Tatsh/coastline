@@ -276,6 +276,22 @@ void N64Audio::Play(std::span<const std::uint8_t> module) {
     }
 }
 
+void N64Audio::Stop() {
+    if (m_stream != nullptr) {
+        SDL_LockAudioStream(m_stream);
+    }
+    g_bMusicPlaybackEnabled = FALSE;
+    ResetMusicChannels();
+    // The channels otherwise loop the samples of their last notes.
+    for (int i = 0; i < g_nAudioChannelCount; ++i) {
+        g_aMixerChannels[i].sample = reinterpret_cast<s8 *>(g_AudioDmaBuffer);
+        g_aMixerChannels[i].step = 0;
+    }
+    if (m_stream != nullptr) {
+        SDL_UnlockAudioStream(m_stream);
+    }
+}
+
 void N64Audio::Tick(std::vector<std::int16_t> &output) {
     // The interface plays a tick's worth of the ring. Its length register counts down in
     // doublewords, and the thread queues the ring again before it runs dry.
