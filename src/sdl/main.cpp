@@ -285,7 +285,7 @@ int main(int argc, char *argv[]) {
         .default_value(30)
         .scan<'i', int>();
     parser.add_argument("--scene").help(
-        "scene to start in: renderer-test, race, n64-data, or n64-frontend");
+        "scene to start in: n64-frontend (the default), race, renderer-test, or n64-data");
     for (const char *name : {"--game-mode", "--track", "--car", "--weather"}) {
         parser.add_argument(name)
             .help("choice of the race scene, as the menus number it")
@@ -377,9 +377,11 @@ int main(int argc, char *argv[]) {
             config.Set(section, key, value);
         }
     }
+    // The game starts at the front end of the Nintendo 64 release unless a test scene is chosen.
+    const std::string scene = parser.present("--scene").value_or("n64-frontend");
 #ifdef COASTLINE_PC_GAME
     // The data of the front end of the Nintendo 64 release, read and written to the log.
-    if (parser.present("--scene") == "n64-data") {
+    if (scene == "n64-data") {
         std::ifstream file(paths->data / "roms" / "usa.z64", std::ios::binary);
         std::vector<std::uint8_t> rom(std::istreambuf_iterator<char>(file), {});
         if (!coastline::CartridgeData::Load(rom)) {
@@ -406,10 +408,9 @@ int main(int argc, char *argv[]) {
                                                               DisplayOptionsFrom(config, parser))) {
             coastline::InputBindings input;
             coastline::N64Audio audio;
-            // The PC game chooses its modules, or plays its own music.
-            if (music && config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice() &&
-                parser.present("--scene") != "race" &&
-                parser.present("--scene") != "n64-frontend") {
+            bool playMusic = config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice();
+            // The PC game and the front end choose their modules.
+            if (music && playMusic && scene != "race" && scene != "n64-frontend") {
                 audio.Play(*music);
             }
             std::optional<std::filesystem::path> screenshot;
@@ -422,12 +423,12 @@ int main(int argc, char *argv[]) {
             std::unique_ptr<coastline::TlRenderer> renderer;
             coastline::TextureHandle testTexture = 0;
             bool pcGame = false;
-            if (parser.present("--scene") == "renderer-test") {
+            if (scene == "renderer-test") {
                 renderer = coastline::TlRenderer::Create(*window);
                 testTexture = renderer ? CreateCheckerTexture(*renderer) : 0;
             }
 #ifdef COASTLINE_PC_GAME
-            if (parser.present("--scene") == "race") {
+            if (scene == "race") {
                 renderer = coastline::TlRenderer::Create(*window);
                 bool pcMusic = config.Get("Game", "Music").value_or("N64") == "PC";
                 for (auto [name, choice] : {std::pair{"--game-mode", &g_SdlScene.gameMode},
@@ -443,18 +444,25 @@ int main(int argc, char *argv[]) {
             }
             // The front end of the Nintendo 64 release runs its own loop, and the frames it
             // presents pump the events, the keys of the script, and the screenshot.
-            if (parser.present("--scene") == "n64-frontend") {
+            if (scene == "n64-frontend") {
                 renderer = coastline::TlRenderer::Create(*window);
                 std::ifstream file(paths->data / "roms" / "usa.z64", std::ios::binary);
                 std::vector<std::uint8_t> rom(std::istreambuf_iterator<char>(file), {});
-                if (!renderer || !coastline::CartridgeData::Load(rom) ||
-                    !coastline::StartPcGame(*renderer, paths->data, paths->state, false)) {
+                if (!renderer) {
+                    return EXIT_FAILURE;
+                }
+                if (!coastline::CartridgeData::Load(rom)) {
+                    SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION,
+                                    "The USA cartridge has not been imported. Run coastline "
+                                    "--import-rom with the image of the USA release.");
+                    return EXIT_FAILURE;
+                }
+                if (!coastline::StartPcGame(*renderer, paths->data, paths->state, false)) {
                     return EXIT_FAILURE;
                 }
                 ReadN64FrontEndData();
                 SetN64FrontEndInput(&input);
-                SetN64FrontEndAudio(config.GetBoolean("Game", "PlayMusic", true) ? &audio :
-                                                                                   nullptr);
+                SetN64FrontEndAudio(playMusic ? &audio : nullptr);
                 coastline::StartPcGameForFrontEnd();
                 auto keys = ParseKeyScript(parser.present("--keys").value_or(""));
                 int frame = 0;
