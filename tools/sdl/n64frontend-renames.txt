@@ -75,6 +75,7 @@ Mtx4x4TransformPoint
 MtxBuildScaledInverse
 PlaceTrackCamera
 PlayModelAnimationsOnce
+ProcessRacingScreen
 ProcessSeasonResults
 ProcessVehicleInputAndPhysics
 QuaternionMultiply

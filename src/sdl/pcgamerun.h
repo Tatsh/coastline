@@ -46,6 +46,13 @@ std::uint32_t PcGameMusicModule();
 void StartPcGameForFrontEnd();
 
 /**
+ * Run the race the front end of the Nintendo 64 release chose, with the game code of the PC
+ * release, until the race returns to the front end, and then restore the screen of the front end.
+ * The game mode, the track, the car, and the weather are those the front end set.
+ */
+void RunPcRaceFromFrontEnd();
+
+/**
  * Save the frames of the scenes that end after this call as a PNG image, for code that presents
  * its frames itself.
  *

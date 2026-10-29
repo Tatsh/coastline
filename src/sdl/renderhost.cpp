@@ -92,6 +92,10 @@ void coastline::SetFramePump(std::function<bool()> pump) {
     g_framePump = std::move(pump);
 }
 
+void coastline::PumpFrame() {
+    PresentFrame();
+}
+
 void ClearRenderTargetOnce(void) {
     if (g_bRenderTargetCleared) {
         return;

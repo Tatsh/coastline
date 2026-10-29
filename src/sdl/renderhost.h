@@ -155,4 +155,10 @@ namespace coastline {
  */
 void SetFramePump(std::function<bool()> pump);
 
+/**
+ * Run the routine of SetFramePump() for a frame that the game code of the PC release presents.
+ * The game ends when the routine returns false.
+ */
+void PumpFrame();
+
 } // namespace coastline

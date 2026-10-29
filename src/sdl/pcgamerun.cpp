@@ -21,6 +21,7 @@
 #include "sdl/gamefiles.h"
 #include "sdl/n64displaylist.h"
 #include "sdl/renderhost.h"
+#include "sdl/scene.h"
 #include "win32/app.h"
 #include "win32/directplay.h"
 #include "win32/input.h"
@@ -135,17 +136,50 @@ bool StartPcGame(TlRenderer &renderer,
     return true;
 }
 
-void StartPcGameForFrontEnd() {
-    // The front end draws a screen of 320 by 240, doubled at its high resolution, as the boot of
-    // the console sets it.
+namespace {
+
+// The front end draws a screen of 320 by 240, doubled at its high resolution, as the boot of the
+// console sets it.
+void SetFrontEndScreen() {
     SetDisplayModeWithFallback(640, 480, 16, 0);
     g_dwScreenWidth = 320;
     g_dwScreenHeight = 240;
     g_device->Renderer().SetScreenSize(640, 480);
     InitializeRenderSubsystems(RENDER_BACKEND_MODE);
     RenderN64DisplayLists();
+}
+
+} // namespace
+
+void StartPcGameForFrontEnd() {
+    SetFrontEndScreen();
     InitializeDirectInput();
     InitializeKeyboardDevice();
+}
+
+void RunPcRaceFromFrontEnd() {
+    g_SdlScene.gameMode = g_dwGameMode;
+    g_SdlScene.track = g_dwSelectedTrackId;
+    g_SdlScene.car = g_dwChosenCar;
+    g_SdlScene.weather = g_dwChosenWeather;
+    // The state machine starts from where the last race left it, the front end after the first.
+    // The frame pump of the front end handles the events and sets the capture of each frame.
+    bool raced = false;
+    for (;;) {
+        g_device->Renderer().SetScreenSize(static_cast<std::uint32_t>(g_dwConfigFramebufferWidth),
+                                           static_cast<std::uint32_t>(g_dwConfigFramebufferHeight));
+        DispatchPostedMessages();
+        if (!DispatchGameStateFrame()) {
+            break;
+        }
+        PumpFrame();
+        if (g_dwGameState == GAME_STATE_RUN_GAME_MODE) {
+            raced = true;
+        } else if (raced && g_dwGameState == GAME_STATE_RUN_FRONT_END) {
+            break;
+        }
+    }
+    SetFrontEndScreen();
 }
 
 void SetPcGameCapture(const std::filesystem::path *capture) {
