@@ -6,7 +6,7 @@
 #include <mmreg.h>
 #include <mmsystem.h>
 
-#include "earplayback.h"
+#include "ear/earplayback.h"
 
 class [[gnu::packed]] PcmWaveStream : public EarPlayback {
 public:

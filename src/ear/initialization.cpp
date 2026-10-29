@@ -4,16 +4,16 @@
 #include "configuration.h"
 #include "directionalmatrix.h"
 #include "ear/backend.h"
+#include "ear/directsoundoutput.h"
 #include "ear/registry.h"
+#include "ear/timer.h"
+#include "ear/window.h"
 #include "environment.h"
 #include "error.h"
 #include "memorybudget.h"
 #include "playbacksmoothing.h"
 #include "runtime.h"
 #include "wavechunks.h"
-#include "win32/ear/directsoundoutput.h"
-#include "win32/ear/timer.h"
-#include "win32/ear/window.h"
 
 namespace {
 // @ghidraAddress EAR: 0x100371c4

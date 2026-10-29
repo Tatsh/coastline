@@ -1,4 +1,4 @@
-#include "directsoundoutput.h"
+#include "ear/directsoundoutput.h"
 
 #include <new>
 
@@ -6,7 +6,7 @@
 
 #include "ear/error.h"
 #include "ear/mfc.h"
-#include "window.h"
+#include "ear/window.h"
 
 EarDirectSoundOutput *g_pEarDirectSoundOutput;
 

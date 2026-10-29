@@ -8,11 +8,11 @@
 #include <windows.h>
 
 #include "ear/mfc.h"
+#include "ear/musicdevice.h"
+#include "ear/window.h"
 #include "error.h"
 #include "runtime.h"
 #include "version.h"
-#include "win32/ear/musicdevice.h"
-#include "win32/ear/window.h"
 
 /** The interface of the version that runs without the IAS engine, in its high word. */
 #define EAR_NO_IAS_INTERFACE 0x1096

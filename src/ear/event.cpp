@@ -8,12 +8,12 @@
 #include "direction.h"
 #include "directionalmatrix.h"
 #include "distance.h"
+#include "ear/earplayback.h"
 #include "ear/registry.h"
 #include "environment.h"
 #include "error.h"
 #include "runtime.h"
 #include "scheduledevent.h"
-#include "win32/ear/earplayback.h"
 
 namespace {
 // @ghidraAddress EAR: 0x1002ebf0

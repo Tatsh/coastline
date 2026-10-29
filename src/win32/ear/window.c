@@ -1,4 +1,4 @@
-#include "window.h"
+#include "ear/window.h"
 
 #include "ear/error.h"
 

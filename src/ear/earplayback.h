@@ -3,8 +3,8 @@
 
 #include <cstdint>
 
-#include "directsoundstate.h"
 #include "ear/directionalmatrix.h"
+#include "ear/directsoundstate.h"
 #include "ear/playbacksmoothing.h"
 
 class EarWaveSample;

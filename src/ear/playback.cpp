@@ -8,10 +8,10 @@
 
 #include "channel.h"
 #include "ear/registry.h"
+#include "ear/timer.h"
 #include "error.h"
 #include "runtime.h"
 #include "scheduledevent.h"
-#include "win32/ear/timer.h"
 
 namespace {
 // @ghidraAddress EAR: 0x1003b49c

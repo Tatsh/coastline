@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "win32/ear/window.h"
+#include "ear/window.h"
 
 uint32_t g_bShowEarErrors;
 const char *const g_earErrorMessages[47] = {

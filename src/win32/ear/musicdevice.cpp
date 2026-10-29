@@ -1,10 +1,10 @@
-#include "musicdevice.h"
+#include "ear/musicdevice.h"
 
 #include <new>
 
 #include "ear/runtime.h"
 #include "ear/shutdown.h"
-#include "window.h"
+#include "ear/window.h"
 
 int32_t g_bCdAudioInitialized;
 int32_t g_bMidiSequencerInitialized;

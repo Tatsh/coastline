@@ -7,10 +7,10 @@
 
 #include "ear/error.h"
 #include "ear/mfc.h"
+#include "ear/musicdevice.h"
+#include "ear/playbackimplementations.h"
 #include "ear/registry.h"
-#include "musicdevice.h"
-#include "playbackimplementations.h"
-#include "window.h"
+#include "ear/window.h"
 
 namespace {
 // @ghidraAddress EAR: 0x10037158

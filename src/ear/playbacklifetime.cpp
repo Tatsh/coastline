@@ -1,4 +1,4 @@
-#include "win32/ear/earplayback.h"
+#include "ear/earplayback.h"
 
 EarPlayback::~EarPlayback() {
     FinalizeDirectSoundPlaybackState();

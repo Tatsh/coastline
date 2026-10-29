@@ -2,12 +2,12 @@
 
 #include "channel.h"
 #include "directionalmatrix.h"
+#include "ear/directsoundoutput.h"
+#include "ear/timer.h"
 #include "environment.h"
 #include "error.h"
 #include "preset.h"
 #include "runtime.h"
-#include "win32/ear/directsoundoutput.h"
-#include "win32/ear/timer.h"
 
 void __stdcall EarShutDownEarExportWrapper(void) {
     EAR_DLL_ShutDownEar();

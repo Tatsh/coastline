@@ -7,11 +7,11 @@
 
 #include <mmsystem.h>
 
+#include "ear/earplayback.h"
+#include "ear/playbackimplementations.h"
 #include "ear/registry.h"
 #include "environment.h"
 #include "error.h"
-#include "win32/ear/earplayback.h"
-#include "win32/ear/playbackimplementations.h"
 
 namespace {
 static inline void ReleasePlaybackStorage(EarPlayback *playback) {

@@ -1,4 +1,4 @@
-#include "earplayback.h"
+#include "ear/earplayback.h"
 
 #include <bit>
 #include <cstring>
@@ -9,7 +9,7 @@
 #include "ear/error.h"
 #include "ear/registry.h"
 #include "ear/volume.h"
-#include "window.h"
+#include "ear/window.h"
 
 std::uint16_t g_wEarObjectHandleCounter = 1;
 

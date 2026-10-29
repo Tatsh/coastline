@@ -3,14 +3,14 @@
 #include <cmath>
 #include <new>
 
+#include "ear/musicdevice.h"
+#include "ear/timer.h"
 #include "error.h"
 #include "event.h"
 #include "playbacksmoothing.h"
 #include "runtime.h"
 #include "scheduledevent.h"
 #include "volume.h"
-#include "win32/ear/musicdevice.h"
-#include "win32/ear/timer.h"
 
 uint32_t g_dwCdAudioChannelId;
 uint32_t g_dwMidiChannelId;
