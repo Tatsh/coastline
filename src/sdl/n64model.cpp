@@ -1,4 +1,4 @@
-#include "carmodel.h"
+#include "n64model.h"
 
 #include <algorithm>
 #include <array>
@@ -16,9 +16,21 @@ namespace {
 // The buffer of glTF is little-endian, and the columns are copied into it as they are in memory.
 static_assert(std::endian::native == std::endian::little);
 
-constexpr std::uint32_t IMAGE_BASE = 0x803c8000;
 constexpr std::size_t VERTEX_SIZE = 16;
 constexpr std::size_t VERTEX_SLOTS = 32;
+// The display list stack of F3DEX.
+constexpr int MAX_DEPTH = 10;
+
+// Where a kind of model is loaded, and where its header lists its textures.
+struct Layout {
+    std::uint32_t base;
+    std::size_t textureCountAt;
+    std::size_t texturesAt;
+};
+
+constexpr Layout CAR_LAYOUT{0x803c8000, 0x10, 0x14};
+constexpr Layout TRACK_LAYOUT{0x80025c00, 0x18, 0x1c};
+
 constexpr int LODS = 3;
 constexpr int BODY_LISTS = 10;
 constexpr int WHEEL_LISTS = 3;
@@ -26,11 +38,9 @@ constexpr int WHEELS = 4;
 constexpr std::size_t BODY_LISTS_AT = 0x18;
 constexpr std::size_t WHEEL_LISTS_AT = 0xbc;
 constexpr std::size_t WHEELS_AT = WHEEL_LISTS_AT + LODS * WHEEL_LISTS * 4;
-constexpr std::size_t HEADER_END = WHEELS_AT + WHEELS * 12;
-// The display list stack of F3DEX.
-constexpr int MAX_DEPTH = 10;
+constexpr std::size_t CAR_HEADER_END = WHEELS_AT + WHEELS * 12;
 // The renderer scales the vertices of the body and of each wheel by 1/255 to metres.
-constexpr std::array<float, 3> MODEL_SCALE{1.0f / 255.0f, 1.0f / 255.0f, 1.0f / 255.0f};
+constexpr float CAR_SCALE = 1.0f / 255.0f;
 
 constexpr std::array<const char *, BODY_LISTS> BODY_LIST_NAMES{"body0",
                                                                "body1",
@@ -45,6 +55,14 @@ constexpr std::array<const char *, BODY_LISTS> BODY_LIST_NAMES{"body0",
 constexpr int VEHICLE_DL_HEADLIGHT_BEAMS = 5;
 constexpr int VEHICLE_DL_HIGHLIGHTED = 9;
 constexpr std::array<const char *, WHEEL_LISTS> WHEEL_LIST_NAMES{"wheel", "wheel1", "wheelSnow"};
+
+constexpr std::size_t TRACK_SKY_AT = 0x50;
+constexpr std::size_t TRACK_INSTANCE_NAMES_AT = 0x5c;
+constexpr std::size_t TRACK_INSTANCES_AT = 0x60;
+constexpr std::size_t TRACK_INSTANCE_COUNT_AT = 0x64;
+constexpr std::size_t TRACK_HEADER_END = 0x230;
+constexpr std::size_t TRACK_INSTANCE_SIZE = 0x54;
+constexpr std::size_t TRACK_INSTANCE_DISPLAY_LIST_AT = 0x44;
 
 // The G_ opcodes of F3DEX the walk follows.
 constexpr std::uint8_t OP_VTX = 0x04;
@@ -61,8 +79,17 @@ constexpr std::uint8_t OP_LOADTILE = 0xf4;
 constexpr std::uint8_t OP_SETTILE = 0xf5;
 constexpr std::uint8_t OP_SETTIMG = 0xfd;
 
-// The tile the triangles of a car sample.
+// The tile the triangles sample.
 constexpr std::uint32_t RENDER_TILE = 0;
+
+std::uint32_t Big32(std::span<const std::uint8_t> image, std::size_t at) {
+    return static_cast<std::uint32_t>(image[at]) << 24 | image[at + 1] << 16 | image[at + 2] << 8 |
+           image[at + 3];
+}
+
+std::uint16_t Big16(std::span<const std::uint8_t> image, std::size_t at) {
+    return static_cast<std::uint16_t>(image[at] << 8 | image[at + 1]);
+}
 
 // What a triangle is drawn with: the texels and the palette it samples, how its texture
 // coordinates map to them, and the name the display list gives its material.
@@ -86,21 +113,13 @@ struct Triangle {
     std::size_t material;
 };
 
-std::uint32_t Big32(std::span<const std::uint8_t> image, std::size_t at) {
-    return static_cast<std::uint32_t>(image[at]) << 24 | image[at + 1] << 16 | image[at + 2] << 8 |
-           image[at + 3];
-}
-
-std::uint16_t Big16(std::span<const std::uint8_t> image, std::size_t at) {
-    return static_cast<std::uint16_t>(image[at] << 8 | image[at + 1]);
-}
-
 // The triangles of one display list.
 using Triangles = std::vector<Triangle>;
 
 class DisplayListWalk {
 public:
-    explicit DisplayListWalk(std::span<const std::uint8_t> image) : m_image(image) {
+    DisplayListWalk(std::span<const std::uint8_t> image, std::uint32_t base)
+        : m_image(image), m_base(base) {
     }
 
     std::optional<std::string> Walk(std::uint32_t address, Triangles &triangles) {
@@ -121,11 +140,11 @@ public:
 
 private:
     std::optional<std::uint32_t> Offset(std::uint32_t address, std::size_t size) const {
-        if (address < IMAGE_BASE || address - IMAGE_BASE > m_image.size() ||
-            size > m_image.size() - (address - IMAGE_BASE)) {
+        if (address < m_base || address - m_base > m_image.size() ||
+            size > m_image.size() - (address - m_base)) {
             return std::nullopt;
         }
-        return address - IMAGE_BASE;
+        return address - m_base;
     }
 
     std::optional<std::string> Triangle(std::uint32_t packed, Triangles &triangles) {
@@ -254,6 +273,7 @@ private:
     }
 
     std::span<const std::uint8_t> m_image;
+    std::uint32_t m_base;
     std::array<std::optional<std::uint32_t>, VERTEX_SLOTS> m_slots{};
     std::map<std::uint32_t, bool> m_vertices;
     std::vector<Material> m_materials;
@@ -262,8 +282,6 @@ private:
     std::string m_comment;
 };
 
-constexpr std::size_t TEXTURE_COUNT_AT = 0x10;
-constexpr std::size_t TEXTURES_AT = 0x14;
 constexpr std::size_t TEXTURE_SIZE = 0x24;
 constexpr std::uint32_t FORMAT_CI4 = 1;
 constexpr std::uint32_t FORMAT_I8 = 4;
@@ -273,7 +291,7 @@ constexpr int MIRRORED_REPEAT = 33648;
 constexpr int CLAMP_TO_EDGE = 33071;
 
 // A texture of the model: where its texels and palette are, its size and format, and how it
-// repeats.
+// repeats. The renderer reads a format other than CI4 and I8 as RGBA 5551.
 struct Texture {
     std::uint32_t image = 0;
     std::uint32_t palette = 0;
@@ -289,10 +307,10 @@ struct Texture {
 
 // The entry of the texture table that a material samples, and the texture. A CI4 texture matches
 // the palette the material loads where an entry does.
-std::optional<std::pair<std::size_t, Texture>> FindTexture(std::span<const std::uint8_t> image,
-                                                           const Material &material) {
-    std::uint32_t count = Big32(image, TEXTURE_COUNT_AT);
-    std::uint32_t table = Big32(image, TEXTURES_AT) - IMAGE_BASE;
+std::optional<std::pair<std::size_t, Texture>>
+FindTexture(std::span<const std::uint8_t> image, const Layout &layout, const Material &material) {
+    std::uint32_t count = Big32(image, layout.textureCountAt);
+    std::uint32_t table = Big32(image, layout.texturesAt) - layout.base;
     if (material.image == 0 || table > image.size() ||
         count > (image.size() - table) / TEXTURE_SIZE) {
         return std::nullopt;
@@ -310,8 +328,7 @@ std::optional<std::pair<std::size_t, Texture>> FindTexture(std::span<const std::
                         .mirrorT = (bits >> 30 & 1) != 0,
                         .clampS = (bits >> 29 & 1) != 0,
                         .clampT = (bits >> 28 & 1) != 0};
-        bool drawable =
-            (texture.format == FORMAT_CI4 && texture.width % 2 == 0) || texture.format == FORMAT_I8;
+        bool drawable = texture.format != FORMAT_CI4 || texture.width % 2 == 0;
         if (texture.image != material.image || !drawable || texture.width < 2 ||
             texture.height < 1) {
             continue;
@@ -328,30 +345,36 @@ std::optional<std::pair<std::size_t, Texture>> FindTexture(std::span<const std::
 
 // The texels of a texture in rows of their width. A row of the console is padded to 64 bits, and
 // each odd row has the two words of each 64 bits swapped for the texture memory.
-std::expected<GltfImage, std::string>
-DecodeTexture(std::span<const std::uint8_t> image, Texture &texture, std::string uri) {
-    bool ci4 = texture.format == FORMAT_CI4;
+std::expected<GltfImage, std::string> DecodeTexture(std::span<const std::uint8_t> image,
+                                                    const Layout &layout,
+                                                    Texture &texture,
+                                                    std::string uri) {
+    GltfImage decoded;
+    decoded.format = texture.format == FORMAT_CI4 ? GltfImageFormat::Ci4 :
+                     texture.format == FORMAT_I8  ? GltfImageFormat::Intensity8 :
+                                                    GltfImageFormat::Rgba5551;
     auto width = static_cast<std::size_t>(texture.width);
     auto height = static_cast<std::size_t>(texture.height);
-    std::size_t rowBytes = ci4 ? width / 2 : width;
+    std::size_t rowBytes = decoded.format == GltfImageFormat::Ci4        ? width / 2 :
+                           decoded.format == GltfImageFormat::Intensity8 ? width :
+                                                                           width * 2;
     std::size_t stride = (rowBytes + 7) / 8 * 8;
-    std::size_t at = texture.image - IMAGE_BASE;
-    if (texture.image < IMAGE_BASE || at > image.size() || stride * height > image.size() - at) {
+    std::size_t at = texture.image - layout.base;
+    if (texture.image < layout.base || at > image.size() || stride * height > image.size() - at) {
         return std::unexpected(std::format("the texture {} is outside the model", uri));
     }
-    GltfImage decoded;
     decoded.uri = std::move(uri);
     decoded.width = texture.width;
     decoded.height = texture.height;
-    decoded.intensity = !ci4;
     for (std::size_t y = 0; y < height; ++y) {
         for (std::size_t x = 0; x < rowBytes; ++x) {
             decoded.texels.push_back(image[at + y * stride + (y % 2 ? x ^ 4 : x)]);
         }
     }
-    if (ci4) {
-        std::size_t palette = texture.palette - IMAGE_BASE;
-        if (texture.palette < IMAGE_BASE || palette > image.size() || image.size() - palette < 32) {
+    if (decoded.format == GltfImageFormat::Ci4) {
+        std::size_t palette = texture.palette - layout.base;
+        if (texture.palette < layout.base || palette > image.size() ||
+            image.size() - palette < 32) {
             return std::unexpected(
                 std::format("the palette of {} is outside the model", decoded.uri));
         }
@@ -362,6 +385,10 @@ DecodeTexture(std::span<const std::uint8_t> image, Texture &texture, std::string
             for (unsigned index : {unsigned{pair} >> 4, unsigned{pair} & 0xfu}) {
                 texture.cutout |= (decoded.palette[index * 2 + 1] & 1) == 0;
             }
+        }
+    } else if (decoded.format == GltfImageFormat::Rgba5551) {
+        for (std::size_t i = 1; i < decoded.texels.size(); i += 2) {
+            texture.cutout |= (decoded.texels[i] & 1) == 0;
         }
     }
     return decoded;
@@ -425,56 +452,35 @@ struct VertexColumns {
     std::vector<std::uint8_t> colors;
 };
 
-std::optional<std::span<const std::uint8_t>> View(const nlohmann::ordered_json &json,
-                                                  std::span<const std::uint8_t> buffer,
-                                                  std::size_t accessorIndex,
-                                                  std::size_t elementSize,
-                                                  std::size_t count) {
-    const auto &accessors = json.at("accessors");
-    if (accessorIndex >= accessors.size()) {
-        return std::nullopt;
-    }
-    const auto &accessor = accessors[accessorIndex];
-    if (accessor.at("count").get<std::size_t>() != count) {
-        return std::nullopt;
-    }
-    const auto &view = json.at("bufferViews").at(accessor.at("bufferView").get<std::size_t>());
-    std::size_t offset =
-        view.at("byteOffset").get<std::size_t>() + accessor.value("byteOffset", std::size_t{0});
-    std::size_t size = elementSize * count;
-    if (offset > buffer.size() || size > buffer.size() - offset) {
-        return std::nullopt;
-    }
-    return buffer.subspan(offset, size);
-}
+// A place a display list is drawn at: the name of its node and the transform of the node.
+struct Placement {
+    std::string name;
+    nlohmann::ordered_json transform;
+};
 
-} // namespace
+// A display list, the places it is drawn at, and the scene of the places, or none.
+struct Draw {
+    std::string name;
+    std::uint32_t displayList;
+    std::vector<Placement> placements;
+    std::optional<std::size_t> scene;
+};
 
-std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_t> bytes,
-                                                     std::size_t imageOffset,
-                                                     std::string_view bufferUri) {
-    if (bytes.size() < imageOffset + HEADER_END) {
-        return std::unexpected("the file is too short for a model of a car");
-    }
+// The glTF of an image of the console: the meshes of the display lists of the draws, their
+// textures and materials, a node for each place, and the bytes of the file outside the vertices.
+std::expected<GltfModel, std::string> BuildModel(std::span<const std::uint8_t> bytes,
+                                                 std::size_t imageOffset,
+                                                 const Layout &layout,
+                                                 const std::vector<Draw> &draws,
+                                                 const std::vector<std::string> &scenes,
+                                                 std::string_view bufferUri) {
     auto image = bytes.subspan(imageOffset);
-    DisplayListWalk walk(image);
-    std::array<std::array<Triangles, BODY_LISTS>, LODS> body;
-    std::array<std::array<Triangles, WHEEL_LISTS>, LODS> wheel;
-    for (int lod = 0; lod < LODS; ++lod) {
-        for (int list = 0; list < BODY_LISTS; ++list) {
-            std::uint32_t address = Big32(image, BODY_LISTS_AT + (lod * BODY_LISTS + list) * 4);
-            if (address != 0) {
-                if (auto failure = walk.Walk(address, body[lod][list])) {
-                    return std::unexpected(*failure);
-                }
-            }
-        }
-        for (int list = 0; list < WHEEL_LISTS; ++list) {
-            std::uint32_t address = Big32(image, WHEEL_LISTS_AT + (lod * WHEEL_LISTS + list) * 4);
-            if (address != 0) {
-                if (auto failure = walk.Walk(address, wheel[lod][list])) {
-                    return std::unexpected(*failure);
-                }
+    DisplayListWalk walk(image, layout.base);
+    std::map<std::uint32_t, Triangles> lists;
+    for (const Draw &draw : draws) {
+        if (!lists.contains(draw.displayList)) {
+            if (auto failure = walk.Walk(draw.displayList, lists[draw.displayList])) {
+                return std::unexpected(std::format("{} ({})", *failure, draw.name));
             }
         }
     }
@@ -521,13 +527,14 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
     std::map<std::size_t, std::size_t> imageOf;
     GltfModel model;
     for (std::size_t m = 0; m < walk.Materials().size(); ++m) {
-        auto found = FindTexture(image, walk.Materials()[m]);
+        auto found = FindTexture(image, layout, walk.Materials()[m]);
         if (!found) {
             continue;
         }
         auto [entry, texture] = *found;
         if (!imageOf.contains(entry)) {
-            auto decoded = DecodeTexture(image, texture, std::format("{}-{}.png", stem, entry));
+            auto decoded =
+                DecodeTexture(image, layout, texture, std::format("{}-{}.png", stem, entry));
             if (!decoded) {
                 return std::unexpected(decoded.error());
             }
@@ -542,7 +549,7 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
     // it. A vertex the console draws with two textures of other sizes takes the first.
     std::vector<float> uv(vertexCount * 2, 0.0f);
     std::vector<bool> placed(vertexCount, false);
-    auto place = [&](const Triangles &triangles) {
+    for (const auto &[address, triangles] : lists) {
         for (const Triangle &triangle : triangles) {
             const Material &material = walk.Materials()[triangle.material];
             if (!textureOf[triangle.material]) {
@@ -565,10 +572,6 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
                 uv[vertex * 2 + 1] = static_cast<float>(t / texture.height);
             }
         }
-    };
-    for (int lod = 0; lod < LODS; ++lod) {
-        std::ranges::for_each(body[lod], place);
-        std::ranges::for_each(wheel[lod], place);
     }
 
     model.json = {{"asset", {{"version", "2.0"}, {"generator", "coastline"}}},
@@ -663,11 +666,15 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
         model.json["materials"].push_back(std::move(material));
     }
 
-    auto addMesh = [&](const Triangles &triangles, std::string name) -> std::optional<std::size_t> {
+    // A mesh for each display list, with a primitive for each material in the order the list
+    // first draws it.
+    std::map<std::uint32_t, std::optional<std::size_t>> meshOf;
+    auto addMesh = [&](std::uint32_t address, const std::string &name) {
+        const Triangles &triangles = lists.at(address);
         if (triangles.empty()) {
-            return std::nullopt;
+            meshOf[address] = std::nullopt;
+            return;
         }
-        // A primitive for each material, in the order the display list first draws it.
         std::vector<std::size_t> order;
         std::map<std::size_t, std::vector<std::uint32_t>> indices;
         for (const auto &triangle : triangles) {
@@ -696,56 +703,40 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
                                   {"mode", TRIANGLES}});
         }
         model.json["meshes"].push_back({{"name", name}, {"primitives", std::move(primitives)}});
-        model.json["nodes"].push_back({{"name", std::move(name)},
-                                       {"mesh", model.json["meshes"].size() - 1},
-                                       {"scale", MODEL_SCALE}});
-        return model.json["nodes"].size() - 1;
+        meshOf[address] = model.json["meshes"].size() - 1;
     };
 
-    for (int lod = 0; lod < LODS; ++lod) {
-        nlohmann::ordered_json children = nlohmann::ordered_json::array();
-        for (int list = 0; list < BODY_LISTS; ++list) {
-            if (auto node =
-                    addMesh(body[lod][list], std::format("lod{}-{}", lod, BODY_LIST_NAMES[list]))) {
-                // The highlight adds to the colours under it, and the beams draw at night or in
-                // the rain. A viewer of the scene omits them.
-                if (list != VEHICLE_DL_HIGHLIGHTED && list != VEHICLE_DL_HEADLIGHT_BEAMS) {
-                    children.push_back(*node);
-                }
+    std::vector<nlohmann::ordered_json> children(scenes.size(), nlohmann::ordered_json::array());
+    for (const Draw &draw : draws) {
+        if (!meshOf.contains(draw.displayList)) {
+            addMesh(draw.displayList, draw.name);
+        }
+        if (!meshOf[draw.displayList]) {
+            continue;
+        }
+        for (const Placement &placement : draw.placements) {
+            nlohmann::ordered_json node{{"name", placement.name},
+                                        {"mesh", *meshOf[draw.displayList]}};
+            for (const auto &[key, value] : placement.transform.items()) {
+                node[key] = value;
+            }
+            model.json["nodes"].push_back(std::move(node));
+            if (draw.scene) {
+                children[*draw.scene].push_back(model.json["nodes"].size() - 1);
             }
         }
-        for (int list = 0; list < WHEEL_LISTS; ++list) {
-            if (auto node = addMesh(wheel[lod][list],
-                                    std::format("lod{}-{}", lod, WHEEL_LIST_NAMES[list]))) {
-                // The mesh of a wheel is drawn at each of the four places of the wheels.
-                for (int place = 0; place < WHEELS; ++place) {
-                    std::array<float, 3> at{};
-                    for (int axis = 0; axis < 3; ++axis) {
-                        at[static_cast<std::size_t>(axis)] = std::bit_cast<float>(Big32(
-                            image, WHEELS_AT + static_cast<std::size_t>(place * 12 + axis * 4)));
-                    }
-                    model.json["nodes"].push_back(
-                        {{"name", std::format("lod{}-{}{}", lod, WHEEL_LIST_NAMES[list], place)},
-                         {"mesh", model.json["nodes"][*node]["mesh"]},
-                         {"translation", at},
-                         {"scale", MODEL_SCALE}});
-                    children.push_back(model.json["nodes"].size() - 1);
-                }
-                // The node of the mesh itself is not part of a scene.
-                model.json["nodes"][*node]["name"] =
-                    std::format("lod{}-{}-unplaced", lod, WHEEL_LIST_NAMES[list]);
-            }
-        }
-        // The car is z up and x forward, and glTF is y up.
-        model.json["nodes"].push_back({{"name", std::format("lod{}", lod)},
+    }
+    for (std::size_t scene = 0; scene < scenes.size(); ++scene) {
+        // The console is z up and glTF is y up.
+        model.json["nodes"].push_back({{"name", scenes[scene]},
                                        {"rotation", {-0.70710678f, 0.0f, 0.0f, 0.70710678f}},
-                                       {"children", std::move(children)}});
+                                       {"children", std::move(children[scene])}});
         model.json["scenes"].push_back(
-            {{"name", std::format("lod{}", lod)}, {"nodes", {model.json["nodes"].size() - 1}}});
+            {{"name", scenes[scene]}, {"nodes", {model.json["nodes"].size() - 1}}});
     }
 
     std::size_t residualView = AddView(model, residual.data(), residual.size());
-    model.json["extras"] = {{"coastlineCarModel",
+    model.json["extras"] = {{"coastlineModel",
                              {{"imageOffset", imageOffset},
                               {"vertexRuns", std::move(runs)},
                               {"residualBufferView", residualView},
@@ -754,10 +745,134 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
     return model;
 }
 
+std::optional<std::span<const std::uint8_t>> View(const nlohmann::ordered_json &json,
+                                                  std::span<const std::uint8_t> buffer,
+                                                  std::size_t accessorIndex,
+                                                  std::size_t elementSize,
+                                                  std::size_t count) {
+    const auto &accessors = json.at("accessors");
+    if (accessorIndex >= accessors.size()) {
+        return std::nullopt;
+    }
+    const auto &accessor = accessors[accessorIndex];
+    if (accessor.at("count").get<std::size_t>() != count) {
+        return std::nullopt;
+    }
+    const auto &view = json.at("bufferViews").at(accessor.at("bufferView").get<std::size_t>());
+    std::size_t offset =
+        view.at("byteOffset").get<std::size_t>() + accessor.value("byteOffset", std::size_t{0});
+    std::size_t size = elementSize * count;
+    if (offset > buffer.size() || size > buffer.size() - offset) {
+        return std::nullopt;
+    }
+    return buffer.subspan(offset, size);
+}
+
+} // namespace
+
+std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_t> bytes,
+                                                     std::size_t imageOffset,
+                                                     std::string_view bufferUri) {
+    if (bytes.size() < imageOffset + CAR_HEADER_END) {
+        return std::unexpected("the file is too short for a model of a car");
+    }
+    auto image = bytes.subspan(imageOffset);
+    nlohmann::ordered_json scale{{"scale", {CAR_SCALE, CAR_SCALE, CAR_SCALE}}};
+    std::vector<Draw> draws;
+    std::vector<std::string> scenes;
+    for (int lod = 0; lod < LODS; ++lod) {
+        scenes.push_back(std::format("lod{}", lod));
+        for (int list = 0; list < BODY_LISTS; ++list) {
+            std::uint32_t address = Big32(image, BODY_LISTS_AT + (lod * BODY_LISTS + list) * 4);
+            if (address == 0) {
+                continue;
+            }
+            auto name = std::format("lod{}-{}", lod, BODY_LIST_NAMES[list]);
+            // The highlight adds to the colours under it, and the beams draw at night or in the
+            // rain. A viewer of the scene omits them.
+            bool shown = list != VEHICLE_DL_HIGHLIGHTED && list != VEHICLE_DL_HEADLIGHT_BEAMS;
+            draws.push_back({name,
+                             address,
+                             {{name, scale}},
+                             shown ? std::optional<std::size_t>(lod) : std::nullopt});
+        }
+        for (int list = 0; list < WHEEL_LISTS; ++list) {
+            std::uint32_t address = Big32(image, WHEEL_LISTS_AT + (lod * WHEEL_LISTS + list) * 4);
+            if (address == 0) {
+                continue;
+            }
+            // The mesh of a wheel is drawn at each of the four places of the wheels.
+            Draw draw{std::format("lod{}-{}", lod, WHEEL_LIST_NAMES[list]), address, {}, lod};
+            for (int place = 0; place < WHEELS; ++place) {
+                std::array<float, 3> at{};
+                for (int axis = 0; axis < 3; ++axis) {
+                    at[static_cast<std::size_t>(axis)] = std::bit_cast<float>(
+                        Big32(image, WHEELS_AT + static_cast<std::size_t>(place * 12 + axis * 4)));
+                }
+                nlohmann::ordered_json transform = scale;
+                transform["translation"] = at;
+                draw.placements.push_back(
+                    {std::format("{}{}", draw.name, place), std::move(transform)});
+            }
+            draws.push_back(std::move(draw));
+        }
+    }
+    return BuildModel(bytes, imageOffset, CAR_LAYOUT, draws, scenes, bufferUri);
+}
+
+std::expected<GltfModel, std::string> TrackToGltf(std::span<const std::uint8_t> bytes,
+                                                  std::string_view bufferUri) {
+    if (bytes.size() < TRACK_HEADER_END) {
+        return std::unexpected("the file is too short for a track");
+    }
+    const std::uint32_t base = TRACK_LAYOUT.base;
+    std::uint32_t count = Big32(bytes, TRACK_INSTANCE_COUNT_AT);
+    std::uint32_t instances = Big32(bytes, TRACK_INSTANCES_AT) - base;
+    if (instances > bytes.size() || count > (bytes.size() - instances) / TRACK_INSTANCE_SIZE) {
+        return std::unexpected("the placed models of the track are outside the file");
+    }
+    std::uint32_t names = Big32(bytes, TRACK_INSTANCE_NAMES_AT);
+    auto nameOf = [&](std::uint32_t index) {
+        // The name of a placed model, where the track lists names.
+        if (names != 0 && names - base <= bytes.size() - 4 * (index + 1)) {
+            std::uint32_t text = Big32(bytes, names - base + 4 * index);
+            if (text >= base && text - base < bytes.size()) {
+                std::string name;
+                for (std::size_t at = text - base; at < bytes.size() && bytes[at] != 0; ++at) {
+                    name.push_back(static_cast<char>(bytes[at]));
+                }
+                if (!name.empty()) {
+                    return std::format("{}-{}", index, name);
+                }
+            }
+        }
+        return std::format("instance{}", index);
+    };
+    std::vector<Draw> draws;
+    for (std::uint32_t i = 0; i < count; ++i) {
+        std::size_t at = instances + i * TRACK_INSTANCE_SIZE;
+        std::uint32_t displayList = Big32(bytes, at + TRACK_INSTANCE_DISPLAY_LIST_AT);
+        if (displayList == 0) {
+            continue;
+        }
+        // The rows of the matrix of the console are the columns of glTF.
+        nlohmann::ordered_json matrix = nlohmann::ordered_json::array();
+        for (std::size_t k = 0; k < 16; ++k) {
+            matrix.push_back(std::bit_cast<float>(Big32(bytes, at + k * 4)));
+        }
+        auto name = nameOf(i);
+        draws.push_back({name, displayList, {{name, {{"matrix", matrix}}}}, 0});
+    }
+    if (std::uint32_t sky = Big32(bytes, TRACK_SKY_AT); sky != 0) {
+        draws.push_back({"sky", sky, {{"sky", nlohmann::ordered_json::object()}}, std::nullopt});
+    }
+    return BuildModel(bytes, 0, TRACK_LAYOUT, draws, {"track"}, bufferUri);
+}
+
 std::expected<std::vector<std::uint8_t>, std::string>
-CarModelFromGltf(const nlohmann::ordered_json &json, std::span<const std::uint8_t> buffer) {
+ModelFromGltf(const nlohmann::ordered_json &json, std::span<const std::uint8_t> buffer) {
     try {
-        const auto &extras = json.at("extras").at("coastlineCarModel");
+        const auto &extras = json.at("extras").at("coastlineModel");
         auto imageOffset = extras.at("imageOffset").get<std::size_t>();
         const auto &view =
             json.at("bufferViews").at(extras.at("residualBufferView").get<std::size_t>());
@@ -818,7 +933,8 @@ CarModelFromGltf(const nlohmann::ordered_json &json, std::span<const std::uint8_
         }
         return file;
     } catch (const nlohmann::json::exception &error) {
-        return std::unexpected(std::format("the glTF does not describe a car ({})", error.what()));
+        return std::unexpected(
+            std::format("the glTF does not describe a model of the console ({})", error.what()));
     }
 }
 

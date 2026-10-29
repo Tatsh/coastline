@@ -62,7 +62,6 @@ add_custom_target(coastline_manifests DEPENDS ${_manifest_headers})
 # the Nintendo 64 release is shared C.
 add_library(
   coastline_sdl STATIC
-  carmodel.cpp
   config.cpp
   ghostfile.cpp
   gpu.cpp
@@ -71,6 +70,7 @@ add_library(
   input.cpp
   log.cpp
   music.cpp
+  n64model.cpp
   paths.cpp
   stringresources.cpp
   tlrenderer.cpp

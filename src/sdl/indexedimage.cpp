@@ -166,4 +166,49 @@ bool SaveIntensity8Png(const std::filesystem::path &path,
     return true;
 }
 
+bool SaveRgba5551Png(const std::filesystem::path &path,
+                     std::span<const std::uint8_t> texels,
+                     int width,
+                     int height) {
+    auto count = static_cast<std::size_t>(width) * static_cast<std::size_t>(height);
+    if (width <= 0 || height <= 0 || texels.size() != count * 2) {
+        return false;
+    }
+    Surface surface(SDL_CreateSurface(width, height, SDL_PIXELFORMAT_RGBA32));
+    if (!surface) {
+        return false;
+    }
+    for (std::size_t i = 0; i < count; ++i) {
+        unsigned half = static_cast<unsigned>(texels[i * 2]) << 8 | texels[i * 2 + 1];
+        auto *pixel =
+            static_cast<std::uint8_t *>(surface->pixels) +
+            i / static_cast<std::size_t>(width) * static_cast<std::size_t>(surface->pitch) +
+            i % static_cast<std::size_t>(width) * 4;
+        pixel[0] = Widen5(half >> 11 & 0x1F);
+        pixel[1] = Widen5(half >> 6 & 0x1F);
+        pixel[2] = Widen5(half >> 1 & 0x1F);
+        pixel[3] = half & 1 ? 0xFF : 0;
+    }
+    if (!SDL_SavePNG(surface.get(), path.string().c_str())) {
+        return false;
+    }
+    Surface read(SDL_LoadPNG(path.string().c_str()));
+    Surface rgba(read ? SDL_ConvertSurface(read.get(), SDL_PIXELFORMAT_RGBA32) : nullptr);
+    if (!rgba || rgba->w != width || rgba->h != height) {
+        return false;
+    }
+    for (std::size_t i = 0; i < count; ++i) {
+        const auto *pixel =
+            static_cast<const std::uint8_t *>(rgba->pixels) +
+            i / static_cast<std::size_t>(width) * static_cast<std::size_t>(rgba->pitch) +
+            i % static_cast<std::size_t>(width) * 4;
+        auto half = static_cast<unsigned>((pixel[0] >> 3) << 11 | (pixel[1] >> 3) << 6 |
+                                          (pixel[2] >> 3) << 1 | (pixel[3] >= 0x80 ? 1 : 0));
+        if (half != (static_cast<unsigned>(texels[i * 2]) << 8 | texels[i * 2 + 1])) {
+            return false;
+        }
+    }
+    return true;
+}
+
 } // namespace coastline

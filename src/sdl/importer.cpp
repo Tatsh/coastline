@@ -6,6 +6,7 @@
 #include <cstring>
 #include <format>
 #include <fstream>
+#include <functional>
 #include <iterator>
 #include <memory>
 #include <optional>
@@ -20,9 +21,9 @@
 #include "cartridge/eu.h"
 #include "cartridge/jp.h"
 #include "cartridge/us.h"
-#include "sdl/carmodel.h"
 #include "sdl/ghostfile.h"
 #include "sdl/indexedimage.h"
+#include "sdl/n64model.h"
 #include "sdl/stringresources.h"
 #include "sha1.h"
 
@@ -403,21 +404,24 @@ std::optional<std::string> ConvertGhostRecordings(const std::filesystem::path &d
     return std::nullopt;
 }
 
-// Writes the model of a car as glTF with its buffer and images, and removes the model once the
-// written files build the same bytes.
-std::optional<std::string> ConvertCarModel(const std::filesystem::path &car,
-                                           std::size_t header,
-                                           const std::filesystem::path &gltfPath,
-                                           const std::filesystem::path &bufferPath) {
+using ModelConverter = std::function<std::expected<GltfModel, std::string>(
+    std::span<const std::uint8_t> bytes, std::string_view bufferUri)>;
+
+// Writes a model of the console as glTF with its buffer and images, and removes the model once
+// the written files build the same bytes.
+std::optional<std::string> ConvertModel(const std::filesystem::path &car,
+                                        const ModelConverter &convert,
+                                        const std::filesystem::path &gltfPath,
+                                        const std::filesystem::path &bufferPath) {
     std::error_code error;
     {
         auto bytes = ReadWholeFile(car);
         if (!bytes) {
             return std::format("{} cannot be read.", car.string());
         }
-        auto model = CarModelToGltf(*bytes, header, bufferPath.filename().string());
+        auto model = convert(*bytes, bufferPath.filename().string());
         if (!model) {
-            return std::format("{} is not a car ({}).", car.string(), model.error());
+            return std::format("{} is not a model ({}).", car.string(), model.error());
         }
         std::ofstream(gltfPath, std::ios::trunc) << model->json.dump(1) << '\n';
         if (!WriteBytes(bufferPath, model->buffer)) {
@@ -425,10 +429,20 @@ std::optional<std::string> ConvertCarModel(const std::filesystem::path &car,
         }
         for (const GltfImage &texture : model->images) {
             auto path = car.parent_path() / texture.uri;
-            if (!(texture.intensity ?
-                      SaveIntensity8Png(path, texture.texels, texture.width, texture.height) :
-                      SaveIndexed4Png(
-                          path, texture.texels, texture.palette, texture.width, texture.height))) {
+            bool saved = false;
+            switch (texture.format) {
+            case GltfImageFormat::Ci4:
+                saved = SaveIndexed4Png(
+                    path, texture.texels, texture.palette, texture.width, texture.height);
+                break;
+            case GltfImageFormat::Intensity8:
+                saved = SaveIntensity8Png(path, texture.texels, texture.width, texture.height);
+                break;
+            case GltfImageFormat::Rgba5551:
+                saved = SaveRgba5551Png(path, texture.texels, texture.width, texture.height);
+                break;
+            }
+            if (!saved) {
                 return std::format("{} does not read back as its texels.", path.string());
             }
         }
@@ -437,7 +451,7 @@ std::optional<std::string> ConvertCarModel(const std::filesystem::path &car,
         auto buffer = ReadWholeFile(bufferPath);
         auto rebuilt = parsed.is_discarded() || !buffer ?
                            std::unexpected(std::string("the files cannot be read")) :
-                           CarModelFromGltf(parsed, *buffer);
+                           ModelFromGltf(parsed, *buffer);
         if (!rebuilt || *rebuilt != *bytes) {
             return std::format("{} does not read back as {}.", gltfPath.string(), car.string());
         }
@@ -456,11 +470,34 @@ std::optional<std::string> ConvertCarModels(const std::filesystem::path &dataDir
             cars.push_back(entry.path());
         }
     }
+    auto convert = [](std::span<const std::uint8_t> bytes, std::string_view bufferUri) {
+        return CarModelToGltf(bytes, RCA_HEADER, bufferUri);
+    };
     for (const auto &car : cars) {
-        if (auto failure = ConvertCarModel(car,
-                                           RCA_HEADER,
-                                           std::filesystem::path(car).replace_extension(".gltf"),
-                                           std::filesystem::path(car).replace_extension(".bin"))) {
+        if (auto failure = ConvertModel(car,
+                                        convert,
+                                        std::filesystem::path(car).replace_extension(".gltf"),
+                                        std::filesystem::path(car).replace_extension(".bin"))) {
+            return failure;
+        }
+    }
+    return std::nullopt;
+}
+
+// Replaces each .trk file of tracks with a glTF file of the same name.
+std::optional<std::string> ConvertTracks(const std::filesystem::path &dataDirectory) {
+    std::error_code error;
+    std::vector<std::filesystem::path> tracks;
+    for (const auto &entry : std::filesystem::directory_iterator(dataDirectory / "tracks", error)) {
+        if (Lowercase(entry.path().extension().string()) == ".trk") {
+            tracks.push_back(entry.path());
+        }
+    }
+    for (const auto &track : tracks) {
+        if (auto failure = ConvertModel(track,
+                                        TrackToGltf,
+                                        std::filesystem::path(track).replace_extension(".gltf"),
+                                        std::filesystem::path(track).replace_extension(".bin"))) {
             return failure;
         }
     }
@@ -653,8 +690,11 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         if (!std::filesystem::exists(model)) {
             continue;
         }
+        auto convert = [](std::span<const std::uint8_t> bytes, std::string_view bufferUri) {
+            return CarModelToGltf(bytes, 0, bufferUri);
+        };
         if (auto failure =
-                ConvertCarModel(model, 0, car.path() / "model.gltf", car.path() / "mesh.bin")) {
+                ConvertModel(model, convert, car.path() / "model.gltf", car.path() / "mesh.bin")) {
             return std::unexpected(*failure);
         }
     }
@@ -811,6 +851,9 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         return std::unexpected(*failure);
     }
     if (auto failure = ConvertCarModels(dataDirectory)) {
+        return std::unexpected(*failure);
+    }
+    if (auto failure = ConvertTracks(dataDirectory)) {
         return std::unexpected(*failure);
     }
     for (const auto &track : tracks) {

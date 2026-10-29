@@ -13,13 +13,20 @@
 
 namespace coastline {
 
+/** The texels of a texture of a glTF document. */
+enum class GltfImageFormat {
+    Ci4,        /*!< 4-bit indices of a palette of 16 colours, two to a byte. */
+    Intensity8, /*!< 8-bit intensities. */
+    Rgba5551,   /*!< 16-bit colours, red, green, and blue of 5 bits and an alpha bit, big-endian. */
+};
+
 /** A texture of a glTF document, as the texels of the console. */
 struct GltfImage {
-    std::string uri;                  /*!< The URI the document gives the image. */
-    int width = 0;                    /*!< The width in texels. */
-    int height = 0;                   /*!< The height in texels. */
-    bool intensity = false;           /*!< Whether the texels are 8-bit intensities, not CI4. */
-    std::vector<std::uint8_t> texels; /*!< The texels row by row, two to a byte for CI4. */
+    std::string uri;                        /*!< The URI the document gives the image. */
+    int width = 0;                          /*!< The width in texels. */
+    int height = 0;                         /*!< The height in texels. */
+    GltfImageFormat format{};               /*!< The format of the texels. */
+    std::vector<std::uint8_t> texels;       /*!< The texels row by row, without padding. */
     std::array<std::uint8_t, 32> palette{}; /*!< The 16 colours of a CI4 image, RGBA 5551. */
 };
 
@@ -34,7 +41,7 @@ struct GltfModel {
  * Describe the model of a car as glTF. The document has a scene for each level of detail, with a
  * mesh for each display list of the body and the wheels at their places. Every vertex the display
  * lists load appears once, in the order of the file, and the bytes of the file outside the vertices
- * are retained in the buffer for CarModelFromGltf().
+ * are retained in the buffer for ModelFromGltf().
  *
  * @param bytes The file, a header of @p imageOffset bytes followed by the image of the model as the
  * console loads it at 0x803c8000.
@@ -48,14 +55,28 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
                                                      std::string_view bufferUri);
 
 /**
- * Build the file of the model of a car from its glTF, the inverse of CarModelToGltf(). The
- * vertices come from the accessors of the document.
+ * Describe a track as glTF. The document has one scene, with a node for each placed model at its
+ * place, and the sky as a node outside the scene. The bytes of the file outside the vertices are
+ * retained in the buffer for ModelFromGltf(), the textures of the bank after the geometry among
+ * them.
+ *
+ * @param bytes The file, the image of the geometry as the console loads it at 0x80025c00, followed
+ * by the textures that stream from it.
+ * @param bufferUri The URI the document gives its buffer.
+ * @return The glTF, or a description of why the file is not a track.
+ */
+std::expected<GltfModel, std::string> TrackToGltf(std::span<const std::uint8_t> bytes,
+                                                  std::string_view bufferUri);
+
+/**
+ * Build the file of a model or a track from its glTF, the inverse of CarModelToGltf() and
+ * TrackToGltf(). The vertices come from the accessors of the document.
  *
  * @param json The document.
  * @param buffer The bytes of its buffer.
- * @return The file, or a description of why the glTF does not describe a car.
+ * @return The file, or a description of why the glTF does not describe a model of the console.
  */
 std::expected<std::vector<std::uint8_t>, std::string>
-CarModelFromGltf(const nlohmann::ordered_json &json, std::span<const std::uint8_t> buffer);
+ModelFromGltf(const nlohmann::ordered_json &json, std::span<const std::uint8_t> buffer);
 
 } // namespace coastline

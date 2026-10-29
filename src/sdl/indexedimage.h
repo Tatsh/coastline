@@ -48,4 +48,18 @@ bool SaveIntensity8Png(const std::filesystem::path &path,
                        int width,
                        int height);
 
+/**
+ * Write RGBA 5551 texels as a PNG image of 8 bits a channel, and read it back to check it.
+ *
+ * @param path The image to write.
+ * @param texels The texels, two big-endian bytes each, row by row.
+ * @param width The width in texels.
+ * @param height The height in texels.
+ * @return Whether the image was written and reads back as the same texels.
+ */
+bool SaveRgba5551Png(const std::filesystem::path &path,
+                     std::span<const std::uint8_t> texels,
+                     int width,
+                     int height);
+
 } // namespace coastline
