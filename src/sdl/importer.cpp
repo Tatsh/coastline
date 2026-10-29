@@ -261,8 +261,8 @@ std::string Lowercase(std::string text) {
 // pictures of the menus of the Windows release, which the front end of the Nintendo 64 release
 // replaces, are left on the disc.
 bool IsGameData(const std::filesystem::path &path) {
-    static constexpr std::array<std::string_view, 6> directories{
-        "cargfx", "cars", "images", "paint", "sfx", "tracks"};
+    static constexpr std::array<std::string_view, 5> directories{
+        "cargfx", "cars", "paint", "sfx", "tracks"};
     // The text of the game is in the string resources of BRString.dll.
     static constexpr std::array<std::string_view, 7> files{"bossrally.pod",
                                                            "brstring.dll",
