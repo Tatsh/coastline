@@ -1,9 +1,9 @@
-#include "win32/boot/rallyconfig.h"
+#include "win32/rallyconfig.h"
 
 #include <cstdio>
 #include <cstring>
 
-#include "win32/boot/app.h"
+#include "win32/app.h"
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include <string>
 

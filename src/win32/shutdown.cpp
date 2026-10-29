@@ -3,8 +3,7 @@
 #include <objbase.h>
 #include <windows.h>
 
-#include "win32/boot/app.h"
-#include "win32/boot/strings.h"
+#include "win32/app.h"
 #include "win32/d3d/renderer.h"
 #include "win32/directplay.h"
 #include "win32/frontend.h"
@@ -15,6 +14,7 @@
 #include "win32/settings.h"
 #include "win32/snapshot.h"
 #include "win32/sound.h"
+#include "win32/strings.h"
 
 void ShutdownApplication(int nExitCode) {
     if (g_pActiveMenuScreen != nullptr && g_dwNullStubEnable) {

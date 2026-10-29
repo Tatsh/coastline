@@ -6,7 +6,7 @@
 #include "common/model.h"
 #include "common/vehiclecolor.h"
 #include "common/weather.h"
-#include "win32/boot/app.h"
+#include "win32/app.h"
 #include "win32/render.h"
 #include "win32/texturescan.h"
 #include "win32/trackrelocation.h"

@@ -10,7 +10,7 @@
 #include "clipplane.h"
 #include "common/displaylistptr.h"
 #include "common/weather.h"
-#include "win32/boot/app.h"
+#include "win32/app.h"
 #include "win32/hudcanvas.h"
 #include "win32/render.h"
 #include "win32/settings.h"

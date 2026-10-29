@@ -14,9 +14,9 @@
 #if TGR_PC
 #include <stdint.h>
 
-#include "win32/boot/app.h"
-#include "win32/boot/rallyconfig.h"
+#include "win32/app.h"
 #include "win32/gameinit.h"
+#include "win32/rallyconfig.h"
 #include "win32/season.h"
 #include "win32/snapshot.h"
 #include "win32/sound.h"

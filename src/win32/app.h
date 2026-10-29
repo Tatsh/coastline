@@ -16,7 +16,7 @@
 #endif
 
 #include "common/screen.h"
-#include "win32/boot/fatalerror.h"
+#include "win32/fatalerror.h"
 
 /**
  * Exit code RallyMain() returns to the launcher.

@@ -16,9 +16,7 @@
 #include "common/pause.h"
 #include "common/timing.h"
 #include "common/vehicle.h"
-#include "win32/boot/app.h"
-#include "win32/boot/rallyconfig.h"
-#include "win32/boot/strings.h"
+#include "win32/app.h"
 #include "win32/buildinfo.h"
 #include "win32/directplay.h"
 #include "win32/frametimer.h"
@@ -26,9 +24,11 @@
 #include "win32/glide/device.h"
 #include "win32/glide/renderer.h"
 #include "win32/racesound.h"
+#include "win32/rallyconfig.h"
 #include "win32/render.h"
 #include "win32/settings.h"
 #include "win32/sound.h"
+#include "win32/strings.h"
 
 HINSTANCE g_hAppInstance;
 HWND g_hMainWindow;

@@ -17,7 +17,7 @@ set(COASTLINE_PC_C_SOURCES
     common/screenrect.c common/shadowreset.c common/sidegrip.c common/skystate.c common/soundeffect.c common/soundpan.c common/soundsource.c
     common/startlights.c common/textrender.c common/textstyle.c common/texturebind.c common/texturestream.c common/timingframe.c
     common/trackgrid.c common/trackvalid.c common/tricache.c common/util.c common/vblankquery.c common/vecmath.c common/vehiclemodel.c common/visgrid.c
-    common/visiblecompare.c win32/airplanestate.c win32/assetnames.c win32/boot/strings.c
+    common/visiblecompare.c win32/airplanestate.c win32/assetnames.c win32/strings.c
     win32/buildinfo.c win32/clockfields.c win32/convertedvertex.c win32/creditdata.c
     win32/dashboardtextures.c win32/displaylistdata.c win32/effectdata.c
     win32/fontdata.c win32/fpshud.c win32/framebuffer.c win32/framefields.c win32/hudassets.c
@@ -39,7 +39,7 @@ set(COASTLINE_PC_CXX_SOURCES
     common/trackrender.c common/vehiclechoice.c common/vehicledeform.c common/vehicleeffects.c common/vehicleengine.c
     common/vehiclemodelrender.c common/vehiclepaint.c common/vehiclephysics.c common/vehiclereset.c common/vehiclesound.c
     common/vehiclestatus.c common/vehicletrackpos.c common/vehiclevisibility.c common/visibleinstances.c common/volumecontrols.c
-    common/wheelrender.c win32/assetfile.cpp win32/boot/gamestate.cpp win32/boot/rallyconfig.cpp
+    common/wheelrender.c win32/assetfile.cpp win32/gamestate.cpp win32/rallyconfig.cpp
     win32/configfile.cpp win32/displaylist.cpp win32/frametimer.cpp win32/gameinit.cpp
     win32/gamesession.cpp win32/ghost.cpp win32/hudlaplist.cpp win32/hudnetwork.cpp
     win32/inputdefaults.cpp win32/modelrelocation.cpp win32/podarchive.cpp win32/racercolor.cpp
@@ -66,7 +66,7 @@ set(COASTLINE_PC_SDL_SOURCES bitmap.cpp d3dcompat.cpp dinputcompat.cpp fileio.cp
 # The routines of the textures of BRD3D.dll that do not use DirectDraw, and the conversions of the
 # states of vehicles the network streams.
 list(APPEND COASTLINE_PC_CXX_SOURCES "${_src}/win32/d3d/texture.cpp" "${_src}/win32/netstream.cpp"
-     "${_src}/win32/boot/app.cpp" "${_src}/win32/boot/startup.cpp" "${_src}/win32/input.cpp"
+     "${_src}/win32/app.cpp" "${_src}/win32/startup.cpp" "${_src}/win32/input.cpp"
      "${_src}/win32/earsound.cpp" "${_src}/win32/sound.cpp" "${_src}/win32/wavread.c")
 
 add_library(coastline_pcgame STATIC ${COASTLINE_PC_C_SOURCES} ${COASTLINE_PC_CXX_SOURCES}

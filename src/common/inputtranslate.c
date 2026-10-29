@@ -4,7 +4,7 @@
 #include "common/screen.h"
 
 #if TGR_PC
-#include "win32/boot/rallyconfig.h"
+#include "win32/rallyconfig.h"
 #ifdef errno
 #undef errno
 #endif

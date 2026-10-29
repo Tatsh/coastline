@@ -12,7 +12,7 @@
 #include "common/volumecontrols.h"
 
 #if TGR_PC
-#include "win32/boot/app.h"
+#include "win32/app.h"
 #include "win32/directplay.h"
 #include "win32/input.h"
 #include "win32/settings.h"

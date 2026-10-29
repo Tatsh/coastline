@@ -18,11 +18,11 @@
 #if TGR_PC
 #include <string.h>
 
-#include "win32/boot/strings.h"
 #include "win32/directplay.h"
 #include "win32/ghost.h"
 #include "win32/input.h"
 #include "win32/settings.h"
+#include "win32/strings.h"
 #else
 #include <PR/os_libc.h>
 

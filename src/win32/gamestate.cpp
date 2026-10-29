@@ -2,8 +2,8 @@
 #include "common/screen.h"
 #include "common/trackselect.h"
 #include "common/vehicle.h"
-#include "win32/boot/app.h"
-#include "win32/boot/rallyconfig.h"
+#include "win32/app.h"
+#include "win32/rallyconfig.h"
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include "win32/frontend.h"
 #else

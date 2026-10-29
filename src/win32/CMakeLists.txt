@@ -1,31 +1,30 @@
-# The entry points of the Windows port. A routine that differs substantially between renderers has
-# one translation unit per renderer, suffixed with the renderer or under its directory (d3d, glide),
-# and the build selects the unit. A routine whose difference is a few lines, DllMain() for one,
-# stays in one unit. Each renderer's library exports RallyMain. Nothing refers to DllMain() or
-# RallyMain by name, so the link would drop them from an archive, and the objects go into each
-# library directly.
+# The Windows port. A routine that differs substantially between renderers has one translation unit
+# per renderer, suffixed with the renderer or under its directory (d3d, glide), and the build selects
+# the unit. A routine whose difference is a few lines, DllMain() for one, stays in one unit.
+
+# Each renderer's library exports RallyMain. Nothing refers to DllMain() or RallyMain by name, so the
+# link would drop them from an archive, and their objects go into each library directly.
+add_library(coastline_main OBJECT dllmain.c)
+target_link_libraries(coastline_main PRIVATE coastline_options)
+
 add_library(
-  coastline_main OBJECT
+  coastline_win32 STATIC
   airplanestate.c
+  app.cpp
   assetfile.cpp
   assetnames.c
-  boot/app.cpp
-  boot/displaymodelist.cpp
-  boot/dxversion.cpp
-  boot/gamestate.cpp
-  boot/rallyconfig.cpp
-  boot/shutdown.cpp
-  boot/startup.cpp
-  boot/strings.c
   buildinfo.c
   clockfields.c
   configfile.cpp
+  convertedvertex.c
   creditdata.c
   dashboardtextures.c
+  diagnostics.c
   directplay.cpp
   displaylist.cpp
   displaylistdata.c
-  dllmain.c
+  displaymodelist.cpp
+  dxversion.cpp
   earsound.cpp
   effectdata.c
   fileio.c
@@ -38,6 +37,7 @@ add_library(
   frontenddata.cpp
   gameinit.cpp
   gamesession.cpp
+  gamestate.cpp
   ghost.cpp
   hud.c
   hudassets.c
@@ -61,6 +61,7 @@ add_library(
   racerslot.cpp
   racescreen.cpp
   racesound.cpp
+  rallyconfig.cpp
   reflectiondata.c
   render.cpp
   renderdefaults.cpp
@@ -68,12 +69,17 @@ add_library(
   runtimebuffers.cpp
   season.cpp
   settings.c
+  shadowclip.cpp
+  shadowproject.c
+  shutdown.cpp
   snapshot.cpp
   snapshotfields.cpp
   snapshotinterpolation.cpp
   sound.cpp
   soundbank.c
   soundsample.c
+  startup.cpp
+  strings.c
   terrain.c
   texturesampling.c
   texturescan.cpp
@@ -89,53 +95,17 @@ add_library(
   vehiclesetup.cpp
   visibilitydata.c
   wavread.c)
-# The DirectDraw and Direct3D renderer belongs to the Direct3D library alone.
+target_link_libraries(coastline_win32 PRIVATE coastline_options)
+
 if(TGR_RENDERER STREQUAL "d3d")
-  target_sources(
-    coastline_main
-    PRIVATE d3d/ddutil.cpp
-            d3d/devicecaps.cpp
-            d3d/driver.cpp
-            d3d/renderer.cpp
-            d3d/texture.cpp
-            winmain-d3d.cpp)
-endif()
-target_link_libraries(coastline_main PRIVATE coastline_common)
-
-# The Glide renderer and what differs from the Direct3D library belong to the Glide library alone.
-if(TGR_RENDERER STREQUAL "glide")
-  target_sources(
-    coastline_main
-    PRIVATE glide/displaylist.cpp
-            glide/displaymode.cpp
-            glide/fontatlas.c
-            glide/menusurface.cpp
-            glide/renderer.cpp
-            glide/rgb565image.c
-            glide/splash.cpp
-            glide/texture.c
-            glide/texturecache.cpp
-            glide/winmain.cpp)
-
-  # The headers of the Glide 2.x SDK for the Voodoo 2, and the import library of glide2x.dll,
-  # built from the routines the game imports.
-  set(_glide "${CMAKE_SOURCE_DIR}/3rdparty/glide-2f226f0f9225ce8ee83e6a4a7042981e719d19ee")
-  set(_glide_def "${CMAKE_CURRENT_SOURCE_DIR}/glide/glide2x.def")
-  set(_glide_import "${CMAKE_CURRENT_BINARY_DIR}/libglide2x.a")
-  add_custom_command(
-    OUTPUT "${_glide_import}"
-    COMMAND "${CMAKE_DLLTOOL}" -m i386 -d "${_glide_def}" -l "${_glide_import}"
-    DEPENDS "${_glide_def}"
-    COMMENT "Building the import library of glide2x.dll")
-  add_custom_target(coastline_glide_import DEPENDS "${_glide_import}")
-  add_library(coastline_glide INTERFACE)
-  target_include_directories(
-    coastline_glide SYSTEM INTERFACE "${_glide}/glide2x/cvg/glide/src" "${_glide}/glide2x/cvg/incsrc"
-                                     "${_glide}/swlibs/fxmisc")
-  target_link_libraries(coastline_glide INTERFACE "${_glide_import}")
-  add_dependencies(coastline_glide coastline_glide_import)
-  target_link_libraries(coastline_main PRIVATE coastline_glide)
+  # RallyMain of the Direct3D library.
+  target_sources(coastline_main PRIVATE winmain-d3d.cpp)
+  add_subdirectory(d3d)
+else()
+  add_subdirectory(glide)
+  target_link_libraries(coastline_win32 PRIVATE coastline_glide)
 endif()
 
 add_subdirectory(ear)
-add_subdirectory(launcher)
+# The programs that start the game: Boot.exe, BRally.exe, BossRally.exe, and SetVideo.exe.
+add_subdirectory(boot)

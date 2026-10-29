@@ -12,7 +12,7 @@
 #include "common/displaylistops.h"
 #include "common/screen.h"
 #include "common/weather.h"
-#include "win32/boot/app.h"
+#include "win32/app.h"
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include "sdl/renderhost.h"
 #else

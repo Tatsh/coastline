@@ -10,8 +10,8 @@
 
 #include "sdl/stringresources.h"
 #include "sdl/win32types.h"
-#include "win32/boot/strings.h"
 #include "win32/fileio.h"
+#include "win32/strings.h"
 
 namespace {
 

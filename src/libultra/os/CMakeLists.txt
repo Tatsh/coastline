@@ -1,4 +1,10 @@
 # The operating system: threads, messages, interrupts and exceptions, timers, and the caches.
+if(NOT TGR_PLATFORM STREQUAL "n64")
+  # The messages, the count, and the debug output the PC port retained.
+  add_library(coastline_libultra_os STATIC getcount.c recvmesg.c sendmesg.c syncprintf.c)
+  target_link_libraries(coastline_libultra_os PRIVATE coastline_options)
+  return()
+endif()
 add_library(
   coastline_libultra_os STATIC
           createmesgqueue.c

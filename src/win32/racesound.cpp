@@ -9,8 +9,8 @@
 #include "common/vehiclecount.h"
 #include "common/vehiclesound.h"
 #include "vehicle.h"
-#include "win32/boot/rallyconfig.h"
 #include "win32/input.h"
+#include "win32/rallyconfig.h"
 #include "win32/sound.h"
 
 // The sample MuteVehicleSoundVoices() silences on the voice of each vehicle.

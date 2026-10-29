@@ -7,8 +7,8 @@
 #include <windows.h>
 #endif
 
-#include "win32/boot/strings.h"
 #include "win32/sound.h"
+#include "win32/strings.h"
 
 // The key _EAR_DLL_AAA_Validate checks.
 #define EAR_VALIDATION_KEY 0x9be9c9

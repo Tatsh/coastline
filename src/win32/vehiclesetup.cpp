@@ -2,8 +2,6 @@
 
 #include <PR/gu.h>
 
-#include "boot/rallyconfig.h"
-#include "boot/strings.h"
 #include "common/camera.h"
 #include "common/driving.h"
 #include "common/game.h"
@@ -26,6 +24,8 @@
 #include "settings.h"
 #include "sound.h"
 #include "vehicle.h"
+#include "win32/rallyconfig.h"
+#include "win32/strings.h"
 
 void AiVehicleControllerCallback(Vehicle *vehicle) {
     vehicle->ComputeAiVehicleInput();

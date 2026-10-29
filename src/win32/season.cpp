@@ -13,9 +13,9 @@
 #include "common/seasons.h"
 #include "common/trackselect.h"
 #include "common/weather.h"
-#include "win32/boot/rallyconfig.h"
 #include "win32/buildinfo.h"
 #include "win32/configfile.h"
+#include "win32/rallyconfig.h"
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include "win32/frontend.h"
 #else

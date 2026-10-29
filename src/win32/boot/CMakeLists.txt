@@ -1,7 +1,5 @@
 enable_language(RC)
 
-target_sources(coastline_main PRIVATE ../diagnostics.c)
-
 add_executable(coastline_brally WIN32 brally.c brally.rc ini.c registry.c ../fileio.c
                ../diagnostics.c)
 set_target_properties(coastline_brally PROPERTIES OUTPUT_NAME BRally C_STANDARD 23)

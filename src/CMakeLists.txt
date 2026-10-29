@@ -1,45 +1,46 @@
-# Each subsystem directory builds its static library and lists its sources explicitly. A
-# recursive glob would hide what is built. A source added to the tree would join the build with no
-# record of the decision, and a source removed would disappear the same way.
+# Each source directory builds its static library from its own CMakeLists.txt and lists its sources
+# explicitly. A recursive glob would hide what is built. A source added to the tree would join the
+# build with no record of the decision, and a source removed would disappear the same way.
 #
-# Static libraries are deliberate. Archiving produces object files and archives without
-# linking a ROM. The reconstruction is partial, and no link can succeed until every routine a call
-# arrives at has a body.
+# Static libraries are deliberate. Archiving produces object files and archives without linking a
+# ROM. The reconstruction is partial, and no link can succeed until every routine a call arrives at
+# has a body.
 
-# Everything the subsystem libraries share. An interface library provides the settings without
+# The settings every library of the game shares. An interface library provides them without
 # compiling anything itself.
-add_library(coastline_common INTERFACE)
+add_library(coastline_options INTERFACE)
 # A reconstructed routine retains the parameters of the original, used or not.
-target_compile_options(coastline_common INTERFACE -Wall -Wextra -Wno-unused-parameter)
-target_include_directories(coastline_common INTERFACE "${CMAKE_SOURCE_DIR}/src"
-                                                    "${CMAKE_SOURCE_DIR}/src/libultra/include")
+target_compile_options(coastline_options INTERFACE -Wall -Wextra -Wno-unused-parameter)
+target_include_directories(coastline_options INTERFACE "${CMAKE_SOURCE_DIR}/src"
+                                                     "${CMAKE_SOURCE_DIR}/src/libultra/include")
 
-# Subsystems join this list as their directories are reconstructed.
-set(COASTLINE_SUBSYSTEMS)
-
-foreach(SUBSYSTEM ${COASTLINE_SUBSYSTEMS})
-  add_subdirectory(${SUBSYSTEM})
-endforeach()
-
-# The entry points sit outside the subsystems. The Windows port is C++, and this directory links its
-# libraries, so the language is enabled here. The Nintendo 64 entry is assembly.
 if(TGR_PLATFORM STREQUAL "win")
-  target_compile_options(coastline_common INTERFACE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>")
+  # The Windows port is C++, and this directory links its libraries, so the language is enabled
+  # here.
+  target_compile_options(coastline_options INTERFACE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>")
   enable_language(CXX)
   add_subdirectory(ear)
   add_subdirectory(win32)
 else()
   # The Nintendo 64 releases find their headers in n64 as well as here.
-  target_include_directories(coastline_common INTERFACE "${CMAKE_SOURCE_DIR}/src/n64")
-  add_library(coastline_main OBJECT n64/main.s)
-  target_link_libraries(coastline_main PRIVATE coastline_common)
+  target_include_directories(coastline_options INTERFACE "${CMAKE_SOURCE_DIR}/src/n64")
+  add_subdirectory(n64)
 endif()
+add_subdirectory(common)
+add_subdirectory(libultra)
 
 # Every archive the build produces, for a target that builds all of them at once.
-set(COASTLINE_LIBRARIES coastline_main)
-foreach(SUBSYSTEM ${COASTLINE_SUBSYSTEMS})
-  list(APPEND COASTLINE_LIBRARIES coastline_${SUBSYSTEM})
-endforeach()
+set(COASTLINE_LIBRARIES coastline_main coastline_common ${COASTLINE_LIBULTRA_LIBRARIES})
+if(TGR_PLATFORM STREQUAL "win")
+  list(APPEND COASTLINE_LIBRARIES coastline_win32)
+  if(TGR_RENDERER STREQUAL "d3d")
+    list(APPEND COASTLINE_LIBRARIES coastline_win32_d3d)
+  else()
+    list(APPEND COASTLINE_LIBRARIES coastline_win32_glide)
+  endif()
+else()
+  list(APPEND COASTLINE_LIBRARIES coastline_n64)
+endif()
 
 if(TGR_PLATFORM STREQUAL "n64")
   string(TOUPPER "${TGR_REGION}" _tgr_region_upper)
@@ -70,76 +71,7 @@ if(TGR_PLATFORM STREQUAL "n64")
   target_include_directories(coastline_zlib PRIVATE "${CMAKE_SOURCE_DIR}/src"
                                                     "${CMAKE_SOURCE_DIR}/src/libultra/include")
   target_compile_options(coastline_zlib PRIVATE -w)
-  target_link_libraries(coastline_common INTERFACE coastline_zlib)
-  list(APPEND COASTLINE_LIBRARIES coastline_zlib)
-
-  add_subdirectory(libultra)
-  list(APPEND COASTLINE_LIBRARIES ${COASTLINE_LIBULTRA_LIBRARIES})
-
-  # The game code of the Nintendo 64 releases. A routine joins this list when its body moves from
-  # the assembly of the original into C.
-  set(_game_sources common/audio.c n64/audiomix.s n64/camera.c n64/carselect.c n64/controllerscreen.c n64/debugtext.c n64/decaldraw.c n64/decaleditor.c common/driving.c n64/effects.c common/fade.c common/game.c n64/hud.c n64/input.c common/heap.c n64/mainmenu.c common/mathutil.c n64/model.c n64/options.c n64/paintshop.c n64/pakmenu.c n64/physics.c n64/playerselect.c n64/race.c
-                    n64/racemenu.c common/racers.c n64/racesound.c common/replay.c common/rigidbody.c n64/rumble.c common/sky.c n64/snapshot.c n64/splash.c n64/sprite.c n64/system.c n64/text.c n64/texrect.c n64/timing.c n64/track.c common/trackrender.c common/util.c common/vecmath.c n64/vehicle.c common/vehiclemodel.c n64/vehiclerender.c n64/vehiclesetup.c common/visgrid.c n64/weather.c n64/weatherselect.c)
-  list(APPEND _game_sources common/bodyforces.c common/camerachase.c common/cameracollision.c common/displaylistops.c
-                           common/raceload.c common/racerender.c
-                           common/frameclear.c common/playerinput.c common/profileinit.c common/renderinit.c common/screen.c common/seasontrack.c
-                           common/vehiclechoice.c common/trackgrid.c common/tricache.c common/vehiclereset.c common/fog.c common/screendraw.c)
-  # These sources write the Japanese text in UTF-8. The Japanese release compiles copies with the
-  # text in the glyph codes of its font.
-  if(TGR_REGION STREQUAL "jp")
-    foreach(_source n64/carselect.c n64/decaleditor.c n64/options.c n64/pakmenu.c n64/paintshop.c
-                    n64/playerselect.c n64/splash.c n64/text.c)
-      set(_encoded "${CMAKE_CURRENT_BINARY_DIR}/encoded/${_source}")
-      add_custom_command(
-        OUTPUT "${_encoded}"
-        COMMAND "${COASTLINE_TOOL_ENCODE_TEXT}" "${CMAKE_CURRENT_SOURCE_DIR}/${_source}"
-                "${_encoded}"
-        DEPENDS "${_source}" "${COASTLINE_TOOL_ENCODE_TEXT}" coastline_tools
-        COMMENT "Encoding the Japanese text of ${_source}"
-        VERBATIM)
-      list(TRANSFORM _game_sources REPLACE "^${_source}$" "${_encoded}")
-    endforeach()
-  endif()
-  add_library(coastline_game STATIC ${_game_sources})
-  target_link_libraries(coastline_game PRIVATE coastline_common)
-  list(APPEND COASTLINE_LIBRARIES coastline_game)
 else()
-  # The game code the PC port retained from the N64 releases. A source joins this list when every
-  # routine of it that the PC libraries have compiles for them.
-  set_source_files_properties(
-    common/camerachange.c common/camerachase.c common/cameracollision.c common/displaylistops.c common/fog.c common/headlight.c
-    common/playercontrol.c common/routeposition.c common/seasontrack.c common/tracetrack.c common/trackinstance.c common/vehiclechoice.c
-    common/vehiclemodelrender.c common/vehiclephysics.c common/vehiclereset.c common/vehiclesound.c common/vehiclevisibility.c
-    common/wheelrender.c common/vehiclestatus.c common/vehicletrackpos.c common/vehicledeform.c common/racerstate.c common/racers.c
-    common/exhaustspawn.c common/tiresmokespawn.c common/tiresprayemit.c common/tirespray.c common/vehiclepaint.c common/precipitationupdate.c
-    common/billboardparticles.c common/particlesmokerender.c common/particleexhaustrender.c common/tiresprayrender.c common/precipitationrender.c
-    common/sky.c common/hudrace.c common/hudmessage.c common/dashboard.c common/raceresults.c common/hudoverlay.c common/visibleinstances.c
-    common/lastlapsnapshot.c common/trackrender.c common/racerender.c common/raceload.c
-    PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(common/controllerread.c common/inputtranslate.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(common/volumecontrols.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(common/ambientsound.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(common/racerinit.c common/racermotion.c common/racersharing.c common/raceprogress.c
-                              common/vehicleengine.c common/collisionstep.c common/driving.c PROPERTIES LANGUAGE CXX)
-  add_library(
-    coastline_game STATIC common/bodyforces.c common/camerachase.c common/cameracollision.c common/displaylistops.c common/fade.c common/racers.c
-                          common/fog.c common/frameclear.c common/game.c common/heap.c common/mathutil.c common/playerinput.c common/profileinit.c
-                          common/replay.c common/rigidbody.c common/renderinit.c common/screen.c common/screendraw.c common/seasontrack.c common/trackgrid.c common/tricache.c
-                          common/util.c common/vecmath.c
-                          common/vehiclechoice.c common/vehiclemodel.c common/vehiclereset.c common/visgrid.c
-                          libultra/gu/lookat.c libultra/gu/lookathil.c libultra/gu/lookatref.c
-                          libultra/gu/mtxcatf.c
-                          libultra/gu/mtxutil.c libultra/gu/scale.c libultra/gu/translate.c
-                          libultra/gu/perspective.c libultra/gu/rotate.c libultra/io/controller.c libultra/os/getcount.c)
-  target_link_libraries(coastline_game PRIVATE coastline_common)
-  # The game code includes the interpreter of the display lists, which the Glide headers define.
-  if(TARGET coastline_glide)
-    target_link_libraries(coastline_game PRIVATE coastline_glide)
-  endif()
-  list(APPEND COASTLINE_LIBRARIES coastline_game)
-
-  target_sources(coastline_game PRIVATE common/racerender.c common/raceload.c)
-
   # The PC libraries link the checksum of the vendored zlib 1.0.4 and not its inflate side.
   set(_zlib "${CMAKE_SOURCE_DIR}/3rdparty/zlib-1.0.4")
   add_library(coastline_zlib STATIC "${_zlib}/adler32.c")
@@ -147,99 +79,9 @@ else()
   set_target_properties(coastline_zlib PROPERTIES C_STANDARD 90)
   target_include_directories(coastline_zlib PUBLIC "${_zlib}")
   target_compile_options(coastline_zlib PRIVATE -w)
-  target_link_libraries(coastline_common INTERFACE coastline_zlib)
-  list(APPEND COASTLINE_LIBRARIES coastline_zlib)
 endif()
-
-target_sources(coastline_game PRIVATE common/assetdma.c common/camerarender.c common/collisionstep.c common/cubeclip.c common/framebegin.c common/frameflush.c common/materialcolor.c
-                                     common/modelanimation.c common/modelanimationflags.c common/modelrelocation.c common/playercontrol.c common/racerinit.c common/routewalk.c common/sidegrip.c
-                                     common/rledecompress.c common/routeposition.c common/textrender.c common/textstyle.c common/timingframe.c
-                                     common/vehicleengine.c common/vehiclephysics.c)
-
-target_sources(coastline_game PRIVATE common/tracetrack.c common/iomessage.c common/texturestream.c common/soundeffect.c common/soundsource.c)
-target_sources(coastline_game PRIVATE common/completionthreads.c)
-target_sources(coastline_game PRIVATE common/precipitationupdate.c)
-target_sources(coastline_game PRIVATE common/billboardparticles.c)
-target_sources(coastline_game PRIVATE common/particlesmokerender.c)
-target_sources(coastline_game PRIVATE common/particleexhaustrender.c common/tiresprayrender.c)
-target_sources(coastline_game PRIVATE common/precipitationrender.c)
-if(TGR_PLATFORM STREQUAL "win")
-  target_sources(coastline_game PRIVATE common/trackrender.c)
-  target_sources(coastline_game PRIVATE libultra/os/recvmesg.c libultra/os/sendmesg.c)
-  target_sources(coastline_game PRIVATE libultra/os/syncprintf.c)
-  target_sources(coastline_game PRIVATE common/sky.c)
-endif()
-target_sources(coastline_game PRIVATE common/soundpan.c)
-target_sources(coastline_game PRIVATE common/vehiclestatus.c)
-target_sources(coastline_game PRIVATE common/vehicletrackpos.c)
-target_sources(coastline_game PRIVATE common/vehicledeform.c)
-target_sources(coastline_game PRIVATE common/racerstate.c)
-target_sources(coastline_game PRIVATE common/exhaustspawn.c)
-target_sources(coastline_game PRIVATE common/tiresmokespawn.c)
-target_sources(coastline_game PRIVATE common/vehiclepaint.c)
-target_sources(coastline_game PRIVATE common/tiresprayemit.c)
-target_sources(coastline_game PRIVATE common/tirespray.c)
-target_sources(coastline_game PRIVATE common/vehiclesound.c)
-target_sources(coastline_game PRIVATE common/racersharing.c)
-target_sources(coastline_game PRIVATE common/racermotion.c common/frametime.c)
-target_sources(coastline_game PRIVATE common/raceprogress.c common/laptime.c)
-target_sources(coastline_game PRIVATE common/controllerread.c)
-target_sources(coastline_game PRIVATE common/inputtranslate.c)
-target_sources(coastline_game PRIVATE common/vehiclevisibility.c)
-target_sources(coastline_game PRIVATE common/debuginstance.c)
-target_sources(coastline_game PRIVATE common/shadowreset.c)
-target_sources(coastline_game PRIVATE common/savestate.c)
-target_sources(coastline_game PRIVATE common/volumecontrols.c)
-target_sources(coastline_game PRIVATE common/camerachange.c)
-target_sources(coastline_game PRIVATE common/ambientsound.c)
-target_sources(coastline_game PRIVATE common/lightning.c)
-target_sources(coastline_game PRIVATE common/hudtime.c)
-target_sources(coastline_game PRIVATE common/hudrace.c common/racephases.c common/racespecials.c common/raceinit.c)
-target_sources(coastline_game PRIVATE common/racecontrols.c common/racefinish.c common/racerun.c)
-if(TGR_PLATFORM STREQUAL "win")
-  set_source_files_properties(common/racephases.c common/racespecials.c common/raceinit.c common/racecontrols.c common/racefinish.c common/racerun.c
-                              PROPERTIES LANGUAGE CXX)
-endif()
-target_sources(coastline_game PRIVATE common/hudmessage.c)
-target_sources(coastline_game PRIVATE common/dashboard.c)
-target_sources(coastline_game PRIVATE common/raceresults.c)
-target_sources(coastline_game PRIVATE common/hudoverlay.c)
-target_sources(coastline_game PRIVATE common/screenrect.c)
-target_sources(coastline_game PRIVATE common/visibleinstances.c)
-target_sources(coastline_game PRIVATE common/modeldraw.c)
-target_sources(coastline_game PRIVATE common/headlightglare.c)
-target_sources(coastline_game PRIVATE common/fadeupdate.c)
-target_sources(coastline_game PRIVATE common/screenfade.c)
-target_sources(coastline_game PRIVATE common/lastlapsnapshot.c)
-target_sources(coastline_game PRIVATE common/skystate.c common/visiblecompare.c)
-target_sources(coastline_game PRIVATE common/raininit.c)
-target_sources(coastline_game PRIVATE common/wind.c)
-target_sources(coastline_game PRIVATE common/loadcar.c)
-target_sources(coastline_game PRIVATE common/particleinit.c)
-target_sources(coastline_game PRIVATE common/particleupdate.c)
-target_sources(coastline_game PRIVATE common/vehicleeffects.c)
-target_sources(coastline_game PRIVATE common/emptycallback.c common/racecredits.c common/startlights.c common/trackvalid.c common/vblankquery.c)
-target_sources(coastline_game PRIVATE common/wheelrender.c)
-target_sources(coastline_game PRIVATE common/texturebind.c)
-target_sources(coastline_game PRIVATE common/headlight.c)
-target_sources(coastline_game PRIVATE common/vehiclemodelrender.c)
-target_sources(coastline_game PRIVATE common/trackinstance.c)
-if(TGR_PLATFORM STREQUAL "win")
-  set_source_files_properties(common/loadcar.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(common/particleinit.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(common/particleupdate.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(common/vehicleeffects.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(common/vehiclemodelrender.c PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(common/trackinstance.c PROPERTIES LANGUAGE CXX)
-  target_sources(coastline_game PRIVATE win32/convertedvertex.c)
-  target_sources(coastline_game PRIVATE win32/shadowproject.c)
-  target_sources(coastline_game PRIVATE win32/shadowclip.cpp)
-  target_sources(coastline_game PRIVATE libultra/io/contreaddata.c)
-endif()
-
-if(TGR_PLATFORM STREQUAL "win")
-  target_sources(coastline_game PRIVATE common/driving.c)
-endif()
+target_link_libraries(coastline_options INTERFACE coastline_zlib)
+list(APPEND COASTLINE_LIBRARIES coastline_zlib)
 
 add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES})
 if(TARGET coastline_ear)
@@ -252,11 +94,17 @@ if(TGR_PLATFORM STREQUAL "win")
   else()
     set(_library BRGlide)
   endif()
+  set(_link_libraries ${COASTLINE_LIBRARIES})
+  list(REMOVE_ITEM _link_libraries coastline_main)
+  # The Windows libraries contain every routine of their units, called or not, as the original
+  # libraries do.
+  list(TRANSFORM _link_libraries REPLACE "^(coastline_win32.*)$" "$<LINK_LIBRARY:WHOLE_ARCHIVE,\\1>")
   add_library(${_library} SHARED $<TARGET_OBJECTS:coastline_main>)
   set_target_properties(${_library} PROPERTIES PREFIX "")
-  target_link_libraries(${_library} PRIVATE ${COASTLINE_LIBRARIES} ole32 user32 ddraw dinput
-                                          dplayx dxguid winmm msacm32)
-  if(TARGET coastline_glide)
+  # The libraries call each other, so they are linked as one group.
+  target_link_libraries(${_library} PRIVATE "-Wl,--start-group" ${_link_libraries} "-Wl,--end-group"
+                                            ole32 user32 ddraw dinput dplayx dxguid winmm msacm32)
+  if(TGR_RENDERER STREQUAL "glide")
     target_link_libraries(${_library} PRIVATE coastline_glide)
   endif()
 else()

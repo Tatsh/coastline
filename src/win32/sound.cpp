@@ -12,9 +12,9 @@
 #endif
 
 #include "common/soundchannel.h"
-#include "win32/boot/app.h"
-#include "win32/boot/rallyconfig.h"
+#include "win32/app.h"
 #include "win32/earsound.h"
+#include "win32/rallyconfig.h"
 #include "win32/settings.h"
 #include "win32/timer.h"
 #include "win32/wavread.h"

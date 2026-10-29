@@ -50,10 +50,10 @@
 #if TGR_PC
 #include <string.h>
 
-#include "win32/boot/rallyconfig.h"
 #include "win32/dashboardtextures.h"
 #include "win32/frametimer.h"
 #include "win32/ghost.h"
+#include "win32/rallyconfig.h"
 #include "win32/render.h"
 #include "win32/snapshot.h"
 #include "win32/sound.h"

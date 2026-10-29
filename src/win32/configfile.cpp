@@ -3,7 +3,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include "win32/boot/app.h"
+#include "win32/app.h"
 #include "win32/ghost.h"
 #include "win32/season.h"
 

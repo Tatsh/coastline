@@ -6,7 +6,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "win32/boot/app.h"
+#include "win32/app.h"
 
 PodArchive g_BossRallyPodArchive;
 

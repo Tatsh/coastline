@@ -1,7 +1,7 @@
 #include "common/vehiclemodel.h"
 
 #if TGR_PC
-#include "win32/boot/app.h"
+#include "win32/app.h"
 #else
 #include <string.h>
 

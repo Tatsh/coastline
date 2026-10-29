@@ -2,7 +2,7 @@
 
 #include <zlib.h>
 
-#include "win32/boot/app.h"
+#include "win32/app.h"
 #include "win32/d3d/renderer.h"
 #include "win32/fileio.h"
 #include "win32/glide/texturecache.h"

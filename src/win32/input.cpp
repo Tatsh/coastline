@@ -19,10 +19,10 @@
 #include "common/playerinput.h"
 #include "common/vehicleaccess.h"
 #include "vehicle.h"
-#include "win32/boot/app.h"
-#include "win32/boot/rallyconfig.h"
-#include "win32/boot/strings.h"
+#include "win32/app.h"
 #include "win32/directplay.h"
+#include "win32/rallyconfig.h"
+#include "win32/strings.h"
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include "win32/frontend.h"
 #else

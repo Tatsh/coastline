@@ -4,7 +4,7 @@
 // The headers below need the types of windows.h.
 #include <ddraw.h>
 
-#include "win32/boot/app.h"
+#include "win32/app.h"
 
 typedef HRESULT(WINAPI *DirectDrawCreateProc)(GUID *pGuid,
                                               IDirectDraw **ppDirectDraw,

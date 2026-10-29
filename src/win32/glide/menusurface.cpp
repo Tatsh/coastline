@@ -5,7 +5,7 @@
  */
 #include <cstdio>
 
-#include "win32/boot/app.h"
+#include "win32/app.h"
 #include "win32/frontend.h"
 #include "win32/glide/rgb565image.h"
 #include "win32/render.h"

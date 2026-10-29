@@ -17,7 +17,7 @@
 #include "common/weather.h"
 
 #if TGR_PC
-#include "win32/boot/rallyconfig.h"
+#include "win32/rallyconfig.h"
 #include "win32/render.h"
 #include "win32/settings.h"
 #else

@@ -10,7 +10,7 @@
 #include "common/vehicletrackpos.h"
 
 #if TGR_PC
-#include "win32/boot/strings.h"
+#include "win32/strings.h"
 #endif
 
 #define GRID_CELL 32

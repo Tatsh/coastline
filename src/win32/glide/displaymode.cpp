@@ -2,9 +2,9 @@
 
 #include <windows.h>
 
-#include "win32/boot/rallyconfig.h"
 #include "win32/frontend.h"
 #include "win32/glide/renderer.h"
+#include "win32/rallyconfig.h"
 
 // The bits of a pixel of every mode.
 #define GLIDE_MODE_BIT_DEPTH 16

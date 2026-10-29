@@ -1,4 +1,4 @@
-#include "win32/boot/strings.h"
+#include "win32/strings.h"
 
 #include <stdlib.h>
 #include <string.h>

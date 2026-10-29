@@ -1,4 +1,4 @@
-#include "win32/boot/app.h"
+#include "win32/app.h"
 
 #include "common/displaylistptr.h"
 #include "common/racerslot.h"
