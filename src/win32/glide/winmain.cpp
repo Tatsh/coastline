@@ -15,6 +15,7 @@
 #include "common/laps.h"
 #include "common/pause.h"
 #include "common/racesound.h"
+#include "common/rallyconfig.h"
 #include "common/settings.h"
 #include "common/strings.h"
 #include "common/timing.h"
@@ -26,7 +27,6 @@
 #include "win32/frontend.h"
 #include "win32/glide/device.h"
 #include "win32/glide/renderer.h"
-#include "win32/rallyconfig.h"
 #include "win32/render.h"
 #include "win32/sound.h"
 

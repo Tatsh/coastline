@@ -11,11 +11,11 @@
 #include <objbase.h>
 #endif
 
+#include "common/rallyconfig.h"
 #include "common/settings.h"
 #include "common/soundchannel.h"
 #include "win32/app.h"
 #include "win32/earsound.h"
-#include "win32/rallyconfig.h"
 #include "win32/timer.h"
 #include "win32/wavread.h"
 

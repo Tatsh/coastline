@@ -12,6 +12,7 @@
 #include "common/instantreplay.h"
 #include "common/pause.h"
 #include "common/race.h"
+#include "common/rallyconfig.h"
 #include "common/settings.h"
 #include "common/snapshot.h"
 #include "common/strings.h"
@@ -23,7 +24,6 @@
 #include "win32/app.h"
 #include "win32/directplay.h"
 #include "win32/input.h"
-#include "win32/rallyconfig.h"
 #include "win32/render.h"
 #include "win32/sound.h"
 

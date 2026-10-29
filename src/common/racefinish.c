@@ -15,10 +15,10 @@
 #include <stdint.h>
 
 #include "common/gameinit.h"
+#include "common/rallyconfig.h"
 #include "common/season.h"
 #include "common/snapshot.h"
 #include "win32/app.h"
-#include "win32/rallyconfig.h"
 #include "win32/sound.h"
 #else
 #include "carselect.h"

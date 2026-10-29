@@ -12,6 +12,7 @@
 #include "common/racers.h"
 #include "common/racersharing.h"
 #include "common/racerslotaccess.h"
+#include "common/rallyconfig.h"
 #include "common/settings.h"
 #include "common/strings.h"
 #include "common/trackselect.h"
@@ -25,7 +26,6 @@
 #include "render.h"
 #include "sound.h"
 #include "vehicle.h"
-#include "win32/rallyconfig.h"
 
 void AiVehicleControllerCallback(Vehicle *vehicle) {
     vehicle->ComputeAiVehicleInput();

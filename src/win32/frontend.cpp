@@ -24,6 +24,7 @@
 #include "common/ghost.h"
 #include "common/laps.h"
 #include "common/profile.h"
+#include "common/rallyconfig.h"
 #include "common/screen.h"
 #include "common/season.h"
 #include "common/seasons.h"
@@ -36,7 +37,6 @@
 #include "win32/buildinfo.h"
 #include "win32/directplay.h"
 #include "win32/input.h"
-#include "win32/rallyconfig.h"
 #include "win32/sound.h"
 #include "win32/timer.h"
 #if TGR_BRD3D

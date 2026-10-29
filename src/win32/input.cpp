@@ -17,12 +17,12 @@
 #include "common/laps.h"
 #include "common/pause.h"
 #include "common/playerinput.h"
+#include "common/rallyconfig.h"
 #include "common/strings.h"
 #include "common/vehicleaccess.h"
 #include "vehicle.h"
 #include "win32/app.h"
 #include "win32/directplay.h"
-#include "win32/rallyconfig.h"
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include "win32/frontend.h"
 #else

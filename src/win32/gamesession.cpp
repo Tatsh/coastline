@@ -1,6 +1,6 @@
+#include "common/rallyconfig.h"
 #include "win32/app.h"
 #include "win32/buildinfo.h"
-#include "win32/rallyconfig.h"
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include "sdl/renderhost.h"
 #elif TGR_BRD3D

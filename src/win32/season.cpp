@@ -11,11 +11,11 @@
 #include "common/game.h"
 #include "common/profile.h"
 #include "common/race.h"
+#include "common/rallyconfig.h"
 #include "common/seasons.h"
 #include "common/trackselect.h"
 #include "common/weather.h"
 #include "win32/buildinfo.h"
-#include "win32/rallyconfig.h"
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 #include "win32/frontend.h"
 #else

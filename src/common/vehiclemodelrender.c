@@ -12,8 +12,8 @@
 #include "common/weather.h"
 
 #if TGR_BOSS_RALLY
+#include "common/rallyconfig.h"
 #include "win32/app.h"
-#include "win32/rallyconfig.h"
 #include "win32/render.h"
 #include "win32/renderbackend.h"
 #if TGR_RENDERER == TGR_RENDERER_GLIDE

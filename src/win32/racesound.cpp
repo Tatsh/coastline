@@ -1,5 +1,6 @@
 #include "common/racesound.h"
 
+#include "common/rallyconfig.h"
 #include "common/screen.h"
 #include "common/soundchannel.h"
 #include "common/soundeffect.h"
@@ -10,7 +11,6 @@
 #include "common/vehiclesound.h"
 #include "vehicle.h"
 #include "win32/input.h"
-#include "win32/rallyconfig.h"
 #include "win32/sound.h"
 
 // The sample MuteVehicleSoundVoices() silences on the voice of each vehicle.

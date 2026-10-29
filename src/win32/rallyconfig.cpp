@@ -1,9 +1,10 @@
-#include "win32/rallyconfig.h"
+#include "common/rallyconfig.h"
 
 #include <cstdio>
 #include <cstring>
 
 #include "win32/app.h"
+#include "win32/input.h"
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include <string>
 

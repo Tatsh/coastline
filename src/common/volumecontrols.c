@@ -1,7 +1,7 @@
 #include "common/volumecontrols.h"
 
 #if TGR_BOSS_RALLY
-#include "win32/rallyconfig.h"
+#include "common/rallyconfig.h"
 #include "win32/sound.h"
 #else
 #include "common/audio.h"

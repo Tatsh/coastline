@@ -17,8 +17,8 @@
 #include "common/weather.h"
 
 #if TGR_BOSS_RALLY
+#include "common/rallyconfig.h"
 #include "common/settings.h"
-#include "win32/rallyconfig.h"
 #include "win32/render.h"
 #else
 #include "common/audiomix.h"

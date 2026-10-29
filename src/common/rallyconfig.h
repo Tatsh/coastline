@@ -6,13 +6,13 @@
  * command line.
  */
 
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/win32types.h"
-#else
-#include <windows.h>
-#endif
+#include "common/guid.h"
+#include "common/inputbinding.h"
 
-#include "win32/input.h"
+#ifndef MAX_PATH
+/** The longest path of the Windows API, the size of the paths the settings save. */
+#define MAX_PATH 260
+#endif
 
 /** The number of menu selections the configuration saves. */
 #define MENU_SELECTION_COUNT 12

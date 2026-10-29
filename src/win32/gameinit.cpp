@@ -4,6 +4,7 @@
 #include "common/game.h"
 #include "common/ghost.h"
 #include "common/race.h"
+#include "common/rallyconfig.h"
 #include "common/screen.h"
 #include "common/settings.h"
 #include "common/vehicleaccess.h"
@@ -14,7 +15,6 @@
 #include "win32/directplay.h"
 #include "win32/hud.h"
 #include "win32/input.h"
-#include "win32/rallyconfig.h"
 #include "win32/renderinit.h"
 #include "win32/sound.h"
 #if TGR_PLATFORM == TGR_PLATFORM_SDL

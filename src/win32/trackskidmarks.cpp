@@ -4,6 +4,7 @@
 #include <PR/os_cont.h>
 
 #include "common/displaylistptr.h"
+#include "common/rallyconfig.h"
 #include "common/settings.h"
 #include "common/shadowbuffers.h"
 #include "common/system.h"
@@ -11,7 +12,6 @@
 #include "common/vehiclecount.h"
 #include "common/weather.h"
 #include "vehicle.h"
-#include "win32/rallyconfig.h"
 #include "win32/render.h"
 #include "win32/terrain.h"
 

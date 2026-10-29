@@ -67,6 +67,8 @@ typedef struct tagBITMAP {
     LPVOID bmBits;     /*!< The pixels. */
 } BITMAP;
 
+#ifndef GUID_DEFINED
+#define GUID_DEFINED
 /** A globally unique identifier. */
 typedef struct _GUID {
     DWORD Data1;   /*!< The first 32 bits. */
@@ -74,6 +76,7 @@ typedef struct _GUID {
     WORD Data3;    /*!< The next 16 bits. */
     BYTE Data4[8]; /*!< The last 64 bits. */
 } GUID;
+#endif /* GUID_DEFINED */
 
 /* The wave formats are packed to the byte in the headers of Windows, as in the files. */
 #pragma pack(push, 1)
