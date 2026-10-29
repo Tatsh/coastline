@@ -5,6 +5,7 @@
 #include <cctype>
 #include <format>
 #include <fstream>
+#include <iterator>
 #include <memory>
 #include <optional>
 #include <sstream>
@@ -184,23 +185,29 @@ std::expected<std::vector<IsoEntry>, std::string> ListIso(SectorReader &reader) 
     return entries;
 }
 
-// The installers, DirectX, and the programs of the Windows release are not game data.
+// The files of the disc the game opens. The video, the installers, DirectX, the programs, and the
+// pictures of the menus of the Windows release, which the front end of the Nintendo 64 release
+// replaces, are left on the disc.
 bool IsGameData(const std::filesystem::path &path) {
     auto lower = [](std::string text) {
         std::ranges::transform(text, text.begin(), [](unsigned char c) { return std::tolower(c); });
         return text;
     };
-    if (lower(path.begin()->string()) == "directx") {
-        return false;
+    static constexpr std::array<std::string_view, 6> directories{
+        "cargfx", "cars", "images", "paint", "sfx", "tracks"};
+    // The text of the game is in the string resources of BRString.dll.
+    static constexpr std::array<std::string_view, 7> files{"bossrally.pod",
+                                                           "brstring.dll",
+                                                           "loading.img",
+                                                           "rallycredits.dat",
+                                                           "rallyintro1.dat",
+                                                           "rallyintro2.dat",
+                                                           "rallyoutro.dat"};
+    std::string first = lower(path.begin()->string());
+    if (std::next(path.begin()) != path.end()) {
+        return std::ranges::find(directories, first) != directories.end();
     }
-    // The text of the game is in the string resources of BRString.dll, which the game reads.
-    if (lower(path.filename().string()) == "brstring.dll") {
-        return true;
-    }
-    static constexpr std::array<std::string_view, 10> skipped{
-        ".exe", ".dll", ".cab", ".ex_", ".inf", ".url", ".tag", ".ini", ".bin", ".hdr"};
-    auto extension = lower(path.extension().string());
-    return std::ranges::find(skipped, extension) == skipped.end();
+    return std::ranges::find(files, first) != files.end();
 }
 
 std::optional<std::string>

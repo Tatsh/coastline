@@ -923,6 +923,9 @@ racesound
 racespecials
 raininit
 rallyconfig
+rallycredits
+rallyintro
+rallyoutro
 ralt
 ramarray
 ramreadformat
