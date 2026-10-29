@@ -97,7 +97,19 @@ struct Primitive {
     bool blend = false;
     bool twoSided = false;
     bool lit = false;
+    // The combiner of the RDP, its colours, and the image of its second texel, where recorded.
+    std::optional<std::array<std::uint32_t, 2>> combine;
+    std::array<float, 4> prim{1, 1, 1, 1};
+    std::array<float, 4> env{1, 1, 1, 1};
+    std::optional<std::size_t> texel1;
 };
+
+std::array<float, 4> Rgba(std::uint32_t value) {
+    return {static_cast<float>(value >> 24 & 0xff) / 255.0f,
+            static_cast<float>(value >> 16 & 0xff) / 255.0f,
+            static_cast<float>(value >> 8 & 0xff) / 255.0f,
+            static_cast<float>(value & 0xff) / 255.0f};
+}
 
 // A placed mesh: its primitives and the transform of its node.
 struct Placed {
@@ -113,6 +125,9 @@ struct VertexUniforms {
 struct FragmentUniforms {
     float flags[4];
     float lightDirection[4];
+    std::uint32_t combine[4];
+    float prim[4];
+    float env[4];
 };
 
 SDL_GPUShader *CreateShader(SDL_GPUDevice *device,
@@ -378,7 +393,7 @@ std::unique_ptr<ModelView> ModelView::Create(GpuWindow &window, const std::files
     SDL_GPUShader *vertex =
         CreateShader(device, SDL_GPU_SHADERSTAGE_VERTEX, 0, MODEL_VERT_SPIRV, MODEL_VERT_MSL);
     SDL_GPUShader *fragment =
-        CreateShader(device, SDL_GPU_SHADERSTAGE_FRAGMENT, 1, MODEL_FRAG_SPIRV, MODEL_FRAG_MSL);
+        CreateShader(device, SDL_GPU_SHADERSTAGE_FRAGMENT, 2, MODEL_FRAG_SPIRV, MODEL_FRAG_MSL);
     if (vertex == nullptr || fragment == nullptr) {
         return nullptr;
     }
@@ -554,6 +569,19 @@ std::unique_ptr<ModelView> ModelView::Create(GpuWindow &window, const std::files
                 drawn.blend = mode == "BLEND";
                 drawn.alphaCut = mode == "MASK" ? 0.5f : -1.0f;
                 drawn.twoSided = material.value("doubleSided", false);
+                if (material.contains("extras") && material["extras"].contains("coastlineRdp")) {
+                    const auto &rdp = material["extras"]["coastlineRdp"];
+                    std::array<std::uint32_t, 2> words{rdp["combine"][0].get<std::uint32_t>(),
+                                                       rdp["combine"][1].get<std::uint32_t>()};
+                    if (words[0] != 0 || words[1] != 0) {
+                        drawn.combine = words;
+                    }
+                    drawn.prim = Rgba(rdp["primColor"].get<std::uint32_t>());
+                    drawn.env = Rgba(rdp["envColor"].get<std::uint32_t>());
+                    if (rdp.contains("texel1Image")) {
+                        drawn.texel1 = rdp["texel1Image"].get<std::size_t>();
+                    }
+                }
             }
             primitives.push_back(drawn);
         }
@@ -693,19 +721,30 @@ void ModelView::Draw(const std::filesystem::path *capture) {
                     s.pipelines[static_cast<std::size_t>((blending ? 2 : 0) +
                                                          (primitive.twoSided ? 1 : 0))]);
                 SDL_PushGPUVertexUniformData(commands, 0, &vertexUniforms, sizeof(vertexUniforms));
-                FragmentUniforms fragmentUniforms{{primitive.alphaCut,
-                                                   primitive.lit ? 1.0f : 0.0f,
-                                                   primitive.texture ? 1.0f : 0.0f,
-                                                   0.0f},
-                                                  {-0.4f, -0.8f, -0.4f, 0.0f}};
+                FragmentUniforms fragmentUniforms{
+                    {primitive.alphaCut,
+                     primitive.lit ? 1.0f : 0.0f,
+                     primitive.texture ? 1.0f : 0.0f,
+                     primitive.combine ? 1.0f : 0.0f},
+                    {-0.4f, -0.8f, -0.4f, 0.0f},
+                    {primitive.combine ? (*primitive.combine)[0] : 0u,
+                     primitive.combine ? (*primitive.combine)[1] : 0u,
+                     0u,
+                     0u},
+                    {primitive.prim[0], primitive.prim[1], primitive.prim[2], primitive.prim[3]},
+                    {primitive.env[0], primitive.env[1], primitive.env[2], primitive.env[3]}};
                 SDL_PushGPUFragmentUniformData(
                     commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
-                SDL_GPUTextureSamplerBinding binding{s.white, s.whiteSampler};
+                std::array<SDL_GPUTextureSamplerBinding, 2> bindings{
+                    {{s.white, s.whiteSampler}, {s.white, s.whiteSampler}}};
                 if (primitive.texture && *primitive.texture < s.textures.size()) {
                     auto [image, sampler] = s.textures[*primitive.texture];
-                    binding = {s.images.at(image), s.samplers.at(sampler)};
+                    bindings[0] = {s.images.at(image), s.samplers.at(sampler)};
+                    if (primitive.texel1 && *primitive.texel1 < s.images.size()) {
+                        bindings[1] = {s.images[*primitive.texel1], s.samplers.at(sampler)};
+                    }
                 }
-                SDL_BindGPUFragmentSamplers(pass, 0, &binding, 1);
+                SDL_BindGPUFragmentSamplers(pass, 0, bindings.data(), bindings.size());
                 SDL_GPUBufferBinding vertices{primitive.vertices, 0};
                 SDL_BindGPUVertexBuffers(pass, 0, &vertices, 1);
                 SDL_GPUBufferBinding indices{primitive.indices, 0};

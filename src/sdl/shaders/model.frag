@@ -7,23 +7,82 @@ layout(location = 2) in vec4 inColor;
 layout(location = 0) out vec4 outColor;
 
 layout(set = 2, binding = 0) uniform sampler2D textureMap;
+layout(set = 2, binding = 1) uniform sampler2D textureMap1;
 
-// x is the alpha a texel needs to be drawn, or -1 to draw every texel. y is 1 for a lit material,
-// whose vertices have normals, and 0 for one whose vertices have colours. z is 1 for a textured
-// material.
+// flags: x is the alpha a texel needs to be drawn, or -1 to draw every texel, y is 1 for a lit
+// material, whose vertices have normals, z is 1 for a textured material, and w is 1 where the
+// combiner of the RDP is given. combine holds its two words, and prim and env the primitive and
+// the environment colour.
 layout(set = 3, binding = 0) uniform Material {
     vec4 flags;
     vec4 lightDirection;
+    uvec4 combine;
+    vec4 prim;
+    vec4 env;
 };
 
+// The inputs of the first cycle of the colour combiner, as the RDP numbers them.
+vec3 ColorInput(uint code, int slot, vec4 t0, vec4 t1, vec4 shade, float lod) {
+    switch (code) {
+    case 1u: return t0.rgb;
+    case 2u: return t1.rgb;
+    case 3u: return prim.rgb;
+    case 4u: return shade.rgb;
+    case 5u: return env.rgb;
+    }
+    if (slot == 0 && code == 6u) return vec3(1.0);
+    if (slot == 2) {
+        switch (code) {
+        case 8u: return vec3(t0.a);
+        case 9u: return vec3(t1.a);
+        case 10u: return vec3(prim.a);
+        case 11u: return vec3(shade.a);
+        case 12u: return vec3(env.a);
+        case 13u: return vec3(lod);
+        }
+    }
+    if (slot == 3 && code == 6u) return vec3(1.0);
+    return vec3(0.0);
+}
+
+float AlphaInput(uint code, int slot, vec4 t0, vec4 t1, vec4 shade, float lod) {
+    switch (code) {
+    case 1u: return t0.a;
+    case 2u: return t1.a;
+    case 3u: return prim.a;
+    case 4u: return shade.a;
+    case 5u: return env.a;
+    }
+    if (slot == 2) return code == 0u ? lod : 0.0;
+    return code == 6u ? 1.0 : 0.0;
+}
+
 void main() {
-    vec4 texel = flags.z > 0.5 ? texture(textureMap, inTexCoord) : vec4(1.0);
+    vec4 t0 = flags.z > 0.5 ? texture(textureMap, inTexCoord) : vec4(1.0);
+    vec4 t1 = texture(textureMap1, inTexCoord);
     vec4 shade = inColor;
     if (flags.y > 0.5) {
         float diffuse = max(dot(normalize(inNormal), -lightDirection.xyz), 0.0);
         shade = vec4(vec3(0.45 + 0.55 * diffuse), 1.0);
     }
-    vec4 color = texel * shade;
+    vec4 color = t0 * shade;
+    if (flags.w > 0.5) {
+        // The fraction between two levels of detail, from the texels a pixel covers.
+        vec2 footprint = max(abs(dFdx(inTexCoord)), abs(dFdy(inTexCoord))) *
+                         vec2(textureSize(textureMap, 0));
+        float lod = clamp(log2(max(max(footprint.x, footprint.y), 1.0)), 0.0, 1.0);
+        uint high = combine.x;
+        uint low = combine.y;
+        vec3 rgb = (ColorInput(high >> 20 & 0xfu, 0, t0, t1, shade, lod) -
+                    ColorInput(low >> 28 & 0xfu, 1, t0, t1, shade, lod)) *
+                       ColorInput(high >> 15 & 0x1fu, 2, t0, t1, shade, lod) +
+                   ColorInput(low >> 15 & 0x7u, 3, t0, t1, shade, lod);
+        float alpha = (AlphaInput(high >> 12 & 0x7u, 0, t0, t1, shade, lod) -
+                       AlphaInput(low >> 12 & 0x7u, 1, t0, t1, shade, lod)) *
+                          AlphaInput(high >> 9 & 0x7u, 2, t0, t1, shade, lod) +
+                      AlphaInput(low >> 9 & 0x7u, 3, t0, t1, shade, lod);
+        color = vec4(rgb, alpha);
+    }
     if (color.a < flags.x) {
         discard;
     }

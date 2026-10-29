@@ -1220,6 +1220,7 @@ urlkey
 urllib
 urlopen
 userabort
+uvec
 vars
 vblankquery
 vecmath
