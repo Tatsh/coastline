@@ -34,9 +34,9 @@
 #include "common/racesound.h"
 #include "common/settings.h"
 #include "common/snapshot.h"
+#include "common/soundsystem.h"
 #include "win32/directplay.h"
 #include "win32/hud.h"
-#include "win32/sound.h"
 #else
 #include "common/audiomix.h"
 #include "common/shadowbuffers.h"

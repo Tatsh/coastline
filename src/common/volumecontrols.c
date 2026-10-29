@@ -2,7 +2,7 @@
 
 #if TGR_BOSS_RALLY
 #include "common/rallyconfig.h"
-#include "win32/sound.h"
+#include "common/soundsystem.h"
 #else
 #include "common/audio.h"
 #include "common/optionsettings.h"

@@ -11,7 +11,7 @@
 #include "common/vehiclecount.h"
 
 #if TGR_BOSS_RALLY
-#include "win32/sound.h"
+#include "common/soundsystem.h"
 #else
 #include "common/audio.h"
 #include "common/audiomix.h"

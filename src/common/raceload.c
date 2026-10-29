@@ -52,10 +52,10 @@
 #include "common/ghost.h"
 #include "common/rallyconfig.h"
 #include "common/snapshot.h"
+#include "common/soundsystem.h"
 #include "common/trackrelocation.h"
 #include "win32/dashboardtextures.h"
 #include "win32/render.h"
-#include "win32/sound.h"
 
 namespace {
     union StartLightsStorage {

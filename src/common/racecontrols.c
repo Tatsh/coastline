@@ -16,8 +16,8 @@
 #include "common/session.h"
 #include "common/settings.h"
 #include "common/snapshot.h"
+#include "common/soundsystem.h"
 #include "win32/directplay.h"
-#include "win32/sound.h"
 #endif
 
 #if TGR_BOSS_RALLY

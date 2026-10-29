@@ -19,7 +19,7 @@
 #include "common/season.h"
 #include "common/session.h"
 #include "common/snapshot.h"
-#include "win32/sound.h"
+#include "common/soundsystem.h"
 #else
 #include "common/audio.h"
 #include "common/audiomix.h"

@@ -1,4 +1,4 @@
-#include "win32/soundsample.h"
+#include "common/soundsample.h"
 
 SoundSample g_aSoundChannelBuffers[SOUND_SAMPLE_COUNT] = {
     {{{0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}, {0}}, {0}, 11025.0},

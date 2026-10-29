@@ -19,8 +19,8 @@
 #include "common/ghost.h"
 #include "common/rallyconfig.h"
 #include "common/settings.h"
+#include "common/soundsystem.h"
 #include "win32/directplay.h"
-#include "win32/sound.h"
 
 #else
 #include <PR/os_libc.h>

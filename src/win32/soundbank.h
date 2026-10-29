@@ -2,7 +2,7 @@
 
 #include <stdint.h>
 
-#include "win32/soundsample.h"
+#include "common/soundsample.h"
 
 #ifdef __cplusplus
 extern "C" {
