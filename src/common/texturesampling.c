@@ -1,4 +1,4 @@
-#include "win32/texturesampling.h"
+#include "common/texturesampling.h"
 
 #include <math.h>
 #include <stdint.h>

@@ -20,11 +20,11 @@
 #endif
 #include "common/fileio.h"
 #include "common/settings.h"
+#include "common/textureworkspace.h"
 #include "win32/d3d/texture.h"
 #include "win32/displaylist.h"
 #include "win32/paintshop.h"
 #include "win32/texturescan.h"
-#include "win32/textureworkspace.h"
 
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
 #include <zlib.h>

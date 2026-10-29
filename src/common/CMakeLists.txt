@@ -135,6 +135,39 @@ if(TGR_PLATFORM STREQUAL "n64")
   # The mixer of the console and the player of its music modules.
   target_sources(coastline_common PRIVATE audio.c)
 else()
+  # The game code and data of Boss Rally that the Windows libraries and the SDL game share.
+  target_sources(
+    coastline_common
+    PRIVATE airplanestate.c
+            assetnames.c
+            clockfields.c
+            convertedvertex.c
+            creditdata.c
+            dashboardtextures.c
+            displaylistdata.c
+            effectdata.c
+            fontdata.c
+            framebuffer.c
+            framefields.c
+            hud.c
+            hudassets.c
+            hudcanvas.c
+            hudquad.c
+            particlesnapshot.c
+            physicsdata.c
+            raceglobals.c
+            racerslot.cpp
+            settings.c
+            shadowproject.c
+            snapshot.cpp
+            soundbank.c
+            soundsample.c
+            terrain.c
+            texturesampling.c
+            textureworkspace.c
+            trackmenudata.c
+            vehicle.cpp
+            visibilitydata.c)
   # The PC port compiles these sources as C++, as the Windows libraries were built.
   set_source_files_properties(
     ambientsound.c

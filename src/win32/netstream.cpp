@@ -4,9 +4,9 @@
 
 #include "common/ghost.h"
 #include "common/settings.h"
+#include "common/terrain.h"
 #include "common/trackselect.h"
 #include "win32/directplay.h"
-#include "win32/terrain.h"
 
 namespace {
 /**

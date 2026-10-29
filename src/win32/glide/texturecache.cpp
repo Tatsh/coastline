@@ -9,6 +9,8 @@
 #include <zlib.h>
 
 #include "common/settings.h"
+#include "common/texturesampling.h"
+#include "common/textureworkspace.h"
 #include "common/vehiclemodel.h"
 #include "win32/d3d/renderer.h"
 #include "win32/displaylist.h"
@@ -17,9 +19,7 @@
 #include "win32/glide/texture.h"
 #include "win32/paintshop.h"
 #include "win32/render.h"
-#include "win32/texturesampling.h"
 #include "win32/texturescan.h"
-#include "win32/textureworkspace.h"
 
 GlideTmuMemory g_aGlideTmuMemory[GLIDE_TMU_COUNT];
 GlideTextureSlot g_aGlideTextureSlots[GLIDE_TEXTURE_SLOT_COUNT];

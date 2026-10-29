@@ -17,16 +17,16 @@ set(COASTLINE_PC_C_SOURCES
     common/screenrect.c common/shadowreset.c common/sidegrip.c common/skystate.c common/soundeffect.c common/soundpan.c common/soundsource.c
     common/startlights.c common/textrender.c common/textstyle.c common/texturebind.c common/texturestream.c common/timingframe.c
     common/trackgrid.c common/trackvalid.c common/tricache.c common/util.c common/vblankquery.c common/vecmath.c common/vehiclemodel.c common/visgrid.c
-    common/visiblecompare.c win32/airplanestate.c win32/assetnames.c win32/strings.c
-    win32/buildinfo.c win32/clockfields.c win32/convertedvertex.c win32/creditdata.c
-    win32/dashboardtextures.c win32/displaylistdata.c win32/effectdata.c
-    win32/fontdata.c win32/fpshud.c win32/framebuffer.c win32/framefields.c win32/hudassets.c
-    win32/hud.c win32/hudcanvas.c win32/hudquad.c win32/numericdata.c win32/paintshop.c
-    win32/particlesnapshot.c win32/physicsdata.c win32/raceglobals.c win32/racepacing.c
-    win32/reflectiondata.c win32/runtimebuffers.c win32/settings.c win32/shadowproject.c
-    win32/soundbank.c win32/soundsample.c win32/terrain.c win32/texturesampling.c
-    win32/textureworkspace.c win32/timer.c win32/trackmenudata.c win32/vehiclemodelload.c
-    win32/visibilitydata.c common/wind.c)
+    common/visiblecompare.c common/airplanestate.c common/assetnames.c win32/strings.c
+    win32/buildinfo.c common/clockfields.c common/convertedvertex.c common/creditdata.c
+    common/dashboardtextures.c common/displaylistdata.c common/effectdata.c
+    common/fontdata.c win32/fpshud.c common/framebuffer.c common/framefields.c common/hudassets.c
+    common/hud.c common/hudcanvas.c common/hudquad.c win32/numericdata.c win32/paintshop.c
+    common/particlesnapshot.c common/physicsdata.c common/raceglobals.c win32/racepacing.c
+    win32/reflectiondata.c win32/runtimebuffers.c common/settings.c common/shadowproject.c
+    common/soundbank.c common/soundsample.c common/terrain.c common/texturesampling.c
+    common/textureworkspace.c win32/timer.c common/trackmenudata.c win32/vehiclemodelload.c
+    common/visibilitydata.c common/wind.c)
 set(COASTLINE_PC_CXX_SOURCES
     common/ambientsound.c common/billboardparticles.c common/camerachange.c common/camerachase.c common/cameracollision.c
     common/collisionstep.c common/controllerread.c common/dashboard.c common/displaylistops.c common/driving.c common/exhaustspawn.c common/fog.c
@@ -43,11 +43,11 @@ set(COASTLINE_PC_CXX_SOURCES
     win32/configfile.cpp win32/displaylist.cpp win32/frametimer.cpp win32/gameinit.cpp
     win32/gamesession.cpp win32/ghost.cpp win32/hudlaplist.cpp win32/hudnetwork.cpp
     win32/inputdefaults.cpp win32/modelrelocation.cpp win32/podarchive.cpp win32/racercolor.cpp
-    win32/racerslot.cpp win32/racescreen.cpp win32/racesound.cpp win32/render.cpp
+    common/racerslot.cpp win32/racescreen.cpp win32/racesound.cpp win32/render.cpp
     win32/renderdefaults.cpp win32/runtimebuffers.cpp win32/season.cpp win32/shadowclip.cpp
-    win32/snapshot.cpp win32/snapshotfields.cpp win32/snapshotinterpolation.cpp
+    common/snapshot.cpp win32/snapshotfields.cpp win32/snapshotinterpolation.cpp
     win32/texturescan.cpp win32/trackanimation.cpp win32/trackload.cpp win32/trackskidmarks.cpp
-    win32/tracktexture.cpp win32/vehicle.cpp win32/vehiclesetup.cpp)
+    win32/tracktexture.cpp common/vehicle.cpp win32/vehiclesetup.cpp)
 list(TRANSFORM COASTLINE_PC_C_SOURCES PREPEND "${_src}/")
 list(TRANSFORM COASTLINE_PC_CXX_SOURCES PREPEND "${_src}/")
 # The SDL game compiles every source as C++, for the 32-bit offsets of Ptr32 in the structures

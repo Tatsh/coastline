@@ -1,4 +1,4 @@
-#include "win32/hudassets.h"
+#include "common/hudassets.h"
 
 #include "common/weather.h"
 

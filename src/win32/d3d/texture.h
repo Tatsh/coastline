@@ -14,7 +14,7 @@
 #include <ddraw.h>
 #endif
 
-#include "win32/textureworkspace.h"
+#include "common/textureworkspace.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,5 +1,5 @@
-#ifndef COASTLINE_WIN_HUDASSETS_H
-#define COASTLINE_WIN_HUDASSETS_H
+#ifndef COASTLINE_HUDASSETS_H
+#define COASTLINE_HUDASSETS_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,4 +55,4 @@ extern unsigned char g_abNightSkyTexture[2048];
 }
 #endif
 
-#endif /* COASTLINE_WIN_HUDASSETS_H */
+#endif /* COASTLINE_HUDASSETS_H */

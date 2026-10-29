@@ -1,4 +1,4 @@
-#include "win32/textureworkspace.h"
+#include "common/textureworkspace.h"
 
 typedef union {
     unsigned char decoded[TEXTURE_DECODE_WORKSPACE_BYTES];

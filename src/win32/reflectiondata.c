@@ -1,5 +1,5 @@
+#include "common/hudassets.h"
 #include "common/vehicleview.h"
-#include "win32/hudassets.h"
 
 VehicleReflectionTexture g_apVehicleReflectionTextures[4] = {
     {.image = g_abDaySkyTexture},

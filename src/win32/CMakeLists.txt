@@ -9,29 +9,18 @@ target_link_libraries(coastline_main PRIVATE coastline_options)
 
 add_library(
   coastline_win32 STATIC
-  airplanestate.c
   app.cpp
   assetfile.cpp
-  assetnames.c
   buildinfo.c
-  clockfields.c
   configfile.cpp
-  convertedvertex.c
-  creditdata.c
-  dashboardtextures.c
   diagnostics.c
   directplay.cpp
   displaylist.cpp
-  displaylistdata.c
   displaymodelist.cpp
   dxversion.cpp
   earsound.cpp
-  effectdata.c
   fileio.c
-  fontdata.c
   fpshud.c
-  framebuffer.c
-  framefields.c
   frametimer.cpp
   frontend.cpp
   frontenddata.cpp
@@ -39,12 +28,8 @@ add_library(
   gamesession.cpp
   gamestate.cpp
   ghost.cpp
-  hud.c
-  hudassets.c
-  hudcanvas.c
   hudlaplist.cpp
   hudnetwork.cpp
-  hudquad.c
   input.cpp
   inputdefaults.cpp
   menufont.cpp
@@ -52,13 +37,9 @@ add_library(
   netstream.cpp
   numericdata.c
   paintshop.c
-  particlesnapshot.c
-  physicsdata.c
   podarchive.cpp
-  raceglobals.c
   racepacing.c
   racercolor.cpp
-  racerslot.cpp
   racescreen.cpp
   racesound.cpp
   rallyconfig.cpp
@@ -68,32 +49,21 @@ add_library(
   runtimebuffers.c
   runtimebuffers.cpp
   season.cpp
-  settings.c
   shadowclip.cpp
-  shadowproject.c
   shutdown.cpp
-  snapshot.cpp
   snapshotfields.cpp
   snapshotinterpolation.cpp
   sound.cpp
-  soundbank.c
-  soundsample.c
   startup.cpp
   strings.c
-  terrain.c
-  texturesampling.c
   texturescan.cpp
-  textureworkspace.c
   timer.c
   trackanimation.cpp
   trackload.cpp
-  trackmenudata.c
   trackskidmarks.cpp
   tracktexture.cpp
-  vehicle.cpp
   vehiclemodelload.c
   vehiclesetup.cpp
-  visibilitydata.c
   wavread.c)
 target_link_libraries(coastline_win32 PRIVATE coastline_options)
 

@@ -8,12 +8,12 @@
 #include "common/settings.h"
 #include "common/shadowbuffers.h"
 #include "common/system.h"
+#include "common/terrain.h"
 #include "common/trackrender.h"
 #include "common/vehicle.h"
 #include "common/vehiclecount.h"
 #include "common/weather.h"
 #include "win32/render.h"
-#include "win32/terrain.h"
 
 namespace {
 struct SkidMarkSegment {

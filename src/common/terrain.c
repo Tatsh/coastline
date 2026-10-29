@@ -1,4 +1,4 @@
-#include "win32/terrain.h"
+#include "common/terrain.h"
 
 #include "common/physics.h"
 #include "common/tricache.h"

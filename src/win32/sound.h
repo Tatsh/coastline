@@ -18,9 +18,9 @@
 #endif
 
 #include "common/assetnames.h"
+#include "common/soundbank.h"
 #include "common/soundsample.h"
 #include "common/soundsystem.h"
-#include "win32/soundbank.h"
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,4 +1,4 @@
-#include "win32/soundbank.h"
+#include "common/soundbank.h"
 
 SoundBankRow g_SoundBankIndexTableA[SOUND_SAMPLE_COUNT] = {
     {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0x0, 0x0, 0x40c58880}},
