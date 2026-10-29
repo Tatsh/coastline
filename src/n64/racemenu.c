@@ -26,8 +26,8 @@
 #include "weatherselect.h"
 
 /* The sounds of moving the cursor and of choosing, on the cartridge. */
-#define ROM_SCROLL_SOUND 0x1BF480
-#define ROM_SELECT_SOUND 0x1BFEC0
+#define ROM_SCROLL_SOUND ((u32)_scrollSoundSegmentRomStart)
+#define ROM_SELECT_SOUND ((u32)_selectSoundSegmentRomStart)
 
 #if TGR_REGION == TGR_REGION_JP
 #define TRACK_MENU_TITLE "COURSE SELECT"
