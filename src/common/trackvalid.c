@@ -1,7 +1,7 @@
 #include "common/trackselect.h"
 
 #if !TGR_BOSS_RALLY
-#include "racemenu.h"
+#include "common/trackmenuitem.h"
 #endif
 
 s32 IsTrackIndexValid(s32 track) {

@@ -22,9 +22,9 @@
 #include <PR/os_libc.h>
 
 #include "common/input.h"
+#include "common/optionsettings.h"
 #include "common/system.h"
 #include "common/text.h"
-#include "options.h"
 #endif /* TGR_BOSS_RALLY */
 
 #if TGR_BOSS_RALLY && defined(ENABLE_PATCHES)

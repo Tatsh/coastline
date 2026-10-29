@@ -41,10 +41,8 @@
 #if !TGR_BOSS_RALLY
 #include <PR/os_libc.h>
 
-#include "carselect.h"
-#include "mainmenu.h"
-#include "options.h"
-#include "racemenu.h"
+#include "common/frontendscreens.h"
+#include "common/optionsettings.h"
 #endif
 
 #if TGR_BOSS_RALLY

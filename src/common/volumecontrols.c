@@ -5,7 +5,7 @@
 #include "win32/sound.h"
 #else
 #include "common/audio.h"
-#include "options.h"
+#include "common/optionsettings.h"
 #endif
 
 #if TGR_BOSS_RALLY

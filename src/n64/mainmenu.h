@@ -103,15 +103,6 @@ void StartChampionshipRace(void);
  */
 void StartTimeAttack(void);
 
-/**
- * Run one frame of the main menu.
- *
- * @ghidraAddress USA: 0x802111e0
- * @ghidraAddress EUR: 0x80211040
- * @ghidraAddress JPN: 0x80210f30
- */
-void ProcessMainMenu(void);
-
 #ifdef __cplusplus
 }
 #endif

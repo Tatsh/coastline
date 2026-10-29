@@ -10,12 +10,11 @@
 #include <PR/os.h>
 
 #include "common/audio.h"
+#include "common/frontendscreens.h"
+#include "common/optionsettings.h"
 #include "common/replay.h"
 #include "common/splash.h"
 #include "common/vehicle.h"
-#include "mainmenu.h"
-#include "options.h"
-#include "racemenu.h"
 #else
 #include "common/displaylistops.h"
 #include "common/gameinit.h"

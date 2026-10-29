@@ -19,7 +19,6 @@
 #include <PR/gu.h>
 #include <PR/os_libc.h>
 
-#include "racemenu.h"
 #else
 #include "common/screen.h"
 #endif

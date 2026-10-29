@@ -10,6 +10,7 @@
 #include <PR/gbi.h>
 #include <PR/ultratypes.h>
 
+#include "common/frontendscreens.h"
 #include "common/model.h"
 #include "common/seasons.h"
 #include "common/texrect.h"
@@ -467,15 +468,6 @@ void TrackMenuPostDraw(s32 item);
  * @ghidraAddress JPN: 0x802086b4
  */
 void SeasonRecordsPreDrawCallback(void);
-
-/**
- * Run one frame of the track menu: set it up on its first frame, then act on its items.
- *
- * @ghidraAddress USA: 0x80209434
- * @ghidraAddress EUR: 0x80209214
- * @ghidraAddress JPN: 0x80208e20
- */
-void ProcessTrackMenu(void);
 
 /**
  * Draw the beam of the spotlight over the stage of a screen.

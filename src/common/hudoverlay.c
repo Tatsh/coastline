@@ -17,7 +17,7 @@
 #include <PR/os_libc.h>
 
 #include "common/input.h"
-#include "options.h"
+#include "common/optionsettings.h"
 #endif /* TGR_BOSS_RALLY */
 
 #if TGR_BOSS_RALLY

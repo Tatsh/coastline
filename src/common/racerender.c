@@ -15,7 +15,7 @@
 #else
 #include <PR/os_libc.h>
 
-#include "options.h"
+#include "common/optionsettings.h"
 #endif /* TGR_BOSS_RALLY */
 
 #include "common/camera.h"

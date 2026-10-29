@@ -9,15 +9,14 @@
 
 #include <PR/ultratypes.h>
 
+#include "common/frontendscreens.h"
+#include "common/optionsettings.h"
 #include "common/volumecontrols.h"
 #include "racemenu.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-/** The levels of each volume, from 0 for silence. */
-#define VOLUME_LEVELS 11
 
 /** The items of the options menu. */
 enum {
@@ -31,15 +30,6 @@ enum {
 #endif
     OPTIONS_ITEM_CREDITS, /*!< Starts the credits race. */
     OPTIONS_ITEMS,        /*!< The number of items. */
-};
-
-/** The screens that open the save and load menu, deciding what it offers and where it returns. */
-enum {
-    SAVE_LOAD_FROM_MAIN_MENU,   /*!< The main menu; the menu offers every choice. */
-    SAVE_LOAD_FROM_SEASON,      /*!< The results of a championship race; the menu offers to save
-                                     the season. */
-    SAVE_LOAD_FROM_TIME_ATTACK, /*!< The results of a time attack; the menu offers to save the
-                                     ghost car. */
 };
 
 /** The choices of the save and load menu. */
@@ -74,28 +64,6 @@ typedef struct {
 } SaveLoadMenuItem;
 #endif /* TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP */
 
-/** The data ProcessPakDataScreen() loads or saves. */
-enum {
-    PAK_DATA_LOAD_SEASON,        /*!< Load a championship season. */
-    PAK_DATA_LOAD_GHOST,         /*!< Load a ghost car of time attack. */
-    PAK_DATA_LOAD_CONFIGURATION, /*!< Load the settings of the options menu. */
-    PAK_DATA_SAVE_CONFIGURATION, /*!< Save the settings of the options menu. */
-};
-
-/** The settings of the options menu, which the configuration on a Controller Pak keeps. */
-typedef struct {
-    s32 musicVolume; /*!< The level of the music, from 0 to #VOLUME_LEVELS - 1. */
-    s32 sfxVolume;   /*!< The level of the sound effects, from 0 to #VOLUME_LEVELS - 1. */
-    s32 speedInMph;  /*!< Whether speeds show in miles an hour rather than kilometres. */
-} OptionSettings;
-
-/**
- * @ghidraAddress USA: 0x802723d0
- * @ghidraAddress EUR: 0x802743b0
- * @ghidraAddress JPN: 0x80273e60
- */
-extern OptionSettings g_OptionSettings;
-
 /**
  * The items of the options menu, by the OPTIONS_ITEM_ values.
  *
@@ -114,22 +82,6 @@ extern MenuItem g_aOptionsMenuItems[OPTIONS_ITEMS];
  */
 extern MenuItem *g_apOptionsMenuItems[];
 
-/**
- * The volume of the music and of the effects at each level.
- *
- * @ghidraAddress USA: 0x80272488
- * @ghidraAddress EUR: 0x80274438
- * @ghidraAddress JPN: 0x80273ee8
- */
-extern s32 g_adwBgmVolumeLevels[VOLUME_LEVELS];
-
-/**
- * @ghidraAddress USA: 0x802724b4
- * @ghidraAddress EUR: 0x80274464
- * @ghidraAddress JPN: 0x80273f14
- */
-extern s32 g_adwSfxVolumeLevels[VOLUME_LEVELS];
-
 #if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
 /**
  * Whether a setting of the options menu changed since the menu opened, and the game data needs
@@ -140,15 +92,6 @@ extern s32 g_adwSfxVolumeLevels[VOLUME_LEVELS];
  */
 extern s32 g_dwOptionsChangedNeedsSave;
 #endif /* TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP */
-
-/**
- * Which screen opened the save and load menu, by the SAVE_LOAD_FROM_ values.
- *
- * @ghidraAddress USA: 0x802724f4
- * @ghidraAddress EUR: 0x802744a4
- * @ghidraAddress JPN: 0x80273f54
- */
-extern u8 g_bSaveLoadEntryPoint;
 
 /**
  * Whether the save and load menu, or the screen of the Controller Pak data, is set up.
@@ -412,15 +355,6 @@ extern u8 g_bPakDataStep;
 extern u8 g_bPakDataWaitFrames;
 
 /**
- * Apply the music and effect volumes of the options.
- *
- * @ghidraAddress USA: 0x802118b4
- * @ghidraAddress EUR: 0x802117a4
- * @ghidraAddress JPN: 0x80211694
- */
-void ApplyVolumeSettings(void);
-
-/**
  * Draw the hint of the volume items, and run the screen that loads or saves the configuration
  * while the options menu asks for it.
  *
@@ -431,36 +365,7 @@ void ApplyVolumeSettings(void);
  */
 void OptionsMenuPostDraw(s32 item);
 
-/**
- * Run one frame of the options menu.
- *
- * @ghidraAddress USA: 0x80211a3c
- * @ghidraAddress EUR: 0x8021192c
- * @ghidraAddress JPN: 0x802117e8
- */
-void ProcessOptionsMenu(void);
-
-/**
- * Run one frame of the save and load menu.
- *
- * @ghidraAddress USA: 0x80211d70
- * @ghidraAddress EUR: 0x80212208
- * @ghidraAddress JPN: 0x80212058
- */
-void ProcessDataSaveLoadMenu(void);
-
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
-/**
- * Load the profile of both players, the equipment of the second player, and the options from the
- * EEPROM of the cartridge, when the EEPROM responds and passes its checksum.
- *
- * @return #TRUE when the data was loaded, #FALSE when the EEPROM is missing, unreadable, or fails
- *     its checksum.
- * @ghidraAddress EUR: 0x80211ca0
- * @ghidraAddress JPN: 0x80211b60
- */
-s32 LoadSaveDataFromEeprom(void);
-
 /**
  * Write the equipment of both players and the options to the EEPROM of the cartridge, with the
  * whole profile of the first player when the EEPROM fails its checksum.
@@ -470,15 +375,6 @@ s32 LoadSaveDataFromEeprom(void);
  */
 void SaveGameDataToEeprom(void);
 #endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
-
-/**
- * Load the pictures of the A and B buttons, and allocate the buffer of the Controller Pak data.
- *
- * @ghidraAddress USA: 0x80214a3c
- * @ghidraAddress EUR: 0x80215b08
- * @ghidraAddress JPN: 0x802155cc
- */
-void PreparePakDataScreen(void);
 
 /**
  * Ask the player to put the Rumble Pak back, and wait for A.
@@ -492,15 +388,6 @@ void PreparePakDataScreen(void);
 s32 DrawRumblePakPrompt(s32 anyPlayer);
 
 /**
- * Look for a Rumble Pak in the controller of each player at this console, and stop its motor.
- *
- * @ghidraAddress USA: 0x80214bec
- * @ghidraAddress EUR: 0x80215cb8
- * @ghidraAddress JPN: 0x80215744
- */
-void InitAllRumblePaks(void);
-
-/**
  * Whether a player at this console has no working Rumble Pak in the controller. Nothing calls it.
  *
  * @return Whether a controller lacks a Rumble Pak.
@@ -509,19 +396,6 @@ void InitAllRumblePaks(void);
  * @ghidraAddress JPN: 0x80215808
  */
 s32 IsRumblePakMissing(void);
-
-/**
- * Run one frame of the screen that loads or saves data on a Controller Pak.
- *
- * @param dataType The data to load or save, a `PAK_DATA_*` value.
- * @param quiet Work without fading the sounds or showing any message, and finish when the data is
- * missing.
- * @return Nonzero once the screen is finished.
- * @ghidraAddress USA: 0x80214e0c
- * @ghidraAddress EUR: 0x80215ed8
- * @ghidraAddress JPN: 0x80215964
- */
-s32 ProcessPakDataScreen(s32 dataType, u8 quiet);
 
 #ifdef __cplusplus
 }

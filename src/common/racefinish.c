@@ -21,13 +21,11 @@
 #include "win32/app.h"
 #include "win32/sound.h"
 #else
-#include "carselect.h"
 #include "common/audio.h"
 #include "common/audiomix.h"
+#include "common/frontendscreens.h"
+#include "common/optionsettings.h"
 #include "common/splash.h"
-#include "mainmenu.h"
-#include "options.h"
-#include "racemenu.h"
 #endif /* TGR_BOSS_RALLY */
 
 #if TGR_BOSS_RALLY

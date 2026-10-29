@@ -506,15 +506,6 @@ void RenderCameraView(Model *model,
  */
 void ProcessCarSelectScreen(void);
 
-/**
- * Run one frame of the results of a race, on the car selection screen.
- *
- * @ghidraAddress USA: 0x80210f4c
- * @ghidraAddress EUR: 0x80210da8
- * @ghidraAddress JPN: 0x80210ca0
- */
-void ProcessRaceResultsScreen(void);
-
 #ifdef __cplusplus
 }
 #endif
