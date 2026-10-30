@@ -302,9 +302,10 @@ void DrawHudCommands(HudDrawing &drawing, const GbiCommand *end) {
         }
         auto &cached = textures[entry];
         if (!cached.second || cached.first != source->version) {
+            // BRD3D filters every texture linearly, the rectangles of the HUD among them.
             cached = {source->version,
                       RenderTexture::FromTexels(
-                          renderer, source->width, source->height, source->rgba, false, false)};
+                          renderer, source->width, source->height, source->rgba, true, false)};
         }
         return cached.second.get();
     };
