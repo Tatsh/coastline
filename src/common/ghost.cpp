@@ -13,6 +13,9 @@
 #include "common/packedvalue.h"
 #include "common/pause.h"
 #include "common/season.h"
+#ifdef ENABLE_PATCHES
+#include "common/settings.h"
+#endif
 #include "common/vehicleaccess.h"
 #include "common/vehiclephysics.h"
 
@@ -309,6 +312,11 @@ bool LoadGhostFile(bool bAllowFailure) {
 }
 
 bool SaveGhostFile(void) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+    if (g_bTestSceneSession) {
+        return true;
+    }
+#endif
     u32 dwChecksum = GhostChecksum(GetGhostKeyframeDataSize(), true, GetGhostKeyframeBuffer());
     unsigned nPayloadSize = GetGhostKeyframeDataSize() + g_dwGhostRecordingSize + 12;
     FILE *pFile = fopen(g_szTimeAttackSaveFileName, "wb");

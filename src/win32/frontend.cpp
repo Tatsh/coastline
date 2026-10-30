@@ -525,6 +525,11 @@ SaveFileList::~SaveFileList() {
 }
 
 int SaveFileList::WriteSeasonDescFile(int nUnused) {
+#ifdef ENABLE_PATCHES
+    if (g_bTestSceneSession) {
+        return 1;
+    }
+#endif
     FILE *file = fopen("seasondesc.dat", "wb");
     if (!file) {
         ShowErrorMessage(7);

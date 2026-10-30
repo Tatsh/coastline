@@ -1,6 +1,9 @@
 #include "common/game.h"
 #include "common/rallyconfig.h"
 #include "common/screen.h"
+#ifdef ENABLE_PATCHES
+#include "common/season.h"
+#endif
 #include "common/settings.h"
 #include "common/trackselect.h"
 #include "common/vehicle.h"
@@ -107,6 +110,25 @@ int GameState_ShowLoadingScreenAndInitGame(void) {
 #define MENU_SCREEN_HEIGHT 480
 #endif
 
+#ifdef ENABLE_PATCHES
+// Load the race of `scene=` in place of the menus, as the benchmark does, and stop every write of
+// saved data until the game exits.
+static inline void StartTestScene(void) {
+    g_dwGameMode = g_nTestSceneGameMode;
+    g_nTestSceneGameMode = -1;
+    g_bTestSceneSession = true;
+    if (g_dwGameMode == GAME_MODE_DEMO) {
+        g_dwRaceSessionType = RACE_SESSION_ATTRACT;
+    } else if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
+        // The race reads the season of the profile of the first car, here a blank one.
+        ResetSeasonSaveBuffers();
+        g_pPrimarySeasonSave->season = static_cast<u8>(g_nTestSceneSeason);
+    }
+    g_dwNullStubEnable = false;
+    g_dwGameState = GAME_STATE_LOAD_GAME;
+}
+#endif /* ENABLE_PATCHES */
+
 int GameState_RunFrontEnd(void) {
     MenuScreen *pScreen = g_pActiveMenuScreen;
 
@@ -144,6 +166,12 @@ int GameState_RunFrontEnd(void) {
         g_dwGameState = GAME_STATE_LOAD_GAME;
         return true;
     }
+#ifdef ENABLE_PATCHES
+    if (g_nTestSceneGameMode >= 0) {
+        StartTestScene();
+        return true;
+    }
+#endif
     if (!pScreen->IsBuilt()) {
 #if TGR_BRD3D
         DisplayMode *pMode = g_pMainRenderWindow->GetMode();

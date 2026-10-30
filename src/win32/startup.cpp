@@ -7,6 +7,9 @@
 #include "common/fileio.h"
 #include "common/paintshop.h"
 #include "common/podarchive.h"
+#ifdef ENABLE_PATCHES
+#include "common/qualityoflife.h"
+#endif
 #include "common/rallyconfig.h"
 #include "common/settings.h"
 #include "win32/app.h"
@@ -18,6 +21,12 @@
 #define INI_LINE_SIZE 256
 
 size_t g_dwTotalPhysicalMemory;
+
+#ifdef ENABLE_PATCHES
+int g_nTestSceneGameMode = -1;
+int g_nTestSceneSeason = 1;
+int g_bTestSceneSession;
+#endif
 
 bool FocusExistingBossRallyInstance(void) {
     HWND hWindow;
@@ -187,6 +196,14 @@ static inline void ApplyCommandLine(const char *pszCmdLine) {
     if ((pszValue = GetCommandLineValue(pszCmdLine, "bsuspension=")) != nullptr) {
         g_bNetSuspensionSetting = atoi(pszValue);
     }
+#ifdef ENABLE_PATCHES
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "scene=")) != nullptr) {
+        g_nTestSceneGameMode = ParseTestScene(pszValue);
+    }
+    if ((pszValue = GetCommandLineValue(pszCmdLine, "season=")) != nullptr) {
+        g_nTestSceneSeason = atoi(pszValue);
+    }
+#endif /* ENABLE_PATCHES */
 }
 
 void LoadBossRallyIniSettings(const char *pszCmdLine) {

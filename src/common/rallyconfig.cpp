@@ -4,6 +4,9 @@
 #include <cstring>
 
 #include "common/inputbinding.h"
+#ifdef ENABLE_PATCHES
+#include "common/settings.h"
+#endif
 
 // The first bytes of BossRally.cfg and the version of its layout.
 #define CONFIG_FILE_MAGIC "RCfg"
@@ -172,6 +175,11 @@ bool RallyConfig::SaveConfigToFile(const char *pszPath) {
     int dwVersion = CONFIG_FILE_VERSION;
     bool bWritten;
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+    if (g_bTestSceneSession) {
+        return true;
+    }
+#endif
     pFile = fopen(pszPath, "wb");
     if (pFile == nullptr) {
         return false;

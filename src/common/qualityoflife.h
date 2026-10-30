@@ -51,6 +51,17 @@ float GetHorPlusFovY(float fov, float width, float height);
  */
 void GetHudCanvasSize(int width, int height, int *pCanvasWidth, int *pCanvasHeight);
 
+/**
+ * Return the mode of play of the value of `scene=` on the command line.
+ *
+ * The scenes are `arcade`, `demo`, `practice`, `seasonwinner`, and `timeattack`. The value ends
+ * at the end of the string or at white space.
+ *
+ * @param pszValue The text after `scene=`.
+ * @return The mode of play, or -1 when the value is not a scene.
+ */
+int ParseTestScene(const char *pszValue);
+
 #ifdef __cplusplus
 }
 #endif

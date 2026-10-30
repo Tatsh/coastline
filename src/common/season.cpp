@@ -335,6 +335,11 @@ bool LoadSeasonSaveFile(int nMode, bool bAllowFailure) {
 }
 
 bool SaveSeasonSaveFile(void) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+    if (g_bTestSceneSession) {
+        return true;
+    }
+#endif
     u32 dwChecksum = adler32(0, nullptr, 0);
     if (g_pPrimarySeasonSave) {
         u8 abProfileBytes[SEASON_SAVE_PAYLOAD_SIZE];

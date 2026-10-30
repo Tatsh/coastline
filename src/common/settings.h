@@ -139,6 +139,17 @@ extern int g_bDisableCarShadow;
  */
 extern int g_dwRunBenchmark;
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
+/** The mode of play of `scene=`, started in place of the menus, or -1 once started or for none. */
+extern int g_nTestSceneGameMode;
+
+/** The season of the profile of the race after a season, from `season=`. */
+extern int g_nTestSceneSeason;
+
+/** Whether a scene of `scene=` started, which stops every write of saved data until exit. */
+extern int g_bTestSceneSession;
+#endif
+
 /**
  * How music plays, from `PlayMusic=`.
  *

@@ -1002,6 +1002,7 @@ seasondesc
 seasonpoints
 seasonraces
 seasontrack
+seasonwinner
 sendmesg
 serverplayer
 serviceproviderloaded
@@ -1184,6 +1185,7 @@ texturestream
 textureworkspace
 tgmath
 thiscall
+timeattack
 timerintr
 timingframe
 tiresmokespawn

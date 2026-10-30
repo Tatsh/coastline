@@ -3,7 +3,23 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "common/game.h"
 #include "common/qualityoflife.h"
+
+static void TestScene(void) {
+    assert(ParseTestScene("arcade") == GAME_MODE_ARCADE);
+    assert(ParseTestScene("demo") == GAME_MODE_DEMO);
+    assert(ParseTestScene("practice") == GAME_MODE_PRACTICE);
+    assert(ParseTestScene("seasonwinner") == GAME_MODE_AFTER_SEASON);
+    assert(ParseTestScene("timeattack") == GAME_MODE_TIME_ATTACK);
+    /* The value ends at white space, as the next key of the command line follows it. */
+    assert(ParseTestScene("seasonwinner season=2") == GAME_MODE_AFTER_SEASON);
+    assert(ParseTestScene("arcade\n") == GAME_MODE_ARCADE);
+    /* A longer word, an unknown word, and the championship are not scenes. */
+    assert(ParseTestScene("arcades") == -1);
+    assert(ParseTestScene("championship") == -1);
+    assert(ParseTestScene("") == -1);
+}
 
 static void TestSecondPress(void) {
     unsigned last = 0;
@@ -81,6 +97,7 @@ int main(void) {
     TestSecondPress();
     TestHorPlusFov();
     TestHudCanvas();
+    TestScene();
     puts("qualityoflife: ok");
     return 0;
 }
