@@ -1245,7 +1245,8 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     if (snapshot != nullptr) {
         LoadParticleListHeads(&snapshot->GetParticles());
         DrawParticles(renderer, *s.particleTexture, *s.shadowTexture, *camera, viewProjection);
-        for (int index = 0; index < g_dwNumVehicles; ++index) {
+        // A championship has more racers than vehicles, and only the vehicles have spray.
+        for (int index = 0; index < g_dwNumActiveVehicles; ++index) {
             DrawTireSpray(renderer, *s.sprayTexture, snapshot->GetVehicle(index), viewProjection);
         }
     }
