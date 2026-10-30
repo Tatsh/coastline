@@ -52,6 +52,7 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
     menus->m_cache = cache;
     // The Controller Pak of the first controller is a directory of the state of the game.
     menus->m_pak = ControllerPak(state / "controller-pak");
+    menus->m_ghostFramesFile = state / "ghost-frames.bin";
     menus->LoadPakData();
     menus->m_paintShop = PaintShop::Load(renderer,
                                          release,

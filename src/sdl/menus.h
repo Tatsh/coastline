@@ -271,7 +271,7 @@ private:
     void DrawConfirmOverwrite();
     bool ReadSeasonNote(const std::vector<u8> &note, int player, bool otherRetainsEquipment);
     bool ReadGhostNote(const std::vector<u8> &note);
-    void KeepTimeAttackRecording(const std::vector<u8> &recording);
+    void KeepTimeAttackRecording(const std::vector<u8> &recording, const std::vector<u8> &frames);
     bool LoadSaveLoadNote(int player);
     int SaveSaveLoadNote(int player);
     void LeaveDataSaveLoadMenu();
@@ -399,6 +399,11 @@ private:
     int m_saveLoadFadeDelayFrames = 0;
     // The ghost recording of the console, its track and its car first, g_abGhostRecording.
     std::vector<u8> m_ghostRecording = std::vector<u8>(8);
+    // The frames of the race engine the ghost car plays, recorded with m_ghostRecording, and the
+    // file beside the pak they are saved to with the ghost. A ghost recorded on the console has
+    // none.
+    std::vector<u8> m_ghostFrames;
+    std::filesystem::path m_ghostFramesFile;
 };
 
 } // namespace coastline

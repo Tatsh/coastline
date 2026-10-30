@@ -730,6 +730,12 @@ bool Menus::ReadGhostNote(const std::vector<u8> &note) {
         static_cast<std::size_t>((*recording)[1]) >= m_cars.size()) {
         return false;
     }
+    // The race engine plays the ghost car from the frames it recorded with the recording. A ghost
+    // recorded on the console has none, and its car does not race.
+    m_ghostFrames = LoadGhostFrames(m_ghostFramesFile, *recording).value_or(std::vector<u8>());
+    if (m_ghostFrames.empty()) {
+        SDL_Log("The ghost car has no frames of the race engine and does not race.");
+    }
     m_ghostRecordingSize = static_cast<int>(recording->size());
     recording->resize(GHOST_RECORDING_CAPACITY);
     m_ghostRecording = std::move(*recording);
@@ -778,12 +784,23 @@ int Menus::SaveSaveLoadNote(int player) {
         return m_pak.WriteNote(SEASON_NOTE, note) ? PAK_ERROR_NONE : PAK_ERROR_WRITE;
     }
     if (m_saveLoadChoice == SAVE_LOAD_SAVE_GHOST) {
-        auto note = PackGhostNote(std::span<const u8>(m_ghostRecording)
-                                      .first(static_cast<std::size_t>(m_ghostRecordingSize)));
+        auto recording = std::span<const u8>(m_ghostRecording)
+                             .first(static_cast<std::size_t>(m_ghostRecordingSize));
+        auto note = PackGhostNote(recording);
         if (!note) {
             return PAK_ERROR_GHOST_TOO_LARGE;
         }
-        return m_pak.WriteNote(GHOST_NOTE, *note) ? PAK_ERROR_NONE : PAK_ERROR_WRITE;
+        if (!m_pak.WriteNote(GHOST_NOTE, *note)) {
+            return PAK_ERROR_WRITE;
+        }
+        // The note is written whether or not the frames are, and a ghost without its frames does
+        // not race.
+        if (!SaveGhostFrames(m_ghostFramesFile, recording, m_ghostFrames)) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "The frames of the ghost car were not written to %s.",
+                         m_ghostFramesFile.string().c_str());
+        }
+        return PAK_ERROR_NONE;
     }
     return SaveOptionsNote(player) ? PAK_ERROR_NONE : PAK_ERROR_WRITE;
 }

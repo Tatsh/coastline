@@ -62,6 +62,10 @@ struct RaceSetup {
     int sfxVolume = 9;
     /** Whether speeds show in miles an hour rather than kilometres. */
     bool speedInMph = true;
+    /** The header of the recording of the ghost car of a time attack, as the console writes it. */
+    std::array<u8, 8> ghostHeader{};
+    /** The frames of the race engine the ghost car of a time attack plays, or none for no ghost. */
+    std::vector<u8> ghostFrames;
 };
 
 /** How a player finished a race. */
@@ -83,6 +87,8 @@ struct RaceResults {
     /** The input of the first player of a time attack up to the finish, its header first, as the
      * console records it. Empty for another mode or a player who did not finish. */
     std::vector<u8> ghostRecording;
+    /** The frames of the race engine recorded with ghostRecording, GHOST_FRAME_SIZE bytes each. */
+    std::vector<u8> ghostFrames;
 };
 
 /** How a race ends. */

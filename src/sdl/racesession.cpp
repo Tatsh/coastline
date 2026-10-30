@@ -1,6 +1,7 @@
 #include "racesession.h"
 
 #include <algorithm>
+#include <cstring>
 
 #include <SDL3/SDL.h>
 
@@ -67,6 +68,8 @@ void ReadResults() {
         auto length = static_cast<std::size_t>(
             std::min(input->recordPositions[0], static_cast<s32>(RECORDING_CAPACITY)));
         g_results.ghostRecording.assign(g_aabInputRecordings[0], g_aabInputRecordings[0] + length);
+        g_results.ghostFrames.assign(GetGhostKeyframeBuffer(),
+                                     GetGhostKeyframeBuffer() + GetGhostKeyframeDataSize());
     }
 }
 
@@ -90,6 +93,26 @@ void HoldSoundUntilShown() {
     if (g_musicStarted) {
         RestartRaceMusic();
     }
+}
+
+// The ghost car of a time attack as ReadGhostFileData() of the PC release loads it: the header the
+// race checks against the track and the weather of the race, and the frames of the second
+// recording. A failed load of the PC release clears the header the same way.
+void LoadGhostCar(const RaceSetup &setup) {
+    std::size_t bytes = std::min(setup.ghostFrames.size(),
+                                 static_cast<std::size_t>(GHOST_MAX_FRAMES) * GHOST_FRAME_SIZE);
+    if (bytes < GHOST_FRAME_SIZE) {
+        std::memset(&g_GhostRecordingInfo, 0xff, sizeof(g_GhostRecordingInfo));
+        SetGhostFrameCountFromSize(0);
+        return;
+    }
+    std::memcpy(&g_GhostRecordingInfo, setup.ghostHeader.data(), setup.ghostHeader.size());
+    g_GhostRecordingInfo.track = static_cast<s8>(setup.track);
+    g_GhostRecordingInfo.weather = static_cast<s8>(setup.weather);
+    g_GhostRecordingInfo.reserved[0] = 0;
+    g_GhostRecordingInfo.reserved[1] = 0;
+    std::memcpy(GetGhostPlaybackKeyframeBuffer(), setup.ghostFrames.data(), bytes);
+    SetGhostFrameCountFromSize(static_cast<unsigned>(bytes));
 }
 
 } // namespace
@@ -141,6 +164,9 @@ void StartRace(const RaceSetup &setup, const std::filesystem::path &music, bool 
         profile->transmission = second.transmission;
         profile->tires = second.tires;
         profile->suspension = second.suspension;
+    }
+    if (setup.gameMode == GAME_MODE_TIME_ATTACK) {
+        LoadGhostCar(setup);
     }
     g_musicStarted =
         StartRaceMusic(music, cdAudio ? RaceMusicSource::CdAudio : RaceMusicSource::Modules);

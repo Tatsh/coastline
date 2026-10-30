@@ -145,6 +145,13 @@ RaceSetup Menus::ChosenRace() const {
         setup.lapRecords[pc] = m_profile.lapRecords[static_cast<std::size_t>(track)];
         setup.raceRecords[pc] = m_profile.raceRecords[static_cast<std::size_t>(track)];
     }
+    // SetupRaceVehicles() of the console races the ghost only on its track.
+    if (m_gameMode == GameMode::TimeAttack &&
+        m_ghostRecordingSize > static_cast<int>(RECORDING_HEADER_SIZE) &&
+        m_ghostRecording[0] == m_selectedTrackId) {
+        std::copy_n(m_ghostRecording.begin(), setup.ghostHeader.size(), setup.ghostHeader.begin());
+        setup.ghostFrames = m_ghostFrames;
+    }
     return setup;
 }
 
@@ -171,7 +178,7 @@ void Menus::FinishRace(RaceEnd end, const RaceResults &results) {
             m_profile.seasonTimes[m_profile.season][m_profile.round] = results.players[0].totalTime;
         }
         if (m_gameMode == GameMode::TimeAttack) {
-            KeepTimeAttackRecording(results.ghostRecording);
+            KeepTimeAttackRecording(results.ghostRecording, results.ghostFrames);
         }
         m_resultsInitialized = false;
         SetCurrentScreen(Screen::RaceResultsScreen);
@@ -191,7 +198,8 @@ void Menus::FinishRace(RaceEnd end, const RaceResults &results) {
 
 // KeepTimeAttackRecording() of the console: the run is the new ghost when it reached the finish in
 // fewer steps than the ghost, or the ghost is of another track or empty.
-void Menus::KeepTimeAttackRecording(const std::vector<u8> &recording) {
+void Menus::KeepTimeAttackRecording(const std::vector<u8> &recording,
+                                    const std::vector<u8> &frames) {
     m_ghostSaveAvailable = false;
     if (recording.size() <= RECORDING_HEADER_SIZE ||
         (static_cast<int>(recording.size()) >= m_ghostRecordingSize &&
@@ -212,6 +220,7 @@ void Menus::KeepTimeAttackRecording(const std::vector<u8> &recording) {
     m_ghostRecording[6] = static_cast<u8>(m_profile.controllerLayout);
     m_ghostRecording[7] = 0;
     m_ghostRecordingSize = static_cast<int>(recording.size());
+    m_ghostFrames = frames;
     m_ghostSaveAvailable = true;
 }
 

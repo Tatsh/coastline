@@ -13,6 +13,7 @@
  */
 
 #include <cstddef>
+#include <filesystem>
 #include <optional>
 #include <span>
 #include <vector>
@@ -65,5 +66,27 @@ std::vector<u8> PackGhostFrames(std::span<const u8> recording, std::span<const u
  */
 std::optional<std::vector<u8>> GhostFramesFor(std::span<const u8> file,
                                               std::span<const u8> recording);
+
+/**
+ * Write the file of PackGhostFrames(), creating its directory.
+ *
+ * @param path The file.
+ * @param recording The recording of the console.
+ * @param frames The frames, GHOST_FRAME_SIZE bytes each.
+ * @return Whether the file was written.
+ */
+bool SaveGhostFrames(const std::filesystem::path &path,
+                     std::span<const u8> recording,
+                     std::span<const u8> frames);
+
+/**
+ * Read the frames of a recording from the file of SaveGhostFrames().
+ *
+ * @param path The file.
+ * @param recording The recording of the console.
+ * @return The result of GhostFramesFor(), or nothing when the file cannot be read.
+ */
+std::optional<std::vector<u8>> LoadGhostFrames(const std::filesystem::path &path,
+                                               std::span<const u8> recording);
 
 } // namespace coastline

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <cstdint>
+#include <filesystem>
 #include <iostream>
 #include <vector>
 
@@ -106,6 +107,14 @@ void TestFrames() {
     Check(!coastline::GhostFramesFor(file, recording), "a truncated file is refused");
     Check(!coastline::GhostFramesFor(std::vector<u8>{'C', 'G'}, recording),
           "a file shorter than its signature is refused");
+    auto directory = std::filesystem::temp_directory_path() / "coastline-ghostnote-test";
+    auto path = directory / "state" / "ghost-frames.bin";
+    std::filesystem::remove_all(directory);
+    Check(!coastline::LoadGhostFrames(path, recording), "a missing file has no frames");
+    Check(coastline::SaveGhostFrames(path, recording, frames), "the frames are saved");
+    auto loaded = coastline::LoadGhostFrames(path, recording);
+    Check(loaded && *loaded == frames, "the saved frames load with their recording");
+    std::filesystem::remove_all(directory);
 }
 
 } // namespace

@@ -3,6 +3,9 @@
 #include <algorithm>
 #include <array>
 #include <cstring>
+#include <fstream>
+#include <iterator>
+#include <system_error>
 
 #include "common/rle.h"
 
@@ -133,6 +136,28 @@ std::optional<std::vector<u8>> GhostFramesFor(std::span<const u8> file,
         return std::nullopt;
     }
     return std::vector<u8>(file.begin() + static_cast<std::ptrdiff_t>(at), file.end());
+}
+
+bool SaveGhostFrames(const std::filesystem::path &path,
+                     std::span<const u8> recording,
+                     std::span<const u8> frames) {
+    std::error_code error;
+    std::filesystem::create_directories(path.parent_path(), error);
+    auto file = PackGhostFrames(recording, frames);
+    std::ofstream out(path, std::ios::binary | std::ios::trunc);
+    out.write(reinterpret_cast<const char *>(file.data()),
+              static_cast<std::streamsize>(file.size()));
+    return static_cast<bool>(out);
+}
+
+std::optional<std::vector<u8>> LoadGhostFrames(const std::filesystem::path &path,
+                                               std::span<const u8> recording) {
+    std::ifstream in(path, std::ios::binary);
+    if (!in) {
+        return std::nullopt;
+    }
+    std::vector<u8> file((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
+    return GhostFramesFor(file, recording);
 }
 
 } // namespace coastline
