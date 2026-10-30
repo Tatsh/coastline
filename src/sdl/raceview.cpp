@@ -553,6 +553,8 @@ struct CarModels {
     std::array<std::optional<CarLevel>, VEHICLE_LODS> levels;
     std::unique_ptr<RenderModel> wheel;
     std::unique_ptr<RenderModel> snowWheel;
+    // The beams of the headlights of the nearest level, the one level that draws them.
+    std::unique_ptr<RenderModel> beams;
 };
 
 // A car in a colour: the car, an index of g_apszCarModelPrefixes, its red, green, and blue, and
@@ -1324,6 +1326,10 @@ CarModels LoadCarModels(SceneRenderer &renderer,
     models.wheel = RenderModel::Load(renderer, carFile, options);
     options.node = "lod0-wheelSnow0";
     models.snowWheel = RenderModel::Load(renderer, carFile, options);
+    // The beams are a node outside the scene, drawn without the turn of its root.
+    options.node = "lod0-headlightBeams";
+    options.optional = true;
+    models.beams = RenderModel::Load(renderer, carFile, options);
     if (!models.levels[0]->car || !models.levels[0]->paint || !models.wheel) {
         return {};
     }
@@ -1988,6 +1994,32 @@ void RaceView::DrawView(SceneRenderer &renderer,
     }
     if (carsAfterTrack) {
         drawCarsAndSmoke();
+    }
+    // RenderVehicleHeadlightBeams() of each vehicle at night and in the rain, but not of a ghost,
+    // of a vehicle the view does not see, or of the car of the view from its bumper.
+    if (g_dwNightMode || g_dwRainMode) {
+        for (int index = 0; index < g_dwNumActiveVehicles; ++index) {
+            const Vehicle &car = vehicles[index];
+            if (!g_adwVehicleVisible[index] || car.GetGhostMode() == VEHICLE_GHOST ||
+                (index == cameraIndex && camera == &cameras[VEHICLE_CAMERA_BUMPER])) {
+                continue;
+            }
+            const auto &color = car.GetColor();
+            CarKey key{car.GetCarModel(),
+                       color[0],
+                       color[1],
+                       color[2],
+                       s.images.contains(index) ? index + 1 : 0};
+            auto found = s.cars.find(key);
+            if (found != s.cars.end() && found->second.beams) {
+                renderer.DrawModel(*found->second.beams,
+                                   FrameMatrix(car.GetFrame()),
+                                   viewProjection,
+                                   Lighting{},
+                                   std::nullopt,
+                                   true);
+            }
+        }
     }
     drawCars(true);
     // RenderExhaustAndTireSpray(): the exhaust in the snow, and the spray of the vehicles. A

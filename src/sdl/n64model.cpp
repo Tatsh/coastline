@@ -65,6 +65,13 @@ constexpr int VEHICLE_DL_HEADLIGHT_BEAMS = 5;
 constexpr int VEHICLE_DL_UNDERSIDE = 6;
 constexpr std::size_t NEAR_DETAIL_TEXTURE = 3;
 constexpr std::size_t UNDERSIDE_TEXTURE = 6;
+// RenderVehicleHeadlightBeams() binds the texture of entry 5 of the table, an I8 ramp along the
+// beams, and draws them in white by its alpha with gDPSetCombineLERP(0, 0, 0, 1, 0, 0, 0, TEXEL0)
+// in both cycles. The render mode of AA_EN, Z_CMP, IM_RD, CVG_DST_WRAP, CLR_ON_CVG, ZMODE_XLU, and
+// FORCE_BL blends them over the frame by that alpha without writing the depth.
+constexpr std::size_t HEADLIGHT_BEAM_TEXTURE = 5;
+constexpr std::array<std::uint32_t, 2> HEADLIGHT_BEAM_COMBINE{0x00ffffff, 0xffff73b9};
+constexpr std::uint32_t HEADLIGHT_BEAM_RENDER_MODE = 0x004049d8;
 constexpr int VEHICLE_DL_HIGHLIGHTED = 9;
 constexpr int VEHICLE_DL_BODY = 4;
 // gDPSetCombineLERP(TEXEL0, ENVIRONMENT, ENV_ALPHA, ENVIRONMENT, 0, 0, 0, TEXEL0) in both cycles,
@@ -293,6 +300,8 @@ struct StartState {
     bool textureGen = false;
     // Whether the caller loads the shade palette into SHADE_PALETTE.
     bool shadePalette = false;
+    // The render mode the caller sets before it, in the low word of the other modes.
+    std::uint32_t otherModeL = 0;
 };
 
 class DisplayListWalk {
@@ -312,7 +321,7 @@ public:
         m_geometryMode = (start.lit ? G_LIGHTING : 0) | (start.twoSided ? 0 : G_CULL_BACK) |
                          (start.textureGen ? G_TEXTURE_GEN : 0);
         m_otherModeH = 0;
-        m_otherModeL = 0;
+        m_otherModeL = start.otherModeL;
         m_primColor = 0xffffffff;
         m_envColor = 0xffffffff;
         m_combineHigh = start.combine[0];
@@ -1920,7 +1929,7 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
             // rain. A viewer of the scene omits them.
             bool shown = list != VEHICLE_DL_HIGHLIGHTED && list != VEHICLE_DL_HEADLIGHT_BEAMS;
             // The renderer turns on lighting before the lists of a car, and loads a texture of the
-            // model before the underside and the near detail.
+            // model before the underside, the near detail, and the beams.
             StartState start{
                 .lit = true, .twoSided = false, .bound = std::nullopt, .shadePalette = true};
             // The paint and the windows reflect the sky: the renderer generates their texture
@@ -1933,6 +1942,10 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
                 start.bound = TableTexture(image, CAR_LAYOUT, UNDERSIDE_TEXTURE);
             } else if (list == VEHICLE_DL_NEAR_DETAIL) {
                 start.bound = TableTexture(image, CAR_LAYOUT, NEAR_DETAIL_TEXTURE);
+            } else if (list == VEHICLE_DL_HEADLIGHT_BEAMS) {
+                start.bound = TableTexture(image, CAR_LAYOUT, HEADLIGHT_BEAM_TEXTURE);
+                start.combine = HEADLIGHT_BEAM_COMBINE;
+                start.otherModeL = HEADLIGHT_BEAM_RENDER_MODE;
             }
             draws.push_back({name,
                              address,
