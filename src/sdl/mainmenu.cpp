@@ -46,16 +46,18 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
     menus->m_mainMenuItems = std::move(*main);
     if (!menus->LoadPlayerCountItems(renderer, release) ||
         !menus->LoadTrackMenu(renderer, release) || !menus->LoadWeatherItems(renderer, release) ||
-        !menus->LoadCarSelect(renderer, release)) {
+        !menus->LoadCarSelect(renderer, release) || !menus->LoadOptionsItems(renderer, release)) {
         return nullptr;
     }
     menus->m_cache = cache;
     // The Controller Pak of the first controller is a directory of the state of the game.
+    menus->m_pak = ControllerPak(state / "controller-pak");
+    menus->LoadPakData();
     menus->m_paintShop = PaintShop::Load(renderer,
                                          release,
                                          *menus->m_screen,
                                          menus->m_textCustomColors,
-                                         ControllerPak(state / "controller-pak"),
+                                         menus->m_pak,
                                          cache / "paint-shop");
     // The other screens show without the paint shop, which returns to the main menu.
     if (!menus->m_paintShop) {

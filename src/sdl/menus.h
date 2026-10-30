@@ -46,6 +46,14 @@ struct MenuProfile {
     u16 unlocks = 0x102;               /*!< The unlocked cars, a bit for each. */
     u16 unlockedTracks = 4;            /*!< The unlocked tracks, a bit for each. */
     u16 unlockedWeathers = 1;          /*!< The weathers the championship has raced in. */
+    int controllerLayout = 0;          /*!< The button layout of the controller screen. */
+};
+
+/** The settings of the options menu, as OptionSettings of the console. */
+struct MenuOptions {
+    int musicVolume = 10;   /*!< The level of the music, from 0 for silence to 10. */
+    int sfxVolume = 10;     /*!< The level of the sound effects, from 0 for silence to 10. */
+    bool speedInMph = true; /*!< Whether speeds show in miles an hour rather than kilometres. */
 };
 
 /** A season of the championship, as g_SeasonTable of the console records it. */
@@ -240,6 +248,16 @@ private:
     void HandleRaceResultsInput(const MenuButtons &buttons);
     void LeaveRaceResults();
     void ProcessRaceResultsScreen(SceneRenderer &renderer, float seconds, const MenuButtons &first);
+    static int RaceVolumeLevel(int level);
+    bool LoadOptionsItems(SceneRenderer &renderer, const std::filesystem::path &release);
+    void LoadPakData();
+    void ApplyVolumeSettings() const;
+    bool SaveOptionsNote(int player) const;
+    void DrawMessageBox(int x, int y, int width, int height);
+    void SetMessageText();
+    bool ProcessPakDataScreen(SceneRenderer &renderer, int dataType);
+    void OptionsMenuPostDraw(SceneRenderer &renderer, int item);
+    void ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const MenuButtons &first);
 
     std::unique_ptr<MenuScreen> m_screen;
     std::unique_ptr<PaintShop> m_paintShop;
@@ -330,6 +348,25 @@ private:
     int m_resultsWeather = 0;
     s32 m_resultsChampionshipFlags = 0;
     std::vector<std::string> m_seasonMessage;
+
+    // The Controller Pak of the first controller, a directory of the state of the game.
+    ControllerPak m_pak{std::filesystem::path()};
+    MenuOptions m_options;
+    std::vector<MenuItem> m_optionsMenuItems;
+    int m_optionsMenuState = 0;
+    int m_optionsMenuSelection = 0;
+    bool m_optionsChanged = false;
+    bool m_loadConfigurationPending = false;
+    bool m_saveConfigurationPending = false;
+
+    // The screen of the Controller Pak data, and the presses of the frame it reads in place of the
+    // menu under it.
+    MenuButtons m_pakInput;
+    bool m_pakDataInitialized = false;
+    int m_pakDataStep = 0;
+    int m_pakDataWaitFrames = 0;
+    int m_pakError = 0;
+    std::optional<std::vector<u8>> m_pakNote;
 };
 
 } // namespace coastline

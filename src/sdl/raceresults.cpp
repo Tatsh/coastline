@@ -109,6 +109,9 @@ RaceSetup Menus::ChosenRace() const {
     setup.weather = RaceWeather(m_gameMode, m_selectedTrackId, m_currentWeather);
     // InitRace() of the console races three laps but in arcade.
     setup.laps = m_gameMode == GameMode::Arcade ? m_totalLaps : 3;
+    setup.musicVolume = RaceVolumeLevel(m_options.musicVolume);
+    setup.sfxVolume = RaceVolumeLevel(m_options.sfxVolume);
+    setup.speedInMph = m_options.speedInMph;
     for (int player = 0; player < m_numLocalPlayers; ++player) {
         const MenuProfile &profile = player == 0 ? m_profile : m_secondProfile;
         setup.cars[static_cast<std::size_t>(player)] = {
@@ -145,6 +148,8 @@ RaceSetup Menus::ChosenRace() const {
 }
 
 void Menus::FinishRace(RaceEnd end, const RaceResults &results) {
+    // The race played at the levels of the race engine.
+    ApplyVolumeSettings();
     bool afterSeason = m_afterSeasonRace;
     m_afterSeasonRace = false;
     if (end == RaceEnd::Results) {

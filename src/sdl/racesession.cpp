@@ -4,6 +4,7 @@
 
 #include <SDL3/SDL.h>
 
+#include "common/configfile.h"
 #include "common/fade.h"
 #include "common/game.h"
 #include "common/ghost.h"
@@ -109,6 +110,10 @@ void StartRace(const RaceSetup &setup, const std::filesystem::path &music, bool 
     constexpr int JOYSTICK_DEVICE = 2;
     g_GlobalRallyConfig.dwInputDeviceType = SDL_HasGamepad() ? JOYSTICK_DEVICE : KEYBOARD_DEVICE;
     g_GlobalRallyConfig.SelectActiveInputBindings();
+    // ApplyAudioVolumeSettings() and the speedometer read the options of the menus.
+    g_GlobalRallyConfig.dwMusicVolume = setup.musicVolume;
+    g_GlobalRallyConfig.dwSfxVolume = setup.sfxVolume;
+    g_bSpeedUnitsMph = setup.speedInMph ? 1 : 0;
     InitGameAndShowMenus();
     // The PC release races one player, and a championship of the PC release takes its track and
     // its weather from the seasons of the PC release. The menus of the console chose both.

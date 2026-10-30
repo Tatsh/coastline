@@ -259,6 +259,16 @@ public:
     void FadeOut();
 
     /**
+     * Fade the sound effects and the music alone, as FadeSfxTo() and FadeMusicTo() of the console.
+     *
+     * @param level The level to fade to, from 0 for silence to 1.
+     */
+    void FadeSounds(float level);
+
+    /** @return Whether the fade of the sound effects has arrived, as HasSfxFadeFinished(). */
+    bool SoundsFaded() const;
+
+    /**
      * Advance the fades of the screen and the sound effects by a frame.
      *
      * @param seconds The time of the frame.

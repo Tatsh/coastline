@@ -436,6 +436,15 @@ void MenuScreen::FadeOut() {
     m_state->FadeOut();
 }
 
+void MenuScreen::FadeSounds(float level) {
+    m_state->sfxFade.SetTarget(level, FADE_TIME);
+    m_state->musicFade.SetTarget(level, FADE_TIME);
+}
+
+bool MenuScreen::SoundsFaded() const {
+    return m_state->sfxFade.Complete();
+}
+
 void MenuScreen::UpdateFade(float seconds) {
     State &s = *m_state;
     s.fade.Update(seconds);

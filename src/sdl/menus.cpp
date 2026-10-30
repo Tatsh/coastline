@@ -11,6 +11,8 @@ Menus::~Menus() = default;
 
 void Menus::Restart() {
     m_current = Screen::MainMenu;
+    // The attract demo races at the levels of the race engine.
+    ApplyVolumeSettings();
 }
 
 void Menus::SetCurrentScreen(Screen screen) {
@@ -21,7 +23,7 @@ void Menus::SetCurrentScreen(Screen screen) {
                                          nullptr,
                                          nullptr,
                                          "data save and load",
-                                         "options",
+                                         nullptr,
                                          nullptr,
                                          nullptr};
     const char *name = NOT_BUILT[static_cast<int>(screen)];
@@ -71,6 +73,9 @@ MenusEnd Menus::Frame(SceneRenderer &renderer,
         break;
     case Screen::CarSelect:
         ProcessCarSelectScreen(renderer, seconds, buttons);
+        break;
+    case Screen::OptionsMenu:
+        ProcessOptionsMenu(renderer, seconds, first);
         break;
     case Screen::RaceResultsScreen:
         ProcessRaceResultsScreen(renderer, seconds, first);

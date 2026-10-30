@@ -189,6 +189,7 @@ add_library(
   music.cpp
   n64attract.cpp
   n64model.cpp
+  options.cpp
   paintshop.cpp
   paths.cpp
   playerselect.cpp

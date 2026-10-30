@@ -171,6 +171,10 @@ public:
                                         DecalCar &car);
 
 private:
+    // The screens of the Controller Pak of the menus draw with the drawing and the pictures of the
+    // paint shop, as the console shares them.
+    friend class Menus;
+
     PaintShop(MenuScreen &screen,
               std::optional<std::array<int, 6>> &textColors,
               ControllerPak pak,

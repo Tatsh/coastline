@@ -56,6 +56,12 @@ struct RaceSetup {
     bool waitForStart = false;
     /** Whether the computer drives the car of the first player, for unattended checks. */
     bool autopilot = false;
+    /** The level of the music, from 0 to 9. */
+    int musicVolume = 9;
+    /** The level of the sound effects, from 0 to 9. */
+    int sfxVolume = 9;
+    /** Whether speeds show in miles an hour rather than kilometres. */
+    bool speedInMph = true;
 };
 
 /** How a player finished a race. */
