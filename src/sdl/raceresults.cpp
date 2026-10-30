@@ -123,19 +123,13 @@ RaceSetup Menus::ChosenRace() const {
             profile.tires,
             profile.suspension,
             std::nullopt,
-            m_carSelect[static_cast<std::size_t>(player)].paint};
-        // The custom decals race the model the decals loaded into, and ExtractVehicleBaseColor()
-        // takes the colour of the car from its paint.
+            m_carSelect[static_cast<std::size_t>(player)].paint,
+            m_carSelect[static_cast<std::size_t>(player)].otherLook};
+        // The custom decals race the model the decals loaded into, in the paint of the player.
         auto index = static_cast<std::size_t>(player);
-        const auto &custom = m_customDecals[index];
-        if (m_carSelect[index].customDecals && custom && m_customDecalImages[index]) {
-            RacePlayerSetup &car = setup.cars[index];
-            car.images = m_customDecalImages[index];
-            u16 paint = custom->PaletteColor(CAR_MATERIAL_PAINT, 0);
-            car.color =
-                std::array<u8, 3>{static_cast<u8>(((paint >> 13) & 7) | ((paint >> 8) & 0xF8)),
-                                  static_cast<u8>(((paint >> 8) & 7) | ((paint >> 3) & 0xF8)),
-                                  static_cast<u8>(((paint >> 3) & 7) | ((paint << 2) & 0xF8))};
+        if (m_carSelect[index].customDecals && m_customDecals[index] &&
+            m_customDecalImages[index]) {
+            setup.cars[index].images = m_customDecalImages[index];
         }
     }
     setup.season = m_profile.season;

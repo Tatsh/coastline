@@ -799,6 +799,8 @@ struct RenderModel::State {
     float radius = 1.0f;
     // Whether the caller of the display lists sets one cycle.
     bool oneCycle = false;
+    // Whether every part reflects the sky with the combiner of the reflection.
+    bool reflects = false;
     // Whether the model draws the palette variants of the images, and the variant it draws.
     bool varied = false;
     int variant = 0;
@@ -1297,10 +1299,6 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
                     }
                 }
             }
-            if (options.reflects && options.reflects(mesh.value("name", std::string()))) {
-                part.textureGen = true;
-                part.combine = REFLECTION_COMBINE;
-            }
             drawn.primitives.push_back(part);
         }
     }
@@ -1353,6 +1351,7 @@ std::unique_ptr<RenderModel> RenderModel::Load(std::shared_ptr<RenderDocument> o
     state->document = &owner->m_state->data;
     state->owner = std::move(owner);
     state->oneCycle = options.oneCycle;
+    state->reflects = options.reflects;
     state->varied = options.variants > 0;
     const DocumentData &data = *state->document;
     const nlohmann::json &document = data.document;
@@ -2063,7 +2062,14 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                     shaded.push_back(&shadow);
                 }
             }
-            for (const Primitive &primitive : mesh.primitives) {
+            for (const Primitive &part : mesh.primitives) {
+                Primitive reflecting;
+                if (model.reflects) {
+                    reflecting = part;
+                    reflecting.textureGen = true;
+                    reflecting.combine = REFLECTION_COMBINE;
+                }
+                const Primitive &primitive = model.reflects ? reflecting : part;
                 if (draw.highlight) {
                     // The highlight adds to the opaque parts drawn before it, in their place.
                     if (drawn != Pass::Blended) {

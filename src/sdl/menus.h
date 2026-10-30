@@ -105,6 +105,10 @@ struct CarSelectPlayer {
     std::array<u8, 3> paint{}; /*!< The red, green, and blue of the paint of the car. */
     bool otherLook = false;    /*!< Whether the car shows its other look, with its highlighted parts
                                     reflecting the sky in place of its textured parts. */
+    /** The milliseconds of the stick held up and down before it presses again, as the repeatUp
+     * and repeatDown of the input of the console: positive before the first repeat, negative
+     * after it, and 0 while the stick is at rest. */
+    std::array<int, 2> stickRepeat{};
 };
 
 /** Where the menus go next. */
@@ -234,7 +238,13 @@ private:
     bool IsCarUnlocked(int car) const;
     void LoadCarModel(SceneRenderer &renderer, int slot, int car);
     void ResetCarPaint(int player);
-    void AdjustCarPaint(SceneRenderer &renderer, int player, const MenuButtons &buttons);
+    void AdjustCarPaint(SceneRenderer &renderer,
+                        int player,
+                        const MenuButtons &buttons,
+                        std::array<bool, 2> stick);
+    void RepaintCars(SceneRenderer &renderer, int player);
+    void LoadCustomModel(SceneRenderer &renderer, int player);
+    void TakeDecalPaint(int player);
     void StartCarSelect(SceneRenderer &renderer);
     void SetCarSelectOptions(int player,
                              const std::vector<MenuItem> &options,
@@ -313,7 +323,8 @@ private:
     std::array<std::optional<DecalCar>, 2> m_customDecals;
     std::array<std::optional<std::filesystem::path>, 2> m_customDecalImages;
     std::array<std::unique_ptr<RenderModel>, 2> m_customModels;
-    std::unique_ptr<RenderModel> m_retiredCustomModel;
+    // The paint and the look each model of m_customModels was loaded in, as m_carModelLooks.
+    std::array<std::array<int, 4>, 2> m_customModelLooks{};
     int m_pakDialogPlayer = -1;
     std::filesystem::path m_release;
     Screen m_current = Screen::MainMenu;
@@ -381,9 +392,12 @@ private:
     // The highlighted parts of each model of m_carModels in the other look, or none.
     std::array<std::vector<std::unique_ptr<RenderModel>>, 2> m_carHighlightModels;
     std::vector<std::unique_ptr<RenderModel>> m_retiredCarModels;
-    // The time towards the next frame of the console, and whether this frame is one.
+    // The time towards the next frame of the console, whether this frame is one, the frames of
+    // the console since the screen started, and the milliseconds of the last of them.
     float m_carSelectFrameTime = 0.0f;
     bool m_carSelectConsoleFrame = false;
+    std::uint64_t m_carSelectConsoleFrames = 0;
+    int m_carSelectFrameMs = 0;
     // The choice marker of the stage of the cars, the shadow of a car on it, and the reflection of
     // the sky on the cars.
     StageMesh m_stageChoiceMarker;

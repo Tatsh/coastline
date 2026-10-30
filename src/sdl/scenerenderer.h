@@ -176,10 +176,10 @@ struct ModelOptions {
     std::optional<std::array<std::uint8_t, 3>> paint;
     /** Whether a node of a mesh is drawn, by its name, or none for every node. */
     std::function<bool(const std::string &)> parts;
-    /** Whether a mesh, by its name, reflects the sky whatever its materials set, as
+    /** Whether every part of the model reflects the sky whatever its materials set, as
      * RenderVehicleModel() sets G_TEXTURE_GEN and the combiner of the reflection before the
-     * highlighted parts of a car in its other look; none for the materials alone. */
-    std::function<bool(const std::string &)> reflects;
+     * highlighted parts of a car in its other look. */
+    bool reflects = false;
     /** Another glTF document of the same model whose images take the place of these, one for
      * one, such as the textures of the cartridge on a car of the PC release, or none. A document
      * with another number of images is not taken. */

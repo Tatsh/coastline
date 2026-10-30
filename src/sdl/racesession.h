@@ -35,6 +35,8 @@ struct RacePlayerSetup {
     /** The colour of the paint, from the car select screen or the custom decals, or none for the
      * colour of the player. */
     std::optional<std::array<u8, 3>> color;
+    /** Whether the car races in its other look, as Vehicle.otherLook of the console. */
+    bool otherLook = false;
 };
 
 /** What a race is, in the terms of the race engine. */

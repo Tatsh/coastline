@@ -55,8 +55,55 @@ constexpr int STAT_BAR_HEIGHT = 11;
 constexpr float FULL_ACCELERATION = 500.0f;
 constexpr float FULL_SPEED = 10.0f;
 
-// The frame of the console the paint steps once in.
-constexpr float CONSOLE_FRAME_SECONDS = 1.0f / 60.0f;
+// The frames of the console each second. FlushDisplayList() waits for a retrace of the 60 of NTSC
+// before and after it swaps the frame buffers, and the paint steps once a frame.
+constexpr int CONSOLE_FRAME_RATE = 30;
+constexpr float CONSOLE_FRAME_SECONDS = 1.0f / CONSOLE_FRAME_RATE;
+
+// UpdateStickRepeat() of the console: the stick presses past 0.6 of its range of 70, releases
+// below 0.3, and presses again after 500 milliseconds and then every 200.
+constexpr float STICK_RANGE = 70.0f;
+constexpr float STICK_PRESS = 0.6f;
+constexpr float STICK_RELEASE = 0.3f;
+constexpr int STICK_FIRST_DELAY = 500;
+constexpr int STICK_REPEAT_DELAY = 200;
+
+// CheckAnalogStickPositive() of the console for an axis turned to the direction it presses:
+// whether the stick presses this frame.
+bool StepStickRepeat(int &timer, float axis, int frameMs) {
+    if (timer == 0) {
+        if (axis > STICK_PRESS) {
+            timer = STICK_FIRST_DELAY;
+            return true;
+        }
+        return false;
+    }
+    if (axis < STICK_RELEASE) {
+        timer = 0;
+        return false;
+    }
+    // A positive time counts down to a press, and a negative one counts up to it.
+    bool pressed = false;
+    if (timer > 0) {
+        timer -= frameMs;
+        pressed = timer <= 0;
+    } else {
+        timer += frameMs;
+        pressed = timer >= 0;
+    }
+    if (pressed) {
+        timer = -STICK_REPEAT_DELAY;
+    }
+    return pressed;
+}
+
+// The parts of a car on a stage: the other look does not draw the textured parts.
+std::function<bool(const std::string &)> StagePartsOf(bool otherLook) {
+    return [otherLook](const std::string &name) {
+        return !(otherLook && name == "lod0-textured") &&
+               std::ranges::find(STAGE_CAR_PARTS, name) != STAGE_CAR_PARTS.end();
+    };
+}
 
 // The low-resolution screen the layouts of the console are written for.
 constexpr int WIDTH = 320;
@@ -243,11 +290,7 @@ void Menus::LoadCarModel(SceneRenderer &renderer, int slot, int car) {
     ModelOptions options;
     options.paint = player.paint;
     bool otherLook = player.otherLook;
-    // The other look does not draw the textured parts.
-    options.parts = [otherLook](const std::string &name) {
-        return !(otherLook && name == "lod0-textured") &&
-               std::ranges::find(STAGE_CAR_PARTS, name) != STAGE_CAR_PARTS.end();
-    };
+    options.parts = StagePartsOf(otherLook);
     m_retiredCarModels.push_back(std::move(model));
     model = RenderModel::Load(renderer, file, options);
     // The other look draws the highlighted parts with the sky reflected, as the painted body. They
@@ -258,7 +301,7 @@ void Menus::LoadCarModel(SceneRenderer &renderer, int slot, int car) {
         ModelOptions highlightOptions;
         highlightOptions.node = "lod0-highlighted";
         highlightOptions.optional = true;
-        highlightOptions.reflects = [](const std::string &) { return true; };
+        highlightOptions.reflects = true;
         highlighted = RenderModel::Load(renderer, file, highlightOptions);
     }
     loaded = look;
@@ -275,10 +318,14 @@ void Menus::ResetCarPaint(int player) {
 }
 
 // The car and the decals steps of HandleCarSelectInput() of the console: C-down switches the look
-// once the unlock of the mirrored cars allows it, and each frame of the console up or down raises
-// or lowers by 4 the red with C-left, the green with C-up, and the blue with C-right held. Both
-// slots of the player show the change.
-void Menus::AdjustCarPaint(SceneRenderer &renderer, int player, const MenuButtons &buttons) {
+// once the unlock of the mirrored cars allows it, and up or down raises or lowers by 4 the red with
+// C-left, the green with C-up, and the blue with C-right held. The pad presses up and down each
+// frame of the console it is held, and the stick as UpdateStickRepeat() repeats it. Both slots of
+// the player show the change.
+void Menus::AdjustCarPaint(SceneRenderer &renderer,
+                           int player,
+                           const MenuButtons &buttons,
+                           std::array<bool, 2> stick) {
     // The unlock of the profile that "Bonus: Mirrored Cars Added!" reports.
     constexpr u16 UNLOCK_OTHER_LOOK = 0x8000;
     constexpr int PAINT_STEP = 4;
@@ -288,10 +335,10 @@ void Menus::AdjustCarPaint(SceneRenderer &renderer, int player, const MenuButton
     if (buttons.cDown && (ProfileOf(player).unlocks & UNLOCK_OTHER_LOOK) != 0) {
         choice.otherLook = !choice.otherLook;
     }
-    bool up = (buttons.heldButtons & BUTTON_D_UP) != 0;
-    bool down = (buttons.heldButtons & BUTTON_D_DOWN) != 0;
+    bool up = stick[0] || (m_carSelectConsoleFrame && (buttons.heldButtons & BUTTON_D_UP) != 0);
+    bool down = stick[1] || (m_carSelectConsoleFrame && (buttons.heldButtons & BUTTON_D_DOWN) != 0);
     constexpr std::array<std::uint16_t, 3> PARTS{BUTTON_C_LEFT, BUTTON_C_UP, BUTTON_C_RIGHT};
-    for (std::size_t i = 0; m_carSelectConsoleFrame && i < PARTS.size(); ++i) {
+    for (std::size_t i = 0; i < PARTS.size(); ++i) {
         if ((buttons.heldButtons & PARTS[i]) == 0) {
             continue;
         }
@@ -304,15 +351,59 @@ void Menus::AdjustCarPaint(SceneRenderer &renderer, int player, const MenuButton
             part = part < PAINT_STEP ? 0 : static_cast<u8>(part - PAINT_STEP);
         }
     }
-    if (choice.paint == paint && choice.otherLook == otherLook) {
-        return;
+    if (choice.paint != paint || choice.otherLook != otherLook) {
+        RepaintCars(renderer, player);
     }
+}
+
+// SetVehicleModelSlot() of the console paints the model of each slot of a player, the custom
+// decals loaded into it included, in the paint of the player as it draws it.
+void Menus::RepaintCars(SceneRenderer &renderer, int player) {
+    const CarSelectPlayer &choice = m_carSelect[static_cast<std::size_t>(player)];
     for (int slot : {choice.slot ^ 2, choice.slot}) {
         int car = m_slotCars[static_cast<std::size_t>(slot)];
         if (m_carModels[static_cast<std::size_t>(player)][static_cast<std::size_t>(car)]) {
             LoadCarModel(renderer, slot, car);
         }
     }
+    std::array<int, 4> look{
+        choice.paint[0] >> 3, choice.paint[1] >> 3, choice.paint[2] >> 3, choice.otherLook};
+    if (m_customModels[static_cast<std::size_t>(player)] &&
+        m_customModelLooks[static_cast<std::size_t>(player)] != look) {
+        LoadCustomModel(renderer, player);
+    }
+}
+
+// The model of the car of a player with the custom decals, in the paint and the look of the
+// player. A model the frame drew is released at the start of the next frame.
+void Menus::LoadCustomModel(SceneRenderer &renderer, int player) {
+    auto index = static_cast<std::size_t>(player);
+    const CarSelectPlayer &choice = m_carSelect[index];
+    m_retiredCarModels.push_back(std::move(m_customModels[index]));
+    if (!m_customDecals[index] || !m_customDecalImages[index]) {
+        return;
+    }
+    ModelOptions options;
+    options.parts = StagePartsOf(choice.otherLook);
+    options.images = m_customDecalImages[index];
+    options.paint = choice.paint;
+    m_customModels[index] =
+        RenderModel::Load(renderer, m_customDecals[index]->Directory() / "model.gltf", options);
+    m_customModelLooks[index] = {
+        choice.paint[0] >> 3, choice.paint[1] >> 3, choice.paint[2] >> 3, choice.otherLook};
+}
+
+// ExtractVehicleBaseColor() of the console: the paint of a player becomes the colour of the paint
+// of the custom decals loaded.
+void Menus::TakeDecalPaint(int player) {
+    auto index = static_cast<std::size_t>(player);
+    if (!m_customDecals[index]) {
+        return;
+    }
+    u16 paint = m_customDecals[index]->PaletteColor(CAR_MATERIAL_PAINT, 0);
+    m_carSelect[index].paint = {static_cast<u8>(((paint >> 13) & 7) | ((paint >> 8) & 0xF8)),
+                                static_cast<u8>(((paint >> 8) & 7) | ((paint >> 3) & 0xF8)),
+                                static_cast<u8>(((paint >> 3) & 7) | ((paint << 2) & 0xF8))};
 }
 
 void Menus::StartCarSelect(SceneRenderer &renderer) {
@@ -374,6 +465,13 @@ void Menus::HandleCarSelectInput(SceneRenderer &renderer, int player, const Menu
     CarSelectPlayer &choice = m_carSelect[static_cast<std::size_t>(player)];
     MenuProfile &profile = ProfileOf(player);
     bool playSound = true;
+    // UpdateStickRepeat() of the console: up and down of the stick, each frame of the console.
+    std::array<bool, 2> stick{};
+    if (m_carSelectConsoleFrame) {
+        float axis = std::clamp(static_cast<float>(buttons.stickY) / STICK_RANGE, -1.0f, 1.0f);
+        stick = {StepStickRepeat(choice.stickRepeat[0], axis, m_carSelectFrameMs),
+                 StepStickRepeat(choice.stickRepeat[1], -axis, m_carSelectFrameMs)};
+    }
     if (choice.state == CAR_SELECT_READY) {
         if (buttons.back) {
             --choice.state;
@@ -411,7 +509,7 @@ void Menus::HandleCarSelectInput(SceneRenderer &renderer, int player, const Menu
     }
 
     if (choice.state == CAR_SELECT_CAR || choice.state == CAR_SELECT_DECALS) {
-        AdjustCarPaint(renderer, player, buttons);
+        AdjustCarPaint(renderer, player, buttons, stick);
     }
 
     // Left and right move through the options of the other steps.
@@ -624,9 +722,7 @@ void Menus::DrawStageCar(SceneRenderer &renderer,
         *model, StageCarAt(x, y, angle), camera, STAGE_CAR_LIGHTING, reflection, scissor);
     const auto &highlighted =
         m_carHighlightModels[static_cast<std::size_t>(slot & 1)][static_cast<std::size_t>(car)];
-    if (highlighted &&
-        model ==
-            m_carModels[static_cast<std::size_t>(slot & 1)][static_cast<std::size_t>(car)].get()) {
+    if (highlighted) {
         renderer.DrawReflectingModel(*highlighted,
                                      StageFrameAt(x, y, angle),
                                      camera,
@@ -869,17 +965,9 @@ void Menus::UseCustomDecals(SceneRenderer &renderer, int player) {
     const DecalCar &car = *m_customDecals[index];
     m_customDecalImages[index] =
         car.WriteImages(m_cache / "decals" / ("player" + std::to_string(player + 1)));
-    // A model the frame drew is released with the next load, after the frame has drawn it.
-    m_retiredCustomModel = std::move(m_customModels[index]);
-    if (m_customDecalImages[index]) {
-        ModelOptions modelOptions;
-        modelOptions.parts = [](const std::string &name) {
-            return std::ranges::find(STAGE_CAR_PARTS, name) != STAGE_CAR_PARTS.end();
-        };
-        modelOptions.images = m_customDecalImages[index];
-        m_customModels[index] =
-            RenderModel::Load(renderer, car.Directory() / "model.gltf", modelOptions);
-    }
+    TakeDecalPaint(player);
+    LoadCustomModel(renderer, player);
+    RepaintCars(renderer, player);
 }
 
 // The custom decals of the car a player chose, loaded from the pak without the dialog when the
@@ -893,6 +981,8 @@ bool Menus::RestoreCustomDecals(SceneRenderer &renderer, int player) {
     auto directory = m_release / m_cars[static_cast<std::size_t>(car)].directory;
     auto &custom = m_customDecals[index];
     if (custom && custom->Directory() == directory && m_customDecalImages[index]) {
+        TakeDecalPaint(player);
+        RepaintCars(renderer, player);
         return true;
     }
     custom = DecalCar::Load(directory);
@@ -974,11 +1064,16 @@ void Menus::ProcessCarSelectScreen(SceneRenderer &renderer,
     }
     m_screen->UpdateFade(seconds);
     m_screen->DrawBackground(renderer, {0x00, 0x00, 0x00}, {0x50, 0x00, 0x00});
-    // A slow frame paints a step once, not once for each 60th it took.
+    // A slow frame advances the console a frame once, not once for each 30th it took. The
+    // milliseconds of the frame are those UpdateFrameTiming() counts from a whole elapsed time.
     m_carSelectFrameTime += seconds;
     m_carSelectConsoleFrame = m_carSelectFrameTime >= CONSOLE_FRAME_SECONDS;
     if (m_carSelectConsoleFrame) {
         m_carSelectFrameTime = std::fmod(m_carSelectFrameTime, CONSOLE_FRAME_SECONDS);
+        ++m_carSelectConsoleFrames;
+        m_carSelectFrameMs =
+            static_cast<int>(m_carSelectConsoleFrames * 1000 / CONSOLE_FRAME_RATE -
+                             (m_carSelectConsoleFrames - 1) * 1000 / CONSOLE_FRAME_RATE);
     }
 
     // The stages turn, the second the other way, and the cars slide to rest.

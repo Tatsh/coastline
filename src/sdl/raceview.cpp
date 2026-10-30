@@ -7,6 +7,7 @@
 #include <iterator>
 #include <map>
 #include <optional>
+#include <set>
 #include <span>
 #include <string>
 
@@ -561,9 +562,10 @@ struct CarModels {
     std::unique_ptr<RenderModel> beams;
 };
 
-// A car in a colour: the car, an index of g_apszCarModelPrefixes, its red, green, and blue, and
-// 1 more than the vehicle whose images come from another document, or 0 for the asset pack.
-using CarKey = std::array<int, 5>;
+// A car in a colour: the car, an index of g_apszCarModelPrefixes, its red, green, and blue, 1 more
+// than the vehicle whose images come from another document, or 0 for the asset pack, and 1 for
+// the other look.
+using CarKey = std::array<int, 6>;
 
 // The document of each car, read once for its parts, levels, and colours, by the car and the last
 // of its CarKey, or none for a car that does not load.
@@ -587,6 +589,8 @@ struct RaceView::State {
     std::map<CarKey, CarModels> cars;
     // The documents of the images of the vehicles that do not take those of the asset pack.
     std::map<int, std::filesystem::path> images;
+    // The vehicles that draw in the other look.
+    std::set<int> otherLook;
     std::unique_ptr<RenderModel> startLights;
     std::unique_ptr<MenuText> text;
     // The images of the day and the night sky the paint and the windows of the car reflect.
@@ -1470,8 +1474,10 @@ CarLevel LoadCarLevel(const std::shared_ptr<RenderDocument> &document, const Car
     options.paint = CarPaint(key);
     options.optional = lod != 0;
     options.node = root;
-    options.parts = [&level](const std::string &n) {
-        return n == level + "nearDetail" || n == level + "textured";
+    // RenderVehicleModel() does not draw the textured parts of a car in its other look.
+    bool otherLook = key[5] != 0;
+    options.parts = [&level, otherLook](const std::string &n) {
+        return n == level + "nearDetail" || (!otherLook && n == level + "textured");
     };
     options.variants = CAR_LIGHT_VARIANTS;
     parts.car = RenderModel::Load(document, options);
@@ -1480,9 +1486,11 @@ CarLevel LoadCarLevel(const std::shared_ptr<RenderDocument> &document, const Car
     parts.paint = RenderModel::Load(document, options);
     options.parts = [&level](const std::string &n) { return n == level + "underside"; };
     parts.underside = RenderModel::Load(document, options);
-    // The highlighted parts are a node outside the scene, drawn without the turn of its root.
+    // The highlighted parts are a node outside the scene, drawn without the turn of its root. In
+    // the other look they reflect the sky in the pass of the painted body.
     options.parts = nullptr;
     options.node = level + "highlighted";
+    options.reflects = otherLook;
     parts.highlighted = RenderModel::Load(document, options);
     return parts;
 }
@@ -1588,7 +1596,15 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
         if (vehicle.images) {
             state->images[static_cast<int>(i)] = *vehicle.images;
         }
-        CarKey key{vehicle.car, vehicle.paint[0], vehicle.paint[1], vehicle.paint[2], custom};
+        if (vehicle.otherLook) {
+            state->otherLook.insert(static_cast<int>(i));
+        }
+        CarKey key{vehicle.car,
+                   vehicle.paint[0],
+                   vehicle.paint[1],
+                   vehicle.paint[2],
+                   custom,
+                   vehicle.otherLook};
         if (state->cars.contains(key)) {
             continue;
         }
@@ -1604,7 +1620,7 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     for (std::size_t i = g_dwNumLocalPlayers; i < cars.size(); ++i) {
         for (int racer = static_cast<int>(g_dwNumLocalPlayers); racer < g_dwNumVehicles; ++racer) {
             const u8 *color = g_aRacerSlots[racer].GetColor();
-            CarKey key{cars[i].car, color[0], color[1], color[2], 0};
+            CarKey key{cars[i].car, color[0], color[1], color[2], 0, 0};
             if (!state->cars.contains(key)) {
                 state->cars.try_emplace(
                     key,
@@ -2261,7 +2277,8 @@ void RaceView::DrawView(SceneRenderer &renderer,
                        color[0],
                        color[1],
                        color[2],
-                       s.images.contains(index) ? index + 1 : 0};
+                       s.images.contains(index) ? index + 1 : 0,
+                       s.otherLook.contains(index)};
             auto found = s.cars.find(key);
             if (found != s.cars.end() && found->second.beams) {
                 renderer.DrawModel(*found->second.beams,
@@ -2339,7 +2356,12 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     if (images != s.images.end()) {
         document = images->second;
     }
-    CarKey key{car.GetCarModel(), color[0], color[1], color[2], document ? vehicleIndex + 1 : 0};
+    CarKey key{car.GetCarModel(),
+               color[0],
+               color[1],
+               color[2],
+               document ? vehicleIndex + 1 : 0,
+               s.otherLook.contains(vehicleIndex)};
     auto found = s.cars.find(key);
     // A car that does not load is not tried again.
     if (found == s.cars.end()) {
@@ -2413,11 +2435,18 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     std::optional<Highlight> highlight =
         CarHighlight(car, vehicle, camera, s.dayHighlight.get(), s.nightHighlight.get());
     // The highlight draws only where the depth is equal, and a ghost does not write the depth.
-    if (highlight && level.highlighted && !ghost) {
+    // The other look has no highlight.
+    bool otherLook = key[5] != 0;
+    if (highlight && level.highlighted && !ghost && !otherLook) {
         renderer.DrawHighlight(*level.highlighted, FrameMatrix(frame), viewProjection, *highlight);
     }
     if (level.paint) {
         renderer.DrawReflectingModel(*level.paint, body, viewProjection, carLighting, reflection);
+    }
+    // The other look draws the highlighted parts after the body with the sky reflected.
+    if (otherLook && level.highlighted) {
+        renderer.DrawReflectingModel(
+            *level.highlighted, FrameMatrix(frame), viewProjection, carLighting, reflection);
     }
     // RenderWheelModels(): each wheel at the matrix the race gives it, in snow the wheel of the
     // snow.

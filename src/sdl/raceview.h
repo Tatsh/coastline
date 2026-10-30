@@ -26,6 +26,9 @@ struct RaceCar {
     /** A glTF document of the car of the cartridge whose images take the place of those of the
      * asset pack, such as custom decals, or none. */
     std::optional<std::filesystem::path> images;
+    /** Whether the car draws in its other look, with its highlighted parts reflecting the sky in
+     * place of its textured parts, as Vehicle.otherLook of the console. */
+    bool otherLook = false;
 };
 
 /** The models of the track and the cars of a race, and their drawing from the state of the race. */

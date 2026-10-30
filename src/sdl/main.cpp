@@ -1501,7 +1501,9 @@ int main(int argc, char *argv[]) {
                         raceView->Draw(*sceneRenderer, raceTime / RACE_STEP);
                     } else {
                         sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
-                        auto menuButtons = [&](std::uint16_t down, std::uint16_t now) {
+                        auto menuButtons = [&](std::uint16_t down,
+                                               std::uint16_t now,
+                                               const coastline::ControllerState &port) {
                             return coastline::MenuButtons{
                                 .left = (down & coastline::BUTTON_D_LEFT) != 0,
                                 .right = (down & coastline::BUTTON_D_RIGHT) != 0,
@@ -1512,16 +1514,18 @@ int main(int argc, char *argv[]) {
                                 .back = (down & coastline::BUTTON_B) != 0,
                                 .held = now != 0,
                                 .cDown = (down & coastline::BUTTON_C_DOWN) != 0,
-                                .heldButtons = now};
+                                .heldButtons = port.buttons,
+                                .stickY = port.stickY};
                         };
                         coastline::PaintShopInput pointer = PaintShopInputOf(ports[0], mouse);
                         pointer.text = std::move(typed);
-                        coastline::MenusEnd end = mainMenu->Frame(
-                            *sceneRenderer,
-                            seconds,
-                            {menuButtons(pressed, held), menuButtons(secondPressed, secondHeld)},
-                            ports[1].connected,
-                            pointer);
+                        coastline::MenusEnd end =
+                            mainMenu->Frame(*sceneRenderer,
+                                            seconds,
+                                            {menuButtons(pressed, held, ports[0]),
+                                             menuButtons(secondPressed, secondHeld, ports[1])},
+                                            ports[1].connected,
+                                            pointer);
                         // The keyboard of the computer types while a screen takes text.
                         if (mainMenu->TakesText() != SDL_TextInputActive(window->Window())) {
                             if (mainMenu->TakesText()) {
@@ -1575,6 +1579,7 @@ int main(int argc, char *argv[]) {
                         for (std::size_t i = 0; i < cars.size() && i < setup.cars.size(); ++i) {
                             if (static_cast<int>(i) < setup.players) {
                                 cars[i].images = setup.cars[i].images;
+                                cars[i].otherLook = setup.cars[i].otherLook;
                             }
                         }
                         raceView = coastline::RaceView::Load(
