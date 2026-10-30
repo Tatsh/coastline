@@ -429,6 +429,7 @@ struct ModelDraw {
     Lighting lighting;
     std::optional<MorphPose> pose;
     bool depth;
+    std::optional<SDL_Rect> scissor;
 };
 
 struct QuadDraw {
@@ -443,8 +444,6 @@ struct QuadDraw {
 struct RenderModel::State {
     SDL_GPUDevice *device = nullptr;
     std::vector<SDL_GPUTexture *> images;
-    // The width over the height of each image.
-    std::vector<float> imageAspects;
     std::vector<SDL_GPUSampler *> samplers;
     std::vector<std::pair<std::size_t, std::size_t>> textures; // Image and sampler.
     std::vector<Mesh> meshes;
@@ -646,7 +645,6 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
             texels.insert(texels.end(), row, row + rgba->w * 4);
         }
         state->images.push_back(upload.Texture(rgba->w, rgba->h, texels));
-        state->imageAspects.push_back(static_cast<float>(rgba->w) / static_cast<float>(rgba->h));
         SDL_DestroySurface(rgba);
     }
     for (const auto &sampler : document.value("samplers", nlohmann::json::array())) {
@@ -960,8 +958,10 @@ void SceneRenderer::DrawModel(const RenderModel &model,
                               const Matrix4 &viewProjection,
                               const Lighting &lighting,
                               std::optional<MorphPose> pose,
-                              bool depth) {
-    m_state->draws.emplace_back(ModelDraw{&model, world, viewProjection, lighting, pose, depth});
+                              bool depth,
+                              std::optional<SDL_Rect> scissor) {
+    m_state->draws.emplace_back(
+        ModelDraw{&model, world, viewProjection, lighting, pose, depth, scissor});
 }
 
 void SceneRenderer::DrawQuads(std::span<const FlatVertex> corners,
@@ -972,6 +972,7 @@ void SceneRenderer::DrawQuads(std::span<const FlatVertex> corners,
         Vertex v{};
         v.position[0] = corner.x;
         v.position[1] = corner.y;
+        v.position[2] = corner.z;
         v.texCoord[0] = corner.u;
         v.texCoord[1] = corner.v;
         std::memcpy(v.color, corner.color.data(), 4);
@@ -1091,8 +1092,11 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
 
     // Each model draws its opaque primitives where it comes, and the blended ones of every model
     // follow every opaque one. A flat draw comes after the models drawn before it.
+    SDL_Rect whole{
+        0, 0, static_cast<int>(s.window->FrameWidth()), static_cast<int>(s.window->FrameHeight())};
     auto drawModel = [&](const ModelDraw &draw, bool blending) {
         const RenderModel::State &model = *draw.model->m_state;
+        SDL_SetGPUScissor(pass, draw.scissor ? &*draw.scissor : &whole);
         for (const Placed &placed : model.placed) {
             const Mesh &mesh = model.meshes[placed.mesh];
             VertexUniforms vertexUniforms{draw.viewProjection,
@@ -1110,13 +1114,6 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                 if (primitive.blend == blending) {
                     VertexUniforms uniforms = vertexUniforms;
                     uniforms.blend[1] = primitive.textureGen ? 1.0f : 0.0f;
-                    // The coordinates the RSP generates cover a square of the width of the image,
-                    // the first level of the levels stacked under it.
-                    uniforms.blend[2] = 1.0f;
-                    if (primitive.texture && *primitive.texture < model.textures.size()) {
-                        uniforms.blend[2] =
-                            model.imageAspects.at(model.textures[*primitive.texture].first);
-                    }
                     drawPrimitive(primitive, model, uniforms, lighting, targets, draw.depth);
                 }
             }
@@ -1145,6 +1142,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             continue;
         }
         SDL_BindGPUGraphicsPipeline(pass, pipeline);
+        SDL_SetGPUScissor(pass, &whole);
         VertexUniforms vertexUniforms{
             quad.projection, IDENTITY_MATRIX, {0, 0, 0, 0}, {0.0f, 0.0f, 0.0f, 0.0f}};
         SDL_PushGPUVertexUniformData(commands, 0, &vertexUniforms, sizeof(vertexUniforms));

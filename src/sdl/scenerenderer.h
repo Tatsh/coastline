@@ -134,6 +134,7 @@ struct FlatVertex {
     float u = 0.0f;                                        /*!< The texel across, from 0 to 1. */
     float v = 0.0f;                                        /*!< The texel down, from 0 to 1. */
     std::array<std::uint8_t, 4> color{255, 255, 255, 255}; /*!< The colour, R, G, B, and A. */
+    float z = 0.0f;                                        /*!< The back to front place. */
 };
 
 /** How a run of flat quads is coloured: the textures and the colour combiner of the RDP. */
@@ -185,13 +186,16 @@ public:
      * @param lighting The lights of the model.
      * @param pose The pose of its vertices, or none for the pose of the document.
      * @param depth Whether the model tests and writes the depth.
+     * @param scissor The rectangle of the frame in pixels the model is cut to, or none for the
+     * whole frame.
      */
     void DrawModel(const RenderModel &model,
                    const Matrix4 &world,
                    const Matrix4 &viewProjection,
                    const Lighting &lighting,
                    std::optional<MorphPose> pose,
-                   bool depth);
+                   bool depth,
+                   std::optional<SDL_Rect> scissor = std::nullopt);
 
     /**
      * Draw flat quads over everything drawn before them, blended by their alpha.
