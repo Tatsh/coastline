@@ -169,6 +169,7 @@ add_library(
   decaldraw.cpp
   decaleditor.cpp
   earsound.cpp
+  effecttextures.cpp
   enginecheck.cpp
   enginetextures.cpp
   frontend.cpp
@@ -219,8 +220,8 @@ add_dependencies(coastline_sdl coastline_shaders coastline_manifests)
 target_link_libraries(coastline_sdl PUBLIC nlohmann_json::nlohmann_json
                                     PRIVATE FLAC::FLAC fmt::fmt ZLIB::ZLIB)
 # A reconstructed routine retains the parameters of the original, used or not.
-set_source_files_properties("${CMAKE_SOURCE_DIR}/src/common/audio.c" pending.cpp
-                            PROPERTIES COMPILE_OPTIONS "${COASTLINE_NO_UNUSED_PARAMETER}")
+set_source_files_properties("${CMAKE_SOURCE_DIR}/src/common/audio.c" effecttextures.cpp
+                            pending.cpp PROPERTIES COMPILE_OPTIONS "${COASTLINE_NO_UNUSED_PARAMETER}")
 # The interpreter rounds each operation of the floating-point unit of the console on its own. MSVC
 # does not contract operations without /fp:contract.
 if(NOT MSVC)

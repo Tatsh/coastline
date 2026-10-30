@@ -393,6 +393,7 @@ eepromprobe
 eepromread
 eepromwrite
 effectdata
+effecttextures
 emptycallback
 emulatedclock
 encryptionfailed

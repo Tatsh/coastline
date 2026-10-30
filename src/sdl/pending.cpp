@@ -36,16 +36,3 @@ void RefreshVehicleMaterialTextures(VehicleModel *model) {
 void ApplyRandomAdjacentDamageTexture(int nTexture, const int *pnEntries, int *pnLevels) {
     PENDING();
 }
-
-// The renderer.
-void CopyTileColumnScaled(int nTileIndex, int nSrcX, int nSrcY, int nSrcRow) {
-    PENDING();
-}
-
-void CreateGlobalEffectTextures(void) {
-    PENDING();
-}
-
-void GetPrecipitationTextureDimensions(int nIndex) {
-    PENDING();
-}
