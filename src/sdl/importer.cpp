@@ -8,6 +8,7 @@
 #include <fstream>
 #include <functional>
 #include <iterator>
+#include <map>
 #include <memory>
 #include <optional>
 #include <span>
@@ -622,6 +623,280 @@ std::optional<std::string> ConvertConsoleLights(const std::filesystem::path &des
     return std::nullopt;
 }
 
+std::uint32_t Big32(const std::uint8_t *bytes) {
+    return static_cast<std::uint32_t>(bytes[0]) << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3];
+}
+
+// The offset and the name of an asset of the manifest of a cartridge, and the offset of the next
+// asset after any padding.
+struct ManifestAsset {
+    std::uint32_t romStart;
+    std::uint32_t romEnd;
+    std::string name;
+};
+
+std::vector<ManifestAsset> ManifestAssets(std::span<const unsigned char> manifest) {
+    std::vector<ManifestAsset> assets;
+    std::istringstream lines(std::string(manifest.begin(), manifest.end()));
+    std::string line;
+    while (std::getline(lines, line)) {
+        std::istringstream fields(line);
+        std::uint32_t offset = 0;
+        std::uint32_t size = 0;
+        std::string kind;
+        std::string name;
+        if (!(fields >> std::hex >> offset >> std::dec >> size >> kind >> name) ||
+            name == "padding") {
+            continue;
+        }
+        if (!assets.empty()) {
+            assets.back().romEnd = offset;
+        }
+        assets.push_back({offset, offset + size, std::move(name)});
+    }
+    return assets;
+}
+
+// The offsets of the 4-aligned records of the main segment whose words at the offset field of the
+// record are the start and the end of the asset.
+std::vector<std::size_t> FindAssetRecords(std::span<const std::uint8_t> segment,
+                                          const ManifestAsset &asset,
+                                          std::size_t field,
+                                          std::size_t recordSize) {
+    std::vector<std::size_t> records;
+    for (std::size_t at = field; at + recordSize - field <= segment.size(); at += 4) {
+        if (Big32(&segment[at]) == asset.romStart && Big32(&segment[at + 4]) == asset.romEnd) {
+            records.push_back(at - field);
+        }
+    }
+    return records;
+}
+
+// The lowest bit and the width of a channel of a texel. A width of 0 is an opaque alpha.
+struct TexelChannel {
+    int shift;
+    int bits;
+};
+
+// The red, green, blue, and alpha of a texel of a G_IM_FMT_* format and a G_IM_SIZ_* size.
+struct TexelLayout {
+    std::uint8_t format;
+    std::uint8_t size;
+    std::array<TexelChannel, 4> channels;
+};
+
+constexpr std::array<TexelLayout, 7> TEXEL_LAYOUTS{{
+    {0, 2, {{{11, 5}, {6, 5}, {1, 5}, {0, 1}}}},
+    {0, 3, {{{24, 8}, {16, 8}, {8, 8}, {0, 8}}}},
+    {3, 0, {{{1, 3}, {1, 3}, {1, 3}, {0, 1}}}},
+    {3, 1, {{{4, 4}, {4, 4}, {4, 4}, {0, 4}}}},
+    {3, 2, {{{8, 8}, {8, 8}, {8, 8}, {0, 8}}}},
+    {4, 0, {{{0, 4}, {0, 4}, {0, 4}, {0, 0}}}},
+    {4, 1, {{{0, 8}, {0, 8}, {0, 8}, {0, 0}}}},
+}};
+
+// A value of the given number of bits scaled to 8 bits by repeating its bits. Shifting the result
+// right by 8 less that number restores the value.
+std::uint8_t ExpandBits(std::uint32_t value, int bits) {
+    std::uint32_t result = 0;
+    for (int shift = 8 - bits; shift > -bits; shift -= bits) {
+        result |= shift >= 0 ? value << shift : value >> -shift;
+    }
+    return static_cast<std::uint8_t>(result);
+}
+
+// Each texture of the interface in data/ as a PNG image, upright, in place of its texels once the
+// image builds the same texels, and data/textures.json with the format, the bits a texel, and the
+// dimensions of each. Each texture is found by its Texture descriptor in the main segment. A
+// texture without a descriptor or a PNG form remains as its texels.
+std::optional<std::string> ConvertConsoleTextures(const std::filesystem::path &destination,
+                                                  std::span<const std::uint8_t> segment,
+                                                  std::span<const ManifestAsset> assets) {
+    constexpr std::size_t DESCRIPTOR = 20;
+    constexpr std::array<const char *, 5> FORMATS{"RGBA", "YUV", "CI", "IA", "I"};
+    nlohmann::ordered_json json = nlohmann::ordered_json::object();
+    for (const ManifestAsset &asset : assets) {
+        if (!asset.name.starts_with("data/")) {
+            continue;
+        }
+        auto path = destination / (asset.name + ".bin");
+        auto records = FindAssetRecords(segment, asset, 0, DESCRIPTOR);
+        auto descriptor = std::ranges::find_if(records, [&](std::size_t at) {
+            return Big32(&segment[at + 8]) == 0 && (segment[at + 12] | segment[at + 13]) != 0 &&
+                   (segment[at + 14] | segment[at + 15]) != 0 &&
+                   segment[at + 16] < FORMATS.size() && segment[at + 17] <= 3 &&
+                   segment[at + 18] == 0 && segment[at + 19] == 0;
+        });
+        if (descriptor == records.end()) {
+            SDL_Log("The main segment has no texture descriptor of %s.", path.string().c_str());
+            continue;
+        }
+        const std::uint8_t *fields = &segment[*descriptor];
+        int width = fields[12] << 8 | fields[13];
+        int height = fields[14] << 8 | fields[15];
+        std::uint8_t format = fields[16];
+        std::uint8_t size = fields[17];
+        int bits = 4 << size;
+        json[path.stem().string()] = {
+            {"format", FORMATS[format]}, {"size", bits}, {"width", width}, {"height", height}};
+        const auto *layout = std::ranges::find_if(TEXEL_LAYOUTS, [&](const TexelLayout &entry) {
+            return entry.format == format && entry.size == size;
+        });
+        auto texels = ReadWholeFile(path);
+        if (!texels) {
+            return std::format("{} cannot be read.", path.string());
+        }
+        auto count = static_cast<std::size_t>(width) * static_cast<std::size_t>(height);
+        if (layout == TEXEL_LAYOUTS.end() || count == 0 ||
+            texels->size() != (count * static_cast<std::size_t>(bits) + 7) / 8) {
+            SDL_Log("The %zu bytes of %s %d-bit texels, %dx%d, of %s have no PNG form.",
+                    texels->size(),
+                    FORMATS[format],
+                    bits,
+                    width,
+                    height,
+                    path.string().c_str());
+            continue;
+        }
+        auto bytesPerTexel = static_cast<std::size_t>(bits) / 8;
+        auto texelAt = [&](std::size_t index) {
+            if (bits == 4) {
+                return static_cast<std::uint32_t>((*texels)[index / 2] >> (index % 2 == 0 ? 4 : 0) &
+                                                  0xf);
+            }
+            std::uint32_t value = 0;
+            for (std::size_t i = 0; i < bytesPerTexel; ++i) {
+                value = value << 8 | (*texels)[index * bytesPerTexel + i];
+            }
+            return value;
+        };
+        // The console stores the rows from the bottom up, and draws them with a negative step.
+        auto rowOfPixel = [&](std::size_t pixel) {
+            return (static_cast<std::size_t>(height) - 1 -
+                    pixel / static_cast<std::size_t>(width)) *
+                       static_cast<std::size_t>(width) +
+                   pixel % static_cast<std::size_t>(width);
+        };
+        std::vector<std::uint8_t> rgba;
+        rgba.reserve(count * 4);
+        for (std::size_t pixel = 0; pixel < count; ++pixel) {
+            std::uint32_t texel = texelAt(rowOfPixel(pixel));
+            for (auto [shift, channelBits] : layout->channels) {
+                rgba.push_back(
+                    channelBits == 0 ?
+                        0xff :
+                        ExpandBits(texel >> shift & ((1u << channelBits) - 1), channelBits));
+            }
+        }
+        auto png = std::filesystem::path(path).replace_extension(".png");
+        if (!SaveRgba8Png(png, rgba, width, height)) {
+            return std::format("{} does not read back as its pixels.", png.string());
+        }
+        std::vector<std::uint8_t> rebuilt(texels->size());
+        for (std::size_t pixel = 0; pixel < count; ++pixel) {
+            std::uint32_t texel = 0;
+            for (std::size_t channel = 0; channel < 4; ++channel) {
+                auto [shift, channelBits] = layout->channels[channel];
+                if (channelBits != 0) {
+                    texel |=
+                        static_cast<std::uint32_t>(rgba[pixel * 4 + channel] >> (8 - channelBits))
+                        << shift;
+                }
+            }
+            std::size_t index = rowOfPixel(pixel);
+            if (bits == 4) {
+                rebuilt[index / 2] |= static_cast<std::uint8_t>(texel << (index % 2 == 0 ? 4 : 0));
+                continue;
+            }
+            for (std::size_t i = 0; i < bytesPerTexel; ++i) {
+                rebuilt[index * bytesPerTexel + i] =
+                    static_cast<std::uint8_t>(texel >> (8 * (bytesPerTexel - 1 - i)));
+            }
+        }
+        std::error_code error;
+        if (rebuilt != *texels) {
+            SDL_Log(
+                "%s does not build the texels of %s.", png.string().c_str(), path.string().c_str());
+            std::filesystem::remove(png, error);
+            continue;
+        }
+        std::filesystem::remove(path, error);
+    }
+    std::ofstream(destination / "data" / "textures.json", std::ios::trunc) << json.dump(2) << '\n';
+    return std::nullopt;
+}
+
+// Writes the text and the MENU_ITEM_* flags of the MenuItem record of each model of menu-items/ to
+// items.json in the directory of the model, by the name of the model.
+void WriteMenuItems(const std::filesystem::path &destination,
+                    std::span<const std::uint8_t> segment,
+                    std::span<const ManifestAsset> assets) {
+    constexpr std::uint32_t SEGMENT_BASE = 0x80200000;
+    constexpr std::size_t MENU_ITEM = 20;
+    std::map<std::filesystem::path, nlohmann::ordered_json> menus;
+    for (const ManifestAsset &asset : assets) {
+        if (!asset.name.starts_with("menu-items/")) {
+            continue;
+        }
+        auto model = destination / asset.name;
+        auto records = FindAssetRecords(segment, asset, 12, MENU_ITEM);
+        auto record = std::ranges::find_if(records, [&](std::size_t at) {
+            std::uint32_t text = Big32(&segment[at]);
+            return Big32(&segment[at + 8]) == 0 && text >= SEGMENT_BASE &&
+                   text - SEGMENT_BASE < segment.size() &&
+                   std::ranges::find(segment.subspan(text - SEGMENT_BASE), 0) != segment.end();
+        });
+        if (record == records.end()) {
+            SDL_Log("%s has no menu item in the main segment.", asset.name.c_str());
+            continue;
+        }
+        const auto *text =
+            reinterpret_cast<const char *>(&segment[Big32(&segment[*record]) - SEGMENT_BASE]);
+        menus[model.parent_path()][model.filename().string()] = {
+            {"name", std::string(text)}, {"flags", Big32(&segment[*record + 4])}};
+    }
+    for (const auto &[directory, items] : menus) {
+        std::ofstream(directory / "items.json", std::ios::trunc)
+            << items.dump(2, ' ', false, nlohmann::ordered_json::error_handler_t::replace) << '\n';
+    }
+}
+
+// The addresses of the vertices of the choice marker of the menus, drawn by
+// g_aMenuChoiceMarkerDisplayList.
+constexpr std::uint32_t USA_MENU_CHOICE_MARKER = 0x80271E68;
+constexpr std::uint32_t EUR_MENU_CHOICE_MARKER = 0x80273E48;
+constexpr std::uint32_t JPN_MENU_CHOICE_MARKER = 0x80273908;
+
+// Writes the position and the colour of each of the 12 vertices of the choice marker of the menus,
+// and the triangles of its display list, as data/menu-choice-marker.json.
+std::optional<std::string> WriteMenuChoiceMarker(const std::filesystem::path &destination,
+                                                 std::span<const std::uint8_t> segment,
+                                                 RomRelease release) {
+    constexpr std::uint32_t SEGMENT_BASE = 0x80200000;
+    constexpr std::size_t VERTICES = 12;
+    constexpr std::size_t VERTEX = 16;
+    std::uint32_t address = release == RomRelease::Usa ? USA_MENU_CHOICE_MARKER :
+                            release == RomRelease::Eur ? EUR_MENU_CHOICE_MARKER :
+                                                         JPN_MENU_CHOICE_MARKER;
+    if (address - SEGMENT_BASE + VERTICES * VERTEX > segment.size()) {
+        return std::string("The choice marker of the menus is outside the main segment.");
+    }
+    nlohmann::ordered_json vertices = nlohmann::ordered_json::array();
+    for (std::size_t i = 0; i < VERTICES; ++i) {
+        const std::uint8_t *vertex = &segment[address - SEGMENT_BASE + i * VERTEX];
+        auto coordinate = [vertex](int index) {
+            return static_cast<std::int16_t>(vertex[index * 2] << 8 | vertex[index * 2 + 1]);
+        };
+        vertices.push_back({{"position", {coordinate(0), coordinate(1), coordinate(2)}},
+                            {"color", {vertex[12], vertex[13], vertex[14], vertex[15]}}});
+    }
+    nlohmann::ordered_json marker{{"vertices", vertices},
+                                  {"triangles", {{0, 1, 2}, {6, 7, 8}, {3, 4, 5}, {9, 10, 11}}}};
+    std::ofstream(destination / "data" / "menu-choice-marker.json", std::ios::trunc)
+        << marker.dump(2) << '\n';
+    return std::nullopt;
+}
+
 // Each ghost recording of the demos as JSON of the same name, in place of the file once the JSON
 // builds the same bytes.
 std::optional<std::string> ConvertGhostRecordings(const std::filesystem::path &dataDirectory) {
@@ -989,13 +1264,16 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
             splashModels.push_back(model);
         }
     }
-    for (std::string_view name : {"splash_sound_a", "splash_sound_b"}) {
-        if (auto sound = destination / "constants" / (std::string(name) + ".bin");
+    for (std::string_view name : {"constants/splash_sound_a",
+                                  "constants/splash_sound_b",
+                                  "segments/scrollSound",
+                                  "segments/selectSound"}) {
+        if (auto sound = destination / (std::string(name) + ".bin");
             std::filesystem::exists(sound)) {
             sounds.push_back(sound);
         }
     }
-    // The sounds of the splash screens and of the races as WAV files.
+    // The sounds of the splash screens, the menus, and the races as WAV files.
     for (const auto &sound :
          std::filesystem::directory_iterator(destination / "sounds", carsError)) {
         if (sound.path().extension() == ".bin") {
@@ -1020,6 +1298,29 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
                                         std::filesystem::path(model).replace_extension(".gltf"),
                                         model.parent_path() / (stem + "-mesh.bin"))) {
             return std::unexpected(*failure);
+        }
+    }
+    auto segment = std::span<const std::uint8_t>(*bytes).subspan(SEGMENT_ROM, SEGMENT_SIZE);
+    auto assets = ManifestAssets(known.manifest);
+    if (auto failure = ConvertConsoleTextures(destination, segment, assets)) {
+        return std::unexpected(*failure);
+    }
+    if (auto failure = WriteMenuChoiceMarker(destination, segment, *release)) {
+        return std::unexpected(*failure);
+    }
+    WriteMenuItems(destination, segment, assets);
+    // Replaces each model of the menu items with a glTF file of the same name.
+    for (const ManifestAsset &asset : assets) {
+        if (!asset.name.starts_with("menu-items/")) {
+            continue;
+        }
+        auto model = destination / (asset.name + ".bin");
+        auto stem = model.stem().string();
+        if (auto failure = ConvertModel(model,
+                                        FrontEndModelToGltf,
+                                        std::filesystem::path(model).replace_extension(".gltf"),
+                                        model.parent_path() / (stem + "-mesh.bin"))) {
+            SDL_Log("%s", failure->c_str());
         }
     }
     std::error_code error;
