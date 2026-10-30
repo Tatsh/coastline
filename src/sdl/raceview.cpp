@@ -914,44 +914,18 @@ constexpr std::array<std::uint32_t, 2> PRECIPITATION_COMBINE = CombineLerp(ZERO_
 // The scale from the place of a particle of the rain or the snow to the units of the world.
 constexpr float PRECIPITATION_SCALE = 6.10370189e-05f;
 
-// RenderPrecipitationEffect(): the streak of the rain of a view, from the fall of the rain on the
-// screen. Each of 16 steps along the fall writes a disc 5 texels across without its corners, the
-// later steps brighter, as BRD3D writes the white texels of the alpha ramp of
-// CreateAlphaRampTextures() into the texture of the view, cleared each frame.
-std::vector<std::uint8_t> RainStreakTexels(const CameraFrame &camera, const Vec3f &velocity) {
-    constexpr int SIDE = RAIN_STREAK_TEXTURE_SIDE;
-    constexpr int MARGIN = 2;
-    constexpr std::array<std::array<int, 2>, 21> DISC{
-        {{-1, -2}, {0, -2}, {1, -2}, {-2, -1}, {-1, -1}, {0, -1}, {1, -1},
-         {2, -1},  {-2, 0}, {-1, 0}, {0, 0},   {1, 0},   {2, 0},  {-2, 1},
-         {-1, 1},  {0, 1},  {1, 1},  {2, 1},   {-1, 2},  {0, 2},  {1, 2}}};
-    std::vector<std::uint8_t> texels(static_cast<std::size_t>(SIDE * SIDE * 4), 0);
-    // The velocity in the axes of the camera, across, up, and along it.
-    Vec3f fall{static_cast<f32>(Vec3fDot(&velocity, &camera.side)),
-               static_cast<f32>(Vec3fDot(&velocity, &camera.up)),
-               static_cast<f32>(Vec3fDot(&velocity, &camera.forward))};
-    Vec3fNormalize(&fall);
-    long double u = 32.0L - static_cast<long double>(fall.x) * 28.0f;
-    long double v = 32.0L - static_cast<long double>(fall.y) * -28.0f;
-    long double du = static_cast<long double>(fall.x) * 3.5f;
-    long double dv = static_cast<long double>(fall.y) * -3.5f;
-    v += dv;
-    for (int step = 0; step < 16; ++step) {
-        u += du;
-        auto row = static_cast<int>(v);
-        auto column = static_cast<int>(u);
-        if (row >= MARGIN && row < SIDE - MARGIN && column >= MARGIN && column < SIDE - MARGIN) {
-            for (const auto &[dx, dy] : DISC) {
-                std::size_t at = static_cast<std::size_t>(((row + dy) * SIDE + column + dx) * 4);
-                texels[at] = 0xFF;
-                texels[at + 1] = 0xFF;
-                texels[at + 2] = 0xFF;
-                texels[at + 3] = static_cast<std::uint8_t>(step << 4 | step);
-            }
-        }
-        v += dv;
-    }
-    return texels;
+// RenderPrecipitationEffect() of the view the globals of the race look from, to a scratch list, for
+// the streak of the rain it writes into the texture of the view through CopyTileColumnScaled():
+// the white texels of the alpha ramp along the fall of the rain on the screen. The commands are not
+// read.
+std::vector<std::uint8_t> RainStreakTexels(int view) {
+    static std::array<GbiCommand, RAIN_PARTICLES + 64> scratch;
+    GbiCommand *list = gDisplayListPtr;
+    gDisplayListPtr = scratch.data();
+    RenderPrecipitationEffect();
+    gDisplayListPtr = list;
+    const auto &texels = g_abPrecipitationTextures[view];
+    return {std::begin(texels), std::end(texels)};
 }
 
 // RenderPrecipitationEffect() of a view: each particle in front of the camera and on the screen is
@@ -959,7 +933,9 @@ std::vector<std::uint8_t> RainStreakTexels(const CameraFrame &camera, const Vec3
 // by 144 for the snow and 128 for the rain over its distance, in quarters of a pixel of the 480
 // lines of the screen of the PC release. A particle lies around the camera opposite to its place
 // in the axes of the world. The rectangle takes the texture upside down, the half of its texture
-// the snow samples, in the colour of the rain or of the snow by the alpha of the texture.
+// the snow samples, in the colour of the rain or of the snow by the alpha of the texture. On a
+// mirrored track the race negates the places across and the fall of the rain, and the viewport
+// turns both back, so the particles keep their places and only the rectangles turn.
 void DrawPrecipitation(SceneRenderer &renderer,
                        const RenderTexture &texture,
                        int view,
@@ -1003,13 +979,13 @@ void DrawPrecipitation(SceneRenderer &renderer,
         if (sizeX < 2 || sizeY < 2) {
             continue;
         }
-        float right = left + static_cast<float>(sizeX) / 1280.0f / widen;
+        float span = static_cast<float>(sizeX) / 1280.0f / widen;
+        float right = across ? left - span : left + span;
         float bottom = top - static_cast<float>(sizeY) / 960.0f;
-        float sign = across ? -1.0f : 1.0f;
-        corners.push_back({left * sign, top, first, last, color, 0.0f});
-        corners.push_back({right * sign, top, last, last, color, 0.0f});
-        corners.push_back({right * sign, bottom, last, first, color, 0.0f});
-        corners.push_back({left * sign, bottom, first, first, color, 0.0f});
+        corners.push_back({left, top, first, last, color, 0.0f});
+        corners.push_back({right, top, last, last, color, 0.0f});
+        corners.push_back({right, bottom, last, first, color, 0.0f});
+        corners.push_back({left, bottom, first, first, color, 0.0f});
     }
     if (corners.empty()) {
         return;
@@ -2225,16 +2201,14 @@ void RaceView::DrawView(SceneRenderer &renderer,
     }
     // RenderPrecipitationEffect() in the rain and the snow, in the view and not in its mirror, and
     // not with the camera under a shelter. It takes the projection before a mirrored track turns
-    // it, and the rectangles turn with the view. The rectangles keep their shape across a view
-    // wider than the screen of the PC release.
+    // it. The rectangles keep their shape across a view wider than the screen of the PC release.
     bool sheltered = std::ranges::any_of(
         std::span(g_awCameraRayHitInstances, static_cast<std::size_t>(g_dwCameraRayHitCount)),
         [](u16 hit) { return (g_LoadedTrack.instances[hit].flags & TRACK_INSTANCE_SHELTER) != 0; });
     if (!mirror && (g_dwSnowMode || g_dwRainMode) && !sheltered) {
         const RenderTexture *precipitation = s.shadowTexture.get();
         if (g_dwRainMode) {
-            std::vector<std::uint8_t> texels =
-                RainStreakTexels(*camera, g_avRainVelocity[static_cast<std::size_t>(index)]);
+            std::vector<std::uint8_t> texels = RainStreakTexels(index);
             auto view = static_cast<std::size_t>(index);
             if (!s.streaks[view] || texels != s.streakTexels[view]) {
                 s.streaks[view] = RenderTexture::FromTexels(renderer,
