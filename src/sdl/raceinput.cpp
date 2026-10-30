@@ -191,6 +191,18 @@ constexpr SDL_GamepadButton JOYSTICK_BUTTONS[] = {
     SDL_GAMEPAD_BUTTON_MISC1,
 };
 
+#ifdef ENABLE_PATCHES
+struct GamepadAlternate {
+    int binding;
+    std::size_t button;
+};
+
+// The bindings the joystick of the PC release leaves to the keyboard, and the buttons of
+// JOYSTICK_BUTTONS that select them as well. The right and the left shoulder change gear up and
+// down, Start pauses, and Back starts the race and resets the car.
+constexpr GamepadAlternate GAMEPAD_ALTERNATES[] = {{5, 5}, {6, 4}, {15, 7}, {16, 6}};
+#endif /* ENABLE_PATCHES */
+
 struct JoystickState {
     int x;
     int y;
@@ -266,6 +278,9 @@ private:
     void ReadMouse();
     unsigned char IsHeld(int binding) const;
     unsigned char IsPressed(int binding) const;
+#ifdef ENABLE_PATCHES
+    unsigned char ReadGamepadAlternate(int binding, bool pressed) const;
+#endif
     int AxisOf(unsigned kind, bool current) const;
     int ReadAxisMagnitude(int binding) const;
     bool IsForceFeedbackInUse() const;
@@ -426,6 +441,9 @@ unsigned char RaceInput::IsHeld(int binding) const {
             result |= keys[control & 0xff] & DOWN;
         }
     }
+#ifdef ENABLE_PATCHES
+    result |= ReadGamepadAlternate(binding, false);
+#endif
     return result;
 }
 
@@ -468,8 +486,30 @@ unsigned char RaceInput::IsPressed(int binding) const {
             result |= IsPressedEdge(previousKeys[control & 0xff], keys[control & 0xff]);
         }
     }
+#ifdef ENABLE_PATCHES
+    result |= ReadGamepadAlternate(binding, true);
+#endif
     return result;
 }
+
+#ifdef ENABLE_PATCHES
+unsigned char RaceInput::ReadGamepadAlternate(int binding, bool pressed) const {
+    if (g_GlobalRallyConfig.dwInputDeviceType != 1 && g_GlobalRallyConfig.dwInputDeviceType != 2) {
+        return 0;
+    }
+    const auto &current = m_joystick[static_cast<std::size_t>(m_joystickCurrent)].buttons;
+    const auto &previous = m_joystick[static_cast<std::size_t>(m_joystickPrevious)].buttons;
+    unsigned char result = 0;
+    for (const auto &alternate : GAMEPAD_ALTERNATES) {
+        if (alternate.binding == binding) {
+            result |= pressed ?
+                          IsPressedEdge(previous[alternate.button], current[alternate.button]) :
+                          current[alternate.button] & DOWN;
+        }
+    }
+    return result;
+}
+#endif /* ENABLE_PATCHES */
 
 int RaceInput::ReadAxisMagnitude(int binding) const {
     const unsigned kind = g_GlobalRallyConfig.pActiveInputBindings[binding].wControl & 0xff00;

@@ -12,6 +12,7 @@
 #include "common/profile.h"
 #include "common/race.h"
 #include "common/racephases.h"
+#include "common/rallyconfig.h"
 #include "common/render.h"
 #include "common/screen.h"
 #include "common/season.h"
@@ -82,6 +83,12 @@ void StartRace(const RaceSetup &setup, const std::filesystem::path &music, bool 
     g_SeasonProgress.championshipFlags = setup.championshipFlags;
     std::copy(setup.lapRecords.begin(), setup.lapRecords.end(), g_SeasonProgress.lapRecords);
     std::copy(setup.raceRecords.begin(), setup.raceRecords.end(), g_SeasonProgress.raceRecords);
+    // The options of the PC release choose the keyboard or the joystick, and the menus of the
+    // console have no such choice. A connected gamepad is the joystick of those options.
+    constexpr int KEYBOARD_DEVICE = 0;
+    constexpr int JOYSTICK_DEVICE = 2;
+    g_GlobalRallyConfig.dwInputDeviceType = SDL_HasGamepad() ? JOYSTICK_DEVICE : KEYBOARD_DEVICE;
+    g_GlobalRallyConfig.SelectActiveInputBindings();
     InitGameAndShowMenus();
     // The PC release races one player, and a championship of the PC release takes its track and
     // its weather from the seasons of the PC release. The menus of the console chose both.
