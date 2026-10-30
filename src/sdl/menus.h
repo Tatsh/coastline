@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "config.h"
 #include "frontend.h"
 #include "menuscreen.h"
 #include "paintshop.h"
@@ -127,12 +128,17 @@ public:
      * @param release The directory of the import of the release, such as n64/usa.
      * @param state The state directory of the game, with the Controller Pak.
      * @param cache The cache directory of the game, for the images of the painted cars.
+     * @param config The settings of BossRally.ini, with the cars the players chose last. The
+     * settings outlive the menus.
+     * @param configPath The file of the settings, written whenever a player chooses a car.
      * @return The menus, or nothing with the reason logged.
      */
     static std::unique_ptr<Menus> Load(SceneRenderer &renderer,
                                        const std::filesystem::path &release,
                                        const std::filesystem::path &state,
-                                       const std::filesystem::path &cache);
+                                       const std::filesystem::path &cache,
+                                       GameConfig &config,
+                                       const std::filesystem::path &configPath);
     ~Menus();
     Menus(const Menus &) = delete;
     Menus &operator=(const Menus &) = delete;
@@ -237,7 +243,11 @@ private:
     void DrawPlayerStage(SceneRenderer &renderer, int player, int y, int height, float spread);
     void DrawCarStats(SceneRenderer &renderer, int player, int y, int barY);
     void DrawCarSelectChoices(SceneRenderer &renderer);
+    void UseCustomDecals(SceneRenderer &renderer, int player);
+    bool RestoreCustomDecals(SceneRenderer &renderer, int player);
     void RunPakDialog(SceneRenderer &renderer, float seconds);
+    void LoadCarChoices();
+    void SaveCarChoice(int player);
     void LeaveCarSelect();
     void ProcessCarSelectScreen(SceneRenderer &renderer,
                                 float seconds,
@@ -279,6 +289,8 @@ private:
     std::unique_ptr<MenuScreen> m_screen;
     std::unique_ptr<PaintShop> m_paintShop;
     std::filesystem::path m_cache;
+    GameConfig *m_config = nullptr;
+    std::filesystem::path m_configPath;
     PaintShopInput m_pointer;
     bool m_escapeDown = false;
     // The decals each player loaded from the Controller Pak on the car select screen, the images

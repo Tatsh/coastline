@@ -107,6 +107,15 @@ long GameConfig::GetInteger(std::string_view section, std::string_view key, long
     return error == std::errc() && end == value->data() + value->size() ? result : fallback;
 }
 
+int GameConfig::GetIndex(std::string_view section,
+                         std::string_view key,
+                         std::size_t count,
+                         int fallback) const {
+    long value = GetInteger(section, key, -1);
+    return value >= 0 && static_cast<unsigned long>(value) < count ? static_cast<int>(value) :
+                                                                     fallback;
+}
+
 float GameConfig::GetFloat(std::string_view section, std::string_view key, float fallback) const {
     auto value = Get(section, key);
     if (!value) {

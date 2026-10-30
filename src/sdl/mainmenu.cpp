@@ -33,7 +33,9 @@ constexpr float MAIN_MENU_IDLE_TIMEOUT = 20.0f;
 std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
                                    const std::filesystem::path &release,
                                    const std::filesystem::path &state,
-                                   const std::filesystem::path &cache) {
+                                   const std::filesystem::path &cache,
+                                   GameConfig &config,
+                                   const std::filesystem::path &configPath) {
     auto screen = MenuScreen::Load(renderer, release);
     if (!screen) {
         return nullptr;
@@ -54,6 +56,9 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
     menus->m_pak = ControllerPak(state / "controller-pak");
     menus->m_ghostFramesFile = state / "ghost-frames.bin";
     menus->LoadPakData();
+    menus->m_config = &config;
+    menus->m_configPath = configPath;
+    menus->LoadCarChoices();
     menus->m_paintShop = PaintShop::Load(renderer,
                                          release,
                                          *menus->m_screen,

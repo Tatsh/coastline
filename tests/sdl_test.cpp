@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstdlib>
+#include <filesystem>
 #include <iostream>
 #include <map>
 #include <string>
@@ -171,6 +172,25 @@ int main() {
     Check(!config.Get("Game", "broken"), "a line without = is skipped");
     config.Set("Video", "driver", "SDL");
     Check(config.Get("Video", "Driver") == "SDL", "Set replaces the key of any case");
+
+    auto choices = coastline::GameConfig::Parse("[Player2]\nCar=12\nHandling=-1\nTires=x\n"
+                                                "Suspension=3\nTransmission=0\n");
+    Check(choices.GetIndex("Player2", "Car", 13, 0) == 12, "the last index is read");
+    Check(choices.GetIndex("Player2", "Car", 12, 4) == 4, "an index past the choices falls back");
+    Check(choices.GetIndex("Player2", "Handling", 3, 1) == 1, "a negative index falls back");
+    Check(choices.GetIndex("Player2", "Tires", 5, 2) == 2, "a malformed index falls back");
+    Check(choices.GetIndex("Player2", "Transmission", 2, 1) == 0, "index 0 is read");
+    Check(choices.GetIndex("Player1", "Car", 13, 7) == 7, "an absent index falls back");
+    choices.Set("Player1", "Car", "9");
+    choices.Set("Player1", "CustomDecals", "1");
+    auto file = std::filesystem::temp_directory_path() / "coastline-sdl-test-choices.ini";
+    Check(choices.Save(file), "the choices are written");
+    auto reread = coastline::GameConfig::Load(file);
+    std::filesystem::remove(file);
+    Check(reread.GetIndex("Player1", "Car", 13, 0) == 9 &&
+              reread.GetBoolean("Player1", "CustomDecals", false) &&
+              reread.GetIndex("Player2", "Suspension", 4, 0) == 3,
+          "the choices are read back from the file");
 
     return g_failures == 0 ? EXIT_SUCCESS : EXIT_FAILURE;
 }

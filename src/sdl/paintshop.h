@@ -170,6 +170,15 @@ public:
                                         const PaintShopInput &input,
                                         DecalCar &car);
 
+    /**
+     * Load the decals of the Controller Pak into a car at once, without the dialog, for the
+     * custom decals a player chose before.
+     *
+     * @param car The car the decals load into.
+     * @return Whether the decals loaded.
+     */
+    bool LoadDecalsQuietly(DecalCar &car);
+
 private:
     // The screens of the Controller Pak of the menus draw with the drawing and the pictures of the
     // paint shop, as the console shares them.
@@ -280,6 +289,7 @@ private:
     void DrawPakProgressBox(s32 y, const char *text, s32 textX, s32 textY);
     void CopyUnmaskedTexels(u8 *texels, const u8 *mask, s32 width, s32 height);
     void TransferDecal(DecalCar &car, u8 operation);
+    void LoadDecalPalette(DecalCar &car, std::size_t offset);
     void DrawPakButtons(s32 buttonY, u32 okTextX, u32 cancelTextX, s32 okX, s32 cancelX);
     s32 ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect, bool &done);
     void ProcessTextInputKeyboard();

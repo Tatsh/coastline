@@ -1146,8 +1146,8 @@ int main(int argc, char *argv[]) {
                     auto release = coastline::DefaultAssets(paths->data) / "n64" / "usa";
                     intro = coastline::Intro::Load(*sceneRenderer, release);
                     frameRateText = coastline::MenuText::Load(*sceneRenderer, release / "fonts");
-                    mainMenu =
-                        coastline::Menus::Load(*sceneRenderer, release, paths->state, paths->cache);
+                    mainMenu = coastline::Menus::Load(
+                        *sceneRenderer, release, paths->state, paths->cache, config, configPath);
                     if (scene == "main-menu" && mainMenu) {
                         frontEnd = FrontEnd::MainMenu;
                     }

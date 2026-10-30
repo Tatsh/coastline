@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cstddef>
 #include <filesystem>
 #include <map>
 #include <optional>
@@ -53,6 +54,16 @@ public:
      * @return The value as an integer.
      */
     long GetInteger(std::string_view section, std::string_view key, long fallback) const;
+
+    /**
+     * @param section The section name.
+     * @param key The key name.
+     * @param count The number of choices.
+     * @param fallback The value for an absent or malformed key, or a value outside the choices.
+     * @return The value as the index of a choice, from 0 to @p count - 1.
+     */
+    int
+    GetIndex(std::string_view section, std::string_view key, std::size_t count, int fallback) const;
 
     /**
      * @param section The section name.

@@ -2108,6 +2108,43 @@ void PaintShop::TransferDecal(DecalCar &car, u8 operation) {
     m_pakFileOffset += m_pakChunkSize;
 }
 
+void PaintShop::LoadDecalPalette(DecalCar &car, std::size_t offset) {
+    for (int entry = 0; entry < 16; ++entry) {
+        auto at = offset + static_cast<std::size_t>(entry) * 2;
+        car.SetPaletteColor(
+            CAR_MATERIAL_PAINT, entry, static_cast<u16>(m_pakNote[at] << 8 | m_pakNote[at + 1]));
+    }
+    // The lights take the first two colours of the paint.
+    for (int material : {CAR_MATERIAL_HEADLIGHTS, CAR_MATERIAL_REAR_LIGHTS}) {
+        car.SetPaletteColor(material, 0, car.PaletteColor(CAR_MATERIAL_PAINT, 0));
+        car.SetPaletteColor(material, 1, car.PaletteColor(CAR_MATERIAL_PAINT, 1));
+    }
+    m_previewDirty = true;
+}
+
+bool PaintShop::LoadDecalsQuietly(DecalCar &car) {
+    auto note = m_pak.ReadNote(DECAL_NOTE);
+    if (!note) {
+        return false;
+    }
+    m_pakNote = std::move(*note);
+    m_pakError = 0;
+    m_pakFileOffset = 0;
+    for (m_pakDecalIndex = 0; m_pakDecalIndex < DECAL_SLOTS && m_pakError == 0; ++m_pakDecalIndex) {
+        TransferDecal(car, PAINT_TOOL_LOAD);
+    }
+    auto offset = static_cast<std::size_t>(m_pakFileOffset);
+    bool loaded = m_pakError == 0 && offset + DECAL_PALETTE_BYTES <= m_pakNote.size();
+    if (loaded) {
+        LoadDecalPalette(car, offset);
+    }
+    m_pakError = 0;
+    m_pakDecalIndex = 0;
+    m_pakFileOffset = 0;
+    m_pakChunkSize = 0;
+    return loaded;
+}
+
 void PaintShop::DrawPakButtons(s32 buttonY, u32 okTextX, u32 cancelTextX, s32 okX, s32 cancelX) {
     m_text.size = 10;
     s32 textY = (buttonY + 0x12) >> 1;
@@ -2279,18 +2316,7 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
             m_pakError = PAK_ERROR_TRANSFER;
         } else if (operation == PAINT_TOOL_LOAD) {
             SDL_Log("Loading color palette...");
-            for (int entry = 0; entry < 16; ++entry) {
-                auto at = offset + static_cast<std::size_t>(entry) * 2;
-                car.SetPaletteColor(CAR_MATERIAL_PAINT,
-                                    entry,
-                                    static_cast<u16>(m_pakNote[at] << 8 | m_pakNote[at + 1]));
-            }
-            // The lights take the first two colours of the paint.
-            for (int material : {CAR_MATERIAL_HEADLIGHTS, CAR_MATERIAL_REAR_LIGHTS}) {
-                car.SetPaletteColor(material, 0, car.PaletteColor(CAR_MATERIAL_PAINT, 0));
-                car.SetPaletteColor(material, 1, car.PaletteColor(CAR_MATERIAL_PAINT, 1));
-            }
-            m_previewDirty = true;
+            LoadDecalPalette(car, offset);
             if (!inCarSelect) {
                 ConvertPaletteToRgb();
                 SaveDecalUndo();

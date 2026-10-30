@@ -241,7 +241,6 @@ void Menus::StartCarSelect(SceneRenderer &renderer) {
         player.slot = i;
         player.state = CAR_SELECT_CAR;
         player.slide = 0.0f;
-        player.customDecals = false;
 
         // ChooseVehicleCar() of the console: the first car of the season in a championship.
         if (m_gameMode == GameMode::Championship) {
@@ -399,6 +398,12 @@ void Menus::HandleCarSelectInput(SceneRenderer &renderer, int player, const Menu
             playSound = false;
             LoadCarModel(renderer, choice.slot, choice.carModel);
             LoadCarModel(renderer, choice.slot ^ 2, choice.carModel);
+            // The custom decals the player chose last are offered again, loaded from the pak.
+            choice.customDecals = choice.customDecals && RestoreCustomDecals(renderer, player);
+            if (choice.customDecals) {
+                choice.optionCount = static_cast<int>(m_decalOptions.size());
+                choice.cursor = DECALS_CUSTOM;
+            }
             break;
         case CAR_SELECT_DECALS:
             if (choice.cursor == DECALS_LOAD) {
@@ -422,7 +427,11 @@ void Menus::HandleCarSelectInput(SceneRenderer &renderer, int player, const Menu
         } else {
             choice.prevCursor = choice.cursor;
 
-            // Start and the paint shop skip the rest.
+            // Start and the paint shop skip the rest. A skip before the decals races the decals
+            // chosen last.
+            if (buttons.start && !m_paintMode && choice.state < CAR_SELECT_DECALS) {
+                choice.customDecals = choice.customDecals && RestoreCustomDecals(renderer, player);
+            }
             if (buttons.start || m_paintMode) {
                 choice.optionCount = static_cast<int>(m_decalOptions.size()) - 1;
                 choice.cursor = 0;
@@ -431,6 +440,7 @@ void Menus::HandleCarSelectInput(SceneRenderer &renderer, int player, const Menu
             } else {
                 ++choice.state;
             }
+            SaveCarChoice(player);
 
             // Once every player is ready, the screen fades out.
             bool ready = true;
@@ -750,19 +760,89 @@ void Menus::RunPakDialog(SceneRenderer &renderer, float seconds) {
     choice.prevCursor = choice.cursor;
     choice.cursor = (choice.cursor + 1) % options;
     choice.slide = 1.0f;
-    const DecalCar &car = *m_customDecals[player];
-    m_customDecalImages[player] =
+    UseCustomDecals(renderer, static_cast<int>(player));
+}
+
+// The images of the car of a player with the custom decals loaded into it, and the model of the
+// car that shows them.
+void Menus::UseCustomDecals(SceneRenderer &renderer, int player) {
+    auto index = static_cast<std::size_t>(player);
+    const DecalCar &car = *m_customDecals[index];
+    m_customDecalImages[index] =
         car.WriteImages(m_cache / "decals" / ("player" + std::to_string(player + 1)));
     // A model the frame drew is released with the next load, after the frame has drawn it.
-    m_retiredCustomModel = std::move(m_customModels[player]);
-    if (m_customDecalImages[player]) {
+    m_retiredCustomModel = std::move(m_customModels[index]);
+    if (m_customDecalImages[index]) {
         ModelOptions modelOptions;
         modelOptions.parts = [](const std::string &name) {
             return std::ranges::find(STAGE_CAR_PARTS, name) != STAGE_CAR_PARTS.end();
         };
-        modelOptions.images = m_customDecalImages[player];
-        m_customModels[player] =
+        modelOptions.images = m_customDecalImages[index];
+        m_customModels[index] =
             RenderModel::Load(renderer, car.Directory() / "model.gltf", modelOptions);
+    }
+}
+
+// The custom decals of the car a player chose, loaded from the pak without the dialog when the
+// decals loaded are of another car or none have loaded.
+bool Menus::RestoreCustomDecals(SceneRenderer &renderer, int player) {
+    auto index = static_cast<std::size_t>(player);
+    int car = m_carSelect[index].carModel;
+    if (!m_paintShop || car >= PAINT_SHOP_CARS) {
+        return false;
+    }
+    auto directory = m_release / m_cars[static_cast<std::size_t>(car)].directory;
+    auto &custom = m_customDecals[index];
+    if (custom && custom->Directory() == directory && m_customDecalImages[index]) {
+        return true;
+    }
+    custom = DecalCar::Load(directory);
+    if (!custom || !m_paintShop->LoadDecalsQuietly(*custom)) {
+        custom.reset();
+        return false;
+    }
+    UseCustomDecals(renderer, player);
+    return m_customDecalImages[index].has_value();
+}
+
+// The car and the decals each player chose last, and the equipment of the second player. The note
+// of the options has the equipment of the first player, as the console saves it there.
+void Menus::LoadCarChoices() {
+    for (std::size_t player = 0; player < m_carSelect.size(); ++player) {
+        CarSelectPlayer &choice = m_carSelect[player];
+        std::string section = "Player" + std::to_string(player + 1);
+        choice.carModel = m_config->GetIndex(section, "Car", m_cars.size(), choice.carModel);
+        choice.selectedCar = choice.carModel;
+        choice.customDecals = m_config->GetBoolean(section, "CustomDecals", false);
+    }
+    MenuProfile &second = m_secondProfile;
+    second.handling =
+        m_config->GetIndex("Player2", "Handling", m_handlingOptions.size(), second.handling);
+    second.transmission = m_config->GetIndex(
+        "Player2", "Transmission", m_transmissionOptions.size(), second.transmission);
+    second.tires = m_config->GetIndex("Player2", "Tires", m_tiresOptions.size(), second.tires);
+    second.suspension =
+        m_config->GetIndex("Player2", "Suspension", m_suspensionOptions.size(), second.suspension);
+}
+
+void Menus::SaveCarChoice(int player) {
+    const CarSelectPlayer &choice = m_carSelect[static_cast<std::size_t>(player)];
+    std::string section = "Player" + std::to_string(player + 1);
+    m_config->Set(section, "Car", std::to_string(choice.carModel));
+    m_config->Set(section, "CustomDecals", choice.customDecals ? "1" : "0");
+    if (player == 0) {
+        if (!SaveOptionsNote(0)) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The options were not saved.");
+        }
+    } else {
+        const MenuProfile &profile = m_secondProfile;
+        m_config->Set(section, "Handling", std::to_string(profile.handling));
+        m_config->Set(section, "Transmission", std::to_string(profile.transmission));
+        m_config->Set(section, "Tires", std::to_string(profile.tires));
+        m_config->Set(section, "Suspension", std::to_string(profile.suspension));
+    }
+    if (!m_config->Save(m_configPath)) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "BossRally.ini cannot be written.");
     }
 }
 
