@@ -609,7 +609,8 @@ float RenderModel::Radius() const {
 }
 
 std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
-                                               const std::filesystem::path &path) {
+                                               const std::filesystem::path &path,
+                                               std::optional<std::string> node) {
     auto state = std::make_unique<State>();
     state->device = renderer.m_state->device;
     SDL_GPUDevice *device = state->device;
@@ -825,9 +826,18 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
             self(self, child.get<std::size_t>(), matrix);
         }
     };
-    const auto &scene = document["scenes"][document.value("scene", 0)];
-    for (const auto &root : scene["nodes"]) {
-        visit(visit, root.get<std::size_t>(), IDENTITY_MATRIX);
+    if (node) {
+        const auto &nodes = document["nodes"];
+        for (std::size_t index = 0; index < nodes.size(); ++index) {
+            if (nodes[index].value("name", "") == *node) {
+                visit(visit, index, IDENTITY_MATRIX);
+            }
+        }
+    } else {
+        const auto &scene = document["scenes"][document.value("scene", 0)];
+        for (const auto &root : scene["nodes"]) {
+            visit(visit, root.get<std::size_t>(), IDENTITY_MATRIX);
+        }
     }
     if (state->placed.empty()) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s draws nothing.", path.string().c_str());

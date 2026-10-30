@@ -1,5 +1,4 @@
 aabb
-abgr
 abicalls
 abiflags
 accel
@@ -1347,6 +1346,7 @@ wwshould
 wwss
 wwthe
 xabs
+xbgr
 xchar
 xcpluscomm
 xcursor

@@ -150,11 +150,12 @@ bool GpuWindow::SaveFrame(SDL_GPUCommandBuffer *commands, const std::filesystem:
     if (fence != nullptr && SDL_WaitForGPUFences(m_device.get(), true, &fence, 1)) {
         const void *pixels = SDL_MapGPUTransferBuffer(m_device.get(), buffer, false);
         if (pixels != nullptr) {
-            // R8G8B8A8 bytes in memory order are ABGR8888 in the packed order of SDL.
+            // R8G8B8A8 bytes in memory order are XBGR8888 in the packed order of SDL. The display
+            // does not show the alpha of the frame, and the image leaves it out too.
             std::unique_ptr<SDL_Surface, SurfaceDeleter> surface(
                 SDL_CreateSurface(static_cast<int>(m_frameWidth),
                                   static_cast<int>(m_frameHeight),
-                                  SDL_PIXELFORMAT_ABGR8888));
+                                  SDL_PIXELFORMAT_XBGR8888));
             if (surface) {
                 for (Uint32 row = 0; row < m_frameHeight; ++row) {
                     std::memcpy(static_cast<Uint8 *>(surface->pixels) + row * surface->pitch,

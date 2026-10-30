@@ -62,6 +62,8 @@ constexpr int VEHICLE_DL_HIGHLIGHTED = 9;
 constexpr std::array<const char *, WHEEL_LISTS> WHEEL_LIST_NAMES{"wheel", "wheel1", "wheelSnow"};
 
 constexpr std::size_t TRACK_SKY_AT = 0x50;
+// gDPSetCombineLERP(0, 0, 0, TEXEL0, 0, 0, 0, SHADE) in both cycles, the combiner of the sky.
+constexpr std::array<std::uint32_t, 2> SKY_COMBINE{0x00ffffff, 0xfffcf87c};
 constexpr std::size_t TRACK_INSTANCE_NAMES_AT = 0x5c;
 constexpr std::size_t TRACK_INSTANCES_AT = 0x60;
 constexpr std::size_t TRACK_INSTANCE_COUNT_AT = 0x64;
@@ -252,6 +254,8 @@ struct StartState {
     bool lit = false;
     bool twoSided = false;
     std::optional<TextureKey> bound;
+    // The combiner the caller of the display list sets before it, in the two words of the command.
+    std::array<std::uint32_t, 2> combine{};
 };
 
 class DisplayListWalk {
@@ -272,8 +276,8 @@ public:
         m_otherModeL = 0;
         m_primColor = 0xffffffff;
         m_envColor = 0xffffffff;
-        m_combineHigh = 0;
-        m_combineLow = 0;
+        m_combineHigh = start.combine[0];
+        m_combineLow = start.combine[1];
         m_textureOn = true;
         m_textureTile = 0;
         m_scaleS = 1.0;
@@ -1759,8 +1763,13 @@ std::expected<GltfModel, std::string> TrackToGltf(std::span<const std::uint8_t> 
              {.lit = true, .twoSided = twoSided, .bound = std::nullopt}});
     }
     if (std::uint32_t sky = Big32(bytes, TRACK_SKY_AT); sky != 0) {
+        // RenderSkybox() sets the colour of the texels and the alpha of the shade before the sky.
         draws.push_back(
-            {"sky", sky, {{"sky", nlohmann::ordered_json::object()}}, std::nullopt, {}});
+            {"sky",
+             sky,
+             {{"sky", nlohmann::ordered_json::object()}},
+             std::nullopt,
+             {.lit = false, .twoSided = false, .bound = std::nullopt, .combine = SKY_COMBINE}});
     }
     auto model = BuildModel(bytes, 0, TRACK_LAYOUT, draws, {"track"}, bufferUri);
     if (model) {

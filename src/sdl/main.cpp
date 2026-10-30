@@ -354,9 +354,8 @@ int main(int argc, char *argv[]) {
               "through the race engine, write the results to the log, and exit")
         .flag();
     parser.add_argument("--scene").help(
-        "scene to start in: intro, the default, main-menu, renderer-test, or model:FILE.gltf for a "
-        "converted "
-        "model or track, from the imported data when relative");
+        "scene to start in: intro, the default, main-menu, attract-demo, renderer-test, or "
+        "model:FILE.gltf for a converted model or track, from the imported data when relative");
     parser.add_argument("--screenshot").help("save a frame to this PNG file");
     parser.add_argument("--screenshot-frame")
         .help("number of the frame to save, from 1")
@@ -496,6 +495,7 @@ int main(int argc, char *argv[]) {
             bool raceDataOpen = false;
             float raceTime = 0.0f;
             bool leaveDemo = false;
+            bool startInDemo = scene == "attract-demo";
             coastline::TextureHandle testTexture = 0;
             if (scene == "renderer-test") {
                 renderer = coastline::TlRenderer::Create(*window);
@@ -506,7 +506,8 @@ int main(int argc, char *argv[]) {
                     model = coastline::DefaultAssets(paths->data) / model;
                 }
                 modelView = coastline::ModelView::Create(*window, model);
-            } else if (scene.empty() || scene == "intro" || scene == "main-menu") {
+            } else if (scene.empty() || scene == "intro" || scene == "main-menu" ||
+                       scene == "attract-demo") {
                 sceneRenderer = coastline::SceneRenderer::Create(*window);
                 if (sceneRenderer) {
                     auto release = coastline::DefaultAssets(paths->data) / "n64" / "usa";
@@ -573,7 +574,9 @@ int main(int argc, char *argv[]) {
                     if (frontEnd == FrontEnd::Intro) {
                         coastline::IntroButtons buttons{(pressed & CHOOSE) != 0,
                                                         (held & C_BUTTONS) == C_BUTTONS};
-                        coastline::IntroEnd end = intro->Update(seconds, buttons);
+                        coastline::IntroEnd end = startInDemo ? coastline::IntroEnd::AttractDemo :
+                                                                intro->Update(seconds, buttons);
+                        startInDemo = false;
                         if (end == coastline::IntroEnd::MainMenu && mainMenu) {
                             mainMenu->Restart();
                             frontEnd = FrontEnd::MainMenu;

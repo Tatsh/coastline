@@ -8,6 +8,7 @@
 
 #include "common/assetnames.h"
 #include "common/render.h"
+#include "common/sky.h"
 #include "common/vehicle.h"
 #include "common/weather.h"
 #include "frontend.h"
@@ -118,8 +119,15 @@ Matrix4 ConsoleSpace() {
 
 } // namespace
 
+// The sky sits just inside the far end of the view along the depth of the camera, as RenderSkybox()
+// places it.
+constexpr float SKY_DEPTH_SCALE = 0.99f;
+
 struct RaceView::State {
     std::unique_ptr<RenderModel> track;
+    // ponytail: the sky loads the images of the track a second time; a model with its nodes drawn
+    // by name would share them.
+    std::unique_ptr<RenderModel> sky;
     std::unique_ptr<RenderModel> car;
 };
 
@@ -132,7 +140,9 @@ std::unique_ptr<RaceView>
 RaceView::Load(SceneRenderer &renderer, const std::filesystem::path &defaults, int track, int car) {
     auto state = std::make_unique<State>();
     std::filesystem::path trackFile = defaults / "tracks" / g_apszTrackFilenames[track];
-    state->track = RenderModel::Load(renderer, trackFile.replace_extension(".gltf"));
+    trackFile.replace_extension(".gltf");
+    state->track = RenderModel::Load(renderer, trackFile);
+    state->sky = RenderModel::Load(renderer, trackFile, "sky");
     state->car = RenderModel::Load(
         renderer, defaults / "cars" / (std::string(g_apszCarModelPrefixes[car]) + ".gltf"));
     if (!state->track || !state->car) {
@@ -170,6 +180,14 @@ void RaceView::Draw(SceneRenderer &renderer) const {
                             static_cast<float>(g_bDirLightG) / 255.0f,
                             static_cast<float>(g_bDirLightB) / 255.0f};
 
+    // RenderSkybox(): the sky centred on the camera without the depth, unless the fog fills it with
+    // the clear colour. Its node is in the world of the race, outside the root of the track that
+    // stands the track up.
+    if (s.sky && !IsSkyFogFilled() && !g_dwSkyboxDisabled) {
+        Matrix4 place = Translation(
+            camera->position.x, camera->position.y, camera->position.z * SKY_DEPTH_SCALE);
+        renderer.DrawModel(*s.sky, place, viewProjection, lighting, std::nullopt, false);
+    }
     renderer.DrawModel(*s.track, ConsoleSpace(), viewProjection, lighting, std::nullopt, true);
     renderer.DrawModel(*s.car,
                        MultiplyMatrices(FrameMatrix(g_aVehicles[0].GetFrame()), ConsoleSpace()),

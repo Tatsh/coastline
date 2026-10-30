@@ -11,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <span>
+#include <string>
 #include <vector>
 
 #include <SDL3/SDL.h>
@@ -65,10 +66,13 @@ public:
      *
      * @param renderer The renderer that draws the model.
      * @param path The glTF document.
+     * @param node The name of a node to draw in place of the default scene, such as the sky of a
+     * track, or none for the scene.
      * @return The model, or nothing with the reason logged.
      */
     static std::unique_ptr<RenderModel> Load(SceneRenderer &renderer,
-                                             const std::filesystem::path &path);
+                                             const std::filesystem::path &path,
+                                             std::optional<std::string> node = std::nullopt);
     ~RenderModel();
     RenderModel(const RenderModel &) = delete;
     RenderModel &operator=(const RenderModel &) = delete;
