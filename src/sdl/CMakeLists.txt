@@ -189,6 +189,8 @@ add_library(
   racemenu.cpp
   raceinput.cpp
   racemusic.cpp
+  raceresults.cpp
+  racesession.cpp
   raceview.cpp
   runtimebuffers.cpp
   scenerenderer.cpp

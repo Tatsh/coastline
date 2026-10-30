@@ -606,6 +606,9 @@ public:
     void ClearDriver() {
         driver = nullptr;
     }
+    void SetDriver(void (*value)(Vehicle *vehicle)) {
+        driver = value;
+    }
     s32 GetEffectPriority() const {
         return effectPriority;
     }

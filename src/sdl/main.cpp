@@ -37,6 +37,7 @@
 #include "music.h"
 #include "paths.h"
 #include "racedemo.h"
+#include "racesession.h"
 #include "raceview.h"
 #include "scenerenderer.h"
 #include "tlrenderer.h"
@@ -120,13 +121,27 @@ std::optional<std::vector<std::uint8_t>> LoadMusicByIndex(const std::filesystem:
     return LoadMusicModule(data, coastline::USA_MUSIC_MODULES[index].offset);
 }
 
-// A press of --press: the buttons held from a frame for SCRIPTED_PRESS_FRAMES frames.
+// A press of --press: the buttons pressed from a frame for a number of frames,
+// SCRIPTED_PRESS_FRAMES unless the press gives a number.
 struct ScriptedPress {
     int frame;
     std::uint16_t buttons;
+    int frames;
 };
 
 constexpr int SCRIPTED_PRESS_FRAMES = 6;
+
+// The keys of the default keyboard bindings of the PC release a press pushes down in a race.
+constexpr std::array<std::pair<std::uint16_t, int>, 8> RACE_KEYS{{
+    {coastline::BUTTON_A, SDL_SCANCODE_UP},
+    {coastline::BUTTON_D_UP, SDL_SCANCODE_UP},
+    {coastline::BUTTON_B, SDL_SCANCODE_DOWN},
+    {coastline::BUTTON_D_DOWN, SDL_SCANCODE_DOWN},
+    {coastline::BUTTON_D_LEFT, SDL_SCANCODE_LEFT},
+    {coastline::BUTTON_D_RIGHT, SDL_SCANCODE_RIGHT},
+    {coastline::BUTTON_START, SDL_SCANCODE_ESCAPE},
+    {coastline::BUTTON_Z, SDL_SCANCODE_SPACE},
+}};
 
 // A malformed press is logged and left out.
 std::vector<ScriptedPress> ParsePresses(const argparse::ArgumentParser &parser) {
@@ -148,16 +163,23 @@ std::vector<ScriptedPress> ParsePresses(const argparse::ArgumentParser &parser) 
     std::vector<ScriptedPress> presses;
     for (const auto &value : parser.get<std::vector<std::string>>("--press")) {
         auto colon = value.find(':');
-        auto found = std::ranges::find(
-            BUTTONS,
-            std::string_view(value).substr(colon == std::string::npos ? 0 : colon + 1),
-            &std::pair<std::string_view, std::uint16_t>::first);
+        auto second = colon == std::string::npos ? colon : value.find(':', colon + 1);
+        std::string_view button =
+            colon == std::string::npos ?
+                std::string_view() :
+                std::string_view(value).substr(
+                    colon + 1, second == std::string::npos ? second : second - colon - 1);
+        auto found =
+            std::ranges::find(BUTTONS, button, &std::pair<std::string_view, std::uint16_t>::first);
         int frame = std::atoi(value.substr(0, colon).c_str());
-        if (colon == std::string::npos || found == BUTTONS.end() || frame <= 0) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s is not FRAME:BUTTON.", value.c_str());
+        int frames = second == std::string::npos ? SCRIPTED_PRESS_FRAMES :
+                                                   std::atoi(value.substr(second + 1).c_str());
+        if (colon == std::string::npos || found == BUTTONS.end() || frame <= 0 || frames <= 0) {
+            SDL_LogError(
+                SDL_LOG_CATEGORY_APPLICATION, "%s is not FRAME:BUTTON[:FRAMES].", value.c_str());
             continue;
         }
-        presses.push_back({frame, found->second});
+        presses.push_back({frame, found->second, frames});
     }
     return presses;
 }
@@ -368,9 +390,14 @@ int main(int argc, char *argv[]) {
         .scan<'i', int>();
     parser.add_argument("--quit-after-screenshot").help("exit once the frame is saved").flag();
     parser.add_argument("--press")
-        .help("press a button of the first controller for 6 frames from a frame, as FRAME:BUTTON "
-              "with BUTTON one of a, b, z, start, l, r, up, down, left, right, cu, cd, cl, or cr")
+        .help("press a button of the first controller from a frame for 6 frames or FRAMES, as "
+              "FRAME:BUTTON[:FRAMES] with BUTTON one of a, b, z, start, l, r, up, down, left, "
+              "right, cu, cd, cl, or cr; in a race, a and up accelerate, b and down brake, left "
+              "and right steer, start pauses, and z is the start binding")
         .append();
+    parser.add_argument("--autopilot")
+        .help("let the computer drive the car of the first player in a race")
+        .flag();
     try {
         parser.parse_args(argc, argv);
     } catch (const std::exception &error) {
@@ -449,6 +476,7 @@ int main(int argc, char *argv[]) {
                                               {"Video", "GpuDriver", ""},
                                               {"Game", "PlayMusic", "1"},
                                               {"Game", "PlaySFX", "1"},
+                                              {"Game", "WaitForStart", "0"},
                                               {"Game", "Music", "N64"}}) {
         if (!config.Get(section, key)) {
             config.Set(section, key, value);
@@ -492,13 +520,22 @@ int main(int argc, char *argv[]) {
             std::unique_ptr<coastline::Intro> intro;
             std::unique_ptr<coastline::Menus> mainMenu;
             // The screen of the front end that shows.
-            enum class FrontEnd { Intro, AttractDemo, MainMenu };
+            enum class FrontEnd { Intro, AttractDemo, MainMenu, Race };
             FrontEnd frontEnd = FrontEnd::Intro;
-            // The race of the attract demo runs a 30th of a second a step, from the default assets.
+            // The races run a 30th of a second a step, from the default assets.
             constexpr float RACE_STEP = 1.0f / 30.0f;
             const std::filesystem::path defaults = coastline::DefaultAssets(paths->data);
             std::unique_ptr<coastline::RaceView> raceView;
             bool raceDataOpen = false;
+            // The race engine reads its files from the default assets.
+            auto openRaceData = [&]() {
+                if (!raceDataOpen) {
+                    std::error_code error;
+                    std::filesystem::current_path(defaults, error);
+                    coastline::OpenRaceData(config.GetBoolean("Game", "PlaySFX", true));
+                    raceDataOpen = true;
+                }
+            };
             float raceTime = 0.0f;
             bool leaveDemo = false;
             bool startInDemo = scene == "attract-demo" || scene.starts_with("attract-demo:");
@@ -538,11 +575,24 @@ int main(int argc, char *argv[]) {
                     input.HandleEvent(event);
                 }
                 auto ports = input.Poll();
+                std::uint16_t scripted = 0;
                 for (const ScriptedPress &press : presses) {
-                    if (frame >= press.frame && frame < press.frame + SCRIPTED_PRESS_FRAMES) {
-                        ports[0].buttons |= press.buttons;
+                    if (frame >= press.frame && frame < press.frame + press.frames) {
+                        scripted |= press.buttons;
                     }
                 }
+                ports[0].buttons |= scripted;
+                // The race reads the keyboard through the bindings of the PC release, and the
+                // presses push down the keys of its default bindings.
+                std::vector<int> scriptedKeys;
+                if (frontEnd == FrontEnd::Race) {
+                    for (const auto &[button, key] : RACE_KEYS) {
+                        if (scripted & button) {
+                            scriptedKeys.push_back(key);
+                        }
+                    }
+                }
+                coastline::SetScriptedKeys(std::move(scriptedKeys));
                 bool capture = screenshot && frame == screenshotFrame;
                 std::optional<std::filesystem::path> framePath;
                 if (capture) {
@@ -592,21 +642,16 @@ int main(int argc, char *argv[]) {
                             mainMenu->Restart();
                             frontEnd = FrontEnd::MainMenu;
                         } else if (end != coastline::IntroEnd::Running) {
-                            // The race engine reads its files from the default assets.
-                            if (!raceDataOpen) {
-                                std::error_code error;
-                                std::filesystem::current_path(defaults, error);
-                                coastline::OpenRaceData(config.GetBoolean("Game", "PlaySFX", true));
-                                raceDataOpen = true;
-                            }
+                            openRaceData();
                             // The first step loads the race and with it the track and the car.
                             coastline::StartAttractDemo();
                             coastline::StepAttractDemo(false);
+                            const coastline::RaceCar demoCar{coastline::AttractDemoCar(),
+                                                             coastline::AttractDemoColor()};
                             raceView = coastline::RaceView::Load(*sceneRenderer,
                                                                  defaults,
                                                                  coastline::AttractDemoTrack(),
-                                                                 coastline::AttractDemoCar(),
-                                                                 coastline::AttractDemoColor());
+                                                                 {&demoCar, 1});
                             raceTime = 0.0f;
                             leaveDemo = false;
                             if (raceView) {
@@ -635,11 +680,28 @@ int main(int argc, char *argv[]) {
                                 frontEnd = FrontEnd::Intro;
                             }
                         }
+                    } else if (frontEnd == FrontEnd::Race) {
+                        raceTime += seconds;
+                        coastline::RaceEnd end = coastline::RaceEnd::Running;
+                        while (end == coastline::RaceEnd::Running && raceTime >= RACE_STEP) {
+                            raceTime -= RACE_STEP;
+                            end = coastline::StepRace();
+                        }
+                        if (end != coastline::RaceEnd::Running) {
+                            // The music of the menus plays again after the race.
+                            raceView.reset();
+                            if (music && playMusic) {
+                                audio.Play(*music);
+                            }
+                            mainMenu->FinishRace(end, coastline::LastRaceResults());
+                            frontEnd = FrontEnd::MainMenu;
+                        }
                     }
+                    bool startRace = false;
                     if (frontEnd == FrontEnd::Intro) {
                         sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
                         intro->Draw(*sceneRenderer);
-                    } else if (frontEnd == FrontEnd::AttractDemo) {
+                    } else if (frontEnd == FrontEnd::AttractDemo || frontEnd == FrontEnd::Race) {
                         sceneRenderer->Begin(raceView->ClearColor());
                         // The frame is raceTime into the step after the last snapshot.
                         raceView->Draw(*sceneRenderer, raceTime / RACE_STEP);
@@ -654,13 +716,40 @@ int main(int argc, char *argv[]) {
                             .start = (pressed & coastline::BUTTON_START) != 0,
                             .back = (pressed & coastline::BUTTON_B) != 0,
                             .held = held != 0};
-                        if (mainMenu->Frame(*sceneRenderer, seconds, buttons, ports[1].connected) ==
-                            coastline::MenusEnd::Splash) {
+                        coastline::MenusEnd end =
+                            mainMenu->Frame(*sceneRenderer, seconds, buttons, ports[1].connected);
+                        if (end == coastline::MenusEnd::Splash) {
                             intro->Restart();
                             frontEnd = FrontEnd::Intro;
                         }
+                        startRace = end == coastline::MenusEnd::Race;
                     }
                     sceneRenderer->End(framePath ? &*framePath : nullptr);
+                    if (startRace) {
+                        // The music of the menus stops when the race starts, and the race plays
+                        // its own. The first step loads the race and with it the track and the
+                        // cars.
+                        openRaceData();
+                        audio.Stop();
+                        coastline::RaceSetup setup = mainMenu->ChosenRace();
+                        setup.waitForStart = config.GetBoolean("Game", "WaitForStart", false);
+                        setup.autopilot = parser.get<bool>("--autopilot");
+                        coastline::StartRace(
+                            setup, defaults / "music", config.Get("Game", "Music") == "CD");
+                        std::vector<coastline::RaceCar> cars = coastline::RaceCars();
+                        raceView = coastline::RaceView::Load(
+                            *sceneRenderer, defaults, coastline::RaceTrack(), cars);
+                        raceTime = 0.0f;
+                        if (raceView) {
+                            frontEnd = FrontEnd::Race;
+                        } else {
+                            coastline::AbandonRace();
+                            if (music && playMusic) {
+                                audio.Play(*music);
+                            }
+                            mainMenu->FinishRace(coastline::RaceEnd::Menu, {});
+                        }
+                    }
                 } else if (modelView) {
                     modelView->Draw(framePath ? &*framePath : nullptr);
                 } else if (renderer) {

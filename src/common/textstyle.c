@@ -64,7 +64,17 @@ void SetTextSize(s32 size) {
     g_nFontSize = size;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+void (*g_pfnTextSink)(const char *text, s32 x, s32 y);
+#endif
+
 void DrawText(const char *text, s32 x, s32 y) {
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    if (g_pfnTextSink != NULL) {
+        g_pfnTextSink(text, x, y);
+        return;
+    }
+#endif
 #if TGR_BOSS_RALLY
     gDisplayListPtr->w0 = 0xb6000000;
     gDisplayListPtr->w1 = 1;

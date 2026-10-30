@@ -15,6 +15,7 @@
 
 #include "frontend.h"
 #include "menuscreen.h"
+#include "racesession.h"
 
 namespace coastline {
 
@@ -35,6 +36,10 @@ struct MenuProfile {
     u8 season = 0;                     /*!< The season of the championship being raced. */
     u8 round = 0;                      /*!< The race of the season being raced. */
     std::array<u16, 6> seasonPoints{}; /*!< The points scored in each season. */
+    /** The place of each race of each season, from 0 for the winner. */
+    std::array<std::array<u8, 4>, 6> seasonPlaces{};
+    /** The time of each race of each season, in seconds. */
+    std::array<std::array<f32, 4>, 6> seasonTimes{};
     std::array<f32, 10> lapRecords{};  /*!< The best lap on each track, or 0 for none. */
     std::array<f32, 10> raceRecords{}; /*!< The best race on each track, or 0 for none. */
     u16 unlocks = 0x102;               /*!< The unlocked cars, a bit for each. */
@@ -48,6 +53,7 @@ struct MenuSeason {
     std::string subtitle;                      /*!< The heading of the records of the season. */
     int raceCount = 0;                         /*!< The number of races. */
     int pointsNeeded = 0;                      /*!< The points that advance to the next season. */
+    int unlocks = 0;                           /*!< The cars passing the season unlocks. */
     std::array<int, 2> cars{};                 /*!< The two cars, shown in the records. */
     std::array<std::array<int, 2>, 4> races{}; /*!< The track and the weather of each race. */
 };
@@ -91,6 +97,7 @@ struct CarSelectPlayer {
 enum class MenusEnd {
     Running, /*!< A menu screen is still showing. */
     Splash,  /*!< The player went back from the main menu, or it timed out. */
+    Race,    /*!< The race of Menus::ChosenRace() starts. */
 };
 
 /** The modes of the game, as g_dwGameMode of the console. */
@@ -132,6 +139,18 @@ public:
     MenusEnd
     Frame(SceneRenderer &renderer, float seconds, const MenuButtons &first, bool secondController);
 
+    /** @return The race the menus chose, in the terms of the race engine. */
+    RaceSetup ChosenRace() const;
+
+    /**
+     * Go on from a race that Frame() started, as FinishRace() of the console goes on: to the
+     * results screen, to the next season of the championship, or to the main menu.
+     *
+     * @param end How the race ended.
+     * @param results The results of the race, read when it ended with RaceEnd::Results.
+     */
+    void FinishRace(RaceEnd end, const RaceResults &results);
+
 private:
     // The screens of the console, each the routine of the same name.
     enum class Screen {
@@ -142,6 +161,7 @@ private:
         CarSelect,
         DataSaveLoadMenu,
         OptionsMenu,
+        RaceResultsScreen,
     };
 
     explicit Menus(std::unique_ptr<MenuScreen> screen);
@@ -191,6 +211,15 @@ private:
     void DrawCarSelectChoices(SceneRenderer &renderer);
     void LeaveCarSelect();
     void ProcessCarSelectScreen(SceneRenderer &renderer, float seconds, const MenuButtons &first);
+    void StartRaceResults(SceneRenderer &renderer);
+    void ProcessSeasonResults();
+    void DrawRaceResultsTitle(SceneRenderer &renderer);
+    void DrawPlayerRaceResults(SceneRenderer &renderer, int player);
+    void DrawSeasonResults(SceneRenderer &renderer);
+    void DrawSeasonMessage(SceneRenderer &renderer);
+    void HandleRaceResultsInput(const MenuButtons &buttons);
+    void LeaveRaceResults();
+    void ProcessRaceResultsScreen(SceneRenderer &renderer, float seconds, const MenuButtons &first);
 
     std::unique_ptr<MenuScreen> m_screen;
     std::filesystem::path m_release;
@@ -255,6 +284,20 @@ private:
     std::unique_ptr<RenderTexture> m_stageReflection;
     bool m_carSelectInitialized = false;
     bool m_carSelectDone = false;
+
+    // The results screen, the car select screen of the console in its review mode.
+    RaceResults m_results;
+    bool m_afterSeasonRace = false;
+    bool m_resultsInitialized = false;
+    bool m_resultsDone = false;
+    bool m_seasonResultsShown = false;
+    int m_resultsPage = 0;
+    int m_resultsSeason = 0;
+    int m_resultsRound = 0;
+    int m_resultsTrack = 0;
+    int m_resultsWeather = 0;
+    s32 m_resultsChampionshipFlags = 0;
+    std::vector<std::string> m_seasonMessage;
 };
 
 } // namespace coastline

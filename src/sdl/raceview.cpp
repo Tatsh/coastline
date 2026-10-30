@@ -17,18 +17,24 @@
 #include "common/game.h"
 #include "common/hud.h"
 #include "common/hudassets.h"
+#include "common/hudcanvas.h"
 #include "common/input.h"
+#include "common/instantreplay.h"
 #include "common/model.h"
 #include "common/packedvalue.h"
 #include "common/particlesnapshot.h"
 #include "common/race.h"
+#include "common/racerender.h"
+#include "common/racerslot.h"
 #include "common/rallyconfig.h"
 #include "common/render.h"
 #include "common/screen.h"
+#include "common/settings.h"
 #include "common/sky.h"
 #include "common/snapshot.h"
 #include "common/strings.h"
 #include "common/system.h"
+#include "common/text.h"
 #include "common/track.h"
 #include "common/trackmenuitem.h"
 #include "common/trackselect.h"
@@ -155,28 +161,130 @@ struct HudCanvas {
     Matrix4 projection;
 };
 
+// The matrix from a canvas, from its top left with y down, onto the whole frame.
+Matrix4 CanvasProjection(int width, int height) {
+    return {2.0f / static_cast<float>(width),
+            0,
+            0,
+            0,
+            0,
+            -2.0f / static_cast<float>(height),
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            -1.0f,
+            1.0f,
+            0,
+            1};
+}
+
 HudCanvas MakeHudCanvas(const GpuWindow &window) {
     float scale = window.DisplayScale();
     int width = std::max(static_cast<int>(static_cast<float>(window.FrameWidth()) / scale), 1);
     int height = std::max(static_cast<int>(static_cast<float>(window.FrameHeight()) / scale), 1);
-    return {width,
-            height,
-            {2.0f / static_cast<float>(width),
-             0,
-             0,
-             0,
-             0,
-             -2.0f / static_cast<float>(height),
-             0,
-             0,
-             0,
-             0,
-             1,
-             0,
-             -1.0f,
-             1.0f,
-             0,
-             1}};
+    return {width, height, CanvasProjection(width, height)};
+}
+
+// The renderer and the fonts DrawText() draws the HUD with while it hands its text to the SDL game.
+struct HudTextTarget {
+    SceneRenderer *renderer = nullptr;
+    const MenuText *text = nullptr;
+};
+
+HudTextTarget g_hudTextTarget;
+
+// RenderTextToDisplayList() of the text of the HUD: the size, the alignment, the style, and the
+// custom colours the race set, on the canvas the HUD is laid out on. The custom colours are never
+// turned off once set.
+void DrawHudText(const char *text, s32 x, s32 y) {
+    TextStyle style;
+    style.size = g_nFontSize;
+    style.align = g_nTextAlignment == TEXT_ALIGN_RIGHT  ? TextStyle::Align::Right :
+                  g_nTextAlignment == TEXT_ALIGN_CENTER ? TextStyle::Align::Center :
+                                                          TextStyle::Align::Left;
+    style.shadow = g_bTextShadowEnabled != 0;
+    style.bold = g_bTextStyleBold != 0;
+    style.doubled = false;
+    if (g_bTextCustomColorsEnabled) {
+        style.colors = std::array<int, 6>{g_dwTextCustomColorR,
+                                          g_dwTextCustomColorG,
+                                          g_dwTextCustomColorB,
+                                          g_dwTextCustomColor2R,
+                                          g_dwTextCustomColor2G,
+                                          g_dwTextCustomColor2B};
+    }
+    g_hudTextTarget.text->Draw(*g_hudTextTarget.renderer,
+                               text,
+                               x,
+                               y,
+                               style,
+                               CanvasProjection(GetHudCanvasWidth(), GetHudCanvasHeight()));
+}
+
+// The commands the HUD writes for the dashboard and its scissors go to a scratch list.
+constexpr std::size_t HUD_SCRATCH_COMMANDS = 4096;
+
+// DrawViewOverlay() and DrawPauseMenu() of the view of the first player, from the routines of the
+// race, their text drawn by DrawHudText() on the canvas of the HUD as the patched PC release lays
+// its HUD out on its canvas.
+// ponytail: the gauges of the dashboard go to the scratch list and are not drawn yet.
+void DrawRaceHud(SceneRenderer &renderer, const MenuText &text, const HudCanvas &hud) {
+    static std::array<GbiCommand, HUD_SCRATCH_COMMANDS> scratch;
+    GbiCommand *list = gDisplayListPtr;
+    gDisplayListPtr = scratch.data();
+    int framebufferWidth = g_dwConfigFramebufferWidth;
+    int framebufferHeight = g_dwConfigFramebufferHeight;
+    g_dwConfigFramebufferWidth = hud.width;
+    g_dwConfigFramebufferHeight = hud.height;
+    g_hudTextTarget = {&renderer, &text};
+    g_pfnTextSink = DrawHudText;
+
+    // ponytail: a race of two players shows the view of the first player alone, across the frame.
+    std::array<ViewportRect, 2> views{g_aViewportRects[0], g_aViewportRects[0]};
+    for (ViewportRect &view : views) {
+        view.x = 0;
+        view.y = 0;
+        view.width = hud.width;
+        view.height = hud.height;
+    }
+    g_dwCurrentSplitScreenIndex = 0;
+    g_pActiveCameraVehicle = &g_aVehicles[views[0].vehicleIndex];
+    g_pActiveCamera = g_pActiveCameraVehicle->GetActiveCamera();
+    const auto &cameras = g_pActiveCameraVehicle->GetCameras();
+    if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
+        SetTextStyleNormal();
+        SetTextAlignCenter();
+        SetTextSize(40);
+        DrawText(GetStringResource(g_aVehicles[0].GetProfile()->season ? 240 : 241),
+                 hud.width / 2,
+                 hud.height - 30);
+    } else if (g_bShowHudHelpText && g_dwGameMode != GAME_MODE_DEMO) {
+        if (gInstantReplayActive) {
+            SetTextStyleNormal();
+            SetTextAlignLeft();
+            SetTextSize(15);
+            DrawText(GetStringResource(242), 28, 32);
+            SetTextAlignRight();
+            DrawText(GetStringResource(244), hud.width - 28, hud.height - 24);
+        } else if (g_pActiveCamera == &cameras[VEHICLE_CAMERA_TRACKSIDE]) {
+            if (g_pActiveCameraVehicle->GetRacer()->GetStatus() & RACER_FINISHED) {
+                DrawHudMessage(views.data());
+            }
+        } else {
+            DrawSpeedAndHudOverlay(views.data(), g_aVehicles);
+        }
+    }
+    if (g_dwRacePauseState) {
+        DrawPauseMenu(views.data(), g_aRacerSlots, g_aVehicles);
+    }
+
+    g_pfnTextSink = nullptr;
+    g_dwConfigFramebufferWidth = framebufferWidth;
+    g_dwConfigFramebufferHeight = framebufferHeight;
+    gDisplayListPtr = list;
 }
 
 // The glTF of a model of the console stands it up from z up to y up, and this turns it back to the
@@ -252,17 +360,25 @@ std::vector<MorphPose> StartLightsPoses(const RenderModel &lights) {
 
 } // namespace
 
+// The parts of the car of a vehicle.
+struct CarModels {
+    // The textured parts of the car, and the painted body and windows drawn after the highlight.
+    std::unique_ptr<RenderModel> car;
+    std::unique_ptr<RenderModel> paint;
+    std::unique_ptr<RenderModel> underside;
+    // The parts of the car the specular highlight shines on.
+    std::unique_ptr<RenderModel> highlighted;
+    std::unique_ptr<RenderModel> wheel;
+    std::unique_ptr<RenderModel> snowWheel;
+};
+
 struct RaceView::State {
     std::unique_ptr<RenderModel> track;
     // ponytail: the sky loads the images of the track a second time; a model with its nodes drawn
     // by name would share them.
     std::unique_ptr<RenderModel> sky;
-    // The textured parts of the car, and the painted body and windows drawn after the highlight.
-    std::unique_ptr<RenderModel> car;
-    std::unique_ptr<RenderModel> paint;
-    std::unique_ptr<RenderModel> underside;
-    std::unique_ptr<RenderModel> wheel;
-    std::unique_ptr<RenderModel> snowWheel;
+    // The car of each vehicle, from the first.
+    std::vector<CarModels> cars;
     std::unique_ptr<RenderModel> startLights;
     std::unique_ptr<MenuText> text;
     // The images of the day and the night sky the paint and the windows of the car reflect.
@@ -274,8 +390,6 @@ struct RaceView::State {
     std::unique_ptr<RenderTexture> particleTexture;
     // LoadTireTrailTexture(): the 32 by 64 intensities of 4 bits of the spray of the tyres.
     std::unique_ptr<RenderTexture> sprayTexture;
-    // The parts of the car the specular highlight shines on.
-    std::unique_ptr<RenderModel> highlighted;
     // CreateFallbackEnvironmentTexture() and LoadVehicleEnvMapTexture(): the 64 by 64 intensities
     // of 4 bits of the highlight by day and at night.
     std::unique_ptr<RenderTexture> dayHighlight;
@@ -875,8 +989,7 @@ RaceView::~RaceView() = default;
 std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
                                          const std::filesystem::path &defaults,
                                          int track,
-                                         int car,
-                                         std::array<std::uint8_t, 3> color) {
+                                         std::span<const RaceCar> cars) {
     auto state = std::make_unique<State>();
     std::filesystem::path trackFile = defaults / "tracks" / g_apszTrackFilenames[track];
     trackFile.replace_extension(".gltf");
@@ -889,35 +1002,41 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     state->sky = RenderModel::Load(renderer, trackFile, sky);
     // The car of the nearest level of detail, the one level a single view draws, in its parts:
     // the body, the underside, and a wheel of each kind, which the race places one by one.
-    // ponytail: each part loads the images of the car again; a model drawn by parts would share
-    // them.
+    // ponytail: each part loads the images of the car again, and each vehicle its car; a model
+    // drawn by parts and shared by the vehicles of a car would share them.
     // The geometry of the car is that of the PC release, which its race moves, and its textures
     // are those of the cartridge.
-    std::string prefix = g_apszCarModelPrefixes[car];
-    auto carFile = defaults / "cars" / (prefix + ".gltf");
-    ModelOptions options;
-    options.paint = color;
-    options.images = CartridgeCar(defaults, prefix);
-    options.parts = [](const std::string &n) {
-        return n == "lod0-nearDetail" || n == "lod0-textured";
-    };
-    options.variants = CAR_LIGHT_VARIANTS;
-    options.paletteVariant = CarLightPalette;
-    state->car = RenderModel::Load(renderer, carFile, options);
-    options.variants = 0;
-    options.paletteVariant = nullptr;
-    options.parts = [](const std::string &n) { return n == "lod0-paint"; };
-    state->paint = RenderModel::Load(renderer, carFile, options);
-    options.parts = [](const std::string &n) { return n == "lod0-underside"; };
-    state->underside = RenderModel::Load(renderer, carFile, options);
-    // The highlighted parts are a node outside the scene, drawn without the turn of its root.
-    options.parts = nullptr;
-    options.node = "lod0-highlighted";
-    state->highlighted = RenderModel::Load(renderer, carFile, options);
-    options.node = "lod0-wheel0";
-    state->wheel = RenderModel::Load(renderer, carFile, options);
-    options.node = "lod0-wheelSnow0";
-    state->snowWheel = RenderModel::Load(renderer, carFile, options);
+    for (const RaceCar &vehicle : cars) {
+        std::string prefix = g_apszCarModelPrefixes[vehicle.car];
+        auto carFile = defaults / "cars" / (prefix + ".gltf");
+        CarModels &models = state->cars.emplace_back();
+        ModelOptions options;
+        options.paint = vehicle.paint;
+        options.images = CartridgeCar(defaults, prefix);
+        options.parts = [](const std::string &n) {
+            return n == "lod0-nearDetail" || n == "lod0-textured";
+        };
+        options.variants = CAR_LIGHT_VARIANTS;
+        options.paletteVariant = CarLightPalette;
+        models.car = RenderModel::Load(renderer, carFile, options);
+        options.variants = 0;
+        options.paletteVariant = nullptr;
+        options.parts = [](const std::string &n) { return n == "lod0-paint"; };
+        models.paint = RenderModel::Load(renderer, carFile, options);
+        options.parts = [](const std::string &n) { return n == "lod0-underside"; };
+        models.underside = RenderModel::Load(renderer, carFile, options);
+        // The highlighted parts are a node outside the scene, drawn without the turn of its root.
+        options.parts = nullptr;
+        options.node = "lod0-highlighted";
+        models.highlighted = RenderModel::Load(renderer, carFile, options);
+        options.node = "lod0-wheel0";
+        models.wheel = RenderModel::Load(renderer, carFile, options);
+        options.node = "lod0-wheelSnow0";
+        models.snowWheel = RenderModel::Load(renderer, carFile, options);
+        if (!models.car || !models.paint || !models.wheel) {
+            return nullptr;
+        }
+    }
     // The skies of the track in cargfx, as the import converted them.
     auto skyImage = [&](const SkyTextureFiles *files) {
         // The reflection wraps across the sky, as its tile wraps.
@@ -947,8 +1066,7 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     state->text = MenuText::Load(renderer, defaults / "n64" / "usa" / "fonts");
     // The start lights, the model of BossRally.pod.
     state->startLights = RenderModel::Load(renderer, defaults / "BossRally" / "modellights.gltf");
-    if (!state->track || !state->car || !state->paint || !state->wheel || !state->text ||
-        !state->startLights) {
+    if (!state->track || state->cars.empty() || !state->text || !state->startLights) {
         return nullptr;
     }
     return std::unique_ptr<RaceView>(new RaceView(std::move(state)));
@@ -986,6 +1104,13 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     // the display scale from the same offsets from the edges of the screen.
     HudCanvas hud = MakeHudCanvas(window);
     Matrix4 viewProjection = CameraMatrix(*camera, aspect);
+    // SetViewport() mirrors the view across on a mirrored track, where the steering turns the
+    // other way, and the faces of the models then turn the other way.
+    if (g_dwTrackMirrored) {
+        constexpr Matrix4 ACROSS{-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
+        viewProjection = MultiplyMatrices(ACROSS, viewProjection);
+    }
+    renderer.SetMirrored(g_dwTrackMirrored != 0);
 
     // The lights of the weather of the race.
     // The animated textures of the track take the time of the race.
@@ -1040,31 +1165,43 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     const auto &cameras = g_aVehicles[0].GetCameras();
     bool inside =
         active == &cameras[VEHICLE_CAMERA_COCKPIT] || active == &cameras[VEHICLE_CAMERA_MIRROR];
-    Lighting carLighting = CarLighting(vehicle, vehicle, *camera);
-    if (!inside || g_dwVehicleCullingDisabled) {
-        Matrix4 body = MultiplyMatrices(FrameMatrix(vehicle.GetFrame()), ConsoleSpace());
-        Reflection reflection = SkyReflection(s.daySky.get(), s.nightSky.get(), *camera, vehicle);
+    Lighting cameraCarLighting = CarLighting(vehicle, vehicle, *camera);
+    // RenderRacerVehicles(): the car of each vehicle of the race.
+    // ponytail: the ghost of a time attack is drawn solid; its opacity of 0.375 is not applied.
+    int vehicles = std::min(static_cast<int>(s.cars.size()), std::max(g_dwNumActiveVehicles, 1));
+    for (int index = 0; index < vehicles; ++index) {
+        if (index == 0 && inside && !g_dwVehicleCullingDisabled) {
+            continue;
+        }
+        const Vehicle &car = snapshot != nullptr ? snapshot->GetVehicle(index) : g_aVehicles[index];
+        const CarModels &models = s.cars[static_cast<std::size_t>(index)];
+        Lighting carLighting = CarLighting(car, vehicle, *camera);
+        Matrix4 body = MultiplyMatrices(FrameMatrix(car.GetFrame()), ConsoleSpace());
+        Reflection reflection = SkyReflection(s.daySky.get(), s.nightSky.get(), *camera, car);
         // The textured parts, the underside, the highlight, and the painted body in turn.
-        s.car->SetVariant(CarLightVariant(vehicle));
-        renderer.DrawReflectingModel(*s.car, body, viewProjection, carLighting, reflection);
+        models.car->SetVariant(CarLightVariant(car));
+        renderer.DrawReflectingModel(*models.car, body, viewProjection, carLighting, reflection);
         // The underside shows only from below the car.
-        const CameraFrame &frame = vehicle.GetFrame();
+        const CameraFrame &frame = car.GetFrame();
         float below = frame.up.x * (frame.position.x - camera->position.x) +
                       frame.up.y * (frame.position.y - camera->position.y) +
                       frame.up.z * (frame.position.z - camera->position.z);
-        if (s.underside && below > 0.0f) {
-            renderer.DrawModel(*s.underside, body, viewProjection, carLighting, std::nullopt, true);
+        if (models.underside && below > 0.0f) {
+            renderer.DrawModel(
+                *models.underside, body, viewProjection, carLighting, std::nullopt, true);
         }
         std::optional<Highlight> highlight =
-            CarHighlight(vehicle, vehicle, *camera, s.dayHighlight.get(), s.nightHighlight.get());
-        if (highlight && s.highlighted) {
-            renderer.DrawHighlight(*s.highlighted, FrameMatrix(frame), viewProjection, *highlight);
+            CarHighlight(car, vehicle, *camera, s.dayHighlight.get(), s.nightHighlight.get());
+        if (highlight && models.highlighted) {
+            renderer.DrawHighlight(
+                *models.highlighted, FrameMatrix(frame), viewProjection, *highlight);
         }
-        renderer.DrawReflectingModel(*s.paint, body, viewProjection, carLighting, reflection);
+        renderer.DrawReflectingModel(*models.paint, body, viewProjection, carLighting, reflection);
         // RenderWheelModels(): each wheel at the matrix the race gives it, in snow the wheel of
         // the snow.
-        const RenderModel &wheel = g_dwSnowMode && s.snowWheel ? *s.snowWheel : *s.wheel;
-        for (const auto &rows : vehicle.GetWheelMatrices()) {
+        const RenderModel &wheel =
+            g_dwSnowMode && models.snowWheel ? *models.snowWheel : *models.wheel;
+        for (const auto &rows : car.GetWheelMatrices()) {
             Matrix4 place{};
             std::memcpy(place.data(), rows, sizeof(place));
             renderer.DrawModel(wheel, place, viewProjection, carLighting, std::nullopt, true);
@@ -1085,10 +1222,12 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
         renderer.DrawModel(*s.startLights,
                            MultiplyMatrices(*lights, ConsoleSpace()),
                            viewProjection,
-                           carLighting,
+                           cameraCarLighting,
                            StartLightsPoses(*s.startLights),
                            true);
     }
+
+    DrawRaceHud(renderer, *s.text, hud);
 
     // The help of the attract demo, from the corner of the canvas of the HUD, under the fade. The
     // console shows nothing over its demo.

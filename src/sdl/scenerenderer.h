@@ -328,6 +328,14 @@ public:
     void SetFog(std::optional<Fog> fog);
 
     /**
+     * Set whether the models of the frame are drawn through a projection that mirrors the frame
+     * across, their faces then turning the other way, not from Begin().
+     *
+     * @param mirrored Whether the projection mirrors the frame.
+     */
+    void SetMirrored(bool mirrored);
+
+    /**
      * Draw a model, its opaque parts now and its translucent ones after every opaque draw.
      *
      * @param model The model.

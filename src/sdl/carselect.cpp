@@ -740,11 +740,11 @@ void Menus::DrawCarSelectChoices(SceneRenderer &renderer) {
 void Menus::LeaveCarSelect() {
     m_carSelectInitialized = false;
     MenuScreen::SilenceSounds();
-    if (m_carSelectDone) {
-        // ponytail: the paint shop and the race after the car select screen are not built yet,
-        // and the menus return to the main menu.
-        SDL_Log(m_paintMode ? "The paint shop screen is not built yet." :
-                              "The race after the car select screen is not built yet.");
+    if (m_carSelectDone && !m_paintMode) {
+        m_end = MenusEnd::Race;
+    } else if (m_carSelectDone) {
+        // ponytail: the paint shop is not built yet, and the menus return to the main menu.
+        SDL_Log("The paint shop screen is not built yet.");
         SetCurrentScreen(Screen::MainMenu);
     } else if (m_paintMode) {
         SetCurrentScreen(Screen::MainMenu);

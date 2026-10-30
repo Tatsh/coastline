@@ -364,6 +364,17 @@ void MenuScreen::DrawFooter(SceneRenderer &renderer) const {
     s.text->Draw(renderer, "%wwGo Back", 175, 240 * 19 / 20 - 3, footer, flat);
 }
 
+void MenuScreen::DrawPauseFooter(SceneRenderer &renderer) const {
+    const State &s = *m_state;
+    DrawTexture(renderer, *s.arrowLeft, 102, 216, 12, 12);
+    DrawTexture(renderer, *s.arrowRight, 178, 216, 12, 12);
+    TextStyle footer;
+    footer.size = 11;
+    Matrix4 flat = FlatFor(renderer);
+    s.text->Draw(renderer, "%wwContinue", 118, 240 * 19 / 20 - 3, footer, flat);
+    s.text->Draw(renderer, "%wwExit", 193, 240 * 19 / 20 - 3, footer, flat);
+}
+
 void MenuScreen::PlayScrollSound() {
     PlaySoundEffect(m_state->scrollSound, SfxVolume(32, 32));
 }

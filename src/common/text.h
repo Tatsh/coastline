@@ -518,6 +518,15 @@ void SetTextSize(s32 size);
  */
 void DrawText(const char *text, s32 x, s32 y);
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/**
+ * The routine DrawText() hands its text to in place of the display list while it is set, with the
+ * size, the alignment, and the colours of the text in the globals of the text. The SDL game draws
+ * the HUD of a race through it.
+ */
+extern void (*g_pfnTextSink)(const char *text, s32 x, s32 y);
+#endif
+
 /**
  * Draw text at a position in fractions of the screen, measured from the bottom left. A unit is
  * a little under a thousandth of the screen.

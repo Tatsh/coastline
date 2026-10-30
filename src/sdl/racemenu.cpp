@@ -94,6 +94,7 @@ bool Menus::LoadTrackMenu(SceneRenderer &renderer, const std::filesystem::path &
             season.subtitle = record.at("subtitle").get<std::string>();
             season.raceCount = record.at("raceCount").get<int>();
             season.pointsNeeded = record.at("pointsNeeded").get<int>();
+            season.unlocks = record.at("unlocks").get<int>();
             season.cars = record.at("cars").get<std::array<int, 2>>();
             season.races = record.at("races").get<std::array<std::array<int, 2>, 4>>();
             m_seasons.push_back(std::move(season));

@@ -236,6 +236,13 @@ public:
      */
     void DrawFooter(SceneRenderer &renderer) const;
 
+    /**
+     * DrawPauseMenuButtons() of the console: the buttons at the bottom to go on and to exit.
+     *
+     * @param renderer The renderer of the frame.
+     */
+    void DrawPauseFooter(SceneRenderer &renderer) const;
+
     /** Play the sound of moving the cursor. */
     void PlayScrollSound();
 

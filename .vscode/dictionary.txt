@@ -941,6 +941,7 @@ racerslot
 racerstate
 racerun
 racescreen
+racesession
 racesound
 racespecials
 raceview

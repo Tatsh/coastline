@@ -471,6 +471,7 @@ struct PipelineKey {
     bool twoSided;
     DepthMode depth;
     bool additive = false;
+    bool mirrored = false;
     auto operator<=>(const PipelineKey &) const = default;
 };
 
@@ -545,6 +546,7 @@ struct SceneRenderer::State {
     std::function<const float *(int)> instanceMatrix;
     // The fog the models of the frame are drawn in, or none.
     std::optional<Fog> fog;
+    bool mirrored = false;
     GpuWindow *window = nullptr;
     SDL_GPUDevice *device = nullptr;
     SDL_GPUShader *vertexShader = nullptr;
@@ -629,7 +631,8 @@ struct SceneRenderer::State {
         info.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
         info.rasterizer_state.cull_mode =
             key.twoSided ? SDL_GPU_CULLMODE_NONE : SDL_GPU_CULLMODE_BACK;
-        info.rasterizer_state.front_face = SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE;
+        info.rasterizer_state.front_face =
+            key.mirrored ? SDL_GPU_FRONTFACE_CLOCKWISE : SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE;
         info.depth_stencil_state.enable_depth_test = key.depth != DepthMode::None;
         info.depth_stencil_state.enable_depth_write = key.depth == DepthMode::TestAndWrite;
         info.depth_stencil_state.compare_op = key.depth == DepthMode::Equal ?
@@ -1158,6 +1161,7 @@ void SceneRenderer::Begin(std::array<float, 4> clear) {
     m_state->hiddenFlags = 0;
     m_state->instanceMatrix = nullptr;
     m_state->fog.reset();
+    m_state->mirrored = false;
     m_state->draws.clear();
     m_state->flat.clear();
 }
@@ -1176,6 +1180,10 @@ void SceneRenderer::SetInstanceMatrices(std::function<const float *(int)> matrix
 
 void SceneRenderer::SetFog(std::optional<Fog> fog) {
     m_state->fog = fog;
+}
+
+void SceneRenderer::SetMirrored(bool mirrored) {
+    m_state->mirrored = mirrored;
 }
 
 void SceneRenderer::DrawModel(const RenderModel &model,
@@ -1355,7 +1363,9 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                                                         primitive.twoSided,
                                                         !depthTest      ? DepthMode::None :
                                                         primitive.blend ? DepthMode::Test :
-                                                                          DepthMode::TestAndWrite});
+                                                                          DepthMode::TestAndWrite,
+                                                        false,
+                                                        s.mirrored});
         if (pipeline == nullptr) {
             return;
         }
@@ -1435,7 +1445,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                              SDL_GPUBuffer *targets,
                              const Highlight &highlight) {
         SDL_GPUGraphicsPipeline *pipeline =
-            s.Pipeline({true, primitive.twoSided, DepthMode::Equal, true});
+            s.Pipeline({true, primitive.twoSided, DepthMode::Equal, true, s.mirrored});
         if (pipeline == nullptr || highlight.texture == nullptr) {
             return;
         }
