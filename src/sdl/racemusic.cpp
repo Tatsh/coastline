@@ -19,6 +19,7 @@
 #include "common/frameclock.h"
 #include "common/settings.h"
 #include "common/soundsystem.h"
+#include "common/trackselect.h"
 #include "importer.h"
 #include "music.h"
 
@@ -38,6 +39,21 @@ constexpr int RACE_MODULES = 5;
 // The CD audio, 16-bit stereo at 44,100 Hz.
 constexpr int CD_RATE = 44100;
 constexpr int CD_CHANNELS = 2;
+
+// The module of a track of the music. g_adwTrackMusicRom of the console gives each track of the
+// races the module of its place, race1 to race5, and each mirrored track that of its original. The
+// race after a season has a sound sample there rather than a module, and takes the module of the
+// track of the music in turn.
+int RaceModule(int track) {
+    int race = static_cast<int>(g_dwSelectedTrackId);
+    if (race >= TRACK_MIRROR_DESERT && race < TRACK_MIRROR_DESERT + RACE_MODULES) {
+        race -= TRACK_MIRRORED;
+    }
+    if (race >= TRACK_DESERT && race < RACE_MODULES) {
+        return 1 + race;
+    }
+    return track == MENU_MODULE_TRACK ? 0 : 1 + (track - FIRST_RACE_MODULE_TRACK) % RACE_MODULES;
+}
 
 struct DecoderDeleter {
     void operator()(FLAC__StreamDecoder *decoder) const {
@@ -226,8 +242,10 @@ void RaceMusic::Stop() {
         SDL_DestroyAudioStream(m_cdStream);
         m_cdStream = nullptr;
     }
+    // A race that ends from its pause menu leaves the device of the menus paused.
     if (m_shared != nullptr) {
         m_shared->Stop();
+        m_shared->Resume();
     }
     m_modules.reset();
     m_cdTrack = FlacTrack();
@@ -258,11 +276,12 @@ bool RaceMusic::Play(int track) {
         m_cdTrack.Open(CdTrackPath(track));
         if (m_cdStream != nullptr) {
             SDL_UnlockAudioStream(m_cdStream);
+            // MCI plays a new track after a pause of the race, as when the race restarts.
+            SDL_ResumeAudioStreamDevice(m_cdStream);
         }
         return true;
     }
-    int module =
-        track == MENU_MODULE_TRACK ? 0 : 1 + (track - FIRST_RACE_MODULE_TRACK) % RACE_MODULES;
+    int module = RaceModule(track);
     std::ifstream file(m_directory / (std::string(USA_MUSIC_MODULES[module].name) + ".xm"),
                        std::ios::binary);
     if (!file) {
@@ -273,6 +292,7 @@ bool RaceMusic::Play(int track) {
     }
     m_module.assign(std::istreambuf_iterator<char>(file), {});
     Modules()->Play(m_module);
+    Modules()->Resume();
     return true;
 }
 
