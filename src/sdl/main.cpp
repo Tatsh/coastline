@@ -32,7 +32,7 @@
 #include "input.h"
 #include "intro.h"
 #include "log.h"
-#include "mainmenu.h"
+#include "menus.h"
 #include "modelview.h"
 #include "music.h"
 #include "paths.h"
@@ -490,7 +490,7 @@ int main(int argc, char *argv[]) {
             std::unique_ptr<coastline::ModelView> modelView;
             std::unique_ptr<coastline::SceneRenderer> sceneRenderer;
             std::unique_ptr<coastline::Intro> intro;
-            std::unique_ptr<coastline::MainMenu> mainMenu;
+            std::unique_ptr<coastline::Menus> mainMenu;
             // The screen of the front end that shows.
             enum class FrontEnd { Intro, AttractDemo, MainMenu };
             FrontEnd frontEnd = FrontEnd::Intro;
@@ -517,7 +517,7 @@ int main(int argc, char *argv[]) {
                 if (sceneRenderer) {
                     auto release = coastline::DefaultAssets(paths->data) / "n64" / "usa";
                     intro = coastline::Intro::Load(*sceneRenderer, release);
-                    mainMenu = coastline::MainMenu::Load(*sceneRenderer, release);
+                    mainMenu = coastline::Menus::Load(*sceneRenderer, release);
                     if (scene == "main-menu" && mainMenu) {
                         frontEnd = FrontEnd::MainMenu;
                     }
@@ -573,6 +573,12 @@ int main(int argc, char *argv[]) {
                     }
                     if (ports[0].stickX > STICK_PUSH) {
                         held |= coastline::BUTTON_D_RIGHT;
+                    }
+                    if (ports[0].stickY > STICK_PUSH) {
+                        held |= coastline::BUTTON_D_UP;
+                    }
+                    if (ports[0].stickY < -STICK_PUSH) {
+                        held |= coastline::BUTTON_D_DOWN;
                     }
                     std::uint16_t pressed = held & ~lastButtons;
                     lastButtons = held;
@@ -639,23 +645,19 @@ int main(int argc, char *argv[]) {
                         raceView->Draw(*sceneRenderer, raceTime / RACE_STEP);
                     } else {
                         sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
-                        coastline::MenuButtons buttons{(pressed & coastline::BUTTON_D_LEFT) != 0,
-                                                       (pressed & coastline::BUTTON_D_RIGHT) != 0,
-                                                       (pressed & CHOOSE) != 0,
-                                                       (pressed & coastline::BUTTON_B) != 0,
-                                                       held != 0};
-                        coastline::MainMenuEnd end = mainMenu->Update(seconds, buttons);
-                        if (end == coastline::MainMenuEnd::Left) {
+                        coastline::MenuButtons buttons{
+                            .left = (pressed & coastline::BUTTON_D_LEFT) != 0,
+                            .right = (pressed & coastline::BUTTON_D_RIGHT) != 0,
+                            .up = (pressed & coastline::BUTTON_D_UP) != 0,
+                            .down = (pressed & coastline::BUTTON_D_DOWN) != 0,
+                            .choose = (pressed & CHOOSE) != 0,
+                            .back = (pressed & coastline::BUTTON_B) != 0,
+                            .held = held != 0};
+                        if (mainMenu->Frame(*sceneRenderer, seconds, buttons) ==
+                            coastline::MenusEnd::Splash) {
                             intro->Restart();
                             frontEnd = FrontEnd::Intro;
-                        } else if (end == coastline::MainMenuEnd::Chosen) {
-                            // ponytail: the screens after the main menu are not built yet, and the
-                            // menu shows again on the item chosen.
-                            SDL_Log("The %s screen is not built yet.",
-                                    mainMenu->SelectionName().c_str());
-                            mainMenu->Restart();
                         }
-                        mainMenu->Draw(*sceneRenderer);
                     }
                     sceneRenderer->End(framePath ? &*framePath : nullptr);
                 } else if (modelView) {

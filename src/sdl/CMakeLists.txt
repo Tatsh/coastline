@@ -172,6 +172,8 @@ add_library(
   intro.cpp
   log.cpp
   mainmenu.cpp
+  menus.cpp
+  menuscreen.cpp
   menutext.cpp
   mipscpu.cpp
   modelview.cpp
