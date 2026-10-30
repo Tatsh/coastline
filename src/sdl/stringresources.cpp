@@ -243,18 +243,18 @@ std::string ToWindows1252(std::string_view text) {
 
 } // namespace coastline
 
-// The SDL game reads the strings of BRString.dll from strings/pc.json, the import of the library,
-// in the code page LoadStringA() converts them to, into the table of the race.
+// The SDL game reads the strings of BRString.dll from strings/en-us.json, the import of the
+// library, in the code page LoadStringA() converts them to, into the table of the race.
 extern "C" void LoadStringTableFromDll(void) {
     std::memset(&g_apszStringResourceTable[1], 0, STRING_RESOURCE_COUNT * sizeof(char *));
     if (g_pStringTableBuffer != nullptr) {
         return;
     }
-    std::ifstream file("strings/pc.json");
+    std::ifstream file("strings/en-us.json");
     auto json = nlohmann::json::parse(file, nullptr, false);
     if (json.is_discarded() || !json.is_object()) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "strings/pc.json is not the strings of the race.");
+                     "strings/en-us.json is not the strings of the race.");
         return;
     }
     std::vector<std::pair<unsigned, std::string>> strings;

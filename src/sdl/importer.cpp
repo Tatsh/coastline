@@ -1602,7 +1602,7 @@ std::optional<std::string> ConvertSkyImages(const std::filesystem::path &dataDir
     return std::nullopt;
 }
 
-// The strings of BRString.dll as strings/pc.json, by identifier, in place of the library.
+// The strings of BRString.dll as strings/en-us.json, by identifier, in place of the library.
 std::optional<std::string> ConvertStringLibrary(const std::filesystem::path &library,
                                                 const std::filesystem::path &dataDirectory) {
     std::ifstream in(library, std::ios::binary);
@@ -1615,7 +1615,7 @@ std::optional<std::string> ConvertStringLibrary(const std::filesystem::path &lib
     for (const auto &[id, text] : strings) {
         json[std::to_string(id)] = text;
     }
-    auto destination = dataDirectory / "strings" / "pc.json";
+    auto destination = dataDirectory / "strings" / "en-us.json";
     std::error_code error;
     std::filesystem::create_directories(destination.parent_path(), error);
     std::ofstream out(destination, std::ios::trunc);
