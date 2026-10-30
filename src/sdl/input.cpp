@@ -332,6 +332,10 @@ int TakeMouseWheel() {
     return units;
 }
 
+void ClearMouseWheel() {
+    g_mouseWheel = 0;
+}
+
 } // namespace coastline
 
 int ReadSecondControllerPad(unsigned short *buttons, signed char *stickX, signed char *stickY) {

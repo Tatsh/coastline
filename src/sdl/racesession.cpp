@@ -132,6 +132,8 @@ void StartRace(const RaceSetup &setup, const std::filesystem::path &music, bool 
     g_dwTotalLaps = setup.laps;
     // LoadConfigData() copies the season of the front end into the profile of each player. The
     // computer's cars of the championship drive by its season and its race.
+    // The menus do not read the wheel, and the race does not take the turns of the wheel there.
+    ClearMouseWheel();
     g_SeasonProgress.season = static_cast<u8>(setup.season);
     g_SeasonProgress.round = static_cast<u8>(setup.round);
     g_SeasonProgress.championshipFlags = setup.championshipFlags;

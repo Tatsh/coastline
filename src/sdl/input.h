@@ -140,4 +140,7 @@ void SetSecondControllerState(const ControllerState &state);
  */
 int TakeMouseWheel();
 
+/** Discard the wheel of the mouse scrolled since TakeMouseWheel() last read it. */
+void ClearMouseWheel();
+
 } // namespace coastline
