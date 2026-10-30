@@ -266,6 +266,9 @@ void N64Audio::Play(std::span<const std::uint8_t> module) {
     }
     // LoadMusicModule() reads the module in place, so it is retained.
     m_module.assign(module.begin(), module.end());
+    // LoadAndPlayTrackBgm() of the console silences the channels before a new module. The
+    // channels otherwise play the notes of the old module on from their samples.
+    ResetMusicPlaybackState();
     InitMusicPlayback(m_module.data(), g_abMusicModuleWorkBuffer);
     if (m_stream != nullptr) {
         SDL_UnlockAudioStream(m_stream);
