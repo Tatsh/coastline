@@ -291,6 +291,14 @@ extern const char g_szAutoSaveBrf[];
  */
 extern char g_szSeasonSaveSlotName[SEASON_SAVE_SLOT_NAME_SIZE];
 
+#ifdef ENABLE_PATCHES
+/**
+ * The numbered season save last loaded or saved, which SaveAutoSaveSeason() also writes, or empty
+ * when the season did not come from a numbered save.
+ */
+extern char g_szSeasonSlotFileName[];
+#endif
+
 /**
  * Write the first player's profile, checksum, settings, and slot label to g_szSeasonSaveFileName.
  *

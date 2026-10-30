@@ -3455,6 +3455,10 @@ int MultiplayerGameSetupUI::OnEscape(MenuWidget *pWidget) {
 }
 
 int ChampionshipSeasonUI::OnStartNewSeason(MenuWidget *pWidget) {
+#ifdef ENABLE_PATCHES
+    // A new season is not written over the numbered save of an earlier one.
+    g_szSeasonSlotFileName[0] = '\0';
+#endif
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     ResetMenuSelectionsToDefaults();
     g_aVehicles[0].SetProfile(nullptr);
@@ -3564,6 +3568,23 @@ int SaveSeasonUI::OnSlotNameEntered(MenuItemList *pList, int nStatus) {
     return 1;
 }
 
+#ifdef ENABLE_PATCHES
+// The time attack slot last loaded or saved: its file, its name, the track of its ghost, or -1 for
+// no slot, and the race time of its ghost, or 0 when the file has none. The front end resets
+// g_szTimeAttackSaveFileName whenever it starts.
+static char ghostSlotFileName[FRONT_END_SAVE_PATH_SIZE];
+static char ghostSlotName[SEASON_SAVE_SLOT_NAME_SIZE];
+static int ghostSlotTrack = -1;
+static float ghostSlotRaceTime;
+
+static inline void RecordGhostSlot(void) {
+    std::strcpy(ghostSlotFileName, g_szTimeAttackSaveFileName);
+    std::memcpy(ghostSlotName, g_szSeasonSaveSlotName, sizeof(ghostSlotName));
+    ghostSlotTrack = static_cast<int>(g_dwSelectedTrackId);
+    ghostSlotRaceTime = g_fGhostBestRaceTime;
+}
+#endif
+
 int LoadTimeAttackMenuUI::OnSlotSelected(MenuItemList *, int *slot) {
     g_dwGameMode = GAME_MODE_TIME_ATTACK;
     g_dwTimeAttackLoadSelected = 0;
@@ -3603,6 +3624,9 @@ int LoadTimeAttackMenuUI::OnSlotSelected(MenuItemList *, int *slot) {
     g_dwTransmissionType = g_adwTransmissionMenuIndexToType[g_LoadedSeasonSettings.transmission];
     SyncSeasonProgress();
     g_dwSeasonLoaded = 1;
+#ifdef ENABLE_PATCHES
+    RecordGhostSlot();
+#endif
     return 1;
 }
 
@@ -3646,6 +3670,9 @@ int SaveTimeAttackMenuUI::OnSlotNameEntered(MenuItemList *list, int status) {
         // The slot is marked as named even when writing fails.
         SaveGhostFile();
         g_dwTimeAttackSaveSlotNamed = 1;
+#ifdef ENABLE_PATCHES
+        RecordGhostSlot();
+#endif
     }
     return 1;
 }
@@ -7812,10 +7839,42 @@ void ProcessCheatCodeInput(void) {
     g_dwLastWmCharParam = 0;
 }
 
+#ifdef ENABLE_PATCHES
+// Write a finished run over the ghost of the slot last loaded or saved when the slot is of the same
+// track and the run beats its time. Return whether the run was saved.
+static inline bool AutoSaveGhost(void) {
+    const float raceTime = VEHICLE_GET(&(g_aVehicles[0]), TotalTime);
+
+    if (ghostSlotTrack != static_cast<int>(g_dwSelectedTrackId) ||
+        (ghostSlotRaceTime > 0.0f && raceTime >= ghostSlotRaceTime)) {
+        return false;
+    }
+    g_fGhostBestLapTime = VEHICLE_GET(&(g_aVehicles[0]), BestLapTime);
+    g_fGhostBestRaceTime = raceTime;
+    char name[sizeof(g_szSeasonSaveSlotName)];
+    std::memcpy(name, g_szSeasonSaveSlotName, sizeof(name));
+    std::strcpy(g_szTimeAttackSaveFileName, ghostSlotFileName);
+    std::memcpy(g_szSeasonSaveSlotName, ghostSlotName, sizeof(g_szSeasonSaveSlotName));
+    const bool saved = SaveGhostFile();
+    std::memcpy(g_szSeasonSaveSlotName, name, sizeof(g_szSeasonSaveSlotName));
+    if (saved) {
+        ghostSlotRaceTime = raceTime;
+    }
+    return saved;
+}
+#endif /* ENABLE_PATCHES */
+
 int EnterTimeAttackMode(void) {
     if (VEHICLE_GET(&(g_aVehicles[0]), Lap) >= g_dwTotalLaps) {
         ShowTimeAttackMenu(nullptr);
+#ifdef ENABLE_PATCHES
+        // A run that cannot be saved without a choice of slot, or that is slower, still prompts.
+        if (!AutoSaveGhost()) {
+            ShowSaveGhostMenu(0);
+        }
+#else
         ShowSaveGhostMenu(0);
+#endif
     }
     g_dwGameMode = GAME_MODE_TIME_ATTACK;
     return true;

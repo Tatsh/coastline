@@ -162,6 +162,22 @@ SeasonSaveSettings g_LoadedSeasonSettings;
 char g_szSecondarySeasonSaveSlotName[SEASON_SAVE_SLOT_NAME_SIZE];
 int g_dwSaveSlotPlayerIndex;
 u8 g_abSaveFileReadBuffer[SEASON_SAVE_PAYLOAD_SIZE];
+#ifdef ENABLE_PATCHES
+char g_szSeasonSlotFileName[FRONT_END_SAVE_PATH_SIZE];
+// The name of the slot of g_szSeasonSlotFileName.
+static char szSeasonSlotName[SEASON_SAVE_SLOT_NAME_SIZE];
+
+// Whether g_szSeasonSaveFileName is a numbered slot rather than the autosave or another file.
+static inline bool IsSeasonSlotFile(void) {
+    return strncmp(g_szSeasonSaveFileName, "RallySeason", strlen("RallySeason")) == 0;
+}
+
+// Record g_szSeasonSaveFileName and its name as the slot of the season.
+static inline void RecordSeasonSlot(void) {
+    strcpy(g_szSeasonSlotFileName, g_szSeasonSaveFileName);
+    memcpy(szSeasonSlotName, g_szSeasonSaveSlotName, sizeof(szSeasonSlotName));
+}
+#endif /* ENABLE_PATCHES */
 
 static inline void UpdateSeasonLabels(void) {
     sprintf(g_szSeasonYearLabel, "%d", g_dwSeasonYear + 1);
@@ -325,6 +341,13 @@ bool LoadSeasonSaveFile(int nMode, bool bAllowFailure) {
         memcpy(g_pPrimarySeasonSave, g_abSaveFileReadBuffer, sizeof(*g_pPrimarySeasonSave));
         memcpy(g_pSecondarySeasonSave, g_abSaveFileReadBuffer, sizeof(*g_pSecondarySeasonSave));
         ReadSeasonSaveTrailer(pFile);
+#ifdef ENABLE_PATCHES
+        if (IsSeasonSlotFile()) {
+            RecordSeasonSlot();
+        } else {
+            g_szSeasonSlotFileName[0] = '\0';
+        }
+#endif
     } else {
         ApplySeasonProfilePreservingOtherPlayer();
     }
@@ -371,6 +394,11 @@ bool SaveSeasonSaveFile(void) {
         return false;
     }
     fclose(pFile);
+#ifdef ENABLE_PATCHES
+    if (IsSeasonSlotFile()) {
+        RecordSeasonSlot();
+    }
+#endif
     return true;
 }
 
@@ -457,6 +485,18 @@ void SaveAutoSaveSeason(void) {
         memset(g_pPrimarySeasonSave->seasonTimes, 0, sizeof(g_pPrimarySeasonSave->seasonTimes));
     }
     SaveSeasonSaveFile();
+#ifdef ENABLE_PATCHES
+    // A season loaded from or saved to a slot is written to the slot as well, under its name.
+    if (g_szSeasonSlotFileName[0] != '\0') {
+        char szName[sizeof(g_szSeasonSaveSlotName)];
+        memcpy(szName, g_szSeasonSaveSlotName, sizeof(szName));
+        strcpy(g_szSeasonSaveFileName, g_szSeasonSlotFileName);
+        memcpy(g_szSeasonSaveSlotName, szSeasonSlotName, sizeof(g_szSeasonSaveSlotName));
+        SaveSeasonSaveFile();
+        strcpy(g_szSeasonSaveFileName, g_szAutoSaveBrf);
+        memcpy(g_szSeasonSaveSlotName, szName, sizeof(g_szSeasonSaveSlotName));
+    }
+#endif
 }
 
 int ResetSeasonSaveBuffers(void) {
