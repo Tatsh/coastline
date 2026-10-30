@@ -185,6 +185,7 @@ add_library(
   playerselect.cpp
   ptr32.cpp
   racedemo.cpp
+  racemenu.cpp
   raceinput.cpp
   racemusic.cpp
   raceview.cpp
@@ -194,6 +195,7 @@ add_library(
   stringresources.cpp
   tlrenderer.cpp
   trackload.cpp
+  weatherselect.cpp
   "${CMAKE_SOURCE_DIR}/src/common/audio.c"
   "${CMAKE_SOURCE_DIR}/tools/common/assetchain.cpp"
   "${CMAKE_SOURCE_DIR}/tools/common/sha1.cpp")

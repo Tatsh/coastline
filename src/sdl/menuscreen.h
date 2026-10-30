@@ -158,8 +158,15 @@ public:
      */
     void SetPendingSelection(int item);
 
-    /** @return The item under the cursor on the last frame. */
+    /** @return The item under the cursor on the last frame, g_nScreenLastActiveIndex. */
     int LastActiveIndex() const;
+
+    /**
+     * Set the item under the cursor on the last frame, as a screen does before it starts.
+     *
+     * @param item The item.
+     */
+    void SetLastActiveIndex(int item);
 
     /** @return The player whose press chose the last item. */
     int ChoosingPlayer() const;

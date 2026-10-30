@@ -310,6 +310,10 @@ int MenuScreen::LastActiveIndex() const {
     return m_state->lastActive;
 }
 
+void MenuScreen::SetLastActiveIndex(int item) {
+    m_state->lastActive = item;
+}
+
 int MenuScreen::ChoosingPlayer() const {
     return m_state->choosingPlayer;
 }

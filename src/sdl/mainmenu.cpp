@@ -19,6 +19,10 @@ enum MainMenuItem {
 constexpr std::array<const char *, 7> MAIN_MENU_STEMS{
     "championship", "arcade", "time-attack", "practice", "paint-shop", "load-save", "options"};
 
+// The modes that return to their item of the main menu.
+constexpr int ENTRY_FROM_CHAMPIONSHIP = 1;
+constexpr int ENTRY_FROM_TIME_ATTACK = 2;
+
 // How long the main menu waits for a press before it exits to the splash screens.
 constexpr float MAIN_MENU_IDLE_TIMEOUT = 20.0f;
 
@@ -35,7 +39,8 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer, const std::filesyste
     }
     std::unique_ptr<Menus> menus(new Menus(std::move(screen)));
     menus->m_mainMenuItems = std::move(*main);
-    if (!menus->LoadPlayerCountItems(renderer, release)) {
+    if (!menus->LoadPlayerCountItems(renderer, release) ||
+        !menus->LoadTrackMenu(renderer, release) || !menus->LoadWeatherItems(renderer, release)) {
         return nullptr;
     }
     return menus;
@@ -47,6 +52,14 @@ void Menus::ProcessMainMenu(SceneRenderer &renderer, float seconds, const MenuBu
         m_screen->Reset();
         m_screen->titleImage = MenuTitleImage{&m_screen->MainMenuTitle(), 25, 14, 280, 32};
         m_screen->idleTimeout = MAIN_MENU_IDLE_TIMEOUT;
+
+        // Return to the item of the mode that led back here.
+        if (m_mainMenuEntrySource == ENTRY_FROM_CHAMPIONSHIP) {
+            m_mainMenuSelection = MAIN_MENU_CHAMPIONSHIP;
+        } else if (m_mainMenuEntrySource == ENTRY_FROM_TIME_ATTACK) {
+            m_mainMenuSelection = MAIN_MENU_TIME_ATTACK;
+        }
+        m_mainMenuEntrySource = 0;
         if (m_mainMenuInitState == 0) {
             m_mainMenuSelection = MAIN_MENU_CHAMPIONSHIP;
         }
@@ -65,6 +78,9 @@ void Menus::ProcessMainMenu(SceneRenderer &renderer, float seconds, const MenuBu
     if (result == MenuResult::Chosen) {
         m_paintMode = false;
         switch (m_mainMenuSelection) {
+        case MAIN_MENU_CHAMPIONSHIP:
+            StartChampionshipRace();
+            break;
         case MAIN_MENU_ARCADE:
             m_numLocalPlayers = 2;
             m_gameMode = GameMode::Arcade;
@@ -87,7 +103,7 @@ void Menus::ProcessMainMenu(SceneRenderer &renderer, float seconds, const MenuBu
             SetCurrentScreen(Screen::OptionsMenu);
             break;
         default:
-            SetCurrentScreen(Screen::TrackMenu);
+            StartTimeAttack();
             break;
         }
         m_mainMenuInitState = -1;
