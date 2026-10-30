@@ -42,6 +42,8 @@ struct DisplayOptions {
     /** The most samples of anisotropic filtering of the textures of models, which are then
      * mipmapped, from 2 to 16, or 0 for neither. */
     int anisotropy = 0;
+    /** Whether the alpha of the texels a model cuts covers the samples of a multisampled pixel. */
+    bool alphaToCoverage = true;
     std::optional<std::string>
         driver; /*!< An SDL GPU driver, such as vulkan, metal, or direct3d12. */
 };
@@ -143,6 +145,11 @@ public:
     /** @return The samples of each pixel the options requested, 1 for no anti-aliasing. */
     int Antialias() const {
         return m_antialias;
+    }
+
+    /** @return Whether the alpha of cut texels covers the samples of a multisampled pixel. */
+    bool AlphaToCoverage() const {
+        return m_options.alphaToCoverage;
     }
 
     /** @return The most samples of anisotropic filtering of the options, 0 for no mipmaps. */

@@ -517,6 +517,8 @@ struct PipelineKey {
     bool additive = false;
     bool mirrored = false;
     bool ghost = false;
+    // Whether the alpha of a fragment covers that share of the samples of its pixel.
+    bool coverage = false;
     auto operator<=>(const PipelineKey &) const = default;
 };
 
@@ -628,6 +630,11 @@ struct SceneRenderer::State {
     SDL_GPUShader *fragmentShader = nullptr;
     std::map<PipelineKey, SDL_GPUGraphicsPipeline *> pipelines;
     SDL_GPUTexture *depth = nullptr;
+    // The samples of each pixel, and the target of that many the frame resolves from when there
+    // are more than one.
+    SDL_GPUSampleCount sampleCount = SDL_GPU_SAMPLECOUNT_1;
+    SDL_GPUTexture *multisampled = nullptr;
+    bool alphaToCoverage = false;
     Uint32 depthWidth = 0;
     Uint32 depthHeight = 0;
     SDL_GPUTextureFormat depthFormat = SDL_GPU_TEXTUREFORMAT_D16_UNORM;
@@ -644,7 +651,7 @@ struct SceneRenderer::State {
     std::vector<std::variant<ModelDraw, QuadDraw>> draws;
     std::vector<Vertex> flat;
 
-    // Give the depth the size of the frame, which follows the window.
+    // Give the depth, and the multisampled target, the size of the frame, which follows the window.
     bool MatchFrame() {
         if (depth != nullptr && depthWidth == window->FrameWidth() &&
             depthHeight == window->FrameHeight()) {
@@ -658,15 +665,31 @@ struct SceneRenderer::State {
         info.height = window->FrameHeight();
         info.layer_count_or_depth = 1;
         info.num_levels = 1;
-        SDL_GPUTexture *created = SDL_CreateGPUTexture(device, &info);
-        if (created == nullptr) {
-            SDL_LogError(SDL_LOG_CATEGORY_GPU, "The depth was not created: %s", SDL_GetError());
+        info.sample_count = sampleCount;
+        SDL_GPUTexture *createdDepth = SDL_CreateGPUTexture(device, &info);
+        SDL_GPUTexture *createdColor = nullptr;
+        if (sampleCount != SDL_GPU_SAMPLECOUNT_1) {
+            info.format = GpuWindow::FrameFormat();
+            info.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET;
+            createdColor = SDL_CreateGPUTexture(device, &info);
+        }
+        if (createdDepth == nullptr ||
+            (sampleCount != SDL_GPU_SAMPLECOUNT_1 && createdColor == nullptr)) {
+            SDL_LogError(SDL_LOG_CATEGORY_GPU, "The targets were not created: %s", SDL_GetError());
+            for (auto *texture : {createdDepth, createdColor}) {
+                if (texture != nullptr) {
+                    SDL_ReleaseGPUTexture(device, texture);
+                }
+            }
             return false;
         }
-        if (depth != nullptr) {
-            SDL_ReleaseGPUTexture(device, depth);
+        for (auto *texture : {depth, multisampled}) {
+            if (texture != nullptr) {
+                SDL_ReleaseGPUTexture(device, texture);
+            }
         }
-        depth = created;
+        depth = createdDepth;
+        multisampled = createdColor;
         depthWidth = info.width;
         depthHeight = info.height;
         return true;
@@ -684,7 +707,7 @@ struct SceneRenderer::State {
                 SDL_ReleaseGPUShader(device, shader);
             }
         }
-        for (auto *texture : {depth, white}) {
+        for (auto *texture : {depth, multisampled, white}) {
             if (texture != nullptr) {
                 SDL_ReleaseGPUTexture(device, texture);
             }
@@ -756,6 +779,8 @@ struct SceneRenderer::State {
             info.rasterizer_state.depth_bias_constant_factor = -2.0f;
             info.rasterizer_state.depth_bias_slope_factor = -1.0f;
         }
+        info.multisample_state.sample_count = sampleCount;
+        info.multisample_state.enable_alpha_to_coverage = key.coverage;
         info.target_info.color_target_descriptions = &target;
         info.target_info.num_color_targets = 1;
         info.target_info.depth_stencil_format = depthFormat;
@@ -1285,6 +1310,20 @@ std::unique_ptr<SceneRenderer> SceneRenderer::Create(GpuWindow &window) {
             break;
         }
     }
+    // The most samples Antialias allows that the device supports for both targets.
+    for (auto [samples, count] : {std::pair{8, SDL_GPU_SAMPLECOUNT_8},
+                                  {4, SDL_GPU_SAMPLECOUNT_4},
+                                  {2, SDL_GPU_SAMPLECOUNT_2}}) {
+        if (window.Antialias() >= samples &&
+            SDL_GPUTextureSupportsSampleCount(device, GpuWindow::FrameFormat(), count) &&
+            SDL_GPUTextureSupportsSampleCount(device, state->depthFormat, count)) {
+            state->sampleCount = count;
+            SDL_Log("Drawing %d samples of each pixel.", samples);
+            break;
+        }
+    }
+    state->alphaToCoverage =
+        state->sampleCount != SDL_GPU_SAMPLECOUNT_1 && window.AlphaToCoverage();
     state->MatchFrame();
     Uploader upload(device);
     constexpr std::array<std::uint8_t, 4> WHITE{255, 255, 255, 255};
@@ -1520,6 +1559,12 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
     color.clear_color = {s.clear[0], s.clear[1], s.clear[2], s.clear[3]};
     color.load_op = SDL_GPU_LOADOP_CLEAR;
     color.store_op = SDL_GPU_STOREOP_STORE;
+    // The samples resolve into the frame at the end of the pass.
+    if (s.multisampled != nullptr) {
+        color.resolve_texture = color.texture;
+        color.texture = s.multisampled;
+        color.store_op = SDL_GPU_STOREOP_RESOLVE;
+    }
     SDL_GPUDepthStencilTargetInfo depth{};
     depth.texture = s.depth;
     depth.clear_depth = 1.0f;
@@ -1560,6 +1605,9 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                              const Reflection *reflection,
                              const CarShadow *shadow) {
         bool ghost = drawState->ghost;
+        // An opaque primitive whose texels are cut by their alpha covers the samples of a pixel by
+        // its alpha.
+        bool coverage = s.alphaToCoverage && !primitive.blend && !ghost && primitive.alphaCut >= 0;
         SDL_GPUGraphicsPipeline *pipeline =
             s.Pipeline({primitive.blend || ghost,
                         primitive.twoSided,
@@ -1568,7 +1616,8 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                                                    DepthMode::TestAndWrite,
                         false,
                         drawState->mirrored,
-                        ghost});
+                        ghost,
+                        coverage});
         if (pipeline == nullptr) {
             return;
         }
@@ -1579,7 +1628,10 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
              primitive.lit ? 1.0f : 0.0f,
              primitive.texture || reflection != nullptr ? 1.0f : 0.0f,
              primitive.combine ? 1.0f : 0.0f},
-            {lighting.direction[0], lighting.direction[1], lighting.direction[2], 0.0f},
+            {lighting.direction[0],
+             lighting.direction[1],
+             lighting.direction[2],
+             coverage ? 1.0f : 0.0f},
             {primitive.combine ? (*primitive.combine)[0] : 0u,
              primitive.combine ? (*primitive.combine)[1] : 0u,
              primitive.twoCycle ? 1u : 0u,

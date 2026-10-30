@@ -95,6 +95,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     // Vulkan, Metal, and Direct3D 12 all filter at least 16 samples.
     options.anisotropy = static_cast<int>(
         std::clamp(config.GetInteger("Video", "AnisotropicFiltering", 0), 0L, 16L));
+    options.alphaToCoverage = config.GetBoolean("Video", "AlphaToCoverage", true);
     options.antialias =
         static_cast<int>(config.GetInteger("Video", "Antialias", options.antialias));
     if (auto antialias = parser.present<int>("--antialias")) {
@@ -879,6 +880,8 @@ int main(int argc, char *argv[]) {
                                               {"Video", "ScaleFilter", "linear"},
                                               {"Video", "FieldOfView", "1"},
                                               {"Video", "AnisotropicFiltering", "0"},
+                                              {"Video", "Antialias", "1"},
+                                              {"Video", "AlphaToCoverage", "1"},
                                               {"Video", "GpuDriver", ""},
                                               {"Video", "WideMenus", "0"},
                                               {"Game", "PlayMusic", "1"},

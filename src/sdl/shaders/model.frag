@@ -119,7 +119,15 @@ void main() {
             color = clamp(vec4(rgb, alpha), 0.0, 1.0);
         }
     }
-    if (color.a < flags.x) {
+    // Where lightDirection.w is 1, the pipeline covers the samples of the pixel by the alpha, and
+    // the alpha a texel needs is the middle of an edge one pixel wide rather than a cut.
+    float coverage = 1.0;
+    if (lightDirection.w > 0.5) {
+        coverage = clamp((color.a - flags.x) / max(fwidth(color.a), 0.0001) + 0.5, 0.0, 1.0);
+        if (coverage <= 0.0) {
+            discard;
+        }
+    } else if (color.a < flags.x) {
         discard;
     }
     if (shadowForward.z > 0.5) {
@@ -143,4 +151,7 @@ void main() {
         color.rgb = mix(fogColor.rgb, color.rgb, (shown < 8.0 ? 0.0 : min(shown, 255.0)) / 255.0);
     }
     outColor = color;
+    if (lightDirection.w > 0.5) {
+        outColor.a = coverage;
+    }
 }

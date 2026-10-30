@@ -469,6 +469,7 @@ ftofrac
 ftol
 funclets
 funcs
+fwidth
 fxfalse
 fxmisc
 fxtrue
