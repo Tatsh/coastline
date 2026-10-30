@@ -1829,7 +1829,8 @@ std::expected<GltfModel, std::string> TrackToGltf(std::span<const std::uint8_t> 
             {name,
              displayList,
              {{name,
-               {{"matrix", matrix}, {"extras", {{"coastlineInstance", {{"flags", flags}}}}}}}},
+               {{"matrix", matrix},
+                {"extras", {{"coastlineInstance", {{"flags", flags}, {"index", i}}}}}}}},
              0,
              {.lit = true, .twoSided = twoSided, .bound = std::nullopt}});
     }

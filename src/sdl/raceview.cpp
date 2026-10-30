@@ -11,8 +11,10 @@
 #include "common/fade.h"
 #include "common/game.h"
 #include "common/hud.h"
+#include "common/hudassets.h"
 #include "common/model.h"
 #include "common/race.h"
+#include "common/rallyconfig.h"
 #include "common/render.h"
 #include "common/screen.h"
 #include "common/sky.h"
@@ -248,6 +250,8 @@ struct RaceView::State {
     // The images of the day and the night sky the paint and the windows of the car reflect.
     std::unique_ptr<RenderTexture> daySky;
     std::unique_ptr<RenderTexture> nightSky;
+    // The shadow of the car, the 8-bit intensities of the engine, the alpha the shade.
+    std::unique_ptr<RenderTexture> shadowTexture;
 };
 
 namespace {
@@ -292,6 +296,52 @@ Reflection SkyReflection(const RenderTexture *daySky,
     return reflection;
 }
 
+// The scales of the shadow of a car along it and across it, for the first wheel of its model.
+constexpr float SHADOW_LENGTH_SCALE = 235.52f;
+constexpr float SHADOW_WIDTH_SCALE = 161.28f;
+
+// The shadow of a car as RenderTrackInstance() lays it on the instances near the car, or none
+// where the race does not draw it: with the shadows off, from the mirror, or from the cockpit or
+// the bumper of the car.
+std::optional<CarShadow> ShadowOf(const RenderTexture *texture, const Vehicle &car) {
+    const CameraFrame *active = g_aVehicles[0].GetActiveCamera();
+    const auto &cameras = g_aVehicles[0].GetCameras();
+    if (texture == nullptr || !g_GlobalRallyConfig.bCarShadowSelection ||
+        active == &cameras[VEHICLE_CAMERA_MIRROR] || active == &cameras[VEHICLE_CAMERA_COCKPIT] ||
+        active == &cameras[VEHICLE_CAMERA_BUMPER]) {
+        return std::nullopt;
+    }
+    const CameraFrame &frame = car.GetFrame();
+    Vec3f forward = frame.forward;
+    if (forward.x == 0.0f && forward.y == 0.0f) {
+        forward = frame.up;
+    }
+    float length = std::max(std::hypot(forward.x, forward.y), 0.5f);
+    float width = std::max(std::hypot(frame.side.x, frame.side.y), 0.5f);
+    const VehicleModel *model = car.GetModel();
+    CarShadow shadow;
+    shadow.texture = texture;
+    shadow.x = frame.position.x;
+    shadow.y = frame.position.y;
+    shadow.along = SHADOW_LENGTH_SCALE / model->wheels[0].x / length;
+    shadow.across = SHADOW_WIDTH_SCALE / model->wheels[0].y / width;
+    shadow.forward = {forward.x, forward.y};
+    float fog = car.GetFogFactor();
+    shadow.color = {static_cast<float>(g_bFogR) / 255.0f * fog,
+                    static_cast<float>(g_bFogG) / 255.0f * fog,
+                    static_cast<float>(g_bFogB) / 255.0f * fog,
+                    1.0f};
+    std::vector<u8> nearby(static_cast<std::size_t>(g_LoadedTrack.instanceCount), 0);
+    car.MarkNearbyInstanceShadows(nearby.data(), 1);
+    for (int index = 0; index < g_LoadedTrack.instanceCount; ++index) {
+        if (nearby[static_cast<std::size_t>(index)] != 0 &&
+            !(g_LoadedTrack.instances[index].flags & TRACK_INSTANCE_NO_SHADOW)) {
+            shadow.instances.push_back(index);
+        }
+    }
+    return shadow;
+}
+
 } // namespace
 
 RaceView::RaceView(std::unique_ptr<State> state) : m_state(std::move(state)) {
@@ -326,11 +376,18 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     state->snowWheel = RenderModel::Load(renderer, carFile, "lod0-wheelSnow0", color);
     // The skies of the track in cargfx, as the import converted them.
     auto skyImage = [&](const SkyTextureFiles *files) {
+        // The reflection wraps across the sky, as its tile wraps.
         return RenderTexture::Load(
-            renderer, (defaults / files->image).replace_extension(".png"), true);
+            renderer, (defaults / files->image).replace_extension(".png"), true, true);
     };
     state->daySky = skyImage(g_aTrackDescriptors[track].daySkyFiles);
     state->nightSky = skyImage(g_aTrackDescriptors[track].nightSkyFiles);
+    // LoadHudOverlayTexture(): the 64 by 64 intensities of the shadow, clamped at its edges.
+    std::vector<std::uint8_t> shadow;
+    for (unsigned char level : g_abHudOverlayTextureData) {
+        shadow.insert(shadow.end(), {level, level, level, level});
+    }
+    state->shadowTexture = RenderTexture::FromTexels(renderer, 64, 64, shadow, true, false);
     // The race of the PC release draws its text with the fonts of the cartridge.
     state->text = MenuText::Load(renderer, defaults / "n64" / "usa" / "fonts");
     // The start lights, the model of BossRally.pod.
@@ -384,7 +441,13 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
             camera->position.x, camera->position.y, camera->position.z * SKY_DEPTH_SCALE);
         renderer.DrawModel(*s.sky, place, viewProjection, lighting, std::nullopt, false);
     }
-    renderer.DrawModel(*s.track, ConsoleSpace(), viewProjection, lighting, std::nullopt, true);
+    std::optional<CarShadow> shadow = ShadowOf(s.shadowTexture.get(), vehicle);
+    if (shadow) {
+        renderer.DrawShadowedModel(
+            *s.track, ConsoleSpace(), viewProjection, lighting, std::move(*shadow));
+    } else {
+        renderer.DrawModel(*s.track, ConsoleSpace(), viewProjection, lighting, std::nullopt, true);
+    }
     // RenderVehicleModel() does not draw the car from its own cockpit or its mirror.
     const CameraFrame *active = g_aVehicles[0].GetActiveCamera();
     const auto &cameras = g_aVehicles[0].GetCameras();

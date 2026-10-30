@@ -10,6 +10,7 @@ layout(location = 3) in vec4 inColor;
 layout(location = 0) out vec2 outTexCoord;
 layout(location = 1) out vec3 outNormal;
 layout(location = 2) out vec4 outColor;
+layout(location = 3) out vec3 outWorld;
 
 // The morph targets of the keys of an animation of the vertices: for each key, the displacement of
 // the position and then of the normal of every vertex.
@@ -46,7 +47,9 @@ void main() {
         position += mix(displacements[first].xyz, displacements[second].xyz, poses[i].z);
         normal += mix(displacements[first + 1].xyz, displacements[second + 1].xyz, poses[i].z);
     }
-    gl_Position = viewProjection * model * vec4(position, 1.0);
+    vec4 world = model * vec4(position, 1.0);
+    outWorld = world.xyz;
+    gl_Position = viewProjection * world;
     outTexCoord = inTexCoord;
     outNormal = mat3(model) * normal;
     if (blend.z > 0.5) {

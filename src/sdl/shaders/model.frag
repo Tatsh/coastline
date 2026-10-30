@@ -3,11 +3,13 @@
 layout(location = 0) in vec2 inTexCoord;
 layout(location = 1) in vec3 inNormal;
 layout(location = 2) in vec4 inColor;
+layout(location = 3) in vec3 inWorld;
 
 layout(location = 0) out vec4 outColor;
 
 layout(set = 2, binding = 0) uniform sampler2D textureMap;
 layout(set = 2, binding = 1) uniform sampler2D textureMap1;
+layout(set = 2, binding = 2) uniform sampler2D shadowMap;
 
 // flags: x is the alpha a texel needs to be drawn, or -1 to draw every texel, y is 1 for a lit
 // material, whose vertices have normals, z is 1 for a textured material, and w is 1 where the
@@ -26,6 +28,12 @@ layout(set = 3, binding = 0) uniform Material {
     // The scale in xy and the offset in zw from the texture coordinate of the first texel to the
     // second, which a glyph samples its gradient by.
     vec4 texel1Transform;
+    // The shadow of a car on the track, as RenderTrackInstance() lays it on the ground: the place
+    // of the car in xy and the scales along and across it in zw, its heading in xy and in z 1
+    // where the shadow falls on the fragment, and its colour, the fog by the fog of the car.
+    vec4 shadowCenter;
+    vec4 shadowForward;
+    vec4 shadowColor;
 };
 
 // The inputs of a cycle of the colour combiner, as the RDP numbers them. The second cycle reads the
@@ -111,6 +119,20 @@ void main() {
     }
     if (color.a < flags.x) {
         discard;
+    }
+    if (shadowForward.z > 0.5) {
+        // The texture lies along the car on the ground, centred under it, 1024 to its width, and
+        // a texel of less than 8 draws nothing, as the threshold of the blend colour cuts it.
+        vec2 offset = inWorld.xy - shadowCenter.xy;
+        vec2 forward = shadowForward.xy;
+        vec2 st = (vec2(shadowCenter.z * dot(offset, forward),
+                        shadowCenter.w * dot(offset, vec2(-forward.y, forward.x))) +
+                   512.0) /
+                  1024.0;
+        float shade = texture(shadowMap, clamp(st, 0.0, 1.0)).a;
+        if (shade * 255.0 >= 8.0) {
+            color.rgb = mix(color.rgb, shadowColor.rgb, shade);
+        }
     }
     outColor = color;
 }

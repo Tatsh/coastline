@@ -131,6 +131,9 @@ struct FragmentUniforms {
     float ambient[4];
     float directional[4];
     float texel1Transform[4];
+    float shadowCenter[4];
+    float shadowForward[4];
+    float shadowColor[4];
 };
 
 // The cycle type of the RDP in its high other mode word.
@@ -406,6 +409,7 @@ struct Placed {
     std::size_t mesh;
     Matrix4 matrix;
     std::optional<Lighting> lighting;
+    int instance; // The instance of the track the node draws, or -1.
 };
 
 // The lights of a clear day as the race sets them up: a directional light of 255, 255, 204 from
@@ -457,6 +461,7 @@ struct ModelDraw {
     bool depth;
     std::optional<SDL_Rect> scissor;
     std::optional<Reflection> reflection;
+    std::optional<CarShadow> shadow;
 };
 
 struct QuadDraw {
@@ -863,11 +868,13 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
         if (node.contains("mesh") && (!parts || parts(node.value("name", "")))) {
             std::size_t mesh = node["mesh"].get<std::size_t>();
             std::optional<Lighting> lighting;
+            int instance = -1;
             if (node.contains("extras") && node["extras"].contains("coastlineInstance")) {
-                lighting = TrackInstanceLighting(
-                    node["extras"]["coastlineInstance"]["flags"].get<std::uint32_t>());
+                const auto &extras = node["extras"]["coastlineInstance"];
+                lighting = TrackInstanceLighting(extras["flags"].get<std::uint32_t>());
+                instance = extras.value("index", -1);
             }
-            state->placed.push_back({mesh, matrix, lighting});
+            state->placed.push_back({mesh, matrix, lighting, instance});
             for (const auto &p : meshPositions[mesh]) {
                 auto world = Transform(matrix, p.data());
                 for (std::size_t axis = 0; axis < 3; ++axis) {
@@ -931,9 +938,10 @@ int RenderTexture::Height() const {
     return m_height;
 }
 
-std::unique_ptr<RenderTexture>
-RenderTexture::Load(SceneRenderer &renderer, const std::filesystem::path &path, bool linear) {
-    SDL_GPUDevice *device = renderer.m_state->device;
+std::unique_ptr<RenderTexture> RenderTexture::Load(SceneRenderer &renderer,
+                                                   const std::filesystem::path &path,
+                                                   bool linear,
+                                                   bool repeat) {
     SDL_Surface *loaded = SDL_LoadPNG(path.string().c_str());
     SDL_Surface *rgba = loaded ? SDL_ConvertSurface(loaded, SDL_PIXELFORMAT_RGBA32) : nullptr;
     SDL_DestroySurface(loaded);
@@ -949,18 +957,32 @@ RenderTexture::Load(SceneRenderer &renderer, const std::filesystem::path &path, 
     int width = rgba->w;
     int height = rgba->h;
     SDL_DestroySurface(rgba);
-    Uploader upload(device);
-    SDL_GPUTexture *texture = upload.Texture(width, height, texels);
-    if (texture == nullptr || !upload.Submit()) {
+    auto texture = FromTexels(renderer, width, height, texels, linear, repeat);
+    if (!texture) {
         SDL_LogError(SDL_LOG_CATEGORY_GPU, "%s was not uploaded.", path.string().c_str());
+    }
+    return texture;
+}
+
+std::unique_ptr<RenderTexture> RenderTexture::FromTexels(SceneRenderer &renderer,
+                                                         int width,
+                                                         int height,
+                                                         std::span<const std::uint8_t> rgba,
+                                                         bool linear,
+                                                         bool repeat) {
+    SDL_GPUDevice *device = renderer.m_state->device;
+    Uploader upload(device);
+    SDL_GPUTexture *texture = upload.Texture(width, height, rgba);
+    if (texture == nullptr || !upload.Submit()) {
         return nullptr;
     }
     SDL_GPUSamplerCreateInfo info{};
     info.min_filter = linear ? SDL_GPU_FILTER_LINEAR : SDL_GPU_FILTER_NEAREST;
     info.mag_filter = info.min_filter;
-    info.address_mode_u = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
-    info.address_mode_v = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
-    info.address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
+    info.address_mode_u =
+        repeat ? SDL_GPU_SAMPLERADDRESSMODE_REPEAT : SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
+    info.address_mode_v = info.address_mode_u;
+    info.address_mode_w = info.address_mode_u;
     return std::unique_ptr<RenderTexture>(
         new RenderTexture(device, texture, SDL_CreateGPUSampler(device, &info), width, height));
 }
@@ -982,7 +1004,7 @@ std::unique_ptr<SceneRenderer> SceneRenderer::Create(GpuWindow &window) {
     state->vertexShader =
         CreateShader(device, SDL_GPU_SHADERSTAGE_VERTEX, 0, 1, MODEL_VERT_SPIRV, MODEL_VERT_MSL);
     state->fragmentShader =
-        CreateShader(device, SDL_GPU_SHADERSTAGE_FRAGMENT, 2, 0, MODEL_FRAG_SPIRV, MODEL_FRAG_MSL);
+        CreateShader(device, SDL_GPU_SHADERSTAGE_FRAGMENT, 3, 0, MODEL_FRAG_SPIRV, MODEL_FRAG_MSL);
     if (state->vertexShader == nullptr || state->fragmentShader == nullptr) {
         return nullptr;
     }
@@ -1050,8 +1072,15 @@ void SceneRenderer::DrawModel(const RenderModel &model,
     if (poses.size() > MAX_MORPH_POSES) {
         poses.resize(MAX_MORPH_POSES);
     }
-    m_state->draws.emplace_back(ModelDraw{
-        &model, world, viewProjection, lighting, std::move(poses), depth, scissor, std::nullopt});
+    m_state->draws.emplace_back(ModelDraw{&model,
+                                          world,
+                                          viewProjection,
+                                          lighting,
+                                          std::move(poses),
+                                          depth,
+                                          scissor,
+                                          std::nullopt,
+                                          std::nullopt});
 }
 
 void SceneRenderer::DrawReflectingModel(const RenderModel &model,
@@ -1059,8 +1088,24 @@ void SceneRenderer::DrawReflectingModel(const RenderModel &model,
                                         const Matrix4 &viewProjection,
                                         const Lighting &lighting,
                                         const Reflection &reflection) {
-    m_state->draws.emplace_back(
-        ModelDraw{&model, world, viewProjection, lighting, {}, true, std::nullopt, reflection});
+    m_state->draws.emplace_back(ModelDraw{
+        &model, world, viewProjection, lighting, {}, true, std::nullopt, reflection, std::nullopt});
+}
+
+void SceneRenderer::DrawShadowedModel(const RenderModel &model,
+                                      const Matrix4 &world,
+                                      const Matrix4 &viewProjection,
+                                      const Lighting &lighting,
+                                      CarShadow shadow) {
+    m_state->draws.emplace_back(ModelDraw{&model,
+                                          world,
+                                          viewProjection,
+                                          lighting,
+                                          {},
+                                          true,
+                                          std::nullopt,
+                                          std::nullopt,
+                                          std::move(shadow)});
 }
 
 void SceneRenderer::DrawQuads(std::span<const FlatVertex> corners,
@@ -1145,7 +1190,8 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                              const Lighting &lighting,
                              SDL_GPUBuffer *targets,
                              bool depthTest,
-                             const Reflection *reflection) {
+                             const Reflection *reflection,
+                             const CarShadow *shadow) {
         SDL_GPUGraphicsPipeline *pipeline = s.Pipeline({primitive.blend,
                                                         primitive.twoSided,
                                                         !depthTest      ? DepthMode::None :
@@ -1170,13 +1216,30 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             {primitive.env[0], primitive.env[1], primitive.env[2], primitive.env[3]},
             {lighting.ambient[0], lighting.ambient[1], lighting.ambient[2], 1.0f},
             {lighting.directional[0], lighting.directional[1], lighting.directional[2], 1.0f},
-            {1.0f, 1.0f, 0.0f, 0.0f}};
+            {1.0f, 1.0f, 0.0f, 0.0f},
+            {},
+            {},
+            {}};
         if (reflection != nullptr) {
             std::ranges::copy(reflection->environment, fragmentUniforms.env);
         }
+        if (shadow != nullptr) {
+            float length = std::hypot(shadow->forward[0], shadow->forward[1]);
+            fragmentUniforms.shadowCenter[0] = shadow->x;
+            fragmentUniforms.shadowCenter[1] = shadow->y;
+            fragmentUniforms.shadowCenter[2] = shadow->along;
+            fragmentUniforms.shadowCenter[3] = shadow->across;
+            fragmentUniforms.shadowForward[0] = length > 0.0f ? shadow->forward[0] / length : 1.0f;
+            fragmentUniforms.shadowForward[1] = length > 0.0f ? shadow->forward[1] / length : 0.0f;
+            fragmentUniforms.shadowForward[2] = 1.0f;
+            std::ranges::copy(shadow->color, fragmentUniforms.shadowColor);
+        }
         SDL_PushGPUFragmentUniformData(commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
-        std::array<SDL_GPUTextureSamplerBinding, 2> bindings{
-            {{s.white, s.plainSampler}, {s.white, s.plainSampler}}};
+        std::array<SDL_GPUTextureSamplerBinding, 3> bindings{
+            {{s.white, s.plainSampler}, {s.white, s.plainSampler}, {s.white, s.plainSampler}}};
+        if (shadow != nullptr) {
+            bindings[2] = {shadow->texture->m_texture, shadow->texture->m_sampler};
+        }
         if (primitive.texture && *primitive.texture < model.textures.size()) {
             auto [image, sampler] = model.textures[*primitive.texture];
             bindings[0] = {model.images.at(image), model.samplers.at(sampler)};
@@ -1225,6 +1288,10 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                 targets = mesh.targets;
             }
             const Lighting &lighting = placed.lighting ? *placed.lighting : draw.lighting;
+            // The shadow of the car falls on the instances near it.
+            bool shaded = draw.shadow && draw.shadow->texture != nullptr && placed.instance >= 0 &&
+                          std::ranges::find(draw.shadow->instances, placed.instance) !=
+                              draw.shadow->instances.end();
             for (const Primitive &primitive : mesh.primitives) {
                 if (primitive.blend == blending) {
                     VertexUniforms uniforms = vertexUniforms;
@@ -1244,8 +1311,14 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                         uniforms.reflectUp = {
                             reflection->up[0], reflection->up[1], reflection->up[2], 0.0f};
                     }
-                    drawPrimitive(
-                        primitive, model, uniforms, lighting, targets, draw.depth, reflection);
+                    drawPrimitive(primitive,
+                                  model,
+                                  uniforms,
+                                  lighting,
+                                  targets,
+                                  draw.depth,
+                                  reflection,
+                                  shaded ? &*draw.shadow : nullptr);
                 }
             }
         }
@@ -1290,10 +1363,13 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             {material.texel1Transform[0],
              material.texel1Transform[1],
              material.texel1Transform[2],
-             material.texel1Transform[3]}};
+             material.texel1Transform[3]},
+            {},
+            {},
+            {}};
         SDL_PushGPUFragmentUniformData(commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
-        std::array<SDL_GPUTextureSamplerBinding, 2> bindings{
-            {{s.white, s.plainSampler}, {s.white, s.plainSampler}}};
+        std::array<SDL_GPUTextureSamplerBinding, 3> bindings{
+            {{s.white, s.plainSampler}, {s.white, s.plainSampler}, {s.white, s.plainSampler}}};
         if (material.texel0 != nullptr) {
             bindings[0] = {material.texel0->m_texture, material.texel0->m_sampler};
         }

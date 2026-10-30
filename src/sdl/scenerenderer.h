@@ -76,6 +76,21 @@ struct Reflection {
 };
 
 /**
+ * The shadow of a car on the track, as RenderTrackInstance() lays its texture on the ground under
+ * the car: 1024 across the texture, centred under the car, along and across its heading.
+ */
+struct CarShadow {
+    const RenderTexture *texture = nullptr; /*!< The texture of the shadow, its alpha the shade. */
+    float x = 0.0f;                         /*!< The place of the car across the world. */
+    float y = 0.0f;                         /*!< The place of the car along the world. */
+    float along = 0.0f;  /*!< The units of the texture for each unit along the car. */
+    float across = 0.0f; /*!< The units of the texture for each unit across the car. */
+    std::array<float, 2> forward{1.0f, 0.0f}; /*!< The heading of the car on the ground. */
+    std::array<float, 4> color{};             /*!< The colour the shade blends towards. */
+    std::vector<int> instances; /*!< The instances of the track the shadow falls on. */
+};
+
+/**
  * The pose of a vertex animation at a time, as the console blends its keys.
  *
  * @param animation The animation.
@@ -136,10 +151,31 @@ public:
      * @param renderer The renderer that draws with the texture.
      * @param path The image.
      * @param linear Whether the texture filters linearly, or takes the nearest texel.
+     * @param repeat Whether the texture repeats past its edges, or clamps to them.
      * @return The texture, or nothing with the reason logged.
      */
-    static std::unique_ptr<RenderTexture>
-    Load(SceneRenderer &renderer, const std::filesystem::path &path, bool linear);
+    static std::unique_ptr<RenderTexture> Load(SceneRenderer &renderer,
+                                               const std::filesystem::path &path,
+                                               bool linear,
+                                               bool repeat = false);
+
+    /**
+     * Upload texels the game has in memory, such as a texture of the race built into the engine.
+     *
+     * @param renderer The renderer that draws with the texture.
+     * @param width The width in texels.
+     * @param height The height in texels.
+     * @param rgba The texels as 8-bit RGBA, row by row from the top.
+     * @param linear Whether the texture filters linearly, or takes the nearest texel.
+     * @param repeat Whether the texture repeats past its edges, or clamps to them.
+     * @return The texture, or nothing when the upload failed.
+     */
+    static std::unique_ptr<RenderTexture> FromTexels(SceneRenderer &renderer,
+                                                     int width,
+                                                     int height,
+                                                     std::span<const std::uint8_t> rgba,
+                                                     bool linear,
+                                                     bool repeat);
     ~RenderTexture();
     RenderTexture(const RenderTexture &) = delete;
     RenderTexture &operator=(const RenderTexture &) = delete;
@@ -271,6 +307,21 @@ public:
                              const Matrix4 &viewProjection,
                              const Lighting &lighting,
                              const Reflection &reflection);
+
+    /**
+     * Draw a track with the shadow of a car on the instances near the car.
+     *
+     * @param model The model of the track.
+     * @param world The place of the model.
+     * @param viewProjection The camera and its projection, to a depth from 0 to 1.
+     * @param lighting The lights of the model.
+     * @param shadow The shadow of the car.
+     */
+    void DrawShadowedModel(const RenderModel &model,
+                           const Matrix4 &world,
+                           const Matrix4 &viewProjection,
+                           const Lighting &lighting,
+                           CarShadow shadow);
 
     /**
      * Draw flat quads over everything drawn before them, blended by their alpha.
