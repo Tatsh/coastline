@@ -973,6 +973,39 @@ Lighting CarLighting(const Vehicle &car, const Vehicle &cameraCar, const CameraF
     return lighting;
 }
 
+// The lights BuildVisibleInstanceList() gives the track and RenderTrackGeometry() loads, in the
+// colours of the weather. The direction is the sun, or at night above and ahead of the car of the
+// camera, at 120 a unit rounded to bytes.
+Lighting TrackLighting(const Vehicle &cameraCar) {
+    Vec3f light{g_afLightDirection[0], g_afLightDirection[1], g_afLightDirection[2]};
+    if (g_dwNightMode) {
+        const CameraFrame &frame = cameraCar.GetFrame();
+        light = {static_cast<f32>(static_cast<long double>(frame.up.x) -
+                                  static_cast<long double>(frame.forward.x) * 4.0f),
+                 static_cast<f32>(static_cast<long double>(frame.up.y) -
+                                  static_cast<long double>(frame.forward.y) * 4.0f),
+                 static_cast<f32>(static_cast<long double>(frame.up.z) -
+                                  static_cast<long double>(frame.forward.z) * 4.0f)};
+    }
+    Vec3fNormalize(&light);
+    Vec3fScaleInPlace(&light, 120.0f);
+    std::array<float, 3> rounded{static_cast<float>(static_cast<s8>(static_cast<s32>(light.x))),
+                                 static_cast<float>(static_cast<s8>(static_cast<s32>(light.y))),
+                                 static_cast<float>(static_cast<s8>(static_cast<s32>(light.z)))};
+    Lighting lighting;
+    float length = std::hypot(rounded[0], rounded[1], rounded[2]);
+    if (length > 0.0f) {
+        lighting.direction = {rounded[0] / length, rounded[1] / length, rounded[2] / length};
+    }
+    lighting.ambient = {static_cast<float>(g_bAmbientLightR) / 255.0f,
+                        static_cast<float>(g_bAmbientLightG) / 255.0f,
+                        static_cast<float>(g_bAmbientLightB) / 255.0f};
+    lighting.directional = {static_cast<float>(g_bDirLightR) / 255.0f,
+                            static_cast<float>(g_bDirLightG) / 255.0f,
+                            static_cast<float>(g_bDirLightB) / 255.0f};
+    return lighting;
+}
+
 // The colour of the highlight, PRIMITIVE with the alpha of TEXEL0, and its primitive colour.
 constexpr std::array<std::uint32_t, 2> HIGHLIGHT_COMBINE = CombineLerp(ZERO_AB,
                                                                        ZERO_AB,
@@ -1567,14 +1600,15 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     }
 }
 
-// A car drawn in a view: the car, the car of the view and its number, the camera of the view, and
-// its projection.
+// A car drawn in a view: the car, the car of the view and its number, the camera of the view, its
+// projection, and the lights of the car.
 struct RaceView::CarInView {
     const Vehicle *car;
     const Vehicle *cameraCar;
     int cameraIndex;
     const CameraFrame *camera;
     const Matrix4 *viewProjection;
+    const Lighting &lighting;
 };
 
 // RenderRaceView() of a view: the track, the cars, the puffs, and the start lights from the active
@@ -1658,7 +1692,8 @@ void RaceView::DrawView(SceneRenderer &renderer, FrameSnapshot *snapshot, int in
     const auto &cameras = vehicle.GetCameras();
     bool inside =
         camera == &cameras[VEHICLE_CAMERA_COCKPIT] || camera == &cameras[VEHICLE_CAMERA_MIRROR];
-    Lighting cameraCarLighting = CarLighting(vehicle, vehicle, *camera);
+    // The lights the start lights draw under: those of the track until a car sets its own.
+    Lighting lastLighting = TrackLighting(vehicle);
     // RenderRacerVehicles(): the car of each vehicle of the race that is, or is not, a ghost. A
     // ghost, the car of a time attack recorded before or a car fading back in after it is put back
     // on the track, is drawn in the render mode of a ghost of BRD3D. The opacity of a ghost goes to
@@ -1673,7 +1708,8 @@ void RaceView::DrawView(SceneRenderer &renderer, FrameSnapshot *snapshot, int in
                 (index == cameraIndex && inside && !g_dwVehicleCullingDisabled)) {
                 continue;
             }
-            DrawCar(renderer, {&car, &vehicle, cameraIndex, camera, &viewProjection});
+            lastLighting = CarLighting(car, vehicle, *camera);
+            DrawCar(renderer, {&car, &vehicle, cameraIndex, camera, &viewProjection, lastLighting});
         }
     };
     // RenderRaceScene() draws the cars and the smoke of the tyres after the second pass of the
@@ -1689,14 +1725,14 @@ void RaceView::DrawView(SceneRenderer &renderer, FrameSnapshot *snapshot, int in
     if (!carsAfterTrack) {
         drawCarsAndSmoke();
     }
-    // RenderStartLights() draws under the lights the cars left: g_DefaultLights in their colours.
-    // ponytail: from the cockpit the PC release leaves the colours of the frame before.
+    // RenderStartLights() draws under the lights the last car drawn left, g_DefaultLights in its
+    // colours, or else under those of the track.
     std::optional<Matrix4> lights = StartLightsMatrix();
     if (lights) {
         renderer.DrawModel(*s.startLights,
                            MultiplyMatrices(*lights, ConsoleSpace()),
                            viewProjection,
-                           cameraCarLighting,
+                           lastLighting,
                            StartLightsPoses(*s.startLights),
                            true);
     }
@@ -1772,7 +1808,7 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     const CarLevel &level = *models.levels[lod];
     bool ghost = car.GetGhostMode() == VEHICLE_GHOST;
     renderer.SetGhost(ghost);
-    Lighting carLighting = CarLighting(car, vehicle, camera);
+    const Lighting &carLighting = view.lighting;
     Matrix4 body = MultiplyMatrices(FrameMatrix(frame), ConsoleSpace());
     Reflection reflection =
         SkyReflection(s.daySky.get(), s.nightSky.get(), camera, car, g_aVehicles[cameraIndex]);
