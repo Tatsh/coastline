@@ -195,6 +195,34 @@ void DrawFrameRate(coastline::SceneRenderer &renderer, const coastline::MenuText
                                         static_cast<float>(std::max(window.FrameHeight(), 1u))));
 }
 
+// Every character of the menu fonts, or the text of --scene font:TEXT, drawn by the menu text on
+// black: in the default gradient, in white, and in the small font, each as large as fits.
+void DrawFontSample(coastline::SceneRenderer &renderer,
+                    const coastline::MenuText &text,
+                    const std::string &sample) {
+    constexpr int WIDTH = 300;
+    constexpr int LARGEST = 40;
+    const coastline::GpuWindow &window = renderer.Window();
+    coastline::Matrix4 flat =
+        coastline::FlatProjection(static_cast<float>(window.FrameWidth()) /
+                                  static_cast<float>(std::max(window.FrameHeight(), 1u)));
+    auto fitted = [&](int size) {
+        while (size > 4 && text.Width(sample, size) > WIDTH) {
+            --size;
+        }
+        return size;
+    };
+    coastline::TextStyle style;
+    style.align = coastline::TextStyle::Align::Center;
+    style.size = fitted(LARGEST);
+    text.Draw(renderer, sample, 160, 40, style, flat);
+    style.colors = std::array<int, 6>{255, 255, 255, 255, 255, 255};
+    text.Draw(renderer, sample, 160, 100, style, flat);
+    // The small font draws text of 10 pixels and less.
+    style.size = std::min(fitted(10), 10);
+    text.Draw(renderer, sample, 160, 170, style, flat);
+}
+
 // The XM module of the music pack default for a module of the USA cartridge.
 std::optional<std::vector<std::uint8_t>> LoadMusicModule(const std::filesystem::path &data,
                                                          std::uint32_t offset) {
@@ -689,8 +717,9 @@ int main(int argc, char *argv[]) {
         .flag();
     parser.add_argument("--scene").help(
         "scene to start in: intro, the default, main-menu, attract-demo, attract-demo:RELEASE for "
-        "the demo of the usa, jpn, or eur cartridge, renderer-test, or model:FILE.gltf for a "
-        "converted model or track, from the imported data when relative");
+        "the demo of the usa, jpn, or eur cartridge, renderer-test, model:FILE.gltf for a "
+        "converted model or track, from the imported data when relative, or font for every "
+        "character of the menu fonts, font:TEXT for a string of them");
     parser.add_argument("--screenshot").help("save a frame to this PNG file");
     parser.add_argument("--screenshot-frame")
         .help("number of the frame to save, from 1")
@@ -868,6 +897,8 @@ int main(int argc, char *argv[]) {
             std::unique_ptr<coastline::Intro> intro;
             std::unique_ptr<coastline::Menus> mainMenu;
             std::unique_ptr<coastline::MenuText> frameRateText;
+            std::unique_ptr<coastline::MenuText> fontSample;
+            std::string fontSampleText;
             // The screen of the front end that shows.
             enum class FrontEnd { Intro, AttractDemo, MainMenu, Race };
             FrontEnd frontEnd = FrontEnd::Intro;
@@ -898,6 +929,16 @@ int main(int argc, char *argv[]) {
                     model = coastline::DefaultAssets(paths->data) / model;
                 }
                 modelView = coastline::ModelView::Create(*window, model);
+            } else if (scene == "font" || scene.starts_with("font:")) {
+                sceneRenderer = coastline::SceneRenderer::Create(*window);
+                if (sceneRenderer) {
+                    fontSample = coastline::MenuText::Load(*sceneRenderer,
+                                                           coastline::DefaultAssets(paths->data) /
+                                                               "n64" / "usa" / "fonts");
+                }
+                fontSampleText = scene == "font" ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 "
+                                                   ",.?!#$&-+;:'\"/*=@" :
+                                                   scene.substr(5);
             } else if (scene.empty() || scene == "intro" || scene == "main-menu" || startInDemo) {
                 sceneRenderer = coastline::SceneRenderer::Create(*window);
                 if (sceneRenderer) {
@@ -1213,6 +1254,10 @@ int main(int argc, char *argv[]) {
                             mainMenu->FinishRace(coastline::RaceEnd::Menu, {});
                         }
                     }
+                } else if (fontSample) {
+                    sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
+                    DrawFontSample(*sceneRenderer, *fontSample, fontSampleText);
+                    sceneRenderer->End(framePath ? &*framePath : nullptr);
                 } else if (modelView) {
                     modelView->Draw(framePath ? &*framePath : nullptr);
                 } else if (renderer) {
