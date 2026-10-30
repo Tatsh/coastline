@@ -97,13 +97,15 @@ jobs:
         shell: bash
       - if: runner.os == 'Linux'
         name: 'Configure and compile'
-        run: cmake --workflow --preset sdl
+        run: |
+          cmake --preset sdl
+          cmake --build --preset sdl -- -k 0
       - if: runner.os == 'macOS'
         name: 'Configure and compile'
         run: |
           cmake --preset sdl -DCMAKE_OSX_ARCHITECTURES="$ARCHITECTURE" \
             -DVCPKG_TARGET_TRIPLET="$TRIPLET"
-          cmake --build --preset sdl
+          cmake --build --preset sdl -- -k 0
         env:
           ARCHITECTURE: '${{ matrix.architecture }}'
           TRIPLET: '${{ matrix.triplet }}'
@@ -117,7 +119,9 @@ jobs:
           Import-Module "$studio\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
           Enter-VsDevShell -VsInstallPath $studio -SkipAutomaticLocation `
             -DevCmdArguments "-arch=$env:ARCHITECTURE -host_arch=$env:ARCHITECTURE"
-          cmake --workflow --preset sdl
+          cmake --preset sdl
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build --preset sdl -- -k 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         env:
           ARCHITECTURE: '${{ matrix.architecture }}'

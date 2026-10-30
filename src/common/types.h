@@ -15,6 +15,10 @@
  */
 #include <stddef.h>
 #include <stdint.h>
+/* bool is a keyword of C23, which the C of MSVC lacks. */
+#if !defined(__cplusplus) && defined(_MSC_VER)
+#include <stdbool.h>
+#endif
 
 #include <PR/ultratypes.h>
 
