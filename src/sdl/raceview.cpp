@@ -1021,6 +1021,62 @@ void DrawPrecipitation(SceneRenderer &renderer,
     renderer.DrawQuads(corners, material, IDENTITY_MATRIX);
 }
 
+// The glare of the beams of the headlights that shine at the camera of a view, as
+// RenderVehicleHeadlightBeams() adds it up: of the beams in front of the camera in
+// g_fHeadlightGlare, and of those behind it, which its mirror faces, in g_fScreenFogPulse.
+struct HeadlightGlare {
+    float ahead = 0.0f;
+    float behind = 0.0f;
+};
+
+// RenderVehicleHeadlightBeams() of a vehicle other than the car of the view: its beams glare the
+// camera the more the more straight they shine at it, and the nearer they are. The beams point
+// along the vehicle, as the tilt of their up axis is 0.
+void AddHeadlightGlare(HeadlightGlare &glare, const Vehicle &car, const CameraFrame &camera) {
+    CameraFrame frame = car.GetFrame();
+    Vec3f eye = camera.position;
+    Vec3f toCamera{};
+    Vec3fAdd(&toCamera, &frame.position, &frame.forward);
+    Vec3fSubtract(&toCamera, &eye, &toCamera);
+    long double rawDistance = Vec3fLength(&toCamera);
+    if (rawDistance == 0.0L || rawDistance != rawDistance) {
+        return;
+    }
+    auto distance = static_cast<f32>(rawDistance);
+    Vec3fDivideInPlace(&toCamera, distance);
+    long double squared = static_cast<long double>(distance) * distance;
+    long double facing = Vec3fDot(&toCamera, &camera.forward);
+    auto along = static_cast<f32>(Vec3fDot(&toCamera, &frame.forward));
+    if (!(facing >= 0.0L)) {
+        long double level = -(facing * along);
+        if (0.95f < level) {
+            glare.ahead += static_cast<f32>(750.0f * (level - 0.95f) / squared);
+        }
+    }
+    if (facing > 0.95f) {
+        long double level = facing * along;
+        if (0.95f < level) {
+            glare.behind += static_cast<f32>(750.0f * (level - 0.95f) / squared);
+        }
+    }
+}
+
+// RenderHeadlightGlare(): the view in white by the glare, from a glare of 0.1 and at most 0.7,
+// blended over the frame.
+void DrawHeadlightGlare(SceneRenderer &renderer, float level) {
+    if (!(level >= 0.1f)) {
+        return;
+    }
+    level = std::min(level, 0.7f);
+    auto alpha = static_cast<std::uint8_t>(static_cast<s32>(static_cast<s64>(255.0L * level)));
+    std::array<std::uint8_t, 4> white{0xFF, 0xFF, 0xFF, alpha};
+    std::array<FlatVertex, 4> corners{{{-1.0f, 1.0f, 0.0f, 0.0f, white, 0.0f},
+                                       {1.0f, 1.0f, 0.0f, 0.0f, white, 0.0f},
+                                       {1.0f, -1.0f, 0.0f, 0.0f, white, 0.0f},
+                                       {-1.0f, -1.0f, 0.0f, 0.0f, white, 0.0f}}};
+    renderer.DrawQuads(corners, FlatMaterial{}, IDENTITY_MATRIX);
+}
+
 // The combiner of the spray of the tyres: the shade, its alpha the texel by the shade.
 constexpr std::array<std::uint32_t, 2> SPRAY_COMBINE = PARTICLE_COMBINE;
 
@@ -2128,12 +2184,17 @@ void RaceView::DrawView(SceneRenderer &renderer,
     }
     // RenderVehicleHeadlightBeams() of each vehicle at night and in the rain, but not of a ghost,
     // of a vehicle the view does not see, or of the car of the view from its bumper.
+    // The beams of the other vehicles glare the view.
+    HeadlightGlare glare;
     if (g_dwNightMode || g_dwRainMode) {
         for (int index = 0; index < g_dwNumActiveVehicles; ++index) {
             const Vehicle &car = vehicles[index];
             if (!g_adwVehicleVisible[index] || car.GetGhostMode() == VEHICLE_GHOST ||
                 (index == cameraIndex && camera == &cameras[VEHICLE_CAMERA_BUMPER])) {
                 continue;
+            }
+            if (index != cameraIndex) {
+                AddHeadlightGlare(glare, car, *camera);
             }
             const auto &color = car.GetColor();
             CarKey key{car.GetCarModel(),
@@ -2197,6 +2258,12 @@ void RaceView::DrawView(SceneRenderer &renderer,
                               across);
         }
     }
+    // RenderHeadlightGlare() over the view with half of the glare from behind, and over its mirror
+    // with all of it.
+    DrawHeadlightGlare(renderer,
+                       mirror ? glare.behind + glare.ahead :
+                                static_cast<float>(static_cast<long double>(glare.ahead) -
+                                                   static_cast<long double>(glare.behind) * -0.5f));
 }
 
 // RenderVehicleModel() of a car in a view.
