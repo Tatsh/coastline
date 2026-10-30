@@ -117,6 +117,29 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     }
     options.antialias =
         static_cast<int>(config.GetInteger("Video", "Antialias", options.antialias));
+    // A preset of --gpu replaces the filtering and the anti-aliasing of the settings for this run,
+    // and the options of the command line after it still apply. The resolution follows the window
+    // as set, and best covers the display at its desktop mode, its largest.
+    if (auto preset = parser.present("--gpu")) {
+        if (*preset == "best") {
+            options.antialias = 8;
+            options.alphaToCoverage = true;
+            options.anisotropy = 16;
+            options.textureFilter = coastline::TextureFilter::Modern;
+            options.fullscreen = true;
+            options.exclusive = false;
+        } else if (*preset == "worst") {
+            options.antialias = 1;
+            options.alphaToCoverage = false;
+            options.postAntialias = coastline::PostAntialias::None;
+            options.anisotropy = 0;
+            options.textureFilter = coastline::TextureFilter::Nearest;
+        } else {
+            SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
+                        "--gpu takes best or worst, and %s is ignored.",
+                        preset->c_str());
+        }
+    }
     if (auto antialias = parser.present<int>("--antialias")) {
         options.antialias = *antialias;
     }
@@ -128,6 +151,12 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     }
     if (auto height = parser.present<int>("--height")) {
         options.height = *height;
+    }
+    // best draws at the size the command line gives, scaled to the display it covers.
+    if (parser.present("--gpu") == "best" &&
+        (parser.is_used("--width") || parser.is_used("--height"))) {
+        options.frameWidth = options.width;
+        options.frameHeight = options.height;
     }
     if (parser.get<bool>("--fullscreen")) {
         options.fullscreen = true;
@@ -755,6 +784,12 @@ int main(int argc, char *argv[]) {
     parser.add_argument("--no-vsync").help("present frames without waiting").flag();
     parser.add_argument("--gpu-driver")
         .help("SDL GPU driver, such as vulkan, metal, or direct3d12");
+    parser.add_argument("--gpu").help(
+        "preset of the graphics for this run, not saved: best for 8 samples of anti-aliasing, "
+        "alpha to coverage, 16 samples of anisotropic filtering, and the full screen at the "
+        "desktop mode of the display, drawn at the size of the display or at --width by --height "
+        "when given, or worst for no anti-aliasing and the nearest texel; --antialias, "
+        "--fullscreen, and --windowed still apply");
     parser.add_argument("--list-gpu-drivers").help("write the GPU drivers and exit").flag();
     parser.add_argument("--import-disc")
         .help("copy the game data and music from a Boss Rally CUE sheet or ISO image, and exit");
