@@ -1039,9 +1039,9 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     const auto &cameras = g_aVehicles[0].GetCameras();
     bool inside =
         active == &cameras[VEHICLE_CAMERA_COCKPIT] || active == &cameras[VEHICLE_CAMERA_MIRROR];
+    Lighting carLighting = CarLighting(vehicle, vehicle, *camera);
     if (!inside || g_dwVehicleCullingDisabled) {
         Matrix4 body = MultiplyMatrices(FrameMatrix(vehicle.GetFrame()), ConsoleSpace());
-        Lighting carLighting = CarLighting(vehicle, vehicle, *camera);
         Reflection reflection = SkyReflection(s.daySky.get(), s.nightSky.get(), *camera, vehicle);
         // The textured parts, the underside, the highlight, and the painted body in turn.
         s.car->SetVariant(CarLightVariant(vehicle));
@@ -1077,12 +1077,14 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
             DrawTireSpray(renderer, *s.sprayTexture, snapshot->GetVehicle(index), viewProjection);
         }
     }
+    // RenderStartLights() draws under the lights the cars left: g_DefaultLights in their colours.
+    // ponytail: from the cockpit the PC release leaves the colours of the frame before.
     std::optional<Matrix4> lights = StartLightsMatrix();
     if (lights) {
         renderer.DrawModel(*s.startLights,
                            MultiplyMatrices(*lights, ConsoleSpace()),
                            viewProjection,
-                           lighting,
+                           carLighting,
                            StartLightsPoses(*s.startLights),
                            true);
     }
