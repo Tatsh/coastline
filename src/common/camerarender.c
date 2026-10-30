@@ -10,6 +10,9 @@
 #include <math.h>
 
 #include "common/gbicommand.h"
+#ifdef ENABLE_PATCHES
+#include "common/qualityoflife.h"
+#endif
 #else
 #include <PR/R4300.h>
 #endif
@@ -98,7 +101,7 @@ f32 g_fFrustumFovAngle;
 
 void SetupFrustumCorners(CameraFrame *camera, f32 fov, f32 farDistance, f32 width, f32 height) {
 #if TGR_BOSS_RALLY && defined(ENABLE_PATCHES)
-    f32 halfHeight = tanf(fov * 0.5f) * farDistance;
+    f32 halfHeight = tanf(GetHorPlusFovY(fov, width, height) * 0.5f) * farDistance;
     f32 halfWidth = halfHeight * width / height;
 #elif TGR_BOSS_RALLY
     long double sine;
@@ -175,7 +178,7 @@ void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width,
     guPerspectiveF(g_afPerspectiveMatrix,
                    &g_wPerspNorm,
 #if TGR_BOSS_RALLY && defined(ENABLE_PATCHES)
-                   fov * DEGREES_PER_RADIAN,
+                   GetHorPlusFovY(fov, width, height) * DEGREES_PER_RADIAN,
 #elif TGR_BOSS_RALLY
                    (long double)fov * ASPECT_4_3 * ((long double)height / width) *
                        DEGREES_PER_RADIAN,

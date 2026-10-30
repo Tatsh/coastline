@@ -2,6 +2,7 @@
 
 #include "common/displaylistptr.h"
 #include "common/gbicommand.h"
+#include "common/qualityoflife.h"
 #include "common/settings.h"
 
 static int canvasWidth;
@@ -25,15 +26,8 @@ int GetHudCanvasY(int coordinate) {
 }
 
 ViewportRect *BeginRaceHudCanvas(const ViewportRect *viewports) {
-    canvasHeight = g_dwConfigFramebufferHeight < 480 ? g_dwConfigFramebufferHeight : 480;
-    canvasWidth =
-        (int)((double)g_dwConfigFramebufferWidth * canvasHeight / g_dwConfigFramebufferHeight +
-              0.5);
-    /* Integer rectangle commands have twelve bits per coordinate. */
-    if (canvasWidth > 2000) {
-        canvasHeight = (int)((double)canvasHeight * 2000 / canvasWidth);
-        canvasWidth = 2000;
-    }
+    GetHudCanvasSize(
+        g_dwConfigFramebufferWidth, g_dwConfigFramebufferHeight, &canvasWidth, &canvasHeight);
     for (int index = 0; index < g_dwNumViewports; ++index) {
         canvasViews[index] = viewports[index];
         canvasViews[index].x = GetHudCanvasX(viewports[index].x);
