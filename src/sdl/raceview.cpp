@@ -296,10 +296,16 @@ void DrawHudCommands(HudDrawing &drawing, const GbiCommand *end) {
             auto top = static_cast<float>(command.w1 & 0xfff);
             auto right = static_cast<float>(command.w0 >> 12 & 0xfff);
             auto bottom = static_cast<float>(command.w0 & 0xfff);
-            std::array<FlatVertex, 4> corners{{{left, top, 0.0f, 0.0f},
-                                               {right, top, 1.0f, 0.0f},
-                                               {right, bottom, 1.0f, 1.0f},
-                                               {left, bottom, 0.0f, 1.0f}}};
+            // DrawTextureRectangle() of BRD3D gives the top corners the lower right T of the tile
+            // and the bottom corners its upper left T, the centres of the last and the first rows.
+            // The images of the dashboard are stored from the bottom row up.
+            const EngineTexture *source = FindEngineTexture(entry);
+            float halfU = 0.5f / static_cast<float>(source->width);
+            float halfV = 0.5f / static_cast<float>(source->height);
+            std::array<FlatVertex, 4> corners{{{left, top, halfU, 1.0f - halfV},
+                                               {right, top, 1.0f - halfU, 1.0f - halfV},
+                                               {right, bottom, 1.0f - halfU, halfV},
+                                               {left, bottom, halfU, halfV}}};
             FlatMaterial material;
             material.texel0 = image;
             material.alphaCut = 0.5f;
