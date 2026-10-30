@@ -251,7 +251,6 @@ private:
     void HandleRaceResultsInput(const MenuButtons &buttons);
     void LeaveRaceResults();
     void ProcessRaceResultsScreen(SceneRenderer &renderer, float seconds, const MenuButtons &first);
-    static int RaceVolumeLevel(int level);
     bool LoadOptionsItems(SceneRenderer &renderer, const std::filesystem::path &release);
     void LoadPakData();
     void ApplyVolumeSettings() const;

@@ -248,6 +248,11 @@ void AbandonRace() {
     StopMusicOfRace();
 }
 
+std::array<int, 2> RaceVolumeLevels() {
+    return {static_cast<int>(g_GlobalRallyConfig.dwMusicVolume),
+            static_cast<int>(g_GlobalRallyConfig.dwSfxVolume)};
+}
+
 const RaceResults &LastRaceResults() {
     return g_results;
 }

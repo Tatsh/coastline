@@ -120,6 +120,12 @@ RaceEnd StepRace();
 /** End the race that StartRace() started without running it, and stop its music. */
 void AbandonRace();
 
+/**
+ * @return The levels of the music and of the sound effects of the race that StartRace() started
+ * last, from 0 to 9, as its pause menu set them.
+ */
+std::array<int, 2> RaceVolumeLevels();
+
 /** @return The results of the race that ended last with RaceEnd::Results. */
 const RaceResults &LastRaceResults();
 

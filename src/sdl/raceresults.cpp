@@ -15,6 +15,7 @@
 #include "frontend.h"
 #include "menus.h"
 #include "menutext.h"
+#include "volumelevels.h"
 
 namespace coastline {
 
@@ -156,7 +157,18 @@ RaceSetup Menus::ChosenRace() const {
 }
 
 void Menus::FinishRace(RaceEnd end, const RaceResults &results) {
-    // The race played at the levels of the race engine.
+    // The race played at the levels of the race engine, and the levels its pause menu changed are
+    // saved with the options.
+    auto [musicLevel, sfxLevel] = RaceVolumeLevels();
+    int music = MenuVolumeLevel(musicLevel, m_options.musicVolume);
+    int sfx = MenuVolumeLevel(sfxLevel, m_options.sfxVolume);
+    if (music != m_options.musicVolume || sfx != m_options.sfxVolume) {
+        m_options.musicVolume = music;
+        m_options.sfxVolume = sfx;
+        if (!SaveOptionsNote(0)) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The options were not saved.");
+        }
+    }
     ApplyVolumeSettings();
     bool afterSeason = m_afterSeasonRace;
     m_afterSeasonRace = false;

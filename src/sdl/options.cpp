@@ -11,6 +11,7 @@
 #include "ghostnote.h"
 #include "menus.h"
 #include "menutext.h"
+#include "volumelevels.h"
 
 namespace coastline {
 
@@ -38,10 +39,6 @@ constexpr std::array<u8, 11> BGM_VOLUME_LEVELS{
     0x00, 0x04, 0x09, 0x0E, 0x13, 0x18, 0x1C, 0x21, 0x26, 0x2B, 0x30};
 constexpr std::array<u8, 11> SFX_VOLUME_LEVELS{
     0x00, 0x19, 0x33, 0x4C, 0x66, 0x7F, 0x99, 0xB2, 0xCC, 0xE5, 0xFF};
-constexpr int MAX_VOLUME_LEVEL = 10;
-
-// The levels of the race engine, from 0 to 9.
-constexpr int MAX_RACE_VOLUME_LEVEL = 9;
 
 // The notes of the Controller Pak, as the console writes their names in the characters of the pak.
 constexpr const char *SEASON_NOTE = "TOP GEAR SEASON";
@@ -221,11 +218,6 @@ void ReadOptions(MenuOptions &options, const std::vector<u8> &bytes) {
 }
 
 } // namespace
-
-int Menus::RaceVolumeLevel(int level) {
-    // The race engine has a level fewer, and the loudest of each is the same.
-    return (level * MAX_RACE_VOLUME_LEVEL + MAX_VOLUME_LEVEL / 2) / MAX_VOLUME_LEVEL;
-}
 
 bool Menus::LoadOptionsItems(SceneRenderer &renderer, const std::filesystem::path &release) {
     auto items = m_screen->LoadItems(renderer, release / "menu-items" / "options", OPTIONS_STEMS);

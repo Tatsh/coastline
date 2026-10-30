@@ -1,5 +1,5 @@
-// Host check of the XDG directories, the BossRally.ini reader, and the icon file reader of the SDL
-// game.
+// Host check of the XDG directories, the BossRally.ini reader, the icon file reader, and the volume
+// levels of the SDL game.
 
 #include <algorithm>
 #include <cstdint>
@@ -11,6 +11,7 @@
 #include "config.h"
 #include "iconfile.h"
 #include "paths.h"
+#include "volumelevels.h"
 
 namespace {
 
@@ -74,6 +75,32 @@ std::vector<std::uint8_t> IconFile(const std::vector<std::uint8_t> &dib) {
     return icon;
 }
 
+void CheckVolumeLevels() {
+    using coastline::MAX_RACE_VOLUME_LEVEL;
+    using coastline::MAX_VOLUME_LEVEL;
+    using coastline::MenuVolumeLevel;
+    using coastline::RaceVolumeLevel;
+    Check(RaceVolumeLevel(0) == 0 && RaceVolumeLevel(MAX_VOLUME_LEVEL) == MAX_RACE_VOLUME_LEVEL,
+          "silence and the loudest level map to the race engine");
+    for (int level = 0; level <= MAX_VOLUME_LEVEL; ++level) {
+        Check(MenuVolumeLevel(RaceVolumeLevel(level), level) == level,
+              "an unchanged race level retains the level of the options");
+    }
+    for (int raceLevel = 0; raceLevel <= MAX_RACE_VOLUME_LEVEL; ++raceLevel) {
+        for (int level = 0; level <= MAX_VOLUME_LEVEL; ++level) {
+            int back = MenuVolumeLevel(raceLevel, level);
+            Check(back >= 0 && back <= MAX_VOLUME_LEVEL && RaceVolumeLevel(back) == raceLevel,
+                  "a changed race level maps to a level of the options that gives it");
+        }
+    }
+    Check(MenuVolumeLevel(RaceVolumeLevel(MAX_VOLUME_LEVEL) - 1, MAX_VOLUME_LEVEL) == 9,
+          "a step down in the pause menu is a step down in the options");
+    Check(MenuVolumeLevel(5, 5) == 5 && MenuVolumeLevel(5, 6) == 6,
+          "both levels of the options that give the same race level are retained");
+    Check(MenuVolumeLevel(MAX_RACE_VOLUME_LEVEL + 3, 0) == MAX_VOLUME_LEVEL,
+          "a race level past the loudest is clamped");
+}
+
 void CheckIconFile() {
     auto dib = IconBitmap();
     auto iconFile = IconFile(dib);
@@ -114,6 +141,7 @@ void CheckIconFile() {
 
 int main() {
     CheckIconFile();
+    CheckVolumeLevels();
 
     auto defaults =
         coastline::ResolveXdgPaths(Environment({{"HOME", "/home/player"}}), "coastline");
