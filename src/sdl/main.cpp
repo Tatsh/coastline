@@ -244,6 +244,37 @@ void DrawFontSample(coastline::SceneRenderer &renderer,
     text.Draw(renderer, sample, 160, 170, style, flat);
 }
 
+// A new file in a directory of screenshots, named by the local time to the millisecond, with the
+// directory made when it does not exist.
+std::optional<std::filesystem::path> ScreenshotPath(const std::filesystem::path &directory) {
+    std::error_code error;
+    std::filesystem::create_directories(directory, error);
+    if (error) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                    "%s cannot be made: %s",
+                    directory.string().c_str(),
+                    error.message().c_str());
+        return std::nullopt;
+    }
+    SDL_Time now = 0;
+    SDL_DateTime time{};
+    if (!SDL_GetCurrentTime(&now) || !SDL_TimeToDateTime(now, &time, true)) {
+        return std::nullopt;
+    }
+    char name[64];
+    std::snprintf(name,
+                  sizeof(name),
+                  "coastline-%04d%02d%02d-%02d%02d%02d-%03d.png",
+                  time.year,
+                  time.month,
+                  time.day,
+                  time.hour,
+                  time.minute,
+                  time.second,
+                  time.nanosecond / 1000000);
+    return directory / name;
+}
+
 // The XM module of the music pack default for a module of the USA cartridge.
 std::optional<std::vector<std::uint8_t>> LoadMusicModule(const std::filesystem::path &data,
                                                          std::uint32_t offset) {
@@ -1024,13 +1055,19 @@ int main(int argc, char *argv[]) {
             std::uint16_t lastButtons = 0;
             std::uint16_t lastSecondButtons = 0;
             bool running = true;
+            bool printScreenWasDown = false;
             for (int frame = 1; running; ++frame) {
                 PushScriptedTyping(typing, frame, window->Window());
                 // The text typed on a keyboard while a screen takes it, with Backspace and Enter
                 // as control characters.
                 std::string typed;
+                bool printScreen = false;
                 SDL_Event event;
                 while (SDL_PollEvent(&event)) {
+                    if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat &&
+                        event.key.scancode == SDL_SCANCODE_PRINTSCREEN) {
+                        printScreen = true;
+                    }
                     if (event.type == SDL_EVENT_QUIT) {
                         running = false;
                     } else if (event.type == SDL_EVENT_TEXT_INPUT) {
@@ -1107,6 +1144,9 @@ int main(int argc, char *argv[]) {
                     }
                 }
                 coastline::SetScriptedKeys(std::move(scriptedKeys));
+                bool printScreenDown = coastline::IsKeyDown(SDL_SCANCODE_PRINTSCREEN);
+                printScreen = printScreen || (printScreenDown && !printScreenWasDown);
+                printScreenWasDown = printScreenDown;
                 bool capture = screenshot && frame == screenshotFrame;
                 std::optional<std::filesystem::path> framePath;
                 if (capture) {
@@ -1116,6 +1156,11 @@ int main(int argc, char *argv[]) {
                     std::snprintf(number, sizeof(number), "-%06d", frame);
                     framePath = screenshot->parent_path() / (screenshot->stem().string() + number +
                                                              screenshot->extension().string());
+                }
+                // Print Screen saves the frame to the screenshots of the data directory, named by
+                // the time it was taken.
+                if (printScreen && !framePath) {
+                    framePath = ScreenshotPath(paths->data / "screenshots");
                 }
                 // The test of the renderer keeps the size it started at, its targets with it.
                 if (!renderer) {
