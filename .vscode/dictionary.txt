@@ -721,6 +721,7 @@ moddi
 modelanimation
 modelanimationflags
 modeldraw
+modellights
 modelpart
 modelpartflags
 modelpartpos

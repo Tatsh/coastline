@@ -17,25 +17,29 @@ layout(std430, set = 0, binding = 0) readonly buffer Targets {
     vec4 displacements[];
 };
 
-// morph: x and y are the two keys to blend, z is the vertices of a key, and w is 1 where the model
-// is animated. blend.x is the share of the second key, and blend.y is 1 where the texture
+// The most poses a draw blends.
+const int MAX_POSES = 64;
+
+// morph: z is the vertices of a key, and w is the number of poses. blend.y is 1 where the texture
 // coordinates come from the normal across the whole texture, as G_TEXTURE_GEN of the RSP makes
-// them.
+// them. Each pose is the first and the second key to blend and the share of the second, and the
+// vertices take the sum of the poses, as each animation moves its own vertices.
 layout(set = 1, binding = 0) uniform Transform {
     mat4 viewProjection;
     mat4 model;
     ivec4 morph;
     vec4 blend;
+    vec4 poses[MAX_POSES];
 };
 
 void main() {
     vec3 position = inPosition;
     vec3 normal = inNormal;
-    if (morph.w == 1) {
-        int first = (morph.x * morph.z + gl_VertexIndex) * 2;
-        int second = (morph.y * morph.z + gl_VertexIndex) * 2;
-        position += mix(displacements[first].xyz, displacements[second].xyz, blend.x);
-        normal += mix(displacements[first + 1].xyz, displacements[second + 1].xyz, blend.x);
+    for (int i = 0; i < min(morph.w, MAX_POSES); ++i) {
+        int first = (int(poses[i].x) * morph.z + gl_VertexIndex) * 2;
+        int second = (int(poses[i].y) * morph.z + gl_VertexIndex) * 2;
+        position += mix(displacements[first].xyz, displacements[second].xyz, poses[i].z);
+        normal += mix(displacements[first + 1].xyz, displacements[second + 1].xyz, poses[i].z);
     }
     gl_Position = viewProjection * model * vec4(position, 1.0);
     outTexCoord = inTexCoord;

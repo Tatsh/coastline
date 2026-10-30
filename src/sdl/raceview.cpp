@@ -10,11 +10,15 @@
 #include "common/fade.h"
 #include "common/game.h"
 #include "common/hud.h"
+#include "common/model.h"
+#include "common/race.h"
 #include "common/render.h"
 #include "common/screen.h"
 #include "common/sky.h"
 #include "common/snapshot.h"
 #include "common/strings.h"
+#include "common/track.h"
+#include "common/vecmath.h"
 #include "common/vehicle.h"
 #include "common/weather.h"
 #include "frontend.h"
@@ -166,12 +170,74 @@ Matrix4 ConsoleSpace() {
 // places it.
 constexpr float SKY_DEPTH_SCALE = 0.99f;
 
+namespace {
+
+// RenderStartLights(): the lights face across the track from the right edge of its first point,
+// lowered as they drop away, scaled by 1/1024.
+std::optional<Matrix4> StartLightsMatrix() {
+    if (!g_bStartLightsVisible || g_LoadedTrack.rootSection == nullptr) {
+        return std::nullopt;
+    }
+    TrackPoint &first = g_LoadedTrack.rootSection->points[0];
+    Vec3f across{};
+    Vec3f forward{};
+    Vec3f up{0.0f, 0.0f, 1.0f};
+    Vec3fDirection(&across, &first.position, &first.right);
+    Vec3fCross(&forward, &across, &up);
+    Vec3fCross(&across, &up, &forward);
+    Vec3f position{
+        first.position.x,
+        first.position.y,
+        static_cast<f32>(static_cast<long double>(first.position.z) + g_fStartLightsDrop + 2.0f)};
+    Vec3fMulAdd(&position, &position, &forward, -0.3f);
+    Vec3fMulAdd(&position, &position, &across, -0.6f);
+    Matrix4 place{forward.x,
+                  forward.y,
+                  forward.z,
+                  0,
+                  across.x,
+                  across.y,
+                  across.z,
+                  0,
+                  up.x,
+                  up.y,
+                  up.z,
+                  0,
+                  position.x,
+                  position.y,
+                  position.z,
+                  1};
+    return MultiplyMatrices(place, Scale(1.0f / 1024.0f));
+}
+
+// The poses of the animations of the start lights at the times the race has them.
+std::vector<MorphPose> StartLightsPoses(const RenderModel &lights) {
+    std::vector<MorphPose> poses;
+    if (g_pStartLightsModel == nullptr || g_pStartLightsModel->animations == nullptr) {
+        return poses;
+    }
+    const auto &animations = lights.Animations();
+    int count = g_pStartLightsModel->animations->count;
+    for (int i = 0; i < count && static_cast<std::size_t>(i) < animations.size(); ++i) {
+        std::optional<MorphPose> pose =
+            PoseAtTime(animations[static_cast<std::size_t>(i)],
+                       g_pStartLightsModel->animations->entries[i]->time);
+        if (pose) {
+            poses.push_back(*pose);
+        }
+    }
+    return poses;
+}
+
+} // namespace
+
 struct RaceView::State {
     std::unique_ptr<RenderModel> track;
     // ponytail: the sky loads the images of the track a second time; a model with its nodes drawn
     // by name would share them.
     std::unique_ptr<RenderModel> sky;
     std::unique_ptr<RenderModel> car;
+    std::unique_ptr<RenderModel> startLights;
     std::unique_ptr<MenuText> text;
 };
 
@@ -197,7 +263,9 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
                           color);
     // The race of the PC release draws its text with the fonts of the cartridge.
     state->text = MenuText::Load(renderer, defaults / "n64" / "usa" / "fonts");
-    if (!state->track || !state->car || !state->text) {
+    // The start lights, the model of BossRally.pod.
+    state->startLights = RenderModel::Load(renderer, defaults / "BossRally" / "modellights.gltf");
+    if (!state->track || !state->car || !state->text || !state->startLights) {
         return nullptr;
     }
     return std::unique_ptr<RaceView>(new RaceView(std::move(state)));
@@ -253,6 +321,15 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
                        lighting,
                        std::nullopt,
                        true);
+    std::optional<Matrix4> lights = StartLightsMatrix();
+    if (lights) {
+        renderer.DrawModel(*s.startLights,
+                           MultiplyMatrices(*lights, ConsoleSpace()),
+                           viewProjection,
+                           lighting,
+                           StartLightsPoses(*s.startLights),
+                           true);
+    }
 
     // The help of the attract demo, from the corner of the canvas of the HUD, under the fade.
     const char *help = GetStringResource(DEMO_HELP_STRING);

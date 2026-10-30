@@ -177,24 +177,10 @@ struct Intro::State {
     // The pose of the vertex animation of a part of the title at its time.
     std::optional<MorphPose> TitlePose(std::size_t part) const {
         const auto &animations = title[part]->Animations();
-        if (animations.empty() || animations[0].keyTimes.size() < 2) {
+        if (animations.empty()) {
             return std::nullopt;
         }
-        const VertexAnimationInfo &animation = animations[0];
-        float t =
-            std::clamp(animationTime[part], animation.keyTimes.front(), animation.keyTimes.back());
-        std::size_t k = 1;
-        while (k + 1 < animation.keyTimes.size() && !(t < animation.keyTimes[k])) {
-            ++k;
-        }
-        float from = animation.keyTimes[k - 1];
-        float to = animation.keyTimes[k];
-        float share = to > from ? (t - from) / (to - from) : 0.0f;
-        // The console blends in 4096ths.
-        share = std::floor(share * 4096.0f) / 4096.0f;
-        return MorphPose{animation.firstTarget + static_cast<int>(k) - 1,
-                         animation.firstTarget + static_cast<int>(k),
-                         share};
+        return PoseAtTime(animations[0], animationTime[part]);
     }
 
     // AdvanceForwardAnimation() and AdvanceReversingAnimation() of the console, for an animation

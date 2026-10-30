@@ -105,12 +105,17 @@ std::array<float, 4> Rgba(std::uint32_t value) {
             static_cast<float>(value & 0xff) / 255.0f};
 }
 
+// The most poses of vertex animations a draw blends, as many as the vertex shader takes.
+constexpr std::size_t MAX_MORPH_POSES = 64;
+
 // The uniforms of the vertex shader, in the layout of std140.
 struct VertexUniforms {
     Matrix4 viewProjection;
     Matrix4 model;
     std::array<std::int32_t, 4> morph;
     std::array<float, 4> blend;
+    // The first and the second target and the share of the second of each pose.
+    std::array<std::array<float, 4>, MAX_MORPH_POSES> poses;
 };
 
 // The uniforms of the fragment shader, in the layout of std140.
@@ -445,7 +450,7 @@ struct ModelDraw {
     Matrix4 world;
     Matrix4 viewProjection;
     Lighting lighting;
-    std::optional<MorphPose> pose;
+    std::vector<MorphPose> poses;
     bool depth;
     std::optional<SDL_Rect> scissor;
 };
@@ -624,6 +629,25 @@ std::array<float, 3> RenderModel::Centre() const {
 
 float RenderModel::Radius() const {
     return m_state->radius;
+}
+
+std::optional<MorphPose> PoseAtTime(const VertexAnimationInfo &animation, float time) {
+    if (animation.keyTimes.size() < 2) {
+        return std::nullopt;
+    }
+    float t = std::clamp(time, animation.keyTimes.front(), animation.keyTimes.back());
+    std::size_t k = 1;
+    while (k + 1 < animation.keyTimes.size() && !(t < animation.keyTimes[k])) {
+        ++k;
+    }
+    float from = animation.keyTimes[k - 1];
+    float to = animation.keyTimes[k];
+    float share = to > from ? (t - from) / (to - from) : 0.0f;
+    // The console blends in 4096ths.
+    share = std::floor(share * 4096.0f) / 4096.0f;
+    return MorphPose{animation.firstTarget + static_cast<int>(k) - 1,
+                     animation.firstTarget + static_cast<int>(k),
+                     share};
 }
 
 std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
@@ -995,8 +1019,25 @@ void SceneRenderer::DrawModel(const RenderModel &model,
                               std::optional<MorphPose> pose,
                               bool depth,
                               std::optional<SDL_Rect> scissor) {
+    std::vector<MorphPose> poses;
+    if (pose) {
+        poses.push_back(*pose);
+    }
+    DrawModel(model, world, viewProjection, lighting, std::move(poses), depth, scissor);
+}
+
+void SceneRenderer::DrawModel(const RenderModel &model,
+                              const Matrix4 &world,
+                              const Matrix4 &viewProjection,
+                              const Lighting &lighting,
+                              std::vector<MorphPose> poses,
+                              bool depth,
+                              std::optional<SDL_Rect> scissor) {
+    if (poses.size() > MAX_MORPH_POSES) {
+        poses.resize(MAX_MORPH_POSES);
+    }
     m_state->draws.emplace_back(
-        ModelDraw{&model, world, viewProjection, lighting, pose, depth, scissor});
+        ModelDraw{&model, world, viewProjection, lighting, std::move(poses), depth, scissor});
 }
 
 void SceneRenderer::DrawQuads(std::span<const FlatVertex> corners,
@@ -1137,11 +1178,18 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             VertexUniforms vertexUniforms{draw.viewProjection,
                                           MultiplyMatrices(draw.world, placed.matrix),
                                           {0, 0, mesh.vertexCount, 0},
-                                          {0.0f, 0.0f, 0.0f, 0.0f}};
+                                          {0.0f, 0.0f, 0.0f, 0.0f},
+                                          {}};
             SDL_GPUBuffer *targets = s.noTargets;
-            if (draw.pose && mesh.targets != nullptr) {
-                vertexUniforms.morph = {draw.pose->first, draw.pose->second, mesh.vertexCount, 1};
-                vertexUniforms.blend[0] = draw.pose->blend;
+            if (!draw.poses.empty() && mesh.targets != nullptr) {
+                vertexUniforms.morph = {
+                    0, 0, mesh.vertexCount, static_cast<std::int32_t>(draw.poses.size())};
+                for (std::size_t i = 0; i < draw.poses.size(); ++i) {
+                    vertexUniforms.poses[i] = {static_cast<float>(draw.poses[i].first),
+                                               static_cast<float>(draw.poses[i].second),
+                                               draw.poses[i].blend,
+                                               0.0f};
+                }
                 targets = mesh.targets;
             }
             const Lighting &lighting = placed.lighting ? *placed.lighting : draw.lighting;
@@ -1179,7 +1227,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         SDL_BindGPUGraphicsPipeline(pass, pipeline);
         SDL_SetGPUScissor(pass, &whole);
         VertexUniforms vertexUniforms{
-            quad.projection, IDENTITY_MATRIX, {0, 0, 0, 0}, {0.0f, 0.0f, 0.0f, 0.0f}};
+            quad.projection, IDENTITY_MATRIX, {0, 0, 0, 0}, {0.0f, 0.0f, 0.0f, 0.0f}, {}};
         SDL_PushGPUVertexUniformData(commands, 0, &vertexUniforms, sizeof(vertexUniforms));
         const FlatMaterial &material = quad.material;
         bool combined = material.combine[0] != 0 || material.combine[1] != 0;

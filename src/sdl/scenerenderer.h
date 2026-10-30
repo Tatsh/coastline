@@ -58,6 +58,16 @@ struct VertexAnimationInfo {
     int firstTarget = 0;         /*!< The morph target of its first key. */
 };
 
+/**
+ * The pose of a vertex animation at a time, as the console blends its keys.
+ *
+ * @param animation The animation.
+ * @param time The time of the animation, in seconds.
+ * @return The two keys around the time and the share of the second, in 4096ths, or nothing for an
+ * animation of fewer than two keys.
+ */
+std::optional<MorphPose> PoseAtTime(const VertexAnimationInfo &animation, float time);
+
 /** A converted model on the GPU: its meshes, its parts, and its animations. */
 class RenderModel {
 public:
@@ -203,6 +213,27 @@ public:
                    const Matrix4 &viewProjection,
                    const Lighting &lighting,
                    std::optional<MorphPose> pose,
+                   bool depth,
+                   std::optional<SDL_Rect> scissor = std::nullopt);
+
+    /**
+     * Draw a model whose vertices take the sum of the poses of several vertex animations, each
+     * moving its own vertices, as the parts of the start lights move.
+     *
+     * @param model The model.
+     * @param world The place of the model.
+     * @param viewProjection The camera and its projection, to a depth from 0 to 1.
+     * @param lighting The lights of the model.
+     * @param poses The pose of each animation, the first 64 of them.
+     * @param depth Whether the model tests and writes the depth.
+     * @param scissor The rectangle of the frame in pixels the model is cut to, or none for the
+     * whole frame.
+     */
+    void DrawModel(const RenderModel &model,
+                   const Matrix4 &world,
+                   const Matrix4 &viewProjection,
+                   const Lighting &lighting,
+                   std::vector<MorphPose> poses,
                    bool depth,
                    std::optional<SDL_Rect> scissor = std::nullopt);
 
