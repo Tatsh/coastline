@@ -110,10 +110,17 @@ int ReadControl(SDL_Gamepad *gamepad, ControlAction action) {
     for (const ControlSource &source : g_controls[action]) {
         int value = 0;
         if (source.axis) {
-            value =
+            // A stick at rest reads a little off centre, and its other half would otherwise cancel
+            // a full press of the same action from a button.
+            constexpr int DEAD_ZONE = 7849;
+            const int raw =
                 std::max(0,
                          SDL_GetGamepadAxis(gamepad, static_cast<SDL_GamepadAxis>(source.index)) *
                              source.sign);
+            value = raw <= DEAD_ZONE ?
+                        0 :
+                        std::min(CONTROL_FULL,
+                                 (raw - DEAD_ZONE) * CONTROL_FULL / (CONTROL_FULL - DEAD_ZONE));
         } else if (SDL_GetGamepadButton(gamepad, static_cast<SDL_GamepadButton>(source.index))) {
             value = CONTROL_FULL;
         }
