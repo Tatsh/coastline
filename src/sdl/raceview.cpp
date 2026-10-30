@@ -1324,7 +1324,10 @@ void RaceView::DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, 
         camera == &cameras[VEHICLE_CAMERA_COCKPIT] || camera == &cameras[VEHICLE_CAMERA_MIRROR];
     Lighting cameraCarLighting = CarLighting(vehicle, vehicle, *camera);
     // RenderRacerVehicles(): the car of each vehicle of the race.
-    // ponytail: the ghost of a time attack is drawn solid; its opacity of 0.375 is not applied.
+    // A ghost, the car of a time attack recorded before or a car fading back in after it is put
+    // back on the track, is drawn after the cars that are not, in the render mode of a ghost of
+    // BRD3D. The opacity of a ghost goes to the alpha of the primitive colour, which that render
+    // mode does not read.
     for (int index = 0; index < std::max(g_dwNumActiveVehicles, 1); ++index) {
         if (index == cameraIndex && inside && !g_dwVehicleCullingDisabled) {
             continue;
@@ -1341,6 +1344,8 @@ void RaceView::DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, 
         if (!models.car) {
             continue;
         }
+        bool ghost = car.GetGhostMode() == VEHICLE_GHOST;
+        renderer.SetGhost(ghost);
         Lighting carLighting = CarLighting(car, vehicle, *camera);
         Matrix4 body = MultiplyMatrices(FrameMatrix(car.GetFrame()), ConsoleSpace());
         Reflection reflection =
@@ -1359,7 +1364,8 @@ void RaceView::DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, 
         }
         std::optional<Highlight> highlight =
             CarHighlight(car, vehicle, *camera, s.dayHighlight.get(), s.nightHighlight.get());
-        if (highlight && models.highlighted) {
+        // The highlight draws only where the depth is equal, and a ghost does not write the depth.
+        if (highlight && models.highlighted && !ghost) {
             renderer.DrawHighlight(
                 *models.highlighted, FrameMatrix(frame), viewProjection, *highlight);
         }
@@ -1374,6 +1380,7 @@ void RaceView::DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, 
             renderer.DrawModel(wheel, place, viewProjection, carLighting, std::nullopt, true);
         }
     }
+    renderer.SetGhost(false);
     if (snapshot != nullptr) {
         DrawParticles(renderer, *s.particleTexture, *s.shadowTexture, *camera, viewProjection);
         // A championship has more racers than vehicles, and only the vehicles have spray.

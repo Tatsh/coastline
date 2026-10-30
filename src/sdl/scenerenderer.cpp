@@ -472,6 +472,7 @@ struct PipelineKey {
     DepthMode depth;
     bool additive = false;
     bool mirrored = false;
+    bool ghost = false;
     auto operator<=>(const PipelineKey &) const = default;
 };
 
@@ -480,6 +481,7 @@ struct DrawState {
     std::optional<SDL_Rect> view;
     std::optional<Fog> fog;
     std::uint32_t hiddenFlags = 0;
+    bool ghost = false;
 };
 
 struct ModelDraw {
@@ -557,6 +559,7 @@ struct SceneRenderer::State {
     std::optional<Fog> fog;
     bool mirrored = false;
     std::optional<SDL_Rect> view;
+    bool ghost = false;
     GpuWindow *window = nullptr;
     SDL_GPUDevice *device = nullptr;
     SDL_GPUShader *vertexShader = nullptr;
@@ -629,6 +632,11 @@ struct SceneRenderer::State {
             target.blend_state.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
             target.blend_state.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
             target.blend_state.alpha_blend_op = SDL_GPU_BLENDOP_ADD;
+            // The render mode of a ghost in BRD3D adds the colour by itself to the frame.
+            if (key.ghost) {
+                target.blend_state.src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_COLOR;
+                target.blend_state.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
+            }
         }
         SDL_GPUGraphicsPipelineCreateInfo info{};
         info.vertex_shader = vertexShader;
@@ -661,7 +669,7 @@ struct SceneRenderer::State {
     }
 
     DrawState Current() const {
-        return {view, fog, hiddenFlags};
+        return {view, fog, hiddenFlags, ghost};
     }
 
     // A buffer of at least a size, made again when it is too small.
@@ -1177,6 +1185,7 @@ void SceneRenderer::Begin(std::array<float, 4> clear) {
     m_state->fog.reset();
     m_state->mirrored = false;
     m_state->view.reset();
+    m_state->ghost = false;
     m_state->draws.clear();
     m_state->flat.clear();
 }
@@ -1203,6 +1212,10 @@ void SceneRenderer::SetMirrored(bool mirrored) {
 
 void SceneRenderer::SetViewport(std::optional<SDL_Rect> view) {
     m_state->view = view;
+}
+
+void SceneRenderer::SetGhost(bool ghost) {
+    m_state->ghost = ghost;
 }
 
 void SceneRenderer::DrawModel(const RenderModel &model,
@@ -1406,13 +1419,16 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                              bool depthTest,
                              const Reflection *reflection,
                              const CarShadow *shadow) {
-        SDL_GPUGraphicsPipeline *pipeline = s.Pipeline({primitive.blend,
-                                                        primitive.twoSided,
-                                                        !depthTest      ? DepthMode::None :
-                                                        primitive.blend ? DepthMode::Test :
-                                                                          DepthMode::TestAndWrite,
-                                                        false,
-                                                        s.mirrored});
+        bool ghost = drawState->ghost;
+        SDL_GPUGraphicsPipeline *pipeline =
+            s.Pipeline({primitive.blend || ghost,
+                        primitive.twoSided,
+                        !depthTest               ? DepthMode::None :
+                        primitive.blend || ghost ? DepthMode::Test :
+                                                   DepthMode::TestAndWrite,
+                        false,
+                        s.mirrored,
+                        ghost});
         if (pipeline == nullptr) {
             return;
         }
@@ -1593,7 +1609,8 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                     }
                     continue;
                 }
-                if (primitive.blend == blending) {
+                // Every part of a ghost waits for the blended draws.
+                if ((primitive.blend || draw.state.ghost) == blending) {
                     VertexUniforms uniforms = vertexUniforms;
                     uniforms.blend[1] = primitive.textureGen ? 1.0f : 0.0f;
                     // A part with generated coordinates and no texture reflects the sky.

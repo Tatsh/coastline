@@ -345,6 +345,15 @@ public:
     void SetViewport(std::optional<SDL_Rect> view);
 
     /**
+     * Set whether the models drawn after it are ghosts, not from Begin(). Every part of a ghost is
+     * drawn after the opaque draws, its colour by itself added to the frame without writing the
+     * depth, as BRD3D draws a ghost.
+     *
+     * @param ghost Whether the models are ghosts.
+     */
+    void SetGhost(bool ghost);
+
+    /**
      * Draw a model, its opaque parts now and its translucent ones after every opaque draw.
      *
      * @param model The model.
