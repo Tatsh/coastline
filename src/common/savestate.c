@@ -12,8 +12,14 @@
 #endif
 
 #if TGR_BOSS_RALLY
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+static inline void CopySnapshotBytes(void *destinationData, const void *sourceData, u32 size) {
+    u8 *destination = static_cast<u8 *>(destinationData);
+    const u8 *source = static_cast<const u8 *>(sourceData);
+#else
 static inline void CopySnapshotBytes(u8 *destination, const void *sourceData, u32 size) {
     const u8 *source = sourceData;
+#endif
     u32 word;
 
     while (size >= 4) {
@@ -84,7 +90,14 @@ void SerializeSaveData(SaveField *fields, u8 *buffer, s32 capacity) {
         buffer += fields[i].size;
     }
     if (capacity < buffer - start) {
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+        sprintf(message,
+                "VAR SAVE OVERFLOW (%d avail, %d used)",
+                capacity,
+                static_cast<int>(buffer - start));
+#else
         sprintf(message, "VAR SAVE OVERFLOW (%d avail, %d used)", capacity, buffer - start);
+#endif
         SetDebugMessage(message);
     }
 }

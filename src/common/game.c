@@ -34,6 +34,8 @@
 #include "win32/directplay.h"
 #include "win32/input.h"
 #include "win32/sound.h"
+#elif TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/pending.h"
 #endif
 #endif /* !TGR_BOSS_RALLY */
 
@@ -118,7 +120,9 @@ void InitGameAndShowMenus(void) {
     ResetMouseState();
     g_bRaceStartReached = g_dwGameMode == GAME_MODE_DEMO;
     g_bNetReadyToStartSent = false;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     g_dwNetworkDataReceived = false;
+#endif
 #endif
     InitRenderingSubsystem();
     StubUpdateCallback();

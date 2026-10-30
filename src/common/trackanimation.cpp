@@ -30,6 +30,23 @@ static inline void RelocateTrackPointer(T *&pointer) {
     pointer = std::bit_cast<T *>(address);
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+// The SDL game stores the pointers of a track in 32 bits, and relocates the stored word.
+template <typename T>
+static inline void SwapAndRelocateTrackPointer(coastline::Ptr32<T> &pointer) {
+    unsigned address = std::byteswap(pointer.Raw());
+    RelocatePointerValue(&address);
+    pointer.SetRaw(address);
+}
+
+template <typename T>
+static inline void RelocateTrackPointer(coastline::Ptr32<T> &pointer) {
+    unsigned address = pointer.Raw();
+    RelocatePointerValue(&address);
+    pointer.SetRaw(address);
+}
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
+
 void ReadAndRelocateTrackHeader(TrackHeader *track, GameFile *file) {
     CHK_FRead(track, 1, TRACK_HEADER_SIZE, file);
     ByteSwapTrackField(track->size);

@@ -249,6 +249,13 @@ else()
     volumecontrols.c
     wheelrender.c
     PROPERTIES LANGUAGE CXX)
+  if(TGR_PLATFORM STREQUAL "sdl")
+    # On a 64-bit processor, the structures read from files and the display lists store their
+    # pointers as the 32-bit offsets of common/ptr32.h, and only C++ has them. The SDL game compiles
+    # every source as C++, and every source sees the same layout.
+    get_target_property(_sources coastline_common SOURCES)
+    set_source_files_properties(${_sources} PROPERTIES LANGUAGE CXX)
+  endif()
   # The game code includes the interpreter of the display lists, which the Glide headers define.
   if(TGR_RENDERER STREQUAL "glide")
     target_link_libraries(coastline_common PRIVATE coastline_glide)

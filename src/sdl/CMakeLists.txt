@@ -14,6 +14,15 @@ find_package(ZLIB REQUIRED)
 # EAR, the sound engine of the PC release, on SDL audio.
 add_subdirectory("${CMAKE_SOURCE_DIR}/src/ear" "${CMAKE_BINARY_DIR}/src/ear")
 
+# The race engine of the PC release, shared with the Windows libraries. Its libraries take the
+# settings of src/CMakeLists.txt.
+add_library(coastline_options INTERFACE)
+target_compile_options(coastline_options INTERFACE -Wall -Wextra -Wno-unused-parameter
+                                                   "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>")
+target_include_directories(coastline_options INTERFACE "${CMAKE_SOURCE_DIR}/src"
+                                                     "${CMAKE_SOURCE_DIR}/src/libultra/include")
+add_subdirectory("${CMAKE_SOURCE_DIR}/src/common" "${CMAKE_BINARY_DIR}/src/common")
+
 # The shaders are GLSL, compiled to SPIR-V for Vulkan and translated to MSL for Metal by the host
 # tools of vcpkg, and embedded in the executable.
 set(_host_tools "${VCPKG_INSTALLED_DIR}/${VCPKG_HOST_TRIPLET}/tools")
@@ -77,6 +86,9 @@ add_library(
   music.cpp
   n64model.cpp
   paths.cpp
+  pending.cpp
+  ptr32.cpp
+  runtimebuffers.cpp
   stringresources.cpp
   tlrenderer.cpp
   "${CMAKE_SOURCE_DIR}/src/common/audio.c"
@@ -89,8 +101,8 @@ target_include_directories(coastline_sdl PRIVATE "${CMAKE_SOURCE_DIR}/src"
 add_dependencies(coastline_sdl coastline_shaders coastline_manifests)
 target_link_libraries(coastline_sdl PRIVATE FLAC::FLAC nlohmann_json::nlohmann_json ZLIB::ZLIB)
 # A reconstructed routine retains the parameters of the original, used or not.
-set_source_files_properties("${CMAKE_SOURCE_DIR}/src/common/audio.c" PROPERTIES COMPILE_OPTIONS
-                                                                         "-Wno-unused-parameter")
+set_source_files_properties("${CMAKE_SOURCE_DIR}/src/common/audio.c" pending.cpp
+                            PROPERTIES COMPILE_OPTIONS "-Wno-unused-parameter")
 if(APPLE)
   enable_language(OBJCXX)
   target_sources(coastline_sdl PRIVATE paths-apple.mm)
@@ -108,6 +120,11 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
                            COASTLINE_VERSION="${CMAKE_PROJECT_VERSION}")
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_sdl argparse::argparse)
+# The race engine calls the routines of the platform in coastline_sdl. The game links every routine
+# of the engine, called or not, and a routine the engine calls that the game lacks fails the link.
+target_link_libraries(coastline_common PRIVATE ${COASTLINE_COMMON_LIBULTRA_LIBRARIES}
+                                               $<LINK_ONLY:coastline_sdl>)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,coastline_common>")
 
 install(TARGETS ${CMAKE_PROJECT_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
 # A shared SDL is installed beside the game on Windows, and in the library directory elsewhere. A

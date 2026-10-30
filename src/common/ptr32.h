@@ -17,8 +17,11 @@
 #include <type_traits>
 
 extern "C" {
-/** The anchor the offsets of Ptr32 count from. No pointer addresses it. */
-extern unsigned char g_abPtr32Anchor[16];
+/**
+ * The anchor the offsets of Ptr32 count from. No pointer addresses it. Its size is not declared, as
+ * the compiler would otherwise take every decoded pointer for an access past its end.
+ */
+extern unsigned char g_abPtr32Anchor[];
 }
 
 // The headers of the game may include this one inside extern "C".

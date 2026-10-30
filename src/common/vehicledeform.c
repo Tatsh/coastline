@@ -11,6 +11,8 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/paintshop.h"
 #include "win32/render.h"
+#elif TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/pending.h"
 #endif
 
 #if TGR_BOSS_RALLY
@@ -29,7 +31,7 @@
 
 #define UNDENTED_DISPLAY_LIST VEHICLE_DL_HIGHLIGHTED
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#if TGR_PLATFORM == TGR_PLATFORM_WIN || TGR_PLATFORM == TGR_PLATFORM_SDL
 inline void Vehicle::ApplyImpactDamageTexture(s32 side) {
     SetColorTintMultipliers(color[0], color[1], color[2]);
     ApplyRandomAdjacentDamageTexture(side, damageTextureEntries, damageTextureLevels);
