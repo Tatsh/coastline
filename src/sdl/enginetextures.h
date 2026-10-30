@@ -2,7 +2,7 @@
 
 /**
  * @file
- * The textures the race engine creates through the hooks of the renderer of the PC release, kept
+ * The textures the race engine creates through the hooks of the renderer of the PC release, stored
  * as texels in memory for the SDL game to draw.
  */
 

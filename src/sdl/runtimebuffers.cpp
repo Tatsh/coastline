@@ -71,7 +71,7 @@ unsigned g_dwParticleTextureId;
 unsigned g_dwTireTrailTextureId;
 unsigned g_dwVehicleEnvMapTextureId;
 // The renderer of the SDL game draws the race from the converted models and textures. The hooks
-// of the renderers of the Windows libraries keep the 8-bit colour-indexed images of the engine,
+// of the renderers of the Windows libraries store the 8-bit colour-indexed images of the engine,
 // the dashboards of the cars, as texels for the SDL game, and otherwise do nothing.
 constexpr int IMAGE_SIZE_8 = 1;
 constexpr int IMAGE_FORMAT_CI = 2;

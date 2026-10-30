@@ -1236,7 +1236,7 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
 namespace {
 
 // RenderRaceView() looks from the car of a view before SetupFog() writes the fog of the view and
-// its two commands, which go to a scratch list.
+// its two commands to a scratch list.
 void LookFromView(int index) {
     std::array<GbiCommand, 2> commands{};
     GbiCommand *list = gDisplayListPtr;
@@ -1277,10 +1277,10 @@ struct ViewInstances {
 // RenderRaceView() casts a ray down from the camera, and the groups the instances under it hide are
 // not drawn. BuildVisibleInstanceList() lists the instances of the cells of the grid the frustum of
 // the camera covers, the nearest cells first and each instance once, the airplane before the first
-// cell it is in view at. RenderTrackGeometry() draws the opaque ones in that order and defers the
-// translucent ones to its second pass, which draws them the farthest first.
-// ponytail: the cells of one distance sort by the qsort() of the platform, the order of the PC
-// release among them is not kept.
+// cell it is in view at. RenderTrackGeometry() draws the opaque ones in that order, and its second
+// pass draws the translucent ones the farthest first.
+// ponytail: the cells of one distance sort by the qsort() of the platform, and their order on the
+// PC release is not reproduced.
 ViewInstances
 VisibleInstances(const CameraFrame &camera, float fov, float farPlane, SDL_Rect frame) {
     Vec3f eye = camera.position;
@@ -1315,7 +1315,7 @@ VisibleInstances(const CameraFrame &camera, float fov, float farPlane, SDL_Rect 
     }
     constexpr s32 GRID_CELLS = 64;
     constexpr float GRID_CELL_SIZE = 32.0f;
-    // The cell of the camera, kept on the grid at its far edges.
+    // The cell of the camera, clamped to the grid at its far edges.
     auto cameraColumn = static_cast<s32>(camera.position.x * (1.0f / GRID_CELL_SIZE));
     if (cameraColumn == GRID_CELLS) {
         --cameraColumn;
@@ -1552,7 +1552,7 @@ void RaceView::DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, 
     // RenderRacerVehicles(): the car of each vehicle of the race that is, or is not, a ghost. A
     // ghost, the car of a time attack recorded before or a car fading back in after it is put back
     // on the track, is drawn in the render mode of a ghost of BRD3D. The opacity of a ghost goes to
-    // the alpha of the primitive colour, which that render mode does not read.
+    // the alpha of the primitive colour, and that render mode does not read it.
     auto drawCars = [&](bool ghosts) {
         for (int index = 0; index < std::max(g_dwNumActiveVehicles, 1); ++index) {
             const Vehicle &car =
