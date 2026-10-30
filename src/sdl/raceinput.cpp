@@ -287,6 +287,8 @@ private:
     std::array<bool, SDL_SCANCODE_COUNT> m_asyncDown{};
 #ifdef ENABLE_PATCHES
     unsigned m_lastRespawnPress = 0;
+    // The reads of the input, from 1.
+    unsigned m_steps = 0;
 #endif
 
     SDL_Gamepad *m_gamepad = nullptr;
@@ -493,6 +495,9 @@ unsigned RaceInput::ReadButtonMask(int *pnSteering, int *pnAcceleration) {
     if (m_pollCounter < 0x7fff) {
         ++m_pollCounter;
     }
+#ifdef ENABLE_PATCHES
+    ++m_steps;
+#endif
     ReadKeyboard();
     const auto &keys = m_keyboard[static_cast<std::size_t>(m_keyboardCurrent)];
     const auto &previousKeys = m_keyboard[static_cast<std::size_t>(m_keyboardPrevious)];
@@ -573,10 +578,12 @@ unsigned RaceInput::ReadButtonMask(int *pnSteering, int *pnAcceleration) {
     if (IsPressed(16)) {
 #ifdef ENABLE_PATCHES
         // The car is reset by a second press within half a second of the first.
-        constexpr unsigned RESPAWN_DOUBLE_PRESS_MS = 500;
-        const unsigned now = GetHighResolutionTime();
+        // The SDL game reads the input once each step of the race, a 30th of a second, and counts
+        // the half second in steps for the same presses to respawn in every run of fixed steps.
+        constexpr unsigned RESPAWN_DOUBLE_PRESS_STEPS = 15;
+        const unsigned now = m_steps;
         const bool doublePress =
-            m_lastRespawnPress != 0 && now - m_lastRespawnPress <= RESPAWN_DOUBLE_PRESS_MS;
+            m_lastRespawnPress != 0 && now - m_lastRespawnPress <= RESPAWN_DOUBLE_PRESS_STEPS;
         m_lastRespawnPress = doublePress ? 0 : now;
         if (doublePress && !g_dwRacePauseState && g_dwGameMode != GAME_MODE_DEMO &&
             g_dwGameMode != GAME_MODE_AFTER_SEASON) {
