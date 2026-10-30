@@ -353,6 +353,7 @@ private:
     std::array<int, 2> m_pointer{};
     bool m_pointerMoved = false;
     bool m_pointerSeen = false;
+    bool m_escapeDown = false;
 
     // The pictures, by their address in the main segment of the console.
     std::map<u32, PaintSprite> m_sprites;

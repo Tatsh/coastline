@@ -885,8 +885,17 @@ void PaintShop::TranslateInput(float seconds, const PaintShopInput &input, bool 
     if (dialog && input.enter) {
         m_input.buttons |= INPUT_A;
     }
-    if (dialog && input.escape) {
+    // A press of Escape cancels a dialog. Elsewhere it chooses DONE, as the button does, unless the
+    // text tool takes the keys of its text.
+    bool escape = input.escape && !m_escapeDown;
+    m_escapeDown = input.escape;
+    bool typing = m_paintTool == PAINT_TOOL_TEXT && (m_decalDragActive || m_paintToolStarted);
+    if (dialog && escape) {
         m_input.buttons |= INPUT_B;
+    } else if (escape && m_initialized && !typing && !m_paintShopExiting) {
+        m_paintToolStarted = 0;
+        m_previousPaintTool = m_paintTool;
+        m_paintTool = PAINT_TOOL_EXIT;
     }
     m_input.stickX = std::clamp(input.stickX, -1.0f, 1.0f);
     m_input.stickY = std::clamp(input.stickY, -1.0f, 1.0f);
@@ -1523,7 +1532,9 @@ bool PaintShop::Frame(SceneRenderer &renderer, float seconds, const PaintShopInp
     if (m_showPreview3D) {
         RenderDecalPreview3D();
     }
-    if (IsCursorInRect(m_decalCanvas)) {
+    // A dialog runs wherever the cursor is, as Escape opens the exit prompt with the cursor over
+    // the decal.
+    if (IsCursorInRect(m_decalCanvas) && !DialogShows()) {
         ProcessDecalEditorInput();
         UpdateCursorFromInput();
         DrawToolCursor();
