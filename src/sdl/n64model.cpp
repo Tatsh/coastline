@@ -5,9 +5,10 @@
 #include <bit>
 #include <cmath>
 #include <cstring>
-#include <format>
 #include <map>
 #include <optional>
+
+#include <fmt/format.h>
 
 namespace coastline {
 
@@ -315,11 +316,11 @@ public:
     nlohmann::ordered_json Coverage() const {
         nlohmann::ordered_json commands = nlohmann::ordered_json::object();
         for (const auto &[opcode, count] : m_ignored) {
-            commands[std::format("{:#04x}", opcode)] = count;
+            commands[fmt::format("{:#04x}", opcode)] = count;
         }
         nlohmann::ordered_json combiners = nlohmann::ordered_json::object();
         for (const auto &[combiner, count] : m_combiners) {
-            combiners[std::format("{:06x}:{:08x}", combiner >> 32, combiner & 0xffffffff)] = count;
+            combiners[fmt::format("{:06x}:{:08x}", combiner >> 32, combiner & 0xffffffff)] = count;
         }
         std::size_t inexact = m_inexact;
         return {{"triangles", m_triangles},
@@ -485,7 +486,7 @@ private:
         for (int i = 0; i < 3; ++i) {
             std::uint32_t slot = (packed >> (16 - 8 * i) & 0xff) / 2;
             if (slot >= VERTEX_SLOTS || !m_slots[slot]) {
-                return std::format("a triangle uses the empty vertex slot {}", slot);
+                return fmt::format("a triangle uses the empty vertex slot {}", slot);
             }
             corners[static_cast<std::size_t>(i)] = *m_slots[slot];
         }
@@ -527,12 +528,12 @@ private:
 
     std::optional<std::string> Run(std::uint32_t address, Triangles &triangles, int depth) {
         if (depth >= MAX_DEPTH) {
-            return std::format("the display lists nest deeper than {}", MAX_DEPTH);
+            return fmt::format("the display lists nest deeper than {}", MAX_DEPTH);
         }
         for (;;) {
             auto at = Offset(address, 8);
             if (!at) {
-                return std::format("the display list command at {:#x} is outside the model",
+                return fmt::format("the display list command at {:#x} is outside the model",
                                    address);
             }
             std::uint32_t w0 = Big32(m_image, *at);
@@ -544,7 +545,7 @@ private:
                 std::uint32_t first = (w0 >> 16 & 0xff) / 2;
                 auto source = Offset(w1, count * VERTEX_SIZE);
                 if (!source || first + count > VERTEX_SLOTS) {
-                    return std::format("the vertices at {:#x} are outside the model", w1);
+                    return fmt::format("the vertices at {:#x} are outside the model", w1);
                 }
                 for (std::uint32_t i = 0; i < count; ++i) {
                     std::uint32_t vertex = *source + i * static_cast<std::uint32_t>(VERTEX_SIZE);
@@ -1076,7 +1077,7 @@ BuildModel(std::span<const std::uint8_t> bytes,
         auto key = keyOf(draw);
         if (!lists.contains(key)) {
             if (auto failure = walk.Walk(draw.displayList, lists[key], draw.start)) {
-                return std::unexpected(std::format("{} ({})", *failure, draw.name));
+                return std::unexpected(fmt::format("{} ({})", *failure, draw.name));
             }
         }
     }
@@ -1132,7 +1133,7 @@ BuildModel(std::span<const std::uint8_t> bytes,
     auto imageFor = [&](const TextureKey &key) {
         if (!imageOf.contains(key)) {
             imageOf[key] = model.images.size();
-            model.images.push_back({std::format("{}-{}.png", stem, model.images.size()),
+            model.images.push_back({fmt::format("{}-{}.png", stem, model.images.size()),
                                     static_cast<int>(key.width),
                                     static_cast<int>(key.height),
                                     DecodeTexture(memory, key),
@@ -1185,7 +1186,7 @@ BuildModel(std::span<const std::uint8_t> bytes,
                                frame.time == ROM_NONE ? nlohmann::ordered_json(nullptr) :
                                                         nlohmann::ordered_json(frame.time)},
                               {"image", model.images.size()}});
-            model.images.push_back({std::format("{}-{}-{}.png", stem, index, f),
+            model.images.push_back({fmt::format("{}-{}-{}.png", stem, index, f),
                                     static_cast<int>(key.width),
                                     static_cast<int>(key.height),
                                     DecodeTexture(scratch, key),
@@ -1485,7 +1486,7 @@ BuildModel(std::span<const std::uint8_t> bytes,
     for (std::size_t m = 0; m < walk.Materials().size(); ++m) {
         const Material &source = walk.Materials()[m];
         nlohmann::ordered_json material{
-            {"name", source.name.empty() ? std::format("material{}", m) : source.name},
+            {"name", source.name.empty() ? fmt::format("material{}", m) : source.name},
             {"pbrMetallicRoughness", {{"metallicFactor", 0.0}, {"roughnessFactor", 1.0}}}};
         // The state of the RDP a renderer draws the material with.
         nlohmann::ordered_json rdp{{"combine", {source.combineHigh, source.combineLow}},
@@ -1652,7 +1653,7 @@ BuildModel(std::span<const std::uint8_t> bytes,
             }
         }
         model.json["animations"].push_back(
-            {{"name", std::format("vertices{}", a)},
+            {{"name", fmt::format("vertices{}", a)},
              {"samplers", {{{"input", input}, {"interpolation", "LINEAR"}, {"output", output}}}},
              {"channels", std::move(channels)},
              {"extras",
@@ -1712,13 +1713,13 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
     std::vector<Draw> draws;
     std::vector<std::string> scenes;
     for (int lod = 0; lod < LODS; ++lod) {
-        scenes.push_back(std::format("lod{}", lod));
+        scenes.push_back(fmt::format("lod{}", lod));
         for (int list = 0; list < BODY_LISTS; ++list) {
             std::uint32_t address = Big32(image, BODY_LISTS_AT + (lod * BODY_LISTS + list) * 4);
             if (address == 0) {
                 continue;
             }
-            auto name = std::format("lod{}-{}", lod, BODY_LIST_NAMES[list]);
+            auto name = fmt::format("lod{}-{}", lod, BODY_LIST_NAMES[list]);
             // The highlight adds to the colours under it, and the beams draw at night or in the
             // rain. A viewer of the scene omits them.
             bool shown = list != VEHICLE_DL_HIGHLIGHTED && list != VEHICLE_DL_HEADLIGHT_BEAMS;
@@ -1748,7 +1749,7 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
                 continue;
             }
             // The mesh of a wheel is drawn at each of the four places of the wheels.
-            Draw draw{std::format("lod{}-{}", lod, WHEEL_LIST_NAMES[list]),
+            Draw draw{fmt::format("lod{}-{}", lod, WHEEL_LIST_NAMES[list]),
                       address,
                       {},
                       lod,
@@ -1762,7 +1763,7 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
                 nlohmann::ordered_json transform = scale;
                 transform["translation"] = at;
                 draw.placements.push_back(
-                    {std::format("{}{}", draw.name, place), std::move(transform)});
+                    {fmt::format("{}{}", draw.name, place), std::move(transform)});
             }
             draws.push_back(std::move(draw));
         }
@@ -1802,11 +1803,11 @@ std::expected<GltfModel, std::string> TrackToGltf(std::span<const std::uint8_t> 
                     name.push_back(static_cast<char>(bytes[at]));
                 }
                 if (!name.empty()) {
-                    return std::format("{}-{}", index, name);
+                    return fmt::format("{}-{}", index, name);
                 }
             }
         }
-        return std::format("instance{}", index);
+        return fmt::format("instance{}", index);
     };
     std::vector<Draw> draws;
     for (std::uint32_t i = 0; i < count; ++i) {
@@ -1882,7 +1883,7 @@ std::expected<GltfModel, std::string> FrontEndModelToGltf(std::span<const std::u
         for (std::size_t axis = 0; axis < 3; ++axis) {
             translation.push_back(std::bit_cast<float>(Big32(bytes, at + 8 + axis * 4)));
         }
-        auto name = std::format("part{}", i);
+        auto name = fmt::format("part{}", i);
         draws.push_back(
             {name,
              displayList,
@@ -1973,7 +1974,7 @@ ModelFromGltf(const nlohmann::ordered_json &json, std::span<const std::uint8_t> 
                     float whole = std::round(value);
                     if (!(whole >= -32768.0f && whole <= 32767.0f)) {
                         return std::unexpected(
-                            std::format("vertex {} is outside the range of the console", vertex));
+                            fmt::format("vertex {} is outside the range of the console", vertex));
                     }
                     put16(at + axis * 2,
                           static_cast<std::uint16_t>(static_cast<std::int16_t>(whole)));
@@ -1992,7 +1993,7 @@ ModelFromGltf(const nlohmann::ordered_json &json, std::span<const std::uint8_t> 
         return file;
     } catch (const nlohmann::json::exception &error) {
         return std::unexpected(
-            std::format("the glTF does not describe a model of the console ({})", error.what()));
+            fmt::format("the glTF does not describe a model of the console ({})", error.what()));
     }
 }
 

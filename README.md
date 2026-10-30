@@ -67,8 +67,10 @@ need argparse, spdlog, and zlib, from vcpkg, the system, or a pinned download.
 ## SDL game
 
 The `sdl` platform builds `coastline`, a stand-alone 64-bit game for every operating system SDL 3
-supports. It draws through the GPU API of SDL (Vulkan, Metal, or Direct3D 12) and takes its
-libraries from vcpkg, found through `VCPKG_ROOT`.
+supports, from Windows 7 and macOS 10.15 on x86_64 and arm64. It draws through the GPU API of SDL
+(Vulkan, Metal, or Direct3D 12). It builds with GCC, Clang, MSVC of Visual Studio 2022, and MinGW.
+
+The `sdl` preset takes the libraries from vcpkg, found through `VCPKG_ROOT`.
 
 ```shell
 VCPKG_ROOT=/path/to/vcpkg cmake --workflow --preset sdl
@@ -78,8 +80,19 @@ VCPKG_ROOT=/path/to/vcpkg cmake --workflow --preset sdl
 cmake --install build/sdl --prefix ~/.local
 ```
 
-On Linux, the vcpkg build of SDL needs the development headers of ALSA, EGL, Wayland, xkbcommon,
-and the X11 extensions (Xcursor, Xfixes, Xi, Xrandr, Xss, Xtst), and autoconf-archive.
+Without vcpkg, each library and tool comes from a pinned release that is downloaded and built with
+the game. The `USE_SYSTEM_<NAME>` options take each from the system instead, with nothing
+downloaded: `USE_SYSTEM_SDL3`, `USE_SYSTEM_ARGPARSE`, `USE_SYSTEM_FMT`, `USE_SYSTEM_FLAC`,
+`USE_SYSTEM_NLOHMANN_JSON`, `USE_SYSTEM_ZLIB`, `USE_SYSTEM_GLSLANG`, and `USE_SYSTEM_SPIRV_CROSS`.
+A cross build takes glslang and SPIRV-Cross from the system or vcpkg, as it cannot run the tools it
+builds.
+
+```shell
+cmake -S . -B build/sdl -G Ninja -DTGR_PLATFORM=sdl -DUSE_SYSTEM_SDL3=ON -DUSE_SYSTEM_ZLIB=ON
+```
+
+On Linux, the build of SDL needs the development headers of ALSA, EGL, Wayland, xkbcommon, and
+the X11 extensions (Xcursor, Xfixes, Xi, Xrandr, Xss, Xtst), and autoconf-archive for vcpkg.
 
 The game reads `BossRally.ini` from `~/.config/coastline`, its data from `~/.local/share/coastline`,
 and writes `game.log` to `~/.local/state/coastline`. The XDG Base Directory variables move these

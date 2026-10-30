@@ -2,10 +2,10 @@
 
 #include <algorithm>
 #include <filesystem>
-#include <format>
 #include <fstream>
 #include <iterator>
 
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 #include <zlib.h>
 
@@ -149,7 +149,7 @@ void FrameFromJson(std::vector<std::uint8_t> &bytes, const nlohmann::ordered_jso
 std::string Hex(std::span<const std::uint8_t> bytes) {
     std::string text;
     for (std::uint8_t byte : bytes) {
-        text += std::format("{:02x}", byte);
+        text += fmt::format("{:02x}", byte);
     }
     return text;
 }

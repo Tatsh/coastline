@@ -2,13 +2,13 @@
 
 #include <array>
 #include <cmath>
-#include <format>
 #include <fstream>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include <SDL3/SDL.h>
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
 #include "common/audio.h"
@@ -231,7 +231,7 @@ std::unique_ptr<Intro> Intro::Load(SceneRenderer &renderer, const std::filesyste
     for (std::size_t part = 0; part < state->title.size(); ++part) {
         state->title[part] = RenderModel::Load(
             renderer,
-            constants / std::format("splash_title_{}.gltf", static_cast<char>('a' + part)));
+            constants / fmt::format("splash_title_{}.gltf", static_cast<char>('a' + part)));
         if (!state->title[part]) {
             return nullptr;
         }

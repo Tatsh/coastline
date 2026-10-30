@@ -1,12 +1,13 @@
 #include "log.h"
 
 #include <chrono>
-#include <format>
 #include <fstream>
 #include <memory>
 #include <mutex>
 
 #include <SDL3/SDL.h>
+#include <fmt/chrono.h>
+#include <fmt/format.h>
 
 namespace coastline {
 
@@ -52,7 +53,7 @@ void SDLCALL WriteLogMessage(void *userData,
         if (state->file) {
             auto now =
                 std::chrono::floor<std::chrono::milliseconds>(std::chrono::system_clock::now());
-            state->file << std::format("{:%F %T} [{}] {}\n", now, PriorityName(priority), message);
+            state->file << fmt::format("{:%F %T} [{}] {}\n", now, PriorityName(priority), message);
             state->file.flush();
         }
     }

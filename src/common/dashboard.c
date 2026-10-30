@@ -20,6 +20,7 @@
 #include "common/hudcanvas.h"
 #include "common/hudquad.h"
 #include "common/renderbackend.h"
+#include "common/x87.h"
 #else
 #include <PR/gu.h>
 #include <PR/os_libc.h>
@@ -44,18 +45,8 @@
 #define DASHBOARD_AXIS_2 z
 #define DASHBOARD_VERTEX(vertex, axis) ((vertex).position.DASHBOARD_AXIS_##axis)
 #define DASHBOARD_COORD(value) ((s16)(s64)(value))
-#define DASHBOARD_COS DashboardCos
-#define DASHBOARD_SIN DashboardSin
-static inline long double DashboardCos(long double angle) {
-    long double result;
-    __asm__("fcos" : "=t"(result) : "0"(angle));
-    return result;
-}
-static inline long double DashboardSin(long double angle) {
-    long double result;
-    __asm__("fsin" : "=t"(result) : "0"(angle));
-    return result;
-}
+#define DASHBOARD_COS X87Cosine
+#define DASHBOARD_SIN X87Sine
 namespace {
     /** @ghidraAddress BRD3D: 0x104afd20 */
     ConvertedModelVertex g_aGaugeNeedleVerts[2][DASHBOARD_VIEWS][4];

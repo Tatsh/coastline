@@ -4,7 +4,6 @@
 #include <array>
 #include <cctype>
 #include <cstring>
-#include <format>
 #include <fstream>
 #include <functional>
 #include <iterator>
@@ -16,6 +15,7 @@
 
 #include <FLAC/stream_encoder.h>
 #include <SDL3/SDL.h>
+#include <fmt/format.h>
 #include <nlohmann/json.hpp>
 
 #include "assetchain.h"
@@ -76,7 +76,7 @@ std::optional<std::string> ExtractCartridge(std::span<const std::uint8_t> rom,
     std::error_code error;
     std::filesystem::create_directories(directory, error);
     if (!WriteBytes(directory / "segment.bin", rom.subspan(SEGMENT_ROM, SEGMENT_SIZE))) {
-        return std::format("{} cannot be written", (directory / "segment.bin").string());
+        return fmt::format("{} cannot be written", (directory / "segment.bin").string());
     }
     std::istringstream lines(std::string(manifest.begin(), manifest.end()));
     std::optional<std::size_t> position;
@@ -90,13 +90,13 @@ std::optional<std::string> ExtractCartridge(std::span<const std::uint8_t> rom,
         if (!(fields >> std::hex >> offset >> std::dec >> size >> kind >> name) ||
             (position && offset != *position) || offset > rom.size() ||
             size > rom.size() - offset) {
-            return std::format("the manifest does not fit the image at '{}'", line);
+            return fmt::format("the manifest does not fit the image at '{}'", line);
         }
         position = offset + size;
         auto bytes = rom.subspan(offset, size);
         if (name == "padding") {
             if (std::ranges::any_of(bytes, [](std::uint8_t byte) { return byte != 0; })) {
-                return std::format("the padding at {:#x} is not zero", offset);
+                return fmt::format("the padding at {:#x} is not zero", offset);
             }
             continue;
         }
@@ -105,10 +105,10 @@ std::optional<std::string> ExtractCartridge(std::span<const std::uint8_t> rom,
             auto data = Tools::Common::decompress(bytes);
             if (size < 4 || (static_cast<std::size_t>(bytes[0]) << 24 | bytes[1] << 16 |
                              bytes[2] << 8 | bytes[3]) != size) {
-                return std::format("{} at {:#x} is not an asset of {} bytes", name, offset, size);
+                return fmt::format("{} at {:#x} is not an asset of {} bytes", name, offset, size);
             }
             if (!data) {
-                return std::format("{} at {:#x} does not inflate", name, offset);
+                return fmt::format("{} at {:#x} does not inflate", name, offset);
             }
             inflated = std::move(*data);
             bytes = inflated;
@@ -116,7 +116,7 @@ std::optional<std::string> ExtractCartridge(std::span<const std::uint8_t> rom,
         auto path = directory / (name + ".bin");
         std::filesystem::create_directories(path.parent_path(), error);
         if (!WriteBytes(path, bytes)) {
-            return std::format("{} cannot be written", path.string());
+            return fmt::format("{} cannot be written", path.string());
         }
     }
     if (position != rom.size()) {
@@ -306,7 +306,7 @@ CopyIsoFile(SectorReader &reader, const IsoEntry &entry, const std::filesystem::
     std::filesystem::create_directories(destination.parent_path(), error);
     std::ofstream out(destination, std::ios::binary | std::ios::trunc);
     if (!out) {
-        return std::format("{} cannot be written.", destination.string());
+        return fmt::format("{} cannot be written.", destination.string());
     }
     std::vector<std::uint8_t> chunk;
     constexpr std::uint32_t CHUNK_SECTORS = 256;
@@ -314,13 +314,13 @@ CopyIsoFile(SectorReader &reader, const IsoEntry &entry, const std::filesystem::
     for (std::uint32_t sector = 0; remaining > 0; sector += CHUNK_SECTORS) {
         std::uint32_t bytes = std::min(remaining, CHUNK_SECTORS * DATA_SECTOR);
         if (!reader.Read(entry.extent + sector, (bytes + DATA_SECTOR - 1) / DATA_SECTOR, chunk)) {
-            return std::format("{} is cut short on the disc.", entry.path.string());
+            return fmt::format("{} is cut short on the disc.", entry.path.string());
         }
         out.write(reinterpret_cast<const char *>(chunk.data()), bytes);
         remaining -= bytes;
     }
     return out ? std::nullopt :
-                 std::optional(std::format("{} was not written.", destination.string()));
+                 std::optional(fmt::format("{} was not written.", destination.string()));
 }
 
 struct SurfaceDeleter {
@@ -355,14 +355,14 @@ std::optional<std::string> ConvertBitmap(const std::filesystem::path &bitmap) {
     auto png = std::filesystem::path(bitmap).replace_extension(".png");
     Surface original(SDL_LoadBMP(bitmap.string().c_str()));
     if (!original) {
-        return std::format("{} cannot be read: {}", bitmap.string(), SDL_GetError());
+        return fmt::format("{} cannot be read: {}", bitmap.string(), SDL_GetError());
     }
     if (!SDL_SavePNG(original.get(), png.string().c_str())) {
-        return std::format("{} cannot be written: {}", png.string(), SDL_GetError());
+        return fmt::format("{} cannot be written: {}", png.string(), SDL_GetError());
     }
     Surface converted(SDL_LoadPNG(png.string().c_str()));
     if (!converted || !SamePixels(original.get(), converted.get())) {
-        return std::format("{} does not read back as {}.", png.string(), bitmap.string());
+        return fmt::format("{} does not read back as {}.", png.string(), bitmap.string());
     }
     std::error_code error;
     std::filesystem::remove(bitmap, error);
@@ -376,7 +376,7 @@ std::optional<std::string> ConvertConsoleSound(const std::filesystem::path &soun
     constexpr std::uint32_t SOUND_RATE = 21998 / 2;
     auto samples = ReadWholeFile(sound);
     if (!samples) {
-        return std::format("{} cannot be read.", sound.string());
+        return fmt::format("{} cannot be read.", sound.string());
     }
     auto wav = std::filesystem::path(sound).replace_extension(".wav");
     std::vector<std::uint8_t> file;
@@ -406,7 +406,7 @@ std::optional<std::string> ConvertConsoleSound(const std::filesystem::path &soun
         file.push_back(0);
     }
     if (!WriteBytes(wav, file)) {
-        return std::format("{} cannot be written.", wav.string());
+        return fmt::format("{} cannot be written.", wav.string());
     }
     SDL_AudioSpec spec;
     Uint8 *read = nullptr;
@@ -419,7 +419,7 @@ std::optional<std::string> ConvertConsoleSound(const std::filesystem::path &soun
                 });
     SDL_free(read);
     if (!same) {
-        return std::format("{} does not read back as {}.", wav.string(), sound.string());
+        return fmt::format("{} does not read back as {}.", wav.string(), sound.string());
     }
     std::error_code error;
     std::filesystem::remove(sound, error);
@@ -486,7 +486,7 @@ std::optional<std::string> ConvertConsoleFonts(const std::filesystem::path &dest
                                                               JPN_FONTS;
     auto segment = ReadWholeFile(destination / "segment.bin");
     if (!segment) {
-        return std::format("{} cannot be read.", (destination / "segment.bin").string());
+        return fmt::format("{} cannot be read.", (destination / "segment.bin").string());
     }
     auto bytesAt = [&](std::uint32_t address,
                        std::size_t size) -> std::optional<std::span<const std::uint8_t>> {
@@ -505,7 +505,7 @@ std::optional<std::string> ConvertConsoleFonts(const std::filesystem::path &dest
                           int height) -> std::optional<std::string> {
         auto texels = bytesAt(address, static_cast<std::size_t>(width) * height);
         if (!texels) {
-            return std::format("The texels of {} are outside the main segment.", name);
+            return fmt::format("The texels of {} are outside the main segment.", name);
         }
         // The console holds the rows from the bottom up, and draws them with a negative step.
         std::vector<std::uint8_t> rgba;
@@ -523,7 +523,7 @@ std::optional<std::string> ConvertConsoleFonts(const std::filesystem::path &dest
         }
         auto path = fontsDirectory / (std::string(name) + ".png");
         if (!SaveRgba8Png(path, rgba, width, height)) {
-            return std::format("{} does not read back as its texels.", path.string());
+            return fmt::format("{} does not read back as its texels.", path.string());
         }
         return std::nullopt;
     };
@@ -603,14 +603,14 @@ std::optional<std::string> ConvertConsoleLights(const std::filesystem::path &des
                                                                 JPN_LIGHTS;
     auto segment = ReadWholeFile(destination / "segment.bin");
     if (!segment) {
-        return std::format("{} cannot be read.", (destination / "segment.bin").string());
+        return fmt::format("{} cannot be read.", (destination / "segment.bin").string());
     }
     nlohmann::ordered_json json = nlohmann::ordered_json::object();
     for (auto [name, address] :
          {std::pair{"splash", lights.splash}, std::pair{"menu", lights.menu}}) {
         std::size_t at = address - SEGMENT_BASE;
         if (address < SEGMENT_BASE || at + AMBIENT_AND_DIRECTIONAL > segment->size()) {
-            return std::format("The lights of the {} are outside the main segment.", name);
+            return fmt::format("The lights of the {} are outside the main segment.", name);
         }
         const std::uint8_t *bytes = segment->data() + at;
         json[name] = {{"ambient", {bytes[0], bytes[1], bytes[2]}},
@@ -745,7 +745,7 @@ std::optional<std::string> ConvertConsoleTextures(const std::filesystem::path &d
         });
         auto texels = ReadWholeFile(path);
         if (!texels) {
-            return std::format("{} cannot be read.", path.string());
+            return fmt::format("{} cannot be read.", path.string());
         }
         auto count = static_cast<std::size_t>(width) * static_cast<std::size_t>(height);
         if (layout == TEXEL_LAYOUTS.end() || count == 0 ||
@@ -791,7 +791,7 @@ std::optional<std::string> ConvertConsoleTextures(const std::filesystem::path &d
         }
         auto png = std::filesystem::path(path).replace_extension(".png");
         if (!SaveRgba8Png(png, rgba, width, height)) {
-            return std::format("{} does not read back as its pixels.", png.string());
+            return fmt::format("{} does not read back as its pixels.", png.string());
         }
         std::vector<std::uint8_t> rebuilt(texels->size());
         for (std::size_t pixel = 0; pixel < count; ++pixel) {
@@ -916,7 +916,7 @@ std::optional<std::string> ConvertGhostRecordings(const std::filesystem::path &d
         auto json = coastline::GhostToJson(bytes);
         auto rebuilt = json ? coastline::GhostFromJson(*json) : std::nullopt;
         if (!rebuilt || *rebuilt != bytes) {
-            return std::format("{} does not convert to JSON without loss.", recording.string());
+            return fmt::format("{} does not convert to JSON without loss.", recording.string());
         }
         auto destination = std::filesystem::path(recording).replace_extension(".json");
         std::ofstream out(destination, std::ios::trunc);
@@ -927,7 +927,7 @@ std::optional<std::string> ConvertGhostRecordings(const std::filesystem::path &d
         auto parsed = nlohmann::ordered_json::parse(written, nullptr, false);
         auto reread = parsed.is_discarded() ? std::nullopt : coastline::GhostFromJson(parsed);
         if (!reread || *reread != bytes) {
-            return std::format(
+            return fmt::format(
                 "{} does not read back as {}.", destination.string(), recording.string());
         }
         std::filesystem::remove(recording, error);
@@ -950,15 +950,15 @@ std::optional<std::string> ConvertModel(const std::filesystem::path &car,
     {
         auto bytes = ReadWholeFile(car);
         if (!bytes) {
-            return std::format("{} cannot be read.", car.string());
+            return fmt::format("{} cannot be read.", car.string());
         }
         auto model = convert(*bytes, bufferPath.filename().string());
         if (!model) {
-            return std::format("{} is not a model ({}).", car.string(), model.error());
+            return fmt::format("{} is not a model ({}).", car.string(), model.error());
         }
         std::ofstream(gltfPath, std::ios::trunc) << model->json.dump(1) << '\n';
         if (!WriteBytes(bufferPath, model->buffer)) {
-            return std::format("{} cannot be written.", bufferPath.string());
+            return fmt::format("{} cannot be written.", bufferPath.string());
         }
         for (const GltfImage &texture : model->images) {
             auto path = car.parent_path() / texture.uri;
@@ -972,7 +972,7 @@ std::optional<std::string> ConvertModel(const std::filesystem::path &car,
                                              texture.width,
                                              texture.height);
             if (!saved) {
-                return std::format("{} does not read back as its texels.", path.string());
+                return fmt::format("{} does not read back as its texels.", path.string());
             }
         }
         std::ifstream written(gltfPath);
@@ -982,7 +982,7 @@ std::optional<std::string> ConvertModel(const std::filesystem::path &car,
                            std::unexpected(std::string("the files cannot be read")) :
                            ModelFromGltf(parsed, *buffer);
         if (!rebuilt || *rebuilt != *bytes) {
-            return std::format("{} does not read back as {}.", gltfPath.string(), car.string());
+            return fmt::format("{} does not read back as {}.", gltfPath.string(), car.string());
         }
         const auto &coverage = model->json["extras"]["coastlineCoverage"];
         SDL_Log("%s draws %zu of %zu triangles with state glTF expresses.",
@@ -1109,12 +1109,12 @@ std::optional<std::string> ConvertPodArchive(const std::filesystem::path &dataDi
     }
     const std::vector<std::uint8_t> &bytes = *archive;
     if (bytes.size() < POD_HEADER_SIZE || std::memcmp(bytes.data(), "POD", 3) != 0) {
-        return std::format("{} is not a POD archive.", archivePath.string());
+        return fmt::format("{} is not a POD archive.", archivePath.string());
     }
     std::uint32_t count = Little32(bytes, 8);
     std::uint32_t directory = Little32(bytes, 12);
     if (directory > bytes.size() || count > (bytes.size() - directory) / POD_ENTRY_SIZE) {
-        return std::format("{} has a directory outside it.", archivePath.string());
+        return fmt::format("{} has a directory outside it.", archivePath.string());
     }
     auto output = dataDirectory / "BossRally";
     std::error_code error;
@@ -1126,14 +1126,14 @@ std::optional<std::string> ConvertPodArchive(const std::filesystem::path &dataDi
         std::uint32_t offset = Little32(bytes, at);
         std::uint32_t size = Little32(bytes, at + 4);
         if (offset > bytes.size() || size > bytes.size() - offset) {
-            return std::format("{} has an entry outside it.", archivePath.string());
+            return fmt::format("{} has an entry outside it.", archivePath.string());
         }
         std::string name(
             reinterpret_cast<const char *>(&bytes[at + POD_NAME_AT]),
             strnlen(reinterpret_cast<const char *>(&bytes[at + POD_NAME_AT]), POD_NAME_SIZE));
         auto raw = output / Lowercase(name);
         if (!WriteBytes(raw, std::span(bytes).subspan(offset, size))) {
-            return std::format("{} cannot be written.", raw.string());
+            return fmt::format("{} cannot be written.", raw.string());
         }
         auto file = PodEntryFile(name);
         if (file.extension() == ".gltf") {
@@ -1164,7 +1164,7 @@ std::optional<std::string> ConvertPodArchive(const std::filesystem::path &dataDi
         auto data = ReadPodEntry(output / entry["file"].get<std::string>());
         auto offset = entry["offset"].get<std::uint32_t>();
         if (!data || offset > rebuilt.size() || data->size() > rebuilt.size() - offset) {
-            return std::format("{} does not read back.", archivePath.string());
+            return fmt::format("{} does not read back.", archivePath.string());
         }
         std::ranges::copy(*data, rebuilt.begin() + offset);
         std::size_t at = directory + i * POD_ENTRY_SIZE;
@@ -1202,13 +1202,13 @@ std::optional<std::string> ConvertSkyImages(const std::filesystem::path &dataDir
         std::ifstream paletteFile(lut, std::ios::binary);
         std::vector<std::uint8_t> palette(std::istreambuf_iterator<char>(paletteFile), {});
         if (palette.size() != 32 || texels.empty() || texels.size() % (SKY_WIDTH / 2) != 0) {
-            return std::format("{} and {} are not a sky image.", image.string(), lut.string());
+            return fmt::format("{} and {} are not a sky image.", image.string(), lut.string());
         }
         auto png = std::filesystem::path(image).replace_extension(".png");
         int height = static_cast<int>(texels.size() / (SKY_WIDTH / 2));
         if (!coastline::SaveIndexed4Png(
                 png, texels, std::span<const std::uint8_t, 32>(palette), SKY_WIDTH, height)) {
-            return std::format("{} does not read back as {}.", png.string(), image.string());
+            return fmt::format("{} does not read back as {}.", png.string(), image.string());
         }
         std::filesystem::remove(image, error);
         std::filesystem::remove(lut, error);
@@ -1223,7 +1223,7 @@ std::optional<std::string> ConvertStringLibrary(const std::filesystem::path &lib
     std::vector<std::uint8_t> image(std::istreambuf_iterator<char>(in), {});
     auto strings = coastline::ReadLibraryStrings(image);
     if (strings.empty()) {
-        return std::format("{} has no strings.", library.string());
+        return fmt::format("{} has no strings.", library.string());
     }
     nlohmann::ordered_json json = nlohmann::ordered_json::object();
     for (const auto &[id, text] : strings) {
@@ -1235,7 +1235,7 @@ std::optional<std::string> ConvertStringLibrary(const std::filesystem::path &lib
     std::ofstream out(destination, std::ios::trunc);
     out << json.dump(2) << '\n';
     if (!out) {
-        return std::format("{} cannot be written.", destination.string());
+        return fmt::format("{} cannot be written.", destination.string());
     }
     std::filesystem::remove(library, error);
     return std::nullopt;
@@ -1265,7 +1265,7 @@ std::optional<std::string> EncodeAudioTrack(std::ifstream &file,
     if (FLAC__stream_encoder_init_file(
             encoder.get(), destination.string().c_str(), nullptr, nullptr) !=
         FLAC__STREAM_ENCODER_INIT_STATUS_OK) {
-        return std::format("{} cannot be written.", destination.string());
+        return fmt::format("{} cannot be written.", destination.string());
     }
     constexpr std::uint64_t CHUNK_SECTORS = 75;
     std::vector<std::uint8_t> raw(CHUNK_SECTORS * RAW_SECTOR);
@@ -1275,7 +1275,7 @@ std::optional<std::string> EncodeAudioTrack(std::ifstream &file,
         std::uint64_t count = std::min(CHUNK_SECTORS, track.sectorCount - done);
         if (!file.read(reinterpret_cast<char *>(raw.data()),
                        static_cast<std::streamsize>(count * RAW_SECTOR))) {
-            return std::format("Track {} is cut short in the image.", track.number);
+            return fmt::format("Track {} is cut short in the image.", track.number);
         }
         // CD audio is 16-bit little-endian stereo.
         std::size_t values = count * RAW_SECTOR / 2;
@@ -1284,11 +1284,11 @@ std::optional<std::string> EncodeAudioTrack(std::ifstream &file,
         }
         if (!FLAC__stream_encoder_process_interleaved(
                 encoder.get(), samples.data(), static_cast<unsigned>(values / 2))) {
-            return std::format("Track {} was not encoded.", track.number);
+            return fmt::format("Track {} was not encoded.", track.number);
         }
     }
     if (!FLAC__stream_encoder_finish(encoder.get())) {
-        return std::format("Track {} was not finished.", track.number);
+        return fmt::format("Track {} was not finished.", track.number);
     }
     return std::nullopt;
 }
@@ -1340,7 +1340,7 @@ std::expected<RomRelease, std::string> IdentifyRom(std::span<const std::uint8_t>
             return release.release;
         }
     }
-    return std::unexpected(std::format(
+    return std::unexpected(fmt::format(
         "The image is not an unmodified release of Top Gear Rally (SHA-1 {}).", digest));
 }
 
@@ -1348,10 +1348,10 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
                                                  const std::filesystem::path &dataDirectory) {
     auto bytes = ReadWholeFile(image);
     if (!bytes) {
-        return std::unexpected(std::format("{} cannot be read.", image.string()));
+        return std::unexpected(fmt::format("{} cannot be read.", image.string()));
     }
     if (!NormalizeRomByteOrder(*bytes)) {
-        return std::unexpected(std::format("{} is not a Nintendo 64 image.", image.string()));
+        return std::unexpected(fmt::format("{} is not a Nintendo 64 image.", image.string()));
     }
     auto release = IdentifyRom(*bytes);
     if (!release) {
@@ -1361,7 +1361,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     auto destination = dataDirectory / "n64" / known.directory;
     if (auto failure = ExtractCartridge(*bytes, known.manifest, destination)) {
         return std::unexpected(
-            std::format("{} cannot be imported ({}).", image.string(), *failure));
+            fmt::format("{} cannot be imported ({}).", image.string(), *failure));
     }
     // Replaces the model.bin of each car with model.gltf, its buffer mesh.bin, and its images.
     std::error_code carsError;
@@ -1391,13 +1391,13 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         if (geometry->size() < 4 ||
             (static_cast<std::size_t>((*geometry)[0]) << 24 | (*geometry)[1] << 16 |
              (*geometry)[2] << 8 | (*geometry)[3]) != geometry->size()) {
-            return std::unexpected(std::format("{} does not begin with its size.",
+            return std::unexpected(fmt::format("{} does not begin with its size.",
                                                (track.path() / "geometry.bin").string()));
         }
         auto joined = track.path() / "track.trk";
         geometry->insert(geometry->end(), textures->begin(), textures->end());
         if (!WriteBytes(joined, *geometry)) {
-            return std::unexpected(std::format("{} cannot be written.", joined.string()));
+            return std::unexpected(fmt::format("{} cannot be written.", joined.string()));
         }
         if (auto failure = ConvertModel(
                 joined, TrackToGltf, track.path() / "track.gltf", track.path() / "track.bin")) {
@@ -1500,7 +1500,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
             xm.write(reinterpret_cast<const char *>(module->data()),
                      static_cast<std::streamsize>(module->size()));
             if (!xm) {
-                return std::unexpected(std::format("{} cannot be written.", path.string()));
+                return std::unexpected(fmt::format("{} cannot be written.", path.string()));
             }
         }
     }
@@ -1510,7 +1510,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
 std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::filesystem::path &cue) {
     std::ifstream file(cue);
     if (!file) {
-        return std::unexpected(std::format("{} cannot be read.", cue.string()));
+        return std::unexpected(fmt::format("{} cannot be read.", cue.string()));
     }
     std::vector<CueTrack> tracks;
     std::vector<std::uint64_t> nextStarts;
@@ -1542,7 +1542,7 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
             stream >> index >> msf;
             auto sector = ParseMsf(msf);
             if (!sector) {
-                return std::unexpected(std::format("The index {} cannot be read.", msf));
+                return std::unexpected(fmt::format("The index {} cannot be read.", msf));
             }
             if (index == 1) {
                 tracks.back().firstSector = *sector;
@@ -1564,13 +1564,13 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
             std::error_code error;
             auto bytes = std::filesystem::file_size(tracks[i].file, error);
             if (error) {
-                return std::unexpected(std::format("{} cannot be read.", tracks[i].file.string()));
+                return std::unexpected(fmt::format("{} cannot be read.", tracks[i].file.string()));
             }
             end = bytes / tracks[i].sectorSize;
         }
         if (end < tracks[i].firstSector) {
             return std::unexpected(
-                std::format("Track {} ends before it starts.", tracks[i].number));
+                fmt::format("Track {} ends before it starts.", tracks[i].number));
         }
         tracks[i].sectorCount = end - tracks[i].firstSector;
     }
@@ -1596,7 +1596,7 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
     }
     std::ifstream dataFile(data->file, std::ios::binary);
     if (!dataFile) {
-        return std::unexpected(std::format("{} cannot be read.", data->file.string()));
+        return std::unexpected(fmt::format("{} cannot be read.", data->file.string()));
     }
     SectorReader reader(dataFile, data->sectorSize, data->firstSector);
     auto entries = ListIso(reader);
@@ -1651,7 +1651,7 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         if (!track.audio) {
             continue;
         }
-        auto name = std::format("track{:02}.flac", track.number);
+        auto name = fmt::format("track{:02}.flac", track.number);
         if (progress) {
             progress("music/" + name, static_cast<double>(written) / steps);
         }

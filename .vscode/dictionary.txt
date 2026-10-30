@@ -140,6 +140,7 @@ chewbaca
 chnl
 ckid
 cksize
+clatest
 cleargeometrymode
 clipintersectionall
 clockfields
@@ -179,6 +180,7 @@ createmesgqueue
 createplayerorgroup
 createthread
 creditdata
+crosscompiling
 csidl
 ctest
 ctrlfrequency
@@ -190,6 +192,7 @@ cullmode
 cupra
 curwd
 cxicon
+cxxlibs
 cycletype
 cyicon
 dacrate
@@ -682,6 +685,7 @@ maind
 mainmenu
 mainpage
 makeintresourcea
+manpages
 maptlbrdb
 maskt
 matchscan
@@ -1387,6 +1391,7 @@ zbuffer
 zbufferbitdepth
 zenable
 zizmor
+zlibstatic
 zmode
 zsize
 zsrcsel

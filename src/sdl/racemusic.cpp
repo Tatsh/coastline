@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <cstdint>
 #include <cstdlib>
-#include <format>
 #include <fstream>
 #include <iterator>
 #include <memory>
@@ -15,6 +14,7 @@
 
 #include <FLAC/stream_decoder.h>
 #include <SDL3/SDL.h>
+#include <fmt/format.h>
 
 #include "common/frameclock.h"
 #include "common/settings.h"
@@ -141,7 +141,7 @@ public:
 private:
     RaceMusic() = default;
     std::filesystem::path CdTrackPath(int track) const {
-        return m_directory / std::format("track{:02}.flac", track);
+        return m_directory / fmt::format("track{:02}.flac", track);
     }
     void FillCd(std::vector<std::int16_t> &output, std::size_t frames);
     static void SDLCALL CdCallback(void *user, SDL_AudioStream *stream, int additional, int total);

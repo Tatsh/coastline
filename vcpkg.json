@@ -21,6 +21,7 @@
         "argparse",
         "boost-pfr",
         "drlibs",
+        "fmt",
         {
           "features": ["tools"],
           "host": true,

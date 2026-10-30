@@ -7,6 +7,8 @@
 #include "common/weather.h"
 
 #if TGR_BOSS_RALLY
+#include "common/x87.h"
+
 namespace {
     /**
      * Whether the rain particles have their first positions.
@@ -112,12 +114,12 @@ void UpdatePrecipitationParticles(void) {
         dy = rawY;
         dz = rawZ;
         speed = (rawX * dx + rawY * dy) + rawZ * dz;
-        __asm__("fsqrt" : "=t"(speed) : "0"(speed));
+        speed = X87SquareRoot(speed);
         speed /= g_fFrameDeltaTime;
         g_fRainCameraSpeed = speed;
         if (speed > RAIN_MIN_CAMERA_SPEED) {
             rawScale = (long double)g_fRainCameraSpeed * RAIN_CAMERA_SPEED_MUL;
-            __asm__("fsqrt" : "=t"(rawScale) : "0"(rawScale));
+            rawScale = X87SquareRoot(rawScale);
             rawScale = rawScale * RAIN_MIN_CAMERA_SPEED / g_fRainCameraSpeed;
             g_fRainCameraSpeedScale = rawScale;
             g_fRainCameraSpeed = rawScale * g_fRainCameraSpeed;
@@ -157,8 +159,8 @@ void UpdatePrecipitationParticles(void) {
         } else {
             velocity = &g_avRainVelocity[view];
 #if TGR_BOSS_RALLY
-            __asm__("fcos" : "=t"(cosine) : "0"((long double)g_fWindAngle));
-            __asm__("fsin" : "=t"(rawSine) : "0"((long double)g_fWindAngle));
+            cosine = X87Cosine((long double)g_fWindAngle);
+            rawSine = X87Sine((long double)g_fWindAngle);
             velocity->x = cosine * g_fWindStrength * g_fFrameDeltaTime;
 #else
             velocity->x = cosf(g_fWindAngle) * (g_fFrameDeltaTime * g_fWindStrength);

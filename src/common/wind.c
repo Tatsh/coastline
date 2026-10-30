@@ -2,7 +2,9 @@
 #include "common/vecmath.h"
 #include "common/weather.h"
 
-#if !TGR_BOSS_RALLY
+#if TGR_BOSS_RALLY
+#include "common/x87.h"
+#else
 #include <PR/gu.h>
 #endif
 
@@ -17,18 +19,8 @@ f32 g_fWindAngle;
 #define WIND_STRENGTH_MIN 0.5f
 
 #if TGR_BOSS_RALLY
-/* The x87 instructions preserve extended results and return large angles unchanged. */
-static inline long double WindCosine(f32 angle) {
-    long double result;
-    __asm__("fcos" : "=t"(result) : "0"((long double)angle));
-    return result;
-}
-
-static inline long double WindSine(f32 angle) {
-    long double result;
-    __asm__("fsin" : "=t"(result) : "0"((long double)angle));
-    return result;
-}
+#define WindCosine(angle) X87Cosine((long double)(angle))
+#define WindSine(angle) X87Sine((long double)(angle))
 #endif /* TGR_BOSS_RALLY */
 
 void UpdateWindDirection(void) {

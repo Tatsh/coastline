@@ -36,7 +36,12 @@ if(TGR_PLATFORM STREQUAL "sdl")
 else()
   target_compile_options(coastline_ear PRIVATE -Wall -Wextra -Wno-unused-parameter)
 endif()
-set_target_properties(coastline_ear PROPERTIES C_STANDARD 23 C_STANDARD_REQUIRED YES)
+if(MSVC)
+  # CMake has no flag of C23 for MSVC, whose newest C is /std:clatest.
+  target_compile_options(coastline_ear PRIVATE "$<$<COMPILE_LANGUAGE:C>:/std:clatest>")
+else()
+  set_target_properties(coastline_ear PROPERTIES C_STANDARD 23 C_STANDARD_REQUIRED YES)
+endif()
 if(TGR_PLATFORM STREQUAL "sdl")
   # The SDL game reads the wave files and mixes the buffers with SDL in place of the multimedia
   # I/O and DirectSound of Windows. The types shared with the PC release come from common/types.h,

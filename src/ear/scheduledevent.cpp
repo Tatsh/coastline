@@ -1,5 +1,6 @@
 #include "scheduledevent.h"
 
+#include <atomic>
 #include <bit>
 #include <concepts>
 #include <cstring>
@@ -202,7 +203,7 @@ ScheduledEarEvent::~ScheduledEarEvent() {
         // Native failure cleanup can invoke destruction repeatedly on the same storage, so the
         // barrier keeps the store from being dropped as dead.
         allocatedSource = nullptr;
-        __asm__ __volatile__("" : : : "memory");
+        std::atomic_signal_fence(std::memory_order_seq_cst);
     }
 }
 

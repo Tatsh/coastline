@@ -10,6 +10,7 @@
 #include <math.h>
 
 #include "common/gbicommand.h"
+#include "common/x87.h"
 #ifdef ENABLE_PATCHES
 #include "common/qualityoflife.h"
 #endif
@@ -107,7 +108,7 @@ void SetupFrustumCorners(CameraFrame *camera, f32 fov, f32 farDistance, f32 widt
     long double sine;
     f32 halfWidth, halfHeight;
 
-    __asm__("fsin" : "=t"(sine) : "0"((long double)fov));
+    sine = X87Sine((long double)fov);
     halfWidth = sine * farDistance;
     halfHeight = (long double)halfWidth * height / width;
 #else
