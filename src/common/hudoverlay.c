@@ -134,8 +134,22 @@ void DrawSpeedAndHudOverlay(void) {
         return;
     }
     x = HUD_OVERLAY_ADD(x, -30);
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    /* The speed sits on the smaller dashboard of a split screen. */
+    if (g_dwNumViewports == 2) {
+        y = HUD_OVERLAY_ADD(
+            y,
+            -g_aVehicleModels[viewports[g_dwCurrentSplitScreenIndex].vehicleIndex].dashboardHeight *
+                3 / 4);
+    } else {
+        y = HUD_OVERLAY_ADD(
+            y,
+            -g_aVehicleModels[viewports[g_dwCurrentSplitScreenIndex].vehicleIndex].dashboardHeight);
+    }
+#else
     y = HUD_OVERLAY_ADD(
         y, -g_aVehicleModels[viewports[g_dwCurrentSplitScreenIndex].vehicleIndex].dashboardHeight);
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 #else
     x = HUD_RIGHT;
     y = g_aViewportRects[g_dwCurrentSplitScreenIndex].y +

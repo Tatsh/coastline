@@ -103,6 +103,42 @@ s32 g_bHudShowSpeedometer = 1;
 #define DASHBOARD_GEAR g_aDashboardGearTextures[g_dwCurrentSplitScreenIndex]
 #define ACTIVE_CAR_MODEL g_aCarModels[g_pActiveCameraVehicle->carModel]
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+static void DrawSplitScreenDashboard(
+    const ViewportRect *view, const VehicleModel *car, s32 gear, s32 x, s32 y) {
+    s32 lit = 15;
+    PackCombineMode(gDisplayListPtr++, 0, 0, 0, 1003, 0, 0, 0, 1003, 0, 0, 0, 1003, 0, 0, 0, 1003);
+    gDisplayListWords(gDisplayListPtr++, 0xb900031d, 0x0c184240);
+    gDisplayListWords(gDisplayListPtr++, 0xb900031d, 0x0c193078);
+    gSPClearGeometryMode(gDisplayListPtr++, G_ZBUFFER);
+    gDisplayListWords(gDisplayListPtr++, 0xde000000, 0x3f800000);
+    gDisplayListWords(gDisplayListPtr++, 0xdf000000, 0xbf800000);
+    if (car->tachometer == TACHOMETER_BAR_DIMMED || car->tachometer == TACHOMETER_BAR_HIDDEN) {
+        s32 jitter = g_dwRacePauseState ? NEEDLE_JITTER_PAUSED : AdvanceRng() & NEEDLE_JITTER_MASK;
+        lit = (s32)((((f32)jitter + VEHICLE_GET(g_pActiveCameraVehicle, EngineRpm)) - 1000.0f) *
+                        (1.0f / 7000.0f) * (f32)(car->barSegments + 1) -
+                    0.5f);
+        lit = lit < 0 ? 0 : lit > 15 ? 15 : lit;
+    }
+    EmitIndexedQuadDrawCommand(view->dashboardTextureEntries[15 - lit],
+                               x,
+                               y,
+                               car->dashboardWidth * 3 / 4,
+                               car->dashboardHeight * 3 / 4);
+    if (gear != g_adwDashboardLoadedGear[g_dwCurrentSplitScreenIndex]) {
+        GbiCommand *command = gDisplayListPtr++;
+        command->w0 = 0xdd000000u | ((u32)view->dashboardGearTextureEntry & 0xffffffu);
+        command->pData = &car->dashboardImages[(u32)gear * (u32)car->gearImageBytes];
+        g_adwDashboardLoadedGear[g_dwCurrentSplitScreenIndex] = gear;
+    }
+    EmitIndexedQuadDrawCommand(view->dashboardGearTextureEntry,
+                               x + car->gearX * 3 / 4,
+                               y + car->gearY * 3 / 4,
+                               car->gearWidth * 3 / 4,
+                               car->gearHeight * 3 / 4);
+}
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
+
 #if TGR_BOSS_RALLY
 void RenderDashboardGauges(const ViewportRect *viewports) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -166,6 +202,16 @@ void RenderDashboardGauges(const ViewportRect *viewports) {
                                    car->gearWidth,
                                    car->gearHeight);
     }
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    else {
+        /* The PC release draws only the needle in a split screen. The SDL game draws the face and
+           the gear of each player as the console does, three quarters of their size with the
+           bottom right in place, from the textures of the view. */
+        x = DASHBOARD_ADD(x, car->dashboardWidth / 4);
+        y = DASHBOARD_ADD(y, car->dashboardHeight / 4);
+        DrawSplitScreenDashboard(rect, car, gear, x, y);
+    }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 #else
 void RenderDashboardGauges(void) {
     ViewportRect *rect = &g_aViewportRects[g_dwCurrentSplitScreenIndex];
