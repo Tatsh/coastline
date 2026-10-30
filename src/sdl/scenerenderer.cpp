@@ -1099,6 +1099,7 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
                         part.combine = words;
                     }
                     part.twoCycle =
+                        !options.oneCycle ||
                         (rdp.value("otherModeH", 0u) >> CYCLE_TYPE_SHIFT & 3) == TWO_CYCLE;
                     part.textureGen = (rdp.value("geometryMode", 0u) & G_TEXTURE_GEN) != 0;
                     part.prim = Rgba(rdp["primColor"].get<std::uint32_t>());
@@ -1644,9 +1645,11 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
              lighting.direction[1],
              lighting.direction[2],
              coverage ? 1.0f : 0.0f},
+            // The reflection combines its one texture alike in both cycles, which the second cycle
+            // reads as the second texel.
             {primitive.combine ? (*primitive.combine)[0] : 0u,
              primitive.combine ? (*primitive.combine)[1] : 0u,
-             primitive.twoCycle ? 1u : 0u,
+             primitive.twoCycle && reflection == nullptr ? 1u : 0u,
              0u},
             {primitive.prim[0], primitive.prim[1], primitive.prim[2], primitive.prim[3]},
             {primitive.env[0], primitive.env[1], primitive.env[2], primitive.env[3]},

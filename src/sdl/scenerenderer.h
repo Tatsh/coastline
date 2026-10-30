@@ -188,6 +188,10 @@ struct ModelOptions {
     /** Whether the document may have nothing to draw, such as a part a level of detail of a car
      * does not have, which then loads no model without an error. */
     bool optional = false;
+    /** Whether the caller of the display lists sets one cycle, as RenderSkybox() and
+     * RenderVehicleHeadlightBeams() do. The lists do not set the cycle type themselves, and
+     * DrawModelList(), RenderTrackGeometry(), and RenderVehicleModel() set two. */
+    bool oneCycle = false;
 };
 
 /** A converted model on the GPU: its meshes, its parts, and its animations. */

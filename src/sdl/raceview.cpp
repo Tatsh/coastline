@@ -1519,6 +1519,7 @@ CarModels LoadCarModels(SceneRenderer &renderer,
     // The beams are a node outside the scene, drawn without the turn of its root.
     options.node = "lod0-headlightBeams";
     options.optional = true;
+    options.oneCycle = true;
     models.beams = RenderModel::Load(renderer, carFile, options);
     if (!models.levels[0]->car || !models.levels[0]->paint || !models.wheel) {
         return {};
@@ -1567,6 +1568,7 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     state->track = RenderModel::Load(renderer, trackFile);
     ModelOptions sky;
     sky.node = "sky";
+    sky.oneCycle = true;
     state->sky = RenderModel::Load(renderer, trackFile, sky);
     state->defaults = defaults;
     state->damage = LoadDamageMasks(defaults, cars.empty() ? -1 : cars.front().car);
