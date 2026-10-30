@@ -441,6 +441,7 @@ framebegin
 frameclear
 framefields
 frameflush
+framestatistics
 frametime
 frametimer
 freeable

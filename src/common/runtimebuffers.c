@@ -2,6 +2,7 @@
 #include <common/effects.h>
 #include <common/fade.h>
 #include <common/fontdata.h>
+#include <common/framestatistics.h>
 #include <common/hud.h>
 #include <common/physics.h>
 #include <common/race.h>
@@ -21,7 +22,6 @@
 #include <common/vehiclerender.h>
 #include <common/visgrid.h>
 #include <common/weather.h>
-#include <win32/framestatistics.h>
 
 #include "common/shadowclip.h"
 
@@ -34,7 +34,7 @@ alignas(8)
     DisplayListCommand g_abDisplayListMemory[2 * DISPLAY_LIST_COMMANDS + DISPLAY_LIST_RESERVED];
 u8 g_aabInputRecordings[INPUT_RECORDERS][0xF000];
 u8 g_abPlaybackRecording[RECORDING_HEADER_SIZE];
-DWORD g_adwGameFpsFrameTimeSamples[GAME_FPS_FRAME_TIME_SAMPLE_COUNT];
+unsigned g_adwGameFpsFrameTimeSamples[GAME_FPS_FRAME_TIME_SAMPLE_COUNT];
 
 SoundSourceTracking g_ClosestSoundSource;
 OSMesgQueue g_DmaMessageQueue;

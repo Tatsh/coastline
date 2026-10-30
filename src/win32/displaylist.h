@@ -10,10 +10,10 @@
 
 #include <windows.h>
 
+#include "common/framestatistics.h"
 #include "common/gbicommand.h"
 #include "common/textureupload.h"
 #include "common/vecmath.h"
-#include "win32/framestatistics.h"
 
 #if TGR_BRD3D
 #include <d3d.h>

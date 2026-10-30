@@ -2,10 +2,10 @@
 
 #include <common/hud.h>
 
+#include "common/framestatistics.h"
 #include "common/hudcanvas.h"
 #include "common/settings.h"
 #include "common/text.h"
-#include "win32/framestatistics.h"
 
 #undef DrawText
 
@@ -24,7 +24,7 @@ static float g_fRenderFrameRate = 30.0f;
 s32 g_bShowFpsCounter;
 int g_dwFpsSampleFrames = 5;
 int g_dwFpsFrameCountdown = -1;
-DWORD g_adwFpsFrameTimeSamples[FPS_FRAME_TIME_SAMPLE_COUNT];
+unsigned g_adwFpsFrameTimeSamples[FPS_FRAME_TIME_SAMPLE_COUNT];
 
 void DrawFpsCounterOverlay(void) {
     if (g_bShowFpsCounter == 0) {

@@ -1,8 +1,6 @@
 // ponytail: the routines of the Windows libraries the race engine calls and the SDL game does not
 // implement yet. Each records its first call in the log and does nothing. Later milestones replace
 // them with real implementations, and move the game logic among them into src/common.
-#include "sdl/pending.h"
-
 #include <cstdlib>
 
 #include <PR/os.h>
@@ -53,39 +51,6 @@
             SDL_Log("%s is not implemented in the SDL game yet.", __func__);                       \
         }                                                                                          \
     } while (false)
-
-// The timing of the frames.
-u64 osClockRate = 2165625000ULL;
-
-u64 osGetCount(void) {
-    PENDING();
-    return 0;
-}
-
-u32 GetHighResolutionTime(void) {
-    PENDING();
-    return 0;
-}
-
-void AdvanceFrameTickCounter(void) {
-    PENDING();
-}
-
-void ResetFrameTimer(void) {
-    PENDING();
-}
-
-void ResetFrameTimerState(void) {
-    PENDING();
-}
-
-void UpdateRaceFrameStatistics(void) {
-    PENDING();
-}
-
-void PaceRaceFrames(void) {
-    PENDING();
-}
 
 // The files and the messages of the game.
 char *GetStringResource(unsigned nResourceId) {
@@ -239,10 +204,6 @@ void ResetModelDataPool(void) {
 }
 
 void ResetRenderCommandBufferStack(void) {
-    PENDING();
-}
-
-void DrawFpsCounterOverlay(void) {
     PENDING();
 }
 

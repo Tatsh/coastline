@@ -16,8 +16,6 @@ add_library(
   displaylist.cpp
   dxversion.cpp
   earsound.cpp
-  fpshud.c
-  frametimer.cpp
   frontend.cpp
   frontenddata.cpp
   gameinit.cpp
@@ -29,20 +27,17 @@ add_library(
   modelrelocation.cpp
   netstream.cpp
   podarchive.cpp
-  racepacing.c
   racercolor.cpp
   racesound.cpp
   rallyconfig.cpp
   render.cpp
   renderdefaults.cpp
-  runtimebuffers.c
   runtimebuffers.cpp
   shutdown.cpp
   sound.cpp
   startup.cpp
   strings.c
   texturescan.cpp
-  timer.c
   trackload.cpp
   tracktexture.cpp
   vehiclemodelload.c

@@ -12,9 +12,9 @@
 // The headers below need the types of windows.h.
 #include <dinput.h>
 
+#include "common/emulatedclock.h"
 #include "common/inputbinding.h"
 #include "common/inputpoll.h"
-#include "emulatedclock.h"
 
 /** The mouse of the game. The layout is not recovered past the members below. */
 class MouseDevice {

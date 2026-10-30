@@ -1,14 +1,22 @@
-#include "win32/frametimer.h"
+#include "common/frameclock.h"
 
-#include <mmsystem.h>
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
+// The headers below need the types of windows.h.
+#include <mmsystem.h>
+
+#include "win32/frametimer.h"
+#endif
 
 #include "common/racepacing.h"
 #include "common/snapshot.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/timer.h"
+#endif
 
 namespace {
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * The clock of the frames of a race.
  *
@@ -40,6 +48,7 @@ int g_bFrameTimerHasPerfCounter;
  * @ghidraAddress BRGlide: 0x118ee250
  */
 LARGE_INTEGER g_liFrameTimerFrequency;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /**
  * The time of the current tick, in milliseconds.
@@ -47,7 +56,7 @@ LARGE_INTEGER g_liFrameTimerFrequency;
  * @ghidraAddress BRD3D: 0x118ab118
  * @ghidraAddress BRGlide: 0x118ee230
  */
-DWORD g_dwFrameTickTime;
+unsigned g_dwFrameTickTime;
 
 /**
  * The entry of g_adwFrameTickIncrements of the current tick.
@@ -55,7 +64,7 @@ DWORD g_dwFrameTickTime;
  * @ghidraAddress BRD3D: 0x118ab12c
  * @ghidraAddress BRGlide: 0x118ee244
  */
-DWORD g_dwFrameTickPhase;
+unsigned g_dwFrameTickPhase;
 
 /**
  * The milliseconds of each tick of a period, 33, 33, and 34 to make a tenth of a second.
@@ -63,7 +72,7 @@ DWORD g_dwFrameTickPhase;
  * @ghidraAddress BRD3D: 0x100bbac8
  * @ghidraAddress BRGlide: 0x100bb2d0
  */
-const DWORD g_adwFrameTickIncrements[TICKS_PER_PERIOD] = {33, 33, 34};
+const unsigned g_adwFrameTickIncrements[TICKS_PER_PERIOD] = {33, 33, 34};
 
 /**
  * The ticks of the frames, three for each tenth of a second.
@@ -71,12 +80,13 @@ const DWORD g_adwFrameTickIncrements[TICKS_PER_PERIOD] = {33, 33, 34};
  * @ghidraAddress BRD3D: 0x118ab134
  * @ghidraAddress BRGlide: 0x118ee24c
  */
-[[maybe_unused]] DWORD g_dwFrameTickCounter;
+[[maybe_unused]] unsigned g_dwFrameTickCounter;
 
 } // namespace
 
 int g_dwRaceFrameCounter;
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 // The frames of a second.
 #define FRAMES_PER_SECOND 30
 // The milliseconds of a frame without the performance counter.
@@ -110,9 +120,10 @@ void FrameTimer::SnapshotTimerState() {
 DWORD GetFrameTickCounter(void) {
     return g_dwFrameTickTime;
 }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void ResetFrameTimer(void) {
-    DWORD dwNow = GetHighResolutionTime();
+    unsigned dwNow = GetHighResolutionTime();
 
     g_dwFrameTickPhase = 0;
     g_dwFrameTickTime = dwNow;
@@ -129,14 +140,18 @@ void AdvanceFrameTickCounter(void) {
 }
 
 void ResetFrameTimerState(void) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     g_FrameTimer.SnapshotTimerState();
+#endif
     g_dwRaceFrameCounter = -1;
     g_bFrameTimerReset = true;
     ResetFrameTimer();
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 void EndHighResolutionTimerPeriod(void) {
     if (!g_bFrameTimerHasPerfCounter) {
         timeEndPeriod(1);
     }
 }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

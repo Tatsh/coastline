@@ -2,10 +2,8 @@
 #define COASTLINE_PLATFORM_WIN_RACE_PACING_H
 
 #include "common/frameclock.h"
+#include "common/framestatistics.h"
 #include "common/snapshotops.h"
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "win32/framestatistics.h"
-#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -18,19 +16,18 @@ extern "C" {
  */
 extern int g_dwRaceFrameCounter;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
  * The time of the preceding game loop, in milliseconds.
  * @ghidraAddress BRD3D: 0x106909e8
  * @ghidraAddress BRGlide: 0x105ccb90
  */
-extern DWORD g_dwLastFrameTimestamp;
+extern unsigned g_dwLastFrameTimestamp;
 /**
  * The milliseconds the race has run since its first frame.
  * @ghidraAddress BRD3D: 0x106909d4
  * @ghidraAddress BRGlide: 0x105ccb7c
  */
-extern volatile DWORD g_dwRaceAccumulatedTime;
+extern volatile unsigned g_dwRaceAccumulatedTime;
 /**
  * The entry of g_adwRaceFrameIntervals that paces the next frame.
  * @ghidraAddress BRD3D: 0x106805c4
@@ -42,7 +39,7 @@ extern int g_nRacePacingInterval;
  * @ghidraAddress BRD3D: 0x10680948
  * @ghidraAddress BRGlide: 0x105bcaf0
  */
-extern DWORD g_dwNextRaceFrameTime;
+extern unsigned g_dwNextRaceFrameTime;
 /**
  * The game frames run since a snapshot was last drawn.
  * @ghidraAddress BRD3D: 0x106909f8
@@ -54,18 +51,18 @@ extern int g_nRaceFramesWithoutRender;
  * @ghidraAddress BRD3D: 0x106909fc
  * @ghidraAddress BRGlide: 0x105ccba4
  */
-extern DWORD g_dwLastRaceRenderTime;
+extern unsigned g_dwLastRaceRenderTime;
 /**
  * The milliseconds of three game frames in turn, a tenth of a second together.
  * @ghidraAddress BRD3D: 0x100aa268
  * @ghidraAddress BRGlide: 0x100a95b8
  */
-extern const DWORD g_adwRaceFrameIntervals[3];
+extern const unsigned g_adwRaceFrameIntervals[3];
 
 /** Record the duration of the preceding game loop. */
 static inline void UpdateRaceFrameStatistics(void) {
-    DWORD now = GetHighResolutionTime();
-    DWORD elapsed = now - g_dwLastFrameTimestamp;
+    unsigned now = GetHighResolutionTime();
+    unsigned elapsed = now - g_dwLastFrameTimestamp;
     int sampleFrames = g_dwGameFpsSampleFrames;
     int index = g_dwGameFpsFrameCountdown;
     int i;
@@ -94,7 +91,7 @@ static inline void UpdateRaceFrameStatistics(void) {
 /** Render interpolated snapshots until the next game frame is due. */
 static inline void PaceRaceFrames(void) {
     int rendered;
-    DWORD now;
+    unsigned now;
 
     if (g_bFrameTimerReset) {
         g_dwNextRaceFrameTime = GetHighResolutionTime();
@@ -119,7 +116,7 @@ static inline void PaceRaceFrames(void) {
     rendered = 1;
     now = GetHighResolutionTime();
     for (;;) {
-        DWORD lastRender = g_dwLastRaceRenderTime;
+        unsigned lastRender = g_dwLastRaceRenderTime;
         if ((now >= g_dwNextRaceFrameTime && now <= lastRender + 333u) || !rendered) {
             break;
         }
@@ -131,7 +128,6 @@ static inline void PaceRaceFrames(void) {
         }
     }
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 #ifdef __cplusplus
 }

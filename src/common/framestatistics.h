@@ -1,6 +1,5 @@
-#pragma once
-
-#include <windows.h>
+#ifndef COASTLINE_FRAMESTATISTICS_H
+#define COASTLINE_FRAMESTATISTICS_H
 
 #include "common/frameclock.h"
 
@@ -16,7 +15,7 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10680758
  * @ghidraAddress BRGlide: 0x105bc900
  */
-extern DWORD g_adwGameFpsFrameTimeSamples[GAME_FPS_FRAME_TIME_SAMPLE_COUNT];
+extern unsigned g_adwGameFpsFrameTimeSamples[GAME_FPS_FRAME_TIME_SAMPLE_COUNT];
 
 /** The number of entries of g_adwFpsFrameTimeSamples. */
 #define FPS_FRAME_TIME_SAMPLE_COUNT 120
@@ -40,8 +39,10 @@ extern int g_dwFpsFrameCountdown;
  * @ghidraAddress BRD3D: 0x10b4ffe8
  * @ghidraAddress BRGlide: 0x10b73348
  */
-extern DWORD g_adwFpsFrameTimeSamples[FPS_FRAME_TIME_SAMPLE_COUNT];
+extern unsigned g_adwFpsFrameTimeSamples[FPS_FRAME_TIME_SAMPLE_COUNT];
 
 #ifdef __cplusplus
 }
 #endif
+
+#endif /* COASTLINE_FRAMESTATISTICS_H */

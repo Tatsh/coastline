@@ -149,10 +149,13 @@ else()
             dashboardtextures.c
             displaylistdata.c
             effectdata.c
+            emulatedclock.cpp
             fileio.c
             fontdata.c
+            fpshud.c
             framebuffer.c
             framefields.c
+            frametimer.cpp
             ghost.cpp
             hud.c
             hudassets.c
@@ -166,9 +169,11 @@ else()
             particlesnapshot.c
             physicsdata.c
             raceglobals.c
+            racepacing.c
             racerslot.cpp
             racescreen.cpp
             reflectiondata.c
+            runtimebuffers.c
             season.cpp
             settings.c
             shadowclip.cpp
@@ -181,6 +186,7 @@ else()
             terrain.c
             texturesampling.c
             textureworkspace.c
+            timer.c
             trackanimation.cpp
             trackmenudata.c
             trackskidmarks.cpp

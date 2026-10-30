@@ -38,8 +38,6 @@
 #include "common/soundsystem.h"
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/directplay.h"
-#elif TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/pending.h"
 #endif
 #else
 #include "common/audiomix.h"

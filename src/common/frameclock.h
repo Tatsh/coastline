@@ -7,6 +7,13 @@
 
 #include "common/types.h"
 
+/** The milliseconds of a period of ticks. */
+#define TICK_PERIOD_MS 100
+/** The ticks of a period. */
+#define TICKS_PER_PERIOD 3
+/** The milliseconds of a tick, rounded down. */
+#define TICK_INTERVAL_MS 33
+
 #ifdef __cplusplus
 extern "C" {
 #endif
