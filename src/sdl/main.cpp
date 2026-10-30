@@ -134,7 +134,7 @@ struct ScriptedPress {
 constexpr int SCRIPTED_PRESS_FRAMES = 6;
 
 // The keys of the default keyboard bindings of the PC release a press pushes down in a race.
-constexpr std::array<std::pair<std::uint16_t, int>, 8> RACE_KEYS{{
+constexpr std::array<std::pair<std::uint16_t, int>, 11> RACE_KEYS{{
     {coastline::BUTTON_A, SDL_SCANCODE_UP},
     {coastline::BUTTON_D_UP, SDL_SCANCODE_UP},
     {coastline::BUTTON_B, SDL_SCANCODE_DOWN},
@@ -143,6 +143,9 @@ constexpr std::array<std::pair<std::uint16_t, int>, 8> RACE_KEYS{{
     {coastline::BUTTON_D_RIGHT, SDL_SCANCODE_RIGHT},
     {coastline::BUTTON_START, SDL_SCANCODE_ESCAPE},
     {coastline::BUTTON_Z, SDL_SCANCODE_SPACE},
+    {coastline::BUTTON_C_UP, SDL_SCANCODE_DELETE},
+    {coastline::BUTTON_C_LEFT, SDL_SCANCODE_END},
+    {coastline::BUTTON_C_DOWN, SDL_SCANCODE_PAGEDOWN},
 }};
 
 // A malformed press is logged and left out.
@@ -401,7 +404,8 @@ int main(int argc, char *argv[]) {
               "left, right, cu, cd, cl, or cr, and PORT the controller from 1, the first unless "
               "given; a press of another controller connects it; in a race, on the first "
               "controller a and up accelerate, b and down brake, left and right steer, start "
-              "pauses, and z is the start binding")
+              "pauses, z is the start binding, and cu, cl, and cd choose the cockpit, the bumper, "
+              "and the chase camera")
         .append();
     parser.add_argument("--autopilot")
         .help("let the computer drive the car of the first player in a race")
