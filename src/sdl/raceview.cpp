@@ -1598,8 +1598,12 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
         renderer, 64, 64, Intensities4(g_abHudTexture64BData), true, true);
     // The race of the PC release draws its text with the fonts of the cartridge.
     state->text = MenuText::Load(renderer, defaults / "n64" / "usa" / "fonts");
-    // The start lights, the model of BossRally.pod.
-    state->startLights = RenderModel::Load(renderer, defaults / "BossRally" / "modellights.gltf");
+    // The start lights, the model of BossRally.pod. Their lamps keep the colours of their texels in
+    // one cycle, unshaded by the light of the track.
+    ModelOptions lightsOptions;
+    lightsOptions.oneCycle = true;
+    state->startLights =
+        RenderModel::Load(renderer, defaults / "BossRally" / "modellights.gltf", lightsOptions);
     if (!state->track || state->cars.empty() || !state->text || !state->startLights) {
         return nullptr;
     }
