@@ -13,6 +13,7 @@
 #include "common/render.h"
 #include "common/screen.h"
 #include "common/sky.h"
+#include "common/snapshot.h"
 #include "common/strings.h"
 #include "common/vehicle.h"
 #include "common/weather.h"
@@ -209,12 +210,15 @@ std::array<float, 4> RaceView::ClearColor() const {
             1.0f};
 }
 
-void RaceView::Draw(SceneRenderer &renderer) const {
+void RaceView::Draw(SceneRenderer &renderer, float share) const {
     const State &s = *m_state;
     GpuWindow &window = renderer.Window();
     float aspect = static_cast<float>(window.FrameWidth()) /
                    static_cast<float>(std::max<Uint32>(window.FrameHeight(), 1));
-    const CameraFrame *camera = g_aVehicles[0].GetActiveCamera();
+    // The frame draws the snapshots of the race blended, or the race itself before it has two.
+    const FrameSnapshot *snapshot = InterpolateFrameSnapshots(share);
+    const Vehicle &vehicle = snapshot != nullptr ? snapshot->GetVehicle(0) : g_aVehicles[0];
+    const CameraFrame *camera = vehicle.GetActiveCamera();
     if (camera == nullptr) {
         return;
     }
@@ -244,7 +248,7 @@ void RaceView::Draw(SceneRenderer &renderer) const {
     }
     renderer.DrawModel(*s.track, ConsoleSpace(), viewProjection, lighting, std::nullopt, true);
     renderer.DrawModel(*s.car,
-                       MultiplyMatrices(FrameMatrix(g_aVehicles[0].GetFrame()), ConsoleSpace()),
+                       MultiplyMatrices(FrameMatrix(vehicle.GetFrame()), ConsoleSpace()),
                        viewProjection,
                        lighting,
                        std::nullopt,

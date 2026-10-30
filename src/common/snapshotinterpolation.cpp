@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cstring>
 #include <initializer_list>
 
@@ -112,6 +113,30 @@ inline void FrameSnapshot::InterpolateFrom(const FrameSnapshot &from,
     unreconstructed2c0e0 = from.unreconstructed2c0e0;
     std::memcpy(&particles, &from.particles, sizeof(particles));
 }
+
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+const FrameSnapshot *InterpolateFrameSnapshots(float share) {
+    if (g_dwFrameSnapshotCurrentSlot < 0 || g_dwFrameSnapshotPreviousSlot < 0) {
+        return nullptr;
+    }
+    const FrameSnapshot &from = g_aFrameSnapshots[g_dwFrameSnapshotPreviousSlot];
+    const FrameSnapshot &to = g_aFrameSnapshots[g_dwFrameSnapshotCurrentSlot];
+    const auto &previousCamera = from.GetPrimaryCamera();
+    const auto &currentCamera = to.GetPrimaryCamera();
+    const long double x =
+        static_cast<long double>(currentCamera.position.x) - previousCamera.position.x;
+    const long double y =
+        static_cast<long double>(currentCamera.position.y) - previousCamera.position.y;
+    const long double z =
+        static_cast<long double>(currentCamera.position.z) - previousCamera.position.z;
+    // A cut of the camera, or frames that are not blended, show the current snapshot.
+    if ((x * x + y * y) + z * z > 100.0f || !g_bInterpolateFrames) {
+        share = 1.0f;
+    }
+    g_InterpolatedFrameSnapshot.InterpolateFrom(from, to, std::clamp(share, 0.0f, 1.0f));
+    return &g_InterpolatedFrameSnapshot;
+}
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 int InterpolateFrameSnapshotsAndRender(int forceRender) {
     if (g_dwFrameSnapshotCurrentSlot < 0 || g_dwFrameSnapshotPreviousSlot < 0) {

@@ -34,6 +34,11 @@ public:
     const CameraFrame &GetPrimaryCamera() const {
         return *vehicles[0].GetActiveCamera();
     }
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    const Vehicle &GetVehicle(int index) const {
+        return vehicles[index];
+    }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
     void Capture();
     inline void RenderRacingScreen();
     inline void
@@ -82,6 +87,17 @@ void InitFrameSnapshotSlots(void);
  * @ghidraAddress BRGlide: 0x10013f20
  */
 int AcquireNextFrameSnapshotSlot(void);
+
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/**
+ * Blend the last two snapshots of the race into g_InterpolatedFrameSnapshot as
+ * InterpolateFrameSnapshotsAndRender() blends them, without drawing, for the SDL game to draw.
+ *
+ * @param share How far the frame is from the previous snapshot to the current one, from 0 to 1.
+ * @return The blended snapshot, or null before the race has two snapshots.
+ */
+const FrameSnapshot *InterpolateFrameSnapshots(float share);
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 /**
  * Whether the snapshots of frames are set up.

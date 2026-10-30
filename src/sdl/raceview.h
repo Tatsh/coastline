@@ -38,11 +38,14 @@ public:
     RaceView &operator=(const RaceView &) = delete;
 
     /**
-     * Draw the race as the engine has it, from the active camera of the first vehicle.
+     * Draw the race from the active camera of the first vehicle, blended between its last two
+     * frames as the PC release blends them.
      *
      * @param renderer The renderer of the frame, between Begin() and End().
+     * @param share How far the frame is from the previous frame of the race to the current one,
+     * from 0 to 1.
      */
-    void Draw(SceneRenderer &renderer) const;
+    void Draw(SceneRenderer &renderer, float share) const;
 
     /** @return The colour the frame clears to, the fog of the race. */
     std::array<float, 4> ClearColor() const;

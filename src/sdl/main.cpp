@@ -630,7 +630,8 @@ int main(int argc, char *argv[]) {
                         intro->Draw(*sceneRenderer);
                     } else if (frontEnd == FrontEnd::AttractDemo) {
                         sceneRenderer->Begin(raceView->ClearColor());
-                        raceView->Draw(*sceneRenderer);
+                        // The frame is raceTime into the step after the last snapshot.
+                        raceView->Draw(*sceneRenderer, raceTime / RACE_STEP);
                     } else {
                         sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
                         coastline::MenuButtons buttons{(pressed & coastline::BUTTON_D_LEFT) != 0,
