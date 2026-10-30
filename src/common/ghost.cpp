@@ -274,7 +274,11 @@ static inline bool ReadGhostPayload(FILE *pFile, unsigned *pnLayout, unsigned *p
 }
 
 bool ReadGhostFileData(const char *pszPath, bool bAllowFailure) {
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    FILE *pFile = OpenGhostRecording(pszPath);
+#else
     FILE *pFile = fopen(pszPath, "rb");
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
     unsigned nLayout;
     unsigned nSize;
     if (!pFile || !ReadGhostPayload(pFile, &nLayout, &nSize)) {

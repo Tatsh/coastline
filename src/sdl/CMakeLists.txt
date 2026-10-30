@@ -93,6 +93,7 @@ add_library(
   paths.cpp
   pending.cpp
   ptr32.cpp
+  racedemo.cpp
   raceinput.cpp
   racemusic.cpp
   runtimebuffers.cpp

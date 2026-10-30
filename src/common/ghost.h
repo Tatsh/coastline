@@ -6,6 +6,7 @@
  */
 
 #include <cstddef>
+#include <cstdio>
 
 #include "common/rigidbody.h"
 #include "common/vecmath.h"
@@ -192,6 +193,17 @@ unsigned GetGhostKeyframeDataSize(void);
  * @ghidraAddress BRGlide: 0x10069a80
  */
 bool ReadGhostFileData(const char *pszPath, bool bAllowFailure);
+
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/**
+ * Open a ghost recording: the file itself, such as a saved recording, or the file built from the
+ * JSON the import converted it to.
+ *
+ * @param pszPath The path of the recording.
+ * @return The file, open for reading, or null.
+ */
+FILE *OpenGhostRecording(const char *pszPath);
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 /**
  * Read the ghost file selected in the front end.

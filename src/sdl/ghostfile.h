@@ -38,14 +38,3 @@ std::optional<std::vector<std::uint8_t>> GhostFromJson(const nlohmann::ordered_j
 std::string FormatGhostJson(const nlohmann::ordered_json &json);
 
 } // namespace coastline
-
-extern "C" {
-/**
- * Open a ghost recording of the PC release: the file built from the JSON the import converted it
- * to, or the file itself, such as a saved recording.
- *
- * @param path The path of the recording in the PC release.
- * @return The file, open for reading, or null.
- */
-FILE *OpenGhostRecording(const char *path);
-}

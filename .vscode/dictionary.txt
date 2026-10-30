@@ -893,6 +893,7 @@ querydragicon
 racecontrols
 racecredits
 racedata
+racedemo
 racefinish
 raceglobals
 raceinit

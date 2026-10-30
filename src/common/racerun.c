@@ -240,7 +240,10 @@ void ProcessRacingScreen(void) {
 #if TGR_BOSS_RALLY
     UpdateRaceAnimations();
     g_aFrameSnapshots[AcquireNextFrameSnapshotSlot()].Capture();
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
+    // The SDL game paces the frames of the race and draws them from its own loop.
     PaceRaceFrames();
+#endif /* TGR_PLATFORM != TGR_PLATFORM_SDL */
 #else
     UpdateFadeTransitions();
     StartLowResFrame();

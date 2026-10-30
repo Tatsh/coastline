@@ -1,7 +1,9 @@
 #include "ghostfile.h"
 
 #include <algorithm>
+#include <filesystem>
 #include <format>
+#include <fstream>
 #include <iterator>
 
 #include <nlohmann/json.hpp>
@@ -301,3 +303,34 @@ std::string FormatGhostJson(const nlohmann::ordered_json &json) {
 }
 
 } // namespace coastline
+
+// The engine reads a recording through a FILE, and the file built from the JSON goes to a
+// temporary file that is removed when it is closed.
+extern "C" FILE *OpenGhostRecording(const char *pszPath) {
+    FILE *original = std::fopen(pszPath, "rb");
+    if (original != nullptr) {
+        return original;
+    }
+    std::ifstream text(std::filesystem::path(pszPath).replace_extension(".json"));
+    if (!text) {
+        return nullptr;
+    }
+    auto json = nlohmann::ordered_json::parse(text, nullptr, false);
+    if (json.is_discarded()) {
+        return nullptr;
+    }
+    auto bytes = coastline::GhostFromJson(json);
+    if (!bytes) {
+        return nullptr;
+    }
+    FILE *built = std::tmpfile();
+    if (built == nullptr) {
+        return nullptr;
+    }
+    if (std::fwrite(bytes->data(), 1, bytes->size(), built) != bytes->size()) {
+        std::fclose(built);
+        return nullptr;
+    }
+    std::rewind(built);
+    return built;
+}

@@ -66,12 +66,32 @@ unsigned g_dwHudOverlayTextureId;
 unsigned g_dwParticleTextureId;
 unsigned g_dwTireTrailTextureId;
 unsigned g_dwVehicleEnvMapTextureId;
-decltype(g_pfnAliasTextureEntrySurface) g_pfnAliasTextureEntrySurface;
-decltype(g_pfnCreateTextureFromN64Image) g_pfnCreateTextureFromN64Image;
-decltype(g_pfnDecodeN64TextureToPixelBuffer) g_pfnDecodeN64TextureToPixelBuffer;
-decltype(g_pfnInitializeTextureSubsystem) g_pfnInitializeTextureSubsystem;
-decltype(g_pfnRenderBackendInit) g_pfnRenderBackendInit;
-decltype(g_pfnRenderBackendShutdown) g_pfnRenderBackendShutdown;
-decltype(g_pfnRenderBackendSubmitDisplayList) g_pfnRenderBackendSubmitDisplayList;
-decltype(g_pfnRenderBackendUpdateFog) g_pfnRenderBackendUpdateFog;
-decltype(g_pfnShutdownTextureSubsystem) g_pfnShutdownTextureSubsystem;
+// The renderer of the SDL game draws the race from the converted models and textures, and the
+// hooks of the renderers of the Windows libraries do nothing.
+decltype(g_pfnAliasTextureEntrySurface) g_pfnAliasTextureEntrySurface = [](int, int) {};
+decltype(g_pfnCreateTextureFromN64Image) g_pfnCreateTextureFromN64Image = [](const unsigned char *,
+                                                                             const unsigned char *,
+                                                                             int,
+                                                                             int,
+                                                                             int,
+                                                                             int,
+                                                                             int,
+                                                                             int,
+                                                                             int,
+                                                                             int,
+                                                                             int,
+                                                                             int,
+                                                                             int,
+                                                                             int,
+                                                                             int) -> unsigned {
+    return 0;
+};
+decltype(g_pfnDecodeN64TextureToPixelBuffer) g_pfnDecodeN64TextureToPixelBuffer =
+    [](void *, const unsigned char *, const unsigned char *, int, int, int, int, int) { return 0; };
+decltype(g_pfnInitializeTextureSubsystem) g_pfnInitializeTextureSubsystem = [] {};
+decltype(g_pfnRenderBackendInit) g_pfnRenderBackendInit = [] {};
+decltype(g_pfnRenderBackendShutdown) g_pfnRenderBackendShutdown = [] {};
+decltype(g_pfnRenderBackendSubmitDisplayList) g_pfnRenderBackendSubmitDisplayList =
+    [](GbiCommand *) {};
+decltype(g_pfnRenderBackendUpdateFog) g_pfnRenderBackendUpdateFog = [] {};
+decltype(g_pfnShutdownTextureSubsystem) g_pfnShutdownTextureSubsystem = [] {};

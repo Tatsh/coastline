@@ -10,6 +10,7 @@
 
 #include "common/assetnames.h"
 #include "common/fileio.h"
+#include "common/ghost.h"
 #include "common/inputpoll.h"
 #include "common/model.h"
 #include "common/podarchive.h"
@@ -19,9 +20,11 @@
 #include "common/settings.h"
 #include "common/soundbuffer.h"
 #include "common/track.h"
+#include "common/trackselect.h"
 #include "common/vehiclemodel.h"
 #include "ear/sdlmixer.h"
 #include "input.h"
+#include "racedemo.h"
 #include "racemusic.h"
 #include "trackload.h"
 
@@ -162,6 +165,34 @@ bool CheckPodModel() {
     return model->partCount > 0;
 }
 
+// The demo runs a few seconds of its race, through the countdown and past the start.
+bool CheckAttractDemo() {
+    constexpr int DEMO_FRAMES = 300;
+    OpenRaceData();
+    StartAttractDemo();
+    int frames = 0;
+    Vec3f start{};
+    while (frames < DEMO_FRAMES && StepAttractDemo()) {
+        ++frames;
+        if (frames == 1) {
+            start = g_aVehicles[0].GetFrame().position;
+        }
+    }
+    const Vec3f &position = g_aVehicles[0].GetFrame().position;
+    SDL_Log("Attract demo: track %d, car %d, %d frames, the car from (%.1f, %.1f, %.1f) to (%.1f, "
+            "%.1f, %.1f).",
+            static_cast<int>(g_dwSelectedTrackId),
+            static_cast<int>(g_GhostRecordingInfo.car),
+            frames,
+            static_cast<double>(start.x),
+            static_cast<double>(start.y),
+            static_cast<double>(start.z),
+            static_cast<double>(position.x),
+            static_cast<double>(position.y),
+            static_cast<double>(position.z));
+    return frames == DEMO_FRAMES && (start.x != position.x || start.y != position.y);
+}
+
 } // namespace
 
 int CheckEngine(const std::filesystem::path &defaults) {
@@ -190,6 +221,7 @@ int CheckEngine(const std::filesystem::path &defaults) {
         {"track", CheckTrack()},
         {"car", CheckCar()},
         {"model of the pod", CheckPodModel()},
+        {"attract demo", CheckAttractDemo()},
     };
     int failures = 0;
     for (const Check &check : checks) {
