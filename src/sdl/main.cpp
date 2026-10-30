@@ -1,3 +1,5 @@
+#include <algorithm>
+#include <array>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -9,6 +11,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <vector>
 
@@ -112,6 +115,48 @@ std::optional<std::vector<std::uint8_t>> LoadMusicByIndex(const std::filesystem:
         return std::nullopt;
     }
     return LoadMusicModule(data, coastline::USA_MUSIC_MODULES[index].offset);
+}
+
+// A press of --press: the buttons held from a frame for SCRIPTED_PRESS_FRAMES frames.
+struct ScriptedPress {
+    int frame;
+    std::uint16_t buttons;
+};
+
+constexpr int SCRIPTED_PRESS_FRAMES = 6;
+
+// A malformed press is logged and left out.
+std::vector<ScriptedPress> ParsePresses(const argparse::ArgumentParser &parser) {
+    static constexpr std::array<std::pair<std::string_view, std::uint16_t>, 14> BUTTONS{
+        {{"a", coastline::BUTTON_A},
+         {"b", coastline::BUTTON_B},
+         {"z", coastline::BUTTON_Z},
+         {"start", coastline::BUTTON_START},
+         {"l", coastline::BUTTON_L},
+         {"r", coastline::BUTTON_R},
+         {"up", coastline::BUTTON_D_UP},
+         {"down", coastline::BUTTON_D_DOWN},
+         {"left", coastline::BUTTON_D_LEFT},
+         {"right", coastline::BUTTON_D_RIGHT},
+         {"cu", coastline::BUTTON_C_UP},
+         {"cd", coastline::BUTTON_C_DOWN},
+         {"cl", coastline::BUTTON_C_LEFT},
+         {"cr", coastline::BUTTON_C_RIGHT}}};
+    std::vector<ScriptedPress> presses;
+    for (const auto &value : parser.get<std::vector<std::string>>("--press")) {
+        auto colon = value.find(':');
+        auto found = std::ranges::find(
+            BUTTONS,
+            std::string_view(value).substr(colon == std::string::npos ? 0 : colon + 1),
+            &std::pair<std::string_view, std::uint16_t>::first);
+        int frame = std::atoi(value.substr(0, colon).c_str());
+        if (colon == std::string::npos || found == BUTTONS.end() || frame <= 0) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s is not FRAME:BUTTON.", value.c_str());
+            continue;
+        }
+        presses.push_back({frame, found->second});
+    }
+    return presses;
 }
 
 coastline::TextureHandle CreateCheckerTexture(coastline::TlRenderer &renderer) {
@@ -315,6 +360,10 @@ int main(int argc, char *argv[]) {
         .default_value(0)
         .scan<'i', int>();
     parser.add_argument("--quit-after-screenshot").help("exit once the frame is saved").flag();
+    parser.add_argument("--press")
+        .help("press a button of the first controller for 6 frames from a frame, as FRAME:BUTTON "
+              "with BUTTON one of a, b, z, start, l, r, up, down, left, right, cu, cd, cl, or cr")
+        .append();
     try {
         parser.parse_args(argc, argv);
     } catch (const std::exception &error) {
@@ -419,6 +468,7 @@ int main(int argc, char *argv[]) {
             int screenshotFrame = parser.get<int>("--screenshot-frame");
             int screenshotEvery = parser.get<int>("--screenshot-every");
             bool quitAfterScreenshot = parser.get<bool>("--quit-after-screenshot");
+            std::vector<ScriptedPress> presses = ParsePresses(parser);
             std::unique_ptr<coastline::TlRenderer> renderer;
             std::unique_ptr<coastline::ModelView> modelView;
             std::unique_ptr<coastline::SceneRenderer> sceneRenderer;
@@ -463,6 +513,11 @@ int main(int argc, char *argv[]) {
                     input.HandleEvent(event);
                 }
                 auto ports = input.Poll();
+                for (const ScriptedPress &press : presses) {
+                    if (frame >= press.frame && frame < press.frame + SCRIPTED_PRESS_FRAMES) {
+                        ports[0].buttons |= press.buttons;
+                    }
+                }
                 bool capture = screenshot && frame == screenshotFrame;
                 std::optional<std::filesystem::path> framePath;
                 if (capture) {
