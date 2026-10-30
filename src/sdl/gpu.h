@@ -39,6 +39,9 @@ struct DisplayOptions {
      * systems, rather than presenting to the mailbox at the refresh rate of the display. */
     bool fifo = false;
     int antialias = 1; /*!< The samples of each pixel: 1 for none, or 2, 4, or 8. */
+    /** The most samples of anisotropic filtering of the textures of models, which are then
+     * mipmapped, from 2 to 16, or 0 for neither. */
+    int anisotropy = 0;
     std::optional<std::string>
         driver; /*!< An SDL GPU driver, such as vulkan, metal, or direct3d12. */
 };
@@ -140,6 +143,11 @@ public:
     /** @return The samples of each pixel the options requested, 1 for no anti-aliasing. */
     int Antialias() const {
         return m_antialias;
+    }
+
+    /** @return The most samples of anisotropic filtering of the options, 0 for no mipmaps. */
+    int Anisotropy() const {
+        return m_options.anisotropy;
     }
 
 private:

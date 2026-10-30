@@ -92,6 +92,9 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     }
     // A capture is drawn at Width by Height, for the same frames on every machine.
     options.fixedFrame = parser.is_used("--screenshot");
+    // Vulkan, Metal, and Direct3D 12 all filter at least 16 samples.
+    options.anisotropy = static_cast<int>(
+        std::clamp(config.GetInteger("Video", "AnisotropicFiltering", 0), 0L, 16L));
     options.antialias =
         static_cast<int>(config.GetInteger("Video", "Antialias", options.antialias));
     if (auto antialias = parser.present<int>("--antialias")) {
@@ -875,6 +878,7 @@ int main(int argc, char *argv[]) {
                                               {"Video", "RenderScale", "1"},
                                               {"Video", "ScaleFilter", "linear"},
                                               {"Video", "FieldOfView", "1"},
+                                              {"Video", "AnisotropicFiltering", "0"},
                                               {"Video", "GpuDriver", ""},
                                               {"Video", "WideMenus", "0"},
                                               {"Game", "PlayMusic", "1"},
@@ -1101,8 +1105,11 @@ int main(int argc, char *argv[]) {
                     framePath = screenshot->parent_path() / (screenshot->stem().string() + number +
                                                              screenshot->extension().string());
                 }
-                if (intro) {
+                // The test of the renderer keeps the size it started at, its targets with it.
+                if (!renderer) {
                     window->UpdateFrameSize();
+                }
+                if (intro) {
                     Uint64 now = SDL_GetTicksNS();
                     float seconds = fixedStep ?
                                         1.0f / 60.0f :

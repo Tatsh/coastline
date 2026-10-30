@@ -1,6 +1,7 @@
 #include "scenerenderer.h"
 
 #include <algorithm>
+#include <bit>
 #include <cmath>
 #include <cstring>
 #include <fstream>
@@ -260,7 +261,10 @@ public:
         return buffer;
     }
 
-    SDL_GPUTexture *Texture(int width, int height, std::span<const std::uint8_t> rgba) {
+    // A mipmapped texture has every level down to a pixel, generated from the first after the
+    // upload.
+    SDL_GPUTexture *
+    Texture(int width, int height, std::span<const std::uint8_t> rgba, bool mipmapped = false) {
         SDL_GPUTextureCreateInfo info{};
         info.type = SDL_GPU_TEXTURETYPE_2D;
         info.format = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
@@ -269,10 +273,19 @@ public:
         info.height = static_cast<Uint32>(height);
         info.layer_count_or_depth = 1;
         info.num_levels = 1;
+        mipmapped = mipmapped && std::max(width, height) > 1;
+        if (mipmapped) {
+            info.usage |= SDL_GPU_TEXTUREUSAGE_COLOR_TARGET;
+            info.num_levels =
+                static_cast<Uint32>(std::bit_width(static_cast<unsigned>(std::max(width, height))));
+        }
         SDL_GPUTexture *texture = SDL_CreateGPUTexture(m_device, &info);
         if (texture != nullptr) {
-            m_textures.push_back(
-                {texture, width, height, std::vector<std::uint8_t>(rgba.begin(), rgba.end())});
+            m_textures.push_back({texture,
+                                  width,
+                                  height,
+                                  std::vector<std::uint8_t>(rgba.begin(), rgba.end()),
+                                  mipmapped});
         }
         return texture;
     }
@@ -329,6 +342,11 @@ public:
             offset += texture.bytes.size();
         }
         SDL_EndGPUCopyPass(pass);
+        for (const auto &texture : m_textures) {
+            if (texture.mipmapped) {
+                SDL_GenerateMipmapsForGPUTexture(commands, texture.texture);
+            }
+        }
         bool submitted = SDL_SubmitGPUCommandBuffer(commands);
         SDL_ReleaseGPUTransferBuffer(m_device, transfer);
         return submitted;
@@ -344,6 +362,7 @@ private:
         int width;
         int height;
         std::vector<std::uint8_t> bytes;
+        bool mipmapped;
     };
     SDL_GPUDevice *m_device;
     std::vector<PendingBuffer> m_buffers;
@@ -858,6 +877,9 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
         }
     }
 
+    // The textures of a model are mipmapped for anisotropic filtering, and other textures are not.
+    const int anisotropy = renderer.m_state->window->Anisotropy();
+    const bool mipmapped = anisotropy > 0;
     Uploader upload(device);
     for (const auto &image : images) {
         auto file = imageDirectory / image["uri"].get<std::string>();
@@ -888,7 +910,7 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
                     auto *row = static_cast<std::uint8_t *>(texels->pixels) + y * texels->pitch;
                     rows.insert(rows.end(), row, row + texels->w * 4);
                 }
-                textures.push_back(upload.Texture(texels->w, texels->h, rows));
+                textures.push_back(upload.Texture(texels->w, texels->h, rows, mipmapped));
                 SDL_DestroySurface(texels);
             }
             if (!textures.empty()) {
@@ -917,12 +939,15 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
         if (damage) {
             std::vector<SDL_GPUTexture *> levels;
             for (const auto &mask : *options.damageMasks) {
-                levels.push_back(upload.Texture(
-                    rgba->w, rgba->h, DamageTexels(texels, rgba->w, rgba->h, mask, *damage)));
+                levels.push_back(
+                    upload.Texture(rgba->w,
+                                   rgba->h,
+                                   DamageTexels(texels, rgba->w, rgba->h, mask, *damage),
+                                   mipmapped));
             }
             state->damaged[state->images.size()] = {damage->side, std::move(levels)};
         }
-        state->images.push_back(upload.Texture(rgba->w, rgba->h, texels));
+        state->images.push_back(upload.Texture(rgba->w, rgba->h, texels, mipmapped));
         SDL_DestroySurface(rgba);
     }
     for (const auto &sampler : document.value("samplers", nlohmann::json::array())) {
@@ -930,6 +955,12 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
         info.min_filter = SDL_GPU_FILTER_LINEAR;
         info.mag_filter = SDL_GPU_FILTER_LINEAR;
         info.mipmap_mode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST;
+        if (mipmapped) {
+            info.mipmap_mode = SDL_GPU_SAMPLERMIPMAPMODE_LINEAR;
+            info.max_lod = 1000.0f;
+            info.enable_anisotropy = anisotropy > 1;
+            info.max_anisotropy = static_cast<float>(anisotropy);
+        }
         info.address_mode_u = AddressMode(sampler.value("wrapS", 10497));
         info.address_mode_v = AddressMode(sampler.value("wrapT", 10497));
         info.address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_REPEAT;

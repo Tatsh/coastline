@@ -168,18 +168,19 @@ music track, and F11 does not select the previous one as in the PC release.
 
 The `[Video]` section of `BossRally.ini` sets up the display.
 
-| Key              | Values                                                                                                                                        |
-| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Fullscreen`     | `1` for the full screen, or `0` for a resizable window. Alt+Enter and F11 save their choice here.                                             |
-| `FullscreenMode` | `borderless`, the default, covers the display at its desktop mode. `exclusive` switches the display to `Width` by `Height` at `RefreshRate`.  |
-| `RefreshRate`    | The refresh rate of the exclusive mode in hertz, or `0` for the rate of the desktop.                                                          |
-| `VSync`          | `vsync` or `1` waits for the vertical blank. `mailbox` presents without tearing and without waiting, and `immediate` or `0` presents at once. |
-| `FrameRateLimit` | The most frames drawn each second, or `0` for no limit.                                                                                       |
-| `InternalWidth`  | The width of the frame the game draws in pixels, or `0`, the default, for the width of the window.                                            |
-| `InternalHeight` | The height of the frame the game draws in pixels, or `0`, the default, for the height of the window.                                          |
-| `RenderScale`    | The pixels of the frame for each pixel of the window, from `0.25` to `4`, when the frame follows the window. The default is `1`.              |
-| `ScaleFilter`    | `linear`, the default, or `nearest`, how the frame is scaled to the window.                                                                   |
-| `FieldOfView`    | The multiplier of the field of view of a race, `1` for that of the PC release.                                                                |
+| Key                    | Values                                                                                                                                          |
+| ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Fullscreen`           | `1` for the full screen, or `0` for a resizable window. Alt+Enter and F11 save their choice here.                                               |
+| `FullscreenMode`       | `borderless`, the default, covers the display at its desktop mode. `exclusive` switches the display to `Width` by `Height` at `RefreshRate`.    |
+| `RefreshRate`          | The refresh rate of the exclusive mode in hertz, or `0` for the rate of the desktop.                                                            |
+| `VSync`                | `vsync` or `1` waits for the vertical blank. `mailbox` presents without tearing and without waiting, and `immediate` or `0` presents at once.   |
+| `FrameRateLimit`       | The most frames drawn each second, or `0` for no limit.                                                                                         |
+| `InternalWidth`        | The width of the frame the game draws in pixels, or `0`, the default, for the width of the window.                                              |
+| `InternalHeight`       | The height of the frame the game draws in pixels, or `0`, the default, for the height of the window.                                            |
+| `RenderScale`          | The pixels of the frame for each pixel of the window, from `0.25` to `4`, when the frame follows the window. The default is `1`.                |
+| `ScaleFilter`          | `linear`, the default, or `nearest`, how the frame is scaled to the window.                                                                     |
+| `FieldOfView`          | The multiplier of the field of view of a race, `1` for that of the PC release.                                                                  |
+| `AnisotropicFiltering` | `2`, `4`, `8`, or `16` mipmaps the textures of the tracks and the cars and filters them with that many samples. `0`, the default, does neither. |
 
 By default the frame follows the size of the window in pixels, and changes with it as the window
 is resized or covers the display. `InternalWidth` and `InternalHeight` set a size of their own,
