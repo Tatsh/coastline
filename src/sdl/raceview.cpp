@@ -600,6 +600,9 @@ struct RaceView::State {
     HudTextures hudTextures;
     // The vertices of the pool of the quads of the track the skid marks of the frame have taken.
     int skidVertices = 0;
+    // The streak of the rain of each view, and the texels it was made from.
+    std::array<std::vector<std::uint8_t>, WEATHER_VIEWS> streakTexels;
+    std::array<std::unique_ptr<RenderTexture>, WEATHER_VIEWS> streaks;
 };
 
 namespace {
@@ -888,6 +891,134 @@ void DrawExhaust(SceneRenderer &renderer,
             renderer.DrawQuads(quads, material, viewProjection, true);
         }
     }
+}
+
+// RenderPrecipitationEffect(): the colour of the rain or the snow, its alpha the texel.
+constexpr std::array<std::uint32_t, 2> PRECIPITATION_COMBINE = CombineLerp(ZERO_AB,
+                                                                           ZERO_AB,
+                                                                           ZERO_D,
+                                                                           PRIMITIVE,
+                                                                           ZERO_ALPHA,
+                                                                           ZERO_ALPHA,
+                                                                           ZERO_ALPHA,
+                                                                           TEXEL0,
+                                                                           ZERO_AB,
+                                                                           ZERO_AB,
+                                                                           ZERO_D,
+                                                                           PRIMITIVE,
+                                                                           ZERO_ALPHA,
+                                                                           ZERO_ALPHA,
+                                                                           ZERO_ALPHA,
+                                                                           TEXEL0);
+
+// The scale from the place of a particle of the rain or the snow to the units of the world.
+constexpr float PRECIPITATION_SCALE = 6.10370189e-05f;
+
+// RenderPrecipitationEffect(): the streak of the rain of a view, from the fall of the rain on the
+// screen. Each of 16 steps along the fall writes a disc 5 texels across without its corners, the
+// later steps brighter, as BRD3D writes the white texels of the alpha ramp of
+// CreateAlphaRampTextures() into the texture of the view, cleared each frame.
+std::vector<std::uint8_t> RainStreakTexels(const CameraFrame &camera, const Vec3f &velocity) {
+    constexpr int SIDE = RAIN_STREAK_TEXTURE_SIDE;
+    constexpr int MARGIN = 2;
+    constexpr std::array<std::array<int, 2>, 21> DISC{
+        {{-1, -2}, {0, -2}, {1, -2}, {-2, -1}, {-1, -1}, {0, -1}, {1, -1},
+         {2, -1},  {-2, 0}, {-1, 0}, {0, 0},   {1, 0},   {2, 0},  {-2, 1},
+         {-1, 1},  {0, 1},  {1, 1},  {2, 1},   {-1, 2},  {0, 2},  {1, 2}}};
+    std::vector<std::uint8_t> texels(static_cast<std::size_t>(SIDE * SIDE * 4), 0);
+    // The velocity in the axes of the camera, across, up, and along it.
+    Vec3f fall{static_cast<f32>(Vec3fDot(&velocity, &camera.side)),
+               static_cast<f32>(Vec3fDot(&velocity, &camera.up)),
+               static_cast<f32>(Vec3fDot(&velocity, &camera.forward))};
+    Vec3fNormalize(&fall);
+    long double u = 32.0L - static_cast<long double>(fall.x) * 28.0f;
+    long double v = 32.0L - static_cast<long double>(fall.y) * -28.0f;
+    long double du = static_cast<long double>(fall.x) * 3.5f;
+    long double dv = static_cast<long double>(fall.y) * -3.5f;
+    v += dv;
+    for (int step = 0; step < 16; ++step) {
+        u += du;
+        auto row = static_cast<int>(v);
+        auto column = static_cast<int>(u);
+        if (row >= MARGIN && row < SIDE - MARGIN && column >= MARGIN && column < SIDE - MARGIN) {
+            for (const auto &[dx, dy] : DISC) {
+                std::size_t at = static_cast<std::size_t>(((row + dy) * SIDE + column + dx) * 4);
+                texels[at] = 0xFF;
+                texels[at + 1] = 0xFF;
+                texels[at + 2] = 0xFF;
+                texels[at + 3] = static_cast<std::uint8_t>(step << 4 | step);
+            }
+        }
+        v += dv;
+    }
+    return texels;
+}
+
+// RenderPrecipitationEffect() of a view: each particle in front of the camera and on the screen is
+// a rectangle of the texture from the particle, at half the scale of the projection, its size 96
+// by 144 for the snow and 128 for the rain over its distance, in quarters of a pixel of the 480
+// lines of the screen of the PC release. A particle lies around the camera opposite to its place
+// in the axes of the world. The rectangle takes the texture upside down, the half of its texture
+// the snow samples, in the colour of the rain or of the snow by the alpha of the texture.
+void DrawPrecipitation(SceneRenderer &renderer,
+                       const RenderTexture &texture,
+                       int view,
+                       const CameraFrame &camera,
+                       const Matrix4 &viewProjection,
+                       float widen,
+                       bool across) {
+    float width = g_dwSnowMode ? 96.0f : 128.0f;
+    float height = g_dwSnowMode ? 144.0f : 128.0f;
+    float textureScale = g_dwSnowMode ? 0.5f : 1.0f;
+    float first = 0.5f / 64.0f * textureScale;
+    float last = 63.5f / 64.0f * textureScale;
+    std::array<std::uint8_t, 4> color = g_dwSnowMode ?
+                                            std::array<std::uint8_t, 4>{0xE0, 0xE0, 0xFF, 0xFF} :
+                                            std::array<std::uint8_t, 4>{0x78, 0x80, 0x88, 0xFF};
+    std::vector<FlatVertex> corners;
+    for (s32 i = 0; i < g_dwRainParticleCount; ++i) {
+        const s16 *particle = g_awRainParticlePos[view][i];
+        std::array<float, 4> place{
+            camera.position.x - static_cast<float>(particle[0]) * PRECIPITATION_SCALE,
+            camera.position.y - static_cast<float>(particle[1]) * PRECIPITATION_SCALE,
+            camera.position.z - static_cast<float>(particle[2]) * PRECIPITATION_SCALE,
+            1.0f};
+        std::array<float, 4> clip{};
+        for (std::size_t row = 0; row < 4; ++row) {
+            for (std::size_t column = 0; column < 4; ++column) {
+                clip[row] += viewProjection[column * 4 + row] * place[column];
+            }
+        }
+        if (!(clip[3] >= 0.1f)) {
+            continue;
+        }
+        float scale = 0.5f / clip[3];
+        float top = clip[1] * scale;
+        float left = clip[0] * scale;
+        if (!(top >= -1.0f) || top > 1.0f || !(left >= -1.0f) || left > 1.0f) {
+            continue;
+        }
+        auto sizeX = static_cast<int>(scale * width);
+        auto sizeY = static_cast<int>(scale * height);
+        if (sizeX < 2 || sizeY < 2) {
+            continue;
+        }
+        float right = left + static_cast<float>(sizeX) / 1280.0f / widen;
+        float bottom = top - static_cast<float>(sizeY) / 960.0f;
+        float sign = across ? -1.0f : 1.0f;
+        corners.push_back({left * sign, top, first, last, color, 0.0f});
+        corners.push_back({right * sign, top, last, last, color, 0.0f});
+        corners.push_back({right * sign, bottom, last, first, color, 0.0f});
+        corners.push_back({left * sign, bottom, first, first, color, 0.0f});
+    }
+    if (corners.empty()) {
+        return;
+    }
+    FlatMaterial material;
+    material.texel0 = &texture;
+    material.combine = PRECIPITATION_COMBINE;
+    material.prim = {color[0] / 255.0f, color[1] / 255.0f, color[2] / 255.0f, 1.0f};
+    renderer.DrawQuads(corners, material, IDENTITY_MATRIX);
 }
 
 // The combiner of the spray of the tyres: the shade, its alpha the texel by the shade.
@@ -2029,6 +2160,41 @@ void RaceView::DrawView(SceneRenderer &renderer,
         DrawExhaust(renderer, *s.shadowTexture, *camera, viewProjection);
         for (int index = 0; index < g_dwNumActiveVehicles; ++index) {
             DrawTireSpray(renderer, *s.sprayTexture, vehicles[index], viewProjection);
+        }
+    }
+    // RenderPrecipitationEffect() in the rain and the snow, in the view and not in its mirror, and
+    // not with the camera under a shelter. It takes the projection before a mirrored track turns
+    // it, and the rectangles turn with the view. The rectangles keep their shape across a view
+    // wider than the screen of the PC release.
+    bool sheltered = std::ranges::any_of(
+        std::span(g_awCameraRayHitInstances, static_cast<std::size_t>(g_dwCameraRayHitCount)),
+        [](u16 hit) { return (g_LoadedTrack.instances[hit].flags & TRACK_INSTANCE_SHELTER) != 0; });
+    if (!mirror && (g_dwSnowMode || g_dwRainMode) && !sheltered) {
+        const RenderTexture *precipitation = s.shadowTexture.get();
+        if (g_dwRainMode) {
+            std::vector<std::uint8_t> texels =
+                RainStreakTexels(*camera, g_avRainVelocity[static_cast<std::size_t>(index)]);
+            auto view = static_cast<std::size_t>(index);
+            if (!s.streaks[view] || texels != s.streakTexels[view]) {
+                s.streaks[view] = RenderTexture::FromTexels(renderer,
+                                                            RAIN_STREAK_TEXTURE_SIDE,
+                                                            RAIN_STREAK_TEXTURE_SIDE,
+                                                            texels,
+                                                            true,
+                                                            false);
+                s.streakTexels[view] = std::move(texels);
+            }
+            precipitation = s.streaks[view].get();
+        }
+        if (precipitation != nullptr) {
+            DrawPrecipitation(renderer,
+                              *precipitation,
+                              index,
+                              *camera,
+                              CameraMatrix(*camera, fov, farPlane, aspect),
+                              aspect * static_cast<float>(screen.height) /
+                                  static_cast<float>(std::max(screen.width, 1)),
+                              across);
         }
     }
 }
