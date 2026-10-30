@@ -13,6 +13,7 @@ namespace coastline {
 namespace {
 
 std::array<std::vector<ControlSource>, CONTROL_ACTION_COUNT> g_controls;
+std::array<std::string, PLAYER_DEVICE_KEYS.size()> g_playerDevices{"auto", "auto"};
 
 bool EqualsIgnoringCase(std::string_view left, std::string_view right) {
     return std::ranges::equal(left, right, [](char a, char b) {
@@ -99,6 +100,18 @@ void LoadControls(const GameConfig &config) {
         auto value = config.Get("Controls", CONTROL_KEYS[i]);
         g_controls[i] = ParseSources(CONTROL_KEYS[i], value ? *value : preset->values[i]);
     }
+    for (std::size_t i = 0; i < PLAYER_DEVICE_KEYS.size(); ++i) {
+        auto value = config.Get("Controls", PLAYER_DEVICE_KEYS[i]);
+        std::string device(value ? Trim(*value) : std::string_view());
+        std::ranges::transform(device, device.begin(), [](unsigned char c) {
+            return static_cast<char>(std::tolower(c));
+        });
+        g_playerDevices[i] = device.empty() ? "auto" : device;
+    }
+}
+
+std::string_view PlayerDevice(std::size_t player) {
+    return g_playerDevices[player];
 }
 
 bool IsControlAnalog(ControlAction action) {

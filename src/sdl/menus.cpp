@@ -27,6 +27,10 @@ bool Menus::TakesText() const {
     return m_current == Screen::PaintShopScreen && m_paintShop->TakesText();
 }
 
+int Menus::ControlledPlayers() const {
+    return m_current == Screen::CarSelect ? m_numLocalPlayers : 1;
+}
+
 MenusEnd Menus::Frame(SceneRenderer &renderer,
                       float seconds,
                       const std::array<MenuButtons, 2> &players,

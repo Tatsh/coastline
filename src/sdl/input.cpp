@@ -1,7 +1,9 @@
 #include "input.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cmath>
+#include <string>
 
 #include "common/inputpoll.h"
 #include "controls.h"
@@ -18,6 +20,8 @@ constexpr int C_BUTTON_THRESHOLD = 16384;
 std::vector<int> g_scriptedKeys;
 std::vector<int> g_ignoredKeys;
 ControllerState g_secondController;
+// The open gamepads in the order they connected.
+std::vector<SDL_Gamepad *> g_gamepads;
 
 struct KeyBinding {
     SDL_Scancode key;
@@ -70,16 +74,24 @@ ScaleStickDirections(SDL_Gamepad *gamepad, ControlAction negative, ControlAction
     return ScaleStickAxis(static_cast<std::int16_t>(std::clamp(axis, -32768, 32767)));
 }
 
+// A stick at rest leaves the stick of another device of the same player.
 void PollGamepad(SDL_Gamepad *gamepad, ControllerState &state) {
     for (const auto &binding : PAD_BUTTONS) {
         if (ReadControl(gamepad, binding.action) > C_BUTTON_THRESHOLD) {
             state.buttons |= binding.button;
         }
     }
-    state.stickX = ScaleStickDirections(gamepad, CONTROL_MENU_STICK_LEFT, CONTROL_MENU_STICK_RIGHT);
+    const std::int8_t x =
+        ScaleStickDirections(gamepad, CONTROL_MENU_STICK_LEFT, CONTROL_MENU_STICK_RIGHT);
     // SDL reports down as positive, and the console reports up as positive.
-    state.stickY = static_cast<std::int8_t>(
+    const auto y = static_cast<std::int8_t>(
         -ScaleStickDirections(gamepad, CONTROL_MENU_STICK_UP, CONTROL_MENU_STICK_DOWN));
+    if (x != 0) {
+        state.stickX = x;
+    }
+    if (y != 0) {
+        state.stickY = y;
+    }
 }
 
 void PollKeyboard(ControllerState &state) {
@@ -106,6 +118,49 @@ void PollKeyboard(ControllerState &state) {
     }
 }
 
+std::string LowercaseName(SDL_Gamepad *gamepad) {
+    const char *name = SDL_GetGamepadName(gamepad);
+    std::string lowercase(name != nullptr ? name : "");
+    std::ranges::transform(lowercase, lowercase.begin(), [](unsigned char c) {
+        return static_cast<char>(std::tolower(c));
+    });
+    return lowercase;
+}
+
+bool OpenGamepad(SDL_JoystickID id) {
+    if (std::ranges::any_of(
+            g_gamepads, [&](SDL_Gamepad *gamepad) { return SDL_GetGamepadID(gamepad) == id; })) {
+        return false;
+    }
+    SDL_Gamepad *gamepad = SDL_OpenGamepad(id);
+    if (gamepad == nullptr) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_INPUT, "A gamepad did not open: %s", SDL_GetError());
+        return false;
+    }
+    g_gamepads.push_back(gamepad);
+    SDL_Log("Gamepad %d is %s.", static_cast<int>(g_gamepads.size()), SDL_GetGamepadName(gamepad));
+    return true;
+}
+
+std::string DescribeDevices(const PlayerDevices &devices) {
+    std::string text;
+    for (SDL_Gamepad *gamepad : devices.gamepads) {
+        const char *name = SDL_GetGamepadName(gamepad);
+        text += text.empty() ? "" : ", ";
+        text += name != nullptr ? name : "a gamepad";
+    }
+    if (devices.keyboard) {
+        text += text.empty() ? "keyboard" : ", keyboard";
+    }
+    return text.empty() ? "none" : text;
+}
+
+void LogPlayerDevices() {
+    SDL_Log("Player 1: %s; Player 2: %s",
+            DescribeDevices(AssignedDevices(0, 2)).c_str(),
+            DescribeDevices(AssignedDevices(1, 2)).c_str());
+}
+
 } // namespace
 
 std::int8_t ScaleStickAxis(std::int16_t axis) {
@@ -119,64 +174,117 @@ std::int8_t ScaleStickAxis(std::int16_t axis) {
     return static_cast<std::int8_t>(value < 0 ? -scaled : scaled);
 }
 
+PlayerDevices AssignedDevices(std::size_t player, std::size_t players) {
+    std::array<PlayerDevices, 2> devices;
+    std::vector<bool> taken(g_gamepads.size());
+    std::vector<std::size_t> automatic;
+    for (std::size_t p = 0; p < devices.size(); ++p) {
+        const std::string_view device = PlayerDevice(p);
+        if (device == "auto") {
+            automatic.push_back(p);
+            continue;
+        }
+        if (device == "none") {
+            continue;
+        }
+        if (device == "keyboard") {
+            devices[p].keyboard = true;
+            continue;
+        }
+        // gamepad1 is the first gamepad connected, and another value is a part of a name.
+        std::size_t number = 0;
+        const bool numbered =
+            device.starts_with("gamepad") && device.size() > 7 &&
+            std::ranges::all_of(device.substr(7), [](char c) { return c >= '0' && c <= '9'; });
+        if (numbered) {
+            number = std::stoul(std::string(device.substr(7)));
+        }
+        for (std::size_t i = 0; i < g_gamepads.size(); ++i) {
+            const bool match = numbered ?
+                                   number == i + 1 :
+                                   LowercaseName(g_gamepads[i]).find(device) != std::string::npos;
+            if (match && !taken[i]) {
+                devices[p].gamepads.push_back(g_gamepads[i]);
+                taken[i] = true;
+                break;
+            }
+        }
+    }
+    const bool keyboardTaken = devices[0].keyboard || devices[1].keyboard;
+    std::size_t next = 0;
+    for (std::size_t i = 0; i < g_gamepads.size() && !automatic.empty(); ++i) {
+        if (!taken[i]) {
+            const std::size_t p = next < automatic.size() ? automatic[next++] : automatic.front();
+            devices[p].gamepads.push_back(g_gamepads[i]);
+        }
+    }
+    if (!keyboardTaken && !automatic.empty()) {
+        auto free = std::ranges::find_if(
+            automatic, [&](std::size_t p) { return devices[p].gamepads.empty(); });
+        devices[free == automatic.end() ? automatic.front() : *free].keyboard = true;
+    }
+    if (players < 2) {
+        devices[0].keyboard = devices[0].keyboard || devices[1].keyboard;
+        devices[0].gamepads.insert(
+            devices[0].gamepads.end(), devices[1].gamepads.begin(), devices[1].gamepads.end());
+        devices[1] = {};
+    }
+    return devices[player];
+}
+
 InputBindings::InputBindings() {
     int count = 0;
     SDL_JoystickID *ids = SDL_GetGamepads(&count);
     for (int i = 0; ids != nullptr && i < count; ++i) {
-        SDL_Event event{};
-        event.gdevice.type = SDL_EVENT_GAMEPAD_ADDED;
-        event.gdevice.which = ids[i];
-        HandleEvent(event);
+        OpenGamepad(ids[i]);
     }
     SDL_free(ids);
+    LogPlayerDevices();
 }
 
 InputBindings::~InputBindings() {
-    for (auto *gamepad : m_gamepads) {
-        if (gamepad != nullptr) {
-            SDL_CloseGamepad(gamepad);
-        }
+    for (auto *gamepad : g_gamepads) {
+        SDL_CloseGamepad(gamepad);
     }
+    g_gamepads.clear();
 }
 
 void InputBindings::HandleEvent(const SDL_Event &event) {
     if (event.type == SDL_EVENT_GAMEPAD_ADDED) {
-        for (auto *gamepad : m_gamepads) {
-            if (gamepad != nullptr && SDL_GetGamepadID(gamepad) == event.gdevice.which) {
-                return;
-            }
-        }
-        auto free = std::ranges::find(m_gamepads, nullptr);
-        if (free == m_gamepads.end()) {
-            SDL_Log("Every controller port is in use, and the new gamepad is ignored.");
-            return;
-        }
-        *free = SDL_OpenGamepad(event.gdevice.which);
-        if (*free != nullptr) {
-            SDL_Log("Gamepad %s is bound to controller %d.",
-                    SDL_GetGamepadName(*free),
-                    static_cast<int>(free - m_gamepads.begin()) + 1);
+        if (OpenGamepad(event.gdevice.which)) {
+            LogPlayerDevices();
         }
     } else if (event.type == SDL_EVENT_GAMEPAD_REMOVED) {
-        for (auto *&gamepad : m_gamepads) {
-            if (gamepad != nullptr && SDL_GetGamepadID(gamepad) == event.gdevice.which) {
-                SDL_CloseGamepad(gamepad);
-                gamepad = nullptr;
-            }
+        auto removed = std::ranges::find_if(g_gamepads, [&](SDL_Gamepad *gamepad) {
+            return SDL_GetGamepadID(gamepad) == event.gdevice.which;
+        });
+        if (removed != g_gamepads.end()) {
+            SDL_CloseGamepad(*removed);
+            g_gamepads.erase(removed);
+            LogPlayerDevices();
         }
     }
 }
 
-std::array<ControllerState, CONTROLLER_PORTS> InputBindings::Poll() const {
+std::array<ControllerState, CONTROLLER_PORTS> InputBindings::Poll(std::size_t players,
+                                                                  bool race) const {
     std::array<ControllerState, CONTROLLER_PORTS> ports{};
-    for (std::size_t i = 0; i < CONTROLLER_PORTS; ++i) {
-        if (m_gamepads[i] != nullptr) {
-            ports[i].connected = true;
-            PollGamepad(m_gamepads[i], ports[i]);
+    for (std::size_t player = 0; player < std::min<std::size_t>(players, 2); ++player) {
+        const PlayerDevices devices = AssignedDevices(player, players);
+        if (race && player == 1) {
+            ports[player] = ReadRacePad(devices);
+            continue;
+        }
+        for (SDL_Gamepad *gamepad : devices.gamepads) {
+            PollGamepad(gamepad, ports[player]);
+        }
+        if (devices.keyboard) {
+            PollKeyboard(ports[player]);
         }
     }
     ports[0].connected = true;
-    PollKeyboard(ports[0]);
+    const PlayerDevices second = AssignedDevices(1, 2);
+    ports[1].connected = second.keyboard || !second.gamepads.empty();
     return ports;
 }
 

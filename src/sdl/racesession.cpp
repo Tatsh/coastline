@@ -24,6 +24,7 @@
 #include "common/vehicle.h"
 #include "common/vehiclecount.h"
 #include "common/weather.h"
+#include "input.h"
 #include "racemusic.h"
 
 namespace coastline {
@@ -105,10 +106,13 @@ void StartRace(const RaceSetup &setup, const std::filesystem::path &music, bool 
     std::copy(setup.lapRecords.begin(), setup.lapRecords.end(), g_SeasonProgress.lapRecords);
     std::copy(setup.raceRecords.begin(), setup.raceRecords.end(), g_SeasonProgress.raceRecords);
     // The options of the PC release choose the keyboard or the joystick, and the menus of the
-    // console have no such choice. A connected gamepad is the joystick of those options.
+    // console have no such choice. A gamepad of the first player is the joystick of those options.
     constexpr int KEYBOARD_DEVICE = 0;
     constexpr int JOYSTICK_DEVICE = 2;
-    g_GlobalRallyConfig.dwInputDeviceType = SDL_HasGamepad() ? JOYSTICK_DEVICE : KEYBOARD_DEVICE;
+    g_GlobalRallyConfig.dwInputDeviceType =
+        AssignedDevices(0, static_cast<std::size_t>(setup.players)).gamepads.empty() ?
+            KEYBOARD_DEVICE :
+            JOYSTICK_DEVICE;
     g_GlobalRallyConfig.SelectActiveInputBindings();
     // ApplyAudioVolumeSettings() and the speedometer read the options of the menus.
     g_GlobalRallyConfig.dwMusicVolume = setup.musicVolume;

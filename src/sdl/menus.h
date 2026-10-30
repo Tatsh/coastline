@@ -163,6 +163,9 @@ public:
     /** @return Whether the screen that shows takes the text typed on a keyboard. */
     bool TakesText() const;
 
+    /** @return The number of players the screen that shows reads, 2 on the car select of two. */
+    int ControlledPlayers() const;
+
     /** @return The race the menus chose, in the terms of the race engine. */
     RaceSetup ChosenRace() const;
 

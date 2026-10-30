@@ -37,9 +37,15 @@ struct ControllerState {
 /** The number of controller ports of the console. */
 inline constexpr std::size_t CONTROLLER_PORTS = 4;
 
+/** The devices that drive one player. */
+struct PlayerDevices {
+    bool keyboard = false;               /*!< Whether the keyboard drives the player. */
+    std::vector<SDL_Gamepad *> gamepads; /*!< The gamepads that drive the player. */
+};
+
 /**
- * Bind gamepads and the keyboard to the four ports without configuration. Each gamepad takes the
- * first free port in the order it connects, and the keyboard always drives the first port.
+ * Open every gamepad in the order it connects, and drive the first two ports with the devices the
+ * Player1 and Player2 keys of the Controls section choose. One instance exists at a time.
  */
 class InputBindings {
 public:
@@ -49,18 +55,44 @@ public:
     InputBindings &operator=(const InputBindings &) = delete;
 
     /**
-     * Open or close a gamepad for a connection event. Other events are ignored.
+     * Open or close a gamepad for a connection event, and log the devices of the players. Other
+     * events are ignored.
      *
      * @param event The SDL event.
      */
     void HandleEvent(const SDL_Event &event);
 
-    /** @return The state of every port, read now. */
-    std::array<ControllerState, CONTROLLER_PORTS> Poll() const;
-
-private:
-    std::array<SDL_Gamepad *, CONTROLLER_PORTS> m_gamepads{};
+    /**
+     * @param players The number of players the screen reads, 1 or 2. Every device of both players
+     * drives the first port of one player.
+     * @param race Whether a race reads the second port, through the race actions of the Controls
+     * section for a gamepad and the keyboard bindings of the PC release for the keyboard.
+     * @return The state of every port, read now. The second port is connected whenever a device
+     * would drive the second of two players.
+     */
+    std::array<ControllerState, CONTROLLER_PORTS> Poll(std::size_t players, bool race) const;
 };
+
+/**
+ * Resolve the Player1 and Player2 keys of the Controls section against the open gamepads. A key
+ * that is `auto` takes the gamepads no other key chooses, one each in the order of the players
+ * and the rest by the first player that is `auto`, and the keyboard goes to the first player that
+ * is `auto` with no gamepad, else to the first player that is `auto`.
+ *
+ * @param player The player, 0 for the first.
+ * @param players The number of players, 1 or 2. One player takes the devices of both.
+ * @return The devices of the player.
+ */
+PlayerDevices AssignedDevices(std::size_t player, std::size_t players);
+
+/**
+ * Read the second player of a race as the console reads a pad: the race actions of the Controls
+ * section for each gamepad, and the keyboard bindings of the PC release for the keyboard.
+ *
+ * @param devices The devices of the player.
+ * @return The state of the pad, connected.
+ */
+ControllerState ReadRacePad(const PlayerDevices &devices);
 
 /**
  * Scale an SDL axis of -32768 to 32767 to the range of the controller stick, with a dead zone

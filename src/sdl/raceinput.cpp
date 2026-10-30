@@ -193,6 +193,54 @@ constexpr RaceControl RACE_CONTROLS[] = {
     {CONTROL_START_OR_RESPAWN, 16},
 };
 
+// The bindings of the PC release a race reads for each player from the keyboard of another
+// player: the steering, the pedals, the gears, and the cameras.
+constexpr int DRIVING_BINDING_COUNT = 11;
+
+struct RacePadControl {
+    ControlAction action;
+    int binding;
+    std::uint16_t button;
+};
+
+// The buttons of the console the second player presses for each race action, as
+// TranslateControllerInput() reads them in a race.
+constexpr RacePadControl RACE_PAD_CONTROLS[] = {
+    {CONTROL_ACCELERATE, 2, BUTTON_A},
+    {CONTROL_BRAKE, 3, BUTTON_B},
+    {CONTROL_REVERSE, 4, BUTTON_A},
+    {CONTROL_GEAR_UP, 5, BUTTON_R},
+    {CONTROL_GEAR_DOWN, 6, BUTTON_L},
+    {CONTROL_COCKPIT_CAMERA, 8, BUTTON_C_UP},
+    {CONTROL_BUMPER_CAMERA, 9, BUTTON_C_LEFT},
+    {CONTROL_CHASE_CAMERA, 10, BUTTON_C_DOWN},
+    {CONTROL_PAUSE, 15, BUTTON_START},
+};
+
+// The stick of the console held down with A reverses.
+constexpr std::int8_t REVERSE_STICK_Y = -80;
+constexpr int STICK_RANGE = 80;
+
+// The keys of a binding of the keyboard of the PC release, its control and its alternates.
+template <typename Visit>
+void ForEachKey(const InputBinding &entry, Visit visit) {
+    for (unsigned short control :
+         {entry.wControl, entry.awAlternateControls[0], entry.awAlternateControls[1]}) {
+        if ((control & 0xff00) == 0 && control != 0) {
+            visit(static_cast<unsigned char>(control));
+        }
+    }
+}
+
+bool IsBindingKeyDown(const InputBinding &entry) {
+    bool down = false;
+    ForEachKey(entry, [&](unsigned char dik) {
+        const auto *code = std::ranges::find(SCAN_CODES, dik, &ScanCode::dik);
+        down = down || (code != std::end(SCAN_CODES) && IsKeyDown(code->sdl));
+    });
+    return down;
+}
+
 // The kinds of a binding of the PC release that address a button or one of the three axes of a
 // joystick, read from the Controls section in place of the joystick.
 constexpr unsigned JOYSTICK_BUTTON_KIND = 0x100;
@@ -338,6 +386,15 @@ void RaceInput::ReadKeyboard() {
         }
     }
     keys[0] = 0;
+    // The keyboard of another player does not drive the first car, and still pauses the race and
+    // moves through the pause menu.
+    if (!AssignedDevices(0, g_dwNumLocalPlayers).keyboard && !g_dwRacePauseState) {
+        for (int binding = 0; binding < DRIVING_BINDING_COUNT; ++binding) {
+            auto release = [&](unsigned char dik) { keys[dik] = 0; };
+            ForEachKey(g_GlobalRallyConfig.aInputBindingsKeyboard[binding], release);
+            ForEachKey(g_GlobalRallyConfig.pActiveInputBindings[binding], release);
+        }
+    }
 }
 
 void RaceInput::ReadJoystick() {
@@ -345,11 +402,11 @@ void RaceInput::ReadJoystick() {
     m_joystickCurrent = (m_joystickCurrent - 1) & 1;
     auto &state = m_joystick[static_cast<std::size_t>(m_joystickCurrent)];
     state.controls.fill(0);
-    if (m_gamepad == nullptr || !SDL_GamepadConnected(m_gamepad)) {
-        return;
-    }
-    for (const RaceControl &control : RACE_CONTROLS) {
-        state.controls[control.action] = ReadControl(m_gamepad, control.action);
+    for (SDL_Gamepad *gamepad : AssignedDevices(0, g_dwNumLocalPlayers).gamepads) {
+        for (const RaceControl &control : RACE_CONTROLS) {
+            state.controls[control.action] =
+                std::max(state.controls[control.action], ReadControl(gamepad, control.action));
+        }
     }
 }
 
@@ -691,12 +748,11 @@ int RaceInput::InitializeJoystick() {
     if (g_GlobalRallyConfig.dwInputDeviceType == 0 || ++m_joystickUsers != 1) {
         return g_GlobalRallyConfig.dwInputDeviceType;
     }
-    int count = 0;
-    SDL_JoystickID *ids = SDL_GetGamepads(&count);
-    if (ids != nullptr && count > 0) {
-        m_gamepad = SDL_OpenGamepad(ids[0]);
+    // The force feedback shakes the first gamepad of the first player.
+    const PlayerDevices devices = AssignedDevices(0, g_dwNumLocalPlayers);
+    if (!devices.gamepads.empty()) {
+        m_gamepad = SDL_OpenGamepad(SDL_GetGamepadID(devices.gamepads.front()));
     }
-    SDL_free(ids);
     if (m_gamepad == nullptr) {
         return 0;
     }
@@ -859,6 +915,41 @@ void RaceInput::StartJolt() {
         const Uint16 high = m_forceDirection[0] < 0 ? 0x8000 : 0xffff;
         SDL_RumbleGamepad(m_gamepad, low, high, milliseconds);
     }
+}
+
+ControllerState ReadRacePad(const PlayerDevices &devices) {
+    ControllerState state;
+    state.connected = true;
+    const InputBinding *keys = g_GlobalRallyConfig.aInputBindingsKeyboard;
+    auto isDown = [&](ControlAction action, int binding) {
+        if (devices.keyboard && IsBindingKeyDown(keys[binding])) {
+            return true;
+        }
+        return std::ranges::any_of(devices.gamepads, [&](SDL_Gamepad *gamepad) {
+            return ReadControl(gamepad, action) > CONTROL_FULL / 2;
+        });
+    };
+    for (const RacePadControl &control : RACE_PAD_CONTROLS) {
+        if (isDown(control.action, control.binding)) {
+            state.buttons |= control.button;
+        }
+    }
+    if (isDown(CONTROL_REVERSE, 4)) {
+        state.stickY = REVERSE_STICK_Y;
+    }
+    int steering = 0;
+    for (SDL_Gamepad *gamepad : devices.gamepads) {
+        const int axis =
+            ReadControl(gamepad, CONTROL_STEER_RIGHT) - ReadControl(gamepad, CONTROL_STEER_LEFT);
+        steering = std::abs(axis) > std::abs(steering) ? axis : steering;
+    }
+    steering = steering * STICK_RANGE / CONTROL_FULL;
+    if (devices.keyboard) {
+        steering += IsBindingKeyDown(keys[1]) ? STICK_RANGE : 0;
+        steering -= IsBindingKeyDown(keys[0]) ? STICK_RANGE : 0;
+    }
+    state.stickX = static_cast<std::int8_t>(std::clamp(steering, -STICK_RANGE, STICK_RANGE));
+    return state;
 }
 
 } // namespace coastline

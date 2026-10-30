@@ -60,7 +60,7 @@ void Menus::ProcessPlayerCountSelect(SceneRenderer &renderer,
         m_playerCountSelectState = 1;
     }
 
-    // Two players need the first two controllers. The keyboard is always bound to the first.
+    // Two players need a device for the second player, the keyboard or a gamepad.
     MenuItem &twoPlayers = m_playerCountItems[ITEM_TWO_PLAYERS];
     if (!secondController) {
         twoPlayers.flags |= MENU_ITEM_UNAVAILABLE;

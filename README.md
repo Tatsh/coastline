@@ -158,7 +158,23 @@ These are the keys and the bindings of each preset.
 
 `Kart` follows Mario Kart 8 on the Pro Controller, with the east button accelerating and the south
 button braking. A press of `StartOrRespawn` starts a race, and a second press within half a second
-resets the car. The menu keys also drive the second player of a race.
+resets the car. The menu keys drive the menus, and the race keys drive both players of a race.
+
+`Player1` and `Player2` choose the device of each player. A value is `auto`, the default,
+`keyboard`, `gamepad1`, `gamepad2`, and so on for the gamepads in the order they connect, a part of
+the name of a gamepad (`PS5`, `DualSense`, or `Xbox`), or `none`. With one player, the first player
+takes the devices of both. With two players, the gamepads go to the players that are `auto` in
+order, and the keyboard goes to the player that is `auto` without a gamepad. The keyboard and one
+gamepad are then enough for two players, with the gamepad for the first. The second player of a race
+drives with the keyboard bindings of the PC release (the arrow keys, Right Ctrl to brake, A and Z
+to change gear). The log records the device of each player at the start and whenever a gamepad
+connects or disconnects.
+
+```ini
+[Controls]
+Player1 = keyboard
+Player2 = DualSense
+```
 
 ### Display
 

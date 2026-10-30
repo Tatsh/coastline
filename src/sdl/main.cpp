@@ -25,6 +25,7 @@
 #endif
 
 #include "common/framestatistics.h"
+#include "common/game.h"
 #include "common/hud.h"
 #include "common/input.h"
 #include "config.h"
@@ -928,7 +929,9 @@ int main(int argc, char *argv[]) {
                                               {"Game", "PlaySFX", "1"},
                                               {"Game", "WaitForStart", "0"},
                                               {"Game", "Music", "N64"},
-                                              {"Controls", "Preset", "Default"}}) {
+                                              {"Controls", "Preset", "Default"},
+                                              {"Controls", "Player1", "auto"},
+                                              {"Controls", "Player2", "auto"}}) {
         if (!config.Get(section, key)) {
             config.Set(section, key, value);
         }
@@ -1099,7 +1102,12 @@ int main(int argc, char *argv[]) {
                 case DisplayKey::None:
                     break;
                 }
-                auto ports = input.Poll();
+                const bool racing = frontEnd == FrontEnd::Race;
+                auto ports = input.Poll(racing ? g_dwNumLocalPlayers :
+                                        mainMenu && frontEnd == FrontEnd::MainMenu ?
+                                                 mainMenu->ControlledPlayers() :
+                                                 1,
+                                        racing);
                 std::uint16_t scripted = 0;
                 for (const ScriptedPress &press : presses) {
                     if (press.port != 0) {
