@@ -292,10 +292,13 @@ void MenuText::Draw(SceneRenderer &renderer,
         int width = (columns * size) / font.cell;
         // The glyphs before the first row of the console are in the upper row of the image.
         std::size_t row = static_cast<int>(glyph) < m_firstRowGlyphs ? 0 : 1;
-        float u0 = static_cast<float>(left) / atlasWidth;
-        float u1 = static_cast<float>(left + columns) / atlasWidth;
-        float v0 = static_cast<float>(row) * cellV;
-        float v1 = v0 + cellV;
+        // The console loads each glyph as a tile of its own, and its filter clamps at the edges of
+        // the tile. The glyphs here share one image, and the half texel within each edge keeps the
+        // filter from reading the next glyph.
+        float u0 = (static_cast<float>(left) + 0.5f) / atlasWidth;
+        float u1 = (static_cast<float>(left + columns) - 0.5f) / atlasWidth;
+        float v0 = static_cast<float>(row) * cellV + 0.5f / atlasHeight;
+        float v1 = static_cast<float>(row) * cellV + cellV - 0.5f / atlasHeight;
         auto fx = static_cast<float>(x);
         auto fy = static_cast<float>(y);
         auto right = static_cast<float>(x + width);
