@@ -1,5 +1,6 @@
 #include "paths.h"
 
+#include <chrono>
 #include <cstdlib>
 #include <fstream>
 #include <functional>
@@ -118,7 +119,9 @@ std::optional<std::string> LayerStamp(const std::filesystem::path &base,
                 return std::nullopt;
             }
             lines.insert(entry->path().string() + '\t' +
-                         std::to_string(time.time_since_epoch().count()));
+                         std::to_string(std::chrono::duration_cast<std::chrono::nanoseconds>(
+                                            time.time_since_epoch())
+                                            .count()));
         }
         if (error) {
             return std::nullopt;

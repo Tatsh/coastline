@@ -298,6 +298,13 @@ int main() {
     config.Set("Video", "driver", "SDL");
     Check(config.Get("Video", "Driver") == "SDL", "Set replaces the key of any case");
 
+    auto scales = coastline::GameConfig::Parse("[Video]\nRenderScale=1.5\nFieldOfView=-0.25\n"
+                                               "Gain=2x\nEmpty=\n");
+    Check(scales.GetFloat("Video", "RenderScale", 0.0f) == 1.5f, "a decimal is read");
+    Check(scales.GetFloat("Video", "FieldOfView", 0.0f) == -0.25f, "a negative decimal is read");
+    Check(scales.GetFloat("Video", "Gain", 1.0f) == 1.0f, "trailing text gives the fallback");
+    Check(scales.GetFloat("Video", "Empty", 3.0f) == 3.0f, "an empty value gives the fallback");
+
     auto choices = coastline::GameConfig::Parse("[Player2]\nCar=12\nHandling=-1\nTires=x\n"
                                                 "Suspension=3\nTransmission=0\n");
     Check(choices.GetIndex("Player2", "Car", 13, 0) == 12, "the last index is read");

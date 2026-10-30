@@ -4,6 +4,7 @@
 #include <cctype>
 #include <charconv>
 #include <fstream>
+#include <locale>
 #include <ranges>
 #include <sstream>
 
@@ -121,9 +122,12 @@ float GameConfig::GetFloat(std::string_view section, std::string_view key, float
     if (!value) {
         return fallback;
     }
+    // Floating-point std::from_chars needs macOS 26, so the classic locale parses the value.
+    std::istringstream stream{std::string(*value)};
+    stream.imbue(std::locale::classic());
     float result = 0.0f;
-    auto [end, error] = std::from_chars(value->data(), value->data() + value->size(), result);
-    return error == std::errc() && end == value->data() + value->size() ? result : fallback;
+    stream >> std::noskipws >> result;
+    return !stream.fail() && stream.peek() == std::char_traits<char>::eof() ? result : fallback;
 }
 
 bool GameConfig::GetBoolean(std::string_view section, std::string_view key, bool fallback) const {
