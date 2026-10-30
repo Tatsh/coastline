@@ -779,12 +779,9 @@ void AddBillboards(std::vector<FlatVertex> &quads,
     }
 }
 
-// RenderTireSmoke() by day, in the colours of the dirt and of the pavement of the track, and
-// RenderExhaustAndTireSpray() in the snow, the exhaust in the half of its texture the PC release
-// samples.
-void DrawParticles(SceneRenderer &renderer,
+// RenderTireSmoke() by day, in the colours of the dirt and of the pavement of the track.
+void DrawTireSmoke(SceneRenderer &renderer,
                    const RenderTexture &smoke,
-                   const RenderTexture &exhaust,
                    const CameraFrame &camera,
                    const Matrix4 &viewProjection) {
     FlatMaterial material;
@@ -808,6 +805,16 @@ void DrawParticles(SceneRenderer &renderer,
             renderer.DrawQuads(quads, material, viewProjection, true);
         }
     }
+}
+
+// RenderExhaustAndTireSpray() in the snow, the exhaust in the half of its texture the PC release
+// samples.
+void DrawExhaust(SceneRenderer &renderer,
+                 const RenderTexture &exhaust,
+                 const CameraFrame &camera,
+                 const Matrix4 &viewProjection) {
+    FlatMaterial material;
+    material.combine = PARTICLE_COMBINE;
     if (g_dwSnowMode) {
         std::vector<FlatVertex> quads;
         AddBillboards(quads, g_wRenderExhaustParticleListHead, {0xE0, 0xE0, 0xFF}, camera, 0.5f);
@@ -1565,9 +1572,18 @@ void RaceView::DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, 
             }
         }
     };
-    drawCars(false);
-    if (snapshot != nullptr) {
-        DrawParticles(renderer, *s.particleTexture, *s.shadowTexture, *camera, viewProjection);
+    // RenderRaceScene() draws the cars and the smoke of the tyres after the second pass of the
+    // track in the snow on every track but the coastline.
+    bool carsAfterTrack = g_dwSnowMode && g_dwSelectedTrackId != TRACK_COASTLINE &&
+                          g_dwSelectedTrackId != TRACK_MIRROR_COASTLINE;
+    auto drawCarsAndSmoke = [&]() {
+        drawCars(false);
+        if (snapshot != nullptr) {
+            DrawTireSmoke(renderer, *s.particleTexture, *camera, viewProjection);
+        }
+    };
+    if (!carsAfterTrack) {
+        drawCarsAndSmoke();
     }
     // RenderStartLights() draws under the lights the cars left: g_DefaultLights in their colours.
     // ponytail: from the cockpit the PC release leaves the colours of the frame before.
@@ -1592,10 +1608,14 @@ void RaceView::DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, 
         DrawSkidMarks(
             renderer, *s.skidTexture, ShadowColor(vehicle), viewProjection, instances.listed);
     }
+    if (carsAfterTrack) {
+        drawCarsAndSmoke();
+    }
     drawCars(true);
-    // RenderExhaustAndTireSpray(): the spray of the vehicles. A championship has more racers than
-    // vehicles, and only the vehicles have spray.
+    // RenderExhaustAndTireSpray(): the exhaust in the snow, and the spray of the vehicles. A
+    // championship has more racers than vehicles, and only the vehicles have spray.
     if (snapshot != nullptr) {
+        DrawExhaust(renderer, *s.shadowTexture, *camera, viewProjection);
         for (int index = 0; index < g_dwNumActiveVehicles; ++index) {
             DrawTireSpray(renderer, *s.sprayTexture, snapshot->GetVehicle(index), viewProjection);
         }
