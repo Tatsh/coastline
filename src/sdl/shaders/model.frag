@@ -34,6 +34,8 @@ layout(set = 3, binding = 0) uniform Material {
     vec4 shadowCenter;
     vec4 shadowForward;
     vec4 shadowColor;
+    // The colour of the fog, and in w its range, or 0 where there is no fog.
+    vec4 fogColor;
 };
 
 // The inputs of a cycle of the colour combiner, as the RDP numbers them. The second cycle reads the
@@ -133,6 +135,12 @@ void main() {
         if (shade * 255.0 >= 8.0) {
             color.rgb = mix(color.rgb, shadowColor.rgb, shade);
         }
+    }
+    if (fogColor.w > 0.0) {
+        // VertexFog() of the PC release: the range by the reciprocal of w, which runs straight
+        // across the screen between the clipped vertices, and none of the colour below 8 of 255.
+        float shown = trunc(fogColor.w * gl_FragCoord.w);
+        color.rgb = mix(fogColor.rgb, color.rgb, (shown < 8.0 ? 0.0 : min(shown, 255.0)) / 255.0);
     }
     outColor = color;
 }

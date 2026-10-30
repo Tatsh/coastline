@@ -1227,6 +1227,7 @@ tranx
 tricache
 trisurface
 trrwd
+trunc
 tuco
 txls
 typeh

@@ -10,6 +10,8 @@
 #include <SDL3/SDL.h>
 
 #include "common/assetnames.h"
+#include "common/camera.h"
+#include "common/displaylistptr.h"
 #include "common/effects.h"
 #include "common/fade.h"
 #include "common/game.h"
@@ -882,6 +884,15 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
 }
 
 std::array<float, 4> RaceView::ClearColor() const {
+    // SetupFog() writes the fog of the frame and its two commands, which go to a scratch list.
+    std::array<GbiCommand, 2> commands{};
+    GbiCommand *list = gDisplayListPtr;
+    gDisplayListPtr = commands.data();
+    // RenderRaceViewport() looks from the car of the view before it sets up the fog.
+    g_pActiveCameraVehicle = &g_aVehicles[g_aViewportRects[0].vehicleIndex];
+    g_pActiveCamera = g_pActiveCameraVehicle->GetActiveCamera();
+    SetupFog();
+    gDisplayListPtr = list;
     return {static_cast<float>(g_bFogR) / 255.0f,
             static_cast<float>(g_bFogG) / 255.0f,
             static_cast<float>(g_bFogB) / 255.0f,
@@ -909,6 +920,13 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     // The animated textures of the track take the time of the race.
     renderer.SetTextureTime(static_cast<std::uint32_t>(g_dwElapsedTimeMs));
     renderer.SetHiddenInstanceFlags(HiddenInstanceFlags(vehicle));
+    // UpdateD3DFogRenderState(): the fog of the weather, farther on a clear night.
+    if (g_dwWeatherActive) {
+        renderer.SetFog(Fog{{static_cast<float>(g_bFogR) / 255.0f,
+                             static_cast<float>(g_bFogG) / 255.0f,
+                             static_cast<float>(g_bFogB) / 255.0f},
+                            !g_dwRainMode && !g_dwSnowMode && g_dwNightMode ? 16384.0f : 8192.0f});
+    }
     // UpdateTrackSpecials() spins instances and flies the airplane in their matrices.
     renderer.SetInstanceMatrices([](int index) -> const float * {
         return index < g_LoadedTrack.instanceCount ? &g_LoadedTrack.instances[index].matrix[0][0] :

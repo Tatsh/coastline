@@ -92,6 +92,15 @@ struct Highlight {
 };
 
 /**
+ * The fog of the PC release: each vertex shows the share of its colour of the range by the
+ * reciprocal of its w, a share below 8 of 255 none, and the rest is the colour of the fog.
+ */
+struct Fog {
+    std::array<float, 3> color{}; /*!< The colour of the fog, from 0 to 1. */
+    float range = 0.0f;           /*!< The range, 8192 or on a clear night 16384. */
+};
+
+/**
  * The shadow of a car on the track, as RenderTrackInstance() lays its texture on the ground under
  * the car: 1024 across the texture, centred under the car, along and across its heading.
  */
@@ -310,6 +319,13 @@ public:
      * place in the model.
      */
     void SetInstanceMatrices(std::function<const float *(int)> matrix);
+
+    /**
+     * Set the fog the models of the frame are drawn in, none from Begin().
+     *
+     * @param fog The fog, or none.
+     */
+    void SetFog(std::optional<Fog> fog);
 
     /**
      * Draw a model, its opaque parts now and its translucent ones after every opaque draw.

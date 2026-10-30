@@ -150,6 +150,7 @@ struct FragmentUniforms {
     float shadowCenter[4];
     float shadowForward[4];
     float shadowColor[4];
+    float fogColor[4] = {};
 };
 
 // The cycle type of the RDP in its high other mode word.
@@ -542,6 +543,8 @@ struct SceneRenderer::State {
     std::uint32_t hiddenFlags = 0;
     // The matrices of the instances of a track as the race moves them, or none.
     std::function<const float *(int)> instanceMatrix;
+    // The fog the models of the frame are drawn in, or none.
+    std::optional<Fog> fog;
     GpuWindow *window = nullptr;
     SDL_GPUDevice *device = nullptr;
     SDL_GPUShader *vertexShader = nullptr;
@@ -1154,6 +1157,7 @@ void SceneRenderer::Begin(std::array<float, 4> clear) {
     m_state->textureTime = 0;
     m_state->hiddenFlags = 0;
     m_state->instanceMatrix = nullptr;
+    m_state->fog.reset();
     m_state->draws.clear();
     m_state->flat.clear();
 }
@@ -1168,6 +1172,10 @@ void SceneRenderer::SetHiddenInstanceFlags(std::uint32_t flags) {
 
 void SceneRenderer::SetInstanceMatrices(std::function<const float *(int)> matrix) {
     m_state->instanceMatrix = std::move(matrix);
+}
+
+void SceneRenderer::SetFog(std::optional<Fog> fog) {
+    m_state->fog = fog;
 }
 
 void SceneRenderer::DrawModel(const RenderModel &model,
@@ -1373,6 +1381,10 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         if (reflection != nullptr) {
             std::ranges::copy(reflection->environment, fragmentUniforms.env);
         }
+        if (s.fog) {
+            std::ranges::copy(s.fog->color, fragmentUniforms.fogColor);
+            fragmentUniforms.fogColor[3] = s.fog->range;
+        }
         if (shadow != nullptr) {
             float length = std::hypot(shadow->forward[0], shadow->forward[1]);
             fragmentUniforms.shadowCenter[0] = shadow->x;
@@ -1442,6 +1454,10 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                                           {},
                                           {},
                                           {}};
+        if (s.fog) {
+            std::ranges::copy(s.fog->color, fragmentUniforms.fogColor);
+            fragmentUniforms.fogColor[3] = s.fog->range;
+        }
         SDL_PushGPUFragmentUniformData(commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
         std::array<SDL_GPUTextureSamplerBinding, 3> bindings{
             {{highlight.texture->m_texture, highlight.texture->m_sampler},
