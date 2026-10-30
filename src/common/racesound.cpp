@@ -1,6 +1,7 @@
 #include "common/racesound.h"
 
 #include "common/inputpoll.h"
+#include "common/race.h"
 #include "common/rallyconfig.h"
 #include "common/screen.h"
 #include "common/soundbuffer.h"
@@ -108,7 +109,13 @@ void PlayVehicleEventSounds(Vehicle *vehicle, CameraFrame *listener) {
         SetForceFeedbackShortDuration();
     }
     VEHICLE_GET(vehicle, Body).impactVolume = 0;
+#ifdef ENABLE_PATCHES
+    // Each car drops onto the track as the race loads, and its landing is not heard while the cars
+    // are held at the start lights.
+    if (VEHICLE_GET(vehicle, Body).landed > 127 && !g_bStartLightsVisible) {
+#else
     if (VEHICLE_GET(vehicle, Body).landed > 127) {
+#endif /* ENABLE_PATCHES */
         levels = VehicleEventLevels(vehicle, listener, 0);
         PlaySoundChannelOneOnce(3, levels);
     }
