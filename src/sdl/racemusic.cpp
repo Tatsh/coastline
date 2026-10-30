@@ -137,8 +137,16 @@ public:
     std::size_t Render(std::size_t frames);
     int RandomTrack() const;
     bool Step(int step);
+    void Share(N64Audio *audio) {
+        m_shared = audio;
+    }
 
 private:
+    // The modules play through the player of the menus when it is shared, and else through a
+    // player of the races.
+    N64Audio *Modules() const {
+        return m_shared != nullptr ? m_shared : m_modules.get();
+    }
     RaceMusic() = default;
     std::filesystem::path CdTrackPath(int track) const {
         return m_directory / fmt::format("track{:02}.flac", track);
@@ -154,6 +162,7 @@ private:
     RaceMusicSource m_source = RaceMusicSource::Modules;
     bool m_active = false;
     std::unique_ptr<N64Audio> m_modules;
+    N64Audio *m_shared = nullptr;
     std::vector<std::uint8_t> m_module;
     SDL_AudioStream *m_cdStream = nullptr;
     FlacTrack m_cdTrack;
@@ -192,8 +201,10 @@ bool RaceMusic::Start(const std::filesystem::path &directory, RaceMusicSource so
         }
     } else {
         m_trackMax = LAST_MUSIC_TRACK;
-        m_modules = std::make_unique<N64Audio>();
-        m_modules->OpenDevice();
+        if (m_shared == nullptr) {
+            m_modules = std::make_unique<N64Audio>();
+            m_modules->OpenDevice();
+        }
     }
     m_active = m_trackMax >= m_trackMin;
     if (!m_active) {
@@ -214,6 +225,9 @@ void RaceMusic::Stop() {
     if (m_cdStream != nullptr) {
         SDL_DestroyAudioStream(m_cdStream);
         m_cdStream = nullptr;
+    }
+    if (m_shared != nullptr) {
+        m_shared->Stop();
     }
     m_modules.reset();
     m_cdTrack = FlacTrack();
@@ -258,7 +272,7 @@ bool RaceMusic::Play(int track) {
         return true;
     }
     m_module.assign(std::istreambuf_iterator<char>(file), {});
-    m_modules->Play(m_module);
+    Modules()->Play(m_module);
     return true;
 }
 
@@ -269,7 +283,7 @@ bool RaceMusic::Pause() {
     if (m_cdStream != nullptr) {
         return SDL_PauseAudioStreamDevice(m_cdStream);
     }
-    return m_modules->Pause();
+    return Modules()->Pause();
 }
 
 bool RaceMusic::Resume() {
@@ -279,7 +293,7 @@ bool RaceMusic::Resume() {
     if (m_cdStream != nullptr) {
         return SDL_ResumeAudioStreamDevice(m_cdStream);
     }
-    return m_modules->Resume();
+    return Modules()->Resume();
 }
 
 void RaceMusic::SetVolume(unsigned char volume) {
@@ -347,8 +361,8 @@ std::size_t RaceMusic::Render(std::size_t frames) {
     std::vector<std::int16_t> samples;
     if (m_source == RaceMusicSource::CdAudio) {
         FillCd(samples, frames);
-    } else if (m_modules) {
-        samples = m_modules->Render(frames);
+    } else if (Modules() != nullptr) {
+        samples = Modules()->Render(frames);
     }
     return static_cast<std::size_t>(
         std::ranges::count_if(samples, [](std::int16_t sample) { return sample != 0; }));
@@ -362,6 +376,10 @@ bool StartRaceMusic(const std::filesystem::path &directory, RaceMusicSource sour
 
 void StopRaceMusic() {
     RaceMusic::Get().Stop();
+}
+
+void ShareRaceMusicPlayer(N64Audio *audio) {
+    RaceMusic::Get().Share(audio);
 }
 
 std::size_t RenderRaceMusic(std::size_t frames) {

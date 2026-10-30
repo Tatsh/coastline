@@ -37,6 +37,7 @@
 #include "music.h"
 #include "paths.h"
 #include "racedemo.h"
+#include "racemusic.h"
 #include "racesession.h"
 #include "raceview.h"
 #include "scenerenderer.h"
@@ -515,6 +516,7 @@ int main(int argc, char *argv[]) {
             coastline::InputBindings input;
             coastline::N64Audio audio;
             bool playMusic = config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice();
+            coastline::ShareRaceMusicPlayer(playMusic ? &audio : nullptr);
             if (music && playMusic) {
                 audio.Play(*music);
             }
@@ -806,6 +808,7 @@ int main(int argc, char *argv[]) {
                     running = false;
                 }
             }
+            coastline::ShareRaceMusicPlayer(nullptr);
             status = EXIT_SUCCESS;
         }
     }

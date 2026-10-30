@@ -4,6 +4,8 @@
 
 namespace coastline {
 
+class N64Audio;
+
 /** Where the music of a race comes from. */
 enum class RaceMusicSource {
     Modules, /*!< The XM modules of the Nintendo 64 release, the default. */
@@ -22,6 +24,15 @@ bool StartRaceMusic(const std::filesystem::path &directory, RaceMusicSource sour
 
 /** Drop a user of the music of the races. The last user stops the music and closes its device. */
 void StopRaceMusic();
+
+/**
+ * Play the modules of the races through the player of the music of the menus, which mixes the
+ * channels of the console, instead of a player of their own. Two players would mix the same
+ * channels on two threads.
+ *
+ * @param audio The player of the menus, with its device open, or null for a player of their own.
+ */
+void ShareRaceMusicPlayer(N64Audio *audio);
 
 /**
  * Render frames of the track that plays, without a device, for tests.
