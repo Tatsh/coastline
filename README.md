@@ -99,6 +99,8 @@ and writes `game.log` to `~/.local/state/coastline`. The XDG Base Directory vari
 directories. Windows uses the roaming and local application data folders, and macOS uses
 Application Support, Caches, and Logs in the library of the user.
 
+### Controls
+
 The `Controls` section of `BossRally.ini` maps the gamepad. `Preset` chooses `Default` or `Kart`,
 and a key of an action present in the section replaces the binding of the preset for that action.
 A value lists SDL gamepad names separated by commas (`a`, `b`, `x`, `y`, `back`, `start`,
@@ -157,6 +159,28 @@ These are the keys and the bindings of each preset.
 `Kart` follows Mario Kart 8 on the Pro Controller, with the east button accelerating and the south
 button braking. A press of `StartOrRespawn` starts a race, and a second press within half a second
 resets the car. The menu keys also drive the second player of a race.
+
+### Display
+
+Alt+Enter and F11 switch between a window and the full screen on every screen of the game. F shows
+the frame rate at the bottom of the screen, as in the PC release. In a race, F12 selects the next
+music track, and F11 does not select the previous one as in the PC release.
+
+The `[Video]` section of `BossRally.ini` sets up the display.
+
+| Key              | Values                                                                                                                                        |
+| ---------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Fullscreen`     | `1` for the full screen, or `0` for a resizable window. Alt+Enter and F11 save their choice here.                                             |
+| `FullscreenMode` | `borderless`, the default, covers the display at its desktop mode. `exclusive` switches the display to `Width` by `Height` at `RefreshRate`.  |
+| `RefreshRate`    | The refresh rate of the exclusive mode in hertz, or `0` for the rate of the desktop.                                                          |
+| `VSync`          | `vsync` or `1` waits for the vertical blank. `mailbox` presents without tearing and without waiting, and `immediate` or `0` presents at once. |
+| `FrameRateLimit` | The most frames drawn each second, or `0` for no limit.                                                                                       |
+
+A mode of `VSync` the GPU driver does not support falls back to the other mode that does not wait,
+then to `vsync`. `--no-vsync` selects `immediate`. The races run at 30 steps a second and draw
+between the steps, and the menus move by the time between frames, at any frame rate.
+
+### Data
 
 The data comes from a Boss Rally disc image and a Top Gear Rally cartridge image. The import
 checks the cartridge against the SHA-1 of each release, and converts the CD audio of a CUE sheet

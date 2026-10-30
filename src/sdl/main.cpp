@@ -24,6 +24,8 @@
 #include <sys/resource.h>
 #endif
 
+#include "common/framestatistics.h"
+#include "common/hud.h"
 #include "common/input.h"
 #include "config.h"
 #include "controls.h"
@@ -36,6 +38,7 @@
 #include "intro.h"
 #include "log.h"
 #include "menus.h"
+#include "menutext.h"
 #include "modelview.h"
 #include "music.h"
 #include "paths.h"
@@ -67,7 +70,16 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     options.width = static_cast<int>(config.GetInteger("Video", "Width", options.width));
     options.height = static_cast<int>(config.GetInteger("Video", "Height", options.height));
     options.fullscreen = config.GetBoolean("Video", "Fullscreen", options.fullscreen);
-    options.vsync = config.GetBoolean("Video", "VSync", options.vsync);
+    options.exclusive = config.Get("Video", "FullscreenMode") == "exclusive";
+    options.refreshRate = static_cast<int>(config.GetInteger("Video", "RefreshRate", 0));
+    // VSync takes a present mode by name, or 1 and 0 for vertical sync and immediate.
+    auto present = config.Get("Video", "VSync");
+    if (present == "mailbox") {
+        options.presentMode = SDL_GPU_PRESENTMODE_MAILBOX;
+    } else if (present == "immediate" ||
+               (present != "vsync" && !config.GetBoolean("Video", "VSync", true))) {
+        options.presentMode = SDL_GPU_PRESENTMODE_IMMEDIATE;
+    }
     options.antialias =
         static_cast<int>(config.GetInteger("Video", "Antialias", options.antialias));
     if (auto antialias = parser.present<int>("--antialias")) {
@@ -89,12 +101,95 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
         options.fullscreen = false;
     }
     if (parser.get<bool>("--no-vsync")) {
-        options.vsync = false;
+        options.presentMode = SDL_GPU_PRESENTMODE_IMMEDIATE;
     }
     if (auto driver = parser.present("--gpu-driver")) {
         options.driver = *driver;
     }
     return options;
+}
+
+// The shortcuts of the window on every screen: Alt and Enter or F11 for the full screen, and F for
+// the frame rate.
+enum class DisplayKey { None, Fullscreen, FrameRate };
+
+// The keys of the shortcuts held the frame before, from the keyboard and the scripted keys.
+struct DisplayKeys {
+    bool f11 = false;
+    bool f = false;
+
+    // The shortcut pressed since the frame before, F only when @p frameRate allows it.
+    DisplayKey Read(bool frameRate) {
+        bool alt =
+            coastline::IsKeyDown(SDL_SCANCODE_LALT) || coastline::IsKeyDown(SDL_SCANCODE_RALT);
+        // Enter of the shortcut is ignored until it is released, and does not also press Start or
+        // choose.
+        bool enter = false;
+        for (SDL_Scancode key : {SDL_SCANCODE_RETURN, SDL_SCANCODE_KP_ENTER}) {
+            if (alt && coastline::IsKeyDown(key)) {
+                coastline::IgnoreKeyUntilReleased(key);
+                enter = true;
+            }
+        }
+        bool f11Now = coastline::IsKeyDown(SDL_SCANCODE_F11);
+        bool fNow = coastline::IsKeyDown(SDL_SCANCODE_F);
+        bool fullscreen = enter || (f11Now && !f11);
+        bool toggleRate = frameRate && fNow && !f;
+        f11 = f11Now;
+        f = fNow;
+        if (fullscreen) {
+            return DisplayKey::Fullscreen;
+        }
+        return toggleRate ? DisplayKey::FrameRate : DisplayKey::None;
+    }
+};
+
+// RecordFrameTime() of BRD3D: the milliseconds since the frame before, in the samples
+// DrawFpsCounterOverlay() averages.
+void RecordFrameTime() {
+    static unsigned last = GetHighResolutionTime();
+    unsigned now = GetHighResolutionTime();
+    unsigned delta = now - last;
+    last = now;
+    int entry = g_dwFpsFrameCountdown;
+    if (entry < 0) {
+        // The first frame fills every sample with its time.
+        std::fill_n(g_adwFpsFrameTimeSamples, g_dwFpsSampleFrames, delta);
+        entry = g_dwFpsSampleFrames;
+    }
+    if (++entry >= g_dwFpsSampleFrames) {
+        entry = 0;
+    }
+    g_dwFpsFrameCountdown = entry;
+    g_adwFpsFrameTimeSamples[entry] = delta;
+}
+
+// DrawFpsCounterOverlay() on the screens outside a race: the rate of the samples, updated as they
+// wrap, in 15-point text centred 10 above the bottom of the 640 by 480 screen.
+void DrawFrameRate(coastline::SceneRenderer &renderer, const coastline::MenuText &text) {
+    static float rate = 30.0f;
+    if (g_dwFpsFrameCountdown == 0) {
+        unsigned total = 0;
+        for (int index = 0; index < g_dwFpsSampleFrames; ++index) {
+            total += g_adwFpsFrameTimeSamples[index];
+        }
+        rate = static_cast<float>(g_dwFpsSampleFrames) * 1000.0f /
+               static_cast<float>(std::max(total, 1u));
+    }
+    char line[32];
+    std::snprintf(line, sizeof(line), "%6.2f FPS", static_cast<double>(rate));
+    const coastline::GpuWindow &window = renderer.Window();
+    coastline::TextStyle style;
+    style.size = 15;
+    style.align = coastline::TextStyle::Align::Center;
+    style.doubled = false;
+    text.Draw(renderer,
+              line,
+              320,
+              470,
+              style,
+              coastline::FlatProjection(static_cast<float>(window.FrameWidth()) /
+                                        static_cast<float>(std::max(window.FrameHeight(), 1u))));
 }
 
 // The XM module of the music pack default for a module of the USA cartridge.
@@ -703,7 +798,10 @@ int main(int argc, char *argv[]) {
                                               {"Video", "Width", "1280"},
                                               {"Video", "Height", "720"},
                                               {"Video", "Fullscreen", "0"},
+                                              {"Video", "FullscreenMode", "borderless"},
+                                              {"Video", "RefreshRate", "0"},
                                               {"Video", "VSync", "1"},
+                                              {"Video", "FrameRateLimit", "0"},
                                               {"Video", "GpuDriver", ""},
                                               {"Video", "WideMenus", "0"},
                                               {"Game", "PlayMusic", "1"},
@@ -766,6 +864,7 @@ int main(int argc, char *argv[]) {
             std::unique_ptr<coastline::SceneRenderer> sceneRenderer;
             std::unique_ptr<coastline::Intro> intro;
             std::unique_ptr<coastline::Menus> mainMenu;
+            std::unique_ptr<coastline::MenuText> frameRateText;
             // The screen of the front end that shows.
             enum class FrontEnd { Intro, AttractDemo, MainMenu, Race };
             FrontEnd frontEnd = FrontEnd::Intro;
@@ -801,6 +900,7 @@ int main(int argc, char *argv[]) {
                 if (sceneRenderer) {
                     auto release = coastline::DefaultAssets(paths->data) / "n64" / "usa";
                     intro = coastline::Intro::Load(*sceneRenderer, release);
+                    frameRateText = coastline::MenuText::Load(*sceneRenderer, release / "fonts");
                     mainMenu =
                         coastline::Menus::Load(*sceneRenderer, release, paths->state, paths->cache);
                     if (scene == "main-menu" && mainMenu) {
@@ -812,6 +912,13 @@ int main(int argc, char *argv[]) {
             // frames on every machine.
             bool fixedStep = screenshot.has_value();
             Uint64 lastTicks = SDL_GetTicksNS();
+            // FrameRateLimit spaces the frames, at no limit when 0.
+            const long frameLimit = config.GetInteger("Video", "FrameRateLimit", 0);
+            const Uint64 framePeriod = frameLimit > 0 ? SDL_NS_PER_SECOND / frameLimit : 0;
+            Uint64 nextFrame = lastTicks;
+            Uint64 rateStart = lastTicks;
+            int rateFrames = 0;
+            DisplayKeys displayKeys;
             std::uint16_t lastButtons = 0;
             std::uint16_t lastSecondButtons = 0;
             bool running = true;
@@ -835,6 +942,23 @@ int main(int argc, char *argv[]) {
                         }
                     }
                     input.HandleEvent(event);
+                }
+                // The shortcuts of the window are read before the controllers, which then do not
+                // see the Enter of Alt and Enter. A race and the attract demo read F themselves.
+                bool raceShows = frontEnd == FrontEnd::Race || frontEnd == FrontEnd::AttractDemo;
+                switch (displayKeys.Read(!raceShows && !SDL_TextInputActive(window->Window()))) {
+                case DisplayKey::Fullscreen: {
+                    bool fullscreen = !window->Fullscreen();
+                    if (window->SetFullscreen(fullscreen)) {
+                        config.Set("Video", "Fullscreen", fullscreen ? "1" : "0");
+                    }
+                    break;
+                }
+                case DisplayKey::FrameRate:
+                    g_bShowFpsCounter = !g_bShowFpsCounter;
+                    break;
+                case DisplayKey::None:
+                    break;
                 }
                 auto ports = input.Poll();
                 std::uint16_t scripted = 0;
@@ -1050,6 +1174,11 @@ int main(int argc, char *argv[]) {
                         }
                         startRace = end == coastline::MenusEnd::Race;
                     }
+                    // The HUD of a race and of the attract demo draws the rate itself.
+                    if (g_bShowFpsCounter && frameRateText &&
+                        (frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::MainMenu)) {
+                        DrawFrameRate(*sceneRenderer, *frameRateText);
+                    }
                     sceneRenderer->End(framePath ? &*framePath : nullptr);
                     if (startRace) {
                         // The music of the menus stops when the race starts, and the race plays
@@ -1094,6 +1223,27 @@ int main(int argc, char *argv[]) {
                     float blue = ports[0].buttons != 0 ? 0.6f : 0.2f;
                     window->PresentClear(SDL_FColor{red, green, blue, 1.0f},
                                          framePath ? &*framePath : nullptr);
+                }
+                RecordFrameTime();
+                // SDL_LOGGING=render=debug logs the frames of every 5 seconds.
+                ++rateFrames;
+                Uint64 now = SDL_GetTicksNS();
+                if (now - rateStart >= 5 * SDL_NS_PER_SECOND) {
+                    SDL_LogDebug(SDL_LOG_CATEGORY_RENDER,
+                                 "%.2f frames a second.",
+                                 static_cast<double>(rateFrames) * 1e9 /
+                                     static_cast<double>(now - rateStart));
+                    rateStart = now;
+                    rateFrames = 0;
+                }
+                if (framePeriod > 0) {
+                    nextFrame += framePeriod;
+                    if (nextFrame > now) {
+                        SDL_DelayPrecise(nextFrame - now);
+                    } else {
+                        // A late frame does not hurry the frames after it.
+                        nextFrame = now;
+                    }
                 }
                 if (capture && quitAfterScreenshot) {
                     running = false;

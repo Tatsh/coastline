@@ -664,7 +664,10 @@ void PaintShop::DrawDecalCircleOutline(s32 x, s32 y, s32 radius) {
 }
 
 void PaintShop::AdvanceDashes() {
-    // The colours of the dashes swap every 8 frames.
+    // The colours of the dashes swap every 8 frames of the console.
+    if (!m_consoleFrame) {
+        return;
+    }
     ++m_screenFrameCount;
     if ((m_screenFrameCount & 7) == 0) {
         std::swap(m_dashColorA, m_dashColorB);

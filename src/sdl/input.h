@@ -80,9 +80,18 @@ void SetScriptedKeys(std::vector<int> scancodes);
 
 /**
  * @param scancode The key.
- * @return Whether the key is down on the keyboard or held by SetScriptedKeys().
+ * @return Whether the key is down on the keyboard or held by SetScriptedKeys(), and not ignored by
+ * IgnoreKeyUntilReleased().
  */
 bool IsKeyDown(SDL_Scancode scancode);
+
+/**
+ * Report a key as up to IsKeyDown() until it is released, for a key a shortcut of the window
+ * consumed, such as Enter of Alt and Enter.
+ *
+ * @param scancode The key.
+ */
+void IgnoreKeyUntilReleased(SDL_Scancode scancode);
 
 /**
  * Set the state of the second controller the race reads for its second player, until the next

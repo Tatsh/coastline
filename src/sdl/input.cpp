@@ -16,6 +16,7 @@ constexpr int DEAD_ZONE = 7849;
 constexpr int C_BUTTON_THRESHOLD = 16384;
 
 std::vector<int> g_scriptedKeys;
+std::vector<int> g_ignoredKeys;
 ControllerState g_secondController;
 
 struct KeyBinding {
@@ -184,8 +185,23 @@ void SetScriptedKeys(std::vector<int> scancodes) {
 }
 
 bool IsKeyDown(SDL_Scancode scancode) {
-    return SDL_GetKeyboardState(nullptr)[scancode] ||
-           std::ranges::find(g_scriptedKeys, static_cast<int>(scancode)) != g_scriptedKeys.end();
+    bool down =
+        SDL_GetKeyboardState(nullptr)[scancode] ||
+        std::ranges::find(g_scriptedKeys, static_cast<int>(scancode)) != g_scriptedKeys.end();
+    auto ignored = std::ranges::find(g_ignoredKeys, static_cast<int>(scancode));
+    if (ignored == g_ignoredKeys.end()) {
+        return down;
+    }
+    if (!down) {
+        g_ignoredKeys.erase(ignored);
+    }
+    return false;
+}
+
+void IgnoreKeyUntilReleased(SDL_Scancode scancode) {
+    if (std::ranges::find(g_ignoredKeys, static_cast<int>(scancode)) == g_ignoredKeys.end()) {
+        g_ignoredKeys.push_back(static_cast<int>(scancode));
+    }
 }
 
 void SetSecondControllerState(const ControllerState &state) {

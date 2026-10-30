@@ -14,8 +14,14 @@ struct DisplayOptions {
     int width = 1280;        /*!< The width of the window in pixels. */
     int height = 720;        /*!< The height of the window in pixels. */
     bool fullscreen = false; /*!< Whether the window covers the display. */
-    bool vsync = true;       /*!< Whether presentation waits for the vertical blank. */
-    int antialias = 1;       /*!< The samples of each pixel: 1 for none, or 2, 4, or 8. */
+    /** Whether the window covers the display in a mode of the width, the height, and the refresh
+     * rate, rather than at the desktop mode without borders. */
+    bool exclusive = false;
+    int refreshRate = 0; /*!< The refresh rate of the exclusive mode in hertz, 0 for the desktop. */
+    /** How frames are presented, with the other mode that does not wait and then vertical sync
+     * taking the place of a mode the window does not support. */
+    SDL_GPUPresentMode presentMode = SDL_GPU_PRESENTMODE_VSYNC;
+    int antialias = 1; /*!< The samples of each pixel: 1 for none, or 2, 4, or 8. */
     std::optional<std::string>
         driver; /*!< An SDL GPU driver, such as vulkan, metal, or direct3d12. */
 };
@@ -48,6 +54,20 @@ public:
     SDL_GPUDevice *Device() const {
         return m_device.get();
     }
+
+    /** @return Whether the window covers the display. */
+    bool Fullscreen() const {
+        return (SDL_GetWindowFlags(m_window.get()) & SDL_WINDOW_FULLSCREEN) != 0;
+    }
+
+    /**
+     * Cover the display, at the desktop mode or the exclusive mode of the options, or return to a
+     * window. An exclusive mode the display does not have falls back to the desktop mode.
+     *
+     * @param fullscreen Whether the window covers the display.
+     * @return Whether the window changed, with the reason logged when it did not.
+     */
+    bool SetFullscreen(bool fullscreen);
 
     /**
      * Clear the frame texture to @p color, present it, and save it when @p capture is given.
@@ -122,6 +142,8 @@ private:
     Uint32 m_frameWidth = 0;
     Uint32 m_frameHeight = 0;
     int m_antialias = 1;
+    bool m_exclusive = false;
+    int m_refreshRate = 0;
 };
 
 } // namespace coastline

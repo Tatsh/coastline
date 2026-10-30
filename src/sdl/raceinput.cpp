@@ -538,9 +538,8 @@ unsigned RaceInput::ReadButtonMask(int *pnSteering, int *pnAcceleration) {
             *toggles[i] = !*toggles[i];
         }
     }
-    if (IsPressedEdge(previousKeys[DIK_F11], keys[DIK_F11])) {
-        SelectPreviousMusicTrack();
-    }
+    // F11 of the PC release selects the previous music track, and here it toggles the full
+    // screen on every screen.
     if (IsPressedEdge(previousKeys[DIK_F12], keys[DIK_F12])) {
         SelectNextMusicTrack();
     }

@@ -15,19 +15,54 @@ struct SurfaceDeleter {
     }
 };
 
+const char *PresentModeName(SDL_GPUPresentMode mode) {
+    switch (mode) {
+    case SDL_GPU_PRESENTMODE_IMMEDIATE:
+        return "immediate";
+    case SDL_GPU_PRESENTMODE_MAILBOX:
+        return "mailbox";
+    default:
+        return "vsync";
+    }
+}
+
+// Mailbox and immediate presentation stand in for each other, as neither waits for the vertical
+// blank, and every window supports vertical sync.
+SDL_GPUPresentMode
+SupportedPresentMode(SDL_GPUDevice *device, SDL_Window *window, SDL_GPUPresentMode wanted) {
+    if (wanted != SDL_GPU_PRESENTMODE_VSYNC) {
+        SDL_GPUPresentMode other = wanted == SDL_GPU_PRESENTMODE_MAILBOX ?
+                                       SDL_GPU_PRESENTMODE_IMMEDIATE :
+                                       SDL_GPU_PRESENTMODE_MAILBOX;
+        for (SDL_GPUPresentMode mode : {wanted, other}) {
+            if (SDL_WindowSupportsGPUPresentMode(device, window, mode)) {
+                return mode;
+            }
+        }
+    }
+    return SDL_GPU_PRESENTMODE_VSYNC;
+}
+
 } // namespace
 
 std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOptions &options) {
     std::unique_ptr<GpuWindow> result(new GpuWindow());
-    SDL_WindowFlags flags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
-    if (options.fullscreen) {
-        flags |= SDL_WINDOW_FULLSCREEN;
-    }
+    result->m_frameWidth = static_cast<Uint32>(options.width);
+    result->m_frameHeight = static_cast<Uint32>(options.height);
+    result->m_exclusive = options.exclusive;
+    result->m_refreshRate = options.refreshRate;
+    // The window shows once it covers the display, at the mode of the options.
+    SDL_WindowFlags flags =
+        SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_HIDDEN;
     result->m_window.reset(SDL_CreateWindow(title, options.width, options.height, flags));
     if (!result->m_window) {
         SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "The window was not created: %s", SDL_GetError());
         return nullptr;
     }
+    if (options.fullscreen) {
+        result->SetFullscreen(true);
+    }
+    SDL_ShowWindow(result->m_window.get());
     // The shaders ship as SPIR-V for Vulkan, MSL for Metal, and DXIL for Direct3D 12.
     result->m_device.reset(SDL_CreateGPUDevice(
         SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_MSL | SDL_GPU_SHADERFORMAT_DXIL,
@@ -41,14 +76,25 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
         SDL_LogError(SDL_LOG_CATEGORY_GPU, "The window was not claimed: %s", SDL_GetError());
         return nullptr;
     }
-    if (!options.vsync) {
-        SDL_SetGPUSwapchainParameters(result->m_device.get(),
-                                      result->m_window.get(),
-                                      SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
-                                      SDL_GPU_PRESENTMODE_IMMEDIATE);
+    SDL_GPUPresentMode presentMode =
+        SupportedPresentMode(result->m_device.get(), result->m_window.get(), options.presentMode);
+    if (presentMode != SDL_GPU_PRESENTMODE_VSYNC &&
+        !SDL_SetGPUSwapchainParameters(result->m_device.get(),
+                                       result->m_window.get(),
+                                       SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
+                                       presentMode)) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_GPU,
+                    "The frames wait for vertical sync, as %s presentation did not start: %s",
+                    PresentModeName(presentMode),
+                    SDL_GetError());
+        presentMode = SDL_GPU_PRESENTMODE_VSYNC;
     }
-    result->m_frameWidth = static_cast<Uint32>(options.width);
-    result->m_frameHeight = static_cast<Uint32>(options.height);
+    if (presentMode != options.presentMode) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_GPU,
+                    "The window does not support %s presentation.",
+                    PresentModeName(options.presentMode));
+    }
+    SDL_Log("Presenting frames with %s.", PresentModeName(presentMode));
     result->m_antialias = options.antialias;
     SDL_GPUTextureCreateInfo frame{};
     frame.type = SDL_GPU_TEXTURETYPE_2D;
@@ -76,6 +122,49 @@ GpuWindow::~GpuWindow() {
             SDL_ReleaseWindowFromGPUDevice(m_device.get(), m_window.get());
         }
     }
+}
+
+bool GpuWindow::SetFullscreen(bool fullscreen) {
+    if (fullscreen) {
+        SDL_DisplayMode closest{};
+        const SDL_DisplayMode *mode = nullptr;
+        if (m_exclusive) {
+            if (SDL_GetClosestFullscreenDisplayMode(SDL_GetDisplayForWindow(m_window.get()),
+                                                    static_cast<int>(m_frameWidth),
+                                                    static_cast<int>(m_frameHeight),
+                                                    static_cast<float>(m_refreshRate),
+                                                    false,
+                                                    &closest)) {
+                mode = &closest;
+            } else {
+                SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
+                            "The display has no mode of %u by %u, and the full screen is at the "
+                            "desktop mode: %s",
+                            m_frameWidth,
+                            m_frameHeight,
+                            SDL_GetError());
+            }
+        }
+        // A null mode is the desktop mode, without borders.
+        if (!SDL_SetWindowFullscreenMode(m_window.get(), mode)) {
+            SDL_LogWarn(
+                SDL_LOG_CATEGORY_VIDEO, "The full-screen mode was not set: %s", SDL_GetError());
+        }
+        if (mode != nullptr) {
+            SDL_Log("Covering the display at %d by %d and %.2f Hz.",
+                    mode->w,
+                    mode->h,
+                    static_cast<double>(mode->refresh_rate));
+        }
+    }
+    if (!SDL_SetWindowFullscreen(m_window.get(), fullscreen)) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
+                    "The window did not %s: %s",
+                    fullscreen ? "cover the display" : "leave the full screen",
+                    SDL_GetError());
+        return false;
+    }
+    return true;
 }
 
 bool GpuWindow::PresentClear(SDL_FColor color, const std::filesystem::path *capture) {

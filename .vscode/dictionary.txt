@@ -1341,6 +1341,7 @@ volumecontrols
 vretrace
 vsince
 vswhere
+vsync
 waitforsingleobject
 wasstilldrawing
 watr

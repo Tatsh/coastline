@@ -361,6 +361,10 @@ private:
     PlayerInputState m_input{};
     std::string m_typedText;
     s32 m_frameMilliseconds = 0;
+    // The counts of frames of the console advance once a 60th of a second at any frame rate: the
+    // time toward the next count, and whether one is due this frame.
+    float m_consoleFrameTime = 0.0f;
+    bool m_consoleFrame = true;
     // Where the mouse is on the 640 by 480 screen, and whether it moved this frame.
     std::array<int, 2> m_pointer{};
     bool m_pointerMoved = false;

@@ -50,6 +50,9 @@ constexpr u8 SLOT_RIGHT_REAR_FENDER = 7;
 constexpr int CAR_RAISED_IN_PREVIEW = 1;
 constexpr int CAR_LOWERED_IN_PREVIEW = 10;
 
+// The length of a frame of the console the counts of frames below are in.
+constexpr float CONSOLE_FRAME_SECONDS = 1.0f / 60.0f;
+
 // The frames the preview takes to turn from one decal slot to the next.
 constexpr u16 PREVIEW_TURN_FRAMES = 16;
 
@@ -881,6 +884,12 @@ bool PaintShop::DialogShows() const {
 
 void PaintShop::TranslateInput(float seconds, const PaintShopInput &input, bool dialog) {
     m_frameMilliseconds = static_cast<s32>(seconds * 1000.0f);
+    m_consoleFrameTime += seconds;
+    m_consoleFrame = m_consoleFrameTime >= CONSOLE_FRAME_SECONDS;
+    if (m_consoleFrame) {
+        // A slow frame advances a count once, not once for each 60th it took.
+        m_consoleFrameTime = std::fmod(m_consoleFrameTime, CONSOLE_FRAME_SECONDS);
+    }
     m_input.buttons = input.buttons;
     // In a menu or a dialog of the console, Enter chooses as A does. The keyboard of the text tool
     // reads Enter from the typed text instead.
@@ -1034,7 +1043,9 @@ void PaintShop::RenderDecalPreview3D() {
     if (m_decalSlotChanged) {
         PaintVector from = m_panelViewDirections[m_previousDecalSlot];
         PaintVector to = m_panelViewDirections[m_decalSlot];
-        ++m_screenFrameCount;
+        if (m_consoleFrame) {
+            ++m_screenFrameCount;
+        }
         Normalize(from);
         Normalize(to);
         if (Dot(to, from) < -0.9) {
@@ -1079,7 +1090,7 @@ void PaintShop::RenderDecalPreview3D() {
     m_framePosition = {m_frameUp.x * -0.65f, m_frameUp.y * -0.65f, m_frameUp.z * -0.65f};
 
     // The images of the painted car are written again for the preview a few frames apart.
-    if (m_previewWait > 0) {
+    if (m_previewWait > 0 && m_consoleFrame) {
         --m_previewWait;
     }
     if ((m_previewDirty && m_previewWait == 0) || !m_preview) {
@@ -2126,7 +2137,7 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
         m_pakDialogState = PAK_STATE_WAIT_FADE;
         break;
     case PAK_STATE_WAIT_FADE:
-        if (m_pakWaitFrames++ == PAK_FADE_WAIT_FRAMES) {
+        if (m_consoleFrame && m_pakWaitFrames++ == PAK_FADE_WAIT_FRAMES) {
             m_pakDialogState = PAK_STATE_INIT_PAK;
             m_pakWaitFrames = 0;
         }
@@ -2230,7 +2241,7 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
         } else {
             DrawPakProgressBox(y, "SAVING DECALS...", 0x73, textY);
         }
-        if (m_pakWaitFrames++ < PAK_TRANSFER_DELAY_FRAMES) {
+        if (!m_consoleFrame || m_pakWaitFrames++ < PAK_TRANSFER_DELAY_FRAMES) {
             break;
         }
         if (m_pakFileNeedsCreate) {
@@ -2471,7 +2482,7 @@ void PaintShop::ProcessTextInputKeyboard() {
     DrawSpriteTinted(*m_keyboardBackground, 0xE0, 0xE0, 0xE0);
     if (highlight.style) {
         highlight.style = 0;
-        if (m_screenFrameCount > 0) {
+        if (m_screenFrameCount > 0 && m_consoleFrame) {
             --m_screenFrameCount;
         }
         if (m_screenFrameCount == 0) {

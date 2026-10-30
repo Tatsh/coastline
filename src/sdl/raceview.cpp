@@ -371,9 +371,10 @@ void DrawHudText(const char *text, s32 x, s32 y) {
                             CanvasProjection(GetHudCanvasWidth(), GetHudCanvasHeight()));
 }
 
-// DrawViewOverlay() of each view and DrawPauseMenu(), from the routines of the race, their text
-// drawn by DrawHudText() on the canvas of the HUD as the patched PC release lays its HUD out on its
-// canvas, in the order of the commands they write, the gauges of the dashboard before the speed.
+// DrawFpsCounterOverlay(), DrawViewOverlay() of each view, and DrawPauseMenu(), from the routines
+// of the race, their text drawn by DrawHudText() on the canvas of the HUD as the patched PC release
+// lays its HUD out on its canvas, in the order of the commands they write, the gauges of the
+// dashboard before the speed.
 void DrawRaceHud(SceneRenderer &renderer,
                  const MenuText &text,
                  HudTextures &textures,
@@ -387,6 +388,7 @@ void DrawRaceHud(SceneRenderer &renderer,
     g_dwConfigFramebufferHeight = hud.height;
     g_hudDrawing = {&renderer, &text, &textures, &hud, scratch.data()};
     g_pfnTextSink = DrawHudText;
+    DrawFpsCounterOverlay();
 
     std::array<ViewportRect, 2> views = HudViews(hud);
     for (int index = 0; index < ViewCount(); ++index) {
