@@ -576,9 +576,9 @@ struct RaceView::State {
     // ponytail: the sky loads the images of the track a second time; a model with its nodes drawn
     // by name would share them.
     std::unique_ptr<RenderModel> sky;
-    // The cars in the colours the vehicles of the race have had. The computer's cars of a
-    // championship take the colour of each racer they drive for, and a car in a colour not seen
-    // before loads while the race runs.
+    // The cars in the colours the vehicles of the race can have. The computer's cars of a
+    // championship take the colour of each racer they drive for, and every such colour loads with
+    // the race, as a load while the race runs stalls the frame that draws it.
     std::map<CarKey, CarModels> cars;
     // The documents of the images of the vehicles that do not take those of the asset pack.
     std::map<int, std::filesystem::path> images;
@@ -1558,6 +1558,7 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     state->sky = RenderModel::Load(renderer, trackFile, sky);
     state->defaults = defaults;
     state->damage = LoadDamageMasks(defaults, cars.empty() ? -1 : cars.front().car);
+    Uint64 carsStart = SDL_GetTicks();
     for (std::size_t i = 0; i < cars.size(); ++i) {
         const RaceCar &vehicle = cars[i];
         int custom = vehicle.images ? static_cast<int>(i) + 1 : 0;
@@ -1565,12 +1566,45 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
             state->images[static_cast<int>(i)] = *vehicle.images;
         }
         CarKey key{vehicle.car, vehicle.paint[0], vehicle.paint[1], vehicle.paint[2], custom};
+        if (state->cars.contains(key)) {
+            continue;
+        }
         CarModels models = LoadCarModels(renderer, defaults, key, vehicle.images, state->damage);
         if (!models.levels[0]) {
             return nullptr;
         }
         state->cars.try_emplace(key, std::move(models));
     }
+    // AcquireRacerVehicle() paints a computer's car in the colour of the racer it drives for.
+    for (std::size_t i = g_dwNumLocalPlayers; i < cars.size(); ++i) {
+        for (int racer = static_cast<int>(g_dwNumLocalPlayers); racer < g_dwNumVehicles; ++racer) {
+            const u8 *color = g_aRacerSlots[racer].GetColor();
+            CarKey key{cars[i].car, color[0], color[1], color[2], 0};
+            if (!state->cars.contains(key)) {
+                state->cars.try_emplace(
+                    key, LoadCarModels(renderer, defaults, key, std::nullopt, state->damage));
+            }
+        }
+    }
+    // The farther levels of detail of a split screen.
+    if (g_dwNumViewports == 2) {
+        for (auto &[key, models] : state->cars) {
+            if (!models.levels[0]) {
+                continue;
+            }
+            std::optional<std::filesystem::path> document;
+            if (key[4] > 0) {
+                document = state->images[key[4] - 1];
+            }
+            for (int lod = 1; lod < VEHICLE_LODS; ++lod) {
+                models.levels[static_cast<std::size_t>(lod)] =
+                    LoadCarLevel(renderer, defaults, key, lod, document, state->damage);
+            }
+        }
+    }
+    SDL_Log("%zu cars of the race loaded in %llu ms.",
+            state->cars.size(),
+            static_cast<unsigned long long>(SDL_GetTicks() - carsStart));
     // The skies of the track in cargfx, as the import converted them.
     auto skyImage = [&](const SkyTextureFiles *files) {
         // The reflection wraps across the sky, as its tile wraps.
@@ -2280,6 +2314,12 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     auto found = s.cars.find(key);
     // A car that does not load is not tried again.
     if (found == s.cars.end()) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                    "Car %d in color %d %d %d loads while the race runs.",
+                    key[0],
+                    key[1],
+                    key[2],
+                    key[3]);
         found =
             s.cars.try_emplace(key, LoadCarModels(renderer, s.defaults, key, document, s.damage))
                 .first;
@@ -2306,6 +2346,10 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
         }
     }
     if (!models.levels[lod]) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                    "Level %zu of detail of car %d loads while the race runs.",
+                    lod,
+                    key[0]);
         models.levels[lod] =
             LoadCarLevel(renderer, s.defaults, key, static_cast<int>(lod), document, s.damage);
     }

@@ -134,6 +134,14 @@ FrameSnapshot *InterpolateFrameSnapshots(float share) {
         share = 1.0f;
     }
     g_InterpolatedFrameSnapshot.InterpolateFrom(from, to, std::clamp(share, 0.0f, 1.0f));
+    // A vehicle ManageAiRacerSlots() gave to another racer between the snapshots is placed where
+    // that racer is, and the frame shows it there in the colour of the racer. Blended, it would
+    // cross the track between the two places in the colour of the racer before.
+    for (int i = 0; i < (g_dwNumActiveVehicles == 0 ? 1 : g_dwNumActiveVehicles); ++i) {
+        if (from.GetVehicle(i).GetRacer() != to.GetVehicle(i).GetRacer()) {
+            g_InterpolatedFrameSnapshot.GetVehicles()[i].CopySnapshotState(to.GetVehicle(i));
+        }
+    }
     return &g_InterpolatedFrameSnapshot;
 }
 #endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
