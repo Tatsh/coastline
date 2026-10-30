@@ -40,6 +40,88 @@ jobs:
         run: cmake --build --preset "n64-$TGR_REGION" -- -k 0
         env:
           TGR_REGION: '${{ matrix.region }}'
+  sdl:
+    name: 'SDL (${{ matrix.name }})'
+    runs-on: '${{ matrix.os }}'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: 'Linux x86_64'
+            os: 'ubuntu-latest'
+          - name: 'Linux arm64'
+            os: 'ubuntu-24.04-arm'
+          # MSVC of Visual Studio 2022 is the oldest that compiles C++23, and the game targets
+          # Windows 7, the oldest SDL 3 runs on.
+          - architecture: 'x64'
+            name: 'Windows x64'
+            os: 'windows-2022'
+          - architecture: 'arm64'
+            name: 'Windows arm64'
+            os: 'windows-11-arm'
+          # The Apple silicon runner also builds for Intel Macs, from 10.15, the oldest macOS
+          # whose C++ library has std::filesystem.
+          - architecture: 'arm64'
+            name: 'macOS arm64'
+            os: 'macos-latest'
+            triplet: 'arm64-osx'
+          - architecture: 'x86_64'
+            name: 'macOS x86_64'
+            os: 'macos-latest'
+            triplet: 'x64-osx'
+    env:
+      MACOSX_DEPLOYMENT_TARGET: '10.15'
+      VCPKG_KEEP_ENV_VARS: 'MACOSX_DEPLOYMENT_TARGET'
+      VCPKG_ROOT: '${{ github.workspace }}/.vcpkg'
+    steps:
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          persist-credentials: false
+      # The vcpkg build of SDL needs the development headers of ALSA, EGL, Wayland, xkbcommon, and
+      # the X11 extensions, and autoconf-archive.
+      - if: runner.os == 'Linux'
+        name: 'Install the tools'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y autoconf-archive cmake libasound2-dev libegl1-mesa-dev \
+            libltdl-dev libwayland-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev \
+            libxi-dev libxkbcommon-dev libxrandr-dev libxss-dev libxtst-dev ninja-build \
+            pkg-config wayland-protocols
+      - if: runner.os == 'macOS'
+        name: 'Install the tools'
+        run: brew install ninja
+      # The baseline of vcpkg-configuration.json pins the versions of the ports.
+      # The workflow also builds tags, so the packages vcpkg builds are not cached.
+      - name: 'Install vcpkg'
+        run: git clone https://github.com/microsoft/vcpkg "$VCPKG_ROOT"
+        shell: bash
+      - if: runner.os == 'Linux'
+        name: 'Configure and compile'
+        run: cmake --workflow --preset sdl
+      - if: runner.os == 'macOS'
+        name: 'Configure and compile'
+        run: |
+          cmake --preset sdl -DCMAKE_OSX_ARCHITECTURES="$ARCHITECTURE" \
+            -DVCPKG_TARGET_TRIPLET="$TRIPLET"
+          cmake --build --preset sdl
+        env:
+          ARCHITECTURE: '${{ matrix.architecture }}'
+          TRIPLET: '${{ matrix.triplet }}'
+      # Ninja finds MSVC in the environment the developer command prompt sets up for the
+      # architecture of the runner.
+      - if: runner.os == 'Windows'
+        name: 'Configure and compile'
+        run: |
+          $installer = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
+          $studio = & $installer -latest -property installationPath
+          Import-Module "$studio\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
+          Enter-VsDevShell -VsInstallPath $studio -SkipAutomaticLocation `
+            -DevCmdArguments "-arch=$env:ARCHITECTURE -host_arch=$env:ARCHITECTURE"
+          cmake --workflow --preset sdl
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        env:
+          ARCHITECTURE: '${{ matrix.architecture }}'
+        shell: pwsh
   win:
     name: 'Windows (${{ matrix.renderer }}, ${{ matrix.build-type }})'
     runs-on: windows-latest

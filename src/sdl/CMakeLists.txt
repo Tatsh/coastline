@@ -4,6 +4,15 @@ enable_language(CXX)
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_C_STANDARD 23)
+# The warnings of every library of the game, and the warning a reconstructed routine with unused
+# parameters turns off.
+if(MSVC)
+  set(COASTLINE_WARNINGS /W4 /utf-8)
+  set(COASTLINE_NO_UNUSED_PARAMETER /wd4100)
+else()
+  set(COASTLINE_WARNINGS -Wall -Wextra)
+  set(COASTLINE_NO_UNUSED_PARAMETER -Wno-unused-parameter)
+endif()
 
 find_package(SDL3 CONFIG REQUIRED)
 find_package(argparse CONFIG REQUIRED)
@@ -17,8 +26,16 @@ add_subdirectory("${CMAKE_SOURCE_DIR}/src/ear" "${CMAKE_BINARY_DIR}/src/ear")
 # The race engine of the PC release, shared with the Windows libraries. Its libraries take the
 # settings of src/CMakeLists.txt.
 add_library(coastline_options INTERFACE)
-target_compile_options(coastline_options INTERFACE -Wall -Wextra -Wno-unused-parameter
-                                                   "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>")
+target_compile_options(coastline_options INTERFACE ${COASTLINE_WARNINGS}
+                                                   ${COASTLINE_NO_UNUSED_PARAMETER})
+# MSVC compiles the C sources marked as C++ with the /TP CMake gives it.
+if(NOT MSVC)
+  target_compile_options(coastline_options INTERFACE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>")
+endif()
+# Windows 7 is the oldest Windows SDL 3 runs on, with MSVC and MinGW alike.
+if(WIN32)
+  target_compile_definitions(coastline_options INTERFACE _WIN32_WINNT=0x0601 WINVER=0x0601)
+endif()
 target_include_directories(coastline_options INTERFACE "${CMAKE_SOURCE_DIR}/src"
                                                      "${CMAKE_SOURCE_DIR}/src/libultra/include")
 add_subdirectory("${CMAKE_SOURCE_DIR}/src/common" "${CMAKE_BINARY_DIR}/src/common")
@@ -114,14 +131,14 @@ add_dependencies(coastline_sdl coastline_shaders coastline_manifests)
 target_link_libraries(coastline_sdl PRIVATE FLAC::FLAC nlohmann_json::nlohmann_json ZLIB::ZLIB)
 # A reconstructed routine retains the parameters of the original, used or not.
 set_source_files_properties("${CMAKE_SOURCE_DIR}/src/common/audio.c" pending.cpp
-                            PROPERTIES COMPILE_OPTIONS "-Wno-unused-parameter")
+                            PROPERTIES COMPILE_OPTIONS "${COASTLINE_NO_UNUSED_PARAMETER}")
 if(APPLE)
   enable_language(OBJCXX)
   target_sources(coastline_sdl PRIVATE paths-apple.mm)
   target_link_libraries(coastline_sdl PUBLIC "-framework Foundation")
 endif()
 target_include_directories(coastline_sdl PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
-target_compile_options(coastline_sdl PRIVATE -Wall -Wextra)
+target_compile_options(coastline_sdl PRIVATE ${COASTLINE_WARNINGS})
 target_link_libraries(coastline_sdl PUBLIC SDL3::SDL3 coastline_ear)
 if(WIN32)
   target_link_libraries(coastline_sdl PUBLIC shell32)
@@ -130,7 +147,7 @@ endif()
 add_executable(${CMAKE_PROJECT_NAME} main.cpp)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
                            COASTLINE_VERSION="${CMAKE_PROJECT_VERSION}")
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE -Wall -Wextra)
+target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE ${COASTLINE_WARNINGS})
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_sdl argparse::argparse)
 # The race engine calls the routines of the platform in coastline_sdl, and of SDL where the Windows
 # libraries call Windows. The game links every routine of the engine, called or not, and a routine
