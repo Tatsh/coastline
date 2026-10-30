@@ -872,9 +872,22 @@ void PaintShop::SetTextCustomColors(u8 red0, u8 green0, u8 blue0, u8 red1, u8 gr
 
 // The input of the player.
 
-void PaintShop::TranslateInput(float seconds, const PaintShopInput &input) {
+bool PaintShop::DialogShows() const {
+    return m_paintTool == PAINT_TOOL_MIRROR || m_paintTool == PAINT_TOOL_CLEAR ||
+           m_paintTool == PAINT_TOOL_LOAD || m_paintTool == PAINT_TOOL_SAVE ||
+           m_paintTool == PAINT_TOOL_EXIT || m_styleMenuOpen || m_colorEditorOpen;
+}
+
+void PaintShop::TranslateInput(float seconds, const PaintShopInput &input, bool dialog) {
     m_frameMilliseconds = static_cast<s32>(seconds * 1000.0f);
     m_input.buttons = input.buttons;
+    // In a menu or a dialog of the console, Enter chooses as A does and Escape cancels as B does.
+    if (dialog && input.enter) {
+        m_input.buttons |= INPUT_A;
+    }
+    if (dialog && input.escape) {
+        m_input.buttons |= INPUT_B;
+    }
     m_input.stickX = std::clamp(input.stickX, -1.0f, 1.0f);
     m_input.stickY = std::clamp(input.stickY, -1.0f, 1.0f);
     ConsumeInputFlags(&m_input);
@@ -883,12 +896,10 @@ void PaintShop::TranslateInput(float seconds, const PaintShopInput &input) {
         return;
     }
     m_pointer = *input.pointer;
+    m_pointerSeen = true;
     // The mouse moves the cursor of the paint shop, except while a menu or a dialog shows. The
     // cursor of the console stays still there, and the mouse picks the options of the menu.
-    bool menu = m_paintTool == PAINT_TOOL_MIRROR || m_paintTool == PAINT_TOOL_CLEAR ||
-                m_paintTool == PAINT_TOOL_LOAD || m_paintTool == PAINT_TOOL_SAVE ||
-                m_paintTool == PAINT_TOOL_EXIT || m_styleMenuOpen || m_colorEditorOpen;
-    if (!menu && !m_paintShopExiting) {
+    if (!dialog && !m_paintShopExiting) {
         m_paintCursor->originX = std::clamp(m_pointer[0], CURSOR_MIN_X, CURSOR_MAX_X);
         m_paintCursor->originY = std::clamp(m_pointer[1], CURSOR_MIN_Y, CURSOR_MAX_Y);
     }
@@ -1498,7 +1509,8 @@ void PaintShop::HandlePaintShopB() {
 
 bool PaintShop::Frame(SceneRenderer &renderer, float seconds, const PaintShopInput &input) {
     BeginDraw(renderer);
-    TranslateInput(seconds, input);
+    bool dialog = DialogShows();
+    TranslateInput(seconds, input, dialog);
     if (!m_initialized && !InitPaintShop()) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                      "The paint shop cannot open %s.",
@@ -1517,6 +1529,15 @@ bool PaintShop::Frame(SceneRenderer &renderer, float seconds, const PaintShopInp
         DrawToolCursor();
     } else {
         RunPaintShopMenus();
+    }
+    // The console draws no cursor over a menu or a dialog, where the mouse picks the options. The
+    // cursor shows at the mouse whenever a mouse is connected.
+    if (dialog && !m_paintShopExiting && (m_pointerSeen || SDL_HasMouse())) {
+        if (m_pointerSeen) {
+            DrawTexturedSprite(*m_paintCursor, m_pointer[0], m_pointer[1]);
+        } else {
+            DrawSpriteAtOrigin(*m_paintCursor);
+        }
     }
     FlushFills();
     m_screen.DrawFade(renderer);
@@ -2305,7 +2326,7 @@ std::optional<bool> PaintShop::LoadDecalsFrame(SceneRenderer &renderer,
                                                DecalCar &car) {
     // RunPakDialog() of the car select screen of the console.
     BeginDraw(renderer);
-    TranslateInput(seconds, input);
+    TranslateInput(seconds, input, true);
     if (m_pakResult == 0) {
         if (!m_pakDone) {
             m_pakResult = ProcessDecalSaveLoad(car, PAINT_TOOL_LOAD, 1, m_pakDone);

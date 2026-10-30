@@ -247,6 +247,38 @@ std::vector<ScriptedMouse> ParseMouseMoves(const argparse::ArgumentParser &parse
     return moves;
 }
 
+// A press of --key: a key of the keyboard down from a frame for a number of frames.
+struct ScriptedKey {
+    int frame;
+    int scancode;
+    int frames;
+};
+
+// A malformed press is logged and left out.
+std::vector<ScriptedKey> ParseKeys(const argparse::ArgumentParser &parser) {
+    std::vector<ScriptedKey> keys;
+    for (const auto &value : parser.get<std::vector<std::string>>("--key")) {
+        auto colon = value.find(':');
+        auto second = colon == std::string::npos ? colon : value.find(':', colon + 1);
+        std::string name =
+            colon == std::string::npos ?
+                std::string() :
+                value.substr(colon + 1,
+                             second == std::string::npos ? std::string::npos : second - colon - 1);
+        SDL_Scancode scancode = SDL_GetScancodeFromName(name.c_str());
+        int frame = std::atoi(value.substr(0, colon).c_str());
+        int frames = second == std::string::npos ? SCRIPTED_PRESS_FRAMES :
+                                                   std::atoi(value.substr(second + 1).c_str());
+        if (scancode == SDL_SCANCODE_UNKNOWN || frame <= 0 || frames <= 0) {
+            SDL_LogError(
+                SDL_LOG_CATEGORY_APPLICATION, "%s is not FRAME:KEY[:FRAMES].", value.c_str());
+            continue;
+        }
+        keys.push_back({frame, static_cast<int>(scancode), frames});
+    }
+    return keys;
+}
+
 // The mouse of a frame, where it is on the 640 by 480 screen of the menus and its buttons, and
 // where it was the frame before.
 struct MouseState {
@@ -304,6 +336,9 @@ coastline::PaintShopInput PaintShopInputOf(const coastline::ControllerState &por
     }
     input.stickX = static_cast<float>(port.stickX) / STICK_RANGE;
     input.stickY = static_cast<float>(port.stickY) / STICK_RANGE;
+    input.enter =
+        coastline::IsKeyDown(SDL_SCANCODE_RETURN) || coastline::IsKeyDown(SDL_SCANCODE_KP_ENTER);
+    input.escape = coastline::IsKeyDown(SDL_SCANCODE_ESCAPE);
     if (!mouse.last || *mouse.last != mouse.at) {
         input.pointer = mouse.at;
     }
@@ -531,6 +566,10 @@ int main(int argc, char *argv[]) {
               "the button pressed down while the mouse is there; the real mouse is read when no "
               "move is given")
         .append();
+    parser.add_argument("--key")
+        .help("press a key of the keyboard from a frame for 6 frames or FRAMES, as "
+              "FRAME:KEY[:FRAMES] with KEY the SDL name of the key, such as Return or Escape")
+        .append();
     parser.add_argument("--autopilot")
         .help("let the computer drive the car of the first player in a race")
         .flag();
@@ -660,6 +699,7 @@ int main(int argc, char *argv[]) {
             bool quitAfterScreenshot = parser.get<bool>("--quit-after-screenshot");
             std::vector<ScriptedPress> presses = ParsePresses(parser);
             std::vector<ScriptedMouse> mouseMoves = ParseMouseMoves(parser);
+            std::vector<ScriptedKey> keys = ParseKeys(parser);
             MouseState mouse;
             std::unique_ptr<coastline::TlRenderer> renderer;
             std::unique_ptr<coastline::ModelView> modelView;
@@ -755,6 +795,11 @@ int main(int argc, char *argv[]) {
                 // The race reads the keyboard through the bindings of the PC release, and the
                 // presses push down the keys of its default bindings.
                 std::vector<int> scriptedKeys;
+                for (const ScriptedKey &key : keys) {
+                    if (frame >= key.frame && frame < key.frame + key.frames) {
+                        scriptedKeys.push_back(key.scancode);
+                    }
+                }
                 if (frontEnd == FrontEnd::Race) {
                     for (const auto &[button, key] : RACE_KEYS) {
                         if (scripted & button) {

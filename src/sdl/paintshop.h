@@ -53,6 +53,8 @@ struct PaintShopInput {
     float stickY = 0.0f; /*!< The stick up and down, from -1 for down to 1 for up. */
     /** Where the mouse moved to this frame on the 640 by 480 screen, or none when it is still. */
     std::optional<std::array<int, 2>> pointer;
+    bool enter = false;  /*!< Whether Return or keypad Enter is down, A in a dialog. */
+    bool escape = false; /*!< Whether Escape is down, B in a dialog. */
 };
 
 /** A rectangle of the 640 by 480 screen, ScreenRect of the console. */
@@ -225,7 +227,8 @@ private:
     void SetTextCustomColors(u8 red0, u8 green0, u8 blue0, u8 red1, u8 green1, u8 blue1);
 
     // The input of the player as the console reads it.
-    void TranslateInput(float seconds, const PaintShopInput &input);
+    void TranslateInput(float seconds, const PaintShopInput &input, bool dialog);
+    bool DialogShows() const;
     void Transfer(u32 mask);
     void UpdateStickRepeat();
     void CheckStick(s32 &timer, f32 axis, f32 sign, u32 button);
@@ -349,6 +352,7 @@ private:
     // Where the mouse is on the 640 by 480 screen, and whether it moved this frame.
     std::array<int, 2> m_pointer{};
     bool m_pointerMoved = false;
+    bool m_pointerSeen = false;
 
     // The pictures, by their address in the main segment of the console.
     std::map<u32, PaintSprite> m_sprites;
