@@ -4,6 +4,9 @@
 #include "common/screen.h"
 
 #if TGR_BOSS_RALLY
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "common/game.h"
+#endif
 #include "common/rallyconfig.h"
 #ifdef errno
 #undef errno
@@ -279,7 +282,15 @@ void TranslateControllerInput(PlayerInputState *state) {
         for (i = 0; i < INPUT_RECORDERS; i++) {
             if (state->recordBuffers[i] != NULL &&
                 state->recordPositions[i] < state->recordLimits[i]) {
-#if !TGR_BOSS_RALLY
+#if TGR_BOSS_RALLY && TGR_PLATFORM == TGR_PLATFORM_SDL
+                /* The SDL game records the input of a time attack as the console does, for the
+                 * ghost of the Controller Pak. The PC release records only the header. */
+                if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
+                    state->recordBuffers[i][state->recordPositions[i]] = state->steeringInput;
+                    state->recordBuffers[i][state->recordPositions[i] + 1] =
+                        (state->buttons & INPUT_RECORDED_ACTIONS) >> 16;
+                }
+#elif !TGR_BOSS_RALLY
                 state->recordBuffers[i][state->recordPositions[i]] = state->steeringInput;
                 state->recordBuffers[i][state->recordPositions[i] + 1] =
                     (state->buttons & INPUT_RECORDED_ACTIONS) >> 16;

@@ -80,6 +80,9 @@ struct RaceResults {
     std::array<RacePlayerResult, 2> players{};       /*!< The result of each player. */
     std::array<f32, PC_RECORD_TRACKS> lapRecords{};  /*!< The best laps after the race. */
     std::array<f32, PC_RECORD_TRACKS> raceRecords{}; /*!< The best races after the race. */
+    /** The input of the first player of a time attack up to the finish, its header first, as the
+     * console records it. Empty for another mode or a player who did not finish. */
+    std::vector<u8> ghostRecording;
 };
 
 /** How a race ends. */

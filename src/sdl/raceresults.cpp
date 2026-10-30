@@ -10,6 +10,7 @@
 
 #include "common/game.h"
 #include "common/race.h"
+#include "common/recordingformat.h"
 #include "common/weather.h"
 #include "frontend.h"
 #include "menus.h"
@@ -169,6 +170,9 @@ void Menus::FinishRace(RaceEnd end, const RaceResults &results) {
             m_profile.seasonPlaces[m_profile.season][m_profile.round] = static_cast<u8>(place);
             m_profile.seasonTimes[m_profile.season][m_profile.round] = results.players[0].totalTime;
         }
+        if (m_gameMode == GameMode::TimeAttack) {
+            KeepTimeAttackRecording(results.ghostRecording);
+        }
         m_resultsInitialized = false;
         SetCurrentScreen(Screen::RaceResultsScreen);
     } else if (end == RaceEnd::SeasonMenu) {
@@ -183,6 +187,32 @@ void Menus::FinishRace(RaceEnd end, const RaceResults &results) {
         }
         SetCurrentScreen(Screen::MainMenu);
     }
+}
+
+// KeepTimeAttackRecording() of the console: the run is the new ghost when it reached the finish in
+// fewer steps than the ghost, or the ghost is of another track or empty.
+void Menus::KeepTimeAttackRecording(const std::vector<u8> &recording) {
+    m_ghostSaveAvailable = false;
+    if (recording.size() <= RECORDING_HEADER_SIZE ||
+        (static_cast<int>(recording.size()) >= m_ghostRecordingSize &&
+         m_ghostRecording[0] == m_selectedTrackId &&
+         m_ghostRecordingSize > static_cast<int>(RECORDING_HEADER_SIZE))) {
+        return;
+    }
+    m_ghostRecording = recording;
+    // The header of the console: its numbers of the track and the car, the setup, and the layout
+    // of the controller. The race engine writes the weather in the last byte, and the console
+    // does not write it.
+    m_ghostRecording[0] = static_cast<u8>(m_selectedTrackId);
+    m_ghostRecording[1] = static_cast<u8>(m_carSelect[0].carModel);
+    m_ghostRecording[2] = static_cast<u8>(m_profile.handling);
+    m_ghostRecording[3] = static_cast<u8>(m_profile.transmission);
+    m_ghostRecording[4] = static_cast<u8>(m_profile.tires);
+    m_ghostRecording[5] = static_cast<u8>(m_profile.suspension);
+    m_ghostRecording[6] = static_cast<u8>(m_profile.controllerLayout);
+    m_ghostRecording[7] = 0;
+    m_ghostRecordingSize = static_cast<int>(recording.size());
+    m_ghostSaveAvailable = true;
 }
 
 void Menus::StartRaceResults(SceneRenderer &renderer) {
@@ -522,10 +552,12 @@ void Menus::LeaveRaceResults() {
     }
     if (m_gameMode != GameMode::Championship) {
         // A time attack saves its ghost on the save and load menu when the race recorded a new
-        // one, g_dwSaveAvailable of the console. The race engine of the PC release does not record
-        // the ghost of the console, and the main menu follows.
-        // ponytail: offer the ghost once the race records the recording of the console.
-        SetCurrentScreen(Screen::MainMenu);
+        // one, and otherwise the main menu follows.
+        if (m_gameMode == GameMode::TimeAttack && m_ghostSaveAvailable) {
+            StartDataSaveLoadMenu(SaveLoadEntry::TimeAttack);
+        } else {
+            SetCurrentScreen(Screen::MainMenu);
+        }
         return;
     }
     // The next race of the season, or after its last race, the race after the season.

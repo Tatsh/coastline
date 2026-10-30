@@ -15,6 +15,7 @@
 #include "common/racephases.h"
 #include "common/rallyconfig.h"
 #include "common/render.h"
+#include "common/replay.h"
 #include "common/screen.h"
 #include "common/season.h"
 #include "common/settings.h"
@@ -59,6 +60,14 @@ void ReadResults() {
     const PlayerProfile *profile = g_aVehicles[0].GetProfile();
     std::copy_n(profile->lapRecords, PC_RECORD_TRACKS, g_results.lapRecords.begin());
     std::copy_n(profile->raceRecords, PC_RECORD_TRACKS, g_results.raceRecords.begin());
+    // KeepTimeAttackRecording() ends the recording of a player at the finish.
+    const PlayerInputState *input = g_aVehicles[0].GetInput();
+    if (g_dwGameMode == GAME_MODE_TIME_ATTACK && input->recordBuffers[0] == nullptr &&
+        input->recordPositions[0] > RECORDING_HEADER_SIZE) {
+        auto length = static_cast<std::size_t>(
+            std::min(input->recordPositions[0], static_cast<s32>(RECORDING_CAPACITY)));
+        g_results.ghostRecording.assign(g_aabInputRecordings[0], g_aabInputRecordings[0] + length);
+    }
 }
 
 bool g_waitForStart = false;

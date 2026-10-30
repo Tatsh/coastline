@@ -271,6 +271,7 @@ private:
     void DrawConfirmOverwrite();
     bool ReadSeasonNote(const std::vector<u8> &note, int player, bool otherRetainsEquipment);
     bool ReadGhostNote(const std::vector<u8> &note);
+    void KeepTimeAttackRecording(const std::vector<u8> &recording);
     bool LoadSaveLoadNote(int player);
     int SaveSaveLoadNote(int player);
     void LeaveDataSaveLoadMenu();
@@ -326,6 +327,8 @@ private:
     float m_seasonRecordsBlinkTime = 0.0f;
     // The console boots with a recording of its header alone.
     int m_ghostRecordingSize = 8;
+    // Whether the last time attack recorded a new ghost, g_dwSaveAvailable of the console.
+    bool m_ghostSaveAvailable = false;
 
     std::vector<MenuItem> m_weatherItems;
     int m_weatherSelectState = 0;
