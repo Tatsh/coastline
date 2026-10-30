@@ -1121,10 +1121,12 @@ int main(int argc, char *argv[]) {
             float raceTime = 0.0f;
             bool leaveDemo = false;
             // The first step of the race of the credits loads the race and with it the track and
-            // the car of the recording.
-            auto startCredits = [&]() {
+            // the car of the recording. The ending credits scroll, and go on to the next season.
+            bool endingCredits = false;
+            auto startCredits = [&](bool ending) {
+                endingCredits = ending;
                 openRaceData();
-                coastline::StartCreditsRace();
+                coastline::StartCreditsRace(ending);
                 coastline::StartConsoleCredits(defaults / "n64" / "usa");
                 coastline::StepAttractDemo(false);
                 const coastline::RaceCar car{
@@ -1404,8 +1406,14 @@ int main(int argc, char *argv[]) {
                             if (music && playMusic) {
                                 audio.Play(*music);
                             }
-                            mainMenu->FinishRace(end, coastline::LastRaceResults());
                             frontEnd = FrontEnd::MainMenu;
+                            if (end != coastline::RaceEnd::Credits) {
+                                mainMenu->FinishRace(end, coastline::LastRaceResults());
+                            } else if (startCredits(true)) {
+                                frontEnd = FrontEnd::Credits;
+                            } else {
+                                mainMenu->FinishRace(end, {});
+                            }
                         }
                     } else if (frontEnd == FrontEnd::Credits) {
                         // A press of A, Start, or Z ends the credits as it ends the attract demo.
@@ -1420,7 +1428,11 @@ int main(int argc, char *argv[]) {
                         }
                         if (!creditsRunning) {
                             raceView.reset();
-                            mainMenu->FinishCredits();
+                            if (endingCredits) {
+                                mainMenu->FinishRace(coastline::RaceEnd::Credits, {});
+                            } else {
+                                mainMenu->FinishCredits();
+                            }
                             frontEnd = FrontEnd::MainMenu;
                         }
                     }
@@ -1487,7 +1499,7 @@ int main(int argc, char *argv[]) {
                     sceneRenderer->End(framePath ? &*framePath : nullptr);
                     // The credits play under the music of the menus.
                     if (startCreditsRace) {
-                        if (startCredits()) {
+                        if (startCredits(false)) {
                             frontEnd = FrontEnd::Credits;
                         } else {
                             mainMenu->FinishCredits();

@@ -29,11 +29,16 @@ void OpenRaceData(bool playSounds);
 void StartAttractDemo();
 
 /**
- * Start the race of the credits as StartCreditsRace() of the console starts it from the options
- * menu, on the recording of the credits of the PC release. StepAttractDemo() runs it. The working
- * directory is the directory of the default assets.
+ * Start the race of the credits, on the recording of the credits of the PC release, as
+ * StartCreditsRace() of the console starts the captions from the options menu and
+ * StartEndingCredits() starts the scrolling credits after the last season. The console scrolls the
+ * credits of the options menu instead under the multiplayer mode of a cheat, absent from the SDL
+ * game. StepAttractDemo() runs the race. The working directory is the directory of the default
+ * assets.
+ *
+ * @param scrolling Whether the credits scroll rather than show as captions.
  */
-void StartCreditsRace();
+void StartCreditsRace(bool scrolling);
 
 /**
  * Run one frame of the race of the demo, a 30th of a second.

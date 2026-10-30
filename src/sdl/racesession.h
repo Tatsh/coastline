@@ -97,6 +97,8 @@ enum class RaceEnd {
     Results,    /*!< The race finished with results, for the results screen. */
     Menu,       /*!< The race was abandoned or had no results, for the main menu. */
     SeasonMenu, /*!< The race after a season ended, for the next season of the championship. */
+    Credits,    /*!< The race after the last season ended, for the ending credits and then the next
+                     season of the championship. */
 };
 
 /**

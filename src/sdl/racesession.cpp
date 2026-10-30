@@ -202,14 +202,13 @@ RaceEnd StepRace() {
         StopMusicOfRace();
         return season ? RaceEnd::SeasonMenu : RaceEnd::Menu;
     }
-    // ponytail: the credits after the last season are a race of the recording of the PC release,
-    // and the game returns to the main menu in their place.
+    // StartEndingCredits() follows the race after the last season. The race of the credits starts
+    // as a session of its own, as the race of the credits of the options menu does.
     if (g_dwGameMode == GAME_MODE_DEMO) {
-        SDL_Log("The ending credits are not built yet.");
         ShutdownGameSession();
         SetCurrentScreenCallback(ExitRaceSessionToMenu);
         StopMusicOfRace();
-        return RaceEnd::Menu;
+        return RaceEnd::Credits;
     }
     bool loading = !g_dwRaceInitialized;
     CallCurrentGameMode();

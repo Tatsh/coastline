@@ -170,7 +170,6 @@ void Menus::FinishRace(RaceEnd end, const RaceResults &results) {
         }
     }
     ApplyVolumeSettings();
-    bool afterSeason = m_afterSeasonRace;
     m_afterSeasonRace = false;
     if (end == RaceEnd::Results) {
         // The races and the laps of record the race set.
@@ -194,16 +193,14 @@ void Menus::FinishRace(RaceEnd end, const RaceResults &results) {
         }
         m_resultsInitialized = false;
         SetCurrentScreen(Screen::RaceResultsScreen);
-    } else if (end == RaceEnd::SeasonMenu) {
-        // After the race of a season, the championship goes on with the next season.
+    } else if (end == RaceEnd::SeasonMenu || end == RaceEnd::Credits) {
+        // After the race of a season or the ending credits, the championship goes on with the next
+        // season.
         m_gameMode = GameMode::Championship;
         SetTrackFromSeason();
         m_continueFromResults = false;
         StartDataSaveLoadMenu(SaveLoadEntry::Season);
     } else {
-        if (afterSeason) {
-            SDL_Log("The ending credits are not built yet.");
-        }
         SetCurrentScreen(Screen::MainMenu);
     }
 }

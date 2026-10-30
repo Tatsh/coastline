@@ -85,11 +85,9 @@ void StartAttractDemo() {
     g_bSfxVolume = static_cast<unsigned char>(g_bSfxVolume * 3 / 4);
 }
 
-void StartCreditsRace() {
-    // The console starts the scrolling credits instead with the multiplayer mode of a cheat, which
-    // the SDL game does not have.
+void StartCreditsRace(bool scrolling) {
     g_dwGameMode = GAME_MODE_DEMO;
-    g_dwRaceSessionType = RACE_SESSION_CREDIT_CAPTIONS;
+    g_dwRaceSessionType = scrolling ? RACE_SESSION_SCROLLING_CREDITS : RACE_SESSION_CREDIT_CAPTIONS;
     g_dwRaceInitialized = 0;
     g_consoleDemo = nullptr;
     InitGameAndShowMenus();
