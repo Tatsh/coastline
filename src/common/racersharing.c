@@ -12,8 +12,12 @@
 
 #include "common/screen.h"
 #define osSyncPrintf(...) NullStub()
-#define QuickSort qsort
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#define QuickSort qsort
+#elif TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "common/util.h"
+#endif
 
 #include "common/game.h"
 #include "common/input.h"

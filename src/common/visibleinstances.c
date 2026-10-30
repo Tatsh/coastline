@@ -70,7 +70,11 @@ u16 g_wActiveInstanceHideMask;
 #if TGR_BOSS_RALLY
 
 #define VIS_FILL_MASK FillMemoryPatternBytes
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #define VIS_SORT qsort
+#else
+#define VIS_SORT QuickSort
+#endif
 #define VIS_INTERMEDIATE(value) ((long double)(value))
 #define VIS_TRUNCATE(value) ((s32)(s64)(value))
 #else

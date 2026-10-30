@@ -200,7 +200,9 @@ LookAt *AllocLightBlock(void);
 void ResetFrameBlocks(void);
 
 /**
- * Sort count elements of a size with a comparison.
+ * Sort count elements of a size with a comparison. Equal elements end in the order the qsort() of
+ * the C runtime of the PC release gives them, and the SDL game sorts with this routine where the
+ * PC release calls that qsort().
  *
  * @param base The first element.
  * @param count The number of elements.

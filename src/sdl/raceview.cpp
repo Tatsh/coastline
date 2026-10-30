@@ -47,6 +47,7 @@
 #include "common/trackrender.h"
 #include "common/trackselect.h"
 #include "common/trackskidmarks.h"
+#include "common/util.h"
 #include "common/vecmath.h"
 #include "common/vehicle.h"
 #include "common/vehiclecamera.h"
@@ -1674,8 +1675,6 @@ constexpr std::size_t SHADOW_VEHICLES = 4;
 // in view at, and marks the instances near the vehicles it gives shadows. RenderTrackGeometry()
 // draws the opaque ones in that order, and its second pass draws the translucent ones the farthest
 // first.
-// ponytail: the cells of one distance sort by the qsort() of the platform, and their order on the
-// PC release is not reproduced.
 ViewInstances VisibleInstances(const CameraFrame &camera,
                                float fov,
                                float farPlane,
@@ -1740,7 +1739,11 @@ ViewInstances VisibleInstances(const CameraFrame &camera,
         s32 along = cell.row - cameraRow;
         cell.distance = static_cast<s16>(across * across + along * along);
     }
-    std::qsort(cells.data(), cells.size(), sizeof(VisibleCell), CompareVisibleCellDistance);
+    // The sort of the C runtime of the PC release, for the same order of the cells of one distance.
+    QuickSort(cells.data(),
+              static_cast<u32>(cells.size()),
+              sizeof(VisibleCell),
+              CompareVisibleCellDistance);
 
     ViewInstances view;
     view.mask.assign(static_cast<std::size_t>(g_LoadedTrack.instanceCount), 0xFF);

@@ -102,7 +102,7 @@ void GetTextureScaleAndMask(u32 size, s32 *scale, s32 *maskBits) {
 /* The first grid row extended to row 0 on the strip mine and its mirrored version. */
 #define TRACK_SECTION_ROW_EXTENDED 2
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 /* QuickSort() hands ranges of this many elements or fewer to ShortSort(). */
 #define SHORT_SORT_LIMIT 8
 
@@ -172,7 +172,7 @@ void ResetFrameBlocks(void) {
     g_dwLightBlockCount = 0;
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
 void QuickSort(void *base, u32 count, u32 size, CompareFunc compare) {
     u8 *lo, *hi, *mid, *loguy, *higuy;
     u32 n;
@@ -181,6 +181,7 @@ void QuickSort(void *base, u32 count, u32 size, CompareFunc compare) {
     s32 stkptr;
     SwapFunc swap;
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
     /* Exchange whole words or halfwords when the size allows. The exchanges take typed buffers,
      * which the swap pointer passes as untyped ones. */
     if ((size & 3) == 0) {
@@ -190,12 +191,17 @@ void QuickSort(void *base, u32 count, u32 size, CompareFunc compare) {
     } else {
         swap = (SwapFunc)ExchangeByteBuffers;
     }
+#else
+    /* The order is that of the word exchanges, without reading an element through another type
+     * or at an alignment it does not have. */
+    swap = (SwapFunc)ExchangeByteBuffers;
+#endif
 
     if (count < 2 || size == 0) {
         return;
     }
     stkptr = 0;
-    lo = base;
+    lo = (u8 *)base;
     hi = (u8 *)base + size * (count - 1);
 
     for (;;) {
@@ -307,4 +313,4 @@ void ExchangeWordBuffers(u32 *a, u32 *b, u32 size) {
         }
     }
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
