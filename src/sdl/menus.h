@@ -132,12 +132,14 @@ public:
      *
      * @param renderer The renderer of the frame, between Begin() and End().
      * @param seconds The time of the frame.
-     * @param first The presses of the first controller.
+     * @param players The presses of the first and the second controller.
      * @param secondController Whether a device is bound to the second port.
      * @return Where the menus go.
      */
-    MenusEnd
-    Frame(SceneRenderer &renderer, float seconds, const MenuButtons &first, bool secondController);
+    MenusEnd Frame(SceneRenderer &renderer,
+                   float seconds,
+                   const std::array<MenuButtons, 2> &players,
+                   bool secondController);
 
     /** @return The race the menus chose, in the terms of the race engine. */
     RaceSetup ChosenRace() const;
@@ -210,7 +212,9 @@ private:
     void DrawCarStats(SceneRenderer &renderer, int player, int y, int barY);
     void DrawCarSelectChoices(SceneRenderer &renderer);
     void LeaveCarSelect();
-    void ProcessCarSelectScreen(SceneRenderer &renderer, float seconds, const MenuButtons &first);
+    void ProcessCarSelectScreen(SceneRenderer &renderer,
+                                float seconds,
+                                const std::array<MenuButtons, 2> &players);
     void StartRaceResults(SceneRenderer &renderer);
     void ProcessSeasonResults();
     void DrawRaceResultsTitle(SceneRenderer &renderer);

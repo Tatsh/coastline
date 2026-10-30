@@ -123,6 +123,19 @@ void SetForceFeedbackShortDuration(void);
  */
 void StartForceFeedbackJolt(void);
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/**
+ * Read the second controller of the SDL game as the console reads a pad, for the second player of
+ * a race.
+ *
+ * @param buttons Receives the buttons held, in the bits of libultra.
+ * @param stickX Receives the stick, right positive.
+ * @param stickY Receives the stick, up positive.
+ * @return Whether a device is bound to the second controller.
+ */
+int ReadSecondControllerPad(unsigned short *buttons, signed char *stickX, signed char *stickY);
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
+
 #ifdef __cplusplus
 }
 #endif

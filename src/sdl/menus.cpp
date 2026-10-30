@@ -27,8 +27,10 @@ void Menus::SetCurrentScreen(Screen screen) {
 
 MenusEnd Menus::Frame(SceneRenderer &renderer,
                       float seconds,
-                      const MenuButtons &first,
+                      const std::array<MenuButtons, 2> &players,
                       bool secondController) {
+    // The screens but the car select read the first controller.
+    const MenuButtons &first = players[0];
     m_end = MenusEnd::Running;
     switch (m_current) {
     case Screen::MainMenu:
@@ -44,7 +46,7 @@ MenusEnd Menus::Frame(SceneRenderer &renderer,
         ProcessWeatherSelect(renderer, seconds, first);
         break;
     case Screen::CarSelect:
-        ProcessCarSelectScreen(renderer, seconds, first);
+        ProcessCarSelectScreen(renderer, seconds, players);
         break;
     case Screen::RaceResultsScreen:
         ProcessRaceResultsScreen(renderer, seconds, first);

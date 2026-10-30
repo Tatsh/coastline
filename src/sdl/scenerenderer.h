@@ -336,6 +336,15 @@ public:
     void SetMirrored(bool mirrored);
 
     /**
+     * Set the rectangle of the frame the draws after it fill, as a view of a split screen fills its
+     * part of the screen, the whole frame from Begin(). The draws are cut to the rectangle, and the
+     * fog and the hidden instances of each draw are those set when it is made.
+     *
+     * @param view The rectangle in pixels, or none for the whole frame.
+     */
+    void SetViewport(std::optional<SDL_Rect> view);
+
+    /**
      * Draw a model, its opaque parts now and its translucent ones after every opaque draw.
      *
      * @param model The model.

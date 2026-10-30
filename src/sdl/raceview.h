@@ -12,6 +12,8 @@
 #include <memory>
 #include <span>
 
+class FrameSnapshot;
+
 namespace coastline {
 
 class SceneRenderer;
@@ -44,8 +46,9 @@ public:
     RaceView &operator=(const RaceView &) = delete;
 
     /**
-     * Draw the race from the active camera of the first vehicle, blended between its last two
-     * frames as the PC release blends them, and the HUD of the race over it.
+     * Draw each view of the race from the active camera of its vehicle, the views laid out as the
+     * race lays them out, blended between the last two frames of the race as the PC release blends
+     * them, and the HUD of each view over it.
      *
      * @param renderer The renderer of the frame, between Begin() and End().
      * @param share How far the frame is from the previous frame of the race to the current one,
@@ -53,12 +56,16 @@ public:
      */
     void Draw(SceneRenderer &renderer, float share) const;
 
-    /** @return The colour the frame clears to, the fog of the race. */
+    /**
+     * @return The colour the frame clears to: the fog of the race in a single view, and black
+     * around the views of a split screen.
+     */
     std::array<float, 4> ClearColor() const;
 
 private:
     struct State;
     explicit RaceView(std::unique_ptr<State> state);
+    void DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, int index) const;
     std::unique_ptr<State> m_state;
 };
 

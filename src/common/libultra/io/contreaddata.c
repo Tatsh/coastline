@@ -52,6 +52,13 @@ void osContGetReadData(OSContPad *data) {
     if (buttons & 0x40) {
         data->button |= L_TRIG;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    /* The PC release reads one player, and the SDL game reads the second from its controller. */
+    data[1].CONT_ERRNO =
+        ReadSecondControllerPad(&data[1].button, &data[1].stick_x, &data[1].stick_y) ?
+            0 :
+            CONT_NO_RESPONSE_ERROR;
+#endif
 }
 
 #else

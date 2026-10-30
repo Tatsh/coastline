@@ -90,8 +90,8 @@ std::array<float, 3> Vector(const Vec3f &v) {
 }
 
 // SetupCameraMatrix() of the PC release: guLookAtF() from the camera along its forward axis, and a
-// perspective whose field across the frame is that of the camera on a 4:3 screen.
-Matrix4 CameraMatrix(const CameraFrame &camera, float aspect) {
+// perspective whose field across the view is a field of view on a 4:3 screen, to a far plane.
+Matrix4 CameraMatrix(const CameraFrame &camera, float fov, float farPlane, float aspect) {
     std::array<float, 3> eye = Vector(camera.position);
     std::array<float, 3> forward = Normalized(Vector(camera.forward));
     std::array<float, 3> side = Normalized(Cross(forward, Vector(camera.up)));
@@ -112,7 +112,7 @@ Matrix4 CameraMatrix(const CameraFrame &camera, float aspect) {
                  -Dot(up, eye),
                  Dot(forward, eye),
                  1};
-    float fovy = camera.fov * ASPECT_4_3 / aspect;
+    float fovy = fov * ASPECT_4_3 / aspect;
     float focal = 1.0f / std::tan(fovy * 0.5f);
     Matrix4 projection{focal / aspect,
                        0,
@@ -124,11 +124,11 @@ Matrix4 CameraMatrix(const CameraFrame &camera, float aspect) {
                        0,
                        0,
                        0,
-                       CAMERA_FAR / (CAMERA_NEAR - CAMERA_FAR),
+                       farPlane / (CAMERA_NEAR - farPlane),
                        -1,
                        0,
                        0,
-                       CAMERA_NEAR * CAMERA_FAR / (CAMERA_NEAR - CAMERA_FAR),
+                       CAMERA_NEAR * farPlane / (CAMERA_NEAR - farPlane),
                        0};
     return MultiplyMatrices(projection, view);
 }
@@ -228,9 +228,38 @@ void DrawHudText(const char *text, s32 x, s32 y) {
 // The commands the HUD writes for the dashboard and its scissors go to a scratch list.
 constexpr std::size_t HUD_SCRATCH_COMMANDS = 4096;
 
-// DrawViewOverlay() and DrawPauseMenu() of the view of the first player, from the routines of the
-// race, their text drawn by DrawHudText() on the canvas of the HUD as the patched PC release lays
-// its HUD out on its canvas.
+// The number of views of the race, one for each local player.
+int ViewCount() {
+    return g_dwNumViewports >= 2 ? 2 : 1;
+}
+
+// The views of the race on the canvas of the HUD: the whole canvas for a single view, and the
+// views of a split screen scaled from the screen of the race, as BeginRaceHudCanvas() scales them.
+std::array<ViewportRect, 2> HudViews(const HudCanvas &hud) {
+    std::array<ViewportRect, 2> views{g_aViewportRects[0], g_aViewportRects[1]};
+    int screenWidth = std::max<int>(g_dwScreenWidth, 1);
+    int screenHeight = std::max<int>(g_dwScreenHeight, 1);
+    for (std::size_t index = 0; index < views.size(); ++index) {
+        ViewportRect &view = views[index];
+        const ViewportRect &screen = g_aViewportRects[index];
+        if (ViewCount() == 1) {
+            view.x = 0;
+            view.y = 0;
+            view.width = hud.width;
+            view.height = hud.height;
+            continue;
+        }
+        view.x = screen.x * hud.width / screenWidth;
+        view.y = screen.y * hud.height / screenHeight;
+        view.width = (screen.x + screen.width) * hud.width / screenWidth - view.x;
+        view.height = (screen.y + screen.height) * hud.height / screenHeight - view.y;
+    }
+    return views;
+}
+
+// DrawViewOverlay() of each view and DrawPauseMenu(), from the routines of the race, their text
+// drawn by DrawHudText() on the canvas of the HUD as the patched PC release lays its HUD out on its
+// canvas.
 // ponytail: the gauges of the dashboard go to the scratch list and are not drawn yet.
 void DrawRaceHud(SceneRenderer &renderer, const MenuText &text, const HudCanvas &hud) {
     static std::array<GbiCommand, HUD_SCRATCH_COMMANDS> scratch;
@@ -243,39 +272,34 @@ void DrawRaceHud(SceneRenderer &renderer, const MenuText &text, const HudCanvas 
     g_hudTextTarget = {&renderer, &text};
     g_pfnTextSink = DrawHudText;
 
-    // ponytail: a race of two players shows the view of the first player alone, across the frame.
-    std::array<ViewportRect, 2> views{g_aViewportRects[0], g_aViewportRects[0]};
-    for (ViewportRect &view : views) {
-        view.x = 0;
-        view.y = 0;
-        view.width = hud.width;
-        view.height = hud.height;
-    }
-    g_dwCurrentSplitScreenIndex = 0;
-    g_pActiveCameraVehicle = &g_aVehicles[views[0].vehicleIndex];
-    g_pActiveCamera = g_pActiveCameraVehicle->GetActiveCamera();
-    const auto &cameras = g_pActiveCameraVehicle->GetCameras();
-    if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
-        SetTextStyleNormal();
-        SetTextAlignCenter();
-        SetTextSize(40);
-        DrawText(GetStringResource(g_aVehicles[0].GetProfile()->season ? 240 : 241),
-                 hud.width / 2,
-                 hud.height - 30);
-    } else if (g_bShowHudHelpText && g_dwGameMode != GAME_MODE_DEMO) {
-        if (gInstantReplayActive) {
+    std::array<ViewportRect, 2> views = HudViews(hud);
+    for (int index = 0; index < ViewCount(); ++index) {
+        g_dwCurrentSplitScreenIndex = index;
+        g_pActiveCameraVehicle = &g_aVehicles[views[static_cast<std::size_t>(index)].vehicleIndex];
+        g_pActiveCamera = g_pActiveCameraVehicle->GetActiveCamera();
+        const auto &cameras = g_pActiveCameraVehicle->GetCameras();
+        if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
             SetTextStyleNormal();
-            SetTextAlignLeft();
-            SetTextSize(15);
-            DrawText(GetStringResource(242), 28, 32);
-            SetTextAlignRight();
-            DrawText(GetStringResource(244), hud.width - 28, hud.height - 24);
-        } else if (g_pActiveCamera == &cameras[VEHICLE_CAMERA_TRACKSIDE]) {
-            if (g_pActiveCameraVehicle->GetRacer()->GetStatus() & RACER_FINISHED) {
-                DrawHudMessage(views.data());
+            SetTextAlignCenter();
+            SetTextSize(40);
+            DrawText(GetStringResource(g_aVehicles[0].GetProfile()->season ? 240 : 241),
+                     hud.width / 2,
+                     hud.height - 30);
+        } else if (g_bShowHudHelpText && g_dwGameMode != GAME_MODE_DEMO) {
+            if (gInstantReplayActive) {
+                SetTextStyleNormal();
+                SetTextAlignLeft();
+                SetTextSize(15);
+                DrawText(GetStringResource(242), 28, 32);
+                SetTextAlignRight();
+                DrawText(GetStringResource(244), hud.width - 28, hud.height - 24);
+            } else if (g_pActiveCamera == &cameras[VEHICLE_CAMERA_TRACKSIDE]) {
+                if (g_pActiveCameraVehicle->GetRacer()->GetStatus() & RACER_FINISHED) {
+                    DrawHudMessage(views.data());
+                }
+            } else {
+                DrawSpeedAndHudOverlay(views.data(), g_aVehicles);
             }
-        } else {
-            DrawSpeedAndHudOverlay(views.data(), g_aVehicles);
         }
     }
     if (g_dwRacePauseState) {
@@ -447,11 +471,13 @@ constexpr std::uint32_t TRACK_INSTANCE_TUNNEL = 0x10;
 
 // The reflection of the sky on the car as RenderVehicleModel() sets it up: the night sky at night
 // or in a tunnel, else the day sky, across the axes of guLookAtReflectF() from the heading of the
-// camera, with the window of the tile turning with the heading of the camera of the race.
+// camera, with the window of the tile turning with the heading of the camera of the car of the
+// view.
 Reflection SkyReflection(const RenderTexture *daySky,
                          const RenderTexture *nightSky,
                          const CameraFrame &camera,
-                         const Vehicle &car) {
+                         const Vehicle &car,
+                         const Vehicle &cameraCar) {
     bool inTunnel =
         car.GetGroundInstanceCount() != 0 &&
         (g_LoadedTrack.instances[car.GetGroundInstances()[0]].flags & TRACK_INSTANCE_TUNNEL) != 0;
@@ -465,7 +491,7 @@ Reflection SkyReflection(const RenderTexture *daySky,
     std::array<float, 3> look = Normalized({-eyeX, -eyeY, 0.0f});
     reflection.across = {-look[1], look[0], 0.0f};
     reflection.up = {0.0f, 0.0f, 1.0f};
-    long double heading = g_aVehicles[0].GetCameraHeading();
+    long double heading = cameraCar.GetCameraHeading();
     auto offset = static_cast<std::int32_t>(
         0xffffffdfu -
         static_cast<std::uint32_t>(static_cast<std::int64_t>(heading * -20.3718318939209L)));
@@ -1098,16 +1124,64 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     return std::unique_ptr<RaceView>(new RaceView(std::move(state)));
 }
 
-std::array<float, 4> RaceView::ClearColor() const {
-    // SetupFog() writes the fog of the frame and its two commands, which go to a scratch list.
+namespace {
+
+// RenderRaceView() looks from the car of a view before SetupFog() writes the fog of the view and
+// its two commands, which go to a scratch list.
+void LookFromView(int index) {
     std::array<GbiCommand, 2> commands{};
     GbiCommand *list = gDisplayListPtr;
     gDisplayListPtr = commands.data();
-    // RenderRaceViewport() looks from the car of the view before it sets up the fog.
-    g_pActiveCameraVehicle = &g_aVehicles[g_aViewportRects[0].vehicleIndex];
+    g_dwCurrentSplitScreenIndex = index;
+    g_pActiveCameraVehicle = &g_aVehicles[g_aViewportRects[index].vehicleIndex];
     g_pActiveCamera = g_pActiveCameraVehicle->GetActiveCamera();
     SetupFog();
     gDisplayListPtr = list;
+}
+
+// The rectangle of the frame in pixels a view of a split screen fills, from its place on the screen
+// of the race.
+SDL_Rect FrameRect(const ViewportRect &view, const GpuWindow &window) {
+    auto width = static_cast<int>(window.FrameWidth());
+    auto height = static_cast<int>(window.FrameHeight());
+    int screenWidth = std::max<int>(g_dwScreenWidth, 1);
+    int screenHeight = std::max<int>(g_dwScreenHeight, 1);
+    int left = view.x * width / screenWidth;
+    int top = view.y * height / screenHeight;
+    return {left,
+            top,
+            (view.x + view.width) * width / screenWidth - left,
+            (view.y + view.height) * height / screenHeight - top};
+}
+
+// The flash of lightning RenderSkybox() mixes a quarter of into the fog.
+constexpr std::array<int, 3> LIGHTNING_FLASH{0xF0, 0xF8, 0xFF};
+
+// RenderSkybox() when the fog fills the sky: DrawFilledRect() of the view in the colour of the fog,
+// a quarter of the way to the flash on the odd frames of lightning.
+void FillSkyWithFog(SceneRenderer &renderer) {
+    std::array<int, 3> fog{g_bFogR, g_bFogG, g_bFogB};
+    std::array<std::uint8_t, 4> color{0, 0, 0, 0xFF};
+    bool flash = g_dwLightningFlashCounter > 0 && (g_dwLightningFlashCounter & 1) != 0;
+    for (std::size_t i = 0; i < fog.size(); ++i) {
+        color[i] =
+            static_cast<std::uint8_t>(flash ? (fog[i] * 3 + LIGHTNING_FLASH[i]) >> 2 : fog[i]);
+    }
+    std::array<FlatVertex, 4> corners{{{-1.0f, 1.0f, 0.0f, 0.0f, color, 0.0f},
+                                       {1.0f, 1.0f, 0.0f, 0.0f, color, 0.0f},
+                                       {1.0f, -1.0f, 0.0f, 0.0f, color, 0.0f},
+                                       {-1.0f, -1.0f, 0.0f, 0.0f, color, 0.0f}}};
+    renderer.DrawQuads(corners, FlatMaterial{}, IDENTITY_MATRIX);
+}
+
+} // namespace
+
+std::array<float, 4> RaceView::ClearColor() const {
+    // ClearScreen() blacks out the screen around the views of a split screen.
+    if (ViewCount() > 1) {
+        return {0.0f, 0.0f, 0.0f, 1.0f};
+    }
+    LookFromView(0);
     return {static_cast<float>(g_bFogR) / 255.0f,
             static_cast<float>(g_bFogG) / 255.0f,
             static_cast<float>(g_bFogB) / 255.0f,
@@ -1117,43 +1191,105 @@ std::array<float, 4> RaceView::ClearColor() const {
 void RaceView::Draw(SceneRenderer &renderer, float share) const {
     State &s = *m_state;
     GpuWindow &window = renderer.Window();
-    float aspect = static_cast<float>(window.FrameWidth()) /
-                   static_cast<float>(std::max<Uint32>(window.FrameHeight(), 1));
     // The frame draws the snapshots of the race blended, or the race itself before it has two.
     FrameSnapshot *snapshot = InterpolateFrameSnapshots(share);
-    const Vehicle &vehicle = snapshot != nullptr ? snapshot->GetVehicle(0) : g_aVehicles[0];
+    // The race keeps the 640 by 480 screen of the PC release, and the HUD is drawn on the canvas of
+    // the display scale from the same offsets from the edges of the screen.
+    HudCanvas hud = MakeHudCanvas(window);
+    renderer.SetMirrored(g_dwTrackMirrored != 0);
+    // The animated textures of the track take the time of the race.
+    renderer.SetTextureTime(static_cast<std::uint32_t>(g_dwElapsedTimeMs));
+    // UpdateTrackSpecials() spins instances and flies the airplane in their matrices.
+    renderer.SetInstanceMatrices([](int index) -> const float * {
+        return index < g_LoadedTrack.instanceCount ? &g_LoadedTrack.instances[index].matrix[0][0] :
+                                                     nullptr;
+    });
+    // DrawTrackShadows() lays the skid marks of the cars of each drawn frame, and each view draws
+    // them.
+    if (snapshot != nullptr && s.skidTexture) {
+        RecordFrameSkidMarks(snapshot->GetVehicles());
+    }
+    // The puffs of the snapshot the frame draws.
+    if (snapshot != nullptr) {
+        LoadParticleListHeads(&snapshot->GetParticles());
+    }
+    for (int index = 0; index < ViewCount(); ++index) {
+        DrawView(renderer, snapshot, index);
+    }
+    renderer.SetViewport(std::nullopt);
+    renderer.SetFog(std::nullopt);
+
+    DrawRaceHud(renderer, *s.text, hud);
+
+    // The help of the attract demo, from the corner of the canvas of the HUD, under the fade. The
+    // console shows nothing over its demo.
+    const char *help = GetStringResource(DEMO_HELP_STRING);
+    if (g_bShowHudHelpText && g_dwGameMode == GAME_MODE_DEMO &&
+        g_dwRaceSessionType == RACE_SESSION_ATTRACT && !AttractDemoFromConsole() &&
+        help != nullptr) {
+        TextStyle style;
+        style.size = 15;
+        style.align = TextStyle::Align::Right;
+        style.doubled = false;
+        s.text->Draw(renderer, help, hud.width - 28, hud.height - 24, style, hud.projection);
+    }
+
+    // ApplyScreenFade(): black left and right of the edges of the fade, across the whole frame.
+    if (g_fFadeLevel != 1.0f && g_dwScreenWidth > 0) {
+        ScreenFade wipe;
+        wipe.level = g_fFadeLevel;
+        wipe.left = g_dwFadeRectLeft * static_cast<int>(SCREEN_WIDTH) / g_dwScreenWidth;
+        wipe.right = g_dwFadeRectRight * static_cast<int>(SCREEN_WIDTH) / g_dwScreenWidth;
+        wipe.Draw(renderer);
+    }
+}
+
+// RenderRaceView() of a view: the track, the cars, the puffs, and the start lights from the active
+// camera of the car of the view.
+void RaceView::DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, int index) const {
+    State &s = *m_state;
+    GpuWindow &window = renderer.Window();
+    int cameraIndex = g_aViewportRects[index].vehicleIndex;
+    const Vehicle &vehicle =
+        snapshot != nullptr ? snapshot->GetVehicle(cameraIndex) : g_aVehicles[cameraIndex];
+    const Vehicle &first = snapshot != nullptr ? snapshot->GetVehicle(0) : g_aVehicles[0];
     const CameraFrame *camera = vehicle.GetActiveCamera();
     if (camera == nullptr) {
         return;
     }
-    // The race keeps the 640 by 480 screen of the PC release, and the HUD is drawn on the canvas of
-    // the display scale from the same offsets from the edges of the screen.
-    HudCanvas hud = MakeHudCanvas(window);
-    Matrix4 viewProjection = CameraMatrix(*camera, aspect);
+    // A view of a split screen fills its part of the screen, and looks narrower and not as far.
+    bool split = ViewCount() > 1;
+    SDL_Rect frame{
+        0, 0, static_cast<int>(window.FrameWidth()), static_cast<int>(window.FrameHeight())};
+    if (split) {
+        frame = FrameRect(g_aViewportRects[index], window);
+        renderer.SetViewport(frame);
+    }
+    float aspect = static_cast<float>(frame.w) / static_cast<float>(std::max(frame.h, 1));
+    Matrix4 viewProjection = CameraMatrix(*camera,
+                                          split ? camera->fov * 0.7f : camera->fov,
+                                          split ? CAMERA_FAR * 0.65f : CAMERA_FAR,
+                                          aspect);
     // SetViewport() mirrors the view across on a mirrored track, where the steering turns the
     // other way, and the faces of the models then turn the other way.
     if (g_dwTrackMirrored) {
         constexpr Matrix4 ACROSS{-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
         viewProjection = MultiplyMatrices(ACROSS, viewProjection);
     }
-    renderer.SetMirrored(g_dwTrackMirrored != 0);
-
-    // The lights of the weather of the race.
-    // The animated textures of the track take the time of the race.
-    renderer.SetTextureTime(static_cast<std::uint32_t>(g_dwElapsedTimeMs));
-    renderer.SetHiddenInstanceFlags(HiddenInstanceFlags(vehicle));
+    LookFromView(index);
+    if (split && IsSkyFogFilled() && !g_dwSkyboxDisabled) {
+        FillSkyWithFog(renderer);
+    }
+    renderer.SetHiddenInstanceFlags(HiddenInstanceFlags(first));
     // UpdateD3DFogRenderState(): the fog of the weather, farther on a clear night.
+    renderer.SetFog(std::nullopt);
     if (g_dwWeatherActive) {
         renderer.SetFog(Fog{{static_cast<float>(g_bFogR) / 255.0f,
                              static_cast<float>(g_bFogG) / 255.0f,
                              static_cast<float>(g_bFogB) / 255.0f},
                             !g_dwRainMode && !g_dwSnowMode && g_dwNightMode ? 16384.0f : 8192.0f});
     }
-    // UpdateTrackSpecials() spins instances and flies the airplane in their matrices.
-    renderer.SetInstanceMatrices([](int index) -> const float * {
-        return index < g_LoadedTrack.instanceCount ? &g_LoadedTrack.instances[index].matrix[0][0] :
-                                                     nullptr;
-    });
+    // The lights of the weather of the race.
     SetupWeatherLights();
     Lighting lighting;
     lighting.direction = {g_afLightDirection[0], g_afLightDirection[1], g_afLightDirection[2]};
@@ -1179,14 +1315,10 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     } else {
         renderer.DrawModel(*s.track, ConsoleSpace(), viewProjection, lighting, std::nullopt, true);
     }
-    // DrawTrackShadows() lays the skid marks of the cars of each drawn frame, then draws them.
-    if (snapshot != nullptr && s.skidTexture) {
-        RecordFrameSkidMarks(snapshot->GetVehicles());
-        if (g_GlobalRallyConfig.bSkidMarksSelection) {
-            DrawSkidMarks(renderer, *s.skidTexture, ShadowColor(vehicle), viewProjection);
-        }
+    if (snapshot != nullptr && s.skidTexture && g_GlobalRallyConfig.bSkidMarksSelection) {
+        DrawSkidMarks(renderer, *s.skidTexture, ShadowColor(vehicle), viewProjection);
     }
-    // RenderVehicleModel() does not draw the car from its own cockpit or its mirror.
+    // RenderVehicleModel() does not draw the car of the view from its own cockpit or its mirror.
     const auto &cameras = vehicle.GetCameras();
     bool inside =
         camera == &cameras[VEHICLE_CAMERA_COCKPIT] || camera == &cameras[VEHICLE_CAMERA_MIRROR];
@@ -1194,7 +1326,7 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     // RenderRacerVehicles(): the car of each vehicle of the race.
     // ponytail: the ghost of a time attack is drawn solid; its opacity of 0.375 is not applied.
     for (int index = 0; index < std::max(g_dwNumActiveVehicles, 1); ++index) {
-        if (index == 0 && inside && !g_dwVehicleCullingDisabled) {
+        if (index == cameraIndex && inside && !g_dwVehicleCullingDisabled) {
             continue;
         }
         const Vehicle &car = snapshot != nullptr ? snapshot->GetVehicle(index) : g_aVehicles[index];
@@ -1211,7 +1343,8 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
         }
         Lighting carLighting = CarLighting(car, vehicle, *camera);
         Matrix4 body = MultiplyMatrices(FrameMatrix(car.GetFrame()), ConsoleSpace());
-        Reflection reflection = SkyReflection(s.daySky.get(), s.nightSky.get(), *camera, car);
+        Reflection reflection =
+            SkyReflection(s.daySky.get(), s.nightSky.get(), *camera, car, g_aVehicles[cameraIndex]);
         // The textured parts, the underside, the highlight, and the painted body in turn.
         models.car->SetVariant(CarLightVariant(car));
         renderer.DrawReflectingModel(*models.car, body, viewProjection, carLighting, reflection);
@@ -1241,9 +1374,7 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
             renderer.DrawModel(wheel, place, viewProjection, carLighting, std::nullopt, true);
         }
     }
-    // The puffs of the snapshot the frame draws.
     if (snapshot != nullptr) {
-        LoadParticleListHeads(&snapshot->GetParticles());
         DrawParticles(renderer, *s.particleTexture, *s.shadowTexture, *camera, viewProjection);
         // A championship has more racers than vehicles, and only the vehicles have spray.
         for (int index = 0; index < g_dwNumActiveVehicles; ++index) {
@@ -1260,30 +1391,6 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
                            cameraCarLighting,
                            StartLightsPoses(*s.startLights),
                            true);
-    }
-
-    DrawRaceHud(renderer, *s.text, hud);
-
-    // The help of the attract demo, from the corner of the canvas of the HUD, under the fade. The
-    // console shows nothing over its demo.
-    const char *help = GetStringResource(DEMO_HELP_STRING);
-    if (g_bShowHudHelpText && g_dwGameMode == GAME_MODE_DEMO &&
-        g_dwRaceSessionType == RACE_SESSION_ATTRACT && !AttractDemoFromConsole() &&
-        help != nullptr) {
-        TextStyle style;
-        style.size = 15;
-        style.align = TextStyle::Align::Right;
-        style.doubled = false;
-        s.text->Draw(renderer, help, hud.width - 28, hud.height - 24, style, hud.projection);
-    }
-
-    // ApplyScreenFade(): black left and right of the edges of the fade, across the whole frame.
-    if (g_fFadeLevel != 1.0f && g_dwScreenWidth > 0) {
-        ScreenFade wipe;
-        wipe.level = g_fFadeLevel;
-        wipe.left = g_dwFadeRectLeft * static_cast<int>(SCREEN_WIDTH) / g_dwScreenWidth;
-        wipe.right = g_dwFadeRectRight * static_cast<int>(SCREEN_WIDTH) / g_dwScreenWidth;
-        wipe.Draw(renderer);
     }
 }
 

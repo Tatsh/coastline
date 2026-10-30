@@ -104,7 +104,12 @@ void TranslateControllerInput(PlayerInputState *state) {
             state->buttons |= INPUT_GEAR_UP;
         }
         if ((g_GlobalRallyConfig.pActiveInputBindings[0].wControl & 0x8000) ||
-            (g_GlobalRallyConfig.pActiveInputBindings[1].wControl & 0x8000)) {
+            (g_GlobalRallyConfig.pActiveInputBindings[1].wControl & 0x8000)
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+            /* The second player steers with the stick, and with the pad while it is centred. */
+            || (state->playerIndex != 0 && state->pad->stick_x != 0)
+#endif
+        ) {
             state->steeringInput = state->pad->stick_x;
         } else if ((state->buttons & INPUT_LEFT) && !(state->buttons & INPUT_RIGHT)) {
             state->steeringInput = -DPAD_STEERING;

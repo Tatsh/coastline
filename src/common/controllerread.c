@@ -1,5 +1,6 @@
 #include <PR/os.h>
 
+#include "common/game.h"
 #include "common/input.h"
 #include "common/rumble.h"
 
@@ -51,7 +52,10 @@ void UpdateControllerState(void) {
     s32 i;
 
     ReadControllers();
-#if TGR_BOSS_RALLY
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    /* The second player of the SDL game has the second pad. */
+    for (i = 0; i < (g_dwNumLocalPlayers > 1 ? 2 : 1); i++) {
+#elif TGR_BOSS_RALLY
     for (i = 0; i < 1; i++) {
 #else
     for (i = 0; i < MAX_PLAYERS; i++) {

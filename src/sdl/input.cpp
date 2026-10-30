@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include "common/inputpoll.h"
+
 namespace coastline {
 
 namespace {
@@ -13,6 +15,7 @@ constexpr int DEAD_ZONE = 7849;
 constexpr int C_BUTTON_THRESHOLD = 16384;
 
 std::vector<int> g_scriptedKeys;
+ControllerState g_secondController;
 
 struct KeyBinding {
     SDL_Scancode key;
@@ -185,4 +188,15 @@ bool IsKeyDown(SDL_Scancode scancode) {
            std::ranges::find(g_scriptedKeys, static_cast<int>(scancode)) != g_scriptedKeys.end();
 }
 
+void SetSecondControllerState(const ControllerState &state) {
+    g_secondController = state;
+}
+
 } // namespace coastline
+
+int ReadSecondControllerPad(unsigned short *buttons, signed char *stickX, signed char *stickY) {
+    *buttons = coastline::g_secondController.buttons;
+    *stickX = coastline::g_secondController.stickX;
+    *stickY = coastline::g_secondController.stickY;
+    return coastline::g_secondController.connected ? 1 : 0;
+}

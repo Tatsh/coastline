@@ -758,7 +758,7 @@ void Menus::LeaveCarSelect() {
 
 void Menus::ProcessCarSelectScreen(SceneRenderer &renderer,
                                    float seconds,
-                                   const MenuButtons &first) {
+                                   const std::array<MenuButtons, 2> &players) {
     if (!m_carSelectInitialized) {
         StartCarSelect(renderer);
     }
@@ -829,10 +829,9 @@ void Menus::ProcessCarSelectScreen(SceneRenderer &renderer,
         }
         return;
     }
-    // ponytail: the menus read the first controller alone, and the second player has no input
-    // until they read the second.
+    // Each player chooses with the controller of the player.
     for (int player = 0; player < m_numLocalPlayers; ++player) {
-        HandleCarSelectInput(renderer, player, player == 0 ? first : MenuButtons{});
+        HandleCarSelectInput(renderer, player, players[static_cast<std::size_t>(player)]);
     }
 }
 

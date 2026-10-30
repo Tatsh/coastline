@@ -12,9 +12,11 @@
 #include "common/profile.h"
 #include "common/race.h"
 #include "common/racephases.h"
+#include "common/render.h"
 #include "common/screen.h"
 #include "common/season.h"
 #include "common/settings.h"
+#include "common/system.h"
 #include "common/trackselect.h"
 #include "common/vehicle.h"
 #include "common/vehiclecount.h"
@@ -132,6 +134,12 @@ RaceEnd StepRace() {
     }
     bool loading = !g_dwRaceInitialized;
     CallCurrentGameMode();
+    // The PC release lays out the views with each frame it draws, and the race lays them out at
+    // its load before it knows how many players race. The SDL game lays them out again once the
+    // race has loaded.
+    if (loading && g_dwRaceInitialized) {
+        StartLowResFrame(g_aViewportRects);
+    }
     if (loading && g_dwRaceInitialized && !gInstantReplayActive) {
         // The console counts down as soon as the race has loaded, where the PC release waits for
         // the start binding.

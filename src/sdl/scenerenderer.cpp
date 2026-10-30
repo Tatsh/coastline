@@ -475,6 +475,13 @@ struct PipelineKey {
     auto operator<=>(const PipelineKey &) const = default;
 };
 
+// The state of the frame a draw is made in: its view, its fog, and the instances it hides.
+struct DrawState {
+    std::optional<SDL_Rect> view;
+    std::optional<Fog> fog;
+    std::uint32_t hiddenFlags = 0;
+};
+
 struct ModelDraw {
     const RenderModel *model;
     Matrix4 world;
@@ -486,6 +493,7 @@ struct ModelDraw {
     std::optional<Reflection> reflection;
     std::optional<CarShadow> shadow;
     std::optional<Highlight> highlight;
+    DrawState state;
 };
 
 struct QuadDraw {
@@ -494,6 +502,7 @@ struct QuadDraw {
     FlatMaterial material;
     Matrix4 projection;
     bool depthTest;
+    DrawState state;
 };
 
 } // namespace
@@ -547,6 +556,7 @@ struct SceneRenderer::State {
     // The fog the models of the frame are drawn in, or none.
     std::optional<Fog> fog;
     bool mirrored = false;
+    std::optional<SDL_Rect> view;
     GpuWindow *window = nullptr;
     SDL_GPUDevice *device = nullptr;
     SDL_GPUShader *vertexShader = nullptr;
@@ -648,6 +658,10 @@ struct SceneRenderer::State {
         }
         pipelines[key] = pipeline;
         return pipeline;
+    }
+
+    DrawState Current() const {
+        return {view, fog, hiddenFlags};
     }
 
     // A buffer of at least a size, made again when it is too small.
@@ -1162,6 +1176,7 @@ void SceneRenderer::Begin(std::array<float, 4> clear) {
     m_state->instanceMatrix = nullptr;
     m_state->fog.reset();
     m_state->mirrored = false;
+    m_state->view.reset();
     m_state->draws.clear();
     m_state->flat.clear();
 }
@@ -1184,6 +1199,10 @@ void SceneRenderer::SetFog(std::optional<Fog> fog) {
 
 void SceneRenderer::SetMirrored(bool mirrored) {
     m_state->mirrored = mirrored;
+}
+
+void SceneRenderer::SetViewport(std::optional<SDL_Rect> view) {
+    m_state->view = view;
 }
 
 void SceneRenderer::DrawModel(const RenderModel &model,
@@ -1219,7 +1238,8 @@ void SceneRenderer::DrawModel(const RenderModel &model,
                                           scissor,
                                           std::nullopt,
                                           std::nullopt,
-                                          std::nullopt});
+                                          std::nullopt,
+                                          m_state->Current()});
 }
 
 void SceneRenderer::DrawReflectingModel(const RenderModel &model,
@@ -1237,7 +1257,8 @@ void SceneRenderer::DrawReflectingModel(const RenderModel &model,
                                           scissor,
                                           reflection,
                                           std::nullopt,
-                                          std::nullopt});
+                                          std::nullopt,
+                                          m_state->Current()});
 }
 
 void SceneRenderer::DrawShadowedModel(const RenderModel &model,
@@ -1254,7 +1275,8 @@ void SceneRenderer::DrawShadowedModel(const RenderModel &model,
                                           std::nullopt,
                                           std::nullopt,
                                           std::move(shadow),
-                                          std::nullopt});
+                                          std::nullopt,
+                                          m_state->Current()});
 }
 
 void SceneRenderer::DrawHighlight(const RenderModel &model,
@@ -1270,7 +1292,8 @@ void SceneRenderer::DrawHighlight(const RenderModel &model,
                                           std::nullopt,
                                           std::nullopt,
                                           std::nullopt,
-                                          highlight});
+                                          highlight,
+                                          m_state->Current()});
 }
 
 void SceneRenderer::DrawQuads(std::span<const FlatVertex> corners,
@@ -1289,7 +1312,7 @@ void SceneRenderer::DrawQuads(std::span<const FlatVertex> corners,
         m_state->flat.push_back(v);
     }
     m_state->draws.emplace_back(
-        QuadDraw{first, corners.size() / 4, material, projection, depthTest});
+        QuadDraw{first, corners.size() / 4, material, projection, depthTest, m_state->Current()});
 }
 
 void SceneRenderer::End(const std::filesystem::path *capture) {
@@ -1351,6 +1374,30 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
     depth.store_op = SDL_GPU_STOREOP_DONT_CARE;
     SDL_GPURenderPass *pass = SDL_BeginGPURenderPass(commands, &color, 1, &depth);
 
+    // The view, the fog, and the hidden instances of the draw being made.
+    SDL_Rect whole{
+        0, 0, static_cast<int>(s.window->FrameWidth()), static_cast<int>(s.window->FrameHeight())};
+    const DrawState *drawState = nullptr;
+    // Fill the view of a draw and cut it to its scissor within the view, or report that nothing of
+    // it shows.
+    auto useView = [&](const DrawState &state, const std::optional<SDL_Rect> &scissor) {
+        drawState = &state;
+        SDL_Rect view = state.view.value_or(whole);
+        SDL_GPUViewport viewport{static_cast<float>(view.x),
+                                 static_cast<float>(view.y),
+                                 static_cast<float>(view.w),
+                                 static_cast<float>(view.h),
+                                 0.0f,
+                                 1.0f};
+        SDL_SetGPUViewport(pass, &viewport);
+        SDL_Rect cut = view;
+        if (scissor && !SDL_GetRectIntersection(&view, &*scissor, &cut)) {
+            return false;
+        }
+        SDL_SetGPUScissor(pass, &cut);
+        return true;
+    };
+
     auto drawPrimitive = [&](const Primitive &primitive,
                              const RenderModel::State &model,
                              const VertexUniforms &vertexUniforms,
@@ -1392,9 +1439,9 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         if (reflection != nullptr) {
             std::ranges::copy(reflection->environment, fragmentUniforms.env);
         }
-        if (s.fog) {
-            std::ranges::copy(s.fog->color, fragmentUniforms.fogColor);
-            fragmentUniforms.fogColor[3] = s.fog->range;
+        if (drawState->fog) {
+            std::ranges::copy(drawState->fog->color, fragmentUniforms.fogColor);
+            fragmentUniforms.fogColor[3] = drawState->fog->range;
         }
         if (shadow != nullptr) {
             float length = std::hypot(shadow->forward[0], shadow->forward[1]);
@@ -1465,9 +1512,9 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                                           {},
                                           {},
                                           {}};
-        if (s.fog) {
-            std::ranges::copy(s.fog->color, fragmentUniforms.fogColor);
-            fragmentUniforms.fogColor[3] = s.fog->range;
+        if (drawState->fog) {
+            std::ranges::copy(drawState->fog->color, fragmentUniforms.fogColor);
+            fragmentUniforms.fogColor[3] = drawState->fog->range;
         }
         SDL_PushGPUFragmentUniformData(commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
         std::array<SDL_GPUTextureSamplerBinding, 3> bindings{
@@ -1485,13 +1532,13 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
 
     // Each model draws its opaque primitives where it comes, and the blended ones of every model
     // follow every opaque one. A flat draw comes after the models drawn before it.
-    SDL_Rect whole{
-        0, 0, static_cast<int>(s.window->FrameWidth()), static_cast<int>(s.window->FrameHeight())};
     auto drawModel = [&](const ModelDraw &draw, bool blending) {
         const RenderModel::State &model = *draw.model->m_state;
-        SDL_SetGPUScissor(pass, draw.scissor ? &*draw.scissor : &whole);
+        if (!useView(draw.state, draw.scissor)) {
+            return;
+        }
         for (const Placed &placed : model.placed) {
-            if (placed.flags & s.hiddenFlags) {
+            if (placed.flags & draw.state.hiddenFlags) {
                 continue;
             }
             const Mesh &mesh = model.meshes[placed.mesh];
@@ -1600,7 +1647,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             continue;
         }
         SDL_BindGPUGraphicsPipeline(pass, pipeline);
-        SDL_SetGPUScissor(pass, &whole);
+        useView(quad.state, std::nullopt);
         VertexUniforms vertexUniforms{
             quad.projection, IDENTITY_MATRIX, {0, 0, 0, 0}, {0.0f, 0.0f, 0.0f, 0.0f}, {}, {}, {}};
         SDL_PushGPUVertexUniformData(commands, 0, &vertexUniforms, sizeof(vertexUniforms));

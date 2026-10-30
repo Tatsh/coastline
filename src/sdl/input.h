@@ -84,4 +84,12 @@ void SetScriptedKeys(std::vector<int> scancodes);
  */
 bool IsKeyDown(SDL_Scancode scancode);
 
+/**
+ * Set the state of the second controller the race reads for its second player, until the next
+ * call.
+ *
+ * @param state The state of the second port.
+ */
+void SetSecondControllerState(const ControllerState &state);
+
 } // namespace coastline

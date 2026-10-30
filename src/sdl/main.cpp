@@ -121,12 +121,14 @@ std::optional<std::vector<std::uint8_t>> LoadMusicByIndex(const std::filesystem:
     return LoadMusicModule(data, coastline::USA_MUSIC_MODULES[index].offset);
 }
 
-// A press of --press: the buttons pressed from a frame for a number of frames,
-// SCRIPTED_PRESS_FRAMES unless the press gives a number.
+// A press of --press: the buttons of a controller pressed from a frame for a number of frames,
+// SCRIPTED_PRESS_FRAMES unless the press gives a number, on the first controller unless it gives
+// another.
 struct ScriptedPress {
     int frame;
     std::uint16_t buttons;
     int frames;
+    std::size_t port;
 };
 
 constexpr int SCRIPTED_PRESS_FRAMES = 6;
@@ -171,15 +173,19 @@ std::vector<ScriptedPress> ParsePresses(const argparse::ArgumentParser &parser) 
                     colon + 1, second == std::string::npos ? second : second - colon - 1);
         auto found =
             std::ranges::find(BUTTONS, button, &std::pair<std::string_view, std::uint16_t>::first);
+        auto third = second == std::string::npos ? second : value.find(':', second + 1);
         int frame = std::atoi(value.substr(0, colon).c_str());
         int frames = second == std::string::npos ? SCRIPTED_PRESS_FRAMES :
                                                    std::atoi(value.substr(second + 1).c_str());
-        if (colon == std::string::npos || found == BUTTONS.end() || frame <= 0 || frames <= 0) {
-            SDL_LogError(
-                SDL_LOG_CATEGORY_APPLICATION, "%s is not FRAME:BUTTON[:FRAMES].", value.c_str());
+        int port = third == std::string::npos ? 1 : std::atoi(value.substr(third + 1).c_str());
+        if (colon == std::string::npos || found == BUTTONS.end() || frame <= 0 || frames <= 0 ||
+            port < 1 || port > static_cast<int>(coastline::CONTROLLER_PORTS)) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "%s is not FRAME:BUTTON[:FRAMES[:PORT]].",
+                         value.c_str());
             continue;
         }
-        presses.push_back({frame, found->second, frames});
+        presses.push_back({frame, found->second, frames, static_cast<std::size_t>(port - 1)});
     }
     return presses;
 }
@@ -390,10 +396,12 @@ int main(int argc, char *argv[]) {
         .scan<'i', int>();
     parser.add_argument("--quit-after-screenshot").help("exit once the frame is saved").flag();
     parser.add_argument("--press")
-        .help("press a button of the first controller from a frame for 6 frames or FRAMES, as "
-              "FRAME:BUTTON[:FRAMES] with BUTTON one of a, b, z, start, l, r, up, down, left, "
-              "right, cu, cd, cl, or cr; in a race, a and up accelerate, b and down brake, left "
-              "and right steer, start pauses, and z is the start binding")
+        .help("press a button of a controller from a frame for 6 frames or FRAMES, as "
+              "FRAME:BUTTON[:FRAMES[:PORT]] with BUTTON one of a, b, z, start, l, r, up, down, "
+              "left, right, cu, cd, cl, or cr, and PORT the controller from 1, the first unless "
+              "given; a press of another controller connects it; in a race, on the first "
+              "controller a and up accelerate, b and down brake, left and right steer, start "
+              "pauses, and z is the start binding")
         .append();
     parser.add_argument("--autopilot")
         .help("let the computer drive the car of the first player in a race")
@@ -565,6 +573,7 @@ int main(int argc, char *argv[]) {
             bool fixedStep = screenshot.has_value();
             Uint64 lastTicks = SDL_GetTicksNS();
             std::uint16_t lastButtons = 0;
+            std::uint16_t lastSecondButtons = 0;
             bool running = true;
             for (int frame = 1; running; ++frame) {
                 SDL_Event event;
@@ -577,11 +586,17 @@ int main(int argc, char *argv[]) {
                 auto ports = input.Poll();
                 std::uint16_t scripted = 0;
                 for (const ScriptedPress &press : presses) {
+                    if (press.port != 0) {
+                        ports[press.port].connected = true;
+                    }
                     if (frame >= press.frame && frame < press.frame + press.frames) {
-                        scripted |= press.buttons;
+                        ports[press.port].buttons |= press.buttons;
+                        if (press.port == 0) {
+                            scripted |= press.buttons;
+                        }
                     }
                 }
-                ports[0].buttons |= scripted;
+                coastline::SetSecondControllerState(ports[1]);
                 // The race reads the keyboard through the bindings of the PC release, and the
                 // presses push down the keys of its default bindings.
                 std::vector<int> scriptedKeys;
@@ -616,22 +631,30 @@ int main(int argc, char *argv[]) {
                     constexpr std::uint16_t C_BUTTONS =
                         coastline::BUTTON_C_UP | coastline::BUTTON_C_DOWN |
                         coastline::BUTTON_C_LEFT | coastline::BUTTON_C_RIGHT;
+                    // The stick of a controller pushes the directions of its pad.
                     constexpr int STICK_PUSH = 40;
-                    std::uint16_t held = ports[0].buttons;
-                    if (ports[0].stickX < -STICK_PUSH) {
-                        held |= coastline::BUTTON_D_LEFT;
-                    }
-                    if (ports[0].stickX > STICK_PUSH) {
-                        held |= coastline::BUTTON_D_RIGHT;
-                    }
-                    if (ports[0].stickY > STICK_PUSH) {
-                        held |= coastline::BUTTON_D_UP;
-                    }
-                    if (ports[0].stickY < -STICK_PUSH) {
-                        held |= coastline::BUTTON_D_DOWN;
-                    }
+                    auto heldOf = [](const coastline::ControllerState &port) {
+                        std::uint16_t buttons = port.buttons;
+                        if (port.stickX < -STICK_PUSH) {
+                            buttons |= coastline::BUTTON_D_LEFT;
+                        }
+                        if (port.stickX > STICK_PUSH) {
+                            buttons |= coastline::BUTTON_D_RIGHT;
+                        }
+                        if (port.stickY > STICK_PUSH) {
+                            buttons |= coastline::BUTTON_D_UP;
+                        }
+                        if (port.stickY < -STICK_PUSH) {
+                            buttons |= coastline::BUTTON_D_DOWN;
+                        }
+                        return buttons;
+                    };
+                    std::uint16_t held = heldOf(ports[0]);
                     std::uint16_t pressed = held & ~lastButtons;
                     lastButtons = held;
+                    std::uint16_t secondHeld = heldOf(ports[1]);
+                    std::uint16_t secondPressed = secondHeld & ~lastSecondButtons;
+                    lastSecondButtons = secondHeld;
                     if (frontEnd == FrontEnd::Intro) {
                         coastline::IntroButtons buttons{(pressed & CHOOSE) != 0,
                                                         (held & C_BUTTONS) == C_BUTTONS};
@@ -707,17 +730,22 @@ int main(int argc, char *argv[]) {
                         raceView->Draw(*sceneRenderer, raceTime / RACE_STEP);
                     } else {
                         sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
-                        coastline::MenuButtons buttons{
-                            .left = (pressed & coastline::BUTTON_D_LEFT) != 0,
-                            .right = (pressed & coastline::BUTTON_D_RIGHT) != 0,
-                            .up = (pressed & coastline::BUTTON_D_UP) != 0,
-                            .down = (pressed & coastline::BUTTON_D_DOWN) != 0,
-                            .choose = (pressed & CHOOSE) != 0,
-                            .start = (pressed & coastline::BUTTON_START) != 0,
-                            .back = (pressed & coastline::BUTTON_B) != 0,
-                            .held = held != 0};
-                        coastline::MenusEnd end =
-                            mainMenu->Frame(*sceneRenderer, seconds, buttons, ports[1].connected);
+                        auto menuButtons = [&](std::uint16_t down, std::uint16_t now) {
+                            return coastline::MenuButtons{
+                                .left = (down & coastline::BUTTON_D_LEFT) != 0,
+                                .right = (down & coastline::BUTTON_D_RIGHT) != 0,
+                                .up = (down & coastline::BUTTON_D_UP) != 0,
+                                .down = (down & coastline::BUTTON_D_DOWN) != 0,
+                                .choose = (down & CHOOSE) != 0,
+                                .start = (down & coastline::BUTTON_START) != 0,
+                                .back = (down & coastline::BUTTON_B) != 0,
+                                .held = now != 0};
+                        };
+                        coastline::MenusEnd end = mainMenu->Frame(
+                            *sceneRenderer,
+                            seconds,
+                            {menuButtons(pressed, held), menuButtons(secondPressed, secondHeld)},
+                            ports[1].connected);
                         if (end == coastline::MenusEnd::Splash) {
                             intro->Restart();
                             frontEnd = FrontEnd::Intro;
