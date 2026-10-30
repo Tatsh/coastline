@@ -131,6 +131,12 @@ inline void StoreHalf(u8 *at, s32 value) {
     std::memcpy(at, &half, sizeof(half));
 }
 
+// The music clips at the range of a sample rather than wrapping as the console does, as a gain on
+// the music can raise it past the levels of the console.
+inline void StoreHalfClipped(u8 *at, s32 value) {
+    StoreHalf(at, std::clamp(value, -32768, 32767));
+}
+
 inline s32 LoadHalf(const u8 *at) {
     s16 half;
     std::memcpy(&half, at, sizeof(half));
@@ -166,12 +172,12 @@ void MixAudioSamples(s16 *ring, u32 bytes) {
         s32 right2 = NextSample(c[3]);
         s32 left3 = NextSample(c[4]);
         s32 right3 = NextSample(c[5]);
-        StoreHalf(frame,
-                  Add(Add(Mul(c[0].mixVolume, left), Mul(c[2].mixVolume, left2)),
-                      Mul(c[4].mixVolume, left3)));
-        StoreHalf(frame + 2,
-                  Add(Add(Mul(c[3].mixVolume, right2), Mul(c[1].mixVolume, right)),
-                      Mul(c[5].mixVolume, right3)));
+        StoreHalfClipped(frame,
+                         Add(Add(Mul(c[0].mixVolume, left), Mul(c[2].mixVolume, left2)),
+                             Mul(c[4].mixVolume, left3)));
+        StoreHalfClipped(frame + 2,
+                         Add(Add(Mul(c[3].mixVolume, right2), Mul(c[1].mixVolume, right)),
+                             Mul(c[5].mixVolume, right3)));
     });
     g_wAudioBufferWritePos = static_cast<u16>(end);
 }
@@ -181,8 +187,8 @@ void MixAudioStereoSamples(s16 *ring, u32 bytes, u32 pairOffset) {
     u32 end = MixRing(ring, g_wAudioBufferWritePos, bytes, 4, [c](u8 *frame) {
         s32 left = Mul(c[0].mixVolume, NextSample(c[0]));
         s32 right = Mul(c[1].mixVolume, NextSample(c[1]));
-        StoreHalf(frame, Add(LoadHalf(frame), left));
-        StoreHalf(frame + 2, Add(LoadHalf(frame + 2), right));
+        StoreHalfClipped(frame, Add(LoadHalf(frame), left));
+        StoreHalfClipped(frame + 2, Add(LoadHalf(frame + 2), right));
     });
     g_wAudioBufferWritePos = static_cast<u16>(end);
 }
@@ -299,6 +305,10 @@ bool N64Audio::Resume() {
     return m_stream == nullptr || SDL_ResumeAudioStreamDevice(m_stream);
 }
 
+void N64Audio::SetMusicGain(float gain) {
+    m_musicGain = static_cast<std::uint32_t>(std::clamp(gain, 0.0f, 8.0f) * 256.0f + 0.5f);
+}
+
 void N64Audio::Tick(std::vector<std::int16_t> &output) {
     // The interface plays a tick's worth of the ring. Its length register counts down in
     // doublewords, and the thread queues the ring again before it runs dry.
@@ -315,8 +325,9 @@ void N64Audio::Tick(std::vector<std::int16_t> &output) {
     g_dwAudioTickToggle ^= 1;
     for (int i = 0; i < g_nAudioChannelCount; ++i) {
         MixerChannel &channel = g_aMixerChannels[i];
-        channel.mixVolume = static_cast<s32>(
-            (static_cast<u32>(channel.volume) * g_bBgmVolume * g_bMusicVolume) >> 16);
+        channel.mixVolume = static_cast<s32>((static_cast<std::uint64_t>(channel.volume) *
+                                              g_bBgmVolume * g_bMusicVolume * m_musicGain) >>
+                                             24);
     }
     for (auto &channel : g_aSoundEffectChannels) {
         u32 levels = static_cast<u32>(channel.volume);

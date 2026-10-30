@@ -227,6 +227,12 @@ drops frames on some drivers. `fifo` waits for the vertical blank under Wayland 
 at 30 steps a second and draw between the steps, and the menus move by the time between frames, at
 any frame rate.
 
+### Sound
+
+`XmMusicGain` in the `[Game]` section scales the music of the cartridge's XM modules against the
+sound effects, 1.5 by default and 1 for the level of the console. The music clips rather than
+wrapping when the gain raises it past the range of a sample.
+
 ### Data
 
 The data comes from a Boss Rally disc image and a Top Gear Rally cartridge image. The import

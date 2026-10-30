@@ -51,6 +51,13 @@ public:
     bool Resume();
 
     /**
+     * Scale the music of the modules, apart from the sound effects the player mixes with it.
+     *
+     * @param gain The scale, 1 for the level of the console.
+     */
+    void SetMusicGain(float gain);
+
+    /**
      * Render stereo 16-bit frames without a device, as the device would receive them.
      *
      * @param frames The frames to render.
@@ -70,6 +77,8 @@ private:
     std::uint32_t m_aiLength = 0;
     std::uint64_t m_aiRemainder = 0;
     std::vector<std::int16_t> m_pending;
+    // The music gain in 8.8 fixed point.
+    std::uint32_t m_musicGain = 256;
 };
 
 /**

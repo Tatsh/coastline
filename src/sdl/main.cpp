@@ -1034,6 +1034,7 @@ int main(int argc, char *argv[]) {
                                               {"Game", "PlaySFX", "1"},
                                               {"Game", "WaitForStart", "0"},
                                               {"Game", "Music", "N64"},
+                                              {"Game", "XmMusicGain", "1.5"},
                                               {"Controls", "Preset", "Default"},
                                               {"Controls", "Player1", "auto"},
                                               {"Controls", "Player2", "auto"}}) {
@@ -1067,6 +1068,8 @@ int main(int argc, char *argv[]) {
             coastline::InputBindings input;
             coastline::N64Audio audio;
             bool playMusic = config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice();
+            // The modules of the cartridge play quieter than the CD audio of the PC release.
+            audio.SetMusicGain(config.GetFloat("Game", "XmMusicGain", 1.5f));
             coastline::ShareRaceMusicPlayer(playMusic ? &audio : nullptr);
             if (music && playMusic) {
                 audio.Play(*music);
