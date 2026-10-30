@@ -15,6 +15,7 @@
 
 #include "frontend.h"
 #include "menuscreen.h"
+#include "paintshop.h"
 #include "racesession.h"
 
 namespace coastline {
@@ -116,10 +117,14 @@ public:
      *
      * @param renderer The renderer that draws them.
      * @param release The directory of the import of the release, such as n64/usa.
+     * @param state The state directory of the game, with the Controller Pak.
+     * @param cache The cache directory of the game, for the images of the painted cars.
      * @return The menus, or nothing with the reason logged.
      */
     static std::unique_ptr<Menus> Load(SceneRenderer &renderer,
-                                       const std::filesystem::path &release);
+                                       const std::filesystem::path &release,
+                                       const std::filesystem::path &state,
+                                       const std::filesystem::path &cache);
     ~Menus();
     Menus(const Menus &) = delete;
     Menus &operator=(const Menus &) = delete;
@@ -134,12 +139,18 @@ public:
      * @param seconds The time of the frame.
      * @param players The presses of the first and the second controller.
      * @param secondController Whether a device is bound to the second port.
+     * @param pointer The buttons, the stick, and the mouse of the first player, as the paint shop
+     * and the dialogs of the Controller Pak read them.
      * @return Where the menus go.
      */
     MenusEnd Frame(SceneRenderer &renderer,
                    float seconds,
                    const std::array<MenuButtons, 2> &players,
-                   bool secondController);
+                   bool secondController,
+                   const PaintShopInput &pointer);
+
+    /** @return Whether the screen that shows draws a cursor for the mouse. */
+    bool DrawsPointer() const;
 
     /** @return The race the menus chose, in the terms of the race engine. */
     RaceSetup ChosenRace() const;
@@ -164,6 +175,7 @@ private:
         DataSaveLoadMenu,
         OptionsMenu,
         RaceResultsScreen,
+        PaintShopScreen,
     };
 
     explicit Menus(std::unique_ptr<MenuScreen> screen);
@@ -211,6 +223,7 @@ private:
     void DrawPlayerStage(SceneRenderer &renderer, int player, int y, int height, float spread);
     void DrawCarStats(SceneRenderer &renderer, int player, int y, int barY);
     void DrawCarSelectChoices(SceneRenderer &renderer);
+    void RunPakDialog(SceneRenderer &renderer, float seconds);
     void LeaveCarSelect();
     void ProcessCarSelectScreen(SceneRenderer &renderer,
                                 float seconds,
@@ -226,6 +239,16 @@ private:
     void ProcessRaceResultsScreen(SceneRenderer &renderer, float seconds, const MenuButtons &first);
 
     std::unique_ptr<MenuScreen> m_screen;
+    std::unique_ptr<PaintShop> m_paintShop;
+    std::filesystem::path m_cache;
+    PaintShopInput m_pointer;
+    // The decals each player loaded from the Controller Pak on the car select screen, the images
+    // of the car with them, and the model of the car that shows them.
+    std::array<std::optional<DecalCar>, 2> m_customDecals;
+    std::array<std::optional<std::filesystem::path>, 2> m_customDecalImages;
+    std::array<std::unique_ptr<RenderModel>, 2> m_customModels;
+    std::unique_ptr<RenderModel> m_retiredCustomModel;
+    int m_pakDialogPlayer = -1;
     std::filesystem::path m_release;
     Screen m_current = Screen::MainMenu;
     MenusEnd m_end = MenusEnd::Running;

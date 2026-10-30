@@ -162,6 +162,11 @@ add_library(
   coastline_sdl STATIC
   carselect.cpp
   config.cpp
+  consolesegment.cpp
+  controllerpak.cpp
+  decalcar.cpp
+  decaldraw.cpp
+  decaleditor.cpp
   earsound.cpp
   enginecheck.cpp
   enginetextures.cpp
@@ -182,6 +187,7 @@ add_library(
   music.cpp
   n64attract.cpp
   n64model.cpp
+  paintshop.cpp
   paths.cpp
   pending.cpp
   playerselect.cpp

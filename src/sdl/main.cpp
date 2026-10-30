@@ -24,6 +24,7 @@
 #include <sys/resource.h>
 #endif
 
+#include "common/input.h"
 #include "config.h"
 #include "earsound.h"
 #include "enginecheck.h"
@@ -194,6 +195,120 @@ std::vector<ScriptedPress> ParsePresses(const argparse::ArgumentParser &parser) 
         presses.push_back({frame, found->second, frames, static_cast<std::size_t>(port - 1)});
     }
     return presses;
+}
+
+// A move of --mouse: the mouse at a place of the 320 by 240 screen from a frame for a number of
+// frames, with a button down or none.
+struct ScriptedMouse {
+    int frame;
+    int x;
+    int y;
+    std::uint32_t buttons;
+    int frames;
+};
+
+// A malformed move is logged and left out.
+std::vector<ScriptedMouse> ParseMouseMoves(const argparse::ArgumentParser &parser) {
+    std::vector<ScriptedMouse> moves;
+    for (const auto &value : parser.get<std::vector<std::string>>("--mouse")) {
+        std::vector<std::string> fields;
+        std::size_t start = 0;
+        while (start <= value.size()) {
+            auto colon = value.find(':', start);
+            fields.push_back(
+                value.substr(start, colon == std::string::npos ? colon : colon - start));
+            if (colon == std::string::npos) {
+                break;
+            }
+            start = colon + 1;
+        }
+        std::uint32_t buttons = 0;
+        bool valid = fields.size() >= 3 && fields.size() <= 5;
+        if (valid && fields.size() >= 4) {
+            if (fields[3] == "left") {
+                buttons = SDL_BUTTON_LMASK;
+            } else if (fields[3] == "right") {
+                buttons = SDL_BUTTON_RMASK;
+            } else {
+                valid = fields[3] == "none";
+            }
+        }
+        int frame = valid ? std::atoi(fields[0].c_str()) : 0;
+        int frames = valid && fields.size() == 5 ? std::atoi(fields[4].c_str()) : 1;
+        if (!valid || frame <= 0 || frames <= 0) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "%s is not FRAME:X:Y[:BUTTON[:FRAMES]].",
+                         value.c_str());
+            continue;
+        }
+        moves.push_back(
+            {frame, std::atoi(fields[1].c_str()), std::atoi(fields[2].c_str()), buttons, frames});
+    }
+    return moves;
+}
+
+// The mouse of a frame, where it is on the 640 by 480 screen of the menus and its buttons, and
+// where it was the frame before.
+struct MouseState {
+    std::array<int, 2> at{};
+    std::uint32_t buttons = 0;
+    std::optional<std::array<int, 2>> last;
+};
+
+// The place of the mouse in the window on the 640 by 480 screen, centred at 4:3 in the window as
+// the flat draws of the menus are.
+std::array<int, 2> MouseOnScreen(SDL_Window *window, float x, float y) {
+    int width = 1;
+    int height = 1;
+    SDL_GetWindowSize(window, &width, &height);
+    width = std::max(width, 1);
+    height = std::max(height, 1);
+    float across = (4.0f / 3.0f) / (static_cast<float>(width) / static_cast<float>(height));
+    float clipX = x / static_cast<float>(width) * 2.0f - 1.0f;
+    return {static_cast<int>((clipX + across) * 640.0f / (2.0f * across)),
+            static_cast<int>(y / static_cast<float>(height) * 480.0f)};
+}
+
+// The input of the paint shop from the first controller and the mouse: the buttons of the mouse
+// are A and B, and the mouse moves the cursor when it moves.
+coastline::PaintShopInput PaintShopInputOf(const coastline::ControllerState &port,
+                                           MouseState &mouse) {
+    static constexpr std::array<std::pair<std::uint16_t, std::uint32_t>, 14> BUTTONS{
+        {{coastline::BUTTON_D_UP, INPUT_UP},
+         {coastline::BUTTON_D_DOWN, INPUT_DOWN},
+         {coastline::BUTTON_D_LEFT, INPUT_LEFT},
+         {coastline::BUTTON_D_RIGHT, INPUT_RIGHT},
+         {coastline::BUTTON_A, INPUT_A},
+         {coastline::BUTTON_B, INPUT_B},
+         {coastline::BUTTON_L, INPUT_L},
+         {coastline::BUTTON_R, INPUT_R},
+         {coastline::BUTTON_Z, INPUT_Z},
+         {coastline::BUTTON_START, INPUT_START},
+         {coastline::BUTTON_C_UP, INPUT_C_UP},
+         {coastline::BUTTON_C_RIGHT, INPUT_C_RIGHT},
+         {coastline::BUTTON_C_DOWN, INPUT_C_DOWN},
+         {coastline::BUTTON_C_LEFT, INPUT_C_LEFT}}};
+    // TranslateControllerInput() of the console scales the stick by 70.
+    constexpr float STICK_RANGE = 70.0f;
+    coastline::PaintShopInput input;
+    for (const auto &[button, bit] : BUTTONS) {
+        if ((port.buttons & button) != 0) {
+            input.buttons |= bit;
+        }
+    }
+    if ((mouse.buttons & SDL_BUTTON_LMASK) != 0) {
+        input.buttons |= INPUT_A;
+    }
+    if ((mouse.buttons & SDL_BUTTON_RMASK) != 0) {
+        input.buttons |= INPUT_B;
+    }
+    input.stickX = static_cast<float>(port.stickX) / STICK_RANGE;
+    input.stickY = static_cast<float>(port.stickY) / STICK_RANGE;
+    if (!mouse.last || *mouse.last != mouse.at) {
+        input.pointer = mouse.at;
+    }
+    mouse.last = mouse.at;
+    return input;
 }
 
 coastline::TextureHandle CreateCheckerTexture(coastline::TlRenderer &renderer) {
@@ -410,6 +525,12 @@ int main(int argc, char *argv[]) {
               "pauses, z is the start binding, and cu, cl, and cd choose the cockpit, the bumper, "
               "and the chase camera, and cr chooses an item of the pause menu")
         .append();
+    parser.add_argument("--mouse")
+        .help("put the mouse at a place of the 320 by 240 screen from a frame for 1 frame or "
+              "FRAMES, as FRAME:X:Y[:BUTTON[:FRAMES]] with BUTTON one of left, right, or none, "
+              "the button pressed down while the mouse is there; the real mouse is read when no "
+              "move is given")
+        .append();
     parser.add_argument("--autopilot")
         .help("let the computer drive the car of the first player in a race")
         .flag();
@@ -538,6 +659,8 @@ int main(int argc, char *argv[]) {
             int screenshotEvery = parser.get<int>("--screenshot-every");
             bool quitAfterScreenshot = parser.get<bool>("--quit-after-screenshot");
             std::vector<ScriptedPress> presses = ParsePresses(parser);
+            std::vector<ScriptedMouse> mouseMoves = ParseMouseMoves(parser);
+            MouseState mouse;
             std::unique_ptr<coastline::TlRenderer> renderer;
             std::unique_ptr<coastline::ModelView> modelView;
             std::unique_ptr<coastline::SceneRenderer> sceneRenderer;
@@ -578,7 +701,8 @@ int main(int argc, char *argv[]) {
                 if (sceneRenderer) {
                     auto release = coastline::DefaultAssets(paths->data) / "n64" / "usa";
                     intro = coastline::Intro::Load(*sceneRenderer, release);
-                    mainMenu = coastline::Menus::Load(*sceneRenderer, release);
+                    mainMenu =
+                        coastline::Menus::Load(*sceneRenderer, release, paths->state, paths->cache);
                     if (scene == "main-menu" && mainMenu) {
                         frontEnd = FrontEnd::MainMenu;
                     }
@@ -613,6 +737,21 @@ int main(int argc, char *argv[]) {
                     }
                 }
                 coastline::SetSecondControllerState(ports[1]);
+                // The scripted moves of the mouse take the place of the real mouse.
+                if (mouseMoves.empty()) {
+                    float x = 0.0f;
+                    float y = 0.0f;
+                    mouse.buttons = SDL_GetMouseState(&x, &y);
+                    mouse.at = MouseOnScreen(window->Window(), x, y);
+                } else {
+                    mouse.buttons = 0;
+                    for (const ScriptedMouse &move : mouseMoves) {
+                        if (frame >= move.frame && frame < move.frame + move.frames) {
+                            mouse.at = {move.x * 2, move.y * 2};
+                            mouse.buttons = move.buttons;
+                        }
+                    }
+                }
                 // The race reads the keyboard through the bindings of the PC release, and the
                 // presses push down the keys of its default bindings.
                 std::vector<int> scriptedKeys;
@@ -686,7 +825,8 @@ int main(int argc, char *argv[]) {
                             coastline::StartAttractDemo();
                             coastline::StepAttractDemo(false);
                             const coastline::RaceCar demoCar{coastline::AttractDemoCar(),
-                                                             coastline::AttractDemoColor()};
+                                                             coastline::AttractDemoColor(),
+                                                             std::nullopt};
                             raceView = coastline::RaceView::Load(*sceneRenderer,
                                                                  defaults,
                                                                  coastline::AttractDemoTrack(),
@@ -761,7 +901,17 @@ int main(int argc, char *argv[]) {
                             *sceneRenderer,
                             seconds,
                             {menuButtons(pressed, held), menuButtons(secondPressed, secondHeld)},
-                            ports[1].connected);
+                            ports[1].connected,
+                            PaintShopInputOf(ports[0], mouse));
+                        // A screen that draws a cursor for the mouse hides the cursor of the
+                        // system.
+                        if (mainMenu->DrawsPointer() == SDL_CursorVisible()) {
+                            if (mainMenu->DrawsPointer()) {
+                                SDL_HideCursor();
+                            } else {
+                                SDL_ShowCursor();
+                            }
+                        }
                         if (end == coastline::MenusEnd::Splash) {
                             intro->Restart();
                             frontEnd = FrontEnd::Intro;
@@ -781,6 +931,11 @@ int main(int argc, char *argv[]) {
                         coastline::StartRace(
                             setup, defaults / "music", config.Get("Game", "Music") == "CD");
                         std::vector<coastline::RaceCar> cars = coastline::RaceCars();
+                        for (std::size_t i = 0; i < cars.size() && i < setup.cars.size(); ++i) {
+                            if (static_cast<int>(i) < setup.players) {
+                                cars[i].images = setup.cars[i].images;
+                            }
+                        }
                         raceView = coastline::RaceView::Load(
                             *sceneRenderer, defaults, coastline::RaceTrack(), cars);
                         raceTime = 0.0f;

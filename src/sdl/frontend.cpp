@@ -20,7 +20,29 @@ const Matrix4 CONSOLE_SPACE = RotationX(HALF_PI);
 
 bool g_wideMenus = false;
 
+// Each axis of the unit direction of the lights of a car in the menus.
+constexpr float STAGE_LIGHT_AXIS = 0.5773502692f;
+
 } // namespace
+
+const Lighting STAGE_CAR_LIGHTING{{STAGE_LIGHT_AXIS, STAGE_LIGHT_AXIS, STAGE_LIGHT_AXIS},
+                                  {102.0f / 255.0f, 102.0f / 255.0f, 119.0f / 255.0f},
+                                  {1.0f, 1.0f, 204.0f / 255.0f}};
+
+Reflection StageReflection(const RenderTexture *texture, const std::array<float, 3> &eye) {
+    Reflection reflection;
+    reflection.texture = texture;
+    float length = std::hypot(eye[0], eye[1]);
+    reflection.across = {-eye[1] / length, eye[0] / length, 0.0f};
+    reflection.up = {0.0f, 0.0f, 1.0f};
+    float heading = std::atan2(-eye[1], -eye[0]);
+    if (heading < 0.0f) {
+        heading += TWO_PI;
+    }
+    int offset = 31 - (64 - static_cast<int>(heading * 64.0f * 0.3183098733f));
+    reflection.column = static_cast<float>(offset + 2) / 4.0f;
+    return reflection;
+}
 
 Matrix4 Translation(float x, float y, float z) {
     return {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1};

@@ -15,8 +15,15 @@ void Menus::Restart() {
 
 void Menus::SetCurrentScreen(Screen screen) {
     // ponytail: a screen not built yet returns to the main menu on the item chosen.
-    constexpr const char *NOT_BUILT[] = {
-        nullptr, nullptr, nullptr, nullptr, nullptr, "data save and load", "options", nullptr};
+    constexpr const char *NOT_BUILT[] = {nullptr,
+                                         nullptr,
+                                         nullptr,
+                                         nullptr,
+                                         nullptr,
+                                         "data save and load",
+                                         "options",
+                                         nullptr,
+                                         nullptr};
     const char *name = NOT_BUILT[static_cast<int>(screen)];
     if (name != nullptr) {
         SDL_Log("The %s screen is not built yet.", name);
@@ -25,13 +32,19 @@ void Menus::SetCurrentScreen(Screen screen) {
     m_current = screen;
 }
 
+bool Menus::DrawsPointer() const {
+    return m_current == Screen::PaintShopScreen;
+}
+
 MenusEnd Menus::Frame(SceneRenderer &renderer,
                       float seconds,
                       const std::array<MenuButtons, 2> &players,
-                      bool secondController) {
+                      bool secondController,
+                      const PaintShopInput &pointer) {
     // The screens but the car select read the first controller.
     const MenuButtons &first = players[0];
     m_end = MenusEnd::Running;
+    m_pointer = pointer;
     switch (m_current) {
     case Screen::MainMenu:
         ProcessMainMenu(renderer, seconds, first);
@@ -50,6 +63,12 @@ MenusEnd Menus::Frame(SceneRenderer &renderer,
         break;
     case Screen::RaceResultsScreen:
         ProcessRaceResultsScreen(renderer, seconds, first);
+        break;
+    case Screen::PaintShopScreen:
+        // The paint shop returns to the main menu on the item of the paint shop.
+        if (m_paintShop->Frame(renderer, seconds, pointer)) {
+            SetCurrentScreen(Screen::MainMenu);
+        }
         break;
     default:
         break;

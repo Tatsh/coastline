@@ -1,5 +1,7 @@
 #include <array>
 
+#include <SDL3/SDL.h>
+
 #include "menus.h"
 
 namespace coastline {
@@ -28,7 +30,10 @@ constexpr float MAIN_MENU_IDLE_TIMEOUT = 20.0f;
 
 } // namespace
 
-std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer, const std::filesystem::path &release) {
+std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
+                                   const std::filesystem::path &release,
+                                   const std::filesystem::path &state,
+                                   const std::filesystem::path &cache) {
     auto screen = MenuScreen::Load(renderer, release);
     if (!screen) {
         return nullptr;
@@ -43,6 +48,18 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer, const std::filesyste
         !menus->LoadTrackMenu(renderer, release) || !menus->LoadWeatherItems(renderer, release) ||
         !menus->LoadCarSelect(renderer, release)) {
         return nullptr;
+    }
+    menus->m_cache = cache;
+    // The Controller Pak of the first controller is a directory of the state of the game.
+    menus->m_paintShop = PaintShop::Load(renderer,
+                                         release,
+                                         *menus->m_screen,
+                                         menus->m_textCustomColors,
+                                         ControllerPak(state / "controller-pak"),
+                                         cache / "paint-shop");
+    // The other screens show without the paint shop, which returns to the main menu.
+    if (!menus->m_paintShop) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The paint shop did not load.");
     }
     return menus;
 }

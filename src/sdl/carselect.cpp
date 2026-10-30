@@ -123,45 +123,11 @@ constexpr float SHADOW_DROP = 0.18f;
 // Each axis of the unit direction of the lights of a stage.
 constexpr float STAGE_LIGHT_AXIS = 0.5773502692f;
 
-// RenderVehicleModel() lights a car with g_DefaultLights, from (84, 84, 84), in the colours of
-// SetupWeatherLights() in clear weather.
-const Lighting STAGE_CAR_LIGHTING{{STAGE_LIGHT_AXIS, STAGE_LIGHT_AXIS, STAGE_LIGHT_AXIS},
-                                  {102.0f / 255.0f, 102.0f / 255.0f, 119.0f / 255.0f},
-                                  {1.0f, 1.0f, 204.0f / 255.0f}};
-
 // LIGHT_STAGE_MODEL() of the console lights an option with an ambient light of 64 and the sum of
 // four white lights from (112, 112, 112).
 const Lighting STAGE_MODEL_LIGHTING{{STAGE_LIGHT_AXIS, STAGE_LIGHT_AXIS, STAGE_LIGHT_AXIS},
                                     {64.0f / 255.0f, 64.0f / 255.0f, 64.0f / 255.0f},
                                     {4.0f, 4.0f, 4.0f}};
-
-// The parts of a car RenderVehicleModel() draws on a stage: the near detail, the textured parts,
-// the painted body, and the normal wheels. The underside shows only from below.
-constexpr std::array<std::string_view, 7> STAGE_CAR_PARTS{"lod0-nearDetail",
-                                                          "lod0-textured",
-                                                          "lod0-paint",
-                                                          "lod0-wheel0",
-                                                          "lod0-wheel1",
-                                                          "lod0-wheel2",
-                                                          "lod0-wheel3"};
-
-// The reflection of the sky on a car as RenderVehicleModel() sets it up for the trackside camera
-// of a stage looking at the origin from an eye: the axes of guLookAtReflectF() from the heading of
-// the camera, and the window of the tile turning with the heading.
-Reflection StageReflection(const RenderTexture *texture, const std::array<float, 3> &eye) {
-    Reflection reflection;
-    reflection.texture = texture;
-    float length = std::hypot(eye[0], eye[1]);
-    reflection.across = {-eye[1] / length, eye[0] / length, 0.0f};
-    reflection.up = {0.0f, 0.0f, 1.0f};
-    float heading = std::atan2(-eye[1], -eye[0]);
-    if (heading < 0.0f) {
-        heading += TWO_PI;
-    }
-    int offset = 31 - (64 - static_cast<int>(heading * 64.0f * 0.3183098733f));
-    reflection.column = static_cast<float>(offset + 2) / 4.0f;
-    return reflection;
-}
 
 // The shaded triangles of a display list of the stage, from a record of data/car-stage.json.
 StageMesh ReadStageMesh(const nlohmann::json &record) {
@@ -445,9 +411,14 @@ void Menus::HandleCarSelectInput(SceneRenderer &renderer, int player, const Menu
             break;
         }
         if (loadDecals) {
-            // ponytail: the dialog of the controller pak is not built yet, and the load is
-            // cancelled at once.
-            SDL_Log("The controller pak dialog is not built yet.");
+            // The decals load into the model of the car of the player, as the console loads them
+            // into the slot of the race.
+            auto &custom = m_customDecals[static_cast<std::size_t>(player)];
+            custom = DecalCar::Load(m_release /
+                                    m_cars[static_cast<std::size_t>(choice.carModel)].directory);
+            if (custom && m_paintShop) {
+                m_pakDialogPlayer = player;
+            }
         } else {
             choice.prevCursor = choice.cursor;
 
@@ -520,9 +491,17 @@ void Menus::DrawStageCar(SceneRenderer &renderer,
                          float angle,
                          const SDL_Rect &scissor) const {
     int car = m_slotCars[static_cast<std::size_t>(slot)];
-    const auto &model =
-        m_carModels[static_cast<std::size_t>(slot & 1)][static_cast<std::size_t>(car)];
-    if (!model) {
+    const RenderModel *model =
+        m_carModels[static_cast<std::size_t>(slot & 1)][static_cast<std::size_t>(car)].get();
+    // The slot of a player with the decals loaded from the Controller Pak shows them.
+    if (slot < 2) {
+        const CarSelectPlayer &choice = m_carSelect[static_cast<std::size_t>(slot)];
+        const auto &custom = m_customModels[static_cast<std::size_t>(slot)];
+        if (custom && (choice.state == CAR_SELECT_DECALS || choice.state == CAR_SELECT_READY)) {
+            model = custom.get();
+        }
+    }
+    if (model == nullptr) {
         return;
     }
     const MenuCar &record = m_cars[static_cast<std::size_t>(car)];
@@ -749,15 +728,55 @@ void Menus::DrawCarSelectChoices(SceneRenderer &renderer) {
                     car.maxSpeed / FULL_SPEED);
 }
 
+// RunPakDialog() of the console: the dialog that loads the decals of a player, and the custom
+// decals it adds once they have loaded.
+void Menus::RunPakDialog(SceneRenderer &renderer, float seconds) {
+    auto player = static_cast<std::size_t>(m_pakDialogPlayer);
+    CarSelectPlayer &choice = m_carSelect[player];
+    auto loaded =
+        m_paintShop->LoadDecalsFrame(renderer, seconds, m_pointer, *m_customDecals[player]);
+    if (!loaded) {
+        return;
+    }
+    m_pakDialogPlayer = -1;
+    int options = static_cast<int>(m_decalOptions.size());
+    if (!*loaded) {
+        // The custom decals are out of reach without loaded ones.
+        choice.optionCount = options - 1;
+        return;
+    }
+    // Loaded decals add the custom choice, and the cursor moves to it.
+    choice.optionCount = options;
+    choice.prevCursor = choice.cursor;
+    choice.cursor = (choice.cursor + 1) % options;
+    choice.slide = 1.0f;
+    const DecalCar &car = *m_customDecals[player];
+    m_customDecalImages[player] =
+        car.WriteImages(m_cache / "decals" / ("player" + std::to_string(player + 1)));
+    // A model the frame drew is released with the next load, after the frame has drawn it.
+    m_retiredCustomModel = std::move(m_customModels[player]);
+    if (m_customDecalImages[player]) {
+        ModelOptions modelOptions;
+        modelOptions.parts = [](const std::string &name) {
+            return std::ranges::find(STAGE_CAR_PARTS, name) != STAGE_CAR_PARTS.end();
+        };
+        modelOptions.images = m_customDecalImages[player];
+        m_customModels[player] =
+            RenderModel::Load(renderer, car.Directory() / "model.gltf", modelOptions);
+    }
+}
+
 void Menus::LeaveCarSelect() {
     m_carSelectInitialized = false;
     MenuScreen::SilenceSounds();
     if (m_carSelectDone && !m_paintMode) {
         m_end = MenusEnd::Race;
-    } else if (m_carSelectDone) {
-        // ponytail: the paint shop is not built yet, and the menus return to the main menu.
-        SDL_Log("The paint shop screen is not built yet.");
-        SetCurrentScreen(Screen::MainMenu);
+    } else if (m_carSelectDone && m_paintShop) {
+        const CarSelectPlayer &choice = m_carSelect[0];
+        m_paintShop->SetCar(choice.carModel,
+                            m_release /
+                                m_cars[static_cast<std::size_t>(choice.carModel)].directory);
+        SetCurrentScreen(Screen::PaintShopScreen);
     } else if (m_paintMode) {
         SetCurrentScreen(Screen::MainMenu);
     } else if (m_gameMode == GameMode::Championship || m_gameMode == GameMode::TimeAttack) {
@@ -835,6 +854,11 @@ void Menus::ProcessCarSelectScreen(SceneRenderer &renderer,
     m_screen->DrawFooter(renderer);
     m_screen->DrawFade(renderer);
 
+    // The dialog of the Controller Pak that loads the decals takes the input until it closes.
+    if (m_pakDialogPlayer >= 0) {
+        RunPakDialog(renderer, seconds);
+        return;
+    }
     if (m_screen->FadingOut()) {
         if (m_screen->FadeComplete()) {
             LeaveCarSelect();

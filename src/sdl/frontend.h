@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include <SDL3/SDL.h>
@@ -178,6 +179,35 @@ Matrix4 StageFrameAt(float x, float y, float angle);
  * @return The place of the car.
  */
 Matrix4 StageCarAt(float x, float y, float angle);
+
+/**
+ * The parts of a car RenderVehicleModel() draws in the menus: the near detail, the textured parts,
+ * the painted body, and the normal wheels. The underside shows only from below.
+ */
+inline constexpr std::array<std::string_view, 7> STAGE_CAR_PARTS{"lod0-nearDetail",
+                                                                 "lod0-textured",
+                                                                 "lod0-paint",
+                                                                 "lod0-wheel0",
+                                                                 "lod0-wheel1",
+                                                                 "lod0-wheel2",
+                                                                 "lod0-wheel3"};
+
+/**
+ * The lights RenderVehicleModel() lights a car with in the menus: g_DefaultLights, from
+ * (84, 84, 84), in the colours of SetupWeatherLights() in clear weather.
+ */
+extern const Lighting STAGE_CAR_LIGHTING;
+
+/**
+ * The reflection of the sky on a car as RenderVehicleModel() sets it up for the trackside camera
+ * of the menus looking at the origin from an eye: the axes of guLookAtReflectF() from the heading
+ * of the camera, and the window of the tile turning with the heading.
+ *
+ * @param texture The image of the sky.
+ * @param eye The place of the camera.
+ * @return The reflection.
+ */
+Reflection StageReflection(const RenderTexture *texture, const std::array<float, 3> &eye);
 
 /** A vertex of a shaded triangle of a stage: its place and its colour. */
 struct StageVertex {

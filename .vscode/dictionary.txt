@@ -156,12 +156,14 @@ combkey
 completionthreads
 configfile
 congrat
+consolesegment
 constexpr
 contpfs
 contramread
 contramwrite
 contreaddata
 contrfail
+controllerpak
 controllerread
 controllerscreen
 convertedvertex
@@ -238,6 +240,7 @@ ddutil
 debuginstance
 debugmessage
 debugtext
+decalcar
 decaldraw
 decaleditor
 declear

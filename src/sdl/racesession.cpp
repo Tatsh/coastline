@@ -110,6 +110,13 @@ void StartRace(const RaceSetup &setup, const std::filesystem::path &music, bool 
     g_autopilot = setup.autopilot;
     // The first frame loads the race.
     StepRace();
+    // A player with custom decals races in the colour of their paint.
+    for (int i = 0; i < setup.players; ++i) {
+        const auto &color = setup.cars[static_cast<std::size_t>(i)].color;
+        if (color) {
+            g_aVehicles[i].SetVehiclePaintColorRgb((*color)[0], (*color)[1], (*color)[2]);
+        }
+    }
 }
 
 RaceEnd StepRace() {
@@ -188,7 +195,8 @@ std::vector<RaceCar> RaceCars() {
     std::vector<RaceCar> cars;
     for (int i = 0; i < g_dwNumActiveVehicles; ++i) {
         const auto &color = g_aVehicles[i].GetColor();
-        cars.push_back({g_aVehicles[i].GetCarModel(), {color[0], color[1], color[2]}});
+        cars.push_back(
+            {g_aVehicles[i].GetCarModel(), {color[0], color[1], color[2]}, std::nullopt});
     }
     return cars;
 }
