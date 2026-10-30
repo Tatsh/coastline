@@ -14,6 +14,14 @@ extern "C" {
  * @ghidraAddress BRGlide: 0x10226a44
  */
 extern int g_bRaceStartReached;
+
+#ifdef ENABLE_PATCHES
+/**
+ * Whether a race counts down as soon as it has loaded, rather than waiting for the start binding,
+ * and so never requests it.
+ */
+extern int g_bRaceStartsItself;
+#endif /* ENABLE_PATCHES */
 #else
 /** Advance the race phase when network readiness permits it. */
 void AdvanceRacePhase(void);

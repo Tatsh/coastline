@@ -127,6 +127,7 @@ void StartRace(const RaceSetup &setup, const std::filesystem::path &music, bool 
     g_musicStarted =
         StartRaceMusic(music, cdAudio ? RaceMusicSource::CdAudio : RaceMusicSource::Modules);
     g_waitForStart = setup.waitForStart;
+    g_bRaceStartsItself = !setup.waitForStart;
     g_autopilot = setup.autopilot;
     // The first frame loads the race.
     StepRace();

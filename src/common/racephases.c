@@ -43,6 +43,9 @@ namespace {
 #endif /* TGR_BOSS_RALLY */
 
 #if TGR_BOSS_RALLY
+#ifdef ENABLE_PATCHES
+int g_bRaceStartsItself;
+#endif /* ENABLE_PATCHES */
 /** @ghidraAddress BRD3D: 0x106909e0 */
 s32 gInstantReplayActive;
 /** @ghidraAddress BRD3D: 0x10680938 */
@@ -120,7 +123,12 @@ static BOSS_RALLY_INLINE void HoldBeforeStart(void) {
     s32 i;
 
 #if TGR_BOSS_RALLY
+#ifdef ENABLE_PATCHES
+    /* A race that starts by itself does not request the start binding while it loads again. */
+    if (g_bRaceStartReached || g_bRaceStartsItself) {
+#else
     if (g_bRaceStartReached) {
+#endif /* ENABLE_PATCHES */
         const s32 localPlayers = (s32)g_dwNumLocalPlayers;
         for (i = 0; i < localPlayers; i++) {
             VEHICLE_SET(&g_aVehicles[i], SubMessage, NULL);
