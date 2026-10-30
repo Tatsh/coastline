@@ -345,7 +345,7 @@ public:
     void SetFog(std::optional<Fog> fog);
 
     /**
-     * Set whether the models of the frame are drawn through a projection that mirrors the frame
+     * Set whether the models drawn after it are drawn through a projection that mirrors them
      * across, their faces then turning the other way, not from Begin().
      *
      * @param mirrored Whether the projection mirrors the frame.

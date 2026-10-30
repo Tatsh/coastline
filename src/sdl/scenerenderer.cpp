@@ -463,13 +463,15 @@ struct PipelineKey {
     auto operator<=>(const PipelineKey &) const = default;
 };
 
-// The state of the frame a draw is made in: its view, its fog, and the instances it hides.
+// The state of the frame a draw is made in: its view, its fog, the instances it hides, and whether
+// its projection mirrors it across.
 struct DrawState {
     std::optional<SDL_Rect> view;
     std::optional<Fog> fog;
     std::uint32_t hiddenFlags = 0;
     bool ghost = false;
     bool inOrder = false;
+    bool mirrored = false;
 };
 
 struct ModelDraw {
@@ -646,9 +648,17 @@ struct SceneRenderer::State {
             key.mirrored ? SDL_GPU_FRONTFACE_CLOCKWISE : SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE;
         info.depth_stencil_state.enable_depth_test = key.depth != DepthMode::None;
         info.depth_stencil_state.enable_depth_write = key.depth == DepthMode::TestAndWrite;
-        info.depth_stencil_state.compare_op = key.depth == DepthMode::Equal ?
-                                                  SDL_GPU_COMPAREOP_EQUAL :
-                                                  SDL_GPU_COMPAREOP_LESS_OR_EQUAL;
+        info.depth_stencil_state.compare_op = SDL_GPU_COMPAREOP_LESS_OR_EQUAL;
+        // BRD3D draws the highlight with the vertices of the parts under it, and their depths are
+        // equal. The highlighted parts here are their own node, transformed without the turns of
+        // the root, and their depths differ by a rounding that flickers across a near surface such
+        // as the bonnet from the bumper. They are drawn a little nearer instead, where the depth is
+        // less or equal.
+        if (key.depth == DepthMode::Equal) {
+            info.rasterizer_state.enable_depth_bias = true;
+            info.rasterizer_state.depth_bias_constant_factor = -2.0f;
+            info.rasterizer_state.depth_bias_slope_factor = -1.0f;
+        }
         info.target_info.color_target_descriptions = &target;
         info.target_info.num_color_targets = 1;
         info.target_info.depth_stencil_format = depthFormat;
@@ -662,7 +672,7 @@ struct SceneRenderer::State {
     }
 
     DrawState Current() const {
-        return {view, fog, hiddenFlags, ghost, inOrder};
+        return {view, fog, hiddenFlags, ghost, inOrder, mirrored};
     }
 
     // A buffer of at least a size, made again when it is too small.
@@ -1433,7 +1443,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                         primitive.blend || ghost ? DepthMode::Test :
                                                    DepthMode::TestAndWrite,
                         false,
-                        s.mirrored,
+                        drawState->mirrored,
                         ghost});
         if (pipeline == nullptr) {
             return;
@@ -1514,7 +1524,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                              SDL_GPUBuffer *targets,
                              const Highlight &highlight) {
         SDL_GPUGraphicsPipeline *pipeline =
-            s.Pipeline({true, primitive.twoSided, DepthMode::Equal, true, s.mirrored});
+            s.Pipeline({true, primitive.twoSided, DepthMode::Equal, true, drawState->mirrored});
         if (pipeline == nullptr || highlight.texture == nullptr) {
             return;
         }

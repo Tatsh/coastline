@@ -1543,6 +1543,66 @@ void FillSkyWithFog(SceneRenderer &renderer) {
     renderer.DrawQuads(corners, FlatMaterial{}, IDENTITY_MATRIX);
 }
 
+// The rectangle of RenderRearViewMirror() on the screen of the race: a quarter, five sixteenths,
+// or three eighths and two of the width of the view by g_dwRearViewMirrorMode, a quarter of that
+// high, centred across and a sixteenth of the height of the view from its top.
+ViewportRect RearViewMirrorRect(const ViewportRect &view) {
+    ViewportRect mirror = view;
+    if (g_dwRearViewMirrorMode == 1) {
+        mirror.width = view.width / 4;
+    } else if (g_dwRearViewMirrorMode == 2) {
+        mirror.width = view.width * 5 / 16;
+    } else {
+        mirror.width = view.width * 3 / 8 + 2;
+    }
+    mirror.height = mirror.width >> 2;
+    mirror.x = ((view.width - mirror.width) >> 1) + view.x;
+    mirror.y = view.height / 16 + view.y;
+    return mirror;
+}
+
+// DrawRdpBorderRect() of BRD3D around the mirror: each of its fill rectangles, from its first to
+// its last pixel, clears the frame to the black of the fill colour in either render mode.
+void DrawRearViewMirrorFrame(SceneRenderer &renderer, const ViewportRect &mirror) {
+    GpuWindow &window = renderer.Window();
+    auto width = static_cast<int>(window.FrameWidth());
+    auto height = static_cast<int>(window.FrameHeight());
+    auto fill = [&](int left, int top, int right, int bottom) {
+        ViewportRect screen = mirror;
+        screen.x = left;
+        screen.y = top;
+        screen.width = right + 1 - left;
+        screen.height = bottom + 1 - top;
+        SDL_Rect pixels = FrameRect(screen, window);
+        std::array<std::uint8_t, 4> black{0, 0, 0, 0xFF};
+        auto x0 = static_cast<float>(pixels.x);
+        auto y0 = static_cast<float>(pixels.y);
+        auto x1 = static_cast<float>(pixels.x + pixels.w);
+        auto y1 = static_cast<float>(pixels.y + pixels.h);
+        std::array<FlatVertex, 4> corners{{{x0, y0, 0.0f, 0.0f, black, 0.0f},
+                                           {x1, y0, 0.0f, 0.0f, black, 0.0f},
+                                           {x1, y1, 0.0f, 0.0f, black, 0.0f},
+                                           {x0, y1, 0.0f, 0.0f, black, 0.0f}}};
+        renderer.DrawQuads(corners, FlatMaterial{}, CanvasProjection(width, height));
+    };
+    int x = mirror.x;
+    int y = mirror.y;
+    int right = mirror.x + mirror.width;
+    int bottom = mirror.y + mirror.height;
+    fill(x - 1, y - 2, right, y - 1);
+    fill(x - 1, bottom, right, bottom + 1);
+    fill(x - 2, y - 1, x - 1, bottom);
+    fill(right, y - 1, right + 1, bottom);
+    fill(x, y, right, y + 1);
+    fill(x, bottom - 1, right, bottom);
+    fill(x, y, x + 1, bottom);
+    fill(right - 1, y, right, bottom);
+    fill(x - 3, y - 3, right + 3, y - 2);
+    fill(x - 3, bottom + 2, right + 3, bottom + 3);
+    fill(x - 3, y - 3, x - 2, bottom + 3);
+    fill(right + 2, y - 3, right + 3, bottom + 3);
+}
+
 } // namespace
 
 std::array<float, 4> RaceView::ClearColor() const {
@@ -1585,8 +1645,28 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     // ResetShadowBuffers() empties the pool of the quads of the skid marks once a frame.
     s.skidVertices = 0;
     renderer.SetDrawnInOrder(true);
+    Vehicle *vehicles = snapshot != nullptr ? snapshot->GetVehicles() : g_aVehicles;
     for (int index = 0; index < ViewCount(); ++index) {
-        DrawView(renderer, snapshot, index);
+        DrawView(renderer, snapshot, index, false);
+        // RenderRaceView() draws the rear-view mirror over a single view from the bumper. While
+        // RenderRearViewMirror() draws it, the mirror is the active camera of the vehicle.
+        int cameraIndex = g_aViewportRects[index].vehicleIndex;
+        Vehicle &vehicle = vehicles[cameraIndex];
+        Vehicle &live = g_aVehicles[cameraIndex];
+        if (vehicle.GetActiveCamera() != &vehicle.GetCameras()[VEHICLE_CAMERA_BUMPER] ||
+            g_dwNumViewports != 1 || !g_dwRearViewMirrorMode) {
+            continue;
+        }
+        CameraFrame *saved = vehicle.GetActiveCamera();
+        CameraFrame *savedLive = live.GetActiveCamera();
+        vehicle.SetActiveCamera(&vehicle.GetCameras()[VEHICLE_CAMERA_MIRROR]);
+        live.SetActiveCamera(&live.GetCameras()[VEHICLE_CAMERA_MIRROR]);
+        DrawView(renderer, snapshot, index, true);
+        live.SetActiveCamera(savedLive);
+        vehicle.SetActiveCamera(saved);
+        renderer.SetViewport(std::nullopt);
+        renderer.SetMirrored(g_dwTrackMirrored != 0);
+        DrawRearViewMirrorFrame(renderer, RearViewMirrorRect(g_aViewportRects[index]));
     }
     renderer.SetDrawnInOrder(false);
     renderer.SetViewport(std::nullopt);
@@ -1630,7 +1710,10 @@ struct RaceView::CarInView {
 
 // RenderRaceView() of a view: the track, the cars, the puffs, and the start lights from the active
 // camera of the car of the view.
-void RaceView::DrawView(SceneRenderer &renderer, FrameSnapshot *snapshot, int index) const {
+void RaceView::DrawView(SceneRenderer &renderer,
+                        FrameSnapshot *snapshot,
+                        int index,
+                        bool mirror) const {
     State &s = *m_state;
     GpuWindow &window = renderer.Window();
     int cameraIndex = g_aViewportRects[index].vehicleIndex;
@@ -1649,25 +1732,41 @@ void RaceView::DrawView(SceneRenderer &renderer, FrameSnapshot *snapshot, int in
         frame = FrameRect(g_aViewportRects[index], window);
         renderer.SetViewport(frame);
     }
+    // The mirror fills its rectangle, its frustum reaches a fifth as far and its projection three
+    // tenths as far, and its depth is not cleared, as ClearZBufferRect() of the PC release is
+    // empty.
+    if (mirror) {
+        frame = FrameRect(RearViewMirrorRect(g_aViewportRects[index]), window);
+        renderer.SetViewport(frame);
+    }
     float aspect = static_cast<float>(frame.w) / static_cast<float>(std::max(frame.h, 1));
     float fov = split ? camera->fov * 0.7f : camera->fov;
-    // A view of a split screen keeps the height of the field of the view on the screen of the race
-    // and widens across a wider frame.
-    if (split) {
-        const ViewportRect &screen = g_aViewportRects[index];
-        fov *= aspect * static_cast<float>(screen.height) /
-               static_cast<float>(std::max(screen.width, 1));
-    }
+    // SetupCameraMatrix() takes the width and the height of the view, or of the mirror, on the
+    // screen of the race. A view keeps the height of that field and widens across a wider frame.
+    ViewportRect screen =
+        mirror ? RearViewMirrorRect(g_aViewportRects[index]) : g_aViewportRects[index];
+    fov *=
+        aspect * static_cast<float>(screen.height) / static_cast<float>(std::max(screen.width, 1));
     float farPlane = split ? CAMERA_FAR * 0.65f : CAMERA_FAR;
+    float frustumFar = farPlane;
+    if (mirror) {
+        farPlane = CAMERA_FAR * 0.3f;
+        frustumFar = CAMERA_FAR * 0.2f;
+    }
     Matrix4 viewProjection = CameraMatrix(*camera, fov, farPlane, aspect);
     // SetViewport() mirrors the view across on a mirrored track, where the steering turns the
-    // other way, and the faces of the models then turn the other way.
-    if (g_dwTrackMirrored) {
+    // other way, and for the negative width of the mirror, and the faces of the models then turn
+    // the other way. The mirror of a mirrored track is not mirrored.
+    bool across = (g_dwTrackMirrored != 0) != mirror;
+    renderer.SetMirrored(across);
+    if (across) {
         constexpr Matrix4 ACROSS{-1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
         viewProjection = MultiplyMatrices(ACROSS, viewProjection);
     }
     LookFromView(index);
-    if (split && IsSkyFogFilled() && !g_dwSkyboxDisabled) {
+    // RenderSkybox() fills the view of a split screen or the mirror with the fog, where a single
+    // view is cleared to it.
+    if ((split || mirror) && IsSkyFogFilled() && !g_dwSkyboxDisabled) {
         FillSkyWithFog(renderer);
     }
     renderer.SetHiddenInstanceFlags(HiddenInstanceFlags(first));
@@ -1700,7 +1799,7 @@ void RaceView::DrawView(SceneRenderer &renderer, FrameSnapshot *snapshot, int in
     }
     // RenderTrackGeometry(): the first pass draws the opaque instances in view.
     ViewInstances instances =
-        VisibleInstances(*camera, fov, farPlane, frame, vehicles, cameraIndex);
+        VisibleInstances(*camera, fov, frustumFar, frame, vehicles, cameraIndex);
     std::optional<CarShadow> shadow = ShadowOf(s.shadowTexture.get(), vehicle);
     const Lighting trackLighting = TrackLighting(vehicle);
     renderer.DrawShadowedModel(*s.track,
@@ -1735,12 +1834,13 @@ void RaceView::DrawView(SceneRenderer &renderer, FrameSnapshot *snapshot, int in
         }
     };
     // RenderRaceScene() draws the cars and the smoke of the tyres after the second pass of the
-    // track in the snow on every track but the coastline.
+    // track in the snow on every track but the coastline, there the smoke only in the view and not
+    // in its mirror.
     bool carsAfterTrack = g_dwSnowMode && g_dwSelectedTrackId != TRACK_COASTLINE &&
                           g_dwSelectedTrackId != TRACK_MIRROR_COASTLINE;
     auto drawCarsAndSmoke = [&]() {
         drawCars(false);
-        if (snapshot != nullptr) {
+        if (snapshot != nullptr && !(carsAfterTrack && mirror)) {
             DrawTireSmoke(renderer, *s.particleTexture, *camera, viewProjection);
         }
     };
@@ -1748,9 +1848,9 @@ void RaceView::DrawView(SceneRenderer &renderer, FrameSnapshot *snapshot, int in
         drawCarsAndSmoke();
     }
     // RenderStartLights() draws under the lights the last car drawn left, g_DefaultLights in its
-    // colours, or else under those of the track.
+    // colours, or else under those of the track, in the view and not in its mirror.
     std::optional<Matrix4> lights = StartLightsMatrix();
-    if (lights) {
+    if (lights && !mirror) {
         renderer.DrawModel(*s.startLights,
                            MultiplyMatrices(*lights, ConsoleSpace()),
                            viewProjection,
@@ -1779,8 +1879,9 @@ void RaceView::DrawView(SceneRenderer &renderer, FrameSnapshot *snapshot, int in
     }
     drawCars(true);
     // RenderExhaustAndTireSpray(): the exhaust in the snow, and the spray of the vehicles. A
-    // championship has more racers than vehicles, and only the vehicles have spray.
-    if (snapshot != nullptr) {
+    // championship has more racers than vehicles, and only the vehicles have spray. The mirror
+    // draws neither.
+    if (snapshot != nullptr && !mirror) {
         DrawExhaust(renderer, *s.shadowTexture, *camera, viewProjection);
         for (int index = 0; index < g_dwNumActiveVehicles; ++index) {
             DrawTireSpray(renderer, *s.sprayTexture, vehicles[index], viewProjection);
