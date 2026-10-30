@@ -917,6 +917,7 @@ racerun
 racescreen
 racesound
 racespecials
+raceview
 raininit
 rallyconfig
 rallycredits

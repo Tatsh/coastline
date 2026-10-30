@@ -96,6 +96,7 @@ add_library(
   racedemo.cpp
   raceinput.cpp
   racemusic.cpp
+  raceview.cpp
   runtimebuffers.cpp
   scenerenderer.cpp
   session.cpp

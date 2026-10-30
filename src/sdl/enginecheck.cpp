@@ -172,7 +172,7 @@ bool CheckAttractDemo() {
     StartAttractDemo();
     int frames = 0;
     Vec3f start{};
-    while (frames < DEMO_FRAMES && StepAttractDemo()) {
+    while (frames < DEMO_FRAMES && StepAttractDemo(false)) {
         ++frames;
         if (frames == 1) {
             start = g_aVehicles[0].GetFrame().position;

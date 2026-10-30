@@ -36,6 +36,8 @@
 #include "modelview.h"
 #include "music.h"
 #include "paths.h"
+#include "racedemo.h"
+#include "raceview.h"
 #include "scenerenderer.h"
 #include "tlrenderer.h"
 
@@ -485,8 +487,15 @@ int main(int argc, char *argv[]) {
             std::unique_ptr<coastline::Intro> intro;
             std::unique_ptr<coastline::MainMenu> mainMenu;
             // The screen of the front end that shows.
-            enum class FrontEnd { Intro, MainMenu };
+            enum class FrontEnd { Intro, AttractDemo, MainMenu };
             FrontEnd frontEnd = FrontEnd::Intro;
+            // The race of the attract demo runs a 30th of a second a step, from the default assets.
+            constexpr float RACE_STEP = 1.0f / 30.0f;
+            const std::filesystem::path defaults = coastline::DefaultAssets(paths->data);
+            std::unique_ptr<coastline::RaceView> raceView;
+            bool raceDataOpen = false;
+            float raceTime = 0.0f;
+            bool leaveDemo = false;
             coastline::TextureHandle testTexture = 0;
             if (scene == "renderer-test") {
                 renderer = coastline::TlRenderer::Create(*window);
@@ -561,7 +570,6 @@ int main(int argc, char *argv[]) {
                     }
                     std::uint16_t pressed = held & ~lastButtons;
                     lastButtons = held;
-                    sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
                     if (frontEnd == FrontEnd::Intro) {
                         coastline::IntroButtons buttons{(pressed & CHOOSE) != 0,
                                                         (held & C_BUTTONS) == C_BUTTONS};
@@ -570,13 +578,57 @@ int main(int argc, char *argv[]) {
                             mainMenu->Restart();
                             frontEnd = FrontEnd::MainMenu;
                         } else if (end != coastline::IntroEnd::Running) {
-                            // ponytail: the attract demo of the PC release plays here once its
-                            // race is built into the game, and Start leaves it for the main menu.
-                            SDL_Log("The attract demo is not built yet.");
-                            intro->Restart();
+                            // The race engine reads its files from the default assets.
+                            if (!raceDataOpen) {
+                                std::error_code error;
+                                std::filesystem::current_path(defaults, error);
+                                coastline::OpenRaceData();
+                                raceDataOpen = true;
+                            }
+                            // The first step loads the race and with it the track and the car.
+                            coastline::StartAttractDemo();
+                            coastline::StepAttractDemo(false);
+                            raceView = coastline::RaceView::Load(*sceneRenderer,
+                                                                 defaults,
+                                                                 coastline::AttractDemoTrack(),
+                                                                 coastline::AttractDemoCar());
+                            raceTime = 0.0f;
+                            leaveDemo = false;
+                            if (raceView) {
+                                frontEnd = FrontEnd::AttractDemo;
+                            } else {
+                                intro->Restart();
+                            }
                         }
+                    } else if (frontEnd == FrontEnd::AttractDemo) {
+                        // A press of A, Start, or Z leaves the demo for the main menu.
+                        leaveDemo = leaveDemo || (pressed & CHOOSE) != 0;
+                        raceTime += seconds;
+                        bool demoRunning = true;
+                        while (demoRunning && raceTime >= RACE_STEP) {
+                            raceTime -= RACE_STEP;
+                            demoRunning = coastline::StepAttractDemo(leaveDemo);
+                            leaveDemo = false;
+                        }
+                        if (!demoRunning) {
+                            raceView.reset();
+                            if (coastline::AttractDemoInterrupted() && mainMenu) {
+                                mainMenu->Restart();
+                                frontEnd = FrontEnd::MainMenu;
+                            } else {
+                                intro->Restart();
+                                frontEnd = FrontEnd::Intro;
+                            }
+                        }
+                    }
+                    if (frontEnd == FrontEnd::Intro) {
+                        sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
                         intro->Draw(*sceneRenderer);
+                    } else if (frontEnd == FrontEnd::AttractDemo) {
+                        sceneRenderer->Begin(raceView->ClearColor());
+                        raceView->Draw(*sceneRenderer);
                     } else {
+                        sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
                         coastline::MenuButtons buttons{(pressed & coastline::BUTTON_D_LEFT) != 0,
                                                        (pressed & coastline::BUTTON_D_RIGHT) != 0,
                                                        (pressed & CHOOSE) != 0,
