@@ -500,10 +500,8 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
             m_optionsChanged = true;
             break;
         case OPTIONS_ITEM_CONTROLLER:
-            // ponytail: the controller configuration screen is not built yet, and the options
-            // show again.
-            SDL_Log("The controller configuration screen is not built yet.");
             m_optionsMenuState = -1;
+            SetCurrentScreen(Screen::ControllerConfigScreen);
             break;
         case OPTIONS_ITEM_SAVE_CONFIGURATION:
             m_saveConfigurationPending = true;

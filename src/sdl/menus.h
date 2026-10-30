@@ -21,6 +21,7 @@
 
 namespace coastline {
 
+class GameConfig;
 class SceneRenderer;
 
 /**
@@ -196,6 +197,7 @@ private:
         OptionsMenu,
         RaceResultsScreen,
         PaintShopScreen,
+        ControllerConfigScreen,
     };
 
     explicit Menus(std::unique_ptr<MenuScreen> screen);
@@ -270,6 +272,10 @@ private:
     bool ProcessPakDataScreen(SceneRenderer &renderer, int dataType);
     void OptionsMenuPostDraw(SceneRenderer &renderer, int item);
     void ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const MenuButtons &first);
+    bool LoadControllerScreen(SceneRenderer &renderer, const std::filesystem::path &release);
+    void DrawControllerLayoutDiagram(SceneRenderer &renderer, int item) const;
+    void
+    ProcessControllerConfigScreen(SceneRenderer &renderer, float seconds, const MenuButtons &first);
     // The screens that open the save and load menu, g_bSaveLoadEntryPoint of the console.
     enum class SaveLoadEntry { MainMenu, Season, TimeAttack };
     void StartDataSaveLoadMenu(SaveLoadEntry entry);
@@ -399,6 +405,13 @@ private:
     int m_pakDataWaitFrames = 0;
     int m_pakError = 0;
     std::optional<std::vector<u8>> m_pakNote;
+
+    // The controller configuration screen: its items and the pictures of the layouts of the
+    // console.
+    std::vector<MenuItem> m_controllerScreenItems;
+    std::array<std::unique_ptr<RenderTexture>, 5> m_controllerLayoutPictures;
+    int m_controllerScreenInitState = 0;
+    int m_controllerScreenSelection = 0;
 
     // The save and load menu.
     SaveLoadEntry m_saveLoadEntry = SaveLoadEntry::MainMenu;

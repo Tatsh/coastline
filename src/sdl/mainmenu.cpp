@@ -48,7 +48,8 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
     menus->m_mainMenuItems = std::move(*main);
     if (!menus->LoadPlayerCountItems(renderer, release) ||
         !menus->LoadTrackMenu(renderer, release) || !menus->LoadWeatherItems(renderer, release) ||
-        !menus->LoadCarSelect(renderer, release) || !menus->LoadOptionsItems(renderer, release)) {
+        !menus->LoadCarSelect(renderer, release) || !menus->LoadOptionsItems(renderer, release) ||
+        !menus->LoadControllerScreen(renderer, release)) {
         return nullptr;
     }
     menus->m_cache = cache;

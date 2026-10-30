@@ -72,46 +72,74 @@ struct ControlPreset {
     std::array<std::string_view, CONTROL_ACTION_COUNT> values; /*!< The bindings by action. */
 };
 
+/** The preset of an absent or unknown Preset key. */
+inline constexpr ControlPreset DEFAULT_CONTROL_PRESET{"Default",
+                                                      {"leftx-,dpleft",
+                                                       "leftx+,dpright",
+                                                       "a,righttrigger",
+                                                       "b,lefttrigger",
+                                                       "x",
+                                                       "rightshoulder",
+                                                       "leftshoulder",
+                                                       "righty-",
+                                                       "rightx-",
+                                                       "righty+,y",
+                                                       "lefty-,dpup",
+                                                       "lefty+,dpdown",
+                                                       "a",
+                                                       "start",
+                                                       "back",
+                                                       "a",
+                                                       "b,x",
+                                                       "lefttrigger",
+                                                       "start",
+                                                       "leftshoulder",
+                                                       "rightshoulder,righttrigger",
+                                                       "righty-",
+                                                       "righty+",
+                                                       "rightx-",
+                                                       "rightx+",
+                                                       "dpup",
+                                                       "dpdown",
+                                                       "dpleft",
+                                                       "dpright",
+                                                       "leftx-",
+                                                       "leftx+",
+                                                       "lefty-",
+                                                       "lefty+"}};
+
+/** The actions of a race, from CONTROL_STEER_LEFT to CONTROL_CHASE_CAMERA. */
+inline constexpr std::size_t RACE_CONTROL_ACTIONS = CONTROL_CHASE_CAMERA + 1;
+
+/**
+ * @param name The value of the Preset key.
+ * @param race The bindings of the actions of a race.
+ * @return The default preset with the bindings of the actions of a race replaced.
+ */
+constexpr ControlPreset
+RaceControlPreset(std::string_view name,
+                  const std::array<std::string_view, RACE_CONTROL_ACTIONS> &race) {
+    ControlPreset preset = DEFAULT_CONTROL_PRESET;
+    preset.name = name;
+    for (std::size_t i = 0; i < race.size(); ++i) {
+        preset.values[i] = race[i];
+    }
+    return preset;
+}
+
 /**
  * The presets the Preset key chooses from, the first the default. Kart follows Mario Kart 8 on the
  * Pro Controller, with the east button for accelerate and A of the menus, and the south button for
  * brake and B of the menus.
+ *
+ * The five after Kart are the button layouts of the controller screen of the Nintendo 64 release,
+ * as TranslateControllerInput() of the console reads them, with A of the console on the south
+ * button, B on the east, Z on the left trigger, L and R on the shoulders, and the C buttons on the
+ * right stick. An action of the console that needs two buttons at once has the second alone: down
+ * reverses without A, and the e-brake of A and B, or of C down in TypeB, has no binding.
  */
-inline constexpr std::array<ControlPreset, 2> CONTROL_PRESETS{{
-    {"Default",
-     {"leftx-,dpleft",
-      "leftx+,dpright",
-      "a,righttrigger",
-      "b,lefttrigger",
-      "x",
-      "rightshoulder",
-      "leftshoulder",
-      "righty-",
-      "rightx-",
-      "righty+,y",
-      "lefty-,dpup",
-      "lefty+,dpdown",
-      "a",
-      "start",
-      "back",
-      "a",
-      "b,x",
-      "lefttrigger",
-      "start",
-      "leftshoulder",
-      "rightshoulder,righttrigger",
-      "righty-",
-      "righty+",
-      "rightx-",
-      "rightx+",
-      "dpup",
-      "dpdown",
-      "dpleft",
-      "dpright",
-      "leftx-",
-      "leftx+",
-      "lefty-",
-      "lefty+"}},
+inline constexpr std::array<ControlPreset, 7> CONTROL_PRESETS{{
+    DEFAULT_CONTROL_PRESET,
     {"Kart",
      {"leftx-,dpleft",
       "leftx+,dpright",
@@ -146,6 +174,61 @@ inline constexpr std::array<ControlPreset, 2> CONTROL_PRESETS{{
       "leftx+",
       "lefty-",
       "lefty+"}},
+    RaceControlPreset("TypeA",
+                      {"leftx-",
+                       "leftx+",
+                       "a",
+                       "b",
+                       "lefty+",
+                       "rightshoulder",
+                       "lefttrigger",
+                       "righty-",
+                       "rightx-",
+                       "righty+"}),
+    RaceControlPreset("TypeB",
+                      {"leftx-",
+                       "leftx+",
+                       "a",
+                       "b",
+                       "lefty+",
+                       "rightshoulder",
+                       "lefttrigger",
+                       "righty-",
+                       "rightx-",
+                       "rightx+"}),
+    RaceControlPreset("TypeC",
+                      {"dpleft",
+                       "dpright",
+                       "a",
+                       "b",
+                       "dpdown",
+                       "rightshoulder",
+                       "leftshoulder",
+                       "righty-",
+                       "rightx-",
+                       "righty+"}),
+    RaceControlPreset("TypeD",
+                      {"leftx-",
+                       "leftx+",
+                       "lefty-",
+                       "lefttrigger",
+                       "lefty+",
+                       "b,dpup",
+                       "a,dpdown",
+                       "righty-",
+                       "rightx-",
+                       "righty+"}),
+    RaceControlPreset("SteeringWheel",
+                      {"leftx-",
+                       "leftx+",
+                       "a",
+                       "b",
+                       "lefty+",
+                       "rightshoulder",
+                       "leftshoulder",
+                       "righty-",
+                       "rightx-",
+                       "righty+"}),
 }};
 
 /** A button or the half of an axis of a gamepad that drives an action. */

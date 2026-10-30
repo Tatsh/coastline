@@ -166,6 +166,7 @@ contrfail
 controllerpak
 controllerread
 controllerscreen
+controllerscreenitems
 convertedvertex
 cosf
 counselor

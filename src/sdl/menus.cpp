@@ -69,6 +69,9 @@ MenusEnd Menus::Frame(SceneRenderer &renderer,
     case Screen::OptionsMenu:
         ProcessOptionsMenu(renderer, seconds, first);
         break;
+    case Screen::ControllerConfigScreen:
+        ProcessControllerConfigScreen(renderer, seconds, first);
+        break;
     case Screen::RaceResultsScreen:
         ProcessRaceResultsScreen(renderer, seconds, first);
         break;

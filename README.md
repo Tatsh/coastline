@@ -101,7 +101,7 @@ Application Support, Caches, and Logs in the library of the user.
 
 ### Controls
 
-The `Controls` section of `BossRally.ini` maps the gamepad. `Preset` chooses `Default` or `Kart`,
+The `Controls` section of `BossRally.ini` maps the gamepad. `Preset` chooses one of the presets below,
 and a key of an action present in the section replaces the binding of the preset for that action.
 A value lists SDL gamepad names separated by commas (`a`, `b`, `x`, `y`, `back`, `start`,
 `leftshoulder`, `rightshoulder`, `leftstick`, `rightstick`, `dpup`, `dpdown`, `dpleft`, `dpright`,
@@ -159,6 +159,26 @@ These are the keys and the bindings of each preset.
 `Kart` follows Mario Kart 8 on the Pro Controller, with the east button accelerating and the south
 button braking. A press of `StartOrRespawn` starts a race, and a second press within half a second
 resets the car. The menu keys drive the menus, and the race keys drive both players of a race.
+
+`TypeA`, `TypeB`, `TypeC`, `TypeD`, and `SteeringWheel` are the button layouts of the Nintendo 64
+release, with A of the console on `a`, B on `b`, Z on `lefttrigger`, L and R on the shoulders, and
+the C buttons on the right stick. They bind the race keys below and the other keys as `Default`
+does. The controller configuration screen of the options menu writes `Preset` with any of the
+seven presets. Down reverses without A, and the console's e-brake (A and B together, or C down in
+`TypeB`) has no binding.
+
+| Key             | `TypeA`         | `TypeB`         | `TypeC`         | `TypeD`       | `SteeringWheel` |
+| --------------- | --------------- | --------------- | --------------- | ------------- | --------------- |
+| `SteerLeft`     | `leftx-`        | `leftx-`        | `dpleft`        | `leftx-`      | `leftx-`        |
+| `SteerRight`    | `leftx+`        | `leftx+`        | `dpright`       | `leftx+`      | `leftx+`        |
+| `Accelerate`    | `a`             | `a`             | `a`             | `lefty-`      | `a`             |
+| `Brake`         | `b`             | `b`             | `b`             | `lefttrigger` | `b`             |
+| `Reverse`       | `lefty+`        | `lefty+`        | `dpdown`        | `lefty+`      | `lefty+`        |
+| `GearUp`        | `rightshoulder` | `rightshoulder` | `rightshoulder` | `b,dpup`      | `rightshoulder` |
+| `GearDown`      | `lefttrigger`   | `lefttrigger`   | `leftshoulder`  | `a,dpdown`    | `leftshoulder`  |
+| `CockpitCamera` | `righty-`       | `righty-`       | `righty-`       | `righty-`     | `righty-`       |
+| `BumperCamera`  | `rightx-`       | `rightx-`       | `rightx-`       | `rightx-`     | `rightx-`       |
+| `ChaseCamera`   | `righty+`       | `rightx+`       | `righty+`       | `righty+`     | `righty+`       |
 
 `Player1` and `Player2` choose the device of each player. A value is `auto`, the default,
 `keyboard`, `gamepad1`, `gamepad2`, and so on for the gamepads in the order they connect, a part of
