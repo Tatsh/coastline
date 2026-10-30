@@ -35,11 +35,24 @@ inline constexpr Matrix4 IDENTITY_MATRIX{1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 
  */
 Matrix4 MultiplyMatrices(const Matrix4 &a, const Matrix4 &b);
 
-/** The lights of a model: an ambient colour and a directional colour from a direction. */
+/** The ambient colours of a ramped instance of a track on a clear day, from 0 to 1. */
+inline constexpr std::array<std::array<float, 3>, 4> CLEAR_LIGHT_RAMP{
+    {{63 / 255.0f, 63 / 255.0f, 51 / 255.0f},
+     {127 / 255.0f, 127 / 255.0f, 102 / 255.0f},
+     {190 / 255.0f, 190 / 255.0f, 153 / 255.0f},
+     {1.0f, 1.0f, 204 / 255.0f}}};
+
+/**
+ * The lights of a model, an ambient colour and a directional colour from a direction in the space
+ * the model is placed in. A ramped instance of a track takes its ambient colour from the ramp by
+ * the low bits of its flags, and a directional colour only where it is lit at night.
+ */
 struct Lighting {
     std::array<float, 3> direction{0.0f, 0.0f, 1.0f}; /*!< The unit direction toward the light. */
     std::array<float, 3> ambient{1.0f, 1.0f, 1.0f};   /*!< The ambient colour, from 0 to 1. */
     std::array<float, 3> directional{};               /*!< The directional colour, from 0 to 1. */
+    std::array<std::array<float, 3>, 4> ramp = CLEAR_LIGHT_RAMP; /*!< The ambient ramp. */
+    std::array<float, 3> nightLit{}; /*!< The directional colour of a night-lit ramped instance. */
 };
 
 /** The pose of the vertices of an animated model: two keys and the share of the second. */

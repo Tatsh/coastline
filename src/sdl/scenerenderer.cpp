@@ -424,42 +424,28 @@ struct Mesh {
     int vertexCount = 0;
 };
 
-// A mesh placed by a node of the scene, and the lights a placed model of a track has of its own.
+// A mesh placed by a node of the scene.
 struct Placed {
     std::size_t mesh;
     Matrix4 matrix;
-    std::optional<Lighting> lighting;
     int instance;        // The instance of the track the node draws, or -1.
     std::uint32_t flags; // The TRACK_INSTANCE_ flags of the instance, or 0.
     Matrix4 parent;      // The place of the parent of the node, under the matrix of the instance.
 };
 
-// The lights of a clear day as the race sets them up: a directional light of 255, 255, 204 from
-// 15, 10, 20 and an ambient light of 102, 102, 119. A placed model with a ramped light has no
-// directional light, and an ambient light of a quarter, a half, three quarters, or all of the
-// directional colour by the low bits of its flags.
-constexpr std::array<int, 3> RACE_DIRECTIONAL{255, 255, 204};
-constexpr std::array<int, 3> RACE_AMBIENT{102, 102, 119};
-// The direction toward the light, 15, 10, 20 of the console, which is z up, normalised in the y
-// up space of glTF.
-constexpr std::array<float, 3> RACE_LIGHT_DIRECTION{0.5571f, 0.7428f, -0.3714f};
 constexpr std::uint32_t TRACK_INSTANCE_LIGHT_RAMP = 0x0003;
+constexpr std::uint32_t TRACK_INSTANCE_NIGHT_LIT = 0x0100;
 constexpr std::uint32_t TRACK_INSTANCE_RAMPED = 0x0400;
 
-Lighting TrackInstanceLighting(std::uint32_t flags) {
-    Lighting lighting;
-    lighting.direction = RACE_LIGHT_DIRECTION;
-    for (std::size_t i = 0; i < 3; ++i) {
-        int full = RACE_DIRECTIONAL[i];
-        if ((flags & TRACK_INSTANCE_RAMPED) != 0) {
-            std::array<int, 4> ramp{full >> 2, full >> 1, (full >> 1) + (full >> 2), full};
-            lighting.ambient[i] =
-                static_cast<float>(ramp[flags & TRACK_INSTANCE_LIGHT_RAMP]) / 255.0f;
-            lighting.directional[i] = 0.0f;
-        } else {
-            lighting.ambient[i] = static_cast<float>(RACE_AMBIENT[i]) / 255.0f;
-            lighting.directional[i] = static_cast<float>(full) / 255.0f;
-        }
+// RenderTrackGeometry() lights an instance of a track with the lights of the track, and a ramped
+// instance with the colour of its ramp as the ambient light and a directional light only where it
+// is lit at night.
+Lighting TrackInstanceLighting(const Lighting &track, std::uint32_t flags) {
+    Lighting lighting = track;
+    if ((flags & TRACK_INSTANCE_RAMPED) != 0) {
+        lighting.ambient = track.ramp[flags & TRACK_INSTANCE_LIGHT_RAMP];
+        lighting.directional =
+            (flags & TRACK_INSTANCE_NIGHT_LIT) != 0 ? track.nightLit : std::array<float, 3>{};
     }
     return lighting;
 }
@@ -1007,16 +993,14 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
         Matrix4 matrix = MultiplyMatrices(parent, NodeMatrix(node));
         if (node.contains("mesh") && (!parts || parts(node.value("name", "")))) {
             std::size_t mesh = node["mesh"].get<std::size_t>();
-            std::optional<Lighting> lighting;
             int instance = -1;
             std::uint32_t flags = 0;
             if (node.contains("extras") && node["extras"].contains("coastlineInstance")) {
                 const auto &extras = node["extras"]["coastlineInstance"];
                 flags = extras["flags"].get<std::uint32_t>();
-                lighting = TrackInstanceLighting(flags);
                 instance = extras.value("index", -1);
             }
-            state->placed.push_back({mesh, matrix, lighting, instance, flags, parent});
+            state->placed.push_back({mesh, matrix, instance, flags, parent});
             for (const auto &p : meshPositions[mesh]) {
                 auto world = Transform(matrix, p.data());
                 for (std::size_t axis = 0; axis < 3; ++axis) {
@@ -1626,7 +1610,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                 }
                 targets = mesh.targets;
             }
-            const Lighting &lighting = placed.lighting ? *placed.lighting : draw.lighting;
+            Lighting lighting = TrackInstanceLighting(draw.lighting, placed.flags);
             // The shadow of the car falls on the instances near it.
             bool shaded = draw.shadow && draw.shadow->texture != nullptr && placed.instance >= 0 &&
                           std::ranges::find(draw.shadow->instances, placed.instance) !=

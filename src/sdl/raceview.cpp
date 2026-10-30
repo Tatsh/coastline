@@ -1003,6 +1003,17 @@ Lighting TrackLighting(const Vehicle &cameraCar) {
     lighting.directional = {static_cast<float>(g_bDirLightR) / 255.0f,
                             static_cast<float>(g_bDirLightG) / 255.0f,
                             static_cast<float>(g_bDirLightB) / 255.0f};
+    for (std::size_t i = 0; i < lighting.ramp.size(); ++i) {
+        lighting.ramp[i] = {static_cast<float>(g_abLightRampR[i]) / 255.0f,
+                            static_cast<float>(g_abLightRampG[i]) / 255.0f,
+                            static_cast<float>(g_abLightRampB[i]) / 255.0f};
+    }
+    // A ramped instance lit at night takes half the directional colour.
+    if (g_dwNightMode) {
+        lighting.nightLit = {static_cast<float>(g_bDirLightR >> 1) / 255.0f,
+                             static_cast<float>(g_bDirLightG >> 1) / 255.0f,
+                             static_cast<float>(g_bDirLightB >> 1) / 255.0f};
+    }
     return lighting;
 }
 
@@ -1685,15 +1696,20 @@ void RaceView::DrawView(SceneRenderer &renderer, FrameSnapshot *snapshot, int in
     ViewInstances instances =
         VisibleInstances(*camera, fov, farPlane, frame, vehicles, cameraIndex);
     std::optional<CarShadow> shadow = ShadowOf(s.shadowTexture.get(), vehicle);
-    renderer.DrawShadowedModel(
-        *s.track, ConsoleSpace(), viewProjection, lighting, std::move(instances.opaque), shadow);
+    const Lighting trackLighting = TrackLighting(vehicle);
+    renderer.DrawShadowedModel(*s.track,
+                               ConsoleSpace(),
+                               viewProjection,
+                               trackLighting,
+                               std::move(instances.opaque),
+                               shadow);
     // RenderVehicleModel() draws a car the view sees, but not the car of the view from its own
     // cockpit or its mirror, which returns before it sets the colours of the lights.
     const auto &cameras = vehicle.GetCameras();
     bool inside =
         camera == &cameras[VEHICLE_CAMERA_COCKPIT] || camera == &cameras[VEHICLE_CAMERA_MIRROR];
     // The lights the start lights draw under: those of the track until a car sets its own.
-    Lighting lastLighting = TrackLighting(vehicle);
+    Lighting lastLighting = trackLighting;
     // RenderRacerVehicles(): the car of each vehicle of the race that is, or is not, a ghost. A
     // ghost, the car of a time attack recorded before or a car fading back in after it is put back
     // on the track, is drawn in the render mode of a ghost of BRD3D. The opacity of a ghost goes to
@@ -1741,7 +1757,7 @@ void RaceView::DrawView(SceneRenderer &renderer, FrameSnapshot *snapshot, int in
     renderer.DrawShadowedModel(*s.track,
                                ConsoleSpace(),
                                viewProjection,
-                               lighting,
+                               trackLighting,
                                std::move(instances.translucent),
                                std::move(shadow));
     if (snapshot != nullptr && s.skidTexture && g_GlobalRallyConfig.bSkidMarksSelection) {
