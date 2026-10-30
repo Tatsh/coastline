@@ -6,6 +6,9 @@
  * replayed for 39.6 seconds under the cameras of the race.
  */
 
+#include <array>
+#include <cstdint>
+
 namespace coastline {
 
 /**
@@ -39,5 +42,9 @@ int AttractDemoTrack();
 
 /** @return The car of the demo, an index of g_apszCarModelPrefixes, once its race has loaded. */
 int AttractDemoCar();
+
+/** @return The red, green, and blue of the colour of the car of the demo, once its race has loaded.
+ */
+std::array<std::uint8_t, 3> AttractDemoColor();
 
 } // namespace coastline

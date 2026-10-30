@@ -7,6 +7,7 @@
  */
 
 #include <array>
+#include <cstdint>
 #include <filesystem>
 #include <memory>
 
@@ -24,10 +25,14 @@ public:
      * @param defaults The directory of the default assets.
      * @param track The track, an index of g_apszTrackFilenames.
      * @param car The car, an index of g_apszCarModelPrefixes.
+     * @param color The red, green, and blue the car is painted.
      * @return The view, or nothing with the reason logged.
      */
-    static std::unique_ptr<RaceView>
-    Load(SceneRenderer &renderer, const std::filesystem::path &defaults, int track, int car);
+    static std::unique_ptr<RaceView> Load(SceneRenderer &renderer,
+                                          const std::filesystem::path &defaults,
+                                          int track,
+                                          int car,
+                                          std::array<std::uint8_t, 3> color);
     ~RaceView();
     RaceView(const RaceView &) = delete;
     RaceView &operator=(const RaceView &) = delete;

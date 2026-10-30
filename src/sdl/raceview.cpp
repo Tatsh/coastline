@@ -179,15 +179,21 @@ RaceView::RaceView(std::unique_ptr<State> state) : m_state(std::move(state)) {
 
 RaceView::~RaceView() = default;
 
-std::unique_ptr<RaceView>
-RaceView::Load(SceneRenderer &renderer, const std::filesystem::path &defaults, int track, int car) {
+std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
+                                         const std::filesystem::path &defaults,
+                                         int track,
+                                         int car,
+                                         std::array<std::uint8_t, 3> color) {
     auto state = std::make_unique<State>();
     std::filesystem::path trackFile = defaults / "tracks" / g_apszTrackFilenames[track];
     trackFile.replace_extension(".gltf");
     state->track = RenderModel::Load(renderer, trackFile);
     state->sky = RenderModel::Load(renderer, trackFile, "sky");
-    state->car = RenderModel::Load(
-        renderer, defaults / "cars" / (std::string(g_apszCarModelPrefixes[car]) + ".gltf"));
+    state->car =
+        RenderModel::Load(renderer,
+                          defaults / "cars" / (std::string(g_apszCarModelPrefixes[car]) + ".gltf"),
+                          std::nullopt,
+                          color);
     // The race of the PC release draws its text with the fonts of the cartridge.
     state->text = MenuText::Load(renderer, defaults / "n64" / "usa" / "fonts");
     if (!state->track || !state->car || !state->text) {

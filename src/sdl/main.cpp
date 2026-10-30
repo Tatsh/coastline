@@ -594,7 +594,8 @@ int main(int argc, char *argv[]) {
                             raceView = coastline::RaceView::Load(*sceneRenderer,
                                                                  defaults,
                                                                  coastline::AttractDemoTrack(),
-                                                                 coastline::AttractDemoCar());
+                                                                 coastline::AttractDemoCar(),
+                                                                 coastline::AttractDemoColor());
                             raceTime = 0.0f;
                             leaveDemo = false;
                             if (raceView) {

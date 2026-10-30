@@ -39,7 +39,12 @@ constexpr int WHEELS = 4;
 constexpr std::size_t BODY_LISTS_AT = 0x18;
 constexpr std::size_t WHEEL_LISTS_AT = 0xbc;
 constexpr std::size_t WHEELS_AT = WHEEL_LISTS_AT + LODS * WHEEL_LISTS * 4;
-constexpr std::size_t CAR_HEADER_END = WHEELS_AT + WHEELS * 12;
+// The textures of the materials of a car, whose palettes its colour paints, follow the wheels.
+constexpr std::size_t MATERIAL_TEXTURES_AT = WHEELS_AT + WHEELS * 12;
+constexpr int VEHICLE_MATERIALS = 12;
+constexpr std::size_t CAR_HEADER_END = MATERIAL_TEXTURES_AT + VEHICLE_MATERIALS;
+// The bytes of the 16 colours of a palette of 4-bit texels.
+constexpr std::size_t PALETTE_4_BYTES = 32;
 // The renderer scales the vertices of the body and of each wheel by 1/255 to metres.
 constexpr float CAR_SCALE = 1.0f / 255.0f;
 
@@ -921,6 +926,25 @@ std::vector<std::uint8_t> DecodeTexture(std::span<const std::uint8_t> memory,
     return rgba;
 }
 
+// The 4-bit texels of a texture, two to a byte with the first in the high four bits, row by row
+// from the top with each row starting on a byte, and the odd rows of the texture memory unswapped.
+std::vector<std::uint8_t> DecodeIndices4(std::span<const std::uint8_t> memory,
+                                         const TextureKey &key) {
+    std::size_t stride = (key.line != 0 ? key.line : (key.width * 4 + 63) / 64) * 8;
+    std::size_t rowBytes = (key.width + 1) / 2;
+    std::vector<std::uint8_t> packed(rowBytes * key.height, 0);
+    for (std::uint32_t y = 0; y < key.height; ++y) {
+        for (std::uint32_t x = 0; x < key.width; ++x) {
+            std::size_t position = static_cast<std::size_t>(x) * 4;
+            std::size_t at = key.address + y * stride + ((position >> 3) ^ (y % 2 ? 4 : 0));
+            std::uint8_t value =
+                at < memory.size() ? memory[at] >> (position & 4 ? 0 : 4) & 0xf : 0;
+            packed[y * rowBytes + x / 2] |= static_cast<std::uint8_t>(value << (x % 2 ? 0 : 4));
+        }
+    }
+    return packed;
+}
+
 // The wrap of glTF nearest to a tile. The RDP repeats a texture within the span of the tile and
 // clamps beyond it, so a tile wider than its texture repeats.
 int WrapMode(std::uint32_t clampMirror, std::uint32_t tileSize, std::uint32_t textureSize) {
@@ -1029,7 +1053,8 @@ BuildModel(std::span<const std::uint8_t> bytes,
            const std::vector<Draw> &draws,
            const std::vector<std::string> &scenes,
            std::string_view bufferUri,
-           const std::vector<VertexAnimation> &animations = {}) {
+           const std::vector<VertexAnimation> &animations = {},
+           const std::map<std::size_t, int> &paintMaterialOf = {}) {
     auto image = bytes.subspan(imageOffset);
     DisplayListWalk walk(image, layout.base);
     // A draw is walked once for each state it starts from.
@@ -1103,7 +1128,23 @@ BuildModel(std::span<const std::uint8_t> bytes,
             model.images.push_back({std::format("{}-{}.png", stem, model.images.size()),
                                     static_cast<int>(key.width),
                                     static_cast<int>(key.height),
-                                    DecodeTexture(memory, key)});
+                                    DecodeTexture(memory, key),
+                                    {},
+                                    {},
+                                    -1});
+            // A texture of a material of a car keeps its indices for the colour of the car to
+            // paint its first two colours.
+            auto painted = paintMaterialOf.find(key.address);
+            if (painted != paintMaterialOf.end() && key.format == G_IM_FMT_CI &&
+                key.texelSize == G_IM_SIZ_4b && key.palette &&
+                *key.palette + PALETTE_4_BYTES <= memory.size()) {
+                GltfImage &picture = model.images.back();
+                picture.indices = DecodeIndices4(memory, key);
+                picture.palette.assign(
+                    memory.begin() + static_cast<std::ptrdiff_t>(*key.palette),
+                    memory.begin() + static_cast<std::ptrdiff_t>(*key.palette + PALETTE_4_BYTES));
+                picture.paintMaterial = painted->second;
+            }
         }
         return imageOf[key];
     };
@@ -1140,7 +1181,10 @@ BuildModel(std::span<const std::uint8_t> bytes,
             model.images.push_back({std::format("{}-{}-{}.png", stem, index, f),
                                     static_cast<int>(key.width),
                                     static_cast<int>(key.height),
-                                    DecodeTexture(scratch, key)});
+                                    DecodeTexture(scratch, key),
+                                    {},
+                                    {},
+                                    -1});
             // The next frame starts from the texture as a race starts.
             for (auto [target, size] :
                  {std::pair{texture->texels, texture->size},
@@ -1407,7 +1451,11 @@ BuildModel(std::span<const std::uint8_t> bytes,
     model.json["samplers"] = nlohmann::ordered_json::array();
     model.json["textures"] = nlohmann::ordered_json::array();
     for (const GltfImage &picture : model.images) {
-        model.json["images"].push_back({{"uri", picture.uri}});
+        nlohmann::ordered_json entry{{"uri", picture.uri}};
+        if (picture.paintMaterial >= 0) {
+            entry["extras"]["coastlinePaint"] = {{"material", picture.paintMaterial}};
+        }
+        model.json["images"].push_back(std::move(entry));
     }
     // A texture for each image and wrap the materials sample it with, and a sampler for each wrap.
     std::map<std::pair<int, int>, std::size_t> samplerOf;
@@ -1706,7 +1754,17 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
             draws.push_back(std::move(draw));
         }
     }
-    return BuildModel(bytes, imageOffset, CAR_LAYOUT, draws, scenes, bufferUri);
+    // The textures whose palettes SetMaterialPaletteColors() paints, by their material. A texture
+    // of more than one material takes the alpha of the last.
+    std::map<std::size_t, int> paintMaterialOf;
+    for (int material = 0; material < VEHICLE_MATERIALS; ++material) {
+        auto texture = TableTexture(image, CAR_LAYOUT, image[MATERIAL_TEXTURES_AT + material]);
+        if (texture) {
+            paintMaterialOf[texture->address] = material;
+        }
+    }
+    return BuildModel(
+        bytes, imageOffset, CAR_LAYOUT, draws, scenes, bufferUri, {}, paintMaterialOf);
 }
 
 std::expected<GltfModel, std::string> TrackToGltf(std::span<const std::uint8_t> bytes,

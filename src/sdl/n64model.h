@@ -19,6 +19,14 @@ struct GltfImage {
     int width = 0;                  /*!< The width in texels. */
     int height = 0;                 /*!< The height in texels. */
     std::vector<std::uint8_t> rgba; /*!< The texels as 8-bit RGBA, row by row from the top. */
+    /** The 4-bit texels of an image the colour of a car paints, two to a byte with the first in the
+     * high four bits and each row starting on a byte, or empty for an image of RGBA texels. */
+    std::vector<std::uint8_t> indices;
+    /** The 16 colours of the texels of indices, each a big-endian RGBA5551 half. */
+    std::vector<std::uint8_t> palette;
+    /** The material of the car, a VEHICLE_MATERIAL_ value, whose entry of the palette gives the
+     * alpha of the paint of the image. */
+    int paintMaterial = -1;
 };
 
 /** A glTF document, the bytes of its one buffer, and its images. */

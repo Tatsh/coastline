@@ -80,6 +80,24 @@ struct Vertex {
     std::uint8_t color[4];
 };
 
+// SetMaterialPaletteColors(): the first colour of the palette of a material takes the colour of
+// the car in 5 bits a component, and the second a darker shade of it, both with the alpha of the
+// entry of the palette at the number of the material.
+void PaintPalette(SDL_Palette *palette, std::array<std::uint8_t, 3> paint, int material) {
+    if (palette == nullptr || material >= palette->ncolors || palette->ncolors < 2) {
+        return;
+    }
+    // The components of RGBA5551 widen to 8 bits as the import widens them.
+    auto light = [&](std::size_t i) { return static_cast<Uint8>((paint[i] >> 3) * 255 / 31); };
+    auto dark = [&](std::size_t i) {
+        return static_cast<Uint8>(((paint[i] >> 3 & 0x1e) >> 1) * 255 / 31);
+    };
+    Uint8 alpha = palette->colors[material].a;
+    std::array<SDL_Color, 2> colors{
+        {{light(0), light(1), light(2), alpha}, {dark(0), dark(1), dark(2), alpha}}};
+    SDL_SetPaletteColors(palette, colors.data(), 0, 2);
+}
+
 std::array<float, 4> Rgba(std::uint32_t value) {
     return {static_cast<float>(value >> 24 & 0xff) / 255.0f,
             static_cast<float>(value >> 16 & 0xff) / 255.0f,
@@ -610,7 +628,8 @@ float RenderModel::Radius() const {
 
 std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
                                                const std::filesystem::path &path,
-                                               std::optional<std::string> node) {
+                                               std::optional<std::string> node,
+                                               std::optional<std::array<std::uint8_t, 3>> paint) {
     auto state = std::make_unique<State>();
     state->device = renderer.m_state->device;
     SDL_GPUDevice *device = state->device;
@@ -634,6 +653,12 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
     for (const auto &image : document.value("images", nlohmann::json::array())) {
         auto file = path.parent_path() / image["uri"].get<std::string>();
         SDL_Surface *loaded = SDL_LoadPNG(file.string().c_str());
+        int material = image.value("extras", nlohmann::json::object())
+                           .value("coastlinePaint", nlohmann::json::object())
+                           .value("material", -1);
+        if (loaded != nullptr && paint && material >= 0) {
+            PaintPalette(SDL_GetSurfacePalette(loaded), *paint, material);
+        }
         SDL_Surface *rgba = loaded ? SDL_ConvertSurface(loaded, SDL_PIXELFORMAT_RGBA32) : nullptr;
         SDL_DestroySurface(loaded);
         if (rgba == nullptr) {

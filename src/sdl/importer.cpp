@@ -961,7 +961,16 @@ std::optional<std::string> ConvertModel(const std::filesystem::path &car,
         }
         for (const GltfImage &texture : model->images) {
             auto path = car.parent_path() / texture.uri;
-            if (!SaveRgba8Png(path, texture.rgba, texture.width, texture.height)) {
+            // A texture the colour of the car paints keeps its indices and its palette.
+            bool saved = texture.indices.empty() ?
+                             SaveRgba8Png(path, texture.rgba, texture.width, texture.height) :
+                             SaveIndexed4Png(path,
+                                             texture.indices,
+                                             std::span<const std::uint8_t, 32>(
+                                                 texture.palette.data(), texture.palette.size()),
+                                             texture.width,
+                                             texture.height);
+            if (!saved) {
                 return std::format("{} does not read back as its texels.", path.string());
             }
         }

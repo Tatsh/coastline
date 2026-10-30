@@ -68,11 +68,16 @@ public:
      * @param path The glTF document.
      * @param node The name of a node to draw in place of the default scene, such as the sky of a
      * track, or none for the scene.
+     * @param paint The red, green, and blue of the colour of a car, which paints the first two
+     * colours of the images of its materials as SetMaterialPaletteColors() paints them, or none
+     * for the colours of the images.
      * @return The model, or nothing with the reason logged.
      */
-    static std::unique_ptr<RenderModel> Load(SceneRenderer &renderer,
-                                             const std::filesystem::path &path,
-                                             std::optional<std::string> node = std::nullopt);
+    static std::unique_ptr<RenderModel>
+    Load(SceneRenderer &renderer,
+         const std::filesystem::path &path,
+         std::optional<std::string> node = std::nullopt,
+         std::optional<std::array<std::uint8_t, 3>> paint = std::nullopt);
     ~RenderModel();
     RenderModel(const RenderModel &) = delete;
     RenderModel &operator=(const RenderModel &) = delete;

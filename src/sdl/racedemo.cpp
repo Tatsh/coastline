@@ -10,6 +10,8 @@
 #include "common/season.h"
 #include "common/strings.h"
 #include "common/trackselect.h"
+#include "common/vehicle.h"
+#include "common/vehicleaccess.h"
 
 namespace coastline {
 
@@ -75,6 +77,11 @@ int AttractDemoTrack() {
 
 int AttractDemoCar() {
     return static_cast<int>(g_GhostRecordingInfo.car);
+}
+
+std::array<std::uint8_t, 3> AttractDemoColor() {
+    const u8 *color = VEHICLE_GET(&g_aVehicles[0], Color);
+    return {color[0], color[1], color[2]};
 }
 
 } // namespace coastline
