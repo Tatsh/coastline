@@ -3,8 +3,13 @@
 #include "common/fileio.h"
 #include "common/model.h"
 #include "common/podarchive.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/app.h"
 #include "win32/render.h"
+#else
+#include "common/fatalerror.h"
+#include "common/relocation.h"
+#endif
 
 void ReadEntireFile(void *buffer, const char *path, int size) {
     if (!CHK_FileExists(path)) {
@@ -23,7 +28,12 @@ void ReadEntireFile(void *buffer, const char *path, int size) {
 Model *DecompressModel(void *dst, const char *source) {
     Model *model =
         static_cast<Model *>(g_BossRallyPodArchive.PodArchive::LoadPodByName(source, dst));
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     SetPointerRelocationBase(0, reinterpret_cast<unsigned>(model));
+#else
+    // The offsets of the model are from its start, and the start is its offset from the anchor.
+    SetPointerRelocationBase(0, coastline::EncodePtr32(model));
+#endif
     RelocateModelPointers(model);
     return model;
 }

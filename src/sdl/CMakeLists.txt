@@ -98,6 +98,7 @@ add_library(
   scenerenderer.cpp
   stringresources.cpp
   tlrenderer.cpp
+  trackload.cpp
   "${CMAKE_SOURCE_DIR}/src/common/audio.c"
   "${CMAKE_SOURCE_DIR}/tools/common/assetchain.cpp"
   "${CMAKE_SOURCE_DIR}/tools/common/sha1.cpp")

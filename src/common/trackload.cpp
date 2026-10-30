@@ -6,11 +6,14 @@
 
 #include "common/fileio.h"
 #include "common/physics.h"
+#include "common/relocation.h"
 #include "common/settings.h"
 #include "common/trackmenuitem.h"
 #include "common/trackrelocation.h"
 #include "common/util.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/render.h"
+#endif
 
 namespace {
 /**
@@ -27,7 +30,12 @@ static inline bool IsUnitTrackScale(long double value) {
 void LoadTrackGeometryFromRom(s32 track) {
     LoadTrackTextureMap(track);
     constexpr unsigned originalBase = 0x80025c00u;
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     unsigned geometryBase = std::bit_cast<unsigned>(&g_abTrackGeometryBuffer[0]);
+#else
+    // The pointers of the track become offsets from the anchor of the 32-bit pointers.
+    unsigned geometryBase = coastline::EncodePtr32(&g_abTrackGeometryBuffer[0]);
+#endif
     g_dwTextureMapAddressBias = originalBase - geometryBase;
     SetPointerRelocationBase(originalBase, geometryBase);
     SetCopyTextureDataOnRelocate(1);
@@ -50,12 +58,14 @@ void LoadTrackGeometryFromRom(s32 track) {
               file);
     CHK_FClose(file);
     ByteSwapTrackAnimationTable(&g_LoadedTrack);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     ReadEntireFile(g_abDaySkyPalette, g_aTrackDescriptors[track].daySkyFiles->palette, 32);
     ReadEntireFile(g_abDaySkyTexture, g_aTrackDescriptors[track].daySkyFiles->image, -1);
     ReadEntireFile(g_abNightSkyPalette, g_aTrackDescriptors[track].nightSkyFiles->palette, 32);
     ReadEntireFile(g_abNightSkyTexture, g_aTrackDescriptors[track].nightSkyFiles->image, -1);
     CreateDaySkyTexture();
     CreateNightSkyTexture();
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     g_pTrackTextureTable = g_abTrackGeometryBuffer + g_LoadedTrack.size;
     g_dwTrackDataRelocationDelta = geometryBase - g_LoadedTrack.headerSize;
     ByteSwapTrackData(&g_LoadedTrack);

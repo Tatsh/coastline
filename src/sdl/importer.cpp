@@ -938,11 +938,13 @@ using ModelConverter = std::function<std::expected<GltfModel, std::string>(
     std::span<const std::uint8_t> bytes, std::string_view bufferUri)>;
 
 // Writes a model of the console as glTF with its buffer and images, and removes the model once
-// the written files build the same bytes.
+// the written files build the same bytes. The race engine of the PC release reads the image of a
+// model of the PC release itself, and that image is retained.
 std::optional<std::string> ConvertModel(const std::filesystem::path &car,
                                         const ModelConverter &convert,
                                         const std::filesystem::path &gltfPath,
-                                        const std::filesystem::path &bufferPath) {
+                                        const std::filesystem::path &bufferPath,
+                                        bool retainSource = false) {
     std::error_code error;
     {
         auto bytes = ReadWholeFile(car);
@@ -978,11 +980,14 @@ std::optional<std::string> ConvertModel(const std::filesystem::path &car,
                 coverage["exactTriangles"].get<std::size_t>(),
                 coverage["triangles"].get<std::size_t>());
     }
-    std::filesystem::remove(car, error);
+    if (!retainSource) {
+        std::filesystem::remove(car, error);
+    }
     return std::nullopt;
 }
 
-// Replaces each .rca file of cars with a glTF file of the same name.
+// Writes a glTF file of the same name beside each .rca file of cars, and retains the .rca file
+// for the race engine.
 std::optional<std::string> ConvertCarModels(const std::filesystem::path &dataDirectory) {
     constexpr std::size_t RCA_HEADER = 0x8000;
     std::error_code error;
@@ -999,14 +1004,16 @@ std::optional<std::string> ConvertCarModels(const std::filesystem::path &dataDir
         if (auto failure = ConvertModel(car,
                                         convert,
                                         std::filesystem::path(car).replace_extension(".gltf"),
-                                        std::filesystem::path(car).replace_extension(".bin"))) {
+                                        std::filesystem::path(car).replace_extension(".bin"),
+                                        true)) {
             return failure;
         }
     }
     return std::nullopt;
 }
 
-// Replaces each .trk file of tracks with a glTF file of the same name.
+// Writes a glTF file of the same name beside each .trk file of tracks, and retains the .trk file
+// for the race engine.
 std::optional<std::string> ConvertTracks(const std::filesystem::path &dataDirectory) {
     std::error_code error;
     std::vector<std::filesystem::path> tracks;
@@ -1019,7 +1026,8 @@ std::optional<std::string> ConvertTracks(const std::filesystem::path &dataDirect
         if (auto failure = ConvertModel(track,
                                         TrackToGltf,
                                         std::filesystem::path(track).replace_extension(".gltf"),
-                                        std::filesystem::path(track).replace_extension(".bin"))) {
+                                        std::filesystem::path(track).replace_extension(".bin"),
+                                        true)) {
             return failure;
         }
     }

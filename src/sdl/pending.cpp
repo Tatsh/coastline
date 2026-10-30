@@ -1,21 +1,17 @@
 // ponytail: the routines of the Windows libraries the race engine calls and the SDL game does not
 // implement yet. Each records its first call in the log and does nothing. Every routine here calls
-// Windows (the renderers or the application window), or loads tracks and models through 32-bit
-// relocation, and later milestones give each an SDL implementation.
+// Windows (the renderers or the application window), and later milestones give each an SDL
+// implementation.
 #include <cstdlib>
 
 #include <SDL3/SDL.h>
 
 #include "common/damagetexture.h"
 #include "common/fatalerror.h"
-#include "common/model.h"
 #include "common/racerslot.h"
-#include "common/relocation.h"
 #include "common/renderbackend.h"
 #include "common/season.h"
 #include "common/session.h"
-#include "common/track.h"
-#include "common/trackrelocation.h"
 #include "common/vehicle.h"
 #include "common/vehiclecolor.h"
 #include "common/vehiclemodel.h"
@@ -57,40 +53,6 @@ void RefreshVehicleMaterialTextures(VehicleModel *model) {
 }
 
 void ApplyRandomAdjacentDamageTexture(int nTexture, const int *pnEntries, int *pnLevels) {
-    PENDING();
-}
-
-// The tracks and the models.
-void LoadTrackGeometryFromRom(s32 track) {
-    PENDING();
-}
-
-void LoadTrackTextureMap(int track) {
-    PENDING();
-}
-
-void LoadVehicleModelFromRom(VehicleModel *model, s32 car) {
-    PENDING();
-}
-
-Model *DecompressModel(void *dst, const char *source) {
-    PENDING();
-    return nullptr;
-}
-
-void ByteSwap3DWords(Vec3f *pData) {
-    PENDING();
-}
-
-void ByteSwapTerrainVertex(TrackPoint *point) {
-    PENDING();
-}
-
-void RelocatePointerValue(unsigned *pdwPointer) {
-    PENDING();
-}
-
-void ResetModelDataPool(void) {
     PENDING();
 }
 

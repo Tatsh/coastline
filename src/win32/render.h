@@ -377,14 +377,6 @@ extern TextureMapEntry g_aTextureMapEntries[TEXTURE_MAP_ENTRY_COUNT];
 extern int g_dwTextureMapEntryCount;
 
 /**
- * The amount added to an address before it is looked up in g_aTextureMapEntries.
- *
- * @ghidraAddress BRD3D: 0x10a9977c
- * @ghidraAddress BRGlide: 0x10ac080c
- */
-extern unsigned g_dwTextureMapAddressBias;
-
-/**
  * Get the size of the replacement of a texture of the console, searching the texture map from its
  * last entry.
  *
@@ -455,15 +447,6 @@ void DestroyTextureUploadQueue(void);
  * @ghidraAddress BRGlide: 0x105b16e8
  */
 extern int g_dwCopyTextureDataOnRelocate;
-
-/**
- * Set whether the data of a texture is copied when its pointers are relocated.
- *
- * @param bCopy Whether to copy.
- * @ghidraAddress BRD3D: 0x1002b9d0
- * @ghidraAddress BRGlide: 0x10018a40
- */
-void SetCopyTextureDataOnRelocate(int bCopy);
 
 /**
  * The category of the textures loaded next. Its values are not recovered yet.

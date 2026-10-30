@@ -10,7 +10,6 @@ target_link_libraries(coastline_main PRIVATE coastline_options)
 add_library(
   coastline_win32 STATIC
   app.cpp
-  assetfile.cpp
   diagnostics.c
   directplay.cpp
   displaylist.cpp
@@ -25,7 +24,6 @@ add_library(
   menufont.cpp
   modelrelocation.cpp
   netstream.cpp
-  podarchive.cpp
   racercolor.cpp
   render.cpp
   renderdefaults.cpp
@@ -34,9 +32,7 @@ add_library(
   sound.cpp
   startup.cpp
   texturescan.cpp
-  trackload.cpp
   tracktexture.cpp
-  vehiclemodelload.c
   wavread.c)
 target_link_libraries(coastline_win32 PRIVATE coastline_options)
 

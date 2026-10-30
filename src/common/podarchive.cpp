@@ -6,7 +6,9 @@
 #include <cstdlib>
 #include <cstring>
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/app.h"
+#endif
 
 PodArchive g_BossRallyPodArchive;
 
@@ -219,7 +221,13 @@ void PodArchive::AddPodEntry(
     if (strlen(pEntry->szName) > POD_ENTRY_NAME_SIZE) {
         FatalErrorWithMessage("Add: Name is too long to be a pod name.");
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     _strupr(pEntry->szName);
+#else
+    for (char *pChar = pEntry->szName; *pChar != '\0'; pChar++) {
+        *pChar = static_cast<char>(toupper(static_cast<unsigned char>(*pChar)));
+    }
+#endif
     pEntry->dwOffset = ftell(g_pPodArchiveFile);
     pEntry->bAttrA = static_cast<unsigned char>(bAttrA);
     pEntry->dwSize = dwSize;

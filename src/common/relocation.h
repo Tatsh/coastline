@@ -160,6 +160,23 @@ void ResetVertexConversionCache(void);
  */
 void SetPointerRelocationBase(unsigned dwOldBase, unsigned dwNewBase);
 
+/**
+ * Set whether the data of a texture is copied when its pointers are relocated.
+ *
+ * @param bCopy Whether to copy.
+ * @ghidraAddress BRD3D: 0x1002b9d0
+ * @ghidraAddress BRGlide: 0x10018a40
+ */
+void SetCopyTextureDataOnRelocate(int bCopy);
+
+/**
+ * The amount added to an address before it is looked up in g_aTextureMapEntries.
+ *
+ * @ghidraAddress BRD3D: 0x10a9977c
+ * @ghidraAddress BRGlide: 0x10ac080c
+ */
+extern unsigned g_dwTextureMapAddressBias;
+
 #ifdef __cplusplus
 }
 #endif

@@ -139,6 +139,7 @@ else()
   target_sources(
     coastline_common
     PRIVATE airplanestate.c
+            assetfile.cpp
             assetnames.c
             buildinfo.c
             clockfields.c
@@ -171,6 +172,7 @@ else()
             paintshop.c
             particlesnapshot.c
             physicsdata.c
+            podarchive.cpp
             raceglobals.c
             racepacing.c
             racerslot.cpp
@@ -196,9 +198,11 @@ else()
             textureworkspace.c
             timer.c
             trackanimation.cpp
+            trackload.cpp
             trackmenudata.c
             trackskidmarks.cpp
             vehicle.cpp
+            vehiclemodelload.c
             vehiclesetup.cpp
             visibilitydata.c)
   # The PC port compiles these sources as C++, as the Windows libraries were built.
