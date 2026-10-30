@@ -429,6 +429,7 @@ struct Placed {
     std::optional<Lighting> lighting;
     int instance;        // The instance of the track the node draws, or -1.
     std::uint32_t flags; // The TRACK_INSTANCE_ flags of the instance, or 0.
+    Matrix4 parent;      // The place of the parent of the node, under the matrix of the instance.
 };
 
 // The lights of a clear day as the race sets them up: a directional light of 255, 255, 204 from
@@ -539,6 +540,8 @@ struct SceneRenderer::State {
     std::uint32_t textureTime = 0;
     // The TRACK_INSTANCE_ flags of the instances the frame does not draw.
     std::uint32_t hiddenFlags = 0;
+    // The matrices of the instances of a track as the race moves them, or none.
+    std::function<const float *(int)> instanceMatrix;
     GpuWindow *window = nullptr;
     SDL_GPUDevice *device = nullptr;
     SDL_GPUShader *vertexShader = nullptr;
@@ -978,7 +981,7 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
                 lighting = TrackInstanceLighting(flags);
                 instance = extras.value("index", -1);
             }
-            state->placed.push_back({mesh, matrix, lighting, instance, flags});
+            state->placed.push_back({mesh, matrix, lighting, instance, flags, parent});
             for (const auto &p : meshPositions[mesh]) {
                 auto world = Transform(matrix, p.data());
                 for (std::size_t axis = 0; axis < 3; ++axis) {
@@ -1150,6 +1153,7 @@ void SceneRenderer::Begin(std::array<float, 4> clear) {
     m_state->clear = clear;
     m_state->textureTime = 0;
     m_state->hiddenFlags = 0;
+    m_state->instanceMatrix = nullptr;
     m_state->draws.clear();
     m_state->flat.clear();
 }
@@ -1160,6 +1164,10 @@ void SceneRenderer::SetTextureTime(std::uint32_t milliseconds) {
 
 void SceneRenderer::SetHiddenInstanceFlags(std::uint32_t flags) {
     m_state->hiddenFlags = flags;
+}
+
+void SceneRenderer::SetInstanceMatrices(std::function<const float *(int)> matrix) {
+    m_state->instanceMatrix = std::move(matrix);
 }
 
 void SceneRenderer::DrawModel(const RenderModel &model,
@@ -1460,8 +1468,17 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                 continue;
             }
             const Mesh &mesh = model.meshes[placed.mesh];
+            Matrix4 local = placed.matrix;
+            const float *moved = placed.instance >= 0 && s.instanceMatrix ?
+                                     s.instanceMatrix(placed.instance) :
+                                     nullptr;
+            if (moved != nullptr) {
+                Matrix4 instance{};
+                std::copy_n(moved, instance.size(), instance.begin());
+                local = MultiplyMatrices(placed.parent, instance);
+            }
             VertexUniforms vertexUniforms{draw.viewProjection,
-                                          MultiplyMatrices(draw.world, placed.matrix),
+                                          MultiplyMatrices(draw.world, local),
                                           {0, 0, mesh.vertexCount, 0},
                                           {0.0f, 0.0f, 0.0f, 0.0f},
                                           {},

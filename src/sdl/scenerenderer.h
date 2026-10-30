@@ -303,6 +303,15 @@ public:
     void SetHiddenInstanceFlags(std::uint32_t flags);
 
     /**
+     * Place the instances of a track at the matrices the race moves them to, the default places
+     * from Begin().
+     *
+     * @param matrix The 16 values of the matrix of an instance by its number, or none for its
+     * place in the model.
+     */
+    void SetInstanceMatrices(std::function<const float *(int)> matrix);
+
+    /**
      * Draw a model, its opaque parts now and its translucent ones after every opaque draw.
      *
      * @param model The model.

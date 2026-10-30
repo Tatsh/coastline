@@ -909,6 +909,11 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     // The animated textures of the track take the time of the race.
     renderer.SetTextureTime(static_cast<std::uint32_t>(g_dwElapsedTimeMs));
     renderer.SetHiddenInstanceFlags(HiddenInstanceFlags(vehicle));
+    // UpdateTrackSpecials() spins instances and flies the airplane in their matrices.
+    renderer.SetInstanceMatrices([](int index) -> const float * {
+        return index < g_LoadedTrack.instanceCount ? &g_LoadedTrack.instances[index].matrix[0][0] :
+                                                     nullptr;
+    });
     SetupWeatherLights();
     Lighting lighting;
     lighting.direction = {g_afLightDirection[0], g_afLightDirection[1], g_afLightDirection[2]};
