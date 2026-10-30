@@ -174,6 +174,7 @@ add_library(
   enginetextures.cpp
   frontend.cpp
   ghostfile.cpp
+  ghostnote.cpp
   gpu.cpp
   importer.cpp
   indexedimage.cpp

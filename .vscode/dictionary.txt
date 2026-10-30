@@ -492,6 +492,7 @@ gfxtask
 ghidra
 ghnd
 ghostfile
+ghostnote
 glabel
 glist
 globl
@@ -1298,6 +1299,7 @@ urlkey
 urllib
 urlopen
 userabort
+utgr
 uvec
 vars
 vblankquery

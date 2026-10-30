@@ -2,13 +2,13 @@
 #include <array>
 #include <bit>
 #include <cstdint>
-#include <cstring>
+#include <span>
 #include <string>
 #include <vector>
 
 #include <SDL3/SDL.h>
 
-#include "common/rle.h"
+#include "ghostnote.h"
 #include "menus.h"
 #include "menutext.h"
 
@@ -48,10 +48,9 @@ constexpr const char *SEASON_NOTE = "TOP GEAR SEASON";
 constexpr const char *OPTIONS_NOTE = "TOP GEAR OPTIONS";
 constexpr const char *GHOST_NOTE = "TOP GEAR GHOST";
 
-// The sizes of the notes of a season, of a ghost car, and of the options. The options store the
-// settings in the first half of their note and the equipment of the car in the second.
+// The sizes of the notes of a season and of the options. The options store the settings in the
+// first half of their note and the equipment of the car in the second.
 constexpr std::size_t SEASON_NOTE_SIZE = 0x200;
-constexpr std::size_t GHOST_NOTE_SIZE = 0x3A00;
 constexpr std::size_t OPTIONS_NOTE_SIZE = 0x100;
 constexpr std::size_t OPTIONS_HALF_SIZE = 0x80;
 
@@ -91,10 +90,6 @@ enum PakError {
     PAK_ERROR_WRITE,
     PAK_ERROR_GHOST_TOO_LARGE,
 };
-
-// The capacity of the ghost recording, and its channels, interleaved.
-constexpr std::size_t GHOST_RECORDING_CAPACITY = 0xDE5C;
-constexpr s32 GHOST_CHANNELS = 2;
 
 // The choices of the save and load menu.
 enum SaveLoadChoice {
@@ -216,31 +211,6 @@ void WriteProfile(std::vector<u8> &bytes, const MenuProfile &profile) {
     Put16(bytes, 0xCE, profile.unlockedTracks);
     Put16(bytes, 0xD0, profile.unlockedWeathers);
     GetEquipment(bytes, 0xD4, profile);
-}
-
-// Each channel of a compressed ghost starts with its length in the byte order of the console, and
-// the run-length routines read and write the length in the order of the host. A length past the
-// end of the note fails.
-bool SwapBlockLengths(std::vector<u8> &packed, bool fromConsole) {
-    std::size_t at = 0;
-    for (s32 channel = 0; channel < GHOST_CHANNELS; ++channel) {
-        if (at + 4 > packed.size()) {
-            return false;
-        }
-        u32 length = 0;
-        if (fromConsole) {
-            length = Get32(packed, at);
-            std::memcpy(&packed[at], &length, sizeof(length));
-        } else {
-            std::memcpy(&length, &packed[at], sizeof(length));
-            Put32(packed, at, length);
-        }
-        if (length > packed.size() - at - 4) {
-            return false;
-        }
-        at += 4 + length;
-    }
-    return true;
 }
 
 // The options as OptionSettings of the console at the start of the note of the options.
@@ -754,24 +724,15 @@ bool Menus::ReadSeasonNote(const std::vector<u8> &note, int player, bool otherRe
 }
 
 bool Menus::ReadGhostNote(const std::vector<u8> &note) {
-    std::vector<u8> compressed = note;
-    if (!SwapBlockLengths(compressed, true)) {
-        return false;
-    }
-    // A literal block may read past the end of the note, and two bytes of the note expand to at
-    // most 130 bytes of each channel.
-    compressed.resize(compressed.size() + 0x100);
-    std::vector<u8> expanded(compressed.size() * 130 * GHOST_CHANNELS);
-    s32 size = DecompressInterleavedRle(
-        expanded.data(), static_cast<s32>(expanded.size()), compressed.data(), GHOST_CHANNELS);
+    auto recording = UnpackGhostNote(note);
     // A recording written elsewhere may have any track and car.
-    if (size < 2 || static_cast<std::size_t>(size) > GHOST_RECORDING_CAPACITY ||
-        expanded[0] >= m_numTracks || static_cast<std::size_t>(expanded[1]) >= m_cars.size()) {
+    if (!recording || (*recording)[0] >= m_numTracks ||
+        static_cast<std::size_t>((*recording)[1]) >= m_cars.size()) {
         return false;
     }
-    expanded.resize(GHOST_RECORDING_CAPACITY);
-    m_ghostRecording = std::move(expanded);
-    m_ghostRecordingSize = size;
+    m_ghostRecordingSize = static_cast<int>(recording->size());
+    recording->resize(GHOST_RECORDING_CAPACITY);
+    m_ghostRecording = std::move(*recording);
     // The recording starts with its track and its car, and the load unlocks both.
     m_profile.unlockedTracks =
         static_cast<u16>(m_profile.unlockedTracks | 1 << m_ghostRecording[0]);
@@ -817,21 +778,12 @@ int Menus::SaveSaveLoadNote(int player) {
         return m_pak.WriteNote(SEASON_NOTE, note) ? PAK_ERROR_NONE : PAK_ERROR_WRITE;
     }
     if (m_saveLoadChoice == SAVE_LOAD_SAVE_GHOST) {
-        // The scan reads a byte past the end of the recording.
-        std::vector<u8> recording = m_ghostRecording;
-        recording.resize(std::max<std::size_t>(recording.size(),
-                                               static_cast<std::size_t>(m_ghostRecordingSize)) +
-                         GHOST_CHANNELS);
-        std::vector<u8> note(GHOST_NOTE_SIZE, 0);
-        s32 size = CompressRleChannels(note.data(),
-                                       static_cast<s32>(note.size()),
-                                       recording.data(),
-                                       m_ghostRecordingSize,
-                                       GHOST_CHANNELS);
-        if (size == -1 || !SwapBlockLengths(note, false)) {
+        auto note = PackGhostNote(std::span<const u8>(m_ghostRecording)
+                                      .first(static_cast<std::size_t>(m_ghostRecordingSize)));
+        if (!note) {
             return PAK_ERROR_GHOST_TOO_LARGE;
         }
-        return m_pak.WriteNote(GHOST_NOTE, note) ? PAK_ERROR_NONE : PAK_ERROR_WRITE;
+        return m_pak.WriteNote(GHOST_NOTE, *note) ? PAK_ERROR_NONE : PAK_ERROR_WRITE;
     }
     return SaveOptionsNote(player) ? PAK_ERROR_NONE : PAK_ERROR_WRITE;
 }

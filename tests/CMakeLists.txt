@@ -179,6 +179,19 @@ target_compile_options(sdl_test PRIVATE -Wall -Wextra -fsanitize=address,undefin
 target_link_options(sdl_test PRIVATE -fsanitize=address,undefined)
 add_test(NAME sdl COMMAND sdl_test)
 
+# The note of the ghost car of the SDL game, with the run-length routines as the SDL game builds
+# them.
+add_executable(ghostnote_test ghostnote_test.cpp "${_src}/sdl/ghostnote.cpp"
+                              "${_src}/common/replay.c" "${_src}/common/rledecompress.c")
+set_target_properties(ghostnote_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(ghostnote_test PRIVATE "${_src}" "${_src}/sdl"
+                                                  "${_src}/libultra/include")
+target_compile_options(
+  ghostnote_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL -UTGR_BOSS_RALLY
+                         -DTGR_BOSS_RALLY=1 -fsanitize=address,undefined)
+target_link_options(ghostnote_test PRIVATE -fsanitize=address,undefined)
+add_test(NAME ghostnote COMMAND ghostnote_test)
+
 # The interpreter of the processor of the console that records the attract demos at import.
 add_executable(mipscpu_test mipscpu_test.cpp "${_src}/sdl/mipscpu.cpp")
 set_target_properties(mipscpu_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
