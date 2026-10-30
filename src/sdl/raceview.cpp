@@ -665,9 +665,19 @@ Reflection SkyReflection(const RenderTexture *daySky,
     if (eyeX == 0.0f && eyeY == 0.0f) {
         eyeX = 1e-4f;
     }
-    std::array<float, 3> look = Normalized({-eyeX, -eyeY, 0.0f});
-    reflection.across = {-look[1], look[0], 0.0f};
-    reflection.up = {0.0f, 0.0f, 1.0f};
+    // The right and the up axes of guLookAtF() for the look from the eye at the origin, rounded to
+    // bytes, which G_TEXTURE_GEN_LINEAR of BRD3D follows.
+    std::array<float, 3> look = Normalized({eyeX, eyeY, 0.0f});
+    std::array<float, 3> right = Normalized(Cross({0.0f, 0.0f, 1.0f}, look));
+    auto rounded = [](const std::array<float, 3> &axis) {
+        return std::array<float, 3>{static_cast<float>(ConvertDoubleToSignedByte(axis[0])) / 128.0f,
+                                    static_cast<float>(ConvertDoubleToSignedByte(axis[1])) / 128.0f,
+                                    static_cast<float>(ConvertDoubleToSignedByte(axis[2])) /
+                                        128.0f};
+    };
+    reflection.across = rounded(right);
+    reflection.up = rounded(Normalized(Cross(look, right)));
+    reflection.linear = g_bVehicleEnvMapLinearTexGen != 0;
     long double heading = cameraCar.GetCameraHeading();
     auto offset = static_cast<std::int32_t>(
         0xffffffdfu -

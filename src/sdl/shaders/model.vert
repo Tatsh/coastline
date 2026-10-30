@@ -27,7 +27,8 @@ const int MAX_POSES = 64;
 // vertices take the sum of the poses, as each animation moves its own vertices.
 // blend.z is 1 where the generated coordinates reflect the sky on a car: they follow the axes of
 // the look-at of the reflection, across a window of 31 of the 32 columns of the sky from the
-// column in reflectAcross.w and down its 128 rows. blend.z is 2 where they place the highlight of a
+// column in reflectAcross.w and down its 128 rows, or where reflectUp.w is 1 as BRD3D generates
+// them linearly. blend.z is 2 where they place the highlight of a
 // car from the offsets in reflectAcross.w and reflectUp.w.
 layout(set = 1, binding = 0) uniform Transform {
     mat4 viewProjection;
@@ -59,6 +60,15 @@ void main() {
         vec3 turned = normalize(outNormal);
         outTexCoord = vec2(dot(turned, reflectAcross.xyz), dot(turned, reflectUp.xyz)) * 0.25 +
                       vec2(reflectAcross.w, reflectUp.w);
+    } else if (blend.z > 0.5 && reflectUp.w > 0.5) {
+        // G_TEXTURE_GEN_LINEAR of BRD3D, the reflection of the race: the dot of the turned normal
+        // with the axis across, and the arcsine of the dot with the axis up over pi, by the 32 by
+        // 128 texels of the tile, less half the upper left of the tile, two quarter texels down.
+        vec3 turned = normalize(outNormal);
+        float across = dot(turned, reflectAcross.xyz);
+        float up = asin(clamp(dot(turned, reflectUp.xyz), -1.0, 1.0)) / 3.1415927;
+        outTexCoord = vec2((across * 32.0 + 128.0 - reflectAcross.w * 2.0) / 64.0,
+                           (up * 128.0 + 127.0) / 256.0);
     } else if (blend.z > 0.5) {
         // G_TEXTURE_GEN of the RSP with the look-at of guLookAtReflectF(), in the tile the
         // reflection of the race sets.

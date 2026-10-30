@@ -170,7 +170,8 @@ struct VertexUniforms {
     Matrix4 model;
     std::array<std::int32_t, 4> morph;
     std::array<float, 4> blend;
-    // The axes of the coordinates of a reflection, and in w the first column of its window.
+    // The axes of the coordinates of a reflection, in the w of the first the first column of its
+    // window, and in the w of the second 1 where the coordinates are generated linearly.
     std::array<float, 4> reflectAcross;
     std::array<float, 4> reflectUp;
     // The first and the second target and the share of the second of each pose.
@@ -1877,8 +1878,10 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                                                   reflection->across[1],
                                                   reflection->across[2],
                                                   reflection->column};
-                        uniforms.reflectUp = {
-                            reflection->up[0], reflection->up[1], reflection->up[2], 0.0f};
+                        uniforms.reflectUp = {reflection->up[0],
+                                              reflection->up[1],
+                                              reflection->up[2],
+                                              reflection->linear ? 1.0f : 0.0f};
                     }
                     drawPrimitive(primitive,
                                   model,

@@ -87,6 +87,9 @@ struct Reflection {
     float column = 0.0f;                    /*!< The first column of the window, in texels. */
     /** The environment colour the reflection blends towards by its alpha, the fog. */
     std::array<float, 4> environment{1.0f, 1.0f, 1.0f, 1.0f};
+    /** Whether the coordinates come from G_TEXTURE_GEN_LINEAR as BRD3D generates them, in a tile
+     * of 32 by 128 texels, rather than from the normal across the window of the tile. */
+    bool linear = false;
 };
 
 /**
