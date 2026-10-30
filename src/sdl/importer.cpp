@@ -870,6 +870,24 @@ void WriteMenuItems(const std::filesystem::path &destination,
     }
 }
 
+// The position and the colour of each of a number of vertices of the console in the main segment,
+// whose bounds the caller checks.
+nlohmann::ordered_json
+VerticesJson(std::span<const std::uint8_t> segment, std::uint32_t address, std::size_t count) {
+    constexpr std::uint32_t SEGMENT_BASE = 0x80200000;
+    constexpr std::size_t VERTEX = 16;
+    nlohmann::ordered_json vertices = nlohmann::ordered_json::array();
+    for (std::size_t i = 0; i < count; ++i) {
+        const std::uint8_t *vertex = &segment[address - SEGMENT_BASE + i * VERTEX];
+        auto coordinate = [vertex](int index) {
+            return static_cast<std::int16_t>(vertex[index * 2] << 8 | vertex[index * 2 + 1]);
+        };
+        vertices.push_back({{"position", {coordinate(0), coordinate(1), coordinate(2)}},
+                            {"color", {vertex[12], vertex[13], vertex[14], vertex[15]}}});
+    }
+    return vertices;
+}
+
 // The addresses of the vertices of the choice marker of the menus, drawn by
 // g_aMenuChoiceMarkerDisplayList.
 constexpr std::uint32_t USA_MENU_CHOICE_MARKER = 0x80271E68;
@@ -890,19 +908,83 @@ std::optional<std::string> WriteMenuChoiceMarker(const std::filesystem::path &de
     if (address - SEGMENT_BASE + VERTICES * VERTEX > segment.size()) {
         return std::string("The choice marker of the menus is outside the main segment.");
     }
-    nlohmann::ordered_json vertices = nlohmann::ordered_json::array();
-    for (std::size_t i = 0; i < VERTICES; ++i) {
-        const std::uint8_t *vertex = &segment[address - SEGMENT_BASE + i * VERTEX];
-        auto coordinate = [vertex](int index) {
-            return static_cast<std::int16_t>(vertex[index * 2] << 8 | vertex[index * 2 + 1]);
-        };
-        vertices.push_back({{"position", {coordinate(0), coordinate(1), coordinate(2)}},
-                            {"color", {vertex[12], vertex[13], vertex[14], vertex[15]}}});
-    }
-    nlohmann::ordered_json marker{{"vertices", vertices},
+    nlohmann::ordered_json marker{{"vertices", VerticesJson(segment, address, VERTICES)},
                                   {"triangles", {{0, 1, 2}, {6, 7, 8}, {3, 4, 5}, {9, 10, 11}}}};
     std::ofstream(destination / "data" / "menu-choice-marker.json", std::ios::trunc)
         << marker.dump(2) << '\n';
+    return std::nullopt;
+}
+
+// The addresses of the vertices of the choice marker of the stage of the cars, drawn by
+// g_aCarStageChoiceMarkerDisplayList, of the shadow of a car on the stage, drawn by
+// g_aCarStageShadowDisplayList, and of g_apVehicleReflectionTextures in each release.
+struct CarStageAddresses {
+    std::uint32_t choiceMarker;
+    std::uint32_t shadow;
+    std::uint32_t reflectionTextures;
+};
+constexpr CarStageAddresses USA_CAR_STAGE{0x8028C430, 0x8028C550, 0x8028C308};
+constexpr CarStageAddresses EUR_CAR_STAGE{0x8028EB90, 0x8028ECB0, 0x8028EA68};
+constexpr CarStageAddresses JPN_CAR_STAGE{0x8028E5E0, 0x8028E700, 0x8028E4B8};
+
+// Writes the 12 vertices and the triangles of the choice marker of the stage of the cars and the 8
+// vertices and the triangles of the shadow of a car on it as data/car-stage.json, and the
+// reflection of the sky on the cars of the menus as data/menu-reflection.png. The menus draw the
+// reflection of view mode 0 in the open, a 32 by 128 texture of 4-bit indices with its palette.
+std::optional<std::string> WriteCarStage(const std::filesystem::path &destination,
+                                         std::span<const std::uint8_t> segment,
+                                         RomRelease release) {
+    constexpr std::uint32_t SEGMENT_BASE = 0x80200000;
+    constexpr std::size_t MARKER_VERTICES = 12;
+    constexpr std::size_t SHADOW_VERTICES = 8;
+    constexpr std::size_t VERTEX = 16;
+    // g_apVehicleReflectionTluts follows the 4 textures, and g_abVehicleReflectionTexSelect
+    // follows them after g_dwVehicleViewModeIndex.
+    constexpr std::uint32_t TLUTS = 0x10;
+    constexpr std::uint32_t SELECT = 0x24;
+    constexpr int REFLECTION_WIDTH = 32;
+    constexpr int REFLECTION_HEIGHT = 128;
+    constexpr std::size_t REFLECTION_BYTES = REFLECTION_WIDTH * REFLECTION_HEIGHT / 2;
+    constexpr std::size_t PALETTE_BYTES = 32;
+    const CarStageAddresses &at = release == RomRelease::Usa ? USA_CAR_STAGE :
+                                  release == RomRelease::Eur ? EUR_CAR_STAGE :
+                                                               JPN_CAR_STAGE;
+    auto inside = [&](std::uint32_t address, std::size_t size) {
+        return address >= SEGMENT_BASE && address - SEGMENT_BASE + size <= segment.size();
+    };
+    if (!inside(at.choiceMarker, MARKER_VERTICES * VERTEX) ||
+        !inside(at.shadow, SHADOW_VERTICES * VERTEX) ||
+        !inside(at.reflectionTextures, SELECT + 1)) {
+        return std::string("The stage of the cars is outside the main segment.");
+    }
+    nlohmann::ordered_json stage{
+        {"choiceMarker",
+         {{"vertices", VerticesJson(segment, at.choiceMarker, MARKER_VERTICES)},
+          {"triangles", {{0, 1, 2}, {6, 7, 8}, {3, 4, 5}, {9, 10, 11}}}}},
+        {"shadow",
+         {{"vertices", VerticesJson(segment, at.shadow, SHADOW_VERTICES)},
+          {"triangles", {{0, 1, 2}, {0, 2, 3}, {0, 3, 4}, {0, 4, 5}, {0, 5, 6}, {0, 6, 7}}}}}};
+    std::ofstream(destination / "data" / "car-stage.json", std::ios::trunc)
+        << stage.dump(2) << '\n';
+
+    std::uint32_t reflection = segment[at.reflectionTextures + SELECT - SEGMENT_BASE];
+    if (reflection >= 4) {
+        return std::string("The menus select no reflection of the sky.");
+    }
+    std::uint32_t texels = Big32(&segment[at.reflectionTextures + reflection * 4 - SEGMENT_BASE]);
+    std::uint32_t palette =
+        Big32(&segment[at.reflectionTextures + TLUTS + reflection * 4 - SEGMENT_BASE]);
+    if (!inside(texels, REFLECTION_BYTES) || !inside(palette, PALETTE_BYTES)) {
+        return std::string("The reflection of the menus is outside the main segment.");
+    }
+    auto png = destination / "data" / "menu-reflection.png";
+    if (!SaveIndexed4Png(png,
+                         segment.subspan(texels - SEGMENT_BASE, REFLECTION_BYTES),
+                         segment.subspan(palette - SEGMENT_BASE).first<PALETTE_BYTES>(),
+                         REFLECTION_WIDTH,
+                         REFLECTION_HEIGHT)) {
+        return fmt::format("{} does not read back as its texels.", png.string());
+    }
     return std::nullopt;
 }
 
@@ -956,8 +1038,9 @@ constexpr TrackMenuAddresses JPN_TRACK_MENU{
 // seasons of the championship, and the options of the car select screen as data/menus.json. Each
 // track gives its name, its MENU_ITEM_ flags, whether its geometry exists, and the glTF file of its
 // model in the import. Each car gives its name, its directory in the import, whether its model
-// exists, and what the car select screen shows of it, and each season the indices of its two
-// cars. Each option gives its name, its flags, and the glTF file of its model, or none.
+// exists, what the car select screen shows of it, and the size of its shadow on the stage of the
+// cars, and each season the indices of its two cars. Each option gives its name, its flags, and the
+// glTF file of its model, or none.
 std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
                                       std::span<const std::uint8_t> segment,
                                       std::span<const ManifestAsset> assets,
@@ -1046,7 +1129,9 @@ std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
                         {"engineLayout", static_cast<std::int32_t>(word(entry + 0x40))},
                         {"acceleration", std::bit_cast<float>(word(entry + 0x44))},
                         {"maxSpeed", std::bit_cast<float>(word(entry + 0x48))},
-                        {"gearCount", static_cast<std::int32_t>(word(entry + 0x54))}});
+                        {"gearCount", static_cast<std::int32_t>(word(entry + 0x54))},
+                        {"shadowLength", std::bit_cast<float>(word(entry + 0x58))},
+                        {"shadowHalfWidth", std::bit_cast<float>(word(entry + 0x5C))}});
     }
     auto names = [&](std::uint32_t address,
                      std::uint32_t count) -> std::optional<nlohmann::ordered_json> {
@@ -1874,6 +1959,9 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         return std::unexpected(*failure);
     }
     if (auto failure = WriteMenuChoiceMarker(destination, segment, *release)) {
+        return std::unexpected(*failure);
+    }
+    if (auto failure = WriteCarStage(destination, segment, *release)) {
         return std::unexpected(*failure);
     }
     WriteMenuItems(destination, segment, assets);
