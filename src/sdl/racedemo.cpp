@@ -5,7 +5,6 @@
 #include "common/fade.h"
 #include "common/game.h"
 #include "common/ghost.h"
-#include "common/podarchive.h"
 #include "common/race.h"
 #include "common/rallyconfig.h"
 #include "common/screen.h"
@@ -37,8 +36,6 @@ void OpenRaceData(bool playSounds) {
     g_GlobalRallyConfig.InitRallyConfigDefaults();
     g_GlobalRallyConfig.LoadDeviceDefaultBindings(0);
     g_GlobalRallyConfig.SelectActiveInputBindings();
-    g_BossRallyPodArchive.SetFilePath("BossRally.pod");
-    g_BossRallyPodArchive.OpenPodFile();
     // OpenBossRallyPodAndInit() opens the sound of the race when the settings enable it.
     if (playSounds && !InitializeDirectSound()) {
         SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "The sound effects of the race did not start.");

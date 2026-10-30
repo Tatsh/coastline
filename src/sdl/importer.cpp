@@ -22,6 +22,7 @@
 #include "cartridge/eu.h"
 #include "cartridge/jp.h"
 #include "cartridge/us.h"
+#include "common/podarchive.h"
 #include "sdl/ghostfile.h"
 #include "sdl/indexedimage.h"
 #include "sdl/n64model.h"
@@ -1045,6 +1046,146 @@ std::optional<std::string> ConvertTracks(const std::filesystem::path &dataDirect
 
 // Each sky of cargfx, the 4-bit texels of a .ci4 file and the palette of the .lut4 file of the same
 // name, as an indexed PNG image of 32 texels a row, in place of the two files.
+// The layout of a POD archive: a header of its signature, version, entry count, and the offset of
+// its directory, and an entry of the directory for each file, its offset, size, two attributes, two
+// reserved bytes, and its name in capitals.
+constexpr std::size_t POD_HEADER_SIZE = 16;
+constexpr std::size_t POD_ENTRY_SIZE = 76;
+constexpr std::size_t POD_NAME_AT = 12;
+constexpr std::size_t POD_NAME_SIZE = 64;
+
+std::uint32_t Little32(std::span<const std::uint8_t> bytes, std::size_t at) {
+    return static_cast<std::uint32_t>(bytes[at]) | static_cast<std::uint32_t>(bytes[at + 1]) << 8 |
+           static_cast<std::uint32_t>(bytes[at + 2]) << 16 |
+           static_cast<std::uint32_t>(bytes[at + 3]) << 24;
+}
+
+void PutLittle32(std::vector<std::uint8_t> &bytes, std::size_t at, std::uint32_t value) {
+    for (std::size_t i = 0; i < 4; ++i) {
+        bytes[at + i] = static_cast<std::uint8_t>(value >> (i * 8));
+    }
+}
+
+// The file of an entry of the archive in the directory of its import, by its name in lower case,
+// and the glTF of a model in place of the model.
+std::filesystem::path PodEntryFile(std::string name) {
+    name = Lowercase(name);
+    if (name.ends_with(".blob")) {
+        return std::filesystem::path(name).replace_extension(".gltf");
+    }
+    return name;
+}
+
+// The bytes of an entry from the directory of the import: the model built from its glTF, or the
+// file as it is.
+std::optional<std::vector<std::uint8_t>> ReadPodEntry(const std::filesystem::path &file) {
+    if (file.extension() != ".gltf") {
+        return ReadWholeFile(file);
+    }
+    std::ifstream text(file);
+    auto json = nlohmann::ordered_json::parse(text, nullptr, false);
+    if (json.is_discarded()) {
+        return std::nullopt;
+    }
+    auto buffer = ReadWholeFile(file.parent_path() / json["buffers"][0]["uri"].get<std::string>());
+    if (!buffer) {
+        return std::nullopt;
+    }
+    auto bytes = ModelFromGltf(json, *buffer);
+    if (!bytes) {
+        return std::nullopt;
+    }
+    return std::move(*bytes);
+}
+
+// BossRally.pod, the archive of the start lights of the PC release, as the directory BossRally of
+// its entries. pod.json lists the version and each entry with its attributes and its file, and a
+// model becomes glTF. The archive is removed once its entries build it again.
+std::optional<std::string> ConvertPodArchive(const std::filesystem::path &dataDirectory) {
+    auto archivePath = dataDirectory / "BossRally.pod";
+    auto archive = ReadWholeFile(archivePath);
+    if (!archive) {
+        return std::nullopt;
+    }
+    const std::vector<std::uint8_t> &bytes = *archive;
+    if (bytes.size() < POD_HEADER_SIZE || std::memcmp(bytes.data(), "POD", 3) != 0) {
+        return std::format("{} is not a POD archive.", archivePath.string());
+    }
+    std::uint32_t count = Little32(bytes, 8);
+    std::uint32_t directory = Little32(bytes, 12);
+    if (directory > bytes.size() || count > (bytes.size() - directory) / POD_ENTRY_SIZE) {
+        return std::format("{} has a directory outside it.", archivePath.string());
+    }
+    auto output = dataDirectory / "BossRally";
+    std::error_code error;
+    std::filesystem::create_directories(output, error);
+    nlohmann::ordered_json json{{"version", Little32(bytes, 4)},
+                                {"entries", nlohmann::ordered_json::array()}};
+    for (std::uint32_t i = 0; i < count; ++i) {
+        std::size_t at = directory + i * POD_ENTRY_SIZE;
+        std::uint32_t offset = Little32(bytes, at);
+        std::uint32_t size = Little32(bytes, at + 4);
+        if (offset > bytes.size() || size > bytes.size() - offset) {
+            return std::format("{} has an entry outside it.", archivePath.string());
+        }
+        std::string name(
+            reinterpret_cast<const char *>(&bytes[at + POD_NAME_AT]),
+            strnlen(reinterpret_cast<const char *>(&bytes[at + POD_NAME_AT]), POD_NAME_SIZE));
+        auto raw = output / Lowercase(name);
+        if (!WriteBytes(raw, std::span(bytes).subspan(offset, size))) {
+            return std::format("{} cannot be written.", raw.string());
+        }
+        auto file = PodEntryFile(name);
+        if (file.extension() == ".gltf") {
+            auto stem = file.stem().string();
+            auto failure = ConvertModel(
+                raw, FrontEndModelToGltf, output / file, output / (stem + "-mesh.bin"));
+            if (failure) {
+                return failure;
+            }
+        }
+        json["entries"].push_back({{"name", name},
+                                   {"file", file.string()},
+                                   {"offset", offset},
+                                   {"attributes", {bytes[at + 8], bytes[at + 9]}},
+                                   {"reserved", {bytes[at + 10], bytes[at + 11]}}});
+    }
+    json["directory"] = directory;
+    json["size"] = bytes.size();
+
+    // The archive built from the entries, with the bytes between them zero.
+    std::vector<std::uint8_t> rebuilt(bytes.size(), 0);
+    std::memcpy(rebuilt.data(), "POD", 4);
+    PutLittle32(rebuilt, 4, json["version"].get<std::uint32_t>());
+    PutLittle32(rebuilt, 8, count);
+    PutLittle32(rebuilt, 12, directory);
+    for (std::size_t i = 0; i < json["entries"].size(); ++i) {
+        const auto &entry = json["entries"][i];
+        auto data = ReadPodEntry(output / entry["file"].get<std::string>());
+        auto offset = entry["offset"].get<std::uint32_t>();
+        if (!data || offset > rebuilt.size() || data->size() > rebuilt.size() - offset) {
+            return std::format("{} does not read back.", archivePath.string());
+        }
+        std::ranges::copy(*data, rebuilt.begin() + offset);
+        std::size_t at = directory + i * POD_ENTRY_SIZE;
+        PutLittle32(rebuilt, at, offset);
+        PutLittle32(rebuilt, at + 4, static_cast<std::uint32_t>(data->size()));
+        rebuilt[at + 8] = entry["attributes"][0].get<std::uint8_t>();
+        rebuilt[at + 9] = entry["attributes"][1].get<std::uint8_t>();
+        rebuilt[at + 10] = entry["reserved"][0].get<std::uint8_t>();
+        rebuilt[at + 11] = entry["reserved"][1].get<std::uint8_t>();
+        auto name = entry["name"].get<std::string>();
+        std::memcpy(&rebuilt[at + POD_NAME_AT], name.data(), std::min(name.size(), POD_NAME_SIZE));
+    }
+    if (rebuilt != bytes) {
+        // An archive whose entries do not build it again, with other bytes between them, stays.
+        return std::nullopt;
+    }
+    std::ofstream(output / "pod.json", std::ios::trunc) << json.dump(2) << '\n';
+    std::filesystem::remove(archivePath, error);
+    return std::nullopt;
+}
+
 std::optional<std::string> ConvertSkyImages(const std::filesystem::path &dataDirectory) {
     constexpr int SKY_WIDTH = 32;
     std::error_code error;
@@ -1281,6 +1422,11 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
             splashModels.push_back(model);
         }
     }
+    // The start lights of the races, a model of the same format.
+    if (auto lights = destination / "segments" / "startLights.bin";
+        std::filesystem::exists(lights)) {
+        splashModels.push_back(lights);
+    }
     for (std::string_view name : {"constants/splash_sound_a",
                                   "constants/splash_sound_b",
                                   "segments/scrollSound",
@@ -1489,6 +1635,9 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
     if (auto failure = ConvertSkyImages(dataDirectory)) {
         return std::unexpected(*failure);
     }
+    if (auto failure = ConvertPodArchive(dataDirectory)) {
+        return std::unexpected(*failure);
+    }
     if (auto failure = ConvertGhostRecordings(dataDirectory)) {
         return std::unexpected(*failure);
     }
@@ -1519,3 +1668,17 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
 }
 
 } // namespace coastline
+
+bool ReadImportedPodEntry(const char *pszPath, void *pBuffer) {
+    // The archive names an entry by the name of its file, as CleanupName() takes it.
+    std::string_view path(pszPath);
+    std::size_t separator = path.find_last_of("\\/");
+    std::string name(separator == std::string_view::npos ? path : path.substr(separator + 1));
+    auto bytes =
+        coastline::ReadPodEntry(std::filesystem::path("BossRally") / coastline::PodEntryFile(name));
+    if (!bytes) {
+        return false;
+    }
+    std::memcpy(pBuffer, bytes->data(), bytes->size());
+    return true;
+}

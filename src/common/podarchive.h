@@ -307,3 +307,15 @@ public:
  * @ghidraAddress BRGlide: 0x10ac0810
  */
 extern PodArchive g_BossRallyPodArchive;
+
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/**
+ * Read an entry of BossRally.pod from its import, the directory BossRally of the default assets,
+ * where a model is built from its glTF.
+ *
+ * @param pszPath The path of the entry, whose file name names it as the archive names it.
+ * @param pBuffer Receives the bytes of the entry, and fits them.
+ * @return Whether the entry was read.
+ */
+bool ReadImportedPodEntry(const char *pszPath, void *pBuffer);
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */

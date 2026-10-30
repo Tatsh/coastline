@@ -26,8 +26,17 @@ void ReadEntireFile(void *buffer, const char *path, int size) {
 }
 
 Model *DecompressModel(void *dst, const char *source) {
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    // The SDL game reads the model from the import of BossRally.pod. As LoadPodByName(), the read
+    // trusts the buffer to fit the entry.
+    if (!ReadImportedPodEntry(source, dst)) {
+        FatalErrorWithMessage("GetNumForName: %s not found!", source);
+    }
+    Model *model = static_cast<Model *>(dst);
+#else
     Model *model =
         static_cast<Model *>(g_BossRallyPodArchive.PodArchive::LoadPodByName(source, dst));
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     SetPointerRelocationBase(0, reinterpret_cast<unsigned>(model));
 #else

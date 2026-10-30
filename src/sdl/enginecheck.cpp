@@ -156,12 +156,9 @@ bool CheckCar() {
 }
 
 bool CheckPodModel() {
-    g_BossRallyPodArchive.SetFilePath("BossRally.pod");
-    g_BossRallyPodArchive.OpenPodFile();
     Model *model = DecompressModel(g_abCheckModelBuffer, "misc\\modelLights.blob");
-    SDL_Log("BossRally.pod: misc\\modelLights.blob has %u parts.",
+    SDL_Log("BossRally.pod: misc\\modelLights.blob has %u parts, from its import.",
             static_cast<unsigned>(model->partCount));
-    g_BossRallyPodArchive.ClosePodFile();
     return model->partCount > 0;
 }
 

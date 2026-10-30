@@ -12,8 +12,8 @@
 namespace coastline {
 
 /**
- * Set the default configuration and bindings of the race, open BossRally.pod, the archive the race
- * loads models from, and open the sound of the race, as the PC release does once at its start.
+ * Set the default configuration, the bindings, and the strings of the race, and open its sound, as
+ * the PC release does once at its start. The models of BossRally.pod load from its import.
  * The working directory is the directory of the default assets.
  *
  * @param playSounds Whether the race plays its sound effects.
