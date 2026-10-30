@@ -65,7 +65,9 @@ public:
 private:
     struct State;
     explicit RaceView(std::unique_ptr<State> state);
+    struct CarInView;
     void DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, int index) const;
+    void DrawCar(SceneRenderer &renderer, const CarInView &view) const;
     std::unique_ptr<State> m_state;
 };
 

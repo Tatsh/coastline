@@ -6,6 +6,7 @@
 #include <fstream>
 #include <iterator>
 #include <map>
+#include <numeric>
 #include <string>
 #include <variant>
 
@@ -496,6 +497,8 @@ struct ModelDraw {
     std::optional<CarShadow> shadow;
     std::optional<Highlight> highlight;
     DrawState state;
+    // The instances of a track the draw draws in their order, or none for every node in its own.
+    std::optional<std::vector<int>> instances;
 };
 
 struct QuadDraw {
@@ -516,6 +519,8 @@ struct RenderModel::State {
     std::vector<std::pair<std::size_t, std::size_t>> textures; // Image and sampler.
     std::vector<Mesh> meshes;
     std::vector<Placed> placed;
+    // The nodes of each instance of a track, and under -1 the nodes of no instance.
+    std::map<int, std::vector<std::size_t>> placedByInstance;
     std::vector<VertexAnimationInfo> animations;
     std::array<float, 3> centre{};
     float radius = 1.0f;
@@ -1048,6 +1053,9 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s draws nothing.", path.string().c_str());
         return nullptr;
     }
+    for (std::size_t p = 0; p < state->placed.size(); ++p) {
+        state->placedByInstance[state->placed[p].instance].push_back(p);
+    }
     for (std::size_t axis = 0; axis < 3; ++axis) {
         state->centre[axis] = (low[axis] + high[axis]) / 2;
         state->radius = std::max(state->radius, (high[axis] - low[axis]) / 2);
@@ -1252,7 +1260,8 @@ void SceneRenderer::DrawModel(const RenderModel &model,
                                           std::nullopt,
                                           std::nullopt,
                                           std::nullopt,
-                                          m_state->Current()});
+                                          m_state->Current(),
+                                          std::nullopt});
 }
 
 void SceneRenderer::DrawReflectingModel(const RenderModel &model,
@@ -1271,14 +1280,16 @@ void SceneRenderer::DrawReflectingModel(const RenderModel &model,
                                           reflection,
                                           std::nullopt,
                                           std::nullopt,
-                                          m_state->Current()});
+                                          m_state->Current(),
+                                          std::nullopt});
 }
 
 void SceneRenderer::DrawShadowedModel(const RenderModel &model,
                                       const Matrix4 &world,
                                       const Matrix4 &viewProjection,
                                       const Lighting &lighting,
-                                      CarShadow shadow) {
+                                      std::vector<int> instances,
+                                      std::optional<CarShadow> shadow) {
     m_state->draws.emplace_back(ModelDraw{&model,
                                           world,
                                           viewProjection,
@@ -1289,7 +1300,8 @@ void SceneRenderer::DrawShadowedModel(const RenderModel &model,
                                           std::nullopt,
                                           std::move(shadow),
                                           std::nullopt,
-                                          m_state->Current()});
+                                          m_state->Current(),
+                                          std::move(instances)});
 }
 
 void SceneRenderer::DrawHighlight(const RenderModel &model,
@@ -1306,7 +1318,8 @@ void SceneRenderer::DrawHighlight(const RenderModel &model,
                                           std::nullopt,
                                           std::nullopt,
                                           highlight,
-                                          m_state->Current()});
+                                          m_state->Current(),
+                                          std::nullopt});
 }
 
 void SceneRenderer::DrawQuads(std::span<const FlatVertex> corners,
@@ -1553,7 +1566,22 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         if (!useView(draw.state, draw.scissor)) {
             return;
         }
-        for (const Placed &placed : model.placed) {
+        // The nodes of the model in their order, or those of the instances of a draw of
+        // instances in the order of the instances.
+        std::vector<std::size_t> order;
+        if (draw.instances) {
+            for (int instance : *draw.instances) {
+                auto found = model.placedByInstance.find(instance);
+                if (found != model.placedByInstance.end()) {
+                    order.insert(order.end(), found->second.begin(), found->second.end());
+                }
+            }
+        } else {
+            order.resize(model.placed.size());
+            std::iota(order.begin(), order.end(), std::size_t{0});
+        }
+        for (std::size_t node : order) {
+            const Placed &placed = model.placed[node];
             if (placed.flags & draw.state.hiddenFlags) {
                 continue;
             }

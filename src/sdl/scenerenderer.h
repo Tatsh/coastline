@@ -427,19 +427,22 @@ public:
                        const Highlight &highlight);
 
     /**
-     * Draw a track with the shadow of a car on the instances near the car.
+     * Draw instances of a track in an order, with the shadow of a car on the instances near the
+     * car.
      *
      * @param model The model of the track.
      * @param world The place of the model.
      * @param viewProjection The camera and its projection, to a depth from 0 to 1.
      * @param lighting The lights of the model.
-     * @param shadow The shadow of the car.
+     * @param instances The instances drawn, in their order, with -1 for the nodes of no instance.
+     * @param shadow The shadow of the car, or none.
      */
     void DrawShadowedModel(const RenderModel &model,
                            const Matrix4 &world,
                            const Matrix4 &viewProjection,
                            const Lighting &lighting,
-                           CarShadow shadow);
+                           std::vector<int> instances,
+                           std::optional<CarShadow> shadow);
 
     /**
      * Draw flat quads over everything drawn before them, blended by their alpha.

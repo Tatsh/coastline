@@ -38,6 +38,7 @@
 #include "common/text.h"
 #include "common/track.h"
 #include "common/trackmenuitem.h"
+#include "common/trackrender.h"
 #include "common/trackselect.h"
 #include "common/trackskidmarks.h"
 #include "common/vecmath.h"
@@ -47,6 +48,7 @@
 #include "common/vehicleeffects.h"
 #include "common/vehiclemodel.h"
 #include "common/vehiclerender.h"
+#include "common/visgrid.h"
 #include "common/weather.h"
 #include "frontend.h"
 #include "gpu.h"
@@ -1154,6 +1156,109 @@ SDL_Rect FrameRect(const ViewportRect &view, const GpuWindow &window) {
             (view.y + view.height) * height / screenHeight - top};
 }
 
+// The instances of the track a view draws, as BuildVisibleInstanceList() lists them and
+// RenderTrackGeometry() draws them.
+struct ViewInstances {
+    // The opaque instances, the nearest cells first, after the nodes of no instance.
+    std::vector<int> opaque{-1};
+    // The translucent instances the second pass draws, the farthest first.
+    std::vector<int> translucent;
+};
+
+// RenderRaceView() casts a ray down from the camera, and the groups the instances under it hide are
+// not drawn. BuildVisibleInstanceList() lists the instances of the cells of the grid the frustum of
+// the camera covers, the nearest cells first and each instance once, the airplane before the first
+// cell it is in view at. RenderTrackGeometry() draws the opaque ones in that order and defers the
+// translucent ones to its second pass, which draws them the farthest first.
+// ponytail: the cells of one distance sort by the qsort() of the platform, the order of the PC
+// release among them is not kept.
+ViewInstances
+VisibleInstances(const CameraFrame &camera, float fov, float farPlane, SDL_Rect frame) {
+    Vec3f eye = camera.position;
+    std::array<u16, RAY_INSTANCES> nearby{};
+    s32 nearbyCount = 0;
+    f32 groundDistance = 0.0f;
+    s32 groundSurface = 0;
+    CastRayAgainstTrack(nullptr,
+                        nullptr,
+                        &eye,
+                        g_awCameraRayHitInstances,
+                        &g_dwCameraRayHitCount,
+                        nearby.data(),
+                        &nearbyCount,
+                        &groundDistance,
+                        &groundSurface);
+    u16 hidden = 0;
+    for (s32 i = 0; i < g_dwCameraRayHitCount; ++i) {
+        hidden |= g_LoadedTrack.instances[g_awCameraRayHitInstances[i]].hidesGroups;
+    }
+
+    CameraFrame look = camera;
+    SetupFrustumCorners(&look, fov, farPlane, static_cast<f32>(frame.w), static_cast<f32>(frame.h));
+    BuildVisibleGrid();
+    std::vector<VisibleCell> cells;
+    for (s32 row = g_dwVisibleGridMinRow; row <= g_dwVisibleGridMaxRow; ++row) {
+        for (s32 column = g_adwVisibleGridRowMinCol[row];
+             column <= g_adwVisibleGridRowMaxCol[row] && cells.size() < VISIBLE_CELLS;
+             ++column) {
+            cells.push_back({static_cast<u8>(column), static_cast<u8>(row), 0});
+        }
+    }
+    constexpr s32 GRID_CELLS = 64;
+    constexpr float GRID_CELL_SIZE = 32.0f;
+    // The cell of the camera, kept on the grid at its far edges.
+    auto cameraColumn = static_cast<s32>(camera.position.x * (1.0f / GRID_CELL_SIZE));
+    if (cameraColumn == GRID_CELLS) {
+        --cameraColumn;
+    }
+    auto cameraRow = static_cast<s32>(camera.position.y * (1.0f / GRID_CELL_SIZE));
+    if (cameraRow == GRID_CELLS) {
+        --cameraRow;
+    }
+    for (VisibleCell &cell : cells) {
+        s32 across = cell.column - cameraColumn;
+        s32 along = cell.row - cameraRow;
+        cell.distance = static_cast<s16>(across * across + along * along);
+    }
+    std::qsort(cells.data(), cells.size(), sizeof(VisibleCell), CompareVisibleCellDistance);
+
+    ViewInstances view;
+    std::vector<bool> listed(static_cast<std::size_t>(g_LoadedTrack.instanceCount), false);
+    auto list = [&](u16 index) {
+        listed[index] = true;
+        const TrackInstance &instance = g_LoadedTrack.instances[index];
+        if ((instance.groups & hidden) != 0) {
+            return;
+        }
+        if ((instance.flags & TRACK_INSTANCE_TRANSLUCENT) != 0) {
+            view.translucent.insert(view.translucent.begin(), index);
+        } else {
+            view.opaque.push_back(index);
+        }
+    };
+    auto airplane = static_cast<u16>(g_dwAirplaneInstance);
+    for (const VisibleCell &cell : cells) {
+        if (airplane != 0 && !listed[airplane]) {
+            const f32 *position = g_LoadedTrack.instances[airplane].matrix[3];
+            if (IsPointVisible(position[0], position[1])) {
+                list(airplane);
+            }
+        }
+        u32 found = LookupInstanceGridCell(cell.column, cell.row);
+        if (found == 0) {
+            continue;
+        }
+        TrackGridCursor cursor{static_cast<u16>(found), static_cast<u16>(found >> 16)};
+        for (u16 index = NextGridCellInstance(&cursor); index != 0;
+             index = NextGridCellInstance(&cursor)) {
+            if (!listed[index] && index != airplane) {
+                list(index);
+            }
+        }
+    }
+    return view;
+}
+
 // The flash of lightning RenderSkybox() mixes a quarter of into the fog.
 constexpr std::array<int, 3> LIGHTNING_FLASH{0xF0, 0xF8, 0xFF};
 
@@ -1244,6 +1349,16 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     }
 }
 
+// A car drawn in a view: the car, the car of the view and its number, the camera of the view, and
+// its projection.
+struct RaceView::CarInView {
+    const Vehicle *car;
+    const Vehicle *cameraCar;
+    int cameraIndex;
+    const CameraFrame *camera;
+    const Matrix4 *viewProjection;
+};
+
 // RenderRaceView() of a view: the track, the cars, the puffs, and the start lights from the active
 // camera of the car of the view.
 void RaceView::DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, int index) const {
@@ -1266,10 +1381,9 @@ void RaceView::DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, 
         renderer.SetViewport(frame);
     }
     float aspect = static_cast<float>(frame.w) / static_cast<float>(std::max(frame.h, 1));
-    Matrix4 viewProjection = CameraMatrix(*camera,
-                                          split ? camera->fov * 0.7f : camera->fov,
-                                          split ? CAMERA_FAR * 0.65f : CAMERA_FAR,
-                                          aspect);
+    float fov = split ? camera->fov * 0.7f : camera->fov;
+    float farPlane = split ? CAMERA_FAR * 0.65f : CAMERA_FAR;
+    Matrix4 viewProjection = CameraMatrix(*camera, fov, farPlane, aspect);
     // SetViewport() mirrors the view across on a mirrored track, where the steering turns the
     // other way, and the faces of the models then turn the other way.
     if (g_dwTrackMirrored) {
@@ -1308,85 +1422,33 @@ void RaceView::DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, 
             camera->position.x, camera->position.y, camera->position.z * SKY_DEPTH_SCALE);
         renderer.DrawModel(*s.sky, place, viewProjection, lighting, std::nullopt, false);
     }
+    // RenderTrackGeometry(): the first pass draws the opaque instances in view.
+    ViewInstances instances = VisibleInstances(*camera, fov, farPlane, frame);
     std::optional<CarShadow> shadow = ShadowOf(s.shadowTexture.get(), vehicle);
-    if (shadow) {
-        renderer.DrawShadowedModel(
-            *s.track, ConsoleSpace(), viewProjection, lighting, std::move(*shadow));
-    } else {
-        renderer.DrawModel(*s.track, ConsoleSpace(), viewProjection, lighting, std::nullopt, true);
-    }
-    if (snapshot != nullptr && s.skidTexture && g_GlobalRallyConfig.bSkidMarksSelection) {
-        DrawSkidMarks(renderer, *s.skidTexture, ShadowColor(vehicle), viewProjection);
-    }
+    renderer.DrawShadowedModel(
+        *s.track, ConsoleSpace(), viewProjection, lighting, std::move(instances.opaque), shadow);
     // RenderVehicleModel() does not draw the car of the view from its own cockpit or its mirror.
     const auto &cameras = vehicle.GetCameras();
     bool inside =
         camera == &cameras[VEHICLE_CAMERA_COCKPIT] || camera == &cameras[VEHICLE_CAMERA_MIRROR];
     Lighting cameraCarLighting = CarLighting(vehicle, vehicle, *camera);
-    // RenderRacerVehicles(): the car of each vehicle of the race.
-    // A ghost, the car of a time attack recorded before or a car fading back in after it is put
-    // back on the track, is drawn after the cars that are not, in the render mode of a ghost of
-    // BRD3D. The opacity of a ghost goes to the alpha of the primitive colour, which that render
-    // mode does not read.
-    for (int index = 0; index < std::max(g_dwNumActiveVehicles, 1); ++index) {
-        if (index == cameraIndex && inside && !g_dwVehicleCullingDisabled) {
-            continue;
+    // RenderRacerVehicles(): the car of each vehicle of the race that is, or is not, a ghost. A
+    // ghost, the car of a time attack recorded before or a car fading back in after it is put back
+    // on the track, is drawn in the render mode of a ghost of BRD3D. The opacity of a ghost goes to
+    // the alpha of the primitive colour, which that render mode does not read.
+    auto drawCars = [&](bool ghosts) {
+        for (int index = 0; index < std::max(g_dwNumActiveVehicles, 1); ++index) {
+            const Vehicle &car =
+                snapshot != nullptr ? snapshot->GetVehicle(index) : g_aVehicles[index];
+            if ((car.GetGhostMode() == VEHICLE_GHOST) == ghosts &&
+                (index != cameraIndex || !inside || g_dwVehicleCullingDisabled)) {
+                DrawCar(renderer, {&car, &vehicle, cameraIndex, camera, &viewProjection});
+            }
         }
-        const Vehicle &car = snapshot != nullptr ? snapshot->GetVehicle(index) : g_aVehicles[index];
-        const auto &color = car.GetColor();
-        CarKey key{car.GetCarModel(), color[0], color[1], color[2]};
-        auto found = s.cars.find(key);
-        // A car that does not load is not tried again.
-        if (found == s.cars.end()) {
-            found = s.cars.try_emplace(key, LoadCarModels(renderer, s.defaults, key)).first;
-        }
-        const CarModels &models = found->second;
-        if (!models.car) {
-            continue;
-        }
-        bool ghost = car.GetGhostMode() == VEHICLE_GHOST;
-        renderer.SetGhost(ghost);
-        Lighting carLighting = CarLighting(car, vehicle, *camera);
-        Matrix4 body = MultiplyMatrices(FrameMatrix(car.GetFrame()), ConsoleSpace());
-        Reflection reflection =
-            SkyReflection(s.daySky.get(), s.nightSky.get(), *camera, car, g_aVehicles[cameraIndex]);
-        // The textured parts, the underside, the highlight, and the painted body in turn.
-        models.car->SetVariant(CarLightVariant(car));
-        renderer.DrawReflectingModel(*models.car, body, viewProjection, carLighting, reflection);
-        // The underside shows only from below the car.
-        const CameraFrame &frame = car.GetFrame();
-        float below = frame.up.x * (frame.position.x - camera->position.x) +
-                      frame.up.y * (frame.position.y - camera->position.y) +
-                      frame.up.z * (frame.position.z - camera->position.z);
-        if (models.underside && below > 0.0f) {
-            renderer.DrawModel(
-                *models.underside, body, viewProjection, carLighting, std::nullopt, true);
-        }
-        std::optional<Highlight> highlight =
-            CarHighlight(car, vehicle, *camera, s.dayHighlight.get(), s.nightHighlight.get());
-        // The highlight draws only where the depth is equal, and a ghost does not write the depth.
-        if (highlight && models.highlighted && !ghost) {
-            renderer.DrawHighlight(
-                *models.highlighted, FrameMatrix(frame), viewProjection, *highlight);
-        }
-        renderer.DrawReflectingModel(*models.paint, body, viewProjection, carLighting, reflection);
-        // RenderWheelModels(): each wheel at the matrix the race gives it, in snow the wheel of
-        // the snow.
-        const RenderModel &wheel =
-            g_dwSnowMode && models.snowWheel ? *models.snowWheel : *models.wheel;
-        for (const auto &rows : car.GetWheelMatrices()) {
-            Matrix4 place{};
-            std::memcpy(place.data(), rows, sizeof(place));
-            renderer.DrawModel(wheel, place, viewProjection, carLighting, std::nullopt, true);
-        }
-    }
-    renderer.SetGhost(false);
+    };
+    drawCars(false);
     if (snapshot != nullptr) {
         DrawParticles(renderer, *s.particleTexture, *s.shadowTexture, *camera, viewProjection);
-        // A championship has more racers than vehicles, and only the vehicles have spray.
-        for (int index = 0; index < g_dwNumActiveVehicles; ++index) {
-            DrawTireSpray(renderer, *s.sprayTexture, snapshot->GetVehicle(index), viewProjection);
-        }
     }
     // RenderStartLights() draws under the lights the cars left: g_DefaultLights in their colours.
     // ponytail: from the cockpit the PC release leaves the colours of the frame before.
@@ -1399,6 +1461,80 @@ void RaceView::DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, 
                            StartLightsPoses(*s.startLights),
                            true);
     }
+    // The second pass of RenderTrackGeometry() draws the translucent instances in view, and
+    // DrawTrackShadows() draws the skid marks after them.
+    renderer.DrawShadowedModel(*s.track,
+                               ConsoleSpace(),
+                               viewProjection,
+                               lighting,
+                               std::move(instances.translucent),
+                               std::move(shadow));
+    if (snapshot != nullptr && s.skidTexture && g_GlobalRallyConfig.bSkidMarksSelection) {
+        DrawSkidMarks(renderer, *s.skidTexture, ShadowColor(vehicle), viewProjection);
+    }
+    drawCars(true);
+    // RenderExhaustAndTireSpray(): the spray of the vehicles. A championship has more racers than
+    // vehicles, and only the vehicles have spray.
+    if (snapshot != nullptr) {
+        for (int index = 0; index < g_dwNumActiveVehicles; ++index) {
+            DrawTireSpray(renderer, *s.sprayTexture, snapshot->GetVehicle(index), viewProjection);
+        }
+    }
+}
+
+// RenderVehicleModel() of a car in a view.
+void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
+    State &s = *m_state;
+    const Vehicle &car = *view.car;
+    const Vehicle &vehicle = *view.cameraCar;
+    const CameraFrame &camera = *view.camera;
+    const Matrix4 &viewProjection = *view.viewProjection;
+    int cameraIndex = view.cameraIndex;
+    const auto &color = car.GetColor();
+    CarKey key{car.GetCarModel(), color[0], color[1], color[2]};
+    auto found = s.cars.find(key);
+    // A car that does not load is not tried again.
+    if (found == s.cars.end()) {
+        found = s.cars.try_emplace(key, LoadCarModels(renderer, s.defaults, key)).first;
+    }
+    const CarModels &models = found->second;
+    if (!models.car) {
+        return;
+    }
+    bool ghost = car.GetGhostMode() == VEHICLE_GHOST;
+    renderer.SetGhost(ghost);
+    Lighting carLighting = CarLighting(car, vehicle, camera);
+    Matrix4 body = MultiplyMatrices(FrameMatrix(car.GetFrame()), ConsoleSpace());
+    Reflection reflection =
+        SkyReflection(s.daySky.get(), s.nightSky.get(), camera, car, g_aVehicles[cameraIndex]);
+    // The textured parts, the underside, the highlight, and the painted body in turn.
+    models.car->SetVariant(CarLightVariant(car));
+    renderer.DrawReflectingModel(*models.car, body, viewProjection, carLighting, reflection);
+    // The underside shows only from below the car.
+    const CameraFrame &frame = car.GetFrame();
+    float below = frame.up.x * (frame.position.x - camera.position.x) +
+                  frame.up.y * (frame.position.y - camera.position.y) +
+                  frame.up.z * (frame.position.z - camera.position.z);
+    if (models.underside && below > 0.0f) {
+        renderer.DrawModel(
+            *models.underside, body, viewProjection, carLighting, std::nullopt, true);
+    }
+    std::optional<Highlight> highlight =
+        CarHighlight(car, vehicle, camera, s.dayHighlight.get(), s.nightHighlight.get());
+    // The highlight draws only where the depth is equal, and a ghost does not write the depth.
+    if (highlight && models.highlighted && !ghost) {
+        renderer.DrawHighlight(*models.highlighted, FrameMatrix(frame), viewProjection, *highlight);
+    }
+    renderer.DrawReflectingModel(*models.paint, body, viewProjection, carLighting, reflection);
+    // RenderWheelModels(): each wheel at the matrix the race gives it, in snow the wheel of the
+    // snow.
+    const RenderModel &wheel = g_dwSnowMode && models.snowWheel ? *models.snowWheel : *models.wheel;
+    for (const auto &rows : car.GetWheelMatrices()) {
+        Matrix4 place{};
+        std::memcpy(place.data(), rows, sizeof(place));
+        renderer.DrawModel(wheel, place, viewProjection, carLighting, std::nullopt, true);
+    }
+    renderer.SetGhost(false);
 }
 
 } // namespace coastline
