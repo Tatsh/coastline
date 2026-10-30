@@ -64,17 +64,19 @@ constexpr std::array<std::uint8_t, 4> BAR_FRAME_COLOR{0x00, 0x00, 0x00, 0xFF};
 constexpr std::array<std::uint8_t, 4> BAR_BACK_COLOR{0x00, 0x1C, 0x00, 0xFF};
 constexpr std::array<std::uint8_t, 4> BAR_FILL_COLOR{0x00, 0x7B, 0x00, 0xFF};
 
-// A rectangle of one colour on the 320 by 240 screen, cut at its edges as the RDP cuts it.
+// A rectangle of one colour, cut at its edges as the RDP cuts it. The console fills it in pixels of
+// the 640 by 480 frame buffer, not in the 320 by 240 units of the layouts, and the fill mode covers
+// the right and bottom edges as well.
 void FillRect(SceneRenderer &renderer,
               int left,
               int top,
               int right,
               int bottom,
               const std::array<std::uint8_t, 4> &color) {
-    auto x0 = static_cast<float>(std::clamp(left, 0, WIDTH) * 2);
-    auto y0 = static_cast<float>(top * 2);
-    auto x1 = static_cast<float>(std::clamp(right, 0, WIDTH) * 2);
-    auto y1 = static_cast<float>(bottom * 2);
+    auto x0 = static_cast<float>(std::clamp(left, 0, WIDTH * 2));
+    auto y0 = static_cast<float>(top);
+    auto x1 = static_cast<float>(std::clamp(right + 1, 0, WIDTH * 2));
+    auto y1 = static_cast<float>(bottom + 1);
     std::array<FlatVertex, 4> corners{{{x0, y0, 0.0f, 0.0f, color},
                                        {x1, y0, 0.0f, 0.0f, color},
                                        {x1, y1, 0.0f, 0.0f, color},

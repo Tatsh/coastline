@@ -863,6 +863,7 @@ static inline void DrawOnePlayerChoices(char *text) {
             SELECTED_CAR(player).gearCount,
             g_apszDriveTypes[SELECTED_CAR(player).driveType]);
     DrawText(text, g_dwScreenWidth * 11 / 16, g_dwScreenHeight * 3 / 8 + 2);
+    /* The bars are placed in pixels of the 640 by 480 frame buffer, half the scale of the text. */
     DrawProgressBar(g_dwScreenWidth * 3 / 4 + 10,
                     g_dwScreenHeight * 3 / 4 - 23,
                     STAT_BAR_WIDTH,
