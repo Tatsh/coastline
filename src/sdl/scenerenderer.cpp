@@ -661,9 +661,10 @@ std::optional<MorphPose> PoseAtTime(const VertexAnimationInfo &animation, float 
 
 std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
                                                const std::filesystem::path &path,
-                                               std::optional<std::string> node,
-                                               std::optional<std::array<std::uint8_t, 3>> paint,
-                                               std::function<bool(const std::string &)> parts) {
+                                               const ModelOptions &options) {
+    const auto &node = options.node;
+    const auto &paint = options.paint;
+    const auto &parts = options.parts;
     auto state = std::make_unique<State>();
     state->device = renderer.m_state->device;
     SDL_GPUDevice *device = state->device;
@@ -683,9 +684,27 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
         return nullptr;
     }
 
+    // The images of another document of the model, one for one, when it has as many.
+    nlohmann::json images = document.value("images", nlohmann::json::array());
+    std::filesystem::path imageDirectory = path.parent_path();
+    if (options.images) {
+        std::ifstream other(*options.images);
+        auto replacement = nlohmann::json::parse(other, nullptr, false);
+        if (!replacement.is_discarded() &&
+            replacement.value("images", nlohmann::json::array()).size() == images.size()) {
+            images = replacement["images"];
+            imageDirectory = options.images->parent_path();
+        } else {
+            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                        "%s does not have the images of %s.",
+                        options.images->string().c_str(),
+                        path.string().c_str());
+        }
+    }
+
     Uploader upload(device);
-    for (const auto &image : document.value("images", nlohmann::json::array())) {
-        auto file = path.parent_path() / image["uri"].get<std::string>();
+    for (const auto &image : images) {
+        auto file = imageDirectory / image["uri"].get<std::string>();
         SDL_Surface *loaded = SDL_LoadPNG(file.string().c_str());
         int material = image.value("extras", nlohmann::json::object())
                            .value("coastlinePaint", nlohmann::json::object())

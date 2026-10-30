@@ -100,6 +100,23 @@ struct CarShadow {
  */
 std::optional<MorphPose> PoseAtTime(const VertexAnimationInfo &animation, float time);
 
+/** What of a glTF document a RenderModel takes, and how. */
+struct ModelOptions {
+    /** The name of a node to draw in place of the default scene, such as the sky of a track or a
+     * wheel of a car, at its origin without its translation, or none for the scene. */
+    std::optional<std::string> node;
+    /** The red, green, and blue of the colour of a car, which paints the first two colours of the
+     * images of its materials as SetMaterialPaletteColors() paints them, or none for the colours
+     * of the images. */
+    std::optional<std::array<std::uint8_t, 3>> paint;
+    /** Whether a node of a mesh is drawn, by its name, or none for every node. */
+    std::function<bool(const std::string &)> parts;
+    /** Another glTF document of the same model whose images take the place of these, one for
+     * one, such as the textures of the cartridge on a car of the PC release, or none. A document
+     * with another number of images is not taken. */
+    std::optional<std::filesystem::path> images;
+};
+
 /** A converted model on the GPU: its meshes, its parts, and its animations. */
 class RenderModel {
 public:
@@ -108,20 +125,12 @@ public:
      *
      * @param renderer The renderer that draws the model.
      * @param path The glTF document.
-     * @param node The name of a node to draw in place of the default scene, such as the sky of a
-     * track or a wheel of a car, at its origin without its translation, or none for the scene.
-     * @param paint The red, green, and blue of the colour of a car, which paints the first two
-     * colours of the images of its materials as SetMaterialPaletteColors() paints them, or none
-     * for the colours of the images.
-     * @param parts Whether a node of a mesh is drawn, by its name, or none for every node.
+     * @param options What of the document the model takes, and how.
      * @return The model, or nothing with the reason logged.
      */
-    static std::unique_ptr<RenderModel>
-    Load(SceneRenderer &renderer,
-         const std::filesystem::path &path,
-         std::optional<std::string> node = std::nullopt,
-         std::optional<std::array<std::uint8_t, 3>> paint = std::nullopt,
-         std::function<bool(const std::string &)> parts = nullptr);
+    static std::unique_ptr<RenderModel> Load(SceneRenderer &renderer,
+                                             const std::filesystem::path &path,
+                                             const ModelOptions &options = {});
     ~RenderModel();
     RenderModel(const RenderModel &) = delete;
     RenderModel &operator=(const RenderModel &) = delete;

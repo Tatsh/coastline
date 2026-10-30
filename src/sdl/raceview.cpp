@@ -256,6 +256,29 @@ struct RaceView::State {
 
 namespace {
 
+// The model of a car of the PC release on a cartridge, by the prefix of its files: the releases of
+// the United States, Japan, and Europe in turn, as the cars of the PC release that the cartridge of
+// the United States does not have are on the Japanese one. None when no cartridge has the car.
+std::optional<std::filesystem::path> CartridgeCar(const std::filesystem::path &defaults,
+                                                  const std::string &prefix) {
+    static constexpr std::array<std::pair<std::string_view, std::string_view>, 4> NAMED{
+        {{"bb", "beach-ball"}, {"cu", "cupra"}, {"hm", "helmet"}, {"mt", "milk-truck"}}};
+    std::string name = "type-" + prefix;
+    for (const auto &[from, to] : NAMED) {
+        if (prefix == from) {
+            name = to;
+        }
+    }
+    for (std::string_view release : {"usa", "jpn", "eur"}) {
+        auto model = defaults / "n64" / release / "cars" / name / "model.gltf";
+        std::error_code error;
+        if (std::filesystem::exists(model, error)) {
+            return model;
+        }
+    }
+    return std::nullopt;
+}
+
 // The flag of an instance of a track that is a tunnel.
 constexpr std::uint32_t TRACK_INSTANCE_TUNNEL = 0x10;
 
@@ -358,22 +381,31 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     std::filesystem::path trackFile = defaults / "tracks" / g_apszTrackFilenames[track];
     trackFile.replace_extension(".gltf");
     state->track = RenderModel::Load(renderer, trackFile);
-    state->sky = RenderModel::Load(renderer, trackFile, "sky");
+    ModelOptions sky;
+    sky.node = "sky";
+    state->sky = RenderModel::Load(renderer, trackFile, sky);
     // The car of the nearest level of detail, the one level a single view draws, in its parts:
     // the body, the underside, and a wheel of each kind, which the race places one by one.
     // ponytail: each part loads the images of the car again; a model drawn by parts would share
     // them.
-    auto carFile = defaults / "cars" / (std::string(g_apszCarModelPrefixes[car]) + ".gltf");
-    state->car =
-        RenderModel::Load(renderer, carFile, std::nullopt, color, [](const std::string &n) {
-            return n == "lod0-nearDetail" || n == "lod0-paint" || n == "lod0-textured";
-        });
-    state->underside =
-        RenderModel::Load(renderer, carFile, std::nullopt, color, [](const std::string &n) {
-            return n == "lod0-underside";
-        });
-    state->wheel = RenderModel::Load(renderer, carFile, "lod0-wheel0", color);
-    state->snowWheel = RenderModel::Load(renderer, carFile, "lod0-wheelSnow0", color);
+    // The geometry of the car is that of the PC release, which its race moves, and its textures
+    // are those of the cartridge.
+    std::string prefix = g_apszCarModelPrefixes[car];
+    auto carFile = defaults / "cars" / (prefix + ".gltf");
+    ModelOptions options;
+    options.paint = color;
+    options.images = CartridgeCar(defaults, prefix);
+    options.parts = [](const std::string &n) {
+        return n == "lod0-nearDetail" || n == "lod0-paint" || n == "lod0-textured";
+    };
+    state->car = RenderModel::Load(renderer, carFile, options);
+    options.parts = [](const std::string &n) { return n == "lod0-underside"; };
+    state->underside = RenderModel::Load(renderer, carFile, options);
+    options.parts = nullptr;
+    options.node = "lod0-wheel0";
+    state->wheel = RenderModel::Load(renderer, carFile, options);
+    options.node = "lod0-wheelSnow0";
+    state->snowWheel = RenderModel::Load(renderer, carFile, options);
     // The skies of the track in cargfx, as the import converted them.
     auto skyImage = [&](const SkyTextureFiles *files) {
         // The reflection wraps across the sky, as its tile wraps.
