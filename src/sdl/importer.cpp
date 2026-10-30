@@ -748,7 +748,7 @@ std::optional<std::string> ConvertConsoleTextures(const std::filesystem::path &d
         int bits = 4 << size;
         json[path.stem().string()] = {
             {"format", FORMATS[format]}, {"size", bits}, {"width", width}, {"height", height}};
-        const auto *layout = std::ranges::find_if(TEXEL_LAYOUTS, [&](const TexelLayout &entry) {
+        auto layout = std::ranges::find_if(TEXEL_LAYOUTS, [&](const TexelLayout &entry) {
             return entry.format == format && entry.size == size;
         });
         auto texels = ReadWholeFile(path);

@@ -9,6 +9,10 @@
 #include "common/types.h"
 #include "common/vecmath.h"
 
+#if TGR_BOSS_RALLY
+#include "common/hudassets.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -247,7 +251,12 @@ extern s32 g_bRainParticlesInitialized;
  * @ghidraAddress BRD3D: 0x100baac8
  * @ghidraAddress BRGlide: 0x100ba2d0
  */
+#if TGR_BOSS_RALLY
+/* The PC release keeps the texture in the storage of the shadow of the HUD, under both names. */
+#define g_aParticleTexture g_abHudOverlayTextureData
+#else
 extern u8 g_aParticleTexture[];
+#endif
 
 /** The last texel of the particle texture, in the 10.5 fixed point of a coordinate. */
 #define PARTICLE_TEXTURE_LAST_T (63 << 5)
