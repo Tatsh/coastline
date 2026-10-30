@@ -38,6 +38,7 @@
 #include "gpu.h"
 #include "iconfile.h"
 #include "importer.h"
+#include "importversion.h"
 #include "input.h"
 #include "intro.h"
 #include "language.h"
@@ -233,8 +234,28 @@ void RecordFrameTime() {
     g_adwFpsFrameTimeSamples[entry] = delta;
 }
 
+// A line of 15-point text centred at @p y of the 640 by 480 screen, as DrawFpsCounterOverlay()
+// draws it.
+void DrawOverlayLine(coastline::SceneRenderer &renderer,
+                     const coastline::MenuText &text,
+                     const char *line,
+                     int y) {
+    const coastline::GpuWindow &window = renderer.Window();
+    coastline::TextStyle style;
+    style.size = 15;
+    style.align = coastline::TextStyle::Align::Center;
+    style.doubled = false;
+    text.Draw(renderer,
+              line,
+              320,
+              y,
+              style,
+              coastline::FlatProjection(static_cast<float>(window.FrameWidth()) /
+                                        static_cast<float>(std::max(window.FrameHeight(), 1u))));
+}
+
 // DrawFpsCounterOverlay() on the screens outside a race: the rate of the samples, updated as they
-// wrap, in 15-point text centred 10 above the bottom of the 640 by 480 screen.
+// wrap, 10 above the bottom of the screen.
 void DrawFrameRate(coastline::SceneRenderer &renderer, const coastline::MenuText &text) {
     static float rate = 30.0f;
     if (g_dwFpsFrameCountdown == 0) {
@@ -247,18 +268,7 @@ void DrawFrameRate(coastline::SceneRenderer &renderer, const coastline::MenuText
     }
     char line[32];
     std::snprintf(line, sizeof(line), "%6.2f FPS", static_cast<double>(rate));
-    const coastline::GpuWindow &window = renderer.Window();
-    coastline::TextStyle style;
-    style.size = 15;
-    style.align = coastline::TextStyle::Align::Center;
-    style.doubled = false;
-    text.Draw(renderer,
-              line,
-              320,
-              470,
-              style,
-              coastline::FlatProjection(static_cast<float>(window.FrameWidth()) /
-                                        static_cast<float>(std::max(window.FrameHeight(), 1u))));
+    DrawOverlayLine(renderer, text, line, 470);
 }
 
 // Every character of the menu fonts, or the text of --scene font:TEXT, drawn by the menu text on
@@ -774,12 +784,25 @@ void SetWindowIcon(SDL_Window *window, const std::filesystem::path &pack) {
 int ImportFromCommandLine(const argparse::ArgumentParser &parser,
                           const std::filesystem::path &data) {
     int status = EXIT_SUCCESS;
+    // Records that a source was imported with the current version of its conversion.
+    auto record = [&](coastline::ImportSource source) {
+        if (!coastline::RecordImport(coastline::DefaultAssets(data), source)) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "%s cannot be written.",
+                         (coastline::DefaultAssets(data) / "import.ini").string().c_str());
+            status = EXIT_FAILURE;
+        }
+    };
     for (const auto &rom : parser.get<std::vector<std::string>>("--import-rom")) {
         if (auto release = coastline::ImportRom(rom, coastline::DefaultAssets(data))) {
             static constexpr const char *names[] = {"USA", "Japanese", "European"};
+            static constexpr coastline::ImportSource sources[] = {coastline::ImportSource::Usa,
+                                                                  coastline::ImportSource::Jpn,
+                                                                  coastline::ImportSource::Eur};
             SDL_Log("Imported the %s cartridge from %s.",
                     names[static_cast<int>(*release)],
                     rom.c_str());
+            record(sources[static_cast<int>(*release)]);
         } else {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", release.error().c_str());
             status = EXIT_FAILURE;
@@ -792,6 +815,7 @@ int ImportFromCommandLine(const argparse::ArgumentParser &parser,
             });
         if (written) {
             SDL_Log("Imported %zu files from %s.", *written, disc->c_str());
+            record(coastline::ImportSource::Disc);
         } else {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", written.error().c_str());
             status = EXIT_FAILURE;
@@ -1055,6 +1079,15 @@ int main(int argc, char *argv[]) {
     }
     const std::filesystem::path assets = *packAssets;
     SDL_Log("Asset pack: %s (%s)", pack.c_str(), assets.string().c_str());
+    // A source imported by an older conversion has files the game no longer draws correctly.
+    std::string reimportNotice;
+    const auto staleImports = coastline::StaleImports(coastline::DefaultAssets(paths->data));
+    if (!staleImports.empty()) {
+        reimportNotice = coastline::ReimportMessage(staleImports);
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                    "The data was imported by an older version of the game. %s",
+                    reimportNotice.c_str());
+    }
     coastline::SelectLanguage(
         parser.present("--language")
             .value_or(
@@ -1139,6 +1172,9 @@ int main(int argc, char *argv[]) {
             std::unique_ptr<coastline::Intro> intro;
             std::unique_ptr<coastline::Menus> mainMenu;
             std::unique_ptr<coastline::MenuText> frameRateText;
+            // The seconds the request to import again remains at the top of the splash screens
+            // and the menus.
+            float reimportNoticeSeconds = reimportNotice.empty() ? 0.0f : 10.0f;
             std::unique_ptr<coastline::MenuText> fontSample;
             std::string fontSampleText;
             // The screen of the front end that shows.
@@ -1554,6 +1590,11 @@ int main(int argc, char *argv[]) {
                     if (g_bShowFpsCounter && frameRateText &&
                         (frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::MainMenu)) {
                         DrawFrameRate(*sceneRenderer, *frameRateText);
+                    }
+                    if (reimportNoticeSeconds > 0.0f && frameRateText &&
+                        (frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::MainMenu)) {
+                        DrawOverlayLine(*sceneRenderer, *frameRateText, reimportNotice.c_str(), 20);
+                        reimportNoticeSeconds -= seconds;
                     }
                     sceneRenderer->End(framePath ? &*framePath : nullptr);
                     // The credits play under the music of the menus.

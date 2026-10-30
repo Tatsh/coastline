@@ -265,6 +265,11 @@ data directory.
 coastline --import-disc 'Boss Rally.cue' --import-rom usa.z64 --import-rom jpn.z64
 ```
 
+Each import records the version of its conversion in `assets/default/import.ini`. When a newer
+game converts a source differently, the game logs the disc or the cartridges to import again on
+start and shows the request at the top of the splash screens and the menus for 10 seconds. Data
+imported before the record existed counts as old.
+
 ### Language
 
 `Language` in the `[Game]` section selects the language of the text, `en-us`, the default, or

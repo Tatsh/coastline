@@ -560,6 +560,7 @@ ilse
 imaadpcmstream
 imaadpcmwaveformat
 immp
+importversion
 imref
 incsrc
 indexedimage

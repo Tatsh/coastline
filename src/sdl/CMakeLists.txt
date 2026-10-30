@@ -190,6 +190,7 @@ add_library(
   ghostnote.cpp
   gpu.cpp
   importer.cpp
+  importversion.cpp
   indexedimage.cpp
   input.cpp
   intro.cpp

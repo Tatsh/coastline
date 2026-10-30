@@ -1,7 +1,9 @@
-// Host check of the XDG directories, the layers of the asset packs, the BossRally.ini reader, the
-// icon file reader, and the volume levels of the SDL game.
+// Host check of the XDG directories, the layers of the asset packs, the record of the versions of
+// the import, the BossRally.ini reader, the icon file reader, and the volume levels of the SDL
+// game.
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <cstdint>
 #include <cstdlib>
@@ -11,9 +13,11 @@
 #include <iterator>
 #include <map>
 #include <string>
+#include <vector>
 
 #include "config.h"
 #include "iconfile.h"
+#include "importversion.h"
 #include "language.h"
 #include "paths.h"
 #include "volumelevels.h"
@@ -152,6 +156,39 @@ std::string ReadText(const std::filesystem::path &path) {
     return std::string(std::istreambuf_iterator<char>(in), {});
 }
 
+void CheckImportVersions() {
+    using coastline::ImportSource;
+    auto defaults = std::filesystem::temp_directory_path() / "coastline-sdl-test-imports";
+    std::filesystem::remove_all(defaults);
+    Check(coastline::StaleImports(defaults).empty(), "an empty pack has no old source");
+    std::filesystem::create_directories(defaults / "cars");
+    std::filesystem::create_directories(defaults / "n64" / "usa");
+    std::filesystem::create_directories(defaults / "n64" / "eur");
+    Check(coastline::StaleImports(defaults) ==
+              std::vector{ImportSource::Disc, ImportSource::Usa, ImportSource::Eur},
+          "every source imported without a record is old");
+    Check(coastline::RecordImport(defaults, ImportSource::Usa), "the record is written");
+    Check(coastline::StaleImports(defaults) == std::vector{ImportSource::Disc, ImportSource::Eur},
+          "a recorded source is current");
+    WriteText(defaults / "import.ini", "[Import]\nDisc=0\nUsa=1\nEur=1\n");
+    Check(coastline::StaleImports(defaults) == std::vector{ImportSource::Disc},
+          "an older version is old");
+    Check(coastline::RecordImport(defaults, ImportSource::Disc), "the record is updated");
+    Check(coastline::StaleImports(defaults).empty(), "every source is current");
+    Check(coastline::GameConfig::Load(defaults / "import.ini").GetInteger("Import", "Eur", 0) == 1,
+          "an update retains the other sources");
+    std::array disc{ImportSource::Disc};
+    Check(coastline::ReimportMessage(disc) == "Import the disc again.", "one source");
+    std::array two{ImportSource::Disc, ImportSource::Jpn};
+    Check(coastline::ReimportMessage(two) == "Import the disc and the Japanese cartridge again.",
+          "two sources");
+    std::array three{ImportSource::Usa, ImportSource::Jpn, ImportSource::Eur};
+    Check(coastline::ReimportMessage(three) == "Import the USA cartridge, the Japanese cartridge, "
+                                               "and the European cartridge again.",
+          "three sources");
+    std::filesystem::remove_all(defaults);
+}
+
 void CheckPackAssets() {
     auto root = std::filesystem::temp_directory_path() / "coastline-sdl-test-packs";
     std::filesystem::remove_all(root);
@@ -229,6 +266,7 @@ int main() {
     CheckIconFile();
     CheckVolumeLevels();
     CheckPackAssets();
+    CheckImportVersions();
     CheckLanguage();
 
     auto defaults =
