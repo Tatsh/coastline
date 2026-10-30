@@ -161,7 +161,7 @@ std::string FormatLapTime(float seconds) {
 bool Menus::LoadTrackMenu(SceneRenderer &renderer, const std::filesystem::path &release) {
     m_release = release;
     try {
-        std::ifstream file(release / "data" / "track-menu.json");
+        std::ifstream file(release / "data" / "menus.json");
         auto menu = nlohmann::json::parse(file);
         m_numTracks = menu.at("numTracks").get<int>();
         for (const auto &track : menu.at("tracks")) {

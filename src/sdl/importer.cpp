@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cctype>
 #include <cmath>
 #include <cstring>
@@ -906,7 +907,8 @@ std::optional<std::string> WriteMenuChoiceMarker(const std::filesystem::path &de
 
 // The addresses of the tables of the track menu and the championship of each release:
 // g_aTrackDescriptors, g_apWeatherMenuItems, g_dwNumTracks, g_dwCarCount, g_aCarModels, and
-// g_SeasonTable.
+// g_SeasonTable, and of the car select screen: g_apszEngineLayouts, g_apszDriveTypes, and the
+// options of the handling, the transmission, the tyres, the suspension, and the decals.
 struct TrackMenuAddresses {
     std::uint32_t trackDescriptors;
     std::uint32_t weatherMenuItems;
@@ -914,22 +916,51 @@ struct TrackMenuAddresses {
     std::uint32_t carCount;
     std::uint32_t carModels;
     std::uint32_t seasonTable;
+    std::uint32_t engineLayouts;
+    std::uint32_t driveTypes;
+    std::array<std::uint32_t, 5> options;
 };
 constexpr TrackMenuAddresses USA_TRACK_MENU{
-    0x80270854, 0x802722A4, 0x8028AE04, 0x8028AE08, 0x8028AE0C, 0x8028B944};
+    0x80270854,
+    0x802722A4,
+    0x8028AE04,
+    0x8028AE08,
+    0x8028AE0C,
+    0x8028B944,
+    0x80272030,
+    0x8027203C,
+    {0x802720B4, 0x802720F0, 0x8027213C, 0x8027218C, 0x802721DC}};
 constexpr TrackMenuAddresses EUR_TRACK_MENU{
-    0x80272834, 0x80274284, 0x8028D0B4, 0x8028D0B8, 0x8028D0BC, 0x8028DBF4};
+    0x80272834,
+    0x80274284,
+    0x8028D0B4,
+    0x8028D0B8,
+    0x8028D0BC,
+    0x8028DBF4,
+    0x80274010,
+    0x8027401C,
+    {0x80274094, 0x802740D0, 0x8027411C, 0x8027416C, 0x802741BC}};
 constexpr TrackMenuAddresses JPN_TRACK_MENU{
-    0x802722F4, 0x80273D34, 0x8028CAE4, 0x8028CAE8, 0x8028CAEC, 0x8028D624};
+    0x802722F4,
+    0x80273D34,
+    0x8028CAE4,
+    0x8028CAE8,
+    0x8028CAEC,
+    0x8028D624,
+    0x80273AD0,
+    0x80273ADC,
+    {0x80273B40, 0x80273B7C, 0x80273BC8, 0x80273C18, 0x80273C68}};
 
-// Writes the items of the tracks on the track menu, the names of the weathers, the cars, and the
-// seasons of the championship as data/track-menu.json. Each track gives its name, its MENU_ITEM_
-// flags, whether its geometry exists, and the glTF file of its model in the import. Each car gives
-// its name and its directory in the import, and each season the indices of its two cars.
-std::optional<std::string> WriteTrackMenu(const std::filesystem::path &destination,
-                                          std::span<const std::uint8_t> segment,
-                                          std::span<const ManifestAsset> assets,
-                                          RomRelease release) {
+// Writes the items of the tracks on the track menu, the names of the weathers, the cars, the
+// seasons of the championship, and the options of the car select screen as data/menus.json. Each
+// track gives its name, its MENU_ITEM_ flags, whether its geometry exists, and the glTF file of its
+// model in the import. Each car gives its name, its directory in the import, whether its model
+// exists, and what the car select screen shows of it, and each season the indices of its two
+// cars. Each option gives its name, its flags, and the glTF file of its model, or none.
+std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
+                                      std::span<const std::uint8_t> segment,
+                                      std::span<const ManifestAsset> assets,
+                                      RomRelease release) {
     constexpr std::uint32_t SEGMENT_BASE = 0x80200000;
     constexpr std::uint32_t TRACK_DESCRIPTOR = 0x17C;
     constexpr std::uint32_t TRACK_DESCRIPTORS = 11;
@@ -938,6 +969,7 @@ std::optional<std::string> WriteTrackMenu(const std::filesystem::path &destinati
     constexpr std::uint32_t SEASON = 0x1C;
     constexpr std::uint32_t SEASONS = 6;
     constexpr std::uint32_t SEASON_RACES = 4;
+    constexpr std::uint32_t MENU_ITEM = 20;
     const TrackMenuAddresses &at = release == RomRelease::Usa ? USA_TRACK_MENU :
                                    release == RomRelease::Eur ? EUR_TRACK_MENU :
                                                                 JPN_TRACK_MENU;
@@ -1007,7 +1039,71 @@ std::optional<std::string> WriteTrackMenu(const std::filesystem::path &destinati
         while (!directory.empty() && directory.back() == '-') {
             directory.pop_back();
         }
-        cars.push_back({{"name", *name}, {"directory", "cars/" + directory}});
+        std::uint32_t entry = at.carModels + i * CAR_MODEL;
+        cars.push_back({{"name", *name},
+                        {"directory", "cars/" + directory},
+                        {"exists", word(entry + 0x18) != 0},
+                        {"driveType", static_cast<std::int32_t>(word(entry + 0x3C))},
+                        {"engineLayout", static_cast<std::int32_t>(word(entry + 0x40))},
+                        {"acceleration", std::bit_cast<float>(word(entry + 0x44))},
+                        {"maxSpeed", std::bit_cast<float>(word(entry + 0x48))},
+                        {"gearCount", static_cast<std::int32_t>(word(entry + 0x54))}});
+    }
+    auto names = [&](std::uint32_t address,
+                     std::uint32_t count) -> std::optional<nlohmann::ordered_json> {
+        nlohmann::ordered_json list = nlohmann::ordered_json::array();
+        for (std::uint32_t i = 0; i < count; ++i) {
+            auto name = inside(address + i * 4, 4) ? text(word(address + i * 4)) : std::nullopt;
+            if (!name) {
+                return std::nullopt;
+            }
+            list.push_back(*name);
+        }
+        return list;
+    };
+    // A list of options ends with a null pointer, and an option without a model starts at 0.
+    auto options = [&](std::uint32_t address) -> std::optional<nlohmann::ordered_json> {
+        constexpr std::uint32_t MOST_OPTIONS = 16;
+        nlohmann::ordered_json list = nlohmann::ordered_json::array();
+        for (std::uint32_t i = 0; i < MOST_OPTIONS && inside(address + i * 4, 4); ++i) {
+            std::uint32_t item = word(address + i * 4);
+            if (item == 0) {
+                return list;
+            }
+            auto name = inside(item, MENU_ITEM) ? text(word(item)) : std::nullopt;
+            if (!name) {
+                return std::nullopt;
+            }
+            nlohmann::ordered_json model = nullptr;
+            std::uint32_t modelStart = word(item + 0x0C);
+            if (modelStart != 0) {
+                auto asset = std::ranges::find(assets, modelStart, &ManifestAsset::romStart);
+                if (asset == assets.end()) {
+                    return std::nullopt;
+                }
+                model = asset->name + ".gltf";
+            }
+            list.push_back({{"name", *name}, {"flags", word(item + 0x04)}, {"model", model}});
+        }
+        return std::nullopt;
+    };
+    constexpr std::array<const char *, 5> OPTION_LISTS{
+        "handling", "transmission", "tires", "suspension", "decals"};
+    nlohmann::ordered_json carSelect;
+    auto engineLayouts = names(at.engineLayouts, 3);
+    auto driveTypes = names(at.driveTypes, 3);
+    if (!engineLayouts || !driveTypes) {
+        return std::string("The engine layouts and drive types of the cars are not readable.");
+    }
+    carSelect["engineLayouts"] = *engineLayouts;
+    carSelect["driveTypes"] = *driveTypes;
+    for (std::size_t i = 0; i < OPTION_LISTS.size(); ++i) {
+        auto list = options(at.options[i]);
+        if (!list) {
+            return std::format("The {} options of the car select screen are not readable.",
+                               OPTION_LISTS[i]);
+        }
+        carSelect[OPTION_LISTS[i]] = *list;
     }
     nlohmann::ordered_json seasons = nlohmann::ordered_json::array();
     for (std::uint32_t i = 0; i < SEASONS; ++i) {
@@ -1034,8 +1130,9 @@ std::optional<std::string> WriteTrackMenu(const std::filesystem::path &destinati
                                 {"tracks", tracks},
                                 {"weathers", weathers},
                                 {"cars", cars},
-                                {"seasons", seasons}};
-    std::ofstream(destination / "data" / "track-menu.json", std::ios::trunc)
+                                {"seasons", seasons},
+                                {"carSelect", carSelect}};
+    std::ofstream(destination / "data" / "menus.json", std::ios::trunc)
         << menu.dump(2, ' ', false, nlohmann::ordered_json::error_handler_t::replace) << '\n';
     return std::nullopt;
 }
@@ -1786,7 +1883,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     if (auto failure = WriteAttractDemo(*bytes, *release, destination)) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "%s", failure->c_str());
     }
-    if (auto failure = WriteTrackMenu(destination, segment, assets, *release)) {
+    if (auto failure = WriteMenus(destination, segment, assets, *release)) {
         return std::unexpected(*failure);
     }
     // Replaces each model of the menu items and of the tracks on the track menu with a glTF file
