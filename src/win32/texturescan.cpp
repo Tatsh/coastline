@@ -5,11 +5,11 @@
 
 #include <zlib.h>
 
+#include "common/paintshop.h"
 #include "common/settings.h"
 #include "common/vehiclemodel.h"
 #include "win32/app.h"
 #include "win32/d3d/renderer.h"
-#include "win32/paintshop.h"
 #include "win32/render.h"
 
 int g_dwTexScanLoadState;

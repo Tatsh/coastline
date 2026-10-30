@@ -1,14 +1,14 @@
 enable_language(RC)
 
-add_executable(coastline_brally WIN32 brally.c brally.rc ini.c registry.c ../fileio.c
-               ../diagnostics.c)
+add_executable(coastline_brally WIN32 brally.c brally.rc ini.c registry.c
+               "${CMAKE_SOURCE_DIR}/src/common/fileio.c" ../diagnostics.c)
 set_target_properties(coastline_brally PROPERTIES OUTPUT_NAME BRally C_STANDARD 23)
 target_compile_options(coastline_brally PRIVATE -Wall -Wextra -Wno-unused-parameter)
 target_include_directories(coastline_brally PRIVATE "${CMAKE_SOURCE_DIR}/src")
 target_link_libraries(coastline_brally PRIVATE advapi32 kernel32 user32)
 
 add_executable(coastline_setvideo WIN32 setvideo.c setvideo.rc ini.c registry.c filewrite.c
-                                         ../fileio.c)
+                                         "${CMAKE_SOURCE_DIR}/src/common/fileio.c")
 set_target_properties(coastline_setvideo PROPERTIES OUTPUT_NAME SetVideo C_STANDARD 23)
 target_compile_options(coastline_setvideo PRIVATE -Wall -Wextra -Wno-unused-parameter)
 target_include_directories(coastline_setvideo PRIVATE "${CMAKE_SOURCE_DIR}/src")

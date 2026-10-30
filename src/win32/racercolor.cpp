@@ -2,6 +2,7 @@
 
 #include "common/fileio.h"
 #include "common/game.h"
+#include "common/paintshop.h"
 #include "common/racerslot.h"
 #include "common/racerslotaccess.h"
 #include "common/textureupload.h"
@@ -10,7 +11,6 @@
 #include "common/vehiclecolor.h"
 #include "common/weather.h"
 #include "win32/app.h"
-#include "win32/paintshop.h"
 #include "win32/render.h"
 
 void RefreshVehicleMaterialTextures(VehicleModel *model) {

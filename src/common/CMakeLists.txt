@@ -145,9 +145,11 @@ else()
             configfile.cpp
             convertedvertex.c
             creditdata.c
+            damagetexture.cpp
             dashboardtextures.c
             displaylistdata.c
             effectdata.c
+            fileio.c
             fontdata.c
             framebuffer.c
             framefields.c
@@ -160,6 +162,7 @@ else()
             inputdefaults.cpp
             numericdata.c
             packedvalue.cpp
+            paintshop.c
             particlesnapshot.c
             physicsdata.c
             raceglobals.c
@@ -182,6 +185,7 @@ else()
             trackmenudata.c
             trackskidmarks.cpp
             vehicle.cpp
+            vehiclesetup.cpp
             visibilitydata.c)
   # The PC port compiles these sources as C++, as the Windows libraries were built.
   set_source_files_properties(

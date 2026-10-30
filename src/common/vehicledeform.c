@@ -6,13 +6,12 @@
 #include "common/vehiclemodel.h"
 
 #if TGR_BOSS_RALLY
+#include "common/damagetexture.h"
 #include "common/gbicommand.h"
+#include "common/paintshop.h"
 #endif
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "win32/paintshop.h"
 #include "win32/render.h"
-#elif TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/pending.h"
 #endif
 
 #if TGR_BOSS_RALLY

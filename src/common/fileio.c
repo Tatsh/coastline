@@ -5,7 +5,15 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
+
+#define OutputFileMessage(message) OutputDebugStringA(message)
+#else
+#include <SDL3/SDL.h>
+
+#define OutputFileMessage(message) SDL_Log("%s", (message))
+#endif
 
 // The size of the buffer of a message to the debugger.
 #define MESSAGE_SIZE 1024
@@ -27,15 +35,16 @@ GameFile *CHK_FReadOpen(const char *pszPath) {
     GameFile *pFile;
     FILE *pErrorFile;
 
-    pFile = CHK_AllocateMemory(sizeof(GameFile), "CHK_FReadOpen():pfil");
-    pFile->pszPath = CHK_AllocateMemory(strlen(pszPath) + 1, "CHK_FReadOpen():szName");
+    pFile = (GameFile *)CHK_AllocateMemory(sizeof(GameFile), "CHK_FReadOpen():pfil");
+    pFile->pszPath = (char *)CHK_AllocateMemory(strlen(pszPath) + 1, "CHK_FReadOpen():szName");
     strcpy(pFile->pszPath, pszPath);
     if (g_bVerboseFileTrace) {
         sprintf(szMessage, "CHK_FReadOpen(%s)\n", pFile->pszPath);
-        OutputDebugStringA(szMessage);
+        OutputFileMessage(szMessage);
     }
     pFile->pFile = fopen(pFile->pszPath, "rb");
     if (pFile->pFile == nullptr) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
         pErrorFile = fopen("c:\\RallyError.txt", "w");
         sprintf(szMessage, "CHK_FReadOpen(): error opening file %s.\n", pFile->pszPath);
 #ifdef ENABLE_PATCHES
@@ -46,6 +55,12 @@ GameFile *CHK_FReadOpen(const char *pszPath) {
 #endif /* ENABLE_PATCHES */
         OutputDebugStringA(szMessage);
         fclose(pErrorFile);
+#else
+        // The log of the game takes the place of RallyError.txt at the root of drive C.
+        (void)pErrorFile;
+        sprintf(szMessage, "CHK_FReadOpen(): error opening file %s.\n", pFile->pszPath);
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", szMessage);
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         exit(1);
     }
     return pFile;
@@ -67,7 +82,7 @@ bool FCHK_FRead(void *pBuffer, size_t nSize, size_t nCount, GameFile *pFile) {
                 "FCHK_FRead(): trying to read %d bytes, but got only %d bytes.\n",
                 (int)(nSize * nCount),
                 (int)(nRead * nSize));
-        OutputDebugStringA(szMessage);
+        OutputFileMessage(szMessage);
         exit(1);
     }
     return true;
@@ -80,7 +95,7 @@ void *CHK_FRead(void *pBuffer, size_t nSize, size_t nCount, GameFile *pFile) {
         sprintf(szMessage,
                 "CHK_FRead(): trying to read %u bytes, but got EOF.\n",
                 (unsigned)(nCount * nSize));
-        OutputDebugStringA(szMessage);
+        OutputFileMessage(szMessage);
         exit(1);
     }
     return pBuffer;
@@ -123,11 +138,11 @@ void CHK_FClose(GameFile *pFile) {
 
     if (g_bVerboseFileTrace) {
         sprintf(szMessage, "CHK_FClose(%s)\n", pFile->pszPath);
-        OutputDebugStringA(szMessage);
+        OutputFileMessage(szMessage);
     }
     if (fclose(pFile->pFile) == EOF) {
         sprintf(szMessage, "CHK_FClose(): error closing file %s.\n", pFile->pszPath);
-        OutputDebugStringA(szMessage);
+        OutputFileMessage(szMessage);
         exit(1);
     }
     free(pFile->pszPath);
@@ -140,7 +155,7 @@ int CHK_FileExists(const char *pszPath) {
 
     if (g_bVerboseFileTrace) {
         sprintf(szMessage, "CHK_FileExists(%s)\n", pszPath);
-        OutputDebugStringA(szMessage);
+        OutputFileMessage(szMessage);
     }
     pFile = fopen(pszPath, "rb");
     if (pFile == nullptr) {
@@ -160,7 +175,7 @@ void *CHK_AllocateMemory(size_t nSize, const char *szCaller) {
     pMemory = malloc(nSize);
     if (pMemory == nullptr) {
         sprintf(szMessage, "CHK_AllocateMemory(): Out of memory: couldn't allocate %s\n", szCaller);
-        OutputDebugStringA(szMessage);
+        OutputFileMessage(szMessage);
         exit(1);
     }
     return pMemory;
@@ -177,7 +192,7 @@ void *CHK_ReAllocateMemory(void *pMemory, size_t nSize, const char *szCaller) {
     if (pResizedMemory == nullptr) {
         sprintf(
             szMessage, "CHK_ReAllocateMemory(): Out of memory: couldn't reallocate %s\n", szCaller);
-        OutputDebugStringA(szMessage);
+        OutputFileMessage(szMessage);
         exit(1);
     }
     return pResizedMemory;

@@ -8,6 +8,7 @@
 
 #include <zlib.h>
 
+#include "common/paintshop.h"
 #include "common/settings.h"
 #include "common/texturesampling.h"
 #include "common/textureworkspace.h"
@@ -17,7 +18,6 @@
 #include "win32/frontend.h"
 #include "win32/glide/renderer.h"
 #include "win32/glide/texture.h"
-#include "win32/paintshop.h"
 #include "win32/render.h"
 #include "win32/texturescan.h"
 

@@ -11,6 +11,7 @@
 #include "common/debugmessage.h"
 #include "common/displaylistops.h"
 #include "common/fileio.h"
+#include "common/paintshop.h"
 #include "common/screen.h"
 #include "common/settings.h"
 #include "common/textureworkspace.h"
@@ -19,7 +20,6 @@
 #include "win32/d3d/renderer.h"
 #include "win32/d3d/texture.h"
 #include "win32/displaylist.h"
-#include "win32/paintshop.h"
 #include "win32/texturescan.h"
 
 #if TGR_RENDERER == TGR_RENDERER_GLIDE
@@ -600,16 +600,6 @@ int g_dwTextureLoadCategory;
 
 void SetTextureLoadCategory(int nCategory) {
     g_dwTextureLoadCategory = nCategory;
-}
-
-int g_anDamageTextureEntries[DAMAGE_TEXTURE_COUNT];
-
-void ClearDamageTextureEntries(void) {
-    memset(g_anDamageTextureEntries, 0, sizeof(g_anDamageTextureEntries));
-}
-
-void CopyDamageTextureEntries(int *pnEntries) {
-    memcpy(pnEntries, g_anDamageTextureEntries, sizeof(g_anDamageTextureEntries));
 }
 
 void (*g_pfnReloadTextureEntryData)(int nEntry);
@@ -1344,18 +1334,6 @@ unsigned ResizeTextureMipChain(unsigned char *pDest,
     return bytes;
 }
 #endif /* TGR_BRD3D */
-
-void ModulateRgbaByMask(unsigned char *pixels, int width, int height, const unsigned char *mask) {
-    int count = static_cast<int>(static_cast<unsigned>(width) * static_cast<unsigned>(height));
-    for (int i = 0; i < count; ++i) {
-        unsigned intensity = mask[0];
-        pixels[0] = pixels[0] * intensity / 255;
-        pixels[1] = pixels[1] * intensity / 255;
-        pixels[2] = pixels[2] * intensity / 255;
-        pixels += 4;
-        mask += 4;
-    }
-}
 
 unsigned char g_abTextureResampleBuffer[TEXTURE_RESAMPLE_BUFFER_BYTES];
 

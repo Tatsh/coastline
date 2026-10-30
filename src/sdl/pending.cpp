@@ -11,6 +11,7 @@
 #include "common/buildinfo.h"
 #include "common/camera.h"
 #include "common/combine.h"
+#include "common/damagetexture.h"
 #include "common/debugmessage.h"
 #include "common/driving.h"
 #include "common/fatalerror.h"
@@ -87,11 +88,6 @@ void PaceRaceFrames(void) {
 }
 
 // The files and the messages of the game.
-void *CHK_FRead(void *pBuffer, size_t nSize, size_t nCount, GameFile *pFile) {
-    PENDING();
-    return pBuffer;
-}
-
 char *GetStringResource(unsigned nResourceId) {
     PENDING();
     return nullptr;
@@ -128,10 +124,6 @@ void ShutdownGameSession(void) {
     PENDING();
 }
 
-void FreeAllRacerColorPanels(void) {
-    PENDING();
-}
-
 // The input of the players.
 void ResetMouseState(void) {
     PENDING();
@@ -150,76 +142,8 @@ void SetForceFeedbackDirection(int nDirection) {
     PENDING();
 }
 
-void PlayerInputState::InitPlayerInputState(void) {
-    PENDING();
-}
-
-void PlayerInputState::ConsumeInputFlags(void) {
-    PENDING();
-}
-
-void PlayerInputState::TransferFlags(u32 mask) {
-    PENDING();
-}
-
 // The vehicles and the racers.
-void AiVehicleControllerCallback(Vehicle *vehicle) {
-    PENDING();
-}
-
-void PlayerVehicleControllerCallback(Vehicle *vehicle) {
-    PENDING();
-}
-
-void ApplyPlayerVehicleRespawnRequest(Vehicle *vehicle) {
-    PENDING();
-}
-
-void Vehicle::ChooseVehicleCar(void) {
-    PENDING();
-}
-
-void Vehicle::InitPlayerVehicleSlot(void) {
-    PENDING();
-}
-
-void Vehicle::InstallVehicleModel(s32 slot, s32 car) {
-    PENDING();
-}
-
-void Vehicle::ManageAiRacerSlots(void) {
-    PENDING();
-}
-
-void Vehicle::SetVehicleCarId(s32 carId) {
-    PENDING();
-}
-
-void Vehicle::SetVehiclePaintColorRgb(u8 red, u8 green, u8 blue) {
-    PENDING();
-}
-
-void Vehicle::TransformAllWheelMatrices(void) {
-    PENDING();
-}
-
-void Vehicle::UpdateCameraSystem(void) {
-    PENDING();
-}
-
-void Vehicle::UpdateVehiclePhysicsFrame(void) {
-    PENDING();
-}
-
 void Vehicle::UpdateVehicleSounds(void) {
-    PENDING();
-}
-
-void RacerSlot::UpdateRaceProgress(void) {
-    PENDING();
-}
-
-void RacerSlot::UpdateRacerSlotMotion(void) {
     PENDING();
 }
 
@@ -232,10 +156,6 @@ void MakeEnemyCarColorPanels(RacerSlot *slot) {
 }
 
 void RefreshVehicleMaterialTextures(VehicleModel *model) {
-    PENDING();
-}
-
-void SetColorTintMultipliers(int nRed, int nGreen, int nBlue) {
     PENDING();
 }
 

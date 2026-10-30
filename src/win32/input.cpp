@@ -757,18 +757,6 @@ unsigned short g_wMenuHoverIndex;
 DWORD g_dwLastInputActivityTime;
 MouseDevice *g_pMousePosition;
 
-void PlayerInputState::ConsumeInputFlags(void) {
-    ::ConsumeInputFlags(this);
-}
-
-void PlayerInputState::TransferFlags(u32 mask) {
-    ::TransferFlags(this, mask);
-}
-
-void PlayerInputState::InitPlayerInputState(void) {
-    ::InitPlayerInputState(this);
-}
-
 void UpdateMouseButtonEdges(void) {
     for (int i = 0; i < MOUSE_BUTTON_COUNT; i++) {
         g_adwMouseButtonPressed[i] = (g_adwMouseButtonPrev[i] == 0) & g_adwMouseButtonRaw[i];

@@ -16,7 +16,6 @@ add_library(
   displaylist.cpp
   dxversion.cpp
   earsound.cpp
-  fileio.c
   fpshud.c
   frametimer.cpp
   frontend.cpp
@@ -29,7 +28,6 @@ add_library(
   menufont.cpp
   modelrelocation.cpp
   netstream.cpp
-  paintshop.c
   podarchive.cpp
   racepacing.c
   racercolor.cpp
@@ -48,7 +46,6 @@ add_library(
   trackload.cpp
   tracktexture.cpp
   vehiclemodelload.c
-  vehiclesetup.cpp
   wavread.c)
 target_link_libraries(coastline_win32 PRIVATE coastline_options)
 

@@ -194,6 +194,7 @@ cycletype
 cyicon
 dacrate
 daddu
+damagetexture
 damnit
 darin
 dashboardtextures

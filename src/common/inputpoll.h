@@ -60,6 +60,21 @@ extern "C" {
  */
 unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration);
 
+/**
+ * Whether the respawn binding was pressed.
+ * @ghidraAddress BRD3D: 0x118abdcc
+ * @ghidraAddress BRGlide: 0x118eeee4
+ */
+extern int g_bRespawnRequested;
+
+/**
+ * Clear both states of the mouse.
+ *
+ * @ghidraAddress BRD3D: 0x100770c0
+ * @ghidraAddress BRGlide: 0x100703a0
+ */
+void ResetMouseState(void);
+
 #ifdef __cplusplus
 }
 #endif

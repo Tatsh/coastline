@@ -306,13 +306,6 @@ unsigned char IsInputBindingPressed(int nBinding);
 unsigned char IsInputBindingHeld(int nBinding);
 
 /**
- * Whether the respawn binding was pressed.
- * @ghidraAddress BRD3D: 0x118abdcc
- * @ghidraAddress BRGlide: 0x118eeee4
- */
-extern int g_bRespawnRequested;
-
-/**
  * Movement ranges for the eight mouse sensitivity settings.
  * @ghidraAddress BRD3D: 0x100bd400
  * @ghidraAddress BRGlide: 0x100bcc08
@@ -461,14 +454,6 @@ int GetPressedMouseButton(void);
  * @ghidraAddress BRGlide: 0x100704e0
  */
 int GetPressedJoystickControl(unsigned *pwControl);
-
-/**
- * Clear both states of the mouse.
- *
- * @ghidraAddress BRD3D: 0x100770c0
- * @ghidraAddress BRGlide: 0x100703a0
- */
-void ResetMouseState(void);
 
 /**
  * Add a user of the keyboard. The first user clears the states of the keyboard, the game

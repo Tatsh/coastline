@@ -19,6 +19,14 @@ extern "C" {
 #define VOLUME_LEVEL_COUNT 10
 
 /**
+ * Set the volumes of the music and the sound effects from the levels of g_GlobalRallyConfig.
+ *
+ * @ghidraAddress BRD3D: 0x10060d90
+ * @ghidraAddress BRGlide: 0x10059e00
+ */
+void ApplyAudioVolumeSettings(void);
+
+/**
  * The volume of the music of each level of the configuration, from 0 to 255.
  *
  * @ghidraAddress BRD3D: 0x100adf68

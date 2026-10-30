@@ -174,6 +174,7 @@ RallyConfig g_GlobalRallyConfig;
 // The input of the players.
 int g_bNetGamePaused;
 int g_bNetReadyToStartSent;
+int g_bRespawnRequested;
 unsigned g_dwInputButtonMask;
 
 // The sound and the music.

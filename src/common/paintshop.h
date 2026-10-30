@@ -6,7 +6,9 @@
  * The bitmaps of the paint shop of the PC port.
  */
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -247,7 +249,9 @@ void CopyBgr24ToRgba32Flipped(
  * @ghidraAddress BRD3D: 0x10060ea0
  * @ghidraAddress BRGlide: 0x10059f10
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 void *ConvertBitmap24ToRgba32(const BITMAP *pBitmap);
+#endif
 
 /**
  * Load a bitmap file of 24 bits as pixels of RGBA 8888.

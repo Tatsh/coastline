@@ -3,29 +3,30 @@
 #include <PR/gu.h>
 
 #include "common/camera.h"
+#include "common/damagetexture.h"
 #include "common/driving.h"
 #include "common/game.h"
 #include "common/ghost.h"
+#include "common/inputpoll.h"
 #include "common/instantreplay.h"
+#include "common/paintshop.h"
 #include "common/raceprogress.h"
 #include "common/racermotion.h"
 #include "common/racers.h"
 #include "common/racersharing.h"
+#include "common/racerslot.h"
 #include "common/racerslotaccess.h"
 #include "common/rallyconfig.h"
+#include "common/session.h"
 #include "common/settings.h"
 #include "common/strings.h"
 #include "common/trackselect.h"
 #include "common/vehicle.h"
 #include "common/vehicleaccess.h"
 #include "common/vehiclechoice.h"
+#include "common/vehiclecount.h"
 #include "common/vehiclephysics.h"
 #include "common/vehiclereset.h"
-#include "directplay.h"
-#include "input.h"
-#include "paintshop.h"
-#include "render.h"
-#include "sound.h"
 
 void AiVehicleControllerCallback(Vehicle *vehicle) {
     vehicle->ComputeAiVehicleInput();
@@ -219,4 +220,10 @@ void Vehicle::InitPlayerVehicleSlot(void) {
     }
     ChooseVehicleCar();
     customDecals = 0;
+}
+
+void FreeAllRacerColorPanels(void) {
+    for (s32 index = 0; index < g_dwNumVehicles; index++) {
+        g_aRacerSlots[index].FreeEnemyCarColorPanels();
+    }
 }

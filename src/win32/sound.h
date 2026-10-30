@@ -776,14 +776,6 @@ HRESULT FreeSoundBufferList(SoundBufferNode *pHead);
 bool RouteMusicInitByFlag(HWND hWnd);
 
 /**
- * Set the volumes of the music and the sound effects from the levels of g_GlobalRallyConfig.
- *
- * @ghidraAddress BRD3D: 0x10060d90
- * @ghidraAddress BRGlide: 0x10059e00
- */
-void ApplyAudioVolumeSettings(void);
-
-/**
  * Add a user of DirectSound when sound effects play. The first user clears the channels and the
  * banks, allocates the wave format of 22050 Hz, 16 bits, and two channels, and creates
  * DirectSound with priority and its primary buffer, playing in a loop. A step that fails releases

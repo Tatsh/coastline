@@ -28,14 +28,13 @@
 #include "common/rallyconfig.h"
 #include "common/screen.h"
 #include "common/settings.h"
+#include "common/soundsystem.h"
 #include "common/vehicleaccess.h"
 #include "common/vehiclecount.h"
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/directplay.h"
 #include "win32/input.h"
 #include "win32/sound.h"
-#elif TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/pending.h"
 #endif
 #endif /* !TGR_BOSS_RALLY */
 

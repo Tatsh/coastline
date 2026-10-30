@@ -18,12 +18,6 @@ int g_dwAppExitCode;
 /** @ghidraAddress BRD3D: 0x1027736c */
 DirectDrawRenderer *g_pMainRenderWindow;
 
-void FreeAllRacerColorPanels(void) {
-    for (s32 index = 0; index < g_dwNumVehicles; index++) {
-        g_aRacerSlots[index].FreeEnemyCarColorPanels();
-    }
-}
-
 [[noreturn]] void ShowFatalErrorScreen(const char *pszMessage) {
     GbiCommand commands[0x1000];
     InvalidateFrameSnapshotSlots();

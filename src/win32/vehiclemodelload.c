@@ -3,9 +3,9 @@
 
 #include "common/fatalerror.h"
 #include "common/fileio.h"
+#include "common/paintshop.h"
 #include "common/settings.h"
 #include "common/vehiclemodel.h"
-#include "win32/paintshop.h"
 
 void LoadVehicleModelFromRom(VehicleModel *model, s32 car) {
     int savedQuality = 0;

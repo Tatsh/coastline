@@ -1,8 +1,12 @@
-#include "win32/paintshop.h"
+#include "common/paintshop.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
+#include <SDL3/SDL.h>
+#endif
 
 #include "common/fileio.h"
 
@@ -506,10 +510,12 @@ void LoadCarPaintTextures(int group, int damageVariants) {
         set->apBitmaps[0] = LoadBitmapFromFile(path);
         path[8] = 'd';
         if (CHK_FileExists(path)) {
-            unsigned char *mask = LoadBitmapFromFile(path);
+            unsigned char *mask = (unsigned char *)LoadBitmapFromFile(path);
             if (set->apBitmaps[0] != NULL && mask != NULL) {
-                ModulateRgbaByMask(
-                    set->apBitmaps[0], g_dwConvertedBitmapWidth, g_dwConvertedBitmapHeight, mask);
+                ModulateRgbaByMask((unsigned char *)set->apBitmaps[0],
+                                   g_dwConvertedBitmapWidth,
+                                   g_dwConvertedBitmapHeight,
+                                   mask);
                 free(mask);
             }
         }
@@ -520,10 +526,10 @@ void LoadCarPaintTextures(int group, int damageVariants) {
         for (int damage = 1; damage < CAR_PAINT_BITMAP_COUNT; damage++) {
             unsigned allocationSize =
                 (unsigned)g_dwConvertedBitmapHeight * (unsigned)g_dwConvertedBitmapWidth * 4;
-            unsigned char *destination = malloc(allocationSize);
+            unsigned char *destination = (unsigned char *)malloc(allocationSize);
             set->apBitmaps[damage] = destination;
             if (destination != NULL) {
-                const unsigned char *source = set->apBitmaps[0];
+                const unsigned char *source = (const unsigned char *)set->apBitmaps[0];
                 unsigned bytes =
                     (unsigned)g_dwConvertedBitmapHeight * (unsigned)g_dwConvertedBitmapWidth * 4;
                 while (bytes != 0) {
@@ -535,7 +541,7 @@ void LoadCarPaintTextures(int group, int damageVariants) {
                     bytes -= 4;
                 }
                 ApplyPaintDamageOverlay(damage,
-                                        set->apBitmaps[damage],
+                                        (unsigned char *)set->apBitmaps[damage],
                                         g_dwConvertedBitmapWidth,
                                         g_dwConvertedBitmapHeight);
             }
@@ -544,7 +550,7 @@ void LoadCarPaintTextures(int group, int damageVariants) {
 }
 
 void ApplyPaintDamageOverlay(int damage, unsigned char *pixels, int width, int height) {
-    const unsigned char *mask = g_apPaintDamageBitmaps[damage - 1];
+    const unsigned char *mask = (const unsigned char *)g_apPaintDamageBitmaps[damage - 1];
     unsigned rowCoordinate = 0;
 
     if (mask == NULL || height <= 0 || width <= 0) {
@@ -589,7 +595,7 @@ int HasPaintTintPixels(const void *pImage, int nLeft, int nRight, int nTop, int 
     int width = (int)((unsigned)nRight - (unsigned)nLeft);
     int height = (int)((unsigned)nBottom - (unsigned)nTop);
     if (pImage != NULL && width > 0 && height > 0) {
-        const unsigned char *pixel = pImage;
+        const unsigned char *pixel = (const unsigned char *)pImage;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 if (pixel[0] == 0 && pixel[1] == pixel[2]) {
@@ -613,7 +619,7 @@ int BlitPaintImageToPixels(const void *pImage,
     int width = (int)((unsigned)nRight - (unsigned)nLeft);
     int height = (int)((unsigned)nBottom - (unsigned)nTop);
     if (pImage != NULL && width > 0 && height > 0) {
-        const unsigned char *source = pImage;
+        const unsigned char *source = (const unsigned char *)pImage;
         for (int y = 0; y < height; y++) {
             unsigned char *dest = pDest + ((nHeight - nTop - y - 1) * nWidth + nLeft) * 4;
             for (int x = 0; x < width; x++) {
@@ -661,6 +667,7 @@ void CopyBgr24ToRgba32Flipped(
     }
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 void *ConvertBitmap24ToRgba32(const BITMAP *pBitmap) {
     unsigned char *pPixels;
 
@@ -676,7 +683,35 @@ void *ConvertBitmap24ToRgba32(const BITMAP *pBitmap) {
     }
     return pPixels;
 }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
+void *LoadBitmapFromFile(const char *pszPath) {
+    SDL_Surface *surface = SDL_LoadBMP(pszPath);
+    unsigned char *pPixels = nullptr;
+
+    if (surface == nullptr) {
+        return nullptr;
+    }
+    // An SDL surface stores its rows from the top down, and the copy walks them with a negative
+    // stride from the top row.
+    if (SDL_BITSPERPIXEL(surface->format) == PAINT_BITMAP_BITS) {
+        pPixels = (unsigned char *)malloc(surface->h * surface->w * RGBA32_PIXEL_SIZE);
+        if (pPixels != nullptr) {
+            CopyBgr24ToRgba32Flipped(pPixels,
+                                     (const unsigned char *)surface->pixels +
+                                         (surface->h - 1) * surface->pitch,
+                                     surface->w,
+                                     surface->h,
+                                     -surface->pitch);
+            g_dwConvertedBitmapWidth = surface->w;
+            g_dwConvertedBitmapHeight = surface->h;
+        }
+    }
+    SDL_DestroySurface(surface);
+    return pPixels;
+}
+#else
 void *LoadBitmapFromFile(const char *pszPath) {
     HBITMAP hBitmap;
     BITMAP bm;
@@ -695,6 +730,19 @@ void *LoadBitmapFromFile(const char *pszPath) {
     pPixels = ConvertBitmap24ToRgba32(&bm);
     DeleteObject(hBitmap);
     return pPixels;
+}
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
+
+void ModulateRgbaByMask(unsigned char *pixels, int width, int height, const unsigned char *mask) {
+    int count = (int)((unsigned)width * (unsigned)height);
+    for (int i = 0; i < count; ++i) {
+        unsigned intensity = mask[0];
+        pixels[0] = pixels[0] * intensity / 255;
+        pixels[1] = pixels[1] * intensity / 255;
+        pixels[2] = pixels[2] * intensity / 255;
+        pixels += 4;
+        mask += 4;
+    }
 }
 
 void SetColorTintMultipliers(int nRed, int nGreen, int nBlue) {
