@@ -1,15 +1,13 @@
 // ponytail: the routines of the Windows libraries the race engine calls and the SDL game does not
 // implement yet. Each records its first call in the log and does nothing. Every routine here calls
-// Windows (DirectInput, the renderers, or the application window), or loads tracks and models
-// through 32-bit relocation, and later milestones give each an SDL implementation.
+// Windows (the renderers or the application window), or loads tracks and models through 32-bit
+// relocation, and later milestones give each an SDL implementation.
 #include <cstdlib>
 
 #include <SDL3/SDL.h>
 
-#include "common/camera.h"
 #include "common/damagetexture.h"
 #include "common/fatalerror.h"
-#include "common/inputpoll.h"
 #include "common/model.h"
 #include "common/racerslot.h"
 #include "common/relocation.h"
@@ -42,37 +40,6 @@
 }
 
 void ShutdownGameSession(void) {
-    PENDING();
-}
-
-// The input of the players.
-void ResetMouseState(void) {
-    PENDING();
-}
-
-unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration) {
-    PENDING();
-    return 0;
-}
-
-int InitializeJoystickDevice(void) {
-    PENDING();
-    return 0;
-}
-
-void UpdateForceFeedbackForce(int bReduceForce, int bEnableForce, int nForce) {
-    PENDING();
-}
-
-void SetForceFeedbackDirection(int nDirection) {
-    PENDING();
-}
-
-void SetForceFeedbackShortDuration(void) {
-    PENDING();
-}
-
-void StartForceFeedbackJolt(void) {
     PENDING();
 }
 

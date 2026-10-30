@@ -44,6 +44,7 @@ int g_dwAccumUnlockedTrackMask;
 int g_dwHandlingTypeMenuIndex = 4;
 s16 g_wVehicleDeformMaxDent = 0x100;
 int g_bRaceStartReached;
+int g_dwRunBenchmark;
 int g_dwNetworkPlayMode;
 const char g_szEmptyUiString[1] = {0};
 int g_dwNullStubEnable = 1;
