@@ -258,8 +258,9 @@ wrapping when the gain raises it past the range of a sample.
 
 The data comes from a Boss Rally disc image and a Top Gear Rally cartridge image. The import
 checks the cartridge against the SHA-1 of each release, and converts the CD audio of a CUE sheet
-to FLAC. An ISO image has no CD audio. The import writes every file to `assets/defaults` in the
-data directory.
+to FLAC. An ISO image has no CD audio. The import writes every file to `assets/default` in the
+data directory. On start, the game moves the `assets/defaults` of an earlier import to
+`assets/default`.
 
 ```shell
 coastline --import-disc 'Boss Rally.cue' --import-rom usa.z64 --import-rom jpn.z64
@@ -278,11 +279,11 @@ disc and the cartridges are imported again.
 `AssetPack` in the `[Game]` section selects the pack, `default` or `boss` for the images of the PC
 release, and `--asset-pack NAME` selects one for a single run. A mod pack is a directory of its own
 in `assets`, selected by its directory name. A file of the selected pack replaces the file of the
-same path in `assets/defaults`, and every other file is read from `assets/defaults`. The game links
+same path in `assets/default`, and every other file is read from `assets/default`. The game links
 the files of both packs into `assets/NAME` in the cache directory on each start.
 
 A pack may have a `pack.json` of settings. Each key of the selected pack replaces the key of
-`assets/defaults/pack.json`, which the import writes.
+`assets/default/pack.json`, which the import writes.
 
 ```json
 {

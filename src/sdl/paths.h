@@ -56,15 +56,14 @@ bool CreateGamePaths(const GamePaths &paths);
  * @return The directory of the default pack.
  */
 inline std::filesystem::path DefaultAssets(const std::filesystem::path &data) {
-    return data / "assets" / "defaults";
+    return data / "assets" / "default";
 }
 
-/** The name of the asset pack of the import, the directory assets/defaults. */
+/** The name of the asset pack of the import, the directory assets/default. */
 inline constexpr std::string_view DEFAULT_PACK = "default";
 
 /**
- * The directory of a pack under assets of the data directory: defaults for the default pack, and
- * the directory of the name for another.
+ * The directory of a pack under assets of the data directory, named after the pack.
  *
  * @param data The data directory of the game.
  * @param pack The name of the pack.

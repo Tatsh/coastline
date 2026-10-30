@@ -100,7 +100,7 @@ bool LayerDirectory(const std::filesystem::path &base,
 } // namespace
 
 std::filesystem::path PackDirectory(const std::filesystem::path &data, std::string_view pack) {
-    return pack == DEFAULT_PACK ? DefaultAssets(data) : data / "assets" / pack;
+    return data / "assets" / pack;
 }
 
 std::optional<std::filesystem::path> PackAssets(const std::filesystem::path &data,

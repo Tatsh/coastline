@@ -59,7 +59,7 @@ inline constexpr UsaMusicModule USA_MUSIC_MODULES[] = {{0x0EBC00, "menu"},
  * XM modules in music.
  *
  * @param image The cartridge image.
- * @param dataDirectory The directory of the pack to write, assets/defaults of the data directory.
+ * @param dataDirectory The directory of the pack to write, assets/default of the data directory.
  * @return The release, or a message.
  */
 std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &image,
@@ -90,7 +90,7 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
  * Boss.ico moves to icon/coastline.ico, beside a PNG image of each of its sizes.
  *
  * @param disc A CUE sheet or an ISO image.
- * @param dataDirectory The directory of the pack to write, assets/defaults of the data directory.
+ * @param dataDirectory The directory of the pack to write, assets/default of the data directory.
  * @param progress Called as each file and track is written.
  * @return The number of files written, or a message.
  */

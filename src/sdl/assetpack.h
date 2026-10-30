@@ -27,7 +27,7 @@ inline constexpr float DEFAULT_XM_MUSIC_GAIN = 1.5f;
  * disc is not yet imported is skipped, and an image already in place is not written again. Each
  * file written is read back and compared. The default pack and boss also take their pack.json.
  *
- * @param defaults The directory of the default pack, assets/defaults of the data directory.
+ * @param defaults The directory of the default pack, assets/default of the data directory.
  * @return A message, or nothing.
  */
 std::optional<std::string> CurateAssetPacks(const std::filesystem::path &defaults);
