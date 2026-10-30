@@ -309,14 +309,17 @@ void RecordFrameSkidMarks(Vehicle *vehicles) {
     }
 }
 
-// DrawSkidTrails() without the test of the visibility of the instances under the segments, which
-// the SDL game does not build.
+// DrawSkidTrails(), with the pool of the vertices of the quads of the track to itself.
+// ponytail: the shadows of the cars take vertices of the pool before the skid marks on the PC
+// release, and the instances near the eighth vehicle read as out of view there.
 void VisitSkidMarkQuads(void (*visit)(const Vec3f *oldRight,
                                       const Vec3f *newRight,
                                       const Vec3f *oldLeft,
                                       const Vec3f *newLeft,
                                       void *context),
-                        void *context) {
+                        void *context,
+                        const unsigned char *listed) {
+    int vertices = 0;
     bool active[SKID_MARK_TRACK_COUNT] = {};
     int indices[SKID_MARK_TRACK_COUNT] = {};
     for (int trail = 0; trail < g_dwNumActiveVehicles * 4; ++trail) {
@@ -339,7 +342,12 @@ void VisitSkidMarkQuads(void (*visit)(const Vec3f *oldRight,
                 continue;
             }
             const SkidMarkSegment &old = g_aSkidMarkSegments[trail][previous];
-            if ((segment.flags & ACTIVE) && (old.flags & ACTIVE)) {
+            if ((segment.flags & ACTIVE) && (old.flags & ACTIVE) &&
+                (listed[segment.flags & ~ACTIVE] || listed[old.flags & ~ACTIVE])) {
+                if (TRACK_QUAD_VERTICES <= vertices + 4) {
+                    return;
+                }
+                vertices += 4;
                 visit(&old.right, &segment.right, &old.left, &segment.left, context);
             }
             more = true;

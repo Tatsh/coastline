@@ -1699,7 +1699,10 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         const FlatMaterial &material = quad.material;
         bool combined = material.combine[0] != 0 || material.combine[1] != 0;
         FragmentUniforms fragmentUniforms{
-            {-1.0f, 0.0f, material.texel0 != nullptr ? 1.0f : 0.0f, combined ? 1.0f : 0.0f},
+            {material.alphaCut,
+             0.0f,
+             material.texel0 != nullptr ? 1.0f : 0.0f,
+             combined ? 1.0f : 0.0f},
             {0.0f, 0.0f, 1.0f, 0.0f},
             {material.combine[0], material.combine[1], material.twoCycle ? 1u : 0u, 0u},
             {material.prim[0], material.prim[1], material.prim[2], material.prim[3]},

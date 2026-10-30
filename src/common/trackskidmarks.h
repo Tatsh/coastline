@@ -41,17 +41,21 @@ void RecordFrameSkidMarks(Vehicle *vehicles);
 
 /**
  * Visit the quads of the skid marks in the order DrawTrackShadows() draws them, each the right
- * and the left corner of the older segment and of the newer one.
+ * and the left corner of the older segment and of the newer one. A quad is visited when the
+ * instance under either of its segments is in view, until the quads fill the pool of the vertices
+ * of the quads of the track.
  *
  * @param visit Called with the four corners of a quad and the context.
  * @param context Passed to each call.
+ * @param listed For each instance of the track, nonzero when the view lists it in view.
  */
 void VisitSkidMarkQuads(void (*visit)(const Vec3f *oldRight,
                                       const Vec3f *newRight,
                                       const Vec3f *oldLeft,
                                       const Vec3f *newLeft,
                                       void *context),
-                        void *context);
+                        void *context,
+                        const unsigned char *listed);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 #ifdef __cplusplus

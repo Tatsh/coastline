@@ -549,10 +549,14 @@ struct SkidQuads {
     float v = 0.0f;
 };
 
+// The render mode of the skid marks blends them by their alpha without writing the depth, a texel
+// of an alpha below 1 drawing nothing, or below 8 at night and in the rain. The quads draw where an
+// instance under them is in view.
 void DrawSkidMarks(SceneRenderer &renderer,
                    const RenderTexture &texture,
                    std::array<float, 4> color,
-                   const Matrix4 &viewProjection) {
+                   const Matrix4 &viewProjection,
+                   const std::vector<unsigned char> &listed) {
     SkidQuads quads;
     quads.u = 1024.0f / (32.0f * static_cast<float>(texture.Width()));
     quads.v = 1024.0f / (32.0f * static_cast<float>(texture.Height()));
@@ -571,7 +575,8 @@ void DrawSkidMarks(SceneRenderer &renderer,
             corner(newLeft, skid.u, skid.v);
             corner(oldLeft, 0.0f, skid.v);
         },
-        &quads);
+        &quads,
+        listed.data());
     if (quads.corners.empty()) {
         return;
     }
@@ -579,6 +584,7 @@ void DrawSkidMarks(SceneRenderer &renderer,
     material.texel0 = &texture;
     material.combine = SKID_COMBINE;
     material.env = color;
+    material.alphaCut = (!g_dwNightMode && !g_dwRainMode ? 1.0f : 8.0f) / 255.0f;
     renderer.DrawQuads(quads.corners, material, viewProjection, true);
 }
 
@@ -1163,6 +1169,8 @@ struct ViewInstances {
     std::vector<int> opaque{-1};
     // The translucent instances the second pass draws, the farthest first.
     std::vector<int> translucent;
+    // For each instance, nonzero when the view lists it in view, the groups it hides or not.
+    std::vector<unsigned char> listed;
 };
 
 // RenderRaceView() casts a ray down from the camera, and the groups the instances under it hide are
@@ -1223,9 +1231,10 @@ VisibleInstances(const CameraFrame &camera, float fov, float farPlane, SDL_Rect 
     std::qsort(cells.data(), cells.size(), sizeof(VisibleCell), CompareVisibleCellDistance);
 
     ViewInstances view;
-    std::vector<bool> listed(static_cast<std::size_t>(g_LoadedTrack.instanceCount), false);
+    view.listed.assign(static_cast<std::size_t>(g_LoadedTrack.instanceCount), 0);
+    std::vector<unsigned char> &listed = view.listed;
     auto list = [&](u16 index) {
-        listed[index] = true;
+        listed[index] = 1;
         const TrackInstance &instance = g_LoadedTrack.instances[index];
         if ((instance.groups & hidden) != 0) {
             return;
@@ -1477,7 +1486,8 @@ void RaceView::DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, 
                                std::move(instances.translucent),
                                std::move(shadow));
     if (snapshot != nullptr && s.skidTexture && g_GlobalRallyConfig.bSkidMarksSelection) {
-        DrawSkidMarks(renderer, *s.skidTexture, ShadowColor(vehicle), viewProjection);
+        DrawSkidMarks(
+            renderer, *s.skidTexture, ShadowColor(vehicle), viewProjection, instances.listed);
     }
     drawCars(true);
     // RenderExhaustAndTireSpray(): the spray of the vehicles. A championship has more racers than
