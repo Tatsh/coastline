@@ -1052,7 +1052,9 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
         }
     }
     if (state->placed.empty()) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s draws nothing.", path.string().c_str());
+        if (!options.optional) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s draws nothing.", path.string().c_str());
+        }
         return nullptr;
     }
     for (std::size_t p = 0; p < state->placed.size(); ++p) {

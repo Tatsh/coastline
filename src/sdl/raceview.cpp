@@ -486,14 +486,20 @@ std::vector<MorphPose> StartLightsPoses(const RenderModel &lights) {
 
 } // namespace
 
-// The parts of the car of a vehicle.
-struct CarModels {
+// The parts of the car of a vehicle at a level of detail.
+struct CarLevel {
     // The textured parts of the car, and the painted body and windows drawn after the highlight.
     std::unique_ptr<RenderModel> car;
     std::unique_ptr<RenderModel> paint;
     std::unique_ptr<RenderModel> underside;
     // The parts of the car the specular highlight shines on.
     std::unique_ptr<RenderModel> highlighted;
+};
+
+// The parts of the car of a vehicle: each level of detail, the nearest first, once it is drawn,
+// and the wheels of the nearest level, which RenderWheelModels() draws at every level.
+struct CarModels {
+    std::array<std::optional<CarLevel>, VEHICLE_LODS> levels;
     std::unique_ptr<RenderModel> wheel;
     std::unique_ptr<RenderModel> snowWheel;
 };
@@ -1137,44 +1143,70 @@ RaceView::~RaceView() = default;
 
 namespace {
 
-// The car of the nearest level of detail, the one level a single view draws, in its parts: the
-// body, the underside, and a wheel of each kind, which the race places one by one. The geometry of
-// the car is that of the PC release, which its race moves, and its textures are those of the
-// cartridge, painted as SetMaterialColor() paints them. None of the parts load when the car is
-// missing.
-// ponytail: each part, and each colour of a car, loads the images of the car again; a model drawn
-// by parts and painted as it is drawn would share them.
-CarModels
-LoadCarModels(SceneRenderer &renderer, const std::filesystem::path &defaults, const CarKey &key) {
-    std::string prefix = g_apszCarModelPrefixes[key[0]];
-    auto carFile = defaults / "cars" / (prefix + ".gltf");
-    CarModels models;
+// The options of the models of a car: its textures those of the cartridge, painted as
+// SetMaterialColor() paints them.
+ModelOptions
+CarOptions(const std::filesystem::path &defaults, const std::string &prefix, const CarKey &key) {
     ModelOptions options;
     options.paint = std::array<std::uint8_t, 3>{static_cast<std::uint8_t>(key[1]),
                                                 static_cast<std::uint8_t>(key[2]),
                                                 static_cast<std::uint8_t>(key[3])};
     options.images = CartridgeCar(defaults, prefix);
-    options.parts = [](const std::string &n) {
-        return n == "lod0-nearDetail" || n == "lod0-textured";
+    return options;
+}
+
+// A level of detail of a car in its parts, the children of the root of the level: the textured
+// parts, the body, and the underside, and the highlighted parts, a node of their own. A part the
+// level does not have is none, as RenderVehicleModel() passes over a display list the level does
+// not have, and only a part of the nearest level is missed in the log.
+// ponytail: each part, each level, and each colour of a car loads the images of the car again; a
+// model drawn by parts and painted as it is drawn would share them.
+CarLevel LoadCarLevel(SceneRenderer &renderer,
+                      const std::filesystem::path &defaults,
+                      const CarKey &key,
+                      int lod) {
+    std::string prefix = g_apszCarModelPrefixes[key[0]];
+    auto carFile = defaults / "cars" / (prefix + ".gltf");
+    std::string root = "lod" + std::to_string(lod);
+    std::string level = root + "-";
+    CarLevel parts;
+    ModelOptions options = CarOptions(defaults, prefix, key);
+    options.optional = lod != 0;
+    options.node = root;
+    options.parts = [&level](const std::string &n) {
+        return n == level + "nearDetail" || n == level + "textured";
     };
     options.variants = CAR_LIGHT_VARIANTS;
     options.paletteVariant = CarLightPalette;
-    models.car = RenderModel::Load(renderer, carFile, options);
+    parts.car = RenderModel::Load(renderer, carFile, options);
     options.variants = 0;
     options.paletteVariant = nullptr;
-    options.parts = [](const std::string &n) { return n == "lod0-paint"; };
-    models.paint = RenderModel::Load(renderer, carFile, options);
-    options.parts = [](const std::string &n) { return n == "lod0-underside"; };
-    models.underside = RenderModel::Load(renderer, carFile, options);
+    options.parts = [&level](const std::string &n) { return n == level + "paint"; };
+    parts.paint = RenderModel::Load(renderer, carFile, options);
+    options.parts = [&level](const std::string &n) { return n == level + "underside"; };
+    parts.underside = RenderModel::Load(renderer, carFile, options);
     // The highlighted parts are a node outside the scene, drawn without the turn of its root.
     options.parts = nullptr;
-    options.node = "lod0-highlighted";
-    models.highlighted = RenderModel::Load(renderer, carFile, options);
+    options.node = level + "highlighted";
+    parts.highlighted = RenderModel::Load(renderer, carFile, options);
+    return parts;
+}
+
+// The car of the nearest level of detail, the one level a single view draws, and a wheel of each
+// kind, which the race places one by one. The geometry of the car is that of the PC release, which
+// its race moves. None of the parts load when the car is missing.
+CarModels
+LoadCarModels(SceneRenderer &renderer, const std::filesystem::path &defaults, const CarKey &key) {
+    std::string prefix = g_apszCarModelPrefixes[key[0]];
+    auto carFile = defaults / "cars" / (prefix + ".gltf");
+    CarModels models;
+    models.levels[0] = LoadCarLevel(renderer, defaults, key, 0);
+    ModelOptions options = CarOptions(defaults, prefix, key);
     options.node = "lod0-wheel0";
     models.wheel = RenderModel::Load(renderer, carFile, options);
     options.node = "lod0-wheelSnow0";
     models.snowWheel = RenderModel::Load(renderer, carFile, options);
-    if (!models.car || !models.paint || !models.wheel) {
+    if (!models.levels[0]->car || !models.levels[0]->paint || !models.wheel) {
         return {};
     }
     return models;
@@ -1200,7 +1232,7 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     for (const RaceCar &vehicle : cars) {
         CarKey key{vehicle.car, vehicle.paint[0], vehicle.paint[1], vehicle.paint[2]};
         CarModels models = LoadCarModels(renderer, defaults, key);
-        if (!models.car) {
+        if (!models.levels[0]) {
             return nullptr;
         }
         state->cars.try_emplace(key, std::move(models));
@@ -1637,35 +1669,58 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     if (found == s.cars.end()) {
         found = s.cars.try_emplace(key, LoadCarModels(renderer, s.defaults, key)).first;
     }
-    const CarModels &models = found->second;
-    if (!models.car) {
+    CarModels &models = found->second;
+    if (!models.levels[0]) {
         return;
     }
+    const CameraFrame &frame = car.GetFrame();
+    // With the screen split in two, a car 40 from the camera is drawn at the second level of
+    // detail, and one 80 from it at the third, as SPLIT_LOD1_DISTANCE and SPLIT_LOD2_DISTANCE of
+    // RenderVehicleModel() pick them. Its g_dwVehicleLodBias is never set on the PC release.
+    constexpr long double SPLIT_LOD1_DISTANCE = 40.0L;
+    constexpr long double SPLIT_LOD2_DISTANCE = 80.0L;
+    std::size_t lod = 0;
+    if (g_dwNumViewports == 2) {
+        Vec3f from = frame.position;
+        Vec3f to = camera.position;
+        long double distance = Vec3fDistance(&from, &to);
+        if (distance >= SPLIT_LOD2_DISTANCE) {
+            lod = 2;
+        } else if (distance >= SPLIT_LOD1_DISTANCE) {
+            lod = 1;
+        }
+    }
+    if (!models.levels[lod]) {
+        models.levels[lod] = LoadCarLevel(renderer, s.defaults, key, static_cast<int>(lod));
+    }
+    const CarLevel &level = *models.levels[lod];
     bool ghost = car.GetGhostMode() == VEHICLE_GHOST;
     renderer.SetGhost(ghost);
     Lighting carLighting = CarLighting(car, vehicle, camera);
-    Matrix4 body = MultiplyMatrices(FrameMatrix(car.GetFrame()), ConsoleSpace());
+    Matrix4 body = MultiplyMatrices(FrameMatrix(frame), ConsoleSpace());
     Reflection reflection =
         SkyReflection(s.daySky.get(), s.nightSky.get(), camera, car, g_aVehicles[cameraIndex]);
     // The textured parts, the underside, the highlight, and the painted body in turn.
-    models.car->SetVariant(CarLightVariant(car));
-    renderer.DrawReflectingModel(*models.car, body, viewProjection, carLighting, reflection);
+    if (level.car) {
+        level.car->SetVariant(CarLightVariant(car));
+        renderer.DrawReflectingModel(*level.car, body, viewProjection, carLighting, reflection);
+    }
     // The underside shows only from below the car.
-    const CameraFrame &frame = car.GetFrame();
     float below = frame.up.x * (frame.position.x - camera.position.x) +
                   frame.up.y * (frame.position.y - camera.position.y) +
                   frame.up.z * (frame.position.z - camera.position.z);
-    if (models.underside && below > 0.0f) {
-        renderer.DrawModel(
-            *models.underside, body, viewProjection, carLighting, std::nullopt, true);
+    if (level.underside && below > 0.0f) {
+        renderer.DrawModel(*level.underside, body, viewProjection, carLighting, std::nullopt, true);
     }
     std::optional<Highlight> highlight =
         CarHighlight(car, vehicle, camera, s.dayHighlight.get(), s.nightHighlight.get());
     // The highlight draws only where the depth is equal, and a ghost does not write the depth.
-    if (highlight && models.highlighted && !ghost) {
-        renderer.DrawHighlight(*models.highlighted, FrameMatrix(frame), viewProjection, *highlight);
+    if (highlight && level.highlighted && !ghost) {
+        renderer.DrawHighlight(*level.highlighted, FrameMatrix(frame), viewProjection, *highlight);
     }
-    renderer.DrawReflectingModel(*models.paint, body, viewProjection, carLighting, reflection);
+    if (level.paint) {
+        renderer.DrawReflectingModel(*level.paint, body, viewProjection, carLighting, reflection);
+    }
     // RenderWheelModels(): each wheel at the matrix the race gives it, in snow the wheel of the
     // snow.
     const RenderModel &wheel = g_dwSnowMode && models.snowWheel ? *models.snowWheel : *models.wheel;

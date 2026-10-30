@@ -145,6 +145,9 @@ struct ModelOptions {
     /** Change the palette of an image of a material for a variant, and report whether the image
      * has variants; called for each variant of each image with a material. */
     std::function<bool(SDL_Palette *, int material, int variant)> paletteVariant;
+    /** Whether the document may have nothing to draw, such as a part a level of detail of a car
+     * does not have, which then loads no model without an error. */
+    bool optional = false;
 };
 
 /** A converted model on the GPU: its meshes, its parts, and its animations. */
