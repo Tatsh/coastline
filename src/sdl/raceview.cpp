@@ -521,8 +521,9 @@ struct CarModels {
     std::unique_ptr<RenderModel> snowWheel;
 };
 
-// A car in a colour: the car, an index of g_apszCarModelPrefixes, and its red, green, and blue.
-using CarKey = std::array<int, 4>;
+// A car in a colour: the car, an index of g_apszCarModelPrefixes, its red, green, and blue, and
+// 1 more than the vehicle whose images come from another document, or 0 for the cartridge.
+using CarKey = std::array<int, 5>;
 
 struct RaceView::State {
     std::filesystem::path defaults;
@@ -534,6 +535,8 @@ struct RaceView::State {
     // championship take the colour of each racer they drive for, and a car in a colour not seen
     // before loads while the race runs.
     std::map<CarKey, CarModels> cars;
+    // The documents of the images of the vehicles that do not take those of the cartridge.
+    std::map<int, std::filesystem::path> images;
     std::unique_ptr<RenderModel> startLights;
     std::unique_ptr<MenuText> text;
     // The images of the day and the night sky the paint and the windows of the car reflect.
@@ -1209,15 +1212,17 @@ RaceView::~RaceView() = default;
 
 namespace {
 
-// The options of the models of a car: its textures those of the cartridge, painted as
-// SetMaterialColor() paints them.
-ModelOptions
-CarOptions(const std::filesystem::path &defaults, const std::string &prefix, const CarKey &key) {
+// The options of the models of a car: its textures those of the cartridge or of another document,
+// painted as SetMaterialColor() paints them.
+ModelOptions CarOptions(const std::filesystem::path &defaults,
+                        const std::string &prefix,
+                        const CarKey &key,
+                        const std::optional<std::filesystem::path> &images) {
     ModelOptions options;
     options.paint = std::array<std::uint8_t, 3>{static_cast<std::uint8_t>(key[1]),
                                                 static_cast<std::uint8_t>(key[2]),
                                                 static_cast<std::uint8_t>(key[3])};
-    options.images = CartridgeCar(defaults, prefix);
+    options.images = images ? images : CartridgeCar(defaults, prefix);
     return options;
 }
 
@@ -1230,13 +1235,14 @@ CarOptions(const std::filesystem::path &defaults, const std::string &prefix, con
 CarLevel LoadCarLevel(SceneRenderer &renderer,
                       const std::filesystem::path &defaults,
                       const CarKey &key,
-                      int lod) {
+                      int lod,
+                      const std::optional<std::filesystem::path> &images) {
     std::string prefix = g_apszCarModelPrefixes[key[0]];
     auto carFile = defaults / "cars" / (prefix + ".gltf");
     std::string root = "lod" + std::to_string(lod);
     std::string level = root + "-";
     CarLevel parts;
-    ModelOptions options = CarOptions(defaults, prefix, key);
+    ModelOptions options = CarOptions(defaults, prefix, key, images);
     options.optional = lod != 0;
     options.node = root;
     options.parts = [&level](const std::string &n) {
@@ -1261,13 +1267,15 @@ CarLevel LoadCarLevel(SceneRenderer &renderer,
 // The car of the nearest level of detail, the one level a single view draws, and a wheel of each
 // kind, which the race places one by one. The geometry of the car is that of the PC release, which
 // its race moves. None of the parts load when the car is missing.
-CarModels
-LoadCarModels(SceneRenderer &renderer, const std::filesystem::path &defaults, const CarKey &key) {
+CarModels LoadCarModels(SceneRenderer &renderer,
+                        const std::filesystem::path &defaults,
+                        const CarKey &key,
+                        const std::optional<std::filesystem::path> &images) {
     std::string prefix = g_apszCarModelPrefixes[key[0]];
     auto carFile = defaults / "cars" / (prefix + ".gltf");
     CarModels models;
-    models.levels[0] = LoadCarLevel(renderer, defaults, key, 0);
-    ModelOptions options = CarOptions(defaults, prefix, key);
+    models.levels[0] = LoadCarLevel(renderer, defaults, key, 0, images);
+    ModelOptions options = CarOptions(defaults, prefix, key, images);
     options.node = "lod0-wheel0";
     models.wheel = RenderModel::Load(renderer, carFile, options);
     options.node = "lod0-wheelSnow0";
@@ -1295,9 +1303,14 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     sky.node = "sky";
     state->sky = RenderModel::Load(renderer, trackFile, sky);
     state->defaults = defaults;
-    for (const RaceCar &vehicle : cars) {
-        CarKey key{vehicle.car, vehicle.paint[0], vehicle.paint[1], vehicle.paint[2]};
-        CarModels models = LoadCarModels(renderer, defaults, key);
+    for (std::size_t i = 0; i < cars.size(); ++i) {
+        const RaceCar &vehicle = cars[i];
+        int custom = vehicle.images ? static_cast<int>(i) + 1 : 0;
+        if (vehicle.images) {
+            state->images[static_cast<int>(i)] = *vehicle.images;
+        }
+        CarKey key{vehicle.car, vehicle.paint[0], vehicle.paint[1], vehicle.paint[2], custom};
+        CarModels models = LoadCarModels(renderer, defaults, key, vehicle.images);
         if (!models.levels[0]) {
             return nullptr;
         }
@@ -1898,11 +1911,17 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     const Matrix4 &viewProjection = *view.viewProjection;
     int cameraIndex = view.cameraIndex;
     const auto &color = car.GetColor();
-    CarKey key{car.GetCarModel(), color[0], color[1], color[2]};
+    auto vehicleIndex = static_cast<int>(&car - &g_aVehicles[0]);
+    auto images = s.images.find(vehicleIndex);
+    std::optional<std::filesystem::path> document;
+    if (images != s.images.end()) {
+        document = images->second;
+    }
+    CarKey key{car.GetCarModel(), color[0], color[1], color[2], document ? vehicleIndex + 1 : 0};
     auto found = s.cars.find(key);
     // A car that does not load is not tried again.
     if (found == s.cars.end()) {
-        found = s.cars.try_emplace(key, LoadCarModels(renderer, s.defaults, key)).first;
+        found = s.cars.try_emplace(key, LoadCarModels(renderer, s.defaults, key, document)).first;
     }
     CarModels &models = found->second;
     if (!models.levels[0]) {
@@ -1926,7 +1945,8 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
         }
     }
     if (!models.levels[lod]) {
-        models.levels[lod] = LoadCarLevel(renderer, s.defaults, key, static_cast<int>(lod));
+        models.levels[lod] =
+            LoadCarLevel(renderer, s.defaults, key, static_cast<int>(lod), document);
     }
     const CarLevel &level = *models.levels[lod];
     bool ghost = car.GetGhostMode() == VEHICLE_GHOST;

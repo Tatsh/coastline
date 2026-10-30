@@ -10,6 +10,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <memory>
+#include <optional>
 #include <span>
 
 class FrameSnapshot;
@@ -22,6 +23,9 @@ class SceneRenderer;
 struct RaceCar {
     int car = 0;                         /*!< The car, an index of g_apszCarModelPrefixes. */
     std::array<std::uint8_t, 3> paint{}; /*!< The red, green, and blue the car is painted. */
+    /** A glTF document of the car of the cartridge whose images take the place of those of the
+     * cartridge, such as custom decals, or none. */
+    std::optional<std::filesystem::path> images;
 };
 
 /** The models of the track and the cars of a race, and their drawing from the state of the race. */
