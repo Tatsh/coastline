@@ -62,7 +62,9 @@ constexpr std::size_t EQUIPMENT_SIZE = 5 * 4;
 
 // The data ProcessPakDataScreen() loads or saves.
 enum PakData {
-    PAK_DATA_LOAD_CONFIGURATION = 2,
+    PAK_DATA_LOAD_SEASON,
+    PAK_DATA_LOAD_GHOST,
+    PAK_DATA_LOAD_CONFIGURATION,
     PAK_DATA_SAVE_CONFIGURATION,
 };
 
@@ -339,7 +341,9 @@ bool Menus::ProcessPakDataScreen(SceneRenderer &renderer, int dataType) {
         break;
 
     case PAK_DATA_STEP_FIND:
-        m_pakNote = m_pak.ReadNote(OPTIONS_NOTE);
+        m_pakNote = m_pak.ReadNote(dataType == PAK_DATA_LOAD_SEASON ? SEASON_NOTE :
+                                   dataType == PAK_DATA_LOAD_GHOST  ? GHOST_NOTE :
+                                                                      OPTIONS_NOTE);
         if (m_pakNote) {
             m_pakDataStep =
                 dataType == PAK_DATA_SAVE_CONFIGURATION ? PAK_DATA_STEP_SAVE : PAK_DATA_STEP_LOAD;
@@ -352,6 +356,19 @@ bool Menus::ProcessPakDataScreen(SceneRenderer &renderer, int dataType) {
         break;
 
     case PAK_DATA_STEP_LOAD:
+        // A season or a ghost car loads without a message.
+        if (dataType == PAK_DATA_LOAD_SEASON || dataType == PAK_DATA_LOAD_GHOST) {
+            bool loaded = dataType == PAK_DATA_LOAD_SEASON ?
+                              ReadSeasonNote(*m_pakNote, player, true) :
+                              ReadGhostNote(*m_pakNote);
+            if (loaded) {
+                m_pakDataStep = PAK_DATA_STEP_FINISH;
+            } else {
+                m_pakError = PAK_ERROR_NOT_FOUND;
+                m_pakDataStep = PAK_DATA_STEP_ERROR;
+            }
+            break;
+        }
         if (m_pakNote->size() < OPTIONS_HALF_SIZE + EQUIPMENT_SIZE) {
             m_pakError = PAK_ERROR_NOT_FOUND;
             m_pakDataStep = PAK_DATA_STEP_ERROR;
@@ -720,47 +737,63 @@ void Menus::DrawConfirmOverwrite() {
     draw.DrawTexturedSprite(*draw.m_buttonB, 0x135, buttonY);
 }
 
+bool Menus::ReadSeasonNote(const std::vector<u8> &note, int player, bool otherRetainsEquipment) {
+    if (note.size() < PROFILE_SIZE) {
+        return false;
+    }
+    // Both players take the season.
+    MenuProfile &other = ProfileOf(player ^ 1);
+    std::vector<u8> equipment(EQUIPMENT_SIZE);
+    GetEquipment(equipment, 0, other);
+    ReadProfile(m_profile, note);
+    ReadProfile(m_secondProfile, note);
+    if (otherRetainsEquipment) {
+        SetEquipment(other, equipment, 0);
+    }
+    return true;
+}
+
+bool Menus::ReadGhostNote(const std::vector<u8> &note) {
+    std::vector<u8> compressed = note;
+    if (!SwapBlockLengths(compressed, true)) {
+        return false;
+    }
+    // A literal block may read past the end of the note, and two bytes of the note expand to at
+    // most 130 bytes of each channel.
+    compressed.resize(compressed.size() + 0x100);
+    std::vector<u8> expanded(compressed.size() * 130 * GHOST_CHANNELS);
+    s32 size = DecompressInterleavedRle(
+        expanded.data(), static_cast<s32>(expanded.size()), compressed.data(), GHOST_CHANNELS);
+    // A recording written elsewhere may have any track and car.
+    if (size < 2 || static_cast<std::size_t>(size) > GHOST_RECORDING_CAPACITY ||
+        expanded[0] >= m_numTracks || static_cast<std::size_t>(expanded[1]) >= m_cars.size()) {
+        return false;
+    }
+    expanded.resize(GHOST_RECORDING_CAPACITY);
+    m_ghostRecording = std::move(expanded);
+    m_ghostRecordingSize = size;
+    // The recording starts with its track and its car, and the load unlocks both.
+    m_profile.unlockedTracks =
+        static_cast<u16>(m_profile.unlockedTracks | 1 << m_ghostRecording[0]);
+    m_profile.unlocks = static_cast<u16>(m_profile.unlocks | 1 << m_ghostRecording[1]);
+    return true;
+}
+
 bool Menus::LoadSaveLoadNote(int player) {
     const std::vector<u8> &note = *m_pakNote;
     if (m_saveLoadChoice == SAVE_LOAD_LOAD_SEASON) {
-        if (note.size() < PROFILE_SIZE) {
+        // The other player retains the equipment of the car when the main menu opened the menu.
+        if (!ReadSeasonNote(note, player, m_saveLoadEntry == SaveLoadEntry::MainMenu)) {
             return false;
-        }
-        // Both players take the season, but the other player retains the equipment of the car
-        // when the main menu opened the menu.
-        MenuProfile &other = ProfileOf(player ^ 1);
-        std::vector<u8> equipment(EQUIPMENT_SIZE);
-        GetEquipment(equipment, 0, other);
-        ReadProfile(m_profile, note);
-        ReadProfile(m_secondProfile, note);
-        if (m_saveLoadEntry == SaveLoadEntry::MainMenu) {
-            SetEquipment(other, equipment, 0);
         }
         // A loaded season starts its race at once, without a message.
         m_saveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
         m_saveLoadDataWasLoaded = true;
     } else if (m_saveLoadChoice == SAVE_LOAD_LOAD_GHOST) {
-        std::vector<u8> compressed = note;
-        if (!SwapBlockLengths(compressed, true)) {
+        if (!ReadGhostNote(note)) {
             return false;
         }
-        // A literal block may read past the end of the note, and two bytes of the note expand to
-        // at most 130 bytes of each channel.
-        compressed.resize(compressed.size() + 0x100);
-        std::vector<u8> expanded(compressed.size() * 130 * GHOST_CHANNELS);
-        s32 size = DecompressInterleavedRle(
-            expanded.data(), static_cast<s32>(expanded.size()), compressed.data(), GHOST_CHANNELS);
-        if (size < 2 || static_cast<std::size_t>(size) > GHOST_RECORDING_CAPACITY) {
-            return false;
-        }
-        expanded.resize(GHOST_RECORDING_CAPACITY);
-        m_ghostRecording = std::move(expanded);
-        m_ghostRecordingSize = size;
-        // The recording starts with its track and its car, and the load unlocks both.
         m_selectedTrackId = m_ghostRecording[0];
-        m_profile.unlockedTracks =
-            static_cast<u16>(m_profile.unlockedTracks | 1 << m_ghostRecording[0]);
-        m_profile.unlocks = static_cast<u16>(m_profile.unlocks | 1 << m_ghostRecording[1]);
         m_saveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
         m_saveLoadDataWasLoaded = true;
     } else {

@@ -209,11 +209,25 @@ void Menus::TrackMenuPostDraw(SceneRenderer &renderer, int item) {
         }
         text.Draw(renderer, points, 160, 90, style, flat);
     }
-    if (m_trackMenuPakScreen) {
-        // ponytail: the screen of the controller pak is not built yet, and it returns at once as
-        // if the load found no data.
-        SDL_Log("The controller pak screen is not built yet.");
+    if (!m_trackMenuPakScreen) {
+        return;
+    }
+    // The screen loads the season, data type 0, or in a time attack the ghost car, 1.
+    if (ProcessPakDataScreen(renderer, m_gameMode == GameMode::TimeAttack ? 1 : 0)) {
         m_trackMenuPakScreen = false;
+        if (m_gameMode == GameMode::Championship) {
+            ValidateChampionshipProgress();
+            StartChampionshipRace();
+            LoadSeasonCars(renderer);
+            m_seasonFirstRace = true;
+        } else if (m_gameMode == GameMode::TimeAttack) {
+            StartTimeAttack();
+            // The loaded ghost picks its track when that track is unlocked.
+            if (m_profile.unlockedTracks & (1 << m_ghostRecording[0])) {
+                m_selectedTrackId = m_ghostRecording[0];
+            }
+        }
+        m_screen->SetPendingSelection(m_selectedTrackId);
     }
 }
 
@@ -369,6 +383,10 @@ void Menus::ProcessTrackMenu(SceneRenderer &renderer, float seconds, const MenuB
 
     // The item of the track of the next race, or of the arcade, has its race or its laps in its
     // name for the frame.
+    // The menu takes no input while the screen of the Controller Pak runs and reads it instead.
+    m_pakInput = first;
+    const MenuButtons none;
+    const MenuButtons &input = m_trackMenuPakScreen ? none : first;
     int named = -1;
     std::string name;
     MenuResult result;
@@ -386,7 +404,7 @@ void Menus::ProcessTrackMenu(SceneRenderer &renderer, float seconds, const MenuB
         }
         result = m_screen->Process(renderer,
                                    seconds,
-                                   {&first, 1},
+                                   {&input, 1},
                                    {.title = m_seasons[m_profile.season].name,
                                     .items = m_trackMenuItems,
                                     .selection = &m_trackMenuSelection,
@@ -405,7 +423,7 @@ void Menus::ProcessTrackMenu(SceneRenderer &renderer, float seconds, const MenuB
         }
         result = m_screen->Process(renderer,
                                    seconds,
-                                   {&first, 1},
+                                   {&input, 1},
                                    {.title = "TRACK SELECT",
                                     .items = m_trackMenuItems,
                                     .selection = &m_trackMenuSelection,

@@ -266,6 +266,8 @@ private:
     void DrawSaveLoadError(int noteSize);
     void DrawSaveLoadDone();
     void DrawConfirmOverwrite();
+    bool ReadSeasonNote(const std::vector<u8> &note, int player, bool otherRetainsEquipment);
+    bool ReadGhostNote(const std::vector<u8> &note);
     bool LoadSaveLoadNote(int player);
     int SaveSaveLoadNote(int player);
     void LeaveDataSaveLoadMenu();
