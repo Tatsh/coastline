@@ -87,6 +87,15 @@ public:
         return m_frameHeight;
     }
 
+    /**
+     * @return The pixels of the frame for each point of the operating system on the display of
+     * the window, its density times the scale of its content, or 1 when it is unknown.
+     */
+    float DisplayScale() const {
+        float scale = SDL_GetWindowDisplayScale(m_window.get());
+        return scale > 0.0f ? scale : 1.0f;
+    }
+
     /** @return The samples of each pixel the options requested, 1 for no anti-aliasing. */
     int Antialias() const {
         return m_antialias;

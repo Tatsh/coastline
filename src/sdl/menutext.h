@@ -25,6 +25,10 @@ struct TextStyle {
     Align align = Align::Left; /*!< Where the string stands from its x. */
     bool shadow = false;       /*!< Whether the glyphs are coloured by the shadow gradient. */
     bool bold = false;         /*!< Whether the default colours are those of bold text. */
+    /** Whether the place and the size are of the 320 by 240 screen a frame of high resolution
+     * doubles, or of the 640 by 480 screen as they are, as the frames of a race of the PC release
+     * draw them. */
+    bool doubled = true;
     /** The red, green, and blue of the bottom and then of the top of the gradient, if not default.
      */
     std::optional<std::array<int, 6>> colors;
@@ -66,9 +70,11 @@ public:
     /**
      * @param text The string.
      * @param size The height of the text, in pixels of the 320 by 240 screen.
+     * @param doubled Whether the size is of the 320 by 240 screen a frame of high resolution
+     * doubles, or of the 640 by 480 screen as it is.
      * @return The width of the string as MeasureTextWidth() of the console measures it.
      */
-    int Width(std::string_view text, int size) const;
+    int Width(std::string_view text, int size, bool doubled = true) const;
 
 private:
     struct Font {

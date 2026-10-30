@@ -167,9 +167,10 @@ const MenuText::Font &MenuText::FontFor(int size) const {
     return size < SMALL_FONT_MAX_SIZE ? m_small : m_large;
 }
 
-int MenuText::Width(std::string_view text, int size) const {
+int MenuText::Width(std::string_view text, int size, bool doubled) const {
     // A frame of high resolution doubles every size, and the width halves at the end.
-    size *= 2;
+    int scale = doubled ? 2 : 1;
+    size *= scale;
     const Font &font = FontFor(size);
     int width = 0;
     for (std::size_t i = 0; i < text.size(); ++i) {
@@ -195,7 +196,7 @@ int MenuText::Width(std::string_view text, int size) const {
                   size) /
                  font.cell;
     }
-    return width >> 1;
+    return width / scale;
 }
 
 void MenuText::Draw(SceneRenderer &renderer,
@@ -205,16 +206,17 @@ void MenuText::Draw(SceneRenderer &renderer,
                     const TextStyle &style,
                     const Matrix4 &projection) const {
     if (style.align == TextStyle::Align::Center) {
-        x -= Width(text, style.size) >> 1;
+        x -= Width(text, style.size, style.doubled) >> 1;
     } else if (style.align == TextStyle::Align::Right) {
-        x -= Width(text, style.size);
+        x -= Width(text, style.size, style.doubled);
     }
     int size = style.size;
     y -= (size * ASCENT) / SIZE_UNITS;
     // A frame of high resolution doubles the place and the size.
-    x *= 2;
-    y *= 2;
-    size *= 2;
+    int scale = style.doubled ? 2 : 1;
+    x *= scale;
+    y *= scale;
+    size *= scale;
     const Font &font = FontFor(size);
 
     FlatMaterial material;

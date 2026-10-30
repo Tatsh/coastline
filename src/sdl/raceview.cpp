@@ -8,13 +8,17 @@
 
 #include "common/assetnames.h"
 #include "common/fade.h"
+#include "common/game.h"
+#include "common/hud.h"
 #include "common/render.h"
 #include "common/screen.h"
 #include "common/sky.h"
+#include "common/strings.h"
 #include "common/vehicle.h"
 #include "common/weather.h"
 #include "frontend.h"
 #include "gpu.h"
+#include "menutext.h"
 #include "scenerenderer.h"
 
 namespace coastline {
@@ -26,6 +30,9 @@ namespace {
 constexpr float CAMERA_NEAR = 0.8f;
 constexpr float CAMERA_FAR = 400.0f;
 constexpr float ASPECT_4_3 = 1.3333334f;
+
+// The string of the help the attract demo shows, "Press ESC to exit".
+constexpr unsigned DEMO_HELP_STRING = 244;
 
 std::array<float, 3> Normalized(std::array<float, 3> v) {
     float length = std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
@@ -113,6 +120,39 @@ Matrix4 FrameMatrix(const CameraFrame &frame) {
             1};
 }
 
+// The canvas the HUD of the race is laid out on: the frame in points of the operating system, so
+// the HUD keeps the size the display scale gives it, from its top left with y down onto the whole
+// frame.
+struct HudCanvas {
+    int width;
+    int height;
+    Matrix4 projection;
+};
+
+HudCanvas MakeHudCanvas(const GpuWindow &window) {
+    float scale = window.DisplayScale();
+    int width = std::max(static_cast<int>(static_cast<float>(window.FrameWidth()) / scale), 1);
+    int height = std::max(static_cast<int>(static_cast<float>(window.FrameHeight()) / scale), 1);
+    return {width,
+            height,
+            {2.0f / static_cast<float>(width),
+             0,
+             0,
+             0,
+             0,
+             -2.0f / static_cast<float>(height),
+             0,
+             0,
+             0,
+             0,
+             1,
+             0,
+             -1.0f,
+             1.0f,
+             0,
+             1}};
+}
+
 // The glTF of a model of the console stands it up from z up to y up, and this turns it back to the
 // world of the race.
 Matrix4 ConsoleSpace() {
@@ -131,6 +171,7 @@ struct RaceView::State {
     // by name would share them.
     std::unique_ptr<RenderModel> sky;
     std::unique_ptr<RenderModel> car;
+    std::unique_ptr<MenuText> text;
 };
 
 RaceView::RaceView(std::unique_ptr<State> state) : m_state(std::move(state)) {
@@ -147,7 +188,9 @@ RaceView::Load(SceneRenderer &renderer, const std::filesystem::path &defaults, i
     state->sky = RenderModel::Load(renderer, trackFile, "sky");
     state->car = RenderModel::Load(
         renderer, defaults / "cars" / (std::string(g_apszCarModelPrefixes[car]) + ".gltf"));
-    if (!state->track || !state->car) {
+    // The race of the PC release draws its text with the fonts of the cartridge.
+    state->text = MenuText::Load(renderer, defaults / "n64" / "usa" / "fonts");
+    if (!state->track || !state->car || !state->text) {
         return nullptr;
     }
     return std::unique_ptr<RaceView>(new RaceView(std::move(state)));
@@ -169,6 +212,9 @@ void RaceView::Draw(SceneRenderer &renderer) const {
     if (camera == nullptr) {
         return;
     }
+    // The race keeps the 640 by 480 screen of the PC release, and the HUD is drawn on the canvas of
+    // the display scale from the same offsets from the edges of the screen.
+    HudCanvas hud = MakeHudCanvas(window);
     Matrix4 viewProjection = CameraMatrix(*camera, aspect);
 
     // The lights of the weather of the race.
@@ -197,6 +243,17 @@ void RaceView::Draw(SceneRenderer &renderer) const {
                        lighting,
                        std::nullopt,
                        true);
+
+    // The help of the attract demo, from the corner of the canvas of the HUD, under the fade.
+    const char *help = GetStringResource(DEMO_HELP_STRING);
+    if (g_bShowHudHelpText && g_dwGameMode == GAME_MODE_DEMO &&
+        g_dwRaceSessionType == RACE_SESSION_ATTRACT && help != nullptr) {
+        TextStyle style;
+        style.size = 15;
+        style.align = TextStyle::Align::Right;
+        style.doubled = false;
+        s.text->Draw(renderer, help, hud.width - 28, hud.height - 24, style, hud.projection);
+    }
 
     // ApplyScreenFade(): black left and right of the edges of the fade, across the whole frame.
     if (g_fFadeLevel != 1.0f && g_dwScreenWidth > 0) {

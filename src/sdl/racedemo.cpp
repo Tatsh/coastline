@@ -8,6 +8,7 @@
 #include "common/rallyconfig.h"
 #include "common/screen.h"
 #include "common/season.h"
+#include "common/strings.h"
 #include "common/trackselect.h"
 
 namespace coastline {
@@ -23,10 +24,11 @@ constexpr s32 RACE_SCREEN_HEIGHT = 480;
 } // namespace
 
 void OpenRaceData() {
-    // The race lays out its fades and its text on the 640 by 480 screen of the default display
-    // mode of the PC release, and the SDL game scales that screen to its frame.
+    // The race lays out its fades on the 640 by 480 screen of the default display mode of the PC
+    // release, and the SDL game draws them across its frame.
     g_dwScreenWidth = RACE_SCREEN_WIDTH;
     g_dwScreenHeight = RACE_SCREEN_HEIGHT;
+    LoadStringTableFromDll();
     g_GlobalRallyConfig.InitRallyConfigDefaults();
     g_GlobalRallyConfig.LoadDeviceDefaultBindings(0);
     g_GlobalRallyConfig.SelectActiveInputBindings();

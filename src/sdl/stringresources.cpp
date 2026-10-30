@@ -1,6 +1,16 @@
 #include "stringresources.h"
 
+#include <cstdlib>
+#include <cstring>
+#include <fstream>
 #include <optional>
+#include <utility>
+#include <vector>
+
+#include <SDL3/SDL.h>
+#include <nlohmann/json.hpp>
+
+#include "common/strings.h"
 
 namespace {
 
@@ -232,3 +242,41 @@ std::string ToWindows1252(std::string_view text) {
 }
 
 } // namespace coastline
+
+// The SDL game reads the strings of BRString.dll from strings/pc.json, the import of the library,
+// in the code page LoadStringA() converts them to, into the table of the race.
+extern "C" void LoadStringTableFromDll(void) {
+    std::memset(&g_apszStringResourceTable[1], 0, STRING_RESOURCE_COUNT * sizeof(char *));
+    if (g_pStringTableBuffer != nullptr) {
+        return;
+    }
+    std::ifstream file("strings/pc.json");
+    auto json = nlohmann::json::parse(file, nullptr, false);
+    if (json.is_discarded() || !json.is_object()) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "strings/pc.json is not the strings of the race.");
+        return;
+    }
+    std::vector<std::pair<unsigned, std::string>> strings;
+    std::size_t size = 0;
+    for (const auto &[id, text] : json.items()) {
+        unsigned number = static_cast<unsigned>(std::strtoul(id.c_str(), nullptr, 10));
+        if (number < 1 || number > STRING_RESOURCE_COUNT || !text.is_string()) {
+            continue;
+        }
+        strings.emplace_back(number, coastline::ToWindows1252(text.get<std::string>()));
+        size += strings.back().second.size() + 1;
+    }
+    g_pStringTableBuffer = static_cast<char *>(std::malloc(size));
+    if (g_pStringTableBuffer == nullptr) {
+        return;
+    }
+    g_dwStringTableBufferSize = size;
+    g_dwStringTableUsedBytes = 0;
+    for (const auto &[number, text] : strings) {
+        char *entry = g_pStringTableBuffer + g_dwStringTableUsedBytes;
+        std::memcpy(entry, text.c_str(), text.size() + 1);
+        g_apszStringResourceTable[number] = entry;
+        g_dwStringTableUsedBytes += text.size() + 1;
+    }
+}
