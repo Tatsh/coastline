@@ -468,6 +468,9 @@ struct Primitive {
     bool lit = false;
     // The combiner of the RDP, its colours, and the image of its second texel, where recorded.
     std::optional<std::array<std::uint32_t, 2>> combine;
+    // Whether the state of the RDP is recorded, and whether the display list sets two cycles
+    // itself, which a model whose caller sets two draws in alike.
+    bool recorded = false;
     bool twoCycle = false;
     // Whether the texture coordinates come from the normals, as G_TEXTURE_GEN of the RSP.
     bool textureGen = false;
@@ -552,6 +555,8 @@ struct ModelDraw {
     DrawState state;
     // The instances of a track the draw draws in their order, or none for every node in its own.
     std::optional<std::vector<int>> instances;
+    // The palette variant of the model when it was drawn.
+    int variant = 0;
 };
 
 struct QuadDraw {
@@ -563,33 +568,17 @@ struct QuadDraw {
     DrawState state;
 };
 
-} // namespace
-
-struct RenderModel::State {
-    SDL_GPUDevice *device = nullptr;
-    std::vector<SDL_GPUTexture *> images;
-    // Whether the images are those of another model, which releases them.
-    bool sharedImages = false;
-    std::vector<SDL_GPUSampler *> samplers;
-    // Whether the shader filters the texels of the images as the RDP does.
-    bool threePoint = false;
-    std::vector<std::pair<std::size_t, std::size_t>> textures; // Image and sampler.
-    std::vector<Mesh> meshes;
-    std::vector<Placed> placed;
-    // The nodes of each instance of a track, and under -1 the nodes of no instance.
-    std::map<int, std::vector<std::size_t>> placedByInstance;
-    std::vector<VertexAnimationInfo> animations;
-    std::array<float, 3> centre{};
-    float radius = 1.0f;
-    // The palette variants of an image, by the image, and the variant the frame shows.
-    // ponytail: one variant a model; cars sharing a model would need the variant per draw.
+// The textures of images of a document by the image: each image, its palette variants, and its
+// damaged images, the side of the car and the image at each level of damage after the first.
+struct ImageSet {
+    std::map<std::size_t, SDL_GPUTexture *> images;
     std::map<std::size_t, std::vector<SDL_GPUTexture *>> variants;
-    int variant = 0;
-    // The damaged images, by the image: the side of the car and the image at each level of damage
-    // after the first.
     std::map<std::size_t, std::pair<int, std::vector<SDL_GPUTexture *>>> damaged;
 
-    ~State() {
+    void Release(SDL_GPUDevice *device) {
+        for (auto &[image, texture] : images) {
+            SDL_ReleaseGPUTexture(device, texture);
+        }
         for (auto &[image, textures] : variants) {
             for (auto *texture : textures) {
                 SDL_ReleaseGPUTexture(device, texture);
@@ -600,6 +589,178 @@ struct RenderModel::State {
                 SDL_ReleaseGPUTexture(device, texture);
             }
         }
+        *this = {};
+    }
+};
+
+// How the images of a document become textures: the palette variants of the images of materials,
+// the masks of the damage, and whether the textures are mipmapped.
+struct ImageOptions {
+    int variants = 0;
+    std::function<bool(SDL_Palette *, int material, int variant)> paletteVariant;
+    std::array<std::vector<std::uint8_t>, CAR_DAMAGE_LEVELS> damageMasks;
+    bool mipmapped = false;
+};
+
+// A decoded image: its texels, the material whose palette the paint colours or -1, and its damage.
+struct DecodedImage {
+    SDL_Surface *surface = nullptr;
+    int material = -1;
+    std::optional<ImageDamage> damage;
+};
+
+// A copy of an image with a palette of its own, which changes without changing the image.
+SDL_Surface *CopyImage(SDL_Surface *image) {
+    SDL_Surface *copy = SDL_DuplicateSurface(image);
+    SDL_Palette *palette = SDL_GetSurfacePalette(image);
+    if (copy == nullptr || palette == nullptr) {
+        return copy;
+    }
+    SDL_Palette *own = SDL_CreatePalette(palette->ncolors);
+    if (own == nullptr || !SDL_SetPaletteColors(own, palette->colors, 0, palette->ncolors) ||
+        !SDL_SetSurfacePalette(copy, own)) {
+        SDL_DestroyPalette(own);
+        SDL_DestroySurface(copy);
+        return nullptr;
+    }
+    // The copy retains its reference to the palette.
+    SDL_DestroyPalette(own);
+    return copy;
+}
+
+// The texels of an image as 8-bit RGBA, row by row from the top, or none.
+std::optional<std::vector<std::uint8_t>> ImageTexels(SDL_Surface *image, int &width, int &height) {
+    SDL_Surface *rgba = SDL_ConvertSurface(image, SDL_PIXELFORMAT_RGBA32);
+    if (rgba == nullptr) {
+        return std::nullopt;
+    }
+    std::vector<std::uint8_t> texels;
+    for (int y = 0; y < rgba->h; ++y) {
+        auto *row = static_cast<std::uint8_t *>(rgba->pixels) + y * rgba->pitch;
+        texels.insert(texels.end(), row, row + rgba->w * 4);
+    }
+    width = rgba->w;
+    height = rgba->h;
+    SDL_DestroySurface(rgba);
+    return texels;
+}
+
+// Add the textures of an image to a set: the image, its palette variants where it is the image of
+// a material whose palette a variant changes, and its damaged images. The image is not changed.
+bool AddImage(Uploader &upload,
+              ImageSet &set,
+              std::size_t index,
+              SDL_Surface *image,
+              const DecodedImage &decoded,
+              const ImageOptions &options) {
+    int width = 0;
+    int height = 0;
+    if (options.paletteVariant && decoded.material >= 0 &&
+        SDL_GetSurfacePalette(image) != nullptr) {
+        std::vector<SDL_GPUTexture *> textures;
+        for (int variant = 0; variant < options.variants; ++variant) {
+            SDL_Surface *copy = CopyImage(image);
+            if (copy == nullptr ||
+                !options.paletteVariant(SDL_GetSurfacePalette(copy), decoded.material, variant)) {
+                SDL_DestroySurface(copy);
+                break;
+            }
+            auto texels = ImageTexels(copy, width, height);
+            SDL_DestroySurface(copy);
+            if (!texels) {
+                break;
+            }
+            textures.push_back(upload.Texture(width, height, *texels, options.mipmapped));
+        }
+        if (!textures.empty()) {
+            set.variants[index] = std::move(textures);
+        }
+    }
+    auto texels = ImageTexels(image, width, height);
+    if (!texels) {
+        return false;
+    }
+    if (decoded.damage) {
+        std::vector<SDL_GPUTexture *> levels;
+        for (const auto &mask : options.damageMasks) {
+            levels.push_back(
+                upload.Texture(width,
+                               height,
+                               DamageTexels(*texels, width, height, mask, *decoded.damage),
+                               options.mipmapped));
+        }
+        set.damaged[index] = {decoded.damage->side, std::move(levels)};
+    }
+    set.images[index] = upload.Texture(width, height, *texels, options.mipmapped);
+    return true;
+}
+
+// A glTF document on the GPU, which every model of its parts shares.
+struct DocumentData {
+    SDL_GPUDevice *device = nullptr;
+    std::filesystem::path path;
+    nlohmann::json document;
+    std::vector<SDL_GPUSampler *> samplers;
+    // Whether the shader filters the texels of the images as the RDP does.
+    bool threePoint = false;
+    std::vector<std::pair<std::size_t, std::size_t>> textures; // Image and sampler.
+    std::vector<Mesh> meshes;
+    // The positions of the vertices of each mesh, for the bounds of a model.
+    std::vector<std::vector<std::array<float, 3>>> meshPositions;
+    std::vector<VertexAnimationInfo> animations;
+    ImageOptions imageOptions;
+    // The textures of the images the paint does not colour.
+    ImageSet plain;
+    // The decoded images of the materials, which the paint colours.
+    std::map<std::size_t, DecodedImage> materials;
+    // The textures of the images of the materials in each colour, or unpainted under none.
+    std::map<std::optional<std::array<std::uint8_t, 3>>, ImageSet> painted;
+
+    DocumentData() = default;
+    DocumentData(const DocumentData &) = delete;
+    DocumentData &operator=(const DocumentData &) = delete;
+
+    // The images of the materials in a colour, painted and uploaded the first time, or none when
+    // they were not uploaded.
+    const ImageSet *Painted(const std::optional<std::array<std::uint8_t, 3>> &paint) {
+        if (auto found = painted.find(paint); found != painted.end()) {
+            return &found->second;
+        }
+        Uploader upload(device);
+        ImageSet set;
+        for (const auto &[index, decoded] : materials) {
+            SDL_Surface *copy = CopyImage(decoded.surface);
+            if (copy != nullptr && paint) {
+                PaintPalette(SDL_GetSurfacePalette(copy), *paint, decoded.material);
+            }
+            bool added =
+                copy != nullptr && AddImage(upload, set, index, copy, decoded, imageOptions);
+            SDL_DestroySurface(copy);
+            if (!added) {
+                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                             "Image %zu of %s cannot be painted.",
+                             index,
+                             path.string().c_str());
+                set.Release(device);
+                return nullptr;
+            }
+        }
+        if (!upload.Submit()) {
+            SDL_LogError(SDL_LOG_CATEGORY_GPU, "The paint was not uploaded: %s", SDL_GetError());
+            set.Release(device);
+            return nullptr;
+        }
+        return &painted.emplace(paint, std::move(set)).first->second;
+    }
+
+    ~DocumentData() {
+        plain.Release(device);
+        for (auto &[paint, set] : painted) {
+            set.Release(device);
+        }
+        for (auto &[index, decoded] : materials) {
+            SDL_DestroySurface(decoded.surface);
+        }
         for (auto &mesh : meshes) {
             for (auto &primitive : mesh.primitives) {
                 SDL_ReleaseGPUBuffer(device, primitive.vertices);
@@ -609,14 +770,52 @@ struct RenderModel::State {
                 SDL_ReleaseGPUBuffer(device, mesh.targets);
             }
         }
-        if (!sharedImages) {
-            for (auto *image : images) {
-                SDL_ReleaseGPUTexture(device, image);
-            }
-        }
         for (auto *sampler : samplers) {
             SDL_ReleaseGPUSampler(device, sampler);
         }
+    }
+};
+
+} // namespace
+
+struct RenderDocument::State {
+    DocumentData data;
+};
+
+RenderDocument::RenderDocument(std::unique_ptr<State> state) : m_state(std::move(state)) {
+}
+
+RenderDocument::~RenderDocument() = default;
+
+struct RenderModel::State {
+    std::shared_ptr<RenderDocument> owner;
+    DocumentData *document = nullptr;
+    // The images of the materials in the colour of the model.
+    const ImageSet *painted = nullptr;
+    std::vector<Placed> placed;
+    // The nodes of each instance of a track, and under -1 the nodes of no instance.
+    std::map<int, std::vector<std::size_t>> placedByInstance;
+    std::array<float, 3> centre{};
+    float radius = 1.0f;
+    // Whether the caller of the display lists sets one cycle.
+    bool oneCycle = false;
+    // Whether the model draws the palette variants of the images, and the variant it draws.
+    bool varied = false;
+    int variant = 0;
+
+    // The entry of an image in the images of the colour of the model, or in those the paint does
+    // not colour, or none.
+    template <typename T>
+    const T *Find(std::map<std::size_t, T> ImageSet::*field, std::size_t image) const {
+        for (const ImageSet *set : std::array<const ImageSet *, 2>{painted, &document->plain}) {
+            if (set == nullptr) {
+                continue;
+            }
+            if (auto found = (set->*field).find(image); found != (set->*field).end()) {
+                return &found->second;
+            }
+        }
+        return nullptr;
     }
 };
 
@@ -833,7 +1032,7 @@ RenderModel::RenderModel(std::unique_ptr<State> state) : m_state(std::move(state
 RenderModel::~RenderModel() = default;
 
 const std::vector<VertexAnimationInfo> &RenderModel::Animations() const {
-    return m_state->animations;
+    return m_state->document->animations;
 }
 
 std::array<float, 3> RenderModel::Centre() const {
@@ -867,14 +1066,13 @@ std::optional<MorphPose> PoseAtTime(const VertexAnimationInfo &animation, float 
                      share};
 }
 
-std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
-                                               const std::filesystem::path &path,
-                                               const ModelOptions &options) {
-    const auto &node = options.node;
-    const auto &paint = options.paint;
-    const auto &parts = options.parts;
-    auto state = std::make_unique<State>();
+std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
+                                                     const std::filesystem::path &path,
+                                                     const ModelOptions &options) {
+    auto owned = std::make_unique<State>();
+    DocumentData *state = &owned->data;
     state->device = renderer.m_state->device;
+    state->path = path;
     SDL_GPUDevice *device = state->device;
     nlohmann::json document;
     std::vector<std::uint8_t> buffer;
@@ -911,11 +1109,6 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
                         path.string().c_str());
         }
     }
-    if (options.texturesOf != nullptr) {
-        images = nlohmann::json::array();
-        state->images = options.texturesOf->m_state->images;
-        state->sharedImages = true;
-    }
 
     // The textures of a model are mipmapped for anisotropic filtering of the modern filter, and
     // other textures are not.
@@ -923,75 +1116,44 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
     const int anisotropy = renderer.m_state->window->Anisotropy();
     const bool mipmapped = anisotropy > 0 && filter == TextureFilter::Modern;
     state->threePoint = filter == TextureFilter::N64;
+    state->imageOptions.variants = options.variants;
+    state->imageOptions.paletteVariant = options.paletteVariant;
+    if (options.damageMasks != nullptr) {
+        state->imageOptions.damageMasks = *options.damageMasks;
+    }
+    state->imageOptions.mipmapped = mipmapped;
     Uploader upload(device);
-    for (const auto &image : images) {
+    for (std::size_t index = 0; index < images.size(); ++index) {
+        const auto &image = images[index];
         auto file = imageDirectory / image["uri"].get<std::string>();
         SDL_Surface *loaded = SDL_LoadPNG(file.string().c_str());
-        int material = image.value("extras", nlohmann::json::object())
-                           .value("coastlinePaint", nlohmann::json::object())
-                           .value("material", -1);
-        if (loaded != nullptr && paint && material >= 0) {
-            PaintPalette(SDL_GetSurfacePalette(loaded), *paint, material);
-        }
-        if (loaded != nullptr && options.paletteVariant && material >= 0 &&
-            SDL_GetSurfacePalette(loaded) != nullptr) {
-            std::vector<SDL_GPUTexture *> textures;
-            for (int variant = 0; variant < options.variants; ++variant) {
-                SDL_Surface *copy = SDL_DuplicateSurface(loaded);
-                if (copy == nullptr ||
-                    !options.paletteVariant(SDL_GetSurfacePalette(copy), material, variant)) {
-                    SDL_DestroySurface(copy);
-                    break;
-                }
-                SDL_Surface *texels = SDL_ConvertSurface(copy, SDL_PIXELFORMAT_RGBA32);
-                SDL_DestroySurface(copy);
-                if (texels == nullptr) {
-                    break;
-                }
-                std::vector<std::uint8_t> rows;
-                for (int y = 0; y < texels->h; ++y) {
-                    auto *row = static_cast<std::uint8_t *>(texels->pixels) + y * texels->pitch;
-                    rows.insert(rows.end(), row, row + texels->w * 4);
-                }
-                textures.push_back(upload.Texture(texels->w, texels->h, rows, mipmapped));
-                SDL_DestroySurface(texels);
-            }
-            if (!textures.empty()) {
-                state->variants[state->images.size()] = std::move(textures);
-            }
-        }
-        SDL_Surface *rgba = loaded ? SDL_ConvertSurface(loaded, SDL_PIXELFORMAT_RGBA32) : nullptr;
-        SDL_DestroySurface(loaded);
-        if (rgba == nullptr) {
+        if (loaded == nullptr) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s cannot be read.", file.string().c_str());
             return nullptr;
         }
-        std::vector<std::uint8_t> texels;
-        for (int y = 0; y < rgba->h; ++y) {
-            auto *row = static_cast<std::uint8_t *>(rgba->pixels) + y * rgba->pitch;
-            texels.insert(texels.end(), row, row + rgba->w * 4);
-        }
-        std::optional<ImageDamage> damage;
-        int paintSet = ownImages[state->images.size()]
+        DecodedImage decoded;
+        decoded.material = image.value("extras", nlohmann::json::object())
+                               .value("coastlinePaint", nlohmann::json::object())
+                               .value("material", -1);
+        int paintSet = ownImages[index]
                            .value("extras", nlohmann::json::object())
                            .value("coastlinePaint", nlohmann::json::object())
                            .value("set", -1);
         if (options.damage && options.damageMasks != nullptr && paintSet >= 0) {
-            damage = options.damage(paintSet);
+            decoded.damage = options.damage(paintSet);
         }
-        if (damage) {
-            std::vector<SDL_GPUTexture *> levels;
-            for (const auto &mask : *options.damageMasks) {
-                levels.push_back(
-                    upload.Texture(rgba->w,
-                                   rgba->h,
-                                   DamageTexels(texels, rgba->w, rgba->h, mask, *damage),
-                                   mipmapped));
-            }
-            state->damaged[state->images.size()] = {damage->side, std::move(levels)};
+        // The paint colours an image of a material for each colour as a model takes it.
+        if (decoded.material >= 0) {
+            decoded.surface = loaded;
+            state->materials.emplace(index, decoded);
+            continue;
         }
-        state->images.push_back(upload.Texture(rgba->w, rgba->h, texels, mipmapped));
-        SDL_DestroySurface(rgba);
+        bool added = AddImage(upload, state->plain, index, loaded, decoded, state->imageOptions);
+        SDL_DestroySurface(loaded);
+        if (!added) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s cannot be read.", file.string().c_str());
+            return nullptr;
+        }
     }
     for (const auto &sampler : document.value("samplers", nlohmann::json::array())) {
         SDL_GPUSamplerCreateInfo info{};
@@ -1015,45 +1177,11 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
             {texture["source"].get<std::size_t>(), texture["sampler"].get<std::size_t>()});
     }
 
-    // The nodes the model draws from, every node of the name of the node or the roots of the first
-    // scene, and the meshes under them. A mesh no node draws is not uploaded, such as each mesh of
-    // a track but the sky for the sky.
-    const auto &nodes = document["nodes"];
-    std::vector<std::size_t> roots;
-    if (node) {
-        for (std::size_t index = 0; index < nodes.size(); ++index) {
-            if (nodes[index].value("name", "") == *node) {
-                roots.push_back(index);
-            }
-        }
-    } else {
-        for (const auto &root : document["scenes"][document.value("scene", 0)]["nodes"]) {
-            roots.push_back(root.get<std::size_t>());
-        }
-    }
-    std::vector<bool> drawnMeshes(document["meshes"].size());
-    auto markMeshes = [&](auto &self, std::size_t index) -> void {
-        const auto &marked = nodes.at(index);
-        if (marked.contains("mesh")) {
-            drawnMeshes.at(marked["mesh"].get<std::size_t>()) = true;
-        }
-        for (const auto &child : marked.value("children", nlohmann::json::array())) {
-            self(self, child.get<std::size_t>());
-        }
-    };
-    for (std::size_t root : roots) {
-        markMeshes(markMeshes, root);
-    }
-
     // The meshes, with the vertices of each primitive in the layout of the shaders, and the
     // displacements of the morph targets of the first primitive, which every primitive shares.
-    std::vector<std::vector<std::array<float, 3>>> meshPositions;
     for (const auto &mesh : document["meshes"]) {
         Mesh &drawn = state->meshes.emplace_back();
-        auto &positions = meshPositions.emplace_back();
-        if (!drawnMeshes[state->meshes.size() - 1]) {
-            continue;
-        }
+        auto &positions = state->meshPositions.emplace_back();
         for (const auto &primitive : mesh["primitives"]) {
             const auto &attributes = primitive["attributes"];
             auto position = Accessor(document, buffer, attributes["POSITION"], 12);
@@ -1144,8 +1272,8 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
                     if (words[0] != 0 || words[1] != 0) {
                         part.combine = words;
                     }
+                    part.recorded = true;
                     part.twoCycle =
-                        !options.oneCycle ||
                         (rdp.value("otherModeH", 0u) >> CYCLE_TYPE_SHIFT & 3) == TWO_CYCLE;
                     part.textureGen = (rdp.value("geometryMode", 0u) & G_TEXTURE_GEN) != 0;
                     part.prim = Rgba(rdp["primColor"].get<std::uint32_t>());
@@ -1203,6 +1331,35 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
         }
         state->animations.push_back(std::move(info));
     }
+    state->document = std::move(document);
+    return std::shared_ptr<RenderDocument>(new RenderDocument(std::move(owned)));
+}
+
+std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
+                                               const std::filesystem::path &path,
+                                               const ModelOptions &options) {
+    auto document = RenderDocument::Load(renderer, path, options);
+    if (!document) {
+        return nullptr;
+    }
+    return Load(std::move(document), options);
+}
+
+std::unique_ptr<RenderModel> RenderModel::Load(std::shared_ptr<RenderDocument> owner,
+                                               const ModelOptions &options) {
+    const auto &node = options.node;
+    const auto &parts = options.parts;
+    auto state = std::make_unique<State>();
+    state->document = &owner->m_state->data;
+    state->owner = std::move(owner);
+    state->oneCycle = options.oneCycle;
+    state->varied = options.variants > 0;
+    const DocumentData &data = *state->document;
+    const nlohmann::json &document = data.document;
+    state->painted = state->document->Painted(options.paint);
+    if (state->painted == nullptr) {
+        return nullptr;
+    }
 
     // The nodes of the first scene and their places, and the bounds of what they draw.
     std::array<float, 3> low{INFINITY, INFINITY, INFINITY};
@@ -1220,7 +1377,7 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
                 instance = extras.value("index", -1);
             }
             state->placed.push_back({mesh, matrix, instance, flags, parent});
-            for (const auto &p : meshPositions[mesh]) {
+            for (const auto &p : data.meshPositions[mesh]) {
                 auto world = Transform(matrix, p.data());
                 for (std::size_t axis = 0; axis < 3; ++axis) {
                     low[axis] = std::min(low[axis], world[axis]);
@@ -1232,23 +1389,32 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
             self(self, child.get<std::size_t>(), matrix);
         }
     };
-    for (std::size_t root : roots) {
-        std::size_t before = state->placed.size();
-        visit(visit, root, IDENTITY_MATRIX);
-        if (node) {
-            // The node draws at its origin, for the caller to place it: its translation moves
-            // every placement under it, and leaves them.
-            Matrix4 own = NodeMatrix(nodes[root]);
-            for (std::size_t p = before; p < state->placed.size(); ++p) {
-                for (std::size_t axis = 0; axis < 3; ++axis) {
-                    state->placed[p].matrix[12 + axis] -= own[12 + axis];
+    if (node) {
+        const auto &nodes = document["nodes"];
+        for (std::size_t index = 0; index < nodes.size(); ++index) {
+            if (nodes[index].value("name", "") == *node) {
+                // The node draws at its origin, for the caller to place it: its translation moves
+                // every placement under it, and leaves them.
+                std::size_t before = state->placed.size();
+                visit(visit, index, IDENTITY_MATRIX);
+                Matrix4 own = NodeMatrix(nodes[index]);
+                for (std::size_t p = before; p < state->placed.size(); ++p) {
+                    for (std::size_t axis = 0; axis < 3; ++axis) {
+                        state->placed[p].matrix[12 + axis] -= own[12 + axis];
+                    }
                 }
             }
+        }
+    } else {
+        const auto &scene = document["scenes"][document.value("scene", 0)];
+        for (const auto &root : scene["nodes"]) {
+            visit(visit, root.get<std::size_t>(), IDENTITY_MATRIX);
         }
     }
     if (state->placed.empty()) {
         if (!options.optional) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s draws nothing.", path.string().c_str());
+            SDL_LogError(
+                SDL_LOG_CATEGORY_APPLICATION, "%s draws nothing.", data.path.string().c_str());
         }
         return nullptr;
     }
@@ -1481,7 +1647,8 @@ void SceneRenderer::DrawModel(const RenderModel &model,
                                           {},
                                           std::nullopt,
                                           m_state->Current(),
-                                          std::nullopt});
+                                          std::nullopt,
+                                          model.m_state->variant});
 }
 
 void SceneRenderer::DrawReflectingModel(const RenderModel &model,
@@ -1501,7 +1668,8 @@ void SceneRenderer::DrawReflectingModel(const RenderModel &model,
                                           {},
                                           std::nullopt,
                                           m_state->Current(),
-                                          std::nullopt});
+                                          std::nullopt,
+                                          model.m_state->variant});
 }
 
 void SceneRenderer::DrawShadowedModel(const RenderModel &model,
@@ -1521,7 +1689,8 @@ void SceneRenderer::DrawShadowedModel(const RenderModel &model,
                                           std::move(shadows),
                                           std::nullopt,
                                           m_state->Current(),
-                                          std::move(instances)});
+                                          std::move(instances),
+                                          model.m_state->variant});
 }
 
 void SceneRenderer::DrawHighlight(const RenderModel &model,
@@ -1539,7 +1708,8 @@ void SceneRenderer::DrawHighlight(const RenderModel &model,
                                           {},
                                           highlight,
                                           m_state->Current(),
-                                          std::nullopt});
+                                          std::nullopt,
+                                          model.m_state->variant});
 }
 
 void SceneRenderer::DrawQuads(std::span<const FlatVertex> corners,
@@ -1653,6 +1823,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
 
     auto drawPrimitive = [&](const Primitive &primitive,
                              const RenderModel::State &model,
+                             int variant,
                              const VertexUniforms &vertexUniforms,
                              const Lighting &lighting,
                              SDL_GPUBuffer *targets,
@@ -1691,7 +1862,10 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             // reads as the second texel.
             {primitive.combine ? (*primitive.combine)[0] : 0u,
              primitive.combine ? (*primitive.combine)[1] : 0u,
-             primitive.twoCycle && reflection == nullptr ? 1u : 0u,
+             primitive.recorded && (!model.oneCycle || primitive.twoCycle) &&
+                     reflection == nullptr ?
+                 1u :
+                 0u,
              0u},
             {primitive.prim[0], primitive.prim[1], primitive.prim[2], primitive.prim[3]},
             {primitive.env[0], primitive.env[1], primitive.env[2], primitive.env[3]},
@@ -1731,27 +1905,31 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             bindings[2] = {shadows[0]->texture->m_texture, shadows[0]->texture->m_sampler};
             threePoint |= shadows[0]->texture->m_threePoint ? 4u : 0u;
         }
-        if (primitive.texture && *primitive.texture < model.textures.size()) {
-            threePoint |= model.threePoint ? 1u : 0u;
-            threePoint |= model.threePoint && primitive.texel1 ? 2u : 0u;
-            auto [image, sampler] = model.textures[*primitive.texture];
+        const DocumentData &document = *model.document;
+        if (primitive.texture && *primitive.texture < document.textures.size()) {
+            threePoint |= document.threePoint ? 1u : 0u;
+            threePoint |= document.threePoint && primitive.texel1 ? 2u : 0u;
+            auto [image, sampler] = document.textures[*primitive.texture];
             image = AnimationFrame(primitive.frames, s.textureTime).value_or(image);
-            bindings[0] = {model.images.at(image), model.samplers.at(sampler)};
-            auto varied = model.variants.find(image);
-            if (varied != model.variants.end() && model.variant >= 0 &&
-                static_cast<std::size_t>(model.variant) < varied->second.size()) {
-                bindings[0].texture = varied->second[static_cast<std::size_t>(model.variant)];
+            bindings[0].sampler = document.samplers.at(sampler);
+            if (const auto *texture = model.Find(&ImageSet::images, image)) {
+                bindings[0].texture = *texture;
             }
-            auto damaged = model.damaged.find(image);
-            if (damaged != model.damaged.end()) {
-                int level = drawState->damage[static_cast<std::size_t>(damaged->second.first)];
-                if (level > 0 && static_cast<std::size_t>(level) <= damaged->second.second.size()) {
-                    bindings[0].texture =
-                        damaged->second.second[static_cast<std::size_t>(level - 1)];
+            const auto *varied = model.varied ? model.Find(&ImageSet::variants, image) : nullptr;
+            if (varied != nullptr && variant >= 0 &&
+                static_cast<std::size_t>(variant) < varied->size()) {
+                bindings[0].texture = (*varied)[static_cast<std::size_t>(variant)];
+            }
+            if (const auto *damaged = model.Find(&ImageSet::damaged, image)) {
+                int level = drawState->damage[static_cast<std::size_t>(damaged->first)];
+                if (level > 0 && static_cast<std::size_t>(level) <= damaged->second.size()) {
+                    bindings[0].texture = damaged->second[static_cast<std::size_t>(level - 1)];
                 }
             }
-            if (primitive.texel1 && *primitive.texel1 < model.images.size()) {
-                bindings[1] = {model.images[*primitive.texel1], model.samplers.at(sampler)};
+            const auto *texel1 =
+                primitive.texel1 ? model.Find(&ImageSet::images, *primitive.texel1) : nullptr;
+            if (texel1 != nullptr) {
+                bindings[1] = {*texel1, document.samplers.at(sampler)};
             }
         }
         if (reflection != nullptr) {
@@ -1846,7 +2024,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             if (placed.flags & draw.state.hiddenFlags) {
                 continue;
             }
-            const Mesh &mesh = model.meshes[placed.mesh];
+            const Mesh &mesh = model.document->meshes[placed.mesh];
             Matrix4 local = placed.matrix;
             const float *moved = placed.instance >= 0 && s.instanceMatrix ?
                                      s.instanceMatrix(placed.instance) :
@@ -1926,6 +2104,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                     }
                     drawPrimitive(primitive,
                                   model,
+                                  draw.variant,
                                   uniforms,
                                   lighting,
                                   targets,

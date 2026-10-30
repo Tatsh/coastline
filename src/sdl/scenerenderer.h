@@ -21,7 +21,6 @@
 namespace coastline {
 
 class GpuWindow;
-class RenderModel;
 class SceneRenderer;
 
 /** A 4 by 4 matrix, column by column. */
@@ -163,7 +162,10 @@ struct ImageDamage {
     std::array<int, 4> rectangle{};
 };
 
-/** What of a glTF document a RenderModel takes, and how. */
+/**
+ * What of a glTF document a RenderModel takes, and how. A RenderDocument takes the images, the
+ * variants and their palettes, and the damage, and each model of the document the rest.
+ */
 struct ModelOptions {
     /** The name of a node to draw in place of the default scene, such as the sky of a track or a
      * wheel of a car, at its origin without its translation, or none for the scene. */
@@ -182,10 +184,8 @@ struct ModelOptions {
      * one, such as the textures of the cartridge on a car of the PC release, or none. A document
      * with another number of images is not taken. */
     std::optional<std::filesystem::path> images;
-    /** A model of the same document whose textures this model draws with in place of loading the
-     * images again, such as the track for its sky, or none. The model must outlive this one. */
-    const RenderModel *texturesOf = nullptr;
-    /** The number of palette variants of the images of materials, such as the lights of a car. */
+    /** The number of palette variants of the images of materials, such as the lights of a car. A
+     * model of a document draws the variants only where its own options have them. */
     int variants = 0;
     /** Change the palette of an image of a material for a variant, and report whether the image
      * has variants; called for each variant of each image with a material. */
@@ -205,6 +205,37 @@ struct ModelOptions {
     bool oneCycle = false;
 };
 
+/**
+ * A glTF document of the import on the GPU, read and decoded once for every RenderModel of its
+ * parts: its vertices, its animations, and the images no paint colours. The images of materials
+ * are painted and uploaded for a colour the first time a model of the document takes it, and each
+ * later model in that colour shares them.
+ */
+class RenderDocument {
+public:
+    /**
+     * Read a glTF document of the import, upload its vertices and the images no paint colours,
+     * and decode the images of its materials.
+     *
+     * @param renderer The renderer that draws the models of the document.
+     * @param path The glTF document.
+     * @param options The images, the palette variants, and the damage of the document.
+     * @return The document, or nothing with the reason logged.
+     */
+    static std::shared_ptr<RenderDocument> Load(SceneRenderer &renderer,
+                                                const std::filesystem::path &path,
+                                                const ModelOptions &options = {});
+    ~RenderDocument();
+    RenderDocument(const RenderDocument &) = delete;
+    RenderDocument &operator=(const RenderDocument &) = delete;
+
+private:
+    friend class RenderModel;
+    struct State;
+    explicit RenderDocument(std::unique_ptr<State> state);
+    std::unique_ptr<State> m_state;
+};
+
 /** A converted model on the GPU: its meshes, its parts, and its animations. */
 class RenderModel {
 public:
@@ -218,6 +249,18 @@ public:
      */
     static std::unique_ptr<RenderModel> Load(SceneRenderer &renderer,
                                              const std::filesystem::path &path,
+                                             const ModelOptions &options = {});
+
+    /**
+     * Take the parts of a document already read, painting the images of its materials in the
+     * colour of the options when no model of the document has taken that colour before.
+     *
+     * @param document The document.
+     * @param options The node, the paint, the parts, whether the model may draw nothing, the cycle
+     * type, and whether the model draws the palette variants of the document.
+     * @return The model, or nothing with the reason logged.
+     */
+    static std::unique_ptr<RenderModel> Load(std::shared_ptr<RenderDocument> document,
                                              const ModelOptions &options = {});
     ~RenderModel();
     RenderModel(const RenderModel &) = delete;
@@ -233,7 +276,8 @@ public:
     float Radius() const;
 
     /**
-     * Pick the palette variant the images with variants show until the next call.
+     * Pick the palette variant the images with variants show in the draws of the model until the
+     * next call.
      *
      * @param variant The variant, from 0 to the variants of the options of the model.
      */
@@ -542,6 +586,7 @@ public:
     void End(const std::filesystem::path *capture);
 
 private:
+    friend class RenderDocument;
     friend class RenderModel;
     friend class RenderTexture;
     struct State;

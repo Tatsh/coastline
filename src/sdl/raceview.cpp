@@ -565,6 +565,10 @@ struct CarModels {
 // 1 more than the vehicle whose images come from another document, or 0 for the asset pack.
 using CarKey = std::array<int, 5>;
 
+// The document of each car, read once for its parts, levels, and colours, by the car and the last
+// of its CarKey, or none for a car that does not load.
+using CarDocuments = std::map<std::array<int, 2>, std::shared_ptr<RenderDocument>>;
+
 // LoadPaintDamageBitmaps(): the 64 by 64 intensities of each level of damage after the first, and
 // the car of the first vehicle, whose paint sets LoadCarPaintTextures() damages, or -1 for none.
 struct CarDamageMasks {
@@ -575,8 +579,8 @@ struct CarDamageMasks {
 struct RaceView::State {
     std::filesystem::path defaults;
     std::unique_ptr<RenderModel> track;
-    // The sky draws with the textures of the track, and is declared after it to be released first.
     std::unique_ptr<RenderModel> sky;
+    CarDocuments documents;
     // The cars in the colours the vehicles of the race can have. The computer's cars of a
     // championship take the colour of each racer they drive for, and every such colour loads with
     // the race, as a load while the race runs stalls the frame that draws it.
@@ -1416,17 +1420,21 @@ RaceView::~RaceView() = default;
 
 namespace {
 
-// The options of the models of a car: its textures those of the asset pack or of another document,
-// painted as SetMaterialColor() paints them, and the car of the first vehicle damaged as
-// LoadVehicleModelFromRom() damages the paint sets of the first model. The paint sets of a car
-// are loaded once, and a computer's car of the same kind shares the damaged sets.
+// The colour SetMaterialColor() paints a car in.
+std::array<std::uint8_t, 3> CarPaint(const CarKey &key) {
+    return {static_cast<std::uint8_t>(key[1]),
+            static_cast<std::uint8_t>(key[2]),
+            static_cast<std::uint8_t>(key[3])};
+}
+
+// The options of the document of a car: its textures those of the asset pack or of another
+// document, and the car of the first vehicle damaged as LoadVehicleModelFromRom() damages the
+// paint sets of the first model. The paint sets of a car are loaded once, and a computer's car of
+// the same kind shares the damaged sets.
 ModelOptions CarOptions(const CarKey &key,
                         const std::optional<std::filesystem::path> &images,
                         const CarDamageMasks &damage) {
     ModelOptions options;
-    options.paint = std::array<std::uint8_t, 3>{static_cast<std::uint8_t>(key[1]),
-                                                static_cast<std::uint8_t>(key[2]),
-                                                static_cast<std::uint8_t>(key[3])};
     options.images = images;
     if (key[0] == damage.car) {
         int car = key[0];
@@ -1451,63 +1459,75 @@ ModelOptions CarOptions(const CarKey &key,
 // parts, the body, and the underside, and the highlighted parts, a node of their own. A part the
 // level does not have is none, as RenderVehicleModel() passes over a display list the level does
 // not have, and only a part of the nearest level is missed in the log.
-// ponytail: each part, each level, and each colour of a car loads the images of the car again; a
-// model drawn by parts and painted as it is drawn would share them.
-CarLevel LoadCarLevel(SceneRenderer &renderer,
-                      const std::filesystem::path &defaults,
-                      const CarKey &key,
-                      int lod,
-                      const std::optional<std::filesystem::path> &images,
-                      const CarDamageMasks &damage) {
-    std::string prefix = g_apszCarModelPrefixes[key[0]];
-    auto carFile = defaults / "cars" / (prefix + ".gltf");
+CarLevel LoadCarLevel(const std::shared_ptr<RenderDocument> &document, const CarKey &key, int lod) {
+    CarLevel parts;
+    if (!document) {
+        return parts;
+    }
     std::string root = "lod" + std::to_string(lod);
     std::string level = root + "-";
-    CarLevel parts;
-    ModelOptions options = CarOptions(key, images, damage);
+    ModelOptions options;
+    options.paint = CarPaint(key);
     options.optional = lod != 0;
     options.node = root;
     options.parts = [&level](const std::string &n) {
         return n == level + "nearDetail" || n == level + "textured";
     };
     options.variants = CAR_LIGHT_VARIANTS;
-    options.paletteVariant = CarLightPalette;
-    parts.car = RenderModel::Load(renderer, carFile, options);
+    parts.car = RenderModel::Load(document, options);
     options.variants = 0;
-    options.paletteVariant = nullptr;
     options.parts = [&level](const std::string &n) { return n == level + "paint"; };
-    parts.paint = RenderModel::Load(renderer, carFile, options);
+    parts.paint = RenderModel::Load(document, options);
     options.parts = [&level](const std::string &n) { return n == level + "underside"; };
-    parts.underside = RenderModel::Load(renderer, carFile, options);
+    parts.underside = RenderModel::Load(document, options);
     // The highlighted parts are a node outside the scene, drawn without the turn of its root.
     options.parts = nullptr;
     options.node = level + "highlighted";
-    parts.highlighted = RenderModel::Load(renderer, carFile, options);
+    parts.highlighted = RenderModel::Load(document, options);
     return parts;
+}
+
+// The document of a car with its images, read once for every part, level, and colour of the car,
+// with the palettes of the lights of each variant.
+std::shared_ptr<RenderDocument> CarDocument(SceneRenderer &renderer,
+                                            CarDocuments &documents,
+                                            const std::filesystem::path &defaults,
+                                            const CarKey &key,
+                                            const std::optional<std::filesystem::path> &images,
+                                            const CarDamageMasks &damage) {
+    std::array<int, 2> car{key[0], key[4]};
+    if (auto found = documents.find(car); found != documents.end()) {
+        return found->second;
+    }
+    std::string prefix = g_apszCarModelPrefixes[key[0]];
+    ModelOptions options = CarOptions(key, images, damage);
+    options.variants = CAR_LIGHT_VARIANTS;
+    options.paletteVariant = CarLightPalette;
+    auto document = RenderDocument::Load(renderer, defaults / "cars" / (prefix + ".gltf"), options);
+    documents.emplace(car, document);
+    return document;
 }
 
 // The car of the nearest level of detail, the one level a single view draws, and a wheel of each
 // kind, which the race places one by one. The geometry of the car is that of the PC release, which
 // its race moves. None of the parts load when the car is missing.
-CarModels LoadCarModels(SceneRenderer &renderer,
-                        const std::filesystem::path &defaults,
-                        const CarKey &key,
-                        const std::optional<std::filesystem::path> &images,
-                        const CarDamageMasks &damage) {
-    std::string prefix = g_apszCarModelPrefixes[key[0]];
-    auto carFile = defaults / "cars" / (prefix + ".gltf");
+CarModels LoadCarModels(const std::shared_ptr<RenderDocument> &document, const CarKey &key) {
     CarModels models;
-    models.levels[0] = LoadCarLevel(renderer, defaults, key, 0, images, damage);
-    ModelOptions options = CarOptions(key, images, damage);
+    models.levels[0] = LoadCarLevel(document, key, 0);
+    if (!document) {
+        return {};
+    }
+    ModelOptions options;
+    options.paint = CarPaint(key);
     options.node = "lod0-wheel0";
-    models.wheel = RenderModel::Load(renderer, carFile, options);
+    models.wheel = RenderModel::Load(document, options);
     options.node = "lod0-wheelSnow0";
-    models.snowWheel = RenderModel::Load(renderer, carFile, options);
+    models.snowWheel = RenderModel::Load(document, options);
     // The beams are a node outside the scene, drawn without the turn of its root.
     options.node = "lod0-headlightBeams";
     options.optional = true;
     options.oneCycle = true;
-    models.beams = RenderModel::Load(renderer, carFile, options);
+    models.beams = RenderModel::Load(document, options);
     if (!models.levels[0]->car || !models.levels[0]->paint || !models.wheel) {
         return {};
     }
@@ -1552,12 +1572,13 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     auto state = std::make_unique<State>();
     std::filesystem::path trackFile = defaults / "tracks" / g_apszTrackFilenames[track];
     trackFile.replace_extension(".gltf");
-    state->track = RenderModel::Load(renderer, trackFile);
-    ModelOptions sky;
-    sky.node = "sky";
-    sky.oneCycle = true;
-    sky.texturesOf = state->track.get();
-    state->sky = RenderModel::Load(renderer, trackFile, sky);
+    if (auto document = RenderDocument::Load(renderer, trackFile)) {
+        state->track = RenderModel::Load(document);
+        ModelOptions sky;
+        sky.node = "sky";
+        sky.oneCycle = true;
+        state->sky = RenderModel::Load(document, sky);
+    }
     state->defaults = defaults;
     state->damage = LoadDamageMasks(defaults, cars.empty() ? -1 : cars.front().car);
     Uint64 carsStart = SDL_GetTicks();
@@ -1571,15 +1592,42 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
         if (state->cars.contains(key)) {
             continue;
         }
-        CarModels models = LoadCarModels(renderer, defaults, key, vehicle.images, state->damage);
+        CarModels models = LoadCarModels(
+            CarDocument(renderer, state->documents, defaults, key, vehicle.images, state->damage),
+            key);
         if (!models.levels[0]) {
             return nullptr;
         }
         state->cars.try_emplace(key, std::move(models));
     }
-    // ponytail: the colours of the racers a computer's car takes over later load as they first
-    // draw; loading each car in every colour here took half a minute, as each load reads and
-    // decodes the whole car. Reuse the decoded car and repaint only its paint to load them here.
+    // AcquireRacerVehicle() paints a computer's car in the colour of the racer it drives for.
+    for (std::size_t i = g_dwNumLocalPlayers; i < cars.size(); ++i) {
+        for (int racer = static_cast<int>(g_dwNumLocalPlayers); racer < g_dwNumVehicles; ++racer) {
+            const u8 *color = g_aRacerSlots[racer].GetColor();
+            CarKey key{cars[i].car, color[0], color[1], color[2], 0};
+            if (!state->cars.contains(key)) {
+                state->cars.try_emplace(
+                    key,
+                    LoadCarModels(
+                        CarDocument(
+                            renderer, state->documents, defaults, key, std::nullopt, state->damage),
+                        key));
+            }
+        }
+    }
+    // The farther levels of detail of a split screen.
+    if (g_dwNumViewports == 2) {
+        for (auto &[key, models] : state->cars) {
+            if (!models.levels[0]) {
+                continue;
+            }
+            auto document = state->documents.find({key[0], key[4]});
+            for (int lod = 1; lod < VEHICLE_LODS; ++lod) {
+                models.levels[static_cast<std::size_t>(lod)] =
+                    LoadCarLevel(document->second, key, lod);
+            }
+        }
+    }
     SDL_Log("%zu cars of the race loaded in %llu ms.",
             state->cars.size(),
             static_cast<unsigned long long>(SDL_GetTicks() - carsStart));
@@ -2301,9 +2349,13 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
                     key[1],
                     key[2],
                     key[3]);
-        found =
-            s.cars.try_emplace(key, LoadCarModels(renderer, s.defaults, key, document, s.damage))
-                .first;
+        found = s.cars
+                    .try_emplace(
+                        key,
+                        LoadCarModels(
+                            CarDocument(renderer, s.documents, s.defaults, key, document, s.damage),
+                            key))
+                    .first;
     }
     CarModels &models = found->second;
     if (!models.levels[0]) {
@@ -2332,7 +2384,9 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
                     lod,
                     key[0]);
         models.levels[lod] =
-            LoadCarLevel(renderer, s.defaults, key, static_cast<int>(lod), document, s.damage);
+            LoadCarLevel(CarDocument(renderer, s.documents, s.defaults, key, document, s.damage),
+                         key,
+                         static_cast<int>(lod));
     }
     const CarLevel &level = *models.levels[lod];
     bool ghost = car.GetGhostMode() == VEHICLE_GHOST;
