@@ -84,6 +84,8 @@ bool Menus::LoadTrackMenu(SceneRenderer &renderer, const std::filesystem::path &
             car.acceleration = record.at("acceleration").get<float>();
             car.maxSpeed = record.at("maxSpeed").get<float>();
             car.gearCount = record.at("gearCount").get<int>();
+            car.shadowLength = record.at("shadowLength").get<float>();
+            car.shadowHalfWidth = record.at("shadowHalfWidth").get<float>();
             m_cars.push_back(std::move(car));
         }
         for (const auto &record : menu.at("seasons")) {
@@ -141,11 +143,8 @@ void Menus::StartTimeAttack() {
 // The two cars of the season of the profile, as the console loads them into the two slots.
 void Menus::LoadSeasonCars(SceneRenderer &renderer) {
     const MenuSeason &season = m_seasons[m_profile.season];
-    for (std::size_t slot = 0; slot < m_seasonCars.size(); ++slot) {
-        m_seasonCars[slot] = RenderModel::Load(
-            renderer,
-            m_release / m_cars[static_cast<std::size_t>(season.cars[slot])].directory /
-                "model.gltf");
+    for (std::size_t slot = 0; slot < season.cars.size(); ++slot) {
+        LoadCarModel(renderer, static_cast<int>(slot), season.cars[slot]);
     }
 }
 
@@ -298,7 +297,8 @@ void Menus::SeasonRecordsPreDraw(SceneRenderer &renderer) {
     text.Draw(renderer, "Cars For", WIDTH >> 1, 148, style, flat);
     text.Draw(renderer, "This Season:", WIDTH >> 1, 158, style, flat);
 
-    // The two cars of the season side by side, each from the trackside camera of its view.
+    // The two cars of the season side by side, each on its stage from the trackside camera of its
+    // view, without the choice marker.
     GpuWindow &window = renderer.Window();
     float aspect = static_cast<float>(window.FrameWidth()) /
                    static_cast<float>(std::max<Uint32>(window.FrameHeight(), 1));
@@ -307,22 +307,22 @@ void Menus::SeasonRecordsPreDraw(SceneRenderer &renderer) {
         float angle;
     };
     constexpr std::array<View, 2> VIEWS{{{0, HALF_PI}, {WIDTH * 3 / 8, 0.0f}}};
+    constexpr std::array<float, 3> EYE{10.0f, 10.0f, 5.0f};
     for (std::size_t slot = 0; slot < VIEWS.size(); ++slot) {
-        if (!m_seasonCars[slot]) {
-            continue;
-        }
         int x = VIEWS[slot].x;
         int top = HEIGHT * 7 / 16;
         int width = WIDTH * 5 / 8;
         int height = HEIGHT * 5 / 8;
-        renderer.DrawModel(
-            *m_seasonCars[slot],
-            StageCarAt(0.0f, 0.0f, VIEWS[slot].angle),
-            StageCamera(aspect, {10.0f, 10.0f, 5.0f}, x, top, width, height),
-            m_screen->MenuLighting(),
-            std::nullopt,
-            true,
-            FrameRect(window.FrameWidth(), window.FrameHeight(), x, top, width, height));
+        Matrix4 camera = StageCamera(aspect, EYE, x, top, width, height);
+        DrawCarStage(renderer, camera, true);
+        DrawStageCar(renderer,
+                     camera,
+                     EYE,
+                     static_cast<int>(slot),
+                     0.0f,
+                     0.0f,
+                     VIEWS[slot].angle,
+                     FrameRect(window.FrameWidth(), window.FrameHeight(), x, top, width, height));
     }
 }
 

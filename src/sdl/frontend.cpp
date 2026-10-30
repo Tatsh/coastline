@@ -158,12 +158,29 @@ StageCamera(float aspect, const std::array<float, 3> &eye, int x, int y, int wid
     return MultiplyMatrices(viewport, MultiplyMatrices(projection, view));
 }
 
-Matrix4 StageCarAt(float x, float y, float angle) {
+Matrix4 StageFrameAt(float x, float y, float angle) {
     constexpr float STAGE_HEIGHT = 0.254f;
     float c = std::cos(angle);
     float s = std::sin(angle);
-    Matrix4 frame{c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, x, y, STAGE_HEIGHT, 1};
-    return MultiplyMatrices(frame, CONSOLE_SPACE);
+    return {c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, x, y, STAGE_HEIGHT, 1};
+}
+
+Matrix4 StageCarAt(float x, float y, float angle) {
+    return MultiplyMatrices(StageFrameAt(x, y, angle), CONSOLE_SPACE);
+}
+
+void AddTriangle(std::vector<FlatVertex> &quads,
+                 const StageVertex &a,
+                 const StageVertex &b,
+                 const StageVertex &c) {
+    for (const StageVertex *corner : {&a, &b, &c, &c}) {
+        quads.push_back({corner->position[0],
+                         corner->position[1],
+                         0.0f,
+                         0.0f,
+                         corner->color,
+                         corner->position[2]});
+    }
 }
 
 SDL_Rect FrameRect(Uint32 frameWidth, Uint32 frameHeight, int x, int y, int width, int height) {

@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 
+#include "frontend.h"
 #include "menuscreen.h"
 
 namespace coastline {
@@ -53,14 +54,22 @@ struct MenuSeason {
 
 /** A car the players can choose, as g_aCarModels of the console records it. */
 struct MenuCar {
-    std::string name;          /*!< The name, in capitals. */
-    std::string directory;     /*!< The directory of its model in the import of the release. */
-    bool exists = false;       /*!< Whether the car has a model. */
-    int driveType = 0;         /*!< The wheels driven, as the index of their name. */
-    int engineLayout = 0;      /*!< The layout of the engine, as the index of its name. */
-    float acceleration = 0.0f; /*!< The acceleration shown, a full bar at 500. */
-    float maxSpeed = 0.0f;     /*!< The top speed shown, a full bar at 10. */
-    int gearCount = 0;         /*!< The gears of the gearbox. */
+    std::string name;             /*!< The name, in capitals. */
+    std::string directory;        /*!< The directory of its model in the import of the release. */
+    bool exists = false;          /*!< Whether the car has a model. */
+    int driveType = 0;            /*!< The wheels driven, as the index of their name. */
+    int engineLayout = 0;         /*!< The layout of the engine, as the index of its name. */
+    float acceleration = 0.0f;    /*!< The acceleration shown, a full bar at 500. */
+    float maxSpeed = 0.0f;        /*!< The top speed shown, a full bar at 10. */
+    int gearCount = 0;            /*!< The gears of the gearbox. */
+    float shadowLength = 0.0f;    /*!< The length of its shadow on the stage of the cars. */
+    float shadowHalfWidth = 0.0f; /*!< Half the width of its shadow on the stage of the cars. */
+};
+
+/** The shaded triangles of a display list of the stage of the cars. */
+struct StageMesh {
+    std::vector<StageVertex> vertices;         /*!< The vertices. */
+    std::vector<std::array<int, 3>> triangles; /*!< The vertices of each triangle. */
 };
 
 /** The choices of a player on the car select screen, the per-player state of the console. */
@@ -168,6 +177,15 @@ private:
                              int cursor);
     void StepCarSelectOption(int player, const MenuButtons &buttons);
     void HandleCarSelectInput(SceneRenderer &renderer, int player, const MenuButtons &buttons);
+    void DrawCarStage(SceneRenderer &renderer, const Matrix4 &camera, bool hideChoiceMarker) const;
+    void DrawStageCar(SceneRenderer &renderer,
+                      const Matrix4 &camera,
+                      const std::array<float, 3> &eye,
+                      int slot,
+                      float x,
+                      float y,
+                      float angle,
+                      const SDL_Rect &scissor) const;
     void DrawPlayerStage(SceneRenderer &renderer, int player, int y, int height, float spread);
     void DrawCarStats(SceneRenderer &renderer, int player, int y, int barY);
     void DrawCarSelectChoices(SceneRenderer &renderer);
@@ -200,7 +218,6 @@ private:
     std::vector<std::string> m_weatherNames;
     std::vector<MenuCar> m_cars;
     std::vector<MenuSeason> m_seasons;
-    std::array<std::unique_ptr<RenderModel>, 2> m_seasonCars;
     int m_numTracks = 0;
     int m_trackMenuInitState = 0;
     int m_trackMenuSelection = 0;
@@ -231,6 +248,11 @@ private:
     // The car loaded into each of the four slots of the console, and the models of the cars.
     std::array<int, 4> m_slotCars{};
     std::vector<std::unique_ptr<RenderModel>> m_carModels;
+    // The choice marker of the stage of the cars, the shadow of a car on it, and the reflection of
+    // the sky on the cars.
+    StageMesh m_stageChoiceMarker;
+    StageMesh m_stageShadow;
+    std::unique_ptr<RenderTexture> m_stageReflection;
     bool m_carSelectInitialized = false;
     bool m_carSelectDone = false;
 };

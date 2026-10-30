@@ -1218,14 +1218,15 @@ void SceneRenderer::DrawReflectingModel(const RenderModel &model,
                                         const Matrix4 &world,
                                         const Matrix4 &viewProjection,
                                         const Lighting &lighting,
-                                        const Reflection &reflection) {
+                                        const Reflection &reflection,
+                                        std::optional<SDL_Rect> scissor) {
     m_state->draws.emplace_back(ModelDraw{&model,
                                           world,
                                           viewProjection,
                                           lighting,
                                           {},
                                           true,
-                                          std::nullopt,
+                                          scissor,
                                           reflection,
                                           std::nullopt,
                                           std::nullopt});

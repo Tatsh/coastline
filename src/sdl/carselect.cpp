@@ -1,7 +1,10 @@
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <fstream>
 #include <string>
+#include <string_view>
+#include <vector>
 
 #include <SDL3/SDL.h>
 #include <nlohmann/json.hpp>
@@ -102,6 +105,84 @@ Matrix4 StageOptionAt(float x, float y, float angle) {
                          MultiplyMatrices(Scale(STAGE_MODEL_SCALE), RotationX(HALF_PI))));
 }
 
+// The points of the fan of the disc of the stage, the turn between them, its radius, and the scale
+// and the turn of g_CarStageMtx.
+constexpr int STAGE_DISC_POINTS = 31;
+constexpr float STAGE_DISC_STEP = 0.2094395161f;
+constexpr float STAGE_DISC_RADIUS = 256.0f;
+constexpr float STAGE_DISC_SCALE = 0.009765625f;
+constexpr float STAGE_DISC_TURN = -45.0f * PI / 180.0f;
+
+// The units of the shadow of a car for each unit of its size, and its drop below the car.
+constexpr float SHADOW_UNITS = 256.0f;
+constexpr float SHADOW_DROP = 0.18f;
+
+// Each axis of the unit direction of the lights of a stage.
+constexpr float STAGE_LIGHT_AXIS = 0.5773502692f;
+
+// RenderVehicleModel() lights a car with g_DefaultLights, from (84, 84, 84), in the colours of
+// SetupWeatherLights() in clear weather.
+const Lighting STAGE_CAR_LIGHTING{{STAGE_LIGHT_AXIS, STAGE_LIGHT_AXIS, STAGE_LIGHT_AXIS},
+                                  {102.0f / 255.0f, 102.0f / 255.0f, 119.0f / 255.0f},
+                                  {1.0f, 1.0f, 204.0f / 255.0f}};
+
+// LIGHT_STAGE_MODEL() of the console lights an option with an ambient light of 64 and the sum of
+// four white lights from (112, 112, 112).
+const Lighting STAGE_MODEL_LIGHTING{{STAGE_LIGHT_AXIS, STAGE_LIGHT_AXIS, STAGE_LIGHT_AXIS},
+                                    {64.0f / 255.0f, 64.0f / 255.0f, 64.0f / 255.0f},
+                                    {4.0f, 4.0f, 4.0f}};
+
+// The parts of a car RenderVehicleModel() draws on a stage: the near detail, the textured parts,
+// the painted body, and the normal wheels. The underside shows only from below.
+constexpr std::array<std::string_view, 7> STAGE_CAR_PARTS{"lod0-nearDetail",
+                                                          "lod0-textured",
+                                                          "lod0-paint",
+                                                          "lod0-wheel0",
+                                                          "lod0-wheel1",
+                                                          "lod0-wheel2",
+                                                          "lod0-wheel3"};
+
+// The reflection of the sky on a car as RenderVehicleModel() sets it up for the trackside camera
+// of a stage looking at the origin from an eye: the axes of guLookAtReflectF() from the heading of
+// the camera, and the window of the tile turning with the heading.
+Reflection StageReflection(const RenderTexture *texture, const std::array<float, 3> &eye) {
+    Reflection reflection;
+    reflection.texture = texture;
+    float length = std::hypot(eye[0], eye[1]);
+    reflection.across = {-eye[1] / length, eye[0] / length, 0.0f};
+    reflection.up = {0.0f, 0.0f, 1.0f};
+    float heading = std::atan2(-eye[1], -eye[0]);
+    if (heading < 0.0f) {
+        heading += TWO_PI;
+    }
+    int offset = 31 - (64 - static_cast<int>(heading * 64.0f * 0.3183098733f));
+    reflection.column = static_cast<float>(offset + 2) / 4.0f;
+    return reflection;
+}
+
+// The shaded triangles of a display list of the stage, from a record of data/car-stage.json.
+StageMesh ReadStageMesh(const nlohmann::json &record) {
+    StageMesh mesh;
+    for (const auto &vertex : record.at("vertices")) {
+        mesh.vertices.push_back({vertex.at("position").get<std::array<float, 3>>(),
+                                 vertex.at("color").get<std::array<std::uint8_t, 4>>()});
+    }
+    mesh.triangles = record.at("triangles").get<std::vector<std::array<int, 3>>>();
+    return mesh;
+}
+
+// The triangles of a mesh of the stage as flat quads.
+std::vector<FlatVertex> StageQuads(const StageMesh &mesh) {
+    std::vector<FlatVertex> quads;
+    for (const auto &triangle : mesh.triangles) {
+        AddTriangle(quads,
+                    mesh.vertices.at(static_cast<std::size_t>(triangle[0])),
+                    mesh.vertices.at(static_cast<std::size_t>(triangle[1])),
+                    mesh.vertices.at(static_cast<std::size_t>(triangle[2])));
+    }
+    return quads;
+}
+
 } // namespace
 
 bool Menus::LoadCarSelect(SceneRenderer &renderer, const std::filesystem::path &release) {
@@ -131,6 +212,10 @@ bool Menus::LoadCarSelect(SceneRenderer &renderer, const std::filesystem::path &
             !read("decals", m_decalOptions)) {
             return false;
         }
+        std::ifstream stageFile(release / "data" / "car-stage.json");
+        auto stage = nlohmann::json::parse(stageFile);
+        m_stageChoiceMarker = ReadStageMesh(stage.at("choiceMarker"));
+        m_stageShadow = ReadStageMesh(stage.at("shadow"));
     } catch (const nlohmann::json::exception &error) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                      "%s does not have the car select screen: %s",
@@ -139,7 +224,10 @@ bool Menus::LoadCarSelect(SceneRenderer &renderer, const std::filesystem::path &
         return false;
     }
     m_carModels.resize(m_cars.size());
-    return true;
+    // The reflection wraps across the sky, as its tile wraps.
+    m_stageReflection =
+        RenderTexture::Load(renderer, release / "data" / "menu-reflection.png", true, true);
+    return m_stageReflection != nullptr;
 }
 
 MenuProfile &Menus::ProfileOf(int player) {
@@ -157,8 +245,14 @@ void Menus::LoadCarModel(SceneRenderer &renderer, int slot, int car) {
     m_slotCars[static_cast<std::size_t>(slot)] = car;
     auto &model = m_carModels[static_cast<std::size_t>(car)];
     if (!model) {
-        model = RenderModel::Load(
-            renderer, m_release / m_cars[static_cast<std::size_t>(car)].directory / "model.gltf");
+        ModelOptions options;
+        options.parts = [](const std::string &name) {
+            return std::ranges::find(STAGE_CAR_PARTS, name) != STAGE_CAR_PARTS.end();
+        };
+        model = RenderModel::Load(renderer,
+                                  m_release / m_cars[static_cast<std::size_t>(car)].directory /
+                                      "model.gltf",
+                                  options);
     }
 }
 
@@ -376,6 +470,78 @@ void Menus::HandleCarSelectInput(SceneRenderer &renderer, int player, const Menu
     }
 }
 
+// DrawCarStageDisc() and DrawCarStageChoiceMarker() of the console: the white disc of the stage,
+// and the arrows of the choice unless they are hidden, under g_CarStageMtx and over what is drawn
+// before them, as their display lists do not test the depth.
+void Menus::DrawCarStage(SceneRenderer &renderer,
+                         const Matrix4 &camera,
+                         bool hideChoiceMarker) const {
+    Matrix4 stage = MultiplyMatrices(
+        camera, MultiplyMatrices(RotationZ(STAGE_DISC_TURN), Scale(STAGE_DISC_SCALE)));
+    StageMesh disc;
+    for (int i = 0; i < STAGE_DISC_POINTS; ++i) {
+        float angle = static_cast<float>(i) * STAGE_DISC_STEP;
+        disc.vertices.push_back(
+            {{static_cast<float>(static_cast<s16>(std::cos(angle) * STAGE_DISC_RADIUS)),
+              static_cast<float>(static_cast<s16>(std::sin(angle) * STAGE_DISC_RADIUS)),
+              0.0f},
+             {0xFF, 0xFF, 0xFF, 0xFF}});
+    }
+    disc.vertices[0].position = {0.0f, 0.0f, 0.0f};
+    for (int i = 1; i < STAGE_DISC_POINTS; ++i) {
+        disc.triangles.push_back({0, i, i + 1 < STAGE_DISC_POINTS ? i + 1 : 1});
+    }
+    renderer.DrawQuads(StageQuads(disc), FlatMaterial{}, stage);
+    if (!hideChoiceMarker) {
+        renderer.DrawQuads(StageQuads(m_stageChoiceMarker), FlatMaterial{}, stage);
+    }
+}
+
+// DRAW_STAGE_VEHICLE() of the console: DrawCarStageShadow() places the octagon of the shadow,
+// scaled to the car of a slot, below the car without testing the depth, and RenderVehicleModel()
+// draws the car over it with the sky reflected on its painted body.
+void Menus::DrawStageCar(SceneRenderer &renderer,
+                         const Matrix4 &camera,
+                         const std::array<float, 3> &eye,
+                         int slot,
+                         float x,
+                         float y,
+                         float angle,
+                         const SDL_Rect &scissor) const {
+    int car = m_slotCars[static_cast<std::size_t>(slot)];
+    const auto &model = m_carModels[static_cast<std::size_t>(car)];
+    if (!model) {
+        return;
+    }
+    const MenuCar &record = m_cars[static_cast<std::size_t>(car)];
+    Matrix4 shadow{record.shadowLength / SHADOW_UNITS,
+                   0,
+                   0,
+                   0,
+                   0,
+                   (record.shadowHalfWidth + record.shadowHalfWidth) / SHADOW_UNITS,
+                   0,
+                   0,
+                   0,
+                   0,
+                   1.0f / SHADOW_UNITS,
+                   0,
+                   0,
+                   0,
+                   -SHADOW_DROP,
+                   1};
+    renderer.DrawQuads(
+        StageQuads(m_stageShadow),
+        FlatMaterial{},
+        MultiplyMatrices(camera, MultiplyMatrices(StageFrameAt(x, y, angle), shadow)));
+    renderer.DrawReflectingModel(*model,
+                                 StageCarAt(x, y, angle),
+                                 camera,
+                                 STAGE_CAR_LIGHTING,
+                                 StageReflection(m_stageReflection.get(), eye),
+                                 scissor);
+}
+
 // RenderCameraView() of the console for the stage of a player: the car or the option under the
 // cursor, and while they slide, the one the cursor departed coming in from the far side.
 void Menus::DrawPlayerStage(SceneRenderer &renderer, int player, int y, int height, float spread) {
@@ -397,24 +563,19 @@ void Menus::DrawPlayerStage(SceneRenderer &renderer, int player, int y, int heig
     Matrix4 camera = StageCamera(aspect, eye, 0, y, WIDTH, height);
     SDL_Rect scissor = FrameRect(
         window.FrameWidth(), window.FrameHeight(), 0, y, WIDTH, std::min(height, HEIGHT - y));
-    const Lighting &lighting = m_screen->MenuLighting();
+    DrawCarStage(renderer, camera, choice.state == CAR_SELECT_READY);
     auto draw = [&](const RenderModel *option, int slot, float x, float along) {
         if (option) {
             renderer.DrawModel(*option,
                                StageOptionAt(x, along, angle),
                                camera,
-                               lighting,
+                               STAGE_MODEL_LIGHTING,
                                std::nullopt,
                                true,
                                scissor);
             return;
         }
-        const auto &car =
-            m_carModels[static_cast<std::size_t>(m_slotCars[static_cast<std::size_t>(slot)])];
-        if (car) {
-            renderer.DrawModel(
-                *car, StageCarAt(x, along, angle), camera, lighting, std::nullopt, true, scissor);
-        }
+        DrawStageCar(renderer, camera, eye, slot, x, along, angle, scissor);
     };
 
     // The cars slide apart by the square of the slide.

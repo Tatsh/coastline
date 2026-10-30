@@ -147,6 +147,17 @@ Matrix4
 StageCamera(float aspect, const std::array<float, 3> &eye, int x, int y, int width, int height);
 
 /**
+ * The frame of a car on a stage of the menus in the space of the console, facing an angle about z,
+ * 0.254 above the stage.
+ *
+ * @param x The place across.
+ * @param y The place along.
+ * @param angle The direction the car faces, in radians.
+ * @return The frame of the car.
+ */
+Matrix4 StageFrameAt(float x, float y, float angle);
+
+/**
  * The place of a car on a stage of the menus, facing an angle about z, 0.254 above the stage. The
  * frame of the car is turned back from the z up of the console to the y up of the glTF.
  *
@@ -156,6 +167,25 @@ StageCamera(float aspect, const std::array<float, 3> &eye, int x, int y, int wid
  * @return The place of the car.
  */
 Matrix4 StageCarAt(float x, float y, float angle);
+
+/** A vertex of a shaded triangle of a stage: its place and its colour. */
+struct StageVertex {
+    std::array<float, 3> position;     /*!< The place, in the units of its display list. */
+    std::array<std::uint8_t, 4> color; /*!< The colour, R, G, B, and A. */
+};
+
+/**
+ * Add a shaded triangle to flat quads, as a quad whose last corner repeats its third.
+ *
+ * @param quads The corners of the quads.
+ * @param a The first corner.
+ * @param b The second corner.
+ * @param c The third corner.
+ */
+void AddTriangle(std::vector<FlatVertex> &quads,
+                 const StageVertex &a,
+                 const StageVertex &b,
+                 const StageVertex &c);
 
 /**
  * @param frameWidth The width of the frame, in pixels.

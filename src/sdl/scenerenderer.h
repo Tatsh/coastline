@@ -377,12 +377,15 @@ public:
      * @param viewProjection The camera and its projection, to a depth from 0 to 1.
      * @param lighting The lights of the model.
      * @param reflection The reflection of the sky.
+     * @param scissor The rectangle of the frame in pixels the model is cut to, or none for the
+     * whole frame.
      */
     void DrawReflectingModel(const RenderModel &model,
                              const Matrix4 &world,
                              const Matrix4 &viewProjection,
                              const Lighting &lighting,
-                             const Reflection &reflection);
+                             const Reflection &reflection,
+                             std::optional<SDL_Rect> scissor = std::nullopt);
 
     /**
      * Draw the specular highlight of a car over the parts drawn before it.

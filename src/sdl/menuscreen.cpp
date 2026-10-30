@@ -98,27 +98,6 @@ constexpr std::array<std::uint32_t, 2> SHADE_COMBINE = CombineLerp(ZERO_AB,
                                                                    ZERO_ALPHA,
                                                                    SHADE);
 
-// A vertex of a coloured triangle of the stage.
-struct StageVertex {
-    std::array<float, 3> position;
-    std::array<std::uint8_t, 4> color;
-};
-
-// A triangle drawn as a quad whose last corner repeats its third.
-void AddTriangle(std::vector<FlatVertex> &quads,
-                 const StageVertex &a,
-                 const StageVertex &b,
-                 const StageVertex &c) {
-    for (const StageVertex *corner : {&a, &b, &c, &c}) {
-        quads.push_back({corner->position[0],
-                         corner->position[1],
-                         0.0f,
-                         0.0f,
-                         corner->color,
-                         corner->position[2]});
-    }
-}
-
 // A texture stretched over a rectangle of the 320 by 240 screen, as DrawTexturedRect() draws it.
 void DrawTexturedRect(SceneRenderer &renderer,
                       const RenderTexture &texture,
