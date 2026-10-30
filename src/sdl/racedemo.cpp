@@ -1,5 +1,7 @@
 #include "racedemo.h"
 
+#include <SDL3/SDL.h>
+
 #include "common/fade.h"
 #include "common/game.h"
 #include "common/ghost.h"
@@ -8,6 +10,7 @@
 #include "common/rallyconfig.h"
 #include "common/screen.h"
 #include "common/season.h"
+#include "common/soundbuffer.h"
 #include "common/strings.h"
 #include "common/trackselect.h"
 #include "common/vehicle.h"
@@ -25,7 +28,7 @@ constexpr s32 RACE_SCREEN_HEIGHT = 480;
 
 } // namespace
 
-void OpenRaceData() {
+void OpenRaceData(bool playSounds) {
     // The race lays out its fades on the 640 by 480 screen of the default display mode of the PC
     // release, and the SDL game draws them across its frame.
     g_dwScreenWidth = RACE_SCREEN_WIDTH;
@@ -36,6 +39,10 @@ void OpenRaceData() {
     g_GlobalRallyConfig.SelectActiveInputBindings();
     g_BossRallyPodArchive.SetFilePath("BossRally.pod");
     g_BossRallyPodArchive.OpenPodFile();
+    // OpenBossRallyPodAndInit() opens the sound of the race when the settings enable it.
+    if (playSounds && !InitializeDirectSound()) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "The sound effects of the race did not start.");
+    }
 }
 
 void StartAttractDemo() {

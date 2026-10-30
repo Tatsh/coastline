@@ -168,7 +168,9 @@ bool CheckPodModel() {
 // The demo runs a few seconds of its race, through the countdown and past the start.
 bool CheckAttractDemo() {
     constexpr int DEMO_FRAMES = 300;
-    OpenRaceData();
+    // The sound of the race renders on request, for the check to count what the demo plays.
+    EarSetSdlMixerOffline(true);
+    OpenRaceData(true);
     StartAttractDemo();
     int frames = 0;
     Vec3f start{};
@@ -178,7 +180,12 @@ bool CheckAttractDemo() {
             start = g_aVehicles[0].GetFrame().position;
         }
     }
+    std::vector<std::int16_t> samples(static_cast<std::size_t>(RENDER_FRAMES) * EAR_MIX_CHANNELS);
+    EarRenderSdlMixer(samples.data(), RENDER_FRAMES);
+    auto audible = std::ranges::count_if(samples, [](std::int16_t sample) { return sample != 0; });
+    ShutdownDirectSound();
     const Vec3f &position = g_aVehicles[0].GetFrame().position;
+    SDL_Log("Attract demo: %td audible samples of %zu after the frames.", audible, samples.size());
     SDL_Log("Attract demo: track %d, car %d, %d frames, the car from (%.1f, %.1f, %.1f) to (%.1f, "
             "%.1f, %.1f).",
             static_cast<int>(g_dwSelectedTrackId),
@@ -190,7 +197,7 @@ bool CheckAttractDemo() {
             static_cast<double>(position.x),
             static_cast<double>(position.y),
             static_cast<double>(position.z));
-    return frames == DEMO_FRAMES && (start.x != position.x || start.y != position.y);
+    return frames == DEMO_FRAMES && (start.x != position.x || start.y != position.y) && audible > 0;
 }
 
 } // namespace

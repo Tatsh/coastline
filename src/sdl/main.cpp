@@ -585,7 +585,7 @@ int main(int argc, char *argv[]) {
                             if (!raceDataOpen) {
                                 std::error_code error;
                                 std::filesystem::current_path(defaults, error);
-                                coastline::OpenRaceData();
+                                coastline::OpenRaceData(config.GetBoolean("Game", "PlaySFX", true));
                                 raceDataOpen = true;
                             }
                             // The first step loads the race and with it the track and the car.
