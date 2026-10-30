@@ -64,6 +64,10 @@ constexpr int VEHICLE_DL_UNDERSIDE = 6;
 constexpr std::size_t NEAR_DETAIL_TEXTURE = 3;
 constexpr std::size_t UNDERSIDE_TEXTURE = 6;
 constexpr int VEHICLE_DL_HIGHLIGHTED = 9;
+constexpr int VEHICLE_DL_BODY = 4;
+// gDPSetCombineLERP(TEXEL0, ENVIRONMENT, ENV_ALPHA, ENVIRONMENT, 0, 0, 0, TEXEL0) in both cycles,
+// the combiner of the reflection of the sky on a car.
+constexpr std::array<std::uint32_t, 2> REFLECTION_COMBINE{0x00167e2c, 0x55fef379};
 constexpr std::array<const char *, WHEEL_LISTS> WHEEL_LIST_NAMES{"wheel", "wheel1", "wheelSnow"};
 
 constexpr std::size_t TRACK_SKY_AT = 0x50;
@@ -261,6 +265,8 @@ struct StartState {
     std::optional<TextureKey> bound;
     // The combiner the caller of the display list sets before it, in the two words of the command.
     std::array<std::uint32_t, 2> combine{};
+    // Whether the caller turns on the generation of the texture coordinates from the normals.
+    bool textureGen = false;
 };
 
 class DisplayListWalk {
@@ -276,7 +282,8 @@ public:
         m_tiles[PALETTE_TILE].tmem = LAST_PALETTE_TMEM;
         m_tiles[SECOND_PALETTE_TILE].tmem = PALETTE_TMEM;
         m_tmem.clear();
-        m_geometryMode = (start.lit ? G_LIGHTING : 0) | (start.twoSided ? 0 : G_CULL_BACK);
+        m_geometryMode = (start.lit ? G_LIGHTING : 0) | (start.twoSided ? 0 : G_CULL_BACK) |
+                         (start.textureGen ? G_TEXTURE_GEN : 0);
         m_otherModeH = 0;
         m_otherModeL = 0;
         m_primColor = 0xffffffff;
@@ -1718,6 +1725,12 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
             // The renderer turns on lighting before the lists of a car, and loads a texture of the
             // model before the underside and the near detail.
             StartState start{.lit = true, .twoSided = false, .bound = std::nullopt};
+            // The paint and the windows reflect the sky: the renderer generates their texture
+            // coordinates from the normals and blends the reflection towards the fog.
+            if (list == VEHICLE_DL_BODY) {
+                start.combine = REFLECTION_COMBINE;
+                start.textureGen = true;
+            }
             if (list == VEHICLE_DL_UNDERSIDE) {
                 start.bound = TableTexture(image, CAR_LAYOUT, UNDERSIDE_TEXTURE);
             } else if (list == VEHICLE_DL_NEAR_DETAIL) {

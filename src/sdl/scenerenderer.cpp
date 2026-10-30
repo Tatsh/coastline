@@ -114,6 +114,9 @@ struct VertexUniforms {
     Matrix4 model;
     std::array<std::int32_t, 4> morph;
     std::array<float, 4> blend;
+    // The axes of the coordinates of a reflection, and in w the first column of its window.
+    std::array<float, 4> reflectAcross;
+    std::array<float, 4> reflectUp;
     // The first and the second target and the share of the second of each pose.
     std::array<std::array<float, 4>, MAX_MORPH_POSES> poses;
 };
@@ -453,6 +456,7 @@ struct ModelDraw {
     std::vector<MorphPose> poses;
     bool depth;
     std::optional<SDL_Rect> scissor;
+    std::optional<Reflection> reflection;
 };
 
 struct QuadDraw {
@@ -1046,8 +1050,17 @@ void SceneRenderer::DrawModel(const RenderModel &model,
     if (poses.size() > MAX_MORPH_POSES) {
         poses.resize(MAX_MORPH_POSES);
     }
+    m_state->draws.emplace_back(ModelDraw{
+        &model, world, viewProjection, lighting, std::move(poses), depth, scissor, std::nullopt});
+}
+
+void SceneRenderer::DrawReflectingModel(const RenderModel &model,
+                                        const Matrix4 &world,
+                                        const Matrix4 &viewProjection,
+                                        const Lighting &lighting,
+                                        const Reflection &reflection) {
     m_state->draws.emplace_back(
-        ModelDraw{&model, world, viewProjection, lighting, std::move(poses), depth, scissor});
+        ModelDraw{&model, world, viewProjection, lighting, {}, true, std::nullopt, reflection});
 }
 
 void SceneRenderer::DrawQuads(std::span<const FlatVertex> corners,
@@ -1131,7 +1144,8 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                              const VertexUniforms &vertexUniforms,
                              const Lighting &lighting,
                              SDL_GPUBuffer *targets,
-                             bool depthTest) {
+                             bool depthTest,
+                             const Reflection *reflection) {
         SDL_GPUGraphicsPipeline *pipeline = s.Pipeline({primitive.blend,
                                                         primitive.twoSided,
                                                         !depthTest      ? DepthMode::None :
@@ -1145,7 +1159,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         FragmentUniforms fragmentUniforms{
             {primitive.alphaCut,
              primitive.lit ? 1.0f : 0.0f,
-             primitive.texture ? 1.0f : 0.0f,
+             primitive.texture || reflection != nullptr ? 1.0f : 0.0f,
              primitive.combine ? 1.0f : 0.0f},
             {lighting.direction[0], lighting.direction[1], lighting.direction[2], 0.0f},
             {primitive.combine ? (*primitive.combine)[0] : 0u,
@@ -1166,6 +1180,9 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             if (primitive.texel1 && *primitive.texel1 < model.images.size()) {
                 bindings[1] = {model.images[*primitive.texel1], model.samplers.at(sampler)};
             }
+        }
+        if (reflection != nullptr) {
+            bindings[0] = {reflection->texture->m_texture, reflection->texture->m_sampler};
         }
         SDL_BindGPUFragmentSamplers(pass, 0, bindings.data(), bindings.size());
         SDL_BindGPUVertexStorageBuffers(pass, 0, &targets, 1);
@@ -1189,6 +1206,8 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                                           MultiplyMatrices(draw.world, placed.matrix),
                                           {0, 0, mesh.vertexCount, 0},
                                           {0.0f, 0.0f, 0.0f, 0.0f},
+                                          {},
+                                          {},
                                           {}};
             SDL_GPUBuffer *targets = s.noTargets;
             if (!draw.poses.empty() && mesh.targets != nullptr) {
@@ -1207,7 +1226,23 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                 if (primitive.blend == blending) {
                     VertexUniforms uniforms = vertexUniforms;
                     uniforms.blend[1] = primitive.textureGen ? 1.0f : 0.0f;
-                    drawPrimitive(primitive, model, uniforms, lighting, targets, draw.depth);
+                    // A part with generated coordinates and no texture reflects the sky.
+                    const Reflection *reflection = draw.reflection && primitive.textureGen &&
+                                                           !primitive.texture &&
+                                                           draw.reflection->texture != nullptr ?
+                                                       &*draw.reflection :
+                                                       nullptr;
+                    if (reflection != nullptr) {
+                        uniforms.blend[2] = 1.0f;
+                        uniforms.reflectAcross = {reflection->across[0],
+                                                  reflection->across[1],
+                                                  reflection->across[2],
+                                                  reflection->column};
+                        uniforms.reflectUp = {
+                            reflection->up[0], reflection->up[1], reflection->up[2], 0.0f};
+                    }
+                    drawPrimitive(
+                        primitive, model, uniforms, lighting, targets, draw.depth, reflection);
                 }
             }
         }
@@ -1237,7 +1272,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         SDL_BindGPUGraphicsPipeline(pass, pipeline);
         SDL_SetGPUScissor(pass, &whole);
         VertexUniforms vertexUniforms{
-            quad.projection, IDENTITY_MATRIX, {0, 0, 0, 0}, {0.0f, 0.0f, 0.0f, 0.0f}, {}};
+            quad.projection, IDENTITY_MATRIX, {0, 0, 0, 0}, {0.0f, 0.0f, 0.0f, 0.0f}, {}, {}, {}};
         SDL_PushGPUVertexUniformData(commands, 0, &vertexUniforms, sizeof(vertexUniforms));
         const FlatMaterial &material = quad.material;
         bool combined = material.combine[0] != 0 || material.combine[1] != 0;

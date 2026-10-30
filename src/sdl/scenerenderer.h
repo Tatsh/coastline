@@ -59,6 +59,20 @@ struct VertexAnimationInfo {
     int firstTarget = 0;         /*!< The morph target of its first key. */
 };
 
+class RenderTexture;
+
+/**
+ * The reflection of the sky on a car: the image the parts whose texture coordinates come from
+ * their normals sample, the axes those coordinates follow, and the column of the image the
+ * window starts at, as the tile of the reflection of the race takes it.
+ */
+struct Reflection {
+    const RenderTexture *texture = nullptr; /*!< The image of the sky. */
+    std::array<float, 3> across{};          /*!< The axis of the coordinate across the image. */
+    std::array<float, 3> up{};              /*!< The axis of the coordinate down the image. */
+    float column = 0.0f;                    /*!< The first column of the window, in texels. */
+};
+
 /**
  * The pose of a vertex animation at a time, as the console blends its keys.
  *
@@ -239,6 +253,22 @@ public:
                    std::vector<MorphPose> poses,
                    bool depth,
                    std::optional<SDL_Rect> scissor = std::nullopt);
+
+    /**
+     * Draw a car whose parts with texture coordinates from their normals and no texture of their
+     * own reflect the sky.
+     *
+     * @param model The model.
+     * @param world The place of the model.
+     * @param viewProjection The camera and its projection, to a depth from 0 to 1.
+     * @param lighting The lights of the model.
+     * @param reflection The reflection of the sky.
+     */
+    void DrawReflectingModel(const RenderModel &model,
+                             const Matrix4 &world,
+                             const Matrix4 &viewProjection,
+                             const Lighting &lighting,
+                             const Reflection &reflection);
 
     /**
      * Draw flat quads over everything drawn before them, blended by their alpha.

@@ -19,6 +19,7 @@
 #include "common/snapshot.h"
 #include "common/strings.h"
 #include "common/track.h"
+#include "common/trackmenuitem.h"
 #include "common/vecmath.h"
 #include "common/vehicle.h"
 #include "common/vehiclecamera.h"
@@ -244,7 +245,45 @@ struct RaceView::State {
     std::unique_ptr<RenderModel> snowWheel;
     std::unique_ptr<RenderModel> startLights;
     std::unique_ptr<MenuText> text;
+    // The images of the day and the night sky the paint and the windows of the car reflect.
+    std::unique_ptr<RenderTexture> daySky;
+    std::unique_ptr<RenderTexture> nightSky;
 };
+
+namespace {
+
+// The flag of an instance of a track that is a tunnel.
+constexpr std::uint32_t TRACK_INSTANCE_TUNNEL = 0x10;
+
+// The reflection of the sky on the car as RenderVehicleModel() sets it up: the night sky at night
+// or in a tunnel, else the day sky, across the axes of guLookAtReflectF() from the heading of the
+// camera, with the window of the tile turning with the heading of the camera of the race.
+Reflection SkyReflection(const RenderTexture *daySky,
+                         const RenderTexture *nightSky,
+                         const CameraFrame &camera,
+                         const Vehicle &car) {
+    bool inTunnel =
+        car.GetGroundInstanceCount() != 0 &&
+        (g_LoadedTrack.instances[car.GetGroundInstances()[0]].flags & TRACK_INSTANCE_TUNNEL) != 0;
+    Reflection reflection;
+    reflection.texture = g_dwNightMode || inTunnel ? nightSky : daySky;
+    float eyeX = camera.forward.x;
+    float eyeY = camera.forward.y;
+    if (eyeX == 0.0f && eyeY == 0.0f) {
+        eyeX = 1e-4f;
+    }
+    std::array<float, 3> look = Normalized({-eyeX, -eyeY, 0.0f});
+    reflection.across = {-look[1], look[0], 0.0f};
+    reflection.up = {0.0f, 0.0f, 1.0f};
+    long double heading = g_aVehicles[0].GetCameraHeading();
+    auto offset = static_cast<std::int32_t>(
+        0xffffffdfu -
+        static_cast<std::uint32_t>(static_cast<std::int64_t>(heading * -20.3718318939209L)));
+    reflection.column = static_cast<float>(offset + 2) / 4.0f;
+    return reflection;
+}
+
+} // namespace
 
 RaceView::RaceView(std::unique_ptr<State> state) : m_state(std::move(state)) {
 }
@@ -276,6 +315,13 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
         });
     state->wheel = RenderModel::Load(renderer, carFile, "lod0-wheel0", color);
     state->snowWheel = RenderModel::Load(renderer, carFile, "lod0-wheelSnow0", color);
+    // The skies of the track in cargfx, as the import converted them.
+    auto skyImage = [&](const SkyTextureFiles *files) {
+        return RenderTexture::Load(
+            renderer, (defaults / files->image).replace_extension(".png"), true);
+    };
+    state->daySky = skyImage(g_aTrackDescriptors[track].daySkyFiles);
+    state->nightSky = skyImage(g_aTrackDescriptors[track].nightSkyFiles);
     // The race of the PC release draws its text with the fonts of the cartridge.
     state->text = MenuText::Load(renderer, defaults / "n64" / "usa" / "fonts");
     // The start lights, the model of BossRally.pod.
@@ -337,7 +383,12 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
         active == &cameras[VEHICLE_CAMERA_COCKPIT] || active == &cameras[VEHICLE_CAMERA_MIRROR];
     if (!inside || g_dwVehicleCullingDisabled) {
         Matrix4 body = MultiplyMatrices(FrameMatrix(vehicle.GetFrame()), ConsoleSpace());
-        renderer.DrawModel(*s.car, body, viewProjection, lighting, std::nullopt, true);
+        renderer.DrawReflectingModel(
+            *s.car,
+            body,
+            viewProjection,
+            lighting,
+            SkyReflection(s.daySky.get(), s.nightSky.get(), *camera, vehicle));
         // The underside shows only from below the car.
         const CameraFrame &frame = vehicle.GetFrame();
         float below = frame.up.x * (frame.position.x - camera->position.x) +
