@@ -651,6 +651,7 @@ int main(int argc, char *argv[]) {
                             .up = (pressed & coastline::BUTTON_D_UP) != 0,
                             .down = (pressed & coastline::BUTTON_D_DOWN) != 0,
                             .choose = (pressed & CHOOSE) != 0,
+                            .start = (pressed & coastline::BUTTON_START) != 0,
                             .back = (pressed & coastline::BUTTON_B) != 0,
                             .held = held != 0};
                         if (mainMenu->Frame(*sceneRenderer, seconds, buttons, ports[1].connected) ==

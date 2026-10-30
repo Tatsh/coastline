@@ -53,6 +53,7 @@ struct MenuButtons {
     bool up = false;     /*!< Up on the pad or the stick, to raise an adjustable item. */
     bool down = false;   /*!< Down on the pad or the stick, to lower an adjustable item. */
     bool choose = false; /*!< A, Start, or Z, to choose the item. */
+    bool start = false;  /*!< Start, read by itself on the car select screen too. */
     bool back = false;   /*!< B, to exit the screen. */
     bool held = false;   /*!< Whether any button is down, restarting the wait of the timeout. */
 };
@@ -216,6 +217,62 @@ public:
      * @return The flat draws of the 640 by 480 screen in the frame.
      */
     static Matrix4 FlatFor(SceneRenderer &renderer);
+
+    /**
+     * Draw the background of a screen, its texels lerping from one colour to another.
+     *
+     * @param renderer The renderer of the frame.
+     * @param top The red, green, and blue of the dark background.
+     * @param bottom The colour the texels of the background lerp to.
+     */
+    void DrawBackground(SceneRenderer &renderer,
+                        const std::array<int, 3> &top,
+                        const std::array<int, 3> &bottom) const;
+
+    /**
+     * DrawMenuFooterButtons() of the console: the buttons at the bottom and their names.
+     *
+     * @param renderer The renderer of the frame.
+     */
+    void DrawFooter(SceneRenderer &renderer) const;
+
+    /** Play the sound of moving the cursor. */
+    void PlayScrollSound();
+
+    /** Play the sound of choosing. */
+    void PlaySelectSound();
+
+    /**
+     * Start the fade of a screen that draws itself in, as SetFadeTarget() and FadeSfxTo() of the
+     * console fade it in from black.
+     */
+    void FadeIn();
+
+    /** Fade the screen and the sound effects out. */
+    void FadeOut();
+
+    /**
+     * Advance the fades of the screen and the sound effects by a frame.
+     *
+     * @param seconds The time of the frame.
+     */
+    void UpdateFade(float seconds);
+
+    /** @return Whether the screen fades out, as IsFadingOut() of the console. */
+    bool FadingOut() const;
+
+    /** @return Whether the fade has arrived at its target, as IsFadeComplete() of the console. */
+    bool FadeComplete() const;
+
+    /**
+     * Draw the black of the fade, as ApplyScreenFade() of the console.
+     *
+     * @param renderer The renderer of the frame.
+     */
+    void DrawFade(SceneRenderer &renderer) const;
+
+    /** Silence every channel of the sound effects, as a screen does once it has faded out. */
+    static void SilenceSounds();
 
     std::optional<MenuTitleImage> titleImage; /*!< The picture over the title, g_pMenuTitleImage. */
     float idleTimeout = 0.0f; /*!< The time without input after which the screen exits, or 0. */

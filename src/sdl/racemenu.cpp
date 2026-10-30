@@ -39,109 +39,6 @@ constexpr int EMPTY_GHOST_RECORDING = 8;
 constexpr int WIDTH = 320;
 constexpr int HEIGHT = 240;
 
-// The camera of the cars of the records: the field of view of the camera of the console, its near
-// plane, and its far plane, a fifth of the projection scale of 400.
-constexpr float CAMERA_FOV = 0.5235987901687622f;
-constexpr float ASPECT_4_3 = 1.3333334f;
-constexpr float CAMERA_NEAR = 2.4f;
-constexpr float CAMERA_FAR = 400.0f * 0.2f;
-
-// The height of a car above the stage of the records.
-constexpr float STAGE_HEIGHT = 0.254f;
-
-using Vector3 = std::array<float, 3>;
-
-Vector3 Normalized(const Vector3 &v) {
-    float length = std::sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-    return {v[0] / length, v[1] / length, v[2] / length};
-}
-
-Vector3 Cross(const Vector3 &a, const Vector3 &b) {
-    return {a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]};
-}
-
-float Dot(const Vector3 &a, const Vector3 &b) {
-    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-}
-
-// SetupCameraMatrix() of the console from the trackside camera of the records, at (10, 10, 5)
-// looking at the origin with z up, for a viewport of a width and a height, its picture moved and
-// scaled to the rectangle of the viewport in the frame.
-Matrix4 RecordsCamera(float aspect, int x, int y, int width, int height) {
-    Vector3 eye{10.0f, 10.0f, 5.0f};
-    Vector3 forward = Normalized({-eye[0], -eye[1], -eye[2]});
-    Vector3 side = Normalized(Cross(forward, {0.0f, 0.0f, 1.0f}));
-    Vector3 up = Cross(side, forward);
-    Matrix4 view{side[0],
-                 up[0],
-                 -forward[0],
-                 0,
-                 side[1],
-                 up[1],
-                 -forward[1],
-                 0,
-                 side[2],
-                 up[2],
-                 -forward[2],
-                 0,
-                 -Dot(side, eye),
-                 -Dot(up, eye),
-                 Dot(forward, eye),
-                 1};
-    float w = static_cast<float>(width);
-    float h = static_cast<float>(height);
-    float fovy = CAMERA_FOV * ASPECT_4_3 * (h / w);
-    float focal = 1.0f / std::tan(fovy * 0.5f);
-    Matrix4 projection{focal / (w / h),
-                       0,
-                       0,
-                       0,
-                       0,
-                       focal,
-                       0,
-                       0,
-                       0,
-                       0,
-                       CAMERA_FAR / (CAMERA_NEAR - CAMERA_FAR),
-                       -1,
-                       0,
-                       0,
-                       CAMERA_NEAR * CAMERA_FAR / (CAMERA_NEAR - CAMERA_FAR),
-                       0};
-    // The 320 by 240 screen is centred in the frame at 4:3.
-    float across = ASPECT_4_3 / aspect;
-    float left = (static_cast<float>(x) / WIDTH * 2.0f - 1.0f) * across;
-    float right = (static_cast<float>(x + width) / WIDTH * 2.0f - 1.0f) * across;
-    float top = 1.0f - static_cast<float>(y) / HEIGHT * 2.0f;
-    float bottom = 1.0f - static_cast<float>(y + height) / HEIGHT * 2.0f;
-    Matrix4 viewport{(right - left) / 2.0f,
-                     0,
-                     0,
-                     0,
-                     0,
-                     (top - bottom) / 2.0f,
-                     0,
-                     0,
-                     0,
-                     0,
-                     1,
-                     0,
-                     (right + left) / 2.0f,
-                     (top + bottom) / 2.0f,
-                     0,
-                     1};
-    return MultiplyMatrices(viewport, MultiplyMatrices(projection, view));
-}
-
-// The place of a car on the stage facing an angle about z, its frame turned back from the z up of
-// the console to the y up of the glTF.
-Matrix4 StageCar(float angle) {
-    float c = std::cos(angle);
-    float s = std::sin(angle);
-    Matrix4 frame{c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, STAGE_HEIGHT, 1};
-    return MultiplyMatrices(frame, RotationX(HALF_PI));
-}
-
 // FormatLapTime() of the console: minutes, seconds, and hundredths.
 std::string FormatLapTime(float seconds) {
     auto hundredths = static_cast<int>(seconds * 100.0f);
@@ -177,8 +74,17 @@ bool Menus::LoadTrackMenu(SceneRenderer &renderer, const std::filesystem::path &
             m_trackExists.push_back(track.at("exists").get<bool>());
         }
         m_weatherNames = menu.at("weathers").get<std::vector<std::string>>();
-        for (const auto &car : menu.at("cars")) {
-            m_carDirectories.push_back(car.at("directory").get<std::string>());
+        for (const auto &record : menu.at("cars")) {
+            MenuCar car;
+            car.name = record.at("name").get<std::string>();
+            car.directory = record.at("directory").get<std::string>();
+            car.exists = record.at("exists").get<bool>();
+            car.driveType = record.at("driveType").get<int>();
+            car.engineLayout = record.at("engineLayout").get<int>();
+            car.acceleration = record.at("acceleration").get<float>();
+            car.maxSpeed = record.at("maxSpeed").get<float>();
+            car.gearCount = record.at("gearCount").get<int>();
+            m_cars.push_back(std::move(car));
         }
         for (const auto &record : menu.at("seasons")) {
             MenuSeason season;
@@ -238,7 +144,7 @@ void Menus::LoadSeasonCars(SceneRenderer &renderer) {
     for (std::size_t slot = 0; slot < m_seasonCars.size(); ++slot) {
         m_seasonCars[slot] = RenderModel::Load(
             renderer,
-            m_release / m_carDirectories[static_cast<std::size_t>(season.cars[slot])] /
+            m_release / m_cars[static_cast<std::size_t>(season.cars[slot])].directory /
                 "model.gltf");
     }
 }
@@ -411,8 +317,8 @@ void Menus::SeasonRecordsPreDraw(SceneRenderer &renderer) {
         int height = HEIGHT * 5 / 8;
         renderer.DrawModel(
             *m_seasonCars[slot],
-            StageCar(VIEWS[slot].angle),
-            RecordsCamera(aspect, x, top, width, height),
+            StageCarAt(0.0f, 0.0f, VIEWS[slot].angle),
+            StageCamera(aspect, {10.0f, 10.0f, 5.0f}, x, top, width, height),
             m_screen->MenuLighting(),
             std::nullopt,
             true,

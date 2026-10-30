@@ -611,6 +611,7 @@ leitch
 lenqueue
 leodiskinit
 leointerrupt
+lerping
 lerps
 lfirst
 lgui

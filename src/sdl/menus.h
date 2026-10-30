@@ -20,10 +20,14 @@ namespace coastline {
 class SceneRenderer;
 
 /**
- * The parts of the profile of the first player of the console the menus read, as
+ * The parts of the profile of a player of the console the menus read, as
  * InitPlayerProfileDefaults() of the console sets them.
  */
 struct MenuProfile {
+    int handling = 0;     /*!< The handling the player chose last. */
+    int transmission = 1; /*!< The transmission the player chose last, 1 for the automatic. */
+    int tires = 2;        /*!< The tyres the player chose last. */
+    int suspension = 1;   /*!< The suspension the player chose last. */
     /** The progress of the championship across its years, bit 0 set while the seasons race the
      * tracks mirrored. */
     s32 championshipFlags = 0;
@@ -45,6 +49,33 @@ struct MenuSeason {
     int pointsNeeded = 0;                      /*!< The points that advance to the next season. */
     std::array<int, 2> cars{};                 /*!< The two cars, shown in the records. */
     std::array<std::array<int, 2>, 4> races{}; /*!< The track and the weather of each race. */
+};
+
+/** A car the players can choose, as g_aCarModels of the console records it. */
+struct MenuCar {
+    std::string name;          /*!< The name, in capitals. */
+    std::string directory;     /*!< The directory of its model in the import of the release. */
+    bool exists = false;       /*!< Whether the car has a model. */
+    int driveType = 0;         /*!< The wheels driven, as the index of their name. */
+    int engineLayout = 0;      /*!< The layout of the engine, as the index of its name. */
+    float acceleration = 0.0f; /*!< The acceleration shown, a full bar at 500. */
+    float maxSpeed = 0.0f;     /*!< The top speed shown, a full bar at 10. */
+    int gearCount = 0;         /*!< The gears of the gearbox. */
+};
+
+/** The choices of a player on the car select screen, the per-player state of the console. */
+struct CarSelectPlayer {
+    int state = 0;                                  /*!< The step, by the CAR_SELECT_ values. */
+    int cursor = 0;                                 /*!< The option under the cursor. */
+    int prevCursor = 0;                             /*!< The option the cursor departed. */
+    int optionCount = 0;                            /*!< The options of the step. */
+    const std::vector<MenuItem> *options = nullptr; /*!< The options of the step. */
+    std::string category;                           /*!< The name of the step. */
+    float slide = 0.0f;                             /*!< How far the cars or options slide. */
+    int slot = 0;                                   /*!< The slot of the car shown. */
+    int selectedCar = 0;                            /*!< The car under the cursor. */
+    int carModel = 0;                               /*!< The car chosen. */
+    bool customDecals = false;                      /*!< Whether the custom decals were chosen. */
 };
 
 /** Where the menus go next. */
@@ -126,6 +157,22 @@ private:
     bool LoadWeatherItems(SceneRenderer &renderer, const std::filesystem::path &release);
     bool IsWeatherSelectable(int weather) const;
     void ProcessWeatherSelect(SceneRenderer &renderer, float seconds, const MenuButtons &first);
+    bool LoadCarSelect(SceneRenderer &renderer, const std::filesystem::path &release);
+    MenuProfile &ProfileOf(int player);
+    bool IsCarUnlocked(int car) const;
+    void LoadCarModel(SceneRenderer &renderer, int slot, int car);
+    void StartCarSelect(SceneRenderer &renderer);
+    void SetCarSelectOptions(int player,
+                             const std::vector<MenuItem> &options,
+                             const char *name,
+                             int cursor);
+    void StepCarSelectOption(int player, const MenuButtons &buttons);
+    void HandleCarSelectInput(SceneRenderer &renderer, int player, const MenuButtons &buttons);
+    void DrawPlayerStage(SceneRenderer &renderer, int player, int y, int height, float spread);
+    void DrawCarStats(SceneRenderer &renderer, int player, int y, int barY);
+    void DrawCarSelectChoices(SceneRenderer &renderer);
+    void LeaveCarSelect();
+    void ProcessCarSelectScreen(SceneRenderer &renderer, float seconds, const MenuButtons &first);
 
     std::unique_ptr<MenuScreen> m_screen;
     std::filesystem::path m_release;
@@ -151,7 +198,7 @@ private:
     std::vector<MenuItem> m_trackMenuItems;
     std::vector<bool> m_trackExists;
     std::vector<std::string> m_weatherNames;
-    std::vector<std::string> m_carDirectories;
+    std::vector<MenuCar> m_cars;
     std::vector<MenuSeason> m_seasons;
     std::array<std::unique_ptr<RenderModel>, 2> m_seasonCars;
     int m_numTracks = 0;
@@ -170,6 +217,22 @@ private:
     std::vector<MenuItem> m_weatherItems;
     int m_weatherSelectState = 0;
     int m_weatherMenuSelection = 0;
+
+    std::vector<std::string> m_engineLayouts;
+    std::vector<std::string> m_driveTypes;
+    std::vector<MenuItem> m_handlingOptions;
+    std::vector<MenuItem> m_transmissionOptions;
+    std::vector<MenuItem> m_tiresOptions;
+    std::vector<MenuItem> m_suspensionOptions;
+    std::vector<MenuItem> m_decalOptions;
+    MenuProfile m_secondProfile;
+    std::array<CarSelectPlayer, 2> m_carSelect;
+    std::array<float, 2> m_carSelectAngle{};
+    // The car loaded into each of the four slots of the console, and the models of the cars.
+    std::array<int, 4> m_slotCars{};
+    std::vector<std::unique_ptr<RenderModel>> m_carModels;
+    bool m_carSelectInitialized = false;
+    bool m_carSelectDone = false;
 };
 
 } // namespace coastline

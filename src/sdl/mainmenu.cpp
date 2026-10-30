@@ -40,7 +40,8 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer, const std::filesyste
     std::unique_ptr<Menus> menus(new Menus(std::move(screen)));
     menus->m_mainMenuItems = std::move(*main);
     if (!menus->LoadPlayerCountItems(renderer, release) ||
-        !menus->LoadTrackMenu(renderer, release) || !menus->LoadWeatherItems(renderer, release)) {
+        !menus->LoadTrackMenu(renderer, release) || !menus->LoadWeatherItems(renderer, release) ||
+        !menus->LoadCarSelect(renderer, release)) {
         return nullptr;
     }
     return menus;

@@ -130,6 +130,34 @@ Matrix4 FlatProjection(float aspect);
 Matrix4 ScreenModelAt(float x, float y, float z, float angle, float scale);
 
 /**
+ * SetupCameraMatrix() of the console for the trackside camera of a stage of the menus. The camera
+ * looks at the origin from an eye with z up, in a viewport of the 320 by 240 screen. The picture is
+ * moved and scaled to the rectangle of the viewport in the frame, where the screen is centred at
+ * 4:3.
+ *
+ * @param aspect The width of the frame over its height.
+ * @param eye The place of the camera, in the space of the race.
+ * @param x The left of the viewport.
+ * @param y The top of the viewport.
+ * @param width The width of the viewport.
+ * @param height The height of the viewport.
+ * @return The camera and its projection, to a depth from 0 to 1.
+ */
+Matrix4
+StageCamera(float aspect, const std::array<float, 3> &eye, int x, int y, int width, int height);
+
+/**
+ * The place of a car on a stage of the menus, facing an angle about z, 0.254 above the stage. The
+ * frame of the car is turned back from the z up of the console to the y up of the glTF.
+ *
+ * @param x The place across.
+ * @param y The place along.
+ * @param angle The direction the car faces, in radians.
+ * @return The place of the car.
+ */
+Matrix4 StageCarAt(float x, float y, float angle);
+
+/**
  * @param frameWidth The width of the frame, in pixels.
  * @param frameHeight The height of the frame, in pixels.
  * @param x The left of a rectangle of the 320 by 240 screen.

@@ -364,16 +364,81 @@ void MenuScreen::DrawFadeOverlay(
     renderer.DrawQuads(corners, shaded, FlatFor(renderer));
 }
 
+void MenuScreen::DrawBackground(SceneRenderer &renderer,
+                                const std::array<int, 3> &top,
+                                const std::array<int, 3> &bottom) const {
+    FlatMaterial background;
+    background.combine = BACKGROUND_COMBINE;
+    background.prim = Color(top[0], top[1], top[2], 0xFF);
+    background.env = Color(bottom[0], bottom[1], bottom[2], 0xFF);
+    DrawTexturedRect(renderer, *m_state->background, 0, 0, 320, 240, background, FlatFor(renderer));
+}
+
+void MenuScreen::DrawFooter(SceneRenderer &renderer) const {
+    const State &s = *m_state;
+    DrawTexture(renderer, *s.arrowLeft, 100, 216, 12, 12);
+    DrawTexture(renderer, *s.arrowRight, 160, 216, 12, 12);
+    TextStyle footer;
+    footer.size = 11;
+    Matrix4 flat = FlatFor(renderer);
+    s.text->Draw(renderer, "%wwSelect", 115, 240 * 19 / 20 - 3, footer, flat);
+    s.text->Draw(renderer, "%wwGo Back", 175, 240 * 19 / 20 - 3, footer, flat);
+}
+
+void MenuScreen::PlayScrollSound() {
+    PlaySoundEffect(m_state->scrollSound, SfxVolume(32, 32));
+}
+
+void MenuScreen::PlaySelectSound() {
+    PlaySoundEffect(m_state->selectSound, SfxVolume(32, 32));
+}
+
+void MenuScreen::FadeIn() {
+    State &s = *m_state;
+    s.fade = {};
+    s.fade.SetTarget(1.0f, FADE_TIME);
+    s.sfxFade = {.level = s.sfxFade.level, .target = s.sfxFade.target};
+    s.sfxFade.SetTarget(1.0f, FADE_TIME);
+}
+
+void MenuScreen::FadeOut() {
+    m_state->FadeOut();
+}
+
+void MenuScreen::UpdateFade(float seconds) {
+    State &s = *m_state;
+    s.fade.Update(seconds);
+    s.sfxFade.Update(seconds);
+    g_bSfxVolume = static_cast<u8>(static_cast<int>(s.sfxFade.level * MAX_SFX_VOLUME));
+}
+
+bool MenuScreen::FadingOut() const {
+    return m_state->fade.FadingOut();
+}
+
+bool MenuScreen::FadeComplete() const {
+    return m_state->fade.Complete();
+}
+
+void MenuScreen::DrawFade(SceneRenderer &renderer) const {
+    m_state->fade.Draw(renderer);
+}
+
+void MenuScreen::SilenceSounds() {
+    for (auto &channel : g_aSoundEffectChannels) {
+        channel.volume = 0;
+        channel.mixVolume = 0;
+        channel.step = 0;
+    }
+}
+
 MenuResult MenuScreen::Process(SceneRenderer &renderer,
                                float seconds,
                                std::span<const MenuButtons> players,
                                const MenuSetup &setup) {
     State &s = *m_state;
     if (!s.initialized) {
-        s.fade = {};
-        s.fade.SetTarget(1.0f, FADE_TIME);
-        s.sfxFade = {.level = s.sfxFade.level, .target = s.sfxFade.target};
-        s.sfxFade.SetTarget(1.0f, FADE_TIME);
+        FadeIn();
         s.cursor = *setup.selection;
         s.previous = s.cursor;
         s.angle = START_ANGLE;
@@ -400,9 +465,7 @@ MenuResult MenuScreen::Process(SceneRenderer &renderer,
 MenuResult
 MenuScreen::Update(float seconds, std::span<const MenuButtons> players, const MenuSetup &setup) {
     State &s = *m_state;
-    s.fade.Update(seconds);
-    s.sfxFade.Update(seconds);
-    g_bSfxVolume = static_cast<u8>(static_cast<int>(s.sfxFade.level * MAX_SFX_VOLUME));
+    UpdateFade(seconds);
 
     // The model under the cursor turns twice a second about, and the items slide to rest.
     float step = seconds + seconds;
@@ -421,11 +484,7 @@ MenuScreen::Update(float seconds, std::span<const MenuButtons> players, const Me
             // The screen is done: silence its sounds and exit.
             s.initialized = false;
             *setup.selection = s.cursor;
-            for (auto &channel : g_aSoundEffectChannels) {
-                channel.volume = 0;
-                channel.mixVolume = 0;
-                channel.step = 0;
-            }
+            SilenceSounds();
             return s.chosen ? MenuResult::Chosen : MenuResult::Cancelled;
         }
         s.lastActive = s.cursor;
@@ -503,12 +562,7 @@ void MenuScreen::Draw(SceneRenderer &renderer, const MenuSetup &setup) const {
     Matrix4 flat = FlatProjection(aspect);
     Matrix4 projection = MenuProjection(aspect, MENU_NEAR, MENU_FAR);
 
-    // The background lerps from the top colour to the bottom colour by its texels.
-    FlatMaterial background;
-    background.combine = BACKGROUND_COMBINE;
-    background.prim = Color(setup.top[0], setup.top[1], setup.top[2], 0xFF);
-    background.env = Color(setup.bottom[0], setup.bottom[1], setup.bottom[2], 0xFF);
-    DrawTexturedRect(renderer, *s.background, 0, 0, 320, 240, background, flat);
+    DrawBackground(renderer, setup.top, setup.bottom);
     FlatMaterial plain;
     plain.combine = TEXTURE_COMBINE;
     if (titleImage) {
@@ -616,14 +670,7 @@ void MenuScreen::Draw(SceneRenderer &renderer, const MenuSetup &setup) const {
         }
     }
 
-    // The buttons at the bottom and their names.
-    DrawTexturedRect(renderer, *s.arrowLeft, 100, 216, 12, 12, plain, flat);
-    DrawTexturedRect(renderer, *s.arrowRight, 160, 216, 12, 12, plain, flat);
-    TextStyle footer;
-    footer.size = 11;
-    s.text->Draw(renderer, "%wwSelect", 115, 240 * 19 / 20 - 3, footer, flat);
-    s.text->Draw(renderer, "%wwGo Back", 175, 240 * 19 / 20 - 3, footer, flat);
-
+    DrawFooter(renderer);
     s.fade.Draw(renderer);
 }
 
