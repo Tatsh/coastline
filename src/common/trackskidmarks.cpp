@@ -1,5 +1,7 @@
 #include "common/trackskidmarks.h"
 
+#include <cmath>
+
 // Parse the SDK error fields before Windows headers define the errno macro.
 #include <PR/os_cont.h>
 
@@ -79,7 +81,7 @@ inline void RecordTrackSkidMarks(Vehicle *vehicle, int vehicleIndex) {
         WheelFrame &frame = vehicle->GetWheelFrames()[g_anSkidMarkWheelIndices[wheel]];
         long double x = frame.side.x;
         long double y = frame.side.y;
-        float length = static_cast<float>(__builtin_sqrtl(x * x + y * y));
+        float length = static_cast<float>(std::sqrt(x * x + y * y));
         long double offsetX = x / length * 0.156f;
         long double offsetY = y / length * 0.156f;
         float leftX = static_cast<float>(static_cast<long double>(frame.position.x) -
