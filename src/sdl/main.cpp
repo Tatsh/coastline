@@ -354,8 +354,9 @@ int main(int argc, char *argv[]) {
               "through the race engine, write the results to the log, and exit")
         .flag();
     parser.add_argument("--scene").help(
-        "scene to start in: intro, the default, main-menu, attract-demo, renderer-test, or "
-        "model:FILE.gltf for a converted model or track, from the imported data when relative");
+        "scene to start in: intro, the default, main-menu, attract-demo, attract-demo:RELEASE for "
+        "the demo of the usa, jpn, or eur cartridge, renderer-test, or model:FILE.gltf for a "
+        "converted model or track, from the imported data when relative");
     parser.add_argument("--screenshot").help("save a frame to this PNG file");
     parser.add_argument("--screenshot-frame")
         .help("number of the frame to save, from 1")
@@ -454,6 +455,11 @@ int main(int argc, char *argv[]) {
         }
     }
     const std::string scene = parser.present("--scene").value_or("");
+    if (scene.starts_with("attract-demo:") &&
+        !coastline::ChooseAttractDemo(scene.substr(scene.find(':') + 1))) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "There is no attract demo %s.", scene.c_str());
+        return EXIT_FAILURE;
+    }
     int status = EXIT_FAILURE;
     {
         SdlSession sdl(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD);
@@ -495,7 +501,7 @@ int main(int argc, char *argv[]) {
             bool raceDataOpen = false;
             float raceTime = 0.0f;
             bool leaveDemo = false;
-            bool startInDemo = scene == "attract-demo";
+            bool startInDemo = scene == "attract-demo" || scene.starts_with("attract-demo:");
             coastline::TextureHandle testTexture = 0;
             if (scene == "renderer-test") {
                 renderer = coastline::TlRenderer::Create(*window);
@@ -506,8 +512,7 @@ int main(int argc, char *argv[]) {
                     model = coastline::DefaultAssets(paths->data) / model;
                 }
                 modelView = coastline::ModelView::Create(*window, model);
-            } else if (scene.empty() || scene == "intro" || scene == "main-menu" ||
-                       scene == "attract-demo") {
+            } else if (scene.empty() || scene == "intro" || scene == "main-menu" || startInDemo) {
                 sceneRenderer = coastline::SceneRenderer::Create(*window);
                 if (sceneRenderer) {
                     auto release = coastline::DefaultAssets(paths->data) / "n64" / "usa";

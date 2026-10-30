@@ -44,6 +44,7 @@
 #include "frontend.h"
 #include "gpu.h"
 #include "menutext.h"
+#include "racedemo.h"
 #include "scenerenderer.h"
 
 namespace coastline {
@@ -1089,10 +1090,12 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
                            true);
     }
 
-    // The help of the attract demo, from the corner of the canvas of the HUD, under the fade.
+    // The help of the attract demo, from the corner of the canvas of the HUD, under the fade. The
+    // console shows nothing over its demo.
     const char *help = GetStringResource(DEMO_HELP_STRING);
     if (g_bShowHudHelpText && g_dwGameMode == GAME_MODE_DEMO &&
-        g_dwRaceSessionType == RACE_SESSION_ATTRACT && help != nullptr) {
+        g_dwRaceSessionType == RACE_SESSION_ATTRACT && !AttractDemoFromConsole() &&
+        help != nullptr) {
         TextStyle style;
         style.size = 15;
         style.align = TextStyle::Align::Right;

@@ -31,7 +31,7 @@
 #include "common/audiomix.h"
 #endif /* TGR_BOSS_RALLY */
 
-#if TGR_BOSS_RALLY
+#if TGR_BOSS_RALLY && TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * The next of the two attract recordings to load.
  *
@@ -184,12 +184,16 @@ void SetupRaceVehicles(void) {
             ReadGhostFileData("RallyCredits.dat", false);
             goto loadedDemo;
         case RACE_SESSION_ATTRACT:
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+            ReadGhostFileData(NextAttractDemoRecording(), false);
+#else
             ReadGhostFileData(g_dwAttractDemoIndex == 0 ? "RallyIntro1.dat" : "RallyIntro2.dat",
                               false);
             g_dwAttractDemoIndex = (s32)((u32)g_dwAttractDemoIndex + 1);
             if (g_dwAttractDemoIndex > 1) {
                 g_dwAttractDemoIndex = 0;
             }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
         loadedDemo:
             ClearGhostPlaybackState();
             g_bDemoInterrupted = FALSE;

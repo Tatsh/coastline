@@ -203,6 +203,14 @@ bool ReadGhostFileData(const char *pszPath, bool bAllowFailure);
  * @return The file, open for reading, or null.
  */
 FILE *OpenGhostRecording(const char *pszPath);
+
+/**
+ * Choose the recording of the next attract demo: the two of the PC release in turn, and then the
+ * demo of each imported cartridge.
+ *
+ * @return The path of the recording, relative to the default assets.
+ */
+const char *NextAttractDemoRecording(void);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 /**

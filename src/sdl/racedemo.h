@@ -3,11 +3,13 @@
 /**
  * @file
  * The attract demo of the PC release, run by its race engine: a recording of a car on a track,
- * replayed for 39.6 seconds under the cameras of the race.
+ * replayed for 39.6 seconds under the cameras of the race. The demos of the imported cartridges
+ * follow the two of the PC release.
  */
 
 #include <array>
 #include <cstdint>
+#include <string_view>
 
 namespace coastline {
 
@@ -48,5 +50,20 @@ int AttractDemoCar();
 /** @return The red, green, and blue of the colour of the car of the demo, once its race has loaded.
  */
 std::array<std::uint8_t, 3> AttractDemoColor();
+
+/**
+ * @return Whether the demo is the one of a cartridge, recorded at its import. The console plays it
+ * in fog with no help on the screen and ends it with its recording.
+ */
+bool AttractDemoFromConsole();
+
+/**
+ * Make the demo of a cartridge the next to play, if it was imported, and go on with the rotation
+ * from it.
+ *
+ * @param release The directory of the release: usa, jpn, or eur.
+ * @return Whether the release is one of the three.
+ */
+bool ChooseAttractDemo(std::string_view release);
 
 } // namespace coastline
