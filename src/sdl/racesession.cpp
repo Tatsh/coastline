@@ -17,6 +17,7 @@
 #include "common/screen.h"
 #include "common/season.h"
 #include "common/settings.h"
+#include "common/soundsystem.h"
 #include "common/system.h"
 #include "common/trackselect.h"
 #include "common/vehicle.h"
@@ -60,6 +61,25 @@ void ReadResults() {
 
 bool g_waitForStart = false;
 bool g_autopilot = false;
+bool g_soundHeld = false;
+
+// A race that has loaded is silent until the screen has wiped in from black, and its music starts
+// from the beginning of its track then.
+void HoldSoundUntilShown() {
+    if (!g_soundHeld) {
+        return;
+    }
+    if (g_fFadeLevel < 1.0f) {
+        g_bSfxVolume = 0;
+        return;
+    }
+    g_soundHeld = false;
+    g_bSfxVolume =
+        static_cast<unsigned char>(g_adwSfxVolumeLevels[g_GlobalRallyConfig.dwSfxVolume]);
+    if (g_musicStarted) {
+        RestartRaceMusic();
+    }
+}
 
 } // namespace
 
@@ -166,10 +186,13 @@ RaceEnd StepRace() {
         if (g_autopilot) {
             g_aVehicles[0].SetDriver(AiVehicleControllerCallback);
         }
+        g_soundHeld = true;
+        PauseMusicPlayback();
     }
     // The PC release advances the fades with each frame it draws, and the SDL game with each frame
     // of the race.
     UpdateFadeTransitions();
+    HoldSoundUntilShown();
     return RaceEnd::Running;
 }
 

@@ -25,6 +25,9 @@ bool StartRaceMusic(const std::filesystem::path &directory, RaceMusicSource sour
 /** Drop a user of the music of the races. The last user stops the music and closes its device. */
 void StopRaceMusic();
 
+/** Play the track of the race from its start, with the device of the music resumed. */
+void RestartRaceMusic();
+
 /**
  * Play the modules of the races through the player of the music of the menus, which mixes the
  * channels of the console, instead of a player of their own. Two players would mix the same

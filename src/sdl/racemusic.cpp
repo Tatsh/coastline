@@ -402,6 +402,11 @@ void StopRaceMusic() {
     RaceMusic::Get().Stop();
 }
 
+void RestartRaceMusic() {
+    RaceMusic &music = RaceMusic::Get();
+    music.Play(music.CurrentTrack());
+}
+
 void ShareRaceMusicPlayer(N64Audio *audio) {
     RaceMusic::Get().Share(audio);
 }

@@ -15,6 +15,7 @@
 #include "common/screen.h"
 #include "common/season.h"
 #include "common/soundbuffer.h"
+#include "common/soundsystem.h"
 #include "common/strings.h"
 #include "common/trackselect.h"
 #include "common/vehicle.h"
@@ -80,6 +81,8 @@ void StartAttractDemo() {
     g_dwRaceSessionType = RACE_SESSION_ATTRACT;
     g_dwRaceInitialized = 0;
     InitGameAndShowMenus();
+    // The demo plays its sound effects a quarter quieter than a race, under the music of the menus.
+    g_bSfxVolume = static_cast<unsigned char>(g_bSfxVolume * 3 / 4);
 }
 
 bool StepAttractDemo(bool leave) {
