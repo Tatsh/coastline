@@ -348,6 +348,9 @@ void Menus::DrawPlayerRaceResults(SceneRenderer &renderer, int player) {
                        "--    ";
         }
         text.Draw(renderer, label, WIDTH * 5 / 16, y, style, flat);
+        // RestoreRaceResultsFromSlots() does not restore the best lap time, and the time is the
+        // one the instant replay arrived at. A replay exited before the lap ends shows BEST LAP
+        // for a record, as on the console.
         if (lap < result.lap && lap == result.bestLap) {
             text.Draw(renderer,
                       result.bestLapTime == m_profile.lapRecords[track] ? "  %yyRECORD LAP!" :
