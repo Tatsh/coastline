@@ -27,6 +27,8 @@ struct GltfImage {
     /** The material of the car, a VEHICLE_MATERIAL_ value, whose entry of the palette gives the
      * alpha of the paint of the image. */
     int paintMaterial = -1;
+    /** The offset of the texels in the image of the model. */
+    std::size_t address = 0;
 };
 
 /** A glTF document, the bytes of its one buffer, and its images. */

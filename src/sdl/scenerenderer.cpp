@@ -99,6 +99,44 @@ void PaintPalette(SDL_Palette *palette, std::array<std::uint8_t, 3> paint, int m
     SDL_SetPaletteColors(palette, colors.data(), 0, 2);
 }
 
+// ApplyPaintDamageOverlay(): the paint of a set darkened by a mask of 64 by 64 intensities
+// stretched over it, the paint placed as BlitPaintImageToPixels() places it in the image at twice
+// its size, its bottom on the bottom of the rectangle of the set measured from the bottom of the
+// image. A texel outside the paint is not darkened.
+std::vector<std::uint8_t> DamageTexels(std::vector<std::uint8_t> texels,
+                                       int width,
+                                       int height,
+                                       const std::vector<std::uint8_t> &mask,
+                                       const ImageDamage &damage) {
+    constexpr int MASK_SIDE = 64;
+    auto [left, right, top, bottom] = damage.rectangle;
+    if (left == 0 && right == 0 && top == 0 && bottom == 0) {
+        right = width * 2;
+        bottom = height * 2;
+    }
+    int paintWidth = right - left;
+    int paintHeight = bottom - top;
+    if (paintWidth <= 0 || paintHeight <= 0 || mask.size() < MASK_SIDE * MASK_SIDE) {
+        return texels;
+    }
+    for (int y = 0; y < height; ++y) {
+        int row = y * 2 - (height * 2 - bottom);
+        for (int x = 0; x < width; ++x) {
+            int column = x * 2 - left;
+            if (row < 0 || row >= paintHeight || column < 0 || column >= paintWidth) {
+                continue;
+            }
+            unsigned intensity = mask[static_cast<std::size_t>(
+                row * MASK_SIDE / paintHeight * MASK_SIDE + column * MASK_SIDE / paintWidth)];
+            std::uint8_t *texel = &texels[static_cast<std::size_t>((y * width + x) * 4)];
+            for (int c = 0; c < 3; ++c) {
+                texel[c] = static_cast<std::uint8_t>(texel[c] * intensity / 255);
+            }
+        }
+    }
+    return texels;
+}
+
 std::array<float, 4> Rgba(std::uint32_t value) {
     return {static_cast<float>(value >> 24 & 0xff) / 255.0f,
             static_cast<float>(value >> 16 & 0xff) / 255.0f,
@@ -472,6 +510,7 @@ struct DrawState {
     bool ghost = false;
     bool inOrder = false;
     bool mirrored = false;
+    CarDamage damage{};
 };
 
 struct ModelDraw {
@@ -517,10 +556,18 @@ struct RenderModel::State {
     // ponytail: one variant a model; cars sharing a model would need the variant per draw.
     std::map<std::size_t, std::vector<SDL_GPUTexture *>> variants;
     int variant = 0;
+    // The damaged images, by the image: the side of the car and the image at each level of damage
+    // after the first.
+    std::map<std::size_t, std::pair<int, std::vector<SDL_GPUTexture *>>> damaged;
 
     ~State() {
         for (auto &[image, textures] : variants) {
             for (auto *texture : textures) {
+                SDL_ReleaseGPUTexture(device, texture);
+            }
+        }
+        for (auto &[image, levels] : damaged) {
+            for (auto *texture : levels.second) {
                 SDL_ReleaseGPUTexture(device, texture);
             }
         }
@@ -555,6 +602,7 @@ struct SceneRenderer::State {
     std::optional<SDL_Rect> view;
     bool ghost = false;
     bool inOrder = false;
+    CarDamage damage{};
     GpuWindow *window = nullptr;
     SDL_GPUDevice *device = nullptr;
     SDL_GPUShader *vertexShader = nullptr;
@@ -702,7 +750,7 @@ struct SceneRenderer::State {
     }
 
     DrawState Current() const {
-        return {view, fog, hiddenFlags, ghost, inOrder, mirrored};
+        return {view, fog, hiddenFlags, ghost, inOrder, mirrored, damage};
     }
 
     // A buffer of at least a size, made again when it is too small.
@@ -792,6 +840,8 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
 
     // The images of another document of the model, one for one, when it has as many.
     nlohmann::json images = document.value("images", nlohmann::json::array());
+    // The paint sets are those of this document, whichever document the images come from.
+    const nlohmann::json ownImages = images;
     std::filesystem::path imageDirectory = path.parent_path();
     if (options.images) {
         std::ifstream other(*options.images);
@@ -855,6 +905,22 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
         for (int y = 0; y < rgba->h; ++y) {
             auto *row = static_cast<std::uint8_t *>(rgba->pixels) + y * rgba->pitch;
             texels.insert(texels.end(), row, row + rgba->w * 4);
+        }
+        std::optional<ImageDamage> damage;
+        int paintSet = ownImages[state->images.size()]
+                           .value("extras", nlohmann::json::object())
+                           .value("coastlinePaint", nlohmann::json::object())
+                           .value("set", -1);
+        if (options.damage && options.damageMasks != nullptr && paintSet >= 0) {
+            damage = options.damage(paintSet);
+        }
+        if (damage) {
+            std::vector<SDL_GPUTexture *> levels;
+            for (const auto &mask : *options.damageMasks) {
+                levels.push_back(upload.Texture(
+                    rgba->w, rgba->h, DamageTexels(texels, rgba->w, rgba->h, mask, *damage)));
+            }
+            state->damaged[state->images.size()] = {damage->side, std::move(levels)};
         }
         state->images.push_back(upload.Texture(rgba->w, rgba->h, texels));
         SDL_DestroySurface(rgba);
@@ -1247,6 +1313,10 @@ void SceneRenderer::SetGhost(bool ghost) {
     m_state->ghost = ghost;
 }
 
+void SceneRenderer::SetDamage(const CarDamage &damage) {
+    m_state->damage = damage;
+}
+
 void SceneRenderer::SetDrawnInOrder(bool inOrder) {
     m_state->inOrder = inOrder;
 }
@@ -1523,6 +1593,14 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             if (varied != model.variants.end() && model.variant >= 0 &&
                 static_cast<std::size_t>(model.variant) < varied->second.size()) {
                 bindings[0].texture = varied->second[static_cast<std::size_t>(model.variant)];
+            }
+            auto damaged = model.damaged.find(image);
+            if (damaged != model.damaged.end()) {
+                int level = drawState->damage[static_cast<std::size_t>(damaged->second.first)];
+                if (level > 0 && static_cast<std::size_t>(level) <= damaged->second.second.size()) {
+                    bindings[0].texture =
+                        damaged->second.second[static_cast<std::size_t>(level - 1)];
+                }
             }
             if (primitive.texel1 && *primitive.texel1 < model.images.size()) {
                 bindings[1] = {model.images[*primitive.texel1], model.samplers.at(sampler)};

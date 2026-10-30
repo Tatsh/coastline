@@ -570,6 +570,9 @@ public:
     s32 GetCustomCarModel() const {
         return customCarModel;
     }
+    const auto &GetDamageTextureLevels() const {
+        return damageTextureLevels;
+    }
     s16 GetDentJitter() const {
         return dentJitter;
     }

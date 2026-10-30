@@ -138,6 +138,23 @@ struct CarShadow {
  */
 std::optional<MorphPose> PoseAtTime(const VertexAnimationInfo &animation, float time);
 
+/** The number of sides of a car that take damage, as IncrementDamageTextureLevel() counts them. */
+constexpr int CAR_DAMAGE_SIDES = 8;
+
+/** The levels of damage of a car after the first, as LoadCarPaintTextures() makes them. */
+constexpr int CAR_DAMAGE_LEVELS = 3;
+
+/** The levels of damage of the sides of a car, each from 0 for none to #CAR_DAMAGE_LEVELS. */
+using CarDamage = std::array<int, CAR_DAMAGE_SIDES>;
+
+/** The damage of an image of a car, as LoadCarPaintTextures() damages the image of a paint set. */
+struct ImageDamage {
+    int side = 0; /*!< The side of the car the damage of the image follows. */
+    /** The left, right, top, and bottom of the paint set, in texels of twice the size of the
+     * image, all 0 for the whole image. */
+    std::array<int, 4> rectangle{};
+};
+
 /** What of a glTF document a RenderModel takes, and how. */
 struct ModelOptions {
     /** The name of a node to draw in place of the default scene, such as the sky of a track or a
@@ -158,6 +175,12 @@ struct ModelOptions {
     /** Change the palette of an image of a material for a variant, and report whether the image
      * has variants; called for each variant of each image with a material. */
     std::function<bool(SDL_Palette *, int material, int variant)> paletteVariant;
+    /** The damage of the image of a paint set of the document, by the set, or none for an image
+     * the damage does not darken; none for a model without damage. */
+    std::function<std::optional<ImageDamage>(int set)> damage;
+    /** The 64 by 64 intensities of the damage of each level after the first, row by row from the
+     * top, which darken a damaged image. */
+    const std::array<std::vector<std::uint8_t>, CAR_DAMAGE_LEVELS> *damageMasks = nullptr;
     /** Whether the document may have nothing to draw, such as a part a level of detail of a car
      * does not have, which then loads no model without an error. */
     bool optional = false;
@@ -369,6 +392,13 @@ public:
      * @param ghost Whether the models are ghosts.
      */
     void SetGhost(bool ghost);
+
+    /**
+     * Set the damage the damaged images of the models drawn after it show, not from Begin().
+     *
+     * @param damage The levels of damage of the sides of a car.
+     */
+    void SetDamage(const CarDamage &damage);
 
     /**
      * Set whether the models drawn after it draw their translucent parts straight after their

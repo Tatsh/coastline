@@ -7,6 +7,7 @@
 #include <cstring>
 #include <map>
 #include <optional>
+#include <set>
 
 #include <fmt/format.h>
 
@@ -1174,7 +1175,8 @@ BuildModel(std::span<const std::uint8_t> bytes,
                                     DecodeTexture(memory, key),
                                     {},
                                     {},
-                                    -1});
+                                    -1,
+                                    key.address});
             // A texture of a material of a car keeps its indices for the colour of the car to
             // paint its first two colours.
             auto painted = paintMaterialOf.find(key.address);
@@ -1227,7 +1229,8 @@ BuildModel(std::span<const std::uint8_t> bytes,
                                     DecodeTexture(scratch, key),
                                     {},
                                     {},
-                                    -1});
+                                    -1,
+                                    key.address});
             // The next frame starts from the texture as a race starts.
             for (auto [target, size] :
                  {std::pair{texture->texels, texture->size},
@@ -1735,6 +1738,164 @@ std::optional<std::span<const std::uint8_t>> View(const nlohmann::ordered_json &
     return buffer.subspan(offset, size);
 }
 
+// The states of the loads of a texture as PreprocessDisplayListTextures() of the PC release follows
+// them.
+enum class TextureScan {
+    Idle,
+    ImageSet,
+    LoadSynced,
+    BlockLoaded,
+    TileSynced,
+    TileSet,
+    TileSized,
+    TlutLoaded,
+    PipeSynced
+};
+
+// A texture entry of the PC release: the addresses of its texels and its palette, and the colours
+// of the combine of the PC release that tells entries of the same image apart.
+struct ScannedTexture {
+    std::uint32_t texels = 0;
+    std::uint32_t palette = 0;
+    bool colorCombine = false;
+    std::uint32_t primitive = 0;
+    std::uint32_t environment = 0;
+};
+
+// The paint set of each texture of a model of a car, by the offset of its texels in the image.
+// PreparePaintTexture() of the PC release counts a set, from 1, for each texture entry the car
+// creates: those PreprocessDisplayListTextures() creates over the display lists of the body and
+// then of the wheels, each list once, then those of the textures 6, 3, and 5 of the table that
+// FindMatchingTextureEntry() does not find among them.
+std::map<std::size_t, int> PaintSets(std::span<const std::uint8_t> image) {
+    std::vector<ScannedTexture> entries;
+    std::map<std::size_t, int> sets;
+    auto create = [&](const ScannedTexture &texture) {
+        bool found = std::ranges::any_of(entries, [&](const ScannedTexture &entry) {
+            return entry.texels == texture.texels && entry.palette == texture.palette &&
+                   (!entry.colorCombine || !texture.colorCombine ||
+                    (entry.primitive == texture.primitive &&
+                     entry.environment == texture.environment));
+        });
+        if (found) {
+            return;
+        }
+        entries.push_back(texture);
+        if (texture.texels >= CAR_LAYOUT.base) {
+            sets.try_emplace(texture.texels - CAR_LAYOUT.base, static_cast<int>(entries.size()));
+        }
+    };
+    std::vector<std::uint32_t> lists;
+    for (int lod = 0; lod < LODS; ++lod) {
+        for (int list = 0; list < BODY_LISTS; ++list) {
+            lists.push_back(Big32(image, BODY_LISTS_AT + (lod * BODY_LISTS + list) * 4));
+        }
+    }
+    for (int lod = 0; lod < LODS; ++lod) {
+        for (int list = 0; list < WHEEL_LISTS; ++list) {
+            lists.push_back(Big32(image, WHEEL_LISTS_AT + (lod * WHEEL_LISTS + list) * 4));
+        }
+    }
+    // The source of the last block loaded and the colours persist from list to list.
+    std::uint32_t imageAddress = 0;
+    std::uint32_t blockSource = 0;
+    std::uint32_t primitive = 0;
+    std::uint32_t environment = 0;
+    std::set<std::uint32_t> scanned;
+    for (std::uint32_t list : lists) {
+        if (list == 0 || !scanned.insert(list).second) {
+            continue;
+        }
+        TextureScan state = TextureScan::Idle;
+        std::uint32_t tlut = 0;
+        bool colorCombine = false;
+        for (std::size_t at = list - CAR_LAYOUT.base; at + 8 <= image.size(); at += 8) {
+            std::uint32_t w0 = Big32(image, at);
+            std::uint32_t w1 = Big32(image, at + 4);
+            std::uint32_t opcode = w0 >> 24;
+            if (opcode == OP_ENDDL) {
+                break;
+            }
+            switch (opcode) {
+            case OP_VTX:
+            case OP_TRI2:
+            case OP_TRI1:
+                if (state != TextureScan::Idle) {
+                    create({blockSource, tlut, colorCombine, primitive, environment});
+                    state = TextureScan::Idle;
+                }
+                break;
+            case OP_RDPLOADSYNC:
+                if (state == TextureScan::ImageSet) {
+                    state = TextureScan::LoadSynced;
+                }
+                break;
+            case OP_RDPPIPESYNC:
+                if (state == TextureScan::TlutLoaded) {
+                    state = TextureScan::PipeSynced;
+                }
+                break;
+            case OP_RDPTILESYNC:
+                if (state == TextureScan::BlockLoaded || state == TextureScan::TlutLoaded) {
+                    state = TextureScan::TileSynced;
+                }
+                break;
+            case OP_LOADTLUT:
+                if (state == TextureScan::ImageSet) {
+                    tlut = imageAddress;
+                    state = TextureScan::TlutLoaded;
+                }
+                break;
+            case OP_SETTILESIZE:
+                state = TextureScan::TileSized;
+                break;
+            case OP_LOADBLOCK:
+                if (state == TextureScan::LoadSynced) {
+                    blockSource = imageAddress;
+                    state = TextureScan::BlockLoaded;
+                }
+                break;
+            case OP_SETTILE:
+                state = TextureScan::TileSet;
+                break;
+            case OP_SETPRIMCOLOR:
+                primitive = w1;
+                break;
+            case OP_SETENVCOLOR:
+                environment = w1;
+                break;
+            case OP_SETCOMBINE:
+                colorCombine = w0 == 0xfc50fe04 && w1 == 0x3ffdf3f8;
+                break;
+            case OP_SETTIMG:
+                if (state == TextureScan::Idle || state == TextureScan::BlockLoaded ||
+                    state == TextureScan::TileSized) {
+                    imageAddress = w1;
+                    tlut = 0;
+                    state = TextureScan::ImageSet;
+                }
+                break;
+            default:
+                break;
+            }
+        }
+    }
+    // CreateDeviceTextureFromImageHeader() passes over a texture without texels or with the
+    // flag 0x100000.
+    std::uint32_t table = Big32(image, CAR_LAYOUT.texturesAt) - CAR_LAYOUT.base;
+    for (std::size_t entry : {6, 3, 5}) {
+        std::size_t at = table + entry * TEXTURE_SIZE;
+        if (table > image.size() || at + TEXTURE_SIZE > image.size()) {
+            break;
+        }
+        std::uint32_t texels = Big32(image, at);
+        if (texels != 0 && (Big32(image, at + 0x20) & 0x100000) == 0) {
+            create({texels, Big32(image, at + 4), false, 0, 0});
+        }
+    }
+    return sets;
+}
+
 } // namespace
 
 std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_t> bytes,
@@ -1814,8 +1975,21 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
             paintMaterialOf[texture->address] = material;
         }
     }
-    return BuildModel(
-        bytes, imageOffset, CAR_LAYOUT, draws, scenes, bufferUri, {}, paintMaterialOf);
+    auto model =
+        BuildModel(bytes, imageOffset, CAR_LAYOUT, draws, scenes, bufferUri, {}, paintMaterialOf);
+    if (!model) {
+        return model;
+    }
+    // The paint set of each image, which IncrementDamageTextureLevel() damages by the side of the
+    // set.
+    std::map<std::size_t, int> sets = PaintSets(image);
+    for (std::size_t i = 0; i < model->images.size(); ++i) {
+        auto set = sets.find(model->images[i].address);
+        if (set != sets.end()) {
+            model->json["images"][i]["extras"]["coastlinePaint"]["set"] = set->second;
+        }
+    }
+    return model;
 }
 
 std::expected<GltfModel, std::string> TrackToGltf(std::span<const std::uint8_t> bytes,

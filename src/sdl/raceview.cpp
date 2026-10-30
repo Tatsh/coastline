@@ -27,6 +27,7 @@
 #include "common/instantreplay.h"
 #include "common/model.h"
 #include "common/packedvalue.h"
+#include "common/paintshop.h"
 #include "common/particlesnapshot.h"
 #include "common/qualityoflife.h"
 #include "common/race.h"
@@ -558,6 +559,13 @@ struct CarModels {
 // 1 more than the vehicle whose images come from another document, or 0 for the cartridge.
 using CarKey = std::array<int, 5>;
 
+// LoadPaintDamageBitmaps(): the 64 by 64 intensities of each level of damage after the first, and
+// the car of the first vehicle, whose paint sets LoadCarPaintTextures() damages, or -1 for none.
+struct CarDamageMasks {
+    int car = -1;
+    std::array<std::vector<std::uint8_t>, CAR_DAMAGE_LEVELS> masks;
+};
+
 struct RaceView::State {
     std::filesystem::path defaults;
     std::unique_ptr<RenderModel> track;
@@ -577,6 +585,7 @@ struct RaceView::State {
     std::unique_ptr<RenderTexture> nightSky;
     // The shadow of the car, the 8-bit intensities of the engine, the alpha the shade.
     std::unique_ptr<RenderTexture> shadowTexture;
+    CarDamageMasks damage;
     // LoadParticleTexture(): the 64 by 64 intensities of a puff of smoke.
     std::unique_ptr<RenderTexture> particleTexture;
     // LoadTireTrailTexture(): the 32 by 64 intensities of 4 bits of the spray of the tyres.
@@ -1227,16 +1236,35 @@ RaceView::~RaceView() = default;
 namespace {
 
 // The options of the models of a car: its textures those of the cartridge or of another document,
-// painted as SetMaterialColor() paints them.
+// painted as SetMaterialColor() paints them, and the car of the first vehicle damaged as
+// LoadVehicleModelFromRom() damages the paint sets of the first model. The paint sets of a car
+// are loaded once, and a computer's car of the same kind shares the damaged sets.
 ModelOptions CarOptions(const std::filesystem::path &defaults,
                         const std::string &prefix,
                         const CarKey &key,
-                        const std::optional<std::filesystem::path> &images) {
+                        const std::optional<std::filesystem::path> &images,
+                        const CarDamageMasks &damage) {
     ModelOptions options;
     options.paint = std::array<std::uint8_t, 3>{static_cast<std::uint8_t>(key[1]),
                                                 static_cast<std::uint8_t>(key[2]),
                                                 static_cast<std::uint8_t>(key[3])};
     options.images = images ? images : CartridgeCar(defaults, prefix);
+    if (key[0] == damage.car) {
+        int car = key[0];
+        options.damage = [car](int set) -> std::optional<ImageDamage> {
+            if (set >= CAR_PAINT_SET_COUNT) {
+                return std::nullopt;
+            }
+            const CarPaintTextureSet &paint = g_CarPaintTextureSets[car][set];
+            if (paint.pszBitmapName == nullptr || paint.nOption10 < 0 ||
+                paint.nOption10 >= CAR_DAMAGE_SIDES) {
+                return std::nullopt;
+            }
+            return ImageDamage{paint.nOption10,
+                               {paint.nLeft, paint.nRight, paint.nTop, paint.nBottom}};
+        };
+        options.damageMasks = &damage.masks;
+    }
     return options;
 }
 
@@ -1250,13 +1278,14 @@ CarLevel LoadCarLevel(SceneRenderer &renderer,
                       const std::filesystem::path &defaults,
                       const CarKey &key,
                       int lod,
-                      const std::optional<std::filesystem::path> &images) {
+                      const std::optional<std::filesystem::path> &images,
+                      const CarDamageMasks &damage) {
     std::string prefix = g_apszCarModelPrefixes[key[0]];
     auto carFile = defaults / "cars" / (prefix + ".gltf");
     std::string root = "lod" + std::to_string(lod);
     std::string level = root + "-";
     CarLevel parts;
-    ModelOptions options = CarOptions(defaults, prefix, key, images);
+    ModelOptions options = CarOptions(defaults, prefix, key, images, damage);
     options.optional = lod != 0;
     options.node = root;
     options.parts = [&level](const std::string &n) {
@@ -1284,12 +1313,13 @@ CarLevel LoadCarLevel(SceneRenderer &renderer,
 CarModels LoadCarModels(SceneRenderer &renderer,
                         const std::filesystem::path &defaults,
                         const CarKey &key,
-                        const std::optional<std::filesystem::path> &images) {
+                        const std::optional<std::filesystem::path> &images,
+                        const CarDamageMasks &damage) {
     std::string prefix = g_apszCarModelPrefixes[key[0]];
     auto carFile = defaults / "cars" / (prefix + ".gltf");
     CarModels models;
-    models.levels[0] = LoadCarLevel(renderer, defaults, key, 0, images);
-    ModelOptions options = CarOptions(defaults, prefix, key, images);
+    models.levels[0] = LoadCarLevel(renderer, defaults, key, 0, images, damage);
+    ModelOptions options = CarOptions(defaults, prefix, key, images, damage);
     options.node = "lod0-wheel0";
     models.wheel = RenderModel::Load(renderer, carFile, options);
     options.node = "lod0-wheelSnow0";
@@ -1298,6 +1328,35 @@ CarModels LoadCarModels(SceneRenderer &renderer,
         return {};
     }
     return models;
+}
+
+// The masks of LoadPaintDamageBitmaps() from Paint of the import, the red of each texel. A car
+// without every mask takes no damage, as ApplyPaintDamageOverlay() passes over a missing mask.
+CarDamageMasks LoadDamageMasks(const std::filesystem::path &defaults, int car) {
+    constexpr int MASK_SIDE = 64;
+    CarDamageMasks damage;
+    for (int level = 0; level < CAR_DAMAGE_LEVELS; ++level) {
+        auto path = defaults / "Paint" / ("damage" + std::to_string(level + 1) + ".png");
+        SDL_Surface *loaded = SDL_LoadPNG(path.string().c_str());
+        SDL_Surface *rgba = loaded ? SDL_ConvertSurface(loaded, SDL_PIXELFORMAT_RGBA32) : nullptr;
+        SDL_DestroySurface(loaded);
+        if (rgba == nullptr || rgba->w != MASK_SIDE || rgba->h != MASK_SIDE) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                        "%s is not a mask of damage of 64 by 64 texels.",
+                        path.string().c_str());
+            SDL_DestroySurface(rgba);
+            return {};
+        }
+        for (int y = 0; y < MASK_SIDE; ++y) {
+            const auto *row = static_cast<const std::uint8_t *>(rgba->pixels) + y * rgba->pitch;
+            for (int x = 0; x < MASK_SIDE; ++x) {
+                damage.masks[static_cast<std::size_t>(level)].push_back(row[x * 4]);
+            }
+        }
+        SDL_DestroySurface(rgba);
+    }
+    damage.car = car;
+    return damage;
 }
 
 } // namespace
@@ -1314,6 +1373,7 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     sky.node = "sky";
     state->sky = RenderModel::Load(renderer, trackFile, sky);
     state->defaults = defaults;
+    state->damage = LoadDamageMasks(defaults, cars.empty() ? -1 : cars.front().car);
     for (std::size_t i = 0; i < cars.size(); ++i) {
         const RaceCar &vehicle = cars[i];
         int custom = vehicle.images ? static_cast<int>(i) + 1 : 0;
@@ -1321,7 +1381,7 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
             state->images[static_cast<int>(i)] = *vehicle.images;
         }
         CarKey key{vehicle.car, vehicle.paint[0], vehicle.paint[1], vehicle.paint[2], custom};
-        CarModels models = LoadCarModels(renderer, defaults, key, vehicle.images);
+        CarModels models = LoadCarModels(renderer, defaults, key, vehicle.images, state->damage);
         if (!models.levels[0]) {
             return nullptr;
         }
@@ -1753,6 +1813,9 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
 // projection, and the lights of the car.
 struct RaceView::CarInView {
     const Vehicle *car;
+    // The index of the car among the vehicles, which the car of a snapshot does not give by its
+    // address.
+    int carIndex;
     const Vehicle *cameraCar;
     int cameraIndex;
     const CameraFrame *camera;
@@ -1882,7 +1945,8 @@ void RaceView::DrawView(SceneRenderer &renderer,
                 continue;
             }
             lastLighting = CarLighting(car, vehicle, *camera);
-            DrawCar(renderer, {&car, &vehicle, cameraIndex, camera, &viewProjection, lastLighting});
+            DrawCar(renderer,
+                    {&car, index, &vehicle, cameraIndex, camera, &viewProjection, lastLighting});
         }
     };
     // RenderRaceScene() draws the cars and the smoke of the tyres after the second pass of the
@@ -1946,7 +2010,7 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     const Matrix4 &viewProjection = *view.viewProjection;
     int cameraIndex = view.cameraIndex;
     const auto &color = car.GetColor();
-    auto vehicleIndex = static_cast<int>(&car - &g_aVehicles[0]);
+    int vehicleIndex = view.carIndex;
     auto images = s.images.find(vehicleIndex);
     std::optional<std::filesystem::path> document;
     if (images != s.images.end()) {
@@ -1956,7 +2020,9 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     auto found = s.cars.find(key);
     // A car that does not load is not tried again.
     if (found == s.cars.end()) {
-        found = s.cars.try_emplace(key, LoadCarModels(renderer, s.defaults, key, document)).first;
+        found =
+            s.cars.try_emplace(key, LoadCarModels(renderer, s.defaults, key, document, s.damage))
+                .first;
     }
     CarModels &models = found->second;
     if (!models.levels[0]) {
@@ -1981,11 +2047,14 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     }
     if (!models.levels[lod]) {
         models.levels[lod] =
-            LoadCarLevel(renderer, s.defaults, key, static_cast<int>(lod), document);
+            LoadCarLevel(renderer, s.defaults, key, static_cast<int>(lod), document, s.damage);
     }
     const CarLevel &level = *models.levels[lod];
     bool ghost = car.GetGhostMode() == VEHICLE_GHOST;
     renderer.SetGhost(ghost);
+    CarDamage damage{};
+    std::ranges::copy(car.GetDamageTextureLevels(), damage.begin());
+    renderer.SetDamage(damage);
     const Lighting &carLighting = view.lighting;
     Matrix4 body = MultiplyMatrices(FrameMatrix(frame), ConsoleSpace());
     Reflection reflection =
@@ -2020,6 +2089,7 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
         renderer.DrawModel(wheel, place, viewProjection, carLighting, std::nullopt, true);
     }
     renderer.SetGhost(false);
+    renderer.SetDamage({});
 }
 
 } // namespace coastline

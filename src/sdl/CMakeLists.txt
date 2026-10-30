@@ -191,7 +191,6 @@ add_library(
   n64model.cpp
   paintshop.cpp
   paths.cpp
-  pending.cpp
   playerselect.cpp
   ptr32.cpp
   racedemo.cpp
@@ -221,7 +220,7 @@ target_link_libraries(coastline_sdl PUBLIC nlohmann_json::nlohmann_json
                                     PRIVATE FLAC::FLAC fmt::fmt ZLIB::ZLIB)
 # A reconstructed routine retains the parameters of the original, used or not.
 set_source_files_properties("${CMAKE_SOURCE_DIR}/src/common/audio.c" effecttextures.cpp
-                            pending.cpp PROPERTIES COMPILE_OPTIONS "${COASTLINE_NO_UNUSED_PARAMETER}")
+                            PROPERTIES COMPILE_OPTIONS "${COASTLINE_NO_UNUSED_PARAMETER}")
 # The interpreter rounds each operation of the floating-point unit of the console on its own. MSVC
 # does not contract operations without /fp:contract.
 if(NOT MSVC)
