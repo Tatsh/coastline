@@ -723,6 +723,7 @@ minimizebox
 minode
 miny
 minz
+mipscpu
 mirrwd
 mixercontrol
 mixercontrola
@@ -894,6 +895,7 @@ ppsz
 preapproved
 precipitationrender
 precipitationupdate
+preempt
 prenmi
 primarybuffer
 primarysurface

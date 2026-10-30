@@ -168,8 +168,10 @@ add_library(
   log.cpp
   mainmenu.cpp
   menutext.cpp
+  mipscpu.cpp
   modelview.cpp
   music.cpp
+  n64attract.cpp
   n64model.cpp
   paths.cpp
   pending.cpp
@@ -197,6 +199,11 @@ target_link_libraries(coastline_sdl PRIVATE FLAC::FLAC fmt::fmt nlohmann_json::n
 # A reconstructed routine retains the parameters of the original, used or not.
 set_source_files_properties("${CMAKE_SOURCE_DIR}/src/common/audio.c" pending.cpp
                             PROPERTIES COMPILE_OPTIONS "${COASTLINE_NO_UNUSED_PARAMETER}")
+# The interpreter rounds each operation of the floating-point unit of the console on its own. MSVC
+# does not contract operations without /fp:contract.
+if(NOT MSVC)
+  set_source_files_properties(mipscpu.cpp PROPERTIES COMPILE_OPTIONS "-ffp-contract=off")
+endif()
 if(APPLE)
   enable_language(OBJCXX)
   target_sources(coastline_sdl PRIVATE paths-apple.mm)

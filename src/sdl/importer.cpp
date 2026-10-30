@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <cctype>
+#include <cmath>
 #include <cstring>
 #include <fstream>
 #include <functional>
@@ -17,14 +18,19 @@
 #include <SDL3/SDL.h>
 #include <fmt/format.h>
 #include <nlohmann/json.hpp>
+#include <zlib.h>
 
 #include "assetchain.h"
 #include "cartridge/eu.h"
 #include "cartridge/jp.h"
 #include "cartridge/us.h"
+#include "common/ghost.h"
 #include "common/podarchive.h"
+#include "common/rigidbody.h"
+#include "common/weather.h"
 #include "sdl/ghostfile.h"
 #include "sdl/indexedimage.h"
+#include "sdl/n64attract.h"
 #include "sdl/n64model.h"
 #include "sdl/stringresources.h"
 #include "sha1.h"
@@ -1307,6 +1313,173 @@ std::optional<std::uint64_t> ParseMsf(const std::string &text) {
     return (static_cast<std::uint64_t>(minutes) * 60 + seconds) * FRAMES_PER_SECOND + frames;
 }
 
+// The steps a second of the race of the PC release. It plays a frame of a ghost each step.
+constexpr double GHOST_STEPS_PER_SECOND = 30.0;
+// A move between two steps of a demo longer than this is a cut of its camera to another part of
+// the track, and the two steps are not blended.
+constexpr float DEMO_CUT_DISTANCE = 20.0f;
+// The bits of the buttons of an input that brake.
+constexpr std::uint32_t BRAKE_BUTTONS = 0xC0000;
+
+// The pose and the controls of the PC release a step of a demo of the console gives, as
+// BuildVehicleKeyframe() takes them from a vehicle, with the wheels in the order 0, 2, 1, and 3.
+KeyframeState DemoKeyframe(const N64DemoFrame &frame) {
+    constexpr std::array<int, 4> WHEELS{0, 2, 1, 3};
+    KeyframeState state{};
+    f32 matrix[4][4];
+    std::memcpy(matrix, frame.matrix, sizeof(matrix));
+    MatrixToQuaternion(matrix, &state.orientation);
+    state.position = {frame.matrix[3][0], frame.matrix[3][1], frame.matrix[3][2]};
+    state.fBodyRollAngle = frame.bodyRoll;
+    state.fSteerAngle = frame.steerAngle;
+    for (std::size_t i = 0; i < WHEELS.size(); ++i) {
+        auto wheel = static_cast<std::size_t>(WHEELS[i]);
+        state.afWheelAngle[i] = frame.wheelRoll[wheel];
+        state.afWheelContact[i] = static_cast<float>(frame.wheelContact[wheel]);
+        state.afWheelSurface[i] =
+            static_cast<float>(static_cast<std::int8_t>(frame.wheelSurface[wheel]));
+    }
+    state.fGearControl = frame.skidding;
+    state.fBraking = (frame.buttons & BRAKE_BUTTONS) != 0 ? 1.0f : 0.0f;
+    state.fReverse = !(frame.throttle >= 0.0f) ? 1.0f : 0.0f;
+    state.fProgress = frame.distance;
+    state.fEngineRpm = frame.engineRpm;
+    state.afLight[0] = frame.vehicleImpactVolume;
+    state.afLight[1] = frame.impactVolume;
+    state.afEffectFlags[0] = frame.landed;
+    state.afEffectFlags[1] = frame.effect;
+    return state;
+}
+
+// The steps of a demo at the rate of the race of the PC release. The poses between two steps of
+// the console are blended, and the wheels, the flags, and the sounds are those of the nearer step.
+std::vector<KeyframeState> DemoKeyframes(const N64Demo &demo) {
+    std::vector<KeyframeState> steps;
+    for (const N64DemoFrame &frame : demo.frames) {
+        steps.push_back(DemoKeyframe(frame));
+    }
+    double rate = 1.0 / demo.stepSeconds;
+    if (steps.empty() || std::abs(rate - GHOST_STEPS_PER_SECOND) < 0.01) {
+        return steps;
+    }
+    auto count = static_cast<std::size_t>(static_cast<double>(steps.size() - 1) / rate *
+                                          GHOST_STEPS_PER_SECOND) +
+                 1;
+    std::vector<KeyframeState> resampled;
+    for (std::size_t k = 0; k < count; ++k) {
+        double at = static_cast<double>(k) * rate / GHOST_STEPS_PER_SECOND;
+        auto i = std::min(static_cast<std::size_t>(at), steps.size() - 1);
+        auto share = static_cast<float>(at - static_cast<double>(i));
+        if (i + 1 >= steps.size() || share <= 0.0f) {
+            resampled.push_back(steps[i]);
+            continue;
+        }
+        KeyframeState &from = steps[i];
+        KeyframeState &to = steps[i + 1];
+        float dx = to.position.x - from.position.x;
+        float dy = to.position.y - from.position.y;
+        float dz = to.position.z - from.position.z;
+        const KeyframeState &nearer = share < 0.5f ? from : to;
+        if (dx * dx + dy * dy + dz * dz > DEMO_CUT_DISTANCE * DEMO_CUT_DISTANCE) {
+            resampled.push_back(nearer);
+            continue;
+        }
+        KeyframeState blended = nearer;
+        InterpolateKeyframeState(&blended, share, &from, &to);
+        std::memcpy(blended.afWheelAngle, nearer.afWheelAngle, sizeof(blended.afWheelAngle));
+        std::memcpy(blended.afWheelContact, nearer.afWheelContact, sizeof(blended.afWheelContact));
+        std::memcpy(blended.afWheelSurface, nearer.afWheelSurface, sizeof(blended.afWheelSurface));
+        std::memcpy(blended.afLight, nearer.afLight, sizeof(blended.afLight));
+        std::memcpy(blended.afEffectFlags, nearer.afEffectFlags, sizeof(blended.afEffectFlags));
+        blended.fGearControl = nearer.fGearControl;
+        blended.fBraking = nearer.fBraking;
+        blended.fReverse = nearer.fReverse;
+        resampled.push_back(blended);
+    }
+    return resampled;
+}
+
+void AppendLittle32(std::vector<std::uint8_t> &bytes, std::uint32_t value) {
+    for (int shift = 0; shift < 32; shift += 8) {
+        bytes.push_back(static_cast<std::uint8_t>(value >> shift));
+    }
+}
+
+// A demo of the console as a ghost recording of the PC release, in fog as the console races it.
+std::vector<std::uint8_t> DemoGhost(const N64Demo &demo, std::string_view slotName) {
+    constexpr std::size_t SLOT_NAME_SIZE = 128;
+    constexpr std::size_t RESERVED_BYTES = 8;
+    std::vector<std::uint8_t> body{static_cast<std::uint8_t>(demo.track),
+                                   static_cast<std::uint8_t>(demo.car),
+                                   demo.options[0],
+                                   demo.options[1],
+                                   demo.options[2],
+                                   demo.options[3],
+                                   demo.options[4],
+                                   WEATHER_FOG};
+    body.resize(body.size() + RESERVED_BYTES, 0);
+    for (const KeyframeState &state : DemoKeyframes(demo)) {
+        std::array<std::uint8_t, GHOST_FRAME_SIZE> frame{};
+        PackKeyframeToCompactBuffer(frame.data(), &state);
+        body.insert(body.end(), frame.begin(), frame.end());
+    }
+    uLong checksum = adler32(0, nullptr, 0);
+    checksum = adler32(checksum, body.data(), static_cast<uInt>(body.size()));
+    std::vector<std::uint8_t> bytes{'R', 'G', 'h', 'o'};
+    AppendLittle32(bytes, static_cast<std::uint32_t>(body.size() + 4));
+    AppendLittle32(bytes, static_cast<std::uint32_t>(checksum));
+    bytes.insert(bytes.end(), body.begin(), body.end());
+    // The settings of the menus: the transmission, the tyres, the suspension, the car, the
+    // handling, and one lap.
+    for (std::uint32_t setting : {static_cast<std::uint32_t>(demo.options[1]),
+                                  static_cast<std::uint32_t>(demo.options[2]),
+                                  static_cast<std::uint32_t>(demo.options[3]),
+                                  static_cast<std::uint32_t>(demo.car),
+                                  static_cast<std::uint32_t>(demo.options[0]),
+                                  1u}) {
+        AppendLittle32(bytes, setting);
+    }
+    std::vector<std::uint8_t> slot(slotName.begin(), slotName.end());
+    slot.resize(SLOT_NAME_SIZE, 0);
+    bytes.insert(bytes.end(), slot.begin(), slot.end());
+    return bytes;
+}
+
+// Record the attract demo of a cartridge and write it as attract.json, the JSON of a ghost
+// recording, once it reads back as the same recording.
+std::optional<std::string> WriteAttractDemo(std::span<const std::uint8_t> rom,
+                                            RomRelease release,
+                                            const std::filesystem::path &destination) {
+    N64DemoRelease demoRelease = release == RomRelease::Usa ? N64DemoRelease::Usa :
+                                 release == RomRelease::Eur ? N64DemoRelease::Eur :
+                                                              N64DemoRelease::Jpn;
+    auto demo = RecordN64AttractDemo(rom, demoRelease);
+    if (!demo) {
+        return std::format("The attract demo was not recorded: {}", demo.error());
+    }
+    auto bytes = DemoGhost(*demo, std::format("n64 {}", destination.filename().string()));
+    auto json = GhostToJson(bytes);
+    auto rebuilt = json ? GhostFromJson(*json) : std::nullopt;
+    if (!rebuilt || *rebuilt != bytes) {
+        return "The attract demo does not convert to JSON without loss.";
+    }
+    auto path = destination / "attract.json";
+    std::ofstream out(path, std::ios::trunc);
+    out << FormatGhostJson(*json);
+    out.close();
+    std::ifstream written(path);
+    auto parsed = nlohmann::ordered_json::parse(written, nullptr, false);
+    auto reread = parsed.is_discarded() ? std::nullopt : GhostFromJson(parsed);
+    if (!reread || *reread != bytes) {
+        return std::format("{} does not read back as the attract demo.", path.string());
+    }
+    SDL_Log("The attract demo of %s has %zu steps of the console, from %llu instructions.",
+            destination.filename().string().c_str(),
+            demo->frames.size(),
+            static_cast<unsigned long long>(demo->instructions));
+    return std::nullopt;
+}
+
 } // namespace
 
 bool NormalizeRomByteOrder(std::span<std::uint8_t> image) {
@@ -1472,6 +1645,11 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         return std::unexpected(*failure);
     }
     WriteMenuItems(destination, segment, assets);
+    // The game plays without the attract demo of a release. A failure to record it is logged and
+    // the import goes on.
+    if (auto failure = WriteAttractDemo(*bytes, *release, destination)) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "%s", failure->c_str());
+    }
     // Replaces each model of the menu items with a glTF file of the same name.
     for (const ManifestAsset &asset : assets) {
         if (!asset.name.starts_with("menu-items/")) {
