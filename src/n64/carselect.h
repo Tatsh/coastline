@@ -474,7 +474,7 @@ s32 IsCarUnlocked(s32 car);
  * @param width The width of the rectangle, in pixels.
  * @param height The height of the rectangle, in pixels.
  * @param slide How far the cars slide apart, as a fraction that the square of moves them by.
- * @param hideTachometer Whether the tachometer is left out.
+ * @param hideChoiceMarker Whether the choice marker of the stage is omitted.
  * @param slot The slot of g_aVehicleModelSlots of the first car.
  * @param secondSlot The slot of g_aVehicleModelSlots of the second car.
  * @param spread The distance of the slide at its full extent.
@@ -491,7 +491,7 @@ void RenderCameraView(Model *model,
                       s32 width,
                       s32 height,
                       f32 slide,
-                      s32 hideTachometer,
+                      s32 hideChoiceMarker,
                       s32 slot,
                       s32 secondSlot,
                       f32 spread,

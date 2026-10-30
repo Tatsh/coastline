@@ -178,7 +178,7 @@ s32 IsCarUnlocked(s32 car) {
 /** Draw the vehicle of the camera with the car of its slot, and its shadow. */
 #define DRAW_STAGE_VEHICLE()                                                                       \
     {                                                                                              \
-        RenderTrackShadow(g_pActiveCameraVehicle);                                                 \
+        DrawCarStageShadow(g_pActiveCameraVehicle);                                                \
         CheckVehicleVisibility(g_pActiveCameraVehicle);                                            \
         RenderVehicleModel(g_pActiveCameraVehicle, 0);                                             \
     }
@@ -191,7 +191,7 @@ void RenderCameraView(Model *model,
                       s32 width,
                       s32 height,
                       f32 slide,
-                      s32 hideTachometer,
+                      s32 hideChoiceMarker,
                       s32 slot,
                       s32 secondSlot,
                       f32 spread,
@@ -237,9 +237,9 @@ void RenderCameraView(Model *model,
     }
     load = &g_aVehicleModelSlots[slot];
     PollVehicleModelDma(load);
-    RenderSpeedometerNeedle(g_pActiveCameraVehicle);
-    if (!hideTachometer && !g_dwIsReviewMode) {
-        EmitTachometerDisplayList(g_pActiveCameraVehicle);
+    DrawCarStageDisc(g_pActiveCameraVehicle);
+    if (!hideChoiceMarker && !g_dwIsReviewMode) {
+        DrawCarStageChoiceMarker(g_pActiveCameraVehicle);
     }
     if (model != NULL) {
         LIGHT_STAGE_MODEL(11.0f, 11.0f, 1.0f, 0.0f, 1.0f);

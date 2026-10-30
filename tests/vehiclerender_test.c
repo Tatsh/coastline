@@ -57,9 +57,10 @@ u8 *g_apVehicleReflectionTextures[4];
 u16 *g_apVehicleReflectionTluts[4];
 u8 g_abVehicleReflectionTexSelect[4][2] = {{0, 1}};
 s32 g_dwGameFrameCount;
-Vtx g_aSpeedometerNeedleVertices[32];
-Mtx g_SpeedometerNeedleMtx;
-Gfx g_aSpeedometerNeedleDisplayList[1], g_aTachometerDisplayList[1], g_aTrackShadowDisplayList[1];
+Vtx g_aCarStageDiscVertices[32];
+Mtx g_CarStageMtx;
+Gfx g_aCarStageDiscDisplayList[1], g_aCarStageChoiceMarkerDisplayList[1],
+    g_aCarStageShadowDisplayList[1];
 
 void SetDebugMessage(const char *message) {
 }

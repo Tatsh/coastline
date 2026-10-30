@@ -34293,18 +34293,18 @@ dlabel D_8028E514
     /* 8F514 8028E514 00000000 */ .word 0x00000000
 enddlabel D_8028E514
 
-nonmatching g_aSpeedometerNeedleDisplayList
+nonmatching g_aCarStageDiscDisplayList
 
 .balign 8
-dlabel g_aSpeedometerNeedleDisplayList
+dlabel g_aCarStageDiscDisplayList
     /* 8F518 8028E518 B6000000 */ .word 0xB6000000
     /* 8F51C 8028E51C 00020000 */ .word 0x00020000
     /* 8F520 8028E520 B7000000 */ .word 0xB7000000
     /* 8F524 8028E524 00000204 */ .word 0x00000204
     /* 8F528 8028E528 01040040 */ .word 0x01040040
-    /* 8F52C 8028E52C 80352B50 */ .word g_SpeedometerNeedleMtx
+    /* 8F52C 8028E52C 80352B50 */ .word g_CarStageMtx
     /* 8F530 8028E530 040081FF */ .word 0x040081FF
-    /* 8F534 8028E534 80352B90 */ .word g_aSpeedometerNeedleVertices
+    /* 8F534 8028E534 80352B90 */ .word g_aCarStageDiscVertices
     /* 8F538 8028E538 E7000000 */ .word 0xE7000000
     /* 8F53C 8028E53C 00000000 */ .word 0x00000000
     /* 8F540 8028E540 BA001402 */ .word 0xBA001402
@@ -34324,19 +34324,7 @@ dlabel g_aSpeedometerNeedleDisplayList
     /* 8F578 8028E578 B1001214 */ .word 0xB1001214
     /* 8F57C 8028E57C 00001416 */ .word 0x00001416
     /* 8F580 8028E580 B1001618 */ .word 0xB1001618
-enddlabel g_aSpeedometerNeedleDisplayList
-
-nonmatching g_dwGameRngSeed
-
-dlabel g_dwGameRngSeed
     /* 8F584 8028E584 0000181A */ .word 0x0000181A
-enddlabel g_dwGameRngSeed
-
-nonmatching D_8028E588
-
-/* Automatically generated and unreferenced pad */
-.balign 8
-dlabel D_8028E588
     /* 8F588 8028E588 B1001A1C */ .word 0xB1001A1C
     /* 8F58C 8028E58C 00001C1E */ .word 0x00001C1E
     /* 8F590 8028E590 B1001E20 */ .word 0xB1001E20
@@ -34359,12 +34347,12 @@ dlabel D_8028E588
     /* 8F5D4 8028E5D4 00000000 */ .word 0x00000000
     /* 8F5D8 8028E5D8 B8000000 */ .word 0xB8000000
     /* 8F5DC 8028E5DC 00000000 */ .word 0x00000000
-enddlabel D_8028E588
+enddlabel g_aCarStageDiscDisplayList
 
-nonmatching D_8028E5E0
+nonmatching g_aCarStageChoiceMarkerVertices
 
 .balign 8
-dlabel D_8028E5E0
+dlabel g_aCarStageChoiceMarkerVertices
     /* 8F5E0 8028E5E0 0122000A */ .word 0x0122000A
     /* 8F5E4 8028E5E4 00000000 */ .word 0x00000000
     /* 8F5E8 8028E5E8 00000000 */ .word 0x00000000
@@ -34413,20 +34401,20 @@ dlabel D_8028E5E0
     /* 8F694 8028E694 000A0000 */ .word 0x000A0000
     /* 8F698 8028E698 00000000 */ .word 0x00000000
     /* 8F69C 8028E69C F0D200FF */ .word 0xF0D200FF
-enddlabel D_8028E5E0
+enddlabel g_aCarStageChoiceMarkerVertices
 
-nonmatching g_aTachometerDisplayList
+nonmatching g_aCarStageChoiceMarkerDisplayList
 
 .balign 8
-dlabel g_aTachometerDisplayList
+dlabel g_aCarStageChoiceMarkerDisplayList
     /* 8F6A0 8028E6A0 B6000000 */ .word 0xB6000000
     /* 8F6A4 8028E6A4 00020000 */ .word 0x00020000
     /* 8F6A8 8028E6A8 B7000000 */ .word 0xB7000000
     /* 8F6AC 8028E6AC 00000204 */ .word 0x00000204
     /* 8F6B0 8028E6B0 01040040 */ .word 0x01040040
-    /* 8F6B4 8028E6B4 80352B50 */ .word g_SpeedometerNeedleMtx
+    /* 8F6B4 8028E6B4 80352B50 */ .word g_CarStageMtx
     /* 8F6B8 8028E6B8 040030BF */ .word 0x040030BF
-    /* 8F6BC 8028E6BC 8028E5E0 */ .word D_8028E5E0
+    /* 8F6BC 8028E6BC 8028E5E0 */ .word g_aCarStageChoiceMarkerVertices
     /* 8F6C0 8028E6C0 E7000000 */ .word 0xE7000000
     /* 8F6C4 8028E6C4 00000000 */ .word 0x00000000
     /* 8F6C8 8028E6C8 BA001402 */ .word 0xBA001402
@@ -34443,12 +34431,12 @@ dlabel g_aTachometerDisplayList
     /* 8F6F4 8028E6F4 00000000 */ .word 0x00000000
     /* 8F6F8 8028E6F8 B8000000 */ .word 0xB8000000
     /* 8F6FC 8028E6FC 00000000 */ .word 0x00000000
-enddlabel g_aTachometerDisplayList
+enddlabel g_aCarStageChoiceMarkerDisplayList
 
-nonmatching D_8028E700
+nonmatching g_aCarStageShadowVertices
 
 .balign 8
-dlabel D_8028E700
+dlabel g_aCarStageShadowVertices
     /* 8F700 8028E700 00B4FFA6 */ .word 0x00B4FFA6
     /* 8F704 8028E704 00000000 */ .word 0x00000000
     /* 8F708 8028E708 00000000 */ .word 0x00000000
@@ -34483,18 +34471,18 @@ dlabel D_8028E700
     /* 8F77C 8028E77C 00000080 */ .word 0x00000080
     /* 8F780 8028E780 00000000 */ .word 0x00000000
     /* 8F784 8028E784 00000000 */ .word 0x00000000
-enddlabel D_8028E700
+enddlabel g_aCarStageShadowVertices
 
-nonmatching g_aTrackShadowDisplayList
+nonmatching g_aCarStageShadowDisplayList
 
 .balign 8
-dlabel g_aTrackShadowDisplayList
+dlabel g_aCarStageShadowDisplayList
     /* 8F788 8028E788 B6000000 */ .word 0xB6000000
     /* 8F78C 8028E78C 00030000 */ .word 0x00030000
     /* 8F790 8028E790 B7000000 */ .word 0xB7000000
     /* 8F794 8028E794 00000204 */ .word 0x00000204
     /* 8F798 8028E798 0400207F */ .word 0x0400207F
-    /* 8F79C 8028E79C 8028E700 */ .word D_8028E700
+    /* 8F79C 8028E79C 8028E700 */ .word g_aCarStageShadowVertices
     /* 8F7A0 8028E7A0 E7000000 */ .word 0xE7000000
     /* 8F7A4 8028E7A4 00000000 */ .word 0x00000000
     /* 8F7A8 8028E7A8 BA001402 */ .word 0xBA001402
@@ -34515,7 +34503,7 @@ dlabel g_aTrackShadowDisplayList
     /* 8F7E4 8028E7E4 00000000 */ .word 0x00000000
     /* 8F7E8 8028E7E8 00000000 */ .word 0x00000000
     /* 8F7EC 8028E7EC 00000000 */ .word 0x00000000
-enddlabel g_aTrackShadowDisplayList
+enddlabel g_aCarStageShadowDisplayList
 
 .align 2
 nonmatching g_aTrackLights

@@ -2123,14 +2123,14 @@ nonmatching D_803519DC, 0x4
 dlabel D_803519DC
     /* 803519DC */ .space 0x04
 
-nonmatching g_SpeedometerNeedleMtx, 0x40
+nonmatching g_CarStageMtx, 0x40
 
-dlabel g_SpeedometerNeedleMtx
+dlabel g_CarStageMtx
     /* 803519E0 */ .space 0x40
 
-nonmatching g_aSpeedometerNeedleVertices, 0x2
+nonmatching g_aCarStageDiscVertices, 0x2
 
-dlabel g_aSpeedometerNeedleVertices
+dlabel g_aCarStageDiscVertices
     /* 80351A20 */ .space 0x02
 
 nonmatching g_wReplaySpeedY, 0x2

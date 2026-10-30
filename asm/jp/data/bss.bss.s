@@ -3091,14 +3091,14 @@ nonmatching D_80352B4C, 0x4
 dlabel D_80352B4C
     /* 80352B4C */ .space 0x04
 
-nonmatching g_SpeedometerNeedleMtx, 0x40
+nonmatching g_CarStageMtx, 0x40
 
-dlabel g_SpeedometerNeedleMtx
+dlabel g_CarStageMtx
     /* 80352B50 */ .space 0x40
 
-nonmatching g_aSpeedometerNeedleVertices, 0x2
+nonmatching g_aCarStageDiscVertices, 0x2
 
-dlabel g_aSpeedometerNeedleVertices
+dlabel g_aCarStageDiscVertices
     /* 80352B90 */ .space 0x02
 
 nonmatching g_wReplaySpeedY, 0x2

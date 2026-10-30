@@ -15,9 +15,9 @@
 #include "common/weather.h"
 #include "racemenu.h"
 
-/* The sides of a fan, and the radius of the needle fan in its units. */
-#define NEEDLE_FAN_POINTS 31
-#define NEEDLE_FAN_RADIUS 256.0f
+/* The points of the fan of the stage disc, and its radius in its units. */
+#define STAGE_DISC_POINTS 31
+#define STAGE_DISC_RADIUS 256.0f
 
 void TransformWheelPositions(s32 index) {
     Vehicle *vehicle = &g_aVehicles[index];
@@ -34,43 +34,43 @@ void TransformWheelPositions(s32 index) {
     }
 }
 
-void RenderSpeedometerNeedle(Vehicle *vehicle) {
+void DrawCarStageDisc(Vehicle *vehicle) {
     f32 angle;
     s32 i;
 
     if (g_dwGameFrameCount == 0) {
-        for (i = 0; i < NEEDLE_FAN_POINTS; i++) {
+        for (i = 0; i < STAGE_DISC_POINTS; i++) {
             angle = (f32)i * 0.2094395161f;
-            g_aSpeedometerNeedleVertices[i].v.ob[0] = (s32)(cosf(angle) * NEEDLE_FAN_RADIUS);
-            g_aSpeedometerNeedleVertices[i].v.ob[1] = (s32)(sinf(angle) * NEEDLE_FAN_RADIUS);
-            g_aSpeedometerNeedleVertices[i].v.ob[2] = 0;
-            g_aSpeedometerNeedleVertices[i].v.cn[0] = 0xFF;
-            g_aSpeedometerNeedleVertices[i].v.cn[1] = 0xFF;
-            g_aSpeedometerNeedleVertices[i].v.cn[2] = 0xFF;
-            g_aSpeedometerNeedleVertices[i].v.cn[3] = 0xFF;
+            g_aCarStageDiscVertices[i].v.ob[0] = (s32)(cosf(angle) * STAGE_DISC_RADIUS);
+            g_aCarStageDiscVertices[i].v.ob[1] = (s32)(sinf(angle) * STAGE_DISC_RADIUS);
+            g_aCarStageDiscVertices[i].v.ob[2] = 0;
+            g_aCarStageDiscVertices[i].v.cn[0] = 0xFF;
+            g_aCarStageDiscVertices[i].v.cn[1] = 0xFF;
+            g_aCarStageDiscVertices[i].v.cn[2] = 0xFF;
+            g_aCarStageDiscVertices[i].v.cn[3] = 0xFF;
         }
-        g_aSpeedometerNeedleVertices[0].v.ob[0] = 0;
-        g_aSpeedometerNeedleVertices[0].v.ob[1] = 0;
-        g_aSpeedometerNeedleVertices[0].v.ob[2] = 0;
+        g_aCarStageDiscVertices[0].v.ob[0] = 0;
+        g_aCarStageDiscVertices[0].v.ob[1] = 0;
+        g_aCarStageDiscVertices[0].v.ob[2] = 0;
         guScaleF(g_afMvpMatrix, 0.009765625f, 0.009765625f, 0.009765625f);
         guRotateF(g_afScratchMatrix, -45.0f, 0.0f, 0.0f, 1.0f);
         guMtxCatF(g_afMvpMatrix, g_afScratchMatrix, g_afScratchMatrix);
-        guMtxF2L(g_afScratchMatrix, &g_SpeedometerNeedleMtx);
+        guMtxF2L(g_afScratchMatrix, &g_CarStageMtx);
     }
     gSPMatrix(gDisplayListPtr++, g_pProjectionMtx, G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
     /* The address of the normalisation is sent, not its value. */
     gSPPerspNormalize(gDisplayListPtr++, (u32)&g_wPerspNorm);
-    gSPDisplayList(gDisplayListPtr++, g_aSpeedometerNeedleDisplayList);
+    gSPDisplayList(gDisplayListPtr++, g_aCarStageDiscDisplayList);
 }
 
-void EmitTachometerDisplayList(Vehicle *vehicle) {
+void DrawCarStageChoiceMarker(Vehicle *vehicle) {
     gSPMatrix(gDisplayListPtr++, g_pProjectionMtx, G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
     /* The address of the normalisation is sent, not its value. */
     gSPPerspNormalize(gDisplayListPtr++, (u32)&g_wPerspNorm);
-    gSPDisplayList(gDisplayListPtr++, g_aTachometerDisplayList);
+    gSPDisplayList(gDisplayListPtr++, g_aCarStageChoiceMarkerDisplayList);
 }
 
-void RenderTrackShadow(Vehicle *vehicle) {
+void DrawCarStageShadow(Vehicle *vehicle) {
     Mtx *block;
     s32 car;
 
@@ -89,5 +89,5 @@ void RenderTrackShadow(Vehicle *vehicle) {
     guMtxCatF(g_afMvpMatrix, g_afScratchMatrix, g_afScratchMatrix);
     guMtxF2L(g_afScratchMatrix, block);
     gSPMatrix(gDisplayListPtr++, block, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-    gSPDisplayList(gDisplayListPtr++, g_aTrackShadowDisplayList);
+    gSPDisplayList(gDisplayListPtr++, g_aCarStageShadowDisplayList);
 }

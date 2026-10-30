@@ -21,6 +21,12 @@ void ClearFramebuffersForWideMode(void) {
 }
 void DecompressFromRom(void) {
 }
+void DrawCarStageChoiceMarker(void) {
+}
+void DrawCarStageDisc(void) {
+}
+void DrawCarStageShadow(void) {
+}
 void DrawMenuFooterButtons(void) {
 }
 void DrawModelList(void) {
@@ -36,8 +42,6 @@ void DrawTexturedRect(void) {
 void DrawTimingBars(void) {
 }
 void DriveAiVehicle(void) {
-}
-void EmitTachometerDisplayList(void) {
 }
 void ExtractVehicleBaseColor(void) {
 }
@@ -70,10 +74,6 @@ void ProcessRacingScreen(void) {
 void ProcessTrackMenu(void) {
 }
 void ProcessWeatherSelect(void) {
-}
-void RenderSpeedometerNeedle(void) {
-}
-void RenderTrackShadow(void) {
 }
 void RenderVehicleModel(void) {
 }

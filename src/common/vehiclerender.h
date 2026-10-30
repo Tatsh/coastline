@@ -222,34 +222,41 @@ extern u8 g_aVehicleNightHighlightTexture[];
 extern s32 g_dwGameFrameCount;
 
 /**
- * The fan of the speedometer needle, around its centre.
+ * The white disc of the stage of the cars of a menu: its centre and 30 points around it.
  *
  * @ghidraAddress USA: 0x80351a20
  * @ghidraAddress EUR: 0x80353f20
  * @ghidraAddress JPN: 0x80352b90
  */
-extern Vtx g_aSpeedometerNeedleVertices[32];
+extern Vtx g_aCarStageDiscVertices[32];
 
 /**
+ * The scale and the turn of the disc and the choice marker of the stage of the cars.
+ *
  * @ghidraAddress USA: 0x803519e0
  * @ghidraAddress EUR: 0x80353ee0
  * @ghidraAddress JPN: 0x80352b50
  */
-extern Mtx g_SpeedometerNeedleMtx;
+extern Mtx g_CarStageMtx;
 
 /**
+ * The disc of the stage of the cars, a fan of shaded triangles drawn without the depth buffer.
+ *
  * @ghidraAddress USA: 0x8028c368
  * @ghidraAddress EUR: 0x8028eac8
  * @ghidraAddress JPN: 0x8028e518
  */
-extern Gfx g_aSpeedometerNeedleDisplayList[];
+extern Gfx g_aCarStageDiscDisplayList[];
 
 /**
+ * The choice marker of the stage of the cars: an arrow on each side of the disc, over its black
+ * shadow.
+ *
  * @ghidraAddress USA: 0x8028c4f0
  * @ghidraAddress EUR: 0x8028ec50
  * @ghidraAddress JPN: 0x8028e6a0
  */
-extern Gfx g_aTachometerDisplayList[];
+extern Gfx g_aCarStageChoiceMarkerDisplayList[];
 
 /**
  * The shadow a car casts on the stage of a menu.
@@ -258,7 +265,7 @@ extern Gfx g_aTachometerDisplayList[];
  * @ghidraAddress EUR: 0x8028ed38
  * @ghidraAddress JPN: 0x8028e788
  */
-extern Gfx g_aTrackShadowDisplayList[];
+extern Gfx g_aCarStageShadowDisplayList[];
 
 /**
  * Place the four wheels of a vehicle: each takes the axes of the vehicle and the position of its
@@ -324,24 +331,24 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset);
 void RenderVehicleHeadlightBeams(Vehicle *vehicle);
 
 /**
- * Draw the needle of the speedometer, building its fan on the first frame.
+ * Draw the white disc of the stage of the cars, building its fan and its matrix on the first frame.
  *
  * @param vehicle The vehicle, which is not used.
  * @ghidraAddress USA: 0x80233494
  * @ghidraAddress EUR: 0x802349a4
  * @ghidraAddress JPN: 0x802347a4
  */
-void RenderSpeedometerNeedle(Vehicle *vehicle);
+void DrawCarStageDisc(Vehicle *vehicle);
 
 /**
- * Draw the tachometer.
+ * Draw the choice marker of the stage of the cars, with the matrix DrawCarStageDisc() builds.
  *
  * @param vehicle The vehicle, which is not used.
  * @ghidraAddress USA: 0x80233668
  * @ghidraAddress EUR: 0x80234b78
  * @ghidraAddress JPN: 0x80234978
  */
-void EmitTachometerDisplayList(Vehicle *vehicle);
+void DrawCarStageChoiceMarker(Vehicle *vehicle);
 
 /**
  * Draw the shadow of a car on the stage of a menu, sized to its car.
@@ -351,7 +358,7 @@ void EmitTachometerDisplayList(Vehicle *vehicle);
  * @ghidraAddress EUR: 0x80234bf0
  * @ghidraAddress JPN: 0x802349f0
  */
-void RenderTrackShadow(Vehicle *vehicle);
+void DrawCarStageShadow(Vehicle *vehicle);
 
 #ifdef __cplusplus
 }
