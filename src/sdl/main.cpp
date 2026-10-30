@@ -1150,12 +1150,12 @@ int main(int argc, char *argv[]) {
                 endingCredits = ending;
                 openRaceData();
                 coastline::StartCreditsRace(ending);
-                coastline::StartConsoleCredits(defaults / "n64" / "usa");
+                coastline::StartConsoleCredits(assets / "n64" / "usa");
                 coastline::StepAttractDemo(false);
                 const coastline::RaceCar car{
                     coastline::AttractDemoCar(), coastline::AttractDemoColor(), std::nullopt};
                 raceView = coastline::RaceView::Load(
-                    *sceneRenderer, defaults, coastline::AttractDemoTrack(), {&car, 1});
+                    *sceneRenderer, assets, coastline::AttractDemoTrack(), {&car, 1});
                 raceTime = 0.0f;
                 leaveDemo = false;
                 return raceView != nullptr;
