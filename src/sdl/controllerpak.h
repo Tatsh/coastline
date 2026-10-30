@@ -70,4 +70,32 @@ private:
     std::filesystem::path m_directory;
 };
 
+/** The bytes of the image of a Controller Pak, as emulators and the tools of a pak store one. */
+inline constexpr std::size_t PAK_IMAGE_BYTES = 0x8000;
+
+/**
+ * Write the notes of a pak as the image of a formatted Controller Pak, with the game code and the
+ * company code of the USA release on each note. An image of four paks of 0x20000 bytes, as
+ * mupen64plus writes one, takes the notes in its first pak, and its other paks are retained.
+ * Another file is replaced by an image of one pak.
+ *
+ * @param pak The pak of the notes.
+ * @param file The image.
+ * @return Nothing once the image is written, or the reason it was not.
+ */
+std::optional<std::string> ExportPakImage(const ControllerPak &pak,
+                                          const std::filesystem::path &file);
+
+/**
+ * Copy the notes of the USA release from the image of a Controller Pak, or from the first pak of
+ * an image of four, to a pak. A note the pak has already is replaced and the replacement is logged.
+ * The notes of other games are skipped.
+ *
+ * @param pak The pak the notes are written to.
+ * @param file The image.
+ * @return Nothing once the notes are written, or the reason they were not.
+ */
+std::optional<std::string> ImportPakImage(const ControllerPak &pak,
+                                          const std::filesystem::path &file);
+
 } // namespace coastline

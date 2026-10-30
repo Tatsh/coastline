@@ -28,6 +28,7 @@
 #include "common/hud.h"
 #include "common/input.h"
 #include "config.h"
+#include "controllerpak.h"
 #include "controls.h"
 #include "earsound.h"
 #include "enginecheck.h"
@@ -706,6 +707,11 @@ int main(int argc, char *argv[]) {
     parser.add_argument("--import-rom")
         .help("copy a Top Gear Rally cartridge image, checked by SHA-1, and exit")
         .append();
+    parser.add_argument("--import-pak")
+        .help("copy the notes of Top Gear Rally from a Controller Pak image (.mpk), and exit");
+    parser.add_argument("--export-pak")
+        .help("write the saved notes to a Controller Pak image (.mpk), and exit; the first pak of "
+              "an image of four paks of mupen64plus is replaced and the other paks are retained");
     parser.add_argument("--music")
         .help("music module to play: 0 for the menus, 1 to 5 for the tracks")
         .default_value(0)
@@ -812,6 +818,21 @@ int main(int argc, char *argv[]) {
 
     if (parser.is_used("--import-disc") || parser.is_used("--import-rom")) {
         return ImportFromCommandLine(parser, paths->data);
+    }
+    if (parser.is_used("--import-pak") || parser.is_used("--export-pak")) {
+        coastline::ControllerPak pak(paths->state / "controller-pak");
+        std::optional<std::string> failure;
+        if (auto image = parser.present("--import-pak")) {
+            failure = coastline::ImportPakImage(pak, *image);
+        }
+        if (auto image = parser.present("--export-pak"); image && !failure) {
+            failure = coastline::ExportPakImage(pak, *image);
+        }
+        if (failure) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", failure->c_str());
+        }
+        coastline::StopGameLog();
+        return failure ? EXIT_FAILURE : EXIT_SUCCESS;
     }
     if (parser.is_used("--play-sound")) {
         return PlaySoundFromCommandLine(parser, paths->data);
