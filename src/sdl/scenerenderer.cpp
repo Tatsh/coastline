@@ -505,8 +505,17 @@ struct RenderModel::State {
     std::vector<VertexAnimationInfo> animations;
     std::array<float, 3> centre{};
     float radius = 1.0f;
+    // The palette variants of an image, by the image, and the variant the frame shows.
+    // ponytail: one variant a model; cars sharing a model would need the variant per draw.
+    std::map<std::size_t, std::vector<SDL_GPUTexture *>> variants;
+    int variant = 0;
 
     ~State() {
+        for (auto &[image, textures] : variants) {
+            for (auto *texture : textures) {
+                SDL_ReleaseGPUTexture(device, texture);
+            }
+        }
         for (auto &mesh : meshes) {
             for (auto &primitive : mesh.primitives) {
                 SDL_ReleaseGPUBuffer(device, primitive.vertices);
@@ -669,6 +678,10 @@ float RenderModel::Radius() const {
     return m_state->radius;
 }
 
+void RenderModel::SetVariant(int variant) {
+    m_state->variant = variant;
+}
+
 std::optional<MorphPose> PoseAtTime(const VertexAnimationInfo &animation, float time) {
     if (animation.keyTimes.size() < 2) {
         return std::nullopt;
@@ -740,6 +753,33 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
                            .value("material", -1);
         if (loaded != nullptr && paint && material >= 0) {
             PaintPalette(SDL_GetSurfacePalette(loaded), *paint, material);
+        }
+        if (loaded != nullptr && options.paletteVariant && material >= 0 &&
+            SDL_GetSurfacePalette(loaded) != nullptr) {
+            std::vector<SDL_GPUTexture *> textures;
+            for (int variant = 0; variant < options.variants; ++variant) {
+                SDL_Surface *copy = SDL_DuplicateSurface(loaded);
+                if (copy == nullptr ||
+                    !options.paletteVariant(SDL_GetSurfacePalette(copy), material, variant)) {
+                    SDL_DestroySurface(copy);
+                    break;
+                }
+                SDL_Surface *texels = SDL_ConvertSurface(copy, SDL_PIXELFORMAT_RGBA32);
+                SDL_DestroySurface(copy);
+                if (texels == nullptr) {
+                    break;
+                }
+                std::vector<std::uint8_t> rows;
+                for (int y = 0; y < texels->h; ++y) {
+                    auto *row = static_cast<std::uint8_t *>(texels->pixels) + y * texels->pitch;
+                    rows.insert(rows.end(), row, row + texels->w * 4);
+                }
+                textures.push_back(upload.Texture(texels->w, texels->h, rows));
+                SDL_DestroySurface(texels);
+            }
+            if (!textures.empty()) {
+                state->variants[state->images.size()] = std::move(textures);
+            }
         }
         SDL_Surface *rgba = loaded ? SDL_ConvertSurface(loaded, SDL_PIXELFORMAT_RGBA32) : nullptr;
         SDL_DestroySurface(loaded);
@@ -1346,6 +1386,11 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             auto [image, sampler] = model.textures[*primitive.texture];
             image = AnimationFrame(primitive.frames, s.textureTime).value_or(image);
             bindings[0] = {model.images.at(image), model.samplers.at(sampler)};
+            auto varied = model.variants.find(image);
+            if (varied != model.variants.end() && model.variant >= 0 &&
+                static_cast<std::size_t>(model.variant) < varied->second.size()) {
+                bindings[0].texture = varied->second[static_cast<std::size_t>(model.variant)];
+            }
             if (primitive.texel1 && *primitive.texel1 < model.images.size()) {
                 bindings[1] = {model.images[*primitive.texel1], model.samplers.at(sampler)};
             }

@@ -131,6 +131,11 @@ struct ModelOptions {
      * one, such as the textures of the cartridge on a car of the PC release, or none. A document
      * with another number of images is not taken. */
     std::optional<std::filesystem::path> images;
+    /** The number of palette variants of the images of materials, such as the lights of a car. */
+    int variants = 0;
+    /** Change the palette of an image of a material for a variant, and report whether the image
+     * has variants; called for each variant of each image with a material. */
+    std::function<bool(SDL_Palette *, int material, int variant)> paletteVariant;
 };
 
 /** A converted model on the GPU: its meshes, its parts, and its animations. */
@@ -159,6 +164,13 @@ public:
 
     /** @return The radius of what the model draws, in the units of its document. */
     float Radius() const;
+
+    /**
+     * Pick the palette variant the images with variants show until the next call.
+     *
+     * @param variant The variant, from 0 to the variants of the options of the model.
+     */
+    void SetVariant(int variant);
 
 private:
     friend class SceneRenderer;

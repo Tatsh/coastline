@@ -15,6 +15,7 @@
 #include "common/game.h"
 #include "common/hud.h"
 #include "common/hudassets.h"
+#include "common/input.h"
 #include "common/model.h"
 #include "common/packedvalue.h"
 #include "common/particlesnapshot.h"
@@ -34,6 +35,7 @@
 #include "common/vehiclecamera.h"
 #include "common/vehiclecount.h"
 #include "common/vehicleeffects.h"
+#include "common/vehiclemodel.h"
 #include "common/vehiclerender.h"
 #include "common/weather.h"
 #include "frontend.h"
@@ -498,6 +500,76 @@ constexpr std::array<std::uint32_t, 2> SPRAY_COMBINE = PARTICLE_COMBINE;
 constexpr float SPRAY_TEXTURE_S = 32.0f * 32.0f;
 constexpr float SPRAY_TEXTURE_T = 32.0f * 64.0f;
 
+// The palettes of the lights of a car of the cartridge, as the N64 release of
+// RenderVehicleModel() changes them: the headlights and the rear lights lit at night and in the
+// rain, the brake lights while a brake is held, and the reversing lights while the throttle is
+// below 0. A variant is the sum of 1 when lit, 2 when braking, and 4 when reversing.
+constexpr int CAR_LIGHT_VARIANTS = 8;
+constexpr int CAR_LIT = 1;
+constexpr int CAR_BRAKING = 2;
+constexpr int CAR_REVERSING = 4;
+constexpr int HEADLIGHT_FIRST_ENTRY = 12;
+constexpr int HEADLIGHT_ENTRIES = 4;
+constexpr std::uint32_t BRAKE_BUTTONS = INPUT_BRAKE | INPUT_EBRAKE;
+
+bool CarLightPalette(SDL_Palette *palette, int material, int variant) {
+    if (palette == nullptr || palette->ncolors < 16) {
+        return false;
+    }
+    std::array<SDL_Color, 16> colors{};
+    std::copy_n(palette->colors, colors.size(), colors.begin());
+    auto set = [&](int entry, std::uint32_t value) {
+        colors[static_cast<std::size_t>(entry)] = {
+            static_cast<Uint8>((value >> 11 & 0x1f) * 255 / 31),
+            static_cast<Uint8>((value >> 6 & 0x1f) * 255 / 31),
+            static_cast<Uint8>((value >> 1 & 0x1f) * 255 / 31),
+            static_cast<Uint8>((value & 1) != 0 ? 255 : 0)};
+    };
+    bool lit = (variant & CAR_LIT) != 0;
+    if (material == VEHICLE_MATERIAL_HEADLIGHTS) {
+        for (int entry = HEADLIGHT_FIRST_ENTRY; entry < HEADLIGHT_FIRST_ENTRY + HEADLIGHT_ENTRIES;
+             ++entry) {
+            colors[static_cast<std::size_t>(entry)].a = lit ? 0 : 255;
+        }
+    } else if (material == VEHICLE_MATERIAL_REAR_LIGHTS) {
+        std::uint32_t tail = lit ? 0x7000 : 0x9001;
+        std::uint32_t lamp = lit ? 0x9082 : 0xA001;
+        set(15, tail);
+        set(10, lamp);
+        if ((variant & CAR_BRAKING) != 0) {
+            set(14, 0xC000);
+            set(13, 0xC000);
+            set(9, 0xF904);
+            set(8, 0xF904);
+        } else {
+            set(14, 0x9001);
+            set(9, 0xA001);
+            set(13, tail);
+            set(8, lamp);
+        }
+        set(12, 0x7981);
+        set(7, 0x9241);
+        bool reversing = (variant & CAR_REVERSING) != 0;
+        set(11, reversing ? 0xB5AC : 0xAD6B);
+        set(6, reversing ? 0xFFFE : 0xC631);
+    } else {
+        return false;
+    }
+    return SDL_SetPaletteColors(palette, colors.data(), 0, static_cast<int>(colors.size()));
+}
+
+// The variant of the lights of a car this frame.
+int CarLightVariant(const Vehicle &car) {
+    int variant = g_dwNightMode || g_dwRainMode ? CAR_LIT : 0;
+    if (car.GetInput() != nullptr && (car.GetInput()->buttons & BRAKE_BUTTONS) != 0) {
+        variant |= CAR_BRAKING;
+    }
+    if (car.GetThrottle() < 0.0f) {
+        variant |= CAR_REVERSING;
+    }
+    return variant;
+}
+
 // Whether RenderVehicleModel() finds a car in a tunnel, by the first instance under it.
 bool InTunnel(const Vehicle &car) {
     return car.GetGroundInstanceCount() != 0 &&
@@ -756,7 +828,11 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     options.parts = [](const std::string &n) {
         return n == "lod0-nearDetail" || n == "lod0-textured";
     };
+    options.variants = CAR_LIGHT_VARIANTS;
+    options.paletteVariant = CarLightPalette;
     state->car = RenderModel::Load(renderer, carFile, options);
+    options.variants = 0;
+    options.paletteVariant = nullptr;
     options.parts = [](const std::string &n) { return n == "lod0-paint"; };
     state->paint = RenderModel::Load(renderer, carFile, options);
     options.parts = [](const std::string &n) { return n == "lod0-underside"; };
@@ -868,6 +944,7 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
         Lighting carLighting = CarLighting(vehicle, vehicle, *camera);
         Reflection reflection = SkyReflection(s.daySky.get(), s.nightSky.get(), *camera, vehicle);
         // The textured parts, the underside, the highlight, and the painted body in turn.
+        s.car->SetVariant(CarLightVariant(vehicle));
         renderer.DrawReflectingModel(*s.car, body, viewProjection, carLighting, reflection);
         // The underside shows only from below the car.
         const CameraFrame &frame = vehicle.GetFrame();
