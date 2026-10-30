@@ -40,6 +40,7 @@
 #include "importer.h"
 #include "input.h"
 #include "intro.h"
+#include "language.h"
 #include "log.h"
 #include "menus.h"
 #include "menutext.h"
@@ -52,6 +53,7 @@
 #include "racesession.h"
 #include "raceview.h"
 #include "scenerenderer.h"
+#include "stringresources.h"
 #include "tlrenderer.h"
 
 namespace {
@@ -841,6 +843,9 @@ int main(int argc, char *argv[]) {
         .help("asset pack for this run, not saved: default, boss for the images of the PC "
               "release in place of the branded images of the cartridges, or the name of a mod "
               "pack under assets of the data directory, read over the default pack");
+    parser.add_argument("--language")
+        .help("language of the text for this run, not saved: en-us, or ja for the font and the "
+              "Japanese text of the Japanese cartridge, the strings of strings/ja.json");
     parser.add_argument("--width").help("width of the window in pixels").scan<'i', int>();
     parser.add_argument("--height").help("height of the window in pixels").scan<'i', int>();
     parser.add_argument("--fullscreen").help("cover the display").flag();
@@ -1027,6 +1032,7 @@ int main(int argc, char *argv[]) {
                                               {"Game", "WaitForStart", "0"},
                                               {"Game", "Music", "N64"},
                                               {"Game", "AssetPack", "default"},
+                                              {"Game", "Language", "en-us"},
                                               {"Controls", "Preset", "Default"},
                                               {"Controls", "Player1", "auto"},
                                               {"Controls", "Player2", "auto"}}) {
@@ -1049,6 +1055,16 @@ int main(int argc, char *argv[]) {
     }
     const std::filesystem::path assets = *packAssets;
     SDL_Log("Asset pack: %s (%s)", pack.c_str(), assets.string().c_str());
+    coastline::SelectLanguage(
+        parser.present("--language")
+            .value_or(
+                config.Get("Game", "Language").value_or(std::string(coastline::DEFAULT_LANGUAGE))));
+    coastline::LoadStrings(assets, coastline::SelectedLanguage());
+    const std::filesystem::path release =
+        coastline::ReleaseDirectory(assets, coastline::SelectedLanguage());
+    SDL_Log("Language: %s (%s)",
+            coastline::SelectedLanguage().c_str(),
+            release.lexically_relative(assets).string().c_str());
     const nlohmann::json packSettings = coastline::PackSettings(paths->data, pack);
     // XmMusicGain of the configuration replaces the gain of the pack when the user writes it.
     const float musicGain = config.GetFloat(
@@ -1150,7 +1166,7 @@ int main(int argc, char *argv[]) {
                 endingCredits = ending;
                 openRaceData();
                 coastline::StartCreditsRace(ending);
-                coastline::StartConsoleCredits(assets / "n64" / "usa");
+                coastline::StartConsoleCredits(release);
                 coastline::StepAttractDemo(false);
                 const coastline::RaceCar car{
                     coastline::AttractDemoCar(), coastline::AttractDemoColor(), std::nullopt};
@@ -1174,8 +1190,7 @@ int main(int argc, char *argv[]) {
             } else if (scene == "font" || scene.starts_with("font:")) {
                 sceneRenderer = coastline::SceneRenderer::Create(*window);
                 if (sceneRenderer) {
-                    fontSample =
-                        coastline::MenuText::Load(*sceneRenderer, assets / "n64" / "usa" / "fonts");
+                    fontSample = coastline::MenuText::Load(*sceneRenderer, release / "fonts");
                 }
                 fontSampleText = scene == "font" ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 "
                                                    ",.?!#$&-+;:'\"/*=@" :
@@ -1183,11 +1198,27 @@ int main(int argc, char *argv[]) {
             } else if (scene.empty() || scene == "intro" || scene == "main-menu" || startInDemo) {
                 sceneRenderer = coastline::SceneRenderer::Create(*window);
                 if (sceneRenderer) {
-                    auto release = assets / "n64" / "usa";
-                    intro = coastline::Intro::Load(*sceneRenderer, release);
+                    auto frontEndRelease = release;
+                    auto loadFrontEnd = [&]() {
+                        intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
+                        mainMenu = coastline::Menus::Load(*sceneRenderer,
+                                                          frontEndRelease,
+                                                          paths->state,
+                                                          paths->cache,
+                                                          config,
+                                                          configPath);
+                    };
+                    loadFrontEnd();
+                    // The splash screens and the menus are those of the USA release, and a
+                    // release whose screens differ falls back to it.
+                    if ((!intro || !mainMenu) && release != assets / "n64" / "usa") {
+                        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                                    "The menus of %s do not load, and those of n64/usa are drawn.",
+                                    release.lexically_relative(assets).string().c_str());
+                        frontEndRelease = assets / "n64" / "usa";
+                        loadFrontEnd();
+                    }
                     frameRateText = coastline::MenuText::Load(*sceneRenderer, release / "fonts");
-                    mainMenu = coastline::Menus::Load(
-                        *sceneRenderer, release, paths->state, paths->cache, config, configPath);
                     if (scene == "main-menu" && mainMenu) {
                         frontEnd = FrontEnd::MainMenu;
                     }

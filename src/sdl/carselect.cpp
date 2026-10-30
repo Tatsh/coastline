@@ -15,6 +15,7 @@
 #include "input.h"
 #include "menus.h"
 #include "menutext.h"
+#include "stringresources.h"
 
 namespace coastline {
 
@@ -781,7 +782,13 @@ void Menus::DrawCarSelectChoices(SceneRenderer &renderer) {
     }
     text.Draw(renderer, choiceText(0, "%ryLET'S GO!"), WIDTH / 2, HEIGHT * 20 / 64, style, flat);
     style.size = 8;
-    if (decalsNote(0)) {
+    // The Japanese release draws its note on one line of a larger size.
+    const std::string *note = FindString("n64/802a90a8");
+    if (note != nullptr && decalsNote(0)) {
+        style.size = 14;
+        text.Draw(renderer, *note, WIDTH / 2, HEIGHT * 3 / 8 - 1, style, flat);
+        style.size = 8;
+    } else if (decalsNote(0)) {
         text.Draw(renderer,
                   "%wwIf you wish to use the Rumble Pak, you should",
                   WIDTH / 2,

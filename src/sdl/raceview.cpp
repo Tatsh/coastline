@@ -61,6 +61,7 @@
 #include "enginetextures.h"
 #include "frontend.h"
 #include "gpu.h"
+#include "language.h"
 #include "menutext.h"
 #include "racecredits.h"
 #include "racedemo.h"
@@ -1608,7 +1609,8 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     state->nightHighlight = RenderTexture::FromTexels(
         renderer, 64, 64, Intensities4(g_abHudTexture64BData), true, true);
     // The race of the PC release draws its text with the fonts of the cartridge.
-    state->text = MenuText::Load(renderer, defaults / "n64" / "usa" / "fonts");
+    state->text =
+        MenuText::Load(renderer, ReleaseDirectory(defaults, SelectedLanguage()) / "fonts");
     // The start lights, the model of BossRally.pod. Their lamps keep the colours of their texels in
     // one cycle, unshaded by the light of the track.
     ModelOptions lightsOptions;

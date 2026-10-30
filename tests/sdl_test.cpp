@@ -14,6 +14,7 @@
 
 #include "config.h"
 #include "iconfile.h"
+#include "language.h"
 #include "paths.h"
 #include "volumelevels.h"
 
@@ -202,12 +203,33 @@ void CheckPackAssets() {
     std::filesystem::remove_all(root);
 }
 
+void CheckLanguage() {
+    auto strings = coastline::MergeStrings({{"1", "Paused"}, {"2", "Quit"}},
+                                           {{"2", "やめる"}, {"n64/802a90a8", "振動パック"}});
+    Check(strings.at("1") == "Paused", "a key the language lacks takes the en-us string");
+    Check(strings.at("2") == "やめる", "a key of the language replaces the en-us string");
+    Check(strings.at("n64/802a90a8") == "振動パック", "a key of the language alone is read");
+    Check(strings.size() == 3, "the strings are the keys of both");
+
+    auto assets = std::filesystem::temp_directory_path() / "coastline-sdl-test-language";
+    std::filesystem::remove_all(assets);
+    Check(coastline::ReleaseDirectory(assets, "ja") == assets / "n64" / "usa",
+          "ja without the Japanese release draws the USA release");
+    WriteText(assets / "n64" / "jpn" / "segment.bin", "segment");
+    Check(coastline::ReleaseDirectory(assets, "ja") == assets / "n64" / "jpn",
+          "ja draws the Japanese release");
+    Check(coastline::ReleaseDirectory(assets, "en-us") == assets / "n64" / "usa",
+          "en-us draws the USA release");
+    std::filesystem::remove_all(assets);
+}
+
 } // namespace
 
 int main() {
     CheckIconFile();
     CheckVolumeLevels();
     CheckPackAssets();
+    CheckLanguage();
 
     auto defaults =
         coastline::ResolveXdgPaths(Environment({{"HOME", "/home/player"}}), "coastline");

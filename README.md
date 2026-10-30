@@ -265,6 +265,31 @@ data directory.
 coastline --import-disc 'Boss Rally.cue' --import-rom usa.z64 --import-rom jpn.z64
 ```
 
+### Language
+
+`Language` in the `[Game]` section selects the language of the text, `en-us`, the default, or
+`ja`. `--language` selects one for a single run. The game reads the strings of the language from
+`strings/LANGUAGE.json` in the assets, and takes the string of `strings/en-us.json` for each key
+the language lacks. The text draws with the font of the cartridge of the language, the Japanese
+release for `ja` and the USA release for `en-us`, or the USA release when the Japanese cartridge
+was not imported. The splash screens and the menus are those of the USA release in every language.
+
+```ini
+[Game]
+Language = ja
+```
+
+The disc import writes the strings of BRString.dll to `strings/en-us.json`, keyed by their number.
+The import of the Japanese cartridge writes its Japanese text to `strings/ja.json`, keyed
+`n64/ADDRESS` by the address of the string in the main segment of the release, and the kana and
+kanji of its font to `n64/jpn/fonts/japanese.png`. Every file of strings is UTF-8.
+
+The Japanese release has Japanese text only in the messages of the Controller Pak, the Rumble Pak,
+and the second controller. Its menus, its races, and its titles are in English, and it has no
+Japanese counterpart of a string of BRString.dll. With `ja`, the races draw the English strings,
+and the car selection shows the Japanese note of the Rumble Pak. The European release has the
+English text of the USA release, and no language of its own.
+
 ### Asset packs
 
 The game draws the images of the PC release, except where the PC release removed the branding of

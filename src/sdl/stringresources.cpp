@@ -11,6 +11,7 @@
 #include <nlohmann/json.hpp>
 
 #include "common/strings.h"
+#include "language.h"
 
 namespace {
 
@@ -123,25 +124,31 @@ private:
     std::size_t m_resources = 0;
 };
 
-// Windows-1252 for a character; others become '?', as the default character of
-// WideCharToMultiByte() does.
-char ToWindows1252Character(std::uint32_t c) {
-    if (c < 0x80 || (c >= 0xA0 && c <= 0xFF)) {
-        return static_cast<char>(c);
+// The strings of LoadStrings().
+coastline::StringTable g_strings;
+
+coastline::StringTable ReadStringsFile(const std::filesystem::path &path) {
+    coastline::StringTable strings;
+    std::ifstream file(path);
+    auto json = nlohmann::json::parse(file, nullptr, false);
+    if (json.is_discarded() || !json.is_object()) {
+        SDL_LogWarn(
+            SDL_LOG_CATEGORY_APPLICATION, "%s is not a file of strings.", path.string().c_str());
+        return strings;
     }
-    static constexpr std::uint16_t HIGH[32] = {
-        0x20AC, 0,      0x201A, 0x0192, 0x201E, 0x2026, 0x2020, 0x2021, 0x02C6, 0x2030, 0x0160,
-        0x2039, 0x0152, 0,      0x017D, 0,      0,      0x2018, 0x2019, 0x201C, 0x201D, 0x2022,
-        0x2013, 0x2014, 0x02DC, 0x2122, 0x0161, 0x203A, 0x0153, 0,      0x017E, 0x0178};
-    for (int i = 0; i < 32; ++i) {
-        if (HIGH[i] != 0 && HIGH[i] == c) {
-            return static_cast<char>(0x80 + i);
+    for (const auto &[key, text] : json.items()) {
+        if (text.is_string()) {
+            strings.emplace(key, text.get<std::string>());
         }
     }
-    return '?';
+    return strings;
 }
 
-void AppendUtf8(std::string &text, std::uint32_t c) {
+} // namespace
+
+namespace coastline {
+
+void AppendUtf8(std::string &text, char32_t c) {
     if (c < 0x80) {
         text += static_cast<char>(c);
     } else if (c < 0x800) {
@@ -159,9 +166,41 @@ void AppendUtf8(std::string &text, std::uint32_t c) {
     }
 }
 
-} // namespace
+char32_t NextCodePoint(std::string_view text, std::size_t &position) {
+    auto lead = static_cast<unsigned char>(text[position]);
+    int extra = lead < 0xC0 ? 0 : lead < 0xE0 ? 1 : lead < 0xF0 ? 2 : 3;
+    char32_t c = extra == 0 ? lead : lead & (0x3F >> extra);
+    for (int i = 1; i <= extra && position + i < text.size(); ++i) {
+        c = c << 6 | (static_cast<unsigned char>(text[position + i]) & 0x3F);
+    }
+    position += static_cast<std::size_t>(extra) + 1;
+    return c;
+}
 
-namespace coastline {
+void LoadStrings(const std::filesystem::path &assets, std::string_view language) {
+    auto directory = assets / "strings";
+    auto fallback = ReadStringsFile(directory / (std::string(DEFAULT_LANGUAGE) + ".json"));
+    if (language == DEFAULT_LANGUAGE) {
+        g_strings = std::move(fallback);
+        return;
+    }
+    auto selected = directory / (std::string(language) + ".json");
+    std::error_code error;
+    if (!std::filesystem::exists(selected, error)) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                    "%s is missing, and the strings of %s are used.",
+                    selected.string().c_str(),
+                    std::string(DEFAULT_LANGUAGE).c_str());
+        g_strings = std::move(fallback);
+        return;
+    }
+    g_strings = MergeStrings(std::move(fallback), ReadStringsFile(selected));
+}
+
+const std::string *FindString(std::string_view key) {
+    auto found = g_strings.find(key);
+    return found == g_strings.end() ? nullptr : &found->second;
+}
 
 std::map<unsigned, std::string> ReadLibraryStrings(std::span<const std::uint8_t> image) {
     std::map<unsigned, std::string> strings;
@@ -226,46 +265,29 @@ std::map<unsigned, std::string> ReadLibraryStrings(std::span<const std::uint8_t>
     return strings;
 }
 
-std::string ToWindows1252(std::string_view text) {
-    std::string converted;
-    for (std::size_t i = 0; i < text.size();) {
-        auto lead = static_cast<unsigned char>(text[i]);
-        int extra = lead < 0x80 ? 0 : lead < 0xE0 ? 1 : lead < 0xF0 ? 2 : 3;
-        std::uint32_t c = extra == 0 ? lead : lead & (0x3F >> extra);
-        for (int j = 1; j <= extra && i + j < text.size(); ++j) {
-            c = c << 6 | (static_cast<unsigned char>(text[i + j]) & 0x3F);
-        }
-        converted += ToWindows1252Character(c);
-        i += static_cast<std::size_t>(extra) + 1;
-    }
-    return converted;
-}
-
 } // namespace coastline
 
-// The SDL game reads the strings of BRString.dll from strings/en-us.json, the import of the
-// library, in the code page LoadStringA() converts them to, into the table of the race.
+// The SDL game puts the strings of LoadStrings() with a number for a key, the strings of
+// BRString.dll, into the table of the race in UTF-8.
 extern "C" void LoadStringTableFromDll(void) {
     std::memset(&g_apszStringResourceTable[1], 0, STRING_RESOURCE_COUNT * sizeof(char *));
     if (g_pStringTableBuffer != nullptr) {
         return;
     }
-    std::ifstream file("strings/en-us.json");
-    auto json = nlohmann::json::parse(file, nullptr, false);
-    if (json.is_discarded() || !json.is_object()) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "strings/en-us.json is not the strings of the race.");
-        return;
-    }
-    std::vector<std::pair<unsigned, std::string>> strings;
+    std::vector<std::pair<unsigned, const std::string *>> strings;
     std::size_t size = 0;
-    for (const auto &[id, text] : json.items()) {
-        unsigned number = static_cast<unsigned>(std::strtoul(id.c_str(), nullptr, 10));
-        if (number < 1 || number > STRING_RESOURCE_COUNT || !text.is_string()) {
+    for (const auto &[id, text] : g_strings) {
+        char *end = nullptr;
+        unsigned number = static_cast<unsigned>(std::strtoul(id.c_str(), &end, 10));
+        if (*end != '\0' || number < 1 || number > STRING_RESOURCE_COUNT) {
             continue;
         }
-        strings.emplace_back(number, coastline::ToWindows1252(text.get<std::string>()));
-        size += strings.back().second.size() + 1;
+        strings.emplace_back(number, &text);
+        size += text.size() + 1;
+    }
+    if (strings.empty()) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The strings of the race are missing.");
+        return;
     }
     g_pStringTableBuffer = static_cast<char *>(std::malloc(size));
     if (g_pStringTableBuffer == nullptr) {
@@ -275,8 +297,8 @@ extern "C" void LoadStringTableFromDll(void) {
     g_dwStringTableUsedBytes = 0;
     for (const auto &[number, text] : strings) {
         char *entry = g_pStringTableBuffer + g_dwStringTableUsedBytes;
-        std::memcpy(entry, text.c_str(), text.size() + 1);
+        std::memcpy(entry, text->c_str(), text->size() + 1);
         g_apszStringResourceTable[number] = entry;
-        g_dwStringTableUsedBytes += text.size() + 1;
+        g_dwStringTableUsedBytes += text->size() + 1;
     }
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <filesystem>
 #include <map>
 #include <span>
 #include <string>
@@ -18,12 +19,37 @@ namespace coastline {
 std::map<unsigned, std::string> ReadLibraryStrings(std::span<const std::uint8_t> image);
 
 /**
- * Convert UTF-8 text to Windows-1252, as WideCharToMultiByte() converts the strings LoadStringA()
- * returns. A character Windows-1252 does not have becomes '?'.
+ * Append a code point to UTF-8 text.
  *
  * @param text The UTF-8 text.
- * @return The Windows-1252 text.
+ * @param c The code point.
  */
-std::string ToWindows1252(std::string_view text);
+void AppendUtf8(std::string &text, char32_t c);
+
+/**
+ * Decode the code point of UTF-8 text at a position, and step past it. A sequence cut short by the
+ * end of the text decodes from the bytes it has.
+ *
+ * @param text The UTF-8 text.
+ * @param position The byte of the code point, moved to the byte after it.
+ * @return The code point.
+ */
+char32_t NextCodePoint(std::string_view text, std::size_t &position);
+
+/**
+ * Read the strings of a language and of en-us, each a JSON object of strings by key, from
+ * strings/LANGUAGE.json and strings/en-us.json under @p assets, for the race and the menus. A key
+ * the language lacks takes its en-us string.
+ *
+ * @param assets The assets of the pack.
+ * @param language The language, such as en-us or ja.
+ */
+void LoadStrings(const std::filesystem::path &assets, std::string_view language);
+
+/**
+ * @param key The key of a string, such as 1 or n64/802a8fb8.
+ * @return The string of LoadStrings() in UTF-8, or nothing.
+ */
+const std::string *FindString(std::string_view key);
 
 } // namespace coastline

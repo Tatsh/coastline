@@ -193,6 +193,7 @@ add_library(
   indexedimage.cpp
   input.cpp
   intro.cpp
+  language.cpp
   log.cpp
   mainmenu.cpp
   menus.cpp

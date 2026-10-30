@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string_view>
+#include <unordered_map>
 #include <vector>
 
 #include "scenerenderer.h"
@@ -54,7 +55,8 @@ public:
      * Draw a string as DrawText() of the console draws it on a frame of high resolution.
      *
      * @param renderer The renderer of the frame.
-     * @param text The string, with the colour codes of the console.
+     * @param text The string in UTF-8, with the colour codes of the console. A character without
+     * a glyph is not drawn.
      * @param x The left, centre, or right of the string, in pixels of the 320 by 240 screen.
      * @param y The baseline of the string, in pixels of the 320 by 240 screen.
      * @param style How the string is drawn.
@@ -68,7 +70,7 @@ public:
               const Matrix4 &projection) const;
 
     /**
-     * @param text The string.
+     * @param text The string in UTF-8.
      * @param size The height of the text, in pixels of the 320 by 240 screen.
      * @param doubled Whether the size is of the 320 by 240 screen a frame of high resolution
      * doubles, or of the 640 by 480 screen as it is.
@@ -85,13 +87,21 @@ private:
         int padding = 0;
         std::vector<int> glyphStarts;
     };
+    // The glyphs of the Japanese text of the Japanese release, of one width, in rows of an image.
+    struct JapaneseFont {
+        std::unique_ptr<RenderTexture> image;
+        int width = 0;
+        int columns = 0;
+        std::unordered_map<char32_t, int> glyphs;
+    };
     MenuText() = default;
     const Font &FontFor(int size) const;
 
     Font m_large;
     Font m_small;
-    std::vector<int> m_glyphOfCharacter;
+    std::unordered_map<char32_t, int> m_glyphs;
     int m_firstRowGlyphs = 0;
+    std::optional<JapaneseFont> m_japanese;
 };
 
 } // namespace coastline

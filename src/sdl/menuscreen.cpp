@@ -12,6 +12,7 @@
 
 #include "frontend.h"
 #include "gpu.h"
+#include "language.h"
 #include "menutext.h"
 
 namespace coastline {
@@ -243,7 +244,11 @@ std::unique_ptr<MenuScreen> MenuScreen::Load(SceneRenderer &renderer,
                            RenderTexture::Load(renderer, data / "g_TitleBarTextureDesc.png", true);
     state->arrowLeft = RenderTexture::Load(renderer, data / "g_ArrowLeftTextureDesc.png", true);
     state->arrowRight = RenderTexture::Load(renderer, data / "g_ArrowRightTextureDesc.png", true);
-    state->text = MenuText::Load(renderer, release / "fonts");
+    // The fonts of the release of the language, the same Latin glyphs as every release, with the
+    // Japanese glyphs of the Japanese release.
+    state->text = MenuText::Load(
+        renderer,
+        ReleaseDirectory(release.parent_path().parent_path(), SelectedLanguage()) / "fonts");
     auto scroll = ReadSound(release / "segments" / "scrollSound.wav");
     auto select = ReadSound(release / "segments" / "selectSound.wav");
     if (!state->background || !state->titleBar || !state->mainTitle || !state->arrowLeft ||

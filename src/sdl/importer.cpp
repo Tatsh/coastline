@@ -29,6 +29,7 @@
 #include "common/podarchive.h"
 #include "common/profile.h"
 #include "common/rigidbody.h"
+#include "common/rle.h"
 #include "common/weather.h"
 #include "sdl/ghostfile.h"
 #include "sdl/iconfile.h"
@@ -497,6 +498,154 @@ std::optional<std::string> ConvertConsoleSound(const std::filesystem::path &soun
     return std::nullopt;
 }
 
+// The characters of the glyph codes of the Japanese release from FIRST_JAPANESE_GLYPH.
+constexpr std::u32string_view JAPANESE_GLYPHS =
+    U"！？。、ー☀☁☂❄☾゛゜"
+    U"あかさたなはまやらがざだばぱぁっいきしちにひみゆりぎじぢびぴぃゃ"
+    U"うくすつぬふむよるぐずづぶぷぅゅえけせてねへめわれげぜでべぺぇょ"
+    U"おこそとのほもをろごぞどぼぽぉん"
+    U"アカサタナハマヤラガザダバパァッイキシチニヒミユリギジヂビピィャ"
+    U"ウクスツヌフムヨルグズヅブプゥュエケセテネヘメワレゲゼデベペェョ"
+    U"オコソトノホモヲロゴゾドボポォン"
+    U"異常振動交換必要左右上下反転使用消空足読書込中選元他全前後発生";
+constexpr unsigned FIRST_JAPANESE_GLYPH = 0x24;
+
+// The text of a string of the Japanese release in UTF-8 without %j and %e, or nothing for bytes
+// that are not text.
+std::optional<std::string> DecodeJapaneseText(std::string_view text) {
+    std::string decoded;
+    bool japanese = false;
+    for (std::size_t i = 0; i < text.size(); ++i) {
+        auto c = static_cast<unsigned char>(text[i]);
+        if (c == '%' && i + 1 < text.size()) {
+            char next = text[i + 1];
+            if (next == 'j' || next == 'e') {
+                japanese = next == 'j';
+                ++i;
+                continue;
+            }
+            // A code of the colours applies between %j and %e as well.
+            if (next == '%' && japanese) {
+                c = '%';
+                ++i;
+            } else if (next == '%' || next == 'i' || next == 'n') {
+                decoded += text.substr(i, 2);
+                ++i;
+                continue;
+            } else if (i + 2 < text.size()) {
+                decoded += text.substr(i, 3);
+                i += 2;
+                continue;
+            }
+        }
+        if (!japanese || c == ' ') {
+            if (c < 0x20 || c >= 0x7F) {
+                return std::nullopt;
+            }
+            decoded += static_cast<char>(c);
+        } else if (c >= FIRST_JAPANESE_GLYPH && c - FIRST_JAPANESE_GLYPH < JAPANESE_GLYPHS.size()) {
+            AppendUtf8(decoded, JAPANESE_GLYPHS[c - FIRST_JAPANESE_GLYPH]);
+        } else {
+            return std::nullopt;
+        }
+    }
+    return decoded;
+}
+
+// The glyphs of the Japanese text in a row of japanese.png, 36 texels across and 40 down, from the
+// glyphs the console caches from the cartridge, and their layout for fonts.json with the glyph of
+// each code point. The glyphs are 4-bit intensity and alpha, upside down.
+std::expected<nlohmann::ordered_json, std::string>
+ConvertJapaneseGlyphs(const std::filesystem::path &glyphs, const std::filesystem::path &image) {
+    constexpr int WIDTH = 36;
+    constexpr int HEIGHT = 40;
+    constexpr int COLUMNS = 16;
+    constexpr std::size_t SLOT = WIDTH * HEIGHT;
+    // The table of offsets starts at the glyph code 0x20.
+    constexpr unsigned FIRST_OFFSET = 0x20;
+    auto bytes = ReadWholeFile(glyphs);
+    if (!bytes) {
+        return std::unexpected(fmt::format("{} cannot be read.", glyphs.string()));
+    }
+    auto offset = [&](std::size_t entry) -> std::optional<std::int32_t> {
+        std::size_t at = entry * 4;
+        if (at + 4 > bytes->size()) {
+            return std::nullopt;
+        }
+        return static_cast<std::int32_t>(static_cast<std::uint32_t>((*bytes)[at]) << 24 |
+                                         (*bytes)[at + 1] << 16 | (*bytes)[at + 2] << 8 |
+                                         (*bytes)[at + 3]);
+    };
+    const int count = static_cast<int>(JAPANESE_GLYPHS.size());
+    const int rows = (count + COLUMNS - 1) / COLUMNS;
+    const int imageWidth = COLUMNS * WIDTH;
+    std::vector<std::uint8_t> rgba(static_cast<std::size_t>(imageWidth) * rows * HEIGHT * 4);
+    nlohmann::ordered_json glyphOfCodePoint = nlohmann::ordered_json::object();
+    for (int glyph = 0; glyph < count; ++glyph) {
+        std::size_t entry = FIRST_JAPANESE_GLYPH - FIRST_OFFSET + static_cast<std::size_t>(glyph);
+        auto start = offset(entry);
+        auto end = offset(entry + 1);
+        if (!start || !end) {
+            return std::unexpected(fmt::format("{} has no table of glyphs.", glyphs.string()));
+        }
+        // A negative offset marks a glyph stored without run-length compression.
+        std::size_t from = static_cast<std::size_t>(std::abs(*start));
+        std::size_t to = static_cast<std::size_t>(std::abs(*end));
+        if (from > to || to > bytes->size()) {
+            return std::unexpected(fmt::format("{} has a glyph outside it.", glyphs.string()));
+        }
+        // The expansion does not check the size of its buffer, given room for twice a glyph.
+        std::vector<std::uint8_t> texels(SLOT * 2);
+        std::vector<std::uint8_t> stored(bytes->begin() + static_cast<std::ptrdiff_t>(from),
+                                         bytes->begin() + static_cast<std::ptrdiff_t>(to));
+        // The run-length block starts with its length, big-endian on the cartridge, which the
+        // expansion reads in the order of the host.
+        std::uint32_t length = 0;
+        if (*start >= 0) {
+            if (stored.size() < 4) {
+                return std::unexpected(fmt::format("{} has a glyph cut short.", glyphs.string()));
+            }
+            length = static_cast<std::uint32_t>(stored[0]) << 24 | stored[1] << 16 |
+                     stored[2] << 8 | stored[3];
+            if (length > stored.size() - 4) {
+                return std::unexpected(fmt::format("{} has a glyph cut short.", glyphs.string()));
+            }
+            std::memcpy(stored.data(), &length, 4);
+        }
+        if (*start < 0) {
+            std::copy_n(stored.begin(), std::min(stored.size(), SLOT), texels.begin());
+        } else if (DecompressInterleavedRle(
+                       texels.data(), static_cast<s32>(SLOT), stored.data(), 1) !=
+                   static_cast<s32>(SLOT)) {
+            return std::unexpected(fmt::format("{} has a glyph of another size.", glyphs.string()));
+        }
+        int left = glyph % COLUMNS * WIDTH;
+        int top = glyph / COLUMNS * HEIGHT;
+        for (int row = 0; row < HEIGHT; ++row) {
+            for (int column = 0; column < WIDTH; ++column) {
+                std::uint8_t texel = texels[static_cast<std::size_t>(row) * WIDTH + column];
+                std::size_t pixel = (static_cast<std::size_t>(top + HEIGHT - 1 - row) * imageWidth +
+                                     left + column) *
+                                    4;
+                auto intensity = static_cast<std::uint8_t>((texel >> 4) * 17);
+                rgba[pixel] = intensity;
+                rgba[pixel + 1] = intensity;
+                rgba[pixel + 2] = intensity;
+                rgba[pixel + 3] = static_cast<std::uint8_t>((texel & 0xF) * 17);
+            }
+        }
+        glyphOfCodePoint[std::to_string(static_cast<std::uint32_t>(JAPANESE_GLYPHS[glyph]))] =
+            glyph;
+    }
+    if (!SaveRgba8Png(image, rgba, imageWidth, rows * HEIGHT)) {
+        return std::unexpected(fmt::format("{} does not read back as its texels.", image.string()));
+    }
+    return nlohmann::ordered_json{{"image", image.filename().string()},
+                                  {"width", WIDTH},
+                                  {"columns", COLUMNS},
+                                  {"glyphs", glyphOfCodePoint}};
+}
+
 // The addresses of the fonts of a release in its main segment, which starts at 0x80200000.
 struct FontAddresses {
     std::uint32_t largeAtlas;
@@ -628,27 +777,78 @@ std::optional<std::string> ConvertConsoleFonts(const std::filesystem::path &dest
     if (!glyphs || !largeOffsets || !smallOffsets) {
         return std::string("The glyph tables of the fonts are outside the main segment.");
     }
-    // The glyph of each character from '!', and where each glyph starts in its row. The images are
+    // The console indexes its table by the byte of a character from '!', each byte an ASCII
+    // character, and the game by code point.
+    nlohmann::ordered_json glyphOfCodePoint = nlohmann::ordered_json::object();
+    for (std::size_t i = 0; i < CHARACTERS && '!' + i < 0x80; ++i) {
+        glyphOfCodePoint[std::to_string('!' + i)] = (*glyphs)[i];
+    }
+    // The glyph of each code point, and where each glyph starts in its row. The images are
     // upright, and the first row of glyphs is the upper row of cells.
-    nlohmann::ordered_json layout{
-        {"firstCharacter", "!"},
-        {"glyphOfCharacter", std::vector<int>(glyphs->begin(), glyphs->end())},
-        {"firstRowGlyphs", 27},
-        {"large",
-         {{"image", "large.png"},
-          {"cell", LARGE_CELL},
-          {"padding", 7},
-          {"gradient", "large-gradient.png"},
-          {"shadowGradient", "large-shadow-gradient.png"},
-          {"glyphStarts", *largeOffsets}}},
-        {"small",
-         {{"image", "small.png"},
-          {"cell", SMALL_CELL},
-          {"padding", 4},
-          {"gradient", "small-gradient.png"},
-          {"shadowGradient", "small-shadow-gradient.png"},
-          {"glyphStarts", *smallOffsets}}}};
+    nlohmann::ordered_json layout{{"glyphs", glyphOfCodePoint},
+                                  {"firstRowGlyphs", 27},
+                                  {"large",
+                                   {{"image", "large.png"},
+                                    {"cell", LARGE_CELL},
+                                    {"padding", 7},
+                                    {"gradient", "large-gradient.png"},
+                                    {"shadowGradient", "large-shadow-gradient.png"},
+                                    {"glyphStarts", *largeOffsets}}},
+                                  {"small",
+                                   {{"image", "small.png"},
+                                    {"cell", SMALL_CELL},
+                                    {"padding", 4},
+                                    {"gradient", "small-gradient.png"},
+                                    {"shadowGradient", "small-shadow-gradient.png"},
+                                    {"glyphStarts", *smallOffsets}}}};
+    if (release == RomRelease::Jpn) {
+        auto japanese = ConvertJapaneseGlyphs(destination / "segments" / "cachedGlyphs.bin",
+                                              fontsDirectory / "japanese.png");
+        if (!japanese) {
+            return japanese.error();
+        }
+        layout["japanese"] = *japanese;
+    }
     std::ofstream(fontsDirectory / "fonts.json", std::ios::trunc) << layout.dump(1) << '\n';
+    return std::nullopt;
+}
+
+// The Japanese text of the Japanese release, from the main segment, as strings/ja.json in UTF-8.
+// The console draws each byte between %j and %e as a glyph code, and a %% there as the glyph of
+// '%'. A string is keyed n64/ADDRESS by its address, as the menus of the release read it. A
+// string of the sprintf() of the console, with %%j, is not text.
+std::optional<std::string> WriteJapaneseStrings(const std::filesystem::path &release,
+                                                const std::filesystem::path &dataDirectory) {
+    constexpr std::uint32_t SEGMENT_BASE = 0x80200000;
+    auto segment = ReadWholeFile(release / "segment.bin");
+    if (!segment) {
+        return fmt::format("{} cannot be read.", (release / "segment.bin").string());
+    }
+    std::string_view bytes(reinterpret_cast<const char *>(segment->data()), segment->size());
+    nlohmann::ordered_json strings = nlohmann::ordered_json::object();
+    // IDO places each string at a word.
+    for (std::size_t start = 0; start < bytes.size(); start += 4) {
+        auto end = bytes.find('\0', start);
+        if (end == std::string_view::npos) {
+            break;
+        }
+        auto text = bytes.substr(start, end - start);
+        if ((start > 0 && bytes[start - 1] != '\0') || !text.contains("%j") ||
+            text.contains("%%j")) {
+            continue;
+        }
+        if (auto decoded = DecodeJapaneseText(text)) {
+            strings[fmt::format("n64/{:08x}", SEGMENT_BASE + start)] = *decoded;
+        }
+    }
+    auto destination = dataDirectory / "strings" / "ja.json";
+    std::error_code error;
+    std::filesystem::create_directories(destination.parent_path(), error);
+    std::ofstream out(destination, std::ios::trunc);
+    out << strings.dump(2) << '\n';
+    if (!out) {
+        return fmt::format("{} cannot be written.", destination.string());
+    }
     return std::nullopt;
 }
 
@@ -2003,6 +2203,11 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     }
     if (auto failure = ConvertConsoleFonts(destination, *release)) {
         return std::unexpected(*failure);
+    }
+    if (*release == RomRelease::Jpn) {
+        if (auto failure = WriteJapaneseStrings(destination, dataDirectory)) {
+            return std::unexpected(*failure);
+        }
     }
     if (auto failure = ConvertConsoleLights(destination, *release)) {
         return std::unexpected(*failure);

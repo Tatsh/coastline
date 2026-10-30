@@ -24,8 +24,10 @@
 #include "common/vehiclemodel.h"
 #include "ear/sdlmixer.h"
 #include "input.h"
+#include "language.h"
 #include "racedemo.h"
 #include "racemusic.h"
+#include "stringresources.h"
 #include "trackload.h"
 
 namespace coastline {
@@ -209,6 +211,7 @@ int CheckEngine(const std::filesystem::path &defaults) {
                      error.message().c_str());
         return EXIT_FAILURE;
     }
+    LoadStrings(defaults, DEFAULT_LANGUAGE);
     if (!SDL_Init(SDL_INIT_EVENTS)) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "SDL did not start: %s", SDL_GetError());
         return EXIT_FAILURE;
