@@ -35,6 +35,7 @@
 #include "enginecheck.h"
 #include "frontend.h"
 #include "gpu.h"
+#include "iconfile.h"
 #include "importer.h"
 #include "input.h"
 #include "intro.h"
@@ -710,6 +711,64 @@ void RaiseOpenFileLimit() {
 #endif
 }
 
+// The icon of the window from the PNG images of icon in the default pack: the smallest at the scale
+// of the display, and each larger size as its form for a higher scale.
+void SetWindowIcon(SDL_Window *window, const std::filesystem::path &pack) {
+    std::vector<std::pair<coastline::IconSize, std::filesystem::path>> images;
+    std::error_code error;
+    for (const auto &file : std::filesystem::directory_iterator(pack / "icon", error)) {
+        if (auto size = coastline::ParseIconName(file.path().filename().string())) {
+            images.emplace_back(*size, file.path());
+        }
+    }
+    if (images.empty()) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
+                    "The window has no icon, as %s has no images. Import the disc again for it.",
+                    (pack / "icon").string().c_str());
+        return;
+    }
+    // Each size takes the image of the most bits per pixel.
+    std::ranges::sort(images, {}, [](const auto &image) {
+        return std::tuple(image.first.width, image.first.height, -image.first.bitCount);
+    });
+    struct SurfaceDeleter {
+        void operator()(SDL_Surface *surface) const {
+            SDL_DestroySurface(surface);
+        }
+    };
+    std::unique_ptr<SDL_Surface, SurfaceDeleter> icon;
+    coastline::IconSize previous;
+    for (const auto &[size, path] : images) {
+        if (size.width == previous.width && size.height == previous.height) {
+            continue;
+        }
+        previous = size;
+        std::unique_ptr<SDL_Surface, SurfaceDeleter> image(SDL_LoadPNG(path.string().c_str()));
+        if (!image) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
+                        "%s cannot be read: %s",
+                        path.string().c_str(),
+                        SDL_GetError());
+        } else if (!icon) {
+            icon = std::move(image);
+        } else {
+            SDL_AddSurfaceAlternateImage(icon.get(), image.get());
+        }
+    }
+    if (!icon || !SDL_SetWindowIcon(window, icon.get())) {
+        SDL_LogWarn(
+            SDL_LOG_CATEGORY_VIDEO, "The icon of the window was not set: %s", SDL_GetError());
+        return;
+    }
+    int count = 0;
+    SDL_free(SDL_GetSurfaceImages(icon.get(), &count));
+    SDL_Log("The icon of the window is %dx%d, with %d sizes, from %s.",
+            icon->w,
+            icon->h,
+            count,
+            (pack / "icon").string().c_str());
+}
+
 int ImportFromCommandLine(const argparse::ArgumentParser &parser,
                           const std::filesystem::path &data) {
     int status = EXIT_SUCCESS;
@@ -1002,6 +1061,7 @@ int main(int argc, char *argv[]) {
             SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "SDL did not start: %s", SDL_GetError());
         } else if (auto window = coastline::GpuWindow::Create("Coastline",
                                                               DisplayOptionsFrom(config, parser))) {
+            SetWindowIcon(window->Window(), coastline::DefaultAssets(paths->data));
             coastline::SetWideMenus(config.GetBoolean("Video", "WideMenus", false));
             coastline::SetFieldOfViewScale(config.GetFloat("Video", "FieldOfView", 1.0f));
             coastline::InputBindings input;

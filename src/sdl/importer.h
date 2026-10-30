@@ -86,7 +86,8 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
 
 /**
  * Copy the files of the Boss Rally disc the game opens to @p dataDirectory, and its CD audio tracks
- * as music/trackNN.flac. An ISO image has no audio tracks, and only the files are copied.
+ * as music/trackNN.flac. An ISO image has no audio tracks, and only the files are copied. The icon
+ * Boss.ico moves to icon/coastline.ico, beside a PNG image of each of its sizes.
  *
  * @param disc A CUE sheet or an ISO image.
  * @param dataDirectory The directory of the pack to write, assets/defaults of the data directory.

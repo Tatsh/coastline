@@ -31,6 +31,7 @@
 #include "common/rigidbody.h"
 #include "common/weather.h"
 #include "sdl/ghostfile.h"
+#include "sdl/iconfile.h"
 #include "sdl/indexedimage.h"
 #include "sdl/n64attract.h"
 #include "sdl/n64model.h"
@@ -288,14 +289,15 @@ std::string Lowercase(std::string text) {
     return text;
 }
 
-// The files of the disc the game opens. The video, the installers, DirectX, the programs, and the
-// pictures of the menus and the loading screen of the Windows release, which the front end of the
-// Nintendo 64 release replaces, are left on the disc.
+// The files of the disc the game opens, and the icon of the window. The video, the installers,
+// DirectX, the programs, and the pictures of the menus and the loading screen of the Windows
+// release, which the front end of the Nintendo 64 release replaces, are not copied.
 bool IsGameData(const std::filesystem::path &path) {
     static constexpr std::array<std::string_view, 5> directories{
         "cargfx", "cars", "paint", "sfx", "tracks"};
     // The text of the game is in the string resources of BRString.dll.
-    static constexpr std::array<std::string_view, 6> files{"bossrally.pod",
+    static constexpr std::array<std::string_view, 7> files{"boss.ico",
+                                                           "bossrally.pod",
                                                            "brstring.dll",
                                                            "rallycredits.dat",
                                                            "rallyintro1.dat",
@@ -374,6 +376,67 @@ std::optional<std::string> ConvertBitmap(const std::filesystem::path &bitmap) {
     }
     std::error_code error;
     std::filesystem::remove(bitmap, error);
+    return std::nullopt;
+}
+
+// An image of the icon as a PNG image named for its size, which reads back with the same pixels. A
+// PNG image in the icon file is written as it is.
+std::optional<std::string> ConvertIconImage(const IconEntry &entry,
+                                            const std::filesystem::path &directory) {
+    static constexpr std::array<std::uint8_t, 8> PNG_SIGNATURE{
+        0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n'};
+    if (entry.image.size() >= PNG_SIGNATURE.size() &&
+        std::ranges::equal(entry.image.first(PNG_SIGNATURE.size()), PNG_SIGNATURE)) {
+        Surface image(
+            SDL_LoadPNG_IO(SDL_IOFromConstMem(entry.image.data(), entry.image.size()), true));
+        if (!image) {
+            return fmt::format("A PNG image of the icon cannot be read: {}", SDL_GetError());
+        }
+        auto png = directory / IconName({image->w, image->h, static_cast<int>(entry.bitCount)});
+        Surface written(WriteBytes(png, entry.image) ? SDL_LoadPNG(png.string().c_str()) : nullptr);
+        if (!written || written->w != image->w || written->h != image->h) {
+            return fmt::format("{} does not read back as the image of the icon.", png.string());
+        }
+        return std::nullopt;
+    }
+    auto pixels = DecodeIconBitmap(entry.image);
+    if (!pixels) {
+        return fmt::format(
+            "An image of the icon is not a bitmap of {} bits a pixel the game reads.",
+            entry.bitCount);
+    }
+    auto png =
+        directory / IconName({pixels->width, pixels->height, static_cast<int>(entry.bitCount)});
+    if (!SaveRgba8Png(png, pixels->rgba, pixels->width, pixels->height)) {
+        return fmt::format("{} does not read back as the pixels of the icon.", png.string());
+    }
+    return std::nullopt;
+}
+
+// Boss.ico, the icon of the Windows release, moved unchanged to icon/coastline.ico, with each of
+// its images as a PNG image in icon.
+std::optional<std::string> ConvertIconFile(const std::filesystem::path &file,
+                                           const std::filesystem::path &dataDirectory) {
+    auto icon = ReadWholeFile(file);
+    auto entries = icon ? ListIconImages(*icon) : std::vector<IconEntry>{};
+    if (entries.empty()) {
+        return fmt::format("{} is not an icon file with images.", file.string());
+    }
+    auto directory = dataDirectory / "icon";
+    std::error_code error;
+    std::filesystem::create_directories(directory, error);
+    for (const auto &entry : entries) {
+        if (auto failure = ConvertIconImage(entry, directory)) {
+            return failure;
+        }
+    }
+    std::filesystem::rename(file, directory / "coastline.ico", error);
+    if (error) {
+        return fmt::format("{} cannot be moved to {}: {}",
+                           file.string(),
+                           (directory / "coastline.ico").string(),
+                           error.message());
+    }
     return std::nullopt;
 }
 
@@ -2126,6 +2189,8 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         std::optional<std::string> failure;
         if (name == "brstring.dll") {
             failure = ConvertStringLibrary(dataDirectory / entry.path, dataDirectory);
+        } else if (name == "boss.ico") {
+            failure = ConvertIconFile(dataDirectory / entry.path, dataDirectory);
         } else if (name.ends_with(".bmp")) {
             failure = ConvertBitmap(dataDirectory / entry.path);
         }

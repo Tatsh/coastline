@@ -191,6 +191,7 @@ add_library(
   n64model.cpp
   options.cpp
   paintshop.cpp
+  iconfile.cpp
   paths.cpp
   playerselect.cpp
   ptr32.cpp

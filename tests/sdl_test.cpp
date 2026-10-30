@@ -1,11 +1,15 @@
-// Host check of the XDG directories and the BossRally.ini reader of the SDL game.
+// Host check of the XDG directories, the BossRally.ini reader, and the icon file reader of the SDL
+// game.
 
+#include <algorithm>
+#include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <map>
 #include <string>
 
 #include "config.h"
+#include "iconfile.h"
 #include "paths.h"
 
 namespace {
@@ -29,9 +33,88 @@ coastline::EnvironmentReader Environment(std::map<std::string, std::string> valu
     };
 }
 
+void Put16(std::vector<std::uint8_t> &bytes, std::size_t at, std::uint32_t value) {
+    bytes[at] = static_cast<std::uint8_t>(value);
+    bytes[at + 1] = static_cast<std::uint8_t>(value >> 8);
+}
+
+void Put32(std::vector<std::uint8_t> &bytes, std::size_t at, std::uint32_t value) {
+    Put16(bytes, at, value);
+    Put16(bytes, at + 2, value >> 16);
+}
+
+// A 2x2 icon of 4 bits a pixel: the colours of indices 2 and 1 on the top row and 1 and 2 on the
+// bottom, where the AND mask makes the second pixel transparent.
+std::vector<std::uint8_t> IconBitmap() {
+    std::vector<std::uint8_t> dib(120);
+    Put32(dib, 0, 40);
+    Put32(dib, 4, 2);
+    Put32(dib, 8, 4);
+    Put16(dib, 12, 1);
+    Put16(dib, 14, 4);
+    Put32(dib, 40 + 4, 0x00102030);
+    Put32(dib, 40 + 8, 0x00FF0080);
+    dib[104] = 0x12;
+    dib[108] = 0x21;
+    dib[112] = 0x40;
+    return dib;
+}
+
+// An icon file of the bitmap whose entry records 0 planes and 0 bits per pixel, as Boss.ico does.
+std::vector<std::uint8_t> IconFile(const std::vector<std::uint8_t> &dib) {
+    std::vector<std::uint8_t> icon(22);
+    Put16(icon, 2, 1);
+    Put16(icon, 4, 1);
+    icon[6] = 2;
+    icon[7] = 2;
+    icon[8] = 16;
+    Put32(icon, 14, static_cast<std::uint32_t>(dib.size()));
+    Put32(icon, 18, 22);
+    icon.insert(icon.end(), dib.begin(), dib.end());
+    return icon;
+}
+
+void CheckIconFile() {
+    auto dib = IconBitmap();
+    auto iconFile = IconFile(dib);
+    auto entries = coastline::ListIconImages(iconFile);
+    Check(entries.size() == 1 && entries[0].bitCount == 4 &&
+              std::equal(dib.begin(), dib.end(), entries[0].image.begin(), entries[0].image.end()),
+          "the icon file lists its image");
+    auto pixels = coastline::DecodeIconBitmap(dib);
+    const std::vector<std::uint8_t> rgba{0xFF,
+                                         0x00,
+                                         0x80,
+                                         0xFF,
+                                         0x10,
+                                         0x20,
+                                         0x30,
+                                         0xFF,
+                                         0x10,
+                                         0x20,
+                                         0x30,
+                                         0xFF,
+                                         0xFF,
+                                         0x00,
+                                         0x80,
+                                         0x00};
+    Check(pixels && pixels->width == 2 && pixels->height == 2 && pixels->rgba == rgba,
+          "the bitmap decodes from the bottom row with the AND mask as alpha");
+    iconFile.resize(iconFile.size() - 1);
+    Check(coastline::ListIconImages(iconFile).empty(), "an image cut short gives no images");
+    Check(!coastline::DecodeIconBitmap(std::span(dib).first(110)), "a mask cut short is refused");
+    Check(coastline::ParseIconName("32x32x4.png") == coastline::IconSize{32, 32, 4},
+          "an icon name gives its size");
+    Check(coastline::IconName({256, 256, 32}) == "256x256x32.png", "a size gives its icon name");
+    Check(!coastline::ParseIconName("coastline.ico") && !coastline::ParseIconName("32x32.png"),
+          "other names give no size");
+}
+
 } // namespace
 
 int main() {
+    CheckIconFile();
+
     auto defaults =
         coastline::ResolveXdgPaths(Environment({{"HOME", "/home/player"}}), "coastline");
     Check(defaults.has_value(), "HOME alone resolves the directories");
