@@ -76,6 +76,7 @@ add_library(
   coastline_sdl STATIC
   config.cpp
   earsound.cpp
+  frontend.cpp
   ghostfile.cpp
   gpu.cpp
   importer.cpp
@@ -83,6 +84,7 @@ add_library(
   input.cpp
   intro.cpp
   log.cpp
+  mainmenu.cpp
   menutext.cpp
   modelview.cpp
   music.cpp

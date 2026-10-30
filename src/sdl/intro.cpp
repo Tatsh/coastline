@@ -13,6 +13,7 @@
 
 #include "common/audio.h"
 #include "common/audiomix.h"
+#include "frontend.h"
 #include "gpu.h"
 #include "menutext.h"
 #include "scenerenderer.h"
@@ -21,14 +22,8 @@ namespace coastline {
 
 namespace {
 
-constexpr float HALF_PI = 1.570796371f;
-constexpr float PI = 3.141592741f;
-
 // The time of each fade, in seconds.
 constexpr float FADE_TIME = 0.2f;
-
-// The silence after each sound, for the mixer to read zeros past its end.
-constexpr std::size_t SOUND_PADDING = 0x100;
 
 // When each logo starts, and the times of a logo after its start: flying in, holding, leaving,
 // and gone.
@@ -66,189 +61,18 @@ constexpr float SKIP_TIME = 17.2f;
 constexpr float SKIP_END_TIME = 19.2f;
 constexpr float SPLASH_END_TIME = 24.2f;
 
-// The levels of a sound effect channel, the right in the upper half and the left in the lower.
-constexpr std::uint32_t SfxVolume(std::uint32_t right, std::uint32_t left) {
-    return (right << 16) + left;
-}
-
-// The 32.32 step that plays a sample at its own rate.
-constexpr std::uint64_t SFX_STEP_ONE = 1ull << 32;
-
 // The sound effect channels the splash screens silence when they end.
 constexpr int SPLASH_SFX_CHANNELS = 5;
 
-// The camera of the menus looks at the middle of the 320 by 240 screen from 290 in front of it,
-// with a field of 45 degrees, and the splash screens draw from 10 to 5000 away.
-constexpr float MENU_CENTER_X = 160.0f;
-constexpr float MENU_CENTER_Y = 120.0f;
-constexpr float MENU_DISTANCE = 290.0f;
-constexpr float SCREEN_FOV = 45.0f;
+// The splash screens draw from 10 to 5000 away.
 constexpr float SPLASH_NEAR = 10.0f;
 constexpr float SPLASH_FAR = 5000.0f;
-constexpr float SCREEN_WIDTH = 320.0f;
-constexpr float SCREEN_HEIGHT = 240.0f;
 
-Matrix4 Translation(float x, float y, float z) {
-    return {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, x, y, z, 1};
-}
-
-Matrix4 Scale(float s) {
-    return {s, 0, 0, 0, 0, s, 0, 0, 0, 0, s, 0, 0, 0, 0, 1};
-}
-
-// A turn by an angle in radians about the x or the z axis, as guRotateF() turns it.
-Matrix4 RotationX(float angle) {
-    float c = std::cos(angle);
-    float s = std::sin(angle);
-    return {1, 0, 0, 0, 0, c, s, 0, 0, -s, c, 0, 0, 0, 0, 1};
-}
-
-Matrix4 RotationZ(float angle) {
-    float c = std::cos(angle);
-    float s = std::sin(angle);
-    return {c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-}
-
-// The projection of the menus over the whole frame, its height the height of the 4:3 screen, to
-// a depth from 0 to 1.
-Matrix4 MenuProjection(float aspect) {
-    float focal = 1.0f / std::tan(SCREEN_FOV * PI / 360.0f);
-    float range = SPLASH_FAR - SPLASH_NEAR;
-    Matrix4 projection{focal / aspect,
-                       0,
-                       0,
-                       0,
-                       0,
-                       focal,
-                       0,
-                       0,
-                       0,
-                       0,
-                       -SPLASH_FAR / range,
-                       -1,
-                       0,
-                       0,
-                       -SPLASH_NEAR * SPLASH_FAR / range,
-                       0};
-    return MultiplyMatrices(projection,
-                            Translation(-MENU_CENTER_X, -MENU_CENTER_Y, -MENU_DISTANCE));
-}
-
-// The flat draws of the 640 by 480 screen, centred in the frame at 4:3 with y down.
-Matrix4 FlatProjection(float aspect) {
-    float width = (4.0f / 3.0f) / aspect;
-    return {2.0f * width / 640.0f, 0, 0, 0, 0, -2.0f / 480.0f, 0, 0, 0, 0, 1, 0, -width, 1, 0, 1};
-}
-
-// The glTF of a model of the console stands it up from z up to y up, which the matrices of the
-// console do themselves: this turns it back.
-const Matrix4 CONSOLE_SPACE = RotationX(HALF_PI);
-
-// The lights of the splash screens or the menus, in the space of the console.
-Lighting ReadLighting(const nlohmann::json &light) {
-    Lighting lighting;
-    auto direction = light.at("direction").get<std::array<float, 3>>();
-    float length = std::sqrt(direction[0] * direction[0] + direction[1] * direction[1] +
-                             direction[2] * direction[2]);
-    for (std::size_t i = 0; i < 3; ++i) {
-        lighting.direction[i] = length > 0.0f ? direction[i] / length : 0.0f;
-        lighting.ambient[i] = light.at("ambient")[i].get<float>() / 255.0f;
-        lighting.directional[i] = light.at("directional")[i].get<float>() / 255.0f;
-    }
-    return lighting;
-}
-
-// The signed 8-bit samples of a sound of the import, with silence after them.
-std::optional<std::vector<s8>> ReadSound(const std::filesystem::path &path) {
-    SDL_AudioSpec spec;
-    Uint8 *read = nullptr;
-    Uint32 length = 0;
-    if (!SDL_LoadWAV(path.string().c_str(), &spec, &read, &length) || spec.format != SDL_AUDIO_U8) {
-        SDL_free(read);
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s cannot be read.", path.string().c_str());
-        return std::nullopt;
-    }
-    std::vector<s8> samples(length + SOUND_PADDING, 0);
-    for (Uint32 i = 0; i < length; ++i) {
-        samples[i] = static_cast<s8>(read[i] ^ 0x80);
-    }
-    SDL_free(read);
-    return samples;
-}
-
-// The fade of the screen: a wipe whose level goes to its target at a rate, and the edges of the
-// picture it shows, in pixels of the 320 by 240 screen.
-struct ScreenFade {
-    float level = 0.0f;
-    float target = 0.0f;
-    float rate = 0.0f;
-    bool autoReverse = false;
-    bool skipFrame = false;
-    int left = 0;
-    int right = 0;
-
-    void SetTarget(float to, float seconds) {
-        skipFrame = true;
-        if (to < level || to == 0.0f) {
-            if (level == 1.0f || rate <= 0.0f) {
-                rate = -1.0f / seconds;
-                target = to;
-            } else {
-                // Still fading in: fade out once the picture is whole.
-                autoReverse = true;
-            }
-            return;
-        }
-        target = to;
-        rate = 1.0f / seconds;
-    }
-
-    bool FadingIn() const {
-        return rate > 0.0f && !autoReverse;
-    }
-
-    bool FadingOut() const {
-        return rate < 0.0f || autoReverse;
-    }
-
-    bool Complete() const {
-        return target == level && !autoReverse;
-    }
-
-    void Update(float seconds) {
-        if (!skipFrame) {
-            if (level != target) {
-                level += rate * seconds;
-                if (rate < 0.0f) {
-                    level = std::max(level, target);
-                } else if (target <= level) {
-                    level = target;
-                    if (autoReverse) {
-                        target = 0.0f;
-                        rate = -rate;
-                        autoReverse = false;
-                    }
-                }
-            }
-        } else {
-            skipFrame = false;
-        }
-        constexpr int WIDTH = static_cast<int>(SCREEN_WIDTH);
-        if (rate > 0.0f) {
-            // Fading in, the picture grows from the left.
-            left = 0;
-            right = (static_cast<int>(WIDTH * level) + 3) & ~3;
-        } else if (rate < 0.0f) {
-            // Fading out, black comes in from the left.
-            int move = (WIDTH - static_cast<int>(WIDTH * level) - left + 3) & ~3;
-            left += move;
-            right = std::min(right + move, WIDTH);
-        } else {
-            left = 0;
-            right = WIDTH;
-        }
-    }
-};
+// The band of the screen the flag is cut to once it rests.
+constexpr int FLAG_BAND_X = 40;
+constexpr int FLAG_BAND_WIDTH = 250;
+constexpr int FLAG_BAND_Y = 100;
+constexpr int FLAG_BAND_HEIGHT = 50;
 
 // The state of a logo: the voice of the sound that pans after it, and which sounds it played.
 struct LogoSounds {
@@ -269,11 +93,11 @@ struct Intro::State {
     Lighting menuLighting;
     std::vector<s8> soundA;
     std::vector<s8> soundB;
-    std::uint32_t soundALength = 0;
-    std::uint32_t soundBLength = 0;
 
     float time = 0.0f;
     ScreenFade fade;
+    // The volume of the sound effects. It fades out with the screen.
+    ScreenFade sfxFade{.level = 1.0f, .target = 1.0f};
     bool skipped = false;
     bool fadingOut = false;
     bool buildDate = false;
@@ -281,27 +105,17 @@ struct Intro::State {
     // The time of the vertex animation of each part of the title, from where it loads.
     std::array<float, 4> animationTime{};
 
-    s16 PlaySound(std::vector<s8> &sample, std::uint32_t length, std::uint32_t volume) {
-        s16 channel = FindFreeSoundChannel();
-        if (channel != -1) {
-            N64InitSoundChannel(channel, sample.data(), length, 0);
-            g_aSoundEffectChannels[channel].volume = static_cast<s32>(volume);
-            g_aSoundEffectChannels[channel].step = SFX_STEP_ONE;
-        }
-        return channel;
-    }
-
     // A logo flies in with a spin from the distance and two sounds, holds, then slides off to the
     // right with a sound that pans after it.
     void UpdateLogo(float start, float end, LogoSounds &sounds) {
         float t = time;
         if (t < start + LOGO_LANDED_TIME) {
             if (t > start + LOGO_SOUND_A_TIME && sounds.soundA == 0) {
-                PlaySound(soundA, soundALength, SfxVolume(32, 32));
+                PlaySoundEffect(soundA, SfxVolume(32, 32));
                 sounds.soundA = 1;
             }
             if (t > start + LOGO_SOUND_B_TIME && !sounds.soundB) {
-                PlaySound(soundB, soundBLength, SfxVolume(32, 32));
+                PlaySoundEffect(soundB, SfxVolume(32, 32));
                 sounds.soundB = true;
             }
             return;
@@ -310,12 +124,7 @@ struct Intro::State {
             return;
         }
         if (sounds.soundA < 2) {
-            sounds.voice = FindFreeSoundChannel();
-            if (sounds.voice != -1) {
-                N64InitSoundChannel(sounds.voice, soundA.data(), soundALength, 0);
-                g_aSoundEffectChannels[sounds.voice].volume = static_cast<s32>(SfxVolume(20, 20));
-                g_aSoundEffectChannels[sounds.voice].step = SFX_STEP_ONE;
-            }
+            sounds.voice = PlaySoundEffect(soundA, SfxVolume(20, 20));
             sounds.soundA = 2;
         } else if (sounds.voice != -1) {
             int pan = std::min(static_cast<int>((t - (start + LOGO_LEAVE_TIME)) * 32.0f), 20);
@@ -353,12 +162,8 @@ struct Intro::State {
     // DrawModelAt() of the console: turned about its own axis, scaled, stood up, and placed, in
     // the space the splash screens move to the middle of the screen and 100 forward.
     static Matrix4 ModelAt(float x, float y, float z, float angle, float scale) {
-        Matrix4 place =
-            MultiplyMatrices(Translation(x, y, z),
-                             MultiplyMatrices(RotationX(-HALF_PI),
-                                              MultiplyMatrices(Scale(scale), RotationZ(angle))));
         return MultiplyMatrices(Translation(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 100.0f),
-                                MultiplyMatrices(place, CONSOLE_SPACE));
+                                ScreenModelAt(x, y, z, angle, scale));
     }
 
     // The depth of a part of the title, which slows as it comes forward and rests at 0 by its end.
@@ -452,8 +257,6 @@ std::unique_ptr<Intro> Intro::Load(SceneRenderer &renderer, const std::filesyste
         !soundA || !soundB) {
         return nullptr;
     }
-    state->soundALength = static_cast<std::uint32_t>(soundA->size() - SOUND_PADDING);
-    state->soundBLength = static_cast<std::uint32_t>(soundB->size() - SOUND_PADDING);
     state->soundA = std::move(*soundA);
     state->soundB = std::move(*soundB);
     try {
@@ -477,6 +280,8 @@ void Intro::Restart() {
     State &s = *m_state;
     s.fade = {};
     s.fade.SetTarget(1.0f, FADE_TIME);
+    s.sfxFade = {.level = 1.0f, .target = 1.0f};
+    g_bSfxVolume = MAX_SFX_VOLUME;
     s.time = 0.0f;
     s.skipped = false;
     s.fadingOut = false;
@@ -492,6 +297,8 @@ IntroEnd Intro::Update(float seconds, const IntroButtons &buttons) {
     State &s = *m_state;
     s.buildDate = buttons.buildDate;
     s.fade.Update(seconds);
+    s.sfxFade.Update(seconds);
+    g_bSfxVolume = static_cast<u8>(static_cast<int>(s.sfxFade.level * MAX_SFX_VOLUME));
     if (!s.fade.FadingIn() || s.fade.Complete()) {
         s.time += seconds;
     }
@@ -519,6 +326,9 @@ IntroEnd Intro::Update(float seconds, const IntroButtons &buttons) {
                 g_aSoundEffectChannels[i].step = 0;
                 g_aSoundEffectChannels[i].volume = 0;
             }
+            // The console leaves the sound effects silent for the next screen to fade in. The
+            // screens after the intro do not fade them yet, and they return to full volume here.
+            g_bSfxVolume = MAX_SFX_VOLUME;
             return s.skipped ? IntroEnd::MainMenu : IntroEnd::AttractDemo;
         }
         return IntroEnd::Running;
@@ -541,6 +351,7 @@ IntroEnd Intro::Update(float seconds, const IntroButtons &buttons) {
     }
     s.fadingOut = true;
     s.fade.SetTarget(0.0f, FADE_TIME);
+    s.sfxFade.SetTarget(0.0f, FADE_TIME);
     return IntroEnd::Running;
 }
 
@@ -549,7 +360,7 @@ void Intro::Draw(SceneRenderer &renderer) const {
     GpuWindow &window = renderer.Window();
     float aspect = static_cast<float>(window.FrameWidth()) /
                    static_cast<float>(std::max<Uint32>(window.FrameHeight(), 1));
-    Matrix4 projection = MenuProjection(aspect);
+    Matrix4 projection = MenuProjection(aspect, SPLASH_NEAR, SPLASH_FAR);
     Matrix4 flat = FlatProjection(aspect);
 
     // The captions fade in as a logo lands and out as it leaves.
@@ -598,8 +409,18 @@ void Intro::Draw(SceneRenderer &renderer) const {
     // The title, tilted, its parts coming forward one after another, lit by the lights of the
     // menus. The flag and the second part draw without the depth.
     if (s.time > TITLE_START) {
-        // ponytail: the flag is not cut to the band the console scissors it to after TITLE_A_END;
-        // a scissor rectangle on the renderer's draws would add it.
+        // Once the flag rests it is cut to a band of the screen, inside the edges of the fade.
+        std::optional<SDL_Rect> band;
+        if (s.time > TITLE_A_END) {
+            int left = std::max(FLAG_BAND_X, s.fade.left);
+            int right = std::min(FLAG_BAND_X + FLAG_BAND_WIDTH, s.fade.right);
+            band = FrameRect(window.FrameWidth(),
+                             window.FrameHeight(),
+                             left,
+                             FLAG_BAND_Y,
+                             std::max(right - left, 0),
+                             FLAG_BAND_HEIGHT);
+        }
         float z =
             s.time < TITLE_A_END ?
                 (std::sqrt(TITLE_A_END - TITLE_START) - std::sqrt(s.time - TITLE_START)) * 300.0f :
@@ -616,7 +437,8 @@ void Intro::Draw(SceneRenderer &renderer) const {
                 tilt,
                 MultiplyMatrices(Translation(-SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2, -100.0f),
                                  place)));
-        renderer.DrawModel(*s.title[0], flag, projection, s.menuLighting, s.TitlePose(0), false);
+        renderer.DrawModel(
+            *s.title[0], flag, projection, s.menuLighting, s.TitlePose(0), false, band);
     }
     if (s.time > TITLE_B_START) {
         renderer.DrawModel(*s.title[1],
@@ -693,28 +515,7 @@ void Intro::Draw(SceneRenderer &renderer) const {
         s.text->Draw(renderer, "c", 78, 190, style, flat);
     }
 
-    // The wipe of the fade: black left of the picture and right of it, across the whole frame.
-    if (s.fade.level != 1.0f) {
-        constexpr float WIDTH = SCREEN_WIDTH;
-        Matrix4 whole{2.0f, 0, 0, 0, 0, -2.0f, 0, 0, 0, 0, 1, 0, -1.0f, 1.0f, 0, 1};
-        std::vector<FlatVertex> black;
-        auto cover = [&](float from, float to) {
-            if (to <= from) {
-                return;
-            }
-            std::array<std::uint8_t, 4> color{0, 0, 0, 255};
-            black.insert(black.end(),
-                         {{from, 0.0f, 0.0f, 0.0f, color},
-                          {to, 0.0f, 0.0f, 0.0f, color},
-                          {to, 1.0f, 0.0f, 0.0f, color},
-                          {from, 1.0f, 0.0f, 0.0f, color}});
-        };
-        cover(0.0f, static_cast<float>(s.fade.left) / WIDTH);
-        cover(static_cast<float>(s.fade.right) / WIDTH, 1.0f);
-        if (!black.empty()) {
-            renderer.DrawQuads(black, FlatMaterial{}, whole);
-        }
-    }
+    s.fade.Draw(renderer);
 }
 
 } // namespace coastline

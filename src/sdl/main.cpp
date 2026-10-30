@@ -28,6 +28,7 @@
 #include "input.h"
 #include "intro.h"
 #include "log.h"
+#include "mainmenu.h"
 #include "modelview.h"
 #include "music.h"
 #include "paths.h"
@@ -301,7 +302,8 @@ int main(int argc, char *argv[]) {
         .help("read the whole file of --play-sound before it plays, rather than streaming it")
         .flag();
     parser.add_argument("--scene").help(
-        "scene to start in: intro, the default, renderer-test, or model:FILE.gltf for a converted "
+        "scene to start in: intro, the default, main-menu, renderer-test, or model:FILE.gltf for a "
+        "converted "
         "model or track, from the imported data when relative");
     parser.add_argument("--screenshot").help("save a frame to this PNG file");
     parser.add_argument("--screenshot-frame")
@@ -421,6 +423,10 @@ int main(int argc, char *argv[]) {
             std::unique_ptr<coastline::ModelView> modelView;
             std::unique_ptr<coastline::SceneRenderer> sceneRenderer;
             std::unique_ptr<coastline::Intro> intro;
+            std::unique_ptr<coastline::MainMenu> mainMenu;
+            // The screen of the front end that shows.
+            enum class FrontEnd { Intro, MainMenu };
+            FrontEnd frontEnd = FrontEnd::Intro;
             coastline::TextureHandle testTexture = 0;
             if (scene == "renderer-test") {
                 renderer = coastline::TlRenderer::Create(*window);
@@ -431,11 +437,15 @@ int main(int argc, char *argv[]) {
                     model = coastline::DefaultAssets(paths->data) / model;
                 }
                 modelView = coastline::ModelView::Create(*window, model);
-            } else if (scene.empty() || scene == "intro") {
+            } else if (scene.empty() || scene == "intro" || scene == "main-menu") {
                 sceneRenderer = coastline::SceneRenderer::Create(*window);
                 if (sceneRenderer) {
-                    intro = coastline::Intro::Load(
-                        *sceneRenderer, coastline::DefaultAssets(paths->data) / "n64" / "usa");
+                    auto release = coastline::DefaultAssets(paths->data) / "n64" / "usa";
+                    intro = coastline::Intro::Load(*sceneRenderer, release);
+                    mainMenu = coastline::MainMenu::Load(*sceneRenderer, release);
+                    if (scene == "main-menu" && mainMenu) {
+                        frontEnd = FrontEnd::MainMenu;
+                    }
                 }
             }
             // A capture steps the splash screens by a 60th of a second a frame, for the same
@@ -469,24 +479,57 @@ int main(int argc, char *argv[]) {
                                         1.0f / 60.0f :
                                         std::min(static_cast<float>(now - lastTicks) / 1e9f, 0.1f);
                     lastTicks = now;
-                    // A press of A, Start, or Z skips, and every C button together shows the date
-                    // of the build.
-                    constexpr std::uint16_t SKIP =
+                    // A press of A, Start, or Z skips or chooses, B goes back, and every C button
+                    // together shows the date of the build on the splash screens.
+                    constexpr std::uint16_t CHOOSE =
                         coastline::BUTTON_A | coastline::BUTTON_START | coastline::BUTTON_Z;
                     constexpr std::uint16_t C_BUTTONS =
                         coastline::BUTTON_C_UP | coastline::BUTTON_C_DOWN |
                         coastline::BUTTON_C_LEFT | coastline::BUTTON_C_RIGHT;
+                    constexpr int STICK_PUSH = 40;
                     std::uint16_t held = ports[0].buttons;
-                    coastline::IntroButtons buttons{(held & ~lastButtons & SKIP) != 0,
-                                                    (held & C_BUTTONS) == C_BUTTONS};
-                    lastButtons = held;
-                    // ponytail: the demo and the main menu that follow the splash screens are not
-                    // built yet, so the splash screens start again.
-                    if (intro->Update(seconds, buttons) != coastline::IntroEnd::Running) {
-                        intro->Restart();
+                    if (ports[0].stickX < -STICK_PUSH) {
+                        held |= coastline::BUTTON_D_LEFT;
                     }
+                    if (ports[0].stickX > STICK_PUSH) {
+                        held |= coastline::BUTTON_D_RIGHT;
+                    }
+                    std::uint16_t pressed = held & ~lastButtons;
+                    lastButtons = held;
                     sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
-                    intro->Draw(*sceneRenderer);
+                    if (frontEnd == FrontEnd::Intro) {
+                        coastline::IntroButtons buttons{(pressed & CHOOSE) != 0,
+                                                        (held & C_BUTTONS) == C_BUTTONS};
+                        coastline::IntroEnd end = intro->Update(seconds, buttons);
+                        if (end == coastline::IntroEnd::MainMenu && mainMenu) {
+                            mainMenu->Restart();
+                            frontEnd = FrontEnd::MainMenu;
+                        } else if (end != coastline::IntroEnd::Running) {
+                            // ponytail: the attract demo of the PC release plays here once its
+                            // race is built into the game, and Start leaves it for the main menu.
+                            SDL_Log("The attract demo is not built yet.");
+                            intro->Restart();
+                        }
+                        intro->Draw(*sceneRenderer);
+                    } else {
+                        coastline::MenuButtons buttons{(pressed & coastline::BUTTON_D_LEFT) != 0,
+                                                       (pressed & coastline::BUTTON_D_RIGHT) != 0,
+                                                       (pressed & CHOOSE) != 0,
+                                                       (pressed & coastline::BUTTON_B) != 0,
+                                                       held != 0};
+                        coastline::MainMenuEnd end = mainMenu->Update(seconds, buttons);
+                        if (end == coastline::MainMenuEnd::Left) {
+                            intro->Restart();
+                            frontEnd = FrontEnd::Intro;
+                        } else if (end == coastline::MainMenuEnd::Chosen) {
+                            // ponytail: the screens after the main menu are not built yet, and the
+                            // menu shows again on the item chosen.
+                            SDL_Log("The %s screen is not built yet.",
+                                    mainMenu->SelectionName().c_str());
+                            mainMenu->Restart();
+                        }
+                        mainMenu->Draw(*sceneRenderer);
+                    }
                     sceneRenderer->End(framePath ? &*framePath : nullptr);
                 } else if (modelView) {
                     modelView->Draw(framePath ? &*framePath : nullptr);

@@ -5,6 +5,8 @@
 #include <SDL3/SDL.h>
 #include <nlohmann/json.hpp>
 
+#include "frontend.h"
+
 namespace coastline {
 
 namespace {
@@ -17,40 +19,6 @@ constexpr int ASCENT = 30;
 constexpr int SIZE_UNITS = 40;
 // The rows of a gradient image.
 constexpr int GRADIENT_ROWS = 40;
-
-// The inputs of the colour combiner, as the RDP numbers them, and the zero of each of its slots.
-constexpr std::uint32_t COMBINED = 0;
-constexpr std::uint32_t TEXEL0 = 1;
-constexpr std::uint32_t TEXEL1 = 2;
-constexpr std::uint32_t PRIMITIVE = 3;
-constexpr std::uint32_t ENVIRONMENT = 5;
-constexpr std::uint32_t ZERO_AB = 15;
-constexpr std::uint32_t ZERO_D = 7;
-constexpr std::uint32_t ZERO_ALPHA = 7;
-
-// The two words of gDPSetCombineLERP().
-constexpr std::array<std::uint32_t, 2> CombineLerp(std::uint32_t a0,
-                                                   std::uint32_t b0,
-                                                   std::uint32_t c0,
-                                                   std::uint32_t d0,
-                                                   std::uint32_t alphaA0,
-                                                   std::uint32_t alphaB0,
-                                                   std::uint32_t alphaC0,
-                                                   std::uint32_t alphaD0,
-                                                   std::uint32_t a1,
-                                                   std::uint32_t b1,
-                                                   std::uint32_t c1,
-                                                   std::uint32_t d1,
-                                                   std::uint32_t alphaA1,
-                                                   std::uint32_t alphaB1,
-                                                   std::uint32_t alphaC1,
-                                                   std::uint32_t alphaD1) {
-    return {(a0 & 0xf) << 20 | (c0 & 0x1f) << 15 | (alphaA0 & 7) << 12 | (alphaC0 & 7) << 9 |
-                (a1 & 0xf) << 5 | (c1 & 0x1f),
-            (b0 & 0xf) << 28 | (b1 & 0xf) << 24 | (alphaA1 & 7) << 21 | (alphaC1 & 7) << 18 |
-                (d0 & 7) << 15 | (alphaB0 & 7) << 12 | (alphaD0 & 7) << 9 | (d1 & 7) << 6 |
-                (alphaB1 & 7) << 3 | (alphaD1 & 7)};
-}
 
 // The glyph lerps from the environment to the primitive colour by the gradient, takes the alpha of
 // the glyph, and the second cycle multiplies by the glyph.
