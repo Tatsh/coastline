@@ -1428,9 +1428,11 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     if (snapshot != nullptr) {
         LoadParticleListHeads(&snapshot->GetParticles());
     }
+    renderer.SetDrawnInOrder(true);
     for (int index = 0; index < ViewCount(); ++index) {
         DrawView(renderer, snapshot, index);
     }
+    renderer.SetDrawnInOrder(false);
     renderer.SetViewport(std::nullopt);
     renderer.SetFog(std::nullopt);
 

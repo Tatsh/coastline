@@ -483,6 +483,7 @@ struct DrawState {
     std::optional<Fog> fog;
     std::uint32_t hiddenFlags = 0;
     bool ghost = false;
+    bool inOrder = false;
 };
 
 struct ModelDraw {
@@ -565,6 +566,7 @@ struct SceneRenderer::State {
     bool mirrored = false;
     std::optional<SDL_Rect> view;
     bool ghost = false;
+    bool inOrder = false;
     GpuWindow *window = nullptr;
     SDL_GPUDevice *device = nullptr;
     SDL_GPUShader *vertexShader = nullptr;
@@ -674,7 +676,7 @@ struct SceneRenderer::State {
     }
 
     DrawState Current() const {
-        return {view, fog, hiddenFlags, ghost};
+        return {view, fog, hiddenFlags, ghost, inOrder};
     }
 
     // A buffer of at least a size, made again when it is too small.
@@ -1194,6 +1196,7 @@ void SceneRenderer::Begin(std::array<float, 4> clear) {
     m_state->mirrored = false;
     m_state->view.reset();
     m_state->ghost = false;
+    m_state->inOrder = false;
     m_state->draws.clear();
     m_state->flat.clear();
 }
@@ -1224,6 +1227,10 @@ void SceneRenderer::SetViewport(std::optional<SDL_Rect> view) {
 
 void SceneRenderer::SetGhost(bool ghost) {
     m_state->ghost = ghost;
+}
+
+void SceneRenderer::SetDrawnInOrder(bool inOrder) {
+    m_state->inOrder = inOrder;
 }
 
 void SceneRenderer::DrawModel(const RenderModel &model,
@@ -1560,8 +1567,11 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
     };
 
     // Each model draws its opaque primitives where it comes, and the blended ones of every model
-    // follow every opaque one. A flat draw comes after the models drawn before it.
-    auto drawModel = [&](const ModelDraw &draw, bool blending) {
+    // follow every opaque one. A model drawn in order draws every primitive where it comes, as
+    // BRD3D draws the triangles of a display list. A flat draw comes after the models drawn before
+    // it.
+    enum class Pass { Opaque, Blended, All };
+    auto drawModel = [&](const ModelDraw &draw, Pass drawn) {
         const RenderModel::State &model = *draw.model->m_state;
         if (!useView(draw.state, draw.scissor)) {
             return;
@@ -1622,7 +1632,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             for (const Primitive &primitive : mesh.primitives) {
                 if (draw.highlight) {
                     // The highlight adds to the opaque parts drawn before it, in their place.
-                    if (!blending) {
+                    if (drawn != Pass::Blended) {
                         VertexUniforms uniforms = vertexUniforms;
                         uniforms.blend[2] = 2.0f;
                         uniforms.reflectAcross = {draw.highlight->across[0],
@@ -1638,7 +1648,8 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                     continue;
                 }
                 // Every part of a ghost waits for the blended draws.
-                if ((primitive.blend || draw.state.ghost) == blending) {
+                if (drawn == Pass::All ||
+                    (primitive.blend || draw.state.ghost) == (drawn == Pass::Blended)) {
                     VertexUniforms uniforms = vertexUniforms;
                     uniforms.blend[1] = primitive.textureGen ? 1.0f : 0.0f;
                     // A part with generated coordinates and no texture reflects the sky.
@@ -1671,13 +1682,19 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
     std::vector<const ModelDraw *> pending;
     auto flushBlended = [&]() {
         for (const ModelDraw *draw : pending) {
-            drawModel(*draw, true);
+            drawModel(*draw, Pass::Blended);
         }
         pending.clear();
     };
     for (const auto &entry : s.draws) {
-        if (const auto *draw = std::get_if<ModelDraw>(&entry)) {
-            drawModel(*draw, false);
+        const auto *draw = std::get_if<ModelDraw>(&entry);
+        if (draw != nullptr && draw->state.inOrder) {
+            flushBlended();
+            drawModel(*draw, Pass::All);
+            continue;
+        }
+        if (draw != nullptr) {
+            drawModel(*draw, Pass::Opaque);
             pending.push_back(draw);
             continue;
         }
