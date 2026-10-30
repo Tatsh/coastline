@@ -40,6 +40,15 @@ jobs:
         run: cmake --build --preset "n64-$TGR_REGION" -- -k 0
         env:
           TGR_REGION: '${{ matrix.region }}'
+      # Without a cartridge image the build has no cartridge, only the program.
+      - name: 'Upload the program'
+        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        with:
+          if-no-files-found: 'error'
+          name: 'n64-${{ matrix.region }}-${{ matrix.build-type }}'
+          path: |
+            build/n64-${{ matrix.region }}/coastline.bin
+            build/n64-${{ matrix.region }}/src/coastline
   sdl:
     name: 'SDL (${{ matrix.name }})'
     runs-on: '${{ matrix.os }}'
@@ -126,6 +135,15 @@ jobs:
         env:
           ARCHITECTURE: '${{ matrix.architecture }}'
         shell: pwsh
+      - name: 'Install'
+        run: cmake --install build/sdl --prefix staging
+        shell: bash
+      - name: 'Upload the game'
+        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        with:
+          if-no-files-found: 'error'
+          name: 'sdl-${{ matrix.name }}'
+          path: 'staging'
   win:
     name: 'Windows (${{ matrix.renderer }}, ${{ matrix.build-type }})'
     runs-on: windows-latest
@@ -164,6 +182,12 @@ jobs:
         env:
           TGR_RENDERER: '${{ matrix.renderer }}'
         shell: 'msys2 {0}'
+      - name: 'Upload the library'
+        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        with:
+          if-no-files-found: 'error'
+          name: 'win-${{ matrix.renderer }}-${{ matrix.build-type }}'
+          path: 'build/win-${{ matrix.renderer }}/src/*.dll'
 name: 'Build'
 'on':
   push:
