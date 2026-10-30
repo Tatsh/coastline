@@ -27,6 +27,7 @@
 #include "config.h"
 #include "earsound.h"
 #include "enginecheck.h"
+#include "frontend.h"
 #include "gpu.h"
 #include "importer.h"
 #include "input.h"
@@ -488,6 +489,7 @@ int main(int argc, char *argv[]) {
                                               {"Video", "Fullscreen", "0"},
                                               {"Video", "VSync", "1"},
                                               {"Video", "GpuDriver", ""},
+                                              {"Video", "WideMenus", "0"},
                                               {"Game", "PlayMusic", "1"},
                                               {"Game", "PlaySFX", "1"},
                                               {"Game", "WaitForStart", "0"},
@@ -514,6 +516,7 @@ int main(int argc, char *argv[]) {
             SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "SDL did not start: %s", SDL_GetError());
         } else if (auto window = coastline::GpuWindow::Create("Coastline",
                                                               DisplayOptionsFrom(config, parser))) {
+            coastline::SetWideMenus(config.GetBoolean("Video", "WideMenus", false));
             coastline::InputBindings input;
             coastline::N64Audio audio;
             bool playMusic = config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice();

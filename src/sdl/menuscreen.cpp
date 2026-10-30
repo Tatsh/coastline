@@ -98,6 +98,23 @@ constexpr std::array<std::uint32_t, 2> SHADE_COMBINE = CombineLerp(ZERO_AB,
                                                                    ZERO_ALPHA,
                                                                    SHADE);
 
+// A texture stretched over a rectangle of the 640 by 480 space of the flat projection.
+void DrawTexturedQuad(SceneRenderer &renderer,
+                      const RenderTexture &texture,
+                      float left,
+                      float top,
+                      float right,
+                      float bottom,
+                      FlatMaterial material,
+                      const Matrix4 &flat) {
+    material.texel0 = &texture;
+    std::array<FlatVertex, 4> corners{{{left, top, 0.0f, 0.0f},
+                                       {right, top, 1.0f, 0.0f},
+                                       {right, bottom, 1.0f, 1.0f},
+                                       {left, bottom, 0.0f, 1.0f}}};
+    renderer.DrawQuads(corners, material, flat);
+}
+
 // A texture stretched over a rectangle of the 320 by 240 screen, as DrawTexturedRect() draws it.
 void DrawTexturedRect(SceneRenderer &renderer,
                       const RenderTexture &texture,
@@ -107,16 +124,14 @@ void DrawTexturedRect(SceneRenderer &renderer,
                       int height,
                       FlatMaterial material,
                       const Matrix4 &flat) {
-    material.texel0 = &texture;
-    auto left = static_cast<float>(x * 2);
-    auto top = static_cast<float>(y * 2);
-    auto right = static_cast<float>((x + width) * 2);
-    auto bottom = static_cast<float>((y + height) * 2);
-    std::array<FlatVertex, 4> corners{{{left, top, 0.0f, 0.0f},
-                                       {right, top, 1.0f, 0.0f},
-                                       {right, bottom, 1.0f, 1.0f},
-                                       {left, bottom, 0.0f, 1.0f}}};
-    renderer.DrawQuads(corners, material, flat);
+    DrawTexturedQuad(renderer,
+                     texture,
+                     static_cast<float>(x * 2),
+                     static_cast<float>(y * 2),
+                     static_cast<float>((x + width) * 2),
+                     static_cast<float>((y + height) * 2),
+                     material,
+                     flat);
 }
 
 // The colour of the RDP from its 8-bit components.
@@ -351,7 +366,28 @@ void MenuScreen::DrawBackground(SceneRenderer &renderer,
     background.combine = BACKGROUND_COMBINE;
     background.prim = Color(top[0], top[1], top[2], 0xFF);
     background.env = Color(bottom[0], bottom[1], bottom[2], 0xFF);
-    DrawTexturedRect(renderer, *m_state->background, 0, 0, 320, 240, background, FlatFor(renderer));
+    GpuWindow &window = renderer.Window();
+    float aspect = static_cast<float>(window.FrameWidth()) /
+                   static_cast<float>(std::max<Uint32>(window.FrameHeight(), 1));
+    if (!WideMenus() || aspect <= SCREEN_WIDTH / SCREEN_HEIGHT) {
+        DrawTexturedRect(
+            renderer, *m_state->background, 0, 0, 320, 240, background, FlatFor(renderer));
+        return;
+    }
+    // The background is scaled to the width of the frame and cropped at the top and the bottom.
+    // The rest of the screen keeps the 4:3 layout of the console in the middle.
+    float width = SCREEN_HEIGHT * 2.0f * aspect;
+    float height = width * SCREEN_HEIGHT / SCREEN_WIDTH;
+    float fillLeft = SCREEN_WIDTH - width / 2.0f;
+    float fillTop = SCREEN_HEIGHT - height / 2.0f;
+    DrawTexturedQuad(renderer,
+                     *m_state->background,
+                     fillLeft,
+                     fillTop,
+                     fillLeft + width,
+                     fillTop + height,
+                     background,
+                     FlatFor(renderer));
 }
 
 void MenuScreen::DrawFooter(SceneRenderer &renderer) const {

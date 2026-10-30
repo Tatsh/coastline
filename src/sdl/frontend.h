@@ -117,6 +117,17 @@ Matrix4 MenuProjection(float aspect, float nearPlane, float farPlane);
 Matrix4 FlatProjection(float aspect);
 
 /**
+ * Choose whether the background of the menus fills a frame wider than 4:3, scaled to its width and
+ * cropped, rather than the 4:3 middle of the frame.
+ *
+ * @param wide Whether the background fills the frame.
+ */
+void SetWideMenus(bool wide);
+
+/** @return Whether the background of the menus fills a frame wider than 4:3. */
+bool WideMenus();
+
+/**
  * DrawModelAt() of the console: a model turned about its own axis, scaled, stood up, and placed.
  * The glTF of a model of the console is stood up from z up to y up, and this turns it back.
  *
