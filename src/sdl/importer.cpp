@@ -1455,9 +1455,9 @@ std::optional<std::string> WriteAttractDemo(std::span<const std::uint8_t> rom,
                                                               N64DemoRelease::Jpn;
     auto demo = RecordN64AttractDemo(rom, demoRelease);
     if (!demo) {
-        return std::format("The attract demo was not recorded: {}", demo.error());
+        return fmt::format("The attract demo was not recorded: {}", demo.error());
     }
-    auto bytes = DemoGhost(*demo, std::format("n64 {}", destination.filename().string()));
+    auto bytes = DemoGhost(*demo, fmt::format("n64 {}", destination.filename().string()));
     auto json = GhostToJson(bytes);
     auto rebuilt = json ? GhostFromJson(*json) : std::nullopt;
     if (!rebuilt || *rebuilt != bytes) {
@@ -1471,7 +1471,7 @@ std::optional<std::string> WriteAttractDemo(std::span<const std::uint8_t> rom,
     auto parsed = nlohmann::ordered_json::parse(written, nullptr, false);
     auto reread = parsed.is_discarded() ? std::nullopt : GhostFromJson(parsed);
     if (!reread || *reread != bytes) {
-        return std::format("{} does not read back as the attract demo.", path.string());
+        return fmt::format("{} does not read back as the attract demo.", path.string());
     }
     SDL_Log("The attract demo of %s has %zu steps of the console, from %llu instructions.",
             destination.filename().string().c_str(),

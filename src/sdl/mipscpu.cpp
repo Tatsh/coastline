@@ -2,7 +2,7 @@
 
 #include <bit>
 #include <cmath>
-#include <format>
+#include <cstdio>
 #include <limits>
 
 namespace coastline {
@@ -10,6 +10,28 @@ namespace coastline {
 namespace {
 
 constexpr std::uint32_t KSEG0 = 0x80000000u;
+
+// A word as 0x and eight hexadecimal digits, for the faults.
+std::string Hex32(std::uint32_t value) {
+    char text[11];
+    std::snprintf(text, sizeof(text), "0x%08x", static_cast<unsigned>(value));
+    return text;
+}
+
+// The high and the low word of the unsigned 128-bit product of two words, from their 32-bit halves,
+// as DMULTU makes it on every compiler.
+void MultiplyWide(std::uint64_t a, std::uint64_t b, std::uint64_t &high, std::uint64_t &low) {
+    std::uint64_t aLow = a & 0xFFFFFFFFu;
+    std::uint64_t aHigh = a >> 32;
+    std::uint64_t bLow = b & 0xFFFFFFFFu;
+    std::uint64_t bHigh = b >> 32;
+    std::uint64_t lowProduct = aLow * bLow;
+    std::uint64_t across = aHigh * bLow;
+    std::uint64_t down = aLow * bHigh;
+    std::uint64_t middle = (lowProduct >> 32) + (across & 0xFFFFFFFFu) + (down & 0xFFFFFFFFu);
+    low = (middle << 32) | (lowProduct & 0xFFFFFFFFu);
+    high = aHigh * bHigh + (across >> 32) + (down >> 32) + (middle >> 32);
+}
 constexpr std::uint32_t KSEG2 = 0xC0000000u;
 constexpr std::uint32_t PHYSICAL_MASK = 0x1FFFFFFFu;
 constexpr std::uint32_t CARTRIDGE_START = 0x10000000u;
@@ -149,7 +171,7 @@ std::uint32_t MipsCpu::Argument(int index) {
 
 void MipsCpu::SetFault(const std::string &fault) {
     if (m_fault.empty()) {
-        m_fault = std::format("{} (instruction at 0x{:08x})", fault, m_current);
+        m_fault = fault + " (instruction at " + Hex32(m_current) + ")";
     }
 }
 
@@ -166,7 +188,7 @@ std::uint8_t *MipsCpu::RamAt(std::uint32_t address, int size) {
 
 std::uint64_t MipsCpu::ReadDevice(std::uint32_t address, int size) {
     if (address < KSEG0 || address >= KSEG2) {
-        SetFault(std::format("A read of the mapped address 0x{:08x}", address));
+        SetFault("A read of the mapped address " + Hex32(address));
         return 0;
     }
     std::uint32_t physical = address & PHYSICAL_MASK;
@@ -184,7 +206,7 @@ std::uint64_t MipsCpu::ReadDevice(std::uint32_t address, int size) {
 
 void MipsCpu::WriteDevice(std::uint32_t address, int size, std::uint64_t value) {
     if (address < KSEG0 || address >= KSEG2) {
-        SetFault(std::format("A write to the mapped address 0x{:08x}", address));
+        SetFault("A write to the mapped address " + Hex32(address));
         return;
     }
     if (m_deviceWrite) {
@@ -201,7 +223,7 @@ std::uint8_t MipsCpu::Read8(std::uint32_t address) {
 
 std::uint16_t MipsCpu::Read16(std::uint32_t address) {
     if ((address & 1) != 0) {
-        SetFault(std::format("An unaligned read of 0x{:08x}", address));
+        SetFault("An unaligned read of " + Hex32(address));
         return 0;
     }
     if (std::uint8_t *p = RamAt(address, 2)) {
@@ -212,7 +234,7 @@ std::uint16_t MipsCpu::Read16(std::uint32_t address) {
 
 std::uint32_t MipsCpu::Read32(std::uint32_t address) {
     if ((address & 3) != 0) {
-        SetFault(std::format("An unaligned read of 0x{:08x}", address));
+        SetFault("An unaligned read of " + Hex32(address));
         return 0;
     }
     if (std::uint8_t *p = RamAt(address, 4)) {
@@ -224,7 +246,7 @@ std::uint32_t MipsCpu::Read32(std::uint32_t address) {
 
 std::uint64_t MipsCpu::Read64(std::uint32_t address) {
     if ((address & 7) != 0) {
-        SetFault(std::format("An unaligned read of 0x{:08x}", address));
+        SetFault("An unaligned read of " + Hex32(address));
         return 0;
     }
     return static_cast<std::uint64_t>(Read32(address)) << 32 | Read32(address + 4);
@@ -240,7 +262,7 @@ void MipsCpu::Write8(std::uint32_t address, std::uint8_t value) {
 
 void MipsCpu::Write16(std::uint32_t address, std::uint16_t value) {
     if ((address & 1) != 0) {
-        SetFault(std::format("An unaligned write to 0x{:08x}", address));
+        SetFault("An unaligned write to " + Hex32(address));
         return;
     }
     if (std::uint8_t *p = RamAt(address, 2)) {
@@ -253,7 +275,7 @@ void MipsCpu::Write16(std::uint32_t address, std::uint16_t value) {
 
 void MipsCpu::Write32(std::uint32_t address, std::uint32_t value) {
     if ((address & 3) != 0) {
-        SetFault(std::format("An unaligned write to 0x{:08x}", address));
+        SetFault("An unaligned write to " + Hex32(address));
         return;
     }
     if (std::uint8_t *p = RamAt(address, 4)) {
@@ -268,7 +290,7 @@ void MipsCpu::Write32(std::uint32_t address, std::uint32_t value) {
 
 void MipsCpu::Write64(std::uint32_t address, std::uint64_t value) {
     if ((address & 7) != 0) {
-        SetFault(std::format("An unaligned write to 0x{:08x}", address));
+        SetFault("An unaligned write to " + Hex32(address));
         return;
     }
     Write32(address, static_cast<std::uint32_t>(value >> 32));
@@ -566,7 +588,7 @@ void MipsCpu::Execute(std::uint32_t instruction, std::uint32_t address) {
         Write64(effective, gpr[rt]);
         break;
     default:
-        SetFault(std::format("An unknown instruction 0x{:08x}", instruction));
+        SetFault("An unknown instruction " + Hex32(instruction));
         break;
     }
 }
@@ -611,7 +633,7 @@ void MipsCpu::Special(std::uint32_t instruction) {
         SetFault("A system call");
         break;
     case 13:
-        SetFault(std::format("A break of code {}", (instruction >> 6) & 0xFFFFF));
+        SetFault("A break of code " + std::to_string((instruction >> 6) & 0xFFFFF));
         break;
     case 15:
         break;
@@ -674,18 +696,20 @@ void MipsCpu::Special(std::uint32_t instruction) {
         }
         break;
     case 28: {
-        __int128 product = static_cast<__int128>(static_cast<std::int64_t>(gpr[rs])) *
-                           static_cast<std::int64_t>(gpr[rt]);
-        lo = static_cast<std::uint64_t>(product);
-        hi = static_cast<std::uint64_t>(static_cast<unsigned __int128>(product) >> 64);
+        MultiplyWide(gpr[rs], gpr[rt], hi, lo);
+        // The signed product differs from the unsigned one in its high word, by each negative
+        // factor times the other.
+        if (static_cast<std::int64_t>(gpr[rs]) < 0) {
+            hi -= gpr[rt];
+        }
+        if (static_cast<std::int64_t>(gpr[rt]) < 0) {
+            hi -= gpr[rs];
+        }
         break;
     }
-    case 29: {
-        unsigned __int128 product = static_cast<unsigned __int128>(gpr[rs]) * gpr[rt];
-        lo = static_cast<std::uint64_t>(product);
-        hi = static_cast<std::uint64_t>(product >> 64);
+    case 29:
+        MultiplyWide(gpr[rs], gpr[rt], hi, lo);
         break;
-    }
     case 30: {
         auto n = static_cast<std::int64_t>(gpr[rs]);
         auto d = static_cast<std::int64_t>(gpr[rt]);
@@ -747,7 +771,7 @@ void MipsCpu::Special(std::uint32_t instruction) {
     case 52:
         // The compiler places TEQ after a division to catch a divisor of zero.
         if (gpr[rs] == gpr[rt]) {
-            SetFault(std::format("A trap of code {}", (instruction >> 6) & 0x3FF));
+            SetFault("A trap of code " + std::to_string((instruction >> 6) & 0x3FF));
         }
         break;
     case 56:
@@ -769,7 +793,7 @@ void MipsCpu::Special(std::uint32_t instruction) {
         gpr[rd] = static_cast<std::uint64_t>(static_cast<std::int64_t>(gpr[rt]) >> (sa + 32));
         break;
     default:
-        SetFault(std::format("An unknown instruction 0x{:08x}", instruction));
+        SetFault("An unknown instruction " + Hex32(instruction));
         break;
     }
 }
@@ -798,7 +822,7 @@ void MipsCpu::RegImm(std::uint32_t instruction, std::uint32_t address) {
         Branch(taken, target, true);
         break;
     default:
-        SetFault(std::format("An unknown instruction 0x{:08x}", instruction));
+        SetFault("An unknown instruction " + Hex32(instruction));
         break;
     }
 }
@@ -822,7 +846,7 @@ void MipsCpu::Cop0(std::uint32_t instruction) {
         }
         break;
     default:
-        SetFault(std::format("An unknown instruction 0x{:08x}", instruction));
+        SetFault("An unknown instruction " + Hex32(instruction));
         break;
     }
 }
@@ -866,7 +890,7 @@ void MipsCpu::Cop1(std::uint32_t instruction, std::uint32_t address) {
         FloatOperation(instruction);
         break;
     default:
-        SetFault(std::format("An unknown instruction 0x{:08x}", instruction));
+        SetFault("An unknown instruction " + Hex32(instruction));
         break;
     }
 }
@@ -967,7 +991,7 @@ void MipsCpu::FloatOperation(std::uint32_t instruction) {
             result = -a;
             break;
         default:
-            SetFault(std::format("An unknown instruction 0x{:08x}", instruction));
+            SetFault("An unknown instruction " + Hex32(instruction));
             return;
         }
         SetSingle(fd, Flush(result, fcr31));
@@ -1003,13 +1027,13 @@ void MipsCpu::FloatOperation(std::uint32_t instruction) {
             result = -a;
             break;
         default:
-            SetFault(std::format("An unknown instruction 0x{:08x}", instruction));
+            SetFault("An unknown instruction " + Hex32(instruction));
             return;
         }
         SetDouble(fd, Flush(result, fcr31));
         return;
     }
-    SetFault(std::format("An unknown instruction 0x{:08x}", instruction));
+    SetFault("An unknown instruction " + Hex32(instruction));
 }
 
 } // namespace coastline

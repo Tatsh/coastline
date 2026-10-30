@@ -7,8 +7,9 @@
 
 #include <algorithm>
 #include <cstring>
-#include <format>
 #include <optional>
+
+#include <fmt/format.h>
 
 #include "mipscpu.h"
 
@@ -877,14 +878,14 @@ std::expected<N64Demo, std::string> Console::Record() {
         bool stopped = m_cpu.Run(RUN_SLICE);
         run += std::max<std::uint64_t>(m_cpu.instructions - before, 1);
         if (!m_cpu.Fault().empty()) {
-            return std::unexpected(std::format("{}\n{}", m_cpu.Fault(), m_log));
+            return std::unexpected(fmt::format("{}\n{}", m_cpu.Fault(), m_log));
         }
         if (stopped && !m_finished) {
             return std::unexpected(m_log);
         }
     }
     if (!m_finished) {
-        return std::unexpected(std::format("The demo did not end in time.\n{}", m_log));
+        return std::unexpected(fmt::format("The demo did not end in time.\n{}", m_log));
     }
     m_demo.instructions = m_cpu.instructions;
     return m_demo;

@@ -304,6 +304,7 @@ dmaterial
 dmaterialhandle
 dmawrite
 dmmx
+dmultu
 dndebug
 docdir
 docstrings
