@@ -42,6 +42,7 @@ assetchain
 assetdma
 assetfile
 assetnames
+assetpack
 atdb
 atexit
 attachedonly

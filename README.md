@@ -249,8 +249,9 @@ any frame rate.
 
 ### Sound
 
-`XmMusicGain` in the `[Game]` section scales the music of the cartridge's XM modules against the
-sound effects, 1.5 by default and 1 for the level of the console. The music clips rather than
+The music of the cartridge's XM modules is scaled against the sound effects by the gain of the
+asset pack, 1.5 in the default pack and 1 for the level of the console. `XmMusicGain` in the
+`[Game]` section replaces the gain of the pack when the user adds it. The music clips rather than
 wrapping when the gain raises it past the range of a sample.
 
 ### Data
@@ -258,11 +259,39 @@ wrapping when the gain raises it past the range of a sample.
 The data comes from a Boss Rally disc image and a Top Gear Rally cartridge image. The import
 checks the cartridge against the SHA-1 of each release, and converts the CD audio of a CUE sheet
 to FLAC. An ISO image has no CD audio. The import writes every file to `assets/defaults` in the
-data directory, and a mod pack is a directory of its own beside it in `assets`.
+data directory.
 
 ```shell
 coastline --import-disc 'Boss Rally.cue' --import-rom usa.z64 --import-rom jpn.z64
 ```
+
+### Asset packs
+
+The game draws the images of the PC release, except where the PC release removed the branding of
+Nintendo, Top Gear, or Kemco. There, the default pack has the image of the cartridge, such as the
+NINTENDO and TOP GEAR RALLY decals of the cars, the Kemco livery of the Japanese car `pj`, the TOP
+GEAR RALLY banners of the desert, and the Nintendo banners of the season winner scene. The import
+lists these images in `src/sdl/data/branded-textures.json`, and moves each PC image it replaces to
+the pack `boss` in `assets`. A data directory imported before the packs existed takes them once the
+disc and the cartridges are imported again.
+
+`AssetPack` in the `[Game]` section selects the pack, `default` or `boss` for the images of the PC
+release, and `--asset-pack NAME` selects one for a single run. A mod pack is a directory of its own
+in `assets`, selected by its directory name. A file of the selected pack replaces the file of the
+same path in `assets/defaults`, and every other file is read from `assets/defaults`. The game links
+the files of both packs into `assets/NAME` in the cache directory on each start.
+
+A pack may have a `pack.json` of settings. Each key of the selected pack replaces the key of
+`assets/defaults/pack.json`, which the import writes.
+
+```json
+{
+  "version": 1,
+  "xmMusicGain": 1.5
+}
+```
+
+`version` is the version of the file, 1. `xmMusicGain` is the gain of the music of the XM modules.
 
 `coastline --help` lists the options, among them `--screenshot` and `--scene` for unattended
 checks.

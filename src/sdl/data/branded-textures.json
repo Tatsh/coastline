@@ -1,0 +1,107 @@
+{
+  "textures": [
+    {
+      "branding": "top-gear",
+      "cartridge": "n64/usa/cars/type-ce/mesh-19.png",
+      "pc": "cars/ce-19.png"
+    },
+    {
+      "branding": "top-gear",
+      "cartridge": "n64/usa/cars/type-ce/mesh-21.png",
+      "pc": "cars/ce-21.png"
+    },
+    {
+      "branding": "top-gear",
+      "cartridge": "n64/usa/cars/type-ce/mesh-5.png",
+      "pc": "cars/ce-5.png"
+    },
+    {
+      "branding": "nintendo",
+      "cartridge": "n64/usa/cars/type-ce/mesh-9.png",
+      "pc": "cars/ce-9.png"
+    },
+    {
+      "branding": "nintendo",
+      "cartridge": "n64/usa/cars/type-ip/mesh-5.png",
+      "pc": "cars/ip-5.png"
+    },
+    {
+      "branding": "kemco",
+      "cartridge": "n64/jpn/cars/type-pj/mesh-10.png",
+      "pc": "cars/pj-10.png"
+    },
+    {
+      "branding": "kemco",
+      "cartridge": "n64/jpn/cars/type-pj/mesh-12.png",
+      "pc": "cars/pj-12.png"
+    },
+    {
+      "branding": "kemco",
+      "cartridge": "n64/jpn/cars/type-pj/mesh-14.png",
+      "pc": "cars/pj-14.png"
+    },
+    {
+      "branding": "kemco",
+      "cartridge": "n64/jpn/cars/type-pj/mesh-16.png",
+      "pc": "cars/pj-16.png"
+    },
+    {
+      "branding": "kemco",
+      "cartridge": "n64/jpn/cars/type-pj/mesh-18.png",
+      "pc": "cars/pj-18.png"
+    },
+    {
+      "branding": "kemco",
+      "cartridge": "n64/jpn/cars/type-pj/mesh-20.png",
+      "pc": "cars/pj-20.png"
+    },
+    {
+      "branding": "kemco",
+      "cartridge": "n64/jpn/cars/type-pj/mesh-22.png",
+      "pc": "cars/pj-22.png"
+    },
+    {
+      "branding": "kemco",
+      "cartridge": "n64/jpn/cars/type-pj/mesh-5.png",
+      "pc": "cars/pj-5.png"
+    },
+    {
+      "branding": "kemco",
+      "cartridge": "n64/jpn/cars/type-pj/mesh-6.png",
+      "pc": "cars/pj-6.png"
+    },
+    {
+      "branding": "nintendo",
+      "cartridge": "n64/usa/cars/type-sp/mesh-6.png",
+      "pc": "cars/sp-6.png"
+    },
+    {
+      "branding": "top-gear",
+      "cartridge": "n64/usa/tracks/desert/track-161.png",
+      "pc": "tracks/desert-161.png"
+    },
+    {
+      "branding": "top-gear",
+      "cartridge": "n64/usa/tracks/desert/track-162.png",
+      "pc": "tracks/desert-162.png"
+    },
+    {
+      "branding": "top-gear",
+      "cartridge": "n64/usa/tracks/desert/track-163.png",
+      "pc": "tracks/desert-163.png"
+    },
+    {
+      "branding": "top-gear",
+      "cartridge": "n64/usa/tracks/desert/track-164.png",
+      "pc": "tracks/desert-164.png"
+    },
+    {
+      "branding": "nintendo",
+      "cartridge": "n64/usa/tracks/load-and-gamewin/track-2.png",
+      "meshes": [2, 4, 6, 27, 30, 32, 34, 36, 38, 40, 41, 43, 45, 46, 48, 51, 52, 53, 86],
+      "model": "tracks/gamewin.gltf",
+      "pc": "tracks/gamewin-2.png"
+    }
+  ],
+  "version": 1
+}

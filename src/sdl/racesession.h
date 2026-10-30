@@ -30,7 +30,7 @@ struct RacePlayerSetup {
     int transmission = 1; /*!< The transmission, nonzero for the automatic. */
     int tires = 2;        /*!< The tyres. */
     int suspension = 1;   /*!< The suspension, from 0 for the softest springs. */
-    /** The images of the car with the custom decals of the player, or none for the cartridge. */
+    /** The images of the car with the custom decals of the player, or none for the asset pack. */
     std::optional<std::filesystem::path> images;
     /** The colour of the paint the custom decals bring, or none for the colour of the car. */
     std::optional<std::array<u8, 3>> color;

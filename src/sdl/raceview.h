@@ -24,7 +24,7 @@ struct RaceCar {
     int car = 0;                         /*!< The car, an index of g_apszCarModelPrefixes. */
     std::array<std::uint8_t, 3> paint{}; /*!< The red, green, and blue the car is painted. */
     /** A glTF document of the car of the cartridge whose images take the place of those of the
-     * cartridge, such as custom decals, or none. */
+     * asset pack, such as custom decals, or none. */
     std::optional<std::filesystem::path> images;
 };
 
@@ -35,7 +35,7 @@ public:
      * Read the models of a track and the cars of the import.
      *
      * @param renderer The renderer that draws them.
-     * @param defaults The directory of the default assets.
+     * @param defaults The directory of the assets of the selected pack.
      * @param track The track, an index of g_apszTrackFilenames.
      * @param cars The car of each vehicle of the race, from the first. A vehicle that takes
      * another car or colour during the race loads it as it is drawn.

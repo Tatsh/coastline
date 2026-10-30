@@ -1,6 +1,7 @@
 #include "paths.h"
 
 #include <cstdlib>
+#include <set>
 #include <system_error>
 
 #ifdef _WIN32
@@ -37,7 +38,91 @@ std::optional<std::filesystem::path> KnownFolder(int folder) {
 }
 #endif
 
+// A link to a file or a directory: a hard link or a symbolic link, or else a copy, of each file of
+// a directory in turn.
+bool LinkEntry(const std::filesystem::path &from, const std::filesystem::path &to) {
+    std::error_code error;
+    if (std::filesystem::is_directory(from, error)) {
+        std::filesystem::create_directory_symlink(from, to, error);
+        if (!error) {
+            return true;
+        }
+        std::filesystem::create_directories(to, error);
+        for (const auto &entry : std::filesystem::directory_iterator(from, error)) {
+            if (!LinkEntry(entry.path(), to / entry.path().filename())) {
+                return false;
+            }
+        }
+        return !error;
+    }
+    std::filesystem::create_hard_link(from, to, error);
+    if (!error) {
+        return true;
+    }
+    error.clear();
+    std::filesystem::create_symlink(from, to, error);
+    if (!error) {
+        return true;
+    }
+    error.clear();
+    return std::filesystem::copy_file(from, to, error);
+}
+
+// The entries of base and of pack in to, an entry of pack in place of the entry of base of the
+// same name, and a directory of both layered in turn.
+bool LayerDirectory(const std::filesystem::path &base,
+                    const std::filesystem::path &pack,
+                    const std::filesystem::path &to) {
+    std::error_code error;
+    std::filesystem::create_directories(to, error);
+    if (error) {
+        return false;
+    }
+    std::set<std::filesystem::path> names;
+    for (const auto *directory : {&base, &pack}) {
+        for (const auto &entry : std::filesystem::directory_iterator(*directory, error)) {
+            names.insert(entry.path().filename());
+        }
+    }
+    for (const auto &name : names) {
+        bool inPack = std::filesystem::exists(pack / name, error);
+        bool layered = inPack && std::filesystem::is_directory(pack / name, error) &&
+                       std::filesystem::is_directory(base / name, error);
+        bool linked = layered ? LayerDirectory(base / name, pack / name, to / name) :
+                                LinkEntry((inPack ? pack : base) / name, to / name);
+        if (!linked) {
+            return false;
+        }
+    }
+    return true;
+}
+
 } // namespace
+
+std::filesystem::path PackDirectory(const std::filesystem::path &data, std::string_view pack) {
+    return pack == DEFAULT_PACK ? DefaultAssets(data) : data / "assets" / pack;
+}
+
+std::optional<std::filesystem::path> PackAssets(const std::filesystem::path &data,
+                                                const std::filesystem::path &cache,
+                                                std::string_view pack) {
+    auto directory = PackDirectory(data, pack);
+    std::error_code error;
+    if (pack.empty() || !std::filesystem::is_directory(directory, error)) {
+        return std::nullopt;
+    }
+    if (pack == DEFAULT_PACK) {
+        return directory;
+    }
+    // ponytail: the layers are linked again on every start, a few milliseconds for a pack beside
+    // whole directories of the default pack; a stamp of both packs would skip an unchanged layer.
+    auto layered = cache / "assets" / pack;
+    std::filesystem::remove_all(layered, error);
+    if (!LayerDirectory(DefaultAssets(data), directory, layered)) {
+        return std::nullopt;
+    }
+    return layered;
+}
 
 std::optional<GamePaths> ResolveXdgPaths(const EnvironmentReader &environment,
                                          const std::string &application) {

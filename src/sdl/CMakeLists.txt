@@ -154,12 +154,24 @@ foreach(_release eu jp us)
     VERBATIM)
   list(APPEND _manifest_headers "${_header}")
 endforeach()
+# The images of the cartridges with the branding the PC release removed, embedded for the import.
+set(_source "${CMAKE_CURRENT_SOURCE_DIR}/data/branded-textures.json")
+set(_header "${CMAKE_CURRENT_BINARY_DIR}/data/branded-textures.h")
+add_custom_command(
+  OUTPUT "${_header}"
+  COMMAND "${CMAKE_COMMAND}" -DINPUT=${_source} -DOUTPUT=${_header} -DNAME=BRANDED_TEXTURES -P
+          "${CMAKE_SOURCE_DIR}/cmake/embed.cmake"
+  DEPENDS "${_source}" "${CMAKE_SOURCE_DIR}/cmake/embed.cmake"
+  COMMENT "Embedding the list of the branded images"
+  VERBATIM)
+list(APPEND _manifest_headers "${_header}")
 add_custom_target(coastline_manifests DEPENDS ${_manifest_headers})
 
 # The SHA-1 and the asset chains of the host tools read the cartridge images. The music player of
 # the Nintendo 64 release is shared C.
 add_library(
   coastline_sdl STATIC
+  assetpack.cpp
   carselect.cpp
   config.cpp
   consolesegment.cpp

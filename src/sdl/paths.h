@@ -4,6 +4,7 @@
 #include <functional>
 #include <optional>
 #include <string>
+#include <string_view>
 
 namespace coastline {
 
@@ -57,5 +58,34 @@ bool CreateGamePaths(const GamePaths &paths);
 inline std::filesystem::path DefaultAssets(const std::filesystem::path &data) {
     return data / "assets" / "defaults";
 }
+
+/** The name of the asset pack of the import, the directory assets/defaults. */
+inline constexpr std::string_view DEFAULT_PACK = "default";
+
+/**
+ * The directory of a pack under assets of the data directory: defaults for the default pack, and
+ * the directory of the name for another.
+ *
+ * @param data The data directory of the game.
+ * @param pack The name of the pack.
+ * @return The directory of the pack.
+ */
+std::filesystem::path PackDirectory(const std::filesystem::path &data, std::string_view pack);
+
+/**
+ * The directory the game reads its assets from with a pack selected. The default pack is read in
+ * place. Another pack is layered over the default pack in a directory under @p cache, made again
+ * on each call: an entry of the pack replaces the entry of the same name in the default pack, and
+ * a directory in both is layered in turn. Each entry is a link to the file or the directory it
+ * comes from, or a copy where the file system has no links.
+ *
+ * @param data The data directory of the game.
+ * @param cache The cache directory of the game.
+ * @param pack The name of the pack.
+ * @return The directory, or nothing when the pack does not exist or the directory cannot be made.
+ */
+std::optional<std::filesystem::path> PackAssets(const std::filesystem::path &data,
+                                                const std::filesystem::path &cache,
+                                                std::string_view pack);
 
 } // namespace coastline

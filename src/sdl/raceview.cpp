@@ -560,7 +560,7 @@ struct CarModels {
 };
 
 // A car in a colour: the car, an index of g_apszCarModelPrefixes, its red, green, and blue, and
-// 1 more than the vehicle whose images come from another document, or 0 for the cartridge.
+// 1 more than the vehicle whose images come from another document, or 0 for the asset pack.
 using CarKey = std::array<int, 5>;
 
 // LoadPaintDamageBitmaps(): the 64 by 64 intensities of each level of damage after the first, and
@@ -580,7 +580,7 @@ struct RaceView::State {
     // championship take the colour of each racer they drive for, and a car in a colour not seen
     // before loads while the race runs.
     std::map<CarKey, CarModels> cars;
-    // The documents of the images of the vehicles that do not take those of the cartridge.
+    // The documents of the images of the vehicles that do not take those of the asset pack.
     std::map<int, std::filesystem::path> images;
     std::unique_ptr<RenderModel> startLights;
     std::unique_ptr<MenuText> text;
@@ -619,29 +619,6 @@ std::vector<std::uint8_t> Intensities4(std::span<const unsigned char> pairs) {
         }
     }
     return texels;
-}
-
-// The model of a car of the PC release on a cartridge, by the prefix of its files: the releases of
-// the United States, Japan, and Europe in turn, as the cars of the PC release that the cartridge of
-// the United States does not have are on the Japanese one. None when no cartridge has the car.
-std::optional<std::filesystem::path> CartridgeCar(const std::filesystem::path &defaults,
-                                                  const std::string &prefix) {
-    static constexpr std::array<std::pair<std::string_view, std::string_view>, 4> NAMED{
-        {{"bb", "beach-ball"}, {"cu", "cupra"}, {"hm", "helmet"}, {"mt", "milk-truck"}}};
-    std::string name = "type-" + prefix;
-    for (const auto &[from, to] : NAMED) {
-        if (prefix == from) {
-            name = to;
-        }
-    }
-    for (std::string_view release : {"usa", "jpn", "eur"}) {
-        auto model = defaults / "n64" / release / "cars" / name / "model.gltf";
-        std::error_code error;
-        if (std::filesystem::exists(model, error)) {
-            return model;
-        }
-    }
-    return std::nullopt;
 }
 
 // The flag of an instance of a track that is a tunnel.
@@ -1438,20 +1415,18 @@ RaceView::~RaceView() = default;
 
 namespace {
 
-// The options of the models of a car: its textures those of the cartridge or of another document,
+// The options of the models of a car: its textures those of the asset pack or of another document,
 // painted as SetMaterialColor() paints them, and the car of the first vehicle damaged as
 // LoadVehicleModelFromRom() damages the paint sets of the first model. The paint sets of a car
 // are loaded once, and a computer's car of the same kind shares the damaged sets.
-ModelOptions CarOptions(const std::filesystem::path &defaults,
-                        const std::string &prefix,
-                        const CarKey &key,
+ModelOptions CarOptions(const CarKey &key,
                         const std::optional<std::filesystem::path> &images,
                         const CarDamageMasks &damage) {
     ModelOptions options;
     options.paint = std::array<std::uint8_t, 3>{static_cast<std::uint8_t>(key[1]),
                                                 static_cast<std::uint8_t>(key[2]),
                                                 static_cast<std::uint8_t>(key[3])};
-    options.images = images ? images : CartridgeCar(defaults, prefix);
+    options.images = images;
     if (key[0] == damage.car) {
         int car = key[0];
         options.damage = [car](int set) -> std::optional<ImageDamage> {
@@ -1488,7 +1463,7 @@ CarLevel LoadCarLevel(SceneRenderer &renderer,
     std::string root = "lod" + std::to_string(lod);
     std::string level = root + "-";
     CarLevel parts;
-    ModelOptions options = CarOptions(defaults, prefix, key, images, damage);
+    ModelOptions options = CarOptions(key, images, damage);
     options.optional = lod != 0;
     options.node = root;
     options.parts = [&level](const std::string &n) {
@@ -1522,7 +1497,7 @@ CarModels LoadCarModels(SceneRenderer &renderer,
     auto carFile = defaults / "cars" / (prefix + ".gltf");
     CarModels models;
     models.levels[0] = LoadCarLevel(renderer, defaults, key, 0, images, damage);
-    ModelOptions options = CarOptions(defaults, prefix, key, images, damage);
+    ModelOptions options = CarOptions(key, images, damage);
     options.node = "lod0-wheel0";
     models.wheel = RenderModel::Load(renderer, carFile, options);
     options.node = "lod0-wheelSnow0";

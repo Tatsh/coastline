@@ -1,11 +1,13 @@
-// Host check of the XDG directories, the BossRally.ini reader, the icon file reader, and the volume
-// levels of the SDL game.
+// Host check of the XDG directories, the layers of the asset packs, the BossRally.ini reader, the
+// icon file reader, and the volume levels of the SDL game.
 
 #include <algorithm>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
+#include <fstream>
 #include <iostream>
+#include <iterator>
 #include <map>
 #include <string>
 
@@ -138,11 +140,52 @@ void CheckIconFile() {
           "other names give no size");
 }
 
+void WriteText(const std::filesystem::path &path, const std::string &text) {
+    std::filesystem::create_directories(path.parent_path());
+    std::ofstream(path) << text;
+}
+
+std::string ReadText(const std::filesystem::path &path) {
+    std::ifstream in(path);
+    return std::string(std::istreambuf_iterator<char>(in), {});
+}
+
+void CheckPackAssets() {
+    auto root = std::filesystem::temp_directory_path() / "coastline-sdl-test-packs";
+    std::filesystem::remove_all(root);
+    auto data = root / "data";
+    auto cache = root / "cache";
+    auto defaults = coastline::DefaultAssets(data);
+    WriteText(defaults / "tracks" / "a.png", "default a");
+    WriteText(defaults / "tracks" / "b.png", "default b");
+    WriteText(defaults / "music" / "menu.xm", "menu");
+    WriteText(data / "assets" / "boss" / "tracks" / "a.png", "boss a");
+    WriteText(data / "assets" / "boss" / "extra.txt", "extra");
+
+    Check(coastline::PackAssets(data, cache, "default") == defaults,
+          "the default pack is read in place");
+    Check(!coastline::PackAssets(data, cache, "missing"), "a missing pack gives nothing");
+    auto boss = coastline::PackAssets(data, cache, "boss");
+    Check(boss && ReadText(*boss / "tracks" / "a.png") == "boss a", "a file of the pack replaces");
+    Check(boss && ReadText(*boss / "tracks" / "b.png") == "default b",
+          "a directory of both packs is layered");
+    Check(boss && ReadText(*boss / "music" / "menu.xm") == "menu",
+          "a directory of the default pack alone is read");
+    Check(boss && ReadText(*boss / "extra.txt") == "extra", "a file of the pack alone is read");
+    std::filesystem::remove(data / "assets" / "boss" / "extra.txt");
+    boss = coastline::PackAssets(data, cache, "boss");
+    Check(boss && !std::filesystem::exists(*boss / "extra.txt"), "the layers are made again");
+    Check(ReadText(defaults / "tracks" / "a.png") == "default a",
+          "the default pack is not written");
+    std::filesystem::remove_all(root);
+}
+
 } // namespace
 
 int main() {
     CheckIconFile();
     CheckVolumeLevels();
+    CheckPackAssets();
 
     auto defaults =
         coastline::ResolveXdgPaths(Environment({{"HOME", "/home/player"}}), "coastline");

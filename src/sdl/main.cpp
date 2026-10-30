@@ -24,6 +24,7 @@
 #include <sys/resource.h>
 #endif
 
+#include "assetpack.h"
 #include "common/framestatistics.h"
 #include "common/game.h"
 #include "common/hud.h"
@@ -317,17 +318,15 @@ std::optional<std::filesystem::path> ScreenshotPath(const std::filesystem::path 
     return directory / name;
 }
 
-// The XM module of the music pack default for a module of the USA cartridge.
-std::optional<std::vector<std::uint8_t>> LoadMusicModule(const std::filesystem::path &data,
+// The XM module of the asset pack for a module of the USA cartridge.
+std::optional<std::vector<std::uint8_t>> LoadMusicModule(const std::filesystem::path &assets,
                                                          std::uint32_t offset) {
     const auto *module =
         std::ranges::find(coastline::USA_MUSIC_MODULES, offset, &coastline::UsaMusicModule::offset);
     if (module == std::end(coastline::USA_MUSIC_MODULES)) {
         return std::nullopt;
     }
-    std::ifstream file(coastline::DefaultAssets(data) / "music" /
-                           (std::string(module->name) + ".xm"),
-                       std::ios::binary);
+    std::ifstream file(assets / "music" / (std::string(module->name) + ".xm"), std::ios::binary);
     if (!file) {
         SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
                     "The USA cartridge has not been imported, and the music is silent.");
@@ -336,13 +335,13 @@ std::optional<std::vector<std::uint8_t>> LoadMusicModule(const std::filesystem::
     return std::vector<std::uint8_t>(std::istreambuf_iterator<char>(file), {});
 }
 
-std::optional<std::vector<std::uint8_t>> LoadMusicByIndex(const std::filesystem::path &data,
+std::optional<std::vector<std::uint8_t>> LoadMusicByIndex(const std::filesystem::path &assets,
                                                           int index) {
     if (index < 0 || index >= static_cast<int>(std::size(coastline::USA_MUSIC_MODULES))) {
         SDL_LogError(SDL_LOG_CATEGORY_AUDIO, "There is no music module %d.", index);
         return std::nullopt;
     }
-    return LoadMusicModule(data, coastline::USA_MUSIC_MODULES[index].offset);
+    return LoadMusicModule(assets, coastline::USA_MUSIC_MODULES[index].offset);
 }
 
 // A press of --press: the buttons of a controller pressed from a frame for a number of frames,
@@ -796,6 +795,10 @@ int ImportFromCommandLine(const argparse::ArgumentParser &parser,
             status = EXIT_FAILURE;
         }
     }
+    if (auto failure = coastline::CurateAssetPacks(coastline::DefaultAssets(data))) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", failure->c_str());
+        status = EXIT_FAILURE;
+    }
     coastline::StopGameLog();
     return status;
 }
@@ -834,6 +837,10 @@ int main(int argc, char *argv[]) {
     argparse::ArgumentParser parser(APPLICATION, COASTLINE_VERSION);
     parser.add_description("Top Gear Rally and Boss Rally in one stand-alone game.");
     parser.add_argument("--data-dir").help("read the game data from this directory");
+    parser.add_argument("--asset-pack")
+        .help("asset pack for this run, not saved: default, boss for the images of the PC "
+              "release in place of the branded images of the cartridges, or the name of a mod "
+              "pack under assets of the data directory, read over the default pack");
     parser.add_argument("--width").help("width of the window in pixels").scan<'i', int>();
     parser.add_argument("--height").help("height of the window in pixels").scan<'i', int>();
     parser.add_argument("--fullscreen").help("cover the display").flag();
@@ -991,22 +998,6 @@ int main(int argc, char *argv[]) {
         coastline::StopGameLog();
         return checked;
     }
-    auto music = LoadMusicByIndex(paths->data, parser.get<int>("--music"));
-    if (auto wav = parser.present("--music-wav")) {
-        if (!music) {
-            coastline::StopGameLog();
-            return EXIT_FAILURE;
-        }
-        coastline::N64Audio audio;
-        audio.Play(*music);
-        auto samples = audio.Render(static_cast<std::size_t>(parser.get<int>("--music-seconds")) *
-                                    coastline::N64_AUDIO_RATE);
-        bool written = coastline::WriteWav(*wav, samples, coastline::N64_AUDIO_RATE);
-        SDL_Log(written ? "Wrote %s." : "%s cannot be written.", wav->c_str());
-        coastline::StopGameLog();
-        return written ? EXIT_SUCCESS : EXIT_FAILURE;
-    }
-
     auto configPath = paths->config / "BossRally.ini";
     auto config = coastline::GameConfig::Load(configPath);
     // Every setting is written to the file on the first run: the keys of the PC release first,
@@ -1035,13 +1026,47 @@ int main(int argc, char *argv[]) {
                                               {"Game", "PlaySFX", "1"},
                                               {"Game", "WaitForStart", "0"},
                                               {"Game", "Music", "N64"},
-                                              {"Game", "XmMusicGain", "1.5"},
+                                              {"Game", "AssetPack", "default"},
                                               {"Controls", "Preset", "Default"},
                                               {"Controls", "Player1", "auto"},
                                               {"Controls", "Player2", "auto"}}) {
         if (!config.Get(section, key)) {
             config.Set(section, key, value);
         }
+    }
+    // The assets of the pack of the command line or of the configuration, else of the default pack.
+    std::string pack =
+        parser.present("--asset-pack")
+            .value_or(
+                config.Get("Game", "AssetPack").value_or(std::string(coastline::DEFAULT_PACK)));
+    auto packAssets = coastline::PackAssets(paths->data, paths->cache, pack);
+    if (!packAssets) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                    "The asset pack %s cannot be read, and the default pack is used.",
+                    pack.c_str());
+        pack = coastline::DEFAULT_PACK;
+        packAssets = coastline::DefaultAssets(paths->data);
+    }
+    const std::filesystem::path assets = *packAssets;
+    SDL_Log("Asset pack: %s (%s)", pack.c_str(), assets.string().c_str());
+    const nlohmann::json packSettings = coastline::PackSettings(paths->data, pack);
+    // XmMusicGain of the configuration replaces the gain of the pack when the user writes it.
+    const float musicGain = config.GetFloat(
+        "Game", "XmMusicGain", packSettings.value("xmMusicGain", coastline::DEFAULT_XM_MUSIC_GAIN));
+    auto music = LoadMusicByIndex(assets, parser.get<int>("--music"));
+    if (auto wav = parser.present("--music-wav")) {
+        if (!music) {
+            coastline::StopGameLog();
+            return EXIT_FAILURE;
+        }
+        coastline::N64Audio audio;
+        audio.Play(*music);
+        auto samples = audio.Render(static_cast<std::size_t>(parser.get<int>("--music-seconds")) *
+                                    coastline::N64_AUDIO_RATE);
+        bool written = coastline::WriteWav(*wav, samples, coastline::N64_AUDIO_RATE);
+        SDL_Log(written ? "Wrote %s." : "%s cannot be written.", wav->c_str());
+        coastline::StopGameLog();
+        return written ? EXIT_SUCCESS : EXIT_FAILURE;
     }
     // The keys of the actions are not written, as each key present replaces its preset binding.
     coastline::LoadControls(config);
@@ -1063,14 +1088,13 @@ int main(int argc, char *argv[]) {
             SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "SDL did not start: %s", SDL_GetError());
         } else if (auto window = coastline::GpuWindow::Create("Coastline",
                                                               DisplayOptionsFrom(config, parser))) {
-            SetWindowIcon(window->Window(), coastline::DefaultAssets(paths->data));
+            SetWindowIcon(window->Window(), assets);
             coastline::SetWideMenus(config.GetBoolean("Video", "WideMenus", false));
             coastline::SetFieldOfViewScale(config.GetFloat("Video", "FieldOfView", 1.0f));
             coastline::InputBindings input;
             coastline::N64Audio audio;
             bool playMusic = config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice();
-            // The modules of the cartridge play quieter than the CD audio of the PC release.
-            audio.SetMusicGain(config.GetFloat("Game", "XmMusicGain", 1.5f));
+            audio.SetMusicGain(musicGain);
             coastline::ShareRaceMusicPlayer(playMusic ? &audio : nullptr);
             if (music && playMusic) {
                 audio.Play(*music);
@@ -1104,16 +1128,15 @@ int main(int argc, char *argv[]) {
             // The screen of the front end that shows.
             enum class FrontEnd { Intro, AttractDemo, MainMenu, Race, Credits };
             FrontEnd frontEnd = FrontEnd::Intro;
-            // The races run a 30th of a second a step, from the default assets.
+            // The races run a 30th of a second a step, from the assets of the pack.
             constexpr float RACE_STEP = 1.0f / 30.0f;
-            const std::filesystem::path defaults = coastline::DefaultAssets(paths->data);
             std::unique_ptr<coastline::RaceView> raceView;
             bool raceDataOpen = false;
-            // The race engine reads its files from the default assets.
+            // The race engine reads its files from the assets of the pack.
             auto openRaceData = [&]() {
                 if (!raceDataOpen) {
                     std::error_code error;
-                    std::filesystem::current_path(defaults, error);
+                    std::filesystem::current_path(assets, error);
                     coastline::OpenRaceData(config.GetBoolean("Game", "PlaySFX", true));
                     raceDataOpen = true;
                 }
@@ -1145,15 +1168,14 @@ int main(int argc, char *argv[]) {
             } else if (scene.starts_with("model:")) {
                 std::filesystem::path model = scene.substr(6);
                 if (model.is_relative()) {
-                    model = coastline::DefaultAssets(paths->data) / model;
+                    model = assets / model;
                 }
                 modelView = coastline::ModelView::Create(*window, model);
             } else if (scene == "font" || scene.starts_with("font:")) {
                 sceneRenderer = coastline::SceneRenderer::Create(*window);
                 if (sceneRenderer) {
-                    fontSample = coastline::MenuText::Load(*sceneRenderer,
-                                                           coastline::DefaultAssets(paths->data) /
-                                                               "n64" / "usa" / "fonts");
+                    fontSample =
+                        coastline::MenuText::Load(*sceneRenderer, assets / "n64" / "usa" / "fonts");
                 }
                 fontSampleText = scene == "font" ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 "
                                                    ",.?!#$&-+;:'\"/*=@" :
@@ -1161,7 +1183,7 @@ int main(int argc, char *argv[]) {
             } else if (scene.empty() || scene == "intro" || scene == "main-menu" || startInDemo) {
                 sceneRenderer = coastline::SceneRenderer::Create(*window);
                 if (sceneRenderer) {
-                    auto release = coastline::DefaultAssets(paths->data) / "n64" / "usa";
+                    auto release = assets / "n64" / "usa";
                     intro = coastline::Intro::Load(*sceneRenderer, release);
                     frameRateText = coastline::MenuText::Load(*sceneRenderer, release / "fonts");
                     mainMenu = coastline::Menus::Load(
@@ -1362,7 +1384,7 @@ int main(int argc, char *argv[]) {
                                                              coastline::AttractDemoColor(),
                                                              std::nullopt};
                             raceView = coastline::RaceView::Load(*sceneRenderer,
-                                                                 defaults,
+                                                                 assets,
                                                                  coastline::AttractDemoTrack(),
                                                                  {&demoCar, 1});
                             raceTime = 0.0f;
@@ -1515,7 +1537,7 @@ int main(int argc, char *argv[]) {
                         setup.waitForStart = config.GetBoolean("Game", "WaitForStart", false);
                         setup.autopilot = parser.get<bool>("--autopilot");
                         coastline::StartRace(
-                            setup, defaults / "music", config.Get("Game", "Music") == "CD");
+                            setup, assets / "music", config.Get("Game", "Music") == "CD");
                         std::vector<coastline::RaceCar> cars = coastline::RaceCars();
                         for (std::size_t i = 0; i < cars.size() && i < setup.cars.size(); ++i) {
                             if (static_cast<int>(i) < setup.players) {
@@ -1523,7 +1545,7 @@ int main(int argc, char *argv[]) {
                             }
                         }
                         raceView = coastline::RaceView::Load(
-                            *sceneRenderer, defaults, coastline::RaceTrack(), cars);
+                            *sceneRenderer, assets, coastline::RaceTrack(), cars);
                         raceTime = 0.0f;
                         if (raceView) {
                             frontEnd = FrontEnd::Race;
