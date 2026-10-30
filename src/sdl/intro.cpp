@@ -473,7 +473,17 @@ void Intro::Draw(SceneRenderer &renderer) const {
         style.colors = std::array<int, 6>{alpha, alpha, alpha, alpha, alpha, alpha};
         if (s.buildDate) {
             style.size = 10;
+#ifdef ENABLE_PATCHES
+            // The patched cartridge shows the project, the commit, and the time of the build.
+            s.text->Draw(renderer,
+                         "github.com/Tatsh/coastline " COASTLINE_GIT_SHA " " __DATE__ " " __TIME__,
+                         160,
+                         40,
+                         style,
+                         flat);
+#else
             s.text->Draw(renderer, "25Aug97 11:46:52", 160, 40, style, flat);
+#endif /* ENABLE_PATCHES */
         }
         style.size = 7;
         s.text->Draw(renderer,

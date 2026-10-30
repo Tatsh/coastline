@@ -811,8 +811,12 @@ int main(int argc, char *argv[]) {
                     std::uint16_t secondPressed = secondHeld & ~lastSecondButtons;
                     lastSecondButtons = secondHeld;
                     if (frontEnd == FrontEnd::Intro) {
+                        // Shift and I on the keyboard hold every C button at once.
+                        const bool *keys = SDL_GetKeyboardState(nullptr);
+                        bool shiftI =
+                            keys[SDL_SCANCODE_I] && (SDL_GetModState() & SDL_KMOD_SHIFT) != 0;
                         coastline::IntroButtons buttons{(pressed & CHOOSE) != 0,
-                                                        (held & C_BUTTONS) == C_BUTTONS};
+                                                        (held & C_BUTTONS) == C_BUTTONS || shiftI};
                         coastline::IntroEnd end = startInDemo ? coastline::IntroEnd::AttractDemo :
                                                                 intro->Update(seconds, buttons);
                         startInDemo = false;
