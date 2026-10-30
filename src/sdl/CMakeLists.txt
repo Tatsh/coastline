@@ -76,6 +76,7 @@ add_library(
   coastline_sdl STATIC
   config.cpp
   earsound.cpp
+  enginecheck.cpp
   frontend.cpp
   ghostfile.cpp
   gpu.cpp

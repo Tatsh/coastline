@@ -26,6 +26,7 @@
 
 #include "config.h"
 #include "earsound.h"
+#include "enginecheck.h"
 #include "gpu.h"
 #include "importer.h"
 #include "input.h"
@@ -346,6 +347,10 @@ int main(int argc, char *argv[]) {
     parser.add_argument("--sound-whole")
         .help("read the whole file of --play-sound before it plays, rather than streaming it")
         .flag();
+    parser.add_argument("--check-engine")
+        .help("load a track, a car, and the sounds and music of a race from the imported data "
+              "through the race engine, write the results to the log, and exit")
+        .flag();
     parser.add_argument("--scene").help(
         "scene to start in: intro, the default, main-menu, renderer-test, or model:FILE.gltf for a "
         "converted "
@@ -408,6 +413,11 @@ int main(int argc, char *argv[]) {
     }
     if (parser.is_used("--play-sound")) {
         return PlaySoundFromCommandLine(parser, paths->data);
+    }
+    if (parser.get<bool>("--check-engine")) {
+        int checked = coastline::CheckEngine(coastline::DefaultAssets(paths->data));
+        coastline::StopGameLog();
+        return checked;
     }
     auto music = LoadMusicByIndex(paths->data, parser.get<int>("--music"));
     if (auto wav = parser.present("--music-wav")) {
