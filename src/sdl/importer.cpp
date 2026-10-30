@@ -904,6 +904,142 @@ std::optional<std::string> WriteMenuChoiceMarker(const std::filesystem::path &de
     return std::nullopt;
 }
 
+// The addresses of the tables of the track menu and the championship of each release:
+// g_aTrackDescriptors, g_apWeatherMenuItems, g_dwNumTracks, g_dwCarCount, g_aCarModels, and
+// g_SeasonTable.
+struct TrackMenuAddresses {
+    std::uint32_t trackDescriptors;
+    std::uint32_t weatherMenuItems;
+    std::uint32_t numTracks;
+    std::uint32_t carCount;
+    std::uint32_t carModels;
+    std::uint32_t seasonTable;
+};
+constexpr TrackMenuAddresses USA_TRACK_MENU{
+    0x80270854, 0x802722A4, 0x8028AE04, 0x8028AE08, 0x8028AE0C, 0x8028B944};
+constexpr TrackMenuAddresses EUR_TRACK_MENU{
+    0x80272834, 0x80274284, 0x8028D0B4, 0x8028D0B8, 0x8028D0BC, 0x8028DBF4};
+constexpr TrackMenuAddresses JPN_TRACK_MENU{
+    0x802722F4, 0x80273D34, 0x8028CAE4, 0x8028CAE8, 0x8028CAEC, 0x8028D624};
+
+// Writes the items of the tracks on the track menu, the names of the weathers, the cars, and the
+// seasons of the championship as data/track-menu.json. Each track gives its name, its MENU_ITEM_
+// flags, whether its geometry exists, and the glTF file of its model in the import. Each car gives
+// its name and its directory in the import, and each season the indices of its two cars.
+std::optional<std::string> WriteTrackMenu(const std::filesystem::path &destination,
+                                          std::span<const std::uint8_t> segment,
+                                          std::span<const ManifestAsset> assets,
+                                          RomRelease release) {
+    constexpr std::uint32_t SEGMENT_BASE = 0x80200000;
+    constexpr std::uint32_t TRACK_DESCRIPTOR = 0x17C;
+    constexpr std::uint32_t TRACK_DESCRIPTORS = 11;
+    constexpr std::uint32_t WEATHERS = 5;
+    constexpr std::uint32_t CAR_MODEL = 0x60;
+    constexpr std::uint32_t SEASON = 0x1C;
+    constexpr std::uint32_t SEASONS = 6;
+    constexpr std::uint32_t SEASON_RACES = 4;
+    const TrackMenuAddresses &at = release == RomRelease::Usa ? USA_TRACK_MENU :
+                                   release == RomRelease::Eur ? EUR_TRACK_MENU :
+                                                                JPN_TRACK_MENU;
+    auto inside = [&](std::uint32_t address, std::uint32_t size) {
+        return address >= SEGMENT_BASE && address - SEGMENT_BASE + size <= segment.size();
+    };
+    auto word = [&](std::uint32_t address) { return Big32(&segment[address - SEGMENT_BASE]); };
+    auto text = [&](std::uint32_t address) -> std::optional<std::string> {
+        if (!inside(address, 1)) {
+            return std::nullopt;
+        }
+        auto rest = segment.subspan(address - SEGMENT_BASE);
+        auto end = std::ranges::find(rest, 0);
+        if (end == rest.end()) {
+            return std::nullopt;
+        }
+        return std::string(rest.begin(), end);
+    };
+    if (!inside(at.trackDescriptors, TRACK_DESCRIPTOR * TRACK_DESCRIPTORS) ||
+        !inside(at.weatherMenuItems, 4 * WEATHERS) || !inside(at.numTracks, 4) ||
+        !inside(at.carCount, 4) || !inside(at.seasonTable, SEASON * SEASONS)) {
+        return std::string("The tables of the track menu are outside the main segment.");
+    }
+    nlohmann::ordered_json tracks = nlohmann::ordered_json::array();
+    for (std::uint32_t i = 0; i < TRACK_DESCRIPTORS; ++i) {
+        std::uint32_t entry = at.trackDescriptors + i * TRACK_DESCRIPTOR;
+        auto name = text(word(entry));
+        std::uint32_t modelStart = word(entry + 0x0C);
+        auto asset = std::ranges::find(assets, modelStart, &ManifestAsset::romStart);
+        if (!name || asset == assets.end()) {
+            return std::format("Track {} of the track menu has no name or no model.", i);
+        }
+        tracks.push_back({{"name", *name},
+                          {"flags", word(entry + 0x04)},
+                          {"exists", word(entry + 0x18) != 0},
+                          {"model", asset->name + ".gltf"}});
+    }
+    nlohmann::ordered_json weathers = nlohmann::ordered_json::array();
+    for (std::uint32_t i = 0; i < WEATHERS; ++i) {
+        std::uint32_t item = word(at.weatherMenuItems + i * 4);
+        auto name = inside(item, 4) ? text(word(item)) : std::nullopt;
+        if (!name) {
+            return std::format("Weather {} of the menus has no name.", i);
+        }
+        weathers.push_back(*name);
+    }
+    std::uint32_t carCount = word(at.carCount);
+    if (!inside(at.carModels, CAR_MODEL * carCount)) {
+        return std::string("The cars are outside the main segment.");
+    }
+    // The directory of a car in the import is its name in lowercase, each run of other characters
+    // a hyphen.
+    nlohmann::ordered_json cars = nlohmann::ordered_json::array();
+    for (std::uint32_t i = 0; i < carCount; ++i) {
+        auto name = text(word(at.carModels + i * CAR_MODEL));
+        if (!name) {
+            return std::format("Car {} has no name.", i);
+        }
+        std::string directory;
+        for (char c : *name) {
+            if (std::isalnum(static_cast<unsigned char>(c))) {
+                directory += static_cast<char>(std::tolower(static_cast<unsigned char>(c)));
+            } else if (!directory.empty() && directory.back() != '-') {
+                directory += '-';
+            }
+        }
+        while (!directory.empty() && directory.back() == '-') {
+            directory.pop_back();
+        }
+        cars.push_back({{"name", *name}, {"directory", "cars/" + directory}});
+    }
+    nlohmann::ordered_json seasons = nlohmann::ordered_json::array();
+    for (std::uint32_t i = 0; i < SEASONS; ++i) {
+        std::uint32_t entry = at.seasonTable + i * SEASON;
+        const std::uint8_t *bytes = &segment[entry - SEGMENT_BASE];
+        auto name = text(word(entry));
+        auto subtitle = text(word(entry + 4));
+        if (!name || !subtitle || bytes[16] >= cars.size() || bytes[17] >= cars.size()) {
+            return std::format("Season {} of the championship is not readable.", i);
+        }
+        nlohmann::ordered_json races = nlohmann::ordered_json::array();
+        for (std::uint32_t race = 0; race < SEASON_RACES; ++race) {
+            races.push_back({bytes[20 + race * 2], bytes[21 + race * 2]});
+        }
+        seasons.push_back({{"name", *name},
+                           {"subtitle", *subtitle},
+                           {"raceCount", static_cast<std::int32_t>(word(entry + 8))},
+                           {"pointsNeeded", static_cast<std::int32_t>(word(entry + 12))},
+                           {"cars", {bytes[16], bytes[17]}},
+                           {"unlocks", bytes[18] << 8 | bytes[19]},
+                           {"races", races}});
+    }
+    nlohmann::ordered_json menu{{"numTracks", static_cast<std::int32_t>(word(at.numTracks))},
+                                {"tracks", tracks},
+                                {"weathers", weathers},
+                                {"cars", cars},
+                                {"seasons", seasons}};
+    std::ofstream(destination / "data" / "track-menu.json", std::ios::trunc)
+        << menu.dump(2, ' ', false, nlohmann::ordered_json::error_handler_t::replace) << '\n';
+    return std::nullopt;
+}
+
 // Each ghost recording of the demos as JSON of the same name, in place of the file once the JSON
 // builds the same bytes.
 std::optional<std::string> ConvertGhostRecordings(const std::filesystem::path &dataDirectory) {
@@ -1650,9 +1786,13 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     if (auto failure = WriteAttractDemo(*bytes, *release, destination)) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "%s", failure->c_str());
     }
-    // Replaces each model of the menu items with a glTF file of the same name.
+    if (auto failure = WriteTrackMenu(destination, segment, assets, *release)) {
+        return std::unexpected(*failure);
+    }
+    // Replaces each model of the menu items and of the tracks on the track menu with a glTF file
+    // of the same name.
     for (const ManifestAsset &asset : assets) {
-        if (!asset.name.starts_with("menu-items/")) {
+        if (!asset.name.starts_with("menu-items/") && !asset.name.ends_with("/menu-model")) {
             continue;
         }
         auto model = destination / (asset.name + ".bin");
