@@ -4,9 +4,12 @@
 #include <PR/os.h>
 
 #include "common/frontendstate.h"
+#include "common/hudassets.h"
 #include "common/inputpoll.h"
+#include "common/racephases.h"
 #include "common/render.h"
 #include "common/renderbackend.h"
+#include "common/session.h"
 #include "common/settings.h"
 #include "common/snapshot.h"
 #include "common/system.h"
