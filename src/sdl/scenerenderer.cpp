@@ -187,9 +187,9 @@ struct FragmentUniforms {
     float ambient[4];
     float directional[4];
     float texel1Transform[4];
-    float shadowCenter[4];
-    float shadowForward[4];
-    float shadowColor[4];
+    float shadowCenter[MAX_CAR_SHADOWS][4];
+    float shadowForward[MAX_CAR_SHADOWS][4];
+    float shadowColor[MAX_CAR_SHADOWS][4];
     float fogColor[4] = {};
 };
 
@@ -543,7 +543,7 @@ struct ModelDraw {
     bool depth;
     std::optional<SDL_Rect> scissor;
     std::optional<Reflection> reflection;
-    std::optional<CarShadow> shadow;
+    std::vector<CarShadow> shadows;
     std::optional<Highlight> highlight;
     DrawState state;
     // The instances of a track the draw draws in their order, or none for every node in its own.
@@ -1423,7 +1423,7 @@ void SceneRenderer::DrawModel(const RenderModel &model,
                                           depth,
                                           scissor,
                                           std::nullopt,
-                                          std::nullopt,
+                                          {},
                                           std::nullopt,
                                           m_state->Current(),
                                           std::nullopt});
@@ -1443,7 +1443,7 @@ void SceneRenderer::DrawReflectingModel(const RenderModel &model,
                                           true,
                                           scissor,
                                           reflection,
-                                          std::nullopt,
+                                          {},
                                           std::nullopt,
                                           m_state->Current(),
                                           std::nullopt});
@@ -1454,7 +1454,7 @@ void SceneRenderer::DrawShadowedModel(const RenderModel &model,
                                       const Matrix4 &viewProjection,
                                       const Lighting &lighting,
                                       std::vector<int> instances,
-                                      std::optional<CarShadow> shadow) {
+                                      std::vector<CarShadow> shadows) {
     m_state->draws.emplace_back(ModelDraw{&model,
                                           world,
                                           viewProjection,
@@ -1463,7 +1463,7 @@ void SceneRenderer::DrawShadowedModel(const RenderModel &model,
                                           true,
                                           std::nullopt,
                                           std::nullopt,
-                                          std::move(shadow),
+                                          std::move(shadows),
                                           std::nullopt,
                                           m_state->Current(),
                                           std::move(instances)});
@@ -1481,7 +1481,7 @@ void SceneRenderer::DrawHighlight(const RenderModel &model,
                                           true,
                                           std::nullopt,
                                           std::nullopt,
-                                          std::nullopt,
+                                          {},
                                           highlight,
                                           m_state->Current(),
                                           std::nullopt});
@@ -1603,7 +1603,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                              SDL_GPUBuffer *targets,
                              bool depthTest,
                              const Reflection *reflection,
-                             const CarShadow *shadow) {
+                             std::span<const CarShadow *const> shadows) {
         bool ghost = drawState->ghost;
         // An opaque primitive whose texels are cut by their alpha covers the samples of a pixel by
         // its alpha.
@@ -1651,22 +1651,26 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             std::ranges::copy(drawState->fog->color, fragmentUniforms.fogColor);
             fragmentUniforms.fogColor[3] = drawState->fog->range;
         }
-        if (shadow != nullptr) {
-            float length = std::hypot(shadow->forward[0], shadow->forward[1]);
-            fragmentUniforms.shadowCenter[0] = shadow->x;
-            fragmentUniforms.shadowCenter[1] = shadow->y;
-            fragmentUniforms.shadowCenter[2] = shadow->along;
-            fragmentUniforms.shadowCenter[3] = shadow->across;
-            fragmentUniforms.shadowForward[0] = length > 0.0f ? shadow->forward[0] / length : 1.0f;
-            fragmentUniforms.shadowForward[1] = length > 0.0f ? shadow->forward[1] / length : 0.0f;
-            fragmentUniforms.shadowForward[2] = 1.0f;
-            std::ranges::copy(shadow->color, fragmentUniforms.shadowColor);
+        for (std::size_t i = 0; i < shadows.size() && i < MAX_CAR_SHADOWS; ++i) {
+            const CarShadow &shadow = *shadows[i];
+            float length = std::hypot(shadow.forward[0], shadow.forward[1]);
+            fragmentUniforms.shadowCenter[i][0] = shadow.x;
+            fragmentUniforms.shadowCenter[i][1] = shadow.y;
+            fragmentUniforms.shadowCenter[i][2] = shadow.along;
+            fragmentUniforms.shadowCenter[i][3] = shadow.across;
+            fragmentUniforms.shadowForward[i][0] =
+                length > 0.0f ? shadow.forward[0] / length : 1.0f;
+            fragmentUniforms.shadowForward[i][1] =
+                length > 0.0f ? shadow.forward[1] / length : 0.0f;
+            fragmentUniforms.shadowForward[i][2] = 1.0f;
+            std::ranges::copy(shadow.color, fragmentUniforms.shadowColor[i]);
         }
         SDL_PushGPUFragmentUniformData(commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
         std::array<SDL_GPUTextureSamplerBinding, 3> bindings{
             {{s.white, s.plainSampler}, {s.white, s.plainSampler}, {s.white, s.plainSampler}}};
-        if (shadow != nullptr) {
-            bindings[2] = {shadow->texture->m_texture, shadow->texture->m_sampler};
+        // The shadows of every car take the one texture.
+        if (!shadows.empty()) {
+            bindings[2] = {shadows[0]->texture->m_texture, shadows[0]->texture->m_sampler};
         }
         if (primitive.texture && *primitive.texture < model.textures.size()) {
             auto [image, sampler] = model.textures[*primitive.texture];
@@ -1805,10 +1809,15 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                 targets = mesh.targets;
             }
             Lighting lighting = TrackInstanceLighting(draw.lighting, placed.flags);
-            // The shadow of the car falls on the instances near it.
-            bool shaded = draw.shadow && draw.shadow->texture != nullptr && placed.instance >= 0 &&
-                          std::ranges::find(draw.shadow->instances, placed.instance) !=
-                              draw.shadow->instances.end();
+            // The shadow of each car falls on the instances near it.
+            std::vector<const CarShadow *> shaded;
+            for (const CarShadow &shadow : draw.shadows) {
+                if (shadow.texture != nullptr && placed.instance >= 0 &&
+                    std::ranges::contains(shadow.instances, placed.instance) &&
+                    shaded.size() < MAX_CAR_SHADOWS) {
+                    shaded.push_back(&shadow);
+                }
+            }
             for (const Primitive &primitive : mesh.primitives) {
                 if (draw.highlight) {
                     // The highlight adds to the opaque parts drawn before it, in their place.
@@ -1853,7 +1862,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                                   targets,
                                   draw.depth,
                                   reflection,
-                                  shaded ? &*draw.shadow : nullptr);
+                                  shaded);
                 }
             }
         }

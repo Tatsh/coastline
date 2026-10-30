@@ -6,6 +6,7 @@
  */
 
 #include <array>
+#include <cstddef>
 #include <cstdint>
 #include <filesystem>
 #include <functional>
@@ -127,6 +128,9 @@ struct CarShadow {
     std::array<float, 4> color{};             /*!< The colour the shade blends towards. */
     std::vector<int> instances; /*!< The instances of the track the shadow falls on. */
 };
+
+/** The most shadows of cars that fall on an instance of a track. */
+inline constexpr std::size_t MAX_CAR_SHADOWS = 4;
 
 /**
  * The pose of a vertex animation at a time, as the console blends its keys.
@@ -482,22 +486,22 @@ public:
                        const Highlight &highlight);
 
     /**
-     * Draw instances of a track in an order, with the shadow of a car on the instances near the
-     * car.
+     * Draw instances of a track in an order, with the shadows of cars on the instances near them.
      *
      * @param model The model of the track.
      * @param world The place of the model.
      * @param viewProjection The camera and its projection, to a depth from 0 to 1.
      * @param lighting The lights of the model.
      * @param instances The instances drawn, in their order, with -1 for the nodes of no instance.
-     * @param shadow The shadow of the car, or none.
+     * @param shadows The shadows of the cars, laid on an instance one after another in their order,
+     * the first MAX_CAR_SHADOWS of those that fall on it.
      */
     void DrawShadowedModel(const RenderModel &model,
                            const Matrix4 &world,
                            const Matrix4 &viewProjection,
                            const Lighting &lighting,
                            std::vector<int> instances,
-                           std::optional<CarShadow> shadow);
+                           std::vector<CarShadow> shadows);
 
     /**
      * Draw flat quads over everything drawn before them, blended by their alpha.

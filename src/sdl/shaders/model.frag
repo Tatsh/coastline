@@ -28,12 +28,13 @@ layout(set = 3, binding = 0) uniform Material {
     // The scale in xy and the offset in zw from the texture coordinate of the first texel to the
     // second, which a glyph samples its gradient by.
     vec4 texel1Transform;
-    // The shadow of a car on the track, as RenderTrackInstance() lays it on the ground: the place
-    // of the car in xy and the scales along and across it in zw, its heading in xy and in z 1
-    // where the shadow falls on the fragment, and its colour, the fog by the fog of the car.
-    vec4 shadowCenter;
-    vec4 shadowForward;
-    vec4 shadowColor;
+    // The shadows of as many as 4 cars on the track, as RenderTrackInstance() lays each on the
+    // ground in turn: the place of the car in xy and the scales along and across it in zw, its
+    // heading in xy and in z 1 where the shadow falls on the fragment, and its colour, the fog by
+    // the fog of the car.
+    vec4 shadowCenter[4];
+    vec4 shadowForward[4];
+    vec4 shadowColor[4];
     // The colour of the fog, and in w its range, or 0 where there is no fog.
     vec4 fogColor;
 };
@@ -130,18 +131,21 @@ void main() {
     } else if (color.a < flags.x) {
         discard;
     }
-    if (shadowForward.z > 0.5) {
+    for (int i = 0; i < 4; ++i) {
+        if (shadowForward[i].z <= 0.5) {
+            continue;
+        }
         // The texture lies along the car on the ground, centred under it, 1024 to its width, and
         // a texel of less than 8 draws nothing, as the threshold of the blend colour cuts it.
-        vec2 offset = inWorld.xy - shadowCenter.xy;
-        vec2 forward = shadowForward.xy;
-        vec2 st = (vec2(shadowCenter.z * dot(offset, forward),
-                        shadowCenter.w * dot(offset, vec2(-forward.y, forward.x))) +
+        vec2 offset = inWorld.xy - shadowCenter[i].xy;
+        vec2 forward = shadowForward[i].xy;
+        vec2 st = (vec2(shadowCenter[i].z * dot(offset, forward),
+                        shadowCenter[i].w * dot(offset, vec2(-forward.y, forward.x))) +
                    512.0) /
                   1024.0;
         float shade = texture(shadowMap, clamp(st, 0.0, 1.0)).a;
         if (shade * 255.0 >= 8.0) {
-            color.rgb = mix(color.rgb, shadowColor.rgb, shade);
+            color.rgb = mix(color.rgb, shadowColor[i].rgb, shade);
         }
     }
     if (fogColor.w > 0.0) {

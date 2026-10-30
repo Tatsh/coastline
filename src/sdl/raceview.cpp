@@ -757,17 +757,12 @@ void DrawSkidMarks(SceneRenderer &renderer,
     renderer.DrawQuads(corners, material, viewProjection, true);
 }
 
-// The shadow of a car as RenderTrackInstance() lays it on the instances near the car, or none
-// where the race does not draw it: with the shadows off, from the mirror, or from the cockpit or
-// the bumper of the car.
-std::optional<CarShadow> ShadowOf(const RenderTexture *texture, const Vehicle &car) {
-    const CameraFrame *active = car.GetActiveCamera();
-    const auto &cameras = car.GetCameras();
-    if (texture == nullptr || !g_GlobalRallyConfig.bCarShadowSelection ||
-        active == &cameras[VEHICLE_CAMERA_MIRROR] || active == &cameras[VEHICLE_CAMERA_COCKPIT] ||
-        active == &cameras[VEHICLE_CAMERA_BUMPER]) {
-        return std::nullopt;
-    }
+// The shadow of a car as RenderTrackInstance() lays it on the instances near the car, those whose
+// byte of g_abInstanceVisibilityMask has the bit of the vehicle.
+CarShadow ShadowOf(const RenderTexture *texture,
+                   const Vehicle &car,
+                   unsigned bit,
+                   const std::vector<unsigned char> &mask) {
     const CameraFrame &frame = car.GetFrame();
     Vec3f forward = frame.forward;
     if (forward.x == 0.0f && forward.y == 0.0f) {
@@ -784,15 +779,46 @@ std::optional<CarShadow> ShadowOf(const RenderTexture *texture, const Vehicle &c
     shadow.across = SHADOW_WIDTH_SCALE / model->wheels[0].y / width;
     shadow.forward = {forward.x, forward.y};
     shadow.color = ShadowColor(car);
-    std::vector<u8> nearby(static_cast<std::size_t>(g_LoadedTrack.instanceCount), 0);
-    car.MarkNearbyInstanceShadows(nearby.data(), 1);
     for (int index = 0; index < g_LoadedTrack.instanceCount; ++index) {
-        if (nearby[static_cast<std::size_t>(index)] != 0 &&
+        if ((mask[static_cast<std::size_t>(index)] & bit) != 0 &&
             !(g_LoadedTrack.instances[index].flags & TRACK_INSTANCE_NO_SHADOW)) {
             shadow.instances.push_back(index);
         }
     }
     return shadow;
+}
+
+// RenderTrackInstance() lays the shadow of each vehicle BuildVisibleInstanceList() gives a shadow
+// in a view, in the order of the vehicles, but none with the shadows off or from the mirror, and
+// none of the car of the view from its cockpit or its bumper. The byte of an instance the view does
+// not list has every bit.
+std::vector<CarShadow> ShadowsOf(const RenderTexture *texture,
+                                 const Vehicle *vehicles,
+                                 int cameraIndex,
+                                 const std::vector<unsigned char> &mask) {
+    std::vector<CarShadow> shadows;
+    const Vehicle &viewer = vehicles[cameraIndex];
+    const CameraFrame *active = viewer.GetActiveCamera();
+    const auto &cameras = viewer.GetCameras();
+    if (texture == nullptr || !g_GlobalRallyConfig.bCarShadowSelection ||
+        active == &cameras[VEHICLE_CAMERA_MIRROR]) {
+        return shadows;
+    }
+    bool inside =
+        active == &cameras[VEHICLE_CAMERA_COCKPIT] || active == &cameras[VEHICLE_CAMERA_BUMPER];
+    std::vector<unsigned char> listed = mask;
+    std::ranges::replace(listed, 0xFF, 0);
+    // The bit of a vehicle past the eighth is lost to the byte.
+    for (int index = 0; index < std::min<int>(g_dwNumActiveVehicles, 8); ++index) {
+        if (index == cameraIndex && inside) {
+            continue;
+        }
+        CarShadow shadow = ShadowOf(texture, vehicles[index], 1u << index, listed);
+        if (!shadow.instances.empty()) {
+            shadows.push_back(std::move(shadow));
+        }
+    }
+    return shadows;
 }
 
 // WriteParticleCombineMode(): the colour of a puff, its alpha the texel by its opacity. The
@@ -2084,14 +2110,15 @@ void RaceView::DrawView(SceneRenderer &renderer,
     // RenderTrackGeometry(): the first pass draws the opaque instances in view.
     ViewInstances instances =
         VisibleInstances(*camera, fov, frustumFar, frame, vehicles, cameraIndex);
-    std::optional<CarShadow> shadow = ShadowOf(s.shadowTexture.get(), vehicle);
+    std::vector<CarShadow> shadows =
+        ShadowsOf(s.shadowTexture.get(), vehicles, cameraIndex, instances.mask);
     const Lighting trackLighting = TrackLighting(vehicle);
     renderer.DrawShadowedModel(*s.track,
                                ConsoleSpace(),
                                viewProjection,
                                trackLighting,
                                std::move(instances.opaque),
-                               shadow);
+                               shadows);
     // RenderVehicleModel() draws a car the view sees, but not the car of the view from its own
     // cockpit or its mirror, which returns before it sets the colours of the lights.
     const auto &cameras = vehicle.GetCameras();
@@ -2150,7 +2177,7 @@ void RaceView::DrawView(SceneRenderer &renderer,
                                viewProjection,
                                trackLighting,
                                std::move(instances.translucent),
-                               std::move(shadow));
+                               std::move(shadows));
     if (snapshot != nullptr && g_GlobalRallyConfig.bSkidMarksSelection) {
         DrawSkidMarks(
             renderer, ShadowColor(vehicle), viewProjection, instances.mask, s.skidVertices);
