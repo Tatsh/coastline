@@ -10,10 +10,11 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import urllib.request
 from pathlib import Path
 
-BRIDGE = 'http://127.0.0.1:8090'
+BRIDGE = f'http://127.0.0.1:{os.environ.get("GHIDRA_PORT", "8090")}'
 PROGRAMS = ('jpn.z64', 'eur.z64', 'BRD3D.dll', 'BRGlide.dll')
 SCRIPT = Path(__file__).with_name('SyncNames.java')
 

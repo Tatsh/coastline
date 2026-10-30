@@ -10,11 +10,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import urllib.request
 from pathlib import Path
 
-BRIDGE = 'http://127.0.0.1:8090'
+BRIDGE = f'http://127.0.0.1:{os.environ.get("GHIDRA_PORT", "8090")}'
 
 
 def post(endpoint: str, program: str, body: dict) -> dict:
