@@ -96,6 +96,7 @@ add_library(
   racemusic.cpp
   runtimebuffers.cpp
   scenerenderer.cpp
+  session.cpp
   stringresources.cpp
   tlrenderer.cpp
   trackload.cpp
