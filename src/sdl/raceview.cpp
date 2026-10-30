@@ -1575,33 +1575,9 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
         }
         state->cars.try_emplace(key, std::move(models));
     }
-    // AcquireRacerVehicle() paints a computer's car in the colour of the racer it drives for.
-    for (std::size_t i = g_dwNumLocalPlayers; i < cars.size(); ++i) {
-        for (int racer = static_cast<int>(g_dwNumLocalPlayers); racer < g_dwNumVehicles; ++racer) {
-            const u8 *color = g_aRacerSlots[racer].GetColor();
-            CarKey key{cars[i].car, color[0], color[1], color[2], 0};
-            if (!state->cars.contains(key)) {
-                state->cars.try_emplace(
-                    key, LoadCarModels(renderer, defaults, key, std::nullopt, state->damage));
-            }
-        }
-    }
-    // The farther levels of detail of a split screen.
-    if (g_dwNumViewports == 2) {
-        for (auto &[key, models] : state->cars) {
-            if (!models.levels[0]) {
-                continue;
-            }
-            std::optional<std::filesystem::path> document;
-            if (key[4] > 0) {
-                document = state->images[key[4] - 1];
-            }
-            for (int lod = 1; lod < VEHICLE_LODS; ++lod) {
-                models.levels[static_cast<std::size_t>(lod)] =
-                    LoadCarLevel(renderer, defaults, key, lod, document, state->damage);
-            }
-        }
-    }
+    // ponytail: the colours of the racers a computer's car takes over later load as they first
+    // draw; loading each car in every colour here took half a minute, as each load reads and
+    // decodes the whole car. Reuse the decoded car and repaint only its paint to load them here.
     SDL_Log("%zu cars of the race loaded in %llu ms.",
             state->cars.size(),
             static_cast<unsigned long long>(SDL_GetTicks() - carsStart));
