@@ -154,6 +154,26 @@ constexpr std::uint32_t PALETTE_TMEM = 0x100;
 constexpr std::uint32_t LAST_PALETTE_TMEM = 0x1f0;
 constexpr std::size_t PALETTE_TILE = 6;
 constexpr std::size_t SECOND_PALETTE_TILE = 5;
+// RenderVehicleModel() loads g_awVehicleShadePalette, a ramp of greys from black to white in
+// RGBA5551, into palette 14 before the lists of a car. The shading textures of the decals are
+// 4-bit texels of that palette, which the second texel of their combiner multiplies.
+constexpr std::uint32_t SHADE_PALETTE = 14;
+constexpr std::array<std::uint16_t, 16> SHADE_PALETTE_COLORS{0x0001,
+                                                             0x1085,
+                                                             0x2109,
+                                                             0x318d,
+                                                             0x4211,
+                                                             0x5295,
+                                                             0x6319,
+                                                             0x739d,
+                                                             0x8c63,
+                                                             0x9ce7,
+                                                             0xad6b,
+                                                             0xbdef,
+                                                             0xce73,
+                                                             0xdef7,
+                                                             0xef7b,
+                                                             0xffff};
 // The texture LOD mode of the other modes that samples the detail tile after the render tile.
 constexpr std::uint32_t G_TL_LOD = 1;
 constexpr std::uint32_t G_TD_DETAIL = 2;
@@ -172,6 +192,8 @@ std::uint16_t Big16(std::span<const std::uint8_t> image, std::size_t at) {
 struct TextureKey {
     std::size_t address = 0;
     std::optional<std::size_t> palette;
+    // Whether the palette is the one the renderer loads into SHADE_PALETTE, in place of palette.
+    bool shadePalette = false;
     std::uint32_t format = 0;
     std::uint32_t texelSize = 0;
     std::uint32_t width = 0;
@@ -268,6 +290,8 @@ struct StartState {
     std::array<std::uint32_t, 2> combine{};
     // Whether the caller turns on the generation of the texture coordinates from the normals.
     bool textureGen = false;
+    // Whether the caller loads the shade palette into SHADE_PALETTE.
+    bool shadePalette = false;
 };
 
 class DisplayListWalk {
@@ -283,6 +307,7 @@ public:
         m_tiles[PALETTE_TILE].tmem = LAST_PALETTE_TMEM;
         m_tiles[SECOND_PALETTE_TILE].tmem = PALETTE_TMEM;
         m_tmem.clear();
+        m_shadePalette = start.shadePalette;
         m_geometryMode = (start.lit ? G_LIGHTING : 0) | (start.twoSided ? 0 : G_CULL_BACK) |
                          (start.textureGen ? G_TEXTURE_GEN : 0);
         m_otherModeH = 0;
@@ -437,7 +462,9 @@ private:
         if (tile.maskt != 0) {
             key.height = std::min(key.height, 1u << tile.maskt);
         }
-        if (tile.format == G_IM_FMT_CI) {
+        if (tile.format == G_IM_FMT_CI && tile.palette == SHADE_PALETTE && m_shadePalette) {
+            key.shadePalette = true;
+        } else if (tile.format == G_IM_FMT_CI) {
             auto palette = Lookup(PALETTE_TMEM + (tile.palette << 4));
             auto at = palette ? Offset(*palette, 1) : std::nullopt;
             if (!at) {
@@ -645,6 +672,9 @@ private:
             case OP_LOADTILE:
             case OP_LOADTLUT:
                 m_tmem[m_tiles[w1 >> 24 & 7].tmem] = m_textureImage;
+                if (m_tiles[w1 >> 24 & 7].tmem == PALETTE_TMEM + (SHADE_PALETTE << 4)) {
+                    m_shadePalette = false;
+                }
                 m_bound = std::nullopt;
                 break;
             case OP_RDPLOADSYNC:
@@ -666,6 +696,7 @@ private:
     std::vector<Material> m_materials;
     std::array<Tile, 8> m_tiles{};
     std::map<std::uint32_t, std::uint32_t> m_tmem;
+    bool m_shadePalette = false;
     std::uint32_t m_geometryMode = 0;
     std::uint32_t m_otherModeH = 0;
     std::uint32_t m_otherModeL = 0;
@@ -871,7 +902,11 @@ std::vector<std::uint8_t> DecodeTexture(std::span<const std::uint8_t> memory,
     std::size_t stride =
         (key.line != 0 ? key.line : (static_cast<std::size_t>(key.width) * bits + 63) / 64) * 8;
     std::vector<std::array<std::uint8_t, 4>> palette;
-    if (key.format == G_IM_FMT_CI) {
+    if (key.shadePalette) {
+        for (std::uint16_t colour : SHADE_PALETTE_COLORS) {
+            palette.push_back(Rgba5551(colour));
+        }
+    } else if (key.format == G_IM_FMT_CI) {
         std::size_t colours = key.texelSize == G_IM_SIZ_4b ? 16 : 256;
         for (std::size_t i = 0; i < colours; ++i) {
             std::size_t at = *key.palette + i * 2;
@@ -1725,7 +1760,8 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
             bool shown = list != VEHICLE_DL_HIGHLIGHTED && list != VEHICLE_DL_HEADLIGHT_BEAMS;
             // The renderer turns on lighting before the lists of a car, and loads a texture of the
             // model before the underside and the near detail.
-            StartState start{.lit = true, .twoSided = false, .bound = std::nullopt};
+            StartState start{
+                .lit = true, .twoSided = false, .bound = std::nullopt, .shadePalette = true};
             // The paint and the windows reflect the sky: the renderer generates their texture
             // coordinates from the normals and blends the reflection towards the fog.
             if (list == VEHICLE_DL_BODY) {
@@ -1749,11 +1785,12 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
                 continue;
             }
             // The mesh of a wheel is drawn at each of the four places of the wheels.
-            Draw draw{fmt::format("lod{}-{}", lod, WHEEL_LIST_NAMES[list]),
-                      address,
-                      {},
-                      lod,
-                      {.lit = true, .twoSided = false, .bound = std::nullopt}};
+            Draw draw{
+                fmt::format("lod{}-{}", lod, WHEEL_LIST_NAMES[list]),
+                address,
+                {},
+                lod,
+                {.lit = true, .twoSided = false, .bound = std::nullopt, .shadePalette = true}};
             for (int place = 0; place < WHEELS; ++place) {
                 std::array<float, 3> at{};
                 for (int axis = 0; axis < 3; ++axis) {
