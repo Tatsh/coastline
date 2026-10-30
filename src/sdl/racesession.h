@@ -110,8 +110,8 @@ const RaceResults &LastRaceResults();
 int RaceTrack();
 
 /**
- * @return The car of each vehicle of the race that loaded last, in the colours of its images as
- * the North American release draws the cars of a race.
+ * @return The car of each vehicle of the race that loaded last, in the colour of the vehicle as
+ * InitVehicleColorAndPhysics() paints it.
  */
 std::vector<RaceCar> RaceCars();
 

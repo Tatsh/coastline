@@ -1,7 +1,6 @@
 #include "racesession.h"
 
 #include <algorithm>
-#include <optional>
 
 #include <SDL3/SDL.h>
 
@@ -173,7 +172,8 @@ int RaceTrack() {
 std::vector<RaceCar> RaceCars() {
     std::vector<RaceCar> cars;
     for (int i = 0; i < g_dwNumActiveVehicles; ++i) {
-        cars.push_back({g_aVehicles[i].GetCarModel(), std::nullopt});
+        const auto &color = g_aVehicles[i].GetColor();
+        cars.push_back({g_aVehicles[i].GetCarModel(), {color[0], color[1], color[2]}});
     }
     return cars;
 }

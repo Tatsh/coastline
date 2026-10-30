@@ -3,6 +3,7 @@
 #include <array>
 #include <cmath>
 #include <cstring>
+#include <map>
 #include <optional>
 #include <span>
 #include <string>
@@ -372,13 +373,19 @@ struct CarModels {
     std::unique_ptr<RenderModel> snowWheel;
 };
 
+// A car in a colour: the car, an index of g_apszCarModelPrefixes, and its red, green, and blue.
+using CarKey = std::array<int, 4>;
+
 struct RaceView::State {
+    std::filesystem::path defaults;
     std::unique_ptr<RenderModel> track;
     // ponytail: the sky loads the images of the track a second time; a model with its nodes drawn
     // by name would share them.
     std::unique_ptr<RenderModel> sky;
-    // The car of each vehicle, from the first.
-    std::vector<CarModels> cars;
+    // The cars in the colours the vehicles of the race have had. The computer's cars of a
+    // championship take the colour of each racer they drive for, and a car in a colour not seen
+    // before loads while the race runs.
+    std::map<CarKey, CarModels> cars;
     std::unique_ptr<RenderModel> startLights;
     std::unique_ptr<MenuText> text;
     // The images of the day and the night sky the paint and the windows of the car reflect.
@@ -986,6 +993,53 @@ RaceView::RaceView(std::unique_ptr<State> state) : m_state(std::move(state)) {
 
 RaceView::~RaceView() = default;
 
+namespace {
+
+// The car of the nearest level of detail, the one level a single view draws, in its parts: the
+// body, the underside, and a wheel of each kind, which the race places one by one. The geometry of
+// the car is that of the PC release, which its race moves, and its textures are those of the
+// cartridge, painted as SetMaterialColor() paints them. None of the parts load when the car is
+// missing.
+// ponytail: each part, and each colour of a car, loads the images of the car again; a model drawn
+// by parts and painted as it is drawn would share them.
+CarModels
+LoadCarModels(SceneRenderer &renderer, const std::filesystem::path &defaults, const CarKey &key) {
+    std::string prefix = g_apszCarModelPrefixes[key[0]];
+    auto carFile = defaults / "cars" / (prefix + ".gltf");
+    CarModels models;
+    ModelOptions options;
+    options.paint = std::array<std::uint8_t, 3>{static_cast<std::uint8_t>(key[1]),
+                                                static_cast<std::uint8_t>(key[2]),
+                                                static_cast<std::uint8_t>(key[3])};
+    options.images = CartridgeCar(defaults, prefix);
+    options.parts = [](const std::string &n) {
+        return n == "lod0-nearDetail" || n == "lod0-textured";
+    };
+    options.variants = CAR_LIGHT_VARIANTS;
+    options.paletteVariant = CarLightPalette;
+    models.car = RenderModel::Load(renderer, carFile, options);
+    options.variants = 0;
+    options.paletteVariant = nullptr;
+    options.parts = [](const std::string &n) { return n == "lod0-paint"; };
+    models.paint = RenderModel::Load(renderer, carFile, options);
+    options.parts = [](const std::string &n) { return n == "lod0-underside"; };
+    models.underside = RenderModel::Load(renderer, carFile, options);
+    // The highlighted parts are a node outside the scene, drawn without the turn of its root.
+    options.parts = nullptr;
+    options.node = "lod0-highlighted";
+    models.highlighted = RenderModel::Load(renderer, carFile, options);
+    options.node = "lod0-wheel0";
+    models.wheel = RenderModel::Load(renderer, carFile, options);
+    options.node = "lod0-wheelSnow0";
+    models.snowWheel = RenderModel::Load(renderer, carFile, options);
+    if (!models.car || !models.paint || !models.wheel) {
+        return {};
+    }
+    return models;
+}
+
+} // namespace
+
 std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
                                          const std::filesystem::path &defaults,
                                          int track,
@@ -1000,42 +1054,14 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     ModelOptions sky;
     sky.node = "sky";
     state->sky = RenderModel::Load(renderer, trackFile, sky);
-    // The car of the nearest level of detail, the one level a single view draws, in its parts:
-    // the body, the underside, and a wheel of each kind, which the race places one by one.
-    // ponytail: each part loads the images of the car again, and each vehicle its car; a model
-    // drawn by parts and shared by the vehicles of a car would share them.
-    // The geometry of the car is that of the PC release, which its race moves, and its textures
-    // are those of the cartridge.
+    state->defaults = defaults;
     for (const RaceCar &vehicle : cars) {
-        std::string prefix = g_apszCarModelPrefixes[vehicle.car];
-        auto carFile = defaults / "cars" / (prefix + ".gltf");
-        CarModels &models = state->cars.emplace_back();
-        ModelOptions options;
-        options.paint = vehicle.paint;
-        options.images = CartridgeCar(defaults, prefix);
-        options.parts = [](const std::string &n) {
-            return n == "lod0-nearDetail" || n == "lod0-textured";
-        };
-        options.variants = CAR_LIGHT_VARIANTS;
-        options.paletteVariant = CarLightPalette;
-        models.car = RenderModel::Load(renderer, carFile, options);
-        options.variants = 0;
-        options.paletteVariant = nullptr;
-        options.parts = [](const std::string &n) { return n == "lod0-paint"; };
-        models.paint = RenderModel::Load(renderer, carFile, options);
-        options.parts = [](const std::string &n) { return n == "lod0-underside"; };
-        models.underside = RenderModel::Load(renderer, carFile, options);
-        // The highlighted parts are a node outside the scene, drawn without the turn of its root.
-        options.parts = nullptr;
-        options.node = "lod0-highlighted";
-        models.highlighted = RenderModel::Load(renderer, carFile, options);
-        options.node = "lod0-wheel0";
-        models.wheel = RenderModel::Load(renderer, carFile, options);
-        options.node = "lod0-wheelSnow0";
-        models.snowWheel = RenderModel::Load(renderer, carFile, options);
-        if (!models.car || !models.paint || !models.wheel) {
+        CarKey key{vehicle.car, vehicle.paint[0], vehicle.paint[1], vehicle.paint[2]};
+        CarModels models = LoadCarModels(renderer, defaults, key);
+        if (!models.car) {
             return nullptr;
         }
+        state->cars.try_emplace(key, std::move(models));
     }
     // The skies of the track in cargfx, as the import converted them.
     auto skyImage = [&](const SkyTextureFiles *files) {
@@ -1089,7 +1115,7 @@ std::array<float, 4> RaceView::ClearColor() const {
 }
 
 void RaceView::Draw(SceneRenderer &renderer, float share) const {
-    const State &s = *m_state;
+    State &s = *m_state;
     GpuWindow &window = renderer.Window();
     float aspect = static_cast<float>(window.FrameWidth()) /
                    static_cast<float>(std::max<Uint32>(window.FrameHeight(), 1));
@@ -1168,13 +1194,22 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     Lighting cameraCarLighting = CarLighting(vehicle, vehicle, *camera);
     // RenderRacerVehicles(): the car of each vehicle of the race.
     // ponytail: the ghost of a time attack is drawn solid; its opacity of 0.375 is not applied.
-    int vehicles = std::min(static_cast<int>(s.cars.size()), std::max(g_dwNumActiveVehicles, 1));
-    for (int index = 0; index < vehicles; ++index) {
+    for (int index = 0; index < std::max(g_dwNumActiveVehicles, 1); ++index) {
         if (index == 0 && inside && !g_dwVehicleCullingDisabled) {
             continue;
         }
         const Vehicle &car = snapshot != nullptr ? snapshot->GetVehicle(index) : g_aVehicles[index];
-        const CarModels &models = s.cars[static_cast<std::size_t>(index)];
+        const auto &color = car.GetColor();
+        CarKey key{car.GetCarModel(), color[0], color[1], color[2]};
+        auto found = s.cars.find(key);
+        // A car that does not load is not tried again.
+        if (found == s.cars.end()) {
+            found = s.cars.try_emplace(key, LoadCarModels(renderer, s.defaults, key)).first;
+        }
+        const CarModels &models = found->second;
+        if (!models.car) {
+            continue;
+        }
         Lighting carLighting = CarLighting(car, vehicle, *camera);
         Matrix4 body = MultiplyMatrices(FrameMatrix(car.GetFrame()), ConsoleSpace());
         Reflection reflection = SkyReflection(s.daySky.get(), s.nightSky.get(), *camera, car);

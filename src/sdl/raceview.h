@@ -10,7 +10,6 @@
 #include <cstdint>
 #include <filesystem>
 #include <memory>
-#include <optional>
 #include <span>
 
 namespace coastline {
@@ -19,9 +18,8 @@ class SceneRenderer;
 
 /** The car of a vehicle of a race. */
 struct RaceCar {
-    int car = 0; /*!< The car, an index of g_apszCarModelPrefixes. */
-    /** The red, green, and blue the car is painted, or none for the colours of its images. */
-    std::optional<std::array<std::uint8_t, 3>> paint;
+    int car = 0;                         /*!< The car, an index of g_apszCarModelPrefixes. */
+    std::array<std::uint8_t, 3> paint{}; /*!< The red, green, and blue the car is painted. */
 };
 
 /** The models of the track and the cars of a race, and their drawing from the state of the race. */
@@ -33,7 +31,8 @@ public:
      * @param renderer The renderer that draws them.
      * @param defaults The directory of the default assets.
      * @param track The track, an index of g_apszTrackFilenames.
-     * @param cars The car of each vehicle of the race, from the first.
+     * @param cars The car of each vehicle of the race, from the first. A vehicle that takes
+     * another car or colour during the race loads it as it is drawn.
      * @return The view, or nothing with the reason logged.
      */
     static std::unique_ptr<RaceView> Load(SceneRenderer &renderer,
