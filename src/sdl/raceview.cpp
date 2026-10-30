@@ -194,42 +194,6 @@ HudCanvas MakeHudCanvas(const GpuWindow &window) {
     return {width, height, CanvasProjection(width, height)};
 }
 
-// The renderer and the fonts DrawText() draws the HUD with while it hands its text to the SDL game.
-struct HudTextTarget {
-    SceneRenderer *renderer = nullptr;
-    const MenuText *text = nullptr;
-};
-
-HudTextTarget g_hudTextTarget;
-
-// RenderTextToDisplayList() of the text of the HUD: the size, the alignment, the style, and the
-// custom colours the race set, on the canvas the HUD is laid out on. The custom colours are never
-// turned off once set.
-void DrawHudText(const char *text, s32 x, s32 y) {
-    TextStyle style;
-    style.size = g_nFontSize;
-    style.align = g_nTextAlignment == TEXT_ALIGN_RIGHT  ? TextStyle::Align::Right :
-                  g_nTextAlignment == TEXT_ALIGN_CENTER ? TextStyle::Align::Center :
-                                                          TextStyle::Align::Left;
-    style.shadow = g_bTextShadowEnabled != 0;
-    style.bold = g_bTextStyleBold != 0;
-    style.doubled = false;
-    if (g_bTextCustomColorsEnabled) {
-        style.colors = std::array<int, 6>{g_dwTextCustomColorR,
-                                          g_dwTextCustomColorG,
-                                          g_dwTextCustomColorB,
-                                          g_dwTextCustomColor2R,
-                                          g_dwTextCustomColor2G,
-                                          g_dwTextCustomColor2B};
-    }
-    g_hudTextTarget.text->Draw(*g_hudTextTarget.renderer,
-                               text,
-                               x,
-                               y,
-                               style,
-                               CanvasProjection(GetHudCanvasWidth(), GetHudCanvasHeight()));
-}
-
 // The commands the HUD writes for the dashboard and its scissors go to a scratch list.
 constexpr std::size_t HUD_SCRATCH_COMMANDS = 4096;
 
@@ -270,14 +234,33 @@ constexpr unsigned GBI_OP_SET_TEXTURE_ENTRY = 0xdc;
 constexpr unsigned GBI_OP_LOAD_TEXTURE_ENTRY = 0xdd;
 constexpr unsigned GBI_OP_TEXTURE_RECTANGLE = 0xe3;
 
-// The commands of RenderDashboardGauges(), drawn as BRD3D draws them on the canvas of the HUD: the
-// face and the gear of the dashboard as rectangles of their textures, a texel of an alpha below a
-// half drawing nothing, and the needle of the tachometer in the colour of its corners, its places
-// counted up from the bottom of the canvas.
-void DrawHudCommands(SceneRenderer &renderer,
-                     HudTextures &textures,
-                     std::span<const GbiCommand> commands,
-                     const HudCanvas &hud) {
+// The HUD being drawn: the renderer, the fonts DrawText() draws with while it hands its text to the
+// SDL game, the textures and the canvas of the commands the HUD writes, the first command not drawn
+// yet, and the texture entry and the vertices the commands drawn have loaded.
+struct HudDrawing {
+    SceneRenderer *renderer = nullptr;
+    const MenuText *text = nullptr;
+    HudTextures *textures = nullptr;
+    const HudCanvas *hud = nullptr;
+    const GbiCommand *drawn = nullptr;
+    unsigned entry = 0;
+    const ConvertedModelVertex *vertices = nullptr;
+    unsigned firstVertex = 0;
+    unsigned vertexCount = 0;
+};
+
+HudDrawing g_hudDrawing;
+
+// The commands of RenderDashboardGauges() not drawn yet, up to the next one the HUD writes, drawn
+// as BRD3D draws them on the canvas of the HUD: the face and the gear of the dashboard as
+// rectangles of their textures, a texel of an alpha below a half drawing nothing, and the needle of
+// the tachometer in the colour of its corners, its places counted up from the bottom of the canvas.
+void DrawHudCommands(HudDrawing &drawing, const GbiCommand *end) {
+    SceneRenderer &renderer = *drawing.renderer;
+    HudTextures &textures = *drawing.textures;
+    const HudCanvas &hud = *drawing.hud;
+    std::span<const GbiCommand> commands{drawing.drawn, end};
+    drawing.drawn = end;
     auto texture = [&](unsigned entry) -> const RenderTexture * {
         const EngineTexture *source = FindEngineTexture(entry);
         if (source == nullptr || source->rgba.empty()) {
@@ -291,10 +274,10 @@ void DrawHudCommands(SceneRenderer &renderer,
         }
         return cached.second.get();
     };
-    unsigned entry = 0;
-    const ConvertedModelVertex *vertices = nullptr;
-    unsigned firstVertex = 0;
-    unsigned vertexCount = 0;
+    unsigned &entry = drawing.entry;
+    const ConvertedModelVertex *&vertices = drawing.vertices;
+    unsigned &firstVertex = drawing.firstVertex;
+    unsigned &vertexCount = drawing.vertexCount;
     for (const GbiCommand &command : commands) {
         unsigned opcode = command.w0 >> 24;
         if (opcode == GBI_OP_SET_TEXTURE_ENTRY) {
@@ -351,9 +334,38 @@ void DrawHudCommands(SceneRenderer &renderer,
     }
 }
 
+// RenderTextToDisplayList() of the text of the HUD after the commands the HUD wrote before it: the
+// size, the alignment, the style, and the custom colours the race set, on the canvas the HUD is
+// laid out on. The custom colours are never turned off once set.
+void DrawHudText(const char *text, s32 x, s32 y) {
+    DrawHudCommands(g_hudDrawing, gDisplayListPtr);
+    TextStyle style;
+    style.size = g_nFontSize;
+    style.align = g_nTextAlignment == TEXT_ALIGN_RIGHT  ? TextStyle::Align::Right :
+                  g_nTextAlignment == TEXT_ALIGN_CENTER ? TextStyle::Align::Center :
+                                                          TextStyle::Align::Left;
+    style.shadow = g_bTextShadowEnabled != 0;
+    style.bold = g_bTextStyleBold != 0;
+    style.doubled = false;
+    if (g_bTextCustomColorsEnabled) {
+        style.colors = std::array<int, 6>{g_dwTextCustomColorR,
+                                          g_dwTextCustomColorG,
+                                          g_dwTextCustomColorB,
+                                          g_dwTextCustomColor2R,
+                                          g_dwTextCustomColor2G,
+                                          g_dwTextCustomColor2B};
+    }
+    g_hudDrawing.text->Draw(*g_hudDrawing.renderer,
+                            text,
+                            x,
+                            y,
+                            style,
+                            CanvasProjection(GetHudCanvasWidth(), GetHudCanvasHeight()));
+}
+
 // DrawViewOverlay() of each view and DrawPauseMenu(), from the routines of the race, their text
 // drawn by DrawHudText() on the canvas of the HUD as the patched PC release lays its HUD out on its
-// canvas, and the gauges of the dashboard they write after the text.
+// canvas, in the order of the commands they write, the gauges of the dashboard before the speed.
 void DrawRaceHud(SceneRenderer &renderer,
                  const MenuText &text,
                  HudTextures &textures,
@@ -365,7 +377,7 @@ void DrawRaceHud(SceneRenderer &renderer,
     int framebufferHeight = g_dwConfigFramebufferHeight;
     g_dwConfigFramebufferWidth = hud.width;
     g_dwConfigFramebufferHeight = hud.height;
-    g_hudTextTarget = {&renderer, &text};
+    g_hudDrawing = {&renderer, &text, &textures, &hud, scratch.data()};
     g_pfnTextSink = DrawHudText;
 
     std::array<ViewportRect, 2> views = HudViews(hud);
@@ -402,10 +414,7 @@ void DrawRaceHud(SceneRenderer &renderer,
         DrawPauseMenu(views.data(), g_aRacerSlots, g_aVehicles);
     }
 
-    DrawHudCommands(renderer,
-                    textures,
-                    {scratch.data(), static_cast<std::size_t>(gDisplayListPtr - scratch.data())},
-                    hud);
+    DrawHudCommands(g_hudDrawing, gDisplayListPtr);
 
     g_pfnTextSink = nullptr;
     g_dwConfigFramebufferWidth = framebufferWidth;
