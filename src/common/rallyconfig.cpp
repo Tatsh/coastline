@@ -3,8 +3,7 @@
 #include <cstdio>
 #include <cstring>
 
-#include "win32/app.h"
-#include "win32/input.h"
+#include "common/inputbinding.h"
 
 // The first bytes of BossRally.cfg and the version of its layout.
 #define CONFIG_FILE_MAGIC "RCfg"
@@ -206,32 +205,4 @@ bool RallyConfig::SaveConfigToFile(const char *pszPath) {
                WriteConfigField(pFile, aInputBindingsDevice3, sizeof(aInputBindingsDevice3));
     fclose(pFile);
     return bWritten;
-}
-
-void ReadInstallDirectoryFromRegistry(void) {
-    HKEY hKey;
-    DWORD dwSize;
-    LONG nResult;
-
-    if (RegOpenKeyExA(HKEY_LOCAL_MACHINE,
-                      "SOFTWARE\\SouthPeak Interactive\\Boss Rally",
-                      0,
-                      KEY_READ,
-                      &hKey) == ERROR_SUCCESS) {
-        dwSize = MAX_PATH;
-        nResult = RegQueryValueExA(hKey,
-                                   "Directory",
-                                   nullptr,
-                                   nullptr,
-                                   reinterpret_cast<BYTE *>(g_szInstallDirectory),
-                                   &dwSize);
-        RegCloseKey(hKey);
-        if (nResult == ERROR_SUCCESS) {
-            if (g_szInstallDirectory[strlen(g_szInstallDirectory) - 1] != '\\') {
-                strcat(g_szInstallDirectory, "\\");
-            }
-            return;
-        }
-    }
-    strcpy(g_szInstallDirectory, "c:\\");
 }

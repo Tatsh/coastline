@@ -233,6 +233,7 @@ ddsdm
 ddsurfacedesc
 ddutil
 debuginstance
+debugmessage
 debugtext
 decaldraw
 decaleditor

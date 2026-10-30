@@ -3,7 +3,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
+#endif
 
 #include "common/fileio.h"
 
@@ -15,6 +17,7 @@ char *g_pStringTableBuffer;
 size_t g_dwStringTableUsedBytes;
 size_t g_dwStringTableBufferSize;
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 void LoadStringTableFromDll(void) {
     GameFile *pFile;
     HMODULE hLibrary;
@@ -47,6 +50,7 @@ void LoadStringTableFromDll(void) {
     }
     FreeLibrary(hLibrary);
 }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 char *GetStringResource(unsigned nResourceId) {
     if (nResourceId < 1 || nResourceId > STRING_RESOURCE_COUNT) {

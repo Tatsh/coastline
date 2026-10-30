@@ -18,7 +18,6 @@ add_library(
   earsound.cpp
   frontend.cpp
   frontenddata.cpp
-  gameinit.cpp
   gamesession.cpp
   gamestate.cpp
   hudnetwork.cpp
@@ -29,14 +28,12 @@ add_library(
   podarchive.cpp
   racercolor.cpp
   racesound.cpp
-  rallyconfig.cpp
   render.cpp
   renderdefaults.cpp
   runtimebuffers.cpp
   shutdown.cpp
   sound.cpp
   startup.cpp
-  strings.c
   texturescan.cpp
   trackload.cpp
   tracktexture.cpp

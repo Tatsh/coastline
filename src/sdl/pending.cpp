@@ -1,46 +1,31 @@
 // ponytail: the routines of the Windows libraries the race engine calls and the SDL game does not
-// implement yet. Each records its first call in the log and does nothing. Later milestones replace
-// them with real implementations, and move the game logic among them into src/common.
+// implement yet. Each records its first call in the log and does nothing. Every routine here calls
+// Windows (DirectInput, DirectSound, the EAR music channel, the renderers, or the application
+// window), or loads tracks and models through 32-bit relocation, and later milestones give each an
+// SDL implementation.
 #include <cstdlib>
 
-#include <PR/os.h>
 #include <SDL3/SDL.h>
 
-#include "common/buildinfo.h"
 #include "common/camera.h"
-#include "common/combine.h"
 #include "common/damagetexture.h"
-#include "common/debugmessage.h"
-#include "common/driving.h"
 #include "common/fatalerror.h"
-#include "common/fileio.h"
-#include "common/frameclock.h"
-#include "common/ghost.h"
-#include "common/hud.h"
 #include "common/inputpoll.h"
 #include "common/model.h"
-#include "common/packedvalue.h"
-#include "common/playerinput.h"
-#include "common/racermotion.h"
-#include "common/racers.h"
 #include "common/racerslot.h"
 #include "common/racesound.h"
-#include "common/rallyconfig.h"
 #include "common/relocation.h"
 #include "common/renderbackend.h"
-#include "common/screen.h"
 #include "common/season.h"
 #include "common/session.h"
 #include "common/soundchannel.h"
 #include "common/soundeffect.h"
 #include "common/soundsystem.h"
-#include "common/strings.h"
 #include "common/track.h"
 #include "common/trackrelocation.h"
 #include "common/vehicle.h"
 #include "common/vehiclecolor.h"
 #include "common/vehiclemodel.h"
-#include "common/vehiclephysics.h"
 #include "common/vehiclesound.h"
 
 #define PENDING()                                                                                  \
@@ -52,16 +37,7 @@
         }                                                                                          \
     } while (false)
 
-// The files and the messages of the game.
-char *GetStringResource(unsigned nResourceId) {
-    PENDING();
-    return nullptr;
-}
-
-void SetDebugMessage(const char *message) {
-    PENDING();
-}
-
+// The application and the game session.
 [[noreturn]] void ShowFatalErrorScreen(const char *pszMessage) {
     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", pszMessage);
     std::exit(EXIT_FAILURE);
@@ -69,20 +45,6 @@ void SetDebugMessage(const char *message) {
 
 [[noreturn]] void ShutdownApplication(int nExitCode) {
     std::exit(nExitCode);
-}
-
-// The constructor of g_GlobalRallyConfig runs before main(), and does not log.
-RallyConfig::RallyConfig() {
-}
-
-bool RallyConfig::SaveConfigToFile(const char *pszPath) {
-    PENDING();
-    return false;
-}
-
-// The front end, the seasons, and the session.
-s32 ReturnZero(void) {
-    return 0;
 }
 
 void ShutdownGameSession(void) {
@@ -107,11 +69,7 @@ void SetForceFeedbackDirection(int nDirection) {
     PENDING();
 }
 
-// The vehicles and the racers.
-void Vehicle::UpdateVehicleSounds(void) {
-    PENDING();
-}
-
+// The textures of the vehicles and the racers.
 void ApplyEnemyCarColorPanels(Vehicle *vehicle, RacerSlot *slot) {
     PENDING();
 }
@@ -158,11 +116,11 @@ void RelocatePointerValue(unsigned *pdwPointer) {
     PENDING();
 }
 
-// The renderer.
-void ClearSplitScreenRenderState(void) {
+void ResetModelDataPool(void) {
     PENDING();
 }
 
+// The renderer.
 void CopyTileColumnScaled(int nTileIndex, int nSrcX, int nSrcY, int nSrcRow) {
     PENDING();
 }
@@ -175,39 +133,11 @@ void GetPrecipitationTextureDimensions(int nIndex) {
     PENDING();
 }
 
-void NullStub2(void *pMemory) {
-    PENDING();
-}
-
-void PackCombineMode(GbiCommand *pCommand,
-                     int nColorA0,
-                     int nColorB0,
-                     int nColorC0,
-                     int nColorD0,
-                     int nAlphaA0,
-                     int nAlphaB0,
-                     int nAlphaC0,
-                     int nAlphaD0,
-                     int nColorA1,
-                     int nColorB1,
-                     int nColorC1,
-                     int nColorD1,
-                     int nAlphaA1,
-                     int nAlphaB1,
-                     int nAlphaC1,
-                     int nAlphaD1) {
-    PENDING();
-}
-
-void ResetModelDataPool(void) {
-    PENDING();
-}
-
-void ResetRenderCommandBufferStack(void) {
-    PENDING();
-}
-
 // The sound and the music.
+void Vehicle::UpdateVehicleSounds(void) {
+    PENDING();
+}
+
 void ApplyAudioVolumeSettings(void) {
     PENDING();
 }

@@ -142,11 +142,13 @@ else()
             assetnames.c
             buildinfo.c
             clockfields.c
+            combine.cpp
             configfile.cpp
             convertedvertex.c
             creditdata.c
             damagetexture.cpp
             dashboardtextures.c
+            debugmessage.cpp
             displaylistdata.c
             effectdata.c
             emulatedclock.cpp
@@ -156,6 +158,7 @@ else()
             framebuffer.c
             framefields.c
             frametimer.cpp
+            gameinit.cpp
             ghost.cpp
             hud.c
             hudassets.c
@@ -172,7 +175,9 @@ else()
             racepacing.c
             racerslot.cpp
             racescreen.cpp
+            rallyconfig.cpp
             reflectiondata.c
+            renderbackend.cpp
             runtimebuffers.c
             season.cpp
             settings.c
@@ -183,6 +188,7 @@ else()
             snapshotinterpolation.cpp
             soundbank.c
             soundsample.c
+            strings.c
             terrain.c
             texturesampling.c
             textureworkspace.c

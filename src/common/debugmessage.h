@@ -28,6 +28,17 @@ void SetDebugMessage(const char *message);
  */
 extern const char *g_pszDebugMessage;
 
+#if TGR_BOSS_RALLY
+/**
+ * Display the current debug message on the fatal error screen.
+ *
+ * @param unused Not read.
+ * @ghidraAddress BRD3D: 0x10035ba7
+ * @ghidraAddress BRGlide: 0x1002f258
+ */
+[[noreturn]] void ShowDebugMessageFatalError(int unused);
+#endif /* TGR_BOSS_RALLY */
+
 #ifdef __cplusplus
 }
 #endif

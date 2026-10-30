@@ -3,48 +3,16 @@
 // definition.
 #include <PR/os.h>
 
-#include "common/assetnames.h"
-#include "common/camera.h"
-#include "common/effects.h"
-#include "common/fade.h"
-#include "common/fontdata.h"
 #include "common/frontendstate.h"
-#include "common/gameinit.h"
-#include "common/ghost.h"
-#include "common/hud.h"
-#include "common/hudassets.h"
 #include "common/inputpoll.h"
-#include "common/physics.h"
-#include "common/race.h"
-#include "common/racephases.h"
-#include "common/racers.h"
-#include "common/rallyconfig.h"
 #include "common/render.h"
 #include "common/renderbackend.h"
-#include "common/replay.h"
-#include "common/rumble.h"
-#include "common/season.h"
-#include "common/seasons.h"
-#include "common/session.h"
 #include "common/settings.h"
-#include "common/shadowbuffers.h"
-#include "common/shadowclip.h"
 #include "common/snapshot.h"
-#include "common/soundsource.h"
 #include "common/soundsystem.h"
 #include "common/system.h"
-#include "common/timing.h"
-#include "common/track.h"
-#include "common/trackrelocation.h"
-#include "common/trackrender.h"
 #include "common/trackskidmarks.h"
-#include "common/tricache.h"
-#include "common/util.h"
-#include "common/vehiclecount.h"
 #include "common/vehicledeform.h"
-#include "common/vehiclerender.h"
-#include "common/visgrid.h"
-#include "common/weather.h"
 
 unsigned char g_abDaySkyTexture[2048];
 int g_abFrameSnapshotInUse[FRAME_SNAPSHOT_COUNT];
@@ -76,17 +44,10 @@ int g_dwAccumUnlockedCarMask;
 int g_dwAccumUnlockedTrackMask;
 int g_dwHandlingTypeMenuIndex = 4;
 s16 g_wVehicleDeformMaxDent = 0x100;
-u32 g_dwCurrentWeather;
-s32 g_dwNumActiveVehicles = 2;
-s32 g_dwSavedMusicVolume;
-s32 g_dwSavedSfxVolume;
-s32 g_dwUnk_InitGameAndShowMenus_106c664c;
-s32 g_dwUnk_InitGameAndShowMenus_10b4df28;
 int g_bRaceStartReached;
 int g_dwNetworkPlayMode;
 const char g_szEmptyUiString[1] = {0};
 int g_dwNullStubEnable = 1;
-RallyConfig g_GlobalRallyConfig;
 
 // The input of the players.
 int g_bNetGamePaused;

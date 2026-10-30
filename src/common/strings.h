@@ -50,7 +50,9 @@ extern size_t g_dwStringTableBufferSize;
  * @ghidraAddress BRD3D: 0x10073f60
  * @ghidraAddress BRGlide: 0x1006d1a0
  */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 void LoadStringTableFromDll(void);
+#endif
 
 /**
  * Look up a string of the loaded string table.
