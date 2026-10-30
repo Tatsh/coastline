@@ -115,7 +115,7 @@ coastline_tool(
   HASH f708982e88b763ef5b0394ed468fc2c3628f68cdab89f2e7a946cd628c04e721
   OPTIONS SPIRV_CROSS_ENABLE_TESTS=OFF SPIRV_CROSS_SKIP_INSTALL=ON)
 set(_shader_headers)
-foreach(_shader model.frag model.vert tl.frag tl.vert)
+foreach(_shader fxaa.frag model.frag model.vert post.vert tl.frag tl.vert)
   string(REPLACE "." "_" _stem "${_shader}")
   string(TOUPPER "${_stem}" _name)
   set(_source "${CMAKE_CURRENT_SOURCE_DIR}/shaders/${_shader}")

@@ -15,6 +15,12 @@ enum class ScaleFilter {
     Nearest, /*!< Each pixel of the window takes the nearest pixel of the frame. */
 };
 
+/** The anti-aliasing of the finished frame, before it is scaled to the window. */
+enum class PostAntialias {
+    None, /*!< The frame as the scene drew it. */
+    Fxaa, /*!< Fast approximate anti-aliasing blends along the edges it finds. */
+};
+
 /** The options of the window and the GPU device. */
 struct DisplayOptions {
     int width = 1280;    /*!< The width of the window and of the exclusive mode in pixels. */
@@ -24,6 +30,7 @@ struct DisplayOptions {
     /** The pixels of the frame for each pixel of the window, when the frame follows the window. */
     float renderScale = 1.0f;
     ScaleFilter scaleFilter = ScaleFilter::Linear; /*!< How the frame is scaled to the window. */
+    PostAntialias postAntialias = PostAntialias::None; /*!< The anti-aliasing of the frame. */
     /** Whether the frame stays at the width and the height, for captures that are the same on
      * every machine. */
     bool fixedFrame = false;
@@ -170,12 +177,20 @@ private:
     };
 
     GpuWindow() = default;
-    bool SaveFrame(SDL_GPUCommandBuffer *commands, const std::filesystem::path &path);
+    bool SaveFrame(SDL_GPUCommandBuffer *commands,
+                   SDL_GPUTexture *source,
+                   const std::filesystem::path &path);
     bool CreateFrame(Uint32 width, Uint32 height);
+    bool CreatePostPasses();
+    SDL_GPUTexture *AntialiasFrame(SDL_GPUCommandBuffer *commands);
 
     std::unique_ptr<SDL_Window, WindowDeleter> m_window;
     std::unique_ptr<SDL_GPUDevice, DeviceDeleter> m_device;
     SDL_GPUTexture *m_frame = nullptr;
+    // The frame after the anti-aliasing pass, its pipeline, and the sampler it reads the frame by.
+    SDL_GPUTexture *m_antialiased = nullptr;
+    SDL_GPUGraphicsPipeline *m_antialiasPipeline = nullptr;
+    SDL_GPUSampler *m_postSampler = nullptr;
     Uint32 m_frameWidth = 0;
     Uint32 m_frameHeight = 0;
     DisplayOptions m_options;

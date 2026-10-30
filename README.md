@@ -183,13 +183,18 @@ The `[Video]` section of `BossRally.ini` sets up the display.
 | `Antialias`            | The samples of each pixel the scene is drawn with, `2`, `4`, or `8` for multisample anti-aliasing, or `1`, the default, for none.                                               |
 | `AlphaToCoverage`      | `1`, the default, smooths the edges of the cut texels of trees and fences by the share of the samples of a pixel their alpha covers, with `Antialias` above `1`. `0` cuts them. |
 | `AnisotropicFiltering` | `2`, `4`, `8`, or `16` mipmaps the textures of the tracks and the cars and filters them with that many samples. `0`, the default, does neither.                                 |
+| `AntialiasPost`        | `fxaa` blends the finished frame along the edges it finds with fast approximate anti-aliasing. `none`, the default, does not.                                                   |
 
 By default the frame follows the size of the window in pixels, and changes with it as the window
 is resized or covers the display. `InternalWidth` and `InternalHeight` set a size of their own,
 which takes the place of the size of the window and of `RenderScale`, and the frame is scaled to
 the window with bars where its shape differs. `Width` and `Height` set the size of the window and
-of the exclusive mode. A run with `--screenshot` draws its frames at `Width` by `Height`, for the
-same captures on every machine.
+of the exclusive mode. A run with `--screenshot` draws its frames at `Width` by `Height` times
+`RenderScale`, for the same captures on every machine. A `RenderScale` of `2` draws four pixels for
+each pixel of the window and filters them down, which is supersampling.
+
+The frame passes through the anti-aliasing of `AntialiasPost` and then the scale of `ScaleFilter`
+on its way to the window.
 
 A race keeps the vertical field of view of the PC release on a frame wider than 4:3 and widens
 across, and keeps the field across of 4:3 on a narrower frame. Neither field exceeds 120 degrees.

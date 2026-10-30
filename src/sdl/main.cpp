@@ -90,6 +90,14 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     if (config.Get("Video", "ScaleFilter") == "nearest") {
         options.scaleFilter = coastline::ScaleFilter::Nearest;
     }
+    auto post = config.Get("Video", "AntialiasPost");
+    if (post == "fxaa") {
+        options.postAntialias = coastline::PostAntialias::Fxaa;
+    } else if (post && *post != "none") {
+        SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
+                    "AntialiasPost takes none or fxaa, and %s is drawn as none.",
+                    post->c_str());
+    }
     // A capture is drawn at Width by Height, for the same frames on every machine.
     options.fixedFrame = parser.is_used("--screenshot");
     // Vulkan, Metal, and Direct3D 12 all filter at least 16 samples.
@@ -882,6 +890,7 @@ int main(int argc, char *argv[]) {
                                               {"Video", "AnisotropicFiltering", "0"},
                                               {"Video", "Antialias", "1"},
                                               {"Video", "AlphaToCoverage", "1"},
+                                              {"Video", "AntialiasPost", "none"},
                                               {"Video", "GpuDriver", ""},
                                               {"Video", "WideMenus", "0"},
                                               {"Game", "PlayMusic", "1"},

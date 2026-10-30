@@ -470,6 +470,7 @@ ftol
 funclets
 funcs
 fwidth
+fxaa
 fxfalse
 fxmisc
 fxtrue
@@ -670,6 +671,7 @@ lookatref
 lookatx
 lookaty
 lostk
+lottes
 loword
 lpanic
 lpcdpname
@@ -694,6 +696,7 @@ lstrcat
 lstrcpy
 lstrlen
 ltgray
+luma
 lyield
 mabi
 maind
@@ -1186,6 +1189,7 @@ strupr
 subu
 sunweth
 superbuild
+supersampling
 surfacelost
 swapchain
 swapchaincomposition
