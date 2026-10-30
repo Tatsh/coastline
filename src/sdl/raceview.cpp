@@ -8,11 +8,13 @@
 #include <SDL3/SDL.h>
 
 #include "common/assetnames.h"
+#include "common/effects.h"
 #include "common/fade.h"
 #include "common/game.h"
 #include "common/hud.h"
 #include "common/hudassets.h"
 #include "common/model.h"
+#include "common/particlesnapshot.h"
 #include "common/race.h"
 #include "common/rallyconfig.h"
 #include "common/render.h"
@@ -22,6 +24,7 @@
 #include "common/strings.h"
 #include "common/track.h"
 #include "common/trackmenuitem.h"
+#include "common/trackselect.h"
 #include "common/vecmath.h"
 #include "common/vehicle.h"
 #include "common/vehiclecamera.h"
@@ -252,6 +255,8 @@ struct RaceView::State {
     std::unique_ptr<RenderTexture> nightSky;
     // The shadow of the car, the 8-bit intensities of the engine, the alpha the shade.
     std::unique_ptr<RenderTexture> shadowTexture;
+    // LoadParticleTexture(): the 64 by 64 intensities of a puff of smoke.
+    std::unique_ptr<RenderTexture> particleTexture;
 };
 
 namespace {
@@ -365,6 +370,97 @@ std::optional<CarShadow> ShadowOf(const RenderTexture *texture, const Vehicle &c
     return shadow;
 }
 
+// WriteParticleCombineMode(): the colour of a puff, its alpha the texel by its opacity. The
+// colour and the opacity of a puff come in the colour of its corners.
+constexpr std::array<std::uint32_t, 2> PARTICLE_COMBINE = CombineLerp(ZERO_AB,
+                                                                      ZERO_AB,
+                                                                      ZERO_D,
+                                                                      SHADE,
+                                                                      TEXEL0,
+                                                                      ZERO_ALPHA,
+                                                                      SHADE,
+                                                                      ZERO_ALPHA,
+                                                                      ZERO_AB,
+                                                                      ZERO_AB,
+                                                                      ZERO_D,
+                                                                      SHADE,
+                                                                      TEXEL0,
+                                                                      ZERO_ALPHA,
+                                                                      SHADE,
+                                                                      ZERO_ALPHA);
+
+// RenderBillboardParticles(): each puff of a list faces the camera, its height 16/3 and its width
+// 4 times its size over the focal length of the camera on a screen of 4:3, as the rectangles of the
+// PC release are drawn, in a colour with the opacity of the puff.
+void AddBillboards(std::vector<FlatVertex> &quads,
+                   u32 head,
+                   std::array<std::uint8_t, 3> color,
+                   const CameraFrame &camera,
+                   float textureScale) {
+    std::array<float, 3> forward = Normalized(Vector(camera.forward));
+    std::array<float, 3> side = Normalized(Cross(forward, Vector(camera.up)));
+    std::array<float, 3> up = Cross(side, forward);
+    float focal = 1.0f / std::tan(camera.fov * 0.5f);
+    for (u32 index = head; index != 0; index = g_pParticleListData[index].next) {
+        const Particle &particle = g_pParticleListData[index];
+        float halfHeight = particle.size * (16.0f / 3.0f) / focal;
+        float halfWidth = particle.size * 4.0f / focal;
+        auto opacity = static_cast<std::uint8_t>((particle.alpha * particle.fade) >> 8);
+        std::array<std::uint8_t, 4> rgba{color[0], color[1], color[2], opacity};
+        auto corner = [&](float across, float down, float u, float v) {
+            quads.push_back({particle.position.x + side[0] * across - up[0] * down,
+                             particle.position.y + side[1] * across - up[1] * down,
+                             u * textureScale,
+                             v * textureScale,
+                             rgba,
+                             particle.position.z + side[2] * across - up[2] * down});
+        };
+        corner(-halfWidth, -halfHeight, 0.0f, 0.0f);
+        corner(halfWidth, -halfHeight, 1.0f, 0.0f);
+        corner(halfWidth, halfHeight, 1.0f, 1.0f);
+        corner(-halfWidth, halfHeight, 0.0f, 1.0f);
+    }
+}
+
+// RenderTireSmoke() by day, in the colours of the dirt and of the pavement of the track, and
+// RenderExhaustAndTireSpray() in the snow, the exhaust in the half of its texture the PC release
+// samples.
+void DrawParticles(SceneRenderer &renderer,
+                   const RenderTexture &smoke,
+                   const RenderTexture &exhaust,
+                   const CameraFrame &camera,
+                   const Matrix4 &viewProjection) {
+    FlatMaterial material;
+    material.combine = PARTICLE_COMBINE;
+    if (!g_dwNightMode) {
+        std::array<std::uint8_t, 3> dirt{0xA0, 0x88, 0x60};
+        std::array<std::uint8_t, 3> paved{0x70, 0x68, 0x58};
+        if (g_dwSelectedTrackId == TRACK_MOUNTAIN || g_dwSelectedTrackId == TRACK_MIRROR_MOUNTAIN) {
+            dirt = {0x60, 0x54, 0x38};
+            paved = {0x60, 0x5C, 0x50};
+        } else if (g_dwSelectedTrackId == TRACK_JUNGLE ||
+                   g_dwSelectedTrackId == TRACK_MIRROR_JUNGLE) {
+            dirt = {0x70, 0x58, 0x38};
+            paved = {0x70, 0x68, 0x58};
+        }
+        std::vector<FlatVertex> quads;
+        AddBillboards(quads, g_wRenderTireSmokeListHead, dirt, camera, 1.0f);
+        AddBillboards(quads, g_wRenderPavedTireSmokeListHead, paved, camera, 1.0f);
+        if (!quads.empty()) {
+            material.texel0 = &smoke;
+            renderer.DrawQuads(quads, material, viewProjection, true);
+        }
+    }
+    if (g_dwSnowMode) {
+        std::vector<FlatVertex> quads;
+        AddBillboards(quads, g_wRenderExhaustParticleListHead, {0xE0, 0xE0, 0xFF}, camera, 0.5f);
+        if (!quads.empty()) {
+            material.texel0 = &exhaust;
+            renderer.DrawQuads(quads, material, viewProjection, true);
+        }
+    }
+}
+
 } // namespace
 
 RaceView::RaceView(std::unique_ptr<State> state) : m_state(std::move(state)) {
@@ -420,6 +516,11 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
         shadow.insert(shadow.end(), {level, level, level, level});
     }
     state->shadowTexture = RenderTexture::FromTexels(renderer, 64, 64, shadow, true, false);
+    std::vector<std::uint8_t> puff;
+    for (unsigned char level : g_abHudTexture64AData) {
+        puff.insert(puff.end(), {level, level, level, level});
+    }
+    state->particleTexture = RenderTexture::FromTexels(renderer, 64, 64, puff, true, true);
     // The race of the PC release draws its text with the fonts of the cartridge.
     state->text = MenuText::Load(renderer, defaults / "n64" / "usa" / "fonts");
     // The start lights, the model of BossRally.pod.
@@ -509,6 +610,11 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
             std::memcpy(place.data(), rows, sizeof(place));
             renderer.DrawModel(wheel, place, viewProjection, lighting, std::nullopt, true);
         }
+    }
+    // The puffs of the snapshot the frame draws.
+    if (snapshot != nullptr) {
+        LoadParticleListHeads(&snapshot->GetParticles());
+        DrawParticles(renderer, *s.particleTexture, *s.shadowTexture, *camera, viewProjection);
     }
     std::optional<Matrix4> lights = StartLightsMatrix();
     if (lights) {

@@ -338,10 +338,13 @@ public:
      * @param corners Four corners for each quad, clockwise from the top left.
      * @param material How the quads are coloured.
      * @param projection The matrix from the space of the corners to the screen.
+     * @param depthTest Whether the quads are hidden behind what is nearer, as the puffs of a race
+     * are, without writing the depth.
      */
     void DrawQuads(std::span<const FlatVertex> corners,
                    const FlatMaterial &material,
-                   const Matrix4 &projection);
+                   const Matrix4 &projection,
+                   bool depthTest = false);
 
     /**
      * Draw the frame and present it.

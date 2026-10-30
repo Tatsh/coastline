@@ -469,6 +469,7 @@ struct QuadDraw {
     std::size_t quadCount;
     FlatMaterial material;
     Matrix4 projection;
+    bool depthTest;
 };
 
 } // namespace
@@ -1129,7 +1130,8 @@ void SceneRenderer::DrawShadowedModel(const RenderModel &model,
 
 void SceneRenderer::DrawQuads(std::span<const FlatVertex> corners,
                               const FlatMaterial &material,
-                              const Matrix4 &projection) {
+                              const Matrix4 &projection,
+                              bool depthTest) {
     std::size_t first = m_state->flat.size();
     for (const FlatVertex &corner : corners) {
         Vertex v{};
@@ -1141,7 +1143,8 @@ void SceneRenderer::DrawQuads(std::span<const FlatVertex> corners,
         std::memcpy(v.color, corner.color.data(), 4);
         m_state->flat.push_back(v);
     }
-    m_state->draws.emplace_back(QuadDraw{first, corners.size() / 4, material, projection});
+    m_state->draws.emplace_back(
+        QuadDraw{first, corners.size() / 4, material, projection, depthTest});
 }
 
 void SceneRenderer::End(const std::filesystem::path *capture) {
@@ -1360,7 +1363,8 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         if (s.flatVertices == nullptr || s.flat.empty()) {
             continue;
         }
-        SDL_GPUGraphicsPipeline *pipeline = s.Pipeline({true, true, DepthMode::None});
+        SDL_GPUGraphicsPipeline *pipeline =
+            s.Pipeline({true, true, quad.depthTest ? DepthMode::Test : DepthMode::None});
         if (pipeline == nullptr) {
             continue;
         }

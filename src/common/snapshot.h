@@ -38,6 +38,9 @@ public:
     const Vehicle &GetVehicle(int index) const {
         return vehicles[index];
     }
+    const ParticleSnapshot &GetParticles() const {
+        return particles;
+    }
 #endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
     void Capture();
     inline void RenderRacingScreen();
