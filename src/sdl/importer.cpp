@@ -27,6 +27,7 @@
 #include "cartridge/us.h"
 #include "common/ghost.h"
 #include "common/podarchive.h"
+#include "common/profile.h"
 #include "common/rigidbody.h"
 #include "common/weather.h"
 #include "sdl/ghostfile.h"
@@ -967,8 +968,6 @@ std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
     constexpr std::uint32_t WEATHERS = 5;
     constexpr std::uint32_t CAR_MODEL = 0x60;
     constexpr std::uint32_t SEASON = 0x1C;
-    constexpr std::uint32_t SEASONS = 6;
-    constexpr std::uint32_t SEASON_RACES = 4;
     constexpr std::uint32_t MENU_ITEM = 20;
     const TrackMenuAddresses &at = release == RomRelease::Usa ? USA_TRACK_MENU :
                                    release == RomRelease::Eur ? EUR_TRACK_MENU :
@@ -1000,7 +999,7 @@ std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
         std::uint32_t modelStart = word(entry + 0x0C);
         auto asset = std::ranges::find(assets, modelStart, &ManifestAsset::romStart);
         if (!name || asset == assets.end()) {
-            return std::format("Track {} of the track menu has no name or no model.", i);
+            return fmt::format("Track {} of the track menu has no name or no model.", i);
         }
         tracks.push_back({{"name", *name},
                           {"flags", word(entry + 0x04)},
@@ -1012,7 +1011,7 @@ std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
         std::uint32_t item = word(at.weatherMenuItems + i * 4);
         auto name = inside(item, 4) ? text(word(item)) : std::nullopt;
         if (!name) {
-            return std::format("Weather {} of the menus has no name.", i);
+            return fmt::format("Weather {} of the menus has no name.", i);
         }
         weathers.push_back(*name);
     }
@@ -1026,7 +1025,7 @@ std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
     for (std::uint32_t i = 0; i < carCount; ++i) {
         auto name = text(word(at.carModels + i * CAR_MODEL));
         if (!name) {
-            return std::format("Car {} has no name.", i);
+            return fmt::format("Car {} has no name.", i);
         }
         std::string directory;
         for (char c : *name) {
@@ -1100,7 +1099,7 @@ std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
     for (std::size_t i = 0; i < OPTION_LISTS.size(); ++i) {
         auto list = options(at.options[i]);
         if (!list) {
-            return std::format("The {} options of the car select screen are not readable.",
+            return fmt::format("The {} options of the car select screen are not readable.",
                                OPTION_LISTS[i]);
         }
         carSelect[OPTION_LISTS[i]] = *list;
@@ -1112,7 +1111,7 @@ std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
         auto name = text(word(entry));
         auto subtitle = text(word(entry + 4));
         if (!name || !subtitle || bytes[16] >= cars.size() || bytes[17] >= cars.size()) {
-            return std::format("Season {} of the championship is not readable.", i);
+            return fmt::format("Season {} of the championship is not readable.", i);
         }
         nlohmann::ordered_json races = nlohmann::ordered_json::array();
         for (std::uint32_t race = 0; race < SEASON_RACES; ++race) {
