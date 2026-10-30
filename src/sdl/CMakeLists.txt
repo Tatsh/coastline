@@ -89,6 +89,7 @@ add_library(
   pending.cpp
   ptr32.cpp
   runtimebuffers.cpp
+  scenerenderer.cpp
   stringresources.cpp
   tlrenderer.cpp
   "${CMAKE_SOURCE_DIR}/src/common/audio.c"

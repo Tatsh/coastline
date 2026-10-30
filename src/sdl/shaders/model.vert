@@ -11,14 +11,32 @@ layout(location = 0) out vec2 outTexCoord;
 layout(location = 1) out vec3 outNormal;
 layout(location = 2) out vec4 outColor;
 
+// The morph targets of the keys of an animation of the vertices: for each key, the displacement of
+// the position and then of the normal of every vertex.
+layout(std430, set = 0, binding = 0) readonly buffer Targets {
+    vec4 displacements[];
+};
+
+// morph: x and y are the two keys to blend, z is the vertices of a key, and w is 1 where the model
+// is animated. blend is the share of the second key.
 layout(set = 1, binding = 0) uniform Transform {
     mat4 viewProjection;
     mat4 model;
+    ivec4 morph;
+    vec4 blend;
 };
 
 void main() {
-    gl_Position = viewProjection * model * vec4(inPosition, 1.0);
+    vec3 position = inPosition;
+    vec3 normal = inNormal;
+    if (morph.w == 1) {
+        int first = (morph.x * morph.z + gl_VertexIndex) * 2;
+        int second = (morph.y * morph.z + gl_VertexIndex) * 2;
+        position += mix(displacements[first].xyz, displacements[second].xyz, blend.x);
+        normal += mix(displacements[first + 1].xyz, displacements[second + 1].xyz, blend.x);
+    }
+    gl_Position = viewProjection * model * vec4(position, 1.0);
     outTexCoord = inTexCoord;
-    outNormal = mat3(model) * inNormal;
+    outNormal = mat3(model) * normal;
     outColor = inColor;
 }

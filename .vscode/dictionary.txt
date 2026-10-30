@@ -965,6 +965,7 @@ savd
 savestate
 sawkins
 sbclaude
+scenerenderer
 scheduledevent
 schemafile
 screendraw

@@ -25,8 +25,11 @@ layout(set = 3, binding = 0) uniform Material {
     vec4 directional;
 };
 
-// The inputs of the first cycle of the colour combiner, as the RDP numbers them.
-vec3 ColorInput(uint code, int slot, vec4 t0, vec4 t1, vec4 shade, float lod) {
+// The inputs of a cycle of the colour combiner, as the RDP numbers them. The second cycle reads the
+// colour of the first as COMBINED.
+vec3 ColorInput(uint code, int slot, vec4 t0, vec4 t1, vec4 shade, float lod, vec4 combined) {
+    if (code == 0u) return combined.rgb;
+    if (code == 7u && slot == 2) return vec3(combined.a);
     switch (code) {
     case 1u: return t0.rgb;
     case 2u: return t1.rgb;
@@ -49,7 +52,8 @@ vec3 ColorInput(uint code, int slot, vec4 t0, vec4 t1, vec4 shade, float lod) {
     return vec3(0.0);
 }
 
-float AlphaInput(uint code, int slot, vec4 t0, vec4 t1, vec4 shade, float lod) {
+float AlphaInput(uint code, int slot, vec4 t0, vec4 t1, vec4 shade, float lod, vec4 combined) {
+    if (code == 0u && slot != 2) return combined.a;
     switch (code) {
     case 1u: return t0.a;
     case 2u: return t1.a;
@@ -77,15 +81,30 @@ void main() {
         float lod = clamp(log2(max(max(footprint.x, footprint.y), 1.0)), 0.0, 1.0);
         uint high = combine.x;
         uint low = combine.y;
-        vec3 rgb = (ColorInput(high >> 20 & 0xfu, 0, t0, t1, shade, lod) -
-                    ColorInput(low >> 28 & 0xfu, 1, t0, t1, shade, lod)) *
-                       ColorInput(high >> 15 & 0x1fu, 2, t0, t1, shade, lod) +
-                   ColorInput(low >> 15 & 0x7u, 3, t0, t1, shade, lod);
-        float alpha = (AlphaInput(high >> 12 & 0x7u, 0, t0, t1, shade, lod) -
-                       AlphaInput(low >> 12 & 0x7u, 1, t0, t1, shade, lod)) *
-                          AlphaInput(high >> 9 & 0x7u, 2, t0, t1, shade, lod) +
-                      AlphaInput(low >> 9 & 0x7u, 3, t0, t1, shade, lod);
-        color = vec4(rgb, alpha);
+        vec4 none = vec4(0.0);
+        vec3 rgb = (ColorInput(high >> 20 & 0xfu, 0, t0, t1, shade, lod, none) -
+                    ColorInput(low >> 28 & 0xfu, 1, t0, t1, shade, lod, none)) *
+                       ColorInput(high >> 15 & 0x1fu, 2, t0, t1, shade, lod, none) +
+                   ColorInput(low >> 15 & 0x7u, 3, t0, t1, shade, lod, none);
+        float alpha = (AlphaInput(high >> 12 & 0x7u, 0, t0, t1, shade, lod, none) -
+                       AlphaInput(low >> 12 & 0x7u, 1, t0, t1, shade, lod, none)) *
+                          AlphaInput(high >> 9 & 0x7u, 2, t0, t1, shade, lod, none) +
+                      AlphaInput(low >> 9 & 0x7u, 3, t0, t1, shade, lod, none);
+        color = clamp(vec4(rgb, alpha), 0.0, 1.0);
+        // The second cycle, where combine.z is 1, takes the first as COMBINED. It reads the texels
+        // the other way round.
+        if (combine.z == 1u) {
+            vec4 combined = color;
+            rgb = (ColorInput(high >> 5 & 0xfu, 0, t1, t0, shade, lod, combined) -
+                   ColorInput(low >> 24 & 0xfu, 1, t1, t0, shade, lod, combined)) *
+                      ColorInput(high & 0x1fu, 2, t1, t0, shade, lod, combined) +
+                  ColorInput(low >> 6 & 0x7u, 3, t1, t0, shade, lod, combined);
+            alpha = (AlphaInput(low >> 21 & 0x7u, 0, t1, t0, shade, lod, combined) -
+                     AlphaInput(low >> 3 & 0x7u, 1, t1, t0, shade, lod, combined)) *
+                        AlphaInput(low >> 18 & 0x7u, 2, t1, t0, shade, lod, combined) +
+                    AlphaInput(low & 0x7u, 3, t1, t0, shade, lod, combined);
+            color = clamp(vec4(rgb, alpha), 0.0, 1.0);
+        }
     }
     if (color.a < flags.x) {
         discard;

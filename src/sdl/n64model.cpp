@@ -1007,6 +1007,7 @@ struct VertexAnimation {
     std::uint16_t flags;
     float startTime;
     float endTime;
+    float time;
     std::vector<VertexKey> keys;
 };
 
@@ -1595,7 +1596,10 @@ BuildModel(std::span<const std::uint8_t> bytes,
               {{"coastlineVertexAnimation",
                 {{"flags", animation.flags},
                  {"startTime", animation.startTime},
-                 {"endTime", animation.endTime}}}}}});
+                 {"endTime", animation.endTime},
+                 {"time", animation.time},
+                 {"firstTarget", firstTargetOf[a]},
+                 {"keyCount", animation.keys.size()}}}}}});
     }
 
     std::size_t residualView = AddView(model, residual.data(), residual.size());
@@ -1822,6 +1826,7 @@ std::expected<GltfModel, std::string> FrontEndModelToGltf(std::span<const std::u
                                       .flags = Big16(bytes, at + 0x10),
                                       .startTime = std::bit_cast<float>(Big32(bytes, at + 0x14)),
                                       .endTime = std::bit_cast<float>(Big32(bytes, at + 0x18)),
+                                      .time = std::bit_cast<float>(Big32(bytes, at + 0x1c)),
                                       .keys = {}};
             std::uint32_t keyCount = Big32(bytes, at + 0xc);
             for (std::uint32_t k = 0; k < keyCount && at + 0x20 + k * 4 + 4 <= bytes.size(); ++k) {
