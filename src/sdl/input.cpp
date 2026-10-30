@@ -22,6 +22,10 @@ std::vector<int> g_ignoredKeys;
 ControllerState g_secondController;
 // The open gamepads in the order they connected.
 std::vector<SDL_Gamepad *> g_gamepads;
+// The units of the wheel of a DirectInput mouse in each notch, WHEEL_DELTA of Win32.
+constexpr float WHEEL_UNITS_PER_NOTCH = 120;
+// The units of the wheel scrolled since TakeMouseWheel() last read them.
+float g_mouseWheel = 0;
 
 struct KeyBinding {
     SDL_Scancode key;
@@ -263,6 +267,12 @@ void InputBindings::HandleEvent(const SDL_Event &event) {
             g_gamepads.erase(removed);
             LogPlayerDevices();
         }
+    } else if (event.type == SDL_EVENT_MOUSE_WHEEL) {
+        // DirectInput reports the wheel as the hand turns it, whatever the scrolling of the
+        // system.
+        float notches =
+            event.wheel.direction == SDL_MOUSEWHEEL_FLIPPED ? -event.wheel.y : event.wheel.y;
+        g_mouseWheel += notches * WHEEL_UNITS_PER_NOTCH;
     }
 }
 
@@ -314,6 +324,12 @@ void IgnoreKeyUntilReleased(SDL_Scancode scancode) {
 
 void SetSecondControllerState(const ControllerState &state) {
     g_secondController = state;
+}
+
+int TakeMouseWheel() {
+    int units = static_cast<int>(g_mouseWheel);
+    g_mouseWheel -= static_cast<float>(units);
+    return units;
 }
 
 } // namespace coastline

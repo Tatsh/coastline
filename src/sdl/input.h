@@ -55,8 +55,8 @@ public:
     InputBindings &operator=(const InputBindings &) = delete;
 
     /**
-     * Open or close a gamepad for a connection event, and log the devices of the players. Other
-     * events are ignored.
+     * Open or close a gamepad for a connection event, and log the devices of the players. A wheel
+     * event of the mouse adds to the wheel TakeMouseWheel() reads. Other events are ignored.
      *
      * @param event The SDL event.
      */
@@ -132,5 +132,12 @@ void IgnoreKeyUntilReleased(SDL_Scancode scancode);
  * @param state The state of the second port.
  */
 void SetSecondControllerState(const ControllerState &state);
+
+/**
+ * @return The wheel of the mouse scrolled since the last call, in the units of the third axis of a
+ * DirectInput mouse (120 a notch, positive away from the user). A fraction of a unit is retained
+ * for the next call.
+ */
+int TakeMouseWheel();
 
 } // namespace coastline

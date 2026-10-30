@@ -430,9 +430,7 @@ void RaceInput::ReadMouse() {
     float dy = 0;
     SDL_GetRelativeMouseState(&dx, &dy);
     SDL_MouseButtonFlags buttons = SDL_GetMouseState(nullptr, nullptr);
-    // ponytail: SDL reports the wheel only as events, so the third axis of the mouse does not
-    // move; read SDL_EVENT_MOUSE_WHEEL into it when a binding needs the wheel.
-    int dz = 0;
+    int dz = TakeMouseWheel();
     state.accumulatedX = previous.accumulatedX + static_cast<int>(dx);
     // The three accumulators add to the horizontal accumulator of the state before, as in the
     // original.
