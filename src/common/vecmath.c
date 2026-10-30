@@ -8,8 +8,6 @@
 #else
 #include <math.h>
 #include <string.h>
-
-#include "common/x87.h"
 #endif
 
 /* The declarations of NormalizeLightMatrix() and GetMaxAbsValue12() give them C linkage. */
@@ -790,7 +788,7 @@ f32 Atan2f(f32 x, f32 y) {
 
 #if TGR_BOSS_RALLY
     squared = (long double)y * y + (long double)x * x;
-    length = X87SquareRoot((long double)squared);
+    length = sqrtl((long double)squared);
 #else
     length = sqrtf(y * y + x * x);
 #endif

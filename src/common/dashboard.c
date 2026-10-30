@@ -16,11 +16,12 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/directplay.h"
 #endif
+#include <math.h>
+
 #include "common/combine.h"
 #include "common/hudcanvas.h"
 #include "common/hudquad.h"
 #include "common/renderbackend.h"
-#include "common/x87.h"
 #else
 #include <PR/gu.h>
 #include <PR/os_libc.h>
@@ -45,8 +46,8 @@
 #define DASHBOARD_AXIS_2 z
 #define DASHBOARD_VERTEX(vertex, axis) ((vertex).position.DASHBOARD_AXIS_##axis)
 #define DASHBOARD_COORD(value) ((s16)(s64)(value))
-#define DASHBOARD_COS X87Cosine
-#define DASHBOARD_SIN X87Sine
+#define DASHBOARD_COS cosl
+#define DASHBOARD_SIN sinl
 namespace {
     /** @ghidraAddress BRD3D: 0x104afd20 */
     ConvertedModelVertex g_aGaugeNeedleVerts[2][DASHBOARD_VIEWS][4];

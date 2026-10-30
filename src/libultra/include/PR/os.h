@@ -932,6 +932,8 @@ void osSyncPrintf(const char *fmt, ...);
  */
 void rmonPrintf(const char *fmt, ...);
 
+/* MSVC has intrinsics of three of the names of the 64-bit helpers of the console. */
+#ifndef _MSC_VER
 /**
  * @ghidraAddress USA: 0x80266020
  * @ghidraAddress EUR: 0x802677b0
@@ -1004,6 +1006,7 @@ long long __ll_mod(long long a0, long long a1);
  * @ghidraAddress JPN: 0x80267544
  */
 long long __ll_rshift(long long a0, long long a1);
+#endif /* _MSC_VER */
 
 /**
  * @ghidraAddress USA: 0x802669d0

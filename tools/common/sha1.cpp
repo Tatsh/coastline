@@ -2,7 +2,7 @@
 
 #include <array>
 #include <bit>
-#include <format>
+#include <cstdio>
 
 namespace Tools::Common {
 
@@ -77,7 +77,9 @@ std::string sha1Hex(std::span<const std::uint8_t> data) {
     }
     std::string hex;
     for (const auto word : state) {
-        hex += std::format("{:08x}", word);
+        char digits[9];
+        std::snprintf(digits, sizeof(digits), "%08x", static_cast<unsigned>(word));
+        hex += digits;
     }
     return hex;
 }

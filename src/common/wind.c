@@ -3,7 +3,7 @@
 #include "common/weather.h"
 
 #if TGR_BOSS_RALLY
-#include "common/x87.h"
+#include <math.h>
 #else
 #include <PR/gu.h>
 #endif
@@ -19,8 +19,8 @@ f32 g_fWindAngle;
 #define WIND_STRENGTH_MIN 0.5f
 
 #if TGR_BOSS_RALLY
-#define WindCosine(angle) X87Cosine((long double)(angle))
-#define WindSine(angle) X87Sine((long double)(angle))
+#define WindCosine(angle) cosl((long double)(angle))
+#define WindSine(angle) sinl((long double)(angle))
 #endif /* TGR_BOSS_RALLY */
 
 void UpdateWindDirection(void) {

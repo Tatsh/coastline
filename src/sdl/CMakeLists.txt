@@ -70,6 +70,11 @@ if(NOT TARGET ZLIB::ZLIB AND TARGET zlibstatic)
   add_library(ZLIB::ZLIB ALIAS zlibstatic)
 endif()
 
+# The code of the PC release takes char as signed, as MSVC does, which Linux on ARM does not.
+if(NOT MSVC)
+  add_compile_options(-fsigned-char)
+endif()
+
 # EAR, the sound engine of the PC release, on SDL audio.
 add_subdirectory("${CMAKE_SOURCE_DIR}/src/ear" "${CMAKE_BINARY_DIR}/src/ear")
 
