@@ -164,6 +164,7 @@ add_library(
   config.cpp
   consolesegment.cpp
   controllerpak.cpp
+  controls.cpp
   decalcar.cpp
   decaldraw.cpp
   decaleditor.cpp

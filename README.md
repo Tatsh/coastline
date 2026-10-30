@@ -99,6 +99,65 @@ and writes `game.log` to `~/.local/state/coastline`. The XDG Base Directory vari
 directories. Windows uses the roaming and local application data folders, and macOS uses
 Application Support, Caches, and Logs in the library of the user.
 
+The `Controls` section of `BossRally.ini` maps the gamepad. `Preset` chooses `Default` or `Kart`,
+and a key of an action present in the section replaces the binding of the preset for that action.
+A value lists SDL gamepad names separated by commas (`a`, `b`, `x`, `y`, `back`, `start`,
+`leftshoulder`, `rightshoulder`, `leftstick`, `rightstick`, `dpup`, `dpdown`, `dpleft`, `dpright`,
+`lefttrigger`, `righttrigger`, `leftx`, `lefty`, `rightx`, and `righty`). `a`, `b`, `x`, and `y`
+are the south, east, west, and north buttons. A `+` or `-` after an axis selects one half of it,
+and an axis without a sign reads its positive half. An axis steers and accelerates in proportion,
+and a button gives the full amount. An empty value unbinds the action. The log records each name
+that is not a button or an axis, and the game ignores it.
+
+```ini
+[Controls]
+Preset = Default
+Accelerate = a,righttrigger
+SteerLeft = leftx-,dpleft
+```
+
+These are the keys and the bindings of each preset.
+
+| Key               | `Default`                    | `Kart`                       |
+| ----------------- | ---------------------------- | ---------------------------- |
+| `SteerLeft`       | `leftx-,dpleft`              | `leftx-,dpleft`              |
+| `SteerRight`      | `leftx+,dpright`             | `leftx+,dpright`             |
+| `Accelerate`      | `a,righttrigger`             | `b`                          |
+| `Brake`           | `b,lefttrigger`              | `a`                          |
+| `Reverse`         | `x`                          | `x`                          |
+| `GearUp`          | `rightshoulder`              | `rightshoulder,righttrigger` |
+| `GearDown`        | `leftshoulder`               | `leftshoulder,lefttrigger`   |
+| `CockpitCamera`   | `righty-`                    | `righty-`                    |
+| `BumperCamera`    | `rightx-`                    | `rightx-`                    |
+| `ChaseCamera`     | `righty+,y`                  | `righty+,y`                  |
+| `PauseMenuUp`     | `lefty-,dpup`                | `lefty-,dpup`                |
+| `PauseMenuDown`   | `lefty+,dpdown`              | `lefty+,dpdown`              |
+| `PauseMenuSelect` | `a`                          | `b`                          |
+| `Pause`           | `start`                      | `start`                      |
+| `StartOrRespawn`  | `back`                       | `back`                       |
+| `MenuA`           | `a`                          | `b`                          |
+| `MenuB`           | `b,x`                        | `a,x`                        |
+| `MenuZ`           | `lefttrigger`                | `lefttrigger`                |
+| `MenuStart`       | `start`                      | `start`                      |
+| `MenuL`           | `leftshoulder`               | `leftshoulder`               |
+| `MenuR`           | `rightshoulder,righttrigger` | `rightshoulder,righttrigger` |
+| `MenuCUp`         | `righty-`                    | `righty-`                    |
+| `MenuCDown`       | `righty+`                    | `righty+`                    |
+| `MenuCLeft`       | `rightx-`                    | `rightx-`                    |
+| `MenuCRight`      | `rightx+`                    | `rightx+`                    |
+| `MenuDUp`         | `dpup`                       | `dpup`                       |
+| `MenuDDown`       | `dpdown`                     | `dpdown`                     |
+| `MenuDLeft`       | `dpleft`                     | `dpleft`                     |
+| `MenuDRight`      | `dpright`                    | `dpright`                    |
+| `MenuStickLeft`   | `leftx-`                     | `leftx-`                     |
+| `MenuStickRight`  | `leftx+`                     | `leftx+`                     |
+| `MenuStickUp`     | `lefty-`                     | `lefty-`                     |
+| `MenuStickDown`   | `lefty+`                     | `lefty+`                     |
+
+`Kart` follows Mario Kart 8 on the Pro Controller, with the east button accelerating and the south
+button braking. A press of `StartOrRespawn` starts a race, and a second press within half a second
+resets the car. The menu keys also drive the second player of a race.
+
 The data comes from a Boss Rally disc image and a Top Gear Rally cartridge image. The import
 checks the cartridge against the SHA-1 of each release, and converts the CD audio of a CUE sheet
 to FLAC. An ISO image has no CD audio. The import writes every file to `assets/defaults` in the

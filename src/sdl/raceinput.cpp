@@ -1,7 +1,7 @@
 // The input of a race on SDL: the keyboard, the first gamepad, and the mouse, read into the states
-// the bindings of the PC release address (the scan codes of DirectInput, the buttons and the axes
-// of a joystick of -128 to 128 with no dead zone, and the mouse), and the force feedback of the
-// gamepad through the haptic or the rumble of SDL.
+// the bindings of the PC release address (the scan codes of DirectInput, the actions of the
+// Controls section of BossRally.ini in place of the joystick, and the mouse), and the force
+// feedback of the gamepad through the haptic or the rumble of SDL.
 #include <algorithm>
 #include <array>
 #include <cstdio>
@@ -27,6 +27,7 @@
 #include "common/soundsystem.h"
 #include "common/vehicle.h"
 #include "common/vehicleaccess.h"
+#include "controls.h"
 #include "input.h"
 
 namespace coastline {
@@ -34,12 +35,10 @@ namespace coastline {
 namespace {
 
 constexpr int KEYBOARD_KEY_COUNT = 256;
-constexpr int JOYSTICK_BUTTON_COUNT = 128;
 constexpr int MOUSE_BUTTON_COUNT = 4;
 // The bit of a key or a button that is set while it is down.
 constexpr unsigned char DOWN = 0x80;
-// The range DirectInput gives the axes of the joystick, with no dead zone.
-constexpr int JOYSTICK_AXIS_MIN = -128;
+// The greatest value DirectInput gives an axis of the joystick.
 constexpr int JOYSTICK_AXIS_MAX = 128;
 // The scan codes of DirectInput the poll reads by name.
 constexpr int DIK_F5 = 0x3f;
@@ -170,44 +169,47 @@ constexpr ScanCode SCAN_CODES[] = {
     {0xdd, SDL_SCANCODE_APPLICATION},
 };
 
-// The buttons of a gamepad in the order DirectInput numbers the buttons of an XInput controller,
-// the order the default bindings of the controllers address.
-constexpr SDL_GamepadButton JOYSTICK_BUTTONS[] = {
-    SDL_GAMEPAD_BUTTON_SOUTH,
-    SDL_GAMEPAD_BUTTON_EAST,
-    SDL_GAMEPAD_BUTTON_WEST,
-    SDL_GAMEPAD_BUTTON_NORTH,
-    SDL_GAMEPAD_BUTTON_LEFT_SHOULDER,
-    SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER,
-    SDL_GAMEPAD_BUTTON_BACK,
-    SDL_GAMEPAD_BUTTON_START,
-    SDL_GAMEPAD_BUTTON_LEFT_STICK,
-    SDL_GAMEPAD_BUTTON_RIGHT_STICK,
-    SDL_GAMEPAD_BUTTON_DPAD_UP,
-    SDL_GAMEPAD_BUTTON_DPAD_DOWN,
-    SDL_GAMEPAD_BUTTON_DPAD_LEFT,
-    SDL_GAMEPAD_BUTTON_DPAD_RIGHT,
-    SDL_GAMEPAD_BUTTON_GUIDE,
-    SDL_GAMEPAD_BUTTON_MISC1,
-};
-
-#ifdef ENABLE_PATCHES
-struct GamepadAlternate {
+struct RaceControl {
+    ControlAction action;
     int binding;
-    std::size_t button;
 };
 
-// The bindings the joystick of the PC release leaves to the keyboard, and the buttons of
-// JOYSTICK_BUTTONS that select them as well. The right and the left shoulder change gear up and
-// down, Start pauses, and Back starts the race and resets the car.
-constexpr GamepadAlternate GAMEPAD_ALTERNATES[] = {{5, 5}, {6, 4}, {15, 7}, {16, 6}};
-#endif /* ENABLE_PATCHES */
+// The actions of the Controls section and the bindings of the PC release they drive.
+constexpr RaceControl RACE_CONTROLS[] = {
+    {CONTROL_STEER_LEFT, 0},
+    {CONTROL_STEER_RIGHT, 1},
+    {CONTROL_ACCELERATE, 2},
+    {CONTROL_BRAKE, 3},
+    {CONTROL_REVERSE, 4},
+    {CONTROL_GEAR_UP, 5},
+    {CONTROL_GEAR_DOWN, 6},
+    {CONTROL_COCKPIT_CAMERA, 8},
+    {CONTROL_BUMPER_CAMERA, 9},
+    {CONTROL_CHASE_CAMERA, 10},
+    {CONTROL_PAUSE_MENU_UP, 12},
+    {CONTROL_PAUSE_MENU_DOWN, 13},
+    {CONTROL_PAUSE_MENU_SELECT, 14},
+    {CONTROL_PAUSE, 15},
+    {CONTROL_START_OR_RESPAWN, 16},
+};
+
+// The kinds of a binding of the PC release that address a button or one of the three axes of a
+// joystick, read from the Controls section in place of the joystick.
+constexpr unsigned JOYSTICK_BUTTON_KIND = 0x100;
+constexpr unsigned JOYSTICK_AXIS_KIND = 0x8000;
+constexpr unsigned MOUSE_AXIS_KIND = 0x8600;
+
+bool IsJoystickKind(unsigned kind) {
+    return kind == JOYSTICK_BUTTON_KIND || (kind >= JOYSTICK_AXIS_KIND && kind < MOUSE_AXIS_KIND);
+}
+
+// A magnitude of the Controls section on the range of an axis of DirectInput, 0 to 128.
+int ScaleControl(int magnitude) {
+    return magnitude * JOYSTICK_AXIS_MAX / CONTROL_FULL;
+}
 
 struct JoystickState {
-    int x;
-    int y;
-    int z;
-    std::array<unsigned char, JOYSTICK_BUTTON_COUNT> buttons;
+    std::array<int, CONTROL_ACTION_COUNT> controls;
 };
 
 struct MouseState {
@@ -246,12 +248,6 @@ void ClampMouseAxis(int &axis, int &accumulated, int range) {
     }
 }
 
-// DirectInput maps the whole range of the device onto the range of the property, rounding down.
-int ScaleJoystickAxis(Sint16 axis) {
-    return JOYSTICK_AXIS_MIN +
-           (static_cast<int>(axis) + 32768) * (JOYSTICK_AXIS_MAX - JOYSTICK_AXIS_MIN) / 65535;
-}
-
 } // namespace
 
 /** The devices and the state of the input of a race. */
@@ -278,9 +274,7 @@ private:
     void ReadMouse();
     unsigned char IsHeld(int binding) const;
     unsigned char IsPressed(int binding) const;
-#ifdef ENABLE_PATCHES
-    unsigned char ReadGamepadAlternate(int binding, bool pressed) const;
-#endif
+    int ControlOf(int binding, bool current) const;
     int AxisOf(unsigned kind, bool current) const;
     int ReadAxisMagnitude(int binding) const;
     bool IsForceFeedbackInUse() const;
@@ -350,23 +344,24 @@ void RaceInput::ReadJoystick() {
     m_joystickPrevious = m_joystickCurrent;
     m_joystickCurrent = (m_joystickCurrent - 1) & 1;
     auto &state = m_joystick[static_cast<std::size_t>(m_joystickCurrent)];
-    // A device that cannot be read retains its axes and clears its buttons.
-    state.buttons.fill(0);
+    state.controls.fill(0);
     if (m_gamepad == nullptr || !SDL_GamepadConnected(m_gamepad)) {
         return;
     }
-    state.x = ScaleJoystickAxis(SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTX));
-    state.y = ScaleJoystickAxis(SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFTY));
-    // DirectInput reports the two triggers of an XInput controller as one axis, the left trigger
-    // toward its maximum.
-    int triggers = SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_LEFT_TRIGGER) -
-                   SDL_GetGamepadAxis(m_gamepad, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER);
-    state.z = ScaleJoystickAxis(static_cast<Sint16>(std::clamp(triggers, -32768, 32767)));
-    for (std::size_t i = 0; i < std::size(JOYSTICK_BUTTONS); ++i) {
-        if (SDL_GetGamepadButton(m_gamepad, JOYSTICK_BUTTONS[i])) {
-            state.buttons[i] = DOWN;
-        }
+    for (const RaceControl &control : RACE_CONTROLS) {
+        state.controls[control.action] = ReadControl(m_gamepad, control.action);
     }
+}
+
+// The magnitude of the action of the Controls section that drives a binding, 0 to 128.
+int RaceInput::ControlOf(int binding, bool current) const {
+    const auto *control = std::ranges::find(RACE_CONTROLS, binding, &RaceControl::binding);
+    if (control == std::end(RACE_CONTROLS)) {
+        return 0;
+    }
+    const JoystickState &state =
+        m_joystick[static_cast<std::size_t>(current ? m_joystickCurrent : m_joystickPrevious)];
+    return ScaleControl(state.controls[control->action]);
 }
 
 void RaceInput::ReadMouse() {
@@ -399,13 +394,9 @@ void RaceInput::ReadMouse() {
     }
 }
 
+// The axes of the joystick are read through ControlOf().
 int RaceInput::AxisOf(unsigned kind, bool current) const {
     const unsigned axis = (kind - 0x8000) >> 9;
-    if (axis < 3) {
-        const JoystickState &state =
-            m_joystick[static_cast<std::size_t>(current ? m_joystickCurrent : m_joystickPrevious)];
-        return axis == 0 ? state.x : axis == 1 ? state.y : state.z;
-    }
     const MouseState &state =
         m_mouse[static_cast<std::size_t>(current ? m_mouseCurrent : m_mousePrevious)];
     return axis == 3 ? state.x : axis == 4 ? state.y : state.z;
@@ -418,32 +409,21 @@ unsigned char RaceInput::IsHeld(int binding) const {
     const auto &keys = m_keyboard[static_cast<std::size_t>(m_keyboardCurrent)];
     unsigned char result = 0;
 
-    switch (kind) {
-    case 0:
+    if (IsJoystickKind(kind)) {
+        result = ControlOf(binding, true) > 50 ? DOWN : 0;
+    } else if (kind == 0) {
         result = keys[button] & DOWN;
-        break;
-    case 0x100:
-        result =
-            m_joystick[static_cast<std::size_t>(m_joystickCurrent)].buttons[button & 0x7f] & DOWN;
-        break;
-    case 0x300:
+    } else if (kind == 0x300) {
         result = m_mouse[static_cast<std::size_t>(m_mouseCurrent)].buttons[button & 3] & DOWN;
-        break;
-    default:
-        if (kind >= 0x8000 && kind <= 0x8b00) {
-            const int current = AxisOf(kind, true);
-            result = ((kind & 0x100) ? current > 50 : current < -50) ? DOWN : 0;
-        }
-        break;
+    } else if (kind >= MOUSE_AXIS_KIND && kind <= 0x8b00) {
+        const int current = AxisOf(kind, true);
+        result = ((kind & 0x100) ? current > 50 : current < -50) ? DOWN : 0;
     }
     for (unsigned short control : entry.awAlternateControls) {
         if ((control & 0xff00) == 0) {
             result |= keys[control & 0xff] & DOWN;
         }
     }
-#ifdef ENABLE_PATCHES
-    result |= ReadGamepadAlternate(binding, false);
-#endif
     return result;
 }
 
@@ -455,66 +435,47 @@ unsigned char RaceInput::IsPressed(int binding) const {
     const auto &previousKeys = m_keyboard[static_cast<std::size_t>(m_keyboardPrevious)];
     unsigned char result = 0;
 
-    switch (kind) {
-    case 0:
+    if (IsJoystickKind(kind)) {
+        result = ControlOf(binding, false) <= 50 && ControlOf(binding, true) > 50 ? DOWN : 0;
+    } else if (kind == 0) {
         result = IsPressedEdge(previousKeys[button], keys[button]);
-        break;
-    case 0x100:
-        result = IsPressedEdge(
-            m_joystick[static_cast<std::size_t>(m_joystickPrevious)].buttons[button & 0x7f],
-            m_joystick[static_cast<std::size_t>(m_joystickCurrent)].buttons[button & 0x7f]);
-        break;
-    case 0x300:
+    } else if (kind == 0x300) {
         result =
             IsPressedEdge(m_mouse[static_cast<std::size_t>(m_mousePrevious)].buttons[button & 3],
                           m_mouse[static_cast<std::size_t>(m_mouseCurrent)].buttons[button & 3]);
-        break;
-    default:
-        if (kind >= 0x8000 && kind <= 0x8b00) {
-            const int previous = AxisOf(kind, false);
-            const int current = AxisOf(kind, true);
-            if (kind & 0x100) {
-                result = previous <= 50 && current > 50 ? DOWN : 0;
-            } else {
-                result = previous >= -50 && current < -50 ? DOWN : 0;
-            }
+    } else if (kind >= MOUSE_AXIS_KIND && kind <= 0x8b00) {
+        const int previous = AxisOf(kind, false);
+        const int current = AxisOf(kind, true);
+        if (kind & 0x100) {
+            result = previous <= 50 && current > 50 ? DOWN : 0;
+        } else {
+            result = previous >= -50 && current < -50 ? DOWN : 0;
         }
-        break;
     }
     for (unsigned short control : entry.awAlternateControls) {
         if ((control & 0xff00) == 0) {
             result |= IsPressedEdge(previousKeys[control & 0xff], keys[control & 0xff]);
         }
     }
-#ifdef ENABLE_PATCHES
-    result |= ReadGamepadAlternate(binding, true);
-#endif
     return result;
 }
-
-#ifdef ENABLE_PATCHES
-unsigned char RaceInput::ReadGamepadAlternate(int binding, bool pressed) const {
-    if (g_GlobalRallyConfig.dwInputDeviceType != 1 && g_GlobalRallyConfig.dwInputDeviceType != 2) {
-        return 0;
-    }
-    const auto &current = m_joystick[static_cast<std::size_t>(m_joystickCurrent)].buttons;
-    const auto &previous = m_joystick[static_cast<std::size_t>(m_joystickPrevious)].buttons;
-    unsigned char result = 0;
-    for (const auto &alternate : GAMEPAD_ALTERNATES) {
-        if (alternate.binding == binding) {
-            result |= pressed ?
-                          IsPressedEdge(previous[alternate.button], current[alternate.button]) :
-                          current[alternate.button] & DOWN;
-        }
-    }
-    return result;
-}
-#endif /* ENABLE_PATCHES */
 
 int RaceInput::ReadAxisMagnitude(int binding) const {
     const unsigned kind = g_GlobalRallyConfig.pActiveInputBindings[binding].wControl & 0xff00;
     if (kind < 0x8000 || kind > 0x8b00) {
         return -1;
+    }
+    if (IsJoystickKind(kind)) {
+        // A key of the alternates drives an analogue action fully, as a button of the gamepad does.
+        const auto &keys = m_keyboard[static_cast<std::size_t>(m_keyboardCurrent)];
+        int value = ControlOf(binding, true);
+        for (unsigned short control :
+             g_GlobalRallyConfig.pActiveInputBindings[binding].awAlternateControls) {
+            if ((control & 0xff00) == 0 && (keys[control & 0xff] & DOWN)) {
+                value = JOYSTICK_AXIS_MAX;
+            }
+        }
+        return value > 0 ? value * 80 / 128 : -1;
     }
     const int value = AxisOf(kind, true);
     if (kind & 0x100) {
@@ -741,6 +702,15 @@ int RaceInput::InitializeJoystick() {
         return 0;
     }
     SDL_Log("Gamepad %s drives the race.", SDL_GetGamepadName(m_gamepad));
+    // Each action of the Controls section replaces the joystick or the key of its binding with the
+    // joystick, an axis for an action an axis drives, as the race engine treats an axis as
+    // analogue. The keys of the defaults remain in the alternates.
+    InputBinding *bindings =
+        g_GlobalRallyConfig.GetDeviceBindings(g_GlobalRallyConfig.dwInputDeviceType);
+    for (const RaceControl &control : RACE_CONTROLS) {
+        bindings[control.binding].wControl = static_cast<unsigned short>(
+            IsControlAnalog(control.action) ? JOYSTICK_AXIS_KIND : JOYSTICK_BUTTON_KIND);
+    }
     m_forceFeedbackAvailable = false;
     if (!g_GlobalRallyConfig.bForceFeedbackEnabled) {
         return g_GlobalRallyConfig.dwInputDeviceType;

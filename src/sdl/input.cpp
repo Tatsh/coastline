@@ -4,6 +4,7 @@
 #include <cmath>
 
 #include "common/inputpoll.h"
+#include "controls.h"
 
 namespace coastline {
 
@@ -40,51 +41,44 @@ constexpr KeyBinding KEY_BUTTONS[] = {
 };
 
 struct PadBinding {
-    SDL_GamepadButton pad;
+    ControlAction action;
     std::uint16_t button;
 };
 
 constexpr PadBinding PAD_BUTTONS[] = {
-    {SDL_GAMEPAD_BUTTON_SOUTH, BUTTON_A},
-    {SDL_GAMEPAD_BUTTON_EAST, BUTTON_B},
-    {SDL_GAMEPAD_BUTTON_WEST, BUTTON_B},
-    {SDL_GAMEPAD_BUTTON_START, BUTTON_START},
-    {SDL_GAMEPAD_BUTTON_LEFT_SHOULDER, BUTTON_L},
-    {SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER, BUTTON_R},
-    {SDL_GAMEPAD_BUTTON_DPAD_UP, BUTTON_D_UP},
-    {SDL_GAMEPAD_BUTTON_DPAD_DOWN, BUTTON_D_DOWN},
-    {SDL_GAMEPAD_BUTTON_DPAD_LEFT, BUTTON_D_LEFT},
-    {SDL_GAMEPAD_BUTTON_DPAD_RIGHT, BUTTON_D_RIGHT},
+    {CONTROL_MENU_A, BUTTON_A},
+    {CONTROL_MENU_B, BUTTON_B},
+    {CONTROL_MENU_Z, BUTTON_Z},
+    {CONTROL_MENU_START, BUTTON_START},
+    {CONTROL_MENU_L, BUTTON_L},
+    {CONTROL_MENU_R, BUTTON_R},
+    {CONTROL_MENU_C_UP, BUTTON_C_UP},
+    {CONTROL_MENU_C_DOWN, BUTTON_C_DOWN},
+    {CONTROL_MENU_C_LEFT, BUTTON_C_LEFT},
+    {CONTROL_MENU_C_RIGHT, BUTTON_C_RIGHT},
+    {CONTROL_MENU_D_UP, BUTTON_D_UP},
+    {CONTROL_MENU_D_DOWN, BUTTON_D_DOWN},
+    {CONTROL_MENU_D_LEFT, BUTTON_D_LEFT},
+    {CONTROL_MENU_D_RIGHT, BUTTON_D_RIGHT},
 };
+
+// The magnitudes of two opposite directions as one SDL axis.
+std::int8_t
+ScaleStickDirections(SDL_Gamepad *gamepad, ControlAction negative, ControlAction positive) {
+    int axis = ReadControl(gamepad, positive) - ReadControl(gamepad, negative);
+    return ScaleStickAxis(static_cast<std::int16_t>(std::clamp(axis, -32768, 32767)));
+}
 
 void PollGamepad(SDL_Gamepad *gamepad, ControllerState &state) {
     for (const auto &binding : PAD_BUTTONS) {
-        if (SDL_GetGamepadButton(gamepad, binding.pad)) {
+        if (ReadControl(gamepad, binding.action) > C_BUTTON_THRESHOLD) {
             state.buttons |= binding.button;
         }
     }
-    if (SDL_GetGamepadAxis(gamepad, SDL_GAMEPAD_AXIS_LEFT_TRIGGER) > C_BUTTON_THRESHOLD) {
-        state.buttons |= BUTTON_Z;
-    }
-    if (SDL_GetGamepadAxis(gamepad, SDL_GAMEPAD_AXIS_RIGHT_TRIGGER) > C_BUTTON_THRESHOLD) {
-        state.buttons |= BUTTON_R;
-    }
-    auto rightX = SDL_GetGamepadAxis(gamepad, SDL_GAMEPAD_AXIS_RIGHTX);
-    auto rightY = SDL_GetGamepadAxis(gamepad, SDL_GAMEPAD_AXIS_RIGHTY);
-    if (rightX > C_BUTTON_THRESHOLD) {
-        state.buttons |= BUTTON_C_RIGHT;
-    } else if (rightX < -C_BUTTON_THRESHOLD) {
-        state.buttons |= BUTTON_C_LEFT;
-    }
-    if (rightY > C_BUTTON_THRESHOLD) {
-        state.buttons |= BUTTON_C_DOWN;
-    } else if (rightY < -C_BUTTON_THRESHOLD) {
-        state.buttons |= BUTTON_C_UP;
-    }
-    state.stickX = ScaleStickAxis(SDL_GetGamepadAxis(gamepad, SDL_GAMEPAD_AXIS_LEFTX));
+    state.stickX = ScaleStickDirections(gamepad, CONTROL_MENU_STICK_LEFT, CONTROL_MENU_STICK_RIGHT);
     // SDL reports down as positive, and the console reports up as positive.
     state.stickY = static_cast<std::int8_t>(
-        -ScaleStickAxis(SDL_GetGamepadAxis(gamepad, SDL_GAMEPAD_AXIS_LEFTY)));
+        -ScaleStickDirections(gamepad, CONTROL_MENU_STICK_UP, CONTROL_MENU_STICK_DOWN));
 }
 
 void PollKeyboard(ControllerState &state) {

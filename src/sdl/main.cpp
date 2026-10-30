@@ -26,6 +26,7 @@
 
 #include "common/input.h"
 #include "config.h"
+#include "controls.h"
 #include "earsound.h"
 #include "enginecheck.h"
 #include "frontend.h"
@@ -653,11 +654,14 @@ int main(int argc, char *argv[]) {
                                               {"Game", "PlayMusic", "1"},
                                               {"Game", "PlaySFX", "1"},
                                               {"Game", "WaitForStart", "0"},
-                                              {"Game", "Music", "N64"}}) {
+                                              {"Game", "Music", "N64"},
+                                              {"Controls", "Preset", "Default"}}) {
         if (!config.Get(section, key)) {
             config.Set(section, key, value);
         }
     }
+    // The keys of the actions are not written, as each key present replaces its preset binding.
+    coastline::LoadControls(config);
     const std::string scene = parser.present("--scene").value_or("");
     if (scene.starts_with("attract-demo:") &&
         !coastline::ChooseAttractDemo(scene.substr(scene.find(':') + 1))) {
