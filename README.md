@@ -259,8 +259,7 @@ wrapping when the gain raises it past the range of a sample.
 The data comes from a Boss Rally disc image and a Top Gear Rally cartridge image. The import
 checks the cartridge against the SHA-1 of each release, and converts the CD audio of a CUE sheet
 to FLAC. An ISO image has no CD audio. The import writes every file to `assets/default` in the
-data directory. On start, the game moves the `assets/defaults` of an earlier import to
-`assets/default`.
+data directory.
 
 ```shell
 coastline --import-disc 'Boss Rally.cue' --import-rom usa.z64 --import-rom jpn.z64

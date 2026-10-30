@@ -971,16 +971,6 @@ int main(int argc, char *argv[]) {
     SDL_Log("Data: %s", paths->data.string().c_str());
     SDL_Log("State: %s", paths->state.string().c_str());
     SDL_Log("Cache: %s", paths->cache.string().c_str());
-    // Imports of earlier versions wrote the default pack to assets/defaults.
-    auto importedAssets = paths->data / "assets" / "defaults";
-    std::error_code moveError;
-    if (std::filesystem::is_directory(importedAssets, moveError) &&
-        !std::filesystem::exists(coastline::DefaultAssets(paths->data), moveError)) {
-        std::filesystem::rename(importedAssets, coastline::DefaultAssets(paths->data), moveError);
-        SDL_Log("The default pack moved to %s: %s",
-                coastline::DefaultAssets(paths->data).string().c_str(),
-                moveError ? moveError.message().c_str() : "done");
-    }
 
     if (parser.is_used("--import-disc") || parser.is_used("--import-rom")) {
         return ImportFromCommandLine(parser, paths->data);
