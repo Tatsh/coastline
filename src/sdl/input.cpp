@@ -82,8 +82,14 @@ void PollGamepad(SDL_Gamepad *gamepad, ControllerState &state) {
 }
 
 void PollKeyboard(ControllerState &state) {
+    // The letters typed into a text are not the buttons they are bound to as well.
+    // The game has one window, and its text input stays on while the window is not focused.
+    int count = 0;
+    SDL_Window **windows = SDL_GetWindows(&count);
+    bool typing = windows != nullptr && count > 0 && SDL_TextInputActive(windows[0]);
+    SDL_free(windows);
     for (const auto &binding : KEY_BUTTONS) {
-        if (IsKeyDown(binding.key)) {
+        if (!typing && IsKeyDown(binding.key)) {
             state.buttons |= binding.button;
         }
     }

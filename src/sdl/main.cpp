@@ -280,6 +280,57 @@ std::vector<ScriptedKey> ParseKeys(const argparse::ArgumentParser &parser) {
     return keys;
 }
 
+// A typing of --type: a text, or a key of <backspace> or <enter>, typed at a frame.
+struct ScriptedTyping {
+    int frame;
+    std::string text;
+};
+
+// A malformed typing is logged and omitted.
+std::vector<ScriptedTyping> ParseTyping(const argparse::ArgumentParser &parser) {
+    std::vector<ScriptedTyping> typing;
+    for (const auto &value : parser.get<std::vector<std::string>>("--type")) {
+        auto colon = value.find(':');
+        int frame = colon == std::string::npos ? 0 : std::atoi(value.substr(0, colon).c_str());
+        if (frame <= 0 || colon + 1 == value.size()) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s is not FRAME:TEXT.", value.c_str());
+            continue;
+        }
+        typing.push_back({frame, value.substr(colon + 1)});
+    }
+    return typing;
+}
+
+// Push the events of the keyboard of the typings of a frame, as SDL sends them while text input
+// is on.
+void PushScriptedTyping(const std::vector<ScriptedTyping> &typing, int frame, SDL_Window *window) {
+    static constexpr std::array<std::pair<std::string_view, SDL_Keycode>, 2> KEYS{
+        {{"<backspace>", SDLK_BACKSPACE}, {"<enter>", SDLK_RETURN}}};
+    if (!SDL_TextInputActive(window)) {
+        return;
+    }
+    for (const ScriptedTyping &typed : typing) {
+        if (typed.frame != frame) {
+            continue;
+        }
+        SDL_Event event{};
+        event.common.timestamp = SDL_GetTicksNS();
+        auto key =
+            std::ranges::find(KEYS, typed.text, &std::pair<std::string_view, SDL_Keycode>::first);
+        if (key == KEYS.end()) {
+            event.type = SDL_EVENT_TEXT_INPUT;
+            event.text.windowID = SDL_GetWindowID(window);
+            event.text.text = typed.text.c_str();
+        } else {
+            event.type = SDL_EVENT_KEY_DOWN;
+            event.key.windowID = SDL_GetWindowID(window);
+            event.key.key = key->second;
+            event.key.down = true;
+        }
+        SDL_PushEvent(&event);
+    }
+}
+
 // The mouse of a frame, where it is on the 640 by 480 screen of the menus and its buttons, and
 // where it was the frame before.
 struct MouseState {
@@ -571,6 +622,10 @@ int main(int argc, char *argv[]) {
         .help("press a key of the keyboard from a frame for 6 frames or FRAMES, as "
               "FRAME:KEY[:FRAMES] with KEY the SDL name of the key, such as Return or Escape")
         .append();
+    parser.add_argument("--type")
+        .help("type on the keyboard at a frame while a screen takes text, as FRAME:TEXT with "
+              "TEXT the characters typed, or one of <backspace> or <enter> for the key")
+        .append();
     parser.add_argument("--autopilot")
         .help("let the computer drive the car of the first player in a race")
         .flag();
@@ -704,6 +759,7 @@ int main(int argc, char *argv[]) {
             std::vector<ScriptedPress> presses = ParsePresses(parser);
             std::vector<ScriptedMouse> mouseMoves = ParseMouseMoves(parser);
             std::vector<ScriptedKey> keys = ParseKeys(parser);
+            const std::vector<ScriptedTyping> typing = ParseTyping(parser);
             MouseState mouse;
             std::unique_ptr<coastline::TlRenderer> renderer;
             std::unique_ptr<coastline::ModelView> modelView;
@@ -760,10 +816,23 @@ int main(int argc, char *argv[]) {
             std::uint16_t lastSecondButtons = 0;
             bool running = true;
             for (int frame = 1; running; ++frame) {
+                PushScriptedTyping(typing, frame, window->Window());
+                // The text typed on a keyboard while a screen takes it, with Backspace and Enter
+                // as control characters.
+                std::string typed;
                 SDL_Event event;
                 while (SDL_PollEvent(&event)) {
                     if (event.type == SDL_EVENT_QUIT) {
                         running = false;
+                    } else if (event.type == SDL_EVENT_TEXT_INPUT) {
+                        typed += event.text.text;
+                    } else if (event.type == SDL_EVENT_KEY_DOWN &&
+                               SDL_TextInputActive(window->Window())) {
+                        if (event.key.key == SDLK_BACKSPACE) {
+                            typed += '\b';
+                        } else if (event.key.key == SDLK_RETURN || event.key.key == SDLK_KP_ENTER) {
+                            typed += '\r';
+                        }
                     }
                     input.HandleEvent(event);
                 }
@@ -950,12 +1019,22 @@ int main(int argc, char *argv[]) {
                                 .back = (down & coastline::BUTTON_B) != 0,
                                 .held = now != 0};
                         };
+                        coastline::PaintShopInput pointer = PaintShopInputOf(ports[0], mouse);
+                        pointer.text = std::move(typed);
                         coastline::MenusEnd end = mainMenu->Frame(
                             *sceneRenderer,
                             seconds,
                             {menuButtons(pressed, held), menuButtons(secondPressed, secondHeld)},
                             ports[1].connected,
-                            PaintShopInputOf(ports[0], mouse));
+                            pointer);
+                        // The keyboard of the computer types while a screen takes text.
+                        if (mainMenu->TakesText() != SDL_TextInputActive(window->Window())) {
+                            if (mainMenu->TakesText()) {
+                                SDL_StartTextInput(window->Window());
+                            } else {
+                                SDL_StopTextInput(window->Window());
+                            }
+                        }
                         // A screen that draws a cursor for the mouse hides the cursor of the
                         // system.
                         if (mainMenu->DrawsPointer() == SDL_CursorVisible()) {

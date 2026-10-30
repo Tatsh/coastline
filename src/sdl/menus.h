@@ -152,6 +152,9 @@ public:
     /** @return Whether the screen that shows draws a cursor for the mouse. */
     bool DrawsPointer() const;
 
+    /** @return Whether the screen that shows takes the text typed on a keyboard. */
+    bool TakesText() const;
+
     /** @return The race the menus chose, in the terms of the race engine. */
     RaceSetup ChosenRace() const;
 

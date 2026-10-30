@@ -36,6 +36,10 @@ bool Menus::DrawsPointer() const {
     return m_current == Screen::PaintShopScreen;
 }
 
+bool Menus::TakesText() const {
+    return m_current == Screen::PaintShopScreen && m_paintShop->TakesText();
+}
+
 MenusEnd Menus::Frame(SceneRenderer &renderer,
                       float seconds,
                       const std::array<MenuButtons, 2> &players,

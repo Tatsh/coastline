@@ -53,8 +53,14 @@ struct PaintShopInput {
     float stickY = 0.0f; /*!< The stick up and down, from -1 for down to 1 for up. */
     /** Where the mouse moved to this frame on the 640 by 480 screen, or none when it is still. */
     std::optional<std::array<int, 2>> pointer;
-    bool enter = false;  /*!< Whether Return or keypad Enter is down, A in a dialog. */
-    bool escape = false; /*!< Whether Escape is down, B in a dialog. */
+    bool enter = false; /*!< Whether Return or keypad Enter is down, A in a dialog. */
+    /** Whether Escape is down, B in a dialog and on the keyboard of the text tool. */
+    bool escape = false;
+    /**
+     * The characters typed on a keyboard this frame in UTF-8, with Backspace as `'\b'` and Enter
+     * as `'\r'`, in the order typed.
+     */
+    std::string text;
 };
 
 /** A rectangle of the 640 by 480 screen, ScreenRect of the console. */
@@ -145,6 +151,9 @@ public:
      * @return Whether the paint shop has closed for the main menu.
      */
     bool Frame(SceneRenderer &renderer, float seconds, const PaintShopInput &input);
+
+    /** @return Whether the keyboard of the text tool shows and reads PaintShopInput::text. */
+    bool TakesText() const;
 
     /**
      * Run a frame of the dialog that loads the decals on the car select screen, as the car select
@@ -270,6 +279,8 @@ private:
     void DrawPakButtons(s32 buttonY, u32 okTextX, u32 cancelTextX, s32 okX, s32 cancelX);
     s32 ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect, bool &done);
     void ProcessTextInputKeyboard();
+    void PressKeyboardKey(u8 key);
+    void TypeOnKeyboard();
 
     // decaleditor.c of the console.
     void SelectDecalSlot(s32 slot);
@@ -348,6 +359,7 @@ private:
 
     // The input of the player, and the time of the frame.
     PlayerInputState m_input{};
+    std::string m_typedText;
     s32 m_frameMilliseconds = 0;
     // Where the mouse is on the 640 by 480 screen, and whether it moved this frame.
     std::array<int, 2> m_pointer{};

@@ -1,6 +1,7 @@
 #include "paintshop.h"
 
 #include <algorithm>
+#include <cctype>
 #include <cmath>
 #include <cstring>
 #include <fstream>
@@ -881,16 +882,17 @@ bool PaintShop::DialogShows() const {
 void PaintShop::TranslateInput(float seconds, const PaintShopInput &input, bool dialog) {
     m_frameMilliseconds = static_cast<s32>(seconds * 1000.0f);
     m_input.buttons = input.buttons;
-    // In a menu or a dialog of the console, Enter chooses as A does and Escape cancels as B does.
+    // In a menu or a dialog of the console, Enter chooses as A does. The keyboard of the text tool
+    // reads Enter from the typed text instead.
     if (dialog && input.enter) {
         m_input.buttons |= INPUT_A;
     }
-    // A press of Escape cancels a dialog. Elsewhere it chooses DONE, as the button does, unless the
-    // text tool takes the keys of its text.
+    // A press of Escape cancels a dialog and the text of the text tool as B does. Elsewhere it
+    // chooses DONE, as the button does.
     bool escape = input.escape && !m_escapeDown;
     m_escapeDown = input.escape;
     bool typing = m_paintTool == PAINT_TOOL_TEXT && (m_decalDragActive || m_paintToolStarted);
-    if (dialog && escape) {
+    if ((dialog || typing) && escape) {
         m_input.buttons |= INPUT_B;
     } else if (escape && m_initialized && !typing && !m_paintShopExiting) {
         m_paintToolStarted = 0;
@@ -900,6 +902,7 @@ void PaintShop::TranslateInput(float seconds, const PaintShopInput &input, bool 
     m_input.stickX = std::clamp(input.stickX, -1.0f, 1.0f);
     m_input.stickY = std::clamp(input.stickY, -1.0f, 1.0f);
     ConsumeInputFlags(&m_input);
+    m_typedText = input.text;
     m_pointerMoved = input.pointer.has_value();
     if (!m_pointerMoved) {
         return;
@@ -1562,6 +1565,11 @@ bool PaintShop::Frame(SceneRenderer &renderer, float seconds, const PaintShopInp
         return true;
     }
     return false;
+}
+
+bool PaintShop::TakesText() const {
+    return m_initialized && m_paintTool == PAINT_TOOL_TEXT && m_decalDragActive &&
+           !m_paintToolStarted;
 }
 
 void PaintShop::ResetPaintShopState() {
@@ -2361,6 +2369,101 @@ std::optional<bool> PaintShop::LoadDecalsFrame(SceneRenderer &renderer,
     return loaded;
 }
 
+void PaintShop::PressKeyboardKey(u8 key) {
+    if (key == KEY_ENTER) {
+        if (m_decalTextLength > 0) {
+            m_paintToolStarted = 1;
+            m_textShadowPickerOpen = 1;
+        } else {
+            m_paintToolStarted = 0;
+            m_decalDragActive = 0;
+        }
+        m_showPreview3D = 1;
+        m_paletteEnabled = 1;
+    } else if (key == KEY_BACKSPACE) {
+        u8 length = 0;
+        // An empty text reads the word before the keys of the text, and the console finds
+        // nothing there.
+        if (m_decalTextLength == 0 || m_decalTextGlyphs[m_decalTextLength - 1] < 0) {
+            m_decalTextLength = 0;
+            m_decalTextWidth = 0;
+        } else {
+            length = --m_decalTextLength;
+            if (length == 0) {
+                m_decalTextWidth = static_cast<u8>(
+                    m_decalTextWidth -
+                    m_decalGlyphs[static_cast<std::size_t>(m_decalTextGlyphs[0])].width);
+            } else {
+                const PaintGlyph &before =
+                    m_decalGlyphs[static_cast<std::size_t>(m_decalTextGlyphs[length - 1])];
+                const PaintGlyph &last =
+                    m_decalGlyphs[static_cast<std::size_t>(m_decalTextGlyphs[length])];
+                s32 overlap = before.kernRight < last.kernLeft ? before.kernRight : last.kernLeft;
+                m_decalTextWidth = static_cast<u8>(m_decalTextWidth - last.width + overlap - 2);
+            }
+        }
+        m_decalText.resize(length);
+        m_decalTextGlyphs[length] = -1;
+    } else {
+        const PaintGlyph &pressed = m_decalGlyphs[key];
+        s32 width = pressed.width + m_decalTextWidth;
+        if (width + 2 < m_decalWidth && m_decalTextLength < DECAL_TEXT_LENGTH) {
+            u8 length = m_decalTextLength;
+            m_decalText.resize(length);
+            m_decalText.push_back(static_cast<char>(pressed.character));
+            m_decalTextGlyphs[length] = key;
+            if (length == 0) {
+                m_decalTextWidth = static_cast<u8>(width);
+            } else {
+                const PaintGlyph &before =
+                    m_decalGlyphs[static_cast<std::size_t>(m_decalTextGlyphs[length - 1])];
+                s32 overlap =
+                    before.kernRight < pressed.kernLeft ? before.kernRight : pressed.kernLeft;
+                m_decalTextWidth = static_cast<u8>(width - overlap + 2);
+            }
+            m_decalTextLength = static_cast<u8>(length + 1);
+        }
+    }
+}
+
+void PaintShop::TypeOnKeyboard() {
+    // A keyboard of the computer types the keys of the font. A letter the font has only in capitals
+    // types the capital, and a character the font lacks is dropped.
+    auto keyOf = [&](unsigned char character) -> std::optional<u8> {
+        for (u8 i = 0; i < m_decalGlyphs.size(); ++i) {
+            if (i != KEY_BACKSPACE && i != KEY_ENTER && m_decalGlyphs[i].character == character) {
+                return i;
+            }
+        }
+        return std::nullopt;
+    };
+    // The keys typed after Enter in the same frame are dropped with the keyboard.
+    for (char typed : m_typedText) {
+        if (!TakesText()) {
+            return;
+        }
+        if (typed == '\r') {
+            PressKeyboardKey(KEY_ENTER);
+            continue;
+        }
+        if (typed == '\b') {
+            PressKeyboardKey(KEY_BACKSPACE);
+            continue;
+        }
+        auto c = static_cast<unsigned char>(typed);
+        if (c < 0x20 || c >= 0x80) {
+            continue;
+        }
+        std::optional<u8> key = keyOf(c);
+        if (!key) {
+            key = keyOf(static_cast<unsigned char>(std::toupper(c)));
+        }
+        if (key) {
+            PressKeyboardKey(*key);
+        }
+    }
+}
+
 void PaintShop::ProcessTextInputKeyboard() {
     PaintSprite &highlight = *m_keyboardHighlight;
     m_showPreview3D = 0;
@@ -2396,64 +2499,10 @@ void PaintShop::ProcessTextInputKeyboard() {
             }
             Transfer(INPUT_Z | INPUT_A);
             m_screenFrameCount = KEY_FLASH_FRAMES;
-            if (m_keyboardHoverKey == KEY_ENTER) {
-                if (m_decalTextLength > 0) {
-                    m_paintToolStarted = 1;
-                    m_textShadowPickerOpen = 1;
-                } else {
-                    m_paintToolStarted = 0;
-                    m_decalDragActive = 0;
-                }
-                m_showPreview3D = 1;
-                m_paletteEnabled = 1;
-            } else if (m_keyboardHoverKey == KEY_BACKSPACE) {
-                u8 length = 0;
-                // An empty text reads the word before the keys of the text, and the console finds
-                // nothing there.
-                if (m_decalTextLength == 0 || m_decalTextGlyphs[m_decalTextLength - 1] < 0) {
-                    m_decalTextLength = 0;
-                    m_decalTextWidth = 0;
-                } else {
-                    length = --m_decalTextLength;
-                    if (length == 0) {
-                        m_decalTextWidth = static_cast<u8>(
-                            m_decalTextWidth -
-                            m_decalGlyphs[static_cast<std::size_t>(m_decalTextGlyphs[0])].width);
-                    } else {
-                        const PaintGlyph &before =
-                            m_decalGlyphs[static_cast<std::size_t>(m_decalTextGlyphs[length - 1])];
-                        const PaintGlyph &last =
-                            m_decalGlyphs[static_cast<std::size_t>(m_decalTextGlyphs[length])];
-                        s32 overlap =
-                            before.kernRight < last.kernLeft ? before.kernRight : last.kernLeft;
-                        m_decalTextWidth =
-                            static_cast<u8>(m_decalTextWidth - last.width + overlap - 2);
-                    }
-                }
-                m_decalText.resize(length);
-                m_decalTextGlyphs[length] = -1;
-            } else {
-                const PaintGlyph &pressed = m_decalGlyphs[m_keyboardHoverKey];
-                s32 width = pressed.width + m_decalTextWidth;
-                if (width + 2 < m_decalWidth && m_decalTextLength < DECAL_TEXT_LENGTH) {
-                    u8 length = m_decalTextLength;
-                    m_decalText.resize(length);
-                    m_decalText.push_back(static_cast<char>(pressed.character));
-                    m_decalTextGlyphs[length] = m_keyboardHoverKey;
-                    if (length == 0) {
-                        m_decalTextWidth = static_cast<u8>(width);
-                    } else {
-                        const PaintGlyph &before =
-                            m_decalGlyphs[static_cast<std::size_t>(m_decalTextGlyphs[length - 1])];
-                        s32 overlap = before.kernRight < pressed.kernLeft ? before.kernRight :
-                                                                            pressed.kernLeft;
-                        m_decalTextWidth = static_cast<u8>(width - overlap + 2);
-                    }
-                    m_decalTextLength = static_cast<u8>(length + 1);
-                }
-            }
+            PressKeyboardKey(m_keyboardHoverKey);
         }
     }
+    TypeOnKeyboard();
     if (m_decalTextLength > 0) {
         const auto &color = m_swatches[m_decalColor].color;
         SetTextCustomColors(color[0], color[1], color[2], color[0], color[1], color[2]);

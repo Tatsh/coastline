@@ -1033,6 +1033,7 @@ screenfade
 screenrect
 scrolllock
 sdlcall
+sdlk
 sdlmixer
 seasn
 seasoncars
