@@ -558,8 +558,8 @@ void DrawSkidMarks(SceneRenderer &renderer,
 // where the race does not draw it: with the shadows off, from the mirror, or from the cockpit or
 // the bumper of the car.
 std::optional<CarShadow> ShadowOf(const RenderTexture *texture, const Vehicle &car) {
-    const CameraFrame *active = g_aVehicles[0].GetActiveCamera();
-    const auto &cameras = g_aVehicles[0].GetCameras();
+    const CameraFrame *active = car.GetActiveCamera();
+    const auto &cameras = car.GetCameras();
     if (texture == nullptr || !g_GlobalRallyConfig.bCarShadowSelection ||
         active == &cameras[VEHICLE_CAMERA_MIRROR] || active == &cameras[VEHICLE_CAMERA_COCKPIT] ||
         active == &cameras[VEHICLE_CAMERA_BUMPER]) {
@@ -1187,10 +1187,9 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
         }
     }
     // RenderVehicleModel() does not draw the car from its own cockpit or its mirror.
-    const CameraFrame *active = g_aVehicles[0].GetActiveCamera();
-    const auto &cameras = g_aVehicles[0].GetCameras();
+    const auto &cameras = vehicle.GetCameras();
     bool inside =
-        active == &cameras[VEHICLE_CAMERA_COCKPIT] || active == &cameras[VEHICLE_CAMERA_MIRROR];
+        camera == &cameras[VEHICLE_CAMERA_COCKPIT] || camera == &cameras[VEHICLE_CAMERA_MIRROR];
     Lighting cameraCarLighting = CarLighting(vehicle, vehicle, *camera);
     // RenderRacerVehicles(): the car of each vehicle of the race.
     // ponytail: the ghost of a time attack is drawn solid; its opacity of 0.375 is not applied.
