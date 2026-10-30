@@ -319,7 +319,11 @@ bool RaceMusic::Resume() {
 void RaceMusic::SetVolume(unsigned char volume) {
     // The player of the modules scales its channels by g_bBgmVolume itself.
     if (IsPlaying() && m_cdStream != nullptr) {
-        SDL_SetAudioStreamGain(m_cdStream, volume / 255.0f);
+        // The highest level of the music plays the CD at its own level.
+        SDL_SetAudioStreamGain(
+            m_cdStream,
+            static_cast<float>(volume) /
+                static_cast<float>(g_adwBgmVolumeLevels[VOLUME_LEVEL_COUNT - 1]));
     }
 }
 

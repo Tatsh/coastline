@@ -18,7 +18,8 @@ u64 g_qwSoundEffectSampleMask;
 MixerChannel g_aSoundEffectChannels[SOUND_EFFECT_CHANNELS];
 s32 g_dwSoundEffectEchoOffset;
 s32 g_nAudioChannelCount;
-u8 g_bBgmVolume = 0x24;
+// The console starts at 0x24 and applies the default level of its options, 0x30, as it boots.
+u8 g_bBgmVolume = 0x30;
 u8 g_bSfxVolume = 0xFF;
 u8 g_bSfxMasterVolume = 0xFF;
 f32 g_afNoteFrequencies[MUSIC_NOTES] = {

@@ -40,8 +40,15 @@ IDirectSoundBuffer *g_pDirectSoundPrimaryBuffer;
 WAVEFORMATEX *g_pDirectSoundWaveFormat;
 #endif
 SoundBufferNode g_SoundBufferListHead;
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+// The SDL game plays the music of the console, whose player takes the level of g_adwBgmVolumeLevels
+// of the console, 0x30 at most and by default. The levels of the PC release run to that level.
+const int g_adwBgmVolumeLevels[VOLUME_LEVEL_COUNT] = {
+    0x00, 0x05, 0x0b, 0x10, 0x15, 0x1b, 0x20, 0x25, 0x2b, 0x30};
+#else
 const int g_adwBgmVolumeLevels[VOLUME_LEVEL_COUNT] = {
     0x00, 0x1c, 0x38, 0x55, 0x71, 0x8d, 0xaa, 0xc6, 0xe2, 0xff};
+#endif
 const int g_adwSfxVolumeLevels[VOLUME_LEVEL_COUNT] = {
     0x00, 0x55, 0x78, 0x93, 0xaa, 0xbe, 0xd0, 0xe1, 0xf0, 0xff};
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -71,12 +78,8 @@ bool g_bEarSoundStarted;
 #define MAX_VOLUME 255
 
 void ApplyAudioVolumeSettings(void) {
-    // The music of the SDL game plays at the level of the menus of the console from the splash
-    // screens to the race, and the music volume of the PC configuration does not replace it.
-#if TGR_PLATFORM != TGR_PLATFORM_SDL
     g_bBgmVolume =
         static_cast<unsigned char>(g_adwBgmVolumeLevels[g_GlobalRallyConfig.dwMusicVolume]);
-#endif
     DispatchMusicVolumeChange(g_bBgmVolume);
     g_bSfxVolume =
         static_cast<unsigned char>(g_adwSfxVolumeLevels[g_GlobalRallyConfig.dwSfxVolume]);
