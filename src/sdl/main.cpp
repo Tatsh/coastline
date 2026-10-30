@@ -26,10 +26,12 @@
 #include "gpu.h"
 #include "importer.h"
 #include "input.h"
+#include "intro.h"
 #include "log.h"
 #include "modelview.h"
 #include "music.h"
 #include "paths.h"
+#include "scenerenderer.h"
 #include "tlrenderer.h"
 
 namespace {
@@ -299,8 +301,8 @@ int main(int argc, char *argv[]) {
         .help("read the whole file of --play-sound before it plays, rather than streaming it")
         .flag();
     parser.add_argument("--scene").help(
-        "scene to start in: renderer-test, model:FILE.gltf for a converted model or track, or "
-        "none for the default");
+        "scene to start in: intro, the default, renderer-test, or model:FILE.gltf for a converted "
+        "model or track, from the imported data when relative");
     parser.add_argument("--screenshot").help("save a frame to this PNG file");
     parser.add_argument("--screenshot-frame")
         .help("number of the frame to save, from 1")
@@ -417,13 +419,30 @@ int main(int argc, char *argv[]) {
             bool quitAfterScreenshot = parser.get<bool>("--quit-after-screenshot");
             std::unique_ptr<coastline::TlRenderer> renderer;
             std::unique_ptr<coastline::ModelView> modelView;
+            std::unique_ptr<coastline::SceneRenderer> sceneRenderer;
+            std::unique_ptr<coastline::Intro> intro;
             coastline::TextureHandle testTexture = 0;
             if (scene == "renderer-test") {
                 renderer = coastline::TlRenderer::Create(*window);
                 testTexture = renderer ? CreateCheckerTexture(*renderer) : 0;
             } else if (scene.starts_with("model:")) {
-                modelView = coastline::ModelView::Create(*window, scene.substr(6));
+                std::filesystem::path model = scene.substr(6);
+                if (model.is_relative()) {
+                    model = coastline::DefaultAssets(paths->data) / model;
+                }
+                modelView = coastline::ModelView::Create(*window, model);
+            } else if (scene.empty() || scene == "intro") {
+                sceneRenderer = coastline::SceneRenderer::Create(*window);
+                if (sceneRenderer) {
+                    intro = coastline::Intro::Load(
+                        *sceneRenderer, coastline::DefaultAssets(paths->data) / "n64" / "usa");
+                }
             }
+            // A capture steps the splash screens by a 60th of a second a frame, for the same
+            // frames on every machine.
+            bool fixedStep = screenshot.has_value();
+            Uint64 lastTicks = SDL_GetTicksNS();
+            std::uint16_t lastButtons = 0;
             bool running = true;
             for (int frame = 1; running; ++frame) {
                 SDL_Event event;
@@ -444,7 +463,32 @@ int main(int argc, char *argv[]) {
                     framePath = screenshot->parent_path() / (screenshot->stem().string() + number +
                                                              screenshot->extension().string());
                 }
-                if (modelView) {
+                if (intro) {
+                    Uint64 now = SDL_GetTicksNS();
+                    float seconds = fixedStep ?
+                                        1.0f / 60.0f :
+                                        std::min(static_cast<float>(now - lastTicks) / 1e9f, 0.1f);
+                    lastTicks = now;
+                    // A press of A, Start, or Z skips, and every C button together shows the date
+                    // of the build.
+                    constexpr std::uint16_t SKIP =
+                        coastline::BUTTON_A | coastline::BUTTON_START | coastline::BUTTON_Z;
+                    constexpr std::uint16_t C_BUTTONS =
+                        coastline::BUTTON_C_UP | coastline::BUTTON_C_DOWN |
+                        coastline::BUTTON_C_LEFT | coastline::BUTTON_C_RIGHT;
+                    std::uint16_t held = ports[0].buttons;
+                    coastline::IntroButtons buttons{(held & ~lastButtons & SKIP) != 0,
+                                                    (held & C_BUTTONS) == C_BUTTONS};
+                    lastButtons = held;
+                    // ponytail: the demo and the main menu that follow the splash screens are not
+                    // built yet, so the splash screens start again.
+                    if (intro->Update(seconds, buttons) != coastline::IntroEnd::Running) {
+                        intro->Restart();
+                    }
+                    sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
+                    intro->Draw(*sceneRenderer);
+                    sceneRenderer->End(framePath ? &*framePath : nullptr);
+                } else if (modelView) {
                     modelView->Draw(framePath ? &*framePath : nullptr);
                 } else if (renderer) {
                     DrawRendererTestScene(

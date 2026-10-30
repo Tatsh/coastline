@@ -104,11 +104,14 @@ struct FragmentUniforms {
     float env[4];
     float ambient[4];
     float directional[4];
+    float texel1Transform[4];
 };
 
 // The cycle type of the RDP in its high other mode word.
 constexpr std::uint32_t CYCLE_TYPE_SHIFT = 20;
 constexpr std::uint32_t TWO_CYCLE = 1;
+// The bit of the geometry mode that generates the texture coordinates from the normals.
+constexpr std::uint32_t G_TEXTURE_GEN = 0x40000;
 
 SDL_GPUShader *CreateShader(SDL_GPUDevice *device,
                             SDL_GPUShaderStage stage,
@@ -358,6 +361,8 @@ struct Primitive {
     // The combiner of the RDP, its colours, and the image of its second texel, where recorded.
     std::optional<std::array<std::uint32_t, 2>> combine;
     bool twoCycle = false;
+    // Whether the texture coordinates come from the normals, as G_TEXTURE_GEN of the RSP.
+    bool textureGen = false;
     std::array<float, 4> prim{1, 1, 1, 1};
     std::array<float, 4> env{1, 1, 1, 1};
     std::optional<std::size_t> texel1;
@@ -438,6 +443,8 @@ struct QuadDraw {
 struct RenderModel::State {
     SDL_GPUDevice *device = nullptr;
     std::vector<SDL_GPUTexture *> images;
+    // The width over the height of each image.
+    std::vector<float> imageAspects;
     std::vector<SDL_GPUSampler *> samplers;
     std::vector<std::pair<std::size_t, std::size_t>> textures; // Image and sampler.
     std::vector<Mesh> meshes;
@@ -639,6 +646,7 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
             texels.insert(texels.end(), row, row + rgba->w * 4);
         }
         state->images.push_back(upload.Texture(rgba->w, rgba->h, texels));
+        state->imageAspects.push_back(static_cast<float>(rgba->w) / static_cast<float>(rgba->h));
         SDL_DestroySurface(rgba);
     }
     for (const auto &sampler : document.value("samplers", nlohmann::json::array())) {
@@ -754,6 +762,7 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
                     }
                     part.twoCycle =
                         (rdp.value("otherModeH", 0u) >> CYCLE_TYPE_SHIFT & 3) == TWO_CYCLE;
+                    part.textureGen = (rdp.value("geometryMode", 0u) & G_TEXTURE_GEN) != 0;
                     part.prim = Rgba(rdp["primColor"].get<std::uint32_t>());
                     part.env = Rgba(rdp["envColor"].get<std::uint32_t>());
                     if (rdp.contains("texel1Image")) {
@@ -1059,7 +1068,8 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             {primitive.prim[0], primitive.prim[1], primitive.prim[2], primitive.prim[3]},
             {primitive.env[0], primitive.env[1], primitive.env[2], primitive.env[3]},
             {lighting.ambient[0], lighting.ambient[1], lighting.ambient[2], 1.0f},
-            {lighting.directional[0], lighting.directional[1], lighting.directional[2], 1.0f}};
+            {lighting.directional[0], lighting.directional[1], lighting.directional[2], 1.0f},
+            {1.0f, 1.0f, 0.0f, 0.0f}};
         SDL_PushGPUFragmentUniformData(commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
         std::array<SDL_GPUTextureSamplerBinding, 2> bindings{
             {{s.white, s.plainSampler}, {s.white, s.plainSampler}}};
@@ -1098,7 +1108,16 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             const Lighting &lighting = placed.lighting ? *placed.lighting : draw.lighting;
             for (const Primitive &primitive : mesh.primitives) {
                 if (primitive.blend == blending) {
-                    drawPrimitive(primitive, model, vertexUniforms, lighting, targets, draw.depth);
+                    VertexUniforms uniforms = vertexUniforms;
+                    uniforms.blend[1] = primitive.textureGen ? 1.0f : 0.0f;
+                    // The coordinates the RSP generates cover a square of the width of the image,
+                    // the first level of the levels stacked under it.
+                    uniforms.blend[2] = 1.0f;
+                    if (primitive.texture && *primitive.texture < model.textures.size()) {
+                        uniforms.blend[2] =
+                            model.imageAspects.at(model.textures[*primitive.texture].first);
+                    }
+                    drawPrimitive(primitive, model, uniforms, lighting, targets, draw.depth);
                 }
             }
         }
@@ -1138,7 +1157,11 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             {material.prim[0], material.prim[1], material.prim[2], material.prim[3]},
             {material.env[0], material.env[1], material.env[2], material.env[3]},
             {1.0f, 1.0f, 1.0f, 1.0f},
-            {0.0f, 0.0f, 0.0f, 1.0f}};
+            {0.0f, 0.0f, 0.0f, 1.0f},
+            {material.texel1Transform[0],
+             material.texel1Transform[1],
+             material.texel1Transform[2],
+             material.texel1Transform[3]}};
         SDL_PushGPUFragmentUniformData(commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
         std::array<SDL_GPUTextureSamplerBinding, 2> bindings{
             {{s.white, s.plainSampler}, {s.white, s.plainSampler}}};

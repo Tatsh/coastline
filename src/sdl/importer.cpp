@@ -579,6 +579,49 @@ std::optional<std::string> ConvertConsoleFonts(const std::filesystem::path &dest
     return std::nullopt;
 }
 
+// The addresses of the lights of the splash screens and the menus of a release: an ambient light
+// of 8 bytes and a directional light after it.
+struct LightAddresses {
+    std::uint32_t splash;
+    std::uint32_t menu;
+};
+
+constexpr LightAddresses USA_LIGHTS{0x80270820, 0x80271F88};
+constexpr LightAddresses EUR_LIGHTS{0x80272800, 0x80273F68};
+constexpr LightAddresses JPN_LIGHTS{0x802722C8, 0x80273A28};
+
+// The lights of the splash screens and the menus as lights.json: the colour of each ambient light,
+// and the colour and the direction toward each directional light, in the space of the console.
+std::optional<std::string> ConvertConsoleLights(const std::filesystem::path &destination,
+                                                RomRelease release) {
+    constexpr std::uint32_t SEGMENT_BASE = 0x80200000;
+    constexpr std::size_t AMBIENT_AND_DIRECTIONAL = 8 + 16;
+    const LightAddresses &lights = release == RomRelease::Usa ? USA_LIGHTS :
+                                   release == RomRelease::Eur ? EUR_LIGHTS :
+                                                                JPN_LIGHTS;
+    auto segment = ReadWholeFile(destination / "segment.bin");
+    if (!segment) {
+        return std::format("{} cannot be read.", (destination / "segment.bin").string());
+    }
+    nlohmann::ordered_json json = nlohmann::ordered_json::object();
+    for (auto [name, address] :
+         {std::pair{"splash", lights.splash}, std::pair{"menu", lights.menu}}) {
+        std::size_t at = address - SEGMENT_BASE;
+        if (address < SEGMENT_BASE || at + AMBIENT_AND_DIRECTIONAL > segment->size()) {
+            return std::format("The lights of the {} are outside the main segment.", name);
+        }
+        const std::uint8_t *bytes = segment->data() + at;
+        json[name] = {{"ambient", {bytes[0], bytes[1], bytes[2]}},
+                      {"directional", {bytes[8], bytes[9], bytes[10]}},
+                      {"direction",
+                       {static_cast<std::int8_t>(bytes[16]),
+                        static_cast<std::int8_t>(bytes[17]),
+                        static_cast<std::int8_t>(bytes[18])}}};
+    }
+    std::ofstream(destination / "lights.json", std::ios::trunc) << json.dump(1) << '\n';
+    return std::nullopt;
+}
+
 // Each ghost recording of the demos as JSON of the same name, in place of the file once the JSON
 // builds the same bytes.
 std::optional<std::string> ConvertGhostRecordings(const std::filesystem::path &dataDirectory) {
@@ -965,6 +1008,9 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         }
     }
     if (auto failure = ConvertConsoleFonts(destination, *release)) {
+        return std::unexpected(*failure);
+    }
+    if (auto failure = ConvertConsoleLights(destination, *release)) {
         return std::unexpected(*failure);
     }
     for (const auto &model : splashModels) {

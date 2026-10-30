@@ -370,7 +370,9 @@ private:
         material.geometryMode = m_geometryMode;
         material.primColor = m_primColor;
         material.envColor = m_envColor;
-        if (!m_textureOn || (m_geometryMode & G_TEXTURE_GEN) != 0) {
+        // A material with G_TEXTURE_GEN takes its texture coordinates from its normals, which the
+        // renderer generates from the geometry mode the material records.
+        if (!m_textureOn) {
             return material;
         }
         bool detail =
@@ -457,7 +459,9 @@ private:
         }
         m_fogTriangles += fog ? 1 : 0;
         m_twoCycleTriangles += twoCycle ? 1 : 0;
-        m_inexact += (combiner && !product && !constant) || fog || twoCycle ? 1 : 0;
+        // glTF has no texture coordinates generated from the normals.
+        bool generated = m_textureOn && (m_geometryMode & G_TEXTURE_GEN) != 0;
+        m_inexact += (combiner && !product && !constant) || fog || twoCycle || generated ? 1 : 0;
     }
 
     std::optional<std::string> Triangle(std::uint32_t packed, Triangles &triangles) {

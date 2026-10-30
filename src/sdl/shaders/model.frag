@@ -23,6 +23,9 @@ layout(set = 3, binding = 0) uniform Material {
     vec4 env;
     vec4 ambient;
     vec4 directional;
+    // The scale in xy and the offset in zw from the texture coordinate of the first texel to the
+    // second, which a glyph samples its gradient by.
+    vec4 texel1Transform;
 };
 
 // The inputs of a cycle of the colour combiner, as the RDP numbers them. The second cycle reads the
@@ -67,7 +70,7 @@ float AlphaInput(uint code, int slot, vec4 t0, vec4 t1, vec4 shade, float lod, v
 
 void main() {
     vec4 t0 = flags.z > 0.5 ? texture(textureMap, inTexCoord) : vec4(1.0);
-    vec4 t1 = texture(textureMap1, inTexCoord);
+    vec4 t1 = texture(textureMap1, inTexCoord * texel1Transform.xy + texel1Transform.zw);
     vec4 shade = inColor;
     if (flags.y > 0.5) {
         float diffuse = max(dot(normalize(inNormal), lightDirection.xyz), 0.0);

@@ -599,6 +599,7 @@ leitch
 lenqueue
 leodiskinit
 leointerrupt
+lerps
 lfirst
 lhandle
 libc
@@ -683,6 +684,7 @@ memset
 menufont
 menuitemrom
 menusurface
+menutext
 mesg
 meyerhofer
 mfhi

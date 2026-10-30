@@ -81,7 +81,9 @@ add_library(
   importer.cpp
   indexedimage.cpp
   input.cpp
+  intro.cpp
   log.cpp
+  menutext.cpp
   modelview.cpp
   music.cpp
   n64model.cpp

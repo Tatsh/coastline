@@ -18,7 +18,9 @@ layout(std430, set = 0, binding = 0) readonly buffer Targets {
 };
 
 // morph: x and y are the two keys to blend, z is the vertices of a key, and w is 1 where the model
-// is animated. blend is the share of the second key.
+// is animated. blend.x is the share of the second key, and blend.y is 1 where the texture
+// coordinates come from the normal, as G_TEXTURE_GEN of the RSP makes them, over a square whose
+// height is blend.z of the texture.
 layout(set = 1, binding = 0) uniform Transform {
     mat4 viewProjection;
     mat4 model;
@@ -38,5 +40,11 @@ void main() {
     gl_Position = viewProjection * model * vec4(position, 1.0);
     outTexCoord = inTexCoord;
     outNormal = mat3(model) * normal;
+    if (blend.y > 0.5) {
+        // The reflection of the menus looks along z with x right and y up, so the turned normal
+        // reads across and down the texture.
+        vec3 turned = normalize(outNormal);
+        outTexCoord = (turned.xy * 0.5 + 0.5) * vec2(1.0, blend.z);
+    }
     outColor = inColor;
 }
