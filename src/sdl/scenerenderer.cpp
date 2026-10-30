@@ -565,6 +565,8 @@ struct RenderModel::State {
     SDL_GPUDevice *device = nullptr;
     std::vector<SDL_GPUTexture *> images;
     std::vector<SDL_GPUSampler *> samplers;
+    // Whether the shader filters the texels of the images as the RDP does.
+    bool threePoint = false;
     std::vector<std::pair<std::size_t, std::size_t>> textures; // Image and sampler.
     std::vector<Mesh> meshes;
     std::vector<Placed> placed;
@@ -902,9 +904,12 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
         }
     }
 
-    // The textures of a model are mipmapped for anisotropic filtering, and other textures are not.
+    // The textures of a model are mipmapped for anisotropic filtering of the modern filter, and
+    // other textures are not.
+    const TextureFilter filter = renderer.m_state->window->Filter();
     const int anisotropy = renderer.m_state->window->Anisotropy();
-    const bool mipmapped = anisotropy > 0;
+    const bool mipmapped = anisotropy > 0 && filter == TextureFilter::Modern;
+    state->threePoint = filter == TextureFilter::N64;
     Uploader upload(device);
     for (const auto &image : images) {
         auto file = imageDirectory / image["uri"].get<std::string>();
@@ -977,8 +982,9 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
     }
     for (const auto &sampler : document.value("samplers", nlohmann::json::array())) {
         SDL_GPUSamplerCreateInfo info{};
-        info.min_filter = SDL_GPU_FILTER_LINEAR;
-        info.mag_filter = SDL_GPU_FILTER_LINEAR;
+        info.min_filter =
+            filter == TextureFilter::Modern ? SDL_GPU_FILTER_LINEAR : SDL_GPU_FILTER_NEAREST;
+        info.mag_filter = info.min_filter;
         info.mipmap_mode = SDL_GPU_SAMPLERMIPMAPMODE_NEAREST;
         if (mipmapped) {
             info.mipmap_mode = SDL_GPU_SAMPLERMIPMAPMODE_LINEAR;
@@ -1269,15 +1275,21 @@ std::unique_ptr<RenderTexture> RenderTexture::FromTexels(SceneRenderer &renderer
     if (texture == nullptr || !upload.Submit()) {
         return nullptr;
     }
+    // A filtered texture is filtered as TextureFilter chooses: by the sampler, by the shader as the
+    // RDP filters, or not at all.
+    TextureFilter filter = renderer.m_state->window->Filter();
     SDL_GPUSamplerCreateInfo info{};
-    info.min_filter = linear ? SDL_GPU_FILTER_LINEAR : SDL_GPU_FILTER_NEAREST;
+    info.min_filter =
+        linear && filter == TextureFilter::Modern ? SDL_GPU_FILTER_LINEAR : SDL_GPU_FILTER_NEAREST;
     info.mag_filter = info.min_filter;
     info.address_mode_u =
         repeat ? SDL_GPU_SAMPLERADDRESSMODE_REPEAT : SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
     info.address_mode_v = info.address_mode_u;
     info.address_mode_w = info.address_mode_u;
-    return std::unique_ptr<RenderTexture>(
+    std::unique_ptr<RenderTexture> result(
         new RenderTexture(device, texture, SDL_CreateGPUSampler(device, &info), width, height));
+    result->m_threePoint = linear && filter == TextureFilter::N64;
+    return result;
 }
 
 SceneRenderer::SceneRenderer(std::unique_ptr<State> state) : m_state(std::move(state)) {
@@ -1665,14 +1677,18 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             fragmentUniforms.shadowForward[i][2] = 1.0f;
             std::ranges::copy(shadow.color, fragmentUniforms.shadowColor[i]);
         }
-        SDL_PushGPUFragmentUniformData(commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
         std::array<SDL_GPUTextureSamplerBinding, 3> bindings{
             {{s.white, s.plainSampler}, {s.white, s.plainSampler}, {s.white, s.plainSampler}}};
-        // The shadows of every car take the one texture.
+        // The textures the shader filters as the RDP does, by their bits. The shadows of every car
+        // take the one texture.
+        std::uint32_t threePoint = 0;
         if (!shadows.empty()) {
             bindings[2] = {shadows[0]->texture->m_texture, shadows[0]->texture->m_sampler};
+            threePoint |= shadows[0]->texture->m_threePoint ? 4u : 0u;
         }
         if (primitive.texture && *primitive.texture < model.textures.size()) {
+            threePoint |= model.threePoint ? 1u : 0u;
+            threePoint |= model.threePoint && primitive.texel1 ? 2u : 0u;
             auto [image, sampler] = model.textures[*primitive.texture];
             image = AnimationFrame(primitive.frames, s.textureTime).value_or(image);
             bindings[0] = {model.images.at(image), model.samplers.at(sampler)};
@@ -1695,7 +1711,10 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         }
         if (reflection != nullptr) {
             bindings[0] = {reflection->texture->m_texture, reflection->texture->m_sampler};
+            threePoint = (threePoint & ~1u) | (reflection->texture->m_threePoint ? 1u : 0u);
         }
+        fragmentUniforms.combine[3] = threePoint;
+        SDL_PushGPUFragmentUniformData(commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
         SDL_BindGPUFragmentSamplers(pass, 0, bindings.data(), bindings.size());
         SDL_BindGPUVertexStorageBuffers(pass, 0, &targets, 1);
         SDL_GPUBufferBinding vertices{primitive.vertices, 0};
@@ -1720,7 +1739,10 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         SDL_PushGPUVertexUniformData(commands, 0, &vertexUniforms, sizeof(vertexUniforms));
         FragmentUniforms fragmentUniforms{{8.0f / 255.0f, 0.0f, 1.0f, 1.0f},
                                           {0.0f, 0.0f, 1.0f, 0.0f},
-                                          {highlight.combine[0], highlight.combine[1], 0u, 0u},
+                                          {highlight.combine[0],
+                                           highlight.combine[1],
+                                           0u,
+                                           highlight.texture->m_threePoint ? 1u : 0u},
                                           {highlight.primitive[0],
                                            highlight.primitive[1],
                                            highlight.primitive[2],
@@ -1910,7 +1932,11 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
              material.texel0 != nullptr ? 1.0f : 0.0f,
              combined ? 1.0f : 0.0f},
             {0.0f, 0.0f, 1.0f, 0.0f},
-            {material.combine[0], material.combine[1], material.twoCycle ? 1u : 0u, 0u},
+            {material.combine[0],
+             material.combine[1],
+             material.twoCycle ? 1u : 0u,
+             (material.texel0 != nullptr && material.texel0->m_threePoint ? 1u : 0u) |
+                 (material.texel1 != nullptr && material.texel1->m_threePoint ? 2u : 0u)},
             {material.prim[0], material.prim[1], material.prim[2], material.prim[3]},
             {material.env[0], material.env[1], material.env[2], material.env[3]},
             {1.0f, 1.0f, 1.0f, 1.0f},

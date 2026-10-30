@@ -105,6 +105,16 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     options.anisotropy = static_cast<int>(
         std::clamp(config.GetInteger("Video", "AnisotropicFiltering", 0), 0L, 16L));
     options.alphaToCoverage = config.GetBoolean("Video", "AlphaToCoverage", true);
+    auto filter = config.Get("Video", "TextureFilter");
+    if (filter == "n64") {
+        options.textureFilter = coastline::TextureFilter::N64;
+    } else if (filter == "nearest") {
+        options.textureFilter = coastline::TextureFilter::Nearest;
+    } else if (filter && *filter != "modern") {
+        SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
+                    "TextureFilter takes n64, modern, or nearest, and %s filters as modern.",
+                    filter->c_str());
+    }
     options.antialias =
         static_cast<int>(config.GetInteger("Video", "Antialias", options.antialias));
     if (auto antialias = parser.present<int>("--antialias")) {
@@ -919,6 +929,7 @@ int main(int argc, char *argv[]) {
                                               {"Video", "RenderScale", "1"},
                                               {"Video", "ScaleFilter", "linear"},
                                               {"Video", "FieldOfView", "1"},
+                                              {"Video", "TextureFilter", "modern"},
                                               {"Video", "AnisotropicFiltering", "0"},
                                               {"Video", "Antialias", "1"},
                                               {"Video", "AlphaToCoverage", "1"},

@@ -287,6 +287,8 @@ private:
     SDL_GPUSampler *m_sampler;
     int m_width;
     int m_height;
+    // Whether the shader filters the texels as the RDP does, through a sampler of the nearest.
+    bool m_threePoint = false;
 };
 
 /** A corner of a flat quad: its place in the space of the flat draws, its texels, and its colour.

@@ -79,9 +79,39 @@ float AlphaInput(uint code, int slot, vec4 t0, vec4 t1, vec4 shade, float lod, v
     return code == 6u ? 1.0 : 0.0;
 }
 
+// The texel nearest a texel position, through a sampler of the nearest texel, which wraps, clamps,
+// or mirrors the position as the texture does.
+vec4 Texel(sampler2D map, vec2 position, vec2 size) {
+    return textureLod(map, (position + 0.5) / size, 0.0);
+}
+
+// The filter of the RDP of the Nintendo 64 where the bit of the texture in combine.w is 1, bit 0
+// for the first texture, bit 1 for the second, and bit 2 for the shadow: three texels, the nearest corner of the four
+// around the point and its two neighbours, interpolated across the triangle of them the point is
+// in, from the centres of the texels half a texel up and left.
+vec4 Sample(sampler2D map, vec2 coordinate, uint bit) {
+    if ((combine.w & bit) == 0u) {
+        return texture(map, coordinate);
+    }
+    vec2 size = vec2(textureSize(map, 0));
+    vec2 position = coordinate * size - 0.5;
+    vec2 corner = floor(position);
+    vec2 fraction = position - corner;
+    vec4 upperLeft = Texel(map, corner, size);
+    vec4 upperRight = Texel(map, corner + vec2(1.0, 0.0), size);
+    vec4 lowerLeft = Texel(map, corner + vec2(0.0, 1.0), size);
+    if (fraction.x + fraction.y < 1.0) {
+        return upperLeft + fraction.x * (upperRight - upperLeft) +
+               fraction.y * (lowerLeft - upperLeft);
+    }
+    vec4 lowerRight = Texel(map, corner + vec2(1.0), size);
+    return lowerRight + (1.0 - fraction.x) * (lowerLeft - lowerRight) +
+           (1.0 - fraction.y) * (upperRight - lowerRight);
+}
+
 void main() {
-    vec4 t0 = flags.z > 0.5 ? texture(textureMap, inTexCoord) : vec4(1.0);
-    vec4 t1 = texture(textureMap1, inTexCoord * texel1Transform.xy + texel1Transform.zw);
+    vec4 t0 = flags.z > 0.5 ? Sample(textureMap, inTexCoord, 1u) : vec4(1.0);
+    vec4 t1 = Sample(textureMap1, inTexCoord * texel1Transform.xy + texel1Transform.zw, 2u);
     vec4 shade = inColor;
     if (flags.y > 0.5) {
         float diffuse = max(dot(normalize(inNormal), lightDirection.xyz), 0.0);
@@ -143,7 +173,7 @@ void main() {
                         shadowCenter[i].w * dot(offset, vec2(-forward.y, forward.x))) +
                    512.0) /
                   1024.0;
-        float shade = texture(shadowMap, clamp(st, 0.0, 1.0)).a;
+        float shade = Sample(shadowMap, clamp(st, 0.0, 1.0), 4u).a;
         if (shade * 255.0 >= 8.0) {
             color.rgb = mix(color.rgb, shadowColor[i].rgb, shade);
         }

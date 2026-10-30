@@ -15,6 +15,13 @@ enum class ScaleFilter {
     Nearest, /*!< Each pixel of the window takes the nearest pixel of the frame. */
 };
 
+/** How the textures the game filters are filtered. */
+enum class TextureFilter {
+    N64,     /*!< Three texels, as the RDP of the Nintendo 64 filters. */
+    Modern,  /*!< Four texels, bilinear, and trilinear and anisotropic with mipmaps. */
+    Nearest, /*!< The nearest texel, unfiltered. */
+};
+
 /** The anti-aliasing of the finished frame, before it is scaled to the window. */
 enum class PostAntialias {
     None, /*!< The frame as the scene drew it. */
@@ -49,6 +56,7 @@ struct DisplayOptions {
     /** The most samples of anisotropic filtering of the textures of models, which are then
      * mipmapped, from 2 to 16, or 0 for neither. */
     int anisotropy = 0;
+    TextureFilter textureFilter = TextureFilter::Modern; /*!< How textures are filtered. */
     /** Whether the alpha of the texels a model cuts covers the samples of a multisampled pixel. */
     bool alphaToCoverage = true;
     std::optional<std::string>
@@ -152,6 +160,11 @@ public:
     /** @return The samples of each pixel the options requested, 1 for no anti-aliasing. */
     int Antialias() const {
         return m_antialias;
+    }
+
+    /** @return How the textures the game filters are filtered. */
+    TextureFilter Filter() const {
+        return m_options.textureFilter;
     }
 
     /** @return Whether the alpha of cut texels covers the samples of a multisampled pixel. */
