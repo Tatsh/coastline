@@ -22,6 +22,7 @@
 #include "common/sky.h"
 #include "common/snapshot.h"
 #include "common/strings.h"
+#include "common/system.h"
 #include "common/track.h"
 #include "common/trackmenuitem.h"
 #include "common/trackselect.h"
@@ -556,6 +557,8 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     Matrix4 viewProjection = CameraMatrix(*camera, aspect);
 
     // The lights of the weather of the race.
+    // The animated textures of the track take the time of the race.
+    renderer.SetTextureTime(static_cast<std::uint32_t>(g_dwElapsedTimeMs));
     SetupWeatherLights();
     Lighting lighting;
     lighting.direction = {g_afLightDirection[0], g_afLightDirection[1], g_afLightDirection[2]};

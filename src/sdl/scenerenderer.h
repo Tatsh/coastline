@@ -261,6 +261,13 @@ public:
     void Begin(std::array<float, 4> clear);
 
     /**
+     * Set the time the animated textures of the frame show, from 0 at Begin().
+     *
+     * @param milliseconds The time, such as the elapsed time of a race.
+     */
+    void SetTextureTime(std::uint32_t milliseconds);
+
+    /**
      * Draw a model, its opaque parts now and its translucent ones after every opaque draw.
      *
      * @param model The model.

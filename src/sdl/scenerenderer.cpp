@@ -105,6 +105,22 @@ std::array<float, 4> Rgba(std::uint32_t value) {
             static_cast<float>(value & 0xff) / 255.0f};
 }
 
+// StreamAnimatedTrackTextures(): the frame of an animated texture at a time of the race, the last
+// whose time is not past the time within the span of the frames, or none for a still texture.
+std::optional<std::size_t>
+AnimationFrame(const std::vector<std::pair<std::uint32_t, std::size_t>> &frames,
+               std::uint32_t time) {
+    if (frames.size() < 2 || frames.back().first <= frames.front().first) {
+        return std::nullopt;
+    }
+    std::uint32_t phase = time % (frames.back().first - frames.front().first);
+    std::size_t frame = 1;
+    while (frame < frames.size() && !(phase < frames[frame].first)) {
+        ++frame;
+    }
+    return frames[frame - 1].second;
+}
+
 // The most poses of vertex animations a draw blends, as many as the vertex shader takes.
 constexpr std::size_t MAX_MORPH_POSES = 64;
 
@@ -395,6 +411,8 @@ struct Primitive {
     std::array<float, 4> prim{1, 1, 1, 1};
     std::array<float, 4> env{1, 1, 1, 1};
     std::optional<std::size_t> texel1;
+    // The frames of an animated texture, each its time in milliseconds and its image.
+    std::vector<std::pair<std::uint32_t, std::size_t>> frames;
 };
 
 // A mesh: its primitives, and the displacements of its morph targets.
@@ -505,6 +523,8 @@ struct RenderModel::State {
 };
 
 struct SceneRenderer::State {
+    // The time of the frame the animated textures show, in milliseconds.
+    std::uint32_t textureTime = 0;
     GpuWindow *window = nullptr;
     SDL_GPUDevice *device = nullptr;
     SDL_GPUShader *vertexShader = nullptr;
@@ -847,6 +867,20 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
                         part.texel1 = rdp["texel1Image"].get<std::size_t>();
                     }
                 }
+                // The frames of an animated texture of a track. The PC release does not swap the
+                // textures of the snow, which have no time.
+                if (material.contains("extras") &&
+                    material["extras"].contains("coastlineAnimation")) {
+                    const auto &animation = material["extras"]["coastlineAnimation"];
+                    if (!animation.value("snow", false)) {
+                        for (const auto &frame : animation["frames"]) {
+                            if (frame["time"].is_number()) {
+                                part.frames.emplace_back(frame["time"].get<std::uint32_t>(),
+                                                         frame["image"].get<std::size_t>());
+                            }
+                        }
+                    }
+                }
             }
             drawn.primitives.push_back(part);
         }
@@ -1064,8 +1098,13 @@ std::unique_ptr<SceneRenderer> SceneRenderer::Create(GpuWindow &window) {
 
 void SceneRenderer::Begin(std::array<float, 4> clear) {
     m_state->clear = clear;
+    m_state->textureTime = 0;
     m_state->draws.clear();
     m_state->flat.clear();
+}
+
+void SceneRenderer::SetTextureTime(std::uint32_t milliseconds) {
+    m_state->textureTime = milliseconds;
 }
 
 void SceneRenderer::DrawModel(const RenderModel &model,
@@ -1264,6 +1303,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         }
         if (primitive.texture && *primitive.texture < model.textures.size()) {
             auto [image, sampler] = model.textures[*primitive.texture];
+            image = AnimationFrame(primitive.frames, s.textureTime).value_or(image);
             bindings[0] = {model.images.at(image), model.samplers.at(sampler)};
             if (primitive.texel1 && *primitive.texel1 < model.images.size()) {
                 bindings[1] = {model.images[*primitive.texel1], model.samplers.at(sampler)};
