@@ -20,6 +20,7 @@
 #include "common/track.h"
 #include "common/vecmath.h"
 #include "common/vehicle.h"
+#include "common/vehiclecamera.h"
 #include "common/weather.h"
 #include "frontend.h"
 #include "gpu.h"
@@ -315,12 +316,19 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
         renderer.DrawModel(*s.sky, place, viewProjection, lighting, std::nullopt, false);
     }
     renderer.DrawModel(*s.track, ConsoleSpace(), viewProjection, lighting, std::nullopt, true);
-    renderer.DrawModel(*s.car,
-                       MultiplyMatrices(FrameMatrix(vehicle.GetFrame()), ConsoleSpace()),
-                       viewProjection,
-                       lighting,
-                       std::nullopt,
-                       true);
+    // RenderVehicleModel() does not draw the car from its own cockpit or its mirror.
+    const CameraFrame *active = g_aVehicles[0].GetActiveCamera();
+    const auto &cameras = g_aVehicles[0].GetCameras();
+    bool inside =
+        active == &cameras[VEHICLE_CAMERA_COCKPIT] || active == &cameras[VEHICLE_CAMERA_MIRROR];
+    if (!inside || g_dwVehicleCullingDisabled) {
+        renderer.DrawModel(*s.car,
+                           MultiplyMatrices(FrameMatrix(vehicle.GetFrame()), ConsoleSpace()),
+                           viewProjection,
+                           lighting,
+                           std::nullopt,
+                           true);
+    }
     std::optional<Matrix4> lights = StartLightsMatrix();
     if (lights) {
         renderer.DrawModel(*s.startLights,
