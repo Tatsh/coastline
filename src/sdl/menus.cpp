@@ -16,21 +16,6 @@ void Menus::Restart() {
 }
 
 void Menus::SetCurrentScreen(Screen screen) {
-    // ponytail: a screen not built yet returns to the main menu on the item chosen.
-    constexpr const char *NOT_BUILT[] = {nullptr,
-                                         nullptr,
-                                         nullptr,
-                                         nullptr,
-                                         nullptr,
-                                         "data save and load",
-                                         nullptr,
-                                         nullptr,
-                                         nullptr};
-    const char *name = NOT_BUILT[static_cast<int>(screen)];
-    if (name != nullptr) {
-        SDL_Log("The %s screen is not built yet.", name);
-        screen = Screen::MainMenu;
-    }
     m_current = screen;
 }
 
@@ -73,6 +58,9 @@ MenusEnd Menus::Frame(SceneRenderer &renderer,
         break;
     case Screen::CarSelect:
         ProcessCarSelectScreen(renderer, seconds, buttons);
+        break;
+    case Screen::DataSaveLoadMenu:
+        ProcessDataSaveLoadMenu(renderer, seconds, first);
         break;
     case Screen::OptionsMenu:
         ProcessOptionsMenu(renderer, seconds, first);

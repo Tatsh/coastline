@@ -173,11 +173,10 @@ void Menus::FinishRace(RaceEnd end, const RaceResults &results) {
         SetCurrentScreen(Screen::RaceResultsScreen);
     } else if (end == RaceEnd::SeasonMenu) {
         // After the race of a season, the championship goes on with the next season.
-        // ponytail: the data save and load screen is not built yet, and the track menu follows.
         m_gameMode = GameMode::Championship;
         SetTrackFromSeason();
         m_continueFromResults = false;
-        SetCurrentScreen(Screen::TrackMenu);
+        StartDataSaveLoadMenu(SaveLoadEntry::Season);
     } else {
         if (afterSeason) {
             SDL_Log("The ending credits are not built yet.");
@@ -522,8 +521,10 @@ void Menus::LeaveRaceResults() {
         return;
     }
     if (m_gameMode != GameMode::Championship) {
-        // ponytail: the data save and load screen, where a time attack saves its ghost, is not
-        // built yet.
+        // A time attack saves its ghost on the save and load menu when the race recorded a new
+        // one, g_dwSaveAvailable of the console. The race engine of the PC release does not record
+        // the ghost of the console, and the main menu follows.
+        // ponytail: offer the ghost once the race records the recording of the console.
         SetCurrentScreen(Screen::MainMenu);
         return;
     }
@@ -531,9 +532,8 @@ void Menus::LeaveRaceResults() {
     m_numLocalPlayers = 1;
     m_continueFromResults = m_profile.round != 0;
     if (m_resultsSeason == m_profile.season) {
-        // ponytail: the data save and load screen is not built yet, and the track menu follows.
         SetTrackFromSeason();
-        SetCurrentScreen(Screen::TrackMenu);
+        StartDataSaveLoadMenu(SaveLoadEntry::Season);
     } else {
         m_afterSeasonRace = true;
         m_end = MenusEnd::Race;

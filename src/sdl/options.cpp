@@ -2,11 +2,13 @@
 #include <array>
 #include <bit>
 #include <cstdint>
+#include <cstring>
 #include <string>
 #include <vector>
 
 #include <SDL3/SDL.h>
 
+#include "common/rle.h"
 #include "menus.h"
 #include "menutext.h"
 
@@ -44,10 +46,12 @@ constexpr int MAX_RACE_VOLUME_LEVEL = 9;
 // The notes of the Controller Pak, as the console writes their names in the characters of the pak.
 constexpr const char *SEASON_NOTE = "TOP GEAR SEASON";
 constexpr const char *OPTIONS_NOTE = "TOP GEAR OPTIONS";
+constexpr const char *GHOST_NOTE = "TOP GEAR GHOST";
 
-// The sizes of the notes of a season and of the options. The options store the settings in the
-// first half of their note and the equipment of the car in the second.
+// The sizes of the notes of a season, of a ghost car, and of the options. The options store the
+// settings in the first half of their note and the equipment of the car in the second.
 constexpr std::size_t SEASON_NOTE_SIZE = 0x200;
+constexpr std::size_t GHOST_NOTE_SIZE = 0x3A00;
 constexpr std::size_t OPTIONS_NOTE_SIZE = 0x100;
 constexpr std::size_t OPTIONS_HALF_SIZE = 0x80;
 
@@ -83,6 +87,46 @@ enum PakError {
     PAK_ERROR_NOT_FOUND,
     PAK_ERROR_FULL,
     PAK_ERROR_WRITE,
+    PAK_ERROR_GHOST_TOO_LARGE,
+};
+
+// The capacity of the ghost recording, and its channels, interleaved.
+constexpr std::size_t GHOST_RECORDING_CAPACITY = 0xDE5C;
+constexpr s32 GHOST_CHANNELS = 2;
+
+// The choices of the save and load menu.
+enum SaveLoadChoice {
+    SAVE_LOAD_LOAD_SEASON,
+    SAVE_LOAD_SAVE_SEASON,
+    SAVE_LOAD_LOAD_GHOST,
+    SAVE_LOAD_SAVE_GHOST,
+    SAVE_LOAD_LOAD_OPTIONS,
+    SAVE_LOAD_SAVE_OPTIONS,
+    SAVE_LOAD_CHOICES,
+};
+constexpr std::array<const char *, SAVE_LOAD_CHOICES> SAVE_LOAD_CHOICE_NAMES{"LOAD SEASON DATA",
+                                                                             "SAVE SEASON DATA",
+                                                                             "LOAD GHOST CAR DATA",
+                                                                             "SAVE GHOST CAR DATA",
+                                                                             "LOAD OPTIONS",
+                                                                             "SAVE OPTIONS"};
+
+// The steps of the save and load menu, without the steps of a missing pak, another pak, and a
+// Rumble Pak.
+enum SaveLoadStep {
+    SAVE_LOAD_STEP_FADE_IN,
+    SAVE_LOAD_STEP_CHOOSE,
+    SAVE_LOAD_STEP_QUIET,
+    SAVE_LOAD_STEP_WAIT_QUIET,
+    SAVE_LOAD_STEP_FIND,
+    SAVE_LOAD_STEP_LOAD,
+    SAVE_LOAD_STEP_ALLOCATE,
+    SAVE_LOAD_STEP_CONFIRM_OVERWRITE,
+    SAVE_LOAD_STEP_SAVE,
+    SAVE_LOAD_STEP_ERROR,
+    SAVE_LOAD_STEP_DONE,
+    SAVE_LOAD_STEP_FADE_OUT,
+    SAVE_LOAD_STEP_LEAVE,
 };
 
 // The notes are in the byte order of the console.
@@ -140,6 +184,61 @@ void ReadProfile(MenuProfile &profile, const std::vector<u8> &bytes) {
     profile.unlockedTracks = Get16(bytes, 0xCE);
     profile.unlockedWeathers = Get16(bytes, 0xD0);
     SetEquipment(profile, bytes, 0xD4);
+}
+
+void Put16(std::vector<u8> &bytes, std::size_t at, u16 value) {
+    bytes[at] = static_cast<u8>(value >> 8);
+    bytes[at + 1] = static_cast<u8>(value);
+}
+
+// The fields of a profile ReadProfile() reads, over the bytes of a note. The bytes of the console
+// the menus do not read are left as the note has them.
+void WriteProfile(std::vector<u8> &bytes, const MenuProfile &profile) {
+    Put32(bytes, 0x00, static_cast<u32>(profile.championshipFlags));
+    bytes[0x04] = profile.season;
+    bytes[0x05] = profile.round;
+    for (std::size_t season = 0; season < profile.seasonPlaces.size(); ++season) {
+        for (std::size_t race = 0; race < profile.seasonPlaces[season].size(); ++race) {
+            bytes[0x06 + season * 4 + race] = profile.seasonPlaces[season][race];
+            Put32(bytes,
+                  0x2C + (season * 4 + race) * 4,
+                  std::bit_cast<u32>(profile.seasonTimes[season][race]));
+        }
+        Put16(bytes, 0x1E + season * 2, profile.seasonPoints[season]);
+    }
+    for (std::size_t track = 0; track < profile.lapRecords.size(); ++track) {
+        Put32(bytes, 0x8C + track * 4, std::bit_cast<u32>(profile.lapRecords[track]));
+        Put32(bytes, 0xE8 + track * 4, std::bit_cast<u32>(profile.raceRecords[track]));
+    }
+    Put16(bytes, 0xCC, profile.unlocks);
+    Put16(bytes, 0xCE, profile.unlockedTracks);
+    Put16(bytes, 0xD0, profile.unlockedWeathers);
+    GetEquipment(bytes, 0xD4, profile);
+}
+
+// Each channel of a compressed ghost starts with its length in the byte order of the console, and
+// the run-length routines read and write the length in the order of the host. A length past the
+// end of the note fails.
+bool SwapBlockLengths(std::vector<u8> &packed, bool fromConsole) {
+    std::size_t at = 0;
+    for (s32 channel = 0; channel < GHOST_CHANNELS; ++channel) {
+        if (at + 4 > packed.size()) {
+            return false;
+        }
+        u32 length = 0;
+        if (fromConsole) {
+            length = Get32(packed, at);
+            std::memcpy(&packed[at], &length, sizeof(length));
+        } else {
+            std::memcpy(&length, &packed[at], sizeof(length));
+            Put32(packed, at, length);
+        }
+        if (length > packed.size() - at - 4) {
+            return false;
+        }
+        at += 4 + length;
+    }
+    return true;
 }
 
 // The options as OptionSettings of the console at the start of the note of the options.
@@ -453,6 +552,454 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
         break;
     default:
         break;
+    }
+}
+
+void Menus::StartDataSaveLoadMenu(SaveLoadEntry entry) {
+    m_saveLoadEntry = entry;
+    SetCurrentScreen(Screen::DataSaveLoadMenu);
+}
+
+void Menus::DrawShortMessage(
+    int boxX, int boxWidth, int textX, const char *line1, const char *line2) {
+    DrawMessageBox(boxX, 0xD9, boxWidth, 0x4A);
+    m_paintShop->DrawText(line1, textX, 0x7C);
+    m_paintShop->DrawText(line2, textX, 0x8A);
+}
+
+void Menus::DrawSaveLoadChoices() {
+    PaintShop &draw = *m_paintShop;
+    // The current choice is brighter, and every choice dims while a message shows.
+    auto colors = [&](bool current) {
+        if (m_saveLoadInputEnabled) {
+            if (current) {
+                draw.SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00);
+            } else {
+                draw.SetTextCustomColors(0xFF, 0xF5, 0x00, 0xC8, 0x00, 0x00);
+            }
+        } else if (current) {
+            draw.SetTextCustomColors(0x80, 0x80, 0x80, 0x84, 0x7C, 0x00);
+        } else {
+            draw.SetTextCustomColors(0x80, 0x78, 0x00, 0x64, 0x00, 0x00);
+        }
+    };
+    constexpr int FOOTER_Y = 240 * 19 / 20 - 3;
+    if (m_saveLoadEntry == SaveLoadEntry::MainMenu) {
+        draw.m_text.size = 16;
+        for (int choice = 0; choice != SAVE_LOAD_CHOICES; ++choice) {
+            colors(choice == m_saveLoadChoice);
+            draw.DrawText(
+                SAVE_LOAD_CHOICE_NAMES[static_cast<std::size_t>(choice)], 0x9E, 0x57 + choice * 18);
+        }
+        draw.DrawTexturedSprite(*draw.m_buttonA, 0xCA, 0x1B0);
+        draw.DrawTexturedSprite(*draw.m_buttonB, 0x142, 0x1B0);
+        draw.m_text.align = TextStyle::Align::Left;
+        draw.m_text.size = 11;
+        draw.DrawText("%wwSelect", 0x74, FOOTER_Y);
+        draw.DrawText("%wwGo Back", 0xB0, FOOTER_Y);
+        return;
+    }
+    // After a race the menu only requests whether to save it.
+    draw.m_text.size = 20;
+    colors(true);
+    if (m_saveLoadEntry == SaveLoadEntry::Season) {
+        draw.DrawText("SAVE SEASON DATA?", 0x9E, 0x80);
+        m_saveLoadChoice = SAVE_LOAD_SAVE_SEASON;
+    } else {
+        draw.DrawText("SAVE GHOST CAR DATA?", 0x9E, 0x80);
+        m_saveLoadChoice = SAVE_LOAD_SAVE_GHOST;
+    }
+    draw.DrawTexturedSprite(*draw.m_buttonA, 0xEC, 0x1B0);
+    draw.DrawTexturedSprite(*draw.m_buttonB, 0x154, 0x1B0);
+    draw.m_text.align = TextStyle::Align::Left;
+    draw.m_text.size = 11;
+    draw.DrawText("%wwYES", 0x84, FOOTER_Y);
+    draw.DrawText("%wwNO", 0xB9, FOOTER_Y);
+}
+
+void Menus::DrawSaveLoadError(int noteSize) {
+    PaintShop &draw = *m_paintShop;
+    bool load = m_saveLoadChoice == SAVE_LOAD_LOAD_SEASON ||
+                m_saveLoadChoice == SAVE_LOAD_LOAD_GHOST ||
+                m_saveLoadChoice == SAVE_LOAD_LOAD_OPTIONS;
+    SetMessageText();
+    switch (m_pakError) {
+    case PAK_ERROR_FULL: {
+        DrawMessageBox(0xA5, 0x9F, 0x136, 0xBD);
+        const char *pages =
+            noteSize == static_cast<int>(SEASON_NOTE_SIZE) ? "TWO PAGES AND ONE NOTE" :
+            noteSize == static_cast<int>(GHOST_NOTE_SIZE)  ? "58 PAGES AND ONE NOTE" :
+                                                             "ONE PAGE AND ONE NOTE";
+        const char *data = noteSize == static_cast<int>(SEASON_NOTE_SIZE) ? "SEASON DATA." :
+                           noteSize == static_cast<int>(GHOST_NOTE_SIZE)  ? "GHOST CAR DATA." :
+                                                                            "OPTIONS.";
+        draw.DrawText("INSUFFICIENT FREE PAGES", 0x5A, 0x5F);
+        draw.DrawText("OR FREE NOTES IN THE", 0x5A, 0x5F + 0xD);
+        draw.DrawText("SAVE FOLDER.", 0x5A, 0x5F + 0x1A);
+        draw.DrawText(pages, 0x5A, 0x5F + 0x2D);
+        draw.DrawText("ARE NEEDED TO SAVE THE", 0x5A, 0x5F + 0x3A);
+        draw.DrawText(data, 0x5A, 0x5F + 0x47);
+        break;
+    }
+    case PAK_ERROR_GHOST_TOO_LARGE:
+        DrawMessageBox(0x75, 0xBD, 0x196, 0x82);
+        draw.DrawText("UNABLE TO SAVE GHOST CAR DATA.", 0x42, 0x6E);
+        draw.DrawText("GHOST CAR DATA IS LARGER THAN", 0x42, 0x7C);
+        draw.DrawText("THE MAXIMUM ALLOCATED SPACE", 0x42, 0x8A);
+        draw.DrawText("IN THE SAVE FOLDER.", 0x42, 0x98);
+        break;
+    case PAK_ERROR_NOT_FOUND:
+        if (load) {
+            DrawShortMessage(0xAD, 0x125, 0x5E, "SAVED DATA NOT FOUND", "IN THE SAVE FOLDER.");
+        } else {
+            DrawShortMessage(0xB6, 0x114, 0x63, "UNABLE TO SAVE DATA", "TO THE SAVE FOLDER.");
+        }
+        break;
+    case PAK_ERROR_WRITE:
+        DrawShortMessage(0xB6, 0x114, 0x63, "UNABLE TO SAVE DATA", "TO THE SAVE FOLDER.");
+        break;
+    default:
+        DrawShortMessage(0xB1, 0x11E, 0x60, "SAVE FOLDER ERROR", "HAS BEEN DETECTED!");
+        break;
+    }
+}
+
+void Menus::DrawSaveLoadDone() {
+    PaintShop &draw = *m_paintShop;
+    draw.m_text = TextStyle();
+    draw.m_text.size = 12;
+    draw.m_text.align = TextStyle::Align::Center;
+    int top = m_saveLoadEntry != SaveLoadEntry::MainMenu ? 0xCE : 0xD9;
+    auto done = [&](int boxX, int boxWidth, const char *line1, const char *line2) {
+        DrawMessageBox(boxX, top, boxWidth, 0x4A);
+        draw.DrawText(line1, 0x9F, (top + 0x20) >> 1);
+        draw.DrawText(line2, 0x9F, ((top + 0x20) >> 1) + 0xE);
+    };
+    switch (m_saveLoadChoice) {
+    case SAVE_LOAD_LOAD_SEASON:
+        done(0xE2, 0xBC, "%ywSEASON DATA", "%ywLOADED OK!");
+        break;
+    case SAVE_LOAD_SAVE_SEASON:
+        done(0xE2, 0xBC, "%ywSEASON DATA", "%ywSAVED OK!");
+        break;
+    case SAVE_LOAD_LOAD_GHOST:
+        done(0xE2, 0xBC, "%ywGHOST DATA", "%ywLOADED OK!");
+        break;
+    case SAVE_LOAD_SAVE_GHOST:
+        done(0xD8, 0xD0, "%ywGHOST CAR DATA", "%ywSAVED OK!");
+        break;
+    case SAVE_LOAD_LOAD_OPTIONS:
+        DrawMessageBox(0xC3, 0xE7, 0xFA, 0x2E);
+        draw.DrawText("%ywOPTIONS LOADED OK!", 0x9F, 0x83);
+        break;
+    default:
+        DrawMessageBox(0xC3, 0xE7, 0xFA, 0x2E);
+        draw.DrawText("%ywOPTIONS SAVED OK!", 0x9F, 0x83);
+        break;
+    }
+}
+
+void Menus::DrawConfirmOverwrite() {
+    PaintShop &draw = *m_paintShop;
+    int top = m_saveLoadEntry != SaveLoadEntry::MainMenu ? 0xBF : 0xC9;
+    // The buttons are placed by the width of the picture of A, not its height.
+    int buttonY = top - draw.m_buttonA->width + 0x62;
+    DrawMessageBox(0xD5, top, 0xD6, 0x6A);
+    draw.m_text = TextStyle();
+    draw.m_text.size = 13;
+    draw.SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
+    int textY = (top + 0x1E) >> 1;
+    draw.DrawText("OK TO OVERWRITE", 0x72, textY);
+    draw.DrawText("SAVED DATA?", 0x72, textY + 0xE);
+    draw.m_text.size = 10;
+    textY = (buttonY + 0x12) >> 1;
+    draw.DrawText("%wwOK", (draw.m_buttonA->width + 0xED) >> 1, textY);
+    // CANCEL is placed by the height of the picture of B, unlike the other labels.
+    draw.DrawText("%wwCANCEL", (draw.m_buttonB->height + 0x13B) >> 1, textY);
+    draw.DrawTexturedSprite(*draw.m_buttonA, 0xE7, buttonY);
+    draw.DrawTexturedSprite(*draw.m_buttonB, 0x135, buttonY);
+}
+
+bool Menus::LoadSaveLoadNote(int player) {
+    const std::vector<u8> &note = *m_pakNote;
+    if (m_saveLoadChoice == SAVE_LOAD_LOAD_SEASON) {
+        if (note.size() < PROFILE_SIZE) {
+            return false;
+        }
+        // Both players take the season, but the other player retains the equipment of the car
+        // when the main menu opened the menu.
+        MenuProfile &other = ProfileOf(player ^ 1);
+        std::vector<u8> equipment(EQUIPMENT_SIZE);
+        GetEquipment(equipment, 0, other);
+        ReadProfile(m_profile, note);
+        ReadProfile(m_secondProfile, note);
+        if (m_saveLoadEntry == SaveLoadEntry::MainMenu) {
+            SetEquipment(other, equipment, 0);
+        }
+        // A loaded season starts its race at once, without a message.
+        m_saveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
+        m_saveLoadDataWasLoaded = true;
+    } else if (m_saveLoadChoice == SAVE_LOAD_LOAD_GHOST) {
+        std::vector<u8> compressed = note;
+        if (!SwapBlockLengths(compressed, true)) {
+            return false;
+        }
+        // A literal block may read past the end of the note, and two bytes of the note expand to
+        // at most 130 bytes of each channel.
+        compressed.resize(compressed.size() + 0x100);
+        std::vector<u8> expanded(compressed.size() * 130 * GHOST_CHANNELS);
+        s32 size = DecompressInterleavedRle(
+            expanded.data(), static_cast<s32>(expanded.size()), compressed.data(), GHOST_CHANNELS);
+        if (size < 2 || static_cast<std::size_t>(size) > GHOST_RECORDING_CAPACITY) {
+            return false;
+        }
+        expanded.resize(GHOST_RECORDING_CAPACITY);
+        m_ghostRecording = std::move(expanded);
+        m_ghostRecordingSize = size;
+        // The recording starts with its track and its car, and the load unlocks both.
+        m_selectedTrackId = m_ghostRecording[0];
+        m_profile.unlockedTracks =
+            static_cast<u16>(m_profile.unlockedTracks | 1 << m_ghostRecording[0]);
+        m_profile.unlocks = static_cast<u16>(m_profile.unlocks | 1 << m_ghostRecording[1]);
+        m_saveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
+        m_saveLoadDataWasLoaded = true;
+    } else {
+        if (note.size() < OPTIONS_HALF_SIZE + EQUIPMENT_SIZE) {
+            return false;
+        }
+        ReadOptions(m_options, note);
+        SetEquipment(ProfileOf(player), note, OPTIONS_HALF_SIZE);
+        ApplyVolumeSettings();
+        m_saveLoadStep = SAVE_LOAD_STEP_DONE;
+    }
+    return true;
+}
+
+int Menus::SaveSaveLoadNote(int player) {
+    if (m_saveLoadChoice == SAVE_LOAD_SAVE_SEASON) {
+        // The bytes of the note the menus do not read are written back as they are.
+        std::vector<u8> note = m_pakNote.value_or(std::vector<u8>());
+        note.resize(SEASON_NOTE_SIZE);
+        WriteProfile(note, m_profile);
+        return m_pak.WriteNote(SEASON_NOTE, note) ? PAK_ERROR_NONE : PAK_ERROR_WRITE;
+    }
+    if (m_saveLoadChoice == SAVE_LOAD_SAVE_GHOST) {
+        // The scan reads a byte past the end of the recording.
+        std::vector<u8> recording = m_ghostRecording;
+        recording.resize(std::max<std::size_t>(recording.size(),
+                                               static_cast<std::size_t>(m_ghostRecordingSize)) +
+                         GHOST_CHANNELS);
+        std::vector<u8> note(GHOST_NOTE_SIZE, 0);
+        s32 size = CompressRleChannels(note.data(),
+                                       static_cast<s32>(note.size()),
+                                       recording.data(),
+                                       m_ghostRecordingSize,
+                                       GHOST_CHANNELS);
+        if (size == -1 || !SwapBlockLengths(note, false)) {
+            return PAK_ERROR_GHOST_TOO_LARGE;
+        }
+        return m_pak.WriteNote(GHOST_NOTE, note) ? PAK_ERROR_NONE : PAK_ERROR_WRITE;
+    }
+    return SaveOptionsNote(player) ? PAK_ERROR_NONE : PAK_ERROR_WRITE;
+}
+
+void Menus::LeaveDataSaveLoadMenu() {
+    m_saveLoadInitialized = false;
+    m_pakError = PAK_ERROR_NONE;
+    if (m_saveLoadChoice == SAVE_LOAD_LOAD_SEASON && m_saveLoadDataWasLoaded) {
+        m_saveLoadDataWasLoaded = false;
+        StartChampionshipRace();
+    } else if (m_saveLoadChoice == SAVE_LOAD_LOAD_GHOST && m_saveLoadDataWasLoaded) {
+        m_saveLoadDataWasLoaded = false;
+        StartTimeAttack();
+    } else {
+        m_saveLoadChoice = SAVE_LOAD_LOAD_SEASON;
+        SetCurrentScreen(m_saveLoadEntry == SaveLoadEntry::Season ? Screen::TrackMenu :
+                                                                    Screen::MainMenu);
+    }
+}
+
+void Menus::ProcessDataSaveLoadMenu(SceneRenderer &renderer,
+                                    float seconds,
+                                    const MenuButtons &first) {
+    // The menu draws with the paint shop, and returns to the main menu without it.
+    if (!m_paintShop) {
+        SetCurrentScreen(Screen::MainMenu);
+        return;
+    }
+    PaintShop &draw = *m_paintShop;
+    if (!m_saveLoadInitialized) {
+        m_saveLoadInitialized = true;
+        m_saveLoadDataWasLoaded = false;
+        m_saveLoadInputEnabled = true;
+        m_pakError = PAK_ERROR_NONE;
+        m_saveLoadFadeDelayFrames = 0;
+        draw.LoadTextureFromRom(*draw.m_background);
+        draw.LoadTextureFromRom(*draw.m_logo);
+        if (m_saveLoadEntry == SaveLoadEntry::MainMenu) {
+            m_saveLoadChoice = SAVE_LOAD_LOAD_SEASON;
+        } else if (m_saveLoadEntry == SaveLoadEntry::Season) {
+            m_saveLoadChoice = SAVE_LOAD_SAVE_SEASON;
+        } else {
+            m_saveLoadChoice = SAVE_LOAD_SAVE_GHOST;
+        }
+        m_saveLoadStep = SAVE_LOAD_STEP_FADE_IN;
+        m_screen->FadeIn();
+    }
+
+    m_screen->UpdateFade(seconds);
+    draw.BeginDraw(renderer);
+    draw.DrawSpriteTinted(*draw.m_background, 0x60, 0, 0x80);
+    draw.DrawTexturedSprite(*draw.m_logo, draw.m_logo->originX, draw.m_logo->originY + 8);
+
+    int noteSize = static_cast<int>(OPTIONS_NOTE_SIZE);
+    const char *noteName = OPTIONS_NOTE;
+    if (m_saveLoadChoice == SAVE_LOAD_LOAD_SEASON || m_saveLoadChoice == SAVE_LOAD_SAVE_SEASON) {
+        noteName = SEASON_NOTE;
+        noteSize = static_cast<int>(SEASON_NOTE_SIZE);
+    } else if (m_saveLoadChoice == SAVE_LOAD_LOAD_GHOST ||
+               m_saveLoadChoice == SAVE_LOAD_SAVE_GHOST) {
+        noteName = GHOST_NOTE;
+        noteSize = static_cast<int>(GHOST_NOTE_SIZE);
+    }
+
+    draw.m_text = TextStyle();
+    draw.m_text.size = 30;
+    draw.m_text.align = TextStyle::Align::Center;
+    draw.DrawText(
+        m_saveLoadEntry == SaveLoadEntry::MainMenu ? "%ryDATA LOAD/SAVE" : "%ryDATA SAVE", 160, 41);
+    DrawSaveLoadChoices();
+
+    int player = m_screen->ChoosingPlayer();
+    bool dismissed = first.choose || first.back;
+    bool load = m_saveLoadChoice == SAVE_LOAD_LOAD_SEASON ||
+                m_saveLoadChoice == SAVE_LOAD_LOAD_GHOST ||
+                m_saveLoadChoice == SAVE_LOAD_LOAD_OPTIONS;
+    // A message dismissed or cancelled from the main menu returns to the choices, and after a race
+    // it exits.
+    auto backToChoices = [&]() {
+        if (m_saveLoadEntry == SaveLoadEntry::MainMenu) {
+            m_screen->FadeSounds(1.0f);
+            m_saveLoadStep = SAVE_LOAD_STEP_CHOOSE;
+        } else {
+            m_saveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
+        }
+    };
+    switch (m_saveLoadStep) {
+    case SAVE_LOAD_STEP_FADE_IN:
+        if (m_screen->FadeComplete()) {
+            m_saveLoadStep = SAVE_LOAD_STEP_CHOOSE;
+        }
+        break;
+
+    case SAVE_LOAD_STEP_CHOOSE:
+        m_saveLoadInputEnabled = true;
+        if (m_saveLoadEntry == SaveLoadEntry::MainMenu) {
+            if (first.down) {
+                m_saveLoadChoice = (m_saveLoadChoice + 1) % SAVE_LOAD_CHOICES;
+            } else if (first.up) {
+                m_saveLoadChoice = (m_saveLoadChoice + SAVE_LOAD_CHOICES - 1) % SAVE_LOAD_CHOICES;
+            }
+        }
+        if (first.choose) {
+            m_saveLoadStep = SAVE_LOAD_STEP_QUIET;
+        } else if (first.back) {
+            m_saveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
+        }
+        break;
+
+    case SAVE_LOAD_STEP_QUIET:
+        m_screen->FadeSounds(0.0f);
+        m_saveLoadStep = SAVE_LOAD_STEP_WAIT_QUIET;
+        break;
+
+    case SAVE_LOAD_STEP_WAIT_QUIET:
+        if (m_screen->SoundsFaded() && m_saveLoadFadeDelayFrames++ == 4) {
+            m_saveLoadStep = SAVE_LOAD_STEP_FIND;
+            m_saveLoadFadeDelayFrames = 0;
+        }
+        break;
+
+    case SAVE_LOAD_STEP_FIND:
+        m_pakNote = m_pak.ReadNote(noteName);
+        if (m_pakNote) {
+            if (load) {
+                m_saveLoadStep = SAVE_LOAD_STEP_LOAD;
+            } else if (m_saveLoadChoice == SAVE_LOAD_SAVE_OPTIONS) {
+                // The options are overwritten without requesting confirmation.
+                m_saveLoadStep = SAVE_LOAD_STEP_SAVE;
+            } else {
+                m_saveLoadStep = SAVE_LOAD_STEP_CONFIRM_OVERWRITE;
+            }
+        } else if (load) {
+            m_pakError = PAK_ERROR_NOT_FOUND;
+            m_saveLoadStep = SAVE_LOAD_STEP_ERROR;
+        } else {
+            m_saveLoadStep = SAVE_LOAD_STEP_ALLOCATE;
+        }
+        break;
+
+    case SAVE_LOAD_STEP_LOAD:
+        if (!LoadSaveLoadNote(player)) {
+            m_pakError = PAK_ERROR_NOT_FOUND;
+            m_saveLoadStep = SAVE_LOAD_STEP_ERROR;
+        }
+        break;
+
+    case SAVE_LOAD_STEP_ALLOCATE:
+        if (m_pak.FreeBytes() < static_cast<std::size_t>(noteSize)) {
+            m_pakError = PAK_ERROR_FULL;
+            m_saveLoadStep = SAVE_LOAD_STEP_ERROR;
+        } else {
+            m_saveLoadStep = SAVE_LOAD_STEP_SAVE;
+        }
+        break;
+
+    case SAVE_LOAD_STEP_CONFIRM_OVERWRITE:
+        m_saveLoadInputEnabled = false;
+        DrawConfirmOverwrite();
+        if (first.choose) {
+            m_saveLoadStep = SAVE_LOAD_STEP_SAVE;
+        } else if (first.back) {
+            backToChoices();
+        }
+        break;
+
+    case SAVE_LOAD_STEP_SAVE:
+        m_pakError = SaveSaveLoadNote(player);
+        m_saveLoadStep = m_pakError == PAK_ERROR_NONE ? SAVE_LOAD_STEP_DONE : SAVE_LOAD_STEP_ERROR;
+        break;
+
+    case SAVE_LOAD_STEP_ERROR:
+        m_saveLoadInputEnabled = false;
+        DrawSaveLoadError(noteSize);
+        if (dismissed) {
+            m_pakError = PAK_ERROR_NONE;
+            m_saveLoadStep = SAVE_LOAD_STEP_CHOOSE;
+        }
+        break;
+
+    case SAVE_LOAD_STEP_DONE:
+        m_saveLoadInputEnabled = false;
+        DrawSaveLoadDone();
+        if (dismissed) {
+            backToChoices();
+        }
+        break;
+
+    case SAVE_LOAD_STEP_FADE_OUT:
+        m_screen->FadeOut();
+        m_screen->FadeSounds(1.0f);
+        m_saveLoadStep = SAVE_LOAD_STEP_LEAVE;
+        break;
+
+    default:
+        break;
+    }
+    draw.FlushFills();
+    m_screen->DrawFade(renderer);
+    if (m_screen->FadingOut() && m_screen->FadeComplete()) {
+        LeaveDataSaveLoadMenu();
     }
 }
 

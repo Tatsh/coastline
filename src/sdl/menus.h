@@ -258,6 +258,18 @@ private:
     bool ProcessPakDataScreen(SceneRenderer &renderer, int dataType);
     void OptionsMenuPostDraw(SceneRenderer &renderer, int item);
     void ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const MenuButtons &first);
+    // The screens that open the save and load menu, g_bSaveLoadEntryPoint of the console.
+    enum class SaveLoadEntry { MainMenu, Season, TimeAttack };
+    void StartDataSaveLoadMenu(SaveLoadEntry entry);
+    void DrawShortMessage(int boxX, int boxWidth, int textX, const char *line1, const char *line2);
+    void DrawSaveLoadChoices();
+    void DrawSaveLoadError(int noteSize);
+    void DrawSaveLoadDone();
+    void DrawConfirmOverwrite();
+    bool LoadSaveLoadNote(int player);
+    int SaveSaveLoadNote(int player);
+    void LeaveDataSaveLoadMenu();
+    void ProcessDataSaveLoadMenu(SceneRenderer &renderer, float seconds, const MenuButtons &first);
 
     std::unique_ptr<MenuScreen> m_screen;
     std::unique_ptr<PaintShop> m_paintShop;
@@ -307,7 +319,8 @@ private:
     bool m_trackMenuChampionship = false;
     bool m_trackMenuPakScreen = false;
     float m_seasonRecordsBlinkTime = 0.0f;
-    int m_ghostRecordingSize = 0;
+    // The console boots with a recording of its header alone.
+    int m_ghostRecordingSize = 8;
 
     std::vector<MenuItem> m_weatherItems;
     int m_weatherSelectState = 0;
@@ -367,6 +380,17 @@ private:
     int m_pakDataWaitFrames = 0;
     int m_pakError = 0;
     std::optional<std::vector<u8>> m_pakNote;
+
+    // The save and load menu.
+    SaveLoadEntry m_saveLoadEntry = SaveLoadEntry::MainMenu;
+    bool m_saveLoadInitialized = false;
+    bool m_saveLoadInputEnabled = false;
+    bool m_saveLoadDataWasLoaded = false;
+    int m_saveLoadStep = 0;
+    int m_saveLoadChoice = 0;
+    int m_saveLoadFadeDelayFrames = 0;
+    // The ghost recording of the console, its track and its car first, g_abGhostRecording.
+    std::vector<u8> m_ghostRecording = std::vector<u8>(8);
 };
 
 } // namespace coastline

@@ -117,7 +117,7 @@ void Menus::ProcessMainMenu(SceneRenderer &renderer, float seconds, const MenuBu
             SetCurrentScreen(Screen::CarSelect);
             break;
         case MAIN_MENU_LOAD_SAVE:
-            SetCurrentScreen(Screen::DataSaveLoadMenu);
+            StartDataSaveLoadMenu(SaveLoadEntry::MainMenu);
             break;
         case MAIN_MENU_OPTIONS:
             SetCurrentScreen(Screen::OptionsMenu);
