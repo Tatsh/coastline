@@ -287,6 +287,14 @@ void N64Audio::Stop() {
     }
 }
 
+bool N64Audio::Pause() {
+    return m_stream == nullptr || SDL_PauseAudioStreamDevice(m_stream);
+}
+
+bool N64Audio::Resume() {
+    return m_stream == nullptr || SDL_ResumeAudioStreamDevice(m_stream);
+}
+
 void N64Audio::Tick(std::vector<std::int16_t> &output) {
     // The interface plays a tick's worth of the ring. Its length register counts down in
     // doublewords, and the thread queues the ring again before it runs dry.

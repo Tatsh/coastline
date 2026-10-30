@@ -27,7 +27,6 @@ add_library(
   netstream.cpp
   podarchive.cpp
   racercolor.cpp
-  racesound.cpp
   render.cpp
   renderdefaults.cpp
   runtimebuffers.cpp

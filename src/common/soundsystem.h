@@ -114,6 +114,24 @@ bool DispatchMusicVolumeChange(unsigned char bVolume);
 int RandomizeMusicTrack(void);
 
 /**
+ * Play the track of music before the current one, staying at the first.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x10002930
+ * @ghidraAddress BRGlide: 0x10002c70
+ */
+bool SelectPreviousMusicTrack(void);
+
+/**
+ * Play the track of music after the current one, staying at the last.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x10002970
+ * @ghidraAddress BRGlide: 0x10002cb0
+ */
+bool SelectNextMusicTrack(void);
+
+/**
  * Pause the music while the game is paused.
  *
  * @return Whether the music paused, and true when no music plays.

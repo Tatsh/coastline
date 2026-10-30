@@ -9,7 +9,6 @@
 #include "common/renderbackend.h"
 #include "common/settings.h"
 #include "common/snapshot.h"
-#include "common/soundsystem.h"
 #include "common/system.h"
 #include "common/trackskidmarks.h"
 #include "common/vehicledeform.h"
@@ -54,14 +53,6 @@ int g_bNetGamePaused;
 int g_bNetReadyToStartSent;
 int g_bRespawnRequested;
 unsigned g_dwInputButtonMask;
-
-// The sound and the music.
-const int g_adwBgmVolumeLevels[VOLUME_LEVEL_COUNT] = {
-    0x00, 0x1c, 0x38, 0x55, 0x71, 0x8d, 0xaa, 0xc6, 0xe2, 0xff};
-const int g_adwSfxVolumeLevels[VOLUME_LEVEL_COUNT] = {
-    0x00, 0x55, 0x78, 0x93, 0xaa, 0xbe, 0xd0, 0xe1, 0xf0, 0xff};
-SoundChannelState g_aSoundChannelRequested[SOUND_CHANNEL_COUNT];
-int g_bAltLoopingSoundSet;
 
 // The renderer. The SDL game sets no routine of a renderer yet.
 int g_adwPrecipitationTextureIds[PRECIPITATION_TEXTURE_COUNT];

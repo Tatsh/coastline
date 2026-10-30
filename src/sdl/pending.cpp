@@ -1,8 +1,7 @@
 // ponytail: the routines of the Windows libraries the race engine calls and the SDL game does not
 // implement yet. Each records its first call in the log and does nothing. Every routine here calls
-// Windows (DirectInput, DirectSound, the EAR music channel, the renderers, or the application
-// window), or loads tracks and models through 32-bit relocation, and later milestones give each an
-// SDL implementation.
+// Windows (DirectInput, the renderers, or the application window), or loads tracks and models
+// through 32-bit relocation, and later milestones give each an SDL implementation.
 #include <cstdlib>
 
 #include <SDL3/SDL.h>
@@ -13,20 +12,15 @@
 #include "common/inputpoll.h"
 #include "common/model.h"
 #include "common/racerslot.h"
-#include "common/racesound.h"
 #include "common/relocation.h"
 #include "common/renderbackend.h"
 #include "common/season.h"
 #include "common/session.h"
-#include "common/soundchannel.h"
-#include "common/soundeffect.h"
-#include "common/soundsystem.h"
 #include "common/track.h"
 #include "common/trackrelocation.h"
 #include "common/vehicle.h"
 #include "common/vehiclecolor.h"
 #include "common/vehiclemodel.h"
-#include "common/vehiclesound.h"
 
 #define PENDING()                                                                                  \
     do {                                                                                           \
@@ -61,11 +55,24 @@ unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration) {
     return 0;
 }
 
+int InitializeJoystickDevice(void) {
+    PENDING();
+    return 0;
+}
+
 void UpdateForceFeedbackForce(int bReduceForce, int bEnableForce, int nForce) {
     PENDING();
 }
 
 void SetForceFeedbackDirection(int nDirection) {
+    PENDING();
+}
+
+void SetForceFeedbackShortDuration(void) {
+    PENDING();
+}
+
+void StartForceFeedbackJolt(void) {
     PENDING();
 }
 
@@ -131,80 +138,4 @@ void CreateGlobalEffectTextures(void) {
 
 void GetPrecipitationTextureDimensions(int nIndex) {
     PENDING();
-}
-
-// The sound and the music.
-void Vehicle::UpdateVehicleSounds(void) {
-    PENDING();
-}
-
-void ApplyAudioVolumeSettings(void) {
-    PENDING();
-}
-
-bool DispatchMusicVolumeChange(unsigned char bVolume) {
-    PENDING();
-    return false;
-}
-
-bool InitSoundChannel(s16 channel, s32 sample, u32 length, u32 loopLength) {
-    PENDING();
-    return false;
-}
-
-bool StartSoundChannelMuted(s16 channel, s32 sample, u32 length, u32 loopLength) {
-    PENDING();
-    return false;
-}
-
-void LoadAllSoundEffects(void) {
-    PENDING();
-}
-
-bool MuteAllActiveSoundChannels(void) {
-    PENDING();
-    return false;
-}
-
-void MuteVehicleSoundVoices(void) {
-    PENDING();
-}
-
-bool PauseMusicPlayback(void) {
-    PENDING();
-    return false;
-}
-
-bool UnpauseMusicPlayback(void) {
-    PENDING();
-    return false;
-}
-
-void PlayVehicleEventSounds(Vehicle *vehicle, CameraFrame *listener) {
-    PENDING();
-}
-
-int RandomizeMusicTrack(void) {
-    PENDING();
-    return 0;
-}
-
-bool ResetAudioSubsystem(void) {
-    PENDING();
-    return false;
-}
-
-bool ResumeLoopingSoundChannels(void) {
-    PENDING();
-    return false;
-}
-
-bool SetCurrentMusicTrack(int nModeIndex) {
-    PENDING();
-    return false;
-}
-
-bool StopAudioChannel(int nChannel) {
-    PENDING();
-    return false;
 }

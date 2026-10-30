@@ -245,15 +245,6 @@ HRESULT SetJoystickAxisRange(IDirectInputDevice2A *pDevice,
 extern MouseDevice *g_pMouseDevice;
 
 /**
- * Drop a user of the game controller device. The last user releases the effects of force feedback
- * and the device. A count that falls below 0 is set back to 0.
- *
- * @ghidraAddress BRD3D: 0x10079550
- * @ghidraAddress BRGlide: 0x10072840
- */
-void ReleaseJoystickDevice(void);
-
-/**
  * Drop a user of the keyboard device. The last user releases the device. A count that falls below
  * 0 is set back to 0.
  *
@@ -521,33 +512,6 @@ void SetForceFeedbackMagnitude(LONG lMagnitude);
 extern LONG g_adwForceFeedbackDirection[2];
 
 /**
- * Set the effects of force feedback to last 250 milliseconds, under the conditions of
- * SetForceFeedbackDirection().
- *
- * @ghidraAddress BRD3D: 0x10078e50
- * @ghidraAddress BRGlide: 0x10072140
- */
-void SetForceFeedbackLongDuration(void);
-
-/**
- * Set the effects of force feedback to last 125 milliseconds, under the conditions of
- * SetForceFeedbackDirection().
- *
- * @ghidraAddress BRD3D: 0x10078e90
- * @ghidraAddress BRGlide: 0x10072180
- */
-void SetForceFeedbackShortDuration(void);
-
-/**
- * Start the jolt of force feedback with the duration of g_dwForceFeedbackDuration and its
- * direction, under the conditions of SetForceFeedbackDirection().
- *
- * @ghidraAddress BRD3D: 0x10078ed0
- * @ghidraAddress BRGlide: 0x100721c0
- */
-void StartForceFeedbackJolt(void);
-
-/**
  * Create the condition effect, a spring on X and Y that lasts until it stops, and the jolt
  * effect, a square wave, of force feedback of the game controller.
  *
@@ -572,18 +536,6 @@ HRESULT CreateForceFeedbackEffects(int nCoefficientX, int nCoefficientY);
  */
 BOOL CALLBACK EnumJoysticksCallback_CreateDevice(const DIDEVICEINSTANCEA *pInstance,
                                                  void *pContext);
-
-/**
- * Add a user of the game controller of dwInputDeviceType. The first user creates the device,
- * exclusively with force feedback when it is on and available and shared otherwise, and sets the
- * range of X and Y to -128 to 128 with no dead zone. A property that is not set releases the
- * device.
- *
- * @return dwInputDeviceType of g_GlobalRallyConfig, or 0 without a game controller.
- * @ghidraAddress BRD3D: 0x100791d0
- * @ghidraAddress BRGlide: 0x100724c0
- */
-int InitializeJoystickDevice(void);
 
 /**
  * Create and release the first game controller with force feedback on, to find whether one is

@@ -174,6 +174,7 @@ else()
             raceglobals.c
             racepacing.c
             racerslot.cpp
+            racesound.cpp
             racescreen.cpp
             rallyconfig.cpp
             reflectiondata.c
@@ -187,6 +188,7 @@ else()
             snapshotfields.cpp
             snapshotinterpolation.cpp
             soundbank.c
+            soundbuffer.cpp
             soundsample.c
             strings.c
             terrain.c

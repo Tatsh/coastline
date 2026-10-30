@@ -1,0 +1,566 @@
+#pragma once
+
+/**
+ * @file
+ * The buffers and the channels of the sound effects of the PC port. The Windows libraries play
+ * each buffer through DirectSound, and the SDL game through a buffer of the mixer of EAR.
+ */
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include <windows.h>
+// The headers below need the types of windows.h.
+#include <dsound.h>
+#else
+#include "ear/sdlmixer.h"
+#endif
+
+#include "common/assetnames.h"
+#include "common/soundbank.h"
+#include "common/soundsample.h"
+#include "common/soundsystem.h"
+#include "ear/wavechunks.h"
+
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
+/** The result of a step of a sound buffer, 0 for success, as HRESULT is on Windows. */
+typedef int32_t HRESULT;
+#endif
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * DirectSound.
+ *
+ * @ghidraAddress BRD3D: 0x118290f8
+ * @ghidraAddress BRGlide: 0x1184c458
+ */
+extern IDirectSound *g_pDirectSound;
+
+/**
+ * The primary buffer of DirectSound.
+ *
+ * @ghidraAddress BRD3D: 0x11828fe4
+ * @ghidraAddress BRGlide: 0x1184c344
+ */
+extern IDirectSoundBuffer *g_pDirectSoundPrimaryBuffer;
+
+/**
+ * The wave format of the primary buffer, in locked global memory.
+ *
+ * @ghidraAddress BRD3D: 0x11828f50
+ * @ghidraAddress BRGlide: 0x1184c2b0
+ */
+extern WAVEFORMATEX *g_pDirectSoundWaveFormat;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+
+/**
+ * The users of DirectSound. The last ShutdownDirectSound() releases it.
+ *
+ * @ghidraAddress BRD3D: 0x118290fc
+ * @ghidraAddress BRGlide: 0x1184c45c
+ */
+extern int g_dwDirectSoundRefCount;
+
+/** A sound buffer of a sample, in a list. The layout is not recovered past the members below. */
+struct SoundBufferNode {
+    void *pSampleData;  /*!< The data of the sample, in locked global memory. */
+    DWORD dwSampleSize; /*!< The size of the sample in bytes. */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    WAVEFORMATEX *pWaveFormat; /*!< The format of the sample, in locked global memory. */
+#else
+    EarWaveFormat *pWaveFormat; /*!< The format of the sample. */
+#endif
+    DWORD dwFrequency;      /*!< The frequency of the buffer, in samples a second. */
+    int nPan;               /*!< The pan, from 0 to 800 with the centre at 400. */
+    int nVolume;            /*!< The volume before the volume of the sound effects. */
+    int bLooping;           /*!< Whether the buffer plays in a loop. */
+    int bPlaying;           /*!< Whether the buffer plays. */
+    char abUnknown20[4];    /* +0x20 */
+    int bHardware;          /*!< Whether the buffer is in the memory of the sound card. */
+    int bStickyFocus;       /*!< Whether the buffer plays while the window is not active. */
+    char abUnknown2c[0x70]; /* +0x2c */
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+    IDirectSoundBuffer *pBuffer; /*!< The buffer of DirectSound. */
+    int nNameOffset;             /*!< The offset in szPath of the name of the file, or 0. */
+    char szPath[MAX_PATH];       /*!< The path of the file of the sample. */
+#else
+    EarSdlVoice *pBuffer; /*!< The buffer of the mixer of EAR. */
+    int nNameOffset;      /*!< The offset in szPath of the name of the file, or 0. */
+    char szPath[0x400];   /*!< The path of the file of the sample, as long as the paths it takes. */
+#endif
+    SoundBufferNode *pNext; /*!< The next node of the list. */
+};
+
+/**
+ * The head of the list of the sound buffers. Only its first member and its link are read here.
+ *
+ * @ghidraAddress BRD3D: 0x11828f48
+ * @ghidraAddress BRGlide: 0x1184c2a8
+ */
+extern SoundBufferNode g_SoundBufferListHead;
+
+/**
+ * Create the buffer of DirectSound of a sample, static with control of the frequency, the pan,
+ * the volume, and the position, and copy the sample into it. The volume is set full and the pan
+ * centred, and bHardware records where the buffer is. A step that fails releases the buffer.
+ *
+ * @param pNode The node of the sample.
+ * @return DS_OK, or the error of the step that failed.
+ * @ghidraAddress BRD3D: 0x100722d0
+ * @ghidraAddress BRGlide: 0x1006b240
+ */
+HRESULT CreateDirectSoundBufferFromSample(SoundBufferNode *pNode);
+
+/**
+ * Release the buffer of DirectSound of a node.
+ *
+ * @param pNode The node.
+ * @return Always DS_OK.
+ * @ghidraAddress BRD3D: 0x10072520
+ * @ghidraAddress BRGlide: 0x1006b490
+ */
+HRESULT ReleaseSoundBuffer(SoundBufferNode *pNode);
+
+/**
+ * Stop the buffer of DirectSound of a node that plays.
+ *
+ * @param pNode The node.
+ * @return The result of the stop, or DS_OK for a buffer that does not play.
+ * @ghidraAddress BRD3D: 0x10072550
+ * @ghidraAddress BRGlide: 0x1006b4c0
+ */
+HRESULT StopSoundBuffer(SoundBufferNode *pNode);
+
+/**
+ * The sound buffers of the channels of the sound effects.
+ *
+ * @ghidraAddress BRD3D: 0x11828f08
+ * @ghidraAddress BRGlide: 0x1184c268
+ */
+extern SoundBufferNode *g_apSoundChannelBuffer[SOUND_CHANNEL_COUNT];
+
+/**
+ * Report whether the buffer of a channel plays, when sound is on.
+ *
+ * @param nChannel The channel.
+ * @return Whether it plays, false without a buffer, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072fe0
+ * @ghidraAddress BRGlide: 0x1006bf50
+ */
+bool IsSoundChannelPlaying(int nChannel);
+
+/**
+ * Set whether the buffer of a channel plays in a loop, when sound is on.
+ *
+ * @param nChannel The channel.
+ * @param bLooping Whether it loops.
+ * @return Whether it was set, false without a buffer, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072640
+ * @ghidraAddress BRGlide: 0x1006b5b0
+ */
+bool SetAudioChannelLooping(int nChannel, int bLooping);
+
+/**
+ * Record a sound for the even channel of a voice in the first row of the banks and in the rows of
+ * the variants and the looping sounds, as one more than its index.
+ *
+ * @param nVoice The voice, half the channel.
+ * @param nIndex The index of the sound.
+ * @ghidraAddress BRD3D: 0x10073080
+ * @ghidraAddress BRGlide: 0x1006bff0
+ */
+void SetSoundBankEntryIndex(int nVoice, int nIndex);
+
+/**
+ * Clear the first entries of the three tables of the banks of sounds.
+ *
+ * @ghidraAddress BRD3D: 0x10073060
+ * @ghidraAddress BRGlide: 0x1006bfd0
+ */
+void ResetSoundBankTables(void);
+
+/**
+ * The number of entries of g_aSoundChannelBuffers that are loaded.
+ *
+ * @ghidraAddress BRD3D: 0x11828f00
+ * @ghidraAddress BRGlide: 0x1184c260
+ */
+extern int g_dwLoadedSoundSampleCount;
+
+/** The sets of sounds of LoadSoundSet(). */
+enum {
+    SOUND_SET_FRONT_END, /*!< The sounds of the front end. */
+    SOUND_SET_RACE,      /*!< The sounds of a race. */
+};
+
+/**
+ * Add a node at the end of a list of sound buffers, not playing.
+ *
+ * @param pHead The head of the list.
+ * @param pNode The node.
+ * @return Always 0.
+ * @ghidraAddress BRD3D: 0x10072450
+ * @ghidraAddress BRGlide: 0x1006b3c0
+ */
+int AppendSoundBufferToList(SoundBufferNode *pHead, SoundBufferNode *pNode);
+
+/**
+ * Set the pan of the buffer of a node from nPan.
+ *
+ * @param pNode The node.
+ * @return The result of SetPan().
+ * @ghidraAddress BRD3D: 0x10072490
+ * @ghidraAddress BRGlide: 0x1006b400
+ */
+HRESULT ApplySoundBufferPan(SoundBufferNode *pNode);
+
+/**
+ * Set the frequency of the buffer of a node from dwFrequency.
+ *
+ * @param pNode The node.
+ * @return The result of SetFrequency().
+ * @ghidraAddress BRD3D: 0x100724b0
+ * @ghidraAddress BRGlide: 0x1006b420
+ */
+HRESULT ApplySoundBufferFrequency(SoundBufferNode *pNode);
+
+/**
+ * Set the volume of the buffer of a node from nVolume scaled by g_bSfxVolume, or silence it when
+ * the sound effects are off.
+ *
+ * @param pNode The node.
+ * @return The result of SetVolume().
+ * @ghidraAddress BRD3D: 0x100724d0
+ * @ghidraAddress BRGlide: 0x1006b440
+ */
+HRESULT ApplySoundBufferVolume(SoundBufferNode *pNode);
+
+/**
+ * Play the buffer of a node from its start: a buffer that plays goes back to its start, and one
+ * that does not starts, in a loop when bLooping is set, and is marked as playing.
+ *
+ * @param pNode The node.
+ * @return The result of SetCurrentPosition() or Play().
+ * @ghidraAddress BRD3D: 0x10072a00
+ * @ghidraAddress BRGlide: 0x1006b970
+ */
+HRESULT RestartOrPlaySoundBuffer(SoundBufferNode *pNode);
+
+/**
+ * Set whether the buffer of a node loops and play it from its start.
+ *
+ * @param pNode The node.
+ * @param bLooping Whether the buffer plays in a loop.
+ * @return The result of RestartOrPlaySoundBuffer().
+ * @ghidraAddress BRD3D: 0x100729e0
+ * @ghidraAddress BRGlide: 0x1006b950
+ */
+HRESULT PlaySoundBuffer(SoundBufferNode *pNode, int bLooping);
+
+/**
+ * Set the frequency of the buffer of a node, when sound is on.
+ *
+ * @param pNode The node.
+ * @param dwFrequency The frequency, in samples a second.
+ * @return Whether the frequency was set, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072700
+ * @ghidraAddress BRGlide: 0x1006b670
+ */
+bool SetSoundBufferFrequency(SoundBufferNode *pNode, DWORD dwFrequency);
+
+/**
+ * Report whether the buffer of a node plays.
+ *
+ * @param pNode The node.
+ * @return Whether it plays, and false when its status cannot be read.
+ * @ghidraAddress BRD3D: 0x10073020
+ * @ghidraAddress BRGlide: 0x1006bf90
+ */
+bool IsSoundBufferPlaying(SoundBufferNode *pNode);
+
+/**
+ * Set the frequency of a channel of a sample, when sound is on.
+ *
+ * @param nSample The sample.
+ * @param nChannel The channel.
+ * @param dwFrequency The frequency, in samples a second.
+ * @return Whether the frequency was set, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072770
+ * @ghidraAddress BRGlide: 0x1006b6e0
+ */
+bool SetSoundChannelFrequency(int nSample, int nChannel, DWORD dwFrequency);
+
+/**
+ * Set the frequency of the even channel of a voice of a sample, dropping the fraction.
+ *
+ * @param nSample The sample.
+ * @param nVoice The voice, half the channel.
+ * @param fFrequency The frequency, in samples a second.
+ * @return The result of SetSoundChannelFrequency().
+ * @ghidraAddress BRD3D: 0x10072750
+ * @ghidraAddress BRGlide: 0x1006b6c0
+ */
+bool SetSoundVoiceFrequencyFloat(int nSample, int nVoice, float fFrequency);
+
+/**
+ * Stop the buffer of the first channel of a voice of a sample, when sound is on.
+ *
+ * @param nSample The sample.
+ * @param nVoice The voice. Its first channel is twice the voice.
+ * @return Whether the buffer stopped, and true without a buffer or without sound.
+ * @ghidraAddress BRD3D: 0x10072ba0
+ * @ghidraAddress BRGlide: 0x1006bb10
+ */
+bool StopSoundVoice(int nSample, int nVoice);
+
+/**
+ * Set the volume and the pan of the buffer of a node from the levels of its two sides.
+ *
+ * @param pNode The node.
+ * @param dwLevels The level of the left side in the high word and of the right in the low word,
+ * each up to 32.
+ * @return Whether the levels were set.
+ * @ghidraAddress BRD3D: 0x10072820
+ * @ghidraAddress BRGlide: 0x1006b790
+ */
+bool SetSoundBufferStereoLevels(SoundBufferNode *pNode, DWORD dwLevels);
+
+/**
+ * The settings last applied to the buffer of each channel.
+ *
+ * @ghidraAddress BRD3D: 0x11828d20
+ * @ghidraAddress BRGlide: 0x1184c080
+ */
+extern SoundChannelState g_aSoundChannelState[SOUND_CHANNEL_COUNT];
+
+/**
+ * Set the levels of the two sides of the buffer of a channel and record them, when sound is on.
+ *
+ * @param nChannel The channel.
+ * @param dwLevels The levels, as SetSoundBufferStereoLevels().
+ * @return Whether the levels were set, and true without sound.
+ * @ghidraAddress BRD3D: 0x100727c0
+ * @ghidraAddress BRGlide: 0x1006b730
+ */
+bool SetAudioChannelStereoLevels(int nChannel, DWORD dwLevels);
+
+/**
+ * The scale of a frequency of each channel, from the sample assigned to it.
+ *
+ * @ghidraAddress BRD3D: 0x11828e88
+ * @ghidraAddress BRGlide: 0x1184c1e8
+ */
+extern double g_adChannelFrequencyScale[SOUND_CHANNEL_COUNT];
+
+/**
+ * Stop the buffer of a channel and give the channel the buffer of a sample for it, when sound is
+ * on.
+ *
+ * @param nSample The sample.
+ * @param nChannel The channel.
+ * @return Whether the sample has a buffer for the channel, and true without sound.
+ * @ghidraAddress BRD3D: 0x100725c0
+ * @ghidraAddress BRGlide: 0x1006b530
+ */
+bool AssignAudioChannel(int nSample, int nChannel);
+
+/**
+ * Set the frequency of the buffer of a channel, scaled by its sample, and record it, when sound is
+ * on.
+ *
+ * @param nChannel The channel.
+ * @param llFrequency The frequency in units of 2 to the power of -32.
+ * @return Whether the frequency was set, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072680
+ * @ghidraAddress BRGlide: 0x1006b5f0
+ */
+bool SetAudioChannelFrequency(int nChannel, long long llFrequency);
+
+/**
+ * Play the buffer of a sample for a channel and give it to the channel, when sound is on. The
+ * frequency of the buffer, without the scale of the channel, is requested and recorded.
+ *
+ * @param nSample The sample.
+ * @param nChannel The channel.
+ * @param bLooping Whether the buffer plays in a loop.
+ * @return Whether the buffer plays, false without a buffer, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072910
+ * @ghidraAddress BRGlide: 0x1006b880
+ */
+bool StartSoundChannelPlayback(int nSample, int nChannel, int bLooping);
+
+/**
+ * Request a sample and levels for a channel, give the channel the buffer of the sample, and play
+ * it.
+ *
+ * @param nChannel The channel.
+ * @param nSample The sample.
+ * @param nLength The length of the sample, which is not read.
+ * @param nLoopLength The length of the loop of the sample, where any value but 0 plays it in a
+ * loop.
+ * @param dwLevels The levels, as SetSoundBufferStereoLevels().
+ * @return Whether the buffer plays, and false when the sample has no buffer for the channel.
+ * @ghidraAddress BRD3D: 0x10075260
+ * @ghidraAddress BRGlide: 0x1006e4c0
+ */
+bool InitSoundChannelWithVolume(
+    short nChannel, int nSample, int nLength, int nLoopLength, DWORD dwLevels);
+
+/**
+ * Set the levels of the two sides of a channel of a sample and play it, when sound is on.
+ *
+ * @param nSample The sample, an index into g_aSoundChannelBuffers.
+ * @param nChannel The channel.
+ * @param dwLevels The levels, as SetSoundBufferStereoLevels() takes them.
+ * @param bLooping Whether the buffer plays in a loop.
+ * @return Whether the levels were set and the buffer played, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072a90
+ * @ghidraAddress BRGlide: 0x1006ba00
+ */
+bool SetStereoAndPlaySoundChannel(int nSample, int nChannel, DWORD dwLevels, int bLooping);
+
+/**
+ * Set the levels of the two sides of channel 1 of a sample and play it.
+ *
+ * @param nSample The sample.
+ * @param dwLevels The levels, as SetSoundBufferStereoLevels() takes them.
+ * @param bLooping Whether the buffer plays in a loop.
+ * @return The result of SetStereoAndPlaySoundChannel().
+ * @ghidraAddress BRD3D: 0x10072a70
+ * @ghidraAddress BRGlide: 0x1006b9e0
+ */
+bool PlaySoundChannelOneWithStereo(int nSample, DWORD dwLevels, int bLooping);
+
+/**
+ * Set the levels of the two sides of a channel of a sample, when sound is on.
+ *
+ * @param nSample The sample.
+ * @param nChannel The channel.
+ * @param dwLevels The levels, as SetSoundBufferStereoLevels() takes them.
+ * @return Whether the levels were set, and true without sound.
+ * @ghidraAddress BRD3D: 0x10072b30
+ * @ghidraAddress BRGlide: 0x1006baa0
+ */
+bool SetSoundChannelStereo(int nSample, int nChannel, DWORD dwLevels);
+
+/**
+ * Set the levels of the two sides of the even channel of a voice of a sample.
+ *
+ * @param nSample The sample.
+ * @param nVoice The voice, half the channel.
+ * @param dwLevels The levels, as SetSoundBufferStereoLevels() takes them.
+ * @return The result of SetSoundChannelStereo().
+ * @ghidraAddress BRD3D: 0x10072b80
+ * @ghidraAddress BRGlide: 0x1006baf0
+ */
+bool SetSoundVoiceStereo(int nSample, int nVoice, DWORD dwLevels);
+
+/**
+ * Set the levels of the two sides of channel 1 of a sample and play it once.
+ *
+ * @param nSample The sample.
+ * @param dwLevels The levels, as SetSoundBufferStereoLevels() takes them.
+ * @return The result of PlaySoundChannelOneWithStereo().
+ * @ghidraAddress BRD3D: 0x10072af0
+ * @ghidraAddress BRGlide: 0x1006ba60
+ */
+bool PlaySoundChannelOneOnce(int nSample, DWORD dwLevels);
+
+/**
+ * Set the levels of the two sides of the even channel of a voice of a sample and play it in a
+ * loop.
+ *
+ * @param nSample The sample.
+ * @param nVoice The voice, half the channel.
+ * @param dwLevels The levels, as SetSoundBufferStereoLevels() takes them.
+ * @return The result of SetStereoAndPlaySoundChannel().
+ * @ghidraAddress BRD3D: 0x10072b10
+ * @ghidraAddress BRGlide: 0x1006ba80
+ */
+bool PlayLoopedSoundVoiceWithStereo(int nSample, int nVoice, DWORD dwLevels);
+
+/**
+ * Load a wave file into a node of a buffer of DirectSound at the end of g_SoundBufferListHead, at
+ * its own frequency, the centre, and the volume of the sound effects. A step that fails frees what
+ * it created.
+ *
+ * @param pszPath The path of the file.
+ * @return The node, or null.
+ * @ghidraAddress BRD3D: 0x10072ca0
+ * @ghidraAddress BRGlide: 0x1006bc10
+ */
+SoundBufferNode *LoadAudioFile(const char *pszPath);
+
+/**
+ * Load the three files of a sound effect of a race, named by the prefixes the banks of sounds
+ * select for its channel: the wave (`.wav`), the variant (`h.wav`), and the looping sound
+ * (`r.wav`). Without sound, or when the first bank does not enable the channel, the three are
+ * cleared.
+ *
+ * @param nEffect The effect, half the channel.
+ * @return Whether the files loaded, and false at once when the looping sound does not.
+ * @ghidraAddress BRD3D: 0x100730a0
+ * @ghidraAddress BRGlide: 0x1006c010
+ */
+bool LoadSfxWaveVariants(int nEffect);
+
+/**
+ * Load the samples of a set of sounds into the channels the banks of sounds enable, from the
+ * second sample to the one before the last. The set of a race first loads the variants of its sound
+ * effects. Nothing loads without sound.
+ *
+ * @param nSet The set, by the SOUND_SET_ values.
+ * @return Whether every sample loaded.
+ * @ghidraAddress BRD3D: 0x10073320
+ * @ghidraAddress BRGlide: 0x1006c290
+ */
+bool LoadSoundSet(int nSet);
+
+/**
+ * Stop every sound buffer of a list.
+ *
+ * @param pHead The head of the list.
+ * @return Always DS_OK.
+ * @ghidraAddress BRD3D: 0x10072bf0
+ * @ghidraAddress BRGlide: 0x1006bb60
+ */
+HRESULT StopAllSoundBuffersInList(SoundBufferNode *pHead);
+
+/**
+ * Release and free every node of a list of sound buffers, with the sample and the format of
+ * each, and empty the list. The head is not freed.
+ *
+ * @param pHead The head of the list.
+ * @return Always DS_OK.
+ * @ghidraAddress BRD3D: 0x10072c20
+ * @ghidraAddress BRGlide: 0x1006bb90
+ */
+HRESULT FreeSoundBufferList(SoundBufferNode *pHead);
+
+/**
+ * Add a user of DirectSound when sound effects play. The first user clears the channels and the
+ * banks, allocates the wave format of 22050 Hz, 16 bits, and two channels, and creates
+ * DirectSound with priority and its primary buffer, playing in a loop. A step that fails releases
+ * what it created.
+ *
+ * @return Whether the last step succeeded, and true without sound effects or for a later user.
+ * @ghidraAddress BRD3D: 0x10073560
+ * @ghidraAddress BRGlide: 0x1006c4d0
+ */
+bool InitializeDirectSound(void);
+
+/**
+ * Drop a user of DirectSound. The last user resets the audio, stops and releases the primary
+ * buffer and DirectSound, and frees the wave format and the list of sound buffers.
+ *
+ * @return Always true.
+ * @ghidraAddress BRD3D: 0x10073730
+ * @ghidraAddress BRGlide: 0x1006c6a0
+ */
+bool ShutdownDirectSound(void);
+
+#ifdef __cplusplus
+}
+#endif

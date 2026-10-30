@@ -44,6 +44,12 @@ public:
     /** Stop the module and silence its channels. */
     void Stop();
 
+    /** @return Whether the device paused, and true without a device. */
+    bool Pause();
+
+    /** @return Whether the device resumed, and true without a device. */
+    bool Resume();
+
     /**
      * Render stereo 16-bit frames without a device, as the device would receive them.
      *

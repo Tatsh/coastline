@@ -92,6 +92,7 @@ add_library(
   paths.cpp
   pending.cpp
   ptr32.cpp
+  racemusic.cpp
   runtimebuffers.cpp
   scenerenderer.cpp
   stringresources.cpp

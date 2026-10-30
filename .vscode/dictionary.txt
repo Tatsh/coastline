@@ -114,6 +114,7 @@ cantcreatesession
 cantloadcapi
 cantloadsecuritypackage
 cantloadsspi
+capslock
 capsnotavailableyet
 cargfx
 carmodel
@@ -390,6 +391,7 @@ enddl
 endforeach
 endfunction
 endlabel
+enginecheck
 engsound
 entermenuloop
 entersizemove
@@ -583,6 +585,7 @@ kemco
 keybd
 kseg
 kuseg
+lalt
 laprecords
 laptime
 laptimes
@@ -593,6 +596,7 @@ lbzero
 lcart
 lclear
 lcounter
+lctrl
 ldblk
 ldiv
 ldtob
@@ -604,6 +608,7 @@ leodiskinit
 leointerrupt
 lerps
 lfirst
+lgui
 lhandle
 libc
 libdragon
@@ -621,6 +626,7 @@ lightr
 lindex
 litob
 llcvt
+lmask
 lnext
 loadcar
 loadtlut
@@ -766,6 +772,7 @@ nolod
 nonewplayers
 nonexclusive
 nonmatching
+nonusbackslash
 noone
 noplayers
 noreorder
@@ -889,8 +896,10 @@ racedata
 racefinish
 raceglobals
 raceinit
+raceinput
 raceload
 racemenu
+racemusic
 racepacing
 racephases
 raceprogress
@@ -912,10 +921,12 @@ rallyconfig
 rallycredits
 rallyintro
 rallyoutro
+ralt
 ramarray
 ramreadformat
 ranlib
 raydone
+rctrl
 rdbread
 rdbwrite
 rdparty
@@ -948,11 +959,13 @@ restartfrom
 rgbdither
 rgdw
 rgsz
+rgui
 rightx
 righty
 rigidbody
 ripgreprc
 rledecompress
+rmask
 rmonspin
 rodata
 rombuilder
@@ -977,6 +990,7 @@ schemafile
 screendraw
 screenfade
 screenrect
+scrolllock
 sdlcall
 sdlmixer
 seasn
@@ -1059,6 +1073,7 @@ snowdl
 softshok
 sostrom
 soundbank
+soundbuffer
 soundchannel
 soundeffect
 soundpan
