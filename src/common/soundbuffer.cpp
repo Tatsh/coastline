@@ -18,6 +18,8 @@
 #include "win32/timer.h"
 #include "win32/wavread.h"
 #else
+#include <string>
+
 #include <SDL3/SDL.h>
 
 #include "common/rallyconfig.h"
@@ -618,13 +620,34 @@ bool PlayLoopedSoundVoiceWithStereo(int nSample, int nVoice, DWORD dwLevels) {
 }
 
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
+// The files of the disc retain the case of their names (Beep.wav, RN_Dirt.wav), and the PC release
+// opens them by names of another case, as the file system of Windows ignores case.
+static inline bool
+LoadWaveIgnoringCase(const char *pszPath, SDL_AudioSpec *pSpec, Uint8 **ppData, Uint32 *pdwBytes) {
+    if (SDL_LoadWAV(pszPath, pSpec, ppData, pdwBytes)) {
+        return true;
+    }
+    const std::string path = pszPath;
+    const std::size_t slash = path.find_last_of('/');
+    const std::string directory = slash == std::string::npos ? "." : path.substr(0, slash);
+    const std::string name = slash == std::string::npos ? path : path.substr(slash + 1);
+    int count = 0;
+    char **ppMatches =
+        SDL_GlobDirectory(directory.c_str(), name.c_str(), SDL_GLOB_CASEINSENSITIVE, &count);
+    const bool bLoaded =
+        ppMatches != nullptr && count > 0 &&
+        SDL_LoadWAV((directory + '/' + ppMatches[0]).c_str(), pSpec, ppData, pdwBytes);
+    SDL_free(ppMatches);
+    return bLoaded;
+}
+
 // Read a wave file into the sample and the format of a node, as WaveLoadFile() of Windows does,
 // with the samples in a format the mixer plays.
 static inline int LoadWaveSamples(const char *pszPath, SoundBufferNode *pNode) {
     SDL_AudioSpec spec;
     Uint8 *pData = nullptr;
     Uint32 dwBytes = 0;
-    if (!SDL_LoadWAV(pszPath, &spec, &pData, &dwBytes)) {
+    if (!LoadWaveIgnoringCase(pszPath, &spec, &pData, &dwBytes)) {
         SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "%s cannot be read: %s", pszPath, SDL_GetError());
         return 1;
     }
