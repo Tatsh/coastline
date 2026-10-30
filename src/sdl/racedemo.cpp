@@ -17,9 +17,16 @@ namespace {
 // The time the race fades out in when a button leaves the demo, FADE_SECONDS of the race.
 constexpr float DEMO_FADE_SECONDS = 0.2f;
 
+constexpr s32 RACE_SCREEN_WIDTH = 640;
+constexpr s32 RACE_SCREEN_HEIGHT = 480;
+
 } // namespace
 
 void OpenRaceData() {
+    // The race lays out its fades and its text on the 640 by 480 screen of the default display
+    // mode of the PC release, and the SDL game scales that screen to its frame.
+    g_dwScreenWidth = RACE_SCREEN_WIDTH;
+    g_dwScreenHeight = RACE_SCREEN_HEIGHT;
     g_GlobalRallyConfig.InitRallyConfigDefaults();
     g_GlobalRallyConfig.LoadDeviceDefaultBindings(0);
     g_GlobalRallyConfig.SelectActiveInputBindings();

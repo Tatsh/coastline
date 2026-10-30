@@ -7,7 +7,9 @@
 #include <SDL3/SDL.h>
 
 #include "common/assetnames.h"
+#include "common/fade.h"
 #include "common/render.h"
+#include "common/screen.h"
 #include "common/sky.h"
 #include "common/vehicle.h"
 #include "common/weather.h"
@@ -195,6 +197,15 @@ void RaceView::Draw(SceneRenderer &renderer) const {
                        lighting,
                        std::nullopt,
                        true);
+
+    // ApplyScreenFade(): black left and right of the edges of the fade, across the whole frame.
+    if (g_fFadeLevel != 1.0f && g_dwScreenWidth > 0) {
+        ScreenFade wipe;
+        wipe.level = g_fFadeLevel;
+        wipe.left = g_dwFadeRectLeft * static_cast<int>(SCREEN_WIDTH) / g_dwScreenWidth;
+        wipe.right = g_dwFadeRectRight * static_cast<int>(SCREEN_WIDTH) / g_dwScreenWidth;
+        wipe.Draw(renderer);
+    }
 }
 
 } // namespace coastline
