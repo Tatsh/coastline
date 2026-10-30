@@ -208,8 +208,9 @@ target_include_directories(coastline_sdl PRIVATE "${CMAKE_SOURCE_DIR}/src"
                                                  "${CMAKE_SOURCE_DIR}/tools/common"
                                                  "${CMAKE_CURRENT_BINARY_DIR}")
 add_dependencies(coastline_sdl coastline_shaders coastline_manifests)
-target_link_libraries(coastline_sdl PRIVATE FLAC::FLAC fmt::fmt nlohmann_json::nlohmann_json
-                                            ZLIB::ZLIB)
+# The headers of the menus declare their readers of JSON, and the game includes them.
+target_link_libraries(coastline_sdl PUBLIC nlohmann_json::nlohmann_json
+                                    PRIVATE FLAC::FLAC fmt::fmt ZLIB::ZLIB)
 # A reconstructed routine retains the parameters of the original, used or not.
 set_source_files_properties("${CMAKE_SOURCE_DIR}/src/common/audio.c" pending.cpp
                             PROPERTIES COMPILE_OPTIONS "${COASTLINE_NO_UNUSED_PARAMETER}")
