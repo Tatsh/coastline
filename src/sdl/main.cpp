@@ -516,7 +516,13 @@ int main(int argc, char *argv[]) {
             }
             std::optional<std::filesystem::path> screenshot;
             if (auto path = parser.present("--screenshot")) {
-                screenshot = *path;
+                // A race moves to the data directory, and a relative path would then point at
+                // another file.
+                std::error_code error;
+                screenshot = std::filesystem::absolute(*path, error);
+                if (error) {
+                    screenshot = *path;
+                }
             }
             int screenshotFrame = parser.get<int>("--screenshot-frame");
             int screenshotEvery = parser.get<int>("--screenshot-every");
