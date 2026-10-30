@@ -1171,6 +1171,9 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             {lighting.ambient[0], lighting.ambient[1], lighting.ambient[2], 1.0f},
             {lighting.directional[0], lighting.directional[1], lighting.directional[2], 1.0f},
             {1.0f, 1.0f, 0.0f, 0.0f}};
+        if (reflection != nullptr) {
+            std::ranges::copy(reflection->environment, fragmentUniforms.env);
+        }
         SDL_PushGPUFragmentUniformData(commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
         std::array<SDL_GPUTextureSamplerBinding, 2> bindings{
             {{s.white, s.plainSampler}, {s.white, s.plainSampler}}};

@@ -280,6 +280,15 @@ Reflection SkyReflection(const RenderTexture *daySky,
         0xffffffdfu -
         static_cast<std::uint32_t>(static_cast<std::int64_t>(heading * -20.3718318939209L)));
     reflection.column = static_cast<float>(offset + 2) / 4.0f;
+    // The reflection blends towards the fog, more in a tunnel, and not at all in clear weather.
+    int alpha = 0xFF;
+    if (g_dwWeatherActive) {
+        alpha = inTunnel ? (g_bFogIntensity >> 3) + 0xDF : (g_bFogIntensity >> 1) + 0x7F;
+    }
+    reflection.environment = {static_cast<float>(g_bFogR) / 255.0f,
+                              static_cast<float>(g_bFogG) / 255.0f,
+                              static_cast<float>(g_bFogB) / 255.0f,
+                              static_cast<float>(alpha) / 255.0f};
     return reflection;
 }
 

@@ -71,6 +71,8 @@ struct Reflection {
     std::array<float, 3> across{};          /*!< The axis of the coordinate across the image. */
     std::array<float, 3> up{};              /*!< The axis of the coordinate down the image. */
     float column = 0.0f;                    /*!< The first column of the window, in texels. */
+    /** The environment colour the reflection blends towards by its alpha, the fog. */
+    std::array<float, 4> environment{1.0f, 1.0f, 1.0f, 1.0f};
 };
 
 /**
