@@ -9,6 +9,7 @@
 
 #include "common/buildinfo.h"
 #include "common/configfile.h"
+#include "common/frontendstate.h"
 #include "common/game.h"
 #include "common/ghost.h"
 #include "common/profile.h"
@@ -18,7 +19,9 @@
 #include "common/settings.h"
 #include "common/trackselect.h"
 #include "common/weather.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/frontend.h"
+#endif
 
 void ProcessSeasonResults(void) {
     if (g_dwGameMode != GAME_MODE_CHAMPIONSHIP || !g_dwSavedResultsValid) {
@@ -203,6 +206,7 @@ static inline void ClearCurrentSeasonRecords(PlayerProfile *pProfile) {
            sizeof(pProfile->seasonTimes[pProfile->season]));
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 bool RestoreSeasonProgressState(void) {
     if (!g_SeasonResumeState.state) {
         memcpy(&g_LastRaceResultCopy, &g_SeasonResumeState, sizeof(g_LastRaceResultCopy));
@@ -250,6 +254,7 @@ bool RestoreSeasonProgressState(void) {
     g_pActiveMenuScreen->ShutdownFrontEnd(false);
     return false;
 }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 static inline void ReadSeasonSaveTrailer(FILE *pFile) {
     fseek(pFile, 0, SEEK_END);
@@ -364,6 +369,7 @@ bool SaveSeasonSaveFile(void) {
     return true;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 static inline void ResetSeasonMenuForLoad(void) {
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     ResetMenuSelectionsToDefaults();
@@ -431,6 +437,7 @@ int LoadSeasonUI_OnSlotSelected(MenuItemList *pUnused, int *pnSlot) {
     strcat(fileName, ".brf");
     return LoadSeasonMenuFile(fileName);
 }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void SaveAutoSaveSeason(void) {
     if (!g_pPrimarySeasonSave) {

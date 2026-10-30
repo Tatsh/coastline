@@ -8,6 +8,7 @@
 #include "common/effects.h"
 #include "common/fade.h"
 #include "common/fontdata.h"
+#include "common/frontendstate.h"
 #include "common/gameinit.h"
 #include "common/ghost.h"
 #include "common/hud.h"
@@ -145,6 +146,18 @@ OSMesgQueue g_ViRetracePollMesgQueue;
 
 // The front end, the game session, and the network session.
 int g_dwChosenCar;
+int g_dwInNetworkCarSetup;
+char g_szSeasonSaveFileName[FRONT_END_SAVE_PATH_SIZE];
+char g_szTimeAttackSaveFileName[FRONT_END_SAVE_PATH_SIZE];
+int g_dwFrontEndAtRootMenu;
+int g_dwSelectedTransmission;
+int g_dwTireMenuIndex = 1;
+int g_dwSuspensionMenuIndex = 1;
+int g_dwCarMenuIndex = 1;
+int g_dwTotalLapsSetting = 3;
+int g_dwAccumUnlockedCarMask;
+int g_dwAccumUnlockedTrackMask;
+int g_dwHandlingTypeMenuIndex = 4;
 s16 g_wVehicleDeformMaxDent = 0x100;
 u32 g_dwCurrentWeather;
 s32 g_dwNumActiveVehicles = 2;
@@ -157,20 +170,6 @@ int g_dwNetworkPlayMode;
 const char g_szEmptyUiString[1] = {0};
 int g_dwNullStubEnable = 1;
 RallyConfig g_GlobalRallyConfig;
-
-// The ghost recordings and the seasons.
-unsigned g_dwGhostRecordingSize;
-GhostRecordingInfo g_GhostRecordingInfo;
-u8 g_abSaveFileReadBuffer[SEASON_SAVE_PAYLOAD_SIZE];
-int g_dwSaveSlotPlayerIndex;
-Season g_SeasonTable[SEASONS] = {
-    {0xdf, 2, 10, {1, 8}, 0x0081, {{2, 0}, {4, 0}, {0, 0}, {0, 0}}},
-    {0xe0, 3, 15, {0, 7}, 0x0050, {{0, 0}, {2, 0}, {4, 2}, {0, 0}}},
-    {0xe1, 4, 20, {4, 6}, 0x000c, {{4, 1}, {0, 1}, {2, 2}, {1, 0}}},
-    {0xe2, 4, 20, {3, 2}, 0x0020, {{4, 3}, {1, 1}, {2, 4}, {0, 2}}},
-    {0xe3, 4, 20, {2, 5}, 0x0020, {{2, 3}, {0, 4}, {10, 3}, {1, 2}}},
-    {0xe4, 4, 20, {5, 5}, 0x0020, {{6, 1}, {2, 2}, {1, 4}, {10, 2}}},
-};
 
 // The input of the players.
 int g_bNetGamePaused;

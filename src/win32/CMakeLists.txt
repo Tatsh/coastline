@@ -11,7 +11,6 @@ add_library(
   coastline_win32 STATIC
   app.cpp
   assetfile.cpp
-  buildinfo.c
   diagnostics.c
   directplay.cpp
   displaylist.cpp
@@ -25,7 +24,6 @@ add_library(
   gameinit.cpp
   gamesession.cpp
   gamestate.cpp
-  ghost.cpp
   hudnetwork.cpp
   input.cpp
   menufont.cpp
@@ -41,7 +39,6 @@ add_library(
   renderdefaults.cpp
   runtimebuffers.c
   runtimebuffers.cpp
-  season.cpp
   shutdown.cpp
   sound.cpp
   startup.cpp

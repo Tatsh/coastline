@@ -293,9 +293,11 @@ static void DrawViewOverlay(void) {
             SetTextAlignLeft();
             SetTextSize(15);
             DrawText(GetStringResource(242), 28, 32);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
             if (g_dwGameMode == GAME_MODE_NETWORK) {
                 DrawNetworkRaceStandingsHud(views, vehicles);
             }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             SetTextAlignRight();
             DrawText(
                 GetStringResource(244), RACE_VIEW_SCREEN_WIDTH - 28, RACE_VIEW_SCREEN_HEIGHT - 24);
@@ -309,7 +311,9 @@ static void DrawViewOverlay(void) {
             view = &views[index];
             SetupViewportAndScissor(view->x, view->y, view->width, view->height, TRUE);
             DrawSpeedAndHudOverlay(views, vehicles);
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
             DrawNetworkRaceStandingsHud(views, vehicles);
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
             NullStub();
             if (g_pActiveCamera != &g_pActiveCameraVehicle->GetCameras()[VEHICLE_CAMERA_BUMPER]) {
                 NullStub();

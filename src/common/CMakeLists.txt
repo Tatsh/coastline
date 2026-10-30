@@ -140,6 +140,7 @@ else()
     coastline_common
     PRIVATE airplanestate.c
             assetnames.c
+            buildinfo.c
             clockfields.c
             configfile.cpp
             convertedvertex.c
@@ -150,6 +151,7 @@ else()
             fontdata.c
             framebuffer.c
             framefields.c
+            ghost.cpp
             hud.c
             hudassets.c
             hudcanvas.c
@@ -157,12 +159,14 @@ else()
             hudquad.c
             inputdefaults.cpp
             numericdata.c
+            packedvalue.cpp
             particlesnapshot.c
             physicsdata.c
             raceglobals.c
             racerslot.cpp
             racescreen.cpp
             reflectiondata.c
+            season.cpp
             settings.c
             shadowclip.cpp
             shadowproject.c

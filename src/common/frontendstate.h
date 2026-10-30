@@ -1,4 +1,5 @@
-#pragma once
+#ifndef COASTLINE_FRONTENDSTATE_H
+#define COASTLINE_FRONTENDSTATE_H
 
 /**
  * @file
@@ -6,8 +7,15 @@
  * those of the SDL game set.
  */
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /** The number of controls displayed by key configuration. */
 #define KEY_CONFIG_ENTRY_COUNT 21
+
+/** The size of the path of a saved season or ghost, MAX_PATH of Windows. */
+#define FRONT_END_SAVE_PATH_SIZE 260
 
 /**
  * The path of the file of the saved season.
@@ -15,7 +23,7 @@
  * @ghidraAddress BRD3D: 0x11782cd0
  * @ghidraAddress BRGlide: 0x117a6030
  */
-extern char g_szSeasonSaveFileName[];
+extern char g_szSeasonSaveFileName[FRONT_END_SAVE_PATH_SIZE];
 
 /**
  * The path of the file of the saved ghost of a time attack.
@@ -23,7 +31,7 @@ extern char g_szSeasonSaveFileName[];
  * @ghidraAddress BRD3D: 0x11782bc8
  * @ghidraAddress BRGlide: 0x117a5f28
  */
-extern char g_szTimeAttackSaveFileName[];
+extern char g_szTimeAttackSaveFileName[FRONT_END_SAVE_PATH_SIZE];
 
 /**
  * Whether the root screen is the screen that shows.
@@ -104,3 +112,9 @@ extern int g_dwHandlingTypeMenuIndex;
  * @ghidraAddress BRGlide: 0x10ac5bb4
  */
 extern int g_dwInNetworkCarSetup;
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* COASTLINE_FRONTENDSTATE_H */

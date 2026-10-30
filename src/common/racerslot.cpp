@@ -12,10 +12,12 @@ void RacerSlot::UpdateRemoteVehicleFrame(void) {
     if (vehicle == nullptr) {
         return;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     if (g_dwNetworkPlayMode != 0 &&
         !ApplyRemoteVehicleState(vehicle, VEHICLE_GET(vehicle, Index))) {
         return;
     }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     vehicle->TransformAllWheelMatrices();
     vehicle->UpdateCameraSystem();
 }

@@ -5,17 +5,16 @@
 
 #include <zlib.h>
 
+#include "common/frontendstate.h"
 #include "common/game.h"
+#include "common/inputpoll.h"
 #include "common/instantreplay.h"
 #include "common/laps.h"
+#include "common/packedvalue.h"
 #include "common/pause.h"
 #include "common/season.h"
 #include "common/vehicleaccess.h"
 #include "common/vehiclephysics.h"
-#include "win32/directplay.h"
-#include "win32/frontend.h"
-#include "win32/input.h"
-#include "win32/netstream.h"
 
 unsigned g_adwGhostFrameCount[GHOST_RECORDING_COUNT];
 int g_bGhostRecordingActive;
@@ -541,25 +540,6 @@ void ApplyVehicleKeyframe(Vehicle *pVehicle, const KeyframeState *pState) {
     ComputeDeltaQuaternion(&VEHICLE_GET(pVehicle, Body).state);
     VEHICLE_GET(pVehicle, Body).stepStates[0] = VEHICLE_GET(pVehicle, Body).state;
     VEHICLE_GET(pVehicle, Body).stepStates[1] = VEHICLE_GET(pVehicle, Body).state;
-}
-
-unsigned ApplyRemoteVehicleState(Vehicle *vehicle, int slotIndex) {
-    if (slotIndex == GetLocalPlayerIndex() || g_dwRacePauseState != 0) {
-        return 1;
-    }
-    KeyframeState state;
-    if (!GetInterpolatedRemoteVehicleState(&state, slotIndex)) {
-        return 0;
-    }
-    ApplyVehicleKeyframe(vehicle, &state);
-    UpdateVehicleWheelTransforms(vehicle);
-    return 1;
-}
-
-void RecordVehicleKeyframe(Vehicle *vehicle) {
-    KeyframeState state;
-    BuildVehicleKeyframe(&state, vehicle);
-    SendLocalVehicleStateUpdate(&state);
 }
 
 void RecordGhostKeyframe(Vehicle *pVehicle) {

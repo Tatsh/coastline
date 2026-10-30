@@ -101,10 +101,6 @@ void SetDebugMessage(const char *message) {
     PENDING();
 }
 
-void DrawRaceBuildIdentification(void) {
-    PENDING();
-}
-
 [[noreturn]] void ShowFatalErrorScreen(const char *pszMessage) {
     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", pszMessage);
     std::exit(EXIT_FAILURE);
@@ -128,21 +124,8 @@ s32 ReturnZero(void) {
     return 0;
 }
 
-void ExitRaceAndProcessSeasonResults(void) {
+void ShutdownGameSession(void) {
     PENDING();
-}
-
-void ExitRaceSessionToMenu(void) {
-    PENDING();
-}
-
-void ShutdownGameSessionToSeasonMenu(void) {
-    PENDING();
-}
-
-bool LoadSeasonSaveFile(int nMode, bool bAllowFailure) {
-    PENDING();
-    return false;
 }
 
 void FreeAllRacerColorPanels(void) {
@@ -177,72 +160,6 @@ void PlayerInputState::ConsumeInputFlags(void) {
 
 void PlayerInputState::TransferFlags(u32 mask) {
     PENDING();
-}
-
-// The ghost recordings.
-void AdvanceGhostRecordFrame(void) {
-    PENDING();
-}
-
-void ApplyGhostKeyframeForVehicle(Vehicle *pVehicle) {
-    PENDING();
-}
-
-void ApplyGhostKeyframeToVehicle(Vehicle *pVehicle, int nRecording) {
-    PENDING();
-}
-
-unsigned ApplyRemoteVehicleState(Vehicle *vehicle, int slotIndex) {
-    PENDING();
-    return 0;
-}
-
-void ClearGhostPlaybackState(void) {
-    PENDING();
-}
-
-void FillMemoryPatternBytes(void *pDest, size_t nCount, int nByte) {
-    PENDING();
-}
-
-int IsGhostRecordingActive(void) {
-    PENDING();
-    return 0;
-}
-
-bool LoadGhostFile(bool bAllowFailure) {
-    PENDING();
-    return false;
-}
-
-bool ReadGhostFileData(const char *pszPath, bool bAllowFailure) {
-    PENDING();
-    return false;
-}
-
-void RecordGhostKeyframe(Vehicle *pVehicle) {
-    PENDING();
-}
-
-void RecordVehicleKeyframe(Vehicle *vehicle) {
-    PENDING();
-}
-
-void ResetGhostRecording(void) {
-    PENDING();
-}
-
-void StartGhostRecording(void) {
-    PENDING();
-}
-
-void UpdateReplayScrubControls(void) {
-    PENDING();
-}
-
-int ConvertDoubleToSignedByte(double dValue) {
-    PENDING();
-    return 0;
 }
 
 // The vehicles and the racers.
@@ -406,10 +323,6 @@ void ResetRenderCommandBufferStack(void) {
 }
 
 void DrawFpsCounterOverlay(void) {
-    PENDING();
-}
-
-void DrawNetworkRaceStandingsHud(const ViewportRect *viewport, const Vehicle *vehicles) {
     PENDING();
 }
 

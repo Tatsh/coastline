@@ -84,10 +84,12 @@ static inline s32 ShouldStepVehiclePhysics(Vehicle *vehicle) {
 /** Update drawing transforms or send the local driver's motion. */
 static inline void FinishVehiclePhysicsFrame(Vehicle *vehicle) {
     if (g_dwNetworkPlayMode) {
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
         if (VEHICLE_GET(vehicle, Driver) == PlayerVehicleControllerCallback &&
             !gInstantReplayActive) {
             RecordVehicleKeyframe(vehicle);
         }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
     } else if (!gInstantReplayActive) {
         vehicle->TransformAllWheelMatrices();
     }
