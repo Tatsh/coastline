@@ -21,6 +21,7 @@
 namespace coastline {
 
 class GpuWindow;
+class RenderModel;
 class SceneRenderer;
 
 /** A 4 by 4 matrix, column by column. */
@@ -177,6 +178,9 @@ struct ModelOptions {
      * one, such as the textures of the cartridge on a car of the PC release, or none. A document
      * with another number of images is not taken. */
     std::optional<std::filesystem::path> images;
+    /** A model of the same document whose textures this model draws with in place of loading the
+     * images again, such as the track for its sky, or none. The model must outlive this one. */
+    const RenderModel *texturesOf = nullptr;
     /** The number of palette variants of the images of materials, such as the lights of a car. */
     int variants = 0;
     /** Change the palette of an image of a material for a variant, and report whether the image

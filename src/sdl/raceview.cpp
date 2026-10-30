@@ -573,8 +573,7 @@ struct CarDamageMasks {
 struct RaceView::State {
     std::filesystem::path defaults;
     std::unique_ptr<RenderModel> track;
-    // ponytail: the sky loads the images of the track a second time; a model with its nodes drawn
-    // by name would share them.
+    // The sky draws with the textures of the track, and is declared after it to be released first.
     std::unique_ptr<RenderModel> sky;
     // The cars in the colours the vehicles of the race can have. The computer's cars of a
     // championship take the colour of each racer they drive for, and every such colour loads with
@@ -1555,6 +1554,7 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     ModelOptions sky;
     sky.node = "sky";
     sky.oneCycle = true;
+    sky.texturesOf = state->track.get();
     state->sky = RenderModel::Load(renderer, trackFile, sky);
     state->defaults = defaults;
     state->damage = LoadDamageMasks(defaults, cars.empty() ? -1 : cars.front().car);

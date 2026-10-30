@@ -565,6 +565,8 @@ struct QuadDraw {
 struct RenderModel::State {
     SDL_GPUDevice *device = nullptr;
     std::vector<SDL_GPUTexture *> images;
+    // Whether the images are those of another model, which releases them.
+    bool sharedImages = false;
     std::vector<SDL_GPUSampler *> samplers;
     // Whether the shader filters the texels of the images as the RDP does.
     bool threePoint = false;
@@ -604,8 +606,10 @@ struct RenderModel::State {
                 SDL_ReleaseGPUBuffer(device, mesh.targets);
             }
         }
-        for (auto *image : images) {
-            SDL_ReleaseGPUTexture(device, image);
+        if (!sharedImages) {
+            for (auto *image : images) {
+                SDL_ReleaseGPUTexture(device, image);
+            }
         }
         for (auto *sampler : samplers) {
             SDL_ReleaseGPUSampler(device, sampler);
@@ -904,6 +908,11 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
                         path.string().c_str());
         }
     }
+    if (options.texturesOf != nullptr) {
+        images = nlohmann::json::array();
+        state->images = options.texturesOf->m_state->images;
+        state->sharedImages = true;
+    }
 
     // The textures of a model are mipmapped for anisotropic filtering of the modern filter, and
     // other textures are not.
@@ -1003,12 +1012,45 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
             {texture["source"].get<std::size_t>(), texture["sampler"].get<std::size_t>()});
     }
 
+    // The nodes the model draws from, every node of the name of the node or the roots of the first
+    // scene, and the meshes under them. A mesh no node draws is not uploaded, such as each mesh of
+    // a track but the sky for the sky.
+    const auto &nodes = document["nodes"];
+    std::vector<std::size_t> roots;
+    if (node) {
+        for (std::size_t index = 0; index < nodes.size(); ++index) {
+            if (nodes[index].value("name", "") == *node) {
+                roots.push_back(index);
+            }
+        }
+    } else {
+        for (const auto &root : document["scenes"][document.value("scene", 0)]["nodes"]) {
+            roots.push_back(root.get<std::size_t>());
+        }
+    }
+    std::vector<bool> drawnMeshes(document["meshes"].size());
+    auto markMeshes = [&](auto &self, std::size_t index) -> void {
+        const auto &marked = nodes.at(index);
+        if (marked.contains("mesh")) {
+            drawnMeshes.at(marked["mesh"].get<std::size_t>()) = true;
+        }
+        for (const auto &child : marked.value("children", nlohmann::json::array())) {
+            self(self, child.get<std::size_t>());
+        }
+    };
+    for (std::size_t root : roots) {
+        markMeshes(markMeshes, root);
+    }
+
     // The meshes, with the vertices of each primitive in the layout of the shaders, and the
     // displacements of the morph targets of the first primitive, which every primitive shares.
     std::vector<std::vector<std::array<float, 3>>> meshPositions;
     for (const auto &mesh : document["meshes"]) {
         Mesh &drawn = state->meshes.emplace_back();
         auto &positions = meshPositions.emplace_back();
+        if (!drawnMeshes[state->meshes.size() - 1]) {
+            continue;
+        }
         for (const auto &primitive : mesh["primitives"]) {
             const auto &attributes = primitive["attributes"];
             auto position = Accessor(document, buffer, attributes["POSITION"], 12);
@@ -1183,26 +1225,18 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
             self(self, child.get<std::size_t>(), matrix);
         }
     };
-    if (node) {
-        const auto &nodes = document["nodes"];
-        for (std::size_t index = 0; index < nodes.size(); ++index) {
-            if (nodes[index].value("name", "") == *node) {
-                // The node draws at its origin, for the caller to place it: its translation moves
-                // every placement under it, and leaves them.
-                std::size_t before = state->placed.size();
-                visit(visit, index, IDENTITY_MATRIX);
-                Matrix4 own = NodeMatrix(nodes[index]);
-                for (std::size_t p = before; p < state->placed.size(); ++p) {
-                    for (std::size_t axis = 0; axis < 3; ++axis) {
-                        state->placed[p].matrix[12 + axis] -= own[12 + axis];
-                    }
+    for (std::size_t root : roots) {
+        std::size_t before = state->placed.size();
+        visit(visit, root, IDENTITY_MATRIX);
+        if (node) {
+            // The node draws at its origin, for the caller to place it: its translation moves
+            // every placement under it, and leaves them.
+            Matrix4 own = NodeMatrix(nodes[root]);
+            for (std::size_t p = before; p < state->placed.size(); ++p) {
+                for (std::size_t axis = 0; axis < 3; ++axis) {
+                    state->placed[p].matrix[12 + axis] -= own[12 + axis];
                 }
             }
-        }
-    } else {
-        const auto &scene = document["scenes"][document.value("scene", 0)];
-        for (const auto &root : scene["nodes"]) {
-            visit(visit, root.get<std::size_t>(), IDENTITY_MATRIX);
         }
     }
     if (state->placed.empty()) {
