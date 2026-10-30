@@ -32,7 +32,8 @@ struct RacePlayerSetup {
     int suspension = 1;   /*!< The suspension, from 0 for the softest springs. */
     /** The images of the car with the custom decals of the player, or none for the asset pack. */
     std::optional<std::filesystem::path> images;
-    /** The colour of the paint the custom decals bring, or none for the colour of the car. */
+    /** The colour of the paint, from the car select screen or the custom decals, or none for the
+     * colour of the player. */
     std::optional<std::array<u8, 3>> color;
 };
 

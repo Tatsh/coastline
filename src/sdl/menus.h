@@ -102,6 +102,9 @@ struct CarSelectPlayer {
     int selectedCar = 0;                            /*!< The car under the cursor. */
     int carModel = 0;                               /*!< The car chosen. */
     bool customDecals = false;                      /*!< Whether the custom decals were chosen. */
+    std::array<u8, 3> paint{}; /*!< The red, green, and blue of the paint of the car. */
+    bool otherLook = false;    /*!< Whether the car shows its other look, with its highlighted parts
+                                    reflecting the sky in place of its textured parts. */
 };
 
 /** Where the menus go next. */
@@ -230,6 +233,8 @@ private:
     MenuProfile &ProfileOf(int player);
     bool IsCarUnlocked(int car) const;
     void LoadCarModel(SceneRenderer &renderer, int slot, int car);
+    void ResetCarPaint(int player);
+    void AdjustCarPaint(SceneRenderer &renderer, int player, const MenuButtons &buttons);
     void StartCarSelect(SceneRenderer &renderer);
     void SetCarSelectOptions(int player,
                              const std::vector<MenuItem> &options,
@@ -369,6 +374,16 @@ private:
     // colour of each of the two vehicles that draw them.
     std::array<int, 4> m_slotCars{};
     std::array<std::vector<std::unique_ptr<RenderModel>>, 2> m_carModels;
+    // The paint each model of m_carModels was loaded in, in the 5 bits a channel of
+    // SetMaterialColor(), and 1 after it for the other look. A model a frame drew and a load
+    // replaced is released at the start of the next frame.
+    std::array<std::vector<std::array<int, 4>>, 2> m_carModelLooks;
+    // The highlighted parts of each model of m_carModels in the other look, or none.
+    std::array<std::vector<std::unique_ptr<RenderModel>>, 2> m_carHighlightModels;
+    std::vector<std::unique_ptr<RenderModel>> m_retiredCarModels;
+    // The time towards the next frame of the console, and whether this frame is one.
+    float m_carSelectFrameTime = 0.0f;
+    bool m_carSelectConsoleFrame = false;
     // The choice marker of the stage of the cars, the shadow of a car on it, and the reflection of
     // the sky on the cars.
     StageMesh m_stageChoiceMarker;

@@ -12,6 +12,7 @@
 #include "common/vehicle.h"
 #include "frontend.h"
 #include "gpu.h"
+#include "input.h"
 #include "menus.h"
 #include "menutext.h"
 
@@ -52,6 +53,9 @@ constexpr int STAT_BAR_WIDTH = 80;
 constexpr int STAT_BAR_HEIGHT = 11;
 constexpr float FULL_ACCELERATION = 500.0f;
 constexpr float FULL_SPEED = 10.0f;
+
+// The frame of the console the paint steps once in.
+constexpr float CONSOLE_FRAME_SECONDS = 1.0f / 60.0f;
 
 // The low-resolution screen the layouts of the console are written for.
 constexpr int WIDTH = 320;
@@ -195,6 +199,15 @@ bool Menus::LoadCarSelect(SceneRenderer &renderer, const std::filesystem::path &
     for (auto &models : m_carModels) {
         models.resize(m_cars.size());
     }
+    for (auto &looks : m_carModelLooks) {
+        looks.resize(m_cars.size());
+    }
+    for (auto &models : m_carHighlightModels) {
+        models.resize(m_cars.size());
+    }
+    for (int player = 0; player < 2; ++player) {
+        ResetCarPaint(player);
+    }
     // The reflection wraps across the sky, as its tile wraps.
     m_stageReflection =
         RenderTexture::Load(renderer, release / "data" / "menu-reflection.png", true, true);
@@ -212,24 +225,92 @@ bool Menus::IsCarUnlocked(int car) const {
 
 // LoadVehicleModel() of the console: the model of a car into a slot. A model read once is read
 // again from memory. Vehicle 0 draws slots 0 and 2, and vehicle 1 slots 1 and 3.
-// SetVehicleModelSlot() paints the model of each draw in the colour of its player, from
-// InitVehicleColor().
+// SetVehicleModelSlot() paints the model of each draw in the paint of its player, and
+// RenderVehicleModel() draws it in the look of the player.
 void Menus::LoadCarModel(SceneRenderer &renderer, int slot, int car) {
     m_slotCars[static_cast<std::size_t>(slot)] = car;
     std::size_t vehicle = static_cast<std::size_t>(slot & 1);
+    const CarSelectPlayer &player = m_carSelect[vehicle];
+    std::array<int, 4> look{
+        player.paint[0] >> 3, player.paint[1] >> 3, player.paint[2] >> 3, player.otherLook};
     auto &model = m_carModels[vehicle][static_cast<std::size_t>(car)];
-    if (!model) {
-        ModelOptions options;
-        options.paint = std::array<std::uint8_t, 3>{g_abPlayerColorsRgb[vehicle][0],
-                                                    g_abPlayerColorsRgb[vehicle][1],
-                                                    g_abPlayerColorsRgb[vehicle][2]};
-        options.parts = [](const std::string &name) {
-            return std::ranges::find(STAGE_CAR_PARTS, name) != STAGE_CAR_PARTS.end();
-        };
-        model = RenderModel::Load(renderer,
-                                  m_release / m_cars[static_cast<std::size_t>(car)].directory /
-                                      "model.gltf",
-                                  options);
+    auto &loaded = m_carModelLooks[vehicle][static_cast<std::size_t>(car)];
+    if (model && loaded == look) {
+        return;
+    }
+    auto file = m_release / m_cars[static_cast<std::size_t>(car)].directory / "model.gltf";
+    ModelOptions options;
+    options.paint = player.paint;
+    bool otherLook = player.otherLook;
+    // The other look does not draw the textured parts.
+    options.parts = [otherLook](const std::string &name) {
+        return !(otherLook && name == "lod0-textured") &&
+               std::ranges::find(STAGE_CAR_PARTS, name) != STAGE_CAR_PARTS.end();
+    };
+    m_retiredCarModels.push_back(std::move(model));
+    model = RenderModel::Load(renderer, file, options);
+    // The other look draws the highlighted parts with the sky reflected, as the painted body. They
+    // are a node outside the scene, drawn without the turn of its root.
+    auto &highlighted = m_carHighlightModels[vehicle][static_cast<std::size_t>(car)];
+    m_retiredCarModels.push_back(std::move(highlighted));
+    if (otherLook) {
+        ModelOptions highlightOptions;
+        highlightOptions.node = "lod0-highlighted";
+        highlightOptions.optional = true;
+        highlightOptions.reflects = [](const std::string &) { return true; };
+        highlighted = RenderModel::Load(renderer, file, highlightOptions);
+    }
+    loaded = look;
+}
+
+// InitVehicleColor() of the console: the car of a player in the colour of the player, in its usual
+// look.
+void Menus::ResetCarPaint(int player) {
+    CarSelectPlayer &choice = m_carSelect[static_cast<std::size_t>(player)];
+    choice.paint = {g_abPlayerColorsRgb[player][0],
+                    g_abPlayerColorsRgb[player][1],
+                    g_abPlayerColorsRgb[player][2]};
+    choice.otherLook = false;
+}
+
+// The car and the decals steps of HandleCarSelectInput() of the console: C-down switches the look
+// once the unlock of the mirrored cars allows it, and each frame of the console up or down raises
+// or lowers by 4 the red with C-left, the green with C-up, and the blue with C-right held. Both
+// slots of the player show the change.
+void Menus::AdjustCarPaint(SceneRenderer &renderer, int player, const MenuButtons &buttons) {
+    // The unlock of the profile that "Bonus: Mirrored Cars Added!" reports.
+    constexpr u16 UNLOCK_OTHER_LOOK = 0x8000;
+    constexpr int PAINT_STEP = 4;
+    CarSelectPlayer &choice = m_carSelect[static_cast<std::size_t>(player)];
+    std::array<u8, 3> paint = choice.paint;
+    bool otherLook = choice.otherLook;
+    if (buttons.cDown && (ProfileOf(player).unlocks & UNLOCK_OTHER_LOOK) != 0) {
+        choice.otherLook = !choice.otherLook;
+    }
+    bool up = (buttons.heldButtons & BUTTON_D_UP) != 0;
+    bool down = (buttons.heldButtons & BUTTON_D_DOWN) != 0;
+    constexpr std::array<std::uint16_t, 3> PARTS{BUTTON_C_LEFT, BUTTON_C_UP, BUTTON_C_RIGHT};
+    for (std::size_t i = 0; m_carSelectConsoleFrame && i < PARTS.size(); ++i) {
+        if ((buttons.heldButtons & PARTS[i]) == 0) {
+            continue;
+        }
+        u8 &part = choice.paint[i];
+        // Up raises the part first, and down lowers it after.
+        if (up) {
+            part = part < 0x100 - PAINT_STEP ? static_cast<u8>(part + PAINT_STEP) : 0xFF;
+        }
+        if (down) {
+            part = part < PAINT_STEP ? 0 : static_cast<u8>(part - PAINT_STEP);
+        }
+    }
+    if (choice.paint == paint && choice.otherLook == otherLook) {
+        return;
+    }
+    for (int slot : {choice.slot ^ 2, choice.slot}) {
+        int car = m_slotCars[static_cast<std::size_t>(slot)];
+        if (m_carModels[static_cast<std::size_t>(player)][static_cast<std::size_t>(car)]) {
+            LoadCarModel(renderer, slot, car);
+        }
     }
 }
 
@@ -241,6 +322,7 @@ void Menus::StartCarSelect(SceneRenderer &renderer) {
         player.slot = i;
         player.state = CAR_SELECT_CAR;
         player.slide = 0.0f;
+        ResetCarPaint(i);
 
         // ChooseVehicleCar() of the console: the first car of the season in a championship.
         if (m_gameMode == GameMode::Championship) {
@@ -327,8 +409,9 @@ void Menus::HandleCarSelectInput(SceneRenderer &renderer, int player, const Menu
         }
     }
 
-    // ponytail: the other look on C-down and the paint on up and down with the C buttons held are
-    // not read yet. The other look needs an unlock a new profile does not have.
+    if (choice.state == CAR_SELECT_CAR || choice.state == CAR_SELECT_DECALS) {
+        AdjustCarPaint(renderer, player, buttons);
+    }
 
     // Left and right move through the options of the other steps.
     if (choice.state != CAR_SELECT_CAR) {
@@ -535,12 +618,21 @@ void Menus::DrawStageCar(SceneRenderer &renderer,
         StageQuads(m_stageShadow),
         FlatMaterial{},
         MultiplyMatrices(camera, MultiplyMatrices(StageFrameAt(x, y, angle), shadow)));
-    renderer.DrawReflectingModel(*model,
-                                 StageCarAt(x, y, angle),
-                                 camera,
-                                 STAGE_CAR_LIGHTING,
-                                 StageReflection(m_stageReflection.get(), eye),
-                                 scissor);
+    Reflection reflection = StageReflection(m_stageReflection.get(), eye);
+    renderer.DrawReflectingModel(
+        *model, StageCarAt(x, y, angle), camera, STAGE_CAR_LIGHTING, reflection, scissor);
+    const auto &highlighted =
+        m_carHighlightModels[static_cast<std::size_t>(slot & 1)][static_cast<std::size_t>(car)];
+    if (highlighted &&
+        model ==
+            m_carModels[static_cast<std::size_t>(slot & 1)][static_cast<std::size_t>(car)].get()) {
+        renderer.DrawReflectingModel(*highlighted,
+                                     StageFrameAt(x, y, angle),
+                                     camera,
+                                     STAGE_CAR_LIGHTING,
+                                     reflection,
+                                     scissor);
+    }
 }
 
 // RenderCameraView() of the console for the stage of a player: the car or the option under the
@@ -875,6 +967,12 @@ void Menus::ProcessCarSelectScreen(SceneRenderer &renderer,
     }
     m_screen->UpdateFade(seconds);
     m_screen->DrawBackground(renderer, {0x00, 0x00, 0x00}, {0x50, 0x00, 0x00});
+    // A slow frame paints a step once, not once for each 60th it took.
+    m_carSelectFrameTime += seconds;
+    m_carSelectConsoleFrame = m_carSelectFrameTime >= CONSOLE_FRAME_SECONDS;
+    if (m_carSelectConsoleFrame) {
+        m_carSelectFrameTime = std::fmod(m_carSelectFrameTime, CONSOLE_FRAME_SECONDS);
+    }
 
     // The stages turn, the second the other way, and the cars slide to rest.
     m_carSelectAngle[0] += seconds;

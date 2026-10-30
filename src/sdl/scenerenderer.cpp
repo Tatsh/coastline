@@ -199,6 +199,9 @@ constexpr std::uint32_t CYCLE_TYPE_SHIFT = 20;
 constexpr std::uint32_t TWO_CYCLE = 1;
 // The bit of the geometry mode that generates the texture coordinates from the normals.
 constexpr std::uint32_t G_TEXTURE_GEN = 0x40000;
+// The combiner of the reflection pass of RenderVehicleModel(), (TEXEL0 - ENVIRONMENT) * ENV_ALPHA
+// + ENVIRONMENT with the alpha of TEXEL0 in both cycles.
+constexpr std::array<std::uint32_t, 2> REFLECTION_COMBINE{0x167E2C, 0x55FEF379};
 
 SDL_GPUShader *CreateShader(SDL_GPUDevice *device,
                             SDL_GPUShaderStage stage,
@@ -1165,6 +1168,10 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
                         }
                     }
                 }
+            }
+            if (options.reflects && options.reflects(mesh.value("name", std::string()))) {
+                part.textureGen = true;
+                part.combine = REFLECTION_COMBINE;
             }
             drawn.primitives.push_back(part);
         }

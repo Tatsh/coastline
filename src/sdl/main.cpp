@@ -1479,7 +1479,9 @@ int main(int argc, char *argv[]) {
                                 .choose = (down & CHOOSE) != 0,
                                 .start = (down & coastline::BUTTON_START) != 0,
                                 .back = (down & coastline::BUTTON_B) != 0,
-                                .held = now != 0};
+                                .held = now != 0,
+                                .cDown = (down & coastline::BUTTON_C_DOWN) != 0,
+                                .heldButtons = now};
                         };
                         coastline::PaintShopInput pointer = PaintShopInputOf(ports[0], mouse);
                         pointer.text = std::move(typed);

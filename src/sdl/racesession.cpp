@@ -175,7 +175,7 @@ void StartRace(const RaceSetup &setup, const std::filesystem::path &music, bool 
     g_autopilot = setup.autopilot;
     // The first frame loads the race.
     StepRace();
-    // A player with custom decals races in the colour of their paint.
+    // A player races in the colour of the paint of the player.
     for (int i = 0; i < setup.players; ++i) {
         const auto &color = setup.cars[static_cast<std::size_t>(i)].color;
         if (color) {

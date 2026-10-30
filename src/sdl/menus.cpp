@@ -53,6 +53,7 @@ MenusEnd Menus::Frame(SceneRenderer &renderer,
     const MenuButtons &first = buttons[0];
     m_end = MenusEnd::Running;
     m_pointer = pointer;
+    m_retiredCarModels.clear();
     switch (m_current) {
     case Screen::MainMenu:
         ProcessMainMenu(renderer, seconds, first);

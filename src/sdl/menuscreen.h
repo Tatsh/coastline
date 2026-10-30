@@ -56,6 +56,10 @@ struct MenuButtons {
     bool start = false;  /*!< Start, read by itself on the car select screen too. */
     bool back = false;   /*!< B, to exit the screen. */
     bool held = false;   /*!< Whether any button is down, restarting the wait of the timeout. */
+    bool cDown = false;  /*!< C down, to switch the look of a car on the car select screen. */
+    /** The ControllerButton bits held, with the stick holding the directions of the pad, which the
+     * car select screen paints the car with. */
+    std::uint16_t heldButtons = 0;
 };
 
 /** What a frame of a menu screen ends with, the results of ProcessScreenState(). */

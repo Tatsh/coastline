@@ -123,7 +123,7 @@ RaceSetup Menus::ChosenRace() const {
             profile.tires,
             profile.suspension,
             std::nullopt,
-            std::nullopt};
+            m_carSelect[static_cast<std::size_t>(player)].paint};
         // The custom decals race the model the decals loaded into, and ExtractVehicleBaseColor()
         // takes the colour of the car from its paint.
         auto index = static_cast<std::size_t>(player);

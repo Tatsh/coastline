@@ -145,6 +145,7 @@ void Menus::StartTimeAttack() {
 void Menus::LoadSeasonCars(SceneRenderer &renderer) {
     const MenuSeason &season = m_seasons[m_profile.season];
     for (std::size_t slot = 0; slot < season.cars.size(); ++slot) {
+        ResetCarPaint(static_cast<int>(slot));
         LoadCarModel(renderer, static_cast<int>(slot), season.cars[slot]);
     }
 }
