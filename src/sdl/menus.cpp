@@ -45,8 +45,15 @@ MenusEnd Menus::Frame(SceneRenderer &renderer,
                       const std::array<MenuButtons, 2> &players,
                       bool secondController,
                       const PaintShopInput &pointer) {
+    // Escape on the keyboard backs out of a screen as B does, and the paint shop takes it itself.
+    bool escape = pointer.escape && !m_escapeDown;
+    m_escapeDown = pointer.escape;
+    std::array<MenuButtons, 2> buttons = players;
+    if (escape && m_current != Screen::PaintShopScreen) {
+        buttons[0].back = true;
+    }
     // The screens but the car select read the first controller.
-    const MenuButtons &first = players[0];
+    const MenuButtons &first = buttons[0];
     m_end = MenusEnd::Running;
     m_pointer = pointer;
     switch (m_current) {
@@ -63,7 +70,7 @@ MenusEnd Menus::Frame(SceneRenderer &renderer,
         ProcessWeatherSelect(renderer, seconds, first);
         break;
     case Screen::CarSelect:
-        ProcessCarSelectScreen(renderer, seconds, players);
+        ProcessCarSelectScreen(renderer, seconds, buttons);
         break;
     case Screen::RaceResultsScreen:
         ProcessRaceResultsScreen(renderer, seconds, first);

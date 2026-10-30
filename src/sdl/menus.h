@@ -245,6 +245,7 @@ private:
     std::unique_ptr<PaintShop> m_paintShop;
     std::filesystem::path m_cache;
     PaintShopInput m_pointer;
+    bool m_escapeDown = false;
     // The decals each player loaded from the Controller Pak on the car select screen, the images
     // of the car with them, and the model of the car that shows them.
     std::array<std::optional<DecalCar>, 2> m_customDecals;
