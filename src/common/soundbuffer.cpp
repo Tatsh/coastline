@@ -69,8 +69,12 @@ bool g_bEarSoundStarted;
 #define MAX_VOLUME 255
 
 void ApplyAudioVolumeSettings(void) {
+    // The music of the SDL game plays at the level of the menus of the console from the splash
+    // screens to the race, and the music volume of the PC configuration does not replace it.
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
     g_bBgmVolume =
         static_cast<unsigned char>(g_adwBgmVolumeLevels[g_GlobalRallyConfig.dwMusicVolume]);
+#endif
     DispatchMusicVolumeChange(g_bBgmVolume);
     g_bSfxVolume =
         static_cast<unsigned char>(g_adwSfxVolumeLevels[g_GlobalRallyConfig.dwSfxVolume]);
