@@ -38,6 +38,9 @@ public:
     const Vehicle &GetVehicle(int index) const {
         return vehicles[index];
     }
+    Vehicle *GetVehicles() {
+        return vehicles;
+    }
     const ParticleSnapshot &GetParticles() const {
         return particles;
     }
@@ -99,7 +102,7 @@ int AcquireNextFrameSnapshotSlot(void);
  * @param share How far the frame is from the previous snapshot to the current one, from 0 to 1.
  * @return The blended snapshot, or null before the race has two snapshots.
  */
-const FrameSnapshot *InterpolateFrameSnapshots(float share);
+FrameSnapshot *InterpolateFrameSnapshots(float share);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 /**

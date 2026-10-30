@@ -115,7 +115,7 @@ inline void FrameSnapshot::InterpolateFrom(const FrameSnapshot &from,
 }
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
-const FrameSnapshot *InterpolateFrameSnapshots(float share) {
+FrameSnapshot *InterpolateFrameSnapshots(float share) {
     if (g_dwFrameSnapshotCurrentSlot < 0 || g_dwFrameSnapshotPreviousSlot < 0) {
         return nullptr;
     }

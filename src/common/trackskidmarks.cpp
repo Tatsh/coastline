@@ -296,3 +296,53 @@ void DrawTrackShadows(Vehicle *vehicles) {
     // The native pool advances past one unwritten command.
     g_pShadowDisplayListWritePtr = command + 9;
 }
+
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+void RecordFrameSkidMarks(Vehicle *vehicles) {
+    if (!g_GlobalRallyConfig.bSkidMarksSelection) {
+        return;
+    }
+    for (int index = 0; index < g_dwNumActiveVehicles; ++index) {
+        RecordTrackSkidMarks(&vehicles[index], index);
+    }
+}
+
+// DrawSkidTrails() without the test of the visibility of the instances under the segments, which
+// the SDL game does not build.
+void VisitSkidMarkQuads(void (*visit)(const Vec3f *oldRight,
+                                      const Vec3f *newRight,
+                                      const Vec3f *oldLeft,
+                                      const Vec3f *newLeft,
+                                      void *context),
+                        void *context) {
+    bool active[SKID_MARK_TRACK_COUNT] = {};
+    int indices[SKID_MARK_TRACK_COUNT] = {};
+    for (int trail = 0; trail < g_dwNumActiveVehicles * 4; ++trail) {
+        indices[trail] = PreviousSegment(g_anSkidMarkHead[trail]);
+        active[trail] = g_anSkidMarkHead[trail] != g_anSkidMarkTail[trail];
+    }
+    bool more;
+    do {
+        more = false;
+        for (int trail = 0; trail < g_dwNumActiveVehicles * 4; ++trail) {
+            if (!active[trail]) {
+                continue;
+            }
+            int index = indices[trail];
+            int previous = PreviousSegment(index);
+            const SkidMarkSegment &segment = g_aSkidMarkSegments[trail][index];
+            if (index == g_anSkidMarkTail[trail] ||
+                ((segment.flags & ACTIVE) && previous == g_anSkidMarkTail[trail])) {
+                active[trail] = false;
+                continue;
+            }
+            const SkidMarkSegment &old = g_aSkidMarkSegments[trail][previous];
+            if ((segment.flags & ACTIVE) && (old.flags & ACTIVE)) {
+                visit(&old.right, &segment.right, &old.left, &segment.left, context);
+            }
+            more = true;
+            indices[trail] = previous;
+        }
+    } while (more);
+}
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
