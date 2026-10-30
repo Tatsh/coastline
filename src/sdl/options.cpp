@@ -510,9 +510,8 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
             m_loadConfigurationPending = true;
             break;
         case OPTIONS_ITEM_CREDITS:
-            // ponytail: the credits race is not built yet, and the options show again.
-            SDL_Log("The credits race is not built yet.");
             m_optionsMenuState = -1;
+            m_end = MenusEnd::Credits;
             break;
         default:
             break;

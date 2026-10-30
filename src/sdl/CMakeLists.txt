@@ -197,6 +197,7 @@ add_library(
   paths.cpp
   playerselect.cpp
   ptr32.cpp
+  racecredits.cpp
   racedemo.cpp
   racemenu.cpp
   raceinput.cpp

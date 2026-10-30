@@ -15,6 +15,12 @@ void Menus::Restart() {
     ApplyVolumeSettings();
 }
 
+void Menus::FinishCredits() {
+    // The credits race at the levels of the race engine.
+    ApplyVolumeSettings();
+    SetCurrentScreen(Screen::OptionsMenu);
+}
+
 void Menus::SetCurrentScreen(Screen screen) {
     m_current = screen;
 }

@@ -61,6 +61,7 @@
 #include "frontend.h"
 #include "gpu.h"
 #include "menutext.h"
+#include "racecredits.h"
 #include "racedemo.h"
 #include "scenerenderer.h"
 
@@ -2006,6 +2007,7 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
         style.doubled = false;
         s.text->Draw(renderer, help, hud.width - 28, hud.height - 24, style, hud.projection);
     }
+    DrawConsoleCredits(renderer, *s.text);
 
     // ApplyScreenFade(): black left and right of the edges of the fade, across the whole frame.
     if (g_fFadeLevel != 1.0f && g_dwScreenWidth > 0) {

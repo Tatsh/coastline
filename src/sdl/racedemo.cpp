@@ -85,6 +85,18 @@ void StartAttractDemo() {
     g_bSfxVolume = static_cast<unsigned char>(g_bSfxVolume * 3 / 4);
 }
 
+void StartCreditsRace() {
+    // The console starts the scrolling credits instead with the multiplayer mode of a cheat, which
+    // the SDL game does not have.
+    g_dwGameMode = GAME_MODE_DEMO;
+    g_dwRaceSessionType = RACE_SESSION_CREDIT_CAPTIONS;
+    g_dwRaceInitialized = 0;
+    g_consoleDemo = nullptr;
+    InitGameAndShowMenus();
+    // The credits play under the music of the menus, as the attract demo does.
+    g_bSfxVolume = static_cast<unsigned char>(g_bSfxVolume * 3 / 4);
+}
+
 bool StepAttractDemo(bool leave) {
     // The race leaves for the front end through ExitRaceSessionToMenu(), which ends the session.
     if (IsCurrentScreen(ExitRaceSessionToMenu)) {

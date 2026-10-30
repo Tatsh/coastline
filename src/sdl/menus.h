@@ -109,6 +109,7 @@ enum class MenusEnd {
     Running, /*!< A menu screen is still showing. */
     Splash,  /*!< The player went back from the main menu, or it timed out. */
     Race,    /*!< The race of Menus::ChosenRace() starts. */
+    Credits, /*!< The race of the credits of the options menu starts. */
 };
 
 /** The modes of the game, as g_dwGameMode of the console. */
@@ -184,6 +185,9 @@ public:
      * @param results The results of the race, read when it ended with RaceEnd::Results.
      */
     void FinishRace(RaceEnd end, const RaceResults &results);
+
+    /** Show the options menu again after the race of the credits it started. */
+    void FinishCredits();
 
 private:
     // The screens of the console, each the routine of the same name.

@@ -29,6 +29,13 @@ void OpenRaceData(bool playSounds);
 void StartAttractDemo();
 
 /**
+ * Start the race of the credits as StartCreditsRace() of the console starts it from the options
+ * menu, on the recording of the credits of the PC release. StepAttractDemo() runs it. The working
+ * directory is the directory of the default assets.
+ */
+void StartCreditsRace();
+
+/**
  * Run one frame of the race of the demo, a 30th of a second.
  *
  * @param leave Whether a button that leaves the demo was pressed, as the pause binding of the PC

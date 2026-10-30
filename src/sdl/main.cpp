@@ -45,6 +45,7 @@
 #include "modelview.h"
 #include "music.h"
 #include "paths.h"
+#include "racecredits.h"
 #include "racedemo.h"
 #include "racemusic.h"
 #include "racesession.h"
@@ -1101,7 +1102,7 @@ int main(int argc, char *argv[]) {
             std::unique_ptr<coastline::MenuText> fontSample;
             std::string fontSampleText;
             // The screen of the front end that shows.
-            enum class FrontEnd { Intro, AttractDemo, MainMenu, Race };
+            enum class FrontEnd { Intro, AttractDemo, MainMenu, Race, Credits };
             FrontEnd frontEnd = FrontEnd::Intro;
             // The races run a 30th of a second a step, from the default assets.
             constexpr float RACE_STEP = 1.0f / 30.0f;
@@ -1119,6 +1120,21 @@ int main(int argc, char *argv[]) {
             };
             float raceTime = 0.0f;
             bool leaveDemo = false;
+            // The first step of the race of the credits loads the race and with it the track and
+            // the car of the recording.
+            auto startCredits = [&]() {
+                openRaceData();
+                coastline::StartCreditsRace();
+                coastline::StartConsoleCredits(defaults / "n64" / "usa");
+                coastline::StepAttractDemo(false);
+                const coastline::RaceCar car{
+                    coastline::AttractDemoCar(), coastline::AttractDemoColor(), std::nullopt};
+                raceView = coastline::RaceView::Load(
+                    *sceneRenderer, defaults, coastline::AttractDemoTrack(), {&car, 1});
+                raceTime = 0.0f;
+                leaveDemo = false;
+                return raceView != nullptr;
+            };
             bool startInDemo = scene == "attract-demo" || scene.starts_with("attract-demo:");
             coastline::TextureHandle testTexture = 0;
             if (scene == "renderer-test") {
@@ -1195,8 +1211,10 @@ int main(int argc, char *argv[]) {
                     input.HandleEvent(event);
                 }
                 // The shortcuts of the window are read before the controllers, which then do not
-                // see the Enter of Alt and Enter. A race and the attract demo read F themselves.
-                bool raceShows = frontEnd == FrontEnd::Race || frontEnd == FrontEnd::AttractDemo;
+                // see the Enter of Alt and Enter. A race, the attract demo, and the credits read F
+                // themselves.
+                bool raceShows = frontEnd == FrontEnd::Race || frontEnd == FrontEnd::AttractDemo ||
+                                 frontEnd == FrontEnd::Credits;
                 switch (displayKeys.Read(!raceShows && !SDL_TextInputActive(window->Window()))) {
                 case DisplayKey::Fullscreen: {
                     bool fullscreen = !window->Fullscreen();
@@ -1389,12 +1407,30 @@ int main(int argc, char *argv[]) {
                             mainMenu->FinishRace(end, coastline::LastRaceResults());
                             frontEnd = FrontEnd::MainMenu;
                         }
+                    } else if (frontEnd == FrontEnd::Credits) {
+                        // A press of A, Start, or Z ends the credits as it ends the attract demo.
+                        leaveDemo = leaveDemo || (pressed & CHOOSE) != 0;
+                        raceTime += seconds;
+                        bool creditsRunning = true;
+                        while (creditsRunning && raceTime >= RACE_STEP) {
+                            raceTime -= RACE_STEP;
+                            creditsRunning = coastline::StepAttractDemo(leaveDemo);
+                            coastline::StepConsoleCredits(RACE_STEP);
+                            leaveDemo = false;
+                        }
+                        if (!creditsRunning) {
+                            raceView.reset();
+                            mainMenu->FinishCredits();
+                            frontEnd = FrontEnd::MainMenu;
+                        }
                     }
                     bool startRace = false;
+                    bool startCreditsRace = false;
                     if (frontEnd == FrontEnd::Intro) {
                         sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
                         intro->Draw(*sceneRenderer);
-                    } else if (frontEnd == FrontEnd::AttractDemo || frontEnd == FrontEnd::Race) {
+                    } else if (frontEnd == FrontEnd::AttractDemo || frontEnd == FrontEnd::Race ||
+                               frontEnd == FrontEnd::Credits) {
                         sceneRenderer->Begin(raceView->ClearColor());
                         // The frame is raceTime into the step after the last snapshot.
                         raceView->Draw(*sceneRenderer, raceTime / RACE_STEP);
@@ -1441,6 +1477,7 @@ int main(int argc, char *argv[]) {
                             frontEnd = FrontEnd::Intro;
                         }
                         startRace = end == coastline::MenusEnd::Race;
+                        startCreditsRace = end == coastline::MenusEnd::Credits;
                     }
                     // The HUD of a race and of the attract demo draws the rate itself.
                     if (g_bShowFpsCounter && frameRateText &&
@@ -1448,6 +1485,14 @@ int main(int argc, char *argv[]) {
                         DrawFrameRate(*sceneRenderer, *frameRateText);
                     }
                     sceneRenderer->End(framePath ? &*framePath : nullptr);
+                    // The credits play under the music of the menus.
+                    if (startCreditsRace) {
+                        if (startCredits()) {
+                            frontEnd = FrontEnd::Credits;
+                        } else {
+                            mainMenu->FinishCredits();
+                        }
+                    }
                     if (startRace) {
                         // The music of the menus stops when the race starts, and the race plays
                         // its own. The first step loads the race and with it the track and the
