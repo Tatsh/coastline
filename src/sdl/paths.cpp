@@ -1,7 +1,10 @@
 #include "paths.h"
 
 #include <cstdlib>
+#include <fstream>
+#include <functional>
 #include <set>
+#include <string>
 #include <system_error>
 
 #ifdef _WIN32
@@ -97,6 +100,44 @@ bool LayerDirectory(const std::filesystem::path &base,
     return true;
 }
 
+// The file of a layered directory that records the stamp of the packs it was made from.
+constexpr const char *LAYER_STAMP = ".layer-stamp";
+
+// A hash of the path and the write time of every entry of both trees, or nothing when a tree
+// cannot be read. Adding, removing, or writing an entry changes it.
+std::optional<std::string> LayerStamp(const std::filesystem::path &base,
+                                      const std::filesystem::path &pack) {
+    std::set<std::string> lines;
+    for (const auto *tree : {&base, &pack}) {
+        std::error_code error;
+        std::filesystem::recursive_directory_iterator entry(*tree, error);
+        for (; !error && entry != std::filesystem::recursive_directory_iterator();
+             entry.increment(error)) {
+            auto time = entry->last_write_time(error);
+            if (error) {
+                return std::nullopt;
+            }
+            lines.insert(entry->path().string() + '\t' +
+                         std::to_string(time.time_since_epoch().count()));
+        }
+        if (error) {
+            return std::nullopt;
+        }
+    }
+    std::string listing;
+    for (const auto &line : lines) {
+        listing += line + '\n';
+    }
+    return std::to_string(std::hash<std::string>{}(listing));
+}
+
+std::string ReadStamp(const std::filesystem::path &path) {
+    std::ifstream in(path);
+    std::string stamp;
+    std::getline(in, stamp);
+    return stamp;
+}
+
 } // namespace
 
 std::filesystem::path PackDirectory(const std::filesystem::path &data, std::string_view pack) {
@@ -114,12 +155,18 @@ std::optional<std::filesystem::path> PackAssets(const std::filesystem::path &dat
     if (pack == DEFAULT_PACK) {
         return directory;
     }
-    // ponytail: the layers are linked again on every start, a few milliseconds for a pack beside
-    // whole directories of the default pack; a stamp of both packs would skip an unchanged layer.
     auto layered = cache / "assets" / pack;
+    auto stampPath = layered / LAYER_STAMP;
+    auto stamp = LayerStamp(DefaultAssets(data), directory);
+    if (stamp && ReadStamp(stampPath) == *stamp) {
+        return layered;
+    }
     std::filesystem::remove_all(layered, error);
     if (!LayerDirectory(DefaultAssets(data), directory, layered)) {
         return std::nullopt;
+    }
+    if (stamp) {
+        std::ofstream(stampPath) << *stamp << '\n';
     }
     return layered;
 }

@@ -73,10 +73,11 @@ std::filesystem::path PackDirectory(const std::filesystem::path &data, std::stri
 
 /**
  * The directory the game reads its assets from with a pack selected. The default pack is read in
- * place. Another pack is layered over the default pack in a directory under @p cache, made again
- * on each call: an entry of the pack replaces the entry of the same name in the default pack, and
- * a directory in both is layered in turn. Each entry is a link to the file or the directory it
- * comes from, or a copy where the file system has no links.
+ * place. Another pack is layered over the default pack in a directory under @p cache. An entry of
+ * the pack replaces the entry of the same name in the default pack, and a directory in both is
+ * layered in turn. Each entry is a link to the file or the directory it comes from, or a copy where
+ * the file system has no links. The directory is made again only when the path or the write time
+ * of an entry of either pack differs from the stamp recorded in it, or the stamp is missing.
  *
  * @param data The data directory of the game.
  * @param cache The cache directory of the game.

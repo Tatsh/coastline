@@ -2,6 +2,7 @@
 // icon file reader, and the volume levels of the SDL game.
 
 #include <algorithm>
+#include <chrono>
 #include <cstdint>
 #include <cstdlib>
 #include <filesystem>
@@ -177,6 +178,27 @@ void CheckPackAssets() {
     Check(boss && !std::filesystem::exists(*boss / "extra.txt"), "the layers are made again");
     Check(ReadText(defaults / "tracks" / "a.png") == "default a",
           "the default pack is not written");
+
+    // A file of the cache alone shows whether a call reuses the layers or makes them again.
+    auto marker = *boss / "marker";
+    WriteText(marker, "");
+    Check(coastline::PackAssets(data, cache, "boss") == boss && std::filesystem::exists(marker),
+          "unchanged packs reuse the layers");
+    WriteText(defaults / "music" / "race.xm", "race");
+    boss = coastline::PackAssets(data, cache, "boss");
+    Check(boss && !std::filesystem::exists(marker) &&
+              ReadText(*boss / "music" / "race.xm") == "race",
+          "a file added to the default pack makes the layers again");
+    WriteText(marker, "");
+    auto bossFile = data / "assets" / "boss" / "tracks" / "a.png";
+    std::filesystem::last_write_time(
+        bossFile, std::filesystem::last_write_time(bossFile) + std::chrono::hours(1));
+    coastline::PackAssets(data, cache, "boss");
+    Check(!std::filesystem::exists(marker), "a file of the pack written makes the layers again");
+    WriteText(marker, "");
+    std::filesystem::remove(*boss / ".layer-stamp");
+    coastline::PackAssets(data, cache, "boss");
+    Check(!std::filesystem::exists(marker), "a missing stamp makes the layers again");
     std::filesystem::remove_all(root);
 }
 
