@@ -55,16 +55,32 @@ public:
      * @param renderer The renderer of the frame, between Begin() and End().
      * @param seconds The time of the frame.
      * @param first The presses of the first controller.
+     * @param secondController Whether a device is bound to the second port.
      * @return Where the menus go.
      */
-    MenusEnd Frame(SceneRenderer &renderer, float seconds, const MenuButtons &first);
+    MenusEnd
+    Frame(SceneRenderer &renderer, float seconds, const MenuButtons &first, bool secondController);
 
 private:
     // The screens of the console, each the routine of the same name.
-    enum class Screen { MainMenu, NotBuilt };
+    enum class Screen {
+        MainMenu,
+        PlayerCountSelect,
+        TrackMenu,
+        CarSelect,
+        DataSaveLoadMenu,
+        OptionsMenu,
+    };
 
     explicit Menus(std::unique_ptr<MenuScreen> screen);
+    void SetCurrentScreen(Screen screen);
     void ProcessMainMenu(SceneRenderer &renderer, float seconds, const MenuButtons &first);
+    bool LoadPlayerCountItems(SceneRenderer &renderer, const std::filesystem::path &release);
+    void TwoControllersPostDraw(SceneRenderer &renderer, int item) const;
+    void ProcessPlayerCountSelect(SceneRenderer &renderer,
+                                  float seconds,
+                                  const MenuButtons &first,
+                                  bool secondController);
 
     std::unique_ptr<MenuScreen> m_screen;
     Screen m_current = Screen::MainMenu;
@@ -76,6 +92,10 @@ private:
     std::vector<MenuItem> m_mainMenuItems;
     int m_mainMenuInitState = 0;
     int m_mainMenuSelection = 0;
+
+    std::vector<MenuItem> m_playerCountItems;
+    int m_playerCountSelectState = 0;
+    int m_playerCountSelection = 0;
 };
 
 } // namespace coastline

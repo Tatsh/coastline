@@ -885,6 +885,7 @@ placedvel
 playbacklifetime
 playbacksmoothing
 playercontrol
+playercount
 playerinput
 playerlost
 playerready

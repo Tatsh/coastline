@@ -1,5 +1,7 @@
 #include "menus.h"
 
+#include <SDL3/SDL.h>
+
 namespace coastline {
 
 Menus::Menus(std::unique_ptr<MenuScreen> screen) : m_screen(std::move(screen)) {
@@ -11,16 +13,31 @@ void Menus::Restart() {
     m_current = Screen::MainMenu;
 }
 
-MenusEnd Menus::Frame(SceneRenderer &renderer, float seconds, const MenuButtons &first) {
-    m_end = MenusEnd::Running;
-    if (m_current == Screen::NotBuilt) {
-        m_current = Screen::MainMenu;
+void Menus::SetCurrentScreen(Screen screen) {
+    // ponytail: a screen not built yet returns to the main menu on the item chosen.
+    constexpr const char *NOT_BUILT[] = {
+        nullptr, nullptr, "track", "car select", "data save and load", "options"};
+    const char *name = NOT_BUILT[static_cast<int>(screen)];
+    if (name != nullptr) {
+        SDL_Log("The %s screen is not built yet.", name);
+        screen = Screen::MainMenu;
     }
+    m_current = screen;
+}
+
+MenusEnd Menus::Frame(SceneRenderer &renderer,
+                      float seconds,
+                      const MenuButtons &first,
+                      bool secondController) {
+    m_end = MenusEnd::Running;
     switch (m_current) {
     case Screen::MainMenu:
         ProcessMainMenu(renderer, seconds, first);
         break;
-    case Screen::NotBuilt:
+    case Screen::PlayerCountSelect:
+        ProcessPlayerCountSelect(renderer, seconds, first, secondController);
+        break;
+    default:
         break;
     }
     return m_end;

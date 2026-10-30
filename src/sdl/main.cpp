@@ -653,7 +653,7 @@ int main(int argc, char *argv[]) {
                             .choose = (pressed & CHOOSE) != 0,
                             .back = (pressed & coastline::BUTTON_B) != 0,
                             .held = held != 0};
-                        if (mainMenu->Frame(*sceneRenderer, seconds, buttons) ==
+                        if (mainMenu->Frame(*sceneRenderer, seconds, buttons, ports[1].connected) ==
                             coastline::MenusEnd::Splash) {
                             intro->Restart();
                             frontEnd = FrontEnd::Intro;

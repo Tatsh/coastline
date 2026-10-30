@@ -182,6 +182,7 @@ add_library(
   n64model.cpp
   paths.cpp
   pending.cpp
+  playerselect.cpp
   ptr32.cpp
   racedemo.cpp
   raceinput.cpp

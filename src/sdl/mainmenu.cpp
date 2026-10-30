@@ -1,7 +1,5 @@
 #include <array>
 
-#include <SDL3/SDL.h>
-
 #include "menus.h"
 
 namespace coastline {
@@ -37,6 +35,9 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer, const std::filesyste
     }
     std::unique_ptr<Menus> menus(new Menus(std::move(screen)));
     menus->m_mainMenuItems = std::move(*main);
+    if (!menus->LoadPlayerCountItems(renderer, release)) {
+        return nullptr;
+    }
     return menus;
 }
 
@@ -67,23 +68,28 @@ void Menus::ProcessMainMenu(SceneRenderer &renderer, float seconds, const MenuBu
         case MAIN_MENU_ARCADE:
             m_numLocalPlayers = 2;
             m_gameMode = GameMode::Arcade;
+            SetCurrentScreen(Screen::PlayerCountSelect);
             break;
         case MAIN_MENU_PRACTICE:
             m_numLocalPlayers = 2;
             m_gameMode = GameMode::Practice;
+            SetCurrentScreen(Screen::PlayerCountSelect);
             break;
         case MAIN_MENU_PAINT_SHOP:
             m_paintMode = true;
             m_numLocalPlayers = 1;
+            SetCurrentScreen(Screen::CarSelect);
+            break;
+        case MAIN_MENU_LOAD_SAVE:
+            SetCurrentScreen(Screen::DataSaveLoadMenu);
+            break;
+        case MAIN_MENU_OPTIONS:
+            SetCurrentScreen(Screen::OptionsMenu);
             break;
         default:
+            SetCurrentScreen(Screen::TrackMenu);
             break;
         }
-        // ponytail: the screens after the main menu are not built yet, and the menu shows again
-        // on the item chosen.
-        SDL_Log("The %s screen is not built yet.",
-                m_mainMenuItems[static_cast<std::size_t>(m_mainMenuSelection)].name.c_str());
-        m_current = Screen::NotBuilt;
         m_mainMenuInitState = -1;
     } else if (result == MenuResult::Cancelled) {
         m_end = MenusEnd::Splash;
