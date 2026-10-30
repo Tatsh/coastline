@@ -15,6 +15,7 @@
 #include "common/system.h"
 #include "common/trackskidmarks.h"
 #include "common/vehicledeform.h"
+#include "enginetextures.h"
 
 unsigned char g_abDaySkyTexture[2048];
 int g_abFrameSnapshotInUse[FRAME_SNAPSHOT_COUNT];
@@ -69,32 +70,54 @@ unsigned g_dwHudOverlayTextureId;
 unsigned g_dwParticleTextureId;
 unsigned g_dwTireTrailTextureId;
 unsigned g_dwVehicleEnvMapTextureId;
-// The renderer of the SDL game draws the race from the converted models and textures, and the
-// hooks of the renderers of the Windows libraries do nothing.
+// The renderer of the SDL game draws the race from the converted models and textures. The hooks
+// of the renderers of the Windows libraries keep the 8-bit colour-indexed images of the engine,
+// the dashboards of the cars, as texels for the SDL game, and otherwise do nothing.
+constexpr int IMAGE_SIZE_8 = 1;
+constexpr int IMAGE_FORMAT_CI = 2;
 decltype(g_pfnAliasTextureEntrySurface) g_pfnAliasTextureEntrySurface = [](int, int) {};
-decltype(g_pfnCreateTextureFromN64Image) g_pfnCreateTextureFromN64Image = [](const unsigned char *,
-                                                                             const unsigned char *,
-                                                                             int,
-                                                                             int,
-                                                                             int,
-                                                                             int,
-                                                                             int,
-                                                                             int,
-                                                                             int,
-                                                                             int,
-                                                                             int,
-                                                                             int,
-                                                                             int,
-                                                                             int,
-                                                                             int) -> unsigned {
-    return 0;
+decltype(g_pfnCreateTextureFromN64Image) g_pfnCreateTextureFromN64Image =
+    [](const unsigned char *image,
+       const unsigned char *palette,
+       int width,
+       int height,
+       int lineBytes,
+       int size,
+       int format,
+       int,
+       int,
+       int,
+       int,
+       int,
+       int,
+       int,
+       int) -> unsigned {
+    if (size != IMAGE_SIZE_8 || format != IMAGE_FORMAT_CI) {
+        return 0;
+    }
+    return coastline::CreateEngineTexture(image, palette, width, height, lineBytes);
 };
 decltype(g_pfnDecodeN64TextureToPixelBuffer) g_pfnDecodeN64TextureToPixelBuffer =
-    [](void *, const unsigned char *, const unsigned char *, int, int, int, int, int) { return 0; };
+    [](void *destination,
+       const unsigned char *image,
+       const unsigned char *palette,
+       int width,
+       int height,
+       int lineBytes,
+       int size,
+       int format) {
+        if (size != IMAGE_SIZE_8 || format != IMAGE_FORMAT_CI) {
+            return 0;
+        }
+        return coastline::DecodeEngineTexture(
+            destination, image, palette, width, height, lineBytes);
+    };
 decltype(g_pfnInitializeTextureSubsystem) g_pfnInitializeTextureSubsystem = [] {};
 decltype(g_pfnRenderBackendInit) g_pfnRenderBackendInit = [] {};
 decltype(g_pfnRenderBackendShutdown) g_pfnRenderBackendShutdown = [] {};
 decltype(g_pfnRenderBackendSubmitDisplayList) g_pfnRenderBackendSubmitDisplayList =
     [](GbiCommand *) {};
 decltype(g_pfnRenderBackendUpdateFog) g_pfnRenderBackendUpdateFog = [] {};
-decltype(g_pfnShutdownTextureSubsystem) g_pfnShutdownTextureSubsystem = [] {};
+decltype(g_pfnShutdownTextureSubsystem) g_pfnShutdownTextureSubsystem = [] {
+    coastline::ClearEngineTextures();
+};

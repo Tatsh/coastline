@@ -12,10 +12,12 @@
 
 #include "common/assetnames.h"
 #include "common/camera.h"
+#include "common/convertedvertex.h"
 #include "common/displaylistptr.h"
 #include "common/effects.h"
 #include "common/fade.h"
 #include "common/game.h"
+#include "common/gbicommand.h"
 #include "common/hud.h"
 #include "common/hudassets.h"
 #include "common/hudcanvas.h"
@@ -50,6 +52,7 @@
 #include "common/vehiclerender.h"
 #include "common/visgrid.h"
 #include "common/weather.h"
+#include "enginetextures.h"
 #include "frontend.h"
 #include "gpu.h"
 #include "menutext.h"
@@ -259,11 +262,102 @@ std::array<ViewportRect, 2> HudViews(const HudCanvas &hud) {
     return views;
 }
 
+// The textures of the engine the HUD draws, by their entry, each with the version of its texels.
+using HudTextures = std::map<unsigned, std::pair<unsigned, std::unique_ptr<RenderTexture>>>;
+
+// The commands of the display list the HUD writes that RenderDashboardGauges() draws with.
+constexpr unsigned GBI_OP_SET_TEXTURE_ENTRY = 0xdc;
+constexpr unsigned GBI_OP_LOAD_TEXTURE_ENTRY = 0xdd;
+constexpr unsigned GBI_OP_TEXTURE_RECTANGLE = 0xe3;
+
+// The commands of RenderDashboardGauges(), drawn as BRD3D draws them on the canvas of the HUD: the
+// face and the gear of the dashboard as rectangles of their textures, a texel of an alpha below a
+// half drawing nothing, and the needle of the tachometer in the colour of its corners, its places
+// counted up from the bottom of the canvas.
+void DrawHudCommands(SceneRenderer &renderer,
+                     HudTextures &textures,
+                     std::span<const GbiCommand> commands,
+                     const HudCanvas &hud) {
+    auto texture = [&](unsigned entry) -> const RenderTexture * {
+        const EngineTexture *source = FindEngineTexture(entry);
+        if (source == nullptr || source->rgba.empty()) {
+            return nullptr;
+        }
+        auto &cached = textures[entry];
+        if (!cached.second || cached.first != source->version) {
+            cached = {source->version,
+                      RenderTexture::FromTexels(
+                          renderer, source->width, source->height, source->rgba, false, false)};
+        }
+        return cached.second.get();
+    };
+    unsigned entry = 0;
+    const ConvertedModelVertex *vertices = nullptr;
+    unsigned firstVertex = 0;
+    unsigned vertexCount = 0;
+    for (const GbiCommand &command : commands) {
+        unsigned opcode = command.w0 >> 24;
+        if (opcode == GBI_OP_SET_TEXTURE_ENTRY) {
+            entry = command.w0 & 0xffffff;
+        } else if (opcode == GBI_OP_LOAD_TEXTURE_ENTRY) {
+            const void *colors = command.pData;
+            LoadEngineTexture(command.w0 & 0xffffff, static_cast<const unsigned char *>(colors));
+        } else if (opcode == GBI_OP_TEXTURE_RECTANGLE) {
+            const RenderTexture *image = texture(entry);
+            if (image == nullptr) {
+                continue;
+            }
+            auto left = static_cast<float>(command.w1 >> 12 & 0xfff);
+            auto top = static_cast<float>(command.w1 & 0xfff);
+            auto right = static_cast<float>(command.w0 >> 12 & 0xfff);
+            auto bottom = static_cast<float>(command.w0 & 0xfff);
+            std::array<FlatVertex, 4> corners{{{left, top, 0.0f, 0.0f},
+                                               {right, top, 1.0f, 0.0f},
+                                               {right, bottom, 1.0f, 1.0f},
+                                               {left, bottom, 0.0f, 1.0f}}};
+            FlatMaterial material;
+            material.texel0 = image;
+            material.alphaCut = 0.5f;
+            renderer.DrawQuads(corners, material, hud.projection);
+        } else if (opcode == GBI_OP_VERTEX) {
+            vertices = command.vertexData.pConverted;
+            firstVertex = command.w0 >> 16 & 0xff;
+            vertexCount = command.w0 >> 10 & 0x3f;
+        } else if (opcode == GBI_OP_TRI2 && vertices != nullptr) {
+            std::vector<FlatVertex> corners;
+            for (unsigned word : {command.w0 & 0xffffff, command.w1 & 0xffffff}) {
+                std::array<unsigned, 3> triangle{word >> 16 & 0xff, word >> 8 & 0xff, word & 0xff};
+                // A triangle is drawn as a quad whose last two corners meet.
+                for (unsigned index : {triangle[0], triangle[1], triangle[2], triangle[2]}) {
+                    if (index < firstVertex || index >= firstVertex + vertexCount) {
+                        break;
+                    }
+                    const ConvertedModelVertex &vertex = vertices[index - firstVertex];
+                    corners.push_back(
+                        {vertex.position.x,
+                         static_cast<float>(hud.height) - vertex.position.y,
+                         0.0f,
+                         0.0f,
+                         {static_cast<std::uint8_t>(std::clamp(vertex.color.x, 0.0f, 255.0f)),
+                          static_cast<std::uint8_t>(std::clamp(vertex.color.y, 0.0f, 255.0f)),
+                          static_cast<std::uint8_t>(std::clamp(vertex.color.z, 0.0f, 255.0f)),
+                          0xFF}});
+                }
+            }
+            if (corners.size() % 4 == 0 && !corners.empty()) {
+                renderer.DrawQuads(corners, FlatMaterial{}, hud.projection);
+            }
+        }
+    }
+}
+
 // DrawViewOverlay() of each view and DrawPauseMenu(), from the routines of the race, their text
 // drawn by DrawHudText() on the canvas of the HUD as the patched PC release lays its HUD out on its
-// canvas.
-// ponytail: the gauges of the dashboard go to the scratch list and are not drawn yet.
-void DrawRaceHud(SceneRenderer &renderer, const MenuText &text, const HudCanvas &hud) {
+// canvas, and the gauges of the dashboard they write after the text.
+void DrawRaceHud(SceneRenderer &renderer,
+                 const MenuText &text,
+                 HudTextures &textures,
+                 const HudCanvas &hud) {
     static std::array<GbiCommand, HUD_SCRATCH_COMMANDS> scratch;
     GbiCommand *list = gDisplayListPtr;
     gDisplayListPtr = scratch.data();
@@ -307,6 +401,11 @@ void DrawRaceHud(SceneRenderer &renderer, const MenuText &text, const HudCanvas 
     if (g_dwRacePauseState) {
         DrawPauseMenu(views.data(), g_aRacerSlots, g_aVehicles);
     }
+
+    DrawHudCommands(renderer,
+                    textures,
+                    {scratch.data(), static_cast<std::size_t>(gDisplayListPtr - scratch.data())},
+                    hud);
 
     g_pfnTextSink = nullptr;
     g_dwConfigFramebufferWidth = framebufferWidth;
@@ -429,6 +528,8 @@ struct RaceView::State {
     std::unique_ptr<RenderTexture> nightHighlight;
     // The first texture of the track, the texture entry 0 the skid marks are drawn with.
     std::unique_ptr<RenderTexture> skidTexture;
+    // The textures of the engine the HUD draws, the gauges of the dashboard.
+    HudTextures hudTextures;
 };
 
 namespace {
@@ -1333,7 +1434,7 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     renderer.SetViewport(std::nullopt);
     renderer.SetFog(std::nullopt);
 
-    DrawRaceHud(renderer, *s.text, hud);
+    DrawRaceHud(renderer, *s.text, s.hudTextures, hud);
 
     // The help of the attract demo, from the corner of the canvas of the HUD, under the fade. The
     // console shows nothing over its demo.

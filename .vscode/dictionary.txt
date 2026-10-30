@@ -395,6 +395,7 @@ endforeach
 endfunction
 endlabel
 enginecheck
+enginetextures
 engsound
 entermenuloop
 entersizemove

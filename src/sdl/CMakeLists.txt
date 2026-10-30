@@ -164,6 +164,7 @@ add_library(
   config.cpp
   earsound.cpp
   enginecheck.cpp
+  enginetextures.cpp
   frontend.cpp
   ghostfile.cpp
   gpu.cpp
