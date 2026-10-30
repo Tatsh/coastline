@@ -20,6 +20,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   converts its CD audio to FLAC. `coastline --import-rom` copies a Top Gear Rally cartridge image
   after checking its SHA-1.
 - The SDL game plays the music of the Nintendo 64 release with the console's player and mixers.
+- Quality of life changes in the Windows libraries built with `TGR_ENABLE_PATCHES`:
+  - The first press of the key that resets the car shows a hint, and a second press within half
+    a second resets it.
+  - Screens narrower than 4:3, such as 5:4, retain the horizontal field of view of 4:3 and lay
+    the HUD out 640 units wide. Wider screens retain the vertical field of view as before.
+  - `scene=` on the command line starts a race in place of the menus: `arcade`, `timeattack`,
+    `practice`, `demo`, or `seasonwinner`, with `season=` for the season of the season winner
+    race and the existing `chosenTrack=`, `chosenCar=`, and `chosenWeather=`. Saved data is not
+    written until the game exits.
+  - A season loaded from or saved to a numbered save is written to it after each race, and a
+    time attack run that beats the ghost of the slot last loaded or saved replaces that ghost
+    without the prompt.
 
 ## [0.0.1] - 2026-00-00
 
