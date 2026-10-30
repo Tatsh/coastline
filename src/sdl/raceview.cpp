@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cmath>
+#include <cstring>
 #include <string>
 
 #include <SDL3/SDL.h>
@@ -238,6 +239,9 @@ struct RaceView::State {
     // by name would share them.
     std::unique_ptr<RenderModel> sky;
     std::unique_ptr<RenderModel> car;
+    std::unique_ptr<RenderModel> underside;
+    std::unique_ptr<RenderModel> wheel;
+    std::unique_ptr<RenderModel> snowWheel;
     std::unique_ptr<RenderModel> startLights;
     std::unique_ptr<MenuText> text;
 };
@@ -257,16 +261,26 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     trackFile.replace_extension(".gltf");
     state->track = RenderModel::Load(renderer, trackFile);
     state->sky = RenderModel::Load(renderer, trackFile, "sky");
+    // The car of the nearest level of detail, the one level a single view draws, in its parts:
+    // the body, the underside, and a wheel of each kind, which the race places one by one.
+    // ponytail: each part loads the images of the car again; a model drawn by parts would share
+    // them.
+    auto carFile = defaults / "cars" / (std::string(g_apszCarModelPrefixes[car]) + ".gltf");
     state->car =
-        RenderModel::Load(renderer,
-                          defaults / "cars" / (std::string(g_apszCarModelPrefixes[car]) + ".gltf"),
-                          std::nullopt,
-                          color);
+        RenderModel::Load(renderer, carFile, std::nullopt, color, [](const std::string &n) {
+            return n == "lod0-nearDetail" || n == "lod0-paint" || n == "lod0-textured";
+        });
+    state->underside =
+        RenderModel::Load(renderer, carFile, std::nullopt, color, [](const std::string &n) {
+            return n == "lod0-underside";
+        });
+    state->wheel = RenderModel::Load(renderer, carFile, "lod0-wheel0", color);
+    state->snowWheel = RenderModel::Load(renderer, carFile, "lod0-wheelSnow0", color);
     // The race of the PC release draws its text with the fonts of the cartridge.
     state->text = MenuText::Load(renderer, defaults / "n64" / "usa" / "fonts");
     // The start lights, the model of BossRally.pod.
     state->startLights = RenderModel::Load(renderer, defaults / "BossRally" / "modellights.gltf");
-    if (!state->track || !state->car || !state->text || !state->startLights) {
+    if (!state->track || !state->car || !state->wheel || !state->text || !state->startLights) {
         return nullptr;
     }
     return std::unique_ptr<RaceView>(new RaceView(std::move(state)));
@@ -322,12 +336,24 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     bool inside =
         active == &cameras[VEHICLE_CAMERA_COCKPIT] || active == &cameras[VEHICLE_CAMERA_MIRROR];
     if (!inside || g_dwVehicleCullingDisabled) {
-        renderer.DrawModel(*s.car,
-                           MultiplyMatrices(FrameMatrix(vehicle.GetFrame()), ConsoleSpace()),
-                           viewProjection,
-                           lighting,
-                           std::nullopt,
-                           true);
+        Matrix4 body = MultiplyMatrices(FrameMatrix(vehicle.GetFrame()), ConsoleSpace());
+        renderer.DrawModel(*s.car, body, viewProjection, lighting, std::nullopt, true);
+        // The underside shows only from below the car.
+        const CameraFrame &frame = vehicle.GetFrame();
+        float below = frame.up.x * (frame.position.x - camera->position.x) +
+                      frame.up.y * (frame.position.y - camera->position.y) +
+                      frame.up.z * (frame.position.z - camera->position.z);
+        if (s.underside && below > 0.0f) {
+            renderer.DrawModel(*s.underside, body, viewProjection, lighting, std::nullopt, true);
+        }
+        // RenderWheelModels(): each wheel at the matrix the race gives it, in snow the wheel of
+        // the snow.
+        const RenderModel &wheel = g_dwSnowMode && s.snowWheel ? *s.snowWheel : *s.wheel;
+        for (const auto &rows : vehicle.GetWheelMatrices()) {
+            Matrix4 place{};
+            std::memcpy(place.data(), rows, sizeof(place));
+            renderer.DrawModel(wheel, place, viewProjection, lighting, std::nullopt, true);
+        }
     }
     std::optional<Matrix4> lights = StartLightsMatrix();
     if (lights) {

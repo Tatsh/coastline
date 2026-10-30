@@ -8,6 +8,7 @@
 #include <array>
 #include <cstdint>
 #include <filesystem>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <span>
@@ -77,17 +78,19 @@ public:
      * @param renderer The renderer that draws the model.
      * @param path The glTF document.
      * @param node The name of a node to draw in place of the default scene, such as the sky of a
-     * track, or none for the scene.
+     * track or a wheel of a car, at its origin without its translation, or none for the scene.
      * @param paint The red, green, and blue of the colour of a car, which paints the first two
      * colours of the images of its materials as SetMaterialPaletteColors() paints them, or none
      * for the colours of the images.
+     * @param parts Whether a node of a mesh is drawn, by its name, or none for every node.
      * @return The model, or nothing with the reason logged.
      */
     static std::unique_ptr<RenderModel>
     Load(SceneRenderer &renderer,
          const std::filesystem::path &path,
          std::optional<std::string> node = std::nullopt,
-         std::optional<std::array<std::uint8_t, 3>> paint = std::nullopt);
+         std::optional<std::array<std::uint8_t, 3>> paint = std::nullopt,
+         std::function<bool(const std::string &)> parts = nullptr);
     ~RenderModel();
     RenderModel(const RenderModel &) = delete;
     RenderModel &operator=(const RenderModel &) = delete;

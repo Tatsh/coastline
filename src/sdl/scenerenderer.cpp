@@ -653,7 +653,8 @@ std::optional<MorphPose> PoseAtTime(const VertexAnimationInfo &animation, float 
 std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
                                                const std::filesystem::path &path,
                                                std::optional<std::string> node,
-                                               std::optional<std::array<std::uint8_t, 3>> paint) {
+                                               std::optional<std::array<std::uint8_t, 3>> paint,
+                                               std::function<bool(const std::string &)> parts) {
     auto state = std::make_unique<State>();
     state->device = renderer.m_state->device;
     SDL_GPUDevice *device = state->device;
@@ -855,7 +856,7 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
     auto visit = [&](auto &self, std::size_t index, const Matrix4 &parent) -> void {
         const auto &node = document["nodes"].at(index);
         Matrix4 matrix = MultiplyMatrices(parent, NodeMatrix(node));
-        if (node.contains("mesh")) {
+        if (node.contains("mesh") && (!parts || parts(node.value("name", "")))) {
             std::size_t mesh = node["mesh"].get<std::size_t>();
             std::optional<Lighting> lighting;
             if (node.contains("extras") && node["extras"].contains("coastlineInstance")) {
@@ -879,7 +880,16 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
         const auto &nodes = document["nodes"];
         for (std::size_t index = 0; index < nodes.size(); ++index) {
             if (nodes[index].value("name", "") == *node) {
+                // The node draws at its origin, for the caller to place it: its translation moves
+                // every placement under it, and leaves them.
+                std::size_t before = state->placed.size();
                 visit(visit, index, IDENTITY_MATRIX);
+                Matrix4 own = NodeMatrix(nodes[index]);
+                for (std::size_t p = before; p < state->placed.size(); ++p) {
+                    for (std::size_t axis = 0; axis < 3; ++axis) {
+                        state->placed[p].matrix[12 + axis] -= own[12 + axis];
+                    }
+                }
             }
         }
     } else {
