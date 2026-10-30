@@ -64,15 +64,22 @@ Matrix4 RotationZ(float angle) {
     return {c, s, 0, 0, -s, c, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
 }
 
+std::array<float, 2> ScreenExtent(float aspect) {
+    constexpr float ASPECT_4_3 = 1.3333334f;
+    return {std::min(ASPECT_4_3 / aspect, 1.0f), std::min(aspect / ASPECT_4_3, 1.0f)};
+}
+
 Matrix4 MenuProjection(float aspect, float nearPlane, float farPlane) {
+    constexpr float ASPECT_4_3 = 1.3333334f;
+    auto [across, down] = ScreenExtent(aspect);
     float focal = 1.0f / std::tan(SCREEN_FOV * PI / 360.0f);
     float range = farPlane - nearPlane;
-    Matrix4 projection{focal / aspect,
+    Matrix4 projection{focal / ASPECT_4_3 * across,
                        0,
                        0,
                        0,
                        0,
-                       focal,
+                       focal * down,
                        0,
                        0,
                        0,
@@ -96,8 +103,23 @@ bool WideMenus() {
 }
 
 Matrix4 FlatProjection(float aspect) {
-    float width = (4.0f / 3.0f) / aspect;
-    return {2.0f * width / 640.0f, 0, 0, 0, 0, -2.0f / 480.0f, 0, 0, 0, 0, 1, 0, -width, 1, 0, 1};
+    auto [width, height] = ScreenExtent(aspect);
+    return {2.0f * width / 640.0f,
+            0,
+            0,
+            0,
+            0,
+            -2.0f * height / 480.0f,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            -width,
+            height,
+            0,
+            1};
 }
 
 Matrix4 ScreenModelAt(float x, float y, float z, float angle, float scale) {
@@ -166,11 +188,11 @@ StageCamera(float aspect, const std::array<float, 3> &eye, int x, int y, int wid
                        0,
                        CAMERA_NEAR * CAMERA_FAR / (CAMERA_NEAR - CAMERA_FAR),
                        0};
-    float across = ASPECT_4_3 / aspect;
+    auto [across, down] = ScreenExtent(aspect);
     float left = (static_cast<float>(x) / SCREEN_WIDTH * 2.0f - 1.0f) * across;
     float right = (static_cast<float>(x + width) / SCREEN_WIDTH * 2.0f - 1.0f) * across;
-    float top = 1.0f - static_cast<float>(y) / SCREEN_HEIGHT * 2.0f;
-    float bottom = 1.0f - static_cast<float>(y + height) / SCREEN_HEIGHT * 2.0f;
+    float top = (1.0f - static_cast<float>(y) / SCREEN_HEIGHT * 2.0f) * down;
+    float bottom = (1.0f - static_cast<float>(y + height) / SCREEN_HEIGHT * 2.0f) * down;
     Matrix4 viewport{(right - left) / 2.0f,
                      0,
                      0,
@@ -216,10 +238,12 @@ void AddTriangle(std::vector<FlatVertex> &quads,
 }
 
 SDL_Rect FrameRect(Uint32 frameWidth, Uint32 frameHeight, int x, int y, int width, int height) {
-    float scale = static_cast<float>(frameHeight) / SCREEN_HEIGHT;
+    float scale = std::min(static_cast<float>(frameHeight) / SCREEN_HEIGHT,
+                           static_cast<float>(frameWidth) / SCREEN_WIDTH);
     float offset = (static_cast<float>(frameWidth) - SCREEN_WIDTH * scale) / 2.0f;
+    float top = (static_cast<float>(frameHeight) - SCREEN_HEIGHT * scale) / 2.0f;
     return {static_cast<int>(offset + static_cast<float>(x) * scale),
-            static_cast<int>(static_cast<float>(y) * scale),
+            static_cast<int>(top + static_cast<float>(y) * scale),
             static_cast<int>(static_cast<float>(width) * scale),
             static_cast<int>(static_cast<float>(height) * scale)};
 }

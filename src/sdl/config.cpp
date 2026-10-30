@@ -107,6 +107,16 @@ long GameConfig::GetInteger(std::string_view section, std::string_view key, long
     return error == std::errc() && end == value->data() + value->size() ? result : fallback;
 }
 
+float GameConfig::GetFloat(std::string_view section, std::string_view key, float fallback) const {
+    auto value = Get(section, key);
+    if (!value) {
+        return fallback;
+    }
+    float result = 0.0f;
+    auto [end, error] = std::from_chars(value->data(), value->data() + value->size(), result);
+    return error == std::errc() && end == value->data() + value->size() ? result : fallback;
+}
+
 bool GameConfig::GetBoolean(std::string_view section, std::string_view key, bool fallback) const {
     auto value = Get(section, key);
     if (!value) {

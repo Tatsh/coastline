@@ -9,10 +9,24 @@
 
 namespace coastline {
 
+/** How the frame is scaled to the window. */
+enum class ScaleFilter {
+    Linear,  /*!< Each pixel of the window blends the nearest four of the frame. */
+    Nearest, /*!< Each pixel of the window takes the nearest pixel of the frame. */
+};
+
 /** The options of the window and the GPU device. */
 struct DisplayOptions {
-    int width = 1280;        /*!< The width of the window in pixels. */
-    int height = 720;        /*!< The height of the window in pixels. */
+    int width = 1280;    /*!< The width of the window and of the exclusive mode in pixels. */
+    int height = 720;    /*!< The height of the window and of the exclusive mode in pixels. */
+    int frameWidth = 0;  /*!< The width of the frame in pixels, 0 to follow the window. */
+    int frameHeight = 0; /*!< The height of the frame in pixels, 0 to follow the window. */
+    /** The pixels of the frame for each pixel of the window, when the frame follows the window. */
+    float renderScale = 1.0f;
+    ScaleFilter scaleFilter = ScaleFilter::Linear; /*!< How the frame is scaled to the window. */
+    /** Whether the frame stays at the width and the height, for captures that are the same on
+     * every machine. */
+    bool fixedFrame = false;
     bool fullscreen = false; /*!< Whether the window covers the display. */
     /** Whether the window covers the display in a mode of the width, the height, and the refresh
      * rate, rather than at the desktop mode without borders. */
@@ -117,13 +131,11 @@ public:
     }
 
     /**
-     * @return The pixels of the frame for each point of the operating system on the display of
-     * the window, its density times the scale of its content, or 1 when it is unknown.
+     * Give the frame the size of the window in pixels times the render scale, or the size of the
+     * options, recreating the frame texture when the size changes. A frame of a size the device
+     * cannot create remains at the size before.
      */
-    float DisplayScale() const {
-        float scale = SDL_GetWindowDisplayScale(m_window.get());
-        return scale > 0.0f ? scale : 1.0f;
-    }
+    void UpdateFrameSize();
 
     /** @return The samples of each pixel the options requested, 1 for no anti-aliasing. */
     int Antialias() const {
@@ -144,12 +156,14 @@ private:
 
     GpuWindow() = default;
     bool SaveFrame(SDL_GPUCommandBuffer *commands, const std::filesystem::path &path);
+    bool CreateFrame(Uint32 width, Uint32 height);
 
     std::unique_ptr<SDL_Window, WindowDeleter> m_window;
     std::unique_ptr<SDL_GPUDevice, DeviceDeleter> m_device;
     SDL_GPUTexture *m_frame = nullptr;
     Uint32 m_frameWidth = 0;
     Uint32 m_frameHeight = 0;
+    DisplayOptions m_options;
     int m_antialias = 1;
     bool m_exclusive = false;
     int m_refreshRate = 0;

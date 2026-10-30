@@ -75,4 +75,24 @@ private:
     std::unique_ptr<State> m_state;
 };
 
+/**
+ * The vertical field of view of a view of the race on a frame. A frame at least as wide as 4:3
+ * keeps the vertical field and widens across, and a narrower frame keeps the field across of 4:3
+ * and grows the vertical field. Neither field exceeds 120 degrees, and past the widest field across
+ * the vertical field shrinks.
+ *
+ * @param fovy The vertical field in radians of the view on the 4:3 screen of the PC release, before
+ * the multiplier of SetFieldOfViewScale().
+ * @param aspect The width of the view over its height on the frame.
+ * @return The vertical field in radians.
+ */
+float RaceFieldOfView(float fovy, float aspect);
+
+/**
+ * Multiply the fields of view of the race.
+ *
+ * @param scale The multiplier, 1 for the fields of the PC release. A value of 0 or below is 1.
+ */
+void SetFieldOfViewScale(float scale);
+
 } // namespace coastline

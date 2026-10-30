@@ -411,11 +411,11 @@ Matrix4 PreviewCamera(float aspect, const PaintVector &eye, int x, int y, int wi
                        0,
                        CAMERA_NEAR * CAMERA_FAR / (CAMERA_NEAR - CAMERA_FAR),
                        0};
-    float across = ASPECT_4_3 / aspect;
+    auto [across, down] = ScreenExtent(aspect);
     float left = (static_cast<float>(x) / SCREEN_WIDTH * 2.0f - 1.0f) * across;
     float right = (static_cast<float>(x + width) / SCREEN_WIDTH * 2.0f - 1.0f) * across;
-    float top = 1.0f - static_cast<float>(y) / SCREEN_HEIGHT * 2.0f;
-    float bottom = 1.0f - static_cast<float>(y + height) / SCREEN_HEIGHT * 2.0f;
+    float top = (1.0f - static_cast<float>(y) / SCREEN_HEIGHT * 2.0f) * down;
+    float bottom = (1.0f - static_cast<float>(y + height) / SCREEN_HEIGHT * 2.0f) * down;
     Matrix4 viewport{(right - left) / 2.0f,
                      0,
                      0,

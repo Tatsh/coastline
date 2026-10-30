@@ -47,8 +47,7 @@ SupportedPresentMode(SDL_GPUDevice *device, SDL_Window *window, SDL_GPUPresentMo
 
 std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOptions &options) {
     std::unique_ptr<GpuWindow> result(new GpuWindow());
-    result->m_frameWidth = static_cast<Uint32>(options.width);
-    result->m_frameHeight = static_cast<Uint32>(options.height);
+    result->m_options = options;
     result->m_exclusive = options.exclusive;
     result->m_refreshRate = options.refreshRate;
     // The window shows once it covers the display, at the mode of the options.
@@ -111,21 +110,61 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
             PresentModeName(presentMode),
             result->m_pacedToRefresh ? " at the refresh rate of the display" : "");
     result->m_antialias = options.antialias;
-    SDL_GPUTextureCreateInfo frame{};
-    frame.type = SDL_GPU_TEXTURETYPE_2D;
-    frame.format = FRAME_FORMAT;
-    frame.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER;
-    frame.width = result->m_frameWidth;
-    frame.height = result->m_frameHeight;
-    frame.layer_count_or_depth = 1;
-    frame.num_levels = 1;
-    result->m_frame = SDL_CreateGPUTexture(result->m_device.get(), &frame);
+    result->UpdateFrameSize();
     if (result->m_frame == nullptr) {
-        SDL_LogError(SDL_LOG_CATEGORY_GPU, "The frame texture was not created: %s", SDL_GetError());
         return nullptr;
     }
     SDL_Log("Drawing with the %s GPU driver.", SDL_GetGPUDeviceDriver(result->m_device.get()));
     return result;
+}
+
+bool GpuWindow::CreateFrame(Uint32 width, Uint32 height) {
+    SDL_GPUTextureCreateInfo info{};
+    info.type = SDL_GPU_TEXTURETYPE_2D;
+    info.format = FRAME_FORMAT;
+    info.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER;
+    info.width = width;
+    info.height = height;
+    info.layer_count_or_depth = 1;
+    info.num_levels = 1;
+    SDL_GPUTexture *frame = SDL_CreateGPUTexture(m_device.get(), &info);
+    if (frame == nullptr) {
+        SDL_LogError(SDL_LOG_CATEGORY_GPU,
+                     "The frame texture of %u by %u was not created: %s",
+                     width,
+                     height,
+                     SDL_GetError());
+        return false;
+    }
+    // The device releases the texture before once the frames that draw into it are done.
+    if (m_frame != nullptr) {
+        SDL_ReleaseGPUTexture(m_device.get(), m_frame);
+    }
+    m_frame = frame;
+    m_frameWidth = width;
+    m_frameHeight = height;
+    SDL_Log("Drawing frames of %u by %u.", width, height);
+    return true;
+}
+
+void GpuWindow::UpdateFrameSize() {
+    // The largest texture every driver of SDL creates.
+    constexpr int LARGEST = 16384;
+    int width = m_options.width;
+    int height = m_options.height;
+    if (m_options.frameWidth > 0 && m_options.frameHeight > 0) {
+        width = m_options.frameWidth;
+        height = m_options.frameHeight;
+    } else if (!m_options.fixedFrame &&
+               SDL_GetWindowSizeInPixels(m_window.get(), &width, &height)) {
+        width = static_cast<int>(static_cast<float>(width) * m_options.renderScale + 0.5f);
+        height = static_cast<int>(static_cast<float>(height) * m_options.renderScale + 0.5f);
+    }
+    auto wantedWidth = static_cast<Uint32>(std::clamp(width, 1, LARGEST));
+    auto wantedHeight = static_cast<Uint32>(std::clamp(height, 1, LARGEST));
+    if (m_frame == nullptr || wantedWidth != m_frameWidth || wantedHeight != m_frameHeight) {
+        CreateFrame(wantedWidth, wantedHeight);
+    }
 }
 
 GpuWindow::~GpuWindow() {
@@ -159,18 +198,18 @@ bool GpuWindow::SetFullscreen(bool fullscreen) {
         const SDL_DisplayMode *mode = nullptr;
         if (m_exclusive) {
             if (SDL_GetClosestFullscreenDisplayMode(SDL_GetDisplayForWindow(m_window.get()),
-                                                    static_cast<int>(m_frameWidth),
-                                                    static_cast<int>(m_frameHeight),
+                                                    m_options.width,
+                                                    m_options.height,
                                                     static_cast<float>(m_refreshRate),
                                                     false,
                                                     &closest)) {
                 mode = &closest;
             } else {
                 SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
-                            "The display has no mode of %u by %u, and the full screen is at the "
+                            "The display has no mode of %d by %d, and the full screen is at the "
                             "desktop mode: %s",
-                            m_frameWidth,
-                            m_frameHeight,
+                            m_options.width,
+                            m_options.height,
                             SDL_GetError());
             }
         }
@@ -234,7 +273,8 @@ bool GpuWindow::Present(SDL_GPUCommandBuffer *commands, const std::filesystem::p
         blit.destination.h = fittedHeight;
         blit.load_op = SDL_GPU_LOADOP_CLEAR;
         blit.clear_color = SDL_FColor{0.0f, 0.0f, 0.0f, 1.0f};
-        blit.filter = SDL_GPU_FILTER_LINEAR;
+        blit.filter = m_options.scaleFilter == ScaleFilter::Nearest ? SDL_GPU_FILTER_NEAREST :
+                                                                      SDL_GPU_FILTER_LINEAR;
         SDL_BlitGPUTexture(commands, &blit);
     }
     if (capture != nullptr) {

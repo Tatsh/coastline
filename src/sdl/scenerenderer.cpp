@@ -561,6 +561,8 @@ struct SceneRenderer::State {
     SDL_GPUShader *fragmentShader = nullptr;
     std::map<PipelineKey, SDL_GPUGraphicsPipeline *> pipelines;
     SDL_GPUTexture *depth = nullptr;
+    Uint32 depthWidth = 0;
+    Uint32 depthHeight = 0;
     SDL_GPUTextureFormat depthFormat = SDL_GPU_TEXTUREFORMAT_D16_UNORM;
     SDL_GPUTexture *white = nullptr;
     SDL_GPUSampler *plainSampler = nullptr;
@@ -574,6 +576,34 @@ struct SceneRenderer::State {
     std::array<float, 4> clear{};
     std::vector<std::variant<ModelDraw, QuadDraw>> draws;
     std::vector<Vertex> flat;
+
+    // Give the depth the size of the frame, which follows the window.
+    bool MatchFrame() {
+        if (depth != nullptr && depthWidth == window->FrameWidth() &&
+            depthHeight == window->FrameHeight()) {
+            return true;
+        }
+        SDL_GPUTextureCreateInfo info{};
+        info.type = SDL_GPU_TEXTURETYPE_2D;
+        info.format = depthFormat;
+        info.usage = SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET;
+        info.width = window->FrameWidth();
+        info.height = window->FrameHeight();
+        info.layer_count_or_depth = 1;
+        info.num_levels = 1;
+        SDL_GPUTexture *created = SDL_CreateGPUTexture(device, &info);
+        if (created == nullptr) {
+            SDL_LogError(SDL_LOG_CATEGORY_GPU, "The depth was not created: %s", SDL_GetError());
+            return false;
+        }
+        if (depth != nullptr) {
+            SDL_ReleaseGPUTexture(device, depth);
+        }
+        depth = created;
+        depthWidth = info.width;
+        depthHeight = info.height;
+        return true;
+    }
 
     ~State() {
         if (device == nullptr) {
@@ -1158,15 +1188,7 @@ std::unique_ptr<SceneRenderer> SceneRenderer::Create(GpuWindow &window) {
             break;
         }
     }
-    SDL_GPUTextureCreateInfo depth{};
-    depth.type = SDL_GPU_TEXTURETYPE_2D;
-    depth.format = state->depthFormat;
-    depth.usage = SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET;
-    depth.width = window.FrameWidth();
-    depth.height = window.FrameHeight();
-    depth.layer_count_or_depth = 1;
-    depth.num_levels = 1;
-    state->depth = SDL_CreateGPUTexture(device, &depth);
+    state->MatchFrame();
     Uploader upload(device);
     constexpr std::array<std::uint8_t, 4> WHITE{255, 255, 255, 255};
     state->white = upload.Texture(1, 1, WHITE);
@@ -1346,6 +1368,7 @@ void SceneRenderer::DrawQuads(std::span<const FlatVertex> corners,
 
 void SceneRenderer::End(const std::filesystem::path *capture) {
     State &s = *m_state;
+    s.MatchFrame();
     SDL_GPUCommandBuffer *commands = SDL_AcquireGPUCommandBuffer(s.device);
 
     // The vertices of the flat draws, and the indices of as many quads, uploaded before the frame.

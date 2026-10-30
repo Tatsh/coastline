@@ -83,6 +83,14 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
                (present != "vsync" && !config.GetBoolean("Video", "VSync", true))) {
         options.presentMode = SDL_GPU_PRESENTMODE_IMMEDIATE;
     }
+    options.frameWidth = static_cast<int>(config.GetInteger("Video", "InternalWidth", 0));
+    options.frameHeight = static_cast<int>(config.GetInteger("Video", "InternalHeight", 0));
+    options.renderScale = std::clamp(config.GetFloat("Video", "RenderScale", 1.0f), 0.25f, 4.0f);
+    if (config.Get("Video", "ScaleFilter") == "nearest") {
+        options.scaleFilter = coastline::ScaleFilter::Nearest;
+    }
+    // A capture is drawn at Width by Height, for the same frames on every machine.
+    options.fixedFrame = parser.is_used("--screenshot");
     options.antialias =
         static_cast<int>(config.GetInteger("Video", "Antialias", options.antialias));
     if (auto antialias = parser.present<int>("--antialias")) {
@@ -467,16 +475,23 @@ struct MouseState {
 
 // The place of the mouse in the window on the 640 by 480 screen, centred at 4:3 in the window as
 // the flat draws of the menus are.
-std::array<int, 2> MouseOnScreen(SDL_Window *window, float x, float y) {
+std::array<int, 2> MouseOnScreen(const coastline::GpuWindow &window, float x, float y) {
     int width = 1;
     int height = 1;
-    SDL_GetWindowSize(window, &width, &height);
-    width = std::max(width, 1);
-    height = std::max(height, 1);
-    float across = (4.0f / 3.0f) / (static_cast<float>(width) / static_cast<float>(height));
-    float clipX = x / static_cast<float>(width) * 2.0f - 1.0f;
-    return {static_cast<int>((clipX + across) * 640.0f / (2.0f * across)),
-            static_cast<int>(y / static_cast<float>(height) * 480.0f)};
+    SDL_GetWindowSize(window.Window(), &width, &height);
+    auto windowWidth = static_cast<float>(std::max(width, 1));
+    auto windowHeight = static_cast<float>(std::max(height, 1));
+    // The frame is fitted to the window as Present() fits it, and the screen to the frame.
+    float frameAspect = static_cast<float>(window.FrameWidth()) /
+                        static_cast<float>(std::max(window.FrameHeight(), 1u));
+    float fit = std::min(windowWidth / frameAspect, windowHeight);
+    float frameX = (x - (windowWidth - fit * frameAspect) / 2.0f) / (fit * frameAspect);
+    float frameY = (y - (windowHeight - fit) / 2.0f) / fit;
+    auto [across, down] = coastline::ScreenExtent(frameAspect);
+    float clipX = frameX * 2.0f - 1.0f;
+    float clipY = frameY * 2.0f - 1.0f;
+    return {static_cast<int>((clipX / across + 1.0f) * 320.0f),
+            static_cast<int>((clipY / down + 1.0f) * 240.0f)};
 }
 
 // The input of the paint shop from the first controller and the mouse: the buttons of the mouse
@@ -834,6 +849,11 @@ int main(int argc, char *argv[]) {
                                               {"Video", "RefreshRate", "0"},
                                               {"Video", "VSync", "1"},
                                               {"Video", "FrameRateLimit", "0"},
+                                              {"Video", "InternalWidth", "0"},
+                                              {"Video", "InternalHeight", "0"},
+                                              {"Video", "RenderScale", "1"},
+                                              {"Video", "ScaleFilter", "linear"},
+                                              {"Video", "FieldOfView", "1"},
                                               {"Video", "GpuDriver", ""},
                                               {"Video", "WideMenus", "0"},
                                               {"Game", "PlayMusic", "1"},
@@ -866,6 +886,7 @@ int main(int argc, char *argv[]) {
         } else if (auto window = coastline::GpuWindow::Create("Coastline",
                                                               DisplayOptionsFrom(config, parser))) {
             coastline::SetWideMenus(config.GetBoolean("Video", "WideMenus", false));
+            coastline::SetFieldOfViewScale(config.GetFloat("Video", "FieldOfView", 1.0f));
             coastline::InputBindings input;
             coastline::N64Audio audio;
             bool playMusic = config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice();
@@ -1023,7 +1044,7 @@ int main(int argc, char *argv[]) {
                     float x = 0.0f;
                     float y = 0.0f;
                     mouse.buttons = SDL_GetMouseState(&x, &y);
-                    mouse.at = MouseOnScreen(window->Window(), x, y);
+                    mouse.at = MouseOnScreen(*window, x, y);
                 } else {
                     mouse.buttons = 0;
                     for (const ScriptedMouse &move : mouseMoves) {
@@ -1060,6 +1081,7 @@ int main(int argc, char *argv[]) {
                                                              screenshot->extension().string());
                 }
                 if (intro) {
+                    window->UpdateFrameSize();
                     Uint64 now = SDL_GetTicksNS();
                     float seconds = fixedStep ?
                                         1.0f / 60.0f :

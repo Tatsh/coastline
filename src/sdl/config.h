@@ -57,6 +57,14 @@ public:
     /**
      * @param section The section name.
      * @param key The key name.
+     * @param fallback The value for an absent or malformed key.
+     * @return The value as a number with a fraction.
+     */
+    float GetFloat(std::string_view section, std::string_view key, float fallback) const;
+
+    /**
+     * @param section The section name.
+     * @param key The key name.
      * @param fallback The value for an absent key.
      * @return Whether the value is a non-zero number, true, yes, or on.
      */

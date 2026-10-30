@@ -175,6 +175,23 @@ The `[Video]` section of `BossRally.ini` sets up the display.
 | `RefreshRate`    | The refresh rate of the exclusive mode in hertz, or `0` for the rate of the desktop.                                                          |
 | `VSync`          | `vsync` or `1` waits for the vertical blank. `mailbox` presents without tearing and without waiting, and `immediate` or `0` presents at once. |
 | `FrameRateLimit` | The most frames drawn each second, or `0` for no limit.                                                                                       |
+| `InternalWidth`  | The width of the frame the game draws in pixels, or `0`, the default, for the width of the window.                                            |
+| `InternalHeight` | The height of the frame the game draws in pixels, or `0`, the default, for the height of the window.                                          |
+| `RenderScale`    | The pixels of the frame for each pixel of the window, from `0.25` to `4`, when the frame follows the window. The default is `1`.              |
+| `ScaleFilter`    | `linear`, the default, or `nearest`, how the frame is scaled to the window.                                                                   |
+| `FieldOfView`    | The multiplier of the field of view of a race, `1` for that of the PC release.                                                                |
+
+By default the frame follows the size of the window in pixels, and changes with it as the window
+is resized or covers the display. `InternalWidth` and `InternalHeight` set a size of their own,
+which takes the place of the size of the window and of `RenderScale`, and the frame is scaled to
+the window with bars where its shape differs. `Width` and `Height` set the size of the window and
+of the exclusive mode. A run with `--screenshot` draws its frames at `Width` by `Height`, for the
+same captures on every machine.
+
+A race keeps the vertical field of view of the PC release on a frame wider than 4:3 and widens
+across, and keeps the field across of 4:3 on a narrower frame. Neither field exceeds 120 degrees.
+The rear-view mirror keeps its shape and its size against the height of the view. The menus keep
+their 4:3 layout in the middle of the frame, with bars at the sides or at the top and bottom.
 
 A mode of `VSync` the GPU driver does not support falls back to the other mode that does not wait,
 then to `vsync`. `--no-vsync` selects `immediate`. Under Wayland, `vsync` presents to the mailbox

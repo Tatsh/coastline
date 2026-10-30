@@ -28,6 +28,7 @@
 #include "common/model.h"
 #include "common/packedvalue.h"
 #include "common/particlesnapshot.h"
+#include "common/qualityoflife.h"
 #include "common/race.h"
 #include "common/racerender.h"
 #include "common/racerslot.h"
@@ -96,9 +97,34 @@ std::array<float, 3> Vector(const Vec3f &v) {
     return {v.x, v.y, v.z};
 }
 
+// The widest field across and the highest vertical field of a view, 120 degrees.
+constexpr float MAX_FIELD = 2.0943952f;
+
+// The multiplier of the fields of view.
+float g_fieldOfViewScale = 1.0f;
+
+} // namespace
+
+float RaceFieldOfView(float fovy, float aspect) {
+    // A frame at least as wide as 4:3 keeps the vertical field and widens across, and a narrower
+    // frame keeps the field across of 4:3 and grows the vertical field, as GetHorPlusFovY() of the
+    // patched PC release gives them. Past the widest field across, the vertical field shrinks.
+    fovy = GetHorPlusFovY(fovy * g_fieldOfViewScale, aspect, 1.0f);
+    if (2.0f * std::atan(std::tan(fovy * 0.5f) * aspect) > MAX_FIELD) {
+        fovy = 2.0f * std::atan(std::tan(MAX_FIELD * 0.5f) / aspect);
+    }
+    return std::min(fovy, MAX_FIELD);
+}
+
+void SetFieldOfViewScale(float scale) {
+    g_fieldOfViewScale = scale > 0.0f ? scale : 1.0f;
+}
+
+namespace {
+
 // SetupCameraMatrix() of the PC release: guLookAtF() from the camera along its forward axis, and a
-// perspective whose field across the view is a field of view on a 4:3 screen, to a far plane.
-Matrix4 CameraMatrix(const CameraFrame &camera, float fov, float farPlane, float aspect) {
+// perspective of a vertical field, to a far plane.
+Matrix4 CameraMatrix(const CameraFrame &camera, float fovy, float farPlane, float aspect) {
     std::array<float, 3> eye = Vector(camera.position);
     std::array<float, 3> forward = Normalized(Vector(camera.forward));
     std::array<float, 3> side = Normalized(Cross(forward, Vector(camera.up)));
@@ -119,7 +145,6 @@ Matrix4 CameraMatrix(const CameraFrame &camera, float fov, float farPlane, float
                  -Dot(up, eye),
                  Dot(forward, eye),
                  1};
-    float fovy = fov * ASPECT_4_3 / aspect;
     float focal = 1.0f / std::tan(fovy * 0.5f);
     Matrix4 projection{focal / aspect,
                        0,
@@ -160,9 +185,9 @@ Matrix4 FrameMatrix(const CameraFrame &frame) {
             1};
 }
 
-// The canvas the HUD of the race is laid out on: the frame in points of the operating system, so
-// the HUD keeps the size the display scale gives it, from its top left with y down onto the whole
-// frame.
+// The canvas the HUD of the race is laid out on, as GetHudCanvasSize() of the patched PC release
+// sizes it: 480 high, or 640 wide on a frame narrower than 4:3, with the shape of the frame, from
+// its top left with y down onto the whole frame.
 struct HudCanvas {
     int width;
     int height;
@@ -190,9 +215,14 @@ Matrix4 CanvasProjection(int width, int height) {
 }
 
 HudCanvas MakeHudCanvas(const GpuWindow &window) {
-    float scale = window.DisplayScale();
-    int width = std::max(static_cast<int>(static_cast<float>(window.FrameWidth()) / scale), 1);
-    int height = std::max(static_cast<int>(static_cast<float>(window.FrameHeight()) / scale), 1);
+    int width = 0;
+    int height = 0;
+    GetHudCanvasSize(static_cast<int>(window.FrameWidth()),
+                     static_cast<int>(window.FrameHeight()),
+                     &width,
+                     &height);
+    width = std::max(width, 1);
+    height = std::max(height, 1);
     return {width, height, CanvasProjection(width, height)};
 }
 
@@ -1563,24 +1593,51 @@ ViewportRect RearViewMirrorRect(const ViewportRect &view) {
     return mirror;
 }
 
+// The mirror of a view on the frame: its rectangle on the screen of the race, and in pixels of the
+// frame with the shape of that rectangle, and the pixels of the frame for a pixel of the screen.
+struct MirrorPlace {
+    ViewportRect screen;
+    SDL_Rect frame;
+    float scale;
+};
+
+// The mirror of a view keeps its shape and its size against the view as the view has on the
+// screen of the race, scaled by the height of the view on a wider frame and by its width on a
+// narrower one, centred across the view.
+MirrorPlace RearViewMirrorOnFrame(const ViewportRect &view, const GpuWindow &window) {
+    MirrorPlace place{RearViewMirrorRect(view), FrameRect(view, window), 1.0f};
+    SDL_Rect viewPixels = place.frame;
+    place.scale = std::min(static_cast<float>(viewPixels.w) / static_cast<float>(view.width),
+                           static_cast<float>(viewPixels.h) / static_cast<float>(view.height));
+    auto width = static_cast<int>(static_cast<float>(place.screen.width) * place.scale);
+    place.frame = {viewPixels.x + (viewPixels.w - width) / 2,
+                   viewPixels.y +
+                       static_cast<int>(static_cast<float>(place.screen.y - view.y) * place.scale),
+                   width,
+                   static_cast<int>(static_cast<float>(place.screen.height) * place.scale)};
+    return place;
+}
+
 // DrawRdpBorderRect() of BRD3D around the mirror: each of its fill rectangles, from its first to
 // its last pixel, clears the frame to the black of the fill colour in either render mode.
-void DrawRearViewMirrorFrame(SceneRenderer &renderer, const ViewportRect &mirror) {
+void DrawRearViewMirrorFrame(SceneRenderer &renderer, const MirrorPlace &place) {
     GpuWindow &window = renderer.Window();
     auto width = static_cast<int>(window.FrameWidth());
     auto height = static_cast<int>(window.FrameHeight());
+    const ViewportRect &mirror = place.screen;
+    // A pixel of the screen from the mirror on the screen to the mirror on the frame.
+    auto across = [&](int x) {
+        return static_cast<float>(place.frame.x) + static_cast<float>(x - mirror.x) * place.scale;
+    };
+    auto down = [&](int y) {
+        return static_cast<float>(place.frame.y) + static_cast<float>(y - mirror.y) * place.scale;
+    };
     auto fill = [&](int left, int top, int right, int bottom) {
-        ViewportRect screen = mirror;
-        screen.x = left;
-        screen.y = top;
-        screen.width = right + 1 - left;
-        screen.height = bottom + 1 - top;
-        SDL_Rect pixels = FrameRect(screen, window);
         std::array<std::uint8_t, 4> black{0, 0, 0, 0xFF};
-        auto x0 = static_cast<float>(pixels.x);
-        auto y0 = static_cast<float>(pixels.y);
-        auto x1 = static_cast<float>(pixels.x + pixels.w);
-        auto y1 = static_cast<float>(pixels.y + pixels.h);
+        float x0 = across(left);
+        float y0 = down(top);
+        float x1 = across(right + 1);
+        float y1 = down(bottom + 1);
         std::array<FlatVertex, 4> corners{{{x0, y0, 0.0f, 0.0f, black, 0.0f},
                                            {x1, y0, 0.0f, 0.0f, black, 0.0f},
                                            {x1, y1, 0.0f, 0.0f, black, 0.0f},
@@ -1668,7 +1725,8 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
         vehicle.SetActiveCamera(saved);
         renderer.SetViewport(std::nullopt);
         renderer.SetMirrored(g_dwTrackMirrored != 0);
-        DrawRearViewMirrorFrame(renderer, RearViewMirrorRect(g_aViewportRects[index]));
+        DrawRearViewMirrorFrame(renderer,
+                                RearViewMirrorOnFrame(g_aViewportRects[index], renderer.Window()));
     }
     renderer.SetDrawnInOrder(false);
     renderer.SetViewport(std::nullopt);
@@ -1738,17 +1796,17 @@ void RaceView::DrawView(SceneRenderer &renderer,
     // tenths as far, and its depth is not cleared, as ClearZBufferRect() of the PC release is
     // empty.
     if (mirror) {
-        frame = FrameRect(RearViewMirrorRect(g_aViewportRects[index]), window);
+        frame = RearViewMirrorOnFrame(g_aViewportRects[index], window).frame;
         renderer.SetViewport(frame);
     }
     float aspect = static_cast<float>(frame.w) / static_cast<float>(std::max(frame.h, 1));
-    float fov = split ? camera->fov * 0.7f : camera->fov;
     // SetupCameraMatrix() takes the width and the height of the view, or of the mirror, on the
-    // screen of the race. A view keeps the height of that field and widens across a wider frame.
+    // screen of the race, and its field is the vertical field of that shape.
     ViewportRect screen =
         mirror ? RearViewMirrorRect(g_aViewportRects[index]) : g_aViewportRects[index];
-    fov *=
-        aspect * static_cast<float>(screen.height) / static_cast<float>(std::max(screen.width, 1));
+    float fov = (split ? camera->fov * 0.7f : camera->fov) * ASPECT_4_3 *
+                static_cast<float>(screen.height) / static_cast<float>(std::max(screen.width, 1));
+    fov = RaceFieldOfView(fov, aspect);
     float farPlane = split ? CAMERA_FAR * 0.65f : CAMERA_FAR;
     float frustumFar = farPlane;
     if (mirror) {

@@ -100,9 +100,18 @@ Matrix4 RotationX(float angle);
 Matrix4 RotationZ(float angle);
 
 /**
+ * The part of the frame the 4:3 screen of the menus covers, centred: the whole height of a frame
+ * wider than 4:3 and the whole width of a narrower one.
+ *
+ * @param aspect The width of the frame over its height.
+ * @return The width and the height of the screen over those of the frame, each at most 1.
+ */
+std::array<float, 2> ScreenExtent(float aspect);
+
+/**
  * The camera of the menus, which looks at the middle of the 320 by 240 screen from 290 in front
- * of it with a field of 45 degrees, over the whole frame, its height the height of the 4:3
- * screen, to a depth from 0 to 1.
+ * of it with a field of 45 degrees, onto the 4:3 screen centred in the frame, to a depth from 0
+ * to 1.
  *
  * @param aspect The width of the frame over its height.
  * @param nearPlane The nearest distance drawn.
