@@ -1563,10 +1563,10 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
     };
 
     // Each model draws its opaque primitives where it comes, and the blended ones of every model
-    // follow every opaque one. A model drawn in order draws every primitive where it comes, as
-    // BRD3D draws the triangles of a display list. A flat draw comes after the models drawn before
-    // it.
-    enum class Pass { Opaque, Blended, All };
+    // follow every opaque one. A model drawn in order draws its blended primitives straight after
+    // its opaque ones and before the next draw, as DrawModelList() draws the translucent parts of a
+    // model after its opaque ones. A flat draw comes after the models drawn before it.
+    enum class Pass { Opaque, Blended };
     auto drawModel = [&](const ModelDraw &draw, Pass drawn) {
         const RenderModel::State &model = *draw.model->m_state;
         if (!useView(draw.state, draw.scissor)) {
@@ -1644,8 +1644,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                     continue;
                 }
                 // Every part of a ghost waits for the blended draws.
-                if (drawn == Pass::All ||
-                    (primitive.blend || draw.state.ghost) == (drawn == Pass::Blended)) {
+                if ((primitive.blend || draw.state.ghost) == (drawn == Pass::Blended)) {
                     VertexUniforms uniforms = vertexUniforms;
                     uniforms.blend[1] = primitive.textureGen ? 1.0f : 0.0f;
                     // A part with generated coordinates and no texture reflects the sky.
@@ -1686,7 +1685,8 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         const auto *draw = std::get_if<ModelDraw>(&entry);
         if (draw != nullptr && draw->state.inOrder) {
             flushBlended();
-            drawModel(*draw, Pass::All);
+            drawModel(*draw, Pass::Opaque);
+            drawModel(*draw, Pass::Blended);
             continue;
         }
         if (draw != nullptr) {

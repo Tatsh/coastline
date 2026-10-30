@@ -371,9 +371,8 @@ public:
     void SetGhost(bool ghost);
 
     /**
-     * Set whether the models drawn after it draw their translucent parts in their place among the
-     * other parts, as BRD3D draws the triangles of a display list in their order, rather than after
-     * every opaque draw, not from Begin().
+     * Set whether the models drawn after it draw their translucent parts straight after their
+     * opaque parts, before the next draw, rather than after every opaque draw, not from Begin().
      *
      * @param inOrder Whether the models are drawn in order.
      */
