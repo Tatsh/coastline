@@ -477,12 +477,9 @@ constexpr float SPRAY_TEXTURE_T = 32.0f * 64.0f;
 // The lights RenderVehicleModel() gives a car. The sun dims with the distance from the camera at
 // night and is gone in a tunnel, where the ambient light is four fifths. The direction of
 // g_DefaultLights, or at night and in the rain the reverse of the heading of the car of the camera
-// at 120 a unit, is turned by the RSP through the view and the projection the car is drawn with, so
-// that the light follows the camera.
-Lighting CarLighting(const Vehicle &car,
-                     const Vehicle &cameraCar,
-                     const CameraFrame &camera,
-                     const Matrix4 &viewProjection) {
+// at 120 a unit, lies in the space of the track. The forced matrix of the car moves its vertices
+// only, and the lights turn through the matrix of the car.
+Lighting CarLighting(const Vehicle &car, const Vehicle &cameraCar, const CameraFrame &camera) {
     const CameraFrame &frame = car.GetFrame();
     bool tunnel =
         car.GetGroundInstanceCount() != 0 &&
@@ -513,15 +510,9 @@ Lighting CarLighting(const Vehicle &car,
                  static_cast<float>(static_cast<s8>(forward.y * -120.0f)),
                  static_cast<float>(static_cast<s8>(forward.z * -120.0f))};
     }
-    std::array<float, 3> turned{};
-    for (std::size_t row = 0; row < 3; ++row) {
-        for (std::size_t column = 0; column < 3; ++column) {
-            turned[row] += viewProjection[row * 4 + column] * light[column];
-        }
-    }
-    float length = std::hypot(turned[0], turned[1], turned[2]);
+    float length = std::hypot(light[0], light[1], light[2]);
     if (length > 0.0f) {
-        lighting.direction = {turned[0] / length, turned[1] / length, turned[2] / length};
+        lighting.direction = {light[0] / length, light[1] / length, light[2] / length};
     }
     return lighting;
 }
@@ -738,7 +729,7 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
         active == &cameras[VEHICLE_CAMERA_COCKPIT] || active == &cameras[VEHICLE_CAMERA_MIRROR];
     if (!inside || g_dwVehicleCullingDisabled) {
         Matrix4 body = MultiplyMatrices(FrameMatrix(vehicle.GetFrame()), ConsoleSpace());
-        Lighting carLighting = CarLighting(vehicle, vehicle, *camera, viewProjection);
+        Lighting carLighting = CarLighting(vehicle, vehicle, *camera);
         renderer.DrawReflectingModel(
             *s.car,
             body,
