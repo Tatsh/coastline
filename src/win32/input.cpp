@@ -16,6 +16,9 @@
 #include "common/laps.h"
 #include "common/pause.h"
 #include "common/playerinput.h"
+#ifdef ENABLE_PATCHES
+#include "common/qualityoflife.h"
+#endif
 #include "common/rallyconfig.h"
 #include "common/settings.h"
 #include "common/snapshot.h"
@@ -495,6 +498,8 @@ static inline void ReadMouseBindingState(void) {
 #ifdef ENABLE_PATCHES
 // The most milliseconds between the two presses that reset the car.
 #define RESPAWN_DOUBLE_PRESS_MS 500
+// The seconds the hint for the second press is shown, as long as the second press may follow.
+#define RESPAWN_HINT_SECONDS 0.5f
 #endif
 
 static inline int ReadBindingAxisMagnitude(int nBinding) {
@@ -625,14 +630,17 @@ unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration) {
     if (IsInputBindingPressed(16)) {
 #ifdef ENABLE_PATCHES
         // The car is reset by a second press within RESPAWN_DOUBLE_PRESS_MS of the first.
-        static DWORD dwLastRespawnPress;
-        const DWORD dwNow = GetHighResolutionTime();
-        const bool bDoublePress =
-            dwLastRespawnPress != 0 && dwNow - dwLastRespawnPress <= RESPAWN_DOUBLE_PRESS_MS;
-        dwLastRespawnPress = bDoublePress ? 0 : dwNow;
-        if (bDoublePress && !g_dwRacePauseState && g_dwGameMode != GAME_MODE_DEMO &&
+        static unsigned lastRespawnPress;
+        const bool bDoublePress = IsSecondPressWithin(
+            &lastRespawnPress, GetHighResolutionTime(), RESPAWN_DOUBLE_PRESS_MS);
+        if (!g_dwRacePauseState && g_dwGameMode != GAME_MODE_DEMO &&
             g_dwGameMode != GAME_MODE_AFTER_SEASON) {
-            g_bRespawnRequested = 1;
+            if (bDoublePress) {
+                g_bRespawnRequested = 1;
+            } else if (g_bRaceStartReached) {
+                VEHICLE_SET(&(g_aVehicles[0]), SubMessage, "%wwPress again to reset the car");
+                VEHICLE_SET(&(g_aVehicles[0]), SubMessageTime, RESPAWN_HINT_SECONDS);
+            }
         }
 #else
         if (!g_dwRacePauseState && g_dwGameMode != GAME_MODE_DEMO &&

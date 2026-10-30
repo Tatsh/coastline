@@ -94,6 +94,7 @@ coastline_add_test(
   "${_src}/common/racespecials.c"
   "${_src}/common/seasontrack.c"
   "${_src}/common/startlights.c")
+coastline_add_test(qualityoflife "${_src}/common/qualityoflife.c")
 coastline_add_test(racemenu stubs/racemenu.c ${_vecmath} ${_gu} "${_src}/common/modeldraw.c")
 coastline_add_test(
   racers

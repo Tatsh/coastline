@@ -275,6 +275,10 @@ else()
     volumecontrols.c
     wheelrender.c
     PROPERTIES LANGUAGE CXX)
+  if(TGR_ENABLE_PATCHES)
+    # The helpers of the quality of life changes, which only the patched libraries have.
+    target_sources(coastline_common PRIVATE qualityoflife.c)
+  endif()
   if(TGR_PLATFORM STREQUAL "sdl")
     # On a 64-bit processor, the structures read from files and the display lists store their
     # pointers as the 32-bit offsets of common/ptr32.h, and only C++ has them. The SDL game compiles

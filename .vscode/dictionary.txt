@@ -889,6 +889,7 @@ pyinstaller
 pylock
 pyproject
 qnjbdpkwzh
+qualityoflife
 querydragicon
 racecontrols
 racecredits
