@@ -1382,6 +1382,13 @@ void RaceView::DrawView(SceneRenderer &renderer, const FrameSnapshot *snapshot, 
     }
     float aspect = static_cast<float>(frame.w) / static_cast<float>(std::max(frame.h, 1));
     float fov = split ? camera->fov * 0.7f : camera->fov;
+    // A view of a split screen keeps the height of the field of the view on the screen of the race
+    // and widens across a wider frame.
+    if (split) {
+        const ViewportRect &screen = g_aViewportRects[index];
+        fov *= aspect * static_cast<float>(screen.height) /
+               static_cast<float>(std::max(screen.width, 1));
+    }
     float farPlane = split ? CAMERA_FAR * 0.65f : CAMERA_FAR;
     Matrix4 viewProjection = CameraMatrix(*camera, fov, farPlane, aspect);
     // SetViewport() mirrors the view across on a mirrored track, where the steering turns the
