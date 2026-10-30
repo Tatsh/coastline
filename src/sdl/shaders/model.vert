@@ -27,7 +27,8 @@ const int MAX_POSES = 64;
 // vertices take the sum of the poses, as each animation moves its own vertices.
 // blend.z is 1 where the generated coordinates reflect the sky on a car: they follow the axes of
 // the look-at of the reflection, across a window of 31 of the 32 columns of the sky from the
-// column in reflectAcross.w and down its 128 rows.
+// column in reflectAcross.w and down its 128 rows. blend.z is 2 where they place the highlight of a
+// car from the offsets in reflectAcross.w and reflectUp.w.
 layout(set = 1, binding = 0) uniform Transform {
     mat4 viewProjection;
     mat4 model;
@@ -52,7 +53,13 @@ void main() {
     gl_Position = viewProjection * world;
     outTexCoord = inTexCoord;
     outNormal = mat3(model) * normal;
-    if (blend.z > 0.5) {
+    if (blend.z > 1.5) {
+        // The highlight of the PC release: a quarter of the dot of the turned normal with each
+        // axis of the look-at, from the offset of the tile of gDPSetHilite1Tile().
+        vec3 turned = normalize(outNormal);
+        outTexCoord = vec2(dot(turned, reflectAcross.xyz), dot(turned, reflectUp.xyz)) * 0.25 +
+                      vec2(reflectAcross.w, reflectUp.w);
+    } else if (blend.z > 0.5) {
         // G_TEXTURE_GEN of the RSP with the look-at of guLookAtReflectF(), in the tile the
         // reflection of the race sets.
         vec3 turned = normalize(outNormal);

@@ -76,6 +76,22 @@ struct Reflection {
 };
 
 /**
+ * The specular highlight of a car, as the PC release generates its coordinates for the tile of
+ * gDPSetHilite1Tile(): a quarter of the dot of the normal with each axis across the texture, from
+ * the offset of the tile, added to the colour drawn where the depth is equal.
+ */
+struct Highlight {
+    const RenderTexture *texture =
+        nullptr;                   /*!< The texture of the highlight, its alpha the shine. */
+    std::array<float, 3> across{}; /*!< The axis of the coordinate across the texture. */
+    std::array<float, 3> up{};     /*!< The axis of the coordinate down the texture. */
+    float s = 0.0f;                /*!< The offset across the texture, from 0 to 1. */
+    float t = 0.0f;                /*!< The offset down the texture, from 0 to 1. */
+    std::array<std::uint32_t, 2> combine{}; /*!< The words of gDPSetCombineLERP(). */
+    std::array<float, 4> primitive{};       /*!< The primitive colour, from 0 to 1. */
+};
+
+/**
  * The shadow of a car on the track, as RenderTrackInstance() lays its texture on the ground under
  * the car: 1024 across the texture, centred under the car, along and across its heading.
  */
@@ -330,6 +346,19 @@ public:
                              const Matrix4 &viewProjection,
                              const Lighting &lighting,
                              const Reflection &reflection);
+
+    /**
+     * Draw the specular highlight of a car over the parts drawn before it.
+     *
+     * @param model The model of the highlighted parts.
+     * @param world The place of the model.
+     * @param viewProjection The camera and its projection, to a depth from 0 to 1.
+     * @param highlight The highlight.
+     */
+    void DrawHighlight(const RenderModel &model,
+                       const Matrix4 &world,
+                       const Matrix4 &viewProjection,
+                       const Highlight &highlight);
 
     /**
      * Draw a track with the shadow of a car on the instances near the car.

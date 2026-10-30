@@ -3,6 +3,8 @@
 #include <array>
 #include <cmath>
 #include <cstring>
+#include <optional>
+#include <span>
 #include <string>
 
 #include <SDL3/SDL.h>
@@ -14,6 +16,7 @@
 #include "common/hud.h"
 #include "common/hudassets.h"
 #include "common/model.h"
+#include "common/packedvalue.h"
 #include "common/particlesnapshot.h"
 #include "common/race.h"
 #include "common/rallyconfig.h"
@@ -31,6 +34,7 @@
 #include "common/vehiclecamera.h"
 #include "common/vehiclecount.h"
 #include "common/vehicleeffects.h"
+#include "common/vehiclerender.h"
 #include "common/weather.h"
 #include "frontend.h"
 #include "gpu.h"
@@ -247,7 +251,9 @@ struct RaceView::State {
     // ponytail: the sky loads the images of the track a second time; a model with its nodes drawn
     // by name would share them.
     std::unique_ptr<RenderModel> sky;
+    // The textured parts of the car, and the painted body and windows drawn after the highlight.
     std::unique_ptr<RenderModel> car;
+    std::unique_ptr<RenderModel> paint;
     std::unique_ptr<RenderModel> underside;
     std::unique_ptr<RenderModel> wheel;
     std::unique_ptr<RenderModel> snowWheel;
@@ -262,9 +268,27 @@ struct RaceView::State {
     std::unique_ptr<RenderTexture> particleTexture;
     // LoadTireTrailTexture(): the 32 by 64 intensities of 4 bits of the spray of the tyres.
     std::unique_ptr<RenderTexture> sprayTexture;
+    // The parts of the car the specular highlight shines on.
+    std::unique_ptr<RenderModel> highlighted;
+    // CreateFallbackEnvironmentTexture() and LoadVehicleEnvMapTexture(): the 64 by 64 intensities
+    // of 4 bits of the highlight by day and at night.
+    std::unique_ptr<RenderTexture> dayHighlight;
+    std::unique_ptr<RenderTexture> nightHighlight;
 };
 
 namespace {
+
+// The texels of an image of intensities of 4 bits, two to a byte, the intensity in every channel.
+std::vector<std::uint8_t> Intensities4(std::span<const unsigned char> pairs) {
+    std::vector<std::uint8_t> texels;
+    for (unsigned char pair : pairs) {
+        for (int nibble : {pair >> 4, pair & 0xf}) {
+            auto level = static_cast<std::uint8_t>(nibble * 17);
+            texels.insert(texels.end(), {level, level, level, level});
+        }
+    }
+    return texels;
+}
 
 // The model of a car of the PC release on a cartridge, by the prefix of its files: the releases of
 // the United States, Japan, and Europe in turn, as the cars of the PC release that the cartridge of
@@ -474,6 +498,13 @@ constexpr std::array<std::uint32_t, 2> SPRAY_COMBINE = PARTICLE_COMBINE;
 constexpr float SPRAY_TEXTURE_S = 32.0f * 32.0f;
 constexpr float SPRAY_TEXTURE_T = 32.0f * 64.0f;
 
+// Whether RenderVehicleModel() finds a car in a tunnel, by the first instance under it.
+bool InTunnel(const Vehicle &car) {
+    return car.GetGroundInstanceCount() != 0 &&
+           (g_LoadedTrack.instances[car.GetGroundInstances()[0]].flags & TRACK_INSTANCE_SHELTER) !=
+               0;
+}
+
 // The lights RenderVehicleModel() gives a car. The sun dims with the distance from the camera at
 // night and is gone in a tunnel, where the ambient light is four fifths. The direction of
 // g_DefaultLights, or at night and in the rain the reverse of the heading of the car of the camera
@@ -481,9 +512,7 @@ constexpr float SPRAY_TEXTURE_T = 32.0f * 64.0f;
 // only, and the lights turn through the matrix of the car.
 Lighting CarLighting(const Vehicle &car, const Vehicle &cameraCar, const CameraFrame &camera) {
     const CameraFrame &frame = car.GetFrame();
-    bool tunnel =
-        car.GetGroundInstanceCount() != 0 &&
-        (g_LoadedTrack.instances[car.GetGroundInstances()[0]].flags & TRACK_INSTANCE_SHELTER) != 0;
+    bool tunnel = InTunnel(car);
     float divisor = 1.0f;
     if (g_dwNightMode) {
         float distance = std::hypot(frame.position.x - camera.position.x,
@@ -515,6 +544,109 @@ Lighting CarLighting(const Vehicle &car, const Vehicle &cameraCar, const CameraF
         lighting.direction = {light[0] / length, light[1] / length, light[2] / length};
     }
     return lighting;
+}
+
+// The colour of the highlight, PRIMITIVE with the alpha of TEXEL0, and its primitive colour.
+constexpr std::array<std::uint32_t, 2> HIGHLIGHT_COMBINE = CombineLerp(ZERO_AB,
+                                                                       ZERO_AB,
+                                                                       ZERO_D,
+                                                                       PRIMITIVE,
+                                                                       ZERO_ALPHA,
+                                                                       ZERO_ALPHA,
+                                                                       ZERO_ALPHA,
+                                                                       TEXEL0,
+                                                                       ZERO_AB,
+                                                                       ZERO_AB,
+                                                                       ZERO_D,
+                                                                       PRIMITIVE,
+                                                                       ZERO_ALPHA,
+                                                                       ZERO_ALPHA,
+                                                                       ZERO_ALPHA,
+                                                                       TEXEL0);
+constexpr std::array<float, 4> HIGHLIGHT_COLOR{1.0f, 1.0f, 0xCC / 255.0f, 1.0f};
+
+// The highlight RenderVehicleModel() draws when the specular light is chosen, but in the snow, in
+// the rain, in a tunnel by day, and on the car of the camera at night. The light comes from the sun
+// by day and from behind the camera at night, and the highlight sits halfway between it and the
+// camera. The PC release of guLookAtHiliteF() places the tile by the angles of that direction
+// around and above the look from the camera at the car, 256 texels of 64ths to half a turn, and
+// the coordinates follow the right and the up axes of the look rounded to bytes.
+std::optional<Highlight> CarHighlight(const Vehicle &car,
+                                      const Vehicle &cameraCar,
+                                      const CameraFrame &camera,
+                                      const RenderTexture *day,
+                                      const RenderTexture *night) {
+    if (!g_GlobalRallyConfig.bSpecularLightingSelection || g_dwSnowMode || g_dwRainMode ||
+        (InTunnel(car) && !g_dwNightMode) || (g_dwNightMode && &car == &cameraCar) ||
+        car.GetCustomCarModel()) {
+        return std::nullopt;
+    }
+    const CameraFrame &frame = car.GetFrame();
+    auto normalize = [](Vec3f v) {
+        float length = std::hypot(v.x, v.y, v.z);
+        return length == 0.0f ? v : Vec3f{v.x / length, v.y / length, v.z / length};
+    };
+    Vec3f light{g_afLightDirection[0], g_afLightDirection[1], g_afLightDirection[2]};
+    if (g_dwNightMode) {
+        const auto &cameras = cameraCar.GetCameras();
+        const Vec3f &forward = &camera == &cameras[VEHICLE_CAMERA_TRACKSIDE] ?
+                                   camera.forward :
+                                   cameraCar.GetFrame().forward;
+        light = {-forward.x, -forward.y, -forward.z};
+    }
+    light = normalize(light);
+    Vec3f toCamera{camera.position.x - frame.position.x,
+                   camera.position.y - frame.position.y,
+                   camera.position.z - frame.position.z};
+    toCamera = std::hypot(toCamera.x, toCamera.y, toCamera.z) == 0.0f ?
+                   Vec3f{-camera.forward.x, -camera.forward.y, -camera.forward.z} :
+                   normalize(toCamera);
+    Vec3f halfway{(toCamera.x + light.x) * 0.5f,
+                  (toCamera.y + light.y) * 0.5f,
+                  (toCamera.z + light.z) * 0.5f};
+    halfway = std::hypot(halfway.x, halfway.y, halfway.z) == 0.0f ? camera.up : normalize(halfway);
+    float nudgeX = 0.0f;
+    float nudgeZ = 0.0f;
+    if (camera.position.x == frame.position.x && camera.position.y == frame.position.y) {
+        if (camera.position.z == frame.position.z) {
+            nudgeZ = 1.0f;
+        } else {
+            nudgeX = 0.1f;
+        }
+    }
+    // The right, the up, and the look axes of guLookAtF(), the look from the car back to the eye.
+    std::array<float, 3> back = Normalized({camera.position.x - frame.position.x - nudgeX,
+                                            camera.position.y - frame.position.y,
+                                            camera.position.z - frame.position.z - nudgeZ});
+    std::array<float, 3> right = Normalized(Cross({0.0f, 0.0f, 1.0f}, back));
+    std::array<std::array<float, 3>, 3> axes{right, Normalized(Cross(back, right)), back};
+    auto along = [&](int column) {
+        const auto &a = axes[static_cast<std::size_t>(column)];
+        return static_cast<double>(a[0]) * halfway.x + static_cast<double>(a[1]) * halfway.y +
+               static_cast<double>(a[2]) * halfway.z;
+    };
+    double angle = std::atan2(along(0), along(2));
+    double rise = std::asin(std::clamp(along(1), -1.0, 1.0));
+    auto tile = [](double value) {
+        return static_cast<std::int32_t>(
+            256u -
+            static_cast<std::uint32_t>(static_cast<std::int64_t>(value * -81.48734781601175)));
+    };
+    auto axis = [&](int column) {
+        const auto &a = axes[static_cast<std::size_t>(column)];
+        return std::array<float, 3>{static_cast<float>(ConvertDoubleToSignedByte(a[0])) / 128.0f,
+                                    static_cast<float>(ConvertDoubleToSignedByte(a[1])) / 128.0f,
+                                    static_cast<float>(ConvertDoubleToSignedByte(a[2])) / 128.0f};
+    };
+    Highlight highlight;
+    highlight.texture = g_dwNightMode ? night : day;
+    highlight.across = axis(0);
+    highlight.up = axis(1);
+    highlight.s = static_cast<float>(128 - tile(angle)) / 256.0f;
+    highlight.t = static_cast<float>(128 - tile(rise)) / 256.0f;
+    highlight.combine = HIGHLIGHT_COMBINE;
+    highlight.primitive = HIGHLIGHT_COLOR;
+    return highlight;
 }
 
 // The instances RenderTrack() hides: the ones of a dark or wet track on a clear day, the ones of
@@ -622,12 +754,17 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     options.paint = color;
     options.images = CartridgeCar(defaults, prefix);
     options.parts = [](const std::string &n) {
-        return n == "lod0-nearDetail" || n == "lod0-paint" || n == "lod0-textured";
+        return n == "lod0-nearDetail" || n == "lod0-textured";
     };
     state->car = RenderModel::Load(renderer, carFile, options);
+    options.parts = [](const std::string &n) { return n == "lod0-paint"; };
+    state->paint = RenderModel::Load(renderer, carFile, options);
     options.parts = [](const std::string &n) { return n == "lod0-underside"; };
     state->underside = RenderModel::Load(renderer, carFile, options);
+    // The highlighted parts are a node outside the scene, drawn without the turn of its root.
     options.parts = nullptr;
+    options.node = "lod0-highlighted";
+    state->highlighted = RenderModel::Load(renderer, carFile, options);
     options.node = "lod0-wheel0";
     state->wheel = RenderModel::Load(renderer, carFile, options);
     options.node = "lod0-wheelSnow0";
@@ -651,19 +788,18 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
         puff.insert(puff.end(), {level, level, level, level});
     }
     state->particleTexture = RenderTexture::FromTexels(renderer, 64, 64, puff, true, true);
-    std::vector<std::uint8_t> trail;
-    for (unsigned char pair : g_abHudTexture32x64Data) {
-        for (int nibble : {pair >> 4, pair & 0xf}) {
-            auto level = static_cast<std::uint8_t>(nibble * 17);
-            trail.insert(trail.end(), {level, level, level, level});
-        }
-    }
-    state->sprayTexture = RenderTexture::FromTexels(renderer, 32, 64, trail, true, true);
+    state->sprayTexture = RenderTexture::FromTexels(
+        renderer, 32, 64, Intensities4(g_abHudTexture32x64Data), true, true);
+    state->dayHighlight = RenderTexture::FromTexels(
+        renderer, 64, 64, Intensities4(g_abFallbackEnvTextureData), true, true);
+    state->nightHighlight = RenderTexture::FromTexels(
+        renderer, 64, 64, Intensities4(g_abHudTexture64BData), true, true);
     // The race of the PC release draws its text with the fonts of the cartridge.
     state->text = MenuText::Load(renderer, defaults / "n64" / "usa" / "fonts");
     // The start lights, the model of BossRally.pod.
     state->startLights = RenderModel::Load(renderer, defaults / "BossRally" / "modellights.gltf");
-    if (!state->track || !state->car || !state->wheel || !state->text || !state->startLights) {
+    if (!state->track || !state->car || !state->paint || !state->wheel || !state->text ||
+        !state->startLights) {
         return nullptr;
     }
     return std::unique_ptr<RaceView>(new RaceView(std::move(state)));
@@ -730,12 +866,9 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     if (!inside || g_dwVehicleCullingDisabled) {
         Matrix4 body = MultiplyMatrices(FrameMatrix(vehicle.GetFrame()), ConsoleSpace());
         Lighting carLighting = CarLighting(vehicle, vehicle, *camera);
-        renderer.DrawReflectingModel(
-            *s.car,
-            body,
-            viewProjection,
-            carLighting,
-            SkyReflection(s.daySky.get(), s.nightSky.get(), *camera, vehicle));
+        Reflection reflection = SkyReflection(s.daySky.get(), s.nightSky.get(), *camera, vehicle);
+        // The textured parts, the underside, the highlight, and the painted body in turn.
+        renderer.DrawReflectingModel(*s.car, body, viewProjection, carLighting, reflection);
         // The underside shows only from below the car.
         const CameraFrame &frame = vehicle.GetFrame();
         float below = frame.up.x * (frame.position.x - camera->position.x) +
@@ -744,6 +877,12 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
         if (s.underside && below > 0.0f) {
             renderer.DrawModel(*s.underside, body, viewProjection, carLighting, std::nullopt, true);
         }
+        std::optional<Highlight> highlight =
+            CarHighlight(vehicle, vehicle, *camera, s.dayHighlight.get(), s.nightHighlight.get());
+        if (highlight && s.highlighted) {
+            renderer.DrawHighlight(*s.highlighted, FrameMatrix(frame), viewProjection, *highlight);
+        }
+        renderer.DrawReflectingModel(*s.paint, body, viewProjection, carLighting, reflection);
         // RenderWheelModels(): each wheel at the matrix the race gives it, in snow the wheel of
         // the snow.
         const RenderModel &wheel = g_dwSnowMode && s.snowWheel ? *s.snowWheel : *s.wheel;

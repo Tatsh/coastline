@@ -462,12 +462,13 @@ Lighting TrackInstanceLighting(std::uint32_t flags) {
 }
 
 // A key of a pipeline: blending, both sides, and the depth test and write.
-enum class DepthMode { None, Test, TestAndWrite };
+enum class DepthMode { None, Test, TestAndWrite, Equal };
 
 struct PipelineKey {
     bool blend;
     bool twoSided;
     DepthMode depth;
+    bool additive = false;
     auto operator<=>(const PipelineKey &) const = default;
 };
 
@@ -481,6 +482,7 @@ struct ModelDraw {
     std::optional<SDL_Rect> scissor;
     std::optional<Reflection> reflection;
     std::optional<CarShadow> shadow;
+    std::optional<Highlight> highlight;
 };
 
 struct QuadDraw {
@@ -594,7 +596,8 @@ struct SceneRenderer::State {
         if (key.blend) {
             target.blend_state.enable_blend = true;
             target.blend_state.src_color_blendfactor = SDL_GPU_BLENDFACTOR_SRC_ALPHA;
-            target.blend_state.dst_color_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
+            target.blend_state.dst_color_blendfactor =
+                key.additive ? SDL_GPU_BLENDFACTOR_ONE : SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
             target.blend_state.color_blend_op = SDL_GPU_BLENDOP_ADD;
             target.blend_state.src_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE;
             target.blend_state.dst_alpha_blendfactor = SDL_GPU_BLENDFACTOR_ONE_MINUS_SRC_ALPHA;
@@ -614,7 +617,9 @@ struct SceneRenderer::State {
         info.rasterizer_state.front_face = SDL_GPU_FRONTFACE_COUNTER_CLOCKWISE;
         info.depth_stencil_state.enable_depth_test = key.depth != DepthMode::None;
         info.depth_stencil_state.enable_depth_write = key.depth == DepthMode::TestAndWrite;
-        info.depth_stencil_state.compare_op = SDL_GPU_COMPAREOP_LESS_OR_EQUAL;
+        info.depth_stencil_state.compare_op = key.depth == DepthMode::Equal ?
+                                                  SDL_GPU_COMPAREOP_EQUAL :
+                                                  SDL_GPU_COMPAREOP_LESS_OR_EQUAL;
         info.target_info.color_target_descriptions = &target;
         info.target_info.num_color_targets = 1;
         info.target_info.depth_stencil_format = depthFormat;
@@ -1149,6 +1154,7 @@ void SceneRenderer::DrawModel(const RenderModel &model,
                                           depth,
                                           scissor,
                                           std::nullopt,
+                                          std::nullopt,
                                           std::nullopt});
 }
 
@@ -1157,8 +1163,16 @@ void SceneRenderer::DrawReflectingModel(const RenderModel &model,
                                         const Matrix4 &viewProjection,
                                         const Lighting &lighting,
                                         const Reflection &reflection) {
-    m_state->draws.emplace_back(ModelDraw{
-        &model, world, viewProjection, lighting, {}, true, std::nullopt, reflection, std::nullopt});
+    m_state->draws.emplace_back(ModelDraw{&model,
+                                          world,
+                                          viewProjection,
+                                          lighting,
+                                          {},
+                                          true,
+                                          std::nullopt,
+                                          reflection,
+                                          std::nullopt,
+                                          std::nullopt});
 }
 
 void SceneRenderer::DrawShadowedModel(const RenderModel &model,
@@ -1174,7 +1188,24 @@ void SceneRenderer::DrawShadowedModel(const RenderModel &model,
                                           true,
                                           std::nullopt,
                                           std::nullopt,
-                                          std::move(shadow)});
+                                          std::move(shadow),
+                                          std::nullopt});
+}
+
+void SceneRenderer::DrawHighlight(const RenderModel &model,
+                                  const Matrix4 &world,
+                                  const Matrix4 &viewProjection,
+                                  const Highlight &highlight) {
+    m_state->draws.emplace_back(ModelDraw{&model,
+                                          world,
+                                          viewProjection,
+                                          {},
+                                          {},
+                                          true,
+                                          std::nullopt,
+                                          std::nullopt,
+                                          std::nullopt,
+                                          highlight});
 }
 
 void SceneRenderer::DrawQuads(std::span<const FlatVertex> corners,
@@ -1331,6 +1362,47 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         SDL_DrawGPUIndexedPrimitives(pass, primitive.indexCount, 1, 0, 0, 0);
     };
 
+    // The render mode 4 of the PC release: the colour by its alpha added to the frame where the
+    // depth is equal, a texel of alpha below 8 drawing nothing.
+    auto drawHighlight = [&](const Primitive &primitive,
+                             const VertexUniforms &vertexUniforms,
+                             SDL_GPUBuffer *targets,
+                             const Highlight &highlight) {
+        SDL_GPUGraphicsPipeline *pipeline =
+            s.Pipeline({true, primitive.twoSided, DepthMode::Equal, true});
+        if (pipeline == nullptr || highlight.texture == nullptr) {
+            return;
+        }
+        SDL_BindGPUGraphicsPipeline(pass, pipeline);
+        SDL_PushGPUVertexUniformData(commands, 0, &vertexUniforms, sizeof(vertexUniforms));
+        FragmentUniforms fragmentUniforms{{8.0f / 255.0f, 0.0f, 1.0f, 1.0f},
+                                          {0.0f, 0.0f, 1.0f, 0.0f},
+                                          {highlight.combine[0], highlight.combine[1], 0u, 0u},
+                                          {highlight.primitive[0],
+                                           highlight.primitive[1],
+                                           highlight.primitive[2],
+                                           highlight.primitive[3]},
+                                          {1.0f, 1.0f, 1.0f, 1.0f},
+                                          {1.0f, 1.0f, 1.0f, 1.0f},
+                                          {0.0f, 0.0f, 0.0f, 1.0f},
+                                          {1.0f, 1.0f, 0.0f, 0.0f},
+                                          {},
+                                          {},
+                                          {}};
+        SDL_PushGPUFragmentUniformData(commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
+        std::array<SDL_GPUTextureSamplerBinding, 3> bindings{
+            {{highlight.texture->m_texture, highlight.texture->m_sampler},
+             {s.white, s.plainSampler},
+             {s.white, s.plainSampler}}};
+        SDL_BindGPUFragmentSamplers(pass, 0, bindings.data(), bindings.size());
+        SDL_BindGPUVertexStorageBuffers(pass, 0, &targets, 1);
+        SDL_GPUBufferBinding vertices{primitive.vertices, 0};
+        SDL_BindGPUVertexBuffers(pass, 0, &vertices, 1);
+        SDL_GPUBufferBinding indices{primitive.indices, 0};
+        SDL_BindGPUIndexBuffer(pass, &indices, SDL_GPU_INDEXELEMENTSIZE_32BIT);
+        SDL_DrawGPUIndexedPrimitives(pass, primitive.indexCount, 1, 0, 0, 0);
+    };
+
     // Each model draws its opaque primitives where it comes, and the blended ones of every model
     // follow every opaque one. A flat draw comes after the models drawn before it.
     SDL_Rect whole{
@@ -1368,6 +1440,23 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                           std::ranges::find(draw.shadow->instances, placed.instance) !=
                               draw.shadow->instances.end();
             for (const Primitive &primitive : mesh.primitives) {
+                if (draw.highlight) {
+                    // The highlight adds to the opaque parts drawn before it, in their place.
+                    if (!blending) {
+                        VertexUniforms uniforms = vertexUniforms;
+                        uniforms.blend[2] = 2.0f;
+                        uniforms.reflectAcross = {draw.highlight->across[0],
+                                                  draw.highlight->across[1],
+                                                  draw.highlight->across[2],
+                                                  draw.highlight->s};
+                        uniforms.reflectUp = {draw.highlight->up[0],
+                                              draw.highlight->up[1],
+                                              draw.highlight->up[2],
+                                              draw.highlight->t};
+                        drawHighlight(primitive, uniforms, targets, *draw.highlight);
+                    }
+                    continue;
+                }
                 if (primitive.blend == blending) {
                     VertexUniforms uniforms = vertexUniforms;
                     uniforms.blend[1] = primitive.textureGen ? 1.0f : 0.0f;
