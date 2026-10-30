@@ -554,8 +554,6 @@ struct RaceView::State {
     // of 4 bits of the highlight by day and at night.
     std::unique_ptr<RenderTexture> dayHighlight;
     std::unique_ptr<RenderTexture> nightHighlight;
-    // The first texture of the track, the texture entry 0 the skid marks are drawn with.
-    std::unique_ptr<RenderTexture> skidTexture;
     // The textures of the engine the HUD draws, the gauges of the dashboard.
     HudTextures hudTextures;
     // The vertices of the pool of the quads of the track the skid marks of the frame have taken.
@@ -655,8 +653,11 @@ std::array<float, 4> ShadowColor(const Vehicle &car) {
 }
 
 // DrawSkidTrails(): each quad between two segments of a skid mark in the environment colour with
-// the alpha of the texture of entry 0, the first texture of the track, as the PC release never
-// sets the texture of the skid marks; 1024 of the 1/32 texels across and along a quad.
+// the alpha of texture entry 0, as the PC release never sets the texture of the skid marks.
+// InitializeTextureSubsystem() empties the entries before each race, and
+// CreateWeatherShadeTexture() then makes entry 0 a 4 by 4 texture of 8-bit intensities, 0x20 in the
+// rain and the snow and 0x80 in the other weathers, its alpha the intensity. The environment alpha
+// takes the place of the texture of one alpha.
 constexpr std::array<std::uint32_t, 2> SKID_COMBINE = CombineLerp(ZERO_AB,
                                                                   ZERO_AB,
                                                                   ZERO_D,
@@ -664,7 +665,7 @@ constexpr std::array<std::uint32_t, 2> SKID_COMBINE = CombineLerp(ZERO_AB,
                                                                   ZERO_ALPHA,
                                                                   ZERO_ALPHA,
                                                                   ZERO_ALPHA,
-                                                                  TEXEL0,
+                                                                  ENVIRONMENT,
                                                                   ZERO_AB,
                                                                   ZERO_AB,
                                                                   ZERO_D,
@@ -672,54 +673,43 @@ constexpr std::array<std::uint32_t, 2> SKID_COMBINE = CombineLerp(ZERO_AB,
                                                                   ZERO_ALPHA,
                                                                   ZERO_ALPHA,
                                                                   ZERO_ALPHA,
-                                                                  TEXEL0);
-
-struct SkidQuads {
-    std::vector<FlatVertex> corners;
-    float u = 0.0f;
-    float v = 0.0f;
-};
+                                                                  ENVIRONMENT);
 
 // The render mode of the skid marks blends them by their alpha without writing the depth, a texel
 // of an alpha below 1 drawing nothing, or below 8 at night and in the rain. The quads draw where an
 // instance under them is in view and not near the eighth vehicle, from the pool of vertices every
 // view of the frame shares.
 void DrawSkidMarks(SceneRenderer &renderer,
-                   const RenderTexture &texture,
                    std::array<float, 4> color,
                    const Matrix4 &viewProjection,
                    const std::vector<unsigned char> &mask,
                    int &vertices) {
-    SkidQuads quads;
-    quads.u = 1024.0f / (32.0f * static_cast<float>(texture.Width()));
-    quads.v = 1024.0f / (32.0f * static_cast<float>(texture.Height()));
+    std::vector<FlatVertex> corners;
     VisitSkidMarkQuads(
         [](const Vec3f *oldRight,
            const Vec3f *newRight,
            const Vec3f *oldLeft,
            const Vec3f *newLeft,
            void *context) {
-            auto &skid = *static_cast<SkidQuads *>(context);
-            auto corner = [&](const Vec3f *p, float u, float v) {
-                skid.corners.push_back({p->x, p->y, u, v, {255, 255, 255, 255}, p->z});
-            };
-            corner(oldRight, 0.0f, 0.0f);
-            corner(newRight, skid.u, 0.0f);
-            corner(newLeft, skid.u, skid.v);
-            corner(oldLeft, 0.0f, skid.v);
+            auto &quads = *static_cast<std::vector<FlatVertex> *>(context);
+            for (const Vec3f *p : {oldRight, newRight, newLeft, oldLeft}) {
+                quads.push_back({p->x, p->y, 0.0f, 0.0f, {255, 255, 255, 255}, p->z});
+            }
         },
-        &quads,
+        &corners,
         mask.data(),
         &vertices);
-    if (quads.corners.empty()) {
+    if (corners.empty()) {
         return;
     }
+    color[3] =
+        (g_dwChosenWeather == WEATHER_RAIN || g_dwChosenWeather == WEATHER_SNOW ? 0x20 : 0x80) /
+        255.0f;
     FlatMaterial material;
-    material.texel0 = &texture;
     material.combine = SKID_COMBINE;
     material.env = color;
     material.alphaCut = (!g_dwNightMode && !g_dwRainMode ? 1.0f : 8.0f) / 255.0f;
-    renderer.DrawQuads(quads.corners, material, viewProjection, true);
+    renderer.DrawQuads(corners, material, viewProjection, true);
 }
 
 // The shadow of a car as RenderTrackInstance() lays it on the instances near the car, or none
@@ -1298,9 +1288,6 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     std::filesystem::path trackFile = defaults / "tracks" / g_apszTrackFilenames[track];
     trackFile.replace_extension(".gltf");
     state->track = RenderModel::Load(renderer, trackFile);
-    std::filesystem::path skidImage = trackFile;
-    skidImage.replace_filename(trackFile.stem().string() + "-0.png");
-    state->skidTexture = RenderTexture::Load(renderer, skidImage, true, true);
     ModelOptions sky;
     sky.node = "sky";
     state->sky = RenderModel::Load(renderer, trackFile, sky);
@@ -1650,7 +1637,7 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     });
     // DrawTrackShadows() lays the skid marks of the cars of each drawn frame, and each view draws
     // them.
-    if (snapshot != nullptr && s.skidTexture) {
+    if (snapshot != nullptr) {
         RecordFrameSkidMarks(snapshot->GetVehicles());
     }
     // The puffs of the snapshot the frame draws.
@@ -1881,13 +1868,9 @@ void RaceView::DrawView(SceneRenderer &renderer,
                                trackLighting,
                                std::move(instances.translucent),
                                std::move(shadow));
-    if (snapshot != nullptr && s.skidTexture && g_GlobalRallyConfig.bSkidMarksSelection) {
-        DrawSkidMarks(renderer,
-                      *s.skidTexture,
-                      ShadowColor(vehicle),
-                      viewProjection,
-                      instances.mask,
-                      s.skidVertices);
+    if (snapshot != nullptr && g_GlobalRallyConfig.bSkidMarksSelection) {
+        DrawSkidMarks(
+            renderer, ShadowColor(vehicle), viewProjection, instances.mask, s.skidVertices);
     }
     if (carsAfterTrack) {
         drawCarsAndSmoke();
