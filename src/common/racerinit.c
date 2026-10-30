@@ -112,7 +112,7 @@ void InitRacerSlot(RacerSlot *slot) {
                            .startTime);
         RACER_SLOT_SET(slot, RacePosition, g_dwNumVehicles - RACER_SLOT_GET(slot, Index) - 1);
     }
-#if TGR_BOSS_RALLY
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     if (RACER_SLOT_GET(slot, Index) < (s32)g_dwNumLocalPlayers) {
         RACER_SLOT_SET(slot, ColorPanels, NULL);
         RACER_SLOT_SET(slot, ColorPanelCount, 0);

@@ -10,7 +10,7 @@ void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue) {
     }
 #endif
     SetMaterialPaletteColors(model, red, green, blue);
-#if TGR_BOSS_RALLY
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     RefreshVehicleMaterialTextures(model);
 #endif
 }

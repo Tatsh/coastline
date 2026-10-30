@@ -20,19 +20,6 @@
         }                                                                                          \
     } while (false)
 
-// The textures of the vehicles and the racers.
-void ApplyEnemyCarColorPanels(Vehicle *vehicle, RacerSlot *slot) {
-    PENDING();
-}
-
-void MakeEnemyCarColorPanels(RacerSlot *slot) {
-    PENDING();
-}
-
-void RefreshVehicleMaterialTextures(VehicleModel *model) {
-    PENDING();
-}
-
 void ApplyRandomAdjacentDamageTexture(int nTexture, const int *pnEntries, int *pnLevels) {
     PENDING();
 }

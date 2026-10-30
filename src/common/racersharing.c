@@ -193,9 +193,9 @@ static BOSS_RALLY_INLINE void AcquireRacerVehicle(RacerSlot *slot, Vehicle *vehi
     VEHICLE_GET(vehicle, Color)[0] = RACER_SLOT_GET(slot, Color)[0];
     VEHICLE_GET(vehicle, Color)[1] = RACER_SLOT_GET(slot, Color)[1];
     VEHICLE_GET(vehicle, Color)[2] = RACER_SLOT_GET(slot, Color)[2];
-#if TGR_BOSS_RALLY
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     ApplyEnemyCarColorPanels(vehicle, slot);
-#else
+#elif !TGR_BOSS_RALLY
     SetMaterialColor(vehicle->model, slot->color[0] >> 3, slot->color[1] >> 3, slot->color[2] >> 3);
 #endif
 

@@ -49,6 +49,7 @@
 #include "common/vecmath.h"
 #include "common/vehicle.h"
 #include "common/vehiclecamera.h"
+#include "common/vehiclecolor.h"
 #include "common/vehiclecount.h"
 #include "common/vehicleeffects.h"
 #include "common/vehiclemodel.h"
@@ -886,10 +887,11 @@ constexpr std::array<std::uint32_t, 2> SPRAY_COMBINE = PARTICLE_COMBINE;
 constexpr float SPRAY_TEXTURE_S = 32.0f * 32.0f;
 constexpr float SPRAY_TEXTURE_T = 32.0f * 64.0f;
 
-// The palettes of the lights of a car of the cartridge, as the N64 release of
-// RenderVehicleModel() changes them: the headlights and the rear lights lit at night and in the
-// rain, the brake lights while a brake is held, and the reversing lights while the throttle is
-// below 0. A variant is the sum of 1 when lit, 2 when braking, and 4 when reversing.
+// The palettes of the lights of a car of the cartridge. ByteSwapAndRelocateCarModel() lights the
+// headlights at night and in the rain. The rear lights take the palette SetVehicleLightPalette()
+// gives each of the four light textures of CreateCarLightTextures(), lit at night and in the
+// rain, and RenderVehicleModel() draws the texture for a held brake and a throttle that is not at
+// or above 0. A variant is the sum of 1 when lit, 2 when braking, and 4 when reversing.
 constexpr int CAR_LIGHT_VARIANTS = 8;
 constexpr int CAR_LIT = 1;
 constexpr int CAR_BRAKING = 2;
@@ -918,26 +920,16 @@ bool CarLightPalette(SDL_Palette *palette, int material, int variant) {
             colors[static_cast<std::size_t>(entry)].a = lit ? 0 : 255;
         }
     } else if (material == VEHICLE_MATERIAL_REAR_LIGHTS) {
-        std::uint32_t tail = lit ? 0x7000 : 0x9001;
-        std::uint32_t lamp = lit ? 0x9082 : 0xA001;
-        set(15, tail);
-        set(10, lamp);
-        if ((variant & CAR_BRAKING) != 0) {
-            set(14, 0xC000);
-            set(13, 0xC000);
-            set(9, 0xF904);
-            set(8, 0xF904);
-        } else {
-            set(14, 0x9001);
-            set(9, 0xA001);
-            set(13, tail);
-            set(8, lamp);
+        // The texture of the first light sets the entries the other three retain.
+        std::array<u16, 16> words{};
+        SetVehicleLightPalette(words.data(), 0, lit);
+        int light = variant / CAR_BRAKING;
+        if (light != 0) {
+            SetVehicleLightPalette(words.data(), light, 0);
         }
-        set(12, 0x7981);
-        set(7, 0x9241);
-        bool reversing = (variant & CAR_REVERSING) != 0;
-        set(11, reversing ? 0xB5AC : 0xAD6B);
-        set(6, reversing ? 0xFFFE : 0xC631);
+        for (int entry = 6; entry < 16; ++entry) {
+            set(entry, PackMaterialPaletteColor(words[static_cast<std::size_t>(entry)]));
+        }
     } else {
         return false;
     }
@@ -950,7 +942,7 @@ int CarLightVariant(const Vehicle &car) {
     if (car.GetInput() != nullptr && (car.GetInput()->buttons & BRAKE_BUTTONS) != 0) {
         variant |= CAR_BRAKING;
     }
-    if (car.GetThrottle() < 0.0f) {
+    if (!(car.GetThrottle() >= 0.0f)) {
         variant |= CAR_REVERSING;
     }
     return variant;
