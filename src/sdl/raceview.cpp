@@ -29,6 +29,8 @@
 #include "common/vecmath.h"
 #include "common/vehicle.h"
 #include "common/vehiclecamera.h"
+#include "common/vehiclecount.h"
+#include "common/vehicleeffects.h"
 #include "common/weather.h"
 #include "frontend.h"
 #include "gpu.h"
@@ -258,6 +260,8 @@ struct RaceView::State {
     std::unique_ptr<RenderTexture> shadowTexture;
     // LoadParticleTexture(): the 64 by 64 intensities of a puff of smoke.
     std::unique_ptr<RenderTexture> particleTexture;
+    // LoadTireTrailTexture(): the 32 by 64 intensities of 4 bits of the spray of the tyres.
+    std::unique_ptr<RenderTexture> sprayTexture;
 };
 
 namespace {
@@ -462,6 +466,69 @@ void DrawParticles(SceneRenderer &renderer,
     }
 }
 
+// The combiner of the spray of the tyres: the shade, its alpha the texel by the shade.
+constexpr std::array<std::uint32_t, 2> SPRAY_COMBINE = PARTICLE_COMBINE;
+
+// The width and the height of the texture of the trails of the tyres, in the 1/32 texels of the
+// coordinates of a vertex of the PC release.
+constexpr float SPRAY_TEXTURE_S = 32.0f * 32.0f;
+constexpr float SPRAY_TEXTURE_T = 32.0f * 64.0f;
+
+// DrawTireSpray(): behind each wheel, the quads between the segments of its spray but the newest,
+// skipping a quad whose two edges have stopped, in the place of the spray matrix of the car.
+// The spray is not drawn in the snow but on the coast.
+void DrawTireSpray(SceneRenderer &renderer,
+                   const RenderTexture &texture,
+                   const Vehicle &car,
+                   const Matrix4 &viewProjection) {
+    if (g_dwSnowMode && g_dwSelectedTrackId != TRACK_COASTLINE &&
+        g_dwSelectedTrackId != TRACK_MIRROR_COASTLINE) {
+        return;
+    }
+    const auto &vertices = car.GetSprayVertices();
+    const auto &velocities = car.GetSprayVelocities();
+    std::vector<FlatVertex> quads;
+    auto corner = [&](const ConvertedModelVertex &vertex) {
+        // An unlit vertex of the PC release takes its colour from its normal, from 0 to 255.
+        quads.push_back({vertex.position.x,
+                         vertex.position.y,
+                         vertex.texture.x / SPRAY_TEXTURE_S,
+                         vertex.texture.y / SPRAY_TEXTURE_T,
+                         {static_cast<std::uint8_t>(std::clamp(vertex.color.x, 0.0f, 255.0f)),
+                          static_cast<std::uint8_t>(std::clamp(vertex.color.y, 0.0f, 255.0f)),
+                          static_cast<std::uint8_t>(std::clamp(vertex.color.z, 0.0f, 255.0f)),
+                          0xFF},
+                         vertex.position.z});
+    };
+    auto stopped = [](const s16(&velocity)[3]) {
+        return velocity[0] == 0 && velocity[1] == 0 && velocity[2] == 0;
+    };
+    for (int wheel = 0; wheel < VEHICLE_WHEELS; ++wheel) {
+        for (int segment = 1; segment + 1 < SPRAY_SEGMENTS; ++segment) {
+            if (stopped(velocities[wheel][segment][1]) &&
+                stopped(velocities[wheel][segment + 1][1])) {
+                continue;
+            }
+            // The two triangles of gSP2Triangles(), the first and the second edge across them.
+            const auto &near = vertices[wheel][segment];
+            const auto &far = vertices[wheel][segment + 1];
+            corner(far[0]);
+            corner(far[1]);
+            corner(near[1]);
+            corner(near[0]);
+        }
+    }
+    if (quads.empty()) {
+        return;
+    }
+    Matrix4 place{};
+    std::memcpy(place.data(), car.GetSprayMatrix(), sizeof(place));
+    FlatMaterial material;
+    material.texel0 = &texture;
+    material.combine = SPRAY_COMBINE;
+    renderer.DrawQuads(quads, material, MultiplyMatrices(viewProjection, place), true);
+}
+
 } // namespace
 
 RaceView::RaceView(std::unique_ptr<State> state) : m_state(std::move(state)) {
@@ -522,6 +589,14 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
         puff.insert(puff.end(), {level, level, level, level});
     }
     state->particleTexture = RenderTexture::FromTexels(renderer, 64, 64, puff, true, true);
+    std::vector<std::uint8_t> trail;
+    for (unsigned char pair : g_abHudTexture32x64Data) {
+        for (int nibble : {pair >> 4, pair & 0xf}) {
+            auto level = static_cast<std::uint8_t>(nibble * 17);
+            trail.insert(trail.end(), {level, level, level, level});
+        }
+    }
+    state->sprayTexture = RenderTexture::FromTexels(renderer, 32, 64, trail, true, true);
     // The race of the PC release draws its text with the fonts of the cartridge.
     state->text = MenuText::Load(renderer, defaults / "n64" / "usa" / "fonts");
     // The start lights, the model of BossRally.pod.
@@ -618,6 +693,9 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     if (snapshot != nullptr) {
         LoadParticleListHeads(&snapshot->GetParticles());
         DrawParticles(renderer, *s.particleTexture, *s.shadowTexture, *camera, viewProjection);
+        for (int index = 0; index < g_dwNumVehicles; ++index) {
+            DrawTireSpray(renderer, *s.sprayTexture, snapshot->GetVehicle(index), viewProjection);
+        }
     }
     std::optional<Matrix4> lights = StartLightsMatrix();
     if (lights) {
