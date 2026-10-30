@@ -2169,12 +2169,12 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
     s32 textY = 0;
     switch (m_pakDialogState) {
     case PAK_STATE_FADE_OUT:
-        // ponytail: the music and the sound effects are not faded around the dialog; the frames
-        // of the wait remain.
+        m_screen.FadeSounds(0.0f);
         m_pakDialogState = PAK_STATE_WAIT_FADE;
         break;
     case PAK_STATE_WAIT_FADE:
-        if (m_consoleFrame && m_pakWaitFrames++ == PAK_FADE_WAIT_FRAMES) {
+        // The frames of the wait are counted once the sound effects are silent.
+        if (m_screen.SoundsFaded() && m_consoleFrame && m_pakWaitFrames++ == PAK_FADE_WAIT_FRAMES) {
             m_pakDialogState = PAK_STATE_INIT_PAK;
             m_pakWaitFrames = 0;
         }
@@ -2357,6 +2357,7 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
         break;
     case PAK_STATE_FINISH:
         m_pakDialogActive = 0;
+        m_screen.FadeSounds(1.0f);
         if (!m_pakError) {
             done = true;
             if (!inCarSelect) {
