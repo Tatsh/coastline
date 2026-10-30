@@ -474,6 +474,58 @@ constexpr std::array<std::uint32_t, 2> SPRAY_COMBINE = PARTICLE_COMBINE;
 constexpr float SPRAY_TEXTURE_S = 32.0f * 32.0f;
 constexpr float SPRAY_TEXTURE_T = 32.0f * 64.0f;
 
+// The lights RenderVehicleModel() gives a car. The sun dims with the distance from the camera at
+// night and is gone in a tunnel, where the ambient light is four fifths. The direction of
+// g_DefaultLights, or at night and in the rain the reverse of the heading of the car of the camera
+// at 120 a unit, is turned by the RSP through the view and the projection the car is drawn with, so
+// that the light follows the camera.
+Lighting CarLighting(const Vehicle &car,
+                     const Vehicle &cameraCar,
+                     const CameraFrame &camera,
+                     const Matrix4 &viewProjection) {
+    const CameraFrame &frame = car.GetFrame();
+    bool tunnel =
+        car.GetGroundInstanceCount() != 0 &&
+        (g_LoadedTrack.instances[car.GetGroundInstances()[0]].flags & TRACK_INSTANCE_SHELTER) != 0;
+    float divisor = 1.0f;
+    if (g_dwNightMode) {
+        float distance = std::hypot(frame.position.x - camera.position.x,
+                                    frame.position.y - camera.position.y,
+                                    frame.position.z - camera.position.z);
+        divisor = std::max(distance * 0.1f, 1.0f);
+    }
+    Lighting lighting;
+    std::array<std::uint8_t, 3> sun{g_bDirLightR, g_bDirLightG, g_bDirLightB};
+    std::array<std::uint8_t, 3> ambient{g_bAmbientLightR, g_bAmbientLightG, g_bAmbientLightB};
+    for (std::size_t i = 0; i < 3; ++i) {
+        if (!g_dwNightMode && tunnel) {
+            sun[i] = 0;
+            ambient[i] = static_cast<std::uint8_t>(ambient[i] * 4 / 5);
+        }
+        lighting.directional[i] =
+            static_cast<float>(static_cast<std::uint8_t>(sun[i] / divisor)) / 255.0f;
+        lighting.ambient[i] = static_cast<float>(ambient[i]) / 255.0f;
+    }
+    std::array<float, 3> light{84.0f, 84.0f, 84.0f};
+    if (g_dwNightMode || g_dwRainMode) {
+        const Vec3f &forward = cameraCar.GetFrame().forward;
+        light = {static_cast<float>(static_cast<s8>(forward.x * -120.0f)),
+                 static_cast<float>(static_cast<s8>(forward.y * -120.0f)),
+                 static_cast<float>(static_cast<s8>(forward.z * -120.0f))};
+    }
+    std::array<float, 3> turned{};
+    for (std::size_t row = 0; row < 3; ++row) {
+        for (std::size_t column = 0; column < 3; ++column) {
+            turned[row] += viewProjection[row * 4 + column] * light[column];
+        }
+    }
+    float length = std::hypot(turned[0], turned[1], turned[2]);
+    if (length > 0.0f) {
+        lighting.direction = {turned[0] / length, turned[1] / length, turned[2] / length};
+    }
+    return lighting;
+}
+
 // The instances RenderTrack() hides: the ones of a dark or wet track on a clear day, the ones of
 // arcade races in every other mode but the race after the first season, and the ones of a clear sky
 // in weather on every track but the coastline.
@@ -686,11 +738,12 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
         active == &cameras[VEHICLE_CAMERA_COCKPIT] || active == &cameras[VEHICLE_CAMERA_MIRROR];
     if (!inside || g_dwVehicleCullingDisabled) {
         Matrix4 body = MultiplyMatrices(FrameMatrix(vehicle.GetFrame()), ConsoleSpace());
+        Lighting carLighting = CarLighting(vehicle, vehicle, *camera, viewProjection);
         renderer.DrawReflectingModel(
             *s.car,
             body,
             viewProjection,
-            lighting,
+            carLighting,
             SkyReflection(s.daySky.get(), s.nightSky.get(), *camera, vehicle));
         // The underside shows only from below the car.
         const CameraFrame &frame = vehicle.GetFrame();
@@ -698,7 +751,7 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
                       frame.up.y * (frame.position.y - camera->position.y) +
                       frame.up.z * (frame.position.z - camera->position.z);
         if (s.underside && below > 0.0f) {
-            renderer.DrawModel(*s.underside, body, viewProjection, lighting, std::nullopt, true);
+            renderer.DrawModel(*s.underside, body, viewProjection, carLighting, std::nullopt, true);
         }
         // RenderWheelModels(): each wheel at the matrix the race gives it, in snow the wheel of
         // the snow.
@@ -706,7 +759,7 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
         for (const auto &rows : vehicle.GetWheelMatrices()) {
             Matrix4 place{};
             std::memcpy(place.data(), rows, sizeof(place));
-            renderer.DrawModel(wheel, place, viewProjection, lighting, std::nullopt, true);
+            renderer.DrawModel(wheel, place, viewProjection, carLighting, std::nullopt, true);
         }
     }
     // The puffs of the snapshot the frame draws.
