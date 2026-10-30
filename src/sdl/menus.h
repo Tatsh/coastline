@@ -278,9 +278,10 @@ private:
     MenuProfile m_secondProfile;
     std::array<CarSelectPlayer, 2> m_carSelect;
     std::array<float, 2> m_carSelectAngle{};
-    // The car loaded into each of the four slots of the console, and the models of the cars.
+    // The car loaded into each of the four slots of the console, and the models of the cars in the
+    // colour of each of the two vehicles that draw them.
     std::array<int, 4> m_slotCars{};
-    std::vector<std::unique_ptr<RenderModel>> m_carModels;
+    std::array<std::vector<std::unique_ptr<RenderModel>>, 2> m_carModels;
     // The choice marker of the stage of the cars, the shadow of a car on it, and the reflection of
     // the sky on the cars.
     StageMesh m_stageChoiceMarker;

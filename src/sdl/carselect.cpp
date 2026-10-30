@@ -9,6 +9,7 @@
 #include <SDL3/SDL.h>
 #include <nlohmann/json.hpp>
 
+#include "common/vehicle.h"
 #include "frontend.h"
 #include "gpu.h"
 #include "menus.h"
@@ -223,7 +224,9 @@ bool Menus::LoadCarSelect(SceneRenderer &renderer, const std::filesystem::path &
                      error.what());
         return false;
     }
-    m_carModels.resize(m_cars.size());
+    for (auto &models : m_carModels) {
+        models.resize(m_cars.size());
+    }
     // The reflection wraps across the sky, as its tile wraps.
     m_stageReflection =
         RenderTexture::Load(renderer, release / "data" / "menu-reflection.png", true, true);
@@ -240,12 +243,18 @@ bool Menus::IsCarUnlocked(int car) const {
 }
 
 // LoadVehicleModel() of the console: the model of a car into a slot. A model read once is read
-// again from memory.
+// again from memory. Vehicle 0 draws slots 0 and 2, and vehicle 1 slots 1 and 3.
+// SetVehicleModelSlot() paints the model of each draw in the colour of its player, from
+// InitVehicleColor().
 void Menus::LoadCarModel(SceneRenderer &renderer, int slot, int car) {
     m_slotCars[static_cast<std::size_t>(slot)] = car;
-    auto &model = m_carModels[static_cast<std::size_t>(car)];
+    std::size_t vehicle = static_cast<std::size_t>(slot & 1);
+    auto &model = m_carModels[vehicle][static_cast<std::size_t>(car)];
     if (!model) {
         ModelOptions options;
+        options.paint = std::array<std::uint8_t, 3>{g_abPlayerColorsRgb[vehicle][0],
+                                                    g_abPlayerColorsRgb[vehicle][1],
+                                                    g_abPlayerColorsRgb[vehicle][2]};
         options.parts = [](const std::string &name) {
             return std::ranges::find(STAGE_CAR_PARTS, name) != STAGE_CAR_PARTS.end();
         };
@@ -509,7 +518,8 @@ void Menus::DrawStageCar(SceneRenderer &renderer,
                          float angle,
                          const SDL_Rect &scissor) const {
     int car = m_slotCars[static_cast<std::size_t>(slot)];
-    const auto &model = m_carModels[static_cast<std::size_t>(car)];
+    const auto &model =
+        m_carModels[static_cast<std::size_t>(slot & 1)][static_cast<std::size_t>(car)];
     if (!model) {
         return;
     }
