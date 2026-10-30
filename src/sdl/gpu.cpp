@@ -76,8 +76,19 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
         SDL_LogError(SDL_LOG_CATEGORY_GPU, "The window was not claimed: %s", SDL_GetError());
         return nullptr;
     }
+    // Vertical sync of a Wayland window waits more than a refresh for some frames and drops the
+    // rate below the refresh of the display. A Wayland compositor does not tear, and the mailbox
+    // paced at the refresh rate shows every frame in its place.
+    SDL_GPUPresentMode wanted = options.presentMode;
+    if (wanted == SDL_GPU_PRESENTMODE_VSYNC && !options.fifo &&
+        SDL_strcmp(SDL_GetCurrentVideoDriver(), "wayland") == 0 &&
+        SDL_WindowSupportsGPUPresentMode(
+            result->m_device.get(), result->m_window.get(), SDL_GPU_PRESENTMODE_MAILBOX)) {
+        wanted = SDL_GPU_PRESENTMODE_MAILBOX;
+        result->m_pacedToRefresh = true;
+    }
     SDL_GPUPresentMode presentMode =
-        SupportedPresentMode(result->m_device.get(), result->m_window.get(), options.presentMode);
+        SupportedPresentMode(result->m_device.get(), result->m_window.get(), wanted);
     if (presentMode != SDL_GPU_PRESENTMODE_VSYNC &&
         !SDL_SetGPUSwapchainParameters(result->m_device.get(),
                                        result->m_window.get(),
@@ -89,12 +100,16 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
                     SDL_GetError());
         presentMode = SDL_GPU_PRESENTMODE_VSYNC;
     }
-    if (presentMode != options.presentMode) {
+    if (presentMode != wanted) {
         SDL_LogWarn(SDL_LOG_CATEGORY_GPU,
                     "The window does not support %s presentation.",
-                    PresentModeName(options.presentMode));
+                    PresentModeName(wanted));
     }
-    SDL_Log("Presenting frames with %s.", PresentModeName(presentMode));
+    result->m_pacedToRefresh =
+        result->m_pacedToRefresh && presentMode == SDL_GPU_PRESENTMODE_MAILBOX;
+    SDL_Log("Presenting frames with %s%s.",
+            PresentModeName(presentMode),
+            result->m_pacedToRefresh ? " at the refresh rate of the display" : "");
     result->m_antialias = options.antialias;
     SDL_GPUTextureCreateInfo frame{};
     frame.type = SDL_GPU_TEXTURETYPE_2D;
@@ -122,6 +137,20 @@ GpuWindow::~GpuWindow() {
             SDL_ReleaseWindowFromGPUDevice(m_device.get(), m_window.get());
         }
     }
+}
+
+Uint64 GpuWindow::RefreshPeriod() const {
+    if (!m_pacedToRefresh) {
+        return 0;
+    }
+    const SDL_DisplayMode *mode =
+        SDL_GetCurrentDisplayMode(SDL_GetDisplayForWindow(m_window.get()));
+    if (mode == nullptr || mode->refresh_rate_numerator <= 0) {
+        // A display of no known rate is paced at 60 hertz.
+        return SDL_NS_PER_SECOND / 60;
+    }
+    return SDL_NS_PER_SECOND * static_cast<Uint64>(mode->refresh_rate_denominator) /
+           static_cast<Uint64>(mode->refresh_rate_numerator);
 }
 
 bool GpuWindow::SetFullscreen(bool fullscreen) {

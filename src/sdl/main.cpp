@@ -72,10 +72,13 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     options.fullscreen = config.GetBoolean("Video", "Fullscreen", options.fullscreen);
     options.exclusive = config.Get("Video", "FullscreenMode") == "exclusive";
     options.refreshRate = static_cast<int>(config.GetInteger("Video", "RefreshRate", 0));
-    // VSync takes a present mode by name, or 1 and 0 for vertical sync and immediate.
+    // VSync takes a present mode by name, or 1 and 0 for vertical sync and immediate. fifo is
+    // vertical sync that waits for the vertical blank under Wayland too.
     auto present = config.Get("Video", "VSync");
     if (present == "mailbox") {
         options.presentMode = SDL_GPU_PRESENTMODE_MAILBOX;
+    } else if (present == "fifo") {
+        options.fifo = true;
     } else if (present == "immediate" ||
                (present != "vsync" && !config.GetBoolean("Video", "VSync", true))) {
         options.presentMode = SDL_GPU_PRESENTMODE_IMMEDIATE;
@@ -1236,8 +1239,10 @@ int main(int argc, char *argv[]) {
                     rateStart = now;
                     rateFrames = 0;
                 }
-                if (framePeriod > 0) {
-                    nextFrame += framePeriod;
+                // The longer of the limit and the refresh the presentation is paced to.
+                Uint64 period = std::max(framePeriod, window->RefreshPeriod());
+                if (period > 0) {
+                    nextFrame += period;
                     if (nextFrame > now) {
                         SDL_DelayPrecise(nextFrame - now);
                     } else {

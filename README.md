@@ -177,8 +177,11 @@ The `[Video]` section of `BossRally.ini` sets up the display.
 | `FrameRateLimit` | The most frames drawn each second, or `0` for no limit.                                                                                       |
 
 A mode of `VSync` the GPU driver does not support falls back to the other mode that does not wait,
-then to `vsync`. `--no-vsync` selects `immediate`. The races run at 30 steps a second and draw
-between the steps, and the menus move by the time between frames, at any frame rate.
+then to `vsync`. `--no-vsync` selects `immediate`. Under Wayland, `vsync` presents to the mailbox
+and paces the frames at the refresh rate of the display, as waiting for the vertical blank there
+drops frames on some drivers. `fifo` waits for the vertical blank under Wayland too. The races run
+at 30 steps a second and draw between the steps, and the menus move by the time between frames, at
+any frame rate.
 
 ### Data
 

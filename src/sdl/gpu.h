@@ -21,6 +21,9 @@ struct DisplayOptions {
     /** How frames are presented, with the other mode that does not wait and then vertical sync
      * taking the place of a mode the window does not support. */
     SDL_GPUPresentMode presentMode = SDL_GPU_PRESENTMODE_VSYNC;
+    /** Whether vertical sync of a Wayland window waits for the vertical blank as on other
+     * systems, rather than presenting to the mailbox at the refresh rate of the display. */
+    bool fifo = false;
     int antialias = 1; /*!< The samples of each pixel: 1 for none, or 2, 4, or 8. */
     std::optional<std::string>
         driver; /*!< An SDL GPU driver, such as vulkan, metal, or direct3d12. */
@@ -68,6 +71,12 @@ public:
      * @return Whether the window changed, with the reason logged when it did not.
      */
     bool SetFullscreen(bool fullscreen);
+
+    /**
+     * @return The nanoseconds between the frames the game paces itself to, one refresh of the
+     * display of the window when vertical sync presents to the mailbox, or 0 for no pacing.
+     */
+    Uint64 RefreshPeriod() const;
 
     /**
      * Clear the frame texture to @p color, present it, and save it when @p capture is given.
@@ -144,6 +153,7 @@ private:
     int m_antialias = 1;
     bool m_exclusive = false;
     int m_refreshRate = 0;
+    bool m_pacedToRefresh = false;
 };
 
 } // namespace coastline
