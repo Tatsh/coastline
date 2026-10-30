@@ -268,6 +268,13 @@ public:
     void SetTextureTime(std::uint32_t milliseconds);
 
     /**
+     * Set the instances of a track the frame does not draw, none from Begin().
+     *
+     * @param flags The TRACK_INSTANCE_ flags, any of which hides an instance.
+     */
+    void SetHiddenInstanceFlags(std::uint32_t flags);
+
+    /**
      * Draw a model, its opaque parts now and its translucent ones after every opaque draw.
      *
      * @param model The model.

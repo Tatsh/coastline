@@ -474,6 +474,25 @@ constexpr std::array<std::uint32_t, 2> SPRAY_COMBINE = PARTICLE_COMBINE;
 constexpr float SPRAY_TEXTURE_S = 32.0f * 32.0f;
 constexpr float SPRAY_TEXTURE_T = 32.0f * 64.0f;
 
+// The instances RenderTrack() hides: the ones of a dark or wet track on a clear day, the ones of
+// arcade races in every other mode but the race after the first season, and the ones of a clear sky
+// in weather on every track but the coastline.
+std::uint32_t HiddenInstanceFlags(const Vehicle &first) {
+    std::uint32_t flags = 0;
+    if (!g_dwNightMode && !g_dwRainMode) {
+        flags = TRACK_INSTANCE_DARK_OR_WET;
+    }
+    if (g_dwGameMode != GAME_MODE_ARCADE && g_dwGameMode != GAME_MODE_NETWORK &&
+        (g_dwGameMode != GAME_MODE_AFTER_SEASON || first.GetProfile()->season != 0)) {
+        flags |= TRACK_INSTANCE_ARCADE;
+    }
+    if (g_dwWeatherActive && (g_dwSnowMode || g_dwRainMode || g_dwNightMode) &&
+        g_dwSelectedTrackId != TRACK_COASTLINE && g_dwSelectedTrackId != TRACK_MIRROR_COASTLINE) {
+        flags |= TRACK_INSTANCE_CLEAR_SKY;
+    }
+    return flags;
+}
+
 // DrawTireSpray(): behind each wheel, the quads between the segments of its spray but the newest,
 // skipping a quad whose two edges have stopped, in the place of the spray matrix of the car.
 // The spray is not drawn in the snow but on the coast.
@@ -634,6 +653,7 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     // The lights of the weather of the race.
     // The animated textures of the track take the time of the race.
     renderer.SetTextureTime(static_cast<std::uint32_t>(g_dwElapsedTimeMs));
+    renderer.SetHiddenInstanceFlags(HiddenInstanceFlags(vehicle));
     SetupWeatherLights();
     Lighting lighting;
     lighting.direction = {g_afLightDirection[0], g_afLightDirection[1], g_afLightDirection[2]};

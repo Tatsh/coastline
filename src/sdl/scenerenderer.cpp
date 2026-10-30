@@ -427,7 +427,8 @@ struct Placed {
     std::size_t mesh;
     Matrix4 matrix;
     std::optional<Lighting> lighting;
-    int instance; // The instance of the track the node draws, or -1.
+    int instance;        // The instance of the track the node draws, or -1.
+    std::uint32_t flags; // The TRACK_INSTANCE_ flags of the instance, or 0.
 };
 
 // The lights of a clear day as the race sets them up: a directional light of 255, 255, 204 from
@@ -525,6 +526,8 @@ struct RenderModel::State {
 struct SceneRenderer::State {
     // The time of the frame the animated textures show, in milliseconds.
     std::uint32_t textureTime = 0;
+    // The TRACK_INSTANCE_ flags of the instances the frame does not draw.
+    std::uint32_t hiddenFlags = 0;
     GpuWindow *window = nullptr;
     SDL_GPUDevice *device = nullptr;
     SDL_GPUShader *vertexShader = nullptr;
@@ -923,12 +926,14 @@ std::unique_ptr<RenderModel> RenderModel::Load(SceneRenderer &renderer,
             std::size_t mesh = node["mesh"].get<std::size_t>();
             std::optional<Lighting> lighting;
             int instance = -1;
+            std::uint32_t flags = 0;
             if (node.contains("extras") && node["extras"].contains("coastlineInstance")) {
                 const auto &extras = node["extras"]["coastlineInstance"];
-                lighting = TrackInstanceLighting(extras["flags"].get<std::uint32_t>());
+                flags = extras["flags"].get<std::uint32_t>();
+                lighting = TrackInstanceLighting(flags);
                 instance = extras.value("index", -1);
             }
-            state->placed.push_back({mesh, matrix, lighting, instance});
+            state->placed.push_back({mesh, matrix, lighting, instance, flags});
             for (const auto &p : meshPositions[mesh]) {
                 auto world = Transform(matrix, p.data());
                 for (std::size_t axis = 0; axis < 3; ++axis) {
@@ -1099,12 +1104,17 @@ std::unique_ptr<SceneRenderer> SceneRenderer::Create(GpuWindow &window) {
 void SceneRenderer::Begin(std::array<float, 4> clear) {
     m_state->clear = clear;
     m_state->textureTime = 0;
+    m_state->hiddenFlags = 0;
     m_state->draws.clear();
     m_state->flat.clear();
 }
 
 void SceneRenderer::SetTextureTime(std::uint32_t milliseconds) {
     m_state->textureTime = milliseconds;
+}
+
+void SceneRenderer::SetHiddenInstanceFlags(std::uint32_t flags) {
+    m_state->hiddenFlags = flags;
 }
 
 void SceneRenderer::DrawModel(const RenderModel &model,
@@ -1329,6 +1339,9 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         const RenderModel::State &model = *draw.model->m_state;
         SDL_SetGPUScissor(pass, draw.scissor ? &*draw.scissor : &whole);
         for (const Placed &placed : model.placed) {
+            if (placed.flags & s.hiddenFlags) {
+                continue;
+            }
             const Mesh &mesh = model.meshes[placed.mesh];
             VertexUniforms vertexUniforms{draw.viewProjection,
                                           MultiplyMatrices(draw.world, placed.matrix),
