@@ -247,6 +247,7 @@ private:
                                 u8 green,
                                 u8 blue);
     void EmitScaledTextureRect(s32 x, s32 y, s32 width, s32 height);
+    static bool JapaneseMessage(std::string_view text);
     // Lines after a newline are lineHeight below the line before, or as lineGaps lists them.
     void DrawText(std::string_view text,
                   s32 x,

@@ -1130,12 +1130,15 @@ void PaintShop::ProcessPaintShopExitConfirm() {
     s32 buttonY = 0x11D - m_buttonA->width;
     s32 cancelX = 0x169 - m_buttonB->width;
     DrawRectBorder(0xBF, 0xBB, 0x102, 0x6A, 3, 0, 0, 0x80, 0x80, 0x80);
-    m_text.size = 12;
-    m_text.align = TextStyle::Align::Left;
+    std::string_view question = GameString("n64.paintShop.exitWithoutSaving");
+    bool japanese = JapaneseMessage(question);
+    m_text.size = japanese ? 14 : 12;
+    m_text.align = japanese ? TextStyle::Align::Center : TextStyle::Align::Left;
     m_text.shadow = false;
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
-    DrawText(GameString("n64.paintShop.exitWithoutSaving"), 0x67, 0x6D, 0x7B - 0x6D);
+    DrawText(question, japanese ? 160 : 0x67, 0x6D, 0x7B - 0x6D);
     m_text.size = 10;
+    m_text.align = TextStyle::Align::Left;
     s32 textY = (buttonY + 0x12) >> 1;
     DrawText("%wwYES", (m_buttonA->drawWidth + 0xF9) >> 1, textY);
     DrawText("%wwNO", (cancelX + m_buttonB->drawWidth + 8) >> 1, textY);

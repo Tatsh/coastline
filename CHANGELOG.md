@@ -60,6 +60,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
     time attack run that beats the ghost of the slot last loaded or saved replaces that ghost
     without the prompt.
 
+### Fixed
+
+- Restored Japanese paint-shop dialogue dimensions, text sizes, alignment, and button positions for
+  decal loading, saving, overwrite confirmation, and Controller Pak errors.
+
 ## [0.0.1] - 2026-00-00
 
 First version.

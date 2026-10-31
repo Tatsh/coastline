@@ -21,6 +21,16 @@
 
 namespace coastline {
 
+bool PaintShop::JapaneseMessage(std::string_view text) {
+    for (std::size_t position = 0; position < text.size();) {
+        char32_t character = NextCodePoint(text, position);
+        if (character >= U'\u3000' && character <= U'\u9fff') {
+            return true;
+        }
+    }
+    return false;
+}
+
 namespace {
 
 // The decal slot the paint shop opens on, and the brush and colour it opens with.
@@ -1657,7 +1667,8 @@ void PaintShop::SetPakTextColors(u8 inCarSelect) {
 }
 
 void PaintShop::DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
-    m_text.size = 12;
+    bool japanese = JapaneseMessage(GameString("n64.paintShop.controllerPakNotInserted"));
+    m_text.size = japanese ? 14 : 12;
     SetPakTextColors(inCarSelect);
     m_text.align = TextStyle::Align::Left;
     m_text.shadow = false;
@@ -1670,17 +1681,25 @@ void PaintShop::DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
     case PFS_ERR_NOPACK:
     case PFS_ERR_DEVICE:
         y = inCarSelect == 1 ? 0xEA : 0xCC;
-        DrawDialogBox(0xD5, y, 0xD5, 0x48);
+        DrawDialogBox(japanese ? 0xCC : 0xD5, y, japanese ? 0xE8 : 0xD5, 0x48);
         textY = (y + 30) >> 1;
-        DrawText(GameString("n64.paintShop.controllerPakNotInserted"), 0x72, textY, 14);
+        DrawText(GameString("n64.paintShop.controllerPakNotInserted"),
+                 japanese ? 0x6E : 0x72,
+                 textY,
+                 14);
         break;
     case PFS_DATA_FULL:
     case PFS_DIR_FULL: {
         static constexpr std::array<int, 5> PAGES_GAPS{12, 12, 18, 12, 12};
-        y = inCarSelect == 1 ? 0xC3 : 0x97;
-        DrawDialogBox(0xA5, y, 0x135, 0xB2);
+        static constexpr std::array<int, 3> JAPANESE_PAGES_GAPS{12, 18, 12};
+        y = inCarSelect == 1 ? (japanese ? 0xDB : 0xC3) : (japanese ? 0xAF : 0x97);
+        DrawDialogBox(japanese ? 0xB9 : 0xA5, y, japanese ? 0x10E : 0x135, japanese ? 0x82 : 0xB2);
         textY = (y + 30) >> 1;
-        DrawText(GameString("n64.paintShop.decalPagesFull"), 0x5A, textY, 12, PAGES_GAPS);
+        DrawText(GameString("n64.paintShop.decalPagesFull"),
+                 japanese ? 0x64 : 0x5A,
+                 textY,
+                 12,
+                 japanese ? std::span<const int>(JAPANESE_PAGES_GAPS) : PAGES_GAPS);
         break;
     }
     case PFS_ERR_INCONSISTENT:
@@ -1721,22 +1740,22 @@ void PaintShop::DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
         break;
     case PFS_ERR_BAD_DATA:
         y = inCarSelect == 1 ? 0xE4 : 0xCC;
-        DrawDialogBox(0xAD, y, 0x126, 0x48);
+        DrawDialogBox(japanese ? 0xB6 : 0xAD, y, japanese ? 0x114 : 0x126, 0x48);
         textY = (y + 30) >> 1;
         DrawText(GameString(operation == PAINT_TOOL_LOAD ? "n64.paintShop.loadBadData" :
                                                            "n64.paintShop.saveBadData"),
-                 0x5D,
+                 japanese ? 0x62 : 0x5D,
                  textY,
                  14);
         break;
     case PFS_ERR_CONTRFAIL: {
         static constexpr std::array<int, 3> ERROR_GAPS{12, 18, 12};
         y = inCarSelect == 1 ? 0xDC : 0xB0;
-        DrawDialogBox(0xAE, y, 0x124, 0x80);
+        DrawDialogBox(japanese ? 0xCD : 0xAE, y, japanese ? 0xE6 : 0x124, 0x80);
         textY = (y + 30) >> 1;
         DrawText(GameString(operation == PAINT_TOOL_LOAD ? "n64.paintShop.loadControllerError" :
                                                            "n64.paintShop.saveControllerError"),
-                 0x5E,
+                 japanese ? 0x6D : 0x5E,
                  textY,
                  12,
                  ERROR_GAPS);
@@ -1744,9 +1763,10 @@ void PaintShop::DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
     }
     case PFS_ERR_ID_FATAL:
         y = inCarSelect == 1 ? 0xF8 : 0xCC;
-        DrawDialogBox(0xCD, y, 0xE6, 0x48);
+        DrawDialogBox(japanese ? 0x50 : 0xCD, y, japanese ? 0x1E0 : 0xE6, 0x48);
         textY = (y + 30) >> 1;
-        DrawText(GameString("n64.paintShop.controllerPakBroken"), 0x6E, textY, 14);
+        DrawText(
+            GameString("n64.paintShop.controllerPakBroken"), japanese ? 0x30 : 0x6E, textY, 14);
         break;
     default:
         break;
@@ -1846,7 +1866,7 @@ void PaintShop::ProcessFillClearMenu() {
     m_text.size = 16;
     DrawText("%rySELECT OPTION", 0x9E, 0x4E);
     DrawSunkenFrame(0xBA, options[0].y + options[0].height + 12, 0x10C, 0x3A);
-    m_text.size = 11;
+    m_text.size = JapaneseMessage(GameString(OPTION_KEYS[clear.style])) ? 14 : 11;
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
     DrawText(GameString(OPTION_KEYS[clear.style]), 0x9E, 0x8E, 0x9B - 0x8E);
     DrawMenuButtons(buttonY, cancelX);
@@ -2038,12 +2058,14 @@ void PaintShop::FlipDecalPixels() {
 }
 
 void PaintShop::DrawPakProgressBox(s32 y, std::string_view text, s32 textX, s32 textY) {
-    DrawDialogBox(0xD4, y, 0xD8, 0x56);
-    m_text.align = TextStyle::Align::Left;
+    bool japanese = JapaneseMessage(text);
+    bool loading = text == GameString("n64.paintShop.loadingDecals");
+    DrawDialogBox(japanese && loading ? 0xC4 : 0xD4, y, japanese && loading ? 0xF8 : 0xD8, 0x56);
+    m_text.align = japanese ? TextStyle::Align::Center : TextStyle::Align::Left;
     m_text.shadow = false;
-    m_text.size = 13;
+    m_text.size = japanese ? 14 : 13;
     SetPakTextColors(0);
-    DrawText(text, textX, textY);
+    DrawText(text, japanese ? 160 : textX, textY);
     DrawSunkenFrame(0xE6, y + 0x34, 0xB4, 0x14);
 }
 
@@ -2168,20 +2190,21 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
     case PAK_STATE_CONFIRM: {
         // The row of the buttons is placed by the width of the A button.
         s32 buttonY = 0x110 - m_buttonA->width;
-        DrawDialogBox(0xDC, 0xC8, 0xC8, 0x50);
+        std::string_view question =
+            GameString(operation == PAINT_TOOL_LOAD ? "n64.paintShop.loadDecalsQuestion" :
+                                                      "n64.paintShop.saveDecalsQuestion");
+        bool japanese = JapaneseMessage(question);
+        DrawDialogBox(japanese ? 0xAA : 0xDC, 0xC8, japanese ? 0x12C : 0xC8, 0x50);
         m_text.align = TextStyle::Align::Left;
         m_text.shadow = false;
         m_text.size = 14;
         SetPakTextColors(0);
-        DrawText(GameString(operation == PAINT_TOOL_LOAD ? "n64.paintShop.loadDecalsQuestion" :
-                                                           "n64.paintShop.saveDecalsQuestion"),
-                 0x77,
-                 0x74);
+        DrawText(question, japanese ? 0x5E : 0x77, 0x74);
         DrawPakButtons(buttonY,
-                       static_cast<u32>(m_buttonA->width + 0xF2),
-                       static_cast<u32>(m_buttonB->width + 0x136),
-                       0xEC,
-                       0x130);
+                       static_cast<u32>(m_buttonA->width + (japanese ? 0xC0 : 0xF2)),
+                       static_cast<u32>(m_buttonB->width + (japanese ? 0x168 : 0x136)),
+                       japanese ? 0xBA : 0xEC,
+                       japanese ? 0x162 : 0x130);
         if ((m_input.buttons & INPUT_A) != 0) {
             Transfer(INPUT_A);
             m_pakDialogState = PAK_STATE_FADE_OUT;
@@ -2203,10 +2226,14 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
         DrawDialogBox(0xD6, 0xBB, 0xD4, 0x6A);
         m_text.align = TextStyle::Align::Left;
         m_text.shadow = false;
-        m_text.size = 13;
         SetPakTextColors(0);
         std::string_view overwrite = GameString("n64.paintShop.confirmOverwrite");
-        DrawText(overwrite, 0x72, CenterLines(overwrite, 0x6C, 2, 0xE), 0xE);
+        bool japanese = JapaneseMessage(overwrite);
+        m_text.size = japanese ? 14 : 13;
+        DrawText(overwrite,
+                 japanese ? 0x79 : 0x72,
+                 japanese ? 0x71 : CenterLines(overwrite, 0x6C, 2, 0xE),
+                 0xE);
         // The label of the B button is placed by its height.
         DrawPakButtons(buttonY,
                        static_cast<u32>(m_buttonA->width + 0xEE),
