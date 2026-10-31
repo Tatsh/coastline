@@ -84,6 +84,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Fixed a crash when pausing or resuming CD music without an available audio device.
 - Fixed inconsistent audio and crashes in sound-effect mixing after recreating the Nintendo 64 music
   player by resetting mixer positions and clearing the audio buffer.
 - Patched builds zero-pad unused season save bytes instead of reading beyond the profile, with

@@ -331,8 +331,8 @@ bool RaceMusic::Pause() {
     if (!IsPlaying()) {
         return true;
     }
-    if (m_cdStream != nullptr) {
-        return SDL_PauseAudioStreamDevice(m_cdStream);
+    if (m_source == RaceMusicSource::CdAudio) {
+        return m_cdStream == nullptr || SDL_PauseAudioStreamDevice(m_cdStream);
     }
     return Modules()->Pause();
 }
@@ -341,8 +341,8 @@ bool RaceMusic::Resume() {
     if (!IsPlaying()) {
         return true;
     }
-    if (m_cdStream != nullptr) {
-        return SDL_ResumeAudioStreamDevice(m_cdStream);
+    if (m_source == RaceMusicSource::CdAudio) {
+        return m_cdStream == nullptr || SDL_ResumeAudioStreamDevice(m_cdStream);
     }
     return Modules()->Resume();
 }
