@@ -486,6 +486,10 @@ void guLookAtHilite(Mtx *m,
                     int twidth,
                     int theight);
 
+#if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_SDL
+/* The SDL game takes the three from the C library, as the PC release does. */
+#include <math.h>
+#else
 /**
  * Return the sine of an angle in radians.
  *
@@ -495,10 +499,6 @@ void guLookAtHilite(Mtx *m,
  * @ghidraAddress EUR: 0x80262aa0
  * @ghidraAddress JPN: 0x80262540
  */
-#if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_SDL
-/* The SDL game takes the three from the C library, as the PC release does. */
-#include <math.h>
-#else
 float sinf(float x);
 
 /**
