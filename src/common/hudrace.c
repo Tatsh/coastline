@@ -86,8 +86,10 @@ void DrawRaceTimerHud(void) {
     switch (g_dwGameMode) {
     case GAME_MODE_CHAMPIONSHIP:
     case GAME_MODE_TIME_ATTACK:
-#if TGR_BOSS_RALLY
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     case GAME_MODE_ARCADE:
+#endif
+#if TGR_BOSS_RALLY
     case GAME_MODE_NETWORK:
 #endif
         if (g_dwNumViewports == 1) {
@@ -111,7 +113,7 @@ void DrawRaceTimerHud(void) {
                           HUD_RACE_ADD(y, below));
         }
         break;
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
     case GAME_MODE_ARCADE:
         if (g_dwNumViewports == 1) {
             DRAW_HUD_TIME(HUD_TOTAL_TIME,
@@ -127,11 +129,11 @@ void DrawRaceTimerHud(void) {
                           HUD_RACE_RIGHT,
                           HUD_RACE_ADD(y, below));
         } else if (g_dwNumLocalPlayers == 1) {
-            DRAW_HUD_TIME("%15TIME LEFT",
-                          "%ww",
-                          VEHICLE_GET(g_pActiveCameraVehicle, TimeLeft),
-                          HUD_RACE_RIGHT,
-                          HUD_RACE_ADD(y, below));
+            DrawLabelWithTime("%15TIME LEFT",
+                              "%ww",
+                              VEHICLE_GET(g_pActiveCameraVehicle, TimeLeft),
+                              HUD_RACE_RIGHT,
+                              HUD_RACE_ADD(y, below));
         } else {
             DRAW_HUD_TIME(HUD_LAP_TIME,
                           "%ww",
@@ -140,7 +142,7 @@ void DrawRaceTimerHud(void) {
                           HUD_RACE_ADD(y, below));
         }
         break;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
     case GAME_MODE_PRACTICE:
         if (g_dwNumViewports == 1) {
             DRAW_HUD_TIME(HUD_BEST_LAP,

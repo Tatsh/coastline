@@ -323,16 +323,16 @@ static BOSS_RALLY_INLINE s32 RunRacingPhase(void) {
     if (allFinished) {
         return TRUE;
     }
-#if !TGR_BOSS_RALLY
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
     if (g_dwGameMode == GAME_MODE_ARCADE && g_dwNumLocalPlayers == 1 &&
         (f64)VEHICLE_GET(&g_aVehicles[0], TimeLeft) == 0.0) {
         g_bReplayAfterRace = FALSE;
-        g_aVehicles[1].message = g_aVehicles[0].message = "%ryTIME UP!";
-        g_aVehicles[1].messageTime = 2.0f;
-        g_aVehicles[0].messageTime = g_aVehicles[1].messageTime;
+        VEHICLE_SET(&g_aVehicles[1], Message, VEHICLE_SET(&g_aVehicles[0], Message, "%ryTIME UP!"));
+        VEHICLE_SET(&g_aVehicles[1], MessageTime, 2.0f);
+        VEHICLE_SET(&g_aVehicles[0], MessageTime, VEHICLE_GET(&g_aVehicles[1], MessageTime));
         return TRUE;
     }
-#endif /* !TGR_BOSS_RALLY */
+#endif /* TGR_PLATFORM != TGR_PLATFORM_WIN */
     return FALSE;
 }
 

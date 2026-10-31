@@ -212,13 +212,15 @@ static BOSS_RALLY_INLINE void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f3
                     SELECTED_TRACK_ITEM()
                         ->arcadeTimes[VEHICLE_GET(&(g_aVehicles[0]), TableIndex)][weather]
                         .gateBonuses[gate]);
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if TGR_PLATFORM != TGR_PLATFORM_WIN
         if (g_dwNumLocalPlayers == 1) {
-            sprintf(other->messageText, "%%ry");
-            FormatLapTime(other->messageText + COLOR_PREFIX_LENGTH, other->timeLeft);
-            sprintf(other->messageText + strlen(other->messageText), " Left");
-            other->subMessage = other->messageText;
-            other->subMessageTime = CHECKPOINT_SUB_MESSAGE_TIME;
+            sprintf(VEHICLE_GET(other, MessageText), "%%ry");
+            FormatLapTime(VEHICLE_GET(other, MessageText) + COLOR_PREFIX_LENGTH,
+                          VEHICLE_GET(other, TimeLeft));
+            sprintf(VEHICLE_GET(other, MessageText) + strlen(VEHICLE_GET(other, MessageText)),
+                    " Left");
+            VEHICLE_SET(other, SubMessage, VEHICLE_GET(other, MessageText));
+            VEHICLE_SET(other, SubMessageTime, CHECKPOINT_SUB_MESSAGE_TIME);
         } else
 #endif
             if (!PROGRESS_ZERO(VEHICLE_GET(other, TotalTime))
