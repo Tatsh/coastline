@@ -3,8 +3,28 @@ concurrency:
   cancel-in-progress: true
   group: build-${{ github.ref }}
 jobs:
+  version:
+    name: 'Package version'
+    outputs:
+      version: '${{ steps.version.outputs.version }}'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: 'version'
+        name: 'Select the tag or seven-character SHA'
+        run: |
+          version="${GITHUB_SHA:0:7}"
+          if tag=$(git describe --tags --exact-match HEAD 2>/dev/null); then
+            version="v${tag#v}"
+            version="${version//\//-}"
+          fi
+          printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
   n64:
     name: 'Nintendo 64 (${{ matrix.region }}, ${{ matrix.build-type }})'
+    needs: 'version'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -42,14 +62,26 @@ jobs:
           TGR_REGION: '${{ matrix.region }}'
       # Without a cartridge image the build links neither the program nor the cartridge, only the
       # archives of the routines.
+      - name: 'Version the archive filenames'
+        run: |
+          while IFS= read -r -d '' archive; do
+            relative="${archive#build/n64-"$TGR_REGION"/src/}"
+            destination="artifacts/${relative%.a}-$VERSION.a"
+            mkdir -p "${destination%/*}"
+            cp "$archive" "$destination"
+          done < <(find "build/n64-$TGR_REGION/src" -type f -name '*.a' -print0)
+        env:
+          TGR_REGION: '${{ matrix.region }}'
+          VERSION: '${{ needs.version.outputs.version }}'
       - name: 'Upload the archives'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
           name: 'n64-${{ matrix.region }}-${{ matrix.build-type }}'
-          path: 'build/n64-${{ matrix.region }}/src/**/*.a'
+          path: 'artifacts/**/*.a'
   sdl:
     name: 'SDL (${{ matrix.platform.name }}, ${{ matrix.build-type }})'
+    needs: 'version'
     runs-on: '${{ matrix.platform.os }}'
     strategy:
       fail-fast: false
@@ -88,8 +120,8 @@ jobs:
             slug: 'macos-x86_64'
             triplet: 'x64-osx'
     env:
-      # The name of each package has the tag, or the branch outside a release.
-      PACKAGE: 'coastline-${{ github.ref_name }}-${{ matrix.platform.slug }}-${{ matrix.build-type }}'
+      # Each package filename includes a version tag or the seven-character commit SHA.
+      PACKAGE: 'coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-${{ matrix.build-type }}'
       BUILD_TYPE: '${{ matrix.build-type }}'
       MACOSX_DEPLOYMENT_TARGET: '10.15'
       VCPKG_KEEP_ENV_VARS: 'MACOSX_DEPLOYMENT_TARGET'
@@ -202,8 +234,8 @@ jobs:
           DESTDIR=AppDir cmake --install build/sdl --prefix /usr --strip
           APPIMAGE_EXTRACT_AND_RUN=1 ./linuxdeploy.AppImage --appdir AppDir --output appimage
         env:
-          LDAI_OUTPUT: 'Coastline-${{ github.sha }}-${{ matrix.platform.slug }}.AppImage'
-          LINUXDEPLOY_OUTPUT_VERSION: '${{ github.sha }}'
+          LDAI_OUTPUT: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}.AppImage'
+          LINUXDEPLOY_OUTPUT_VERSION: '${{ needs.version.outputs.version }}'
           LINUXDEPLOY_SHA256: '${{ matrix.platform.linuxdeploy-sha256 }}'
       - if: runner.os == 'Linux' && matrix.build-type == 'Release'
         name: 'Upload the AppImage'
@@ -211,12 +243,13 @@ jobs:
         with:
           if-no-files-found: 'error'
           name: 'appimage-${{ matrix.platform.slug }}'
-          path: 'Coastline-${{ github.sha }}-${{ matrix.platform.slug }}.AppImage'
+          path: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}.AppImage'
   flatpak:
     container:
       image: 'ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08'
       options: '--privileged'
     name: 'Flatpak (${{ matrix.arch }})'
+    needs: 'version'
     runs-on: '${{ matrix.os }}'
     strategy:
       fail-fast: false
@@ -235,11 +268,12 @@ jobs:
         with:
           arch: '${{ matrix.arch }}'
           artifact-name: 'flatpak-${{ matrix.arch }}'
-          bundle: 'sh.tat.coastline-${{ github.ref_name }}-${{ matrix.arch }}.flatpak'
+          bundle: 'sh.tat.coastline-${{ needs.version.outputs.version }}-${{ matrix.arch }}.flatpak'
           cache: false
           manifest-path: 'flatpak/sh.tat.coastline.yml'
   snap:
     name: 'Snap (${{ matrix.name }})'
+    needs: 'version'
     runs-on: '${{ matrix.os }}'
     strategy:
       fail-fast: false
@@ -257,7 +291,7 @@ jobs:
           persist-credentials: false
       - id: 'snap'
         uses: 'snapcore/action-build@3bdaa03e1ba6bf59a65f84a751d943d549a54e79'
-      - name: 'Name the snap after the tag'
+      - name: 'Version the snap filename'
         run: |
           name="coastline_${VERSION}_${ARCH}.snap"
           [[ "$SNAP_FILE" == "$name" ]] || mv "$SNAP_FILE" "$name"
@@ -265,7 +299,7 @@ jobs:
         env:
           ARCH: '${{ matrix.name }}'
           SNAP_FILE: '${{ steps.snap.outputs.snap }}'
-          VERSION: '${{ github.ref_name }}'
+          VERSION: '${{ needs.version.outputs.version }}'
       - name: 'Upload the snap'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
@@ -274,6 +308,7 @@ jobs:
           path: '${{ env.SNAP_FILE }}'
   win:
     name: 'Windows (${{ matrix.renderer }}, ${{ matrix.build-type }})'
+    needs: 'version'
     runs-on: windows-latest
     strategy:
       fail-fast: false
@@ -323,7 +358,7 @@ jobs:
           BUILD_TYPE: '${{ matrix.build-type }}'
           LIBRARY: "${{ matrix.renderer == 'd3d' && 'brd3d' || 'brglide' }}"
           TGR_RENDERER: '${{ matrix.renderer }}'
-          VERSION: '${{ github.ref_name }}'
+          VERSION: '${{ needs.version.outputs.version }}'
         shell: 'msys2 {0}'
       - name: 'Upload the binaries'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
