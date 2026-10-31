@@ -82,17 +82,25 @@ else()
   add_compile_definitions(TGR_BOSS_RALLY=1 TGR_BRD3D=1)
 endif()
 
-# The changes of this project to the game. The commit is read when the build is configured, and is
-# blank without Git or outside a clone, such as from an archive of the sources.
+# The changes of this project to the game. The revision is read when the build is configured: the
+# release tag (v1.2.3) when one names the commit, and the short commit otherwise. It is blank without
+# Git or outside a clone, such as from an archive of the sources.
 if(TGR_ENABLE_PATCHES)
   set(_tgr_git_sha "")
   find_package(Git QUIET)
   if(GIT_FOUND AND EXISTS "${CMAKE_SOURCE_DIR}/.git")
     execute_process(
-      COMMAND "${GIT_EXECUTABLE}" rev-parse --short HEAD
+      COMMAND "${GIT_EXECUTABLE}" describe --tags --exact-match --match "v*" HEAD
       WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
       OUTPUT_VARIABLE _tgr_git_sha
       OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+    if(NOT _tgr_git_sha)
+      execute_process(
+        COMMAND "${GIT_EXECUTABLE}" rev-parse --short HEAD
+        WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+        OUTPUT_VARIABLE _tgr_git_sha
+        OUTPUT_STRIP_TRAILING_WHITESPACE ERROR_QUIET)
+    endif()
   endif()
   add_compile_definitions(ENABLE_PATCHES=1 COASTLINE_GIT_SHA="${_tgr_git_sha}")
 endif()

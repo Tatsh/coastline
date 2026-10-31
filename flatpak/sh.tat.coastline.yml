@@ -25,7 +25,8 @@ modules:
     name: 'coastline'
     sources:
       - path: '..'
-        skip: ['.claude', '.git', '.wiswa-ci', 'build', 'node_modules']
+        # The clone stays, so the build reads the revision of the game from it.
+        skip: ['.claude', '.wiswa-ci', 'build', 'node_modules']
         type: 'dir'
 runtime: 'org.freedesktop.Platform'
 runtime-version: '25.08'
