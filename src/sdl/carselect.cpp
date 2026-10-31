@@ -267,7 +267,10 @@ MenuProfile &Menus::ProfileOf(int player) {
 }
 
 bool Menus::IsCarUnlocked(int car) const {
-    return (!m_paintMode || car < PAINT_SHOP_CARS) && (m_profile.unlocks & (1 << car)) != 0 &&
+    return car >= 0 && static_cast<std::size_t>(car) < m_cars.size() &&
+           (!m_paintMode || car < PAINT_SHOP_CARS) &&
+           (m_paintMode || m_gameMode != GameMode::Championship ||
+            (m_profile.unlocks & (1 << car)) != 0) &&
            m_cars[static_cast<std::size_t>(car)].exists;
 }
 

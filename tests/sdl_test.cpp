@@ -26,6 +26,7 @@
 #include "paths.h"
 #include "performance.h"
 #include "runscript.h"
+#include "trackcatalog.h"
 #include "volumelevels.h"
 
 namespace {
@@ -583,6 +584,28 @@ void CheckAssetData() {
 } // namespace
 
 int main() {
+    const std::array<int, 10> nativeTracks{0, 1, 2, 3, 4, 6, 7, 8, 9, 10};
+    std::set<int> engineTracks;
+    for (int track = 0; track < coastline::MENU_TRACK_COUNT; ++track) {
+        int engine = coastline::EngineTrackForMenu(track);
+        engineTracks.insert(engine);
+        Check(coastline::MenuTrackForEngine(engine) == track,
+              "each track maps back to its menu index");
+        if (track < coastline::CONSOLE_TRACK_COUNT) {
+            Check(engine == nativeTracks[static_cast<std::size_t>(track)],
+                  "the original track indices retain their engine mapping");
+        }
+    }
+    Check(engineTracks.size() == 15 && *engineTracks.begin() == 0 && *engineTracks.rbegin() == 14,
+          "every engine track appears once, including both PC tracks and their mirrors");
+    Check(coastline::EngineTrackForMenu(10) == 5 && coastline::EngineTrackForMenu(11) == 11 &&
+              coastline::EngineTrackForMenu(12) == 14 && coastline::EngineTrackForMenu(13) == 13 &&
+              coastline::EngineTrackForMenu(14) == 12,
+          "PC-only tracks and Gamewin do not reuse action or championship indices");
+    Check(coastline::EngineTrackForMenu(-1) == -1 &&
+              coastline::EngineTrackForMenu(coastline::MENU_TRACK_COUNT) == -1 &&
+              coastline::MenuTrackForEngine(-1) == -1 && coastline::MenuTrackForEngine(15) == -1,
+          "invalid tracks and menu actions cannot become engine tracks");
     const std::array<std::string, 2> gpuNames{"NVIDIA adapter 0", "NVIDIA adapter 1"};
     Check(coastline::UniqueGpuIndex("NVIDIA adapter 1", gpuNames) == 1,
           "GPU statistics must match the selected adapter instead of the first device");

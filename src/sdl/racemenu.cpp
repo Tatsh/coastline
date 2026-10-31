@@ -106,6 +106,31 @@ bool Menus::LoadTrackMenu(SceneRenderer &renderer, const std::filesystem::path &
                      error.what());
         return false;
     }
+    if (m_numTracks != CONSOLE_TRACK_COUNT || m_trackMenuItems.size() != CONSOLE_TRACK_COUNT + 1) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The imported track menu is incomplete.");
+        return false;
+    }
+    MenuItem load = m_trackMenuItems.back();
+    m_trackMenuItems.pop_back();
+    m_trackExists.resize(CONSOLE_TRACK_COUNT);
+    const auto assets = release.parent_path().parent_path();
+    for (const auto &extra : EXTRA_MENU_TRACKS) {
+        MenuItem item;
+        item.name = extra.name;
+        item.flags = extra.mirrored ? MENU_ITEM_MIRRORED_MODEL : 0;
+        if (extra.engine == 12) {
+            item.model = load.model;
+        }
+        auto gltf = assets / "tracks" / (std::string(extra.file) + ".gltf");
+        auto glb = gltf;
+        glb.replace_extension(".glb");
+        std::error_code error;
+        m_trackExists.push_back(std::filesystem::is_regular_file(gltf, error) ||
+                                std::filesystem::is_regular_file(glb, error));
+        m_trackMenuItems.push_back(std::move(item));
+    }
+    m_numTracks = MENU_TRACK_COUNT;
+    m_trackMenuItems.push_back(std::move(load));
     auto resets = m_screen->LoadItems(renderer, release / "menu-items", RESET_STEMS);
     if (!resets) {
         return false;
@@ -151,6 +176,9 @@ void Menus::LoadSeasonCars(SceneRenderer &renderer) {
 }
 
 bool Menus::IsTrackUnlocked(int track) const {
+    if (track < 0 || static_cast<std::size_t>(track) >= m_trackMenuItems.size()) {
+        return false;
+    }
     if (m_gameMode == GameMode::Championship) {
         if (m_seasonFirstRace) {
             return track == m_selectedTrackId;
@@ -160,8 +188,7 @@ bool Menus::IsTrackUnlocked(int track) const {
     if (m_gameMode == GameMode::TimeAttack && (track == m_numTracks || track == m_numTracks + 2)) {
         return true;
     }
-    return (m_profile.unlockedTracks & (1 << track)) && track < m_numTracks &&
-           m_trackExists[static_cast<std::size_t>(track)];
+    return track < m_numTracks && m_trackExists[static_cast<std::size_t>(track)];
 }
 
 void Menus::ValidateChampionshipProgress() {
@@ -223,8 +250,7 @@ void Menus::TrackMenuPostDraw(SceneRenderer &renderer, int item) {
             m_seasonFirstRace = true;
         } else if (m_gameMode == GameMode::TimeAttack) {
             StartTimeAttack();
-            // The loaded ghost picks its track when that track is unlocked.
-            if (m_profile.unlockedTracks & (1 << m_ghostRecording[0])) {
+            if (m_ghostRecording[0] < m_numTracks && IsTrackUnlocked(m_ghostRecording[0])) {
                 m_selectedTrackId = m_ghostRecording[0];
             }
         }

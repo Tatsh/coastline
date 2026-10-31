@@ -21,6 +21,7 @@
 #include "menuscreen.h"
 #include "paintshop.h"
 #include "racesession.h"
+#include "trackcatalog.h"
 
 namespace coastline {
 
@@ -46,12 +47,14 @@ struct MenuProfile {
     std::array<std::array<u8, 4>, 6> seasonPlaces{};
     /** The time of each race of each season, in seconds. */
     std::array<std::array<f32, 4>, 6> seasonTimes{};
-    std::array<f32, 10> lapRecords{};  /*!< The best lap on each track, or 0 for none. */
-    std::array<f32, 10> raceRecords{}; /*!< The best race on each track, or 0 for none. */
-    u16 unlocks = 0x102;               /*!< The unlocked cars, a bit for each. */
-    u16 unlockedTracks = 4;            /*!< The unlocked tracks, a bit for each. */
-    u16 unlockedWeathers = 1;          /*!< The weathers the championship has raced in. */
-    int controllerLayout = 0;          /*!< The button layout of the controller screen. */
+    std::array<f32, MENU_TRACK_COUNT>
+        lapRecords{}; /*!< The best lap on each track, or 0 for none. */
+    std::array<f32, MENU_TRACK_COUNT>
+        raceRecords{};        /*!< The best race on each track, or 0 for none. */
+    u16 unlocks = 0x102;      /*!< The unlocked cars, a bit for each. */
+    u16 unlockedTracks = 4;   /*!< The unlocked tracks, a bit for each. */
+    u16 unlockedWeathers = 1; /*!< The weathers the championship has raced in. */
+    int controllerLayout = 0; /*!< The button layout of the controller screen. */
 };
 
 /** The settings of the options menu, as OptionSettings of the console. */
@@ -240,6 +243,8 @@ private:
     void SetTrackFromSeason();
     void LoadSeasonCars(SceneRenderer &renderer);
     bool IsTrackUnlocked(int track) const;
+    void LoadExtraTrackRecords();
+    void SaveExtraTrackRecords();
     void ValidateChampionshipProgress();
     void TrackMenuPostDraw(SceneRenderer &renderer, int item);
     void SeasonRecordsPreDraw(SceneRenderer &renderer);

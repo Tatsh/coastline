@@ -1348,6 +1348,7 @@ unifont
 unistd
 unknownapplication
 unlabeled
+unmirrored
 unmute
 unrotated
 unscii

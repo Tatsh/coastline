@@ -180,7 +180,7 @@ void ReadProfile(MenuProfile &profile, const std::vector<u8> &bytes) {
         }
         profile.seasonPoints[season] = Get16(bytes, 0x1E + season * 2);
     }
-    for (std::size_t track = 0; track < profile.lapRecords.size(); ++track) {
+    for (std::size_t track = 0; track < CONSOLE_TRACK_COUNT; ++track) {
         profile.lapRecords[track] = std::bit_cast<f32>(Get32(bytes, 0x8C + track * 4));
         profile.raceRecords[track] = std::bit_cast<f32>(Get32(bytes, 0xE8 + track * 4));
     }
@@ -210,7 +210,7 @@ void WriteProfile(std::vector<u8> &bytes, const MenuProfile &profile) {
         }
         Put16(bytes, 0x1E + season * 2, profile.seasonPoints[season]);
     }
-    for (std::size_t track = 0; track < profile.lapRecords.size(); ++track) {
+    for (std::size_t track = 0; track < CONSOLE_TRACK_COUNT; ++track) {
         Put32(bytes, 0x8C + track * 4, std::bit_cast<u32>(profile.lapRecords[track]));
         Put32(bytes, 0xE8 + track * 4, std::bit_cast<u32>(profile.raceRecords[track]));
     }

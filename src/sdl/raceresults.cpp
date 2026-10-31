@@ -3,6 +3,7 @@
 // of the race, the races of the season, and the message of the season, a page each.
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <cstdio>
 #include <string>
 
@@ -41,15 +42,10 @@ constexpr float SPREAD_TWO_VIEWS = 12.0f;
 constexpr int WIDTH = 320;
 constexpr int HEIGHT = 240;
 
-// The tracks of the console, the mirrored ones after the others, and the track of the race after a
-// season.
-constexpr int MENU_TRACKS = 10;
+// Mirrored console tracks follow their unmirrored counterparts in the menu.
 constexpr int MIRRORED_TRACKS = 5;
-constexpr int AFTER_SEASON_MENU_TRACK = 10;
 
-// The tracks of the race engine: the mirrored ones after the six of the PC release, and
-// gamewin.trk.
-constexpr int PC_MIRRORED_TRACKS = 6;
+// Gamewin is the engine track used after completing a season.
 constexpr int PC_AFTER_SEASON_TRACK = 12;
 
 // The seasons of the championship, and the unlocks of the strip mine and of the cars.
@@ -61,14 +57,6 @@ constexpr int MIRROR_STRIP_MINE = 8;
 constexpr std::array<const char *, 20> PLACE_NAMES{
     "1st",  "2nd",  "3rd",  "4th",  "5th",  "6th",  "7th",  "8th",  "9th",  "10th",
     "11th", "12th", "13th", "14th", "15th", "16th", "17th", "18th", "19th", "20th"};
-
-// The track of the race engine of a track of the console.
-int PcTrack(int track) {
-    if (track == AFTER_SEASON_MENU_TRACK) {
-        return PC_AFTER_SEASON_TRACK;
-    }
-    return track < MIRRORED_TRACKS ? track : track - MIRRORED_TRACKS + PC_MIRRORED_TRACKS;
-}
 
 // The weather of a race: SetupRaceVehicles() of the console races a time attack on the strip mine
 // and its mirror in the fog, and on the other tracks in the sun.
@@ -107,7 +95,7 @@ RaceSetup Menus::ChosenRace() const {
     RaceSetup setup;
     setup.gameMode = m_afterSeasonRace ? GAME_MODE_AFTER_SEASON : static_cast<int>(m_gameMode);
     setup.players = m_numLocalPlayers;
-    setup.track = PcTrack(m_selectedTrackId);
+    setup.track = m_afterSeasonRace ? PC_AFTER_SEASON_TRACK : EngineTrackForMenu(m_selectedTrackId);
     setup.weather = RaceWeather(m_gameMode, m_selectedTrackId, m_currentWeather);
     // InitRace() of the console races three laps but in arcade.
     setup.laps = m_gameMode == GameMode::Arcade ? m_totalLaps : 3;
@@ -135,8 +123,8 @@ RaceSetup Menus::ChosenRace() const {
     setup.season = m_profile.season;
     setup.round = m_profile.round;
     setup.championshipFlags = m_profile.championshipFlags;
-    for (int track = 0; track < MENU_TRACKS; ++track) {
-        auto pc = static_cast<std::size_t>(PcTrack(track));
+    for (int track = 0; track < MENU_TRACK_COUNT; ++track) {
+        auto pc = static_cast<std::size_t>(EngineTrackForMenu(track));
         setup.lapRecords[pc] = m_profile.lapRecords[static_cast<std::size_t>(track)];
         setup.raceRecords[pc] = m_profile.raceRecords[static_cast<std::size_t>(track)];
     }
@@ -168,11 +156,12 @@ void Menus::FinishRace(RaceEnd end, const RaceResults &results) {
     if (end == RaceEnd::Results) {
         // The races and the laps of record the race set.
         m_results = results;
-        for (int track = 0; track < MENU_TRACKS; ++track) {
-            auto pc = static_cast<std::size_t>(PcTrack(track));
+        for (int track = 0; track < MENU_TRACK_COUNT; ++track) {
+            auto pc = static_cast<std::size_t>(EngineTrackForMenu(track));
             m_profile.lapRecords[static_cast<std::size_t>(track)] = results.lapRecords[pc];
             m_profile.raceRecords[static_cast<std::size_t>(track)] = results.raceRecords[pc];
         }
+        SaveExtraTrackRecords();
         // RestoreRaceResultsFromSlots() of the console: the points, the place, and the time of
         // the race of the season.
         if (m_gameMode == GameMode::Championship) {
@@ -334,7 +323,7 @@ void Menus::DrawRaceResultsTitle(SceneRenderer &renderer) {
     std::string title;
     if (m_resultsPage == RESULTS_PAGE_PLAYER_1 || m_resultsPage == RESULTS_PAGE_PLAYER_2) {
         // The track and the weather of the race, its name marked when it is mirrored.
-        bool mirrored = m_resultsTrack >= MIRRORED_TRACKS;
+        bool mirrored = m_resultsTrack >= MIRRORED_TRACKS && m_resultsTrack < CONSOLE_TRACK_COUNT;
         int track = mirrored ? m_resultsTrack - MIRRORED_TRACKS : m_resultsTrack;
         title = std::string("%ry") + (mirrored ? "M-" : "") +
                 m_trackMenuItems[static_cast<std::size_t>(track)].name + "/" +
@@ -622,6 +611,36 @@ void Menus::ProcessRaceResultsScreen(SceneRenderer &renderer,
         return;
     }
     HandleRaceResultsInput(first);
+}
+
+void Menus::LoadExtraTrackRecords() {
+    if (!m_config) {
+        return;
+    }
+    for (int track = CONSOLE_TRACK_COUNT; track < MENU_TRACK_COUNT; ++track) {
+        const auto key = "Track" + std::to_string(EngineTrackForMenu(track));
+        auto read = [this, &key](const char *kind) {
+            const float value = m_config->GetFloat("Records", key + kind, 0.0f);
+            return std::isfinite(value) && value > 0.0f ? value : 0.0f;
+        };
+        m_profile.lapRecords[static_cast<std::size_t>(track)] = read("Lap");
+        m_profile.raceRecords[static_cast<std::size_t>(track)] = read("Race");
+    }
+}
+
+void Menus::SaveExtraTrackRecords() {
+    if (!m_config) {
+        return;
+    }
+    for (int track = CONSOLE_TRACK_COUNT; track < MENU_TRACK_COUNT; ++track) {
+        const auto key = "Track" + std::to_string(EngineTrackForMenu(track));
+        const auto index = static_cast<std::size_t>(track);
+        m_config->Set("Records", key + "Lap", std::to_string(m_profile.lapRecords[index]));
+        m_config->Set("Records", key + "Race", std::to_string(m_profile.raceRecords[index]));
+    }
+    if (!m_config->Save(m_configPath)) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Track records could not be saved.");
+    }
 }
 
 } // namespace coastline

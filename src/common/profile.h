@@ -16,8 +16,10 @@ extern "C" {
 #define SEASONS 6      /*!< The seasons of the championship. */
 #define SEASON_RACES 4 /*!< The most races of a season. */
 
-/** Profiles record fourteen Windows tracks or five N64 tracks and their mirrored versions. */
-#if TGR_BOSS_RALLY
+/** Track records include mirrored versions and the SDL bonus track at engine index 14. */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#define PROFILE_RECORD_TRACKS 15
+#elif TGR_BOSS_RALLY
 #define PROFILE_RECORD_TRACKS 14
 #else
 #define PROFILE_RECORD_TRACKS 10

@@ -1534,10 +1534,8 @@ ModelOptions CarOptions(const CarKey &key,
     return options;
 }
 
-// A level of detail of a car in its parts, the children of the root of the level: the textured
-// parts, the body, and the underside, and the highlighted parts, a node of their own. A part the
-// level does not have is none, as RenderVehicleModel() passes over a display list the level does
-// not have, and only a part of the nearest level is missed in the log.
+// RenderVehicleModel() skips absent display lists. Bonus cars can omit painted bodywork or other
+// parts at every detail level.
 CarLevel LoadCarLevel(const std::shared_ptr<RenderDocument> &document, const CarKey &key, int lod) {
     CarLevel parts;
     if (!document) {
@@ -1547,7 +1545,7 @@ CarLevel LoadCarLevel(const std::shared_ptr<RenderDocument> &document, const Car
     std::string level = root + "-";
     ModelOptions options;
     options.paint = CarPaint(key);
-    options.optional = lod != 0;
+    options.optional = true;
     options.node = root;
     // RenderVehicleModel() does not draw the textured parts of a car in its other look.
     bool otherLook = key[5] != 0;
@@ -1611,7 +1609,8 @@ CarModels LoadCarModels(const std::shared_ptr<RenderDocument> &document, const C
     options.optional = true;
     options.oneCycle = true;
     models.beams = RenderModel::Load(document, options);
-    if (!models.levels[0]->car || !models.levels[0]->paint || !models.wheel) {
+    const auto &body = *models.levels[0];
+    if ((!body.car && !body.paint && !body.highlighted) || !models.wheel) {
         return {};
     }
     return models;
@@ -2544,8 +2543,9 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     std::ranges::copy(car.GetDamageTextureLevels(), damage.begin());
     renderer.SetDamage(damage);
     // The body takes the dents the race gives the vertices of the engine, and the wheels do not.
+    const auto &paint = models.levels[0]->paint;
     renderer.SetDisplacement(
-        DentDisplacement(renderer, s.dents[vehicleIndex], car, key, *models.levels[0]->paint));
+        paint ? DentDisplacement(renderer, s.dents[vehicleIndex], car, key, *paint) : nullptr);
     const Lighting &carLighting = view.lighting;
     Matrix4 body = MultiplyMatrices(FrameMatrix(frame), ConsoleSpace());
     Reflection reflection =

@@ -65,6 +65,7 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
     menus->LoadPakData();
     menus->m_config = &config;
     menus->m_configPath = configPath;
+    menus->LoadExtraTrackRecords();
     menus->LoadCarChoices();
     menus->m_paintShop = PaintShop::Load(renderer,
                                          release,

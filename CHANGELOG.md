@@ -11,6 +11,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- All available cars and tracks are selectable outside Championship, including PC Race and Bonus
+  tracks, their mirrors, and Gamewin. Extra track records use separate INI settings and preserve the
+  native Controller Pak layout.
 - AppStream metadata for Linux software catalogues, with game details and asset import requirements.
 - GLB models with embedded buffers and PNG images, plus data URI buffers and images. Paint-shop
   models retain model and paint metadata. Selected-pack models override defaults across formats;

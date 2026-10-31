@@ -17,8 +17,8 @@
 
 namespace coastline {
 
-/** The tracks of the records of a profile of the PC release. */
-constexpr int PC_RECORD_TRACKS = 14;
+/** Track record slots in race-engine order, including the SDL Bonus Track. */
+constexpr int PC_RECORD_TRACKS = 15;
 
 /** The most laps of a race the results record. */
 constexpr int RESULT_LAPS = 12;
