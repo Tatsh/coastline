@@ -211,6 +211,11 @@ These are the keys and the bindings of each preset.
 button braking. A press of `StartOrRespawn` starts a race, and a second press within half a second
 resets the car. The menu keys drive the menus, and the race keys drive both players of a race.
 
+In the pause menu, Escape continues the race whatever item is chosen, and `Pause` of the gamepad
+chooses the item, as Start does on the console. A race pauses when the window loses the focus.
+`PauseOnFocusLoss` in the `[Game]` section is `1`, the default, to pause, or `0` to let the race
+run on. A run of `run-script` never pauses this way.
+
 `TypeA`, `TypeB`, `TypeC`, `TypeD`, and `SteeringWheel` are the button layouts of the Nintendo 64
 release, with A of the console on `a`, B on `b`, Z on `lefttrigger`, L and R on the shoulders, and
 the C buttons on the right stick. They bind the race keys below and the other keys as `Default`

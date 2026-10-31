@@ -29,6 +29,9 @@
 #include "common/game.h"
 #include "common/hud.h"
 #include "common/input.h"
+#include "common/inputpoll.h"
+#include "common/instantreplay.h"
+#include "common/pause.h"
 #include "config.h"
 #include "controllerpak.h"
 #include "controls.h"
@@ -852,6 +855,7 @@ int main(int argc, char *argv[]) {
                                               {"Game", "PlayMusic", "1"},
                                               {"Game", "PlaySFX", "1"},
                                               {"Game", "WaitForStart", "0"},
+                                              {"Game", "PauseOnFocusLoss", "1"},
                                               {"Game", "Music", "N64"},
                                               {"Game", "AssetPack", "default"},
                                               {"Game", "Language", "en-us"},
@@ -923,6 +927,8 @@ int main(int argc, char *argv[]) {
             coastline::InputBindings input;
             coastline::N64Audio audio;
             bool playMusic = config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice();
+            const bool pauseOnFocusLoss = config.GetBoolean("Game", "PauseOnFocusLoss", true) &&
+                                          !parser.is_subcommand_used(runScript);
             audio.SetMusicGain(musicGain);
             coastline::ShareRaceMusicPlayer(playMusic ? &audio : nullptr);
             auto playMenuMusic = [&]() {
@@ -1017,8 +1023,12 @@ int main(int argc, char *argv[]) {
                 // as control characters.
                 std::string typed;
                 bool printScreen = false;
+                bool focusLost = false;
                 SDL_Event event;
                 while (SDL_PollEvent(&event)) {
+                    if (event.type == SDL_EVENT_WINDOW_FOCUS_LOST) {
+                        focusLost = true;
+                    }
                     // F9 takes the frame as well, as a desktop such as Plasma keeps Print Screen.
                     if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat &&
                         (event.key.scancode == SDL_SCANCODE_PRINTSCREEN ||
@@ -1038,6 +1048,12 @@ int main(int argc, char *argv[]) {
                         }
                     }
                     input.HandleEvent(event);
+                }
+                // A race pauses when the window loses the focus, as the pause binding pauses it,
+                // but not an instant replay or a run of a script.
+                if (focusLost && pauseOnFocusLoss && frontEnd == FrontEnd::Race &&
+                    !g_dwRacePauseState && !gInstantReplayActive) {
+                    g_bNetGamePaused = 1;
                 }
                 // The shortcuts of the window are read before the controllers, which then do not
                 // see the Enter of Alt and Enter. A race, the attract demo, and the credits read F
