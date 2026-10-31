@@ -278,7 +278,8 @@ void CheckConsoleStrings() {
     std::set<std::string_view> keys;
     for (const auto &message : coastline::CONSOLE_STRINGS) {
         Check(keys.insert(message.key).second, "each key of the console strings is unique");
-        Check(message.key.starts_with("n64."), "each key of the console strings starts with n64.");
+        Check(message.key.starts_with("n64.") || message.key.starts_with("race."),
+              "each key of the console strings starts with n64. or race.");
         Check(!message.usa.empty() || !message.eur.empty() || !message.jpn.empty(),
               "each console string has the lines of a release");
         for (const auto *lines : {&message.usa, &message.eur, &message.jpn}) {
@@ -296,6 +297,24 @@ void CheckConsoleStrings() {
               "each key of the save folder strings starts with sdl.");
         Check(!message.text.empty() && !message.text.ends_with('\n'),
               "each save folder string has text and no newline at its end");
+    }
+    // Every number of BRString.dll has a key of its own. A race. key is the key of a message of
+    // the console too, and a pc. key the PC release's alone.
+    std::set<std::string_view> libraryKeys;
+    for (auto key : coastline::LIBRARY_STRING_KEYS) {
+        Check(!key.empty(), "each string of the library has a key");
+        Check(libraryKeys.insert(key).second, "each key of the library strings is unique");
+        if (key.starts_with("race.")) {
+            Check(keys.contains(key), "each race. key of the library is a key of the console");
+        } else {
+            Check(key.starts_with("pc.") && !keys.contains(key),
+                  "each other key of the library starts with pc. and is the library's alone");
+        }
+    }
+    for (auto key : keys) {
+        if (key.starts_with("race.")) {
+            Check(libraryKeys.contains(key), "each race. key of the console is a library key");
+        }
     }
 }
 

@@ -4,7 +4,7 @@ namespace coastline {
 
 // Each row lists the key, then the lines of the USA, the European, and the Japanese release. A
 // release that draws the same message from more than one place has the lines of the first.
-const std::array<ConsoleString, 92> CONSOLE_STRINGS{{
+const std::array<ConsoleString, 147> CONSOLE_STRINGS{{
     {"n64.controllerCheck.controllerNotFound", {0x802a748c}, {0x802a8edc}, {0x802a88cc}},
     {"n64.controllerCheck.controllerPakNotFound",
      {0x802a74a4, 0x802a74c0, 0x802a74e0},
@@ -289,6 +289,63 @@ const std::array<ConsoleString, 92> CONSOLE_STRINGS{{
      {0x802ab314, 0x802ab32c, 0x802ab340, 0x802ab358},
      {0x802ad024, 0x802ad03c, 0x802ad050, 0x802ad068},
      {0x802aba64, 0x802aba78, 0x802aba88, 0x802aba98}},
+    // The race, which the PC release draws with the strings of LIBRARY_STRING_KEYS.
+    {"race.placeSuffixSt", {0x802aa114}, {0x802abe64}, {0x802aacf4}},
+    {"race.placeSuffixNd", {0x802aa118}, {0x802abe68}, {0x802aacf8}},
+    {"race.placeSuffixRd", {0x802aa11c}, {0x802abe6c}, {0x802aacfc}},
+    {"race.placeSuffixTh", {0x802aa120}, {0x802abe70}, {0x802aad00}},
+    {"race.lapLabel", {0x802aa0fc}, {0x802abe4c}, {0x802aacdc}},
+    {"race.finished", {0x802aa104}, {0x802abe54}, {0x802aace4}},
+    {"race.totalTimeLabel", {0x802aa050}, {0x802abda0}, {0x802aac30}},
+    {"race.bestLapLabel", {0x802aa064}, {0x802abdb4}, {0x802aac44}},
+    {"race.lapTimeLabel", {0x802aa074}, {0x802abdc4}, {0x802aac54}},
+    {"race.timeLeftLabel", {0x802aa0a8}, {0x802abdf8}, {0x802aac88}},
+    {"race.speedUnitMph", {0x802aa13c}, {0x802abe8c}, {0x802aad1c}},
+    {"race.speedUnitKph", {0x802aa144}, {0x802abe94}, {0x802aad28}},
+    {"race.newRecord", {0x802a6e9c}, {0x802a896c}, {0x802a841c}},
+    {"race.seasonWinner", {0x802a6eb4}, {0x802a8984}, {0x802a8434}},
+    {"race.champion", {0x802a6ec8}, {0x802a8998}, {0x802a8448}},
+    {"race.instantReplay", {0x802a6ed8}, {0x802a89a8}, {}},
+    {"race.wrongWay", {0x8028b308}, {0x8028d5b8}, {0x8028cfe8}},
+    {"race.pause.paused", {0x802a6f10}, {0x802a89e0}, {0x802a8478}},
+    {"race.pause.continueSelected", {0x802a6f1c}, {0x802a89ec}, {0x802a8484}},
+    {"race.pause.continue", {0x802a6f28}, {0x802a89f8}, {0x802a8490}},
+    {"race.pause.restartRaceSelected", {0x802a6f34}, {0x802a8a04}, {0x802a849c}},
+    {"race.pause.restartRace", {0x802a6f44}, {0x802a8a14}, {0x802a84ac}},
+    {"race.pause.sfxVolume", {0x802a6f70}, {0x802a8a40}, {0x802a84d8}},
+    {"race.newLapRecord", {0x802a98a8}, {0x802ab5e8}, {0x802aa578}},
+    {"race.bestLap", {0x802a98bc}, {0x802ab5fc}, {0x802aa58c}},
+    {"race.lapNumber", {0x802a9920}, {0x802ab660}, {0x802aa5f0}},
+    {"race.place.first", {0x802a992c}, {0x802ab66c}, {0x802aa5fc}},
+    {"race.place.second", {0x802a9938}, {0x802ab678}, {0x802aa608}},
+    {"race.place.third", {0x802a9944}, {0x802ab684}, {0x802aa614}},
+    {"race.place.fourth", {0x802a9950}, {0x802ab690}, {0x802aa620}},
+    {"race.place.fifth", {0x802a995c}, {0x802ab69c}, {0x802aa62c}},
+    {"race.place.sixth", {0x802a9968}, {0x802ab6a8}, {0x802aa638}},
+    {"race.place.place7", {0x802a9974}, {0x802ab6b4}, {0x802aa644}},
+    {"race.place.place8", {0x802a997c}, {0x802ab6bc}, {0x802aa64c}},
+    {"race.place.place9", {0x802a9984}, {0x802ab6c4}, {0x802aa654}},
+    {"race.place.place10", {0x802a998c}, {0x802ab6cc}, {0x802aa65c}},
+    {"race.place.place11", {0x802a9994}, {0x802ab6d4}, {0x802aa664}},
+    {"race.place.place12", {0x802a999c}, {0x802ab6dc}, {0x802aa66c}},
+    {"race.place.place13", {0x802a99a4}, {0x802ab6e4}, {0x802aa674}},
+    {"race.place.place14", {0x802a99ac}, {0x802ab6ec}, {0x802aa67c}},
+    {"race.place.place15", {0x802a99b4}, {0x802ab6f4}, {0x802aa684}},
+    {"race.place.place16", {0x802a99bc}, {0x802ab6fc}, {0x802aa68c}},
+    {"race.place.place17", {0x802a99c4}, {0x802ab704}, {0x802aa694}},
+    {"race.place.place18", {0x802a99cc}, {0x802ab70c}, {0x802aa69c}},
+    {"race.place.place19", {0x802a99d4}, {0x802ab714}, {0x802aa6a4}},
+    {"race.place.place20", {0x802a99dc}, {0x802ab71c}, {0x802aa6ac}},
+    {"race.newCourseRecord", {0x802a99e4}, {0x802ab724}, {0x802aa6b4}},
+    {"race.checkPoint", {0x802a99fc}, {0x802ab73c}, {0x802aa6cc}},
+    {"race.wayBehind", {0x802a9a24}, {0x802ab764}, {0x802aa6f4}},
+    {"race.behindSuffix", {0x802a9a3c}, {0x802ab77c}, {0x802aa70c}},
+    {"race.aheadSuffix", {0x802a9a44}, {0x802ab784}, {0x802aa714}},
+    // The race of the console alone, where the PC release has other text in the place.
+    {"n64.race.pause.bgmVolume", {0x802a6f54}, {0x802a8a24}, {0x802a84bc}},
+    {"n64.race.pause.exitToMainMenuSelected", {0x802a6f8c}, {0x802a8a5c}, {0x802a84f4}},
+    {"n64.race.pause.exitToMainMenu", {0x802a6fa4}, {0x802a8a74}, {0x802a850c}},
+    {"n64.race.replayExitHint", {0x802a6efc}, {0x802a89cc}, {0x802a8468}},
 }};
 
 // Each key follows the key of the message of the console in its place, under sdl.
@@ -314,5 +371,312 @@ const std::array<SaveFolderString, 10> SAVE_FOLDER_STRINGS{{
     {"sdl.pakData.saveFolderDataNotFound", "SAVED DATA NOT FOUND\nIN THE SAVE FOLDER."},
     {"sdl.pakData.saveFolderError", "SAVE FOLDER ERROR\nHAS BEEN DETECTED!"},
 }};
+
+// Each key is followed by the number of its string.
+const std::array<std::string_view, LIBRARY_STRING_COUNT> LIBRARY_STRING_KEYS{
+    "pc.menu.mainMenu",                          // 1
+    "pc.menu.championship",                      // 2
+    "pc.menu.multiplayer",                       // 3
+    "pc.menu.timeAttack",                        // 4
+    "pc.menu.quickRace",                         // 5
+    "pc.menu.options",                           // 6
+    "pc.menu.credits",                           // 7
+    "pc.menu.quit",                              // 8
+    "pc.menu.championshipSeasonRaces",           // 9
+    "pc.menu.loadSeason",                        // 10
+    "pc.menu.newSeason",                         // 11
+    "pc.menu.back",                              // 12
+    "pc.menu.pleaseInsertDisc",                  // 13
+    "pc.menu.quitGame",                          // 14
+    "pc.menu.yesQuit",                           // 15
+    "pc.menu.confirmExitSeason",                 // 16
+    "pc.menu.yes",                               // 17
+    "pc.menu.no",                                // 18
+    "pc.menu.carSetup",                          // 19
+    "pc.menu.car",                               // 20
+    "pc.menu.tires",                             // 21
+    "pc.menu.shocks",                            // 22
+    "pc.menu.steering",                          // 23
+    "pc.menu.transmission",                      // 24
+    "pc.menu.startRace",                         // 25
+    "pc.menu.raceSetup",                         // 26
+    "pc.menu.track",                             // 27
+    "pc.menu.weather",                           // 28
+    "pc.menu.laps",                              // 29
+    "pc.menu.continue",                          // 30
+    "pc.menu.inputOptions",                      // 31
+    "pc.menu.videoOptions",                      // 32
+    "pc.menu.audioOptions",                      // 33
+    "pc.menu.gameOptions",                       // 34
+    "pc.menu.inputDevice",                       // 35
+    "pc.menu.configure",                         // 36
+    "pc.menu.restoreDefaults",                   // 37
+    "pc.menu.gameKeyConfiguration",              // 38
+    "pc.menu.changeKey",                         // 39
+    "pc.menu.setting",                           // 40
+    "pc.menu.direct3dDevice",                    // 41
+    "pc.menu.gameResolution",                    // 42
+    "pc.menu.direct3dModeSelection",             // 43
+    "pc.menu.setDriver",                         // 44
+    "pc.menu.setMode",                           // 45
+    "pc.menu.sfxVolume",                         // 46
+    "pc.menu.cdVolume",                          // 47
+    "pc.menu.forceFeedback",                     // 48
+    "pc.menu.skidMarks",                         // 49
+    "pc.menu.specularLighting",                  // 50
+    "pc.menu.carShadow",                         // 51
+    "pc.menu.loadChampionshipSeason",            // 52
+    "pc.menu.restoreAutosave",                   // 53
+    "pc.menu.year",                              // 54
+    "pc.menu.round",                             // 55
+    "pc.menu.season",                            // 56
+    "pc.menu.saveChampionshipSeason",            // 57
+    "pc.menu.overwriteExistingGame",             // 58
+    "pc.menu.newChampionshipSeason",             // 59
+    "pc.menu.playerName",                        // 60
+    "pc.menu.preRaceInformation",                // 61
+    "pc.menu.bestTime",                          // 62
+    "pc.menu.bestLap",                           // 63
+    "pc.menu.points",                            // 64
+    "pc.menu.total",                             // 65
+    "pc.menu.pressAnyKeyToContinue",             // 66
+    "pc.menu.notEnoughPointsToAdvance",          // 67
+    "pc.menu.seasonProgressInformation",         // 68
+    "pc.menu.resetRound",                        // 69
+    "pc.menu.needed",                            // 70
+    "pc.menu.raceResultsInformation",            // 71
+    "pc.menu.lap1",                              // 72
+    "pc.menu.lap2",                              // 73
+    "pc.menu.lap3",                              // 74
+    "pc.menu.totalTime",                         // 75
+    "pc.menu.place",                             // 76
+    "pc.menu.lapTime",                           // 77
+    "pc.menu.raceResultsSummary",                // 78
+    "pc.menu.raceResultsTotals",                 // 79
+    "pc.menu.nextRace",                          // 80
+    "pc.menu.exit",                              // 81
+    "pc.menu.after",                             // 82
+    "pc.menu.rounds",                            // 83
+    "pc.network.multiPlayerConnection",          // 84
+    "pc.network.ipx",                            // 85
+    "pc.network.tcpIp",                          // 86
+    "pc.network.modem",                          // 87
+    "pc.network.serialCable",                    // 88
+    "pc.network.additionalTcpIpInfo",            // 89
+    "pc.network.portNumber",                     // 90
+    "pc.network.ipAddress",                      // 91
+    "pc.network.multiPlayerName",                // 92
+    "pc.network.modemDialUp",                    // 93
+    "pc.network.phoneNumber",                    // 94
+    "pc.network.multiPlayerJoinCreateGame",      // 95
+    "pc.network.join",                           // 96
+    "pc.network.host",                           // 97
+    "pc.network.multiPlayerCreateGame",          // 98
+    "pc.network.gameName",                       // 99
+    "pc.network.multiPlayerGameSetup",           // 100
+    "pc.network.carGroup",                       // 101
+    "pc.network.createGame",                     // 102
+    "pc.network.quitToLobby",                    // 103
+    "pc.network.bootPlayer",                     // 104
+    "pc.network.ready",                          // 105
+    "pc.menu.timeAttackMenu",                    // 106
+    "pc.menu.newRace",                           // 107
+    "pc.menu.loadRace",                          // 108
+    "pc.menu.timeAttackResults",                 // 109
+    "pc.menu.loadTimeAttack",                    // 110
+    "pc.menu.raceTime",                          // 111
+    "pc.menu.overwriteExistingGhostRace",        // 112
+    "pc.menu.y",                                 // 113
+    "pc.menu.n",                                 // 114
+    "pc.menu.on",                                // 115
+    "pc.menu.off",                               // 116
+    "pc.menu.auto",                              // 117
+    "pc.menu.manual",                            // 118
+    "pc.menu.desert",                            // 119
+    "pc.menu.mountain",                          // 120
+    "pc.menu.coastline",                         // 121
+    "pc.menu.stripMine",                         // 122
+    "pc.menu.jungle",                            // 123
+    "pc.menu.race",                              // 124
+    "pc.menu.bonus",                             // 125
+    "pc.menu.slippy",                            // 126
+    "pc.menu.normal",                            // 127
+    "pc.menu.grippy",                            // 128
+    "pc.menu.softer",                            // 129
+    "pc.menu.harder",                            // 130
+    "pc.menu.sunny",                             // 131
+    "pc.menu.foggy",                             // 132
+    "pc.menu.rainy",                             // 133
+    "pc.menu.snowy",                             // 134
+    "pc.menu.night",                             // 135
+    "pc.menu.keyboard",                          // 136
+    "pc.menu.wheel",                             // 137
+    "pc.menu.joystick",                          // 138
+    "pc.menu.mouse",                             // 139
+    "pc.menu.serial",                            // 140
+    "pc.car.n4wdCe",                             // 141
+    "pc.car.n4wdEs",                             // 142
+    "pc.car.n4wdNs",                             // 143
+    "pc.car.n4wdRs",                             // 144
+    "pc.car.rwdSp",                              // 145
+    "pc.car.n4wdPs",                             // 146
+    "pc.car.rwdM3",                              // 147
+    "pc.car.n4wdIp",                             // 148
+    "pc.car.n4wdLd",                             // 149
+    "pc.car.rwdHm",                              // 150
+    "pc.car.rwdMt",                              // 151
+    "pc.car.rwdCu",                              // 152
+    "pc.car.rwdBb",                              // 153
+    "pc.car.n4wdPj",                             // 154
+    "pc.car.rwdTr",                              // 155
+    "pc.car.fwdMn",                              // 156
+    "pc.car.esLd",                               // 157
+    "pc.car.ceIpMn",                             // 158
+    "pc.car.m3TrSp",                             // 159
+    "pc.car.rsPsPjNs",                           // 160
+    "pc.car.cuBbHmMt",                           // 161
+    "pc.error.couldNotAllocateRallySetupObject", // 162
+    "pc.error.couldNotAllocateMenuUtilObject",   // 163
+    "pc.error.fileLengthIs0",                    // 164
+    "pc.error.nullFileName",                     // 165
+    "pc.error.outOfMemory",                      // 166
+    "pc.error.badReturnValue",                   // 167
+    "pc.error.couldNotAllocateFileListObject",   // 168
+    "pc.error.invalidSeasonFile",                // 169
+    "pc.menu.frontEndTitle",                     // 170
+    "pc.error.couldNotCreateDirectInputDevice",  // 171
+    "pc.error.couldNotInitializeMouseDevice",    // 172
+    "pc.error.couldNotSetMouseDataFormat",       // 173
+    "pc.error.couldNotSetMouseCooperativeLevel", // 174
+    "pc.menu.repeat",                            // 175
+    "pc.menu.mirrored",                          // 176
+    "pc.menu.undefined",                         // 177
+    "pc.menu.pressAKey",                         // 178
+    "race.placeSuffixSt",                        // 179
+    "race.placeSuffixNd",                        // 180
+    "race.placeSuffixRd",                        // 181
+    "race.placeSuffixTh",                        // 182
+    "pc.lobby.selectedCar",                      // 183
+    "pc.lobby.changedTrackTo",                   // 184
+    "pc.lobby.changedLapsTo",                    // 185
+    "pc.lobby.changedWeatherTo",                 // 186
+    "pc.lobby.youNeedSomeoneToRaceWith",         // 187
+    "pc.lobby.notEveryoneIsReady",               // 188
+    "pc.lobby.changedTheCarGroupTo",             // 189
+    "pc.menu.emptySlot",                         // 190
+    "pc.menu.roundInfo",                         // 191
+    "pc.menu.player",                            // 192
+    "pc.menu.myGame",                            // 193
+    "pc.menu.saveTimeAttack",                    // 194
+    "pc.controls.button",                        // 195
+    "pc.controls.left",                          // 196
+    "pc.controls.right",                         // 197
+    "pc.controls.forward",                       // 198
+    "pc.controls.backward",                      // 199
+    "pc.controls.zNegative",                     // 200
+    "pc.controls.zPositive",                     // 201
+    "pc.controls.turnLeft",                      // 202
+    "pc.controls.turnRight",                     // 203
+    "pc.controls.accelerate",                    // 204
+    "pc.controls.brake",                         // 205
+    "pc.controls.reverse",                       // 206
+    "pc.controls.shiftUp",                       // 207
+    "pc.controls.shiftDown",                     // 208
+    "pc.controls.resetCar",                      // 209
+    "pc.controls.horn",                          // 210
+    "pc.controls.taunt1",                        // 211
+    "pc.controls.taunt2",                        // 212
+    "pc.controls.taunt3",                        // 213
+    "pc.controls.taunt4",                        // 214
+    "pc.controls.raceMenu",                      // 215
+    "pc.controls.menuUp",                        // 216
+    "pc.controls.menuDown",                      // 217
+    "pc.controls.menuPick",                      // 218
+    "pc.controls.inCar",                         // 219
+    "pc.controls.rearView",                      // 220
+    "pc.controls.behindCar",                     // 221
+    "pc.controls.trackside",                     // 222
+    "pc.menu.spring",                            // 223
+    "pc.menu.summer",                            // 224
+    "pc.menu.fall",                              // 225
+    "pc.menu.winter",                            // 226
+    "pc.menu.pro",                               // 227
+    "pc.menu.expert",                            // 228
+    "race.lapLabel",                             // 229
+    "race.finished",                             // 230
+    "race.totalTimeLabel",                       // 231
+    "race.bestLapLabel",                         // 232
+    "race.lapTimeLabel",                         // 233
+    "race.timeLeftLabel",                        // 234
+    "race.speedUnitMph",                         // 235
+    "race.speedUnitKph",                         // 236
+    "pc.race.waitingForOthers",                  // 237
+    "pc.race.pressSpaceToStart",                 // 238
+    "race.newRecord",                            // 239
+    "race.seasonWinner",                         // 240
+    "race.champion",                             // 241
+    "race.instantReplay",                        // 242
+    "race.wrongWay",                             // 243
+    "pc.race.pressEscToExit",                    // 244
+    "race.pause.paused",                         // 245
+    "pc.race.reallyQuitGame",                    // 246
+    "pc.race.yesSelected",                       // 247
+    "pc.race.yes",                               // 248
+    "pc.race.noSelected",                        // 249
+    "pc.race.no",                                // 250
+    "race.pause.continueSelected",               // 251
+    "race.pause.continue",                       // 252
+    "pc.error.earError",                         // 253
+    "pc.error.couldNotRegisterEarServiceTable",  // 254
+    "race.pause.restartRaceSelected",            // 255
+    "race.pause.restartRace",                    // 256
+    "pc.race.musicVolume",                       // 257
+    "race.pause.sfxVolume",                      // 258
+    "pc.race.quitChampionshipSelected",          // 259
+    "pc.race.quitChampionship",                  // 260
+    "pc.race.quitRaceSelected",                  // 261
+    "pc.race.quitRace",                          // 262
+    "pc.race.quitGameSelected",                  // 263
+    "pc.race.quitGame",                          // 264
+    "race.newLapRecord",                         // 265
+    "race.bestLap",                              // 266
+    "pc.race.finalLap",                          // 267
+    "race.lapNumber",                            // 268
+    "race.place.first",                          // 269
+    "race.place.second",                         // 270
+    "race.place.third",                          // 271
+    "race.place.fourth",                         // 272
+    "race.place.fifth",                          // 273
+    "race.place.sixth",                          // 274
+    "race.place.place7",                         // 275
+    "race.place.place8",                         // 276
+    "race.place.place9",                         // 277
+    "race.place.place10",                        // 278
+    "race.place.place11",                        // 279
+    "race.place.place12",                        // 280
+    "race.place.place13",                        // 281
+    "race.place.place14",                        // 282
+    "race.place.place15",                        // 283
+    "race.place.place16",                        // 284
+    "race.place.place17",                        // 285
+    "race.place.place18",                        // 286
+    "race.place.place19",                        // 287
+    "race.place.place20",                        // 288
+    "race.newCourseRecord",                      // 289
+    "race.checkPoint",                           // 290
+    "race.wayBehind",                            // 291
+    "race.behindSuffix",                         // 292
+    "race.aheadSuffix",                          // 293
+    "pc.error.bossRallyError",                   // 294
+    "pc.error.unableToInitializeDirectinput",    // 295
+    "pc.error.thisGameRequiresDirectx6",         // 296
+    "pc.error.failedToReopenGlideWindow",        // 297
+    "pc.error.couldNotConnectDirectPlayLobby",   // 298
+    "pc.error.couldNotCreateDirectPlayObject",   // 299
+    "pc.error.gearImageOverlap",                 // 300
+    "pc.error.gearImagesTooLarge",               // 301
+    "pc.error.audioCardRequired",                // 302
+    "pc.menu.period",                            // 303
+};
 
 } // namespace coastline

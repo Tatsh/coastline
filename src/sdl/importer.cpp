@@ -816,30 +816,35 @@ std::optional<std::string> ConvertConsoleFonts(const std::filesystem::path &dest
     return std::nullopt;
 }
 
-// Whether the import of a cartridge writes a key of the files of strings: n64.NAME and sdl.NAME,
-// and the n64/ADDRESS keys an older import wrote.
-bool IsCartridgeKey(std::string_view key) {
-    return key.starts_with("n64") || key.starts_with("sdl.");
+// Whether both the disc and the USA cartridge write a key, the text of a message the PC and the
+// Nintendo 64 releases share.
+bool IsSharedKey(std::string_view key) {
+    return std::ranges::contains(LIBRARY_STRING_KEYS, key) &&
+           std::ranges::contains(CONSOLE_STRINGS, key, &ConsoleString::key);
 }
 
-// Write @p strings to the file of strings @p destination. The keys of the file that @p console
-// does not select (the keys of a cartridge when true, of the disc when false) are retained.
+// Write @p strings to the file of strings @p destination, with the keys the file has from the
+// other imports. The disc and the USA cartridge write the same text to a shared key, and other
+// text there is an error.
 std::optional<std::string> WriteStringsFile(const std::filesystem::path &destination,
-                                            const nlohmann::ordered_json &strings,
-                                            bool console) {
+                                            const nlohmann::ordered_json &strings) {
     nlohmann::ordered_json merged = nlohmann::ordered_json::object();
     std::ifstream in(destination);
     if (in) {
-        auto existing = nlohmann::ordered_json::parse(in, nullptr, false);
-        if (existing.is_object()) {
-            for (const auto &[key, text] : existing.items()) {
-                if (IsCartridgeKey(key) != console) {
-                    merged[key] = text;
-                }
-            }
+        merged = nlohmann::ordered_json::parse(in, nullptr, false);
+        if (!merged.is_object()) {
+            merged = nlohmann::ordered_json::object();
         }
     }
     in.close();
+    for (const auto &[key, text] : strings.items()) {
+        if (merged.contains(key) && merged[key] != text && IsSharedKey(key)) {
+            return fmt::format("{} has other text for {} than {}.",
+                               destination.string(),
+                               key,
+                               text.get<std::string>());
+        }
+    }
     merged.update(strings);
     std::error_code error;
     std::filesystem::create_directories(destination.parent_path(), error);
@@ -891,8 +896,8 @@ std::optional<std::string> WriteConsoleStrings(std::span<const std::uint8_t> rom
             strings[std::string(message.key)] = message.text;
         }
     }
-    return WriteStringsFile(
-        dataDirectory / "strings" / (std::string(release.language) + ".json"), strings, true);
+    return WriteStringsFile(dataDirectory / "strings" / (std::string(release.language) + ".json"),
+                            strings);
 }
 
 // The addresses of the lights of the splash screens and the menus of a release: an ambient light
@@ -1856,9 +1861,13 @@ std::optional<std::string> ConvertStringLibrary(const std::filesystem::path &lib
     }
     nlohmann::ordered_json json = nlohmann::ordered_json::object();
     for (const auto &[id, text] : strings) {
-        json[std::to_string(id)] = text;
+        if (id < 1 || id > LIBRARY_STRING_COUNT) {
+            return fmt::format(
+                "{} has a string {} past the strings it is known to have.", library.string(), id);
+        }
+        json[std::string(LIBRARY_STRING_KEYS[id - 1])] = text;
     }
-    if (auto failure = WriteStringsFile(dataDirectory / "strings" / "en-us.json", json, false)) {
+    if (auto failure = WriteStringsFile(dataDirectory / "strings" / "en-us.json", json)) {
         return failure;
     }
     std::error_code error;

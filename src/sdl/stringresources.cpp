@@ -13,6 +13,7 @@
 #include <nlohmann/json.hpp>
 
 #include "common/strings.h"
+#include "consolestrings.h"
 #include "language.h"
 
 namespace {
@@ -284,27 +285,23 @@ std::map<unsigned, std::string> ReadLibraryStrings(std::span<const std::uint8_t>
 
 } // namespace coastline
 
-// The SDL game puts the strings of LoadStrings() with a number for a key, the strings of
-// BRString.dll, into the table of the race in UTF-8.
+// The SDL game puts the strings of LoadStrings() into the table of the race in UTF-8, each by the
+// number of BRString.dll its key in LIBRARY_STRING_KEYS has.
 extern "C" void LoadStringTableFromDll(void) {
     std::memset(&g_apszStringResourceTable[1], 0, STRING_RESOURCE_COUNT * sizeof(char *));
     if (g_pStringTableBuffer != nullptr) {
         return;
     }
-    std::vector<std::pair<unsigned, const std::string *>> strings;
-    std::size_t size = 0;
-    for (const auto &[id, text] : g_strings) {
-        char *end = nullptr;
-        unsigned number = static_cast<unsigned>(std::strtoul(id.c_str(), &end, 10));
-        if (*end != '\0' || number < 1 || number > STRING_RESOURCE_COUNT) {
-            continue;
-        }
-        strings.emplace_back(number, &text);
-        size += text.size() + 1;
-    }
-    if (strings.empty()) {
+    if (g_strings.empty()) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The strings of the race are missing.");
         return;
+    }
+    std::vector<std::pair<unsigned, std::string_view>> strings;
+    std::size_t size = 0;
+    for (unsigned number = 1; number <= STRING_RESOURCE_COUNT; ++number) {
+        std::string_view text = coastline::GameString(coastline::LIBRARY_STRING_KEYS[number - 1]);
+        strings.emplace_back(number, text);
+        size += text.size() + 1;
     }
     g_pStringTableBuffer = static_cast<char *>(std::malloc(size));
     if (g_pStringTableBuffer == nullptr) {
@@ -314,8 +311,9 @@ extern "C" void LoadStringTableFromDll(void) {
     g_dwStringTableUsedBytes = 0;
     for (const auto &[number, text] : strings) {
         char *entry = g_pStringTableBuffer + g_dwStringTableUsedBytes;
-        std::memcpy(entry, text->c_str(), text->size() + 1);
+        std::memcpy(entry, text.data(), text.size());
+        entry[text.size()] = '\0';
         g_apszStringResourceTable[number] = entry;
-        g_dwStringTableUsedBytes += text->size() + 1;
+        g_dwStringTableUsedBytes += text.size() + 1;
     }
 }

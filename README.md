@@ -368,9 +368,14 @@ the menus are those of the USA release in every language.
 Language = ja
 ```
 
-The disc import writes the strings of BRString.dll to `strings/en-us.json`, keyed by their number.
-The import of a cartridge writes the text of the messages of its menus to the file of its
-language: the USA release to `strings/en-us.json`, the European release to `strings/en-gb.json`,
+The disc import writes the strings of BRString.dll to `strings/en-us.json`, each under the key the
+table of `src/sdl/consolestrings.cpp` gives its number, and the race of the game reads a string by
+its number through the same table. A message the PC and the Nintendo 64 releases draw in the same
+place with the same text has one `race.` key, written by the disc and by the cartridges, and a
+string of the PC release alone has a `pc.` key.
+
+The import of a cartridge writes the text of the messages of its menus and its race to the file of
+its language: the USA release to `strings/en-us.json`, the European release to `strings/en-gb.json`,
 and the Japanese release to `strings/ja.json`. A message has the same key in every file, such as
 `n64.carSelect.rumblePakNote`, and the table of `src/sdl/consolestrings.cpp` lists the address of
 each line of the message in each release. A release draws the lines of a message one under the
@@ -383,8 +388,9 @@ import of the Japanese cartridge also writes the kana and kanji of its font to
 
 The Japanese release has Japanese text only in the messages of the Controller Pak, the Rumble Pak,
 the paint shop, and the second controller. Its menus, its races, and its titles are in English,
-and it has no Japanese counterpart of a string of BRString.dll. With `ja`, the races draw the
-English strings, and the car selection shows the Japanese note of the Rumble Pak. The European
+and its speed reads `Mile/h` and `Km/h`. With `ja`, the races draw the English strings and the
+speed units of the Japanese cartridge, and the car selection shows the Japanese note of the Rumble
+Pak. The European
 release has the English text of the USA release, with the messages of its save to the Game Pak
 and a few lines of its own.
 
