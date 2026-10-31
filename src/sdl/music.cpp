@@ -144,6 +144,21 @@ inline s32 LoadHalf(const u8 *at) {
     return half;
 }
 
+// The state of the mixers is global, and one lock covers every player. An SDL mutex is recursive.
+SDL_Mutex *MixerMutex() {
+    static SDL_Mutex *const mutex = SDL_CreateMutex();
+    return mutex;
+}
+
+// The volumes of the game as the mixers read them, copied by PublishN64Volumes().
+struct MixerVolumes {
+    u8 bgm;       /*!< g_bBgmVolume. */
+    u8 music;     /*!< g_bMusicVolume. */
+    u8 sfxMaster; /*!< g_bSfxMasterVolume. */
+    u8 sfx;       /*!< g_bSfxVolume. */
+};
+MixerVolumes g_mixerVolumes;
+
 } // namespace
 
 extern "C" {
@@ -229,7 +244,23 @@ void MixSoundEffectChannels(s16 *ring, u32 bytes, u32 offset) {
 
 namespace coastline {
 
+N64MixerLock::N64MixerLock() {
+    SDL_LockMutex(MixerMutex());
+}
+
+N64MixerLock::~N64MixerLock() {
+    SDL_UnlockMutex(MixerMutex());
+}
+
+void PublishN64Volumes() {
+    N64MixerLock lock;
+    g_mixerVolumes = {g_bBgmVolume, g_bMusicVolume, g_bSfxMasterVolume, g_bSfxVolume};
+}
+
 N64Audio::N64Audio() {
+    // Another player may be mixing the same channels.
+    N64MixerLock lock;
+    PublishN64Volumes();
     // InitAudioSystem() of the console, without the interface and the thread.
     g_qwSoundEffectSampleMask = SOUND_EFFECT_SAMPLE_MASK;
     for (int i = 0; i < MIXER_CHANNELS; ++i) {
@@ -268,24 +299,17 @@ bool N64Audio::OpenDevice() {
 }
 
 void N64Audio::Play(std::span<const std::uint8_t> module) {
-    if (m_stream != nullptr) {
-        SDL_LockAudioStream(m_stream);
-    }
+    N64MixerLock lock;
     // LoadMusicModule() reads the module in place, so it is retained.
     m_module.assign(module.begin(), module.end());
     // LoadAndPlayTrackBgm() of the console silences the channels before a new module. The
     // channels otherwise play the notes of the old module on from their samples.
     ResetMusicPlaybackState();
     InitMusicPlayback(m_module.data(), g_abMusicModuleWorkBuffer);
-    if (m_stream != nullptr) {
-        SDL_UnlockAudioStream(m_stream);
-    }
 }
 
 void N64Audio::Stop() {
-    if (m_stream != nullptr) {
-        SDL_LockAudioStream(m_stream);
-    }
+    N64MixerLock lock;
     g_bMusicPlaybackEnabled = FALSE;
     ResetMusicChannels();
     // The channels otherwise loop the samples of their last notes. A channel stopped on the ring
@@ -293,9 +317,6 @@ void N64Audio::Stop() {
     for (int i = 0; i < g_nAudioChannelCount; ++i) {
         g_aMixerChannels[i].sample = g_SilenceSampleData;
         g_aMixerChannels[i].step = 0;
-    }
-    if (m_stream != nullptr) {
-        SDL_UnlockAudioStream(m_stream);
     }
 }
 
@@ -308,6 +329,7 @@ bool N64Audio::Resume() {
 }
 
 void N64Audio::SetMusicGain(float gain) {
+    N64MixerLock lock;
     m_musicGain = static_cast<std::uint32_t>(std::clamp(gain, 0.0f, 8.0f) * 256.0f + 0.5f);
 }
 
@@ -327,15 +349,17 @@ void N64Audio::Tick(std::vector<std::int16_t> &output) {
     g_dwAudioTickToggle ^= 1;
     for (int i = 0; i < g_nAudioChannelCount; ++i) {
         MixerChannel &channel = g_aMixerChannels[i];
-        channel.mixVolume = static_cast<s32>((static_cast<std::uint64_t>(channel.volume) *
-                                              g_bBgmVolume * g_bMusicVolume * m_musicGain) >>
-                                             24);
+        channel.mixVolume =
+            static_cast<s32>((static_cast<std::uint64_t>(channel.volume) * g_mixerVolumes.bgm *
+                              g_mixerVolumes.music * m_musicGain) >>
+                             24);
     }
     for (auto &channel : g_aSoundEffectChannels) {
         u32 levels = static_cast<u32>(channel.volume);
-        channel.mixVolume =
-            static_cast<s32>(((((levels >> 16) * g_bSfxMasterVolume * g_bSfxVolume) >> 16) << 16) +
-                             (((levels & 0xFFFF) * g_bSfxMasterVolume * g_bSfxVolume) >> 16));
+        u8 master = g_mixerVolumes.sfxMaster;
+        u8 sfx = g_mixerVolumes.sfx;
+        channel.mixVolume = static_cast<s32>(((((levels >> 16) * master * sfx) >> 16) << 16) +
+                                             (((levels & 0xFFFF) * master * sfx) >> 16));
     }
     u32 length = m_aiLength;
     s32 position = static_cast<s32>(length) - MUSIC_LEAD;
@@ -375,6 +399,12 @@ void N64Audio::Tick(std::vector<std::int16_t> &output) {
 }
 
 std::vector<std::int16_t> N64Audio::Render(std::size_t frames) {
+    N64MixerLock lock;
+    PublishN64Volumes();
+    return RenderLocked(frames);
+}
+
+std::vector<std::int16_t> N64Audio::RenderLocked(std::size_t frames) {
     std::vector<std::int16_t> output(m_pending);
     m_pending.clear();
     while (output.size() < frames * 2) {
@@ -393,7 +423,13 @@ void SDLCALL N64Audio::StreamCallback(void *userData,
     if (additional <= 0) {
         return;
     }
-    auto samples = audio->Render(static_cast<std::size_t>(additional) / 4 + 1);
+    std::vector<std::int16_t> samples;
+    {
+        // The stream of SDL is locked around the callback, and the mixers after it. The game
+        // thread does not lock a stream while it has the mixers locked.
+        N64MixerLock lock;
+        samples = audio->RenderLocked(static_cast<std::size_t>(additional) / 4 + 1);
+    }
     SDL_PutAudioStreamData(
         stream, samples.data(), static_cast<int>(samples.size() * sizeof(std::int16_t)));
 }

@@ -14,6 +14,7 @@
 #include "gpu.h"
 #include "language.h"
 #include "menutext.h"
+#include "music.h"
 
 namespace coastline {
 
@@ -472,6 +473,7 @@ void MenuScreen::DrawFade(SceneRenderer &renderer) const {
 }
 
 void MenuScreen::SilenceSounds() {
+    N64MixerLock lock;
     for (auto &channel : g_aSoundEffectChannels) {
         channel.volume = 0;
         channel.mixVolume = 0;

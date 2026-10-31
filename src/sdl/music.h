@@ -58,7 +58,8 @@ public:
     void SetMusicGain(float gain);
 
     /**
-     * Render stereo 16-bit frames without a device, as the device would receive them.
+     * Render stereo 16-bit frames without a device, as the device would receive them. The
+     * volumes of the game are published first.
      *
      * @param frames The frames to render.
      * @return The interleaved samples.
@@ -66,6 +67,7 @@ public:
     std::vector<std::int16_t> Render(std::size_t frames);
 
 private:
+    std::vector<std::int16_t> RenderLocked(std::size_t frames);
     void Tick(std::vector<std::int16_t> &output);
     static void SDLCALL StreamCallback(void *userData,
                                        SDL_AudioStream *stream,
@@ -80,6 +82,26 @@ private:
     // The music gain in 8.8 fixed point.
     std::uint32_t m_musicGain = 256;
 };
+
+/**
+ * A lock of the mixers and the music player of the console against the audio thread that mixes
+ * them, for the life of the object. The game thread takes it around each change of a channel. It
+ * is recursive. The audio thread waits on it, and the game thread locks it for a few stores at
+ * most.
+ */
+class N64MixerLock {
+public:
+    N64MixerLock();
+    ~N64MixerLock();
+    N64MixerLock(const N64MixerLock &) = delete;
+    N64MixerLock &operator=(const N64MixerLock &) = delete;
+};
+
+/**
+ * Hand the volumes the game writes (g_bBgmVolume, g_bMusicVolume, g_bSfxMasterVolume, and
+ * g_bSfxVolume) to the mixers. The mixers read the copy, and the game calls this once a frame.
+ */
+void PublishN64Volumes();
 
 /**
  * Write interleaved stereo 16-bit samples as a WAV file.

@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include "music.h"
+
 namespace coastline {
 
 namespace {
@@ -279,6 +281,7 @@ std::optional<std::vector<s8>> ReadSound(const std::filesystem::path &path) {
 }
 
 s16 PlaySoundEffect(std::vector<s8> &sample, std::uint32_t volume) {
+    N64MixerLock lock;
     s16 channel = FindFreeSoundChannel();
     if (channel != -1) {
         N64InitSoundChannel(

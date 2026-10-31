@@ -1276,6 +1276,8 @@ int main(int argc, char *argv[]) {
             bool running = true;
             bool printScreenWasDown = false;
             for (int frame = 1; running; ++frame) {
+                // The mixers take the volumes the screens and the race wrote in the last frame.
+                coastline::PublishN64Volumes();
                 PushScriptedTyping(typing, frame, window->Window());
                 // The text typed on a keyboard while a screen takes it, with Backspace and Enter
                 // as control characters.

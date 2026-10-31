@@ -16,6 +16,7 @@
 #include "frontend.h"
 #include "gpu.h"
 #include "menutext.h"
+#include "music.h"
 #include "scenerenderer.h"
 
 namespace coastline {
@@ -128,6 +129,7 @@ struct Intro::State {
             sounds.soundA = 2;
         } else if (sounds.voice != -1) {
             int pan = std::min(static_cast<int>((t - (start + LOGO_LEAVE_TIME)) * 32.0f), 20);
+            N64MixerLock lock;
             g_aSoundEffectChannels[sounds.voice].volume = static_cast<s32>(SfxVolume(
                 static_cast<std::uint32_t>(20 - pan), static_cast<std::uint32_t>(20 + pan)));
         }
@@ -308,9 +310,12 @@ IntroEnd Intro::Update(float seconds, const IntroButtons &buttons) {
     // Fade out on a skip or at the end, and leave for the main menu or the demo once faded.
     if (s.fade.FadingOut()) {
         if (s.fade.Complete()) {
-            for (int i = 0; i < SPLASH_SFX_CHANNELS; ++i) {
-                g_aSoundEffectChannels[i].step = 0;
-                g_aSoundEffectChannels[i].volume = 0;
+            {
+                N64MixerLock lock;
+                for (int i = 0; i < SPLASH_SFX_CHANNELS; ++i) {
+                    g_aSoundEffectChannels[i].step = 0;
+                    g_aSoundEffectChannels[i].volume = 0;
+                }
             }
             // The console leaves the sound effects silent for the next screen to fade in. The
             // screens after the intro do not fade them yet, and they return to full volume here.
