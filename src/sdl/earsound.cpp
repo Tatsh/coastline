@@ -86,7 +86,7 @@ bool PlayEarSound(const std::filesystem::path &path, const EarSoundOptions &opti
     params.matrixHandle = SOUND_MATRIX;
     params.minimumGain = FULL_GAIN;
     params.maximumGain = FULL_GAIN;
-    params.flags = EAR_EVENT_NOTIFY_STOP | (options.whole ? EAR_EVENT_NOT_STREAMING : 0);
+    params.flags = EAR_EVENT_NOTIFY_STOP;
     params.direction = static_cast<std::uint16_t>(options.direction);
     params.environmentHandle = DEFAULT_ENVIRONMENT;
     params.distanceUnit = CENTIMETERS;

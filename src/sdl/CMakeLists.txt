@@ -183,7 +183,6 @@ add_library(
   decaleditor.cpp
   earsound.cpp
   effecttextures.cpp
-  enginecheck.cpp
   enginetextures.cpp
   frontend.cpp
   ghostfile.cpp

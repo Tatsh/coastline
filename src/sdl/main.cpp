@@ -33,7 +33,6 @@
 #include "controllerpak.h"
 #include "controls.h"
 #include "earsound.h"
-#include "enginecheck.h"
 #include "frontend.h"
 #include "gpu.h"
 #include "iconfile.h"
@@ -196,9 +195,6 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     }
     if (parser.get<bool>("--no-vsync")) {
         options.presentMode = SDL_GPU_PRESENTMODE_IMMEDIATE;
-    }
-    if (auto driver = parser.present("--gpu-driver")) {
-        options.driver = *driver;
     }
     return options;
 }
@@ -375,15 +371,6 @@ std::optional<std::vector<std::uint8_t>> LoadMusicModule(const std::filesystem::
         return std::nullopt;
     }
     return std::vector<std::uint8_t>(std::istreambuf_iterator<char>(file), {});
-}
-
-std::optional<std::vector<std::uint8_t>> LoadMusicByIndex(const std::filesystem::path &assets,
-                                                          int index) {
-    if (index < 0 || index >= static_cast<int>(std::size(coastline::USA_MUSIC_MODULES))) {
-        SDL_LogError(SDL_LOG_CATEGORY_AUDIO, "There is no music module %d.", index);
-        return std::nullopt;
-    }
-    return LoadMusicModule(assets, coastline::USA_MUSIC_MODULES[index].offset);
 }
 
 // A press of --press: the buttons of a controller pressed from a frame for a number of frames,
@@ -869,7 +856,6 @@ int PlaySoundFromCommandLine(const argparse::ArgumentParser &parser,
     }
     coastline::EarSoundOptions options;
     options.direction = parser.get<int>("--sound-direction");
-    options.whole = parser.get<bool>("--sound-whole");
     if (auto wav = parser.present("--sound-wav")) {
         options.output = *wav;
     }
@@ -908,8 +894,6 @@ int main(int argc, char *argv[]) {
         .help("samples of each pixel for anti-aliasing: 1 for none, or 2, 4, or 8")
         .scan<'i', int>();
     parser.add_argument("--no-vsync").help("present frames without waiting").flag();
-    parser.add_argument("--gpu-driver")
-        .help("SDL GPU driver, such as vulkan, metal, or direct3d12");
     parser.add_argument("--aspect-ratio")
         .help("shape of the frame for this run, in a window and in the full screen, with bars "
               "around it: auto for the shape of the window, a ratio such as 4:3, or a number such "
@@ -926,7 +910,9 @@ int main(int argc, char *argv[]) {
             "the "
             "full screen; "
             "--antialias, --fullscreen, and --windowed still apply");
-    parser.add_argument("--list-gpu-drivers").help("write the GPU drivers and exit").flag();
+    parser.add_argument("--list-gpu-drivers")
+        .help("write the GPU drivers GpuDriver of the settings takes, and exit")
+        .flag();
 #ifndef NDEBUG
     parser.add_argument("--minimized")
         .help("start with the window minimized, for runs that save their frames unattended")
@@ -952,15 +938,6 @@ int main(int argc, char *argv[]) {
         .choices("usa", "eur", "jpn")
         .help("release of the cartridge that reads the notes --export-pak writes: usa, eur, or "
               "jpn");
-    parser.add_argument("--music")
-        .help("music module to play: 0 for the menus, 1 to 5 for the tracks")
-        .default_value(0)
-        .scan<'i', int>();
-    parser.add_argument("--music-wav").help("render the music to this WAV file and exit");
-    parser.add_argument("--music-seconds")
-        .help("length of the WAV file in seconds")
-        .default_value(30)
-        .scan<'i', int>();
     parser.add_argument("--play-sound")
         .help("play a wave file through EAR, from the default assets when relative, and exit");
     parser.add_argument("--sound-wav")
@@ -969,13 +946,6 @@ int main(int argc, char *argv[]) {
         .help("direction of --play-sound: 0 for the centre, 3 for the left, or 5 for the right")
         .default_value(0)
         .scan<'i', int>();
-    parser.add_argument("--sound-whole")
-        .help("read the whole file of --play-sound before it plays, rather than streaming it")
-        .flag();
-    parser.add_argument("--check-engine")
-        .help("load a track, a car, and the sounds and music of a race from the imported data "
-              "through the race engine, write the results to the log, and exit")
-        .flag();
     parser.add_argument("--scene").help(
         "scene to start in: intro, the default, main-menu, attract-demo, attract-demo:RELEASE for "
         "the demo of the usa, jpn, or eur cartridge, renderer-test, model:FILE.gltf for a "
@@ -1088,11 +1058,6 @@ int main(int argc, char *argv[]) {
     if (parser.is_used("--play-sound")) {
         return PlaySoundFromCommandLine(parser, paths->data);
     }
-    if (parser.get<bool>("--check-engine")) {
-        int checked = coastline::CheckEngine(coastline::DefaultAssets(paths->data));
-        coastline::StopGameLog();
-        return checked;
-    }
     auto configPath = paths->config / "BossRally.ini";
     auto config = coastline::GameConfig::Load(configPath);
     // Every setting is written to the file on the first run: the keys of the PC release first,
@@ -1168,21 +1133,8 @@ int main(int argc, char *argv[]) {
     // XmMusicGain of the configuration replaces the gain of the pack when the user writes it.
     const float musicGain = config.GetFloat(
         "Game", "XmMusicGain", packSettings.value("xmMusicGain", coastline::DEFAULT_XM_MUSIC_GAIN));
-    auto music = LoadMusicByIndex(assets, parser.get<int>("--music"));
-    if (auto wav = parser.present("--music-wav")) {
-        if (!music) {
-            coastline::StopGameLog();
-            return EXIT_FAILURE;
-        }
-        coastline::N64Audio audio;
-        audio.Play(*music);
-        auto samples = audio.Render(static_cast<std::size_t>(parser.get<int>("--music-seconds")) *
-                                    coastline::N64_AUDIO_RATE);
-        bool written = coastline::WriteWav(*wav, samples, coastline::N64_AUDIO_RATE);
-        SDL_Log(written ? "Wrote %s." : "%s cannot be written.", wav->c_str());
-        coastline::StopGameLog();
-        return written ? EXIT_SUCCESS : EXIT_FAILURE;
-    }
+    const coastline::UsaMusicModule &menuModule = coastline::USA_MUSIC_MODULES[0];
+    auto music = LoadMusicModule(assets, menuModule.offset);
     // The keys of the actions are not written, as each key present replaces its preset binding.
     coastline::LoadControls(config);
     const std::string scene = parser.present("--scene").value_or("");
@@ -1213,8 +1165,7 @@ int main(int argc, char *argv[]) {
             coastline::ShareRaceMusicPlayer(playMusic ? &audio : nullptr);
             auto playMenuMusic = [&]() {
                 if (music && playMusic) {
-                    SDL_Log("The menus play the music module %s.",
-                            coastline::USA_MUSIC_MODULES[parser.get<int>("--music")].name);
+                    SDL_Log("The menus play the music module %s.", menuModule.name);
                     audio.Play(*music);
                 }
             };

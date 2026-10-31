@@ -9,8 +9,6 @@ namespace coastline {
 struct EarSoundOptions {
     /** The direction of the matrix of one direction, from 0 for the centre to 16. */
     int direction = 0;
-    /** Whether EAR reads the whole file before it plays, rather than streaming it. */
-    bool whole = false;
     /** The WAV file the mix is written to in place of the playback device, if any. */
     std::optional<std::filesystem::path> output;
 };
