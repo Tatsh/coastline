@@ -30,7 +30,11 @@ public:
         CPlex *plex = this;
         while (plex != nullptr) {
             CPlex *following = plex->next;
+#ifdef ENABLE_PATCHES
+            ::operator delete(plex);
+#else
             std::free(plex);
+#endif /* ENABLE_PATCHES */
             plex = following;
         }
     }
@@ -156,7 +160,14 @@ struct MapState {
 
 } // namespace
 
+// The library of MSVC 6 allocates through malloc and calls the new handler until it succeeds,
+// and its operator delete is free, so EAR releases these blocks with operator delete.
 void *MfcAllocateWithNewHandler(std::size_t size) {
+#ifdef ENABLE_PATCHES
+    // Another library's operator delete need not be free, so the allocation pairs with operator
+    // delete. The nothrow form calls the new handler the same way and gives nothing without one.
+    return ::operator new(size, std::nothrow);
+#else
     for (;;) {
         if (void *memory = std::malloc(size)) {
             return memory;
@@ -167,6 +178,7 @@ void *MfcAllocateWithNewHandler(std::size_t size) {
         }
         handler();
     }
+#endif /* ENABLE_PATCHES */
 }
 
 CRuntimeClass *CObject::GetRuntimeClass() const {
