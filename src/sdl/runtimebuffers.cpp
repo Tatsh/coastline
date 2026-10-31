@@ -4,7 +4,6 @@
 #include <PR/os.h>
 
 #include "common/frontendstate.h"
-#include "common/inputpoll.h"
 #include "common/racephases.h"
 #include "common/render.h"
 #include "common/session.h"
@@ -47,9 +46,3 @@ int g_dwRunBenchmark;
 int g_dwNetworkPlayMode;
 const char g_szEmptyUiString[1] = {0};
 int g_dwNullStubEnable = 1;
-
-// The input of the players.
-int g_bNetGamePaused;
-int g_bNetReadyToStartSent;
-int g_bRespawnRequested;
-unsigned g_dwInputButtonMask;

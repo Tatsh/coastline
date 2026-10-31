@@ -326,6 +326,10 @@ public:
     void SetDuration(unsigned microseconds);
     void StartJolt();
 
+    SdlRaceInputState &Platform() {
+        return m_platform;
+    }
+
 private:
     void ReadKeyboard();
     void ReadJoystick();
@@ -342,6 +346,7 @@ private:
     void SetSpringMagnitude(int magnitude);
     bool AsyncKeyPressed(SDL_Scancode scancode);
 
+    SdlRaceInputState m_platform{};
     std::array<std::array<unsigned char, KEYBOARD_KEY_COUNT>, 2> m_keyboard{};
     int m_keyboardCurrent = 1;
     int m_keyboardPrevious = 0;
@@ -611,14 +616,14 @@ unsigned RaceInput::ReadButtonMask(int *pnSteering, int *pnAcceleration) {
         if (IsKeyPressed(15)) {
             g_dwPauseMenuSelection = g_dwRacePauseState == 2 ? 1 : PAUSE_CONTINUE;
         }
-        g_dwInputButtonMask = 0x8000;
-        return g_dwInputButtonMask;
+        m_platform.buttonMask = 0x8000;
+        return m_platform.buttonMask;
     }
 #endif /* ENABLE_PATCHES */
     if (IsPressed(15)) {
-        g_bNetGamePaused = 1;
-        g_dwInputButtonMask = 0x4000;
-        return g_dwInputButtonMask;
+        m_platform.paused = 1;
+        m_platform.buttonMask = 0x4000;
+        return m_platform.buttonMask;
     }
 #ifdef ENABLE_PATCHES
     // Until the start binding begins a race, every other binding but the pause is ignored.
@@ -631,7 +636,7 @@ unsigned RaceInput::ReadButtonMask(int *pnSteering, int *pnAcceleration) {
         }
         *pnSteering = 0;
         *pnAcceleration = 0;
-        g_dwInputButtonMask = 0;
+        m_platform.buttonMask = 0;
         return 0;
     }
 #endif /* ENABLE_PATCHES */
@@ -681,7 +686,7 @@ unsigned RaceInput::ReadButtonMask(int *pnSteering, int *pnAcceleration) {
         if (IsPressed(27)) {
             mask |= 0x400000;
         }
-        g_dwInputButtonMask = mask;
+        m_platform.buttonMask = mask;
         return mask;
     }
     if (IsPressed(16)) {
@@ -696,12 +701,12 @@ unsigned RaceInput::ReadButtonMask(int *pnSteering, int *pnAcceleration) {
         m_lastRespawnPress = doublePress ? 0 : now;
         if (doublePress && !g_dwRacePauseState && g_dwGameMode != GAME_MODE_DEMO &&
             g_dwGameMode != GAME_MODE_AFTER_SEASON) {
-            g_bRespawnRequested = 1;
+            m_platform.respawnRequested = 1;
         }
 #else
         if (!g_dwRacePauseState && g_dwGameMode != GAME_MODE_DEMO &&
             g_dwGameMode != GAME_MODE_AFTER_SEASON) {
-            g_bRespawnRequested = 1;
+            m_platform.respawnRequested = 1;
         }
 #endif /* ENABLE_PATCHES */
         g_bRaceStartReached = 1;
@@ -792,7 +797,7 @@ unsigned RaceInput::ReadButtonMask(int *pnSteering, int *pnAcceleration) {
             }
         }
     }
-    g_dwInputButtonMask = mask;
+    m_platform.buttonMask = mask;
     return mask;
 }
 
@@ -1005,6 +1010,10 @@ ControllerState ReadRacePad(const PlayerDevices &devices) {
 }
 
 } // namespace coastline
+
+extern "C" SdlRaceInputState *GetSdlRaceInputState(void) {
+    return &coastline::RaceInput::Get().Platform();
+}
 
 unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration) {
     return coastline::RaceInput::Get().ReadButtonMask(pnSteering, pnAcceleration);

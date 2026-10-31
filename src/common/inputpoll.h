@@ -1,6 +1,7 @@
 #ifndef COASTLINE_PLATFORM_WIN_INPUTPOLL_H
 #define COASTLINE_PLATFORM_WIN_INPUTPOLL_H
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * Most recent race or replay action mask.
  * @ghidraAddress BRD3D: 0x118abad0
@@ -21,6 +22,7 @@ extern int g_bNetReadyToStartSent;
  * @ghidraAddress BRGlide: 0x10226a50
  */
 extern int g_bNetGamePaused;
+#endif
 
 #ifdef __cplusplus
 /**
@@ -65,7 +67,9 @@ unsigned ReadInputDevicesButtonMask(int *pnSteering, int *pnAcceleration);
  * @ghidraAddress BRD3D: 0x118abdcc
  * @ghidraAddress BRGlide: 0x118eeee4
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern int g_bRespawnRequested;
+#endif
 
 /**
  * Clear both states of the mouse.
@@ -124,6 +128,22 @@ void SetForceFeedbackShortDuration(void);
 void StartForceFeedbackJolt(void);
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
+/** Action and pause requests for one SDL input configuration. */
+typedef struct {
+    unsigned buttonMask;
+    int readyToStartSent;
+    int paused;
+    int respawnRequested;
+} SdlRaceInputState;
+
+/** @return Action storage for the active SDL input configuration. */
+SdlRaceInputState *GetSdlRaceInputState(void);
+
+#define g_dwInputButtonMask (GetSdlRaceInputState()->buttonMask)
+#define g_bNetReadyToStartSent (GetSdlRaceInputState()->readyToStartSent)
+#define g_bNetGamePaused (GetSdlRaceInputState()->paused)
+#define g_bRespawnRequested (GetSdlRaceInputState()->respawnRequested)
+
 /**
  * Read the second controller of the SDL game as the console reads a pad, for the second player of
  * a race.
