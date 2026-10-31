@@ -314,7 +314,7 @@ void PerformanceStats::Frame() {
 std::vector<std::string> PerformanceStats::Lines(std::uint64_t gameGpuBytes) const {
     std::vector<std::string> lines;
     if (m_framesPerSecond) {
-        lines.push_back(fmt::format("FPS: {:.0f}", *m_framesPerSecond));
+        lines.push_back(fmt::format("FPS: {:.2f}", *m_framesPerSecond));
     }
     if (m_worstMs > 0.0) {
         lines.push_back(fmt::format("FRAME: {:.1f} MS, WORST: {:.1f} MS", m_frameMs, m_worstMs));
