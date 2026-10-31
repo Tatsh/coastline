@@ -27,8 +27,9 @@ its assets. Building this source alone will not result in a playable game.
 
 ## Progress
 
-[PROGRESS.md](PROGRESS.md) records which routines of each release the source reconstructs and
-which of them compile to the original code, with a page for each part of the program.
+[PROGRESS.md](PROGRESS.md) records which routines of each release compile to the original code,
+with IDO 5.3 for the Nintendo 64 releases and MSVC 6.0 for the PC libraries, with a page for each
+part of the program.
 
 ## Building
 
