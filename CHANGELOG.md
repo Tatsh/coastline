@@ -66,6 +66,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Fixed a crash when quitting the game during a race by releasing race music before SDL audio
+  shutdown.
 - Restored Japanese paint-shop dialogue dimensions, text sizes, alignment, and button positions for
   decal loading, saving, overwrite confirmation, and Controller Pak errors.
 

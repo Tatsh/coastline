@@ -36,7 +36,7 @@
     }
     ReleaseJoystickDevice();
     ShutdownDirectSound();
-    coastline::StopRaceMusic();
+    coastline::ShutdownRaceMusic();
     if (g_pfnShutdownTextureSubsystem != nullptr) {
         g_pfnShutdownTextureSubsystem();
     }

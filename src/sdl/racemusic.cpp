@@ -137,6 +137,7 @@ public:
 
     bool Start(const std::filesystem::path &directory, RaceMusicSource source);
     void Stop();
+    void Shutdown();
     bool IsPlaying() const {
         return g_dwPlayMusicMode != 0 && m_users != 0 && m_active;
     }
@@ -257,6 +258,19 @@ void RaceMusic::Stop() {
     m_cdTrack = FlacTrack();
     m_cdSamples.clear();
     m_active = false;
+}
+
+void RaceMusic::Shutdown() {
+    m_shared = nullptr;
+    m_users = 0;
+    m_active = false;
+    if (m_cdStream != nullptr) {
+        SDL_DestroyAudioStream(m_cdStream);
+        m_cdStream = nullptr;
+    }
+    m_modules.reset();
+    m_cdTrack = FlacTrack();
+    m_cdSamples.clear();
 }
 
 bool RaceMusic::Play(int track) {
@@ -412,6 +426,10 @@ bool StartRaceMusic(const std::filesystem::path &directory, RaceMusicSource sour
 
 void StopRaceMusic() {
     RaceMusic::Get().Stop();
+}
+
+void ShutdownRaceMusic() {
+    RaceMusic::Get().Shutdown();
 }
 
 void RestartRaceMusic() {

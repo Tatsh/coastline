@@ -29,6 +29,9 @@ bool StartRaceMusic(const std::filesystem::path &directory, RaceMusicSource sour
  */
 void StopRaceMusic();
 
+/** Release all race music resources regardless of active users, before SDL audio shuts down. */
+void ShutdownRaceMusic();
+
 /** Play the track of the race from its start, with the device of the music resumed. */
 void RestartRaceMusic();
 

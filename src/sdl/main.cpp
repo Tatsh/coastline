@@ -70,6 +70,7 @@ struct SdlSession {
     explicit SdlSession(SDL_InitFlags flags) : ready(SDL_Init(flags)) {
     }
     ~SdlSession() {
+        coastline::ShutdownRaceMusic();
         SDL_Quit();
     }
     SdlSession(const SdlSession &) = delete;
