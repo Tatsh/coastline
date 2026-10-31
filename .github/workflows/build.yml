@@ -197,7 +197,7 @@ jobs:
           artifact-name: 'flatpak-${{ matrix.arch }}'
           bundle: 'coastline-${{ matrix.arch }}.flatpak'
           cache: false
-          manifest-path: 'flatpak/io.github.tatsh.coastline.yml'
+          manifest-path: 'flatpak/sh.tat.coastline.yml'
   snap:
     name: 'Snap (${{ matrix.name }})'
     runs-on: '${{ matrix.os }}'

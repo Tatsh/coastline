@@ -991,7 +991,7 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
     SDL_SetMainReady();
-    SDL_SetAppMetadata("Coastline", COASTLINE_VERSION, "io.github.tatsh.coastline");
+    SDL_SetAppMetadata("Coastline", COASTLINE_VERSION, "sh.tat.coastline");
     if (!coastline::StartGameLog(paths->state / "game.log")) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "The log file cannot be opened.");
     }

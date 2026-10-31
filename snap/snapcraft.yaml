@@ -3,8 +3,14 @@ apps:
   coastline:
     command: 'usr/bin/coastline'
     command-chain: ['bin/gpu-2404-wrapper']
-    common-id: 'io.github.tatsh.coastline'
-    desktop: 'usr/share/applications/io.github.tatsh.coastline.desktop'
+    common-id: 'sh.tat.coastline'
+    desktop: 'usr/share/applications/sh.tat.coastline.desktop'
+    # The imported data is large, and snapd copies the directory of each revision on a refresh, so
+    # the data, the cache, and the log go to the directory every revision shares.
+    environment:
+      XDG_CACHE_HOME: '$SNAP_USER_COMMON/.cache'
+      XDG_DATA_HOME: '$SNAP_USER_COMMON/.local/share'
+      XDG_STATE_HOME: '$SNAP_USER_COMMON/.local/state'
     plugs:
       - 'audio-playback'
       - 'home'
@@ -20,7 +26,7 @@ description: |
   image and a Top Gear Rally cartridge image, which `coastline --import-disc` and
   `coastline --import-rom` import.
 grade: 'devel'
-icon: 'src/sdl/io.github.tatsh.coastline.svg'
+icon: 'src/sdl/sh.tat.coastline.svg'
 # The GPU libraries come from the mesa-2404 snap through the gpu-2404 interface.
 layout:
   /usr/share/drirc.d:

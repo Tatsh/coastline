@@ -280,9 +280,8 @@ endif()
 if(NOT WIN32 AND NOT APPLE)
   set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES INSTALL_RPATH
                                                          "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
-  install(FILES io.github.tatsh.coastline.desktop
-          DESTINATION "${CMAKE_INSTALL_DATADIR}/applications")
-  install(FILES io.github.tatsh.coastline.svg
+  install(FILES sh.tat.coastline.desktop DESTINATION "${CMAKE_INSTALL_DATADIR}/applications")
+  install(FILES sh.tat.coastline.svg
           DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps")
 endif()
 install(FILES "${CMAKE_SOURCE_DIR}/LICENSE.txt" "${CMAKE_SOURCE_DIR}/README.md"

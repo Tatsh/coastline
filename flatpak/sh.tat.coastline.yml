@@ -1,4 +1,4 @@
-app-id: 'io.github.tatsh.coastline'
+app-id: 'sh.tat.coastline'
 command: 'coastline'
 # The game imports a disc image and cartridge images from the home directory or a removable drive,
 # and reads the controllers through the input devices.

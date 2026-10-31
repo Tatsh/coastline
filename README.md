@@ -83,14 +83,22 @@ cmake --install build/sdl --prefix ~/.local
 
 The build workflow uploads a debug and a release build of the game for each platform, an AppImage
 of each Linux release build, a snap for amd64 and arm64 built from `snap/snapcraft.yaml`, and a
-Flatpak bundle for x86_64 and aarch64 built from `flatpak/io.github.tatsh.coastline.yml`.
+Flatpak bundle for x86_64 and aarch64 built from `flatpak/sh.tat.coastline.yml`.
 
 ```shell
 snapcraft pack
 ```
 
 ```shell
-flatpak-builder --user --install build/flatpak flatpak/io.github.tatsh.coastline.yml
+flatpak-builder --user --install build/flatpak flatpak/sh.tat.coastline.yml
+```
+
+Both packages import disc and cartridge images from the home directory and from removable
+media, and from nowhere else. The snap reads removable media once the interface is connected.
+It keeps its data in `~/snap/coastline/common`, and the Flatpak in `~/.var/app/sh.tat.coastline`.
+
+```shell
+sudo snap connect coastline:removable-media
 ```
 
 Without vcpkg, each library and tool comes from a pinned release that is downloaded and built with
