@@ -269,7 +269,56 @@ target_link_libraries(coastline_common PRIVATE ${COASTLINE_COMMON_LIBULTRA_LIBRA
                                                $<LINK_ONLY:coastline_sdl> SDL3::SDL3)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,coastline_common>")
 
-install(TARGETS ${CMAKE_PROJECT_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}")
+if(APPLE)
+  set_target_properties(
+    ${CMAKE_PROJECT_NAME}
+    PROPERTIES MACOSX_BUNDLE TRUE
+               MACOSX_BUNDLE_BUNDLE_NAME "Coastline"
+               MACOSX_BUNDLE_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}"
+               MACOSX_BUNDLE_GUI_IDENTIFIER "sh.tat.coastline"
+               MACOSX_BUNDLE_INFO_PLIST "${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in"
+               MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
+               OUTPUT_NAME "Coastline")
+  # The icon of the bundle is made from the SVG when librsvg and iconutil are present.
+  find_program(COASTLINE_RSVG_CONVERT rsvg-convert)
+  find_program(COASTLINE_ICONUTIL iconutil)
+  if(COASTLINE_RSVG_CONVERT AND COASTLINE_ICONUTIL)
+    set(_iconset "${CMAKE_CURRENT_BINARY_DIR}/Coastline.iconset")
+    set(_icon "${CMAKE_CURRENT_BINARY_DIR}/Coastline.icns")
+    set(_svg "${CMAKE_CURRENT_SOURCE_DIR}/sh.tat.coastline.svg")
+    set(_render)
+    foreach(_size IN ITEMS 16 32 128 256 512)
+      math(EXPR _double "${_size} * 2")
+      list(APPEND _render COMMAND "${COASTLINE_RSVG_CONVERT}" -w ${_size} -h ${_size} -o
+           "${_iconset}/icon_${_size}x${_size}.png" "${_svg}")
+      list(APPEND _render COMMAND "${COASTLINE_RSVG_CONVERT}" -w ${_double} -h ${_double} -o
+           "${_iconset}/icon_${_size}x${_size}@2x.png" "${_svg}")
+    endforeach()
+    add_custom_command(
+      OUTPUT "${_icon}"
+      COMMAND "${CMAKE_COMMAND}" -E make_directory "${_iconset}" ${_render}
+      COMMAND "${COASTLINE_ICONUTIL}" -c icns -o "${_icon}" "${_iconset}"
+      DEPENDS "${_svg}"
+      VERBATIM)
+    target_sources(${CMAKE_PROJECT_NAME} PRIVATE "${_icon}")
+    set_source_files_properties("${_icon}" PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
+    set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_ICON_FILE Coastline.icns)
+  endif()
+endif()
+install(TARGETS ${CMAKE_PROJECT_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+        BUNDLE DESTINATION .)
+if(APPLE)
+  # Every library the game links that macOS does not provide is copied into the bundle, and the
+  # bundle is signed again without an identity, as an arm64 Mac runs only signed code.
+  install(
+    CODE [[
+      include(BundleUtilities)
+      set(_bundle "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/Coastline.app")
+      fixup_bundle("${_bundle}" "" "")
+      execute_process(COMMAND codesign --force --deep --sign - "${_bundle}"
+                      COMMAND_ERROR_IS_FATAL ANY)
+    ]])
+endif()
 # The shared SDL of vcpkg is installed beside the game on Windows, and in the library directory
 # elsewhere. The SDL of the system is not installed, and the pinned release is static.
 get_target_property(_sdl_imported SDL3::SDL3 IMPORTED)

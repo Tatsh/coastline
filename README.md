@@ -120,6 +120,14 @@ and writes `game.log` to `~/.local/state/coastline`. The XDG Base Directory vari
 directories. Windows uses the roaming and local application data folders, and macOS uses
 Application Support, Caches, and Logs in the library of the user.
 
+On macOS the install is the application bundle `Coastline.app`, signed without an identity, with
+every library the game links that macOS does not provide inside it. The build workflow uploads it
+as a disk image. The options of the command line go to the program inside the bundle.
+
+```shell
+Coastline.app/Contents/MacOS/Coastline --import-disc 'Boss Rally.cue' --import-rom usa.z64
+```
+
 ### Controls
 
 The `Controls` section of `BossRally.ini` maps the gamepad. `Preset` chooses one of the presets below,

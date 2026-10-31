@@ -28,6 +28,7 @@ andi
 apfn
 appdir
 appimage
+appl
 appnotstarted
 apsz
 aptex
@@ -149,6 +150,7 @@ clipintersectionall
 clockfields
 coasttr
 coasttrk
+codesign
 colc
 collisionstep
 color
@@ -561,6 +563,8 @@ iconerasebkgnd
 iconerror
 iconfile
 iconhand
+iconset
+iconutil
 icsum
 idok
 ilse
@@ -654,6 +658,7 @@ libgcc
 libglide
 libltdl
 libpulse
+librsvg
 libsonnet
 libultra
 libunwind
@@ -1040,6 +1045,7 @@ routewalk
 rrggbb
 rshift
 rside
+rsvg
 rtti
 runtimebuffers
 rxsize
@@ -1301,6 +1307,7 @@ typel
 ucode
 udivdi
 udvare
+udzo
 ullval
 ultoa
 umoddi
@@ -1365,6 +1372,7 @@ viswapbuf
 viswapcontext
 vmodeldl
 vmodeltex
+volname
 volumecontrols
 vretrace
 vsince
