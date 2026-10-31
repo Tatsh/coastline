@@ -4,6 +4,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
 
 #include <SDL3/SDL.h>
 
@@ -116,6 +117,14 @@ public:
     /** @return The GPU device. */
     SDL_GPUDevice *Device() const {
         return m_device.get();
+    }
+
+    /**
+     * @return Bytes of the GPU device's textures, buffers, and transfer buffers created by the game
+     * and not released, excluding allocations internal to the driver.
+     */
+    Uint64 GpuMemoryBytes() const {
+        return m_gpuMemoryBytes;
     }
 
     /** @return The actual adapter reported by SDL. */
@@ -237,6 +246,20 @@ public:
     }
 
 private:
+    friend SDL_GPUTexture *CreateGpuTexture(SDL_GPUDevice *device,
+                                            const SDL_GPUTextureCreateInfo *info);
+    friend SDL_GPUBuffer *CreateGpuBuffer(SDL_GPUDevice *device,
+                                          const SDL_GPUBufferCreateInfo *info);
+    friend SDL_GPUTransferBuffer *
+    CreateGpuTransferBuffer(SDL_GPUDevice *device, const SDL_GPUTransferBufferCreateInfo *info);
+    friend void ReleaseGpuTexture(SDL_GPUDevice *device, SDL_GPUTexture *texture);
+    friend void ReleaseGpuBuffer(SDL_GPUDevice *device, SDL_GPUBuffer *buffer);
+    friend void ReleaseGpuTransferBuffer(SDL_GPUDevice *device, SDL_GPUTransferBuffer *buffer);
+
+    static GpuWindow *ForDevice(SDL_GPUDevice *device);
+    void AddGpuMemory(const void *object, Uint64 bytes);
+    void RemoveGpuMemory(const void *object);
+
     struct WindowDeleter {
         void operator()(SDL_Window *window) const {
             SDL_DestroyWindow(window);
@@ -256,6 +279,9 @@ private:
     bool CreatePostPasses();
     SDL_GPUTexture *AntialiasFrame(SDL_GPUCommandBuffer *commands);
 
+    std::unordered_map<const void *, Uint64> m_gpuMemoryObjects;
+    Uint64 m_gpuMemoryBytes = 0;
+    unsigned m_texturesSincePresent = 0;
     std::unique_ptr<SDL_Window, WindowDeleter> m_window;
     std::unique_ptr<SDL_GPUDevice, DeviceDeleter> m_device;
     SDL_GPUTexture *m_frame = nullptr;
@@ -274,7 +300,7 @@ private:
 };
 
 /**
- * SDL_CreateGPUTexture(), with the bytes of every level and sample added to GpuMemoryBytes().
+ * SDL_CreateGPUTexture(), recording bytes of every level and sample in GpuWindow::GpuMemoryBytes().
  *
  * @param device The GPU device.
  * @param info The texture to create.
@@ -283,7 +309,7 @@ private:
 SDL_GPUTexture *CreateGpuTexture(SDL_GPUDevice *device, const SDL_GPUTextureCreateInfo *info);
 
 /**
- * SDL_CreateGPUBuffer(), with its size added to GpuMemoryBytes().
+ * SDL_CreateGPUBuffer(), recording its size in GpuWindow::GpuMemoryBytes().
  *
  * @param device The GPU device.
  * @param info The buffer to create.
@@ -292,7 +318,7 @@ SDL_GPUTexture *CreateGpuTexture(SDL_GPUDevice *device, const SDL_GPUTextureCrea
 SDL_GPUBuffer *CreateGpuBuffer(SDL_GPUDevice *device, const SDL_GPUBufferCreateInfo *info);
 
 /**
- * SDL_CreateGPUTransferBuffer(), with its size added to GpuMemoryBytes().
+ * SDL_CreateGPUTransferBuffer(), recording its size in GpuWindow::GpuMemoryBytes().
  *
  * @param device The GPU device.
  * @param info The transfer buffer to create.
@@ -302,7 +328,7 @@ SDL_GPUTransferBuffer *CreateGpuTransferBuffer(SDL_GPUDevice *device,
                                                const SDL_GPUTransferBufferCreateInfo *info);
 
 /**
- * SDL_ReleaseGPUTexture(), with the bytes of the texture taken from GpuMemoryBytes().
+ * SDL_ReleaseGPUTexture(), subtracting its bytes from GpuWindow::GpuMemoryBytes().
  *
  * @param device The GPU device.
  * @param texture A texture of CreateGpuTexture(), or null.
@@ -310,7 +336,7 @@ SDL_GPUTransferBuffer *CreateGpuTransferBuffer(SDL_GPUDevice *device,
 void ReleaseGpuTexture(SDL_GPUDevice *device, SDL_GPUTexture *texture);
 
 /**
- * SDL_ReleaseGPUBuffer(), with the bytes of the buffer taken from GpuMemoryBytes().
+ * SDL_ReleaseGPUBuffer(), subtracting its bytes from GpuWindow::GpuMemoryBytes().
  *
  * @param device The GPU device.
  * @param buffer A buffer of CreateGpuBuffer(), or null.
@@ -318,17 +344,11 @@ void ReleaseGpuTexture(SDL_GPUDevice *device, SDL_GPUTexture *texture);
 void ReleaseGpuBuffer(SDL_GPUDevice *device, SDL_GPUBuffer *buffer);
 
 /**
- * SDL_ReleaseGPUTransferBuffer(), with the bytes of the buffer taken from GpuMemoryBytes().
+ * SDL_ReleaseGPUTransferBuffer(), subtracting its bytes from GpuWindow::GpuMemoryBytes().
  *
  * @param device The GPU device.
  * @param buffer A transfer buffer of CreateGpuTransferBuffer(), or null.
  */
 void ReleaseGpuTransferBuffer(SDL_GPUDevice *device, SDL_GPUTransferBuffer *buffer);
-
-/**
- * @return The bytes of the textures, the buffers, and the transfer buffers the game has created
- * and not released, without the memory the driver allocates for itself.
- */
-Uint64 GpuMemoryBytes();
 
 } // namespace coastline

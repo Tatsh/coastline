@@ -1560,7 +1560,7 @@ int main(int argc, char *argv[]) {
                             static_cast<float>(std::max(frame.FrameHeight(), 1u)))[0];
                         int x = 16 - static_cast<int>(320.0f * (1.0f / across - 1.0f));
                         for (const std::string &line :
-                             performanceStats->Lines(coastline::GpuMemoryBytes())) {
+                             performanceStats->Lines(frame.GpuMemoryBytes())) {
                             DrawOverlayLine(*sceneRenderer,
                                             *frameRateText,
                                             line.c_str(),

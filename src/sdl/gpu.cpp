@@ -5,7 +5,6 @@
 #include <cstdint>
 #include <cstring>
 #include <span>
-#include <unordered_map>
 
 #ifdef _WIN32
 #ifndef NOMINMAX
@@ -31,7 +30,7 @@ constexpr SDL_GPUTextureFormat FRAME_FORMAT = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNO
 // of textures loaded in one frame grew the heap by tens of megabytes. A wait for the GPU after
 // every TEXTURES_BEFORE_WAIT textures between presents lets SDL recycle them.
 constexpr unsigned TEXTURES_BEFORE_WAIT = 32;
-unsigned g_texturesSincePresent = 0;
+constexpr const char *GPU_WINDOW_PROPERTY = "coastline.gpu-window";
 
 // A shader of a pass after the scene, in SPIR-V or MSL as the driver takes.
 SDL_GPUShader *CreatePostShader(SDL_GPUDevice *device,
@@ -147,6 +146,8 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
         SDL_LogError(SDL_LOG_CATEGORY_GPU, "The GPU device was not created: %s", SDL_GetError());
         return nullptr;
     }
+    SDL_SetPointerProperty(
+        SDL_GetGPUDeviceProperties(result->m_device.get()), GPU_WINDOW_PROPERTY, result.get());
     if (!SDL_ClaimWindowForGPUDevice(result->m_device.get(), result->m_window.get())) {
         SDL_LogError(SDL_LOG_CATEGORY_GPU, "The window was not claimed: %s", SDL_GetError());
         return nullptr;
@@ -516,7 +517,7 @@ bool GpuWindow::Present(SDL_GPUCommandBuffer *commands, const std::filesystem::p
     // PostAntialias, then the scale to the window by ScaleFilter.
     SDL_GPUTexture *source = AntialiasFrame(commands);
     SDL_GPUTexture *swapchain = nullptr;
-    g_texturesSincePresent = 0;
+    m_texturesSincePresent = 0;
     Uint32 width = 0;
     Uint32 height = 0;
     const auto acquireStart = SDL_GetTicksNS();
@@ -610,31 +611,29 @@ bool GpuWindow::SaveFrame(SDL_GPUCommandBuffer *commands,
     return saved;
 }
 
-namespace {
+GpuWindow *GpuWindow::ForDevice(SDL_GPUDevice *device) {
+    return static_cast<GpuWindow *>(
+        SDL_GetPointerProperty(SDL_GetGPUDeviceProperties(device), GPU_WINDOW_PROPERTY, nullptr));
+}
 
-// The bytes of each object of the GPU the game created, by the object.
-std::unordered_map<const void *, Uint64> g_gpuMemoryObjects;
-Uint64 g_gpuMemoryBytes = 0;
-
-void AddGpuMemory(const void *object, Uint64 bytes) {
+void GpuWindow::AddGpuMemory(const void *object, Uint64 bytes) {
     if (object != nullptr) {
-        g_gpuMemoryObjects[object] = bytes;
-        g_gpuMemoryBytes += bytes;
+        m_gpuMemoryObjects[object] = bytes;
+        m_gpuMemoryBytes += bytes;
     }
 }
 
-void RemoveGpuMemory(const void *object) {
-    auto found = g_gpuMemoryObjects.find(object);
-    if (found != g_gpuMemoryObjects.end()) {
-        g_gpuMemoryBytes -= found->second;
-        g_gpuMemoryObjects.erase(found);
+void GpuWindow::RemoveGpuMemory(const void *object) {
+    auto found = m_gpuMemoryObjects.find(object);
+    if (found != m_gpuMemoryObjects.end()) {
+        m_gpuMemoryBytes -= found->second;
+        m_gpuMemoryObjects.erase(found);
     }
 }
-
-} // namespace
 
 SDL_GPUTexture *CreateGpuTexture(SDL_GPUDevice *device, const SDL_GPUTextureCreateInfo *info) {
-    if (++g_texturesSincePresent % TEXTURES_BEFORE_WAIT == 0) {
+    auto *window = GpuWindow::ForDevice(device);
+    if (window && ++window->m_texturesSincePresent % TEXTURES_BEFORE_WAIT == 0) {
         SDL_WaitForGPUIdle(device);
     }
     SDL_GPUTexture *texture = SDL_CreateGPUTexture(device, info);
@@ -646,40 +645,48 @@ SDL_GPUTexture *CreateGpuTexture(SDL_GPUDevice *device, const SDL_GPUTextureCrea
                                                    info->layer_count_or_depth);
     }
     // SDL_GPU_SAMPLECOUNT_2 and the counts after it are 1, 2, and 3.
-    AddGpuMemory(texture, bytes << info->sample_count);
+    if (window) {
+        window->AddGpuMemory(texture, bytes << info->sample_count);
+    }
     return texture;
 }
 
 SDL_GPUBuffer *CreateGpuBuffer(SDL_GPUDevice *device, const SDL_GPUBufferCreateInfo *info) {
     SDL_GPUBuffer *buffer = SDL_CreateGPUBuffer(device, info);
-    AddGpuMemory(buffer, info->size);
+    if (auto *window = GpuWindow::ForDevice(device)) {
+        window->AddGpuMemory(buffer, info->size);
+    }
     return buffer;
 }
 
 SDL_GPUTransferBuffer *CreateGpuTransferBuffer(SDL_GPUDevice *device,
                                                const SDL_GPUTransferBufferCreateInfo *info) {
     SDL_GPUTransferBuffer *buffer = SDL_CreateGPUTransferBuffer(device, info);
-    AddGpuMemory(buffer, info->size);
+    if (auto *window = GpuWindow::ForDevice(device)) {
+        window->AddGpuMemory(buffer, info->size);
+    }
     return buffer;
 }
 
 void ReleaseGpuTexture(SDL_GPUDevice *device, SDL_GPUTexture *texture) {
-    RemoveGpuMemory(texture);
+    if (auto *window = GpuWindow::ForDevice(device)) {
+        window->RemoveGpuMemory(texture);
+    }
     SDL_ReleaseGPUTexture(device, texture);
 }
 
 void ReleaseGpuBuffer(SDL_GPUDevice *device, SDL_GPUBuffer *buffer) {
-    RemoveGpuMemory(buffer);
+    if (auto *window = GpuWindow::ForDevice(device)) {
+        window->RemoveGpuMemory(buffer);
+    }
     SDL_ReleaseGPUBuffer(device, buffer);
 }
 
 void ReleaseGpuTransferBuffer(SDL_GPUDevice *device, SDL_GPUTransferBuffer *buffer) {
-    RemoveGpuMemory(buffer);
+    if (auto *window = GpuWindow::ForDevice(device)) {
+        window->RemoveGpuMemory(buffer);
+    }
     SDL_ReleaseGPUTransferBuffer(device, buffer);
-}
-
-Uint64 GpuMemoryBytes() {
-    return g_gpuMemoryBytes;
 }
 
 } // namespace coastline
