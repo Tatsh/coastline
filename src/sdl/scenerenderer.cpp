@@ -861,6 +861,10 @@ struct SceneRenderer::State {
     std::size_t flatVertexCapacity = 0;
     SDL_GPUBuffer *quadIndices = nullptr;
     std::size_t quadCapacity = 0;
+    // The upload of the flat draws, kept from frame to frame. Mapping it cycles past an upload the
+    // GPU still reads.
+    SDL_GPUTransferBuffer *flatTransfer = nullptr;
+    std::size_t flatTransferCapacity = 0;
     // The draws of the frame, in order, and the vertices of its flat draws.
     std::array<float, 4> clear{};
     std::vector<std::variant<ModelDraw, QuadDraw>> draws;
@@ -929,6 +933,9 @@ struct SceneRenderer::State {
         }
         if (plainSampler != nullptr) {
             SDL_ReleaseGPUSampler(device, plainSampler);
+        }
+        if (flatTransfer != nullptr) {
+            SDL_ReleaseGPUTransferBuffer(device, flatTransfer);
         }
         for (auto *buffer : {noTargets, flatVertices, quadIndices}) {
             if (buffer != nullptr) {
@@ -1029,6 +1036,22 @@ struct SceneRenderer::State {
         info.size = static_cast<Uint32>(capacity);
         buffer = SDL_CreateGPUBuffer(device, &info);
         return buffer != nullptr;
+    }
+
+    // The upload of the flat draws, of at least a size, made again when it is too small.
+    bool ReserveFlatTransfer(std::size_t bytes) {
+        if (flatTransfer != nullptr && flatTransferCapacity >= bytes) {
+            return true;
+        }
+        if (flatTransfer != nullptr) {
+            SDL_ReleaseGPUTransferBuffer(device, flatTransfer);
+        }
+        flatTransferCapacity = std::max(bytes, flatTransferCapacity * 2);
+        SDL_GPUTransferBufferCreateInfo info{};
+        info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
+        info.size = static_cast<Uint32>(flatTransferCapacity);
+        flatTransfer = SDL_CreateGPUTransferBuffer(device, &info);
+        return flatTransfer != nullptr;
     }
 };
 
@@ -1442,6 +1465,49 @@ RenderTexture::RenderTexture(
 RenderTexture::~RenderTexture() {
     SDL_ReleaseGPUTexture(m_device, m_texture);
     SDL_ReleaseGPUSampler(m_device, m_sampler);
+    if (m_transfer != nullptr) {
+        SDL_ReleaseGPUTransferBuffer(m_device, m_transfer);
+    }
+}
+
+bool RenderTexture::Update(std::span<const std::uint8_t> rgba) {
+    auto bytes = static_cast<std::size_t>(m_width) * static_cast<std::size_t>(m_height) * 4;
+    if (rgba.size() != bytes) {
+        return false;
+    }
+    if (m_transfer == nullptr) {
+        SDL_GPUTransferBufferCreateInfo info{};
+        info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
+        info.size = static_cast<Uint32>(bytes);
+        m_transfer = SDL_CreateGPUTransferBuffer(m_device, &info);
+        if (m_transfer == nullptr) {
+            return false;
+        }
+    }
+    auto *mapped =
+        static_cast<std::uint8_t *>(SDL_MapGPUTransferBuffer(m_device, m_transfer, true));
+    if (mapped == nullptr) {
+        return false;
+    }
+    std::memcpy(mapped, rgba.data(), bytes);
+    SDL_UnmapGPUTransferBuffer(m_device, m_transfer);
+    SDL_GPUCommandBuffer *commands = SDL_AcquireGPUCommandBuffer(m_device);
+    if (commands == nullptr) {
+        return false;
+    }
+    SDL_GPUCopyPass *copy = SDL_BeginGPUCopyPass(commands);
+    SDL_GPUTextureTransferInfo source{};
+    source.transfer_buffer = m_transfer;
+    source.pixels_per_row = static_cast<Uint32>(m_width);
+    source.rows_per_layer = static_cast<Uint32>(m_height);
+    SDL_GPUTextureRegion region{};
+    region.texture = m_texture;
+    region.w = static_cast<Uint32>(m_width);
+    region.h = static_cast<Uint32>(m_height);
+    region.d = 1;
+    SDL_UploadToGPUTexture(copy, &source, &region, true);
+    SDL_EndGPUCopyPass(copy);
+    return SDL_SubmitGPUCommandBuffer(commands);
 }
 
 int RenderTexture::Width() const {
@@ -1767,26 +1833,27 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                 }
             }
             std::size_t indexBytes = indices.size() * 4;
-            SDL_GPUTransferBufferCreateInfo info{};
-            info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
-            info.size = static_cast<Uint32>(vertexBytes + indexBytes);
-            SDL_GPUTransferBuffer *transfer = SDL_CreateGPUTransferBuffer(s.device, &info);
-            auto *mapped =
-                static_cast<std::uint8_t *>(SDL_MapGPUTransferBuffer(s.device, transfer, false));
-            std::memcpy(mapped, s.flat.data(), vertexBytes);
-            std::memcpy(mapped + vertexBytes, indices.data(), indexBytes);
-            SDL_UnmapGPUTransferBuffer(s.device, transfer);
-            SDL_GPUCopyPass *copy = SDL_BeginGPUCopyPass(commands);
-            SDL_GPUTransferBufferLocation from{transfer, 0};
-            SDL_GPUBufferRegion to{s.flatVertices, 0, static_cast<Uint32>(vertexBytes)};
-            SDL_UploadToGPUBuffer(copy, &from, &to, true);
-            if (indexBytes > 0) {
-                from.offset = static_cast<Uint32>(vertexBytes);
-                to = {s.quadIndices, 0, static_cast<Uint32>(indexBytes)};
-                SDL_UploadToGPUBuffer(copy, &from, &to, false);
+            if (!s.ReserveFlatTransfer(vertexBytes + indexBytes)) {
+                SDL_LogError(
+                    SDL_LOG_CATEGORY_GPU, "The flat draws have no upload: %s", SDL_GetError());
+                s.flat.clear();
+            } else {
+                auto *mapped = static_cast<std::uint8_t *>(
+                    SDL_MapGPUTransferBuffer(s.device, s.flatTransfer, true));
+                std::memcpy(mapped, s.flat.data(), vertexBytes);
+                std::memcpy(mapped + vertexBytes, indices.data(), indexBytes);
+                SDL_UnmapGPUTransferBuffer(s.device, s.flatTransfer);
+                SDL_GPUCopyPass *copy = SDL_BeginGPUCopyPass(commands);
+                SDL_GPUTransferBufferLocation from{s.flatTransfer, 0};
+                SDL_GPUBufferRegion to{s.flatVertices, 0, static_cast<Uint32>(vertexBytes)};
+                SDL_UploadToGPUBuffer(copy, &from, &to, true);
+                if (indexBytes > 0) {
+                    from.offset = static_cast<Uint32>(vertexBytes);
+                    to = {s.quadIndices, 0, static_cast<Uint32>(indexBytes)};
+                    SDL_UploadToGPUBuffer(copy, &from, &to, false);
+                }
+                SDL_EndGPUCopyPass(copy);
             }
-            SDL_EndGPUCopyPass(copy);
-            SDL_ReleaseGPUTransferBuffer(s.device, transfer);
         }
     }
 

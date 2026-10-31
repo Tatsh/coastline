@@ -2312,13 +2312,16 @@ void RaceView::DrawView(SceneRenderer &renderer,
         if (g_dwRainMode) {
             std::vector<std::uint8_t> texels = RainStreakTexels(index);
             auto view = static_cast<std::size_t>(index);
+            // The streak changes its texels in place once its texture exists.
             if (!s.streaks[view] || texels != s.streakTexels[view]) {
-                s.streaks[view] = RenderTexture::FromTexels(renderer,
-                                                            RAIN_STREAK_TEXTURE_SIDE,
-                                                            RAIN_STREAK_TEXTURE_SIDE,
-                                                            texels,
-                                                            true,
-                                                            false);
+                if (!s.streaks[view] || !s.streaks[view]->Update(texels)) {
+                    s.streaks[view] = RenderTexture::FromTexels(renderer,
+                                                                RAIN_STREAK_TEXTURE_SIDE,
+                                                                RAIN_STREAK_TEXTURE_SIDE,
+                                                                texels,
+                                                                true,
+                                                                false);
+                }
                 s.streakTexels[view] = std::move(texels);
             }
             precipitation = s.streaks[view].get();

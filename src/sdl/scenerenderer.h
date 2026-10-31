@@ -334,6 +334,15 @@ public:
     /** @return The height in texels. */
     int Height() const;
 
+    /**
+     * Replace the texels in place, through an upload the texture keeps. A frame that still draws
+     * the old texels keeps them.
+     *
+     * @param rgba The texels as 8-bit RGBA, row by row from the top, the size of the texture.
+     * @return Whether the upload was submitted.
+     */
+    bool Update(std::span<const std::uint8_t> rgba);
+
 private:
     friend class SceneRenderer;
     RenderTexture(SDL_GPUDevice *device,
@@ -344,6 +353,8 @@ private:
     SDL_GPUDevice *m_device;
     SDL_GPUTexture *m_texture;
     SDL_GPUSampler *m_sampler;
+    // The upload of Update(), made by its first call.
+    SDL_GPUTransferBuffer *m_transfer = nullptr;
     int m_width;
     int m_height;
     // Whether the shader filters the texels as the RDP does, through a sampler of the nearest.
