@@ -85,17 +85,11 @@ private:
  * the vertical field shrinks.
  *
  * @param fovy The vertical field in radians of the view on the 4:3 screen of the PC release, before
- * the multiplier of SetFieldOfViewScale().
+ * the configured multiplier.
  * @param aspect The width of the view over its height on the frame.
+ * @param scale The field multiplier, with non-positive values treated as 1.
  * @return The vertical field in radians.
  */
-float RaceFieldOfView(float fovy, float aspect);
-
-/**
- * Multiply the fields of view of the race.
- *
- * @param scale The multiplier, 1 for the fields of the PC release. A value of 0 or below is 1.
- */
-void SetFieldOfViewScale(float scale);
+float RaceFieldOfView(float fovy, float aspect, float scale = 1.0f);
 
 } // namespace coastline

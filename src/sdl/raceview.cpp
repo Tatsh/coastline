@@ -111,24 +111,17 @@ std::array<float, 3> Vector(const Vec3f &v) {
 // The widest field across and the highest vertical field of a view, 120 degrees.
 constexpr float MAX_FIELD = 2.0943952f;
 
-// The multiplier of the fields of view.
-float g_fieldOfViewScale = 1.0f;
-
 } // namespace
 
-float RaceFieldOfView(float fovy, float aspect) {
+float RaceFieldOfView(float fovy, float aspect, float scale) {
     // A frame at least as wide as 4:3 keeps the vertical field and widens across, and a narrower
     // frame keeps the field across of 4:3 and grows the vertical field, as GetHorPlusFovY() of the
     // patched PC release gives them. Past the widest field across, the vertical field shrinks.
-    fovy = GetHorPlusFovY(fovy * g_fieldOfViewScale, aspect, 1.0f);
+    fovy = GetHorPlusFovY(fovy * (scale > 0.0f ? scale : 1.0f), aspect, 1.0f);
     if (2.0f * std::atan(std::tan(fovy * 0.5f) * aspect) > MAX_FIELD) {
         fovy = 2.0f * std::atan(std::tan(MAX_FIELD * 0.5f) / aspect);
     }
     return std::min(fovy, MAX_FIELD);
-}
-
-void SetFieldOfViewScale(float scale) {
-    g_fieldOfViewScale = scale > 0.0f ? scale : 1.0f;
 }
 
 namespace {
@@ -2192,7 +2185,7 @@ void RaceView::DrawView(SceneRenderer &renderer,
         mirror ? RearViewMirrorRect(g_aViewportRects[index]) : g_aViewportRects[index];
     float fov = (split ? camera->fov * 0.7f : camera->fov) * ASPECT_4_3 *
                 static_cast<float>(screen.height) / static_cast<float>(std::max(screen.width, 1));
-    fov = RaceFieldOfView(fov, aspect);
+    fov = RaceFieldOfView(fov, aspect, window.FieldOfViewScale());
     float farPlane = split ? CAMERA_FAR * 0.65f : CAMERA_FAR;
     float frustumFar = farPlane;
     if (mirror) {

@@ -7,6 +7,7 @@
 #include <SDL3/SDL.h>
 
 #include "controller.h"
+#include "controls.h"
 
 namespace coastline {
 
@@ -23,9 +24,40 @@ struct PlayerDevices {
 class InputBindings {
 public:
     InputBindings();
+    /** Initialise the input owner with configured controls. */
+    explicit InputBindings(const GameConfig &config);
     ~InputBindings();
     InputBindings(const InputBindings &) = delete;
     InputBindings &operator=(const InputBindings &) = delete;
+
+    /** @return The active input owner registered with SDL, or null outside its lifetime. */
+    static InputBindings *Active();
+
+    /** @return The input owner's configured bindings. */
+    ControlBindings &Controls() {
+        return m_controls;
+    }
+    /** @return The input owner's configured bindings. */
+    const ControlBindings &Controls() const {
+        return m_controls;
+    }
+
+    /** Resolve devices for @p player using the configured assignments. */
+    PlayerDevices AssignedDevices(std::size_t player, std::size_t players) const;
+    /** Replace the keys pressed by the script. */
+    void SetScriptedKeys(std::vector<int> scancodes);
+    /** Read keyboard and scripted input, suppressing consumed shortcuts until release. */
+    bool IsKeyDown(SDL_Scancode scancode);
+    /** Suppress @p scancode until release. */
+    void IgnoreKeyUntilReleased(SDL_Scancode scancode);
+    /** Replace the second controller sample read by the race. */
+    void SetSecondControllerState(const ControllerState &state);
+    /** @return The latest sample of the second controller. */
+    ControllerState SecondControllerState() const;
+    /** Consume whole mouse-wheel units, preserving the fractional remainder. */
+    int TakeMouseWheel();
+    /** Discard accumulated mouse-wheel movement. */
+    void ClearMouseWheel();
 
     /**
      * Open or close a gamepad for a connection event, and log the devices of the players. A wheel
@@ -44,6 +76,15 @@ public:
      * would drive the second of two players.
      */
     std::array<ControllerState, CONTROLLER_PORTS> Poll(std::size_t players, bool race) const;
+
+private:
+    bool OpenGamepad(SDL_JoystickID id);
+    ControlBindings m_controls;
+    std::vector<int> m_scriptedKeys;
+    std::vector<int> m_ignoredKeys;
+    ControllerState m_secondController;
+    std::vector<SDL_Gamepad *> m_gamepads;
+    float m_mouseWheel = 0.0f;
 };
 
 /**

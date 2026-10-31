@@ -30,6 +30,8 @@ enum class PostAntialias {
 
 /** The options of the window and the GPU device. */
 struct DisplayOptions {
+    bool wideMenus = false;             /*!< Fill wide frames with the menu background. */
+    float fieldOfViewScale = 1.0f;      /*!< Multiplier of the race camera's field of view. */
     std::string gpuPreference = "auto"; /*!< Automatic, high-performance, or low-power selection. */
     bool unlockedFramerate =
         false;           /*!< Disable presentation pacing and the software frame limit. */
@@ -95,6 +97,16 @@ public:
     ~GpuWindow();
     GpuWindow(const GpuWindow &) = delete;
     GpuWindow &operator=(const GpuWindow &) = delete;
+
+    /** @return Whether menu backgrounds fill wide frames. */
+    bool WideMenus() const {
+        return m_options.wideMenus;
+    }
+
+    /** @return The configured multiplier of the race camera's field of view. */
+    float FieldOfViewScale() const {
+        return m_options.fieldOfViewScale;
+    }
 
     /** @return The window. */
     SDL_Window *Window() const {

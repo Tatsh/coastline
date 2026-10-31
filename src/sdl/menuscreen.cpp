@@ -374,7 +374,7 @@ void MenuScreen::DrawBackground(SceneRenderer &renderer,
     GpuWindow &window = renderer.Window();
     float aspect = static_cast<float>(window.FrameWidth()) /
                    static_cast<float>(std::max<Uint32>(window.FrameHeight(), 1));
-    if (!WideMenus() || aspect <= SCREEN_WIDTH / SCREEN_HEIGHT) {
+    if (!window.WideMenus() || aspect <= SCREEN_WIDTH / SCREEN_HEIGHT) {
         DrawTexturedRect(
             renderer, *m_state->background, 0, 0, 320, 240, background, FlatFor(renderer));
         return;

@@ -19,14 +19,7 @@ inline constexpr std::string_view DEFAULT_LANGUAGE = "en-us";
 /** Strings by key, in UTF-8. */
 using StringTable = std::map<std::string, std::string, std::less<>>;
 
-/**
- * Select the language of the game.
- *
- * @param language The language, such as en-us, en-gb, or ja.
- */
-void SelectLanguage(std::string_view language);
-
-/** @return The language of SelectLanguage(), else DEFAULT_LANGUAGE. */
+/** @return The active text catalogue's language, or DEFAULT_LANGUAGE without a catalogue. */
 const std::string &SelectedLanguage();
 
 /**

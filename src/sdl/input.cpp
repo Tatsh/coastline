@@ -1,11 +1,13 @@
 #include "input.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cctype>
 #include <cmath>
 #include <string>
 
 #include "common/inputpoll.h"
+#include "config.h"
 #include "controls.h"
 
 namespace coastline {
@@ -16,15 +18,9 @@ namespace {
 constexpr int STICK_RANGE = 80;
 constexpr int C_BUTTON_THRESHOLD = 16384;
 
-std::vector<int> g_scriptedKeys;
-std::vector<int> g_ignoredKeys;
-ControllerState g_secondController;
-// The open gamepads in the order they connected.
-std::vector<SDL_Gamepad *> g_gamepads;
 // The units of the wheel of a DirectInput mouse in each notch, WHEEL_DELTA of Win32.
 constexpr float WHEEL_UNITS_PER_NOTCH = 120;
-// The units of the wheel scrolled since TakeMouseWheel() last read them.
-float g_mouseWheel = 0;
+constexpr const char *ACTIVE_INPUT_PROPERTY = "coastline.input-bindings";
 
 struct KeyBinding {
     SDL_Scancode key;
@@ -130,21 +126,6 @@ std::string LowercaseName(SDL_Gamepad *gamepad) {
     return lowercase;
 }
 
-bool OpenGamepad(SDL_JoystickID id) {
-    if (std::ranges::any_of(
-            g_gamepads, [&](SDL_Gamepad *gamepad) { return SDL_GetGamepadID(gamepad) == id; })) {
-        return false;
-    }
-    SDL_Gamepad *gamepad = SDL_OpenGamepad(id);
-    if (gamepad == nullptr) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_INPUT, "A gamepad did not open: %s", SDL_GetError());
-        return false;
-    }
-    g_gamepads.push_back(gamepad);
-    SDL_Log("Gamepad %d is %s.", static_cast<int>(g_gamepads.size()), SDL_GetGamepadName(gamepad));
-    return true;
-}
-
 std::string DescribeDevices(const PlayerDevices &devices) {
     std::string text;
     for (SDL_Gamepad *gamepad : devices.gamepads) {
@@ -171,12 +152,12 @@ std::int8_t ScaleStickAxis(std::int16_t axis) {
         std::clamp(axis * STICK_RANGE / 32767, -STICK_RANGE, STICK_RANGE));
 }
 
-PlayerDevices AssignedDevices(std::size_t player, std::size_t players) {
+PlayerDevices InputBindings::AssignedDevices(std::size_t player, std::size_t players) const {
     std::array<PlayerDevices, 2> devices;
-    std::vector<bool> taken(g_gamepads.size());
+    std::vector<bool> taken(m_gamepads.size());
     std::vector<std::size_t> automatic;
     for (std::size_t p = 0; p < devices.size(); ++p) {
-        const std::string_view device = PlayerDevice(p);
+        const std::string_view device = m_controls.PlayerDevice(p);
         if (device == "auto") {
             automatic.push_back(p);
             continue;
@@ -196,12 +177,12 @@ PlayerDevices AssignedDevices(std::size_t player, std::size_t players) {
         if (numbered) {
             number = std::stoul(std::string(device.substr(7)));
         }
-        for (std::size_t i = 0; i < g_gamepads.size(); ++i) {
+        for (std::size_t i = 0; i < m_gamepads.size(); ++i) {
             const bool match = numbered ?
                                    number == i + 1 :
-                                   LowercaseName(g_gamepads[i]).find(device) != std::string::npos;
+                                   LowercaseName(m_gamepads[i]).find(device) != std::string::npos;
             if (match && !taken[i]) {
-                devices[p].gamepads.push_back(g_gamepads[i]);
+                devices[p].gamepads.push_back(m_gamepads[i]);
                 taken[i] = true;
                 break;
             }
@@ -209,10 +190,10 @@ PlayerDevices AssignedDevices(std::size_t player, std::size_t players) {
     }
     const bool keyboardTaken = devices[0].keyboard || devices[1].keyboard;
     std::size_t next = 0;
-    for (std::size_t i = 0; i < g_gamepads.size() && !automatic.empty(); ++i) {
+    for (std::size_t i = 0; i < m_gamepads.size() && !automatic.empty(); ++i) {
         if (!taken[i]) {
             const std::size_t p = next < automatic.size() ? automatic[next++] : automatic.front();
-            devices[p].gamepads.push_back(g_gamepads[i]);
+            devices[p].gamepads.push_back(m_gamepads[i]);
         }
     }
     if (!keyboardTaken && !automatic.empty()) {
@@ -229,21 +210,51 @@ PlayerDevices AssignedDevices(std::size_t player, std::size_t players) {
     return devices[player];
 }
 
-InputBindings::InputBindings() {
+InputBindings::InputBindings() : InputBindings(GameConfig{}) {
+}
+
+InputBindings::InputBindings(const GameConfig &config) : m_controls(config) {
+    assert(Active() == nullptr);
     int count = 0;
     SDL_JoystickID *ids = SDL_GetGamepads(&count);
     for (int i = 0; ids != nullptr && i < count; ++i) {
         OpenGamepad(ids[i]);
     }
     SDL_free(ids);
+    SDL_SetPointerProperty(SDL_GetGlobalProperties(), ACTIVE_INPUT_PROPERTY, this);
     LogPlayerDevices();
 }
 
 InputBindings::~InputBindings() {
-    for (auto *gamepad : g_gamepads) {
+    SDL_ClearProperty(SDL_GetGlobalProperties(), ACTIVE_INPUT_PROPERTY);
+    for (auto *gamepad : m_gamepads) {
         SDL_CloseGamepad(gamepad);
     }
-    g_gamepads.clear();
+}
+
+InputBindings *InputBindings::Active() {
+    return static_cast<InputBindings *>(
+        SDL_GetPointerProperty(SDL_GetGlobalProperties(), ACTIVE_INPUT_PROPERTY, nullptr));
+}
+
+bool InputBindings::OpenGamepad(SDL_JoystickID id) {
+    if (std::ranges::any_of(
+            m_gamepads, [&](SDL_Gamepad *gamepad) { return SDL_GetGamepadID(gamepad) == id; })) {
+        return false;
+    }
+    SDL_Gamepad *gamepad = SDL_OpenGamepad(id);
+    if (gamepad == nullptr) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_INPUT, "A gamepad did not open: %s", SDL_GetError());
+        return false;
+    }
+    m_gamepads.push_back(gamepad);
+    SDL_Log("Gamepad %d is %s.", static_cast<int>(m_gamepads.size()), SDL_GetGamepadName(gamepad));
+    return true;
+}
+
+PlayerDevices AssignedDevices(std::size_t player, std::size_t players) {
+    const auto *input = InputBindings::Active();
+    return input ? input->AssignedDevices(player, players) : PlayerDevices{};
 }
 
 void InputBindings::HandleEvent(const SDL_Event &event) {
@@ -252,12 +263,12 @@ void InputBindings::HandleEvent(const SDL_Event &event) {
             LogPlayerDevices();
         }
     } else if (event.type == SDL_EVENT_GAMEPAD_REMOVED) {
-        auto removed = std::ranges::find_if(g_gamepads, [&](SDL_Gamepad *gamepad) {
+        auto removed = std::ranges::find_if(m_gamepads, [&](SDL_Gamepad *gamepad) {
             return SDL_GetGamepadID(gamepad) == event.gdevice.which;
         });
-        if (removed != g_gamepads.end()) {
+        if (removed != m_gamepads.end()) {
             SDL_CloseGamepad(*removed);
-            g_gamepads.erase(removed);
+            m_gamepads.erase(removed);
             LogPlayerDevices();
         }
     } else if (event.type == SDL_EVENT_MOUSE_WHEEL) {
@@ -265,7 +276,7 @@ void InputBindings::HandleEvent(const SDL_Event &event) {
         // system.
         float notches =
             event.wheel.direction == SDL_MOUSEWHEEL_FLIPPED ? -event.wheel.y : event.wheel.y;
-        g_mouseWheel += notches * WHEEL_UNITS_PER_NOTCH;
+        m_mouseWheel += notches * WHEEL_UNITS_PER_NOTCH;
     }
 }
 
@@ -291,49 +302,89 @@ std::array<ControllerState, CONTROLLER_PORTS> InputBindings::Poll(std::size_t pl
     return ports;
 }
 
-void SetScriptedKeys(std::vector<int> scancodes) {
-    g_scriptedKeys = std::move(scancodes);
+void InputBindings::SetScriptedKeys(std::vector<int> scancodes) {
+    m_scriptedKeys = std::move(scancodes);
 }
 
-bool IsKeyDown(SDL_Scancode scancode) {
+bool InputBindings::IsKeyDown(SDL_Scancode scancode) {
     bool down =
         SDL_GetKeyboardState(nullptr)[scancode] ||
-        std::ranges::find(g_scriptedKeys, static_cast<int>(scancode)) != g_scriptedKeys.end();
-    auto ignored = std::ranges::find(g_ignoredKeys, static_cast<int>(scancode));
-    if (ignored == g_ignoredKeys.end()) {
+        std::ranges::find(m_scriptedKeys, static_cast<int>(scancode)) != m_scriptedKeys.end();
+    auto ignored = std::ranges::find(m_ignoredKeys, static_cast<int>(scancode));
+    if (ignored == m_ignoredKeys.end()) {
         return down;
     }
     if (!down) {
-        g_ignoredKeys.erase(ignored);
+        m_ignoredKeys.erase(ignored);
     }
     return false;
 }
 
+void InputBindings::IgnoreKeyUntilReleased(SDL_Scancode scancode) {
+    if (std::ranges::find(m_ignoredKeys, static_cast<int>(scancode)) == m_ignoredKeys.end()) {
+        m_ignoredKeys.push_back(static_cast<int>(scancode));
+    }
+}
+
+void InputBindings::SetSecondControllerState(const ControllerState &state) {
+    m_secondController = state;
+}
+
+ControllerState InputBindings::SecondControllerState() const {
+    return m_secondController;
+}
+
+int InputBindings::TakeMouseWheel() {
+    int units = static_cast<int>(m_mouseWheel);
+    m_mouseWheel -= static_cast<float>(units);
+    return units;
+}
+
+void InputBindings::ClearMouseWheel() {
+    m_mouseWheel = 0;
+}
+
+void SetScriptedKeys(std::vector<int> scancodes) {
+    if (auto *input = InputBindings::Active()) {
+        input->SetScriptedKeys(std::move(scancodes));
+    }
+}
+
+bool IsKeyDown(SDL_Scancode scancode) {
+    auto *input = InputBindings::Active();
+    return input ? input->IsKeyDown(scancode) : SDL_GetKeyboardState(nullptr)[scancode];
+}
+
 void IgnoreKeyUntilReleased(SDL_Scancode scancode) {
-    if (std::ranges::find(g_ignoredKeys, static_cast<int>(scancode)) == g_ignoredKeys.end()) {
-        g_ignoredKeys.push_back(static_cast<int>(scancode));
+    if (auto *input = InputBindings::Active()) {
+        input->IgnoreKeyUntilReleased(scancode);
     }
 }
 
 void SetSecondControllerState(const ControllerState &state) {
-    g_secondController = state;
+    if (auto *input = InputBindings::Active()) {
+        input->SetSecondControllerState(state);
+    }
 }
 
 int TakeMouseWheel() {
-    int units = static_cast<int>(g_mouseWheel);
-    g_mouseWheel -= static_cast<float>(units);
-    return units;
+    auto *input = InputBindings::Active();
+    return input ? input->TakeMouseWheel() : 0;
 }
 
 void ClearMouseWheel() {
-    g_mouseWheel = 0;
+    if (auto *input = InputBindings::Active()) {
+        input->ClearMouseWheel();
+    }
 }
 
 } // namespace coastline
 
 int ReadSecondControllerPad(unsigned short *buttons, signed char *stickX, signed char *stickY) {
-    *buttons = coastline::g_secondController.buttons;
-    *stickX = coastline::g_secondController.stickX;
-    *stickY = coastline::g_secondController.stickY;
-    return coastline::g_secondController.connected ? 1 : 0;
+    const auto *input = coastline::InputBindings::Active();
+    const auto state = input ? input->SecondControllerState() : coastline::ControllerState{};
+    *buttons = state.buttons;
+    *stickX = state.stickX;
+    *stickY = state.stickY;
+    return state.connected ? 1 : 0;
 }

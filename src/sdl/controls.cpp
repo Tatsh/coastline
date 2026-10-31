@@ -7,20 +7,18 @@
 #include <string>
 
 #include "config.h"
+#include "input.h"
 
 namespace coastline {
 
 namespace {
 
-std::array<std::vector<ControlSource>, CONTROL_ACTION_COUNT> g_controls;
-std::array<std::string, PLAYER_DEVICE_KEYS.size()> g_playerDevices{"auto", "auto"};
 // The share of the travel of an axis that reads as 0, with the rest read as it is. The PC release
 // and the console read the stick with no dead zone, and the steering of the console then ignores
 // the first 7% of it. A stick at rest reads a little off centre, and its other half would
 // otherwise cancel a full press of the same action from a button.
 constexpr float DEFAULT_DEAD_ZONE = 0.07f;
 constexpr float MAX_DEAD_ZONE = 0.9f;
-int g_deadZone = static_cast<int>(DEFAULT_DEAD_ZONE * CONTROL_FULL);
 
 bool EqualsIgnoringCase(std::string_view left, std::string_view right) {
     return std::ranges::equal(left, right, [](char a, char b) {
@@ -86,7 +84,11 @@ std::vector<ControlSource> ParseSources(std::string_view key, std::string_view v
 
 } // namespace
 
-void LoadControls(const GameConfig &config) {
+ControlBindings::ControlBindings(const GameConfig &config) {
+    Load(config);
+}
+
+void ControlBindings::Load(const GameConfig &config) {
     const ControlPreset *preset = &CONTROL_PRESETS[0];
     auto name = config.Get("Controls", CONTROL_PRESET_KEY);
     if (name && !name->empty()) {
@@ -105,7 +107,7 @@ void LoadControls(const GameConfig &config) {
     }
     for (std::size_t i = 0; i < CONTROL_ACTION_COUNT; ++i) {
         auto value = config.Get("Controls", CONTROL_KEYS[i]);
-        g_controls[i] = ParseSources(CONTROL_KEYS[i], value ? *value : preset->values[i]);
+        m_controls[i] = ParseSources(CONTROL_KEYS[i], value ? *value : preset->values[i]);
     }
     for (std::size_t i = 0; i < PLAYER_DEVICE_KEYS.size(); ++i) {
         auto value = config.Get("Controls", PLAYER_DEVICE_KEYS[i]);
@@ -113,37 +115,58 @@ void LoadControls(const GameConfig &config) {
         std::ranges::transform(device, device.begin(), [](unsigned char c) {
             return static_cast<char>(std::tolower(c));
         });
-        g_playerDevices[i] = device.empty() ? "auto" : device;
+        m_playerDevices[i] = device.empty() ? "auto" : device;
     }
     const float deadZone = std::clamp(
         config.GetFloat("Controls", DEAD_ZONE_KEY, DEFAULT_DEAD_ZONE), 0.0f, MAX_DEAD_ZONE);
-    g_deadZone = static_cast<int>(deadZone * CONTROL_FULL);
+    m_deadZone = static_cast<int>(deadZone * CONTROL_FULL);
 }
 
-std::string_view PlayerDevice(std::size_t player) {
-    return g_playerDevices[player];
+std::string_view ControlBindings::PlayerDevice(std::size_t player) const {
+    return m_playerDevices[player];
 }
 
-bool IsControlAnalog(ControlAction action) {
-    return std::ranges::any_of(g_controls[action], &ControlSource::axis);
+bool ControlBindings::IsAnalog(ControlAction action) const {
+    return std::ranges::any_of(m_controls[action], &ControlSource::axis);
 }
 
-int ReadControl(SDL_Gamepad *gamepad, ControlAction action) {
+int ControlBindings::Read(SDL_Gamepad *gamepad, ControlAction action) const {
     int magnitude = 0;
-    for (const ControlSource &source : g_controls[action]) {
+    for (const ControlSource &source : m_controls[action]) {
         int value = 0;
         if (source.axis) {
             const int raw =
                 std::max(0,
                          SDL_GetGamepadAxis(gamepad, static_cast<SDL_GamepadAxis>(source.index)) *
                              source.sign);
-            value = raw <= g_deadZone ? 0 : raw;
+            value = raw <= m_deadZone ? 0 : raw;
         } else if (SDL_GetGamepadButton(gamepad, static_cast<SDL_GamepadButton>(source.index))) {
             value = CONTROL_FULL;
         }
         magnitude = std::max(magnitude, value);
     }
     return magnitude;
+}
+
+void LoadControls(const GameConfig &config) {
+    if (auto *input = InputBindings::Active()) {
+        input->Controls().Load(config);
+    }
+}
+
+std::string_view PlayerDevice(std::size_t player) {
+    const auto *input = InputBindings::Active();
+    return input ? input->Controls().PlayerDevice(player) : "auto";
+}
+
+bool IsControlAnalog(ControlAction action) {
+    const auto *input = InputBindings::Active();
+    return input && input->Controls().IsAnalog(action);
+}
+
+int ReadControl(SDL_Gamepad *gamepad, ControlAction action) {
+    const auto *input = InputBindings::Active();
+    return input ? input->Controls().Read(gamepad, action) : 0;
 }
 
 } // namespace coastline

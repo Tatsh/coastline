@@ -1,5 +1,6 @@
 #include "stringresources.h"
 
+#include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
@@ -127,8 +128,7 @@ private:
     std::size_t m_resources = 0;
 };
 
-// The strings of LoadStrings().
-coastline::StringTable g_strings;
+constexpr const char *ACTIVE_TEXT_PROPERTY = "coastline.game-text";
 
 coastline::StringTable ReadStringsFile(const std::filesystem::path &path) {
     coastline::StringTable strings;
@@ -180,44 +180,67 @@ char32_t NextCodePoint(std::string_view text, std::size_t &position) {
     return c;
 }
 
-void LoadStrings(const std::filesystem::path &assets, std::string_view language) {
+GameText::GameText(const std::filesystem::path &assets, std::string language)
+    : m_language(std::move(language)) {
+    assert(Active() == nullptr);
     auto directory = assets / "strings";
     auto fallback = ReadStringsFile(directory / (std::string(DEFAULT_LANGUAGE) + ".json"));
-    if (language == DEFAULT_LANGUAGE) {
-        g_strings = std::move(fallback);
-        return;
-    }
-    auto selected = directory / (std::string(language) + ".json");
+    auto selected = directory / (m_language + ".json");
     std::error_code error;
-    if (!std::filesystem::exists(selected, error)) {
+    if (m_language != DEFAULT_LANGUAGE && !std::filesystem::exists(selected, error)) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
                     "%s is missing, and the strings of %s are used.",
                     selected.string().c_str(),
                     std::string(DEFAULT_LANGUAGE).c_str());
-        g_strings = std::move(fallback);
-        return;
     }
-    g_strings = MergeStrings(std::move(fallback), ReadStringsFile(selected));
+    m_strings = m_language == DEFAULT_LANGUAGE || !std::filesystem::exists(selected, error) ?
+                    std::move(fallback) :
+                    MergeStrings(std::move(fallback), ReadStringsFile(selected));
+    SDL_SetPointerProperty(SDL_GetGlobalProperties(), ACTIVE_TEXT_PROPERTY, this);
 }
 
-const std::string *FindString(std::string_view key) {
-    auto found = g_strings.find(key);
-    return found == g_strings.end() ? nullptr : &found->second;
+GameText::~GameText() {
+    SDL_ClearProperty(SDL_GetGlobalProperties(), ACTIVE_TEXT_PROPERTY);
 }
 
-std::string_view GameString(std::string_view key) {
-    const std::string *found = FindString(key);
+GameText *GameText::Active() {
+    return static_cast<GameText *>(
+        SDL_GetPointerProperty(SDL_GetGlobalProperties(), ACTIVE_TEXT_PROPERTY, nullptr));
+}
+
+const std::string *GameText::Find(std::string_view key) const {
+    auto found = m_strings.find(key);
+    return found == m_strings.end() ? nullptr : &found->second;
+}
+
+std::string_view GameText::Resolve(std::string_view key) {
+    const std::string *found = Find(key);
     if (found != nullptr) {
         return *found;
     }
-    static std::set<std::string, std::less<>> logged;
-    if (logged.emplace(key).second) {
+    if (m_logged.emplace(key).second) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
                     "The string %.*s is in no file of strings. Import the cartridges again.",
                     static_cast<int>(key.size()),
                     key.data());
     }
     return key;
+}
+
+const std::string *FindString(std::string_view key) {
+    const auto *text = GameText::Active();
+    return text ? text->Find(key) : nullptr;
+}
+
+std::string_view GameString(std::string_view key) {
+    auto *text = GameText::Active();
+    return text ? text->Resolve(key) : key;
+}
+
+const std::string &SelectedLanguage() {
+    const auto *text = GameText::Active();
+    static const std::string fallback(DEFAULT_LANGUAGE);
+    return text ? text->Language() : fallback;
 }
 
 std::map<unsigned, std::string> ReadLibraryStrings(std::span<const std::uint8_t> image) {
@@ -285,14 +308,15 @@ std::map<unsigned, std::string> ReadLibraryStrings(std::span<const std::uint8_t>
 
 } // namespace coastline
 
-// The SDL game puts the strings of LoadStrings() into the table of the race in UTF-8, each by the
+// The SDL game puts the active catalogue's strings into the table of the race in UTF-8, each by the
 // number of BRString.dll its key in LIBRARY_STRING_KEYS has.
 extern "C" void LoadStringTableFromDll(void) {
     std::memset(&g_apszStringResourceTable[1], 0, STRING_RESOURCE_COUNT * sizeof(char *));
     if (g_pStringTableBuffer != nullptr) {
         return;
     }
-    if (g_strings.empty()) {
+    const auto *catalog = coastline::GameText::Active();
+    if (!catalog || catalog->Empty()) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The strings of the race are missing.");
         return;
     }

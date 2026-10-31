@@ -20,8 +20,6 @@ constexpr float SCREEN_FOV = 45.0f;
 // console do themselves: this turns it back.
 const Matrix4 CONSOLE_SPACE = RotationX(HALF_PI);
 
-bool g_wideMenus = false;
-
 // Each axis of the unit direction of the lights of a car in the menus.
 constexpr float STAGE_LIGHT_AXIS = 0.5773502692f;
 
@@ -94,14 +92,6 @@ Matrix4 MenuProjection(float aspect, float nearPlane, float farPlane) {
                        0};
     return MultiplyMatrices(projection,
                             Translation(-MENU_CENTER_X, -MENU_CENTER_Y, -MENU_DISTANCE));
-}
-
-void SetWideMenus(bool wide) {
-    g_wideMenus = wide;
-}
-
-bool WideMenus() {
-    return g_wideMenus;
 }
 
 Matrix4 FlatProjection(float aspect) {

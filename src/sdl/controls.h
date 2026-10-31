@@ -2,6 +2,7 @@
 
 #include <array>
 #include <cstddef>
+#include <string>
 #include <string_view>
 #include <vector>
 
@@ -242,6 +243,26 @@ struct ControlSource {
 
 /** The magnitude of a button held down or of an axis at its end. */
 inline constexpr int CONTROL_FULL = 32768;
+
+/** Configured action sources, player devices, and stick dead zone for an input owner. */
+class ControlBindings {
+public:
+    /** Load configured assignments and preset defaults. */
+    explicit ControlBindings(const GameConfig &config);
+    /** Replace assignments from @p config. */
+    void Load(const GameConfig &config);
+    /** @return The configured device selector for @p player. */
+    std::string_view PlayerDevice(std::size_t player) const;
+    /** @return Whether an axis drives @p action. */
+    bool IsAnalog(ControlAction action) const;
+    /** @return The greatest magnitude of the sources of @p action. */
+    int Read(SDL_Gamepad *gamepad, ControlAction action) const;
+
+private:
+    std::array<std::vector<ControlSource>, CONTROL_ACTION_COUNT> m_controls;
+    std::array<std::string, PLAYER_DEVICE_KEYS.size()> m_playerDevices;
+    int m_deadZone = 0;
+};
 
 /**
  * Read the Controls section of @p config: the preset of the Preset key, the default for an absent

@@ -87,6 +87,8 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     options.fullscreen = config.GetBoolean("Video", "Fullscreen", options.fullscreen);
     options.exclusive = config.Get("Video", "FullscreenMode") == "exclusive";
     options.refreshRate = static_cast<int>(config.GetInteger("Video", "RefreshRate", 0));
+    options.wideMenus = config.GetBoolean("Video", "WideMenus", false);
+    options.fieldOfViewScale = config.GetFloat("Video", "FieldOfView", 1.0f);
     // VSync takes a present mode by name, or 1 and 0 for vertical sync and immediate. fifo is
     // vertical sync that waits for the vertical blank under Wayland too.
     auto present = config.Get("Video", "VSync");
@@ -636,7 +638,6 @@ int ImportFromCommandLine(const argparse::ArgumentParser &import,
     if (failure) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", failure->c_str());
     }
-    coastline::StopGameLog();
     return failure ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
@@ -658,7 +659,6 @@ int PakFromCommandLine(const argparse::ArgumentParser &command,
     if (failure) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", failure->c_str());
     }
-    coastline::StopGameLog();
     return failure ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
@@ -889,7 +889,8 @@ int main(int argc, char *argv[]) {
         SDL_SetLogPriorities(SDL_LOG_PRIORITY_WARN);
         SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO);
     }
-    if (!coastline::StartGameLog(paths->state / "game.log")) {
+    coastline::GameLog gameLog(paths->state / "game.log");
+    if (!gameLog.IsOpen()) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "The log file cannot be opened.");
     }
     SDL_Log("Coastline %s", COASTLINE_VERSION);
@@ -910,7 +911,6 @@ int main(int argc, char *argv[]) {
     if (parser.is_subcommand_used(runScript)) {
         auto loaded = LoadScript(runScript.get<std::string>("script"));
         if (!loaded) {
-            coastline::StopGameLog();
             return EXIT_FAILURE;
         }
         script = std::move(*loaded);
@@ -929,7 +929,6 @@ int main(int argc, char *argv[]) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                      "Imported assets are incomplete or use an unsupported layout. Import assets "
                      "again with coastline import --cd DISC --rom ROM.");
-        coastline::StopGameLog();
         return EXIT_FAILURE;
     }
 #if COASTLINE_SETUP_WIZARD
@@ -938,7 +937,6 @@ int main(int argc, char *argv[]) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                      "The game data is not imported. Import it with coastline import --cd DISC "
                      "--rom ROM.");
-        coastline::StopGameLog();
         return EXIT_FAILURE;
     }
 #else
@@ -946,7 +944,6 @@ int main(int argc, char *argv[]) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                      "No usable installed assets were found. Install the Coastline data package "
                      "or select imported data with --data-dir.");
-        coastline::StopGameLog();
         return EXIT_FAILURE;
     }
 #endif
@@ -998,8 +995,6 @@ int main(int argc, char *argv[]) {
             config.Set(section, key, value);
         }
     }
-    // The keys of the actions are not written, as each key present replaces its preset binding.
-    coastline::LoadControls(config);
     const coastline::DisplayOptions displayOptions =
         DisplayOptionsFrom(config, parser, savesFrames);
     int status = EXIT_FAILURE;
@@ -1082,11 +1077,11 @@ int main(int argc, char *argv[]) {
                             "The data was imported by an older version of the game. %s",
                             reimportNotice.c_str());
             }
-            coastline::SelectLanguage(
+            coastline::GameText gameText(
+                assets,
                 parser.present("--language")
                     .value_or(config.Get("Game", "Language")
                                   .value_or(std::string(coastline::DEFAULT_LANGUAGE))));
-            coastline::LoadStrings(assets, coastline::SelectedLanguage());
             const std::filesystem::path release = coastline::ReleaseDirectory(assets);
             SDL_Log("Language: %s (%s)",
                     coastline::SelectedLanguage().c_str(),
@@ -1102,9 +1097,7 @@ int main(int argc, char *argv[]) {
             const coastline::UsaMusicModule &menuModule = coastline::USA_MUSIC_MODULES[0];
             auto music = LoadMusicModule(assets, menuModule.offset);
             SetWindowIcon(window->Window(), assets);
-            coastline::SetWideMenus(config.GetBoolean("Video", "WideMenus", false));
-            coastline::SetFieldOfViewScale(config.GetFloat("Video", "FieldOfView", 1.0f));
-            coastline::InputBindings input;
+            coastline::InputBindings input(config);
             coastline::N64Audio audio;
             bool playMusic = config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice();
             const bool pauseOnFocusLoss = config.GetBoolean("Game", "PauseOnFocusLoss", true) &&
@@ -1672,6 +1665,5 @@ int main(int argc, char *argv[]) {
         SDL_LogWarn(
             SDL_LOG_CATEGORY_APPLICATION, "%s cannot be written.", configPath.string().c_str());
     }
-    coastline::StopGameLog();
     return status;
 }
