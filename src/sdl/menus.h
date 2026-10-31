@@ -137,7 +137,8 @@ public:
      *
      * @param renderer The renderer that draws them.
      * @param release The directory of the import of the release, such as n64/usa.
-     * @param state The state directory of the game, with the Controller Pak.
+     * @param saves The directory of the saves, the data directory of the game, with the
+     * Controller Pak and the frames of the ghost car.
      * @param cache The cache directory of the game, for the images of the painted cars.
      * @param config The settings of BossRally.ini, with the cars the players chose last. The
      * settings outlive the menus.
@@ -146,7 +147,7 @@ public:
      */
     static std::unique_ptr<Menus> Load(SceneRenderer &renderer,
                                        const std::filesystem::path &release,
-                                       const std::filesystem::path &state,
+                                       const std::filesystem::path &saves,
                                        const std::filesystem::path &cache,
                                        GameConfig &config,
                                        const std::filesystem::path &configPath);

@@ -112,11 +112,20 @@ std::vector<std::uint8_t> ReadFile(const std::filesystem::path &file) {
 
 } // namespace
 
-ControllerPak::ControllerPak(std::filesystem::path directory) : m_directory(std::move(directory)) {
+ControllerPak::ControllerPak(std::filesystem::path directory,
+                             std::filesystem::path settingsDirectory)
+    : m_directory(std::move(directory)), m_settingsDirectory(std::move(settingsDirectory)) {
+    if (m_settingsDirectory.empty()) {
+        m_settingsDirectory = m_directory;
+    }
+}
+
+const std::filesystem::path &ControllerPak::DirectoryOf(const std::string &name) const {
+    return name == PAK_SETTINGS_NOTE ? m_settingsDirectory : m_directory;
 }
 
 std::optional<std::vector<std::uint8_t>> ControllerPak::ReadNote(const std::string &name) const {
-    std::ifstream file(m_directory / name, std::ios::binary);
+    std::ifstream file(DirectoryOf(name) / name, std::ios::binary);
     if (!file) {
         return std::nullopt;
     }
@@ -125,9 +134,10 @@ std::optional<std::vector<std::uint8_t>> ControllerPak::ReadNote(const std::stri
 
 bool ControllerPak::WriteNote(const std::string &name, std::span<const std::uint8_t> bytes) const {
     std::error_code error;
-    std::filesystem::create_directories(m_directory, error);
+    const std::filesystem::path &directory = DirectoryOf(name);
+    std::filesystem::create_directories(directory, error);
     // The note is written beside its place and moved there, and a failed write loses no note.
-    auto written = m_directory / (name + ".new");
+    auto written = directory / (name + ".new");
     {
         std::ofstream file(written, std::ios::binary | std::ios::trunc);
         file.write(reinterpret_cast<const char *>(bytes.data()),
@@ -136,22 +146,32 @@ bool ControllerPak::WriteNote(const std::string &name, std::span<const std::uint
             return false;
         }
     }
-    std::filesystem::rename(written, m_directory / name, error);
+    std::filesystem::rename(written, directory / name, error);
     return !error;
 }
 
 bool ControllerPak::DeleteNote(const std::string &name) const {
     std::error_code error;
-    return std::filesystem::remove(m_directory / name, error);
+    return std::filesystem::remove(DirectoryOf(name) / name, error);
 }
 
 std::vector<PakNote> ControllerPak::Notes() const {
     std::vector<PakNote> notes;
     std::error_code error;
     for (const auto &entry : std::filesystem::directory_iterator(m_directory, error)) {
-        if (entry.is_regular_file(error) && entry.path().extension() != ".new") {
+        if (entry.is_regular_file(error) && entry.path().extension() != ".new" &&
+            DirectoryOf(entry.path().filename().string()) == m_directory) {
             notes.push_back({entry.path().filename().string(),
                              static_cast<std::size_t>(entry.file_size(error))});
+        }
+    }
+    // The settings note counts against the room of the pak like the others.
+    if (m_settingsDirectory != m_directory) {
+        auto settings = m_settingsDirectory / PAK_SETTINGS_NOTE;
+        if (std::filesystem::is_regular_file(settings, error)) {
+            notes.push_back(
+                {std::string(PAK_SETTINGS_NOTE),
+                 static_cast<std::size_t>(std::filesystem::file_size(settings, error))});
         }
     }
     std::ranges::sort(notes, {}, &PakNote::name);

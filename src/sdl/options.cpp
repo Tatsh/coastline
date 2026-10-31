@@ -42,7 +42,7 @@ constexpr std::array<u8, 11> SFX_VOLUME_LEVELS{
 
 // The notes of the Controller Pak, as the console writes their names in the characters of the pak.
 constexpr const char *SEASON_NOTE = "TOP GEAR SEASON";
-constexpr const char *OPTIONS_NOTE = "TOP GEAR OPTIONS";
+constexpr const char *OPTIONS_NOTE = PAK_SETTINGS_NOTE.data();
 constexpr const char *GHOST_NOTE = "TOP GEAR GHOST";
 
 // The sizes of the notes of a season and of the options. The options store the settings in the

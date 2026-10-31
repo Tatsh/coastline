@@ -36,7 +36,7 @@ constexpr int MENU_AUDIO_CHANNELS = 8;
 
 std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
                                    const std::filesystem::path &release,
-                                   const std::filesystem::path &state,
+                                   const std::filesystem::path &saves,
                                    const std::filesystem::path &cache,
                                    GameConfig &config,
                                    const std::filesystem::path &configPath) {
@@ -57,9 +57,11 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
         return nullptr;
     }
     menus->m_cache = cache;
-    // The Controller Pak of the first controller is a directory of the state of the game.
-    menus->m_pak = ControllerPak(state / "controller-pak");
-    menus->m_ghostFramesFile = state / "ghost-frames.bin";
+    // The Controller Pak of the first controller is a directory of the saves, with its note of the
+    // settings beside BossRally.ini.
+    menus->m_pak =
+        ControllerPak(saves / "controller-pak", configPath.parent_path() / "controller-pak");
+    menus->m_ghostFramesFile = saves / "ghost-frames.bin";
     menus->LoadPakData();
     menus->m_config = &config;
     menus->m_configPath = configPath;

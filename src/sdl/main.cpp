@@ -1051,7 +1051,8 @@ int main(int argc, char *argv[]) {
         return ImportFromCommandLine(parser, paths->data);
     }
     if (parser.is_used("--import-pak") || parser.is_used("--export-pak")) {
-        coastline::ControllerPak pak(paths->state / "controller-pak");
+        coastline::ControllerPak pak(paths->data / "controller-pak",
+                                     paths->config / "controller-pak");
         std::optional<std::string> failure;
         if (auto image = parser.present("--import-pak")) {
             failure = coastline::ImportPakImage(pak, *image);
@@ -1294,7 +1295,7 @@ int main(int argc, char *argv[]) {
                         intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
                         mainMenu = coastline::Menus::Load(*sceneRenderer,
                                                           frontEndRelease,
-                                                          paths->state,
+                                                          paths->data,
                                                           paths->cache,
                                                           config,
                                                           configPath);

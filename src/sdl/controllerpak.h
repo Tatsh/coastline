@@ -31,13 +31,19 @@ struct PakNote {
     std::size_t bytes; /*!< The size of the note in bytes. */
 };
 
-/** The notes of a Controller Pak, stored in a directory. */
+/** The note of the settings of the options menu, stored with the settings of the game. */
+inline constexpr std::string_view PAK_SETTINGS_NOTE = "TOP GEAR OPTIONS";
+
+/** The notes of a Controller Pak, stored in a directory, with the settings note in another. */
 class ControllerPak {
 public:
     /**
      * @param directory The directory of the notes, created at the first write.
+     * @param settingsDirectory The directory of PAK_SETTINGS_NOTE, or empty for the directory of
+     * the other notes.
      */
-    explicit ControllerPak(std::filesystem::path directory);
+    explicit ControllerPak(std::filesystem::path directory,
+                           std::filesystem::path settingsDirectory = {});
 
     /**
      * @param name The name of the note.
@@ -67,7 +73,11 @@ public:
     std::size_t FreeBytes() const;
 
 private:
+    // The directory a note of the name is stored in.
+    const std::filesystem::path &DirectoryOf(const std::string &name) const;
+
     std::filesystem::path m_directory;
+    std::filesystem::path m_settingsDirectory;
 };
 
 /** The bytes of the image of a Controller Pak, as emulators and the tools of a pak store one. */

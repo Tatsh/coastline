@@ -315,10 +315,14 @@ coastline --import-disc 'Boss Rally.cue' --import-rom usa.z64 --import-rom jpn.z
 ```
 
 The saves of the game are the notes of a Controller Pak, a file for each note in `controller-pak`
-of the state directory. `--export-pak` writes them to a Controller Pak image (`.mpk`) for a console
-or an emulator, with the codes of the release `--pak-release` chooses: `usa` (the default), `eur`,
-or `jpn`. Each release reads only the notes with its own codes. `--import-pak` reads the notes of
-any release from an image.
+of the data directory (`~/.local/share/coastline/controller-pak`), with the frames of the ghost
+car in `ghost-frames.bin` beside it. The note of the options menu, `TOP GEAR OPTIONS`, is a setting
+and is stored in `controller-pak` of the configuration directory
+(`~/.config/coastline/controller-pak`), and the pak counts it with the other notes.
+`--export-pak` writes them to a Controller Pak image (`.mpk`) for a console or an emulator, with the
+codes of the release `--pak-release` chooses: `usa` (the default), `eur`, or `jpn`. Each release
+reads only the notes with its own codes. `--import-pak` reads the notes of any release from an
+image.
 
 ```shell
 coastline --export-pak pak.mpk --pak-release eur
