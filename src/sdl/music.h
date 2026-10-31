@@ -26,13 +26,12 @@ private:
     std::unique_ptr<N64Mixer> m_mixer;
 };
 
-/** The rate the music plays at, as the audio interface of the console sets it for 21,998 Hz. */
+/** The sample rate of the imported music, in stereo frames per second. */
 inline constexpr int N64_AUDIO_RATE = 21998;
 
 /**
- * The music player and the mixers of the Nintendo 64 release, fed by an emulated audio interface.
- * Each tick runs what the mixing thread of the console runs each 10 milliseconds, and the bytes
- * the interface would have played in that time go to the output.
+ * The XM player and sample mixers of the Nintendo 64 release, streamed as native stereo PCM.
+ * Mixer controls advance every 10 milliseconds, with lookahead for notes and sound effects.
  */
 class N64Audio {
 public:
@@ -91,9 +90,9 @@ private:
     N64Mixer &m_mixer;
     SDL_AudioStream *m_stream = nullptr;
     std::vector<std::uint8_t> m_module;
-    std::uint32_t m_aiLength = 0;
-    std::uint64_t m_aiRemainder = 0;
-    std::int32_t m_previousMixPosition = 0;
+    std::uint32_t m_outputReadOffset = 0;
+    std::uint64_t m_frameRemainder = 0;
+    bool m_primed = false;
     std::uint32_t m_soundEffectMixOffset = 0;
     bool m_musicTick = false;
     std::vector<std::int16_t> m_pending;

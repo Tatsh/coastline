@@ -26,7 +26,7 @@ namespace {
 constexpr u32 RING_BYTES = AUDIO_RING_BYTES;
 // The constants of the mixing thread in audio.c.
 constexpr s32 MUSIC_LEAD = 0x1000;
-constexpr u32 SOUND_EFFECT_LEAD = 0x5000;
+constexpr u32 SOUND_EFFECT_LEAD = 0x1000;
 constexpr s32 FIRST_PAIRED_CHANNEL = 6;
 constexpr u32 TICKS_PER_SECOND = 100;
 constexpr u64 SOUND_EFFECT_SAMPLE_MASK = 0xFFFEFFFEFFFEFFFEULL;
@@ -300,8 +300,6 @@ N64Audio::N64Audio() : m_mixer(N64Mixer::Get()) {
     mixer.writePosition = 0;
     MixAudioSamples(music.ring, RING_BYTES);
     BuildFrequencyScaleTable();
-    // osAiSetNextBuffer() queues the whole ring, and the interface plays it from its start.
-    m_aiLength = RING_BYTES;
 }
 
 N64Audio::~N64Audio() {
@@ -361,16 +359,15 @@ void N64Audio::Tick(std::vector<std::int16_t> &output) {
     auto &music = m_mixer.music;
     auto &mixer = m_mixer.channels;
     const auto &volumes = m_mixer.volumes;
-    // The interface plays a tick's worth of the ring. Its length register counts down in
-    // doublewords, and the thread queues the ring again before it runs dry.
-    m_aiRemainder += static_cast<u64>(N64_AUDIO_RATE) * 4;
-    u32 played = static_cast<u32>(m_aiRemainder / TICKS_PER_SECOND) & ~7u;
-    m_aiRemainder -= static_cast<u64>(played) * TICKS_PER_SECOND;
-    u32 start = RING_BYTES - m_aiLength;
+    // The mixers process pairs of stereo frames. Fractional frames accumulate between ticks.
+    m_frameRemainder += N64_AUDIO_RATE;
+    const u32 frames = static_cast<u32>(m_frameRemainder / TICKS_PER_SECOND) & ~1u;
+    m_frameRemainder -= static_cast<u64>(frames) * TICKS_PER_SECOND;
+    const u32 played = frames * 2 * sizeof(s16);
     for (u32 i = 0; i < played; i += 2) {
-        output.push_back(music.ring[((start + i) % RING_BYTES) / 2]);
+        output.push_back(music.ring[((m_outputReadOffset + i) % RING_BYTES) / 2]);
     }
-    m_aiLength = m_aiLength > played ? m_aiLength - played : m_aiLength + RING_BYTES - played;
+    m_outputReadOffset = (m_outputReadOffset + played) % RING_BYTES;
 
     // AudioMixingThreadMain() of the console, one message of the timer.
     m_musicTick = !m_musicTick;
@@ -387,39 +384,27 @@ void N64Audio::Tick(std::vector<std::int16_t> &output) {
         channel.mixVolume = static_cast<s32>(((((levels >> 16) * master * sfx) >> 16) << 16) +
                                              (((levels & 0xFFFF) * master * sfx) >> 16));
     }
-    u32 length = m_aiLength;
-    s32 position = static_cast<s32>(length) - MUSIC_LEAD;
-    if (position < 0) {
-        position += RING_BYTES;
-    }
-    s32 mixBytes = m_previousMixPosition - position;
-    m_previousMixPosition = position;
-    if (mixBytes < 0) {
-        mixBytes += RING_BYTES;
-    }
+    // Prime the lookahead once, then replenish only the PCM consumed by each tick.
+    const u32 mixBytes = played + (m_primed ? 0 : MUSIC_LEAD);
     CheckMusicLoopPoints();
     if (m_musicTick && music.playbackEnabled) {
         UpdateMusicPlayback();
     }
     u16 writePos = mixer.writePosition;
-    MixAudioSamples(music.ring, static_cast<u32>(mixBytes));
+    MixAudioSamples(music.ring, mixBytes);
     for (s32 i = FIRST_PAIRED_CHANNEL; i < music.channelCount; i += 2) {
         mixer.writePosition = writePos;
-        MixAudioStereoSamples(music.ring,
-                              static_cast<u32>(mixBytes),
-                              (i - FIRST_PAIRED_CHANNEL) * sizeof(MixerChannel));
+        MixAudioStereoSamples(
+            music.ring, mixBytes, (i - FIRST_PAIRED_CHANNEL) * sizeof(MixerChannel));
     }
-    u32 offset = m_soundEffectMixOffset;
-    u32 bytes = (((SOUND_EFFECT_LEAD - length) >> 3) << 3) - offset;
-    if (bytes > RING_BYTES) {
-        bytes -= RING_BYTES;
-    }
-    MixSoundEffectChannels(music.ring, bytes, offset);
+    const u32 bytes = played + (m_primed ? 0 : SOUND_EFFECT_LEAD);
+    MixSoundEffectChannels(music.ring, bytes, m_soundEffectMixOffset);
     CheckSoundEffectLoopPoints();
     m_soundEffectMixOffset += bytes;
     if (m_soundEffectMixOffset > RING_BYTES) {
         m_soundEffectMixOffset -= RING_BYTES;
     }
+    m_primed = true;
 }
 
 std::vector<std::int16_t> N64Audio::Render(std::size_t frames) {
