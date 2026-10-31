@@ -40,15 +40,14 @@ jobs:
         run: cmake --build --preset "n64-$TGR_REGION" -- -k 0
         env:
           TGR_REGION: '${{ matrix.region }}'
-      # Without a cartridge image the build has no cartridge, only the program.
-      - name: 'Upload the program'
+      # Without a cartridge image the build links neither the program nor the cartridge, only the
+      # archives of the routines.
+      - name: 'Upload the archives'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
           name: 'n64-${{ matrix.region }}-${{ matrix.build-type }}'
-          path: |
-            build/n64-${{ matrix.region }}/coastline.bin
-            build/n64-${{ matrix.region }}/src/coastline
+          path: 'build/n64-${{ matrix.region }}/src/**/*.a'
   sdl:
     name: 'SDL (${{ matrix.name }})'
     runs-on: '${{ matrix.os }}'
