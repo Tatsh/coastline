@@ -269,11 +269,26 @@ using HudTextures = std::map<unsigned, std::pair<unsigned, std::unique_ptr<Rende
 constexpr unsigned GBI_OP_SET_TEXTURE_ENTRY = 0xdc;
 constexpr unsigned GBI_OP_LOAD_TEXTURE_ENTRY = 0xdd;
 constexpr unsigned GBI_OP_TEXTURE_RECTANGLE = 0xe3;
+constexpr const char *HUD_DRAWING_PROPERTY = "coastline.hud-drawing";
 
 // The HUD being drawn: the renderer, the fonts DrawText() draws with while it hands its text to the
 // SDL game, the textures and the canvas of the commands the HUD writes, the first command not drawn
 // yet, and the texture entry and the vertices the commands drawn have loaded.
 struct HudDrawing {
+    HudDrawing(SceneRenderer &scene,
+               const MenuText &font,
+               HudTextures &images,
+               const HudCanvas &canvas,
+               GbiCommand *scratch);
+    ~HudDrawing();
+    HudDrawing(const HudDrawing &) = delete;
+    HudDrawing &operator=(const HudDrawing &) = delete;
+
+    static HudDrawing *Active() {
+        return static_cast<HudDrawing *>(
+            SDL_GetPointerProperty(SDL_GetGlobalProperties(), HUD_DRAWING_PROPERTY, nullptr));
+    }
+
     SceneRenderer *renderer = nullptr;
     const MenuText *text = nullptr;
     HudTextures *textures = nullptr;
@@ -283,9 +298,14 @@ struct HudDrawing {
     const ConvertedModelVertex *vertices = nullptr;
     unsigned firstVertex = 0;
     unsigned vertexCount = 0;
-};
 
-HudDrawing g_hudDrawing;
+private:
+    HudDrawing *m_previous;
+    decltype(g_pfnTextSink) m_previousSink;
+    GbiCommand *m_previousList;
+    int m_framebufferWidth;
+    int m_framebufferHeight;
+};
 
 // The commands of RenderDashboardGauges() not drawn yet, up to the next one the HUD writes, drawn
 // as BRD3D draws them on the canvas of the HUD: the face and the gear of the dashboard as
@@ -381,7 +401,11 @@ void DrawHudCommands(HudDrawing &drawing, const GbiCommand *end) {
 // size, the alignment, the style, and the custom colours the race set, on the canvas the HUD is
 // laid out on. The custom colours are never turned off once set.
 void DrawHudText(const char *text, s32 x, s32 y) {
-    DrawHudCommands(g_hudDrawing, gDisplayListPtr);
+    auto *drawing = HudDrawing::Active();
+    if (drawing == nullptr) {
+        return;
+    }
+    DrawHudCommands(*drawing, gDisplayListPtr);
     TextStyle style;
     style.size = g_nFontSize;
     style.align = g_nTextAlignment == TEXT_ALIGN_RIGHT  ? TextStyle::Align::Right :
@@ -398,12 +422,40 @@ void DrawHudText(const char *text, s32 x, s32 y) {
                                           g_dwTextCustomColor2G,
                                           g_dwTextCustomColor2B};
     }
-    g_hudDrawing.text->Draw(*g_hudDrawing.renderer,
-                            text,
-                            x,
-                            y,
-                            style,
-                            CanvasProjection(GetHudCanvasWidth(), GetHudCanvasHeight()));
+    drawing->text->Draw(*drawing->renderer,
+                        text,
+                        x,
+                        y,
+                        style,
+                        CanvasProjection(GetHudCanvasWidth(), GetHudCanvasHeight()));
+}
+
+HudDrawing::HudDrawing(SceneRenderer &scene,
+                       const MenuText &font,
+                       HudTextures &images,
+                       const HudCanvas &canvas,
+                       GbiCommand *scratch)
+    : renderer(&scene), text(&font), textures(&images), hud(&canvas), drawn(scratch),
+      m_previous(Active()), m_previousSink(g_pfnTextSink), m_previousList(gDisplayListPtr),
+      m_framebufferWidth(g_dwConfigFramebufferWidth),
+      m_framebufferHeight(g_dwConfigFramebufferHeight) {
+    SDL_SetPointerProperty(SDL_GetGlobalProperties(), HUD_DRAWING_PROPERTY, this);
+    gDisplayListPtr = scratch;
+    g_dwConfigFramebufferWidth = canvas.width;
+    g_dwConfigFramebufferHeight = canvas.height;
+    g_pfnTextSink = DrawHudText;
+}
+
+HudDrawing::~HudDrawing() {
+    g_pfnTextSink = m_previousSink;
+    g_dwConfigFramebufferWidth = m_framebufferWidth;
+    g_dwConfigFramebufferHeight = m_framebufferHeight;
+    gDisplayListPtr = m_previousList;
+    if (m_previous) {
+        SDL_SetPointerProperty(SDL_GetGlobalProperties(), HUD_DRAWING_PROPERTY, m_previous);
+    } else {
+        SDL_ClearProperty(SDL_GetGlobalProperties(), HUD_DRAWING_PROPERTY);
+    }
 }
 
 // DrawFpsCounterOverlay(), DrawViewOverlay() of each view, and DrawPauseMenu(), from the routines
@@ -413,16 +465,9 @@ void DrawHudText(const char *text, s32 x, s32 y) {
 void DrawRaceHud(SceneRenderer &renderer,
                  const MenuText &text,
                  HudTextures &textures,
-                 const HudCanvas &hud) {
-    static std::array<GbiCommand, HUD_SCRATCH_COMMANDS> scratch;
-    GbiCommand *list = gDisplayListPtr;
-    gDisplayListPtr = scratch.data();
-    int framebufferWidth = g_dwConfigFramebufferWidth;
-    int framebufferHeight = g_dwConfigFramebufferHeight;
-    g_dwConfigFramebufferWidth = hud.width;
-    g_dwConfigFramebufferHeight = hud.height;
-    g_hudDrawing = {&renderer, &text, &textures, &hud, scratch.data()};
-    g_pfnTextSink = DrawHudText;
+                 const HudCanvas &hud,
+                 std::span<GbiCommand> scratch) {
+    HudDrawing drawing(renderer, text, textures, hud, scratch.data());
     DrawFpsCounterOverlay();
 
     std::array<ViewportRect, 2> views = HudViews(hud);
@@ -459,12 +504,7 @@ void DrawRaceHud(SceneRenderer &renderer,
         DrawPauseMenu(views.data(), g_aRacerSlots, g_aVehicles);
     }
 
-    DrawHudCommands(g_hudDrawing, gDisplayListPtr);
-
-    g_pfnTextSink = nullptr;
-    g_dwConfigFramebufferWidth = framebufferWidth;
-    g_dwConfigFramebufferHeight = framebufferHeight;
-    gDisplayListPtr = list;
+    DrawHudCommands(drawing, gDisplayListPtr);
 }
 
 // The glTF of a model of the console stands it up from z up to y up, and this turns it back to the
@@ -627,6 +667,8 @@ struct RaceView::State {
     std::unique_ptr<RenderTexture> nightHighlight;
     // The textures of the engine the HUD draws, the gauges of the dashboard.
     HudTextures hudTextures;
+    std::array<GbiCommand, HUD_SCRATCH_COMMANDS> hudScratch{};
+    std::array<GbiCommand, RAIN_PARTICLES + 64> precipitationScratch{};
     // The vertices of the pool of the quads of the track the skid marks of the frame have taken.
     int skidVertices = 0;
     SkidMarkBuffer skidMarks;
@@ -976,8 +1018,7 @@ constexpr float PRECIPITATION_SCALE = 6.10370189e-05f;
 // the streak of the rain it writes into the texture of the view through CopyTileColumnScaled():
 // the white texels of the alpha ramp along the fall of the rain on the screen. The commands are not
 // read.
-std::vector<std::uint8_t> RainStreakTexels(int view) {
-    static std::array<GbiCommand, RAIN_PARTICLES + 64> scratch;
+std::vector<std::uint8_t> RainStreakTexels(int view, std::span<GbiCommand> scratch) {
     GbiCommand *list = gDisplayListPtr;
     gDisplayListPtr = scratch.data();
     RenderPrecipitationEffect();
@@ -2107,7 +2148,7 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     renderer.SetViewport(std::nullopt);
     renderer.SetFog(std::nullopt);
 
-    DrawRaceHud(renderer, *s.text, s.hudTextures, hud);
+    DrawRaceHud(renderer, *s.text, s.hudTextures, hud, s.hudScratch);
 
     // The help of the attract demo, from the corner of the canvas of the HUD, under the fade. The
     // console shows nothing over its demo.
@@ -2122,7 +2163,9 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
         style.doubled = false;
         s.text->Draw(renderer, help, hud.width - 28, hud.height - 24, style, hud.projection);
     }
-    DrawConsoleCredits(renderer, *s.text);
+    if (demo) {
+        demo->Credits().Draw(renderer, *s.text);
+    }
 
     // ApplyScreenFade(): black left and right of the edges of the fade, across the whole frame.
     if (g_fFadeLevel != 1.0f && g_dwScreenWidth > 0) {
@@ -2370,7 +2413,7 @@ void RaceView::DrawView(SceneRenderer &renderer,
     if (!mirror && (g_dwSnowMode || g_dwRainMode) && !sheltered) {
         const RenderTexture *precipitation = s.shadowTexture.get();
         if (g_dwRainMode) {
-            std::vector<std::uint8_t> texels = RainStreakTexels(index);
+            std::vector<std::uint8_t> texels = RainStreakTexels(index, s.precipitationScratch);
             auto view = static_cast<std::size_t>(index);
             // The streak changes its texels in place once its texture exists.
             if (!s.streaks[view] || texels != s.streakTexels[view]) {

@@ -36,12 +36,6 @@ constexpr std::array<CreditAddresses, 3> RELEASE_ADDRESSES{{
 constexpr u32 CAPTION_SIZE = 0x20;
 constexpr std::size_t CAPTION_LINES = 5;
 
-struct Caption {
-    std::string title;
-    float duration;
-    std::vector<std::string> lines;
-};
-
 // The time a caption shows before its text.
 constexpr float CAPTION_DELAY = 0.5f;
 
@@ -49,37 +43,25 @@ constexpr float CAPTION_DELAY = 0.5f;
 // text, to the first whose text is NULL.
 constexpr u32 SCROLL_LINE_SIZE = 0x10;
 
-struct ScrollLine {
-    int y;
-    int size;
-    int gap;
-    std::string text;
-};
-
 // The lines DrawScrollingText() draws, from a little above the screen to a little below it.
 constexpr int SCROLL_TOP = -0x4F;
 constexpr int SCROLL_BOTTOM = 280;
-
-std::vector<Caption> g_captions;
-std::size_t g_caption = 0;
-float g_captionTimer = 0.0f;
-std::vector<ScrollLine> g_scrollLines;
 
 bool IsCreditsRace(s32 session) {
     return g_dwGameMode == GAME_MODE_DEMO && g_dwRaceSessionType == session;
 }
 
-bool CaptionsShow() {
-    return IsCreditsRace(RACE_SESSION_CREDIT_CAPTIONS) && g_caption < g_captions.size();
-}
-
 } // namespace
 
-bool StartConsoleCredits(const std::filesystem::path &release) {
-    g_captions.clear();
-    g_caption = 0;
-    g_captionTimer = 0.0f;
-    g_scrollLines.clear();
+bool ConsoleCredits::CaptionsShow() const {
+    return IsCreditsRace(RACE_SESSION_CREDIT_CAPTIONS) && m_caption < m_captions.size();
+}
+
+bool ConsoleCredits::Start(const std::filesystem::path &release) {
+    m_captions.clear();
+    m_caption = 0;
+    m_captionTimer = 0.0f;
+    m_scrollLines.clear();
     const auto at =
         std::ranges::find(RELEASE_ADDRESSES, CartridgeRegion(release), &CreditAddresses::release);
     auto segment = ConsoleSegment::Load(release);
@@ -96,7 +78,7 @@ bool StartConsoleCredits(const std::filesystem::path &release) {
              ++line) {
             caption.lines.push_back(segment->Text(segment->Word(entry + 8 + line * 4)));
         }
-        g_captions.push_back(std::move(caption));
+        m_captions.push_back(std::move(caption));
     }
     // CalculateScrollPositions(): each line below the last, from the bottom of the screen.
     int y = 240;
@@ -111,15 +93,15 @@ bool StartConsoleCredits(const std::filesystem::path &release) {
         y += above;
         line.y = y;
         y += line.size - above + line.gap;
-        g_scrollLines.push_back(std::move(line));
+        m_scrollLines.push_back(std::move(line));
     }
     return true;
 }
 
-void StepConsoleCredits(float seconds) {
+void ConsoleCredits::Step(float seconds) {
     // ScrollTextUp() moves the lines up a pixel a frame.
     if (IsCreditsRace(RACE_SESSION_SCROLLING_CREDITS)) {
-        for (ScrollLine &line : g_scrollLines) {
+        for (ScrollLine &line : m_scrollLines) {
             --line.y;
         }
         return;
@@ -127,20 +109,20 @@ void StepConsoleCredits(float seconds) {
     if (!CaptionsShow()) {
         return;
     }
-    g_captionTimer += seconds;
-    if (g_captions[g_caption].duration < g_captionTimer) {
-        g_captionTimer = 0.0f;
-        ++g_caption;
+    m_captionTimer += seconds;
+    if (m_captions[m_caption].duration < m_captionTimer) {
+        m_captionTimer = 0.0f;
+        ++m_caption;
     }
 }
 
-void DrawConsoleCredits(SceneRenderer &renderer, const MenuText &text) {
+void ConsoleCredits::Draw(SceneRenderer &renderer, const MenuText &text) const {
     const Matrix4 flat = MenuScreen::FlatFor(renderer);
     TextStyle style;
     style.align = TextStyle::Align::Center;
     style.colors = std::array<int, 6>{0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF};
     if (IsCreditsRace(RACE_SESSION_SCROLLING_CREDITS)) {
-        for (const ScrollLine &line : g_scrollLines) {
+        for (const ScrollLine &line : m_scrollLines) {
             if (line.y >= SCROLL_TOP && line.y < SCROLL_BOTTOM) {
                 style.size = line.size;
                 text.Draw(renderer, line.text, 160, line.y, style, flat);
@@ -148,10 +130,10 @@ void DrawConsoleCredits(SceneRenderer &renderer, const MenuText &text) {
         }
         return;
     }
-    if (!CaptionsShow() || g_captionTimer <= CAPTION_DELAY) {
+    if (!CaptionsShow() || m_captionTimer <= CAPTION_DELAY) {
         return;
     }
-    const Caption &caption = g_captions[g_caption];
+    const Caption &caption = m_captions[m_caption];
     int count = static_cast<int>(caption.lines.size());
     int top = 132 - count * 40 / 4;
     if (caption.title.empty()) {

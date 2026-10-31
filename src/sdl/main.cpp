@@ -1151,7 +1151,7 @@ int main(int argc, char *argv[]) {
                 endingCredits = ending;
                 openRaceData();
                 attractDemo.StartCredits(ending);
-                coastline::StartConsoleCredits(release);
+                attractDemo.Credits().Start(release);
                 attractDemo.Step(false);
                 const coastline::RaceCar car{attractDemo.Car(), attractDemo.Color(), std::nullopt};
                 raceView = coastline::RaceView::Load(
@@ -1457,7 +1457,7 @@ int main(int argc, char *argv[]) {
                         while (creditsRunning && raceTime >= RACE_STEP) {
                             raceTime -= RACE_STEP;
                             creditsRunning = attractDemo.Step(leaveDemo);
-                            coastline::StepConsoleCredits(RACE_STEP);
+                            attractDemo.Credits().Step(RACE_STEP);
                             leaveDemo = false;
                         }
                         if (!creditsRunning) {

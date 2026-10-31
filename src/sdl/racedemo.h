@@ -12,6 +12,8 @@
 #include <optional>
 #include <string>
 
+#include "racecredits.h"
+
 namespace coastline {
 
 /**
@@ -33,6 +35,15 @@ public:
 
     /** @return The active demo controller, or null outside its lifetime. */
     static AttractDemo *Active();
+
+    /** @return Credits displayed over the demo controller's race. */
+    ConsoleCredits &Credits() {
+        return m_credits;
+    }
+    /** @return Credits displayed over the demo controller's race. */
+    const ConsoleCredits &Credits() const {
+        return m_credits;
+    }
 
     /** @return The next recording path, valid until the next selection or destruction. */
     const char *NextRecording();
@@ -91,6 +102,7 @@ private:
     std::size_t m_nextDemo = 0;
     std::string m_demoPath;
     std::optional<std::size_t> m_consoleDemo;
+    ConsoleCredits m_credits;
 };
 
 } // namespace coastline
