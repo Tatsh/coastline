@@ -107,6 +107,9 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
         result->SetFullscreen(true);
     }
     SDL_ShowWindow(result->m_window.get());
+    if (options.minimized) {
+        SDL_MinimizeWindow(result->m_window.get());
+    }
     // The shaders ship as SPIR-V for Vulkan, MSL for Metal, and DXIL for Direct3D 12.
     result->m_device.reset(SDL_CreateGPUDevice(
         SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_MSL | SDL_GPU_SHADERFORMAT_DXIL,

@@ -50,6 +50,8 @@ struct DisplayOptions {
     /** Whether the GPU device checks its use, with the validation layers of Vulkan when they are
      * installed. */
     bool gpuDebug = false;
+    /** Whether the window starts minimized, for runs that save their frames unattended. */
+    bool minimized = false;
     bool fullscreen = false; /*!< Whether the window covers the display. */
     /** Whether the window covers the display in a mode of the width, the height, and the refresh
      * rate, rather than at the desktop mode without borders. */
