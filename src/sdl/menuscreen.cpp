@@ -426,7 +426,7 @@ void MenuScreen::PlaySelectSound() {
     PlaySoundEffect(m_state->selectSound, SfxVolume(32, 32));
 }
 
-void MenuScreen::FadeIn() {
+void MenuScreen::FadeIn(bool fadeMusic) {
     State &s = *m_state;
     s.fade = {};
     s.fade.SetTarget(1.0f, FADE_TIME);
@@ -435,7 +435,9 @@ void MenuScreen::FadeIn() {
     // The music fades in from its level after the race, which a quit from the pause menu silences.
     float music = static_cast<float>(g_bMusicVolume) / MAX_SFX_VOLUME;
     s.musicFade = {.level = music, .target = music};
-    s.musicFade.SetTarget(1.0f, FADE_TIME);
+    if (fadeMusic) {
+        s.musicFade.SetTarget(1.0f, FADE_TIME);
+    }
 }
 
 void MenuScreen::FadeOut() {

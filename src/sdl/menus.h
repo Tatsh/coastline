@@ -8,9 +8,11 @@
 
 #include <array>
 #include <filesystem>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "config.h"
@@ -196,6 +198,16 @@ public:
     /** Show the options menu again after the race of the credits it started. */
     void FinishCredits();
 
+    /**
+     * Set the routine that starts the music module of the menus, which the main menu calls as it
+     * opens after a module of fewer channels, the module of a race.
+     *
+     * @param play The routine, or empty for none.
+     */
+    void SetMenuMusic(std::function<void()> play) {
+        m_playMenuMusic = std::move(play);
+    }
+
 private:
     // The screens of the console, each the routine of the same name.
     enum class Screen {
@@ -337,6 +349,7 @@ private:
     // The custom colours of the text. The console never turns them off once set.
     std::optional<std::array<int, 6>> m_textCustomColors;
 
+    std::function<void()> m_playMenuMusic;
     std::vector<MenuItem> m_mainMenuItems;
     int m_mainMenuInitState = 0;
     int m_mainMenuSelection = 0;

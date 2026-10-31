@@ -167,6 +167,7 @@ private:
     std::filesystem::path CdTrackPath(int track) const {
         return m_directory / fmt::format("track{:02}.flac", track);
     }
+    void PlayModule(int track);
     void FillCd(std::vector<std::int16_t> &output, std::size_t frames);
     static void SDLCALL CdCallback(void *user, SDL_AudioStream *stream, int additional, int total);
 
@@ -243,9 +244,13 @@ void RaceMusic::Stop() {
         SDL_DestroyAudioStream(m_cdStream);
         m_cdStream = nullptr;
     }
+    // The console plays the module of the track on after a race, faded out, until the main menu
+    // starts its own. The music of the CD gives way to that module.
+    if (m_source == RaceMusicSource::CdAudio && m_active && m_shared != nullptr) {
+        PlayModule(m_currentTrack);
+    }
     // A race that ends from its pause menu leaves the device of the menus paused.
     if (m_shared != nullptr) {
-        m_shared->Stop();
         m_shared->Resume();
     }
     m_modules.reset();
@@ -283,6 +288,11 @@ bool RaceMusic::Play(int track) {
         }
         return true;
     }
+    PlayModule(track);
+    return true;
+}
+
+void RaceMusic::PlayModule(int track) {
     int module = RaceModule(track);
     std::ifstream file(m_directory / (std::string(USA_MUSIC_MODULES[module].name) + ".xm"),
                        std::ios::binary);
@@ -290,13 +300,12 @@ bool RaceMusic::Play(int track) {
         SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
                     "The music module %s cannot be read.",
                     USA_MUSIC_MODULES[module].name);
-        return true;
+        return;
     }
     m_module.assign(std::istreambuf_iterator<char>(file), {});
     SDL_Log("The race plays the music module %s.", USA_MUSIC_MODULES[module].name);
     Modules()->Play(m_module);
     Modules()->Resume();
-    return true;
 }
 
 bool RaceMusic::Pause() {

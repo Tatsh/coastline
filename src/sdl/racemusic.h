@@ -22,7 +22,11 @@ enum class RaceMusicSource {
  */
 bool StartRaceMusic(const std::filesystem::path &directory, RaceMusicSource source);
 
-/** Drop a user of the music of the races. The last user stops the music and closes its device. */
+/**
+ * Drop a user of the music of the races. The last user stops the music of the CD and closes its
+ * device. A shared player of the menus then plays the module of the track on, as the console
+ * plays it on the screens after a race.
+ */
 void StopRaceMusic();
 
 /** Play the track of the race from its start, with the device of the music resumed. */

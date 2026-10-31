@@ -2,6 +2,7 @@
 
 #include <SDL3/SDL.h>
 
+#include "common/audio.h"
 #include "menus.h"
 
 namespace coastline {
@@ -27,6 +28,9 @@ constexpr int ENTRY_FROM_TIME_ATTACK = 2;
 
 // How long the main menu waits for a press before it exits to the splash screens.
 constexpr float MAIN_MENU_IDLE_TIMEOUT = 20.0f;
+
+// The channels of the module of the menus are 16, and those of the modules of the races are 6.
+constexpr int MENU_AUDIO_CHANNELS = 8;
 
 } // namespace
 
@@ -77,6 +81,10 @@ void Menus::ProcessMainMenu(SceneRenderer &renderer, float seconds, const MenuBu
     if (m_mainMenuInitState <= 0) {
         m_numLocalPlayers = 2;
         m_screen->Reset();
+        // The module of a race plays until the main menu, which starts the music of the menus.
+        if (g_nAudioChannelCount < MENU_AUDIO_CHANNELS && m_playMenuMusic) {
+            m_playMenuMusic();
+        }
         m_screen->titleImage = MenuTitleImage{&m_screen->MainMenuTitle(), 25, 14, 280, 32};
         m_screen->idleTimeout = MAIN_MENU_IDLE_TIMEOUT;
 

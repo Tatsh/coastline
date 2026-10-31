@@ -1248,6 +1248,9 @@ int main(int argc, char *argv[]) {
                                                           paths->cache,
                                                           config,
                                                           configPath);
+                        if (mainMenu) {
+                            mainMenu->SetMenuMusic(playMenuMusic);
+                        }
                     };
                     loadFrontEnd();
                     // The splash screens and the menus are those of the USA release, and a
@@ -1500,16 +1503,20 @@ int main(int argc, char *argv[]) {
                             end = coastline::StepRace();
                         }
                         if (end != coastline::RaceEnd::Running) {
-                            // The music of the menus plays again after the race.
+                            // The module of the track plays on after the race until the main
+                            // menu starts the music of the menus. The credits play under the
+                            // music of the menus.
                             raceView.reset();
-                            playMenuMusic();
                             frontEnd = FrontEnd::MainMenu;
                             if (end != coastline::RaceEnd::Credits) {
                                 mainMenu->FinishRace(end, coastline::LastRaceResults());
-                            } else if (startCredits(true)) {
-                                frontEnd = FrontEnd::Credits;
                             } else {
-                                mainMenu->FinishRace(end, {});
+                                playMenuMusic();
+                                if (startCredits(true)) {
+                                    frontEnd = FrontEnd::Credits;
+                                } else {
+                                    mainMenu->FinishRace(end, {});
+                                }
                             }
                         }
                     } else if (frontEnd == FrontEnd::Credits) {
@@ -1639,7 +1646,6 @@ int main(int argc, char *argv[]) {
                             frontEnd = FrontEnd::Race;
                         } else {
                             coastline::AbandonRace();
-                            playMenuMusic();
                             mainMenu->FinishRace(coastline::RaceEnd::Menu, {});
                         }
                     }

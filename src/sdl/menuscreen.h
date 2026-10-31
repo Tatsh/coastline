@@ -257,8 +257,10 @@ public:
     /**
      * Start the fade of a screen that draws itself in, as SetFadeTarget() and FadeSfxTo() of the
      * console fade it in from black.
+     *
+     * @param fadeMusic Whether the music fades in as well, or stays at its level.
      */
-    void FadeIn();
+    void FadeIn(bool fadeMusic = true);
 
     /** Fade the screen and the sound effects out. */
     void FadeOut();

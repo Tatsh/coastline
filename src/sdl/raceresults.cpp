@@ -547,6 +547,7 @@ void Menus::HandleRaceResultsInput(const MenuButtons &buttons) {
         m_resultsPage = previous;
         m_resultsDone = true;
         m_screen->FadeOut();
+        m_screen->FadeSounds(0.0f);
     }
     m_screen->PlaySelectSound();
 }
