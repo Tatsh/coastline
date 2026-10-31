@@ -163,6 +163,7 @@ completionthreads
 configfile
 congrat
 consolesegment
+consolestrings
 constexpr
 contpfs
 contramread

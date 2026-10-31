@@ -30,6 +30,9 @@ struct TextStyle {
      * doubles, or of the 640 by 480 screen as they are, as the frames of a race of the PC release
      * draw them. */
     bool doubled = true;
+    /** The distance between the baselines of two lines of a string with a newline, in the units of
+     * size, or 0 for size. */
+    int lineHeight = 0;
     /** The red, green, and blue of the bottom and then of the top of the gradient, if not default.
      */
     std::optional<std::array<int, 6>> colors;
@@ -56,9 +59,10 @@ public:
      *
      * @param renderer The renderer of the frame.
      * @param text The string in UTF-8, with the colour codes of the console. A character without
-     * a glyph is not drawn.
-     * @param x The left, centre, or right of the string, in pixels of the 320 by 240 screen.
-     * @param y The baseline of the string, in pixels of the 320 by 240 screen.
+     * a glyph is not drawn. Each line after a newline is drawn as a string of its own, at
+     * TextStyle::lineHeight below the line before.
+     * @param x The left, centre, or right of each line, in pixels of the 320 by 240 screen.
+     * @param y The baseline of the first line, in pixels of the 320 by 240 screen.
      * @param style How the string is drawn.
      * @param projection The matrix from the 640 by 480 screen to the frame.
      */
@@ -74,7 +78,8 @@ public:
      * @param size The height of the text, in pixels of the 320 by 240 screen.
      * @param doubled Whether the size is of the 320 by 240 screen a frame of high resolution
      * doubles, or of the 640 by 480 screen as it is.
-     * @return The width of the string as MeasureTextWidth() of the console measures it.
+     * @return The width of the string as MeasureTextWidth() of the console measures it, or of its
+     * widest line when it has a newline.
      */
     int Width(std::string_view text, int size, bool doubled = true) const;
 

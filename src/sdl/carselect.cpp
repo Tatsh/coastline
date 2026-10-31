@@ -878,24 +878,22 @@ void Menus::DrawCarSelectChoices(SceneRenderer &renderer) {
     }
     text.Draw(renderer, choiceText(0, "%ryLET'S GO!"), WIDTH / 2, HEIGHT * 20 / 64, style, flat);
     style.size = 8;
-    // The Japanese release draws its note on one line of a larger size.
-    const std::string *note = FindString("n64/802a90a8");
-    if (note != nullptr && decalsNote(0)) {
-        style.size = 14;
-        text.Draw(renderer, *note, WIDTH / 2, HEIGHT * 3 / 8 - 1, style, flat);
-        style.size = 8;
-    } else if (decalsNote(0)) {
+    if (decalsNote(0)) {
+        const std::string *found = FindString("n64.carSelect.rumblePakNoteOneLine");
+        std::string_view note = found != nullptr ?
+                                    std::string_view(*found) :
+                                    "%wwIf you wish to use the Rumble Pak, you should\n"
+                                    "%wwensure that it is plugged in before pressing A.";
+        // The Japanese release draws its note on one line of a larger size.
+        bool oneLine = !note.contains('\n');
+        TextStyle noteStyle = style;
+        noteStyle.size = oneLine ? 14 : 8;
+        noteStyle.lineHeight = 8;
         text.Draw(renderer,
-                  "%wwIf you wish to use the Rumble Pak, you should",
+                  note,
                   WIDTH / 2,
-                  HEIGHT * 3 / 8 - 6,
-                  style,
-                  flat);
-        text.Draw(renderer,
-                  "%wwensure that it is plugged in before pressing A.",
-                  WIDTH / 2,
-                  HEIGHT * 3 / 8 + 2,
-                  style,
+                  oneLine ? HEIGHT * 3 / 8 - 1 : HEIGHT * 3 / 8 - 6,
+                  noteStyle,
                   flat);
     }
     if (m_carSelect[0].state != CAR_SELECT_CAR) {

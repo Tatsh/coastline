@@ -175,6 +175,7 @@ add_library(
   carselect.cpp
   config.cpp
   consolesegment.cpp
+  consolestrings.cpp
   controllerpak.cpp
   controllerscreen.cpp
   controls.cpp

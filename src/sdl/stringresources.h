@@ -42,12 +42,12 @@ char32_t NextCodePoint(std::string_view text, std::size_t &position);
  * the language lacks takes its en-us string.
  *
  * @param assets The assets of the pack.
- * @param language The language, such as en-us or ja.
+ * @param language The language, such as en-us, en-gb, or ja.
  */
 void LoadStrings(const std::filesystem::path &assets, std::string_view language);
 
 /**
- * @param key The key of a string, such as 1 or n64/802a8fb8.
+ * @param key The key of a string, such as 1 or n64.carSelect.rumblePakNote.
  * @return The string of LoadStrings() in UTF-8, or nothing.
  */
 const std::string *FindString(std::string_view key);

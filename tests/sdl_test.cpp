@@ -12,10 +12,13 @@
 #include <iostream>
 #include <iterator>
 #include <map>
+#include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "config.h"
+#include "consolestrings.h"
 #include "iconfile.h"
 #include "importversion.h"
 #include "language.h"
@@ -261,7 +264,30 @@ void CheckLanguage() {
           "ja draws the Japanese release");
     Check(coastline::ReleaseDirectory(assets, "en-us") == assets / "n64" / "usa",
           "en-us draws the USA release");
+    Check(coastline::ReleaseDirectory(assets, "en-gb") == assets / "n64" / "usa",
+          "en-gb without the European release draws the USA release");
+    WriteText(assets / "n64" / "eur" / "segment.bin", "segment");
+    Check(coastline::ReleaseDirectory(assets, "en-gb") == assets / "n64" / "eur",
+          "en-gb draws the European release");
     std::filesystem::remove_all(assets);
+}
+
+void CheckConsoleStrings() {
+    std::set<std::string_view> keys;
+    for (const auto &message : coastline::CONSOLE_STRINGS) {
+        Check(keys.insert(message.key).second, "each key of the console strings is unique");
+        Check(message.key.starts_with("n64."), "each key of the console strings starts with n64.");
+        Check(!message.usa.empty() || !message.eur.empty() || !message.jpn.empty(),
+              "each console string has the lines of a release");
+        for (const auto *lines : {&message.usa, &message.eur, &message.jpn}) {
+            Check(std::ranges::all_of(*lines,
+                                      [](std::uint32_t address) {
+                                          return address >= 0x80200000 && address < 0x802AE0F0 &&
+                                                 address % 4 == 0;
+                                      }),
+                  "each line of a console string is a word of a main segment");
+        }
+    }
 }
 
 void CheckPerformanceParsing() {
@@ -291,6 +317,7 @@ int main() {
     CheckPackAssets();
     CheckImportVersions();
     CheckLanguage();
+    CheckConsoleStrings();
 
     auto defaults =
         coastline::ResolveXdgPaths(Environment({{"HOME", "/home/player"}}), "coastline");

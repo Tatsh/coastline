@@ -342,12 +342,13 @@ imported before the record existed counts as old.
 
 ### Language
 
-`Language` in the `[Game]` section selects the language of the text, `en-us`, the default, or
-`ja`. `--language` selects one for a single run. The game reads the strings of the language from
-`strings/LANGUAGE.json` in the assets, and takes the string of `strings/en-us.json` for each key
-the language lacks. The text draws with the font of the cartridge of the language, the Japanese
-release for `ja` and the USA release for `en-us`, or the USA release when the Japanese cartridge
-was not imported. The splash screens and the menus are those of the USA release in every language.
+`Language` in the `[Game]` section selects the language of the text, `en-us`, the default,
+`en-gb`, or `ja`. `--language` selects one for a single run. The game reads the strings of the
+language from `strings/LANGUAGE.json` in the assets, and takes the string of `strings/en-us.json`
+for each key the language lacks. The text draws with the font of the cartridge of the language,
+the European release for `en-gb`, the Japanese release for `ja`, and the USA release for `en-us`,
+or the USA release when the cartridge of the language was not imported. The splash screens and
+the menus are those of the USA release in every language.
 
 ```ini
 [Game]
@@ -355,15 +356,22 @@ Language = ja
 ```
 
 The disc import writes the strings of BRString.dll to `strings/en-us.json`, keyed by their number.
-The import of the Japanese cartridge writes its Japanese text to `strings/ja.json`, keyed
-`n64/ADDRESS` by the address of the string in the main segment of the release, and the kana and
-kanji of its font to `n64/jpn/fonts/japanese.png`. Every file of strings is UTF-8.
+The import of a cartridge writes the text of the messages of its menus to the file of its
+language: the USA release to `strings/en-us.json`, the European release to `strings/en-gb.json`,
+and the Japanese release to `strings/ja.json`. A message has the same key in every file, such as
+`n64.carSelect.rumblePakNote`, and the table of `src/sdl/consolestrings.cpp` lists the address of
+each line of the message in each release. A release draws the lines of a message one under the
+other, and the import joins them with a newline. Each release has its own lines, and a message
+of one release alone is only in the file of that release. The import of the Japanese cartridge
+also writes the kana and kanji of its font to `n64/jpn/fonts/japanese.png`. Every file of strings
+is UTF-8.
 
 The Japanese release has Japanese text only in the messages of the Controller Pak, the Rumble Pak,
-and the second controller. Its menus, its races, and its titles are in English, and it has no
-Japanese counterpart of a string of BRString.dll. With `ja`, the races draw the English strings,
-and the car selection shows the Japanese note of the Rumble Pak. The European release has the
-English text of the USA release, and no language of its own.
+the paint shop, and the second controller. Its menus, its races, and its titles are in English,
+and it has no Japanese counterpart of a string of BRString.dll. With `ja`, the races draw the
+English strings, and the car selection shows the Japanese note of the Rumble Pak. The European
+release has the English text of the USA release, with the messages of its save to the Game Pak
+and a few lines of its own.
 
 ### Asset packs
 

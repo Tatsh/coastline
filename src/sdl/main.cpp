@@ -884,8 +884,10 @@ int main(int argc, char *argv[]) {
               "release in place of the branded images of the cartridges, or the name of a mod "
               "pack under assets of the data directory, read over the default pack");
     parser.add_argument("--language")
-        .help("language of the text for this run, not saved: en-us, or ja for the font and the "
-              "Japanese text of the Japanese cartridge, the strings of strings/ja.json");
+        .help("language of the text for this run, not saved: en-us for the text of the USA "
+              "cartridge, en-gb for the font and the text of the European cartridge, or ja for "
+              "the font and the Japanese text of the Japanese cartridge, the strings of "
+              "strings/LANGUAGE.json");
     parser.add_argument("--width").help("width of the window in pixels").scan<'i', int>();
     parser.add_argument("--height").help("height of the window in pixels").scan<'i', int>();
     parser.add_argument("--fullscreen").help("cover the display").flag();

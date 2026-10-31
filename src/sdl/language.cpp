@@ -25,7 +25,10 @@ StringTable MergeStrings(StringTable fallback, const StringTable &language) {
 
 std::filesystem::path ReleaseDirectory(const std::filesystem::path &assets,
                                        std::string_view language) {
-    auto release = assets / "n64" / (language == "ja" ? "jpn" : "usa");
+    auto release = assets / "n64" /
+                   (language == "ja"    ? "jpn" :
+                    language == "en-gb" ? "eur" :
+                                          "usa");
     std::error_code error;
     if (!std::filesystem::exists(release / "segment.bin", error)) {
         return assets / "n64" / "usa";

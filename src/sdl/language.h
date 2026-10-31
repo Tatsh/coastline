@@ -23,7 +23,7 @@ using StringTable = std::map<std::string, std::string, std::less<>>;
 /**
  * Select the language of the game.
  *
- * @param language The language, such as en-us or ja.
+ * @param language The language, such as en-us, en-gb, or ja.
  */
 void SelectLanguage(std::string_view language);
 
@@ -40,9 +40,10 @@ StringTable MergeStrings(StringTable fallback, const StringTable &language);
 
 /**
  * @param assets The assets of the pack.
- * @param language The language, such as en-us or ja.
- * @return The import of the cartridge the menus of the language draw, n64/jpn for ja and n64/usa
- * for every other language, or n64/usa when the release of the language was not imported.
+ * @param language The language, such as en-us, en-gb, or ja.
+ * @return The import of the cartridge the menus of the language draw, n64/jpn for ja, n64/eur for
+ * en-gb, and n64/usa for every other language, or n64/usa when the release of the language was not
+ * imported.
  */
 std::filesystem::path ReleaseDirectory(const std::filesystem::path &assets,
                                        std::string_view language);

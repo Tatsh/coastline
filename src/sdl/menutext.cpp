@@ -1,5 +1,6 @@
 #include "menutext.h"
 
+#include <algorithm>
 #include <fstream>
 #include <map>
 
@@ -220,6 +221,11 @@ const MenuText::Font &MenuText::FontFor(int size) const {
 }
 
 int MenuText::Width(std::string_view text, int size, bool doubled) const {
+    auto newline = text.find('\n');
+    if (newline != std::string_view::npos) {
+        return std::max(Width(text.substr(0, newline), size, doubled),
+                        Width(text.substr(newline + 1), size, doubled));
+    }
     // A frame of high resolution doubles every size, and the width halves at the end.
     int scale = doubled ? 2 : 1;
     size *= scale;
@@ -255,6 +261,17 @@ void MenuText::Draw(SceneRenderer &renderer,
                     int y,
                     const TextStyle &style,
                     const Matrix4 &projection) const {
+    auto newline = text.find('\n');
+    if (newline != std::string_view::npos) {
+        Draw(renderer, text.substr(0, newline), x, y, style, projection);
+        Draw(renderer,
+             text.substr(newline + 1),
+             x,
+             y + (style.lineHeight != 0 ? style.lineHeight : style.size),
+             style,
+             projection);
+        return;
+    }
     if (style.align == TextStyle::Align::Center) {
         x -= Width(text, style.size, style.doubled) >> 1;
     } else if (style.align == TextStyle::Align::Right) {

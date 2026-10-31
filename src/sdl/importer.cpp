@@ -31,6 +31,7 @@
 #include "common/rigidbody.h"
 #include "common/rle.h"
 #include "common/weather.h"
+#include "sdl/consolestrings.h"
 #include "sdl/ghostfile.h"
 #include "sdl/iconfile.h"
 #include "sdl/indexedimage.h"
@@ -54,12 +55,13 @@ struct Release {
     const char *directory;                   // The directory of the release under n64/ in the data.
     std::span<const unsigned char> manifest; // The assets, as tools/sdl/cartridgemanifest.py
                                              // writes them.
+    const char *language;                    // The language of the text of the release.
 };
 
 const std::array<Release, 3> RELEASES{{
-    {RomRelease::Usa, "bfc51f086ebdb78904dc24ad0c3a2d946e26d022", "usa", CARTRIDGE_US},
-    {RomRelease::Jpn, "e0415b87c5a5b69ac581e79137406bdaa79b354a", "jpn", CARTRIDGE_JP},
-    {RomRelease::Eur, "9fae5d98fe3464f00d59034690df90118646eb95", "eur", CARTRIDGE_EU},
+    {RomRelease::Usa, "bfc51f086ebdb78904dc24ad0c3a2d946e26d022", "usa", CARTRIDGE_US, "en-us"},
+    {RomRelease::Jpn, "e0415b87c5a5b69ac581e79137406bdaa79b354a", "jpn", CARTRIDGE_JP, "ja"},
+    {RomRelease::Eur, "9fae5d98fe3464f00d59034690df90118646eb95", "eur", CARTRIDGE_EU, "en-gb"},
 }};
 
 // The main segment: its code and data at this offset of the cartridge, up to the end of its
@@ -510,9 +512,10 @@ constexpr std::u32string_view JAPANESE_GLYPHS =
     U"異常振動交換必要左右上下反転使用消空足読書込中選元他全前後発生";
 constexpr unsigned FIRST_JAPANESE_GLYPH = 0x24;
 
-// The text of a string of the Japanese release in UTF-8 without %j and %e, or nothing for bytes
-// that are not text.
-std::optional<std::string> DecodeJapaneseText(std::string_view text) {
+// The text of a string of a release in UTF-8 without %j and %e, or nothing for bytes that are not
+// text. The console draws each byte between %j and %e as a glyph code of the Japanese release, and
+// a %% there as the glyph of '%'. Every other byte is ASCII.
+std::optional<std::string> DecodeConsoleText(std::string_view text) {
     std::string decoded;
     bool japanese = false;
     for (std::size_t i = 0; i < text.size(); ++i) {
@@ -813,43 +816,76 @@ std::optional<std::string> ConvertConsoleFonts(const std::filesystem::path &dest
     return std::nullopt;
 }
 
-// The Japanese text of the Japanese release, from the main segment, as strings/ja.json in UTF-8.
-// The console draws each byte between %j and %e as a glyph code, and a %% there as the glyph of
-// '%'. A string is keyed n64/ADDRESS by its address, as the menus of the release read it. A
-// string of the sprintf() of the console, with %%j, is not text.
-std::optional<std::string> WriteJapaneseStrings(const std::filesystem::path &release,
-                                                const std::filesystem::path &dataDirectory) {
-    constexpr std::uint32_t SEGMENT_BASE = 0x80200000;
-    auto segment = ReadWholeFile(release / "segment.bin");
-    if (!segment) {
-        return fmt::format("{} cannot be read.", (release / "segment.bin").string());
-    }
-    std::string_view bytes(reinterpret_cast<const char *>(segment->data()), segment->size());
-    nlohmann::ordered_json strings = nlohmann::ordered_json::object();
-    // IDO places each string at a word.
-    for (std::size_t start = 0; start < bytes.size(); start += 4) {
-        auto end = bytes.find('\0', start);
-        if (end == std::string_view::npos) {
-            break;
-        }
-        auto text = bytes.substr(start, end - start);
-        if ((start > 0 && bytes[start - 1] != '\0') || !text.contains("%j") ||
-            text.contains("%%j")) {
-            continue;
-        }
-        if (auto decoded = DecodeJapaneseText(text)) {
-            strings[fmt::format("n64/{:08x}", SEGMENT_BASE + start)] = *decoded;
+// The start of the keys of the files of strings that the import of a cartridge writes (n64.NAME),
+// and of the n64/ADDRESS keys an older import wrote.
+constexpr std::string_view CONSOLE_KEY_PREFIX = "n64";
+
+// Write @p strings to the file of strings @p destination. The keys of the file that @p console
+// does not select (the keys of a cartridge when true, of the disc when false) are retained.
+std::optional<std::string> WriteStringsFile(const std::filesystem::path &destination,
+                                            const nlohmann::ordered_json &strings,
+                                            bool console) {
+    nlohmann::ordered_json merged = nlohmann::ordered_json::object();
+    std::ifstream in(destination);
+    if (in) {
+        auto existing = nlohmann::ordered_json::parse(in, nullptr, false);
+        if (existing.is_object()) {
+            for (const auto &[key, text] : existing.items()) {
+                if (key.starts_with(CONSOLE_KEY_PREFIX) != console) {
+                    merged[key] = text;
+                }
+            }
         }
     }
-    auto destination = dataDirectory / "strings" / "ja.json";
+    in.close();
+    merged.update(strings);
     std::error_code error;
     std::filesystem::create_directories(destination.parent_path(), error);
     std::ofstream out(destination, std::ios::trunc);
-    out << strings.dump(2) << '\n';
+    out << merged.dump(2) << '\n';
     if (!out) {
         return fmt::format("{} cannot be written.", destination.string());
     }
     return std::nullopt;
+}
+
+// The messages of CONSOLE_STRINGS that @p release draws, from the main segment of @p rom, as
+// strings/LANGUAGE.json in UTF-8 for the language of the release. The lines of a message are
+// joined with a newline.
+std::optional<std::string> WriteConsoleStrings(std::span<const std::uint8_t> rom,
+                                               const Release &release,
+                                               const std::filesystem::path &dataDirectory) {
+    constexpr std::uint32_t SEGMENT_BASE = 0x80200000;
+    std::string_view bytes(reinterpret_cast<const char *>(rom.data()), rom.size());
+    nlohmann::ordered_json strings = nlohmann::ordered_json::object();
+    for (const auto &message : CONSOLE_STRINGS) {
+        const auto &lines = release.release == RomRelease::Usa ? message.usa :
+                            release.release == RomRelease::Eur ? message.eur :
+                                                                 message.jpn;
+        if (lines.empty()) {
+            continue;
+        }
+        std::string joined;
+        for (std::size_t line = 0; line < lines.size(); ++line) {
+            auto address = lines[line];
+            std::size_t start = SEGMENT_ROM + (address - SEGMENT_BASE);
+            auto end = start < bytes.size() ? bytes.find('\0', start) : std::string_view::npos;
+            auto decoded = end == std::string_view::npos ?
+                               std::nullopt :
+                               DecodeConsoleText(bytes.substr(start, end - start));
+            if (!decoded) {
+                return fmt::format(
+                    "The string at {:08x} for {} is not text.", address, message.key);
+            }
+            if (line > 0) {
+                joined += '\n';
+            }
+            joined += *decoded;
+        }
+        strings[std::string(message.key)] = joined;
+    }
+    return WriteStringsFile(
+        dataDirectory / "strings" / (std::string(release.language) + ".json"), strings, true);
 }
 
 // The addresses of the lights of the splash screens and the menus of a release: an ambient light
@@ -1815,14 +1851,10 @@ std::optional<std::string> ConvertStringLibrary(const std::filesystem::path &lib
     for (const auto &[id, text] : strings) {
         json[std::to_string(id)] = text;
     }
-    auto destination = dataDirectory / "strings" / "en-us.json";
-    std::error_code error;
-    std::filesystem::create_directories(destination.parent_path(), error);
-    std::ofstream out(destination, std::ios::trunc);
-    out << json.dump(2) << '\n';
-    if (!out) {
-        return fmt::format("{} cannot be written.", destination.string());
+    if (auto failure = WriteStringsFile(dataDirectory / "strings" / "en-us.json", json, false)) {
+        return failure;
     }
+    std::error_code error;
     std::filesystem::remove(library, error);
     return std::nullopt;
 }
@@ -2204,10 +2236,8 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     if (auto failure = ConvertConsoleFonts(destination, *release)) {
         return std::unexpected(*failure);
     }
-    if (*release == RomRelease::Jpn) {
-        if (auto failure = WriteJapaneseStrings(destination, dataDirectory)) {
-            return std::unexpected(*failure);
-        }
+    if (auto failure = WriteConsoleStrings(*bytes, known, dataDirectory)) {
+        return std::unexpected(*failure);
     }
     if (auto failure = ConvertConsoleLights(destination, *release)) {
         return std::unexpected(*failure);
