@@ -11,6 +11,10 @@
 #include <span>
 #include <string>
 
+#if defined(__GLIBC__)
+#include <malloc.h>
+#endif
+
 #include <SDL3/SDL.h>
 
 #include "common/assetnames.h"
@@ -1628,8 +1632,20 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
         state->cars.try_emplace(key, std::move(models));
     }
     // AcquireRacerVehicle() paints a computer's car in the colour of the racer it drives for.
+    // ManageAiRacerSlots() gives a racer of a kind (a leader or a straggler) only the vehicle the
+    // kind opens and the vehicles the racers of the kind started in. A car is painted only in the
+    // colours of the racers of the kinds that can drive it.
     for (std::size_t i = g_dwNumLocalPlayers; i < cars.size(); ++i) {
+        std::set<s32> kinds{static_cast<s32>(i - g_dwNumLocalPlayers)};
         for (int racer = static_cast<int>(g_dwNumLocalPlayers); racer < g_dwNumVehicles; ++racer) {
+            if (g_aRacerSlots[racer].GetVehicle() == &g_aVehicles[i]) {
+                kinds.insert(g_aRacerSlots[racer].GetStraggler());
+            }
+        }
+        for (int racer = static_cast<int>(g_dwNumLocalPlayers); racer < g_dwNumVehicles; ++racer) {
+            if (!kinds.contains(g_aRacerSlots[racer].GetStraggler())) {
+                continue;
+            }
             const u8 *color = g_aRacerSlots[racer].GetColor();
             CarKey key{cars[i].car, color[0], color[1], color[2], 0, 0};
             if (!state->cars.contains(key)) {
@@ -1695,6 +1711,11 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     if (!state->track || state->cars.empty() || !state->text || !state->startLights) {
         return nullptr;
     }
+#if defined(__GLIBC__)
+    // The decoded images and the vertices of the load were freed to the heap, and glibc retains
+    // the pages until they are trimmed, about 10 MB in a race of every car.
+    malloc_trim(0);
+#endif
     return std::unique_ptr<RaceView>(new RaceView(std::move(state)));
 }
 

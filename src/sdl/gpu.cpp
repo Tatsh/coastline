@@ -18,6 +18,14 @@ namespace {
 
 constexpr SDL_GPUTextureFormat FRAME_FORMAT = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
 
+// The Vulkan driver of SDL submits a command buffer of its own for each texture it creates, and
+// recycles the command buffers of a window only when a frame is presented. Each command buffer
+// retains its allocations in the GPU driver until the device is destroyed, and a race of hundreds
+// of textures loaded in one frame grew the heap by tens of megabytes. A wait for the GPU after
+// every TEXTURES_BEFORE_WAIT textures between presents lets SDL recycle them.
+constexpr unsigned TEXTURES_BEFORE_WAIT = 32;
+unsigned g_texturesSincePresent = 0;
+
 // A shader of a pass after the scene, in SPIR-V or MSL as the driver takes.
 SDL_GPUShader *CreatePostShader(SDL_GPUDevice *device,
                                 SDL_GPUShaderStage stage,
@@ -420,6 +428,7 @@ bool GpuWindow::Present(SDL_GPUCommandBuffer *commands, const std::filesystem::p
     // PostAntialias, then the scale to the window by ScaleFilter.
     SDL_GPUTexture *source = AntialiasFrame(commands);
     SDL_GPUTexture *swapchain = nullptr;
+    g_texturesSincePresent = 0;
     Uint32 width = 0;
     Uint32 height = 0;
     if (SDL_WaitAndAcquireGPUSwapchainTexture(
@@ -532,6 +541,9 @@ void RemoveGpuMemory(const void *object) {
 } // namespace
 
 SDL_GPUTexture *CreateGpuTexture(SDL_GPUDevice *device, const SDL_GPUTextureCreateInfo *info) {
+    if (++g_texturesSincePresent % TEXTURES_BEFORE_WAIT == 0) {
+        SDL_WaitForGPUIdle(device);
+    }
     SDL_GPUTexture *texture = SDL_CreateGPUTexture(device, info);
     Uint64 bytes = 0;
     for (Uint32 level = 0; level < info->num_levels; ++level) {

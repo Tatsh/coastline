@@ -738,6 +738,7 @@ bool AddImage(Uploader &upload,
 struct DocumentData {
     SDL_GPUDevice *device = nullptr;
     std::filesystem::path path;
+    // The nodes and the scenes of the glTF document.
     nlohmann::json document;
     std::vector<SDL_GPUSampler *> samplers;
     // Whether the shader filters the texels of the images as the RDP does.
@@ -1485,7 +1486,13 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
         }
         state->animations.push_back(std::move(info));
     }
-    state->document = std::move(document);
+    // A model of the document reads only the nodes and the scenes, and the rest of the parsed
+    // document, megabytes for a track and its cars, is released.
+    for (const char *key : {"nodes", "scene", "scenes"}) {
+        if (document.contains(key)) {
+            state->document[key] = std::move(document[key]);
+        }
+    }
     return std::shared_ptr<RenderDocument>(new RenderDocument(std::move(owned)));
 }
 
