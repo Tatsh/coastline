@@ -6,8 +6,8 @@
  * Pointers of 32 bits in the data the game reads from files and in its display lists. The
  * Nintendo 64 and the Windows libraries have 32-bit pointers, and TGR_PTR(T) is T *. The SDL game
  * runs on 64-bit processors, where TGR_PTR(T) is a Ptr32, a signed 32-bit offset from an anchor in
- * the static data of the program. Every object such a pointer addresses is static data or comes
- * from the static pool of CHK_AllocateMemory(), and lies within 2 GiB of the anchor.
+ * the static data of the program. Referenced objects are static data or mapped memory within
+ * 2 GiB of the anchor.
  */
 
 #if defined(TGR_PLATFORM) && TGR_PLATFORM == TGR_PLATFORM_SDL && defined(__cplusplus)
@@ -21,7 +21,7 @@ extern "C" {
  * The anchor the offsets of Ptr32 count from. No pointer addresses it. Its size is not declared, as
  * the compiler would otherwise take every decoded pointer for an access past its end.
  */
-extern unsigned char g_abPtr32Anchor[];
+extern const unsigned char g_abPtr32Anchor[];
 }
 
 // The headers of the game may include this one inside extern "C".
@@ -53,7 +53,8 @@ inline void *DecodePtr32(std::uint32_t offset) {
     if (offset == 0) {
         return nullptr;
     }
-    return g_abPtr32Anchor + static_cast<std::int32_t>(offset);
+    return reinterpret_cast<void *>(reinterpret_cast<std::uintptr_t>(g_abPtr32Anchor) +
+                                    static_cast<std::int32_t>(offset));
 }
 
 /**

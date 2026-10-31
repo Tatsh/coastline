@@ -13,7 +13,7 @@ u8 g_abInstanceVisibilityMask[256];
 ConvertedModelVertex *g_pTrackQuadVertexStart;
 ConvertedModelVertex *g_pTrackQuadVertexWritePtr;
 int g_dwChosenWeather;
-unsigned char g_abPtr32Anchor[1];
+const unsigned char g_abPtr32Anchor[1] = {};
 
 float RaycastTerrainHeight(Vec3f *) {
     return 0.0f;

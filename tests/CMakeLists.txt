@@ -181,6 +181,14 @@ target_compile_options(trackskidmarks_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM
 target_link_options(trackskidmarks_test PRIVATE -Wl,--gc-sections -fsanitize=address,undefined)
 add_test(NAME trackskidmarks COMMAND trackskidmarks_test)
 
+add_executable(ptr32memory_test ptr32memory_test.cpp "${_src}/sdl/ptr32.cpp")
+set_target_properties(ptr32memory_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(ptr32memory_test PRIVATE "${_src}" "${_src}/sdl")
+target_compile_options(ptr32memory_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL
+                                             -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(ptr32memory_test PRIVATE -fsanitize=address,undefined)
+add_test(NAME ptr32memory COMMAND ptr32memory_test)
+
 add_executable(
   sdl_test sdl_test.cpp "${_src}/sdl/config.cpp" "${_src}/sdl/paths.cpp" "${_src}/sdl/assetstorage.cpp" "${_src}/sdl/iconfile.cpp"
            "${_src}/sdl/importversion.cpp" "${_src}/sdl/language.cpp" "${_src}/sdl/consolestrings.cpp"

@@ -25,7 +25,9 @@ void ByteSwapAndRelocateDisplayList(GbiCommand *pCommands);
  * @ghidraAddress BRD3D: 0x10690bec
  * @ghidraAddress BRGlide: 0x106b7c7c
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern unsigned char *g_pTrackTextureTable;
+#endif
 
 /**
  * @ghidraAddress BRD3D: 0x1002bc90
@@ -175,7 +177,9 @@ void SetCopyTextureDataOnRelocate(int bCopy);
  * @ghidraAddress BRD3D: 0x10a9977c
  * @ghidraAddress BRGlide: 0x10ac080c
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern unsigned g_dwTextureMapAddressBias;
+#endif
 
 #ifdef __cplusplus
 }

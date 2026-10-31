@@ -13,6 +13,8 @@
 #include "common/util.h"
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include "win32/render.h"
+#elif TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "sdl/trackload.h"
 #endif
 
 namespace {
@@ -36,7 +38,9 @@ void LoadTrackGeometryFromRom(s32 track) {
     // The pointers of the track become offsets from the anchor of the 32-bit pointers.
     unsigned geometryBase = coastline::EncodePtr32(&g_abTrackGeometryBuffer[0]);
 #endif
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
     g_dwTextureMapAddressBias = originalBase - geometryBase;
+#endif
     SetPointerRelocationBase(originalBase, geometryBase);
     SetCopyTextureDataOnRelocate(1);
     char path[1024];
@@ -66,7 +70,11 @@ void LoadTrackGeometryFromRom(s32 track) {
     CreateDaySkyTexture();
     CreateNightSkyTexture();
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    coastline::SetTrackTextureSource(g_abTrackGeometryBuffer + g_LoadedTrack.size);
+#else
     g_pTrackTextureTable = g_abTrackGeometryBuffer + g_LoadedTrack.size;
+#endif
     g_dwTrackDataRelocationDelta = geometryBase - g_LoadedTrack.headerSize;
     ByteSwapTrackData(&g_LoadedTrack);
     g_dwStreamDmaPrevSegment = -1;

@@ -1,12 +1,30 @@
 #pragma once
 
 #include <array>
+#include <memory>
 #include <span>
 #include <vector>
 
 #include "common/vehiclemodel.h"
 
 namespace coastline {
+
+class ModelLoader;
+
+/** Model relocation, texture lookup, converted vertices, and dents for one race engine. */
+class EngineModels {
+public:
+    EngineModels();
+    ~EngineModels();
+    EngineModels(const EngineModels &) = delete;
+    EngineModels &operator=(const EngineModels &) = delete;
+
+private:
+    std::unique_ptr<ModelLoader> m_loader;
+};
+
+/** Set the texture segment of the loaded track before relocating its textures. */
+void SetTrackTextureSource(unsigned char *textures);
 
 /** @return The entries of the texture map LoadTrackTextureMap() read last. */
 int LoadedTextureMapEntries();

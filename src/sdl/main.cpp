@@ -62,6 +62,7 @@
 #include "runscript.h"
 #include "scenerenderer.h"
 #include "stringresources.h"
+#include "trackload.h"
 
 namespace {
 
@@ -1099,6 +1100,7 @@ int main(int argc, char *argv[]) {
             auto music = LoadMusicModule(assets, menuModule.offset);
             SetWindowIcon(window->Window(), assets);
             coastline::InputBindings input(config);
+            coastline::EngineModels engineModels;
             coastline::EngineTextures engineTextures;
             coastline::AttractDemo attractDemo;
             coastline::N64Audio audio;

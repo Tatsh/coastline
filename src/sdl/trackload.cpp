@@ -1,15 +1,15 @@
 // The byte swapping and the relocation of the tracks and the models the race engine of the PC
 // release reads, on a 64-bit processor. The images of the console store big-endian 32-bit
 // addresses, and the Windows libraries turn each into a pointer of 32 bits. The SDL game turns each
-// into the 32-bit offset of common/ptr32.h, from the anchor of the static data. Every object the
-// images address is static (the buffers of the track and the models, and the pool of the
-// converted vertices here). The SDL renderer makes the textures of the converted images, and the
-// routines of the renderers of the Windows libraries that make them are not called here.
+// into the 32-bit offset of common/ptr32.h, from the anchor of the static data. The vertex pool
+// maps within the signed offset range of the anchor. The SDL renderer makes textures from
+// converted images. Windows renderer texture creation routines are not called here.
 #include "trackload.h"
 
 #include <algorithm>
 #include <array>
 #include <bit>
+#include <cassert>
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
@@ -34,11 +34,9 @@
 #include "common/trackrelocation.h"
 #include "common/vehiclemodel.h"
 #include "common/weather.h"
+#include "ptr32memory.h"
 
 using coastline::Ptr32;
-
-unsigned char *g_pTrackTextureTable;
-unsigned g_dwTextureMapAddressBias;
 
 namespace coastline {
 
@@ -53,6 +51,7 @@ constexpr unsigned PALETTE_CI4_BYTES = 32;
 constexpr unsigned PALETTE_CI8_BYTES = 512;
 // The address of the console the image of a car is based at.
 constexpr unsigned CAR_IMAGE_BASE = 0x803c8000u;
+constexpr const char *MODEL_LOADER_PROPERTY = "coastline.model-loader";
 
 struct VertexConvCacheEntry {
     const Vtx *source;
@@ -67,12 +66,21 @@ struct TextureMapEntry {
     int height;
 };
 
+} // namespace
+
 /** The state of the relocation, the pool of the converted vertices, and the texture map. */
 class ModelLoader {
 public:
+    ModelLoader() : pool(MODEL_VERTEX_POOL_SIZE * sizeof(ConvertedModelVertex)) {
+        std::uninitialized_value_construct_n(static_cast<ConvertedModelVertex *>(pool.Data()),
+                                             MODEL_VERTEX_POOL_SIZE);
+    }
+
     static ModelLoader &Get() {
-        static ModelLoader loader;
-        return loader;
+        auto *loader = static_cast<ModelLoader *>(
+            SDL_GetPointerProperty(SDL_GetGlobalProperties(), MODEL_LOADER_PROPERTY, nullptr));
+        assert(loader != nullptr);
+        return *loader;
     }
 
     unsigned oldBase = 0;
@@ -87,25 +95,47 @@ public:
     std::array<TextureMapEntry, TEXTURE_MAP_ENTRY_COUNT> textureMap{};
     int textureMapCount = 0;
     unsigned hiResTextureMemoryThreshold = 0;
+    unsigned char *textureTable = nullptr;
+    Ptr32Memory pool;
+    std::map<const VehicleModel *, std::vector<std::pair<const ConvertedModelVertex *, Vec3f>>>
+        carRestPositions;
 
     ConvertedModelVertex *AllocateVertices(int count);
-
-private:
-    ModelLoader() = default;
 };
 
-// The pool is static data, addressed by a 32-bit offset from the anchor.
-ConvertedModelVertex g_afModelVertexPool[MODEL_VERTEX_POOL_SIZE];
+ConvertedModelVertex *ModelLoader::AllocateVertices(int count) {
+    if (count < 0 || static_cast<std::size_t>(count) > MODEL_VERTEX_POOL_SIZE - poolUsed) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "The pool of the converted vertices is full (%zu of %zu).",
+                     poolUsed,
+                     MODEL_VERTEX_POOL_SIZE);
+        return nullptr;
+    }
+    auto *first = static_cast<ConvertedModelVertex *>(pool.Data()) + poolUsed;
+    poolUsed += static_cast<std::size_t>(count);
+    convertedVertexCount += static_cast<unsigned>(count);
+    return first;
+}
 
-// The vertices of each car DeformVehicleMeshByImpact() moves, each with where it rested as the car
-// loaded.
-std::map<const VehicleModel *, std::vector<std::pair<const ConvertedModelVertex *, Vec3f>>>
-    g_carRestPositions;
+EngineModels::EngineModels() : m_loader(std::make_unique<ModelLoader>()) {
+    assert(!SDL_HasProperty(SDL_GetGlobalProperties(), MODEL_LOADER_PROPERTY));
+    SDL_SetPointerProperty(SDL_GetGlobalProperties(), MODEL_LOADER_PROPERTY, m_loader.get());
+}
+
+EngineModels::~EngineModels() {
+    SDL_ClearProperty(SDL_GetGlobalProperties(), MODEL_LOADER_PROPERTY);
+}
+
+void SetTrackTextureSource(unsigned char *textures) {
+    ModelLoader::Get().textureTable = textures;
+}
+
+namespace {
 
 // The vertices the commands of the display lists of a car load, as DeformVehicleMeshByImpact()
 // walks the lists.
 void RecordCarRestPositions(const VehicleModel *model) {
-    auto &rest = g_carRestPositions[model];
+    auto &rest = ModelLoader::Get().carRestPositions[model];
     rest.clear();
     std::set<const ConvertedModelVertex *> recorded;
     for (const auto &lod : model->displayLists) {
@@ -134,20 +164,6 @@ std::uint64_t PackPosition(float x, float y, float z) {
                << 16 |
            static_cast<std::uint64_t>(static_cast<std::uint16_t>(static_cast<std::int16_t>(z)))
                << 32;
-}
-
-ConvertedModelVertex *ModelLoader::AllocateVertices(int count) {
-    if (poolUsed + static_cast<std::size_t>(count) > MODEL_VERTEX_POOL_SIZE) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "The pool of the converted vertices is full (%zu of %zu).",
-                     poolUsed,
-                     MODEL_VERTEX_POOL_SIZE);
-        return nullptr;
-    }
-    ConvertedModelVertex *first = g_afModelVertexPool + poolUsed;
-    poolUsed += static_cast<std::size_t>(count);
-    convertedVertexCount += static_cast<unsigned>(count);
-    return first;
 }
 
 unsigned SwapWord(unsigned word) {
@@ -274,8 +290,9 @@ unsigned ConvertedVertexCount() {
 
 std::vector<std::array<float, 3>> CarDentOffsets(const VehicleModel *model,
                                                  std::span<const std::array<float, 3>> rest) {
-    auto found = g_carRestPositions.find(model);
-    if (found == g_carRestPositions.end()) {
+    const auto &positions = ModelLoader::Get().carRestPositions;
+    auto found = positions.find(model);
+    if (found == positions.end()) {
         return {};
     }
     std::unordered_map<std::uint64_t, std::array<float, 3>> moved;
@@ -354,7 +371,7 @@ void SetCopyTextureDataOnRelocate(int bCopy) {
 void ResetModelDataPool(void) {
     ModelLoader::Get().convertedVertexCount = 0;
     ModelLoader::Get().poolUsed = 0;
-    coastline::g_carRestPositions.clear();
+    ModelLoader::Get().carRestPositions.clear();
 }
 
 void ByteSwapArray16(unsigned short *pData, int nCount) {
@@ -466,14 +483,16 @@ void ByteSwapAndRelocateTextureDescriptor(ModelTexture *pTexture) {
         unsigned paletteOffset = pAnimation->frames[frame].paletteRom;
         unsigned imageBytes = pTexture->textureFlags & 0x3ffff;
         if (frame == 0 && imageBytes != 0 && imageOffset != 0xffffffff) {
-            std::memcpy(pTexture->image, g_pTrackTextureTable + imageOffset, imageBytes);
+            std::memcpy(pTexture->image, ModelLoader::Get().textureTable + imageOffset, imageBytes);
         }
         if (pTexture->palette != nullptr && paletteOffset != 0xffffffff) {
-            std::memcpy(pTexture->palette, g_pTrackTextureTable + paletteOffset, paletteBytes);
+            std::memcpy(
+                pTexture->palette, ModelLoader::Get().textureTable + paletteOffset, paletteBytes);
         }
     } else if (pTexture->palette != nullptr) {
         unsigned paletteOffset = (pTexture->source.paletteRomIndex & 0xfff) << 5;
-        std::memcpy(pTexture->palette, g_pTrackTextureTable + paletteOffset, paletteBytes);
+        std::memcpy(
+            pTexture->palette, ModelLoader::Get().textureTable + paletteOffset, paletteBytes);
     }
 }
 
@@ -530,7 +549,7 @@ void CopyTextureAndPaletteFromSegment(ModelTexture *textures, int count) {
             continue;
         }
         std::memcpy(texture.image,
-                    g_pTrackTextureTable + animation->frames[0].imageRom,
+                    ModelLoader::Get().textureTable + animation->frames[0].imageRom,
                     MODEL_TEXTURE_SIZE(&texture));
         if (texture.palette != nullptr) {
             /* Palette size follows the loaded track's table, even for another input table. */
@@ -539,7 +558,7 @@ void CopyTextureAndPaletteFromSegment(ModelTexture *textures, int count) {
                     coastline::PALETTE_CI4_BYTES :
                     coastline::PALETTE_CI8_BYTES;
             std::memcpy(texture.palette,
-                        g_pTrackTextureTable + animation->frames[0].paletteRom,
+                        ModelLoader::Get().textureTable + animation->frames[0].paletteRom,
                         paletteSize);
         }
     }
