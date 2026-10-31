@@ -4,7 +4,9 @@
 #include <chrono>
 #include <condition_variable>
 #include <fstream>
+#include <iterator>
 #include <mutex>
+#include <string>
 #include <thread>
 
 #include <SDL3/SDL.h>
@@ -71,24 +73,37 @@ std::optional<double> ProcessCpuSeconds() {
 #endif
 }
 
-// The bytes of the memory of the process that are resident.
-std::optional<std::uint64_t> ResidentBytes() {
+// The bytes of memory the process holds of its own, without the shared libraries counted whole:
+// the proportional set size on Linux, the private bytes on Windows, and the physical footprint
+// on macOS, as the monitors of each system show them.
+std::optional<std::uint64_t> OwnMemoryBytes() {
 #if defined(_WIN32)
-    PROCESS_MEMORY_COUNTERS counters{};
-    if (!GetProcessMemoryInfo(GetCurrentProcess(), &counters, sizeof(counters))) {
+    PROCESS_MEMORY_COUNTERS_EX counters{};
+    if (!GetProcessMemoryInfo(GetCurrentProcess(),
+                              reinterpret_cast<PROCESS_MEMORY_COUNTERS *>(&counters),
+                              sizeof(counters))) {
         return std::nullopt;
     }
-    return counters.WorkingSetSize;
+    return counters.PrivateUsage;
 #elif defined(__APPLE__)
-    mach_task_basic_info info{};
-    mach_msg_type_number_t count = MACH_TASK_BASIC_INFO_COUNT;
-    kern_return_t result = task_info(
-        mach_task_self(), MACH_TASK_BASIC_INFO, reinterpret_cast<task_info_t>(&info), &count);
+    task_vm_info_data_t info{};
+    mach_msg_type_number_t count = TASK_VM_INFO_COUNT;
+    kern_return_t result =
+        task_info(mach_task_self(), TASK_VM_INFO, reinterpret_cast<task_info_t>(&info), &count);
     if (result != KERN_SUCCESS) {
         return std::nullopt;
     }
-    return info.resident_size;
+    return info.phys_footprint;
 #elif defined(__linux__)
+    {
+        std::ifstream rollup("/proc/self/smaps_rollup");
+        std::string text((std::istreambuf_iterator<char>(rollup)),
+                         std::istreambuf_iterator<char>());
+        if (auto pss = SmapsRollupPssBytes(text)) {
+            return pss;
+        }
+    }
+    // A kernel before 4.14 has no smaps_rollup, and the resident memory stands in.
     std::ifstream file("/proc/self/statm");
     std::string line;
     std::getline(file, line);
@@ -272,7 +287,7 @@ void PerformanceStats::Frame() {
     if (m_lastFrame == 0) {
         m_secondStart = now;
         m_secondStartCpu = ProcessCpuSeconds();
-        m_residentBytes = ResidentBytes();
+        m_memoryBytes = OwnMemoryBytes();
     } else {
         m_frameMs = static_cast<double>(now - m_lastFrame) / 1e6;
         m_worstNowMs = std::max(m_worstNowMs, m_frameMs);
@@ -283,7 +298,7 @@ void PerformanceStats::Frame() {
             m_cpuPercent = (*cpu - *m_secondStartCpu) /
                            (static_cast<double>(now - m_secondStart) / 1e9) * 100.0;
         }
-        m_residentBytes = ResidentBytes();
+        m_memoryBytes = OwnMemoryBytes();
         m_worstMs = m_worstNowMs;
         m_worstNowMs = 0.0;
         m_secondStart = now;
@@ -306,8 +321,8 @@ std::vector<std::string> PerformanceStats::Lines(std::uint64_t gameGpuBytes) con
         lines.push_back(
             fmt::format("CPU: {:.0f} PCT, {:.0f} PCT", *m_cpuPercent, *m_cpuPercent / cores));
     }
-    if (m_residentBytes) {
-        lines.push_back("RAM: " + MemorySize(*m_residentBytes));
+    if (m_memoryBytes) {
+        lines.push_back("RAM: " + MemorySize(*m_memoryBytes));
     }
     std::optional<unsigned> gpu = m_gpu->Percent();
     if (gpu) {

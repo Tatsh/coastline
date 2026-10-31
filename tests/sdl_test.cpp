@@ -267,6 +267,15 @@ void CheckPerformanceParsing() {
     Check(coastline::StatmResidentPages("  7 8") == 8u, "statm may open with spaces");
     Check(!coastline::StatmResidentPages("53287"), "statm without a second number gives nothing");
     Check(!coastline::StatmResidentPages(""), "an empty statm gives nothing");
+    constexpr std::string_view ROLLUP = "55a1c000-7ffd0000 ---p 00000000 00:00 0 [rollup]\n"
+                                        "Rss:             1406744 kB\n"
+                                        "Pss:              912345 kB\n"
+                                        "Pss_Dirty:        800000 kB\n";
+    Check(coastline::SmapsRollupPssBytes(ROLLUP) == 912345ull * 1024,
+          "the Pss line of smaps_rollup is the proportional set size in bytes");
+    Check(coastline::SmapsRollupPssBytes("Pss: 4 kB\n") == 4096u, "Pss may open the text");
+    Check(!coastline::SmapsRollupPssBytes("Rss: 4 kB\nPss_Dirty: 2 kB\n"), "Pss_Dirty is not Pss");
+    Check(!coastline::SmapsRollupPssBytes(""), "an empty rollup gives nothing");
     Check(!coastline::StatmResidentPages("1 x"), "a second word that is not a number is nothing");
 }
 

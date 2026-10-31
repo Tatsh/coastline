@@ -46,6 +46,31 @@ inline std::optional<std::uint64_t> StatmResidentPages(std::string_view text) {
 }
 
 /**
+ * @param text The contents of /proc/self/smaps_rollup.
+ * @return The proportional set size, the Pss line in bytes: the private memory with each shared
+ * page divided among the processes that share it. Nothing when the text has no Pss line.
+ */
+inline std::optional<std::uint64_t> SmapsRollupPssBytes(std::string_view text) {
+    constexpr std::string_view KEY = "\nPss:";
+    std::size_t at = text.starts_with(KEY.substr(1)) ? 0 : text.find(KEY);
+    if (at == std::string_view::npos) {
+        return std::nullopt;
+    }
+    text.remove_prefix(at + (at == 0 ? KEY.size() - 1 : KEY.size()));
+    std::size_t digits = text.find_first_not_of(' ');
+    if (digits == std::string_view::npos) {
+        return std::nullopt;
+    }
+    text.remove_prefix(digits);
+    std::uint64_t kilobytes = 0;
+    auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), kilobytes);
+    if (error != std::errc{} || end == text.data()) {
+        return std::nullopt;
+    }
+    return kilobytes * 1024;
+}
+
+/**
  * The statistics of the frames, with the processor and the memory sampled once a second, and the
  * share of an NVIDIA GPU the game uses sampled once a second on a thread of its own.
  */
@@ -78,7 +103,7 @@ private:
     std::uint64_t m_secondStart = 0;
     std::optional<double> m_secondStartCpu; // The seconds of the processor at the second's start.
     std::optional<double> m_cpuPercent;     // Of one core, over the second before.
-    std::optional<std::uint64_t> m_residentBytes;
+    std::optional<std::uint64_t> m_memoryBytes; // The memory of the game's own, as OwnMemoryBytes.
 };
 
 } // namespace coastline
