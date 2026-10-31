@@ -96,7 +96,7 @@ std::optional<std::string> ExtractCartridge(std::span<const std::uint8_t> rom,
     std::optional<std::size_t> position;
     std::string line;
     while (std::getline(lines, line)) {
-        if (progress && !progress("Extracting the cartridge", 0.0)) {
+        if (progress && !progress("Extracting the ROM image", 0.0)) {
             return "The import was cancelled.";
         }
         std::istringstream fields(line);
@@ -2183,7 +2183,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     // Replaces the model.bin of each car with model.gltf, its buffer mesh.bin, and its images.
     std::error_code carsError;
     for (const auto &car : std::filesystem::directory_iterator(destination / "cars", carsError)) {
-        if (progress && !progress("Converting the cartridge cars", 0.2)) {
+        if (progress && !progress("Converting the ROM image's cars", 0.2)) {
             return std::unexpected("The import was cancelled.");
         }
         auto model = car.path() / "model.bin";
@@ -2203,7 +2203,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     // with track.gltf, its buffer track.bin, and its images.
     for (const auto &track :
          std::filesystem::directory_iterator(destination / "tracks", carsError)) {
-        if (progress && !progress("Converting the cartridge tracks", 0.4)) {
+        if (progress && !progress("Converting the ROM image's tracks", 0.4)) {
             return std::unexpected("The import was cancelled.");
         }
         auto geometry = ReadWholeFile(track.path() / "geometry.bin");
@@ -2267,7 +2267,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         }
     }
     for (const auto &sound : sounds) {
-        if (progress && !progress("Converting the cartridge sounds", 0.6)) {
+        if (progress && !progress("Converting the ROM image's sounds", 0.6)) {
             return std::unexpected("The import was cancelled.");
         }
         if (auto failure = ConvertConsoleSound(sound)) {

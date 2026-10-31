@@ -46,7 +46,7 @@ constexpr std::array<WizardControlId, WIZARD_CARTRIDGES> BROWSE_IDS{
     WizardControlId::UsaBrowse, WizardControlId::EurBrowse, WizardControlId::JpnBrowse};
 constexpr std::array<std::string_view, WIZARD_CARTRIDGES> CHECK_LABELS{"&USA", "&Europe", "&Japan"};
 constexpr std::array<std::string_view, WIZARD_CARTRIDGES> TEXT_LABELS{
-    "&USA cartridge image:", "&Europe cartridge image:", "&Japan cartridge image:"};
+    "&USA ROM image:", "&Europe ROM image:", "&Japan ROM image:"};
 // The Browse button of each row of the cartridge paths, by its place on the screen.
 constexpr std::array<std::string_view, WIZARD_CARTRIDGES> BROWSE_LABELS{
     "B&rowse...", "Bro&wse...", "Brow&se..."};
@@ -358,7 +358,7 @@ std::vector<WizardControl> SetupWizard::BrowserControls() const {
     filter.value = m_browser->allFiles ? "All files (*.*)" :
                    m_browser->target == WizardControlId::DiscText ?
                                          "Disc images (*.cue, *.iso)" :
-                                         "Cartridge images (*.z64, *.n64, *.v64)";
+                                         "ROM images (*.z64, *.n64, *.v64)";
     controls.push_back(filter);
     std::size_t first = controls.size();
     controls.push_back(MakeButton(WizardControlId::BrowserOk, "&OK", 0, BUTTON_ROW));
@@ -1157,13 +1157,13 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
         status = " <Tab=Next Field>  <Alt+Letter=Choose>  <Enter=Next>  <Esc=Quit>";
         break;
     case WizardScreen::Cartridges:
-        dialog("Step 2 of 5: Cartridges");
-        writeLines(DIALOG_ROW + 2, "Which Top Gear Rally N64 ROMs do you have?", Black);
+        dialog("Step 2 of 5: ROM releases");
+        writeLines(DIALOG_ROW + 2, "Which Top Gear Rally N64 ROM images do you have?", Black);
         writeLines(DIALOG_ROW + 3, "Check every release you have with Space.", Black);
         break;
     case WizardScreen::Paths: {
-        dialog("Step 3 of 5: Cartridge images");
-        writeLines(DIALOG_ROW + 2, "Please locate each cartridge image.", Black);
+        dialog("Step 3 of 5: ROM images");
+        writeLines(DIALOG_ROW + 2, "Please locate each ROM image.", Black);
         if (auto base = BaseCartridge(m_checked)) {
             writeLines(SEPARATOR_ROW - 1,
                        "The default pack is built on the " +

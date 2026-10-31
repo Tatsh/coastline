@@ -12,7 +12,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - An in-game QBASIC-style setup wizard with an embedded unscii font for missing, incomplete, or
-  outdated game data. It validates disc and cartridge images and imports data with progress and
+  outdated game data. It validates disc and ROM images and imports data with progress and
   cancellation while controls remain responsive. Finish starts the game in the same process.
 - Game startup with EUR or JPN cartridge data without USA cartridge data, using available regional
   menu assets and music and language fallback.

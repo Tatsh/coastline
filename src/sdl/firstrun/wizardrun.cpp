@@ -67,7 +67,7 @@ std::optional<std::string> ImportFiles(const std::filesystem::path &data,
     double done = 0.0;
     for (const auto &[release, path] : files.cartridges) {
         auto index = static_cast<std::size_t>(release);
-        if (!progress("The " + std::string(CARTRIDGE_NAMES[index]) + " cartridge", done / total)) {
+        if (!progress("The " + std::string(CARTRIDGE_NAMES[index]) + " ROM image", done / total)) {
             return cancelled;
         }
         if (auto imported = ImportRom(path,
@@ -81,7 +81,7 @@ std::optional<std::string> ImportFiles(const std::filesystem::path &data,
         if (auto failure = record(CARTRIDGE_SOURCES[index])) {
             return failure;
         }
-        SDL_Log("Imported the %s cartridge from %s.",
+        SDL_Log("Imported the %s ROM image from %s.",
                 CARTRIDGE_NAMES[index].data(),
                 Utf8FromPath(path).c_str());
         done += 1.0;
