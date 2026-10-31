@@ -171,12 +171,15 @@ void CheckImportVersions() {
     Check(coastline::RecordImport(defaults, ImportSource::Usa), "the record is written");
     Check(coastline::StaleImports(defaults) == std::vector{ImportSource::Disc, ImportSource::Eur},
           "a recorded source is current");
-    WriteText(defaults / "import.ini", "[Import]\nDisc=0\nUsa=1\nEur=1\n");
+    std::string cartridge = std::to_string(coastline::CARTRIDGE_CONVERTER_VERSION);
+    WriteText(defaults / "import.ini",
+              "[Import]\nDisc=0\nUsa=" + cartridge + "\nEur=" + cartridge + "\n");
     Check(coastline::StaleImports(defaults) == std::vector{ImportSource::Disc},
           "an older version is old");
     Check(coastline::RecordImport(defaults, ImportSource::Disc), "the record is updated");
     Check(coastline::StaleImports(defaults).empty(), "every source is current");
-    Check(coastline::GameConfig::Load(defaults / "import.ini").GetInteger("Import", "Eur", 0) == 1,
+    Check(coastline::GameConfig::Load(defaults / "import.ini").GetInteger("Import", "Eur", 0) ==
+              coastline::CARTRIDGE_CONVERTER_VERSION,
           "an update retains the other sources");
     std::array disc{ImportSource::Disc};
     Check(coastline::ReimportMessage(disc) == "Import the disc again.", "one source");

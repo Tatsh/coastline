@@ -931,6 +931,21 @@ std::vector<std::uint8_t> StreamTextures(std::span<const std::uint8_t> image,
     return memory;
 }
 
+// The image of a track as a race in the snow starts, with the frame of the snow of every texture
+// of the snow copied over that of other weathers. A texture that reads a palette or texels a frame
+// of the snow replaces takes the snow too, whether it is animated or not.
+std::vector<std::uint8_t> StreamSnowTextures(std::span<const std::uint8_t> image,
+                                             const Layout &layout,
+                                             const std::vector<StreamedTexture> &textures,
+                                             std::vector<std::uint8_t> memory) {
+    for (const StreamedTexture &texture : textures) {
+        if (texture.snow) {
+            CopyFrame(image, layout, texture, texture.frames.data(), memory);
+        }
+    }
+    return memory;
+}
+
 std::array<std::uint8_t, 4> Rgba5551(std::uint32_t value) {
     return {static_cast<std::uint8_t>((value >> 11 & 0x1f) * 255 / 31),
             static_cast<std::uint8_t>((value >> 6 & 0x1f) * 255 / 31),
@@ -1252,11 +1267,36 @@ BuildModel(std::span<const std::uint8_t> bytes,
     // An image of each frame of an animated texture, and the frames by the image of the texture.
     std::map<std::size_t, nlohmann::ordered_json> animationOf;
     std::vector<std::uint8_t> scratch = streamed;
+    std::vector<std::uint8_t> snowMemory;
+    if (std::ranges::any_of(streamedTextures, &StreamedTexture::snow)) {
+        snowMemory = StreamSnowTextures(image, layout, streamedTextures, streamed);
+    }
     for (const auto &[key, index] : std::map<TextureKey, std::size_t>(imageOf)) {
         auto texture = std::ranges::find_if(streamedTextures, [&](const StreamedTexture &found) {
             return !found.frames.empty() && found.texels - layout.base == key.address;
         });
         if (texture == streamedTextures.end()) {
+            // A texture that is not animated changes in the snow where a frame of the snow
+            // replaces its palette or its texels.
+            if (snowMemory.empty()) {
+                continue;
+            }
+            std::vector<std::uint8_t> snow = DecodeTexture(snowMemory, key);
+            if (snow == model.images[index].rgba) {
+                continue;
+            }
+            nlohmann::ordered_json frames = nlohmann::ordered_json::array();
+            frames.push_back({{"time", nullptr}, {"image", model.images.size()}});
+            frames.push_back({{"time", nullptr}, {"image", index}});
+            model.images.push_back({fmt::format("{}-{}-0.png", stem, index),
+                                    static_cast<int>(key.width),
+                                    static_cast<int>(key.height),
+                                    std::move(snow),
+                                    {},
+                                    {},
+                                    -1,
+                                    key.address});
+            animationOf[index] = {{"snow", true}, {"snowStill", false}, {"frames", frames}};
             continue;
         }
         nlohmann::ordered_json frames = nlohmann::ordered_json::array();
@@ -1270,7 +1310,8 @@ BuildModel(std::span<const std::uint8_t> bytes,
             model.images.push_back({fmt::format("{}-{}-{}.png", stem, index, f),
                                     static_cast<int>(key.width),
                                     static_cast<int>(key.height),
-                                    DecodeTexture(scratch, key),
+                                    texture->snow && f == 0 ? DecodeTexture(snowMemory, key) :
+                                                              DecodeTexture(scratch, key),
                                     {},
                                     {},
                                     -1,
