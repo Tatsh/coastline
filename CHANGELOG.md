@@ -84,6 +84,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Patched builds zero-pad unused season save bytes instead of reading beyond the profile, with
+  checksums calculated from the written payload.
 - SDL builds reject `TGR_ENABLE_PATCHES=OFF` during configuration.
 - Restored Japanese bitmap title display from a converted PNG without producer or title models.
   European and Japanese intros use original logo and title timings and copyright text and placement.

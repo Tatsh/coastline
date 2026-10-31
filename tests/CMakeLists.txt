@@ -238,6 +238,18 @@ target_link_libraries(firstrun_test PRIVATE Threads::Threads)
 add_test(NAME firstrun COMMAND firstrun_test)
 
 find_package(ZLIB REQUIRED)
+add_executable(seasonfiles_test seasonfiles_test.cpp "${_src}/common/season.cpp")
+set_target_properties(seasonfiles_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(seasonfiles_test PRIVATE "${_src}" "${_src}/libultra/include")
+target_compile_definitions(seasonfiles_test PRIVATE ENABLE_PATCHES=1)
+target_compile_options(
+  seasonfiles_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL -UTGR_BOSS_RALLY
+                           -DTGR_BOSS_RALLY=1 -ffunction-sections
+                           -fdata-sections -fsanitize=address,undefined)
+target_link_options(seasonfiles_test PRIVATE -Wl,--gc-sections -fsanitize=address,undefined)
+target_link_libraries(seasonfiles_test PRIVATE ZLIB::ZLIB)
+add_test(NAME seasonfiles COMMAND seasonfiles_test)
+
 add_executable(ziproms_test ziproms_test.cpp "${_src}/sdl/firstrun/ziproms.cpp")
 set_target_properties(ziproms_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(ziproms_test PRIVATE "${_src}/sdl/firstrun")

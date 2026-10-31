@@ -364,12 +364,22 @@ bool SaveSeasonSaveFile(void) {
     }
 #endif
     u32 dwChecksum = adler32(0, nullptr, 0);
+#ifdef ENABLE_PATCHES
+    if (!g_pPrimarySeasonSave) {
+        return false;
+    }
+    // Zero-fill unused payload bytes to avoid reading adjacent objects.
+    u8 abPayload[SEASON_SAVE_PAYLOAD_SIZE] = {};
+    memcpy(abPayload, g_pPrimarySeasonSave, sizeof(*g_pPrimarySeasonSave));
+    dwChecksum = adler32(dwChecksum, abPayload, sizeof(abPayload));
+#else
     if (g_pPrimarySeasonSave) {
         u8 abProfileBytes[SEASON_SAVE_PAYLOAD_SIZE];
         // The saved payload extends beyond the 332-byte profile into adjacent memory.
         memcpy(abProfileBytes, g_pPrimarySeasonSave, sizeof(abProfileBytes));
         dwChecksum = adler32(dwChecksum, abProfileBytes, sizeof(abProfileBytes));
     }
+#endif /* ENABLE_PATCHES */
     FILE *pFile = fopen(g_szSeasonSaveFileName, "wb");
     if (!pFile) {
         return false;
@@ -377,8 +387,12 @@ bool SaveSeasonSaveFile(void) {
     if (fwrite(g_szSeasonSaveMagic, 1, sizeof(g_szSeasonSaveMagic), pFile) !=
             sizeof(g_szSeasonSaveMagic) ||
         fwrite(&dwChecksum, 1, sizeof(dwChecksum), pFile) != sizeof(dwChecksum) ||
+#ifdef ENABLE_PATCHES
+        fwrite(abPayload, 1, sizeof(abPayload), pFile) != sizeof(abPayload)) {
+#else
         fwrite(g_pPrimarySeasonSave, 1, SEASON_SAVE_PAYLOAD_SIZE, pFile) !=
             SEASON_SAVE_PAYLOAD_SIZE) {
+#endif /* ENABLE_PATCHES */
         fclose(pFile);
         return false;
     }

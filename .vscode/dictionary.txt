@@ -1095,6 +1095,7 @@ sdlmixer
 seasn
 seasoncars
 seasondesc
+seasonfiles
 seasonpoints
 seasonraces
 seasontrack
