@@ -11,6 +11,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- AppStream metadata for Linux software catalogues, with game details and asset import requirements.
 - GLB models with embedded buffers and PNG images, plus data URI buffers and images. Paint-shop
   models retain model and paint metadata. Selected-pack models override defaults across formats;
   `.gltf` takes precedence within a pack, and an invalid `.gltf` reports an error instead of loading

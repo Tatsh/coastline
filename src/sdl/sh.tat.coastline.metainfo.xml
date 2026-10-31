@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component type="desktop-application">
+  <id>sh.tat.coastline</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <name>Coastline</name>
+  <summary>Top Gear Rally and Boss Rally in one stand-alone game</summary>
+  <description>
+    <p>
+      Race in Top Gear Rally and Boss Rally with converted game assets, local multiplayer,
+      time trials, and custom paintwork. Play with a keyboard or gamepad and select asset packs
+      with PC or Nintendo 64 textures and models.
+    </p>
+    <p>
+      A Boss Rally disc image and at least one Top Gear Rally ROM image are required.
+      The setup wizard searches for your files and imports the game assets before playing.
+      Game data is not included in the download.
+    </p>
+  </description>
+  <developer id="sh.tat">
+    <name>Coastline contributors</name>
+  </developer>
+  <launchable type="desktop-id">sh.tat.coastline.desktop</launchable>
+  <url type="homepage">https://github.com/Tatsh/coastline</url>
+  <url type="bugtracker">https://github.com/Tatsh/coastline/issues</url>
+  <url type="vcs-browser">https://github.com/Tatsh/coastline</url>
+  <categories>
+    <category>Game</category>
+    <category>ActionGame</category>
+  </categories>
+  <provides>
+    <binary>coastline</binary>
+  </provides>
+  <content_rating type="oars-1.1" />
+  <releases>
+    <release type="development" version="0.0.0" date="2026-10-31" />
+  </releases>
+</component>

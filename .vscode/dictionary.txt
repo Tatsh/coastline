@@ -99,6 +99,7 @@ buckmaster
 bufbusy
 bufferlost
 buffler
+bugtracker
 buildinfo
 buildsystems
 bumpr
@@ -632,6 +633,7 @@ laptime
 laptimes
 lastexitcode
 lastlapsnapshot
+launchable
 lbcmp
 lbcopy
 lbzero
@@ -769,6 +771,7 @@ menuscreen
 menusurface
 menutext
 mesg
+metainfo
 meyerhofer
 mfhi
 mflo
