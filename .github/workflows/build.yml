@@ -102,7 +102,7 @@ jobs:
             pkg-config wayland-protocols
       - if: runner.os == 'macOS'
         name: 'Install the tools'
-        run: brew install ninja
+        run: brew install librsvg ninja
       # The baseline of vcpkg-configuration.json pins the versions of the ports.
       # The workflow also builds tags, so the packages vcpkg builds are not cached.
       - name: 'Install vcpkg'
@@ -145,12 +145,29 @@ jobs:
           if [ "$BUILD_TYPE" = 'Release' ]; then strip='--strip'; else strip=''; fi
           cmake --install build/sdl --prefix staging $strip
         shell: bash
-      - name: 'Upload the game'
+      - if: runner.os != 'macOS'
+        name: 'Upload the game'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
           name: 'sdl-${{ matrix.platform.name }}-${{ matrix.build-type }}'
           path: 'staging'
+      # A disk image keeps the permissions and the signature of the bundle, which an artifact loses.
+      - if: runner.os == 'macOS'
+        name: 'Build the disk image'
+        run: |
+          codesign --verify --deep --strict staging/Coastline.app
+          hdiutil create -volname Coastline -srcfolder staging/Coastline.app -ov -format UDZO \
+            "Coastline-$ARCHITECTURE-$BUILD_TYPE.dmg"
+        env:
+          ARCHITECTURE: '${{ matrix.platform.architecture }}'
+      - if: runner.os == 'macOS'
+        name: 'Upload the disk image'
+        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        with:
+          if-no-files-found: 'error'
+          name: 'sdl-${{ matrix.platform.name }}-${{ matrix.build-type }}'
+          path: '*.dmg'
       # The AppImage bundles the libraries the game links, and SDL opens those of the system for
       # the display, the GPU, and the sound.
       - if: runner.os == 'Linux' && matrix.build-type == 'Release'
@@ -261,12 +278,23 @@ jobs:
         env:
           TGR_RENDERER: '${{ matrix.renderer }}'
         shell: 'msys2 {0}'
-      - name: 'Upload the library'
+      # The renderer library, earpds.dll, and the launchers go side by side, as in the installed
+      # game.
+      - name: 'Collect the binaries'
+        run: |
+          mkdir staging
+          cp "build/win-$TGR_RENDERER/src/"*.dll "build/win-$TGR_RENDERER/src/win32/ear/earpds.dll" \
+            "build/win-$TGR_RENDERER/src/win32/boot/"*.exe staging/
+          ls -l staging
+        env:
+          TGR_RENDERER: '${{ matrix.renderer }}'
+        shell: 'msys2 {0}'
+      - name: 'Upload the binaries'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
           name: 'win-${{ matrix.renderer }}-${{ matrix.build-type }}'
-          path: 'build/win-${{ matrix.renderer }}/src/*.dll'
+          path: 'staging'
 name: 'Build'
 'on':
   push:
