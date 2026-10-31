@@ -34,6 +34,7 @@
 #include "common/weather.h"
 #include "sdl/consolestrings.h"
 #include "sdl/ghostfile.h"
+#include "sdl/gltfdocument.h"
 #include "sdl/iconfile.h"
 #include "sdl/indexedimage.h"
 #include "sdl/n64attract.h"
@@ -1734,19 +1735,15 @@ std::filesystem::path PodEntryFile(std::string name) {
 // The bytes of an entry from the directory of the import: the model built from its glTF, or the
 // file as it is.
 std::optional<std::vector<std::uint8_t>> ReadPodEntry(const std::filesystem::path &file) {
-    if (file.extension() != ".gltf") {
+    if (file.extension() != ".gltf" && file.extension() != ".glb") {
         return ReadWholeFile(file);
     }
-    std::ifstream text(file);
-    auto json = nlohmann::ordered_json::parse(text, nullptr, false);
-    if (json.is_discarded()) {
+    auto source = ReadGltfDocument(file);
+    if (!source) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", source.error().c_str());
         return std::nullopt;
     }
-    auto buffer = ReadWholeFile(file.parent_path() / json["buffers"][0]["uri"].get<std::string>());
-    if (!buffer) {
-        return std::nullopt;
-    }
-    auto bytes = ModelFromGltf(json, *buffer);
+    auto bytes = ModelFromGltf(source->json, source->buffer);
     if (!bytes) {
         return std::nullopt;
     }

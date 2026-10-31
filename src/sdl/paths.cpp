@@ -100,6 +100,13 @@ bool LayerDirectory(const std::filesystem::path &base,
     }
     for (const auto &name : names) {
         bool inPack = std::filesystem::exists(pack / name, error);
+        if (!inPack && (name.extension() == ".gltf" || name.extension() == ".glb")) {
+            auto alternative = name;
+            alternative.replace_extension(name.extension() == ".gltf" ? ".glb" : ".gltf");
+            if (std::filesystem::is_regular_file(pack / alternative, error)) {
+                continue;
+            }
+        }
         bool layered = inPack && std::filesystem::is_directory(pack / name, error) &&
                        std::filesystem::is_directory(base / name, error);
         bool linked = layered ? LayerDirectory(base / name, pack / name, to / name) :
@@ -137,7 +144,7 @@ std::optional<std::string> LayerStamp(const std::filesystem::path &base,
             return std::nullopt;
         }
     }
-    std::string listing;
+    std::string listing = "model-formats-1\n";
     for (const auto &line : lines) {
         listing += line + '\n';
     }

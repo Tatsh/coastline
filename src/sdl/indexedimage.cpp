@@ -24,12 +24,9 @@ std::uint8_t Widen5(unsigned value) {
     return static_cast<std::uint8_t>(value << 3 | value >> 2);
 }
 
-} // namespace
-
-bool LoadIndexed4Png(const std::filesystem::path &path,
+bool ReadIndexed4Png(Surface surface,
                      std::span<std::uint8_t> texels,
                      std::span<std::uint8_t, 32> palette) {
-    Surface surface(SDL_LoadPNG(path.string().c_str()));
     if (!surface) {
         return false;
     }
@@ -63,6 +60,26 @@ bool LoadIndexed4Png(const std::filesystem::path &path,
         }
     }
     return true;
+}
+
+} // namespace
+
+bool LoadIndexed4Png(const std::filesystem::path &path,
+                     std::span<std::uint8_t> texels,
+                     std::span<std::uint8_t, 32> palette) {
+    return ReadIndexed4Png(Surface(SDL_LoadPNG(path.string().c_str())), texels, palette);
+}
+
+bool LoadIndexed4Png(std::span<const std::uint8_t> bytes,
+                     std::span<std::uint8_t> texels,
+                     std::span<std::uint8_t, 32> palette) {
+    if (bytes.empty()) {
+        return false;
+    }
+    return ReadIndexed4Png(
+        Surface(SDL_LoadPNG_IO(SDL_IOFromConstMem(bytes.data(), bytes.size()), true)),
+        texels,
+        palette);
 }
 
 bool SaveIndexed4Png(const std::filesystem::path &path,

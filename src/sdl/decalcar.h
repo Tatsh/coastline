@@ -48,7 +48,7 @@ public:
     /**
      * Build the bytes of a car of the import again from its glTF document.
      *
-     * @param directory The directory of the car, with model.gltf.
+     * @param directory The directory of the car, with model.gltf or model.glb.
      * @return The car, or nothing with the reason logged.
      */
     static std::optional<DecalCar> Load(const std::filesystem::path &directory);
@@ -105,6 +105,7 @@ private:
     DecalCar() = default;
     std::filesystem::path m_directory;
     nlohmann::ordered_json m_images;
+    std::vector<std::vector<std::uint8_t>> m_imageBytes;
     std::vector<u8> m_bytes;
 };
 

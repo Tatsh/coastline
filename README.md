@@ -494,6 +494,12 @@ in `assets`, selected by its directory name. A file of the selected pack replace
 same path in `assets/default`, and every other file is read from `assets/default`. The game links
 the files of both packs into `assets/NAME` in the cache directory on each start.
 
+Models may use separate `.gltf`, buffer, and PNG files or a single `.glb` with embedded buffers
+and PNG images. A reference to `model.gltf` also finds `model.glb`. When both formats exist for
+the same model in a pack, `.gltf` takes precedence; an invalid `.gltf` reports an error. A model
+in the selected pack replaces the default model regardless of format. Paint-shop models retain
+their `coastlineModel` and `coastlinePaint` extras when consolidated.
+
 A pack may have a `pack.json` of settings. Each key of the selected pack replaces the key of
 `assets/default/pack.json`, which the import writes.
 

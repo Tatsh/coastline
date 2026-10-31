@@ -2,10 +2,10 @@
 
 #include <array>
 #include <fstream>
-#include <iterator>
 
 #include <SDL3/SDL.h>
 
+#include "gltfdocument.h"
 #include "indexedimage.h"
 #include "n64model.h"
 
@@ -38,26 +38,13 @@ std::size_t Offset(const std::vector<u8> &bytes, std::size_t at) {
 std::optional<DecalCar> DecalCar::Load(const std::filesystem::path &directory) {
     DecalCar car;
     car.m_directory = directory;
-    auto path = directory / "model.gltf";
-    std::ifstream file(path);
-    auto document = nlohmann::ordered_json::parse(file, nullptr, false);
-    if (document.is_discarded()) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s cannot be read.", path.string().c_str());
+    auto source = ReadGltfDocument(directory / "model.gltf");
+    if (!source) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", source.error().c_str());
         return std::nullopt;
     }
-    std::vector<std::uint8_t> buffer;
-    try {
-        std::ifstream data(directory / document.at("buffers").at(0).at("uri").get<std::string>(),
-                           std::ios::binary);
-        buffer.assign(std::istreambuf_iterator<char>(data), {});
-    } catch (const nlohmann::json::exception &error) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "%s has no buffer: %s",
-                     path.string().c_str(),
-                     error.what());
-        return std::nullopt;
-    }
-    auto bytes = ModelFromGltf(document, buffer);
+    const auto &path = source->path;
+    auto bytes = ModelFromGltf(source->json, source->buffer);
     if (!bytes) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                      "%s is not a car of a cartridge (%s).",
@@ -66,7 +53,18 @@ std::optional<DecalCar> DecalCar::Load(const std::filesystem::path &directory) {
         return std::nullopt;
     }
     car.m_bytes = std::move(*bytes);
-    car.m_images = document.value("images", nlohmann::ordered_json::array());
+    car.m_images = source->json.value("images", nlohmann::ordered_json::array());
+    for (std::size_t index = 0; index < car.m_images.size(); ++index) {
+        auto image = source->Image(index);
+        if (!image) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", image.error().c_str());
+            return std::nullopt;
+        }
+        car.m_imageBytes.push_back(std::move(*image));
+        car.m_images[index].erase("bufferView");
+        car.m_images[index].erase("mimeType");
+        car.m_images[index]["uri"] = "image-" + std::to_string(index) + ".png";
+    }
     // Every texture and mask the paint shop reads lies inside the model.
     if (car.m_bytes.size() < DECAL_MASKS_AT + 4) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s is too short.", path.string().c_str());
@@ -132,16 +130,20 @@ std::optional<std::filesystem::path>
 DecalCar::WriteImages(const std::filesystem::path &directory) const {
     std::error_code error;
     std::filesystem::create_directories(directory, error);
-    for (const auto &image : m_images) {
+    for (std::size_t index = 0; index < m_images.size(); ++index) {
+        const auto &image = m_images[index];
         auto uri = image.value("uri", std::string());
-        auto from = m_directory / uri;
         auto to = directory / uri;
         int material = image.value("extras", nlohmann::ordered_json::object())
                            .value("coastlinePaint", nlohmann::ordered_json::object())
                            .value("material", -1);
         if (material < 0 || material >= CAR_MATERIALS) {
-            if (!std::filesystem::exists(to, error)) {
-                std::filesystem::copy_file(from, to, error);
+            std::ofstream output(to, std::ios::binary | std::ios::trunc);
+            const auto &bytes = m_imageBytes[index];
+            output.write(reinterpret_cast<const char *>(bytes.data()),
+                         static_cast<std::streamsize>(bytes.size()));
+            if (!output) {
+                return std::nullopt;
             }
             continue;
         }
@@ -160,9 +162,12 @@ DecalCar::WriteImages(const std::filesystem::path &directory) const {
                     texels[at] |= static_cast<std::uint8_t>((x & 1) != 0 ? texel : texel << 4);
                 }
             }
-        } else if (!LoadIndexed4Png(from, texels, palette)) {
+        } else if (!LoadIndexed4Png(m_imageBytes[index], texels, palette)) {
             // The lights retain the texels of the import and take the colours of the model.
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s cannot be read.", from.string().c_str());
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "Image %zu of %s cannot be read.",
+                         index,
+                         m_directory.string().c_str());
             return std::nullopt;
         }
         std::copy_n(m_bytes.begin() + static_cast<std::ptrdiff_t>(texture.palette),

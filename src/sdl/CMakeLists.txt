@@ -191,6 +191,7 @@ add_library(
   frontend.cpp
   ghostfile.cpp
   ghostnote.cpp
+  gltfdocument.cpp
   gpu.cpp
   importer.cpp
   importversion.cpp

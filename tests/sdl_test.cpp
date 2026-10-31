@@ -270,6 +270,22 @@ void CheckPackAssets() {
     std::filesystem::remove(*boss / ".layer-stamp");
     coastline::PackAssets(data, cache, "boss");
     Check(!std::filesystem::exists(marker), "a missing stamp makes the layers again");
+    WriteText(defaults / "cars" / "model.gltf", "default glTF");
+    WriteText(defaults / "cars" / "other.glb", "default GLB");
+    WriteText(data / "assets" / "boss" / "cars" / "model.glb", "pack GLB");
+    WriteText(data / "assets" / "boss" / "cars" / "other.gltf", "pack glTF");
+    boss = coastline::PackAssets(data, cache, "boss");
+    Check(boss && ReadText(*boss / "cars" / "model.glb") == "pack GLB" &&
+              !std::filesystem::exists(*boss / "cars" / "model.gltf"),
+          "a GLB replacement suppresses the inherited glTF model");
+    Check(boss && ReadText(*boss / "cars" / "other.gltf") == "pack glTF" &&
+              !std::filesystem::exists(*boss / "cars" / "other.glb"),
+          "a glTF replacement suppresses the inherited GLB model");
+    WriteText(data / "assets" / "boss" / "cars" / "model.gltf", "pack glTF");
+    boss = coastline::PackAssets(data, cache, "boss");
+    Check(boss && ReadText(*boss / "cars" / "model.gltf") == "pack glTF" &&
+              ReadText(*boss / "cars" / "model.glb") == "pack GLB",
+          "both formats in the selected pack remain available for glTF precedence");
     std::filesystem::remove_all(root);
 }
 

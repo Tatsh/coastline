@@ -181,6 +181,22 @@ target_compile_options(sdl_test PRIVATE -Wall -Wextra -fsanitize=address,undefin
 target_link_options(sdl_test PRIVATE -fsanitize=address,undefined)
 add_test(NAME sdl COMMAND sdl_test)
 
+include("${CMAKE_SOURCE_DIR}/cmake/dependencies.cmake")
+coastline_dependency(
+  NLOHMANN_JSON
+  PACKAGE nlohmann_json
+  FIND_ARGS CONFIG
+  URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
+  HASH 42f6e95cad6ec532fd372391373363b62a14af6d771056dbfc86160e6dfff7aa
+  OPTIONS JSON_BuildTests=OFF JSON_Install=OFF)
+add_executable(gltfdocument_test gltfdocument_test.cpp "${_src}/sdl/gltfdocument.cpp")
+set_target_properties(gltfdocument_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(gltfdocument_test PRIVATE "${_src}/sdl")
+target_link_libraries(gltfdocument_test PRIVATE nlohmann_json::nlohmann_json)
+target_compile_options(gltfdocument_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(gltfdocument_test PRIVATE -fsanitize=address,undefined)
+add_test(NAME gltfdocument COMMAND gltfdocument_test)
+
 find_package(Threads REQUIRED)
 add_executable(firstrun_test firstrun_test.cpp "${_src}/sdl/firstrun/filebrowser.cpp"
                "${_src}/sdl/firstrun/setupwizard.cpp" "${_src}/sdl/firstrun/textgrid.cpp"

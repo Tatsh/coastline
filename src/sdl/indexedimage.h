@@ -36,6 +36,12 @@ bool LoadIndexed4Png(const std::filesystem::path &path,
                      std::span<std::uint8_t> texels,
                      std::span<std::uint8_t, 32> palette);
 
+/** Read an encoded indexed PNG with the same texel and palette requirements as the file overload.
+ */
+bool LoadIndexed4Png(std::span<const std::uint8_t> bytes,
+                     std::span<std::uint8_t> texels,
+                     std::span<std::uint8_t, 32> palette);
+
 /**
  * Write 8-bit RGBA texels as a PNG image, and read it back to check it.
  *

@@ -85,6 +85,7 @@ bootplayer
 bossgame
 bossrally
 boxz
+bqyh
 brally
 brglide
 brielle
@@ -519,6 +520,7 @@ glos
 glsl
 glslang
 gltf
+gltfdocument
 gmem
 gnoias
 gouraud

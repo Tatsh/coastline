@@ -4,8 +4,6 @@
 #include <bit>
 #include <cmath>
 #include <cstring>
-#include <fstream>
-#include <iterator>
 #include <map>
 #include <numeric>
 #include <string>
@@ -13,6 +11,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "gltfdocument.h"
 #include "gpu.h"
 #include "shaders/model_frag_msl.h"
 #include "shaders/model_frag_spirv.h"
@@ -1179,36 +1178,27 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
     auto owned = std::make_unique<State>();
     DocumentData *state = &owned->data;
     state->device = renderer.m_state->device;
-    state->path = path;
     SDL_GPUDevice *device = state->device;
-    nlohmann::json document;
-    std::vector<std::uint8_t> buffer;
-    try {
-        std::ifstream file(path);
-        document = nlohmann::json::parse(file);
-        std::ifstream data(path.parent_path() / document["buffers"][0]["uri"].get<std::string>(),
-                           std::ios::binary);
-        buffer.assign(std::istreambuf_iterator<char>(data), {});
-    } catch (const nlohmann::json::exception &error) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "%s is not a glTF document: %s",
-                     path.string().c_str(),
-                     error.what());
+    auto source = ReadGltfDocument(path);
+    if (!source) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", source.error().c_str());
         return nullptr;
     }
+    state->path = source->path;
+    nlohmann::json document = source->json;
+    const auto &buffer = source->buffer;
 
     // The images of another document of the model, one for one, when it has as many.
     nlohmann::json images = document.value("images", nlohmann::json::array());
     // The paint sets are those of this document, whichever document the images come from.
     const nlohmann::json ownImages = images;
-    std::filesystem::path imageDirectory = path.parent_path();
+    std::optional<GltfDocument> replacement;
     if (options.images) {
-        std::ifstream other(*options.images);
-        auto replacement = nlohmann::json::parse(other, nullptr, false);
-        if (!replacement.is_discarded() &&
-            replacement.value("images", nlohmann::json::array()).size() == images.size()) {
-            images = replacement["images"];
-            imageDirectory = options.images->parent_path();
+        auto other = ReadGltfDocument(*options.images);
+        if (other &&
+            other->json.value("images", nlohmann::ordered_json::array()).size() == images.size()) {
+            replacement = std::move(*other);
+            images = replacement->json["images"];
         } else {
             SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
                         "%s does not have the images of %s.",
@@ -1232,10 +1222,17 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
     Uploader upload(device);
     for (std::size_t index = 0; index < images.size(); ++index) {
         const auto &image = images[index];
-        auto file = imageDirectory / image["uri"].get<std::string>();
-        SDL_Surface *loaded = SDL_LoadPNG(file.string().c_str());
+        auto bytes = (replacement ? *replacement : *source).Image(index);
+        SDL_Surface *loaded =
+            bytes && !bytes->empty() ?
+                SDL_LoadPNG_IO(SDL_IOFromConstMem(bytes->data(), bytes->size()), true) :
+                nullptr;
         if (loaded == nullptr) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s cannot be read.", file.string().c_str());
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "Image %zu of %s cannot be read. %s",
+                         index,
+                         path.string().c_str(),
+                         bytes ? SDL_GetError() : bytes.error().c_str());
             return nullptr;
         }
         DecodedImage decoded;
@@ -1258,7 +1255,10 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
         bool added = AddImage(upload, state->plain, index, loaded, decoded, state->imageOptions);
         SDL_DestroySurface(loaded);
         if (!added) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s cannot be read.", file.string().c_str());
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "Image %zu of %s cannot be decoded.",
+                         index,
+                         path.string().c_str());
             return nullptr;
         }
     }
