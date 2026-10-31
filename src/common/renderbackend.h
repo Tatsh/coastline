@@ -7,6 +7,7 @@ struct GbiCommand;
 extern "C" {
 #endif
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * @ghidraAddress BRD3D: 0x10b501d0
  */
@@ -88,6 +89,7 @@ extern void (*g_pfnRenderBackendShutdown)(void);
  * @ghidraAddress BRGlide: 0x118ed1e8
  */
 extern void (*g_pfnShutdownTextureSubsystem)(void);
+#endif
 
 /**
  * Do nothing.
@@ -114,6 +116,7 @@ void ResetRenderCommandBufferStack(void);
  */
 void ClearSplitScreenRenderState(void);
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * The texture of the overlay of the HUD.
  *
@@ -167,6 +170,7 @@ extern unsigned g_dwFallbackEnvMapTextureId;
  * @ghidraAddress BRD3D: 0x11829318
  */
 extern int g_dwAlphaRampStripRowCount;
+#endif
 
 /**
  * Load and create the textures every race uses: the overlay and the glyphs of the display of the
@@ -195,7 +199,9 @@ void ResetModelDataPool(void);
  * @ghidraAddress BRD3D: 0x11829100
  * @ghidraAddress BRGlide: 0x1184c460
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern int g_adwPrecipitationTextureIds[PRECIPITATION_TEXTURE_COUNT];
+#endif
 
 #if TGR_BRD3D
 /**
@@ -218,6 +224,75 @@ void GetPrecipitationTextureDimensions(int nIndex);
  */
 void CopyTileColumnScaled(int nTileIndex, int nSrcX, int nSrcY, int nSrcRow);
 #endif /* TGR_BRD3D */
+
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/** Renderer hooks and effect texture entries for one SDL race engine. */
+typedef struct {
+    void (*submitDisplayList)(struct GbiCommand *displayList);
+    void (*aliasTexture)(int entry, int source);
+    unsigned (*createTexture)(const unsigned char *image,
+                              const unsigned char *palette,
+                              int width,
+                              int height,
+                              int lineBytes,
+                              int size,
+                              int format,
+                              int option7,
+                              int option8,
+                              int option9,
+                              int option10,
+                              int option11,
+                              int option12,
+                              int option13,
+                              int option14);
+    int (*decodeTexture)(void *destination,
+                         const unsigned char *image,
+                         const unsigned char *palette,
+                         int width,
+                         int height,
+                         int lineBytes,
+                         int size,
+                         int format);
+    void (*initialize)(void);
+    void (*initializeTextures)(void);
+    void (*shutdown)(void);
+    void (*shutdownTextures)(void);
+    void (*updateFog)(void);
+    int forceTextureClone;
+    int disableCarShadow;
+    unsigned hudOverlay;
+    unsigned hudOverlayHalf;
+    unsigned particles;
+    unsigned tireTrail;
+    unsigned vehicleEnvironment;
+    unsigned fallbackEnvironment;
+    int alphaRampRows;
+    int precipitation[PRECIPITATION_TEXTURE_COUNT];
+} SdlRenderBackendState;
+
+/** @return Renderer storage for the active SDL texture collection. */
+SdlRenderBackendState *GetSdlRenderBackendState(void);
+
+#define g_pfnRenderBackendSubmitDisplayList (GetSdlRenderBackendState()->submitDisplayList)
+#define g_pfnAliasTextureEntrySurface (GetSdlRenderBackendState()->aliasTexture)
+#define g_pfnCreateTextureFromN64Image (GetSdlRenderBackendState()->createTexture)
+#define g_pfnDecodeN64TextureToPixelBuffer (GetSdlRenderBackendState()->decodeTexture)
+#define g_pfnRenderBackendInit (GetSdlRenderBackendState()->initialize)
+#define g_pfnInitializeTextureSubsystem (GetSdlRenderBackendState()->initializeTextures)
+#define g_pfnRenderBackendShutdown (GetSdlRenderBackendState()->shutdown)
+#define g_pfnShutdownTextureSubsystem (GetSdlRenderBackendState()->shutdownTextures)
+#define g_pfnRenderBackendUpdateFog (GetSdlRenderBackendState()->updateFog)
+#define g_bForceTextureClone (GetSdlRenderBackendState()->forceTextureClone)
+#define g_bDisableCarShadow (GetSdlRenderBackendState()->disableCarShadow)
+#define g_dwHudOverlayTextureId (GetSdlRenderBackendState()->hudOverlay)
+#define g_dwHudOverlayHalfTextureId (GetSdlRenderBackendState()->hudOverlayHalf)
+#define g_dwParticleTextureId (GetSdlRenderBackendState()->particles)
+#define g_dwTireTrailTextureId (GetSdlRenderBackendState()->tireTrail)
+#define g_dwVehicleEnvMapTextureId (GetSdlRenderBackendState()->vehicleEnvironment)
+#define g_dwFallbackEnvMapTextureId (GetSdlRenderBackendState()->fallbackEnvironment)
+#define g_dwAlphaRampStripRowCount (GetSdlRenderBackendState()->alphaRampRows)
+#define g_adwPrecipitationTextureIds (GetSdlRenderBackendState()->precipitation)
+#endif
 
 #ifdef __cplusplus
 }

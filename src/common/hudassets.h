@@ -1,6 +1,10 @@
 #ifndef COASTLINE_HUDASSETS_H
 #define COASTLINE_HUDASSETS_H
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "common/vehicleview.h"
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -40,6 +44,7 @@ extern unsigned char g_abHudTexture64BData[2048];
 extern unsigned char g_abFallbackEnvTextureData[2048];
 /** @ghidraAddress BRD3D: 0x100ba0b8 */
 extern unsigned char g_abTunnelReflectionTexture[2048];
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * @ghidraAddress BRD3D: 0x118aa8f8
  * @ghidraAddress BRGlide: 0x118eda10
@@ -50,6 +55,7 @@ extern unsigned char g_abDaySkyTexture[2048];
  * @ghidraAddress BRGlide: 0x118ed210
  */
 extern unsigned char g_abNightSkyTexture[2048];
+#endif
 
 #ifdef __cplusplus
 }

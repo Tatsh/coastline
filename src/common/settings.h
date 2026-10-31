@@ -8,6 +8,9 @@
 #include "common/assetnames.h"
 #include "common/game.h"
 #include "common/trackselect.h"
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "common/renderbackend.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -129,7 +132,9 @@ extern int g_bSpeedSensitiveSteering;
  * @ghidraAddress BRD3D: 0x1039b6c8
  * @ghidraAddress BRGlide: 0x10396eb0
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern int g_bDisableCarShadow;
+#endif
 
 /**
  * Whether the benchmark runs, from `RunBenchmark=`.

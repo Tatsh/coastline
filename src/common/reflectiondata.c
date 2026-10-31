@@ -1,6 +1,7 @@
 #include "common/hudassets.h"
 #include "common/vehicleview.h"
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 VehicleReflectionTexture g_apVehicleReflectionTextures[4] = {
     {.image = g_abDaySkyTexture},
     {.image = g_abNightSkyTexture},
@@ -9,3 +10,4 @@ VehicleReflectionTexture g_apVehicleReflectionTextures[4] = {
 };
 
 s8 g_abVehicleReflectionTexSelect[3][2] = {{3, 3}, {0, 1}, {2, 2}};
+#endif

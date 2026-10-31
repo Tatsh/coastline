@@ -9,6 +9,9 @@
 #include <cstdint>
 #include <vector>
 
+#include "common/renderbackend.h"
+#include "common/vehicleview.h"
+
 namespace coastline {
 
 /** A texture of the race engine, as 8-bit RGBA texels. */
@@ -30,6 +33,15 @@ public:
     /** @return The active texture collection, or null outside its lifetime. */
     static EngineTextures *Active();
 
+    /** @return Renderer settings and texture hooks for the race engine. */
+    SdlRenderBackendState &Backend() {
+        return m_backend;
+    }
+    /** @return Sky images and reflection descriptors for the race engine. */
+    SdlVehicleReflections &Reflections() {
+        return m_reflections;
+    }
+
     /** Decode an indexed image and return its texture entry, from 1. */
     unsigned Create(const unsigned char *image,
                     const unsigned char *palette,
@@ -45,6 +57,8 @@ public:
 
 private:
     std::vector<EngineTexture> m_textures;
+    SdlRenderBackendState m_backend{};
+    SdlVehicleReflections m_reflections{};
 };
 
 /**

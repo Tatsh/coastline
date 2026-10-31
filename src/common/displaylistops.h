@@ -3,6 +3,9 @@
 
 #include "common/track.h"
 #include "common/types.h"
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "common/renderbackend.h"
+#endif
 
 #if TGR_BOSS_RALLY
 #include "common/gbicommand.h"
@@ -109,7 +112,7 @@ extern DisplayListCommand g_aaDlGhostWheelRenderModes[RENDER_MODE_ROWS][4];
 extern s32 g_bDisplayListSnowTint;
 #endif /* !TGR_BOSS_RALLY */
 
-#if TGR_BOSS_RALLY
+#if TGR_BOSS_RALLY && TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * @ghidraAddress BRD3D: 0x10b501d4
  */

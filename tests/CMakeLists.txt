@@ -223,6 +223,18 @@ target_link_libraries(sdlmixer_test PRIVATE SDL3::SDL3)
 add_test(NAME sdlmixer COMMAND sdlmixer_test)
 set_tests_properties(sdlmixer PROPERTIES ENVIRONMENT "UBSAN_OPTIONS=halt_on_error=1")
 
+add_executable(sdltextures_test sdltextures_test.cpp "${_src}/sdl/enginetextures.cpp")
+set_target_properties(sdltextures_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(sdltextures_test PRIVATE "${_src}" "${_src}/sdl"
+                                                  "${_src}/libultra/include")
+target_compile_options(sdltextures_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL
+                                              -UTGR_BOSS_RALLY -DTGR_BOSS_RALLY=1
+                                              -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(sdltextures_test PRIVATE -fsanitize=address,undefined)
+target_link_libraries(sdltextures_test PRIVATE SDL3::SDL3)
+add_test(NAME sdltextures COMMAND sdltextures_test)
+set_tests_properties(sdltextures PROPERTIES ENVIRONMENT "UBSAN_OPTIONS=halt_on_error=1")
+
 coastline_dependency(
   NLOHMANN_JSON
   PACKAGE nlohmann_json

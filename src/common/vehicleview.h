@@ -20,7 +20,9 @@ typedef union VehicleReflectionTexture {
     u8 *image;
     unsigned entry;
 } VehicleReflectionTexture;
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern VehicleReflectionTexture g_apVehicleReflectionTextures[4];
+#endif
 #else
 extern u8 *g_apVehicleReflectionTextures[4];
 #endif
@@ -42,7 +44,9 @@ extern u16 *g_apVehicleReflectionTluts[4];
  * @ghidraAddress BRGlide: 0x100a5c78
  */
 #if TGR_BOSS_RALLY
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern s8 g_abVehicleReflectionTexSelect[][2];
+#endif
 #else
 extern u8 g_abVehicleReflectionTexSelect[4][2];
 #endif
@@ -57,6 +61,24 @@ extern u8 g_abVehicleReflectionTexSelect[4][2];
  * @ghidraAddress BRGlide: 0x10273688
  */
 extern s32 g_dwVehicleViewModeIndex;
+
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/** Sky images and reflection descriptors for one SDL texture collection. */
+typedef struct {
+    u8 daySky[2048];
+    u8 nightSky[2048];
+    VehicleReflectionTexture textures[4];
+    s8 selection[3][2];
+} SdlVehicleReflections;
+
+/** @return Reflection storage for the active SDL texture collection. */
+SdlVehicleReflections *GetSdlVehicleReflections(void);
+
+#define g_abDaySkyTexture (GetSdlVehicleReflections()->daySky)
+#define g_abNightSkyTexture (GetSdlVehicleReflections()->nightSky)
+#define g_apVehicleReflectionTextures (GetSdlVehicleReflections()->textures)
+#define g_abVehicleReflectionTexSelect (GetSdlVehicleReflections()->selection)
+#endif
 
 #ifdef __cplusplus
 }

@@ -4,11 +4,15 @@
 
 #include <SDL3/SDL.h>
 
+#include "common/hudassets.h"
+
 namespace coastline {
 
 namespace {
 
 constexpr const char *ENGINE_TEXTURES_PROPERTY = "coastline.engine-textures";
+constexpr int IMAGE_SIZE_8 = 1;
+constexpr int IMAGE_FORMAT_CI = 2;
 
 // A big-endian RGBA5551 colour as 8-bit RGBA.
 void AppendColor(std::vector<std::uint8_t> &rgba, const unsigned char *half) {
@@ -23,6 +27,56 @@ void AppendColor(std::vector<std::uint8_t> &rgba, const unsigned char *half) {
 
 EngineTextures::EngineTextures() {
     assert(Active() == nullptr);
+    m_backend.aliasTexture = [](int, int) {};
+    m_backend.createTexture = [](const unsigned char *image,
+                                 const unsigned char *palette,
+                                 int width,
+                                 int height,
+                                 int lineBytes,
+                                 int size,
+                                 int format,
+                                 int,
+                                 int,
+                                 int,
+                                 int,
+                                 int,
+                                 int,
+                                 int,
+                                 int) -> unsigned {
+        if (size != IMAGE_SIZE_8 || format != IMAGE_FORMAT_CI) {
+            return 0;
+        }
+        return CreateEngineTexture(image, palette, width, height, lineBytes);
+    };
+    m_backend.decodeTexture = [](void *destination,
+                                 const unsigned char *image,
+                                 const unsigned char *palette,
+                                 int width,
+                                 int height,
+                                 int lineBytes,
+                                 int size,
+                                 int format) {
+        if (size != IMAGE_SIZE_8 || format != IMAGE_FORMAT_CI) {
+            return 0;
+        }
+        return DecodeEngineTexture(destination, image, palette, width, height, lineBytes);
+    };
+    m_backend.initializeTextures = [] {};
+    m_backend.initialize = [] {};
+    m_backend.shutdown = [] {};
+    m_backend.submitDisplayList = [](GbiCommand *) {};
+    m_backend.updateFog = [] {};
+    m_backend.shutdownTextures = [] { ClearEngineTextures(); };
+    m_reflections.textures[0].image = m_reflections.daySky;
+    m_reflections.textures[1].image = m_reflections.nightSky;
+    m_reflections.textures[2].image = m_reflections.nightSky;
+    m_reflections.textures[3].image = g_abTunnelReflectionTexture;
+    m_reflections.selection[0][0] = 3;
+    m_reflections.selection[0][1] = 3;
+    m_reflections.selection[1][0] = 0;
+    m_reflections.selection[1][1] = 1;
+    m_reflections.selection[2][0] = 2;
+    m_reflections.selection[2][1] = 2;
     SDL_SetPointerProperty(SDL_GetGlobalProperties(), ENGINE_TEXTURES_PROPERTY, this);
 }
 
@@ -116,3 +170,18 @@ void ClearEngineTextures() {
 }
 
 } // namespace coastline
+
+extern "C" {
+
+SdlRenderBackendState *GetSdlRenderBackendState(void) {
+    auto *textures = coastline::EngineTextures::Active();
+    assert(textures != nullptr);
+    return &textures->Backend();
+}
+
+SdlVehicleReflections *GetSdlVehicleReflections(void) {
+    auto *textures = coastline::EngineTextures::Active();
+    assert(textures != nullptr);
+    return &textures->Reflections();
+}
+}
