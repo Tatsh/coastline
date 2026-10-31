@@ -12,9 +12,8 @@ namespace coastline {
 
 namespace {
 
-// A real stick reads about 80 at its gate. The dead zone hides the drift of worn pads.
+// A real stick reads about 80 at its gate.
 constexpr int STICK_RANGE = 80;
-constexpr int DEAD_ZONE = 7849;
 constexpr int C_BUTTON_THRESHOLD = 16384;
 
 std::vector<int> g_scriptedKeys;
@@ -168,14 +167,8 @@ void LogPlayerDevices() {
 } // namespace
 
 std::int8_t ScaleStickAxis(std::int16_t axis) {
-    int value = axis;
-    int magnitude = std::abs(value);
-    if (magnitude <= DEAD_ZONE) {
-        return 0;
-    }
-    int scaled = (magnitude - DEAD_ZONE) * STICK_RANGE / (32768 - DEAD_ZONE);
-    scaled = std::min(scaled, STICK_RANGE);
-    return static_cast<std::int8_t>(value < 0 ? -scaled : scaled);
+    return static_cast<std::int8_t>(
+        std::clamp(axis * STICK_RANGE / 32767, -STICK_RANGE, STICK_RANGE));
 }
 
 PlayerDevices AssignedDevices(std::size_t player, std::size_t players) {

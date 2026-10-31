@@ -95,8 +95,8 @@ PlayerDevices AssignedDevices(std::size_t player, std::size_t players);
 ControllerState ReadRacePad(const PlayerDevices &devices);
 
 /**
- * Scale an SDL axis of -32768 to 32767 to the range of the controller stick, with a dead zone
- * around the centre.
+ * Scale an SDL axis of -32768 to 32767 to the range of the controller stick. The axis has passed
+ * through the dead zone of ReadControl().
  *
  * @param axis The SDL axis value.
  * @return The stick value.
