@@ -495,8 +495,7 @@ struct Mesh {
     std::vector<Primitive> primitives;
     SDL_GPUBuffer *targets = nullptr;
     int vertexCount = 0;
-    // The vertices of the first primitive, and the most of any primitive.
-    std::size_t firstVertices = 0;
+    // The most vertices of any primitive.
     int mostVertices = 0;
 };
 
@@ -726,8 +725,12 @@ struct DocumentData {
     bool threePoint = false;
     std::vector<std::pair<std::size_t, std::size_t>> textures; // Image and sampler.
     std::vector<Mesh> meshes;
-    // The positions of the vertices of each mesh, for the bounds of a model.
-    std::vector<std::vector<std::array<float, 3>>> meshPositions;
+    // Every buffer of the meshes, each released once however many primitives draw from it.
+    std::vector<SDL_GPUBuffer *> buffers;
+    // The positions of the vertices of each accessor of positions, and those each mesh reads in
+    // the order of its primitives, for the bounds of a model.
+    std::vector<std::vector<std::array<float, 3>>> positions;
+    std::vector<std::vector<std::size_t>> meshPositions;
     std::vector<VertexAnimationInfo> animations;
     ImageOptions imageOptions;
     // The textures of the images the paint does not colour.
@@ -782,14 +785,8 @@ struct DocumentData {
         for (auto &[index, decoded] : materials) {
             SDL_DestroySurface(decoded.surface);
         }
-        for (auto &mesh : meshes) {
-            for (auto &primitive : mesh.primitives) {
-                ReleaseGpuBuffer(device, primitive.vertices);
-                ReleaseGpuBuffer(device, primitive.indices);
-            }
-            if (mesh.targets != nullptr) {
-                ReleaseGpuBuffer(device, mesh.targets);
-            }
+        for (auto *buffer : buffers) {
+            ReleaseGpuBuffer(device, buffer);
         }
         for (auto *sampler : samplers) {
             SDL_ReleaseGPUSampler(device, sampler);
@@ -1126,9 +1123,11 @@ std::span<const std::array<float, 3>> RenderModel::Positions() const {
     if (m_state->placed.empty()) {
         return {};
     }
-    std::size_t mesh = m_state->placed.front().mesh;
-    return std::span(m_state->document->meshPositions[mesh])
-        .first(m_state->document->meshes[mesh].firstVertices);
+    const auto &pools = m_state->document->meshPositions[m_state->placed.front().mesh];
+    if (pools.empty()) {
+        return {};
+    }
+    return m_state->document->positions[pools.front()];
 }
 
 void RenderModel::SetVariant(int variant) {
@@ -1267,9 +1266,21 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
 
     // The meshes, with the vertices of each primitive in the layout of the shaders, and the
     // displacements of the morph targets of the first primitive, which every primitive shares.
+    // The import writes the vertices of a whole track or model once, and each primitive indexes
+    // its own of them. Primitives that read the same accessors share one upload of each.
+    std::map<std::array<std::int64_t, 4>, SDL_GPUBuffer *> sharedVertices;
+    std::map<std::int64_t, std::size_t> sharedPositions;
+    std::map<std::string, SDL_GPUBuffer *> sharedTargets;
+    auto uploadBuffer = [&](SDL_GPUBufferUsageFlags usage, std::span<const std::uint8_t> bytes) {
+        SDL_GPUBuffer *created = upload.Buffer(usage, bytes);
+        if (created != nullptr) {
+            state->buffers.push_back(created);
+        }
+        return created;
+    };
     for (const auto &mesh : document["meshes"]) {
         Mesh &drawn = state->meshes.emplace_back();
-        auto &positions = state->meshPositions.emplace_back();
+        auto &meshPositions = state->meshPositions.emplace_back();
         for (const auto &primitive : mesh["primitives"]) {
             const auto &attributes = primitive["attributes"];
             auto position = Accessor(document, buffer, attributes["POSITION"], 12);
@@ -1286,62 +1297,88 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
             if (!position || !indices) {
                 continue;
             }
-            std::vector<Vertex> vertices(position->count);
-            for (std::size_t i = 0; i < vertices.size(); ++i) {
-                Vertex &v = vertices[i];
-                std::memcpy(v.position, position->data + i * position->stride, 12);
-                positions.push_back({v.position[0], v.position[1], v.position[2]});
-                if (texCoord && i < texCoord->count) {
-                    std::memcpy(v.texCoord, texCoord->data + i * texCoord->stride, 8);
+            const std::array<std::int64_t, 4> vertexKey{
+                attributes["POSITION"].get<std::int64_t>(),
+                attributes.value("TEXCOORD_0", std::int64_t{-1}),
+                attributes.value("NORMAL", std::int64_t{-1}),
+                attributes.value("COLOR_0", std::int64_t{-1})};
+            auto [pool, newPool] =
+                sharedPositions.try_emplace(vertexKey[0], state->positions.size());
+            if (newPool) {
+                auto &positions = state->positions.emplace_back(position->count);
+                for (std::size_t i = 0; i < positions.size(); ++i) {
+                    std::memcpy(positions[i].data(), position->data + i * position->stride, 12);
                 }
-                if (normal && i < normal->count) {
-                    std::memcpy(v.normal, normal->data + i * normal->stride, 12);
+            }
+            if (std::find(meshPositions.begin(), meshPositions.end(), pool->second) ==
+                meshPositions.end()) {
+                meshPositions.push_back(pool->second);
+            }
+            auto [shared, newVertices] = sharedVertices.try_emplace(vertexKey, nullptr);
+            if (newVertices) {
+                std::vector<Vertex> vertices(position->count);
+                for (std::size_t i = 0; i < vertices.size(); ++i) {
+                    Vertex &v = vertices[i];
+                    std::memcpy(v.position, position->data + i * position->stride, 12);
+                    if (texCoord && i < texCoord->count) {
+                        std::memcpy(v.texCoord, texCoord->data + i * texCoord->stride, 8);
+                    }
+                    if (normal && i < normal->count) {
+                        std::memcpy(v.normal, normal->data + i * normal->stride, 12);
+                    }
+                    std::array<std::uint8_t, 4> rgba{255, 255, 255, 255};
+                    if (color && i < color->count) {
+                        std::memcpy(rgba.data(), color->data + i * color->stride, 4);
+                    }
+                    std::memcpy(v.color, rgba.data(), 4);
                 }
-                std::array<std::uint8_t, 4> rgba{255, 255, 255, 255};
-                if (color && i < color->count) {
-                    std::memcpy(rgba.data(), color->data + i * color->stride, 4);
-                }
-                std::memcpy(v.color, rgba.data(), 4);
+                shared->second =
+                    uploadBuffer(SDL_GPU_BUFFERUSAGE_VERTEX,
+                                 {reinterpret_cast<const std::uint8_t *>(vertices.data()),
+                                  vertices.size() * sizeof(Vertex)});
             }
             std::vector<std::uint32_t> list(indices->count);
             for (std::size_t i = 0; i < list.size(); ++i) {
                 std::memcpy(&list[i], indices->data + i * indices->stride, 4);
             }
-            if (drawn.primitives.empty()) {
-                drawn.firstVertices = vertices.size();
-            }
-            drawn.mostVertices = std::max(drawn.mostVertices, static_cast<int>(vertices.size()));
+            const std::size_t vertexCount = position->count;
+            drawn.mostVertices = std::max(drawn.mostVertices, static_cast<int>(vertexCount));
             if (drawn.targets == nullptr && primitive.contains("targets")) {
-                // For each target, the position and then the normal of each vertex, as vec4.
-                std::vector<float> displacements;
-                for (const auto &target : primitive["targets"]) {
-                    auto moved =
-                        Vec3Floats(document, buffer, target["POSITION"].get<std::size_t>());
-                    std::vector<float> turned(moved.size(), 0.0f);
-                    if (target.contains("NORMAL")) {
-                        turned = Vec3Floats(document, buffer, target["NORMAL"].get<std::size_t>());
-                    }
-                    for (std::size_t i = 0; i < vertices.size(); ++i) {
-                        for (const auto *values : {&moved, &turned}) {
-                            for (std::size_t axis = 0; axis < 3; ++axis) {
-                                displacements.push_back(
-                                    i * 3 + axis < values->size() ? (*values)[i * 3 + axis] : 0.0f);
+                auto [targets, newTargets] = sharedTargets.try_emplace(
+                    std::to_string(vertexKey[0]) + primitive["targets"].dump(), nullptr);
+                if (newTargets) {
+                    // For each target, the position and then the normal of each vertex, as vec4.
+                    std::vector<float> displacements;
+                    for (const auto &target : primitive["targets"]) {
+                        auto moved =
+                            Vec3Floats(document, buffer, target["POSITION"].get<std::size_t>());
+                        std::vector<float> turned(moved.size(), 0.0f);
+                        if (target.contains("NORMAL")) {
+                            turned =
+                                Vec3Floats(document, buffer, target["NORMAL"].get<std::size_t>());
+                        }
+                        for (std::size_t i = 0; i < vertexCount; ++i) {
+                            for (const auto *values : {&moved, &turned}) {
+                                for (std::size_t axis = 0; axis < 3; ++axis) {
+                                    displacements.push_back(i * 3 + axis < values->size() ?
+                                                                (*values)[i * 3 + axis] :
+                                                                0.0f);
+                                }
+                                displacements.push_back(0.0f);
                             }
-                            displacements.push_back(0.0f);
                         }
                     }
+                    targets->second =
+                        uploadBuffer(SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ,
+                                     {reinterpret_cast<const std::uint8_t *>(displacements.data()),
+                                      displacements.size() * sizeof(float)});
                 }
-                drawn.vertexCount = static_cast<int>(vertices.size());
-                drawn.targets =
-                    upload.Buffer(SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ,
-                                  {reinterpret_cast<const std::uint8_t *>(displacements.data()),
-                                   displacements.size() * sizeof(float)});
+                drawn.vertexCount = static_cast<int>(vertexCount);
+                drawn.targets = targets->second;
             }
             Primitive part;
-            part.vertices = upload.Buffer(SDL_GPU_BUFFERUSAGE_VERTEX,
-                                          {reinterpret_cast<const std::uint8_t *>(vertices.data()),
-                                           vertices.size() * sizeof(Vertex)});
-            part.indices = upload.Buffer(
+            part.vertices = shared->second;
+            part.indices = uploadBuffer(
                 SDL_GPU_BUFFERUSAGE_INDEX,
                 {reinterpret_cast<const std::uint8_t *>(list.data()), list.size() * 4});
             part.indexCount = static_cast<std::uint32_t>(list.size());
@@ -1477,11 +1514,13 @@ std::unique_ptr<RenderModel> RenderModel::Load(std::shared_ptr<RenderDocument> o
                 instance = extras.value("index", -1);
             }
             state->placed.push_back({mesh, matrix, instance, flags, parent});
-            for (const auto &p : data.meshPositions[mesh]) {
-                auto world = Transform(matrix, p.data());
-                for (std::size_t axis = 0; axis < 3; ++axis) {
-                    low[axis] = std::min(low[axis], world[axis]);
-                    high[axis] = std::max(high[axis], world[axis]);
+            for (std::size_t pool : data.meshPositions[mesh]) {
+                for (const auto &p : data.positions[pool]) {
+                    auto world = Transform(matrix, p.data());
+                    for (std::size_t axis = 0; axis < 3; ++axis) {
+                        low[axis] = std::min(low[axis], world[axis]);
+                        high[axis] = std::max(high[axis], world[axis]);
+                    }
                 }
             }
         }
