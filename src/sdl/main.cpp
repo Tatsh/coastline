@@ -94,6 +94,23 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     options.frameWidth = static_cast<int>(config.GetInteger("Video", "InternalWidth", 0));
     options.frameHeight = static_cast<int>(config.GetInteger("Video", "InternalHeight", 0));
     options.renderScale = std::clamp(config.GetFloat("Video", "RenderScale", 1.0f), 0.25f, 4.0f);
+    // AspectRatio keeps a shape for the frame, auto for the shape of the window. --aspect-ratio
+    // replaces it for this run.
+    auto aspectText = parser.present("--aspect-ratio");
+    if (!aspectText) {
+        aspectText = config.Get("Video", "AspectRatio");
+    }
+    if (aspectText) {
+        auto aspect = coastline::ParseAspectRatio(*aspectText);
+        if (aspect) {
+            options.aspectRatio = *aspect;
+        } else {
+            SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
+                        "AspectRatio takes auto, a ratio such as 4:3, or a number above 0, and %s "
+                        "follows the window.",
+                        aspectText->c_str());
+        }
+    }
     if (config.Get("Video", "ScaleFilter") == "nearest") {
         options.scaleFilter = coastline::ScaleFilter::Nearest;
     }
@@ -882,6 +899,10 @@ int main(int argc, char *argv[]) {
     parser.add_argument("--no-vsync").help("present frames without waiting").flag();
     parser.add_argument("--gpu-driver")
         .help("SDL GPU driver, such as vulkan, metal, or direct3d12");
+    parser.add_argument("--aspect-ratio")
+        .help("shape of the frame for this run, in a window and in the full screen, with bars "
+              "around it: auto for the shape of the window, a ratio such as 4:3, or a number such "
+              "as 1.6; replaces AspectRatio of the settings");
     parser.add_argument("--gpu-preset")
         .help(
             "preset of the graphics for this run, not saved: best for 8 samples of anti-aliasing, "
@@ -1000,6 +1021,12 @@ int main(int argc, char *argv[]) {
     }
     SDL_SetMainReady();
     SDL_SetAppMetadata("Coastline", COASTLINE_VERSION, "sh.tat.coastline");
+    // SDL logs only the errors of its categories other than the application, so the warnings of
+    // the video, the GPU, and the audio reach the log too. SDL_LOGGING chooses its own levels.
+    if (SDL_GetHint(SDL_HINT_LOGGING) == nullptr) {
+        SDL_SetLogPriorities(SDL_LOG_PRIORITY_WARN);
+        SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO);
+    }
     if (!coastline::StartGameLog(paths->state / "game.log")) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "The log file cannot be opened.");
     }

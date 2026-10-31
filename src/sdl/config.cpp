@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cctype>
 #include <charconv>
+#include <cmath>
 #include <fstream>
 #include <locale>
 #include <ranges>
@@ -21,6 +22,19 @@ std::string_view Trim(std::string_view text) {
         text.remove_suffix(1);
     }
     return text;
+}
+
+// The whole text as a number, read in the classic locale. Floating-point std::from_chars needs
+// macOS 26.
+std::optional<float> ParseNumber(std::string_view text) {
+    std::istringstream stream{std::string(text)};
+    stream.imbue(std::locale::classic());
+    float result = 0.0f;
+    stream >> std::noskipws >> result;
+    if (stream.fail() || stream.peek() != std::char_traits<char>::eof()) {
+        return std::nullopt;
+    }
+    return result;
 }
 
 } // namespace
@@ -122,12 +136,7 @@ float GameConfig::GetFloat(std::string_view section, std::string_view key, float
     if (!value) {
         return fallback;
     }
-    // Floating-point std::from_chars needs macOS 26, so the classic locale parses the value.
-    std::istringstream stream{std::string(*value)};
-    stream.imbue(std::locale::classic());
-    float result = 0.0f;
-    stream >> std::noskipws >> result;
-    return !stream.fail() && stream.peek() == std::char_traits<char>::eof() ? result : fallback;
+    return ParseNumber(*value).value_or(fallback);
 }
 
 bool GameConfig::GetBoolean(std::string_view section, std::string_view key, bool fallback) const {
@@ -152,6 +161,30 @@ void GameConfig::Set(std::string_view section, std::string_view key, std::string
         found = m_sections.emplace(std::string(section), Section{}).first;
     }
     found->second.insert_or_assign(std::string(key), std::move(value));
+}
+
+std::optional<float> ParseAspectRatio(std::string_view text) {
+    text = Trim(text);
+    std::string lower(text);
+    std::ranges::transform(lower, lower.begin(), [](unsigned char c) { return std::tolower(c); });
+    if (lower.empty() || lower == "auto") {
+        return 0.0f;
+    }
+    std::optional<float> ratio;
+    auto colon = text.find(':');
+    if (colon == std::string_view::npos) {
+        ratio = ParseNumber(text);
+    } else {
+        auto width = ParseNumber(Trim(text.substr(0, colon)));
+        auto height = ParseNumber(Trim(text.substr(colon + 1)));
+        if (width && height && *height > 0.0f) {
+            ratio = *width / *height;
+        }
+    }
+    if (!ratio || !std::isfinite(*ratio) || !(*ratio > 0.0f)) {
+        return std::nullopt;
+    }
+    return ratio;
 }
 
 } // namespace coastline

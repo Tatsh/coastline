@@ -305,6 +305,17 @@ int main() {
     Check(scales.GetFloat("Video", "Gain", 1.0f) == 1.0f, "trailing text gives the fallback");
     Check(scales.GetFloat("Video", "Empty", 3.0f) == 3.0f, "an empty value gives the fallback");
 
+    Check(coastline::ParseAspectRatio("auto") == 0.0f, "auto follows the window");
+    Check(coastline::ParseAspectRatio(" AUTO ") == 0.0f, "auto is read without case or spaces");
+    Check(coastline::ParseAspectRatio("4:3") == 4.0f / 3.0f,
+          "a ratio is the width over the height");
+    Check(coastline::ParseAspectRatio("16 : 9") == 16.0f / 9.0f, "a ratio may have spaces");
+    Check(coastline::ParseAspectRatio("1.6") == 1.6f, "a number is the ratio itself");
+    Check(!coastline::ParseAspectRatio("4:0"), "a height of 0 is no ratio");
+    Check(!coastline::ParseAspectRatio("-1"), "a ratio not above 0 is refused");
+    Check(!coastline::ParseAspectRatio("wide"), "text is refused");
+    Check(!coastline::ParseAspectRatio("inf"), "an infinite ratio is refused");
+
     auto choices = coastline::GameConfig::Parse("[Player2]\nCar=12\nHandling=-1\nTires=x\n"
                                                 "Suspension=3\nTransmission=0\n");
     Check(choices.GetIndex("Player2", "Car", 13, 0) == 12, "the last index is read");

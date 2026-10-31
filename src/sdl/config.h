@@ -99,4 +99,13 @@ private:
     std::map<std::string, Section, CaseInsensitiveLess> m_sections;
 };
 
+/**
+ * Read an aspect ratio as a setting gives it.
+ *
+ * @param text auto, a ratio of two numbers such as 4:3 or 16:9, or a number such as 1.6.
+ * @return The width over the height, 0 for auto, or nothing when the text is none of these or the
+ * ratio is not above 0.
+ */
+std::optional<float> ParseAspectRatio(std::string_view text);
+
 } // namespace coastline
