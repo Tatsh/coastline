@@ -183,8 +183,12 @@ void DrawPicture(SceneRenderer &renderer, const RenderTexture &picture, int x, i
 
 bool Menus::LoadControllerScreen(SceneRenderer &renderer, const std::filesystem::path &release) {
     const char *const wheel[] = {"steering-wheel"};
-    auto items =
-        m_screen->LoadItems(renderer, release / "menu-items" / "controllerscreenitems", wheel);
+    const auto wheelDirectory = release / "menu-items" / "controllerscreenitems";
+    std::optional<std::vector<MenuItem>> items =
+        std::vector<MenuItem>{{"Steering Wheel", MENU_ITEM_SPINNING, nullptr}};
+    if (std::filesystem::exists(wheelDirectory / "items.json")) {
+        items = m_screen->LoadItems(renderer, wheelDirectory, wheel);
+    }
     const RenderModel *controller = m_screen->LoadModel(renderer, release / CONTROLLER_MODEL);
     if (!items || controller == nullptr) {
         return false;

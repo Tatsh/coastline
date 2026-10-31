@@ -36,6 +36,10 @@ constexpr std::array<const char *, 5> OPTIONS_STEMS{
 constexpr const char *LOAD_CONFIGURATION_MODEL = "tracks/load-and-gamewin/menu-model.gltf";
 constexpr const char *CREDITS_STEM = "credits";
 
+bool HasConfigurationItems(const std::filesystem::path &release) {
+    return release.filename() == "usa";
+}
+
 // g_adwBgmVolumeLevels and g_adwSfxVolumeLevels of the console, by the levels of the options.
 constexpr std::array<u8, 11> BGM_VOLUME_LEVELS{
     0x00, 0x04, 0x09, 0x0E, 0x13, 0x18, 0x1C, 0x21, 0x26, 0x2B, 0x30};
@@ -225,9 +229,21 @@ void ReadOptions(MenuOptions &options, const std::vector<u8> &bytes) {
 } // namespace
 
 bool Menus::LoadOptionsItems(SceneRenderer &renderer, const std::filesystem::path &release) {
-    auto items = m_screen->LoadItems(renderer, release / "menu-items" / "options", OPTIONS_STEMS);
     const char *const credits[] = {CREDITS_STEM};
     auto last = m_screen->LoadItems(renderer, release / "menu-items" / "options", credits);
+    if (!HasConfigurationItems(release)) {
+        auto items =
+            m_screen->LoadItems(renderer,
+                                release / "menu-items" / "options",
+                                std::span(OPTIONS_STEMS).first(OPTIONS_ITEM_CONTROLLER + 1));
+        if (!items || !last) {
+            return false;
+        }
+        m_optionsMenuItems = std::move(*items);
+        m_optionsMenuItems.push_back(std::move(last->front()));
+        return true;
+    }
+    auto items = m_screen->LoadItems(renderer, release / "menu-items" / "options", OPTIONS_STEMS);
     const RenderModel *load = m_screen->LoadModel(renderer, release / LOAD_CONFIGURATION_MODEL);
     if (!items || !last || load == nullptr) {
         return false;
@@ -495,7 +511,10 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
         }
         break;
     case MenuResult::Chosen:
-        switch (m_optionsMenuSelection) {
+        switch (!HasConfigurationItems(m_release) &&
+                        m_optionsMenuSelection == OPTIONS_ITEM_CONTROLLER + 1 ?
+                    OPTIONS_ITEM_CREDITS :
+                    m_optionsMenuSelection) {
         case OPTIONS_ITEM_UNITS:
             m_options.speedInMph = !m_options.speedInMph;
             m_optionsChanged = true;

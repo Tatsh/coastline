@@ -14,8 +14,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - An in-game QBASIC-style setup wizard with an embedded unscii font for missing, incomplete, or
   outdated game data. It validates disc and cartridge images and imports data with progress and
   cancellation while controls remain responsive. Finish starts the game in the same process.
-- Music and language fallback for installations imported from EUR or JPN cartridges without USA
-  cartridge data.
+- Game startup with EUR or JPN cartridge data without USA cartridge data, using available regional
+  menu assets and music and language fallback.
 - The `sdl` platform and preset: a stand-alone 64-bit game built with SDL 3 from vcpkg. It
   draws through the SDL GPU API (Vulkan, Metal, or Direct3D 12), stores its files in the XDG
   directories (or the equivalent folders on Windows and macOS), reads `BossRally.ini`, binds

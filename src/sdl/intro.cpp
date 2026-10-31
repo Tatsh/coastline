@@ -228,7 +228,10 @@ std::unique_ptr<Intro> Intro::Load(SceneRenderer &renderer, const std::filesyste
     auto state = std::make_unique<State>();
     auto constants = release / "constants";
     state->firstLogo = RenderModel::Load(renderer, constants / "splash_first_logo.gltf");
-    state->producerLogo = RenderModel::Load(renderer, constants / "splash_producer_logo.gltf");
+    const auto producer = constants / "splash_producer_logo.gltf";
+    if (release.filename() == "usa" || std::filesystem::exists(producer)) {
+        state->producerLogo = RenderModel::Load(renderer, producer);
+    }
     state->developerLogo = RenderModel::Load(renderer, constants / "splash_developer_logo.gltf");
     for (std::size_t part = 0; part < state->title.size(); ++part) {
         state->title[part] = RenderModel::Load(
@@ -241,8 +244,8 @@ std::unique_ptr<Intro> Intro::Load(SceneRenderer &renderer, const std::filesyste
     state->text = MenuText::Load(renderer, release / "fonts");
     auto soundA = ReadSound(constants / "splash_sound_a.wav");
     auto soundB = ReadSound(constants / "splash_sound_b.wav");
-    if (!state->firstLogo || !state->producerLogo || !state->developerLogo || !state->text ||
-        !soundA || !soundB) {
+    if (!state->firstLogo || (!state->producerLogo && release.filename() == "usa") ||
+        !state->developerLogo || !state->text || !soundA || !soundB) {
         return nullptr;
     }
     state->soundA = std::move(*soundA);
@@ -291,7 +294,7 @@ IntroEnd Intro::Update(float seconds, const IntroButtons &buttons) {
         s.time += seconds;
     }
     s.UpdateLogo(FIRST_LOGO_START, LOGO_END_TIME, s.logos[0]);
-    if (s.time >= PRODUCER_LOGO_START) {
+    if (s.producerLogo && s.time >= PRODUCER_LOGO_START) {
         s.UpdateLogo(PRODUCER_LOGO_START, LOGO_END_TIME, s.logos[1]);
     }
     if (s.time >= DEVELOPER_LOGO_START) {
@@ -382,7 +385,7 @@ void Intro::Draw(SceneRenderer &renderer) const {
                 *s.firstLogo, *place, projection, s.splashLighting, std::nullopt, true);
         }
     }
-    if (s.time >= PRODUCER_LOGO_START) {
+    if (s.producerLogo && s.time >= PRODUCER_LOGO_START) {
         caption("Produced by", PRODUCER_LOGO_START, 70);
         if (auto place = s.LogoMatrix(PRODUCER_LOGO_START, LOGO_END_TIME)) {
             renderer.DrawModel(
