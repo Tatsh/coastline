@@ -563,6 +563,14 @@ unsigned RaceInput::ReadButtonMask(int *pnSteering, int *pnAcceleration) {
     }
     ReadMouse();
     // The SDL game has no network play, and a pause binding always pauses.
+#ifdef ENABLE_PATCHES
+    // In the PC release a press of the pause binding in the pause menu pauses the race again as
+    // soon as it continues. On the console Start chooses the item of the pause menu.
+    if (IsPressed(15) && g_dwRacePauseState) {
+        g_dwInputButtonMask = 0x8000;
+        return g_dwInputButtonMask;
+    }
+#endif /* ENABLE_PATCHES */
     if (IsPressed(15)) {
         g_bNetGamePaused = 1;
         g_dwInputButtonMask = 0x4000;
