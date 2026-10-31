@@ -1,5 +1,8 @@
 # The stand-alone SDL game. Its libraries come from the system, vcpkg, or pinned releases, as
 # cmake/dependencies.cmake chooses.
+if(NOT TGR_ENABLE_PATCHES)
+  message(FATAL_ERROR "The SDL build requires TGR_ENABLE_PATCHES=ON.")
+endif()
 enable_language(CXX)
 include("${CMAKE_SOURCE_DIR}/cmake/install-assets.cmake")
 set(CMAKE_CXX_STANDARD 23)

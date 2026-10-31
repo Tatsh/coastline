@@ -80,6 +80,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- SDL builds reject `TGR_ENABLE_PATCHES=OFF` during configuration.
 - Restored Japanese bitmap title display from a converted PNG without producer or title models.
   European and Japanese intros use original logo and title timings and copyright text and placement.
 - Fixed a crash when quitting the game during a race by releasing race music before SDL audio
