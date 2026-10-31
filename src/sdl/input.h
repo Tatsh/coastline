@@ -8,6 +8,7 @@
 
 #include "controller.h"
 #include "controls.h"
+#include "raceinput.h"
 
 namespace coastline {
 
@@ -85,6 +86,7 @@ private:
     ControllerState m_secondController;
     std::vector<SDL_Gamepad *> m_gamepads;
     float m_mouseWheel = 0.0f;
+    RaceInputContext m_raceInput;
 };
 
 /**

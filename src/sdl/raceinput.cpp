@@ -2,8 +2,11 @@
 // the bindings of the PC release address (the scan codes of DirectInput, the actions of the
 // Controls section of BossRally.ini in place of the joystick, and the mouse), and the force
 // feedback of the gamepad through the haptic or the rumble of SDL.
+#include "raceinput.h"
+
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -34,6 +37,8 @@
 namespace coastline {
 
 namespace {
+
+constexpr const char *RACE_INPUT_PROPERTY = "coastline.race-input";
 
 constexpr int KEYBOARD_KEY_COUNT = 256;
 constexpr int MOUSE_BUTTON_COUNT = 4;
@@ -302,9 +307,14 @@ void ClampMouseAxis(int &axis, int &accumulated, int range) {
 /** The devices and the state of the input of a race. */
 class RaceInput {
 public:
+    RaceInput();
+    ~RaceInput();
+
     static RaceInput &Get() {
-        static RaceInput input;
-        return input;
+        auto *input = static_cast<RaceInput *>(
+            SDL_GetPointerProperty(SDL_GetGlobalProperties(), RACE_INPUT_PROPERTY, nullptr));
+        assert(input != nullptr);
+        return *input;
     }
 
     unsigned ReadButtonMask(int *steering, int *acceleration);
@@ -317,7 +327,6 @@ public:
     void StartJolt();
 
 private:
-    RaceInput();
     void ReadKeyboard();
     void ReadJoystick();
     void ReadMouse();
@@ -371,6 +380,20 @@ private:
 
 RaceInput::RaceInput() {
     ResetMouse();
+}
+
+RaceInput::~RaceInput() {
+    m_joystickUsers = 1;
+    ReleaseJoystick();
+}
+
+RaceInputContext::RaceInputContext() : m_input(std::make_unique<RaceInput>()) {
+    assert(!SDL_HasProperty(SDL_GetGlobalProperties(), RACE_INPUT_PROPERTY));
+    SDL_SetPointerProperty(SDL_GetGlobalProperties(), RACE_INPUT_PROPERTY, m_input.get());
+}
+
+RaceInputContext::~RaceInputContext() {
+    SDL_ClearProperty(SDL_GetGlobalProperties(), RACE_INPUT_PROPERTY);
 }
 
 void RaceInput::ResetMouse() {
