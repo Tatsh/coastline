@@ -1145,9 +1145,14 @@ int main(int argc, char *argv[]) {
             bool playMusic = config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice();
             audio.SetMusicGain(musicGain);
             coastline::ShareRaceMusicPlayer(playMusic ? &audio : nullptr);
-            if (music && playMusic) {
-                audio.Play(*music);
-            }
+            auto playMenuMusic = [&]() {
+                if (music && playMusic) {
+                    SDL_Log("The menus play the music module %s.",
+                            coastline::USA_MUSIC_MODULES[parser.get<int>("--music")].name);
+                    audio.Play(*music);
+                }
+            };
+            playMenuMusic();
             std::optional<std::filesystem::path> screenshot;
             if (auto path = parser.present("--screenshot")) {
                 // A race moves to the data directory, and a relative path would then point at
@@ -1497,9 +1502,7 @@ int main(int argc, char *argv[]) {
                         if (end != coastline::RaceEnd::Running) {
                             // The music of the menus plays again after the race.
                             raceView.reset();
-                            if (music && playMusic) {
-                                audio.Play(*music);
-                            }
+                            playMenuMusic();
                             frontEnd = FrontEnd::MainMenu;
                             if (end != coastline::RaceEnd::Credits) {
                                 mainMenu->FinishRace(end, coastline::LastRaceResults());
@@ -1615,6 +1618,7 @@ int main(int argc, char *argv[]) {
                         // its own. The first step loads the race and with it the track and the
                         // cars.
                         openRaceData();
+                        SDL_Log("The music of the menus stops.");
                         audio.Stop();
                         coastline::RaceSetup setup = mainMenu->ChosenRace();
                         setup.waitForStart = config.GetBoolean("Game", "WaitForStart", false);
@@ -1635,9 +1639,7 @@ int main(int argc, char *argv[]) {
                             frontEnd = FrontEnd::Race;
                         } else {
                             coastline::AbandonRace();
-                            if (music && playMusic) {
-                                audio.Play(*music);
-                            }
+                            playMenuMusic();
                             mainMenu->FinishRace(coastline::RaceEnd::Menu, {});
                         }
                     }

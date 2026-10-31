@@ -238,6 +238,7 @@ void RaceMusic::Stop() {
     if (--m_users != 0) {
         return;
     }
+    SDL_Log("The music of the race stops.");
     if (m_cdStream != nullptr) {
         SDL_DestroyAudioStream(m_cdStream);
         m_cdStream = nullptr;
@@ -273,6 +274,7 @@ bool RaceMusic::Play(int track) {
         }
         m_cdSamples.clear();
         m_cdPlaying = track;
+        SDL_Log("The race plays track %d of the CD.", track);
         m_cdTrack.Open(CdTrackPath(track));
         if (m_cdStream != nullptr) {
             SDL_UnlockAudioStream(m_cdStream);
@@ -291,6 +293,7 @@ bool RaceMusic::Play(int track) {
         return true;
     }
     m_module.assign(std::istreambuf_iterator<char>(file), {});
+    SDL_Log("The race plays the music module %s.", USA_MUSIC_MODULES[module].name);
     Modules()->Play(m_module);
     Modules()->Resume();
     return true;
