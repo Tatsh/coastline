@@ -220,6 +220,11 @@ const MenuText::Font &MenuText::FontFor(int size) const {
     return size < SMALL_FONT_MAX_SIZE ? m_small : m_large;
 }
 
+int CenterLines(std::string_view text, int y, int lines, int lineHeight) {
+    auto count = static_cast<int>(std::ranges::count(text, '\n')) + 1;
+    return y + (lines - count) * lineHeight / 2;
+}
+
 int MenuText::Width(std::string_view text, int size, bool doubled) const {
     auto newline = text.find('\n');
     if (newline != std::string_view::npos) {
@@ -261,15 +266,19 @@ void MenuText::Draw(SceneRenderer &renderer,
                     int y,
                     const TextStyle &style,
                     const Matrix4 &projection) const {
-    auto newline = text.find('\n');
-    if (newline != std::string_view::npos) {
-        Draw(renderer, text.substr(0, newline), x, y, style, projection);
-        Draw(renderer,
-             text.substr(newline + 1),
-             x,
-             y + (style.lineHeight != 0 ? style.lineHeight : style.size),
-             style,
-             projection);
+    if (text.contains('\n')) {
+        auto lines = static_cast<std::size_t>(std::ranges::count(text, '\n')) + 1;
+        bool gaps = style.lineGaps.size() + 1 == lines;
+        int lineHeight = style.lineHeight != 0 ? style.lineHeight : style.size;
+        std::size_t start = 0;
+        for (std::size_t line = 0; line < lines; ++line) {
+            auto end = text.find('\n', start);
+            Draw(renderer, text.substr(start, end - start), x, y, style, projection);
+            if (line + 1 < lines) {
+                y += gaps ? style.lineGaps[line] : lineHeight;
+            }
+            start = end + 1;
+        }
         return;
     }
     if (style.align == TextStyle::Align::Center) {

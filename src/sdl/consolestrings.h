@@ -31,4 +31,17 @@ struct ConsoleString {
  */
 extern const std::array<ConsoleString, 92> CONSOLE_STRINGS;
 
+/** A message of the menus in English that the game words differently from the console. */
+struct SaveFolderString {
+    std::string_view key;  /*!< The key of the message in the files of strings. */
+    std::string_view text; /*!< The text, with a newline between lines. */
+};
+
+/**
+ * The messages of the console that name the Controller Pak where the game saves to a folder, as
+ * the import writes them to strings/en-us.json with the text of the USA cartridge. Every other
+ * language takes them from there.
+ */
+extern const std::array<SaveFolderString, 10> SAVE_FOLDER_STRINGS;
+
 } // namespace coastline

@@ -291,4 +291,28 @@ const std::array<ConsoleString, 92> CONSOLE_STRINGS{{
      {0x802aba64, 0x802aba78, 0x802aba88, 0x802aba98}},
 }};
 
+// Each key follows the key of the message of the console in its place, under sdl.
+const std::array<SaveFolderString, 10> SAVE_FOLDER_STRINGS{{
+    {"sdl.saveLoad.seasonPagesFull",
+     "INSUFFICIENT FREE PAGES\nOR FREE NOTES IN THE\nSAVE FOLDER.\nTWO PAGES AND ONE NOTE\n"
+     "ARE NEEDED TO SAVE THE\nSEASON DATA."},
+    {"sdl.saveLoad.ghostCarPagesFull",
+     "INSUFFICIENT FREE PAGES\nOR FREE NOTES IN THE\nSAVE FOLDER.\n58 PAGES AND ONE NOTE\n"
+     "ARE NEEDED TO SAVE THE\nGHOST CAR DATA."},
+    {"sdl.saveLoad.optionsPagesFull",
+     "INSUFFICIENT FREE PAGES\nOR FREE NOTES IN THE\nSAVE FOLDER.\nONE PAGE AND ONE NOTE\n"
+     "ARE NEEDED TO SAVE THE\nOPTIONS."},
+    {"sdl.saveLoad.ghostCarTooLarge",
+     "UNABLE TO SAVE GHOST CAR DATA.\nGHOST CAR DATA IS LARGER THAN\nTHE MAXIMUM ALLOCATED SPACE\n"
+     "IN THE SAVE FOLDER."},
+    {"sdl.saveLoad.saveFolderDataNotFound", "SAVED DATA NOT FOUND\nIN THE SAVE FOLDER."},
+    {"sdl.saveLoad.saveFolderWriteFailed", "UNABLE TO SAVE DATA\nTO THE SAVE FOLDER."},
+    {"sdl.saveLoad.saveFolderError", "SAVE FOLDER ERROR\nHAS BEEN DETECTED!"},
+    {"sdl.pakData.optionsPagesFull",
+     "INSUFFICIENT FREE PAGES\nOR FREE NOTES IN THE\nSAVE FOLDER.\nONE PAGE AND ONE NOTE\n"
+     "ARE NEEDED TO SAVE THE\nOPTIONS."},
+    {"sdl.pakData.saveFolderDataNotFound", "SAVED DATA NOT FOUND\nIN THE SAVE FOLDER."},
+    {"sdl.pakData.saveFolderError", "SAVE FOLDER ERROR\nHAS BEEN DETECTED!"},
+}};
+
 } // namespace coastline

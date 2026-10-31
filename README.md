@@ -375,9 +375,11 @@ and the Japanese release to `strings/ja.json`. A message has the same key in eve
 `n64.carSelect.rumblePakNote`, and the table of `src/sdl/consolestrings.cpp` lists the address of
 each line of the message in each release. A release draws the lines of a message one under the
 other, and the import joins them with a newline. Each release has its own lines, and a message
-of one release alone is only in the file of that release. The import of the Japanese cartridge
-also writes the kana and kanji of its font to `n64/jpn/fonts/japanese.png`. Every file of strings
-is UTF-8.
+of one release alone is only in the file of that release. The game saves to a folder, and the
+import of the USA cartridge writes the messages that name the save folder in place of the
+Controller Pak to `strings/en-us.json` under `sdl.` keys, and every language reads them there. The
+import of the Japanese cartridge also writes the kana and kanji of its font to
+`n64/jpn/fonts/japanese.png`. Every file of strings is UTF-8.
 
 The Japanese release has Japanese text only in the messages of the Controller Pak, the Rumble Pak,
 the paint shop, and the second controller. Its menus, its races, and its titles are in English,

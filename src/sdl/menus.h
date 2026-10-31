@@ -12,6 +12,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -311,7 +312,7 @@ private:
     // The screens that open the save and load menu, g_bSaveLoadEntryPoint of the console.
     enum class SaveLoadEntry { MainMenu, Season, TimeAttack };
     void StartDataSaveLoadMenu(SaveLoadEntry entry);
-    void DrawShortMessage(int boxX, int boxWidth, int textX, const char *line1, const char *line2);
+    void DrawShortMessage(int boxX, int boxWidth, int textX, std::string_view text);
     void DrawSaveLoadChoices();
     void DrawSaveLoadError(int noteSize);
     void DrawSaveLoadDone();

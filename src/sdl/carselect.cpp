@@ -845,17 +845,22 @@ void Menus::DrawCarSelectChoices(SceneRenderer &renderer) {
         text.Draw(renderer, choiceText(1, "%ryREADY!"), WIDTH / 2, HEIGHT * 3 / 5, style, flat);
         style.size = 8;
         style.align = TextStyle::Align::Left;
+        // The five lines of the USA release, and the three of the Japanese release 12 apart.
+        static constexpr std::array<int, 4> NOTE_GAPS{9, 9, 8, 9};
+        TextStyle noteStyle = style;
+        noteStyle.lineHeight = 12;
+        noteStyle.lineGaps = NOTE_GAPS;
         for (int player = 0; player < 2; ++player) {
             if (!decalsNote(player)) {
                 continue;
             }
             int y = player == 0 ? HEIGHT / 4 : HEIGHT * 3 / 5;
-            int x = WIDTH * 11 / 16;
-            text.Draw(renderer, "%wwIf you wish to use", x, y + 19, style, flat);
-            text.Draw(renderer, "%wwthe Rumble Pak, you", x, y + 28, style, flat);
-            text.Draw(renderer, "%wwshould ensure that it", x, y + 37, style, flat);
-            text.Draw(renderer, "%wwis plugged in before", x, y + 45, style, flat);
-            text.Draw(renderer, "%wwpressing A.", x, y + 54, style, flat);
+            text.Draw(renderer,
+                      GameString("n64.carSelect.rumblePakNote"),
+                      WIDTH * 11 / 16,
+                      y + 19,
+                      noteStyle,
+                      flat);
         }
         if (m_carSelect[0].state == CAR_SELECT_CAR) {
             DrawCarStats(renderer, 0, HEIGHT / 4, HEIGHT / 2);
@@ -879,11 +884,7 @@ void Menus::DrawCarSelectChoices(SceneRenderer &renderer) {
     text.Draw(renderer, choiceText(0, "%ryLET'S GO!"), WIDTH / 2, HEIGHT * 20 / 64, style, flat);
     style.size = 8;
     if (decalsNote(0)) {
-        const std::string *found = FindString("n64.carSelect.rumblePakNoteOneLine");
-        std::string_view note = found != nullptr ?
-                                    std::string_view(*found) :
-                                    "%wwIf you wish to use the Rumble Pak, you should\n"
-                                    "%wwensure that it is plugged in before pressing A.";
+        std::string_view note = GameString("n64.carSelect.rumblePakNoteOneLine");
         // The Japanese release draws its note on one line of a larger size.
         bool oneLine = !note.contains('\n');
         TextStyle noteStyle = style;

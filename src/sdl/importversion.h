@@ -19,7 +19,7 @@ inline constexpr int DISC_CONVERTER_VERSION = 3;
  * and the other files ImportRom() converts, n64model.cpp included. Increase it with every change
  * to the output of the conversion, so that the game warns about data imported before the change.
  */
-inline constexpr int CARTRIDGE_CONVERTER_VERSION = 3;
+inline constexpr int CARTRIDGE_CONVERTER_VERSION = 4;
 
 /** A source of the data of the default pack. */
 enum class ImportSource {

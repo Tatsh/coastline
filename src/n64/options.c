@@ -1736,6 +1736,9 @@ void ProcessDataSaveLoadMenu(void) {
         switch (SAVE_LOAD_ACTION) {
         case SAVE_LOAD_LOAD_SEASON:
         case SAVE_LOAD_LOAD_SEASON_GAME_PAK:
+            DRAW_MESSAGE_BOX(0xE2, top, 0xBC, 0x4A);
+            DrawText("%yw%jロード%e OK!", 0x9F, ((top + 0x20) >> 1) + 7);
+            break;
         case SAVE_LOAD_LOAD_GHOST:
             DRAW_MESSAGE_BOX(0xE2, top, 0xBC, 0x4A);
             DrawText("%yw%jロード%e OK!", 0x9F, ((top + 0x20) >> 1) + 7);

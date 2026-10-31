@@ -816,9 +816,11 @@ std::optional<std::string> ConvertConsoleFonts(const std::filesystem::path &dest
     return std::nullopt;
 }
 
-// The start of the keys of the files of strings that the import of a cartridge writes (n64.NAME),
-// and of the n64/ADDRESS keys an older import wrote.
-constexpr std::string_view CONSOLE_KEY_PREFIX = "n64";
+// Whether the import of a cartridge writes a key of the files of strings: n64.NAME and sdl.NAME,
+// and the n64/ADDRESS keys an older import wrote.
+bool IsCartridgeKey(std::string_view key) {
+    return key.starts_with("n64") || key.starts_with("sdl.");
+}
 
 // Write @p strings to the file of strings @p destination. The keys of the file that @p console
 // does not select (the keys of a cartridge when true, of the disc when false) are retained.
@@ -831,7 +833,7 @@ std::optional<std::string> WriteStringsFile(const std::filesystem::path &destina
         auto existing = nlohmann::ordered_json::parse(in, nullptr, false);
         if (existing.is_object()) {
             for (const auto &[key, text] : existing.items()) {
-                if (key.starts_with(CONSOLE_KEY_PREFIX) != console) {
+                if (IsCartridgeKey(key) != console) {
                     merged[key] = text;
                 }
             }
@@ -851,7 +853,7 @@ std::optional<std::string> WriteStringsFile(const std::filesystem::path &destina
 
 // The messages of CONSOLE_STRINGS that @p release draws, from the main segment of @p rom, as
 // strings/LANGUAGE.json in UTF-8 for the language of the release. The lines of a message are
-// joined with a newline.
+// joined with a newline. The USA release also writes SAVE_FOLDER_STRINGS.
 std::optional<std::string> WriteConsoleStrings(std::span<const std::uint8_t> rom,
                                                const Release &release,
                                                const std::filesystem::path &dataDirectory) {
@@ -883,6 +885,11 @@ std::optional<std::string> WriteConsoleStrings(std::span<const std::uint8_t> rom
             joined += *decoded;
         }
         strings[std::string(message.key)] = joined;
+    }
+    if (release.release == RomRelease::Usa) {
+        for (const auto &message : SAVE_FOLDER_STRINGS) {
+            strings[std::string(message.key)] = message.text;
+        }
     }
     return WriteStringsFile(
         dataDirectory / "strings" / (std::string(release.language) + ".json"), strings, true);

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include <SDL3/SDL.h>
@@ -11,6 +12,7 @@
 #include "ghostnote.h"
 #include "menus.h"
 #include "menutext.h"
+#include "stringresources.h"
 #include "volumelevels.h"
 
 namespace coastline {
@@ -44,6 +46,9 @@ constexpr std::array<u8, 11> SFX_VOLUME_LEVELS{
 constexpr const char *SEASON_NOTE = "TOP GEAR SEASON";
 constexpr const char *OPTIONS_NOTE = PAK_SETTINGS_NOTE.data();
 constexpr const char *GHOST_NOTE = "TOP GEAR GHOST";
+
+// The distances between the lines of the message of too few free pages, a gap after the third.
+constexpr std::array<int, 5> PAGES_FULL_GAPS{0xD, 0xD, 0x13, 0xD, 0xD};
 
 // The sizes of the notes of a season and of the options. The options store the settings in the
 // first half of their note and the equipment of the car in the second.
@@ -364,25 +369,18 @@ bool Menus::ProcessPakDataScreen(SceneRenderer &renderer, int dataType) {
         switch (m_pakError) {
         case PAK_ERROR_FULL:
             DrawMessageBox(0xA5, 0xA5, 0x136, 0xBD);
-            m_paintShop->DrawText("INSUFFICIENT FREE PAGES", 0x5A, 0x62);
-            m_paintShop->DrawText("OR FREE NOTES IN THE", 0x5A, 0x62 + 0xD);
-            m_paintShop->DrawText("SAVE FOLDER.", 0x5A, 0x62 + 0x1A);
-            m_paintShop->DrawText("ONE PAGE AND ONE NOTE", 0x5A, 0x62 + 0x2D);
-            m_paintShop->DrawText("ARE NEEDED TO SAVE THE", 0x5A, 0x62 + 0x3A);
-            m_paintShop->DrawText("OPTIONS.", 0x5A, 0x62 + 0x47);
+            m_paintShop->DrawText(
+                GameString("sdl.pakData.optionsPagesFull"), 0x5A, 0x62, 0xD, PAGES_FULL_GAPS);
             break;
         case PAK_ERROR_NOT_FOUND:
             if (dataType != PAK_DATA_SAVE_CONFIGURATION) {
-                DrawMessageBox(0xAF, 0xD9, 0x122, 0x4A);
-                m_paintShop->DrawText("SAVED DATA NOT FOUND", 0x5F, 0x7C);
-                m_paintShop->DrawText("IN THE SAVE FOLDER.", 0x5F, 0x8A);
+                DrawShortMessage(
+                    0xAF, 0x122, 0x5F, GameString("sdl.pakData.saveFolderDataNotFound"));
                 break;
             }
             [[fallthrough]];
         default:
-            DrawMessageBox(0xAF, 0xD9, 0x122, 0x4A);
-            m_paintShop->DrawText("SAVE FOLDER ERROR", 0x5F, 0x7C);
-            m_paintShop->DrawText("HAS BEEN DETECTED!", 0x5F, 0x8A);
+            DrawShortMessage(0xAF, 0x122, 0x5F, GameString("sdl.pakData.saveFolderError"));
             break;
         }
         if (dismissed) {
@@ -395,9 +393,12 @@ bool Menus::ProcessPakDataScreen(SceneRenderer &renderer, int dataType) {
         SetMessageText();
         m_paintShop->m_text.align = TextStyle::Align::Center;
         DrawMessageBox(0xD8, 0xD9, 0xD0, 0x4A);
-        m_paintShop->DrawText("%ywCONFIGURATION", 0x9F, 0x7C);
-        m_paintShop->DrawText(
-            dataType == PAK_DATA_LOAD_CONFIGURATION ? "%ywLOADED OK!" : "%ywSAVED OK!", 0x9F, 0x8A);
+        m_paintShop->DrawText(GameString(dataType == PAK_DATA_LOAD_CONFIGURATION ?
+                                             "n64.pakData.configurationLoaded" :
+                                             "n64.pakData.configurationSaved"),
+                              0x9F,
+                              0x7C,
+                              0xE);
         if (dismissed) {
             if (dataType == PAK_DATA_LOAD_CONFIGURATION) {
                 ApplyVolumeSettings();
@@ -536,11 +537,9 @@ void Menus::StartDataSaveLoadMenu(SaveLoadEntry entry) {
     SetCurrentScreen(Screen::DataSaveLoadMenu);
 }
 
-void Menus::DrawShortMessage(
-    int boxX, int boxWidth, int textX, const char *line1, const char *line2) {
+void Menus::DrawShortMessage(int boxX, int boxWidth, int textX, std::string_view text) {
     DrawMessageBox(boxX, 0xD9, boxWidth, 0x4A);
-    m_paintShop->DrawText(line1, textX, 0x7C);
-    m_paintShop->DrawText(line2, textX, 0x8A);
+    m_paintShop->DrawText(text, textX, 0x7C, 0x8A - 0x7C);
 }
 
 void Menus::DrawSaveLoadChoices() {
@@ -579,10 +578,10 @@ void Menus::DrawSaveLoadChoices() {
     draw.m_text.size = 20;
     colors(true);
     if (m_saveLoadEntry == SaveLoadEntry::Season) {
-        draw.DrawText("SAVE SEASON DATA?", 0x9E, 0x80);
+        draw.DrawText(GameString("n64.saveLoad.saveSeasonDataQuestion"), 0x9E, 0x80);
         m_saveLoadChoice = SAVE_LOAD_SAVE_SEASON;
     } else {
-        draw.DrawText("SAVE GHOST CAR DATA?", 0x9E, 0x80);
+        draw.DrawText(GameString("n64.saveLoad.saveGhostCarDataQuestion"), 0x9E, 0x80);
         m_saveLoadChoice = SAVE_LOAD_SAVE_GHOST;
     }
     draw.DrawTexturedSprite(*draw.m_buttonA, 0xEC, 0x1B0);
@@ -602,40 +601,29 @@ void Menus::DrawSaveLoadError(int noteSize) {
     switch (m_pakError) {
     case PAK_ERROR_FULL: {
         DrawMessageBox(0xA5, 0x9F, 0x136, 0xBD);
-        const char *pages =
-            noteSize == static_cast<int>(SEASON_NOTE_SIZE) ? "TWO PAGES AND ONE NOTE" :
-            noteSize == static_cast<int>(GHOST_NOTE_SIZE)  ? "58 PAGES AND ONE NOTE" :
-                                                             "ONE PAGE AND ONE NOTE";
-        const char *data = noteSize == static_cast<int>(SEASON_NOTE_SIZE) ? "SEASON DATA." :
-                           noteSize == static_cast<int>(GHOST_NOTE_SIZE)  ? "GHOST CAR DATA." :
-                                                                            "OPTIONS.";
-        draw.DrawText("INSUFFICIENT FREE PAGES", 0x5A, 0x5F);
-        draw.DrawText("OR FREE NOTES IN THE", 0x5A, 0x5F + 0xD);
-        draw.DrawText("SAVE FOLDER.", 0x5A, 0x5F + 0x1A);
-        draw.DrawText(pages, 0x5A, 0x5F + 0x2D);
-        draw.DrawText("ARE NEEDED TO SAVE THE", 0x5A, 0x5F + 0x3A);
-        draw.DrawText(data, 0x5A, 0x5F + 0x47);
+        const char *key =
+            noteSize == static_cast<int>(SEASON_NOTE_SIZE) ? "sdl.saveLoad.seasonPagesFull" :
+            noteSize == static_cast<int>(GHOST_NOTE_SIZE)  ? "sdl.saveLoad.ghostCarPagesFull" :
+                                                             "sdl.saveLoad.optionsPagesFull";
+        draw.DrawText(GameString(key), 0x5A, 0x5F, 0xD, PAGES_FULL_GAPS);
         break;
     }
     case PAK_ERROR_GHOST_TOO_LARGE:
         DrawMessageBox(0x75, 0xBD, 0x196, 0x82);
-        draw.DrawText("UNABLE TO SAVE GHOST CAR DATA.", 0x42, 0x6E);
-        draw.DrawText("GHOST CAR DATA IS LARGER THAN", 0x42, 0x7C);
-        draw.DrawText("THE MAXIMUM ALLOCATED SPACE", 0x42, 0x8A);
-        draw.DrawText("IN THE SAVE FOLDER.", 0x42, 0x98);
+        draw.DrawText(GameString("sdl.saveLoad.ghostCarTooLarge"), 0x42, 0x6E, 0xE);
         break;
     case PAK_ERROR_NOT_FOUND:
         if (load) {
-            DrawShortMessage(0xAD, 0x125, 0x5E, "SAVED DATA NOT FOUND", "IN THE SAVE FOLDER.");
+            DrawShortMessage(0xAD, 0x125, 0x5E, GameString("sdl.saveLoad.saveFolderDataNotFound"));
         } else {
-            DrawShortMessage(0xB6, 0x114, 0x63, "UNABLE TO SAVE DATA", "TO THE SAVE FOLDER.");
+            DrawShortMessage(0xB6, 0x114, 0x63, GameString("sdl.saveLoad.saveFolderWriteFailed"));
         }
         break;
     case PAK_ERROR_WRITE:
-        DrawShortMessage(0xB6, 0x114, 0x63, "UNABLE TO SAVE DATA", "TO THE SAVE FOLDER.");
+        DrawShortMessage(0xB6, 0x114, 0x63, GameString("sdl.saveLoad.saveFolderWriteFailed"));
         break;
     default:
-        DrawShortMessage(0xB1, 0x11E, 0x60, "SAVE FOLDER ERROR", "HAS BEEN DETECTED!");
+        DrawShortMessage(0xB1, 0x11E, 0x60, GameString("sdl.saveLoad.saveFolderError"));
         break;
     }
 }
@@ -646,31 +634,31 @@ void Menus::DrawSaveLoadDone() {
     draw.m_text.size = 12;
     draw.m_text.align = TextStyle::Align::Center;
     int top = m_saveLoadEntry != SaveLoadEntry::MainMenu ? 0xCE : 0xD9;
-    auto done = [&](int boxX, int boxWidth, const char *line1, const char *line2) {
+    auto done = [&](int boxX, int boxWidth, const char *key) {
         DrawMessageBox(boxX, top, boxWidth, 0x4A);
-        draw.DrawText(line1, 0x9F, (top + 0x20) >> 1);
-        draw.DrawText(line2, 0x9F, ((top + 0x20) >> 1) + 0xE);
+        std::string_view text = GameString(key);
+        draw.DrawText(text, 0x9F, CenterLines(text, (top + 0x20) >> 1, 2, 0xE), 0xE);
     };
     switch (m_saveLoadChoice) {
     case SAVE_LOAD_LOAD_SEASON:
-        done(0xE2, 0xBC, "%ywSEASON DATA", "%ywLOADED OK!");
+        done(0xE2, 0xBC, "n64.saveLoad.seasonLoaded");
         break;
     case SAVE_LOAD_SAVE_SEASON:
-        done(0xE2, 0xBC, "%ywSEASON DATA", "%ywSAVED OK!");
+        done(0xE2, 0xBC, "n64.saveLoad.seasonSaved");
         break;
     case SAVE_LOAD_LOAD_GHOST:
-        done(0xE2, 0xBC, "%ywGHOST DATA", "%ywLOADED OK!");
+        done(0xE2, 0xBC, "n64.saveLoad.ghostCarLoaded");
         break;
     case SAVE_LOAD_SAVE_GHOST:
-        done(0xD8, 0xD0, "%ywGHOST CAR DATA", "%ywSAVED OK!");
+        done(0xD8, 0xD0, "n64.saveLoad.ghostCarSaved");
         break;
     case SAVE_LOAD_LOAD_OPTIONS:
         DrawMessageBox(0xC3, 0xE7, 0xFA, 0x2E);
-        draw.DrawText("%ywOPTIONS LOADED OK!", 0x9F, 0x83);
+        draw.DrawText(GameString("n64.saveLoad.optionsLoaded"), 0x9F, 0x83);
         break;
     default:
         DrawMessageBox(0xC3, 0xE7, 0xFA, 0x2E);
-        draw.DrawText("%ywOPTIONS SAVED OK!", 0x9F, 0x83);
+        draw.DrawText(GameString("n64.saveLoad.optionsSaved"), 0x9F, 0x83);
         break;
     }
 }
@@ -685,8 +673,8 @@ void Menus::DrawConfirmOverwrite() {
     draw.m_text.size = 13;
     draw.SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
     int textY = (top + 0x1E) >> 1;
-    draw.DrawText("OK TO OVERWRITE", 0x72, textY);
-    draw.DrawText("SAVED DATA?", 0x72, textY + 0xE);
+    std::string_view overwrite = GameString("n64.saveLoad.confirmOverwrite");
+    draw.DrawText(overwrite, 0x72, CenterLines(overwrite, textY, 2, 0xE), 0xE);
     draw.m_text.size = 10;
     textY = (buttonY + 0x12) >> 1;
     draw.DrawText("%wwOK", (draw.m_buttonA->width + 0xED) >> 1, textY);

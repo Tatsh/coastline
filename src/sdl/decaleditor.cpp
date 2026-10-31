@@ -5,6 +5,7 @@
 #include "common/input.h"
 #include "menuscreen.h"
 #include "paintshop.h"
+#include "stringresources.h"
 
 namespace coastline {
 
@@ -1133,8 +1134,7 @@ void PaintShop::ProcessPaintShopExitConfirm() {
     m_text.align = TextStyle::Align::Left;
     m_text.shadow = false;
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
-    DrawText("CHANGES NOT SAVED.", 0x67, 0x6D);
-    DrawText("EXIT ANYWAY?", 0x67, 0x7B);
+    DrawText(GameString("n64.paintShop.exitWithoutSaving"), 0x67, 0x6D, 0x7B - 0x6D);
     m_text.size = 10;
     s32 textY = (buttonY + 0x12) >> 1;
     DrawText("%wwYES", (m_buttonA->drawWidth + 0xF9) >> 1, textY);

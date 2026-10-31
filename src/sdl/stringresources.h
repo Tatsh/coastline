@@ -52,4 +52,11 @@ void LoadStrings(const std::filesystem::path &assets, std::string_view language)
  */
 const std::string *FindString(std::string_view key);
 
+/**
+ * @param key The key of a string, such as n64.carSelect.rumblePakNote.
+ * @return The string of LoadStrings() in UTF-8, the string of the selected language or else of
+ * en-us, or @p key when neither file has it, logged the first time.
+ */
+std::string_view GameString(std::string_view key);
+
 } // namespace coastline

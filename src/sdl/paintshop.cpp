@@ -17,6 +17,7 @@
 #include "frontend.h"
 #include "gpu.h"
 #include "menuscreen.h"
+#include "stringresources.h"
 
 namespace coastline {
 
@@ -863,10 +864,13 @@ void PaintShop::EmitScaledTextureRect(s32 x, s32 y, s32 width, s32 height) {
     m_frameTextures.push_back(std::move(decal));
 }
 
-void PaintShop::DrawText(const std::string &text, s32 x, s32 y) {
+void PaintShop::DrawText(
+    std::string_view text, s32 x, s32 y, int lineHeight, std::span<const int> lineGaps) {
     FlushFills();
     TextStyle style = m_text;
     style.colors = m_textColors;
+    style.lineHeight = lineHeight;
+    style.lineGaps = lineGaps;
     m_screen.Text().Draw(*m_renderer, text, x, y, style, m_flat);
 }
 
@@ -1668,31 +1672,28 @@ void PaintShop::DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
         y = inCarSelect == 1 ? 0xEA : 0xCC;
         DrawDialogBox(0xD5, y, 0xD5, 0x48);
         textY = (y + 30) >> 1;
-        DrawText("CONTROLLER PAK", 0x72, textY);
-        DrawText("IS NOT INSERTED", 0x72, textY + 14);
+        DrawText(GameString("n64.paintShop.controllerPakNotInserted"), 0x72, textY, 14);
         break;
     case PFS_DATA_FULL:
-    case PFS_DIR_FULL:
+    case PFS_DIR_FULL: {
+        static constexpr std::array<int, 5> PAGES_GAPS{12, 12, 18, 12, 12};
         y = inCarSelect == 1 ? 0xC3 : 0x97;
         DrawDialogBox(0xA5, y, 0x135, 0xB2);
         textY = (y + 30) >> 1;
-        DrawText("INSUFFICIENT FREE PAGES", 0x5A, textY);
-        DrawText("OR FREE NOTES IN THE", 0x5A, textY + 12);
-        DrawText("CONTROLLER PAK.", 0x5A, textY + 24);
-        DrawText("62 PAGES AND ONE NOTE", 0x5A, textY + 42);
-        DrawText("ARE NEEDED TO SAVE THE", 0x5A, textY + 54);
-        DrawText("CUSTOM DECALS.", 0x5A, textY + 66);
+        DrawText(GameString("n64.paintShop.decalPagesFull"), 0x5A, textY, 12, PAGES_GAPS);
         break;
+    }
     case PFS_ERR_INCONSISTENT:
         width = operation == PAINT_TOOL_SAVE ? 0x106 : 0x116;
         y = inCarSelect == 1 ? 0xE2 : 0xCC;
         x = (640 - width) >> 1;
         DrawDialogBox(x, y, width, 0x48);
         textY = (y + 30) >> 1;
-        DrawText(operation == PAINT_TOOL_LOAD ? "UNABLE TO READ FROM" : "UNABLE TO WRITE TO",
+        DrawText(GameString(operation == PAINT_TOOL_LOAD ? "n64.paintShop.readFailed" :
+                                                           "n64.paintShop.writeFailed"),
                  (x + 16) >> 1,
-                 textY);
-        DrawText("THE CONTROLLER PAK", (x + 16) >> 1, textY + 14);
+                 textY,
+                 14);
         break;
     case PFS_ERR_INVALID:
         width = operation == PAINT_TOOL_SAVE ? 0x10C : 0xF2;
@@ -1700,13 +1701,11 @@ void PaintShop::DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
         x = (640 - width) >> 1;
         DrawDialogBox(x, y, width, 0x48);
         textY = (y + 30) >> 1;
-        if (operation == PAINT_TOOL_LOAD) {
-            DrawText("DECALS NOT FOUND", (x + 16) >> 1, textY);
-            DrawText("IN CONTROLLER PAK", (x + 16) >> 1, textY + 14);
-        } else {
-            DrawText("ERROR ENCOUNTERED", (x + 16) >> 1, textY);
-            DrawText("WHILE SAVING DECALS", (x + 16) >> 1, textY + 14);
-        }
+        DrawText(GameString(operation == PAINT_TOOL_LOAD ? "n64.paintShop.decalsNotFound" :
+                                                           "n64.paintShop.saveFailed"),
+                 (x + 16) >> 1,
+                 textY,
+                 14);
         break;
     case PAK_ERROR_TRANSFER:
         width = operation == PAINT_TOOL_SAVE ? 0x10B : 0x114;
@@ -1714,35 +1713,40 @@ void PaintShop::DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
         x = (640 - width) >> 1;
         DrawDialogBox(x, y, width, 0x48);
         textY = (y + 30) >> 1;
-        DrawText("ERROR ENCOUNTERED", (x + 15) >> 1, textY);
-        DrawText(operation == PAINT_TOOL_LOAD ? "WHILE LOADING DECALS" : "WHILE SAVING DECALS",
+        DrawText(GameString(operation == PAINT_TOOL_LOAD ? "n64.paintShop.loadTransferFailed" :
+                                                           "n64.paintShop.saveTransferFailed"),
                  (x + 15) >> 1,
-                 textY + 14);
+                 textY,
+                 14);
         break;
     case PFS_ERR_BAD_DATA:
         y = inCarSelect == 1 ? 0xE4 : 0xCC;
         DrawDialogBox(0xAD, y, 0x126, 0x48);
         textY = (y + 30) >> 1;
-        DrawText("BAD DATA ENCOUNTERED", 0x5D, textY);
-        DrawText(operation == PAINT_TOOL_LOAD ? "WHILE LOADING DECALS" : "WHILE SAVING DECALS",
+        DrawText(GameString(operation == PAINT_TOOL_LOAD ? "n64.paintShop.loadBadData" :
+                                                           "n64.paintShop.saveBadData"),
                  0x5D,
-                 textY + 14);
+                 textY,
+                 14);
         break;
-    case PFS_ERR_CONTRFAIL:
+    case PFS_ERR_CONTRFAIL: {
+        static constexpr std::array<int, 3> ERROR_GAPS{12, 18, 12};
         y = inCarSelect == 1 ? 0xDC : 0xB0;
         DrawDialogBox(0xAE, y, 0x124, 0x80);
         textY = (y + 30) >> 1;
-        DrawText("CONTROLLER ERROR HAS", 0x5E, textY);
-        DrawText("BEEN DETECTED.", 0x5E, textY + 12);
-        DrawText("CUSTOM DECALS CANNOT", 0x5E, textY + 30);
-        DrawText(operation == PAINT_TOOL_LOAD ? "BE LOADED." : "BE SAVED.", 0x5E, textY + 42);
+        DrawText(GameString(operation == PAINT_TOOL_LOAD ? "n64.paintShop.loadControllerError" :
+                                                           "n64.paintShop.saveControllerError"),
+                 0x5E,
+                 textY,
+                 12,
+                 ERROR_GAPS);
         break;
+    }
     case PFS_ERR_ID_FATAL:
         y = inCarSelect == 1 ? 0xF8 : 0xCC;
         DrawDialogBox(0xCD, y, 0xE6, 0x48);
         textY = (y + 30) >> 1;
-        DrawText("CONTROLLER PAK", 0x6E, textY);
-        DrawText("IS NONFUNCTIONAL", 0x6E, textY + 14);
+        DrawText(GameString("n64.paintShop.controllerPakBroken"), 0x6E, textY, 14);
         break;
     default:
         break;
@@ -1773,9 +1777,12 @@ void PaintShop::ClearDecal(u8 coloredOption) {
 }
 
 void PaintShop::ProcessFillClearMenu() {
-    static constexpr std::array<const char *, 2> SCOPE_TEXTS{"CLEAR CURRENT DECAL",
-                                                             "CLEAR ALL DECALS"};
-    static constexpr std::array<const char *, 2> COLOR_TEXTS{"TO SELECTED COLOR", "TO BODY COLOR"};
+    // By the option: the scope in the high bit and the colour in the low.
+    static constexpr std::array<const char *, CLEAR_OPTIONS> OPTION_KEYS{
+        "n64.paintShop.clearDecalToSelectedColor",
+        "n64.paintShop.clearDecalToBodyColor",
+        "n64.paintShop.clearAllDecalsToSelectedColor",
+        "n64.paintShop.clearAllDecalsToBodyColor"};
     PaintSprite &clear = *m_paintToolIcons[PAINT_TOOL_CLEAR];
     std::array<PaintRect, CLEAR_OPTIONS> options{};
     s32 buttonY = 0x160 - m_buttonA->height;
@@ -1841,8 +1848,7 @@ void PaintShop::ProcessFillClearMenu() {
     DrawSunkenFrame(0xBA, options[0].y + options[0].height + 12, 0x10C, 0x3A);
     m_text.size = 11;
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
-    DrawText(SCOPE_TEXTS[clear.style >> 1], 0x9E, 0x8E);
-    DrawText(COLOR_TEXTS[clear.style & CLEAR_TO_BODY_COLOR], 0x9E, 0x9B);
+    DrawText(GameString(OPTION_KEYS[clear.style]), 0x9E, 0x8E, 0x9B - 0x8E);
     DrawMenuButtons(buttonY, cancelX);
     UpdateStickRepeat();
     if ((m_input.buttons & INPUT_LEFT) != 0) {
@@ -1889,9 +1895,18 @@ void PaintShop::ProcessFillClearMenu() {
 }
 
 void PaintShop::ProcessMirrorFlipMenu() {
-    static constexpr std::array<const char *, 2> FLIP_TEXTS{"FLIP CURRENT DECAL",
-                                                            "FLIP CURRENT DECAL"};
-    static constexpr std::array<const char *, 2> AXIS_TEXTS{"HORIZONTALLY", "VERTICALLY"};
+    static constexpr std::array<const char *, 2> FLIP_KEYS{"n64.paintShop.flipDecalHorizontally",
+                                                           "n64.paintShop.flipDecalVertically"};
+    // By the slot of the decal, the doors and the fenders a decal mirrors to.
+    static constexpr std::array<const char *, SLOT_RIGHT_REAR_FENDER + 1> MIRROR_KEYS{
+        "n64.paintShop.mirrorToRightDoor",
+        "n64.paintShop.mirrorToLeftDoor",
+        "n64.paintShop.mirrorToRightFrontFender",
+        "n64.paintShop.mirrorToLeftFrontFender",
+        nullptr,
+        nullptr,
+        "n64.paintShop.mirrorToRightRearFender",
+        "n64.paintShop.mirrorToLeftRearFender"};
     PaintSprite &mirror = *m_paintToolIcons[PAINT_TOOL_MIRROR];
     std::array<PaintRect, MIRROR_OPTIONS> options{};
     // The row of the buttons is placed by the width of the A button.
@@ -1928,40 +1943,11 @@ void PaintShop::ProcessMirrorFlipMenu() {
     m_text.size = 11;
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
     if (m_styleMenuCursor != MIRROR_OPTION_MIRROR) {
-        DrawText(FLIP_TEXTS[m_styleMenuCursor - 1], 0x9F, 0x87);
-        DrawText(AXIS_TEXTS[m_styleMenuCursor - 1], 0x9F, 0x94);
+        DrawText(GameString(FLIP_KEYS[m_styleMenuCursor - 1]), 0x9F, 0x87, 0x94 - 0x87);
     } else if (!m_decalSlotHasMirror) {
-        DrawText("MIRROR IS NOT APPLICABLE", 0x9F, 0x87);
-        DrawText("TO THE CURRENT DECAL", 0x9F, 0x94);
-    } else {
-        switch (m_decalSlot) {
-        case SLOT_LEFT_DOOR:
-            DrawText("MIRROR CURRENT DECAL", 0x9F, 0x87);
-            DrawText("TO THE RIGHT DOOR", 0x9F, 0x94);
-            break;
-        case SLOT_RIGHT_DOOR:
-            DrawText("MIRROR CURRENT DECAL", 0x9F, 0x87);
-            DrawText("TO THE LEFT DOOR", 0x9F, 0x94);
-            break;
-        case SLOT_LEFT_FRONT_FENDER:
-            DrawText("MIRROR CURRENT DECAL TO", 0x9F, 0x87);
-            DrawText("THE RIGHT FRONT FENDER", 0x9F, 0x94);
-            break;
-        case SLOT_RIGHT_FRONT_FENDER:
-            DrawText("MIRROR CURRENT DECAL TO", 0x9F, 0x87);
-            DrawText("THE LEFT FRONT FENDER", 0x9F, 0x94);
-            break;
-        case SLOT_LEFT_REAR_FENDER:
-            DrawText("MIRROR CURRENT DECAL TO", 0x9F, 0x87);
-            DrawText("THE RIGHT REAR FENDER", 0x9F, 0x94);
-            break;
-        case SLOT_RIGHT_REAR_FENDER:
-            DrawText("MIRROR CURRENT DECAL TO", 0x9F, 0x87);
-            DrawText("THE LEFT REAR FENDER", 0x9F, 0x94);
-            break;
-        default:
-            break;
-        }
+        DrawText(GameString("n64.paintShop.mirrorNotApplicable"), 0x9F, 0x87, 0x94 - 0x87);
+    } else if (m_decalSlot < MIRROR_KEYS.size() && MIRROR_KEYS[m_decalSlot] != nullptr) {
+        DrawText(GameString(MIRROR_KEYS[m_decalSlot]), 0x9F, 0x87, 0x94 - 0x87);
     }
     DrawMenuButtons(buttonY, cancelX);
     UpdateStickRepeat();
@@ -2051,7 +2037,7 @@ void PaintShop::FlipDecalPixels() {
     m_paintTool = m_previousPaintTool;
 }
 
-void PaintShop::DrawPakProgressBox(s32 y, const char *text, s32 textX, s32 textY) {
+void PaintShop::DrawPakProgressBox(s32 y, std::string_view text, s32 textX, s32 textY) {
     DrawDialogBox(0xD4, y, 0xD8, 0x56);
     m_text.align = TextStyle::Align::Left;
     m_text.shadow = false;
@@ -2187,7 +2173,10 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
         m_text.shadow = false;
         m_text.size = 14;
         SetPakTextColors(0);
-        DrawText(operation == PAINT_TOOL_LOAD ? "LOAD DECALS?" : "SAVE DECALS?", 0x77, 0x74);
+        DrawText(GameString(operation == PAINT_TOOL_LOAD ? "n64.paintShop.loadDecalsQuestion" :
+                                                           "n64.paintShop.saveDecalsQuestion"),
+                 0x77,
+                 0x74);
         DrawPakButtons(buttonY,
                        static_cast<u32>(m_buttonA->width + 0xF2),
                        static_cast<u32>(m_buttonB->width + 0x136),
@@ -2216,8 +2205,8 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
         m_text.shadow = false;
         m_text.size = 13;
         SetPakTextColors(0);
-        DrawText("OK TO OVERWRITE", 0x72, 0x6C);
-        DrawText("SAVED DECALS?", 0x72, 0x7A);
+        std::string_view overwrite = GameString("n64.paintShop.confirmOverwrite");
+        DrawText(overwrite, 0x72, CenterLines(overwrite, 0x6C, 2, 0xE), 0xE);
         // The label of the B button is placed by its height.
         DrawPakButtons(buttonY,
                        static_cast<u32>(m_buttonA->width + 0xEE),
@@ -2245,7 +2234,8 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
             m_pakNote = std::move(*note);
             if (operation == PAINT_TOOL_LOAD) {
                 y = inCarSelect == 1 ? 0xDB : 0xC5;
-                DrawPakProgressBox(y, "LOADING DECALS...", 0x72, (y + 30) >> 1);
+                DrawPakProgressBox(
+                    y, GameString("n64.paintShop.loadingDecals"), 0x72, (y + 30) >> 1);
                 m_pakDialogState = PAK_STATE_TRANSFER_DECALS;
             } else {
                 m_pakNote.resize(DECAL_FILE_SIZE);
@@ -2258,7 +2248,7 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
             m_pakError = PFS_DATA_FULL;
             m_pakDialogState = PAK_STATE_FINISH;
         } else {
-            DrawPakProgressBox(0xC5, "SAVING DECALS...", 0x73, 0x71);
+            DrawPakProgressBox(0xC5, GameString("n64.paintShop.savingDecals"), 0x73, 0x71);
             m_pakFileNeedsCreate = 1;
             m_pakDialogState = PAK_STATE_TRANSFER_DECALS;
             m_pakWaitFrames = 0;
@@ -2274,9 +2264,9 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
             textY = 0x71;
         }
         if (operation == PAINT_TOOL_LOAD) {
-            DrawPakProgressBox(y, "LOADING DECALS...", 0x72, textY);
+            DrawPakProgressBox(y, GameString("n64.paintShop.loadingDecals"), 0x72, textY);
         } else {
-            DrawPakProgressBox(y, "SAVING DECALS...", 0x73, textY);
+            DrawPakProgressBox(y, GameString("n64.paintShop.savingDecals"), 0x73, textY);
         }
         if (!m_consoleFrame || m_pakWaitFrames++ < PAK_TRANSFER_DELAY_FRAMES) {
             break;

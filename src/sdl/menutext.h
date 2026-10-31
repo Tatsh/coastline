@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <memory>
 #include <optional>
+#include <span>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
@@ -33,10 +34,26 @@ struct TextStyle {
     /** The distance between the baselines of two lines of a string with a newline, in the units of
      * size, or 0 for size. */
     int lineHeight = 0;
+    /** The distance from the baseline of each line to the next, in place of lineHeight, for a
+     * string of one line more than it lists. A string of another number of lines takes lineHeight.
+     */
+    std::span<const int> lineGaps;
     /** The red, green, and blue of the bottom and then of the top of the gradient, if not default.
      */
     std::optional<std::array<int, 6>> colors;
 };
+
+/**
+ * Centre a string on the place of a block of a number of lines, as a release that draws a message
+ * in fewer lines than the USA release centres it.
+ *
+ * @param text The string, with a newline between lines.
+ * @param y The baseline of the first line of the block.
+ * @param lines The lines of the block.
+ * @param lineHeight The distance between the baselines of two lines.
+ * @return The baseline of the first line of the string.
+ */
+int CenterLines(std::string_view text, int y, int lines, int lineHeight);
 
 /** The two fonts of the menus, their gradients, and the layout of their glyphs. */
 class MenuText {
@@ -60,7 +77,7 @@ public:
      * @param renderer The renderer of the frame.
      * @param text The string in UTF-8, with the colour codes of the console. A character without
      * a glyph is not drawn. Each line after a newline is drawn as a string of its own, at
-     * TextStyle::lineHeight below the line before.
+     * TextStyle::lineGaps or TextStyle::lineHeight below the line before.
      * @param x The left, centre, or right of each line, in pixels of the 320 by 240 screen.
      * @param y The baseline of the first line, in pixels of the 320 by 240 screen.
      * @param style How the string is drawn.

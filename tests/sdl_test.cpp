@@ -290,6 +290,13 @@ void CheckConsoleStrings() {
                   "each line of a console string is a word of a main segment");
         }
     }
+    for (const auto &message : coastline::SAVE_FOLDER_STRINGS) {
+        Check(keys.insert(message.key).second, "each key of the save folder strings is unique");
+        Check(message.key.starts_with("sdl."),
+              "each key of the save folder strings starts with sdl.");
+        Check(!message.text.empty() && !message.text.ends_with('\n'),
+              "each save folder string has text and no newline at its end");
+    }
 }
 
 void CheckPerformanceParsing() {

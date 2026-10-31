@@ -14,7 +14,9 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "common/playerinput.h"
@@ -245,7 +247,12 @@ private:
                                 u8 green,
                                 u8 blue);
     void EmitScaledTextureRect(s32 x, s32 y, s32 width, s32 height);
-    void DrawText(const std::string &text, s32 x, s32 y);
+    // Lines after a newline are lineHeight below the line before, or as lineGaps lists them.
+    void DrawText(std::string_view text,
+                  s32 x,
+                  s32 y,
+                  int lineHeight = 0,
+                  std::span<const int> lineGaps = {});
     void SetTextCustomColors(u8 red0, u8 green0, u8 blue0, u8 red1, u8 green1, u8 blue1);
 
     // The input of the player as the console reads it.
@@ -286,7 +293,7 @@ private:
     void ProcessMirrorFlipMenu();
     void MirrorDecalToOppositePanel();
     void FlipDecalPixels();
-    void DrawPakProgressBox(s32 y, const char *text, s32 textX, s32 textY);
+    void DrawPakProgressBox(s32 y, std::string_view text, s32 textX, s32 textY);
     void CopyUnmaskedTexels(u8 *texels, const u8 *mask, s32 width, s32 height);
     void TransferDecal(DecalCar &car, u8 operation);
     void LoadDecalPalette(DecalCar &car, std::size_t offset);

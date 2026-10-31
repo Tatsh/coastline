@@ -2,6 +2,7 @@
 
 #include "menus.h"
 #include "menutext.h"
+#include "stringresources.h"
 
 namespace coastline {
 
@@ -40,9 +41,13 @@ void Menus::TwoControllersPostDraw(SceneRenderer &renderer, int item) const {
     style.align = TextStyle::Align::Center;
     Matrix4 flat = MenuScreen::FlatFor(renderer);
     const MenuText &text = m_screen->Text();
-    text.Draw(renderer, "%wwYou Need To Have", WIDTH / 2, HEIGHT * 10 / 16 - 30, style, flat);
-    text.Draw(renderer, "%wwTwo Controllers", WIDTH / 2, HEIGHT * 10 / 16 - 15, style, flat);
-    text.Draw(renderer, "%wwPlugged in", WIDTH / 2, HEIGHT * 10 / 16, style, flat);
+    style.lineHeight = 15;
+    text.Draw(renderer,
+              GameString("n64.playerSelect.twoControllers"),
+              WIDTH / 2,
+              HEIGHT * 10 / 16 - 30,
+              style,
+              flat);
 }
 
 void Menus::ProcessPlayerCountSelect(SceneRenderer &renderer,

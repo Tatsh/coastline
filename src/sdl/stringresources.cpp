@@ -3,7 +3,9 @@
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
+#include <functional>
 #include <optional>
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -200,6 +202,21 @@ void LoadStrings(const std::filesystem::path &assets, std::string_view language)
 const std::string *FindString(std::string_view key) {
     auto found = g_strings.find(key);
     return found == g_strings.end() ? nullptr : &found->second;
+}
+
+std::string_view GameString(std::string_view key) {
+    const std::string *found = FindString(key);
+    if (found != nullptr) {
+        return *found;
+    }
+    static std::set<std::string, std::less<>> logged;
+    if (logged.emplace(key).second) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                    "The string %.*s is in no file of strings. Import the cartridges again.",
+                    static_cast<int>(key.size()),
+                    key.data());
+    }
+    return key;
 }
 
 std::map<unsigned, std::string> ReadLibraryStrings(std::span<const std::uint8_t> image) {
