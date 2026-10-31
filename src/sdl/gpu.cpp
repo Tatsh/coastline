@@ -207,7 +207,24 @@ void GpuWindow::UpdateFrameSize() {
     constexpr int LARGEST = 16384;
     int width = m_options.width;
     int height = m_options.height;
-    if (m_options.frameWidth > 0 && m_options.frameHeight > 0) {
+    if (m_options.lowestFrame) {
+        constexpr int LOWEST_WIDTH = 320;
+        constexpr int LOWEST_HEIGHT = 240;
+        int windowWidth = 0;
+        int windowHeight = 0;
+        SDL_GetWindowSizeInPixels(m_window.get(), &windowWidth, &windowHeight);
+        width = LOWEST_WIDTH;
+        height = LOWEST_HEIGHT;
+        // In the full screen the frame takes the shape of the display, from 320 by 240: a display
+        // wider than 4:3 widens it, and a narrower one makes it taller.
+        if (Fullscreen() && windowWidth > 0 && windowHeight > 0) {
+            if (windowWidth * LOWEST_HEIGHT >= windowHeight * LOWEST_WIDTH) {
+                width = (LOWEST_HEIGHT * windowWidth + windowHeight / 2) / windowHeight;
+            } else {
+                height = (LOWEST_WIDTH * windowHeight + windowWidth / 2) / windowWidth;
+            }
+        }
+    } else if (m_options.frameWidth > 0 && m_options.frameHeight > 0) {
         width = m_options.frameWidth;
         height = m_options.frameHeight;
     } else {

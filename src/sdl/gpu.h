@@ -41,6 +41,9 @@ struct DisplayOptions {
     /** Whether the frame stays at the width and the height, for captures that are the same on
      * every machine. */
     bool fixedFrame = false;
+    /** Whether the frame is the smallest: 320 by 240 in a window, and with the shape of the
+     * display when the window covers it, at least 320 across and 240 down. */
+    bool lowestFrame = false;
     bool fullscreen = false; /*!< Whether the window covers the display. */
     /** Whether the window covers the display in a mode of the width, the height, and the refresh
      * rate, rather than at the desktop mode without borders. */

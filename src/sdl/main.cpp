@@ -124,8 +124,9 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     options.antialias =
         static_cast<int>(config.GetInteger("Video", "Antialias", options.antialias));
     // A preset of --gpu replaces the filtering and the anti-aliasing of the settings for this run,
-    // and the options of the command line after it still apply. The resolution follows the window
-    // as set, and best covers the display at its desktop mode, its largest.
+    // and the options of the command line after it still apply. best covers the display at its
+    // desktop mode, its largest, and worst draws the smallest frame: 320 by 240 in a window, and
+    // the shape of the display in the full screen, at least 320 across and 240 down.
     if (auto preset = parser.present("--gpu")) {
         if (*preset == "best") {
             options.antialias = 8;
@@ -140,6 +141,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
             options.postAntialias = coastline::PostAntialias::None;
             options.anisotropy = 0;
             options.textureFilter = coastline::TextureFilter::Nearest;
+            options.lowestFrame = true;
         } else {
             SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
                         "--gpu takes best or worst, and %s is ignored.",
@@ -884,8 +886,10 @@ int main(int argc, char *argv[]) {
         "preset of the graphics for this run, not saved: best for 8 samples of anti-aliasing, "
         "alpha to coverage, 16 samples of anisotropic filtering, and the full screen at the "
         "desktop mode of the display, drawn at the size of the display or at --width by --height "
-        "when given, or worst for no anti-aliasing and the nearest texel; --antialias, "
-        "--fullscreen, and --windowed still apply");
+        "when given, or worst for no anti-aliasing, the nearest texel, 30 frames a second, and a "
+        "frame of 320 by 240 in a window, or the shape of the display at least 320 by 240 in the "
+        "full screen; "
+        "--antialias, --fullscreen, and --windowed still apply");
     parser.add_argument("--list-gpu-drivers").help("write the GPU drivers and exit").flag();
     parser.add_argument("--import-disc")
         .help("copy the game data and music from a Boss Rally CUE sheet or ISO image, and exit");
@@ -1272,8 +1276,11 @@ int main(int argc, char *argv[]) {
             // frames on every machine.
             bool fixedStep = screenshot.has_value();
             Uint64 lastTicks = SDL_GetTicksNS();
-            // FrameRateLimit spaces the frames, at no limit when 0.
-            const long frameLimit = config.GetInteger("Video", "FrameRateLimit", 0);
+            // FrameRateLimit spaces the frames, at no limit when 0. --gpu worst draws 30 frames a
+            // second, the steps of the race, for a slow computer.
+            const long frameLimit = parser.present("--gpu") == "worst" ?
+                                        30 :
+                                        config.GetInteger("Video", "FrameRateLimit", 0);
             const Uint64 framePeriod = frameLimit > 0 ? SDL_NS_PER_SECOND / frameLimit : 0;
             Uint64 nextFrame = lastTicks;
             Uint64 rateStart = lastTicks;
