@@ -1283,8 +1283,10 @@ int main(int argc, char *argv[]) {
                 bool printScreen = false;
                 SDL_Event event;
                 while (SDL_PollEvent(&event)) {
+                    // F9 takes the frame as well, as a desktop such as Plasma keeps Print Screen.
                     if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat &&
-                        event.key.scancode == SDL_SCANCODE_PRINTSCREEN) {
+                        (event.key.scancode == SDL_SCANCODE_PRINTSCREEN ||
+                         event.key.scancode == SDL_SCANCODE_F9)) {
                         printScreen = true;
                     }
                     if (event.type == SDL_EVENT_QUIT) {
@@ -1370,7 +1372,8 @@ int main(int argc, char *argv[]) {
                     }
                 }
                 coastline::SetScriptedKeys(std::move(scriptedKeys));
-                bool printScreenDown = coastline::IsKeyDown(SDL_SCANCODE_PRINTSCREEN);
+                bool printScreenDown = coastline::IsKeyDown(SDL_SCANCODE_PRINTSCREEN) ||
+                                       coastline::IsKeyDown(SDL_SCANCODE_F9);
                 printScreen = printScreen || (printScreenDown && !printScreenWasDown);
                 printScreenWasDown = printScreenDown;
                 bool capture = screenshot && frame == screenshotFrame;
