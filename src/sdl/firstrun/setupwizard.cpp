@@ -1188,7 +1188,7 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
             grid.Fill(CONTENT_COLUMN, DIALOG_ROW + 7, filled, 1, 0xDB, Blue, LightGray);
             grid.WriteUtf8(CONTENT_COLUMN,
                            DIALOG_ROW + 8,
-                           std::to_string(static_cast<int>(m_importFraction * 100.0)) + " PCT",
+                           std::to_string(static_cast<int>(m_importFraction * 100.0)) + "%",
                            Black,
                            LightGray);
             status = " <Esc=Cancel>";
