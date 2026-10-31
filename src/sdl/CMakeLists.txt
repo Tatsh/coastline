@@ -177,6 +177,7 @@ add_library(
   coastline_sdl STATIC
   assetimport.cpp
   assetpack.cpp
+  assetstorage.cpp
   carselect.cpp
   config.cpp
   consolesegment.cpp

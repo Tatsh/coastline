@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "assetpack.h"
+#include "assetstorage.h"
 #include "importversion.h"
 #include "paths.h"
 
@@ -227,6 +228,10 @@ std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
     }
     if (auto failure = WriteMetadata(defaults, inputs.front().release)) {
         return failure;
+    }
+    auto storage = DeduplicateAssetFiles(defaults);
+    if (!storage) {
+        return storage.error();
     }
     if (!RecordImportFiles(defaults) || !DefaultPackUsable(defaults)) {
         return "The staged assets failed their inventory check.";

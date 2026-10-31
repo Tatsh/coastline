@@ -485,6 +485,10 @@ and a few lines of its own.
 
 ### Asset packs
 
+Import deduplicates generated asset files. `asset-aliases.txt` records paths that share another
+file, and the game recreates alias paths in its cache before applying packs. Mod packs use normal
+files and directories; they do not need alias tables.
+
 The game draws the images of the PC release, except where the PC release removed the branding of
 Nintendo, Top Gear, or Kemco. There, the default pack has the image of the cartridge, such as the
 NINTENDO and TOP GEAR RALLY decals of the cars, the Kemco livery of the Japanese car `pj`, the TOP

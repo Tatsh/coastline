@@ -6,6 +6,7 @@
 #include <string_view>
 #include <system_error>
 
+#include "assetstorage.h"
 #include "config.h"
 
 namespace coastline {
@@ -68,6 +69,11 @@ bool DefaultPackUsable(const std::filesystem::path &defaults) {
     if (!current(ImportSource::Disc) ||
         !(current(ImportSource::Usa) || current(ImportSource::Jpn) || current(ImportSource::Eur))) {
         return false;
+    }
+    for (const char *pack : {"default", "boss", "eur", "jpn"}) {
+        if (!ReadAssetFileAliases(defaults.parent_path() / pack, defaults)) {
+            return false;
+        }
     }
     std::ifstream files(defaults / "import-files.txt", std::ios::binary);
     std::size_t count = 0;

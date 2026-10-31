@@ -1032,7 +1032,13 @@ int main(int argc, char *argv[]) {
                             "The asset pack %s cannot be read, and the default pack is used.",
                             pack.c_str());
                 pack = coastline::DEFAULT_PACK;
-                packAssets = coastline::DefaultAssets(assetData);
+                packAssets = coastline::PackAssets(assetData, paths->cache, pack);
+                if (!packAssets) {
+                    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                                 "Cannot prepare imported assets. Import them again with "
+                                 "coastline import --cd DISC --rom ROM.");
+                    return EXIT_FAILURE;
+                }
             }
             const std::filesystem::path assets = *packAssets;
             SDL_Log("Asset pack: %s (%s)", pack.c_str(), assets.string().c_str());

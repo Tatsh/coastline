@@ -66,6 +66,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Imported byte-identical assets are stored once, with runtime paths reconstructed in cache before
+  mod overrides are applied.
 - CLI and setup imports require a disc and at least one ROM in a staged batch, using USA as the base
   when supplied or the first ROM otherwise. Successful imports replace generated packs and preserve
   mods; failed or cancelled conversions preserve previous assets.

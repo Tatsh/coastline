@@ -48,6 +48,7 @@ assetimport
 assetnames
 assetpack
 assetsearch
+assetstorage
 atdb
 atexit
 attachedonly

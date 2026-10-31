@@ -9,6 +9,7 @@
 #include <string>
 #include <system_error>
 
+#include "assetstorage.h"
 #include "importversion.h"
 
 #ifndef COASTLINE_SYSTEM_DATA_DIR
@@ -25,6 +26,8 @@
 namespace coastline {
 
 namespace {
+
+constexpr const char *LAYER_STAMP = ".layer-stamp";
 
 std::optional<std::filesystem::path> AbsoluteVariable(const EnvironmentReader &environment,
                                                       const char *name) {
@@ -99,6 +102,9 @@ bool LayerDirectory(const std::filesystem::path &base,
         }
     }
     for (const auto &name : names) {
+        if (name == LAYER_STAMP) {
+            continue;
+        }
         bool inPack = std::filesystem::exists(pack / name, error);
         if (!inPack && (name.extension() == ".gltf" || name.extension() == ".glb")) {
             auto alternative = name;
@@ -117,9 +123,6 @@ bool LayerDirectory(const std::filesystem::path &base,
     }
     return true;
 }
-
-// The file of a layered directory that records the stamp of the packs it was made from.
-constexpr const char *LAYER_STAMP = ".layer-stamp";
 
 // A hash of the path and the write time of every entry of both trees, or nothing when a tree
 // cannot be read. Adding, removing, or writing an entry changes it.
@@ -144,7 +147,7 @@ std::optional<std::string> LayerStamp(const std::filesystem::path &base,
             return std::nullopt;
         }
     }
-    std::string listing = "model-formats-1\n";
+    std::string listing = "asset-aliases-1\n";
     for (const auto &line : lines) {
         listing += line + '\n';
     }
@@ -156,6 +159,62 @@ std::string ReadStamp(const std::filesystem::path &path) {
     std::string stamp;
     std::getline(in, stamp);
     return stamp;
+}
+
+std::optional<std::filesystem::path> ExpandAliases(const std::filesystem::path &pack,
+                                                   const std::filesystem::path &defaults,
+                                                   const std::filesystem::path &cache) {
+    auto aliases = ReadAssetFileAliases(pack, defaults);
+    if (!aliases) {
+        return std::nullopt;
+    }
+    if (aliases->empty()) {
+        return pack;
+    }
+    auto expanded = cache / "asset-sources" / pack.filename();
+    auto stamp = LayerStamp(defaults, pack);
+    if (stamp && ReadStamp(expanded / LAYER_STAMP) == *stamp) {
+        return expanded;
+    }
+    std::error_code error;
+    std::filesystem::remove_all(expanded, error);
+    if (error) {
+        return std::nullopt;
+    }
+    std::filesystem::create_directories(expanded, error);
+    if (error) {
+        return std::nullopt;
+    }
+    std::filesystem::recursive_directory_iterator entry(pack, error), end;
+    for (; !error && entry != end; entry.increment(error)) {
+        auto relative = entry->path().lexically_relative(pack);
+        auto to = expanded / relative;
+        if (entry->is_directory(error)) {
+            // Alias destinations require real directories, never links into physical storage.
+            std::filesystem::create_directories(to, error);
+        } else if (relative != LAYER_STAMP && !LinkEntry(entry->path(), to)) {
+            return std::nullopt;
+        }
+    }
+    if (error) {
+        return std::nullopt;
+    }
+    for (const auto &alias : *aliases) {
+        auto to = expanded / alias.path;
+        std::filesystem::create_directories(to.parent_path(), error);
+        if (error || !LinkEntry((alias.fromDefault ? defaults : pack) / alias.target, to)) {
+            return std::nullopt;
+        }
+    }
+    if (stamp) {
+        std::ofstream file(expanded / LAYER_STAMP);
+        file << *stamp << '\n';
+        file.close();
+        if (!file) {
+            return std::nullopt;
+        }
+    }
+    return expanded;
 }
 
 } // namespace
@@ -179,8 +238,16 @@ std::optional<std::filesystem::path> PackAssets(const std::filesystem::path &dat
     if (pack.empty() || !std::filesystem::is_directory(directory, error)) {
         return std::nullopt;
     }
+    auto base = ExpandAliases(DefaultAssets(data), DefaultAssets(data), cache);
+    if (!base) {
+        return std::nullopt;
+    }
     if (pack == DEFAULT_PACK) {
-        return directory;
+        return base;
+    }
+    auto selected = ExpandAliases(directory, DefaultAssets(data), cache);
+    if (!selected) {
+        return std::nullopt;
     }
     auto layered = cache / "assets" / pack;
     auto stampPath = layered / LAYER_STAMP;
@@ -189,7 +256,7 @@ std::optional<std::filesystem::path> PackAssets(const std::filesystem::path &dat
         return layered;
     }
     std::filesystem::remove_all(layered, error);
-    if (!LayerDirectory(DefaultAssets(data), directory, layered)) {
+    if (!LayerDirectory(*base, *selected, layered)) {
         return std::nullopt;
     }
     if (stamp) {
