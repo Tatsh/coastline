@@ -398,6 +398,16 @@ std::optional<LoadedScript> LoadScript(const std::filesystem::path &path) {
     LoadedScript loaded{std::move(*script), {}};
     for (const coastline::ScriptKey &key : loaded.script.keys) {
         SDL_Scancode scancode = SDL_GetScancodeFromName(key.name.c_str());
+        static constexpr std::array<std::pair<std::string_view, SDL_Scancode>, 4> MODIFIERS{
+            {{"Ctrl", SDL_SCANCODE_LCTRL},
+             {"Alt", SDL_SCANCODE_LALT},
+             {"Shift", SDL_SCANCODE_LSHIFT},
+             {"Gui", SDL_SCANCODE_LGUI}}};
+        if (const auto modifier =
+                std::ranges::find(MODIFIERS, key.name, &decltype(MODIFIERS)::value_type::first);
+            modifier != MODIFIERS.end()) {
+            scancode = modifier->second;
+        }
         if (scancode == SDL_SCANCODE_UNKNOWN) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                          "%s:%d: %s is not the SDL name of a key, such as Return or F9.",
@@ -670,7 +680,14 @@ int main(int argc, char *argv[]) {
     RaiseOpenFileLimit();
     argparse::ArgumentParser parser(APPLICATION, COASTLINE_VERSION);
     parser.add_description("Top Gear Rally and Boss Rally in one stand-alone game.");
+    parser.add_argument("--reset")
+        .help("Delete all configuration, data, saved games, state, and cache before starting.")
+        .flag();
+    parser.add_argument("--yes-really", "-y").help("Confirm --reset without prompting.").flag();
     parser.add_argument("--data-dir").help("read the game data from this directory");
+    parser.add_argument("--config")
+        .metavar("INI")
+        .help("Read and save settings in the specified INI file.");
     parser.add_argument("--asset-pack")
         .help("asset pack for this run, not saved: default, boss for the images of the PC "
               "release in place of the branded images of the cartridges, or the name of a mod "
@@ -784,11 +801,67 @@ int main(int argc, char *argv[]) {
     // The game moves to the data directory, and a relative directory would then name another.
     if (auto dataDirectory = parser.present("--data-dir")) {
         std::error_code error;
-        paths->data = std::filesystem::absolute(*dataDirectory, error);
+        paths->data = std::filesystem::absolute(*dataDirectory, error).make_preferred();
+        if (error) {
+            std::cerr << "The data directory cannot be resolved.\n";
+            return EXIT_FAILURE;
+        }
+    }
+    auto configPath = paths->config / "BossRally.ini";
+    if (auto ini = parser.present("--config")) {
+        std::error_code error;
+        configPath = std::filesystem::absolute(*ini, error).make_preferred();
+        if (error) {
+            std::cerr << "The configuration file path cannot be resolved.\n";
+            return EXIT_FAILURE;
+        }
+    }
+    if (parser.get<bool>("--reset")) {
+        if (!parser.get<bool>("--yes-really")) {
+            std::cout << "Reset deletes all Coastline configuration, imported assets, mods, "
+                         "saved games, state, and cache in the following locations:\n";
+            for (const auto *directory :
+                 {&paths->config, &paths->data, &paths->state, &paths->cache}) {
+                std::cout << "  " << directory->string() << '\n';
+            }
+            if (parser.is_used("--config")) {
+                std::cout << "  " << configPath.string() << " (INI file)\n";
+            }
+            std::string response;
+            do {
+                std::cout << "Delete the listed locations and start Coastline? [y/n] "
+                          << std::flush;
+                if (!(std::cin >> response) || response == "n" || response == "N") {
+                    std::cout << "Reset cancelled.\n";
+                    return EXIT_SUCCESS;
+                }
+            } while (response != "y" && response != "Y");
+        }
+        if (auto failure = coastline::ResetGamePaths(*paths)) {
+            std::cerr << *failure << '\n';
+            return EXIT_FAILURE;
+        }
+        if (parser.is_used("--config")) {
+            std::error_code error;
+            std::filesystem::remove(configPath, error);
+            if (error) {
+                std::cerr << "Cannot delete " << configPath.string() << ". " << error.message()
+                          << '\n';
+                return EXIT_FAILURE;
+            }
+        }
     }
     if (!coastline::CreateGamePaths(*paths)) {
         std::cerr << "The directories of the game cannot be created.\n";
         return EXIT_FAILURE;
+    }
+    {
+        std::error_code error;
+        std::filesystem::create_directories(configPath.parent_path(), error);
+        if (error) {
+            std::cerr << "The configuration directory cannot be created.\n";
+            return EXIT_FAILURE;
+        }
     }
     SDL_SetMainReady();
     SDL_SetAppMetadata("Coastline", COASTLINE_VERSION, "sh.tat.coastline");
@@ -806,6 +879,7 @@ int main(int argc, char *argv[]) {
     }
     SDL_Log("Coastline %s", COASTLINE_VERSION);
     SDL_Log("Configuration: %s", paths->config.string().c_str());
+    SDL_Log("Read settings from %s.", configPath.string().c_str());
     SDL_Log("Data: %s", paths->data.string().c_str());
     SDL_Log("State: %s", paths->state.string().c_str());
     SDL_Log("Cache: %s", paths->cache.string().c_str());
@@ -846,7 +920,6 @@ int main(int argc, char *argv[]) {
         std::error_code error;
         std::filesystem::create_directories(scriptFrames, error);
     }
-    auto configPath = paths->config / "BossRally.ini";
     auto config = coastline::GameConfig::Load(configPath);
     // Every setting is written to the file on the first run: the keys of the PC release first,
     // then the keys of this game.
@@ -1512,7 +1585,8 @@ int main(int argc, char *argv[]) {
         status = EXIT_SUCCESS;
     }
     if (!config.Save(configPath)) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "BossRally.ini cannot be written.");
+        SDL_LogWarn(
+            SDL_LOG_CATEGORY_APPLICATION, "%s cannot be written.", configPath.string().c_str());
     }
     coastline::StopGameLog();
     return status;

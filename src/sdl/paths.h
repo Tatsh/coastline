@@ -48,6 +48,9 @@ std::optional<GamePaths> ResolveGamePaths(const std::string &application);
  */
 bool CreateGamePaths(const GamePaths &paths);
 
+/** Delete all four application directories, or return an error message on failure. */
+std::optional<std::string> ResetGamePaths(const GamePaths &paths);
+
 /**
  * The directory the import writes the game data to, the default pack. A mod pack is a directory
  * beside it under assets.

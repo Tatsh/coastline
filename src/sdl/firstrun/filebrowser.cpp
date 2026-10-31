@@ -26,12 +26,13 @@ void SortByName(std::vector<BrowserEntry> &entries) {
 } // namespace
 
 std::string Utf8FromPath(const std::filesystem::path &path) {
-    std::u8string text = path.u8string();
+    auto native = path;
+    std::u8string text = native.make_preferred().u8string();
     return {text.begin(), text.end()};
 }
 
 std::filesystem::path PathFromUtf8(std::string_view text) {
-    return std::filesystem::path(std::u8string(text.begin(), text.end()));
+    return std::filesystem::path(std::u8string(text.begin(), text.end())).make_preferred();
 }
 
 std::string LowercaseExtension(const std::filesystem::path &path) {
@@ -40,7 +41,8 @@ std::string LowercaseExtension(const std::filesystem::path &path) {
 
 std::optional<std::vector<BrowserEntry>>
 ListBrowserDirectory(const std::filesystem::path &directory,
-                     std::span<const std::string_view> extensions) {
+                     std::span<const std::string_view> extensions,
+                     bool directoriesOnly) {
     std::error_code error;
     std::filesystem::directory_iterator iterator(directory, error);
     if (error) {
@@ -63,7 +65,7 @@ ListBrowserDirectory(const std::filesystem::path &directory,
         if (entry.is_directory(statusError)) {
             directories.push_back(
                 {BrowserEntry::Kind::Directory, entry.path(), name, "[" + name + "]"});
-        } else if (!statusError && entry.is_regular_file(statusError) &&
+        } else if (!directoriesOnly && !statusError && entry.is_regular_file(statusError) &&
                    (extensions.empty() ||
                     std::ranges::contains(extensions, LowercaseExtension(entry.path())))) {
             files.push_back({BrowserEntry::Kind::File, entry.path(), name, name});
@@ -94,6 +96,14 @@ ListBrowserDirectory(const std::filesystem::path &directory,
     std::ranges::move(directories, std::back_inserter(entries));
     std::ranges::move(files, std::back_inserter(entries));
     return entries;
+}
+
+std::filesystem::path ResolveUserPath(std::string_view text, const std::filesystem::path &home) {
+    if (!home.empty() && (text == "~" || text.starts_with("~/") || text.starts_with("~\\"))) {
+        auto resolved = text.size() == 1 ? home : home / PathFromUtf8(text.substr(2));
+        return resolved.make_preferred();
+    }
+    return PathFromUtf8(text);
 }
 
 } // namespace coastline

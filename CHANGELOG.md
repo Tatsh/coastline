@@ -14,6 +14,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - An in-game QBASIC-style setup wizard with an embedded unscii font for missing, incomplete, or
   outdated game data. It validates disc and ROM images and imports data with progress and
   cancellation while controls remain responsive. Finish starts the game in the same process.
+  - A single Files screen combines disc selection with three interchangeable ROM fields that detect
+    each release. Recursive directory search displays discovered images and permits retries after
+    partial results.
+  - Clear buttons and text selection with Ctrl+A and Alt+Backspace for word deletion.
+- `--reset` deletes configuration, imported assets, mods, saved games, state, and cache before setup.
+  Confirmation accepts `y` or `n` without case sensitivity; `--yes-really` or `-y` skips confirmation.
+- `--config INI` reads and saves settings in an explicit INI file. Reset also deletes the specified
+  INI file.
 - Game startup with EUR or JPN cartridge data without USA cartridge data, using available regional
   menu assets and music and language fallback.
 - The `sdl` platform and preset: a stand-alone 64-bit game built with SDL 3 from vcpkg. It
@@ -21,9 +29,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   directories (or the equivalent folders on Windows and macOS), reads `BossRally.ini`, binds
   gamepads and the keyboard to controller ports without configuration, and installs with
   `cmake --install`.
-- `coastline import --cd` copies the game data of a Boss Rally CUE sheet or ISO image and
-  converts its CD audio to FLAC. `coastline import --rom` copies a Top Gear Rally cartridge image
-  after checking its SHA-1.
+- `coastline import --cd` copies game data from a Boss Rally CUE sheet, ISO image, or Mode 1 BIN
+  image and converts CD audio to FLAC. BIN import prefers a matching adjacent CUE sheet; standalone
+  BIN import copies data without CD audio. `coastline import --rom` copies a Top Gear Rally
+  cartridge image after checking its SHA-1.
 - The SDL game plays the music of the Nintendo 64 release with the console's player and mixers.
 - Quality of life changes in the Windows libraries built with `TGR_ENABLE_PATCHES`:
   - The first press of the key that resets the car shows a hint, and a second press within half

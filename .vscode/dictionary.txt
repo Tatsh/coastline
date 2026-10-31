@@ -46,6 +46,7 @@ assetdma
 assetfile
 assetnames
 assetpack
+assetsearch
 atdb
 atexit
 attachedonly
@@ -947,6 +948,7 @@ preapproved
 precipitationrender
 precipitationupdate
 preempt
+pregap
 prenmi
 primarybuffer
 primarysurface

@@ -238,8 +238,14 @@ bool ListDirectory(SectorReader &reader,
             offset = (offset / DATA_SECTOR + 1) * DATA_SECTOR;
             continue;
         }
+        if (length < 34 || length > size - offset) {
+            return false;
+        }
         const std::uint8_t *record = &data[offset];
         std::uint8_t nameLength = record[32];
+        if (nameLength == 0 || nameLength > length - 33) {
+            return false;
+        }
         bool special = nameLength == 1 && (record[33] == 0 || record[33] == 1);
         if (!special) {
             auto path = prefix / DecodeName(record + 33, nameLength, joliet);
@@ -2447,12 +2453,52 @@ struct DiscContents {
 std::expected<DiscContents, std::string> ReadDiscContents(const std::filesystem::path &disc) {
     std::vector<CueTrack> tracks;
     const std::string extension = Lowercase(disc.extension().string());
-    if (extension == ".bin" || extension == ".img" || extension == ".ccd") {
-        return std::unexpected(fmt::format("{} cannot be imported yet. The import reads a CUE "
-                                           "sheet (.cue) and an ISO image (.iso).",
-                                           disc.string()));
+    if (extension == ".img" || extension == ".ccd") {
+        return std::unexpected(
+            fmt::format("{} cannot be imported yet. The import reads a CUE "
+                        "sheet (.cue), an ISO image (.iso), or a BIN image (.bin).",
+                        disc.string()));
     }
-    if (extension == ".cue") {
+    if (extension == ".bin") {
+        // A matching CUE sheet supplies audio boundaries absent from a raw image.
+        std::error_code error;
+        std::filesystem::directory_iterator entry(
+            disc.parent_path().empty() ? "." : disc.parent_path(), error),
+            end;
+        while (!error && entry != end) {
+            if (Lowercase(entry->path().extension().string()) == ".cue") {
+                auto parsed = ParseCueSheet(entry->path());
+                if (parsed && std::ranges::any_of(*parsed, [&](const CueTrack &track) {
+                        std::error_code sameError;
+                        return !track.audio &&
+                               std::filesystem::equivalent(track.file, disc, sameError);
+                    })) {
+                    return ReadDiscContents(entry->path());
+                }
+            }
+            entry.increment(error);
+        }
+        // Probe the volume descriptor in cooked and raw Mode 1 layouts, with or without a pregap.
+        std::ifstream image(disc, std::ios::binary);
+        for (auto sectorSize : {RAW_SECTOR, DATA_SECTOR}) {
+            for (std::uint64_t first : {0u, 150u}) {
+                image.clear();
+                SectorReader probe(image, sectorSize, first);
+                std::vector<std::uint8_t> descriptor;
+                if (probe.Read(16, 1, descriptor) && descriptor[0] == 1 &&
+                    std::string_view(reinterpret_cast<char *>(&descriptor[1]), 5) == "CD001") {
+                    tracks.push_back({1, false, sectorSize, disc, first, 0});
+                    break;
+                }
+            }
+            if (!tracks.empty()) {
+                break;
+            }
+        }
+        if (tracks.empty()) {
+            return std::unexpected("The BIN image has no readable ISO 9660 data track.");
+        }
+    } else if (extension == ".cue") {
         auto parsed = ParseCueSheet(disc);
         if (!parsed) {
             return std::unexpected(parsed.error());
@@ -2476,8 +2522,7 @@ std::expected<DiscContents, std::string> ReadDiscContents(const std::filesystem:
     }
     std::erase_if(*entries, [](const IsoEntry &entry) { return !IsGameData(entry.path); });
     if (std::ranges::none_of(*entries, [](const IsoEntry &entry) {
-            return entry.path.filename() == "BossRally.pod" ||
-                   entry.path.filename() == "BOSSRALLY.POD";
+            return Lowercase(entry.path.filename().string()) == "bossrally.pod";
         })) {
         return std::unexpected("The disc is not Boss Rally: BossRally.pod is missing.");
     }

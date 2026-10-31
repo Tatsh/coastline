@@ -21,8 +21,9 @@ constexpr int CONTENT_COLUMN = DIALOG_COLUMN + 3;
 // The line above the buttons, and the buttons.
 constexpr int SEPARATOR_ROW = DIALOG_ROW + DIALOG_HEIGHT - 4;
 constexpr int BUTTON_ROW = DIALOG_ROW + DIALOG_HEIGHT - 3;
-constexpr int TEXT_WIDTH = 50;
-constexpr int BROWSE_COLUMN = CONTENT_COLUMN + TEXT_WIDTH + 2;
+constexpr int TEXT_WIDTH = 40;
+constexpr int BROWSE_COLUMN = CONTENT_COLUMN + TEXT_WIDTH + 1;
+constexpr int CLEAR_COLUMN = BROWSE_COLUMN + 15;
 // The list of the browser, inside its frame, its last column the scroll bar.
 constexpr int LIST_COLUMN = CONTENT_COLUMN;
 constexpr int LIST_ROW = DIALOG_ROW + 5;
@@ -35,27 +36,26 @@ constexpr std::uint64_t DOUBLE_CLICK_MILLISECONDS = 500;
 constexpr std::uint64_t TYPING_MILLISECONDS = 1000;
 constexpr int WHEEL_ROWS = 3;
 
-constexpr std::array<std::string_view, 2> DISC_EXTENSIONS{".cue", ".iso"};
+constexpr std::array<std::string_view, 3> DISC_EXTENSIONS{".bin", ".cue", ".iso"};
 constexpr std::array<std::string_view, 3> CARTRIDGE_EXTENSIONS{".n64", ".v64", ".z64"};
 
-constexpr std::array<WizardControlId, WIZARD_CARTRIDGES> CHECK_IDS{
-    WizardControlId::CheckUsa, WizardControlId::CheckEur, WizardControlId::CheckJpn};
 constexpr std::array<WizardControlId, WIZARD_CARTRIDGES> TEXT_IDS{
-    WizardControlId::UsaText, WizardControlId::EurText, WizardControlId::JpnText};
+    WizardControlId::Rom1Text, WizardControlId::Rom2Text, WizardControlId::Rom3Text};
 constexpr std::array<WizardControlId, WIZARD_CARTRIDGES> BROWSE_IDS{
-    WizardControlId::UsaBrowse, WizardControlId::EurBrowse, WizardControlId::JpnBrowse};
-constexpr std::array<std::string_view, WIZARD_CARTRIDGES> CHECK_LABELS{"&USA", "&Europe", "&Japan"};
+    WizardControlId::Rom1Browse, WizardControlId::Rom2Browse, WizardControlId::Rom3Browse};
+constexpr std::array<WizardControlId, WIZARD_CARTRIDGES> CLEAR_IDS{
+    WizardControlId::Rom1Clear, WizardControlId::Rom2Clear, WizardControlId::Rom3Clear};
 constexpr std::array<std::string_view, WIZARD_CARTRIDGES> TEXT_LABELS{
-    "&USA ROM image:", "&Europe ROM image:", "&Japan ROM image:"};
-// The Browse button of each row of the cartridge paths, by its place on the screen.
+    "ROM image &1:", "ROM image &2:", "ROM image &3:"};
+// Each ROM path has a Browse button at the corresponding screen position.
 constexpr std::array<std::string_view, WIZARD_CARTRIDGES> BROWSE_LABELS{
-    "B&rowse...", "Bro&wse...", "Brow&se..."};
+    "B&rowse...", "Bro&wse...", "Brows&e..."};
 constexpr std::array<std::string_view, WIZARD_CARTRIDGES> RELEASE_NAMES{
     "USA", "European", "Japanese"};
 
 int CartridgeIndex(WizardControlId id) {
     for (int i = 0; i < WIZARD_CARTRIDGES; ++i) {
-        if (TEXT_IDS[i] == id || BROWSE_IDS[i] == id || CHECK_IDS[i] == id) {
+        if (TEXT_IDS[i] == id || BROWSE_IDS[i] == id || CLEAR_IDS[i] == id) {
             return i;
         }
     }
@@ -161,6 +161,7 @@ struct SetupWizard::ImportState {
     bool done = false;
     std::optional<std::string> failure;
     std::atomic<bool> cancel{false};
+    WizardSearchResult search;
 };
 
 std::optional<WizardCartridge> BaseCartridge(const std::array<bool, WIZARD_CARTRIDGES> &checked) {
@@ -223,11 +224,17 @@ const std::filesystem::path &SetupWizard::LastDirectory() const {
 }
 
 SetupWizard::TextField &SetupWizard::Field(WizardControlId id) {
+    if (id == WizardControlId::SearchText) {
+        return m_directory;
+    }
     int index = CartridgeIndex(id);
     return index < 0 ? m_disc : m_cartridges[static_cast<std::size_t>(index)];
 }
 
 const SetupWizard::TextField &SetupWizard::Field(WizardControlId id) const {
+    if (id == WizardControlId::SearchText) {
+        return m_directory;
+    }
     int index = CartridgeIndex(id);
     return index < 0 ? m_disc : m_cartridges[static_cast<std::size_t>(index)];
 }
@@ -240,23 +247,47 @@ std::string SetupWizard::Reason(WizardControlId id) const {
     return Field(id).reason;
 }
 
-std::array<bool, WIZARD_CARTRIDGES> SetupWizard::Checked() const {
-    return m_checked;
+std::array<bool, WIZARD_CARTRIDGES> SetupWizard::Detected() const {
+    std::array<bool, WIZARD_CARTRIDGES> releases{};
+    for (const auto &field : m_cartridges) {
+        if (field.valid && field.release) {
+            releases[static_cast<std::size_t>(*field.release)] = true;
+        }
+    }
+    return releases;
+}
+
+const WizardSearchResult &SetupWizard::SearchResult() const {
+    return m_searchResult;
+}
+
+std::string SetupWizard::SelectedText() const {
+    const auto focus = Focus();
+    if (!focus || (*focus != WizardControlId::DiscText && *focus != WizardControlId::SearchText &&
+                   std::ranges::find(TEXT_IDS, *focus) == TEXT_IDS.end())) {
+        return {};
+    }
+    const auto &field = Field(*focus);
+    if (!field.anchor) {
+        return {};
+    }
+    const auto begin = std::min(*field.anchor, field.caret);
+    return EncodeUtf8(std::u32string_view(field.text)
+                          .substr(begin, std::max(*field.anchor, field.caret) - begin));
 }
 
 bool SetupWizard::NextEnabled() const {
     switch (m_screen) {
-    case WizardScreen::Disc:
-        return m_disc.valid;
-    case WizardScreen::Cartridges:
-        return BaseCartridge(m_checked).has_value();
-    case WizardScreen::Paths:
-        for (int i = 0; i < WIZARD_CARTRIDGES; ++i) {
-            if (m_checked[i] && !m_cartridges[i].valid) {
+    case WizardScreen::Files:
+        for (const auto &field : m_cartridges) {
+            if (!field.text.empty() && !field.valid) {
                 return false;
             }
         }
-        return BaseCartridge(m_checked).has_value();
+        return m_disc.valid && BaseCartridge(Detected()).has_value();
+    case WizardScreen::SearchDirectory:
+        return m_directory.valid;
+    case WizardScreen::Search:
     case WizardScreen::Import:
     case WizardScreen::Done:
         return false;
@@ -279,50 +310,56 @@ std::vector<WizardControl> SetupWizard::ScreenControls() const {
         controls.push_back(control);
     };
     switch (m_screen) {
-    case WizardScreen::Disc:
-        textBox(WizardControlId::DiscText, "&Disc image:", DIALOG_ROW + 6);
+    case WizardScreen::Files:
+        textBox(WizardControlId::DiscText, "Boss Rally &disc image:", DIALOG_ROW + 5);
         controls.push_back(
-            MakeButton(WizardControlId::DiscBrowse, "B&rowse...", BROWSE_COLUMN, DIALOG_ROW + 6));
-        break;
-    case WizardScreen::Cartridges:
+            MakeButton(WizardControlId::DiscBrowse, "&Browse...", BROWSE_COLUMN, DIALOG_ROW + 5));
+        controls.push_back(
+            MakeButton(WizardControlId::DiscClear, "Clear", CLEAR_COLUMN, DIALOG_ROW + 5));
         for (int i = 0; i < WIZARD_CARTRIDGES; ++i) {
-            WizardControl check;
-            check.id = CHECK_IDS[i];
-            check.kind = WizardControl::Kind::CheckBox;
-            check.column = CONTENT_COLUMN + 2;
-            check.row = DIALOG_ROW + 6 + 2 * i;
-            check.label = std::string(CHECK_LABELS[i]);
-            check.width = LabelWidth(check.label) + 4;
-            check.checked = m_checked[i];
-            controls.push_back(check);
-        }
-        break;
-    case WizardScreen::Paths: {
-        int row = DIALOG_ROW + 5;
-        int place = 0;
-        for (int i = 0; i < WIZARD_CARTRIDGES; ++i) {
-            if (!m_checked[i]) {
-                continue;
-            }
+            const int row = DIALOG_ROW + 8 + i * 3;
             textBox(TEXT_IDS[i], std::string(TEXT_LABELS[i]), row);
             controls.push_back(
-                MakeButton(BROWSE_IDS[i], std::string(BROWSE_LABELS[place]), BROWSE_COLUMN, row));
-            row += 3;
-            ++place;
+                MakeButton(BROWSE_IDS[i], std::string(BROWSE_LABELS[i]), BROWSE_COLUMN, row));
+            controls.push_back(MakeButton(CLEAR_IDS[i], "Clear", CLEAR_COLUMN, row));
         }
         break;
-    }
+    case WizardScreen::SearchDirectory:
+        textBox(WizardControlId::SearchText, "&Directory:", DIALOG_ROW + 6);
+        controls.push_back(
+            MakeButton(WizardControlId::SearchBrowse, "&Browse...", BROWSE_COLUMN, DIALOG_ROW + 6));
+        controls.push_back(
+            MakeButton(WizardControlId::SearchClear, "Clear", CLEAR_COLUMN, DIALOG_ROW + 6));
+        break;
+    case WizardScreen::Search:
     case WizardScreen::Import:
     case WizardScreen::Done:
         break;
     }
     std::size_t first = controls.size();
-    if (m_screen != WizardScreen::Disc) {
+    if (m_screen == WizardScreen::Files) {
+        controls.push_back(MakeButton(
+            WizardControlId::SearchAssets, "&Search directory for assets ...", 0, BUTTON_ROW));
+    } else {
         WizardControl back = MakeButton(WizardControlId::Back, "&Back", 0, BUTTON_ROW);
-        back.enabled = m_screen != WizardScreen::Import || m_importFailure.has_value();
+        back.enabled = (m_screen != WizardScreen::Import || m_importFailure.has_value()) &&
+                       m_screen != WizardScreen::Search;
         controls.push_back(back);
     }
-    if (m_screen == WizardScreen::Import) {
+    if (m_screen == WizardScreen::Search) {
+        if (m_searchComplete) {
+            controls.push_back(
+                MakeButton(WizardControlId::RetrySearch, "&Search again", 0, BUTTON_ROW));
+            controls.push_back(
+                MakeButton(WizardControlId::UseFound, "&Use found files", 0, BUTTON_ROW));
+        } else {
+            controls.push_back(MakeButton(WizardControlId::Cancel, "&Cancel", 0, BUTTON_ROW));
+        }
+    } else if (m_screen == WizardScreen::SearchDirectory) {
+        auto search = MakeButton(WizardControlId::StartSearch, "&Search", 0, BUTTON_ROW);
+        search.enabled = NextEnabled();
+        controls.push_back(search);
+    } else if (m_screen == WizardScreen::Import) {
         WizardControl cancel = MakeButton(WizardControlId::Cancel, "&Cancel", 0, BUTTON_ROW);
         cancel.enabled = !m_importFailure.has_value();
         controls.push_back(cancel);
@@ -346,7 +383,8 @@ std::vector<WizardControl> SetupWizard::BrowserControls() const {
     list.row = LIST_ROW;
     list.width = LIST_WIDTH;
     list.height = LIST_HEIGHT;
-    list.label = "&Files:";
+    const bool directory = m_browser->target == WizardControlId::SearchText;
+    list.label = directory ? "&Folders:" : "&Files:";
     controls.push_back(list);
     WizardControl filter;
     filter.id = WizardControlId::BrowserFilter;
@@ -357,11 +395,14 @@ std::vector<WizardControl> SetupWizard::BrowserControls() const {
     filter.width = 44;
     filter.value = m_browser->allFiles ? "All files (*.*)" :
                    m_browser->target == WizardControlId::DiscText ?
-                                         "Disc images (*.cue, *.iso)" :
+                                         "Disc images (*.bin, *.cue, *.iso)" :
                                          "ROM images (*.z64, *.n64, *.v64)";
-    controls.push_back(filter);
+    if (!directory) {
+        controls.push_back(filter);
+    }
     std::size_t first = controls.size();
-    controls.push_back(MakeButton(WizardControlId::BrowserOk, "&OK", 0, BUTTON_ROW));
+    controls.push_back(MakeButton(
+        WizardControlId::BrowserOk, directory ? "&Use this directory" : "&OK", 0, BUTTON_ROW));
     controls.push_back(MakeButton(WizardControlId::BrowserCancel, "&Cancel", 0, BUTTON_ROW));
     CentreButtons(controls, first);
     return controls;
@@ -426,10 +467,13 @@ void SetupWizard::MoveFocus(bool backward) {
 
 void SetupWizard::SetScreen(WizardScreen screen) {
     m_screen = screen;
-    if (screen == WizardScreen::Paths) {
+    if (screen == WizardScreen::Files) {
+        Validate(WizardControlId::DiscText, true);
         for (WizardControlId id : TEXT_IDS) {
             Validate(id, true);
         }
+    } else if (screen == WizardScreen::SearchDirectory) {
+        Validate(WizardControlId::SearchText, true);
     }
     FocusFirst();
     if (screen == WizardScreen::Done) {
@@ -458,8 +502,13 @@ void SetupWizard::ShowMessage(std::vector<std::string> lines, bool question) {
 
 void SetupWizard::Validate(WizardControlId id, bool force) {
     TextField &field = Field(id);
-    const std::filesystem::path path = PathFromUtf8(EncodeUtf8(field.text));
+    const std::filesystem::path path = ResolveUserPath(EncodeUtf8(field.text), m_services.home);
     std::error_code error;
+    if (id == WizardControlId::SearchText) {
+        field.valid = !field.text.empty() && std::filesystem::is_directory(path, error);
+        field.reason = !field.text.empty() && !field.valid ? "Directory not found." : "";
+        return;
+    }
     const bool exists = !field.text.empty() && std::filesystem::is_regular_file(path, error);
     std::uintmax_t size = exists ? std::filesystem::file_size(path, error) : 0;
     auto time =
@@ -473,18 +522,19 @@ void SetupWizard::Validate(WizardControlId id, bool force) {
     field.size = size;
     field.time = time;
     field.valid = false;
+    field.release.reset();
     field.reason.clear();
     if (field.text.empty()) {
         return;
     }
     if (!exists) {
-        field.reason = "File not found";
+        field.reason = CartridgeIndex(id) < 0 ? "File not found" : "Invalid ROM image.";
         return;
     }
     int index = CartridgeIndex(id);
     if (index < 0) {
         if (!std::ranges::contains(DISC_EXTENSIONS, LowercaseExtension(path))) {
-            field.reason = "Not a disc image (.cue or .iso)";
+            field.reason = "Not a disc image (.bin, .cue, or .iso)";
             return;
         }
         if (auto failure = m_services.checkDisc(path)) {
@@ -496,11 +546,10 @@ void SetupWizard::Validate(WizardControlId id, bool force) {
     }
     auto release = m_services.identifyCartridge(path);
     if (!release) {
-        field.reason = "Not a Top Gear Rally ROM";
-    } else if (static_cast<int>(*release) != index) {
-        field.reason = "Not the " + std::string(RELEASE_NAMES[index]) + " release";
+        field.reason = "Invalid ROM image.";
     } else {
         field.valid = true;
+        field.release = release;
     }
 }
 
@@ -509,7 +558,7 @@ void SetupWizard::OpenBrowser(WizardControlId target) {
     browser.target = target;
     m_browser = std::move(browser);
     std::error_code error;
-    std::filesystem::path typed = PathFromUtf8(EncodeUtf8(Field(target).text));
+    std::filesystem::path typed = ResolveUserPath(EncodeUtf8(Field(target).text), m_services.home);
     if (!typed.empty()) {
         typed = std::filesystem::absolute(typed, error);
     }
@@ -533,7 +582,8 @@ void SetupWizard::ChangeDirectory(const std::filesystem::path &directory) {
                          std::span<const std::string_view>(DISC_EXTENSIONS) :
                          std::span<const std::string_view>(CARTRIDGE_EXTENSIONS);
     }
-    auto entries = ListBrowserDirectory(directory, extensions);
+    auto entries = ListBrowserDirectory(
+        directory, extensions, m_browser->target == WizardControlId::SearchText);
     if (!entries) {
         ShowMessage({Utf8FromPath(directory) + " cannot be read."}, false);
         return;
@@ -559,14 +609,31 @@ void SetupWizard::OpenSelected() {
         ChangeDirectory(entry.path);
         return;
     }
-    TextField &field = Field(m_browser->target);
-    field.text = DecodeUtf8(Utf8FromPath(entry.path));
-    field.caret = field.text.size();
-    field.scroll = field.caret > TEXT_WIDTH - 1 ? field.caret - (TEXT_WIDTH - 1) : 0;
+    SetText(m_browser->target, entry.path);
     m_lastDirectory = m_browser->directory;
     m_screenFocus = m_browser->target;
     Validate(m_browser->target, true);
     m_browser.reset();
+}
+
+void SetupWizard::ChooseDirectory() {
+    SetText(WizardControlId::SearchText, m_browser->directory);
+    m_screenFocus = WizardControlId::SearchText;
+    m_browser.reset();
+}
+
+void SetupWizard::SetText(WizardControlId id, const std::filesystem::path &path) {
+    auto &field = Field(id);
+    field = TextField{};
+    field.text = DecodeUtf8(Utf8FromPath(path));
+    field.caret = field.text.size();
+    field.scroll = field.caret >= TEXT_WIDTH ? field.caret - TEXT_WIDTH + 1 : 0;
+    Validate(id, true);
+}
+
+void SetupWizard::ClearText(WizardControlId id) {
+    SetText(id, {});
+    m_screenFocus = id;
 }
 
 void SetupWizard::SetSelection(int selected) {
@@ -584,15 +651,19 @@ void SetupWizard::SetSelection(int selected) {
 
 void SetupWizard::StartImport() {
     WizardImport files;
-    files.disc = PathFromUtf8(EncodeUtf8(m_disc.text));
-    auto base = BaseCartridge(m_checked);
-    for (int pass = 0; pass < 2; ++pass) {
-        for (int i = 0; i < WIZARD_CARTRIDGES; ++i) {
-            bool isBase = base && static_cast<int>(*base) == i;
-            if (m_checked[i] && isBase == (pass == 0)) {
-                files.cartridges.emplace_back(static_cast<WizardCartridge>(i),
-                                              PathFromUtf8(EncodeUtf8(m_cartridges[i].text)));
+    files.disc = ResolveUserPath(EncodeUtf8(m_disc.text), m_services.home);
+    std::array<std::filesystem::path, WIZARD_CARTRIDGES> images;
+    for (const auto &field : m_cartridges) {
+        if (field.valid && field.release) {
+            auto &image = images[static_cast<std::size_t>(*field.release)];
+            if (image.empty()) {
+                image = ResolveUserPath(EncodeUtf8(field.text), m_services.home);
             }
+        }
+    }
+    for (int i = 0; i < WIZARD_CARTRIDGES; ++i) {
+        if (!images[i].empty()) {
+            files.cartridges.emplace_back(static_cast<WizardCartridge>(i), images[i]);
         }
     }
     m_importFailure.reset();
@@ -621,6 +692,60 @@ void SetupWizard::StartImport() {
     });
 }
 
+void SetupWizard::StartSearch() {
+    m_searchComplete = false;
+    m_searchResult = {};
+    m_importStep = "Looking for images";
+    m_importFraction = 0.0;
+    ClearText(WizardControlId::DiscText);
+    for (auto id : TEXT_IDS) {
+        ClearText(id);
+    }
+    m_import = std::make_shared<ImportState>();
+    auto state = m_import;
+    auto services = m_services;
+    const auto directory = ResolveUserPath(EncodeUtf8(m_directory.text), m_services.home);
+    m_thread = std::thread([state, services, directory]() {
+        WizardSearchResult result;
+        try {
+            result = SearchWizardDirectory(
+                directory,
+                services,
+                [state](const WizardSearchResult &found, const std::string &step, double fraction) {
+                    std::lock_guard lock(state->mutex);
+                    state->search = found;
+                    state->step = step;
+                    state->fraction = fraction;
+                    return !state->cancel.load();
+                });
+        } catch (const std::exception &error) {
+            result.failure = error.what();
+        } catch (...) {
+            result.failure = "The search failed.";
+        }
+        std::lock_guard lock(state->mutex);
+        state->search = std::move(result);
+        state->done = true;
+    });
+}
+
+void SetupWizard::ApplySearchResult() {
+    SetText(WizardControlId::DiscText, m_searchResult.disc);
+    int slot = 0;
+    for (auto id : TEXT_IDS) {
+        ClearText(id);
+    }
+    for (const auto &path : m_searchResult.roms) {
+        if (!path.empty()) {
+            SetText(TEXT_IDS[slot++], path);
+        }
+    }
+    SetScreen(WizardScreen::Files);
+    m_screenFocus = !m_disc.valid              ? WizardControlId::DiscText :
+                    !BaseCartridge(Detected()) ? WizardControlId::Rom1Text :
+                                                 WizardControlId::Next;
+}
+
 void SetupWizard::Update() {
     if (!m_import) {
         return;
@@ -630,6 +755,9 @@ void SetupWizard::Update() {
         std::lock_guard lock(m_import->mutex);
         m_importStep = m_import->step;
         m_importFraction = m_import->fraction;
+        if (m_screen == WizardScreen::Search) {
+            m_searchResult = m_import->search;
+        }
         done = m_import->done;
         if (done) {
             m_importFailure = m_import->failure;
@@ -643,7 +771,24 @@ void SetupWizard::Update() {
     m_import.reset();
     if (cancelled) {
         m_importFailure.reset();
-        SetScreen(WizardScreen::Disc);
+        SetScreen(m_screen == WizardScreen::Search ? WizardScreen::SearchDirectory :
+                                                     WizardScreen::Files);
+    } else if (m_screen == WizardScreen::Search) {
+        m_searchComplete = true;
+        m_importFraction = 1.0;
+        m_screenFocus = WizardControlId::UseFound;
+        if (m_searchResult.failure || m_searchResult.disc.empty() ||
+            std::ranges::any_of(m_searchResult.roms,
+                                [](const auto &path) { return path.empty(); })) {
+            std::vector<std::string> lines;
+            if (m_searchResult.failure) {
+                lines.push_back(*m_searchResult.failure);
+            }
+            lines.push_back("Not every image was found. Extra ROM images are optional.");
+            lines.push_back("Search another directory? Yes replaces the search results.");
+            lines.push_back("No returns to the setup fields with the images found.");
+            ShowMessage(std::move(lines), true);
+        }
     } else if (m_importFailure) {
         FocusFirst();
     } else {
@@ -656,32 +801,53 @@ void SetupWizard::Activate(WizardControlId id) {
     case WizardControlId::DiscBrowse:
         OpenBrowser(WizardControlId::DiscText);
         break;
-    case WizardControlId::UsaBrowse:
-    case WizardControlId::EurBrowse:
-    case WizardControlId::JpnBrowse:
+    case WizardControlId::Rom1Browse:
+    case WizardControlId::Rom2Browse:
+    case WizardControlId::Rom3Browse:
         OpenBrowser(TEXT_IDS[CartridgeIndex(id)]);
         break;
-    case WizardControlId::CheckUsa:
-    case WizardControlId::CheckEur:
-    case WizardControlId::CheckJpn: {
-        bool &checked = m_checked[static_cast<std::size_t>(CartridgeIndex(id))];
-        checked = !checked;
+    case WizardControlId::DiscClear:
+        ClearText(WizardControlId::DiscText);
         break;
-    }
+    case WizardControlId::Rom1Clear:
+    case WizardControlId::Rom2Clear:
+    case WizardControlId::Rom3Clear:
+        ClearText(TEXT_IDS[CartridgeIndex(id)]);
+        break;
+    case WizardControlId::SearchClear:
+        ClearText(WizardControlId::SearchText);
+        break;
+    case WizardControlId::SearchAssets:
+    case WizardControlId::RetrySearch:
+        if (m_directory.text.empty()) {
+            SetText(WizardControlId::SearchText,
+                    m_lastDirectory.empty() ? m_services.home : m_lastDirectory);
+        }
+        SetScreen(WizardScreen::SearchDirectory);
+        break;
+    case WizardControlId::SearchBrowse:
+        OpenBrowser(WizardControlId::SearchText);
+        break;
+    case WizardControlId::StartSearch:
+        if (m_directory.valid) {
+            SetScreen(WizardScreen::Search);
+            StartSearch();
+            FocusFirst();
+        }
+        break;
+    case WizardControlId::UseFound:
+        ApplySearchResult();
+        break;
     case WizardControlId::Next:
         if (NextEnabled()) {
-            SetScreen(static_cast<WizardScreen>(static_cast<int>(m_screen) + 1));
+            SetScreen(WizardScreen::Import);
         }
         break;
     case WizardControlId::Back:
-        if (m_screen == WizardScreen::Cartridges) {
-            SetScreen(WizardScreen::Disc);
-        } else if (m_screen == WizardScreen::Paths) {
-            SetScreen(WizardScreen::Cartridges);
-        } else if (m_screen == WizardScreen::Done ||
-                   (m_screen == WizardScreen::Import && m_importFailure)) {
+        if (m_screen == WizardScreen::SearchDirectory || m_screen == WizardScreen::Done ||
+            (m_screen == WizardScreen::Import && m_importFailure)) {
             m_importFailure.reset();
-            SetScreen(WizardScreen::Paths);
+            SetScreen(WizardScreen::Files);
         }
         break;
     case WizardControlId::Cancel:
@@ -693,7 +859,11 @@ void SetupWizard::Activate(WizardControlId id) {
         m_end = WizardEnd::Finished;
         break;
     case WizardControlId::BrowserOk:
-        OpenSelected();
+        if (m_browser->target == WizardControlId::SearchText) {
+            ChooseDirectory();
+        } else {
+            OpenSelected();
+        }
         break;
     case WizardControlId::BrowserCancel:
         m_browser.reset();
@@ -703,17 +873,27 @@ void SetupWizard::Activate(WizardControlId id) {
         ChangeDirectory(m_browser->directory);
         break;
     case WizardControlId::MessageOk:
+        m_message.reset();
+        break;
     case WizardControlId::MessageNo:
         m_message.reset();
+        if (m_screen == WizardScreen::Search && m_searchComplete) {
+            ApplySearchResult();
+        }
         break;
     case WizardControlId::MessageYes:
         m_message.reset();
-        m_end = WizardEnd::Quit;
+        if (m_screen == WizardScreen::Search && m_searchComplete) {
+            Activate(WizardControlId::RetrySearch);
+        } else {
+            m_end = WizardEnd::Quit;
+        }
         break;
     case WizardControlId::DiscText:
-    case WizardControlId::UsaText:
-    case WizardControlId::EurText:
-    case WizardControlId::JpnText:
+    case WizardControlId::Rom1Text:
+    case WizardControlId::Rom2Text:
+    case WizardControlId::Rom3Text:
+    case WizardControlId::SearchText:
     case WizardControlId::BrowserList:
         break;
     }
@@ -726,6 +906,10 @@ void SetupWizard::PressDefault() {
         OpenSelected();
     } else if (m_screen == WizardScreen::Done) {
         Activate(WizardControlId::Finish);
+    } else if (m_screen == WizardScreen::SearchDirectory) {
+        Activate(WizardControlId::StartSearch);
+    } else if (m_screen == WizardScreen::Search && m_searchComplete) {
+        Activate(WizardControlId::UseFound);
     } else {
         Activate(WizardControlId::Next);
     }
@@ -736,16 +920,56 @@ void SetupWizard::Escape() {
         m_message.reset();
     } else if (m_browser) {
         m_browser.reset();
-    } else if (m_screen == WizardScreen::Disc) {
+    } else if (m_screen == WizardScreen::Files) {
         ShowMessage({"Quit?", "The game cannot start without its data."}, true);
-    } else if (m_screen == WizardScreen::Import && !m_importFailure) {
+    } else if ((m_screen == WizardScreen::Import && !m_importFailure) ||
+               (m_screen == WizardScreen::Search && !m_searchComplete)) {
         Activate(WizardControlId::Cancel);
+    } else if (m_screen == WizardScreen::Search) {
+        ApplySearchResult();
     } else {
         Activate(WizardControlId::Back);
     }
 }
 
 void SetupWizard::EditText(TextField &field, const WizardEvent &event, WizardControlId id) {
+    const auto oldCaret = field.caret;
+    const bool selected = field.anchor && *field.anchor != field.caret;
+    auto eraseSelection = [&]() {
+        if (!field.anchor || *field.anchor == field.caret) {
+            field.anchor.reset();
+            return false;
+        }
+        const auto begin = std::min(*field.anchor, field.caret);
+        field.text.erase(begin, std::max(*field.anchor, field.caret) - begin);
+        field.caret = begin;
+        field.anchor.reset();
+        return true;
+    };
+    auto wordCharacter = [](char32_t c) {
+        return c >= 0x80 || c == U'_' || (c < 0x80 && std::isalnum(static_cast<unsigned char>(c)));
+    };
+    auto previousWord = [&]() {
+        auto at = field.caret;
+        while (at > 0 && !wordCharacter(field.text[at - 1])) {
+            --at;
+        }
+        while (at > 0 && wordCharacter(field.text[at - 1])) {
+            --at;
+        }
+        return at;
+    };
+    auto nextWord = [&]() {
+        auto at = field.caret;
+        while (at < field.text.size() && wordCharacter(field.text[at])) {
+            ++at;
+        }
+        while (at < field.text.size() && !wordCharacter(field.text[at])) {
+            ++at;
+        }
+        return at;
+    };
+    bool movement = false;
     if (event.type == WizardEvent::Type::Text) {
         std::u32string typed;
         for (char32_t c : DecodeUtf8(event.text)) {
@@ -753,34 +977,75 @@ void SetupWizard::EditText(TextField &field, const WizardEvent &event, WizardCon
                 typed += c;
             }
         }
+        eraseSelection();
         field.text.insert(field.caret, typed);
         field.caret += typed.size();
     } else {
         switch (event.key) {
         case WizardKey::Left:
-            field.caret -= field.caret > 0 ? 1 : 0;
+            field.caret = !event.shift && selected ? std::min(*field.anchor, field.caret) :
+                                                     field.caret - (field.caret > 0 ? 1 : 0);
+            movement = true;
             break;
         case WizardKey::Right:
-            field.caret += field.caret < field.text.size() ? 1 : 0;
+            field.caret = !event.shift && selected ?
+                              std::max(*field.anchor, field.caret) :
+                              field.caret + (field.caret < field.text.size() ? 1 : 0);
+            movement = true;
             break;
         case WizardKey::Home:
             field.caret = 0;
+            movement = true;
             break;
         case WizardKey::End:
             field.caret = field.text.size();
+            movement = true;
             break;
         case WizardKey::Backspace:
-            if (field.caret > 0) {
+            if (!eraseSelection() && field.caret > 0) {
                 field.text.erase(--field.caret, 1);
             }
             break;
         case WizardKey::Delete:
-            if (field.caret < field.text.size()) {
+            if (!eraseSelection() && field.caret < field.text.size()) {
                 field.text.erase(field.caret, 1);
             }
             break;
+        case WizardKey::SelectAll:
+            field.anchor = 0;
+            field.caret = field.text.size();
+            break;
+        case WizardKey::DeleteWord:
+            if (!eraseSelection()) {
+                const auto begin = previousWord();
+                field.text.erase(begin, field.caret - begin);
+                field.caret = begin;
+            }
+            break;
+        case WizardKey::DeleteNextWord:
+            if (!eraseSelection()) {
+                field.text.erase(field.caret, nextWord() - field.caret);
+            }
+            break;
+        case WizardKey::WordLeft:
+            field.caret = previousWord();
+            movement = true;
+            break;
+        case WizardKey::WordRight:
+            field.caret = nextWord();
+            movement = true;
+            break;
         default:
             return;
+        }
+    }
+    if (movement) {
+        if (event.shift) {
+            if (!field.anchor) {
+                field.anchor = oldCaret;
+            }
+        } else {
+            field.anchor.reset();
         }
     }
     if (field.caret < field.scroll) {
@@ -852,12 +1117,27 @@ void SetupWizard::HandleMouse(const WizardEvent &event) {
     };
     auto scrollTo = [&](int top) { m_browser->top = std::clamp(top, 0, range); };
     if (event.type == WizardEvent::Type::MouseUp) {
+        m_selecting.reset();
         if (m_browser) {
             m_browser->dragging = false;
         }
         return;
     }
     if (event.type == WizardEvent::Type::MouseMove) {
+        if (m_selecting) {
+            auto &field = Field(*m_selecting);
+            const auto at = std::clamp<std::ptrdiff_t>(
+                static_cast<std::ptrdiff_t>(field.scroll) + column - CONTENT_COLUMN,
+                0,
+                static_cast<std::ptrdiff_t>(field.text.size()));
+            field.caret = static_cast<std::size_t>(at);
+            if (field.caret < field.scroll) {
+                field.scroll = field.caret;
+            } else if (field.caret >= field.scroll + TEXT_WIDTH) {
+                field.scroll = field.caret - TEXT_WIDTH + 1;
+            }
+            return;
+        }
         if (m_browser && m_browser->dragging && track > 1) {
             scrollTo(((row - LIST_ROW - 1) * range + (track - 1) / 2) / (track - 1));
         }
@@ -869,6 +1149,7 @@ void SetupWizard::HandleMouse(const WizardEvent &event) {
         }
         return;
     }
+    m_selecting.reset();
     for (const WizardControl &control : Controls()) {
         if (!control.enabled || !Contains(control, column, row)) {
             continue;
@@ -882,8 +1163,13 @@ void SetupWizard::HandleMouse(const WizardEvent &event) {
             break;
         case WizardControl::Kind::TextBox: {
             TextField &field = Field(control.id);
+            const auto oldCaret = field.caret;
             field.caret = std::min(field.scroll + static_cast<std::size_t>(column - control.column),
                                    field.text.size());
+            if (!event.shift || !field.anchor) {
+                field.anchor = event.shift ? oldCaret : field.caret;
+            }
+            m_selecting = control.id;
             break;
         }
         case WizardControl::Kind::List:
@@ -1059,13 +1345,42 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
                            background,
                            control.width);
             }
-            if (focused && blink && Focus() == control.id) {
+            if (focused && field.anchor) {
+                const auto begin = std::min(*field.anchor, field.caret);
+                const auto end = std::max(*field.anchor, field.caret);
+                for (std::size_t i = std::max(begin, field.scroll);
+                     i < end && i < field.scroll + static_cast<std::size_t>(control.width);
+                     ++i) {
+                    auto &cell =
+                        grid.At(control.column + static_cast<int>(i - field.scroll), control.row);
+                    cell.foreground = Black;
+                    cell.background = LightGray;
+                }
+            }
+            if (focused && blink && Focus() == control.id &&
+                (!field.anchor || *field.anchor == field.caret)) {
                 grid.cursor = std::array<int, 2>{
                     control.column + static_cast<int>(field.caret - field.scroll), control.row};
             }
             if (control.bad) {
                 grid.WriteUtf8(
                     control.column, control.row + 1, field.reason, Red, LightGray, TEXT_WIDTH + 14);
+            } else if (field.valid && field.release) {
+                grid.WriteUtf8(
+                    control.column,
+                    control.row + 1,
+                    std::string(RELEASE_NAMES[static_cast<std::size_t>(*field.release)]) +
+                        " ROM image detected.",
+                    DarkGray,
+                    LightGray);
+            } else if (control.id == WizardControlId::DiscText && field.valid &&
+                       LowercaseExtension(
+                           ResolveUserPath(EncodeUtf8(field.text), m_services.home)) == ".iso") {
+                grid.WriteUtf8(control.column,
+                               control.row + 1,
+                               "ISO images do not include PC music.",
+                               DarkGray,
+                               LightGray);
             }
             break;
         }
@@ -1144,36 +1459,52 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
     const bool screenOnTop = !m_browser && !m_message;
     std::string status = " <Tab=Next Field>  <Alt+Letter=Choose>  <Enter=Next>  <Esc=Back>";
     switch (m_screen) {
-    case WizardScreen::Disc:
-        dialog("Step 1 of 5: Disc");
+    case WizardScreen::Files:
+        dialog("Step 1 of 3: Game files");
         writeLines(DIALOG_ROW + 2,
-                   "Please locate your copy of the Boss Rally disc image (.cue or .iso).",
+                   "Required: Boss Rally BIN/CUE/ISO and at least one N64 ROM image.",
                    Black);
-        if (m_disc.valid && LowercaseExtension(PathFromUtf8(EncodeUtf8(m_disc.text))) == ".iso") {
-            writeLines(DIALOG_ROW + 10,
-                       "ISO images do not include PC music. Choose a CUE sheet for disc audio.",
-                       Black);
-        }
         status = " <Tab=Next Field>  <Alt+Letter=Choose>  <Enter=Next>  <Esc=Quit>";
         break;
-    case WizardScreen::Cartridges:
-        dialog("Step 2 of 5: ROM releases");
-        writeLines(DIALOG_ROW + 2, "Which Top Gear Rally N64 ROM images do you have?", Black);
-        writeLines(DIALOG_ROW + 3, "Check every release you have with Space.", Black);
+    case WizardScreen::SearchDirectory:
+        dialog("Search directory for assets");
+        writeLines(DIALOG_ROW + 2, "Choose a folder to search, including its subfolders.", Black);
+        writeLines(
+            DIALOG_ROW + 3, "Type or paste a path, or browse. ~ means your home folder.", Black);
+        writeLines(DIALOG_ROW + 10, "A new search replaces the current file selection.", Black);
+        status = " <Tab=Next Field>  <Enter=Search>  <Esc=Back>";
         break;
-    case WizardScreen::Paths: {
-        dialog("Step 3 of 5: ROM images");
-        writeLines(DIALOG_ROW + 2, "Please locate each ROM image.", Black);
-        if (auto base = BaseCartridge(m_checked)) {
-            writeLines(SEPARATOR_ROW - 1,
-                       "The default pack is built on the " +
-                           std::string(RELEASE_NAMES[static_cast<int>(*base)]) + " release.",
-                       DarkGray);
+    case WizardScreen::Search: {
+        dialog(m_searchComplete ? "Asset search results" : "Searching for assets");
+        grid.WriteUtf8(
+            CONTENT_COLUMN, DIALOG_ROW + 2, m_importStep, Black, LightGray, DIALOG_WIDTH - 6);
+        const std::array<bool, 4> found{!m_searchResult.disc.empty(),
+                                        !m_searchResult.roms[0].empty(),
+                                        !m_searchResult.roms[1].empty(),
+                                        !m_searchResult.roms[2].empty()};
+        constexpr std::array<const char *, 4> labels{
+            "Boss Rally disc image", "USA ROM image", "European ROM image", "Japanese ROM image"};
+        for (std::size_t i = 0; i < found.size(); ++i) {
+            grid.WriteUtf8(CONTENT_COLUMN + 2,
+                           DIALOG_ROW + 5 + static_cast<int>(i) * 2,
+                           std::string(found[i] ? "[X] " : "[ ] ") + labels[i],
+                           found[i] ? Blue : Black,
+                           LightGray);
         }
+        const int width = DIALOG_WIDTH - 6;
+        const int filled = static_cast<int>(std::clamp(m_importFraction, 0.0, 1.0) * width);
+        grid.Fill(CONTENT_COLUMN, DIALOG_ROW + 13, width, 1, 0xB0, DarkGray, LightGray);
+        grid.Fill(CONTENT_COLUMN, DIALOG_ROW + 13, filled, 1, 0xDB, Blue, LightGray);
+        grid.WriteUtf8(CONTENT_COLUMN,
+                       DIALOG_ROW + 14,
+                       std::to_string(static_cast<int>(m_importFraction * 100.0)) + "%",
+                       Black,
+                       LightGray);
+        status = m_searchComplete ? " <Enter=Use Found Files>  <Esc=Back>" : " <Esc=Cancel>";
         break;
     }
     case WizardScreen::Import: {
-        dialog("Step 4 of 5: Import");
+        dialog("Step 2 of 3: Import");
         if (m_importFailure) {
             int row = writeLines(DIALOG_ROW + 2, "The import failed.", Red);
             writeLines(row + 1, *m_importFailure, Red);
@@ -1196,7 +1527,7 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
         break;
     }
     case WizardScreen::Done:
-        dialog("Step 5 of 5: Done");
+        dialog("Step 3 of 3: Done");
         grid.WriteUtf8(DIALOG_COLUMN + (DIALOG_WIDTH - 21) / 2,
                        DIALOG_ROW + 7,
                        "Enjoy Top Gear Rally!",

@@ -183,7 +183,8 @@ add_test(NAME sdl COMMAND sdl_test)
 
 find_package(Threads REQUIRED)
 add_executable(firstrun_test firstrun_test.cpp "${_src}/sdl/firstrun/filebrowser.cpp"
-               "${_src}/sdl/firstrun/setupwizard.cpp" "${_src}/sdl/firstrun/textgrid.cpp")
+               "${_src}/sdl/firstrun/setupwizard.cpp" "${_src}/sdl/firstrun/textgrid.cpp"
+               "${_src}/sdl/firstrun/assetsearch.cpp")
 set_target_properties(firstrun_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(firstrun_test PRIVATE "${_src}/sdl/firstrun")
 target_compile_options(firstrun_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)

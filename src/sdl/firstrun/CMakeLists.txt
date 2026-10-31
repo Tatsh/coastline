@@ -12,7 +12,7 @@ add_custom_command(
   VERBATIM)
 
 find_package(Threads REQUIRED)
-add_library(coastline_firstrun STATIC filebrowser.cpp setupwizard.cpp textfont.cpp textgrid.cpp
+add_library(coastline_firstrun STATIC assetsearch.cpp filebrowser.cpp setupwizard.cpp textfont.cpp textgrid.cpp
                                       wizardrun.cpp "${_font_header}")
 target_include_directories(coastline_firstrun PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}"
                            PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")

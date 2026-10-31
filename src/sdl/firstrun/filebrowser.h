@@ -38,15 +38,20 @@ struct BrowserEntry {
  * @param directory The directory, absolute.
  * @param extensions The extensions of the files listed, lowercase with the full stop, such as
  * .cue, or empty for every file.
+ * @param directoriesOnly Whether to omit files and list only navigable directories.
  * @return The entries, or nothing when the directory cannot be read.
  */
 std::optional<std::vector<BrowserEntry>>
 ListBrowserDirectory(const std::filesystem::path &directory,
-                     std::span<const std::string_view> extensions);
+                     std::span<const std::string_view> extensions,
+                     bool directoriesOnly = false);
+
+/** Expand an initial home-directory shorthand without changing other path characters. */
+std::filesystem::path ResolveUserPath(std::string_view text, const std::filesystem::path &home);
 
 /**
  * @param path A path.
- * @return The path in UTF-8.
+ * @return The path in UTF-8, with native directory separators.
  */
 std::string Utf8FromPath(const std::filesystem::path &path);
 

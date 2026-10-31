@@ -459,9 +459,37 @@ void CheckRunScript() {
     Check(ScriptFails("10", 1, "The frame has no command"), "a frame alone");
 }
 
+void CheckReset() {
+    const auto root = std::filesystem::temp_directory_path() /
+                      ("coastline-reset-" +
+                       std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    const coastline::GamePaths paths{
+        root / "config", root / "config/data", root / "state", root / "cache"};
+    Check(coastline::CreateGamePaths(paths), "reset fixture directories are created");
+    WriteText(paths.data / "nested/asset", "asset");
+    WriteText(paths.config / "settings", "settings");
+    WriteText(paths.state / "save", "save");
+    WriteText(paths.cache / "cache", "cache");
+    WriteText(root / "unrelated", "preserve");
+    std::filesystem::create_directory_symlink(root, paths.data / "outside");
+    Check(!coastline::ResetGamePaths(paths), "all application directories are deleted");
+    for (const auto *path : {&paths.config, &paths.data, &paths.state, &paths.cache}) {
+        Check(!std::filesystem::exists(*path), "reset removes each directory");
+    }
+    Check(ReadText(root / "unrelated") == "preserve", "reset preserves unrelated files");
+    Check(!coastline::ResetGamePaths(paths), "absent directories permit another reset");
+    Check(coastline::CreateGamePaths(paths), "directories can be recreated after reset");
+    auto invalid = paths;
+    invalid.cache = root.root_path();
+    Check(coastline::ResetGamePaths(invalid).has_value(), "reset refuses a filesystem root");
+    Check(std::filesystem::exists(paths.config), "all paths are checked before deletion");
+    std::filesystem::remove_all(root);
+}
+
 } // namespace
 
 int main() {
+    CheckReset();
     CheckImportInventory();
     CheckRunScript();
     CheckPerformanceParsing();

@@ -326,18 +326,34 @@ wrapping when the gain raises it past the range of a sample.
 ### Data
 
 Starting the game without usable assets opens an in-game setup wizard. The wizard locates a
-Boss Rally CUE sheet or ISO and the Top Gear Rally cartridges, checks each cartridge by SHA-1,
-and imports the files while displaying progress. Finish starts the intro in the same window.
-The file browser supports the mouse and keyboard; paths can also be typed or pasted with Ctrl+V.
+Boss Rally BIN, CUE sheet, or ISO and at least one Top Gear Rally ROM image on a single Files screen.
+Three interchangeable ROM fields detect each release by SHA-1. Search directory for assets scans
+subfolders and displays discovered images during the search. Finish starts the intro in the same
+window.
+
+Paths can be browsed, typed, or pasted, and an initial `~` expands to the home directory. Every
+field has a Clear button. Ctrl+A selects all text, Ctrl+V pastes, and Alt+Backspace deletes a word.
+
+`coastline --reset` deletes all Coastline configuration, imported assets, mods, saved games, cache,
+and state before starting setup again. The terminal requests confirmation with `y` or `n`, without
+case sensitivity. Add `--yes-really` or `-y` to skip confirmation. With `--data-dir`, reset also
+deletes the selected data directory.
+
+`--config INI` reads and saves settings in the specified INI file instead of the default
+`BossRally.ini`. Relative paths resolve from the launch directory. Data, cache, state, and controller
+bindings use their normal directories. Combining `--reset` with `--config` also deletes the
+specified INI file.
+
 Cancel stops the import and returns to the first step. Setup replaces the generated packs
 `default`, `boss`, `eur`, and `jpn`, preserving mod packs and saved games.
 
 The data comes from a Boss Rally disc image and a Top Gear Rally cartridge image. The import
 checks the cartridge against the SHA-1 of each release, and converts the CD audio of a CUE sheet
 to FLAC. An ISO image has no CD audio. The import writes every file to `assets/default` in the
-data directory, and exits. The `import` subcommand takes the disc with `--cd`, a CUE sheet (`.cue`)
-or an ISO image (`.iso`), and a cartridge with each `--rom`. A raw BIN image and a CloneCD image
-(`.img` or `.ccd`) cannot be imported yet.
+data directory, and exits. The `import` subcommand takes the disc with `--cd`, a CUE sheet (`.cue`),
+an ISO image (`.iso`), or a BIN image (`.bin`), and a ROM image with each `--rom`. A BIN uses a
+matching adjacent CUE sheet when available. Without a CUE sheet, the Mode 1 data track is imported
+without CD audio. CloneCD images (`.img` or `.ccd`) cannot be imported yet.
 
 ```shell
 coastline import --cd 'Boss Rally.cue' --rom usa.z64 --rom jpn.z64
@@ -463,7 +479,8 @@ line that starts with a frame number, from 1, acts at that frame. These are the 
   `cd` choose the cockpit, the bumper, and the chase camera, and `cr` chooses an item of the pause
   menu.
 - `FRAME key KEY [FRAMES]` holds a key of the keyboard for 6 frames or `FRAMES`. `KEY` is the SDL
-  name of the key, such as `Return`, `Escape`, or `F9`.
+  name of the key, such as `Return`, `Escape`, or `F9`. `Ctrl`, `Alt`, `Shift`, and `Gui` are aliases
+  for modifier keys. Overlapping key durations produce shortcuts such as Ctrl+A.
 - `FRAME type TEXT` types the rest of the line while a screen takes text, or presses Backspace or
   Enter for `<backspace>` or `<enter>`.
 - `FRAME mouse X Y [BUTTON [FRAMES]]` puts the mouse at a place of the 320 by 240 screen for 1

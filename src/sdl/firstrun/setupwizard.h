@@ -2,7 +2,7 @@
 
 /**
  * @file
- * The first-run setup wizard locates and imports disc and cartridge images on screens drawn on a
+ * The first-run setup wizard locates and imports disc and ROM images on screens drawn on a
  * TextGrid in the style of the QBASIC editor. The wizard takes events and produces a grid without
  * calling SDL.
  */
@@ -23,29 +23,29 @@
 
 namespace coastline {
 
-/** A release of the cartridge, in the order of the check boxes of the wizard. */
+/** A supported ROM release. */
 enum class WizardCartridge {
     Usa, /*!< The USA release. */
     Eur, /*!< The European release. */
     Jpn, /*!< The Japanese release. */
 };
 
-/** The number of releases of the cartridge. */
+/** The number of supported ROM releases. */
 inline constexpr int WIZARD_CARTRIDGES = 3;
 
 /**
- * Choose the base release for the default pack. Prefer the USA release when checked, then the
+ * Choose the base release for the default pack. Prefer the USA release when detected, then the
  * European release, then the Japanese release.
  *
- * @param checked Whether each release is checked, in the order of WizardCartridge.
- * @return The release, or nothing when none is checked.
+ * @param checked Whether each release is available, in the order of WizardCartridge.
+ * @return The release, or nothing when no release is available.
  */
 std::optional<WizardCartridge> BaseCartridge(const std::array<bool, WIZARD_CARTRIDGES> &checked);
 
 /** The files an import of the wizard reads. */
 struct WizardImport {
-    std::filesystem::path disc; /*!< The CUE sheet or ISO image of the disc. */
-    /** The cartridge images by their release, the base of the default pack first. */
+    std::filesystem::path disc; /*!< The CUE sheet, ISO image, or BIN image of the disc. */
+    /** The ROM images by release, with the base of the default pack first. */
     std::vector<std::pair<WizardCartridge, std::filesystem::path>> cartridges;
 };
 
@@ -56,7 +56,7 @@ using WizardProgress = std::function<bool(const std::string &step, double fracti
 struct WizardServices {
     /** The reason a disc image is not Boss Rally, or nothing when it is. */
     std::function<std::optional<std::string>(const std::filesystem::path &)> checkDisc;
-    /** The release of a cartridge image by its SHA-1, or nothing when it is not Top Gear Rally. */
+    /** The release of a ROM image by its SHA-1, or nothing when it is not Top Gear Rally. */
     std::function<std::optional<WizardCartridge>(const std::filesystem::path &)> identifyCartridge;
     /** Import files on a separate thread and return a message on failure. */
     std::function<std::optional<std::string>(const WizardImport &, const WizardProgress &)> import;
@@ -64,22 +64,45 @@ struct WizardServices {
     std::filesystem::path lastDirectory; /*!< The directory last browsed, or empty. */
 };
 
+/** The images found during a directory search, indexed by detected release. */
+struct WizardSearchResult {
+    std::filesystem::path disc;
+    std::array<std::filesystem::path, WIZARD_CARTRIDGES> roms;
+    std::size_t examined = 0;
+    std::size_t candidates = 0;
+    std::optional<std::string> failure;
+};
+
+/** Report search progress and return false to cancel. */
+using WizardSearchProgress =
+    std::function<bool(const WizardSearchResult &, const std::string &, double)>;
+
+/** Search a directory recursively for validated disc and ROM images. */
+WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
+                                         const WizardServices &services,
+                                         const WizardSearchProgress &progress);
+
 /** A key of the keyboard the wizard reads. */
 enum class WizardKey {
-    Tab,       /*!< Tab, or Shift and Tab. */
-    Enter,     /*!< Enter. */
-    Space,     /*!< Space. */
-    Escape,    /*!< Escape. */
-    Up,        /*!< The up arrow. */
-    Down,      /*!< The down arrow. */
-    Left,      /*!< The left arrow. */
-    Right,     /*!< The right arrow. */
-    PageUp,    /*!< Page Up. */
-    PageDown,  /*!< Page Down. */
-    Home,      /*!< Home. */
-    End,       /*!< End. */
-    Backspace, /*!< Backspace. */
-    Delete,    /*!< Delete. */
+    Tab,            /*!< Tab, or Shift and Tab. */
+    Enter,          /*!< Enter. */
+    Space,          /*!< Space. */
+    Escape,         /*!< Escape. */
+    Up,             /*!< The up arrow. */
+    Down,           /*!< The down arrow. */
+    Left,           /*!< The left arrow. */
+    Right,          /*!< The right arrow. */
+    PageUp,         /*!< Page Up. */
+    PageDown,       /*!< Page Down. */
+    Home,           /*!< Home. */
+    End,            /*!< End. */
+    Backspace,      /*!< Backspace. */
+    Delete,         /*!< Delete. */
+    SelectAll,      /*!< Select the entire text. */
+    DeleteWord,     /*!< Delete the previous word. */
+    DeleteNextWord, /*!< Delete the next word. */
+    WordLeft,       /*!< Move to the previous word. */
+    WordRight,      /*!< Move to the next word. */
 };
 
 /** An event of the keyboard or the mouse. */
@@ -107,11 +130,11 @@ struct WizardEvent {
 
 /** A screen of the wizard, in order. */
 enum class WizardScreen {
-    Disc,       /*!< The path of the disc image. */
-    Cartridges, /*!< The check boxes of the releases of the cartridge. */
-    Paths,      /*!< The path of each cartridge image checked. */
-    Import,     /*!< The import and its progress. */
-    Done,       /*!< The end, with Finish. */
+    Files,           /*!< The disc and three interchangeable ROM paths. */
+    SearchDirectory, /*!< The directory to search. */
+    Search,          /*!< Search progress and discovered images. */
+    Import,          /*!< The import and its progress. */
+    Done,            /*!< The end, with Finish. */
 };
 
 /** How the wizard ended. */
@@ -125,15 +148,23 @@ enum class WizardEnd {
 enum class WizardControlId {
     DiscText,      /*!< The path of the disc image. */
     DiscBrowse,    /*!< Browse for the disc image. */
-    CheckUsa,      /*!< The check box of the USA cartridge. */
-    CheckEur,      /*!< The check box of the European cartridge. */
-    CheckJpn,      /*!< The check box of the Japanese cartridge. */
-    UsaText,       /*!< The path of the USA cartridge image. */
-    EurText,       /*!< The path of the European cartridge image. */
-    JpnText,       /*!< The path of the Japanese cartridge image. */
-    UsaBrowse,     /*!< Browse for the USA cartridge image. */
-    EurBrowse,     /*!< Browse for the European cartridge image. */
-    JpnBrowse,     /*!< Browse for the Japanese cartridge image. */
+    DiscClear,     /*!< Clear the disc path. */
+    Rom1Text,      /*!< The first ROM path. */
+    Rom2Text,      /*!< The second ROM path. */
+    Rom3Text,      /*!< The third ROM path. */
+    Rom1Browse,    /*!< Browse for the first ROM image. */
+    Rom2Browse,    /*!< Browse for the second ROM image. */
+    Rom3Browse,    /*!< Browse for the third ROM image. */
+    Rom1Clear,     /*!< Clear the first ROM path. */
+    Rom2Clear,     /*!< Clear the second ROM path. */
+    Rom3Clear,     /*!< Clear the third ROM path. */
+    SearchAssets,  /*!< Open the directory search. */
+    SearchText,    /*!< The directory path. */
+    SearchBrowse,  /*!< Browse for a directory. */
+    SearchClear,   /*!< Clear the directory path. */
+    StartSearch,   /*!< Start searching. */
+    RetrySearch,   /*!< Search another directory. */
+    UseFound,      /*!< Return to the setup fields. */
     Back,          /*!< The previous screen. */
     Next,          /*!< The next screen. */
     Cancel,        /*!< Cancel the import. */
@@ -244,6 +275,12 @@ public:
      */
     std::string Reason(WizardControlId id) const;
 
+    /** @return The selection of the focused text field, in UTF-8. */
+    std::string SelectedText() const;
+
+    /** @return The images discovered during the directory search. */
+    const WizardSearchResult &SearchResult() const;
+
     /** @return The directory last browsed, or empty. */
     const std::filesystem::path &LastDirectory() const;
 
@@ -252,7 +289,9 @@ private:
         std::u32string text;
         std::size_t caret = 0;
         std::size_t scroll = 0;
+        std::optional<std::size_t> anchor;
         bool valid = false;
+        std::optional<WizardCartridge> release;
         std::string reason;
         // The text and the size and time of its file at the last check.
         std::u32string checked;
@@ -292,8 +331,13 @@ private:
     void OpenBrowser(WizardControlId target);
     void ChangeDirectory(const std::filesystem::path &directory);
     void OpenSelected();
+    void ChooseDirectory();
     void ShowMessage(std::vector<std::string> lines, bool question);
     void StartImport();
+    void StartSearch();
+    void ApplySearchResult();
+    void SetText(WizardControlId id, const std::filesystem::path &path);
+    void ClearText(WizardControlId id);
     void Validate(WizardControlId id, bool force);
     void EditText(TextField &field, const WizardEvent &event, WizardControlId id);
     void HandleListKey(WizardKey key);
@@ -303,14 +347,16 @@ private:
     bool NextEnabled() const;
     TextField &Field(WizardControlId id);
     const TextField &Field(WizardControlId id) const;
-    std::array<bool, WIZARD_CARTRIDGES> Checked() const;
+    std::array<bool, WIZARD_CARTRIDGES> Detected() const;
 
     WizardServices m_services;
-    WizardScreen m_screen = WizardScreen::Disc;
+    WizardScreen m_screen = WizardScreen::Files;
     WizardEnd m_end = WizardEnd::Running;
     TextField m_disc;
     std::array<TextField, WIZARD_CARTRIDGES> m_cartridges;
-    std::array<bool, WIZARD_CARTRIDGES> m_checked{};
+    TextField m_directory;
+    WizardSearchResult m_searchResult;
+    bool m_searchComplete = false;
     std::optional<Browser> m_browser;
     std::optional<Message> m_message;
     std::optional<WizardControlId> m_screenFocus;
@@ -322,6 +368,7 @@ private:
     std::string m_importStep;
     double m_importFraction = 0.0;
     std::optional<std::string> m_importFailure;
+    std::optional<WizardControlId> m_selecting;
 };
 
 } // namespace coastline

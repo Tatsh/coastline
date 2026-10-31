@@ -211,6 +211,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
             event.x = at[0];
             event.y = at[1];
             event.milliseconds = milliseconds;
+            event.shift = (SDL_GetModState() & SDL_KMOD_SHIFT) != 0;
             return event;
         };
         // Alt and Enter or F11 switch full screen, Alt and a letter press an accelerator, and
@@ -226,10 +227,36 @@ SetupRun RunSetupWizard(GpuWindow &window,
             }
             WizardEvent event;
             event.milliseconds = milliseconds;
-            if ((mod & SDL_KMOD_ALT) && key >= SDLK_A && key <= SDLK_Z) {
+            event.shift = (mod & SDL_KMOD_SHIFT) != 0;
+            const bool command = (mod & (SDL_KMOD_CTRL | SDL_KMOD_GUI)) != 0;
+            if (command && (key == SDLK_C || key == SDLK_X)) {
+                const auto selected = wizard.SelectedText();
+                if (!selected.empty()) {
+                    SDL_SetClipboardText(selected.c_str());
+                    if (key == SDLK_X) {
+                        event.key = WizardKey::Delete;
+                        wizard.Handle(event);
+                    }
+                }
+                return;
+            }
+            if (command && key == SDLK_A) {
+                event.key = WizardKey::SelectAll;
+            } else if ((command || (mod & SDL_KMOD_ALT)) && key == SDLK_BACKSPACE) {
+                event.key = WizardKey::DeleteWord;
+            } else if (command && key == SDLK_DELETE) {
+                event.key = WizardKey::DeleteNextWord;
+            } else if (command && key == SDLK_LEFT) {
+                event.key = WizardKey::WordLeft;
+            } else if (command && key == SDLK_RIGHT) {
+                event.key = WizardKey::WordRight;
+            } else if ((mod & SDL_KMOD_ALT) && key >= SDLK_0 && key <= SDLK_9) {
+                event.type = WizardEvent::Type::Accelerator;
+                event.letter = static_cast<char>('0' + key - SDLK_0);
+            } else if ((mod & SDL_KMOD_ALT) && key >= SDLK_A && key <= SDLK_Z) {
                 event.type = WizardEvent::Type::Accelerator;
                 event.letter = static_cast<char>('a' + (key - SDLK_A));
-            } else if ((mod & SDL_KMOD_CTRL) && key == SDLK_V) {
+            } else if (command && key == SDLK_V) {
                 char *clipboard = SDL_GetClipboardText();
                 event.type = WizardEvent::Type::Text;
                 event.text = clipboard ? clipboard : "";
@@ -299,6 +326,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
                 scriptMod |= code == SDLK_LSHIFT || code == SDLK_RSHIFT ? SDL_KMOD_SHIFT :
                              code == SDLK_LALT || code == SDLK_RALT     ? SDL_KMOD_ALT :
                              code == SDLK_LCTRL || code == SDLK_RCTRL   ? SDL_KMOD_CTRL :
+                             code == SDLK_LGUI || code == SDLK_RGUI     ? SDL_KMOD_GUI :
                                                                           SDL_KMOD_NONE;
             }
         }

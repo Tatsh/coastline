@@ -1,5 +1,6 @@
 #include "paths.h"
 
+#include <array>
 #include <chrono>
 #include <cstdlib>
 #include <fstream>
@@ -237,6 +238,24 @@ bool CreateGamePaths(const GamePaths &paths) {
         }
     }
     return true;
+}
+
+std::optional<std::string> ResetGamePaths(const GamePaths &paths) {
+    const std::array directories{paths.config, paths.data, paths.state, paths.cache};
+    for (const auto &directory : directories) {
+        const auto normalized = directory.lexically_normal();
+        if (!normalized.is_absolute() || normalized == normalized.root_path()) {
+            return "Cannot reset an empty, relative, or root directory.";
+        }
+    }
+    for (const auto &directory : directories) {
+        std::error_code error;
+        std::filesystem::remove_all(directory, error);
+        if (error) {
+            return "Cannot delete " + directory.string() + ". " + error.message();
+        }
+    }
+    return std::nullopt;
 }
 
 } // namespace coastline

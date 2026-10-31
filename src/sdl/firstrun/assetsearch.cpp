@@ -1,0 +1,92 @@
+#include <algorithm>
+#include <array>
+#include <system_error>
+
+#include "setupwizard.h"
+
+namespace coastline {
+
+WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
+                                         const WizardServices &services,
+                                         const WizardSearchProgress &progress) {
+    WizardSearchResult result;
+    auto report = [&](const std::string &step, double fraction) {
+        return !progress || progress(result, step, fraction);
+    };
+    constexpr std::array<std::string_view, 6> extensions{
+        ".cue", ".iso", ".z64", ".n64", ".v64", ".bin"};
+    std::vector<std::filesystem::path> candidates;
+    std::error_code error;
+    std::filesystem::recursive_directory_iterator entry(
+        directory, std::filesystem::directory_options::skip_permission_denied, error),
+        end;
+    if (error) {
+        result.failure = "The directory cannot be read.";
+        return result;
+    }
+    while (entry != end) {
+        if (!report("Looking in " + Utf8FromPath(entry->path().parent_path()), 0.0)) {
+            return result;
+        }
+        const auto name = Utf8FromPath(entry->path().filename());
+        const bool hidden = !name.empty() && name.front() == '.';
+        if (hidden && entry->is_directory(error)) {
+            entry.disable_recursion_pending();
+        }
+        if (!hidden && entry->is_regular_file(error) &&
+            std::ranges::contains(extensions, LowercaseExtension(entry->path()))) {
+            candidates.push_back(entry->path());
+        }
+        entry.increment(error);
+        if (error) {
+            result.failure = "Part of the directory could not be read.";
+            break;
+        }
+    }
+    auto rank = [](const std::filesystem::path &path) {
+        auto extension = LowercaseExtension(path);
+        return extension == ".cue" ? 0 : extension == ".iso" ? 1 : 2;
+    };
+    std::ranges::sort(candidates, [&](const auto &left, const auto &right) {
+        return std::pair(rank(left), left) < std::pair(rank(right), right);
+    });
+    result.candidates = candidates.size();
+    for (const auto &path : candidates) {
+        const double fraction = static_cast<double>(result.examined) /
+                                static_cast<double>(std::max<std::size_t>(result.candidates, 1));
+        if (!report("Checking " + Utf8FromPath(path), fraction)) {
+            return result;
+        }
+        const auto extension = LowercaseExtension(path);
+        if (extension == ".cue" || extension == ".iso" || extension == ".bin") {
+            if (result.disc.empty() && !services.checkDisc(path)) {
+                result.disc = path;
+            }
+        }
+        if (extension != ".cue" && extension != ".iso" && result.disc != path) {
+            const auto size = std::filesystem::file_size(path, error);
+            if (!error && size <= 32 * 1024 * 1024) {
+                if (auto release = services.identifyCartridge(path)) {
+                    auto &found = result.roms[static_cast<std::size_t>(*release)];
+                    if (found.empty()) {
+                        found = path;
+                    }
+                }
+            }
+        }
+        ++result.examined;
+        if (!report("Checked " + Utf8FromPath(path),
+                    static_cast<double>(result.examined) /
+                        static_cast<double>(std::max<std::size_t>(result.candidates, 1)))) {
+            return result;
+        }
+        if (!result.disc.empty() &&
+            std::ranges::all_of(result.roms, [](const auto &rom) { return !rom.empty(); })) {
+            break;
+        }
+    }
+    report("Search complete", 1.0);
+    return result;
+}
+
+} // namespace coastline
