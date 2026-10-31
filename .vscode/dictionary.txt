@@ -26,6 +26,8 @@ ambientsound
 anchorfile
 andi
 apfn
+appdir
+appimage
 appnotstarted
 apsz
 aptex
@@ -179,6 +181,7 @@ cplens
 cplext
 cppreference
 cptex
+craftctl
 createdibsection
 createmesgqueue
 createplayerorgroup
@@ -204,6 +207,7 @@ daddu
 damagetexture
 damnit
 darin
+dasharray
 dashboardtextures
 dashcam
 datacrc
@@ -253,6 +257,7 @@ denumret
 depthbuffer
 desrttr
 desrttrk
+destdir
 destroyplayerorgroup
 destroythread
 devicearrival
@@ -347,6 +352,7 @@ dpup
 drawtexturedrect
 drenderstate
 drenderstatetype
+drirc
 drlibs
 drytire
 dsbcaps
@@ -636,14 +642,17 @@ lgui
 lhandle
 libasound
 libc
+libdecor
 libdragon
 libdragon's
+libdrm
 libegl
 libera
 libflac
 libgcc
 libglide
 libltdl
+libpulse
 libsonnet
 libultra
 libunwind
@@ -661,6 +670,8 @@ lightcol
 lightg
 lightr
 lindex
+linecap
+linuxdeploy
 litob
 llcvt
 lmask
@@ -990,6 +1001,7 @@ rearload
 rearsliding
 reartex
 rearwheel
+rect
 recvmesg
 refguid
 reflectiondata
@@ -1118,6 +1130,7 @@ slotvehicle
 slti
 sltu
 smokepos
+snapcore
 snapcraft
 snapmodule
 snapshotfields

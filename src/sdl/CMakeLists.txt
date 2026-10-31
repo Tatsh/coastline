@@ -282,6 +282,8 @@ if(NOT WIN32 AND NOT APPLE)
                                                          "$ORIGIN/../${CMAKE_INSTALL_LIBDIR}")
   install(FILES io.github.tatsh.coastline.desktop
           DESTINATION "${CMAKE_INSTALL_DATADIR}/applications")
+  install(FILES io.github.tatsh.coastline.svg
+          DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps")
 endif()
 install(FILES "${CMAKE_SOURCE_DIR}/LICENSE.txt" "${CMAKE_SOURCE_DIR}/README.md"
         DESTINATION "${CMAKE_INSTALL_DOCDIR}")

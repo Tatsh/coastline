@@ -80,6 +80,13 @@ VCPKG_ROOT=/path/to/vcpkg cmake --workflow --preset sdl
 cmake --install build/sdl --prefix ~/.local
 ```
 
+The build workflow uploads a debug and a release build of the game for each platform, an AppImage
+of each Linux release build, and a snap for amd64 and arm64 built from `snap/snapcraft.yaml`.
+
+```shell
+snapcraft pack
+```
+
 Without vcpkg, each library and tool comes from a pinned release that is downloaded and built with
 the game. The `USE_SYSTEM_<NAME>` options take each from the system instead, with nothing
 downloaded: `USE_SYSTEM_SDL3`, `USE_SYSTEM_ARGPARSE`, `USE_SYSTEM_FMT`, `USE_SYSTEM_FLAC`,

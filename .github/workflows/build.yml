@@ -49,15 +49,19 @@ jobs:
           name: 'n64-${{ matrix.region }}-${{ matrix.build-type }}'
           path: 'build/n64-${{ matrix.region }}/src/**/*.a'
   sdl:
-    name: 'SDL (${{ matrix.name }})'
-    runs-on: '${{ matrix.os }}'
+    name: 'SDL (${{ matrix.platform.name }}, ${{ matrix.build-type }})'
+    runs-on: '${{ matrix.platform.os }}'
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - name: 'Linux x86_64'
+        build-type: ['Debug', 'Release']
+        platform:
+          # linuxdeploy builds the AppImage, and its checksum is that of the pinned release.
+          - linuxdeploy-sha256: 'c20cd71e3a4e3b80c3483cef793cda3f4e990aca14014d23c544ca3ce1270b4d'
+            name: 'Linux x86_64'
             os: 'ubuntu-latest'
-          - name: 'Linux arm64'
+          - linuxdeploy-sha256: '620095110d693282b8ebeb244a95b5e911cf8f65f76c88b4b47d16ae6346fcff'
+            name: 'Linux arm64'
             os: 'ubuntu-24.04-arm'
           # MSVC of Visual Studio 2022 is the oldest that compiles C++23, and the game targets
           # Windows 7, the oldest SDL 3 runs on.
@@ -78,6 +82,7 @@ jobs:
             os: 'macos-latest'
             triplet: 'x64-osx'
     env:
+      BUILD_TYPE: '${{ matrix.build-type }}'
       MACOSX_DEPLOYMENT_TARGET: '10.15'
       VCPKG_KEEP_ENV_VARS: 'MACOSX_DEPLOYMENT_TARGET'
       VCPKG_ROOT: '${{ github.workspace }}/.vcpkg'
@@ -106,17 +111,17 @@ jobs:
       - if: runner.os == 'Linux'
         name: 'Configure and compile'
         run: |
-          cmake --preset sdl
+          cmake --preset sdl -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
           cmake --build --preset sdl -- -k 0
       - if: runner.os == 'macOS'
         name: 'Configure and compile'
         run: |
-          cmake --preset sdl -DCMAKE_OSX_ARCHITECTURES="$ARCHITECTURE" \
-            -DVCPKG_TARGET_TRIPLET="$TRIPLET"
+          cmake --preset sdl -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
+            -DCMAKE_OSX_ARCHITECTURES="$ARCHITECTURE" -DVCPKG_TARGET_TRIPLET="$TRIPLET"
           cmake --build --preset sdl -- -k 0
         env:
-          ARCHITECTURE: '${{ matrix.architecture }}'
-          TRIPLET: '${{ matrix.triplet }}'
+          ARCHITECTURE: '${{ matrix.platform.architecture }}'
+          TRIPLET: '${{ matrix.platform.triplet }}'
       # Ninja finds MSVC in the environment the developer command prompt sets up for the
       # architecture of the runner.
       - if: runner.os == 'Windows'
@@ -127,22 +132,71 @@ jobs:
           Import-Module "$studio\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
           Enter-VsDevShell -VsInstallPath $studio -SkipAutomaticLocation `
             -DevCmdArguments "-arch=$env:ARCHITECTURE -host_arch=$env:ARCHITECTURE"
-          cmake --preset sdl
+          cmake --preset sdl -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake --build --preset sdl -- -k 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         env:
-          ARCHITECTURE: '${{ matrix.architecture }}'
+          ARCHITECTURE: '${{ matrix.platform.architecture }}'
         shell: pwsh
+      # The debug build retains its symbols, and the release build is stripped.
       - name: 'Install'
-        run: cmake --install build/sdl --prefix staging
+        run: |
+          if [ "$BUILD_TYPE" = 'Release' ]; then strip='--strip'; else strip=''; fi
+          cmake --install build/sdl --prefix staging $strip
         shell: bash
       - name: 'Upload the game'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
-          name: 'sdl-${{ matrix.name }}'
+          name: 'sdl-${{ matrix.platform.name }}-${{ matrix.build-type }}'
           path: 'staging'
+      # The AppImage bundles the libraries the game links, and SDL opens those of the system for
+      # the display, the GPU, and the sound.
+      - if: runner.os == 'Linux' && matrix.build-type == 'Release'
+        name: 'Build the AppImage'
+        run: |
+          arch="$(uname -m)"
+          curl -sSL -o linuxdeploy.AppImage \
+            "https://github.com/linuxdeploy/linuxdeploy/releases/download/1-alpha-20251107-1/linuxdeploy-$arch.AppImage"
+          echo "$LINUXDEPLOY_SHA256  linuxdeploy.AppImage" | sha256sum -c
+          chmod +x linuxdeploy.AppImage
+          DESTDIR=AppDir cmake --install build/sdl --prefix /usr --strip
+          APPIMAGE_EXTRACT_AND_RUN=1 ./linuxdeploy.AppImage --appdir AppDir --output appimage
+        env:
+          LINUXDEPLOY_SHA256: '${{ matrix.platform.linuxdeploy-sha256 }}'
+      - if: runner.os == 'Linux' && matrix.build-type == 'Release'
+        name: 'Upload the AppImage'
+        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        with:
+          if-no-files-found: 'error'
+          name: 'appimage-${{ matrix.platform.name }}'
+          path: '*.AppImage'
+  snap:
+    name: 'Snap (${{ matrix.name }})'
+    runs-on: '${{ matrix.os }}'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: 'amd64'
+            os: 'ubuntu-latest'
+          - name: 'arm64'
+            os: 'ubuntu-24.04-arm'
+    steps:
+      # The version of the snap is the description of the commit by its tags.
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - id: 'snap'
+        uses: 'snapcore/action-build@3bdaa03e1ba6bf59a65f84a751d943d549a54e79'
+      - name: 'Upload the snap'
+        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
+        with:
+          if-no-files-found: 'error'
+          name: 'snap-${{ matrix.name }}'
+          path: '${{ steps.snap.outputs.snap }}'
   win:
     name: 'Windows (${{ matrix.renderer }}, ${{ matrix.build-type }})'
     runs-on: windows-latest

@@ -1,0 +1,100 @@
+adopt-info: coastline
+apps:
+  coastline:
+    command: 'usr/bin/coastline'
+    command-chain: ['bin/gpu-2404-wrapper']
+    common-id: 'io.github.tatsh.coastline'
+    desktop: 'usr/share/applications/io.github.tatsh.coastline.desktop'
+    plugs:
+      - 'audio-playback'
+      - 'home'
+      - 'joystick'
+      - 'opengl'
+      - 'removable-media'
+      - 'wayland'
+      - 'x11'
+base: 'core24'
+confinement: 'strict'
+description: |
+  Coastline is a stand-alone game of Top Gear Rally and Boss Rally. It needs a Boss Rally disc
+  image and a Top Gear Rally cartridge image, which `coastline --import-disc` and
+  `coastline --import-rom` import.
+grade: 'devel'
+icon: 'src/sdl/io.github.tatsh.coastline.svg'
+# The GPU libraries come from the mesa-2404 snap through the gpu-2404 interface.
+layout:
+  /usr/share/drirc.d:
+    symlink: '$SNAP/gpu-2404/drirc.d'
+  /usr/share/libdrm:
+    bind: '$SNAP/gpu-2404/libdrm'
+  /usr/share/X11/XErrorDB:
+    symlink: '$SNAP/gpu-2404/X11/XErrorDB'
+license: 'MIT'
+name: 'coastline'
+parts:
+  coastline:
+    # SDL and the other libraries are the pinned releases the build downloads, linked statically.
+    build-packages:
+      - 'autoconf-archive'
+      - 'git'
+      - 'libasound2-dev'
+      - 'libdecor-0-dev'
+      - 'libegl1-mesa-dev'
+      - 'libpulse-dev'
+      - 'libwayland-dev'
+      - 'libx11-dev'
+      - 'libxcursor-dev'
+      - 'libxext-dev'
+      - 'libxfixes-dev'
+      - 'libxi-dev'
+      - 'libxkbcommon-dev'
+      - 'libxrandr-dev'
+      - 'libxss-dev'
+      - 'libxtst-dev'
+      - 'ninja-build'
+      - 'pkg-config'
+      - 'wayland-protocols'
+    cmake-generator: 'Ninja'
+    cmake-parameters:
+      - '-DCMAKE_BUILD_TYPE=Release'
+      - '-DCMAKE_INSTALL_PREFIX=/usr'
+      - '-DTGR_ENABLE_PATCHES=ON'
+      - '-DTGR_PLATFORM=sdl'
+    override-pull: |
+      craftctl default
+      craftctl set version="$(git describe --always --tags)"
+    plugin: 'cmake'
+    source: '.'
+    # SDL opens these libraries when the game starts.
+    stage-packages:
+      - 'libasound2t64'
+      - 'libdecor-0-0'
+      - 'libpulse0'
+      - 'libwayland-client0'
+      - 'libwayland-cursor0'
+      - 'libwayland-egl1'
+      - 'libx11-6'
+      - 'libxcursor1'
+      - 'libxext6'
+      - 'libxfixes3'
+      - 'libxi6'
+      - 'libxkbcommon0'
+      - 'libxrandr2'
+      - 'libxss1'
+  gpu-2404:
+    after: ['coastline']
+    override-prime: |
+      craftctl default
+      ${CRAFT_PART_SRC}/bin/gpu-2404-cleanup mesa-2404
+    plugin: 'dump'
+    prime: ['bin/gpu-2404-wrapper']
+    source: 'https://github.com/canonical/gpu-snap.git'
+platforms:
+  amd64:
+  arm64:
+plugs:
+  gpu-2404:
+    default-provider: 'mesa-2404'
+    interface: 'content'
+    target: '$SNAP/gpu-2404'
+summary: 'Top Gear Rally and Boss Rally in one stand-alone game'
