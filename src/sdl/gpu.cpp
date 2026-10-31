@@ -100,6 +100,8 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
         SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "The window was not created: %s", SDL_GetError());
         return nullptr;
     }
+    // The window is never smaller than the 320 by 240 of the screen of the console.
+    SDL_SetWindowMinimumSize(result->m_window.get(), 320, 240);
     if (options.fullscreen) {
         result->SetFullscreen(true);
     }
