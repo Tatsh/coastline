@@ -17,8 +17,11 @@
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
-#include <psapi.h>
+// psapi.h needs the types of windows.h before it.
+// clang-format off
 #include <windows.h>
+#include <psapi.h>
+// clang-format on
 #elif defined(__APPLE__)
 #include <sys/resource.h>
 #include <unistd.h>
