@@ -835,8 +835,9 @@ void Menus::ProcessDataSaveLoadMenu(SceneRenderer &renderer,
             m_saveLoadChoice = SAVE_LOAD_SAVE_GHOST;
         }
         m_saveLoadStep = SAVE_LOAD_STEP_FADE_IN;
-        // The music stays silent after the results until the menu exits or returns to its choices.
-        m_screen->FadeIn(false);
+        // Only the screen fades in. The music and the sound effects stay silent after the results
+        // until the menu exits or returns to its choices.
+        m_screen->FadeIn(false, false);
     }
 
     m_screen->UpdateFade(seconds);

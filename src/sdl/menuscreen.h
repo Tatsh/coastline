@@ -259,8 +259,9 @@ public:
      * console fade it in from black.
      *
      * @param fadeMusic Whether the music fades in as well, or stays at its level.
+     * @param fadeSounds Whether the sound effects fade in as well, or stay at their level.
      */
-    void FadeIn(bool fadeMusic = true);
+    void FadeIn(bool fadeMusic = true, bool fadeSounds = true);
 
     /** Fade the screen and the sound effects out. */
     void FadeOut();
