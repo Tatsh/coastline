@@ -14,6 +14,13 @@ namespace {
 
 std::array<std::vector<ControlSource>, CONTROL_ACTION_COUNT> g_controls;
 std::array<std::string, PLAYER_DEVICE_KEYS.size()> g_playerDevices{"auto", "auto"};
+// The share of the travel of an axis that reads as 0. The PC release sets no dead zone on the
+// joystick, and the steering of the console ignores the first 7% of the stick. A stick at rest
+// reads a little off centre, and its other half would otherwise cancel a full press of the same
+// action from a button.
+constexpr float DEFAULT_DEAD_ZONE = 0.07f;
+constexpr float MAX_DEAD_ZONE = 0.9f;
+int g_deadZone = static_cast<int>(DEFAULT_DEAD_ZONE * CONTROL_FULL);
 
 bool EqualsIgnoringCase(std::string_view left, std::string_view right) {
     return std::ranges::equal(left, right, [](char a, char b) {
@@ -108,6 +115,9 @@ void LoadControls(const GameConfig &config) {
         });
         g_playerDevices[i] = device.empty() ? "auto" : device;
     }
+    const float deadZone = std::clamp(
+        config.GetFloat("Controls", DEAD_ZONE_KEY, DEFAULT_DEAD_ZONE), 0.0f, MAX_DEAD_ZONE);
+    g_deadZone = static_cast<int>(deadZone * CONTROL_FULL);
 }
 
 std::string_view PlayerDevice(std::size_t player) {
@@ -123,17 +133,14 @@ int ReadControl(SDL_Gamepad *gamepad, ControlAction action) {
     for (const ControlSource &source : g_controls[action]) {
         int value = 0;
         if (source.axis) {
-            // A stick at rest reads a little off centre, and its other half would otherwise cancel
-            // a full press of the same action from a button.
-            constexpr int DEAD_ZONE = 7849;
             const int raw =
                 std::max(0,
                          SDL_GetGamepadAxis(gamepad, static_cast<SDL_GamepadAxis>(source.index)) *
                              source.sign);
-            value = raw <= DEAD_ZONE ?
+            value = raw <= g_deadZone ?
                         0 :
                         std::min(CONTROL_FULL,
-                                 (raw - DEAD_ZONE) * CONTROL_FULL / (CONTROL_FULL - DEAD_ZONE));
+                                 (raw - g_deadZone) * CONTROL_FULL / (CONTROL_FULL - g_deadZone));
         } else if (SDL_GetGamepadButton(gamepad, static_cast<SDL_GamepadButton>(source.index))) {
             value = CONTROL_FULL;
         }

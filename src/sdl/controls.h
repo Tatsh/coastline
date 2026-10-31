@@ -62,6 +62,8 @@ inline constexpr std::array<std::string_view, CONTROL_ACTION_COUNT> CONTROL_KEYS
 
 /** The key of the Controls section that chooses a preset. */
 inline constexpr std::string_view CONTROL_PRESET_KEY = "Preset";
+/** The key of the Controls section with the share of the travel of an axis that reads as 0. */
+inline constexpr std::string_view DEAD_ZONE_KEY = "DeadZone";
 
 /** The keys of the Controls section that choose the input device of each player. */
 inline constexpr std::array<std::string_view, 2> PLAYER_DEVICE_KEYS{"Player1", "Player2"};
@@ -243,9 +245,9 @@ inline constexpr int CONTROL_FULL = 32768;
 
 /**
  * Read the Controls section of @p config: the preset of the Preset key, the default for an absent
- * or unknown preset, with each action key present replacing the binding of the preset, and the
- * device of each player. A name that is not a button or an axis of a gamepad is logged and
- * ignored.
+ * or unknown preset, with each action key present replacing the binding of the preset, the device
+ * of each player, and the dead zone of the axes. A name that is not a button or an axis of a
+ * gamepad is logged and ignored.
  *
  * @param config The settings of BossRally.ini.
  */

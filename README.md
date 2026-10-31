@@ -147,8 +147,14 @@ and an axis without a sign reads its positive half. An axis steers and accelerat
 and a button gives the full amount. An empty value unbinds the action. The log records each name
 that is not a button or an axis, and the game ignores it.
 
+`DeadZone` is the share of the travel of each axis that reads as 0, from `0` to `0.9`, and the
+rest of the travel covers the whole range. The default of `0.07` matches the dead zone of the
+steering of the Nintendo 64 release. A worn stick that steers or cancels the directional pad at
+rest needs a larger value.
+
 ```ini
 [Controls]
+DeadZone = 0.07
 Preset = Default
 Accelerate = a,righttrigger
 SteerLeft = leftx-,dpleft
