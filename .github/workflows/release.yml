@@ -1,0 +1,146 @@
+---
+concurrency:
+  cancel-in-progress: false
+  group: '${{ github.workflow }}-${{ github.event.workflow_run.head_sha }}'
+env:
+  GH_REPO: '${{ github.repository }}'
+  GH_TOKEN: '${{ github.token }}'
+jobs:
+  publish-release:
+    name: 'Publish the release'
+    permissions:
+      actions: 'read'
+      contents: 'write'
+    runs-on: 'ubuntu-latest'
+    steps:
+      # A run follows each workflow of every commit. It goes on only for a commit a v* tag names,
+      # after the workflow that triggered it succeeded.
+      - env:
+          HEAD_SHA: '${{ github.event.workflow_run.head_sha }}'
+          TRIGGER_CONCLUSION: '${{ github.event.workflow_run.conclusion }}'
+        id: 'guard'
+        name: 'Find the tag of the commit'
+        run: |
+          if [[ "$TRIGGER_CONCLUSION" != 'success' ]]; then
+            echo "The triggering workflow concluded with '${TRIGGER_CONCLUSION}'."
+            exit 0
+          fi
+          tag=''
+          while IFS=$'\t' read -r ref obj_type obj_sha; do
+            [[ -z "$ref" ]] && continue
+            if [[ "$obj_type" == 'commit' ]]; then
+              target_sha="$obj_sha"
+            else
+              target_sha=$(gh api "repos/${GH_REPO}/git/tags/${obj_sha}" --jq '.object.sha' \
+                2>/dev/null || echo '')
+            fi
+            if [[ "$target_sha" == "$HEAD_SHA" ]]; then
+              tag="${ref#refs/tags/}"
+              break
+            fi
+          done < <(gh api "repos/${GH_REPO}/git/matching-refs/tags/v" \
+            --jq '.[] | [.ref, .object.type, .object.sha] | @tsv')
+          if [[ -z "$tag" ]]; then
+            echo "No v* tag names ${HEAD_SHA}."
+            exit 0
+          fi
+          echo "The tag of ${HEAD_SHA} is ${tag}."
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+      # Build attaches the packages, so the release waits for it. A check that did not run for the
+      # commit is skipped.
+      - env:
+          HEAD_SHA: '${{ github.event.workflow_run.head_sha }}'
+          TAG: '${{ steps.guard.outputs.tag }}'
+        id: 'check'
+        if: "steps.guard.outputs.tag != ''"
+        name: 'Check that every workflow succeeded'
+        run: |
+          ready=true
+          for workflow in Build Prettier Spelling Tests clang-format markdownlint; do
+            run=$(gh run list --workflow "$workflow" --commit "$HEAD_SHA" \
+              --json status,conclusion --jq '.[0]')
+            if [[ -z "$run" || "$run" == 'null' ]]; then
+              if [[ "$workflow" == 'Build' ]]; then
+                echo 'Build has not run for this commit yet.'
+                ready=false
+              else
+                echo "${workflow} did not run for this commit."
+              fi
+              continue
+            fi
+            status=$(jq -r '.status' <<< "$run")
+            conclusion=$(jq -r '.conclusion' <<< "$run")
+            case "$conclusion" in
+              failure|cancelled|timed_out|startup_failure|action_required)
+                echo "::error::${workflow} concluded with '${conclusion}'."
+                exit 1
+                ;;
+              success|skipped|neutral)
+                ;;
+              *)
+                if [[ "$status" == 'completed' ]]; then
+                  echo "::error::${workflow} completed with '${conclusion}'."
+                  exit 1
+                fi
+                echo "${workflow} is still ${status}."
+                ready=false
+                ;;
+            esac
+          done
+          if [[ "$ready" == 'true' ]]; then
+            echo "Every workflow succeeded for ${TAG}."
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          fi
+      - env:
+          TAG: '${{ steps.guard.outputs.tag }}'
+        if: "steps.check.outputs.ready == 'true'"
+        name: 'Check that every package is attached'
+        run: |
+          required=()
+          for build in Debug Release; do
+            for platform in linux-x86_64 linux-arm64; do
+              required+=("coastline-${TAG}-${platform}-${build}.tar.gz")
+            done
+            for platform in windows-x64 windows-arm64; do
+              required+=("coastline-${TAG}-${platform}-${build}.zip")
+              required+=("coastline-${TAG}-${platform}-${build}-setup.exe")
+            done
+            for platform in macos-arm64 macos-x86_64; do
+              required+=("coastline-${TAG}-${platform}-${build}.dmg")
+            done
+            for library in brd3d brglide; do
+              required+=("coastline-${TAG}-${library}-${build}.zip")
+            done
+          done
+          required+=(
+            "Coastline-${TAG}-aarch64.AppImage"
+            "Coastline-${TAG}-x86_64.AppImage"
+            "coastline_${TAG}_amd64.snap"
+            "coastline_${TAG}_arm64.snap"
+            "sh.tat.coastline-${TAG}-aarch64.flatpak"
+            "sh.tat.coastline-${TAG}-x86_64.flatpak"
+          )
+          mapfile -t attached < <(gh release view "$TAG" --json assets --jq '.assets[].name')
+          echo "${TAG} has ${#attached[@]} packages attached."
+          missing=0
+          for name in "${required[@]}"; do
+            if ! printf '%s\n' "${attached[@]}" | grep -Fxq "$name"; then
+              echo "::error::${TAG} has no ${name}."
+              missing=$((missing + 1))
+            fi
+          done
+          if [[ "$missing" -gt 0 ]]; then
+            echo "::error::${missing} packages are missing, and ${TAG} stays a draft."
+            exit 1
+          fi
+      - env:
+          TAG: '${{ steps.guard.outputs.tag }}'
+        if: "steps.check.outputs.ready == 'true'"
+        name: 'Publish the release'
+        run: gh release edit "$TAG" --draft=false
+name: 'Release'
+'on':
+  workflow_run:
+    types: ['completed']
+    workflows: ['Build', 'Prettier', 'Spelling', 'Tests', 'clang-format', 'markdownlint']
+permissions: {}

@@ -60,28 +60,36 @@ jobs:
           - linuxdeploy-sha256: 'c20cd71e3a4e3b80c3483cef793cda3f4e990aca14014d23c544ca3ce1270b4d'
             name: 'Linux x86_64'
             os: 'ubuntu-latest'
+            slug: 'linux-x86_64'
           - linuxdeploy-sha256: '620095110d693282b8ebeb244a95b5e911cf8f65f76c88b4b47d16ae6346fcff'
             name: 'Linux arm64'
             os: 'ubuntu-24.04-arm'
+            slug: 'linux-arm64'
           # MSVC of Visual Studio 2022 is the oldest that compiles C++23, and the game targets
           # Windows 7, the oldest SDL 3 runs on.
           - architecture: 'x64'
             name: 'Windows x64'
             os: 'windows-2022'
+            slug: 'windows-x64'
           - architecture: 'arm64'
             name: 'Windows arm64'
             os: 'windows-11-arm'
+            slug: 'windows-arm64'
           # The Apple silicon runner also builds for Intel Macs, from 10.15, the oldest macOS
           # whose C++ library has std::filesystem.
           - architecture: 'arm64'
             name: 'macOS arm64'
             os: 'macos-latest'
+            slug: 'macos-arm64'
             triplet: 'arm64-osx'
           - architecture: 'x86_64'
             name: 'macOS x86_64'
             os: 'macos-latest'
+            slug: 'macos-x86_64'
             triplet: 'x64-osx'
     env:
+      # The name of each package has the tag, or the branch outside a release.
+      PACKAGE: 'coastline-${{ github.ref_name }}-${{ matrix.platform.slug }}-${{ matrix.build-type }}'
       BUILD_TYPE: '${{ matrix.build-type }}'
       MACOSX_DEPLOYMENT_TARGET: '10.15'
       VCPKG_KEEP_ENV_VARS: 'MACOSX_DEPLOYMENT_TARGET'
@@ -145,29 +153,42 @@ jobs:
           if [ "$BUILD_TYPE" = 'Release' ]; then strip='--strip'; else strip=''; fi
           cmake --install build/sdl --prefix staging $strip
         shell: bash
-      - if: runner.os != 'macOS'
-        name: 'Upload the game'
-        uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
-        with:
-          if-no-files-found: 'error'
-          name: 'sdl-${{ matrix.platform.name }}-${{ matrix.build-type }}'
-          path: 'staging'
-      # A disk image keeps the permissions and the signature of the bundle, which an artifact loses.
+      # Each package keeps the permissions of the files, which an artifact loses: a tarball on
+      # Linux, and on macOS a disk image, which also keeps the signature of the bundle.
+      - if: runner.os == 'Linux'
+        name: 'Package'
+        run: tar -C staging -czf "$PACKAGE.tar.gz" .
       - if: runner.os == 'macOS'
-        name: 'Build the disk image'
+        name: 'Package'
         run: |
           codesign --verify --deep --strict staging/Coastline.app
           hdiutil create -volname Coastline -srcfolder staging/Coastline.app -ov -format UDZO \
-            "Coastline-$ARCHITECTURE-$BUILD_TYPE.dmg"
-        env:
-          ARCHITECTURE: '${{ matrix.platform.architecture }}'
-      - if: runner.os == 'macOS'
-        name: 'Upload the disk image'
+            "$PACKAGE.dmg"
+      - if: runner.os == 'Windows'
+        name: 'Package'
+        run: Compress-Archive -Path staging\* -DestinationPath "$env:PACKAGE.zip"
+        shell: pwsh
+      # NSIS is on the x64 runner but not always on the arm64 runner.
+      - if: runner.os == 'Windows'
+        name: 'Build the installer'
+        run: |
+          $nsis = "${env:ProgramFiles(x86)}\NSIS"
+          if (-not (Test-Path "$nsis\makensis.exe")) { choco install nsis -y --no-progress }
+          $env:PATH = "$nsis;$env:PATH"
+          cpack --config build/sdl/CPackConfig.cmake -B . `
+            -D "CPACK_PACKAGE_FILE_NAME=$env:PACKAGE-setup"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        shell: pwsh
+      - name: 'Upload the game'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
           name: 'sdl-${{ matrix.platform.name }}-${{ matrix.build-type }}'
-          path: '*.dmg'
+          path: |
+            coastline-*.dmg
+            coastline-*.exe
+            coastline-*.tar.gz
+            coastline-*.zip
       # The AppImage bundles the libraries the game links, and SDL opens those of the system for
       # the display, the GPU, and the sound.
       - if: runner.os == 'Linux' && matrix.build-type == 'Release'
@@ -181,6 +202,7 @@ jobs:
           DESTDIR=AppDir cmake --install build/sdl --prefix /usr --strip
           APPIMAGE_EXTRACT_AND_RUN=1 ./linuxdeploy.AppImage --appdir AppDir --output appimage
         env:
+          LINUXDEPLOY_OUTPUT_VERSION: '${{ github.ref_name }}'
           LINUXDEPLOY_SHA256: '${{ matrix.platform.linuxdeploy-sha256 }}'
       - if: runner.os == 'Linux' && matrix.build-type == 'Release'
         name: 'Upload the AppImage'
@@ -212,7 +234,7 @@ jobs:
         with:
           arch: '${{ matrix.arch }}'
           artifact-name: 'flatpak-${{ matrix.arch }}'
-          bundle: 'coastline-${{ matrix.arch }}.flatpak'
+          bundle: 'sh.tat.coastline-${{ github.ref_name }}-${{ matrix.arch }}.flatpak'
           cache: false
           manifest-path: 'flatpak/sh.tat.coastline.yml'
   snap:
@@ -234,12 +256,21 @@ jobs:
           persist-credentials: false
       - id: 'snap'
         uses: 'snapcore/action-build@3bdaa03e1ba6bf59a65f84a751d943d549a54e79'
+      - name: 'Name the snap after the tag'
+        run: |
+          name="coastline_${VERSION}_${ARCH}.snap"
+          [[ "$SNAP_FILE" == "$name" ]] || mv "$SNAP_FILE" "$name"
+          echo "SNAP_FILE=$name" >> "$GITHUB_ENV"
+        env:
+          ARCH: '${{ matrix.name }}'
+          SNAP_FILE: '${{ steps.snap.outputs.snap }}'
+          VERSION: '${{ github.ref_name }}'
       - name: 'Upload the snap'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
           name: 'snap-${{ matrix.name }}'
-          path: '${{ steps.snap.outputs.snap }}'
+          path: '${{ env.SNAP_FILE }}'
   win:
     name: 'Windows (${{ matrix.renderer }}, ${{ matrix.build-type }})'
     runs-on: windows-latest
@@ -252,7 +283,7 @@ jobs:
       # The compiler is the i686 mingw-w64 GCC of MSYS2's mingw32 system.
       - uses: 'msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e'
         with:
-          install: 'git'
+          install: 'git zip'
           msystem: 'mingw32'
           pacboy: >-
             cmake:p
@@ -280,21 +311,67 @@ jobs:
         shell: 'msys2 {0}'
       # The renderer library, earpds.dll, and the launchers go side by side, as in the installed
       # game.
-      - name: 'Collect the binaries'
+      - name: 'Package'
         run: |
           mkdir staging
           cp "build/win-$TGR_RENDERER/src/"*.dll "build/win-$TGR_RENDERER/src/win32/ear/earpds.dll" \
             "build/win-$TGR_RENDERER/src/win32/boot/"*.exe staging/
-          ls -l staging
+          (cd staging && zip -9 "../coastline-$VERSION-$LIBRARY-$BUILD_TYPE.zip" ./*)
+          unzip -l ./coastline-*.zip
         env:
+          BUILD_TYPE: '${{ matrix.build-type }}'
+          LIBRARY: "${{ matrix.renderer == 'd3d' && 'brd3d' || 'brglide' }}"
           TGR_RENDERER: '${{ matrix.renderer }}'
+          VERSION: '${{ github.ref_name }}'
         shell: 'msys2 {0}'
       - name: 'Upload the binaries'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
           name: 'win-${{ matrix.renderer }}-${{ matrix.build-type }}'
-          path: 'staging'
+          path: 'coastline-*.zip'
+  # On a tag, every package goes to the draft release of the tag. The Release workflow publishes
+  # the draft once every workflow of the commit succeeds.
+  release:
+    if: "github.ref_type == 'tag'"
+    name: 'Attach to the release'
+    needs: ['flatpak', 'n64', 'sdl', 'snap', 'win']
+    permissions:
+      attestations: 'write'
+      contents: 'write'
+      id-token: 'write'
+    runs-on: 'ubuntu-latest'
+    steps:
+      - uses: 'actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333'
+        with:
+          merge-multiple: true
+          path: 'packages'
+          pattern: '{appimage,flatpak,sdl,snap,win}-*'
+      - name: 'List the packages'
+        run: |
+          find packages -maxdepth 1 -type f \( -name '*.AppImage' -o -name '*.dmg' -o -name '*.exe' \
+            -o -name '*.flatpak' -o -name '*.snap' -o -name '*.tar.gz' -o -name '*.zip' \) \
+            | sort > packages.txt
+          cat packages.txt
+      - uses: 'actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6'
+        with:
+          subject-path: |
+            packages/*.AppImage
+            packages/*.dmg
+            packages/*.exe
+            packages/*.flatpak
+            packages/*.snap
+            packages/*.tar.gz
+            packages/*.zip
+      - env:
+          GH_REPO: '${{ github.repository }}'
+          GH_TOKEN: '${{ github.token }}'
+          TAG: '${{ github.ref_name }}'
+        name: 'Upload to the draft release'
+        run: |
+          gh release view "$TAG" >/dev/null 2>&1 \
+            || gh release create "$TAG" --draft --notes '' --title "$TAG" --verify-tag
+          xargs -d '\n' gh release upload "$TAG" --clobber < packages.txt
 name: 'Build'
 'on':
   push:

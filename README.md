@@ -81,6 +81,13 @@ VCPKG_ROOT=/path/to/vcpkg cmake --workflow --preset sdl
 cmake --install build/sdl --prefix ~/.local
 ```
 
+On Windows, `cpack --config build/sdl/CPackConfig.cmake` builds an NSIS installer that installs the
+game for the current user, with shortcuts and an option to add it to `PATH`.
+
+A tag such as `v1.2.3` names the build: the game shows the tag in place of the commit, and the
+build workflow attaches every package to a draft release of the tag. The release workflow
+publishes the draft once every workflow of the commit succeeds and every package is attached.
+
 The build workflow uploads a debug and a release build of the game for each platform, an AppImage
 of each Linux release build, a snap for amd64 and arm64 built from `snap/snapcraft.yaml`, and a
 Flatpak bundle for x86_64 and aarch64 built from `flatpak/sh.tat.coastline.yml`.
