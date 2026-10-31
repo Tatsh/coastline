@@ -27,9 +27,16 @@ int g_dwFpsFrameCountdown = -1;
 unsigned g_adwFpsFrameTimeSamples[FPS_FRAME_TIME_SAMPLE_COUNT];
 
 void DrawFpsCounterOverlay(void) {
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    /* The SDL game shows the rate as the first of its statistics in the third state of F. */
+    if (g_bShowFpsCounter == 0 || g_bShowFpsCounter == 2) {
+        return;
+    }
+#else
     if (g_bShowFpsCounter == 0) {
         return;
     }
+#endif
     if (g_dwGameFpsFrameCountdown == 0) {
         long double total = 0.0L;
         for (int index = 0; index < g_dwGameFpsSampleFrames; ++index) {

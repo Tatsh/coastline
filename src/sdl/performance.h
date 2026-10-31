@@ -98,8 +98,10 @@ private:
     std::unique_ptr<GpuSampler> m_gpu;
     std::uint64_t m_lastFrame = 0; // The nanoseconds of SDL of the frame before.
     double m_frameMs = 0.0;
-    double m_worstMs = 0.0;    // Of the second before.
-    double m_worstNowMs = 0.0; // Of the second so far.
+    int m_framesNow = 0;                     // Drawn in the second so far.
+    std::optional<double> m_framesPerSecond; // Of the second before.
+    double m_worstMs = 0.0;                  // Of the second before.
+    double m_worstNowMs = 0.0;               // Of the second so far.
     std::uint64_t m_secondStart = 0;
     std::optional<double> m_secondStartCpu; // The seconds of the processor at the second's start.
     std::optional<double> m_cpuPercent;     // Of one core, over the second before.

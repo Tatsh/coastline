@@ -291,8 +291,12 @@ void PerformanceStats::Frame() {
     } else {
         m_frameMs = static_cast<double>(now - m_lastFrame) / 1e6;
         m_worstNowMs = std::max(m_worstNowMs, m_frameMs);
+        ++m_framesNow;
     }
     if (now - m_secondStart >= SDL_NS_PER_SECOND) {
+        m_framesPerSecond =
+            static_cast<double>(m_framesNow) / (static_cast<double>(now - m_secondStart) / 1e9);
+        m_framesNow = 0;
         std::optional<double> cpu = ProcessCpuSeconds();
         if (cpu && m_secondStartCpu) {
             m_cpuPercent = (*cpu - *m_secondStartCpu) /
@@ -309,6 +313,9 @@ void PerformanceStats::Frame() {
 
 std::vector<std::string> PerformanceStats::Lines(std::uint64_t gameGpuBytes) const {
     std::vector<std::string> lines;
+    if (m_framesPerSecond) {
+        lines.push_back(fmt::format("FPS: {:.0f}", *m_framesPerSecond));
+    }
     if (m_worstMs > 0.0) {
         lines.push_back(fmt::format("FRAME: {:.1f} MS, WORST: {:.1f} MS", m_frameMs, m_worstMs));
     } else {
@@ -324,11 +331,12 @@ std::vector<std::string> PerformanceStats::Lines(std::uint64_t gameGpuBytes) con
     if (m_memoryBytes) {
         lines.push_back("RAM: " + MemorySize(*m_memoryBytes));
     }
+    lines.push_back("GAME VRAM: " + MemorySize(gameGpuBytes));
+    // The share of the GPU comes and goes with the samples of NVML, so it is the last line.
     std::optional<unsigned> gpu = m_gpu->Percent();
     if (gpu) {
         lines.push_back(fmt::format("GPU: {} PCT", *gpu));
     }
-    lines.push_back("GAME VRAM: " + MemorySize(gameGpuBytes));
     return lines;
 }
 

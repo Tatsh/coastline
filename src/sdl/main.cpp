@@ -1672,8 +1672,9 @@ int main(int argc, char *argv[]) {
                         startRace = end == coastline::MenusEnd::Race;
                         startCreditsRace = end == coastline::MenusEnd::Credits;
                     }
-                    // The HUD of a race and of the attract demo draws the rate itself.
-                    if (g_bShowFpsCounter && frameRateText &&
+                    // The HUD of a race and of the attract demo draws the rate itself, and the
+                    // statistics draw it in their state.
+                    if (g_bShowFpsCounter == 1 && frameRateText &&
                         (frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::MainMenu)) {
                         DrawFrameRate(*sceneRenderer, *frameRateText);
                     }
