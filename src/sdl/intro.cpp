@@ -15,6 +15,7 @@
 #include "common/audiomix.h"
 #include "frontend.h"
 #include "gpu.h"
+#include "menuscreen.h"
 #include "menutext.h"
 #include "music.h"
 #include "scenerenderer.h"
@@ -30,13 +31,11 @@ constexpr float FADE_TIME = 0.2f;
 // and gone.
 constexpr float FIRST_LOGO_START = 0.0f;
 constexpr float PRODUCER_LOGO_START = 4.0f;
-constexpr float DEVELOPER_LOGO_START = 8.0f;
 constexpr float LOGO_SOUND_A_TIME = 0.35f;
 constexpr float LOGO_SOUND_B_TIME = 0.5f;
 constexpr float LOGO_LANDED_TIME = 2.0f;
 constexpr float LOGO_LEAVE_TIME = 3.5f;
 constexpr float LOGO_END_TIME = 6.0f;
-constexpr float DEVELOPER_LOGO_END_TIME = 5.0f;
 
 // The depth of a logo at rest, and its scale.
 constexpr float LOGO_DEPTH = -50.0f;
@@ -55,12 +54,6 @@ constexpr float TITLE_C_START = 15.2f;
 constexpr float TITLE_C_END = 16.2f;
 constexpr float TITLE_D_START = 15.0f;
 constexpr float TITLE_D_END = 16.0f;
-constexpr float COPYRIGHT_START = 17.2f;
-
-// A skip before this jumps here; after the next time it ends the splash screens.
-constexpr float SKIP_TIME = 17.2f;
-constexpr float SKIP_END_TIME = 19.2f;
-constexpr float SPLASH_END_TIME = 24.2f;
 
 // The sound effect channels the splash screens silence when they end.
 constexpr int SPLASH_SFX_CHANNELS = 5;
@@ -89,11 +82,19 @@ struct Intro::State {
     std::unique_ptr<RenderModel> producerLogo;
     std::unique_ptr<RenderModel> developerLogo;
     std::array<std::unique_ptr<RenderModel>, 4> title;
+    std::unique_ptr<RenderTexture> titleImage;
     std::unique_ptr<MenuText> text;
     Lighting splashLighting;
     Lighting menuLighting;
     std::vector<s8> soundA;
     std::vector<s8> soundB;
+    bool usa = true;
+    float developerStart = 8.0f;
+    float developerEnd = 5.0f;
+    float titleOffset = 0.0f;
+    float copyrightStart = 17.2f;
+    float skipEnd = 19.2f;
+    float splashEnd = 24.2f;
 
     float time = 0.0f;
     ScreenFade fade;
@@ -170,8 +171,8 @@ struct Intro::State {
 
     // The depth of a part of the title, which slows as it comes forward and rests at 0 by its end.
     float TitleDepth(float start, float end, float speed) const {
-        if (time < end) {
-            return (std::sqrt(end - start) - std::sqrt(time - start)) * speed;
+        if (time + titleOffset < end) {
+            return (std::sqrt(end - start) - std::sqrt(time + titleOffset - start)) * speed;
         }
         return 0.0f;
     }
@@ -226,14 +227,31 @@ Intro::~Intro() = default;
 
 std::unique_ptr<Intro> Intro::Load(SceneRenderer &renderer, const std::filesystem::path &release) {
     auto state = std::make_unique<State>();
+    state->usa = release.filename() == "usa";
+    const bool japanese = release.filename() == "jpn";
+    if (!state->usa) {
+        state->developerStart = 4.0f;
+        state->developerEnd = japanese ? 4.5f : 5.0f;
+        state->titleOffset = 4.0f;
+        state->copyrightStart = japanese ? 10.5f : 12.95f;
+        state->skipEnd = japanese ? 12.5f : 14.95f;
+        state->splashEnd = japanese ? 16.8f : 18.2f;
+    }
     auto constants = release / "constants";
     state->firstLogo = RenderModel::Load(renderer, constants / "splash_first_logo.gltf");
     const auto producer = constants / "splash_producer_logo.gltf";
-    if (release.filename() == "usa" || std::filesystem::exists(producer)) {
+    if (state->usa) {
         state->producerLogo = RenderModel::Load(renderer, producer);
     }
     state->developerLogo = RenderModel::Load(renderer, constants / "splash_developer_logo.gltf");
-    for (std::size_t part = 0; part < state->title.size(); ++part) {
+    if (japanese) {
+        state->titleImage =
+            RenderTexture::Load(renderer, release / "data" / "g_SplashTitleLogoTexture.png", true);
+        if (!state->titleImage) {
+            return nullptr;
+        }
+    }
+    for (std::size_t part = 0; !japanese && part < state->title.size(); ++part) {
         state->title[part] = RenderModel::Load(
             renderer,
             constants / fmt::format("splash_title_{}.gltf", static_cast<char>('a' + part)));
@@ -244,8 +262,8 @@ std::unique_ptr<Intro> Intro::Load(SceneRenderer &renderer, const std::filesyste
     state->text = MenuText::Load(renderer, release / "fonts");
     auto soundA = ReadSound(constants / "splash_sound_a.wav");
     auto soundB = ReadSound(constants / "splash_sound_b.wav");
-    if (!state->firstLogo || (!state->producerLogo && release.filename() == "usa") ||
-        !state->developerLogo || !state->text || !soundA || !soundB) {
+    if (!state->firstLogo || (!state->producerLogo && state->usa) || !state->developerLogo ||
+        !state->text || !soundA || !soundB) {
         return nullptr;
     }
     state->soundA = std::move(*soundA);
@@ -278,6 +296,9 @@ void Intro::Restart() {
     s.fadingOut = false;
     s.logos = {};
     for (std::size_t part = 0; part < s.title.size(); ++part) {
+        if (!s.title[part]) {
+            continue;
+        }
         const auto &animations = s.title[part]->Animations();
         s.animationTime[part] = animations.empty() ? 0.0f : animations[0].time;
         s.reversing[part] = false;
@@ -297,12 +318,15 @@ IntroEnd Intro::Update(float seconds, const IntroButtons &buttons) {
     if (s.producerLogo && s.time >= PRODUCER_LOGO_START) {
         s.UpdateLogo(PRODUCER_LOGO_START, LOGO_END_TIME, s.logos[1]);
     }
-    if (s.time >= DEVELOPER_LOGO_START) {
-        s.UpdateLogo(DEVELOPER_LOGO_START, DEVELOPER_LOGO_END_TIME, s.logos[2]);
+    if (s.time >= s.developerStart) {
+        s.UpdateLogo(s.developerStart, s.developerEnd, s.logos[2]);
     }
     // The flag and the second part of the title wave, and the other parts, which do not move,
     // advance with them.
     for (std::size_t part = 0; part < s.title.size(); ++part) {
+        if (!s.title[part]) {
+            continue;
+        }
         const auto &animations = s.title[part]->Animations();
         if (!animations.empty()) {
             s.animationTime[part] = State::AdvanceBouncing(
@@ -328,18 +352,18 @@ IntroEnd Intro::Update(float seconds, const IntroButtons &buttons) {
         return IntroEnd::Running;
     }
     bool leave = false;
-    if (!s.skipped || !(s.time > SKIP_END_TIME)) {
+    if (!s.skipped || !(s.time > s.skipEnd)) {
         if (buttons.skip) {
             s.skipped = true;
             if (s.fadingOut) {
                 leave = true;
-            } else if (s.time < SKIP_TIME) {
-                s.time = SKIP_TIME;
-            } else if (s.time > SKIP_END_TIME) {
+            } else if (s.time < s.copyrightStart) {
+                s.time = s.copyrightStart;
+            } else if (s.time > s.skipEnd) {
                 leave = true;
             }
         }
-        if (!leave && !(s.time >= SPLASH_END_TIME)) {
+        if (!leave && !(s.time >= s.splashEnd)) {
             return IntroEnd::Running;
         }
     }
@@ -392,9 +416,9 @@ void Intro::Draw(SceneRenderer &renderer) const {
                 *s.producerLogo, *place, projection, s.splashLighting, std::nullopt, true);
         }
     }
-    if (s.time >= DEVELOPER_LOGO_START) {
-        caption("Developed by", DEVELOPER_LOGO_START, 60);
-        if (auto place = s.LogoMatrix(DEVELOPER_LOGO_START, DEVELOPER_LOGO_END_TIME)) {
+    if (s.time >= s.developerStart) {
+        caption("Developed by", s.developerStart, 60);
+        if (auto place = s.LogoMatrix(s.developerStart, s.developerEnd)) {
             renderer.DrawModel(
                 *s.developerLogo, *place, projection, s.splashLighting, std::nullopt, true);
         }
@@ -402,10 +426,17 @@ void Intro::Draw(SceneRenderer &renderer) const {
 
     // The title, tilted, its parts coming forward one after another, lit by the lights of the
     // menus. The flag and the second part draw without the depth.
-    if (s.time > TITLE_START) {
+    const float titleTime = s.time + s.titleOffset;
+    if (s.titleImage && s.time > 8.5f) {
+        MenuScreen::DrawTexture(renderer, *s.titleImage, 60, 36, 200, 150);
+        if (s.time < 9.5f) {
+            MenuScreen::DrawFadeOverlay(renderer, s.time - 8.5f, 0, 0, 320, 240);
+        }
+    }
+    if (s.title[0] && titleTime > TITLE_START) {
         // Once the flag rests it is cut to a band of the screen, inside the edges of the fade.
         std::optional<SDL_Rect> band;
-        if (s.time > TITLE_A_END) {
+        if (titleTime > TITLE_A_END) {
             int left = std::max(FLAG_BAND_X, s.fade.left);
             int right = std::min(FLAG_BAND_X + FLAG_BAND_WIDTH, s.fade.right);
             band = FrameRect(window.FrameWidth(),
@@ -415,14 +446,14 @@ void Intro::Draw(SceneRenderer &renderer) const {
                              std::max(right - left, 0),
                              FLAG_BAND_HEIGHT);
         }
-        float z =
-            s.time < TITLE_A_END ?
-                (std::sqrt(TITLE_A_END - TITLE_START) - std::sqrt(s.time - TITLE_START)) * 300.0f :
-                -0.0f;
+        float z = titleTime < TITLE_A_END ?
+                      (std::sqrt(TITLE_A_END - TITLE_START) - std::sqrt(titleTime - TITLE_START)) *
+                          300.0f :
+                      -0.0f;
         Matrix4 tilt =
             MultiplyMatrices(RotationZ(7.0f * PI / 180.0f), RotationX(-7.0f * PI / 180.0f));
         Matrix4 place = State::ModelAt(
-            0.0f, 0.0f, z, std::sqrt(s.time - TITLE_START) * 0.01f + -HALF_PI, 0.05f);
+            0.0f, 0.0f, z, std::sqrt(titleTime - TITLE_START) * 0.01f + -HALF_PI, 0.05f);
         // The tilt is between the move to the middle of the screen and the place of the flag.
         Matrix4 middle = Translation(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2, 100.0f);
         Matrix4 flag = MultiplyMatrices(
@@ -434,7 +465,7 @@ void Intro::Draw(SceneRenderer &renderer) const {
         renderer.DrawModel(
             *s.title[0], flag, projection, s.menuLighting, s.TitlePose(0), false, band);
     }
-    if (s.time > TITLE_B_START) {
+    if (s.title[1] && titleTime > TITLE_B_START) {
         renderer.DrawModel(*s.title[1],
                            State::ModelAt(0.0f,
                                           0.0f,
@@ -446,7 +477,7 @@ void Intro::Draw(SceneRenderer &renderer) const {
                            s.TitlePose(1),
                            false);
     }
-    if (s.time > TITLE_C_START) {
+    if (s.title[2] && titleTime > TITLE_C_START) {
         renderer.DrawModel(*s.title[2],
                            State::ModelAt(0.0f,
                                           0.0f,
@@ -458,7 +489,7 @@ void Intro::Draw(SceneRenderer &renderer) const {
                            s.TitlePose(2),
                            true);
     }
-    if (s.time > TITLE_D_START) {
+    if (s.title[3] && titleTime > TITLE_D_START) {
         renderer.DrawModel(*s.title[3],
                            State::ModelAt(0.0f,
                                           0.0f,
@@ -472,8 +503,8 @@ void Intro::Draw(SceneRenderer &renderer) const {
     }
 
     // The copyright fades in, and the date of the build shows while every C button is held.
-    if (s.time > COPYRIGHT_START) {
-        int alpha = std::min(static_cast<int>(static_cast<double>(s.time - COPYRIGHT_START) *
+    if (s.time > s.copyrightStart) {
+        int alpha = std::min(static_cast<int>(static_cast<double>(s.time - s.copyrightStart) *
                                               255.0 * TEXT_FADE_RATE),
                              TEXT_ALPHA);
         TextStyle style;
@@ -497,26 +528,33 @@ void Intro::Draw(SceneRenderer &renderer) const {
         s.text->Draw(renderer,
                      "O 1997 Boss Game Studios, Inc.  All Rights Reserved.",
                      160,
-                     190,
-                     style,
-                     flat);
-        s.text->Draw(renderer, "Top Gear Rally is a trademark of Kemco.", 160, 197, style, flat);
-        s.text->Draw(renderer,
-                     "Distributed by Midway Home Entertainment under license.",
-                     160,
-                     204,
+                     s.usa ? 190 : 195,
                      style,
                      flat);
         s.text->Draw(renderer,
-                     "Midway is a trademark of Midway Games Inc.  Used by permission.",
+                     "Top Gear Rally is a trademark of Kemco.",
                      160,
-                     211,
+                     s.usa ? 197 : 202,
                      style,
                      flat);
-        s.text->Draw(renderer, "LICENSED BY NINTENDO", 160, 224, style, flat);
+        if (s.usa) {
+            s.text->Draw(renderer,
+                         "Distributed by Midway Home Entertainment under license.",
+                         160,
+                         204,
+                         style,
+                         flat);
+            s.text->Draw(renderer,
+                         "Midway is a trademark of Midway Games Inc.  Used by permission.",
+                         160,
+                         211,
+                         style,
+                         flat);
+        }
+        s.text->Draw(renderer, "LICENSED BY NINTENDO", 160, s.usa ? 224 : 214, style, flat);
         // A small c inside the O of the first line makes the copyright sign.
         style.size = 3;
-        s.text->Draw(renderer, "c", 78, 190, style, flat);
+        s.text->Draw(renderer, "c", 78, s.usa ? 190 : 195, style, flat);
     }
 
     s.fade.Draw(renderer);

@@ -27,7 +27,7 @@ enum class IntroEnd {
     AttractDemo, /*!< They ran to their end, for the demo of a race. */
 };
 
-/** The splash screens of the release of the United States, drawn with the import. */
+/** The regional splash screens, drawn with converted models or the Japanese title image. */
 class Intro {
 public:
     /**

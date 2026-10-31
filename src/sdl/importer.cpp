@@ -1089,6 +1089,39 @@ std::optional<std::string> ConvertConsoleTextures(const std::filesystem::path &d
             return fmt::format("{} cannot be read.", path.string());
         }
         auto count = static_cast<std::size_t>(width) * static_cast<std::size_t>(height);
+        if (asset.name == "data/g_SplashTitleLogoTexture") {
+            const auto palettePath = destination / "constants" / "splash_title_palette.bin";
+            auto palette = ReadWholeFile(palettePath);
+            if (format != 2 || size != 1 || count == 0 || texels->size() != count || !palette ||
+                palette->size() != 512) {
+                return "The Japanese title image or palette is invalid.";
+            }
+            std::vector<std::uint8_t> rgba(count * 4);
+            for (std::size_t pixel = 0; pixel < count; ++pixel) {
+                auto source =
+                    (static_cast<std::size_t>(height) - 1 - pixel / width) * width + pixel % width;
+                auto index = static_cast<std::size_t>((*texels)[source]) * 2;
+                auto color =
+                    static_cast<std::uint32_t>((*palette)[index]) << 8 | (*palette)[index + 1];
+                rgba[pixel * 4] = ExpandBits(color >> 11, 5);
+                rgba[pixel * 4 + 1] = ExpandBits((color >> 6) & 31, 5);
+                rgba[pixel * 4 + 2] = ExpandBits((color >> 1) & 31, 5);
+                rgba[pixel * 4 + 3] = (color & 1) != 0 ? 255 : 0;
+            }
+            auto png = std::filesystem::path(path).replace_extension(".png");
+            if (!SaveRgba8Png(png, rgba, width, height)) {
+                return fmt::format("{} does not read back as its pixels.", png.string());
+            }
+            std::error_code error;
+            std::filesystem::remove(path, error);
+            if (!error) {
+                std::filesystem::remove(palettePath, error);
+            }
+            if (error) {
+                return "Cannot remove the converted Japanese title data. " + error.message();
+            }
+            continue;
+        }
         if (layout == TEXEL_LAYOUTS.end() || count == 0 ||
             texels->size() != (count * static_cast<std::size_t>(bits) + 7) / 8) {
             SDL_Log("The %zu bytes of %s %d-bit texels, %dx%d, of %s have no PNG form.",
