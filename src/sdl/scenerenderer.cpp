@@ -346,9 +346,28 @@ public:
             offset += texture.bytes.size();
         }
         SDL_EndGPUCopyPass(pass);
+        // Each level is filtered from the level above. SDL_GenerateMipmapsForGPUTexture() of SDL
+        // 3.4 halves each side without stopping at 1, so the short side of a texture that is not
+        // square reaches 0, and Vulkan refuses to copy the last levels.
         for (const auto &texture : m_textures) {
-            if (texture.mipmapped) {
-                SDL_GenerateMipmapsForGPUTexture(commands, texture.texture);
+            if (!texture.mipmapped) {
+                continue;
+            }
+            auto levels = static_cast<Uint32>(
+                std::bit_width(static_cast<unsigned>(std::max(texture.width, texture.height))));
+            for (Uint32 level = 1; level < levels; ++level) {
+                SDL_GPUBlitInfo blit{};
+                blit.source.texture = texture.texture;
+                blit.source.mip_level = level - 1;
+                blit.source.w = std::max(static_cast<Uint32>(texture.width) >> (level - 1), 1u);
+                blit.source.h = std::max(static_cast<Uint32>(texture.height) >> (level - 1), 1u);
+                blit.destination.texture = texture.texture;
+                blit.destination.mip_level = level;
+                blit.destination.w = std::max(static_cast<Uint32>(texture.width) >> level, 1u);
+                blit.destination.h = std::max(static_cast<Uint32>(texture.height) >> level, 1u);
+                blit.load_op = SDL_GPU_LOADOP_DONT_CARE;
+                blit.filter = SDL_GPU_FILTER_LINEAR;
+                SDL_BlitGPUTexture(commands, &blit);
             }
         }
         bool submitted = SDL_SubmitGPUCommandBuffer(commands);
