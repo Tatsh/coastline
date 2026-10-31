@@ -595,6 +595,14 @@ struct ImageSet {
     }
 };
 
+// The textures of an image a model draws: the image, its palette variants, and its damaged images,
+// each none where the image has none.
+struct ModelImage {
+    SDL_GPUTexture *texture = nullptr;
+    const std::vector<SDL_GPUTexture *> *variants = nullptr;
+    const std::pair<int, std::vector<SDL_GPUTexture *>> *damaged = nullptr;
+};
+
 // How the images of a document become textures: the palette variants of the images of materials,
 // the masks of the damage, and whether the textures are mipmapped.
 struct ImageOptions {
@@ -795,8 +803,12 @@ struct RenderModel::State {
     // The images of the materials in the colour of the model.
     const ImageSet *painted = nullptr;
     std::vector<Placed> placed;
-    // The nodes of each instance of a track, and under -1 the nodes of no instance.
-    std::map<int, std::vector<std::size_t>> placedByInstance;
+    // The nodes of each instance of a track by the instance plus 1, the first the nodes of no
+    // instance.
+    std::vector<std::vector<std::size_t>> placedByInstance;
+    // The textures of each image of the document, resolved once from the images of the colour of
+    // the model and those the paint does not colour.
+    std::vector<ModelImage> images;
     std::array<float, 3> centre{};
     float radius = 1.0f;
     // Whether the caller of the display lists sets one cycle.
@@ -807,19 +819,43 @@ struct RenderModel::State {
     bool varied = false;
     int variant = 0;
 
-    // The entry of an image in the images of the colour of the model, or in those the paint does
-    // not colour, or none.
-    template <typename T>
-    const T *Find(std::map<std::size_t, T> ImageSet::*field, std::size_t image) const {
-        for (const ImageSet *set : std::array<const ImageSet *, 2>{painted, &document->plain}) {
+    // Resolve the textures of every image, an image of the colour of the model before one the
+    // paint does not colour.
+    void ResolveImages() {
+        std::size_t count = 0;
+        auto grow = [&count](const auto &map) {
+            if (!map.empty()) {
+                count = std::max(count, map.rbegin()->first + 1);
+            }
+        };
+        const std::array<const ImageSet *, 2> sets{&document->plain, painted};
+        for (const ImageSet *set : sets) {
+            if (set != nullptr) {
+                grow(set->images);
+                grow(set->variants);
+                grow(set->damaged);
+            }
+        }
+        images.assign(count, {});
+        for (const ImageSet *set : sets) {
             if (set == nullptr) {
                 continue;
             }
-            if (auto found = (set->*field).find(image); found != (set->*field).end()) {
-                return &found->second;
+            for (const auto &[image, texture] : set->images) {
+                images[image].texture = texture;
+            }
+            for (const auto &[image, textures] : set->variants) {
+                images[image].variants = varied ? &textures : nullptr;
+            }
+            for (const auto &[image, levels] : set->damaged) {
+                images[image].damaged = &levels;
             }
         }
-        return nullptr;
+    }
+
+    // The textures of an image, or none.
+    const ModelImage *Image(std::size_t image) const {
+        return image < images.size() ? &images[image] : nullptr;
     }
 };
 
@@ -1389,6 +1425,7 @@ std::unique_ptr<RenderModel> RenderModel::Load(std::shared_ptr<RenderDocument> o
     if (state->painted == nullptr) {
         return nullptr;
     }
+    state->ResolveImages();
 
     // The nodes of the first scene and their places, and the bounds of what they draw.
     std::array<float, 3> low{INFINITY, INFINITY, INFINITY};
@@ -1448,7 +1485,14 @@ std::unique_ptr<RenderModel> RenderModel::Load(std::shared_ptr<RenderDocument> o
         return nullptr;
     }
     for (std::size_t p = 0; p < state->placed.size(); ++p) {
-        state->placedByInstance[state->placed[p].instance].push_back(p);
+        if (state->placed[p].instance < -1) {
+            continue;
+        }
+        auto slot = static_cast<std::size_t>(state->placed[p].instance + 1);
+        if (slot >= state->placedByInstance.size()) {
+            state->placedByInstance.resize(slot + 1);
+        }
+        state->placedByInstance[slot].push_back(p);
     }
     for (std::size_t axis = 0; axis < 3; ++axis) {
         state->centre[axis] = (low[axis] + high[axis]) / 2;
@@ -1875,6 +1919,79 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
     depth.store_op = SDL_GPU_STOREOP_DONT_CARE;
     SDL_GPURenderPass *pass = SDL_BeginGPURenderPass(commands, &color, 1, &depth);
 
+    // The state last bound in the pass, which a draw binds again only where it differs. The
+    // uniforms pushed to a slot of the command buffer remain through a change of the pipeline.
+    struct Bound {
+        SDL_GPUGraphicsPipeline *pipeline = nullptr;
+        std::array<SDL_GPUTextureSamplerBinding, 3> samplers{};
+        SDL_GPUBuffer *targets = nullptr;
+        SDL_GPUBuffer *vertices = nullptr;
+        SDL_GPUBuffer *indices = nullptr;
+        std::optional<VertexUniforms> vertexUniforms;
+        std::optional<FragmentUniforms> fragmentUniforms;
+    } bound;
+    auto bindPipeline = [&](SDL_GPUGraphicsPipeline *pipeline) {
+        if (pipeline != bound.pipeline) {
+            SDL_BindGPUGraphicsPipeline(pass, pipeline);
+            bound.pipeline = pipeline;
+        }
+    };
+    auto pushUniforms = [&](const VertexUniforms &vertexUniforms,
+                            const FragmentUniforms &fragmentUniforms) {
+        if (!bound.vertexUniforms ||
+            std::memcmp(&*bound.vertexUniforms, &vertexUniforms, sizeof(vertexUniforms)) != 0) {
+            SDL_PushGPUVertexUniformData(commands, 0, &vertexUniforms, sizeof(vertexUniforms));
+            bound.vertexUniforms = vertexUniforms;
+        }
+        if (!bound.fragmentUniforms ||
+            std::memcmp(&*bound.fragmentUniforms, &fragmentUniforms, sizeof(fragmentUniforms)) !=
+                0) {
+            SDL_PushGPUFragmentUniformData(
+                commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
+            bound.fragmentUniforms = fragmentUniforms;
+        }
+    };
+    // Bind the samplers from the first slot that differs to the last, and the buffers that differ.
+    auto bindResources = [&](const std::array<SDL_GPUTextureSamplerBinding, 3> &samplers,
+                             SDL_GPUBuffer *targets,
+                             SDL_GPUBuffer *vertices,
+                             SDL_GPUBuffer *indices) {
+        auto same = [](const SDL_GPUTextureSamplerBinding &a,
+                       const SDL_GPUTextureSamplerBinding &b) {
+            return a.texture == b.texture && a.sampler == b.sampler;
+        };
+        std::size_t first = 0;
+        while (first < samplers.size() && same(samplers[first], bound.samplers[first])) {
+            ++first;
+        }
+        std::size_t last = samplers.size();
+        while (last > first && same(samplers[last - 1], bound.samplers[last - 1])) {
+            --last;
+        }
+        if (first < last) {
+            SDL_BindGPUFragmentSamplers(pass,
+                                        static_cast<Uint32>(first),
+                                        samplers.data() + first,
+                                        static_cast<Uint32>(last - first));
+            std::copy(
+                samplers.begin() + first, samplers.begin() + last, bound.samplers.begin() + first);
+        }
+        if (targets != bound.targets) {
+            SDL_BindGPUVertexStorageBuffers(pass, 0, &targets, 1);
+            bound.targets = targets;
+        }
+        if (vertices != bound.vertices) {
+            SDL_GPUBufferBinding binding{vertices, 0};
+            SDL_BindGPUVertexBuffers(pass, 0, &binding, 1);
+            bound.vertices = vertices;
+        }
+        if (indices != bound.indices) {
+            SDL_GPUBufferBinding binding{indices, 0};
+            SDL_BindGPUIndexBuffer(pass, &binding, SDL_GPU_INDEXELEMENTSIZE_32BIT);
+            bound.indices = indices;
+        }
+    };
+
     // The view, the fog, and the hidden instances of the draw being made.
     SDL_Rect whole{
         0, 0, static_cast<int>(s.window->FrameWidth()), static_cast<int>(s.window->FrameHeight())};
@@ -1925,8 +2042,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         if (pipeline == nullptr) {
             return;
         }
-        SDL_BindGPUGraphicsPipeline(pass, pipeline);
-        SDL_PushGPUVertexUniformData(commands, 0, &vertexUniforms, sizeof(vertexUniforms));
+        bindPipeline(pipeline);
         FragmentUniforms fragmentUniforms{
             {primitive.alphaCut,
              primitive.lit ? 1.0f : 0.0f,
@@ -1993,24 +2109,25 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                 image = *primitive.snowImage;
             }
             bindings[0].sampler = document.samplers.at(sampler);
-            if (const auto *texture = model.Find(&ImageSet::images, image)) {
-                bindings[0].texture = *texture;
+            const ModelImage *resolved = model.Image(image);
+            if (resolved != nullptr && resolved->texture != nullptr) {
+                bindings[0].texture = resolved->texture;
             }
-            const auto *varied = model.varied ? model.Find(&ImageSet::variants, image) : nullptr;
+            const auto *varied = resolved != nullptr ? resolved->variants : nullptr;
             if (varied != nullptr && variant >= 0 &&
                 static_cast<std::size_t>(variant) < varied->size()) {
                 bindings[0].texture = (*varied)[static_cast<std::size_t>(variant)];
             }
-            if (const auto *damaged = model.Find(&ImageSet::damaged, image)) {
+            const auto *damaged = resolved != nullptr ? resolved->damaged : nullptr;
+            if (damaged != nullptr) {
                 int level = drawState->damage[static_cast<std::size_t>(damaged->first)];
                 if (level > 0 && static_cast<std::size_t>(level) <= damaged->second.size()) {
                     bindings[0].texture = damaged->second[static_cast<std::size_t>(level - 1)];
                 }
             }
-            const auto *texel1 =
-                primitive.texel1 ? model.Find(&ImageSet::images, *primitive.texel1) : nullptr;
-            if (texel1 != nullptr) {
-                bindings[1] = {*texel1, document.samplers.at(sampler)};
+            const ModelImage *texel1 = primitive.texel1 ? model.Image(*primitive.texel1) : nullptr;
+            if (texel1 != nullptr && texel1->texture != nullptr) {
+                bindings[1] = {texel1->texture, document.samplers.at(sampler)};
             }
         }
         if (reflection != nullptr) {
@@ -2018,13 +2135,8 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             threePoint = (threePoint & ~1u) | (reflection->texture->m_threePoint ? 1u : 0u);
         }
         fragmentUniforms.combine[3] = threePoint;
-        SDL_PushGPUFragmentUniformData(commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
-        SDL_BindGPUFragmentSamplers(pass, 0, bindings.data(), bindings.size());
-        SDL_BindGPUVertexStorageBuffers(pass, 0, &targets, 1);
-        SDL_GPUBufferBinding vertices{primitive.vertices, 0};
-        SDL_BindGPUVertexBuffers(pass, 0, &vertices, 1);
-        SDL_GPUBufferBinding indices{primitive.indices, 0};
-        SDL_BindGPUIndexBuffer(pass, &indices, SDL_GPU_INDEXELEMENTSIZE_32BIT);
+        pushUniforms(vertexUniforms, fragmentUniforms);
+        bindResources(bindings, targets, primitive.vertices, primitive.indices);
         SDL_DrawGPUIndexedPrimitives(pass, primitive.indexCount, 1, 0, 0, 0);
     };
 
@@ -2039,8 +2151,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         if (pipeline == nullptr || highlight.texture == nullptr) {
             return;
         }
-        SDL_BindGPUGraphicsPipeline(pass, pipeline);
-        SDL_PushGPUVertexUniformData(commands, 0, &vertexUniforms, sizeof(vertexUniforms));
+        bindPipeline(pipeline);
         FragmentUniforms fragmentUniforms{{8.0f / 255.0f, 0.0f, 1.0f, 1.0f},
                                           {0.0f, 0.0f, 1.0f, 0.0f},
                                           {highlight.combine[0],
@@ -2062,17 +2173,12 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             std::ranges::copy(drawState->fog->color, fragmentUniforms.fogColor);
             fragmentUniforms.fogColor[3] = drawState->fog->range;
         }
-        SDL_PushGPUFragmentUniformData(commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
+        pushUniforms(vertexUniforms, fragmentUniforms);
         std::array<SDL_GPUTextureSamplerBinding, 3> bindings{
             {{highlight.texture->m_texture, highlight.texture->m_sampler},
              {s.white, s.plainSampler},
              {s.white, s.plainSampler}}};
-        SDL_BindGPUFragmentSamplers(pass, 0, bindings.data(), bindings.size());
-        SDL_BindGPUVertexStorageBuffers(pass, 0, &targets, 1);
-        SDL_GPUBufferBinding vertices{primitive.vertices, 0};
-        SDL_BindGPUVertexBuffers(pass, 0, &vertices, 1);
-        SDL_GPUBufferBinding indices{primitive.indices, 0};
-        SDL_BindGPUIndexBuffer(pass, &indices, SDL_GPU_INDEXELEMENTSIZE_32BIT);
+        bindResources(bindings, targets, primitive.vertices, primitive.indices);
         SDL_DrawGPUIndexedPrimitives(pass, primitive.indexCount, 1, 0, 0, 0);
     };
 
@@ -2091,9 +2197,10 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         std::vector<std::size_t> order;
         if (draw.instances) {
             for (int instance : *draw.instances) {
-                auto found = model.placedByInstance.find(instance);
-                if (found != model.placedByInstance.end()) {
-                    order.insert(order.end(), found->second.begin(), found->second.end());
+                auto slot = static_cast<std::size_t>(instance + 1);
+                if (instance >= -1 && slot < model.placedByInstance.size()) {
+                    const auto &nodes = model.placedByInstance[slot];
+                    order.insert(order.end(), nodes.begin(), nodes.end());
                 }
             }
         } else {
@@ -2233,11 +2340,10 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         if (pipeline == nullptr) {
             continue;
         }
-        SDL_BindGPUGraphicsPipeline(pass, pipeline);
+        bindPipeline(pipeline);
         useView(quad.state, std::nullopt);
         VertexUniforms vertexUniforms{
             quad.projection, IDENTITY_MATRIX, {0, 0, 0, 0}, {0.0f, 0.0f, 0.0f, 0.0f}, {}, {}, {}};
-        SDL_PushGPUVertexUniformData(commands, 0, &vertexUniforms, sizeof(vertexUniforms));
         const FlatMaterial &material = quad.material;
         bool combined = material.combine[0] != 0 || material.combine[1] != 0;
         FragmentUniforms fragmentUniforms{
@@ -2262,7 +2368,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             {},
             {},
             {}};
-        SDL_PushGPUFragmentUniformData(commands, 0, &fragmentUniforms, sizeof(fragmentUniforms));
+        pushUniforms(vertexUniforms, fragmentUniforms);
         std::array<SDL_GPUTextureSamplerBinding, 3> bindings{
             {{s.white, s.plainSampler}, {s.white, s.plainSampler}, {s.white, s.plainSampler}}};
         if (material.texel0 != nullptr) {
@@ -2271,12 +2377,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         if (material.texel1 != nullptr) {
             bindings[1] = {material.texel1->m_texture, material.texel1->m_sampler};
         }
-        SDL_BindGPUFragmentSamplers(pass, 0, bindings.data(), bindings.size());
-        SDL_BindGPUVertexStorageBuffers(pass, 0, &s.noTargets, 1);
-        SDL_GPUBufferBinding vertices{s.flatVertices, 0};
-        SDL_BindGPUVertexBuffers(pass, 0, &vertices, 1);
-        SDL_GPUBufferBinding indices{s.quadIndices, 0};
-        SDL_BindGPUIndexBuffer(pass, &indices, SDL_GPU_INDEXELEMENTSIZE_32BIT);
+        bindResources(bindings, s.noTargets, s.flatVertices, s.quadIndices);
         SDL_DrawGPUIndexedPrimitives(pass,
                                      static_cast<Uint32>(quad.quadCount * 6),
                                      1,
