@@ -1,6 +1,6 @@
 // Host check of the XDG directories, the layers of the asset packs, the record of the versions of
-// the import, the BossRally.ini reader, the icon file reader, and the volume levels of the SDL
-// game.
+// the import, the BossRally.ini reader, the icon file reader, the volume levels, and the reader of
+// the resident memory of the SDL game.
 
 #include <algorithm>
 #include <array>
@@ -20,6 +20,7 @@
 #include "importversion.h"
 #include "language.h"
 #include "paths.h"
+#include "performance.h"
 #include "volumelevels.h"
 
 namespace {
@@ -260,9 +261,19 @@ void CheckLanguage() {
     std::filesystem::remove_all(assets);
 }
 
+void CheckPerformanceParsing() {
+    Check(coastline::StatmResidentPages("53287 12345 4321 1 0 9876 0\n") == 12345u,
+          "the second number of statm is the resident pages");
+    Check(coastline::StatmResidentPages("  7 8") == 8u, "statm may open with spaces");
+    Check(!coastline::StatmResidentPages("53287"), "statm without a second number gives nothing");
+    Check(!coastline::StatmResidentPages(""), "an empty statm gives nothing");
+    Check(!coastline::StatmResidentPages("1 x"), "a second word that is not a number is nothing");
+}
+
 } // namespace
 
 int main() {
+    CheckPerformanceParsing();
     CheckIconFile();
     CheckVolumeLevels();
     CheckPackAssets();

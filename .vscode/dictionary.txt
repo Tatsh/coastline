@@ -660,6 +660,7 @@ libflac
 libgcc
 libglide
 libltdl
+libnvidia
 libpulse
 librsvg
 libsonnet
@@ -859,6 +860,7 @@ numlight
 numlights
 numpadenter
 numpydoc
+nvml
 oaevent
 oahwnd
 oatrue
@@ -952,6 +954,7 @@ primarysurface
 primitivetype
 probetlb
 profileinit
+psapi
 psdk
 pulseaudio
 putfld
@@ -1193,6 +1196,7 @@ standardvgamode
 startlights
 startthread
 startupinfoa
+statm
 statuscode
 statusline
 stdalign

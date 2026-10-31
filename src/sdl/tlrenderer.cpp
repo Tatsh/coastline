@@ -172,7 +172,7 @@ std::unique_ptr<TlRenderer> TlRenderer::Create(GpuWindow &window) {
         color.layer_count_or_depth = 1;
         color.num_levels = 1;
         color.sample_count = renderer->m_sampleCount;
-        renderer->m_multisampled = SDL_CreateGPUTexture(device, &color);
+        renderer->m_multisampled = CreateGpuTexture(device, &color);
         if (renderer->m_multisampled == nullptr) {
             SDL_LogWarn(SDL_LOG_CATEGORY_GPU,
                         "The multisampled target was not created: %s",
@@ -189,7 +189,7 @@ std::unique_ptr<TlRenderer> TlRenderer::Create(GpuWindow &window) {
     depth.layer_count_or_depth = 1;
     depth.num_levels = 1;
     depth.sample_count = renderer->m_sampleCount;
-    renderer->m_depth = SDL_CreateGPUTexture(device, &depth);
+    renderer->m_depth = CreateGpuTexture(device, &depth);
     if (renderer->m_depth == nullptr) {
         SDL_LogError(SDL_LOG_CATEGORY_GPU, "The depth buffer was not created: %s", SDL_GetError());
         return nullptr;
@@ -210,21 +210,21 @@ TlRenderer::~TlRenderer() {
         SDL_ReleaseGPUSampler(device, sampler);
     }
     for (auto &texture : m_textures) {
-        SDL_ReleaseGPUTexture(device, texture.texture);
+        ReleaseGpuTexture(device, texture.texture);
     }
     for (auto *buffer : {m_vertexBuffer, m_indexBuffer}) {
         if (buffer != nullptr) {
-            SDL_ReleaseGPUBuffer(device, buffer);
+            ReleaseGpuBuffer(device, buffer);
         }
     }
     if (m_transfer != nullptr) {
-        SDL_ReleaseGPUTransferBuffer(device, m_transfer);
+        ReleaseGpuTransferBuffer(device, m_transfer);
     }
     if (m_multisampled != nullptr) {
-        SDL_ReleaseGPUTexture(device, m_multisampled);
+        ReleaseGpuTexture(device, m_multisampled);
     }
     if (m_depth != nullptr) {
-        SDL_ReleaseGPUTexture(device, m_depth);
+        ReleaseGpuTexture(device, m_depth);
     }
     for (auto *shader : {m_vertexShader, m_fragmentShader}) {
         if (shader != nullptr) {
@@ -250,18 +250,18 @@ TextureHandle TlRenderer::CreateTexture(std::uint32_t width,
     info.height = height;
     info.layer_count_or_depth = 1;
     info.num_levels = 1;
-    SDL_GPUTexture *texture = SDL_CreateGPUTexture(device, &info);
+    SDL_GPUTexture *texture = CreateGpuTexture(device, &info);
     if (texture == nullptr) {
         return 0;
     }
     SDL_GPUTransferBufferCreateInfo transferInfo{SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD, bytes, 0};
-    SDL_GPUTransferBuffer *transfer = SDL_CreateGPUTransferBuffer(device, &transferInfo);
+    SDL_GPUTransferBuffer *transfer = CreateGpuTransferBuffer(device, &transferInfo);
     void *mapped =
         transfer != nullptr ? SDL_MapGPUTransferBuffer(device, transfer, false) : nullptr;
     if (mapped == nullptr) {
-        SDL_ReleaseGPUTexture(device, texture);
+        ReleaseGpuTexture(device, texture);
         if (transfer != nullptr) {
-            SDL_ReleaseGPUTransferBuffer(device, transfer);
+            ReleaseGpuTransferBuffer(device, transfer);
         }
         return 0;
     }
@@ -278,7 +278,7 @@ TextureHandle TlRenderer::CreateTexture(std::uint32_t width,
     SDL_UploadToGPUTexture(copy, &source, &destination, false);
     SDL_EndGPUCopyPass(copy);
     SDL_SubmitGPUCommandBuffer(commands);
-    SDL_ReleaseGPUTransferBuffer(device, transfer);
+    ReleaseGpuTransferBuffer(device, transfer);
     m_textures.push_back({texture, hasAlpha});
     return static_cast<TextureHandle>(m_textures.size());
 }
@@ -296,7 +296,7 @@ void TlRenderer::UpdateTexture(TextureHandle texture,
         return;
     }
     // The new texture takes the place of the old one, and its handle is retired.
-    SDL_ReleaseGPUTexture(m_window.Device(), m_textures[texture - 1].texture);
+    ReleaseGpuTexture(m_window.Device(), m_textures[texture - 1].texture);
     m_textures[texture - 1] = m_textures[replacement - 1];
     m_textures.pop_back();
 }
@@ -346,11 +346,11 @@ bool TlRenderer::EnsureBuffers(std::size_t vertexBytes, std::size_t indexBytes) 
         };
         for (auto *buffer : {m_vertexBuffer, m_indexBuffer}) {
             if (buffer != nullptr) {
-                SDL_ReleaseGPUBuffer(device, buffer);
+                ReleaseGpuBuffer(device, buffer);
             }
         }
         if (m_transfer != nullptr) {
-            SDL_ReleaseGPUTransferBuffer(device, m_transfer);
+            ReleaseGpuTransferBuffer(device, m_transfer);
         }
         m_vertexCapacity = grow(vertexBytes);
         m_indexCapacity = grow(indexBytes);
@@ -362,9 +362,9 @@ bool TlRenderer::EnsureBuffers(std::size_t vertexBytes, std::size_t indexBytes) 
             SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD,
             static_cast<Uint32>(m_vertexCapacity + m_indexCapacity),
             0};
-        m_vertexBuffer = SDL_CreateGPUBuffer(device, &vertexInfo);
-        m_indexBuffer = SDL_CreateGPUBuffer(device, &indexInfo);
-        m_transfer = SDL_CreateGPUTransferBuffer(device, &transferInfo);
+        m_vertexBuffer = CreateGpuBuffer(device, &vertexInfo);
+        m_indexBuffer = CreateGpuBuffer(device, &indexInfo);
+        m_transfer = CreateGpuTransferBuffer(device, &transferInfo);
     }
     return m_vertexBuffer != nullptr && m_indexBuffer != nullptr && m_transfer != nullptr;
 }

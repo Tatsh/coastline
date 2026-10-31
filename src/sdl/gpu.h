@@ -222,4 +222,62 @@ private:
     bool m_pacedToRefresh = false;
 };
 
+/**
+ * SDL_CreateGPUTexture(), with the bytes of every level and sample added to GpuMemoryBytes().
+ *
+ * @param device The GPU device.
+ * @param info The texture to create.
+ * @return The texture, or null when the device cannot create it.
+ */
+SDL_GPUTexture *CreateGpuTexture(SDL_GPUDevice *device, const SDL_GPUTextureCreateInfo *info);
+
+/**
+ * SDL_CreateGPUBuffer(), with its size added to GpuMemoryBytes().
+ *
+ * @param device The GPU device.
+ * @param info The buffer to create.
+ * @return The buffer, or null when the device cannot create it.
+ */
+SDL_GPUBuffer *CreateGpuBuffer(SDL_GPUDevice *device, const SDL_GPUBufferCreateInfo *info);
+
+/**
+ * SDL_CreateGPUTransferBuffer(), with its size added to GpuMemoryBytes().
+ *
+ * @param device The GPU device.
+ * @param info The transfer buffer to create.
+ * @return The transfer buffer, or null when the device cannot create it.
+ */
+SDL_GPUTransferBuffer *CreateGpuTransferBuffer(SDL_GPUDevice *device,
+                                               const SDL_GPUTransferBufferCreateInfo *info);
+
+/**
+ * SDL_ReleaseGPUTexture(), with the bytes of the texture taken from GpuMemoryBytes().
+ *
+ * @param device The GPU device.
+ * @param texture A texture of CreateGpuTexture(), or null.
+ */
+void ReleaseGpuTexture(SDL_GPUDevice *device, SDL_GPUTexture *texture);
+
+/**
+ * SDL_ReleaseGPUBuffer(), with the bytes of the buffer taken from GpuMemoryBytes().
+ *
+ * @param device The GPU device.
+ * @param buffer A buffer of CreateGpuBuffer(), or null.
+ */
+void ReleaseGpuBuffer(SDL_GPUDevice *device, SDL_GPUBuffer *buffer);
+
+/**
+ * SDL_ReleaseGPUTransferBuffer(), with the bytes of the buffer taken from GpuMemoryBytes().
+ *
+ * @param device The GPU device.
+ * @param buffer A transfer buffer of CreateGpuTransferBuffer(), or null.
+ */
+void ReleaseGpuTransferBuffer(SDL_GPUDevice *device, SDL_GPUTransferBuffer *buffer);
+
+/**
+ * @return The bytes of the textures, the buffers, and the transfer buffers the game has created
+ * and not released, without the memory the driver allocates for itself.
+ */
+Uint64 GpuMemoryBytes();
+
 } // namespace coastline

@@ -29,6 +29,7 @@
 #include "common/vehicleaccess.h"
 #include "controls.h"
 #include "input.h"
+#include "performance.h"
 
 namespace coastline {
 
@@ -599,7 +600,8 @@ unsigned RaceInput::ReadButtonMask(int *pnSteering, int *pnAcceleration) {
         SelectNextMusicTrack();
     }
     if (AsyncKeyPressed(SDL_SCANCODE_F) && m_pollCounter > 15) {
-        g_bShowFpsCounter = !g_bShowFpsCounter;
+        // The PC release toggles the rate, and a third state here adds the statistics.
+        g_bShowFpsCounter = (g_bShowFpsCounter + 1) % FRAME_RATE_STATES;
     }
     unsigned mask = 0;
     if (gInstantReplayActive) {

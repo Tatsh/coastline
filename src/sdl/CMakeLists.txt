@@ -209,6 +209,7 @@ add_library(
   paintshop.cpp
   iconfile.cpp
   paths.cpp
+  performance.cpp
   playerselect.cpp
   ptr32.cpp
   racecredits.cpp
@@ -254,7 +255,7 @@ target_include_directories(coastline_sdl PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}")
 target_compile_options(coastline_sdl PRIVATE ${COASTLINE_WARNINGS})
 target_link_libraries(coastline_sdl PUBLIC SDL3::SDL3 coastline_ear)
 if(WIN32)
-  target_link_libraries(coastline_sdl PUBLIC shell32)
+  target_link_libraries(coastline_sdl PUBLIC psapi shell32)
 endif()
 
 add_executable(${CMAKE_PROJECT_NAME} main.cpp)

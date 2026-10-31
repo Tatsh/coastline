@@ -48,6 +48,7 @@
 #include "modelview.h"
 #include "music.h"
 #include "paths.h"
+#include "performance.h"
 #include "racecredits.h"
 #include "racedemo.h"
 #include "racemusic.h"
@@ -254,20 +255,26 @@ void RecordFrameTime() {
     g_adwFpsFrameTimeSamples[entry] = delta;
 }
 
-// A line of 15-point text centred at @p y of the 640 by 480 screen, as DrawFpsCounterOverlay()
-// draws it.
+// A line of 15-point text at @p y of the 640 by 480 screen, as DrawFpsCounterOverlay() draws it,
+// centred by default, and in the white of @p white when given.
 void DrawOverlayLine(coastline::SceneRenderer &renderer,
                      const coastline::MenuText &text,
                      const char *line,
-                     int y) {
+                     int y,
+                     int x = 320,
+                     coastline::TextStyle::Align align = coastline::TextStyle::Align::Center,
+                     bool white = false) {
     const coastline::GpuWindow &window = renderer.Window();
     coastline::TextStyle style;
     style.size = 15;
-    style.align = coastline::TextStyle::Align::Center;
+    style.align = align;
     style.doubled = false;
+    if (white) {
+        style.colors = std::array<int, 6>{255, 255, 255, 255, 255, 255};
+    }
     text.Draw(renderer,
               line,
-              320,
+              x,
               y,
               style,
               coastline::FlatProjection(static_cast<float>(window.FrameWidth()) /
@@ -1228,6 +1235,8 @@ int main(int argc, char *argv[]) {
             std::unique_ptr<coastline::Intro> intro;
             std::unique_ptr<coastline::Menus> mainMenu;
             std::unique_ptr<coastline::MenuText> frameRateText;
+            // The statistics of the third state of F, sampled only while they show.
+            std::unique_ptr<coastline::PerformanceStats> performanceStats;
             // The seconds the request to import again remains at the top of the splash screens
             // and the menus.
             float reimportNoticeSeconds = reimportNotice.empty() ? 0.0f : 10.0f;
@@ -1381,7 +1390,7 @@ int main(int argc, char *argv[]) {
                     break;
                 }
                 case DisplayKey::FrameRate:
-                    g_bShowFpsCounter = !g_bShowFpsCounter;
+                    g_bShowFpsCounter = (g_bShowFpsCounter + 1) % coastline::FRAME_RATE_STATES;
                     break;
                 case DisplayKey::None:
                     break;
@@ -1664,6 +1673,35 @@ int main(int argc, char *argv[]) {
                         (frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::MainMenu)) {
                         DrawOverlayLine(*sceneRenderer, *frameRateText, reimportNotice.c_str(), 20);
                         reimportNoticeSeconds -= seconds;
+                    }
+                    if (g_bShowFpsCounter != coastline::FRAME_RATE_STATISTICS) {
+                        performanceStats.reset();
+                    } else if (frameRateText) {
+                        if (!performanceStats) {
+                            performanceStats = std::make_unique<coastline::PerformanceStats>();
+                        }
+                        performanceStats->Frame();
+                        // The lines start under the lap and the times of a race, and the request
+                        // to import again.
+                        int y = 80;
+                        // The left of the frame, under the lap, where the frame is wider than
+                        // the 640 across of the screen.
+                        const coastline::GpuWindow &frame = sceneRenderer->Window();
+                        float across = coastline::ScreenExtent(
+                            static_cast<float>(frame.FrameWidth()) /
+                            static_cast<float>(std::max(frame.FrameHeight(), 1u)))[0];
+                        int x = 16 - static_cast<int>(320.0f * (1.0f / across - 1.0f));
+                        for (const std::string &line :
+                             performanceStats->Lines(coastline::GpuMemoryBytes())) {
+                            DrawOverlayLine(*sceneRenderer,
+                                            *frameRateText,
+                                            line.c_str(),
+                                            y,
+                                            x,
+                                            coastline::TextStyle::Align::Left,
+                                            true);
+                            y += 16;
+                        }
                     }
                     sceneRenderer->End(framePath ? &*framePath : nullptr);
                     // The credits play under the music of the menus.

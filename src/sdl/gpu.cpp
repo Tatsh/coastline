@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <cstring>
 #include <span>
+#include <unordered_map>
 
 #include "shaders/fxaa_frag_msl.h"
 #include "shaders/fxaa_frag_spirv.h"
@@ -174,9 +175,9 @@ bool GpuWindow::CreateFrame(Uint32 width, Uint32 height) {
     info.height = height;
     info.layer_count_or_depth = 1;
     info.num_levels = 1;
-    SDL_GPUTexture *frame = SDL_CreateGPUTexture(m_device.get(), &info);
+    SDL_GPUTexture *frame = CreateGpuTexture(m_device.get(), &info);
     SDL_GPUTexture *antialiased =
-        m_antialiasPipeline != nullptr ? SDL_CreateGPUTexture(m_device.get(), &info) : nullptr;
+        m_antialiasPipeline != nullptr ? CreateGpuTexture(m_device.get(), &info) : nullptr;
     if (frame == nullptr || (m_antialiasPipeline != nullptr && antialiased == nullptr)) {
         SDL_LogError(SDL_LOG_CATEGORY_GPU,
                      "The frame texture of %u by %u was not created: %s",
@@ -185,7 +186,7 @@ bool GpuWindow::CreateFrame(Uint32 width, Uint32 height) {
                      SDL_GetError());
         for (auto *texture : {frame, antialiased}) {
             if (texture != nullptr) {
-                SDL_ReleaseGPUTexture(m_device.get(), texture);
+                ReleaseGpuTexture(m_device.get(), texture);
             }
         }
         return false;
@@ -193,7 +194,7 @@ bool GpuWindow::CreateFrame(Uint32 width, Uint32 height) {
     // The device releases the textures before once the frames that draw into them are done.
     for (auto *texture : {m_frame, m_antialiased}) {
         if (texture != nullptr) {
-            SDL_ReleaseGPUTexture(m_device.get(), texture);
+            ReleaseGpuTexture(m_device.get(), texture);
         }
     }
     m_frame = frame;
@@ -321,7 +322,7 @@ GpuWindow::~GpuWindow() {
     if (m_device) {
         for (auto *texture : {m_frame, m_antialiased}) {
             if (texture != nullptr) {
-                SDL_ReleaseGPUTexture(m_device.get(), texture);
+                ReleaseGpuTexture(m_device.get(), texture);
             }
         }
         if (m_antialiasPipeline != nullptr) {
@@ -451,7 +452,7 @@ bool GpuWindow::SaveFrame(SDL_GPUCommandBuffer *commands,
     SDL_GPUTransferBufferCreateInfo info{};
     info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD;
     info.size = size;
-    SDL_GPUTransferBuffer *buffer = SDL_CreateGPUTransferBuffer(m_device.get(), &info);
+    SDL_GPUTransferBuffer *buffer = CreateGpuTransferBuffer(m_device.get(), &info);
     if (buffer == nullptr) {
         SDL_SubmitGPUCommandBuffer(commands);
         return false;
@@ -491,13 +492,82 @@ bool GpuWindow::SaveFrame(SDL_GPUCommandBuffer *commands,
     if (fence != nullptr) {
         SDL_ReleaseGPUFence(m_device.get(), fence);
     }
-    SDL_ReleaseGPUTransferBuffer(m_device.get(), buffer);
+    ReleaseGpuTransferBuffer(m_device.get(), buffer);
     if (saved) {
         SDL_Log("Saved the frame to %s.", path.string().c_str());
     } else {
         SDL_LogError(SDL_LOG_CATEGORY_GPU, "The frame was not saved: %s", SDL_GetError());
     }
     return saved;
+}
+
+namespace {
+
+// The bytes of each object of the GPU the game created, by the object.
+std::unordered_map<const void *, Uint64> g_gpuMemoryObjects;
+Uint64 g_gpuMemoryBytes = 0;
+
+void AddGpuMemory(const void *object, Uint64 bytes) {
+    if (object != nullptr) {
+        g_gpuMemoryObjects[object] = bytes;
+        g_gpuMemoryBytes += bytes;
+    }
+}
+
+void RemoveGpuMemory(const void *object) {
+    auto found = g_gpuMemoryObjects.find(object);
+    if (found != g_gpuMemoryObjects.end()) {
+        g_gpuMemoryBytes -= found->second;
+        g_gpuMemoryObjects.erase(found);
+    }
+}
+
+} // namespace
+
+SDL_GPUTexture *CreateGpuTexture(SDL_GPUDevice *device, const SDL_GPUTextureCreateInfo *info) {
+    SDL_GPUTexture *texture = SDL_CreateGPUTexture(device, info);
+    Uint64 bytes = 0;
+    for (Uint32 level = 0; level < info->num_levels; ++level) {
+        bytes += SDL_CalculateGPUTextureFormatSize(info->format,
+                                                   std::max(info->width >> level, 1u),
+                                                   std::max(info->height >> level, 1u),
+                                                   info->layer_count_or_depth);
+    }
+    // SDL_GPU_SAMPLECOUNT_2 and the counts after it are 1, 2, and 3.
+    AddGpuMemory(texture, bytes << info->sample_count);
+    return texture;
+}
+
+SDL_GPUBuffer *CreateGpuBuffer(SDL_GPUDevice *device, const SDL_GPUBufferCreateInfo *info) {
+    SDL_GPUBuffer *buffer = SDL_CreateGPUBuffer(device, info);
+    AddGpuMemory(buffer, info->size);
+    return buffer;
+}
+
+SDL_GPUTransferBuffer *CreateGpuTransferBuffer(SDL_GPUDevice *device,
+                                               const SDL_GPUTransferBufferCreateInfo *info) {
+    SDL_GPUTransferBuffer *buffer = SDL_CreateGPUTransferBuffer(device, info);
+    AddGpuMemory(buffer, info->size);
+    return buffer;
+}
+
+void ReleaseGpuTexture(SDL_GPUDevice *device, SDL_GPUTexture *texture) {
+    RemoveGpuMemory(texture);
+    SDL_ReleaseGPUTexture(device, texture);
+}
+
+void ReleaseGpuBuffer(SDL_GPUDevice *device, SDL_GPUBuffer *buffer) {
+    RemoveGpuMemory(buffer);
+    SDL_ReleaseGPUBuffer(device, buffer);
+}
+
+void ReleaseGpuTransferBuffer(SDL_GPUDevice *device, SDL_GPUTransferBuffer *buffer) {
+    RemoveGpuMemory(buffer);
+    SDL_ReleaseGPUTransferBuffer(device, buffer);
+}
+
+Uint64 GpuMemoryBytes() {
+    return g_gpuMemoryBytes;
 }
 
 } // namespace coastline

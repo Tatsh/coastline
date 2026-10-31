@@ -258,7 +258,7 @@ public:
         SDL_GPUBufferCreateInfo info{};
         info.usage = usage;
         info.size = static_cast<Uint32>(bytes.size());
-        SDL_GPUBuffer *buffer = SDL_CreateGPUBuffer(m_device, &info);
+        SDL_GPUBuffer *buffer = CreateGpuBuffer(m_device, &info);
         if (buffer != nullptr) {
             m_buffers.push_back({buffer, std::vector<std::uint8_t>(bytes.begin(), bytes.end())});
         }
@@ -283,7 +283,7 @@ public:
             info.num_levels =
                 static_cast<Uint32>(std::bit_width(static_cast<unsigned>(std::max(width, height))));
         }
-        SDL_GPUTexture *texture = SDL_CreateGPUTexture(m_device, &info);
+        SDL_GPUTexture *texture = CreateGpuTexture(m_device, &info);
         if (texture != nullptr) {
             m_textures.push_back({texture,
                                   width,
@@ -308,7 +308,7 @@ public:
         SDL_GPUTransferBufferCreateInfo info{};
         info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
         info.size = static_cast<Uint32>(total);
-        SDL_GPUTransferBuffer *transfer = SDL_CreateGPUTransferBuffer(m_device, &info);
+        SDL_GPUTransferBuffer *transfer = CreateGpuTransferBuffer(m_device, &info);
         if (transfer == nullptr) {
             return false;
         }
@@ -352,7 +352,7 @@ public:
             }
         }
         bool submitted = SDL_SubmitGPUCommandBuffer(commands);
-        SDL_ReleaseGPUTransferBuffer(m_device, transfer);
+        ReleaseGpuTransferBuffer(m_device, transfer);
         return submitted;
     }
 
@@ -590,16 +590,16 @@ struct ImageSet {
 
     void Release(SDL_GPUDevice *device) {
         for (auto &[image, texture] : images) {
-            SDL_ReleaseGPUTexture(device, texture);
+            ReleaseGpuTexture(device, texture);
         }
         for (auto &[image, textures] : variants) {
             for (auto *texture : textures) {
-                SDL_ReleaseGPUTexture(device, texture);
+                ReleaseGpuTexture(device, texture);
             }
         }
         for (auto &[image, levels] : damaged) {
             for (auto *texture : levels.second) {
-                SDL_ReleaseGPUTexture(device, texture);
+                ReleaseGpuTexture(device, texture);
             }
         }
         *this = {};
@@ -784,11 +784,11 @@ struct DocumentData {
         }
         for (auto &mesh : meshes) {
             for (auto &primitive : mesh.primitives) {
-                SDL_ReleaseGPUBuffer(device, primitive.vertices);
-                SDL_ReleaseGPUBuffer(device, primitive.indices);
+                ReleaseGpuBuffer(device, primitive.vertices);
+                ReleaseGpuBuffer(device, primitive.indices);
             }
             if (mesh.targets != nullptr) {
-                SDL_ReleaseGPUBuffer(device, mesh.targets);
+                ReleaseGpuBuffer(device, mesh.targets);
             }
         }
         for (auto *sampler : samplers) {
@@ -935,26 +935,26 @@ struct SceneRenderer::State {
         info.layer_count_or_depth = 1;
         info.num_levels = 1;
         info.sample_count = sampleCount;
-        SDL_GPUTexture *createdDepth = SDL_CreateGPUTexture(device, &info);
+        SDL_GPUTexture *createdDepth = CreateGpuTexture(device, &info);
         SDL_GPUTexture *createdColor = nullptr;
         if (sampleCount != SDL_GPU_SAMPLECOUNT_1) {
             info.format = GpuWindow::FrameFormat();
             info.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET;
-            createdColor = SDL_CreateGPUTexture(device, &info);
+            createdColor = CreateGpuTexture(device, &info);
         }
         if (createdDepth == nullptr ||
             (sampleCount != SDL_GPU_SAMPLECOUNT_1 && createdColor == nullptr)) {
             SDL_LogError(SDL_LOG_CATEGORY_GPU, "The targets were not created: %s", SDL_GetError());
             for (auto *texture : {createdDepth, createdColor}) {
                 if (texture != nullptr) {
-                    SDL_ReleaseGPUTexture(device, texture);
+                    ReleaseGpuTexture(device, texture);
                 }
             }
             return false;
         }
         for (auto *texture : {depth, multisampled}) {
             if (texture != nullptr) {
-                SDL_ReleaseGPUTexture(device, texture);
+                ReleaseGpuTexture(device, texture);
             }
         }
         depth = createdDepth;
@@ -978,18 +978,18 @@ struct SceneRenderer::State {
         }
         for (auto *texture : {depth, multisampled, white}) {
             if (texture != nullptr) {
-                SDL_ReleaseGPUTexture(device, texture);
+                ReleaseGpuTexture(device, texture);
             }
         }
         if (plainSampler != nullptr) {
             SDL_ReleaseGPUSampler(device, plainSampler);
         }
         if (flatTransfer != nullptr) {
-            SDL_ReleaseGPUTransferBuffer(device, flatTransfer);
+            ReleaseGpuTransferBuffer(device, flatTransfer);
         }
         for (auto *buffer : {noTargets, flatVertices, quadIndices}) {
             if (buffer != nullptr) {
-                SDL_ReleaseGPUBuffer(device, buffer);
+                ReleaseGpuBuffer(device, buffer);
             }
         }
     }
@@ -1078,13 +1078,13 @@ struct SceneRenderer::State {
             return true;
         }
         if (buffer != nullptr) {
-            SDL_ReleaseGPUBuffer(device, buffer);
+            ReleaseGpuBuffer(device, buffer);
         }
         capacity = std::max(bytes, capacity * 2);
         SDL_GPUBufferCreateInfo info{};
         info.usage = usage;
         info.size = static_cast<Uint32>(capacity);
-        buffer = SDL_CreateGPUBuffer(device, &info);
+        buffer = CreateGpuBuffer(device, &info);
         return buffer != nullptr;
     }
 
@@ -1094,13 +1094,13 @@ struct SceneRenderer::State {
             return true;
         }
         if (flatTransfer != nullptr) {
-            SDL_ReleaseGPUTransferBuffer(device, flatTransfer);
+            ReleaseGpuTransferBuffer(device, flatTransfer);
         }
         flatTransferCapacity = std::max(bytes, flatTransferCapacity * 2);
         SDL_GPUTransferBufferCreateInfo info{};
         info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
         info.size = static_cast<Uint32>(flatTransferCapacity);
-        flatTransfer = SDL_CreateGPUTransferBuffer(device, &info);
+        flatTransfer = CreateGpuTransferBuffer(device, &info);
         return flatTransfer != nullptr;
     }
 };
@@ -1541,10 +1541,10 @@ RenderTexture::RenderTexture(
 }
 
 RenderTexture::~RenderTexture() {
-    SDL_ReleaseGPUTexture(m_device, m_texture);
+    ReleaseGpuTexture(m_device, m_texture);
     SDL_ReleaseGPUSampler(m_device, m_sampler);
     if (m_transfer != nullptr) {
-        SDL_ReleaseGPUTransferBuffer(m_device, m_transfer);
+        ReleaseGpuTransferBuffer(m_device, m_transfer);
     }
 }
 
@@ -1557,7 +1557,7 @@ bool RenderTexture::Update(std::span<const std::uint8_t> rgba) {
         SDL_GPUTransferBufferCreateInfo info{};
         info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
         info.size = static_cast<Uint32>(bytes);
-        m_transfer = SDL_CreateGPUTransferBuffer(m_device, &info);
+        m_transfer = CreateGpuTransferBuffer(m_device, &info);
         if (m_transfer == nullptr) {
             return false;
         }
@@ -1772,7 +1772,7 @@ VertexDisplacement::VertexDisplacement(SDL_GPUDevice *device,
 }
 
 VertexDisplacement::~VertexDisplacement() {
-    SDL_ReleaseGPUBuffer(m_device, m_buffer);
+    ReleaseGpuBuffer(m_device, m_buffer);
 }
 
 std::shared_ptr<const VertexDisplacement>
@@ -1789,7 +1789,7 @@ SceneRenderer::CreateDisplacement(std::span<const std::array<float, 3>> offsets)
                        displacements.size() * sizeof(float)});
     if (buffer == nullptr || !upload.Submit()) {
         SDL_LogError(SDL_LOG_CATEGORY_GPU, "A displacement was not uploaded: %s", SDL_GetError());
-        SDL_ReleaseGPUBuffer(m_state->device, buffer);
+        ReleaseGpuBuffer(m_state->device, buffer);
         return nullptr;
     }
     return std::shared_ptr<const VertexDisplacement>(
