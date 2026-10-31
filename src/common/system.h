@@ -347,7 +347,9 @@ extern OSMesg g_aDmaMsgBuf[32];
  * @ghidraAddress EUR: 0x8031c818
  * @ghidraAddress JPN: 0x8031b448
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern OSMesgQueue g_RspEventMsgQueue;
+#endif
 
 /**
  * @ghidraAddress USA: 0x8031a354
@@ -383,7 +385,9 @@ extern OSMesg g_aRspDoneMsgBuf[1];
  * @ghidraAddress EUR: 0x8031c850
  * @ghidraAddress JPN: 0x8031b480
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern OSMesgQueue g_RdpEventMsgQueue;
+#endif
 
 /**
  * @ghidraAddress USA: 0x8031a38c
@@ -420,7 +424,9 @@ extern OSMesg g_aRdpDoneMsgBuf[1];
  * @ghidraAddress EUR: 0x8031c8b0
  * @ghidraAddress JPN: 0x8031b4e0
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern OSMesgQueue g_ViRetracePollMesgQueue;
+#endif
 
 /**
  * @ghidraAddress USA: 0x8031a3c8
@@ -456,7 +462,9 @@ extern OSMesg g_ViRetraceMesgBuf[1];
  * @ghidraAddress EUR: 0x8031c8cc
  * @ghidraAddress JPN: 0x8031b4fc
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern u32 g_dwDummyOsMesg;
+#endif
 
 /**
  * The retraces ViRetraceThread() forwarded, from 0 to 15.
@@ -467,7 +475,9 @@ extern u32 g_dwDummyOsMesg;
  * @ghidraAddress EUR: 0x8028d09c
  * @ghidraAddress JPN: 0x8028cacc
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern s32 g_dwVblankCounter;
+#endif
 
 /**
  * The threads of the system.

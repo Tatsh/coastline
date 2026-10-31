@@ -1,15 +1,12 @@
 // The variables of the race engine that the Windows libraries define in their platform units, and
 // the console in its data. Each has the type, the size, and the first value of the Windows
 // definition.
-#include <PR/os.h>
-
 #include "common/frontendstate.h"
 #include "common/racephases.h"
 #include "common/render.h"
 #include "common/session.h"
 #include "common/settings.h"
 #include "common/snapshot.h"
-#include "common/system.h"
 #include "common/trackskidmarks.h"
 #include "common/vehicledeform.h"
 
@@ -18,13 +15,6 @@ int g_anSkidMarkHead[SKID_MARK_TRACK_COUNT];
 int g_anSkidMarkTail[SKID_MARK_TRACK_COUNT];
 // The path of BossRally.cfg. A path of the host may be longer than a path of Windows.
 char g_szConfigFilePath[4096];
-
-// The threads of the console that wait for the RSP, the RDP, and the retrace.
-u32 g_dwDummyOsMesg;
-s32 g_dwVblankCounter;
-OSMesgQueue g_RdpEventMsgQueue;
-OSMesgQueue g_RspEventMsgQueue;
-OSMesgQueue g_ViRetracePollMesgQueue;
 
 // The front end, the game session, and the network session.
 int g_dwChosenCar;

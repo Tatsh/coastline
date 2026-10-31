@@ -284,6 +284,8 @@ else()
     # pointers as the 32-bit offsets of common/ptr32.h, and only C++ has them. The SDL game compiles
     # every source as C++, and every source sees the same layout.
     get_target_property(_sources coastline_common SOURCES)
+    list(REMOVE_ITEM _sources completionthreads.c)
+    set_property(TARGET coastline_common PROPERTY SOURCES ${_sources})
     set_source_files_properties(${_sources} PROPERTIES LANGUAGE CXX)
   endif()
   # The game code includes the interpreter of the display lists, which the Glide headers define.
