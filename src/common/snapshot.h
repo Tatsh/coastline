@@ -67,7 +67,12 @@ extern FrameSnapshot g_aFrameSnapshots[FRAME_SNAPSHOT_COUNT];
 extern FrameSnapshot g_InterpolatedFrameSnapshot;
 
 /** @ghidraAddress BRD3D: 0x1039b728 */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+int (*GetSdlSnapshotUsage(void))[FRAME_SNAPSHOT_COUNT];
+#define g_abFrameSnapshotInUse (*GetSdlSnapshotUsage())
+#else
 extern int g_abFrameSnapshotInUse[FRAME_SNAPSHOT_COUNT];
+#endif
 /** @ghidraAddress BRD3D: 0x104afd14 */
 extern int g_dwFrameSnapshotBlendFromSlot;
 /** @ghidraAddress BRD3D: 0x1039b75c */

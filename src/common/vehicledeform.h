@@ -15,7 +15,12 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x100ac6a4
  * @ghidraAddress BRGlide: 0x100abe44
  */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+s16 *GetSdlDentLimit(void);
+#define g_wVehicleDeformMaxDent (*GetSdlDentLimit())
+#else
 extern s16 g_wVehicleDeformMaxDent;
+#endif
 #endif
 
 /**

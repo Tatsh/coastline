@@ -1,38 +1,72 @@
-// The variables of the race engine that the Windows libraries define in their platform units, and
-// the console in its data. Each has the type, the size, and the first value of the Windows
-// definition.
-#include "common/frontendstate.h"
+#include "runtimebuffers.h"
+
+#include <cassert>
+
+#include <SDL3/SDL.h>
+
+#include "common/assetnames.h"
 #include "common/racephases.h"
-#include "common/render.h"
-#include "common/session.h"
-#include "common/settings.h"
-#include "common/snapshot.h"
-#include "common/trackskidmarks.h"
 #include "common/vehicledeform.h"
 
-int g_abFrameSnapshotInUse[FRAME_SNAPSHOT_COUNT];
-int g_anSkidMarkHead[SKID_MARK_TRACK_COUNT];
-int g_anSkidMarkTail[SKID_MARK_TRACK_COUNT];
-// The path of BossRally.cfg. A path of the host may be longer than a path of Windows.
-char g_szConfigFilePath[4096];
+namespace coastline {
 
-// The front end, the game session, and the network session.
-int g_dwChosenCar;
-int g_dwInNetworkCarSetup;
-char g_szSeasonSaveFileName[FRONT_END_SAVE_PATH_SIZE];
-char g_szTimeAttackSaveFileName[FRONT_END_SAVE_PATH_SIZE];
-int g_dwFrontEndAtRootMenu;
-int g_dwSelectedTransmission;
-int g_dwTireMenuIndex = 1;
-int g_dwSuspensionMenuIndex = 1;
-int g_dwCarMenuIndex = 1;
-int g_dwTotalLapsSetting = 3;
-int g_dwAccumUnlockedCarMask;
-int g_dwAccumUnlockedTrackMask;
-int g_dwHandlingTypeMenuIndex = 4;
-s16 g_wVehicleDeformMaxDent = 0x100;
-int g_bRaceStartReached;
-int g_dwRunBenchmark;
-int g_dwNetworkPlayMode;
+namespace {
+constexpr const char *ENGINE_RUNTIME_PROPERTY = "coastline.engine-runtime";
+} // namespace
+
+EngineRuntime::EngineRuntime() {
+    assert(Active() == nullptr);
+    m_frontEnd.tires = 1;
+    m_frontEnd.suspension = 1;
+    m_frontEnd.car = 1;
+    m_frontEnd.laps = 3;
+    m_frontEnd.handling = 4;
+    m_frontEnd.frontEndEnabled = 1;
+    SDL_SetPointerProperty(SDL_GetGlobalProperties(), ENGINE_RUNTIME_PROPERTY, this);
+}
+
+EngineRuntime::~EngineRuntime() {
+    SDL_ClearProperty(SDL_GetGlobalProperties(), ENGINE_RUNTIME_PROPERTY);
+}
+
+EngineRuntime *EngineRuntime::Active() {
+    return static_cast<EngineRuntime *>(
+        SDL_GetPointerProperty(SDL_GetGlobalProperties(), ENGINE_RUNTIME_PROPERTY, nullptr));
+}
+
+} // namespace coastline
+
+extern "C" {
+
 const char g_szEmptyUiString[1] = {0};
-int g_dwNullStubEnable = 1;
+
+SdlFrontEndState *GetSdlFrontEndState(void) {
+    auto *runtime = coastline::EngineRuntime::Active();
+    assert(runtime != nullptr);
+    return &runtime->FrontEnd();
+}
+
+SdlSkidMarkState *GetSdlSkidMarkState(void) {
+    auto *runtime = coastline::EngineRuntime::Active();
+    assert(runtime != nullptr);
+    return &runtime->SkidMarks();
+}
+
+int (*GetSdlSnapshotUsage(void)) [FRAME_SNAPSHOT_COUNT] {
+    auto *runtime = coastline::EngineRuntime::Active();
+    assert(runtime != nullptr);
+    return &runtime->SnapshotUsage();
+}
+
+int *GetSdlRaceStarted(void) {
+    auto *runtime = coastline::EngineRuntime::Active();
+    assert(runtime != nullptr);
+    return &runtime->RaceStarted();
+}
+
+s16 *GetSdlDentLimit(void) {
+    auto *runtime = coastline::EngineRuntime::Active();
+    assert(runtime != nullptr);
+    return &runtime->DentLimit();
+}
+}

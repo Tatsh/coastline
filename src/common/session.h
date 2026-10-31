@@ -5,13 +5,19 @@
  * The state of the session of the Boss Rally release the race shares with the front end.
  */
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "common/frontendstate.h"
+#endif
+
 /**
  * Path of BossRally.cfg, built from g_szInstallDirectory.
  *
  * @ghidraAddress BRD3D: 0x10b4fbe8
  * @ghidraAddress BRGlide: 0x10b72f48
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern char g_szConfigFilePath[];
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -24,7 +30,9 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x100ac300
  * @ghidraAddress BRGlide: 0x100abaa0
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern int g_dwNullStubEnable;
+#endif
 
 /**
  * Release every subsystem of the game and end the process.

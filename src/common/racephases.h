@@ -13,7 +13,12 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x1022af14
  * @ghidraAddress BRGlide: 0x10226a44
  */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+int *GetSdlRaceStarted(void);
+#define g_bRaceStartReached (*GetSdlRaceStarted())
+#else
 extern int g_bRaceStartReached;
+#endif
 
 #ifdef ENABLE_PATCHES
 /**

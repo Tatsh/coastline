@@ -1093,6 +1093,7 @@ scrolllock
 sdlcall
 sdlk
 sdlmixer
+sdlruntime
 sdltextures
 seasn
 seasoncars

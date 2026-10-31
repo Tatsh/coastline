@@ -60,6 +60,7 @@
 #include "racesession.h"
 #include "raceview.h"
 #include "runscript.h"
+#include "runtimebuffers.h"
 #include "scenerenderer.h"
 #include "stringresources.h"
 #include "trackload.h"
@@ -1100,6 +1101,7 @@ int main(int argc, char *argv[]) {
             auto music = LoadMusicModule(assets, menuModule.offset);
             SetWindowIcon(window->Window(), assets);
             coastline::N64MixerContext mixer;
+            coastline::EngineRuntime engineRuntime;
             coastline::InputBindings input(config);
             coastline::EngineModels engineModels;
             coastline::EngineTextures engineTextures;

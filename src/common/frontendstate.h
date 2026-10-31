@@ -17,6 +17,49 @@ extern "C" {
 /** The size of the path of a saved season or ghost, MAX_PATH of Windows. */
 #define FRONT_END_SAVE_PATH_SIZE 260
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/** Front-end choices and host paths for one active game session. */
+typedef struct SdlFrontEndState {
+    char configPath[4096];
+    char seasonPath[FRONT_END_SAVE_PATH_SIZE];
+    char timeAttackPath[FRONT_END_SAVE_PATH_SIZE];
+    int chosenCar;
+    int networkCarSetup;
+    int rootMenu;
+    int transmission;
+    int tires;
+    int suspension;
+    int car;
+    int laps;
+    int unlockedCars;
+    int unlockedTracks;
+    int handling;
+    int benchmark;
+    int networkPlay;
+    int frontEndEnabled;
+} SdlFrontEndState;
+
+/** @return Front-end storage for the active engine runtime. */
+SdlFrontEndState *GetSdlFrontEndState(void);
+
+#define g_szConfigFilePath (GetSdlFrontEndState()->configPath)
+#define g_szSeasonSaveFileName (GetSdlFrontEndState()->seasonPath)
+#define g_szTimeAttackSaveFileName (GetSdlFrontEndState()->timeAttackPath)
+#define g_dwChosenCar (GetSdlFrontEndState()->chosenCar)
+#define g_dwInNetworkCarSetup (GetSdlFrontEndState()->networkCarSetup)
+#define g_dwFrontEndAtRootMenu (GetSdlFrontEndState()->rootMenu)
+#define g_dwSelectedTransmission (GetSdlFrontEndState()->transmission)
+#define g_dwTireMenuIndex (GetSdlFrontEndState()->tires)
+#define g_dwSuspensionMenuIndex (GetSdlFrontEndState()->suspension)
+#define g_dwCarMenuIndex (GetSdlFrontEndState()->car)
+#define g_dwTotalLapsSetting (GetSdlFrontEndState()->laps)
+#define g_dwAccumUnlockedCarMask (GetSdlFrontEndState()->unlockedCars)
+#define g_dwAccumUnlockedTrackMask (GetSdlFrontEndState()->unlockedTracks)
+#define g_dwHandlingTypeMenuIndex (GetSdlFrontEndState()->handling)
+#define g_dwRunBenchmark (GetSdlFrontEndState()->benchmark)
+#define g_dwNetworkPlayMode (GetSdlFrontEndState()->networkPlay)
+#define g_dwNullStubEnable (GetSdlFrontEndState()->frontEndEnabled)
+#else
 /**
  * The path of the file of the saved season.
  *
@@ -112,6 +155,7 @@ extern int g_dwHandlingTypeMenuIndex;
  * @ghidraAddress BRGlide: 0x10ac5bb4
  */
 extern int g_dwInNetworkCarSetup;
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 #ifdef __cplusplus
 }

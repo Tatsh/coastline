@@ -9,6 +9,7 @@
 #include "common/game.h"
 #include "common/trackselect.h"
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "common/frontendstate.h"
 #include "common/renderbackend.h"
 #endif
 
@@ -36,7 +37,9 @@ extern char g_szBossRallyIniPath[];
  * @ghidraAddress BRD3D: 0x1022af18
  * @ghidraAddress BRGlide: 0x10226a48
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern int g_dwNetworkPlayMode;
+#endif
 
 /**
  * The car chosen, from `chosenCar=`.
@@ -44,7 +47,9 @@ extern int g_dwNetworkPlayMode;
  * @ghidraAddress BRD3D: 0x1022b34c
  * @ghidraAddress BRGlide: 0x10226e7c
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern int g_dwChosenCar;
+#endif
 
 /**
  * The weather chosen, from `chosenWeather=`.
@@ -142,7 +147,9 @@ extern int g_bDisableCarShadow;
  * @ghidraAddress BRD3D: 0x118abdc4
  * @ghidraAddress BRGlide: 0x118eeedc
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern int g_dwRunBenchmark;
+#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN && defined(ENABLE_PATCHES)
 /** The mode of play of `scene=`, started in place of the menus, or -1 once started or for none. */

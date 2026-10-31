@@ -13,12 +13,11 @@
 #include "common/season.h"
 
 Vehicle g_aVehicles[MAX_VEHICLES];
-char g_szSeasonSaveFileName[FRONT_END_SAVE_PATH_SIZE];
-int g_dwSelectedTransmission = 1;
-int g_dwTireMenuIndex = 2;
-int g_dwSuspensionMenuIndex = 3;
-int g_dwCarMenuIndex = 4;
-int g_dwHandlingTypeMenuIndex = 5;
+SdlFrontEndState g_frontEnd{};
+
+extern "C" SdlFrontEndState *GetSdlFrontEndState(void) {
+    return &g_frontEnd;
+}
 
 namespace {
 
@@ -47,6 +46,11 @@ void CheckPayload(const std::vector<unsigned char> &file, const PlayerProfile &p
 } // namespace
 
 int main() {
+    g_dwSelectedTransmission = 1;
+    g_dwTireMenuIndex = 2;
+    g_dwSuspensionMenuIndex = 3;
+    g_dwCarMenuIndex = 4;
+    g_dwHandlingTypeMenuIndex = 5;
     const auto original = std::filesystem::current_path();
     const auto directory =
         std::filesystem::temp_directory_path() /

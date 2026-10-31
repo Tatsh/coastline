@@ -6,8 +6,11 @@
 
 #include "common/trackskidmarks.cpp"
 
-int g_anSkidMarkHead[SKID_MARK_TRACK_COUNT];
-int g_anSkidMarkTail[SKID_MARK_TRACK_COUNT];
+SdlSkidMarkState g_skidMarks{};
+
+extern "C" SdlSkidMarkState *GetSdlSkidMarkState(void) {
+    return &g_skidMarks;
+}
 s32 g_dwNumActiveVehicles;
 u8 g_abInstanceVisibilityMask[256];
 ConvertedModelVertex *g_pTrackQuadVertexStart;

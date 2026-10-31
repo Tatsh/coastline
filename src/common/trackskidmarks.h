@@ -11,6 +11,18 @@ extern "C" {
 /** The number of entries of g_anSkidMarkHead and g_anSkidMarkTail. */
 #define SKID_MARK_TRACK_COUNT 32
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/** Ring endpoints for each skid trail in one active engine runtime. */
+typedef struct SdlSkidMarkState {
+    int heads[SKID_MARK_TRACK_COUNT];
+    int tails[SKID_MARK_TRACK_COUNT];
+} SdlSkidMarkState;
+
+/** @return Skid trail endpoints for the active engine runtime. */
+SdlSkidMarkState *GetSdlSkidMarkState(void);
+#define g_anSkidMarkHead (GetSdlSkidMarkState()->heads)
+#define g_anSkidMarkTail (GetSdlSkidMarkState()->tails)
+#else
 /**
  * The first skid mark of each track of skid marks.
  *
@@ -26,6 +38,7 @@ extern int g_anSkidMarkHead[SKID_MARK_TRACK_COUNT];
  * @ghidraAddress BRGlide: 0x1035f750
  */
 extern int g_anSkidMarkTail[SKID_MARK_TRACK_COUNT];
+#endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
 /** Append vehicle shadows and skid trails to the deferred display list. */
 void DrawTrackShadows(Vehicle *vehicles);
