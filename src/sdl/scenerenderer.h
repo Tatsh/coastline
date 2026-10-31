@@ -393,6 +393,25 @@ struct FlatVertex {
     float z = 0.0f;                                        /*!< The back to front place. */
 };
 
+/** Persistent quad slots, updated independently and drawn in a caller-specified order. */
+class RenderQuadBuffer {
+public:
+    /** @return A buffer for @p quads slots, or null with the allocation error logged. */
+    static std::unique_ptr<RenderQuadBuffer> Create(SceneRenderer &renderer, std::size_t quads);
+    ~RenderQuadBuffer();
+    RenderQuadBuffer(const RenderQuadBuffer &) = delete;
+    RenderQuadBuffer &operator=(const RenderQuadBuffer &) = delete;
+
+    /** Replace @p slot with four corners before the frame is submitted. */
+    void Update(std::uint32_t slot, std::span<const FlatVertex, 4> corners);
+
+private:
+    friend class SceneRenderer;
+    struct State;
+    explicit RenderQuadBuffer(std::unique_ptr<State> state);
+    std::unique_ptr<State> m_state;
+};
+
 /** How a run of flat quads is coloured: the textures and the colour combiner of the RDP. */
 struct FlatMaterial {
     const RenderTexture *texel0 = nullptr; /*!< The first texture, or none for white. */
@@ -637,6 +656,16 @@ public:
                    bool depthTest = false);
 
     /**
+     * Draw persistent slots in @p order, using the same material and depth rules as DrawQuads().
+     * The buffer must remain valid until End().
+     */
+    void DrawBufferedQuads(RenderQuadBuffer &buffer,
+                           std::span<const std::uint32_t> order,
+                           const FlatMaterial &material,
+                           const Matrix4 &projection,
+                           bool depthTest = false);
+
+    /**
      * Draw the frame and present it.
      *
      * @param capture A PNG file to write the frame to, or null.
@@ -647,6 +676,7 @@ private:
     friend class RenderDocument;
     friend class RenderModel;
     friend class RenderTexture;
+    friend class RenderQuadBuffer;
     struct State;
     explicit SceneRenderer(std::unique_ptr<State> state);
     std::unique_ptr<State> m_state;

@@ -592,6 +592,15 @@ struct CarDents {
     std::shared_ptr<const VertexDisplacement> displacement;
 };
 
+namespace {
+struct SkidMarkBuffer {
+    std::unique_ptr<RenderQuadBuffer> buffer;
+    std::array<std::optional<std::uint64_t>, SKID_MARK_TRACK_COUNT * SKID_MARK_SEGMENT_COUNT>
+        revisions{};
+    std::vector<std::uint32_t> order;
+};
+} // namespace
+
 struct RaceView::State {
     std::filesystem::path defaults;
     std::unique_ptr<RenderModel> track;
@@ -627,6 +636,7 @@ struct RaceView::State {
     HudTextures hudTextures;
     // The vertices of the pool of the quads of the track the skid marks of the frame have taken.
     int skidVertices = 0;
+    SkidMarkBuffer skidMarks;
     // The streak of the rain of each view, and the texels it was made from.
     std::array<std::vector<std::uint8_t>, WEATHER_VIEWS> streakTexels;
     std::array<std::unique_ptr<RenderTexture>, WEATHER_VIEWS> streaks;
@@ -739,26 +749,42 @@ constexpr std::array<std::uint32_t, 2> SKID_COMBINE = CombineLerp(ZERO_AB,
 // instance under them is in view and not near the eighth vehicle, from the pool of vertices every
 // view of the frame shares.
 void DrawSkidMarks(SceneRenderer &renderer,
+                   SkidMarkBuffer &marks,
                    std::array<float, 4> color,
                    const Matrix4 &viewProjection,
                    const std::vector<unsigned char> &mask,
                    int &vertices) {
-    std::vector<FlatVertex> corners;
+    if (marks.buffer == nullptr) {
+        marks.buffer = RenderQuadBuffer::Create(renderer, marks.revisions.size());
+        if (marks.buffer == nullptr) {
+            return;
+        }
+    }
+    marks.order.clear();
     VisitSkidMarkQuads(
-        [](const Vec3f *oldRight,
+        [](unsigned slot,
+           unsigned long long revision,
+           const Vec3f *oldRight,
            const Vec3f *newRight,
            const Vec3f *oldLeft,
            const Vec3f *newLeft,
            void *context) {
-            auto &quads = *static_cast<std::vector<FlatVertex> *>(context);
-            for (const Vec3f *p : {oldRight, newRight, newLeft, oldLeft}) {
-                quads.push_back({p->x, p->y, 0.0f, 0.0f, {255, 255, 255, 255}, p->z});
+            auto &marks = *static_cast<SkidMarkBuffer *>(context);
+            marks.order.push_back(slot);
+            if (marks.revisions[slot] != revision) {
+                std::array<FlatVertex, 4> corners;
+                std::size_t index = 0;
+                for (const Vec3f *p : {oldRight, newRight, newLeft, oldLeft}) {
+                    corners[index++] = {p->x, p->y, 0.0f, 0.0f, {255, 255, 255, 255}, p->z};
+                }
+                marks.buffer->Update(slot, corners);
+                marks.revisions[slot] = revision;
             }
         },
-        &corners,
+        &marks,
         mask.data(),
         &vertices);
-    if (corners.empty()) {
+    if (marks.order.empty()) {
         return;
     }
     color[3] =
@@ -768,7 +794,7 @@ void DrawSkidMarks(SceneRenderer &renderer,
     material.combine = SKID_COMBINE;
     material.env = color;
     material.alphaCut = (!g_dwNightMode && !g_dwRainMode ? 1.0f : 8.0f) / 255.0f;
-    renderer.DrawQuads(corners, material, viewProjection, true);
+    renderer.DrawBufferedQuads(*marks.buffer, marks.order, material, viewProjection, true);
 }
 
 // The shadow of a car as RenderTrackInstance() lays it on the instances near the car, those whose
@@ -2290,8 +2316,12 @@ void RaceView::DrawView(SceneRenderer &renderer,
                                std::move(instances.translucent),
                                std::move(shadows));
     if (snapshot != nullptr && g_GlobalRallyConfig.bSkidMarksSelection) {
-        DrawSkidMarks(
-            renderer, ShadowColor(vehicle), viewProjection, instances.mask, s.skidVertices);
+        DrawSkidMarks(renderer,
+                      s.skidMarks,
+                      ShadowColor(vehicle),
+                      viewProjection,
+                      instances.mask,
+                      s.skidVertices);
     }
     if (carsAfterTrack) {
         drawCarsAndSmoke();

@@ -64,6 +64,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
     time attack run that beats the ghost of the slot last loaded or saved replaces that ghost
     without the prompt.
 
+### Changed
+
+- Skid-mark rendering reuses persistent GPU ring slots and uploads only changed geometry while
+  preserving draw order.
+
 ### Fixed
 
 - Fixed a crash when quitting the game during a race by releasing race music before SDL audio

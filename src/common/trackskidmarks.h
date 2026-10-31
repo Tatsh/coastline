@@ -31,6 +31,9 @@ extern int g_anSkidMarkTail[SKID_MARK_TRACK_COUNT];
 void DrawTrackShadows(Vehicle *vehicles);
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
+/** The number of segments in each trail's ring. */
+#define SKID_MARK_SEGMENT_COUNT 500
+
 /**
  * Lay the skid marks of the wheels of the vehicles of a drawn frame, as DrawTrackShadows() lays
  * them when skid marks are chosen.
@@ -46,12 +49,15 @@ void RecordFrameSkidMarks(Vehicle *vehicles);
  * instance in view and not near the eighth vehicle, until the quads fill the pool of the vertices
  * of the quads of the track every view of the frame draws from.
  *
- * @param visit Called with the four corners of a quad and the context.
+ * @param visit Called with a stable ring slot, packed endpoint revisions, four corners, and
+ * context.
  * @param context Passed to each call.
  * @param mask For each instance of the track, its byte of g_abInstanceVisibilityMask.
  * @param vertices The vertices of the pool the frame has taken, advanced by 4 for each quad.
  */
-void VisitSkidMarkQuads(void (*visit)(const Vec3f *oldRight,
+void VisitSkidMarkQuads(void (*visit)(unsigned slot,
+                                      unsigned long long revision,
+                                      const Vec3f *oldRight,
                                       const Vec3f *newRight,
                                       const Vec3f *oldLeft,
                                       const Vec3f *newLeft,

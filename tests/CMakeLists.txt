@@ -171,6 +171,16 @@ set_source_files_properties("${_src}/libultra/gu/cosf.c" PROPERTIES COMPILE_DEFI
 # The directories, the configuration file, and the icon import of the SDL game, which need neither
 # SDL nor a display.
 enable_language(CXX)
+add_executable(trackskidmarks_test trackskidmarks_test.cpp)
+set_target_properties(trackskidmarks_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(trackskidmarks_test PRIVATE "${_src}" "${_src}/libultra/include")
+target_compile_options(trackskidmarks_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL
+                                                -UTGR_BOSS_RALLY -DTGR_BOSS_RALLY=1
+                                                -ffunction-sections -fdata-sections
+                                                -fsanitize=address,undefined)
+target_link_options(trackskidmarks_test PRIVATE -Wl,--gc-sections -fsanitize=address,undefined)
+add_test(NAME trackskidmarks COMMAND trackskidmarks_test)
+
 add_executable(
   sdl_test sdl_test.cpp "${_src}/sdl/config.cpp" "${_src}/sdl/paths.cpp" "${_src}/sdl/iconfile.cpp"
            "${_src}/sdl/importversion.cpp" "${_src}/sdl/language.cpp" "${_src}/sdl/consolestrings.cpp"

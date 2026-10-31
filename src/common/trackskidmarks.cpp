@@ -23,6 +23,9 @@ struct SkidMarkSegment {
     Vec3f left;
     Vec3f right;
     unsigned flags;
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    unsigned revision;
+#endif
 };
 
 constexpr unsigned ACTIVE = 0x08000000;
@@ -124,6 +127,9 @@ inline void RecordTrackSkidMarks(Vehicle *vehicle, int vehicleIndex) {
         segment.left.z = static_cast<float>(height);
         segment.right.z = static_cast<float>(height);
         segment.flags = vehicle->GetNearbyInstances()[0] | ACTIVE;
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+        ++segment.revision;
+#endif
         AdvanceTrail(trail, head);
     }
 }
@@ -310,7 +316,9 @@ void RecordFrameSkidMarks(Vehicle *vehicles) {
 }
 
 // DrawSkidTrails(), counting the vertices of the pool of the quads of the track the frame takes.
-void VisitSkidMarkQuads(void (*visit)(const Vec3f *oldRight,
+void VisitSkidMarkQuads(void (*visit)(unsigned slot,
+                                      unsigned long long revision,
+                                      const Vec3f *oldRight,
                                       const Vec3f *newRight,
                                       const Vec3f *oldLeft,
                                       const Vec3f *newLeft,
@@ -346,7 +354,15 @@ void VisitSkidMarkQuads(void (*visit)(const Vec3f *oldRight,
                     return;
                 }
                 *vertices += 4;
-                visit(&old.right, &segment.right, &old.left, &segment.left, context);
+                unsigned long long revision =
+                    (static_cast<unsigned long long>(old.revision) << 32) | segment.revision;
+                visit(trail * SEGMENT_COUNT + index,
+                      revision,
+                      &old.right,
+                      &segment.right,
+                      &old.left,
+                      &segment.left,
+                      context);
             }
             more = true;
             indices[trail] = previous;

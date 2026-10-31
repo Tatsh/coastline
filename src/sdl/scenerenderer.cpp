@@ -81,6 +81,17 @@ struct Vertex {
     std::uint8_t color[4];
 };
 
+Vertex ConvertFlatVertex(const FlatVertex &corner) {
+    Vertex vertex{};
+    vertex.position[0] = corner.x;
+    vertex.position[1] = corner.y;
+    vertex.position[2] = corner.z;
+    vertex.texCoord[0] = corner.u;
+    vertex.texCoord[1] = corner.v;
+    std::memcpy(vertex.color, corner.color.data(), 4);
+    return vertex;
+}
+
 // SetMaterialPaletteColors(): the first colour of the palette of a material takes the colour of
 // the car in 5 bits a component, and the second a darker shade of it, both with the alpha of the
 // entry of the palette at the number of the material.
@@ -590,12 +601,13 @@ struct ModelDraw {
 };
 
 struct QuadDraw {
-    std::size_t firstVertex;
+    std::size_t firstIndex;
     std::size_t quadCount;
     FlatMaterial material;
     Matrix4 projection;
     bool depthTest;
     DrawState state;
+    RenderQuadBuffer *buffer = nullptr;
 };
 
 // The textures of images of a document by the image: each image, its palette variants, and its
@@ -886,6 +898,78 @@ struct RenderModel::State {
     }
 };
 
+struct RenderQuadBuffer::State {
+    struct Update {
+        std::uint32_t slot;
+        std::array<Vertex, 4> vertices;
+    };
+
+    SDL_GPUDevice *device = nullptr;
+    SDL_GPUBuffer *vertices = nullptr;
+    SDL_GPUTransferBuffer *transfer = nullptr;
+    std::size_t capacity = 0;
+    std::size_t transferCapacity = 0;
+    std::vector<Update> updates;
+
+    ~State() {
+        if (vertices != nullptr) {
+            ReleaseGpuBuffer(device, vertices);
+        }
+        if (transfer != nullptr) {
+            ReleaseGpuTransferBuffer(device, transfer);
+        }
+    }
+
+    bool Upload(SDL_GPUCommandBuffer *commands) {
+        if (updates.empty()) {
+            return true;
+        }
+        std::ranges::stable_sort(updates, {}, &Update::slot);
+        std::size_t bytes = updates.size() * sizeof(Update::vertices);
+        if (transfer == nullptr || transferCapacity < bytes) {
+            if (transfer != nullptr) {
+                ReleaseGpuTransferBuffer(device, transfer);
+            }
+            transferCapacity = std::max(bytes, transferCapacity * 2);
+            SDL_GPUTransferBufferCreateInfo info{};
+            info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_UPLOAD;
+            info.size = static_cast<Uint32>(transferCapacity);
+            transfer = CreateGpuTransferBuffer(device, &info);
+            if (transfer == nullptr) {
+                return false;
+            }
+        }
+        auto *mapped =
+            static_cast<std::array<Vertex, 4> *>(SDL_MapGPUTransferBuffer(device, transfer, true));
+        if (mapped == nullptr) {
+            return false;
+        }
+        for (std::size_t index = 0; index < updates.size(); ++index) {
+            mapped[index] = updates[index].vertices;
+        }
+        SDL_UnmapGPUTransferBuffer(device, transfer);
+        SDL_GPUCopyPass *copy = SDL_BeginGPUCopyPass(commands);
+        for (std::size_t first = 0; first < updates.size();) {
+            std::size_t end = first + 1;
+            while (end < updates.size() && updates[end].slot == updates[end - 1].slot + 1) {
+                ++end;
+            }
+            SDL_GPUTransferBufferLocation from{
+                transfer, static_cast<Uint32>(first * sizeof(Update::vertices))};
+            SDL_GPUBufferRegion to{
+                vertices,
+                static_cast<Uint32>(updates[first].slot * sizeof(Update::vertices)),
+                static_cast<Uint32>((end - first) * sizeof(Update::vertices))};
+            // Cycling would discard unchanged slots from earlier frames.
+            SDL_UploadToGPUBuffer(copy, &from, &to, false);
+            first = end;
+        }
+        SDL_EndGPUCopyPass(copy);
+        updates.clear();
+        return true;
+    }
+};
+
 struct SceneRenderer::State {
     // The time of the frame the animated textures show, in milliseconds.
     std::uint32_t textureTime = 0;
@@ -927,6 +1011,8 @@ struct SceneRenderer::State {
     std::size_t flatVertexCapacity = 0;
     SDL_GPUBuffer *quadIndices = nullptr;
     std::size_t quadCapacity = 0;
+    SDL_GPUBuffer *quadOrderBuffer = nullptr;
+    std::size_t quadOrderCapacity = 0;
     // The upload of the flat draws, kept from frame to frame. Mapping it cycles past an upload the
     // GPU still reads.
     SDL_GPUTransferBuffer *flatTransfer = nullptr;
@@ -935,6 +1021,7 @@ struct SceneRenderer::State {
     std::array<float, 4> clear{};
     std::vector<std::variant<ModelDraw, QuadDraw>> draws;
     std::vector<Vertex> flat;
+    std::vector<std::uint32_t> quadOrder;
 
     // Give the depth, and the multisampled target, the size of the frame, which follows the window.
     bool MatchFrame() {
@@ -1003,7 +1090,7 @@ struct SceneRenderer::State {
         if (flatTransfer != nullptr) {
             ReleaseGpuTransferBuffer(device, flatTransfer);
         }
-        for (auto *buffer : {noTargets, flatVertices, quadIndices}) {
+        for (auto *buffer : {noTargets, flatVertices, quadIndices, quadOrderBuffer}) {
             if (buffer != nullptr) {
                 ReleaseGpuBuffer(device, buffer);
             }
@@ -1120,6 +1207,35 @@ struct SceneRenderer::State {
         return flatTransfer != nullptr;
     }
 };
+
+RenderQuadBuffer::RenderQuadBuffer(std::unique_ptr<State> state) : m_state(std::move(state)) {
+}
+
+RenderQuadBuffer::~RenderQuadBuffer() = default;
+
+std::unique_ptr<RenderQuadBuffer> RenderQuadBuffer::Create(SceneRenderer &renderer,
+                                                           std::size_t quads) {
+    auto state = std::make_unique<State>();
+    state->device = renderer.m_state->device;
+    state->capacity = quads;
+    SDL_GPUBufferCreateInfo info{};
+    info.usage = SDL_GPU_BUFFERUSAGE_VERTEX;
+    info.size = static_cast<Uint32>(quads * 4 * sizeof(Vertex));
+    state->vertices = CreateGpuBuffer(state->device, &info);
+    if (state->vertices == nullptr) {
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot allocate quad slots. %s", SDL_GetError());
+        return nullptr;
+    }
+    return std::unique_ptr<RenderQuadBuffer>(new RenderQuadBuffer(std::move(state)));
+}
+
+void RenderQuadBuffer::Update(std::uint32_t slot, std::span<const FlatVertex, 4> corners) {
+    SDL_assert(slot < m_state->capacity);
+    State::Update update{};
+    update.slot = slot;
+    std::ranges::transform(corners, update.vertices.begin(), ConvertFlatVertex);
+    m_state->updates.push_back(update);
+}
 
 RenderModel::RenderModel(std::unique_ptr<State> state) : m_state(std::move(state)) {
 }
@@ -1791,6 +1907,7 @@ void SceneRenderer::Begin(std::array<float, 4> clear) {
     m_state->inOrder = false;
     m_state->draws.clear();
     m_state->flat.clear();
+    m_state->quadOrder.clear();
 }
 
 void SceneRenderer::SetTextureTime(std::uint32_t milliseconds) {
@@ -1975,17 +2092,29 @@ void SceneRenderer::DrawQuads(std::span<const FlatVertex> corners,
                               bool depthTest) {
     std::size_t first = m_state->flat.size();
     for (const FlatVertex &corner : corners) {
-        Vertex v{};
-        v.position[0] = corner.x;
-        v.position[1] = corner.y;
-        v.position[2] = corner.z;
-        v.texCoord[0] = corner.u;
-        v.texCoord[1] = corner.v;
-        std::memcpy(v.color, corner.color.data(), 4);
-        m_state->flat.push_back(v);
+        m_state->flat.push_back(ConvertFlatVertex(corner));
     }
-    m_state->draws.emplace_back(
-        QuadDraw{first, corners.size() / 4, material, projection, depthTest, m_state->Current()});
+    m_state->draws.emplace_back(QuadDraw{
+        first / 4 * 6, corners.size() / 4, material, projection, depthTest, m_state->Current()});
+}
+
+void SceneRenderer::DrawBufferedQuads(RenderQuadBuffer &buffer,
+                                      std::span<const std::uint32_t> order,
+                                      const FlatMaterial &material,
+                                      const Matrix4 &projection,
+                                      bool depthTest) {
+    if (order.empty()) {
+        return;
+    }
+    std::size_t first = m_state->quadOrder.size();
+    for (std::uint32_t slot : order) {
+        SDL_assert(slot < buffer.m_state->capacity);
+        for (std::uint32_t corner : {0u, 1u, 2u, 0u, 2u, 3u}) {
+            m_state->quadOrder.push_back(slot * 4 + corner);
+        }
+    }
+    m_state->draws.emplace_back(QuadDraw{
+        first, order.size(), material, projection, depthTest, m_state->Current(), &buffer});
 }
 
 void SceneRenderer::End(const std::filesystem::path *capture) {
@@ -2021,7 +2150,9 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                 auto *mapped = static_cast<std::uint8_t *>(
                     SDL_MapGPUTransferBuffer(s.device, s.flatTransfer, true));
                 std::memcpy(mapped, s.flat.data(), vertexBytes);
-                std::memcpy(mapped + vertexBytes, indices.data(), indexBytes);
+                if (indexBytes > 0) {
+                    std::memcpy(mapped + vertexBytes, indices.data(), indexBytes);
+                }
                 SDL_UnmapGPUTransferBuffer(s.device, s.flatTransfer);
                 SDL_GPUCopyPass *copy = SDL_BeginGPUCopyPass(commands);
                 SDL_GPUTransferBufferLocation from{s.flatTransfer, 0};
@@ -2034,6 +2165,41 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                 }
                 SDL_EndGPUCopyPass(copy);
             }
+        }
+    }
+
+    bool bufferedReady = true;
+    std::size_t orderBytes = s.quadOrder.size() * sizeof(std::uint32_t);
+    if (orderBytes > 0) {
+        if (!s.Reserve(
+                s.quadOrderBuffer, s.quadOrderCapacity, orderBytes, SDL_GPU_BUFFERUSAGE_INDEX) ||
+            !s.ReserveFlatTransfer(orderBytes)) {
+            bufferedReady = false;
+        } else {
+            void *mapped = SDL_MapGPUTransferBuffer(s.device, s.flatTransfer, true);
+            if (mapped == nullptr) {
+                bufferedReady = false;
+            } else {
+                std::memcpy(mapped, s.quadOrder.data(), orderBytes);
+                SDL_UnmapGPUTransferBuffer(s.device, s.flatTransfer);
+                SDL_GPUCopyPass *copy = SDL_BeginGPUCopyPass(commands);
+                SDL_GPUTransferBufferLocation from{s.flatTransfer, 0};
+                SDL_GPUBufferRegion to{s.quadOrderBuffer, 0, static_cast<Uint32>(orderBytes)};
+                SDL_UploadToGPUBuffer(copy, &from, &to, true);
+                SDL_EndGPUCopyPass(copy);
+            }
+        }
+        std::vector<RenderQuadBuffer *> uploaded;
+        for (const auto &entry : s.draws) {
+            const auto *quad = std::get_if<QuadDraw>(&entry);
+            if (quad != nullptr && quad->buffer != nullptr &&
+                std::ranges::find(uploaded, quad->buffer) == uploaded.end()) {
+                bufferedReady = quad->buffer->m_state->Upload(commands) && bufferedReady;
+                uploaded.push_back(quad->buffer);
+            }
+        }
+        if (!bufferedReady) {
+            SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot upload quad slots. %s", SDL_GetError());
         }
     }
 
@@ -2481,7 +2647,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         }
         flushBlended();
         const QuadDraw &quad = std::get<QuadDraw>(entry);
-        if (s.flatVertices == nullptr || s.flat.empty()) {
+        if (quad.buffer != nullptr ? !bufferedReady : s.flatVertices == nullptr || s.flat.empty()) {
             continue;
         }
         SDL_GPUGraphicsPipeline *pipeline =
@@ -2526,11 +2692,14 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         if (material.texel1 != nullptr) {
             bindings[1] = {material.texel1->m_texture, material.texel1->m_sampler};
         }
-        bindResources(bindings, s.noTargets, s.flatVertices, s.quadIndices);
+        bindResources(bindings,
+                      s.noTargets,
+                      quad.buffer != nullptr ? quad.buffer->m_state->vertices : s.flatVertices,
+                      quad.buffer != nullptr ? s.quadOrderBuffer : s.quadIndices);
         SDL_DrawGPUIndexedPrimitives(pass,
                                      static_cast<Uint32>(quad.quadCount * 6),
                                      1,
-                                     static_cast<Uint32>(quad.firstVertex / 4 * 6),
+                                     static_cast<Uint32>(quad.firstIndex),
                                      0,
                                      0);
     }
