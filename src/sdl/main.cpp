@@ -122,6 +122,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
                     "AntialiasPost takes none or fxaa, and %s is drawn as none.",
                     post->c_str());
     }
+    options.gpuDebug = parser.get<bool>("--gpu-debug");
     // A capture is drawn at Width by Height, for the same frames on every machine.
     options.fixedFrame = parser.is_used("--screenshot");
     // Vulkan, Metal, and Direct3D 12 all filter at least 16 samples.
@@ -916,6 +917,10 @@ int main(int argc, char *argv[]) {
             "full screen; "
             "--antialias, --fullscreen, and --windowed still apply");
     parser.add_argument("--list-gpu-drivers").help("write the GPU drivers and exit").flag();
+    parser.add_argument("--gpu-debug")
+        .help("check the use of the GPU, with the validation layers of Vulkan when they are "
+              "installed, and log what they find; slower")
+        .flag();
     parser.add_argument("--import-disc")
         .help("copy the game data and music from a Boss Rally CUE sheet or ISO image, and exit");
     parser.add_argument("--import-rom")

@@ -47,6 +47,9 @@ struct DisplayOptions {
     /** The width over the height the frame keeps in a window and in the full screen, with bars
      * around it, or 0 for the shape of the window. */
     float aspectRatio = 0.0f;
+    /** Whether the GPU device checks its use, with the validation layers of Vulkan when they are
+     * installed. */
+    bool gpuDebug = false;
     bool fullscreen = false; /*!< Whether the window covers the display. */
     /** Whether the window covers the display in a mode of the width, the height, and the refresh
      * rate, rather than at the desktop mode without borders. */
