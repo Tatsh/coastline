@@ -479,6 +479,8 @@ struct Primitive {
     std::optional<std::size_t> texel1;
     // The frames of an animated texture, each its time in milliseconds and its image.
     std::vector<std::pair<std::uint32_t, std::size_t>> frames;
+    // The image of a texture of the snow that a race in the snow draws, or none.
+    std::optional<std::size_t> snowImage;
 };
 
 // A mesh: its primitives, and the displacements of its morph targets.
@@ -824,6 +826,8 @@ struct RenderModel::State {
 struct SceneRenderer::State {
     // The time of the frame the animated textures show, in milliseconds.
     std::uint32_t textureTime = 0;
+    // Whether the textures of the snow show their first frame.
+    bool snow = false;
     // The TRACK_INSTANCE_ flags of the instances the frame does not draw.
     std::uint32_t hiddenFlags = 0;
     // The matrices of the instances of a track as the race moves them, or none.
@@ -1284,12 +1288,15 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
                         part.texel1 = rdp["texel1Image"].get<std::size_t>();
                     }
                 }
-                // The frames of an animated texture of a track. The PC release does not swap the
-                // textures of the snow, which have no time.
+                // The frames of an animated texture of a track. A texture of the snow does not
+                // animate. CopyTextureAndPaletteFromSegment() copies its first frame, which has no
+                // time, over the texture of a race in the snow.
                 if (material.contains("extras") &&
                     material["extras"].contains("coastlineAnimation")) {
                     const auto &animation = material["extras"]["coastlineAnimation"];
-                    if (!animation.value("snow", false)) {
+                    if (animation.value("snow", false)) {
+                        part.snowImage = animation["frames"][0]["image"].get<std::size_t>();
+                    } else {
                         for (const auto &frame : animation["frames"]) {
                             if (frame["time"].is_number()) {
                                 part.frames.emplace_back(frame["time"].get<std::uint32_t>(),
@@ -1564,6 +1571,7 @@ std::unique_ptr<SceneRenderer> SceneRenderer::Create(GpuWindow &window) {
 void SceneRenderer::Begin(std::array<float, 4> clear) {
     m_state->clear = clear;
     m_state->textureTime = 0;
+    m_state->snow = false;
     m_state->hiddenFlags = 0;
     m_state->instanceMatrix = nullptr;
     m_state->fog.reset();
@@ -1577,6 +1585,10 @@ void SceneRenderer::Begin(std::array<float, 4> clear) {
 
 void SceneRenderer::SetTextureTime(std::uint32_t milliseconds) {
     m_state->textureTime = milliseconds;
+}
+
+void SceneRenderer::SetSnow(bool snow) {
+    m_state->snow = snow;
 }
 
 void SceneRenderer::SetHiddenInstanceFlags(std::uint32_t flags) {
@@ -1910,6 +1922,9 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             threePoint |= document.threePoint && primitive.texel1 ? 2u : 0u;
             auto [image, sampler] = document.textures[*primitive.texture];
             image = AnimationFrame(primitive.frames, s.textureTime).value_or(image);
+            if (s.snow && primitive.snowImage) {
+                image = *primitive.snowImage;
+            }
             bindings[0].sampler = document.samplers.at(sampler);
             if (const auto *texture = model.Find(&ImageSet::images, image)) {
                 bindings[0].texture = *texture;

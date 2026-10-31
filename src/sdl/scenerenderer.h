@@ -410,6 +410,13 @@ public:
     void SetTextureTime(std::uint32_t milliseconds);
 
     /**
+     * Set whether the textures of the snow of a track show the snow, false from Begin().
+     *
+     * @param snow Whether the race is in the snow.
+     */
+    void SetSnow(bool snow);
+
+    /**
      * Set the instances of a track the frame does not draw, none from Begin().
      *
      * @param flags The TRACK_INSTANCE_ flags, any of which hides an instance.
