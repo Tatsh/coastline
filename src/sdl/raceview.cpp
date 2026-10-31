@@ -844,8 +844,7 @@ constexpr std::array<std::uint32_t, 2> PARTICLE_COMBINE = CombineLerp(ZERO_AB,
 void AddBillboards(std::vector<FlatVertex> &quads,
                    u32 head,
                    std::array<std::uint8_t, 3> color,
-                   const CameraFrame &camera,
-                   float textureScale) {
+                   const CameraFrame &camera) {
     std::array<float, 3> forward = Normalized(Vector(camera.forward));
     std::array<float, 3> side = Normalized(Cross(forward, Vector(camera.up)));
     std::array<float, 3> up = Cross(side, forward);
@@ -859,8 +858,8 @@ void AddBillboards(std::vector<FlatVertex> &quads,
         auto corner = [&](float across, float down, float u, float v) {
             quads.push_back({particle.position.x + side[0] * across - up[0] * down,
                              particle.position.y + side[1] * across - up[1] * down,
-                             u * textureScale,
-                             v * textureScale,
+                             u,
+                             v,
                              rgba,
                              particle.position.z + side[2] * across - up[2] * down});
         };
@@ -890,8 +889,8 @@ void DrawTireSmoke(SceneRenderer &renderer,
             paved = {0x70, 0x68, 0x58};
         }
         std::vector<FlatVertex> quads;
-        AddBillboards(quads, g_wRenderTireSmokeListHead, dirt, camera, 1.0f);
-        AddBillboards(quads, g_wRenderPavedTireSmokeListHead, paved, camera, 1.0f);
+        AddBillboards(quads, g_wRenderTireSmokeListHead, dirt, camera);
+        AddBillboards(quads, g_wRenderPavedTireSmokeListHead, paved, camera);
         if (!quads.empty()) {
             material.texel0 = &smoke;
             renderer.DrawQuads(quads, material, viewProjection, true);
@@ -899,8 +898,8 @@ void DrawTireSmoke(SceneRenderer &renderer,
     }
 }
 
-// RenderExhaustAndTireSpray() in the snow, the exhaust in the half of its texture the PC release
-// samples.
+// RenderExhaustAndTireSpray() in the snow, the exhaust in the whole of the shadow of the cars, the
+// copy at half the scale undoing the doubling of its shift of 15.
 void DrawExhaust(SceneRenderer &renderer,
                  const RenderTexture &exhaust,
                  const CameraFrame &camera,
@@ -909,7 +908,7 @@ void DrawExhaust(SceneRenderer &renderer,
     material.combine = PARTICLE_COMBINE;
     if (g_dwSnowMode) {
         std::vector<FlatVertex> quads;
-        AddBillboards(quads, g_wRenderExhaustParticleListHead, {0xE0, 0xE0, 0xFF}, camera, 0.5f);
+        AddBillboards(quads, g_wRenderExhaustParticleListHead, {0xE0, 0xE0, 0xFF}, camera);
         if (!quads.empty()) {
             material.texel0 = &exhaust;
             renderer.DrawQuads(quads, material, viewProjection, true);
@@ -956,8 +955,9 @@ std::vector<std::uint8_t> RainStreakTexels(int view) {
 // a rectangle of the texture from the particle, at half the scale of the projection, its size 96
 // by 144 for the snow and 128 for the rain over its distance, in quarters of a pixel of the 480
 // lines of the screen of the PC release. A particle lies around the camera opposite to its place
-// in the axes of the world. The rectangle takes the texture upside down, the half of its texture
-// the snow samples, in the colour of the rain or of the snow by the alpha of the texture. On a
+// in the axes of the world. The rectangle takes the whole texture upside down, in the colour of the
+// rain or of the snow by the alpha of the texture. The shift of 15 of the shadow of the cars
+// doubles its coordinates, and the copy at half the scale the snow takes halves them again. On a
 // mirrored track the race negates the places across and the fall of the rain, and the viewport
 // turns both back, so the particles keep their places and only the rectangles turn.
 void DrawPrecipitation(SceneRenderer &renderer,
@@ -969,9 +969,8 @@ void DrawPrecipitation(SceneRenderer &renderer,
                        bool across) {
     float width = g_dwSnowMode ? 96.0f : 128.0f;
     float height = g_dwSnowMode ? 144.0f : 128.0f;
-    float textureScale = g_dwSnowMode ? 0.5f : 1.0f;
-    float first = 0.5f / 64.0f * textureScale;
-    float last = 63.5f / 64.0f * textureScale;
+    float first = 0.5f / 64.0f;
+    float last = 63.5f / 64.0f;
     std::array<std::uint8_t, 4> color = g_dwSnowMode ?
                                             std::array<std::uint8_t, 4>{0xE0, 0xE0, 0xFF, 0xFF} :
                                             std::array<std::uint8_t, 4>{0x78, 0x80, 0x88, 0xFF};
