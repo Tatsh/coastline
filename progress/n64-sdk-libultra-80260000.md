@@ -1,6 +1,6 @@
 # Nintendo 64 SDK (libultra) from 0x80260000 to 0x80270000
 
-207 of 208 routines done. 208 match the original under IDO 5.3.
+208 of 208 routines done. 208 match the original under IDO 5.3.
 
 Sorted by length, then reference count, then status (remaining first), then name.
 Signatures are the current Ghidra prototypes and are preliminary.
@@ -43,7 +43,7 @@ Signatures are the current Ghidra prototypes and are preliminary.
 | `corrupted`                 |   ✅   |  🟢   |      1 |    488 | `0x802632f8` | `0x80264a78` | `0x80264518` | `undefined corrupted()`                                                                                                                                                                                                                                 |
 | `viMgrMain`                 |   ✅   |  🟢   |      1 |    472 | `0x80266588` | `0x80267d18` | `0x80267818` | `void viMgrMain(void * arg)`                                                                                                                                                                                                                            |
 | `osMotorInit`               |   ✅   |  🟢   |     15 |    452 | `0x80262370` | `0x80263af0` | `0x80263590` | `int osMotorInit(OSMesgQueue * mq, OSPfs * pfs, int channel)`                                                                                                                                                                                           |
-| `sinf`                      |   📝   |  🟢   |     24 |    444 | `0x80261610` | `0x80262aa0` | `0x80262540` | `float sinf(float x)`                                                                                                                                                                                                                                   |
+| `sinf`                      |   ✅   |  🟢   |     24 |    444 | `0x80261610` | `0x80262aa0` | `0x80262540` | `float sinf(float x)`                                                                                                                                                                                                                                   |
 | `osViSetSpecialFeatures`    |   ✅   |  🟢   |      3 |    440 | `0x80264490` | `0x80265c10` | `0x802656b0` | `void osViSetSpecialFeatures(uint func)`                                                                                                                                                                                                                |
 | `osPfsFindFile`             |   ✅   |  🟢   |      8 |    436 | `0x802628c0` | `0x80264040` | `0x80263ae0` | `int osPfsFindFile(OSPfs * pfs, ushort company_code, uint game_code, uchar * game_name, uchar * ext_name, dword * file_no)`                                                                                                                             |
 | `corrupted_init`            |   ✅   |  🟢   |      1 |    436 | `0x80263144` | `0x802648c4` | `0x80264364` | `undefined corrupted_init()`                                                                                                                                                                                                                            |
