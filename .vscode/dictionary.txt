@@ -629,6 +629,7 @@ lcart
 lclear
 lcounter
 lctrl
+ldai
 ldblk
 ldiv
 ldtob

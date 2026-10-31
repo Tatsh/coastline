@@ -183,7 +183,7 @@ jobs:
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
-          name: 'sdl-${{ matrix.platform.name }}-${{ matrix.build-type }}'
+          name: 'sdl-${{ matrix.platform.slug }}-${{ matrix.build-type }}'
           path: |
             coastline-*.dmg
             coastline-*.exe
@@ -202,15 +202,16 @@ jobs:
           DESTDIR=AppDir cmake --install build/sdl --prefix /usr --strip
           APPIMAGE_EXTRACT_AND_RUN=1 ./linuxdeploy.AppImage --appdir AppDir --output appimage
         env:
-          LINUXDEPLOY_OUTPUT_VERSION: '${{ github.ref_name }}'
+          LDAI_OUTPUT: 'Coastline-${{ github.sha }}-${{ matrix.platform.slug }}.AppImage'
+          LINUXDEPLOY_OUTPUT_VERSION: '${{ github.sha }}'
           LINUXDEPLOY_SHA256: '${{ matrix.platform.linuxdeploy-sha256 }}'
       - if: runner.os == 'Linux' && matrix.build-type == 'Release'
         name: 'Upload the AppImage'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
-          name: 'appimage-${{ matrix.platform.name }}'
-          path: '*.AppImage'
+          name: 'appimage-${{ matrix.platform.slug }}'
+          path: 'Coastline-${{ github.sha }}-${{ matrix.platform.slug }}.AppImage'
   flatpak:
     container:
       image: 'ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08'
