@@ -2017,8 +2017,12 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     renderer.SetMirrored(g_dwTrackMirrored != 0);
     // The animated textures of the track take the time of the race.
     renderer.SetTextureTime(static_cast<std::uint32_t>(g_dwElapsedTimeMs));
-    // ByteSwapTrackData() of a race in the snow.
-    renderer.SetSnow(g_dwCurrentWeather == WEATHER_SNOW);
+    // ByteSwapTrackData() of a race in the snow, and off the coastline the colours
+    // ProcessTrackNodeDisplayList() gives the instances and the still frames of
+    // StreamAnimatedTrackTextures().
+    renderer.SetSnow(g_dwCurrentWeather == WEATHER_SNOW,
+                     g_dwSelectedTrackId != TRACK_COASTLINE &&
+                         g_dwSelectedTrackId != TRACK_MIRROR_COASTLINE);
     // UpdateTrackSpecials() spins instances and flies the airplane in their matrices.
     renderer.SetInstanceMatrices([](int index) -> const float * {
         return index < g_LoadedTrack.instanceCount ? &g_LoadedTrack.instances[index].matrix[0][0] :

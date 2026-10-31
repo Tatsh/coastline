@@ -82,6 +82,13 @@ constexpr std::array<const char *, WHEEL_LISTS> WHEEL_LIST_NAMES{"wheel", "wheel
 constexpr std::size_t TRACK_SKY_AT = 0x50;
 // gDPSetCombineLERP(0, 0, 0, TEXEL0, 0, 0, 0, SHADE) in both cycles, the combiner of the sky.
 constexpr std::array<std::uint32_t, 2> SKY_COMBINE{0x00ffffff, 0xfffcf87c};
+// The combiners whose primitive and environment colours ProcessDisplayList() replaces with those
+// of the snow in a list of a track instance that is not two-sided, in the two words of the
+// command.
+constexpr std::array<std::array<std::uint32_t, 2>, 2> SNOW_TINT_COMBINES{
+    {{0x00ffa004, 0xfffd93f8}, {0x0050fe04, 0x3ffdf3f8}}};
+constexpr std::uint32_t SNOW_PRIM_COLOR = 0x60789000;
+constexpr std::uint32_t SNOW_ENV_COLOR = 0x8c9ca800;
 constexpr std::size_t TRACK_INSTANCE_NAMES_AT = 0x5c;
 constexpr std::size_t TRACK_INSTANCES_AT = 0x60;
 constexpr std::size_t TRACK_INSTANCE_COUNT_AT = 0x64;
@@ -255,6 +262,10 @@ struct Material {
     std::uint32_t geometryMode = 0;
     std::uint32_t primColor = 0;
     std::uint32_t envColor = 0;
+    // Whether a race in the snow draws the material with the primitive or the environment colour
+    // of the snow.
+    bool snowPrim = false;
+    bool snowEnv = false;
     std::optional<TextureKey> texture1;
     std::string name;
 
@@ -302,6 +313,9 @@ struct StartState {
     bool shadePalette = false;
     // The render mode the caller sets before it, in the low word of the other modes.
     std::uint32_t otherModeL = 0;
+    // Whether the colours of the combiners of SNOW_TINT_COMBINES the list sets take those of the
+    // snow, as for a track instance that is not two-sided.
+    bool snowTint = false;
 };
 
 class DisplayListWalk {
@@ -324,6 +338,10 @@ public:
         m_otherModeL = start.otherModeL;
         m_primColor = 0xffffffff;
         m_envColor = 0xffffffff;
+        m_snowTintList = start.snowTint;
+        m_snowTintCombine = false;
+        m_snowPrim = false;
+        m_snowEnv = false;
         m_combineHigh = start.combine[0];
         m_combineLow = start.combine[1];
         m_textureOn = true;
@@ -422,6 +440,8 @@ private:
         material.geometryMode = m_geometryMode;
         material.primColor = m_primColor;
         material.envColor = m_envColor;
+        material.snowPrim = m_snowPrim;
+        material.snowEnv = m_snowEnv;
         // A material with G_TEXTURE_GEN takes its texture coordinates from its normals, which the
         // renderer generates from the geometry mode the material records.
         if (!m_textureOn) {
@@ -643,15 +663,23 @@ private:
             case OP_SETTIMG:
                 m_textureImage = w1;
                 break;
+            // ProcessDisplayList() reads the commands of the list itself, not of the lists it
+            // calls.
             case OP_SETPRIMCOLOR:
                 m_primColor = w1;
+                m_snowPrim = depth == 0 && m_snowTintCombine;
                 break;
             case OP_SETENVCOLOR:
                 m_envColor = w1;
+                m_snowEnv = depth == 0 && m_snowTintCombine;
                 break;
             case OP_SETCOMBINE:
                 m_combineHigh = w0 & 0xffffff;
                 m_combineLow = w1;
+                if (depth == 0 && m_snowTintList) {
+                    m_snowTintCombine = std::ranges::contains(
+                        SNOW_TINT_COMBINES, std::array{m_combineHigh, m_combineLow});
+                }
                 break;
             case OP_SETTILE: {
                 Tile &tile = m_tiles[w1 >> 24 & 7];
@@ -712,6 +740,10 @@ private:
     std::uint32_t m_otherModeL = 0;
     std::uint32_t m_primColor = 0xffffffff;
     std::uint32_t m_envColor = 0xffffffff;
+    bool m_snowTintList = false;
+    bool m_snowTintCombine = false;
+    bool m_snowPrim = false;
+    bool m_snowEnv = false;
     std::uint32_t m_combineHigh = 0;
     std::uint32_t m_combineLow = 0;
     std::map<std::uint8_t, std::size_t> m_ignored;
@@ -734,6 +766,7 @@ private:
 constexpr std::size_t TEXTURE_SIZE = 0x24;
 constexpr std::uint32_t TEXTURE_FORMAT_CI4 = 1;
 constexpr std::uint32_t TEXTURE_FORMAT_I8 = 4;
+constexpr std::uint32_t TEXTURE_FORMAT_SNOW_STILL = 0xb;
 constexpr std::uint32_t TEXTURE_ANIMATED = 1u << 20;
 constexpr std::uint32_t ROM_NONE = 0xffffffff;
 constexpr std::size_t ANIMATION_FRAME_COUNT_AT = 2;
@@ -800,6 +833,7 @@ struct StreamedTexture {
     std::uint32_t paletteRom; // Where the palette of a texture that is not animated is in the bank.
     std::vector<AnimationFrame> frames; // The frames of an animated texture, or none.
     bool snow = false; // Whether the frames are a texture of the snow and then of other weathers.
+    bool snowStill = false; // Whether the texture stays on its first frame in the snow.
 };
 
 std::vector<StreamedTexture> ReadStreamedTextures(std::span<const std::uint8_t> image,
@@ -823,7 +857,8 @@ std::vector<StreamedTexture> ReadStreamedTextures(std::span<const std::uint8_t> 
                                                    PALETTE_BYTES,
                                 .paletteRom = (source & 0xfff) << 5,
                                 .frames = {},
-                                .snow = false};
+                                .snow = false,
+                                .snowStill = (bits >> 24 & 0xf) == TEXTURE_FORMAT_SNOW_STILL};
         if (texture.texels == 0) {
             continue;
         }
@@ -1252,7 +1287,9 @@ BuildModel(std::span<const std::uint8_t> bytes,
                 }
             }
         }
-        animationOf[index] = {{"snow", texture->snow}, {"frames", std::move(frames)}};
+        animationOf[index] = {{"snow", texture->snow},
+                              {"snowStill", texture->snowStill},
+                              {"frames", std::move(frames)}};
     }
 
     // The vertices a viewer draws: each record once for each texture coordinate the materials that
@@ -1553,6 +1590,13 @@ BuildModel(std::span<const std::uint8_t> bytes,
                                      {"height", source.tileHeight}}}};
         if (texture1Of[m]) {
             rdp["texel1Image"] = *texture1Of[m];
+        }
+        // The colours a race in the snow draws the material with, where they differ.
+        if (source.snowPrim) {
+            rdp["snowPrimColor"] = SNOW_PRIM_COLOR;
+        }
+        if (source.snowEnv) {
+            rdp["snowEnvColor"] = SNOW_ENV_COLOR;
         }
         material["extras"]["coastlineRdp"] = std::move(rdp);
         if (source.color) {
@@ -2057,7 +2101,7 @@ std::expected<GltfModel, std::string> TrackToGltf(std::span<const std::uint8_t> 
                {{"matrix", matrix},
                 {"extras", {{"coastlineInstance", {{"flags", flags}, {"index", i}}}}}}}},
              0,
-             {.lit = true, .twoSided = twoSided, .bound = std::nullopt}});
+             {.lit = true, .twoSided = twoSided, .bound = std::nullopt, .snowTint = !twoSided}});
     }
     if (std::uint32_t sky = Big32(bytes, TRACK_SKY_AT); sky != 0) {
         // RenderSkybox() sets the colour of the texels and the alpha of the shade before the sky.

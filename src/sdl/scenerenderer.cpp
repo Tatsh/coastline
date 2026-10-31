@@ -481,6 +481,13 @@ struct Primitive {
     std::vector<std::pair<std::uint32_t, std::size_t>> frames;
     // The image of a texture of the snow that a race in the snow draws, or none.
     std::optional<std::size_t> snowImage;
+    // The primitive and environment colours of a race in the snow off the coastline, where they
+    // differ.
+    std::optional<std::array<float, 4>> snowPrim;
+    std::optional<std::array<float, 4>> snowEnv;
+    // Whether the animated texture stays on its first frame in a race in the snow off the
+    // coastline.
+    bool snowStill = false;
 };
 
 // A mesh: its primitives, and the displacements of its morph targets.
@@ -868,6 +875,8 @@ struct SceneRenderer::State {
     std::uint32_t textureTime = 0;
     // Whether the textures of the snow show their first frame.
     bool snow = false;
+    // Whether the colours and the still textures of the snow off the coastline are drawn.
+    bool snowTint = false;
     // The TRACK_INSTANCE_ flags of the instances the frame does not draw.
     std::uint32_t hiddenFlags = 0;
     // The matrices of the instances of a track as the race moves them, or none.
@@ -1361,6 +1370,12 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
                     part.textureGen = (rdp.value("geometryMode", 0u) & G_TEXTURE_GEN) != 0;
                     part.prim = Rgba(rdp["primColor"].get<std::uint32_t>());
                     part.env = Rgba(rdp["envColor"].get<std::uint32_t>());
+                    if (rdp.contains("snowPrimColor")) {
+                        part.snowPrim = Rgba(rdp["snowPrimColor"].get<std::uint32_t>());
+                    }
+                    if (rdp.contains("snowEnvColor")) {
+                        part.snowEnv = Rgba(rdp["snowEnvColor"].get<std::uint32_t>());
+                    }
                     if (rdp.contains("texel1Image")) {
                         part.texel1 = rdp["texel1Image"].get<std::size_t>();
                     }
@@ -1374,6 +1389,7 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
                     if (animation.value("snow", false)) {
                         part.snowImage = animation["frames"][0]["image"].get<std::size_t>();
                     } else {
+                        part.snowStill = animation.value("snowStill", false);
                         for (const auto &frame : animation["frames"]) {
                             if (frame["time"].is_number()) {
                                 part.frames.emplace_back(frame["time"].get<std::uint32_t>(),
@@ -1700,6 +1716,7 @@ void SceneRenderer::Begin(std::array<float, 4> clear) {
     m_state->clear = clear;
     m_state->textureTime = 0;
     m_state->snow = false;
+    m_state->snowTint = false;
     m_state->hiddenFlags = 0;
     m_state->instanceMatrix = nullptr;
     m_state->fog.reset();
@@ -1715,8 +1732,9 @@ void SceneRenderer::SetTextureTime(std::uint32_t milliseconds) {
     m_state->textureTime = milliseconds;
 }
 
-void SceneRenderer::SetSnow(bool snow) {
+void SceneRenderer::SetSnow(bool snow, bool tint) {
     m_state->snow = snow;
+    m_state->snowTint = snow && tint;
 }
 
 void SceneRenderer::SetHiddenInstanceFlags(std::uint32_t flags) {
@@ -2096,6 +2114,10 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             return;
         }
         bindPipeline(pipeline);
+        const std::array<float, 4> &prim =
+            s.snowTint && primitive.snowPrim ? *primitive.snowPrim : primitive.prim;
+        const std::array<float, 4> &env =
+            s.snowTint && primitive.snowEnv ? *primitive.snowEnv : primitive.env;
         FragmentUniforms fragmentUniforms{
             {primitive.alphaCut,
              primitive.lit ? 1.0f : 0.0f,
@@ -2114,8 +2136,8 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                  1u :
                  0u,
              0u},
-            {primitive.prim[0], primitive.prim[1], primitive.prim[2], primitive.prim[3]},
-            {primitive.env[0], primitive.env[1], primitive.env[2], primitive.env[3]},
+            {prim[0], prim[1], prim[2], prim[3]},
+            {env[0], env[1], env[2], env[3]},
             {lighting.ambient[0], lighting.ambient[1], lighting.ambient[2], 1.0f},
             {lighting.directional[0], lighting.directional[1], lighting.directional[2], 1.0f},
             {1.0f, 1.0f, 0.0f, 0.0f},
@@ -2157,7 +2179,11 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             threePoint |= document.threePoint ? 1u : 0u;
             threePoint |= document.threePoint && primitive.texel1 ? 2u : 0u;
             auto [image, sampler] = document.textures[*primitive.texture];
-            image = AnimationFrame(primitive.frames, s.textureTime).value_or(image);
+            if (s.snowTint && primitive.snowStill && !primitive.frames.empty()) {
+                image = primitive.frames.front().second;
+            } else {
+                image = AnimationFrame(primitive.frames, s.textureTime).value_or(image);
+            }
             if (s.snow && primitive.snowImage) {
                 image = *primitive.snowImage;
             }

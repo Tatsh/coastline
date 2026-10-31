@@ -445,8 +445,10 @@ public:
      * Set whether the textures of the snow of a track show the snow, false from Begin().
      *
      * @param snow Whether the race is in the snow.
+     * @param tint Whether a race in the snow also draws the primitive and environment colours of
+     * the snow and holds the animated textures that stay still in the snow on their first frame.
      */
-    void SetSnow(bool snow);
+    void SetSnow(bool snow, bool tint);
 
     /**
      * Set the instances of a track the frame does not draw, none from Begin().
