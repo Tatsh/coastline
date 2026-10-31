@@ -58,6 +58,11 @@ struct WizardServices {
     std::function<std::optional<std::string>(const std::filesystem::path &)> checkDisc;
     /** The release of a ROM image by its SHA-1, or nothing when it is not Top Gear Rally. */
     std::function<std::optional<WizardCartridge>(const std::filesystem::path &)> identifyCartridge;
+    /** Search ZIP entries and report validated ROM images cached outside the archive. */
+    std::function<void(const std::filesystem::path &,
+                       const std::function<bool(WizardCartridge, const std::filesystem::path &)> &,
+                       const WizardProgress &)>
+        scanArchive;
     /** Import files on a separate thread and return a message on failure. */
     std::function<std::optional<std::string>(const WizardImport &, const WizardProgress &)> import;
     std::filesystem::path home;          /*!< The directory the file browser starts in at first. */

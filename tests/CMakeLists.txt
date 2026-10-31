@@ -192,6 +192,15 @@ target_link_options(firstrun_test PRIVATE -fsanitize=address,undefined)
 target_link_libraries(firstrun_test PRIVATE Threads::Threads)
 add_test(NAME firstrun COMMAND firstrun_test)
 
+find_package(ZLIB REQUIRED)
+add_executable(ziproms_test ziproms_test.cpp "${_src}/sdl/firstrun/ziproms.cpp")
+set_target_properties(ziproms_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(ziproms_test PRIVATE "${_src}/sdl/firstrun")
+target_compile_options(ziproms_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(ziproms_test PRIVATE -fsanitize=address,undefined)
+target_link_libraries(ziproms_test PRIVATE ZLIB::ZLIB)
+add_test(NAME ziproms COMMAND ziproms_test)
+
 # The note of the ghost car of the SDL game, with the run-length routines as the SDL game builds
 # them.
 add_executable(ghostnote_test ghostnote_test.cpp "${_src}/sdl/ghostnote.cpp"

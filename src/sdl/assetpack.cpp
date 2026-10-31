@@ -160,9 +160,11 @@ std::optional<std::string> CurateAssetPacks(const std::filesystem::path &default
     return std::nullopt;
 }
 
-nlohmann::json PackSettings(const std::filesystem::path &data, std::string_view pack) {
+nlohmann::json PackSettings(const std::filesystem::path &data,
+                            std::string_view pack,
+                            const std::filesystem::path &fallback) {
     auto settings = nlohmann::json::object();
-    for (const auto &directory : {DefaultAssets(data), PackDirectory(data, pack)}) {
+    for (const auto &directory : {DefaultAssets(data), PackDirectory(data, pack, fallback)}) {
         std::ifstream file(directory / "pack.json");
         auto layer = nlohmann::json::parse(file, nullptr, false);
         if (layer.is_object()) {

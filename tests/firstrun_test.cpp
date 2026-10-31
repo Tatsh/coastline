@@ -240,7 +240,8 @@ void TestSearch(const std::filesystem::path &root) {
         });
     Check(result.disc == root / "Alpha" / "disc.cue", "Search must prefer a CUE sheet.");
     Check(sawDiscBeforeRom && sawAll, "Progress snapshots must update discovered images.");
-    Check(result.roms[0] == root / "usa.z64", "Search must detect ROM releases.");
+    Check(result.roms[0] == root / ".hidden" / "sub" / "usa.z64",
+          "Search must include hidden directories recursively.");
     unsigned callbacks = 0;
     SearchWizardDirectory(
         root, services, [&](const auto &, const auto &, double) { return ++callbacks < 2; });
@@ -331,6 +332,7 @@ int main() {
     try {
         std::filesystem::create_directories(root / "Alpha");
         std::filesystem::create_directories(root / "zeta");
+        std::filesystem::create_directories(root / ".hidden" / "sub");
         for (const char *name : {"disc.iso",
                                  "usa.z64",
                                  "eur.v64",
@@ -338,7 +340,8 @@ int main() {
                                  "bad.z64",
                                  ".hidden.iso",
                                  "Alpha/disc.cue",
-                                 "zeta/usa.z64"}) {
+                                 "zeta/usa.z64",
+                                 ".hidden/sub/usa.z64"}) {
             std::ofstream(root / name).put('x');
         }
         TestCombinations(root);

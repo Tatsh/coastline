@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <array>
 #include <cstdio>
+#include <fstream>
 #include <memory>
 #include <optional>
 #include <string>
@@ -16,6 +17,7 @@
 #include "scenerenderer.h"
 #include "setupwizard.h"
 #include "textfont.h"
+#include "ziproms.h"
 
 namespace coastline {
 
@@ -29,12 +31,8 @@ constexpr std::array<std::string_view, WIZARD_CARTRIDGES> CARTRIDGE_NAMES{
 constexpr std::array<ImportSource, WIZARD_CARTRIDGES> CARTRIDGE_SOURCES{
     ImportSource::Usa, ImportSource::Eur, ImportSource::Jpn};
 
-std::optional<WizardCartridge> IdentifyCartridge(const std::filesystem::path &path) {
-    auto release = IdentifyRomFile(path);
-    if (!release) {
-        return std::nullopt;
-    }
-    switch (*release) {
+std::optional<WizardCartridge> WizardRelease(RomRelease release) {
+    switch (release) {
     case RomRelease::Usa:
         return WizardCartridge::Usa;
     case RomRelease::Eur:
@@ -43,6 +41,11 @@ std::optional<WizardCartridge> IdentifyCartridge(const std::filesystem::path &pa
         return WizardCartridge::Jpn;
     }
     return std::nullopt;
+}
+
+std::optional<WizardCartridge> IdentifyCartridge(const std::filesystem::path &path) {
+    const auto release = IdentifyRomFile(path);
+    return release ? WizardRelease(*release) : std::nullopt;
 }
 
 std::optional<std::string> ImportFiles(const std::filesystem::path &data,
@@ -167,6 +170,41 @@ SetupRun RunSetupWizard(GpuWindow &window,
     WizardServices services;
     services.checkDisc = CheckDisc;
     services.identifyCartridge = IdentifyCartridge;
+    services.scanArchive =
+        [cache = paths.cache / "asset-search"](
+            const std::filesystem::path &archive,
+            const std::function<bool(WizardCartridge, const std::filesystem::path &)> &found,
+            const WizardProgress &progress) {
+            VisitZipRoms(
+                archive,
+                [&](std::vector<std::uint8_t> &bytes) {
+                    if (!NormalizeRomByteOrder(bytes)) {
+                        return true;
+                    }
+                    const auto release = IdentifyRom(bytes);
+                    if (!release) {
+                        return true;
+                    }
+                    const auto detected = WizardRelease(*release);
+                    if (!detected) {
+                        return true;
+                    }
+                    std::error_code error;
+                    std::filesystem::create_directories(cache, error);
+                    if (error) {
+                        return true;
+                    }
+                    const auto output =
+                        cache / (std::string(CARTRIDGE_NAMES[static_cast<std::size_t>(*detected)]) +
+                                 ".z64");
+                    std::ofstream file(output, std::ios::binary | std::ios::trunc);
+                    file.write(reinterpret_cast<const char *>(bytes.data()),
+                               static_cast<std::streamsize>(bytes.size()));
+                    file.close();
+                    return !file || found(*detected, output);
+                },
+                progress);
+        };
     const std::filesystem::path data = paths.data;
     services.import = [data](const WizardImport &files, const WizardProgress &progress) {
         return ImportFiles(data, files, progress);

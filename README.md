@@ -81,6 +81,30 @@ VCPKG_ROOT=/path/to/vcpkg cmake --workflow --preset sdl
 cmake --install build/sdl --prefix ~/.local
 ```
 
+To build with assets for system installation, supply a Boss Rally disc image and at least one
+Top Gear Rally ROM image. Multiple ROM paths use a semicolon-separated CMake list.
+
+```shell
+cmake --preset sdl -DCOASTLINE_INSTALL_ASSETS=ON \
+  -DCOASTLINE_DISC_IMAGE='/path/to/Boss Rally.cue' \
+  '-DCOASTLINE_ROM_IMAGES=/path/to/usa.z64;/path/to/jpn.z64' \
+  -DCMAKE_INSTALL_PREFIX=/usr
+cmake --build build/sdl
+DESTDIR=/path/to/package cmake --install build/sdl
+```
+
+The `coastline_assets` target imports images into the build directory using the import CLI.
+Installation copies the generated `assets` tree to `${CMAKE_INSTALL_DATADIR}/coastline`, normally
+`share/coastline`. macOS bundles use `Coastline.app/Contents/Resources/coastline`. The original
+disc and ROM images are not installed. The import does not create user configuration or logs.
+Image changes, CUE track changes, and importer rebuilds trigger conversion again. Cross builds
+require `COASTLINE_ASSET_IMPORTER` pointing to a host Coastline executable, or a configured
+`CMAKE_CROSSCOMPILING_EMULATOR`.
+
+With `COASTLINE_INSTALL_ASSETS=ON`, the setup wizard and `--reset`, `--yes-really`, and `-y` are
+omitted. Missing or outdated assets produce an error requiring installation of usable data.
+Normal builds retain the wizard and reset options.
+
 On Windows, `cpack --config build/sdl/CPackConfig.cmake` builds an NSIS installer that installs the
 game for the current user, with shortcuts and an option to add it to `PATH`.
 
@@ -331,11 +355,26 @@ Three interchangeable ROM fields detect each release by SHA-1. Search directory 
 subfolders and displays discovered images during the search. Finish starts the intro in the same
 window.
 
+The search includes hidden files and folders, skips `.` and `..`, and does not follow directory
+symlinks. ZIP archives are searched for ROM images, including entries in subfolders. Stored and
+deflated entries are checked by CRC and ROM SHA-1; valid ROMs are extracted to `asset-search` in
+the user cache. Encrypted, corrupt, oversized, and unsupported archive entries are skipped.
+
+Before user assets, the game searches the installation data directory, including relocated
+`bin/../share/coastline`, `/usr/local/share/coastline`, and `/usr/share/coastline` on Unix.
+macOS also searches bundle resources and `/Library/Application Support/coastline`. MSYS2 and
+Windows use the data directory relative to the executable and the configured installation prefix.
+The fallback is the user's data directory, such as `~/.local/share/coastline` on Linux or
+`~/Library/Application Support/coastline/data` on macOS. Every data root uses `assets/default`
+and sibling asset packs. System packs take priority; a user mod can layer over system defaults
+in the user cache. Configurations, saves, screenshots, and cache remain in user directories.
+`--data-dir` explicitly selects a data root and bypasses system asset lookup.
+
 Paths can be browsed, typed, or pasted, and an initial `~` expands to the home directory. Every
 field has a Clear button. Ctrl+A selects all text, Ctrl+V pastes, and Alt+Backspace deletes a word.
 
 `coastline --reset` deletes all Coastline configuration, imported assets, mods, saved games, cache,
-and state before starting setup again. The terminal requests confirmation with `y` or `n`, without
+and state before starting again. The terminal requests confirmation with `y` or `n`, without
 case sensitivity. Add `--yes-really` or `-y` to skip confirmation. With `--data-dir`, reset also
 deletes the selected data directory.
 

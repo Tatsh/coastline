@@ -13,8 +13,8 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
     auto report = [&](const std::string &step, double fraction) {
         return !progress || progress(result, step, fraction);
     };
-    constexpr std::array<std::string_view, 6> extensions{
-        ".cue", ".iso", ".z64", ".n64", ".v64", ".bin"};
+    constexpr std::array<std::string_view, 7> extensions{
+        ".cue", ".iso", ".z64", ".n64", ".v64", ".bin", ".zip"};
     std::vector<std::filesystem::path> candidates;
     std::error_code error;
     std::filesystem::recursive_directory_iterator entry(
@@ -28,12 +28,7 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
         if (!report("Looking in " + Utf8FromPath(entry->path().parent_path()), 0.0)) {
             return result;
         }
-        const auto name = Utf8FromPath(entry->path().filename());
-        const bool hidden = !name.empty() && name.front() == '.';
-        if (hidden && entry->is_directory(error)) {
-            entry.disable_recursion_pending();
-        }
-        if (!hidden && entry->is_regular_file(error) &&
+        if (entry->is_regular_file(error) &&
             std::ranges::contains(extensions, LowercaseExtension(entry->path()))) {
             candidates.push_back(entry->path());
         }
@@ -58,12 +53,31 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
             return result;
         }
         const auto extension = LowercaseExtension(path);
-        if (extension == ".cue" || extension == ".iso" || extension == ".bin") {
+        if (extension == ".zip") {
+            if (services.scanArchive) {
+                services.scanArchive(
+                    path,
+                    [&](WizardCartridge release, const std::filesystem::path &cached) {
+                        auto &found = result.roms[static_cast<std::size_t>(release)];
+                        if (found.empty()) {
+                            found = cached;
+                        }
+                        return report("Found ROM image in " + Utf8FromPath(path), fraction);
+                    },
+                    [&](const std::string &member, double part) {
+                        return report(
+                            "Checking " + Utf8FromPath(path) + ": " + member,
+                            (static_cast<double>(result.examined) + part) /
+                                static_cast<double>(std::max<std::size_t>(result.candidates, 1)));
+                    });
+            }
+        } else if (extension == ".cue" || extension == ".iso" || extension == ".bin") {
             if (result.disc.empty() && !services.checkDisc(path)) {
                 result.disc = path;
             }
         }
-        if (extension != ".cue" && extension != ".iso" && result.disc != path) {
+        if (extension != ".zip" && extension != ".cue" && extension != ".iso" &&
+            result.disc != path) {
             const auto size = std::filesystem::file_size(path, error);
             if (!error && size <= 32 * 1024 * 1024) {
                 if (auto release = services.identifyCartridge(path)) {

@@ -33,13 +33,17 @@ inline constexpr float DEFAULT_XM_MUSIC_GAIN = 1.5f;
 std::optional<std::string> CurateAssetPacks(const std::filesystem::path &defaults);
 
 /**
- * The settings of a pack: the keys of pack.json of the default pack, with the keys of pack.json of
- * the pack in their place. A missing or malformed file gives no keys.
+ * Read default settings from pack.json and replace matching keys with selected pack settings.
+ * Missing or malformed files do not contribute keys.
  *
  * @param data The data directory of the game.
  * @param pack The name of the pack.
+ * @param fallback Another data root searched for the selected pack, or empty. Default settings
+ * still come from @p data.
  * @return The settings, an object.
  */
-nlohmann::json PackSettings(const std::filesystem::path &data, std::string_view pack);
+nlohmann::json PackSettings(const std::filesystem::path &data,
+                            std::string_view pack,
+                            const std::filesystem::path &fallback = {});
 
 } // namespace coastline

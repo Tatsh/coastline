@@ -3,8 +3,10 @@
 #include <filesystem>
 #include <functional>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
+#include <vector>
 
 namespace coastline {
 
@@ -41,6 +43,24 @@ std::optional<GamePaths> ResolveXdgPaths(const EnvironmentReader &environment,
 std::optional<GamePaths> ResolveGamePaths(const std::string &application);
 
 /**
+ * List system data roots, including the relocated installation and platform defaults.
+ *
+ * @param executable The directory of the executable, or empty to omit relative roots.
+ * @return Data roots in lookup order.
+ */
+std::vector<std::filesystem::path> SystemDataDirectories(const std::filesystem::path &executable);
+
+/**
+ * Find usable assets in system roots first, then in the writable user data root.
+ *
+ * @param user The writable user data root.
+ * @param system System data roots in lookup order.
+ * @return The first root with usable default assets, or nothing.
+ */
+std::optional<std::filesystem::path> FindAssetData(const std::filesystem::path &user,
+                                                   std::span<const std::filesystem::path> system);
+
+/**
  * Create every directory of @p paths that does not exist.
  *
  * @param paths The directories to create.
@@ -70,9 +90,12 @@ inline constexpr std::string_view DEFAULT_PACK = "default";
  *
  * @param data The data directory of the game.
  * @param pack The name of the pack.
+ * @param fallback Another data root used when @p data lacks the pack directory, or empty.
  * @return The directory of the pack.
  */
-std::filesystem::path PackDirectory(const std::filesystem::path &data, std::string_view pack);
+std::filesystem::path PackDirectory(const std::filesystem::path &data,
+                                    std::string_view pack,
+                                    const std::filesystem::path &fallback = {});
 
 /**
  * The directory the game reads its assets from with a pack selected. The default pack is read in
@@ -85,10 +108,13 @@ std::filesystem::path PackDirectory(const std::filesystem::path &data, std::stri
  * @param data The data directory of the game.
  * @param cache The cache directory of the game.
  * @param pack The name of the pack.
+ * @param fallback Another data root searched for the selected pack, or empty. Default assets
+ * still come from @p data.
  * @return The directory, or nothing when the pack does not exist or the directory cannot be made.
  */
 std::optional<std::filesystem::path> PackAssets(const std::filesystem::path &data,
                                                 const std::filesystem::path &cache,
-                                                std::string_view pack);
+                                                std::string_view pack,
+                                                const std::filesystem::path &fallback = {});
 
 } // namespace coastline

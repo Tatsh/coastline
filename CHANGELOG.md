@@ -17,8 +17,14 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   - A single Files screen combines disc selection with three interchangeable ROM fields that detect
     each release. Recursive directory search displays discovered images and permits retries after
     partial results.
+  - Search includes hidden files and folders and ROM entries in ZIP archives. ZIP entries pass CRC
+    and ROM SHA-1 checks before extraction to user cache.
   - Clear buttons and text selection with Ctrl+A and Alt+Backspace for word deletion.
-- `--reset` deletes configuration, imported assets, mods, saved games, state, and cache before setup.
+- Installed asset lookup checks system and relocated installation directories before usable user
+  data. Saves and cache remain writeable in user directories, with fallback to user mod packs.
+- `COASTLINE_INSTALL_ASSETS`, `COASTLINE_DISC_IMAGE`, and `COASTLINE_ROM_IMAGES` build and install
+  imported game data. Builds with installed assets omit setup and all reset options.
+- `--reset` deletes configuration, imported assets, mods, saved games, state, and cache before startup.
   Confirmation accepts `y` or `n` without case sensitivity; `--yes-really` or `-y` skips confirmation.
 - `--config INI` reads and saves settings in an explicit INI file. Reset also deletes the specified
   INI file.
@@ -32,7 +38,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - `coastline import --cd` copies game data from a Boss Rally CUE sheet, ISO image, or Mode 1 BIN
   image and converts CD audio to FLAC. BIN import prefers a matching adjacent CUE sheet; standalone
   BIN import copies data without CD audio. `coastline import --rom` copies a Top Gear Rally
-  cartridge image after checking its SHA-1.
+  cartridge image after checking its SHA-1. Import with explicit `--data-dir` avoids writes to user
+  configuration and logs.
 - The SDL game plays the music of the Nintendo 64 release with the console's player and mixers.
 - Quality of life changes in the Windows libraries built with `TGR_ENABLE_PATCHES`:
   - The first press of the key that resets the car shows a hint, and a second press within half

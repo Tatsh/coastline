@@ -486,9 +486,42 @@ void CheckReset() {
     std::filesystem::remove_all(root);
 }
 
+void CheckAssetData() {
+    const auto root = std::filesystem::temp_directory_path() / "coastline-system-assets-test";
+    std::filesystem::remove_all(root);
+    const auto user = root / "user";
+    const std::array system{root / "missing", root / "system"};
+    auto make = [](const std::filesystem::path &data) {
+        const auto assets = coastline::DefaultAssets(data);
+        WriteText(assets / "cars" / "model.gltf", "model");
+        WriteText(assets / "n64" / "eur" / "segment.bin", "segment");
+        coastline::RecordImport(assets, coastline::ImportSource::Disc);
+        coastline::RecordImport(assets, coastline::ImportSource::Eur);
+        coastline::RecordImportFiles(assets);
+    };
+    Check(!coastline::FindAssetData(user, system), "missing assets have no data root");
+    make(user);
+    Check(coastline::FindAssetData(user, system) == user, "user assets are the fallback");
+    make(system[1]);
+    Check(coastline::FindAssetData(user, system) == system[1], "system assets have priority");
+    WriteText(user / "assets/mod/extra.txt", "user mod");
+    const auto mod = coastline::PackAssets(system[1], root / "cache", "mod", user);
+    Check(mod && ReadText(*mod / "extra.txt") == "user mod" &&
+              ReadText(*mod / "cars/model.gltf") == "model",
+          "user mods layer over system defaults in the writable cache");
+    std::filesystem::remove(coastline::DefaultAssets(system[1]) / "import-files.txt");
+    Check(coastline::FindAssetData(user, system) == user,
+          "incomplete system assets fall back to usable user assets");
+    const auto directories = coastline::SystemDataDirectories(root / "bin");
+    Check(std::ranges::find(directories, root / "share/coastline") != directories.end(),
+          "relocated prefixes have a data root beside bin");
+    std::filesystem::remove_all(root);
+}
+
 } // namespace
 
 int main() {
+    CheckAssetData();
     CheckReset();
     CheckImportInventory();
     CheckRunScript();

@@ -1,6 +1,7 @@
 # The stand-alone SDL game. Its libraries come from the system, vcpkg, or pinned releases, as
 # cmake/dependencies.cmake chooses.
 enable_language(CXX)
+include("${CMAKE_SOURCE_DIR}/cmake/install-assets.cmake")
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 if(MSVC)
@@ -259,14 +260,24 @@ if(WIN32)
   target_link_libraries(coastline_sdl PUBLIC psapi shell32)
 endif()
 
-add_subdirectory(firstrun)
+if(NOT COASTLINE_INSTALL_ASSETS)
+  add_subdirectory(firstrun)
+endif()
 
 add_executable(${CMAKE_PROJECT_NAME} main.cpp)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
-                           COASTLINE_VERSION="${CMAKE_PROJECT_VERSION}")
+                           COASTLINE_VERSION="${CMAKE_PROJECT_VERSION}"
+                           COASTLINE_SETUP_WIZARD=$<NOT:$<BOOL:${COASTLINE_INSTALL_ASSETS}>>)
+file(RELATIVE_PATH _relative_data "${CMAKE_INSTALL_FULL_BINDIR}"
+     "${CMAKE_INSTALL_FULL_DATADIR}/coastline")
+target_compile_definitions(coastline_sdl PRIVATE
+                           COASTLINE_SYSTEM_DATA_DIR="${CMAKE_INSTALL_FULL_DATADIR}/coastline"
+                           COASTLINE_RELATIVE_DATA_DIR="${_relative_data}")
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE ${COASTLINE_WARNINGS})
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_firstrun coastline_sdl
-                                                    argparse::argparse)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_sdl argparse::argparse)
+if(NOT COASTLINE_INSTALL_ASSETS)
+  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_firstrun)
+endif()
 # The race engine calls the routines of the platform in coastline_sdl, and of SDL where the Windows
 # libraries call Windows. The game links every routine of the engine, called or not, and a routine
 # the engine calls that the game lacks fails the link.
@@ -312,6 +323,7 @@ if(APPLE)
 endif()
 install(TARGETS ${CMAKE_PROJECT_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
         BUNDLE DESTINATION .)
+coastline_install_assets(${CMAKE_PROJECT_NAME})
 if(APPLE)
   # Every library the game links that macOS does not provide is copied into the bundle, and the
   # bundle is signed again without an identity, as an arm64 Mac runs only signed code.

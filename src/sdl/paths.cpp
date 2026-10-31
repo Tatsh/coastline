@@ -9,6 +9,15 @@
 #include <string>
 #include <system_error>
 
+#include "importversion.h"
+
+#ifndef COASTLINE_SYSTEM_DATA_DIR
+#define COASTLINE_SYSTEM_DATA_DIR ""
+#endif
+#ifndef COASTLINE_RELATIVE_DATA_DIR
+#define COASTLINE_RELATIVE_DATA_DIR "../share/coastline"
+#endif
+
 #ifdef _WIN32
 #include <shlobj.h>
 #endif
@@ -144,14 +153,21 @@ std::string ReadStamp(const std::filesystem::path &path) {
 
 } // namespace
 
-std::filesystem::path PackDirectory(const std::filesystem::path &data, std::string_view pack) {
-    return data / "assets" / pack;
+std::filesystem::path PackDirectory(const std::filesystem::path &data,
+                                    std::string_view pack,
+                                    const std::filesystem::path &fallback) {
+    const auto directory = data / "assets" / pack;
+    std::error_code error;
+    return fallback.empty() || std::filesystem::is_directory(directory, error) ?
+               directory :
+               fallback / "assets" / pack;
 }
 
 std::optional<std::filesystem::path> PackAssets(const std::filesystem::path &data,
                                                 const std::filesystem::path &cache,
-                                                std::string_view pack) {
-    auto directory = PackDirectory(data, pack);
+                                                std::string_view pack,
+                                                const std::filesystem::path &fallback) {
+    auto directory = PackDirectory(data, pack, fallback);
     std::error_code error;
     if (pack.empty() || !std::filesystem::is_directory(directory, error)) {
         return std::nullopt;
@@ -238,6 +254,40 @@ bool CreateGamePaths(const GamePaths &paths) {
         }
     }
     return true;
+}
+
+std::vector<std::filesystem::path> SystemDataDirectories(const std::filesystem::path &executable) {
+    std::vector<std::filesystem::path> directories;
+    if (!executable.empty()) {
+#ifdef __APPLE__
+        directories.push_back(executable / "../Resources/coastline");
+#endif
+        directories.push_back(executable / COASTLINE_RELATIVE_DATA_DIR);
+    }
+    if (std::string_view(COASTLINE_SYSTEM_DATA_DIR).size() > 0) {
+        directories.emplace_back(COASTLINE_SYSTEM_DATA_DIR);
+    }
+#ifdef __APPLE__
+    directories.emplace_back("/Library/Application Support/coastline");
+#endif
+#ifndef _WIN32
+    directories.emplace_back("/usr/local/share/coastline");
+    directories.emplace_back("/usr/share/coastline");
+#endif
+    for (auto &directory : directories) {
+        directory = directory.lexically_normal().make_preferred();
+    }
+    return directories;
+}
+
+std::optional<std::filesystem::path> FindAssetData(const std::filesystem::path &user,
+                                                   std::span<const std::filesystem::path> system) {
+    for (const auto &directory : system) {
+        if (DefaultPackUsable(DefaultAssets(directory))) {
+            return directory;
+        }
+    }
+    return DefaultPackUsable(DefaultAssets(user)) ? std::optional(user) : std::nullopt;
 }
 
 std::optional<std::string> ResetGamePaths(const GamePaths &paths) {

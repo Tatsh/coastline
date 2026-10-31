@@ -35,7 +35,9 @@
 #include "config.h"
 #include "controllerpak.h"
 #include "controls.h"
+#if COASTLINE_SETUP_WIZARD
 #include "firstrun/wizardrun.h"
+#endif
 #include "frontend.h"
 #include "gpu.h"
 #include "iconfile.h"
@@ -680,10 +682,12 @@ int main(int argc, char *argv[]) {
     RaiseOpenFileLimit();
     argparse::ArgumentParser parser(APPLICATION, COASTLINE_VERSION);
     parser.add_description("Top Gear Rally and Boss Rally in one stand-alone game.");
+#if COASTLINE_SETUP_WIZARD
     parser.add_argument("--reset")
         .help("Delete all configuration, data, saved games, state, and cache before starting.")
         .flag();
     parser.add_argument("--yes-really", "-y").help("Confirm --reset without prompting.").flag();
+#endif
     parser.add_argument("--data-dir").help("read the game data from this directory");
     parser.add_argument("--config")
         .metavar("INI")
@@ -793,6 +797,23 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
+    if (parser.is_subcommand_used(import) && parser.is_used("--data-dir")
+#if COASTLINE_SETUP_WIZARD
+        && !parser.get<bool>("--reset")
+#endif
+    ) {
+        std::error_code error;
+        auto data = std::filesystem::absolute(parser.get<std::string>("--data-dir"), error);
+        if (!error) {
+            std::filesystem::create_directories(data, error);
+        }
+        if (error) {
+            std::cerr << "The import data directory cannot be created.\n";
+            return EXIT_FAILURE;
+        }
+        SDL_SetMainReady();
+        return ImportFromCommandLine(import, data);
+    }
     auto paths = coastline::ResolveGamePaths(APPLICATION);
     if (!paths) {
         std::cerr << "The home directory is not known, and the game cannot find its files.\n";
@@ -816,6 +837,7 @@ int main(int argc, char *argv[]) {
             return EXIT_FAILURE;
         }
     }
+#if COASTLINE_SETUP_WIZARD
     if (parser.get<bool>("--reset")) {
         if (!parser.get<bool>("--yes-really")) {
             std::cout << "Reset deletes all Coastline configuration, imported assets, mods, "
@@ -851,6 +873,7 @@ int main(int argc, char *argv[]) {
             }
         }
     }
+#endif
     if (!coastline::CreateGamePaths(*paths)) {
         std::cerr << "The directories of the game cannot be created.\n";
         return EXIT_FAILURE;
@@ -902,7 +925,15 @@ int main(int argc, char *argv[]) {
     }
     // Without usable data, the game starts the setup wizard. A script starts the wizard only when
     // scripted key presses, text input, or mouse movements can operate its controls.
-    const bool showWizard = !coastline::DefaultPackUsable(coastline::DefaultAssets(paths->data));
+    const char *base = SDL_GetBasePath();
+    const auto systemData = parser.is_used("--data-dir") ?
+                                std::vector<std::filesystem::path>{} :
+                                coastline::SystemDataDirectories(
+                                    base ? std::filesystem::path(base) : std::filesystem::path{});
+    const auto foundData = coastline::FindAssetData(paths->data, systemData);
+    const auto assetData = foundData.value_or(paths->data);
+    const bool showWizard = !foundData;
+#if COASTLINE_SETUP_WIZARD
     if (showWizard && parser.is_subcommand_used(runScript) && script.script.keys.empty() &&
         script.script.typing.empty() && script.script.mouseMoves.empty()) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
@@ -911,6 +942,15 @@ int main(int argc, char *argv[]) {
         coastline::StopGameLog();
         return EXIT_FAILURE;
     }
+#else
+    if (showWizard) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "No usable installed assets were found. Install the Coastline data package "
+                     "or select imported data with --data-dir.");
+        coastline::StopGameLog();
+        return EXIT_FAILURE;
+    }
+#endif
     // A run that saves its frames draws them at Width by Height and steps the splash screens by a
     // 60th of a second a frame, for the same frames on every machine.
     const bool savesFrames =
@@ -967,7 +1007,8 @@ int main(int argc, char *argv[]) {
     bool setupQuit = false;
     bool setupFailed = false;
     // The setup wizard imports the data in the window of the game, and the game then reads it.
-    auto setUp = [&](coastline::GpuWindow &window) {
+    auto setUp = [&]([[maybe_unused]] coastline::GpuWindow &window) {
+#if COASTLINE_SETUP_WIZARD
         if (showWizard) {
             coastline::SetupRun run = coastline::RunSetupWizard(
                 window, *paths, config, script.script, script.keys, scriptFrames, savesFrames);
@@ -975,6 +1016,7 @@ int main(int argc, char *argv[]) {
             setupQuit = !run.finished;
             setupFailed = run.failed;
         }
+#endif
         return !setupQuit;
     };
     {
@@ -993,21 +1035,20 @@ int main(int argc, char *argv[]) {
             std::string pack = parser.present("--asset-pack")
                                    .value_or(config.Get("Game", "AssetPack")
                                                  .value_or(std::string(coastline::DEFAULT_PACK)));
-            auto packAssets = coastline::PackAssets(paths->data, paths->cache, pack);
+            auto packAssets = coastline::PackAssets(assetData, paths->cache, pack, paths->data);
             if (!packAssets) {
                 SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
                             "The asset pack %s cannot be read, and the default pack is used.",
                             pack.c_str());
                 pack = coastline::DEFAULT_PACK;
-                packAssets = coastline::DefaultAssets(paths->data);
+                packAssets = coastline::DefaultAssets(assetData);
             }
             const std::filesystem::path assets = *packAssets;
             SDL_Log("Asset pack: %s (%s)", pack.c_str(), assets.string().c_str());
             // A source imported by an older conversion has files the game no longer draws
             // correctly.
             std::string reimportNotice;
-            const auto staleImports =
-                coastline::StaleImports(coastline::DefaultAssets(paths->data));
+            const auto staleImports = coastline::StaleImports(coastline::DefaultAssets(assetData));
             if (!staleImports.empty()) {
                 reimportNotice = coastline::ReimportMessage(staleImports);
                 SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
@@ -1024,7 +1065,8 @@ int main(int argc, char *argv[]) {
             SDL_Log("Language: %s (%s)",
                     coastline::SelectedLanguage().c_str(),
                     release.lexically_relative(assets).string().c_str());
-            const nlohmann::json packSettings = coastline::PackSettings(paths->data, pack);
+            const nlohmann::json packSettings =
+                coastline::PackSettings(assetData, pack, paths->data);
             // XmMusicGain of the configuration replaces the gain of the pack when the user
             // writes it.
             const float musicGain = config.GetFloat(
