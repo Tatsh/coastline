@@ -41,7 +41,7 @@ StringTable MergeStrings(StringTable fallback, const StringTable &language);
 /**
  * @param assets The assets of the pack.
  * @param language The language, such as en-us, en-gb, or ja.
- * @return The import of the cartridge the menus of the language draw, n64/jpn for ja, n64/eur for
+ * @return The import of the cartridge whose font the language draws, n64/jpn for ja, n64/eur for
  * en-gb, and n64/usa for every other language, or n64/usa when the release of the language was not
  * imported.
  */

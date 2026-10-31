@@ -980,28 +980,15 @@ int main(int argc, char *argv[]) {
             };
             sceneRenderer = coastline::SceneRenderer::Create(*window);
             if (sceneRenderer) {
-                auto frontEndRelease = release;
-                auto loadFrontEnd = [&]() {
-                    intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
-                    mainMenu = coastline::Menus::Load(*sceneRenderer,
-                                                      frontEndRelease,
-                                                      paths->data,
-                                                      paths->cache,
-                                                      config,
-                                                      configPath);
-                    if (mainMenu) {
-                        mainMenu->SetMenuMusic(playMenuMusic);
-                    }
-                };
-                loadFrontEnd();
-                // The splash screens and the menus are those of the USA release, and a release
-                // whose screens differ falls back to it.
-                if ((!intro || !mainMenu) && release != assets / "n64" / "usa") {
-                    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                                "The menus of %s do not load, and those of n64/usa are drawn.",
-                                release.lexically_relative(assets).string().c_str());
-                    frontEndRelease = assets / "n64" / "usa";
-                    loadFrontEnd();
+                // The splash screens and the menus are those of the USA release in every
+                // language. The Japanese release has no producer logo, no models of its title,
+                // and no item to save the options.
+                const std::filesystem::path frontEndRelease = assets / "n64" / "usa";
+                intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
+                mainMenu = coastline::Menus::Load(
+                    *sceneRenderer, frontEndRelease, paths->data, paths->cache, config, configPath);
+                if (mainMenu) {
+                    mainMenu->SetMenuMusic(playMenuMusic);
                 }
                 frameRateText = coastline::MenuText::Load(*sceneRenderer, release / "fonts");
             }
