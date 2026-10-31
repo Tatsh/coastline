@@ -1,10 +1,14 @@
 #include "enginetextures.h"
 
+#include <cassert>
+
+#include <SDL3/SDL.h>
+
 namespace coastline {
 
 namespace {
 
-std::vector<EngineTexture> g_engineTextures;
+constexpr const char *ENGINE_TEXTURES_PROPERTY = "coastline.engine-textures";
 
 // A big-endian RGBA5551 colour as 8-bit RGBA.
 void AppendColor(std::vector<std::uint8_t> &rgba, const unsigned char *half) {
@@ -17,11 +21,25 @@ void AppendColor(std::vector<std::uint8_t> &rgba, const unsigned char *half) {
 
 } // namespace
 
-unsigned CreateEngineTexture(const unsigned char *image,
-                             const unsigned char *palette,
-                             int width,
-                             int height,
-                             int lineBytes) {
+EngineTextures::EngineTextures() {
+    assert(Active() == nullptr);
+    SDL_SetPointerProperty(SDL_GetGlobalProperties(), ENGINE_TEXTURES_PROPERTY, this);
+}
+
+EngineTextures::~EngineTextures() {
+    SDL_ClearProperty(SDL_GetGlobalProperties(), ENGINE_TEXTURES_PROPERTY);
+}
+
+EngineTextures *EngineTextures::Active() {
+    return static_cast<EngineTextures *>(
+        SDL_GetPointerProperty(SDL_GetGlobalProperties(), ENGINE_TEXTURES_PROPERTY, nullptr));
+}
+
+unsigned EngineTextures::Create(const unsigned char *image,
+                                const unsigned char *palette,
+                                int width,
+                                int height,
+                                int lineBytes) {
     EngineTexture texture;
     texture.width = width;
     texture.height = height;
@@ -30,8 +48,17 @@ unsigned CreateEngineTexture(const unsigned char *image,
             AppendColor(texture.rgba, &palette[image[y * lineBytes + x] * 2]);
         }
     }
-    g_engineTextures.push_back(std::move(texture));
-    return static_cast<unsigned>(g_engineTextures.size());
+    m_textures.push_back(std::move(texture));
+    return static_cast<unsigned>(m_textures.size());
+}
+
+unsigned CreateEngineTexture(const unsigned char *image,
+                             const unsigned char *palette,
+                             int width,
+                             int height,
+                             int lineBytes) {
+    auto *textures = EngineTextures::Active();
+    return textures ? textures->Create(image, palette, width, height, lineBytes) : 0;
 }
 
 int DecodeEngineTexture(void *destination,
@@ -51,11 +78,11 @@ int DecodeEngineTexture(void *destination,
     return width * height * 2;
 }
 
-void LoadEngineTexture(unsigned entry, const unsigned char *colors) {
-    if (entry == 0 || entry > g_engineTextures.size()) {
+void EngineTextures::Load(unsigned entry, const unsigned char *colors) {
+    if (entry == 0 || entry > m_textures.size()) {
         return;
     }
-    EngineTexture &texture = g_engineTextures[entry - 1];
+    EngineTexture &texture = m_textures[entry - 1];
     texture.rgba.clear();
     for (int texel = 0; texel < texture.width * texture.height; ++texel) {
         AppendColor(texture.rgba, &colors[texel * 2]);
@@ -63,12 +90,29 @@ void LoadEngineTexture(unsigned entry, const unsigned char *colors) {
     ++texture.version;
 }
 
+const EngineTexture *EngineTextures::Find(unsigned entry) const {
+    return entry == 0 || entry > m_textures.size() ? nullptr : &m_textures[entry - 1];
+}
+
+void EngineTextures::Clear() {
+    m_textures.clear();
+}
+
+void LoadEngineTexture(unsigned entry, const unsigned char *colors) {
+    if (auto *textures = EngineTextures::Active()) {
+        textures->Load(entry, colors);
+    }
+}
+
 const EngineTexture *FindEngineTexture(unsigned entry) {
-    return entry == 0 || entry > g_engineTextures.size() ? nullptr : &g_engineTextures[entry - 1];
+    const auto *textures = EngineTextures::Active();
+    return textures ? textures->Find(entry) : nullptr;
 }
 
 void ClearEngineTextures() {
-    g_engineTextures.clear();
+    if (auto *textures = EngineTextures::Active()) {
+        textures->Clear();
+    }
 }
 
 } // namespace coastline

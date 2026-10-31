@@ -36,6 +36,7 @@
 #include "config.h"
 #include "controllerpak.h"
 #include "controls.h"
+#include "enginetextures.h"
 #if COASTLINE_SETUP_WIZARD
 #include "firstrun/wizardrun.h"
 #endif
@@ -1098,6 +1099,8 @@ int main(int argc, char *argv[]) {
             auto music = LoadMusicModule(assets, menuModule.offset);
             SetWindowIcon(window->Window(), assets);
             coastline::InputBindings input(config);
+            coastline::EngineTextures engineTextures;
+            coastline::AttractDemo attractDemo;
             coastline::N64Audio audio;
             bool playMusic = config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice();
             const bool pauseOnFocusLoss = config.GetBoolean("Game", "PauseOnFocusLoss", true) &&
@@ -1128,6 +1131,7 @@ int main(int argc, char *argv[]) {
             // The races run a 30th of a second a step, from the assets of the pack.
             constexpr float RACE_STEP = 1.0f / 30.0f;
             std::unique_ptr<coastline::RaceView> raceView;
+            coastline::RaceSession raceSession;
             bool raceDataOpen = false;
             // The race engine reads its files from the assets of the pack.
             auto openRaceData = [&]() {
@@ -1146,13 +1150,12 @@ int main(int argc, char *argv[]) {
             auto startCredits = [&](bool ending) {
                 endingCredits = ending;
                 openRaceData();
-                coastline::StartCreditsRace(ending);
+                attractDemo.StartCredits(ending);
                 coastline::StartConsoleCredits(release);
-                coastline::StepAttractDemo(false);
-                const coastline::RaceCar car{
-                    coastline::AttractDemoCar(), coastline::AttractDemoColor(), std::nullopt};
+                attractDemo.Step(false);
+                const coastline::RaceCar car{attractDemo.Car(), attractDemo.Color(), std::nullopt};
                 raceView = coastline::RaceView::Load(
-                    *sceneRenderer, assets, coastline::AttractDemoTrack(), {&car, 1});
+                    *sceneRenderer, assets, attractDemo.Track(), {&car, 1});
                 raceTime = 0.0f;
                 leaveDemo = false;
                 return raceView != nullptr;
@@ -1388,15 +1391,12 @@ int main(int argc, char *argv[]) {
                         } else if (end != coastline::IntroEnd::Running) {
                             openRaceData();
                             // The first step loads the race and with it the track and the car.
-                            coastline::StartAttractDemo();
-                            coastline::StepAttractDemo(false);
-                            const coastline::RaceCar demoCar{coastline::AttractDemoCar(),
-                                                             coastline::AttractDemoColor(),
-                                                             std::nullopt};
-                            raceView = coastline::RaceView::Load(*sceneRenderer,
-                                                                 assets,
-                                                                 coastline::AttractDemoTrack(),
-                                                                 {&demoCar, 1});
+                            attractDemo.Start();
+                            attractDemo.Step(false);
+                            const coastline::RaceCar demoCar{
+                                attractDemo.Car(), attractDemo.Color(), std::nullopt};
+                            raceView = coastline::RaceView::Load(
+                                *sceneRenderer, assets, attractDemo.Track(), {&demoCar, 1});
                             raceTime = 0.0f;
                             leaveDemo = false;
                             if (raceView) {
@@ -1412,12 +1412,12 @@ int main(int argc, char *argv[]) {
                         bool demoRunning = true;
                         while (demoRunning && raceTime >= RACE_STEP) {
                             raceTime -= RACE_STEP;
-                            demoRunning = coastline::StepAttractDemo(leaveDemo);
+                            demoRunning = attractDemo.Step(leaveDemo);
                             leaveDemo = false;
                         }
                         if (!demoRunning) {
                             raceView.reset();
-                            if (coastline::AttractDemoInterrupted() && mainMenu) {
+                            if (attractDemo.Interrupted() && mainMenu) {
                                 mainMenu->Restart();
                                 frontEnd = FrontEnd::MainMenu;
                             } else {
@@ -1430,7 +1430,7 @@ int main(int argc, char *argv[]) {
                         coastline::RaceEnd end = coastline::RaceEnd::Running;
                         while (end == coastline::RaceEnd::Running && raceTime >= RACE_STEP) {
                             raceTime -= RACE_STEP;
-                            end = coastline::StepRace();
+                            end = raceSession.Step();
                         }
                         if (end != coastline::RaceEnd::Running) {
                             // The module of the track plays on after the race until the main
@@ -1439,7 +1439,7 @@ int main(int argc, char *argv[]) {
                             raceView.reset();
                             frontEnd = FrontEnd::MainMenu;
                             if (end != coastline::RaceEnd::Credits) {
-                                mainMenu->FinishRace(end, coastline::LastRaceResults());
+                                mainMenu->FinishRace(end, raceSession.Results());
                             } else {
                                 playMenuMusic();
                                 if (startCredits(true)) {
@@ -1456,7 +1456,7 @@ int main(int argc, char *argv[]) {
                         bool creditsRunning = true;
                         while (creditsRunning && raceTime >= RACE_STEP) {
                             raceTime -= RACE_STEP;
-                            creditsRunning = coastline::StepAttractDemo(leaveDemo);
+                            creditsRunning = attractDemo.Step(leaveDemo);
                             coastline::StepConsoleCredits(RACE_STEP);
                             leaveDemo = false;
                         }
@@ -1590,7 +1590,7 @@ int main(int argc, char *argv[]) {
                         coastline::RaceSetup setup = mainMenu->ChosenRace();
                         setup.waitForStart = config.GetBoolean("Game", "WaitForStart", false);
                         setup.autopilot = commands.autopilot;
-                        coastline::StartRace(
+                        raceSession.Start(
                             setup, assets / "music", config.Get("Game", "Music") == "CD");
                         std::vector<coastline::RaceCar> cars = coastline::RaceCars();
                         for (std::size_t i = 0; i < cars.size() && i < setup.cars.size(); ++i) {
@@ -1605,7 +1605,7 @@ int main(int argc, char *argv[]) {
                         if (raceView) {
                             frontEnd = FrontEnd::Race;
                         } else {
-                            coastline::AbandonRace();
+                            raceSession.Abandon();
                             mainMenu->FinishRace(coastline::RaceEnd::Menu, {});
                         }
                     }

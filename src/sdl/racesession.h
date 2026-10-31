@@ -104,35 +104,55 @@ enum class RaceEnd {
                      season of the championship. */
 };
 
-/**
- * Start a race as the front end of the PC release starts one. The race music starts with it. The
- * working directory is the directory of the default assets, and OpenRaceData() was called.
- *
- * @param setup The race.
- * @param music The directory of the music files.
- * @param cdAudio Whether the music is the CD audio of the PC release rather than the modules of
- * the Nintendo 64 release.
- */
-void StartRace(const RaceSetup &setup, const std::filesystem::path &music, bool cdAudio);
+/** Race progress and results for one front end. */
+class RaceSession {
+public:
+    RaceSession() = default;
+    ~RaceSession();
+    RaceSession(const RaceSession &) = delete;
+    RaceSession &operator=(const RaceSession &) = delete;
+
+    /**
+     * Start a race as the front end of the PC release starts one. The race music starts with it.
+     * The working directory is the directory of the default assets, and OpenRaceData() was called.
+     *
+     * @param setup The race.
+     * @param music The directory of the music files.
+     * @param cdAudio Whether the music is the CD audio of the PC release rather than the modules of
+     * the Nintendo 64 release.
+     */
+    void Start(const RaceSetup &setup, const std::filesystem::path &music, bool cdAudio);
+
+    /**
+     * Run one frame of the race, a 30th of a second. The race music stops when the race ends.
+     *
+     * @return How the race ends, or RaceEnd::Running while it goes on.
+     */
+    RaceEnd Step();
+
+    /** End the race that Start() started without running it, and stop its music. */
+    void Abandon();
+
+    /** @return The results of the race that ended last with RaceEnd::Results. */
+    const RaceResults &Results() const;
+
+private:
+    void StopMusic();
+    void ReadResults();
+    void HoldSoundUntilShown();
+
+    RaceResults m_results;
+    bool m_musicStarted = false;
+    bool m_waitForStart = false;
+    bool m_autopilot = false;
+    bool m_soundHeld = false;
+};
 
 /**
- * Run one frame of the race, a 30th of a second. The race music stops when the race ends.
- *
- * @return How the race ends, or RaceEnd::Running while it goes on.
- */
-RaceEnd StepRace();
-
-/** End the race that StartRace() started without running it, and stop its music. */
-void AbandonRace();
-
-/**
- * @return The levels of the music and of the sound effects of the race that StartRace() started
- * last, from 0 to 9, as its pause menu set them.
+ * @return Music and sound effect levels of the race RaceSession::Start() started last, from 0 to 9,
+ * as set by its pause menu.
  */
 std::array<int, 2> RaceVolumeLevels();
-
-/** @return The results of the race that ended last with RaceEnd::Results. */
-const RaceResults &LastRaceResults();
 
 /**
  * @return The track of the race that loaded last, an index of g_apszTrackFilenames: the track of

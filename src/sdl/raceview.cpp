@@ -2112,8 +2112,9 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     // The help of the attract demo, from the corner of the canvas of the HUD, under the fade. The
     // console shows nothing over its demo.
     const char *help = GetStringResource(DEMO_HELP_STRING);
+    const auto *demo = AttractDemo::Active();
     if (g_bShowHudHelpText && g_dwGameMode == GAME_MODE_DEMO &&
-        g_dwRaceSessionType == RACE_SESSION_ATTRACT && !AttractDemoFromConsole() &&
+        g_dwRaceSessionType == RACE_SESSION_ATTRACT && !(demo && demo->FromConsole()) &&
         help != nullptr) {
         TextStyle style;
         style.size = 15;

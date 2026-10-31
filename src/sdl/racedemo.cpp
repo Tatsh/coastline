@@ -1,6 +1,7 @@
 #include "racedemo.h"
 
 #include <array>
+#include <cassert>
 #include <filesystem>
 #include <string>
 #include <vector>
@@ -53,10 +54,7 @@ constexpr std::array<ConsoleDemoEnd, 3> CONSOLE_DEMOS{{
 // The recordings of the PC release, before the demos of the cartridges.
 constexpr std::array<const char *, 2> PC_DEMOS{"RallyIntro1.dat", "RallyIntro2.dat"};
 
-// The demo to play next, by its place in the rotation, and the one playing.
-std::size_t g_nextDemo = 0;
-std::string g_demoPath;
-const ConsoleDemoEnd *g_consoleDemo = nullptr;
+constexpr const char *ATTRACT_DEMO_PROPERTY = "coastline.attract-demo";
 
 } // namespace
 
@@ -75,7 +73,21 @@ void OpenRaceData(bool playSounds) {
     }
 }
 
-void StartAttractDemo() {
+AttractDemo::AttractDemo() {
+    assert(Active() == nullptr);
+    SDL_SetPointerProperty(SDL_GetGlobalProperties(), ATTRACT_DEMO_PROPERTY, this);
+}
+
+AttractDemo::~AttractDemo() {
+    SDL_ClearProperty(SDL_GetGlobalProperties(), ATTRACT_DEMO_PROPERTY);
+}
+
+AttractDemo *AttractDemo::Active() {
+    return static_cast<AttractDemo *>(
+        SDL_GetPointerProperty(SDL_GetGlobalProperties(), ATTRACT_DEMO_PROPERTY, nullptr));
+}
+
+void AttractDemo::Start() {
     g_dwGameMode = GAME_MODE_DEMO;
     g_dwRaceSessionType = RACE_SESSION_ATTRACT;
     g_dwRaceInitialized = 0;
@@ -84,17 +96,17 @@ void StartAttractDemo() {
     g_bSfxVolume = static_cast<unsigned char>(g_bSfxVolume * 3 / 4);
 }
 
-void StartCreditsRace(bool scrolling) {
+void AttractDemo::StartCredits(bool scrolling) {
     g_dwGameMode = GAME_MODE_DEMO;
     g_dwRaceSessionType = scrolling ? RACE_SESSION_SCROLLING_CREDITS : RACE_SESSION_CREDIT_CAPTIONS;
     g_dwRaceInitialized = 0;
-    g_consoleDemo = nullptr;
+    m_consoleDemo.reset();
     InitGameAndShowMenus();
     // The credits play under the music of the menus, as the attract demo does.
     g_bSfxVolume = static_cast<unsigned char>(g_bSfxVolume * 3 / 4);
 }
 
-bool StepAttractDemo(bool leave) {
+bool AttractDemo::Step(bool leave) {
     // The race leaves for the front end through ExitRaceSessionToMenu(), which ends the session.
     if (IsCurrentScreen(ExitRaceSessionToMenu)) {
         CallCurrentGameMode();
@@ -110,13 +122,13 @@ bool StepAttractDemo(bool leave) {
         SetFadeTarget(0.0f, DEMO_FADE_SECONDS);
     }
     // The demo of a cartridge ends with its recording, as RunRacingPhase() ends a demo by its time.
-    if (g_consoleDemo != nullptr && g_dwRaceInitialized && !IsFadingOut() &&
-        g_adwGhostPlaybackFrame[1] + static_cast<int>(g_consoleDemo->steps) + 1 >=
+    if (m_consoleDemo && g_dwRaceInitialized && !IsFadingOut() &&
+        g_adwGhostPlaybackFrame[1] + static_cast<int>(CONSOLE_DEMOS[*m_consoleDemo].steps) + 1 >=
             static_cast<int>(g_adwGhostFrameCount[1])) {
         g_dwRaceExitState = TRUE;
         g_bReplayAfterRace = FALSE;
-        FadeSfxTo(0.0f, g_consoleDemo->seconds);
-        SetFadeTarget(0.0f, g_consoleDemo->seconds);
+        FadeSfxTo(0.0f, CONSOLE_DEMOS[*m_consoleDemo].seconds);
+        SetFadeTarget(0.0f, CONSOLE_DEMOS[*m_consoleDemo].seconds);
     }
     CallCurrentGameMode();
     // The PC release advances the fades with each frame it draws, in RenderRacingScreen(), and the
@@ -125,33 +137,29 @@ bool StepAttractDemo(bool leave) {
     return true;
 }
 
-bool AttractDemoInterrupted() {
+bool AttractDemo::Interrupted() const {
     return g_bDemoInterrupted != 0;
 }
 
-int AttractDemoTrack() {
+int AttractDemo::Track() const {
     return static_cast<int>(g_dwSelectedTrackId);
 }
 
-int AttractDemoCar() {
+int AttractDemo::Car() const {
     return static_cast<int>(g_GhostRecordingInfo.car);
 }
 
-std::array<std::uint8_t, 3> AttractDemoColor() {
+std::array<std::uint8_t, 3> AttractDemo::Color() const {
     const u8 *color = VEHICLE_GET(&g_aVehicles[0], Color);
     return {color[0], color[1], color[2]};
 }
 
-bool AttractDemoFromConsole() {
-    return g_consoleDemo != nullptr;
+bool AttractDemo::FromConsole() const {
+    return m_consoleDemo.has_value();
 }
 
-} // namespace coastline
-
-extern "C" const char *NextAttractDemoRecording(void) {
-    using coastline::CONSOLE_DEMOS;
-    using coastline::PC_DEMOS;
-    const auto region = coastline::CartridgeRegion(coastline::ReleaseDirectory("."));
+const char *AttractDemo::NextRecording() {
+    const auto region = CartridgeRegion(ReleaseDirectory("."));
     std::vector<std::size_t> present;
     for (std::size_t i = 0; i < PC_DEMOS.size() + CONSOLE_DEMOS.size(); ++i) {
         if (i < PC_DEMOS.size()) {
@@ -159,20 +167,27 @@ extern "C" const char *NextAttractDemoRecording(void) {
             continue;
         }
         std::error_code error;
-        auto json = coastline::ReleaseDirectory(".") / "attract.json";
+        auto json = ReleaseDirectory(".") / "attract.json";
         if (region == CONSOLE_DEMOS[i - PC_DEMOS.size()].release &&
             std::filesystem::exists(json, error)) {
             present.push_back(i);
         }
     }
-    std::size_t demo = present[coastline::g_nextDemo % present.size()];
-    coastline::g_nextDemo = (coastline::g_nextDemo + 1) % present.size();
+    std::size_t demo = present[m_nextDemo % present.size()];
+    m_nextDemo = (m_nextDemo + 1) % present.size();
     if (demo < PC_DEMOS.size()) {
-        coastline::g_consoleDemo = nullptr;
-        coastline::g_demoPath = PC_DEMOS[demo];
+        m_consoleDemo.reset();
+        m_demoPath = PC_DEMOS[demo];
     } else {
-        coastline::g_consoleDemo = &CONSOLE_DEMOS[demo - PC_DEMOS.size()];
-        coastline::g_demoPath = (coastline::ReleaseDirectory(".") / "attract.dat").generic_string();
+        m_consoleDemo = demo - PC_DEMOS.size();
+        m_demoPath = (ReleaseDirectory(".") / "attract.dat").generic_string();
     }
-    return coastline::g_demoPath.c_str();
+    return m_demoPath.c_str();
+}
+
+} // namespace coastline
+
+extern "C" const char *NextAttractDemoRecording(void) {
+    auto *demo = coastline::AttractDemo::Active();
+    return demo ? demo->NextRecording() : nullptr;
 }

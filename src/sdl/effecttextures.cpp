@@ -12,40 +12,22 @@
 
 namespace {
 
-// The texels of CreateAlphaRampTextures(): white, each alpha of 4 bits widened to 8.
-constexpr int ALPHA_RAMP_STEPS = 16;
 constexpr int RAMP_TEXEL_BYTES = 4;
-std::array<u8, ALPHA_RAMP_STEPS * RAMP_TEXEL_BYTES> g_alphaRamp;
-
-// The size of the textures of the precipitation, which the SDL game does not reduce.
-int g_precipitationWidth;
-int g_precipitationHeight;
 
 } // namespace
 
 void CreateGlobalEffectTextures(void) {
-    for (int alpha = 0; alpha < ALPHA_RAMP_STEPS; ++alpha) {
-        u8 *texel = &g_alphaRamp[static_cast<std::size_t>(alpha * RAMP_TEXEL_BYTES)];
-        texel[0] = 255;
-        texel[1] = 255;
-        texel[2] = 255;
-        texel[3] = static_cast<u8>(alpha << 4 | alpha);
-    }
     g_dwAlphaRampStripRowCount = RAMP_TEXEL_BYTES;
 }
 
 void GetPrecipitationTextureDimensions(int nIndex) {
-    g_precipitationWidth = RAIN_STREAK_TEXTURE_SIDE;
-    g_precipitationHeight = RAIN_STREAK_TEXTURE_SIDE;
 }
 
 void CopyTileColumnScaled(int nTileIndex, int nSrcX, int nSrcY, int nSrcRow) {
-    int row = nSrcX * g_precipitationHeight / RAIN_STREAK_TEXTURE_SIDE;
-    int column = nSrcY * g_precipitationWidth / RAIN_STREAK_TEXTURE_SIDE;
-    for (int byte = 0; byte < g_dwAlphaRampStripRowCount; ++byte) {
-        int destination = (row * g_precipitationWidth + column) * g_dwAlphaRampStripRowCount + byte;
+    for (int byte = 0; byte < RAMP_TEXEL_BYTES; ++byte) {
+        int destination = (nSrcX * RAIN_STREAK_TEXTURE_SIDE + nSrcY) * RAMP_TEXEL_BYTES + byte;
         g_abPrecipitationTextures[nTileIndex][destination] =
-            g_alphaRamp[static_cast<std::size_t>(nSrcRow * g_dwAlphaRampStripRowCount + byte)];
+            byte == 3 ? static_cast<u8>(nSrcRow << 4 | nSrcRow) : 255;
     }
 }
 

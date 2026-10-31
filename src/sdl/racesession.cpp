@@ -31,26 +31,25 @@
 
 namespace coastline {
 
-namespace {
+RaceSession::~RaceSession() {
+    StopMusic();
+}
 
-RaceResults g_results;
-bool g_musicStarted = false;
-
-void StopMusicOfRace() {
-    if (g_musicStarted) {
+void RaceSession::StopMusic() {
+    if (m_musicStarted) {
         StopRaceMusic();
-        g_musicStarted = false;
+        m_musicStarted = false;
     }
 }
 
 // SaveRaceResultsToSlots() and RestoreRaceResultsFromSlots() store the results of the race in the
 // vehicles of the players, and the races and the laps of record in the profile of the first.
-void ReadResults() {
-    g_results = {};
-    g_results.totalLaps = g_dwTotalLaps;
+void RaceSession::ReadResults() {
+    m_results = {};
+    m_results.totalLaps = g_dwTotalLaps;
     for (int i = 0; i < std::min(static_cast<int>(g_dwNumLocalPlayers), 2); ++i) {
         const Vehicle &vehicle = g_aVehicles[i];
-        RacePlayerResult &result = g_results.players[static_cast<std::size_t>(i)];
+        RacePlayerResult &result = m_results.players[static_cast<std::size_t>(i)];
         result.lap = vehicle.GetLap();
         result.position = vehicle.GetRacePosition();
         result.bestLap = vehicle.GetBestLap();
@@ -59,41 +58,39 @@ void ReadResults() {
         std::copy_n(vehicle.GetLapTimes(), VEHICLE_LAP_TIMES, result.lapTimes.begin());
     }
     const PlayerProfile *profile = g_aVehicles[0].GetProfile();
-    std::copy_n(profile->lapRecords, PC_RECORD_TRACKS, g_results.lapRecords.begin());
-    std::copy_n(profile->raceRecords, PC_RECORD_TRACKS, g_results.raceRecords.begin());
+    std::copy_n(profile->lapRecords, PC_RECORD_TRACKS, m_results.lapRecords.begin());
+    std::copy_n(profile->raceRecords, PC_RECORD_TRACKS, m_results.raceRecords.begin());
     // KeepTimeAttackRecording() ends the recording of a player at the finish.
     const PlayerInputState *input = g_aVehicles[0].GetInput();
     if (g_dwGameMode == GAME_MODE_TIME_ATTACK && input->recordBuffers[0] == nullptr &&
         input->recordPositions[0] > RECORDING_HEADER_SIZE) {
         auto length = static_cast<std::size_t>(
             std::min(input->recordPositions[0], static_cast<s32>(RECORDING_CAPACITY)));
-        g_results.ghostRecording.assign(g_aabInputRecordings[0], g_aabInputRecordings[0] + length);
-        g_results.ghostFrames.assign(GetGhostKeyframeBuffer(),
+        m_results.ghostRecording.assign(g_aabInputRecordings[0], g_aabInputRecordings[0] + length);
+        m_results.ghostFrames.assign(GetGhostKeyframeBuffer(),
                                      GetGhostKeyframeBuffer() + GetGhostKeyframeDataSize());
     }
 }
 
-bool g_waitForStart = false;
-bool g_autopilot = false;
-bool g_soundHeld = false;
-
 // A race that has loaded is silent until the screen has wiped in from black, and its music starts
 // from the beginning of its track then.
-void HoldSoundUntilShown() {
-    if (!g_soundHeld) {
+void RaceSession::HoldSoundUntilShown() {
+    if (!m_soundHeld) {
         return;
     }
     if (g_fFadeLevel < 1.0f) {
         g_bSfxVolume = 0;
         return;
     }
-    g_soundHeld = false;
+    m_soundHeld = false;
     g_bSfxVolume =
         static_cast<unsigned char>(g_adwSfxVolumeLevels[g_GlobalRallyConfig.dwSfxVolume]);
-    if (g_musicStarted) {
+    if (m_musicStarted) {
         RestartRaceMusic();
     }
 }
+
+namespace {
 
 // The ghost car of a time attack as ReadGhostFileData() of the PC release loads it: the header the
 // race checks against the track and the weather of the race, and the frames of the second
@@ -117,7 +114,7 @@ void LoadGhostCar(const RaceSetup &setup) {
 
 } // namespace
 
-void StartRace(const RaceSetup &setup, const std::filesystem::path &music, bool cdAudio) {
+void RaceSession::Start(const RaceSetup &setup, const std::filesystem::path &music, bool cdAudio) {
     // The choices of the front end of the PC release that InitGameAndShowMenus() reads.
     g_dwGameMode = setup.gameMode;
     g_dwRaceSessionType = RACE_SESSION_ATTRACT;
@@ -170,13 +167,13 @@ void StartRace(const RaceSetup &setup, const std::filesystem::path &music, bool 
     if (setup.gameMode == GAME_MODE_TIME_ATTACK) {
         LoadGhostCar(setup);
     }
-    g_musicStarted =
+    m_musicStarted =
         StartRaceMusic(music, cdAudio ? RaceMusicSource::CdAudio : RaceMusicSource::Modules);
-    g_waitForStart = setup.waitForStart;
+    m_waitForStart = setup.waitForStart;
     g_bRaceStartsItself = !setup.waitForStart;
-    g_autopilot = setup.autopilot;
+    m_autopilot = setup.autopilot;
     // The first frame loads the race.
-    StepRace();
+    Step();
     // A player races in the colour of the paint of the player.
     for (int i = 0; i < setup.players; ++i) {
         const auto &color = setup.cars[static_cast<std::size_t>(i)].color;
@@ -186,14 +183,14 @@ void StartRace(const RaceSetup &setup, const std::filesystem::path &music, bool 
     }
 }
 
-RaceEnd StepRace() {
+RaceEnd RaceSession::Step() {
     // The front end of the PC release processes the season and returns to its menus. The menus of
     // the console process the season on their results screen, from the results of the race.
     if (IsCurrentScreen(ExitRaceAndProcessSeasonResults)) {
         ReadResults();
         ShutdownGameSession();
         SetCurrentScreenCallback(ExitRaceSessionToMenu);
-        StopMusicOfRace();
+        StopMusic();
         return RaceEnd::Results;
     }
     if (IsCurrentScreen(ShutdownGameSessionToSeasonMenu) ||
@@ -201,7 +198,7 @@ RaceEnd StepRace() {
         bool season = IsCurrentScreen(ShutdownGameSessionToSeasonMenu) != 0;
         CallCurrentGameMode();
         SetCurrentScreenCallback(ExitRaceSessionToMenu);
-        StopMusicOfRace();
+        StopMusic();
         return season ? RaceEnd::SeasonMenu : RaceEnd::Menu;
     }
     // StartEndingCredits() follows the race after the last season. The race of the credits starts
@@ -209,7 +206,7 @@ RaceEnd StepRace() {
     if (g_dwGameMode == GAME_MODE_DEMO) {
         ShutdownGameSession();
         SetCurrentScreenCallback(ExitRaceSessionToMenu);
-        StopMusicOfRace();
+        StopMusic();
         return RaceEnd::Credits;
     }
     bool loading = !g_dwRaceInitialized;
@@ -223,16 +220,16 @@ RaceEnd StepRace() {
     if (loading && g_dwRaceInitialized && !gInstantReplayActive) {
         // The console counts down as soon as the race has loaded, where the PC release waits for
         // the start binding.
-        if (!g_waitForStart && !g_bRaceStartReached) {
+        if (!m_waitForStart && !g_bRaceStartReached) {
             g_bRaceStartReached = 1;
             if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
                 StartGhostRecording();
             }
         }
-        if (g_autopilot) {
+        if (m_autopilot) {
             g_aVehicles[0].SetDriver(AiVehicleControllerCallback);
         }
-        g_soundHeld = true;
+        m_soundHeld = true;
         PauseMusicPlayback();
     }
     // The PC release advances the fades with each frame it draws, and the SDL game with each frame
@@ -242,11 +239,11 @@ RaceEnd StepRace() {
     return RaceEnd::Running;
 }
 
-void AbandonRace() {
+void RaceSession::Abandon() {
     g_dwRaceInitialized = 0;
     ShutdownGameSession();
     SetCurrentScreenCallback(ExitRaceSessionToMenu);
-    StopMusicOfRace();
+    StopMusic();
 }
 
 std::array<int, 2> RaceVolumeLevels() {
@@ -254,8 +251,8 @@ std::array<int, 2> RaceVolumeLevels() {
             static_cast<int>(g_GlobalRallyConfig.dwSfxVolume)};
 }
 
-const RaceResults &LastRaceResults() {
-    return g_results;
+const RaceResults &RaceSession::Results() const {
+    return m_results;
 }
 
 int RaceTrack() {

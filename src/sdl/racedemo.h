@@ -9,7 +9,8 @@
 
 #include <array>
 #include <cstdint>
-#include <string_view>
+#include <optional>
+#include <string>
 
 namespace coastline {
 
@@ -22,51 +23,74 @@ namespace coastline {
  */
 void OpenRaceData(bool playSounds);
 
-/**
- * Start the attract demo as the root menu of the PC release starts it, on the recording after
- * the one it played last. The working directory is the directory of the default assets.
- */
-void StartAttractDemo();
+/** Attract-demo rotation for one front end. One instance exists at a time. */
+class AttractDemo {
+public:
+    AttractDemo();
+    ~AttractDemo();
+    AttractDemo(const AttractDemo &) = delete;
+    AttractDemo &operator=(const AttractDemo &) = delete;
 
-/**
- * Start the race of the credits, on the recording of the credits of the PC release, as
- * StartCreditsRace() of the console starts the captions from the options menu and
- * StartEndingCredits() starts the scrolling credits after the last season. The console scrolls the
- * credits of the options menu instead under the multiplayer mode of a cheat, absent from the SDL
- * game. StepAttractDemo() runs the race. The working directory is the directory of the default
- * assets.
- *
- * @param scrolling Whether the credits scroll rather than show as captions.
- */
-void StartCreditsRace(bool scrolling);
+    /** @return The active demo controller, or null outside its lifetime. */
+    static AttractDemo *Active();
 
-/**
- * Run one frame of the race of the demo, a 30th of a second.
- *
- * @param leave Whether a button that leaves the demo was pressed, as the pause binding of the PC
- * release leaves it.
- * @return Whether the demo goes on, or false once it has ended, by its time or by a press of the
- * button that leaves it.
- */
-bool StepAttractDemo(bool leave);
+    /** @return The next recording path, valid until the next selection or destruction. */
+    const char *NextRecording();
 
-/** @return Whether the demo that ended last was left by a button rather than by its time. */
-bool AttractDemoInterrupted();
+    /**
+     * Start the attract demo as the root menu of the PC release starts it, on the recording after
+     * the one it played last. The working directory is the directory of the default assets.
+     */
+    void Start();
 
-/** @return The track of the demo, an index of g_apszTrackFilenames, once its race has loaded. */
-int AttractDemoTrack();
+    /**
+     * Start the race of the credits, on the recording of the credits of the PC release, as
+     * StartCreditsRace() of the console starts the captions from the options menu and
+     * StartEndingCredits() starts the scrolling credits after the last season. The console scrolls
+     * the credits of the options menu instead under the multiplayer mode of a cheat, absent from
+     * the SDL game. Step() runs the race. The working directory is the directory of the default
+     * assets.
+     *
+     * @param scrolling Whether the credits scroll rather than show as captions.
+     */
+    void StartCredits(bool scrolling);
 
-/** @return The car of the demo, an index of g_apszCarModelPrefixes, once its race has loaded. */
-int AttractDemoCar();
+    /**
+     * Run one frame of the race of the demo, a 30th of a second.
+     *
+     * @param leave Whether a button that leaves the demo was pressed, as the pause binding of the
+     * PC release leaves it.
+     * @return Whether the demo continues, or false after its time expires or a button ends the
+     * demo.
+     */
+    bool Step(bool leave);
 
-/** @return The red, green, and blue of the colour of the car of the demo, once its race has loaded.
- */
-std::array<std::uint8_t, 3> AttractDemoColor();
+    /** @return Whether a button ended the last demo before its time expired. */
+    bool Interrupted() const;
 
-/**
- * @return Whether the demo is the one of a cartridge, recorded at its import. The console plays it
- * in fog with no help on the screen and ends it with its recording.
- */
-bool AttractDemoFromConsole();
+    /** @return The track of the demo, an index of g_apszTrackFilenames, once its race has loaded.
+     */
+    int Track() const;
+
+    /** @return The car of the demo, an index of g_apszCarModelPrefixes, once its race has loaded.
+     */
+    int Car() const;
+
+    /** @return The red, green, and blue of the colour of the car of the demo, once its race has
+     * loaded.
+     */
+    std::array<std::uint8_t, 3> Color() const;
+
+    /**
+     * @return Whether the demo is the one of a cartridge, recorded at its import. The console plays
+     * it in fog with no help on the screen and ends it with its recording.
+     */
+    bool FromConsole() const;
+
+private:
+    std::size_t m_nextDemo = 0;
+    std::string m_demoPath;
+    std::optional<std::size_t> m_consoleDemo;
+};
 
 } // namespace coastline

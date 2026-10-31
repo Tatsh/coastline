@@ -19,6 +19,34 @@ struct EngineTexture {
     unsigned version = 0;           /*!< Counts the loads of new texels into the texture. */
 };
 
+/** Decoded textures for one active race engine. One instance exists at a time. */
+class EngineTextures {
+public:
+    EngineTextures();
+    ~EngineTextures();
+    EngineTextures(const EngineTextures &) = delete;
+    EngineTextures &operator=(const EngineTextures &) = delete;
+
+    /** @return The active texture collection, or null outside its lifetime. */
+    static EngineTextures *Active();
+
+    /** Decode an indexed image and return its texture entry, from 1. */
+    unsigned Create(const unsigned char *image,
+                    const unsigned char *palette,
+                    int width,
+                    int height,
+                    int lineBytes);
+    /** Replace an entry's texels with big-endian RGBA5551 colours. Invalid entries are ignored. */
+    void Load(unsigned entry, const unsigned char *colors);
+    /** @return The texture, or null for an invalid entry. */
+    const EngineTexture *Find(unsigned entry) const;
+    /** Discard decoded textures when the race engine shuts its texture subsystem down. */
+    void Clear();
+
+private:
+    std::vector<EngineTexture> m_textures;
+};
+
 /**
  * Create a texture from an 8-bit colour-indexed image of the console, as the hook
  * g_pfnCreateTextureFromN64Image() of the PC release creates one.
