@@ -300,8 +300,10 @@ const std::array<ConsoleString, 147> CONSOLE_STRINGS{{
     {"race.bestLapLabel", {0x802aa064}, {0x802abdb4}, {0x802aac44}},
     {"race.lapTimeLabel", {0x802aa074}, {0x802abdc4}, {0x802aac54}},
     {"race.timeLeftLabel", {0x802aa0a8}, {0x802abdf8}, {0x802aac88}},
-    {"race.speedUnitMph", {0x802aa13c}, {0x802abe8c}, {0x802aad1c}},
-    {"race.speedUnitKph", {0x802aa144}, {0x802abe94}, {0x802aad28}},
+    // The units of the Japanese release (Mile/h at 0x802aad1c, Km/h at 0x802aad28) are wider than
+    // the place the speedometer of the PC release leaves them, and Japanese takes those of en-us.
+    {"race.speedUnitMph", {0x802aa13c}, {0x802abe8c}, {}},
+    {"race.speedUnitKph", {0x802aa144}, {0x802abe94}, {}},
     {"race.newRecord", {0x802a6e9c}, {0x802a896c}, {0x802a841c}},
     {"race.seasonWinner", {0x802a6eb4}, {0x802a8984}, {0x802a8434}},
     {"race.champion", {0x802a6ec8}, {0x802a8998}, {0x802a8448}},
