@@ -41,7 +41,7 @@ std::uint8_t Cp437FromCodepoint(char32_t codepoint) {
     if (codepoint >= 0x20 && codepoint < 0x7F) {
         return static_cast<std::uint8_t>(codepoint);
     }
-    const auto *found = std::ranges::find(CP437_CODEPOINTS, codepoint);
+    const auto found = std::ranges::find(CP437_CODEPOINTS, codepoint);
     return found == CP437_CODEPOINTS.end() ?
                REPLACEMENT_GLYPH :
                static_cast<std::uint8_t>(found - CP437_CODEPOINTS.begin());
