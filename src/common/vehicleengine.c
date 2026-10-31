@@ -151,7 +151,31 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
         kph = 340.0f;
     }
     kph = kph - 140.0f;
-#if TGR_BOSS_RALLY
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    /* The SDL game offers the three handling types of the console, and steers by them as the
+     * console does. */
+    switch (VEHICLE_GET(vehicle, SteeringMode)) {
+    case 1:
+        g_fSteerLock = 14.0f;
+        g_fSteerRate = 0.01f;
+        g_fSteerLockLoss = 10.0f;
+        gain = 3.0L;
+        break;
+    case 2:
+        g_fSteerLock = 17.0f;
+        g_fSteerRate = 0.1f;
+        g_fSteerLockLoss = 14.0f;
+        gain = 16.0L;
+        break;
+    default:
+        g_fSteerLock = 14.0f;
+        g_fSteerRate = 0.01f;
+        g_fSteerLockLoss = 10.0f;
+        gain = 6.0L;
+        break;
+    }
+    g_wSteerGainSpeedShare = 0;
+#elif TGR_BOSS_RALLY
     switch (VEHICLE_GET(vehicle, SteeringMode)) {
     case 0:
         g_fSteerRate = 0.008f;
@@ -332,7 +356,10 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
     u32 buttons;
     s32 gear;
 
-#if TGR_BOSS_RALLY
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    /* The stick and the keys steer towards the stick, by the handling, as on the console. */
+    SteerByStick(vehicle, stick);
+#elif TGR_BOSS_RALLY
     if (IsVehicleControlAnalogue(0) || IsVehicleControlAnalogue(1)) {
         SteerVehicleByAnalogueInput(vehicle, stick);
     } else {

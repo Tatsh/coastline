@@ -148,9 +148,13 @@ and a button gives the full amount. An empty value unbinds the action. The log r
 that is not a button or an axis, and the game ignores it.
 
 `DeadZone` is the share of the travel of each axis that reads as 0, from `0` to `0.9`, and the
-rest of the travel covers the whole range. The default of `0.07` matches the dead zone of the
-steering of the Nintendo 64 release. A worn stick that steers or cancels the directional pad at
-rest needs a larger value.
+rest of the travel reads as it is. The default of `0.07` matches the dead zone of the steering of
+the Nintendo 64 release. A worn stick that steers or cancels the directional pad at rest needs a
+larger value.
+
+A race steers by the handling chosen on the car select screen, as the Nintendo 64 release does.
+The wheels turn towards the stick at a rate of the handling and return to the middle at once, and
+a stick pushed past 72% of its travel takes the whole lock, which narrows with the speed.
 
 ```ini
 [Controls]
