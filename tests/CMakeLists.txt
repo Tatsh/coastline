@@ -181,6 +181,16 @@ target_compile_options(sdl_test PRIVATE -Wall -Wextra -fsanitize=address,undefin
 target_link_options(sdl_test PRIVATE -fsanitize=address,undefined)
 add_test(NAME sdl COMMAND sdl_test)
 
+find_package(Threads REQUIRED)
+add_executable(firstrun_test firstrun_test.cpp "${_src}/sdl/firstrun/filebrowser.cpp"
+               "${_src}/sdl/firstrun/setupwizard.cpp" "${_src}/sdl/firstrun/textgrid.cpp")
+set_target_properties(firstrun_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(firstrun_test PRIVATE "${_src}/sdl/firstrun")
+target_compile_options(firstrun_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(firstrun_test PRIVATE -fsanitize=address,undefined)
+target_link_libraries(firstrun_test PRIVATE Threads::Threads)
+add_test(NAME firstrun COMMAND firstrun_test)
+
 # The note of the ghost car of the SDL game, with the run-length routines as the SDL game builds
 # them.
 add_executable(ghostnote_test ghostnote_test.cpp "${_src}/sdl/ghostnote.cpp"

@@ -4,6 +4,7 @@
 #include <expected>
 #include <filesystem>
 #include <functional>
+#include <optional>
 #include <span>
 #include <string>
 #include <vector>
@@ -17,8 +18,11 @@ enum class RomRelease {
     Eur, /*!< Europe, NTRP. */
 };
 
-/** Reports the progress of an import: a description and a fraction from 0 to 1. */
-using ImportProgress = std::function<void(const std::string &step, double fraction)>;
+/**
+ * Reports import progress with a description and a fraction from 0 to 1. It returns false
+ * to cancel the import before its next step.
+ */
+using ImportProgress = std::function<bool(const std::string &step, double fraction)>;
 
 /**
  * Convert a cartridge image in any of the three byte orders (z64, v64, n64) to big-endian.
@@ -35,6 +39,14 @@ bool NormalizeRomByteOrder(std::span<std::uint8_t> image);
  * @return The release, or a message when the image is not an unmodified release.
  */
 std::expected<RomRelease, std::string> IdentifyRom(std::span<const std::uint8_t> image);
+
+/**
+ * Identify a cartridge image file in any of the three byte orders by its SHA-1.
+ *
+ * @param image The cartridge image.
+ * @return The release, or a message when the file cannot be read or is not an unmodified release.
+ */
+std::expected<RomRelease, std::string> IdentifyRomFile(const std::filesystem::path &image);
 
 /** A music module of the USA cartridge and its name in a music pack. */
 struct UsaMusicModule {
@@ -55,15 +67,17 @@ inline constexpr UsaMusicModule USA_MUSIC_MODULES[] = {{0x0EBC00, "menu"},
 
 /**
  * Check a cartridge image and extract its main segment and its assets, inflated, to
- * n64/usa, n64/jpn, or n64/eur under @p dataDirectory. The USA cartridge also gives the pack its
- * XM modules in music.
+ * n64/usa, n64/jpn, or n64/eur under @p dataDirectory. The cartridge also provides XM modules in
+ * music when music/menu.xm does not exist.
  *
  * @param image The cartridge image.
  * @param dataDirectory The directory of the pack to write, assets/default of the data directory.
+ * @param progress Reports extraction and conversion progress, or empty. Return false to cancel.
  * @return The release, or a message.
  */
 std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &image,
-                                                 const std::filesystem::path &dataDirectory);
+                                                 const std::filesystem::path &dataDirectory,
+                                                 const ImportProgress &progress = {});
 
 /** One track of a CUE sheet, with its extent in sectors of 2,352 bytes in the image file. */
 struct CueTrack {
@@ -92,11 +106,20 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
  * @param disc A CUE sheet or an ISO image. A raw BIN image and a CloneCD image (.img or .ccd)
  * are refused with a message.
  * @param dataDirectory The directory of the pack to write, assets/default of the data directory.
- * @param progress Called as each file and track is written.
- * @return The number of files written, or a message.
+ * @param progress Called as each file and track is written, or empty.
+ * @return The number of files written, or a message, also when @p progress cancels the import.
  */
 std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &disc,
                                                    const std::filesystem::path &dataDirectory,
                                                    const ImportProgress &progress);
+
+/**
+ * Check that a disc image is one ImportDisc() reads and that its data track has the files of Boss
+ * Rally, without copying them.
+ *
+ * @param disc A CUE sheet or an ISO image.
+ * @return Why the disc cannot be imported, or nothing.
+ */
+std::optional<std::string> CheckDisc(const std::filesystem::path &disc);
 
 } // namespace coastline

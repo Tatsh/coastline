@@ -183,6 +183,7 @@ void CheckImportVersions() {
           "an older version is old");
     Check(coastline::RecordImport(defaults, ImportSource::Disc), "the record is updated");
     Check(coastline::StaleImports(defaults).empty(), "every source is current");
+    Check(!coastline::DefaultPackUsable(defaults), "version records alone are insufficient");
     Check(coastline::GameConfig::Load(defaults / "import.ini").GetInteger("Import", "Eur", 0) ==
               coastline::CARTRIDGE_CONVERTER_VERSION,
           "an update retains the other sources");
@@ -196,6 +197,29 @@ void CheckImportVersions() {
                                                "and the European cartridge again.",
           "three sources");
     std::filesystem::remove_all(defaults);
+}
+
+void CheckImportInventory() {
+    const auto root = std::filesystem::temp_directory_path() / "coastline-import-inventory";
+    const auto defaults = root / "default";
+    std::filesystem::remove_all(root);
+    WriteText(defaults / "cars" / "model.gltf", "model");
+    WriteText(defaults / "n64" / "eur" / "segment.bin", "segment");
+    Check(coastline::RecordImport(defaults, coastline::ImportSource::Disc), "record the disc");
+    Check(coastline::RecordImport(defaults, coastline::ImportSource::Eur), "record Europe");
+    Check(!coastline::DefaultPackUsable(defaults), "an unfinished import must be refused");
+    Check(coastline::RecordImportFiles(defaults), "record imported files");
+    Check(coastline::DefaultPackUsable(defaults), "a complete import must be usable");
+    WriteText(defaults / "cars" / "model.gltf", "truncated");
+    Check(!coastline::DefaultPackUsable(defaults), "a changed file size must be refused");
+    WriteText(defaults / "cars" / "model.gltf", "model");
+    std::filesystem::remove(defaults / "cars" / "model.gltf");
+    Check(!coastline::DefaultPackUsable(defaults), "a missing imported file must be refused");
+    WriteText(defaults / "import-files.txt", "1 \"../outside\"\n0 \"\"\n");
+    Check(!coastline::DefaultPackUsable(defaults), "inventory paths must stay inside assets");
+    WriteText(defaults / "import-files.txt", "0 \"\"\n");
+    Check(!coastline::DefaultPackUsable(defaults), "an empty inventory must be refused");
+    std::filesystem::remove_all(root);
 }
 
 void CheckPackAssets() {
@@ -264,6 +288,9 @@ void CheckLanguage() {
     WriteText(assets / "n64" / "jpn" / "segment.bin", "segment");
     Check(coastline::ReleaseDirectory(assets, "ja") == assets / "n64" / "jpn",
           "ja draws the Japanese release");
+    Check(coastline::ReleaseDirectory(assets, "en-us") == assets / "n64" / "jpn",
+          "a Japanese base works without a USA cartridge");
+    WriteText(assets / "n64" / "usa" / "segment.bin", "segment");
     Check(coastline::ReleaseDirectory(assets, "en-us") == assets / "n64" / "usa",
           "en-us draws the USA release");
     Check(coastline::ReleaseDirectory(assets, "en-gb") == assets / "n64" / "usa",
@@ -271,6 +298,9 @@ void CheckLanguage() {
     WriteText(assets / "n64" / "eur" / "segment.bin", "segment");
     Check(coastline::ReleaseDirectory(assets, "en-gb") == assets / "n64" / "eur",
           "en-gb draws the European release");
+    std::filesystem::remove_all(assets / "n64" / "usa");
+    Check(coastline::ReleaseDirectory(assets, "en-us") == assets / "n64" / "eur",
+          "a European base works without a USA cartridge");
     std::filesystem::remove_all(assets);
 }
 
@@ -432,6 +462,7 @@ void CheckRunScript() {
 } // namespace
 
 int main() {
+    CheckImportInventory();
     CheckRunScript();
     CheckPerformanceParsing();
     CheckIconFile();

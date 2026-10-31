@@ -1,6 +1,8 @@
 #include "importversion.h"
 
 #include <array>
+#include <fstream>
+#include <iomanip>
 #include <string_view>
 #include <system_error>
 
@@ -55,6 +57,71 @@ std::vector<ImportSource> StaleImports(const std::filesystem::path &defaults) {
         }
     }
     return stale;
+}
+
+bool DefaultPackUsable(const std::filesystem::path &defaults) {
+    auto record = GameConfig::Load(RecordPath(defaults));
+    auto current = [&](ImportSource source) {
+        const SourceInfo &info = Info(source);
+        return record.GetInteger(SECTION, info.key, 0) == info.version;
+    };
+    if (!current(ImportSource::Disc) ||
+        !(current(ImportSource::Usa) || current(ImportSource::Jpn) || current(ImportSource::Eur))) {
+        return false;
+    }
+    std::ifstream files(defaults / "import-files.txt", std::ios::binary);
+    std::size_t count = 0;
+    std::string relative;
+    std::uintmax_t size = 0;
+    while (files >> size >> std::quoted(relative)) {
+        if (relative.empty()) {
+            files >> std::ws;
+            return files.eof() && count > 0;
+        }
+        const std::filesystem::path path(std::u8string(relative.begin(), relative.end()));
+        if (path.is_absolute() || path != path.lexically_normal() ||
+            (path.begin() != path.end() && *path.begin() == "..")) {
+            return false;
+        }
+        std::error_code error;
+        if (!std::filesystem::is_regular_file(defaults.parent_path() / path, error) ||
+            std::filesystem::file_size(defaults.parent_path() / path, error) != size || error) {
+            return false;
+        }
+        ++count;
+    }
+    return false;
+}
+
+bool RecordImportFiles(const std::filesystem::path &defaults) {
+    const auto manifest = defaults / "import-files.txt";
+    std::error_code error;
+    std::filesystem::remove(manifest, error);
+    std::ofstream files(manifest, std::ios::binary | std::ios::trunc);
+    for (const char *pack : {"default", "boss", "eur", "jpn"}) {
+        const auto directory = defaults.parent_path() / pack;
+        if (!std::filesystem::is_directory(directory, error)) {
+            continue;
+        }
+        std::filesystem::recursive_directory_iterator entry(directory, error), end;
+        while (!error && entry != end) {
+            if (entry->is_regular_file(error) && entry->path() != manifest) {
+                const auto relative =
+                    entry->path().lexically_relative(defaults.parent_path()).u8string();
+                const std::string text(relative.begin(), relative.end());
+                files << entry->file_size(error) << ' ' << std::quoted(text) << '\n';
+            }
+            entry.increment(error);
+        }
+        if (error) {
+            files.close();
+            std::filesystem::remove(manifest, error);
+            return false;
+        }
+    }
+    files << "0 \"\"\n";
+    files.close();
+    return static_cast<bool>(files);
 }
 
 std::string ReimportMessage(std::span<const ImportSource> sources) {

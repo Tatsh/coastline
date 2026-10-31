@@ -35,6 +35,7 @@
 #include "config.h"
 #include "controllerpak.h"
 #include "controls.h"
+#include "firstrun/wizardrun.h"
 #include "frontend.h"
 #include "gpu.h"
 #include "iconfile.h"
@@ -618,6 +619,7 @@ int ImportFromCommandLine(const argparse::ArgumentParser &import,
         auto written = coastline::ImportDisc(
             *disc, coastline::DefaultAssets(data), [](const std::string &step, double fraction) {
                 SDL_Log("[%3d%%] %s", static_cast<int>(fraction * 100), step.c_str());
+                return true;
             });
         if (written) {
             SDL_Log("Imported %zu files from %s.", *written, disc->c_str());
@@ -629,6 +631,11 @@ int ImportFromCommandLine(const argparse::ArgumentParser &import,
     }
     if (auto failure = coastline::CurateAssetPacks(coastline::DefaultAssets(data))) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", failure->c_str());
+        status = EXIT_FAILURE;
+    }
+    if (status == EXIT_SUCCESS && !coastline::RecordImportFiles(coastline::DefaultAssets(data))) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "The inventory of imported files cannot be written.");
         status = EXIT_FAILURE;
     }
     coastline::StopGameLog();
@@ -819,6 +826,17 @@ int main(int argc, char *argv[]) {
         }
         script = std::move(*loaded);
     }
+    // Without usable data, the game starts the setup wizard. A script starts the wizard only when
+    // scripted key presses, text input, or mouse movements can operate its controls.
+    const bool showWizard = !coastline::DefaultPackUsable(coastline::DefaultAssets(paths->data));
+    if (showWizard && parser.is_subcommand_used(runScript) && script.script.keys.empty() &&
+        script.script.typing.empty() && script.script.mouseMoves.empty()) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "The game data is not imported. Import it with coastline import --cd DISC "
+                     "--rom ROM.");
+        coastline::StopGameLog();
+        return EXIT_FAILURE;
+    }
     // A run that saves its frames draws them at Width by Height and steps the splash screens by a
     // 60th of a second a frame, for the same frames on every machine.
     const bool savesFrames =
@@ -866,51 +884,26 @@ int main(int argc, char *argv[]) {
             config.Set(section, key, value);
         }
     }
-    // The assets of the pack of the command line or of the configuration, else of the default pack.
-    std::string pack =
-        parser.present("--asset-pack")
-            .value_or(
-                config.Get("Game", "AssetPack").value_or(std::string(coastline::DEFAULT_PACK)));
-    auto packAssets = coastline::PackAssets(paths->data, paths->cache, pack);
-    if (!packAssets) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                    "The asset pack %s cannot be read, and the default pack is used.",
-                    pack.c_str());
-        pack = coastline::DEFAULT_PACK;
-        packAssets = coastline::DefaultAssets(paths->data);
-    }
-    const std::filesystem::path assets = *packAssets;
-    SDL_Log("Asset pack: %s (%s)", pack.c_str(), assets.string().c_str());
-    // A source imported by an older conversion has files the game no longer draws correctly.
-    std::string reimportNotice;
-    const auto staleImports = coastline::StaleImports(coastline::DefaultAssets(paths->data));
-    if (!staleImports.empty()) {
-        reimportNotice = coastline::ReimportMessage(staleImports);
-        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                    "The data was imported by an older version of the game. %s",
-                    reimportNotice.c_str());
-    }
-    coastline::SelectLanguage(
-        parser.present("--language")
-            .value_or(
-                config.Get("Game", "Language").value_or(std::string(coastline::DEFAULT_LANGUAGE))));
-    coastline::LoadStrings(assets, coastline::SelectedLanguage());
-    const std::filesystem::path release =
-        coastline::ReleaseDirectory(assets, coastline::SelectedLanguage());
-    SDL_Log("Language: %s (%s)",
-            coastline::SelectedLanguage().c_str(),
-            release.lexically_relative(assets).string().c_str());
-    const nlohmann::json packSettings = coastline::PackSettings(paths->data, pack);
-    // XmMusicGain of the configuration replaces the gain of the pack when the user writes it.
-    const float musicGain = config.GetFloat(
-        "Game", "XmMusicGain", packSettings.value("xmMusicGain", coastline::DEFAULT_XM_MUSIC_GAIN));
-    const coastline::UsaMusicModule &menuModule = coastline::USA_MUSIC_MODULES[0];
-    auto music = LoadMusicModule(assets, menuModule.offset);
     // The keys of the actions are not written, as each key present replaces its preset binding.
     coastline::LoadControls(config);
     const coastline::DisplayOptions displayOptions =
         DisplayOptionsFrom(config, parser, savesFrames);
     int status = EXIT_FAILURE;
+    // The frame the game starts at, after the frames of the setup wizard.
+    int firstFrame = 1;
+    bool setupQuit = false;
+    bool setupFailed = false;
+    // The setup wizard imports the data in the window of the game, and the game then reads it.
+    auto setUp = [&](coastline::GpuWindow &window) {
+        if (showWizard) {
+            coastline::SetupRun run = coastline::RunSetupWizard(
+                window, *paths, config, script.script, script.keys, scriptFrames, savesFrames);
+            firstFrame = run.frames + 1;
+            setupQuit = !run.finished;
+            setupFailed = run.failed;
+        }
+        return !setupQuit;
+    };
     {
         SdlSession sdl(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD);
         if (sdl.ready && !SDL_InitSubSystem(SDL_INIT_AUDIO)) {
@@ -920,7 +913,53 @@ int main(int argc, char *argv[]) {
         }
         if (!sdl.ready) {
             SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "SDL did not start: %s", SDL_GetError());
-        } else if (auto window = coastline::GpuWindow::Create("Coastline", displayOptions)) {
+        } else if (auto window = coastline::GpuWindow::Create("Coastline", displayOptions);
+                   window && setUp(*window)) {
+            // The assets of the pack of the command line or of the configuration, else of the
+            // default pack.
+            std::string pack = parser.present("--asset-pack")
+                                   .value_or(config.Get("Game", "AssetPack")
+                                                 .value_or(std::string(coastline::DEFAULT_PACK)));
+            auto packAssets = coastline::PackAssets(paths->data, paths->cache, pack);
+            if (!packAssets) {
+                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                            "The asset pack %s cannot be read, and the default pack is used.",
+                            pack.c_str());
+                pack = coastline::DEFAULT_PACK;
+                packAssets = coastline::DefaultAssets(paths->data);
+            }
+            const std::filesystem::path assets = *packAssets;
+            SDL_Log("Asset pack: %s (%s)", pack.c_str(), assets.string().c_str());
+            // A source imported by an older conversion has files the game no longer draws
+            // correctly.
+            std::string reimportNotice;
+            const auto staleImports =
+                coastline::StaleImports(coastline::DefaultAssets(paths->data));
+            if (!staleImports.empty()) {
+                reimportNotice = coastline::ReimportMessage(staleImports);
+                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                            "The data was imported by an older version of the game. %s",
+                            reimportNotice.c_str());
+            }
+            coastline::SelectLanguage(
+                parser.present("--language")
+                    .value_or(config.Get("Game", "Language")
+                                  .value_or(std::string(coastline::DEFAULT_LANGUAGE))));
+            coastline::LoadStrings(assets, coastline::SelectedLanguage());
+            const std::filesystem::path release =
+                coastline::ReleaseDirectory(assets, coastline::SelectedLanguage());
+            SDL_Log("Language: %s (%s)",
+                    coastline::SelectedLanguage().c_str(),
+                    release.lexically_relative(assets).string().c_str());
+            const nlohmann::json packSettings = coastline::PackSettings(paths->data, pack);
+            // XmMusicGain of the configuration replaces the gain of the pack when the user
+            // writes it.
+            const float musicGain = config.GetFloat(
+                "Game",
+                "XmMusicGain",
+                packSettings.value("xmMusicGain", coastline::DEFAULT_XM_MUSIC_GAIN));
+            const coastline::UsaMusicModule &menuModule = coastline::USA_MUSIC_MODULES[0];
+            auto music = LoadMusicModule(assets, menuModule.offset);
             SetWindowIcon(window->Window(), assets);
             coastline::SetWideMenus(config.GetBoolean("Video", "WideMenus", false));
             coastline::SetFieldOfViewScale(config.GetFloat("Video", "FieldOfView", 1.0f));
@@ -986,10 +1025,9 @@ int main(int argc, char *argv[]) {
             };
             sceneRenderer = coastline::SceneRenderer::Create(*window);
             if (sceneRenderer) {
-                // The splash screens and the menus are those of the USA release in every
-                // language. The Japanese release has no producer logo, no models of its title,
-                // and no item to save the options.
-                const std::filesystem::path frontEndRelease = assets / "n64" / "usa";
+                // The USA front end is preferred when imported, regardless of language.
+                const std::filesystem::path frontEndRelease =
+                    coastline::ReleaseDirectory(assets, "en-us");
                 intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
                 mainMenu = coastline::Menus::Load(
                     *sceneRenderer, frontEndRelease, paths->data, paths->cache, config, configPath);
@@ -1015,7 +1053,7 @@ int main(int argc, char *argv[]) {
             std::uint16_t lastSecondButtons = 0;
             bool running = true;
             bool printScreenWasDown = false;
-            for (int frame = 1; running; ++frame) {
+            for (int frame = firstFrame; running; ++frame) {
                 // The mixers take the volumes the screens and the race wrote in the last frame.
                 coastline::PublishN64Volumes();
                 PushScriptedTyping(commands.typing, frame, window->Window());
@@ -1468,6 +1506,10 @@ int main(int argc, char *argv[]) {
             coastline::ShareRaceMusicPlayer(nullptr);
             status = EXIT_SUCCESS;
         }
+    }
+    // Quitting the setup wizard is not a failure.
+    if (setupQuit && !setupFailed) {
+        status = EXIT_SUCCESS;
     }
     if (!config.Save(configPath)) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "BossRally.ini cannot be written.");

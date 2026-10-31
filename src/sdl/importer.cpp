@@ -14,6 +14,7 @@
 #include <optional>
 #include <span>
 #include <sstream>
+#include <utility>
 
 #include <FLAC/stream_encoder.h>
 #include <SDL3/SDL.h>
@@ -81,7 +82,8 @@ bool WriteBytes(const std::filesystem::path &path, std::span<const std::uint8_t>
 // and the bytes of padding must be zero.
 std::optional<std::string> ExtractCartridge(std::span<const std::uint8_t> rom,
                                             std::span<const unsigned char> manifest,
-                                            const std::filesystem::path &directory) {
+                                            const std::filesystem::path &directory,
+                                            const ImportProgress &progress) {
     if (rom.size() < SEGMENT_ROM + SEGMENT_SIZE) {
         return "the image is too short";
     }
@@ -94,6 +96,9 @@ std::optional<std::string> ExtractCartridge(std::span<const std::uint8_t> rom,
     std::optional<std::size_t> position;
     std::string line;
     while (std::getline(lines, line)) {
+        if (progress && !progress("Extracting the cartridge", 0.0)) {
+            return "The import was cancelled.";
+        }
         std::istringstream fields(line);
         std::size_t offset = 0;
         std::size_t size = 0;
@@ -894,6 +899,16 @@ std::optional<std::string> WriteConsoleStrings(std::span<const std::uint8_t> rom
     if (release.release == RomRelease::Usa) {
         for (const auto &message : SAVE_FOLDER_STRINGS) {
             strings[std::string(message.key)] = message.text;
+        }
+    }
+    const auto fallback = dataDirectory / "strings" / "en-us.json";
+    if (release.release != RomRelease::Usa && !std::filesystem::exists(fallback)) {
+        auto base = strings;
+        for (const auto &message : SAVE_FOLDER_STRINGS) {
+            base[std::string(message.key)] = message.text;
+        }
+        if (auto failure = WriteStringsFile(fallback, base)) {
+            return failure;
         }
     }
     return WriteStringsFile(dataDirectory / "strings" / (std::string(release.language) + ".json"),
@@ -2146,7 +2161,8 @@ std::expected<RomRelease, std::string> IdentifyRom(std::span<const std::uint8_t>
 }
 
 std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &image,
-                                                 const std::filesystem::path &dataDirectory) {
+                                                 const std::filesystem::path &dataDirectory,
+                                                 const ImportProgress &progress) {
     auto bytes = ReadWholeFile(image);
     if (!bytes) {
         return std::unexpected(fmt::format("{} cannot be read.", image.string()));
@@ -2160,13 +2176,16 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     }
     const Release &known = *std::ranges::find(RELEASES, *release, &Release::release);
     auto destination = dataDirectory / "n64" / known.directory;
-    if (auto failure = ExtractCartridge(*bytes, known.manifest, destination)) {
+    if (auto failure = ExtractCartridge(*bytes, known.manifest, destination, progress)) {
         return std::unexpected(
             fmt::format("{} cannot be imported ({}).", image.string(), *failure));
     }
     // Replaces the model.bin of each car with model.gltf, its buffer mesh.bin, and its images.
     std::error_code carsError;
     for (const auto &car : std::filesystem::directory_iterator(destination / "cars", carsError)) {
+        if (progress && !progress("Converting the cartridge cars", 0.2)) {
+            return std::unexpected("The import was cancelled.");
+        }
         auto model = car.path() / "model.bin";
         if (!std::filesystem::exists(model)) {
             continue;
@@ -2184,6 +2203,9 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     // with track.gltf, its buffer track.bin, and its images.
     for (const auto &track :
          std::filesystem::directory_iterator(destination / "tracks", carsError)) {
+        if (progress && !progress("Converting the cartridge tracks", 0.4)) {
+            return std::unexpected("The import was cancelled.");
+        }
         auto geometry = ReadWholeFile(track.path() / "geometry.bin");
         auto textures = ReadWholeFile(track.path() / "textures.bin");
         if (!geometry || !textures) {
@@ -2245,6 +2267,9 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         }
     }
     for (const auto &sound : sounds) {
+        if (progress && !progress("Converting the cartridge sounds", 0.6)) {
+            return std::unexpected("The import was cancelled.");
+        }
         if (auto failure = ConvertConsoleSound(sound)) {
             return std::unexpected(*failure);
         }
@@ -2259,6 +2284,9 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         return std::unexpected(*failure);
     }
     for (const auto &model : splashModels) {
+        if (progress && !progress("Converting the intro models", 0.7)) {
+            return std::unexpected("The import was cancelled.");
+        }
         auto stem = model.stem().string();
         if (auto failure = ConvertModel(model,
                                         FrontEndModelToGltf,
@@ -2279,6 +2307,9 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         return std::unexpected(*failure);
     }
     WriteMenuItems(destination, segment, assets);
+    if (progress && !progress("Recording the attract demo", 0.8)) {
+        return std::unexpected("The import was cancelled.");
+    }
     // The game plays without the attract demo of a release. A failure to record it is logged and
     // the import goes on.
     if (auto failure = WriteAttractDemo(*bytes, *release, destination)) {
@@ -2290,6 +2321,9 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     // Replaces each model of the menu items and of the tracks on the track menu with a glTF file
     // of the same name.
     for (const ManifestAsset &asset : assets) {
+        if (progress && !progress("Converting the menu models", 0.9)) {
+            return std::unexpected("The import was cancelled.");
+        }
         if (!asset.name.starts_with("menu-items/") && !asset.name.ends_with("/menu-model")) {
             continue;
         }
@@ -2303,10 +2337,18 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         }
     }
     std::error_code error;
-    if (*release == RomRelease::Usa) {
+    if (!std::filesystem::exists(dataDirectory / "music" / "menu.xm")) {
+        constexpr std::array<std::uint32_t, 6> eurMusic{
+            0x0EB310, 0x1127A0, 0x12DBF0, 0x148DC0, 0x163CA0, 0x17EE50};
+        constexpr std::array<std::uint32_t, 6> jpnMusic{
+            0x102B50, 0x129FE0, 0x145430, 0x160600, 0x17B4E0, 0x196690};
         // The XM modules of the menus and of the tracks, as the music pack default.
-        for (const UsaMusicModule &entry : USA_MUSIC_MODULES) {
-            auto module = Tools::Common::decompress(std::span(*bytes).subspan(entry.offset));
+        for (std::size_t i = 0; i < std::size(USA_MUSIC_MODULES); ++i) {
+            const UsaMusicModule &entry = USA_MUSIC_MODULES[i];
+            auto offset = *release == RomRelease::Eur ? eurMusic[i] :
+                          *release == RomRelease::Jpn ? jpnMusic[i] :
+                                                        entry.offset;
+            auto module = Tools::Common::decompress(std::span(*bytes).subspan(offset));
             if (!module) {
                 return std::unexpected(module.error().message);
             }
@@ -2393,9 +2435,16 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
     return tracks;
 }
 
-std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &disc,
-                                                   const std::filesystem::path &dataDirectory,
-                                                   const ImportProgress &progress) {
+namespace {
+
+// The tracks of a disc image, its data track, and the files of the game on the data track.
+struct DiscContents {
+    std::vector<CueTrack> tracks;
+    CueTrack data;
+    std::vector<IsoEntry> entries;
+};
+
+std::expected<DiscContents, std::string> ReadDiscContents(const std::filesystem::path &disc) {
     std::vector<CueTrack> tracks;
     const std::string extension = Lowercase(disc.extension().string());
     if (extension == ".bin" || extension == ".img" || extension == ".ccd") {
@@ -2432,13 +2481,60 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         })) {
         return std::unexpected("The disc is not Boss Rally: BossRally.pod is missing.");
     }
+    CueTrack track = *data;
+    return DiscContents{std::move(tracks), std::move(track), std::move(*entries)};
+}
+
+} // namespace
+
+std::optional<std::string> CheckDisc(const std::filesystem::path &disc) {
+    auto contents = ReadDiscContents(disc);
+    if (!contents) {
+        return contents.error();
+    }
+    return std::nullopt;
+}
+
+std::expected<RomRelease, std::string> IdentifyRomFile(const std::filesystem::path &image) {
+    auto bytes = ReadWholeFile(image);
+    if (!bytes) {
+        return std::unexpected(fmt::format("{} cannot be read.", image.string()));
+    }
+    if (!NormalizeRomByteOrder(*bytes)) {
+        return std::unexpected(fmt::format("{} is not a Nintendo 64 image.", image.string()));
+    }
+    return IdentifyRom(*bytes);
+}
+
+std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &disc,
+                                                   const std::filesystem::path &dataDirectory,
+                                                   const ImportProgress &progress) {
+    auto contents = ReadDiscContents(disc);
+    if (!contents) {
+        return std::unexpected(contents.error());
+    }
+    const std::vector<CueTrack> &tracks = contents->tracks;
+    const std::vector<IsoEntry> &entries = contents->entries;
+    std::ifstream dataFile(contents->data.file, std::ios::binary);
+    if (!dataFile) {
+        return std::unexpected(fmt::format("{} cannot be read.", contents->data.file.string()));
+    }
+    SectorReader reader(dataFile, contents->data.sectorSize, contents->data.firstSector);
     std::size_t audioCount = std::ranges::count(tracks, true, &CueTrack::audio);
-    double steps = static_cast<double>(entries->size() + audioCount);
+    // The five conversions after the files count as a step each.
+    constexpr std::size_t CONVERSIONS = 5;
+    double steps = static_cast<double>(entries.size() + CONVERSIONS + audioCount);
     std::size_t written = 0;
-    for (const auto &entry : *entries) {
-        if (progress) {
-            progress(entry.path.generic_string(), static_cast<double>(written) / steps);
+    std::size_t done = 0;
+    auto report = [&](const std::string &step) {
+        return !progress || progress(step, static_cast<double>(done) / steps);
+    };
+    const auto cancelled = std::unexpected(std::string("The import was cancelled."));
+    for (const auto &entry : entries) {
+        if (!report(entry.path.generic_string())) {
+            return cancelled;
         }
+        ++done;
         if (auto failure = CopyIsoFile(reader, entry, dataDirectory / entry.path)) {
             return std::unexpected(*failure);
         }
@@ -2456,29 +2552,32 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         }
         ++written;
     }
-    if (auto failure = ConvertSkyImages(dataDirectory)) {
-        return std::unexpected(*failure);
-    }
-    if (auto failure = ConvertPodArchive(dataDirectory)) {
-        return std::unexpected(*failure);
-    }
-    if (auto failure = ConvertGhostRecordings(dataDirectory)) {
-        return std::unexpected(*failure);
-    }
-    if (auto failure = ConvertCarModels(dataDirectory)) {
-        return std::unexpected(*failure);
-    }
-    if (auto failure = ConvertTracks(dataDirectory)) {
-        return std::unexpected(*failure);
+    using Conversion = std::optional<std::string> (*)(const std::filesystem::path &);
+    const std::array<std::pair<const char *, Conversion>, CONVERSIONS> conversions{{
+        {"Converting the skies", ConvertSkyImages},
+        {"Converting BossRally.pod", ConvertPodArchive},
+        {"Converting the ghost recordings", ConvertGhostRecordings},
+        {"Converting the cars", ConvertCarModels},
+        {"Converting the tracks", ConvertTracks},
+    }};
+    for (const auto &[step, convert] : conversions) {
+        if (!report(step)) {
+            return cancelled;
+        }
+        ++done;
+        if (auto failure = convert(dataDirectory)) {
+            return std::unexpected(*failure);
+        }
     }
     for (const auto &track : tracks) {
         if (!track.audio) {
             continue;
         }
         auto name = fmt::format("track{:02}.flac", track.number);
-        if (progress) {
-            progress("music/" + name, static_cast<double>(written) / steps);
+        if (!report("music/" + name)) {
+            return cancelled;
         }
+        ++done;
         std::ifstream audio(track.file, std::ios::binary);
         if (auto failure = EncodeAudioTrack(audio, track, dataDirectory / "music" / name)) {
             return std::unexpected(*failure);

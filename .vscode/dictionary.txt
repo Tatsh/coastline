@@ -150,6 +150,7 @@ clipintersectionall
 clockfields
 coasttr
 coasttrk
+codepoints
 codesign
 colc
 collisionstep
@@ -374,6 +375,7 @@ dsra
 dsref
 dsrl
 dsscl
+dtable
 dtaddress
 dtdy
 dtgr
@@ -411,6 +413,7 @@ enddl
 endforeach
 endfunction
 endlabel
+endwhile
 enginetextures
 engsound
 entermenuloop
@@ -447,6 +450,7 @@ ffunction
 filewrite
 finalrom
 finetune
+firstrun
 fixedh
 flathub
 fnmatch
@@ -728,6 +732,7 @@ manpages
 mapfile
 maptlbrdb
 maskt
+matchall
 matchscan
 materialcolor
 math
@@ -955,6 +960,7 @@ pycache
 pyinstaller
 pylock
 pyproject
+qbasic
 qnjbdpkwzh
 qualityoflife
 querydragicon
@@ -1042,10 +1048,10 @@ rledecompress
 rmask
 rmonspin
 rodata
-rollup
 rombuilder
 routeposition
 routewalk
+rowse
 rshift
 rside
 rsvg
@@ -1100,6 +1106,7 @@ setthreadpri
 settilesize
 settimer
 settimg
+setupwizard
 setvideo
 setzimg
 shademode
@@ -1243,6 +1250,8 @@ texrect
 texrectflip
 textdetail
 textfilt
+textfont
+textgrid
 textlod
 textlut
 textpersp
@@ -1319,11 +1328,13 @@ uncompr
 undraft
 undrafted
 undriven
+unifont
 unistd
 unknownapplication
 unlabeled
 unmute
 unrotated
+unscii
 urlkey
 urllib
 urlopen
@@ -1411,6 +1422,7 @@ winprog
 winver
 wiswa
 wiswa's
+wizardrun
 wndclassa
 worktrees
 worley
@@ -1441,6 +1453,12 @@ xfml
 xkbcommon
 xldtob
 xlitob
+xooo
+xoooo
+xooooo
+xoooooo
+xooooooo
+xoooooooo
 xprintf
 xrandr
 xstdio

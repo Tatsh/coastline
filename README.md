@@ -325,6 +325,13 @@ wrapping when the gain raises it past the range of a sample.
 
 ### Data
 
+Starting the game without usable assets opens an in-game setup wizard. The wizard locates a
+Boss Rally CUE sheet or ISO and the Top Gear Rally cartridges, checks each cartridge by SHA-1,
+and imports the files while displaying progress. Finish starts the intro in the same window.
+The file browser supports the mouse and keyboard; paths can also be typed or pasted with Ctrl+V.
+Cancel stops the import and returns to the first step. Setup replaces the generated packs
+`default`, `boss`, `eur`, and `jpn`, preserving mod packs and saved games.
+
 The data comes from a Boss Rally disc image and a Top Gear Rally cartridge image. The import
 checks the cartridge against the SHA-1 of each release, and converts the CD audio of a CUE sheet
 to FLAC. An ISO image has no CD audio. The import writes every file to `assets/default` in the
@@ -355,10 +362,10 @@ coastline export-pak --release eur pak.mpk
 coastline import-pak pak.mpk
 ```
 
-Each import records the version of its conversion in `assets/default/import.ini`. When a newer
-game converts a source differently, the game logs the disc or the cartridges to import again on
-start and shows the request at the top of the splash screens and the menus for 10 seconds. Data
-imported before the record existed counts as old.
+Each import records conversion versions in `assets/default/import.ini` and the paths and sizes
+of generated files in `assets/default/import-files.txt`. Missing files, different sizes, old
+conversion versions, or an incomplete import open setup again. Data imported without an inventory
+must be imported again.
 
 ### Language
 

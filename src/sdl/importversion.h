@@ -50,6 +50,23 @@ bool RecordImport(const std::filesystem::path &defaults, ImportSource source);
 std::vector<ImportSource> StaleImports(const std::filesystem::path &defaults);
 
 /**
+ * Check whether import.ini records the disc and at least one cartridge at current conversion
+ * versions and every recorded file exists at its imported size.
+ *
+ * @param defaults The directory of the default pack.
+ * @return Whether the default pack is usable.
+ */
+bool DefaultPackUsable(const std::filesystem::path &defaults);
+
+/**
+ * Record the relative path and size of every generated file after a successful import.
+ *
+ * @param defaults The directory of the default pack.
+ * @return Whether the inventory was written.
+ */
+bool RecordImportFiles(const std::filesystem::path &defaults);
+
+/**
  * @param sources The sources to import again, at least one.
  * @return A sentence that requests the sources be imported again, such as
  * "Import the disc and the USA cartridge again."

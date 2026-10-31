@@ -8,6 +8,7 @@ this directory, and upstream code retains its original style.
 | ------------- | -------------------------------------------------- | ------------------------------------------------------------------ | ------------------------- |
 | `zlib-1.0.4/` | <https://www.zlib.net/fossils/zlib-1.0.4.tar.gz> | `e5c260cd3db1370fb3e0c193e9cbd9f127a9bd055d622b3fb55b82747f6e5b24` | 19 of the release's files |
 | `glide-2f226f0f9225ce8ee83e6a4a7042981e719d19ee/` | <https://github.com/sezero/glide/archive/2f226f0f9225ce8ee83e6a4a7042981e719d19ee.tar.gz> | `bc57c4e51e6bd0a3c8f464cb693ca62dd5ad0bd9f8cca6d99933fdd702c1b1e9` | 6 of the archive's files |
+| `unscii/` | <http://viznut.fi/unscii/unscii-16.hex> | `2642c8b748fa81f24d76772d70c55faa720d98fadfec8133daf89136c5c8bfb1` (the file) | `unscii-16.hex` |
 
 ## zlib 1.0.4
 

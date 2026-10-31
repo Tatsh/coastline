@@ -256,11 +256,14 @@ if(WIN32)
   target_link_libraries(coastline_sdl PUBLIC psapi shell32)
 endif()
 
+add_subdirectory(firstrun)
+
 add_executable(${CMAKE_PROJECT_NAME} main.cpp)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
                            COASTLINE_VERSION="${CMAKE_PROJECT_VERSION}")
 target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE ${COASTLINE_WARNINGS})
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_sdl argparse::argparse)
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_firstrun coastline_sdl
+                                                    argparse::argparse)
 # The race engine calls the routines of the platform in coastline_sdl, and of SDL where the Windows
 # libraries call Windows. The game links every routine of the engine, called or not, and a routine
 # the engine calls that the game lacks fails the link.

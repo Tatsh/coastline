@@ -31,6 +31,12 @@ std::filesystem::path ReleaseDirectory(const std::filesystem::path &assets,
                                           "usa");
     std::error_code error;
     if (!std::filesystem::exists(release / "segment.bin", error)) {
+        for (const char *fallback : {"usa", "eur", "jpn"}) {
+            auto candidate = assets / "n64" / fallback;
+            if (std::filesystem::exists(candidate / "segment.bin", error)) {
+                return candidate;
+            }
+        }
         return assets / "n64" / "usa";
     }
     return release;
