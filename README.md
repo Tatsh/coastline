@@ -309,6 +309,16 @@ data directory.
 coastline --import-disc 'Boss Rally.cue' --import-rom usa.z64 --import-rom jpn.z64
 ```
 
+The saves of the game are the notes of a Controller Pak, a file for each note in `controller-pak`
+of the state directory. `--export-pak` writes them to a Controller Pak image (`.mpk`) for a console
+or an emulator, with the codes of the release `--pak-release` chooses: `usa` (the default), `eur`,
+or `jpn`. Each release reads only the notes with its own codes. `--import-pak` reads the notes of
+any release from an image.
+
+```shell
+coastline --export-pak pak.mpk --pak-release eur
+```
+
 Each import records the version of its conversion in `assets/default/import.ini`. When a newer
 game converts a source differently, the game logs the disc or the cartridges to import again on
 start and shows the request at the top of the splash screens and the menus for 10 seconds. Data

@@ -38,9 +38,21 @@ constexpr std::size_t NOTE_ENTRY_SIZE = 0x20;
 constexpr std::uint8_t NOTE_OCCUPIED = 0x02;
 constexpr std::size_t NOTE_NAME_SIZE = 16;
 
-// The game code and the company code of the notes of the USA release, NGRE and 5D.
-constexpr std::uint32_t GAME_CODE = 0x4E475245;
-constexpr std::uint16_t COMPANY_CODE = 0x3544;
+// The game code and the company code each release gives its notes, every note of the release
+// included: NGRE and 5D for the USA, NTRP and 7F for Europe, and NTRJ and 28 for Japan.
+struct PakCodes {
+    std::uint32_t game;
+    std::uint16_t company;
+};
+constexpr std::array<PakCodes, 3> RELEASE_CODES{{
+    {0x4E475245, 0x3544},
+    {0x4E545250, 0x3746},
+    {0x4E54524A, 0x3238},
+}};
+
+const PakCodes &CodesOf(PakRelease release) {
+    return RELEASE_CODES[static_cast<std::size_t>(release)];
+}
 
 // The characters of the names of the notes, from 0x0F for a space.
 constexpr std::string_view NOTE_CHARACTERS = " 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#'*+,-./:=?@";
@@ -154,8 +166,9 @@ std::size_t ControllerPak::FreeBytes() const {
     return pages < PAK_PAGES ? (PAK_PAGES - pages) * PAK_PAGE_BYTES : 0;
 }
 
-std::optional<std::string> ExportPakImage(const ControllerPak &pak,
-                                          const std::filesystem::path &file) {
+std::optional<std::string>
+ExportPakImage(const ControllerPak &pak, const std::filesystem::path &file, PakRelease release) {
+    const PakCodes &codes = CodesOf(release);
     std::vector<std::uint8_t> image(PAK_IMAGE_BYTES, 0);
     // The identity of a pak mupen64plus formats, with the checksums libultra checks.
     constexpr std::array<std::uint8_t, 28> IDENTITY{
@@ -187,9 +200,9 @@ std::optional<std::string> ExportPakImage(const ControllerPak &pak,
             return fmt::format("The note {} does not fit on a Controller Pak.", note.name);
         }
         std::size_t at = NOTE_TABLE_PAGE * PAK_PAGE_BYTES + entry * NOTE_ENTRY_SIZE;
-        Put16(image, at, static_cast<std::uint16_t>(GAME_CODE >> 16));
-        Put16(image, at + 2, static_cast<std::uint16_t>(GAME_CODE));
-        Put16(image, at + 4, COMPANY_CODE);
+        Put16(image, at, static_cast<std::uint16_t>(codes.game >> 16));
+        Put16(image, at + 2, static_cast<std::uint16_t>(codes.game));
+        Put16(image, at + 4, codes.company);
         Put16(image, at + 6, static_cast<std::uint16_t>(next));
         image[at + 8] = NOTE_OCCUPIED;
         std::ranges::copy(*name, image.begin() + static_cast<std::ptrdiff_t>(at + 0x10));
@@ -250,8 +263,11 @@ std::optional<std::string> ImportPakImage(const ControllerPak &pak,
             continue;
         }
         auto name = DecodeName(&image[at + 0x10]);
-        if (game != GAME_CODE || Get16(image, at + 4) != COMPANY_CODE || !name ||
-            image[at + 0x0C] != 0) {
+        std::uint16_t company = Get16(image, at + 4);
+        bool ours = std::ranges::any_of(RELEASE_CODES, [&](const PakCodes &codes) {
+            return codes.game == game && codes.company == company;
+        });
+        if (!ours || !name || image[at + 0x0C] != 0) {
             SDL_Log("Skipped note %zu of %s, a note of another game or release.",
                     entry,
                     file.string().c_str());

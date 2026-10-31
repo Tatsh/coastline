@@ -73,23 +73,32 @@ private:
 /** The bytes of the image of a Controller Pak, as emulators and the tools of a pak store one. */
 inline constexpr std::size_t PAK_IMAGE_BYTES = 0x8000;
 
+/** The release of the cartridge whose game code and company code the notes of an image take. */
+enum class PakRelease {
+    Usa, /*!< NGRE and 5D. */
+    Eur, /*!< NTRP and 7F. */
+    Jpn, /*!< NTRJ and 28. */
+};
+
 /**
  * Write the notes of a pak as the image of a formatted Controller Pak, with the game code and the
- * company code of the USA release on each note. An image of four paks of 0x20000 bytes, as
- * mupen64plus writes one, takes the notes in its first pak, and its other paks are retained.
- * Another file is replaced by an image of one pak.
+ * company code of a release on each note. An image of four paks of 0x20000 bytes, as mupen64plus
+ * writes one, takes the notes in its first pak, and its other paks are retained. Another file is
+ * replaced by an image of one pak.
  *
  * @param pak The pak of the notes.
  * @param file The image.
+ * @param release The release whose cartridge reads the notes.
  * @return Nothing once the image is written, or the reason it was not.
  */
 std::optional<std::string> ExportPakImage(const ControllerPak &pak,
-                                          const std::filesystem::path &file);
+                                          const std::filesystem::path &file,
+                                          PakRelease release = PakRelease::Usa);
 
 /**
- * Copy the notes of the USA release from the image of a Controller Pak, or from the first pak of
- * an image of four, to a pak. A note the pak has already is replaced and the replacement is logged.
- * The notes of other games are skipped.
+ * Copy the notes of any release of the game from the image of a Controller Pak, or from the first
+ * pak of an image of four, to a pak. A note the pak has already is replaced and the replacement is
+ * logged. The notes of other games are skipped.
  *
  * @param pak The pak the notes are written to.
  * @param file The image.
