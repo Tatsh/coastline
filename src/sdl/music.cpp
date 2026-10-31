@@ -39,9 +39,6 @@ f32 g_afNoteFrequencies[MUSIC_NOTES] = {
 };
 s32 g_dwMusicPatternRow;
 s8 g_SilenceSampleData[SILENCE_SAMPLE_BYTES];
-s32 g_dwAudioTickToggle;
-s32 g_dwAiDmaPrevLength;
-u32 g_dwSoundEffectMixOffset;
 s16 g_AudioDmaBuffer[AUDIO_RING_BYTES / sizeof(s16)];
 // The console reserves 0x200 and 0x400 bytes of pointers for these.
 XmSample *g_apInstrumentData[128];
@@ -51,9 +48,6 @@ SoundEffectSample g_aSoundEffectSamples[SOUND_EFFECT_CHANNELS];
 s32 g_bMusicPlaybackEnabled;
 MusicPlayer g_MusicPlayer;
 u64 g_aFreqScaleTable[MUSIC_OCTAVES][MUSIC_NOTES];
-s32 g_dwAudioMixBytes;
-s32 g_dwAiDmaCurrentLength;
-s32 g_dwAudioChannelLoopIdx;
 // The largest module, the menu music, expands to under 300 KiB with its sample tails.
 u8 g_abMusicModuleWorkBuffer[0x100000];
 
@@ -262,6 +256,7 @@ N64Audio::N64Audio() {
     N64MixerLock lock;
     PublishN64Volumes();
     // InitAudioSystem() of the console, without the interface and the thread.
+    std::ranges::fill(g_AudioDmaBuffer, 0);
     g_qwSoundEffectSampleMask = SOUND_EFFECT_SAMPLE_MASK;
     for (int i = 0; i < MIXER_CHANNELS; ++i) {
         g_aMixerChannels[i].sample = reinterpret_cast<s8 *>(g_AudioDmaBuffer);
@@ -346,7 +341,7 @@ void N64Audio::Tick(std::vector<std::int16_t> &output) {
     m_aiLength = m_aiLength > played ? m_aiLength - played : m_aiLength + RING_BYTES - played;
 
     // AudioMixingThreadMain() of the console, one message of the timer.
-    g_dwAudioTickToggle ^= 1;
+    m_musicTick = !m_musicTick;
     for (int i = 0; i < g_nAudioChannelCount; ++i) {
         MixerChannel &channel = g_aMixerChannels[i];
         channel.mixVolume =
@@ -366,35 +361,33 @@ void N64Audio::Tick(std::vector<std::int16_t> &output) {
     if (position < 0) {
         position += RING_BYTES;
     }
-    s32 mixBytes = g_dwAiDmaPrevLength - position;
-    g_dwAiDmaPrevLength = position;
-    g_dwAiDmaCurrentLength = position;
+    s32 mixBytes = m_previousMixPosition - position;
+    m_previousMixPosition = position;
     if (mixBytes < 0) {
         mixBytes += RING_BYTES;
     }
-    g_dwAudioMixBytes = mixBytes;
     CheckMusicLoopPoints();
-    if (g_dwAudioTickToggle && g_bMusicPlaybackEnabled) {
+    if (m_musicTick && g_bMusicPlaybackEnabled) {
         UpdateMusicPlayback();
     }
     u16 writePos = g_wAudioBufferWritePos;
-    MixAudioSamples(g_AudioDmaBuffer, static_cast<u32>(g_dwAudioMixBytes));
+    MixAudioSamples(g_AudioDmaBuffer, static_cast<u32>(mixBytes));
     for (s32 i = FIRST_PAIRED_CHANNEL; i < g_nAudioChannelCount; i += 2) {
         g_wAudioBufferWritePos = writePos;
         MixAudioStereoSamples(g_AudioDmaBuffer,
-                              static_cast<u32>(g_dwAudioMixBytes),
+                              static_cast<u32>(mixBytes),
                               (i - FIRST_PAIRED_CHANNEL) * sizeof(MixerChannel));
     }
-    u32 offset = g_dwSoundEffectMixOffset;
+    u32 offset = m_soundEffectMixOffset;
     u32 bytes = (((SOUND_EFFECT_LEAD - length) >> 3) << 3) - offset;
     if (bytes > RING_BYTES) {
         bytes -= RING_BYTES;
     }
     MixSoundEffectChannels(g_AudioDmaBuffer, bytes, offset);
     CheckSoundEffectLoopPoints();
-    g_dwSoundEffectMixOffset += bytes;
-    if (g_dwSoundEffectMixOffset > RING_BYTES) {
-        g_dwSoundEffectMixOffset -= RING_BYTES;
+    m_soundEffectMixOffset += bytes;
+    if (m_soundEffectMixOffset > RING_BYTES) {
+        m_soundEffectMixOffset -= RING_BYTES;
     }
 }
 

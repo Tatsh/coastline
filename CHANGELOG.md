@@ -84,6 +84,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Fixed inconsistent audio and crashes in sound-effect mixing after recreating the Nintendo 64 music
+  player by resetting mixer positions and clearing the audio buffer.
 - Patched builds zero-pad unused season save bytes instead of reading beyond the profile, with
   checksums calculated from the written payload.
 - SDL builds reject `TGR_ENABLE_PATCHES=OFF` during configuration.

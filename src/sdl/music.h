@@ -78,6 +78,9 @@ private:
     std::vector<std::uint8_t> m_module;
     std::uint32_t m_aiLength = 0;
     std::uint64_t m_aiRemainder = 0;
+    std::int32_t m_previousMixPosition = 0;
+    std::uint32_t m_soundEffectMixOffset = 0;
+    bool m_musicTick = false;
     std::vector<std::int16_t> m_pending;
     // The music gain in 8.8 fixed point.
     std::uint32_t m_musicGain = 256;

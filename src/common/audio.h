@@ -205,6 +205,7 @@ extern s32 g_dwMusicPatternRow;
 #endif
 extern s8 g_SilenceSampleData[SILENCE_SAMPLE_BYTES];
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * Toggled each message of the timer. The music ticks when it is set.
  *
@@ -231,6 +232,7 @@ extern s32 g_dwAiDmaPrevLength;
  * @ghidraAddress JPN: 0x802a6c74
  */
 extern u32 g_dwSoundEffectMixOffset;
+#endif
 
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
@@ -346,6 +348,7 @@ extern u64 g_aAudioThreadStack[AUDIO_THREAD_STACK_WORDS];
  */
 extern u64 g_aFreqScaleTable[MUSIC_OCTAVES][MUSIC_NOTES];
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * The bytes the mixers mix this time.
  *
@@ -370,6 +373,7 @@ extern s32 g_dwAiDmaCurrentLength;
  * @ghidraAddress JPN: 0x8037aaa8
  */
 extern s32 g_dwAudioChannelLoopIdx;
+#endif
 
 /**
  * Copy the order table, the patterns and the samples of an XM module into the work memory, decoding
