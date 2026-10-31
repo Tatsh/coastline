@@ -180,6 +180,14 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     if (auto driver = config.Get("Video", "GpuDriver"); driver && !driver->empty()) {
         options.driver = *driver;
     }
+    options.gpuPreference =
+        parser.present("--gpu").value_or(config.Get("Video", "GpuPreference").value_or("auto"));
+    if (options.gpuPreference != "auto" && options.gpuPreference != "high-performance" &&
+        options.gpuPreference != "low-power") {
+        SDL_LogWarn(SDL_LOG_CATEGORY_GPU, "Invalid GPU preference. Automatic selection is used.");
+        options.gpuPreference = "auto";
+    }
+    options.unlockedFramerate = config.GetBoolean("Video", "UnlockedFramerate", false);
     if (auto width = parser.present<int>("--width")) {
         options.width = *width;
     }
@@ -205,14 +213,15 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
 }
 
 // The shortcuts of the window on every screen: Alt and Enter or F11 for the full screen, F for
-// the frame rate, and V for vertical sync.
-enum class DisplayKey { None, Fullscreen, FrameRate, VSync };
+// the frame rate, V for vertical sync, and Ctrl+U for an unlocked frame rate.
+enum class DisplayKey { None, Fullscreen, FrameRate, VSync, Unlocked };
 
 // The keys of the shortcuts held the frame before, from the keyboard and the scripted keys.
 struct DisplayKeys {
     bool f11 = false;
     bool f = false;
     bool v = false;
+    bool ctrlU = false;
 
     // The shortcut pressed since the frame before, F only when @p frameRate allows it, and V only
     // when @p vsync allows it.
@@ -232,6 +241,11 @@ struct DisplayKeys {
         bool fNow = coastline::IsKeyDown(SDL_SCANCODE_F);
         bool fullscreen = enter || (f11Now && !f11);
         bool vNow = coastline::IsKeyDown(SDL_SCANCODE_V);
+        const bool ctrlUNow = (coastline::IsKeyDown(SDL_SCANCODE_LCTRL) ||
+                               coastline::IsKeyDown(SDL_SCANCODE_RCTRL)) &&
+                              coastline::IsKeyDown(SDL_SCANCODE_U);
+        const bool toggleUnlocked = ctrlUNow && !ctrlU;
+        ctrlU = ctrlUNow;
         bool toggleRate = frameRate && fNow && !f;
         bool toggleVSync = vsync && vNow && !v;
         f11 = f11Now;
@@ -239,6 +253,9 @@ struct DisplayKeys {
         v = vNow;
         if (fullscreen) {
             return DisplayKey::Fullscreen;
+        }
+        if (toggleUnlocked) {
+            return DisplayKey::Unlocked;
         }
         if (toggleVSync) {
             return DisplayKey::VSync;
@@ -725,6 +742,9 @@ int main(int argc, char *argv[]) {
             "the "
             "full screen; "
             "--antialias, --fullscreen, and --windowed still apply");
+    parser.add_argument("--gpu")
+        .choices("auto", "high-performance", "low-power")
+        .help("Select a GPU preference for this run; auto uses SDL's default selection.");
 #ifndef NDEBUG
     parser.add_argument("--minimized")
         .help("start with the window minimized, for runs that save their frames unattended")
@@ -982,6 +1002,8 @@ int main(int argc, char *argv[]) {
                                               {"Video", "AlphaToCoverage", "1"},
                                               {"Video", "AntialiasPost", "none"},
                                               {"Video", "GpuDriver", ""},
+                                              {"Video", "GpuPreference", "auto"},
+                                              {"Video", "UnlockedFramerate", "0"},
                                               {"Video", "WideMenus", "0"},
                                               {"Game", "PlayMusic", "1"},
                                               {"Game", "PlaySFX", "1"},
@@ -1169,6 +1191,8 @@ int main(int argc, char *argv[]) {
             bool running = true;
             bool printScreenWasDown = false;
             for (int frame = firstFrame; running; ++frame) {
+                const auto frameStarted = SDL_GetTicksNS();
+                const auto waitStarted = window->PresentationWaitNanoseconds();
                 // The mixers take the volumes the screens and the race wrote in the last frame.
                 coastline::PublishN64Volumes();
                 PushScriptedTyping(commands.typing, frame, window->Window());
@@ -1215,6 +1239,12 @@ int main(int argc, char *argv[]) {
                                  frontEnd == FrontEnd::Credits;
                 bool typing = SDL_TextInputActive(window->Window());
                 switch (displayKeys.Read(!raceShows && !typing, !typing)) {
+                case DisplayKey::Unlocked:
+                    window->SetFramerateUnlocked(!window->FramerateUnlocked());
+                    config.Set(
+                        "Video", "UnlockedFramerate", window->FramerateUnlocked() ? "1" : "0");
+                    nextFrame = SDL_GetTicksNS();
+                    break;
                 case DisplayKey::Fullscreen: {
                     bool fullscreen = !window->Fullscreen();
                     if (window->SetFullscreen(fullscreen)) {
@@ -1519,9 +1549,9 @@ int main(int argc, char *argv[]) {
                         performanceStats.reset();
                     } else if (frameRateText) {
                         if (!performanceStats) {
-                            performanceStats = std::make_unique<coastline::PerformanceStats>();
+                            performanceStats = std::make_unique<coastline::PerformanceStats>(
+                                window->DeviceName(), window->NvmlAllowed());
                         }
-                        performanceStats->Frame();
                         // The lines start under the lap and the times of a race, and the request
                         // to import again.
                         int y = 80;
@@ -1592,6 +1622,12 @@ int main(int argc, char *argv[]) {
                                          framePath ? &*framePath : nullptr);
                 }
                 RecordFrameTime();
+                const auto frameFinished = SDL_GetTicksNS();
+                if (performanceStats) {
+                    const auto wait = window->PresentationWaitNanoseconds() - waitStarted;
+                    const auto elapsed = frameFinished - frameStarted;
+                    performanceStats->Frame(elapsed > wait ? elapsed - wait : 0);
+                }
                 // SDL_LOGGING=render=debug logs the frames of every 5 seconds.
                 ++rateFrames;
                 Uint64 now = SDL_GetTicksNS();
@@ -1604,7 +1640,9 @@ int main(int argc, char *argv[]) {
                     rateFrames = 0;
                 }
                 // The longer of the limit and the refresh the presentation is paced to.
-                Uint64 period = std::max(framePeriod, window->RefreshPeriod());
+                Uint64 period = window->FramerateUnlocked() ?
+                                    0 :
+                                    std::max(framePeriod, window->RefreshPeriod());
                 if (period > 0) {
                     nextFrame += period;
                     if (nextFrame > now) {

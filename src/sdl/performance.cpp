@@ -1,6 +1,7 @@
 #include "performance.h"
 
 #include <algorithm>
+#include <array>
 #include <chrono>
 #include <condition_variable>
 #include <filesystem>
@@ -126,7 +127,7 @@ std::optional<std::uint64_t> OwnMemoryBytes() {
 // The share of an NVIDIA GPU each process uses, from NVML, loaded at run time.
 class Nvml {
 public:
-    Nvml() {
+    explicit Nvml(const std::string &gpuName) {
 #if defined(_WIN32)
         m_library = SDL_LoadObject("nvml.dll");
         m_pid = GetCurrentProcessId();
@@ -140,12 +141,13 @@ public:
         auto init = Function<Return (*)()>("nvmlInit_v2");
         auto count = Function<Return (*)(unsigned *)>("nvmlDeviceGetCount_v2");
         auto handle = Function<Return (*)(unsigned, Device *)>("nvmlDeviceGetHandleByIndex_v2");
+        auto name = Function<Return (*)(Device, char *, unsigned)>("nvmlDeviceGetName");
         m_shutdown = Function<Return (*)()>("nvmlShutdown");
         m_utilization =
             Function<Return (*)(Device, ProcessSample *, unsigned *, unsigned long long)>(
                 "nvmlDeviceGetProcessUtilization");
-        if (init == nullptr || count == nullptr || handle == nullptr || m_shutdown == nullptr ||
-            m_utilization == nullptr || init() != SUCCESS) {
+        if (init == nullptr || count == nullptr || handle == nullptr || name == nullptr ||
+            m_shutdown == nullptr || m_utilization == nullptr || init() != SUCCESS) {
             m_shutdown = nullptr;
             return;
         }
@@ -153,11 +155,23 @@ public:
         if (count(&devices) != SUCCESS) {
             devices = 0;
         }
+        std::vector<Device> handles;
+        std::vector<std::string> names;
         for (unsigned index = 0; index < devices; ++index) {
             Device device = nullptr;
-            if (handle(index, &device) == SUCCESS) {
-                m_devices.push_back(device);
+            std::array<char, 96> deviceName{};
+            if (handle(index, &device) == SUCCESS &&
+                name(device, deviceName.data(), static_cast<unsigned>(deviceName.size())) ==
+                    SUCCESS) {
+                handles.push_back(device);
+                names.emplace_back(deviceName.data());
             }
+        }
+        if (const auto match = UniqueGpuIndex(gpuName, names)) {
+            m_devices.push_back(handles[*match]);
+            SDL_Log("NVML samples utilization for the active GPU %s.", gpuName.c_str());
+        } else {
+            SDL_Log("NVML cannot uniquely match the active GPU; utilization sampling is disabled.");
         }
     }
 
@@ -240,7 +254,8 @@ private:
 // NVML on a thread of its own, away from the frames.
 class PerformanceStats::GpuSampler {
 public:
-    GpuSampler() : m_thread([this] { Run(); }) {
+    explicit GpuSampler(std::string gpuName)
+        : m_thread([this, name = std::move(gpuName)] { Run(name); }) {
     }
 
     ~GpuSampler() {
@@ -261,8 +276,8 @@ public:
     }
 
 private:
-    void Run() {
-        Nvml nvml;
+    void Run(const std::string &gpuName) {
+        Nvml nvml(gpuName);
         if (!nvml.Loaded()) {
             return;
         }
@@ -283,20 +298,24 @@ private:
     std::thread m_thread;
 };
 
-PerformanceStats::PerformanceStats() : m_gpu(std::make_unique<GpuSampler>()) {
+PerformanceStats::PerformanceStats(std::string gpuName, bool allowNvml) {
+    if (allowNvml && !gpuName.empty()) {
+        m_gpu = std::make_unique<GpuSampler>(std::move(gpuName));
+    }
 }
 
 PerformanceStats::~PerformanceStats() = default;
 
-void PerformanceStats::Frame() {
+void PerformanceStats::Frame(std::uint64_t workNanoseconds) {
     std::uint64_t now = SDL_GetTicksNS();
+    m_workMs = static_cast<double>(workNanoseconds) / 1e6;
+    m_worstNowMs = std::max(m_worstNowMs, m_workMs);
     if (m_lastFrame == 0) {
         m_secondStart = now;
         m_secondStartCpu = ProcessCpuSeconds();
         m_memoryBytes = OwnMemoryBytes();
     } else {
         m_frameMs = static_cast<double>(now - m_lastFrame) / 1e6;
-        m_worstNowMs = std::max(m_worstNowMs, m_frameMs);
         ++m_framesNow;
     }
     if (now - m_secondStart >= SDL_NS_PER_SECOND) {
@@ -323,10 +342,11 @@ std::vector<std::string> PerformanceStats::Lines(std::uint64_t gameGpuBytes) con
         lines.push_back(fmt::format("FPS: {:.2f}", *m_framesPerSecond));
     }
     if (m_worstMs > 0.0) {
-        lines.push_back(fmt::format("FRAME: {:.1f} MS, WORST: {:.1f} MS", m_frameMs, m_worstMs));
+        lines.push_back(fmt::format("CPU WORK: {:.2f} MS, WORST: {:.2f} MS", m_workMs, m_worstMs));
     } else {
-        lines.push_back(fmt::format("FRAME: {:.1f} MS", m_frameMs));
+        lines.push_back(fmt::format("CPU WORK: {:.2f} MS", m_workMs));
     }
+    lines.push_back(fmt::format("INTERVAL: {:.4f} MS", m_frameMs));
     // The menu fonts draw a percent sign as a full stop, and PCT stands for it. The use of one
     // core comes first, and then of every core together.
     if (m_cpuPercent) {
@@ -339,7 +359,7 @@ std::vector<std::string> PerformanceStats::Lines(std::uint64_t gameGpuBytes) con
     }
     lines.push_back("GAME VRAM: " + MemorySize(gameGpuBytes));
     // The share of the GPU comes and goes with the samples of NVML, so it is the last line.
-    std::optional<unsigned> gpu = m_gpu->Percent();
+    std::optional<unsigned> gpu = m_gpu ? m_gpu->Percent() : std::nullopt;
     if (gpu) {
         lines.push_back(fmt::format("GPU: {} PCT", *gpu));
     }

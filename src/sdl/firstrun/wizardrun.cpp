@@ -255,6 +255,12 @@ SetupRun RunSetupWizard(GpuWindow &window,
         // Alt and Enter or F11 switch full screen, Alt and a letter press an accelerator, and
         // Control and V paste clipboard text.
         auto keyDown = [&](SDL_Keycode key, SDL_Keymod mod) {
+            if ((mod & SDL_KMOD_CTRL) && key == SDLK_U) {
+                window.SetFramerateUnlocked(!window.FramerateUnlocked());
+                config.Set("Video", "UnlockedFramerate", window.FramerateUnlocked() ? "1" : "0");
+                nextFrame = SDL_GetTicksNS();
+                return;
+            }
             if (key == SDLK_F11 ||
                 ((mod & SDL_KMOD_ALT) && (key == SDLK_RETURN || key == SDLK_KP_ENTER))) {
                 bool fullscreen = !window.Fullscreen();
@@ -444,8 +450,10 @@ SetupRun RunSetupWizard(GpuWindow &window,
             quit = true;
         }
         run.frames = frame;
-        // The wizard draws at most 60 frames a second, or at the refresh it is paced to.
-        const Uint64 period = std::max<Uint64>(window.RefreshPeriod(), SDL_NS_PER_SECOND / 60);
+        // Unless unlocked, limit wizard drawing to 60 frames a second or the slower refresh rate.
+        const Uint64 period = window.FramerateUnlocked() ?
+                                  0 :
+                                  std::max<Uint64>(window.RefreshPeriod(), SDL_NS_PER_SECOND / 60);
         nextFrame += period;
         const Uint64 after = SDL_GetTicksNS();
         if (nextFrame > after) {

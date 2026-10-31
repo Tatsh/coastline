@@ -387,6 +387,7 @@ dtlvertex
 dvcpkg
 dvddrive
 dwlp
+dxgi
 dxguid
 dxil
 dxmedia
@@ -574,6 +575,7 @@ iconset
 iconutil
 icsum
 idok
+idxgi
 ilse
 imaadpcmstream
 imaadpcmwaveformat
@@ -951,6 +953,7 @@ preapproved
 precipitationrender
 precipitationupdate
 preempt
+preferlowpower
 pregap
 prenmi
 primarybuffer

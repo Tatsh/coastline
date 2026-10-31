@@ -521,6 +521,14 @@ void CheckAssetData() {
 } // namespace
 
 int main() {
+    const std::array<std::string, 2> gpuNames{"NVIDIA adapter 0", "NVIDIA adapter 1"};
+    Check(coastline::UniqueGpuIndex("NVIDIA adapter 1", gpuNames) == 1,
+          "GPU statistics must match the selected adapter instead of the first device");
+    Check(!coastline::UniqueGpuIndex("Intel integrated adapter", gpuNames),
+          "an integrated adapter must not match an NVIDIA statistics device");
+    const std::array<std::string, 2> duplicateNames{"NVIDIA adapter", "NVIDIA adapter"};
+    Check(!coastline::UniqueGpuIndex("NVIDIA adapter", duplicateNames),
+          "ambiguous adapter identities must disable GPU utilization sampling");
     CheckAssetData();
     CheckReset();
     CheckImportInventory();

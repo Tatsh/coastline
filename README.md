@@ -294,6 +294,19 @@ saves the frame as a PNG file to `screenshots` in the data directory
 takes Print Screen for its own screenshots, as Plasma does. V switches between waiting for the
 vertical blank and presenting at once on every screen, except while a screen takes typed text,
 and saves the choice to `VSync`. From `mailbox`, V presents at once.
+Ctrl+U toggles an unlocked frame rate, temporarily bypassing VSync and the software frame limit.
+Toggling back restores the configured presentation mode and frame limit. The choice is saved as
+`UnlockedFramerate` and also applies in setup.
+
+Statistics separate `CPU WORK` (frame work excluding presentation waits and the software limiter)
+from `INTERVAL` (measured time between frames, including pacing, displayed to four decimal places).
+CPU work is CPU-side elapsed time, not GPU execution time. FPS remains the measured frame rate.
+
+`--gpu auto|high-performance|low-power` overrides `GpuPreference` for one run. Automatic selection
+retains SDL's default preference for a dedicated GPU. Low-power selection prefers an
+integrated GPU when available. The log records the actual adapter, backend, driver, and preference.
+NVML loads only for an identified NVIDIA adapter and samples only a unique matching device.
+Non-NVIDIA and unknown adapters omit NVML utilization statistics; game memory counters remain.
 
 The `[Video]` section of `BossRally.ini` sets up the display.
 
@@ -304,6 +317,8 @@ The `[Video]` section of `BossRally.ini` sets up the display.
 | `RefreshRate`          | The refresh rate of the exclusive mode in hertz, or `0` for the rate of the desktop.                                                                                                                                                    |
 | `VSync`                | `vsync` or `1` waits for the vertical blank. `mailbox` presents without tearing and without waiting, and `immediate` or `0` presents at once. V saves its choice here.                                                                  |
 | `GpuDriver`            | The GPU driver of SDL, `vulkan`, `metal`, or `direct3d12`, or empty, the default, for the driver SDL chooses.                                                                                                                           |
+| `GpuPreference`        | `auto` (default), `high-performance`, or `low-power`. `--gpu` overrides the setting for one run.                                                                                                                                        |
+| `UnlockedFramerate`    | `1` bypasses presentation pacing and `FrameRateLimit`; `0` restores configured pacing. Ctrl+U toggles and saves this choice.                                                                                                            |
 | `FrameRateLimit`       | The most frames drawn each second, or `0` for no limit.                                                                                                                                                                                 |
 | `InternalWidth`        | The width of the frame the game draws in pixels, or `0`, the default, for the width of the window.                                                                                                                                      |
 | `InternalHeight`       | The height of the frame the game draws in pixels, or `0`, the default, for the height of the window.                                                                                                                                    |

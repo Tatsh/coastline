@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
 #include <vector>
@@ -22,6 +23,24 @@ inline constexpr int FRAME_RATE_STATES = 3;
 
 /** The state of F in g_bShowFpsCounter that shows the statistics beside the frame rate. */
 inline constexpr int FRAME_RATE_STATISTICS = 2;
+
+/** Match the active adapter to one provider device, rejecting absent and ambiguous identities. */
+inline std::optional<std::size_t> UniqueGpuIndex(std::string_view active,
+                                                 std::span<const std::string> devices) {
+    std::optional<std::size_t> result;
+    if (active.empty()) {
+        return result;
+    }
+    for (std::size_t index = 0; index < devices.size(); ++index) {
+        if (devices[index] == active) {
+            if (result) {
+                return std::nullopt;
+            }
+            result = index;
+        }
+    }
+    return result;
+}
 
 /**
  * @param text A line of /proc/self/statm.
@@ -105,14 +124,18 @@ inline std::optional<std::uint64_t> SmapsGamePssBytes(std::string_view text,
  */
 class PerformanceStats {
 public:
-    /** Start sampling, with NVML loaded when the system has it. */
-    PerformanceStats();
+    /** Sample the active adapter only when its identity permits NVML. */
+    PerformanceStats(std::string gpuName, bool allowNvml);
     ~PerformanceStats();
     PerformanceStats(const PerformanceStats &) = delete;
     PerformanceStats &operator=(const PerformanceStats &) = delete;
 
-    /** Record the time since the frame before, and sample once a second has passed. */
-    void Frame();
+    /**
+     * Record frame work and elapsed frame intervals, and sample once a second has passed.
+     *
+     * @param workNanoseconds CPU-side frame time excluding presentation waits and software pacing.
+     */
+    void Frame(std::uint64_t workNanoseconds);
 
     /**
      * @param gameGpuBytes The bytes of the textures and buffers the game has created.
@@ -127,6 +150,7 @@ private:
     std::unique_ptr<GpuSampler> m_gpu;
     std::uint64_t m_lastFrame = 0; // The nanoseconds of SDL of the frame before.
     double m_frameMs = 0.0;
+    double m_workMs = 0.0;
     int m_framesNow = 0;                     // Drawn in the second so far.
     std::optional<double> m_framesPerSecond; // Of the second before.
     double m_worstMs = 0.0;                  // Of the second before.

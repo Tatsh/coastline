@@ -7,6 +7,13 @@
 #include <span>
 #include <unordered_map>
 
+#ifdef _WIN32
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#include <dxgi.h>
+#endif
+
 #include "shaders/fxaa_frag_msl.h"
 #include "shaders/fxaa_frag_spirv.h"
 #include "shaders/post_vert_msl.h"
@@ -119,10 +126,23 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
         SDL_MinimizeWindow(result->m_window.get());
     }
     // The shaders ship as SPIR-V for Vulkan, MSL for Metal, and DXIL for Direct3D 12.
-    result->m_device.reset(SDL_CreateGPUDevice(
-        SDL_GPU_SHADERFORMAT_SPIRV | SDL_GPU_SHADERFORMAT_MSL | SDL_GPU_SHADERFORMAT_DXIL,
-        options.gpuDebug,
-        options.driver ? options.driver->c_str() : nullptr));
+    const auto properties = SDL_CreateProperties();
+    SDL_SetBooleanProperty(properties, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_SPIRV_BOOLEAN, true);
+    SDL_SetBooleanProperty(properties, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_MSL_BOOLEAN, true);
+    SDL_SetBooleanProperty(properties, SDL_PROP_GPU_DEVICE_CREATE_SHADERS_DXIL_BOOLEAN, true);
+    SDL_SetBooleanProperty(
+        properties, SDL_PROP_GPU_DEVICE_CREATE_DEBUGMODE_BOOLEAN, options.gpuDebug);
+    if (options.driver) {
+        SDL_SetStringProperty(
+            properties, SDL_PROP_GPU_DEVICE_CREATE_NAME_STRING, options.driver->c_str());
+    }
+    if (options.gpuPreference != "auto") {
+        SDL_SetBooleanProperty(properties,
+                               SDL_PROP_GPU_DEVICE_CREATE_PREFERLOWPOWER_BOOLEAN,
+                               options.gpuPreference == "low-power");
+    }
+    result->m_device.reset(SDL_CreateGPUDeviceWithProperties(properties));
+    SDL_DestroyProperties(properties);
     if (!result->m_device) {
         SDL_LogError(SDL_LOG_CATEGORY_GPU, "The GPU device was not created: %s", SDL_GetError());
         return nullptr;
@@ -141,7 +161,75 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
         return nullptr;
     }
     SDL_Log("Drawing with the %s GPU driver.", SDL_GetGPUDeviceDriver(result->m_device.get()));
+    const auto identity = SDL_GetGPUDeviceProperties(result->m_device.get());
+    SDL_Log("Using GPU adapter %s with preference %s.",
+            result->DeviceName().c_str(),
+            options.gpuPreference.c_str());
+    SDL_Log(
+        "Using GPU driver %s, version %s.",
+        SDL_GetStringProperty(identity, SDL_PROP_GPU_DEVICE_DRIVER_NAME_STRING, "unknown"),
+        SDL_GetStringProperty(
+            identity,
+            SDL_PROP_GPU_DEVICE_DRIVER_INFO_STRING,
+            SDL_GetStringProperty(identity, SDL_PROP_GPU_DEVICE_DRIVER_VERSION_STRING, "unknown")));
+    SDL_Log("NVML sampling %s for the active adapter.",
+            result->NvmlAllowed() ? "allowed" : "disabled");
     return result;
+}
+
+std::string GpuWindow::DeviceName() const {
+    return SDL_GetStringProperty(
+        SDL_GetGPUDeviceProperties(m_device.get()), SDL_PROP_GPU_DEVICE_NAME_STRING, "unknown");
+}
+
+bool GpuWindow::NvmlAllowed() const {
+    const auto properties = SDL_GetGPUDeviceProperties(m_device.get());
+    if (SDL_strcmp(SDL_GetStringProperty(properties, SDL_PROP_GPU_DEVICE_DRIVER_NAME_STRING, ""),
+                   "NVIDIA") == 0) {
+        return true;
+    }
+#ifdef _WIN32
+    if (SDL_strcmp(SDL_GetGPUDeviceDriver(m_device.get()), "direct3d12") != 0) {
+        return false;
+    }
+    IDXGIFactory1 *factory = nullptr;
+    if (FAILED(CreateDXGIFactory1(__uuidof(IDXGIFactory1), reinterpret_cast<void **>(&factory)))) {
+        return false;
+    }
+    unsigned matches = 0;
+    bool nvidia = false;
+    const auto active = DeviceName();
+    for (unsigned index = 0;; ++index) {
+        IDXGIAdapter1 *adapter = nullptr;
+        if (factory->EnumAdapters1(index, &adapter) != S_OK) {
+            break;
+        }
+        DXGI_ADAPTER_DESC1 description{};
+        if (SUCCEEDED(adapter->GetDesc1(&description))) {
+            char *name =
+                SDL_iconv_string("UTF-8",
+                                 "UTF-16LE",
+                                 reinterpret_cast<const char *>(description.Description),
+                                 (SDL_wcslen(description.Description) + 1) * sizeof(wchar_t));
+            if (name && active == name) {
+                ++matches;
+                nvidia = description.VendorId == 0x10DE;
+            }
+            SDL_free(name);
+        }
+        adapter->Release();
+    }
+    factory->Release();
+    return matches == 1 && nvidia;
+#else
+    return false;
+#endif
+}
+
+void GpuWindow::SetFramerateUnlocked(bool unlocked) {
+    m_options.unlockedFramerate = unlocked;
+    SetPresentMode(m_options.presentMode);
+    SDL_Log("Unlocked frame rate %s.", unlocked ? "enabled" : "disabled");
 }
 
 void GpuWindow::SetPresentMode(SDL_GPUPresentMode mode) {
@@ -150,7 +238,7 @@ void GpuWindow::SetPresentMode(SDL_GPUPresentMode mode) {
     // Vertical sync of a Wayland window waits more than a refresh for some frames and drops the
     // rate below the refresh of the display. A Wayland compositor does not tear, and the mailbox
     // paced at the refresh rate shows every frame in its place.
-    SDL_GPUPresentMode wanted = mode;
+    SDL_GPUPresentMode wanted = m_options.unlockedFramerate ? SDL_GPU_PRESENTMODE_IMMEDIATE : mode;
     if (wanted == SDL_GPU_PRESENTMODE_VSYNC && !m_options.fifo &&
         SDL_strcmp(SDL_GetCurrentVideoDriver(), "wayland") == 0 &&
         SDL_WindowSupportsGPUPresentMode(
@@ -431,9 +519,11 @@ bool GpuWindow::Present(SDL_GPUCommandBuffer *commands, const std::filesystem::p
     g_texturesSincePresent = 0;
     Uint32 width = 0;
     Uint32 height = 0;
-    if (SDL_WaitAndAcquireGPUSwapchainTexture(
-            commands, m_window.get(), &swapchain, &width, &height) &&
-        swapchain != nullptr) {
+    const auto acquireStart = SDL_GetTicksNS();
+    const bool acquired = SDL_WaitAndAcquireGPUSwapchainTexture(
+        commands, m_window.get(), &swapchain, &width, &height);
+    m_presentationWait += SDL_GetTicksNS() - acquireStart;
+    if (acquired && swapchain != nullptr) {
         // The frame keeps its shape in a window of another shape, with black bars at the sides or
         // at the top and bottom.
         float scale = std::min(static_cast<float>(width) / static_cast<float>(m_frameWidth),
@@ -458,7 +548,10 @@ bool GpuWindow::Present(SDL_GPUCommandBuffer *commands, const std::filesystem::p
     if (capture != nullptr) {
         return SaveFrame(commands, source, *capture);
     }
-    return SDL_SubmitGPUCommandBuffer(commands);
+    const auto submitStart = SDL_GetTicksNS();
+    const bool submitted = SDL_SubmitGPUCommandBuffer(commands);
+    m_presentationWait += SDL_GetTicksNS() - submitStart;
+    return submitted;
 }
 
 bool GpuWindow::SaveFrame(SDL_GPUCommandBuffer *commands,

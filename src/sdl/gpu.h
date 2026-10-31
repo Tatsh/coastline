@@ -30,6 +30,9 @@ enum class PostAntialias {
 
 /** The options of the window and the GPU device. */
 struct DisplayOptions {
+    std::string gpuPreference = "auto"; /*!< Automatic, high-performance, or low-power selection. */
+    bool unlockedFramerate =
+        false;           /*!< Disable presentation pacing and the software frame limit. */
     int width = 1280;    /*!< The width of the window and of the exclusive mode in pixels. */
     int height = 720;    /*!< The height of the window and of the exclusive mode in pixels. */
     int frameWidth = 0;  /*!< The width of the frame in pixels, 0 to follow the window. */
@@ -101,6 +104,25 @@ public:
     /** @return The GPU device. */
     SDL_GPUDevice *Device() const {
         return m_device.get();
+    }
+
+    /** @return The actual adapter reported by SDL. */
+    std::string DeviceName() const;
+
+    /** @return Whether the active adapter is identified as NVIDIA. */
+    bool NvmlAllowed() const;
+
+    /** Set uncapped presentation while retaining the configured present mode. */
+    void SetFramerateUnlocked(bool unlocked);
+
+    /** @return Whether software and presentation pacing are disabled. */
+    bool FramerateUnlocked() const {
+        return m_options.unlockedFramerate;
+    }
+
+    /** @return Cumulative nanoseconds spent acquiring and submitting presentation buffers. */
+    Uint64 PresentationWaitNanoseconds() const {
+        return m_presentationWait;
     }
 
     /** @return Whether the window covers the display. */
@@ -232,6 +254,7 @@ private:
     Uint32 m_frameWidth = 0;
     Uint32 m_frameHeight = 0;
     DisplayOptions m_options;
+    Uint64 m_presentationWait = 0;
     int m_antialias = 1;
     bool m_exclusive = false;
     int m_refreshRate = 0;

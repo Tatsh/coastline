@@ -11,6 +11,12 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- GPU selection preferences through `--gpu` and `GpuPreference`, with adapter and driver logging.
+  NVML samples utilisation only for a uniquely matched active NVIDIA adapter.
+- Ctrl+U toggles an unlocked frame rate in the game and setup, saving `UnlockedFramerate` and
+  restoring configured presentation pacing and frame limits when disabled.
+- Separate CPU work and frame interval statistics. CPU work excludes presentation waits and the
+  software frame limiter; frame intervals include pacing and display four decimal places.
 - An in-game QBASIC-style setup wizard with an embedded unscii font for missing, incomplete, or
   outdated game data. It validates disc and ROM images and imports data with progress and
   cancellation while controls remain responsive. Finish starts the game in the same process.
