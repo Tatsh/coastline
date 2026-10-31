@@ -1,5 +1,6 @@
 #include "importversion.h"
 
+#include <algorithm>
 #include <array>
 #include <fstream>
 #include <iomanip>
@@ -52,7 +53,8 @@ std::vector<ImportSource> StaleImports(const std::filesystem::path &defaults) {
     std::vector<ImportSource> stale;
     for (const SourceInfo &info : SOURCES) {
         std::error_code error;
-        bool imported = std::filesystem::is_directory(defaults / info.directory, error);
+        bool imported = record.Get(SECTION, info.key).has_value() ||
+                        std::filesystem::is_directory(defaults / info.directory, error);
         if (imported && record.GetInteger(SECTION, info.key, 0) < info.version) {
             stale.push_back(info.source);
         }
@@ -62,18 +64,51 @@ std::vector<ImportSource> StaleImports(const std::filesystem::path &defaults) {
 
 bool DefaultPackUsable(const std::filesystem::path &defaults) {
     auto record = GameConfig::Load(RecordPath(defaults));
+    const auto base = record.Get(SECTION, "BaseRegion").value_or("");
+    const auto cartridge = GameConfig::Load(defaults / "n64" / "base" / "cartridge.ini");
+    const std::array<std::string_view, 3> regions{"usa", "jpn", "eur"};
+    auto selected = std::ranges::find(regions, base);
+    if (record.GetInteger(SECTION, "Layout", 0) != 1 || selected == regions.end() ||
+        cartridge.Get("Cartridge", "Region") != base) {
+        return false;
+    }
     auto current = [&](ImportSource source) {
         const SourceInfo &info = Info(source);
         return record.GetInteger(SECTION, info.key, 0) == info.version;
     };
     if (!current(ImportSource::Disc) ||
-        !(current(ImportSource::Usa) || current(ImportSource::Jpn) || current(ImportSource::Eur))) {
+        !current(static_cast<ImportSource>(selected - regions.begin() + 1))) {
         return false;
     }
-    for (const char *pack : {"default", "boss", "eur", "jpn"}) {
-        if (!ReadAssetFileAliases(defaults.parent_path() / pack, defaults)) {
+    for (const auto &source : SOURCES) {
+        if (record.Get(SECTION, source.key) && !current(source.source)) {
             return false;
         }
+        if (source.source != ImportSource::Disc && record.Get(SECTION, source.key)) {
+            const auto region = regions[static_cast<std::size_t>(source.source) - 1];
+            if (region != base &&
+                GameConfig::Load(defaults.parent_path() / region / "n64/base/cartridge.ini")
+                        .Get("Cartridge", "Region") != region) {
+                return false;
+            }
+        }
+    }
+    bool segment = false;
+    std::error_code error;
+    segment = std::filesystem::is_regular_file(defaults / "n64/base/segment.bin", error);
+    for (const char *pack : {"default", "boss", "eur", "jpn"}) {
+        auto aliases = ReadAssetFileAliases(defaults.parent_path() / pack, defaults);
+        if (!aliases) {
+            return false;
+        }
+        if (std::string_view(pack) == "default") {
+            segment = segment || std::ranges::any_of(*aliases, [](const AssetFileAlias &alias) {
+                          return alias.path == "n64/base/segment.bin";
+                      });
+        }
+    }
+    if (!segment || !std::filesystem::is_directory(defaults / "cars", error)) {
+        return false;
     }
     std::ifstream files(defaults / "import-files.txt", std::ios::binary);
     std::size_t count = 0;

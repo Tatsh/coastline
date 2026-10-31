@@ -17,7 +17,6 @@ using namespace coastline;
 
 std::vector<RomRelease> converted;
 std::optional<RomRelease> failConversion;
-std::filesystem::path stagedDefaults;
 constexpr std::array<const char *, 3> REGIONS{"usa", "jpn", "eur"};
 
 void Write(const std::filesystem::path &path, const std::string &text) {
@@ -67,7 +66,6 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &pa
     auto release = IdentifyRomFile(path);
     assert(release);
     converted.push_back(*release);
-    stagedDefaults = defaults;
     if (failConversion == *release) {
         return std::unexpected("Conversion failed.");
     }
@@ -75,7 +73,10 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &pa
         return std::unexpected("Cancelled.");
     }
     const auto name = REGIONS[static_cast<std::size_t>(*release)];
-    Write(defaults / "n64" / name / "segment.bin", name);
+    Write(defaults / "n64" / name / "segment.bin", "segment " + std::string(name));
+    Write(defaults / "n64" / name / "fonts" / "fonts.json", "font " + std::string(name));
+    Write(defaults / "n64" / name / "common.dat", "common cartridge");
+    Write(defaults / "n64" / name / "regional.dat", "regional " + std::string(name));
     if (!std::filesystem::exists(defaults / "music" / "menu.xm")) {
         Write(defaults / "music" / "menu.xm", name);
     }
@@ -137,9 +138,13 @@ int main() {
     assert(failure && Snapshot(data) == original);
     CheckNoStagingDirectory(data);
 
-    failure = ImportAssetImages(data, "disc.iso", roms, [](const std::string &step, double) {
+    failure = ImportAssetImages(data, "disc.iso", roms, [&](const std::string &step, double) {
         if (step == "Installing the asset packs") {
-            std::filesystem::remove_all(stagedDefaults.parent_path() / "boss");
+            for (const auto &entry : std::filesystem::directory_iterator(data)) {
+                if (entry.path().filename().string().starts_with(".coastline-import-")) {
+                    std::filesystem::remove_all(entry.path() / "assets" / "boss");
+                }
+            }
         }
         return true;
     });
@@ -160,7 +165,13 @@ int main() {
     assert(files.at("assets/custom/model.glb") == "custom model");
     assert(files.at("assets/default/music/menu.xm") == "usa");
     assert(!std::filesystem::exists(data / "assets" / "eur"));
-    assert(!std::filesystem::exists(data / "assets" / "jpn"));
+    assert(std::filesystem::is_directory(data / "assets" / "jpn"));
+    assert(files.at("assets/default/n64/base/segment.bin") == "segment usa");
+    assert(files.at("assets/jpn/n64/base/segment.bin") == "segment jpn");
+    assert(!std::filesystem::exists(data / "assets/jpn/n64/base/common.dat"));
+    assert(!std::filesystem::exists(data / "assets/jpn/cars/model.dat"));
+    assert(!std::filesystem::exists(data / "assets/default/n64/usa"));
+    assert(!std::filesystem::exists(data / "assets/default/n64/jpn"));
     std::ifstream metadata(DefaultAssets(data) / "pack.json");
     assert(nlohmann::json::parse(metadata).at("baseRegion") == "usa");
     CheckNoStagingDirectory(data);
@@ -172,6 +183,9 @@ int main() {
     files = Snapshot(data);
     assert(files.at("assets/default/music/menu.xm") == "jpn");
     assert(!std::filesystem::exists(DefaultAssets(data) / "n64" / "usa"));
+    assert(files.at("assets/default/n64/base/segment.bin") == "segment jpn");
+    assert(files.at("assets/eur/n64/base/segment.bin") == "segment eur");
+    assert(!std::filesystem::exists(data / "assets" / "jpn"));
     assert(files.at("assets/custom/model.glb") == "custom model");
     assert(DefaultPackUsable(DefaultAssets(data)));
     CheckNoStagingDirectory(data);

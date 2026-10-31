@@ -1726,8 +1726,7 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     state->nightHighlight = RenderTexture::FromTexels(
         renderer, 64, 64, Intensities4(g_abHudTexture64BData), true, true);
     // The race of the PC release draws its text with the fonts of the cartridge.
-    state->text =
-        MenuText::Load(renderer, ReleaseDirectory(defaults, SelectedLanguage()) / "fonts");
+    state->text = MenuText::Load(renderer, FontDirectory(defaults, SelectedLanguage()));
     // The start lights, the model of BossRally.pod. Their lamps keep the colours of their texels in
     // one cycle, unshaded by the light of the track.
     ModelOptions lightsOptions;

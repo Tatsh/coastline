@@ -34,7 +34,7 @@ public:
      * Read the models, the lights, the fonts, and the sounds of the splash screens.
      *
      * @param renderer The renderer that draws them.
-     * @param release The directory of the import of the release, such as n64/usa.
+     * @param release The selected cartridge directory, n64/base of the prepared assets.
      * @return The splash screens, or nothing with the reason logged.
      */
     static std::unique_ptr<Intro> Load(SceneRenderer &renderer,

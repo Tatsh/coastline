@@ -204,12 +204,32 @@ void CheckImportInventory() {
     const auto defaults = root / "default";
     std::filesystem::remove_all(root);
     WriteText(defaults / "cars" / "model.gltf", "model");
-    WriteText(defaults / "n64" / "eur" / "segment.bin", "segment");
+    WriteText(defaults / "n64" / "base" / "segment.bin", "segment");
+    WriteText(defaults / "n64/base/cartridge.ini", "[Cartridge]\nRegion=eur\n");
+    WriteText(defaults / "import.ini", "[Import]\nLayout=1\nBaseRegion=eur\n");
     Check(coastline::RecordImport(defaults, coastline::ImportSource::Disc), "record the disc");
     Check(coastline::RecordImport(defaults, coastline::ImportSource::Eur), "record Europe");
     Check(!coastline::DefaultPackUsable(defaults), "an unfinished import must be refused");
     Check(coastline::RecordImportFiles(defaults), "record imported files");
     Check(coastline::DefaultPackUsable(defaults), "a complete import must be usable");
+    const auto originalRecord = ReadText(defaults / "import.ini");
+    auto record = coastline::GameConfig::Load(defaults / "import.ini");
+    record.Set("Import", "Layout", "0");
+    record.Save(defaults / "import.ini");
+    coastline::RecordImportFiles(defaults);
+    Check(!coastline::DefaultPackUsable(defaults), "legacy layouts require a new import");
+    record.Set("Import", "Layout", "1");
+    record.Set("Import", "Jpn", "2");
+    record.Save(defaults / "import.ini");
+    coastline::RecordImportFiles(defaults);
+    Check(!coastline::DefaultPackUsable(defaults), "every recorded converter must be current");
+    record.Set("Import", "Jpn", "1");
+    record.Save(defaults / "import.ini");
+    coastline::RecordImportFiles(defaults);
+    Check(!coastline::DefaultPackUsable(defaults), "a recorded region needs its difference pack");
+    WriteText(defaults / "import.ini", originalRecord);
+    coastline::RecordImportFiles(defaults);
+    Check(coastline::DefaultPackUsable(defaults), "restored metadata is usable");
     WriteText(defaults / "cars" / "model.gltf", "truncated");
     Check(!coastline::DefaultPackUsable(defaults), "a changed file size must be refused");
     WriteText(defaults / "cars" / "model.gltf", "model");
@@ -286,6 +306,31 @@ void CheckPackAssets() {
     Check(boss && ReadText(*boss / "cars" / "model.gltf") == "pack glTF" &&
               ReadText(*boss / "cars" / "model.glb") == "pack GLB",
           "both formats in the selected pack remain available for glTF precedence");
+    WriteText(data / "assets/jpn/tracks/a.png", "Japanese a");
+    WriteText(data / "assets/jpn/tracks/b.png", "Japanese b");
+    WriteText(data / "assets/jpn/cars/model.glb", "Japanese GLB");
+    auto japanese = coastline::PackAssets(data, cache, "default", {}, "jpn");
+    Check(japanese && ReadText(*japanese / "tracks/a.png") == "Japanese a" &&
+              ReadText(*japanese / "music/menu.xm") == "menu",
+          "regional assets override default assets and fall back directly to default");
+    Check(japanese && !std::filesystem::exists(*japanese / "cars/model.gltf") &&
+              ReadText(*japanese / "cars/model.glb") == "Japanese GLB",
+          "a regional GLB suppresses the default glTF");
+    auto japaneseBoss = coastline::PackAssets(data, cache, "boss", {}, "jpn");
+    Check(japaneseBoss && ReadText(*japaneseBoss / "tracks/a.png") == "boss a" &&
+              ReadText(*japaneseBoss / "tracks/b.png") == "Japanese b" &&
+              ReadText(*japaneseBoss / "cars/model.gltf") == "pack glTF",
+          "selected pack overrides the region before falling back to default");
+    WriteText(data / "assets/jpn/tracks/b.png", "revised Japanese b");
+    japaneseBoss = coastline::PackAssets(data, cache, "boss", {}, "jpn");
+    Check(japaneseBoss && ReadText(*japaneseBoss / "tracks/b.png") == "revised Japanese b",
+          "regional changes invalidate the final pack cache");
+    boss = coastline::PackAssets(data, cache, "boss");
+    Check(boss && ReadText(*boss / "tracks/b.png") == "default b",
+          "switching to the base region does not inherit a previous region");
+    Check(!coastline::PackAssets(data, cache, "default", {}, "../jpn") &&
+              !coastline::PackAssets(data, cache, "default", {}, "eur"),
+          "unsafe and unavailable regions are refused");
     std::filesystem::remove_all(root);
 }
 
@@ -299,24 +344,23 @@ void CheckLanguage() {
 
     auto assets = std::filesystem::temp_directory_path() / "coastline-sdl-test-language";
     std::filesystem::remove_all(assets);
-    Check(coastline::ReleaseDirectory(assets, "ja") == assets / "n64" / "usa",
-          "ja without the Japanese release draws the USA release");
-    WriteText(assets / "n64" / "jpn" / "segment.bin", "segment");
-    Check(coastline::ReleaseDirectory(assets, "ja") == assets / "n64" / "jpn",
-          "ja draws the Japanese release");
-    Check(coastline::ReleaseDirectory(assets, "en-us") == assets / "n64" / "jpn",
-          "a Japanese base works without a USA cartridge");
-    WriteText(assets / "n64" / "usa" / "segment.bin", "segment");
-    Check(coastline::ReleaseDirectory(assets, "en-us") == assets / "n64" / "usa",
-          "en-us draws the USA release");
-    Check(coastline::ReleaseDirectory(assets, "en-gb") == assets / "n64" / "usa",
-          "en-gb without the European release draws the USA release");
-    WriteText(assets / "n64" / "eur" / "segment.bin", "segment");
-    Check(coastline::ReleaseDirectory(assets, "en-gb") == assets / "n64" / "eur",
-          "en-gb draws the European release");
-    std::filesystem::remove_all(assets / "n64" / "usa");
-    Check(coastline::ReleaseDirectory(assets, "en-us") == assets / "n64" / "eur",
-          "a European base works without a USA cartridge");
+    Check(coastline::ReleaseDirectory(assets) == assets / "n64" / "base",
+          "cartridge assets use a stable path independent of language");
+    Check(coastline::CartridgeRegion(coastline::ReleaseDirectory(assets)).empty(),
+          "missing region metadata does not provide a region");
+    WriteText(assets / "n64/base/cartridge.ini", "[Cartridge]\nRegion=jpn\n");
+    Check(coastline::CartridgeRegion(coastline::ReleaseDirectory(assets)) == "jpn",
+          "cartridge identity comes from converted metadata");
+    WriteText(assets / "fonts/base/fonts.json", "base fonts");
+    WriteText(assets / "fonts/jpn/fonts.json", "Japanese fonts");
+    Check(coastline::FontDirectory(assets, "ja") == assets / "fonts/jpn",
+          "Japanese text selects Japanese fonts");
+    Check(coastline::FontDirectory(assets, "en-us") == assets / "fonts/base",
+          "missing fonts fall back to base fonts");
+    WriteText(assets / "fonts/usa/fonts.json", "USA fonts");
+    Check(coastline::FontDirectory(assets, "en-us") == assets / "fonts/usa" &&
+              coastline::CartridgeRegion(coastline::ReleaseDirectory(assets)) == "jpn",
+          "English fonts do not change the Japanese cartridge");
     std::filesystem::remove_all(assets);
 }
 
@@ -510,7 +554,9 @@ void CheckAssetData() {
     auto make = [](const std::filesystem::path &data) {
         const auto assets = coastline::DefaultAssets(data);
         WriteText(assets / "cars" / "model.gltf", "model");
-        WriteText(assets / "n64" / "eur" / "segment.bin", "segment");
+        WriteText(assets / "n64" / "base" / "segment.bin", "segment");
+        WriteText(assets / "n64/base/cartridge.ini", "[Cartridge]\nRegion=eur\n");
+        WriteText(assets / "import.ini", "[Import]\nLayout=1\nBaseRegion=eur\n");
         coastline::RecordImport(assets, coastline::ImportSource::Disc);
         coastline::RecordImport(assets, coastline::ImportSource::Eur);
         coastline::RecordImportFiles(assets);

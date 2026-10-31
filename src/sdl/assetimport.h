@@ -13,6 +13,8 @@ namespace coastline {
  * Import a disc and every supplied ROM as one batch. USA is the base when supplied; otherwise
  * the first ROM is the base. Failed or cancelled conversions preserve installed packs. A
  * successful batch replaces generated packs and preserves mod packs.
+ * Each additional cartridge produces a regional difference pack over the base. Language fonts
+ * and strings remain available independently of the selected region.
  *
  * @param data The data root where generated packs are installed under assets.
  * @param disc A Boss Rally disc image.

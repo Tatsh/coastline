@@ -909,10 +909,17 @@ std::optional<std::string> WriteConsoleStrings(std::span<const std::uint8_t> rom
         }
     }
     const auto fallback = dataDirectory / "strings" / "en-us.json";
-    if (release.release != RomRelease::Usa && !std::filesystem::exists(fallback)) {
+    if (release.release != RomRelease::Usa) {
         auto base = strings;
         for (const auto &message : SAVE_FOLDER_STRINGS) {
             base[std::string(message.key)] = message.text;
+        }
+        std::ifstream input(fallback);
+        auto existing = nlohmann::ordered_json::parse(input, nullptr, false);
+        if (existing.is_object()) {
+            for (const auto &[key, value] : existing.items()) {
+                base.erase(key);
+            }
         }
         if (auto failure = WriteStringsFile(fallback, base)) {
             return failure;

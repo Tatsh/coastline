@@ -111,11 +111,13 @@ std::filesystem::path PackDirectory(const std::filesystem::path &data,
  * @param pack The name of the pack.
  * @param fallback Another data root searched for the selected pack, or empty. Default assets
  * still come from @p data.
+ * @param region A regional difference pack applied before @p pack, or empty for the base region.
  * @return The directory, or nothing when the pack does not exist or the directory cannot be made.
  */
 std::optional<std::filesystem::path> PackAssets(const std::filesystem::path &data,
                                                 const std::filesystem::path &cache,
                                                 std::string_view pack,
-                                                const std::filesystem::path &fallback = {});
+                                                const std::filesystem::path &fallback = {},
+                                                std::string_view region = {});
 
 } // namespace coastline

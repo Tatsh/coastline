@@ -687,6 +687,9 @@ int main(int argc, char *argv[]) {
               "cartridge, en-gb for the font and the text of the European cartridge, or ja for "
               "the font and the Japanese text of the Japanese cartridge, the strings of "
               "strings/LANGUAGE.json");
+    parser.add_argument("--region")
+        .choices("usa", "eur", "jpn")
+        .help("Select cartridge models and images for this run, independent of language.");
     parser.add_argument("--width").help("width of the window in pixels").scan<'i', int>();
     parser.add_argument("--height").help("height of the window in pixels").scan<'i', int>();
     parser.add_argument("--fullscreen").help("cover the display").flag();
@@ -922,6 +925,13 @@ int main(int argc, char *argv[]) {
     const auto foundData = coastline::FindAssetData(paths->data, systemData);
     const auto assetData = foundData.value_or(paths->data);
     const bool showWizard = !foundData;
+    if (showWizard && std::filesystem::exists(coastline::DefaultAssets(paths->data))) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "Imported assets are incomplete or use an unsupported layout. Import assets "
+                     "again with coastline import --cd DISC --rom ROM.");
+        coastline::StopGameLog();
+        return EXIT_FAILURE;
+    }
 #if COASTLINE_SETUP_WIZARD
     if (showWizard && parser.is_subcommand_used(runScript) && script.script.keys.empty() &&
         script.script.typing.empty() && script.script.mouseMoves.empty()) {
@@ -1026,13 +1036,32 @@ int main(int argc, char *argv[]) {
             std::string pack = parser.present("--asset-pack")
                                    .value_or(config.Get("Game", "AssetPack")
                                                  .value_or(std::string(coastline::DEFAULT_PACK)));
-            auto packAssets = coastline::PackAssets(assetData, paths->cache, pack, paths->data);
+            const auto baseRegion = coastline::CartridgeRegion(
+                coastline::ReleaseDirectory(coastline::DefaultAssets(assetData)));
+            if (!config.Get("Game", "Region")) {
+                config.Set("Game", "Region", baseRegion);
+            }
+            auto region = parser.present("--region")
+                              .value_or(config.Get("Game", "Region").value_or(baseRegion));
+            if (region != baseRegion &&
+                ((region != "usa" && region != "eur" && region != "jpn") ||
+                 coastline::CartridgeRegion(coastline::ReleaseDirectory(
+                     coastline::PackDirectory(assetData, region))) != region)) {
+                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                            "Region %s is unavailable; using %s.",
+                            region.c_str(),
+                            baseRegion.c_str());
+                region = baseRegion;
+            }
+            const std::string regionPack = region == baseRegion ? "" : region;
+            auto packAssets =
+                coastline::PackAssets(assetData, paths->cache, pack, paths->data, regionPack);
             if (!packAssets) {
                 SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
                             "The asset pack %s cannot be read, and the default pack is used.",
                             pack.c_str());
                 pack = coastline::DEFAULT_PACK;
-                packAssets = coastline::PackAssets(assetData, paths->cache, pack);
+                packAssets = coastline::PackAssets(assetData, paths->cache, pack, {}, regionPack);
                 if (!packAssets) {
                     SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                                  "Cannot prepare imported assets. Import them again with "
@@ -1042,6 +1071,7 @@ int main(int argc, char *argv[]) {
             }
             const std::filesystem::path assets = *packAssets;
             SDL_Log("Asset pack: %s (%s)", pack.c_str(), assets.string().c_str());
+            SDL_Log("Using region %s with base %s.", region.c_str(), baseRegion.c_str());
             // A source imported by an older conversion has files the game no longer draws
             // correctly.
             std::string reimportNotice;
@@ -1057,8 +1087,7 @@ int main(int argc, char *argv[]) {
                     .value_or(config.Get("Game", "Language")
                                   .value_or(std::string(coastline::DEFAULT_LANGUAGE))));
             coastline::LoadStrings(assets, coastline::SelectedLanguage());
-            const std::filesystem::path release =
-                coastline::ReleaseDirectory(assets, coastline::SelectedLanguage());
+            const std::filesystem::path release = coastline::ReleaseDirectory(assets);
             SDL_Log("Language: %s (%s)",
                     coastline::SelectedLanguage().c_str(),
                     release.lexically_relative(assets).string().c_str());
@@ -1137,16 +1166,16 @@ int main(int argc, char *argv[]) {
             };
             sceneRenderer = coastline::SceneRenderer::Create(*window);
             if (sceneRenderer) {
-                // The USA front end is preferred when imported, regardless of language.
-                const std::filesystem::path frontEndRelease =
-                    coastline::ReleaseDirectory(assets, "en-us");
+                const std::filesystem::path frontEndRelease = coastline::ReleaseDirectory(assets);
                 intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
                 mainMenu = coastline::Menus::Load(
                     *sceneRenderer, frontEndRelease, paths->data, paths->cache, config, configPath);
                 if (mainMenu) {
                     mainMenu->SetMenuMusic(playMenuMusic);
                 }
-                frameRateText = coastline::MenuText::Load(*sceneRenderer, release / "fonts");
+                frameRateText = coastline::MenuText::Load(
+                    *sceneRenderer,
+                    coastline::FontDirectory(assets, coastline::SelectedLanguage()));
             }
             // The vertical sync V returns to, fifo when the settings choose it.
             const bool fifo = displayOptions.fifo;

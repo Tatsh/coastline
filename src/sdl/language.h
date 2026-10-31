@@ -2,8 +2,7 @@
 
 /**
  * @file
- * The language of the text of the game: the strings it reads and the release of the cartridge the
- * menus draw.
+ * UTF-8 strings, language-specific fonts, and the selected cartridge assets.
  */
 
 #include <filesystem>
@@ -40,12 +39,14 @@ StringTable MergeStrings(StringTable fallback, const StringTable &language);
 
 /**
  * @param assets The assets of the pack.
- * @param language The language, such as en-us, en-gb, or ja.
- * @return The import of the cartridge whose font the language draws, n64/jpn for ja, n64/eur for
- * en-gb, and n64/usa for every other language, or n64/usa when the release of the language was not
- * imported.
+ * @return The selected cartridge directory, independent of language.
  */
-std::filesystem::path ReleaseDirectory(const std::filesystem::path &assets,
-                                       std::string_view language);
+std::filesystem::path ReleaseDirectory(const std::filesystem::path &assets);
+
+/** @return The recorded region of a converted cartridge, or empty for invalid metadata. */
+std::string CartridgeRegion(const std::filesystem::path &release);
+
+/** @return Fonts for @p language, or the imported base fonts when unavailable. */
+std::filesystem::path FontDirectory(const std::filesystem::path &assets, std::string_view language);
 
 } // namespace coastline

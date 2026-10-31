@@ -10,6 +10,7 @@
 #include <SDL3/SDL.h>
 
 #include "ghostnote.h"
+#include "language.h"
 #include "menus.h"
 #include "menutext.h"
 #include "stringresources.h"
@@ -37,7 +38,7 @@ constexpr const char *LOAD_CONFIGURATION_MODEL = "tracks/load-and-gamewin/menu-m
 constexpr const char *CREDITS_STEM = "credits";
 
 bool HasConfigurationItems(const std::filesystem::path &release) {
-    return release.filename() == "usa";
+    return CartridgeRegion(release) == "usa";
 }
 
 // g_adwBgmVolumeLevels and g_adwSfxVolumeLevels of the console, by the levels of the options.

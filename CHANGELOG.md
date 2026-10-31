@@ -66,6 +66,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Sparse `eur` and `jpn` packs store regional differences, layered between base assets and the
+  selected pack. Region selection is independent of language and fonts. `--region` selects a region
+  for one run; saved `Game.Region` defaults to the imported base. Strict layout validation requires
+  reimporting older assets; reimport preserves mods.
 - Imported byte-identical assets are stored once, with runtime paths reconstructed in cache before
   mod overrides are applied.
 - CLI and setup imports require a disc and at least one ROM in a staged batch, using USA as the base

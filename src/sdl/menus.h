@@ -137,7 +137,7 @@ public:
      * Read the assets of the menu screens and the items of each screen.
      *
      * @param renderer The renderer that draws them.
-     * @param release The directory of the import of the release, such as n64/usa.
+     * @param release The selected cartridge directory, n64/base of the prepared assets.
      * @param saves The directory of the saves, the data directory of the game, with the
      * Controller Pak and the frames of the ghost car.
      * @param cache The cache directory of the game, for the images of the painted cars.

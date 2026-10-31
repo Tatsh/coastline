@@ -10,6 +10,7 @@
 
 #include "common/game.h"
 #include "consolesegment.h"
+#include "language.h"
 #include "menuscreen.h"
 #include "menutext.h"
 
@@ -79,8 +80,8 @@ bool StartConsoleCredits(const std::filesystem::path &release) {
     g_caption = 0;
     g_captionTimer = 0.0f;
     g_scrollLines.clear();
-    const auto at = std::ranges::find(
-        RELEASE_ADDRESSES, release.filename().string(), &CreditAddresses::release);
+    const auto at =
+        std::ranges::find(RELEASE_ADDRESSES, CartridgeRegion(release), &CreditAddresses::release);
     auto segment = ConsoleSegment::Load(release);
     if (!segment || at == RELEASE_ADDRESSES.end()) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,

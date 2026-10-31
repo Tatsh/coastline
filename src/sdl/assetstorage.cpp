@@ -142,7 +142,8 @@ DeduplicateAssetFiles(const std::filesystem::path &defaults) {
             }
             const auto relative = entry->path().lexically_relative(pack);
             if (entry->is_regular_file(error) && relative != "pack.json" &&
-                relative != "import.ini" && relative != "import-files.txt") {
+                relative != "import.ini" && relative != "import-files.txt" &&
+                relative != "n64/base/cartridge.ini") {
                 files[pack].push_back(entry->path());
             }
         }

@@ -4,6 +4,7 @@
 #include <array>
 #include <chrono>
 #include <fstream>
+#include <iterator>
 #include <memory>
 #include <set>
 #include <string_view>
@@ -12,6 +13,7 @@
 
 #include "assetpack.h"
 #include "assetstorage.h"
+#include "config.h"
 #include "importversion.h"
 #include "paths.h"
 
@@ -127,6 +129,12 @@ public:
 };
 
 std::optional<std::string> WriteMetadata(const std::filesystem::path &defaults, RomRelease base) {
+    auto record = GameConfig::Load(defaults / "import.ini");
+    record.Set("Import", "Layout", "1");
+    record.Set("Import", "BaseRegion", std::string(REGIONS[static_cast<std::size_t>(base)]));
+    if (!record.Save(defaults / "import.ini")) {
+        return "Cannot record the regional asset layout.";
+    }
     const auto metadata = defaults / "pack.json";
     std::ifstream input(metadata);
     auto settings = nlohmann::ordered_json::parse(input, nullptr, false);
@@ -152,6 +160,45 @@ std::optional<std::string> WriteMetadata(const std::filesystem::path &defaults, 
     bossSettings.close();
     return bossSettings ? std::nullopt :
                           std::optional<std::string>("Cannot record the Boss Rally pack metadata.");
+}
+
+void NormalizeCartridge(const std::filesystem::path &candidate,
+                        std::string_view region,
+                        const std::filesystem::path &fonts) {
+    const auto source = candidate / "n64" / region;
+    std::filesystem::create_directories(fonts);
+    std::filesystem::copy(
+        source / "fonts", fonts / region, std::filesystem::copy_options::recursive);
+    std::filesystem::remove_all(source / "fonts");
+    std::filesystem::rename(source, candidate / "n64" / "base");
+    GameConfig metadata;
+    metadata.Set("Cartridge", "Region", std::string(region));
+    if (!metadata.Save(candidate / "n64" / "base" / "cartridge.ini")) {
+        throw std::filesystem::filesystem_error("Cannot record the cartridge region",
+                                                candidate,
+                                                std::make_error_code(std::errc::io_error));
+    }
+}
+
+void RemoveUnchangedFiles(const std::filesystem::path &candidate,
+                          const std::filesystem::path &defaults) {
+    for (const auto &entry : std::filesystem::recursive_directory_iterator(candidate)) {
+        if (!entry.is_regular_file() || entry.path() == candidate / "pack.json") {
+            continue;
+        }
+        auto base = defaults / entry.path().lexically_relative(candidate);
+        if (!std::filesystem::is_regular_file(base) ||
+            entry.file_size() != std::filesystem::file_size(base)) {
+            continue;
+        }
+        std::ifstream first(entry.path(), std::ios::binary), second(base, std::ios::binary);
+        const std::string bytes(std::istreambuf_iterator<char>(first), {});
+        const std::string original(std::istreambuf_iterator<char>(second), {});
+        if (first.is_open() && second.is_open() && !first.bad() && !second.bad() &&
+            bytes == original) {
+            std::filesystem::remove(entry.path());
+        }
+    }
 }
 
 } // namespace
@@ -195,51 +242,96 @@ std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
         reported = std::max(reported, std::clamp(fraction, 0.0, 1.0));
         return !progress || progress(step, reported);
     };
-    for (const auto &input : inputs) {
-        auto imported =
-            ImportRom(input.path, defaults, [&](const std::string &step, double fraction) {
-                return report(step, (done + fraction) / total);
+    try {
+        const auto pristine = (*stage)->path / "disc";
+        auto importedDisc =
+            ImportDisc(disc, pristine, [&](const std::string &step, double fraction) {
+                return report(step, fraction * DISC_SHARE / total);
             });
-        if (!imported) {
-            return imported.error();
+        if (!importedDisc) {
+            return importedDisc.error();
         }
-        if (*imported != input.release) {
-            return "The ROM image changed during import.";
+        done += DISC_SHARE;
+        for (std::size_t index = 0; index < inputs.size(); ++index) {
+            const auto &input = inputs[index];
+            const auto region = REGIONS[static_cast<std::size_t>(input.release)];
+            const auto workspace = (*stage)->path / "candidates" / region;
+            const auto candidate = DefaultAssets(workspace);
+            std::filesystem::create_directories(candidate.parent_path());
+            std::filesystem::copy(pristine, candidate, std::filesystem::copy_options::recursive);
+            auto imported =
+                ImportRom(input.path, candidate, [&](const std::string &step, double fraction) {
+                    return report(step, (done + fraction) / total);
+                });
+            if (!imported) {
+                return imported.error();
+            }
+            if (*imported != input.release) {
+                return "The ROM image changed during import.";
+            }
+            if (auto failure = CurateAssetPacks(candidate)) {
+                return failure;
+            }
+            const auto candidateBoss = candidate.parent_path() / BOSS_PACK;
+            const auto boss = defaults.parent_path() / BOSS_PACK;
+            if (std::filesystem::is_directory(candidateBoss)) {
+                std::filesystem::create_directories(boss);
+                std::filesystem::copy(candidateBoss,
+                                      boss,
+                                      std::filesystem::copy_options::recursive |
+                                          std::filesystem::copy_options::overwrite_existing);
+            }
+            const auto fonts = (*stage)->path / "fonts";
+            NormalizeCartridge(candidate, region, fonts);
+            if (index == 0) {
+                std::filesystem::create_directories(defaults.parent_path());
+                std::filesystem::rename(candidate, defaults);
+                std::filesystem::copy(
+                    fonts / region, fonts / "base", std::filesystem::copy_options::recursive);
+            } else {
+                const auto strings = candidate / "strings";
+                if (std::filesystem::is_directory(strings)) {
+                    std::filesystem::create_directories(defaults / "strings");
+                    std::filesystem::copy(strings,
+                                          defaults / "strings",
+                                          std::filesystem::copy_options::recursive |
+                                              std::filesystem::copy_options::skip_existing);
+                    std::filesystem::remove_all(strings);
+                }
+                RemoveUnchangedFiles(candidate, defaults);
+                std::filesystem::rename(candidate, defaults.parent_path() / region);
+            }
+            done += 1.0;
         }
-        if (!RecordImport(defaults, SOURCES[static_cast<std::size_t>(*imported)])) {
-            return "Cannot record the imported ROM version.";
+        std::filesystem::rename((*stage)->path / "fonts", defaults / "fonts");
+        for (const auto &input : inputs) {
+            if (!RecordImport(defaults, SOURCES[static_cast<std::size_t>(input.release)])) {
+                return "Cannot record the imported ROM version.";
+            }
         }
-        done += 1.0;
+        if (!RecordImport(defaults, ImportSource::Disc)) {
+            return "Cannot record the imported disc version.";
+        }
+        if (!report("Preparing the asset packs", done / total)) {
+            return "The import was cancelled.";
+        }
+        if (auto failure = WriteMetadata(defaults, inputs.front().release)) {
+            return failure;
+        }
+        auto storage = DeduplicateAssetFiles(defaults);
+        if (!storage) {
+            return storage.error();
+        }
+        if (!RecordImportFiles(defaults) || !DefaultPackUsable(defaults)) {
+            return "The staged assets failed their inventory check.";
+        }
+        if (!report("Installing the asset packs", 1.0)) {
+            return "The import was cancelled.";
+        }
+        return (*stage)->Install(data);
+    } catch (const std::filesystem::filesystem_error &error) {
+        return "Cannot prepare regional asset packs. " + std::string(error.what());
     }
-    auto imported = ImportDisc(disc, defaults, [&](const std::string &step, double fraction) {
-        return report(step, (done + fraction * DISC_SHARE) / total);
-    });
-    if (!imported) {
-        return imported.error();
-    }
-    if (!RecordImport(defaults, ImportSource::Disc)) {
-        return "Cannot record the imported disc version.";
-    }
-    if (!report("Preparing the asset packs", (done + DISC_SHARE) / total)) {
-        return "The import was cancelled.";
-    }
-    if (auto failure = CurateAssetPacks(defaults)) {
-        return failure;
-    }
-    if (auto failure = WriteMetadata(defaults, inputs.front().release)) {
-        return failure;
-    }
-    auto storage = DeduplicateAssetFiles(defaults);
-    if (!storage) {
-        return storage.error();
-    }
-    if (!RecordImportFiles(defaults) || !DefaultPackUsable(defaults)) {
-        return "The staged assets failed their inventory check.";
-    }
-    if (!report("Installing the asset packs", 1.0)) {
-        return "The import was cancelled.";
-    }
-    return (*stage)->Install(data);
 }
 
 } // namespace coastline

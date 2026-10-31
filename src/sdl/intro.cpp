@@ -15,6 +15,7 @@
 #include "common/audiomix.h"
 #include "frontend.h"
 #include "gpu.h"
+#include "language.h"
 #include "menuscreen.h"
 #include "menutext.h"
 #include "music.h"
@@ -227,8 +228,9 @@ Intro::~Intro() = default;
 
 std::unique_ptr<Intro> Intro::Load(SceneRenderer &renderer, const std::filesystem::path &release) {
     auto state = std::make_unique<State>();
-    state->usa = release.filename() == "usa";
-    const bool japanese = release.filename() == "jpn";
+    const auto region = CartridgeRegion(release);
+    state->usa = region == "usa";
+    const bool japanese = region == "jpn";
     if (!state->usa) {
         state->developerStart = 4.0f;
         state->developerEnd = japanese ? 4.5f : 5.0f;
@@ -259,7 +261,8 @@ std::unique_ptr<Intro> Intro::Load(SceneRenderer &renderer, const std::filesyste
             return nullptr;
         }
     }
-    state->text = MenuText::Load(renderer, release / "fonts");
+    state->text = MenuText::Load(
+        renderer, FontDirectory(release.parent_path().parent_path(), SelectedLanguage()));
     auto soundA = ReadSound(constants / "splash_sound_a.wav");
     auto soundB = ReadSound(constants / "splash_sound_b.wav");
     if (!state->firstLogo || (!state->producerLogo && state->usa) || !state->developerLogo ||

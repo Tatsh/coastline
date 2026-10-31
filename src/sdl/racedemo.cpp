@@ -20,6 +20,7 @@
 #include "common/trackselect.h"
 #include "common/vehicle.h"
 #include "common/vehicleaccess.h"
+#include "language.h"
 
 namespace coastline {
 
@@ -150,7 +151,7 @@ bool AttractDemoFromConsole() {
 extern "C" const char *NextAttractDemoRecording(void) {
     using coastline::CONSOLE_DEMOS;
     using coastline::PC_DEMOS;
-    // The rotation omits the cartridges that were not imported.
+    const auto region = coastline::CartridgeRegion(coastline::ReleaseDirectory("."));
     std::vector<std::size_t> present;
     for (std::size_t i = 0; i < PC_DEMOS.size() + CONSOLE_DEMOS.size(); ++i) {
         if (i < PC_DEMOS.size()) {
@@ -158,9 +159,9 @@ extern "C" const char *NextAttractDemoRecording(void) {
             continue;
         }
         std::error_code error;
-        auto json = std::filesystem::path("n64") / CONSOLE_DEMOS[i - PC_DEMOS.size()].release /
-                    "attract.json";
-        if (std::filesystem::exists(json, error)) {
+        auto json = coastline::ReleaseDirectory(".") / "attract.json";
+        if (region == CONSOLE_DEMOS[i - PC_DEMOS.size()].release &&
+            std::filesystem::exists(json, error)) {
             present.push_back(i);
         }
     }
@@ -171,9 +172,7 @@ extern "C" const char *NextAttractDemoRecording(void) {
         coastline::g_demoPath = PC_DEMOS[demo];
     } else {
         coastline::g_consoleDemo = &CONSOLE_DEMOS[demo - PC_DEMOS.size()];
-        coastline::g_demoPath =
-            (std::filesystem::path("n64") / coastline::g_consoleDemo->release / "attract.dat")
-                .generic_string();
+        coastline::g_demoPath = (coastline::ReleaseDirectory(".") / "attract.dat").generic_string();
     }
     return coastline::g_demoPath.c_str();
 }

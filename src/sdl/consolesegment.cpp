@@ -11,6 +11,7 @@
 #include "cartridge/eu.h"
 #include "cartridge/jp.h"
 #include "cartridge/us.h"
+#include "language.h"
 
 namespace coastline {
 
@@ -22,7 +23,7 @@ constexpr u32 SEGMENT_BASE = 0x80200000;
 } // namespace
 
 std::optional<ConsoleSegment> ConsoleSegment::Load(const std::filesystem::path &release) {
-    auto name = release.filename().string();
+    auto name = CartridgeRegion(release);
     std::span<const unsigned char> manifest;
     if (name == "usa") {
         manifest = CARTRIDGE_US;

@@ -248,8 +248,7 @@ std::unique_ptr<MenuScreen> MenuScreen::Load(SceneRenderer &renderer,
     // The fonts of the release of the language, the same Latin glyphs as every release, with the
     // Japanese glyphs of the Japanese release.
     state->text = MenuText::Load(
-        renderer,
-        ReleaseDirectory(release.parent_path().parent_path(), SelectedLanguage()) / "fonts");
+        renderer, FontDirectory(release.parent_path().parent_path(), SelectedLanguage()));
     auto scroll = ReadSound(release / "segments" / "scrollSound.wav");
     auto select = ReadSound(release / "segments" / "selectSound.wav");
     if (!state->background || !state->titleBar || !state->mainTitle || !state->arrowLeft ||

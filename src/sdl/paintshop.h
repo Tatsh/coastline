@@ -119,7 +119,7 @@ public:
      * Read the pictures and the tables of the paint shop from the import of a release.
      *
      * @param renderer The renderer that draws the paint shop.
-     * @param release The directory of the import of the release, such as n64/usa.
+     * @param release The selected cartridge directory, n64/base of the prepared assets.
      * @param screen The menu screens, whose fades and fonts the paint shop shares.
      * @param textColors The custom colours of the text of the menus, set by the paint shop.
      * @param pak The Controller Pak the decals are saved on.

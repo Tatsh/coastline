@@ -16,6 +16,7 @@
 #include "consolesegment.h"
 #include "frontend.h"
 #include "gpu.h"
+#include "language.h"
 #include "menuscreen.h"
 #include "stringresources.h"
 
@@ -478,7 +479,7 @@ std::unique_ptr<PaintShop> PaintShop::Load(SceneRenderer &renderer,
                                            std::optional<std::array<int, 6>> &textColors,
                                            ControllerPak pak,
                                            std::filesystem::path work) {
-    auto name = release.filename().string();
+    auto name = CartridgeRegion(release);
     const auto at = std::ranges::find(RELEASE_ADDRESSES, name, &PaintShopAddresses::release);
     auto loaded = ConsoleSegment::Load(release);
     if (!loaded || at == RELEASE_ADDRESSES.end() || !loaded->Has(at->dashColorA, 12) ||

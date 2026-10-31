@@ -41,8 +41,7 @@ bool RecordImport(const std::filesystem::path &defaults, ImportSource source);
 
 /**
  * The sources of the default pack imported with an older version of their conversion than the
- * current one. A source whose files are in the pack (cars for the disc, n64/usa, n64/jpn, or
- * n64/eur for a cartridge) and that import.ini does not list counts as old.
+ * current one. Legacy source directories without version records also require a new import.
  *
  * @param defaults The directory of the default pack.
  * @return The old sources, in the order of ImportSource.
@@ -51,7 +50,7 @@ std::vector<ImportSource> StaleImports(const std::filesystem::path &defaults);
 
 /**
  * Check whether import.ini records the disc and at least one cartridge at current conversion
- * versions and every recorded file exists at its imported size.
+ * versions, the regional layout is current, and every recorded file exists at its imported size.
  *
  * @param defaults The directory of the default pack.
  * @return Whether the default pack is usable.

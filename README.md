@@ -403,7 +403,7 @@ Cancel stops the import and returns to the first step. Setup replaces the genera
 
 The data comes from a Boss Rally disc image and a Top Gear Rally cartridge image. The import
 checks the cartridge against the SHA-1 of each release, and converts the CD audio of a CUE sheet
-to FLAC. An ISO image has no CD audio. The import writes every file to `assets/default` in the
+to FLAC. An ISO image has no CD audio. The import writes converted packs under `assets` in the
 data directory, and exits. The `import` subcommand takes the disc with `--cd`, a CUE sheet (`.cue`),
 an ISO image (`.iso`), or a BIN image (`.bin`), and a ROM image with each `--rom`. A BIN uses a
 matching adjacent CUE sheet when available. Without a CUE sheet, the Mode 1 data track is imported
@@ -413,6 +413,9 @@ Supply the disc and every ROM image in the same command. A successful import rep
 packs (`default`, `boss`, `eur`, and `jpn`) and preserves mod packs. Failed or cancelled conversions
 preserve the previous assets. USA is the base when supplied; otherwise the first ROM is the base.
 `assets/default/pack.json` records the base in `baseRegion`. Every import creates `default` and `boss`.
+Additional cartridges produce `eur` and `jpn` packs with only differences from the base. Cartridge
+assets use `n64/base` within each pack. Fonts and strings from every imported language remain
+available in `default` independently of the selected region.
 
 ```shell
 coastline import --cd 'Boss Rally.cue' --rom usa.z64 --rom jpn.z64
@@ -439,8 +442,20 @@ coastline import-pak pak.mpk
 
 Each import records conversion versions in `assets/default/import.ini` and the paths and sizes
 of generated files in `assets/default/import-files.txt`. Missing files, different sizes, old
-conversion versions, or an incomplete import open setup again. Data imported without an inventory
-must be imported again.
+conversion versions, an unsupported layout, or an incomplete import prevent the game from starting
+and report the import command. Import old assets again; conversion versions remain 1.
+
+`Region` in `[Game]` selects `usa`, `eur`, or `jpn`, defaulting to the imported base. `--region`
+selects a region for a single run. An unavailable region falls back to the base. Assets are layered
+in the order `default`, the regional difference pack, and the selected `AssetPack` (`boss` or a mod).
+Each optional pack falls back directly to `default`; packs do not declare inherited packs.
+
+```ini
+[Game]
+Region = jpn
+AssetPack = boss
+Language = en-us
+```
 
 ### Language
 
@@ -449,8 +464,8 @@ must be imported again.
 language from `strings/LANGUAGE.json` in the assets, and takes the string of `strings/en-us.json`
 for each key the language lacks. The text draws with the font of the cartridge of the language,
 the European release for `en-gb`, the Japanese release for `ja`, and the USA release for `en-us`,
-or the USA release when the cartridge of the language was not imported. The splash screens and
-the menus are those of the USA release in every language.
+or the base fonts when the cartridge of the language was not imported. Region selects splash
+screens, menu models, and textures independently of Language.
 
 ```ini
 [Game]
@@ -473,7 +488,7 @@ of one release alone is only in the file of that release. The game saves to a fo
 import of the USA cartridge writes the messages that name the save folder in place of the
 Controller Pak to `strings/en-us.json` under `sdl.` keys, and every language reads them there. The
 import of the Japanese cartridge also writes the kana and kanji of its font to
-`n64/jpn/fonts/japanese.png`. Every file of strings is UTF-8.
+`fonts/jpn/japanese.png`. Every file of strings is UTF-8.
 
 The Japanese release has Japanese text only in the messages of the Controller Pak, the Rumble Pak,
 the paint shop, and the second controller. Its menus, its races, and its titles are in English,

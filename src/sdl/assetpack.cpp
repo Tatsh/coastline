@@ -130,7 +130,19 @@ std::optional<std::string> CurateAssetPacks(const std::filesystem::path &default
     for (const auto &entry : list["textures"]) {
         auto pcPath = defaults / entry["pc"].get<std::string>();
         auto pc = ReadFile(pcPath);
-        auto cartridge = ReadFile(defaults / entry["cartridge"].get<std::string>());
+        auto cartridgePath = std::filesystem::path(entry["cartridge"].get<std::string>());
+        if (cartridgePath.begin() != cartridgePath.end() &&
+            cartridgePath.generic_string().starts_with("n64/usa/") &&
+            !std::filesystem::is_directory(defaults / "n64" / "usa")) {
+            const auto relative = cartridgePath.lexically_relative("n64/usa");
+            for (const char *region : {"eur", "jpn"}) {
+                if (std::filesystem::is_directory(defaults / "n64" / region)) {
+                    cartridgePath = std::filesystem::path("n64") / region / relative;
+                    break;
+                }
+            }
+        }
+        auto cartridge = ReadFile(defaults / cartridgePath);
         if (!pc || !cartridge || *pc == *cartridge) {
             continue;
         }

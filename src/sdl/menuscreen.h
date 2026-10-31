@@ -106,7 +106,7 @@ public:
      * marker, and the sounds the screens share.
      *
      * @param renderer The renderer that draws the screens.
-     * @param release The directory of the import of the release, such as n64/usa.
+     * @param release The selected cartridge directory, n64/base of the prepared assets.
      * @return The screens, or nothing with the reason logged.
      */
     static std::unique_ptr<MenuScreen> Load(SceneRenderer &renderer,

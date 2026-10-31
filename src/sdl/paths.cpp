@@ -232,7 +232,8 @@ std::filesystem::path PackDirectory(const std::filesystem::path &data,
 std::optional<std::filesystem::path> PackAssets(const std::filesystem::path &data,
                                                 const std::filesystem::path &cache,
                                                 std::string_view pack,
-                                                const std::filesystem::path &fallback) {
+                                                const std::filesystem::path &fallback,
+                                                std::string_view region) {
     auto directory = PackDirectory(data, pack, fallback);
     std::error_code error;
     if (pack.empty() || !std::filesystem::is_directory(directory, error)) {
@@ -242,27 +243,44 @@ std::optional<std::filesystem::path> PackAssets(const std::filesystem::path &dat
     if (!base) {
         return std::nullopt;
     }
-    if (pack == DEFAULT_PACK) {
-        return base;
+    auto layer = [&](const std::filesystem::path &source, const std::filesystem::path &layered) {
+        auto selected = ExpandAliases(source, DefaultAssets(data), cache);
+        if (!selected) {
+            return false;
+        }
+        const auto stampPath = layered / LAYER_STAMP;
+        auto stamp = LayerStamp(*base, source);
+        if (!stamp || ReadStamp(stampPath) != *stamp) {
+            std::filesystem::remove_all(layered, error);
+            if (error || !LayerDirectory(*base, *selected, layered)) {
+                return false;
+            }
+            if (stamp) {
+                std::ofstream file(stampPath);
+                file << *stamp << '\n';
+                file.close();
+                if (!file) {
+                    return false;
+                }
+            }
+        }
+        base = layered;
+        return true;
+    };
+    if (!region.empty()) {
+        if ((region != "usa" && region != "eur" && region != "jpn") ||
+            !std::filesystem::is_directory(PackDirectory(data, region), error) ||
+            !layer(PackDirectory(data, region), cache / "assets" / "regions" / region)) {
+            return std::nullopt;
+        }
     }
-    auto selected = ExpandAliases(directory, DefaultAssets(data), cache);
-    if (!selected) {
+    if (pack != DEFAULT_PACK && pack != region &&
+        !layer(directory,
+               region.empty() ? cache / "assets" / pack :
+                                cache / "assets" / "selected" / region / pack)) {
         return std::nullopt;
     }
-    auto layered = cache / "assets" / pack;
-    auto stampPath = layered / LAYER_STAMP;
-    auto stamp = LayerStamp(DefaultAssets(data), directory);
-    if (stamp && ReadStamp(stampPath) == *stamp) {
-        return layered;
-    }
-    std::filesystem::remove_all(layered, error);
-    if (!LayerDirectory(*base, *selected, layered)) {
-        return std::nullopt;
-    }
-    if (stamp) {
-        std::ofstream(stampPath) << *stamp << '\n';
-    }
-    return layered;
+    return base;
 }
 
 std::optional<GamePaths> ResolveXdgPaths(const EnvironmentReader &environment,

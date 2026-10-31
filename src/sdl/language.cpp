@@ -1,5 +1,7 @@
 #include "language.h"
 
+#include "config.h"
+
 namespace coastline {
 
 namespace {
@@ -23,23 +25,25 @@ StringTable MergeStrings(StringTable fallback, const StringTable &language) {
     return fallback;
 }
 
-std::filesystem::path ReleaseDirectory(const std::filesystem::path &assets,
-                                       std::string_view language) {
-    auto release = assets / "n64" /
-                   (language == "ja"    ? "jpn" :
-                    language == "en-gb" ? "eur" :
-                                          "usa");
+std::filesystem::path ReleaseDirectory(const std::filesystem::path &assets) {
+    return assets / "n64" / "base";
+}
+
+std::string CartridgeRegion(const std::filesystem::path &release) {
+    auto region = GameConfig::Load(release / "cartridge.ini").Get("Cartridge", "Region");
+    return region && (*region == "usa" || *region == "eur" || *region == "jpn") ? *region : "";
+}
+
+std::filesystem::path FontDirectory(const std::filesystem::path &assets,
+                                    std::string_view language) {
+    auto fonts = assets / "fonts" /
+                 (language == "ja"    ? "jpn" :
+                  language == "en-gb" ? "eur" :
+                                        "usa");
     std::error_code error;
-    if (!std::filesystem::exists(release / "segment.bin", error)) {
-        for (const char *fallback : {"usa", "eur", "jpn"}) {
-            auto candidate = assets / "n64" / fallback;
-            if (std::filesystem::exists(candidate / "segment.bin", error)) {
-                return candidate;
-            }
-        }
-        return assets / "n64" / "usa";
-    }
-    return release;
+    return std::filesystem::is_regular_file(fonts / "fonts.json", error) ?
+               fonts :
+               assets / "fonts" / "base";
 }
 
 } // namespace coastline

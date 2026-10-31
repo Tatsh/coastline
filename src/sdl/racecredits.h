@@ -19,7 +19,7 @@ class SceneRenderer;
  * credits starts: the first caption, and the scrolling credits below the screen, as
  * CalculateScrollPositions() of the console places them.
  *
- * @param release The directory of the import of the release, such as n64/usa.
+ * @param release The selected cartridge directory, n64/base of the prepared assets.
  * @return Whether the release has the credits, logged when it does not.
  */
 bool StartConsoleCredits(const std::filesystem::path &release);
