@@ -313,7 +313,10 @@ if(APPLE)
   install(
     CODE [[
       include(BundleUtilities)
+      # fixup_bundle requires an absolute path, and a relative prefix is relative to the working
+      # directory of the install.
       set(_bundle "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/Coastline.app")
+      cmake_path(ABSOLUTE_PATH _bundle BASE_DIRECTORY "$ENV{PWD}" NORMALIZE)
       fixup_bundle("${_bundle}" "" "")
       execute_process(COMMAND codesign --force --deep --sign - "${_bundle}"
                       COMMAND_ERROR_IS_FATAL ANY)
