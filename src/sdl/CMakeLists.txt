@@ -175,6 +175,7 @@ add_custom_target(coastline_manifests DEPENDS ${_manifest_headers})
 # the Nintendo 64 release is shared C.
 add_library(
   coastline_sdl STATIC
+  assetimport.cpp
   assetpack.cpp
   carselect.cpp
   config.cpp

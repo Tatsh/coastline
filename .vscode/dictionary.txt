@@ -44,6 +44,7 @@ ashft
 assetchain
 assetdma
 assetfile
+assetimport
 assetnames
 assetpack
 assetsearch

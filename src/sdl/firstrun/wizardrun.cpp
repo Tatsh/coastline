@@ -11,9 +11,8 @@
 #include <system_error>
 #include <vector>
 
-#include "assetpack.h"
+#include "assetimport.h"
 #include "importer.h"
-#include "importversion.h"
 #include "scenerenderer.h"
 #include "setupwizard.h"
 #include "textfont.h"
@@ -23,13 +22,8 @@ namespace coastline {
 
 namespace {
 
-// The disc counts as this many cartridges in the progress of an import, as it takes longer.
-constexpr double DISC_SHARE = 4.0;
-
 constexpr std::array<std::string_view, WIZARD_CARTRIDGES> CARTRIDGE_NAMES{
     "USA", "European", "Japanese"};
-constexpr std::array<ImportSource, WIZARD_CARTRIDGES> CARTRIDGE_SOURCES{
-    ImportSource::Usa, ImportSource::Eur, ImportSource::Jpn};
 
 std::optional<WizardCartridge> WizardRelease(RomRelease release) {
     switch (release) {
@@ -51,64 +45,11 @@ std::optional<WizardCartridge> IdentifyCartridge(const std::filesystem::path &pa
 std::optional<std::string> ImportFiles(const std::filesystem::path &data,
                                        const WizardImport &files,
                                        const WizardProgress &progress) {
-    const std::string cancelled = "The import was cancelled.";
-    for (std::string_view pack : {"default", "boss", "eur", "jpn"}) {
-        std::error_code error;
-        std::filesystem::remove_all(data / "assets" / pack, error);
-        if (error) {
-            return Utf8FromPath(data / "assets" / pack) + " cannot be deleted: " + error.message();
-        }
-    }
-    const std::filesystem::path defaults = DefaultAssets(data);
-    auto record = [&](ImportSource source) -> std::optional<std::string> {
-        if (!RecordImport(defaults, source)) {
-            return Utf8FromPath(defaults / "import.ini") + " cannot be written.";
-        }
-        return std::nullopt;
-    };
-    const double total = static_cast<double>(files.cartridges.size()) + DISC_SHARE;
-    double done = 0.0;
+    std::vector<std::filesystem::path> roms;
     for (const auto &[release, path] : files.cartridges) {
-        auto index = static_cast<std::size_t>(release);
-        if (!progress("The " + std::string(CARTRIDGE_NAMES[index]) + " ROM image", done / total)) {
-            return cancelled;
-        }
-        if (auto imported = ImportRom(path,
-                                      defaults,
-                                      [&](const std::string &step, double fraction) {
-                                          return progress(step, (done + fraction) / total);
-                                      });
-            !imported) {
-            return imported.error();
-        }
-        if (auto failure = record(CARTRIDGE_SOURCES[index])) {
-            return failure;
-        }
-        SDL_Log("Imported the %s ROM image from %s.",
-                CARTRIDGE_NAMES[index].data(),
-                Utf8FromPath(path).c_str());
-        done += 1.0;
+        roms.push_back(path);
     }
-    auto written = ImportDisc(files.disc, defaults, [&](const std::string &step, double fraction) {
-        return progress("The disc: " + step, (done + fraction * DISC_SHARE) / total);
-    });
-    if (!written) {
-        return written.error();
-    }
-    SDL_Log("Imported %zu files from %s.", *written, Utf8FromPath(files.disc).c_str());
-    if (auto failure = record(ImportSource::Disc)) {
-        return failure;
-    }
-    if (!progress("The branded images", 1.0)) {
-        return cancelled;
-    }
-    if (auto failure = CurateAssetPacks(defaults)) {
-        return failure;
-    }
-    if (!RecordImportFiles(defaults)) {
-        return "The inventory of imported files cannot be written.";
-    }
-    return std::nullopt;
+    return ImportAssetImages(data, files.disc, roms, progress);
 }
 
 std::optional<WizardKey> KeyOf(SDL_Keycode key) {

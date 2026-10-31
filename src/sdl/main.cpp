@@ -24,6 +24,7 @@
 #include <sys/resource.h>
 #endif
 
+#include "assetimport.h"
 #include "assetpack.h"
 #include "common/framestatistics.h"
 #include "common/game.h"
@@ -620,56 +621,23 @@ void SetWindowIcon(SDL_Window *window, const std::filesystem::path &pack) {
 
 int ImportFromCommandLine(const argparse::ArgumentParser &import,
                           const std::filesystem::path &data) {
-    int status = EXIT_SUCCESS;
-    // Records that a source was imported with the current version of its conversion.
-    auto record = [&](coastline::ImportSource source) {
-        if (!coastline::RecordImport(coastline::DefaultAssets(data), source)) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "%s cannot be written.",
-                         (coastline::DefaultAssets(data) / "import.ini").string().c_str());
-            status = EXIT_FAILURE;
-        }
-    };
+    std::vector<std::filesystem::path> roms;
     for (const auto &rom : import.get<std::vector<std::string>>("--rom")) {
-        if (auto release = coastline::ImportRom(rom, coastline::DefaultAssets(data))) {
-            static constexpr const char *names[] = {"USA", "Japanese", "European"};
-            static constexpr coastline::ImportSource sources[] = {coastline::ImportSource::Usa,
-                                                                  coastline::ImportSource::Jpn,
-                                                                  coastline::ImportSource::Eur};
-            SDL_Log("Imported the %s cartridge from %s.",
-                    names[static_cast<int>(*release)],
-                    rom.c_str());
-            record(sources[static_cast<int>(*release)]);
-        } else {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", release.error().c_str());
-            status = EXIT_FAILURE;
-        }
+        roms.emplace_back(rom);
     }
-    if (auto disc = import.present("--cd")) {
-        auto written = coastline::ImportDisc(
-            *disc, coastline::DefaultAssets(data), [](const std::string &step, double fraction) {
-                SDL_Log("[%3d%%] %s", static_cast<int>(fraction * 100), step.c_str());
-                return true;
-            });
-        if (written) {
-            SDL_Log("Imported %zu files from %s.", *written, disc->c_str());
-            record(coastline::ImportSource::Disc);
-        } else {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", written.error().c_str());
-            status = EXIT_FAILURE;
-        }
-    }
-    if (auto failure = coastline::CurateAssetPacks(coastline::DefaultAssets(data))) {
+    auto failure = coastline::ImportAssetImages(
+        data,
+        import.present("--cd").value_or(""),
+        roms,
+        [](const std::string &step, double fraction) {
+            SDL_Log("[%3d%%] %s", static_cast<int>(fraction * 100), step.c_str());
+            return true;
+        });
+    if (failure) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", failure->c_str());
-        status = EXIT_FAILURE;
-    }
-    if (status == EXIT_SUCCESS && !coastline::RecordImportFiles(coastline::DefaultAssets(data))) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "The inventory of imported files cannot be written.");
-        status = EXIT_FAILURE;
     }
     coastline::StopGameLog();
-    return status;
+    return failure ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
 // The notes of the subcommand import-pak, or of export-pak when @p exporting.
@@ -760,9 +728,9 @@ int main(int argc, char *argv[]) {
         .flag();
 
     argparse::ArgumentParser import("import", "", argparse::default_arguments::help);
-    import.add_description("Copy the game data from a Boss Rally disc image and Top Gear Rally "
-                           "cartridge images, and exit. At least one of --cd and --rom is "
-                           "required.");
+    import.add_description("Import a Boss Rally disc image and every supplied Top Gear Rally ROM "
+                           "image as one batch, replacing generated packs and preserving mod "
+                           "packs. Both --cd and at least one --rom are required.");
     import.add_argument("--cd").metavar("FILE").help(
         "copy the game data and music from a Boss Rally CUE sheet (.cue) or ISO image (.iso)");
     import.add_argument("--rom")

@@ -207,6 +207,15 @@ target_compile_options(gltfdocument_test PRIVATE -Wall -Wextra -fsanitize=addres
 target_link_options(gltfdocument_test PRIVATE -fsanitize=address,undefined)
 add_test(NAME gltfdocument COMMAND gltfdocument_test)
 
+add_executable(assetimport_test assetimport_test.cpp "${_src}/sdl/assetimport.cpp"
+                              "${_src}/sdl/importversion.cpp" "${_src}/sdl/config.cpp")
+set_target_properties(assetimport_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(assetimport_test PRIVATE "${_src}/sdl")
+target_link_libraries(assetimport_test PRIVATE nlohmann_json::nlohmann_json)
+target_compile_options(assetimport_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(assetimport_test PRIVATE -fsanitize=address,undefined)
+add_test(NAME assetimport COMMAND assetimport_test)
+
 find_package(Threads REQUIRED)
 add_executable(firstrun_test firstrun_test.cpp "${_src}/sdl/firstrun/filebrowser.cpp"
                "${_src}/sdl/firstrun/setupwizard.cpp" "${_src}/sdl/firstrun/textgrid.cpp"

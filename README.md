@@ -409,6 +409,11 @@ an ISO image (`.iso`), or a BIN image (`.bin`), and a ROM image with each `--rom
 matching adjacent CUE sheet when available. Without a CUE sheet, the Mode 1 data track is imported
 without CD audio. CloneCD images (`.img` or `.ccd`) cannot be imported yet.
 
+Supply the disc and every ROM image in the same command. A successful import replaces generated
+packs (`default`, `boss`, `eur`, and `jpn`) and preserves mod packs. Failed or cancelled conversions
+preserve the previous assets. USA is the base when supplied; otherwise the first ROM is the base.
+`assets/default/pack.json` records the base in `baseRegion`. Every import creates `default` and `boss`.
+
 ```shell
 coastline import --cd 'Boss Rally.cue' --rom usa.z64 --rom jpn.z64
 ```

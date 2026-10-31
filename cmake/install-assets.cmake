@@ -66,7 +66,6 @@ function(coastline_install_assets target)
   add_custom_command(
     OUTPUT "${_stamp}"
     COMMAND "${CMAKE_COMMAND}" -E rm -f "${_stamp}"
-    COMMAND "${CMAKE_COMMAND}" -E rm -rf "${_data}"
     COMMAND ${_importer} --data-dir "${_data}" import --cd "${COASTLINE_DISC_IMAGE}" ${_rom_arguments}
     COMMAND "${CMAKE_COMMAND}" -E touch "${_stamp}"
     DEPENDS ${target} ${_inputs} "${_configuration}"
