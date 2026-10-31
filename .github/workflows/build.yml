@@ -172,6 +172,32 @@ jobs:
           if-no-files-found: 'error'
           name: 'appimage-${{ matrix.platform.name }}'
           path: '*.AppImage'
+  flatpak:
+    container:
+      image: 'ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08'
+      options: '--privileged'
+    name: 'Flatpak (${{ matrix.arch }})'
+    runs-on: '${{ matrix.os }}'
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: 'x86_64'
+            os: 'ubuntu-latest'
+          - arch: 'aarch64'
+            os: 'ubuntu-24.04-arm'
+    steps:
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          persist-credentials: false
+      # The action uploads the bundle as an artifact.
+      - uses: 'flatpak/flatpak-github-actions/flatpak-builder@79327416609af08178ad73b352877e51450790b3'
+        with:
+          arch: '${{ matrix.arch }}'
+          artifact-name: 'flatpak-${{ matrix.arch }}'
+          bundle: 'coastline-${{ matrix.arch }}.flatpak'
+          cache: false
+          manifest-path: 'flatpak/io.github.tatsh.coastline.yml'
   snap:
     name: 'Snap (${{ matrix.name }})'
     runs-on: '${{ matrix.os }}'

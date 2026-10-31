@@ -1,0 +1,32 @@
+app-id: 'io.github.tatsh.coastline'
+command: 'coastline'
+# The game imports a disc image and cartridge images from the home directory or a removable drive,
+# and reads the controllers through the input devices.
+finish-args:
+  - '--device=dri'
+  - '--device=input'
+  - '--filesystem=/media:ro'
+  - '--filesystem=/run/media:ro'
+  - '--filesystem=home:ro'
+  - '--share=ipc'
+  - '--socket=fallback-x11'
+  - '--socket=pulseaudio'
+  - '--socket=wayland'
+modules:
+  - buildsystem: 'cmake-ninja'
+    # SDL and the other libraries are the pinned releases the build downloads.
+    build-options:
+      build-args: ['--share=network']
+    builddir: true
+    config-opts:
+      - '-DCMAKE_BUILD_TYPE=Release'
+      - '-DTGR_ENABLE_PATCHES=ON'
+      - '-DTGR_PLATFORM=sdl'
+    name: 'coastline'
+    sources:
+      - path: '..'
+        skip: ['.claude', '.git', '.wiswa-ci', 'build', 'node_modules']
+        type: 'dir'
+runtime: 'org.freedesktop.Platform'
+runtime-version: '25.08'
+sdk: 'org.freedesktop.Sdk'

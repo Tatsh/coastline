@@ -447,6 +447,7 @@ filewrite
 finalrom
 finetune
 fixedh
+flathub
 fnmatch
 fogcolor
 fogenable
@@ -940,6 +941,7 @@ primitivetype
 probetlb
 profileinit
 psdk
+pulseaudio
 putfld
 pycache
 pyinstaller
