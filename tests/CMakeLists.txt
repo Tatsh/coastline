@@ -201,6 +201,29 @@ add_test(NAME sdl COMMAND sdl_test)
 
 include("${CMAKE_SOURCE_DIR}/cmake/dependencies.cmake")
 coastline_dependency(
+  SDL3
+  PACKAGE SDL3
+  FIND_ARGS CONFIG
+  URL https://github.com/libsdl-org/SDL/releases/download/release-3.4.18/SDL3-3.4.18.tar.gz
+  HASH 9c75cf16330322c217dedd2e0609f1124f1b54b8633e763467b4684d0f4334a3
+  OPTIONS SDL_SHARED=OFF SDL_STATIC=ON SDL_TEST_LIBRARY=OFF SDL_EXAMPLES=OFF SDL_TESTS=OFF
+          SDL_INSTALL=OFF SDL_VIDEO=OFF SDL_GPU=OFF SDL_RENDER=OFF SDL_CAMERA=OFF SDL_JOYSTICK=OFF
+          SDL_HAPTIC=OFF SDL_HIDAPI=OFF SDL_POWER=OFF SDL_SENSOR=OFF SDL_DIALOG=OFF SDL_TRAY=OFF
+          SDL_UNIX_CONSOLE_BUILD=ON)
+add_executable(sdlmixer_test sdlmixer_test.cpp "${_src}/sdl/music.cpp" "${_src}/common/audio.c")
+set_target_properties(sdlmixer_test PROPERTIES C_STANDARD 23 C_STANDARD_REQUIRED YES
+                                              CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(sdlmixer_test PRIVATE "${_src}" "${_src}/sdl"
+                                               "${_src}/libultra/include")
+target_compile_options(sdlmixer_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL
+                                           -UTGR_BOSS_RALLY -DTGR_BOSS_RALLY=1 -fsigned-char
+                                           -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(sdlmixer_test PRIVATE -fsanitize=address,undefined)
+target_link_libraries(sdlmixer_test PRIVATE SDL3::SDL3)
+add_test(NAME sdlmixer COMMAND sdlmixer_test)
+set_tests_properties(sdlmixer PROPERTIES ENVIRONMENT "UBSAN_OPTIONS=halt_on_error=1")
+
+coastline_dependency(
   NLOHMANN_JSON
   PACKAGE nlohmann_json
   FIND_ARGS CONFIG

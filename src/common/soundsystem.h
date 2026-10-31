@@ -10,6 +10,9 @@
 #include <stdint.h>
 
 #include "common/soundsample.h"
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "common/audio.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,6 +45,7 @@ extern const int g_adwBgmVolumeLevels[VOLUME_LEVEL_COUNT];
  */
 extern const int g_adwSfxVolumeLevels[VOLUME_LEVEL_COUNT];
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * The volume of the music, from 0 to 255.
  *
@@ -57,6 +61,7 @@ extern unsigned char g_bBgmVolume;
  * @ghidraAddress BRGlide: 0x100bb2e8
  */
 extern unsigned char g_bSfxVolume;
+#endif
 
 /** The settings of the buffer of a channel, as requested or as last applied. */
 struct SoundChannelState {

@@ -1099,6 +1099,7 @@ int main(int argc, char *argv[]) {
             const coastline::UsaMusicModule &menuModule = coastline::USA_MUSIC_MODULES[0];
             auto music = LoadMusicModule(assets, menuModule.offset);
             SetWindowIcon(window->Window(), assets);
+            coastline::N64MixerContext mixer;
             coastline::InputBindings input(config);
             coastline::EngineModels engineModels;
             coastline::EngineTextures engineTextures;

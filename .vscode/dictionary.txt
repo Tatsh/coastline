@@ -276,6 +276,7 @@ deviceremovecomplete
 devmgr
 dfiles
 dfrac
+dialog
 dialogs
 dicondition
 dideviceinstancea
@@ -1334,6 +1335,7 @@ tuco
 txls
 typeh
 typel
+ubsan
 ucode
 udivdi
 udvare

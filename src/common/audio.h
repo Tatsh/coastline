@@ -116,6 +116,7 @@ extern u8 _menuMusicSegmentRomStart[];
 extern u8 _scrollSoundSegmentRomStart[];
 extern u8 _selectSoundSegmentRomStart[];
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * The work memory of the music player, at the start of the BSS.
  *
@@ -142,6 +143,7 @@ extern s32 g_nAudioChannelCount;
  * @ghidraAddress JPN: 0x802a6c24
  */
 extern u8 g_bBgmVolume;
+#endif
 
 /**
  * The music-volume factor, from 0 to 255.
@@ -154,6 +156,7 @@ extern u8 g_bBgmVolume;
  */
 extern u8 g_bMusicVolume;
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * The volume of the sound effects the game sets.
  *
@@ -189,6 +192,7 @@ extern f32 g_afNoteFrequencies[MUSIC_NOTES];
  * @ghidraAddress JPN: 0x802a6c64
  */
 extern s32 g_dwMusicPatternRow;
+#endif
 
 /**
  * A silent sample that a channel at rest points at.
@@ -203,7 +207,9 @@ extern s32 g_dwMusicPatternRow;
 #else
 #define SILENCE_SAMPLE_BYTES 4
 #endif
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern s8 g_SilenceSampleData[SILENCE_SAMPLE_BYTES];
+#endif
 
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
@@ -261,6 +267,7 @@ extern OSMesg g_aAudioMsgBuf[2];
 extern OSTimer g_AudioTimer;
 #endif /* TGR_PLATFORM != TGR_PLATFORM_SDL */
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * The stereo ring buffer the audio interface plays.
  *
@@ -319,6 +326,7 @@ extern s32 g_bMusicPlaybackEnabled;
  * @ghidraAddress JPN: 0x8037a110
  */
 extern MusicPlayer g_MusicPlayer;
+#endif
 
 /**
  * @ghidraAddress USA: 0x80378fb8
@@ -346,7 +354,9 @@ extern u64 g_aAudioThreadStack[AUDIO_THREAD_STACK_WORDS];
  * @ghidraAddress EUR: 0x8037ba68
  * @ghidraAddress JPN: 0x8037a6d8
  */
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern u64 g_aFreqScaleTable[MUSIC_OCTAVES][MUSIC_NOTES];
+#endif
 
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
@@ -539,6 +549,48 @@ void N64InitSoundChannel(s16 channel, s8 *sample, u32 length, u32 loopLength);
  * @param loopLength The samples the channel goes back at the end, or 0 to stop.
  */
 void N64StartSoundChannelMuted(s16 channel, s8 *sample, u32 length, u32 loopLength);
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/** XM playback storage and game volumes for one SDL audio context. */
+typedef struct {
+    s32 channelCount;
+    u8 bgmVolume;
+    u8 sfxVolume;
+    u8 sfxMasterVolume;
+    f32 noteFrequencies[MUSIC_NOTES];
+    s32 patternRow;
+    s8 silence[SILENCE_SAMPLE_BYTES];
+    s16 ring[AUDIO_RING_BYTES / sizeof(s16)];
+    XmSample *instruments[128];
+    u8 *patterns[256];
+    MusicChannel channels[MIXER_CHANNELS];
+    SoundEffectSample samples[SOUND_EFFECT_CHANNELS];
+    s32 playbackEnabled;
+    MusicPlayer player;
+    u64 frequencySteps[MUSIC_OCTAVES][MUSIC_NOTES];
+    u8 moduleWork[0x100000];
+} SdlMusicState;
+
+/** @return The XM playback storage of the active SDL audio context. */
+SdlMusicState *GetSdlMusicState(void);
+
+#define g_abMusicModuleWorkBuffer (GetSdlMusicState()->moduleWork)
+#define g_nAudioChannelCount (GetSdlMusicState()->channelCount)
+#define g_bBgmVolume (GetSdlMusicState()->bgmVolume)
+#define g_bSfxMasterVolume (GetSdlMusicState()->sfxMasterVolume)
+#define g_bSfxVolume (GetSdlMusicState()->sfxVolume)
+#define g_afNoteFrequencies (GetSdlMusicState()->noteFrequencies)
+#define g_dwMusicPatternRow (GetSdlMusicState()->patternRow)
+#define g_SilenceSampleData (GetSdlMusicState()->silence)
+#define g_AudioDmaBuffer (GetSdlMusicState()->ring)
+#define g_apInstrumentData (GetSdlMusicState()->instruments)
+#define g_apPatternData (GetSdlMusicState()->patterns)
+#define g_MusicChannelStates (GetSdlMusicState()->channels)
+#define g_aSoundEffectSamples (GetSdlMusicState()->samples)
+#define g_bMusicPlaybackEnabled (GetSdlMusicState()->playbackEnabled)
+#define g_MusicPlayer (GetSdlMusicState()->player)
+#define g_aFreqScaleTable (GetSdlMusicState()->frequencySteps)
 #endif
 
 #ifdef __cplusplus

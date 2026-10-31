@@ -1,56 +1,18 @@
 #include "music.h"
 
 #include <algorithm>
+#include <array>
 #include <bit>
+#include <cassert>
 #include <cstring>
 #include <fstream>
+#include <stdexcept>
 
 extern "C" {
 #include "common/audio.h"
 }
 
-// The storage of the music player and the mixers. The console stores it in its BSS and data
-// segments, and the values are the initial values of the USA release.
 extern "C" {
-u16 g_wAudioBufferWritePos;
-MixerChannel g_aMixerChannels[MIXER_CHANNELS];
-u64 g_qwSoundEffectSampleMask;
-MixerChannel g_aSoundEffectChannels[SOUND_EFFECT_CHANNELS];
-s32 g_dwSoundEffectEchoOffset;
-// The first Play() silences this many channels. The constructor points them at the ring.
-s32 g_nAudioChannelCount = MIXER_CHANNELS;
-// The console starts at 0x24 and applies the default level of its options, 0x30, as it boots.
-u8 g_bBgmVolume = 0x30;
-u8 g_bSfxVolume = 0xFF;
-u8 g_bSfxMasterVolume = 0xFF;
-f32 g_afNoteFrequencies[MUSIC_NOTES] = {
-    std::bit_cast<f32>(0x4382D99Au),
-    std::bit_cast<f32>(0x438A999Au),
-    std::bit_cast<f32>(0x4392D99Au),
-    std::bit_cast<f32>(0x439B8CCDu),
-    std::bit_cast<f32>(0x43A4CCCDu),
-    std::bit_cast<f32>(0x43AE999Au),
-    std::bit_cast<f32>(0x43B90000u),
-    std::bit_cast<f32>(0x43C40000u),
-    std::bit_cast<f32>(0x43CFA666u),
-    std::bit_cast<f32>(0x43DC0000u),
-    std::bit_cast<f32>(0x43E9199Au),
-    std::bit_cast<f32>(0x43F6F333u),
-};
-s32 g_dwMusicPatternRow;
-s8 g_SilenceSampleData[SILENCE_SAMPLE_BYTES];
-s16 g_AudioDmaBuffer[AUDIO_RING_BYTES / sizeof(s16)];
-// The console reserves 0x200 and 0x400 bytes of pointers for these.
-XmSample *g_apInstrumentData[128];
-u8 *g_apPatternData[256];
-MusicChannel g_MusicChannelStates[MIXER_CHANNELS];
-SoundEffectSample g_aSoundEffectSamples[SOUND_EFFECT_CHANNELS];
-s32 g_bMusicPlaybackEnabled;
-MusicPlayer g_MusicPlayer;
-u64 g_aFreqScaleTable[MUSIC_OCTAVES][MUSIC_NOTES];
-// The largest module, the menu music, expands to under 300 KiB with its sample tails.
-u8 g_abMusicModuleWorkBuffer[0x100000];
-
 void osSyncPrintf(const char *format, ...) {
     va_list arguments;
     va_start(arguments, format);
@@ -70,6 +32,21 @@ constexpr u32 TICKS_PER_SECOND = 100;
 constexpr u64 SOUND_EFFECT_SAMPLE_MASK = 0xFFFEFFFEFFFEFFFEULL;
 constexpr s32 MUSIC_CHANNEL_VOLUME = 0x20;
 constexpr s32 SOUND_LEVELS_START = 0x20;
+constexpr const char *MIXER_PROPERTY = "coastline.n64-mixer";
+constexpr std::array<f32, MUSIC_NOTES> NOTE_FREQUENCIES{
+    std::bit_cast<f32>(0x4382D99Au),
+    std::bit_cast<f32>(0x438A999Au),
+    std::bit_cast<f32>(0x4392D99Au),
+    std::bit_cast<f32>(0x439B8CCDu),
+    std::bit_cast<f32>(0x43A4CCCDu),
+    std::bit_cast<f32>(0x43AE999Au),
+    std::bit_cast<f32>(0x43B90000u),
+    std::bit_cast<f32>(0x43C40000u),
+    std::bit_cast<f32>(0x43CFA666u),
+    std::bit_cast<f32>(0x43DC0000u),
+    std::bit_cast<f32>(0x43E9199Au),
+    std::bit_cast<f32>(0x43F6F333u),
+};
 
 // The mixers store a 32.32 position whose upper word is the address of the sample. The step is
 // added before each read, with the carry of the fraction into the address.
@@ -138,12 +115,6 @@ inline s32 LoadHalf(const u8 *at) {
     return half;
 }
 
-// The state of the mixers is global, and one lock covers every player. An SDL mutex is recursive.
-SDL_Mutex *MixerMutex() {
-    static SDL_Mutex *const mutex = SDL_CreateMutex();
-    return mutex;
-}
-
 // The volumes of the game as the mixers read them, copied by PublishN64Volumes().
 struct MixerVolumes {
     u8 bgm;       /*!< g_bBgmVolume. */
@@ -151,11 +122,60 @@ struct MixerVolumes {
     u8 sfxMaster; /*!< g_bSfxMasterVolume. */
     u8 sfx;       /*!< g_bSfxVolume. */
 };
-MixerVolumes g_mixerVolumes;
-
 } // namespace
 
+namespace coastline {
+
+class N64Mixer {
+public:
+    N64Mixer() {
+        if (!mutex) {
+            throw std::runtime_error("The audio mixer mutex could not be created.");
+        }
+        music.channelCount = MIXER_CHANNELS;
+        music.bgmVolume = 0x30;
+        music.sfxVolume = 0xFF;
+        music.sfxMasterVolume = 0xFF;
+        std::ranges::copy(NOTE_FREQUENCIES, music.noteFrequencies);
+    }
+
+    static N64Mixer &Get() {
+        auto *mixer = static_cast<N64Mixer *>(
+            SDL_GetPointerProperty(SDL_GetGlobalProperties(), MIXER_PROPERTY, nullptr));
+        assert(mixer != nullptr);
+        return *mixer;
+    }
+
+    SdlMixerState channels{};
+    SdlMusicState music{};
+    MixerVolumes volumes{};
+    std::unique_ptr<SDL_Mutex, decltype(&SDL_DestroyMutex)> mutex{SDL_CreateMutex(),
+                                                                  SDL_DestroyMutex};
+};
+
+N64MixerContext::N64MixerContext() : m_mixer(std::make_unique<N64Mixer>()) {
+    const auto properties = SDL_GetGlobalProperties();
+    assert(SDL_GetPointerProperty(properties, MIXER_PROPERTY, nullptr) == nullptr);
+    if (!SDL_SetPointerProperty(properties, MIXER_PROPERTY, m_mixer.get())) {
+        throw std::runtime_error("The audio mixer context could not be registered.");
+    }
+}
+
+N64MixerContext::~N64MixerContext() {
+    SDL_ClearProperty(SDL_GetGlobalProperties(), MIXER_PROPERTY);
+}
+
+} // namespace coastline
+
 extern "C" {
+
+SdlMixerState *GetSdlMixerState(void) {
+    return &coastline::N64Mixer::Get().channels;
+}
+
+SdlMusicState *GetSdlMusicState(void) {
+    return &coastline::N64Mixer::Get().music;
+}
 
 void CopyVec4(void *dst, const void *src) {
     std::memcpy(dst, src, 16);
@@ -174,8 +194,9 @@ void MemFill64Aligned(void *dst, u32 size, s32 value) {
 }
 
 void MixAudioSamples(s16 *ring, u32 bytes) {
-    MixerChannel *c = g_aMixerChannels;
-    u32 end = MixRing(ring, g_wAudioBufferWritePos, bytes, 4, [c](u8 *frame) {
+    auto &mixer = *GetSdlMixerState();
+    MixerChannel *c = mixer.musicChannels;
+    u32 end = MixRing(ring, mixer.writePosition, bytes, 4, [c](u8 *frame) {
         s32 left = NextSample(c[0]);
         s32 left2 = NextSample(c[2]);
         s32 right = NextSample(c[1]);
@@ -189,37 +210,41 @@ void MixAudioSamples(s16 *ring, u32 bytes) {
                          Add(Add(Mul(c[3].mixVolume, right2), Mul(c[1].mixVolume, right)),
                              Mul(c[5].mixVolume, right3)));
     });
-    g_wAudioBufferWritePos = static_cast<u16>(end);
+    mixer.writePosition = static_cast<u16>(end);
 }
 
 void MixAudioStereoSamples(s16 *ring, u32 bytes, u32 pairOffset) {
-    MixerChannel *c = &g_aMixerChannels[FIRST_PAIRED_CHANNEL + pairOffset / sizeof(MixerChannel)];
-    u32 end = MixRing(ring, g_wAudioBufferWritePos, bytes, 4, [c](u8 *frame) {
+    auto &mixer = *GetSdlMixerState();
+    MixerChannel *c =
+        &mixer.musicChannels[FIRST_PAIRED_CHANNEL + pairOffset / sizeof(MixerChannel)];
+    u32 end = MixRing(ring, mixer.writePosition, bytes, 4, [c](u8 *frame) {
         s32 left = Mul(c[0].mixVolume, NextSample(c[0]));
         s32 right = Mul(c[1].mixVolume, NextSample(c[1]));
         StoreHalfClipped(frame, Add(LoadHalf(frame), left));
         StoreHalfClipped(frame + 2, Add(LoadHalf(frame + 2), right));
     });
-    g_wAudioBufferWritePos = static_cast<u16>(end);
+    mixer.writePosition = static_cast<u16>(end);
 }
 
 void MixSoundEffectChannels(s16 *ring, u32 bytes, u32 offset) {
-    MixerChannel *c = g_aSoundEffectChannels;
-    MixRing(ring, offset, bytes, 8, [c](u8 *at) {
+    auto &mixer = *GetSdlMixerState();
+    MixerChannel *c = mixer.soundEffectChannels;
+    const auto echoOffset = mixer.soundEffectEchoOffset;
+    const auto mask = mixer.soundEffectSampleMask;
+    MixRing(ring, offset, bytes, 8, [c, echoOffset, mask](u8 *at) {
         for (int i = 0; i < 5; ++i) {
             u64 sum = static_cast<u64>(c[i].fraction) + c[i].step;
             c[i].sample += static_cast<s64>(sum >> 32);
             c[i].fraction = static_cast<u32>(sum);
         }
         // Channel 0 adds its echo, a second sample at a fixed distance, when one is set.
-        s32 echo = g_dwSoundEffectEchoOffset != 0 ? c[0].sample[g_dwSoundEffectEchoOffset] : 0;
+        s32 echo = echoOffset != 0 ? c[0].sample[echoOffset] : 0;
         s32 mixed = Mul(c[0].mixVolume, echo + c[0].sample[0]);
         for (int i = 1; i < 5; ++i) {
             mixed = Add(mixed, Mul(c[i].mixVolume, c[i].sample[0]));
         }
         // The processor has the 32-bit sum sign-extended in a 64-bit register, and the mask
         // preserves its upper bits.
-        u64 mask = g_qwSoundEffectSampleMask;
         u64 frame = static_cast<u64>(static_cast<s64>(mixed)) & mask;
         u64 doubled = (frame << 32) + frame;
         // The doubleword of the ring is big-endian on the console: four halfwords in order.
@@ -238,38 +263,42 @@ void MixSoundEffectChannels(s16 *ring, u32 bytes, u32 offset) {
 
 namespace coastline {
 
-N64MixerLock::N64MixerLock() {
-    SDL_LockMutex(MixerMutex());
+N64MixerLock::N64MixerLock() : m_mutex(N64Mixer::Get().mutex.get()) {
+    SDL_LockMutex(m_mutex);
 }
 
 N64MixerLock::~N64MixerLock() {
-    SDL_UnlockMutex(MixerMutex());
+    SDL_UnlockMutex(m_mutex);
 }
 
 void PublishN64Volumes() {
     N64MixerLock lock;
-    g_mixerVolumes = {g_bBgmVolume, g_bMusicVolume, g_bSfxMasterVolume, g_bSfxVolume};
+    auto &mixer = N64Mixer::Get();
+    mixer.volumes = {
+        mixer.music.bgmVolume, g_bMusicVolume, mixer.music.sfxMasterVolume, mixer.music.sfxVolume};
 }
 
-N64Audio::N64Audio() {
+N64Audio::N64Audio() : m_mixer(N64Mixer::Get()) {
     // Another player may be mixing the same channels.
     N64MixerLock lock;
     PublishN64Volumes();
     // InitAudioSystem() of the console, without the interface and the thread.
-    std::ranges::fill(g_AudioDmaBuffer, 0);
-    g_qwSoundEffectSampleMask = SOUND_EFFECT_SAMPLE_MASK;
+    auto &music = m_mixer.music;
+    auto &mixer = m_mixer.channels;
+    std::ranges::fill(music.ring, 0);
+    mixer.soundEffectSampleMask = SOUND_EFFECT_SAMPLE_MASK;
     for (int i = 0; i < MIXER_CHANNELS; ++i) {
-        g_aMixerChannels[i].sample = reinterpret_cast<s8 *>(g_AudioDmaBuffer);
-        g_aMixerChannels[i].step = 0;
-        g_aMixerChannels[i].volume = MUSIC_CHANNEL_VOLUME;
+        mixer.musicChannels[i].sample = reinterpret_cast<s8 *>(music.ring);
+        mixer.musicChannels[i].step = 0;
+        mixer.musicChannels[i].volume = MUSIC_CHANNEL_VOLUME;
     }
-    for (auto &channel : g_aSoundEffectChannels) {
-        channel.sample = g_SilenceSampleData;
+    for (auto &channel : mixer.soundEffectChannels) {
+        channel.sample = music.silence;
         channel.step = 0;
         channel.volume = SOUND_LEVELS_START;
     }
-    g_wAudioBufferWritePos = 0;
-    MixAudioSamples(g_AudioDmaBuffer, RING_BYTES);
+    mixer.writePosition = 0;
+    MixAudioSamples(music.ring, RING_BYTES);
     BuildFrequencyScaleTable();
     // osAiSetNextBuffer() queues the whole ring, and the interface plays it from its start.
     m_aiLength = RING_BYTES;
@@ -300,18 +329,18 @@ void N64Audio::Play(std::span<const std::uint8_t> module) {
     // LoadAndPlayTrackBgm() of the console silences the channels before a new module. The
     // channels otherwise play the notes of the old module on from their samples.
     ResetMusicPlaybackState();
-    InitMusicPlayback(m_module.data(), g_abMusicModuleWorkBuffer);
+    InitMusicPlayback(m_module.data(), m_mixer.music.moduleWork);
 }
 
 void N64Audio::Stop() {
     N64MixerLock lock;
-    g_bMusicPlaybackEnabled = FALSE;
+    m_mixer.music.playbackEnabled = FALSE;
     ResetMusicChannels();
     // The channels otherwise loop the samples of their last notes. A channel stopped on the ring
     // would read the mixed output back as a level that steps each time the ring is mixed again.
-    for (int i = 0; i < g_nAudioChannelCount; ++i) {
-        g_aMixerChannels[i].sample = g_SilenceSampleData;
-        g_aMixerChannels[i].step = 0;
+    for (int i = 0; i < m_mixer.music.channelCount; ++i) {
+        m_mixer.channels.musicChannels[i].sample = m_mixer.music.silence;
+        m_mixer.channels.musicChannels[i].step = 0;
     }
 }
 
@@ -329,6 +358,9 @@ void N64Audio::SetMusicGain(float gain) {
 }
 
 void N64Audio::Tick(std::vector<std::int16_t> &output) {
+    auto &music = m_mixer.music;
+    auto &mixer = m_mixer.channels;
+    const auto &volumes = m_mixer.volumes;
     // The interface plays a tick's worth of the ring. Its length register counts down in
     // doublewords, and the thread queues the ring again before it runs dry.
     m_aiRemainder += static_cast<u64>(N64_AUDIO_RATE) * 4;
@@ -336,23 +368,22 @@ void N64Audio::Tick(std::vector<std::int16_t> &output) {
     m_aiRemainder -= static_cast<u64>(played) * TICKS_PER_SECOND;
     u32 start = RING_BYTES - m_aiLength;
     for (u32 i = 0; i < played; i += 2) {
-        output.push_back(g_AudioDmaBuffer[((start + i) % RING_BYTES) / 2]);
+        output.push_back(music.ring[((start + i) % RING_BYTES) / 2]);
     }
     m_aiLength = m_aiLength > played ? m_aiLength - played : m_aiLength + RING_BYTES - played;
 
     // AudioMixingThreadMain() of the console, one message of the timer.
     m_musicTick = !m_musicTick;
-    for (int i = 0; i < g_nAudioChannelCount; ++i) {
-        MixerChannel &channel = g_aMixerChannels[i];
-        channel.mixVolume =
-            static_cast<s32>((static_cast<std::uint64_t>(channel.volume) * g_mixerVolumes.bgm *
-                              g_mixerVolumes.music * m_musicGain) >>
-                             24);
+    for (int i = 0; i < music.channelCount; ++i) {
+        MixerChannel &channel = mixer.musicChannels[i];
+        channel.mixVolume = static_cast<s32>((static_cast<std::uint64_t>(channel.volume) *
+                                              volumes.bgm * volumes.music * m_musicGain) >>
+                                             24);
     }
-    for (auto &channel : g_aSoundEffectChannels) {
+    for (auto &channel : mixer.soundEffectChannels) {
         u32 levels = static_cast<u32>(channel.volume);
-        u8 master = g_mixerVolumes.sfxMaster;
-        u8 sfx = g_mixerVolumes.sfx;
+        u8 master = volumes.sfxMaster;
+        u8 sfx = volumes.sfx;
         channel.mixVolume = static_cast<s32>(((((levels >> 16) * master * sfx) >> 16) << 16) +
                                              (((levels & 0xFFFF) * master * sfx) >> 16));
     }
@@ -367,14 +398,14 @@ void N64Audio::Tick(std::vector<std::int16_t> &output) {
         mixBytes += RING_BYTES;
     }
     CheckMusicLoopPoints();
-    if (m_musicTick && g_bMusicPlaybackEnabled) {
+    if (m_musicTick && music.playbackEnabled) {
         UpdateMusicPlayback();
     }
-    u16 writePos = g_wAudioBufferWritePos;
-    MixAudioSamples(g_AudioDmaBuffer, static_cast<u32>(mixBytes));
-    for (s32 i = FIRST_PAIRED_CHANNEL; i < g_nAudioChannelCount; i += 2) {
-        g_wAudioBufferWritePos = writePos;
-        MixAudioStereoSamples(g_AudioDmaBuffer,
+    u16 writePos = mixer.writePosition;
+    MixAudioSamples(music.ring, static_cast<u32>(mixBytes));
+    for (s32 i = FIRST_PAIRED_CHANNEL; i < music.channelCount; i += 2) {
+        mixer.writePosition = writePos;
+        MixAudioStereoSamples(music.ring,
                               static_cast<u32>(mixBytes),
                               (i - FIRST_PAIRED_CHANNEL) * sizeof(MixerChannel));
     }
@@ -383,7 +414,7 @@ void N64Audio::Tick(std::vector<std::int16_t> &output) {
     if (bytes > RING_BYTES) {
         bytes -= RING_BYTES;
     }
-    MixSoundEffectChannels(g_AudioDmaBuffer, bytes, offset);
+    MixSoundEffectChannels(music.ring, bytes, offset);
     CheckSoundEffectLoopPoints();
     m_soundEffectMixOffset += bytes;
     if (m_soundEffectMixOffset > RING_BYTES) {

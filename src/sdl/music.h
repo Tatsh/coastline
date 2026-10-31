@@ -12,6 +12,20 @@
 
 namespace coastline {
 
+class N64Mixer;
+
+/** Mixer channels, XM storage, and synchronisation for one SDL audio session. */
+class N64MixerContext {
+public:
+    N64MixerContext();
+    ~N64MixerContext();
+    N64MixerContext(const N64MixerContext &) = delete;
+    N64MixerContext &operator=(const N64MixerContext &) = delete;
+
+private:
+    std::unique_ptr<N64Mixer> m_mixer;
+};
+
 /** The rate the music plays at, as the audio interface of the console sets it for 21,998 Hz. */
 inline constexpr int N64_AUDIO_RATE = 21998;
 
@@ -74,6 +88,7 @@ private:
                                        int additional,
                                        int total);
 
+    N64Mixer &m_mixer;
     SDL_AudioStream *m_stream = nullptr;
     std::vector<std::uint8_t> m_module;
     std::uint32_t m_aiLength = 0;
@@ -98,6 +113,9 @@ public:
     ~N64MixerLock();
     N64MixerLock(const N64MixerLock &) = delete;
     N64MixerLock &operator=(const N64MixerLock &) = delete;
+
+private:
+    SDL_Mutex *m_mutex;
 };
 
 /**

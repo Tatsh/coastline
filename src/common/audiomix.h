@@ -34,6 +34,25 @@ typedef struct {
 /** The channels of the sound effect mixer. */
 #define SOUND_EFFECT_CHANNELS 6
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/** Mixer channels and write position for one SDL audio context. */
+typedef struct {
+    u16 writePosition;
+    MixerChannel musicChannels[MIXER_CHANNELS];
+    u64 soundEffectSampleMask;
+    MixerChannel soundEffectChannels[SOUND_EFFECT_CHANNELS];
+    s32 soundEffectEchoOffset;
+} SdlMixerState;
+
+/** @return The mixer storage of the active SDL audio context. */
+SdlMixerState *GetSdlMixerState(void);
+
+#define g_wAudioBufferWritePos (GetSdlMixerState()->writePosition)
+#define g_aMixerChannels (GetSdlMixerState()->musicChannels)
+#define g_qwSoundEffectSampleMask (GetSdlMixerState()->soundEffectSampleMask)
+#define g_aSoundEffectChannels (GetSdlMixerState()->soundEffectChannels)
+#define g_dwSoundEffectEchoOffset (GetSdlMixerState()->soundEffectEchoOffset)
+#else
 /**
  * The write position in the stereo ring buffer of the music mixers.
  *
@@ -79,6 +98,7 @@ extern MixerChannel g_aSoundEffectChannels[SOUND_EFFECT_CHANNELS];
  * @ghidraAddress JPN: 0x802a6c10
  */
 extern s32 g_dwSoundEffectEchoOffset;
+#endif
 
 /**
  * Copy 16 bytes between 8-byte aligned addresses.
