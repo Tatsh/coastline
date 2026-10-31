@@ -17,7 +17,8 @@ MixerChannel g_aMixerChannels[MIXER_CHANNELS];
 u64 g_qwSoundEffectSampleMask;
 MixerChannel g_aSoundEffectChannels[SOUND_EFFECT_CHANNELS];
 s32 g_dwSoundEffectEchoOffset;
-s32 g_nAudioChannelCount;
+// The first Play() silences this many channels. The constructor points them at the ring.
+s32 g_nAudioChannelCount = MIXER_CHANNELS;
 // The console starts at 0x24 and applies the default level of its options, 0x30, as it boots.
 u8 g_bBgmVolume = 0x30;
 u8 g_bSfxVolume = 0xFF;
@@ -287,9 +288,10 @@ void N64Audio::Stop() {
     }
     g_bMusicPlaybackEnabled = FALSE;
     ResetMusicChannels();
-    // The channels otherwise loop the samples of their last notes.
+    // The channels otherwise loop the samples of their last notes. A channel stopped on the ring
+    // would read the mixed output back as a level that steps each time the ring is mixed again.
     for (int i = 0; i < g_nAudioChannelCount; ++i) {
-        g_aMixerChannels[i].sample = reinterpret_cast<s8 *>(g_AudioDmaBuffer);
+        g_aMixerChannels[i].sample = g_SilenceSampleData;
         g_aMixerChannels[i].step = 0;
     }
     if (m_stream != nullptr) {
