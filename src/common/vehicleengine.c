@@ -103,6 +103,26 @@ typedef f32 EngineReal;
 
 #define ABS_OF(x) ((x) < 0.0f ? -(x) : (x))
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/* A car a player steers with a controller: not a computer's car, the autopilot, the ghost, or the
+ * recording of a demo. */
+static s32 IsSteeredByPlayer(Vehicle *vehicle) {
+    return VEHICLE_GET(vehicle, Driver) == PlayerVehicleControllerCallback &&
+           VEHICLE_GET(vehicle, Index) < (s32)g_dwNumLocalPlayers &&
+           g_dwGameMode != GAME_MODE_DEMO && g_dwGameMode != GAME_MODE_AFTER_SEASON;
+}
+
+/* The lock, the rate, and the loss of lock with the speed of a handling type of the console, the
+ * three the car select screen of the SDL game offers. Returns the gain in degrees for the whole
+ * stick. */
+static f32 SetConsoleHandling(s32 handling) {
+    g_fSteerLock = handling == 2 ? 17.0f : 14.0f;
+    g_fSteerRate = handling == 2 ? 0.1f : 0.01f;
+    g_fSteerLockLoss = handling == 2 ? 14.0f : 10.0f;
+    return handling == 2 ? 16.0f : (handling == 1 ? 3.0f : 6.0f);
+}
+#endif
+
 /* Steer the front wheels towards the stick, faster back towards the middle. */
 static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
     Vec3f local;
@@ -151,31 +171,7 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
         kph = 340.0f;
     }
     kph = kph - 140.0f;
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-    /* The SDL game offers the three handling types of the console, and steers by them as the
-     * console does. */
-    switch (VEHICLE_GET(vehicle, SteeringMode)) {
-    case 1:
-        g_fSteerLock = 14.0f;
-        g_fSteerRate = 0.01f;
-        g_fSteerLockLoss = 10.0f;
-        gain = 3.0L;
-        break;
-    case 2:
-        g_fSteerLock = 17.0f;
-        g_fSteerRate = 0.1f;
-        g_fSteerLockLoss = 14.0f;
-        gain = 16.0L;
-        break;
-    default:
-        g_fSteerLock = 14.0f;
-        g_fSteerRate = 0.01f;
-        g_fSteerLockLoss = 10.0f;
-        gain = 6.0L;
-        break;
-    }
-    g_wSteerGainSpeedShare = 0;
-#elif TGR_BOSS_RALLY
+#if TGR_BOSS_RALLY
     switch (VEHICLE_GET(vehicle, SteeringMode)) {
     case 0:
         g_fSteerRate = 0.008f;
@@ -213,6 +209,11 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
     g_fSteerLock = (u32)VEHICLE_GET(vehicle, SteeringMode) <= 6 ? 14.0f : 17.0f;
     g_fSteerLockLoss = (u32)VEHICLE_GET(vehicle, SteeringMode) <= 6 ? 10.0f : 14.0f;
     g_wSteerGainSpeedShare = 0;
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    if (IsSteeredByPlayer(vehicle)) {
+        gain = SetConsoleHandling(VEHICLE_GET(vehicle, SteeringMode));
+    }
+#endif
 #else
     switch (vehicle->steeringMode) {
     case 0:
@@ -357,8 +358,14 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
     s32 gear;
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
-    /* The stick and the keys steer towards the stick, by the handling, as on the console. */
-    SteerByStick(vehicle, stick);
+    /* The stick and the keys of a player steer by the handling, as on the console. */
+    if (IsSteeredByPlayer(vehicle)) {
+        SteerByStick(vehicle, stick);
+    } else if (IsVehicleControlAnalogue(0) || IsVehicleControlAnalogue(1)) {
+        SteerVehicleByAnalogueInput(vehicle, stick);
+    } else {
+        SteerByStick(vehicle, stick);
+    }
 #elif TGR_BOSS_RALLY
     if (IsVehicleControlAnalogue(0) || IsVehicleControlAnalogue(1)) {
         SteerVehicleByAnalogueInput(vehicle, stick);

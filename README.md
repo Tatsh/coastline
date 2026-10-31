@@ -152,9 +152,10 @@ rest of the travel reads as it is. The default of `0.07` matches the dead zone o
 the Nintendo 64 release. A worn stick that steers or cancels the directional pad at rest needs a
 larger value.
 
-A race steers by the handling chosen on the car select screen, as the Nintendo 64 release does.
-The wheels turn towards the stick at a rate of the handling and return to the middle at once, and
-a stick pushed past 72% of its travel takes the whole lock, which narrows with the speed.
+The car of a player steers by the handling chosen on the car select screen, as the Nintendo 64
+release does. The wheels turn towards the stick at a rate of the handling and return to the middle
+at once, and a stick pushed past 72% of its travel takes the whole lock, which narrows with the
+speed. The computer's cars and `--autopilot` steer as in the PC release.
 
 ```ini
 [Controls]
