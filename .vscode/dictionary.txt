@@ -142,6 +142,7 @@ chdrive
 cheryll
 chewbaca
 chnl
+choco
 ckid
 cksize
 clatest
@@ -177,6 +178,7 @@ cosf
 counselor
 counterclockwise
 coveragerc
+cpack
 cpdext
 cpdist
 cplens
@@ -426,6 +428,7 @@ erasebkgnd
 eret
 errck
 errorabort
+esac
 esbenp
 exceptasm
 excmask
@@ -684,6 +687,7 @@ lmask
 lnext
 loadcar
 loadtlut
+localappdata
 lods
 logondenied
 loguy
@@ -725,7 +729,9 @@ maind
 mainmenu
 mainpage
 makeintresourcea
+makensis
 manpages
+mapfile
 maptlbrdb
 maskt
 matchscan
@@ -843,6 +849,7 @@ nostdinc
 nostdlib
 notlobbied
 notloggedin
+nsis
 ntdll
 ntrj
 ntrp

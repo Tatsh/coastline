@@ -335,3 +335,23 @@ if(NOT WIN32 AND NOT APPLE)
 endif()
 install(FILES "${CMAKE_SOURCE_DIR}/LICENSE.txt" "${CMAKE_SOURCE_DIR}/README.md"
         DESTINATION "${CMAKE_INSTALL_DOCDIR}")
+
+if(WIN32)
+  # cpack builds an NSIS installer that installs for the current user without elevation. The
+  # option of PATH lets the game be run from a terminal to import the data.
+  set(CPACK_CREATE_DESKTOP_LINKS ${CMAKE_PROJECT_NAME})
+  set(CPACK_GENERATOR NSIS)
+  set(CPACK_NSIS_DEFINES "RequestExecutionLevel user")
+  set(CPACK_NSIS_DISPLAY_NAME "Coastline")
+  set(CPACK_NSIS_INSTALLED_ICON_NAME "${CMAKE_INSTALL_BINDIR}\\\\${CMAKE_PROJECT_NAME}.exe")
+  set(CPACK_NSIS_INSTALL_ROOT "$LOCALAPPDATA\\\\Programs")
+  set(CPACK_NSIS_MANIFEST_DPI_AWARE ON)
+  set(CPACK_NSIS_MODIFY_PATH ON)
+  set(CPACK_NSIS_PACKAGE_NAME "Coastline")
+  set(CPACK_NSIS_URL_INFO_ABOUT "https://github.com/Tatsh/coastline")
+  set(CPACK_PACKAGE_EXECUTABLES "${CMAKE_PROJECT_NAME};Coastline")
+  set(CPACK_PACKAGE_INSTALL_DIRECTORY "Coastline")
+  set(CPACK_PACKAGE_VENDOR "Tatsh")
+  set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE.txt")
+  include(CPack)
+endif()
