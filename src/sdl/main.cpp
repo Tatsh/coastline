@@ -271,13 +271,24 @@ struct DisplayKeys {
     }
 };
 
-// RecordFrameTime() of BRD3D: the milliseconds since the frame before, in the samples
-// DrawFpsCounterOverlay() averages.
-void RecordFrameTime() {
-    static unsigned last = GetHighResolutionTime();
+class FrameRateOverlay {
+public:
+    void Record();
+    void Draw(coastline::SceneRenderer &renderer, const coastline::MenuText &text);
+
+private:
+    std::optional<unsigned> m_last;
+    float m_rate = 30.0f;
+};
+
+// RecordFrameTime() of BRD3D measures milliseconds between frames for DrawFpsCounterOverlay().
+void FrameRateOverlay::Record() {
+    if (!m_last) {
+        m_last = GetHighResolutionTime();
+    }
     unsigned now = GetHighResolutionTime();
-    unsigned delta = now - last;
-    last = now;
+    unsigned delta = now - *m_last;
+    m_last = now;
     int entry = g_dwFpsFrameCountdown;
     if (entry < 0) {
         // The first frame fills every sample with its time.
@@ -319,18 +330,17 @@ void DrawOverlayLine(coastline::SceneRenderer &renderer,
 
 // DrawFpsCounterOverlay() on the screens outside a race: the rate of the samples, updated as they
 // wrap, 10 above the bottom of the screen.
-void DrawFrameRate(coastline::SceneRenderer &renderer, const coastline::MenuText &text) {
-    static float rate = 30.0f;
+void FrameRateOverlay::Draw(coastline::SceneRenderer &renderer, const coastline::MenuText &text) {
     if (g_dwFpsFrameCountdown == 0) {
         unsigned total = 0;
         for (int index = 0; index < g_dwFpsSampleFrames; ++index) {
             total += g_adwFpsFrameTimeSamples[index];
         }
-        rate = static_cast<float>(g_dwFpsSampleFrames) * 1000.0f /
-               static_cast<float>(std::max(total, 1u));
+        m_rate = static_cast<float>(g_dwFpsSampleFrames) * 1000.0f /
+                 static_cast<float>(std::max(total, 1u));
     }
     char line[32];
-    std::snprintf(line, sizeof(line), "%6.2f FPS", static_cast<double>(rate));
+    std::snprintf(line, sizeof(line), "%6.2f FPS", static_cast<double>(m_rate));
     DrawOverlayLine(renderer, text, line, 470);
 }
 
@@ -1192,6 +1202,7 @@ int main(int argc, char *argv[]) {
             Uint64 rateStart = lastTicks;
             int rateFrames = 0;
             DisplayKeys displayKeys;
+            FrameRateOverlay frameRateOverlay;
             std::uint16_t lastButtons = 0;
             std::uint16_t lastSecondButtons = 0;
             bool running = true;
@@ -1541,7 +1552,7 @@ int main(int argc, char *argv[]) {
                     // statistics draw it in their state.
                     if (g_bShowFpsCounter == 1 && frameRateText &&
                         (frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::MainMenu)) {
-                        DrawFrameRate(*sceneRenderer, *frameRateText);
+                        frameRateOverlay.Draw(*sceneRenderer, *frameRateText);
                     }
                     if (reimportNoticeSeconds > 0.0f && frameRateText &&
                         (frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::MainMenu)) {
@@ -1624,7 +1635,7 @@ int main(int argc, char *argv[]) {
                     window->PresentClear(SDL_FColor{red, green, blue, 1.0f},
                                          framePath ? &*framePath : nullptr);
                 }
-                RecordFrameTime();
+                frameRateOverlay.Record();
                 const auto frameFinished = SDL_GetTicksNS();
                 if (performanceStats) {
                     const auto wait = window->PresentationWaitNanoseconds() - waitStarted;
