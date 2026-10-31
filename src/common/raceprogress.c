@@ -322,7 +322,11 @@ ReachNewGate(RacerSlot *slot, Vehicle *vehicle, s32 next, f32 lapTime, f32 gapFa
             return;
         }
     }
-#if TGR_BOSS_RALLY
+#if TGR_BOSS_RALLY && TGR_PLATFORM == TGR_PLATFORM_SDL
+    /* The SDL game has the Time Attack of the N64, which passes no checkpoint. */
+    if ((g_dwGameMode == GAME_MODE_ARCADE || g_dwGameMode == GAME_MODE_NETWORK) &&
+        RACER_SLOT_GET(slot, Index) < (s32)g_dwNumLocalPlayers) {
+#elif TGR_BOSS_RALLY
     if ((g_dwGameMode == GAME_MODE_ARCADE || g_dwGameMode == GAME_MODE_NETWORK ||
          g_dwGameMode == GAME_MODE_TIME_ATTACK) &&
         RACER_SLOT_GET(slot, Index) < (s32)g_dwNumLocalPlayers) {
