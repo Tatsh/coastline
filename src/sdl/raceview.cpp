@@ -67,6 +67,7 @@
 #include "racecredits.h"
 #include "racedemo.h"
 #include "scenerenderer.h"
+#include "trackload.h"
 
 namespace coastline {
 
@@ -578,6 +579,15 @@ struct CarDamageMasks {
     std::array<std::vector<std::uint8_t>, CAR_DAMAGE_LEVELS> masks;
 };
 
+// The vertices of the car of a vehicle as DeformVehicleMeshByImpact() has moved them: the dents of
+// the sides and the car they were taken from, and the displacement of the vertices of its document,
+// none for a car without a dent.
+struct CarDents {
+    std::array<s16, VEHICLE_DENT_SIDES> sides{};
+    CarKey key{};
+    std::shared_ptr<const VertexDisplacement> displacement;
+};
+
 struct RaceView::State {
     std::filesystem::path defaults;
     std::unique_ptr<RenderModel> track;
@@ -599,6 +609,8 @@ struct RaceView::State {
     // The shadow of the car, the 8-bit intensities of the engine, the alpha the shade.
     std::unique_ptr<RenderTexture> shadowTexture;
     CarDamageMasks damage;
+    // The dents of the car of each vehicle, by the vehicle.
+    std::map<int, CarDents> dents;
     // LoadParticleTexture(): the 64 by 64 intensities of a puff of smoke.
     std::unique_ptr<RenderTexture> particleTexture;
     // LoadTireTrailTexture(): the 32 by 64 intensities of 4 bits of the spray of the tyres.
@@ -2345,6 +2357,26 @@ void RaceView::DrawView(SceneRenderer &renderer,
                                                    static_cast<long double>(glare.behind) * -0.5f));
 }
 
+namespace {
+
+// The displacement of the vertices of the car of a vehicle, made again when its dents change.
+std::shared_ptr<const VertexDisplacement> DentDisplacement(SceneRenderer &renderer,
+                                                           CarDents &dents,
+                                                           const Vehicle &car,
+                                                           const CarKey &key,
+                                                           const RenderModel &model) {
+    const auto &sides = car.GetDents();
+    if (!std::ranges::equal(sides, dents.sides) || key != dents.key) {
+        std::ranges::copy(sides, dents.sides.begin());
+        dents.key = key;
+        auto offsets = CarDentOffsets(car.GetModel(), model.Positions());
+        dents.displacement = offsets.empty() ? nullptr : renderer.CreateDisplacement(offsets);
+    }
+    return dents.displacement;
+}
+
+} // namespace
+
 // RenderVehicleModel() of a car in a view.
 void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     State &s = *m_state;
@@ -2420,6 +2452,9 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     CarDamage damage{};
     std::ranges::copy(car.GetDamageTextureLevels(), damage.begin());
     renderer.SetDamage(damage);
+    // The body takes the dents the race gives the vertices of the engine, and the wheels do not.
+    renderer.SetDisplacement(
+        DentDisplacement(renderer, s.dents[vehicleIndex], car, key, *models.levels[0]->paint));
     const Lighting &carLighting = view.lighting;
     Matrix4 body = MultiplyMatrices(FrameMatrix(frame), ConsoleSpace());
     Reflection reflection =
@@ -2454,6 +2489,7 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     }
     // RenderWheelModels(): each wheel at the matrix the race gives it, in snow the wheel of the
     // snow.
+    renderer.SetDisplacement(nullptr);
     const RenderModel &wheel = g_dwSnowMode && models.snowWheel ? *models.snowWheel : *models.wheel;
     for (const auto &rows : car.GetWheelMatrices()) {
         Matrix4 place{};

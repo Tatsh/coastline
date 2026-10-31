@@ -10,9 +10,14 @@
 #include <algorithm>
 #include <array>
 #include <bit>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
+#include <map>
+#include <set>
 #include <type_traits>
+#include <unordered_map>
+#include <utility>
 
 #include <SDL3/SDL.h>
 
@@ -91,6 +96,45 @@ private:
 
 // The pool is static data, addressed by a 32-bit offset from the anchor.
 ConvertedModelVertex g_afModelVertexPool[MODEL_VERTEX_POOL_SIZE];
+
+// The vertices of each car DeformVehicleMeshByImpact() moves, each with where it rested as the car
+// loaded.
+std::map<const VehicleModel *, std::vector<std::pair<const ConvertedModelVertex *, Vec3f>>>
+    g_carRestPositions;
+
+// The vertices the commands of the display lists of a car load, as DeformVehicleMeshByImpact()
+// walks the lists.
+void RecordCarRestPositions(const VehicleModel *model) {
+    auto &rest = g_carRestPositions[model];
+    rest.clear();
+    std::set<const ConvertedModelVertex *> recorded;
+    for (const auto &lod : model->displayLists) {
+        for (const auto &list : lod) {
+            for (const GbiCommand *command = list;
+                 command != nullptr && command->w0 >> 24 != GBI_OP_END_DISPLAY_LIST;
+                 ++command) {
+                const ConvertedModelVertex *vertex = command->vertexData.pConverted;
+                if (command->w0 >> 24 != GBI_OP_VERTEX || vertex == nullptr) {
+                    continue;
+                }
+                for (unsigned count = command->w0 >> 10 & 0x3f; count != 0; --count, ++vertex) {
+                    if (recorded.insert(vertex).second) {
+                        rest.emplace_back(vertex, vertex->position);
+                    }
+                }
+            }
+        }
+    }
+}
+
+// A position of a model, whose coordinates are those of the vertices of the console.
+std::uint64_t PackPosition(float x, float y, float z) {
+    return static_cast<std::uint64_t>(static_cast<std::uint16_t>(static_cast<std::int16_t>(x))) |
+           static_cast<std::uint64_t>(static_cast<std::uint16_t>(static_cast<std::int16_t>(y)))
+               << 16 |
+           static_cast<std::uint64_t>(static_cast<std::uint16_t>(static_cast<std::int16_t>(z)))
+               << 32;
+}
 
 ConvertedModelVertex *ModelLoader::AllocateVertices(int count) {
     if (poolUsed + static_cast<std::size_t>(count) > MODEL_VERTEX_POOL_SIZE) {
@@ -228,6 +272,34 @@ unsigned ConvertedVertexCount() {
     return ModelLoader::Get().convertedVertexCount;
 }
 
+std::vector<std::array<float, 3>> CarDentOffsets(const VehicleModel *model,
+                                                 std::span<const std::array<float, 3>> rest) {
+    auto found = g_carRestPositions.find(model);
+    if (found == g_carRestPositions.end()) {
+        return {};
+    }
+    std::unordered_map<std::uint64_t, std::array<float, 3>> moved;
+    for (const auto &[vertex, position] : found->second) {
+        std::array<float, 3> offset{vertex->position.x - position.x,
+                                    vertex->position.y - position.y,
+                                    vertex->position.z - position.z};
+        if (offset != std::array<float, 3>{}) {
+            moved.try_emplace(PackPosition(position.x, position.y, position.z), offset);
+        }
+    }
+    if (moved.empty()) {
+        return {};
+    }
+    std::vector<std::array<float, 3>> offsets(rest.size());
+    for (std::size_t i = 0; i < rest.size(); ++i) {
+        auto offset = moved.find(PackPosition(rest[i][0], rest[i][1], rest[i][2]));
+        if (offset != moved.end()) {
+            offsets[i] = offset->second;
+        }
+    }
+    return offsets;
+}
+
 } // namespace coastline
 
 using coastline::ModelLoader;
@@ -282,6 +354,7 @@ void SetCopyTextureDataOnRelocate(int bCopy) {
 void ResetModelDataPool(void) {
     ModelLoader::Get().convertedVertexCount = 0;
     ModelLoader::Get().poolUsed = 0;
+    coastline::g_carRestPositions.clear();
 }
 
 void ByteSwapArray16(unsigned short *pData, int nCount) {
@@ -574,6 +647,7 @@ void ByteSwapAndRelocateCarModel(VehicleModel *model) {
     }
     ClearDamageTextureEntries();
     coastline::ConvertCarDisplayLists(model->displayLists);
+    coastline::RecordCarRestPositions(model);
     coastline::SwapValue(model->unreconstructed90);
     /* The original relocates the following field without swapping it. */
     coastline::RelocatePointer(model->unreconstructed94);

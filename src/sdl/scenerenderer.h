@@ -276,6 +276,12 @@ public:
     float Radius() const;
 
     /**
+     * @return The position of each vertex the first mesh of the model indexes, in the units of its
+     * document, where the meshes of a car share their vertices.
+     */
+    std::span<const std::array<float, 3>> Positions() const;
+
+    /**
      * Pick the palette variant the images with variants show in the draws of the model until the
      * next call.
      *
@@ -288,6 +294,21 @@ private:
     struct State;
     explicit RenderModel(std::unique_ptr<State> state);
     std::unique_ptr<State> m_state;
+};
+
+/** How far each vertex of a model is moved on the GPU, such as by the dents of a car. */
+class VertexDisplacement {
+public:
+    ~VertexDisplacement();
+    VertexDisplacement(const VertexDisplacement &) = delete;
+    VertexDisplacement &operator=(const VertexDisplacement &) = delete;
+
+private:
+    friend class SceneRenderer;
+    VertexDisplacement(SDL_GPUDevice *device, SDL_GPUBuffer *buffer, int vertexCount);
+    SDL_GPUDevice *m_device;
+    SDL_GPUBuffer *m_buffer;
+    int m_vertexCount;
 };
 
 /** A texture of the renderer for flat pictures and text. */
@@ -482,6 +503,23 @@ public:
      * @param damage The levels of damage of the sides of a car.
      */
     void SetDamage(const CarDamage &damage);
+
+    /**
+     * Upload how far each vertex of a model is moved.
+     *
+     * @param offsets The displacement of each vertex, in the units of the document of the model.
+     * @return The displacement, or nothing when the upload failed.
+     */
+    std::shared_ptr<const VertexDisplacement>
+    CreateDisplacement(std::span<const std::array<float, 3>> offsets);
+
+    /**
+     * Set how far the vertices of the models drawn after it are moved, those without a pose of a
+     * vertex animation and with no more vertices than the displacement, not from Begin().
+     *
+     * @param displacement The displacement, or none.
+     */
+    void SetDisplacement(std::shared_ptr<const VertexDisplacement> displacement);
 
     /**
      * Set whether the models drawn after it draw their translucent parts straight after their

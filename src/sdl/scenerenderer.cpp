@@ -488,6 +488,9 @@ struct Mesh {
     std::vector<Primitive> primitives;
     SDL_GPUBuffer *targets = nullptr;
     int vertexCount = 0;
+    // The vertices of the first primitive, and the most of any primitive.
+    std::size_t firstVertices = 0;
+    int mostVertices = 0;
 };
 
 // A mesh placed by a node of the scene.
@@ -541,6 +544,7 @@ struct DrawState {
     bool inOrder = false;
     bool mirrored = false;
     CarDamage damage{};
+    std::shared_ptr<const VertexDisplacement> displacement;
 };
 
 struct ModelDraw {
@@ -875,6 +879,7 @@ struct SceneRenderer::State {
     bool ghost = false;
     bool inOrder = false;
     CarDamage damage{};
+    std::shared_ptr<const VertexDisplacement> displacement;
     GpuWindow *window = nullptr;
     SDL_GPUDevice *device = nullptr;
     SDL_GPUShader *vertexShader = nullptr;
@@ -1052,7 +1057,7 @@ struct SceneRenderer::State {
     }
 
     DrawState Current() const {
-        return {view, fog, hiddenFlags, ghost, inOrder, mirrored, damage};
+        return {view, fog, hiddenFlags, ghost, inOrder, mirrored, damage, displacement};
     }
 
     // A buffer of at least a size, made again when it is too small.
@@ -1106,6 +1111,15 @@ std::array<float, 3> RenderModel::Centre() const {
 
 float RenderModel::Radius() const {
     return m_state->radius;
+}
+
+std::span<const std::array<float, 3>> RenderModel::Positions() const {
+    if (m_state->placed.empty()) {
+        return {};
+    }
+    std::size_t mesh = m_state->placed.front().mesh;
+    return std::span(m_state->document->meshPositions[mesh])
+        .first(m_state->document->meshes[mesh].firstVertices);
 }
 
 void RenderModel::SetVariant(int variant) {
@@ -1284,6 +1298,10 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
             for (std::size_t i = 0; i < list.size(); ++i) {
                 std::memcpy(&list[i], indices->data + i * indices->stride, 4);
             }
+            if (drawn.primitives.empty()) {
+                drawn.firstVertices = vertices.size();
+            }
+            drawn.mostVertices = std::max(drawn.mostVertices, static_cast<int>(vertices.size()));
             if (drawn.targets == nullptr && primitive.contains("targets")) {
                 // For each target, the position and then the normal of each vertex, as vec4.
                 std::vector<float> displacements;
@@ -1727,6 +1745,41 @@ void SceneRenderer::SetGhost(bool ghost) {
 
 void SceneRenderer::SetDamage(const CarDamage &damage) {
     m_state->damage = damage;
+}
+
+VertexDisplacement::VertexDisplacement(SDL_GPUDevice *device,
+                                       SDL_GPUBuffer *buffer,
+                                       int vertexCount)
+    : m_device(device), m_buffer(buffer), m_vertexCount(vertexCount) {
+}
+
+VertexDisplacement::~VertexDisplacement() {
+    SDL_ReleaseGPUBuffer(m_device, m_buffer);
+}
+
+std::shared_ptr<const VertexDisplacement>
+SceneRenderer::CreateDisplacement(std::span<const std::array<float, 3>> offsets) {
+    // The position and then the normal of each vertex, as vec4, as the morph targets have them.
+    std::vector<float> displacements(offsets.size() * 8, 0.0f);
+    for (std::size_t i = 0; i < offsets.size(); ++i) {
+        std::copy(offsets[i].begin(), offsets[i].end(), displacements.begin() + i * 8);
+    }
+    Uploader upload(m_state->device);
+    SDL_GPUBuffer *buffer =
+        upload.Buffer(SDL_GPU_BUFFERUSAGE_GRAPHICS_STORAGE_READ,
+                      {reinterpret_cast<const std::uint8_t *>(displacements.data()),
+                       displacements.size() * sizeof(float)});
+    if (buffer == nullptr || !upload.Submit()) {
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "A displacement was not uploaded: %s", SDL_GetError());
+        SDL_ReleaseGPUBuffer(m_state->device, buffer);
+        return nullptr;
+    }
+    return std::shared_ptr<const VertexDisplacement>(
+        new VertexDisplacement(m_state->device, buffer, static_cast<int>(offsets.size())));
+}
+
+void SceneRenderer::SetDisplacement(std::shared_ptr<const VertexDisplacement> displacement) {
+    m_state->displacement = std::move(displacement);
 }
 
 void SceneRenderer::SetDrawnInOrder(bool inOrder) {
@@ -2240,6 +2293,11 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
                                                0.0f};
                 }
                 targets = mesh.targets;
+            } else if (draw.state.displacement &&
+                       mesh.mostVertices <= draw.state.displacement->m_vertexCount) {
+                // The displacement is a single target that the one pose takes in full.
+                vertexUniforms.morph = {0, 0, draw.state.displacement->m_vertexCount, 1};
+                targets = draw.state.displacement->m_buffer;
             }
             Lighting lighting = TrackInstanceLighting(draw.lighting, placed.flags);
             // The shadow of each car falls on the instances near it.
