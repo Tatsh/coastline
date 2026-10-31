@@ -323,6 +323,9 @@ private:
     void ReadMouse();
     unsigned char IsHeld(int binding) const;
     unsigned char IsPressed(int binding) const;
+#ifdef ENABLE_PATCHES
+    bool IsKeyPressed(int binding) const;
+#endif
     int ControlOf(int binding, bool current) const;
     int AxisOf(unsigned kind, bool current) const;
     int ReadAxisMagnitude(int binding) const;
@@ -516,6 +519,19 @@ unsigned char RaceInput::IsPressed(int binding) const {
     return result;
 }
 
+#ifdef ENABLE_PATCHES
+// Whether a key of the keyboard of the binding, its control or an alternate, is newly pressed.
+bool RaceInput::IsKeyPressed(int binding) const {
+    const auto &keys = m_keyboard[static_cast<std::size_t>(m_keyboardCurrent)];
+    const auto &previousKeys = m_keyboard[static_cast<std::size_t>(m_keyboardPrevious)];
+    bool pressed = false;
+    ForEachKey(g_GlobalRallyConfig.pActiveInputBindings[binding], [&](unsigned key) {
+        pressed = pressed || IsPressedEdge(previousKeys[key], keys[key]) != 0;
+    });
+    return pressed;
+}
+#endif /* ENABLE_PATCHES */
+
 int RaceInput::ReadAxisMagnitude(int binding) const {
     const unsigned kind = g_GlobalRallyConfig.pActiveInputBindings[binding].wControl & 0xff00;
     if (kind < 0x8000 || kind > 0x8b00) {
@@ -565,8 +581,13 @@ unsigned RaceInput::ReadButtonMask(int *pnSteering, int *pnAcceleration) {
     // The SDL game has no network play, and a pause binding always pauses.
 #ifdef ENABLE_PATCHES
     // In the PC release a press of the pause binding in the pause menu pauses the race again as
-    // soon as it continues. On the console Start chooses the item of the pause menu.
+    // soon as it continues. Its key of the keyboard (Escape) closes the menu whatever item is
+    // chosen, the item of the confirmation to leave that continues being its second. On the
+    // console Start chooses the item of the pause menu, as the button of the gamepad does.
     if (IsPressed(15) && g_dwRacePauseState) {
+        if (IsKeyPressed(15)) {
+            g_dwPauseMenuSelection = g_dwRacePauseState == 2 ? 1 : PAUSE_CONTINUE;
+        }
         g_dwInputButtonMask = 0x8000;
         return g_dwInputButtonMask;
     }
