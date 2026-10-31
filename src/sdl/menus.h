@@ -316,6 +316,8 @@ private:
     void DrawSaveLoadDone();
     void DrawConfirmOverwrite();
     bool ReadSeasonNote(const std::vector<u8> &note, int player, bool otherRetainsEquipment);
+    // Whether a season note can be raced: a season and a race of the championship, and a car.
+    bool SeasonNoteIsValid(const std::vector<u8> &note) const;
     bool ReadGhostNote(const std::vector<u8> &note);
     void KeepTimeAttackRecording(const std::vector<u8> &recording, const std::vector<u8> &frames);
     bool LoadSaveLoadNote(int player);

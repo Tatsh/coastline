@@ -236,7 +236,7 @@ bool Menus::LoadOptionsItems(SceneRenderer &renderer, const std::filesystem::pat
 void Menus::LoadPakData() {
     // The quiet loads of the season and of the configuration as the console boots.
     auto season = m_pak.ReadNote(SEASON_NOTE);
-    if (season && season->size() >= PROFILE_SIZE) {
+    if (season && SeasonNoteIsValid(*season)) {
         ReadProfile(m_profile, *season);
         ReadProfile(m_secondProfile, *season);
     }
@@ -696,8 +696,34 @@ void Menus::DrawConfirmOverwrite() {
     draw.DrawTexturedSprite(*draw.m_buttonB, 0x135, buttonY);
 }
 
-bool Menus::ReadSeasonNote(const std::vector<u8> &note, int player, bool otherRetainsEquipment) {
+bool Menus::SeasonNoteIsValid(const std::vector<u8> &note) const {
     if (note.size() < PROFILE_SIZE) {
+        return false;
+    }
+    // A note edited or damaged outside the game could name a season or a race past the
+    // championship, or no car, and the car select would then find no car to start on.
+    std::size_t season = note[0x04];
+    int round = note[0x05];
+    auto unlocks = static_cast<unsigned>(Get16(note, 0xCC));
+    unsigned cars = (1u << m_cars.size()) - 1;
+    const char *reason = nullptr;
+    if (season >= m_seasons.size()) {
+        reason = "a season past the last";
+    } else if (round >= m_seasons[season].raceCount) {
+        reason = "a race past the last of its season";
+    } else if ((unlocks & cars) == 0) {
+        reason = "no car";
+    }
+    if (reason != nullptr) {
+        SDL_LogWarn(
+            SDL_LOG_CATEGORY_APPLICATION, "The season note is ignored, as it has %s.", reason);
+        return false;
+    }
+    return true;
+}
+
+bool Menus::ReadSeasonNote(const std::vector<u8> &note, int player, bool otherRetainsEquipment) {
+    if (!SeasonNoteIsValid(note)) {
         return false;
     }
     // Both players take the season.
