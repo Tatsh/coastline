@@ -253,9 +253,11 @@ Alt+Enter and F11 switch between a window and the full screen on every screen of
 through three states on every screen, from the first at each start. The first shows nothing, and
 the second shows the frame rate at the bottom of the screen, as in the PC release. The third adds
 lines at the top left with the time of the last frame and of the slowest frame of the second
-before, the use of one core and of every core together by the game, its resident memory, the bytes
-of the textures and buffers the game has created on the GPU (`GAME VRAM`), and the share of an
-NVIDIA GPU the game used, read from NVML when the driver has it. The fonts of the menus have no
+before, the use of one core and of every core together by the game, its memory (`GAME RAM`), the
+bytes of the textures and buffers the game has created on the GPU (`GAME VRAM`), and the share of an
+NVIDIA GPU the game used, read from NVML when the driver has it. On Linux `GAME RAM` leaves out the
+shared libraries and the GPU driver, and on Windows and macOS it includes the private memory of the
+driver, which those systems do not separate. The fonts of the menus have no
 percent sign, and `PCT` stands for it. In a race, F12 selects the next
 music track, and F11 does not select the previous one as in the PC release. F9 or Print Screen
 saves the frame as a PNG file to `screenshots` in the data directory

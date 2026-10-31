@@ -324,15 +324,33 @@ void CheckPerformanceParsing() {
     Check(coastline::StatmResidentPages("  7 8") == 8u, "statm may open with spaces");
     Check(!coastline::StatmResidentPages("53287"), "statm without a second number gives nothing");
     Check(!coastline::StatmResidentPages(""), "an empty statm gives nothing");
-    constexpr std::string_view ROLLUP = "55a1c000-7ffd0000 ---p 00000000 00:00 0 [rollup]\n"
-                                        "Rss:             1406744 kB\n"
-                                        "Pss:              912345 kB\n"
-                                        "Pss_Dirty:        800000 kB\n";
-    Check(coastline::SmapsRollupPssBytes(ROLLUP) == 912345ull * 1024,
-          "the Pss line of smaps_rollup is the proportional set size in bytes");
-    Check(coastline::SmapsRollupPssBytes("Pss: 4 kB\n") == 4096u, "Pss may open the text");
-    Check(!coastline::SmapsRollupPssBytes("Rss: 4 kB\nPss_Dirty: 2 kB\n"), "Pss_Dirty is not Pss");
-    Check(!coastline::SmapsRollupPssBytes(""), "an empty rollup gives nothing");
+    constexpr std::string_view SMAPS =
+        "5600a000-5600b000 r-xp 00000000 08:01 42   /opt/coastline/bin/coastline\n"
+        "Pss:                 100 kB\n"
+        "Pss_Dirty:            90 kB\n"
+        "5600c000-5600d000 rw-p 00000000 00:00 0    [heap]\n"
+        "Pss:                1000 kB\n"
+        "7f000000-7f001000 rw-p 00000000 00:00 0 \n"
+        "Pss:                  20 kB\n"
+        "7f001000-7f002000 rw-p 00000000 00:00 0    [anon:pool]\n"
+        "Pss:                   3 kB\n"
+        "7f002000-7f003000 r-xp 00000000 08:01 7    /usr/lib64/libdriver.so.615\n"
+        "Pss:               13000 kB\n"
+        "7f003000-7f004000 rw-s 00000000 00:06 9    /dev/gpu0\n"
+        "Pss:               14000 kB\n"
+        "7ffd0000-7ffd1000 rw-p 00000000 00:00 0    [stack]\n"
+        "Pss:                   8 kB\n"
+        "7ffd2000-7ffd3000 r-xp 00000000 00:00 0    [vdso]\n"
+        "Pss:                   1 kB\n";
+    Check(coastline::SmapsGamePssBytes(SMAPS, "/opt/coastline/bin/coastline") == 1131ull * 1024,
+          "the game's memory counts the program, the heap, the stack, and anonymous memory");
+    Check(coastline::SmapsGamePssBytes(SMAPS, "/elsewhere/coastline") == 1031ull * 1024,
+          "a program at another path is a library");
+    Check(!coastline::SmapsGamePssBytes("", "/opt/coastline/bin/coastline"),
+          "an empty smaps gives nothing");
+    Check(!coastline::SmapsGamePssBytes("5600c000-5600d000 rw-p 00000000 00:00 0 [heap]\nPss: x\n",
+                                        "/opt/coastline/bin/coastline"),
+          "a Pss line without a number gives nothing");
     Check(!coastline::StatmResidentPages("1 x"), "a second word that is not a number is nothing");
 }
 

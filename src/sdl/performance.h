@@ -6,6 +6,7 @@
  * the memory, the GPU, and the memory of the GPU by the game.
  */
 
+#include <algorithm>
 #include <charconv>
 #include <cstdint>
 #include <memory>
@@ -46,25 +47,53 @@ inline std::optional<std::uint64_t> StatmResidentPages(std::string_view text) {
 }
 
 /**
- * @param text The contents of /proc/self/smaps_rollup.
- * @return The proportional set size, the Pss line in bytes: the private memory with each shared
- * page divided among the processes that share it. Nothing when the text has no Pss line.
+ * @param text The contents of /proc/self/smaps.
+ * @param executable The path of the program, as /proc/self/exe links to it.
+ * @return The proportional set size in bytes of the memory of the game: the mappings without a
+ * file (the heap, the stacks, and other anonymous memory) and those of the program. The shared
+ * libraries, among them the GPU driver, and the mappings of devices are left out. The driver's own
+ * anonymous memory cannot be told apart and is counted. Nothing when the text has no Pss line.
  */
-inline std::optional<std::uint64_t> SmapsRollupPssBytes(std::string_view text) {
-    constexpr std::string_view KEY = "\nPss:";
-    std::size_t at = text.starts_with(KEY.substr(1)) ? 0 : text.find(KEY);
-    if (at == std::string_view::npos) {
-        return std::nullopt;
-    }
-    text.remove_prefix(at + (at == 0 ? KEY.size() - 1 : KEY.size()));
-    std::size_t digits = text.find_first_not_of(' ');
-    if (digits == std::string_view::npos) {
-        return std::nullopt;
-    }
-    text.remove_prefix(digits);
+inline std::optional<std::uint64_t> SmapsGamePssBytes(std::string_view text,
+                                                      std::string_view executable) {
     std::uint64_t kilobytes = 0;
-    auto [end, error] = std::from_chars(text.data(), text.data() + text.size(), kilobytes);
-    if (error != std::errc{} || end == text.data()) {
+    bool counted = false;
+    bool found = false;
+    while (!text.empty()) {
+        std::size_t end = text.find('\n');
+        std::string_view line = text.substr(0, end);
+        text.remove_prefix(end == std::string_view::npos ? text.size() : end + 1);
+        if (line.starts_with("Pss:")) {
+            line.remove_prefix(4);
+            std::size_t digits = line.find_first_not_of(' ');
+            std::uint64_t value = 0;
+            if (digits == std::string_view::npos ||
+                std::from_chars(line.data() + digits, line.data() + line.size(), value).ec !=
+                    std::errc{}) {
+                return std::nullopt;
+            }
+            found = true;
+            if (counted) {
+                kilobytes += value;
+            }
+            continue;
+        }
+        // The line of a mapping: its range, permissions, offset, device, inode, and path, if any.
+        std::size_t dash = line.find('-');
+        if (dash == 0 || dash == std::string_view::npos ||
+            line.find_first_not_of("0123456789abcdef") != dash) {
+            continue;
+        }
+        std::string_view rest = line;
+        for (int field = 0; field < 5; ++field) {
+            std::size_t space = rest.find(' ');
+            rest.remove_prefix(space == std::string_view::npos ? rest.size() : space);
+            rest.remove_prefix(std::min(rest.find_first_not_of(' '), rest.size()));
+        }
+        counted = rest.empty() || rest == "[heap]" || rest.starts_with("[stack") ||
+                  rest.starts_with("[anon") || rest == executable;
+    }
+    if (!found) {
         return std::nullopt;
     }
     return kilobytes * 1024;

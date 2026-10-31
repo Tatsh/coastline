@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <chrono>
 #include <condition_variable>
+#include <filesystem>
 #include <fstream>
 #include <iterator>
 #include <mutex>
@@ -73,9 +74,10 @@ std::optional<double> ProcessCpuSeconds() {
 #endif
 }
 
-// The bytes of memory the process holds of its own, without the shared libraries counted whole:
-// the proportional set size on Linux, the private bytes on Windows, and the physical footprint
-// on macOS, as the monitors of each system show them.
+// The bytes of memory of the game: on Linux the proportional set size of its anonymous memory
+// and of the program, without the libraries and the GPU driver, the private bytes on Windows,
+// and the physical footprint on macOS. The private bytes and the footprint include the private
+// memory of the driver, which those systems do not tell apart.
 std::optional<std::uint64_t> OwnMemoryBytes() {
 #if defined(_WIN32)
     PROCESS_MEMORY_COUNTERS_EX counters{};
@@ -96,14 +98,15 @@ std::optional<std::uint64_t> OwnMemoryBytes() {
     return info.phys_footprint;
 #elif defined(__linux__)
     {
-        std::ifstream rollup("/proc/self/smaps_rollup");
-        std::string text((std::istreambuf_iterator<char>(rollup)),
-                         std::istreambuf_iterator<char>());
-        if (auto pss = SmapsRollupPssBytes(text)) {
+        std::ifstream smaps("/proc/self/smaps");
+        std::string text((std::istreambuf_iterator<char>(smaps)), std::istreambuf_iterator<char>());
+        std::error_code error;
+        auto executable = std::filesystem::read_symlink("/proc/self/exe", error);
+        if (auto pss = SmapsGamePssBytes(text, error ? std::string() : executable.string())) {
             return pss;
         }
     }
-    // A kernel before 4.14 has no smaps_rollup, and the resident memory stands in.
+    // Without smaps the resident memory stands in, the libraries included.
     std::ifstream file("/proc/self/statm");
     std::string line;
     std::getline(file, line);
@@ -329,7 +332,7 @@ std::vector<std::string> PerformanceStats::Lines(std::uint64_t gameGpuBytes) con
             fmt::format("CPU: {:.0f} PCT, {:.0f} PCT", *m_cpuPercent, *m_cpuPercent / cores));
     }
     if (m_memoryBytes) {
-        lines.push_back("RAM: " + MemorySize(*m_memoryBytes));
+        lines.push_back("GAME RAM: " + MemorySize(*m_memoryBytes));
     }
     lines.push_back("GAME VRAM: " + MemorySize(gameGpuBytes));
     // The share of the GPU comes and goes with the samples of NVML, so it is the last line.
