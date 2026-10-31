@@ -117,6 +117,20 @@ public:
      */
     bool SetFullscreen(bool fullscreen);
 
+    /** @return The present mode of the options or of the last SetPresentMode(). */
+    SDL_GPUPresentMode PresentMode() const {
+        return m_options.presentMode;
+    }
+
+    /**
+     * Present the frames with @p mode, with the other mode that does not wait and then vertical
+     * sync in the place of a mode the window does not support. Vertical sync of a Wayland window
+     * presents to the mailbox at the refresh rate of the display, unless the options choose fifo.
+     *
+     * @param mode How frames are presented.
+     */
+    void SetPresentMode(SDL_GPUPresentMode mode);
+
     /**
      * @return The nanoseconds between the frames the game paces itself to, one refresh of the
      * display of the window when vertical sync presents to the mailbox, or 0 for no pacing.

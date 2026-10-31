@@ -89,7 +89,8 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
  * as music/trackNN.flac. An ISO image has no audio tracks, and only the files are copied. The icon
  * Boss.ico moves to icon/coastline.ico, beside a PNG image of each of its sizes.
  *
- * @param disc A CUE sheet or an ISO image.
+ * @param disc A CUE sheet or an ISO image. A raw BIN image and a CloneCD image (.img or .ccd)
+ * are refused with a message.
  * @param dataDirectory The directory of the pack to write, assets/default of the data directory.
  * @param progress Called as each file and track is written.
  * @return The number of files written, or a message.

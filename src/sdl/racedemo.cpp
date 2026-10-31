@@ -52,10 +52,8 @@ constexpr std::array<ConsoleDemoEnd, 3> CONSOLE_DEMOS{{
 // The recordings of the PC release, before the demos of the cartridges.
 constexpr std::array<const char *, 2> PC_DEMOS{"RallyIntro1.dat", "RallyIntro2.dat"};
 
-// The demo to play next, by its place in the rotation, and the one playing. A demo of a cartridge
-// chosen to play next takes the place of the next one when it was imported.
+// The demo to play next, by its place in the rotation, and the one playing.
 std::size_t g_nextDemo = 0;
-const ConsoleDemoEnd *g_chosenDemo = nullptr;
 std::string g_demoPath;
 const ConsoleDemoEnd *g_consoleDemo = nullptr;
 
@@ -147,16 +145,6 @@ bool AttractDemoFromConsole() {
     return g_consoleDemo != nullptr;
 }
 
-bool ChooseAttractDemo(std::string_view release) {
-    for (const ConsoleDemoEnd &demo : CONSOLE_DEMOS) {
-        if (release == demo.release) {
-            g_chosenDemo = &demo;
-            return true;
-        }
-    }
-    return false;
-}
-
 } // namespace coastline
 
 extern "C" const char *NextAttractDemoRecording(void) {
@@ -173,13 +161,9 @@ extern "C" const char *NextAttractDemoRecording(void) {
         auto json = std::filesystem::path("n64") / CONSOLE_DEMOS[i - PC_DEMOS.size()].release /
                     "attract.json";
         if (std::filesystem::exists(json, error)) {
-            if (coastline::g_chosenDemo == &CONSOLE_DEMOS[i - PC_DEMOS.size()]) {
-                coastline::g_nextDemo = present.size();
-            }
             present.push_back(i);
         }
     }
-    coastline::g_chosenDemo = nullptr;
     std::size_t demo = present[coastline::g_nextDemo % present.size()];
     coastline::g_nextDemo = (coastline::g_nextDemo + 1) % present.size();
     if (demo < PC_DEMOS.size()) {

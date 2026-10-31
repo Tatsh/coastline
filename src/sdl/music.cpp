@@ -434,34 +434,4 @@ void SDLCALL N64Audio::StreamCallback(void *userData,
         stream, samples.data(), static_cast<int>(samples.size() * sizeof(std::int16_t)));
 }
 
-bool WriteWav(const std::filesystem::path &path, std::span<const std::int16_t> samples, int rate) {
-    std::ofstream file(path, std::ios::binary | std::ios::trunc);
-    auto put32 = [&](std::uint32_t value) {
-        for (int i = 0; i < 4; ++i) {
-            file.put(static_cast<char>(value >> (i * 8)));
-        }
-    };
-    auto put16 = [&](std::uint16_t value) {
-        file.put(static_cast<char>(value));
-        file.put(static_cast<char>(value >> 8));
-    };
-    auto dataBytes = static_cast<std::uint32_t>(samples.size() * 2);
-    file.write("RIFF", 4);
-    put32(36 + dataBytes);
-    file.write("WAVEfmt ", 8);
-    put32(16);
-    put16(1);
-    put16(2);
-    put32(static_cast<std::uint32_t>(rate));
-    put32(static_cast<std::uint32_t>(rate) * 4);
-    put16(4);
-    put16(16);
-    file.write("data", 4);
-    put32(dataBytes);
-    for (auto sample : samples) {
-        put16(static_cast<std::uint16_t>(sample));
-    }
-    return static_cast<bool>(file);
-}
-
 } // namespace coastline

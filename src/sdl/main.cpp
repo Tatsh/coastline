@@ -32,7 +32,6 @@
 #include "config.h"
 #include "controllerpak.h"
 #include "controls.h"
-#include "earsound.h"
 #include "frontend.h"
 #include "gpu.h"
 #include "iconfile.h"
@@ -44,7 +43,6 @@
 #include "log.h"
 #include "menus.h"
 #include "menutext.h"
-#include "modelview.h"
 #include "music.h"
 #include "paths.h"
 #include "performance.h"
@@ -53,9 +51,9 @@
 #include "racemusic.h"
 #include "racesession.h"
 #include "raceview.h"
+#include "runscript.h"
 #include "scenerenderer.h"
 #include "stringresources.h"
-#include "tlrenderer.h"
 
 namespace {
 
@@ -73,7 +71,8 @@ struct SdlSession {
 };
 
 coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config,
-                                             const argparse::ArgumentParser &parser) {
+                                             const argparse::ArgumentParser &parser,
+                                             bool fixedFrame) {
     coastline::DisplayOptions options;
     options.width = static_cast<int>(config.GetInteger("Video", "Width", options.width));
     options.height = static_cast<int>(config.GetInteger("Video", "Height", options.height));
@@ -122,12 +121,12 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
                     "AntialiasPost takes none or fxaa, and %s is drawn as none.",
                     post->c_str());
     }
-    options.gpuDebug = parser.get<bool>("--gpu-debug");
+    options.gpuDebug = parser.get<bool>("--debug-gpu");
 #ifndef NDEBUG
     options.minimized = parser.get<bool>("--minimized");
 #endif
     // A capture is drawn at Width by Height, for the same frames on every machine.
-    options.fixedFrame = parser.is_used("--screenshot");
+    options.fixedFrame = fixedFrame;
     // Vulkan, Metal, and Direct3D 12 all filter at least 16 samples.
     options.anisotropy = static_cast<int>(
         std::clamp(config.GetInteger("Video", "AnisotropicFiltering", 0), 0L, 16L));
@@ -199,17 +198,19 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     return options;
 }
 
-// The shortcuts of the window on every screen: Alt and Enter or F11 for the full screen, and F for
-// the frame rate.
-enum class DisplayKey { None, Fullscreen, FrameRate };
+// The shortcuts of the window on every screen: Alt and Enter or F11 for the full screen, F for
+// the frame rate, and V for vertical sync.
+enum class DisplayKey { None, Fullscreen, FrameRate, VSync };
 
 // The keys of the shortcuts held the frame before, from the keyboard and the scripted keys.
 struct DisplayKeys {
     bool f11 = false;
     bool f = false;
+    bool v = false;
 
-    // The shortcut pressed since the frame before, F only when @p frameRate allows it.
-    DisplayKey Read(bool frameRate) {
+    // The shortcut pressed since the frame before, F only when @p frameRate allows it, and V only
+    // when @p vsync allows it.
+    DisplayKey Read(bool frameRate, bool vsync) {
         bool alt =
             coastline::IsKeyDown(SDL_SCANCODE_LALT) || coastline::IsKeyDown(SDL_SCANCODE_RALT);
         // Enter of the shortcut is ignored until it is released, and does not also press Start or
@@ -224,11 +225,17 @@ struct DisplayKeys {
         bool f11Now = coastline::IsKeyDown(SDL_SCANCODE_F11);
         bool fNow = coastline::IsKeyDown(SDL_SCANCODE_F);
         bool fullscreen = enter || (f11Now && !f11);
+        bool vNow = coastline::IsKeyDown(SDL_SCANCODE_V);
         bool toggleRate = frameRate && fNow && !f;
+        bool toggleVSync = vsync && vNow && !v;
         f11 = f11Now;
         f = fNow;
+        v = vNow;
         if (fullscreen) {
             return DisplayKey::Fullscreen;
+        }
+        if (toggleVSync) {
+            return DisplayKey::VSync;
         }
         return toggleRate ? DisplayKey::FrameRate : DisplayKey::None;
     }
@@ -297,34 +304,6 @@ void DrawFrameRate(coastline::SceneRenderer &renderer, const coastline::MenuText
     DrawOverlayLine(renderer, text, line, 470);
 }
 
-// Every character of the menu fonts, or the text of --scene font:TEXT, drawn by the menu text on
-// black: in the default gradient, in white, and in the small font, each as large as fits.
-void DrawFontSample(coastline::SceneRenderer &renderer,
-                    const coastline::MenuText &text,
-                    const std::string &sample) {
-    constexpr int WIDTH = 300;
-    constexpr int LARGEST = 40;
-    const coastline::GpuWindow &window = renderer.Window();
-    coastline::Matrix4 flat =
-        coastline::FlatProjection(static_cast<float>(window.FrameWidth()) /
-                                  static_cast<float>(std::max(window.FrameHeight(), 1u)));
-    auto fitted = [&](int size) {
-        while (size > 4 && text.Width(sample, size) > WIDTH) {
-            --size;
-        }
-        return size;
-    };
-    coastline::TextStyle style;
-    style.align = coastline::TextStyle::Align::Center;
-    style.size = fitted(LARGEST);
-    text.Draw(renderer, sample, 160, 40, style, flat);
-    style.colors = std::array<int, 6>{255, 255, 255, 255, 255, 255};
-    text.Draw(renderer, sample, 160, 100, style, flat);
-    // The small font draws text of 10 pixels and less.
-    style.size = std::min(fitted(10), 10);
-    text.Draw(renderer, sample, 160, 170, style, flat);
-}
-
 // A new file in a directory of screenshots, named by the local time to the millisecond, with the
 // directory made when it does not exist.
 std::optional<std::filesystem::path> ScreenshotPath(const std::filesystem::path &directory) {
@@ -373,18 +352,6 @@ std::optional<std::vector<std::uint8_t>> LoadMusicModule(const std::filesystem::
     return std::vector<std::uint8_t>(std::istreambuf_iterator<char>(file), {});
 }
 
-// A press of --press: the buttons of a controller pressed from a frame for a number of frames,
-// SCRIPTED_PRESS_FRAMES unless the press gives a number, on the first controller unless it gives
-// another.
-struct ScriptedPress {
-    int frame;
-    std::uint16_t buttons;
-    int frames;
-    std::size_t port;
-};
-
-constexpr int SCRIPTED_PRESS_FRAMES = 6;
-
 // The keys of the default keyboard bindings of the PC release a press pushes down in a race.
 constexpr std::array<std::pair<std::uint16_t, int>, 12> RACE_KEYS{{
     {coastline::BUTTON_A, SDL_SCANCODE_UP},
@@ -401,163 +368,56 @@ constexpr std::array<std::pair<std::uint16_t, int>, 12> RACE_KEYS{{
     {coastline::BUTTON_C_RIGHT, SDL_SCANCODE_RETURN},
 }};
 
-// A malformed press is logged and left out.
-std::vector<ScriptedPress> ParsePresses(const argparse::ArgumentParser &parser) {
-    static constexpr std::array<std::pair<std::string_view, std::uint16_t>, 14> BUTTONS{
-        {{"a", coastline::BUTTON_A},
-         {"b", coastline::BUTTON_B},
-         {"z", coastline::BUTTON_Z},
-         {"start", coastline::BUTTON_START},
-         {"l", coastline::BUTTON_L},
-         {"r", coastline::BUTTON_R},
-         {"up", coastline::BUTTON_D_UP},
-         {"down", coastline::BUTTON_D_DOWN},
-         {"left", coastline::BUTTON_D_LEFT},
-         {"right", coastline::BUTTON_D_RIGHT},
-         {"cu", coastline::BUTTON_C_UP},
-         {"cd", coastline::BUTTON_C_DOWN},
-         {"cl", coastline::BUTTON_C_LEFT},
-         {"cr", coastline::BUTTON_C_RIGHT}}};
-    std::vector<ScriptedPress> presses;
-    for (const auto &value : parser.get<std::vector<std::string>>("--press")) {
-        auto colon = value.find(':');
-        auto second = colon == std::string::npos ? colon : value.find(':', colon + 1);
-        std::string_view button =
-            colon == std::string::npos ?
-                std::string_view() :
-                std::string_view(value).substr(
-                    colon + 1, second == std::string::npos ? second : second - colon - 1);
-        auto found =
-            std::ranges::find(BUTTONS, button, &std::pair<std::string_view, std::uint16_t>::first);
-        auto third = second == std::string::npos ? second : value.find(':', second + 1);
-        int frame = std::atoi(value.substr(0, colon).c_str());
-        int frames = second == std::string::npos ? SCRIPTED_PRESS_FRAMES :
-                                                   std::atoi(value.substr(second + 1).c_str());
-        int port = third == std::string::npos ? 1 : std::atoi(value.substr(third + 1).c_str());
-        if (colon == std::string::npos || found == BUTTONS.end() || frame <= 0 || frames <= 0 ||
-            port < 1 || port > static_cast<int>(coastline::CONTROLLER_PORTS)) {
+// The script of run-script, with the scancode of each of its keys in order, or nothing with the
+// line that cannot be read logged.
+struct LoadedScript {
+    coastline::Script script;
+    std::vector<SDL_Scancode> keys;
+};
+
+std::optional<LoadedScript> LoadScript(const std::filesystem::path &path) {
+    std::ifstream file(path, std::ios::binary);
+    if (!file) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s cannot be read.", path.string().c_str());
+        return std::nullopt;
+    }
+    const std::string text(std::istreambuf_iterator<char>(file), {});
+    auto script = coastline::ParseScript(text);
+    if (!script) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "%s:%d: %s",
+                     path.string().c_str(),
+                     script.error().line,
+                     script.error().message.c_str());
+        return std::nullopt;
+    }
+    LoadedScript loaded{std::move(*script), {}};
+    for (const coastline::ScriptKey &key : loaded.script.keys) {
+        SDL_Scancode scancode = SDL_GetScancodeFromName(key.name.c_str());
+        if (scancode == SDL_SCANCODE_UNKNOWN) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "%s is not FRAME:BUTTON[:FRAMES[:PORT]].",
-                         value.c_str());
-            continue;
+                         "%s:%d: %s is not the SDL name of a key, such as Return or F9.",
+                         path.string().c_str(),
+                         key.line,
+                         key.name.c_str());
+            return std::nullopt;
         }
-        presses.push_back({frame, found->second, frames, static_cast<std::size_t>(port - 1)});
+        loaded.keys.push_back(scancode);
     }
-    return presses;
-}
-
-// A move of --mouse: the mouse at a place of the 320 by 240 screen from a frame for a number of
-// frames, with a button down or none.
-struct ScriptedMouse {
-    int frame;
-    int x;
-    int y;
-    std::uint32_t buttons;
-    int frames;
-};
-
-// A malformed move is logged and left out.
-std::vector<ScriptedMouse> ParseMouseMoves(const argparse::ArgumentParser &parser) {
-    std::vector<ScriptedMouse> moves;
-    for (const auto &value : parser.get<std::vector<std::string>>("--mouse")) {
-        std::vector<std::string> fields;
-        std::size_t start = 0;
-        while (start <= value.size()) {
-            auto colon = value.find(':', start);
-            fields.push_back(
-                value.substr(start, colon == std::string::npos ? colon : colon - start));
-            if (colon == std::string::npos) {
-                break;
-            }
-            start = colon + 1;
-        }
-        std::uint32_t buttons = 0;
-        bool valid = fields.size() >= 3 && fields.size() <= 5;
-        if (valid && fields.size() >= 4) {
-            if (fields[3] == "left") {
-                buttons = SDL_BUTTON_LMASK;
-            } else if (fields[3] == "right") {
-                buttons = SDL_BUTTON_RMASK;
-            } else {
-                valid = fields[3] == "none";
-            }
-        }
-        int frame = valid ? std::atoi(fields[0].c_str()) : 0;
-        int frames = valid && fields.size() == 5 ? std::atoi(fields[4].c_str()) : 1;
-        if (!valid || frame <= 0 || frames <= 0) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "%s is not FRAME:X:Y[:BUTTON[:FRAMES]].",
-                         value.c_str());
-            continue;
-        }
-        moves.push_back(
-            {frame, std::atoi(fields[1].c_str()), std::atoi(fields[2].c_str()), buttons, frames});
-    }
-    return moves;
-}
-
-// A press of --key: a key of the keyboard down from a frame for a number of frames.
-struct ScriptedKey {
-    int frame;
-    int scancode;
-    int frames;
-};
-
-// A malformed press is logged and left out.
-std::vector<ScriptedKey> ParseKeys(const argparse::ArgumentParser &parser) {
-    std::vector<ScriptedKey> keys;
-    for (const auto &value : parser.get<std::vector<std::string>>("--key")) {
-        auto colon = value.find(':');
-        auto second = colon == std::string::npos ? colon : value.find(':', colon + 1);
-        std::string name =
-            colon == std::string::npos ?
-                std::string() :
-                value.substr(colon + 1,
-                             second == std::string::npos ? std::string::npos : second - colon - 1);
-        SDL_Scancode scancode = SDL_GetScancodeFromName(name.c_str());
-        int frame = std::atoi(value.substr(0, colon).c_str());
-        int frames = second == std::string::npos ? SCRIPTED_PRESS_FRAMES :
-                                                   std::atoi(value.substr(second + 1).c_str());
-        if (scancode == SDL_SCANCODE_UNKNOWN || frame <= 0 || frames <= 0) {
-            SDL_LogError(
-                SDL_LOG_CATEGORY_APPLICATION, "%s is not FRAME:KEY[:FRAMES].", value.c_str());
-            continue;
-        }
-        keys.push_back({frame, static_cast<int>(scancode), frames});
-    }
-    return keys;
-}
-
-// A typing of --type: a text, or a key of <backspace> or <enter>, typed at a frame.
-struct ScriptedTyping {
-    int frame;
-    std::string text;
-};
-
-// A malformed typing is logged and omitted.
-std::vector<ScriptedTyping> ParseTyping(const argparse::ArgumentParser &parser) {
-    std::vector<ScriptedTyping> typing;
-    for (const auto &value : parser.get<std::vector<std::string>>("--type")) {
-        auto colon = value.find(':');
-        int frame = colon == std::string::npos ? 0 : std::atoi(value.substr(0, colon).c_str());
-        if (frame <= 0 || colon + 1 == value.size()) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s is not FRAME:TEXT.", value.c_str());
-            continue;
-        }
-        typing.push_back({frame, value.substr(colon + 1)});
-    }
-    return typing;
+    return loaded;
 }
 
 // Push the events of the keyboard of the typings of a frame, as SDL sends them while text input
 // is on.
-void PushScriptedTyping(const std::vector<ScriptedTyping> &typing, int frame, SDL_Window *window) {
+void PushScriptedTyping(const std::vector<coastline::ScriptTyping> &typing,
+                        int frame,
+                        SDL_Window *window) {
     static constexpr std::array<std::pair<std::string_view, SDL_Keycode>, 2> KEYS{
         {{"<backspace>", SDLK_BACKSPACE}, {"<enter>", SDLK_RETURN}}};
     if (!SDL_TextInputActive(window)) {
         return;
     }
-    for (const ScriptedTyping &typed : typing) {
+    for (const coastline::ScriptTyping &typed : typing) {
         if (typed.frame != frame) {
             continue;
         }
@@ -653,80 +513,6 @@ coastline::PaintShopInput PaintShopInputOf(const coastline::ControllerState &por
     return input;
 }
 
-coastline::TextureHandle CreateCheckerTexture(coastline::TlRenderer &renderer) {
-    constexpr std::uint32_t SIZE = 64;
-    std::vector<std::uint8_t> texels(SIZE * SIZE * 4);
-    for (std::uint32_t y = 0; y < SIZE; ++y) {
-        for (std::uint32_t x = 0; x < SIZE; ++x) {
-            bool light = ((x / 8) + (y / 8)) % 2 == 0;
-            std::uint8_t *texel = &texels[(y * SIZE + x) * 4];
-            texel[0] = light ? 0xF0 : 0x30;
-            texel[1] = light ? 0xC0 : 0x30;
-            texel[2] = light ? 0x40 : 0x80;
-            texel[3] = 0xFF;
-        }
-    }
-    return renderer.CreateTexture(SIZE, SIZE, texels, false);
-}
-
-// The scene exercises the renderer with the primitives of the game (a textured quad in
-// perspective, a fogged quad behind it, and an alpha-blended triangle in front). The triangle
-// turns with the frame number.
-void DrawRendererTestScene(coastline::TlRenderer &renderer,
-                           coastline::TextureHandle texture,
-                           int frame,
-                           const std::filesystem::path *capture) {
-    using coastline::TlVertex;
-    constexpr std::uint16_t QUAD[] = {0, 1, 2, 0, 2, 3};
-    renderer.BeginScene(0xFF203050);
-    auto &states = renderer.States();
-    states = {};
-    states.cull = coastline::CullMode::None;
-
-    // The far quad has rhw 0.25 and z 0.9, and fades to the fog colour at its top.
-    states.fog = true;
-    states.fogColor = 0xFF8090A0;
-    renderer.SetTexture(0);
-    TlVertex fogged[] = {{40, 40, 0.9f, 0.25f, 0xFF20A020, 0x00000000, 0, 0},
-                         {600, 40, 0.9f, 0.25f, 0xFF20A020, 0x00000000, 0, 0},
-                         {600, 300, 0.9f, 0.25f, 0xFF20A020, 0xFF000000, 0, 0},
-                         {40, 300, 0.9f, 0.25f, 0xFF20A020, 0xFF000000, 0, 0}};
-    renderer.DrawIndexed(fogged, QUAD);
-
-    // A floor in perspective: the near edge has rhw 1 and the far edge rhw 0.2, so the checks
-    // shrink with the distance when the texture coordinates interpolate correctly.
-    states.fog = false;
-    renderer.SetTexture(texture);
-    TlVertex floor[] = {{220, 180, 0.6f, 0.2f, 0xFFFFFFFF, 0, 0, 0},
-                        {420, 180, 0.6f, 0.2f, 0xFFFFFFFF, 0, 4, 0},
-                        {620, 460, 0.1f, 1.0f, 0xFFFFFFFF, 0, 4, 4},
-                        {20, 460, 0.1f, 1.0f, 0xFFFFFFFF, 0, 0, 4}};
-    renderer.DrawIndexed(floor, QUAD);
-
-    states.blend = true;
-    states.sourceBlend = coastline::BlendFactor::SourceAlpha;
-    states.destinationBlend = coastline::BlendFactor::InverseSourceAlpha;
-    renderer.SetTexture(0);
-    float angle = static_cast<float>(frame) * 0.05f;
-    TlVertex triangle[3];
-    for (int i = 0; i < 3; ++i) {
-        float a = angle + static_cast<float>(i) * 2.0943951f;
-        triangle[i] = {320 + 120 * SDL_cosf(a),
-                       240 + 120 * SDL_sinf(a),
-                       0.05f,
-                       1.0f,
-                       i == 0 ? 0x80FF2020u :
-                       i == 1 ? 0x8020FF20u :
-                                0x802020FFu,
-                       0,
-                       0,
-                       0};
-    }
-    constexpr std::uint16_t TRIANGLE[] = {0, 1, 2};
-    renderer.DrawIndexed(triangle, TRIANGLE);
-    renderer.EndScene(capture);
-}
-
 // Raise the soft limit of open files to the hard limit. The Vulkan driver of NVIDIA keeps a
 // descriptor for each allocation of GPU memory, and the textures of a race need more than the
 // usual soft limit of 1024.
@@ -798,7 +584,7 @@ void SetWindowIcon(SDL_Window *window, const std::filesystem::path &pack) {
             (pack / "icon").string().c_str());
 }
 
-int ImportFromCommandLine(const argparse::ArgumentParser &parser,
+int ImportFromCommandLine(const argparse::ArgumentParser &import,
                           const std::filesystem::path &data) {
     int status = EXIT_SUCCESS;
     // Records that a source was imported with the current version of its conversion.
@@ -810,7 +596,7 @@ int ImportFromCommandLine(const argparse::ArgumentParser &parser,
             status = EXIT_FAILURE;
         }
     };
-    for (const auto &rom : parser.get<std::vector<std::string>>("--import-rom")) {
+    for (const auto &rom : import.get<std::vector<std::string>>("--rom")) {
         if (auto release = coastline::ImportRom(rom, coastline::DefaultAssets(data))) {
             static constexpr const char *names[] = {"USA", "Japanese", "European"};
             static constexpr coastline::ImportSource sources[] = {coastline::ImportSource::Usa,
@@ -825,7 +611,7 @@ int ImportFromCommandLine(const argparse::ArgumentParser &parser,
             status = EXIT_FAILURE;
         }
     }
-    if (auto disc = parser.present("--import-disc")) {
+    if (auto disc = import.present("--cd")) {
         auto written = coastline::ImportDisc(
             *disc, coastline::DefaultAssets(data), [](const std::string &step, double fraction) {
                 SDL_Log("[%3d%%] %s", static_cast<int>(fraction * 100), step.c_str());
@@ -846,30 +632,26 @@ int ImportFromCommandLine(const argparse::ArgumentParser &parser,
     return status;
 }
 
-// A sound named relative to the data takes its file from the default assets.
-int PlaySoundFromCommandLine(const argparse::ArgumentParser &parser,
-                             const std::filesystem::path &data) {
-    std::filesystem::path path = parser.get<std::string>("--play-sound");
-    std::error_code error;
-    if (path.is_relative() && !std::filesystem::exists(path, error)) {
-        path = coastline::DefaultAssets(data) / path;
+// The notes of the subcommand import-pak, or of export-pak when @p exporting.
+int PakFromCommandLine(const argparse::ArgumentParser &command,
+                       bool exporting,
+                       const coastline::GamePaths &paths) {
+    coastline::ControllerPak pak(paths.data / "controller-pak", paths.config / "controller-pak");
+    std::optional<std::string> failure;
+    if (exporting) {
+        auto name = command.get<std::string>("--release");
+        auto release = name == "eur" ? coastline::PakRelease::Eur :
+                       name == "jpn" ? coastline::PakRelease::Jpn :
+                                       coastline::PakRelease::Usa;
+        failure = coastline::ExportPakImage(pak, command.get<std::string>("file"), release);
+    } else {
+        failure = coastline::ImportPakImage(pak, command.get<std::string>("file"));
     }
-    coastline::EarSoundOptions options;
-    options.direction = parser.get<int>("--sound-direction");
-    if (auto wav = parser.present("--sound-wav")) {
-        options.output = *wav;
-    }
-    int status = EXIT_FAILURE;
-    {
-        SdlSession sdl(SDL_INIT_EVENTS);
-        if (!sdl.ready) {
-            SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "SDL did not start: %s", SDL_GetError());
-        } else if (coastline::PlayEarSound(path, options)) {
-            status = EXIT_SUCCESS;
-        }
+    if (failure) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", failure->c_str());
     }
     coastline::StopGameLog();
-    return status;
+    return failure ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
 } // namespace
@@ -912,95 +694,76 @@ int main(int argc, char *argv[]) {
             "the "
             "full screen; "
             "--antialias, --fullscreen, and --windowed still apply");
-    parser.add_argument("--list-gpu-drivers")
-        .help("write the GPU drivers GpuDriver of the settings takes, and exit")
-        .flag();
 #ifndef NDEBUG
     parser.add_argument("--minimized")
         .help("start with the window minimized, for runs that save their frames unattended")
         .flag();
 #endif
-    parser.add_argument("--gpu-debug")
+    parser.add_argument("--debug-gpu")
         .help("check the use of the GPU, with the validation layers of Vulkan when they are "
               "installed, and log what they find; slower")
         .flag();
-    parser.add_argument("--import-disc")
-        .help("copy the game data and music from a Boss Rally CUE sheet or ISO image, and exit");
-    parser.add_argument("--import-rom")
-        .help("copy a Top Gear Rally cartridge image, checked by SHA-1, and exit")
-        .append();
-    parser.add_argument("--import-pak")
-        .help("copy the notes of any release of Top Gear Rally from a Controller Pak image (.mpk), "
-              "and exit");
-    parser.add_argument("--export-pak")
-        .help("write the saved notes to a Controller Pak image (.mpk), and exit; the first pak of "
-              "an image of four paks of mupen64plus is replaced and the other paks are retained");
-    parser.add_argument("--pak-release")
-        .default_value(std::string("usa"))
-        .choices("usa", "eur", "jpn")
-        .help("release of the cartridge that reads the notes --export-pak writes: usa, eur, or "
-              "jpn");
-    parser.add_argument("--play-sound")
-        .help("play a wave file through EAR, from the default assets when relative, and exit");
-    parser.add_argument("--sound-wav")
-        .help("write the mix of --play-sound to this WAV file in place of the device");
-    parser.add_argument("--sound-direction")
-        .help("direction of --play-sound: 0 for the centre, 3 for the left, or 5 for the right")
-        .default_value(0)
-        .scan<'i', int>();
-    parser.add_argument("--scene").help(
-        "scene to start in: intro, the default, main-menu, attract-demo, attract-demo:RELEASE for "
-        "the demo of the usa, jpn, or eur cartridge, renderer-test, model:FILE.gltf for a "
-        "converted model or track, from the imported data when relative, or font for every "
-        "character of the menu fonts, font:TEXT for a string of them");
-    parser.add_argument("--screenshot").help("save a frame to this PNG file");
-    parser.add_argument("--screenshot-frame")
-        .help("number of the frame to save, from 1")
-        .default_value(60)
-        .scan<'i', int>();
-    parser.add_argument("--screenshot-every")
-        .help("also save every this many frames, numbered after the name of --screenshot")
-        .default_value(0)
-        .scan<'i', int>();
-    parser.add_argument("--quit-after-screenshot").help("exit once the frame is saved").flag();
-    parser.add_argument("--press")
-        .help("press a button of a controller from a frame for 6 frames or FRAMES, as "
-              "FRAME:BUTTON[:FRAMES[:PORT]] with BUTTON one of a, b, z, start, l, r, up, down, "
-              "left, right, cu, cd, cl, or cr, and PORT the controller from 1, the first unless "
-              "given; a press of another controller connects it; in a race, on the first "
-              "controller a and up accelerate, b and down brake, left and right steer, start "
-              "pauses, z is the start binding, and cu, cl, and cd choose the cockpit, the bumper, "
-              "and the chase camera, and cr chooses an item of the pause menu")
-        .append();
-    parser.add_argument("--mouse")
-        .help("put the mouse at a place of the 320 by 240 screen from a frame for 1 frame or "
-              "FRAMES, as FRAME:X:Y[:BUTTON[:FRAMES]] with BUTTON one of left, right, or none, "
-              "the button pressed down while the mouse is there; the real mouse is read when no "
-              "move is given")
-        .append();
-    parser.add_argument("--key")
-        .help("press a key of the keyboard from a frame for 6 frames or FRAMES, as "
-              "FRAME:KEY[:FRAMES] with KEY the SDL name of the key, such as Return or Escape")
-        .append();
-    parser.add_argument("--type")
-        .help("type on the keyboard at a frame while a screen takes text, as FRAME:TEXT with "
-              "TEXT the characters typed, or one of <backspace> or <enter> for the key")
-        .append();
-    parser.add_argument("--autopilot")
-        .help("let the computer drive the car of the first player in a race")
+    parser.add_argument("--debug")
+        .help("log the debug messages of every category of SDL and of the game")
         .flag();
+
+    argparse::ArgumentParser import("import", "", argparse::default_arguments::help);
+    import.add_description("Copy the game data from a Boss Rally disc image and Top Gear Rally "
+                           "cartridge images, and exit. At least one of --cd and --rom is "
+                           "required.");
+    import.add_argument("--cd").metavar("FILE").help(
+        "copy the game data and music from a Boss Rally CUE sheet (.cue) or ISO image (.iso)");
+    import.add_argument("--rom")
+        .metavar("ROM")
+        .help("copy a Top Gear Rally cartridge image, checked by SHA-1; repeat for each release")
+        .append();
+    parser.add_subparser(import);
+
+    argparse::ArgumentParser importPak("import-pak", "", argparse::default_arguments::help);
+    importPak.add_description("Copy the notes of any release of Top Gear Rally from a Controller "
+                              "Pak image, and exit.");
+    importPak.add_argument("file").help("Controller Pak image (.mpk)");
+    parser.add_subparser(importPak);
+
+    argparse::ArgumentParser exportPak("export-pak", "", argparse::default_arguments::help);
+    exportPak.add_description("Write the saved notes to a Controller Pak image, and exit. The "
+                              "first pak of an image of four paks of mupen64plus is replaced, and "
+                              "the other paks are retained.");
+    exportPak.add_argument("--release")
+        .default_value(std::string("usa"))
+        .nargs(1)
+        .choices("usa", "eur", "jpn")
+        .help("release of the cartridge that reads the notes: usa, eur, or jpn");
+    exportPak.add_argument("file").help("Controller Pak image (.mpk)");
+    parser.add_subparser(exportPak);
+
+    argparse::ArgumentParser runScript("run-script", "", argparse::default_arguments::help);
+    runScript.add_description(
+        "Start the game driven by the input of a script, and save its frames to screenshots in "
+        "the data directory. Each line of the script is a command, with # starting a comment, and "
+        "a line that starts with a frame number acts at that frame. The commands are autopilot, "
+        "screenshot-every N, FRAME press BUTTON [FRAMES [PORT]], FRAME key KEY [FRAMES], FRAME "
+        "type TEXT, FRAME mouse X Y [BUTTON [FRAMES]], FRAME screenshot, and FRAME quit.");
+    runScript.add_argument("script").help("script file");
+    parser.add_subparser(runScript);
+
     try {
         parser.parse_args(argc, argv);
     } catch (const std::exception &error) {
-        std::cerr << error.what() << '\n' << parser;
+        std::cerr << error.what() << '\n';
+        for (const argparse::ArgumentParser *command :
+             {&import, &importPak, &exportPak, &runScript}) {
+            if (parser.is_subcommand_used(*command)) {
+                std::cerr << *command;
+                return EXIT_FAILURE;
+            }
+        }
+        std::cerr << parser;
         return EXIT_FAILURE;
     }
-
-    if (parser.get<bool>("--list-gpu-drivers")) {
-        for (int i = 0; i < SDL_GetNumGPUDrivers(); ++i) {
-            std::cout << SDL_GetGPUDriver(i) << '\n';
-        }
-        return EXIT_SUCCESS;
+    if (parser.is_subcommand_used(import) && !import.is_used("--cd") && !import.is_used("--rom")) {
+        std::cerr << "import requires --cd, --rom, or both.\n" << import;
+        return EXIT_FAILURE;
     }
 
     auto paths = coastline::ResolveGamePaths(APPLICATION);
@@ -1021,7 +784,10 @@ int main(int argc, char *argv[]) {
     SDL_SetAppMetadata("Coastline", COASTLINE_VERSION, "sh.tat.coastline");
     // SDL logs only the errors of its categories other than the application, so the warnings of
     // the video, the GPU, and the audio reach the log too. SDL_LOGGING chooses its own levels.
-    if (SDL_GetHint(SDL_HINT_LOGGING) == nullptr) {
+    // --debug replaces both.
+    if (parser.get<bool>("--debug")) {
+        SDL_SetLogPriorities(SDL_LOG_PRIORITY_DEBUG);
+    } else if (SDL_GetHint(SDL_HINT_LOGGING) == nullptr) {
         SDL_SetLogPriorities(SDL_LOG_PRIORITY_WARN);
         SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO);
     }
@@ -1034,31 +800,30 @@ int main(int argc, char *argv[]) {
     SDL_Log("State: %s", paths->state.string().c_str());
     SDL_Log("Cache: %s", paths->cache.string().c_str());
 
-    if (parser.is_used("--import-disc") || parser.is_used("--import-rom")) {
-        return ImportFromCommandLine(parser, paths->data);
+    if (parser.is_subcommand_used(import)) {
+        return ImportFromCommandLine(import, paths->data);
     }
-    if (parser.is_used("--import-pak") || parser.is_used("--export-pak")) {
-        coastline::ControllerPak pak(paths->data / "controller-pak",
-                                     paths->config / "controller-pak");
-        std::optional<std::string> failure;
-        if (auto image = parser.present("--import-pak")) {
-            failure = coastline::ImportPakImage(pak, *image);
-        }
-        if (auto image = parser.present("--export-pak"); image && !failure) {
-            auto name = parser.get<std::string>("--pak-release");
-            auto release = name == "eur" ? coastline::PakRelease::Eur :
-                           name == "jpn" ? coastline::PakRelease::Jpn :
-                                           coastline::PakRelease::Usa;
-            failure = coastline::ExportPakImage(pak, *image, release);
-        }
-        if (failure) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", failure->c_str());
-        }
-        coastline::StopGameLog();
-        return failure ? EXIT_FAILURE : EXIT_SUCCESS;
+    if (parser.is_subcommand_used(importPak) || parser.is_subcommand_used(exportPak)) {
+        bool exporting = parser.is_subcommand_used(exportPak);
+        return PakFromCommandLine(exporting ? exportPak : importPak, exporting, *paths);
     }
-    if (parser.is_used("--play-sound")) {
-        return PlaySoundFromCommandLine(parser, paths->data);
+    LoadedScript script;
+    if (parser.is_subcommand_used(runScript)) {
+        auto loaded = LoadScript(runScript.get<std::string>("script"));
+        if (!loaded) {
+            coastline::StopGameLog();
+            return EXIT_FAILURE;
+        }
+        script = std::move(*loaded);
+    }
+    // A run that saves its frames draws them at Width by Height and steps the splash screens by a
+    // 60th of a second a frame, for the same frames on every machine.
+    const bool savesFrames =
+        !script.script.screenshots.empty() || script.script.screenshotEvery > 0;
+    const std::filesystem::path scriptFrames = paths->data / "screenshots";
+    if (savesFrames) {
+        std::error_code error;
+        std::filesystem::create_directories(scriptFrames, error);
     }
     auto configPath = paths->config / "BossRally.ini";
     auto config = coastline::GameConfig::Load(configPath);
@@ -1139,12 +904,8 @@ int main(int argc, char *argv[]) {
     auto music = LoadMusicModule(assets, menuModule.offset);
     // The keys of the actions are not written, as each key present replaces its preset binding.
     coastline::LoadControls(config);
-    const std::string scene = parser.present("--scene").value_or("");
-    if (scene.starts_with("attract-demo:") &&
-        !coastline::ChooseAttractDemo(scene.substr(scene.find(':') + 1))) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "There is no attract demo %s.", scene.c_str());
-        return EXIT_FAILURE;
-    }
+    const coastline::DisplayOptions displayOptions =
+        DisplayOptionsFrom(config, parser, savesFrames);
     int status = EXIT_FAILURE;
     {
         SdlSession sdl(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD);
@@ -1155,8 +916,7 @@ int main(int argc, char *argv[]) {
         }
         if (!sdl.ready) {
             SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "SDL did not start: %s", SDL_GetError());
-        } else if (auto window = coastline::GpuWindow::Create("Coastline",
-                                                              DisplayOptionsFrom(config, parser))) {
+        } else if (auto window = coastline::GpuWindow::Create("Coastline", displayOptions)) {
             SetWindowIcon(window->Window(), assets);
             coastline::SetWideMenus(config.GetBoolean("Video", "WideMenus", false));
             coastline::SetFieldOfViewScale(config.GetFloat("Video", "FieldOfView", 1.0f));
@@ -1172,26 +932,8 @@ int main(int argc, char *argv[]) {
                 }
             };
             playMenuMusic();
-            std::optional<std::filesystem::path> screenshot;
-            if (auto path = parser.present("--screenshot")) {
-                // A race moves to the data directory, and a relative path would then point at
-                // another file.
-                std::error_code error;
-                screenshot = std::filesystem::absolute(*path, error);
-                if (error) {
-                    screenshot = *path;
-                }
-            }
-            int screenshotFrame = parser.get<int>("--screenshot-frame");
-            int screenshotEvery = parser.get<int>("--screenshot-every");
-            bool quitAfterScreenshot = parser.get<bool>("--quit-after-screenshot");
-            std::vector<ScriptedPress> presses = ParsePresses(parser);
-            std::vector<ScriptedMouse> mouseMoves = ParseMouseMoves(parser);
-            std::vector<ScriptedKey> keys = ParseKeys(parser);
-            const std::vector<ScriptedTyping> typing = ParseTyping(parser);
+            const coastline::Script &commands = script.script;
             MouseState mouse;
-            std::unique_ptr<coastline::TlRenderer> renderer;
-            std::unique_ptr<coastline::ModelView> modelView;
             std::unique_ptr<coastline::SceneRenderer> sceneRenderer;
             std::unique_ptr<coastline::Intro> intro;
             std::unique_ptr<coastline::Menus> mainMenu;
@@ -1201,8 +943,6 @@ int main(int argc, char *argv[]) {
             // The seconds the request to import again remains at the top of the splash screens
             // and the menus.
             float reimportNoticeSeconds = reimportNotice.empty() ? 0.0f : 10.0f;
-            std::unique_ptr<coastline::MenuText> fontSample;
-            std::string fontSampleText;
             // The screen of the front end that shows.
             enum class FrontEnd { Intro, AttractDemo, MainMenu, Race, Credits };
             FrontEnd frontEnd = FrontEnd::Intro;
@@ -1238,60 +978,35 @@ int main(int argc, char *argv[]) {
                 leaveDemo = false;
                 return raceView != nullptr;
             };
-            bool startInDemo = scene == "attract-demo" || scene.starts_with("attract-demo:");
-            coastline::TextureHandle testTexture = 0;
-            if (scene == "renderer-test") {
-                renderer = coastline::TlRenderer::Create(*window);
-                testTexture = renderer ? CreateCheckerTexture(*renderer) : 0;
-            } else if (scene.starts_with("model:")) {
-                std::filesystem::path model = scene.substr(6);
-                if (model.is_relative()) {
-                    model = assets / model;
-                }
-                modelView = coastline::ModelView::Create(*window, model);
-            } else if (scene == "font" || scene.starts_with("font:")) {
-                sceneRenderer = coastline::SceneRenderer::Create(*window);
-                if (sceneRenderer) {
-                    fontSample = coastline::MenuText::Load(*sceneRenderer, release / "fonts");
-                }
-                fontSampleText = scene == "font" ? "ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789 "
-                                                   ",.?!#$&-+;:'\"/*=@" :
-                                                   scene.substr(5);
-            } else if (scene.empty() || scene == "intro" || scene == "main-menu" || startInDemo) {
-                sceneRenderer = coastline::SceneRenderer::Create(*window);
-                if (sceneRenderer) {
-                    auto frontEndRelease = release;
-                    auto loadFrontEnd = [&]() {
-                        intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
-                        mainMenu = coastline::Menus::Load(*sceneRenderer,
-                                                          frontEndRelease,
-                                                          paths->data,
-                                                          paths->cache,
-                                                          config,
-                                                          configPath);
-                        if (mainMenu) {
-                            mainMenu->SetMenuMusic(playMenuMusic);
-                        }
-                    };
+            sceneRenderer = coastline::SceneRenderer::Create(*window);
+            if (sceneRenderer) {
+                auto frontEndRelease = release;
+                auto loadFrontEnd = [&]() {
+                    intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
+                    mainMenu = coastline::Menus::Load(*sceneRenderer,
+                                                      frontEndRelease,
+                                                      paths->data,
+                                                      paths->cache,
+                                                      config,
+                                                      configPath);
+                    if (mainMenu) {
+                        mainMenu->SetMenuMusic(playMenuMusic);
+                    }
+                };
+                loadFrontEnd();
+                // The splash screens and the menus are those of the USA release, and a release
+                // whose screens differ falls back to it.
+                if ((!intro || !mainMenu) && release != assets / "n64" / "usa") {
+                    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                                "The menus of %s do not load, and those of n64/usa are drawn.",
+                                release.lexically_relative(assets).string().c_str());
+                    frontEndRelease = assets / "n64" / "usa";
                     loadFrontEnd();
-                    // The splash screens and the menus are those of the USA release, and a
-                    // release whose screens differ falls back to it.
-                    if ((!intro || !mainMenu) && release != assets / "n64" / "usa") {
-                        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                                    "The menus of %s do not load, and those of n64/usa are drawn.",
-                                    release.lexically_relative(assets).string().c_str());
-                        frontEndRelease = assets / "n64" / "usa";
-                        loadFrontEnd();
-                    }
-                    frameRateText = coastline::MenuText::Load(*sceneRenderer, release / "fonts");
-                    if (scene == "main-menu" && mainMenu) {
-                        frontEnd = FrontEnd::MainMenu;
-                    }
                 }
+                frameRateText = coastline::MenuText::Load(*sceneRenderer, release / "fonts");
             }
-            // A capture steps the splash screens by a 60th of a second a frame, for the same
-            // frames on every machine.
-            bool fixedStep = screenshot.has_value();
+            // The vertical sync V returns to, fifo when the settings choose it.
+            const bool fifo = displayOptions.fifo;
             Uint64 lastTicks = SDL_GetTicksNS();
             // FrameRateLimit spaces the frames, at no limit when 0. --gpu-preset worst draws 30
             // frames a second, the steps of the race, for a slow computer.
@@ -1310,7 +1025,7 @@ int main(int argc, char *argv[]) {
             for (int frame = 1; running; ++frame) {
                 // The mixers take the volumes the screens and the race wrote in the last frame.
                 coastline::PublishN64Volumes();
-                PushScriptedTyping(typing, frame, window->Window());
+                PushScriptedTyping(commands.typing, frame, window->Window());
                 // The text typed on a keyboard while a screen takes it, with Backspace and Enter
                 // as control characters.
                 std::string typed;
@@ -1339,15 +1054,25 @@ int main(int argc, char *argv[]) {
                 }
                 // The shortcuts of the window are read before the controllers, which then do not
                 // see the Enter of Alt and Enter. A race, the attract demo, and the credits read F
-                // themselves.
+                // themselves, and F and V type while a screen takes text.
                 bool raceShows = frontEnd == FrontEnd::Race || frontEnd == FrontEnd::AttractDemo ||
                                  frontEnd == FrontEnd::Credits;
-                switch (displayKeys.Read(!raceShows && !SDL_TextInputActive(window->Window()))) {
+                bool typing = SDL_TextInputActive(window->Window());
+                switch (displayKeys.Read(!raceShows && !typing, !typing)) {
                 case DisplayKey::Fullscreen: {
                     bool fullscreen = !window->Fullscreen();
                     if (window->SetFullscreen(fullscreen)) {
                         config.Set("Video", "Fullscreen", fullscreen ? "1" : "0");
                     }
+                    break;
+                }
+                case DisplayKey::VSync: {
+                    // V goes from immediate to vertical sync, and from vertical sync or the
+                    // mailbox to immediate.
+                    bool vsync = window->PresentMode() == SDL_GPU_PRESENTMODE_IMMEDIATE;
+                    window->SetPresentMode(vsync ? SDL_GPU_PRESENTMODE_VSYNC :
+                                                   SDL_GPU_PRESENTMODE_IMMEDIATE);
+                    config.Set("Video", "VSync", !vsync ? "immediate" : fifo ? "fifo" : "vsync");
                     break;
                 }
                 case DisplayKey::FrameRate:
@@ -1363,39 +1088,44 @@ int main(int argc, char *argv[]) {
                                                  1,
                                         racing);
                 std::uint16_t scripted = 0;
-                for (const ScriptedPress &press : presses) {
+                for (const coastline::ScriptPress &press : commands.presses) {
                     if (press.port != 0) {
                         ports[press.port].connected = true;
                     }
                     if (frame >= press.frame && frame < press.frame + press.frames) {
-                        ports[press.port].buttons |= press.buttons;
+                        ports[press.port].buttons |= press.button;
                         if (press.port == 0) {
-                            scripted |= press.buttons;
+                            scripted |= press.button;
                         }
                     }
                 }
                 coastline::SetSecondControllerState(ports[1]);
                 // The scripted moves of the mouse take the place of the real mouse.
-                if (mouseMoves.empty()) {
+                if (commands.mouseMoves.empty()) {
                     float x = 0.0f;
                     float y = 0.0f;
                     mouse.buttons = SDL_GetMouseState(&x, &y);
                     mouse.at = MouseOnScreen(*window, x, y);
                 } else {
                     mouse.buttons = 0;
-                    for (const ScriptedMouse &move : mouseMoves) {
+                    for (const coastline::ScriptMouse &move : commands.mouseMoves) {
                         if (frame >= move.frame && frame < move.frame + move.frames) {
                             mouse.at = {move.x * 2, move.y * 2};
-                            mouse.buttons = move.buttons;
+                            mouse.buttons = move.button == coastline::ScriptMouseButton::Left ?
+                                                SDL_BUTTON_LMASK :
+                                            move.button == coastline::ScriptMouseButton::Right ?
+                                                SDL_BUTTON_RMASK :
+                                                0;
                         }
                     }
                 }
                 // The race reads the keyboard through the bindings of the PC release, and the
                 // presses push down the keys of its default bindings.
                 std::vector<int> scriptedKeys;
-                for (const ScriptedKey &key : keys) {
+                for (std::size_t i = 0; i < commands.keys.size(); ++i) {
+                    const coastline::ScriptKey &key = commands.keys[i];
                     if (frame >= key.frame && frame < key.frame + key.frames) {
-                        scriptedKeys.push_back(key.scancode);
+                        scriptedKeys.push_back(script.keys[i]);
                     }
                 }
                 if (frontEnd == FrontEnd::Race) {
@@ -1410,28 +1140,23 @@ int main(int argc, char *argv[]) {
                                        coastline::IsKeyDown(SDL_SCANCODE_F9);
                 printScreen = printScreen || (printScreenDown && !printScreenWasDown);
                 printScreenWasDown = printScreenDown;
-                bool capture = screenshot && frame == screenshotFrame;
+                // The frames of the script are named by their number.
                 std::optional<std::filesystem::path> framePath;
-                if (capture) {
-                    framePath = screenshot;
-                } else if (screenshot && screenshotEvery > 0 && frame % screenshotEvery == 0) {
-                    char number[16];
-                    std::snprintf(number, sizeof(number), "-%06d", frame);
-                    framePath = screenshot->parent_path() / (screenshot->stem().string() + number +
-                                                             screenshot->extension().string());
+                if (std::ranges::contains(commands.screenshots, frame) ||
+                    (commands.screenshotEvery > 0 && frame % commands.screenshotEvery == 0)) {
+                    char name[32];
+                    std::snprintf(name, sizeof(name), "frame-%06d.png", frame);
+                    framePath = scriptFrames / name;
                 }
                 // Print Screen saves the frame to the screenshots of the data directory, named by
                 // the time it was taken.
                 if (printScreen && !framePath) {
                     framePath = ScreenshotPath(paths->data / "screenshots");
                 }
-                // The test of the renderer keeps the size it started at, its targets with it.
-                if (!renderer) {
-                    window->UpdateFrameSize();
-                }
+                window->UpdateFrameSize();
                 if (intro) {
                     Uint64 now = SDL_GetTicksNS();
-                    float seconds = fixedStep ?
+                    float seconds = savesFrames ?
                                         1.0f / 60.0f :
                                         std::min(static_cast<float>(now - lastTicks) / 1e9f, 0.1f);
                     lastTicks = now;
@@ -1473,9 +1198,7 @@ int main(int argc, char *argv[]) {
                             keys[SDL_SCANCODE_I] && (SDL_GetModState() & SDL_KMOD_SHIFT) != 0;
                         coastline::IntroButtons buttons{(pressed & CHOOSE) != 0,
                                                         (held & C_BUTTONS) == C_BUTTONS || shiftI};
-                        coastline::IntroEnd end = startInDemo ? coastline::IntroEnd::AttractDemo :
-                                                                intro->Update(seconds, buttons);
-                        startInDemo = false;
+                        coastline::IntroEnd end = intro->Update(seconds, buttons);
                         if (end == coastline::IntroEnd::MainMenu && mainMenu) {
                             mainMenu->Restart();
                             frontEnd = FrontEnd::MainMenu;
@@ -1683,7 +1406,7 @@ int main(int argc, char *argv[]) {
                         audio.Stop();
                         coastline::RaceSetup setup = mainMenu->ChosenRace();
                         setup.waitForStart = config.GetBoolean("Game", "WaitForStart", false);
-                        setup.autopilot = parser.get<bool>("--autopilot");
+                        setup.autopilot = commands.autopilot;
                         coastline::StartRace(
                             setup, assets / "music", config.Get("Game", "Music") == "CD");
                         std::vector<coastline::RaceCar> cars = coastline::RaceCars();
@@ -1703,18 +1426,9 @@ int main(int argc, char *argv[]) {
                             mainMenu->FinishRace(coastline::RaceEnd::Menu, {});
                         }
                     }
-                } else if (fontSample) {
-                    sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
-                    DrawFontSample(*sceneRenderer, *fontSample, fontSampleText);
-                    sceneRenderer->End(framePath ? &*framePath : nullptr);
-                } else if (modelView) {
-                    modelView->Draw(framePath ? &*framePath : nullptr);
-                } else if (renderer) {
-                    DrawRendererTestScene(
-                        *renderer, testTexture, frame, framePath ? &*framePath : nullptr);
                 } else {
-                    // The clear colour follows the stick of the first controller until the
-                    // game draws its frames here.
+                    // Without the splash screens, the clear colour follows the stick of the
+                    // first controller.
                     float red = 0.5f + ports[0].stickX / 160.0f;
                     float green = 0.5f + ports[0].stickY / 160.0f;
                     float blue = ports[0].buttons != 0 ? 0.6f : 0.2f;
@@ -1744,7 +1458,7 @@ int main(int argc, char *argv[]) {
                         nextFrame = now;
                     }
                 }
-                if (capture && quitAfterScreenshot) {
+                if (frame == commands.quitFrame) {
                     running = false;
                 }
             }

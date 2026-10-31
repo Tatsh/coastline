@@ -123,40 +123,7 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
         SDL_LogError(SDL_LOG_CATEGORY_GPU, "The window was not claimed: %s", SDL_GetError());
         return nullptr;
     }
-    // Vertical sync of a Wayland window waits more than a refresh for some frames and drops the
-    // rate below the refresh of the display. A Wayland compositor does not tear, and the mailbox
-    // paced at the refresh rate shows every frame in its place.
-    SDL_GPUPresentMode wanted = options.presentMode;
-    if (wanted == SDL_GPU_PRESENTMODE_VSYNC && !options.fifo &&
-        SDL_strcmp(SDL_GetCurrentVideoDriver(), "wayland") == 0 &&
-        SDL_WindowSupportsGPUPresentMode(
-            result->m_device.get(), result->m_window.get(), SDL_GPU_PRESENTMODE_MAILBOX)) {
-        wanted = SDL_GPU_PRESENTMODE_MAILBOX;
-        result->m_pacedToRefresh = true;
-    }
-    SDL_GPUPresentMode presentMode =
-        SupportedPresentMode(result->m_device.get(), result->m_window.get(), wanted);
-    if (presentMode != SDL_GPU_PRESENTMODE_VSYNC &&
-        !SDL_SetGPUSwapchainParameters(result->m_device.get(),
-                                       result->m_window.get(),
-                                       SDL_GPU_SWAPCHAINCOMPOSITION_SDR,
-                                       presentMode)) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_GPU,
-                    "The frames wait for vertical sync, as %s presentation did not start: %s",
-                    PresentModeName(presentMode),
-                    SDL_GetError());
-        presentMode = SDL_GPU_PRESENTMODE_VSYNC;
-    }
-    if (presentMode != wanted) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_GPU,
-                    "The window does not support %s presentation.",
-                    PresentModeName(wanted));
-    }
-    result->m_pacedToRefresh =
-        result->m_pacedToRefresh && presentMode == SDL_GPU_PRESENTMODE_MAILBOX;
-    SDL_Log("Presenting frames with %s%s.",
-            PresentModeName(presentMode),
-            result->m_pacedToRefresh ? " at the refresh rate of the display" : "");
+    result->SetPresentMode(options.presentMode);
     result->m_antialias = options.antialias;
     if (options.postAntialias != PostAntialias::None && !result->CreatePostPasses()) {
         return nullptr;
@@ -167,6 +134,43 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
     }
     SDL_Log("Drawing with the %s GPU driver.", SDL_GetGPUDeviceDriver(result->m_device.get()));
     return result;
+}
+
+void GpuWindow::SetPresentMode(SDL_GPUPresentMode mode) {
+    m_options.presentMode = mode;
+    m_pacedToRefresh = false;
+    // Vertical sync of a Wayland window waits more than a refresh for some frames and drops the
+    // rate below the refresh of the display. A Wayland compositor does not tear, and the mailbox
+    // paced at the refresh rate shows every frame in its place.
+    SDL_GPUPresentMode wanted = mode;
+    if (wanted == SDL_GPU_PRESENTMODE_VSYNC && !m_options.fifo &&
+        SDL_strcmp(SDL_GetCurrentVideoDriver(), "wayland") == 0 &&
+        SDL_WindowSupportsGPUPresentMode(
+            m_device.get(), m_window.get(), SDL_GPU_PRESENTMODE_MAILBOX)) {
+        wanted = SDL_GPU_PRESENTMODE_MAILBOX;
+        m_pacedToRefresh = true;
+    }
+    SDL_GPUPresentMode presentMode = SupportedPresentMode(m_device.get(), m_window.get(), wanted);
+    if (!SDL_SetGPUSwapchainParameters(
+            m_device.get(), m_window.get(), SDL_GPU_SWAPCHAINCOMPOSITION_SDR, presentMode) &&
+        presentMode != SDL_GPU_PRESENTMODE_VSYNC) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_GPU,
+                    "The frames wait for vertical sync, as %s presentation did not start: %s",
+                    PresentModeName(presentMode),
+                    SDL_GetError());
+        presentMode = SDL_GPU_PRESENTMODE_VSYNC;
+        SDL_SetGPUSwapchainParameters(
+            m_device.get(), m_window.get(), SDL_GPU_SWAPCHAINCOMPOSITION_SDR, presentMode);
+    }
+    if (presentMode != wanted) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_GPU,
+                    "The window does not support %s presentation.",
+                    PresentModeName(wanted));
+    }
+    m_pacedToRefresh = m_pacedToRefresh && presentMode == SDL_GPU_PRESENTMODE_MAILBOX;
+    SDL_Log("Presenting frames with %s%s.",
+            PresentModeName(presentMode),
+            m_pacedToRefresh ? " at the refresh rate of the display" : "");
 }
 
 bool GpuWindow::CreateFrame(Uint32 width, Uint32 height) {

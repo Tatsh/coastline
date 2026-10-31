@@ -63,7 +63,6 @@ beqz
 berkin
 bestlaptime
 bgdim
-bgra
 bgtz
 bilerp
 bilinearly
@@ -221,8 +220,6 @@ dblclks
 dbuild
 dclipstatus
 dcmake
-dcmpfunc
-dcolor
 dcosf
 dcull
 ddbd
@@ -378,7 +375,6 @@ dsref
 dsrl
 dsscl
 dtaddress
-dtblend
 dtdy
 dtgr
 dtlvertex
@@ -415,7 +411,6 @@ enddl
 endforeach
 endfunction
 endlabel
-enginecheck
 enginetextures
 engsound
 entermenuloop
@@ -595,10 +590,7 @@ inval
 invaldcache
 invalicache
 invalidplayer
-invdestalpha
-invdestcolor
 invsrcalpha
-invsrccolor
 iobusy
 iomessage
 isdvd
@@ -1054,11 +1046,11 @@ rollup
 rombuilder
 routeposition
 routewalk
-rrggbb
 rshift
 rside
 rsvg
 rtti
+runscript
 runtimebuffers
 rxsize
 samplecount
@@ -1283,7 +1275,6 @@ tlbpgmask
 tlbr
 tlbwi
 tlnext
-tlrenderer
 tlut
 tluts
 tlvertex

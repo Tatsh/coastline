@@ -2381,7 +2381,13 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
                                                    const std::filesystem::path &dataDirectory,
                                                    const ImportProgress &progress) {
     std::vector<CueTrack> tracks;
-    if (Lowercase(disc.extension().string()) == ".cue") {
+    const std::string extension = Lowercase(disc.extension().string());
+    if (extension == ".bin" || extension == ".img" || extension == ".ccd") {
+        return std::unexpected(fmt::format("{} cannot be imported yet. The import reads a CUE "
+                                           "sheet (.cue) and an ISO image (.iso).",
+                                           disc.string()));
+    }
+    if (extension == ".cue") {
         auto parsed = ParseCueSheet(disc);
         if (!parsed) {
             return std::unexpected(parsed.error());

@@ -103,14 +103,4 @@ public:
  */
 void PublishN64Volumes();
 
-/**
- * Write interleaved stereo 16-bit samples as a WAV file.
- *
- * @param path The file.
- * @param samples The samples.
- * @param rate The frames a second.
- * @return Whether the file was written.
- */
-bool WriteWav(const std::filesystem::path &path, std::span<const std::int16_t> samples, int rate);
-
 } // namespace coastline

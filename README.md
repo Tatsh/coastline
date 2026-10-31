@@ -129,10 +129,14 @@ Application Support, Caches, and Logs in the library of the user.
 
 On macOS the install is the application bundle `Coastline.app`, signed without an identity, with
 every library the game links that macOS does not provide inside it. The build workflow uploads it
-as a disk image. The options of the command line go to the program inside the bundle.
+as a disk image. `open` passes the options of the command line after `--args` to the game. A game
+started by `open` runs in `/`, where a relative path does not resolve. Give absolute paths.
+`-W` waits for the import to finish, and `-n` starts a new instance, as `open` brings a running
+game forward without passing it the options. The output does not appear in the terminal, and
+`game.log` in `~/Library/Logs/coastline` records the result.
 
 ```shell
-Coastline.app/Contents/MacOS/Coastline --import-disc 'Boss Rally.cue' --import-rom usa.z64
+open -n -W Coastline.app --args import --cd "$PWD/Boss Rally.cue" --rom "$PWD/usa.z64"
 ```
 
 ### Controls
@@ -155,7 +159,7 @@ larger value.
 The car of a player steers by the handling chosen on the car select screen, as the Nintendo 64
 release does. The wheels turn towards the stick at a rate of the handling and return to the middle
 at once, and a stick pushed past 72% of its travel takes the whole lock, which narrows with the
-speed. The computer's cars and `--autopilot` steer as in the PC release.
+speed. The computer's cars and the `autopilot` of a script steer as in the PC release.
 
 ```ini
 [Controls]
@@ -256,7 +260,9 @@ percent sign, and `PCT` stands for it. In a race, F12 selects the next
 music track, and F11 does not select the previous one as in the PC release. F9 or Print Screen
 saves the frame as a PNG file to `screenshots` in the data directory
 (`~/.local/share/coastline/screenshots`), named by the time it was taken. F9 works where the desktop
-takes Print Screen for its own screenshots, as Plasma does.
+takes Print Screen for its own screenshots, as Plasma does. V switches between waiting for the
+vertical blank and presenting at once on every screen, except while a screen takes typed text,
+and saves the choice to `VSync`. From `mailbox`, V presents at once.
 
 The `[Video]` section of `BossRally.ini` sets up the display.
 
@@ -265,8 +271,8 @@ The `[Video]` section of `BossRally.ini` sets up the display.
 | `Fullscreen`           | `1` for the full screen, or `0` for a resizable window. Alt+Enter and F11 save their choice here.                                                                                                                                       |
 | `FullscreenMode`       | `borderless`, the default, covers the display at its desktop mode. `exclusive` switches the display to `Width` by `Height` at `RefreshRate`.                                                                                            |
 | `RefreshRate`          | The refresh rate of the exclusive mode in hertz, or `0` for the rate of the desktop.                                                                                                                                                    |
-| `VSync`                | `vsync` or `1` waits for the vertical blank. `mailbox` presents without tearing and without waiting, and `immediate` or `0` presents at once.                                                                                           |
-| `GpuDriver`            | The GPU driver of SDL, such as `vulkan`, `metal`, or `direct3d12`, or empty, the default, for the driver SDL chooses. `--list-gpu-drivers` lists the drivers of the system.                                                             |
+| `VSync`                | `vsync` or `1` waits for the vertical blank. `mailbox` presents without tearing and without waiting, and `immediate` or `0` presents at once. V saves its choice here.                                                                  |
+| `GpuDriver`            | The GPU driver of SDL, `vulkan`, `metal`, or `direct3d12`, or empty, the default, for the driver SDL chooses.                                                                                                                           |
 | `FrameRateLimit`       | The most frames drawn each second, or `0` for no limit.                                                                                                                                                                                 |
 | `InternalWidth`        | The width of the frame the game draws in pixels, or `0`, the default, for the width of the window.                                                                                                                                      |
 | `InternalHeight`       | The height of the frame the game draws in pixels, or `0`, the default, for the height of the window.                                                                                                                                    |
@@ -284,7 +290,7 @@ By default the frame follows the size of the window in pixels, and changes with 
 is resized or covers the display. `InternalWidth` and `InternalHeight` set a size of their own,
 which takes the place of the size of the window and of `RenderScale`, and the frame is scaled to
 the window with bars where its shape differs. `Width` and `Height` set the size of the window and
-of the exclusive mode. A run with `--screenshot` draws its frames at `Width` by `Height` times
+of the exclusive mode. A script that saves frames draws them at `Width` by `Height` times
 `RenderScale`, for the same captures on every machine. A `RenderScale` of `2` draws four pixels for
 each pixel of the window and filters them down, which is supersampling.
 
@@ -315,10 +321,12 @@ wrapping when the gain raises it past the range of a sample.
 The data comes from a Boss Rally disc image and a Top Gear Rally cartridge image. The import
 checks the cartridge against the SHA-1 of each release, and converts the CD audio of a CUE sheet
 to FLAC. An ISO image has no CD audio. The import writes every file to `assets/default` in the
-data directory.
+data directory, and exits. The `import` subcommand takes the disc with `--cd`, a CUE sheet (`.cue`)
+or an ISO image (`.iso`), and a cartridge with each `--rom`. A raw BIN image and a CloneCD image
+(`.img` or `.ccd`) cannot be imported yet.
 
 ```shell
-coastline --import-disc 'Boss Rally.cue' --import-rom usa.z64 --import-rom jpn.z64
+coastline import --cd 'Boss Rally.cue' --rom usa.z64 --rom jpn.z64
 ```
 
 The saves of the game are the notes of a Controller Pak, a file for each note in `controller-pak`
@@ -326,13 +334,18 @@ of the data directory (`~/.local/share/coastline/controller-pak`), with the fram
 car in `ghost-frames.bin` beside it. The note of the options menu, `TOP GEAR OPTIONS`, is a setting
 and is stored in `controller-pak` of the configuration directory
 (`~/.config/coastline/controller-pak`), and the pak counts it with the other notes.
-`--export-pak` writes them to a Controller Pak image (`.mpk`) for a console or an emulator, with the
-codes of the release `--pak-release` chooses: `usa` (the default), `eur`, or `jpn`. Each release
-reads only the notes with its own codes. `--import-pak` reads the notes of any release from an
-image.
+`export-pak` writes them to a Controller Pak image (`.mpk`) for a console or an emulator, with the
+codes of the release `--release` chooses: `usa` (the default), `eur`, or `jpn`. Each release
+reads only the notes with its own codes.
 
 ```shell
-coastline --export-pak pak.mpk --pak-release eur
+coastline export-pak --release eur pak.mpk
+```
+
+`import-pak` reads the notes of any release from an image.
+
+```shell
+coastline import-pak pak.mpk
 ```
 
 Each import records the version of its conversion in `assets/default/import.ini`. When a newer
@@ -401,8 +414,65 @@ A pack may have a `pack.json` of settings. Each key of the selected pack replace
 
 `version` is the version of the file, 1. `xmMusicGain` is the gain of the music of the XM modules.
 
-`coastline --help` lists the options, among them `--screenshot` and `--scene` for unattended
-checks.
+### Command line
+
+`coastline --help` lists the options and the subcommands, and `coastline SUBCOMMAND --help` lists
+the options of a subcommand. Without a subcommand the game starts. The options of the game come
+before the subcommand. `--debug` logs the debug messages of every category, and `--debug-gpu`
+checks the use of the GPU with the validation layers of Vulkan when they are installed.
+
+```shell
+coastline --debug --width 640 --height 480
+```
+
+### Scripts
+
+`run-script` starts the game at the splash screens, driven by the input of a script file, for
+unattended checks. Each line is a command, `#` starts a comment, and a blank line is ignored. A
+line that starts with a frame number, from 1, acts at that frame. These are the commands:
+
+- `autopilot` lets the computer drive the car of the first player in a race. It takes no frame.
+- `screenshot-every N` saves every N frames. It takes no frame.
+- `FRAME press BUTTON [FRAMES [PORT]]` holds a button of a controller for 6 frames or `FRAMES`.
+  `BUTTON` is one of `a`, `b`, `z`, `start`, `l`, `r`, `up`, `down`, `left`, `right`, `cu`, `cd`,
+  `cl`, or `cr`, and `PORT` is the controller from 1, the first unless given. A press of another
+  controller connects it. In a race, on the first controller, `a` and `up` accelerate, `b` and
+  `down` brake, `left` and `right` steer, `start` pauses, `z` is the start binding, `cu`, `cl`, and
+  `cd` choose the cockpit, the bumper, and the chase camera, and `cr` chooses an item of the pause
+  menu.
+- `FRAME key KEY [FRAMES]` holds a key of the keyboard for 6 frames or `FRAMES`. `KEY` is the SDL
+  name of the key, such as `Return`, `Escape`, or `F9`.
+- `FRAME type TEXT` types the rest of the line while a screen takes text, or presses Backspace or
+  Enter for `<backspace>` or `<enter>`.
+- `FRAME mouse X Y [BUTTON [FRAMES]]` puts the mouse at a place of the 320 by 240 screen for 1
+  frame or `FRAMES`, with `BUTTON` (`left`, `right`, or `none`) held down. The game reads the real
+  mouse when the script does not move it.
+- `FRAME screenshot` saves the frame.
+- `FRAME quit` exits after the frame.
+
+The frames save to `screenshots` in the data directory as `frame-NNNNNN.png`, by the number of the
+frame. A script that saves frames draws them at `Width` by `Height` and steps the splash screens
+by a 60th of a second a frame, for the same captures on every machine. A line that cannot be read
+stops the game before it opens a window, with the file and the line logged.
+
+```text
+autopilot
+screenshot-every 60
+120 press a
+200 press start 12        # 12 frames on the first controller
+300 key F9 6
+400 type HELLO
+450 type <backspace>
+500 mouse 100 80 left 1   # X and Y of the 320 by 240 screen
+600 screenshot
+900 quit
+```
+
+```shell
+coastline --minimized run-script check.txt
+```
+
+`--minimized` exists only in debug builds.
 
 ## Testing
 

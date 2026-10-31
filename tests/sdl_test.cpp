@@ -19,11 +19,13 @@
 
 #include "config.h"
 #include "consolestrings.h"
+#include "controller.h"
 #include "iconfile.h"
 #include "importversion.h"
 #include "language.h"
 #include "paths.h"
 #include "performance.h"
+#include "runscript.h"
 #include "volumelevels.h"
 
 namespace {
@@ -308,9 +310,85 @@ void CheckPerformanceParsing() {
     Check(!coastline::StatmResidentPages("1 x"), "a second word that is not a number is nothing");
 }
 
+// The line and the start of the message of the error of a script.
+bool ScriptFails(std::string_view text, int line, std::string_view message) {
+    auto script = coastline::ParseScript(text);
+    return !script && script.error().line == line && script.error().message.starts_with(message);
+}
+
+void CheckRunScript() {
+    auto script = coastline::ParseScript("# a comment\n"
+                                         "\n"
+                                         "autopilot\r\n"
+                                         "screenshot-every 60\n"
+                                         "  120 press a\n"
+                                         "200 press start 12 2   # FRAMES, then PORT\n"
+                                         "300\tkey F9\n"
+                                         "310 key Return 3\n"
+                                         "400 type HELLO there\n"
+                                         "450 type <backspace>\n"
+                                         "500 mouse 100 80 left 4\n"
+                                         "510 mouse 10 20\n"
+                                         "600 screenshot\n"
+                                         "900 quit\n"
+                                         "800 quit");
+    Check(script.has_value(), "a script of every command is read");
+    if (!script) {
+        return;
+    }
+    Check(script->autopilot, "autopilot applies from the start");
+    Check(script->screenshotEvery == 60, "screenshot-every takes its number");
+    Check(script->presses.size() == 2 && script->presses[0].frame == 120 &&
+              script->presses[0].button == coastline::BUTTON_A &&
+              script->presses[0].frames == coastline::SCRIPT_PRESS_FRAMES &&
+              script->presses[0].port == 0,
+          "a press lasts the default frames on the first controller");
+    Check(script->presses[1].button == coastline::BUTTON_START && script->presses[1].frames == 12 &&
+              script->presses[1].port == 1,
+          "a press takes its frames and its controller");
+    Check(script->keys.size() == 2 && script->keys[0].name == "F9" &&
+              script->keys[0].frames == coastline::SCRIPT_PRESS_FRAMES &&
+              script->keys[0].line == 7 && script->keys[1].frames == 3,
+          "a key takes its name, its frames, and its line");
+    Check(script->typing.size() == 2 && script->typing[0].text == "HELLO there" &&
+              script->typing[1].text == "<backspace>",
+          "type takes the rest of the line");
+    Check(script->mouseMoves.size() == 2 && script->mouseMoves[0].x == 100 &&
+              script->mouseMoves[0].y == 80 &&
+              script->mouseMoves[0].button == coastline::ScriptMouseButton::Left &&
+              script->mouseMoves[0].frames == 4 &&
+              script->mouseMoves[1].button == coastline::ScriptMouseButton::None &&
+              script->mouseMoves[1].frames == 1,
+          "a move of the mouse takes its place, its button, and its frames");
+    Check(script->screenshots == std::vector<int>{600}, "screenshot saves its frame");
+    Check(script->quitFrame == 800, "the earliest quit applies");
+    Check(coastline::ParseScript("").has_value(), "an empty script is read");
+
+    Check(ScriptFails("autopilot\njump\n", 2, "jump is not a command"), "an unknown command");
+    Check(ScriptFails("12x press a", 1, "12x is not a command"), "a frame with letters");
+    Check(ScriptFails("0 press a", 1, "0 is not a frame"), "a frame of 0");
+    Check(ScriptFails("10 press a six", 1, "six is not a number"), "a bad number of frames");
+    Check(ScriptFails("10 press a 0", 1, "0 is not a number"), "a press of no frames");
+    Check(ScriptFails("10 press a 6 5", 1, "5 is not a controller"), "a fifth controller");
+    Check(ScriptFails("10 press x", 1, "x is not one of"), "an unknown button");
+    Check(ScriptFails("10 press", 1, "press takes"), "a press without a button");
+    Check(ScriptFails("10 key", 1, "key takes"), "a key without a name");
+    Check(ScriptFails("10 type   # nothing", 1, "type takes"), "a typing without text");
+    Check(ScriptFails("10 mouse 5", 1, "mouse takes"), "a move without a place");
+    Check(ScriptFails("10 mouse 5 y", 1, "y is not a place"), "a move to a bad place");
+    Check(ScriptFails("10 mouse 5 6 middle", 1, "middle is not one of"), "an unknown mouse button");
+    Check(ScriptFails("press a", 1, "press needs a frame"), "a press without a frame");
+    Check(ScriptFails("10 autopilot", 1, "autopilot applies"), "autopilot at a frame");
+    Check(ScriptFails("screenshot-every", 1, "screenshot-every takes"), "screenshot-every alone");
+    Check(ScriptFails("screenshot-every -1", 1, "-1 is not a number"), "a negative period");
+    Check(ScriptFails("10 quit now", 1, "quit takes no arguments"), "quit with an argument");
+    Check(ScriptFails("10", 1, "The frame has no command"), "a frame alone");
+}
+
 } // namespace
 
 int main() {
+    CheckRunScript();
     CheckPerformanceParsing();
     CheckIconFile();
     CheckVolumeLevels();

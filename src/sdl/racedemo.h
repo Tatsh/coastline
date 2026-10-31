@@ -69,13 +69,4 @@ std::array<std::uint8_t, 3> AttractDemoColor();
  */
 bool AttractDemoFromConsole();
 
-/**
- * Make the demo of a cartridge the next to play, if it was imported, and go on with the rotation
- * from it.
- *
- * @param release The directory of the release: usa, jpn, or eur.
- * @return Whether the release is one of the three.
- */
-bool ChooseAttractDemo(std::string_view release);
-
 } // namespace coastline

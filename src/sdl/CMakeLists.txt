@@ -115,7 +115,7 @@ coastline_tool(
   HASH f708982e88b763ef5b0394ed468fc2c3628f68cdab89f2e7a946cd628c04e721
   OPTIONS SPIRV_CROSS_ENABLE_TESTS=OFF SPIRV_CROSS_SKIP_INSTALL=ON)
 set(_shader_headers)
-foreach(_shader fxaa.frag model.frag model.vert post.vert tl.frag tl.vert)
+foreach(_shader fxaa.frag model.frag model.vert post.vert)
   string(REPLACE "." "_" _stem "${_shader}")
   string(TOUPPER "${_stem}" _name)
   set(_source "${CMAKE_CURRENT_SOURCE_DIR}/shaders/${_shader}")
@@ -182,7 +182,6 @@ add_library(
   decalcar.cpp
   decaldraw.cpp
   decaleditor.cpp
-  earsound.cpp
   effecttextures.cpp
   enginetextures.cpp
   frontend.cpp
@@ -201,7 +200,6 @@ add_library(
   menuscreen.cpp
   menutext.cpp
   mipscpu.cpp
-  modelview.cpp
   music.cpp
   n64attract.cpp
   n64model.cpp
@@ -220,11 +218,11 @@ add_library(
   raceresults.cpp
   racesession.cpp
   raceview.cpp
+  runscript.cpp
   runtimebuffers.cpp
   scenerenderer.cpp
   session.cpp
   stringresources.cpp
-  tlrenderer.cpp
   trackload.cpp
   weatherselect.cpp
   "${CMAKE_SOURCE_DIR}/src/common/audio.c"

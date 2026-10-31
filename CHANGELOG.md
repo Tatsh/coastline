@@ -16,8 +16,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   directories (or the equivalent folders on Windows and macOS), reads `BossRally.ini`, binds
   gamepads and the keyboard to controller ports without configuration, and installs with
   `cmake --install`.
-- `coastline --import-disc` copies the game data of a Boss Rally CUE sheet or ISO image and
-  converts its CD audio to FLAC. `coastline --import-rom` copies a Top Gear Rally cartridge image
+- `coastline import --cd` copies the game data of a Boss Rally CUE sheet or ISO image and
+  converts its CD audio to FLAC. `coastline import --rom` copies a Top Gear Rally cartridge image
   after checking its SHA-1.
 - The SDL game plays the music of the Nintendo 64 release with the console's player and mixers.
 - Quality of life changes in the Windows libraries built with `TGR_ENABLE_PATCHES`:

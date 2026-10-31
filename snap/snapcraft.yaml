@@ -23,8 +23,8 @@ base: 'core24'
 confinement: 'strict'
 description: |
   Coastline is a stand-alone game of Top Gear Rally and Boss Rally. It needs a Boss Rally disc
-  image and a Top Gear Rally cartridge image, which `coastline --import-disc` and
-  `coastline --import-rom` import.
+  image and a Top Gear Rally cartridge image, which `coastline import --cd` and
+  `coastline import --rom` import.
 grade: 'devel'
 icon: 'src/sdl/sh.tat.coastline.svg'
 # The GPU libraries come from the mesa-2404 snap through the gpu-2404 interface.
