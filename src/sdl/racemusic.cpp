@@ -5,6 +5,7 @@
 #include "racemusic.h"
 
 #include <algorithm>
+#include <cassert>
 #include <cstdint>
 #include <cstdlib>
 #include <fstream>
@@ -39,6 +40,7 @@ constexpr int RACE_MODULES = 5;
 // The CD audio, 16-bit stereo at 44,100 Hz.
 constexpr int CD_RATE = 44100;
 constexpr int CD_CHANNELS = 2;
+constexpr const char *RACE_MUSIC_PROPERTY = "coastline.race-music";
 
 // The module of a track of the music. g_adwTrackMusicRom of the console gives each track of the
 // races the module of its place, race1 to race5, and each mirrored track that of its original. The
@@ -127,12 +129,16 @@ private:
     std::vector<std::int16_t> *m_output = nullptr;
 };
 
+} // namespace
+
 /** The music of the races and its device. */
 class RaceMusic {
 public:
-    static RaceMusic &Get() {
-        static RaceMusic music;
-        return music;
+    RaceMusic() = default;
+
+    static RaceMusic *Active() {
+        return static_cast<RaceMusic *>(
+            SDL_GetPointerProperty(SDL_GetGlobalProperties(), RACE_MUSIC_PROPERTY, nullptr));
     }
 
     bool Start(const std::filesystem::path &directory, RaceMusicSource source);
@@ -164,7 +170,6 @@ private:
     N64Audio *Modules() const {
         return m_shared != nullptr ? m_shared : m_modules.get();
     }
-    RaceMusic() = default;
     std::filesystem::path CdTrackPath(int track) const {
         return m_directory / fmt::format("track{:02}.flac", track);
     }
@@ -418,60 +423,85 @@ std::size_t RaceMusic::Render(std::size_t frames) {
         std::ranges::count_if(samples, [](std::int16_t sample) { return sample != 0; }));
 }
 
-} // namespace
+RaceMusicContext::RaceMusicContext() : m_music(std::make_unique<RaceMusic>()) {
+    assert(RaceMusic::Active() == nullptr);
+    SDL_SetPointerProperty(SDL_GetGlobalProperties(), RACE_MUSIC_PROPERTY, m_music.get());
+}
+
+RaceMusicContext::~RaceMusicContext() {
+    m_music->Shutdown();
+    SDL_ClearProperty(SDL_GetGlobalProperties(), RACE_MUSIC_PROPERTY);
+}
 
 bool StartRaceMusic(const std::filesystem::path &directory, RaceMusicSource source) {
-    return RaceMusic::Get().Start(directory, source);
+    auto *music = RaceMusic::Active();
+    return music && music->Start(directory, source);
 }
 
 void StopRaceMusic() {
-    RaceMusic::Get().Stop();
+    if (auto *music = RaceMusic::Active()) {
+        music->Stop();
+    }
 }
 
 void ShutdownRaceMusic() {
-    RaceMusic::Get().Shutdown();
+    if (auto *music = RaceMusic::Active()) {
+        music->Shutdown();
+    }
 }
 
 void RestartRaceMusic() {
-    RaceMusic &music = RaceMusic::Get();
-    music.Play(music.CurrentTrack());
+    if (auto *music = RaceMusic::Active()) {
+        music->Play(music->CurrentTrack());
+    }
 }
 
 void ShareRaceMusicPlayer(N64Audio *audio) {
-    RaceMusic::Get().Share(audio);
+    if (auto *music = RaceMusic::Active()) {
+        music->Share(audio);
+    }
 }
 
 std::size_t RenderRaceMusic(std::size_t frames) {
-    return RaceMusic::Get().Render(frames);
+    auto *music = RaceMusic::Active();
+    return music ? music->Render(frames) : 0;
 }
 
 } // namespace coastline
 
 bool SetCurrentMusicTrack(int nModeIndex) {
-    return coastline::RaceMusic::Get().Play(nModeIndex);
+    auto *music = coastline::RaceMusic::Active();
+    return !music || music->Play(nModeIndex);
 }
 
 bool PauseMusicPlayback(void) {
-    return coastline::RaceMusic::Get().Pause();
+    auto *music = coastline::RaceMusic::Active();
+    return !music || music->Pause();
 }
 
 bool UnpauseMusicPlayback(void) {
-    return coastline::RaceMusic::Get().Resume();
+    auto *music = coastline::RaceMusic::Active();
+    return !music || music->Resume();
 }
 
 int RandomizeMusicTrack(void) {
-    return coastline::RaceMusic::Get().RandomTrack();
+    auto *music = coastline::RaceMusic::Active();
+    return music ? music->RandomTrack() : 0;
 }
 
 bool SelectPreviousMusicTrack(void) {
-    return coastline::RaceMusic::Get().Step(-1);
+    auto *music = coastline::RaceMusic::Active();
+    return !music || music->Step(-1);
 }
 
 bool SelectNextMusicTrack(void) {
-    return coastline::RaceMusic::Get().Step(1);
+    auto *music = coastline::RaceMusic::Active();
+    return !music || music->Step(1);
 }
 
 bool DispatchMusicVolumeChange(unsigned char bVolume) {
-    coastline::RaceMusic::Get().SetVolume(bVolume);
+    if (auto *music = coastline::RaceMusic::Active()) {
+        music->SetVolume(bVolume);
+    }
     return true;
 }

@@ -1104,6 +1104,7 @@ int main(int argc, char *argv[]) {
             coastline::EngineTextures engineTextures;
             coastline::AttractDemo attractDemo;
             coastline::N64Audio audio;
+            coastline::RaceMusicContext raceMusic;
             bool playMusic = config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice();
             const bool pauseOnFocusLoss = config.GetBoolean("Game", "PauseOnFocusLoss", true) &&
                                           !parser.is_subcommand_used(runScript);

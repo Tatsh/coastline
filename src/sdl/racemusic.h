@@ -1,10 +1,24 @@
 #pragma once
 
 #include <filesystem>
+#include <memory>
 
 namespace coastline {
 
 class N64Audio;
+class RaceMusic;
+
+/** Race music resources for one active audio session, destroyed before its shared menu player. */
+class RaceMusicContext {
+public:
+    RaceMusicContext();
+    ~RaceMusicContext();
+    RaceMusicContext(const RaceMusicContext &) = delete;
+    RaceMusicContext &operator=(const RaceMusicContext &) = delete;
+
+private:
+    std::unique_ptr<RaceMusic> m_music;
+};
 
 /** Where the music of a race comes from. */
 enum class RaceMusicSource {
