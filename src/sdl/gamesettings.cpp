@@ -28,6 +28,9 @@ bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset) {
         config.Set("Game", "AssetPack", n64 ? "default" : "boss");
         config.Set("Video", "AspectRatio", "4:3");
     }
+    if (br) {
+        config.Set("Game", "Music", "CD");
+    }
     config.Set("Game", "Effects", n64 ? "N64" : "PC");
     if (lowPower) {
         config.Set("Video", "GpuPreference", "low-power");

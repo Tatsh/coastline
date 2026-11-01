@@ -1328,9 +1328,13 @@ int main(int argc, char *argv[]) {
                 coastline::AttractDemo attractDemo;
                 coastline::N64Audio audio;
                 coastline::RaceMusicContext raceMusic;
+                auto useCdMusic = [&]() {
+                    return parser.present("--gpu-preset") == "br" ||
+                           config.Get("Game", "Music") == "CD";
+                };
                 coastline::FrontEndMusic menuMusic(audio,
                                                    assets / "music",
-                                                   config.Get("Game", "Music") == "CD" ?
+                                                   useCdMusic() ?
                                                        coastline::RaceMusicSource::CdAudio :
                                                        coastline::RaceMusicSource::Modules);
                 const bool musicEnabled = config.GetBoolean("Game", "PlayMusic", true);
@@ -1672,7 +1676,7 @@ int main(int argc, char *argv[]) {
                                     settingsTransition = coastline::MenusEnd::Reinitialize;
                                     settingsFrames = 0;
                                 } else if (playMusic) {
-                                    menuMusic.SetSource(config.Get("Game", "Music") == "CD" ?
+                                    menuMusic.SetSource(useCdMusic() ?
                                                             coastline::RaceMusicSource::CdAudio :
                                                             coastline::RaceMusicSource::Modules);
                                 }
@@ -1972,8 +1976,7 @@ int main(int argc, char *argv[]) {
                             coastline::RaceSetup setup = mainMenu->ChosenRace();
                             setup.waitForStart = config.GetBoolean("Game", "WaitForStart", false);
                             setup.autopilot = commands.autopilot;
-                            raceSession.Start(
-                                setup, assets / "music", config.Get("Game", "Music") == "CD");
+                            raceSession.Start(setup, assets / "music", useCdMusic());
                             std::vector<coastline::RaceCar> cars = coastline::RaceCars();
                             for (std::size_t i = 0; i < cars.size() && i < setup.cars.size(); ++i) {
                                 if (static_cast<int>(i) < setup.players) {

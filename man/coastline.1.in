@@ -68,7 +68,7 @@ Explicit ratios add bars where necessary.
 .BI \-\-gpu-preset " PRESET"
 Select n64, br, ultra, worst, or low-power.
 N64 selects a 320x240 internal base, 4:3, and Consumer CRT.
-BR selects a 640x480 internal base, 4:3, Pure PC textures, and PC CRT.
+BR selects a 640x480 internal base, 4:3, Pure PC textures, PC CRT, and PC CD music.
 An explicit aspect ratio can expand either base resolution.
 Ultra selects maximum graphics quality and full screen.
 Worst selects minimum quality without filters and preserves the aspect ratio.

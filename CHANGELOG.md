@@ -25,7 +25,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - A PC CRT shader simulates a progressive VGA monitor with faint scanlines, a fine shadow mask,
   and mild curvature.
 - Saved Graphics preset choices include Custom, N64, Boss Rally, Ultra, Worst, and Low power.
-  Manual graphics changes select Custom. Presets preserve audio, language, and region;
+  Manual graphics changes select Custom. Presets preserve language and region;
   changes apply as Options closes, restarting at logos when resource or pacing changes require it.
 - `--gpu-preset n64` and `--gpu-preset br` select temporary N64 and Boss Rally looks, with explicit
   asset-pack and display arguments taking precedence.
@@ -122,6 +122,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Boss Rally graphics presets select PC CD music for menus and races. `--gpu-preset br` applies
+  the music choice for the current run without saving it and locks Music in Options.
 - N64 and Boss Rally graphics presets select 4:3. Low power requests a lower-power GPU with
   a 640x480 internal base and a 60 FPS limit, separately from Worst's unfiltered minimum quality.
 - Ultra replaces High quality and `--gpu-preset best`; saved preset identifiers migrate from

@@ -252,6 +252,7 @@ int main() {
     assert(restoredPreset.Label(preset) == "Graphics preset: N64");
     assert(presets.RequiresRestart(preset));
     presetConfig.Set("Video", "AspectRatio", "21:9");
+    presetConfig.Set("Game", "Music", "XM");
     assert(presets.Step(preset, 1));
     assert(presetConfig.Get("Video", "GraphicsPreset") == "br");
     assert(presetConfig.Get("Game", "AssetPack") == "boss");
@@ -260,6 +261,14 @@ int main() {
     assert(presetConfig.GetInteger("Video", "InternalHeight", 0) == 480);
     assert(presetConfig.GetInteger("Video", "FrameRateLimit", 0) == 60);
     assert(presetConfig.Get("Video", "AspectRatio") == "4:3");
+    assert(presetConfig.Get("Game", "Music") == "CD");
+    assert(presetConfig.Get("Game", "SoundEffects") == "N64");
+    assert(presets.AdjustAndSave(Find(presets, "Music:"), -1, path) ==
+           GameSettings::Adjustment::Saved);
+    assert(GameConfig::Load(path).Get("Game", "Music") == "XM");
+    assert(presets.AdjustAndSave(preset, -1, path) == GameSettings::Adjustment::Saved);
+    assert(presets.AdjustAndSave(preset, 1, path) == GameSettings::Adjustment::Saved);
+    assert(GameConfig::Load(path).Get("Game", "Music") == "CD");
     presetConfig.Set("Video", "AspectRatio", "32:9");
     assert(presets.Step(preset, 1));
     assert(presetConfig.Get("Video", "AspectRatio") == "32:9");
@@ -330,7 +339,15 @@ int main() {
     assert(locked.Label(lockedAspect) == "Aspect ratio: 21:9");
     assert(!locked.Step(lockedPreset, 1));
     assert(!saved.Get("Video", "GraphicsPreset"));
+    assert(coastline::ApplyGraphicsPreset(overrides, "br"));
+    locked.SetOverrides(overrides);
+    const auto lockedMusic = Find(locked, "Music:");
+    assert(!locked.IsEnabled(lockedMusic));
+    assert(locked.Label(lockedMusic) == "Music: PC (CD)");
+    assert(!locked.Step(lockedMusic, 1));
+    assert(!saved.Get("Game", "Music"));
     locked.SetOverrides(GameConfig{});
+    assert(locked.IsEnabled(lockedMusic));
     assert(locked.IsEnabled(lockedPreset) && locked.IsEnabled(lockedAspect));
     assert(locked.Label(lockedAspect) == "Aspect ratio: Fill screen");
     assert(!locked.IsEnabled(locked.Count()));
