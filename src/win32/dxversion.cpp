@@ -17,13 +17,13 @@ static inline bool HasDirectInput(void) {
 
     hDirectInput = LoadLibraryA("DINPUT.DLL");
     if (hDirectInput == nullptr) {
-        OutputDebugStringA("Cannot load DInput.\r\n");
+        OutputDebugStringA("Couldn't LoadLibrary DInput\r\n");
         return false;
     }
     pfnDirectInputCreate = GetProcAddress(hDirectInput, "DirectInputCreateA");
     FreeLibrary(hDirectInput);
     if (pfnDirectInputCreate == nullptr) {
-        OutputDebugStringA("Cannot resolve DInputCreate.\r\n");
+        OutputDebugStringA("Couldn't GetProcAddress DInputCreate\r\n");
         return false;
     }
     return true;
@@ -80,14 +80,14 @@ void GetDXVersion(unsigned *pdwVersion, unsigned *pdwPlatform) {
         *pdwVersion = 0;
         *pdwPlatform = 0;
         FreeLibrary(hDirectDraw);
-        OutputDebugStringA("Cannot load DDraw.\r\n");
+        OutputDebugStringA("Couldn't LoadLibrary DDraw\r\n");
         return;
     }
     if (FAILED(pfnDirectDrawCreate(nullptr, &pDirectDraw, nullptr))) {
         *pdwVersion = 0;
         *pdwPlatform = 0;
         FreeLibrary(hDirectDraw);
-        OutputDebugStringA("Cannot create DDraw.\r\n");
+        OutputDebugStringA("Couldn't create DDraw\r\n");
         return;
     }
 
@@ -96,7 +96,7 @@ void GetDXVersion(unsigned *pdwVersion, unsigned *pdwPlatform) {
                                            reinterpret_cast<void **>(&pDirectDraw2)))) {
         pDirectDraw->Release();
         FreeLibrary(hDirectDraw);
-        OutputDebugStringA("Cannot query DDraw2.\r\n");
+        OutputDebugStringA("Couldn't QI DDraw2\r\n");
         return;
     }
     pDirectDraw2->Release();
@@ -104,7 +104,7 @@ void GetDXVersion(unsigned *pdwVersion, unsigned *pdwPlatform) {
     *pdwVersion = 0x200;
     hDirectInput = LoadLibraryA("DINPUT.DLL");
     if (hDirectInput == nullptr) {
-        OutputDebugStringA("Cannot load DInput.\r\n");
+        OutputDebugStringA("Couldn't LoadLibrary DInput\r\n");
         pDirectDraw->Release();
         FreeLibrary(hDirectDraw);
         return;
@@ -115,7 +115,7 @@ void GetDXVersion(unsigned *pdwVersion, unsigned *pdwPlatform) {
         // DDRAW.DLL is freed before the DirectDraw object is released.
         FreeLibrary(hDirectDraw);
         pDirectDraw->Release();
-        OutputDebugStringA("Cannot resolve DInputCreate.\r\n");
+        OutputDebugStringA("Couldn't GetProcAddress DInputCreate\r\n");
         return;
     }
 
@@ -128,14 +128,14 @@ void GetDXVersion(unsigned *pdwVersion, unsigned *pdwPlatform) {
         pDirectDraw->Release();
         FreeLibrary(hDirectDraw);
         *pdwVersion = 0;
-        OutputDebugStringA("Cannot set cooperative level.\r\n");
+        OutputDebugStringA("Couldn't Set coop level\r\n");
         return;
     }
     if (FAILED(pDirectDraw->CreateSurface(&desc, &pSurface, nullptr))) {
         pDirectDraw->Release();
         FreeLibrary(hDirectDraw);
         *pdwVersion = 0;
-        OutputDebugStringA("Cannot create surface.\r\n");
+        OutputDebugStringA("Couldn't CreateSurface\r\n");
         return;
     }
     // The third interface of the surface is never released, and the surface is released only when

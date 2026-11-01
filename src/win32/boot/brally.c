@@ -81,9 +81,9 @@ int WINAPI WinMain(HINSTANCE instance,
     _controlfp(_PC_53, _MCW_PC);
 #endif
     InitializeApplicationDiagnostics();
-    WriteApplicationDiagnostic("Requesting desktop window.\n");
+    WriteApplicationDiagnostic("BRally entered WinMain; requesting desktop window.\n");
     HWND desktop = GetDesktopWindow();
-    WriteApplicationDiagnostic("Loading launcher configuration.\n");
+    WriteApplicationDiagnostic("Desktop window query completed; loading launcher configuration.\n");
     ReadInstallDirectoryFromRegistry();
     strcpy(g_szIniFilePath, g_szInstallDir);
     strcat(g_szIniFilePath, "BossRally.ini");
@@ -114,7 +114,7 @@ int WINAPI WinMain(HINSTANCE instance,
     }
     WriteApplicationDiagnostic("Loading renderer DLL.\n");
     if (!LoadRendererDll(rendererPath)) {
-        WriteApplicationDiagnostic("Cannot load renderer DLL.\n");
+        WriteApplicationDiagnostic("Renderer DLL load failed.\n");
 #ifdef ENABLE_PATCHES
         char message[sizeof("Error: failed to load .") + sizeof(rendererPath)];
         snprintf(message, sizeof(message), "Error: failed to load %s.", rendererPath);
@@ -127,7 +127,7 @@ int WINAPI WinMain(HINSTANCE instance,
     }
     WriteApplicationDiagnostic("Calling renderer entry point.\n");
     int result = g_pfnRallyMain(instance, previousInstance, commandLine, showCommand);
-    WriteApplicationDiagnostic("Unloading renderer DLL.\n");
+    WriteApplicationDiagnostic("Renderer returned; unloading DLL.\n");
     UnloadRendererDll();
     ShutdownApplicationDiagnostics();
     return result;

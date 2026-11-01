@@ -249,7 +249,7 @@ bool EarOpenSdlMixer() {
         return true;
     }
     if (!SDL_InitSubSystem(SDL_INIT_AUDIO)) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "Cannot start EAR audio: %s", SDL_GetError());
+        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "EAR cannot start the audio: %s", SDL_GetError());
         SDL_DestroyMutex(g_mixer.mutex);
         g_mixer.mutex = nullptr;
         return false;
@@ -258,7 +258,7 @@ bool EarOpenSdlMixer() {
     g_mixer.stream = SDL_OpenAudioDeviceStream(
         SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, StreamCallback, nullptr);
     if (!g_mixer.stream) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "Cannot open EAR audio device: %s", SDL_GetError());
+        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "EAR cannot open the audio device: %s", SDL_GetError());
         SDL_QuitSubSystem(SDL_INIT_AUDIO);
         SDL_DestroyMutex(g_mixer.mutex);
         g_mixer.mutex = nullptr;

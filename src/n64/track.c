@@ -32,7 +32,7 @@ void LoadTrackGeometryFromRom(s32 track) {
         osSyncPrintf("Loading track %d (%d / %d)\n", track, g_LoadedTrack.size, TRACK_MAX_SIZE);
     }
     DecompressFromRom(&g_LoadedTrack, descriptor->trackRom, NULL);
-    osSyncPrintf("Track debug words %04x %04x.\n", g_awTrackDebugWords[0], g_awTrackDebugWords[4]);
+    osSyncPrintf("hmm = %04x %04x\n", g_awTrackDebugWords[0], g_awTrackDebugWords[4]);
     osInvalDCache(&g_LoadedTrack, g_LoadedTrack.size);
     DmaRead(g_abTrackSection1Header, descriptor->sectionARom, TRACK_SECTION_HEADER_SIZE);
     DecompressFromRom(

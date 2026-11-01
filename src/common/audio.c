@@ -130,13 +130,13 @@ void LoadMusicModule(u8 *module, u8 *work) {
         *out++ = module[XM_ORDERS + i];
     }
     out = ALIGN4(out);
-    osSyncPrintf("Using song length %d.\n", g_MusicPlayer.songLength);
+    osSyncPrintf("Length = %d\n", g_MusicPlayer.songLength);
     g_MusicPlayer.restartOrder = module[XM_RESTART];
-    osSyncPrintf("Using restart order %d.\n", g_MusicPlayer.restartOrder);
+    osSyncPrintf("Restartfrom = %d\n", g_MusicPlayer.restartOrder);
     patterns = module[XM_PATTERNS];
-    osSyncPrintf("Using %d patterns.\n", patterns);
+    osSyncPrintf("%d Patterns found\n", patterns);
     instruments = module[XM_INSTRUMENTS];
-    osSyncPrintf("Using %d instruments.\n", instruments);
+    osSyncPrintf("%d Instruments found\n", instruments);
 
     /* Each pattern is copied whole, its header with its packed rows. */
     in = module + READ_LE32(&module[XM_HEADER_SIZE]) + XM_HEADER_SIZE;
@@ -155,7 +155,7 @@ void LoadMusicModule(u8 *module, u8 *work) {
      * The first sample of each instrument is kept: its header, its data decoded from the deltas of
      * the module, and then silence, or the start of its loop again, for the mixer to run into.
      */
-    osSyncPrintf("Decoding samples");
+    osSyncPrintf("Now doSamples");
     for (i = 0; i < instruments; i++) {
         osSyncPrintf(".");
         sum = 0;
@@ -189,13 +189,13 @@ void LoadMusicModule(u8 *module, u8 *work) {
             }
             break;
         default:
-            osSyncPrintf("Unsupported 16-bit or ping-pong sample.\n");
+            osSyncPrintf("WANKER fuck off no 16bit, no Ping fucking pong\n");
             break;
         }
         out = ALIGN4(out);
         in = sampleHeader + length + sizeof(XmSample);
     }
-    osSyncPrintf("\n\nUsing %d bytes of sample memory.\n", out - work);
+    osSyncPrintf("\n\nSample Space used = %d bytes\n", out - work);
 }
 
 void BuildFrequencyScaleTable(void) {
@@ -457,7 +457,7 @@ void InitAudioSystem(void *module, void *work) {
 
     g_qwSoundEffectSampleMask = SOUND_EFFECT_SAMPLE_MASK;
     frequency = osAiSetFrequency(AUDIO_FREQUENCY);
-    osSyncPrintf("Using frequency %d.\n", frequency);
+    osSyncPrintf("Real Frequency is = %d\n", frequency);
     osCreateMesgQueue(&g_AudioMsgQueue, g_aAudioMsgBuf, 2);
     osSetTimer(&g_AudioTimer,
                AUDIO_TIMER_USEC * osClockRate / 1000000,
@@ -480,13 +480,13 @@ void InitAudioSystem(void *module, void *work) {
     elapsed = -osGetCount();
     MixAudioSamples(g_AudioDmaBuffer, AUDIO_RING_BYTES);
     elapsed += osGetCount();
-    osSyncPrintf("Module setup takes %1.7f seconds.\n", (f64)elapsed / CPU_COUNT_RATE);
+    osSyncPrintf("%1.7f", (f64)elapsed / CPU_COUNT_RATE);
 
-    osSyncPrintf("Creating frequency increments.\n");
+    osSyncPrintf("Creating I entries\n");
     LoadMusicModule(module, work);
-    osSyncPrintf("Creating note frequencies.\n");
+    osSyncPrintf("Creating Note Frequency entries\n");
     BuildFrequencyScaleTable();
-    osSyncPrintf("Starting module.\n");
+    osSyncPrintf("Starting Mod\n");
     ResetMusicChannels();
     g_bMusicPlaybackEnabled = TRUE;
     osAiSetNextBuffer(g_AudioDmaBuffer, AUDIO_RING_BYTES);
@@ -515,9 +515,9 @@ void ResetMusicPlaybackState(void) {
 void InitMusicPlayback(void *module, void *work) {
     s32 i;
 
-    osSyncPrintf("Creating frequency increments.\n");
+    osSyncPrintf("Creating I entries\n");
     LoadMusicModule(module, work);
-    osSyncPrintf("Starting module.\n");
+    osSyncPrintf("Starting Mod\n");
     ResetMusicChannels();
     g_bMusicPlaybackEnabled = TRUE;
     for (i = 0; i < g_nAudioChannelCount; i++) {

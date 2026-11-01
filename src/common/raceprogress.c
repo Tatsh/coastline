@@ -264,7 +264,7 @@ ReachNewGate(RacerSlot *slot, Vehicle *vehicle, s32 next, f32 lapTime, f32 gapFa
     f32 *record;
 
     RACER_SLOT_SET(slot, MaxGate, RACER_SLOT_GET(slot, Gate));
-    osSyncPrintf("Advancing one gate; adding %f seconds.\n",
+    osSyncPrintf("moved ahead one gate, getting %f seconds\n",
                  (double)g_LoadedTrack.gates[next].seconds);
     if (next == 0) {
         if (RACER_SLOT_GET(slot, Lap) < g_dwTotalLaps) {
@@ -438,7 +438,7 @@ void UpdateRaceProgress(RacerSlot *slot) {
     if (CROSSES_GATE(&g_LoadedTrack.gates[current],
                      &RACER_SLOT_GET(slot, PreviousPosition),
                      &RACER_SLOT_GET(slot, Position))) {
-        osSyncPrintf("%d moves backward from gate %d to gate %d.\n",
+        osSyncPrintf("%d went backwards, from gate %d to gate %d\n",
                      slot->index,
                      slot->gate,
                      slot->gate - 1);
@@ -471,7 +471,7 @@ void UpdateRaceProgress(RacerSlot *slot) {
         gate = &g_LoadedTrack.gates[next];
         if (CROSSES_GATE(
                 gate, &RACER_SLOT_GET(slot, PreviousPosition), &RACER_SLOT_GET(slot, Position))) {
-            osSyncPrintf("%d moves forward from gate %d to gate %d.\n",
+            osSyncPrintf("%d went forward, from gate %d to gate %d\n",
                          slot->index,
                          slot->gate,
                          slot->gate + 1);

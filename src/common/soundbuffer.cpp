@@ -629,7 +629,7 @@ static inline int LoadWaveSamples(const char *pszPath, SoundBufferNode *pNode, i
     Uint8 *pData = nullptr;
     Uint32 dwBytes = 0;
     if (!coastline::SoundEffects::LoadRaceWave(pszPath, sample, &spec, &pData, &dwBytes)) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "Cannot read %s: %s", pszPath, SDL_GetError());
+        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "%s cannot be read: %s", pszPath, SDL_GetError());
         return 1;
     }
     if (spec.format != SDL_AUDIO_U8 && spec.format != SDL_AUDIO_S16LE) {
@@ -640,7 +640,7 @@ static inline int LoadWaveSamples(const char *pszPath, SoundBufferNode *pNode, i
             &spec, pData, static_cast<int>(dwBytes), &target, &pConverted, &nConverted);
         SDL_free(pData);
         if (!bConverted) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "Cannot play %s: %s", pszPath, SDL_GetError());
+            SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "%s cannot be played: %s", pszPath, SDL_GetError());
             return 1;
         }
         spec = target;
@@ -952,7 +952,7 @@ bool InitializeDirectSound(void) {
     g_bEarSoundStarted = EAR_DLL_InitializeEar(0) != 0;
     if (!g_bEarSoundStarted) {
         SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
-                    "Cannot start EAR; sound effects disabled, error %u.",
+                    "The sound effects are silent. EAR did not start, error %u.",
                     EAR_DLL_GetLastError());
     }
     return g_bEarSoundStarted;

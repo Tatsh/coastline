@@ -215,6 +215,7 @@ cyicon
 dacrate
 daddu
 damagetexture
+damnit
 darin
 dasharray
 dashboardtextures
@@ -233,6 +234,7 @@ ddbltfast
 ddcaps
 ddckey
 ddcolorkey
+ddcopybitmap
 ddenumret
 dderr
 ddestination
@@ -1052,6 +1054,7 @@ reques
 resetglobalintmask
 resf
 respawn
+restartfrom
 rgbdither
 rgdw
 rgsz
