@@ -2258,7 +2258,8 @@ void RaceView::DrawView(SceneRenderer &renderer,
     Matrix4 viewProjection = CameraMatrix(*camera, fov, farPlane, aspect);
     // SetViewport() mirrors the view across on a mirrored track, where the steering turns the
     // other way, and for the negative width of the mirror, and the faces of the models then turn
-    // the other way. The mirror of a mirrored track is not mirrored.
+    // the other way. Original console and PC releases reflect car textures with the scene. The
+    // mirror of a mirrored track is not mirrored.
     bool across = (g_dwTrackMirrored != 0) != mirror;
     renderer.SetMirrored(across);
     if (across) {

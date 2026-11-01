@@ -679,6 +679,8 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
 #else
     sideY = sinf(g_LoadedTrack.startHeading + QUARTER_TURN);
 #endif
+    /* Grid columns do not change on mirrored tracks; viewport reflection exchanges visible sides.
+     */
 #if TGR_BOSS_RALLY
     RESET_FREE(SetVehiclePosition)(
         vehicle,

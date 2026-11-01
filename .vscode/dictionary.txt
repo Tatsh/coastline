@@ -1055,6 +1055,7 @@ reques
 resetglobalintmask
 resf
 respawn
+respawning
 restartfrom
 rgbdither
 rgdw

@@ -11,84 +11,181 @@
 extern "C" {
 #endif
 
-/** The first and the last position of a track of the CD, in milliseconds. */
+/** Absolute CD track positions in the MCI millisecond time format. */
 typedef struct EarCdTrackPosition {
-    DWORD start; /*!< The position of the first sample. */
-    DWORD end;   /*!< The position of the last sample. */
+    DWORD start; /*!< The start position in milliseconds from the start of the disc. */
+    DWORD end;   /*!< The start plus duration minus one, in milliseconds. */
 } EarCdTrackPosition;
 
-/** @ghidraAddress EAR: 0x1003b7bc */
+/**
+ * Result of the most recent CD open through OpenEarMusicDevice(), cleared by CloseCdAudioDevice().
+ * @ghidraAddress EAR: 0x1003b7bc
+ */
 extern int32_t g_bCdAudioInitialized;
-/** @ghidraAddress EAR: 0x1003b7c0 */
+/**
+ * Nonzero after successfully opening the MIDI sequencer through OpenEarMusicDevice().
+ * CloseActiveMidiSequencer() does not clear the marker; CloseMidiMusicDevice() does.
+ * @ghidraAddress EAR: 0x1003b7c0
+ */
 extern int32_t g_bMidiSequencerInitialized;
-/** @ghidraAddress EAR: 0x1003b7c4 */
+/**
+ * CD mixer initialisation marker, also set when mixer access is disabled.
+ * An independently closed mixer does not clear the native marker.
+ * @ghidraAddress EAR: 0x1003b7c4
+ */
 extern int32_t g_bCdAudioMixerInitialized;
-/** @ghidraAddress EAR: 0x1003b7c8 */
+/**
+ * MIDI mixer initialisation marker, also set when mixer access is disabled.
+ * An independently closed mixer does not clear the native marker.
+ * @ghidraAddress EAR: 0x1003b7c8
+ */
 extern int32_t g_bMidiMixerInitialized;
-/** @ghidraAddress EAR: 0x1003b7cc */
+/**
+ * Nonzero after a playback registers use of the shared MIDI sequencer.
+ * @ghidraAddress EAR: 0x1003b7cc
+ */
 extern int32_t g_bMidiSequencerActive;
 
-/** @ghidraAddress EAR: 0x1003b7d4 */
+/**
+ * Nonzero when cached MIDI volume-control details and restoration values are available.
+ * @ghidraAddress EAR: 0x1003b7d4
+ */
 extern int32_t g_bMidiVolumeControlAvailable;
-/** @ghidraAddress EAR: 0x1003b7d8 */
+/**
+ * Nonzero when cached MIDI mute-control details and a restoration value are available.
+ * @ghidraAddress EAR: 0x1003b7d8
+ */
 extern int32_t g_bMidiMuteControlAvailable;
-/** @ghidraAddress EAR: 0x1003b7dc */
+/**
+ * Nonzero when cached CD volume-control details and restoration values are available.
+ * @ghidraAddress EAR: 0x1003b7dc
+ */
 extern int32_t g_bCdVolumeControlAvailable;
-/** @ghidraAddress EAR: 0x1003b7e0 */
+/**
+ * Nonzero when cached CD mute-control details and a restoration value are available.
+ * @ghidraAddress EAR: 0x1003b7e0
+ */
 extern int32_t g_bCdMuteControlAvailable;
 
-/** @ghidraAddress EAR: 0x1003b6f0 */
+/**
+ * MCI CD device identifier, or zero when cleared after closing the device.
+ * @ghidraAddress EAR: 0x1003b6f0
+ */
 extern uint16_t g_wCdAudioDeviceId;
-/** @ghidraAddress EAR: 0x1003b6f4 */
+/**
+ * One-based first audio-track number found during discovery, initially zero.
+ * Native rediscovery checks only track 1 when an existing value is nonzero, preserving the value
+ * unless track 1 is audio.
+ * @ghidraAddress EAR: 0x1003b6f4
+ */
 extern uint16_t g_wFirstCdAudioTrack;
-/** @ghidraAddress EAR: 0x1003b6f8 */
+/**
+ * Last permitted audio-track number, set to total track count when an audio track is found.
+ * @ghidraAddress EAR: 0x1003b6f8
+ */
 extern uint16_t g_wLastCdAudioTrack;
-/** @ghidraAddress EAR: 0x1003b6fc */
+/**
+ * Shared MCI MIDI sequencer identifier, cleared by CloseMidiMusicDevice().
+ * @ghidraAddress EAR: 0x1003b6fc
+ */
 extern MCIDEVICEID g_dwMidiSequencerDeviceId;
 
-/** @ghidraAddress EAR: 0x1003b790 */
+/**
+ * Total CD track count, including data tracks, returned by MCI.
+ * @ghidraAddress EAR: 0x1003b790
+ */
 extern DWORD g_dwCdTrackCount;
 /**
- * The positions of the tracks, indexed by the number of the track from 1.
+ * Allocated track positions indexed from 1 through g_dwCdTrackCount; index zero is unused.
+ * LoadCdTrackPositions() replaces the allocation and CloseCdAudioDevice() releases it.
+ * Borrowed references into the table remain valid only until replacement or release.
  *
  * @ghidraAddress EAR: 0x1003b794
  */
 extern EarCdTrackPosition *g_pCdTrackPositions;
 
-/** @ghidraAddress EAR: 0x1003b4c4 */
+/**
+ * CD mixer handle, possibly shared with MIDI; closing assigns the pointer-sized -1 sentinel.
+ * @ghidraAddress EAR: 0x1003b4c4
+ */
 extern HMIXER g_hCdAudioMixer;
-/** @ghidraAddress EAR: 0x1003b63c */
+/**
+ * MIDI mixer handle, possibly shared with CD; closing assigns the pointer-sized -1 sentinel.
+ * @ghidraAddress EAR: 0x1003b63c
+ */
 extern HMIXER g_hMidiMixer;
 
-/** @ghidraAddress EAR: 0x1003b3c8 */
+/**
+ * Cached Windows CD mute-control descriptor, valid after successful control discovery.
+ * @ghidraAddress EAR: 0x1003b3c8
+ */
 extern MIXERCONTROLA g_CdMuteMixerControl;
-/** @ghidraAddress EAR: 0x1003b4e0 */
+/**
+ * Cached Windows CD volume-control descriptor, including device-specific bounds.
+ * @ghidraAddress EAR: 0x1003b4e0
+ */
 extern MIXERCONTROLA g_CdVolumeMixerControl;
-/** @ghidraAddress EAR: 0x1003b580 */
+/**
+ * Cached Windows MIDI volume-control descriptor, including device-specific bounds.
+ * @ghidraAddress EAR: 0x1003b580
+ */
 extern MIXERCONTROLA g_MidiVolumeMixerControl;
-/** @ghidraAddress EAR: 0x1003b648 */
+/**
+ * Cached Windows MIDI mute-control descriptor, valid after successful control discovery.
+ * @ghidraAddress EAR: 0x1003b648
+ */
 extern MIXERCONTROLA g_MidiMuteMixerControl;
 
-/** @ghidraAddress EAR: 0x1003b4c8 */
+/**
+ * MIDI mute value captured for restoration, with nonzero indicating mute.
+ * @ghidraAddress EAR: 0x1003b4c8
+ */
 extern LONG g_bSavedMidiMute;
-/** @ghidraAddress EAR: 0x1003b614 */
+/**
+ * CD volume captured for restoration in the mixer's device-specific integer range.
+ * @ghidraAddress EAR: 0x1003b614
+ */
 extern DWORD g_dwSavedCdVolume;
-/** @ghidraAddress EAR: 0x1003b640 */
+/**
+ * CD mute value captured for restoration, with nonzero indicating mute.
+ * @ghidraAddress EAR: 0x1003b640
+ */
 extern LONG g_bSavedCdMute;
-/** @ghidraAddress EAR: 0x1003b6dc */
+/**
+ * MIDI volume captured for restoration in the mixer's device-specific integer range.
+ * @ghidraAddress EAR: 0x1003b6dc
+ */
 extern DWORD g_dwSavedMidiVolume;
-/** @ghidraAddress EAR: 0x1003b6e8 */
+/**
+ * Maximum CD volume reported by the cached volume-control bounds.
+ * @ghidraAddress EAR: 0x1003b6e8
+ */
 extern DWORD g_dwCdVolumeMaximum;
-/** @ghidraAddress EAR: 0x1003b6ec */
+/**
+ * Maximum MIDI volume reported by the cached volume-control bounds.
+ * @ghidraAddress EAR: 0x1003b6ec
+ */
 extern DWORD g_dwMidiVolumeMaximum;
 
-/** @ghidraAddress EAR: 0x100360d8 */
+/**
+ * Configured Windows CD mixer device identifier, initially unsigned -1.
+ * @ghidraAddress EAR: 0x100360d8
+ */
 extern UINT g_uConfiguredCdMixerId;
-/** @ghidraAddress EAR: 0x100360dc */
+/**
+ * Configured Windows MIDI mixer device identifier, initially unsigned -1.
+ * @ghidraAddress EAR: 0x100360dc
+ */
 extern UINT g_uConfiguredMidiMixerId;
-/** @ghidraAddress EAR: 0x100360e0 */
+/**
+ * Configured CD mixer line identifier, initially unsigned -1.
+ * @ghidraAddress EAR: 0x100360e0
+ */
 extern DWORD g_dwConfiguredCdMixerLineId;
-/** @ghidraAddress EAR: 0x100360e4 */
+/**
+ * Configured MIDI mixer line identifier, initially unsigned -1.
+ * @ghidraAddress EAR: 0x100360e4
+ */
 extern DWORD g_dwConfiguredMidiMixerLineId;
 
 /**
@@ -135,7 +232,8 @@ void CloseMidiMusicDevice(void);
 void RestoreMusicMixerControls(void);
 
 /**
- * Find the track that plays at a position.
+ * Find the track at a position using the loaded table.
+ * The native comparison excludes the stored final millisecond of each track.
  *
  * @param position The position, in milliseconds.
  * @return The number of the track, or 0 for none.
@@ -144,15 +242,16 @@ void RestoreMusicMixerControls(void);
 uint16_t __stdcall FindCdTrackAtPosition(DWORD position);
 
 /**
- * @param track The number of the track.
- * @return The position of the first sample of the track, or 0 past the last audio track.
+ * @param track The one-based track number in a loaded table. Zero is not a valid index.
+ * @return The absolute track start in milliseconds, or zero past the last audio track.
  * @ghidraAddress EAR: 0x100047cf
  */
 DWORD __stdcall GetCdTrackStartPosition(uint16_t track);
 
 /**
- * @param track The number of the track.
- * @return The position of the last sample of the track, or 0 past the last audio track.
+ * @param track The one-based track number in a loaded table. Zero is not a valid index.
+ * @return The absolute start plus duration minus one in milliseconds, or zero past the last
+ * audio track.
  * @ghidraAddress EAR: 0x10004800
  */
 DWORD __stdcall GetCdTrackEndPosition(uint16_t track);
@@ -166,7 +265,8 @@ DWORD GetCdTrackCount(void);
 /**
  * Read the positions of the tracks of the CD and find its first audio track.
  *
- * @return Whether the CD has an audio track.
+ * @return Whether an audio track is found or a previous nonzero first-track value remains.
+ * Zero also indicates a missing device or failure to close an open door.
  * @ghidraAddress EAR: 0x10004b08
  */
 int LoadCdTrackPositions(void);
@@ -175,7 +275,8 @@ int LoadCdTrackPositions(void);
  * Open the mixer of the CD audio, sharing the MIDI mixer when it is the same device.
  *
  * @param mixer The mixer device.
- * @return Whether the mixer is open.
+ * @return Whether opening succeeds or an existing initialisation marker permits reuse.
+ * A stale marker does not guarantee a valid mixer handle.
  * @ghidraAddress EAR: 0x10005e20
  */
 int __stdcall OpenCdAudioMixer(UINT mixer);
@@ -191,7 +292,8 @@ void CloseCdAudioMixer(void);
  * Open the mixer of the MIDI music, sharing the CD audio mixer when it is the same device.
  *
  * @param mixer The mixer device.
- * @return Whether the mixer is open.
+ * @return Whether opening succeeds or an existing initialisation marker permits reuse.
+ * A stale marker does not guarantee a valid mixer handle.
  * @ghidraAddress EAR: 0x10005ef3
  */
 int __stdcall OpenMidiMixer(UINT mixer);
@@ -224,7 +326,8 @@ int __stdcall CacheCdAudioMixerControls(DWORD line);
 /**
  * Open the mixers the configuration selects and save the values of their controls.
  *
- * @return Whether every mixer opened.
+ * @return Zero when either required mixer open fails; otherwise nonzero, including when mixer
+ * access is disabled. Control-discovery failures do not change the return value.
  * @ghidraAddress EAR: 0x10006262
  */
 int InitializeMusicMixers(void);
@@ -232,7 +335,8 @@ int InitializeMusicMixers(void);
 /**
  * Open the CD audio device, timed in milliseconds, and read its tracks.
  *
- * @return Whether the device opened with a CD that has an audio track.
+ * @return Whether the device opens, accepts millisecond timing, reports media, and loads tracks.
+ * Track loading can accept a previously discovered first audio-track number.
  * @ghidraAddress EAR: 0x10006313
  */
 int OpenCdAudioDevice(void);
@@ -266,8 +370,8 @@ int OpenCdAudioDoor(void);
 int CloseCdAudioDoorAndWait(void);
 
 /**
- * @param track The number of the track.
- * @return Whether the track is an audio track of the CD.
+ * @param track The track number to compare with the cached first and last audio-track numbers.
+ * @return Whether the number falls within the inclusive cached range, without querying track type.
  * @ghidraAddress EAR: 0x100064bd
  */
 int __stdcall IsCdTrackInRange(DWORD track);

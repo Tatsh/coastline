@@ -15,56 +15,132 @@
 class EarChannel;
 class EarPlayback;
 
+/** Source representation selected by the low byte of the scheduled event flags. */
 union EarEventSource {
+    /** Borrowed filename or media pointer for the selected playback implementation. */
     const void *address;
+    /** Registered wave-sample handle when the source type is 3. */
     std::uint16_t presetHandle;
 };
 
+/**
+ * Schedule playback with delayed starts, attenuation, spatial updates, and completion timers.
+ * Playback methods require successful construction and an allocated playback implementation.
+ * A twin event borrows source storage from its original event.
+ */
 class [[gnu::packed]] ScheduledEarEvent {
 public:
-    /** @ghidraAddress EAR: 0x100077e0 */
+    /**
+     * Allocate playback for the source type and initialise scheduling defaults.
+     * File-backed PCM and ADPCM paths without source flags 0x6000 are copied to 260-byte storage
+     * and truncated to 259 bytes. Other source storage remains borrowed until destruction.
+     * Failed allocation or an unsupported type records an EAR error and releases event resources.
+     *
+     * @param flags The source type in the low byte and playback flags in the high byte.
+     * @param source The source representation required by the type, including a preset handle
+     * encoded in pointer bits for type 3. File paths must be non-null, terminated strings.
+     * @ghidraAddress EAR: 0x100077e0
+     */
     ScheduledEarEvent(std::uint16_t flags, const void *source);
     /**
-     * Make the twin of an event, which plays the same source and never frees its path.
+     * Create a twin with separate playback and borrowed source storage.
+     * The original source storage must remain valid until the twin is destroyed.
+     * Native construction does not initialise every scheduling field or report playback failure.
      *
-     * @param other The event.
+     * @param other The original event with source storage valid throughout the twin's lifetime.
      * @ghidraAddress EAR: 0x10007b56
      */
     ScheduledEarEvent(const ScheduledEarEvent &other);
-    /** @ghidraAddress EAR: 0x10007d6a */
+    /**
+     * Release playback resources and source storage copied by this event.
+     * Twins do not extend the lifetime of source storage allocated by the original event.
+     * @ghidraAddress EAR: 0x10007d6a
+     */
     ~ScheduledEarEvent();
 
-    /** @ghidraAddress EAR: 0x10007310 */
+    /**
+     * @return The backend status value, with zero for unpaused playback and nonzero for paused.
+     * @ghidraAddress EAR: 0x10007310
+     */
     int GetScheduledEventPlaybackStatus();
-    /** @ghidraAddress EAR: 0x10007330 */
+    /**
+     * @return Nonzero when the backend reports playback complete; otherwise zero.
+     * @ghidraAddress EAR: 0x10007330
+     */
     int IsScheduledEventPlaybackComplete();
-    /** @ghidraAddress EAR: 0x10007350 */
+    /**
+     * Disable backend looping and mark playback complete for subsequent event retirement.
+     * @ghidraAddress EAR: 0x10007350
+     */
     void RequestScheduledEventStop();
 
-    /** @ghidraAddress EAR: 0x10007380 */
+    /**
+     * @return Nonzero when playback is uninitialised, the delay has elapsed, and attenuation
+     * and distance requirements permit a start; otherwise zero.
+     * @ghidraAddress EAR: 0x10007380
+     */
     int CanStartScheduledEarEvent();
-    /** @ghidraAddress EAR: 0x10007400 */
+    /**
+     * Advance pending timers or the active duration limit and mark expired playback complete.
+     * Timer arithmetic wraps at 32 bits. A pending lifetime of -1000 disables lifetime processing.
+     * Other pending lifetimes expire below -500 milliseconds, even with countdown suppression.
+     *
+     * @param elapsedMilliseconds The unsigned elapsed time in milliseconds.
+     * @ghidraAddress EAR: 0x10007400
+     */
     void AdvanceScheduledEventTimers(std::uint32_t elapsedMilliseconds);
-    /** @ghidraAddress EAR: 0x10008126 */
+    /**
+     * Initialise playback if necessary, apply smoothing and frequency, and start the backend.
+     * Initialisation failure records EAR error 0x1a and deactivates the event.
+     *
+     * @return One on success; zero on initialisation failure, paused status, or backend failure.
+     * @ghidraAddress EAR: 0x10008126
+     */
     int StartScheduledEarEvent();
-    /** @ghidraAddress EAR: 0x100074c0 */
+    /**
+     * Advance fade attenuation and apply directional gain, frequency, and backend parameters.
+     * Zero attenuation releases initialised playback resources when attenuation is required
+     * and no stop fade is active.
+     *
+     * @param gain The linear gain multiplier applied after the event's 0..10000 attenuation.
+     * @ghidraAddress EAR: 0x100074c0
+     */
     void UpdateScheduledEventPlayback(double gain);
-    /** @ghidraAddress EAR: 0x100088ea */
+    /**
+     * Select a stop fade, or disable looping and attempt a start when bit zero is set.
+     * Fade attenuation decreases once per playback update rather than per millisecond.
+     *
+     * @param control Bit zero selects the non-looping start. Otherwise the low nibble selects
+     * decrements of 500 (2), 250 (4), 125 (8), or 10000 / ((control >> 4) * 0.02) (14).
+     * Other low nibbles select a zero decrement.
+     * @ghidraAddress EAR: 0x100088ea
+     */
     void ApplyScheduledEventStopControl(std::uint16_t control);
 
     /**
-     * @return The length of the media of the playback, in its own units.
+     * @return The media length in backend-specific units, without conversion to milliseconds.
      * @ghidraAddress EAR: 0x1000c1d0
      */
     std::uint32_t GetScheduledEventMediaLength();
-    /** @ghidraAddress EAR: 0x1000c1f0 */
+    /**
+     * Set backend mute without pausing event timers.
+     * @ghidraAddress EAR: 0x1000c1f0
+     */
     void MuteScheduledEventPlayback();
-    /** @ghidraAddress EAR: 0x1000c210 */
+    /**
+     * Clear backend mute without changing event timers.
+     * @ghidraAddress EAR: 0x1000c210
+     */
     void UnmuteScheduledEventPlayback();
-    /** @ghidraAddress EAR: 0x1000c230 */
+    /**
+     * Pause backend playback and discard the backend stop result.
+     * @ghidraAddress EAR: 0x1000c230
+     */
     void PauseScheduledEventPlayback();
     /**
-     * @return Whether the playback resumed, which is always.
+     * Clear paused status and attempt to restart an active paused backend.
+     *
+     * @return One, including when the backend restart fails.
      * @ghidraAddress EAR: 0x1000c250
      */
     int ResumeScheduledEventPlayback();
