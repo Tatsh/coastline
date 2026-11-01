@@ -42,7 +42,8 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
                                    GameConfig &config,
                                    const std::filesystem::path &configPath,
                                    std::span<const std::filesystem::path> dataRoots,
-                                   std::string_view assetPack) {
+                                   std::string_view assetPack,
+                                   std::string_view unitsRegion) {
     auto screen = MenuScreen::Load(renderer, release);
     if (!screen) {
         return nullptr;
@@ -76,6 +77,18 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
     menus->LoadPakData();
     menus->m_config = &config;
     menus->m_configPath = configPath;
+    std::string country;
+    int localeCount = 0;
+    SDL_Locale **locales = SDL_GetPreferredLocales(&localeCount);
+    for (int locale = 0; locales && locale < localeCount; ++locale) {
+        if (locales[locale]->country && *locales[locale]->country) {
+            country = locales[locale]->country;
+            break;
+        }
+    }
+    SDL_free(locales);
+    menus->m_options.speedInMph = SpeedInMph(config, unitsRegion, country);
+    SDL_Log("Using speed units %s.", menus->m_options.speedInMph ? "mph" : "kph");
     std::vector<std::array<int, 2>> displayResolutions;
     int displayCount = 0;
     SDL_DisplayID *displays = SDL_GetDisplays(&displayCount);

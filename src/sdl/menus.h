@@ -156,6 +156,7 @@ public:
      * @param configPath The file of the settings, written whenever a player chooses a car.
      * @param dataRoots The imported data roots for available packs and cartridge regions.
      * @param assetPack The active pack, or empty to use the configured pack.
+     * @param unitsRegion The explicit CLI region for automatic units, or empty to use locale.
      * @return The menus, or nothing with the reason logged.
      */
     static std::unique_ptr<Menus> Load(SceneRenderer &renderer,
@@ -165,7 +166,8 @@ public:
                                        GameConfig &config,
                                        const std::filesystem::path &configPath,
                                        std::span<const std::filesystem::path> dataRoots = {},
-                                       std::string_view assetPack = {});
+                                       std::string_view assetPack = {},
+                                       std::string_view unitsRegion = {});
     /** Release front-end resources before the configuration and renderer are destroyed. */
     ~Menus();
     /** Prevent copying active front-end resources and screen progress. */
@@ -347,6 +349,8 @@ private:
     bool LoadOptionsItems(SceneRenderer &renderer, const std::filesystem::path &release);
     void LoadPakData();
     void ApplyVolumeSettings() const;
+    bool RememberSpeedUnits();
+    void ToggleSpeedUnits();
     bool SaveOptionsNote(int player) const;
     bool SaveSeasonNote(const MenuProfile &profile) const;
     int SaveGhostNote() const;

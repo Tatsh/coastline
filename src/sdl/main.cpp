@@ -1453,7 +1453,8 @@ int main(int argc, char *argv[]) {
                                                       config,
                                                       configPath,
                                                       std::array{assetData, paths->data},
-                                                      pack);
+                                                      pack,
+                                                      parser.present("--region").value_or(""));
                     if (mainMenu) {
                         auto overrides = CommandLineOverrides(parser);
                         if (overrides.Get("Game", "AssetPack")) {

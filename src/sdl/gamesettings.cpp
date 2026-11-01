@@ -11,6 +11,20 @@
 
 namespace coastline {
 
+bool SpeedInMph(const GameConfig &config, std::string_view region, std::string_view country) {
+    const auto units = config.Get("Game", "Units");
+    if (units == "mph" || units == "kph") {
+        return units == "mph";
+    }
+    if (region == "eur" || region == "jpn") {
+        return false;
+    }
+    if (region == "usa") {
+        return true;
+    }
+    return country.empty() || country == "GB" || country == "US";
+}
+
 bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset) {
     const bool n64 = preset == "n64";
     const bool br = preset == "br";

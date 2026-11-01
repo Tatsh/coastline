@@ -25,6 +25,19 @@ namespace coastline {
  */
 bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset);
 
+/**
+ * Resolve speed units without recording an automatic choice as a user preference.
+ * Game.Units values mph and kph override region and locale. Otherwise, explicit eur and jpn
+ * regions use KPH and usa uses MPH. Without a region, GB and US countries use MPH, other
+ * countries use KPH, and an absent country defaults to MPH.
+ *
+ * @param config Saved settings; an absent or invalid Game.Units value selects automatic units.
+ * @param region The explicit CLI region, or empty to use the system locale.
+ * @param country The first available ISO 3166 country code in preferred locale order, or empty.
+ * @return Whether speeds use miles per hour rather than kilometres per hour.
+ */
+bool SpeedInMph(const GameConfig &config, std::string_view region, std::string_view country);
+
 /** Persistent game choices for the options menu. */
 class GameSettings {
 public:

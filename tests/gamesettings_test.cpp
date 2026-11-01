@@ -31,6 +31,23 @@ void File(const std::filesystem::path &path, const char *text) {
 int main() {
     using coastline::GameConfig;
     using coastline::GameSettings;
+    GameConfig units;
+    assert(coastline::SpeedInMph(units, "", ""));
+    assert(coastline::SpeedInMph(units, "", "GB"));
+    assert(coastline::SpeedInMph(units, "", "US"));
+    for (const auto country : {"JP", "DE", "FR", "CA", "AU"}) {
+        assert(!coastline::SpeedInMph(units, "", country));
+    }
+    assert(!coastline::SpeedInMph(units, "jpn", "US"));
+    assert(!coastline::SpeedInMph(units, "eur", "GB"));
+    assert(coastline::SpeedInMph(units, "usa", "JP"));
+    assert(!units.Get("Game", "Units"));
+    units.Set("Game", "Units", "mph");
+    assert(coastline::SpeedInMph(units, "jpn", "JP"));
+    units.Set("Game", "Units", "kph");
+    assert(!coastline::SpeedInMph(units, "usa", "GB"));
+    units.Set("Game", "Units", "auto");
+    assert(!coastline::SpeedInMph(units, "", "JP"));
     const auto directory =
         std::filesystem::temp_directory_path() /
         ("coastline-settings-" +

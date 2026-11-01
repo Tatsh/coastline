@@ -327,6 +327,13 @@ season and ghost saves. The option takes effect immediately; manual saving remai
 autosave off. Preferences save independently of race progress. Failed automatic saves display a
 warning on the results screen.
 
+Until Units is changed, `--region jpn` and `--region eur` select KPH, and `--region usa` selects
+MPH. Without an explicit region, system locales for GB and US use MPH and other country locales
+use KPH. If the locale has no country, MPH is the fallback. Changing Units records `Units=mph`
+or `Units=kph` under `[Game]` and overrides automatic selection on subsequent launches. Existing
+settings without a valid Units preference use automatic selection. Explicitly loading an options
+note saves its units as a manual choice. Set `Units=auto` to restore automatic selection.
+
 Paint Shop supports Milk Truck, Cupra, Helmet, and Beach Ball. Cupra, Helmet, and Beach Ball use
 numbered texture buttons in place of body-panel buttons. Tall textures shrink to fit the canvas.
 Painting preserves the imported image beneath the decal; clearing the decal restores the image

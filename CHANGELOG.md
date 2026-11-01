@@ -11,6 +11,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Automatic speed units follow explicit `--region` (USA MPH, EUR/JPN KPH), otherwise system country
+  (GB/US MPH, others KPH, missing country MPH). Manual choices override automatic selection and
+  save immediately, including loaded configuration choices; older settings without a valid Units
+  preference use automatic selection.
 - A Window reflections option selects PC projection or original N64 angular mapping, with Auto
   following Visual effects. Changes apply as Options closes without reimporting assets; both modes
   use night-sky reflections in tunnels.

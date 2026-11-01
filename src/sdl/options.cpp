@@ -278,6 +278,30 @@ void Menus::ApplyVolumeSettings() const {
         std::clamp(m_options.sfxVolume, 0, MAX_VOLUME_LEVEL))];
 }
 
+bool Menus::RememberSpeedUnits() {
+    if (!m_config) {
+        return true;
+    }
+    const auto original = *m_config;
+    m_config->Set("Game", "Units", m_options.speedInMph ? "mph" : "kph");
+    m_gameSettingsSaveError = !m_config->Save(m_configPath);
+    if (m_gameSettingsSaveError) {
+        *m_config = original;
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot save speed units.");
+        return false;
+    }
+    return true;
+}
+
+void Menus::ToggleSpeedUnits() {
+    m_options.speedInMph = !m_options.speedInMph;
+    if (RememberSpeedUnits()) {
+        m_optionsChanged = true;
+    } else {
+        m_options.speedInMph = !m_options.speedInMph;
+    }
+}
+
 bool Menus::SaveOptionsNote(int player) const {
     std::vector<u8> note(OPTIONS_NOTE_SIZE, 0);
     Put32(note, 0, static_cast<u32>(m_options.musicVolume));
@@ -399,6 +423,7 @@ bool Menus::ProcessPakDataScreen(SceneRenderer &renderer, int dataType) {
             break;
         }
         ReadOptions(m_options, *m_pakNote);
+        RememberSpeedUnits();
         SetEquipment(ProfileOf(player), *m_pakNote, OPTIONS_HALF_SIZE);
         m_pakDataStep = PAK_DATA_STEP_DONE;
         break;
@@ -594,8 +619,7 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
         } else if (m_optionsMenuSelection == OPTIONS_ITEM_SFX) {
             step(m_options.sfxVolume, result == MenuResult::Up ? 1 : -1);
         } else if (m_optionsMenuSelection == OPTIONS_ITEM_UNITS) {
-            m_options.speedInMph = !m_options.speedInMph;
-            m_optionsChanged = true;
+            ToggleSpeedUnits();
         }
         break;
     case MenuResult::Chosen:
@@ -604,8 +628,7 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
                     OPTIONS_ITEM_CREDITS :
                     m_optionsMenuSelection) {
         case OPTIONS_ITEM_UNITS:
-            m_options.speedInMph = !m_options.speedInMph;
-            m_optionsChanged = true;
+            ToggleSpeedUnits();
             break;
         case OPTIONS_ITEM_CONTROLLER:
             m_optionsMenuState = -1;
@@ -891,6 +914,7 @@ bool Menus::LoadSaveLoadNote(int player) {
             return false;
         }
         ReadOptions(m_options, note);
+        RememberSpeedUnits();
         SetEquipment(ProfileOf(player), note, OPTIONS_HALF_SIZE);
         ApplyVolumeSettings();
         m_saveLoadStep = SAVE_LOAD_STEP_DONE;
