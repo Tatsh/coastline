@@ -948,11 +948,20 @@ int main(int argc, char *argv[]) {
     const auto foundData = coastline::FindAssetData(paths->data, systemData);
     const auto assetData = foundData.value_or(paths->data);
     const bool showWizard = !foundData;
-    if (showWizard && std::filesystem::exists(coastline::DefaultAssets(paths->data))) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "Imported assets are incomplete or use an unsupported layout. Import assets "
-                     "again with coastline import --cd DISC --rom ROM.");
-        return EXIT_FAILURE;
+    std::string reimportReason;
+    if (showWizard) {
+        auto directories = systemData;
+        directories.insert(directories.begin(), paths->data);
+        for (const auto &directory : directories) {
+            std::error_code error;
+            if (std::filesystem::exists(coastline::DefaultAssets(directory), error)) {
+                reimportReason = "Your imported game assets are incomplete or incompatible with "
+                                 "this version of Coastline. Import your game files again to "
+                                 "continue.";
+                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Re-import required.");
+                break;
+            }
+        }
     }
 #if COASTLINE_SETUP_WIZARD
     if (showWizard && parser.is_subcommand_used(runScript) && script.script.keys.empty() &&
@@ -1030,8 +1039,14 @@ int main(int argc, char *argv[]) {
     auto setUp = [&]([[maybe_unused]] coastline::GpuWindow &window) {
 #if COASTLINE_SETUP_WIZARD
         if (showWizard) {
-            coastline::SetupRun run = coastline::RunSetupWizard(
-                window, *paths, config, script.script, script.keys, scriptFrames, savesFrames);
+            coastline::SetupRun run = coastline::RunSetupWizard(window,
+                                                                *paths,
+                                                                config,
+                                                                script.script,
+                                                                script.keys,
+                                                                scriptFrames,
+                                                                savesFrames,
+                                                                reimportReason);
             firstFrame = run.frames + 1;
             setupQuit = !run.finished;
             setupFailed = run.failed;
@@ -1101,17 +1116,6 @@ int main(int argc, char *argv[]) {
                 const std::filesystem::path assets = *packAssets;
                 SDL_Log("Using asset pack %s (%s).", pack.c_str(), assets.string().c_str());
                 SDL_Log("Using region %s with base %s.", region.c_str(), baseRegion.c_str());
-                // A source imported by an older conversion has files the game no longer draws
-                // correctly.
-                std::string reimportNotice;
-                const auto staleImports =
-                    coastline::StaleImports(coastline::DefaultAssets(assetData));
-                if (!staleImports.empty()) {
-                    reimportNotice = coastline::ReimportMessage(staleImports);
-                    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                                "Asset conversion is outdated. %s",
-                                reimportNotice.c_str());
-                }
                 coastline::GameText gameText(
                     assets,
                     parser.present("--language")
@@ -1172,9 +1176,6 @@ int main(int argc, char *argv[]) {
                 std::unique_ptr<coastline::MenuText> frameRateText;
                 // The statistics of the third state of F, sampled only while they show.
                 std::unique_ptr<coastline::PerformanceStats> performanceStats;
-                // The seconds the request to import again remains at the top of the splash screens
-                // and the menus.
-                float reimportNoticeSeconds = reimportNotice.empty() ? 0.0f : 10.0f;
                 // The screen of the front end that shows.
                 enum class FrontEnd { Intro, AttractDemo, MainMenu, Race, Credits };
                 FrontEnd frontEnd = FrontEnd::Intro;
@@ -1712,12 +1713,6 @@ int main(int argc, char *argv[]) {
                             (frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::MainMenu)) {
                             frameRateOverlay.Draw(*sceneRenderer, *frameRateText);
                         }
-                        if (reimportNoticeSeconds > 0.0f && frameRateText &&
-                            (frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::MainMenu)) {
-                            DrawOverlayLine(
-                                *sceneRenderer, *frameRateText, reimportNotice.c_str(), 20);
-                            reimportNoticeSeconds -= seconds;
-                        }
                         if (g_bShowFpsCounter != coastline::FRAME_RATE_STATISTICS) {
                             performanceStats.reset();
                         } else if (frameRateText) {
@@ -1725,8 +1720,7 @@ int main(int argc, char *argv[]) {
                                 performanceStats = std::make_unique<coastline::PerformanceStats>(
                                     window->DeviceName(), window->NvmlAllowed());
                             }
-                            // The lines start under the lap and the times of a race, and the
-                            // request to import again.
+                            // Statistics start below lap times.
                             int y = 80;
                             // The left of the frame, under the lap, where the frame is wider than
                             // the 640 across of the screen.

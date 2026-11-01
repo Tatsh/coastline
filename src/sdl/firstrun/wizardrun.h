@@ -7,6 +7,7 @@
 
 #include <filesystem>
 #include <span>
+#include <string>
 
 #include <SDL3/SDL.h>
 
@@ -40,6 +41,7 @@ struct SetupRun {
  * @param scriptKeys The scancode of each key of @p script, in order.
  * @param captures The directory the frames of the script are saved to.
  * @param fixedTime Whether each frame steps the blink of the cursor by a 60th of a second.
+ * @param reimportReason Why existing assets require another import, or empty for first-run setup.
  * @return How the wizard ended.
  */
 SetupRun RunSetupWizard(GpuWindow &window,
@@ -48,6 +50,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
                         const Script &script,
                         std::span<const SDL_Scancode> scriptKeys,
                         const std::filesystem::path &captures,
-                        bool fixedTime);
+                        bool fixedTime,
+                        const std::string &reimportReason = {});
 
 } // namespace coastline

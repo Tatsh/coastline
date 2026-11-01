@@ -100,6 +100,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Outdated, incompatible, or incomplete imports open a graphical reimport prompt with Start setup
+  and Quit choices. Quitting preserves existing assets; new installations open file setup directly.
 - Each player's selected camera persists across races and game restarts, excluding automatic finish
   and replay camera changes.
 - Statistics use shorter RAM and VRAM labels.

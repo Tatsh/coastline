@@ -187,6 +187,44 @@ void TestRepositoryLink(const std::filesystem::path &root) {
           "Moving outside the repository link must remove its underline.");
 }
 
+void TestReimport(const std::filesystem::path &root) {
+    int imports = 0;
+    auto services = Services(root);
+    services.reimportReason = "Existing assets require another import.";
+    services.import = [&](const auto &, const auto &) {
+        ++imports;
+        return std::optional<std::string>{};
+    };
+    SetupWizard wizard(services);
+    Check(wizard.Screen() == WizardScreen::Reimport, "Old assets must open the re-import screen.");
+    const auto controls = wizard.Controls();
+    Check(controls.size() == 2 && Enabled(wizard, Next) && Enabled(wizard, Quit),
+          "Re-import must offer only Start setup and Quit.");
+    TextGrid grid;
+    wizard.Draw(grid, 0);
+    std::string text;
+    for (int row = 0; row < GRID_ROWS; ++row) {
+        for (int column = 0; column < GRID_COLUMNS; ++column) {
+            text += static_cast<char>(grid.At(column, row).glyph);
+        }
+    }
+    Check(text.find(services.reimportReason) != std::string::npos,
+          "Re-import must explain why setup is required.");
+    Key(wizard, WizardKey::Enter);
+    Check(wizard.Screen() == WizardScreen::Files && wizard.End() == WizardEnd::Running,
+          "Start setup must open game-file selection.");
+    Check(!Enabled(wizard, Next) && imports == 0,
+          "Starting setup must not replace assets before valid files are selected.");
+    SetupWizard quit(services);
+    Click(quit, Quit);
+    Check(quit.End() == WizardEnd::Quit && imports == 0,
+          "Quit must exit without importing assets.");
+    SetupWizard escape(services);
+    Key(escape, WizardKey::Escape);
+    Check(escape.End() == WizardEnd::Quit && imports == 0,
+          "Escape must quit the re-import prompt without changing assets.");
+}
+
 void TestEditing(const std::filesystem::path &root) {
     SetupWizard wizard(Services(root));
     Type(wizard, "~/disc.iso");
@@ -407,6 +445,7 @@ int main() {
         }
         TestCombinations(root);
         TestRepositoryLink(root);
+        TestReimport(root);
         TestEditing(root);
         TestBrowser(root);
         TestSearch(root);

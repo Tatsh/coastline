@@ -184,6 +184,9 @@ char AcceleratorOf(const std::string &label) {
 
 SetupWizard::SetupWizard(WizardServices services)
     : m_services(std::move(services)), m_lastDirectory(m_services.lastDirectory) {
+    if (!m_services.reimportReason.empty()) {
+        m_screen = WizardScreen::Reimport;
+    }
     FocusFirst();
 }
 
@@ -278,6 +281,8 @@ std::string SetupWizard::SelectedText() const {
 
 bool SetupWizard::NextEnabled() const {
     switch (m_screen) {
+    case WizardScreen::Reimport:
+        return true;
     case WizardScreen::Files:
         for (const auto &field : m_cartridges) {
             if (!field.text.empty() && !field.valid) {
@@ -297,6 +302,12 @@ bool SetupWizard::NextEnabled() const {
 
 std::vector<WizardControl> SetupWizard::ScreenControls() const {
     std::vector<WizardControl> controls;
+    if (m_screen == WizardScreen::Reimport) {
+        controls.push_back(MakeButton(WizardControlId::Next, "&Start setup", 0, BUTTON_ROW));
+        controls.push_back(MakeButton(WizardControlId::Quit, "&Quit", 0, BUTTON_ROW));
+        CentreButtons(controls, 0);
+        return controls;
+    }
     auto textBox = [&](WizardControlId id, std::string label, int row) {
         WizardControl control;
         control.id = id;
@@ -331,6 +342,7 @@ std::vector<WizardControl> SetupWizard::ScreenControls() const {
         controls.push_back(
             MakeButton(WizardControlId::SearchClear, "Clear", CLEAR_COLUMN, DIALOG_ROW + 6));
         break;
+    case WizardScreen::Reimport:
     case WizardScreen::Search:
     case WizardScreen::Import:
     case WizardScreen::Done:
@@ -851,8 +863,12 @@ void SetupWizard::Activate(WizardControlId id) {
         break;
     case WizardControlId::Next:
         if (NextEnabled()) {
-            SetScreen(WizardScreen::Import);
+            SetScreen(m_screen == WizardScreen::Reimport ? WizardScreen::Files :
+                                                           WizardScreen::Import);
         }
+        break;
+    case WizardControlId::Quit:
+        m_end = WizardEnd::Quit;
         break;
     case WizardControlId::Back:
         if (m_screen == WizardScreen::SearchDirectory ||
@@ -931,6 +947,8 @@ void SetupWizard::Escape() {
         m_message.reset();
     } else if (m_browser) {
         m_browser.reset();
+    } else if (m_screen == WizardScreen::Reimport) {
+        m_end = WizardEnd::Quit;
     } else if (m_screen == WizardScreen::Files) {
         ShowMessage({"Quit?", "The game cannot start without its data."}, true);
     } else if ((m_screen == WizardScreen::Import && !m_importFailure) ||
@@ -1496,6 +1514,17 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
     const bool screenOnTop = !m_browser && !m_message;
     std::string status = " <Tab=Next Field>  <Alt+Letter=Choose>  <Enter=Next>  <Esc=Back>";
     switch (m_screen) {
+    case WizardScreen::Reimport: {
+        dialog("Import required");
+        int row = writeLines(DIALOG_ROW + 2, m_services.reimportReason, White);
+        row = writeLines(row + 1,
+                         "Start setup to select your Boss Rally BIN/CUE/ISO and at least one "
+                         "Top Gear Rally ROM image.",
+                         LightGray);
+        writeLines(row + 1, "You can also quit and run setup later.", LightGray);
+        status = " <Enter=Start setup>  <Alt+Q=Quit>  <Esc=Quit>";
+        break;
+    }
     case WizardScreen::Files:
         dialog("Step 1 of 3: Game files");
         writeLines(DIALOG_ROW + 2,

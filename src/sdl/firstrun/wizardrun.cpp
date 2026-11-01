@@ -96,7 +96,8 @@ SetupRun RunSetupWizard(GpuWindow &window,
                         const Script &script,
                         std::span<const SDL_Scancode> scriptKeys,
                         const std::filesystem::path &captures,
-                        bool fixedTime) {
+                        bool fixedTime,
+                        const std::string &reimportReason) {
     SetupRun run;
     std::unique_ptr<SceneRenderer> sceneRenderer = SceneRenderer::Create(window);
     if (!sceneRenderer) {
@@ -109,6 +110,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
         return run;
     }
     WizardServices services;
+    services.reimportReason = reimportReason;
 #ifdef COASTLINE_GIT_SHA
     services.buildRevision = COASTLINE_GIT_SHA;
 #endif
@@ -172,7 +174,8 @@ SetupRun RunSetupWizard(GpuWindow &window,
     }
     SetupWizard wizard(std::move(services));
     run.failed = false;
-    SDL_Log("Missing game data; starting setup.");
+    SDL_Log(reimportReason.empty() ? "Missing game data; starting setup." :
+                                     "Re-import required; opening setup.");
 
     SDL_Window *sdlWindow = window.Window();
     SDL_StartTextInput(sdlWindow);

@@ -70,6 +70,7 @@ struct WizardServices {
     std::filesystem::path lastDirectory; /*!< The directory last browsed, or empty. */
     std::string buildRevision;           /*!< A version tag or short source revision. */
     std::string buildDate;               /*!< The ISO 8601 UTC timestamp of the build. */
+    std::string reimportReason;          /*!< Why existing assets need another import, or empty. */
 };
 
 /** The images found during a directory search, indexed by detected release. */
@@ -138,6 +139,7 @@ struct WizardEvent {
 
 /** A screen of the wizard, in order. */
 enum class WizardScreen {
+    Reimport,        /*!< Explain incompatible assets and offer setup or quit. */
     Files,           /*!< The disc and three interchangeable ROM paths. */
     SearchDirectory, /*!< The directory to search. */
     Search,          /*!< Search progress and discovered images. */
@@ -175,6 +177,7 @@ enum class WizardControlId {
     UseFound,      /*!< Return to the setup fields. */
     Back,          /*!< The previous screen. */
     Next,          /*!< The next screen. */
+    Quit,          /*!< Quit without importing assets. */
     Cancel,        /*!< Cancel the import. */
     Finish,        /*!< Start the game. */
     BrowserList,   /*!< The entries of the directory of the file browser. */
