@@ -1002,6 +1002,7 @@ int main(int argc, char *argv[]) {
                                               {"Video", "InternalWidth", "0"},
                                               {"Video", "InternalHeight", "0"},
                                               {"Video", "RenderScale", "1"},
+                                              {"Video", "AspectRatio", "auto"},
                                               {"Video", "ScaleFilter", "linear"},
                                               {"Video", "ScreenShader", "none"},
                                               {"Video", "FieldOfView", "1"},

@@ -416,6 +416,13 @@ For a 1990s consumer CRT look, choose 320x240 internal resolution, Upscaling Off
 Upscaling Off uses nearest-neighbour enlargement (`ScaleFilter=nearest`) without smoothing or edge
 reconstruction. The CRT shader still applies its softness, scanlines, curvature, and phosphor mask.
 
+Aspect ratio defaults to Fill screen (`AspectRatio=auto`), matching the current window or display.
+Options also offers 4:3, 16:9, 21:9, and 32:9. A selected internal resolution supplies minimum
+dimensions; the frame expands across or down to match the ratio, with at least 320x240 pixels.
+For example, 320x240 becomes 427x240 at 16:9, 560x240 at 21:9, or 854x240 at 32:9. Fill screen
+recalculates the dimensions when the window changes size. Explicit ratios display bars when the
+window has another shape. Changes apply as Options closes.
+
 A race keeps the vertical field of view of the PC release on a frame wider than 4:3 and widens
 across, and keeps the field across of 4:3 on a narrower frame. Neither field exceeds 120 degrees.
 The rear-view mirror keeps its shape and its size against the height of the view. The menus keep

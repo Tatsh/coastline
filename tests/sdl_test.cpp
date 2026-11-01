@@ -734,6 +734,24 @@ int main() {
     Check(!coastline::ParseAspectRatio("wide"), "text is refused");
     Check(!coastline::ParseAspectRatio("inf"), "an infinite ratio is refused");
 
+    for (const auto &[aspect, expected] :
+         std::array{std::pair{4.0f / 3.0f, std::array{320, 240}},
+                    std::pair{16.0f / 9.0f, std::array{427, 240}},
+                    std::pair{21.0f / 9.0f, std::array{560, 240}},
+                    std::pair{32.0f / 9.0f, std::array{854, 240}},
+                    std::pair{9.0f / 16.0f, std::array{320, 569}}}) {
+        Check(coastline::ExpandInternalResolution(320, 240, aspect) == expected,
+              "aspect ratios expand the base resolution without cropping");
+    }
+    Check(coastline::ExpandInternalResolution(640, 360, 4.0f / 3.0f) == std::array{640, 480},
+          "a taller aspect preserves the selected width");
+    Check(coastline::ExpandInternalResolution(1920, 1080, 16.0f / 9.0f) == std::array{1920, 1080},
+          "float rounding does not add a pixel to an exact resolution");
+    Check(coastline::ExpandInternalResolution(1, 1, 4.0f / 3.0f) == std::array{320, 240},
+          "internal resolution stays at least 320x240");
+    Check(coastline::ExpandInternalResolution(320, 240, 1e30f)[0] == 16384,
+          "extreme aspect ratios respect the texture size limit");
+
     auto choices = coastline::GameConfig::Parse("[Player2]\nCar=12\nHandling=-1\nTires=x\n"
                                                 "Suspension=3\nTransmission=0\n");
     Check(choices.GetIndex("Player2", "Car", 13, 0) == 12, "the last index is read");

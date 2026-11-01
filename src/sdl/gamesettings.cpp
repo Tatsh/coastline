@@ -163,11 +163,19 @@ GameSettings::GameSettings(GameConfig &config,
                           {"consumer-crt", "Consumer CRT"},
                           {"pvm", "PVM"},
                           {"aperture-grille", "Aperture grille"}}});
+    m_options.push_back({"Aspect ratio",
+                         "Video",
+                         "AspectRatio",
+                         {{"auto", "Fill screen"},
+                          {"4:3", "4:3"},
+                          {"16:9", "16:9"},
+                          {"21:9", "21:9"},
+                          {"32:9", "32:9"}}});
     for (auto &option : m_options) {
         if (option.key == "Music" || option.key == "Effects" || option.key == "FieldOfView" ||
             option.key == "DrawDistance" || option.key == "InternalWidth" ||
             option.key == "AntialiasPost" || option.key == "ScaleFilter" ||
-            option.key == "ScreenShader") {
+            option.key == "ScreenShader" || option.key == "AspectRatio") {
             option.restart = false;
         }
     }

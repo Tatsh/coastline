@@ -114,6 +114,13 @@ int main() {
     const auto music = Find(settings, "Music:");
     const auto upscale = Find(settings, "Upscaling:");
     const auto shader = Find(settings, "Screen shader:");
+    const auto aspect = Find(settings, "Aspect ratio:");
+    assert(settings.Label(aspect) == "Aspect ratio: Fill screen");
+    assert(!settings.RequiresRestart(aspect));
+    for (const auto *ratio : {"4:3", "16:9", "21:9", "32:9", "auto"}) {
+        assert(settings.Step(aspect, 1));
+        assert(config.Get("Video", "AspectRatio") == ratio);
+    }
     assert(!settings.RequiresRestart(upscale));
     assert(!settings.RequiresRestart(shader));
     assert(settings.Step(upscale, -1));

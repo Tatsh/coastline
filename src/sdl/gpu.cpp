@@ -7,6 +7,8 @@
 #include <cstring>
 #include <span>
 
+#include "config.h"
+
 #ifdef _WIN32
 #ifndef NOMINMAX
 #define NOMINMAX
@@ -326,31 +328,21 @@ void GpuWindow::UpdateFrameSize() {
     int width = m_options.width;
     int height = m_options.height;
     float aspect = m_options.aspectRatio;
-    if (m_options.lowestFrame) {
-        constexpr int LOWEST_WIDTH = 320;
-        constexpr int LOWEST_HEIGHT = 240;
-        // The shape is the aspect ratio of the settings, or else the shape of the display in the
-        // full screen and 4:3 in a window. From 320 by 240, a wider shape widens the frame and a
-        // narrower one makes it taller.
+    if (m_options.lowestFrame || (m_options.frameWidth > 0 && m_options.frameHeight > 0)) {
         if (aspect <= 0.0f) {
-            aspect = static_cast<float>(LOWEST_WIDTH) / LOWEST_HEIGHT;
             int windowWidth = 0;
             int windowHeight = 0;
             SDL_GetWindowSizeInPixels(m_window.get(), &windowWidth, &windowHeight);
-            if (Fullscreen() && windowWidth > 0 && windowHeight > 0) {
-                aspect = static_cast<float>(windowWidth) / static_cast<float>(windowHeight);
-            }
+            aspect = windowWidth > 0 && windowHeight > 0 ?
+                         static_cast<float>(windowWidth) / static_cast<float>(windowHeight) :
+                         4.0f / 3.0f;
         }
-        width = LOWEST_WIDTH;
-        height = LOWEST_HEIGHT;
-        if (aspect * LOWEST_HEIGHT >= LOWEST_WIDTH) {
-            width = static_cast<int>(LOWEST_HEIGHT * aspect + 0.5f);
-        } else {
-            height = static_cast<int>(LOWEST_WIDTH / aspect + 0.5f);
-        }
-    } else if (m_options.frameWidth > 0 && m_options.frameHeight > 0) {
-        width = m_options.frameWidth;
-        height = m_options.frameHeight;
+        const auto size =
+            ExpandInternalResolution(m_options.lowestFrame ? 320 : m_options.frameWidth,
+                                     m_options.lowestFrame ? 240 : m_options.frameHeight,
+                                     aspect);
+        width = size[0];
+        height = size[1];
     } else {
         if (!m_options.fixedFrame) {
             SDL_GetWindowSizeInPixels(m_window.get(), &width, &height);
@@ -550,6 +542,7 @@ bool GpuWindow::ApplyLiveOptions(const DisplayOptions &options) {
     m_options.frameWidth = options.frameWidth;
     m_options.frameHeight = options.frameHeight;
     m_options.renderScale = options.renderScale;
+    m_options.aspectRatio = options.aspectRatio;
     m_options.postAntialias = options.postAntialias;
     m_options.scaleFilter = options.scaleFilter;
     m_options.screenShader = options.screenShader;
@@ -680,12 +673,17 @@ bool GpuWindow::Present(SDL_GPUCommandBuffer *commands, const std::filesystem::p
         width = static_cast<Uint32>(std::max(windowWidth, 1));
         height = static_cast<Uint32>(std::max(windowHeight, 1));
     }
-    // The frame keeps its shape in a window of another shape, with black bars at the sides or
-    // at the top and bottom.
-    float scale = std::min(static_cast<float>(width) / static_cast<float>(m_frameWidth),
-                           static_cast<float>(height) / static_cast<float>(m_frameHeight));
-    auto fittedWidth = static_cast<Uint32>(static_cast<float>(m_frameWidth) * scale);
-    auto fittedHeight = static_cast<Uint32>(static_cast<float>(m_frameHeight) * scale);
+    // Fit explicit ratios with bars. Fill screen also absorbs internal pixel-rounding differences.
+    auto fittedWidth = width;
+    auto fittedHeight = height;
+    if (m_options.aspectRatio > 0.0f) {
+        const double aspect = m_options.aspectRatio;
+        if (width > height * aspect) {
+            fittedWidth = std::clamp<Uint32>(std::lround(height * aspect), 1, width);
+        } else {
+            fittedHeight = std::clamp<Uint32>(std::lround(width / aspect), 1, height);
+        }
+    }
     if (m_options.screenShader != ScreenShader::None ||
         m_options.scaleFilter == ScaleFilter::EdgeAdaptive) {
         auto *filtered =

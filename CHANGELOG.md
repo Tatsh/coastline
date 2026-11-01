@@ -11,6 +11,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- An Aspect ratio option offers Fill screen (default), 4:3, 16:9, 21:9, and 32:9, applying as Options
+  closes. Internal frames expand to the ratio while preserving selected minimum dimensions and at
+  least 320x240 pixels. Fill screen follows window resizing; explicit ratios display bars as needed.
 - Edge-adaptive spatial upscaling and Consumer CRT, PVM, and Aperture grille screen presets, saved
   through Options and applied as Options closes.
 - Two separate Escape presses within half a second quit from the main menu.

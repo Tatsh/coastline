@@ -163,6 +163,24 @@ void GameConfig::Set(std::string_view section, std::string_view key, std::string
     found->second.insert_or_assign(std::string(key), std::move(value));
 }
 
+std::array<int, 2> ExpandInternalResolution(int width, int height, float aspect) {
+    constexpr int LARGEST = 16384;
+    width = std::clamp(width, 320, LARGEST);
+    height = std::clamp(height, 240, LARGEST);
+    if (std::isfinite(aspect) && aspect > 0) {
+        // Float ratios can exceed an exact pixel boundary by a rounding error.
+        auto pixels = [](double value) {
+            return static_cast<int>(std::min(std::ceil(value * (1.0 - 1e-6)), 16384.0));
+        };
+        if (static_cast<double>(height) * aspect >= width) {
+            width = std::max(width, pixels(static_cast<double>(height) * aspect));
+        } else {
+            height = std::max(height, pixels(static_cast<double>(width) / aspect));
+        }
+    }
+    return {width, height};
+}
+
 std::optional<float> ParseAspectRatio(std::string_view text) {
     text = Trim(text);
     std::string lower(text);

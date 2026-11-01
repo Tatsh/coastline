@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstddef>
 #include <filesystem>
 #include <map>
@@ -107,5 +108,8 @@ private:
  * ratio is not above 0.
  */
 std::optional<float> ParseAspectRatio(std::string_view text);
+
+/** Expand a resolution to an aspect ratio, with minimum dimensions of 320x240. */
+std::array<int, 2> ExpandInternalResolution(int width, int height, float aspect);
 
 } // namespace coastline

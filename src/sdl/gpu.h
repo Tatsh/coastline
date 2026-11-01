@@ -43,8 +43,8 @@ struct DisplayOptions {
         false;           /*!< Disable presentation pacing and the software frame limit. */
     int width = 1280;    /*!< The width of the window and of the exclusive mode in pixels. */
     int height = 720;    /*!< The height of the window and of the exclusive mode in pixels. */
-    int frameWidth = 0;  /*!< The width of the frame in pixels, 0 to follow the window. */
-    int frameHeight = 0; /*!< The height of the frame in pixels, 0 to follow the window. */
+    int frameWidth = 0;  /*!< The minimum internal width, 0 to follow the window. */
+    int frameHeight = 0; /*!< The minimum internal height, 0 to follow the window. */
     /** The pixels of the frame for each pixel of the window, when the frame follows the window. */
     float renderScale = 1.0f;
     ScaleFilter scaleFilter = ScaleFilter::Linear; /*!< How the frame is scaled to the window. */
@@ -53,8 +53,7 @@ struct DisplayOptions {
     /** Whether the frame stays at the width and the height, for captures that are the same on
      * every machine. */
     bool fixedFrame = false;
-    /** Whether the frame is the smallest: 320 by 240 in a window, and with the shape of the
-     * display when the window covers it, at least 320 across and 240 down. */
+    /** Whether the frame expands from 320x240 to the selected aspect ratio. */
     bool lowestFrame = false;
     /** The width over the height the frame keeps in a window and in the full screen, with bars
      * around it, or 0 for the shape of the window. */
