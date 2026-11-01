@@ -111,6 +111,11 @@ void TestFrames() {
     auto path = directory / "state" / "ghost-frames.bin";
     std::filesystem::remove_all(directory);
     Check(!coastline::LoadGhostFrames(path, recording), "a missing file has no frames");
+    std::filesystem::create_directories(path);
+    Check(!coastline::LoadGhostFrames(path, recording), "frames cannot be loaded from a directory");
+    Check(!coastline::SaveGhostFrames(path, recording, frames),
+          "frames cannot be saved to a directory");
+    std::filesystem::remove(path);
     Check(coastline::SaveGhostFrames(path, recording, frames), "the frames are saved");
     auto loaded = coastline::LoadGhostFrames(path, recording);
     Check(loaded && *loaded == frames, "the saved frames load with their recording");

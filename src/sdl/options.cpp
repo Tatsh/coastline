@@ -287,6 +287,47 @@ bool Menus::SaveOptionsNote(int player) const {
     return m_pak.WriteNote(OPTIONS_NOTE, note);
 }
 
+bool Menus::SaveSeasonNote(const MenuProfile &profile) const {
+    auto note = m_pak.ReadNote(SEASON_NOTE).value_or(std::vector<u8>());
+    note.resize(SEASON_NOTE_SIZE);
+    WriteProfile(note, profile);
+    return m_pak.WriteNote(SEASON_NOTE, note);
+}
+
+int Menus::SaveGhostNote() const {
+    const auto recording =
+        std::span<const u8>(m_ghostRecording).first(static_cast<std::size_t>(m_ghostRecordingSize));
+    const auto note = PackGhostNote(recording);
+    if (!note) {
+        return PAK_ERROR_GHOST_TOO_LARGE;
+    }
+    if (!m_pak.WriteNote(GHOST_NOTE, *note) ||
+        !SaveGhostFrames(m_ghostFramesFile, recording, m_ghostFrames)) {
+        return PAK_ERROR_WRITE;
+    }
+    return PAK_ERROR_NONE;
+}
+
+bool Menus::AutoSaveProgress() {
+    if (!m_config || !m_config->GetBoolean("Game", "AutoSave", true)) {
+        return true;
+    }
+    auto checkpoint = m_profile;
+    if (m_gameMode == GameMode::Championship) {
+        AdvanceSeason(checkpoint);
+    }
+    const bool seasonSaved = SaveSeasonNote(checkpoint);
+    const bool recordsSaved = SaveExtraTrackRecords();
+    const bool ghostSaved = m_gameMode != GameMode::TimeAttack || !m_ghostSaveAvailable ||
+                            SaveGhostNote() == PAK_ERROR_NONE;
+    if (!seasonSaved || !recordsSaved || !ghostSaved) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "Race progress could not be saved automatically.");
+        return false;
+    }
+    return true;
+}
+
 void Menus::DrawMessageBox(int x, int y, int width, int height) {
     m_paintShop->DrawRectBorder(x, y, width, height, 3, 0, 0, 0x80, 0x80, 0x80);
 }
@@ -440,10 +481,11 @@ void Menus::OptionsMenuPostDraw(SceneRenderer &renderer, int item) {
         TextStyle style;
         style.size = 10;
         style.align = TextStyle::Align::Center;
+        const bool restart = m_gameSettings->RequiresRestart(item - m_gameSettingsStart);
         m_screen->Text().Draw(renderer,
-                              m_gameSettingsSaveError ?
-                                  "%wwSettings could not be saved." :
-                                  "%wwUp/down saves changes. Restart to apply.",
+                              m_gameSettingsSaveError ? "%wwSettings could not be saved." :
+                              restart ? "%wwUp/down saves changes. Restart to apply." :
+                                        "%wwUp/down saves changes. Takes effect now.",
                               160,
                               90,
                               style,
@@ -829,30 +871,11 @@ bool Menus::LoadSaveLoadNote(int player) {
 
 int Menus::SaveSaveLoadNote(int player) {
     if (m_saveLoadChoice == SAVE_LOAD_SAVE_SEASON) {
-        // The bytes of the note the menus do not read are written back as they are.
-        std::vector<u8> note = m_pakNote.value_or(std::vector<u8>());
-        note.resize(SEASON_NOTE_SIZE);
-        WriteProfile(note, m_profile);
-        return m_pak.WriteNote(SEASON_NOTE, note) ? PAK_ERROR_NONE : PAK_ERROR_WRITE;
+        return SaveSeasonNote(m_profile) && SaveExtraTrackRecords() ? PAK_ERROR_NONE :
+                                                                      PAK_ERROR_WRITE;
     }
     if (m_saveLoadChoice == SAVE_LOAD_SAVE_GHOST) {
-        auto recording = std::span<const u8>(m_ghostRecording)
-                             .first(static_cast<std::size_t>(m_ghostRecordingSize));
-        auto note = PackGhostNote(recording);
-        if (!note) {
-            return PAK_ERROR_GHOST_TOO_LARGE;
-        }
-        if (!m_pak.WriteNote(GHOST_NOTE, *note)) {
-            return PAK_ERROR_WRITE;
-        }
-        // The note is written whether or not the frames are, and a ghost without its frames does
-        // not race.
-        if (!SaveGhostFrames(m_ghostFramesFile, recording, m_ghostFrames)) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "The frames of the ghost car were not written to %s.",
-                         m_ghostFramesFile.string().c_str());
-        }
-        return PAK_ERROR_NONE;
+        return SaveGhostNote();
     }
     return SaveOptionsNote(player) ? PAK_ERROR_NONE : PAK_ERROR_WRITE;
 }

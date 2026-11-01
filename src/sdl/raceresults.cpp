@@ -161,7 +161,6 @@ void Menus::FinishRace(RaceEnd end, const RaceResults &results) {
             m_profile.lapRecords[static_cast<std::size_t>(track)] = results.lapRecords[pc];
             m_profile.raceRecords[static_cast<std::size_t>(track)] = results.raceRecords[pc];
         }
-        SaveExtraTrackRecords();
         // RestoreRaceResultsFromSlots() of the console: the points, the place, and the time of
         // the race of the season.
         if (m_gameMode == GameMode::Championship) {
@@ -174,6 +173,7 @@ void Menus::FinishRace(RaceEnd end, const RaceResults &results) {
         if (m_gameMode == GameMode::TimeAttack) {
             KeepTimeAttackRecording(results.ghostRecording, results.ghostFrames);
         }
+        m_autoSaveFailed = !AutoSaveProgress();
         m_resultsInitialized = false;
         SetCurrentScreen(Screen::RaceResultsScreen);
     } else if (end == RaceEnd::SeasonMenu || end == RaceEnd::Credits) {
@@ -241,18 +241,17 @@ void Menus::StartRaceResults(SceneRenderer &renderer) {
 
 // ProcessSeasonResults() of the console: the next race of the season, or after its last race the
 // next season and its bonuses, or the season again without the points to pass it.
-void Menus::ProcessSeasonResults() {
-    m_seasonMessage.clear();
+std::vector<std::string> Menus::AdvanceSeason(MenuProfile &profile) const {
+    std::vector<std::string> messages;
     if (m_gameMode != GameMode::Championship) {
-        return;
+        return messages;
     }
-    auto bonus = [this](const char *line) {
-        if (!m_seasonMessage.empty()) {
-            m_seasonMessage.emplace_back();
+    auto bonus = [&messages](const char *line) {
+        if (!messages.empty()) {
+            messages.emplace_back();
         }
-        m_seasonMessage.emplace_back(line);
+        messages.emplace_back(line);
     };
-    MenuProfile &profile = m_profile;
     ++profile.round;
     if (profile.round == m_seasons[profile.season].raceCount) {
         profile.round = 0;
@@ -260,7 +259,7 @@ void Menus::ProcessSeasonResults() {
             profile.unlocks = static_cast<u16>(profile.unlocks | m_seasons[profile.season].unlocks);
             ++profile.season;
             if (profile.season == SEASONS) {
-                m_seasonMessage.emplace_back("ALL SEASONS COMPLETED!");
+                messages.emplace_back("ALL SEASONS COMPLETED!");
                 // Winning every race of the last season adds the strip mine.
                 bool perfect = true;
                 for (int race = 0; race < m_seasons[SEASONS - 1].raceCount; ++race) {
@@ -271,13 +270,13 @@ void Menus::ProcessSeasonResults() {
                 if (perfect && (profile.championshipFlags & 1)) {
                     if (!(profile.unlockedTracks & (1 << MIRROR_STRIP_MINE))) {
                         bonus("You Won all races this season!");
-                        m_seasonMessage.emplace_back("Bonus: Mirror Mine Track Added!");
+                        messages.emplace_back("Bonus: Mirror Mine Track Added!");
                         profile.unlockedTracks =
                             static_cast<u16>(profile.unlockedTracks | 1 << MIRROR_STRIP_MINE);
                     }
                 } else if (perfect && !(profile.unlockedTracks & (1 << STRIP_MINE))) {
                     bonus("You Won all races this season!");
-                    m_seasonMessage.emplace_back("Bonus: Mine Track Added!");
+                    messages.emplace_back("Bonus: Mine Track Added!");
                     profile.unlockedTracks =
                         static_cast<u16>(profile.unlockedTracks | 1 << STRIP_MINE);
                 }
@@ -299,13 +298,13 @@ void Menus::ProcessSeasonResults() {
                 profile.season = 0;
                 ++profile.championshipFlags;
             } else {
-                m_seasonMessage.emplace_back("SEASON COMPLETED!");
-                m_seasonMessage.emplace_back();
-                m_seasonMessage.emplace_back("PROGRESS TO THE NEXT SEASON");
+                messages.emplace_back("SEASON COMPLETED!");
+                messages.emplace_back();
+                messages.emplace_back("PROGRESS TO THE NEXT SEASON");
             }
         } else {
-            m_seasonMessage.emplace_back("Sorry, you don't have enough points to");
-            m_seasonMessage.emplace_back("pass this season.  You'll have to try again.");
+            messages.emplace_back("Sorry, you don't have enough points to");
+            messages.emplace_back("pass this season.  You'll have to try again.");
         }
         profile.seasonPoints[profile.season] = 0;
     }
@@ -316,6 +315,11 @@ void Menus::ProcessSeasonResults() {
         static_cast<u16>(profile.unlockedTracks | 1 << (season.races[profile.round][0] + base));
     profile.unlockedWeathers =
         static_cast<u16>(profile.unlockedWeathers | 1 << season.races[profile.round][1]);
+    return messages;
+}
+
+void Menus::ProcessSeasonResults() {
+    m_seasonMessage = AdvanceSeason(m_profile);
 }
 
 void Menus::DrawRaceResultsTitle(SceneRenderer &renderer) {
@@ -337,6 +341,15 @@ void Menus::DrawRaceResultsTitle(SceneRenderer &renderer) {
     style.colors = m_textCustomColors;
     m_screen->Text().Draw(
         renderer, title, WIDTH / 2, HEIGHT / 6 - 2, style, MenuScreen::FlatFor(renderer));
+    if (m_autoSaveFailed) {
+        style.size = 9;
+        m_screen->Text().Draw(renderer,
+                              "%wwAuto-save failed. Save data manually.",
+                              WIDTH / 2,
+                              201,
+                              style,
+                              MenuScreen::FlatFor(renderer));
+    }
 }
 
 // DrawRaceResults() of the console: the place of a player and the times of the laps and the race.
@@ -628,10 +641,11 @@ void Menus::LoadExtraTrackRecords() {
     }
 }
 
-void Menus::SaveExtraTrackRecords() {
+bool Menus::SaveExtraTrackRecords() {
     if (!m_config) {
-        return;
+        return false;
     }
+    GameConfig original = *m_config;
     for (int track = CONSOLE_TRACK_COUNT; track < MENU_TRACK_COUNT; ++track) {
         const auto key = "Track" + std::to_string(EngineTrackForMenu(track));
         const auto index = static_cast<std::size_t>(track);
@@ -639,8 +653,11 @@ void Menus::SaveExtraTrackRecords() {
         m_config->Set("Records", key + "Race", std::to_string(m_profile.raceRecords[index]));
     }
     if (!m_config->Save(m_configPath)) {
+        *m_config = std::move(original);
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Track records could not be saved.");
+        return false;
     }
+    return true;
 }
 
 } // namespace coastline

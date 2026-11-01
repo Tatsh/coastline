@@ -152,6 +152,10 @@ bool SaveGhostFrames(const std::filesystem::path &path,
 
 std::optional<std::vector<u8>> LoadGhostFrames(const std::filesystem::path &path,
                                                std::span<const u8> recording) {
+    std::error_code error;
+    if (!std::filesystem::is_regular_file(path, error)) {
+        return std::nullopt;
+    }
     std::ifstream in(path, std::ios::binary);
     if (!in) {
         return std::nullopt;

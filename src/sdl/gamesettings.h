@@ -9,7 +9,7 @@
 
 namespace coastline {
 
-/** Persistent game settings whose resources are recreated on the next launch. */
+/** Persistent game choices for the options menu. */
 class GameSettings {
 public:
     enum class Adjustment { Unchanged, Saved, SaveFailed };
@@ -20,6 +20,7 @@ public:
         return m_options.size();
     }
     std::string Label(std::size_t index) const;
+    bool RequiresRestart(std::size_t index) const;
     /** Cycle a setting in either direction. Invalid indices and zero steps are ignored. */
     bool Step(std::size_t index, int direction);
     /** Save an adjustment immediately; restore in-memory configuration if writing fails. */
@@ -37,6 +38,8 @@ private:
         std::vector<Choice> choices;
         std::size_t fallback = 0;
         bool numeric = false;
+        bool boolean = false;
+        bool restart = true;
     };
     std::size_t Selected(const Option &option) const;
     GameConfig &m_config;

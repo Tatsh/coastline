@@ -246,7 +246,7 @@ private:
     void LoadSeasonCars(SceneRenderer &renderer);
     bool IsTrackUnlocked(int track) const;
     void LoadExtraTrackRecords();
-    void SaveExtraTrackRecords();
+    bool SaveExtraTrackRecords();
     void ValidateChampionshipProgress();
     void TrackMenuPostDraw(SceneRenderer &renderer, int item);
     void SeasonRecordsPreDraw(SceneRenderer &renderer);
@@ -296,6 +296,7 @@ private:
                                 const std::array<MenuButtons, 2> &players);
     void StartRaceResults(SceneRenderer &renderer);
     void ProcessSeasonResults();
+    std::vector<std::string> AdvanceSeason(MenuProfile &profile) const;
     void DrawRaceResultsTitle(SceneRenderer &renderer);
     void DrawPlayerRaceResults(SceneRenderer &renderer, int player);
     void DrawSeasonResults(SceneRenderer &renderer);
@@ -307,6 +308,9 @@ private:
     void LoadPakData();
     void ApplyVolumeSettings() const;
     bool SaveOptionsNote(int player) const;
+    bool SaveSeasonNote(const MenuProfile &profile) const;
+    int SaveGhostNote() const;
+    bool AutoSaveProgress();
     void DrawMessageBox(int x, int y, int width, int height);
     void SetMessageText();
     bool ProcessPakDataScreen(SceneRenderer &renderer, int dataType);
@@ -451,6 +455,7 @@ private:
     int m_optionsMenuState = 0;
     int m_optionsMenuSelection = 0;
     bool m_optionsChanged = false;
+    bool m_autoSaveFailed = false;
     std::unique_ptr<GameSettings> m_gameSettings;
     int m_gameSettingsStart = 0;
     bool m_gameSettingsSaveError = false;

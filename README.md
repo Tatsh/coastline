@@ -302,6 +302,13 @@ Statistics separate `CPU WORK` (frame work excluding presentation waits and the 
 from `INTERVAL` (measured time between frames, including pacing, displayed to four decimal places).
 CPU work is CPU-side elapsed time, not GPU execution time. FPS remains the measured frame rate.
 
+`Auto-save race progress` in Options saves championship progress, records, and improved Time Attack
+ghosts after each completed race. Autosave is on by default (`AutoSave=1` under `[Game]` in
+`BossRally.ini`). Championship saves resume at the next round. Automatic saves replace the primary
+season and ghost saves. The option takes effect immediately; manual saving remains available with
+autosave off. Preferences save independently of race progress. Failed automatic saves display a
+warning on the results screen.
+
 `--gpu auto|high-performance|low-power` overrides `GpuPreference` for one run. Automatic selection
 retains SDL's default preference for a dedicated GPU. Low-power selection prefers an
 integrated GPU when available. The log records the actual adapter, backend, driver, and preference.

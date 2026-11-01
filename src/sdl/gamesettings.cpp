@@ -91,11 +91,28 @@ GameSettings::GameSettings(GameConfig &config, std::span<const std::filesystem::
                          true});
     m_options.push_back(
         {"Post anti-aliasing", "Video", "AntialiasPost", {{"none", "Off"}, {"fxaa", "FXAA"}}});
+    m_options.push_back({.label = "Auto-save race progress",
+                         .section = "Game",
+                         .key = "AutoSave",
+                         .choices = {{"0", "Off"}, {"1", "On"}},
+                         .fallback = 1,
+                         .boolean = true,
+                         .restart = false});
 }
 
 std::size_t GameSettings::Selected(const Option &option) const {
     const auto stored = m_config.Get(option.section, option.key);
     if (!stored) {
+        return option.fallback;
+    }
+    if (option.boolean) {
+        const bool value = m_config.GetBoolean(
+            option.section, option.key, option.choices[option.fallback].value == "1");
+        for (std::size_t index = 0; index < option.choices.size(); ++index) {
+            if ((option.choices[index].value == "1") == value) {
+                return index;
+            }
+        }
         return option.fallback;
     }
     const float number =
@@ -124,6 +141,10 @@ std::string GameSettings::Label(std::size_t index) const {
         }
     }
     return option.label + ": " + choice.label;
+}
+
+bool GameSettings::RequiresRestart(std::size_t index) const {
+    return index < m_options.size() && m_options[index].restart;
 }
 
 bool GameSettings::Step(std::size_t index, int direction) {

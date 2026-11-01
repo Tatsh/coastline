@@ -90,6 +90,19 @@ int main() {
     assert(config.GetInteger("Video", "Width", 0) == 1280);
 
     const auto music = Find(settings, "Music:");
+    const auto autosave = Find(settings, "Auto-save race progress:");
+    assert(settings.Label(autosave) == "Auto-save race progress: On");
+    assert(!settings.RequiresRestart(autosave));
+    assert(settings.RequiresRestart(fov));
+    assert(!settings.RequiresRestart(settings.Count()));
+    config.Set("Game", "AutoSave", "oFF");
+    assert(settings.Label(autosave) == "Auto-save race progress: Off");
+    assert(settings.Step(autosave, 1));
+    assert(config.GetBoolean("Game", "AutoSave", false));
+    config.Set("Game", "AutoSave", "TrUe");
+    assert(settings.Label(autosave) == "Auto-save race progress: On");
+    assert(settings.Step(autosave, -1));
+    assert(!config.GetBoolean("Game", "AutoSave", true));
     assert(settings.Step(music, 1));
     assert(config.Get("Game", "Music") == "CD");
     assert(!settings.Step(music, 0));

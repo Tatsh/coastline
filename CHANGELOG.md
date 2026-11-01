@@ -11,6 +11,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Auto-save race progress is enabled by default and saves the next Championship checkpoint,
+  records, and improved time-attack ghosts after races. Its On/Off option saves to INI and applies
+  immediately. Manual saves remain available when disabled, and failed automatic saves are reported.
 - Nine Options menu settings for asset packs, regional models and textures, N64 or PC CD music,
   anti-aliasing, anisotropic filtering, texture filtering, field of view, internal resolution scale,
   and FXAA, with spinning gold coin placeholders. Changes save immediately and require a restart;
@@ -88,6 +91,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Fixed a crash when loading ghost frames from a path occupied by a directory.
 - Fixed a crash when pausing or resuming CD music without an available audio device.
 - Fixed inconsistent audio and crashes in sound-effect mixing after recreating the Nintendo 64 music
   player by resetting mixer positions and clearing the audio buffer.
