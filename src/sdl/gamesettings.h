@@ -2,6 +2,7 @@
 
 #include <array>
 #include <filesystem>
+#include <optional>
 #include <span>
 #include <string>
 #include <string_view>
@@ -80,6 +81,8 @@ public:
      * @return Whether the configuration changed.
      */
     bool Step(std::size_t index, int direction);
+    /** End preset browsing; the next preset adjustment captures a new baseline. */
+    void FinishPresetSelection();
     /**
      * Save an adjustment immediately; restore in-memory configuration if writing fails.
      *
@@ -110,6 +113,7 @@ private:
     const GameConfig &ConfigFor(const Option &option) const;
     GameConfig &m_config;
     GameConfig m_overrides;
+    std::optional<GameConfig> m_presetBaseline;
     std::vector<Option> m_options;
     bool m_presetRestart = true;
 };

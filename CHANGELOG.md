@@ -203,6 +203,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Options applies the final preset to settings captured before browsing, preventing intermediate
+  presets from changing preserved music, sound effects, or asset-pack choices.
 - SDL attract demos and races avoid out-of-bounds controller addresses for AI players.
   Sorting callbacks use matching function types on SDL.
 - Performance statistics start below the lap-count HUD band, with clearance adjusted for window

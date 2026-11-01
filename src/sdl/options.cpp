@@ -550,6 +550,7 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
     m_pakInput = first;
     const MenuButtons none;
     bool pakScreen = m_loadConfigurationPending || m_saveConfigurationPending;
+    const auto previousSelection = m_optionsMenuSelection;
     MenuResult result = m_screen->Process(renderer,
                                           seconds,
                                           {pakScreen ? &none : &first, 1},
@@ -559,6 +560,10 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
                                            .isSelectable = {},
                                            .top = {0x00, 0x00, 0x00},
                                            .bottom = {0x80, 0x40, 0x20}});
+    if (m_gameSettings &&
+        (previousSelection != m_optionsMenuSelection || result == MenuResult::Cancelled)) {
+        m_gameSettings->FinishPresetSelection();
+    }
     if (m_optionsMenuSelection >= m_gameSettingsStart && m_gameSettings &&
         (result == MenuResult::Up || result == MenuResult::Down || result == MenuResult::Chosen)) {
         const auto adjustment =

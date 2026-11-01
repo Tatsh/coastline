@@ -271,6 +271,7 @@ int main() {
     GameSettings restoredPreset(persistedPreset, roots);
     assert(restoredPreset.Label(preset) == "Graphics preset: N64");
     assert(presets.RequiresRestart(preset));
+    presets.FinishPresetSelection();
     presetConfig.Set("Video", "AspectRatio", "21:9");
     presetConfig.Set("Game", "Music", "XM");
     assert(presets.Step(preset, 1));
@@ -301,6 +302,7 @@ int main() {
     assert(presets.AdjustAndSave(preset, -1, path) == GameSettings::Adjustment::Saved);
     assert(presets.AdjustAndSave(preset, 1, path) == GameSettings::Adjustment::Saved);
     assert(GameConfig::Load(path).Get("Game", "Music") == "CD");
+    presets.FinishPresetSelection();
     presetConfig.Set("Video", "AspectRatio", "32:9");
     const std::array preservedKeys{
         "TitleScreen", "AutoSave", "SoundEffects", "Music", "Region", "AssetPack"};
@@ -324,6 +326,7 @@ int main() {
     assert(presetConfig.Get("Video", "AnisotropicFiltering") == "16");
     assert(presetConfig.Get("Game", "Effects") == "PC");
     assert(presetConfig.Get("Video", "GraphicsPreset") == "ultra");
+    presets.FinishPresetSelection();
     presetConfig.Set("Video", "AspectRatio", "32:9");
     presetConfig.Set("Video", "GpuPreference", "high-performance");
     assert(presets.Step(preset, 1));
@@ -352,6 +355,25 @@ int main() {
     assert(presets.Label(preset) == "Graphics preset: Custom");
     assert(presetConfig.Get("Game", "AssetPack") == "boss");
     assert(!coastline::ApplyGraphicsPreset(presetConfig, "unknown"));
+
+    auto browsingConfig = GameConfig::Parse("[Game]\nMusic=XM\nSoundEffects=N64\n"
+                                            "AssetPack=custom\n[Video]\nGraphicsPreset=custom\n");
+    GameSettings browsing(browsingConfig, roots);
+    const auto browsingPreset = Find(browsing, "Graphics preset:");
+    for (int selection = 0; selection < 3; ++selection) {
+        assert(browsing.AdjustAndSave(browsingPreset, 1, path) == GameSettings::Adjustment::Saved);
+    }
+    assert(browsingConfig.Get("Video", "GraphicsPreset") == "ultra");
+    auto savedUltra = GameConfig::Load(path);
+    assert(savedUltra.Get("Game", "Music") == "XM");
+    assert(savedUltra.Get("Game", "SoundEffects") == "N64");
+    assert(savedUltra.Get("Game", "AssetPack") == "custom");
+    browsing.FinishPresetSelection();
+    assert(browsing.AdjustAndSave(browsingPreset, -1, path) == GameSettings::Adjustment::Saved);
+    assert(browsingConfig.Get("Game", "Music") == "CD");
+    browsing.FinishPresetSelection();
+    assert(browsing.AdjustAndSave(browsingPreset, 1, path) == GameSettings::Adjustment::Saved);
+    assert(GameConfig::Load(path).Get("Game", "Music") == "CD");
 
     auto legacyConfig = GameConfig::Parse("[Video]\nGraphicsPreset=best\nAntialias=4\n");
     GameSettings legacy(legacyConfig, roots);
