@@ -8,8 +8,11 @@
 #include <filesystem>
 #include <functional>
 #include <map>
+#include <optional>
+#include <span>
 #include <string>
 #include <string_view>
+#include <vector>
 
 namespace coastline {
 
@@ -38,6 +41,15 @@ std::filesystem::path ReleaseDirectory(const std::filesystem::path &assets);
 
 /** @return The recorded region of a converted cartridge, or empty for invalid metadata. */
 std::string CartridgeRegion(const std::filesystem::path &release);
+
+/** @return Regions available from imported default and regional packs across the data roots. */
+std::vector<std::string>
+AvailableCartridgeRegions(std::span<const std::filesystem::path> dataRoots);
+
+/** @return The requested title region, independent of language, or empty when unavailable. */
+std::optional<std::string> TitleScreenRegion(std::string_view choice,
+                                             std::string_view currentRegion,
+                                             std::span<const std::string> available);
 
 /** @return Fonts for @p language, or the imported base fonts when unavailable. */
 std::filesystem::path FontDirectory(const std::filesystem::path &assets, std::string_view language);

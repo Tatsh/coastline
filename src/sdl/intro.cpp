@@ -226,9 +226,12 @@ Intro::Intro(std::unique_ptr<State> state) : m_state(std::move(state)) {
 
 Intro::~Intro() = default;
 
-std::unique_ptr<Intro> Intro::Load(SceneRenderer &renderer, const std::filesystem::path &release) {
+std::unique_ptr<Intro> Intro::Load(SceneRenderer &renderer,
+                                   const std::filesystem::path &release,
+                                   std::string_view selectedRegion) {
     auto state = std::make_unique<State>();
-    const auto region = CartridgeRegion(release);
+    const auto region =
+        selectedRegion.empty() ? CartridgeRegion(release) : std::string(selectedRegion);
     state->usa = region == "usa";
     const bool japanese = region == "jpn";
     if (!state->usa) {

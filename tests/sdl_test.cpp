@@ -339,6 +339,12 @@ void CheckPackAssets() {
     Check(!coastline::PackAssets(data, cache, "default", {}, "../jpn") &&
               !coastline::PackAssets(data, cache, "default", {}, "eur"),
           "unsafe and unavailable regions are refused");
+    const auto user = root / "user";
+    WriteText(user / "assets/eur/tracks/a.png", "user European a");
+    auto european = coastline::PackAssets(data, cache, "default", user, "eur");
+    Check(european && ReadText(*european / "tracks/a.png") == "user European a" &&
+              ReadText(*european / "tracks/b.png") == "default b",
+          "regional packs fall back to the user root above system defaults");
     std::filesystem::remove_all(root);
 }
 
@@ -369,6 +375,30 @@ void CheckLanguage() {
     Check(coastline::FontDirectory(assets, "en-us") == assets / "fonts/usa" &&
               coastline::CartridgeRegion(coastline::ReleaseDirectory(assets)) == "jpn",
           "English fonts do not change the Japanese cartridge");
+    const std::array roots{assets / "system", assets / "user"};
+    WriteText(roots[0] / "assets/default/n64/base/cartridge.ini", "[Cartridge]\nRegion=usa\n");
+    WriteText(roots[1] / "assets/jpn/n64/base/cartridge.ini", "[Cartridge]\nRegion=jpn\n");
+    WriteText(roots[1] / "assets/eur/n64/base/cartridge.ini", "[Cartridge]\nRegion=jpn\n");
+    WriteText(roots[1] / "assets/custom/n64/base/cartridge.ini", "[Cartridge]\nRegion=eur\n");
+    const auto regions = coastline::AvailableCartridgeRegions(roots);
+    Check(regions == std::vector<std::string>{"jpn", "usa"},
+          "region discovery spans roots and rejects mismatched and custom pack metadata");
+    Check(coastline::TitleScreenRegion("regional", "usa", regions) == "usa" &&
+              coastline::TitleScreenRegion("regional", "jpn", regions) == "jpn",
+          "the default title follows the selected converted region");
+    Check(coastline::TitleScreenRegion("japanese", "usa", regions) == "jpn" &&
+              coastline::TitleScreenRegion("international", "jpn", regions) == "usa",
+          "title choices can differ from the selected converted region");
+    Check(coastline::TitleScreenRegion("international", "eur", regions) == "eur",
+          "an active European release retains its international title");
+    const std::vector<std::string> europeanOnly{"eur"};
+    Check(coastline::TitleScreenRegion("international", "jpn", europeanOnly) == "eur",
+          "European assets can supply the international title without USA assets");
+    Check(!coastline::TitleScreenRegion("japanese", "usa", europeanOnly) &&
+              !coastline::TitleScreenRegion("international", "jpn", {}) &&
+              !coastline::TitleScreenRegion("ja", "usa", regions) &&
+              !coastline::TitleScreenRegion("../jpn", "usa", regions),
+          "unavailable and invalid title choices are rejected");
     std::filesystem::remove_all(assets);
 }
 

@@ -9,6 +9,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <memory>
+#include <string_view>
 
 namespace coastline {
 
@@ -35,10 +36,12 @@ public:
      *
      * @param renderer The renderer that draws them.
      * @param release The selected cartridge directory, n64/base of the prepared assets.
+     * @param region The chosen title region, or empty to read converted metadata.
      * @return The splash screens, or nothing with the reason logged.
      */
     static std::unique_ptr<Intro> Load(SceneRenderer &renderer,
-                                       const std::filesystem::path &release);
+                                       const std::filesystem::path &release,
+                                       std::string_view region = {});
     ~Intro();
     Intro(const Intro &) = delete;
     Intro &operator=(const Intro &) = delete;

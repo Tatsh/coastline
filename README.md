@@ -309,6 +309,13 @@ season and ghost saves. The option takes effect immediately; manual saving remai
 autosave off. Preferences save independently of race progress. Failed automatic saves display a
 warning on the results screen.
 
+The `Title screen` option selects the Japanese or international opening independently of language
+and regional models and textures. `[Game] TitleScreen` accepts `regional` (default), `japanese`,
+or `international`; restart to apply. Alternate titles require the corresponding imported ROM
+assets. The menu offers available titles and marks a saved title as missing if its assets are
+absent. If the requested title cannot load, the game logs a warning and uses the selected
+model region's opening. Asset-pack overrides also apply to the chosen intro.
+
 `--gpu auto|high-performance|low-power` overrides `GpuPreference` for one run. Automatic selection
 retains SDL's default preference for a dedicated GPU. Low-power selection prefers an
 integrated GPU when available. The log records the actual adapter, backend, driver, and preference.

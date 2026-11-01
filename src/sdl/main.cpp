@@ -1003,6 +1003,7 @@ int main(int argc, char *argv[]) {
                                               {"Game", "Music", "N64"},
                                               {"Game", "AssetPack", "default"},
                                               {"Game", "Language", "en-us"},
+                                              {"Game", "TitleScreen", "regional"},
                                               {"Controls", "Preset", "Default"},
                                               {"Controls", "Player1", "auto"},
                                               {"Controls", "Player2", "auto"}}) {
@@ -1056,7 +1057,7 @@ int main(int argc, char *argv[]) {
             if (region != baseRegion &&
                 ((region != "usa" && region != "eur" && region != "jpn") ||
                  coastline::CartridgeRegion(coastline::ReleaseDirectory(
-                     coastline::PackDirectory(assetData, region))) != region)) {
+                     coastline::PackDirectory(assetData, region, paths->data))) != region)) {
                 SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
                             "Region %s is unavailable; using %s.",
                             region.c_str(),
@@ -1181,7 +1182,38 @@ int main(int argc, char *argv[]) {
             sceneRenderer = coastline::SceneRenderer::Create(*window);
             if (sceneRenderer) {
                 const std::filesystem::path frontEndRelease = coastline::ReleaseDirectory(assets);
-                intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
+                const auto titleChoice = config.Get("Game", "TitleScreen").value_or("regional");
+                const auto currentTitleRegion = coastline::CartridgeRegion(frontEndRelease);
+                const auto titleRegion = coastline::TitleScreenRegion(
+                    titleChoice,
+                    currentTitleRegion,
+                    coastline::AvailableCartridgeRegions(std::array{assetData, paths->data}));
+                if (titleRegion && *titleRegion != currentTitleRegion) {
+                    auto titleAssets =
+                        coastline::PackAssets(assetData,
+                                              paths->cache,
+                                              pack,
+                                              paths->data,
+                                              *titleRegion == baseRegion ? "" : *titleRegion);
+                    if (titleAssets) {
+                        intro = coastline::Intro::Load(*sceneRenderer,
+                                                       coastline::ReleaseDirectory(*titleAssets),
+                                                       *titleRegion);
+                    }
+                } else if (titleRegion) {
+                    intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease, *titleRegion);
+                }
+                if (!intro) {
+                    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                                "Title screen %s is unavailable; using region %s.",
+                                titleChoice.c_str(),
+                                currentTitleRegion.c_str());
+                    intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
+                } else {
+                    SDL_Log("Title screen %s uses region %s.",
+                            titleChoice.c_str(),
+                            titleRegion->c_str());
+                }
                 mainMenu = coastline::Menus::Load(*sceneRenderer,
                                                   frontEndRelease,
                                                   paths->data,

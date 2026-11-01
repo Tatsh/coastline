@@ -11,6 +11,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- A saved `TitleScreen` option selects `regional` (default), `international`, or `japanese`
+  independently of language and model region, with a restart to apply. Available imported titles
+  support custom-pack overrides; unavailable selections warn and fall back to the regional opening.
+  Regional and title packs also resolve from user fallback directories over system base assets.
 - A Draw distance option from 1x to 4x extends race visibility, including split-screen and
   rear-view mirrors. `Video.DrawDistance` defaults to `1`; changes apply after restarting.
 - Auto-save race progress is enabled by default and saves the next Championship checkpoint,

@@ -270,8 +270,8 @@ std::optional<std::filesystem::path> PackAssets(const std::filesystem::path &dat
     };
     if (!region.empty()) {
         if ((region != "usa" && region != "eur" && region != "jpn") ||
-            !std::filesystem::is_directory(PackDirectory(data, region), error) ||
-            !layer(PackDirectory(data, region), cache / "assets" / "regions" / region)) {
+            !std::filesystem::is_directory(PackDirectory(data, region, fallback), error) ||
+            !layer(PackDirectory(data, region, fallback), cache / "assets" / "regions" / region)) {
             return std::nullopt;
         }
     }
