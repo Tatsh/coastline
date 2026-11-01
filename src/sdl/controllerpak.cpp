@@ -259,7 +259,7 @@ ExportPakImage(const ControllerPak &pak, const std::filesystem::path &file, PakR
     if (!stream) {
         return fmt::format("{} cannot be written.", file.string());
     }
-    SDL_Log("Export complete: %zu notes in %s.", entry, file.string().c_str());
+    SDL_Log("Exported %zu notes to %s.", entry, file.string().c_str());
     return std::nullopt;
 }
 
@@ -320,10 +320,10 @@ std::optional<std::string> ImportPakImage(const ControllerPak &pak,
         if (!pak.WriteNote(*name, bytes)) {
             return fmt::format("The note {} cannot be written.", *name);
         }
-        SDL_Log("Note import complete: %s, %zu bytes.", name->c_str(), bytes.size());
+        SDL_Log("Imported note %s, %zu bytes.", name->c_str(), bytes.size());
         ++imported;
     }
-    SDL_Log("Import complete: %d notes from %s.", imported, file.string().c_str());
+    SDL_Log("Imported %d notes from %s.", imported, file.string().c_str());
     return std::nullopt;
 }
 

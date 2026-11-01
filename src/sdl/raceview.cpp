@@ -1731,7 +1731,7 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
             }
         }
     }
-    SDL_Log("Car loading complete: %zu cars in %llu ms.",
+    SDL_Log("Loaded %zu race cars in %llu ms.",
             state->cars.size(),
             static_cast<unsigned long long>(SDL_GetTicks() - carsStart));
     // The skies of the track in cargfx, as the import converted them.

@@ -1,4 +1,4 @@
-.TH COASTLINE-IMPORT 1 "2026-11-01" "Coastline @CMAKE_PROJECT_VERSION@" "User Commands"
+.TH COASTLINE-IMPORT 1 "@COASTLINE_MAN_DATE@" "Coastline @CMAKE_PROJECT_VERSION@" "User Commands"
 .SH NAME
 coastline-import \- convert game disc and ROM assets for Coastline
 .SH SYNOPSIS

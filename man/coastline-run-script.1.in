@@ -1,13 +1,18 @@
-.TH COASTLINE-RUN-SCRIPT 1 "2026-11-01" "Coastline @CMAKE_PROJECT_VERSION@" "User Commands"
+.TH COASTLINE-RUN-SCRIPT 1 "@COASTLINE_MAN_DATE@" \
+"Coastline @CMAKE_PROJECT_VERSION@" "User Commands"
 .SH NAME
 coastline-run-script \- drive Coastline with scripted input and screenshots
 .SH SYNOPSIS
 .B coastline
 .RI [ options ]
 .B run-script
-.I SCRIPT
+.RI [ SCRIPT ]
 .SH DESCRIPTION
 Each nonblank line of SCRIPT specifies one command.
+When SCRIPT is omitted or is a single hyphen, read standard input until EOF
+before starting the game.
+Interactive input waits for EOF, usually Ctrl-D on Unix or Ctrl-Z followed
+by Enter on Windows.
 A # starts a comment.
 Frame numbers start at 1.
 Commands supplement ordinary input.
@@ -72,6 +77,12 @@ Save the following commands as test.txt.
 Run the script with the following command.
 .nf
 coastline \-\-config ./test.ini run-script test.txt
+.fi
+.PP
+Read a script from standard input.
+.nf
+coastline run-script < test.txt
+cat test.txt | coastline run-script \-
 .fi
 .SH EXIT STATUS
 Zero indicates a normal exit.

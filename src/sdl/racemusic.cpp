@@ -182,7 +182,7 @@ void RaceMusic::Stop() {
     if (--m_users != 0) {
         return;
     }
-    SDL_Log("Stopping race music.");
+    SDL_Log("Stopping the race music.");
     if (m_cdStream != nullptr) {
         SDL_DestroyAudioStream(m_cdStream);
         m_cdStream = nullptr;
@@ -200,6 +200,7 @@ void RaceMusic::Stop() {
     m_cdTrack = FlacTrack();
     m_cdSamples.clear();
     m_active = false;
+    SDL_Log("Stopped the race music.");
 }
 
 void RaceMusic::Shutdown() {
@@ -235,7 +236,7 @@ bool RaceMusic::Play(int track) {
         }
         m_cdSamples.clear();
         m_cdPlaying = track;
-        SDL_Log("Starting CD track %d.", track);
+        SDL_Log("Playing CD music %s.", CdTrackPath(track).string().c_str());
         const bool opened = m_cdTrack.Open(CdTrackPath(track));
         if (m_cdStream != nullptr) {
             SDL_UnlockAudioStream(m_cdStream);
@@ -251,16 +252,15 @@ bool RaceMusic::Play(int track) {
 
 void RaceMusic::PlayModule(int track) {
     int module = m_moduleChoice.value_or(RaceModule(track));
-    std::ifstream file(m_directory / (std::string(USA_MUSIC_MODULES[module].name) + ".xm"),
-                       std::ios::binary);
+    const auto path = m_directory / (std::string(USA_MUSIC_MODULES[module].name) + ".xm");
+    std::ifstream file(path, std::ios::binary);
     if (!file) {
-        SDL_LogWarn(
-            SDL_LOG_CATEGORY_AUDIO, "Cannot read music module %s.", USA_MUSIC_MODULES[module].name);
+        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "Cannot read music module %s.", path.string().c_str());
         return;
     }
     m_module.assign(std::istreambuf_iterator<char>(file), {});
     m_currentModule = module;
-    SDL_Log("Playing music module %s.", USA_MUSIC_MODULES[module].name);
+    SDL_Log("Playing the race music %s.", path.string().c_str());
     Modules()->Play(m_module);
     Modules()->Resume();
 }
@@ -428,7 +428,7 @@ bool FrontEndMusic::Play() {
         }
         if (state.cdStarted && state.cd.Play(FIRST_MUSIC_TRACK)) {
             state.audio.Stop();
-            SDL_Log("Playing menu CD track %d.", FIRST_MUSIC_TRACK);
+            SDL_Log("Playing the menu music.");
             return true;
         }
         state.cd.Shutdown();
@@ -444,7 +444,7 @@ bool FrontEndMusic::Play() {
         }
         state.module.assign(std::istreambuf_iterator<char>(file), {});
     }
-    SDL_Log("Playing menu XM module.");
+    SDL_Log("Playing the menu music.");
     state.audio.Play(state.module);
     state.audio.Resume();
     return true;

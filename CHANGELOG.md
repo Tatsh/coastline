@@ -11,6 +11,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- `run-script` reads standard input when the filename is omitted or `-`, waiting for EOF before
+  running and reporting script errors with `<stdin>:line` diagnostics.
 - Installed manual pages for `coastline`, `coastline-import`, `coastline-import-pak`, and
   `coastline-run-script`.
 - A saved GPU preference option selects automatic, high-performance, or low-power device selection.
@@ -138,7 +140,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Each player's selected camera persists across races and game restarts, excluding automatic finish
   and replay camera changes.
 - Statistics use shorter RAM and VRAM labels.
-- SDL logs use concise present-tense action and status messages.
+- SDL logs use action and status messages with race music filenames.
 - Successful automatic saves skip post-race save prompts, returning Championship to track selection
   and time attack to the main menu. Disabled or failed automatic saves retain manual prompts.
 - Timing statistics update once a second with average CPU work, frame interval, and FPS, retaining
@@ -182,6 +184,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Scripted button, key, and mouse durations avoid integer overflow near maximum frame numbers.
 - Restarting a race from the pause menu restores each player's selected camera.
 - Command-line validation reports errors instead of aborting for missing, empty, or
   excess option values, window dimensions outside 1..16384, unsupported anti-aliasing levels, and

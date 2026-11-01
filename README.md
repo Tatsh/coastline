@@ -81,6 +81,11 @@ VCPKG_ROOT=/path/to/vcpkg cmake --workflow --preset sdl
 cmake --install build/sdl --prefix ~/.local
 ```
 
+Installation includes four manual pages under `${CMAKE_INSTALL_MANDIR}/man1`. CMake inserts the
+version and UTC date at configuration time; `SOURCE_DATE_EPOCH` supplies the date for reproducible
+builds.
+Use `-DCOASTLINE_MAN_DATE=YYYY-MM-DD` to supply an explicit manual-page date.
+
 To build with assets for system installation, supply a Boss Rally disc image and at least one
 Top Gear Rally ROM image. Multiple ROM paths use a semicolon-separated CMake list.
 
@@ -673,8 +678,11 @@ coastline --debug --width 640 --height 480
 
 ### Scripts
 
-`run-script` starts the game at the splash screens, driven by the input of a script file, for
-unattended checks. Each line is a command, `#` starts a comment, and a blank line is ignored. A
+`run-script` starts the game at the splash screens, driven by scripted input, for unattended checks.
+With no filename, or with `-`, the command reads standard input and waits for EOF before starting.
+Use `coastline run-script < check.txt` to redirect a file, or finish interactive input with Ctrl-D
+on Unix or Ctrl-Z followed by Enter on Windows.
+Each line is a command, `#` starts a comment, and a blank line is ignored. A
 line that starts with a frame number, from 1, acts at that frame. These are the commands:
 
 - `autopilot` lets the computer drive the car of the first player in a race. It takes no frame.

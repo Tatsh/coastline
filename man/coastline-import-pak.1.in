@@ -1,4 +1,5 @@
-.TH COASTLINE-IMPORT-PAK 1 "2026-11-01" "Coastline @CMAKE_PROJECT_VERSION@" "User Commands"
+.TH COASTLINE-IMPORT-PAK 1 "@COASTLINE_MAN_DATE@" \
+"Coastline @CMAKE_PROJECT_VERSION@" "User Commands"
 .SH NAME
 coastline-import-pak \- import Top Gear Rally Controller Pak notes
 .SH SYNOPSIS

@@ -328,7 +328,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
         int scriptMod = SDL_KMOD_NONE;
         for (std::size_t i = 0; i < script.keys.size() && i < scriptKeys.size(); ++i) {
             const ScriptKey &key = script.keys[i];
-            if (frame >= key.frame && frame < key.frame + key.frames) {
+            if (frame >= key.frame && frame - key.frame < key.frames) {
                 SDL_Keycode code = SDL_GetKeyFromScancode(scriptKeys[i], SDL_KMOD_NONE, false);
                 scriptMod |= code == SDLK_LSHIFT || code == SDLK_RSHIFT ? SDL_KMOD_SHIFT :
                              code == SDLK_LALT || code == SDLK_RALT     ? SDL_KMOD_ALT :
@@ -364,7 +364,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
             std::optional<std::array<int, 2>> at;
             bool down = false;
             for (const ScriptMouse &move : script.mouseMoves) {
-                if (frame >= move.frame && frame < move.frame + move.frames) {
+                if (frame >= move.frame && frame - move.frame < move.frames) {
                     at = std::array<int, 2>{move.x * GRID_WIDTH / 320, move.y * GRID_HEIGHT / 240};
                     down = move.button == ScriptMouseButton::Left;
                 }

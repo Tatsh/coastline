@@ -48,7 +48,7 @@
 }
 
 void ShutdownGameSession(void) {
-    SDL_Log("Shutting down race session.");
+    SDL_Log("Shutting down the race session.");
     if (g_dwSavedSfxVolume != g_GlobalRallyConfig.dwSfxVolume ||
         g_dwSavedMusicVolume != g_GlobalRallyConfig.dwMusicVolume) {
         g_GlobalRallyConfig.SaveConfigToFile(g_szConfigFilePath);
@@ -56,5 +56,5 @@ void ShutdownGameSession(void) {
     ResetAudioSubsystem();
     ReleaseJoystickDevice();
     FreeCarPaintTextures();
-    SDL_Log("Race session shutdown complete.");
+    SDL_Log("Shut down the race session.");
 }

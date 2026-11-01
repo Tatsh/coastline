@@ -833,7 +833,7 @@ bool GpuWindow::SaveFrame(SDL_GPUCommandBuffer *commands,
     }
     ReleaseGpuTransferBuffer(m_device.get(), buffer);
     if (saved) {
-        SDL_Log("Frame save complete: %s.", path.string().c_str());
+        SDL_Log("Saved frame %s.", path.string().c_str());
     } else {
         SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot save frame: %s", SDL_GetError());
     }

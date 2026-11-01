@@ -813,7 +813,7 @@ int RaceInput::InitializeJoystick() {
     if (m_gamepad == nullptr) {
         return 0;
     }
-    SDL_Log("Gamepad %s drives the race.", SDL_GetGamepadName(m_gamepad));
+    SDL_Log("Using gamepad %s for the race.", SDL_GetGamepadName(m_gamepad));
     // Each action of the Controls section replaces the joystick or the key of its binding with the
     // joystick, an axis for an action an axis drives, as the race engine treats an axis as
     // analogue. The keys of the defaults remain in the alternates.

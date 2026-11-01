@@ -529,17 +529,31 @@ struct LoadedScript {
 };
 
 std::optional<LoadedScript> LoadScript(const std::filesystem::path &path) {
-    std::ifstream file(path, std::ios::binary);
-    if (!file) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot read %s.", path.string().c_str());
+    const std::string source = path == "-" ? "<stdin>" : path.string();
+    std::ifstream file;
+    std::istream *input = &std::cin;
+    if (path != "-") {
+        file.open(path, std::ios::binary);
+        input = &file;
+    }
+    if (!*input) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot read %s.", source.c_str());
         return std::nullopt;
     }
-    const std::string text(std::istreambuf_iterator<char>(file), {});
+    std::string text;
+    std::array<char, 8192> buffer;
+    while (input->read(buffer.data(), buffer.size()) || input->gcount() != 0) {
+        text.append(buffer.data(), static_cast<std::size_t>(input->gcount()));
+    }
+    if (!input->eof() || input->bad()) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot read %s.", source.c_str());
+        return std::nullopt;
+    }
     auto script = coastline::ParseScript(text);
     if (!script) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                      "%s:%d: %s",
-                     path.string().c_str(),
+                     source.c_str(),
                      script.error().line,
                      script.error().message.c_str());
         return std::nullopt;
@@ -560,7 +574,7 @@ std::optional<LoadedScript> LoadScript(const std::filesystem::path &path) {
         if (scancode == SDL_SCANCODE_UNKNOWN) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
                          "%s:%d: Invalid SDL key %s.",
-                         path.string().c_str(),
+                         source.c_str(),
                          key.line,
                          key.name.c_str());
             return std::nullopt;
@@ -910,7 +924,12 @@ int main(int argc, char *argv[]) {
         "a line that starts with a frame number acts at that frame. The commands are autopilot, "
         "screenshot-every N, FRAME press BUTTON [FRAMES [PORT]], FRAME key KEY [FRAMES], FRAME "
         "type TEXT, FRAME mouse X Y [BUTTON [FRAMES]], FRAME screenshot, and FRAME quit.");
-    runScript.add_argument("script").action(RequiredArgumentValue("script")).help("script file");
+    runScript.add_argument("script")
+        .nargs(argparse::nargs_pattern::optional)
+        .default_value(std::string("-"))
+        .action(RequiredArgumentValue("script"))
+        .help("Read a script file, or standard input when omitted or '-'. Wait for EOF before "
+              "starting.");
     parser.add_subparser(runScript);
 
     try {
@@ -1410,7 +1429,7 @@ int main(int argc, char *argv[]) {
                                     currentTitleRegion.c_str());
                         intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
                     } else {
-                        SDL_Log("Title screen %s uses region %s.",
+                        SDL_Log("Using title screen %s from region %s.",
                                 titleChoice.c_str(),
                                 titleRegion->c_str());
                     }
@@ -1567,7 +1586,7 @@ int main(int argc, char *argv[]) {
                         if (press.port != 0) {
                             ports[press.port].connected = true;
                         }
-                        if (frame >= press.frame && frame < press.frame + press.frames) {
+                        if (frame >= press.frame && frame - press.frame < press.frames) {
                             ports[press.port].buttons |= press.button;
                             if (press.port == 0) {
                                 scripted |= press.button;
@@ -1584,7 +1603,7 @@ int main(int argc, char *argv[]) {
                     } else {
                         mouse.buttons = 0;
                         for (const coastline::ScriptMouse &move : commands.mouseMoves) {
-                            if (frame >= move.frame && frame < move.frame + move.frames) {
+                            if (frame >= move.frame && frame - move.frame < move.frames) {
                                 mouse.at = {move.x * 2, move.y * 2};
                                 mouse.buttons = move.button == coastline::ScriptMouseButton::Left ?
                                                     SDL_BUTTON_LMASK :
@@ -1599,7 +1618,7 @@ int main(int argc, char *argv[]) {
                     std::vector<int> scriptedKeys;
                     for (std::size_t i = 0; i < commands.keys.size(); ++i) {
                         const coastline::ScriptKey &key = commands.keys[i];
-                        if (frame >= key.frame && frame < key.frame + key.frames) {
+                        if (frame >= key.frame && frame - key.frame < key.frames) {
                             scriptedKeys.push_back(script.keys[i]);
                         }
                     }
@@ -1948,7 +1967,7 @@ int main(int argc, char *argv[]) {
                             // its own. The first step loads the race and with it the track and the
                             // cars.
                             openRaceData();
-                            SDL_Log("Stopping menu music.");
+                            SDL_Log("Stopping the menu music.");
                             menuMusic.Stop();
                             coastline::RaceSetup setup = mainMenu->ChosenRace();
                             setup.waitForStart = config.GetBoolean("Game", "WaitForStart", false);

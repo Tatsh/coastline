@@ -2149,7 +2149,7 @@ void PaintShop::TransferDecal(DecalCar &car, u8 operation) {
     if (operation == PAINT_TOOL_LOAD) {
         std::copy_n(
             m_pakNote.begin() + static_cast<std::ptrdiff_t>(offset), size, m_undoBuffer.begin());
-        SDL_Log("Loading decal %d...", m_pakDecalIndex);
+        SDL_Log("Loading decal %d.", m_pakDecalIndex);
         const u8 *mask = car.Mask(m_pakDecalIndex);
         if (mask == nullptr) {
             std::memcpy(texels, m_undoBuffer.data(), size);
@@ -2159,7 +2159,7 @@ void PaintShop::TransferDecal(DecalCar &car, u8 operation) {
         m_previewDirty = true;
     } else {
         std::copy_n(texels, size, m_pakNote.begin() + static_cast<std::ptrdiff_t>(offset));
-        SDL_Log("Saving decal %d...", m_pakDecalIndex);
+        SDL_Log("Saving decal %d.", m_pakDecalIndex);
     }
     m_pakFileOffset += m_pakChunkSize;
 }
@@ -2410,14 +2410,14 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
         if (offset + DECAL_PALETTE_BYTES > m_pakNote.size()) {
             m_pakError = PAK_ERROR_TRANSFER;
         } else if (operation == PAINT_TOOL_LOAD) {
-            SDL_Log("Loading color palette...");
+            SDL_Log("Loading color palette.");
             LoadDecalPalette(car, offset);
             if (!inCarSelect) {
                 ConvertPaletteToRgb();
                 SaveDecalUndo();
             }
         } else {
-            SDL_Log("Saving color palette...");
+            SDL_Log("Saving color palette.");
             for (int entry = 0; entry < 16; ++entry) {
                 u16 color = car.PaletteColor(CAR_MATERIAL_PAINT, entry);
                 m_pakNote[offset + static_cast<std::size_t>(entry) * 2] =
@@ -2430,8 +2430,8 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
             }
         }
         if (m_pakError == 0) {
-            SDL_Log(operation == PAINT_TOOL_LOAD ? "Color palette load complete." :
-                                                   "Color palette save complete.");
+            SDL_Log(operation == PAINT_TOOL_LOAD ? "Loaded color palette." :
+                                                   "Saved color palette.");
             m_pakDialogState = PAK_STATE_DONE;
             if (!inCarSelect) {
                 m_decalEditCount = 0;
