@@ -229,7 +229,7 @@ int main() {
     assert(foundUnicode);
 
     auto presetConfig = GameConfig::Parse("[Game]\nLanguage=ja-jp\nRegion=jpn\nMusic=CD\n"
-                                          "SoundEffects=N64\n[Video]\nAspectRatio=21:9\n");
+                                          "SoundEffects=PC\n[Video]\nAspectRatio=21:9\n");
     GameSettings presets(presetConfig, roots);
     const auto preset = Find(presets, "Graphics preset:");
     assert(presets.Label(preset) == "Graphics preset: Custom");
@@ -237,6 +237,7 @@ int main() {
     assert(presetConfig.Get("Video", "GraphicsPreset") == "n64");
     assert(presetConfig.Get("Game", "AssetPack") == "default");
     assert(presetConfig.Get("Game", "Effects") == "N64");
+    assert(presetConfig.Get("Game", "SoundEffects") == "N64");
     assert(presetConfig.Get("Video", "TextureFilter") == "n64");
     assert(presetConfig.Get("Video", "ScreenShader") == "consumer-crt");
     assert(presetConfig.GetInteger("Video", "InternalWidth", 0) == 320);
@@ -262,7 +263,7 @@ int main() {
     assert(presetConfig.GetInteger("Video", "FrameRateLimit", 0) == 60);
     assert(presetConfig.Get("Video", "AspectRatio") == "4:3");
     assert(presetConfig.Get("Game", "Music") == "CD");
-    assert(presetConfig.Get("Game", "SoundEffects") == "N64");
+    assert(presetConfig.Get("Game", "SoundEffects") == "PC");
     assert(presets.AdjustAndSave(Find(presets, "Music:"), -1, path) ==
            GameSettings::Adjustment::Saved);
     assert(GameConfig::Load(path).Get("Game", "Music") == "XM");

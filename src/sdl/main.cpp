@@ -1320,8 +1320,12 @@ int main(int argc, char *argv[]) {
                     packSettings.value("xmMusicGain", coastline::DEFAULT_XM_MUSIC_GAIN));
                 SetWindowIcon(window->Window(), assets);
                 coastline::N64MixerContext mixer;
+                const auto audioPreset = parser.present("--gpu-preset");
+                const bool n64SoundEffects =
+                    audioPreset == "n64" ||
+                    (audioPreset != "br" && config.Get("Game", "SoundEffects") == "N64");
                 coastline::SoundEffects soundEffects(assets,
-                                                     config.Get("Game", "SoundEffects") == "N64" ?
+                                                     n64SoundEffects ?
                                                          coastline::SoundEffects::Source::N64 :
                                                          coastline::SoundEffects::Source::Pc,
                                                      config.GetBoolean("Game", "PlaySFX", true));
