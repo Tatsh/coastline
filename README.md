@@ -330,6 +330,13 @@ with a warning; PC taunts are silent in N64 mode. PC menu feedback uses the PC f
 matched to the native menu level. Intro sounds remain specific to the selected title.
 `PlaySFX=0` silences menu feedback, intro sounds, and race sound effects independently of music.
 
+`Visual effects` selects PC or N64 rendering (`Effects=PC` or `Effects=N64` under `[Game]`,
+with PC as the default). The selection applies after restart. N64 effects use the imported
+smoke and wheel-spray PNGs, with ordered opacity and depth writes for particles. Persistent
+skid marks appear only in PC mode, as in the original releases. Particle motion follows the
+race simulation in both modes. Import ROM images again to add the effect PNGs to older asset
+directories; missing images produce a warning and use PC effects.
+
 `--gpu auto|high-performance|low-power` overrides `GpuPreference` for one run. Automatic selection
 retains SDL's default preference for a dedicated GPU. Low-power selection prefers an
 integrated GPU when available. The log records the actual adapter, backend, driver, and preference.
@@ -472,7 +479,7 @@ coastline import-pak pak.mpk
 Each import records conversion versions in `assets/default/import.ini` and the paths and sizes
 of generated files in `assets/default/import-files.txt`. Missing files, different sizes, old
 conversion versions, an unsupported layout, or an incomplete import prevent the game from starting
-and report the import command. Import old assets again; conversion versions remain 1.
+and report the import command. Import old assets again.
 
 `Region` in `[Game]` selects `usa`, `eur`, or `jpn`, defaulting to the imported base. `--region`
 selects a region for a single run. An unavailable region falls back to the base. Assets are layered

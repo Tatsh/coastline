@@ -14,6 +14,7 @@
 #include <optional>
 #include <span>
 #include <sstream>
+#include <tuple>
 #include <utility>
 
 #include <FLAC/stream_encoder.h>
@@ -974,6 +975,44 @@ std::optional<std::string> ConvertConsoleLights(const std::filesystem::path &des
 
 std::uint32_t Big32(const std::uint8_t *bytes) {
     return static_cast<std::uint32_t>(bytes[0]) << 24 | bytes[1] << 16 | bytes[2] << 8 | bytes[3];
+}
+
+std::optional<std::string> ConvertConsoleEffects(const std::filesystem::path &destination,
+                                                 std::span<const std::uint8_t> segment,
+                                                 RomRelease release) {
+    const std::size_t particle = release == RomRelease::Usa ? 0xA3790 :
+                                 release == RomRelease::Eur ? 0xA5F50 :
+                                                              0xA59F0;
+    const std::size_t spray = release == RomRelease::Usa ? 0xA2978 :
+                              release == RomRelease::Eur ? 0xA5138 :
+                                                           0xA4BD8;
+    const auto directory = destination / "effects";
+    std::error_code error;
+    std::filesystem::create_directories(directory, error);
+    if (error) {
+        return fmt::format("{} cannot be created.", directory.string());
+    }
+    for (const auto &[name, offset, width, height, bits] :
+         {std::tuple{"smoke", particle, 64, 64, 8}, std::tuple{"spray", spray, 32, 64, 4}}) {
+        const auto count = static_cast<std::size_t>(width * height);
+        const auto bytes = count * bits / 8;
+        if (offset > segment.size() || bytes > segment.size() - offset) {
+            return fmt::format("The {} texture is outside the main segment.", name);
+        }
+        std::vector<std::uint8_t> rgba;
+        rgba.reserve(count * 4);
+        for (std::size_t index = 0; index < count; ++index) {
+            const auto packed = segment[offset + index * bits / 8];
+            const auto intensity = static_cast<std::uint8_t>(
+                bits == 8 ? packed : ((packed >> (index % 2 == 0 ? 4 : 0)) & 15) * 17);
+            rgba.insert(rgba.end(), {intensity, intensity, intensity, intensity});
+        }
+        const auto path = directory / (std::string(name) + ".png");
+        if (!SaveRgba8Png(path, rgba, width, height)) {
+            return fmt::format("{} does not read back as its pixels.", path.string());
+        }
+    }
+    return std::nullopt;
 }
 
 // The offset and the name of an asset of the manifest of a cartridge, and the offset of the next
@@ -2339,6 +2378,9 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
         }
     }
     auto segment = std::span<const std::uint8_t>(*bytes).subspan(SEGMENT_ROM, SEGMENT_SIZE);
+    if (auto failure = ConvertConsoleEffects(destination, segment, *release)) {
+        return std::unexpected(*failure);
+    }
     auto assets = ManifestAssets(known.manifest);
     if (auto failure = ConvertConsoleTextures(destination, segment, assets)) {
         return std::unexpected(*failure);

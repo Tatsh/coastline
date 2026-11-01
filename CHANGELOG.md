@@ -11,6 +11,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- A Visual effects option saves `Game.Effects` as `PC` (default) or `N64`, applying after restart.
+  N64 effects use imported smoke and wheel-spray PNGs, ordered particle opacity, and depth writes;
+  persistent skid marks remain exclusive to PC mode. Older assets require ROM reimport for effect
+  images; missing images produce a warning and fall back to PC effects.
 - A Sound effects option saves `Game.SoundEffects` as `PC` (default) or `N64`, applying after restart.
   N64 sounds preserve duration and are normalised against PC levels with a 98% peak limit. Missing
   N64 samples fall back to PC with a warning; taunts without console equivalents are silent.

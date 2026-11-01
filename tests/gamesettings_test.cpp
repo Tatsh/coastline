@@ -94,6 +94,11 @@ int main() {
     assert(settings.Label(sounds) == "Sound effects: PC");
     assert(settings.Step(sounds, 1));
     assert(config.Get("Game", "SoundEffects") == "N64");
+    const auto effects = Find(settings, "Visual effects:");
+    assert(settings.Label(effects) == "Visual effects: PC");
+    assert(settings.RequiresRestart(effects));
+    assert(settings.Step(effects, 1));
+    assert(config.Get("Game", "Effects") == "N64");
     const auto autosave = Find(settings, "Auto-save race progress:");
     assert(settings.Label(autosave) == "Auto-save race progress: On");
     assert(!settings.RequiresRestart(autosave));

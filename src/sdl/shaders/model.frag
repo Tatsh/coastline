@@ -184,6 +184,15 @@ void main() {
         float shown = trunc(fogColor.w * gl_FragCoord.w);
         color.rgb = mix(fogColor.rgb, color.rgb, (shown < 8.0 ? 0.0 : min(shown, 255.0)) / 255.0);
     }
+    if ((combine.w & 8u) != 0u) {
+        const int threshold[16] = int[16](0, 8, 2, 10, 12, 4, 14, 6,
+                                          3, 11, 1, 9, 15, 7, 13, 5);
+        ivec2 pixel = ivec2(gl_FragCoord.xy) & 3;
+        if (color.a <= (float(threshold[pixel.y * 4 + pixel.x]) + 0.5) / 16.0) {
+            discard;
+        }
+        color.a = 1.0;
+    }
     outColor = color;
     if (lightDirection.w > 0.5) {
         outColor.a = coverage;

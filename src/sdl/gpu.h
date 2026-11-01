@@ -31,7 +31,8 @@ enum class PostAntialias {
 
 /** The options of the window and the GPU device. */
 struct DisplayOptions {
-    bool wideMenus = false;             /*!< Fill wide frames with the menu background. */
+    bool n64Effects = false; /*!< Console particle textures, opacity, and skid-mark visibility. */
+    bool wideMenus = false;  /*!< Fill wide frames with the menu background. */
     float fieldOfViewScale = 1.0f;      /*!< Multiplier of the race camera's field of view. */
     float drawDistanceScale = 1.0f;     /*!< Multiplier of the race view and mirror distances. */
     std::string gpuPreference = "auto"; /*!< Automatic, high-performance, or low-power selection. */
@@ -113,6 +114,10 @@ public:
     /** @return The race draw-distance multiplier, from 1 to 4. */
     float DrawDistanceScale() const {
         return m_options.drawDistanceScale;
+    }
+
+    bool N64Effects() const {
+        return m_options.n64Effects;
     }
 
     /** @return The window. */

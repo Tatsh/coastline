@@ -635,6 +635,7 @@ struct SkidMarkBuffer {
 } // namespace
 
 struct RaceView::State {
+    bool n64Effects = false;
     std::filesystem::path defaults;
     std::unique_ptr<RenderModel> track;
     std::unique_ptr<RenderModel> sky;
@@ -951,9 +952,11 @@ void AddBillboards(std::vector<FlatVertex> &quads,
 void DrawTireSmoke(SceneRenderer &renderer,
                    const RenderTexture &smoke,
                    const CameraFrame &camera,
-                   const Matrix4 &viewProjection) {
+                   const Matrix4 &viewProjection,
+                   bool n64Effects) {
     FlatMaterial material;
     material.combine = PARTICLE_COMBINE;
+    material.ditherOpacity = n64Effects;
     if (!g_dwNightMode) {
         std::array<std::uint8_t, 3> dirt{0xA0, 0x88, 0x60};
         std::array<std::uint8_t, 3> paved{0x70, 0x68, 0x58};
@@ -980,9 +983,11 @@ void DrawTireSmoke(SceneRenderer &renderer,
 void DrawExhaust(SceneRenderer &renderer,
                  const RenderTexture &exhaust,
                  const CameraFrame &camera,
-                 const Matrix4 &viewProjection) {
+                 const Matrix4 &viewProjection,
+                 bool n64Effects) {
     FlatMaterial material;
     material.combine = PARTICLE_COMBINE;
+    material.ditherOpacity = n64Effects;
     if (g_dwSnowMode) {
         std::vector<FlatVertex> quads;
         AddBillboards(quads, g_wRenderExhaustParticleListHead, {0xE0, 0xE0, 0xFF}, camera);
@@ -1754,6 +1759,21 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     state->particleTexture = RenderTexture::FromTexels(renderer, 64, 64, puff, true, true);
     state->sprayTexture = RenderTexture::FromTexels(
         renderer, 32, 64, Intensities4(g_abHudTexture32x64Data), true, true);
+    if (renderer.Window().N64Effects()) {
+        const auto effects = defaults / "n64/base/effects";
+        auto smoke = RenderTexture::Load(renderer, effects / "smoke.png", true, true);
+        auto spray = RenderTexture::Load(renderer, effects / "spray.png", true, true);
+        if (smoke && spray) {
+            state->particleTexture = std::move(smoke);
+            state->sprayTexture = std::move(spray);
+            state->n64Effects = true;
+            SDL_Log("Visual effects use N64 textures and dithered particles without skid marks.");
+        } else {
+            SDL_LogWarn(SDL_LOG_CATEGORY_RENDER,
+                        "N64 effect images are unavailable; using PC effects. Import the ROM "
+                        "image again.");
+        }
+    }
     state->dayHighlight = RenderTexture::FromTexels(
         renderer, 64, 64, Intensities4(g_abFallbackEnvTextureData), true, true);
     state->nightHighlight = RenderTexture::FromTexels(
@@ -2112,7 +2132,7 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     });
     // DrawTrackShadows() lays the skid marks of the cars of each drawn frame, and each view draws
     // them.
-    if (snapshot != nullptr) {
+    if (snapshot != nullptr && !s.n64Effects) {
         RecordFrameSkidMarks(snapshot->GetVehicles());
     }
     // The puffs of the snapshot the frame draws.
@@ -2329,7 +2349,7 @@ void RaceView::DrawView(SceneRenderer &renderer,
     auto drawCarsAndSmoke = [&]() {
         drawCars(false);
         if (snapshot != nullptr && !(carsAfterTrack && mirror)) {
-            DrawTireSmoke(renderer, *s.particleTexture, *camera, viewProjection);
+            DrawTireSmoke(renderer, *s.particleTexture, *camera, viewProjection, s.n64Effects);
         }
     };
     if (!carsAfterTrack) {
@@ -2354,7 +2374,7 @@ void RaceView::DrawView(SceneRenderer &renderer,
                                trackLighting,
                                std::move(instances.translucent),
                                std::move(shadows));
-    if (snapshot != nullptr && g_GlobalRallyConfig.bSkidMarksSelection) {
+    if (snapshot != nullptr && !s.n64Effects && g_GlobalRallyConfig.bSkidMarksSelection) {
         DrawSkidMarks(renderer,
                       s.skidMarks,
                       ShadowColor(vehicle),
@@ -2402,7 +2422,11 @@ void RaceView::DrawView(SceneRenderer &renderer,
     // championship has more racers than vehicles, and only the vehicles have spray. The mirror
     // draws neither.
     if (snapshot != nullptr && !mirror) {
-        DrawExhaust(renderer, *s.shadowTexture, *camera, viewProjection);
+        DrawExhaust(renderer,
+                    s.n64Effects ? *s.particleTexture : *s.shadowTexture,
+                    *camera,
+                    viewProjection,
+                    s.n64Effects);
         for (int index = 0; index < g_dwNumActiveVehicles; ++index) {
             DrawTireSpray(renderer, *s.sprayTexture, vehicles[index], viewProjection);
         }

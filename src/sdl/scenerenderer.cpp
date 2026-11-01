@@ -2650,8 +2650,12 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         if (quad.buffer != nullptr ? !bufferedReady : s.flatVertices == nullptr || s.flat.empty()) {
             continue;
         }
-        SDL_GPUGraphicsPipeline *pipeline =
-            s.Pipeline({true, true, quad.depthTest ? DepthMode::Test : DepthMode::None});
+        const bool dither = quad.material.ditherOpacity;
+        SDL_GPUGraphicsPipeline *pipeline = s.Pipeline({!dither,
+                                                        true,
+                                                        !quad.depthTest ? DepthMode::None :
+                                                        dither          ? DepthMode::TestAndWrite :
+                                                                          DepthMode::Test});
         if (pipeline == nullptr) {
             continue;
         }
@@ -2671,7 +2675,8 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
              material.combine[1],
              material.twoCycle ? 1u : 0u,
              (material.texel0 != nullptr && material.texel0->m_threePoint ? 1u : 0u) |
-                 (material.texel1 != nullptr && material.texel1->m_threePoint ? 2u : 0u)},
+                 (material.texel1 != nullptr && material.texel1->m_threePoint ? 2u : 0u) |
+                 (dither ? 8u : 0u)},
             {material.prim[0], material.prim[1], material.prim[2], material.prim[3]},
             {material.env[0], material.env[1], material.env[2], material.env[3]},
             {1.0f, 1.0f, 1.0f, 1.0f},

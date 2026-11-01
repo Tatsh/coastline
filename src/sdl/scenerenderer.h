@@ -423,7 +423,8 @@ struct FlatMaterial {
     std::array<float, 4> env{1.0f, 1.0f, 1.0f, 1.0f};  /*!< The environment colour. */
     /** The scale of u and v, then their offset, from the texels of texel0 to those of texel1. */
     std::array<float, 4> texel1Transform{1.0f, 1.0f, 0.0f, 0.0f};
-    float alphaCut = -1.0f; /*!< The alpha below which nothing is drawn, below 0 for none. */
+    float alphaCut = -1.0f;     /*!< The alpha below which nothing is drawn, below 0 for none. */
+    bool ditherOpacity = false; /*!< Ordered opacity with depth writes instead of blending. */
 };
 
 /**
