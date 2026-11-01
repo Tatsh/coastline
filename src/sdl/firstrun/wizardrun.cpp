@@ -117,7 +117,14 @@ SetupRun RunSetupWizard(GpuWindow &window,
     } else if (!services.buildRevision.starts_with('v')) {
         services.buildRevision.resize(std::min<std::size_t>(7, services.buildRevision.size()));
     }
-    services.buildDate = __DATE__;
+    services.buildDate = COASTLINE_BUILD_TIMESTAMP;
+    services.openUrl = [](const std::string &url) {
+        if (!SDL_OpenURL(url.c_str())) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                        "The browser could not be opened. %s",
+                        SDL_GetError());
+        }
+    };
     services.checkDisc = CheckDisc;
     services.identifyCartridge = IdentifyCartridge;
     services.scanArchive =
@@ -295,6 +302,11 @@ SetupRun RunSetupWizard(GpuWindow &window,
                 if (script.mouseMoves.empty()) {
                     wizard.Handle(mouseEvent(WizardEvent::Type::MouseMove,
                                              gridPoint(sdlEvent.motion.x, sdlEvent.motion.y)));
+                }
+                break;
+            case SDL_EVENT_WINDOW_MOUSE_LEAVE:
+                if (script.mouseMoves.empty()) {
+                    wizard.Handle(mouseEvent(WizardEvent::Type::MouseMove, {-1, -1}));
                 }
                 break;
             case SDL_EVENT_MOUSE_WHEEL:

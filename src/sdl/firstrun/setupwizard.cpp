@@ -1118,6 +1118,23 @@ void SetupWizard::HandleListText(const std::string &text, std::uint64_t millisec
 void SetupWizard::HandleMouse(const WizardEvent &event) {
     const int column = event.x / CELL_WIDTH;
     const int row = event.y / CELL_HEIGHT;
+    const int repositoryWidth = static_cast<int>(REPOSITORY_URL.size());
+    const int repositoryColumn = (GRID_COLUMNS - repositoryWidth) / 2;
+    m_repositoryHovered = event.x >= 0 && event.y >= 0 && row == GRID_ROWS - 3 &&
+                          column >= repositoryColumn && column < repositoryColumn + repositoryWidth;
+    if (event.type == WizardEvent::Type::MouseDown) {
+        m_repositoryPressed = m_repositoryHovered;
+        if (m_repositoryPressed) {
+            m_selecting.reset();
+            return;
+        }
+    } else if (event.type == WizardEvent::Type::MouseUp) {
+        const bool activate = m_repositoryPressed && m_repositoryHovered;
+        m_repositoryPressed = false;
+        if (activate && m_services.openUrl) {
+            m_services.openUrl(std::string(REPOSITORY_URL));
+        }
+    }
     // The scroll bar of the list: its arrows, its track, and its thumb.
     const int bar = LIST_COLUMN + LIST_WIDTH - 1;
     const int count = m_browser ? static_cast<int>(m_browser->entries.size()) : 0;
@@ -1583,12 +1600,15 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
         status =
             m_message->question ? " <Alt+Y=Yes>  <Alt+N=No>  <Esc=No>" : " <Enter=OK>  <Esc=OK>";
     }
-    const std::string repository = "https://github.com/Tatsh/coastline";
-    grid.WriteUtf8(
-        (GRID_COLUMNS - LabelWidth(repository)) / 2, GRID_ROWS - 3, repository, LightGray, Blue);
+    const int repositoryWidth = static_cast<int>(REPOSITORY_URL.size());
+    const int repositoryColumn = (GRID_COLUMNS - repositoryWidth) / 2;
+    grid.WriteUtf8(repositoryColumn, GRID_ROWS - 3, REPOSITORY_URL, LightGray, Blue);
+    for (int column = repositoryColumn; column < repositoryColumn + repositoryWidth; ++column) {
+        grid.At(column, GRID_ROWS - 3).underline = m_repositoryHovered;
+    }
     const std::string build =
         (m_services.buildRevision.empty() ? "Development build" : m_services.buildRevision) +
-        " | Built " + (m_services.buildDate.empty() ? __DATE__ : m_services.buildDate);
+        (m_services.buildDate.empty() ? "" : " | Built " + m_services.buildDate);
     grid.WriteUtf8(std::max(0, (GRID_COLUMNS - LabelWidth(build)) / 2),
                    GRID_ROWS - 2,
                    build,

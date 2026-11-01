@@ -65,10 +65,11 @@ struct WizardServices {
         scanArchive;
     /** Import files on a separate thread and return a message on failure. */
     std::function<std::optional<std::string>(const WizardImport &, const WizardProgress &)> import;
+    std::function<void(const std::string &)> openUrl;
     std::filesystem::path home;          /*!< The directory the file browser starts in at first. */
     std::filesystem::path lastDirectory; /*!< The directory last browsed, or empty. */
     std::string buildRevision;           /*!< A version tag or short source revision. */
-    std::string buildDate;               /*!< The date the executable was built. */
+    std::string buildDate;               /*!< The ISO 8601 UTC timestamp of the build. */
 };
 
 /** The images found during a directory search, indexed by detected release. */
@@ -292,6 +293,9 @@ public:
     const std::filesystem::path &LastDirectory() const;
 
 private:
+    static constexpr std::string_view REPOSITORY_URL = "https://github.com/Tatsh/coastline";
+    bool m_repositoryHovered = false;
+    bool m_repositoryPressed = false;
     struct TextField {
         std::u32string text;
         std::size_t caret = 0;

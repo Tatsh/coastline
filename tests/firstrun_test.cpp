@@ -72,7 +72,7 @@ WizardServices Services(const std::filesystem::path &root) {
     WizardServices services;
     services.home = root;
     services.buildRevision = "v1.2.3";
-    services.buildDate = "2026-11-01";
+    services.buildDate = "2026-11-01T14:32:05Z";
     services.checkDisc = [](const std::filesystem::path &path) {
         return path.stem() == "disc" ? std::optional<std::string>{} :
                                        std::optional<std::string>{"Not Boss Rally"};
@@ -148,6 +148,45 @@ void TestCombinations(const std::filesystem::path &root) {
     Check(duplicate.Screen() == WizardScreen::Done, "Tilde paths must import successfully.");
 }
 
+void TestRepositoryLink(const std::filesystem::path &root) {
+    auto services = Services(root);
+    int opened = 0;
+    services.openUrl = [&](const std::string &url) {
+        Check(url == "https://github.com/Tatsh/coastline",
+              "The repository link must open its URI.");
+        ++opened;
+    };
+    SetupWizard wizard(std::move(services));
+    WizardEvent event;
+    event.x = GRID_COLUMNS * CELL_WIDTH / 2;
+    event.y = (GRID_ROWS - 3) * CELL_HEIGHT + 4;
+    event.type = WizardEvent::Type::MouseMove;
+    wizard.Handle(event);
+    TextGrid grid;
+    wizard.Draw(grid, 0.0);
+    Check(grid.At(GRID_COLUMNS / 2, GRID_ROWS - 3).underline,
+          "Hovering the repository link must underline it.");
+    event.type = WizardEvent::Type::MouseUp;
+    wizard.Handle(event);
+    Check(opened == 0, "Releasing an unrelated click must not open the browser.");
+    event.type = WizardEvent::Type::MouseDown;
+    wizard.Handle(event);
+    event.type = WizardEvent::Type::MouseUp;
+    wizard.Handle(event);
+    Check(opened == 1, "Clicking the repository link must open the browser once.");
+    event.type = WizardEvent::Type::MouseDown;
+    wizard.Handle(event);
+    event.x = 0;
+    event.type = WizardEvent::Type::MouseMove;
+    wizard.Handle(event);
+    event.type = WizardEvent::Type::MouseUp;
+    wizard.Handle(event);
+    wizard.Draw(grid, 0.0);
+    Check(opened == 1, "Dragging outside the link must cancel browser activation.");
+    Check(!grid.At(GRID_COLUMNS / 2, GRID_ROWS - 3).underline,
+          "Moving outside the repository link must remove its underline.");
+}
+
 void TestEditing(const std::filesystem::path &root) {
     SetupWizard wizard(Services(root));
     Type(wizard, "~/disc.iso");
@@ -167,7 +206,7 @@ void TestEditing(const std::filesystem::path &root) {
     };
     Check(rowText(GRID_ROWS - 3).contains("https://github.com/Tatsh/coastline"),
           "Setup must display its repository URI.");
-    Check(rowText(GRID_ROWS - 2).contains("v1.2.3 | Built 2026-11-01"),
+    Check(rowText(GRID_ROWS - 2).contains("v1.2.3 | Built 2026-11-01T14:32:05Z"),
           "Setup must display the build revision and date.");
     const auto controls = wizard.Controls();
     const auto field = std::ranges::find(controls, Rom1Text, &WizardControl::id);
@@ -367,6 +406,7 @@ int main() {
             std::ofstream(root / name).put('x');
         }
         TestCombinations(root);
+        TestRepositoryLink(root);
         TestEditing(root);
         TestBrowser(root);
         TestSearch(root);

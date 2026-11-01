@@ -74,6 +74,7 @@ struct TextCell {
     std::uint8_t glyph = ' ';                  /*!< The character, in code page 437. */
     CgaColor foreground = CgaColor::LightGray; /*!< The colour of the character. */
     CgaColor background = CgaColor::Blue;      /*!< The colour behind the character. */
+    bool underline = false;
 };
 
 /**

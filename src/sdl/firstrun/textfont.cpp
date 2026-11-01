@@ -174,6 +174,18 @@ void TextFont::Draw(SceneRenderer &renderer,
             if (cell.glyph != ' ') {
                 addGlyph(column, row, cell.glyph, cell.foreground);
             }
+            if (cell.underline) {
+                AddQuad(backgrounds,
+                        static_cast<float>(column * CELL_WIDTH),
+                        static_cast<float>((row + 1) * CELL_HEIGHT - 2),
+                        CELL_WIDTH,
+                        1.0f,
+                        0.0f,
+                        0.0f,
+                        1.0f,
+                        1.0f,
+                        ColorOf(cell.foreground));
+            }
         }
     }
     if (grid.cursor) {

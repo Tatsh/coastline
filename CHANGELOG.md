@@ -102,7 +102,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Title screen choices use USA/Europe and Japan labels without duplicate regional choices; existing
   `regional` settings still follow the selected model region.
-- Setup displays the repository URL, revision or version, and build date in its footer. The Done
+- Setup displays the repository URL, revision or version, and ISO 8601 UTC build date and time in
+  its footer. The URL is underlined on hover and opens the default browser when clicked. The Done
   screen no longer advertises Escape as Back.
 - Gamewin is excluded from regular track selection and remains available for the after-season race.
 - Pure PC car previews use PC models and textures, including Type CE, and apply custom decals to
