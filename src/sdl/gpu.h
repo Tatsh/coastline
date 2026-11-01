@@ -12,8 +12,9 @@ namespace coastline {
 
 /** How the frame is scaled to the window. */
 enum class ScaleFilter {
-    Linear,  /*!< Each pixel of the window blends the nearest four of the frame. */
-    Nearest, /*!< Each pixel of the window takes the nearest pixel of the frame. */
+    Linear,       /*!< Each pixel of the window blends the nearest four of the frame. */
+    Nearest,      /*!< Each pixel of the window takes the nearest pixel of the frame. */
+    EdgeAdaptive, /*!< A directional reconstruction filter follows edges of the frame. */
 };
 
 /** How the textures the game filters are filtered. */
@@ -28,6 +29,8 @@ enum class PostAntialias {
     None, /*!< The frame as the scene drew it. */
     Fxaa, /*!< Fast approximate anti-aliasing blends along the edges it finds. */
 };
+
+enum class ScreenShader { None, ConsumerCrt, Pvm, ApertureGrille };
 
 /** The options of the window and the GPU device. */
 struct DisplayOptions {
@@ -46,6 +49,7 @@ struct DisplayOptions {
     float renderScale = 1.0f;
     ScaleFilter scaleFilter = ScaleFilter::Linear; /*!< How the frame is scaled to the window. */
     PostAntialias postAntialias = PostAntialias::None; /*!< The anti-aliasing of the frame. */
+    ScreenShader screenShader = ScreenShader::None;    /*!< The display simulation after scaling. */
     /** Whether the frame stays at the width and the height, for captures that are the same on
      * every machine. */
     bool fixedFrame = false;
@@ -290,10 +294,17 @@ private:
     GpuWindow() = default;
     bool SaveFrame(SDL_GPUCommandBuffer *commands,
                    SDL_GPUTexture *source,
+                   Uint32 width,
+                   Uint32 height,
                    const std::filesystem::path &path);
     bool CreateFrame(Uint32 width, Uint32 height);
     bool CreatePostPasses();
     SDL_GPUTexture *AntialiasFrame(SDL_GPUCommandBuffer *commands);
+    bool CreatePresentationPass();
+    SDL_GPUTexture *FilterFrame(SDL_GPUCommandBuffer *commands,
+                                SDL_GPUTexture *source,
+                                Uint32 width,
+                                Uint32 height);
 
     std::unordered_map<const void *, Uint64> m_gpuMemoryObjects;
     Uint64 m_gpuMemoryBytes = 0;
@@ -305,6 +316,11 @@ private:
     SDL_GPUTexture *m_antialiased = nullptr;
     SDL_GPUGraphicsPipeline *m_antialiasPipeline = nullptr;
     SDL_GPUSampler *m_postSampler = nullptr;
+    SDL_GPUTexture *m_filtered = nullptr;
+    SDL_GPUGraphicsPipeline *m_presentationPipeline = nullptr;
+    SDL_GPUSampler *m_presentationSampler = nullptr;
+    Uint32 m_filteredWidth = 0;
+    Uint32 m_filteredHeight = 0;
     Uint32 m_frameWidth = 0;
     Uint32 m_frameHeight = 0;
     DisplayOptions m_options;

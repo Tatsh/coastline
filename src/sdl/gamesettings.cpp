@@ -151,10 +151,23 @@ GameSettings::GameSettings(GameConfig &config,
         title.choices.push_back({"japanese", "Japan missing"});
     }
     m_options.push_back(std::move(title));
+    m_options.push_back(
+        {"Upscaling",
+         "Video",
+         "ScaleFilter",
+         {{"linear", "Bilinear"}, {"nearest", "Nearest"}, {"edge-adaptive", "Edge adaptive"}}});
+    m_options.push_back({"Screen shader",
+                         "Video",
+                         "ScreenShader",
+                         {{"none", "Off"},
+                          {"consumer-crt", "Consumer CRT"},
+                          {"pvm", "PVM"},
+                          {"aperture-grille", "Aperture grille"}}});
     for (auto &option : m_options) {
         if (option.key == "Music" || option.key == "Effects" || option.key == "FieldOfView" ||
             option.key == "DrawDistance" || option.key == "InternalWidth" ||
-            option.key == "AntialiasPost") {
+            option.key == "AntialiasPost" || option.key == "ScaleFilter" ||
+            option.key == "ScreenShader") {
             option.restart = false;
         }
     }

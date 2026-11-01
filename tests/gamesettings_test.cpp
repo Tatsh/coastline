@@ -112,6 +112,18 @@ int main() {
     assert(config.GetInteger("Video", "Width", 0) == 1280);
 
     const auto music = Find(settings, "Music:");
+    const auto upscale = Find(settings, "Upscaling:");
+    const auto shader = Find(settings, "Screen shader:");
+    assert(!settings.RequiresRestart(upscale));
+    assert(!settings.RequiresRestart(shader));
+    assert(settings.Step(upscale, -1));
+    assert(config.Get("Video", "ScaleFilter") == "edge-adaptive");
+    assert(settings.Step(shader, 1));
+    assert(config.Get("Video", "ScreenShader") == "consumer-crt");
+    assert(settings.Step(shader, 1));
+    assert(settings.Label(shader) == "Screen shader: PVM");
+    assert(settings.Step(shader, 1));
+    assert(settings.Label(shader) == "Screen shader: Aperture grille");
     const auto sounds = Find(settings, "Sound effects:");
     assert(settings.Label(sounds) == "Sound effects: PC");
     assert(settings.Step(sounds, 1));

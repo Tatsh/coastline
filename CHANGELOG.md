@@ -11,6 +11,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Edge-adaptive spatial upscaling and Consumer CRT, PVM, and Aperture grille screen presets, saved
+  through Options and applied as Options closes.
 - Two separate Escape presses within half a second quit from the main menu.
 - PJ, TR, and MN cars are selectable outside Championship in USA and EUR regions, with Japanese
   menu statistics and matching race identities. Previews prefer imported Japanese models and fall

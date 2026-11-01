@@ -133,6 +133,16 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     }
     if (config.Get("Video", "ScaleFilter") == "nearest") {
         options.scaleFilter = coastline::ScaleFilter::Nearest;
+    } else if (config.Get("Video", "ScaleFilter") == "edge-adaptive") {
+        options.scaleFilter = coastline::ScaleFilter::EdgeAdaptive;
+    }
+    const auto screenShader = config.Get("Video", "ScreenShader");
+    if (screenShader == "consumer-crt" || screenShader == "crt") {
+        options.screenShader = coastline::ScreenShader::ConsumerCrt;
+    } else if (screenShader == "pvm") {
+        options.screenShader = coastline::ScreenShader::Pvm;
+    } else if (screenShader == "aperture-grille") {
+        options.screenShader = coastline::ScreenShader::ApertureGrille;
     }
     auto post = config.Get("Video", "AntialiasPost");
     if (post == "fxaa") {
@@ -172,6 +182,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
             options.renderScale = 1.0f;
             options.scaleFilter = coastline::ScaleFilter::Linear;
             options.postAntialias = coastline::PostAntialias::None;
+            options.screenShader = coastline::ScreenShader::None;
             options.drawDistanceScale = 4.0f;
             options.lowestFrame = false;
             options.antialias = 8;
@@ -189,6 +200,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
             options.antialias = 1;
             options.alphaToCoverage = false;
             options.postAntialias = coastline::PostAntialias::None;
+            options.screenShader = coastline::ScreenShader::None;
             options.anisotropy = 0;
             options.textureFilter = coastline::TextureFilter::Nearest;
             options.lowestFrame = true;
@@ -986,6 +998,7 @@ int main(int argc, char *argv[]) {
                                               {"Video", "InternalHeight", "0"},
                                               {"Video", "RenderScale", "1"},
                                               {"Video", "ScaleFilter", "linear"},
+                                              {"Video", "ScreenShader", "none"},
                                               {"Video", "FieldOfView", "1"},
                                               {"Video", "DrawDistance", "1"},
                                               {"Video", "TextureFilter", "modern"},
@@ -1451,7 +1464,7 @@ int main(int argc, char *argv[]) {
                         if (frameRateText) {
                             DrawOverlayLine(*sceneRenderer,
                                             *frameRateText,
-                                            reboot ? "Reinitializing game... Returning to logos." :
+                                            reboot ? "Reinitializing game... Restarts the game." :
                                                      "Applying settings...",
                                             220,
                                             320,

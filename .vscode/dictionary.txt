@@ -476,6 +476,7 @@ foxundermoon
 fpart
 fpcsr
 fpshud
+fract
 frag
 framebegin
 frameclear
@@ -1086,6 +1087,7 @@ savd
 savestate
 sawkins
 sbclaude
+scanlines
 scenerenderer
 scheduledevent
 schemafile
@@ -1153,6 +1155,7 @@ sidet
 signfailed
 siint
 simgr
+sinc
 sinf
 sioned
 skybox
@@ -1172,6 +1175,7 @@ slotvehicle
 slti
 sltu
 smokepos
+smoothstep
 snapcore
 snapcraft
 snapmodule

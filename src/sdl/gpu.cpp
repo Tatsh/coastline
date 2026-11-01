@@ -18,6 +18,8 @@
 #include "shaders/fxaa_frag_spirv.h"
 #include "shaders/post_vert_msl.h"
 #include "shaders/post_vert_spirv.h"
+#include "shaders/presentation_frag_msl.h"
+#include "shaders/presentation_frag_spirv.h"
 
 namespace coastline {
 
@@ -159,6 +161,11 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
     result->SetPresentMode(options.presentMode);
     result->m_antialias = options.antialias;
     if (options.postAntialias != PostAntialias::None && !result->CreatePostPasses()) {
+        return nullptr;
+    }
+    if ((options.screenShader != ScreenShader::None ||
+         options.scaleFilter == ScaleFilter::EdgeAdaptive) &&
+        !result->CreatePresentationPass()) {
         return nullptr;
     }
     result->UpdateFrameSize();
@@ -427,7 +434,112 @@ SDL_GPUTexture *GpuWindow::AntialiasFrame(SDL_GPUCommandBuffer *commands) {
     return m_antialiased;
 }
 
+bool GpuWindow::CreatePresentationPass() {
+    auto *device = m_device.get();
+    auto *vertex =
+        CreatePostShader(device, SDL_GPU_SHADERSTAGE_VERTEX, 0, 0, POST_VERT_SPIRV, POST_VERT_MSL);
+    auto *fragment = CreatePostShader(
+        device, SDL_GPU_SHADERSTAGE_FRAGMENT, 1, 1, PRESENTATION_FRAG_SPIRV, PRESENTATION_FRAG_MSL);
+    SDL_GPUGraphicsPipeline *pipeline = nullptr;
+    if (vertex != nullptr && fragment != nullptr) {
+        SDL_GPUColorTargetDescription target{};
+        target.format = FRAME_FORMAT;
+        SDL_GPUGraphicsPipelineCreateInfo info{};
+        info.vertex_shader = vertex;
+        info.fragment_shader = fragment;
+        info.primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST;
+        info.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
+        info.target_info.color_target_descriptions = &target;
+        info.target_info.num_color_targets = 1;
+        pipeline = SDL_CreateGPUGraphicsPipeline(device, &info);
+    }
+    for (auto *shader : {vertex, fragment}) {
+        if (shader != nullptr) {
+            SDL_ReleaseGPUShader(device, shader);
+        }
+    }
+    SDL_GPUSamplerCreateInfo info{};
+    info.min_filter = SDL_GPU_FILTER_LINEAR;
+    info.mag_filter = SDL_GPU_FILTER_LINEAR;
+    info.address_mode_u = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
+    info.address_mode_v = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
+    info.address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
+    auto *sampler = SDL_CreateGPUSampler(device, &info);
+    if (pipeline == nullptr || sampler == nullptr) {
+        if (pipeline != nullptr) {
+            SDL_ReleaseGPUGraphicsPipeline(device, pipeline);
+        }
+        if (sampler != nullptr) {
+            SDL_ReleaseGPUSampler(device, sampler);
+        }
+        SDL_LogError(
+            SDL_LOG_CATEGORY_GPU, "The presentation filter was not created. %s", SDL_GetError());
+        return false;
+    }
+    m_presentationPipeline = pipeline;
+    m_presentationSampler = sampler;
+    return true;
+}
+
+SDL_GPUTexture *GpuWindow::FilterFrame(SDL_GPUCommandBuffer *commands,
+                                       SDL_GPUTexture *source,
+                                       Uint32 width,
+                                       Uint32 height) {
+    if (m_filtered == nullptr || width != m_filteredWidth || height != m_filteredHeight) {
+        SDL_GPUTextureCreateInfo info{};
+        info.type = SDL_GPU_TEXTURETYPE_2D;
+        info.format = FRAME_FORMAT;
+        info.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER;
+        info.width = width;
+        info.height = height;
+        info.layer_count_or_depth = 1;
+        info.num_levels = 1;
+        auto *texture = CreateGpuTexture(m_device.get(), &info);
+        if (texture == nullptr) {
+            SDL_LogError(SDL_LOG_CATEGORY_GPU,
+                         "The presentation texture was not created. %s",
+                         SDL_GetError());
+            return nullptr;
+        }
+        if (m_filtered != nullptr) {
+            ReleaseGpuTexture(m_device.get(), m_filtered);
+        }
+        m_filtered = texture;
+        m_filteredWidth = width;
+        m_filteredHeight = height;
+    }
+    SDL_GPUColorTargetInfo target{};
+    target.texture = m_filtered;
+    target.load_op = SDL_GPU_LOADOP_DONT_CARE;
+    target.store_op = SDL_GPU_STOREOP_STORE;
+    auto *pass = SDL_BeginGPURenderPass(commands, &target, 1, nullptr);
+    SDL_BindGPUGraphicsPipeline(pass, m_presentationPipeline);
+    SDL_GPUTextureSamplerBinding binding{source, m_presentationSampler};
+    SDL_BindGPUFragmentSamplers(pass, 0, &binding, 1);
+    const bool upscale = width > m_frameWidth || height > m_frameHeight;
+    const float filter = m_options.scaleFilter == ScaleFilter::Nearest                 ? 1.0f :
+                         m_options.scaleFilter == ScaleFilter::EdgeAdaptive && upscale ? 2.0f :
+                                                                                         0.0f;
+    const std::array<float, 8> uniforms{static_cast<float>(m_frameWidth),
+                                        static_cast<float>(m_frameHeight),
+                                        static_cast<float>(width),
+                                        static_cast<float>(height),
+                                        filter,
+                                        static_cast<float>(m_options.screenShader),
+                                        0.0f,
+                                        0.0f};
+    SDL_PushGPUFragmentUniformData(commands, 0, uniforms.data(), sizeof(uniforms));
+    SDL_DrawGPUPrimitives(pass, 3, 1, 0, 0);
+    SDL_EndGPURenderPass(pass);
+    return m_filtered;
+}
+
 bool GpuWindow::ApplyLiveOptions(const DisplayOptions &options) {
+    if ((options.screenShader != ScreenShader::None ||
+         options.scaleFilter == ScaleFilter::EdgeAdaptive) &&
+        m_presentationPipeline == nullptr && !CreatePresentationPass()) {
+        return false;
+    }
     if (options.postAntialias != PostAntialias::None && m_antialiasPipeline == nullptr) {
         if (!CreatePostPasses() || !CreateFrame(m_frameWidth, m_frameHeight)) {
             return false;
@@ -442,6 +554,8 @@ bool GpuWindow::ApplyLiveOptions(const DisplayOptions &options) {
     m_options.frameHeight = options.frameHeight;
     m_options.renderScale = options.renderScale;
     m_options.postAntialias = options.postAntialias;
+    m_options.scaleFilter = options.scaleFilter;
+    m_options.screenShader = options.screenShader;
     UpdateFrameSize();
     return true;
 }
@@ -456,7 +570,7 @@ bool GpuWindow::ApplyRendererOptions(const DisplayOptions &options) {
 
 GpuWindow::~GpuWindow() {
     if (m_device) {
-        for (auto *texture : {m_frame, m_antialiased}) {
+        for (auto *texture : {m_frame, m_antialiased, m_filtered}) {
             if (texture != nullptr) {
                 ReleaseGpuTexture(m_device.get(), texture);
             }
@@ -466,6 +580,12 @@ GpuWindow::~GpuWindow() {
         }
         if (m_postSampler != nullptr) {
             SDL_ReleaseGPUSampler(m_device.get(), m_postSampler);
+        }
+        if (m_presentationPipeline != nullptr) {
+            SDL_ReleaseGPUGraphicsPipeline(m_device.get(), m_presentationPipeline);
+        }
+        if (m_presentationSampler != nullptr) {
+            SDL_ReleaseGPUSampler(m_device.get(), m_presentationSampler);
         }
         if (m_window) {
             SDL_ReleaseWindowFromGPUDevice(m_device.get(), m_window.get());
@@ -556,17 +676,38 @@ bool GpuWindow::Present(SDL_GPUCommandBuffer *commands, const std::filesystem::p
     const bool acquired = SDL_WaitAndAcquireGPUSwapchainTexture(
         commands, m_window.get(), &swapchain, &width, &height);
     m_presentationWait += SDL_GetTicksNS() - acquireStart;
+    Uint32 sourceWidth = m_frameWidth;
+    Uint32 sourceHeight = m_frameHeight;
+    if (width == 0 || height == 0) {
+        int windowWidth = 0;
+        int windowHeight = 0;
+        SDL_GetWindowSizeInPixels(m_window.get(), &windowWidth, &windowHeight);
+        width = static_cast<Uint32>(std::max(windowWidth, 1));
+        height = static_cast<Uint32>(std::max(windowHeight, 1));
+    }
+    // The frame keeps its shape in a window of another shape, with black bars at the sides or
+    // at the top and bottom.
+    float scale = std::min(static_cast<float>(width) / static_cast<float>(m_frameWidth),
+                           static_cast<float>(height) / static_cast<float>(m_frameHeight));
+    auto fittedWidth = static_cast<Uint32>(static_cast<float>(m_frameWidth) * scale);
+    auto fittedHeight = static_cast<Uint32>(static_cast<float>(m_frameHeight) * scale);
+    if (m_options.screenShader != ScreenShader::None ||
+        m_options.scaleFilter == ScaleFilter::EdgeAdaptive) {
+        auto *filtered =
+            FilterFrame(commands, source, std::max(fittedWidth, 1u), std::max(fittedHeight, 1u));
+        if (filtered == nullptr) {
+            SDL_CancelGPUCommandBuffer(commands);
+            return false;
+        }
+        source = filtered;
+        sourceWidth = m_filteredWidth;
+        sourceHeight = m_filteredHeight;
+    }
     if (acquired && swapchain != nullptr) {
-        // The frame keeps its shape in a window of another shape, with black bars at the sides or
-        // at the top and bottom.
-        float scale = std::min(static_cast<float>(width) / static_cast<float>(m_frameWidth),
-                               static_cast<float>(height) / static_cast<float>(m_frameHeight));
-        auto fittedWidth = static_cast<Uint32>(static_cast<float>(m_frameWidth) * scale);
-        auto fittedHeight = static_cast<Uint32>(static_cast<float>(m_frameHeight) * scale);
         SDL_GPUBlitInfo blit{};
         blit.source.texture = source;
-        blit.source.w = m_frameWidth;
-        blit.source.h = m_frameHeight;
+        blit.source.w = sourceWidth;
+        blit.source.h = sourceHeight;
         blit.destination.texture = swapchain;
         blit.destination.x = (width - fittedWidth) / 2;
         blit.destination.y = (height - fittedHeight) / 2;
@@ -579,7 +720,7 @@ bool GpuWindow::Present(SDL_GPUCommandBuffer *commands, const std::filesystem::p
         SDL_BlitGPUTexture(commands, &blit);
     }
     if (capture != nullptr) {
-        return SaveFrame(commands, source, *capture);
+        return SaveFrame(commands, source, sourceWidth, sourceHeight, *capture);
     }
     const auto submitStart = SDL_GetTicksNS();
     const bool submitted = SDL_SubmitGPUCommandBuffer(commands);
@@ -589,8 +730,10 @@ bool GpuWindow::Present(SDL_GPUCommandBuffer *commands, const std::filesystem::p
 
 bool GpuWindow::SaveFrame(SDL_GPUCommandBuffer *commands,
                           SDL_GPUTexture *frame,
+                          Uint32 width,
+                          Uint32 height,
                           const std::filesystem::path &path) {
-    Uint32 size = m_frameWidth * m_frameHeight * 4;
+    Uint32 size = width * height * 4;
     SDL_GPUTransferBufferCreateInfo info{};
     info.usage = SDL_GPU_TRANSFERBUFFERUSAGE_DOWNLOAD;
     info.size = size;
@@ -602,8 +745,8 @@ bool GpuWindow::SaveFrame(SDL_GPUCommandBuffer *commands,
     SDL_GPUCopyPass *copy = SDL_BeginGPUCopyPass(commands);
     SDL_GPUTextureRegion source{};
     source.texture = frame;
-    source.w = m_frameWidth;
-    source.h = m_frameHeight;
+    source.w = width;
+    source.h = height;
     source.d = 1;
     SDL_GPUTextureTransferInfo destination{};
     destination.transfer_buffer = buffer;
@@ -616,15 +759,13 @@ bool GpuWindow::SaveFrame(SDL_GPUCommandBuffer *commands,
         if (pixels != nullptr) {
             // R8G8B8A8 bytes in memory order are XBGR8888 in the packed order of SDL. The display
             // does not show the alpha of the frame, and the image leaves it out too.
-            std::unique_ptr<SDL_Surface, SurfaceDeleter> surface(
-                SDL_CreateSurface(static_cast<int>(m_frameWidth),
-                                  static_cast<int>(m_frameHeight),
-                                  SDL_PIXELFORMAT_XBGR8888));
+            std::unique_ptr<SDL_Surface, SurfaceDeleter> surface(SDL_CreateSurface(
+                static_cast<int>(width), static_cast<int>(height), SDL_PIXELFORMAT_XBGR8888));
             if (surface) {
-                for (Uint32 row = 0; row < m_frameHeight; ++row) {
+                for (Uint32 row = 0; row < height; ++row) {
                     std::memcpy(static_cast<Uint8 *>(surface->pixels) + row * surface->pitch,
-                                static_cast<const Uint8 *>(pixels) + row * m_frameWidth * 4,
-                                m_frameWidth * 4);
+                                static_cast<const Uint8 *>(pixels) + row * width * 4,
+                                width * 4);
                 }
                 saved = SDL_SavePNG(surface.get(), path.string().c_str());
             }

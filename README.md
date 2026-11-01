@@ -399,6 +399,15 @@ each pixel of the window and filters them down, which is supersampling.
 The frame passes through the anti-aliasing of `AntialiasPost` and then the scale of `ScaleFilter`
 on its way to the window.
 
+Options also offers edge-adaptive upscaling and three screen shaders. Set `ScaleFilter` to
+`edge-adaptive` to reconstruct detail along detected edges when enlarging a lower internal
+resolution. Set `ScreenShader` to `consumer-crt`, `pvm`, or `aperture-grille` for CRT simulation,
+or `none` (default) to disable screen shaders. Consumer CRT adds curved corners, softer pixels,
+and a staggered phosphor mask. PVM has stronger scanlines and a finer mask. Aperture grille has
+a flat image and vertical RGB stripes. Scanlines fade near native resolution to reduce aliasing.
+Both settings apply as Options closes. Screenshots include enabled presentation filters at the
+displayed resolution.
+
 A race keeps the vertical field of view of the PC release on a frame wider than 4:3 and widens
 across, and keeps the field across of 4:3 on a narrower frame. Neither field exceeds 120 degrees.
 The rear-view mirror keeps its shape and its size against the height of the view. The menus keep
