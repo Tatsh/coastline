@@ -384,12 +384,22 @@ std::optional<std::filesystem::path> FindAssetData(const std::filesystem::path &
     return DefaultPackUsable(DefaultAssets(user)) ? std::optional(user) : std::nullopt;
 }
 
-std::optional<std::string> ResetGamePaths(const GamePaths &paths) {
-    const std::array directories{paths.config, paths.data, paths.state, paths.cache};
-    for (const auto &directory : directories) {
+std::optional<std::string> ResetGamePaths(const GamePaths &paths, bool factoryReset) {
+    for (const auto &directory : {paths.config, paths.data, paths.state, paths.cache}) {
         const auto normalized = directory.lexically_normal();
         if (!normalized.is_absolute() || normalized == normalized.root_path()) {
             return "Cannot reset an empty, relative, or root directory.";
+        }
+    }
+    std::vector<std::filesystem::path> directories;
+    if (factoryReset) {
+        directories = {paths.config, paths.data, paths.state, paths.cache};
+    } else {
+        for (const auto *pack : {"default", "boss", "eur", "jpn"}) {
+            directories.push_back(paths.data / "assets" / pack);
+        }
+        for (const auto *cache : {"assets", "asset-sources", "asset-search"}) {
+            directories.push_back(paths.cache / cache);
         }
     }
     for (const auto &directory : directories) {

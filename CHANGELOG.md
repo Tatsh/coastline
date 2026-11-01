@@ -71,10 +71,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   data. Saves and cache remain writeable in user directories, with fallback to user mod packs.
 - `COASTLINE_INSTALL_ASSETS`, `COASTLINE_DISC_IMAGE`, and `COASTLINE_ROM_IMAGES` build and install
   imported game data. Builds with installed assets omit setup and all reset options.
-- `--reset` deletes configuration, imported assets, mods, saved games, state, and cache before startup.
-  Confirmation accepts `y` or `n` without case sensitivity; `--yes-really` or `-y` skips confirmation.
-- `--config INI` reads and saves settings in an explicit INI file. Reset also deletes the specified
-  INI file.
+- `--reset` removes generated `default`, `boss`, `eur`, and `jpn` packs and asset caches, preserving
+  saves, decals, settings, and custom packs. `--factory-reset` deletes all configuration, data,
+  state, and cache, including an explicit INI file. Both resets start the game or setup and accept
+  `y` or `n` without case sensitivity; `--yes-really` or `-y` skips confirmation.
+- `--config INI` reads and saves settings in an explicit INI file.
 - Game startup with EUR or JPN cartridge data without USA cartridge data, using available regional
   menu assets and music and language fallback.
 - The `sdl` platform and preset: a stand-alone 64-bit game built with SDL 3 from vcpkg. It

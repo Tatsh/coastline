@@ -564,18 +564,42 @@ void CheckReset() {
     const coastline::GamePaths paths{
         root / "config", root / "config/data", root / "state", root / "cache"};
     Check(coastline::CreateGamePaths(paths), "reset fixture directories are created");
-    WriteText(paths.data / "nested/asset", "asset");
-    WriteText(paths.config / "settings", "settings");
-    WriteText(paths.state / "save", "save");
-    WriteText(paths.cache / "cache", "cache");
+    for (const auto *pack : {"default", "boss", "eur", "jpn"}) {
+        WriteText(paths.data / "assets" / pack / "asset", "asset");
+    }
+    for (const auto *cache : {"assets", "asset-sources", "asset-search"}) {
+        WriteText(paths.cache / cache / "stale", "cache");
+    }
+    const std::array preserved{paths.config / "settings",
+                               paths.state / "save",
+                               paths.data / "saves/decal",
+                               paths.data / "assets/custom/mod",
+                               paths.cache / "decals/paint",
+                               paths.cache / "paint-shop/decal"};
+    for (const auto &path : preserved) {
+        WriteText(path, "preserve");
+    }
     WriteText(root / "unrelated", "preserve");
     std::filesystem::create_directory_symlink(root, paths.data / "outside");
-    Check(!coastline::ResetGamePaths(paths), "all application directories are deleted");
+    Check(!coastline::ResetGamePaths(paths), "imported assets and asset caches are reset");
+    for (const auto &path : preserved) {
+        Check(ReadText(path) == "preserve", "reset preserves saves, decals, settings, and mods");
+    }
+    for (const auto *pack : {"default", "boss", "eur", "jpn"}) {
+        Check(!std::filesystem::exists(paths.data / "assets" / pack),
+              "reset removes each generated asset pack");
+    }
+    for (const auto *cache : {"assets", "asset-sources", "asset-search"}) {
+        Check(!std::filesystem::exists(paths.cache / cache), "reset removes stale asset caches");
+    }
+    Check(!coastline::ResetGamePaths(paths), "reset tolerates already-cleared assets");
+    Check(!coastline::ResetGamePaths(paths, true), "factory reset deletes all application data");
     for (const auto *path : {&paths.config, &paths.data, &paths.state, &paths.cache}) {
-        Check(!std::filesystem::exists(*path), "reset removes each directory");
+        Check(!std::filesystem::exists(*path), "factory reset removes each directory");
     }
     Check(ReadText(root / "unrelated") == "preserve", "reset preserves unrelated files");
-    Check(!coastline::ResetGamePaths(paths), "absent directories permit another reset");
+    Check(!coastline::ResetGamePaths(paths, true),
+          "absent directories permit another factory reset");
     Check(coastline::CreateGamePaths(paths), "directories can be recreated after reset");
     auto invalid = paths;
     invalid.cache = root.root_path();

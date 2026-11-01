@@ -101,8 +101,8 @@ Image changes, CUE track changes, and importer rebuilds trigger conversion again
 require `COASTLINE_ASSET_IMPORTER` pointing to a host Coastline executable, or a configured
 `CMAKE_CROSSCOMPILING_EMULATOR`.
 
-With `COASTLINE_INSTALL_ASSETS=ON`, the setup wizard and `--reset`, `--yes-really`, and `-y` are
-omitted. Missing or outdated assets produce an error requiring installation of usable data.
+With `COASTLINE_INSTALL_ASSETS=ON`, the setup wizard, `--reset`, `--factory-reset`, `--yes-really`,
+and `-y` are omitted. Missing or outdated assets produce an error requiring installation of usable data.
 Normal builds retain the wizard and reset options.
 
 On Windows, `cpack --config build/sdl/CPackConfig.cmake` builds an NSIS installer that installs the
@@ -468,14 +468,17 @@ in the user cache. Configurations, saves, screenshots, and cache remain in user 
 Paths can be browsed, typed, or pasted, and an initial `~` expands to the home directory. Every
 field has a Clear button. Ctrl+A selects all text, Ctrl+V pastes, and Alt+Backspace deletes a word.
 
-`coastline --reset` deletes all Coastline configuration, imported assets, mods, saved games, cache,
-and state before starting again. The terminal requests confirmation with `y` or `n`, without
-case sensitivity. Add `--yes-really` or `-y` to skip confirmation. With `--data-dir`, reset also
-deletes the selected data directory.
+`coastline --reset` removes generated asset packs (`default`, `boss`, `eur`, and `jpn`) and asset
+caches before starting setup again. Saves, decals, settings, and custom asset packs are preserved.
+With `--data-dir`, reset clears generated packs in the selected data directory.
+
+`coastline --factory-reset` deletes all Coastline configuration, imported assets, mods, saved games,
+decals, cache, and state before starting again. Both reset options request terminal confirmation
+with `y` or `n`, without case sensitivity. Add `--yes-really` or `-y` to skip confirmation.
 
 `--config INI` reads and saves settings in the specified INI file instead of the default
 `BossRally.ini`. Relative paths resolve from the launch directory. Data, cache, state, and controller
-bindings use their normal directories. Combining `--reset` with `--config` also deletes the
+bindings use their normal directories. Combining `--factory-reset` with `--config` also deletes the
 specified INI file.
 
 Cancel stops the import and returns to the first step. Setup replaces the generated packs

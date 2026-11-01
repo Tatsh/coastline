@@ -691,9 +691,14 @@ int main(int argc, char *argv[]) {
     parser.add_description("Top Gear Rally and Boss Rally in one stand-alone game.");
 #if COASTLINE_SETUP_WIZARD
     parser.add_argument("--reset")
-        .help("Delete all configuration, data, saved games, state, and cache before starting.")
+        .help("Reset imported assets and asset caches; preserve saves, decals, settings, and mods.")
         .flag();
-    parser.add_argument("--yes-really", "-y").help("Confirm --reset without prompting.").flag();
+    parser.add_argument("--factory-reset")
+        .help("Delete all configuration, data, saved games, decals, mods, state, and cache.")
+        .flag();
+    parser.add_argument("--yes-really", "-y")
+        .help("Confirm either reset without prompting.")
+        .flag();
 #endif
     parser.add_argument("--data-dir").help("read the game data from this directory");
     parser.add_argument("--config")
@@ -814,7 +819,7 @@ int main(int argc, char *argv[]) {
 
     if (parser.is_subcommand_used(import) && parser.is_used("--data-dir")
 #if COASTLINE_SETUP_WIZARD
-        && !parser.get<bool>("--reset")
+        && !parser.get<bool>("--reset") && !parser.get<bool>("--factory-reset")
 #endif
     ) {
         std::error_code error;
@@ -853,20 +858,31 @@ int main(int argc, char *argv[]) {
         }
     }
 #if COASTLINE_SETUP_WIZARD
-    if (parser.get<bool>("--reset")) {
+    const bool factoryReset = parser.get<bool>("--factory-reset");
+    if (parser.get<bool>("--reset") || factoryReset) {
         if (!parser.get<bool>("--yes-really")) {
-            std::cout << "Reset deletes all Coastline configuration, imported assets, mods, "
-                         "saved games, state, and cache in the following locations:\n";
-            for (const auto *directory :
-                 {&paths->config, &paths->data, &paths->state, &paths->cache}) {
-                std::cout << "  " << directory->string() << '\n';
-            }
-            if (parser.is_used("--config")) {
-                std::cout << "  " << configPath.string() << " (INI file)\n";
+            if (factoryReset) {
+                std::cout << "Factory reset deletes all Coastline configuration, imported assets, "
+                             "mods, saved games, decals, state, and cache in the following "
+                             "locations:\n";
+                for (const auto *directory :
+                     {&paths->config, &paths->data, &paths->state, &paths->cache}) {
+                    std::cout << "  " << directory->string() << '\n';
+                }
+                if (parser.is_used("--config")) {
+                    std::cout << "  " << configPath.string() << " (INI file)\n";
+                }
+            } else {
+                std::cout << "Reset removes generated asset packs and asset caches from the "
+                             "following directories:\n"
+                          << "  " << (paths->data / "assets").string() << '\n'
+                          << "  " << paths->cache.string() << '\n'
+                          << "Saves, decals, settings, and custom asset packs are preserved.\n";
             }
             std::string response;
             do {
-                std::cout << "Delete the listed locations and start Coastline? [y/n] "
+                std::cout << (factoryReset ? "Delete all game data and start Coastline? [y/n] " :
+                                             "Reset imported assets and start Coastline? [y/n] ")
                           << std::flush;
                 if (!(std::cin >> response) || response == "n" || response == "N") {
                     std::cout << "Reset cancelled.\n";
@@ -874,11 +890,11 @@ int main(int argc, char *argv[]) {
                 }
             } while (response != "y" && response != "Y");
         }
-        if (auto failure = coastline::ResetGamePaths(*paths)) {
+        if (auto failure = coastline::ResetGamePaths(*paths, factoryReset)) {
             std::cerr << *failure << '\n';
             return EXIT_FAILURE;
         }
-        if (parser.is_used("--config")) {
+        if (factoryReset && parser.is_used("--config")) {
             std::error_code error;
             std::filesystem::remove(configPath, error);
             if (error) {
