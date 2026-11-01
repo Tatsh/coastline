@@ -40,7 +40,7 @@
         ],
         name: 'gamemode',
         'post-install': [
-          'install -Dm644 LICENSE.txt "${FLATPAK_DEST}/share/licenses/gamemode/LICENSE.txt"',
+          'install -Dm644 ../LICENSE.txt "${FLATPAK_DEST}/share/licenses/gamemode/LICENSE.txt"',
         ],
         sources: [
           {
