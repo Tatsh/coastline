@@ -135,17 +135,20 @@ GameSettings::GameSettings(GameConfig &config,
                          {{"1", "1x"}, {"1.5", "1.5x"}, {"2", "2x"}, {"3", "3x"}, {"4", "4x"}},
                          0,
                          true});
-    Option title{"Title screen", "Game", "TitleScreen", {{"regional", "Regional default"}}};
+    Option title{"Title screen", "Game", "TitleScreen", {}};
     const auto storedTitle = config.Get("Game", "TitleScreen");
     if (regions.contains("usa") || regions.contains("eur")) {
-        title.choices.push_back({"international", "International"});
+        title.choices.push_back({"international", "USA/Europe"});
     } else if (storedTitle == "international") {
-        title.choices.push_back({"international", "Intl. missing"});
+        title.choices.push_back({"international", "USA/Europe missing"});
     }
     if (regions.contains("jpn")) {
-        title.choices.push_back({"japanese", "Japanese"});
+        if (currentRegion == "jpn") {
+            title.fallback = title.choices.size();
+        }
+        title.choices.push_back({"japanese", "Japan"});
     } else if (storedTitle == "japanese") {
-        title.choices.push_back({"japanese", "Japanese missing"});
+        title.choices.push_back({"japanese", "Japan missing"});
     }
     m_options.push_back(std::move(title));
     for (auto &option : m_options) {

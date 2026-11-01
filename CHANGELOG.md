@@ -98,6 +98,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Title screen choices use USA/Europe and Japan labels without duplicate regional choices; existing
+  `regional` settings still follow the selected model region.
 - Gamewin is excluded from regular track selection and remains available for the after-season race.
 - Pure PC car previews use PC models and textures, including Type CE, and apply custom decals to
   the selected preview model. Command-line asset-pack selection also determines preview models.
