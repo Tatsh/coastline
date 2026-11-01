@@ -227,5 +227,47 @@ int main() {
         foundUnicode |= unicodeConfig.Get("Game", "AssetPack") == "日本";
     }
     assert(foundUnicode);
+
+    auto presetConfig = GameConfig::Parse("[Game]\nLanguage=ja-jp\nRegion=jpn\nMusic=CD\n"
+                                          "SoundEffects=N64\n[Video]\nAspectRatio=21:9\n");
+    GameSettings presets(presetConfig, roots);
+    const auto preset = Find(presets, "Graphics preset:");
+    assert(presets.Label(preset) == "Graphics preset: Custom");
+    assert(presets.AdjustAndSave(preset, 1, path) == GameSettings::Adjustment::Saved);
+    assert(presetConfig.Get("Video", "GraphicsPreset") == "n64");
+    assert(presetConfig.Get("Game", "AssetPack") == "default");
+    assert(presetConfig.Get("Game", "Effects") == "N64");
+    assert(presetConfig.Get("Video", "TextureFilter") == "n64");
+    assert(presetConfig.Get("Video", "ScreenShader") == "consumer-crt");
+    assert(presetConfig.GetInteger("Video", "InternalWidth", 0) == 320);
+    assert(presetConfig.GetInteger("Video", "FrameRateLimit", 0) == 30);
+    assert(presetConfig.Get("Video", "AspectRatio") == "21:9");
+    assert(presetConfig.Get("Game", "Region") == "jpn");
+    assert(presetConfig.Get("Game", "Language") == "ja-jp");
+    assert(presetConfig.Get("Game", "Music") == "CD");
+    assert(presetConfig.Get("Game", "SoundEffects") == "N64");
+    auto persistedPreset = GameConfig::Load(path);
+    GameSettings restoredPreset(persistedPreset, roots);
+    assert(restoredPreset.Label(preset) == "Graphics preset: N64");
+    assert(presets.RequiresRestart(preset));
+    assert(presets.Step(preset, 1));
+    assert(presetConfig.Get("Video", "GraphicsPreset") == "br");
+    assert(presetConfig.Get("Game", "AssetPack") == "boss");
+    assert(presetConfig.Get("Video", "ScreenShader") == "pc-crt");
+    assert(presetConfig.GetInteger("Video", "InternalWidth", 0) == 640);
+    assert(presetConfig.GetInteger("Video", "InternalHeight", 0) == 480);
+    assert(presetConfig.GetInteger("Video", "FrameRateLimit", 0) == 60);
+    assert(presets.Step(preset, 1));
+    assert(presetConfig.GetInteger("Video", "DrawDistance", 0) == 4);
+    assert(presetConfig.GetInteger("Video", "Antialias", 0) == 8);
+    assert(presets.Step(preset, 1));
+    assert(presetConfig.GetInteger("Video", "DrawDistance", 0) == 1);
+    assert(presetConfig.GetInteger("Video", "Antialias", 0) == 1);
+    assert(presets.Step(Find(presets, "Screen shader:"), 1));
+    assert(presets.Label(preset) == "Graphics preset: Custom");
+    assert(presets.AdjustAndSave(preset, 1, directory) == GameSettings::Adjustment::SaveFailed);
+    assert(presets.Label(preset) == "Graphics preset: Custom");
+    assert(presetConfig.Get("Game", "AssetPack") == "boss");
+    assert(!coastline::ApplyGraphicsPreset(presetConfig, "unknown"));
     std::filesystem::remove_all(directory);
 }

@@ -30,7 +30,7 @@ enum class PostAntialias {
     Fxaa, /*!< Fast approximate anti-aliasing blends along the edges it finds. */
 };
 
-enum class ScreenShader { None, ConsumerCrt, Pvm, ApertureGrille };
+enum class ScreenShader { None, ConsumerCrt, Pvm, ApertureGrille, PcCrt };
 
 /** The options of the window and the GPU device. */
 struct DisplayOptions {

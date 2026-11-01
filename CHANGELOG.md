@@ -11,6 +11,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- A PC CRT shader simulates a progressive VGA monitor with faint scanlines, a fine shadow mask,
+  and mild curvature.
+- Saved Graphics preset choices include Custom, N64, Boss Rally, High quality, and Low power.
+  Manual graphics changes select Custom. Presets preserve audio, language, region, and aspect ratio;
+  changes apply as Options closes, restarting at logos when resource or pacing changes require it.
+- `--gpu-preset n64` and `--gpu-preset br` select temporary N64 and Boss Rally looks, with explicit
+  asset-pack and display arguments taking precedence.
 - An Aspect ratio option offers Fill screen (default), 4:3, 16:9, 21:9, and 32:9, applying as Options
   closes. Internal frames expand to the ratio while preserving selected minimum dimensions and at
   least 320x240 pixels. Fill screen follows window resizing; explicit ratios display bars as needed.

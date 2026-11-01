@@ -534,6 +534,15 @@ bool GpuWindow::ApplyLiveOptions(const DisplayOptions &options) {
             return false;
         }
     }
+    const bool presentChanged = m_options.presentMode != options.presentMode ||
+                                m_options.fifo != options.fifo ||
+                                m_options.unlockedFramerate != options.unlockedFramerate;
+    m_options.fifo = options.fifo;
+    m_options.unlockedFramerate = options.unlockedFramerate;
+    if (presentChanged) {
+        SetPresentMode(options.presentMode);
+    }
+    m_options.wideMenus = options.wideMenus;
     m_options.fieldOfViewScale = options.fieldOfViewScale;
     m_options.drawDistanceScale = std::isfinite(options.drawDistanceScale) ?
                                       std::clamp(options.drawDistanceScale, 1.0f, 4.0f) :

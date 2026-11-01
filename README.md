@@ -358,6 +358,22 @@ Non-NVIDIA and unknown adapters omit NVML utilization statistics; game memory co
 
 The `[Video]` section of `BossRally.ini` sets up the display.
 
+Options offers persistent Graphics preset choices. Selecting a preset saves its settings in
+`BossRally.ini`; subsequent manual graphics adjustments select Custom. Audio, language, region,
+window mode, and aspect ratio remain independent.
+
+| Preset       | Minimum internal resolution | Filtering and effects                                                               | Screen shader | Frame limit     |
+| ------------ | --------------------------- | ----------------------------------------------------------------------------------- | ------------- | --------------- |
+| N64          | 320x240                     | N64 filtering, console effects, original branding, and coverage anti-aliasing       | Consumer CRT  | 30 FPS          |
+| Boss Rally   | 640x480                     | Bilinear PC textures, PC effects, and Pure PC branding                              | PC CRT        | 60 FPS          |
+| High quality | Window size                 | Modern filtering, 8x anti-aliasing, 16x anisotropic filtering, and 4x draw distance | Off           | Display refresh |
+| Low power    | 320x240                     | Nearest textures, no anti-aliasing, and 1x draw distance                            | Off           | 30 FPS          |
+
+Preset changes apply after exiting Options. Asset-pack, renderer, or frame-limit changes restart
+the game at the logos; other preset adjustments apply during the black transition screen.
+`--gpu-preset n64` and `--gpu-preset br` select the corresponding look for one run without saving
+the preset. Explicit asset-pack and display arguments override the preset.
+
 `--gpu-preset best` uses native resolution, 4x draw distance, 8-sample anti-aliasing, alpha to
 coverage, 16-sample anisotropic filtering, modern texture filtering, and linear scaling in
 borderless full screen. `--gpu-preset worst` uses 1x draw distance, nearest scaling and texture
@@ -403,12 +419,15 @@ each pixel of the window and filters them down, which is supersampling.
 The frame passes through the anti-aliasing of `AntialiasPost` and then the scale of `ScaleFilter`
 on its way to the window.
 
-Options also offers edge-adaptive upscaling and three screen shaders. Set `ScaleFilter` to
+Options also offers edge-adaptive upscaling and four screen shaders. Set `ScaleFilter` to
 `edge-adaptive` to reconstruct detail along detected edges when enlarging a lower internal
-resolution. Set `ScreenShader` to `consumer-crt`, `pvm`, or `aperture-grille` for CRT simulation,
-or `none` (default) to disable screen shaders. Consumer CRT adds curved corners, softer pixels,
-and a staggered phosphor mask. PVM has stronger scanlines and a finer mask. Aperture grille has
-a flat image and vertical RGB stripes. Scanlines fade near native resolution to reduce aliasing.
+resolution. Set `ScreenShader` to `consumer-crt`, `pvm`, `aperture-grille`, or `pc-crt` for CRT
+simulation, or `none` (default) to disable screen shaders. Consumer CRT adds curved corners, softer
+pixels, and a staggered phosphor mask. PVM has stronger scanlines and a finer mask.
+Aperture grille has a flat image and vertical RGB stripes. Scanlines fade near native resolution
+to reduce aliasing.
+PC CRT simulates a sharper progressive VGA monitor with a fine staggered shadow mask, faint
+scanlines, and mild curvature.
 Both settings apply as Options closes. Screenshots include enabled presentation filters at the
 displayed resolution.
 

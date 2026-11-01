@@ -46,6 +46,7 @@
 #include "firstrun/wizardrun.h"
 #endif
 #include "frontend.h"
+#include "gamesettings.h"
 #include "gpu.h"
 #include "iconfile.h"
 #include "importer.h"
@@ -87,9 +88,13 @@ struct SdlSession {
     SdlSession &operator=(const SdlSession &) = delete;
 };
 
-coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config,
+coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedConfig,
                                              const argparse::ArgumentParser &parser,
                                              bool fixedFrame) {
+    auto config = savedConfig;
+    if (const auto preset = parser.present("--gpu-preset")) {
+        coastline::ApplyGraphicsPreset(config, *preset);
+    }
     coastline::DisplayOptions options;
     options.width = static_cast<int>(config.GetInteger("Video", "Width", options.width));
     options.height = static_cast<int>(config.GetInteger("Video", "Height", options.height));
@@ -142,6 +147,8 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
         options.screenShader = coastline::ScreenShader::Pvm;
     } else if (screenShader == "aperture-grille") {
         options.screenShader = coastline::ScreenShader::ApertureGrille;
+    } else if (screenShader == "pc-crt") {
+        options.screenShader = coastline::ScreenShader::PcCrt;
     }
     auto post = config.Get("Video", "AntialiasPost");
     if (post == "fxaa") {
@@ -203,7 +210,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
             options.anisotropy = 0;
             options.textureFilter = coastline::TextureFilter::Nearest;
             options.lowestFrame = true;
-        } else {
+        } else if (*preset != "n64" && *preset != "br") {
             SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "Ignoring invalid GPU preset %s.", preset->c_str());
         }
     }
@@ -729,19 +736,10 @@ int main(int argc, char *argv[]) {
               "around it: auto for the shape of the window, a ratio such as 4:3, or a number such "
               "as 1.6; replaces AspectRatio of the settings");
     parser.add_argument("--gpu-preset")
-        .help(
-            "preset of the graphics for this run, not saved: best for 8 samples of anti-aliasing, "
-            "alpha to coverage, 16 samples of anisotropic filtering, 4x draw distance, native "
-            "resolution, linear scaling, and the full screen at the "
-            "desktop mode of the display, drawn at the size of the display or at --width by "
-            "--height "
-            "when given, or worst for no anti-aliasing, 1x draw distance, nearest scaling and "
-            "texels, 30 frames a second, and "
-            "a "
-            "frame of 320 by 240 in a window, or the shape of the display at least 320 by 240 in "
-            "the "
-            "full screen; "
-            "--antialias, --fullscreen, and --windowed still apply");
+        .choices("n64", "br", "best", "worst")
+        .help("Graphics preset for this run, not saved. n64 selects console graphics and Consumer "
+              "CRT; br selects PC graphics and PC CRT. best selects high quality and full screen; "
+              "worst selects low power. Explicit display arguments still apply.");
     parser.add_argument("--gpu")
         .choices("auto", "high-performance", "low-power")
         .help("Select a GPU preference for this run; auto uses SDL's default selection.");
@@ -1019,6 +1017,7 @@ int main(int argc, char *argv[]) {
                                               {"Video", "InternalHeight", "0"},
                                               {"Video", "RenderScale", "1"},
                                               {"Video", "AspectRatio", "auto"},
+                                              {"Video", "GraphicsPreset", "custom"},
                                               {"Video", "ScaleFilter", "linear"},
                                               {"Video", "ScreenShader", "none"},
                                               {"Video", "FieldOfView", "1"},
@@ -1096,6 +1095,13 @@ int main(int argc, char *argv[]) {
                     parser.present("--asset-pack")
                         .value_or(config.Get("Game", "AssetPack")
                                       .value_or(std::string(coastline::DEFAULT_PACK)));
+                if (!parser.is_used("--asset-pack")) {
+                    if (parser.present("--gpu-preset") == "n64") {
+                        pack = "default";
+                    } else if (parser.present("--gpu-preset") == "br") {
+                        pack = "boss";
+                    }
+                }
                 const auto baseRegion = coastline::CartridgeRegion(
                     coastline::ReleaseDirectory(coastline::DefaultAssets(assetData)));
                 if (!config.Get("Game", "Region")) {
@@ -1289,9 +1295,12 @@ int main(int argc, char *argv[]) {
                 Uint64 lastTicks = SDL_GetTicksNS();
                 // FrameRateLimit spaces the frames, at no limit when 0. --gpu-preset worst draws 30
                 // frames a second, the steps of the race, for a slow computer.
-                const long frameLimit = parser.present("--gpu-preset") == "worst" ?
-                                            30 :
-                                            config.GetInteger("Video", "FrameRateLimit", 0);
+                const auto graphicsPreset = parser.present("--gpu-preset");
+                const long frameLimit =
+                    graphicsPreset == "worst" || graphicsPreset == "n64" ? 30 :
+                    graphicsPreset == "br"                               ? 60 :
+                    graphicsPreset == "best"                             ? 0 :
+                                               config.GetInteger("Video", "FrameRateLimit", 0);
                 const Uint64 framePeriod = frameLimit > 0 ? SDL_NS_PER_SECOND / frameLimit : 0;
                 Uint64 nextFrame = lastTicks;
                 Uint64 rateStart = lastTicks;
@@ -1369,6 +1378,7 @@ int main(int argc, char *argv[]) {
                         window->SetFramerateUnlocked(!window->FramerateUnlocked());
                         config.Set(
                             "Video", "UnlockedFramerate", window->FramerateUnlocked() ? "1" : "0");
+                        config.Set("Video", "GraphicsPreset", "custom");
                         nextFrame = SDL_GetTicksNS();
                         break;
                     case DisplayKey::Fullscreen: {
@@ -1389,6 +1399,7 @@ int main(int argc, char *argv[]) {
                                    !vsync ? "immediate" :
                                    fifo   ? "fifo" :
                                             "vsync");
+                        config.Set("Video", "GraphicsPreset", "custom");
                         break;
                     }
                     case DisplayKey::FrameRate:

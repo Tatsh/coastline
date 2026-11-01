@@ -11,6 +11,41 @@
 
 namespace coastline {
 
+bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset) {
+    const bool n64 = preset == "n64";
+    const bool br = preset == "br";
+    const bool best = preset == "best";
+    const bool worst = preset == "worst";
+    if (preset != "custom" && !n64 && !br && !best && !worst) {
+        return false;
+    }
+    config.Set("Video", "GraphicsPreset", std::string(preset));
+    if (preset == "custom") {
+        return true;
+    }
+    if (n64 || br) {
+        config.Set("Game", "AssetPack", n64 ? "default" : "boss");
+    }
+    config.Set("Game", "Effects", n64 ? "N64" : "PC");
+    config.Set("Video", "InternalWidth", best ? "0" : br ? "640" : "320");
+    config.Set("Video", "InternalHeight", best ? "0" : br ? "480" : "240");
+    config.Set("Video", "RenderScale", "1");
+    config.Set("Video", "FieldOfView", "1");
+    config.Set("Video", "DrawDistance", best ? "4" : "1");
+    config.Set("Video", "Antialias", best || n64 ? "8" : "1");
+    config.Set("Video", "AlphaToCoverage", best || n64 ? "1" : "0");
+    config.Set("Video", "AnisotropicFiltering", best ? "16" : "0");
+    config.Set("Video", "TextureFilter", n64 ? "n64" : worst ? "nearest" : "modern");
+    config.Set("Video", "AntialiasPost", "none");
+    config.Set("Video", "ScaleFilter", best ? "linear" : "nearest");
+    config.Set("Video", "ScreenShader", n64 ? "consumer-crt" : br ? "pc-crt" : "none");
+    config.Set("Video", "FrameRateLimit", best ? "0" : br ? "60" : "30");
+    config.Set("Video", "UnlockedFramerate", "0");
+    config.Set("Video", "VSync", "1");
+    config.Set("Video", "WideMenus", "0");
+    return true;
+}
+
 GameSettings::GameSettings(GameConfig &config,
                            std::span<const std::filesystem::path> dataRoots,
                            std::span<const std::array<int, 2>> displayResolutions)
@@ -162,7 +197,8 @@ GameSettings::GameSettings(GameConfig &config,
                          {{"none", "Off"},
                           {"consumer-crt", "Consumer CRT"},
                           {"pvm", "PVM"},
-                          {"aperture-grille", "Aperture grille"}}});
+                          {"aperture-grille", "Aperture grille"},
+                          {"pc-crt", "PC CRT"}}});
     m_options.push_back({"Aspect ratio",
                          "Video",
                          "AspectRatio",
@@ -171,6 +207,14 @@ GameSettings::GameSettings(GameConfig &config,
                           {"16:9", "16:9"},
                           {"21:9", "21:9"},
                           {"32:9", "32:9"}}});
+    m_options.push_back({"Graphics preset",
+                         "Video",
+                         "GraphicsPreset",
+                         {{"custom", "Custom"},
+                          {"n64", "N64"},
+                          {"br", "Boss Rally"},
+                          {"best", "High quality"},
+                          {"worst", "Low power"}}});
     for (auto &option : m_options) {
         if (option.key == "Music" || option.key == "Effects" || option.key == "FieldOfView" ||
             option.key == "DrawDistance" || option.key == "InternalWidth" ||
@@ -243,7 +287,8 @@ std::string GameSettings::Label(std::size_t index) const {
 }
 
 bool GameSettings::RequiresRestart(std::size_t index) const {
-    return index < m_options.size() && m_options[index].restart;
+    return index < m_options.size() &&
+           (m_options[index].key == "GraphicsPreset" ? m_presetRestart : m_options[index].restart);
 }
 
 bool GameSettings::Step(std::size_t index, int direction) {
@@ -256,10 +301,29 @@ bool GameSettings::Step(std::size_t index, int direction) {
     }
     auto selected = Selected(option);
     selected = (selected + (direction > 0 ? 1 : option.choices.size() - 1)) % option.choices.size();
+    if (option.key == "GraphicsPreset") {
+        const GameConfig original = m_config;
+        ApplyGraphicsPreset(m_config, option.choices[selected].value);
+        m_presetRestart = false;
+        for (const auto &setting : m_options) {
+            if (setting.restart && setting.key != "GraphicsPreset" &&
+                original.Get(setting.section, setting.key) !=
+                    m_config.Get(setting.section, setting.key)) {
+                m_presetRestart = true;
+            }
+        }
+        for (const auto *key : {"FrameRateLimit", "UnlockedFramerate", "VSync"}) {
+            m_presetRestart |= original.Get("Video", key) != m_config.Get("Video", key);
+        }
+        return true;
+    }
     m_config.Set(option.section, option.key, option.choices[selected].value);
     if (option.key == "InternalWidth") {
         m_config.Set("Video", "InternalHeight", std::to_string(option.choices[selected].height));
         m_config.Set("Video", "RenderScale", "1");
+    }
+    if (option.section == "Video" || option.key == "AssetPack" || option.key == "Effects") {
+        m_config.Set("Video", "GraphicsPreset", "custom");
     }
     return true;
 }
@@ -267,6 +331,7 @@ bool GameSettings::Step(std::size_t index, int direction) {
 GameSettings::Adjustment
 GameSettings::AdjustAndSave(std::size_t index, int direction, const std::filesystem::path &path) {
     GameConfig original = m_config;
+    const bool originalRestart = m_presetRestart;
     if (!Step(index, direction)) {
         return Adjustment::Unchanged;
     }
@@ -274,6 +339,7 @@ GameSettings::AdjustAndSave(std::size_t index, int direction, const std::filesys
         return Adjustment::Saved;
     }
     m_config = std::move(original);
+    m_presetRestart = originalRestart;
     return Adjustment::SaveFailed;
 }
 

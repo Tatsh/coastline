@@ -56,9 +56,10 @@ void main() {
     vec2 uv = inTexCoord;
     bool consumer = effects.y > 0.5 && effects.y < 1.5;
     bool pvm = effects.y > 1.5 && effects.y < 2.5;
+    bool pc = effects.y > 3.5;
     if (effects.y > 0.5) {
         vec2 centered = uv * 2.0 - 1.0;
-        float curvature = consumer ? 0.035 : pvm ? 0.012 : 0.0;
+        float curvature = consumer ? 0.035 : pvm ? 0.012 : pc ? 0.006 : 0.0;
         centered *= 1.0 + curvature * dot(centered, centered);
         uv = centered * 0.5 + 0.5;
         if (any(lessThan(uv, vec2(0.0))) || any(greaterThan(uv, vec2(1.0)))) {
@@ -81,19 +82,20 @@ void main() {
             color = mix(color, soft, 0.35);
         }
         // Fade scanlines near native resolution to avoid a moire pattern when shrinking.
-        float scanStrength = (consumer ? 0.24 : pvm ? 0.42 : 0.32) *
+        float scanStrength = (consumer ? 0.24 : pvm ? 0.42 : pc ? 0.08 : 0.32) *
             smoothstep(1.0, 2.0, sizes.w / sizes.y);
         float scan = 1.0 - scanStrength * (0.5 + 0.5 * cos(6.28318531 * uv.y * sizes.y));
-        int rowOffset = consumer ? (int(gl_FragCoord.y) / 2) % 2 : 0;
+        int rowOffset = consumer ? (int(gl_FragCoord.y) / 2) % 2 :
+            pc ? int(gl_FragCoord.y) % 2 : 0;
         int phosphor = (int(gl_FragCoord.x) + rowOffset) % 3;
-        vec3 mask = vec3(consumer ? 0.82 : pvm ? 0.94 : 0.76);
+        vec3 mask = vec3(consumer ? 0.82 : pvm ? 0.94 : pc ? 0.94 : 0.76);
         mask[phosphor] = 1.0;
         if (consumer && int(gl_FragCoord.y) % 3 == 0) {
             mask *= 0.9;
         }
         vec2 edge = min(uv, 1.0 - uv);
-        float border = smoothstep(0.0, 0.012, min(edge.x, edge.y));
-        color *= scan * mask * (pvm ? 1.14 : 1.18) * border;
+        float border = smoothstep(0.0, pc ? 0.004 : 0.012, min(edge.x, edge.y));
+        color *= scan * mask * (pvm ? 1.14 : pc ? 1.06 : 1.18) * border;
     }
     outColor = vec4(clamp(color, 0.0, 1.0), 1.0);
 }

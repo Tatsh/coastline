@@ -4,11 +4,15 @@
 #include <filesystem>
 #include <span>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "config.h"
 
 namespace coastline {
+
+/** Apply a graphics preset without changing audio, language, region, or aspect ratio. */
+bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset);
 
 /** Persistent game choices for the options menu. */
 class GameSettings {
@@ -48,6 +52,7 @@ private:
     std::size_t Selected(const Option &option) const;
     GameConfig &m_config;
     std::vector<Option> m_options;
+    bool m_presetRestart = true;
 };
 
 } // namespace coastline
