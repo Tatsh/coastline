@@ -126,6 +126,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Setup remembers the disc image, all three ROM fields, and search directory across runs,
+  including after cancellation.
+- N64 and Boss Rally presets select N64 and PC sound effects, respectively.
 - Boss Rally graphics presets select PC CD music for menus and races. `--gpu-preset br` applies
   the music choice for the current run without saving it and locks Music in Options.
 - N64 and Boss Rally graphics presets select 4:3. Low power requests a lower-power GPU with

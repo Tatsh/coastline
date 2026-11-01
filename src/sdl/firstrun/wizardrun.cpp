@@ -172,6 +172,13 @@ SetupRun RunSetupWizard(GpuWindow &window,
     if (auto last = config.Get("SetupWizard", "LastDirectory")) {
         services.lastDirectory = PathFromUtf8(*last);
     }
+    services.disc = PathFromUtf8(config.Get("SetupWizard", "DiscImage").value_or(""));
+    for (std::size_t i = 0; i < services.roms.size(); ++i) {
+        services.roms[i] = PathFromUtf8(
+            config.Get("SetupWizard", "RomImage" + std::to_string(i + 1)).value_or(""));
+    }
+    services.searchDirectory =
+        PathFromUtf8(config.Get("SetupWizard", "SearchDirectory").value_or(""));
     SetupWizard wizard(std::move(services));
     run.failed = false;
     SDL_Log(reimportReason.empty() ? "Missing game data; starting setup." :
@@ -428,6 +435,13 @@ SetupRun RunSetupWizard(GpuWindow &window,
     if (!wizard.LastDirectory().empty()) {
         config.Set("SetupWizard", "LastDirectory", Utf8FromPath(wizard.LastDirectory()));
     }
+    config.Set("SetupWizard", "DiscImage", wizard.Text(WizardControlId::DiscText));
+    constexpr std::array romFields{
+        WizardControlId::Rom1Text, WizardControlId::Rom2Text, WizardControlId::Rom3Text};
+    for (std::size_t i = 0; i < romFields.size(); ++i) {
+        config.Set("SetupWizard", "RomImage" + std::to_string(i + 1), wizard.Text(romFields[i]));
+    }
+    config.Set("SetupWizard", "SearchDirectory", wizard.Text(WizardControlId::SearchText));
     SDL_StopTextInput(sdlWindow);
     SDL_ShowCursor();
     return run;

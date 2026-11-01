@@ -29,8 +29,8 @@ struct SetupRun {
  * Show the setup wizard until the user finishes or quits it. Its import deletes the packs
  * default, boss, eur, and jpn under assets of the data directory and imports the chosen files into
  * the default pack. The wizard hides the cursor of the system and draws its own, and shows the
- * cursor again when it ends. The directory last browsed is saved as LastDirectory of the section
- * SetupWizard of @p config.
+ * cursor again when it ends. Disc, ROM, search, and last-browsed paths are restored from the
+ * SetupWizard section of @p config and updated on exit, including cancellation.
  *
  * @param window The window of the game.
  * @param paths The directories of the game.

@@ -184,6 +184,11 @@ char AcceleratorOf(const std::string &label) {
 
 SetupWizard::SetupWizard(WizardServices services)
     : m_services(std::move(services)), m_lastDirectory(m_services.lastDirectory) {
+    SetText(WizardControlId::DiscText, m_services.disc);
+    for (std::size_t i = 0; i < TEXT_IDS.size(); ++i) {
+        SetText(TEXT_IDS[i], m_services.roms[i]);
+    }
+    SetText(WizardControlId::SearchText, m_services.searchDirectory);
     if (!m_services.reimportReason.empty()) {
         m_screen = WizardScreen::Reimport;
     }

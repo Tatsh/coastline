@@ -148,6 +148,30 @@ void TestCombinations(const std::filesystem::path &root) {
     Check(duplicate.Screen() == WizardScreen::Done, "Tilde paths must import successfully.");
 }
 
+void TestRestoredPaths(const std::filesystem::path &root) {
+    auto services = Services(root);
+    services.disc = "~/disc.iso";
+    services.roms = {"~/jpn.n64", "", "~/usa.z64"};
+    services.searchDirectory = root / ".hidden";
+    SetupWizard wizard(services);
+    Check(wizard.Text(DiscText) == "~/disc.iso", "Restore the entered disc path.");
+    Check(wizard.Text(Rom1Text) == "~/jpn.n64" && wizard.Text(Rom2Text).empty() &&
+              wizard.Text(Rom3Text) == "~/usa.z64",
+          "Restore ROM slots without changing their order or filling empty slots.");
+    Check(Enabled(wizard, Next), "Validate restored images before enabling Next.");
+    Click(wizard, SearchAssets);
+    Check(wizard.Text(SearchText) == Utf8FromPath(services.searchDirectory),
+          "Restore the search directory instead of the Downloads default.");
+    Check(Enabled(wizard, StartSearch), "Validate the restored search directory.");
+
+    services.roms[2] = "~/missing.z64";
+    SetupWizard missing(services);
+    Check(!Enabled(missing, Next) && missing.Reason(Rom3Text) == "Invalid ROM image.",
+          "A missing restored ROM must disable Next and display its validation error.");
+    Click(missing, Rom3Clear);
+    Check(Enabled(missing, Next), "Clearing a missing path must permit the remaining valid ROM.");
+}
+
 void TestRepositoryLink(const std::filesystem::path &root) {
     auto services = Services(root);
     int opened = 0;
@@ -444,6 +468,7 @@ int main() {
             std::ofstream(root / name).put('x');
         }
         TestCombinations(root);
+        TestRestoredPaths(root);
         TestRepositoryLink(root);
         TestReimport(root);
         TestEditing(root);

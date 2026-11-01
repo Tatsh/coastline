@@ -69,9 +69,14 @@ struct WizardServices {
     std::function<void(const std::string &)> openUrl;
     std::filesystem::path home;          /*!< The directory the file browser starts in at first. */
     std::filesystem::path lastDirectory; /*!< The directory last browsed, or empty. */
-    std::string buildRevision;           /*!< A version tag or short source revision. */
-    std::string buildDate;               /*!< The ISO 8601 UTC timestamp of the build. */
-    std::string reimportReason;          /*!< Why existing assets need another import, or empty. */
+    std::filesystem::path disc;          /*!< The previously entered disc image path, or empty. */
+    /** Previously entered ROM paths in their original slots, including empty slots. */
+    std::array<std::filesystem::path, WIZARD_CARTRIDGES> roms;
+    std::filesystem::path
+        searchDirectory;        /*!< The previously entered search directory, or empty. */
+    std::string buildRevision;  /*!< A version tag or short source revision. */
+    std::string buildDate;      /*!< The ISO 8601 UTC timestamp of the build. */
+    std::string reimportReason; /*!< Why existing assets need another import, or empty. */
 };
 
 /** The images found during a directory search, indexed by detected release. */
