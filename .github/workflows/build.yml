@@ -225,7 +225,7 @@ jobs:
             coastline-*.zip
       # The AppImage bundles the libraries the game links, and SDL opens those of the system for
       # the display, the GPU, and the sound.
-      - if: runner.os == 'Linux' && matrix.build-type == 'Release'
+      - if: runner.os == 'Linux'
         name: 'Build the AppImage'
         run: |
           arch="$(uname -m)"
@@ -233,19 +233,25 @@ jobs:
             "https://github.com/linuxdeploy/linuxdeploy/releases/download/1-alpha-20251107-1/linuxdeploy-$arch.AppImage"
           echo "$LINUXDEPLOY_SHA256  linuxdeploy.AppImage" | sha256sum -c
           chmod +x linuxdeploy.AppImage
-          DESTDIR=AppDir cmake --install build/sdl --prefix /usr --strip
+          install_args=()
+          if [[ "$BUILD_TYPE" == Release ]]; then
+            install_args+=(--strip)
+          else
+            export NO_STRIP=1
+          fi
+          DESTDIR=AppDir cmake --install build/sdl --prefix /usr "${install_args[@]}"
           APPIMAGE_EXTRACT_AND_RUN=1 ./linuxdeploy.AppImage --appdir AppDir --output appimage
         env:
-          LDAI_OUTPUT: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}.AppImage'
+          LDAI_OUTPUT: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-${{ matrix.build-type }}.AppImage'
           LINUXDEPLOY_OUTPUT_VERSION: '${{ needs.version.outputs.version }}'
           LINUXDEPLOY_SHA256: '${{ matrix.platform.linuxdeploy-sha256 }}'
-      - if: runner.os == 'Linux' && matrix.build-type == 'Release'
+      - if: runner.os == 'Linux'
         name: 'Upload the AppImage'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
-          name: 'coastline-appimage-${{ matrix.platform.architecture }}'
-          path: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}.AppImage'
+          name: 'coastline-appimage-${{ matrix.platform.architecture }}-${{ matrix.build-type }}'
+          path: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-${{ matrix.build-type }}.AppImage'
   flatpak:
     container:
       image: 'ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08'
