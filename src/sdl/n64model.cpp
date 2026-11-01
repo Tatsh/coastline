@@ -2082,6 +2082,9 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
     // set.
     std::map<std::size_t, int> sets = PaintSets(image);
     for (std::size_t i = 0; i < model->images.size(); ++i) {
+        const auto &picture = model->images[i];
+        model->json["images"][i]["extras"]["coastlineImage"] = {
+            {"texels", picture.address}, {"width", picture.width}, {"height", picture.height}};
         auto set = sets.find(model->images[i].address);
         if (set != sets.end()) {
             model->json["images"][i]["extras"]["coastlinePaint"]["set"] = set->second;

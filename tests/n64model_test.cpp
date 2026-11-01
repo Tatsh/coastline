@@ -50,6 +50,9 @@ int main() {
     assert(model && model->images.size() == 2);
     for (std::size_t index = 0; index < model->images.size(); ++index) {
         const auto &image = model->images[index];
+        const auto &layout = model->json["images"][index]["extras"]["coastlineImage"];
+        assert(layout["texels"] == image.address && layout["width"] == image.width &&
+               layout["height"] == image.height);
         if (image.address == 0x410) {
             assert(image.paintMaterial == 11 && image.indices.size() == 8);
             assert(image.palette.size() == 32);

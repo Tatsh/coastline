@@ -73,6 +73,9 @@ std::optional<DecalCar> DecalCar::Load(const std::filesystem::path &directory) {
     }
     for (int material = 0; material < CAR_MATERIALS; ++material) {
         DecalTexture texture = car.Texture(material);
+        if (texture.palette == 0 && car.m_bytes[MATERIAL_TEXTURES_AT + material] == 0) {
+            continue;
+        }
         auto texels = static_cast<std::size_t>(texture.width * texture.height / 2);
         if (texture.width == 0 || texture.texels + texels > car.m_bytes.size() ||
             texture.palette == 0 || texture.palette + PALETTE_BYTES > car.m_bytes.size()) {
@@ -83,10 +86,53 @@ std::optional<DecalCar> DecalCar::Load(const std::filesystem::path &directory) {
             return std::nullopt;
         }
     }
+    if (!car.HasMaterial(CAR_MATERIAL_PAINT)) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                     "Missing editable paint palette in %s.",
+                     path.string().c_str());
+        return std::nullopt;
+    }
+    for (const auto &image : car.m_images) {
+        const auto extras = image.value("extras", nlohmann::ordered_json::object());
+        const int material =
+            extras.value("coastlinePaint", nlohmann::ordered_json::object()).value("material", -1);
+        DecalTexture texture;
+        bool decal = false;
+        if (material >= 0 && material < CAR_MATERIALS) {
+            texture = car.Texture(material);
+            if (extras.contains("coastlineImage")) {
+                const auto &layout = extras.at("coastlineImage");
+                texture.texels = layout.at("texels").get<std::size_t>();
+                texture.width = layout.at("width").get<int>();
+                texture.height = layout.at("height").get<int>();
+                if (texture.width <= 0 || texture.height <= 0 || texture.width > 16384 ||
+                    texture.height > 16384 || texture.texels > car.m_bytes.size() ||
+                    static_cast<std::size_t>((texture.width + 1) / 2) * texture.height >
+                        car.m_bytes.size() - texture.texels) {
+                    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                                 "Image exceeds car texture data in %s.",
+                                 path.string().c_str());
+                    return std::nullopt;
+                }
+                for (int slot = 0; slot < DECAL_SLOTS; ++slot) {
+                    if (texture.texels == car.Texture(slot).texels) {
+                        decal = true;
+                    }
+                }
+            } else {
+                decal = material < DECAL_SLOTS;
+            }
+        }
+        car.m_imageTextures.push_back(texture);
+        car.m_imageDecals.push_back(decal);
+    }
     return car;
 }
 
 DecalTexture DecalCar::Texture(int material) const {
+    if (material < 0 || material >= CAR_MATERIALS) {
+        return {};
+    }
     std::size_t table = Offset(m_bytes, TEXTURES_AT);
     std::size_t at =
         table + m_bytes[MATERIAL_TEXTURES_AT + static_cast<std::size_t>(material)] * TEXTURE_SIZE;
@@ -100,7 +146,16 @@ DecalTexture DecalCar::Texture(int material) const {
 }
 
 u8 *DecalCar::Texels(int material) {
-    return &m_bytes[Texture(material).texels];
+    return HasMaterial(material) ? &m_bytes[Texture(material).texels] : nullptr;
+}
+
+bool DecalCar::HasMaterial(int material) const {
+    const auto texture = Texture(material);
+    return texture.width > 0 && texture.height > 0 && texture.palette != 0;
+}
+
+std::string DecalCar::DecalNote() const {
+    return m_directory.filename() == "milk-truck" ? "COASTLINE MT" : "TOP GEAR DECALS";
 }
 
 const u8 *DecalCar::End() const {
@@ -117,11 +172,17 @@ const u8 *DecalCar::Mask(int slot) const {
 }
 
 u16 DecalCar::PaletteColor(int material, int entry) const {
+    if (!HasMaterial(material) || entry < 0 || entry >= 16) {
+        return 0;
+    }
     std::size_t at = Texture(material).palette + static_cast<std::size_t>(entry) * 2;
     return static_cast<u16>(m_bytes[at] << 8 | m_bytes[at + 1]);
 }
 
 void DecalCar::SetPaletteColor(int material, int entry, u16 color) {
+    if (!HasMaterial(material) || entry < 0 || entry >= 16) {
+        return;
+    }
     std::size_t at = Texture(material).palette + static_cast<std::size_t>(entry) * 2;
     m_bytes[at] = static_cast<u8>(color >> 8);
     m_bytes[at + 1] = static_cast<u8>(color);
@@ -148,11 +209,11 @@ DecalCar::WriteImages(const std::filesystem::path &directory) const {
             }
             continue;
         }
-        DecalTexture texture = Texture(material);
+        const DecalTexture &texture = m_imageTextures[index];
         std::vector<std::uint8_t> texels(
             static_cast<std::size_t>((texture.width + 1) / 2 * texture.height));
         std::array<std::uint8_t, PALETTE_BYTES> palette{};
-        if (material < DECAL_SLOTS) {
+        if (m_imageDecals[index]) {
             // The image of a decal is its texels in rows, without the swap of the odd rows.
             for (int y = 0; y < texture.height; ++y) {
                 for (int x = 0; x < texture.width; ++x) {

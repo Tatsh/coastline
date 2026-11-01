@@ -295,6 +295,16 @@ target_link_options(n64model_test PRIVATE -fsanitize=address,undefined)
 target_link_libraries(n64model_test PRIVATE nlohmann_json::nlohmann_json fmt::fmt)
 add_test(NAME n64model COMMAND n64model_test)
 
+add_executable(decalcar_test decalcar_test.cpp "${_src}/sdl/decalcar.cpp"
+  "${_src}/sdl/gltfdocument.cpp" "${_src}/sdl/indexedimage.cpp" "${_src}/sdl/n64model.cpp")
+set_target_properties(decalcar_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(decalcar_test PRIVATE "${_src}" "${_src}/sdl"
+                                                "${_src}/libultra/include")
+target_compile_options(decalcar_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(decalcar_test PRIVATE -fsanitize=address,undefined)
+target_link_libraries(decalcar_test PRIVATE SDL3::SDL3 nlohmann_json::nlohmann_json fmt::fmt)
+add_test(NAME decalcar COMMAND decalcar_test)
+
 add_executable(gamesettings_test gamesettings_test.cpp "${_src}/sdl/gamesettings.cpp"
   "${_src}/sdl/config.cpp" "${_src}/sdl/language.cpp")
 set_target_properties(gamesettings_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)

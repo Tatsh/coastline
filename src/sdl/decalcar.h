@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <optional>
+#include <string>
 #include <vector>
 
 #include <nlohmann/json.hpp>
@@ -58,6 +59,8 @@ public:
      * @return The texture of the material.
      */
     DecalTexture Texture(int material) const;
+    bool HasMaterial(int material) const;
+    std::string DecalNote() const;
 
     /**
      * @param material The material, from 0 to CAR_MATERIALS - 1.
@@ -106,6 +109,8 @@ private:
     std::filesystem::path m_directory;
     nlohmann::ordered_json m_images;
     std::vector<std::vector<std::uint8_t>> m_imageBytes;
+    std::vector<DecalTexture> m_imageTextures;
+    std::vector<bool> m_imageDecals;
     std::vector<u8> m_bytes;
 };
 

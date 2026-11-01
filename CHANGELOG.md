@@ -165,6 +165,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Saved painted car images respect each texture's dimensions when palettes are shared, preserving
+  unpainted images and matching output from GLB and separate glTF assets. Existing assets require
+  reimporting disc and ROM images.
 - Restored missing surfaces in mirrored Jungle, Coastline, and Desert track-selection previews.
 - Japanese PJ, TR, and MN menu selections start races with the matching cars instead of RS, M3,
   and Helmet counterparts.
