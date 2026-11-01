@@ -34,6 +34,8 @@
 #include "common/instantreplay.h"
 #include "common/pause.h"
 #include "common/settings.h"
+#include "common/soundbuffer.h"
+#include "common/strings.h"
 #include "config.h"
 #include "controllerpak.h"
 #include "controls.h"
@@ -997,8 +999,6 @@ int main(int argc, char *argv[]) {
             config.Set(section, key, value);
         }
     }
-    const coastline::DisplayOptions displayOptions =
-        DisplayOptionsFrom(config, parser, savesFrames);
     int status = EXIT_FAILURE;
     // The frame the game starts at, after the frames of the setup wizard.
     int firstFrame = 1;
@@ -1026,690 +1026,772 @@ int main(int argc, char *argv[]) {
         }
         if (!sdl.ready) {
             SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "SDL did not start: %s", SDL_GetError());
-        } else if (auto window = coastline::GpuWindow::Create("Coastline", displayOptions);
+        } else if (auto window = coastline::GpuWindow::Create(
+                       "Coastline", DisplayOptionsFrom(config, parser, savesFrames));
                    window && setUp(*window)) {
-            // The assets of the pack of the command line or of the configuration, else of the
-            // default pack.
-            std::string pack = parser.present("--asset-pack")
-                                   .value_or(config.Get("Game", "AssetPack")
-                                                 .value_or(std::string(coastline::DEFAULT_PACK)));
-            const auto baseRegion = coastline::CartridgeRegion(
-                coastline::ReleaseDirectory(coastline::DefaultAssets(assetData)));
-            if (!config.Get("Game", "Region")) {
-                config.Set("Game", "Region", baseRegion);
-            }
-            auto region = parser.present("--region")
-                              .value_or(config.Get("Game", "Region").value_or(baseRegion));
-            if (region != baseRegion &&
-                ((region != "usa" && region != "eur" && region != "jpn") ||
-                 coastline::CartridgeRegion(coastline::ReleaseDirectory(
-                     coastline::PackDirectory(assetData, region, paths->data))) != region)) {
-                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                            "Region %s is unavailable; using %s.",
-                            region.c_str(),
-                            baseRegion.c_str());
-                region = baseRegion;
-            }
-            const std::string regionPack = region == baseRegion ? "" : region;
-            auto packAssets =
-                coastline::PackAssets(assetData, paths->cache, pack, paths->data, regionPack);
-            if (!packAssets) {
-                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                            "The asset pack %s cannot be read, and the default pack is used.",
-                            pack.c_str());
-                pack = coastline::DEFAULT_PACK;
-                packAssets = coastline::PackAssets(assetData, paths->cache, pack, {}, regionPack);
+            bool reinitialize = false;
+            do {
+                reinitialize = false;
+                const coastline::DisplayOptions displayOptions =
+                    DisplayOptionsFrom(config, parser, savesFrames);
+                if (!window->ApplyRendererOptions(displayOptions)) {
+                    status = EXIT_FAILURE;
+                    break;
+                }
+                // The assets of the pack of the command line or of the configuration, else of the
+                // default pack.
+                std::string pack =
+                    parser.present("--asset-pack")
+                        .value_or(config.Get("Game", "AssetPack")
+                                      .value_or(std::string(coastline::DEFAULT_PACK)));
+                const auto baseRegion = coastline::CartridgeRegion(
+                    coastline::ReleaseDirectory(coastline::DefaultAssets(assetData)));
+                if (!config.Get("Game", "Region")) {
+                    config.Set("Game", "Region", baseRegion);
+                }
+                auto region = parser.present("--region")
+                                  .value_or(config.Get("Game", "Region").value_or(baseRegion));
+                if (region != baseRegion &&
+                    ((region != "usa" && region != "eur" && region != "jpn") ||
+                     coastline::CartridgeRegion(coastline::ReleaseDirectory(
+                         coastline::PackDirectory(assetData, region, paths->data))) != region)) {
+                    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                                "Region %s is unavailable; using %s.",
+                                region.c_str(),
+                                baseRegion.c_str());
+                    region = baseRegion;
+                }
+                const std::string regionPack = region == baseRegion ? "" : region;
+                auto packAssets =
+                    coastline::PackAssets(assetData, paths->cache, pack, paths->data, regionPack);
                 if (!packAssets) {
-                    SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                                 "Cannot prepare imported assets. Import them again with "
-                                 "coastline import --cd DISC --rom ROM.");
-                    return EXIT_FAILURE;
+                    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                                "The asset pack %s cannot be read, and the default pack is used.",
+                                pack.c_str());
+                    pack = coastline::DEFAULT_PACK;
+                    packAssets =
+                        coastline::PackAssets(assetData, paths->cache, pack, {}, regionPack);
+                    if (!packAssets) {
+                        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                                     "Cannot prepare imported assets. Import them again with "
+                                     "coastline import --cd DISC --rom ROM.");
+                        return EXIT_FAILURE;
+                    }
                 }
-            }
-            const std::filesystem::path assets = *packAssets;
-            SDL_Log("Asset pack: %s (%s)", pack.c_str(), assets.string().c_str());
-            SDL_Log("Using region %s with base %s.", region.c_str(), baseRegion.c_str());
-            // A source imported by an older conversion has files the game no longer draws
-            // correctly.
-            std::string reimportNotice;
-            const auto staleImports = coastline::StaleImports(coastline::DefaultAssets(assetData));
-            if (!staleImports.empty()) {
-                reimportNotice = coastline::ReimportMessage(staleImports);
-                SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                            "The data was imported by an older version of the game. %s",
-                            reimportNotice.c_str());
-            }
-            coastline::GameText gameText(
-                assets,
-                parser.present("--language")
-                    .value_or(config.Get("Game", "Language")
-                                  .value_or(std::string(coastline::DEFAULT_LANGUAGE))));
-            const std::filesystem::path release = coastline::ReleaseDirectory(assets);
-            SDL_Log("Language: %s (%s)",
-                    coastline::SelectedLanguage().c_str(),
-                    release.lexically_relative(assets).string().c_str());
-            const nlohmann::json packSettings =
-                coastline::PackSettings(assetData, pack, paths->data);
-            // XmMusicGain of the configuration replaces the gain of the pack when the user
-            // writes it.
-            const float musicGain = config.GetFloat(
-                "Game",
-                "XmMusicGain",
-                packSettings.value("xmMusicGain", coastline::DEFAULT_XM_MUSIC_GAIN));
-            SetWindowIcon(window->Window(), assets);
-            coastline::N64MixerContext mixer;
-            coastline::SoundEffects soundEffects(assets,
-                                                 config.Get("Game", "SoundEffects") == "N64" ?
-                                                     coastline::SoundEffects::Source::N64 :
-                                                     coastline::SoundEffects::Source::Pc,
-                                                 config.GetBoolean("Game", "PlaySFX", true));
-            coastline::EngineRuntime engineRuntime;
-            coastline::InputBindings input(config);
-            coastline::EngineModels engineModels;
-            coastline::EngineTextures engineTextures;
-            coastline::AttractDemo attractDemo;
-            coastline::N64Audio audio;
-            coastline::RaceMusicContext raceMusic;
-            coastline::FrontEndMusic menuMusic(audio,
-                                               assets / "music",
-                                               config.Get("Game", "Music") == "CD" ?
-                                                   coastline::RaceMusicSource::CdAudio :
-                                                   coastline::RaceMusicSource::Modules);
-            const bool musicEnabled = config.GetBoolean("Game", "PlayMusic", true);
-            g_dwPlayMusicMode = musicEnabled ? 2 : 0;
-            const bool audioOpen =
-                (musicEnabled || config.GetBoolean("Game", "PlaySFX", true)) && audio.OpenDevice();
-            const bool playMusic = musicEnabled && audioOpen;
-            const bool pauseOnFocusLoss = config.GetBoolean("Game", "PauseOnFocusLoss", true) &&
-                                          !parser.is_subcommand_used(runScript);
-            audio.SetMusicGain(musicGain);
-            coastline::ShareRaceMusicPlayer(audioOpen ? &audio : nullptr);
-            auto playMenuMusic = [&]() {
-                if (playMusic) {
-                    menuMusic.SetVolume(g_bBgmVolume);
-                    menuMusic.Play();
+                const std::filesystem::path assets = *packAssets;
+                SDL_Log("Asset pack: %s (%s)", pack.c_str(), assets.string().c_str());
+                SDL_Log("Using region %s with base %s.", region.c_str(), baseRegion.c_str());
+                // A source imported by an older conversion has files the game no longer draws
+                // correctly.
+                std::string reimportNotice;
+                const auto staleImports =
+                    coastline::StaleImports(coastline::DefaultAssets(assetData));
+                if (!staleImports.empty()) {
+                    reimportNotice = coastline::ReimportMessage(staleImports);
+                    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                                "The data was imported by an older version of the game. %s",
+                                reimportNotice.c_str());
                 }
-            };
-            const coastline::Script &commands = script.script;
-            MouseState mouse;
-            std::unique_ptr<coastline::SceneRenderer> sceneRenderer;
-            std::unique_ptr<coastline::Intro> intro;
-            std::unique_ptr<coastline::Menus> mainMenu;
-            std::unique_ptr<coastline::MenuText> frameRateText;
-            // The statistics of the third state of F, sampled only while they show.
-            std::unique_ptr<coastline::PerformanceStats> performanceStats;
-            // The seconds the request to import again remains at the top of the splash screens
-            // and the menus.
-            float reimportNoticeSeconds = reimportNotice.empty() ? 0.0f : 10.0f;
-            // The screen of the front end that shows.
-            enum class FrontEnd { Intro, AttractDemo, MainMenu, Race, Credits };
-            FrontEnd frontEnd = FrontEnd::Intro;
-            // The races run a 30th of a second a step, from the assets of the pack.
-            constexpr float RACE_STEP = 1.0f / 30.0f;
-            std::unique_ptr<coastline::RaceView> raceView;
-            coastline::RaceSession raceSession;
-            bool raceDataOpen = false;
-            // The race engine reads its files from the assets of the pack.
-            auto openRaceData = [&]() {
-                if (!raceDataOpen) {
-                    std::error_code error;
-                    std::filesystem::current_path(assets, error);
-                    coastline::OpenRaceData(config.GetBoolean("Game", "PlaySFX", true));
-                    raceDataOpen = true;
-                }
-            };
-            float raceTime = 0.0f;
-            bool leaveDemo = false;
-            // The first step of the race of the credits loads the race and with it the track and
-            // the car of the recording. The ending credits scroll, and go on to the next season.
-            bool endingCredits = false;
-            auto startCredits = [&](bool ending) {
-                endingCredits = ending;
-                openRaceData();
-                attractDemo.StartCredits(ending);
-                attractDemo.Credits().Start(release);
-                attractDemo.Step(false);
-                const coastline::RaceCar car{attractDemo.Car(), attractDemo.Color(), std::nullopt};
-                raceView = coastline::RaceView::Load(
-                    *sceneRenderer, assets, attractDemo.Track(), {&car, 1});
-                raceTime = 0.0f;
-                leaveDemo = false;
-                return raceView != nullptr;
-            };
-            sceneRenderer = coastline::SceneRenderer::Create(*window);
-            if (sceneRenderer) {
-                const std::filesystem::path frontEndRelease = coastline::ReleaseDirectory(assets);
-                const auto titleChoice = config.Get("Game", "TitleScreen").value_or("regional");
-                const auto currentTitleRegion = coastline::CartridgeRegion(frontEndRelease);
-                const auto titleRegion = coastline::TitleScreenRegion(
-                    titleChoice,
-                    currentTitleRegion,
-                    coastline::AvailableCartridgeRegions(std::array{assetData, paths->data}));
-                if (titleRegion && *titleRegion != currentTitleRegion) {
-                    auto titleAssets =
-                        coastline::PackAssets(assetData,
-                                              paths->cache,
-                                              pack,
-                                              paths->data,
-                                              *titleRegion == baseRegion ? "" : *titleRegion);
-                    if (titleAssets) {
-                        intro = coastline::Intro::Load(*sceneRenderer,
+                coastline::GameText gameText(
+                    assets,
+                    parser.present("--language")
+                        .value_or(config.Get("Game", "Language")
+                                      .value_or(std::string(coastline::DEFAULT_LANGUAGE))));
+                const std::filesystem::path release = coastline::ReleaseDirectory(assets);
+                SDL_Log("Language: %s (%s)",
+                        coastline::SelectedLanguage().c_str(),
+                        release.lexically_relative(assets).string().c_str());
+                const nlohmann::json packSettings =
+                    coastline::PackSettings(assetData, pack, paths->data);
+                // XmMusicGain of the configuration replaces the gain of the pack when the user
+                // writes it.
+                const float musicGain = config.GetFloat(
+                    "Game",
+                    "XmMusicGain",
+                    packSettings.value("xmMusicGain", coastline::DEFAULT_XM_MUSIC_GAIN));
+                SetWindowIcon(window->Window(), assets);
+                coastline::N64MixerContext mixer;
+                coastline::SoundEffects soundEffects(assets,
+                                                     config.Get("Game", "SoundEffects") == "N64" ?
+                                                         coastline::SoundEffects::Source::N64 :
+                                                         coastline::SoundEffects::Source::Pc,
+                                                     config.GetBoolean("Game", "PlaySFX", true));
+                coastline::EngineRuntime engineRuntime;
+                coastline::InputBindings input(config);
+                coastline::EngineModels engineModels;
+                coastline::EngineTextures engineTextures;
+                coastline::AttractDemo attractDemo;
+                coastline::N64Audio audio;
+                coastline::RaceMusicContext raceMusic;
+                coastline::FrontEndMusic menuMusic(audio,
+                                                   assets / "music",
+                                                   config.Get("Game", "Music") == "CD" ?
+                                                       coastline::RaceMusicSource::CdAudio :
+                                                       coastline::RaceMusicSource::Modules);
+                const bool musicEnabled = config.GetBoolean("Game", "PlayMusic", true);
+                g_dwPlayMusicMode = musicEnabled ? 2 : 0;
+                const bool audioOpen =
+                    (musicEnabled || config.GetBoolean("Game", "PlaySFX", true)) &&
+                    audio.OpenDevice();
+                const bool playMusic = musicEnabled && audioOpen;
+                const bool pauseOnFocusLoss = config.GetBoolean("Game", "PauseOnFocusLoss", true) &&
+                                              !parser.is_subcommand_used(runScript);
+                audio.SetMusicGain(musicGain);
+                coastline::ShareRaceMusicPlayer(audioOpen ? &audio : nullptr);
+                auto playMenuMusic = [&]() {
+                    if (playMusic) {
+                        menuMusic.SetVolume(g_bBgmVolume);
+                        menuMusic.Play();
+                    }
+                };
+                const coastline::Script &commands = script.script;
+                MouseState mouse;
+                std::unique_ptr<coastline::SceneRenderer> sceneRenderer;
+                std::unique_ptr<coastline::Intro> intro;
+                std::unique_ptr<coastline::Menus> mainMenu;
+                std::unique_ptr<coastline::MenuText> frameRateText;
+                // The statistics of the third state of F, sampled only while they show.
+                std::unique_ptr<coastline::PerformanceStats> performanceStats;
+                // The seconds the request to import again remains at the top of the splash screens
+                // and the menus.
+                float reimportNoticeSeconds = reimportNotice.empty() ? 0.0f : 10.0f;
+                // The screen of the front end that shows.
+                enum class FrontEnd { Intro, AttractDemo, MainMenu, Race, Credits };
+                FrontEnd frontEnd = FrontEnd::Intro;
+                // The races run a 30th of a second a step, from the assets of the pack.
+                constexpr float RACE_STEP = 1.0f / 30.0f;
+                std::unique_ptr<coastline::RaceView> raceView;
+                coastline::RaceSession raceSession;
+                bool raceDataOpen = false;
+                // The race engine reads its files from the assets of the pack.
+                auto openRaceData = [&]() {
+                    if (!raceDataOpen) {
+                        std::error_code error;
+                        std::filesystem::current_path(assets, error);
+                        coastline::OpenRaceData(config.GetBoolean("Game", "PlaySFX", true));
+                        raceDataOpen = true;
+                    }
+                };
+                float raceTime = 0.0f;
+                bool leaveDemo = false;
+                // The first step of the race of the credits loads the race and with it the track
+                // and the car of the recording. The ending credits scroll, and go on to the next
+                // season.
+                bool endingCredits = false;
+                auto startCredits = [&](bool ending) {
+                    endingCredits = ending;
+                    openRaceData();
+                    attractDemo.StartCredits(ending);
+                    attractDemo.Credits().Start(release);
+                    attractDemo.Step(false);
+                    const coastline::RaceCar car{
+                        attractDemo.Car(), attractDemo.Color(), std::nullopt};
+                    raceView = coastline::RaceView::Load(
+                        *sceneRenderer, assets, attractDemo.Track(), {&car, 1});
+                    raceTime = 0.0f;
+                    leaveDemo = false;
+                    return raceView != nullptr;
+                };
+                sceneRenderer = coastline::SceneRenderer::Create(*window);
+                if (sceneRenderer) {
+                    const std::filesystem::path frontEndRelease =
+                        coastline::ReleaseDirectory(assets);
+                    const auto titleChoice = config.Get("Game", "TitleScreen").value_or("regional");
+                    const auto currentTitleRegion = coastline::CartridgeRegion(frontEndRelease);
+                    const auto titleRegion = coastline::TitleScreenRegion(
+                        titleChoice,
+                        currentTitleRegion,
+                        coastline::AvailableCartridgeRegions(std::array{assetData, paths->data}));
+                    if (titleRegion && *titleRegion != currentTitleRegion) {
+                        auto titleAssets =
+                            coastline::PackAssets(assetData,
+                                                  paths->cache,
+                                                  pack,
+                                                  paths->data,
+                                                  *titleRegion == baseRegion ? "" : *titleRegion);
+                        if (titleAssets) {
+                            intro =
+                                coastline::Intro::Load(*sceneRenderer,
                                                        coastline::ReleaseDirectory(*titleAssets),
                                                        *titleRegion);
+                        }
+                    } else if (titleRegion) {
+                        intro =
+                            coastline::Intro::Load(*sceneRenderer, frontEndRelease, *titleRegion);
                     }
-                } else if (titleRegion) {
-                    intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease, *titleRegion);
-                }
-                if (!intro) {
-                    SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                                "Title screen %s is unavailable; using region %s.",
+                    if (!intro) {
+                        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                                    "Title screen %s is unavailable; using region %s.",
+                                    titleChoice.c_str(),
+                                    currentTitleRegion.c_str());
+                        intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
+                    } else {
+                        SDL_Log("Title screen %s uses region %s.",
                                 titleChoice.c_str(),
-                                currentTitleRegion.c_str());
-                    intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
-                } else {
-                    SDL_Log("Title screen %s uses region %s.",
-                            titleChoice.c_str(),
-                            titleRegion->c_str());
-                }
-                mainMenu = coastline::Menus::Load(*sceneRenderer,
-                                                  frontEndRelease,
-                                                  paths->data,
-                                                  paths->cache,
-                                                  config,
-                                                  configPath,
-                                                  std::array{assetData, paths->data});
-                if (mainMenu) {
-                    mainMenu->SetMenuMusic(playMenuMusic);
-                }
-                frameRateText = coastline::MenuText::Load(
-                    *sceneRenderer,
-                    coastline::FontDirectory(assets, coastline::SelectedLanguage()));
-            }
-            playMenuMusic();
-            // The vertical sync V returns to, fifo when the settings choose it.
-            const bool fifo = displayOptions.fifo;
-            Uint64 lastTicks = SDL_GetTicksNS();
-            // FrameRateLimit spaces the frames, at no limit when 0. --gpu-preset worst draws 30
-            // frames a second, the steps of the race, for a slow computer.
-            const long frameLimit = parser.present("--gpu-preset") == "worst" ?
-                                        30 :
-                                        config.GetInteger("Video", "FrameRateLimit", 0);
-            const Uint64 framePeriod = frameLimit > 0 ? SDL_NS_PER_SECOND / frameLimit : 0;
-            Uint64 nextFrame = lastTicks;
-            Uint64 rateStart = lastTicks;
-            int rateFrames = 0;
-            DisplayKeys displayKeys;
-            FrameRateOverlay frameRateOverlay;
-            std::uint16_t lastButtons = 0;
-            std::uint16_t lastSecondButtons = 0;
-            bool running = true;
-            bool printScreenWasDown = false;
-            for (int frame = firstFrame; running; ++frame) {
-                const auto frameStarted = SDL_GetTicksNS();
-                const auto waitStarted = window->PresentationWaitNanoseconds();
-                // The mixers take the volumes the screens and the race wrote in the last frame.
-                coastline::PublishN64Volumes();
-                PushScriptedTyping(commands.typing, frame, window->Window());
-                // The text typed on a keyboard while a screen takes it, with Backspace and Enter
-                // as control characters.
-                std::string typed;
-                bool printScreen = false;
-                bool focusLost = false;
-                SDL_Event event;
-                while (SDL_PollEvent(&event)) {
-                    if (event.type == SDL_EVENT_WINDOW_FOCUS_LOST) {
-                        focusLost = true;
+                                titleRegion->c_str());
                     }
-                    // F9 takes the frame as well, as a desktop such as Plasma keeps Print Screen.
-                    if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat &&
-                        (event.key.scancode == SDL_SCANCODE_PRINTSCREEN ||
-                         event.key.scancode == SDL_SCANCODE_F9)) {
-                        printScreen = true;
+                    mainMenu = coastline::Menus::Load(*sceneRenderer,
+                                                      frontEndRelease,
+                                                      paths->data,
+                                                      paths->cache,
+                                                      config,
+                                                      configPath,
+                                                      std::array{assetData, paths->data});
+                    if (mainMenu) {
+                        mainMenu->SetMenuMusic(playMenuMusic);
                     }
-                    if (event.type == SDL_EVENT_QUIT) {
-                        running = false;
-                    } else if (event.type == SDL_EVENT_TEXT_INPUT) {
-                        typed += event.text.text;
-                    } else if (event.type == SDL_EVENT_KEY_DOWN &&
-                               SDL_TextInputActive(window->Window())) {
-                        if (event.key.key == SDLK_BACKSPACE) {
-                            typed += '\b';
-                        } else if (event.key.key == SDLK_RETURN || event.key.key == SDLK_KP_ENTER) {
-                            typed += '\r';
+                    frameRateText = coastline::MenuText::Load(
+                        *sceneRenderer,
+                        coastline::FontDirectory(assets, coastline::SelectedLanguage()));
+                }
+                playMenuMusic();
+                // The vertical sync V returns to, fifo when the settings choose it.
+                const bool fifo = displayOptions.fifo;
+                Uint64 lastTicks = SDL_GetTicksNS();
+                // FrameRateLimit spaces the frames, at no limit when 0. --gpu-preset worst draws 30
+                // frames a second, the steps of the race, for a slow computer.
+                const long frameLimit = parser.present("--gpu-preset") == "worst" ?
+                                            30 :
+                                            config.GetInteger("Video", "FrameRateLimit", 0);
+                const Uint64 framePeriod = frameLimit > 0 ? SDL_NS_PER_SECOND / frameLimit : 0;
+                Uint64 nextFrame = lastTicks;
+                Uint64 rateStart = lastTicks;
+                int rateFrames = 0;
+                DisplayKeys displayKeys;
+                FrameRateOverlay frameRateOverlay;
+                std::uint16_t lastButtons = 0;
+                std::uint16_t lastSecondButtons = 0;
+                bool running = true;
+                bool printScreenWasDown = false;
+                coastline::MenusEnd settingsTransition = coastline::MenusEnd::Running;
+                Uint64 settingsShownAt = 0;
+                int settingsFrames = 0;
+                for (int frame = firstFrame; running; ++frame) {
+                    const auto frameStarted = SDL_GetTicksNS();
+                    const auto waitStarted = window->PresentationWaitNanoseconds();
+                    // The mixers take the volumes the screens and the race wrote in the last frame.
+                    coastline::PublishN64Volumes();
+                    PushScriptedTyping(commands.typing, frame, window->Window());
+                    // The text typed on a keyboard while a screen takes it, with Backspace and
+                    // Enter as control characters.
+                    std::string typed;
+                    bool printScreen = false;
+                    bool focusLost = false;
+                    SDL_Event event;
+                    while (SDL_PollEvent(&event)) {
+                        if (event.type == SDL_EVENT_WINDOW_FOCUS_LOST) {
+                            focusLost = true;
                         }
-                    }
-                    input.HandleEvent(event);
-                }
-                // A race pauses when the window loses the focus, as the pause binding pauses it,
-                // but not an instant replay or a run of a script.
-                if (focusLost && pauseOnFocusLoss && frontEnd == FrontEnd::Race &&
-                    !g_dwRacePauseState && !gInstantReplayActive) {
-                    g_bNetGamePaused = 1;
-                }
-                // The shortcuts of the window are read before the controllers, which then do not
-                // see the Enter of Alt and Enter. A race, the attract demo, and the credits read F
-                // themselves, and F and V type while a screen takes text.
-                bool raceShows = frontEnd == FrontEnd::Race || frontEnd == FrontEnd::AttractDemo ||
-                                 frontEnd == FrontEnd::Credits;
-                bool typing = SDL_TextInputActive(window->Window());
-                switch (displayKeys.Read(!raceShows && !typing, !typing)) {
-                case DisplayKey::Unlocked:
-                    window->SetFramerateUnlocked(!window->FramerateUnlocked());
-                    config.Set(
-                        "Video", "UnlockedFramerate", window->FramerateUnlocked() ? "1" : "0");
-                    nextFrame = SDL_GetTicksNS();
-                    break;
-                case DisplayKey::Fullscreen: {
-                    bool fullscreen = !window->Fullscreen();
-                    if (window->SetFullscreen(fullscreen)) {
-                        config.Set("Video", "Fullscreen", fullscreen ? "1" : "0");
-                    }
-                    break;
-                }
-                case DisplayKey::VSync: {
-                    // V goes from immediate to vertical sync, and from vertical sync or the
-                    // mailbox to immediate.
-                    bool vsync = window->PresentMode() == SDL_GPU_PRESENTMODE_IMMEDIATE;
-                    window->SetPresentMode(vsync ? SDL_GPU_PRESENTMODE_VSYNC :
-                                                   SDL_GPU_PRESENTMODE_IMMEDIATE);
-                    config.Set("Video", "VSync", !vsync ? "immediate" : fifo ? "fifo" : "vsync");
-                    break;
-                }
-                case DisplayKey::FrameRate:
-                    g_bShowFpsCounter = (g_bShowFpsCounter + 1) % coastline::FRAME_RATE_STATES;
-                    break;
-                case DisplayKey::None:
-                    break;
-                }
-                const bool racing = frontEnd == FrontEnd::Race;
-                auto ports = input.Poll(racing ? g_dwNumLocalPlayers :
-                                        mainMenu && frontEnd == FrontEnd::MainMenu ?
-                                                 mainMenu->ControlledPlayers() :
-                                                 1,
-                                        racing);
-                std::uint16_t scripted = 0;
-                for (const coastline::ScriptPress &press : commands.presses) {
-                    if (press.port != 0) {
-                        ports[press.port].connected = true;
-                    }
-                    if (frame >= press.frame && frame < press.frame + press.frames) {
-                        ports[press.port].buttons |= press.button;
-                        if (press.port == 0) {
-                            scripted |= press.button;
+                        // F9 takes the frame as well, as a desktop such as Plasma keeps Print
+                        // Screen.
+                        if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat &&
+                            (event.key.scancode == SDL_SCANCODE_PRINTSCREEN ||
+                             event.key.scancode == SDL_SCANCODE_F9)) {
+                            printScreen = true;
                         }
-                    }
-                }
-                coastline::SetSecondControllerState(ports[1]);
-                // The scripted moves of the mouse take the place of the real mouse.
-                if (commands.mouseMoves.empty()) {
-                    float x = 0.0f;
-                    float y = 0.0f;
-                    mouse.buttons = SDL_GetMouseState(&x, &y);
-                    mouse.at = MouseOnScreen(*window, x, y);
-                } else {
-                    mouse.buttons = 0;
-                    for (const coastline::ScriptMouse &move : commands.mouseMoves) {
-                        if (frame >= move.frame && frame < move.frame + move.frames) {
-                            mouse.at = {move.x * 2, move.y * 2};
-                            mouse.buttons = move.button == coastline::ScriptMouseButton::Left ?
-                                                SDL_BUTTON_LMASK :
-                                            move.button == coastline::ScriptMouseButton::Right ?
-                                                SDL_BUTTON_RMASK :
-                                                0;
-                        }
-                    }
-                }
-                // The race reads the keyboard through the bindings of the PC release, and the
-                // presses push down the keys of its default bindings.
-                std::vector<int> scriptedKeys;
-                for (std::size_t i = 0; i < commands.keys.size(); ++i) {
-                    const coastline::ScriptKey &key = commands.keys[i];
-                    if (frame >= key.frame && frame < key.frame + key.frames) {
-                        scriptedKeys.push_back(script.keys[i]);
-                    }
-                }
-                if (frontEnd == FrontEnd::Race) {
-                    for (const auto &[button, key] : RACE_KEYS) {
-                        if (scripted & button) {
-                            scriptedKeys.push_back(key);
-                        }
-                    }
-                }
-                coastline::SetScriptedKeys(std::move(scriptedKeys));
-                bool printScreenDown = coastline::IsKeyDown(SDL_SCANCODE_PRINTSCREEN) ||
-                                       coastline::IsKeyDown(SDL_SCANCODE_F9);
-                printScreen = printScreen || (printScreenDown && !printScreenWasDown);
-                printScreenWasDown = printScreenDown;
-                // The frames of the script are named by their number.
-                std::optional<std::filesystem::path> framePath;
-                if (std::ranges::contains(commands.screenshots, frame) ||
-                    (commands.screenshotEvery > 0 && frame % commands.screenshotEvery == 0)) {
-                    char name[32];
-                    std::snprintf(name, sizeof(name), "frame-%06d.png", frame);
-                    framePath = scriptFrames / name;
-                }
-                // Print Screen saves the frame to the screenshots of the data directory, named by
-                // the time it was taken.
-                if (printScreen && !framePath) {
-                    framePath = ScreenshotPath(paths->data / "screenshots");
-                }
-                window->UpdateFrameSize();
-                if (intro) {
-                    Uint64 now = SDL_GetTicksNS();
-                    float seconds = savesFrames ?
-                                        1.0f / 60.0f :
-                                        std::min(static_cast<float>(now - lastTicks) / 1e9f, 0.1f);
-                    lastTicks = now;
-                    // A press of A, Start, or Z skips or chooses, B goes back, and every C button
-                    // together shows the date of the build on the splash screens.
-                    constexpr std::uint16_t CHOOSE =
-                        coastline::BUTTON_A | coastline::BUTTON_START | coastline::BUTTON_Z;
-                    constexpr std::uint16_t C_BUTTONS =
-                        coastline::BUTTON_C_UP | coastline::BUTTON_C_DOWN |
-                        coastline::BUTTON_C_LEFT | coastline::BUTTON_C_RIGHT;
-                    // The stick of a controller pushes the directions of its pad.
-                    constexpr int STICK_PUSH = 40;
-                    auto heldOf = [](const coastline::ControllerState &port) {
-                        std::uint16_t buttons = port.buttons;
-                        if (port.stickX < -STICK_PUSH) {
-                            buttons |= coastline::BUTTON_D_LEFT;
-                        }
-                        if (port.stickX > STICK_PUSH) {
-                            buttons |= coastline::BUTTON_D_RIGHT;
-                        }
-                        if (port.stickY > STICK_PUSH) {
-                            buttons |= coastline::BUTTON_D_UP;
-                        }
-                        if (port.stickY < -STICK_PUSH) {
-                            buttons |= coastline::BUTTON_D_DOWN;
-                        }
-                        return buttons;
-                    };
-                    std::uint16_t held = heldOf(ports[0]);
-                    std::uint16_t pressed = held & ~lastButtons;
-                    lastButtons = held;
-                    std::uint16_t secondHeld = heldOf(ports[1]);
-                    std::uint16_t secondPressed = secondHeld & ~lastSecondButtons;
-                    lastSecondButtons = secondHeld;
-                    if (frontEnd == FrontEnd::Intro) {
-                        // Shift and I on the keyboard hold every C button at once.
-                        const bool *keys = SDL_GetKeyboardState(nullptr);
-                        bool shiftI =
-                            keys[SDL_SCANCODE_I] && (SDL_GetModState() & SDL_KMOD_SHIFT) != 0;
-                        coastline::IntroButtons buttons{(pressed & CHOOSE) != 0,
-                                                        (held & C_BUTTONS) == C_BUTTONS || shiftI};
-                        coastline::IntroEnd end = intro->Update(seconds, buttons);
-                        if (end == coastline::IntroEnd::MainMenu && mainMenu) {
-                            mainMenu->Restart();
-                            frontEnd = FrontEnd::MainMenu;
-                        } else if (end != coastline::IntroEnd::Running) {
-                            openRaceData();
-                            // The first step loads the race and with it the track and the car.
-                            attractDemo.Start();
-                            attractDemo.Step(false);
-                            const coastline::RaceCar demoCar{
-                                attractDemo.Car(), attractDemo.Color(), std::nullopt};
-                            raceView = coastline::RaceView::Load(
-                                *sceneRenderer, assets, attractDemo.Track(), {&demoCar, 1});
-                            raceTime = 0.0f;
-                            leaveDemo = false;
-                            if (raceView) {
-                                frontEnd = FrontEnd::AttractDemo;
-                            } else {
-                                intro->Restart();
+                        if (event.type == SDL_EVENT_QUIT) {
+                            running = false;
+                        } else if (event.type == SDL_EVENT_TEXT_INPUT) {
+                            typed += event.text.text;
+                        } else if (event.type == SDL_EVENT_KEY_DOWN &&
+                                   SDL_TextInputActive(window->Window())) {
+                            if (event.key.key == SDLK_BACKSPACE) {
+                                typed += '\b';
+                            } else if (event.key.key == SDLK_RETURN ||
+                                       event.key.key == SDLK_KP_ENTER) {
+                                typed += '\r';
                             }
                         }
-                    } else if (frontEnd == FrontEnd::AttractDemo) {
-                        // A press of A, Start, or Z leaves the demo for the main menu.
-                        leaveDemo = leaveDemo || (pressed & CHOOSE) != 0;
-                        raceTime += seconds;
-                        bool demoRunning = true;
-                        while (demoRunning && raceTime >= RACE_STEP) {
-                            raceTime -= RACE_STEP;
-                            demoRunning = attractDemo.Step(leaveDemo);
-                            leaveDemo = false;
+                        input.HandleEvent(event);
+                    }
+                    // A race pauses when the window loses the focus, as the pause binding pauses
+                    // it, but not an instant replay or a run of a script.
+                    if (focusLost && pauseOnFocusLoss && frontEnd == FrontEnd::Race &&
+                        !g_dwRacePauseState && !gInstantReplayActive) {
+                        g_bNetGamePaused = 1;
+                    }
+                    // The shortcuts of the window are read before the controllers, which then do
+                    // not see the Enter of Alt and Enter. A race, the attract demo, and the credits
+                    // read F themselves, and F and V type while a screen takes text.
+                    bool raceShows = frontEnd == FrontEnd::Race ||
+                                     frontEnd == FrontEnd::AttractDemo ||
+                                     frontEnd == FrontEnd::Credits;
+                    bool typing = SDL_TextInputActive(window->Window());
+                    switch (displayKeys.Read(!raceShows && !typing, !typing)) {
+                    case DisplayKey::Unlocked:
+                        window->SetFramerateUnlocked(!window->FramerateUnlocked());
+                        config.Set(
+                            "Video", "UnlockedFramerate", window->FramerateUnlocked() ? "1" : "0");
+                        nextFrame = SDL_GetTicksNS();
+                        break;
+                    case DisplayKey::Fullscreen: {
+                        bool fullscreen = !window->Fullscreen();
+                        if (window->SetFullscreen(fullscreen)) {
+                            config.Set("Video", "Fullscreen", fullscreen ? "1" : "0");
                         }
-                        if (!demoRunning) {
-                            raceView.reset();
-                            if (attractDemo.Interrupted() && mainMenu) {
+                        break;
+                    }
+                    case DisplayKey::VSync: {
+                        // V goes from immediate to vertical sync, and from vertical sync or the
+                        // mailbox to immediate.
+                        bool vsync = window->PresentMode() == SDL_GPU_PRESENTMODE_IMMEDIATE;
+                        window->SetPresentMode(vsync ? SDL_GPU_PRESENTMODE_VSYNC :
+                                                       SDL_GPU_PRESENTMODE_IMMEDIATE);
+                        config.Set("Video",
+                                   "VSync",
+                                   !vsync ? "immediate" :
+                                   fifo   ? "fifo" :
+                                            "vsync");
+                        break;
+                    }
+                    case DisplayKey::FrameRate:
+                        g_bShowFpsCounter = (g_bShowFpsCounter + 1) % coastline::FRAME_RATE_STATES;
+                        break;
+                    case DisplayKey::None:
+                        break;
+                    }
+                    const bool racing = frontEnd == FrontEnd::Race;
+                    auto ports = input.Poll(racing ? g_dwNumLocalPlayers :
+                                            mainMenu && frontEnd == FrontEnd::MainMenu ?
+                                                     mainMenu->ControlledPlayers() :
+                                                     1,
+                                            racing);
+                    std::uint16_t scripted = 0;
+                    for (const coastline::ScriptPress &press : commands.presses) {
+                        if (press.port != 0) {
+                            ports[press.port].connected = true;
+                        }
+                        if (frame >= press.frame && frame < press.frame + press.frames) {
+                            ports[press.port].buttons |= press.button;
+                            if (press.port == 0) {
+                                scripted |= press.button;
+                            }
+                        }
+                    }
+                    coastline::SetSecondControllerState(ports[1]);
+                    // The scripted moves of the mouse take the place of the real mouse.
+                    if (commands.mouseMoves.empty()) {
+                        float x = 0.0f;
+                        float y = 0.0f;
+                        mouse.buttons = SDL_GetMouseState(&x, &y);
+                        mouse.at = MouseOnScreen(*window, x, y);
+                    } else {
+                        mouse.buttons = 0;
+                        for (const coastline::ScriptMouse &move : commands.mouseMoves) {
+                            if (frame >= move.frame && frame < move.frame + move.frames) {
+                                mouse.at = {move.x * 2, move.y * 2};
+                                mouse.buttons = move.button == coastline::ScriptMouseButton::Left ?
+                                                    SDL_BUTTON_LMASK :
+                                                move.button == coastline::ScriptMouseButton::Right ?
+                                                    SDL_BUTTON_RMASK :
+                                                    0;
+                            }
+                        }
+                    }
+                    // The race reads the keyboard through the bindings of the PC release, and the
+                    // presses push down the keys of its default bindings.
+                    std::vector<int> scriptedKeys;
+                    for (std::size_t i = 0; i < commands.keys.size(); ++i) {
+                        const coastline::ScriptKey &key = commands.keys[i];
+                        if (frame >= key.frame && frame < key.frame + key.frames) {
+                            scriptedKeys.push_back(script.keys[i]);
+                        }
+                    }
+                    if (frontEnd == FrontEnd::Race) {
+                        for (const auto &[button, key] : RACE_KEYS) {
+                            if (scripted & button) {
+                                scriptedKeys.push_back(key);
+                            }
+                        }
+                    }
+                    coastline::SetScriptedKeys(std::move(scriptedKeys));
+                    bool printScreenDown = coastline::IsKeyDown(SDL_SCANCODE_PRINTSCREEN) ||
+                                           coastline::IsKeyDown(SDL_SCANCODE_F9);
+                    printScreen = printScreen || (printScreenDown && !printScreenWasDown);
+                    printScreenWasDown = printScreenDown;
+                    // The frames of the script are named by their number.
+                    std::optional<std::filesystem::path> framePath;
+                    if (std::ranges::contains(commands.screenshots, frame) ||
+                        (commands.screenshotEvery > 0 && frame % commands.screenshotEvery == 0)) {
+                        char name[32];
+                        std::snprintf(name, sizeof(name), "frame-%06d.png", frame);
+                        framePath = scriptFrames / name;
+                    }
+                    // Print Screen saves the frame to the screenshots of the data directory, named
+                    // by the time it was taken.
+                    if (printScreen && !framePath) {
+                        framePath = ScreenshotPath(paths->data / "screenshots");
+                    }
+                    window->UpdateFrameSize();
+                    if (intro && settingsTransition != coastline::MenusEnd::Running) {
+                        const bool reboot = settingsTransition == coastline::MenusEnd::Reinitialize;
+                        sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
+                        if (frameRateText) {
+                            DrawOverlayLine(*sceneRenderer,
+                                            *frameRateText,
+                                            reboot ? "Reinitializing game... Returning to logos." :
+                                                     "Applying settings...",
+                                            220,
+                                            320,
+                                            coastline::TextStyle::Align::Center,
+                                            true);
+                        }
+                        sceneRenderer->End(framePath ? &*framePath : nullptr);
+                        if (settingsFrames++ == 0) {
+                            settingsShownAt = SDL_GetTicksNS();
+                            SDL_Log(reboot ? "Reinitializing the game after Options." :
+                                             "Applying settings after Options.");
+                            if (!reboot) {
+                                if (!window->ApplyLiveOptions(
+                                        DisplayOptionsFrom(config, parser, savesFrames))) {
+                                    settingsTransition = coastline::MenusEnd::Reinitialize;
+                                    settingsFrames = 0;
+                                } else if (playMusic) {
+                                    menuMusic.SetSource(config.Get("Game", "Music") == "CD" ?
+                                                            coastline::RaceMusicSource::CdAudio :
+                                                            coastline::RaceMusicSource::Modules);
+                                }
+                            }
+                        } else if (savesFrames ? settingsFrames >= 15 :
+                                                 SDL_GetTicksNS() - settingsShownAt >=
+                                                     SDL_NS_PER_SECOND / 4) {
+                            if (reboot) {
+                                firstFrame = frame + 1;
+                                reinitialize = true;
+                                break;
+                            }
+                            settingsTransition = coastline::MenusEnd::Running;
+                            lastTicks = SDL_GetTicksNS();
+                        }
+                    } else if (intro) {
+                        Uint64 now = SDL_GetTicksNS();
+                        float seconds =
+                            savesFrames ?
+                                1.0f / 60.0f :
+                                std::min(static_cast<float>(now - lastTicks) / 1e9f, 0.1f);
+                        lastTicks = now;
+                        // A press of A, Start, or Z skips or chooses, B goes back, and every C
+                        // button together shows the date of the build on the splash screens.
+                        constexpr std::uint16_t CHOOSE =
+                            coastline::BUTTON_A | coastline::BUTTON_START | coastline::BUTTON_Z;
+                        constexpr std::uint16_t C_BUTTONS =
+                            coastline::BUTTON_C_UP | coastline::BUTTON_C_DOWN |
+                            coastline::BUTTON_C_LEFT | coastline::BUTTON_C_RIGHT;
+                        // The stick of a controller pushes the directions of its pad.
+                        constexpr int STICK_PUSH = 40;
+                        auto heldOf = [](const coastline::ControllerState &port) {
+                            std::uint16_t buttons = port.buttons;
+                            if (port.stickX < -STICK_PUSH) {
+                                buttons |= coastline::BUTTON_D_LEFT;
+                            }
+                            if (port.stickX > STICK_PUSH) {
+                                buttons |= coastline::BUTTON_D_RIGHT;
+                            }
+                            if (port.stickY > STICK_PUSH) {
+                                buttons |= coastline::BUTTON_D_UP;
+                            }
+                            if (port.stickY < -STICK_PUSH) {
+                                buttons |= coastline::BUTTON_D_DOWN;
+                            }
+                            return buttons;
+                        };
+                        std::uint16_t held = heldOf(ports[0]);
+                        std::uint16_t pressed = held & ~lastButtons;
+                        lastButtons = held;
+                        std::uint16_t secondHeld = heldOf(ports[1]);
+                        std::uint16_t secondPressed = secondHeld & ~lastSecondButtons;
+                        lastSecondButtons = secondHeld;
+                        if (frontEnd == FrontEnd::Intro) {
+                            // Shift and I on the keyboard hold every C button at once.
+                            const bool *keys = SDL_GetKeyboardState(nullptr);
+                            bool shiftI =
+                                keys[SDL_SCANCODE_I] && (SDL_GetModState() & SDL_KMOD_SHIFT) != 0;
+                            coastline::IntroButtons buttons{
+                                (pressed & CHOOSE) != 0, (held & C_BUTTONS) == C_BUTTONS || shiftI};
+                            coastline::IntroEnd end = intro->Update(seconds, buttons);
+                            if (end == coastline::IntroEnd::MainMenu && mainMenu) {
                                 mainMenu->Restart();
                                 frontEnd = FrontEnd::MainMenu;
-                            } else {
+                            } else if (end != coastline::IntroEnd::Running) {
+                                openRaceData();
+                                // The first step loads the race and with it the track and the car.
+                                attractDemo.Start();
+                                attractDemo.Step(false);
+                                const coastline::RaceCar demoCar{
+                                    attractDemo.Car(), attractDemo.Color(), std::nullopt};
+                                raceView = coastline::RaceView::Load(
+                                    *sceneRenderer, assets, attractDemo.Track(), {&demoCar, 1});
+                                raceTime = 0.0f;
+                                leaveDemo = false;
+                                if (raceView) {
+                                    frontEnd = FrontEnd::AttractDemo;
+                                } else {
+                                    intro->Restart();
+                                }
+                            }
+                        } else if (frontEnd == FrontEnd::AttractDemo) {
+                            // A press of A, Start, or Z leaves the demo for the main menu.
+                            leaveDemo = leaveDemo || (pressed & CHOOSE) != 0;
+                            raceTime += seconds;
+                            bool demoRunning = true;
+                            while (demoRunning && raceTime >= RACE_STEP) {
+                                raceTime -= RACE_STEP;
+                                demoRunning = attractDemo.Step(leaveDemo);
+                                leaveDemo = false;
+                            }
+                            if (!demoRunning) {
+                                raceView.reset();
+                                if (attractDemo.Interrupted() && mainMenu) {
+                                    mainMenu->Restart();
+                                    frontEnd = FrontEnd::MainMenu;
+                                } else {
+                                    intro->Restart();
+                                    frontEnd = FrontEnd::Intro;
+                                }
+                            }
+                        } else if (frontEnd == FrontEnd::Race) {
+                            raceTime += seconds;
+                            coastline::RaceEnd end = coastline::RaceEnd::Running;
+                            while (end == coastline::RaceEnd::Running && raceTime >= RACE_STEP) {
+                                raceTime -= RACE_STEP;
+                                end = raceSession.Step();
+                            }
+                            if (end != coastline::RaceEnd::Running) {
+                                // The module of the track plays on after the race until the main
+                                // menu starts the music of the menus. The credits play under the
+                                // music of the menus.
+                                raceView.reset();
+                                frontEnd = FrontEnd::MainMenu;
+                                if (end != coastline::RaceEnd::Credits) {
+                                    mainMenu->FinishRace(end, raceSession.Results());
+                                } else {
+                                    playMenuMusic();
+                                    if (startCredits(true)) {
+                                        frontEnd = FrontEnd::Credits;
+                                    } else {
+                                        mainMenu->FinishRace(end, {});
+                                    }
+                                }
+                            }
+                        } else if (frontEnd == FrontEnd::Credits) {
+                            // A press of A, Start, or Z ends the credits as it ends the attract
+                            // demo.
+                            leaveDemo = leaveDemo || (pressed & CHOOSE) != 0;
+                            raceTime += seconds;
+                            bool creditsRunning = true;
+                            while (creditsRunning && raceTime >= RACE_STEP) {
+                                raceTime -= RACE_STEP;
+                                creditsRunning = attractDemo.Step(leaveDemo);
+                                attractDemo.Credits().Step(RACE_STEP);
+                                leaveDemo = false;
+                            }
+                            if (!creditsRunning) {
+                                raceView.reset();
+                                if (endingCredits) {
+                                    mainMenu->FinishRace(coastline::RaceEnd::Credits, {});
+                                } else {
+                                    mainMenu->FinishCredits();
+                                }
+                                frontEnd = FrontEnd::MainMenu;
+                            }
+                        }
+                        bool startRace = false;
+                        bool startCreditsRace = false;
+                        if (frontEnd == FrontEnd::Intro) {
+                            sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
+                            intro->Draw(*sceneRenderer);
+                        } else if (frontEnd == FrontEnd::AttractDemo ||
+                                   frontEnd == FrontEnd::Race || frontEnd == FrontEnd::Credits) {
+                            sceneRenderer->Begin(raceView->ClearColor());
+                            // The frame is raceTime into the step after the last snapshot.
+                            raceView->Draw(*sceneRenderer, raceTime / RACE_STEP);
+                        } else {
+                            sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
+                            auto menuButtons = [&](std::uint16_t down,
+                                                   std::uint16_t now,
+                                                   const coastline::ControllerState &port) {
+                                return coastline::MenuButtons{
+                                    .left = (down & coastline::BUTTON_D_LEFT) != 0,
+                                    .right = (down & coastline::BUTTON_D_RIGHT) != 0,
+                                    .up = (down & coastline::BUTTON_D_UP) != 0,
+                                    .down = (down & coastline::BUTTON_D_DOWN) != 0,
+                                    .choose = (down & CHOOSE) != 0,
+                                    .start = (down & coastline::BUTTON_START) != 0,
+                                    .back = (down & coastline::BUTTON_B) != 0,
+                                    .held = now != 0,
+                                    .cDown = (down & coastline::BUTTON_C_DOWN) != 0,
+                                    .heldButtons = port.buttons,
+                                    .stickY = port.stickY};
+                            };
+                            coastline::PaintShopInput pointer = PaintShopInputOf(ports[0], mouse);
+                            pointer.text = std::move(typed);
+                            coastline::MenusEnd end =
+                                mainMenu->Frame(*sceneRenderer,
+                                                seconds,
+                                                {menuButtons(pressed, held, ports[0]),
+                                                 menuButtons(secondPressed, secondHeld, ports[1])},
+                                                ports[1].connected,
+                                                pointer);
+                            // The keyboard of the computer types while a screen takes text.
+                            if (mainMenu->TakesText() != SDL_TextInputActive(window->Window())) {
+                                if (mainMenu->TakesText()) {
+                                    SDL_StartTextInput(window->Window());
+                                } else {
+                                    SDL_StopTextInput(window->Window());
+                                }
+                            }
+                            // A screen that draws a cursor for the mouse hides the cursor of the
+                            // system.
+                            if (mainMenu->DrawsPointer() == SDL_CursorVisible()) {
+                                if (mainMenu->DrawsPointer()) {
+                                    SDL_HideCursor();
+                                } else {
+                                    SDL_ShowCursor();
+                                }
+                            }
+                            if (end == coastline::MenusEnd::Splash) {
                                 intro->Restart();
                                 frontEnd = FrontEnd::Intro;
                             }
-                        }
-                    } else if (frontEnd == FrontEnd::Race) {
-                        raceTime += seconds;
-                        coastline::RaceEnd end = coastline::RaceEnd::Running;
-                        while (end == coastline::RaceEnd::Running && raceTime >= RACE_STEP) {
-                            raceTime -= RACE_STEP;
-                            end = raceSession.Step();
-                        }
-                        if (end != coastline::RaceEnd::Running) {
-                            // The module of the track plays on after the race until the main
-                            // menu starts the music of the menus. The credits play under the
-                            // music of the menus.
-                            raceView.reset();
-                            frontEnd = FrontEnd::MainMenu;
-                            if (end != coastline::RaceEnd::Credits) {
-                                mainMenu->FinishRace(end, raceSession.Results());
-                            } else {
-                                playMenuMusic();
-                                if (startCredits(true)) {
-                                    frontEnd = FrontEnd::Credits;
-                                } else {
-                                    mainMenu->FinishRace(end, {});
-                                }
+                            startRace = end == coastline::MenusEnd::Race;
+                            startCreditsRace = end == coastline::MenusEnd::Credits;
+                            if (end == coastline::MenusEnd::ApplySettings ||
+                                end == coastline::MenusEnd::Reinitialize) {
+                                settingsTransition = end;
+                                settingsFrames = 0;
                             }
                         }
-                    } else if (frontEnd == FrontEnd::Credits) {
-                        // A press of A, Start, or Z ends the credits as it ends the attract demo.
-                        leaveDemo = leaveDemo || (pressed & CHOOSE) != 0;
-                        raceTime += seconds;
-                        bool creditsRunning = true;
-                        while (creditsRunning && raceTime >= RACE_STEP) {
-                            raceTime -= RACE_STEP;
-                            creditsRunning = attractDemo.Step(leaveDemo);
-                            attractDemo.Credits().Step(RACE_STEP);
-                            leaveDemo = false;
+                        // The HUD of a race and of the attract demo draws the rate itself, and the
+                        // statistics draw it in their state.
+                        if (g_bShowFpsCounter == 1 && frameRateText &&
+                            (frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::MainMenu)) {
+                            frameRateOverlay.Draw(*sceneRenderer, *frameRateText);
                         }
-                        if (!creditsRunning) {
-                            raceView.reset();
-                            if (endingCredits) {
-                                mainMenu->FinishRace(coastline::RaceEnd::Credits, {});
+                        if (reimportNoticeSeconds > 0.0f && frameRateText &&
+                            (frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::MainMenu)) {
+                            DrawOverlayLine(
+                                *sceneRenderer, *frameRateText, reimportNotice.c_str(), 20);
+                            reimportNoticeSeconds -= seconds;
+                        }
+                        if (g_bShowFpsCounter != coastline::FRAME_RATE_STATISTICS) {
+                            performanceStats.reset();
+                        } else if (frameRateText) {
+                            if (!performanceStats) {
+                                performanceStats = std::make_unique<coastline::PerformanceStats>(
+                                    window->DeviceName(), window->NvmlAllowed());
+                            }
+                            // The lines start under the lap and the times of a race, and the
+                            // request to import again.
+                            int y = 80;
+                            // The left of the frame, under the lap, where the frame is wider than
+                            // the 640 across of the screen.
+                            const coastline::GpuWindow &frame = sceneRenderer->Window();
+                            float across = coastline::ScreenExtent(
+                                static_cast<float>(frame.FrameWidth()) /
+                                static_cast<float>(std::max(frame.FrameHeight(), 1u)))[0];
+                            int x = 16 - static_cast<int>(320.0f * (1.0f / across - 1.0f));
+                            for (const std::string &line :
+                                 performanceStats->Lines(frame.GpuMemoryBytes())) {
+                                DrawOverlayLine(*sceneRenderer,
+                                                *frameRateText,
+                                                line.c_str(),
+                                                y,
+                                                x,
+                                                coastline::TextStyle::Align::Left,
+                                                true);
+                                y += 16;
+                            }
+                        }
+                        menuMusic.SetVolume(g_bBgmVolume);
+                        sceneRenderer->End(framePath ? &*framePath : nullptr);
+                        // The credits play under the music of the menus.
+                        if (startCreditsRace) {
+                            if (startCredits(false)) {
+                                frontEnd = FrontEnd::Credits;
                             } else {
                                 mainMenu->FinishCredits();
                             }
-                            frontEnd = FrontEnd::MainMenu;
                         }
-                    }
-                    bool startRace = false;
-                    bool startCreditsRace = false;
-                    if (frontEnd == FrontEnd::Intro) {
-                        sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
-                        intro->Draw(*sceneRenderer);
-                    } else if (frontEnd == FrontEnd::AttractDemo || frontEnd == FrontEnd::Race ||
-                               frontEnd == FrontEnd::Credits) {
-                        sceneRenderer->Begin(raceView->ClearColor());
-                        // The frame is raceTime into the step after the last snapshot.
-                        raceView->Draw(*sceneRenderer, raceTime / RACE_STEP);
-                    } else {
-                        sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
-                        auto menuButtons = [&](std::uint16_t down,
-                                               std::uint16_t now,
-                                               const coastline::ControllerState &port) {
-                            return coastline::MenuButtons{
-                                .left = (down & coastline::BUTTON_D_LEFT) != 0,
-                                .right = (down & coastline::BUTTON_D_RIGHT) != 0,
-                                .up = (down & coastline::BUTTON_D_UP) != 0,
-                                .down = (down & coastline::BUTTON_D_DOWN) != 0,
-                                .choose = (down & CHOOSE) != 0,
-                                .start = (down & coastline::BUTTON_START) != 0,
-                                .back = (down & coastline::BUTTON_B) != 0,
-                                .held = now != 0,
-                                .cDown = (down & coastline::BUTTON_C_DOWN) != 0,
-                                .heldButtons = port.buttons,
-                                .stickY = port.stickY};
-                        };
-                        coastline::PaintShopInput pointer = PaintShopInputOf(ports[0], mouse);
-                        pointer.text = std::move(typed);
-                        coastline::MenusEnd end =
-                            mainMenu->Frame(*sceneRenderer,
-                                            seconds,
-                                            {menuButtons(pressed, held, ports[0]),
-                                             menuButtons(secondPressed, secondHeld, ports[1])},
-                                            ports[1].connected,
-                                            pointer);
-                        // The keyboard of the computer types while a screen takes text.
-                        if (mainMenu->TakesText() != SDL_TextInputActive(window->Window())) {
-                            if (mainMenu->TakesText()) {
-                                SDL_StartTextInput(window->Window());
+                        if (startRace) {
+                            // The music of the menus stops when the race starts, and the race plays
+                            // its own. The first step loads the race and with it the track and the
+                            // cars.
+                            openRaceData();
+                            SDL_Log("The music of the menus stops.");
+                            menuMusic.Stop();
+                            coastline::RaceSetup setup = mainMenu->ChosenRace();
+                            setup.waitForStart = config.GetBoolean("Game", "WaitForStart", false);
+                            setup.autopilot = commands.autopilot;
+                            raceSession.Start(
+                                setup, assets / "music", config.Get("Game", "Music") == "CD");
+                            std::vector<coastline::RaceCar> cars = coastline::RaceCars();
+                            for (std::size_t i = 0; i < cars.size() && i < setup.cars.size(); ++i) {
+                                if (static_cast<int>(i) < setup.players) {
+                                    cars[i].images = setup.cars[i].images;
+                                    cars[i].otherLook = setup.cars[i].otherLook;
+                                }
+                            }
+                            raceView = coastline::RaceView::Load(
+                                *sceneRenderer, assets, coastline::RaceTrack(), cars);
+                            raceTime = 0.0f;
+                            if (raceView) {
+                                frontEnd = FrontEnd::Race;
                             } else {
-                                SDL_StopTextInput(window->Window());
+                                raceSession.Abandon();
+                                mainMenu->FinishRace(coastline::RaceEnd::Menu, {});
                             }
                         }
-                        // A screen that draws a cursor for the mouse hides the cursor of the
-                        // system.
-                        if (mainMenu->DrawsPointer() == SDL_CursorVisible()) {
-                            if (mainMenu->DrawsPointer()) {
-                                SDL_HideCursor();
-                            } else {
-                                SDL_ShowCursor();
-                            }
-                        }
-                        if (end == coastline::MenusEnd::Splash) {
-                            intro->Restart();
-                            frontEnd = FrontEnd::Intro;
-                        }
-                        startRace = end == coastline::MenusEnd::Race;
-                        startCreditsRace = end == coastline::MenusEnd::Credits;
-                    }
-                    // The HUD of a race and of the attract demo draws the rate itself, and the
-                    // statistics draw it in their state.
-                    if (g_bShowFpsCounter == 1 && frameRateText &&
-                        (frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::MainMenu)) {
-                        frameRateOverlay.Draw(*sceneRenderer, *frameRateText);
-                    }
-                    if (reimportNoticeSeconds > 0.0f && frameRateText &&
-                        (frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::MainMenu)) {
-                        DrawOverlayLine(*sceneRenderer, *frameRateText, reimportNotice.c_str(), 20);
-                        reimportNoticeSeconds -= seconds;
-                    }
-                    if (g_bShowFpsCounter != coastline::FRAME_RATE_STATISTICS) {
-                        performanceStats.reset();
-                    } else if (frameRateText) {
-                        if (!performanceStats) {
-                            performanceStats = std::make_unique<coastline::PerformanceStats>(
-                                window->DeviceName(), window->NvmlAllowed());
-                        }
-                        // The lines start under the lap and the times of a race, and the request
-                        // to import again.
-                        int y = 80;
-                        // The left of the frame, under the lap, where the frame is wider than
-                        // the 640 across of the screen.
-                        const coastline::GpuWindow &frame = sceneRenderer->Window();
-                        float across = coastline::ScreenExtent(
-                            static_cast<float>(frame.FrameWidth()) /
-                            static_cast<float>(std::max(frame.FrameHeight(), 1u)))[0];
-                        int x = 16 - static_cast<int>(320.0f * (1.0f / across - 1.0f));
-                        for (const std::string &line :
-                             performanceStats->Lines(frame.GpuMemoryBytes())) {
-                            DrawOverlayLine(*sceneRenderer,
-                                            *frameRateText,
-                                            line.c_str(),
-                                            y,
-                                            x,
-                                            coastline::TextStyle::Align::Left,
-                                            true);
-                            y += 16;
-                        }
-                    }
-                    menuMusic.SetVolume(g_bBgmVolume);
-                    sceneRenderer->End(framePath ? &*framePath : nullptr);
-                    // The credits play under the music of the menus.
-                    if (startCreditsRace) {
-                        if (startCredits(false)) {
-                            frontEnd = FrontEnd::Credits;
-                        } else {
-                            mainMenu->FinishCredits();
-                        }
-                    }
-                    if (startRace) {
-                        // The music of the menus stops when the race starts, and the race plays
-                        // its own. The first step loads the race and with it the track and the
-                        // cars.
-                        openRaceData();
-                        SDL_Log("The music of the menus stops.");
-                        menuMusic.Stop();
-                        coastline::RaceSetup setup = mainMenu->ChosenRace();
-                        setup.waitForStart = config.GetBoolean("Game", "WaitForStart", false);
-                        setup.autopilot = commands.autopilot;
-                        raceSession.Start(
-                            setup, assets / "music", config.Get("Game", "Music") == "CD");
-                        std::vector<coastline::RaceCar> cars = coastline::RaceCars();
-                        for (std::size_t i = 0; i < cars.size() && i < setup.cars.size(); ++i) {
-                            if (static_cast<int>(i) < setup.players) {
-                                cars[i].images = setup.cars[i].images;
-                                cars[i].otherLook = setup.cars[i].otherLook;
-                            }
-                        }
-                        raceView = coastline::RaceView::Load(
-                            *sceneRenderer, assets, coastline::RaceTrack(), cars);
-                        raceTime = 0.0f;
-                        if (raceView) {
-                            frontEnd = FrontEnd::Race;
-                        } else {
-                            raceSession.Abandon();
-                            mainMenu->FinishRace(coastline::RaceEnd::Menu, {});
-                        }
-                    }
-                } else {
-                    // Without the splash screens, the clear colour follows the stick of the
-                    // first controller.
-                    float red = 0.5f + ports[0].stickX / 160.0f;
-                    float green = 0.5f + ports[0].stickY / 160.0f;
-                    float blue = ports[0].buttons != 0 ? 0.6f : 0.2f;
-                    window->PresentClear(SDL_FColor{red, green, blue, 1.0f},
-                                         framePath ? &*framePath : nullptr);
-                }
-                frameRateOverlay.Record();
-                const auto frameFinished = SDL_GetTicksNS();
-                if (performanceStats) {
-                    const auto wait = window->PresentationWaitNanoseconds() - waitStarted;
-                    const auto elapsed = frameFinished - frameStarted;
-                    performanceStats->Frame(elapsed > wait ? elapsed - wait : 0);
-                }
-                // SDL_LOGGING=render=debug logs the frames of every 5 seconds.
-                ++rateFrames;
-                Uint64 now = SDL_GetTicksNS();
-                if (now - rateStart >= 5 * SDL_NS_PER_SECOND) {
-                    SDL_LogDebug(SDL_LOG_CATEGORY_RENDER,
-                                 "%.2f frames a second.",
-                                 static_cast<double>(rateFrames) * 1e9 /
-                                     static_cast<double>(now - rateStart));
-                    rateStart = now;
-                    rateFrames = 0;
-                }
-                // The longer of the limit and the refresh the presentation is paced to.
-                Uint64 period = window->FramerateUnlocked() ?
-                                    0 :
-                                    std::max(framePeriod, window->RefreshPeriod());
-                if (period > 0) {
-                    nextFrame += period;
-                    if (nextFrame > now) {
-                        SDL_DelayPrecise(nextFrame - now);
                     } else {
-                        // A late frame does not hurry the frames after it.
-                        nextFrame = now;
+                        // Without the splash screens, the clear colour follows the stick of the
+                        // first controller.
+                        float red = 0.5f + ports[0].stickX / 160.0f;
+                        float green = 0.5f + ports[0].stickY / 160.0f;
+                        float blue = ports[0].buttons != 0 ? 0.6f : 0.2f;
+                        window->PresentClear(SDL_FColor{red, green, blue, 1.0f},
+                                             framePath ? &*framePath : nullptr);
+                    }
+                    frameRateOverlay.Record();
+                    const auto frameFinished = SDL_GetTicksNS();
+                    if (performanceStats) {
+                        const auto wait = window->PresentationWaitNanoseconds() - waitStarted;
+                        const auto elapsed = frameFinished - frameStarted;
+                        performanceStats->Frame(elapsed > wait ? elapsed - wait : 0);
+                    }
+                    // SDL_LOGGING=render=debug logs the frames of every 5 seconds.
+                    ++rateFrames;
+                    Uint64 now = SDL_GetTicksNS();
+                    if (now - rateStart >= 5 * SDL_NS_PER_SECOND) {
+                        SDL_LogDebug(SDL_LOG_CATEGORY_RENDER,
+                                     "%.2f frames a second.",
+                                     static_cast<double>(rateFrames) * 1e9 /
+                                         static_cast<double>(now - rateStart));
+                        rateStart = now;
+                        rateFrames = 0;
+                    }
+                    // The longer of the limit and the refresh the presentation is paced to.
+                    Uint64 period = window->FramerateUnlocked() ?
+                                        0 :
+                                        std::max(framePeriod, window->RefreshPeriod());
+                    if (period > 0) {
+                        nextFrame += period;
+                        if (nextFrame > now) {
+                            SDL_DelayPrecise(nextFrame - now);
+                        } else {
+                            // A late frame does not hurry the frames after it.
+                            nextFrame = now;
+                        }
+                    }
+                    if (frame == commands.quitFrame) {
+                        running = false;
                     }
                 }
-                if (frame == commands.quitFrame) {
-                    running = false;
+                coastline::ShareRaceMusicPlayer(nullptr);
+                if (raceDataOpen) {
+                    ShutdownDirectSound();
+                    FreeStringTable();
                 }
-            }
-            coastline::ShareRaceMusicPlayer(nullptr);
-            status = EXIT_SUCCESS;
+                status = EXIT_SUCCESS;
+            } while (reinitialize);
         }
     }
     // Quitting the setup wizard is not a failure.

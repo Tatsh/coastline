@@ -40,6 +40,8 @@ public:
     void Stop();
     /** Apply the menu BGM volume to the CD stream. */
     void SetVolume(unsigned char volume);
+    /** Stop the previous source before selecting menu music again. */
+    void SetSource(RaceMusicSource source);
 
 private:
     struct State;

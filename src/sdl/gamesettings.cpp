@@ -117,6 +117,13 @@ GameSettings::GameSettings(GameConfig &config, std::span<const std::filesystem::
         title.choices.push_back({"japanese", "Japanese missing"});
     }
     m_options.push_back(std::move(title));
+    for (auto &option : m_options) {
+        if (option.key == "Music" || option.key == "Effects" || option.key == "FieldOfView" ||
+            option.key == "DrawDistance" || option.key == "RenderScale" ||
+            option.key == "AntialiasPost") {
+            option.restart = false;
+        }
+    }
 }
 
 std::size_t GameSettings::Selected(const Option &option) const {

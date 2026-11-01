@@ -405,7 +405,8 @@ bool GpuWindow::CreatePostPasses() {
 }
 
 SDL_GPUTexture *GpuWindow::AntialiasFrame(SDL_GPUCommandBuffer *commands) {
-    if (m_antialiasPipeline == nullptr || m_antialiased == nullptr) {
+    if (m_options.postAntialias == PostAntialias::None || m_antialiasPipeline == nullptr ||
+        m_antialiased == nullptr) {
         return m_frame;
     }
     SDL_GPUColorTargetInfo target{};
@@ -424,6 +425,33 @@ SDL_GPUTexture *GpuWindow::AntialiasFrame(SDL_GPUCommandBuffer *commands) {
     SDL_DrawGPUPrimitives(pass, 3, 1, 0, 0);
     SDL_EndGPURenderPass(pass);
     return m_antialiased;
+}
+
+bool GpuWindow::ApplyLiveOptions(const DisplayOptions &options) {
+    if (options.postAntialias != PostAntialias::None && m_antialiasPipeline == nullptr) {
+        if (!CreatePostPasses() || !CreateFrame(m_frameWidth, m_frameHeight)) {
+            return false;
+        }
+    }
+    m_options.fieldOfViewScale = options.fieldOfViewScale;
+    m_options.drawDistanceScale = std::isfinite(options.drawDistanceScale) ?
+                                      std::clamp(options.drawDistanceScale, 1.0f, 4.0f) :
+                                      1.0f;
+    m_options.n64Effects = options.n64Effects;
+    m_options.frameWidth = options.frameWidth;
+    m_options.frameHeight = options.frameHeight;
+    m_options.renderScale = options.renderScale;
+    m_options.postAntialias = options.postAntialias;
+    UpdateFrameSize();
+    return true;
+}
+
+bool GpuWindow::ApplyRendererOptions(const DisplayOptions &options) {
+    m_antialias = options.antialias;
+    m_options.anisotropy = options.anisotropy;
+    m_options.textureFilter = options.textureFilter;
+    m_options.alphaToCoverage = options.alphaToCoverage;
+    return ApplyLiveOptions(options);
 }
 
 GpuWindow::~GpuWindow() {

@@ -433,6 +433,14 @@ void FrontEndMusic::SetVolume(unsigned char volume) {
     }
 }
 
+void FrontEndMusic::SetSource(RaceMusicSource source) {
+    if (m_state->source != source) {
+        Stop();
+        m_state->source = source;
+        Play();
+    }
+}
+
 RaceMusicContext::RaceMusicContext() : m_music(std::make_unique<RaceMusic>()) {
     assert(RaceMusic::Active() == nullptr);
     SDL_SetPointerProperty(SDL_GetGlobalProperties(), RACE_MUSIC_PROPERTY, m_music.get());

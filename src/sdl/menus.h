@@ -120,10 +120,12 @@ struct CarSelectPlayer {
 
 /** Where the menus go next. */
 enum class MenusEnd {
-    Running, /*!< A menu screen is still showing. */
-    Splash,  /*!< The player went back from the main menu, or it timed out. */
-    Race,    /*!< The race of Menus::ChosenRace() starts. */
-    Credits, /*!< The race of the credits of the options menu starts. */
+    Running,       /*!< A menu screen is still showing. */
+    Splash,        /*!< The player went back from the main menu, or it timed out. */
+    Race,          /*!< The race of Menus::ChosenRace() starts. */
+    Credits,       /*!< The race of the credits of the options menu starts. */
+    ApplySettings, /*!< Apply pending settings after the options fade out. */
+    Reinitialize,  /*!< Reload game resources and return to the logos. */
 };
 
 /** The modes of the game, as g_dwGameMode of the console. */
@@ -459,6 +461,8 @@ private:
     std::unique_ptr<GameSettings> m_gameSettings;
     int m_gameSettingsStart = 0;
     bool m_gameSettingsSaveError = false;
+    bool m_settingsPending = false;
+    bool m_reinitializePending = false;
     bool m_loadConfigurationPending = false;
     bool m_saveConfigurationPending = false;
 

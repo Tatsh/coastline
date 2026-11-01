@@ -120,6 +120,11 @@ public:
         return m_options.n64Effects;
     }
 
+    /** Apply camera, particle, frame-size, and post-processing settings between frames. */
+    bool ApplyLiveOptions(const DisplayOptions &options);
+    /** Update sampling and texture filtering before rebuilding scene resources. */
+    bool ApplyRendererOptions(const DisplayOptions &options);
+
     /** @return The window. */
     SDL_Window *Window() const {
         return m_window.get();

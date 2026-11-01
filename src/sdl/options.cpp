@@ -484,8 +484,8 @@ void Menus::OptionsMenuPostDraw(SceneRenderer &renderer, int item) {
         const bool restart = m_gameSettings->RequiresRestart(item - m_gameSettingsStart);
         m_screen->Text().Draw(renderer,
                               m_gameSettingsSaveError ? "%wwSettings could not be saved." :
-                              restart ? "%wwUp/down saves changes. Restart to apply." :
-                                        "%wwUp/down saves changes. Takes effect now.",
+                              restart ? "%wwApplies when you exit Options. Returns to logos." :
+                                        "%wwApplies when you exit Options.",
                               160,
                               90,
                               style,
@@ -562,6 +562,11 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
         if (adjustment != GameSettings::Adjustment::Unchanged) {
             m_gameSettingsSaveError = adjustment == GameSettings::Adjustment::SaveFailed;
         }
+        if (adjustment == GameSettings::Adjustment::Saved) {
+            m_settingsPending = true;
+            m_reinitializePending |=
+                m_gameSettings->RequiresRestart(m_optionsMenuSelection - m_gameSettingsStart);
+        }
         return;
     }
     // IncreaseBgmVolume() and the others of the console, by a level within the levels.
@@ -616,6 +621,11 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
         // them to the cartridge, here to the note of the options.
         if (m_optionsChanged && !SaveOptionsNote(0)) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The options were not saved.");
+        }
+        if (m_settingsPending) {
+            m_end = m_reinitializePending ? MenusEnd::Reinitialize : MenusEnd::ApplySettings;
+            m_settingsPending = false;
+            m_reinitializePending = false;
         }
         break;
     default:

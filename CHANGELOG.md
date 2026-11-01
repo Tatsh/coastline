@@ -11,27 +11,30 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- A Visual effects option saves `Game.Effects` as `PC` (default) or `N64`, applying after restart.
+- A Visual effects option saves `Game.Effects` as `PC` (default) or `N64`, applying as Options closes.
   N64 effects use imported smoke and wheel-spray PNGs, ordered particle opacity, and depth writes;
   persistent skid marks remain exclusive to PC mode. Older assets require ROM reimport for effect
   images; missing images produce a warning and fall back to PC effects.
-- A Sound effects option saves `Game.SoundEffects` as `PC` (default) or `N64`, applying after restart.
+- A Sound effects option saves `Game.SoundEffects` as `PC` (default) or `N64`. Changes reinitialise
+  game resources and return to the logos after Options closes.
   N64 sounds preserve duration and are normalised against PC levels with a 98% peak limit. Missing
   N64 samples fall back to PC with a warning; taunts without console equivalents are silent.
   PC menu feedback uses the PC sample matched to native menu volume.
 - A saved `TitleScreen` option selects `regional` (default), `international`, or `japanese`
-  independently of language and model region, with a restart to apply. Available imported titles
+  independently of language and model region. Changes reinitialise game resources and return to the
+  logos after Options closes. Available imported titles
   support custom-pack overrides; unavailable selections warn and fall back to the regional opening.
   Regional and title packs also resolve from user fallback directories over system base assets.
 - A Draw distance option from 1x to 4x extends race visibility, including split-screen and
-  rear-view mirrors. `Video.DrawDistance` defaults to `1`; changes apply after restarting.
+  rear-view mirrors. `Video.DrawDistance` defaults to `1`; changes apply as Options closes.
 - Auto-save race progress is enabled by default and saves the next Championship checkpoint,
   records, and improved time-attack ghosts after races. Its On/Off option saves to INI and applies
   immediately. Manual saves remain available when disabled, and failed automatic saves are reported.
 - Nine Options menu settings for asset packs, regional models and textures, N64 or PC CD music,
   anti-aliasing, anisotropic filtering, texture filtering, field of view, internal resolution scale,
-  and FXAA, with spinning gold coin placeholders. Changes save immediately and require a restart;
-  failed saves display an error and revert the menu adjustment.
+  and FXAA, with spinning gold coin placeholders. Changes save immediately and apply as Options
+  closes, reinitialising resources when required. Failed saves display an error and revert the menu
+  adjustment.
 - All available cars and tracks are selectable outside Championship, including PC Race and Bonus
   tracks, their mirrors, and Gamewin. Extra track records use separate INI settings and preserve the
   native Controller Pak layout.
@@ -91,6 +94,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Settings apply after Options fades to black, with status text during the transition. Changes
+  requiring new resources reinitialise the game in the same process and window, returning to logos.
 - PC CD music selection includes menu track 2, with BGM volume control for menus and races. Missing
   CD audio falls back to XM with a warning. Native N64 XM music remains the default.
 - Sparse `eur` and `jpn` packs store regional differences, layered between base assets and the

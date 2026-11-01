@@ -96,13 +96,13 @@ int main() {
     assert(config.Get("Game", "SoundEffects") == "N64");
     const auto effects = Find(settings, "Visual effects:");
     assert(settings.Label(effects) == "Visual effects: PC");
-    assert(settings.RequiresRestart(effects));
+    assert(!settings.RequiresRestart(effects));
     assert(settings.Step(effects, 1));
     assert(config.Get("Game", "Effects") == "N64");
     const auto autosave = Find(settings, "Auto-save race progress:");
     assert(settings.Label(autosave) == "Auto-save race progress: On");
     assert(!settings.RequiresRestart(autosave));
-    assert(settings.RequiresRestart(fov));
+    assert(!settings.RequiresRestart(fov));
     assert(!settings.RequiresRestart(settings.Count()));
     config.Set("Game", "AutoSave", "oFF");
     assert(settings.Label(autosave) == "Auto-save race progress: Off");
@@ -114,7 +114,7 @@ int main() {
     assert(!config.GetBoolean("Game", "AutoSave", true));
     const auto distance = Find(settings, "Draw distance:");
     assert(settings.Label(distance) == "Draw distance: 1x");
-    assert(settings.RequiresRestart(distance));
+    assert(!settings.RequiresRestart(distance));
     assert(settings.Step(distance, -1));
     assert(config.GetFloat("Video", "DrawDistance", 0) == 4.0f);
     assert(settings.Step(distance, 1));

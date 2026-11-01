@@ -311,27 +311,30 @@ warning on the results screen.
 
 The `Title screen` option selects the Japanese or international opening independently of language
 and regional models and textures. `[Game] TitleScreen` accepts `regional` (default), `japanese`,
-or `international`; restart to apply. Alternate titles require the corresponding imported ROM
-assets. The menu offers available titles and marks a saved title as missing if its assets are
+or `international`. Changing the title reinitialises the game after Options closes and returns
+to the logos. Alternate titles require corresponding imported ROM assets. The menu offers available
+titles and marks a saved title as missing if its assets are
 absent. If the requested title cannot load, the game logs a warning and uses the selected
 model region's opening. Asset-pack overrides also apply to the chosen intro.
 
 The `Music` option selects native N64 XM modules or PC CD audio (`Music=XM` or `Music=CD` under
-`[Game]`). CD selection also plays the PC menu track in the front end. The BGM volume controls both
-sources. Missing CD audio falls back to XM with a warning. F12 advances the selected source's
+`[Game]`). The selection applies as Options closes. CD selection also plays the PC menu track
+in the front end. The BGM volume controls both sources. Missing CD audio falls back to XM with a
+warning. F12 advances the selected source's
 tracks; restarting a race retains a manually selected XM module.
 `PlayMusic=0` silences music in menus and races while sound effects remain independent.
 
 `Sound effects` selects PC or N64 samples (`SoundEffects=PC` or `SoundEffects=N64` under
-`[Game]`, with PC as the default). The selection applies after restart. Race sounds use the
-selected pack's converted WAV files. N64 samples retain their duration and match the RMS level
+`[Game]`, with PC as the default). Changing samples reinitialises the game after Options closes
+and returns to the logos. Race sounds use the selected pack's converted WAV files. N64 samples
+retain their duration and match the RMS level
 of their PC counterparts, limited to 98% peak amplitude. Missing N64 samples fall back to PC
 with a warning; PC taunts are silent in N64 mode. PC menu feedback uses the PC front-end sample,
 matched to the native menu level. Intro sounds remain specific to the selected title.
 `PlaySFX=0` silences menu feedback, intro sounds, and race sound effects independently of music.
 
 `Visual effects` selects PC or N64 rendering (`Effects=PC` or `Effects=N64` under `[Game]`,
-with PC as the default). The selection applies after restart. N64 effects use the imported
+with PC as the default). The selection applies as Options closes. N64 effects use the imported
 smoke and wheel-spray PNGs, with ordered opacity and depth writes for particles. Persistent
 skid marks appear only in PC mode, as in the original releases. Particle motion follows the
 race simulation in both modes. Import ROM images again to add the effect PNGs to older asset
@@ -361,7 +364,7 @@ The `[Video]` section of `BossRally.ini` sets up the display.
 | `ScaleFilter`          | `linear`, the default, or `nearest`, how the frame is scaled to the window.                                                                                                                                                             |
 | `AspectRatio`          | `auto`, the default, for the shape of the window, or a shape the frame keeps in a window and in the full screen with bars around it: a ratio such as `4:3` or `16:10`, or a number such as `1.6`. `--aspect-ratio` sets it for one run. |
 | `FieldOfView`          | The multiplier of the field of view of a race, `1` for that of the PC release.                                                                                                                                                          |
-| `DrawDistance`         | The race draw-distance multiplier, from `1` (default) to `4`, also applied to split views and mirrors. The Options menu offers 1x, 1.5x, 2x, 3x, and 4x. Restart to apply.                                                              |
+| `DrawDistance`         | The race draw-distance multiplier, from `1` (default) to `4`, also applied to split views and mirrors. The Options menu offers 1x, 1.5x, 2x, 3x, and 4x. Applies as Options closes.                                                     |
 | `Antialias`            | The samples of each pixel the scene is drawn with, `2`, `4`, or `8` for multisample anti-aliasing, or `1`, the default, for none.                                                                                                       |
 | `AlphaToCoverage`      | `1`, the default, smooths the edges of the cut texels of trees and fences by the share of the samples of a pixel their alpha covers, with `Antialias` above `1`. `0` cuts them.                                                         |
 | `TextureFilter`        | `modern`, the default, filters textures bilinearly as the PC release does. `n64` filters three texels as the RDP of the Nintendo 64 does. `nearest` takes the nearest texel for a blocky look, the menus and the HUD included.          |
