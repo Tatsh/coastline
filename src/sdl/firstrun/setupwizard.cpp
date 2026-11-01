@@ -343,7 +343,7 @@ std::vector<WizardControl> SetupWizard::ScreenControls() const {
     } else {
         WizardControl back = MakeButton(WizardControlId::Back, "&Back", 0, BUTTON_ROW);
         back.enabled = (m_screen != WizardScreen::Import || m_importFailure.has_value()) &&
-                       m_screen != WizardScreen::Search;
+                       m_screen != WizardScreen::Search && m_screen != WizardScreen::Done;
         controls.push_back(back);
     }
     if (m_screen == WizardScreen::Search) {
@@ -730,14 +730,25 @@ void SetupWizard::StartSearch() {
 }
 
 void SetupWizard::ApplySearchResult() {
-    SetText(WizardControlId::DiscText, m_searchResult.disc);
+    const auto displayPath = [this](const std::filesystem::path &path) {
+        if (!path.empty() && !m_services.home.empty()) {
+            const auto relative =
+                path.lexically_normal().lexically_relative(m_services.home.lexically_normal());
+            if (!relative.empty() && *relative.begin() != "..") {
+                return relative == "." ? std::filesystem::path("~") :
+                                         std::filesystem::path("~") / relative;
+            }
+        }
+        return path;
+    };
+    SetText(WizardControlId::DiscText, displayPath(m_searchResult.disc));
     int slot = 0;
     for (auto id : TEXT_IDS) {
         ClearText(id);
     }
     for (const auto &path : m_searchResult.roms) {
         if (!path.empty()) {
-            SetText(TEXT_IDS[slot++], path);
+            SetText(TEXT_IDS[slot++], displayPath(path));
         }
     }
     SetScreen(WizardScreen::Files);
@@ -844,7 +855,7 @@ void SetupWizard::Activate(WizardControlId id) {
         }
         break;
     case WizardControlId::Back:
-        if (m_screen == WizardScreen::SearchDirectory || m_screen == WizardScreen::Done ||
+        if (m_screen == WizardScreen::SearchDirectory ||
             (m_screen == WizardScreen::Import && m_importFailure)) {
             m_importFailure.reset();
             SetScreen(WizardScreen::Files);

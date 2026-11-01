@@ -118,6 +118,10 @@ void TestCombinations(const std::filesystem::path &root) {
             Click(wizard, Next);
             Wait(wizard);
             Check(wizard.Screen() == WizardScreen::Done, "A successful import must show Done.");
+            Check(!Enabled(wizard, Back), "A successful import must disable Back.");
+            Key(wizard, WizardKey::Escape);
+            Check(wizard.Screen() == WizardScreen::Done,
+                  "Escape must not return to file selection after a successful import.");
             Check(imported && imported->cartridges.front().first == BaseCartridge(selected),
                   "The base priority must be USA, Europe, Japan.");
             Check(imported->cartridges.size() ==
@@ -260,6 +264,11 @@ void TestSearch(const std::filesystem::path &root) {
     Check(wizard.MessageLines().empty(), "A complete search must not warn.");
     Click(wizard, UseFound);
     Check(Enabled(wizard, Next), "A complete search must populate valid setup fields.");
+    Check(wizard.Text(DiscText) == Utf8FromPath(std::filesystem::path("~") / "Alpha" / "disc.cue"),
+          "Search results inside home must display a tilde prefix.");
+    for (auto id : {Rom1Text, Rom2Text, Rom3Text}) {
+        Check(wizard.Text(id).starts_with("~"), "Found ROM paths must abbreviate home.");
+    }
     Click(wizard, SearchAssets);
     Set(wizard, SearchText, "~/zeta");
     Click(wizard, StartSearch);
