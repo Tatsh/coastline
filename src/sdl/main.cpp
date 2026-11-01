@@ -11,9 +11,11 @@
 #include <iterator>
 #include <memory>
 #include <optional>
+#include <stdexcept>
 #include <string>
 #include <string_view>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 #include <argparse/argparse.hpp>
@@ -88,6 +90,32 @@ struct SdlSession {
     SdlSession(const SdlSession &) = delete;
     SdlSession &operator=(const SdlSession &) = delete;
 };
+
+auto RequiredArgumentValue(const char *option) {
+    return [option](const std::string &value) {
+        if (value.empty()) {
+            throw std::invalid_argument(std::string(option) + " requires a value.");
+        }
+        return value;
+    };
+}
+
+auto RequiredChoiceValue(const char *option, std::vector<std::string> choices) {
+    return [option, choices = std::move(choices)](const std::string &value) {
+        RequiredArgumentValue(option)(value);
+        if (!std::ranges::contains(choices, value)) {
+            std::string message = "Invalid value '" + value + "' for " + option + ". Expected ";
+            for (std::size_t index = 0; index < choices.size(); ++index) {
+                if (index != 0) {
+                    message += ", ";
+                }
+                message += choices[index];
+            }
+            throw std::invalid_argument(message + '.');
+        }
+        return value;
+    };
+}
 
 coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedConfig,
                                              const argparse::ArgumentParser &parser,
@@ -736,21 +764,27 @@ int main(int argc, char *argv[]) {
         .help("Confirm either reset without prompting.")
         .flag();
 #endif
-    parser.add_argument("--data-dir").help("read the game data from this directory");
+    parser.add_argument("--data-dir")
+        .action(RequiredArgumentValue("--data-dir"))
+        .help("read the game data from this directory");
     parser.add_argument("--config")
+        .action(RequiredArgumentValue("--config"))
         .metavar("INI")
         .help("Read and save settings in the specified INI file.");
     parser.add_argument("--asset-pack")
+        .action(RequiredArgumentValue("--asset-pack"))
         .help("asset pack for this run, not saved: default, boss for the images of the PC "
               "release in place of the branded images of the cartridges, or the name of a mod "
               "pack under assets of the data directory, read over the default pack");
     parser.add_argument("--language")
+        .action(RequiredArgumentValue("--language"))
         .help("language of the text for this run, not saved: en-us for the text of the USA "
               "cartridge, en-gb for the font and the text of the European cartridge, or ja for "
               "the font and the Japanese text of the Japanese cartridge, the strings of "
               "strings/LANGUAGE.json");
     parser.add_argument("--region")
-        .choices("usa", "eur", "jpn")
+        .action(RequiredChoiceValue("--region", {"usa", "eur", "jpn"}))
+        .metavar("{usa,eur,jpn}")
         .help("Select cartridge models and images for this run, independent of language.");
     parser.add_argument("--width").help("width of the window in pixels").scan<'i', int>();
     parser.add_argument("--height").help("height of the window in pixels").scan<'i', int>();
@@ -761,16 +795,19 @@ int main(int argc, char *argv[]) {
         .scan<'i', int>();
     parser.add_argument("--no-vsync").help("present frames without waiting").flag();
     parser.add_argument("--aspect-ratio")
+        .action(RequiredArgumentValue("--aspect-ratio"))
         .help("shape of the frame for this run, in a window and in the full screen, with bars "
               "around it: auto for the shape of the window, a ratio such as 4:3, or a number such "
               "as 1.6; replaces AspectRatio of the settings");
     parser.add_argument("--gpu-preset")
-        .choices("n64", "br", "best", "worst")
+        .action(RequiredChoiceValue("--gpu-preset", {"n64", "br", "best", "worst"}))
+        .metavar("{n64,br,best,worst}")
         .help("Graphics preset for this run, not saved. n64 selects console graphics and Consumer "
               "CRT; br selects PC graphics and PC CRT. best selects high quality and full screen; "
               "worst selects low power. Explicit display arguments still apply.");
     parser.add_argument("--gpu")
-        .choices("auto", "high-performance", "low-power")
+        .action(RequiredChoiceValue("--gpu", {"auto", "high-performance", "low-power"}))
+        .metavar("{auto,high-performance,low-power}")
         .help("Select a GPU preference for this run; auto uses SDL's default selection.");
 #ifndef NDEBUG
     parser.add_argument("--minimized")
@@ -789,9 +826,13 @@ int main(int argc, char *argv[]) {
     import.add_description("Import a Boss Rally disc image and every supplied Top Gear Rally ROM "
                            "image as one batch, replacing generated packs and preserving mod "
                            "packs. Both --cd and at least one --rom are required.");
-    import.add_argument("--cd").metavar("FILE").help(
-        "copy the game data and music from a Boss Rally CUE sheet (.cue) or ISO image (.iso)");
+    import.add_argument("--cd")
+        .action(RequiredArgumentValue("--cd"))
+        .metavar("FILE")
+        .help(
+            "copy the game data and music from a Boss Rally CUE sheet (.cue) or ISO image (.iso)");
     import.add_argument("--rom")
+        .action(RequiredArgumentValue("--rom"))
         .metavar("ROM")
         .help("copy a Top Gear Rally cartridge image, checked by SHA-1; repeat for each release")
         .append();
@@ -800,7 +841,9 @@ int main(int argc, char *argv[]) {
     argparse::ArgumentParser importPak("import-pak", "", argparse::default_arguments::help);
     importPak.add_description("Copy the notes of any release of Top Gear Rally from a Controller "
                               "Pak image, and exit.");
-    importPak.add_argument("file").help("Controller Pak image (.mpk)");
+    importPak.add_argument("file")
+        .action(RequiredArgumentValue("file"))
+        .help("Controller Pak image (.mpk)");
     parser.add_subparser(importPak);
 
     argparse::ArgumentParser exportPak("export-pak", "", argparse::default_arguments::help);
@@ -808,11 +851,14 @@ int main(int argc, char *argv[]) {
                               "first pak of an image of four paks of mupen64plus is replaced, and "
                               "the other paks are retained.");
     exportPak.add_argument("--release")
+        .action(RequiredChoiceValue("--release", {"usa", "eur", "jpn"}))
         .default_value(std::string("usa"))
         .nargs(1)
-        .choices("usa", "eur", "jpn")
+        .metavar("{usa,eur,jpn}")
         .help("release of the cartridge that reads the notes: usa, eur, or jpn");
-    exportPak.add_argument("file").help("Controller Pak image (.mpk)");
+    exportPak.add_argument("file")
+        .action(RequiredArgumentValue("file"))
+        .help("Controller Pak image (.mpk)");
     parser.add_subparser(exportPak);
 
     argparse::ArgumentParser runScript("run-script", "", argparse::default_arguments::help);
@@ -822,11 +868,25 @@ int main(int argc, char *argv[]) {
         "a line that starts with a frame number acts at that frame. The commands are autopilot, "
         "screenshot-every N, FRAME press BUTTON [FRAMES [PORT]], FRAME key KEY [FRAMES], FRAME "
         "type TEXT, FRAME mouse X Y [BUTTON [FRAMES]], FRAME screenshot, and FRAME quit.");
-    runScript.add_argument("script").help("script file");
+    runScript.add_argument("script").action(RequiredArgumentValue("script")).help("script file");
     parser.add_subparser(runScript);
 
     try {
         parser.parse_args(argc, argv);
+        for (const char *option : {"--width", "--height"}) {
+            if (const auto value = parser.present<int>(option);
+                value && (*value < 1 || *value > 16384)) {
+                throw std::invalid_argument(std::string(option) + " must be from 1 to 16384.");
+            }
+        }
+        if (const auto samples = parser.present<int>("--antialias");
+            samples && *samples != 1 && *samples != 2 && *samples != 4 && *samples != 8) {
+            throw std::invalid_argument("--antialias must be 1, 2, 4, or 8.");
+        }
+        if (const auto aspect = parser.present("--aspect-ratio");
+            aspect && !coastline::ParseAspectRatio(*aspect)) {
+            throw std::invalid_argument("--aspect-ratio requires auto or a positive finite ratio.");
+        }
     } catch (const std::exception &error) {
         std::cerr << error.what() << '\n';
         for (const argparse::ArgumentParser *command :

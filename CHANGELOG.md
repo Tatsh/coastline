@@ -172,6 +172,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Command-line validation reports errors instead of aborting for missing, empty, or
+  excess option values, window dimensions outside 1..16384, unsupported anti-aliasing levels, and
+  malformed aspect ratios.
 - Setup starts with independent rendering and default pacing, ignoring gameplay graphics settings
   while preserving window and graphics-device selection. Ctrl+U still toggles unlocked pacing.
 - Full performance statistics follow changes to window display scaling.
