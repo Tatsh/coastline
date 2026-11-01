@@ -123,6 +123,10 @@ bool EarOpenSdlMixer();
 /** Close the mixer and its device, and delete every buffer. */
 void EarCloseSdlMixer();
 
+/** Enable or suspend sound-effect mixing and playback updates without discarding voices. */
+void EarSetSdlMixerEnabled(bool enabled);
+bool EarSdlMixerEnabled();
+
 /**
  * Mix frames of a mixer that renders on request, and advance its clock by their time.
  *

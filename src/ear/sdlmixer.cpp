@@ -4,6 +4,7 @@
 #include "ear/sdlmixer.h"
 
 #include <algorithm>
+#include <atomic>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
@@ -30,6 +31,7 @@ struct Mixer {
     std::vector<float> mix;
     std::vector<std::int16_t> output;
     bool offline = false;
+    std::atomic<bool> enabled = true;
     std::uint64_t renderedFrames = 0;
 };
 
@@ -59,6 +61,10 @@ float Amplitude(LONG attenuation) {
 // Mix every playing buffer, saturating the sum to 16 bits. The caller locks the mixer.
 void MixLocked(std::int16_t *samples, int frames) {
     std::size_t count = static_cast<std::size_t>(frames) * EAR_MIX_CHANNELS;
+    if (!g_mixer.enabled) {
+        std::fill_n(samples, count, 0);
+        return;
+    }
     g_mixer.mix.assign(count, 0.0f);
     for (EarSdlVoice *voice : g_mixer.voices) {
         voice->MixInto(g_mixer.mix.data(), frames);
@@ -258,8 +264,25 @@ bool EarOpenSdlMixer() {
         g_mixer.mutex = nullptr;
         return false;
     }
-    SDL_ResumeAudioStreamDevice(g_mixer.stream);
+    if (g_mixer.enabled) {
+        SDL_ResumeAudioStreamDevice(g_mixer.stream);
+    }
     return true;
+}
+
+void EarSetSdlMixerEnabled(bool enabled) {
+    if (g_mixer.enabled.exchange(enabled) == enabled || !g_mixer.stream) {
+        return;
+    }
+    if (enabled) {
+        SDL_ResumeAudioStreamDevice(g_mixer.stream);
+    } else {
+        SDL_PauseAudioStreamDevice(g_mixer.stream);
+    }
+}
+
+bool EarSdlMixerEnabled() {
+    return g_mixer.enabled;
 }
 
 void EarCloseSdlMixer() {

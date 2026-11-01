@@ -19,7 +19,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   game resources and return to the logos after Options closes.
   N64 sounds preserve duration and are normalised against PC levels with a 98% peak limit. Missing
   N64 samples fall back to PC with a warning; taunts without console equivalents are silent.
-  PC menu feedback uses the PC sample matched to native menu volume.
+  Menu feedback retains distinct native scroll, selection, and adjustment sounds in both modes.
 - A saved `TitleScreen` option selects `regional` (default), `international`, or `japanese`
   independently of language and model region. Changes reinitialise game resources and return to the
   logos after Options closes. Available imported titles
@@ -94,6 +94,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Zero BGM or SFX volume suspends the corresponding sequencing, decoding, and mixing, with
+  independent resumption. Muting both pauses the native audio device.
 - Setup asset search defaults to `~/Downloads` and preserves an edited search directory on retries.
 - Settings apply after Options fades to black, with status text during the transition. Changes
   requiring new resources reinitialise the game in the same process and window, returning to logos.

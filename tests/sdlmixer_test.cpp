@@ -120,6 +120,16 @@ int main() {
     }
     {
         coastline::N64MixerContext mixer;
+        coastline::N64Audio audio;
+        audio.Play(module);
+        auto samples = audio.Render(1024);
+        g_bSfxMasterVolume = 0;
+        const auto remainder = audio.Render(20976);
+        samples.insert(samples.end(), remainder.begin(), remainder.end());
+        Check(samples == expected, "disabling SFX preserves uninterrupted BGM samples");
+    }
+    {
+        coastline::N64MixerContext mixer;
         std::array<s8, 10000> effect;
         effect.fill(8);
         coastline::N64Audio audio;
@@ -128,6 +138,43 @@ int main() {
         const auto samples = audio.Render(8192);
         Check(std::ranges::any_of(samples, [](auto sample) { return sample != 0; }),
               "sound effects play through the context without a music module");
+    }
+    {
+        coastline::N64MixerContext mixer;
+        coastline::N64Audio audio;
+        std::array<s8, 10000> effect;
+        effect.fill(8);
+        audio.Play(module);
+        N64InitSoundChannel(1, effect.data(), 8192, 8192);
+        SetSoundChannelVolume(1, 0x00200020);
+        audio.Render(1024);
+        g_bBgmVolume = 0;
+        const auto tick = g_MusicPlayer.tick;
+        const auto row = g_MusicPlayer.row;
+        const auto musicSample = g_aMixerChannels[0].sample;
+        auto samples = audio.Render(8192);
+        Check(g_MusicPlayer.tick == tick && g_MusicPlayer.row == row &&
+                  g_aMixerChannels[0].sample == musicSample,
+              "BGM volume zero suspends XM sequencing and sample processing");
+        Check(std::ranges::any_of(samples, [](auto sample) { return sample != 0; }),
+              "sound effects continue while BGM is off");
+        g_bSfxMasterVolume = 0;
+        const auto effectSample = g_aSoundEffectChannels[1].sample;
+        samples = audio.Render(8192);
+        Check(std::ranges::all_of(samples, [](auto sample) { return sample == 0; }) &&
+                  g_aSoundEffectChannels[1].sample == effectSample,
+              "zero volumes suspend both categories");
+        g_bBgmVolume = 48;
+        samples = audio.Render(8192);
+        Check(std::ranges::any_of(samples, [](auto sample) { return sample != 0; }) &&
+                  g_aSoundEffectChannels[1].sample == effectSample,
+              "BGM resumes while sound-effect processing remains suspended");
+        g_bSfxMasterVolume = 255;
+        g_bBgmVolume = 0;
+        samples = audio.Render(1000);
+        Check(std::ranges::any_of(samples, [](auto sample) { return sample != 0; }) &&
+                  g_aSoundEffectChannels[1].sample != effectSample,
+              "sound-effect processing resumes independently of BGM");
     }
     {
         coastline::N64MixerContext mixer;

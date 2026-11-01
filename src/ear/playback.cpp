@@ -14,6 +14,9 @@
 #include "error.h"
 #include "runtime.h"
 #include "scheduledevent.h"
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "ear/sdlmixer.h"
+#endif
 
 namespace {
 // @ghidraAddress EAR: 0x1003b49c
@@ -51,6 +54,11 @@ void RampChannelGain(EarChannel *channel) {
 } // namespace
 
 void __stdcall UpdateEarPlaybackEngine(void) {
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    if (!EarSdlMixerEnabled()) {
+        return;
+    }
+#endif
     if (g_bRegistryMutationLocked || g_bPlaybackUpdateLocked) {
         return;
     }

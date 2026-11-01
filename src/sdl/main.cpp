@@ -33,12 +33,14 @@
 #include "common/inputpoll.h"
 #include "common/instantreplay.h"
 #include "common/pause.h"
+#include "common/rallyconfig.h"
 #include "common/settings.h"
 #include "common/soundbuffer.h"
 #include "common/strings.h"
 #include "config.h"
 #include "controllerpak.h"
 #include "controls.h"
+#include "ear/sdlmixer.h"
 #include "enginetextures.h"
 #if COASTLINE_SETUP_WIZARD
 #include "firstrun/wizardrun.h"
@@ -1271,6 +1273,14 @@ int main(int argc, char *argv[]) {
                     const auto waitStarted = window->PresentationWaitNanoseconds();
                     // The mixers take the volumes the screens and the race wrote in the last frame.
                     coastline::PublishN64Volumes();
+                    const bool raceScreen = frontEnd == FrontEnd::Race ||
+                                            frontEnd == FrontEnd::AttractDemo ||
+                                            frontEnd == FrontEnd::Credits;
+                    const bool sfxEnabled = config.GetBoolean("Game", "PlaySFX", true) &&
+                                            g_bSfxMasterVolume != 0 &&
+                                            (!raceScreen || g_GlobalRallyConfig.dwSfxVolume != 0);
+                    audio.SetProcessingEnabled(musicEnabled, sfxEnabled);
+                    EarSetSdlMixerEnabled(sfxEnabled);
                     PushScriptedTyping(commands.typing, frame, window->Window());
                     // The text typed on a keyboard while a screen takes it, with Backspace and
                     // Enter as control characters.

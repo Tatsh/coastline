@@ -273,6 +273,9 @@ std::optional<std::vector<s8>> ReadSound(const std::filesystem::path &path) {
 
 s16 PlaySoundEffect(std::vector<s8> &sample, std::uint32_t volume) {
     N64MixerLock lock;
+    if (g_bSfxMasterVolume == 0 || volume == 0) {
+        return -1;
+    }
     s16 channel = FindFreeSoundChannel();
     if (channel != -1) {
         N64InitSoundChannel(

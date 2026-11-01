@@ -329,9 +329,15 @@ tracks; restarting a race retains a manually selected XM module.
 and returns to the logos. Race sounds use the selected pack's converted WAV files. N64 samples
 retain their duration and match the RMS level
 of their PC counterparts, limited to 98% peak amplitude. Missing N64 samples fall back to PC
-with a warning; PC taunts are silent in N64 mode. PC menu feedback uses the PC front-end sample,
-matched to the native menu level. Intro sounds remain specific to the selected title.
+with a warning; PC taunts are silent in N64 mode. Menu navigation and adjustments use their
+distinct native sounds with either race sound source. Intro sounds remain specific to the selected
+title.
 `PlaySFX=0` silences menu feedback, intro sounds, and race sound effects independently of music.
+
+Setting BGM or SFX volume to zero suspends processing for the corresponding category. BGM stops XM
+sequencing and mixing or pauses CD playback and FLAC decoding. SFX pauses native mixing and EAR
+playback updates. Raising a volume resumes its category independently; setting both to zero also
+pauses the native audio device.
 
 `Visual effects` selects PC or N64 rendering (`Effects=PC` or `Effects=N64` under `[Game]`,
 with PC as the default). The selection applies as Options closes. N64 effects use the imported

@@ -104,6 +104,7 @@ private:
     }
     void PlayModule(int track);
     void FillCd(std::vector<std::int16_t> &output, std::size_t frames);
+    bool UpdateCdDevice();
     static void SDLCALL CdCallback(void *user, SDL_AudioStream *stream, int additional, int total);
 
     int m_currentTrack = 0;
@@ -122,6 +123,9 @@ private:
     FlacTrack m_cdTrack;
     int m_cdPlaying = 0;
     std::vector<std::int16_t> m_cdSamples;
+    unsigned char m_volume = 48;
+    bool m_paused = false;
+    bool m_cdDevicePaused = true;
 };
 
 bool RaceMusic::Start(const std::filesystem::path &directory, RaceMusicSource source) {
@@ -153,7 +157,8 @@ bool RaceMusic::Start(const std::filesystem::path &directory, RaceMusicSource so
             SDL_LogWarn(
                 SDL_LOG_CATEGORY_AUDIO, "The music device did not open: %s", SDL_GetError());
         } else {
-            SDL_ResumeAudioStreamDevice(m_cdStream);
+            m_cdDevicePaused = true;
+            UpdateCdDevice();
         }
     } else {
         m_trackMax = LAST_MUSIC_TRACK;
@@ -236,7 +241,8 @@ bool RaceMusic::Play(int track) {
         if (m_cdStream != nullptr) {
             SDL_UnlockAudioStream(m_cdStream);
             // MCI plays a new track after a pause of the race, as when the race restarts.
-            SDL_ResumeAudioStreamDevice(m_cdStream);
+            m_paused = false;
+            UpdateCdDevice();
         }
         return opened;
     }
@@ -262,26 +268,32 @@ void RaceMusic::PlayModule(int track) {
 }
 
 bool RaceMusic::Pause() {
+    m_paused = true;
     if (!IsPlaying()) {
         return true;
     }
     if (m_source == RaceMusicSource::CdAudio) {
-        return m_cdStream == nullptr || SDL_PauseAudioStreamDevice(m_cdStream);
+        return UpdateCdDevice();
     }
     return Modules()->Pause();
 }
 
 bool RaceMusic::Resume() {
+    m_paused = false;
     if (!IsPlaying()) {
         return true;
     }
     if (m_source == RaceMusicSource::CdAudio) {
-        return m_cdStream == nullptr || SDL_ResumeAudioStreamDevice(m_cdStream);
+        return UpdateCdDevice();
     }
     return Modules()->Resume();
 }
 
 void RaceMusic::SetVolume(unsigned char volume) {
+    if (m_cdStream != nullptr) {
+        SDL_LockAudioStream(m_cdStream);
+    }
+    m_volume = volume;
     // The player of the modules scales its channels by g_bBgmVolume itself.
     if (IsPlaying() && m_cdStream != nullptr) {
         // The highest level of the music plays the CD at its own level.
@@ -290,12 +302,33 @@ void RaceMusic::SetVolume(unsigned char volume) {
             static_cast<float>(volume) /
                 static_cast<float>(g_adwBgmVolumeLevels[VOLUME_LEVEL_COUNT - 1]));
     }
+    if (m_cdStream != nullptr) {
+        SDL_UnlockAudioStream(m_cdStream);
+        UpdateCdDevice();
+    }
+}
+
+bool RaceMusic::UpdateCdDevice() {
+    const bool paused = m_paused || m_volume == 0;
+    if (m_cdStream == nullptr || paused == m_cdDevicePaused) {
+        return true;
+    }
+    const bool changed =
+        paused ? SDL_PauseAudioStreamDevice(m_cdStream) : SDL_ResumeAudioStreamDevice(m_cdStream);
+    if (changed) {
+        m_cdDevicePaused = paused;
+    }
+    return changed;
 }
 
 // The music of the CD plays the tracks after the current one in turn, and the first after the
 // last, as the window of the PC release does at each notice of MCI.
 void RaceMusic::FillCd(std::vector<std::int16_t> &output, std::size_t frames) {
     std::size_t target = output.size() + frames * CD_CHANNELS;
+    if (m_volume == 0) {
+        output.resize(target, 0);
+        return;
+    }
     for (int attempts = 0; output.size() < target && attempts <= LAST_MUSIC_TRACK; ++attempts) {
         if (m_cdTrack.Decode(output, (target - output.size()) / CD_CHANNELS)) {
             continue;

@@ -78,6 +78,7 @@ int main() {
     WriteWave(native / "impact.wav", 10999, 32767, 4096, true);
     WriteWave(assets / "sfx/front-end5.wav", 22050, 12000);
     WriteWave(root / "n64/base/segments/scrollSound.wav", 10999, 3000);
+    WriteWave(root / "n64/base/segments/selectSound.wav", 10999, 6000);
     using Effects = coastline::SoundEffects;
     {
         Effects effects(assets, Effects::Source::Pc, true);
@@ -126,13 +127,20 @@ int main() {
         assert(peak <= 32113 && peak > 30000);
         assert(impulse.Rms() < 4096);
     }
-    {
-        Effects effects(assets, Effects::Source::Pc, true);
+    for (const auto source : {Effects::Source::Pc, Effects::Source::N64}) {
+        Effects effects(assets, source, true);
         Wave menu;
         assert(Effects::LoadMenuWave(
             root / "n64/base/segments/scrollSound.wav", &menu.spec, &menu.data, &menu.bytes));
         assert(menu.spec.format == SDL_AUDIO_U8 && menu.spec.freq == 10999);
-        assert(menu.bytes > 2000 && menu.bytes < 2100);
+        assert(menu.bytes == 4096);
+        Wave selection;
+        assert(Effects::LoadMenuWave(root / "n64/base/segments/selectSound.wav",
+                                     &selection.spec,
+                                     &selection.data,
+                                     &selection.bytes));
+        assert(selection.bytes == menu.bytes);
+        assert(std::memcmp(menu.data, selection.data, menu.bytes) != 0);
     }
     {
         Effects effects(assets, Effects::Source::Pc, false);

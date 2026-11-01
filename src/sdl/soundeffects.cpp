@@ -219,14 +219,6 @@ bool SoundEffects::LoadMenuWave(const std::filesystem::path &path,
     if (!wave) {
         return false;
     }
-    const auto file = path.filename().string();
-    if (state && state->source == Source::Pc &&
-        (file == "scrollSound.wav" || file == "selectSound.wav")) {
-        auto pc = State::Read(state->assets / "sfx/front-end5.wav");
-        if (pc && State::Match(*pc, *wave, {SDL_AUDIO_U8, 1, 10999})) {
-            wave = std::move(pc);
-        }
-    }
     if ((wave->spec.format != SDL_AUDIO_U8 || wave->spec.channels != 1 ||
          wave->spec.freq != 10999) &&
         !State::Convert(*wave, {SDL_AUDIO_U8, 1, 10999})) {

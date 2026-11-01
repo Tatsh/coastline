@@ -316,8 +316,7 @@ bool N64Audio::OpenDevice() {
         SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "The audio device did not open: %s", SDL_GetError());
         return false;
     }
-    SDL_ResumeAudioStreamDevice(m_stream);
-    return true;
+    return UpdateVolumeProcessing();
 }
 
 void N64Audio::Play(std::span<const std::uint8_t> module) {
@@ -343,11 +342,42 @@ void N64Audio::Stop() {
 }
 
 bool N64Audio::Pause() {
-    return m_stream == nullptr || SDL_PauseAudioStreamDevice(m_stream);
+    m_paused = true;
+    return UpdateVolumeProcessing();
 }
 
 bool N64Audio::Resume() {
-    return m_stream == nullptr || SDL_ResumeAudioStreamDevice(m_stream);
+    m_paused = false;
+    return UpdateVolumeProcessing();
+}
+
+bool N64Audio::UpdateVolumeProcessing() {
+    bool paused;
+    {
+        N64MixerLock lock;
+        const bool music =
+            m_musicEnabled && m_mixer.volumes.bgm != 0 && m_mixer.music.playbackEnabled;
+        const bool sfx = m_sfxEnabled && m_mixer.volumes.sfxMaster != 0;
+        paused = m_paused || (!music && !sfx);
+    }
+    if (m_stream == nullptr || paused == m_devicePaused) {
+        return true;
+    }
+    const bool changed =
+        paused ? SDL_PauseAudioStreamDevice(m_stream) : SDL_ResumeAudioStreamDevice(m_stream);
+    if (changed) {
+        m_devicePaused = paused;
+    }
+    return changed;
+}
+
+void N64Audio::SetProcessingEnabled(bool music, bool soundEffects) {
+    {
+        N64MixerLock lock;
+        m_musicEnabled = music;
+        m_sfxEnabled = soundEffects;
+    }
+    UpdateVolumeProcessing();
 }
 
 void N64Audio::SetMusicGain(float gain) {
@@ -370,36 +400,50 @@ void N64Audio::Tick(std::vector<std::int16_t> &output) {
     m_outputReadOffset = (m_outputReadOffset + played) % RING_BYTES;
 
     // AudioMixingThreadMain() of the console, one message of the timer.
-    m_musicTick = !m_musicTick;
-    for (int i = 0; i < music.channelCount; ++i) {
+    if (m_musicProcessing) {
+        m_musicTick = !m_musicTick;
+    }
+    for (int i = 0; m_musicProcessing && i < music.channelCount; ++i) {
         MixerChannel &channel = mixer.musicChannels[i];
         channel.mixVolume = static_cast<s32>((static_cast<std::uint64_t>(channel.volume) *
                                               volumes.bgm * volumes.music * m_musicGain) >>
                                              24);
     }
-    for (auto &channel : mixer.soundEffectChannels) {
-        u32 levels = static_cast<u32>(channel.volume);
-        u8 master = volumes.sfxMaster;
-        u8 sfx = volumes.sfx;
-        channel.mixVolume = static_cast<s32>(((((levels >> 16) * master * sfx) >> 16) << 16) +
-                                             (((levels & 0xFFFF) * master * sfx) >> 16));
+    if (m_sfxProcessing) {
+        for (auto &channel : mixer.soundEffectChannels) {
+            u32 levels = static_cast<u32>(channel.volume);
+            u8 master = volumes.sfxMaster;
+            u8 sfx = volumes.sfx;
+            channel.mixVolume = static_cast<s32>(((((levels >> 16) * master * sfx) >> 16) << 16) +
+                                                 (((levels & 0xFFFF) * master * sfx) >> 16));
+        }
     }
     // Prime the lookahead once, then replenish only the PCM consumed by each tick.
     const u32 mixBytes = played + (m_primed ? 0 : MUSIC_LEAD);
-    CheckMusicLoopPoints();
-    if (m_musicTick && music.playbackEnabled) {
-        UpdateMusicPlayback();
-    }
     u16 writePos = mixer.writePosition;
-    MixAudioSamples(music.ring, mixBytes);
-    for (s32 i = FIRST_PAIRED_CHANNEL; i < music.channelCount; i += 2) {
-        mixer.writePosition = writePos;
-        MixAudioStereoSamples(
-            music.ring, mixBytes, (i - FIRST_PAIRED_CHANNEL) * sizeof(MixerChannel));
+    if (m_musicProcessing) {
+        CheckMusicLoopPoints();
+        if (m_musicTick && music.playbackEnabled) {
+            UpdateMusicPlayback();
+        }
+        MixAudioSamples(music.ring, mixBytes);
+        for (s32 i = FIRST_PAIRED_CHANNEL; i < music.channelCount; i += 2) {
+            mixer.writePosition = writePos;
+            MixAudioStereoSamples(
+                music.ring, mixBytes, (i - FIRST_PAIRED_CHANNEL) * sizeof(MixerChannel));
+        }
+    } else {
+        mixer.writePosition =
+            static_cast<u16>(MixRing(music.ring, writePos, mixBytes, 4, [](u8 *frame) {
+                StoreHalf(frame, 0);
+                StoreHalf(frame + 2, 0);
+            }));
     }
     const u32 bytes = played + (m_primed ? 0 : SOUND_EFFECT_LEAD);
-    MixSoundEffectChannels(music.ring, bytes, m_soundEffectMixOffset);
-    CheckSoundEffectLoopPoints();
+    if (m_sfxProcessing) {
+        MixSoundEffectChannels(music.ring, bytes, m_soundEffectMixOffset);
+        CheckSoundEffectLoopPoints();
+    }
     m_soundEffectMixOffset += bytes;
     if (m_soundEffectMixOffset > RING_BYTES) {
         m_soundEffectMixOffset -= RING_BYTES;
@@ -414,6 +458,21 @@ std::vector<std::int16_t> N64Audio::Render(std::size_t frames) {
 }
 
 std::vector<std::int16_t> N64Audio::RenderLocked(std::size_t frames) {
+    const bool music = m_musicEnabled && m_mixer.volumes.bgm != 0;
+    const bool sfx = m_sfxEnabled && m_mixer.volumes.sfxMaster != 0;
+    if (!music && !sfx && (m_musicProcessing || m_sfxProcessing)) {
+        m_pending.clear();
+        std::ranges::fill(m_mixer.music.ring, 0);
+        m_mixer.channels.writePosition = 0;
+        m_outputReadOffset = 0;
+        m_soundEffectMixOffset = 0;
+        m_primed = false;
+    }
+    m_musicProcessing = music;
+    m_sfxProcessing = sfx;
+    if (!music && !sfx) {
+        return std::vector<std::int16_t>(frames * 2, 0);
+    }
     std::vector<std::int16_t> output(m_pending);
     m_pending.clear();
     while (output.size() < frames * 2) {

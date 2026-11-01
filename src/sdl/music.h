@@ -62,6 +62,10 @@ public:
 
     /** @return Whether the device resumed, and true without a device. */
     bool Resume();
+    /** Suspend the device when both user volume settings are zero. */
+    bool UpdateVolumeProcessing();
+    /** Enable each category independently of transient fades and playback pauses. */
+    void SetProcessingEnabled(bool music, bool soundEffects);
 
     /**
      * Scale the music of the modules, apart from the sound effects the player mixes with it.
@@ -96,6 +100,12 @@ private:
     std::uint32_t m_soundEffectMixOffset = 0;
     bool m_musicTick = false;
     std::vector<std::int16_t> m_pending;
+    bool m_musicProcessing = true;
+    bool m_sfxProcessing = true;
+    bool m_paused = false;
+    bool m_devicePaused = true;
+    bool m_musicEnabled = true;
+    bool m_sfxEnabled = true;
     // The music gain in 8.8 fixed point.
     std::uint32_t m_musicGain = 256;
 };
