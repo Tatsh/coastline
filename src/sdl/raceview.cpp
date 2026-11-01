@@ -465,6 +465,7 @@ void DrawRaceHud(SceneRenderer &renderer,
                  const HudCanvas &hud,
                  std::span<GbiCommand> scratch) {
     HudDrawing drawing(renderer, text, textures, hud, scratch.data());
+    DrawFpsCounterOverlay();
     std::array<ViewportRect, 2> views = HudViews(hud);
     for (int index = 0; index < ViewCount(); ++index) {
         g_dwCurrentSplitScreenIndex = index;

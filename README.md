@@ -296,16 +296,18 @@ vertical blank and presenting at once on every screen, except while a screen tak
 and saves the choice to `VSync`. From `mailbox`, V presents at once.
 Ctrl+U toggles an unlocked frame rate, temporarily bypassing VSync and the software frame limit.
 Toggling back restores the configured presentation mode and frame limit. The choice is saved as
-`UnlockedFramerate` and also applies in setup.
+`UnlockedFramerate`. Setup starts with independent rendering and default pacing, preserving window
+and graphics-device selection. Ctrl+U can still toggle unlocked pacing during setup.
 
 Statistics separate `CPU WORK` (frame work excluding presentation waits and the software limiter)
 from `INTERVAL` (measured time between frames, including pacing, displayed to four decimal places).
 CPU work is CPU-side elapsed time, not GPU execution time. FPS remains the measured frame rate.
 
-FPS and statistics draw at output resolution after scaling and screen shaders. Their text remains
-sharp at low internal resolutions, and statistics can use the full window, including aspect-ratio
-bars. Disabling the overlay releases its output texture. Screenshots with an overlay include the
-full output at window resolution.
+Single-F FPS retains the PC counter's gradient and size, rendered at internal resolution and
+affected by scaling and screen shaders. Full statistics draw at output resolution after scaling
+and screen shaders, adapting to window display scaling. Statistics can use the full window,
+including aspect-ratio bars. Disabling statistics releases their output texture. Screenshots with
+statistics include the full output at window resolution.
 
 `Auto-save race progress` in Options saves championship progress, records, and improved Time Attack
 ghosts after each completed race. Autosave is on by default (`AutoSave=1` under `[Game]` in

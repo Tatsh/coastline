@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
@@ -90,7 +91,8 @@ struct SdlSession {
 
 coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedConfig,
                                              const argparse::ArgumentParser &parser,
-                                             bool fixedFrame) {
+                                             bool fixedFrame,
+                                             bool setup = false) {
     auto config = savedConfig;
     if (const auto preset = parser.present("--gpu-preset")) {
         coastline::ApplyGraphicsPreset(config, *preset);
@@ -249,6 +251,19 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedC
     if (parser.get<bool>("--no-vsync")) {
         options.presentMode = SDL_GPU_PRESENTMODE_IMMEDIATE;
     }
+    if (setup) {
+        coastline::DisplayOptions setupOptions;
+        setupOptions.width = options.width;
+        setupOptions.height = options.height;
+        setupOptions.fullscreen = options.fullscreen;
+        setupOptions.exclusive = options.exclusive;
+        setupOptions.refreshRate = options.refreshRate;
+        setupOptions.minimized = options.minimized;
+        setupOptions.driver = options.driver;
+        setupOptions.gpuPreference = options.gpuPreference;
+        setupOptions.gpuDebug = options.gpuDebug;
+        return setupOptions;
+    }
     return options;
 }
 
@@ -307,9 +322,7 @@ struct DisplayKeys {
 class FrameRateOverlay {
 public:
     void Record();
-    void Draw(coastline::SceneRenderer &renderer,
-              const coastline::MenuText &text,
-              std::array<Uint32, 2> outputSize);
+    void Draw(coastline::SceneRenderer &renderer, const coastline::MenuText &text);
 
 private:
     std::optional<unsigned> m_last;
@@ -337,7 +350,7 @@ void FrameRateOverlay::Record() {
     g_adwFpsFrameTimeSamples[entry] = delta;
 }
 
-// Draw text on the game canvas, or in output pixels when outputSize is supplied.
+// Draw text on the game canvas, or in display-scaled output units when outputSize is supplied.
 void DrawOverlayLine(coastline::SceneRenderer &renderer,
                      const coastline::MenuText &text,
                      const char *line,
@@ -345,7 +358,7 @@ void DrawOverlayLine(coastline::SceneRenderer &renderer,
                      int x = 320,
                      coastline::TextStyle::Align align = coastline::TextStyle::Align::Center,
                      bool white = false,
-                     std::optional<std::array<Uint32, 2>> outputSize = std::nullopt) {
+                     std::optional<std::array<float, 2>> outputSize = std::nullopt) {
     const coastline::GpuWindow &window = renderer.Window();
     coastline::TextStyle style;
     style.size = 15;
@@ -378,10 +391,8 @@ void DrawOverlayLine(coastline::SceneRenderer &renderer,
     text.Draw(renderer, line, x, y, style, projection);
 }
 
-// Draw the sampled frame rate ten pixels above the bottom of the output window.
-void FrameRateOverlay::Draw(coastline::SceneRenderer &renderer,
-                            const coastline::MenuText &text,
-                            std::array<Uint32, 2> outputSize) {
+// Draw the sampled frame rate with the PC font gradient on the 640 by 480 game canvas.
+void FrameRateOverlay::Draw(coastline::SceneRenderer &renderer, const coastline::MenuText &text) {
     if (g_dwFpsFrameCountdown == 0) {
         unsigned total = 0;
         for (int index = 0; index < g_dwFpsSampleFrames; ++index) {
@@ -392,14 +403,7 @@ void FrameRateOverlay::Draw(coastline::SceneRenderer &renderer,
     }
     char line[32];
     std::snprintf(line, sizeof(line), "%6.2f FPS", static_cast<double>(m_rate));
-    DrawOverlayLine(renderer,
-                    text,
-                    line,
-                    static_cast<int>(outputSize[1]) - 10,
-                    static_cast<int>(outputSize[0]) / 2,
-                    coastline::TextStyle::Align::Center,
-                    true,
-                    outputSize);
+    DrawOverlayLine(renderer, text, line, 470);
 }
 
 // A new file in a directory of screenshots, named by the local time to the millisecond, with the
@@ -1103,7 +1107,7 @@ int main(int argc, char *argv[]) {
         if (!sdl.ready) {
             SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Cannot start SDL: %s", SDL_GetError());
         } else if (auto window = coastline::GpuWindow::Create(
-                       "Coastline", DisplayOptionsFrom(config, parser, savesFrames));
+                       "Coastline", DisplayOptionsFrom(config, parser, savesFrames, showWizard));
                    window && setUp(*window)) {
             bool reinitialize = false;
             do {
@@ -1761,6 +1765,10 @@ int main(int argc, char *argv[]) {
                                 settingsFrames = 0;
                             }
                         }
+                        if (g_bShowFpsCounter == 1 && frameRateText &&
+                            (frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::MainMenu)) {
+                            frameRateOverlay.Draw(*sceneRenderer, *frameRateText);
+                        }
                         if (g_bShowFpsCounter != coastline::FRAME_RATE_STATISTICS) {
                             performanceStats.reset();
                         } else if (frameRateText) {
@@ -1770,7 +1778,7 @@ int main(int argc, char *argv[]) {
                             }
                         }
                         coastline::GpuWindow::OutputOverlay outputOverlay;
-                        if ((g_bShowFpsCounter == 1 || performanceStats) && frameRateText) {
+                        if (performanceStats && frameRateText) {
                             if (!outputRenderer) {
                                 outputRenderer = coastline::SceneRenderer::Create(*window, true);
                             }
@@ -1780,24 +1788,25 @@ int main(int argc, char *argv[]) {
                                                     Uint32 width,
                                                     Uint32 height) {
                                     outputRenderer->Begin({0, 0, 0, 0});
-                                    const std::array<Uint32, 2> size{width, height};
-                                    if (performanceStats) {
-                                        int y = 24;
-                                        for (const auto &line :
-                                             performanceStats->Lines(window->GpuMemoryBytes())) {
-                                            DrawOverlayLine(*outputRenderer,
-                                                            *frameRateText,
-                                                            line.c_str(),
-                                                            y,
-                                                            16,
-                                                            coastline::TextStyle::Align::Left,
-                                                            true,
-                                                            size);
-                                            y += 16;
-                                        }
-                                    } else {
-                                        frameRateOverlay.Draw(
-                                            *outputRenderer, *frameRateText, size);
+                                    float scale = SDL_GetWindowDisplayScale(window->Window());
+                                    if (!std::isfinite(scale) || scale <= 0.0f) {
+                                        scale = 1.0f;
+                                    }
+                                    const std::array<float, 2> size{
+                                        static_cast<float>(width) / scale,
+                                        static_cast<float>(height) / scale};
+                                    int y = 24;
+                                    for (const auto &line :
+                                         performanceStats->Lines(window->GpuMemoryBytes())) {
+                                        DrawOverlayLine(*outputRenderer,
+                                                        *frameRateText,
+                                                        line.c_str(),
+                                                        y,
+                                                        16,
+                                                        coastline::TextStyle::Align::Left,
+                                                        true,
+                                                        size);
+                                        y += 16;
                                     }
                                     outputRenderer->RenderInto(gpuCommands, target, width, height);
                                 };

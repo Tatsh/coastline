@@ -117,9 +117,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- FPS and performance statistics draw at output resolution after upscaling and CRT filters, using
-  the full window including aspect-ratio bars. Captures include the overlay at window resolution;
-  disabling the overlay releases its texture.
+- Full performance statistics draw at output resolution after upscaling and CRT filters, using
+  the full window including aspect-ratio bars. Captures include statistics at window resolution;
+  disabling statistics releases their texture. Single-F FPS retains its legacy gradient and size,
+  rendered at internal resolution with game filters.
 - Upscaling labels nearest scaling as Off to clarify that enlargement applies without smoothing or
   edge reconstruction; existing `nearest` settings remain compatible.
 - Outdated, incompatible, or incomplete imports open a graphical reimport prompt with Start setup
@@ -171,6 +172,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Setup starts with independent rendering and default pacing, ignoring gameplay graphics settings
+  while preserving window and graphics-device selection. Ctrl+U still toggles unlocked pacing.
+- Full performance statistics follow changes to window display scaling.
 - Saved painted car images respect each texture's dimensions when palettes are shared, preserving
   unpainted images and matching output from GLB and separate glTF assets. Existing assets require
   reimporting disc and ROM images.

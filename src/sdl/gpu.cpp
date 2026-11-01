@@ -551,6 +551,8 @@ bool GpuWindow::ApplyLiveOptions(const DisplayOptions &options) {
     m_options.frameWidth = options.frameWidth;
     m_options.frameHeight = options.frameHeight;
     m_options.renderScale = options.renderScale;
+    m_options.fixedFrame = options.fixedFrame;
+    m_options.lowestFrame = options.lowestFrame;
     m_options.aspectRatio = options.aspectRatio;
     m_options.postAntialias = options.postAntialias;
     m_options.scaleFilter = options.scaleFilter;
