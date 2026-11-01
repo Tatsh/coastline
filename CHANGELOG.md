@@ -11,6 +11,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Two separate Escape presses within half a second quit from the main menu.
 - PJ, TR, and MN cars are selectable outside Championship in USA and EUR regions, with Japanese
   menu statistics and matching race identities. Previews prefer imported Japanese models and fall
   back to PC models; Pure PC always uses PC previews.

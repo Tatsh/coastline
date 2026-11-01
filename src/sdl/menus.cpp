@@ -1,5 +1,7 @@
 #include "menus.h"
 
+#include <algorithm>
+
 #include <SDL3/SDL.h>
 
 namespace coastline {
@@ -11,6 +13,7 @@ Menus::~Menus() = default;
 
 void Menus::Restart() {
     m_current = Screen::MainMenu;
+    m_exitEscapeSeconds = 0.0f;
     // The attract demo races at the levels of the race engine.
     ApplyVolumeSettings();
 }
@@ -23,6 +26,7 @@ void Menus::FinishCredits() {
 
 void Menus::SetCurrentScreen(Screen screen) {
     m_current = screen;
+    m_exitEscapeSeconds = 0.0f;
 }
 
 bool Menus::DrawsPointer() const {
@@ -46,8 +50,22 @@ MenusEnd Menus::Frame(SceneRenderer &renderer,
     bool escape = pointer.escape && !m_escapeDown;
     m_escapeDown = pointer.escape;
     std::array<MenuButtons, 2> buttons = players;
-    if (escape && m_current != Screen::PaintShopScreen) {
-        buttons[0].back = true;
+    if (m_current == Screen::MainMenu) {
+        m_exitEscapeSeconds = std::max(0.0f, m_exitEscapeSeconds - seconds);
+        if (escape) {
+            if (m_exitEscapeSeconds > 0.0f) {
+                return MenusEnd::Quit;
+            }
+            m_exitEscapeSeconds = 0.5f;
+        }
+        if (pointer.escape) {
+            buttons[0].back = false;
+        }
+    } else {
+        m_exitEscapeSeconds = 0.0f;
+        if (escape && m_current != Screen::PaintShopScreen) {
+            buttons[0].back = true;
+        }
     }
     // The screens but the car select read the first controller.
     const MenuButtons &first = buttons[0];

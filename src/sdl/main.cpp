@@ -1671,7 +1671,9 @@ int main(int argc, char *argv[]) {
                                     SDL_ShowCursor();
                                 }
                             }
-                            if (end == coastline::MenusEnd::Splash) {
+                            if (end == coastline::MenusEnd::Quit) {
+                                running = false;
+                            } else if (end == coastline::MenusEnd::Splash) {
                                 intro->Restart();
                                 frontEnd = FrontEnd::Intro;
                             }

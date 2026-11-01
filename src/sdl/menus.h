@@ -124,6 +124,7 @@ struct CarSelectPlayer {
 /** Where the menus go next. */
 enum class MenusEnd {
     Running,       /*!< A menu screen is still showing. */
+    Quit,          /*!< Two Escape presses request an application exit. */
     Splash,        /*!< The player went back from the main menu, or it timed out. */
     Race,          /*!< The race of Menus::ChosenRace() starts. */
     Credits,       /*!< The race of the credits of the options menu starts. */
@@ -357,6 +358,7 @@ private:
     std::filesystem::path m_configPath;
     PaintShopInput m_pointer;
     bool m_escapeDown = false;
+    float m_exitEscapeSeconds = 0.0f;
     // The decals each player loaded from the Controller Pak on the car select screen, the images
     // of the car with them, and the model of the car that shows them.
     std::array<std::optional<DecalCar>, 2> m_customDecals;
