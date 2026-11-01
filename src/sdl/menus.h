@@ -470,6 +470,7 @@ private:
     int m_optionsMenuSelection = 0;
     bool m_optionsChanged = false;
     bool m_autoSaveFailed = false;
+    bool m_progressAutoSaved = false;
     std::unique_ptr<GameSettings> m_gameSettings;
     int m_gameSettingsStart = 0;
     bool m_gameSettingsSaveError = false;

@@ -103,6 +103,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Each player's selected camera persists across races and game restarts, excluding automatic finish
   and replay camera changes.
 - Logs use concise present-tense action and status messages.
+- Successful automatic saves skip post-race save prompts, returning Championship to track selection
+  and time attack to the main menu. Disabled or failed automatic saves retain manual prompts.
 - Timing statistics update once a second with average CPU work, frame interval, and FPS, retaining
   the highest CPU work and interval and lowest one-second FPS since statistics were enabled.
 - Title screen choices use USA/Europe and Japan labels without duplicate regional choices; existing

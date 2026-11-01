@@ -633,6 +633,10 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
 }
 
 void Menus::StartDataSaveLoadMenu(SaveLoadEntry entry) {
+    if (entry != SaveLoadEntry::MainMenu && m_progressAutoSaved) {
+        SetCurrentScreen(entry == SaveLoadEntry::Season ? Screen::TrackMenu : Screen::MainMenu);
+        return;
+    }
     m_saveLoadEntry = entry;
     SetCurrentScreen(Screen::DataSaveLoadMenu);
 }

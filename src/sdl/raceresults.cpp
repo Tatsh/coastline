@@ -179,6 +179,8 @@ void Menus::FinishRace(RaceEnd end, const RaceResults &results) {
             KeepTimeAttackRecording(results.ghostRecording, results.ghostFrames);
         }
         m_autoSaveFailed = !AutoSaveProgress();
+        m_progressAutoSaved =
+            m_config && m_config->GetBoolean("Game", "AutoSave", true) && !m_autoSaveFailed;
         m_resultsInitialized = false;
         SetCurrentScreen(Screen::RaceResultsScreen);
     } else if (end == RaceEnd::SeasonMenu || end == RaceEnd::Credits) {
