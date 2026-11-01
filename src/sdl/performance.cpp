@@ -308,45 +308,33 @@ PerformanceStats::~PerformanceStats() = default;
 
 void PerformanceStats::Frame(std::uint64_t workNanoseconds) {
     std::uint64_t now = SDL_GetTicksNS();
-    m_workMs = static_cast<double>(workNanoseconds) / 1e6;
-    m_worstNowMs = std::max(m_worstNowMs, m_workMs);
-    if (m_lastFrame == 0) {
+    const bool sampled = m_frameTimings.Record(workNanoseconds, now);
+    if (m_secondStart == 0) {
         m_secondStart = now;
         m_secondStartCpu = ProcessCpuSeconds();
         m_memoryBytes = OwnMemoryBytes();
-    } else {
-        m_frameMs = static_cast<double>(now - m_lastFrame) / 1e6;
-        ++m_framesNow;
     }
-    if (now - m_secondStart >= SDL_NS_PER_SECOND) {
-        m_framesPerSecond =
-            static_cast<double>(m_framesNow) / (static_cast<double>(now - m_secondStart) / 1e9);
-        m_framesNow = 0;
+    if (sampled) {
         std::optional<double> cpu = ProcessCpuSeconds();
         if (cpu && m_secondStartCpu) {
             m_cpuPercent = (*cpu - *m_secondStartCpu) /
                            (static_cast<double>(now - m_secondStart) / 1e9) * 100.0;
         }
         m_memoryBytes = OwnMemoryBytes();
-        m_worstMs = m_worstNowMs;
-        m_worstNowMs = 0.0;
         m_secondStart = now;
         m_secondStartCpu = cpu;
     }
-    m_lastFrame = now;
 }
 
 std::vector<std::string> PerformanceStats::Lines(std::uint64_t gameGpuBytes) const {
     std::vector<std::string> lines;
-    if (m_framesPerSecond) {
-        lines.push_back(fmt::format("FPS: {:.2f}", *m_framesPerSecond));
+    if (const auto &timing = m_frameTimings.Latest()) {
+        lines.push_back(fmt::format("FPS: {:.2f}, WORST: {:.2f}", timing->fps, timing->worstFps));
+        lines.push_back(fmt::format(
+            "CPU WORK: {:.2f} MS, WORST: {:.2f} MS", timing->workMs, timing->worstWorkMs));
+        lines.push_back(fmt::format(
+            "INTERVAL: {:.4f} MS, WORST: {:.4f} MS", timing->intervalMs, timing->worstIntervalMs));
     }
-    if (m_worstMs > 0.0) {
-        lines.push_back(fmt::format("CPU WORK: {:.2f} MS, WORST: {:.2f} MS", m_workMs, m_worstMs));
-    } else {
-        lines.push_back(fmt::format("CPU WORK: {:.2f} MS", m_workMs));
-    }
-    lines.push_back(fmt::format("INTERVAL: {:.4f} MS", m_frameMs));
     // The menu fonts draw a percent sign as a full stop, and PCT stands for it. The use of one
     // core comes first, and then of every core together.
     if (m_cpuPercent) {

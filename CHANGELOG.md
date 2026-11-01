@@ -100,6 +100,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Timing statistics update once a second with average CPU work, frame interval, and FPS, retaining
+  the highest CPU work and interval and lowest one-second FPS since statistics were enabled.
 - Title screen choices use USA/Europe and Japan labels without duplicate regional choices; existing
   `regional` settings still follow the selected model region.
 - Setup displays the repository URL, revision or version, and ISO 8601 UTC build date and time in

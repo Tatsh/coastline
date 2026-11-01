@@ -118,10 +118,68 @@ inline std::optional<std::uint64_t> SmapsGamePssBytes(std::string_view text,
     return kilobytes * 1024;
 }
 
-/**
- * The statistics of the frames, with the processor and the memory sampled once a second, and the
- * share of an NVIDIA GPU the game uses sampled once a second on a thread of its own.
- */
+/** One-second timing averages and worst values since collection began. */
+class FrameTimings {
+public:
+    struct Snapshot {
+        double workMs = 0.0;
+        double intervalMs = 0.0;
+        double fps = 0.0;
+        double worstWorkMs = 0.0;
+        double worstIntervalMs = 0.0;
+        double worstFps = 0.0;
+    };
+
+    bool Record(std::uint64_t workNanoseconds, std::uint64_t now) {
+        m_workTotal += static_cast<double>(workNanoseconds);
+        ++m_workCount;
+        m_worstWork = std::max(m_worstWork, workNanoseconds);
+        if (!m_previous) {
+            m_previous = now;
+            m_start = now;
+            return false;
+        }
+        const auto interval = now - *m_previous;
+        m_previous = now;
+        m_intervalTotal += static_cast<double>(interval);
+        ++m_intervals;
+        m_worstInterval = std::max(m_worstInterval, interval);
+        if (now - m_start < 1000000000) {
+            return false;
+        }
+        const double fps =
+            static_cast<double>(m_intervals) * 1e9 / static_cast<double>(now - m_start);
+        m_snapshot = {m_workTotal / static_cast<double>(m_workCount) / 1e6,
+                      m_intervalTotal / static_cast<double>(m_intervals) / 1e6,
+                      fps,
+                      static_cast<double>(m_worstWork) / 1e6,
+                      static_cast<double>(m_worstInterval) / 1e6,
+                      m_snapshot ? std::min(m_snapshot->worstFps, fps) : fps};
+        m_workTotal = 0.0;
+        m_workCount = 0;
+        m_intervalTotal = 0.0;
+        m_intervals = 0;
+        m_start = now;
+        return true;
+    }
+
+    const std::optional<Snapshot> &Latest() const {
+        return m_snapshot;
+    }
+
+private:
+    std::optional<Snapshot> m_snapshot;
+    std::optional<std::uint64_t> m_previous;
+    std::uint64_t m_start = 0;
+    double m_workTotal = 0.0;
+    std::uint64_t m_workCount = 0;
+    double m_intervalTotal = 0.0;
+    std::uint64_t m_intervals = 0;
+    std::uint64_t m_worstWork = 0;
+    std::uint64_t m_worstInterval = 0;
+};
+
+/** Frame timings and system statistics, with GPU sampling on a separate thread. */
 class PerformanceStats {
 public:
     /** Sample the active adapter only when its identity permits NVML. */
@@ -148,13 +206,7 @@ private:
     class GpuSampler;
 
     std::unique_ptr<GpuSampler> m_gpu;
-    std::uint64_t m_lastFrame = 0; // The nanoseconds of SDL of the frame before.
-    double m_frameMs = 0.0;
-    double m_workMs = 0.0;
-    int m_framesNow = 0;                     // Drawn in the second so far.
-    std::optional<double> m_framesPerSecond; // Of the second before.
-    double m_worstMs = 0.0;                  // Of the second before.
-    double m_worstNowMs = 0.0;               // Of the second so far.
+    FrameTimings m_frameTimings;
     std::uint64_t m_secondStart = 0;
     std::optional<double> m_secondStartCpu; // The seconds of the processor at the second's start.
     std::optional<double> m_cpuPercent;     // Of one core, over the second before.

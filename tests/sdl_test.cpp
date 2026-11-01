@@ -644,6 +644,30 @@ int main() {
               coastline::MenuTrackForEngine(-1) == -1 && coastline::MenuTrackForEngine(15) == -1,
           "invalid tracks and menu actions cannot become engine tracks");
     const std::array<std::string, 2> gpuNames{"NVIDIA adapter 0", "NVIDIA adapter 1"};
+    coastline::FrameTimings timings;
+    for (std::uint64_t frame = 0; frame <= 60; ++frame) {
+        timings.Record(2000000, frame * 1000000000 / 60);
+    }
+    Check(timings.Latest() && std::abs(timings.Latest()->fps - 60.0) < 0.0001 &&
+              std::abs(timings.Latest()->intervalMs - 1000.0 / 60.0) < 0.0001 &&
+              timings.Latest()->workMs == 2.0,
+          "timing averages must distinguish CPU work from a paced 60 FPS interval");
+    timings.Record(50000000, 1250000000);
+    Check(timings.Latest()->workMs == 2.0 && timings.Latest()->fps == 60.0,
+          "displayed timings must remain stable between one-second samples");
+    for (std::uint64_t frame = 2; frame <= 4; ++frame) {
+        timings.Record(2000000, 1000000000 + frame * 250000000);
+    }
+    Check(timings.Latest()->fps == 4.0 && timings.Latest()->worstFps == 4.0 &&
+              timings.Latest()->workMs == 14.0 && timings.Latest()->worstWorkMs == 50.0 &&
+              timings.Latest()->intervalMs == 250.0 && timings.Latest()->worstIntervalMs == 250.0,
+          "slow frames must update timing averages and worst values");
+    for (std::uint64_t frame = 1; frame <= 60; ++frame) {
+        timings.Record(1000000, 2000000000 + frame * 1000000000 / 60);
+    }
+    Check(timings.Latest()->fps == 60.0 && timings.Latest()->worstFps == 4.0 &&
+              timings.Latest()->worstWorkMs == 50.0 && timings.Latest()->worstIntervalMs == 250.0,
+          "worst values must persist when frame timing improves");
     Check(coastline::UniqueGpuIndex("NVIDIA adapter 1", gpuNames) == 1,
           "GPU statistics must match the selected adapter instead of the first device");
     Check(!coastline::UniqueGpuIndex("Intel integrated adapter", gpuNames),
