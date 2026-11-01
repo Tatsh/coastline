@@ -1,5 +1,6 @@
 *.info
 *.kate-swp
+*.lock
 *.log
 *.min.js
 *.mm

@@ -23,7 +23,9 @@
         "drlibs",
         "fmt",
         {
-          "features": ["tools"],
+          "features": [
+            "tools"
+          ],
           "host": true,
           "name": "glslang"
         },
@@ -31,12 +33,18 @@
         "nlohmann-json",
         {
           "default-features": false,
-          "features": ["vulkan"],
+          "features": [
+            "vulkan"
+          ],
           "name": "sdl3"
         },
         {
           "default-features": false,
-          "features": ["alsa", "wayland", "x11"],
+          "features": [
+            "alsa",
+            "wayland",
+            "x11"
+          ],
           "name": "sdl3",
           "platform": "linux"
         },
@@ -51,7 +59,9 @@
   },
   "homepage": "https://tatsh.github.io/coastline/",
   "license": "MIT",
-  "maintainers": ["Andrew Udvare <audvare@gmail.com>"],
+  "maintainers": [
+    "Andrew Udvare <audvare@gmail.com>"
+  ],
   "name": "coastline",
   "version": "0.0.0"
 }

@@ -1,8 +1,8 @@
 {
   "_wiswa": {
-    "commandLine": "wiswa --skip-remote -q",
-    "lastRun": "2026-10-21T04:34:42Z",
-    "version": "7f9c68f"
+    "commandLine": "wiswa -d",
+    "lastRun": "2026-11-01T15:03:35Z",
+    "version": "15f81a9"
   },
   "contributors": ["Andrew Udvare <audvare@gmail.com>"],
   "cspell": {
@@ -24,13 +24,13 @@
       "*.1",
       "*.har",
       "*.lock",
-      ".claude/worktrees/**",
       ".git/**",
       ".yarn/**/*.cjs",
       ".vscode/extensions.json",
       ".wiswa-ci/**",
       "dist/**",
       "man/**",
+      ".claude/worktrees/**",
       "3rdparty/**",
       "asm/**",
       "docs/*.tags",

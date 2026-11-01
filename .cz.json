@@ -9,6 +9,8 @@
       "CMakeLists.txt",
       "README.md",
       "package.json",
+      "sh.tat.coastline.yml",
+      "snapcraft.yaml",
       "vcpkg.json"
     ],
     "version_provider": "npm",

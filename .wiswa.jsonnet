@@ -15,6 +15,8 @@
   },
   flatpak_image: 'ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08',
   flatpak+: {
+    // Import reads the user's disc and ROM images from home or removable storage. Controllers
+    // require access to input devices.
     'finish-args': [
       '--device=dri',
       '--device=input',
@@ -53,6 +55,7 @@
       },
       {
         buildsystem: 'cmake-ninja',
+        // CMake downloads the pinned SDL and other dependency sources.
         'build-options': {
           'build-args': ['--share=network'],
         },
@@ -66,6 +69,7 @@
         sources: [
           {
             path: '.',
+            // Retain .git so the build can read the source revision.
             skip: ['.claude', '.wiswa-ci', 'build', 'node_modules'],
             type: 'dir',
           },
@@ -82,6 +86,7 @@
         'command-chain': ['bin/gpu-2404-wrapper'],
         'common-id': 'sh.tat.coastline',
         desktop: 'usr/share/applications/sh.tat.coastline.desktop',
+        // Shared directories avoid copying large imported assets on each Snap refresh.
         environment: {
           XDG_CACHE_HOME: '$SNAP_USER_COMMON/.cache',
           XDG_DATA_HOME: '$SNAP_USER_COMMON/.local/share',
@@ -109,6 +114,7 @@
     grade: 'devel',
     icon: 'src/sdl/sh.tat.coastline.svg',
     issues:: null,
+    // GPU libraries are supplied by mesa-2404 through the gpu-2404 content interface.
     layout: {
       '/usr/share/drirc.d': { symlink: '$SNAP/gpu-2404/drirc.d' },
       '/usr/share/libdrm': { bind: '$SNAP/gpu-2404/libdrm' },
@@ -116,6 +122,7 @@
     },
     parts+: {
       coastline: {
+        // CMake downloads pinned dependencies and links them statically.
         'build-packages': [
           'autoconf-archive',
           'git',
@@ -150,6 +157,7 @@
         |||,
         plugin: 'cmake',
         source: '.',
+        // SDL and GameMode load these runtime libraries dynamically.
         'stage-packages': [
           'libasound2t64',
           'libdecor-0-0',
@@ -270,6 +278,7 @@
       },
       {
         cacheVariables: {
+          CMAKE_BUILD_TYPE: 'Debug',
           CMAKE_TOOLCHAIN_FILE: '${sourceDir}/cmake/win-toolchain.cmake',
           TGR_PLATFORM: 'win',
         },
@@ -292,6 +301,7 @@
         cacheVariables: {
           CMAKE_BUILD_TYPE: 'RelWithDebInfo',
           CMAKE_TOOLCHAIN_FILE: '$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake',
+          TGR_ENABLE_PATCHES: 'ON',
           TGR_PLATFORM: 'sdl',
           VCPKG_MANIFEST_FEATURES: 'sdl',
         },
@@ -379,6 +389,29 @@
       { host: true, name: 'spdlog' },
       { host: true, name: 'zlib' },
     ],
+    features+: {
+      sdl: {
+        dependencies: [
+          'argparse',
+          'boost-pfr',
+          'drlibs',
+          'fmt',
+          { features: ['tools'], host: true, name: 'glslang' },
+          'libflac',
+          'nlohmann-json',
+          { 'default-features': false, features: ['vulkan'], name: 'sdl3' },
+          {
+            'default-features': false,
+            features: ['alsa', 'wayland', 'x11'],
+            name: 'sdl3',
+            platform: 'linux',
+          },
+          { host: true, name: 'spirv-cross' },
+          'zlib',
+        ],
+        description: 'Build the stand-alone SDL game.',
+      },
+    },
   },
   vscode+: {
     // IntelliSense targets the USA cartridge build with the packaged libdragon compiler on PATH.
@@ -441,6 +474,41 @@
           name: 'Windows (' + (if renderer == 'd3d' then 'Direct3D' else 'Glide') + ')',
         }
         for renderer in ['d3d', 'glide']
+      ] + [
+        {
+          cStandard: 'c23',
+          compileCommands: '${workspaceFolder}/build/sdl/compile_commands.json',
+          compilerPath: '/usr/bin/g++',
+          configurationProvider: 'ms-vscode.cmake-tools',
+          cppStandard: 'c++23',
+          defines: [
+            'ENABLE_PATCHES',
+            'TGR_BOSS_RALLY=1',
+            'TGR_PLATFORM=3',
+            'TGR_PLATFORM_N64=1',
+            'TGR_PLATFORM_SDL=3',
+            'TGR_PLATFORM_WIN=2',
+            'TGR_REGION=1',
+            'TGR_REGION_EU=3',
+            'TGR_REGION_JP=2',
+            'TGR_REGION_US=1',
+            'TGR_RENDERER=3',
+            'TGR_RENDERER_D3D=1',
+            'TGR_RENDERER_GLIDE=2',
+            'TGR_RENDERER_SDL=3',
+          ],
+          includePath: [
+            '${workspaceFolder}/build/sdl/src/sdl',
+            '${workspaceFolder}/build/sdl/src/sdl/generated',
+            '${workspaceFolder}/build/sdl/vcpkg_installed/x64-linux/include',
+            '${workspaceFolder}/src',
+            '${workspaceFolder}/src/libultra/include',
+            '${workspaceFolder}/src/sdl',
+            '${workspaceFolder}/tools/common',
+          ],
+          intelliSenseMode: 'linux-gcc-x64',
+          name: 'SDL',
+        },
       ],
       env: {},
       version: 4,

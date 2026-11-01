@@ -1,7 +1,5 @@
 app-id: 'sh.tat.coastline'
 command: 'coastline'
-# The game imports a disc image and cartridge images from the home directory or a removable drive,
-# and reads the controllers through the input devices.
 finish-args:
   - '--device=dri'
   - '--device=input'
@@ -14,7 +12,10 @@ finish-args:
   - '--socket=wayland'
 modules:
   - buildsystem: 'meson'
-    cleanup: ['/include', '/lib/pkgconfig', '/lib/libgamemodeauto*']
+    cleanup:
+      - '/include'
+      - '/lib/pkgconfig'
+      - '/lib/libgamemodeauto*'
     config-opts:
       - '-Dwith-examples=false'
       - '-Dwith-pam-renicing=false'
@@ -30,11 +31,11 @@ modules:
         tag: '1.8.2'
         type: 'git'
         url: 'https://github.com/FeralInteractive/gamemode.git'
-  - buildsystem: 'cmake-ninja'
-    # SDL and the other libraries are the pinned releases the build downloads.
-    build-options:
-      build-args: ['--share=network']
+  - build-options:
+      build-args:
+        - '--share=network'
     builddir: true
+    buildsystem: 'cmake-ninja'
     config-opts:
       - '-DCMAKE_BUILD_TYPE=Release'
       - '-DTGR_ENABLE_PATCHES=ON'
@@ -42,8 +43,11 @@ modules:
     name: 'coastline'
     sources:
       - path: '.'
-        # The clone stays, so the build reads the revision of the game from it.
-        skip: ['.claude', '.wiswa-ci', 'build', 'node_modules']
+        skip:
+          - '.claude'
+          - '.wiswa-ci'
+          - 'build'
+          - 'node_modules'
         type: 'dir'
 runtime: 'org.freedesktop.Platform'
 runtime-version: '25.08'

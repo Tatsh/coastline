@@ -1,12 +1,11 @@
-adopt-info: coastline
+adopt-info: 'coastline'
 apps:
   coastline:
     command: 'usr/bin/coastline'
-    command-chain: ['bin/gpu-2404-wrapper']
+    command-chain:
+      - 'bin/gpu-2404-wrapper'
     common-id: 'sh.tat.coastline'
     desktop: 'usr/share/applications/sh.tat.coastline.desktop'
-    # The imported data is large, and snapd copies the directory of each revision on a refresh, so
-    # the data, the cache, and the log go to the directory every revision shares.
     environment:
       XDG_CACHE_HOME: '$SNAP_USER_COMMON/.cache'
       XDG_DATA_HOME: '$SNAP_USER_COMMON/.local/share'
@@ -28,19 +27,17 @@ description: |
   `coastline import --rom` import.
 grade: 'devel'
 icon: 'src/sdl/sh.tat.coastline.svg'
-# The GPU libraries come from the mesa-2404 snap through the gpu-2404 interface.
 layout:
+  /usr/share/X11/XErrorDB:
+    symlink: '$SNAP/gpu-2404/X11/XErrorDB'
   /usr/share/drirc.d:
     symlink: '$SNAP/gpu-2404/drirc.d'
   /usr/share/libdrm:
     bind: '$SNAP/gpu-2404/libdrm'
-  /usr/share/X11/XErrorDB:
-    symlink: '$SNAP/gpu-2404/X11/XErrorDB'
 license: 'MIT'
 name: 'coastline'
 parts:
   coastline:
-    # SDL and the other libraries are the pinned releases the build downloads, linked statically.
     build-packages:
       - 'autoconf-archive'
       - 'git'
@@ -72,7 +69,6 @@ parts:
       craftctl set version="$(git describe --always --tags)"
     plugin: 'cmake'
     source: '.'
-    # SDL opens these libraries when the game starts.
     stage-packages:
       - 'libasound2t64'
       - 'libdecor-0-0'
@@ -90,16 +86,18 @@ parts:
       - 'libxrandr2'
       - 'libxss1'
   gpu-2404:
-    after: ['coastline']
+    after:
+      - 'coastline'
     override-prime: |
       craftctl default
       ${CRAFT_PART_SRC}/bin/gpu-2404-cleanup mesa-2404
     plugin: 'dump'
-    prime: ['bin/gpu-2404-wrapper']
+    prime:
+      - 'bin/gpu-2404-wrapper'
     source: 'https://github.com/canonical/gpu-snap.git'
 platforms:
-  amd64:
-  arm64:
+  amd64: null
+  arm64: null
 plugs:
   gpu-2404:
     default-provider: 'mesa-2404'
