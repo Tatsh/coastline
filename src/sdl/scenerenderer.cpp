@@ -180,8 +180,8 @@ struct VertexUniforms {
     Matrix4 model;
     std::array<std::int32_t, 4> morph;
     std::array<float, 4> blend;
-    // The axes of the coordinates of a reflection, in the w of the first the first column of its
-    // window, and in the w of the second 1 where the coordinates are generated linearly.
+    // reflectAcross.w stores the tile column. reflectUp.w packs texture generation flags.
+    // Bit 0 selects angular coordinates; bit 1 selects N64 RSP and RDP mapping.
     std::array<float, 4> reflectAcross;
     std::array<float, 4> reflectUp;
     // The first and the second target and the share of the second of each pose.
@@ -2624,7 +2624,8 @@ void SceneRenderer::RenderInto(SDL_GPUCommandBuffer *commands,
                         uniforms.reflectUp = {reflection->up[0],
                                               reflection->up[1],
                                               reflection->up[2],
-                                              reflection->linear ? 1.0f : 0.0f};
+                                              (reflection->n64 ? 2.0f : 0.0f) +
+                                                  (reflection->linear ? 1.0f : 0.0f)};
                     }
                     drawPrimitive(primitive,
                                   model,

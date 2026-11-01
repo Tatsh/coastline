@@ -43,7 +43,8 @@ enum class ScreenShader {
 /** The options of the window and the GPU device. */
 struct DisplayOptions {
     bool n64Effects = false; /*!< Console particle textures, opacity, and skid-mark visibility. */
-    bool wideMenus = false;  /*!< Fill wide frames with the menu background. */
+    bool n64WindowReflections = false;  /*!< Generate car reflection coordinates as the N64 RSP. */
+    bool wideMenus = false;             /*!< Fill wide frames with the menu background. */
     float fieldOfViewScale = 1.0f;      /*!< Multiplier of the race camera's field of view. */
     float drawDistanceScale = 1.0f;     /*!< Multiplier of the race view and mirror distances. */
     std::string gpuPreference = "auto"; /*!< Automatic, high-performance, or low-power selection. */
@@ -136,6 +137,11 @@ public:
     /** @return Whether console particle textures, opacity, and skid-mark rules are selected. */
     bool N64Effects() const {
         return m_options.n64Effects;
+    }
+
+    /** @return Whether car windows use N64 RSP reflection coordinates instead of PC mapping. */
+    bool N64WindowReflections() const {
+        return m_options.n64WindowReflections;
     }
 
     /**

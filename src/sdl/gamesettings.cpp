@@ -107,6 +107,10 @@ GameSettings::GameSettings(GameConfig &config,
     m_options.push_back({"Music", "Game", "Music", {{"XM", "N64"}, {"CD", "PC"}}});
     m_options.push_back({"Sound effects", "Game", "SoundEffects", {{"PC", "PC"}, {"N64", "N64"}}});
     m_options.push_back({"Visual effects", "Game", "Effects", {{"PC", "PC"}, {"N64", "N64"}}});
+    m_options.push_back({"Window reflections",
+                         "Game",
+                         "WindowReflections",
+                         {{"auto", "Auto"}, {"PC", "PC"}, {"N64", "N64"}}});
     m_options.push_back({"Anti-aliasing",
                          "Video",
                          "Antialias",
@@ -235,10 +239,11 @@ GameSettings::GameSettings(GameConfig &config,
          "GpuPreference",
          {{"auto", "Auto"}, {"high-performance", "High performance"}, {"low-power", "Low power"}}});
     for (auto &option : m_options) {
-        if (option.key == "Music" || option.key == "Effects" || option.key == "FieldOfView" ||
-            option.key == "DrawDistance" || option.key == "InternalWidth" ||
-            option.key == "AntialiasPost" || option.key == "ScaleFilter" ||
-            option.key == "ScreenShader" || option.key == "AspectRatio") {
+        if (option.key == "Music" || option.key == "Effects" || option.key == "WindowReflections" ||
+            option.key == "FieldOfView" || option.key == "DrawDistance" ||
+            option.key == "InternalWidth" || option.key == "AntialiasPost" ||
+            option.key == "ScaleFilter" || option.key == "ScreenShader" ||
+            option.key == "AspectRatio") {
             option.restart = false;
         }
     }

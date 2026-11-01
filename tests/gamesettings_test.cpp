@@ -140,6 +140,14 @@ int main() {
     assert(!settings.RequiresRestart(effects));
     assert(settings.Step(effects, 1));
     assert(config.Get("Game", "Effects") == "N64");
+    const auto reflections = Find(settings, "Window reflections:");
+    assert(settings.Label(reflections) == "Window reflections: Auto");
+    assert(!settings.RequiresRestart(reflections));
+    assert(settings.AdjustAndSave(reflections, 1, directory / "BossRally.ini") ==
+           GameSettings::Adjustment::Saved);
+    assert(GameConfig::Load(directory / "BossRally.ini").Get("Game", "WindowReflections") == "PC");
+    assert(settings.Step(reflections, 1));
+    assert(settings.Label(reflections) == "Window reflections: N64");
     const auto autosave = Find(settings, "Auto-save race progress:");
     assert(settings.Label(autosave) == "Auto-save race progress: On");
     assert(!settings.RequiresRestart(autosave));

@@ -137,7 +137,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedC
                                              bool fixedFrame,
                                              bool setup = false) {
     auto config = savedConfig;
-    if (const auto preset = parser.present("--gpu-preset")) {
+    if (const auto preset = parser.present("--preset")) {
         coastline::ApplyGraphicsPreset(config, *preset);
     }
     coastline::DisplayOptions options;
@@ -150,6 +150,9 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedC
     options.fieldOfViewScale = config.GetFloat("Video", "FieldOfView", 1.0f);
     options.drawDistanceScale = config.GetFloat("Video", "DrawDistance", 1.0f);
     options.n64Effects = config.Get("Game", "Effects") == "N64";
+    const auto reflections = config.Get("Game", "WindowReflections").value_or("auto");
+    options.n64WindowReflections =
+        reflections == "N64" || (reflections != "PC" && options.n64Effects);
     // VSync takes a present mode by name, or 1 and 0 for vertical sync and immediate. fifo is
     // vertical sync that waits for the vertical blank under Wayland too.
     auto present = config.Get("Video", "VSync");
@@ -226,7 +229,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedC
     options.antialias =
         static_cast<int>(config.GetInteger("Video", "Antialias", options.antialias));
     // Explicit display arguments override the preset after saved settings are read.
-    if (auto preset = parser.present("--gpu-preset")) {
+    if (auto preset = parser.present("--preset")) {
         if (*preset == "ultra") {
             options.frameWidth = 0;
             options.frameHeight = 0;
@@ -306,7 +309,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedC
 
 coastline::GameConfig CommandLineOverrides(const argparse::ArgumentParser &parser) {
     coastline::GameConfig overrides;
-    if (const auto preset = parser.present("--gpu-preset")) {
+    if (const auto preset = parser.present("--preset")) {
         coastline::ApplyGraphicsPreset(overrides, *preset);
     }
     for (const auto &[option, section, key] : {std::tuple{"--aspect-ratio", "Video", "AspectRatio"},
@@ -843,8 +846,8 @@ int main(int argc, char *argv[]) {
         .help("shape of the frame for this run, in a window and in the full screen, with bars "
               "around it: auto for the shape of the window, a ratio such as 4:3, or a number such "
               "as 1.6; replaces AspectRatio of the settings");
-    parser.add_argument("--gpu-preset")
-        .action(RequiredChoiceValue("--gpu-preset", {"n64", "br", "ultra", "worst", "low-power"}))
+    parser.add_argument("--preset")
+        .action(RequiredChoiceValue("--preset", {"n64", "br", "ultra", "worst", "low-power"}))
         .metavar("{n64,br,ultra,worst,low-power}")
         .help("Graphics preset for this run, not saved. n64 selects console graphics and Consumer "
               "CRT; br selects PC graphics and PC CRT. ultra selects maximum quality and full "
@@ -1177,6 +1180,7 @@ int main(int argc, char *argv[]) {
                                               {"Game", "PauseOnFocusLoss", "1"},
                                               {"Game", "GameMode", "1"},
                                               {"Game", "Music", "N64"},
+                                              {"Game", "WindowReflections", "auto"},
                                               {"Game", "AssetPack", "default"},
                                               {"Game", "Language", "en-us"},
                                               {"Game", "TitleScreen", "regional"},
@@ -1247,9 +1251,9 @@ int main(int argc, char *argv[]) {
                         .value_or(config.Get("Game", "AssetPack")
                                       .value_or(std::string(coastline::DEFAULT_PACK)));
                 if (!parser.is_used("--asset-pack")) {
-                    if (parser.present("--gpu-preset") == "n64") {
+                    if (parser.present("--preset") == "n64") {
                         pack = "default";
-                    } else if (parser.present("--gpu-preset") == "br") {
+                    } else if (parser.present("--preset") == "br") {
                         pack = "boss";
                     }
                 }
@@ -1309,7 +1313,7 @@ int main(int argc, char *argv[]) {
                     packSettings.value("xmMusicGain", coastline::DEFAULT_XM_MUSIC_GAIN));
                 SetWindowIcon(window->Window(), assets);
                 coastline::N64MixerContext mixer;
-                const auto audioPreset = parser.present("--gpu-preset");
+                const auto audioPreset = parser.present("--preset");
                 const bool n64SoundEffects =
                     audioPreset == "n64" ||
                     (audioPreset != "br" && config.Get("Game", "SoundEffects") == "N64");
@@ -1326,8 +1330,8 @@ int main(int argc, char *argv[]) {
                 coastline::N64Audio audio;
                 coastline::RaceMusicContext raceMusic;
                 auto useCdMusic = [&]() {
-                    return parser.present("--gpu-preset") == "br" ||
-                           (parser.present("--gpu-preset") != "n64" &&
+                    return parser.present("--preset") == "br" ||
+                           (parser.present("--preset") != "n64" &&
                             config.Get("Game", "Music") == "CD");
                 };
                 coastline::FrontEndMusic menuMusic(audio,
@@ -1462,9 +1466,9 @@ int main(int argc, char *argv[]) {
                 // The vertical sync V returns to, fifo when the settings choose it.
                 const bool fifo = displayOptions.fifo;
                 Uint64 lastTicks = SDL_GetTicksNS();
-                // FrameRateLimit spaces the frames, at no limit when 0. --gpu-preset worst draws 30
+                // FrameRateLimit spaces the frames, at no limit when 0. --preset worst draws 30
                 // frames a second, the steps of the race, for a slow computer.
-                const auto graphicsPreset = parser.present("--gpu-preset");
+                const auto graphicsPreset = parser.present("--preset");
                 const long frameLimit =
                     graphicsPreset == "worst" || graphicsPreset == "n64"    ? 30 :
                     graphicsPreset == "br" || graphicsPreset == "low-power" ? 60 :

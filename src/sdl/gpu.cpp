@@ -548,6 +548,7 @@ bool GpuWindow::ApplyLiveOptions(const DisplayOptions &options) {
                                       std::clamp(options.drawDistanceScale, 1.0f, 4.0f) :
                                       1.0f;
     m_options.n64Effects = options.n64Effects;
+    m_options.n64WindowReflections = options.n64WindowReflections;
     m_options.frameWidth = options.frameWidth;
     m_options.frameHeight = options.frameHeight;
     m_options.renderScale = options.renderScale;

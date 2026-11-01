@@ -11,6 +11,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- A Window reflections option selects PC projection or original N64 angular mapping, with Auto
+  following Visual effects. Changes apply as Options closes without reimporting assets; both modes
+  use night-sky reflections in tunnels.
 - Optional Linux GameMode integration starts with setup or gameplay and ends on exit. Enabled by
   default, it can be disabled with `GameMode=0` under `[Game]`; unavailable clients or services log
   a message without preventing startup. Flatpak and Snap packages include the client.
@@ -30,7 +33,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Saved Graphics preset choices include Custom, N64, Boss Rally, Ultra, Worst, and Low power.
   Manual graphics changes select Custom. Presets preserve language and region;
   changes apply as Options closes, restarting at logos when resource or pacing changes require it.
-- `--gpu-preset n64` and `--gpu-preset br` select temporary N64 and Boss Rally looks, with explicit
+- `--preset n64` and `--preset br` select temporary N64 and Boss Rally looks, with explicit
   asset-pack and display arguments taking precedence.
 - An Aspect ratio option offers Fill screen (default), 4:3, 16:9, 21:9, and 32:9, applying as Options
   closes. Internal frames expand to the ratio while preserving selected minimum dimensions and at
@@ -126,6 +129,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- `--preset` replaces `--gpu-preset` for command-line preset selection.
 - N64 and Boss Rally presets use their native texture filters with anti-aliasing, alpha-to-coverage,
   upscaling, post-process anti-aliasing, and anisotropic filtering disabled. Both preserve title,
   autosave, and region choices.
@@ -140,8 +144,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   Their command-line presets apply music choices without saving them and lock Music in Options.
 - N64 and Boss Rally graphics presets select 4:3. Low power requests a lower-power GPU with
   a 640x480 internal base and a 60 FPS limit, separately from Worst's unfiltered minimum quality.
-- Ultra replaces High quality and `--gpu-preset best`; saved preset identifiers migrate from
-  `best` to `ultra`.
+- Ultra replaces High quality; saved preset identifiers migrate from `best` to `ultra`.
   Command-line choice values accept unique prefixes.
 - Options displays active command-line overrides and locks their settings for the current run.
 - Full performance statistics use a larger font without changing the legacy FPS counter.

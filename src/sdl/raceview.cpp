@@ -699,7 +699,8 @@ Reflection SkyReflection(const RenderTexture *daySky,
                          const RenderTexture *nightSky,
                          const CameraFrame &camera,
                          const Vehicle &car,
-                         const Vehicle &cameraCar) {
+                         const Vehicle &cameraCar,
+                         bool n64) {
     bool inTunnel =
         car.GetGroundInstanceCount() != 0 &&
         (g_LoadedTrack.instances[car.GetGroundInstances()[0]].flags & TRACK_INSTANCE_TUNNEL) != 0;
@@ -723,10 +724,16 @@ Reflection SkyReflection(const RenderTexture *daySky,
     reflection.across = rounded(right);
     reflection.up = rounded(Normalized(Cross(look, right)));
     reflection.linear = g_bVehicleEnvMapLinearTexGen != 0;
+    reflection.n64 = n64;
     long double heading = cameraCar.GetCameraHeading();
     auto offset = static_cast<std::int32_t>(
         0xffffffdfu -
         static_cast<std::uint32_t>(static_cast<std::int64_t>(heading * -20.3718318939209L)));
+    if (n64) {
+        offset =
+            31 -
+            (64 - static_cast<std::int32_t>(cameraCar.GetCameraHeading() * 64.0f * 0.3183098733f));
+    }
     reflection.column = static_cast<float>(offset + 2) / 4.0f;
     // The reflection blends towards the fog, more in a tunnel, and not at all in clear weather.
     int alpha = 0xFF;
@@ -2573,8 +2580,12 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
         paint ? DentDisplacement(renderer, s.dents[vehicleIndex], car, key, *paint) : nullptr);
     const Lighting &carLighting = view.lighting;
     Matrix4 body = MultiplyMatrices(FrameMatrix(frame), ConsoleSpace());
-    Reflection reflection =
-        SkyReflection(s.daySky.get(), s.nightSky.get(), camera, car, g_aVehicles[cameraIndex]);
+    Reflection reflection = SkyReflection(s.daySky.get(),
+                                          s.nightSky.get(),
+                                          camera,
+                                          car,
+                                          g_aVehicles[cameraIndex],
+                                          renderer.Window().N64WindowReflections());
     // The textured parts, the underside, the highlight, and the painted body in turn.
     if (level.car) {
         level.car->SetVariant(CarLightVariant(car));

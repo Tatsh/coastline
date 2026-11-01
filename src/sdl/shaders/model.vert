@@ -25,11 +25,8 @@ const int MAX_POSES = 64;
 // coordinates come from the normal across the whole texture, as G_TEXTURE_GEN of the RSP makes
 // them. Each pose is the first and the second key to blend and the share of the second, and the
 // vertices take the sum of the poses, as each animation moves its own vertices.
-// blend.z is 1 where the generated coordinates reflect the sky on a car: they follow the axes of
-// the look-at of the reflection, across a window of 31 of the 32 columns of the sky from the
-// column in reflectAcross.w and down its 128 rows, or where reflectUp.w is 1 as BRD3D generates
-// them linearly. blend.z is 2 where they place the highlight of a
-// car from the offsets in reflectAcross.w and reflectUp.w.
+// blend.z selects reflections at 1 and highlights at 2. For reflections, reflectAcross.w stores
+// the tile column. reflectUp.w is 0/1 for regular/angular PC generation or 2/3 for N64 generation.
 layout(set = 1, binding = 0) uniform Transform {
     mat4 viewProjection;
     mat4 model;
@@ -60,6 +57,16 @@ void main() {
         vec3 turned = normalize(outNormal);
         outTexCoord = vec2(dot(turned, reflectAcross.xyz), dot(turned, reflectUp.xyz)) * 0.25 +
                       vec2(reflectAcross.w, reflectUp.w);
+    } else if (blend.z > 0.5 && reflectUp.w > 1.5) {
+        vec3 turned = normalize(outNormal);
+        vec2 projected = clamp(vec2(dot(turned, reflectAcross.xyz),
+                                    dot(turned, reflectUp.xyz)), -1.0, 1.0);
+        vec2 generated = reflectUp.w > 2.5 ? acos(projected) / 3.1415927 :
+                                            projected * 0.5 + 0.5;
+        // RenderVehicleModel uses scales 0x0800/0x1000 and tile shifts 15/15. The shifts double
+        // the generated coordinates to 64 by 128 texels before subtracting the tile origin.
+        outTexCoord = (generated * vec2(64.0, 128.0) - vec2(reflectAcross.w, 0.5)) /
+                      vec2(32.0, 128.0);
     } else if (blend.z > 0.5 && reflectUp.w > 0.5) {
         // G_TEXTURE_GEN_LINEAR of BRD3D, the reflection of the race: the dot of the turned normal
         // with the axis across, and the arcsine of the dot with the axis up over pi, by the 32 by

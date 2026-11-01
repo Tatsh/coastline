@@ -65,7 +65,7 @@ Use auto to fill the output, a ratio such as 4:3 or 21:9,
 or a positive finite width-to-height number such as 1.6.
 Explicit ratios add bars where necessary.
 .TP
-.BI \-\-gpu-preset " PRESET"
+.BI \-\-preset " PRESET"
 Select n64, br, ultra, worst, or low-power.
 N64 selects a 320x240 internal base, 4:3, Consumer CRT,
 and N64 music and sound effects.

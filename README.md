@@ -375,6 +375,11 @@ skid marks appear only in PC mode, as in the original releases. Particle motion 
 race simulation in both modes. Import ROM images again to add the effect PNGs to older asset
 directories; missing images produce a warning and use PC effects.
 
+`Window reflections` selects the original PC projection or N64 angular reflection mapping.
+`WindowReflections=auto` under `[Game]` follows Visual effects by default; `PC` and `N64` override
+the mapping independently. Changes apply as Options closes. Both versions use the same reflection
+images and switch to the night image inside tunnels; their generated texture coordinates differ.
+
 `--gpu auto|high-performance|low-power` overrides `GpuPreference` for one run. Automatic selection
 retains SDL's default preference for a dedicated GPU. Low-power selection prefers an
 integrated GPU when available. The log records the actual adapter, backend, driver, and preference.
@@ -399,7 +404,7 @@ power preserve the aspect ratio.
 
 Preset changes apply after exiting Options. Asset-pack, renderer, or frame-limit changes restart
 the game at the logos; other preset adjustments apply during the black transition screen.
-`--gpu-preset n64` and `--gpu-preset br` select the corresponding look for one run without saving
+`--preset n64` and `--preset br` select the corresponding look for one run without saving
 the preset. Explicit asset-pack and display arguments override the preset.
 
 N64 and Boss Rally use 100% field of view and 1x draw distance. Anti-aliasing, anisotropic
@@ -407,22 +412,22 @@ filtering, post-process anti-aliasing, and upscaling are off. Boss Rally uses Mo
 filtering without mipmaps, matching the original bilinear filtering.
 Both presets preserve the title screen, auto-save, and region for models and textures.
 
-`--gpu-preset ultra` fills the screen at window resolution with 2x draw distance, 100% field of
+`--preset ultra` fills the screen at window resolution with 2x draw distance, 100% field of
 view, 8-sample anti-aliasing, alpha to coverage, 16-sample anisotropic filtering, modern texture
 filtering, and PC visual effects. Upscaling, post-process anti-aliasing, and screen shaders are off.
 Ultra preserves the title screen, auto-save, sound effects, music, models and textures, and asset
 pack.
-It uses borderless full screen unless overridden. `--gpu-preset worst` uses 1x draw distance,
+It uses borderless full screen unless overridden. `--preset worst` uses 1x draw distance,
 nearest scaling and texture filtering, no anti-aliasing or screen filters, and a 320 by 240 base
 frame at 30 FPS. Worst preserves the aspect ratio and does not change GPU preference.
-`--gpu-preset low-power` requests SDL's
+`--preset low-power` requests SDL's
 lower-power adapter, when available, and uses the moderate settings above. Other explicit display
 arguments still apply. Unique choice prefixes are accepted, such as `n`, `u`, and `l`; ambiguous
 prefixes produce an argument error.
 
 CLI overrides disable matching Options entries and grey their coins. Their labels show the active
 override, and the temporary values are not saved. For example, `--aspect-ratio 4:3` disables only
-Aspect ratio, while `--gpu-preset n64` disables all settings controlled by the preset. GPU preference
+Aspect ratio, while `--preset n64` disables all settings controlled by the preset. GPU preference
 changes recreate the GPU device and restart the game after Options closes.
 
 | Key                    | Values                                                                                                                                                                                                                                  |
