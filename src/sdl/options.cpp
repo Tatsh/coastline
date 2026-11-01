@@ -794,7 +794,12 @@ bool Menus::SeasonNoteIsValid(const std::vector<u8> &note) const {
     std::size_t season = note[0x04];
     int round = note[0x05];
     auto unlocks = static_cast<unsigned>(Get16(note, 0xCC));
-    unsigned cars = (1u << m_cars.size()) - 1;
+    unsigned cars = 0;
+    for (std::size_t car = 0; car < m_cars.size(); ++car) {
+        if (m_cars[car].championship) {
+            cars |= 1u << car;
+        }
+    }
     const char *reason = nullptr;
     if (season >= m_seasons.size()) {
         reason = "a season past the last";

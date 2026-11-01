@@ -11,6 +11,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- PJ, TR, and MN cars are selectable outside Championship in USA and EUR regions, with Japanese
+  menu statistics and matching race identities. Previews prefer imported Japanese models and fall
+  back to PC models; Pure PC always uses PC previews.
 - A Visual effects option saves `Game.Effects` as `PC` (default) or `N64`, applying as Options closes.
   N64 effects use imported smoke and wheel-spray PNGs, ordered particle opacity, and depth writes;
   persistent skid marks remain exclusive to PC mode. Older assets require ROM reimport for effect

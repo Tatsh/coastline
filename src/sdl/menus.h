@@ -90,6 +90,7 @@ struct MenuCar {
     int gearCount = 0;             /*!< The gears of the gearbox. */
     float shadowLength = 0.0f;     /*!< The length of its shadow on the stage of the cars. */
     float shadowHalfWidth = 0.0f;  /*!< Half the width of its shadow on the stage of the cars. */
+    bool championship = true;      /*!< Whether the selected cartridge offers the car in seasons. */
 };
 
 /** The shaded triangles of a display list of the stage of the cars. */
@@ -250,6 +251,9 @@ private:
                                   bool secondController);
     bool
     LoadTrackMenu(SceneRenderer &renderer, const std::filesystem::path &release, bool pcPreviews);
+    void AddRegionalCars(const std::filesystem::path &cache,
+                         std::span<const std::filesystem::path> dataRoots,
+                         std::string_view assetPack);
     void SetTrackFromSeason();
     void LoadSeasonCars(SceneRenderer &renderer);
     bool IsTrackUnlocked(int track) const;

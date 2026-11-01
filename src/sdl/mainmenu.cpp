@@ -53,12 +53,16 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
     }
     std::unique_ptr<Menus> menus(new Menus(std::move(screen)));
     menus->m_mainMenuItems = std::move(*main);
-    const bool pcPreviews =
-        (assetPack.empty() ? config.Get("Game", "AssetPack").value_or("default") : assetPack) ==
-        BOSS_PACK;
+    const std::string activePack = assetPack.empty() ?
+                                       config.Get("Game", "AssetPack").value_or("default") :
+                                       std::string(assetPack);
+    const bool pcPreviews = activePack == BOSS_PACK;
     if (!menus->LoadPlayerCountItems(renderer, release) ||
-        !menus->LoadTrackMenu(renderer, release, pcPreviews) ||
-        !menus->LoadWeatherItems(renderer, release) || !menus->LoadCarSelect(renderer, release) ||
+        !menus->LoadTrackMenu(renderer, release, pcPreviews)) {
+        return nullptr;
+    }
+    menus->AddRegionalCars(cache, dataRoots, activePack);
+    if (!menus->LoadWeatherItems(renderer, release) || !menus->LoadCarSelect(renderer, release) ||
         !menus->LoadOptionsItems(renderer, release) ||
         !menus->LoadControllerScreen(renderer, release)) {
         return nullptr;

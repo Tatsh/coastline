@@ -8,11 +8,14 @@
 #include <SDL3/SDL.h>
 #include <nlohmann/json.hpp>
 
+#include "assetpack.h"
 #include "common/assetnames.h"
 #include "frontend.h"
 #include "gpu.h"
+#include "language.h"
 #include "menus.h"
 #include "menutext.h"
+#include "paths.h"
 
 namespace coastline {
 
@@ -164,6 +167,93 @@ bool Menus::LoadTrackMenu(SceneRenderer &renderer,
     }
     m_trackMenuItems.insert(m_trackMenuItems.end(), resets->begin(), resets->end());
     return !m_seasons.empty() && m_numTracks + 4 == static_cast<int>(m_trackMenuItems.size());
+}
+
+void Menus::AddRegionalCars(const std::filesystem::path &cache,
+                            std::span<const std::filesystem::path> dataRoots,
+                            std::string_view assetPack) {
+    if (std::ranges::all_of(std::array{13, 14, 15}, [&](int engineCar) {
+            return std::ranges::any_of(m_cars,
+                                       [&](const auto &car) { return car.engineCar == engineCar; });
+        })) {
+        return;
+    }
+    std::filesystem::path japanese;
+    if (assetPack != BOSS_PACK) {
+        for (const auto &root : dataRoots) {
+            const auto fallback =
+                std::ranges::find_if(dataRoots, [&](const auto &other) { return other != root; });
+            const auto other = fallback == dataRoots.end() ? std::filesystem::path{} : *fallback;
+            const bool baseIsJapanese =
+                CartridgeRegion(ReleaseDirectory(DefaultAssets(root))) == "jpn";
+            if (!baseIsJapanese &&
+                CartridgeRegion(ReleaseDirectory(PackDirectory(root, "jpn", other))) != "jpn") {
+                continue;
+            }
+            if (auto assets =
+                    PackAssets(root, cache, assetPack, other, baseIsJapanese ? "" : "jpn")) {
+                japanese = ReleaseDirectory(*assets);
+                break;
+            }
+        }
+    }
+    const std::array extras{MenuCar{.name = "TYPE-PJ",
+                                    .directory = "cars/type-pj",
+                                    .preview = {},
+                                    .engineCar = 13,
+                                    .driveType = 2,
+                                    .engineLayout = 1,
+                                    .acceleration = 480.0f,
+                                    .maxSpeed = 9.5f,
+                                    .gearCount = 6,
+                                    .shadowLength = 2.45f,
+                                    .shadowHalfWidth = 1.35f,
+                                    .championship = false},
+                            MenuCar{.name = "TYPE-TR",
+                                    .directory = "cars/type-tr",
+                                    .preview = {},
+                                    .engineCar = 14,
+                                    .driveType = 1,
+                                    .engineLayout = 0,
+                                    .acceleration = 370.0f,
+                                    .maxSpeed = 7.5f,
+                                    .gearCount = 6,
+                                    .shadowLength = 2.55f,
+                                    .shadowHalfWidth = 1.45f,
+                                    .championship = false},
+                            MenuCar{.name = "TYPE-MN",
+                                    .directory = "cars/type-mn",
+                                    .preview = {},
+                                    .engineCar = 15,
+                                    .driveType = 1,
+                                    .engineLayout = 0,
+                                    .gearCount = 6,
+                                    .shadowLength = 1.55f,
+                                    .shadowHalfWidth = 1.0f,
+                                    .championship = false}};
+    const auto assets = m_release.parent_path().parent_path();
+    auto exists = [](std::filesystem::path path) {
+        std::error_code error;
+        if (std::filesystem::is_regular_file(path, error)) {
+            return true;
+        }
+        path.replace_extension(".glb");
+        return std::filesystem::is_regular_file(path, error);
+    };
+    for (auto car : extras) {
+        if (std::ranges::any_of(
+                m_cars, [&](const auto &current) { return current.engineCar == car.engineCar; })) {
+            continue;
+        }
+        car.preview =
+            assets / "cars" / (std::string(g_apszCarModelPrefixes[car.engineCar]) + ".gltf");
+        if (!japanese.empty() && exists(japanese / car.directory / "model.gltf")) {
+            car.directory = (japanese / car.directory).string();
+            car.preview = std::filesystem::path(car.directory) / "model.gltf";
+        }
+        car.exists = exists(car.preview);
+        m_cars.push_back(std::move(car));
+    }
 }
 
 void Menus::SetTrackFromSeason() {
