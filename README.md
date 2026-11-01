@@ -354,6 +354,13 @@ Non-NVIDIA and unknown adapters omit NVML utilization statistics; game memory co
 
 The `[Video]` section of `BossRally.ini` sets up the display.
 
+`--gpu-preset best` uses native resolution, 4x draw distance, 8-sample anti-aliasing, alpha to
+coverage, 16-sample anisotropic filtering, modern texture filtering, and linear scaling in
+borderless full screen. `--gpu-preset worst` uses 1x draw distance, nearest scaling and texture
+filtering, no anti-aliasing, and a 320 by 240 frame at 30 FPS. Full-screen frames retain the
+display aspect ratio. Both presets override saved internal dimensions, render scale, and
+post-process anti-aliasing for the run. Explicit display arguments still apply.
+
 | Key                    | Values                                                                                                                                                                                                                                  |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Fullscreen`           | `1` for the full screen, or `0` for a resizable window. Alt+Enter and F11 save their choice here.                                                                                                                                       |
@@ -378,7 +385,11 @@ The `[Video]` section of `BossRally.ini` sets up the display.
 | `AntialiasPost`        | `fxaa` blends the finished frame along the edges it finds with fast approximate anti-aliasing. `none`, the default, does not.                                                                                                           |
 
 By default the frame follows the size of the window in pixels, and changes with it as the window
-is resized or covers the display. `InternalWidth` and `InternalHeight` set a size of their own,
+is resized or covers the display. Options lists explicit internal resolutions from 320x240 through
+the highest resolution reported by connected displays, plus a default `Window size` choice.
+The list includes common intermediate sizes and reported display modes, with each size listed once.
+Selecting a resolution resets `RenderScale` to `1` and applies as Options closes.
+`InternalWidth` and `InternalHeight` set a size of their own,
 which takes the place of the size of the window and of `RenderScale`, and the frame is scaled to
 the window with bars where its shape differs. `Width` and `Height` set the size of the window and
 of the exclusive mode. A script that saves frames draws them at `Width` by `Height` times

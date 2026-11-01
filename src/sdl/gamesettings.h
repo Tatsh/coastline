@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <filesystem>
 #include <span>
 #include <string>
@@ -14,7 +15,9 @@ class GameSettings {
 public:
     enum class Adjustment { Unchanged, Saved, SaveFailed };
 
-    GameSettings(GameConfig &config, std::span<const std::filesystem::path> dataRoots = {});
+    GameSettings(GameConfig &config,
+                 std::span<const std::filesystem::path> dataRoots = {},
+                 std::span<const std::array<int, 2>> displayResolutions = {});
 
     std::size_t Count() const {
         return m_options.size();
@@ -30,6 +33,7 @@ private:
     struct Choice {
         std::string value;
         std::string label;
+        int height = 0;
     };
     struct Option {
         std::string label;

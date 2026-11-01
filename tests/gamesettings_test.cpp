@@ -47,7 +47,11 @@ int main() {
     auto config = GameConfig::Parse("[Other]\nPreserved=value\n[Video]\nFieldOfView=1.250000\n"
                                     "Antialias=broken\nInternalWidth=800\nInternalHeight=600\n"
                                     "Width=1280\n");
-    GameSettings settings(config, roots);
+    const std::array displayResolutions{std::array{1920, 1080},
+                                        std::array{3840, 2160},
+                                        std::array{1920, 1080},
+                                        std::array{2880, 1800}};
+    GameSettings settings(config, roots, displayResolutions);
     const auto pack = Find(settings, "Asset pack:");
     assert(settings.Label(pack) == "Asset pack: PC + branded images");
     assert(settings.Step(pack, 1));
@@ -81,10 +85,28 @@ int main() {
     assert(settings.Step(antialias, -1));
     assert(config.GetInteger("Video", "Antialias", 0) == 8);
 
-    const auto scale = Find(settings, "Internal resolution:");
-    assert(settings.Label(scale) == "Internal resolution: 100%");
-    assert(settings.Step(scale, -1));
-    assert(config.GetFloat("Video", "RenderScale", 0) == 0.75f);
+    const auto resolution = Find(settings, "Internal resolution:");
+    assert(settings.Label(resolution) == "Internal resolution: 800x600");
+    assert(!settings.RequiresRestart(resolution));
+    assert(settings.Step(resolution, -1));
+    assert(settings.Label(resolution) == "Internal resolution: 720x576");
+    config.Set("Video", "InternalWidth", "0");
+    config.Set("Video", "InternalHeight", "0");
+    assert(settings.Label(resolution) == "Internal resolution: Window size");
+    assert(settings.Step(resolution, 1));
+    assert(settings.Label(resolution) == "Internal resolution: 320x240");
+    assert(settings.Step(resolution, -1));
+    assert(settings.Step(resolution, -1));
+    assert(settings.Label(resolution) == "Internal resolution: 3840x2160");
+    bool foundDesktop = false;
+    for (int step = 0;
+         step < 100 && settings.Label(resolution) != "Internal resolution: Window size";
+         ++step) {
+        foundDesktop |= settings.Label(resolution) == "Internal resolution: 2880x1800";
+        assert(settings.Step(resolution, -1));
+    }
+    assert(foundDesktop);
+    assert(config.GetFloat("Video", "RenderScale", 0) == 1.0f);
     assert(config.GetInteger("Video", "InternalWidth", -1) == 0);
     assert(config.GetInteger("Video", "InternalHeight", -1) == 0);
     assert(config.GetInteger("Video", "Width", 0) == 1280);

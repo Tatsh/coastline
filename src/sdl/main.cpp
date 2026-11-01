@@ -164,12 +164,16 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     }
     options.antialias =
         static_cast<int>(config.GetInteger("Video", "Antialias", options.antialias));
-    // A preset of --gpu-preset replaces the filtering and the anti-aliasing of the settings for
-    // this run, and the options of the command line after it still apply. best covers the display
-    // at its desktop mode, its largest, and worst draws the smallest frame: 320 by 240 in a window,
-    // and the shape of the display in the full screen, at least 320 across and 240 down.
+    // Explicit display arguments override the preset after saved settings are read.
     if (auto preset = parser.present("--gpu-preset")) {
         if (*preset == "best") {
+            options.frameWidth = 0;
+            options.frameHeight = 0;
+            options.renderScale = 1.0f;
+            options.scaleFilter = coastline::ScaleFilter::Linear;
+            options.postAntialias = coastline::PostAntialias::None;
+            options.drawDistanceScale = 4.0f;
+            options.lowestFrame = false;
             options.antialias = 8;
             options.alphaToCoverage = true;
             options.anisotropy = 16;
@@ -177,6 +181,11 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
             options.fullscreen = true;
             options.exclusive = false;
         } else if (*preset == "worst") {
+            options.frameWidth = 0;
+            options.frameHeight = 0;
+            options.renderScale = 1.0f;
+            options.scaleFilter = coastline::ScaleFilter::Nearest;
+            options.drawDistanceScale = 1.0f;
             options.antialias = 1;
             options.alphaToCoverage = false;
             options.postAntialias = coastline::PostAntialias::None;
@@ -709,10 +718,12 @@ int main(int argc, char *argv[]) {
     parser.add_argument("--gpu-preset")
         .help(
             "preset of the graphics for this run, not saved: best for 8 samples of anti-aliasing, "
-            "alpha to coverage, 16 samples of anisotropic filtering, and the full screen at the "
+            "alpha to coverage, 16 samples of anisotropic filtering, 4x draw distance, native "
+            "resolution, linear scaling, and the full screen at the "
             "desktop mode of the display, drawn at the size of the display or at --width by "
             "--height "
-            "when given, or worst for no anti-aliasing, the nearest texel, 30 frames a second, and "
+            "when given, or worst for no anti-aliasing, 1x draw distance, nearest scaling and "
+            "texels, 30 frames a second, and "
             "a "
             "frame of 320 by 240 in a window, or the shape of the display at least 320 by 240 in "
             "the "

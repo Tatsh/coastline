@@ -66,7 +66,22 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
     menus->LoadPakData();
     menus->m_config = &config;
     menus->m_configPath = configPath;
-    menus->m_gameSettings = std::make_unique<GameSettings>(config, dataRoots);
+    std::vector<std::array<int, 2>> displayResolutions;
+    int displayCount = 0;
+    SDL_DisplayID *displays = SDL_GetDisplays(&displayCount);
+    for (int display = 0; displays && display < displayCount; ++display) {
+        int modeCount = 0;
+        SDL_DisplayMode **modes = SDL_GetFullscreenDisplayModes(displays[display], &modeCount);
+        for (int mode = 0; modes && mode < modeCount; ++mode) {
+            displayResolutions.push_back({modes[mode]->w, modes[mode]->h});
+        }
+        SDL_free(modes);
+        if (const auto *desktop = SDL_GetDesktopDisplayMode(displays[display])) {
+            displayResolutions.push_back({desktop->w, desktop->h});
+        }
+    }
+    SDL_free(displays);
+    menus->m_gameSettings = std::make_unique<GameSettings>(config, dataRoots, displayResolutions);
     menus->m_gameSettingsStart = static_cast<int>(menus->m_optionsMenuItems.size());
     for (std::size_t index = 0; index < menus->m_gameSettings->Count(); ++index) {
         menus->m_optionsMenuItems.push_back({menus->m_gameSettings->Label(index),

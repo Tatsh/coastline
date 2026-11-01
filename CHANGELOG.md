@@ -94,6 +94,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Internal resolution offers explicit sizes from 320x240 through connected display modes, defaulting
+  to Window size and applying as Options closes. Resource-changing options identify game restarts.
+- Graphics presets override saved internal resolution, render scale, and post-process anti-aliasing
+  for consistent results, with 4x draw distance for `best` and 1x for `worst`.
 - Setup disables Back on the Done screen after a successful import.
 - Setup search results abbreviate the home directory as `~` in disc and ROM paths.
 - Gold coin placeholders sit above the menu stage with soft projected shadows.

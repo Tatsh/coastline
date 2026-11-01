@@ -484,7 +484,7 @@ void Menus::OptionsMenuPostDraw(SceneRenderer &renderer, int item) {
         const bool restart = m_gameSettings->RequiresRestart(item - m_gameSettingsStart);
         m_screen->Text().Draw(renderer,
                               m_gameSettingsSaveError ? "%wwSettings could not be saved." :
-                              restart ? "%wwApplies when you exit Options. Returns to logos." :
+                              restart ? "%wwApplies when you exit Options. Restarts the game." :
                                         "%wwApplies when you exit Options.",
                               160,
                               90,

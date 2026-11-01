@@ -1,15 +1,19 @@
 #include "gamesettings.h"
 
+#include <algorithm>
 #include <cmath>
 #include <limits>
 #include <set>
+#include <tuple>
 #include <utility>
 
 #include "language.h"
 
 namespace coastline {
 
-GameSettings::GameSettings(GameConfig &config, std::span<const std::filesystem::path> dataRoots)
+GameSettings::GameSettings(GameConfig &config,
+                           std::span<const std::filesystem::path> dataRoots,
+                           std::span<const std::array<int, 2>> displayResolutions)
     : m_config(config) {
     std::set<std::string> packs{"default"};
     const auto availableRegions = AvailableCartridgeRegions(dataRoots);
@@ -78,17 +82,44 @@ GameSettings::GameSettings(GameConfig &config, std::span<const std::filesystem::
          {{"0.75", "75%"}, {"1", "100%"}, {"1.25", "125%"}, {"1.5", "150%"}, {"2", "200%"}},
          1,
          true});
-    m_options.push_back({"Internal resolution",
-                         "Video",
-                         "RenderScale",
-                         {{"0.5", "50%"},
-                          {"0.67", "67%"},
-                          {"0.75", "75%"},
-                          {"1", "100%"},
-                          {"1.5", "150%"},
-                          {"2", "200%"}},
-                         3,
-                         true});
+    Option resolution{"Internal resolution", "Video", "InternalWidth", {{"0", "Window size"}}};
+    constexpr std::array standardResolutions{
+        std::array{320, 240},   std::array{400, 300},   std::array{512, 384},
+        std::array{640, 360},   std::array{640, 480},   std::array{720, 480},
+        std::array{720, 576},   std::array{800, 600},   std::array{960, 540},
+        std::array{1024, 576},  std::array{1024, 768},  std::array{1152, 864},
+        std::array{1280, 720},  std::array{1280, 768},  std::array{1280, 800},
+        std::array{1280, 960},  std::array{1280, 1024}, std::array{1366, 768},
+        std::array{1440, 900},  std::array{1600, 900},  std::array{1600, 1200},
+        std::array{1680, 1050}, std::array{1920, 1080}, std::array{1920, 1200},
+        std::array{2048, 1536}, std::array{2560, 1080}, std::array{2560, 1440},
+        std::array{2560, 1600}, std::array{3440, 1440}, std::array{3840, 1600},
+        std::array{3840, 2160}, std::array{4096, 2160}, std::array{5120, 1440},
+        std::array{5120, 2880}, std::array{6016, 3384}, std::array{7680, 2160},
+        std::array{7680, 4320}, std::array{8192, 4320}, std::array{15360, 8640}};
+    std::set<std::array<int, 2>> sizes{{320, 240}};
+    for (const auto &size : standardResolutions) {
+        if (std::ranges::any_of(displayResolutions, [&](const auto &mode) {
+                return size[0] <= mode[0] && size[1] <= mode[1];
+            })) {
+            sizes.insert(size);
+        }
+    }
+    for (const auto &size : displayResolutions) {
+        if (size[0] >= 320 && size[1] >= 240 && size[0] <= 16384 && size[1] <= 16384) {
+            sizes.insert(size);
+        }
+    }
+    std::vector<std::array<int, 2>> sorted(sizes.begin(), sizes.end());
+    std::ranges::sort(sorted, [](const auto &a, const auto &b) {
+        return std::tuple{static_cast<long long>(a[0]) * a[1], a[0], a[1]} <
+               std::tuple{static_cast<long long>(b[0]) * b[1], b[0], b[1]};
+    });
+    for (const auto &size : sorted) {
+        const auto width = std::to_string(size[0]);
+        resolution.choices.push_back({width, width + "x" + std::to_string(size[1]), size[1]});
+    }
+    m_options.push_back(std::move(resolution));
     m_options.push_back(
         {"Post anti-aliasing", "Video", "AntialiasPost", {{"none", "Off"}, {"fxaa", "FXAA"}}});
     m_options.push_back({.label = "Auto-save race progress",
@@ -119,7 +150,7 @@ GameSettings::GameSettings(GameConfig &config, std::span<const std::filesystem::
     m_options.push_back(std::move(title));
     for (auto &option : m_options) {
         if (option.key == "Music" || option.key == "Effects" || option.key == "FieldOfView" ||
-            option.key == "DrawDistance" || option.key == "RenderScale" ||
+            option.key == "DrawDistance" || option.key == "InternalWidth" ||
             option.key == "AntialiasPost") {
             option.restart = false;
         }
@@ -127,6 +158,17 @@ GameSettings::GameSettings(GameConfig &config, std::span<const std::filesystem::
 }
 
 std::size_t GameSettings::Selected(const Option &option) const {
+    if (option.key == "InternalWidth") {
+        const auto width = m_config.GetInteger("Video", "InternalWidth", 0);
+        const auto height = m_config.GetInteger("Video", "InternalHeight", 0);
+        for (std::size_t index = 0; index < option.choices.size(); ++index) {
+            const auto &choice = option.choices[index];
+            if (width == std::stoi(choice.value) && height == choice.height) {
+                return index;
+            }
+        }
+        return option.fallback;
+    }
     const auto stored = m_config.Get(option.section, option.key);
     if (!stored) {
         return option.fallback;
@@ -159,6 +201,13 @@ std::string GameSettings::Label(std::size_t index) const {
     }
     const auto &option = m_options[index];
     const auto &choice = option.choices[Selected(option)];
+    if (option.key == "InternalWidth" && Selected(option) == option.fallback) {
+        const auto width = m_config.GetInteger("Video", "InternalWidth", 0);
+        const auto height = m_config.GetInteger("Video", "InternalHeight", 0);
+        if (width > 0 && height > 0) {
+            return option.label + ": " + std::to_string(width) + "x" + std::to_string(height);
+        }
+    }
     if (option.numeric) {
         const float number =
             m_config.GetFloat(option.section, option.key, std::numeric_limits<float>::quiet_NaN());
@@ -184,9 +233,9 @@ bool GameSettings::Step(std::size_t index, int direction) {
     auto selected = Selected(option);
     selected = (selected + (direction > 0 ? 1 : option.choices.size() - 1)) % option.choices.size();
     m_config.Set(option.section, option.key, option.choices[selected].value);
-    if (option.key == "RenderScale") {
-        m_config.Set("Video", "InternalWidth", "0");
-        m_config.Set("Video", "InternalHeight", "0");
+    if (option.key == "InternalWidth") {
+        m_config.Set("Video", "InternalHeight", std::to_string(option.choices[selected].height));
+        m_config.Set("Video", "RenderScale", "1");
     }
     return true;
 }
