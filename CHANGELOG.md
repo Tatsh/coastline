@@ -126,6 +126,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Ultra fills the screen at native window resolution with 2x draw distance and no upscaling,
+  post-process anti-aliasing, or screen shader. It preserves title, autosave, sound effects, music,
+  models, textures, and asset-pack choices.
 - Setup remembers the disc image, all three ROM fields, and search directory across runs,
   including after cancellation.
 - N64 and Boss Rally presets select N64 and PC sound effects, respectively.
@@ -165,7 +168,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Internal resolution offers explicit sizes from 320x240 through connected display modes, defaulting
   to Window size and applying as Options closes. Resource-changing options identify game restarts.
 - Graphics presets override saved internal resolution, render scale, and post-process anti-aliasing
-  for consistent results, with 4x draw distance for `ultra` and 1x for `worst`.
+  for consistent results, with 2x draw distance for `ultra` and 1x for `worst`.
 - Setup disables Back on the Done screen after a successful import.
 - Setup search results abbreviate the home directory as `~` in disc and ROM paths.
 - Gold coin placeholders sit above the menu stage with soft projected shadows.

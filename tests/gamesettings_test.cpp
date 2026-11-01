@@ -271,11 +271,29 @@ int main() {
     assert(presets.AdjustAndSave(preset, 1, path) == GameSettings::Adjustment::Saved);
     assert(GameConfig::Load(path).Get("Game", "Music") == "CD");
     presetConfig.Set("Video", "AspectRatio", "32:9");
+    const std::array preservedKeys{
+        "TitleScreen", "AutoSave", "SoundEffects", "Music", "Region", "AssetPack"};
+    presetConfig.Set("Game", "TitleScreen", "japanese");
+    presetConfig.Set("Game", "AutoSave", "1");
+    const auto beforeUltra = presetConfig;
     assert(presets.Step(preset, 1));
-    assert(presetConfig.Get("Video", "AspectRatio") == "32:9");
-    assert(presetConfig.GetInteger("Video", "DrawDistance", 0) == 4);
+    for (const auto key : preservedKeys) {
+        assert(presetConfig.Get("Game", key) == beforeUltra.Get("Game", key));
+    }
+    assert(presetConfig.Get("Video", "AspectRatio") == "auto");
+    assert(presetConfig.GetInteger("Video", "DrawDistance", 0) == 2);
     assert(presetConfig.GetInteger("Video", "Antialias", 0) == 8);
+    assert(presetConfig.Get("Video", "ScaleFilter") == "nearest");
+    assert(presetConfig.Get("Video", "ScreenShader") == "none");
+    assert(presetConfig.Get("Video", "AntialiasPost") == "none");
+    assert(presetConfig.Get("Video", "InternalWidth") == "0");
+    assert(presetConfig.Get("Video", "InternalHeight") == "0");
+    assert(presetConfig.Get("Video", "FieldOfView") == "1");
+    assert(presetConfig.Get("Video", "TextureFilter") == "modern");
+    assert(presetConfig.Get("Video", "AnisotropicFiltering") == "16");
+    assert(presetConfig.Get("Game", "Effects") == "PC");
     assert(presetConfig.Get("Video", "GraphicsPreset") == "ultra");
+    presetConfig.Set("Video", "AspectRatio", "32:9");
     presetConfig.Set("Video", "GpuPreference", "high-performance");
     assert(presets.Step(preset, 1));
     assert(presetConfig.Get("Video", "AspectRatio") == "32:9");

@@ -231,10 +231,10 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedC
             options.frameWidth = 0;
             options.frameHeight = 0;
             options.renderScale = 1.0f;
-            options.scaleFilter = coastline::ScaleFilter::Linear;
+            options.scaleFilter = coastline::ScaleFilter::Nearest;
             options.postAntialias = coastline::PostAntialias::None;
             options.screenShader = coastline::ScreenShader::None;
-            options.drawDistanceScale = 4.0f;
+            options.drawDistanceScale = 2.0f;
             options.lowestFrame = false;
             options.antialias = 8;
             options.alphaToCoverage = true;
@@ -279,12 +279,6 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedC
     if (auto height = parser.present<int>("--height")) {
         options.height = *height;
     }
-    // Ultra draws at the size the command line gives, scaled to the display it covers.
-    if (parser.present("--gpu-preset") == "ultra" &&
-        (parser.is_used("--width") || parser.is_used("--height"))) {
-        options.frameWidth = options.width;
-        options.frameHeight = options.height;
-    }
     if (parser.get<bool>("--fullscreen")) {
         options.fullscreen = true;
     }
@@ -310,15 +304,10 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedC
     return options;
 }
 
-coastline::GameConfig CommandLineOverrides(const argparse::ArgumentParser &parser,
-                                           const coastline::DisplayOptions &display) {
+coastline::GameConfig CommandLineOverrides(const argparse::ArgumentParser &parser) {
     coastline::GameConfig overrides;
     if (const auto preset = parser.present("--gpu-preset")) {
         coastline::ApplyGraphicsPreset(overrides, *preset);
-        if (*preset == "ultra" && (parser.is_used("--width") || parser.is_used("--height"))) {
-            overrides.Set("Video", "InternalWidth", std::to_string(display.frameWidth));
-            overrides.Set("Video", "InternalHeight", std::to_string(display.frameHeight));
-        }
     }
     for (const auto &[option, section, key] : {std::tuple{"--aspect-ratio", "Video", "AspectRatio"},
                                                std::tuple{"--gpu", "Video", "GpuPreference"},
@@ -1454,7 +1443,7 @@ int main(int argc, char *argv[]) {
                                                       std::array{assetData, paths->data},
                                                       pack);
                     if (mainMenu) {
-                        auto overrides = CommandLineOverrides(parser, displayOptions);
+                        auto overrides = CommandLineOverrides(parser);
                         if (overrides.Get("Game", "AssetPack")) {
                             overrides.Set("Game", "AssetPack", pack);
                         }

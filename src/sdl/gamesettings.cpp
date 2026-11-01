@@ -32,6 +32,9 @@ bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset) {
     if (br) {
         config.Set("Game", "Music", "CD");
     }
+    if (ultra) {
+        config.Set("Video", "AspectRatio", "auto");
+    }
     config.Set("Game", "Effects", n64 ? "N64" : "PC");
     if (lowPower) {
         config.Set("Video", "GpuPreference", "low-power");
@@ -40,13 +43,13 @@ bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset) {
     config.Set("Video", "InternalHeight", ultra ? "0" : br || lowPower ? "480" : "240");
     config.Set("Video", "RenderScale", "1");
     config.Set("Video", "FieldOfView", "1");
-    config.Set("Video", "DrawDistance", ultra ? "4" : "1");
+    config.Set("Video", "DrawDistance", ultra ? "2" : "1");
     config.Set("Video", "Antialias", ultra || n64 ? "8" : lowPower ? "2" : "1");
     config.Set("Video", "AlphaToCoverage", ultra || n64 || lowPower ? "1" : "0");
     config.Set("Video", "AnisotropicFiltering", ultra ? "16" : lowPower ? "2" : "0");
     config.Set("Video", "TextureFilter", n64 ? "n64" : worst ? "nearest" : "modern");
     config.Set("Video", "AntialiasPost", "none");
-    config.Set("Video", "ScaleFilter", ultra || lowPower ? "linear" : "nearest");
+    config.Set("Video", "ScaleFilter", lowPower ? "linear" : "nearest");
     config.Set("Video", "ScreenShader", n64 ? "consumer-crt" : br ? "pc-crt" : "none");
     config.Set("Video", "FrameRateLimit", ultra ? "0" : br || lowPower ? "60" : "30");
     config.Set("Video", "UnlockedFramerate", "0");

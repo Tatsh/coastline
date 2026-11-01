@@ -71,7 +71,13 @@ N64 selects a 320x240 internal base, 4:3, and Consumer CRT.
 BR selects a 640x480 internal base, 4:3, Pure PC textures, PC CRT,
 and PC CD music.
 An explicit aspect ratio can expand either base resolution.
-Ultra selects maximum graphics quality and full screen.
+Ultra fills the screen at window resolution with 2x draw distance,
+100% field of view, 8x anti-aliasing, 16x anisotropic filtering,
+modern textures, and PC visual effects.
+Upscaling, screen shaders, and post-process anti-aliasing are off.
+Title screen, auto-save, sound effects, music, models and textures,
+and asset pack are preserved.
+Ultra uses borderless full screen unless overridden.
 Worst selects minimum quality without filters and preserves the aspect ratio.
 Low-power requests a lower-power GPU with moderate graphics settings.
 Other explicit graphics arguments override the preset.
