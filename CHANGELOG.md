@@ -11,6 +11,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Optional Linux GameMode integration starts with setup or gameplay and ends on exit. Enabled by
+  default, it can be disabled with `GameMode=0` under `[Game]`; unavailable clients or services log
+  a message without preventing startup. Flatpak and Snap packages include the client.
 - `run-script` reads standard input when the filename is omitted or `-`, waiting for EOF before
   running and reporting script errors with `<stdin>:line` diagnostics.
 - Installed manual pages for `coastline`, `coastline-import`, `coastline-import-pak`, and

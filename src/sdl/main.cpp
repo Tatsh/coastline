@@ -49,6 +49,7 @@
 #include "firstrun/wizardrun.h"
 #endif
 #include "frontend.h"
+#include "gamemode.h"
 #include "gamesettings.h"
 #include "gpu.h"
 #include "iconfile.h"
@@ -1185,6 +1186,7 @@ int main(int argc, char *argv[]) {
                                               {"Game", "PlaySFX", "1"},
                                               {"Game", "WaitForStart", "0"},
                                               {"Game", "PauseOnFocusLoss", "1"},
+                                              {"Game", "GameMode", "1"},
                                               {"Game", "Music", "N64"},
                                               {"Game", "AssetPack", "default"},
                                               {"Game", "Language", "en-us"},
@@ -1222,6 +1224,8 @@ int main(int argc, char *argv[]) {
     };
     {
         SdlSession sdl(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD);
+        coastline::GameModeSession gameMode(sdl.ready &&
+                                            config.GetBoolean("Game", "GameMode", true));
         if (sdl.ready && !SDL_InitSubSystem(SDL_INIT_AUDIO)) {
             SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "Cannot start audio: %s", SDL_GetError());
         }

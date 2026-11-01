@@ -143,6 +143,15 @@ macOS and Windows use platform-specific application directories.
 BossRally.ini stores settings.
 The data directory includes assets and Controller Pak notes.
 game.log is written in the state directory.
+.PP
+On Linux, GameMode=1 under [Game] in BossRally.ini requests Feral GameMode at
+startup when its client library and service are available.
+The default is 1; set GameMode=0 to disable the request.
+The request ends on exit and persists across internal game restarts.
+Missing clients and failed requests do not prevent play.
+Other platforms ignore the setting.
+Import and Controller Pak commands do not request GameMode.
+.PP
 System assets are searched before user assets, including the installation's
 share/coastline and /usr/share/coastline on Unix systems.
 .SH ENVIRONMENT

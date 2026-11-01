@@ -73,6 +73,12 @@ supports, from Windows 7 and macOS 10.15 on x86_64 and arm64. It draws through t
 
 The `sdl` preset takes the libraries from vcpkg, found through `VCPKG_ROOT`.
 
+On Linux, Coastline requests Feral GameMode at startup when its client library and service are
+available, and releases the request on exit. Missing clients or failed requests do not prevent
+play. The config-only setting `GameMode=0` under `[Game]` in `BossRally.ini` disables the request;
+the default is `1`. Internal game restarts preserve the registration. Other platforms ignore the
+setting. GameMode is not requested by import or Controller Pak commands.
+
 ```shell
 VCPKG_ROOT=/path/to/vcpkg cmake --workflow --preset sdl
 ```

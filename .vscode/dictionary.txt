@@ -391,6 +391,7 @@ dtgr
 dtlvertex
 dvcpkg
 dvddrive
+dwith
 dwlp
 dxgi
 dxguid
@@ -501,6 +502,7 @@ fxfalse
 fxmisc
 fxtrue
 gameinit
+gamemode
 gamesession
 gamesettings
 gamestate
@@ -671,6 +673,8 @@ libdrm
 libegl
 libera
 libflac
+libgamemode
+libgamemodeauto
 libgcc
 libglide
 libltdl
@@ -1051,6 +1055,7 @@ renderdefaults
 renderinit
 rendermode
 rendertile
+renicing
 reques
 resetglobalintmask
 resf

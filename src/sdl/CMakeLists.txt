@@ -194,6 +194,7 @@ add_library(
   effecttextures.cpp
   enginetextures.cpp
   frontend.cpp
+  gamemode.cpp
   gamesettings.cpp
   flactrack.cpp
   ghostfile.cpp

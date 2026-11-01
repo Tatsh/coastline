@@ -13,6 +13,21 @@ finish-args:
   - '--socket=pulseaudio'
   - '--socket=wayland'
 modules:
+  - buildsystem: 'meson'
+    cleanup: ['/include', '/lib/pkgconfig', '/lib/libgamemodeauto*']
+    config-opts:
+      - '-Dwith-examples=false'
+      - '-Dwith-pam-renicing=false'
+      - '-Dwith-sd-bus-provider=no-daemon'
+      - '-Dwith-systemd-group=false'
+      - '-Dwith-systemd-user-unit=false'
+      - '-Dwith-util=false'
+    name: 'gamemode'
+    sources:
+      - commit: 'c54d6d4243b0dd0afcb49f2c9836d432da171a2b'
+        tag: '1.8.2'
+        type: 'git'
+        url: 'https://github.com/FeralInteractive/gamemode.git'
   - buildsystem: 'cmake-ninja'
     # SDL and the other libraries are the pinned releases the build downloads.
     build-options:
