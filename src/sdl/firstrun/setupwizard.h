@@ -67,6 +67,8 @@ struct WizardServices {
     std::function<std::optional<std::string>(const WizardImport &, const WizardProgress &)> import;
     std::filesystem::path home;          /*!< The directory the file browser starts in at first. */
     std::filesystem::path lastDirectory; /*!< The directory last browsed, or empty. */
+    std::string buildRevision;           /*!< A version tag or short source revision. */
+    std::string buildDate;               /*!< The date the executable was built. */
 };
 
 /** The images found during a directory search, indexed by detected release. */

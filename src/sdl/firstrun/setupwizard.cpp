@@ -1541,7 +1541,7 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
                        White,
                        Blue);
         writeLines(DIALOG_ROW + 10, "Press Finish to start the game.", LightGray);
-        status = " <Enter=Finish>  <Esc=Back>";
+        status = " <Enter=Finish>";
         break;
     }
     drawControls(ScreenControls(), screenOnTop ? m_screenFocus : std::nullopt);
@@ -1583,6 +1583,18 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
         status =
             m_message->question ? " <Alt+Y=Yes>  <Alt+N=No>  <Esc=No>" : " <Enter=OK>  <Esc=OK>";
     }
+    const std::string repository = "https://github.com/Tatsh/coastline";
+    grid.WriteUtf8(
+        (GRID_COLUMNS - LabelWidth(repository)) / 2, GRID_ROWS - 3, repository, LightGray, Blue);
+    const std::string build =
+        (m_services.buildRevision.empty() ? "Development build" : m_services.buildRevision) +
+        " | Built " + (m_services.buildDate.empty() ? __DATE__ : m_services.buildDate);
+    grid.WriteUtf8(std::max(0, (GRID_COLUMNS - LabelWidth(build)) / 2),
+                   GRID_ROWS - 2,
+                   build,
+                   LightGray,
+                   Blue,
+                   GRID_COLUMNS);
     grid.Fill(0, GRID_ROWS - 1, GRID_COLUMNS, 1, ' ', Black, LightGray);
     grid.WriteUtf8(0, GRID_ROWS - 1, status, Black, LightGray);
 }

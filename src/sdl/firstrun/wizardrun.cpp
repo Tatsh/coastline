@@ -109,6 +109,15 @@ SetupRun RunSetupWizard(GpuWindow &window,
         return run;
     }
     WizardServices services;
+#ifdef COASTLINE_GIT_SHA
+    services.buildRevision = COASTLINE_GIT_SHA;
+#endif
+    if (services.buildRevision.empty()) {
+        services.buildRevision = "v" COASTLINE_VERSION;
+    } else if (!services.buildRevision.starts_with('v')) {
+        services.buildRevision.resize(std::min<std::size_t>(7, services.buildRevision.size()));
+    }
+    services.buildDate = __DATE__;
     services.checkDisc = CheckDisc;
     services.identifyCartridge = IdentifyCartridge;
     services.scanArchive =

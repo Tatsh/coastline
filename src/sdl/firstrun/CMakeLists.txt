@@ -17,4 +17,5 @@ add_library(coastline_firstrun STATIC assetsearch.cpp filebrowser.cpp setupwizar
 target_include_directories(coastline_firstrun PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}"
                            PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 target_compile_options(coastline_firstrun PRIVATE ${COASTLINE_WARNINGS})
+target_compile_definitions(coastline_firstrun PRIVATE COASTLINE_VERSION="${CMAKE_PROJECT_VERSION}")
 target_link_libraries(coastline_firstrun PUBLIC coastline_sdl Threads::Threads PRIVATE ZLIB::ZLIB)

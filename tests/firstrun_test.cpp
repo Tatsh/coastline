@@ -71,6 +71,8 @@ void Wait(SetupWizard &wizard) {
 WizardServices Services(const std::filesystem::path &root) {
     WizardServices services;
     services.home = root;
+    services.buildRevision = "v1.2.3";
+    services.buildDate = "2026-11-01";
     services.checkDisc = [](const std::filesystem::path &path) {
         return path.stem() == "disc" ? std::optional<std::string>{} :
                                        std::optional<std::string>{"Not Boss Rally"};
@@ -156,6 +158,17 @@ void TestEditing(const std::filesystem::path &root) {
     Check(!Enabled(wizard, Next), "An invalid optional slot must disable Next.");
     TextGrid grid;
     wizard.Draw(grid, 0.0);
+    auto rowText = [&](int row) {
+        std::string text;
+        for (int column = 0; column < GRID_COLUMNS; ++column) {
+            text.push_back(static_cast<char>(grid.At(column, row).glyph));
+        }
+        return text;
+    };
+    Check(rowText(GRID_ROWS - 3).contains("https://github.com/Tatsh/coastline"),
+          "Setup must display its repository URI.");
+    Check(rowText(GRID_ROWS - 2).contains("v1.2.3 | Built 2026-11-01"),
+          "Setup must display the build revision and date.");
     const auto controls = wizard.Controls();
     const auto field = std::ranges::find(controls, Rom1Text, &WizardControl::id);
     Check(grid.At(field->column, field->row).background == CgaColor::Red,
