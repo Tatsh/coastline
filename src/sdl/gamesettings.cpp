@@ -53,6 +53,7 @@ GameSettings::GameSettings(GameConfig &config, std::span<const std::filesystem::
     }
     m_options.push_back(std::move(region));
     m_options.push_back({"Music", "Game", "Music", {{"XM", "N64"}, {"CD", "PC (CD)"}}});
+    m_options.push_back({"Sound effects", "Game", "SoundEffects", {{"PC", "PC"}, {"N64", "N64"}}});
     m_options.push_back({"Anti-aliasing",
                          "Video",
                          "Antialias",

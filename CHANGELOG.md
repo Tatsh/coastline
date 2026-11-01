@@ -11,6 +11,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- A Sound effects option saves `Game.SoundEffects` as `PC` (default) or `N64`, applying after restart.
+  N64 sounds preserve duration and are normalised against PC levels with a 98% peak limit. Missing
+  N64 samples fall back to PC with a warning; taunts without console equivalents are silent.
+  PC menu feedback uses the PC sample matched to native menu volume.
 - A saved `TitleScreen` option selects `regional` (default), `international`, or `japanese`
   independently of language and model region, with a restart to apply. Available imported titles
   support custom-pack overrides; unavailable selections warn and fall back to the regional opening.
@@ -99,6 +103,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- `PlaySFX=0` silences menu, intro, and race sound effects independently of music.
 - Music playback respects saved BGM volume before starting and `PlayMusic=0` in menus and races,
   while sound effects remain independent.
 - F12 advances N64 music modules, and restarting a race preserves the manually selected module.

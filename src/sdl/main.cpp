@@ -63,6 +63,7 @@
 #include "runscript.h"
 #include "runtimebuffers.h"
 #include "scenerenderer.h"
+#include "soundeffects.h"
 #include "stringresources.h"
 #include "trackload.h"
 
@@ -1096,6 +1097,11 @@ int main(int argc, char *argv[]) {
                 packSettings.value("xmMusicGain", coastline::DEFAULT_XM_MUSIC_GAIN));
             SetWindowIcon(window->Window(), assets);
             coastline::N64MixerContext mixer;
+            coastline::SoundEffects soundEffects(assets,
+                                                 config.Get("Game", "SoundEffects") == "N64" ?
+                                                     coastline::SoundEffects::Source::N64 :
+                                                     coastline::SoundEffects::Source::Pc,
+                                                 config.GetBoolean("Game", "PlaySFX", true));
             coastline::EngineRuntime engineRuntime;
             coastline::InputBindings input(config);
             coastline::EngineModels engineModels;

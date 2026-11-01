@@ -322,6 +322,14 @@ sources. Missing CD audio falls back to XM with a warning. F12 advances the sele
 tracks; restarting a race retains a manually selected XM module.
 `PlayMusic=0` silences music in menus and races while sound effects remain independent.
 
+`Sound effects` selects PC or N64 samples (`SoundEffects=PC` or `SoundEffects=N64` under
+`[Game]`, with PC as the default). The selection applies after restart. Race sounds use the
+selected pack's converted WAV files. N64 samples retain their duration and match the RMS level
+of their PC counterparts, limited to 98% peak amplitude. Missing N64 samples fall back to PC
+with a warning; PC taunts are silent in N64 mode. PC menu feedback uses the PC front-end sample,
+matched to the native menu level. Intro sounds remain specific to the selected title.
+`PlaySFX=0` silences menu feedback, intro sounds, and race sound effects independently of music.
+
 `--gpu auto|high-performance|low-power` overrides `GpuPreference` for one run. Automatic selection
 retains SDL's default preference for a dedicated GPU. Low-power selection prefers an
 integrated GPU when available. The log records the actual adapter, backend, driver, and preference.

@@ -18,8 +18,6 @@
 #include "win32/timer.h"
 #include "win32/wavread.h"
 #else
-#include <string>
-
 #include <SDL3/SDL.h>
 
 #include "common/rallyconfig.h"
@@ -29,6 +27,7 @@
 #include "ear/error.h"
 #include "ear/initialization.h"
 #include "ear/shutdown.h"
+#include "sdl/soundeffects.h"
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -623,34 +622,13 @@ bool PlayLoopedSoundVoiceWithStereo(int nSample, int nVoice, DWORD dwLevels) {
 }
 
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
-// The files of the disc retain the case of their names (Beep.wav, RN_Dirt.wav), and the PC release
-// opens them by names of another case, as the file system of Windows ignores case.
-static inline bool
-LoadWaveIgnoringCase(const char *pszPath, SDL_AudioSpec *pSpec, Uint8 **ppData, Uint32 *pdwBytes) {
-    if (SDL_LoadWAV(pszPath, pSpec, ppData, pdwBytes)) {
-        return true;
-    }
-    const std::string path = pszPath;
-    const std::size_t slash = path.find_last_of('/');
-    const std::string directory = slash == std::string::npos ? "." : path.substr(0, slash);
-    const std::string name = slash == std::string::npos ? path : path.substr(slash + 1);
-    int count = 0;
-    char **ppMatches =
-        SDL_GlobDirectory(directory.c_str(), name.c_str(), SDL_GLOB_CASEINSENSITIVE, &count);
-    const bool bLoaded =
-        ppMatches != nullptr && count > 0 &&
-        SDL_LoadWAV((directory + '/' + ppMatches[0]).c_str(), pSpec, ppData, pdwBytes);
-    SDL_free(ppMatches);
-    return bLoaded;
-}
-
 // Read a wave file into the sample and the format of a node, as WaveLoadFile() of Windows does,
 // with the samples in a format the mixer plays.
-static inline int LoadWaveSamples(const char *pszPath, SoundBufferNode *pNode) {
+static inline int LoadWaveSamples(const char *pszPath, SoundBufferNode *pNode, int sample) {
     SDL_AudioSpec spec;
     Uint8 *pData = nullptr;
     Uint32 dwBytes = 0;
-    if (!LoadWaveIgnoringCase(pszPath, &spec, &pData, &dwBytes)) {
+    if (!coastline::SoundEffects::LoadRaceWave(pszPath, sample, &spec, &pData, &dwBytes)) {
         SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "%s cannot be read: %s", pszPath, SDL_GetError());
         return 1;
     }
@@ -687,7 +665,11 @@ static inline int LoadWaveSamples(const char *pszPath, SoundBufferNode *pNode) {
 }
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+SoundBufferNode *LoadAudioFile(const char *pszPath, int sample) {
+#else
 SoundBufferNode *LoadAudioFile(const char *pszPath) {
+#endif
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     SoundBufferNode *pNode = static_cast<SoundBufferNode *>(
         GlobalLock(GlobalAlloc(GMEM_ZEROINIT, sizeof(SoundBufferNode))));
@@ -711,7 +693,7 @@ SoundBufferNode *LoadAudioFile(const char *pszPath) {
             pszPath, &pNode->dwSampleSize, &dwSamples, &pNode->pWaveFormat, &pNode->pSampleData) !=
             0 ||
 #else
-        LoadWaveSamples(pszPath, pNode) != 0 ||
+        LoadWaveSamples(pszPath, pNode, sample) != 0 ||
 #endif
         CreateDirectSoundBufferFromSample(pNode) != DS_OK ||
         AppendSoundBufferToList(&g_SoundBufferListHead, pNode) != 0) {
@@ -778,7 +760,11 @@ LoadSfxFile(char *pszPath, const char *pszPrefix, const char *pszSuffix) {
     strcpy(pszPath, g_szSfxDirPath);
     strcat(pszPath, pszPrefix);
     strcat(pszPath, pszSuffix);
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    return LoadAudioFile(pszPath, 0);
+#else
     return LoadAudioFile(pszPath);
+#endif
 }
 
 bool LoadSfxWaveVariants(int nEffect) {
@@ -861,7 +847,11 @@ bool LoadSoundSet(int nSet) {
             // Each channel of the sample loads the file of the sample again.
             strcpy(szPath, g_szSfxDirPath);
             strcat(szPath, ppszFiles[nSample]);
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+            pBuffer = LoadAudioFile(szPath, nSet == SOUND_SET_RACE ? nSample : -1);
+#else
             pBuffer = LoadAudioFile(szPath);
+#endif
             if (pBuffer == nullptr) {
                 bLoaded = false;
             }

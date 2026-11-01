@@ -1183,6 +1183,7 @@ soundbank
 soundbuffer
 soundchannel
 soundeffect
+soundeffects
 soundpan
 soundptr
 soundsample

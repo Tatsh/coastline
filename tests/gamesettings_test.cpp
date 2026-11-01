@@ -90,6 +90,10 @@ int main() {
     assert(config.GetInteger("Video", "Width", 0) == 1280);
 
     const auto music = Find(settings, "Music:");
+    const auto sounds = Find(settings, "Sound effects:");
+    assert(settings.Label(sounds) == "Sound effects: PC");
+    assert(settings.Step(sounds, 1));
+    assert(config.Get("Game", "SoundEffects") == "N64");
     const auto autosave = Find(settings, "Auto-save race progress:");
     assert(settings.Label(autosave) == "Auto-save race progress: On");
     assert(!settings.RequiresRestart(autosave));

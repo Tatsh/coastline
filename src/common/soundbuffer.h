@@ -491,7 +491,11 @@ bool PlayLoopedSoundVoiceWithStereo(int nSample, int nVoice, DWORD dwLevels);
  * @ghidraAddress BRD3D: 0x10072ca0
  * @ghidraAddress BRGlide: 0x1006bc10
  */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+SoundBufferNode *LoadAudioFile(const char *pszPath, int sample = -1);
+#else
 SoundBufferNode *LoadAudioFile(const char *pszPath);
+#endif
 
 /**
  * Load the three files of a sound effect of a race, named by the prefixes the banks of sounds

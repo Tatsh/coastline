@@ -223,6 +223,15 @@ target_link_libraries(sdlmixer_test PRIVATE SDL3::SDL3)
 add_test(NAME sdlmixer COMMAND sdlmixer_test)
 set_tests_properties(sdlmixer PROPERTIES ENVIRONMENT "UBSAN_OPTIONS=halt_on_error=1")
 
+add_executable(soundeffects_test soundeffects_test.cpp "${_src}/sdl/soundeffects.cpp")
+set_target_properties(soundeffects_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(soundeffects_test PRIVATE "${_src}/sdl")
+target_compile_options(soundeffects_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(soundeffects_test PRIVATE -fsanitize=address,undefined)
+target_link_libraries(soundeffects_test PRIVATE SDL3::SDL3)
+add_test(NAME soundeffects COMMAND soundeffects_test)
+set_tests_properties(soundeffects PROPERTIES ENVIRONMENT "UBSAN_OPTIONS=halt_on_error=1")
+
 add_executable(sdltextures_test sdltextures_test.cpp "${_src}/sdl/enginetextures.cpp")
 set_target_properties(sdltextures_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(sdltextures_test PRIVATE "${_src}" "${_src}/sdl"

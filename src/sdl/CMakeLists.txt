@@ -226,6 +226,7 @@ add_library(
   racemenu.cpp
   raceinput.cpp
   racemusic.cpp
+  soundeffects.cpp
   raceresults.cpp
   racesession.cpp
   raceview.cpp
