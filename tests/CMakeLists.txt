@@ -280,6 +280,21 @@ coastline_dependency(
   URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
   HASH 42f6e95cad6ec532fd372391373363b62a14af6d771056dbfc86160e6dfff7aa
   OPTIONS JSON_BuildTests=OFF JSON_Install=OFF)
+coastline_dependency(
+  FMT
+  PACKAGE fmt
+  FIND_ARGS CONFIG
+  URL https://github.com/fmtlib/fmt/releases/download/12.2.0/fmt-12.2.0.zip
+  HASH a2f4a8d51178f954e4c339007f77edd76ba0cb2e36f87a48e5a5403d9be5878f
+  OPTIONS FMT_INSTALL=OFF FMT_TEST=OFF FMT_DOC=OFF)
+add_executable(n64model_test n64model_test.cpp "${_src}/sdl/n64model.cpp")
+set_target_properties(n64model_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(n64model_test PRIVATE "${_src}/sdl")
+target_compile_options(n64model_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(n64model_test PRIVATE -fsanitize=address,undefined)
+target_link_libraries(n64model_test PRIVATE nlohmann_json::nlohmann_json fmt::fmt)
+add_test(NAME n64model COMMAND n64model_test)
+
 add_executable(gamesettings_test gamesettings_test.cpp "${_src}/sdl/gamesettings.cpp"
   "${_src}/sdl/config.cpp" "${_src}/sdl/language.cpp")
 set_target_properties(gamesettings_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)

@@ -1157,7 +1157,7 @@ BuildModel(std::span<const std::uint8_t> bytes,
            const std::vector<std::string> &scenes,
            std::string_view bufferUri,
            const std::vector<VertexAnimation> &animations = {},
-           const std::map<std::size_t, int> &paintMaterialOf = {}) {
+           const std::map<std::size_t, int> &paintMaterialOfPalette = {}) {
     auto image = bytes.subspan(imageOffset);
     DisplayListWalk walk(image, layout.base);
     // A draw is walked once for each state it starts from.
@@ -1236,10 +1236,10 @@ BuildModel(std::span<const std::uint8_t> bytes,
                                     {},
                                     -1,
                                     key.address});
-            // A texture of a material of a car keeps its indices for the colour of the car to
-            // paint its first two colours.
-            auto painted = paintMaterialOf.find(key.address);
-            if (painted != paintMaterialOf.end() && key.format == G_IM_FMT_CI &&
+            // Several textures can share a palette that a material recolours.
+            auto painted = key.palette ? paintMaterialOfPalette.find(*key.palette) :
+                                         paintMaterialOfPalette.end();
+            if (painted != paintMaterialOfPalette.end() && key.format == G_IM_FMT_CI &&
                 key.texelSize == G_IM_SIZ_4b && key.palette &&
                 *key.palette + PALETTE_4_BYTES <= memory.size()) {
                 GltfImage &picture = model.images.back();
@@ -2064,17 +2064,17 @@ std::expected<GltfModel, std::string> CarModelToGltf(std::span<const std::uint8_
             draws.push_back(std::move(draw));
         }
     }
-    // The textures whose palettes SetMaterialPaletteColors() paints, by their material. A texture
-    // of more than one material takes the alpha of the last.
-    std::map<std::size_t, int> paintMaterialOf;
+    // SetMaterialPaletteColors() changes every texture sharing a material's palette. Later
+    // materials overwrite earlier palette stores, including their alpha.
+    std::map<std::size_t, int> paintMaterialOfPalette;
     for (int material = 0; material < VEHICLE_MATERIALS; ++material) {
         auto texture = TableTexture(image, CAR_LAYOUT, image[MATERIAL_TEXTURES_AT + material]);
-        if (texture) {
-            paintMaterialOf[texture->address] = material;
+        if (texture && texture->palette) {
+            paintMaterialOfPalette[*texture->palette] = material;
         }
     }
-    auto model =
-        BuildModel(bytes, imageOffset, CAR_LAYOUT, draws, scenes, bufferUri, {}, paintMaterialOf);
+    auto model = BuildModel(
+        bytes, imageOffset, CAR_LAYOUT, draws, scenes, bufferUri, {}, paintMaterialOfPalette);
     if (!model) {
         return model;
     }

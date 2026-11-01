@@ -891,6 +891,7 @@ outfun
 overlappedwindow
 pacboy
 packedvalue
+paintable
 paintshop
 painttex
 pakmenu
