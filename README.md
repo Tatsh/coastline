@@ -302,6 +302,11 @@ Statistics separate `CPU WORK` (frame work excluding presentation waits and the 
 from `INTERVAL` (measured time between frames, including pacing, displayed to four decimal places).
 CPU work is CPU-side elapsed time, not GPU execution time. FPS remains the measured frame rate.
 
+FPS and statistics draw at output resolution after scaling and screen shaders. Their text remains
+sharp at low internal resolutions, and statistics can use the full window, including aspect-ratio
+bars. Disabling the overlay releases its output texture. Screenshots with an overlay include the
+full output at window resolution.
+
 `Auto-save race progress` in Options saves championship progress, records, and improved Time Attack
 ghosts after each completed race. Autosave is on by default (`AutoSave=1` under `[Game]` in
 `BossRally.ini`). Championship saves resume at the next round. Automatic saves replace the primary

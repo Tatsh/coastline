@@ -569,7 +569,7 @@ bool GpuWindow::ApplyRendererOptions(const DisplayOptions &options) {
 
 GpuWindow::~GpuWindow() {
     if (m_device) {
-        for (auto *texture : {m_frame, m_antialiased, m_filtered}) {
+        for (auto *texture : {m_frame, m_antialiased, m_filtered, m_composite}) {
             if (texture != nullptr) {
                 ReleaseGpuTexture(m_device.get(), texture);
             }
@@ -661,7 +661,9 @@ bool GpuWindow::PresentClear(SDL_FColor color, const std::filesystem::path *capt
     return Present(commands, capture);
 }
 
-bool GpuWindow::Present(SDL_GPUCommandBuffer *commands, const std::filesystem::path *capture) {
+bool GpuWindow::Present(SDL_GPUCommandBuffer *commands,
+                        const std::filesystem::path *capture,
+                        const OutputOverlay &overlay) {
     // The passes after the scene, each from the texture of the pass before: the anti-aliasing of
     // PostAntialias, then the scale to the window by ScaleFilter.
     SDL_GPUTexture *source = AntialiasFrame(commands);
@@ -704,6 +706,56 @@ bool GpuWindow::Present(SDL_GPUCommandBuffer *commands, const std::filesystem::p
         source = filtered;
         sourceWidth = m_filteredWidth;
         sourceHeight = m_filteredHeight;
+    }
+    if (overlay) {
+        if (m_composite == nullptr || m_compositeWidth != width || m_compositeHeight != height) {
+            SDL_GPUTextureCreateInfo info{};
+            info.type = SDL_GPU_TEXTURETYPE_2D;
+            info.format = FRAME_FORMAT;
+            info.usage = SDL_GPU_TEXTUREUSAGE_COLOR_TARGET | SDL_GPU_TEXTUREUSAGE_SAMPLER;
+            info.width = width;
+            info.height = height;
+            info.layer_count_or_depth = 1;
+            info.num_levels = 1;
+            auto *texture = CreateGpuTexture(m_device.get(), &info);
+            if (texture == nullptr) {
+                SDL_LogError(
+                    SDL_LOG_CATEGORY_GPU, "Cannot create output overlay: %s", SDL_GetError());
+                SDL_CancelGPUCommandBuffer(commands);
+                return false;
+            }
+            if (m_composite != nullptr) {
+                ReleaseGpuTexture(m_device.get(), m_composite);
+            }
+            m_composite = texture;
+            m_compositeWidth = width;
+            m_compositeHeight = height;
+        }
+        SDL_GPUBlitInfo blit{};
+        blit.source.texture = source;
+        blit.source.w = sourceWidth;
+        blit.source.h = sourceHeight;
+        blit.destination.texture = m_composite;
+        blit.destination.x = (width - fittedWidth) / 2;
+        blit.destination.y = (height - fittedHeight) / 2;
+        blit.destination.w = fittedWidth;
+        blit.destination.h = fittedHeight;
+        blit.load_op = SDL_GPU_LOADOP_CLEAR;
+        blit.clear_color = {0, 0, 0, 1};
+        blit.filter = m_options.scaleFilter == ScaleFilter::Nearest ? SDL_GPU_FILTER_NEAREST :
+                                                                      SDL_GPU_FILTER_LINEAR;
+        blit.cycle = true;
+        SDL_BlitGPUTexture(commands, &blit);
+        overlay(commands, m_composite, width, height);
+        source = m_composite;
+        sourceWidth = width;
+        sourceHeight = height;
+        fittedWidth = width;
+        fittedHeight = height;
+    } else if (m_composite != nullptr) {
+        ReleaseGpuTexture(m_device.get(), m_composite);
+        m_composite = nullptr;
+        m_compositeWidth = m_compositeHeight = 0;
     }
     if (acquired && swapchain != nullptr) {
         SDL_GPUBlitInfo blit{};

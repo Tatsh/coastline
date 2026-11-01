@@ -437,9 +437,10 @@ public:
      * Create the pipelines of the renderer for a window.
      *
      * @param window The window to draw into.
+     * @param outputOverlay Whether to omit depth and multisampled targets for an output overlay.
      * @return The renderer, or nothing with the reason logged.
      */
-    static std::unique_ptr<SceneRenderer> Create(GpuWindow &window);
+    static std::unique_ptr<SceneRenderer> Create(GpuWindow &window, bool outputOverlay = false);
     ~SceneRenderer();
     SceneRenderer(const SceneRenderer &) = delete;
     SceneRenderer &operator=(const SceneRenderer &) = delete;
@@ -670,8 +671,18 @@ public:
      * Draw the frame and present it.
      *
      * @param capture A PNG file to write the frame to, or null.
+     * @param overlay Optional draws at output resolution after presentation filters.
      */
-    void End(const std::filesystem::path *capture);
+    void End(const std::filesystem::path *capture,
+             const std::function<void(SDL_GPUCommandBuffer *, SDL_GPUTexture *, Uint32, Uint32)>
+                 &overlay = {});
+
+    /** Record draws into a target without submitting the command buffer. */
+    void RenderInto(SDL_GPUCommandBuffer *commands,
+                    SDL_GPUTexture *target,
+                    Uint32 width,
+                    Uint32 height,
+                    bool clear = false);
 
 private:
     friend class RenderDocument;

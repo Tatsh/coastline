@@ -1,6 +1,7 @@
 #pragma once
 
 #include <filesystem>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <string>
@@ -91,6 +92,9 @@ struct DisplayOptions {
  */
 class GpuWindow {
 public:
+    /** Draw directly over the output texture after scaling and screen filters. */
+    using OutputOverlay =
+        std::function<void(SDL_GPUCommandBuffer *, SDL_GPUTexture *, Uint32, Uint32)>;
     /**
      * Create the window, a GPU device for it, and the frame texture.
      *
@@ -213,9 +217,12 @@ public:
      *
      * @param commands The command buffer of the frame, submitted here.
      * @param capture A PNG file to write the frame to.
+     * @param overlay Optional draws over the full output after presentation filters.
      * @return Whether the frame was submitted, and saved when requested.
      */
-    bool Present(SDL_GPUCommandBuffer *commands, const std::filesystem::path *capture = nullptr);
+    bool Present(SDL_GPUCommandBuffer *commands,
+                 const std::filesystem::path *capture = nullptr,
+                 const OutputOverlay &overlay = {});
 
     /** @return The texture each frame is drawn into. */
     SDL_GPUTexture *FrameTexture() const {
@@ -320,6 +327,9 @@ private:
     SDL_GPUSampler *m_presentationSampler = nullptr;
     Uint32 m_filteredWidth = 0;
     Uint32 m_filteredHeight = 0;
+    SDL_GPUTexture *m_composite = nullptr;
+    Uint32 m_compositeWidth = 0;
+    Uint32 m_compositeHeight = 0;
     Uint32 m_frameWidth = 0;
     Uint32 m_frameHeight = 0;
     DisplayOptions m_options;

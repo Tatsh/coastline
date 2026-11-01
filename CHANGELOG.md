@@ -111,6 +111,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- FPS and performance statistics draw at output resolution after upscaling and CRT filters, using
+  the full window including aspect-ratio bars. Captures include the overlay at window resolution;
+  disabling the overlay releases its texture.
 - Upscaling labels nearest scaling as Off to clarify that enlargement applies without smoothing or
   edge reconstruction; existing `nearest` settings remain compatible.
 - Outdated, incompatible, or incomplete imports open a graphical reimport prompt with Start setup

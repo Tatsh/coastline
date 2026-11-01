@@ -971,6 +971,7 @@ struct RenderQuadBuffer::State {
 };
 
 struct SceneRenderer::State {
+    bool outputOverlay = false;
     // The time of the frame the animated textures show, in milliseconds.
     std::uint32_t textureTime = 0;
     // Whether the textures of the snow show their first frame.
@@ -1024,17 +1025,16 @@ struct SceneRenderer::State {
     std::vector<std::uint32_t> quadOrder;
 
     // Give the depth, and the multisampled target, the size of the frame, which follows the window.
-    bool MatchFrame() {
-        if (depth != nullptr && depthWidth == window->FrameWidth() &&
-            depthHeight == window->FrameHeight()) {
+    bool MatchFrame(Uint32 width, Uint32 height) {
+        if (outputOverlay || (depth != nullptr && depthWidth == width && depthHeight == height)) {
             return true;
         }
         SDL_GPUTextureCreateInfo info{};
         info.type = SDL_GPU_TEXTURETYPE_2D;
         info.format = depthFormat;
         info.usage = SDL_GPU_TEXTUREUSAGE_DEPTH_STENCIL_TARGET;
-        info.width = window->FrameWidth();
-        info.height = window->FrameHeight();
+        info.width = width;
+        info.height = height;
         info.layer_count_or_depth = 1;
         info.num_levels = 1;
         info.sample_count = sampleCount;
@@ -1159,7 +1159,7 @@ struct SceneRenderer::State {
         info.target_info.color_target_descriptions = &target;
         info.target_info.num_color_targets = 1;
         info.target_info.depth_stencil_format = depthFormat;
-        info.target_info.has_depth_stencil_target = true;
+        info.target_info.has_depth_stencil_target = !outputOverlay;
         SDL_GPUGraphicsPipeline *pipeline = SDL_CreateGPUGraphicsPipeline(device, &info);
         if (pipeline == nullptr) {
             SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot create pipeline: %s", SDL_GetError());
@@ -1842,8 +1842,9 @@ GpuWindow &SceneRenderer::Window() {
     return *m_state->window;
 }
 
-std::unique_ptr<SceneRenderer> SceneRenderer::Create(GpuWindow &window) {
+std::unique_ptr<SceneRenderer> SceneRenderer::Create(GpuWindow &window, bool outputOverlay) {
     auto state = std::make_unique<State>();
+    state->outputOverlay = outputOverlay;
     state->window = &window;
     state->device = window.Device();
     SDL_GPUDevice *device = state->device;
@@ -1867,7 +1868,7 @@ std::unique_ptr<SceneRenderer> SceneRenderer::Create(GpuWindow &window) {
     for (auto [samples, count] : {std::pair{8, SDL_GPU_SAMPLECOUNT_8},
                                   {4, SDL_GPU_SAMPLECOUNT_4},
                                   {2, SDL_GPU_SAMPLECOUNT_2}}) {
-        if (window.Antialias() >= samples &&
+        if (!outputOverlay && window.Antialias() >= samples &&
             SDL_GPUTextureSupportsSampleCount(device, GpuWindow::FrameFormat(), count) &&
             SDL_GPUTextureSupportsSampleCount(device, state->depthFormat, count)) {
             state->sampleCount = count;
@@ -1877,7 +1878,7 @@ std::unique_ptr<SceneRenderer> SceneRenderer::Create(GpuWindow &window) {
     }
     state->alphaToCoverage =
         state->sampleCount != SDL_GPU_SAMPLECOUNT_1 && window.AlphaToCoverage();
-    state->MatchFrame();
+    state->MatchFrame(window.FrameWidth(), window.FrameHeight());
     Uploader upload(device);
     constexpr std::array<std::uint8_t, 4> WHITE{255, 255, 255, 255};
     state->white = upload.Texture(1, 1, WHITE);
@@ -1887,7 +1888,7 @@ std::unique_ptr<SceneRenderer> SceneRenderer::Create(GpuWindow &window) {
                       {reinterpret_cast<const std::uint8_t *>(NONE.data()), sizeof(NONE)});
     SDL_GPUSamplerCreateInfo plain{};
     state->plainSampler = SDL_CreateGPUSampler(device, &plain);
-    if (state->depth == nullptr || !upload.Submit()) {
+    if ((!outputOverlay && state->depth == nullptr) || !upload.Submit()) {
         SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot create renderer: %s", SDL_GetError());
         return nullptr;
     }
@@ -2118,10 +2119,22 @@ void SceneRenderer::DrawBufferedQuads(RenderQuadBuffer &buffer,
         first, order.size(), material, projection, depthTest, m_state->Current(), &buffer});
 }
 
-void SceneRenderer::End(const std::filesystem::path *capture) {
+void SceneRenderer::End(const std::filesystem::path *capture,
+                        const GpuWindow::OutputOverlay &overlay) {
     State &s = *m_state;
-    s.MatchFrame();
     SDL_GPUCommandBuffer *commands = SDL_AcquireGPUCommandBuffer(s.device);
+    RenderInto(
+        commands, s.window->FrameTexture(), s.window->FrameWidth(), s.window->FrameHeight(), true);
+    s.window->Present(commands, capture, overlay);
+}
+
+void SceneRenderer::RenderInto(SDL_GPUCommandBuffer *commands,
+                               SDL_GPUTexture *target,
+                               Uint32 width,
+                               Uint32 height,
+                               bool clear) {
+    State &s = *m_state;
+    s.MatchFrame(width, height);
 
     // The vertices of the flat draws, and the indices of as many quads, uploaded before the frame.
     std::size_t quads = s.flat.size() / 4;
@@ -2205,9 +2218,9 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
     }
 
     SDL_GPUColorTargetInfo color{};
-    color.texture = s.window->FrameTexture();
+    color.texture = target;
     color.clear_color = {s.clear[0], s.clear[1], s.clear[2], s.clear[3]};
-    color.load_op = SDL_GPU_LOADOP_CLEAR;
+    color.load_op = clear ? SDL_GPU_LOADOP_CLEAR : SDL_GPU_LOADOP_LOAD;
     color.store_op = SDL_GPU_STOREOP_STORE;
     // The samples resolve into the frame at the end of the pass.
     if (s.multisampled != nullptr) {
@@ -2220,7 +2233,8 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
     depth.clear_depth = 1.0f;
     depth.load_op = SDL_GPU_LOADOP_CLEAR;
     depth.store_op = SDL_GPU_STOREOP_DONT_CARE;
-    SDL_GPURenderPass *pass = SDL_BeginGPURenderPass(commands, &color, 1, &depth);
+    SDL_GPURenderPass *pass =
+        SDL_BeginGPURenderPass(commands, &color, 1, s.outputOverlay ? nullptr : &depth);
 
     // The state last bound in the pass, which a draw binds again only where it differs. The
     // uniforms pushed to a slot of the command buffer remain through a change of the pipeline.
@@ -2296,8 +2310,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
     };
 
     // The view, the fog, and the hidden instances of the draw being made.
-    SDL_Rect whole{
-        0, 0, static_cast<int>(s.window->FrameWidth()), static_cast<int>(s.window->FrameHeight())};
+    SDL_Rect whole{0, 0, static_cast<int>(width), static_cast<int>(height)};
     const DrawState *drawState = nullptr;
     // Fill the view of a draw and cut it to its scissor within the view, or report that nothing of
     // it shows.
@@ -2711,7 +2724,6 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
     }
     flushBlended();
     SDL_EndGPURenderPass(pass);
-    s.window->Present(commands, capture);
 }
 
 } // namespace coastline

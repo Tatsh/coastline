@@ -307,7 +307,9 @@ struct DisplayKeys {
 class FrameRateOverlay {
 public:
     void Record();
-    void Draw(coastline::SceneRenderer &renderer, const coastline::MenuText &text);
+    void Draw(coastline::SceneRenderer &renderer,
+              const coastline::MenuText &text,
+              std::array<Uint32, 2> outputSize);
 
 private:
     std::optional<unsigned> m_last;
@@ -335,15 +337,15 @@ void FrameRateOverlay::Record() {
     g_adwFpsFrameTimeSamples[entry] = delta;
 }
 
-// A line of 15-point text at @p y of the 640 by 480 screen, as DrawFpsCounterOverlay() draws it,
-// centred by default, and in the white of @p white when given.
+// Draw text on the game canvas, or in output pixels when outputSize is supplied.
 void DrawOverlayLine(coastline::SceneRenderer &renderer,
                      const coastline::MenuText &text,
                      const char *line,
                      int y,
                      int x = 320,
                      coastline::TextStyle::Align align = coastline::TextStyle::Align::Center,
-                     bool white = false) {
+                     bool white = false,
+                     std::optional<std::array<Uint32, 2>> outputSize = std::nullopt) {
     const coastline::GpuWindow &window = renderer.Window();
     coastline::TextStyle style;
     style.size = 15;
@@ -352,18 +354,34 @@ void DrawOverlayLine(coastline::SceneRenderer &renderer,
     if (white) {
         style.colors = std::array<int, 6>{255, 255, 255, 255, 255, 255};
     }
-    text.Draw(renderer,
-              line,
-              x,
-              y,
-              style,
-              coastline::FlatProjection(static_cast<float>(window.FrameWidth()) /
-                                        static_cast<float>(std::max(window.FrameHeight(), 1u))));
+    auto projection =
+        coastline::FlatProjection(static_cast<float>(window.FrameWidth()) /
+                                  static_cast<float>(std::max(window.FrameHeight(), 1u)));
+    if (outputSize) {
+        projection = {2.0f / (*outputSize)[0],
+                      0,
+                      0,
+                      0,
+                      0,
+                      -2.0f / (*outputSize)[1],
+                      0,
+                      0,
+                      0,
+                      0,
+                      1,
+                      0,
+                      -1,
+                      1,
+                      0,
+                      1};
+    }
+    text.Draw(renderer, line, x, y, style, projection);
 }
 
-// DrawFpsCounterOverlay() on the screens outside a race: the rate of the samples, updated as they
-// wrap, 10 above the bottom of the screen.
-void FrameRateOverlay::Draw(coastline::SceneRenderer &renderer, const coastline::MenuText &text) {
+// Draw the sampled frame rate ten pixels above the bottom of the output window.
+void FrameRateOverlay::Draw(coastline::SceneRenderer &renderer,
+                            const coastline::MenuText &text,
+                            std::array<Uint32, 2> outputSize) {
     if (g_dwFpsFrameCountdown == 0) {
         unsigned total = 0;
         for (int index = 0; index < g_dwFpsSampleFrames; ++index) {
@@ -374,7 +392,14 @@ void FrameRateOverlay::Draw(coastline::SceneRenderer &renderer, const coastline:
     }
     char line[32];
     std::snprintf(line, sizeof(line), "%6.2f FPS", static_cast<double>(m_rate));
-    DrawOverlayLine(renderer, text, line, 470);
+    DrawOverlayLine(renderer,
+                    text,
+                    line,
+                    static_cast<int>(outputSize[1]) - 10,
+                    static_cast<int>(outputSize[0]) / 2,
+                    coastline::TextStyle::Align::Center,
+                    true,
+                    outputSize);
 }
 
 // A new file in a directory of screenshots, named by the local time to the millisecond, with the
@@ -1194,6 +1219,7 @@ int main(int argc, char *argv[]) {
                 const coastline::Script &commands = script.script;
                 MouseState mouse;
                 std::unique_ptr<coastline::SceneRenderer> sceneRenderer;
+                std::unique_ptr<coastline::SceneRenderer> outputRenderer;
                 std::unique_ptr<coastline::Intro> intro;
                 std::unique_ptr<coastline::Menus> mainMenu;
                 std::unique_ptr<coastline::MenuText> frameRateText;
@@ -1735,12 +1761,6 @@ int main(int argc, char *argv[]) {
                                 settingsFrames = 0;
                             }
                         }
-                        // The HUD of a race and of the attract demo draws the rate itself, and the
-                        // statistics draw it in their state.
-                        if (g_bShowFpsCounter == 1 && frameRateText &&
-                            (frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::MainMenu)) {
-                            frameRateOverlay.Draw(*sceneRenderer, *frameRateText);
-                        }
                         if (g_bShowFpsCounter != coastline::FRAME_RATE_STATISTICS) {
                             performanceStats.reset();
                         } else if (frameRateText) {
@@ -1748,29 +1768,45 @@ int main(int argc, char *argv[]) {
                                 performanceStats = std::make_unique<coastline::PerformanceStats>(
                                     window->DeviceName(), window->NvmlAllowed());
                             }
-                            // Statistics start below lap times.
-                            int y = 80;
-                            // The left of the frame, under the lap, where the frame is wider than
-                            // the 640 across of the screen.
-                            const coastline::GpuWindow &frame = sceneRenderer->Window();
-                            float across = coastline::ScreenExtent(
-                                static_cast<float>(frame.FrameWidth()) /
-                                static_cast<float>(std::max(frame.FrameHeight(), 1u)))[0];
-                            int x = 16 - static_cast<int>(320.0f * (1.0f / across - 1.0f));
-                            for (const std::string &line :
-                                 performanceStats->Lines(frame.GpuMemoryBytes())) {
-                                DrawOverlayLine(*sceneRenderer,
-                                                *frameRateText,
-                                                line.c_str(),
-                                                y,
-                                                x,
-                                                coastline::TextStyle::Align::Left,
-                                                true);
-                                y += 16;
+                        }
+                        coastline::GpuWindow::OutputOverlay outputOverlay;
+                        if ((g_bShowFpsCounter == 1 || performanceStats) && frameRateText) {
+                            if (!outputRenderer) {
+                                outputRenderer = coastline::SceneRenderer::Create(*window, true);
                             }
+                            if (outputRenderer) {
+                                outputOverlay = [&](SDL_GPUCommandBuffer *gpuCommands,
+                                                    SDL_GPUTexture *target,
+                                                    Uint32 width,
+                                                    Uint32 height) {
+                                    outputRenderer->Begin({0, 0, 0, 0});
+                                    const std::array<Uint32, 2> size{width, height};
+                                    if (performanceStats) {
+                                        int y = 24;
+                                        for (const auto &line :
+                                             performanceStats->Lines(window->GpuMemoryBytes())) {
+                                            DrawOverlayLine(*outputRenderer,
+                                                            *frameRateText,
+                                                            line.c_str(),
+                                                            y,
+                                                            16,
+                                                            coastline::TextStyle::Align::Left,
+                                                            true,
+                                                            size);
+                                            y += 16;
+                                        }
+                                    } else {
+                                        frameRateOverlay.Draw(
+                                            *outputRenderer, *frameRateText, size);
+                                    }
+                                    outputRenderer->RenderInto(gpuCommands, target, width, height);
+                                };
+                            }
+                        } else {
+                            outputRenderer.reset();
                         }
                         menuMusic.SetVolume(g_bBgmVolume);
-                        sceneRenderer->End(framePath ? &*framePath : nullptr);
+                        sceneRenderer->End(framePath ? &*framePath : nullptr, outputOverlay);
                         // The credits play under the music of the menus.
                         if (startCreditsRace) {
                             if (startCredits(false)) {
