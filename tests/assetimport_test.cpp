@@ -1,5 +1,6 @@
 #include <array>
 #include <cassert>
+#include <cstdio>
 #include <fstream>
 #include <iterator>
 #include <map>
@@ -9,6 +10,7 @@
 
 #include "assetimport.h"
 #include "assetpack.h"
+#include "assetstorage.h"
 #include "importversion.h"
 #include "paths.h"
 
@@ -90,6 +92,7 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         return std::unexpected("Cancelled.");
     }
     Write(defaults / "cars" / "model.dat", "disc");
+    std::filesystem::create_directories(defaults / "empty" / "nested");
     return 1;
 }
 
@@ -142,7 +145,9 @@ int main() {
         if (step == "Installing the asset packs") {
             for (const auto &entry : std::filesystem::directory_iterator(data)) {
                 if (entry.path().filename().string().starts_with(".coastline-import-")) {
-                    std::filesystem::remove_all(entry.path() / "assets" / "boss");
+                    std::error_code error;
+                    RemoveAssetTree(entry.path() / "assets" / "boss", error);
+                    assert(!error);
                 }
             }
         }
@@ -158,12 +163,28 @@ int main() {
         previous = fraction;
         return true;
     });
+    if (failure) {
+        std::fprintf(stderr, "Import failed: %s\n", failure->c_str());
+    }
     assert(!failure && previous == 1.0);
     assert((converted == std::vector{RomRelease::Usa, RomRelease::Jpn}));
     assert(DefaultPackUsable(DefaultAssets(data)));
     auto files = Snapshot(data);
     assert(files.at("assets/custom/model.glb") == "custom model");
     assert(files.at("assets/default/music/menu.xm") == "usa");
+    assert(!std::filesystem::exists(DefaultAssets(data) / "empty"));
+    constexpr auto writes = std::filesystem::perms::owner_write |
+                            std::filesystem::perms::group_write |
+                            std::filesystem::perms::others_write;
+    for (const auto &entry : std::filesystem::recursive_directory_iterator(data / "assets")) {
+        const auto relative = entry.path().lexically_relative(data / "assets");
+        if (*relative.begin() != "custom") {
+            assert((entry.status().permissions() & writes) == std::filesystem::perms::none);
+            assert(!entry.is_directory() || !std::filesystem::is_empty(entry.path()));
+        }
+    }
+    assert((std::filesystem::status(data / "assets/custom").permissions() &
+            std::filesystem::perms::owner_write) != std::filesystem::perms::none);
     assert(!std::filesystem::exists(data / "assets" / "eur"));
     assert(std::filesystem::is_directory(data / "assets" / "jpn"));
     assert(files.at("assets/default/n64/base/segment.bin") == "segment usa");
@@ -174,6 +195,24 @@ int main() {
     assert(!std::filesystem::exists(data / "assets/default/n64/jpn"));
     std::ifstream metadata(DefaultAssets(data) / "pack.json");
     assert(nlohmann::json::parse(metadata).at("baseRegion") == "usa");
+    CheckNoStagingDirectory(data);
+
+    const auto protectedFiles = Snapshot(data);
+    const auto protectedMode = std::filesystem::status(DefaultAssets(data)).permissions();
+    failure = ImportAssetImages(data, "disc.iso", roms, [&](const std::string &step, double) {
+        if (step == "Installing the asset packs") {
+            for (const auto &entry : std::filesystem::directory_iterator(data)) {
+                if (entry.path().filename().string().starts_with(".coastline-import-")) {
+                    std::error_code error;
+                    RemoveAssetTree(entry.path() / "assets" / "boss", error);
+                    assert(!error);
+                }
+            }
+        }
+        return true;
+    });
+    assert(failure && Snapshot(data) == protectedFiles);
+    assert(std::filesystem::status(DefaultAssets(data)).permissions() == protectedMode);
     CheckNoStagingDirectory(data);
 
     const std::array<std::filesystem::path, 2> nonUsa{"jpn.rom", "eur.rom"};
@@ -189,5 +228,7 @@ int main() {
     assert(files.at("assets/custom/model.glb") == "custom model");
     assert(DefaultPackUsable(DefaultAssets(data)));
     CheckNoStagingDirectory(data);
-    std::filesystem::remove_all(data);
+    std::error_code cleanupError;
+    RemoveAssetTree(data, cleanupError);
+    assert(!cleanupError);
 }

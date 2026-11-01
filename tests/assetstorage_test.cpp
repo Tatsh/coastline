@@ -143,5 +143,59 @@ int main() {
     std::filesystem::remove(defaults / "a.png");
     assert(!ReadAssetFileAliases(defaults, defaults));
     assert(!PackAssets(data, cache, "default"));
+
+    const GamePaths protectedPaths{
+        root / "config", root / "protected", root / "state", root / "protected-cache"};
+    const auto protectedPack = DefaultAssets(protectedPaths.data);
+    const auto restricted = protectedPack / "restricted";
+    const auto publicFiles = protectedPack / "public";
+    Write(restricted / "file.bin", "restricted");
+    Write(publicFiles / "file.bin", "public");
+    Write(protectedPack / "shared.bin", "public");
+    Write(protectedPaths.data / "assets/mod/file.bin", "mod");
+    std::filesystem::create_directories(protectedPack / "empty/nested");
+    assert(DeduplicateAssetFiles(protectedPack));
+    constexpr auto writes = std::filesystem::perms::owner_write |
+                            std::filesystem::perms::group_write |
+                            std::filesystem::perms::others_write;
+#ifndef _WIN32
+    std::filesystem::permissions(restricted, std::filesystem::perms(0750));
+    std::filesystem::permissions(restricted / "file.bin", std::filesystem::perms(0640));
+    std::filesystem::permissions(publicFiles, std::filesystem::perms(0755));
+    std::filesystem::permissions(publicFiles / "file.bin", std::filesystem::perms(0644));
+#endif
+    std::map<std::filesystem::path, std::filesystem::perms> originalModes;
+    for (const auto &path :
+         {restricted, publicFiles, restricted / "file.bin", publicFiles / "file.bin"}) {
+        originalModes[path] = std::filesystem::status(path).permissions();
+    }
+    assert(!FinalizeGeneratedAssetPacks(protectedPack));
+    assert(!std::filesystem::exists(protectedPack / "empty"));
+    for (const auto &[path, permissions] : originalModes) {
+        assert(std::filesystem::status(path).permissions() == (permissions & ~writes));
+    }
+    auto protectedCache = PackAssets(protectedPaths.data, protectedPaths.cache, "default");
+    assert(protectedCache && Read(*protectedCache / "shared.bin") == "public");
+    std::error_code removalError;
+    RemoveAssetTree(protectedPaths.cache, removalError);
+    assert(!removalError);
+    for (const auto &[path, permissions] : originalModes) {
+        assert(std::filesystem::status(path).permissions() == (permissions & ~writes));
+    }
+    assert(!ResetGamePaths(protectedPaths));
+    assert(!std::filesystem::exists(protectedPack));
+    assert(Read(protectedPaths.data / "assets/mod/file.bin") == "mod");
+    assert(!ResetGamePaths(protectedPaths));
+#ifndef _WIN32
+    const auto outside = root / "outside";
+    Write(outside / "file.bin", "external");
+    std::filesystem::permissions(outside, std::filesystem::perms(0550));
+    std::filesystem::create_directories(protectedPack);
+    std::filesystem::create_directory_symlink(outside, protectedPack / "link");
+    assert(!ResetGamePaths(protectedPaths));
+    assert(std::filesystem::status(outside).permissions() == std::filesystem::perms(0550));
+    assert(Read(outside / "file.bin") == "external");
+    std::filesystem::permissions(outside, std::filesystem::perms(0750));
+#endif
     std::filesystem::remove_all(root);
 }

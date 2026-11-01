@@ -72,7 +72,17 @@ bool LinkEntry(const std::filesystem::path &from, const std::filesystem::path &t
         }
         return !error;
     }
-    std::filesystem::create_hard_link(from, to, error);
+    bool canLink = true;
+#ifdef _WIN32
+    // Clearing a cached hard link's read-only attribute also changes its imported source.
+    canLink = (std::filesystem::status(from, error).permissions() &
+               std::filesystem::perms::owner_write) != std::filesystem::perms::none;
+#endif
+    if (canLink) {
+        std::filesystem::create_hard_link(from, to, error);
+    } else {
+        return std::filesystem::copy_file(from, to, error);
+    }
     if (!error) {
         return true;
     }
@@ -177,7 +187,7 @@ std::optional<std::filesystem::path> ExpandAliases(const std::filesystem::path &
         return expanded;
     }
     std::error_code error;
-    std::filesystem::remove_all(expanded, error);
+    RemoveAssetTree(expanded, error);
     if (error) {
         return std::nullopt;
     }
@@ -252,7 +262,7 @@ std::optional<std::filesystem::path> PackAssets(const std::filesystem::path &dat
         const auto stampPath = layered / LAYER_STAMP;
         auto stamp = LayerStamp(*base, source);
         if (!stamp || ReadStamp(stampPath) != *stamp) {
-            std::filesystem::remove_all(layered, error);
+            RemoveAssetTree(layered, error);
             if (error || !LayerDirectory(*base, *selected, layered)) {
                 return false;
             }
@@ -404,7 +414,7 @@ std::optional<std::string> ResetGamePaths(const GamePaths &paths, bool factoryRe
     }
     for (const auto &directory : directories) {
         std::error_code error;
-        std::filesystem::remove_all(directory, error);
+        RemoveAssetTree(directory, error);
         if (error) {
             return "Cannot delete " + directory.string() + ". " + error.message();
         }

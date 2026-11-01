@@ -658,6 +658,10 @@ and a few lines of its own.
 Import deduplicates generated asset files. `asset-aliases.txt` records paths that share another
 file, and the game recreates alias paths in its cache before applying packs. Mod packs use normal
 files and directories; they do not need alias tables.
+After import, empty subdirectories are removed from generated packs. On Unix, existing read and
+execute permissions are preserved and all write bits are cleared; Windows files receive the
+read-only attribute. Reset and re-import handle protected packs automatically. Mod packs retain
+their permissions.
 
 The game draws the images of the PC release, except where the PC release removed the branding of
 Nintendo, Top Gear, or Kemco. There, the default pack has the image of the cartridge, such as the

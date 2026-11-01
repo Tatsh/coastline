@@ -9,6 +9,7 @@
 #include <set>
 #include <string_view>
 #include <system_error>
+#include <utility>
 #include <vector>
 
 #include "assetpack.h"
@@ -39,7 +40,7 @@ public:
     ~ImportStage() {
         if (!preserve && !path.empty()) {
             std::error_code error;
-            std::filesystem::remove_all(path, error);
+            RemoveAssetTree(path, error);
         }
     }
 
@@ -78,16 +79,19 @@ public:
         if (error) {
             return "Cannot back up generated packs. " + error.message();
         }
-        std::vector<std::string_view> moved;
+        std::vector<std::pair<std::string_view, std::filesystem::perms>> moved;
         std::vector<std::string_view> installed;
         auto restore = [&](const std::string &failure) -> std::optional<std::string> {
             bool restored = true;
             for (auto pack : installed) {
-                std::filesystem::remove_all(destination / pack, error);
+                RemoveAssetTree(destination / pack, error);
                 restored = !error && restored;
             }
-            for (auto pack : moved) {
+            for (const auto &[pack, permissions] : moved) {
                 std::filesystem::rename(previous / pack, destination / pack, error);
+                if (!error && permissions != std::filesystem::perms::unknown) {
+                    std::filesystem::permissions(destination / pack, permissions, error);
+                }
                 restored = !error && restored;
             }
             if (!restored) {
@@ -104,11 +108,28 @@ public:
             if (error) {
                 return restore("Cannot inspect generated packs. " + error.message());
             }
+            const auto permissions = std::filesystem::is_directory(status) ?
+                                         status.permissions() :
+                                         std::filesystem::perms::unknown;
+            // Moving a directory between parents updates its '..' entry and requires write access.
+            if (permissions != std::filesystem::perms::unknown) {
+                std::filesystem::permissions(destination / pack,
+                                             std::filesystem::perms::owner_write,
+                                             std::filesystem::perm_options::add,
+                                             error);
+                if (error) {
+                    return restore("Cannot prepare generated packs. " + error.message());
+                }
+            }
             std::filesystem::rename(destination / pack, previous / pack, error);
             if (error) {
-                return restore("Cannot replace generated packs. " + error.message());
+                const auto failure = "Cannot replace generated packs. " + error.message();
+                if (permissions != std::filesystem::perms::unknown) {
+                    std::filesystem::permissions(destination / pack, permissions, error);
+                }
+                return restore(failure);
             }
-            moved.push_back(pack);
+            moved.emplace_back(pack, permissions);
         }
         for (auto pack : GENERATED_PACKS) {
             if (!std::filesystem::is_directory(path / "assets" / pack, error)) {
@@ -123,6 +144,9 @@ public:
         }
         if (!DefaultPackUsable(DefaultAssets(data))) {
             return restore("Installed asset inventory is invalid.");
+        }
+        if (auto failure = FinalizeGeneratedAssetPacks(DefaultAssets(data))) {
+            return restore(*failure);
         }
         return std::nullopt;
     }

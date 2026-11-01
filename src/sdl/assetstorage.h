@@ -3,7 +3,9 @@
 #include <cstdint>
 #include <expected>
 #include <filesystem>
+#include <optional>
 #include <string>
+#include <system_error>
 #include <vector>
 
 namespace coastline {
@@ -33,6 +35,25 @@ struct AssetStorageSavings {
  */
 std::expected<AssetStorageSavings, std::string>
 DeduplicateAssetFiles(const std::filesystem::path &defaults);
+
+/**
+ * Remove empty subdirectories and write permissions from generated packs, excluding mod packs.
+ * Preserve pack roots and reject symbolic links encountered during finalisation.
+ * Call after installation and inventory validation, with rollback available on failure.
+ *
+ * @param defaults The completed default pack beside other generated packs.
+ * @return An error if a pack cannot be finalised, or an empty optional on success.
+ */
+std::optional<std::string> FinalizeGeneratedAssetPacks(const std::filesystem::path &defaults);
+
+/**
+ * Delete a tree after restoring directory owner-write permissions, without following symlinks.
+ * Windows files also have their read-only attribute cleared before deletion.
+ *
+ * @param path The file, directory, or symlink to delete; missing paths are accepted.
+ * @param error Receives a filesystem error, or is cleared on success.
+ */
+void RemoveAssetTree(const std::filesystem::path &path, std::error_code &error);
 
 /**
  * Read and validate an alias table, including its physical targets. Targets never refer to

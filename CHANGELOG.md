@@ -129,6 +129,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Successful imports remove empty subdirectories and make generated packs read-only, preserving
+  existing read and execute permissions and custom mods. Reset, reimport, and cache removal handle
+  protected trees; failed imports restore original pack permissions.
 - N64 and Boss Rally presets explicitly select N64 and PC window reflections, respectively,
   through Options and `--preset`.
 - Ultra uses cropped wide menu backgrounds only for 16:9 internal frames, updating after resizing

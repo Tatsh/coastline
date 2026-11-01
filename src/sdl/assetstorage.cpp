@@ -61,7 +61,88 @@ struct PendingAlias {
     std::shared_ptr<StoredFile> target;
 };
 
+void MakeRemovable(const std::filesystem::path &path, std::error_code &error) {
+    const auto status = std::filesystem::symlink_status(path, error);
+    if (status.type() == std::filesystem::file_type::not_found) {
+        error.clear();
+        return;
+    }
+    if (error || std::filesystem::is_symlink(status)) {
+        return;
+    }
+    const bool directory = std::filesystem::is_directory(status);
+    bool writable = directory;
+#ifdef _WIN32
+    writable |= std::filesystem::is_regular_file(status);
+#endif
+    if (writable) {
+        std::filesystem::permissions(
+            path, std::filesystem::perms::owner_write, std::filesystem::perm_options::add, error);
+        if (error) {
+            return;
+        }
+    }
+    if (directory) {
+        std::filesystem::directory_iterator entry(path, error), end;
+        for (; !error && entry != end; entry.increment(error)) {
+            MakeRemovable(entry->path(), error);
+            if (error) {
+                return;
+            }
+        }
+    }
+}
+
 } // namespace
+
+void RemoveAssetTree(const std::filesystem::path &path, std::error_code &error) {
+    error.clear();
+    MakeRemovable(path, error);
+    if (!error) {
+        std::filesystem::remove_all(path, error);
+    }
+}
+
+std::optional<std::string> FinalizeGeneratedAssetPacks(const std::filesystem::path &defaults) {
+    constexpr auto writes = std::filesystem::perms::owner_write |
+                            std::filesystem::perms::group_write |
+                            std::filesystem::perms::others_write;
+    try {
+        for (const auto *name : GENERATED_PACKS) {
+            const auto pack = defaults.parent_path() / name;
+            if (!std::filesystem::exists(pack)) {
+                continue;
+            }
+            if (std::filesystem::is_symlink(pack)) {
+                return "Generated assets must not include symbolic links.";
+            }
+            std::vector<std::filesystem::path> directories{pack};
+            for (const auto &entry : std::filesystem::recursive_directory_iterator(pack)) {
+                if (entry.is_symlink()) {
+                    return "Generated assets must not include symbolic links.";
+                }
+                if (entry.is_directory()) {
+                    directories.push_back(entry.path());
+                } else {
+                    std::filesystem::permissions(
+                        entry.path(), writes, std::filesystem::perm_options::remove);
+                }
+            }
+            for (auto directory = directories.rbegin(); directory != directories.rend();
+                 ++directory) {
+                if (*directory != pack && std::filesystem::is_empty(*directory)) {
+                    std::filesystem::remove(*directory);
+                } else {
+                    std::filesystem::permissions(
+                        *directory, writes, std::filesystem::perm_options::remove);
+                }
+            }
+        }
+    } catch (const std::filesystem::filesystem_error &error) {
+        return "Cannot finalize generated assets. " + std::string(error.what());
+    }
+    return std::nullopt;
+}
 
 std::expected<std::vector<AssetFileAlias>, std::string>
 ReadAssetFileAliases(const std::filesystem::path &pack, const std::filesystem::path &defaults) {
