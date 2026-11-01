@@ -124,15 +124,15 @@ build workflow attaches every package to a draft release of the tag. The release
 publishes the draft once every workflow of the commit succeeds and every package is attached.
 
 The build workflow uploads a debug and a release build of the game for each platform, an AppImage
-of each Linux release build, a snap for amd64 and arm64 built from `snap/snapcraft.yaml`, and a
-Flatpak bundle for x86_64 and aarch64 built from `flatpak/sh.tat.coastline.yml`.
+of each Linux release build, a snap for amd64 and arm64 built from `snapcraft.yaml`, and a
+Flatpak bundle for x86_64 and aarch64 built from `sh.tat.coastline.yml`.
 
 ```shell
 snapcraft pack
 ```
 
 ```shell
-flatpak-builder --user --install build/flatpak flatpak/sh.tat.coastline.yml
+flatpak-builder --user --install build/flatpak sh.tat.coastline.yml
 ```
 
 Both packages import disc and cartridge images from the home directory and from removable

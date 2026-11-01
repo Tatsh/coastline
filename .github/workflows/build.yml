@@ -278,7 +278,7 @@ jobs:
           artifact-name: 'coastline-flatpak-${{ matrix.arch }}'
           bundle: 'sh.tat.coastline-${{ needs.version.outputs.version }}-${{ matrix.arch }}.flatpak'
           cache: false
-          manifest-path: 'flatpak/sh.tat.coastline.yml'
+          manifest-path: 'sh.tat.coastline.yml'
   snap:
     name: 'Snap (${{ matrix.name }})'
     needs: 'version'

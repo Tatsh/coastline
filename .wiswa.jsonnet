@@ -8,6 +8,191 @@
   want_codeql: false,
   want_tests: false,
   want_winget: false,
+  want_snap: true,
+  want_flatpak: true,
+  publishing+: {
+    flathub: 'sh.tat.coastline',
+  },
+  flatpak_image: 'ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08',
+  flatpak+: {
+    'finish-args': [
+      '--device=dri',
+      '--device=input',
+      '--filesystem=/media:ro',
+      '--filesystem=/run/media:ro',
+      '--filesystem=home:ro',
+      '--share=ipc',
+      '--socket=fallback-x11',
+      '--socket=pulseaudio',
+      '--socket=wayland',
+    ],
+    modules: [
+      {
+        buildsystem: 'meson',
+        cleanup: ['/include', '/lib/pkgconfig', '/lib/libgamemodeauto*'],
+        'config-opts': [
+          '-Dwith-examples=false',
+          '-Dwith-pam-renicing=false',
+          '-Dwith-sd-bus-provider=no-daemon',
+          '-Dwith-systemd-group=false',
+          '-Dwith-systemd-user-unit=false',
+          '-Dwith-util=false',
+        ],
+        name: 'gamemode',
+        'post-install': [
+          'install -Dm644 LICENSE.txt "${FLATPAK_DEST}/share/licenses/gamemode/LICENSE.txt"',
+        ],
+        sources: [
+          {
+            commit: 'c54d6d4243b0dd0afcb49f2c9836d432da171a2b',
+            tag: '1.8.2',
+            type: 'git',
+            url: 'https://github.com/FeralInteractive/gamemode.git',
+          },
+        ],
+      },
+      {
+        buildsystem: 'cmake-ninja',
+        'build-options': {
+          'build-args': ['--share=network'],
+        },
+        builddir: true,
+        'config-opts': [
+          '-DCMAKE_BUILD_TYPE=Release',
+          '-DTGR_ENABLE_PATCHES=ON',
+          '-DTGR_PLATFORM=sdl',
+        ],
+        name: 'coastline',
+        sources: [
+          {
+            path: '.',
+            skip: ['.claude', '.wiswa-ci', 'build', 'node_modules'],
+            type: 'dir',
+          },
+        ],
+      },
+    ],
+    'runtime-version': '25.08',
+  },
+  snapcraft+: {
+    'adopt-info': 'coastline',
+    apps+: {
+      coastline+: {
+        command: 'usr/bin/coastline',
+        'command-chain': ['bin/gpu-2404-wrapper'],
+        'common-id': 'sh.tat.coastline',
+        desktop: 'usr/share/applications/sh.tat.coastline.desktop',
+        environment: {
+          XDG_CACHE_HOME: '$SNAP_USER_COMMON/.cache',
+          XDG_DATA_HOME: '$SNAP_USER_COMMON/.local/share',
+          XDG_STATE_HOME: '$SNAP_USER_COMMON/.local/state',
+        },
+        plugs: [
+          'audio-playback',
+          'desktop',
+          'home',
+          'joystick',
+          'opengl',
+          'removable-media',
+          'wayland',
+          'x11',
+        ],
+      },
+    },
+    contact:: null,
+    description: |||
+      Coastline is a stand-alone game of Top Gear Rally and Boss Rally. It needs a Boss Rally disc
+      image and a Top Gear Rally cartridge image, which `coastline import --cd` and
+      `coastline import --rom` import.
+    |||,
+    donation:: null,
+    grade: 'devel',
+    icon: 'src/sdl/sh.tat.coastline.svg',
+    issues:: null,
+    layout: {
+      '/usr/share/drirc.d': { symlink: '$SNAP/gpu-2404/drirc.d' },
+      '/usr/share/libdrm': { bind: '$SNAP/gpu-2404/libdrm' },
+      '/usr/share/X11/XErrorDB': { symlink: '$SNAP/gpu-2404/X11/XErrorDB' },
+    },
+    parts+: {
+      coastline: {
+        'build-packages': [
+          'autoconf-archive',
+          'git',
+          'libasound2-dev',
+          'libdecor-0-dev',
+          'libegl1-mesa-dev',
+          'libpulse-dev',
+          'libwayland-dev',
+          'libx11-dev',
+          'libxcursor-dev',
+          'libxext-dev',
+          'libxfixes-dev',
+          'libxi-dev',
+          'libxkbcommon-dev',
+          'libxrandr-dev',
+          'libxss-dev',
+          'libxtst-dev',
+          'ninja-build',
+          'pkg-config',
+          'wayland-protocols',
+        ],
+        'cmake-generator': 'Ninja',
+        'cmake-parameters': [
+          '-DCMAKE_BUILD_TYPE=Release',
+          '-DCMAKE_INSTALL_PREFIX=/usr',
+          '-DTGR_ENABLE_PATCHES=ON',
+          '-DTGR_PLATFORM=sdl',
+        ],
+        'override-pull': |||
+          craftctl default
+          craftctl set version="$(git describe --always --tags)"
+        |||,
+        plugin: 'cmake',
+        source: '.',
+        'stage-packages': [
+          'libasound2t64',
+          'libdecor-0-0',
+          'libgamemode0',
+          'libpulse0',
+          'libwayland-client0',
+          'libwayland-cursor0',
+          'libwayland-egl1',
+          'libx11-6',
+          'libxcursor1',
+          'libxext6',
+          'libxfixes3',
+          'libxi6',
+          'libxkbcommon0',
+          'libxrandr2',
+          'libxss1',
+        ],
+      },
+      'gpu-2404': {
+        after: ['coastline'],
+        'override-prime': |||
+          craftctl default
+          ${CRAFT_PART_SRC}/bin/gpu-2404-cleanup mesa-2404
+        |||,
+        plugin: 'dump',
+        prime: ['bin/gpu-2404-wrapper'],
+        source: 'https://github.com/canonical/gpu-snap.git',
+      },
+    },
+    platforms+: { amd64: null, arm64: null },
+    plugs: {
+      'gpu-2404': {
+        'default-provider': 'mesa-2404',
+        interface: 'content',
+        target: '$SNAP/gpu-2404',
+      },
+    },
+    'source-code':: null,
+    summary: 'Top Gear Rally and Boss Rally in one stand-alone game',
+    title:: null,
+    version:: null,
+    website:: null,
+  },
   clang_format_args: "$(git ls-files 'src/*.c' 'src/*.cpp' 'src/*.h' 'src/*.mm' 'tests/*.c' 'tests/*.cpp' 'tools/*.cpp' 'tools/*.h')",
   clang_format+: {
     IncludeBlocks: 'Regroup',

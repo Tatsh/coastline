@@ -41,7 +41,7 @@ modules:
       - '-DTGR_PLATFORM=sdl'
     name: 'coastline'
     sources:
-      - path: '..'
+      - path: '.'
         # The clone stays, so the build reads the revision of the game from it.
         skip: ['.claude', '.wiswa-ci', 'build', 'node_modules']
         type: 'dir'
