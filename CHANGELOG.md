@@ -107,6 +107,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Fixed PC CD music playing too fast by preserving decoded FLAC samples between audio callbacks.
 - `PlaySFX=0` silences menu, intro, and race sound effects independently of music.
 - Music playback respects saved BGM volume before starting and `PlayMusic=0` in menus and races,
   while sound effects remain independent.

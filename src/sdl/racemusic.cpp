@@ -14,7 +14,6 @@
 #include <optional>
 #include <vector>
 
-#include <FLAC/stream_decoder.h>
 #include <SDL3/SDL.h>
 #include <fmt/format.h>
 
@@ -22,6 +21,7 @@
 #include "common/settings.h"
 #include "common/soundsystem.h"
 #include "common/trackselect.h"
+#include "flactrack.h"
 #include "importer.h"
 #include "music.h"
 
@@ -57,78 +57,6 @@ int RaceModule(int track) {
     }
     return track == MENU_MODULE_TRACK ? 0 : 1 + (track - FIRST_RACE_MODULE_TRACK) % RACE_MODULES;
 }
-
-struct DecoderDeleter {
-    void operator()(FLAC__StreamDecoder *decoder) const {
-        FLAC__stream_decoder_delete(decoder);
-    }
-};
-
-/** A FLAC file decoded on request to 16-bit stereo frames. */
-class FlacTrack {
-public:
-    bool Open(const std::filesystem::path &path) {
-        m_decoder.reset(FLAC__stream_decoder_new());
-        if (!m_decoder) {
-            return false;
-        }
-        auto status = FLAC__stream_decoder_init_file(
-            m_decoder.get(), path.string().c_str(), Write, nullptr, Error, this);
-        if (status != FLAC__STREAM_DECODER_INIT_STATUS_OK) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
-                        "%s cannot be played: %s",
-                        path.string().c_str(),
-                        FLAC__StreamDecoderInitStatusString[status]);
-            m_decoder.reset();
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Decode frames onto the end of the output.
-     *
-     * @return False once the file ends or fails.
-     */
-    bool Decode(std::vector<std::int16_t> &output, std::size_t frames) {
-        m_output = &output;
-        std::size_t target = output.size() + frames * CD_CHANNELS;
-        while (m_decoder && output.size() < target) {
-            if (!FLAC__stream_decoder_process_single(m_decoder.get()) ||
-                FLAC__stream_decoder_get_state(m_decoder.get()) ==
-                    FLAC__STREAM_DECODER_END_OF_STREAM) {
-                m_decoder.reset();
-            }
-        }
-        return m_decoder != nullptr;
-    }
-
-private:
-    static FLAC__StreamDecoderWriteStatus Write(const FLAC__StreamDecoder *,
-                                                const FLAC__Frame *frame,
-                                                const FLAC__int32 *const buffer[],
-                                                void *user) {
-        auto *track = static_cast<FlacTrack *>(user);
-        unsigned bits = frame->header.bits_per_sample;
-        for (unsigned i = 0; i < frame->header.blocksize; ++i) {
-            for (unsigned channel = 0; channel < CD_CHANNELS; ++channel) {
-                FLAC__int32 sample = buffer[channel < frame->header.channels ? channel : 0][i];
-                track->m_output->push_back(static_cast<std::int16_t>(
-                    bits > 16 ? sample >> (bits - 16) : sample << (16 - bits)));
-            }
-        }
-        return FLAC__STREAM_DECODER_WRITE_STATUS_CONTINUE;
-    }
-
-    static void Error(const FLAC__StreamDecoder *, FLAC__StreamDecoderErrorStatus status, void *) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
-                    "The music file is damaged: %s",
-                    FLAC__StreamDecoderErrorStatusString[status]);
-    }
-
-    std::unique_ptr<FLAC__StreamDecoder, DecoderDeleter> m_decoder;
-    std::vector<std::int16_t> *m_output = nullptr;
-};
 
 } // namespace
 

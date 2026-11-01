@@ -232,6 +232,23 @@ target_link_libraries(soundeffects_test PRIVATE SDL3::SDL3)
 add_test(NAME soundeffects COMMAND soundeffects_test)
 set_tests_properties(soundeffects PROPERTIES ENVIRONMENT "UBSAN_OPTIONS=halt_on_error=1")
 
+coastline_dependency(
+  FLAC
+  PACKAGE FLAC
+  FIND_ARGS CONFIG
+  URL https://github.com/xiph/flac/releases/download/1.5.0/flac-1.5.0.tar.xz
+  HASH f2c1c76592a82ffff8413ba3c4a1299b6c7ab06c734dee03fd88630485c2b920
+  OPTIONS BUILD_CXXLIBS=OFF BUILD_PROGRAMS=OFF BUILD_EXAMPLES=OFF BUILD_TESTING=OFF BUILD_DOCS=OFF
+          INSTALL_MANPAGES=OFF WITH_OGG=OFF)
+add_executable(flactrack_test flactrack_test.cpp "${_src}/sdl/flactrack.cpp")
+set_target_properties(flactrack_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(flactrack_test PRIVATE "${_src}/sdl")
+target_compile_options(flactrack_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(flactrack_test PRIVATE -fsanitize=address,undefined)
+target_link_libraries(flactrack_test PRIVATE SDL3::SDL3 FLAC::FLAC)
+add_test(NAME flactrack COMMAND flactrack_test)
+set_tests_properties(flactrack PROPERTIES ENVIRONMENT "UBSAN_OPTIONS=halt_on_error=1")
+
 add_executable(sdltextures_test sdltextures_test.cpp "${_src}/sdl/enginetextures.cpp")
 set_target_properties(sdltextures_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(sdltextures_test PRIVATE "${_src}" "${_src}/sdl"

@@ -462,6 +462,7 @@ finalrom
 finetune
 firstrun
 fixedh
+flactrack
 flathub
 fnmatch
 fogcolor
