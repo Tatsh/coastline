@@ -57,7 +57,7 @@ HRESULT DDReLoadBitmap(IDirectDrawSurface *pSurface, LPCSTR pszBitmap) {
     }
     hr = DDCopyBitmap(pSurface, hBitmap, 0, 0, 0, 0);
     if (hr != DD_OK) {
-        OutputDebugStringA("ddcopybitmap failed\n");
+        OutputDebugStringA("Cannot copy bitmap.\n");
     }
     DeleteObject(hBitmap);
     return hr;
@@ -78,7 +78,7 @@ DDCopyBitmap(IDirectDrawSurface *pSurface, HBITMAP hBitmap, int x, int y, int nW
     hdcImage = CreateCompatibleDC(nullptr);
     // The bitmap is selected into the context even when it is not created.
     if (hdcImage == nullptr) {
-        OutputDebugStringA("createcompatible dc failed\n");
+        OutputDebugStringA("Cannot create compatible device context.\n");
     }
     SelectObject(hdcImage, hBitmap);
     GetObjectA(hBitmap, sizeof(bm), &bm);

@@ -281,7 +281,7 @@ std::unique_ptr<Intro> Intro::Load(SceneRenderer &renderer,
         state->menuLighting = ReadLighting(lights.at("menu"));
     } catch (const nlohmann::json::exception &error) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "%s is not the lights of the release: %s",
+                     "Invalid lighting data %s: %s",
                      (release / "lights.json").string().c_str(),
                      error.what());
         return nullptr;

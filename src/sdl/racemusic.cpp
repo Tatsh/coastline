@@ -154,8 +154,7 @@ bool RaceMusic::Start(const std::filesystem::path &directory, RaceMusicSource so
         m_cdStream =
             SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, CdCallback, this);
         if (m_cdStream == nullptr) {
-            SDL_LogWarn(
-                SDL_LOG_CATEGORY_AUDIO, "The music device did not open: %s", SDL_GetError());
+            SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "Cannot open music device: %s", SDL_GetError());
         } else {
             m_cdDevicePaused = true;
             UpdateCdDevice();
@@ -170,7 +169,7 @@ bool RaceMusic::Start(const std::filesystem::path &directory, RaceMusicSource so
     m_active = m_trackMax >= m_trackMin;
     if (!m_active) {
         SDL_LogWarn(
-            SDL_LOG_CATEGORY_AUDIO, "CD music is unavailable in %s.", directory.string().c_str());
+            SDL_LOG_CATEGORY_AUDIO, "CD music unavailable in %s.", directory.string().c_str());
         Stop();
     }
     return m_active;
@@ -183,7 +182,7 @@ void RaceMusic::Stop() {
     if (--m_users != 0) {
         return;
     }
-    SDL_Log("The music of the race stops.");
+    SDL_Log("Stopping race music.");
     if (m_cdStream != nullptr) {
         SDL_DestroyAudioStream(m_cdStream);
         m_cdStream = nullptr;
@@ -236,7 +235,7 @@ bool RaceMusic::Play(int track) {
         }
         m_cdSamples.clear();
         m_cdPlaying = track;
-        SDL_Log("The race plays track %d of the CD.", track);
+        SDL_Log("Starting CD track %d.", track);
         const bool opened = m_cdTrack.Open(CdTrackPath(track));
         if (m_cdStream != nullptr) {
             SDL_UnlockAudioStream(m_cdStream);
@@ -255,14 +254,13 @@ void RaceMusic::PlayModule(int track) {
     std::ifstream file(m_directory / (std::string(USA_MUSIC_MODULES[module].name) + ".xm"),
                        std::ios::binary);
     if (!file) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
-                    "The music module %s cannot be read.",
-                    USA_MUSIC_MODULES[module].name);
+        SDL_LogWarn(
+            SDL_LOG_CATEGORY_AUDIO, "Cannot read music module %s.", USA_MUSIC_MODULES[module].name);
         return;
     }
     m_module.assign(std::istreambuf_iterator<char>(file), {});
     m_currentModule = module;
-    SDL_Log("The race plays the music module %s.", USA_MUSIC_MODULES[module].name);
+    SDL_Log("Playing music module %s.", USA_MUSIC_MODULES[module].name);
     Modules()->Play(m_module);
     Modules()->Resume();
 }
@@ -430,23 +428,23 @@ bool FrontEndMusic::Play() {
         }
         if (state.cdStarted && state.cd.Play(FIRST_MUSIC_TRACK)) {
             state.audio.Stop();
-            SDL_Log("The menus play track %d of the CD.", FIRST_MUSIC_TRACK);
+            SDL_Log("Playing menu CD track %d.", FIRST_MUSIC_TRACK);
             return true;
         }
         state.cd.Shutdown();
         state.cdStarted = false;
-        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "PC CD audio is unavailable; using N64 menu music.");
+        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "PC CD audio unavailable; using N64 menu music.");
     }
     if (state.module.empty()) {
         const auto path = state.directory / "menu.xm";
         std::ifstream file(path, std::ios::binary);
         if (!file) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "%s cannot be read.", path.string().c_str());
+            SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "Cannot read %s.", path.string().c_str());
             return false;
         }
         state.module.assign(std::istreambuf_iterator<char>(file), {});
     }
-    SDL_Log("The menus play the music module menu.");
+    SDL_Log("Playing menu XM module.");
     state.audio.Play(state.module);
     state.audio.Resume();
     return true;

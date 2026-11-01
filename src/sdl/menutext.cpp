@@ -208,7 +208,7 @@ std::unique_ptr<MenuText> MenuText::Load(SceneRenderer &renderer,
         }
     } catch (const std::exception &error) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "%s is not the layout of the fonts: %s",
+                     "Invalid font layout %s: %s",
                      (fonts / "fonts.json").string().c_str(),
                      error.what());
         return nullptr;

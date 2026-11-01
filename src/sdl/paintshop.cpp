@@ -485,7 +485,7 @@ std::unique_ptr<PaintShop> PaintShop::Load(SceneRenderer &renderer,
     if (!loaded || at == RELEASE_ADDRESSES.end() || !loaded->Has(at->dashColorA, 12) ||
         !loaded->Has(at->decalGlyphs, 50 * GLYPH_SIZE)) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "%s has no main segment of a release with the paint shop.",
+                     "Missing paint-shop segment in %s.",
                      release.string().c_str());
         return nullptr;
     }
@@ -1040,7 +1040,7 @@ bool PaintShop::LoadTextureFromRom(PaintSprite &sprite) {
     }
     if (sprite.pixels.size() != expected) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "AllocPaintShopGfxMem given image %dx%dx%d = %zu bytes but %s is %zu bytes.",
+                     "Image %dx%dx%d requires %zu bytes; %s provides %zu bytes.",
                      sprite.width,
                      sprite.height,
                      sprite.bitsPerTexel,
@@ -1551,7 +1551,7 @@ bool PaintShop::Frame(SceneRenderer &renderer, float seconds, const PaintShopInp
     TranslateInput(seconds, input, dialog);
     if (!m_initialized && !InitPaintShop()) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "The paint shop cannot open %s.",
+                     "Cannot open paint-shop model %s.",
                      m_carDirectory.string().c_str());
         m_initialized = false;
         return true;
@@ -2353,15 +2353,15 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
             }
         }
         if (m_pakError == 0) {
-            SDL_Log(operation == PAINT_TOOL_LOAD ? "Color palette loaded successfully!" :
-                                                   "Color palette saved successfully!");
+            SDL_Log(operation == PAINT_TOOL_LOAD ? "Color palette load complete." :
+                                                   "Color palette save complete.");
             m_pakDialogState = PAK_STATE_DONE;
             if (!inCarSelect) {
                 m_decalEditCount = 0;
             }
             return 0;
         }
-        SDL_Log("err_code = %d", m_pakError);
+        SDL_Log("Controller Pak error %d.", m_pakError);
         m_pakDialogState = PAK_STATE_FINISH;
         done = false;
         break;

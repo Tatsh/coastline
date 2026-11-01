@@ -3523,7 +3523,7 @@ void PrepareNewSeasonSave(int status) {
     ResetSeasonSaveBuffers();
     *g_pPrimarySeasonSave = g_SeasonProgress;
     g_dwSeasonLoaded = true;
-    PrintWineDiagnostic("coastline: New championship initialized for its first save.\n");
+    PrintWineDiagnostic("coastline: New championship ready for first save.\n");
 }
 } // namespace
 #else
@@ -3531,10 +3531,10 @@ void PrepareNewSeasonSave(int status) {
 #endif /* ENABLE_PATCHES */
 
 int SaveSeasonUI::OnSlotNameEntered(MenuItemList *pList, int nStatus) {
-    PrintWineDiagnostic("coastline: Season name entry completed.\n");
+    PrintWineDiagnostic("coastline: Season name entry complete.\n");
     PrepareNewSeasonSave(nStatus);
     if (!g_dwSeasonLoaded) {
-        PrintWineDiagnostic("coastline: Save skipped because the season is not loaded.\n");
+        PrintWineDiagnostic("coastline: Skipping save; season unavailable.\n");
         return 0;
     }
     if (nStatus == -1) {
@@ -3561,8 +3561,8 @@ int SaveSeasonUI::OnSlotNameEntered(MenuItemList *pList, int nStatus) {
     // The slot is marked as named even when writing fails.
     PrintWineDiagnostic("coastline: Writing season save file.\n");
     [[maybe_unused]] const bool saved = SaveSeasonSaveFile();
-    PrintWineDiagnostic(saved ? "coastline: Season save written.\n" :
-                                "coastline: Season save write failed.\n");
+    PrintWineDiagnostic(saved ? "coastline: Season save complete.\n" :
+                                "coastline: Cannot write season save.\n");
     g_dwSaveSeasonSlotNamed = 1;
     PrintWineDiagnostic("coastline: Save menu Continue enabled.\n");
     return 1;
@@ -4008,7 +4008,7 @@ int SeasonProgressInfoUI::OnResetRound(MenuWidget *) {
 int SaveSeasonUI::InvokeBackHandler(MenuWidget *pWidget) {
     PrintWineDiagnostic("coastline: Returning from save menu.\n");
     g_pSaveSeasonBackHandlerMenu->GetActionCallback()(pWidget);
-    PrintWineDiagnostic("coastline: Save menu return completed.\n");
+    PrintWineDiagnostic("coastline: Save menu return complete.\n");
     g_dwGameMode = GAME_MODE_CHAMPIONSHIP;
     return 0;
 }

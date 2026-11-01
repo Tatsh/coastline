@@ -1633,7 +1633,7 @@ CarDamageMasks LoadDamageMasks(const std::filesystem::path &defaults, int car) {
         SDL_DestroySurface(loaded);
         if (rgba == nullptr || rgba->w != MASK_SIDE || rgba->h != MASK_SIDE) {
             SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                        "%s is not a mask of damage of 64 by 64 texels.",
+                        "Invalid 64x64 damage mask %s.",
                         path.string().c_str());
             SDL_DestroySurface(rgba);
             return {};
@@ -1735,7 +1735,7 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
             }
         }
     }
-    SDL_Log("%zu cars of the race loaded in %llu ms.",
+    SDL_Log("Car loading complete: %zu cars in %llu ms.",
             state->cars.size(),
             static_cast<unsigned long long>(SDL_GetTicks() - carsStart));
     // The skies of the track in cargfx, as the import converted them.
@@ -1767,10 +1767,10 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
             state->particleTexture = std::move(smoke);
             state->sprayTexture = std::move(spray);
             state->n64Effects = true;
-            SDL_Log("Visual effects use N64 textures and dithered particles without skid marks.");
+            SDL_Log("Using N64 effects with dithered particles and no skid marks.");
         } else {
             SDL_LogWarn(SDL_LOG_CATEGORY_RENDER,
-                        "N64 effect images are unavailable; using PC effects. Import the ROM "
+                        "N64 effect images unavailable; using PC effects. Import the ROM "
                         "image again.");
         }
     }
@@ -2520,7 +2520,7 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     // A car that does not load is not tried again.
     if (found == s.cars.end()) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                    "Car %d in color %d %d %d loads while the race runs.",
+                    "Loading car %d, color %d %d %d, during race.",
                     key[0],
                     key[1],
                     key[2],
@@ -2556,7 +2556,7 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     }
     if (!models.levels[lod]) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                    "Level %zu of detail of car %d loads while the race runs.",
+                    "Loading detail level %zu for car %d during race.",
                     lod,
                     key[0]);
         models.levels[lod] =

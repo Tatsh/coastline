@@ -133,13 +133,13 @@ bool Menus::LoadTrackMenu(SceneRenderer &renderer,
         }
     } catch (const nlohmann::json::exception &error) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "%s does not have the track menu: %s",
+                     "Invalid track-menu data %s: %s",
                      release.string().c_str(),
                      error.what());
         return false;
     }
     if (m_numTracks != CONSOLE_TRACK_COUNT || m_trackMenuItems.size() != CONSOLE_TRACK_COUNT + 1) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The imported track menu is incomplete.");
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Incomplete track menu.");
         return false;
     }
     MenuItem load = m_trackMenuItems.back();

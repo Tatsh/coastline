@@ -105,7 +105,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
     SceneRenderer &renderer = *sceneRenderer;
     std::unique_ptr<TextFont> font = TextFont::Create(renderer);
     if (!font) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The font of the setup wizard cannot be made.");
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot create setup font.");
         return run;
     }
     WizardServices services;
@@ -120,9 +120,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
     services.buildDate = COASTLINE_BUILD_TIMESTAMP;
     services.openUrl = [](const std::string &url) {
         if (!SDL_OpenURL(url.c_str())) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                        "The browser could not be opened. %s",
-                        SDL_GetError());
+            SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Cannot open browser: %s", SDL_GetError());
         }
     };
     services.checkDisc = CheckDisc;
@@ -174,7 +172,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
     }
     SetupWizard wizard(std::move(services));
     run.failed = false;
-    SDL_Log("The game data is not imported, and the setup wizard starts.");
+    SDL_Log("Missing game data; starting setup.");
 
     SDL_Window *sdlWindow = window.Window();
     SDL_StartTextInput(sdlWindow);

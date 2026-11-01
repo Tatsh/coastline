@@ -42,13 +42,13 @@
     }
     FreeAllPaintBitmaps();
     FreeStringTable();
-    SDL_Log("The game exits with code %d.", nExitCode);
+    SDL_Log("Exiting game with code %d.", nExitCode);
     coastline::StopGameLog();
     std::exit(nExitCode);
 }
 
 void ShutdownGameSession(void) {
-    SDL_Log("Shutting down the race session.");
+    SDL_Log("Shutting down race session.");
     if (g_dwSavedSfxVolume != g_GlobalRallyConfig.dwSfxVolume ||
         g_dwSavedMusicVolume != g_GlobalRallyConfig.dwMusicVolume) {
         g_GlobalRallyConfig.SaveConfigToFile(g_szConfigFilePath);
@@ -56,5 +56,5 @@ void ShutdownGameSession(void) {
     ResetAudioSubsystem();
     ReleaseJoystickDevice();
     FreeCarPaintTextures();
-    SDL_Log("The race session is shut down.");
+    SDL_Log("Race session shutdown complete.");
 }

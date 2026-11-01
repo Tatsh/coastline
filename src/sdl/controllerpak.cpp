@@ -255,7 +255,7 @@ ExportPakImage(const ControllerPak &pak, const std::filesystem::path &file, PakR
     if (!stream) {
         return fmt::format("{} cannot be written.", file.string());
     }
-    SDL_Log("Wrote %zu notes to %s.", entry, file.string().c_str());
+    SDL_Log("Export complete: %zu notes in %s.", entry, file.string().c_str());
     return std::nullopt;
 }
 
@@ -271,7 +271,7 @@ std::optional<std::string> ImportPakImage(const ControllerPak &pak,
     if (Get16(image, INODE_PAGE * PAK_PAGE_BYTES) != InodeChecksum(image, INODE_PAGE)) {
         inodes = INODE_BACKUP_PAGE;
         if (Get16(image, inodes * PAK_PAGE_BYTES) != InodeChecksum(image, inodes)) {
-            return fmt::format("{} has no valid table of pages.", file.string());
+            return fmt::format("Invalid page table in {}.", file.string());
         }
     }
     int imported = 0;
@@ -288,9 +288,8 @@ std::optional<std::string> ImportPakImage(const ControllerPak &pak,
             return codes.game == game && codes.company == company;
         });
         if (!ours || !name || image[at + 0x0C] != 0) {
-            SDL_Log("Skipped note %zu of %s, a note of another game or release.",
-                    entry,
-                    file.string().c_str());
+            SDL_Log(
+                "Skipping note %zu in %s; game or release mismatch.", entry, file.string().c_str());
             continue;
         }
         // The pages of the note in the order of the table. A chain longer than the pak loops.
@@ -308,21 +307,19 @@ std::optional<std::string> ImportPakImage(const ControllerPak &pak,
             page = link;
         }
         if (!ended) {
-            SDL_Log("Skipped the note %s of %s, whose pages are not valid.",
-                    name->c_str(),
-                    file.string().c_str());
+            SDL_Log("Skipping note %s in %s; invalid pages.", name->c_str(), file.string().c_str());
             continue;
         }
         if (pak.ReadNote(*name)) {
-            SDL_Log("The note %s replaces the note of the same name.", name->c_str());
+            SDL_Log("Replacing note %s.", name->c_str());
         }
         if (!pak.WriteNote(*name, bytes)) {
             return fmt::format("The note {} cannot be written.", *name);
         }
-        SDL_Log("Imported the note %s of %zu bytes.", name->c_str(), bytes.size());
+        SDL_Log("Note import complete: %s, %zu bytes.", name->c_str(), bytes.size());
         ++imported;
     }
-    SDL_Log("Imported %d notes from %s.", imported, file.string().c_str());
+    SDL_Log("Import complete: %d notes from %s.", imported, file.string().c_str());
     return std::nullopt;
 }
 

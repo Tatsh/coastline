@@ -76,7 +76,7 @@ bool OpenCdaudioMci(HWND hWnd) {
                              MCI_STATUS_ITEM | MCI_WAIT,
                              reinterpret_cast<DWORD_PTR>(&status));
     if (nError != 0) {
-        wsprintfA(szMessage, "MCI_STATUS returned %d\n", nError);
+        wsprintfA(szMessage, "MCI_STATUS error %d.\n", nError);
         OutputDebugStringA(szMessage);
         mciSendCommandA(g_dwMciCdAudioDeviceId, MCI_CLOSE, 0, 0);
         return false;

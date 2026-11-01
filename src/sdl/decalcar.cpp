@@ -47,7 +47,7 @@ std::optional<DecalCar> DecalCar::Load(const std::filesystem::path &directory) {
     auto bytes = ModelFromGltf(source->json, source->buffer);
     if (!bytes) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "%s is not a car of a cartridge (%s).",
+                     "Invalid cartridge car %s (%s).",
                      path.string().c_str(),
                      bytes.error().c_str());
         return std::nullopt;
@@ -67,7 +67,8 @@ std::optional<DecalCar> DecalCar::Load(const std::filesystem::path &directory) {
     }
     // Every texture and mask the paint shop reads lies inside the model.
     if (car.m_bytes.size() < DECAL_MASKS_AT + 4) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s is too short.", path.string().c_str());
+        SDL_LogError(
+            SDL_LOG_CATEGORY_APPLICATION, "Truncated car data in %s.", path.string().c_str());
         return std::nullopt;
     }
     for (int material = 0; material < CAR_MATERIALS; ++material) {
@@ -76,7 +77,7 @@ std::optional<DecalCar> DecalCar::Load(const std::filesystem::path &directory) {
         if (texture.width == 0 || texture.texels + texels > car.m_bytes.size() ||
             texture.palette == 0 || texture.palette + PALETTE_BYTES > car.m_bytes.size()) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "Material %d of %s is not a texture of 16 colours.",
+                         "Material %d in %s requires a 16-color texture.",
                          material,
                          path.string().c_str());
             return std::nullopt;
@@ -165,7 +166,7 @@ DecalCar::WriteImages(const std::filesystem::path &directory) const {
         } else if (!LoadIndexed4Png(m_imageBytes[index], texels, palette)) {
             // The lights retain the texels of the import and take the colours of the model.
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "Image %zu of %s cannot be read.",
+                         "Cannot read image %zu in %s.",
                          index,
                          m_directory.string().c_str());
             return std::nullopt;
@@ -174,8 +175,7 @@ DecalCar::WriteImages(const std::filesystem::path &directory) const {
                     PALETTE_BYTES,
                     palette.begin());
         if (!SaveIndexed4Png(to, texels, palette, texture.width, texture.height)) {
-            SDL_LogError(
-                SDL_LOG_CATEGORY_APPLICATION, "%s cannot be written.", to.string().c_str());
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot write %s.", to.string().c_str());
             return std::nullopt;
         }
     }

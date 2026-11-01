@@ -176,8 +176,8 @@ static LONG WINAPI ReportApplicationCrash(EXCEPTION_POINTERS *exception) {
                                     nullptr,
                                     nullptr);
             CloseHandle(dump);
-            WriteApplicationDiagnostic(result ? "Crash minidump written.\n" :
-                                                "Crash minidump failed.\n");
+            WriteApplicationDiagnostic(result ? "Crash minidump complete.\n" :
+                                                "Cannot write crash minidump.\n");
         }
     }
     WriteApplicationDiagnostic("Crash report complete; passing exception to the system.\n");
@@ -240,7 +240,7 @@ void InitializeApplicationDiagnostics(void) {
     }
     previousFilter = SetUnhandledExceptionFilter(ReportApplicationCrash);
     exceptionObserver = AddVectoredExceptionHandler(1, ObserveApplicationException);
-    WriteApplicationDiagnostic("Application diagnostics initialized.\n");
+    WriteApplicationDiagnostic("Application diagnostics ready.\n");
     WriteApplicationDiagnostic("github.com/Tatsh/coastline " COASTLINE_GIT_SHA " " __DATE__
                                " " __TIME__ "\n");
     debugLibrary = LoadLibraryA("dbghelp.dll");

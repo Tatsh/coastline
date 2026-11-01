@@ -99,7 +99,7 @@ std::optional<std::string> ExtractCartridge(std::span<const std::uint8_t> rom,
     std::string line;
     while (std::getline(lines, line)) {
         if (progress && !progress("Extracting the ROM image", 0.0)) {
-            return "The import was cancelled.";
+            return "Import cancelled.";
         }
         std::istringstream fields(line);
         std::size_t offset = 0;
@@ -291,7 +291,7 @@ std::expected<std::vector<IsoEntry>, std::string> ListIso(SectorReader &reader) 
     }
     auto root = joliet ? joliet : primary;
     if (!root) {
-        return std::unexpected("The volume has no primary descriptor.");
+        return std::unexpected("Missing primary volume descriptor.");
     }
     std::vector<IsoEntry> entries;
     if (!ListDirectory(reader, (*root)[0], (*root)[1], {}, joliet.has_value(), 0, entries)) {
@@ -346,7 +346,7 @@ CopyIsoFile(SectorReader &reader, const IsoEntry &entry, const std::filesystem::
         remaining -= bytes;
     }
     return out ? std::nullopt :
-                 std::optional(fmt::format("{} was not written.", destination.string()));
+                 std::optional(fmt::format("Cannot write {}.", destination.string()));
 }
 
 struct SurfaceDeleter {
@@ -602,7 +602,7 @@ ConvertJapaneseGlyphs(const std::filesystem::path &glyphs, const std::filesystem
         auto start = offset(entry);
         auto end = offset(entry + 1);
         if (!start || !end) {
-            return std::unexpected(fmt::format("{} has no table of glyphs.", glyphs.string()));
+            return std::unexpected(fmt::format("Missing glyph table in {}.", glyphs.string()));
         }
         // A negative offset marks a glyph stored without run-length compression.
         std::size_t from = static_cast<std::size_t>(std::abs(*start));
@@ -1116,7 +1116,7 @@ std::optional<std::string> ConvertConsoleTextures(const std::filesystem::path &d
                    segment[at + 18] == 0 && segment[at + 19] == 0;
         });
         if (descriptor == records.end()) {
-            SDL_Log("The main segment has no texture descriptor of %s.", path.string().c_str());
+            SDL_Log("Missing texture descriptor for %s.", path.string().c_str());
             continue;
         }
         const std::uint8_t *fields = &segment[*descriptor];
@@ -1170,7 +1170,7 @@ std::optional<std::string> ConvertConsoleTextures(const std::filesystem::path &d
         }
         if (layout == TEXEL_LAYOUTS.end() || count == 0 ||
             texels->size() != (count * static_cast<std::size_t>(bits) + 7) / 8) {
-            SDL_Log("The %zu bytes of %s %d-bit texels, %dx%d, of %s have no PNG form.",
+            SDL_Log("Cannot convert %zu bytes of %s %d-bit texels, %dx%d, in %s to PNG.",
                     texels->size(),
                     FORMATS[format],
                     bits,
@@ -1237,7 +1237,7 @@ std::optional<std::string> ConvertConsoleTextures(const std::filesystem::path &d
         std::error_code error;
         if (rebuilt != *texels) {
             SDL_Log(
-                "%s does not build the texels of %s.", png.string().c_str(), path.string().c_str());
+                "Texel mismatch between %s and %s.", png.string().c_str(), path.string().c_str());
             std::filesystem::remove(png, error);
             continue;
         }
@@ -1268,7 +1268,7 @@ void WriteMenuItems(const std::filesystem::path &destination,
                    std::ranges::find(segment.subspan(text - SEGMENT_BASE), 0) != segment.end();
         });
         if (record == records.end()) {
-            SDL_Log("%s has no menu item in the main segment.", asset.name.c_str());
+            SDL_Log("Missing menu item %s in main segment.", asset.name.c_str());
             continue;
         }
         const auto *text =
@@ -1494,7 +1494,7 @@ std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
         std::uint32_t modelStart = word(entry + 0x0C);
         auto asset = std::ranges::find(assets, modelStart, &ManifestAsset::romStart);
         if (!name || asset == assets.end()) {
-            return fmt::format("Track {} of the track menu has no name or no model.", i);
+            return fmt::format("Missing name or model for menu track {}.", i);
         }
         tracks.push_back({{"name", *name},
                           {"flags", word(entry + 0x04)},
@@ -1506,7 +1506,7 @@ std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
         std::uint32_t item = word(at.weatherMenuItems + i * 4);
         auto name = inside(item, 4) ? text(word(item)) : std::nullopt;
         if (!name) {
-            return fmt::format("Weather {} of the menus has no name.", i);
+            return fmt::format("Missing name for menu weather {}.", i);
         }
         weathers.push_back(*name);
     }
@@ -1520,7 +1520,7 @@ std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
     for (std::uint32_t i = 0; i < carCount; ++i) {
         auto name = text(word(at.carModels + i * CAR_MODEL));
         if (!name) {
-            return fmt::format("Car {} has no name.", i);
+            return fmt::format("Missing name for car {}.", i);
         }
         std::string directory;
         for (char c : *name) {
@@ -1720,7 +1720,7 @@ std::optional<std::string> ConvertModel(const std::filesystem::path &car,
             return fmt::format("{} does not read back as {}.", gltfPath.string(), car.string());
         }
         const auto &coverage = model->json["extras"]["coastlineCoverage"];
-        SDL_Log("%s draws %zu of %zu triangles with state glTF expresses.",
+        SDL_Log("%s represents %zu of %zu triangles in glTF.",
                 gltfPath.filename().string().c_str(),
                 coverage["exactTriangles"].get<std::size_t>(),
                 coverage["triangles"].get<std::size_t>());
@@ -1954,7 +1954,7 @@ std::optional<std::string> ConvertStringLibrary(const std::filesystem::path &lib
     std::vector<std::uint8_t> image(std::istreambuf_iterator<char>(in), {});
     auto strings = coastline::ReadLibraryStrings(image);
     if (strings.empty()) {
-        return fmt::format("{} has no strings.", library.string());
+        return fmt::format("Missing strings in {}.", library.string());
     }
     nlohmann::ordered_json json = nlohmann::ordered_json::object();
     for (const auto &[id, text] : strings) {
@@ -2015,11 +2015,11 @@ std::optional<std::string> EncodeAudioTrack(std::ifstream &file,
         }
         if (!FLAC__stream_encoder_process_interleaved(
                 encoder.get(), samples.data(), static_cast<unsigned>(values / 2))) {
-            return fmt::format("Track {} was not encoded.", track.number);
+            return fmt::format("Cannot encode track {}.", track.number);
         }
     }
     if (!FLAC__stream_encoder_finish(encoder.get())) {
-        return fmt::format("Track {} was not finished.", track.number);
+        return fmt::format("Cannot finish encoding track {}.", track.number);
     }
     return std::nullopt;
 }
@@ -2180,7 +2180,7 @@ std::optional<std::string> WriteAttractDemo(std::span<const std::uint8_t> rom,
                                                               N64DemoRelease::Jpn;
     auto demo = RecordN64AttractDemo(rom, demoRelease);
     if (!demo) {
-        return fmt::format("The attract demo was not recorded: {}", demo.error());
+        return fmt::format("Cannot record attract demo: {}", demo.error());
     }
     auto bytes = DemoGhost(*demo, fmt::format("n64 {}", destination.filename().string()));
     auto json = GhostToJson(bytes);
@@ -2198,7 +2198,7 @@ std::optional<std::string> WriteAttractDemo(std::span<const std::uint8_t> rom,
     if (!reread || *reread != bytes) {
         return fmt::format("{} does not read back as the attract demo.", path.string());
     }
-    SDL_Log("The attract demo of %s has %zu steps of the console, from %llu instructions.",
+    SDL_Log("Attract demo %s spans %zu console steps from %llu instructions.",
             destination.filename().string().c_str(),
             demo->frames.size(),
             static_cast<unsigned long long>(demo->instructions));
@@ -2266,7 +2266,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     std::error_code carsError;
     for (const auto &car : std::filesystem::directory_iterator(destination / "cars", carsError)) {
         if (progress && !progress("Converting the ROM image's cars", 0.2)) {
-            return std::unexpected("The import was cancelled.");
+            return std::unexpected("Import cancelled.");
         }
         auto model = car.path() / "model.bin";
         if (!std::filesystem::exists(model)) {
@@ -2286,7 +2286,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     for (const auto &track :
          std::filesystem::directory_iterator(destination / "tracks", carsError)) {
         if (progress && !progress("Converting the ROM image's tracks", 0.4)) {
-            return std::unexpected("The import was cancelled.");
+            return std::unexpected("Import cancelled.");
         }
         auto geometry = ReadWholeFile(track.path() / "geometry.bin");
         auto textures = ReadWholeFile(track.path() / "textures.bin");
@@ -2350,7 +2350,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     }
     for (const auto &sound : sounds) {
         if (progress && !progress("Converting the ROM image's sounds", 0.6)) {
-            return std::unexpected("The import was cancelled.");
+            return std::unexpected("Import cancelled.");
         }
         if (auto failure = ConvertConsoleSound(sound)) {
             return std::unexpected(*failure);
@@ -2367,7 +2367,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     }
     for (const auto &model : splashModels) {
         if (progress && !progress("Converting the intro models", 0.7)) {
-            return std::unexpected("The import was cancelled.");
+            return std::unexpected("Import cancelled.");
         }
         auto stem = model.stem().string();
         if (auto failure = ConvertModel(model,
@@ -2393,7 +2393,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     }
     WriteMenuItems(destination, segment, assets);
     if (progress && !progress("Recording the attract demo", 0.8)) {
-        return std::unexpected("The import was cancelled.");
+        return std::unexpected("Import cancelled.");
     }
     // The game plays without the attract demo of a release. A failure to record it is logged and
     // the import goes on.
@@ -2407,7 +2407,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     // of the same name.
     for (const ManifestAsset &asset : assets) {
         if (progress && !progress("Converting the menu models", 0.9)) {
-            return std::unexpected("The import was cancelled.");
+            return std::unexpected("Import cancelled.");
         }
         if (!asset.name.starts_with("menu-items/") && !asset.name.ends_with("/menu-model")) {
             continue;
@@ -2467,7 +2467,7 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
             auto open = line.find('"');
             auto close = line.rfind('"');
             if (open == std::string::npos || close <= open) {
-                return std::unexpected("A FILE line of the CUE sheet has no quoted name.");
+                return std::unexpected("Missing quoted filename in CUE FILE line.");
             }
             current = cue.parent_path() / line.substr(open + 1, close - open - 1);
         } else if (command == "TRACK") {
@@ -2575,7 +2575,7 @@ std::expected<DiscContents, std::string> ReadDiscContents(const std::filesystem:
             }
         }
         if (tracks.empty()) {
-            return std::unexpected("The BIN image has no readable ISO 9660 data track.");
+            return std::unexpected("Missing readable ISO 9660 data track in BIN image.");
         }
     } else if (extension == ".cue") {
         auto parsed = ParseCueSheet(disc);
@@ -2588,7 +2588,7 @@ std::expected<DiscContents, std::string> ReadDiscContents(const std::filesystem:
     }
     auto data = std::ranges::find(tracks, false, &CueTrack::audio);
     if (data == tracks.end()) {
-        return std::unexpected("The disc has no data track.");
+        return std::unexpected("Missing disc data track.");
     }
     std::ifstream dataFile(data->file, std::ios::binary);
     if (!dataFile) {
@@ -2653,7 +2653,7 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
     auto report = [&](const std::string &step) {
         return !progress || progress(step, static_cast<double>(done) / steps);
     };
-    const auto cancelled = std::unexpected(std::string("The import was cancelled."));
+    const auto cancelled = std::unexpected(std::string("Import cancelled."));
     for (const auto &entry : entries) {
         if (!report(entry.path.generic_string())) {
             return cancelled;

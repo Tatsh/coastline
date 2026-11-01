@@ -231,7 +231,7 @@ std::unique_ptr<MenuScreen> MenuScreen::Load(SceneRenderer &renderer,
         state->markerTriangles = marker.at("triangles").get<std::vector<std::array<int, 3>>>();
     } catch (const nlohmann::json::exception &error) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "%s is not the menus of a release: %s",
+                     "Invalid menu data %s: %s",
                      release.string().c_str(),
                      error.what());
         return nullptr;
@@ -288,7 +288,7 @@ std::optional<std::vector<MenuItem>> MenuScreen::LoadItems(SceneRenderer &render
         }
     } catch (const nlohmann::json::exception &error) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "%s does not have the items of a menu: %s",
+                     "Invalid menu items in %s: %s",
                      directory.string().c_str(),
                      error.what());
         return std::nullopt;

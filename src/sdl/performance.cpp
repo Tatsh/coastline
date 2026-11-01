@@ -169,9 +169,9 @@ public:
         }
         if (const auto match = UniqueGpuIndex(gpuName, names)) {
             m_devices.push_back(handles[*match]);
-            SDL_Log("NVML samples utilization for the active GPU %s.", gpuName.c_str());
+            SDL_Log("Sampling GPU %s utilization with NVML.", gpuName.c_str());
         } else {
-            SDL_Log("NVML cannot uniquely match the active GPU; utilization sampling is disabled.");
+            SDL_Log("Cannot uniquely match NVML GPU; disabling utilization sampling.");
         }
     }
 

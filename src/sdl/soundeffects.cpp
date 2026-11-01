@@ -159,7 +159,7 @@ SoundEffects::SoundEffects(const std::filesystem::path &assets, Source source, b
     : m_state(std::make_unique<State>(std::filesystem::absolute(assets), source, enabled)) {
     assert(State::Active() == nullptr);
     SDL_SetPointerProperty(SDL_GetGlobalProperties(), State::PROPERTY, m_state.get());
-    SDL_Log("Sound effects use %s samples.", source == Source::Pc ? "PC" : "N64");
+    SDL_Log("Using %s sound effects.", source == Source::Pc ? "PC" : "N64");
 }
 
 SoundEffects::~SoundEffects() {
@@ -196,7 +196,7 @@ bool SoundEffects::LoadRaceWave(
             wave = std::move(*console);
         } else {
             SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
-                        "%s is unavailable; using PC sound %s.",
+                        "Missing %s; using PC sound %s.",
                         State::Utf8(file).c_str(),
                         path);
         }

@@ -32,9 +32,8 @@ std::optional<ConsoleSegment> ConsoleSegment::Load(const std::filesystem::path &
     } else if (name == "jpn") {
         manifest = CARTRIDGE_JP;
     } else {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "%s is not the import of a release.",
-                     release.string().c_str());
+        SDL_LogError(
+            SDL_LOG_CATEGORY_APPLICATION, "Invalid cartridge import %s.", release.string().c_str());
         return std::nullopt;
     }
     ConsoleSegment segment;
@@ -42,7 +41,7 @@ std::optional<ConsoleSegment> ConsoleSegment::Load(const std::filesystem::path &
     segment.m_bytes.assign(std::istreambuf_iterator<char>(file), {});
     if (segment.m_bytes.empty()) {
         SDL_LogError(
-            SDL_LOG_CATEGORY_APPLICATION, "%s has no main segment.", release.string().c_str());
+            SDL_LOG_CATEGORY_APPLICATION, "Missing main segment in %s.", release.string().c_str());
         return std::nullopt;
     }
     std::istringstream lines(std::string(manifest.begin(), manifest.end()));

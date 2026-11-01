@@ -21,7 +21,7 @@ void ShutdownGameSession(void) {
         g_GlobalRallyConfig.SaveConfigToFile(g_szConfigFilePath);
     }
     ResetAudioSubsystem();
-    PrintWineDiagnostic("coastline: Race audio reset.\n");
+    PrintWineDiagnostic("coastline: Race audio reset complete.\n");
     ReleaseJoystickDevice();
     if (g_dwNetworkPlayMode != 0) {
         if (g_dwNetworkPlayMode > 1) {
@@ -37,7 +37,7 @@ void ShutdownGameSession(void) {
     g_pMainRenderWindow->BeginRenderScene();
 #endif
     ResetRenderSubsystems(RENDER_BACKEND_MODE, 640, 480, 16, 0);
-    PrintWineDiagnostic("coastline: Menu renderer restored; freeing paint textures.\n");
+    PrintWineDiagnostic("coastline: Freeing paint textures.\n");
     FreeCarPaintTextures();
-    PrintWineDiagnostic("coastline: Race session shutdown completed.\n");
+    PrintWineDiagnostic("coastline: Race session shutdown complete.\n");
 }

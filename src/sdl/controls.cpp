@@ -69,8 +69,7 @@ std::vector<ControlSource> ParseSources(std::string_view key, std::string_view v
         auto source = ParseSource(token);
         if (!source) {
             SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                        "Controls %.*s: %.*s is not a button or an axis of a gamepad, and is "
-                        "ignored.",
+                        "Ignoring control %.*s with invalid gamepad binding %.*s.",
                         static_cast<int>(key.size()),
                         key.data(),
                         static_cast<int>(token.size()),
@@ -97,7 +96,7 @@ void ControlBindings::Load(const GameConfig &config) {
         });
         if (found == CONTROL_PRESETS.end()) {
             SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                        "Controls Preset: there is no preset %s, and the preset %.*s is used.",
+                        "Unknown control preset %s; using %.*s.",
                         name->c_str(),
                         static_cast<int>(preset->name.size()),
                         preset->name.data());

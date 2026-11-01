@@ -2005,7 +2005,7 @@ void HandleMultiplayerSessionMessage(
                     slot.dpidPlayer = DPID_SERVERPLAYER;
                     slot.nFlag = true;
                     std::sprintf(
-                        debug, "Host set ready message received, ID: %d\n", DPID_SERVERPLAYER);
+                        debug, "Processing host-ready message, ID %d.\n", DPID_SERVERPLAYER);
                     OutputDebugStringA(debug);
                     break;
                 }
@@ -2025,14 +2025,14 @@ void HandleMultiplayerSessionMessage(
         break;
     case 0x60000003:
         g_dwNetworkSendBlocked = true;
-        std::sprintf(debug, "APPMSG_HOSTSTARTED: received");
+        std::sprintf(debug, "Processing APPMSG_HOSTSTARTED.");
         OutputDebugStringA(debug);
         return;
     case 0x60000004:
         if (pInfo->dpidPlayer == message->dwValue) {
             g_dwNetworkDataStreamActive = true;
         }
-        std::sprintf(debug, "APPMSG_BOOTPLAYER: received\n");
+        std::sprintf(debug, "Processing APPMSG_BOOTPLAYER.\n");
         OutputDebugStringA(debug);
         break;
     case 0x60000005:
@@ -2960,7 +2960,7 @@ void HandleDirectPlaySystemMessage(
                 slot.dpidPlayer = 0xffffffff;
                 slot.nFlag = 0;
                 sprintf(szMessage,
-                        "Destroy Player message received, ID: %d\n",
+                        "Processing player-destroy message, ID %d.\n",
                         static_cast<int>(pDestroy->dpId));
                 OutputDebugStringA(szMessage);
                 break;

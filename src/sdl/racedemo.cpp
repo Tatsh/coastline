@@ -69,7 +69,7 @@ void OpenRaceData(bool playSounds) {
     g_GlobalRallyConfig.SelectActiveInputBindings();
     // OpenBossRallyPodAndInit() opens the sound of the race when the settings enable it.
     if (playSounds && !InitializeDirectSound()) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "The sound effects of the race did not start.");
+        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "Cannot start race sound effects.");
     }
 }
 

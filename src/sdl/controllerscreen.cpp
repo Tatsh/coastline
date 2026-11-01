@@ -143,7 +143,7 @@ std::unique_ptr<RenderTexture> LoadLayoutPicture(SceneRenderer &renderer,
     SDL_Surface *rgba = loaded ? SDL_ConvertSurface(loaded, SDL_PIXELFORMAT_RGBA32) : nullptr;
     SDL_DestroySurface(loaded);
     if (rgba == nullptr) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s cannot be read.", path.string().c_str());
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot read %s.", path.string().c_str());
         return nullptr;
     }
     std::vector<std::uint8_t> texels;
@@ -286,7 +286,7 @@ void Menus::ProcessControllerConfigScreen(SceneRenderer &renderer,
             LoadControls(*m_config);
             if (!m_config->Save(m_configPath)) {
                 SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                             "%s cannot be written.",
+                             "Cannot write %s.",
                              m_configPath.string().c_str());
             }
         }

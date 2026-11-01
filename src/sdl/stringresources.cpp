@@ -136,7 +136,7 @@ coastline::StringTable ReadStringsFile(const std::filesystem::path &path) {
     auto json = nlohmann::json::parse(file, nullptr, false);
     if (json.is_discarded() || !json.is_object()) {
         SDL_LogWarn(
-            SDL_LOG_CATEGORY_APPLICATION, "%s is not a file of strings.", path.string().c_str());
+            SDL_LOG_CATEGORY_APPLICATION, "Invalid string table %s.", path.string().c_str());
         return strings;
     }
     for (const auto &[key, text] : json.items()) {
@@ -189,7 +189,7 @@ GameText::GameText(const std::filesystem::path &assets, std::string language)
     std::error_code error;
     if (m_language != DEFAULT_LANGUAGE && !std::filesystem::exists(selected, error)) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                    "%s is missing, and the strings of %s are used.",
+                    "Missing %s; using %s strings.",
                     selected.string().c_str(),
                     std::string(DEFAULT_LANGUAGE).c_str());
     }
@@ -220,7 +220,7 @@ std::string_view GameText::Resolve(std::string_view key) {
     }
     if (m_logged.emplace(key).second) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                    "The string %.*s is in no file of strings. Import the cartridges again.",
+                    "Missing string %.*s; import ROM images again.",
                     static_cast<int>(key.size()),
                     key.data());
     }
@@ -317,7 +317,7 @@ extern "C" void LoadStringTableFromDll(void) {
     }
     const auto *catalog = coastline::GameText::Active();
     if (!catalog || catalog->Empty()) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The strings of the race are missing.");
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Missing race strings.");
         return;
     }
     std::vector<std::pair<unsigned, std::string_view>> strings;

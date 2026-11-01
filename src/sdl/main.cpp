@@ -126,8 +126,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
             options.aspectRatio = *aspect;
         } else {
             SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
-                        "AspectRatio takes auto, a ratio such as 4:3, or a number above 0, and %s "
-                        "follows the window.",
+                        "Invalid AspectRatio %s; using window aspect ratio.",
                         aspectText->c_str());
         }
     }
@@ -149,7 +148,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
         options.postAntialias = coastline::PostAntialias::Fxaa;
     } else if (post && *post != "none") {
         SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
-                    "AntialiasPost takes none or fxaa, and %s is drawn as none.",
+                    "Invalid AntialiasPost %s; disabling post anti-aliasing.",
                     post->c_str());
     }
     options.gpuDebug = parser.get<bool>("--debug-gpu");
@@ -169,7 +168,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
         options.textureFilter = coastline::TextureFilter::Nearest;
     } else if (filter && *filter != "modern") {
         SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
-                    "TextureFilter takes n64, modern, or nearest, and %s filters as modern.",
+                    "Invalid TextureFilter %s; using modern filtering.",
                     filter->c_str());
     }
     options.antialias =
@@ -205,9 +204,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
             options.textureFilter = coastline::TextureFilter::Nearest;
             options.lowestFrame = true;
         } else {
-            SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
-                        "--gpu-preset takes best or worst, and %s is ignored.",
-                        preset->c_str());
+            SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "Ignoring invalid GPU preset %s.", preset->c_str());
         }
     }
     if (auto antialias = parser.present<int>("--antialias")) {
@@ -220,7 +217,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
         parser.present("--gpu").value_or(config.Get("Video", "GpuPreference").value_or("auto"));
     if (options.gpuPreference != "auto" && options.gpuPreference != "high-performance" &&
         options.gpuPreference != "low-power") {
-        SDL_LogWarn(SDL_LOG_CATEGORY_GPU, "Invalid GPU preference. Automatic selection is used.");
+        SDL_LogWarn(SDL_LOG_CATEGORY_GPU, "Invalid GPU preference; using automatic selection.");
         options.gpuPreference = "auto";
     }
     options.unlockedFramerate = config.GetBoolean("Video", "UnlockedFramerate", false);
@@ -380,7 +377,7 @@ std::optional<std::filesystem::path> ScreenshotPath(const std::filesystem::path 
     std::filesystem::create_directories(directory, error);
     if (error) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                    "%s cannot be made: %s",
+                    "Cannot create %s: %s",
                     directory.string().c_str(),
                     error.message().c_str());
         return std::nullopt;
@@ -430,7 +427,7 @@ struct LoadedScript {
 std::optional<LoadedScript> LoadScript(const std::filesystem::path &path) {
     std::ifstream file(path, std::ios::binary);
     if (!file) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s cannot be read.", path.string().c_str());
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot read %s.", path.string().c_str());
         return std::nullopt;
     }
     const std::string text(std::istreambuf_iterator<char>(file), {});
@@ -458,7 +455,7 @@ std::optional<LoadedScript> LoadScript(const std::filesystem::path &path) {
         }
         if (scancode == SDL_SCANCODE_UNKNOWN) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "%s:%d: %s is not the SDL name of a key, such as Return or F9.",
+                         "%s:%d: Invalid SDL key %s.",
                          path.string().c_str(),
                          key.line,
                          key.name.c_str());
@@ -600,7 +597,7 @@ void SetWindowIcon(SDL_Window *window, const std::filesystem::path &pack) {
     }
     if (images.empty()) {
         SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
-                    "The window has no icon, as %s has no images. Import the disc again for it.",
+                    "Missing icon images in %s; import the disc again.",
                     (pack / "icon").string().c_str());
         return;
     }
@@ -623,7 +620,7 @@ void SetWindowIcon(SDL_Window *window, const std::filesystem::path &pack) {
         std::unique_ptr<SDL_Surface, SurfaceDeleter> image(SDL_LoadPNG(path.string().c_str()));
         if (!image) {
             SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
-                        "%s cannot be read: %s",
+                        "Cannot read %s: %s",
                         path.string().c_str(),
                         SDL_GetError());
         } else if (!icon) {
@@ -633,13 +630,12 @@ void SetWindowIcon(SDL_Window *window, const std::filesystem::path &pack) {
         }
     }
     if (!icon || !SDL_SetWindowIcon(window, icon.get())) {
-        SDL_LogWarn(
-            SDL_LOG_CATEGORY_VIDEO, "The icon of the window was not set: %s", SDL_GetError());
+        SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "Cannot set window icon: %s", SDL_GetError());
         return;
     }
     int count = 0;
     SDL_free(SDL_GetSurfaceImages(icon.get(), &count));
-    SDL_Log("The icon of the window is %dx%d, with %d sizes, from %s.",
+    SDL_Log("Using %dx%d icon, %d sizes, from %s.",
             icon->w,
             icon->h,
             count,
@@ -918,14 +914,14 @@ int main(int argc, char *argv[]) {
     }
     coastline::GameLog gameLog(paths->state / "game.log");
     if (!gameLog.IsOpen()) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "The log file cannot be opened.");
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Cannot open log file.");
     }
     SDL_Log("Coastline %s", COASTLINE_VERSION);
-    SDL_Log("Configuration: %s", paths->config.string().c_str());
-    SDL_Log("Read settings from %s.", configPath.string().c_str());
-    SDL_Log("Data: %s", paths->data.string().c_str());
-    SDL_Log("State: %s", paths->state.string().c_str());
-    SDL_Log("Cache: %s", paths->cache.string().c_str());
+    SDL_Log("Using configuration directory %s.", paths->config.string().c_str());
+    SDL_Log("Reading settings from %s.", configPath.string().c_str());
+    SDL_Log("Using data directory %s.", paths->data.string().c_str());
+    SDL_Log("Using state directory %s.", paths->state.string().c_str());
+    SDL_Log("Using cache directory %s.", paths->cache.string().c_str());
 
     if (parser.is_subcommand_used(import)) {
         return ImportFromCommandLine(import, paths->data);
@@ -962,14 +958,14 @@ int main(int argc, char *argv[]) {
     if (showWizard && parser.is_subcommand_used(runScript) && script.script.keys.empty() &&
         script.script.typing.empty() && script.script.mouseMoves.empty()) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "The game data is not imported. Import it with coastline import --cd DISC "
+                     "Missing game data. Use coastline import --cd DISC "
                      "--rom ROM.");
         return EXIT_FAILURE;
     }
 #else
     if (showWizard) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "No usable installed assets were found. Install the Coastline data package "
+                     "Usable installed assets unavailable. Install the Coastline data package "
                      "or select imported data with --data-dir.");
         return EXIT_FAILURE;
     }
@@ -1046,12 +1042,10 @@ int main(int argc, char *argv[]) {
     {
         SdlSession sdl(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD);
         if (sdl.ready && !SDL_InitSubSystem(SDL_INIT_AUDIO)) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
-                        "The game is silent. Audio did not start: %s",
-                        SDL_GetError());
+            SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "Cannot start audio: %s", SDL_GetError());
         }
         if (!sdl.ready) {
-            SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "SDL did not start: %s", SDL_GetError());
+            SDL_LogCritical(SDL_LOG_CATEGORY_APPLICATION, "Cannot start SDL: %s", SDL_GetError());
         } else if (auto window = coastline::GpuWindow::Create(
                        "Coastline", DisplayOptionsFrom(config, parser, savesFrames));
                    window && setUp(*window)) {
@@ -1092,7 +1086,7 @@ int main(int argc, char *argv[]) {
                     coastline::PackAssets(assetData, paths->cache, pack, paths->data, regionPack);
                 if (!packAssets) {
                     SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                                "The asset pack %s cannot be read, and the default pack is used.",
+                                "Cannot read asset pack %s; using default.",
                                 pack.c_str());
                     pack = coastline::DEFAULT_PACK;
                     packAssets =
@@ -1105,7 +1099,7 @@ int main(int argc, char *argv[]) {
                     }
                 }
                 const std::filesystem::path assets = *packAssets;
-                SDL_Log("Asset pack: %s (%s)", pack.c_str(), assets.string().c_str());
+                SDL_Log("Using asset pack %s (%s).", pack.c_str(), assets.string().c_str());
                 SDL_Log("Using region %s with base %s.", region.c_str(), baseRegion.c_str());
                 // A source imported by an older conversion has files the game no longer draws
                 // correctly.
@@ -1115,7 +1109,7 @@ int main(int argc, char *argv[]) {
                 if (!staleImports.empty()) {
                     reimportNotice = coastline::ReimportMessage(staleImports);
                     SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                                "The data was imported by an older version of the game. %s",
+                                "Asset conversion is outdated. %s",
                                 reimportNotice.c_str());
                 }
                 coastline::GameText gameText(
@@ -1124,7 +1118,7 @@ int main(int argc, char *argv[]) {
                         .value_or(config.Get("Game", "Language")
                                       .value_or(std::string(coastline::DEFAULT_LANGUAGE))));
                 const std::filesystem::path release = coastline::ReleaseDirectory(assets);
-                SDL_Log("Language: %s (%s)",
+                SDL_Log("Using language %s (%s).",
                         coastline::SelectedLanguage().c_str(),
                         release.lexically_relative(assets).string().c_str());
                 const nlohmann::json packSettings =
@@ -1474,7 +1468,7 @@ int main(int argc, char *argv[]) {
                         sceneRenderer->End(framePath ? &*framePath : nullptr);
                         if (settingsFrames++ == 0) {
                             settingsShownAt = SDL_GetTicksNS();
-                            SDL_Log(reboot ? "Reinitializing the game after Options." :
+                            SDL_Log(reboot ? "Reinitializing game after Options." :
                                              "Applying settings after Options.");
                             if (!reboot) {
                                 if (!window->ApplyLiveOptions(
@@ -1754,7 +1748,7 @@ int main(int argc, char *argv[]) {
                             // its own. The first step loads the race and with it the track and the
                             // cars.
                             openRaceData();
-                            SDL_Log("The music of the menus stops.");
+                            SDL_Log("Stopping menu music.");
                             menuMusic.Stop();
                             coastline::RaceSetup setup = mainMenu->ChosenRace();
                             setup.waitForStart = config.GetBoolean("Game", "WaitForStart", false);
@@ -1836,8 +1830,7 @@ int main(int argc, char *argv[]) {
         status = EXIT_SUCCESS;
     }
     if (!config.Save(configPath)) {
-        SDL_LogWarn(
-            SDL_LOG_CATEGORY_APPLICATION, "%s cannot be written.", configPath.string().c_str());
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Cannot write %s.", configPath.string().c_str());
     }
     return status;
 }

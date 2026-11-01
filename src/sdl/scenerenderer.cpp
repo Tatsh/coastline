@@ -233,7 +233,7 @@ SDL_GPUShader *CreateShader(SDL_GPUDevice *device,
         // SPIRV-Cross renames main, which Metal reserves.
         info.entrypoint = "main0";
     } else {
-        SDL_LogError(SDL_LOG_CATEGORY_GPU, "The GPU driver takes neither SPIR-V nor MSL shaders.");
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "GPU driver requires SPIR-V or MSL support.");
         return nullptr;
     }
     info.stage = stage;
@@ -242,7 +242,7 @@ SDL_GPUShader *CreateShader(SDL_GPUDevice *device,
     info.num_uniform_buffers = 1;
     SDL_GPUShader *shader = SDL_CreateGPUShader(device, &info);
     if (shader == nullptr) {
-        SDL_LogError(SDL_LOG_CATEGORY_GPU, "A shader was not created: %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot create shader: %s", SDL_GetError());
     }
     return shader;
 }
@@ -793,7 +793,7 @@ struct DocumentData {
             SDL_DestroySurface(copy);
             if (!added) {
                 SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                             "Image %zu of %s cannot be painted.",
+                             "Cannot paint image %zu in %s.",
                              index,
                              path.string().c_str());
                 set.Release(device);
@@ -801,7 +801,7 @@ struct DocumentData {
             }
         }
         if (!upload.Submit()) {
-            SDL_LogError(SDL_LOG_CATEGORY_GPU, "The paint was not uploaded: %s", SDL_GetError());
+            SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot upload paint: %s", SDL_GetError());
             set.Release(device);
             return nullptr;
         }
@@ -1047,7 +1047,7 @@ struct SceneRenderer::State {
         }
         if (createdDepth == nullptr ||
             (sampleCount != SDL_GPU_SAMPLECOUNT_1 && createdColor == nullptr)) {
-            SDL_LogError(SDL_LOG_CATEGORY_GPU, "The targets were not created: %s", SDL_GetError());
+            SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot create render targets: %s", SDL_GetError());
             for (auto *texture : {createdDepth, createdColor}) {
                 if (texture != nullptr) {
                     ReleaseGpuTexture(device, texture);
@@ -1162,7 +1162,7 @@ struct SceneRenderer::State {
         info.target_info.has_depth_stencil_target = true;
         SDL_GPUGraphicsPipeline *pipeline = SDL_CreateGPUGraphicsPipeline(device, &info);
         if (pipeline == nullptr) {
-            SDL_LogError(SDL_LOG_CATEGORY_GPU, "A pipeline was not created: %s", SDL_GetError());
+            SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot create pipeline: %s", SDL_GetError());
         }
         pipelines[key] = pipeline;
         return pipeline;
@@ -1223,7 +1223,7 @@ std::unique_ptr<RenderQuadBuffer> RenderQuadBuffer::Create(SceneRenderer &render
     info.size = static_cast<Uint32>(quads * 4 * sizeof(Vertex));
     state->vertices = CreateGpuBuffer(state->device, &info);
     if (state->vertices == nullptr) {
-        SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot allocate quad slots. %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot allocate quad slots: %s", SDL_GetError());
         return nullptr;
     }
     return std::unique_ptr<RenderQuadBuffer>(new RenderQuadBuffer(std::move(state)));
@@ -1317,7 +1317,7 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
             images = replacement->json["images"];
         } else {
             SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                        "%s does not have the images of %s.",
+                        "Image override %s does not match %s.",
                         options.images->string().c_str(),
                         path.string().c_str());
         }
@@ -1345,7 +1345,7 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
                 nullptr;
         if (loaded == nullptr) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "Image %zu of %s cannot be read. %s",
+                         "Cannot read image %zu in %s: %s",
                          index,
                          path.string().c_str(),
                          bytes ? SDL_GetError() : bytes.error().c_str());
@@ -1372,7 +1372,7 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
         SDL_DestroySurface(loaded);
         if (!added) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "Image %zu of %s cannot be decoded.",
+                         "Cannot decode image %zu in %s.",
                          index,
                          path.string().c_str());
             return nullptr;
@@ -1576,7 +1576,7 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
         }
     }
     if (!upload.Submit()) {
-        SDL_LogError(SDL_LOG_CATEGORY_GPU, "The model was not uploaded: %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot upload model: %s", SDL_GetError());
         return nullptr;
     }
 
@@ -1694,8 +1694,9 @@ std::unique_ptr<RenderModel> RenderModel::Load(std::shared_ptr<RenderDocument> o
     }
     if (state->placed.empty()) {
         if (!options.optional) {
-            SDL_LogError(
-                SDL_LOG_CATEGORY_APPLICATION, "%s draws nothing.", data.path.string().c_str());
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "Missing drawable geometry in %s.",
+                         data.path.string().c_str());
         }
         return nullptr;
     }
@@ -1785,7 +1786,7 @@ std::unique_ptr<RenderTexture> RenderTexture::Load(SceneRenderer &renderer,
     SDL_Surface *rgba = loaded ? SDL_ConvertSurface(loaded, SDL_PIXELFORMAT_RGBA32) : nullptr;
     SDL_DestroySurface(loaded);
     if (rgba == nullptr) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s cannot be read.", path.string().c_str());
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot read %s.", path.string().c_str());
         return nullptr;
     }
     std::vector<std::uint8_t> texels;
@@ -1798,7 +1799,7 @@ std::unique_ptr<RenderTexture> RenderTexture::Load(SceneRenderer &renderer,
     SDL_DestroySurface(rgba);
     auto texture = FromTexels(renderer, width, height, texels, linear, repeat);
     if (!texture) {
-        SDL_LogError(SDL_LOG_CATEGORY_GPU, "%s was not uploaded.", path.string().c_str());
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot upload %s.", path.string().c_str());
     }
     return texture;
 }
@@ -1870,7 +1871,7 @@ std::unique_ptr<SceneRenderer> SceneRenderer::Create(GpuWindow &window) {
             SDL_GPUTextureSupportsSampleCount(device, GpuWindow::FrameFormat(), count) &&
             SDL_GPUTextureSupportsSampleCount(device, state->depthFormat, count)) {
             state->sampleCount = count;
-            SDL_Log("Drawing %d samples of each pixel.", samples);
+            SDL_Log("Using %d samples per pixel.", samples);
             break;
         }
     }
@@ -1887,7 +1888,7 @@ std::unique_ptr<SceneRenderer> SceneRenderer::Create(GpuWindow &window) {
     SDL_GPUSamplerCreateInfo plain{};
     state->plainSampler = SDL_CreateGPUSampler(device, &plain);
     if (state->depth == nullptr || !upload.Submit()) {
-        SDL_LogError(SDL_LOG_CATEGORY_GPU, "The renderer was not created: %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot create renderer: %s", SDL_GetError());
         return nullptr;
     }
     return std::unique_ptr<SceneRenderer>(new SceneRenderer(std::move(state)));
@@ -1970,7 +1971,7 @@ SceneRenderer::CreateDisplacement(std::span<const std::array<float, 3>> offsets)
                       {reinterpret_cast<const std::uint8_t *>(displacements.data()),
                        displacements.size() * sizeof(float)});
     if (buffer == nullptr || !upload.Submit()) {
-        SDL_LogError(SDL_LOG_CATEGORY_GPU, "A displacement was not uploaded: %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot upload displacement: %s", SDL_GetError());
         ReleaseGpuBuffer(m_state->device, buffer);
         return nullptr;
     }
@@ -2130,7 +2131,8 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
         if (!s.Reserve(
                 s.flatVertices, s.flatVertexCapacity, vertexBytes, SDL_GPU_BUFFERUSAGE_VERTEX) ||
             !s.Reserve(s.quadIndices, s.quadCapacity, quads * 6 * 4, SDL_GPU_BUFFERUSAGE_INDEX)) {
-            SDL_LogError(SDL_LOG_CATEGORY_GPU, "The flat draws have no buffer: %s", SDL_GetError());
+            SDL_LogError(
+                SDL_LOG_CATEGORY_GPU, "Cannot allocate flat draw buffer: %s", SDL_GetError());
             s.flat.clear();
         } else {
             std::vector<std::uint32_t> indices;
@@ -2143,8 +2145,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             }
             std::size_t indexBytes = indices.size() * 4;
             if (!s.ReserveFlatTransfer(vertexBytes + indexBytes)) {
-                SDL_LogError(
-                    SDL_LOG_CATEGORY_GPU, "The flat draws have no upload: %s", SDL_GetError());
+                SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot upload flat draws: %s", SDL_GetError());
                 s.flat.clear();
             } else {
                 auto *mapped = static_cast<std::uint8_t *>(
@@ -2199,7 +2200,7 @@ void SceneRenderer::End(const std::filesystem::path *capture) {
             }
         }
         if (!bufferedReady) {
-            SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot upload quad slots. %s", SDL_GetError());
+            SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot upload quad slots: %s", SDL_GetError());
         }
     }
 

@@ -32,7 +32,7 @@ void CheatToggleRamView(void) {
 #if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
 void CheatFinishRace(void) {
     g_dwCheatFinishRacePending = TRUE;
-    osSyncPrintf("FINISH!");
+    osSyncPrintf("Requesting race finish.");
 }
 #endif
 

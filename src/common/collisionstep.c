@@ -537,7 +537,7 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
             if (ABS(normal.x) > 0.999f || ABS(normal.y) > 0.999f || ABS(normal.z) > 0.999f) {
                 g_dwCollisionContactType = 1;
                 spin = 1;
-                osSyncPrintf("Wank CT1 case\n");
+                osSyncPrintf("Handling CT1 collision.\n");
             } else if (COLLISION_LESS(ABS(distance), 0.5f)) {
                 osSyncPrintf("Triangle Edge to CubeFace\n");
                 spin = 0;
@@ -671,7 +671,7 @@ void StepVehicleCollisions(RigidBody *body) {
         step = 1.0f / 30.0f / steps;
         do {
             if (TipBalancedVehicle(body)) {
-                osSyncPrintf("Standing on it's F'in Nose damnit\n");
+                osSyncPrintf("Vehicle rests on its nose.\n");
             }
             CollideVehicles();
             IntegrateRigidBodyState(&body->stepStates[1], &body->stepStates[0], step);

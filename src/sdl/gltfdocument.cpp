@@ -19,7 +19,7 @@ Result ReadFile(const std::filesystem::path &path) {
     }
     Bytes bytes(std::istreambuf_iterator<char>(file), {});
     if (file.bad()) {
-        return std::unexpected(path.string() + " could not be read completely.");
+        return std::unexpected("Cannot finish reading " + path.string() + ".");
     }
     return bytes;
 }

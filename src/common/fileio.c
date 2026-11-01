@@ -39,14 +39,14 @@ GameFile *CHK_FReadOpen(const char *pszPath) {
     pFile->pszPath = (char *)CHK_AllocateMemory(strlen(pszPath) + 1, "CHK_FReadOpen():szName");
     strcpy(pFile->pszPath, pszPath);
     if (g_bVerboseFileTrace) {
-        sprintf(szMessage, "CHK_FReadOpen(%s)\n", pFile->pszPath);
+        sprintf(szMessage, "Opening %s.\n", pFile->pszPath);
         OutputFileMessage(szMessage);
     }
     pFile->pFile = fopen(pFile->pszPath, "rb");
     if (pFile->pFile == nullptr) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         pErrorFile = fopen("c:\\RallyError.txt", "w");
-        sprintf(szMessage, "CHK_FReadOpen(): error opening file %s.\n", pFile->pszPath);
+        sprintf(szMessage, "Cannot open %s.\n", pFile->pszPath);
 #ifdef ENABLE_PATCHES
         fprintf(pErrorFile, "%s", szMessage);
 #else
@@ -58,7 +58,7 @@ GameFile *CHK_FReadOpen(const char *pszPath) {
 #else
         // The log of the game takes the place of RallyError.txt at the root of drive C.
         (void)pErrorFile;
-        sprintf(szMessage, "CHK_FReadOpen(): error opening file %s.\n", pFile->pszPath);
+        sprintf(szMessage, "Cannot open %s.\n", pFile->pszPath);
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", szMessage);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         exit(1);
@@ -79,7 +79,7 @@ bool FCHK_FRead(void *pBuffer, size_t nSize, size_t nCount, GameFile *pFile) {
     }
     if (nRead != nCount) {
         sprintf(szMessage,
-                "FCHK_FRead(): trying to read %d bytes, but got only %d bytes.\n",
+                "Incomplete read: expected %d bytes, available %d bytes.\n",
                 (int)(nSize * nCount),
                 (int)(nRead * nSize));
         OutputFileMessage(szMessage);
@@ -92,9 +92,7 @@ void *CHK_FRead(void *pBuffer, size_t nSize, size_t nCount, GameFile *pFile) {
     char szMessage[MESSAGE_SIZE];
 
     if (!FCHK_FRead(pBuffer, nSize, nCount, pFile)) {
-        sprintf(szMessage,
-                "CHK_FRead(): trying to read %u bytes, but got EOF.\n",
-                (unsigned)(nCount * nSize));
+        sprintf(szMessage, "Cannot read %u bytes at end of file.\n", (unsigned)(nCount * nSize));
         OutputFileMessage(szMessage);
         exit(1);
     }
@@ -137,11 +135,11 @@ void CHK_FClose(GameFile *pFile) {
     char szMessage[MESSAGE_SIZE];
 
     if (g_bVerboseFileTrace) {
-        sprintf(szMessage, "CHK_FClose(%s)\n", pFile->pszPath);
+        sprintf(szMessage, "Closing %s.\n", pFile->pszPath);
         OutputFileMessage(szMessage);
     }
     if (fclose(pFile->pFile) == EOF) {
-        sprintf(szMessage, "CHK_FClose(): error closing file %s.\n", pFile->pszPath);
+        sprintf(szMessage, "Cannot close %s.\n", pFile->pszPath);
         OutputFileMessage(szMessage);
         exit(1);
     }
@@ -154,7 +152,7 @@ int CHK_FileExists(const char *pszPath) {
     FILE *pFile;
 
     if (g_bVerboseFileTrace) {
-        sprintf(szMessage, "CHK_FileExists(%s)\n", pszPath);
+        sprintf(szMessage, "Checking file %s.\n", pszPath);
         OutputFileMessage(szMessage);
     }
     pFile = fopen(pszPath, "rb");
@@ -174,7 +172,7 @@ void *CHK_AllocateMemory(size_t nSize, const char *szCaller) {
     }
     pMemory = malloc(nSize);
     if (pMemory == nullptr) {
-        sprintf(szMessage, "CHK_AllocateMemory(): Out of memory: couldn't allocate %s\n", szCaller);
+        sprintf(szMessage, "Cannot allocate memory for %s.\n", szCaller);
         OutputFileMessage(szMessage);
         exit(1);
     }
@@ -190,8 +188,7 @@ void *CHK_ReAllocateMemory(void *pMemory, size_t nSize, const char *szCaller) {
         return nullptr;
     }
     if (pResizedMemory == nullptr) {
-        sprintf(
-            szMessage, "CHK_ReAllocateMemory(): Out of memory: couldn't reallocate %s\n", szCaller);
+        sprintf(szMessage, "Cannot reallocate memory for %s.\n", szCaller);
         OutputFileMessage(szMessage);
         exit(1);
     }

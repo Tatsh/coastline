@@ -313,7 +313,7 @@ bool N64Audio::OpenDevice() {
     m_stream =
         SDL_OpenAudioDeviceStream(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &spec, StreamCallback, this);
     if (m_stream == nullptr) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "The audio device did not open: %s", SDL_GetError());
+        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "Cannot open audio device: %s", SDL_GetError());
         return false;
     }
     return UpdateVolumeProcessing();

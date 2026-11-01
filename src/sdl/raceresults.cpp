@@ -149,7 +149,7 @@ void Menus::FinishRace(RaceEnd end, const RaceResults &results) {
         m_options.musicVolume = music;
         m_options.sfxVolume = sfx;
         if (!SaveOptionsNote(0)) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The options were not saved.");
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot save options.");
         }
     }
     ApplyVolumeSettings();
@@ -655,7 +655,7 @@ bool Menus::SaveExtraTrackRecords() {
     }
     if (!m_config->Save(m_configPath)) {
         *m_config = std::move(original);
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Track records could not be saved.");
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot save track records.");
         return false;
     }
     return true;

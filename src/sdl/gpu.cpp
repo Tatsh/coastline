@@ -56,7 +56,7 @@ SDL_GPUShader *CreatePostShader(SDL_GPUDevice *device,
         // SPIRV-Cross renames main, which Metal reserves.
         info.entrypoint = "main0";
     } else {
-        SDL_LogError(SDL_LOG_CATEGORY_GPU, "The GPU driver takes neither SPIR-V nor MSL shaders.");
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "GPU driver requires SPIR-V or MSL support.");
         return nullptr;
     }
     info.stage = stage;
@@ -64,7 +64,7 @@ SDL_GPUShader *CreatePostShader(SDL_GPUDevice *device,
     info.num_uniform_buffers = uniformBuffers;
     SDL_GPUShader *shader = SDL_CreateGPUShader(device, &info);
     if (shader == nullptr) {
-        SDL_LogError(SDL_LOG_CATEGORY_GPU, "A shader was not created: %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot create shader: %s", SDL_GetError());
     }
     return shader;
 }
@@ -118,7 +118,7 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
         SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY | SDL_WINDOW_HIDDEN;
     result->m_window.reset(SDL_CreateWindow(title, options.width, options.height, flags));
     if (!result->m_window) {
-        SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "The window was not created: %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Cannot create window: %s", SDL_GetError());
         return nullptr;
     }
     // The window is never smaller than the 320 by 240 of the screen of the console.
@@ -149,13 +149,13 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
     result->m_device.reset(SDL_CreateGPUDeviceWithProperties(properties));
     SDL_DestroyProperties(properties);
     if (!result->m_device) {
-        SDL_LogError(SDL_LOG_CATEGORY_GPU, "The GPU device was not created: %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot create GPU device: %s", SDL_GetError());
         return nullptr;
     }
     SDL_SetPointerProperty(
         SDL_GetGPUDeviceProperties(result->m_device.get()), GPU_WINDOW_PROPERTY, result.get());
     if (!SDL_ClaimWindowForGPUDevice(result->m_device.get(), result->m_window.get())) {
-        SDL_LogError(SDL_LOG_CATEGORY_GPU, "The window was not claimed: %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot bind window to GPU: %s", SDL_GetError());
         return nullptr;
     }
     result->SetPresentMode(options.presentMode);
@@ -172,7 +172,7 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
     if (result->m_frame == nullptr) {
         return nullptr;
     }
-    SDL_Log("Drawing with the %s GPU driver.", SDL_GetGPUDeviceDriver(result->m_device.get()));
+    SDL_Log("Using %s GPU backend.", SDL_GetGPUDeviceDriver(result->m_device.get()));
     const auto identity = SDL_GetGPUDeviceProperties(result->m_device.get());
     SDL_Log("Using GPU adapter %s with preference %s.",
             result->DeviceName().c_str(),
@@ -263,7 +263,7 @@ void GpuWindow::SetPresentMode(SDL_GPUPresentMode mode) {
             m_device.get(), m_window.get(), SDL_GPU_SWAPCHAINCOMPOSITION_SDR, presentMode) &&
         presentMode != SDL_GPU_PRESENTMODE_VSYNC) {
         SDL_LogWarn(SDL_LOG_CATEGORY_GPU,
-                    "The frames wait for vertical sync, as %s presentation did not start: %s",
+                    "Cannot use %s presentation; using VSync: %s",
                     PresentModeName(presentMode),
                     SDL_GetError());
         presentMode = SDL_GPU_PRESENTMODE_VSYNC;
@@ -272,13 +272,13 @@ void GpuWindow::SetPresentMode(SDL_GPUPresentMode mode) {
     }
     if (presentMode != wanted) {
         SDL_LogWarn(SDL_LOG_CATEGORY_GPU,
-                    "The window does not support %s presentation.",
+                    "Window does not support %s presentation.",
                     PresentModeName(wanted));
     }
     m_pacedToRefresh = m_pacedToRefresh && presentMode == SDL_GPU_PRESENTMODE_MAILBOX;
     SDL_Log("Presenting frames with %s%s.",
             PresentModeName(presentMode),
-            m_pacedToRefresh ? " at the refresh rate of the display" : "");
+            m_pacedToRefresh ? " at display refresh rate" : "");
 }
 
 bool GpuWindow::CreateFrame(Uint32 width, Uint32 height) {
@@ -295,7 +295,7 @@ bool GpuWindow::CreateFrame(Uint32 width, Uint32 height) {
         m_antialiasPipeline != nullptr ? CreateGpuTexture(m_device.get(), &info) : nullptr;
     if (frame == nullptr || (m_antialiasPipeline != nullptr && antialiased == nullptr)) {
         SDL_LogError(SDL_LOG_CATEGORY_GPU,
-                     "The frame texture of %u by %u was not created: %s",
+                     "Cannot create %ux%u frame texture: %s",
                      width,
                      height,
                      SDL_GetError());
@@ -316,7 +316,7 @@ bool GpuWindow::CreateFrame(Uint32 width, Uint32 height) {
     m_antialiased = antialiased;
     m_frameWidth = width;
     m_frameHeight = height;
-    SDL_Log("Drawing frames of %u by %u.", width, height);
+    SDL_Log("Rendering %ux%u frames.", width, height);
     return true;
 }
 
@@ -404,8 +404,7 @@ bool GpuWindow::CreatePostPasses() {
     sampler.address_mode_w = SDL_GPU_SAMPLERADDRESSMODE_CLAMP_TO_EDGE;
     m_postSampler = SDL_CreateGPUSampler(device, &sampler);
     if (m_antialiasPipeline == nullptr || m_postSampler == nullptr) {
-        SDL_LogError(
-            SDL_LOG_CATEGORY_GPU, "The anti-aliasing pass was not created: %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot create anti-aliasing pass: %s", SDL_GetError());
         return false;
     }
     return true;
@@ -472,8 +471,7 @@ bool GpuWindow::CreatePresentationPass() {
         if (sampler != nullptr) {
             SDL_ReleaseGPUSampler(device, sampler);
         }
-        SDL_LogError(
-            SDL_LOG_CATEGORY_GPU, "The presentation filter was not created. %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot create presentation filter: %s", SDL_GetError());
         return false;
     }
     m_presentationPipeline = pipeline;
@@ -496,9 +494,8 @@ SDL_GPUTexture *GpuWindow::FilterFrame(SDL_GPUCommandBuffer *commands,
         info.num_levels = 1;
         auto *texture = CreateGpuTexture(m_device.get(), &info);
         if (texture == nullptr) {
-            SDL_LogError(SDL_LOG_CATEGORY_GPU,
-                         "The presentation texture was not created. %s",
-                         SDL_GetError());
+            SDL_LogError(
+                SDL_LOG_CATEGORY_GPU, "Cannot create presentation texture: %s", SDL_GetError());
             return nullptr;
         }
         if (m_filtered != nullptr) {
@@ -621,8 +618,7 @@ bool GpuWindow::SetFullscreen(bool fullscreen) {
                 mode = &closest;
             } else {
                 SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
-                            "The display has no mode of %d by %d, and the full screen is at the "
-                            "desktop mode: %s",
+                            "Display mode %dx%d unavailable; using desktop mode: %s",
                             m_options.width,
                             m_options.height,
                             SDL_GetError());
@@ -630,11 +626,10 @@ bool GpuWindow::SetFullscreen(bool fullscreen) {
         }
         // A null mode is the desktop mode, without borders.
         if (!SDL_SetWindowFullscreenMode(m_window.get(), mode)) {
-            SDL_LogWarn(
-                SDL_LOG_CATEGORY_VIDEO, "The full-screen mode was not set: %s", SDL_GetError());
+            SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "Cannot set full-screen mode: %s", SDL_GetError());
         }
         if (mode != nullptr) {
-            SDL_Log("Covering the display at %d by %d and %.2f Hz.",
+            SDL_Log("Using full screen at %dx%d, %.2f Hz.",
                     mode->w,
                     mode->h,
                     static_cast<double>(mode->refresh_rate));
@@ -642,8 +637,8 @@ bool GpuWindow::SetFullscreen(bool fullscreen) {
     }
     if (!SDL_SetWindowFullscreen(m_window.get(), fullscreen)) {
         SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO,
-                    "The window did not %s: %s",
-                    fullscreen ? "cover the display" : "leave the full screen",
+                    "Cannot %s: %s",
+                    fullscreen ? "enter full screen" : "exit full screen",
                     SDL_GetError());
         return false;
     }
@@ -777,9 +772,9 @@ bool GpuWindow::SaveFrame(SDL_GPUCommandBuffer *commands,
     }
     ReleaseGpuTransferBuffer(m_device.get(), buffer);
     if (saved) {
-        SDL_Log("Saved the frame to %s.", path.string().c_str());
+        SDL_Log("Frame save complete: %s.", path.string().c_str());
     } else {
-        SDL_LogError(SDL_LOG_CATEGORY_GPU, "The frame was not saved: %s", SDL_GetError());
+        SDL_LogError(SDL_LOG_CATEGORY_GPU, "Cannot save frame: %s", SDL_GetError());
     }
     return saved;
 }

@@ -90,7 +90,7 @@ bool InitializeApplication(void) {
         return false;
     }
     if (!FocusExistingBossRallyInstance()) {
-        PrintWineDiagnostic("coastline: Another game window already exists; startup canceled.\n");
+        PrintWineDiagnostic("coastline: Another game window exists; canceling startup.\n");
         return false;
     }
     PrintWineDiagnostic("coastline: Creating main window.\n");
@@ -137,7 +137,7 @@ RallyMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pszCmdLine, int nC
     PrintWineBuildIdentification();
     g_dwAppExitCode = 0;
     if (SUCCEEDED(CoInitialize(nullptr))) {
-        PrintWineDiagnostic("coastline: COM initialized; loading configuration.\n");
+        PrintWineDiagnostic("coastline: Loading configuration.\n");
         RefreshTotalPhysicalMemory();
         ReadInstallDirectoryFromRegistry();
         LoadStringTableFromDll();
@@ -145,27 +145,27 @@ RallyMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR pszCmdLine, int nC
         strcpy(g_szConfigFilePath, g_szInstallDirectory);
         strcat(g_szConfigFilePath, "BossRally.cfg");
         g_GlobalRallyConfig.LoadRallyConfigFile(g_szConfigFilePath);
-        PrintWineDiagnostic("coastline: Configuration loaded; initializing application.\n");
+        PrintWineDiagnostic("coastline: Initializing application.\n");
         if (InitializeApplication()) {
             PrintWineDiagnostic("coastline: Main window ready; initializing DirectPlay.\n");
             InitializeDirectPlayForDesktopWindow();
-            PrintWineDiagnostic("coastline: DirectPlay initialized; loading menu resources.\n");
+            PrintWineDiagnostic("coastline: Loading menu resources.\n");
             if (InitializeFrontEndResources()) {
                 QueryAvailableTextureMemory();
                 PrintWineDiagnostic("coastline: Entering game message loop.\n");
                 RunMessageLoop();
                 ShutdownMainWindow();
             } else {
-                PrintWineDiagnostic("coastline: Menu resource initialization failed.\n");
+                PrintWineDiagnostic("coastline: Cannot initialize menu resources.\n");
             }
         } else {
-            PrintWineDiagnostic("coastline: Application initialization failed.\n");
+            PrintWineDiagnostic("coastline: Cannot initialize application.\n");
         }
     } else {
-        PrintWineDiagnostic("coastline: COM initialization failed.\n");
+        PrintWineDiagnostic("coastline: Cannot initialize COM.\n");
     }
     CoUninitialize();
-    PrintWineDiagnostic("coastline: Renderer returned to launcher.\n");
+    PrintWineDiagnostic("coastline: Returning to launcher.\n");
     return g_dwAppExitCode;
 }
 
@@ -261,20 +261,20 @@ HRESULT CreateRenderWindow(DWORD dwExStyle,
                            hInstance,
                            pParam);
     if (hWnd == nullptr) {
-        PrintWineDiagnostic("coastline: CreateWindowEx failed.\n");
+        PrintWineDiagnostic("coastline: Cannot create window.\n");
         pRenderer->Cleanup();
         delete pRenderer;
         return E_FAIL;
     }
     ShowWindow(hWnd, SW_SHOWDEFAULT);
     UpdateWindow(hWnd);
-    PrintWineDiagnostic("coastline: Window created and shown; initializing renderer.\n");
+    PrintWineDiagnostic("coastline: Initializing renderer.\n");
     if (g_dwPlayMusicMode == 2) {
         InitializeEarSound(hWnd);
     }
     hr = pRenderer->InitializeWindow(hWnd, pDriverGuid, 0, 0, 0, nullptr, nullptr, true);
     if (FAILED(hr)) {
-        PrintWineDiagnostic("coastline: Direct3D initialization failed.\n");
+        PrintWineDiagnostic("coastline: Cannot initialize Direct3D.\n");
         pRenderer->Cleanup();
         delete pRenderer;
         MessageBoxA(hWnd,

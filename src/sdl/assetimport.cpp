@@ -122,7 +122,7 @@ public:
             installed.push_back(pack);
         }
         if (!DefaultPackUsable(DefaultAssets(data))) {
-            return restore("The installed assets failed their inventory check.");
+            return restore("Installed asset inventory is invalid.");
         }
         return std::nullopt;
     }
@@ -267,7 +267,7 @@ std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
                 return imported.error();
             }
             if (*imported != input.release) {
-                return "The ROM image changed during import.";
+                return "ROM image differs from the validated input.";
             }
             if (auto failure = CurateAssetPacks(candidate)) {
                 return failure;
@@ -313,7 +313,7 @@ std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
             return "Cannot record the imported disc version.";
         }
         if (!report("Preparing the asset packs", done / total)) {
-            return "The import was cancelled.";
+            return "Import cancelled.";
         }
         if (auto failure = WriteMetadata(defaults, inputs.front().release)) {
             return failure;
@@ -323,10 +323,10 @@ std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
             return storage.error();
         }
         if (!RecordImportFiles(defaults) || !DefaultPackUsable(defaults)) {
-            return "The staged assets failed their inventory check.";
+            return "Staged asset inventory is invalid.";
         }
         if (!report("Installing the asset packs", 1.0)) {
-            return "The import was cancelled.";
+            return "Import cancelled.";
         }
         return (*stage)->Install(data);
     } catch (const std::filesystem::filesystem_error &error) {

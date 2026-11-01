@@ -140,7 +140,7 @@ std::string DescribeDevices(const PlayerDevices &devices) {
 }
 
 void LogPlayerDevices() {
-    SDL_Log("Player 1: %s; Player 2: %s",
+    SDL_Log("Using player 1 devices %s; player 2 devices %s.",
             DescribeDevices(AssignedDevices(0, 2)).c_str(),
             DescribeDevices(AssignedDevices(1, 2)).c_str());
 }
@@ -244,11 +244,12 @@ bool InputBindings::OpenGamepad(SDL_JoystickID id) {
     }
     SDL_Gamepad *gamepad = SDL_OpenGamepad(id);
     if (gamepad == nullptr) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_INPUT, "A gamepad did not open: %s", SDL_GetError());
+        SDL_LogWarn(SDL_LOG_CATEGORY_INPUT, "Cannot open gamepad: %s", SDL_GetError());
         return false;
     }
     m_gamepads.push_back(gamepad);
-    SDL_Log("Gamepad %d is %s.", static_cast<int>(m_gamepads.size()), SDL_GetGamepadName(gamepad));
+    SDL_Log(
+        "Using gamepad %d (%s).", static_cast<int>(m_gamepads.size()), SDL_GetGamepadName(gamepad));
     return true;
 }
 

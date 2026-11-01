@@ -260,7 +260,7 @@ std::optional<std::vector<s8>> ReadSound(const std::filesystem::path &path) {
     Uint32 length = 0;
     if (!SoundEffects::LoadMenuWave(path, &spec, &read, &length) || spec.format != SDL_AUDIO_U8) {
         SDL_free(read);
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s cannot be read.", path.string().c_str());
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot read %s.", path.string().c_str());
         return std::nullopt;
     }
     std::vector<s8> samples(length + SOUND_PADDING, 0);

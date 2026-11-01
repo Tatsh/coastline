@@ -23,7 +23,7 @@ bool FlacTrack::Open(const std::filesystem::path &path) {
         FLAC__stream_decoder_init_file(m_decoder.get(), utf8.c_str(), Write, nullptr, Error, this);
     if (status != FLAC__STREAM_DECODER_INIT_STATUS_OK) {
         SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
-                    "%s cannot be played. %s",
+                    "Cannot play %s: %s",
                     utf8.c_str(),
                     FLAC__StreamDecoderInitStatusString[status]);
         m_decoder.reset();
@@ -74,7 +74,7 @@ FLAC__StreamDecoderWriteStatus FlacTrack::Write(const FLAC__StreamDecoder *,
 
 void FlacTrack::Error(const FLAC__StreamDecoder *, FLAC__StreamDecoderErrorStatus status, void *) {
     SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
-                "The music file is damaged. %s",
+                "Invalid FLAC audio: %s",
                 FLAC__StreamDecoderErrorStatusString[status]);
 }
 

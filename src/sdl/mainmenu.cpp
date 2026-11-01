@@ -109,7 +109,7 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
                                          cache / "paint-shop");
     // The other screens show without the paint shop, which returns to the main menu.
     if (!menus->m_paintShop) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The paint shop did not load.");
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot load paint shop.");
     }
     return menus;
 }

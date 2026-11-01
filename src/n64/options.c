@@ -1166,7 +1166,7 @@ void ProcessDataSaveLoadMenu(void) {
                                             extension,
                                             &g_dwSaveLoadNoteIndex);
         if (gControllerPakState == PFS_ERR_INCONSISTENT) {
-            PAK_LOG(("File system is corrupted, attempting repair...\n"));
+            PAK_LOG(("Repairing corrupt file system...\n"));
             osPfsChecker(&g_aPakPfs[g_dwMenuChoosingPlayer]);
             gControllerPakState = osPfsFindFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
                                                 COMPANY_CODE,

@@ -67,7 +67,7 @@ bool ConsoleCredits::Start(const std::filesystem::path &release) {
     auto segment = ConsoleSegment::Load(release);
     if (!segment || at == RELEASE_ADDRESSES.end()) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "%s has no main segment of a release with the credits.",
+                     "Missing credits segment in %s.",
                      release.string().c_str());
         return false;
     }

@@ -321,8 +321,7 @@ bool Menus::AutoSaveProgress() {
     const bool ghostSaved = m_gameMode != GameMode::TimeAttack || !m_ghostSaveAvailable ||
                             SaveGhostNote() == PAK_ERROR_NONE;
     if (!seasonSaved || !recordsSaved || !ghostSaved) {
-        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "Race progress could not be saved automatically.");
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot save race progress automatically.");
         return false;
     }
     return true;
@@ -620,7 +619,7 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
         // Changed options are saved as the menu closes, as the European and Japanese releases save
         // them to the cartridge, here to the note of the options.
         if (m_optionsChanged && !SaveOptionsNote(0)) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The options were not saved.");
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot save options.");
         }
         if (m_settingsPending) {
             m_end = m_reinitializePending ? MenusEnd::Reinitialize : MenusEnd::ApplySettings;
@@ -809,8 +808,7 @@ bool Menus::SeasonNoteIsValid(const std::vector<u8> &note) const {
         reason = "no car";
     }
     if (reason != nullptr) {
-        SDL_LogWarn(
-            SDL_LOG_CATEGORY_APPLICATION, "The season note is ignored, as it has %s.", reason);
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Ignoring season note with %s.", reason);
         return false;
     }
     return true;
@@ -843,7 +841,7 @@ bool Menus::ReadGhostNote(const std::vector<u8> &note) {
     // recorded on the console has none, and its car does not race.
     m_ghostFrames = LoadGhostFrames(m_ghostFramesFile, *recording).value_or(std::vector<u8>());
     if (m_ghostFrames.empty()) {
-        SDL_Log("The ghost car has no frames of the race engine and does not race.");
+        SDL_Log("Ghost frames unavailable; disabling ghost car.");
     }
     m_ghostRecordingSize = static_cast<int>(recording->size());
     recording->resize(GHOST_RECORDING_CAPACITY);

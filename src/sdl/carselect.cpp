@@ -239,7 +239,7 @@ bool Menus::LoadCarSelect(SceneRenderer &renderer, const std::filesystem::path &
         m_stageShadow = ReadStageMesh(stage.at("shadow"));
     } catch (const nlohmann::json::exception &error) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "%s does not have the car select screen: %s",
+                     "Invalid car-selection data %s: %s",
                      release.string().c_str(),
                      error.what());
         return false;
@@ -1024,7 +1024,7 @@ void Menus::SaveCarChoice(int player) {
     m_config->Set(section, "CustomDecals", choice.customDecals ? "1" : "0");
     if (player == 0) {
         if (!SaveOptionsNote(0)) {
-            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "The options were not saved.");
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot save options.");
         }
     } else {
         const MenuProfile &profile = m_secondProfile;
@@ -1034,7 +1034,7 @@ void Menus::SaveCarChoice(int player) {
         m_config->Set(section, "Suspension", std::to_string(profile.suspension));
     }
     if (!m_config->Save(m_configPath)) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "BossRally.ini cannot be written.");
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Cannot write BossRally.ini.");
     }
 }
 

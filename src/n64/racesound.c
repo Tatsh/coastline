@@ -55,7 +55,7 @@ void LoadAllSoundEffects(void) {
         dest += effect->length + effect->guardLength;
     }
     used = dest - g_aInflateHeapBuffer;
-    osSyncPrintf("Car sound effect space used: %d/%d\n", used, SOUND_EFFECT_SPACE);
+    osSyncPrintf("Using %d/%d bytes for car sound effects.\n", used, SOUND_EFFECT_SPACE);
     if (used > SOUND_EFFECT_SPACE) {
         SetDebugMessage("Car sound effect overflow");
     }

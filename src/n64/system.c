@@ -391,7 +391,7 @@ void FaultThread(void *arg) {
     g_dwFaultState = 0;
     for (;;) {
         osRecvMesg(&g_FaultMsgQueue, &message, OS_MESG_BLOCK);
-        osSyncPrintf("\n=> faultproc - got a fault message...\n");
+        osSyncPrintf("\nProcessing fault message.\n");
         g_pFaultedThread = __osGetCurrFaultedThread();
         if (g_pFaultedThread != NULL) {
             StubFunction((s32)g_pFaultedThread);

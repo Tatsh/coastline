@@ -866,7 +866,7 @@ void Console::Sample() {
     frame.lap = static_cast<std::int32_t>(cpu.Read32(vehicle + VEHICLE_LAP));
     m_demo.frames.push_back(frame);
     if (m_demo.frames.size() >= MAX_FRAMES) {
-        m_log += "The demo did not end.\n";
+        m_log += "Demo exceeds execution limit.\n";
         cpu.Stop();
     }
 }
@@ -885,7 +885,7 @@ std::expected<N64Demo, std::string> Console::Record() {
         }
     }
     if (!m_finished) {
-        return std::unexpected(fmt::format("The demo did not end in time.\n{}", m_log));
+        return std::unexpected(fmt::format("Demo exceeds execution limit.\n{}", m_log));
     }
     m_demo.instructions = m_cpu.instructions;
     return m_demo;

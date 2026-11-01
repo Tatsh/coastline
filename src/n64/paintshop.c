@@ -2120,9 +2120,9 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
         if (g_dwPakError == 0) {
 #if TGR_REGION != TGR_REGION_JP
             if (operation == PAINT_TOOL_LOAD) {
-                osSyncPrintf("Color palette loaded successfully!\n\n");
+                osSyncPrintf("Color palette load complete.\n\n");
             } else {
-                osSyncPrintf("Color palette saved successfully!\n\n");
+                osSyncPrintf("Color palette save complete.\n\n");
             }
 #endif
             g_bPakDialogState = PAK_STATE_DONE;

@@ -106,7 +106,7 @@ public:
 ConvertedModelVertex *ModelLoader::AllocateVertices(int count) {
     if (count < 0 || static_cast<std::size_t>(count) > MODEL_VERTEX_POOL_SIZE - poolUsed) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "The pool of the converted vertices is full (%zu of %zu).",
+                     "Converted vertex pool full (%zu of %zu).",
                      poolUsed,
                      MODEL_VERTEX_POOL_SIZE);
         return nullptr;

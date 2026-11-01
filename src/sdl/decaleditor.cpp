@@ -116,8 +116,8 @@ void PaintShop::SelectDecalSlot(s32 slot) {
     m_decalMask = m_car->Mask(m_decalSlot);
     m_decalWidth = static_cast<u8>(texture.width);
     m_decalHeight = static_cast<u8>(texture.height);
-    SDL_Log("decal_width = %d", m_decalWidth);
-    SDL_Log("decal_height = %d", m_decalHeight);
+    SDL_Log("Using decal width %d.", m_decalWidth);
+    SDL_Log("Using decal height %d.", m_decalHeight);
     m_decalCanvas.x = m_decalCanvasFrame.x + ((m_decalCanvasFrame.width - m_decalWidth * 4) >> 1);
     m_decalCanvas.y = m_decalCanvasFrame.y + ((m_decalCanvasFrame.height - m_decalHeight * 4) >> 1);
     m_decalCanvas.width = m_decalWidth * 4;
