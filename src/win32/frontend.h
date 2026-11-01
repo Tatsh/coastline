@@ -55,12 +55,28 @@ public:
      */
     virtual int ScanSaveFiles(const char *pszPattern);
 
+    /**
+     * @param index The slot index, 0..99, without bounds checking.
+     * @return The borrowed terminated name, valid until the slot changes or the list is destroyed.
+     */
     const char *GetName(int index) const {
         return aszNames[index];
     }
+    /**
+     * Copy a terminated name into a slot without checking the destination capacity.
+     * @param index The slot index, 0..99.
+     * @param text A non-null terminated string of at most SAVE_FILE_NAME_SIZE - 1 bytes.
+     */
     void SetName(int index, const char *text) {
         std::strcpy(aszNames[index], text);
     }
+    /**
+     * Format one integer into a slot without checking the destination capacity.
+     * @param index The slot index, 0..99.
+     * @param format A non-null terminated printf format accepting one int; the result including
+     * its terminator must fit SAVE_FILE_NAME_SIZE bytes.
+     * @param value The integer supplied to the format.
+     */
     void SetFormattedName(int index, const char *format, int value) {
         std::sprintf(aszNames[index], format, value);
     }
@@ -122,35 +138,65 @@ private:
 
 class MenuScreen;
 class MenuWidget;
+/** Common widget representation used by menu action callbacks. */
 using MenuActionWidget = MenuWidget;
+/** Common widget representation used by network menu callbacks. */
 using NetworkMenuWidget = MenuWidget;
 class MenuItemList;
 
+/** Byte payload associated with a menu-list slot. */
 struct MenuItemData {
+    /** Number of payload bytes last copied into the slot. */
     unsigned dwSize;
+    /** Allocated payload storage, or null before attachment; native removal does not release it. */
     unsigned char *pData;
 };
 
+/**
+ * Menu list with 100 font and payload slots, optional scrolling, and selection callbacks.
+ * Native removal and destruction do not release item-data allocations.
+ * Direct accessors do not validate indices or synchronise related layout fields.
+ */
 class MenuItemList {
 public:
     /**
+     * Initialise an empty list with null callbacks, disabled scrolling, and no images.
+     * Initialise layout before drawing or adding items.
      * @ghidraAddress BRD3D: 0x1005b7f0
      * @ghidraAddress BRGlide: 0x10054610
      */
     MenuItemList();
     /**
+     * Destroy font storage without releasing attached payload allocations.
      * @ghidraAddress BRD3D: 0x1005b8f0
      * @ghidraAddress BRGlide: 0x10054710
      */
     virtual ~MenuItemList();
 
     /**
+     * Append a text row, removing the oldest row first when all 100 slots are used.
+     * Optional automatic scrolling can fail after insertion without removing the new row.
+     * @param text A terminated label fitting MenuFont storage, or null to reject insertion.
+     * @param flags Font flag bits combined with the slot's existing flags.
+     * @param style The font style, with 3 selecting alternate-font measurement.
+     * @param bounds Non-null borrowed text bounds; left and right are copied, with rows 19 pixels
+     * apart from the list's origin.
+     * @param full Whether to copy the complete label rather than its first ten bytes.
+     * @return One normally; zero for null text or an unavailable automatic-scroll target.
      * @ghidraAddress BRD3D: 0x1005bc10
      * @ghidraAddress BRGlide: 0x10054a30
      */
     virtual int
     AddItem(const char *text, unsigned flags, unsigned char style, const RECT *bounds, bool full);
     /**
+     * Copy list bounds and configure visible rows, background, and enabled scrollbar geometry.
+     * Scrollbar markers must be assigned before this call when scrolling is required.
+     * @param flags The list flag bits to store.
+     * @param bounds Non-null borrowed list bounds in menu pixels, copied during the call.
+     * @param visibleRows The visible row count stored as an unsigned 16-bit value.
+     * @param firstVisibleRow The first visible slot stored as a signed 16-bit value.
+     * @param backgroundImage The image identifier stored as a signed 16-bit value.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1005b910
      * @ghidraAddress BRGlide: 0x10054730
      */
@@ -161,70 +207,134 @@ public:
                            int backgroundImage);
 
     /**
+     * Draw the list and process input when text editing and modal dialogs do not block input.
+     * @param selection The selection passed to the drawing operation.
+     * @return The activated row, possibly changed by its callback, or -1 when no row is activated.
      * @ghidraAddress BRD3D: 0x1005cb40
      * @ghidraAddress BRGlide: 0x10055960
      */
     virtual int UpdateAndRenderMenuWidget(int selection);
     /**
+     * Measure a row, process active text editing, and notify its completion or cancellation.
+     * @param nIndex The row index, 0..99, without bounds checking.
+     * @return Zero when the caret is inactive; one when text input was processed.
      * @ghidraAddress BRD3D: 0x1005bb80
      * @ghidraAddress BRGlide: 0x100549a0
      */
     virtual int UpdateItemAndNotify(int nIndex);
 
     /**
+     * Copy bytes into slot payload storage, allocating only when the slot has no buffer.
+     * Existing storage is reused without resizing, and allocation failure is unchecked.
+     * @param data Non-null readable storage of at least size bytes, borrowed during copying.
+     * @param size The byte count; existing slot storage must have sufficient capacity.
+     * @param index The slot index, 0..99, or -1 for the last item; empty lists select slot 0.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1005c200
      * @ghidraAddress BRGlide: 0x10055020
      */
     virtual int SetItemData(const void *data, unsigned size, int index);
 
     /**
+     * Clear a row and shift later rows towards the start without releasing payload allocations.
+     * @param index An existing row index in a nonempty list.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1005c000
      * @ghidraAddress BRGlide: 0x10054e20
      */
     virtual int RemoveItem(int index);
 
+    /**
+     * @param index The font slot index, 0..99.
+     * @return A mutable slot reference valid until destruction; row removal can replace its value.
+     */
     MenuFont &GetFont(int index) {
         return fonts[index];
     }
+    /** @return The stored row count, normally 0..100. */
     unsigned short GetItemCount() const {
         return wItemCount;
     }
+    /**
+     * @param index The payload slot index, 0..99.
+     * @return The borrowed payload pointer, or null; subsequent slot changes can replace it.
+     */
     const void *GetItemData(int index) const {
         return itemData[index].pData;
     }
+    /**
+     * @param index The payload slot index, 0..99.
+     * @return The mutable borrowed payload pointer, or null; slot changes can replace it.
+     */
     void *GetItemData(int index) {
         return itemData[index].pData;
     }
+    /** @return The stored list flag bits. */
     unsigned GetFlags() const {
         return dwFlags;
     }
+    /**
+     * Replace list flags without rebuilding layout.
+     * @param value The list flag bits to store.
+     * @return The stored flag bits.
+     */
     unsigned SetFlags(unsigned value) {
         return dwFlags = value;
     }
+    /**
+     * Store vertical scrollbar state without rebuilding layout.
+     * @param value The marker, with nonzero enabling the scrollbar during initialisation.
+     * @return The stored marker.
+     */
     int SetVerticalScrollbar(int value) {
         return bVerticalScrollbar = value;
     }
+    /**
+     * Replace the row-activation callback without invoking it.
+     * @param callback The callback, or null to disable notifications. Arguments are this list and
+     * a mutable activated-row index borrowed during the call; the integer return is discarded.
+     */
     void SetSelectionChangedCallback(int (*callback)(MenuItemList *, int *)) {
         pfnSelectionChanged = callback;
     }
+    /**
+     * Replace the text-edit completion callback without invoking it.
+     * @param callback The callback, or null to disable notifications. Arguments are this list and
+     * the edited row, or -1 for cancellation; the integer return is discarded.
+     */
     void SetItemChangedCallback(int (*callback)(MenuItemList *, int)) {
         pfnItemChanged = callback;
     }
+    /** @return The stored minimum vertical thumb position in menu pixels. */
     float GetMinScrollThumbY() const {
         return fMinScrollThumbY;
     }
+    /** @return The stored maximum vertical thumb position in menu pixels. */
     float GetMaxScrollThumbY() const {
         return fMaxScrollThumbY;
     }
+    /** @return The stored vertical thumb position in menu pixels. */
     float GetScrollThumbY() const {
         return fScrollThumbY;
     }
+    /**
+     * Store a vertical thumb position without clamping or updating its rectangle.
+     * @param value The vertical position in menu pixels.
+     */
     void SetScrollThumbY(float value) {
         fScrollThumbY = value;
     }
+    /**
+     * Change the thumb rectangle's top without updating its stored floating-point position.
+     * @param value The top menu-pixel coordinate.
+     */
     void SetScrollThumbTop(int value) {
         rcScrollThumb.top = value;
     }
+    /**
+     * Change the thumb rectangle's bottom without resizing other layout fields.
+     * @param value The bottom menu-pixel coordinate.
+     */
     void SetScrollThumbBottom(int value) {
         rcScrollThumb.bottom = value;
     }
@@ -298,20 +408,31 @@ private:
     float fScrollThumbTravel;
 };
 
-/** An item of a panel of the front end. */
+/**
+ * Front-end panel widget with text, sprites, animations, and input callbacks.
+ * Direct setters do not validate values or rebuild related layout state.
+ * Referenced screens, rectangle arrays, and callbacks must remain valid while used by the widget.
+ */
 class MenuWidget {
 public:
     /**
+     * Initialise inactive callbacks, default flags and position, and empty animation/link storage.
+     * Image rectangles and text bounds require separate initialisation before their use.
      * @ghidraAddress BRD3D: 0x100476c0
      * @ghidraAddress BRGlide: 0x10040b10
      */
     MenuWidget();
     /**
+     * Destroy embedded fonts and list storage without releasing borrowed screens or rectangles.
      * @ghidraAddress BRD3D: 0x100478c0
      * @ghidraAddress BRGlide: 0x10040d10
      */
     virtual ~MenuWidget();
     /**
+     * Advance enabled image animation using elapsed milliseconds and mark widgets for redraw.
+     * Custom frame durations control frame advancement; other animations request redraw after
+     * more than 60 ms.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100480a0
      * @ghidraAddress BRGlide: 0x100414f0
      */
@@ -343,6 +464,11 @@ private:
 
 public:
     /**
+     * Blit a menu sprite's stored source rectangle at the supplied destination.
+     * @param nImage A valid menu sprite and image identifier.
+     * @param x The horizontal destination in menu pixels.
+     * @param y The vertical destination in menu pixels.
+     * @return One, without propagating the underlying blit result.
      * @ghidraAddress BRD3D: 0x100479d0
      * @ghidraAddress BRGlide: 0x10040e20
      */
@@ -387,12 +513,27 @@ private:
 
 public:
     /**
+     * Copy text into font slot zero, measure it, and update widget bounds and text dimensions.
+     * @param pszText A non-null terminated label fitting MenuFont text storage, copied during
+     * the call.
+     * @param dwTextFlags Font flags combined with existing flags; bit zero centres measured text.
+     * @param bStyle The font style, with 3 selecting alternate-font measurement.
+     * @param pRect Non-null borrowed bounds supplying horizontal menu-pixel limits.
      * @ghidraAddress BRD3D: 0x10047eb0
      * @ghidraAddress BRGlide: 0x10041300
      */
     virtual void
     SetText(const char *pszText, unsigned dwTextFlags, unsigned char bStyle, const RECT *pRect);
     /**
+     * Assign the parent screen and position, combine flag groups, and set the first sprite.
+     * @param pOwner The borrowed parent screen, valid while the widget uses screen operations.
+     * @param x The horizontal position in menu pixels.
+     * @param y The vertical position in menu pixels.
+     * @param dwItemFlags The primary flag bits combined with existing flags.
+     * @param dwSecondary The secondary flag bits combined with existing flags.
+     * @param dwTertiary The tertiary flag bits combined with existing flags.
+     * @param nMode The image-animation mode, with zero disabling timed image updates.
+     * @param nImage The initial sprite identifier, also assigned to animation slot zero.
      * @ghidraAddress BRD3D: 0x10047fb0
      * @ghidraAddress BRGlide: 0x10041400
      */
@@ -413,114 +554,226 @@ private:
     virtual bool IsBlockedByModalDialog();
 
 public:
+    /** @return The borrowed parent screen, or null before assignment. */
     MenuScreen *GetScreen() const {
         return pScreen;
     }
+    /**
+     * @param index The font slot index, 0..2.
+     * @return A mutable reference to embedded font storage, valid until widget destruction.
+     */
     MenuFont &GetFont(int index) {
         return fonts[index];
     }
+    /** @return A mutable reference to the embedded item list, valid until widget destruction. */
     MenuItemList &GetItemList() {
         return itemList;
     }
+    /** @return The stored primary widget flag bits. */
     unsigned GetFlags() const {
         return dwFlags;
     }
+    /**
+     * Replace primary widget flags without updating layout.
+     * @param value The primary widget flag bits.
+     */
     void SetFlags(unsigned value) {
         dwFlags = value;
     }
+    /** @return The horizontal position in menu pixels. */
     float GetX() const {
         return fX;
     }
+    /** @return The vertical position in menu pixels. */
     float GetY() const {
         return fY;
     }
+    /**
+     * Store a horizontal position without updating bounds or font coordinates.
+     * @param value The horizontal position in menu pixels.
+     */
     void SetX(float value) {
         fX = value;
     }
+    /**
+     * Store a vertical position without updating bounds or font coordinates.
+     * @param value The vertical position in menu pixels.
+     */
     void SetY(float value) {
         fY = value;
     }
+    /**
+     * Store the current sprite identifier without updating geometry.
+     * @param value The sprite identifier required by the selected drawing mode.
+     */
     void SetSpriteId(short value) {
         nSpriteId = value;
     }
+    /** @return The stored current sprite identifier. */
     short GetSpriteId() const {
         return nSpriteId;
     }
+    /**
+     * Store a sprite identifier in one animation slot.
+     * @param index The animation slot index, 0..49.
+     * @param value The sprite identifier used when the frame is selected.
+     */
     void SetAnimationSpriteId(int index, short value) {
         anSpriteIds[index] = value;
     }
+    /**
+     * Store the image-animation mode without resetting timers.
+     * @param value The mode, with zero disabling timed image updates.
+     */
     void SetImageMode(int value) {
         nImageMode = value;
     }
+    /**
+     * Replace the borrowed source-rectangle array used for custom animation frames.
+     * @param rects An array with a valid rectangle for every selected frame, valid while attached.
+     */
     void SetImageRects(const RECT *rects) {
         pImageRects = rects;
     }
+    /**
+     * Select custom frame timings and per-frame source rectangles without initialising either.
+     * Positive frame durations must end with a zero or negative duration within the 50 slots.
+     * @param value Whether valid frame durations, sprites, and source rectangles are configured.
+     */
     void SetCustomFrameDurations(bool value) {
         bCustomFrameDurations = value;
     }
+    /**
+     * Store a custom frame duration without changing animation progress.
+     * @param index The duration slot index, 0..49.
+     * @param value The duration in milliseconds; a zero or negative next duration wraps to frame
+     * zero.
+     */
     void SetFrameDuration(int index, int value) {
         anFrameDurations[index] = value;
     }
+    /** @return The stored linked-widget count, normally 0..25. */
     short GetLinkedWidgetCount() const {
         return nLinkedWidgetCount;
     }
+    /**
+     * @param index The link slot index, 0..24.
+     * @return The linked widget index in the parent screen's current panel.
+     */
     short GetLinkedWidgetIndex(int index) const {
         return anLinkedWidgetIndices[index];
     }
+    /**
+     * Store link count without initialising the corresponding link indices.
+     * @param value The number of valid link slots, 0..25.
+     */
     void SetLinkedWidgetCount(short value) {
         nLinkedWidgetCount = value;
     }
+    /**
+     * Assign one linked widget index without changing link count.
+     * @param index The link slot index, 0..24.
+     * @param value A valid widget index in the parent screen's current panel.
+     */
     void SetLinkedWidgetIndex(int index, short value) {
         anLinkedWidgetIndices[index] = value;
     }
+    /** @return The stored left bound in menu pixels. */
     LONG GetBoundsLeft() const {
         return rcBounds.left;
     }
+    /** @return The stored top bound in menu pixels. */
     LONG GetBoundsTop() const {
         return rcBounds.top;
     }
+    /**
+     * Store the left bound without updating other layout fields.
+     * @param value The left menu-pixel coordinate.
+     */
     void SetBoundsLeft(LONG value) {
         rcBounds.left = value;
     }
+    /**
+     * Store the top bound without updating other layout fields.
+     * @param value The top menu-pixel coordinate.
+     */
     void SetBoundsTop(LONG value) {
         rcBounds.top = value;
     }
+    /**
+     * Store the right bound without updating other layout fields.
+     * @param value The right menu-pixel coordinate.
+     */
     void SetBoundsRight(LONG value) {
         rcBounds.right = value;
     }
+    /**
+     * Store the bottom bound without updating other layout fields.
+     * @param value The bottom menu-pixel coordinate.
+     */
     void SetBoundsBottom(LONG value) {
         rcBounds.bottom = value;
     }
+    /**
+     * Install a widget-update callback without invoking it.
+     * @param callback The callback receiving this widget, or null. Return -2 to skip the remaining
+     * update while continuing, -1 to end the widget, or another value to continue normally.
+     */
     void SetUpdateCallback(int (*callback)(MenuWidget *)) {
         pfnUpdate = callback;
     }
+    /** @return The installed widget-update callback, or null. */
     auto GetUpdateCallback() const {
         return pfnUpdate;
     }
+    /**
+     * Install an activation callback without invoking it.
+     * @param callback The callback receiving this widget, or null; zero ends the widget update.
+     */
     void SetActionCallback(int (*callback)(MenuActionWidget *)) {
         pfnAction = callback;
     }
+    /** @return The installed activation callback, or null. */
     auto GetActionCallback() const {
         return pfnAction;
     }
+    /**
+     * Install an idle callback without invoking it.
+     * @param callback The callback receiving this widget, or null; the return value is discarded.
+     */
     void SetIdleActionCallback(int (*callback)(MenuWidget *)) {
         pfnIdleAction = callback;
     }
+    /**
+     * Install a text-edit completion callback without invoking it.
+     * @param callback The callback receiving this widget, or null; the return value is discarded.
+     */
     void SetTextEditCompleteCallback(int (*callback)(MenuWidget *)) {
         pfnTextEditComplete = callback;
     }
+    /** @return The installed text-edit completion callback, or null. */
     auto GetTextEditCompleteCallback() const {
         return pfnTextEditComplete;
     }
+    /**
+     * Install a callback run by the panel before the widget update.
+     * @param callback The callback receiving this widget, or null; zero aborts panel processing.
+     */
     void SetBeforeUpdateCallback(int (*callback)(MenuWidget *)) {
         pfnBeforeUpdate = callback;
     }
+    /** @return The installed callback for panel processing before widget updates, or null. */
     auto GetBeforeUpdateCallback() const {
         return pfnBeforeUpdate;
     }
+    /**
+     * Install a callback run by the panel after the widget update.
+     * @param callback The callback receiving this widget, or null; zero aborts panel processing.
+     */
     void SetAfterUpdateCallback(int (*callback)(MenuWidget *)) {
         pfnAfterUpdate = callback;
     }
+    /** @return The installed callback for panel processing after widget updates, or null. */
     auto GetAfterUpdateCallback() const {
         return pfnAfterUpdate;
     }
@@ -596,56 +849,84 @@ private:
     const RECT *pImageRects;
 };
 
+/** Callbacks for PC music-track selection and persistent music and sound-effect volume. */
+/** Callbacks for volume, CD track selection, and navigation in the PC audio-options menu. */
 class AudioOptionsUI {
 public:
     /**
      * Update the volume-channel image and its first animation frame.
      *
+     * @param pWidget The non-null borrowed channel-image widget to update.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003e950
      * @ghidraAddress BRGlide: 0x10037f70
      */
     static int UpdateVolumeChannelImage(MenuWidget *pWidget);
 
     /**
+     * Position the volume indicator for the selected music or sound-effect channel.
+     * @param pWidget The non-null borrowed indicator widget to reposition.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003ea40
      * @ghidraAddress BRGlide: 0x10038060
      */
     static int UpdateVolumeLevelIndicatorPos(MenuWidget *pWidget);
 
     /**
+     * Draw and process the CD track list, accepting nonnegative activated-row results.
+     * @param pWidget The non-null borrowed widget with the track list.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003ee20
      * @ghidraAddress BRGlide: 0x10038350
      */
     static int UpdateCdTrackSelection(MenuWidget *pWidget);
 
     /**
+     * Select the CD track two greater than the activated list index.
+     * @param pList The unused list pointer, possibly null.
+     * @param pTrack A non-null borrowed selected-row pointer, read without modification.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1004e810
      * @ghidraAddress BRGlide: 0x100476c0
      */
     static int OnMusicTrackChanged(MenuItemList *pList, int *pTrack);
 
     /**
+     * Select the sound-effect volume channel, cycle its 0..9 level using mouse edges, and apply it.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10042cf0
      * @ghidraAddress BRGlide: 0x1003c240
      */
     static int OnCycleSfxVolume(MenuActionWidget *pWidget);
 
     /**
+     * Select the music volume channel, cycle its 0..9 level using mouse edges, and apply it.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10042d60
      * @ghidraAddress BRGlide: 0x1003c2b0
      */
     static int OnCycleMusicVolume(MenuActionWidget *pWidget);
 
     /**
+     * Destroy the audio-options screen, return to cached Options, back up choices, and save config.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x100466c0
      * @ghidraAddress BRGlide: 0x1003fb10
      */
     static int OnBackAndSave(MenuActionWidget *pItem);
 };
 
+/** Callbacks for car, handling, equipment, and navigation choices in the PC car-setup menus. */
 class CarSetupUI {
 public:
     /**
+     * Stop the setup screen, back up choices, save config, and attempt an automatic season save.
+     * Championship mode also selects three laps.
+     * @param pWidget A non-null borrowed widget of the setup screen.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10043760
      * @ghidraAddress BRGlide: 0x1003ccb0
      */
@@ -654,114 +935,173 @@ public:
     /**
      * Position the steering indicator for the selected handling choice.
      *
+     * @param pWidget The non-null borrowed steering-indicator widget to reposition.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003e920
      * @ghidraAddress BRGlide: 0x10037f40
      */
     static int UpdateSteeringIndicatorPos(MenuWidget *pWidget);
 
     /**
+     * Cycle the handling menu index through 0..7 using mouse edges and update the chosen handling.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10042c80
      * @ghidraAddress BRGlide: 0x1003c1d0
      */
     static int OnCycleHandlingType(MenuWidget *pWidget);
 
     /**
+     * Cycle the tyre menu index through 0..2 using mouse edges and resolve the tyre type.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10042dc0
      * @ghidraAddress BRGlide: 0x1003c310
      */
     static int OnCycleTireType(MenuWidget *pWidget);
 
     /**
+     * Cycle the suspension menu index through 0..2 using mouse edges and resolve its type.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10042e20
      * @ghidraAddress BRGlide: 0x1003c370
      */
     static int OnCycleSuspensionType(MenuWidget *pWidget);
 
     /**
+     * Cycle the transmission menu index through 0..1 using mouse edges and resolve its type.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10042e80
      * @ghidraAddress BRGlide: 0x1003c3d0
      */
     static int OnCycleTransmissionType(MenuWidget *pWidget);
 
     /**
+     * Select the sprite for the current transmission choice.
+     * @param pWidget The non-null borrowed transmission-image widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10040870
      * @ghidraAddress BRGlide: 0x10039db0
      */
     static int UpdateTransmissionImage(MenuWidget *pWidget);
 
     /**
+     * Select the sprite for the current tyre choice.
+     * @param pWidget The non-null borrowed tyre-image widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10040890
      * @ghidraAddress BRGlide: 0x10039dd0
      */
     static int UpdateTiresImage(MenuWidget *pWidget);
 
     /**
+     * Select the sprite for the current suspension choice.
+     * @param pWidget The non-null borrowed suspension-image widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100408b0
      * @ghidraAddress BRGlide: 0x10039df0
      */
     static int UpdateShocksImage(MenuWidget *pWidget);
 
     /**
+     * Cycle selectable cars using mouse edges and resolve the chosen car identifier.
+     * An active DirectPlay interface also receives a selection notice.
+     * @param pItem The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10042b30
      * @ghidraAddress BRGlide: 0x1003c080
      */
     static int OnCycleCar(MenuActionWidget *pItem);
 
     /**
+     * Refresh the car-name label, or the placeholder before a ghost selection is loaded, and
+     * process active text editing.
+     * @param pWidget The non-null borrowed label widget with writable font slot zero.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003f760
      * @ghidraAddress BRGlide: 0x10038ca0
      */
     static int UpdateCarNameLabel(MenuWidget *pWidget);
 
     /**
+     * Refresh the primary transmission label and process active text editing.
+     * @param pWidget The non-null borrowed label widget with writable font slot zero.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003f860
      * @ghidraAddress BRGlide: 0x10038da0
      */
     static int UpdateTransmissionLabel(MenuWidget *pWidget);
 
     /**
+     * Refresh the primary label for the current suspension choice and process active text editing.
+     * @param pWidget The non-null borrowed label widget with writable font slot zero.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003f990
      * @ghidraAddress BRGlide: 0x10038ed0
      */
     static int UpdateShocksLabel(MenuWidget *pWidget);
 
     /**
+     * Refresh the primary label for the current tyre choice and process active text editing.
+     * @param pWidget The non-null borrowed label widget with writable font slot zero.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003f7f0
      * @ghidraAddress BRGlide: 0x10038d30
      */
     static int UpdateTiresLabel(MenuWidget *pWidget);
 
     /**
+     * Select the current car sprite unless the ghost-load screen has no loaded selection.
+     * @param pWidget The non-null borrowed car-image widget.
+     * @return -2 before a ghost selection to skip the remaining widget update, or one after
+     * updating the sprite.
      * @ghidraAddress BRD3D: 0x1003f720
      * @ghidraAddress BRGlide: 0x10038c60
      */
     static int UpdateCarImage(MenuWidget *pWidget);
 
     /**
+     * Destroy the active setup screen, clear its cache, and restore the cached main menu.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x100464e0
      * @ghidraAddress BRGlide: 0x1003f980
      */
     static int OnBackToRaceSetup(MenuActionWidget *pItem);
 
     /**
+     * Open Options and install its return callback for car setup.
+     * @param pItem The unused widget pointer forwarded to ShowOptionsMenu(), possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100458c0
      * @ghidraAddress BRGlide: 0x1003ed50
      */
     static int OnOpenOptions(MenuActionWidget *pItem);
 
     /**
+     * Open season saving and install its return callback for car setup.
+     * @param pItem The unused widget pointer forwarded to ShowSaveSeasonScreen(), possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100458e0
      * @ghidraAddress BRGlide: 0x1003ed70
      */
     static int OnOpenSaveSeason(MenuActionWidget *pItem);
 
     /**
+     * Destroy the active setup screen, clear setup references, and restore season progress.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046cd0
      * @ghidraAddress BRGlide: 0x10040120
      */
     static int OnBackToSeasonProgressInfo(MenuActionWidget *pItem);
 
     /**
+     * Destroy the active setup screen, clear setup references, and restore cached Time Attack.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046d20
      * @ghidraAddress BRGlide: 0x10040170
      */
