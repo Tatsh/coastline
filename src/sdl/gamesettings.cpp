@@ -155,7 +155,7 @@ GameSettings::GameSettings(GameConfig &config,
         {"Upscaling",
          "Video",
          "ScaleFilter",
-         {{"linear", "Bilinear"}, {"nearest", "Nearest"}, {"edge-adaptive", "Edge adaptive"}}});
+         {{"linear", "Bilinear"}, {"nearest", "Off"}, {"edge-adaptive", "Edge adaptive"}}});
     m_options.push_back({"Screen shader",
                          "Video",
                          "ScreenShader",

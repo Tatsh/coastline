@@ -100,6 +100,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Upscaling labels nearest scaling as Off to clarify that enlargement applies without smoothing or
+  edge reconstruction; existing `nearest` settings remain compatible.
 - Outdated, incompatible, or incomplete imports open a graphical reimport prompt with Start setup
   and Quit choices. Quitting preserves existing assets; new installations open file setup directly.
 - Each player's selected camera persists across races and game restarts, excluding automatic finish

@@ -412,6 +412,10 @@ a flat image and vertical RGB stripes. Scanlines fade near native resolution to 
 Both settings apply as Options closes. Screenshots include enabled presentation filters at the
 displayed resolution.
 
+For a 1990s consumer CRT look, choose 320x240 internal resolution, Upscaling Off, and Consumer CRT.
+Upscaling Off uses nearest-neighbour enlargement (`ScaleFilter=nearest`) without smoothing or edge
+reconstruction. The CRT shader still applies its softness, scanlines, curvature, and phosphor mask.
+
 A race keeps the vertical field of view of the PC release on a frame wider than 4:3 and widens
 across, and keeps the field across of 4:3 on a narrower frame. Neither field exceeds 120 degrees.
 The rear-view mirror keeps its shape and its size against the height of the view. The menus keep
