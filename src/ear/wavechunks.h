@@ -60,33 +60,33 @@ typedef EarRiffFile *EarWaveFile; /*!< An open wave file. */
 /**
  * Open a wave file to read, as mmioOpenA() opens a path.
  *
- * @param path The path.
- * @return The file, or a null pointer when it cannot be opened.
+ * @param path A non-null terminated filesystem path, borrowed during opening.
+ * @return A file wrapper to release with EarRiffClose(), or null when opening fails.
  */
 EarRiffFile *EarRiffOpenPath(const char *path);
 
 /**
  * Open a wave file in memory to read, as mmioOpenA() opens a buffer of FOURCC_MEM.
  *
- * @param data The file.
- * @param size The bytes that can be read.
- * @return The file.
+ * @param data Non-null readable file bytes that remain valid until EarRiffClose().
+ * @param size The nonnegative byte count available from data.
+ * @return An allocated file wrapper to release with EarRiffClose(); media bytes remain borrowed.
  */
 EarRiffFile *EarRiffOpenMemory(const void *data, LONG size);
 
 /**
  * Close a file. A null pointer is ignored.
  *
- * @param file The file.
+ * @param file The wrapper to destroy, or null. Borrowed memory-source bytes are not released.
  */
 void EarRiffClose(EarRiffFile *file);
 
 /**
  * Read bytes, as mmioRead() does.
  *
- * @param file The file.
- * @param buffer The bytes read.
- * @param bytes The bytes to read.
+ * @param file A non-null open file wrapper.
+ * @param buffer Writable output storage of at least bytes bytes when bytes is positive.
+ * @param bytes The requested byte count; a negative count fails without reading.
  * @return The bytes read, 0 at the end of the file, or -1 on an error.
  */
 LONG EarRiffRead(EarRiffFile *file, void *buffer, LONG bytes);
@@ -94,10 +94,10 @@ LONG EarRiffRead(EarRiffFile *file, void *buffer, LONG bytes);
 /**
  * Move the position, as mmioSeek() does.
  *
- * @param file The file.
- * @param offset The offset.
+ * @param file A non-null open file wrapper.
+ * @param offset The signed byte displacement from the selected origin.
  * @param origin SEEK_SET, SEEK_CUR, or SEEK_END.
- * @return The new position, or -1 on an error.
+ * @return The absolute byte position, or -1 on error. Memory sources permit positions past the end.
  */
 LONG EarRiffSeek(EarRiffFile *file, LONG offset, int origin);
 
@@ -105,9 +105,10 @@ LONG EarRiffSeek(EarRiffFile *file, LONG offset, int origin);
  * Read the header of the chunk at the position, or with EAR_RIFF_FIND_CHUNK find the chunk of the
  * identifier of @p chunk within @p parent, as mmioDescend() does.
  *
- * @param file The file.
- * @param chunk The chunk read.
- * @param parent The chunk searched, or a null pointer for the whole file.
+ * @param file A non-null open file wrapper, advanced to the selected chunk data on success.
+ * @param chunk A non-null writable chunk descriptor. Its initial ckid selects the sought
+ * identifier.
+ * @param parent A borrowed parent descriptor limiting the search, or null for an unbounded search.
  * @param flags 0 or EAR_RIFF_FIND_CHUNK.
  * @return 0, or nonzero when the chunk is not found.
  */
@@ -116,8 +117,8 @@ UINT EarRiffDescend(EarRiffFile *file, EarRiffChunk *chunk, const EarRiffChunk *
 /**
  * Move past the end of a chunk and its pad byte, as mmioAscend() does.
  *
- * @param file The file.
- * @param chunk The chunk.
+ * @param file A non-null open file wrapper to seek.
+ * @param chunk A non-null borrowed descriptor with valid data offset and byte size.
  * @return 0, or nonzero on an error.
  */
 UINT EarRiffAscend(EarRiffFile *file, const EarRiffChunk *chunk);
@@ -136,13 +137,25 @@ UINT EarRiffAscend(EarRiffFile *file, const EarRiffChunk *chunk);
 /** The format of IMA ADPCM samples. */
 #define EAR_WAVE_FORMAT_IMA_ADPCM 0x11
 
-/** @ghidraAddress EAR: 0x1003b880 */
+/**
+ * Shared scratch descriptor for the current RIFF/WAVE container during media preparation.
+ * @ghidraAddress EAR: 0x1003b880
+ */
 extern EarRiffChunk g_RiffWaveChunk;
-/** @ghidraAddress EAR: 0x1003b898 */
+/**
+ * Shared scratch descriptor for the current wave sample-data chunk.
+ * @ghidraAddress EAR: 0x1003b898
+ */
 extern EarRiffChunk g_WaveDataChunk;
-/** @ghidraAddress EAR: 0x1003b8b0 */
+/**
+ * Shared scratch descriptor for the current wave format chunk.
+ * @ghidraAddress EAR: 0x1003b8b0
+ */
 extern EarRiffChunk g_WaveFormatChunk;
-/** @ghidraAddress EAR: 0x10037268 */
+/**
+ * PCM streaming buffer byte limit, also used when sizing ADPCM blocks; initially 49152.
+ * @ghidraAddress EAR: 0x10037268
+ */
 extern uint16_t g_earMaximumStreamingBufferBytes;
 
 #ifdef __cplusplus

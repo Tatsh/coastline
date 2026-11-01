@@ -14,23 +14,34 @@ enum EarWaveSampleSource : std::uint16_t {
 /** A wave file loaded whole into memory, which a preset registers and sample playbacks share. */
 class [[gnu::packed]] EarWaveSample {
 public:
-    /** @ghidraAddress EAR: 0x10009520 */
+    /**
+     * Initialise empty sample storage and file-source defaults without assigning a wave format.
+     * @ghidraAddress EAR: 0x10009520
+     */
     EarWaveSample();
-    /** @ghidraAddress EAR: 0x10009554 */
+    /**
+     * Free allocated sample storage and subtract its tracked byte count from the sample budget.
+     * Borrowing sample playbacks must be released before destruction.
+     * @ghidraAddress EAR: 0x10009554
+     */
     ~EarWaveSample();
 
     /**
-     * Load the samples of a wave file.
+     * Load wave samples into allocated storage with sample-memory budget accounting.
+     * Use an empty sample object; loading does not release a previous sample allocation first.
+     * Failed loads retain any budget reservation until destruction.
      *
-     * @param source The path of the file, or the file in memory.
+     * @param source A non-null terminated path or complete readable RIFF image, borrowed during
+     * load.
      * @param sourceKind How @p source is given.
-     * @return Whether the samples were loaded.
+     * @return One on success; zero with an EAR error for format, I/O, budget, or allocation
+     * failure.
      * @ghidraAddress EAR: 0x1000958a
      */
     int LoadWaveSample(const void *source, EarWaveSampleSource sourceKind);
 
     /**
-     * @return The samples.
+     * @return Borrowed sample storage, valid until destruction or replacement, or null when empty.
      * @ghidraAddress EAR: 0x100098b1
      */
     char *GetWaveSampleBuffer() const;
@@ -42,7 +53,7 @@ public:
     DWORD GetWaveSampleByteCount() const;
 
     /**
-     * @return The format of the samples.
+     * @return A copy of the loaded format; a successful load must precede this query.
      * @ghidraAddress EAR: 0x100098d2
      */
     EarWaveFormat CopyWaveSampleFormat() const;

@@ -63,16 +63,24 @@ public:
     bool SetPlayCursor(std::uint32_t offset);
 
     /**
+     * Change playback frequency when the requested rate is within the device-compatible range.
+     * Out-of-range requests preserve the previous frequency.
+     *
      * @param frequency The frames a second the buffer plays at, from 100 to 100000.
      */
     void SetFrequency(std::uint32_t frequency);
 
     /**
+     * Change volume when the requested attenuation is within the device-compatible range.
+     * Out-of-range requests preserve the previous volume.
+     *
      * @param volume The attenuation, from -10000 to 0 hundredths of a decibel.
      */
     void SetVolume(LONG volume);
 
     /**
+     * Change stereo pan within the device-compatible range; out-of-range requests are ignored.
+     *
      * @param pan The attenuation of the right side when negative, or of the left side when
      * positive, from -10000 to 10000 hundredths of a decibel.
      */
@@ -93,8 +101,8 @@ private:
 
     EarWaveFormat format = {};       /*!< The format of the samples. */
     std::uint8_t *samples = nullptr; /*!< The samples. */
-    std::uint32_t bytes = 0;         /*!< The bytes of @ref samples. */
-    std::uint32_t frames = 0;        /*!< The whole frames of @ref samples. */
+    std::uint32_t bytes = 0;         /*!< The bytes of `samples`. */
+    std::uint32_t frames = 0;        /*!< The whole frames of `samples`. */
     std::uint64_t position = 0;      /*!< The frame that plays next, in 32.32 fixed point. */
     std::uint32_t frequency = 0;     /*!< The frames a second the buffer plays at. */
     LONG volume = 0;                 /*!< The attenuation of both sides. */
@@ -123,8 +131,12 @@ bool EarOpenSdlMixer();
 /** Close the mixer and its device, and delete every buffer. */
 void EarCloseSdlMixer();
 
-/** Enable or suspend sound-effect mixing and playback updates without discarding voices. */
+/**
+ * Enable or suspend sound-effect mixing and playback updates without discarding voices.
+ * @param enabled Whether mixing should advance; a live output stream is resumed or paused too.
+ */
 void EarSetSdlMixerEnabled(bool enabled);
+/** @return Whether sound-effect mixing and playback updates are enabled. */
 bool EarSdlMixerEnabled();
 
 /**

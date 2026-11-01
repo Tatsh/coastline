@@ -7,7 +7,13 @@
 extern "C" {
 #endif
 
-/** @ghidraAddress EAR: 0x10012420 */
+/**
+ * Approximate percentage gain as DirectSound attenuation using the native quartic polynomial.
+ * @param gain The percentage amplitude, normally 0..100; input and output are not clamped.
+ * @return Attenuation in hundredths of a decibel, truncated to an integer's low 32 bits;
+ * zero when the polynomial cannot be converted to a signed 64-bit integer.
+ * @ghidraAddress EAR: 0x10012420
+ */
 int32_t __stdcall ConvertPercentGainToDirectSoundVolume(double gain);
 
 /**
@@ -28,7 +34,10 @@ int32_t __stdcall ConvertPercentGainToLeftPan(double gain);
  */
 int32_t __stdcall ConvertPercentGainToRightPan(double gain);
 
-/** @ghidraAddress EAR: 0x10036148 */
+/**
+ * Linear master attenuation multiplier applied to PCM gain, initially one.
+ * @ghidraAddress EAR: 0x10036148
+ */
 extern double g_dMasterAttenuationLevel;
 
 #ifdef __cplusplus

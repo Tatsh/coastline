@@ -57,6 +57,7 @@ typedef struct [[gnu::packed]] EarEventParams {
     uint32_t maximumDistance; /*!< The distance of the minimum gain. */
     uint32_t minimumDistance; /*!< The distance of the maximum gain. */
     uint32_t flags;           /*!< EarEventParamsFlag values. */
+    /** Unrecovered parameter bytes at the original offset. */
     uint8_t unknown20[4];     /* +0x20 */
     uint32_t reservedControl; /*!< The reserved control of an event of source type 6. */
     uint16_t direction;       /*!< The direction of an event that is not directional. */
@@ -65,17 +66,20 @@ typedef struct [[gnu::packed]] EarEventParams {
     int32_t activeTime;       /*!< The time the event may play, in milliseconds. */
     /** The EarEventQueueMode in the low word, and the event it refers to in the high word. */
     uint32_t queueControl;
-    uint16_t environmentHandle;  /*!< The environment. */
+    uint16_t environmentHandle; /*!< The environment. */
+    /** Unrecovered parameter bytes at the original offset. */
     uint8_t unknown3a[2];        /* +0x3a */
     uint16_t priority;           /*!< The priority of the event. */
     uint16_t frequencyScale;     /*!< The scale of the frequency, in ten-thousandths. */
     uint16_t baseFrequencyScale; /*!< The scale of the base frequency, in ten-thousandths. */
     uint16_t startPosition;      /*!< The position the playback starts at, in ten-thousandths. */
     uint16_t limitDistance;      /*!< The distance beyond which the event stops. */
-    uint8_t unknown46[6];        /* +0x46 */
-    uint16_t pitchVariation;     /*!< The range of the variation of the pitch, 0 for the default. */
+    /** Unrecovered parameter bytes at the original offset. */
+    uint8_t unknown46[6];    /* +0x46 */
+    uint16_t pitchVariation; /*!< The range of the variation of the pitch, 0 for the default. */
     /** The parameter of the backend in ten-thousandths, 0xffff for -1. */
     uint16_t backendParameter;
+    /** Unrecovered parameter bytes at the original offset. */
     uint8_t unknown50[0x10]; /* +0x50 */
     uint32_t distanceUnit;   /*!< The entry of g_adDistanceUnitToCentimeters. */
     int32_t positionX;       /*!< The position across, from the listener. */
@@ -83,6 +87,7 @@ typedef struct [[gnu::packed]] EarEventParams {
     int32_t positionZ;       /*!< The position ahead, from the listener. */
     /** The upper ends of the bands, in ten-thousandths of the maximum distance. */
     uint16_t distanceBands[EAR_EVENT_DISTANCE_BAND_COUNT];
+    /** Unrecovered parameter bytes at the original offset. */
     uint8_t unknown7c[4]; /* +0x7c */
 } EarEventParams;
 

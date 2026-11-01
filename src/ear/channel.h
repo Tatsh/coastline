@@ -12,9 +12,16 @@ class ScheduledEarEvent;
 /** A channel the game registers, which plays and groups its events. */
 class EarChannel {
 public:
-    /** @ghidraAddress EAR: 0x1000e330 */
+    /**
+     * Initialise an unpaused, unmuted channel with unity gain, unlimited events, and empty lists.
+     * Registration must assign priorityLevel before a priority query.
+     * @ghidraAddress EAR: 0x1000e330
+     */
     EarChannel();
-    /** @ghidraAddress EAR: 0x1000e440 */
+    /**
+     * Release list and registry storage without deleting event objects or their playback resources.
+     * @ghidraAddress EAR: 0x1000e440
+     */
     ~EarChannel();
 
     /**
@@ -55,9 +62,15 @@ public:
     EarWordPointerRegistry<ScheduledEarEvent> events; /*!< The events by handle. */
 };
 
-/** @ghidraAddress EAR: 0x1003b6e0 */
+/**
+ * CD audio channel identifier recorded during registration, cleared when the channel is deleted.
+ * @ghidraAddress EAR: 0x1003b6e0
+ */
 extern uint32_t g_dwCdAudioChannelId;
-/** @ghidraAddress EAR: 0x1003b6e4 */
+/**
+ * MIDI channel identifier recorded during registration, cleared when the channel is deleted.
+ * @ghidraAddress EAR: 0x1003b6e4
+ */
 extern uint32_t g_dwMidiChannelId;
 /**
  * The state of the last channel a control changed, as flags of the control.
@@ -158,7 +171,9 @@ uint32_t __stdcall EarChangeChannelControlExportWrapper(uint32_t channel, uint32
 uint32_t __stdcall EAR_DLL_ChangeChannelControl(uint32_t channel, uint32_t control);
 
 /**
- * @param channel The channel, 0 for every channel.
+ * Forward channel or master gain adjustment to EAR_DLL_SetAttenuationLevel().
+ *
+ * @param channel The channel, or 0 for master attenuation.
  * @param level The attenuation level, in ten-thousandths.
  * @ghidraAddress EAR: 0x1000ef30
  */

@@ -26,15 +26,30 @@ int __stdcall ValidateEarTitleConfiguration(uint32_t required);
  */
 int ValidateEarAudioComponents(void);
 
-/** @ghidraAddress EAR: 0x1003b704 */
+/**
+ * Nonzero when config.ear includes the global configuration section.
+ * @ghidraAddress EAR: 0x1003b704
+ */
 extern int32_t g_bGlobalConfigurationFound;
-/** @ghidraAddress EAR: 0x1003b708 */
+/**
+ * Configured hexadecimal product target from [PTARGET], compared with the version's high word.
+ * @ghidraAddress EAR: 0x1003b708
+ */
 extern uint16_t g_wConfiguredProductTarget;
-/** @ghidraAddress EAR: 0x1003b70c */
+/**
+ * Configured hexadecimal interface target from [ITARGET], compared with the version's high word.
+ * @ghidraAddress EAR: 0x1003b70c
+ */
 extern uint16_t g_wConfiguredInterfaceTarget;
-/** @ghidraAddress EAR: 0x1003b710 */
+/**
+ * Configured hexadecimal version from [VERSION], compared with the version's low word.
+ * @ghidraAddress EAR: 0x1003b710
+ */
 extern uint16_t g_wConfiguredVersion;
-/** @ghidraAddress EAR: 0x1003b714 */
+/**
+ * Nonzero when global [GNOIAS] requires the non-IAS interface target during title validation.
+ * @ghidraAddress EAR: 0x1003b714
+ */
 extern int32_t g_bConfiguredGlobalNoIas;
 /**
  * Whether the configuration records a DVD drive, from [DVDDRIVE].
@@ -54,7 +69,10 @@ extern int32_t g_bConfiguredCdChanger;
  * @ghidraAddress EAR: 0x1003b720
  */
 extern int32_t g_bConfiguredMultiDisc;
-/** @ghidraAddress EAR: 0x1003b724 */
+/**
+ * Nonzero when config.ear includes the selected title configuration section.
+ * @ghidraAddress EAR: 0x1003b724
+ */
 extern int32_t g_bTitleConfigurationFound;
 /**
  * The title of the game in the configuration, from [TITLE], without its line break.
@@ -62,7 +80,10 @@ extern int32_t g_bTitleConfigurationFound;
  * @ghidraAddress EAR: 0x1003b728
  */
 extern char g_szConfiguredTitle[80];
-/** @ghidraAddress EAR: 0x1003b778 */
+/**
+ * Nonzero when title [NOIAS] requires the non-IAS interface target during title validation.
+ * @ghidraAddress EAR: 0x1003b778
+ */
 extern int32_t g_bConfiguredTitleNoIas;
 /**
  * Whether the title is on a DVD, from [ISDVD].
@@ -76,9 +97,17 @@ extern int32_t g_bConfiguredTitleIsDvd;
  * @ghidraAddress EAR: 0x1003b780
  */
 extern uint32_t g_dwConfiguredLaunchCount;
-/** @ghidraAddress EAR: 0x1003b798 */
+/**
+ * Component mismatch bits, including target/version mismatch (1) and older/newer backend (8/2).
+ * ValidateEarAudioComponents() clears the flags before testing configured components.
+ * @ghidraAddress EAR: 0x1003b798
+ */
 extern uint16_t g_earAudioComponentValidationFlags;
-/** @ghidraAddress EAR: 0x1003b7b4 */
+/**
+ * Nonzero once component validation is attempted, including failed validation.
+ * Version queries then perform backend version checks.
+ * @ghidraAddress EAR: 0x1003b7b4
+ */
 extern int32_t g_earAudioComponentsValidated;
 
 /**

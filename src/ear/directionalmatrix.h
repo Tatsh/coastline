@@ -29,7 +29,10 @@ typedef struct [[gnu::packed]] EarDirectionalMatrixEntry {
 /** A directional matrix, the pan and the gain of each direction of an event. */
 class [[gnu::packed]] EarPresetTable {
 public:
-    /** @ghidraAddress EAR: 0x10010640 */
+    /**
+     * Initialise all 128 directional entries to zero pan and zero gain, with mode zero.
+     * @ghidraAddress EAR: 0x10010640
+     */
     EarPresetTable();
 
     /**
@@ -58,6 +61,8 @@ public:
      */
     void CopyPresetTableEntry(uint16_t destination, uint16_t source);
     /**
+     * Store the matrix mode without validating or changing directional entries.
+     *
      * @param newMode The mode of the matrix.
      * @ghidraAddress EAR: 0x100124d0
      */

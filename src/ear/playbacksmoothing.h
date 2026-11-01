@@ -7,11 +7,22 @@
 extern "C" {
 #endif
 
-/** @ghidraAddress EAR: 0x100049ab */
+/**
+ * Select one or two playback smoothing passes without resetting per-playback pass counters.
+ * @param reduced Nonzero for one pass; zero for two passes.
+ * @ghidraAddress EAR: 0x100049ab
+ */
 void __stdcall ConfigurePlaybackSmoothingPasses(uint32_t reduced);
-/** @ghidraAddress EAR: 0x100360b8 */
+/**
+ * Configured smoothing pass count, initially two.
+ * ConfigurePlaybackSmoothingPasses() sets one or two.
+ * @ghidraAddress EAR: 0x100360b8
+ */
 extern uint16_t g_wPlaybackSmoothingPassCount;
-/** @ghidraAddress EAR: 0x1003b7b8 */
+/**
+ * Nonzero when an applied gain/pan smoothing update advances directly beyond the final pass.
+ * @ghidraAddress EAR: 0x1003b7b8
+ */
 extern int g_earPlaybackSmoothingEnabled;
 
 #ifdef __cplusplus

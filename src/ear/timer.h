@@ -15,44 +15,81 @@
 extern "C" {
 #endif
 
-/** @ghidraAddress EAR: 0x1000f870 */
+/**
+ * Forward timer cancellation to EAR_DLL_ShutDownTimer().
+ * @ghidraAddress EAR: 0x1000f870
+ */
 void __stdcall EarShutDownTimerExportWrapper(void);
 
-/** @ghidraAddress EAR: 0x1000f87a */
+/**
+ * Cancel the periodic playback timer if present and clear its identifier on success.
+ * Clear the last EAR error first; cancellation failure records error 24 and preserves
+ * the identifier.
+ * @ghidraAddress EAR: 0x1000f87a
+ */
 void __stdcall EAR_DLL_ShutDownTimer(void);
 
-/** @ghidraAddress EAR: 0x1000fa7a */
+/**
+ * Attempt to replace an existing timer and schedule playback updates every 50 milliseconds.
+ * The library must be ready. Replacement proceeds even when cancelling an existing timer fails.
+ * @return TRUE when a timer is created; FALSE when EAR is unavailable or creation fails.
+ * Creation failure records EAR error 24.
+ * @ghidraAddress EAR: 0x1000fa7a
+ */
 int __stdcall EAR_DLL_StartTimer(void);
 
-/** @ghidraAddress EAR: 0x1000fa70 */
+/**
+ * Forward periodic timer creation to EAR_DLL_StartTimer().
+ * @return Whether the playback timer was created.
+ * @ghidraAddress EAR: 0x1000fa70
+ */
 int __stdcall EarStartTimerExportWrapper(void);
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-/** @ghidraAddress EAR: 0x1003b4a0 */
+/**
+ * Windows multimedia playback timer identifier, or zero when no timer is registered.
+ * @ghidraAddress EAR: 0x1003b4a0
+ */
 extern UINT g_uPlaybackTimerId;
 
-/** @ghidraAddress EAR: 0x1003b3ac */
+/**
+ * Requested Windows multimedia timer resolution in milliseconds, bounded by timer capabilities.
+ * @ghidraAddress EAR: 0x1003b3ac
+ */
 extern WORD g_wTimerResolutionMs;
 
-/** @ghidraAddress EAR: 0x1003b578 */
+/**
+ * Cached Windows multimedia timer capability bounds used during timer creation.
+ * @ghidraAddress EAR: 0x1003b578
+ */
 extern TIMECAPS g_earTimerCapabilities;
 #else
-/** @ghidraAddress EAR: 0x1003b4a0 */
+/**
+ * SDL playback timer identifier, or zero when no timer is registered.
+ * @ghidraAddress EAR: 0x1003b4a0
+ */
 extern SDL_TimerID g_uPlaybackTimerId;
 
 /**
  * The clock of EAR, in milliseconds, as timeGetTime() gives it in the original. A mixer that
  * renders on request counts the time of the frames it rendered.
  *
- * @return The time.
+ * @return The current EAR clock in milliseconds, wrapping at 32 bits.
  */
 DWORD GetEarTimeMilliseconds(void);
 #endif
 
-/** @ghidraAddress EAR: 0x1003b45c */
+/**
+ * Previous playback-update clock reading in milliseconds for unsigned elapsed-time calculation.
+ * @ghidraAddress EAR: 0x1003b45c
+ */
 extern DWORD g_dwPreviousPlaybackUpdateTimeMs;
 
-/** @ghidraAddress EAR: 0x1003b4d4 */
+/**
+ * Current absolute playback-update clock reading in milliseconds, wrapping at 32 bits.
+ * Timer creation resets the reading to zero until the first update.
+ * @ghidraAddress EAR: 0x1003b4d4
+ */
 extern DWORD g_dwPlaybackUpdateTimeMs;
 
 #ifdef __cplusplus

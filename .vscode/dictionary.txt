@@ -1361,11 +1361,16 @@ undraft
 undrafted
 undriven
 unifont
+uninitialise
+uninitialises
 unistd
 unknownapplication
 unlabeled
 unmirrored
 unmute
+unmuted
+unmuting
+unrecovered
 unrotated
 unscii
 urlkey

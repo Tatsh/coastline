@@ -13,7 +13,10 @@ extern "C" {
  */
 void __stdcall EAR_DLL_ShutDownEar(void);
 
-/** @ghidraAddress EAR: 0x1000e650 */
+/**
+ * Forward an in-place library reset to EAR_DLL_ResetEar().
+ * @ghidraAddress EAR: 0x1000e650
+ */
 void __stdcall EarResetEarExportWrapper(void);
 
 /**

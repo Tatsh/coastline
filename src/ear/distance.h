@@ -9,13 +9,27 @@
 extern "C" {
 #endif
 
-/** @ghidraAddress EAR: 0x1000fb70 */
+/**
+ * Forward distance-scale configuration to EAR_DLL_SetUserDistanceUnit().
+ * @param unitIndex The distance-unit index, 0..3.
+ * @param value The centimetres per unit multiplied by 100.
+ * @ghidraAddress EAR: 0x1000fb70
+ */
 void __stdcall EarSetUserDistanceUnitExportWrapper(uint32_t unitIndex, uint32_t value);
 
-/** @ghidraAddress EAR: 0x1000fb84 */
+/**
+ * Store a distance-unit multiplier after clearing the last EAR error.
+ * An index above three records error 0x24 without modifying the table.
+ * @param unitIndex The distance-unit index, 0..3.
+ * @param value The centimetres per unit multiplied by 100; zero is accepted.
+ * @ghidraAddress EAR: 0x1000fb84
+ */
 void __stdcall EAR_DLL_SetUserDistanceUnit(uint32_t unitIndex, uint32_t value);
 
-/** @ghidraAddress EAR: 0x100360e8 */
+/**
+ * Centimetres per event-distance unit for indices 0..3, initially one for every entry.
+ * @ghidraAddress EAR: 0x100360e8
+ */
 extern double g_adDistanceUnitToCentimeters[4];
 
 /**

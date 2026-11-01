@@ -11,19 +11,36 @@
 extern "C" {
 #endif
 
-/** @ghidraAddress EAR: 0x10003c86 */
+/**
+ * @return Nonzero when code validation, component initialisation, and final initialisation markers
+ * are all set; otherwise zero. This query does not change the last EAR error.
+ * @ghidraAddress EAR: 0x10003c86
+ */
 int IsEarReady(void);
 
-/** @ghidraAddress EAR: 0x1000c680 */
+/**
+ * @return Nonzero when EAR is not ready, after clearing the last EAR error through the export.
+ * @ghidraAddress EAR: 0x1000c680
+ */
 int __stdcall EarEarInactiveExportWrapper(void);
 
-/** @ghidraAddress EAR: 0x1000c68a */
+/**
+ * Clear the last EAR error and query readiness.
+ * @return Nonzero when EAR is not ready; otherwise zero.
+ * @ghidraAddress EAR: 0x1000c68a
+ */
 int __stdcall EAR_DLL_EarInactive(void);
 
-/** @ghidraAddress EAR: 0x1000f270 */
+/**
+ * Forward a complete library shutdown to EAR_DLL_ShutDownEar().
+ * @ghidraAddress EAR: 0x1000f270
+ */
 void __stdcall EarShutDownEarExportWrapper(void);
 
-/** @ghidraAddress EAR: 0x1000fbd0 */
+/**
+ * Forward a manual playback update to EAR_DLL_UpdateEar().
+ * @ghidraAddress EAR: 0x1000fbd0
+ */
 void __stdcall EarUpdateEarExportWrapper(void);
 
 /**
@@ -54,18 +71,33 @@ extern volatile int32_t g_bPlaybackUpdateLocked;
  */
 extern volatile int32_t g_bRegistryMutationLocked;
 
-/** @ghidraAddress EAR: 0x1003b784 */
+/**
+ * Nonzero when music mixer discovery, configuration, and restoration are bypassed.
+ * @ghidraAddress EAR: 0x1003b784
+ */
 extern int32_t g_bMixerAccessDisabled;
-/** @ghidraAddress EAR: 0x1003b788 */
+/**
+ * Nonzero when title configuration validation is bypassed.
+ * @ghidraAddress EAR: 0x1003b788
+ */
 extern int32_t g_bConfigurationValidationDisabled;
 
-/** @ghidraAddress EAR: 0x1003b7a0 */
+/**
+ * Nonzero after successful numeric-code validation; readiness requires this marker.
+ * @ghidraAddress EAR: 0x1003b7a0
+ */
 extern int32_t g_bEarCodeValidated;
 
-/** @ghidraAddress EAR: 0x1003b7a4 */
+/**
+ * Latest component-initialisation stage result; readiness requires a nonzero marker.
+ * @ghidraAddress EAR: 0x1003b7a4
+ */
 extern int32_t g_bEarComponentsInitialized;
 
-/** @ghidraAddress EAR: 0x1003b7a8 */
+/**
+ * Final library initialisation marker required for readiness.
+ * @ghidraAddress EAR: 0x1003b7a8
+ */
 extern int32_t g_bEarInitializationComplete;
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN

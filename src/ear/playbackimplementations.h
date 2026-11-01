@@ -11,9 +11,17 @@
 #include "ear/earplayback.h"
 #include "ear/wavechunks.h"
 
+/**
+ * PCM wave playback with optional half-buffer streaming and explicit resource release.
+ * File-backed instances allocate sample storage; memory and preset subclasses borrow samples.
+ */
 class [[gnu::packed]] PcmWaveStream : public EarPlayback {
 public:
-    /** @ghidraAddress EAR: 0x1000af00 */
+    /**
+     * Initialise null file and sample references with zero read and write counters.
+     * Media preparation must assign format and file offsets before use.
+     * @ghidraAddress EAR: 0x1000af00
+     */
     PcmWaveStream();
 
 private:
@@ -23,12 +31,22 @@ private:
     int InitializeEarPlayback(const void *source, int streaming, int looping) override;
 
 protected:
-    /** @ghidraAddress EAR: 0x10012ba7 */
+    /**
+     * Create and fill the device buffer, apply initial frequency, and seek when requested.
+     * Sample storage, format, buffer sizes, and base frequency must already be prepared.
+     * @return The next 16-bit event identifier on success, wrapping without skipping zero;
+     * zero also indicates a device-buffer, copy, or seek failure.
+     * @ghidraAddress EAR: 0x10012ba7
+     */
     std::uint16_t AllocateEarEventId() override;
 
 private:
 protected:
-    /** @ghidraAddress EAR: 0x1000b1c6 */
+    /**
+     * Release registered playback, close or restore the source file, and free sample storage.
+     * Subclasses with borrowed sample storage replace this closure operation.
+     * @ghidraAddress EAR: 0x1000b1c6
+     */
     void CloseRegisteredEarPlayback() override;
 
 private:
@@ -36,7 +54,12 @@ private:
     void RefillEarPlaybackStream() override;
 
 protected:
-    /** @ghidraAddress EAR: 0x100129c9 */
+    /**
+     * Copy the sample half opposite the refill index into the corresponding device-buffer half.
+     * A prepared sample buffer and device buffer are required. Device-copy failures may mark
+     * playback complete and record an EAR error.
+     * @ghidraAddress EAR: 0x100129c9
+     */
     void CopyEarPlaybackSamplesToOutput() override;
 
 private:
@@ -44,7 +67,11 @@ private:
     void CompleteEarPlayback() override;
 
 protected:
-    /** @ghidraAddress EAR: 0x10012b34 */
+    /**
+     * Drain a completed stream by copying its first trailing half and stopping on later checks.
+     * @return Nonzero when the device buffer has stopped; otherwise zero.
+     * @ghidraAddress EAR: 0x10012b34
+     */
     int CheckEarPlaybackLoopCompletion() override;
 
 private:
@@ -60,23 +87,29 @@ private:
     int FailPcmWavePreparation(std::uint32_t error);
 
 protected:
-    /** @ghidraAddress EAR: 0x10012e1b */
+    /**
+     * @return One; this implementation does not query device access.
+     * @ghidraAddress EAR: 0x10012e1b
+     */
     int CheckWavePlaybackDeviceAccess();
 
-    EarWaveFile file;        /*!< The file the samples stream from. */
-    DWORD readOffset;        /*!< The bytes of the data read so far. */
-    LONG dataStartOffset;    /*!< The offset of the data in the file. */
-    LONG originalFileOffset; /*!< The offset of a file the caller opened, restored on close. */
-    char *sampleBuffer;      /*!< The samples, or the part of them being streamed. */
-    DWORD dataBytes;         /*!< The bytes of the data. */
-    EarWaveFormat format;    /*!< The format of the samples. */
-    DWORD writeOffset;       /*!< The offset in the buffer the next samples are written at. */
+    EarWaveFile file;     /*!< Source file handle; memory subclasses may retain a closed handle. */
+    DWORD readOffset;     /*!< PCM or encoded data bytes read so far. */
+    LONG dataStartOffset; /*!< Byte offset of source data within the file. */
+    LONG originalFileOffset; /*!< Borrowed file's byte position, restored on close. */
+    char *sampleBuffer;      /*!< Decoded PCM storage, borrowed by memory and preset subclasses. */
+    DWORD dataBytes;         /*!< Total decoded PCM data size in bytes. */
+    EarWaveFormat format;    /*!< Decoded PCM sample format. */
+    DWORD writeOffset; /*!< Next refill destination offset in bytes of the current source buffer. */
 };
 
-/** A wave file in memory, played from where it lies. */
+/** PCM wave playback borrowing sample bytes from a caller-supplied RIFF image until release. */
 class [[gnu::packed]] MemoryWaveStream : public PcmWaveStream {
 public:
-    /** @ghidraAddress EAR: 0x1000a2a0 */
+    /**
+     * Initialise inherited stream state without allocating or attaching a memory image.
+     * @ghidraAddress EAR: 0x1000a2a0
+     */
     MemoryWaveStream();
 
 private:
@@ -97,10 +130,13 @@ private:
     int OpenMemoryWaveStream(const void *source);
 };
 
-/** A playback of the samples of a preset. */
+/** PCM playback borrowing a preset's sample storage; the preset must outlast playback release. */
 class [[gnu::packed]] SampleWavePlayback : public PcmWaveStream {
 public:
-    /** @ghidraAddress EAR: 0x10009910 */
+    /**
+     * Initialise inherited stream state without attaching a preset.
+     * @ghidraAddress EAR: 0x10009910
+     */
     SampleWavePlayback();
 
 private:
@@ -115,33 +151,84 @@ private:
 };
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-/** A playback of a MIDI file through the MCI sequencer, its volume set through the mixer. */
+/**
+ * MIDI playback through the shared MCI sequencer and Windows MIDI mixer.
+ * Music devices and mixer controls must be initialised before playback operations.
+ */
 class [[gnu::packed]] MidiPlayback : public EarPlayback {
 public:
-    /** @ghidraAddress EAR: 0x10008d20 */
+    /**
+     * Initialise empty media state; a gain adjustment must assign pendingGain before playback.
+     * @ghidraAddress EAR: 0x10008d20
+     */
     MidiPlayback();
 
-    /** @ghidraAddress EAR: 0x10008d8d */
+    /**
+     * Unregister playback and delete any temporary MIDI file and allocated temporary path.
+     * Caller-supplied source paths remain borrowed.
+     * @ghidraAddress EAR: 0x10008d8d
+     */
     void ReleaseEarPlaybackResources() override;
-    /** @ghidraAddress EAR: 0x100093d5 */
+    /**
+     * Set shared MIDI mixer volume when active, or cache gain for the next start when inactive.
+     * @param direction The unused directional row index.
+     * @param gain The linear multiplier of the MIDI mixer's maximum volume, without clamping.
+     * @param matrix The unused directional matrix handle.
+     * @ghidraAddress EAR: 0x100093d5
+     */
     void SetEarPlaybackDirectionalGain(std::uint16_t direction,
                                        double gain,
                                        std::uint16_t matrix) override;
-    /** @ghidraAddress EAR: 0x1000914d */
+    /**
+     * Open source media in the shared sequencer and query sequence length.
+     * Source flag 0x2000 writes reservedEventControl bytes to a temporary MIDI file first.
+     * @param source A borrowed terminated path, or readable MIDI bytes for memory-source flags.
+     * A borrowed path must remain valid until resource release.
+     * @param streaming The ignored streaming request; MIDI streaming is disabled.
+     * @param looping The looping marker, with nonzero enabling loop handling at completion.
+     * @return One when MCI opens the sequence; zero when opening fails.
+     * @ghidraAddress EAR: 0x1000914d
+     */
     int InitializeEarPlayback(const void *source, int streaming, int looping) override;
-    /** @ghidraAddress EAR: 0x10009051 */
+    /**
+     * Seek to a specified fractional start, post an enabled notification, and play the sequence.
+     * @return One on successful playback; zero on failure, after closing the sequencer.
+     * @ghidraAddress EAR: 0x10009051
+     */
     int StartEarPlayback() override;
-    /** @ghidraAddress EAR: 0x10009009 */
+    /**
+     * Set paused status and pause the sequencer when active.
+     * @return The paused marker, one unless pausing an active sequencer fails.
+     * @ghidraAddress EAR: 0x10009009
+     */
     int PauseEarPlayback() override;
-    /** @ghidraAddress EAR: 0x1000948b */
+    /**
+     * Attempt to resume an active paused sequencer and clear paused status on success.
+     * @return Nonzero when unpaused after the attempt, including when already unpaused.
+     * @ghidraAddress EAR: 0x1000948b
+     */
     int ResumeEarPlayback() override;
-    /** @ghidraAddress EAR: 0x10008f83 */
+    /**
+     * Store mute state and write the shared Windows MIDI mixer's mute control.
+     * @param muted The mute marker, with nonzero indicating mute.
+     * @ghidraAddress EAR: 0x10008f83
+     */
     void SetEarPlaybackMute(int muted) override;
-    /** @ghidraAddress EAR: 0x10008e5b */
+    /**
+     * Query MCI stop state unless inactive or a shared completion query is already in progress.
+     * A completed loop seeks to the start, clears active state, and posts an end notification.
+     * Loop completion posts the notification regardless of notification flags.
+     * @return Nonzero on requested or detected non-looping completion; otherwise zero.
+     * @ghidraAddress EAR: 0x10008e5b
+     */
     int IsBufferedEarPlaybackComplete() override;
 
 protected:
-    /** @ghidraAddress EAR: 0x10008df4 */
+    /**
+     * Request zero gain, record shared sequencer use, post an enabled end message, and unregister.
+     * The sequencer remains open; an absent playback handle suppresses closure work.
+     * @ghidraAddress EAR: 0x10008df4
+     */
     void CloseRegisteredEarPlayback() override;
 
 private:
@@ -153,39 +240,91 @@ private:
     MCI_PLAY_PARMS resumeParameters; /*!< The play command a resume sends. */
     DWORD lengthMilliseconds;        /*!< The length of the sequence. */
     char *path;                      /*!< The file the sequencer plays. */
-    int ownsTemporaryFile;           /*!< Whether @ref path is a copy to delete on release. */
+    int ownsTemporaryFile;           /*!< Whether `path` is a copy to delete on release. */
     double pendingGain;              /*!< The gain set while inactive, applied at the start. */
 };
 
-/** A playback of the tracks of the CD through the MCI CD audio device. */
+/**
+ * CD track playback through the shared MCI CD device and Windows CD mixer.
+ * Device, track positions, and mixer controls must be initialised before playback operations.
+ */
 class [[gnu::packed]] CdAudioPlayback : public EarPlayback {
 public:
-    /** @ghidraAddress EAR: 0x10009ae0 */
+    /**
+     * Initialise single-track mode with zero duration; media initialisation sets command ranges.
+     * @ghidraAddress EAR: 0x10009ae0
+     */
     CdAudioPlayback();
 
-    /** @ghidraAddress EAR: 0x10009b19 */
+    /**
+     * Release playback through the registered-closure operation without closing the shared device.
+     * @ghidraAddress EAR: 0x10009b19
+     */
     void ReleaseEarPlaybackResources() override;
-    /** @ghidraAddress EAR: 0x1000a187 */
+    /**
+     * Write the shared CD mixer volume control immediately.
+     * @param direction The unused directional row index.
+     * @param gain The linear multiplier of the CD mixer's maximum volume, without clamping.
+     * @param matrix The unused directional matrix handle.
+     * @ghidraAddress EAR: 0x1000a187
+     */
     void SetEarPlaybackDirectionalGain(std::uint16_t direction,
                                        double gain,
                                        std::uint16_t matrix) override;
-    /** @ghidraAddress EAR: 0x1000a051 */
+    /**
+     * Configure a track range from the loaded CD positions without starting playback.
+     * @param source A one-based track number encoded in pointer bits, or null for all audio tracks.
+     * @param streaming The streaming marker to store; CD playback does not use PCM refill halves.
+     * @param looping The looping marker, with nonzero enabling restart at completion.
+     * @return One on success; zero with EAR error 0x0d when the track exceeds the last audio track.
+     * @ghidraAddress EAR: 0x1000a051
+     */
     int InitializeEarPlayback(const void *source, int streaming, int looping) override;
-    /** @ghidraAddress EAR: 0x10009df1 */
+    /**
+     * Apply specified start and end overrides, post an enabled start message, and play the range.
+     * Whole-disc overrides encode track numbers divided by 10000; single-track overrides are
+     * fractions of track duration. Successful single-track playback clears applied overrides.
+     * @return One on MCI success, with active state set and pause status cleared; zero on failure.
+     * @ghidraAddress EAR: 0x10009df1
+     */
     int StartEarPlayback() override;
-    /** @ghidraAddress EAR: 0x10009d39 */
+    /**
+     * Pause CD playback and cache its position for a later resume when pausing succeeds.
+     * @return One when MCI accepts the pause command; zero on failure.
+     * @ghidraAddress EAR: 0x10009d39
+     */
     int PauseEarPlayback() override;
-    /** @ghidraAddress EAR: 0x1000a21a */
+    /**
+     * Resume an active paused range from the cached position and clear pause status on success.
+     * @return Nonzero when unpaused after the attempt, including when already unpaused.
+     * @ghidraAddress EAR: 0x1000a21a
+     */
     int ResumeEarPlayback() override;
-    /** @ghidraAddress EAR: 0x1000a280 */
+    /**
+     * @return The configured playback range duration in milliseconds.
+     * @ghidraAddress EAR: 0x1000a280
+     */
     std::uint32_t GetEarPlaybackMediaLength() override;
-    /** @ghidraAddress EAR: 0x10009cb3 */
+    /**
+     * Store mute state and write the shared Windows CD mixer's mute control.
+     * @param muted The mute marker, with nonzero indicating mute.
+     * @ghidraAddress EAR: 0x10009cb3
+     */
     void SetEarPlaybackMute(int muted) override;
-    /** @ghidraAddress EAR: 0x10009bba */
+    /**
+     * Query MCI stop state while active and restart a completed looping range.
+     * @return Nonzero on requested completion, detected non-looping completion, or loop restart
+     * failure; zero while incomplete or after a successful loop restart.
+     * @ghidraAddress EAR: 0x10009bba
+     */
     int IsBufferedEarPlaybackComplete() override;
 
 protected:
-    /** @ghidraAddress EAR: 0x10009b2f */
+    /**
+     * Stop CD playback, post an enabled end message, clear mute, restore full gain, and unregister.
+     * An absent playback handle suppresses closure work.
+     * @ghidraAddress EAR: 0x10009b2f
+     */
     void CloseRegisteredEarPlayback() override;
 
 private:
@@ -209,7 +348,11 @@ struct ImaAdpcmChannelState {
 /** A wave file of IMA ADPCM, decoded into 16-bit samples a half of the buffer at a time. */
 class [[gnu::packed]] ImaAdpcmWaveStream : public PcmWaveStream {
 public:
-    /** @ghidraAddress EAR: 0x10001000 */
+    /**
+     * Initialise inherited stream state and empty ADPCM decoder and block-buffer state.
+     * Media preparation must assign encoded format fields before use.
+     * @ghidraAddress EAR: 0x10001000
+     */
     ImaAdpcmWaveStream();
 
 private:
@@ -252,7 +395,7 @@ private:
     EarImaAdpcmWaveFormat adpcmFormat; /*!< The format of the file. */
     std::uint8_t *blockBuffer;  /*!< The encoded blocks, or the part of them being streamed. */
     DWORD adpcmDataBytes;       /*!< The bytes of the data chunk. */
-    DWORD blockBufferBytes;     /*!< The bytes of @ref blockBuffer. */
+    DWORD blockBufferBytes;     /*!< The bytes of `blockBuffer`. */
     DWORD blockHalfBytes;       /*!< The encoded bytes each half of the buffer decodes. */
     int decodedSample;          /*!< The sample the decoder produced last. */
     int decodedDifference;      /*!< The difference the decoder added last. */
