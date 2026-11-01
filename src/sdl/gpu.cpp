@@ -25,6 +25,13 @@
 
 namespace coastline {
 
+bool GpuWindow::WideMenus() const {
+    // Internal aspect expansion rounds dimensions to whole pixels.
+    return m_options.wideMenus ||
+           (m_options.autoWideMenus && m_frameHeight != 0 &&
+            std::abs(static_cast<double>(m_frameWidth) - m_frameHeight * (16.0 / 9.0)) <= 1.0);
+}
+
 namespace {
 
 constexpr SDL_GPUTextureFormat FRAME_FORMAT = SDL_GPU_TEXTUREFORMAT_R8G8B8A8_UNORM;
@@ -543,6 +550,7 @@ bool GpuWindow::ApplyLiveOptions(const DisplayOptions &options) {
         SetPresentMode(options.presentMode);
     }
     m_options.wideMenus = options.wideMenus;
+    m_options.autoWideMenus = options.autoWideMenus;
     m_options.fieldOfViewScale = options.fieldOfViewScale;
     m_options.drawDistanceScale = std::isfinite(options.drawDistanceScale) ?
                                       std::clamp(options.drawDistanceScale, 1.0f, 4.0f) :

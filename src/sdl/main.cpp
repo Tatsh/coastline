@@ -147,6 +147,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedC
     options.exclusive = config.Get("Video", "FullscreenMode") == "exclusive";
     options.refreshRate = static_cast<int>(config.GetInteger("Video", "RefreshRate", 0));
     options.wideMenus = config.GetBoolean("Video", "WideMenus", false);
+    options.autoWideMenus = config.Get("Video", "WideMenus") == "auto";
     options.fieldOfViewScale = config.GetFloat("Video", "FieldOfView", 1.0f);
     options.drawDistanceScale = config.GetFloat("Video", "DrawDistance", 1.0f);
     options.n64Effects = config.Get("Game", "Effects") == "N64";

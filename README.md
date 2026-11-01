@@ -411,13 +411,17 @@ N64 and Boss Rally use 100% field of view and 1x draw distance. Anti-aliasing, a
 filtering, post-process anti-aliasing, and upscaling are off. Boss Rally uses Modern texture
 filtering without mipmaps, matching the original bilinear filtering.
 Both presets preserve the title screen, auto-save, and region for models and textures.
+N64 selects N64 window reflections, and Boss Rally selects PC window reflections.
 
 `--preset ultra` fills the screen at window resolution with 2x draw distance, 100% field of
 view, 8-sample anti-aliasing, alpha to coverage, 16-sample anisotropic filtering, modern texture
 filtering, and PC visual effects. Upscaling, post-process anti-aliasing, and screen shaders are off.
 Ultra preserves the title screen, auto-save, sound effects, music, models and textures, and asset
 pack.
-It uses borderless full screen unless overridden. `--preset worst` uses 1x draw distance,
+Ultra uses wide menu backgrounds only while the internal frame is 16:9. Other aspect ratios use
+the normal menu background framing. `WideMenus=auto` under `[Video]` selects this behaviour;
+`1` fills all wide frames, and `0` disables wide menus.
+Ultra uses borderless full screen unless overridden. `--preset worst` uses 1x draw distance,
 nearest scaling and texture filtering, no anti-aliasing or screen filters, and a 320 by 240 base
 frame at 30 FPS. Worst preserves the aspect ratio and does not change GPU preference.
 `--preset low-power` requests SDL's

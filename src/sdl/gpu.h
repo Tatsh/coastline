@@ -43,10 +43,11 @@ enum class ScreenShader {
 /** The options of the window and the GPU device. */
 struct DisplayOptions {
     bool n64Effects = false; /*!< Console particle textures, opacity, and skid-mark visibility. */
-    bool n64WindowReflections = false;  /*!< Generate car reflection coordinates as the N64 RSP. */
-    bool wideMenus = false;             /*!< Fill wide frames with the menu background. */
-    float fieldOfViewScale = 1.0f;      /*!< Multiplier of the race camera's field of view. */
-    float drawDistanceScale = 1.0f;     /*!< Multiplier of the race view and mirror distances. */
+    bool n64WindowReflections = false; /*!< Generate car reflection coordinates as the N64 RSP. */
+    bool wideMenus = false;            /*!< Fill wide frames with the menu background. */
+    bool autoWideMenus = false;        /*!< Fill menu backgrounds only for a 16:9 internal frame. */
+    float fieldOfViewScale = 1.0f;     /*!< Multiplier of the race camera's field of view. */
+    float drawDistanceScale = 1.0f;    /*!< Multiplier of the race view and mirror distances. */
     std::string gpuPreference = "auto"; /*!< Automatic, high-performance, or low-power selection. */
     bool unlockedFramerate =
         false;           /*!< Disable presentation pacing and the software frame limit. */
@@ -119,10 +120,11 @@ public:
     /** Prevent assignment of the window and GPU device. */
     GpuWindow &operator=(const GpuWindow &) = delete;
 
-    /** @return Whether menu backgrounds fill wide frames. */
-    bool WideMenus() const {
-        return m_options.wideMenus;
-    }
+    /**
+     * @return Whether wide menu background rendering is enabled. Automatic mode requires a 16:9
+     * internal frame, allowing at most one pixel of width rounding error.
+     */
+    bool WideMenus() const;
 
     /** @return The configured multiplier of the race camera's field of view. */
     float FieldOfViewScale() const {

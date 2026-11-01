@@ -129,6 +129,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- N64 and Boss Rally presets explicitly select N64 and PC window reflections, respectively,
+  through Options and `--preset`.
+- Ultra uses cropped wide menu backgrounds only for 16:9 internal frames, updating after resizing
+  or live options changes. N64, Boss Rally, Worst, and Low power disable wide menus;
+  `WideMenus=1` still applies to all wide frames.
 - `--preset` replaces `--gpu-preset` for command-line preset selection.
 - N64 and Boss Rally presets use their native texture filters with anti-aliasing, alpha-to-coverage,
   upscaling, post-process anti-aliasing, and anisotropic filtering disabled. Both preserve title,

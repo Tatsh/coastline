@@ -28,6 +28,7 @@ bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset) {
         config.Set("Game", "AssetPack", n64 ? "default" : "boss");
         config.Set("Game", "SoundEffects", n64 ? "N64" : "PC");
         config.Set("Game", "Music", n64 ? "XM" : "CD");
+        config.Set("Game", "WindowReflections", n64 ? "N64" : "PC");
         config.Set("Video", "AspectRatio", "4:3");
     }
     if (ultra) {
@@ -52,7 +53,7 @@ bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset) {
     config.Set("Video", "FrameRateLimit", ultra ? "0" : br || lowPower ? "60" : "30");
     config.Set("Video", "UnlockedFramerate", "0");
     config.Set("Video", "VSync", "1");
-    config.Set("Video", "WideMenus", "0");
+    config.Set("Video", "WideMenus", ultra ? "auto" : "0");
     return true;
 }
 

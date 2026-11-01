@@ -246,6 +246,7 @@ int main() {
     assert(presetConfig.Get("Video", "GraphicsPreset") == "n64");
     assert(presetConfig.Get("Game", "AssetPack") == "default");
     assert(presetConfig.Get("Game", "Effects") == "N64");
+    assert(presetConfig.Get("Game", "WindowReflections") == "N64");
     assert(presetConfig.Get("Game", "SoundEffects") == "N64");
     assert(presetConfig.Get("Video", "TextureFilter") == "n64");
     assert(presetConfig.Get("Video", "ScreenShader") == "consumer-crt");
@@ -285,6 +286,7 @@ int main() {
     assert(presetConfig.Get("Game", "Music") == "CD");
     assert(presetConfig.Get("Game", "SoundEffects") == "PC");
     assert(presetConfig.Get("Game", "Effects") == "PC");
+    assert(presetConfig.Get("Game", "WindowReflections") == "PC");
     assert(presetConfig.Get("Game", "Region") == "jpn");
     assert(presetConfig.Get("Game", "TitleScreen") == "japanese");
     assert(presetConfig.Get("Game", "AutoSave") == "1");
@@ -326,6 +328,7 @@ int main() {
     assert(presetConfig.Get("Video", "AnisotropicFiltering") == "16");
     assert(presetConfig.Get("Game", "Effects") == "PC");
     assert(presetConfig.Get("Video", "GraphicsPreset") == "ultra");
+    assert(presetConfig.Get("Video", "WideMenus") == "auto");
     presets.FinishPresetSelection();
     presetConfig.Set("Video", "AspectRatio", "32:9");
     presetConfig.Set("Video", "GpuPreference", "high-performance");
@@ -334,6 +337,7 @@ int main() {
     assert(presetConfig.GetInteger("Video", "DrawDistance", 0) == 1);
     assert(presetConfig.GetInteger("Video", "Antialias", 0) == 1);
     assert(presetConfig.Get("Video", "GraphicsPreset") == "worst");
+    assert(presetConfig.Get("Video", "WideMenus") == "0");
     assert(presetConfig.Get("Video", "GpuPreference") == "high-performance");
     assert(presetConfig.Get("Video", "ScreenShader") == "none");
     assert(presetConfig.Get("Video", "ScaleFilter") == "nearest");
