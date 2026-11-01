@@ -116,6 +116,10 @@ RaceSetup Menus::ChosenRace() const {
             m_carSelect[static_cast<std::size_t>(player)].otherLook};
         // The custom decals race the model the decals loaded into, in the paint of the player.
         auto index = static_cast<std::size_t>(player);
+        if (m_config) {
+            setup.cars[index].camera =
+                m_config->GetIndex("Player" + std::to_string(player + 1), "Camera", 4, 0);
+        }
         if (m_carSelect[index].customDecals && m_customDecals[index] &&
             m_customDecalImages[index]) {
             setup.cars[index].images = m_customDecalImages[index];

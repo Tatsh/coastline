@@ -100,6 +100,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Each player's selected camera persists across races and game restarts, excluding automatic finish
+  and replay camera changes.
 - Logs use concise present-tense action and status messages.
 - Timing statistics update once a second with average CPU work, frame interval, and FPS, retaining
   the highest CPU work and interval and lowest one-second FPS since statistics were enabled.

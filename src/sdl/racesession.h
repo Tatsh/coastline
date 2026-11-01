@@ -37,6 +37,7 @@ struct RacePlayerSetup {
     std::optional<std::array<u8, 3>> color;
     /** Whether the car races in its other look, as Vehicle.otherLook of the console. */
     bool otherLook = false;
+    int camera = 0; /*!< The last selected cockpit, chase, bumper, or trackside view. */
 };
 
 /** What a race is, in the terms of the race engine. */
@@ -135,6 +136,10 @@ public:
 
     /** @return The results of the race that ended last with RaceEnd::Results. */
     const RaceResults &Results() const;
+    /** @return Each player's selected camera, or -1 outside player-controlled races. */
+    std::array<int, 2> CameraChoices() const {
+        return m_cameraChoices;
+    }
 
 private:
     void StopMusic();
@@ -142,6 +147,7 @@ private:
     void HoldSoundUntilShown();
 
     RaceResults m_results;
+    std::array<int, 2> m_cameraChoices{-1, -1};
     bool m_musicStarted = false;
     bool m_waitForStart = false;
     bool m_autopilot = false;

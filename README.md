@@ -334,6 +334,10 @@ distinct native sounds with either race sound source. Intro sounds remain specif
 title.
 `PlaySFX=0` silences menu feedback, intro sounds, and race sound effects independently of music.
 
+Each player's selected race camera persists across races and application restarts. `[Player1]`
+and `[Player2]` store `Camera` as `0` (cockpit), `1` (chase), `2` (bumper), or `3` (trackside).
+Replays and automatic finish cameras preserve the player's selection.
+
 Setting BGM or SFX volume to zero suspends processing for the corresponding category. BGM stops XM
 sequencing and mixing or pauses CD playback and FLAC decoding. SFX pauses native mixing and EAR
 playback updates. Raising a volume resumes its category independently; setting both to zero also

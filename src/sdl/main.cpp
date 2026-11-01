@@ -1585,6 +1585,20 @@ int main(int argc, char *argv[]) {
                                 raceTime -= RACE_STEP;
                                 end = raceSession.Step();
                             }
+                            bool cameraChanged = false;
+                            const auto cameras = raceSession.CameraChoices();
+                            for (std::size_t player = 0; player < cameras.size(); ++player) {
+                                const auto section = "Player" + std::to_string(player + 1);
+                                if (cameras[player] >= 0 &&
+                                    config.GetInteger(section, "Camera", -1) != cameras[player]) {
+                                    config.Set(section, "Camera", std::to_string(cameras[player]));
+                                    cameraChanged = true;
+                                }
+                            }
+                            if (cameraChanged && !config.Save(configPath)) {
+                                SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                                             "Cannot save camera settings.");
+                            }
                             if (end != coastline::RaceEnd::Running) {
                                 // The module of the track plays on after the race until the main
                                 // menu starts the music of the menus. The credits play under the

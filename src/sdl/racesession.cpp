@@ -5,6 +5,7 @@
 
 #include <SDL3/SDL.h>
 
+#include "common/camera.h"
 #include "common/configfile.h"
 #include "common/fade.h"
 #include "common/game.h"
@@ -14,6 +15,7 @@
 #include "common/profile.h"
 #include "common/race.h"
 #include "common/racephases.h"
+#include "common/racerslot.h"
 #include "common/rallyconfig.h"
 #include "common/render.h"
 #include "common/replay.h"
@@ -24,6 +26,7 @@
 #include "common/system.h"
 #include "common/trackselect.h"
 #include "common/vehicle.h"
+#include "common/vehiclecamera.h"
 #include "common/vehiclecount.h"
 #include "common/weather.h"
 #include "input.h"
@@ -115,6 +118,7 @@ void LoadGhostCar(const RaceSetup &setup) {
 } // namespace
 
 void RaceSession::Start(const RaceSetup &setup, const std::filesystem::path &music, bool cdAudio) {
+    m_cameraChoices.fill(-1);
     // The choices of the front end of the PC release that InitGameAndShowMenus() reads.
     g_dwGameMode = setup.gameMode;
     g_dwRaceSessionType = RACE_SESSION_ATTRACT;
@@ -184,6 +188,19 @@ void RaceSession::Start(const RaceSetup &setup, const std::filesystem::path &mus
         if (color) {
             g_aVehicles[i].SetVehiclePaintColorRgb((*color)[0], (*color)[1], (*color)[2]);
         }
+        if (setup.gameMode >= GAME_MODE_CHAMPIONSHIP && setup.gameMode <= GAME_MODE_PRACTICE) {
+            const auto index = static_cast<std::size_t>(i);
+            const int camera = std::clamp(setup.cars[index].camera, 0, 3);
+            Vehicle &vehicle = g_aVehicles[i];
+            if (camera == VEHICLE_CAMERA_TRACKSIDE) {
+                PlaceTrackCamera(&vehicle);
+            } else {
+                vehicle.SetActiveCamera(&vehicle.GetCameras()[camera]);
+                vehicle.SetCameraChanged(1);
+            }
+            vehicle.SetPreviousCamera(vehicle.GetActiveCamera());
+            m_cameraChoices[index] = camera;
+        }
     }
 }
 
@@ -236,8 +253,22 @@ RaceEnd RaceSession::Step() {
         m_soundHeld = true;
         PauseMusicPlayback();
     }
-    // The PC release advances the fades with each frame it draws, and the SDL game with each frame
-    // of the race.
+    if (!gInstantReplayActive && g_dwRaceInitialized) {
+        for (std::size_t player = 0; player < m_cameraChoices.size(); ++player) {
+            const auto &vehicle = g_aVehicles[player];
+            if (m_cameraChoices[player] < 0 || vehicle.GetRacer() == nullptr ||
+                (vehicle.GetRacer()->GetStatus() & RACER_FINISHED) != 0) {
+                continue;
+            }
+            for (int camera = 0; camera <= VEHICLE_CAMERA_TRACKSIDE; ++camera) {
+                if (vehicle.GetActiveCamera() == &vehicle.GetCameras()[camera]) {
+                    m_cameraChoices[player] = camera;
+                    break;
+                }
+            }
+        }
+    }
+    // The PC release advances fades with each drawn frame, and SDL with each race frame.
     UpdateFadeTransitions();
     HoldSoundUntilShown();
     return RaceEnd::Running;
