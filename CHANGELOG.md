@@ -102,6 +102,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Each player's selected camera persists across races and game restarts, excluding automatic finish
   and replay camera changes.
+- Statistics use shorter RAM and VRAM labels.
 - Logs use concise present-tense action and status messages.
 - Successful automatic saves skip post-race save prompts, returning Championship to track selection
   and time attack to the main menu. Disabled or failed automatic saves retain manual prompts.

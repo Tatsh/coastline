@@ -343,9 +343,9 @@ std::vector<std::string> PerformanceStats::Lines(std::uint64_t gameGpuBytes) con
             fmt::format("CPU: {:.0f} PCT, {:.0f} PCT", *m_cpuPercent, *m_cpuPercent / cores));
     }
     if (m_memoryBytes) {
-        lines.push_back("GAME RAM: " + MemorySize(*m_memoryBytes));
+        lines.push_back("RAM: " + MemorySize(*m_memoryBytes));
     }
-    lines.push_back("GAME VRAM: " + MemorySize(gameGpuBytes));
+    lines.push_back("VRAM: " + MemorySize(gameGpuBytes));
     // The share of the GPU comes and goes with the samples of NVML, so it is the last line.
     std::optional<unsigned> gpu = m_gpu ? m_gpu->Percent() : std::nullopt;
     if (gpu) {
