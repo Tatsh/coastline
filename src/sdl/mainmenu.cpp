@@ -2,6 +2,7 @@
 
 #include <SDL3/SDL.h>
 
+#include "assetpack.h"
 #include "common/audio.h"
 #include "menus.h"
 
@@ -40,7 +41,8 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
                                    const std::filesystem::path &cache,
                                    GameConfig &config,
                                    const std::filesystem::path &configPath,
-                                   std::span<const std::filesystem::path> dataRoots) {
+                                   std::span<const std::filesystem::path> dataRoots,
+                                   std::string_view assetPack) {
     auto screen = MenuScreen::Load(renderer, release);
     if (!screen) {
         return nullptr;
@@ -51,9 +53,13 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
     }
     std::unique_ptr<Menus> menus(new Menus(std::move(screen)));
     menus->m_mainMenuItems = std::move(*main);
+    const bool pcPreviews =
+        (assetPack.empty() ? config.Get("Game", "AssetPack").value_or("default") : assetPack) ==
+        BOSS_PACK;
     if (!menus->LoadPlayerCountItems(renderer, release) ||
-        !menus->LoadTrackMenu(renderer, release) || !menus->LoadWeatherItems(renderer, release) ||
-        !menus->LoadCarSelect(renderer, release) || !menus->LoadOptionsItems(renderer, release) ||
+        !menus->LoadTrackMenu(renderer, release, pcPreviews) ||
+        !menus->LoadWeatherItems(renderer, release) || !menus->LoadCarSelect(renderer, release) ||
+        !menus->LoadOptionsItems(renderer, release) ||
         !menus->LoadControllerScreen(renderer, release)) {
         return nullptr;
     }

@@ -105,7 +105,8 @@ RaceSetup Menus::ChosenRace() const {
     for (int player = 0; player < m_numLocalPlayers; ++player) {
         const MenuProfile &profile = player == 0 ? m_profile : m_secondProfile;
         setup.cars[static_cast<std::size_t>(player)] = {
-            m_carSelect[static_cast<std::size_t>(player)].carModel,
+            m_cars[static_cast<std::size_t>(m_carSelect[static_cast<std::size_t>(player)].carModel)]
+                .engineCar,
             profile.handling,
             profile.transmission,
             profile.tires,

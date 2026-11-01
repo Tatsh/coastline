@@ -1249,7 +1249,8 @@ int main(int argc, char *argv[]) {
                                                       paths->cache,
                                                       config,
                                                       configPath,
-                                                      std::array{assetData, paths->data});
+                                                      std::array{assetData, paths->data},
+                                                      pack);
                     if (mainMenu) {
                         mainMenu->SetMenuMusic(playMenuMusic);
                     }

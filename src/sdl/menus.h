@@ -78,16 +78,18 @@ struct MenuSeason {
 
 /** A car the players can choose, as g_aCarModels of the console records it. */
 struct MenuCar {
-    std::string name;             /*!< The name, in capitals. */
-    std::string directory;        /*!< The directory of its model in the import of the release. */
-    bool exists = false;          /*!< Whether the car has a model. */
-    int driveType = 0;            /*!< The wheels driven, as the index of their name. */
-    int engineLayout = 0;         /*!< The layout of the engine, as the index of its name. */
-    float acceleration = 0.0f;    /*!< The acceleration shown, a full bar at 500. */
-    float maxSpeed = 0.0f;        /*!< The top speed shown, a full bar at 10. */
-    int gearCount = 0;            /*!< The gears of the gearbox. */
-    float shadowLength = 0.0f;    /*!< The length of its shadow on the stage of the cars. */
-    float shadowHalfWidth = 0.0f; /*!< Half the width of its shadow on the stage of the cars. */
+    std::string name;              /*!< The name, in capitals. */
+    std::string directory;         /*!< The directory of its model in the import of the release. */
+    std::filesystem::path preview; /*!< The model displayed in the car-selection stage. */
+    int engineCar = 0;             /*!< The car index of the PC race engine. */
+    bool exists = false;           /*!< Whether the car has a model. */
+    int driveType = 0;             /*!< The wheels driven, as the index of their name. */
+    int engineLayout = 0;          /*!< The layout of the engine, as the index of its name. */
+    float acceleration = 0.0f;     /*!< The acceleration shown, a full bar at 500. */
+    float maxSpeed = 0.0f;         /*!< The top speed shown, a full bar at 10. */
+    int gearCount = 0;             /*!< The gears of the gearbox. */
+    float shadowLength = 0.0f;     /*!< The length of its shadow on the stage of the cars. */
+    float shadowHalfWidth = 0.0f;  /*!< Half the width of its shadow on the stage of the cars. */
 };
 
 /** The shaded triangles of a display list of the stage of the cars. */
@@ -150,6 +152,8 @@ public:
      * @param config The settings of BossRally.ini, with the cars the players chose last. The
      * settings outlive the menus.
      * @param configPath The file of the settings, written whenever a player chooses a car.
+     * @param dataRoots The imported data roots for available packs and cartridge regions.
+     * @param assetPack The active pack, or empty to use the configured pack.
      * @return The menus, or nothing with the reason logged.
      */
     static std::unique_ptr<Menus> Load(SceneRenderer &renderer,
@@ -158,7 +162,8 @@ public:
                                        const std::filesystem::path &cache,
                                        GameConfig &config,
                                        const std::filesystem::path &configPath,
-                                       std::span<const std::filesystem::path> dataRoots = {});
+                                       std::span<const std::filesystem::path> dataRoots = {},
+                                       std::string_view assetPack = {});
     ~Menus();
     Menus(const Menus &) = delete;
     Menus &operator=(const Menus &) = delete;
@@ -243,7 +248,8 @@ private:
                                   float seconds,
                                   const MenuButtons &first,
                                   bool secondController);
-    bool LoadTrackMenu(SceneRenderer &renderer, const std::filesystem::path &release);
+    bool
+    LoadTrackMenu(SceneRenderer &renderer, const std::filesystem::path &release, bool pcPreviews);
     void SetTrackFromSeason();
     void LoadSeasonCars(SceneRenderer &renderer);
     bool IsTrackUnlocked(int track) const;

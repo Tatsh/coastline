@@ -94,6 +94,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Pure PC car previews use PC models and textures, including Type CE, and apply custom decals to
+  the selected preview model. Command-line asset-pack selection also determines preview models.
 - Internal resolution offers explicit sizes from 320x240 through connected display modes, defaulting
   to Window size and applying as Options closes. Resource-changing options identify game restarts.
 - Graphics presets override saved internal resolution, render scale, and post-process anti-aliasing
@@ -125,6 +127,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Japanese PJ, TR, and MN menu selections start races with the matching cars instead of RS, M3,
+  and Helmet counterparts.
 - Fixed Milk Truck front-right fender and fascia colours by importing every texture sharing a
   paintable palette. Existing assets require reimporting the disc and ROM images.
 - Fixed PC CD music playing too fast by preserving decoded FLAC samples between audio callbacks.

@@ -8,6 +8,7 @@
 #include <SDL3/SDL.h>
 #include <nlohmann/json.hpp>
 
+#include "common/assetnames.h"
 #include "frontend.h"
 #include "gpu.h"
 #include "menus.h"
@@ -55,7 +56,9 @@ std::string FormatLapTime(float seconds) {
 
 } // namespace
 
-bool Menus::LoadTrackMenu(SceneRenderer &renderer, const std::filesystem::path &release) {
+bool Menus::LoadTrackMenu(SceneRenderer &renderer,
+                          const std::filesystem::path &release,
+                          bool pcPreviews) {
     m_release = release;
     try {
         std::ifstream file(release / "data" / "menus.json");
@@ -74,10 +77,36 @@ bool Menus::LoadTrackMenu(SceneRenderer &renderer, const std::filesystem::path &
             m_trackExists.push_back(track.at("exists").get<bool>());
         }
         m_weatherNames = menu.at("weathers").get<std::vector<std::string>>();
+        constexpr std::array<std::string_view, 16> carDirectories{"type-ce",
+                                                                  "type-es",
+                                                                  "type-ns",
+                                                                  "type-rs",
+                                                                  "type-sp",
+                                                                  "type-ps",
+                                                                  "type-m3",
+                                                                  "type-ip",
+                                                                  "type-ld",
+                                                                  "helmet",
+                                                                  "milk-truck",
+                                                                  "cupra",
+                                                                  "beach-ball",
+                                                                  "type-pj",
+                                                                  "type-tr",
+                                                                  "type-mn"};
         for (const auto &record : menu.at("cars")) {
             MenuCar car;
             car.name = record.at("name").get<std::string>();
             car.directory = record.at("directory").get<std::string>();
+            const auto directory = std::filesystem::path(car.directory).filename().string();
+            const auto identity = std::ranges::find(carDirectories, directory);
+            car.engineCar = identity == carDirectories.end() ?
+                                static_cast<int>(m_cars.size()) :
+                                static_cast<int>(identity - carDirectories.begin());
+            car.preview = release / car.directory / "model.gltf";
+            if (pcPreviews) {
+                car.preview = release.parent_path().parent_path() / "cars" /
+                              (std::string(g_apszCarModelPrefixes[car.engineCar]) + ".gltf");
+            }
             car.exists = record.at("exists").get<bool>();
             car.driveType = record.at("driveType").get<int>();
             car.engineLayout = record.at("engineLayout").get<int>();

@@ -289,7 +289,7 @@ void Menus::LoadCarModel(SceneRenderer &renderer, int slot, int car) {
     if (model && loaded == look) {
         return;
     }
-    auto file = m_release / m_cars[static_cast<std::size_t>(car)].directory / "model.gltf";
+    const auto &file = m_cars[static_cast<std::size_t>(car)].preview;
     ModelOptions options;
     options.paint = player.paint;
     bool otherLook = player.otherLook;
@@ -390,8 +390,8 @@ void Menus::LoadCustomModel(SceneRenderer &renderer, int player) {
     options.parts = StagePartsOf(choice.otherLook);
     options.images = m_customDecalImages[index];
     options.paint = choice.paint;
-    m_customModels[index] =
-        RenderModel::Load(renderer, m_customDecals[index]->Directory() / "model.gltf", options);
+    m_customModels[index] = RenderModel::Load(
+        renderer, m_cars[static_cast<std::size_t>(choice.carModel)].preview, options);
     m_customModelLooks[index] = {
         choice.paint[0] >> 3, choice.paint[1] >> 3, choice.paint[2] >> 3, choice.otherLook};
 }
