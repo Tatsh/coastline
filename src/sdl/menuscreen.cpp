@@ -606,6 +606,85 @@ MenuScreen::Update(float seconds, std::span<const MenuButtons> players, const Me
     return result;
 }
 
+void MenuScreen::DrawCoin(SceneRenderer &renderer,
+                          float x,
+                          float angle,
+                          const Matrix4 &projection) {
+    struct Triangle {
+        std::array<StageVertex, 3> corners;
+        float depth;
+    };
+    constexpr int SEGMENTS = 32;
+    std::vector<Triangle> triangles;
+    const float sine = std::sin(angle);
+    const float cosine = std::cos(angle);
+    auto rotate = [&](const std::array<float, 3> &point) {
+        return std::array<float, 3>{
+            point[0] * cosine + point[2] * sine, point[1], point[2] * cosine - point[0] * sine};
+    };
+    auto triangle = [&](std::array<float, 3> a,
+                        std::array<float, 3> b,
+                        std::array<float, 3> c,
+                        std::array<float, 3> normal) {
+        normal = rotate(normal);
+        const float diffuse =
+            std::max(0.0f, normal[0] * -0.4f + normal[1] * 0.5f + normal[2] * 0.7681146f);
+        const float glint = std::pow(
+            std::max(0.0f, normal[0] * -0.2f + normal[1] * 0.25f + normal[2] * 0.9473648f), 24.0f);
+        const float light = 0.3f + diffuse * 0.7f;
+        const std::array<std::uint8_t, 4> color{
+            static_cast<std::uint8_t>(std::min(255.0f, 255.0f * light + glint * 90.0f)),
+            static_cast<std::uint8_t>(std::min(255.0f, 185.0f * light + glint * 90.0f)),
+            static_cast<std::uint8_t>(std::min(255.0f, 35.0f * light + glint * 90.0f)),
+            255};
+        Triangle face{};
+        int index = 0;
+        for (auto point : {a, b, c}) {
+            point = rotate(point);
+            point[0] += x;
+            point[1] += STAGE_Y;
+            face.corners[index++] = {point, color};
+            face.depth += point[1] * std::sin(STAGE_TILT) + point[2] * std::cos(STAGE_TILT);
+        }
+        triangles.push_back(face);
+    };
+    for (int segment = 0; segment < SEGMENTS; ++segment) {
+        const float from = TWO_PI * segment / SEGMENTS;
+        const float to = TWO_PI * (segment + 1) / SEGMENTS;
+        const float middle = (from + to) * 0.5f;
+        const float nx = std::cos(middle);
+        const float ny = std::sin(middle);
+        auto point = [](float turn, float radius, float depth) {
+            return std::array<float, 3>{std::cos(turn) * radius, std::sin(turn) * radius, depth};
+        };
+        for (float side : {-1.0f, 1.0f}) {
+            const auto a = point(from, 24.0f, side * 2.5f);
+            const auto b = point(to, 24.0f, side * 2.5f);
+            const auto c = point(from, 27.0f, side * 1.0f);
+            const auto d = point(to, 27.0f, side * 1.0f);
+            triangle({0, 0, side * 2.5f}, a, b, {0, 0, side});
+            triangle(a, c, d, {nx * 0.6f, ny * 0.6f, side * 0.8f});
+            triangle(a, d, b, {nx * 0.6f, ny * 0.6f, side * 0.8f});
+        }
+        const auto a = point(from, 27.0f, -1.0f);
+        const auto b = point(to, 27.0f, -1.0f);
+        const auto c = point(from, 27.0f, 1.0f);
+        const auto d = point(to, 27.0f, 1.0f);
+        triangle(a, b, c, {nx, ny, 0});
+        triangle(b, d, c, {nx, ny, 0});
+    }
+    // Flat draws do not write depth. Submit farther coin faces first.
+    std::ranges::sort(triangles, {}, &Triangle::depth);
+    std::vector<FlatVertex> corners;
+    corners.reserve(triangles.size() * 4);
+    for (const auto &face : triangles) {
+        AddTriangle(corners, face.corners[0], face.corners[1], face.corners[2]);
+    }
+    FlatMaterial material;
+    material.combine = SHADE_COMBINE;
+    renderer.DrawQuads(corners, material, MultiplyMatrices(projection, RotationX(STAGE_TILT)));
+}
+
 void MenuScreen::Draw(SceneRenderer &renderer, const MenuSetup &setup) const {
     const State &s = *m_state;
     GpuWindow &window = renderer.Window();
@@ -680,7 +759,9 @@ void MenuScreen::Draw(SceneRenderer &renderer, const MenuSetup &setup) const {
         // An item is its model turning on the stage, or its name when it has no model.
         auto drawItem = [&](int index, float offset, float angle) {
             const MenuItem &item = setup.items[static_cast<std::size_t>(index)];
-            if (item.model) {
+            if (item.coin) {
+                DrawCoin(renderer, STAGE_X - offset * SCREEN_WIDTH / 6.0f, angle, projection);
+            } else if (item.model) {
                 Matrix4 world =
                     MultiplyMatrices(RotationX(STAGE_TILT),
                                      StageModelAt(STAGE_X - offset * SCREEN_WIDTH / 6.0f,

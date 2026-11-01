@@ -1180,8 +1180,13 @@ int main(int argc, char *argv[]) {
             if (sceneRenderer) {
                 const std::filesystem::path frontEndRelease = coastline::ReleaseDirectory(assets);
                 intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
-                mainMenu = coastline::Menus::Load(
-                    *sceneRenderer, frontEndRelease, paths->data, paths->cache, config, configPath);
+                mainMenu = coastline::Menus::Load(*sceneRenderer,
+                                                  frontEndRelease,
+                                                  paths->data,
+                                                  paths->cache,
+                                                  config,
+                                                  configPath,
+                                                  std::array{assetData, paths->data});
                 if (mainMenu) {
                     mainMenu->SetMenuMusic(playMenuMusic);
                 }

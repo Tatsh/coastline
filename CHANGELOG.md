@@ -11,6 +11,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Nine Options menu settings for asset packs, regional models and textures, N64 or PC CD music,
+  anti-aliasing, anisotropic filtering, texture filtering, field of view, internal resolution scale,
+  and FXAA, with spinning gold coin placeholders. Changes save immediately and require a restart;
+  failed saves display an error and revert the menu adjustment.
 - All available cars and tracks are selectable outside Championship, including PC Race and Bonus
   tracks, their mirrors, and Gamewin. Extra track records use separate INI settings and preserve the
   native Controller Pak layout.

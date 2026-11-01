@@ -222,11 +222,12 @@ std::optional<std::filesystem::path> ExpandAliases(const std::filesystem::path &
 std::filesystem::path PackDirectory(const std::filesystem::path &data,
                                     std::string_view pack,
                                     const std::filesystem::path &fallback) {
-    const auto directory = data / "assets" / pack;
+    const std::filesystem::path packPath(std::u8string(pack.begin(), pack.end()));
+    const auto directory = data / "assets" / packPath;
     std::error_code error;
     return fallback.empty() || std::filesystem::is_directory(directory, error) ?
                directory :
-               fallback / "assets" / pack;
+               fallback / "assets" / packPath;
 }
 
 std::optional<std::filesystem::path> PackAssets(const std::filesystem::path &data,
@@ -276,8 +277,9 @@ std::optional<std::filesystem::path> PackAssets(const std::filesystem::path &dat
     }
     if (pack != DEFAULT_PACK && pack != region &&
         !layer(directory,
-               region.empty() ? cache / "assets" / pack :
-                                cache / "assets" / "selected" / region / pack)) {
+               region.empty() ? cache / "assets" / std::u8string(pack.begin(), pack.end()) :
+                                cache / "assets" / "selected" / region /
+                                    std::u8string(pack.begin(), pack.end()))) {
         return std::nullopt;
     }
     return base;

@@ -194,6 +194,7 @@ add_library(
   effecttextures.cpp
   enginetextures.cpp
   frontend.cpp
+  gamesettings.cpp
   ghostfile.cpp
   ghostnote.cpp
   gltfdocument.cpp

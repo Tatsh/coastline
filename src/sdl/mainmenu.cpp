@@ -39,7 +39,8 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
                                    const std::filesystem::path &saves,
                                    const std::filesystem::path &cache,
                                    GameConfig &config,
-                                   const std::filesystem::path &configPath) {
+                                   const std::filesystem::path &configPath,
+                                   std::span<const std::filesystem::path> dataRoots) {
     auto screen = MenuScreen::Load(renderer, release);
     if (!screen) {
         return nullptr;
@@ -65,6 +66,14 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
     menus->LoadPakData();
     menus->m_config = &config;
     menus->m_configPath = configPath;
+    menus->m_gameSettings = std::make_unique<GameSettings>(config, dataRoots);
+    menus->m_gameSettingsStart = static_cast<int>(menus->m_optionsMenuItems.size());
+    for (std::size_t index = 0; index < menus->m_gameSettings->Count(); ++index) {
+        menus->m_optionsMenuItems.push_back({menus->m_gameSettings->Label(index),
+                                             MENU_ITEM_ADJUSTABLE | MENU_ITEM_IMMEDIATE,
+                                             nullptr,
+                                             true});
+    }
     menus->LoadExtraTrackRecords();
     menus->LoadCarChoices();
     menus->m_paintShop = PaintShop::Load(renderer,

@@ -500,6 +500,7 @@ fxmisc
 fxtrue
 gameinit
 gamesession
+gamesettings
 gamestate
 gamewin
 gbicommand

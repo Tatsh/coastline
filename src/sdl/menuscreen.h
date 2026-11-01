@@ -77,6 +77,7 @@ struct MenuItem {
     std::string name;                   /*!< The text of the item. */
     u32 flags = 0;                      /*!< The MENU_ITEM_ flags. */
     const RenderModel *model = nullptr; /*!< The model of the item, or none to show its name. */
+    bool coin = false;                  /*!< Draw a gold coin placeholder instead of a model. */
 };
 
 /** What a frame of a screen shows, the arguments of ProcessScreenState(). */
@@ -101,6 +102,8 @@ struct MenuTitleImage {
 /** The state and the assets of the menu screens, read once from the import of a release. */
 class MenuScreen {
 public:
+    /** Draw the lit placeholder on the menu stage, with a turn in radians. */
+    static void DrawCoin(SceneRenderer &renderer, float x, float angle, const Matrix4 &projection);
     /**
      * Read the background, the arrows, the title pictures, the fonts, the lights, the choice
      * marker, and the sounds the screens share.

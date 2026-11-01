@@ -254,6 +254,14 @@ coastline_dependency(
   URL https://github.com/nlohmann/json/releases/download/v3.12.0/json.tar.xz
   HASH 42f6e95cad6ec532fd372391373363b62a14af6d771056dbfc86160e6dfff7aa
   OPTIONS JSON_BuildTests=OFF JSON_Install=OFF)
+add_executable(gamesettings_test gamesettings_test.cpp "${_src}/sdl/gamesettings.cpp"
+                                 "${_src}/sdl/config.cpp")
+set_target_properties(gamesettings_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(gamesettings_test PRIVATE "${_src}/sdl")
+target_compile_options(gamesettings_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(gamesettings_test PRIVATE -fsanitize=address,undefined)
+add_test(NAME gamesettings COMMAND gamesettings_test)
+
 add_executable(gltfdocument_test gltfdocument_test.cpp "${_src}/sdl/gltfdocument.cpp")
 set_target_properties(gltfdocument_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(gltfdocument_test PRIVATE "${_src}/sdl")

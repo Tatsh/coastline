@@ -18,6 +18,7 @@
 
 #include "config.h"
 #include "frontend.h"
+#include "gamesettings.h"
 #include "menuscreen.h"
 #include "paintshop.h"
 #include "racesession.h"
@@ -154,7 +155,8 @@ public:
                                        const std::filesystem::path &saves,
                                        const std::filesystem::path &cache,
                                        GameConfig &config,
-                                       const std::filesystem::path &configPath);
+                                       const std::filesystem::path &configPath,
+                                       std::span<const std::filesystem::path> dataRoots = {});
     ~Menus();
     Menus(const Menus &) = delete;
     Menus &operator=(const Menus &) = delete;
@@ -449,6 +451,9 @@ private:
     int m_optionsMenuState = 0;
     int m_optionsMenuSelection = 0;
     bool m_optionsChanged = false;
+    std::unique_ptr<GameSettings> m_gameSettings;
+    int m_gameSettingsStart = 0;
+    bool m_gameSettingsSaveError = false;
     bool m_loadConfigurationPending = false;
     bool m_saveConfigurationPending = false;
 

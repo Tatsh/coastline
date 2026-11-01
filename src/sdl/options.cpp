@@ -436,6 +436,19 @@ bool Menus::ProcessPakDataScreen(SceneRenderer &renderer, int dataType) {
 }
 
 void Menus::OptionsMenuPostDraw(SceneRenderer &renderer, int item) {
+    if (item >= m_gameSettingsStart && m_gameSettings) {
+        TextStyle style;
+        style.size = 10;
+        style.align = TextStyle::Align::Center;
+        m_screen->Text().Draw(renderer,
+                              m_gameSettingsSaveError ?
+                                  "%wwSettings could not be saved." :
+                                  "%wwUp/down saves changes. Restart to apply.",
+                              160,
+                              90,
+                              style,
+                              MenuScreen::FlatFor(renderer));
+    }
     if (item < OPTIONS_ITEM_UNITS) {
         TextStyle style;
         style.size = 10;
@@ -479,6 +492,11 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
         "SFX Volume: " + std::to_string(m_options.sfxVolume);
     m_optionsMenuItems[OPTIONS_ITEM_UNITS].name =
         m_options.speedInMph ? "Units: mph" : "Units: kph";
+    if (m_gameSettings) {
+        for (std::size_t index = 0; index < m_gameSettings->Count(); ++index) {
+            m_optionsMenuItems[m_gameSettingsStart + index].name = m_gameSettings->Label(index);
+        }
+    }
 
     // The menu takes no input while the screen of the Controller Pak runs and reads it instead.
     m_pakInput = first;
@@ -493,6 +511,17 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
                                            .isSelectable = {},
                                            .top = {0x00, 0x00, 0x00},
                                            .bottom = {0x80, 0x40, 0x20}});
+    if (m_optionsMenuSelection >= m_gameSettingsStart && m_gameSettings &&
+        (result == MenuResult::Up || result == MenuResult::Down || result == MenuResult::Chosen)) {
+        const auto adjustment =
+            m_gameSettings->AdjustAndSave(m_optionsMenuSelection - m_gameSettingsStart,
+                                          result == MenuResult::Down ? -1 : 1,
+                                          m_configPath);
+        if (adjustment != GameSettings::Adjustment::Unchanged) {
+            m_gameSettingsSaveError = adjustment == GameSettings::Adjustment::SaveFailed;
+        }
+        return;
+    }
     // IncreaseBgmVolume() and the others of the console, by a level within the levels.
     auto step = [this](int &level, int by) {
         level = std::clamp(level + by, 0, MAX_VOLUME_LEVEL);

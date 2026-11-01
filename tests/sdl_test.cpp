@@ -307,6 +307,13 @@ void CheckPackAssets() {
     Check(boss && ReadText(*boss / "cars" / "model.gltf") == "pack glTF" &&
               ReadText(*boss / "cars" / "model.glb") == "pack GLB",
           "both formats in the selected pack remain available for glTF precedence");
+    const std::filesystem::path unicodePack(u8"日本");
+    WriteText(data / "assets" / unicodePack / "cars/model.glb", "Unicode GLB");
+    auto unicode = coastline::PackAssets(data, cache, "日本");
+    Check(coastline::PackDirectory(data, "日本") == data / "assets" / unicodePack &&
+              unicode == cache / "assets" / unicodePack &&
+              ReadText(*unicode / "cars/model.glb") == "Unicode GLB",
+          "UTF-8 pack identifiers select native paths and cache directories");
     WriteText(data / "assets/jpn/tracks/a.png", "Japanese a");
     WriteText(data / "assets/jpn/tracks/b.png", "Japanese b");
     WriteText(data / "assets/jpn/cars/model.glb", "Japanese GLB");
