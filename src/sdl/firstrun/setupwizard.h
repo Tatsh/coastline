@@ -3,8 +3,8 @@
 /**
  * @file
  * The first-run setup wizard locates and imports disc and ROM images on screens drawn on a
- * TextGrid in the style of the QBASIC editor. The wizard takes events and produces a grid without
- * calling SDL.
+ * TextGrid with the blue and grey palette of text-mode Windows Setup. The wizard processes events
+ * and produces a grid without calling SDL.
  */
 
 #include <array>

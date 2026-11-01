@@ -94,6 +94,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Setup uses classic text-mode Windows Setup colours, retaining red invalid ROM fields. Search and
+  import progress bars centre percentages with contrasting text across the filled and empty areas.
 - Zero BGM or SFX volume suspends the corresponding sequencing, decoding, and mixing, with
   independent resumption. Muting both pauses the native audio device.
 - Setup asset search defaults to `~/Downloads` and preserves an edited search directory on retries.

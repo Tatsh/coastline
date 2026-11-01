@@ -1276,28 +1276,24 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
     grid.cursor.reset();
     const bool blink = std::fmod(seconds, 1.0) < 0.5;
     grid.Fill(0, 0, GRID_COLUMNS, GRID_ROWS, ' ', LightGray, Blue);
-    grid.Fill(0, 0, GRID_COLUMNS, 1, ' ', Black, LightGray);
-    grid.WriteUtf8(1, 0, "Coastline Setup", Black, LightGray);
+    grid.WriteUtf8(1, 0, "Coastline Setup", White, Blue);
+    grid.Fill(0, 1, GRID_COLUMNS, 1, 0xC4, LightGray, Blue);
 
     auto dialog = [&](const std::string &title) {
-        grid.Box(DIALOG_COLUMN, DIALOG_ROW, DIALOG_WIDTH, DIALOG_HEIGHT, Black, LightGray, false);
-        grid.Shadow(DIALOG_COLUMN, DIALOG_ROW, DIALOG_WIDTH, DIALOG_HEIGHT);
+        grid.Box(DIALOG_COLUMN, DIALOG_ROW, DIALOG_WIDTH, DIALOG_HEIGHT, LightGray, Blue, false);
         std::string text = " " + title + " ";
-        grid.WriteUtf8(DIALOG_COLUMN + (DIALOG_WIDTH - LabelWidth(text)) / 2,
-                       DIALOG_ROW,
-                       text,
-                       Black,
-                       LightGray);
-        grid.Fill(DIALOG_COLUMN + 1, SEPARATOR_ROW, DIALOG_WIDTH - 2, 1, 0xC4, Black, LightGray);
+        grid.WriteUtf8(
+            DIALOG_COLUMN + (DIALOG_WIDTH - LabelWidth(text)) / 2, DIALOG_ROW, text, White, Blue);
+        grid.Fill(DIALOG_COLUMN + 1, SEPARATOR_ROW, DIALOG_WIDTH - 2, 1, 0xC4, LightGray, Blue);
         grid.At(DIALOG_COLUMN, SEPARATOR_ROW).glyph = 0xC3;
         grid.At(DIALOG_COLUMN + DIALOG_WIDTH - 1, SEPARATOR_ROW).glyph = 0xB4;
     };
     auto drawControl = [&](const WizardControl &control, bool focused) {
         switch (control.kind) {
         case WizardControl::Kind::Button: {
-            CgaColor foreground = !control.enabled ? DarkGray : focused ? LightGray : Black;
-            CgaColor background = focused ? Black : LightGray;
-            CgaColor accent = control.enabled ? White : DarkGray;
+            CgaColor foreground = !control.enabled ? LightBlue : focused ? Black : LightGray;
+            CgaColor background = focused ? LightGray : Blue;
+            CgaColor accent = !control.enabled ? LightBlue : focused ? Black : White;
             std::string label = control.label;
             if (!control.enabled) {
                 std::erase(label, '&');
@@ -1310,8 +1306,8 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
             break;
         }
         case WizardControl::Kind::CheckBox: {
-            CgaColor foreground = focused ? LightGray : Black;
-            CgaColor background = focused ? Black : LightGray;
+            CgaColor foreground = focused ? Black : LightGray;
+            CgaColor background = focused ? LightGray : Blue;
             grid.WriteUtf8(control.column,
                            control.row,
                            control.checked ? "[X] " : "[ ] ",
@@ -1323,18 +1319,16 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
                        control.label,
                        foreground,
                        background,
-                       White);
+                       focused ? Black : White);
             break;
         }
         case WizardControl::Kind::TextBox: {
             const TextField &field = Field(control.id);
-            CgaColor labelColor = control.bad ? Red : Black;
+            CgaColor labelColor = control.bad ? LightRed : LightGray;
             WriteLabel(
-                grid, control.column, control.row - 1, control.label, labelColor, LightGray, White);
-            CgaColor foreground = control.bad ? (focused ? Yellow : White) :
-                                  focused     ? White :
-                                                Black;
-            CgaColor background = control.bad ? Red : focused ? Black : Cyan;
+                grid, control.column, control.row - 1, control.label, labelColor, Blue, White);
+            CgaColor foreground = control.bad ? White : focused ? Black : White;
+            CgaColor background = control.bad ? Red : focused ? LightGray : Blue;
             grid.Fill(control.column, control.row, control.width, 1, ' ', foreground, background);
             std::u32string_view text = field.text;
             if (field.scroll < text.size()) {
@@ -1353,8 +1347,8 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
                      ++i) {
                     auto &cell =
                         grid.At(control.column + static_cast<int>(i - field.scroll), control.row);
-                    cell.foreground = Black;
-                    cell.background = LightGray;
+                    cell.foreground = White;
+                    cell.background = Black;
                 }
             }
             if (focused && blink && Focus() == control.id &&
@@ -1364,35 +1358,35 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
             }
             if (control.bad) {
                 grid.WriteUtf8(
-                    control.column, control.row + 1, field.reason, Red, LightGray, TEXT_WIDTH + 14);
+                    control.column, control.row + 1, field.reason, LightRed, Blue, TEXT_WIDTH + 14);
             } else if (field.valid && field.release) {
                 grid.WriteUtf8(
                     control.column,
                     control.row + 1,
                     std::string(RELEASE_NAMES[static_cast<std::size_t>(*field.release)]) +
                         " ROM image detected.",
-                    DarkGray,
-                    LightGray);
+                    LightGray,
+                    Blue);
             } else if (control.id == WizardControlId::DiscText && field.valid &&
                        LowercaseExtension(
                            ResolveUserPath(EncodeUtf8(field.text), m_services.home)) == ".iso") {
                 grid.WriteUtf8(control.column,
                                control.row + 1,
                                "ISO images do not include PC music.",
-                               DarkGray,
-                               LightGray);
+                               LightGray,
+                               Blue);
             }
             break;
         }
         case WizardControl::Kind::List: {
             WriteLabel(
-                grid, control.column - 1, control.row - 2, control.label, Black, LightGray, White);
+                grid, control.column - 1, control.row - 2, control.label, LightGray, Blue, White);
             grid.Box(control.column - 1,
                      control.row - 1,
                      control.width + 2,
                      control.height + 2,
-                     Black,
                      LightGray,
+                     Blue,
                      false);
             const auto &entries = m_browser->entries;
             for (int line = 0; line < control.height; ++line) {
@@ -1401,8 +1395,8 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
                     break;
                 }
                 bool selected = index == m_browser->selected;
-                CgaColor foreground = selected && focused ? LightGray : Black;
-                CgaColor background = !selected ? LightGray : focused ? Black : Cyan;
+                CgaColor foreground = selected ? Black : LightGray;
+                CgaColor background = selected ? LightGray : Blue;
                 grid.Fill(control.column,
                           control.row + line,
                           control.width - 1,
@@ -1420,17 +1414,17 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
             const int bar = control.column + control.width - 1;
             const int range = std::max(static_cast<int>(entries.size()) - control.height, 0);
             const int track = control.height - 2;
-            grid.Fill(bar, control.row + 1, 1, track, 0xB0, Black, LightGray);
-            grid.At(bar, control.row) = {0x18, Black, LightGray};
-            grid.At(bar, control.row + control.height - 1) = {0x19, Black, LightGray};
+            grid.Fill(bar, control.row + 1, 1, track, 0xB0, LightGray, Blue);
+            grid.At(bar, control.row) = {0x18, LightGray, Blue};
+            grid.At(bar, control.row + control.height - 1) = {0x19, LightGray, Blue};
             int thumb = control.row + 1 + (range == 0 ? 0 : m_browser->top * (track - 1) / range);
-            grid.At(bar, thumb) = {0xDB, Black, LightGray};
+            grid.At(bar, thumb) = {0xDB, White, Blue};
             break;
         }
         case WizardControl::Kind::Choice: {
-            WriteLabel(grid, CONTENT_COLUMN, control.row, control.label, Black, LightGray, White);
-            CgaColor foreground = focused ? LightGray : Black;
-            CgaColor background = focused ? Black : Cyan;
+            WriteLabel(grid, CONTENT_COLUMN, control.row, control.label, LightGray, Blue, White);
+            CgaColor foreground = focused ? Black : LightGray;
+            CgaColor background = focused ? LightGray : Blue;
             grid.Fill(control.column, control.row, control.width, 1, ' ', foreground, background);
             grid.WriteUtf8(control.column + 1,
                            control.row,
@@ -1451,9 +1445,24 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
     };
     auto writeLines = [&](int row, const std::string &text, CgaColor color) {
         for (const std::u32string &line : Wrap(text, DIALOG_WIDTH - 6)) {
-            grid.Write(CONTENT_COLUMN, row++, line, color, LightGray);
+            grid.Write(CONTENT_COLUMN, row++, line, color, Blue);
         }
         return row;
+    };
+    auto drawProgress = [&](int row) {
+        const int width = DIALOG_WIDTH - 6;
+        const double fraction = std::clamp(m_importFraction, 0.0, 1.0);
+        const int filled = static_cast<int>(fraction * width);
+        grid.Fill(CONTENT_COLUMN, row, width, 1, 0xB0, LightGray, Blue);
+        grid.Fill(CONTENT_COLUMN, row, filled, 1, ' ', Black, LightGray);
+        const auto percent = std::to_string(static_cast<int>(fraction * 100.0)) + "%";
+        const int start = (width - LabelWidth(percent)) / 2;
+        for (int index = 0; index < static_cast<int>(percent.size()); ++index) {
+            const int column = start + index;
+            grid.At(CONTENT_COLUMN + column, row) = {static_cast<std::uint8_t>(percent[index]),
+                                                     column < filled ? Black : White,
+                                                     column < filled ? LightGray : Blue};
+        }
     };
 
     const bool screenOnTop = !m_browser && !m_message;
@@ -1463,21 +1472,23 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
         dialog("Step 1 of 3: Game files");
         writeLines(DIALOG_ROW + 2,
                    "Required: Boss Rally BIN/CUE/ISO and at least one N64 ROM image.",
-                   Black);
+                   LightGray);
         status = " <Tab=Next Field>  <Alt+Letter=Choose>  <Enter=Next>  <Esc=Quit>";
         break;
     case WizardScreen::SearchDirectory:
         dialog("Search directory for assets");
-        writeLines(DIALOG_ROW + 2, "Choose a folder to search, including its subfolders.", Black);
         writeLines(
-            DIALOG_ROW + 3, "Type or paste a path, or browse. ~ means your home folder.", Black);
-        writeLines(DIALOG_ROW + 10, "A new search replaces the current file selection.", Black);
+            DIALOG_ROW + 2, "Choose a folder to search, including its subfolders.", LightGray);
+        writeLines(DIALOG_ROW + 3,
+                   "Type or paste a path, or browse. ~ means your home folder.",
+                   LightGray);
+        writeLines(DIALOG_ROW + 10, "A new search replaces the current file selection.", LightGray);
         status = " <Tab=Next Field>  <Enter=Search>  <Esc=Back>";
         break;
     case WizardScreen::Search: {
         dialog(m_searchComplete ? "Asset search results" : "Searching for assets");
         grid.WriteUtf8(
-            CONTENT_COLUMN, DIALOG_ROW + 2, m_importStep, Black, LightGray, DIALOG_WIDTH - 6);
+            CONTENT_COLUMN, DIALOG_ROW + 2, m_importStep, LightGray, Blue, DIALOG_WIDTH - 6);
         const std::array<bool, 4> found{!m_searchResult.disc.empty(),
                                         !m_searchResult.roms[0].empty(),
                                         !m_searchResult.roms[1].empty(),
@@ -1488,40 +1499,25 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
             grid.WriteUtf8(CONTENT_COLUMN + 2,
                            DIALOG_ROW + 5 + static_cast<int>(i) * 2,
                            std::string(found[i] ? "[X] " : "[ ] ") + labels[i],
-                           found[i] ? Blue : Black,
-                           LightGray);
+                           found[i] ? White : LightGray,
+                           Blue);
         }
-        const int width = DIALOG_WIDTH - 6;
-        const int filled = static_cast<int>(std::clamp(m_importFraction, 0.0, 1.0) * width);
-        grid.Fill(CONTENT_COLUMN, DIALOG_ROW + 13, width, 1, 0xB0, DarkGray, LightGray);
-        grid.Fill(CONTENT_COLUMN, DIALOG_ROW + 13, filled, 1, 0xDB, Blue, LightGray);
-        grid.WriteUtf8(CONTENT_COLUMN,
-                       DIALOG_ROW + 14,
-                       std::to_string(static_cast<int>(m_importFraction * 100.0)) + "%",
-                       Black,
-                       LightGray);
+        drawProgress(DIALOG_ROW + 13);
         status = m_searchComplete ? " <Enter=Use Found Files>  <Esc=Back>" : " <Esc=Cancel>";
         break;
     }
     case WizardScreen::Import: {
         dialog("Step 2 of 3: Import");
         if (m_importFailure) {
-            int row = writeLines(DIALOG_ROW + 2, "The import failed.", Red);
-            writeLines(row + 1, *m_importFailure, Red);
+            int row = writeLines(DIALOG_ROW + 2, "The import failed.", LightRed);
+            writeLines(row + 1, *m_importFailure, LightRed);
             status = " <Enter=Back>  <Esc=Back>";
         } else {
-            writeLines(DIALOG_ROW + 2, "Importing the game data. This takes a few minutes.", Black);
+            writeLines(
+                DIALOG_ROW + 2, "Importing the game data. This takes a few minutes.", LightGray);
             grid.WriteUtf8(
-                CONTENT_COLUMN, DIALOG_ROW + 5, m_importStep, Black, LightGray, DIALOG_WIDTH - 6);
-            const int width = DIALOG_WIDTH - 6;
-            const int filled = static_cast<int>(std::clamp(m_importFraction, 0.0, 1.0) * width);
-            grid.Fill(CONTENT_COLUMN, DIALOG_ROW + 7, width, 1, 0xB0, DarkGray, LightGray);
-            grid.Fill(CONTENT_COLUMN, DIALOG_ROW + 7, filled, 1, 0xDB, Blue, LightGray);
-            grid.WriteUtf8(CONTENT_COLUMN,
-                           DIALOG_ROW + 8,
-                           std::to_string(static_cast<int>(m_importFraction * 100.0)) + "%",
-                           Black,
-                           LightGray);
+                CONTENT_COLUMN, DIALOG_ROW + 5, m_importStep, LightGray, Blue, DIALOG_WIDTH - 6);
+            drawProgress(DIALOG_ROW + 7);
             status = " <Esc=Cancel>";
         }
         break;
@@ -1531,26 +1527,24 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
         grid.WriteUtf8(DIALOG_COLUMN + (DIALOG_WIDTH - 21) / 2,
                        DIALOG_ROW + 7,
                        "Enjoy Top Gear Rally!",
-                       Black,
-                       LightGray);
-        writeLines(DIALOG_ROW + 10, "Press Finish to start the game.", Black);
+                       White,
+                       Blue);
+        writeLines(DIALOG_ROW + 10, "Press Finish to start the game.", LightGray);
         status = " <Enter=Finish>  <Esc=Back>";
         break;
     }
     drawControls(ScreenControls(), screenOnTop ? m_screenFocus : std::nullopt);
     if (m_browser) {
-        grid.Box(DIALOG_COLUMN, DIALOG_ROW, DIALOG_WIDTH, DIALOG_HEIGHT, Black, LightGray, true);
-        grid.Shadow(DIALOG_COLUMN, DIALOG_ROW, DIALOG_WIDTH, DIALOG_HEIGHT);
-        grid.WriteUtf8(
-            DIALOG_COLUMN + (DIALOG_WIDTH - 8) / 2, DIALOG_ROW, " Browse ", Black, LightGray);
+        grid.Box(DIALOG_COLUMN, DIALOG_ROW, DIALOG_WIDTH, DIALOG_HEIGHT, White, Blue, true);
+        grid.WriteUtf8(DIALOG_COLUMN + (DIALOG_WIDTH - 8) / 2, DIALOG_ROW, " Browse ", White, Blue);
         std::u32string directory = DecodeUtf8(Utf8FromPath(m_browser->directory));
         const std::size_t room = DIALOG_WIDTH - 17;
         if (directory.size() > room) {
             directory = U"..." + directory.substr(directory.size() - room + 3);
         }
-        grid.WriteUtf8(CONTENT_COLUMN - 1, DIALOG_ROW + 2, "Directory:", Black, LightGray);
-        grid.Write(CONTENT_COLUMN + 10, DIALOG_ROW + 2, directory, Black, LightGray);
-        grid.Fill(DIALOG_COLUMN + 1, SEPARATOR_ROW, DIALOG_WIDTH - 2, 1, 0xC4, Black, LightGray);
+        grid.WriteUtf8(CONTENT_COLUMN - 1, DIALOG_ROW + 2, "Directory:", LightGray, Blue);
+        grid.Write(CONTENT_COLUMN + 10, DIALOG_ROW + 2, directory, White, Blue);
+        grid.Fill(DIALOG_COLUMN + 1, SEPARATOR_ROW, DIALOG_WIDTH - 2, 1, 0xC4, LightGray, Blue);
         grid.At(DIALOG_COLUMN, SEPARATOR_ROW).glyph = 0xC7;
         grid.At(DIALOG_COLUMN + DIALOG_WIDTH - 1, SEPARATOR_ROW).glyph = 0xB6;
         drawControls(BrowserControls(), m_message ? std::nullopt : m_browserFocus);
@@ -1565,22 +1559,21 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
         std::vector<WizardControl> controls = MessageControls();
         const int row = controls.front().row - height + 2;
         const int column = (GRID_COLUMNS - width) / 2;
-        grid.Box(column, row, width, height, Black, LightGray, true);
-        grid.Shadow(column, row, width, height);
+        grid.Box(column, row, width, height, White, Blue, true);
         for (std::size_t i = 0; i < m_message->lines.size(); ++i) {
             const std::string &line = m_message->lines[i];
             grid.WriteUtf8(column + (width - LabelWidth(line)) / 2,
                            row + 1 + static_cast<int>(i),
                            line,
-                           Black,
-                           LightGray);
+                           White,
+                           Blue);
         }
         drawControls(controls, m_messageFocus);
         status =
             m_message->question ? " <Alt+Y=Yes>  <Alt+N=No>  <Esc=No>" : " <Enter=OK>  <Esc=OK>";
     }
-    grid.Fill(0, GRID_ROWS - 1, GRID_COLUMNS, 1, ' ', Black, Cyan);
-    grid.WriteUtf8(0, GRID_ROWS - 1, status, Black, Cyan);
+    grid.Fill(0, GRID_ROWS - 1, GRID_COLUMNS, 1, ' ', Black, LightGray);
+    grid.WriteUtf8(0, GRID_ROWS - 1, status, Black, LightGray);
 }
 
 } // namespace coastline
