@@ -270,6 +270,7 @@ private:
     bool LoadCarSelect(SceneRenderer &renderer, const std::filesystem::path &release);
     MenuProfile &ProfileOf(int player);
     bool IsCarUnlocked(int car) const;
+    bool CanPaintCar(int car) const;
     void LoadCarModel(SceneRenderer &renderer, int slot, int car);
     void ResetCarPaint(int player);
     void AdjustCarPaint(SceneRenderer &renderer,

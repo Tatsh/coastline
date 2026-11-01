@@ -90,7 +90,6 @@ constexpr u8 DECAL_TEXT_LENGTH = 16;
 
 // The note of the decals on the Controller Pak, its size, and the bytes of the palette of the
 // paint saved after the decals.
-constexpr const char *DECAL_NOTE = "TOP GEAR DECALS";
 constexpr std::size_t DECAL_FILE_SIZE = 0x3E00;
 constexpr std::size_t DECAL_PALETTE_BYTES = 0x20;
 
@@ -1352,6 +1351,7 @@ bool PaintShop::InitPaintShop() {
     m_keyboardBackground->drawHeight = m_keyboardPanel->drawHeight - 16;
     LoadStyleIcons();
     SelectDecalTexels(m_decalSlot);
+    m_decalSlotHasMirror = HasOppositePanel(m_decalSlot);
     m_decalPaletteMaterial = m_decalSlot;
     LayOutPaintShopControls();
     m_decalCanvas.width = m_decalWidth * 4;
@@ -1396,14 +1396,20 @@ void PaintShop::DrawPaintShop() {
     m_text.shadow = false;
     DrawText("%ryPAINT SHOP", 160, TITLE_Y);
     for (std::size_t i = 0; i < DECAL_SLOTS; ++i) {
-        if (i == m_decalSlot) {
+        if (!m_car->HasMaterial(static_cast<int>(i))) {
+            DrawSpriteTinted(*m_decalSlotIcons[i], 0x30, 0x30, 0x30);
+        } else if (i == m_decalSlot) {
             DrawSpriteTinted(*m_decalSlotIcons[i], 0x20, 0xC8, 0xFF);
         } else {
             DrawSpriteTinted(*m_decalSlotIcons[i], 0x20, 0x10, 0xFF);
         }
     }
-    DrawSpriteTinted(*m_panel8Overlay, 0xFF, 0xFF, 0xFF);
-    DrawSpriteTinted(*m_panel9Overlay, 0xC0, 0, 0);
+    if (m_car->HasMaterial(8)) {
+        DrawSpriteTinted(*m_panel8Overlay, 0xFF, 0xFF, 0xFF);
+    }
+    if (m_car->HasMaterial(9)) {
+        DrawSpriteTinted(*m_panel9Overlay, 0xC0, 0, 0);
+    }
     DrawFilledRectHiRes(m_decalCanvasFrame.x,
                         m_decalCanvasFrame.y,
                         m_decalCanvasFrame.width,
@@ -1893,6 +1899,9 @@ void PaintShop::ProcessFillClearMenu() {
             m_savedDecalSlot = m_decalSlot;
             // The palette and the button of the slot are not switched with its texels.
             for (int i = 0; i < DECAL_SLOTS; ++i) {
+                if (!m_car->HasMaterial(i)) {
+                    continue;
+                }
                 SelectDecalTexels(i);
                 ClearDecal(CLEAR_ALL_DECALS);
             }
@@ -2083,11 +2092,16 @@ void PaintShop::CopyUnmaskedTexels(u8 *texels, const u8 *mask, s32 width, s32 he
 }
 
 void PaintShop::TransferDecal(DecalCar &car, u8 operation) {
+    if (!car.HasMaterial(m_pakDecalIndex)) {
+        m_pakChunkSize = 0;
+        return;
+    }
     DecalTexture texture = car.Texture(m_pakDecalIndex);
     s32 width = texture.width;
     s32 height = texture.height;
-    // The doors move one row more than they have.
-    if (m_pakDecalIndex == SLOT_LEFT_DOOR || m_pakDecalIndex == SLOT_RIGHT_DOOR) {
+    // Original console notes include an extra row for each door.
+    if (car.DecalNote() == "TOP GEAR DECALS" &&
+        (m_pakDecalIndex == SLOT_LEFT_DOOR || m_pakDecalIndex == SLOT_RIGHT_DOOR)) {
         ++height;
     }
     m_pakChunkSize = (width * height) >> 1;
@@ -2132,7 +2146,7 @@ void PaintShop::LoadDecalPalette(DecalCar &car, std::size_t offset) {
 }
 
 bool PaintShop::LoadDecalsQuietly(DecalCar &car) {
-    auto note = m_pak.ReadNote(DECAL_NOTE);
+    auto note = m_pak.ReadNote(car.DecalNote());
     if (!note) {
         return false;
     }
@@ -2257,7 +2271,7 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
         m_pakDecalIndex = 0;
         m_pakFileNeedsCreate = 0;
         m_pakWaitFrames = 0;
-        auto note = m_pak.ReadNote(DECAL_NOTE);
+        auto note = m_pak.ReadNote(car.DecalNote());
         if (note) {
             m_pakNote = std::move(*note);
             if (operation == PAINT_TOOL_LOAD) {
@@ -2348,7 +2362,7 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
                 m_pakNote[offset + static_cast<std::size_t>(entry) * 2 + 1] =
                     static_cast<u8>(color);
             }
-            if (!m_pak.WriteNote(DECAL_NOTE, m_pakNote)) {
+            if (!m_pak.WriteNote(car.DecalNote(), m_pakNote)) {
                 m_pakError = PFS_ERR_INCONSISTENT;
             }
         }

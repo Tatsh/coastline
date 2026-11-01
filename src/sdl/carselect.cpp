@@ -266,9 +266,14 @@ MenuProfile &Menus::ProfileOf(int player) {
     return player == 0 ? m_profile : m_secondProfile;
 }
 
+bool Menus::CanPaintCar(int car) const {
+    return car >= 0 && static_cast<std::size_t>(car) < m_cars.size() &&
+           (car < PAINT_SHOP_CARS || m_cars[static_cast<std::size_t>(car)].engineCar == 10);
+}
+
 bool Menus::IsCarUnlocked(int car) const {
     return car >= 0 && static_cast<std::size_t>(car) < m_cars.size() &&
-           (!m_paintMode || car < PAINT_SHOP_CARS) &&
+           (!m_paintMode || CanPaintCar(car)) &&
            (m_paintMode || m_gameMode != GameMode::Championship ||
             (m_cars[static_cast<std::size_t>(car)].championship &&
              (m_profile.unlocks & (1 << car)) != 0)) &&
@@ -576,8 +581,8 @@ void Menus::HandleCarSelectInput(SceneRenderer &renderer, int player, const Menu
             profile.suspension = choice.cursor;
             choice.cursor = 0;
             choice.options = &m_decalOptions;
-            choice.optionCount = static_cast<int>(m_decalOptions.size()) -
-                                 (choice.carModel < PAINT_SHOP_CARS ? 1 : 2);
+            choice.optionCount =
+                static_cast<int>(m_decalOptions.size()) - (CanPaintCar(choice.carModel) ? 1 : 2);
             choice.category = "Decals";
             choice.slot = player ^ 2;
             m_screen->PlaySelectSound();
@@ -978,7 +983,7 @@ void Menus::UseCustomDecals(SceneRenderer &renderer, int player) {
 bool Menus::RestoreCustomDecals(SceneRenderer &renderer, int player) {
     auto index = static_cast<std::size_t>(player);
     int car = m_carSelect[index].carModel;
-    if (!m_paintShop || car >= PAINT_SHOP_CARS) {
+    if (!m_paintShop || !CanPaintCar(car)) {
         return false;
     }
     auto directory = m_release / m_cars[static_cast<std::size_t>(car)].directory;

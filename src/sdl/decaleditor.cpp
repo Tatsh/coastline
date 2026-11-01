@@ -105,6 +105,16 @@ void PaintShop::CopyLightPalettes() {
     m_car->SetPaletteColor(CAR_MATERIAL_REAR_LIGHTS, 0, first);
 }
 
+bool PaintShop::HasOppositePanel(int slot) const {
+    if (slot < 0 || slot >= DECAL_SLOTS || !HasMirror(static_cast<u8>(slot)) ||
+        !m_car->HasMaterial(slot ^ 1)) {
+        return false;
+    }
+    const auto source = m_car->Texture(slot);
+    const auto target = m_car->Texture(slot ^ 1);
+    return source.width == target.width && source.height == target.height;
+}
+
 void PaintShop::SelectDecalSlot(s32 slot) {
     // The decal edited, centred in its frame.
     m_decalSlotChanged = 1;
@@ -330,7 +340,7 @@ bool PaintShop::PickDecalSlot() {
         return false;
     }
     for (u8 i = 0; i < DECAL_SLOTS; ++i) {
-        if (!IsCursorInRect(m_decalSlotRects[i])) {
+        if (!m_car->HasMaterial(i) || !IsCursorInRect(m_decalSlotRects[i])) {
             continue;
         }
         Transfer(INPUT_PICK);
@@ -339,7 +349,7 @@ bool PaintShop::PickDecalSlot() {
         if (m_previousDecalSlot != m_decalSlot) {
             SelectDecalSlot(i);
         }
-        m_decalSlotHasMirror = HasMirror(m_decalSlot);
+        m_decalSlotHasMirror = HasOppositePanel(m_decalSlot);
         return true;
     }
     return false;

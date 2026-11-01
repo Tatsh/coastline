@@ -11,6 +11,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Milk Truck paint and decal editing, with custom decals restored for races. Missing panels and
+  incompatible mirrors are disabled; a separate Milk Truck save note preserves existing decal notes.
 - A PC CRT shader simulates a progressive VGA monitor with faint scanlines, a fine shadow mask,
   and mild curvature.
 - Saved Graphics preset choices include Custom, N64, Boss Rally, High quality, and Low power.

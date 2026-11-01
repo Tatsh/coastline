@@ -306,6 +306,7 @@ private:
 
     // decaleditor.c of the console.
     void SelectDecalSlot(s32 slot);
+    bool HasOppositePanel(int slot) const;
     s32 AnchorDistance() const;
     void ProcessColorEditorDialog();
     void UpdateCursorFromInput();
