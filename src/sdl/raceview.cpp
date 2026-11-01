@@ -1836,7 +1836,8 @@ ViewInstances VisibleInstances(const CameraFrame &camera,
                                float farPlane,
                                SDL_Rect frame,
                                Vehicle *vehicles,
-                               int cameraIndex) {
+                               int cameraIndex,
+                               bool extendedDistance) {
     Vec3f eye = camera.position;
     std::array<u16, RAY_INSTANCES> nearby{};
     s32 nearbyCount = 0;
@@ -1872,9 +1873,11 @@ ViewInstances VisibleInstances(const CameraFrame &camera,
     g_pActiveCameraVehicle = savedVehicle;
 
     std::vector<VisibleCell> cells;
+    const std::size_t cellLimit =
+        extendedDistance ? VISIBLE_GRID_SIZE * VISIBLE_GRID_SIZE : VISIBLE_CELLS;
     for (s32 row = g_dwVisibleGridMinRow; row <= g_dwVisibleGridMaxRow; ++row) {
         for (s32 column = g_adwVisibleGridRowMinCol[row];
-             column <= g_adwVisibleGridRowMaxCol[row] && cells.size() < VISIBLE_CELLS;
+             column <= g_adwVisibleGridRowMaxCol[row] && cells.size() < cellLimit;
              ++column) {
             cells.push_back({static_cast<u8>(column), static_cast<u8>(row), 0});
         }
@@ -2229,11 +2232,12 @@ void RaceView::DrawView(SceneRenderer &renderer,
     float fov = (split ? camera->fov * 0.7f : camera->fov) * ASPECT_4_3 *
                 static_cast<float>(screen.height) / static_cast<float>(std::max(screen.width, 1));
     fov = RaceFieldOfView(fov, aspect, window.FieldOfViewScale());
-    float farPlane = split ? CAMERA_FAR * 0.65f : CAMERA_FAR;
+    const float drawDistance = CAMERA_FAR * window.DrawDistanceScale();
+    float farPlane = split ? drawDistance * 0.65f : drawDistance;
     float frustumFar = farPlane;
     if (mirror) {
-        farPlane = CAMERA_FAR * 0.3f;
-        frustumFar = CAMERA_FAR * 0.2f;
+        farPlane = drawDistance * 0.3f;
+        frustumFar = drawDistance * 0.2f;
     }
     Matrix4 viewProjection = CameraMatrix(*camera, fov, farPlane, aspect);
     // SetViewport() mirrors the view across on a mirrored track, where the steering turns the
@@ -2280,8 +2284,8 @@ void RaceView::DrawView(SceneRenderer &renderer,
         renderer.DrawModel(*s.sky, place, viewProjection, lighting, std::nullopt, false);
     }
     // RenderTrackGeometry(): the first pass draws the opaque instances in view.
-    ViewInstances instances =
-        VisibleInstances(*camera, fov, frustumFar, frame, vehicles, cameraIndex);
+    ViewInstances instances = VisibleInstances(
+        *camera, fov, frustumFar, frame, vehicles, cameraIndex, window.DrawDistanceScale() > 1.0f);
     std::vector<CarShadow> shadows =
         ShadowsOf(s.shadowTexture.get(), vehicles, cameraIndex, instances.mask);
     const Lighting trackLighting = TrackLighting(vehicle);

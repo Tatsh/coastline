@@ -103,6 +103,15 @@ int main() {
     assert(settings.Label(autosave) == "Auto-save race progress: On");
     assert(settings.Step(autosave, -1));
     assert(!config.GetBoolean("Game", "AutoSave", true));
+    const auto distance = Find(settings, "Draw distance:");
+    assert(settings.Label(distance) == "Draw distance: 1x");
+    assert(settings.RequiresRestart(distance));
+    assert(settings.Step(distance, -1));
+    assert(config.GetFloat("Video", "DrawDistance", 0) == 4.0f);
+    assert(settings.Step(distance, 1));
+    assert(config.GetFloat("Video", "DrawDistance", 0) == 1.0f);
+    assert(settings.Step(distance, 1));
+    assert(config.GetFloat("Video", "DrawDistance", 0) == 1.5f);
     assert(settings.Step(music, 1));
     assert(config.Get("Game", "Music") == "CD");
     assert(!settings.Step(music, 0));

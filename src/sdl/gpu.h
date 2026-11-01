@@ -33,6 +33,7 @@ enum class PostAntialias {
 struct DisplayOptions {
     bool wideMenus = false;             /*!< Fill wide frames with the menu background. */
     float fieldOfViewScale = 1.0f;      /*!< Multiplier of the race camera's field of view. */
+    float drawDistanceScale = 1.0f;     /*!< Multiplier of the race view and mirror distances. */
     std::string gpuPreference = "auto"; /*!< Automatic, high-performance, or low-power selection. */
     bool unlockedFramerate =
         false;           /*!< Disable presentation pacing and the software frame limit. */
@@ -107,6 +108,11 @@ public:
     /** @return The configured multiplier of the race camera's field of view. */
     float FieldOfViewScale() const {
         return m_options.fieldOfViewScale;
+    }
+
+    /** @return The race draw-distance multiplier, from 1 to 4. */
+    float DrawDistanceScale() const {
+        return m_options.drawDistanceScale;
     }
 
     /** @return The window. */

@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <cstdint>
 #include <cstring>
 #include <span>
@@ -105,6 +106,9 @@ SupportedPresentMode(SDL_GPUDevice *device, SDL_Window *window, SDL_GPUPresentMo
 std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOptions &options) {
     std::unique_ptr<GpuWindow> result(new GpuWindow());
     result->m_options = options;
+    result->m_options.drawDistanceScale = std::isfinite(options.drawDistanceScale) ?
+                                              std::clamp(options.drawDistanceScale, 1.0f, 4.0f) :
+                                              1.0f;
     result->m_exclusive = options.exclusive;
     result->m_refreshRate = options.refreshRate;
     // The window shows once it covers the display, at the mode of the options.

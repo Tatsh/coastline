@@ -11,6 +11,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- A Draw distance option from 1x to 4x extends race visibility, including split-screen and
+  rear-view mirrors. `Video.DrawDistance` defaults to `1`; changes apply after restarting.
 - Auto-save race progress is enabled by default and saves the next Championship checkpoint,
   records, and improved time-attack ghosts after races. Its On/Off option saves to INI and applies
   immediately. Manual saves remain available when disabled, and failed automatic saves are reported.

@@ -92,6 +92,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &config
     options.refreshRate = static_cast<int>(config.GetInteger("Video", "RefreshRate", 0));
     options.wideMenus = config.GetBoolean("Video", "WideMenus", false);
     options.fieldOfViewScale = config.GetFloat("Video", "FieldOfView", 1.0f);
+    options.drawDistanceScale = config.GetFloat("Video", "DrawDistance", 1.0f);
     // VSync takes a present mode by name, or 1 and 0 for vertical sync and immediate. fifo is
     // vertical sync that waits for the vertical blank under Wayland too.
     auto present = config.Get("Video", "VSync");
@@ -985,6 +986,7 @@ int main(int argc, char *argv[]) {
                                               {"Video", "RenderScale", "1"},
                                               {"Video", "ScaleFilter", "linear"},
                                               {"Video", "FieldOfView", "1"},
+                                              {"Video", "DrawDistance", "1"},
                                               {"Video", "TextureFilter", "modern"},
                                               {"Video", "AnisotropicFiltering", "0"},
                                               {"Video", "Antialias", "1"},

@@ -98,6 +98,12 @@ GameSettings::GameSettings(GameConfig &config, std::span<const std::filesystem::
                          .fallback = 1,
                          .boolean = true,
                          .restart = false});
+    m_options.push_back({"Draw distance",
+                         "Video",
+                         "DrawDistance",
+                         {{"1", "1x"}, {"1.5", "1.5x"}, {"2", "2x"}, {"3", "3x"}, {"4", "4x"}},
+                         0,
+                         true});
 }
 
 std::size_t GameSettings::Selected(const Option &option) const {
