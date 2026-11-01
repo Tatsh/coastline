@@ -94,6 +94,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Setup asset search defaults to `~/Downloads` and preserves an edited search directory on retries.
 - Settings apply after Options fades to black, with status text during the transition. Changes
   requiring new resources reinitialise the game in the same process and window, returning to logos.
 - PC CD music selection includes menu track 2, with BGM volume control for menus and races. Missing

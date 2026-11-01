@@ -821,7 +821,7 @@ void SetupWizard::Activate(WizardControlId id) {
     case WizardControlId::RetrySearch:
         if (m_directory.text.empty()) {
             SetText(WizardControlId::SearchText,
-                    m_lastDirectory.empty() ? m_services.home : m_lastDirectory);
+                    std::filesystem::path("~/Downloads").make_preferred());
         }
         SetScreen(WizardScreen::SearchDirectory);
         break;
