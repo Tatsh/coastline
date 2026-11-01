@@ -173,6 +173,12 @@ void ResetFrameBlocks(void) {
 }
 
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+static void ExchangeUntypedByteBuffers(void *a, void *b, u32 size) {
+    ExchangeByteBuffers((u8 *)a, (u8 *)b, size);
+}
+#endif
+
 void QuickSort(void *base, u32 count, u32 size, CompareFunc compare) {
     u8 *lo, *hi, *mid, *loguy, *higuy;
     u32 n;
@@ -194,7 +200,7 @@ void QuickSort(void *base, u32 count, u32 size, CompareFunc compare) {
 #else
     /* The order is that of the word exchanges, without reading an element through another type
      * or at an alignment it does not have. */
-    swap = (SwapFunc)ExchangeByteBuffers;
+    swap = ExchangeUntypedByteBuffers;
 #endif
 
     if (count < 2 || size == 0) {

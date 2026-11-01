@@ -125,7 +125,7 @@ void TransferFlags(PlayerInputState *state, u32 mask);
 extern PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
 
 /**
- * Emulated controller pad storage for four ports.
+ * Emulated controller pads for four ports, or every player slot on SDL.
  *
  * @ghidraAddress USA: 0x8031a3e0
  * @ghidraAddress EUR: 0x8031c8e0
@@ -133,7 +133,11 @@ extern PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
  * @ghidraAddress BRD3D: 0x106c65a0
  * @ghidraAddress BRGlide: 0x106ed630
  */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+extern OSContPad g_aContPadData[MAX_PLAYERS];
+#else
 extern OSContPad g_aContPadData[MAXCONTROLLERS];
+#endif
 
 /**
  * Reset the input of a player.

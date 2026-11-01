@@ -187,6 +187,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- SDL attract demos and races avoid out-of-bounds controller addresses for AI players.
+  Sorting callbacks use matching function types on SDL.
 - Performance statistics start below the lap-count HUD band, with clearance adjusted for window
   height and display scaling.
 - Scripted button, key, and mouse durations avoid integer overflow near maximum frame numbers.

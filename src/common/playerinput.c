@@ -2,7 +2,11 @@
 
 #if TGR_BOSS_RALLY
 PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+OSContPad g_aContPadData[MAX_PLAYERS];
+#else
 OSContPad g_aContPadData[MAXCONTROLLERS];
+#endif
 #endif
 
 void ConsumeInputFlags(PlayerInputState *state) {
