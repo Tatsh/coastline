@@ -39,7 +39,9 @@ Optional packs override files from the default and selected regional packs.
 Select imported text and fonts, such as en-us, en-gb, or ja.
 .TP
 .BI \-\-region " REGION"
-Select usa, eur, or jpn models and images independently of language.
+Select usa, eur, or jpn for cartridge models, images, music, and intro,
+independently of language.
+Override the saved title-screen choice for this run.
 .TP
 .BI \-\-width " PIXELS"
 Set the window width, from 1 to 16384 pixels.

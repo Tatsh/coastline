@@ -341,6 +341,8 @@ to the logos. Alternate titles require corresponding imported ROM assets. The me
 titles and marks a saved title as missing if its assets are
 absent. If the requested title cannot load, the game logs a warning and uses the selected
 model region's opening. Asset-pack overrides also apply to the chosen intro.
+An explicit `--region` overrides the saved title choice for that run and locks Title screen in
+Options to the active region's opening after fallback.
 
 The `Music` option selects native N64 XM modules or PC CD audio (`Music=XM` or `Music=CD` under
 `[Game]`). The selection applies as Options closes. CD selection also plays the PC menu track

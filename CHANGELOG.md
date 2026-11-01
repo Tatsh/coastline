@@ -212,6 +212,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Explicit `--region` selects the regional intro for the current run over saved title preferences
+  and locks Title screen in Options to the active region after fallback.
 - Options applies the final preset to settings captured before browsing, preventing intermediate
   presets from changing preserved music, sound effects, or asset-pack choices.
 - SDL attract demos and races avoid out-of-bounds controller addresses for AI players.

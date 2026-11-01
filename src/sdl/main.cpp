@@ -833,7 +833,8 @@ int main(int argc, char *argv[]) {
     parser.add_argument("--region")
         .action(RequiredChoiceValue("--region", {"usa", "eur", "jpn"}))
         .metavar("{usa,eur,jpn}")
-        .help("Select cartridge models and images for this run, independent of language.");
+        .help("Select cartridge region for models, images, music, and intro, independent of "
+              "language. Override the saved title-screen choice for this run.");
     parser.add_argument("--width").help("width of the window in pixels").scan<'i', int>();
     parser.add_argument("--height").help("height of the window in pixels").scan<'i', int>();
     parser.add_argument("--fullscreen").help("cover the display").flag();
@@ -1406,7 +1407,10 @@ int main(int argc, char *argv[]) {
                 if (sceneRenderer) {
                     const std::filesystem::path frontEndRelease =
                         coastline::ReleaseDirectory(assets);
-                    const auto titleChoice = config.Get("Game", "TitleScreen").value_or("regional");
+                    const auto titleChoice =
+                        parser.is_used("--region") ?
+                            "regional" :
+                            config.Get("Game", "TitleScreen").value_or("regional");
                     const auto currentTitleRegion = coastline::CartridgeRegion(frontEndRelease);
                     const auto titleRegion = coastline::TitleScreenRegion(
                         titleChoice,
@@ -1455,6 +1459,9 @@ int main(int argc, char *argv[]) {
                         }
                         if (overrides.Get("Game", "Region")) {
                             overrides.Set("Game", "Region", region);
+                            overrides.Set("Game",
+                                          "TitleScreen",
+                                          region == "jpn" ? "japanese" : "international");
                         }
                         mainMenu->SetOptionOverrides(std::move(overrides));
                         mainMenu->SetMenuMusic(playMenuMusic);
