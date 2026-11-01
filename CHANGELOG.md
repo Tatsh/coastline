@@ -186,6 +186,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Performance statistics start below the lap-count HUD band, with clearance adjusted for window
+  height and display scaling.
 - Scripted button, key, and mouse durations avoid integer overflow near maximum frame numbers.
 - Restarting a race from the pause menu restores each player's selected camera.
 - Command-line validation reports errors instead of aborting for missing, empty, or

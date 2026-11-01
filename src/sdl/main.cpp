@@ -1936,7 +1936,10 @@ int main(int argc, char *argv[]) {
                                     const std::array<float, 2> size{
                                         static_cast<float>(width) / scale,
                                         static_cast<float>(height) / scale};
-                                    int y = 32;
+                                    // Reserve lap-counter space above the first statistics
+                                    // baseline.
+                                    int y = std::max(
+                                        80, static_cast<int>(std::ceil(size[1] / 12.0f)) + 20);
                                     for (const auto &line :
                                          performanceStats->Lines(window->GpuMemoryBytes())) {
                                         DrawOverlayLine(*outputRenderer,
