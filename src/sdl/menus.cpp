@@ -13,7 +13,6 @@ Menus::~Menus() = default;
 
 void Menus::Restart() {
     m_current = Screen::MainMenu;
-    m_exitEscapeSeconds = 0.0f;
     // The attract demo races at the levels of the race engine.
     ApplyVolumeSettings();
 }
@@ -26,7 +25,6 @@ void Menus::FinishCredits() {
 
 void Menus::SetCurrentScreen(Screen screen) {
     m_current = screen;
-    m_exitEscapeSeconds = 0.0f;
 }
 
 bool Menus::DrawsPointer() const {
@@ -51,18 +49,10 @@ MenusEnd Menus::Frame(SceneRenderer &renderer,
     m_escapeDown = pointer.escape;
     std::array<MenuButtons, 2> buttons = players;
     if (m_current == Screen::MainMenu) {
-        m_exitEscapeSeconds = std::max(0.0f, m_exitEscapeSeconds - seconds);
-        if (escape) {
-            if (m_exitEscapeSeconds > 0.0f) {
-                return MenusEnd::Quit;
-            }
-            m_exitEscapeSeconds = 0.5f;
-        }
         if (pointer.escape) {
             buttons[0].back = false;
         }
     } else {
-        m_exitEscapeSeconds = 0.0f;
         if (escape && m_current != Screen::PaintShopScreen) {
             buttons[0].back = true;
         }

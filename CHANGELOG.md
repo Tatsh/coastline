@@ -34,7 +34,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   least 320x240 pixels. Fill screen follows window resizing; explicit ratios display bars as needed.
 - Edge-adaptive spatial upscaling and Consumer CRT, PVM, and Aperture grille screen presets, saved
   through Options and applied as Options closes.
-- Two separate Escape presses within half a second quit from the main menu.
+- Two separate Escape presses within half a second quit from logos, attract demos, or the main
+  menu. Escape retains normal back navigation in submenus.
 - PJ, TR, and MN cars are selectable outside Championship in USA and EUR regions, with Japanese
   menu statistics and matching race identities. Previews prefer imported Japanese models and fall
   back to PC models; Pure PC always uses PC previews.

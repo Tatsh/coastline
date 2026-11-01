@@ -176,6 +176,11 @@ public:
     /** Show the main menu again, as the splash screens and the attract demo switch to it. */
     void Restart();
 
+    /** @return Whether the root main menu is active. */
+    bool IsMainMenu() const {
+        return m_current == Screen::MainMenu;
+    }
+
     /**
      * Run a frame of the screen that shows and draw it.
      *
@@ -373,7 +378,6 @@ private:
     std::filesystem::path m_configPath;
     PaintShopInput m_pointer;
     bool m_escapeDown = false;
-    float m_exitEscapeSeconds = 0.0f;
     // The decals each player loaded from the Controller Pak on the car select screen, the images
     // of the car with them, and the model of the car that shows them.
     std::array<std::optional<DecalCar>, 2> m_customDecals;

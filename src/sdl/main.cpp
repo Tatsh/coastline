@@ -1482,6 +1482,8 @@ int main(int argc, char *argv[]) {
                 std::uint16_t lastSecondButtons = 0;
                 bool running = true;
                 bool printScreenWasDown = false;
+                bool escapeWasDown = false;
+                float exitEscapeSeconds = 0.0f;
                 coastline::MenusEnd settingsTransition = coastline::MenusEnd::Running;
                 Uint64 settingsShownAt = 0;
                 int settingsFrames = 0;
@@ -1699,6 +1701,19 @@ int main(int argc, char *argv[]) {
                                 1.0f / 60.0f :
                                 std::min(static_cast<float>(now - lastTicks) / 1e9f, 0.1f);
                         lastTicks = now;
+                        const bool escape = coastline::IsKeyDown(SDL_SCANCODE_ESCAPE);
+                        const bool canExit =
+                            frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::AttractDemo ||
+                            (frontEnd == FrontEnd::MainMenu && mainMenu && mainMenu->IsMainMenu());
+                        exitEscapeSeconds =
+                            canExit ? std::max(0.0f, exitEscapeSeconds - seconds) : 0.0f;
+                        if (canExit && escape && !escapeWasDown) {
+                            if (exitEscapeSeconds > 0.0f) {
+                                break;
+                            }
+                            exitEscapeSeconds = 0.5f;
+                        }
+                        escapeWasDown = escape;
                         // A press of A, Start, or Z skips or chooses, B goes back, and every C
                         // button together shows the date of the build on the splash screens.
                         constexpr std::uint16_t CHOOSE =
