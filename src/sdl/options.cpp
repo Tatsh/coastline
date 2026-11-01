@@ -481,7 +481,9 @@ void Menus::OptionsMenuPostDraw(SceneRenderer &renderer, int item) {
         style.size = 10;
         style.align = TextStyle::Align::Center;
         const bool restart = m_gameSettings->RequiresRestart(item - m_gameSettingsStart);
+        const bool enabled = m_gameSettings->IsEnabled(item - m_gameSettingsStart);
         m_screen->Text().Draw(renderer,
+                              !enabled                ? "%wwControlled by a command-line option." :
                               m_gameSettingsSaveError ? "%wwSettings could not be saved." :
                               restart ? "%wwApplies when you exit Options. Restarts the game." :
                                         "%wwApplies when you exit Options.",
@@ -535,7 +537,12 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
         m_options.speedInMph ? "Units: mph" : "Units: kph";
     if (m_gameSettings) {
         for (std::size_t index = 0; index < m_gameSettings->Count(); ++index) {
-            m_optionsMenuItems[m_gameSettingsStart + index].name = m_gameSettings->Label(index);
+            auto &item = m_optionsMenuItems[m_gameSettingsStart + index];
+            item.name = m_gameSettings->Label(index);
+            item.flags &= ~MENU_ITEM_LOCKED;
+            if (!m_gameSettings->IsEnabled(index)) {
+                item.flags |= MENU_ITEM_LOCKED;
+            }
         }
     }
 

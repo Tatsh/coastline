@@ -14,9 +14,10 @@ namespace coastline {
 bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset) {
     const bool n64 = preset == "n64";
     const bool br = preset == "br";
-    const bool best = preset == "best";
+    const bool ultra = preset == "ultra";
     const bool worst = preset == "worst";
-    if (preset != "custom" && !n64 && !br && !best && !worst) {
+    const bool lowPower = preset == "low-power";
+    if (preset != "custom" && !n64 && !br && !ultra && !worst && !lowPower) {
         return false;
     }
     config.Set("Video", "GraphicsPreset", std::string(preset));
@@ -25,21 +26,25 @@ bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset) {
     }
     if (n64 || br) {
         config.Set("Game", "AssetPack", n64 ? "default" : "boss");
+        config.Set("Video", "AspectRatio", "4:3");
     }
     config.Set("Game", "Effects", n64 ? "N64" : "PC");
-    config.Set("Video", "InternalWidth", best ? "0" : br ? "640" : "320");
-    config.Set("Video", "InternalHeight", best ? "0" : br ? "480" : "240");
+    if (lowPower) {
+        config.Set("Video", "GpuPreference", "low-power");
+    }
+    config.Set("Video", "InternalWidth", ultra ? "0" : br || lowPower ? "640" : "320");
+    config.Set("Video", "InternalHeight", ultra ? "0" : br || lowPower ? "480" : "240");
     config.Set("Video", "RenderScale", "1");
     config.Set("Video", "FieldOfView", "1");
-    config.Set("Video", "DrawDistance", best ? "4" : "1");
-    config.Set("Video", "Antialias", best || n64 ? "8" : "1");
-    config.Set("Video", "AlphaToCoverage", best || n64 ? "1" : "0");
-    config.Set("Video", "AnisotropicFiltering", best ? "16" : "0");
+    config.Set("Video", "DrawDistance", ultra ? "4" : "1");
+    config.Set("Video", "Antialias", ultra || n64 ? "8" : lowPower ? "2" : "1");
+    config.Set("Video", "AlphaToCoverage", ultra || n64 || lowPower ? "1" : "0");
+    config.Set("Video", "AnisotropicFiltering", ultra ? "16" : lowPower ? "2" : "0");
     config.Set("Video", "TextureFilter", n64 ? "n64" : worst ? "nearest" : "modern");
     config.Set("Video", "AntialiasPost", "none");
-    config.Set("Video", "ScaleFilter", best ? "linear" : "nearest");
+    config.Set("Video", "ScaleFilter", ultra || lowPower ? "linear" : "nearest");
     config.Set("Video", "ScreenShader", n64 ? "consumer-crt" : br ? "pc-crt" : "none");
-    config.Set("Video", "FrameRateLimit", best ? "0" : br ? "60" : "30");
+    config.Set("Video", "FrameRateLimit", ultra ? "0" : br || lowPower ? "60" : "30");
     config.Set("Video", "UnlockedFramerate", "0");
     config.Set("Video", "VSync", "1");
     config.Set("Video", "WideMenus", "0");
@@ -50,6 +55,9 @@ GameSettings::GameSettings(GameConfig &config,
                            std::span<const std::filesystem::path> dataRoots,
                            std::span<const std::array<int, 2>> displayResolutions)
     : m_config(config) {
+    if (config.Get("Video", "GraphicsPreset") == "best") {
+        config.Set("Video", "GraphicsPreset", "ultra");
+    }
     std::set<std::string> packs{"default"};
     const auto availableRegions = AvailableCartridgeRegions(dataRoots);
     std::set<std::string> regions(availableRegions.begin(), availableRegions.end());
@@ -213,8 +221,14 @@ GameSettings::GameSettings(GameConfig &config,
                          {{"custom", "Custom"},
                           {"n64", "N64"},
                           {"br", "Boss Rally"},
-                          {"best", "High quality"},
-                          {"worst", "Low power"}}});
+                          {"ultra", "Ultra"},
+                          {"worst", "Worst"},
+                          {"low-power", "Low power"}}});
+    m_options.push_back(
+        {"GPU preference",
+         "Video",
+         "GpuPreference",
+         {{"auto", "Auto"}, {"high-performance", "High performance"}, {"low-power", "Low power"}}});
     for (auto &option : m_options) {
         if (option.key == "Music" || option.key == "Effects" || option.key == "FieldOfView" ||
             option.key == "DrawDistance" || option.key == "InternalWidth" ||
@@ -226,9 +240,10 @@ GameSettings::GameSettings(GameConfig &config,
 }
 
 std::size_t GameSettings::Selected(const Option &option) const {
+    const auto &config = ConfigFor(option);
     if (option.key == "InternalWidth") {
-        const auto width = m_config.GetInteger("Video", "InternalWidth", 0);
-        const auto height = m_config.GetInteger("Video", "InternalHeight", 0);
+        const auto width = config.GetInteger("Video", "InternalWidth", 0);
+        const auto height = config.GetInteger("Video", "InternalHeight", 0);
         for (std::size_t index = 0; index < option.choices.size(); ++index) {
             const auto &choice = option.choices[index];
             if (width == std::stoi(choice.value) && height == choice.height) {
@@ -237,12 +252,12 @@ std::size_t GameSettings::Selected(const Option &option) const {
         }
         return option.fallback;
     }
-    const auto stored = m_config.Get(option.section, option.key);
+    const auto stored = config.Get(option.section, option.key);
     if (!stored) {
         return option.fallback;
     }
     if (option.boolean) {
-        const bool value = m_config.GetBoolean(
+        const bool value = config.GetBoolean(
             option.section, option.key, option.choices[option.fallback].value == "1");
         for (std::size_t index = 0; index < option.choices.size(); ++index) {
             if ((option.choices[index].value == "1") == value) {
@@ -252,7 +267,7 @@ std::size_t GameSettings::Selected(const Option &option) const {
         return option.fallback;
     }
     const float number =
-        m_config.GetFloat(option.section, option.key, std::numeric_limits<float>::quiet_NaN());
+        config.GetFloat(option.section, option.key, std::numeric_limits<float>::quiet_NaN());
     for (std::size_t index = 0; index < option.choices.size(); ++index) {
         const auto &choice = option.choices[index];
         if (option.numeric ? std::abs(number - std::stof(choice.value)) < 0.00001f :
@@ -268,22 +283,40 @@ std::string GameSettings::Label(std::size_t index) const {
         return {};
     }
     const auto &option = m_options[index];
+    const auto &config = ConfigFor(option);
     const auto &choice = option.choices[Selected(option)];
     if (option.key == "InternalWidth" && Selected(option) == option.fallback) {
-        const auto width = m_config.GetInteger("Video", "InternalWidth", 0);
-        const auto height = m_config.GetInteger("Video", "InternalHeight", 0);
+        const auto width = config.GetInteger("Video", "InternalWidth", 0);
+        const auto height = config.GetInteger("Video", "InternalHeight", 0);
         if (width > 0 && height > 0) {
             return option.label + ": " + std::to_string(width) + "x" + std::to_string(height);
         }
     }
     if (option.numeric) {
         const float number =
-            m_config.GetFloat(option.section, option.key, std::numeric_limits<float>::quiet_NaN());
+            config.GetFloat(option.section, option.key, std::numeric_limits<float>::quiet_NaN());
         if (std::isfinite(number) && std::abs(number - std::stof(choice.value)) >= 0.00001f) {
-            return option.label + ": Custom (" + *m_config.Get(option.section, option.key) + ")";
+            return option.label + ": Custom (" + *config.Get(option.section, option.key) + ")";
         }
     }
+    if (const auto overridden = m_overrides.Get(option.section, option.key);
+        overridden && *overridden != choice.value && !option.numeric && !option.boolean) {
+        return option.label + ": " + *overridden;
+    }
     return option.label + ": " + choice.label;
+}
+
+void GameSettings::SetOverrides(GameConfig overrides) {
+    m_overrides = std::move(overrides);
+}
+
+const GameConfig &GameSettings::ConfigFor(const Option &option) const {
+    return m_overrides.Get(option.section, option.key) ? m_overrides : m_config;
+}
+
+bool GameSettings::IsEnabled(std::size_t index) const {
+    return index < m_options.size() &&
+           !m_overrides.Get(m_options[index].section, m_options[index].key);
 }
 
 bool GameSettings::RequiresRestart(std::size_t index) const {
@@ -292,7 +325,7 @@ bool GameSettings::RequiresRestart(std::size_t index) const {
 }
 
 bool GameSettings::Step(std::size_t index, int direction) {
-    if (index >= m_options.size() || direction == 0) {
+    if (!IsEnabled(index) || direction == 0) {
         return false;
     }
     const auto &option = m_options[index];
@@ -312,7 +345,7 @@ bool GameSettings::Step(std::size_t index, int direction) {
                 m_presetRestart = true;
             }
         }
-        for (const auto *key : {"FrameRateLimit", "UnlockedFramerate", "VSync"}) {
+        for (const auto *key : {"FrameRateLimit", "UnlockedFramerate", "VSync", "GpuPreference"}) {
             m_presetRestart |= original.Get("Video", key) != m_config.Get("Video", key);
         }
         return true;

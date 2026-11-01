@@ -103,8 +103,20 @@ struct MenuTitleImage {
 /** The state and the assets of the menu screens, read once from the import of a release. */
 class MenuScreen {
 public:
-    /** Draw the lit placeholder on the menu stage, with a turn in radians. */
-    static void DrawCoin(SceneRenderer &renderer, float x, float angle, const Matrix4 &projection);
+    /**
+     * Draw the lit coin and its shadow on the menu stage.
+     *
+     * @param renderer The renderer recording the current frame.
+     * @param x The horizontal stage position.
+     * @param angle The coin rotation, in radians.
+     * @param projection The stage-to-frame projection matrix.
+     * @param locked Whether to draw a dim grey coin instead of gold.
+     */
+    static void DrawCoin(SceneRenderer &renderer,
+                         float x,
+                         float angle,
+                         const Matrix4 &projection,
+                         bool locked = false);
     /**
      * Read the background, the arrows, the title pictures, the fonts, the lights, the choice
      * marker, and the sounds the screens share.

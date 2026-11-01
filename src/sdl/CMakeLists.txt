@@ -365,6 +365,17 @@ if(NOT WIN32 AND NOT APPLE)
 endif()
 install(FILES "${CMAKE_SOURCE_DIR}/LICENSE.txt" "${CMAKE_SOURCE_DIR}/README.md"
         DESTINATION "${CMAKE_INSTALL_DOCDIR}")
+if(COASTLINE_INSTALL_ASSETS)
+  set(COASTLINE_MAN_SETUP 0)
+else()
+  set(COASTLINE_MAN_SETUP 1)
+endif()
+foreach(_page IN ITEMS coastline coastline-import coastline-import-pak coastline-run-script)
+  configure_file("${CMAKE_SOURCE_DIR}/man/${_page}.1.in" "${CMAKE_CURRENT_BINARY_DIR}/${_page}.1"
+                 @ONLY)
+  install(FILES "${CMAKE_CURRENT_BINARY_DIR}/${_page}.1"
+          DESTINATION "${CMAKE_INSTALL_MANDIR}/man1")
+endforeach()
 
 if(WIN32)
   # cpack builds an NSIS installer that installs for the current user without elevation. The

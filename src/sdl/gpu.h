@@ -153,6 +153,11 @@ public:
     /** @return The actual adapter reported by SDL. */
     std::string DeviceName() const;
 
+    /** @return The requested GPU-selection preference used when the device was created. */
+    const std::string &GpuPreference() const {
+        return m_options.gpuPreference;
+    }
+
     /** @return Whether the active adapter is identified as NVIDIA. */
     bool NvmlAllowed() const;
 

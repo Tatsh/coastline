@@ -103,7 +103,21 @@ auto RequiredArgumentValue(const char *option) {
 auto RequiredChoiceValue(const char *option, std::vector<std::string> choices) {
     return [option, choices = std::move(choices)](const std::string &value) {
         RequiredArgumentValue(option)(value);
-        if (!std::ranges::contains(choices, value)) {
+        if (std::ranges::contains(choices, value)) {
+            return value;
+        }
+        const std::string *match = nullptr;
+        bool ambiguous = false;
+        for (const auto &choice : choices) {
+            if (choice.starts_with(value)) {
+                if (match != nullptr) {
+                    ambiguous = true;
+                    break;
+                }
+                match = &choice;
+            }
+        }
+        if (match == nullptr || ambiguous) {
             std::string message = "Invalid value '" + value + "' for " + option + ". Expected ";
             for (std::size_t index = 0; index < choices.size(); ++index) {
                 if (index != 0) {
@@ -113,7 +127,7 @@ auto RequiredChoiceValue(const char *option, std::vector<std::string> choices) {
             }
             throw std::invalid_argument(message + '.');
         }
-        return value;
+        return *match;
     };
 }
 
@@ -212,7 +226,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedC
         static_cast<int>(config.GetInteger("Video", "Antialias", options.antialias));
     // Explicit display arguments override the preset after saved settings are read.
     if (auto preset = parser.present("--gpu-preset")) {
-        if (*preset == "best") {
+        if (*preset == "ultra") {
             options.frameWidth = 0;
             options.frameHeight = 0;
             options.renderScale = 1.0f;
@@ -240,7 +254,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedC
             options.anisotropy = 0;
             options.textureFilter = coastline::TextureFilter::Nearest;
             options.lowestFrame = true;
-        } else if (*preset != "n64" && *preset != "br") {
+        } else if (*preset != "n64" && *preset != "br" && *preset != "low-power") {
             SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "Ignoring invalid GPU preset %s.", preset->c_str());
         }
     }
@@ -264,8 +278,8 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedC
     if (auto height = parser.present<int>("--height")) {
         options.height = *height;
     }
-    // best draws at the size the command line gives, scaled to the display it covers.
-    if (parser.present("--gpu-preset") == "best" &&
+    // Ultra draws at the size the command line gives, scaled to the display it covers.
+    if (parser.present("--gpu-preset") == "ultra" &&
         (parser.is_used("--width") || parser.is_used("--height"))) {
         options.frameWidth = options.width;
         options.frameHeight = options.height;
@@ -293,6 +307,31 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedC
         return setupOptions;
     }
     return options;
+}
+
+coastline::GameConfig CommandLineOverrides(const argparse::ArgumentParser &parser,
+                                           const coastline::DisplayOptions &display) {
+    coastline::GameConfig overrides;
+    if (const auto preset = parser.present("--gpu-preset")) {
+        coastline::ApplyGraphicsPreset(overrides, *preset);
+        if (*preset == "ultra" && (parser.is_used("--width") || parser.is_used("--height"))) {
+            overrides.Set("Video", "InternalWidth", std::to_string(display.frameWidth));
+            overrides.Set("Video", "InternalHeight", std::to_string(display.frameHeight));
+        }
+    }
+    for (const auto &[option, section, key] : {std::tuple{"--aspect-ratio", "Video", "AspectRatio"},
+                                               std::tuple{"--gpu", "Video", "GpuPreference"},
+                                               std::tuple{"--asset-pack", "Game", "AssetPack"},
+                                               std::tuple{"--region", "Game", "Region"},
+                                               std::tuple{"--language", "Game", "Language"}}) {
+        if (const auto value = parser.present(option)) {
+            overrides.Set(section, key, *value);
+        }
+    }
+    if (const auto samples = parser.present<int>("--antialias")) {
+        overrides.Set("Video", "Antialias", std::to_string(*samples));
+    }
+    return overrides;
 }
 
 // The shortcuts of the window on every screen: Alt and Enter or F11 for the full screen, F for
@@ -386,10 +425,11 @@ void DrawOverlayLine(coastline::SceneRenderer &renderer,
                      int x = 320,
                      coastline::TextStyle::Align align = coastline::TextStyle::Align::Center,
                      bool white = false,
-                     std::optional<std::array<float, 2>> outputSize = std::nullopt) {
+                     std::optional<std::array<float, 2>> outputSize = std::nullopt,
+                     int fontSize = 15) {
     const coastline::GpuWindow &window = renderer.Window();
     coastline::TextStyle style;
-    style.size = 15;
+    style.size = fontSize;
     style.align = align;
     style.doubled = false;
     if (white) {
@@ -800,11 +840,13 @@ int main(int argc, char *argv[]) {
               "around it: auto for the shape of the window, a ratio such as 4:3, or a number such "
               "as 1.6; replaces AspectRatio of the settings");
     parser.add_argument("--gpu-preset")
-        .action(RequiredChoiceValue("--gpu-preset", {"n64", "br", "best", "worst"}))
-        .metavar("{n64,br,best,worst}")
+        .action(RequiredChoiceValue("--gpu-preset", {"n64", "br", "ultra", "worst", "low-power"}))
+        .metavar("{n64,br,ultra,worst,low-power}")
         .help("Graphics preset for this run, not saved. n64 selects console graphics and Consumer "
-              "CRT; br selects PC graphics and PC CRT. best selects high quality and full screen; "
-              "worst selects low power. Explicit display arguments still apply.");
+              "CRT; br selects PC graphics and PC CRT. ultra selects maximum quality and full "
+              "screen; worst disables filters at minimum quality; low-power requests a lower-power "
+              "GPU with moderate settings. Unique prefixes are accepted. Explicit display "
+              "arguments still apply.");
     parser.add_argument("--gpu")
         .action(RequiredChoiceValue("--gpu", {"auto", "high-performance", "low-power"}))
         .metavar("{auto,high-performance,low-power}")
@@ -1174,6 +1216,14 @@ int main(int argc, char *argv[]) {
                 reinitialize = false;
                 const coastline::DisplayOptions displayOptions =
                     DisplayOptionsFrom(config, parser, savesFrames);
+                if (window->GpuPreference() != displayOptions.gpuPreference) {
+                    window.reset();
+                    window = coastline::GpuWindow::Create("Coastline", displayOptions);
+                    if (!window) {
+                        status = EXIT_FAILURE;
+                        break;
+                    }
+                }
                 if (!window->ApplyRendererOptions(displayOptions)) {
                     status = EXIT_FAILURE;
                     break;
@@ -1373,6 +1423,14 @@ int main(int argc, char *argv[]) {
                                                       std::array{assetData, paths->data},
                                                       pack);
                     if (mainMenu) {
+                        auto overrides = CommandLineOverrides(parser, displayOptions);
+                        if (overrides.Get("Game", "AssetPack")) {
+                            overrides.Set("Game", "AssetPack", pack);
+                        }
+                        if (overrides.Get("Game", "Region")) {
+                            overrides.Set("Game", "Region", region);
+                        }
+                        mainMenu->SetOptionOverrides(std::move(overrides));
                         mainMenu->SetMenuMusic(playMenuMusic);
                     }
                     frameRateText = coastline::MenuText::Load(
@@ -1387,10 +1445,10 @@ int main(int argc, char *argv[]) {
                 // frames a second, the steps of the race, for a slow computer.
                 const auto graphicsPreset = parser.present("--gpu-preset");
                 const long frameLimit =
-                    graphicsPreset == "worst" || graphicsPreset == "n64" ? 30 :
-                    graphicsPreset == "br"                               ? 60 :
-                    graphicsPreset == "best"                             ? 0 :
-                                               config.GetInteger("Video", "FrameRateLimit", 0);
+                    graphicsPreset == "worst" || graphicsPreset == "n64"    ? 30 :
+                    graphicsPreset == "br" || graphicsPreset == "low-power" ? 60 :
+                    graphicsPreset == "ultra"                               ? 0 :
+                                                config.GetInteger("Video", "FrameRateLimit", 0);
                 const Uint64 framePeriod = frameLimit > 0 ? SDL_NS_PER_SECOND / frameLimit : 0;
                 Uint64 nextFrame = lastTicks;
                 Uint64 rateStart = lastTicks;
@@ -1855,7 +1913,7 @@ int main(int argc, char *argv[]) {
                                     const std::array<float, 2> size{
                                         static_cast<float>(width) / scale,
                                         static_cast<float>(height) / scale};
-                                    int y = 24;
+                                    int y = 32;
                                     for (const auto &line :
                                          performanceStats->Lines(window->GpuMemoryBytes())) {
                                         DrawOverlayLine(*outputRenderer,
@@ -1865,8 +1923,9 @@ int main(int argc, char *argv[]) {
                                                         16,
                                                         coastline::TextStyle::Align::Left,
                                                         true,
-                                                        size);
-                                        y += 16;
+                                                        size,
+                                                        20);
+                                        y += 22;
                                     }
                                     outputRenderer->RenderInto(gpuCommands, target, width, height);
                                 };

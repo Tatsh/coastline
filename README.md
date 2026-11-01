@@ -373,27 +373,35 @@ Non-NVIDIA and unknown adapters omit NVML utilization statistics; game memory co
 The `[Video]` section of `BossRally.ini` sets up the display.
 
 Options offers persistent Graphics preset choices. Selecting a preset saves its settings in
-`BossRally.ini`; subsequent manual graphics adjustments select Custom. Audio, language, region,
-window mode, and aspect ratio remain independent.
+`BossRally.ini`; subsequent manual graphics adjustments select Custom. Audio, language, and region
+remain independent. N64 and Boss Rally select 4:3; other presets preserve the aspect ratio.
 
-| Preset       | Minimum internal resolution | Filtering and effects                                                               | Screen shader | Frame limit     |
-| ------------ | --------------------------- | ----------------------------------------------------------------------------------- | ------------- | --------------- |
-| N64          | 320x240                     | N64 filtering, console effects, original branding, and coverage anti-aliasing       | Consumer CRT  | 30 FPS          |
-| Boss Rally   | 640x480                     | Bilinear PC textures, PC effects, and Pure PC branding                              | PC CRT        | 60 FPS          |
-| High quality | Window size                 | Modern filtering, 8x anti-aliasing, 16x anisotropic filtering, and 4x draw distance | Off           | Display refresh |
-| Low power    | 320x240                     | Nearest textures, no anti-aliasing, and 1x draw distance                            | Off           | 30 FPS          |
+| Preset     | Minimum internal resolution | Filtering and effects                                                               | Screen shader | Frame limit     |
+| ---------- | --------------------------- | ----------------------------------------------------------------------------------- | ------------- | --------------- |
+| N64        | 320x240                     | N64 filtering, console effects, original branding, and coverage anti-aliasing       | Consumer CRT  | 30 FPS          |
+| Boss Rally | 640x480                     | Bilinear PC textures, PC effects, and Pure PC branding                              | PC CRT        | 60 FPS          |
+| Ultra      | Window size                 | Modern filtering, 8x anti-aliasing, 16x anisotropic filtering, and 4x draw distance | Off           | Display refresh |
+| Worst      | 320x240                     | Nearest textures and scaling, no anti-aliasing, and 1x draw distance                | Off           | 30 FPS          |
+| Low power  | 640x480                     | Modern textures, 2x anti-aliasing, 2x anisotropic filtering, and 1x draw distance   | Off           | 60 FPS          |
 
 Preset changes apply after exiting Options. Asset-pack, renderer, or frame-limit changes restart
 the game at the logos; other preset adjustments apply during the black transition screen.
 `--gpu-preset n64` and `--gpu-preset br` select the corresponding look for one run without saving
 the preset. Explicit asset-pack and display arguments override the preset.
 
-`--gpu-preset best` uses native resolution, 4x draw distance, 8-sample anti-aliasing, alpha to
+`--gpu-preset ultra` uses native resolution, 4x draw distance, 8-sample anti-aliasing, alpha to
 coverage, 16-sample anisotropic filtering, modern texture filtering, and linear scaling in
 borderless full screen. `--gpu-preset worst` uses 1x draw distance, nearest scaling and texture
-filtering, no anti-aliasing, and a 320 by 240 frame at 30 FPS. Full-screen frames retain the
-display aspect ratio. Both presets override saved internal dimensions, render scale, and
-post-process anti-aliasing for the run. Explicit display arguments still apply.
+filtering, no anti-aliasing or screen filters, and a 320 by 240 base frame at 30 FPS. Worst preserves
+the aspect ratio and does not change GPU preference. `--gpu-preset low-power` requests SDL's
+lower-power adapter, when available, and uses the moderate settings above. Other explicit display
+arguments still apply. Unique choice prefixes are accepted, such as `n`, `u`, and `l`; ambiguous
+prefixes produce an argument error.
+
+CLI overrides disable matching Options entries and grey their coins. Their labels show the active
+override, and the temporary values are not saved. For example, `--aspect-ratio 4:3` disables only
+Aspect ratio, while `--gpu-preset n64` disables all settings controlled by the preset. GPU preference
+changes recreate the GPU device and restart the game after Options closes.
 
 | Key                    | Values                                                                                                                                                                                                                                  |
 | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

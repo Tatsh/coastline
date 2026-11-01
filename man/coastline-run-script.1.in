@@ -1,0 +1,82 @@
+.TH COASTLINE-RUN-SCRIPT 1 "2026-11-01" "Coastline @CMAKE_PROJECT_VERSION@" "User Commands"
+.SH NAME
+coastline-run-script \- drive Coastline with scripted input and screenshots
+.SH SYNOPSIS
+.B coastline
+.RI [ options ]
+.B run-script
+.I SCRIPT
+.SH DESCRIPTION
+Each nonblank line of SCRIPT specifies one command.
+A # starts a comment.
+Frame numbers start at 1.
+Commands supplement ordinary input.
+Global options precede run-script.
+Use \-\-data-dir for an isolated data directory and \-\-config for a separate
+INI file.
+.PP
+Scripts operate setup when game data is unavailable and keyboard, text, or
+mouse input is supplied.
+.SH COMMANDS
+.TP
+.B autopilot
+Let the computer drive the first car.
+Applies from the start without a frame prefix.
+.TP
+.BI "screenshot-every " N
+Capture every N frames.
+N must be positive.
+Applies from the start without a frame prefix.
+.TP
+.IB "FRAME " "press BUTTON " "[FRAMES [PORT]]"
+Press a controller button for FRAMES frames, defaulting to 6.
+PORT is 1 through 4 and defaults to 1.
+BUTTON is a, b, z, start, l, r, up, down, left, right, cu, cd, cl, or cr.
+.TP
+.IB "FRAME " "key KEY " "[FRAMES]"
+Press the SDL key KEY for FRAMES frames, defaulting to 6.
+Use SDL key names such as Return, Escape, or F.
+Ctrl, Alt, Shift, and Gui select left-side modifier keys.
+.TP
+.IB "FRAME " "type TEXT"
+Type the remainder of the line as UTF-8.
+The special values <backspace> and <enter> press editing keys.
+.TP
+.IB "FRAME " "mouse X Y " "[BUTTON [FRAMES]]"
+Position the pointer on the 320x240 logical input surface.
+BUTTON is none, left, or right and defaults to none.
+FRAMES defaults to 1.
+Setup maps the same coordinates to its text grid.
+.TP
+.IB "FRAME " screenshot
+Capture the current frame.
+.TP
+.IB "FRAME " quit
+Exit after the specified frame.
+If several quit commands are present, the earliest applies.
+.SH CAPTURES
+PNG files are written below screenshots in the data directory,
+with filenames such as frame-000060.png.
+Capture runs advance front-end animation at a fixed 60 frames per second.
+Captures include game presentation filters and enabled full statistics.
+Full statistics use output resolution.
+.SH EXAMPLES
+Save the following commands as test.txt.
+.nf
+60 press a
+180 press a
+240 screenshot
+300 quit
+.fi
+.PP
+Run the script with the following command.
+.nf
+coastline \-\-config ./test.ini run-script test.txt
+.fi
+.SH EXIT STATUS
+Zero indicates a normal exit.
+A nonzero status indicates an unreadable script, invalid command, or startup
+failure.
+.SH SEE ALSO
+.BR coastline (1),
+.BR coastline-import (1)

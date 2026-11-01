@@ -1,0 +1,58 @@
+.TH COASTLINE-IMPORT 1 "2026-11-01" "Coastline @CMAKE_PROJECT_VERSION@" "User Commands"
+.SH NAME
+coastline-import \- convert game disc and ROM assets for Coastline
+.SH SYNOPSIS
+.B coastline
+.RI [ options ]
+.B import \-\-cd
+.I DISC
+.B \-\-rom
+.I ROM
+.RI [ "\-\-rom ROM" ...]
+.SH DESCRIPTION
+Import a Boss Rally disc image together with at least one supported Top Gear
+Rally ROM.
+Both the disc and a ROM are required.
+ROM images are identified by SHA-1 after normalising their byte order.
+USA, European, and Japanese releases can be imported in one batch.
+.PP
+Conversion produces PNG images, FLAC audio, glTF models, and JSON metadata.
+Successful imports replace generated packs and preserve custom mod packs.
+Original game files must be supplied by the user.
+.SH OPTIONS
+.TP
+.BI \-\-cd " DISC"
+Read a Boss Rally CUE sheet, ISO image, or Mode 1 BIN image.
+A BIN image uses a matching adjacent CUE sheet when available.
+Without a CUE sheet, BIN and ISO import provide data without CD audio.
+Track files referenced by a CUE sheet must remain available.
+.TP
+.BI \-\-rom " ROM"
+Read a Top Gear Rally ROM image.
+Repeat for each release to include.
+.TP
+.BR \-h ", " \-\-help
+Print subcommand usage and exit.
+.PP
+Global options precede import.
+Use \-\-data-dir to select the destination.
+An explicit data directory imports without creating normal configuration or
+log files.
+.SH FILES
+Generated assets are written below assets/default in the data directory.
+Other generated regional and Pure PC packs are written beside default.
+Without \-\-data-dir, the platform's normal user data directory is used.
+.SH EXAMPLES
+.nf
+coastline import \-\-cd "Boss Rally.cue" \-\-rom usa.z64
+coastline \-\-data-dir ./game-data import \-\-cd rally.iso \e
+  \-\-rom usa.z64 \-\-rom jpn.z64
+.fi
+.SH EXIT STATUS
+Zero indicates a successful import.
+A nonzero status indicates invalid arguments, unsupported input, or conversion
+failure.
+.SH SEE ALSO
+.BR coastline (1),
+.BR coastline-import-pak (1),
+.BR coastline-run-script (1)

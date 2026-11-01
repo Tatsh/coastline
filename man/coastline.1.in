@@ -1,0 +1,164 @@
+.TH COASTLINE 1 "2026-11-01" "Coastline @CMAKE_PROJECT_VERSION@" "User Commands"
+.SH NAME
+coastline \- play Top Gear Rally and Boss Rally
+.SH SYNOPSIS
+.B coastline
+.RI [ options ]
+.RI [ command " [" arguments ]]
+.SH DESCRIPTION
+Coastline combines Top Gear Rally and Boss Rally in a stand-alone SDL game.
+Game assets must be imported from a Boss Rally disc image and at least one
+supported Top Gear Rally ROM image.
+Without usable assets, builds with interactive setup open the import wizard.
+Incompatible assets require reimporting.
+.PP
+Command-line overrides apply for the current run.
+Matching Options entries are disabled while an override controls them.
+Unique prefixes are accepted for choice values; ambiguous prefixes are rejected.
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+Print usage and exit.
+.TP
+.BR \-v ", " \-\-version
+Print the version and exit.
+.TP
+.BI \-\-data-dir " DIRECTORY"
+Use DIRECTORY for imported assets and saved data instead of system or user
+asset roots.
+.TP
+.BI \-\-config " INI"
+Read and save settings in INI instead of the default configuration file.
+Data, state, and cache paths are unaffected.
+.TP
+.BI \-\-asset-pack " PACK"
+Select default, boss for Pure PC textures, or an installed mod pack.
+Optional packs override files from the default and selected regional packs.
+.TP
+.BI \-\-language " LANGUAGE"
+Select imported text and fonts, such as en-us, en-gb, or ja.
+.TP
+.BI \-\-region " REGION"
+Select usa, eur, or jpn models and images independently of language.
+.TP
+.BI \-\-width " PIXELS"
+Set the window width, from 1 to 16384 pixels.
+.TP
+.BI \-\-height " PIXELS"
+Set the window height, from 1 to 16384 pixels.
+.TP
+.B \-\-fullscreen
+Cover the display.
+.TP
+.B \-\-windowed
+Start in a window.
+.TP
+.BI \-\-antialias " SAMPLES"
+Select 1, 2, 4, or 8 samples per pixel.
+A value of 1 disables multisample anti-aliasing.
+.TP
+.B \-\-no-vsync
+Present frames without waiting for vertical synchronisation.
+.TP
+.BI \-\-aspect-ratio " RATIO"
+Use auto to fill the output, a ratio such as 4:3 or 21:9,
+or a positive finite width-to-height number such as 1.6.
+Explicit ratios add bars where necessary.
+.TP
+.BI \-\-gpu-preset " PRESET"
+Select n64, br, ultra, worst, or low-power.
+N64 selects a 320x240 internal base, 4:3, and Consumer CRT.
+BR selects a 640x480 internal base, 4:3, Pure PC textures, and PC CRT.
+An explicit aspect ratio can expand either base resolution.
+Ultra selects maximum graphics quality and full screen.
+Worst selects minimum quality without filters and preserves the aspect ratio.
+Low-power requests a lower-power GPU with moderate graphics settings.
+Other explicit graphics arguments override the preset.
+.TP
+.BI \-\-gpu " PREFERENCE"
+Select auto, high-performance, or low-power.
+SDL selects an available adapter matching the preference when possible.
+.TP
+.B \-\-debug-gpu
+Enable GPU validation when the backend provides validation layers.
+.TP
+.B \-\-debug
+Enable debug logging.
+.TP
+.B \-\-minimized
+Start with the window minimised.
+Available in debug builds only.
+.if @COASTLINE_MAN_SETUP@ \{\
+.TP
+.B \-\-reset
+Remove generated asset packs and asset caches, preserving settings, saves,
+decals, and custom packs, then start the game or setup.
+Confirm with y or n at the terminal, without case sensitivity.
+.TP
+.B \-\-factory-reset
+Delete all configuration, data, state, and cache, including saves, decals,
+custom packs, and an explicit INI file, then start the game or setup.
+Confirmation is required.
+.TP
+.BR \-y ", " \-\-yes-really
+Confirm either reset without prompting.
+.\}
+.SH COMMANDS
+.TP
+.B import
+Convert disc and ROM assets.
+See
+.BR coastline-import (1).
+.TP
+.B import-pak
+Import Controller Pak notes.
+See
+.BR coastline-import-pak (1).
+.TP
+.BI "export-pak " "[\-\-release REGION] FILE"
+Export saved notes to a Controller Pak image.
+REGION is usa, eur, or jpn and defaults to usa.
+For an existing four-pak image, replace the first pak and preserve the other
+three.
+.TP
+.B run-script
+Run scripted input and screenshots.
+See
+.BR coastline-run-script (1).
+.SH CONTROLS
+Alt+Enter or F11 toggles full screen.
+F cycles through legacy FPS, full statistics, and no overlay.
+Legacy FPS uses game resolution and filters.
+Full statistics use output resolution and OS display scaling.
+Ctrl+U toggles unlocked frame pacing.
+V changes vertical synchronisation outside screens that accept text.
+.SH FILES
+On Linux and BSD, the XDG base directories apply, each with a coastline
+subdirectory.
+Defaults are ~/.config/coastline, ~/.local/share/coastline,
+~/.local/state/coastline, and ~/.cache/coastline.
+macOS and Windows use platform-specific application directories.
+.PP
+BossRally.ini stores settings.
+The data directory includes assets and Controller Pak notes.
+game.log is written in the state directory.
+System assets are searched before user assets, including the installation's
+share/coastline and /usr/share/coastline on Unix systems.
+.SH ENVIRONMENT
+.TP
+.BR XDG_CONFIG_HOME ", " XDG_DATA_HOME ", " XDG_STATE_HOME ", " XDG_CACHE_HOME
+Override corresponding Unix base directories.
+Relative values are ignored.
+.TP
+.B SDL_LOGGING
+Set SDL log levels unless \-\-debug overrides them.
+.SH EXIT STATUS
+Zero indicates success or a normal exit.
+A nonzero status indicates invalid arguments, an import failure, or a startup
+error.
+.SH SEE ALSO
+.BR coastline-import (1),
+.BR coastline-import-pak (1),
+.BR coastline-run-script (1)
+.SH BUGS
+Report issues at https://github.com/Tatsh/coastline/issues.

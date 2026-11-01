@@ -563,7 +563,9 @@ MenuScreen::Update(float seconds, std::span<const MenuButtons> players, const Me
                 s.Move(1, -1.0f, setup);
             }
             const MenuItem &item = setup.items[static_cast<std::size_t>(s.cursor)];
-            if (upDown && (item.flags & MENU_ITEM_ADJUSTABLE) && (buttons.up || buttons.down)) {
+            if (upDown && (item.flags & MENU_ITEM_ADJUSTABLE) &&
+                !(item.flags & (MENU_ITEM_LOCKED | MENU_ITEM_UNAVAILABLE)) &&
+                (buttons.up || buttons.down)) {
                 *setup.selection = s.cursor;
                 result = buttons.up ? MenuResult::Up : MenuResult::Down;
                 selected = true;
@@ -606,10 +608,8 @@ MenuScreen::Update(float seconds, std::span<const MenuButtons> players, const Me
     return result;
 }
 
-void MenuScreen::DrawCoin(SceneRenderer &renderer,
-                          float x,
-                          float angle,
-                          const Matrix4 &projection) {
+void MenuScreen::DrawCoin(
+    SceneRenderer &renderer, float x, float angle, const Matrix4 &projection, bool locked) {
     struct Triangle {
         std::array<StageVertex, 3> corners;
         float depth;
@@ -653,11 +653,16 @@ void MenuScreen::DrawCoin(SceneRenderer &renderer,
         const float glint = std::pow(
             std::max(0.0f, normal[0] * -0.2f + normal[1] * 0.25f + normal[2] * 0.9473648f), 24.0f);
         const float light = 0.3f + diffuse * 0.7f;
-        const std::array<std::uint8_t, 4> color{
+        std::array<std::uint8_t, 4> color{
             static_cast<std::uint8_t>(std::min(255.0f, 255.0f * light + glint * 90.0f)),
             static_cast<std::uint8_t>(std::min(255.0f, 185.0f * light + glint * 90.0f)),
             static_cast<std::uint8_t>(std::min(255.0f, 35.0f * light + glint * 90.0f)),
             255};
+        if (locked) {
+            const auto grey = static_cast<std::uint8_t>(
+                (static_cast<unsigned>(color[0]) + color[1] + color[2]) / 6);
+            color = {grey, grey, grey, 255};
+        }
         Triangle face{};
         int index = 0;
         for (auto point : {a, b, c}) {
@@ -778,7 +783,11 @@ void MenuScreen::Draw(SceneRenderer &renderer, const MenuSetup &setup) const {
         auto drawItem = [&](int index, float offset, float angle) {
             const MenuItem &item = setup.items[static_cast<std::size_t>(index)];
             if (item.coin) {
-                DrawCoin(renderer, STAGE_X - offset * SCREEN_WIDTH / 6.0f, angle, projection);
+                DrawCoin(renderer,
+                         STAGE_X - offset * SCREEN_WIDTH / 6.0f,
+                         angle,
+                         projection,
+                         (item.flags & MENU_ITEM_LOCKED) != 0);
             } else if (item.model) {
                 const bool mirrored = (item.flags & MENU_ITEM_MIRRORED_MODEL) != 0;
                 Matrix4 world = MultiplyMatrices(

@@ -1,0 +1,45 @@
+.TH COASTLINE-IMPORT-PAK 1 "2026-11-01" "Coastline @CMAKE_PROJECT_VERSION@" "User Commands"
+.SH NAME
+coastline-import-pak \- import Top Gear Rally Controller Pak notes
+.SH SYNOPSIS
+.B coastline
+.RI [ options ]
+.B import-pak
+.I FILE
+.SH DESCRIPTION
+Copy recognised Top Gear Rally notes from FILE into Coastline's Controller Pak
+data.
+USA, European, and Japanese releases are accepted.
+Unrelated notes and invalid page chains are skipped.
+A recognised note replaces a saved note with the same identifier.
+.PP
+FILE must be a 32 KiB Controller Pak image or a 128 KiB four-pak image.
+Only the first pak of a four-pak image is imported.
+Global options precede import-pak.
+Use \-\-data-dir to select the destination data directory.
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+Print subcommand usage and exit.
+.SH LIMITATIONS
+Console Time Attack ghost notes provide recorded controller input.
+Import does not convert the recording into pose frames required by the PC race
+engine.
+.SH EXAMPLES
+.nf
+coastline import-pak controller.mpk
+coastline \-\-data-dir ./game-data import-pak backup.mpk
+.fi
+.PP
+Export saved notes with the following command.
+.nf
+coastline export-pak \-\-release usa backup.mpk
+.fi
+.SH EXIT STATUS
+Zero indicates that the image was processed.
+Skipped unrelated or invalid notes do not make an otherwise valid import fail.
+A nonzero status indicates invalid arguments, an invalid image, or a write
+failure.
+.SH SEE ALSO
+.BR coastline (1),
+.BR coastline-import (1)

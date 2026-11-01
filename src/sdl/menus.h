@@ -224,6 +224,17 @@ public:
         m_playMenuMusic = std::move(play);
     }
 
+    /**
+     * Display temporary command-line values and disable matching Options entries.
+     *
+     * @param overrides Per-run settings that are never written to the user's INI file.
+     */
+    void SetOptionOverrides(GameConfig overrides) {
+        if (m_gameSettings) {
+            m_gameSettings->SetOverrides(std::move(overrides));
+        }
+    }
+
 private:
     // The screens of the console, each the routine of the same name.
     enum class Screen {

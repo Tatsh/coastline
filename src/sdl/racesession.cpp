@@ -95,6 +95,16 @@ void RaceSession::HoldSoundUntilShown() {
 
 namespace {
 
+void RestoreCameraChoice(Vehicle &vehicle, int camera) {
+    if (camera == VEHICLE_CAMERA_TRACKSIDE) {
+        PlaceTrackCamera(&vehicle);
+    } else {
+        vehicle.SetActiveCamera(&vehicle.GetCameras()[camera]);
+        vehicle.SetCameraChanged(1);
+    }
+    vehicle.SetPreviousCamera(vehicle.GetActiveCamera());
+}
+
 // The ghost car of a time attack as ReadGhostFileData() of the PC release loads it: the header the
 // race checks against the track and the weather of the race, and the frames of the second
 // recording. A failed load of the PC release clears the header the same way.
@@ -192,13 +202,7 @@ void RaceSession::Start(const RaceSetup &setup, const std::filesystem::path &mus
             const auto index = static_cast<std::size_t>(i);
             const int camera = std::clamp(setup.cars[index].camera, 0, 3);
             Vehicle &vehicle = g_aVehicles[i];
-            if (camera == VEHICLE_CAMERA_TRACKSIDE) {
-                PlaceTrackCamera(&vehicle);
-            } else {
-                vehicle.SetActiveCamera(&vehicle.GetCameras()[camera]);
-                vehicle.SetCameraChanged(1);
-            }
-            vehicle.SetPreviousCamera(vehicle.GetActiveCamera());
+            RestoreCameraChoice(vehicle, camera);
             m_cameraChoices[index] = camera;
         }
     }
@@ -239,6 +243,12 @@ RaceEnd RaceSession::Step() {
         StartLowResFrame(g_aViewportRects);
     }
     if (loading && g_dwRaceInitialized && !gInstantReplayActive) {
+        for (std::size_t player = 0; player < m_cameraChoices.size(); ++player) {
+            if (m_cameraChoices[player] >= 0 &&
+                player < static_cast<std::size_t>(g_dwNumLocalPlayers)) {
+                RestoreCameraChoice(g_aVehicles[player], m_cameraChoices[player]);
+            }
+        }
         // The console counts down as soon as the race has loaded, where the PC release waits for
         // the start binding.
         if (!m_waitForStart && !g_bRaceStartReached) {

@@ -11,6 +11,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Installed manual pages for `coastline`, `coastline-import`, `coastline-import-pak`, and
+  `coastline-run-script`.
+- A saved GPU preference option selects automatic, high-performance, or low-power device selection.
 - Cupra, Helmet, and Beach Ball paint and decal editing through numbered texture layers, preserving
   imported images beneath paint, with clear and undo support and tall textures fitted to the canvas.
   Bonus-car saves use `controller-pak/custom-decals` without consuming console capacity; original
@@ -19,8 +22,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   incompatible mirrors are disabled; a separate Milk Truck save note preserves existing decal notes.
 - A PC CRT shader simulates a progressive VGA monitor with faint scanlines, a fine shadow mask,
   and mild curvature.
-- Saved Graphics preset choices include Custom, N64, Boss Rally, High quality, and Low power.
-  Manual graphics changes select Custom. Presets preserve audio, language, region, and aspect ratio;
+- Saved Graphics preset choices include Custom, N64, Boss Rally, Ultra, Worst, and Low power.
+  Manual graphics changes select Custom. Presets preserve audio, language, and region;
   changes apply as Options closes, restarting at logos when resource or pacing changes require it.
 - `--gpu-preset n64` and `--gpu-preset br` select temporary N64 and Boss Rally looks, with explicit
   asset-pack and display arguments taking precedence.
@@ -117,6 +120,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- N64 and Boss Rally graphics presets select 4:3. Low power requests a lower-power GPU with
+  a 640x480 internal base and a 60 FPS limit, separately from Worst's unfiltered minimum quality.
+- Ultra replaces High quality and `--gpu-preset best`; saved preset identifiers migrate from
+  `best` to `ultra`.
+  Command-line choice values accept unique prefixes.
+- Options displays active command-line overrides and locks their settings for the current run.
+- Full performance statistics use a larger font without changing the legacy FPS counter.
 - Full performance statistics draw at output resolution after upscaling and CRT filters, using
   the full window including aspect-ratio bars. Captures include statistics at window resolution;
   disabling statistics releases their texture. Single-F FPS retains its legacy gradient and size,
@@ -144,7 +154,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Internal resolution offers explicit sizes from 320x240 through connected display modes, defaulting
   to Window size and applying as Options closes. Resource-changing options identify game restarts.
 - Graphics presets override saved internal resolution, render scale, and post-process anti-aliasing
-  for consistent results, with 4x draw distance for `best` and 1x for `worst`.
+  for consistent results, with 4x draw distance for `ultra` and 1x for `worst`.
 - Setup disables Back on the Done screen after a successful import.
 - Setup search results abbreviate the home directory as `~` in disc and ROM paths.
 - Gold coin placeholders sit above the menu stage with soft projected shadows.
@@ -172,6 +182,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Restarting a race from the pause menu restores each player's selected camera.
 - Command-line validation reports errors instead of aborting for missing, empty, or
   excess option values, window dimensions outside 1..16384, unsupported anti-aliasing levels, and
   malformed aspect ratios.
