@@ -139,6 +139,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Restored missing surfaces in mirrored Jungle, Coastline, and Desert track-selection previews.
 - Japanese PJ, TR, and MN menu selections start races with the matching cars instead of RS, M3,
   and Helmet counterparts.
 - Fixed Milk Truck front-right fender and fascia colours by importing every texture sharing a

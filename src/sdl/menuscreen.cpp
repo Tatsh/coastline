@@ -780,12 +780,13 @@ void MenuScreen::Draw(SceneRenderer &renderer, const MenuSetup &setup) const {
             if (item.coin) {
                 DrawCoin(renderer, STAGE_X - offset * SCREEN_WIDTH / 6.0f, angle, projection);
             } else if (item.model) {
-                Matrix4 world =
-                    MultiplyMatrices(RotationX(STAGE_TILT),
-                                     StageModelAt(STAGE_X - offset * SCREEN_WIDTH / 6.0f,
-                                                  angle,
-                                                  (item.flags & MENU_ITEM_MIRRORED_MODEL) != 0));
+                const bool mirrored = (item.flags & MENU_ITEM_MIRRORED_MODEL) != 0;
+                Matrix4 world = MultiplyMatrices(
+                    RotationX(STAGE_TILT),
+                    StageModelAt(STAGE_X - offset * SCREEN_WIDTH / 6.0f, angle, mirrored));
+                renderer.SetMirrored(mirrored);
                 renderer.DrawModel(*item.model, world, projection, s.lighting, std::nullopt, true);
+                renderer.SetMirrored(false);
             } else if (!item.emptyStage) {
                 s.text->Draw(renderer,
                              "%ww" + item.name,
