@@ -268,7 +268,8 @@ MenuProfile &Menus::ProfileOf(int player) {
 
 bool Menus::CanPaintCar(int car) const {
     return car >= 0 && static_cast<std::size_t>(car) < m_cars.size() &&
-           (car < PAINT_SHOP_CARS || m_cars[static_cast<std::size_t>(car)].engineCar == 10);
+           (car < PAINT_SHOP_CARS || (m_cars[static_cast<std::size_t>(car)].engineCar >= 9 &&
+                                      m_cars[static_cast<std::size_t>(car)].engineCar <= 12));
 }
 
 bool Menus::IsCarUnlocked(int car) const {

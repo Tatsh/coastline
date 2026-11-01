@@ -186,6 +186,10 @@ std::size_t ControllerPak::FreeBytes() const {
     return pages < PAK_PAGES ? (PAK_PAGES - pages) * PAK_PAGE_BYTES : 0;
 }
 
+ControllerPak ControllerPak::Subdirectory(const std::filesystem::path &directory) const {
+    return ControllerPak(m_directory / directory);
+}
+
 std::optional<std::string>
 ExportPakImage(const ControllerPak &pak, const std::filesystem::path &file, PakRelease release) {
     const PakCodes &codes = CodesOf(release);

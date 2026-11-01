@@ -11,6 +11,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Cupra, Helmet, and Beach Ball paint and decal editing through numbered texture layers, preserving
+  imported images beneath paint, with clear and undo support and tall textures fitted to the canvas.
+  Bonus-car saves use `controller-pak/custom-decals` without consuming console capacity; original
+  decal notes and older Milk Truck saves remain readable.
 - Milk Truck paint and decal editing, with custom decals restored for races. Missing panels and
   incompatible mirrors are disabled; a separate Milk Truck save note preserves existing decal notes.
 - A PC CRT shader simulates a progressive VGA monitor with faint scanlines, a fine shadow mask,

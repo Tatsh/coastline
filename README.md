@@ -314,6 +314,13 @@ season and ghost saves. The option takes effect immediately; manual saving remai
 autosave off. Preferences save independently of race progress. Failed automatic saves display a
 warning on the results screen.
 
+Paint Shop supports Milk Truck, Cupra, Helmet, and Beach Ball. Cupra, Helmet, and Beach Ball use
+numbered texture buttons in place of body-panel buttons. Tall textures shrink to fit the canvas.
+Painting preserves the imported image beneath the decal; clearing the decal restores the image
+with the current body tint. Bonus-car decals save beneath `controller-pak/custom-decals` in the
+save directory, independently of the console Controller Pak capacity. Existing Milk Truck notes
+remain readable, and original console decal notes retain their format.
+
 The `Title screen` option selects the Japanese or international opening independently of language
 and regional models and textures. `[Game] TitleScreen` accepts `regional` (default), `japanese`,
 or `international`. Changing the title reinitialises the game after Options closes and returns

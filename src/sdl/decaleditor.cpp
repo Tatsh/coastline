@@ -96,6 +96,9 @@ void PaintShop::SetPalette(int entry, u8 red, u8 green, u8 blue) {
 }
 
 void PaintShop::CopyLightPalettes() {
+    if (m_car->ImagePanels()) {
+        return;
+    }
     // The first two colours of the palette are copied into the palettes of the lights. The second
     // colour of the rear lights is never set, and the first is set again.
     u16 first = m_car->PaletteColor(m_decalPaletteMaterial, 0);
@@ -106,13 +109,36 @@ void PaintShop::CopyLightPalettes() {
 }
 
 bool PaintShop::HasOppositePanel(int slot) const {
-    if (slot < 0 || slot >= DECAL_SLOTS || !HasMirror(static_cast<u8>(slot)) ||
-        !m_car->HasMaterial(slot ^ 1)) {
+    if (m_car->ImagePanels() || slot < 0 || slot >= DECAL_SLOTS ||
+        !HasMirror(static_cast<u8>(slot)) || !m_car->HasMaterial(slot ^ 1)) {
         return false;
     }
     const auto source = m_car->Texture(slot);
     const auto target = m_car->Texture(slot ^ 1);
     return source.width == target.width && source.height == target.height;
+}
+
+PaintRect PaintShop::DecalSlotRect(int slot) const {
+    if (m_car->ImagePanels()) {
+        return {100 + slot % 4 * 30, 108 + slot / 4 * 28, 28, 24};
+    }
+    return m_decalSlotRects[static_cast<std::size_t>(slot)];
+}
+
+void PaintShop::LayOutDecalCanvas() {
+    m_decalZoom = 4;
+    if (m_car->ImagePanels()) {
+        while (m_decalZoom > 1 && (m_decalWidth * m_decalZoom > m_decalCanvasFrame.width ||
+                                   m_decalHeight * m_decalZoom > m_decalCanvasFrame.height)) {
+            m_decalZoom /= 2;
+        }
+    }
+    m_decalCanvas.width = m_decalWidth * m_decalZoom;
+    m_decalCanvas.height = m_decalHeight * m_decalZoom;
+    m_decalCanvas.x =
+        m_decalCanvasFrame.x + ((m_decalCanvasFrame.width - m_decalCanvas.width) >> 1);
+    m_decalCanvas.y =
+        m_decalCanvasFrame.y + ((m_decalCanvasFrame.height - m_decalCanvas.height) >> 1);
 }
 
 void PaintShop::SelectDecalSlot(s32 slot) {
@@ -128,10 +154,7 @@ void PaintShop::SelectDecalSlot(s32 slot) {
     m_decalHeight = static_cast<u8>(texture.height);
     SDL_Log("Using decal width %d.", m_decalWidth);
     SDL_Log("Using decal height %d.", m_decalHeight);
-    m_decalCanvas.x = m_decalCanvasFrame.x + ((m_decalCanvasFrame.width - m_decalWidth * 4) >> 1);
-    m_decalCanvas.y = m_decalCanvasFrame.y + ((m_decalCanvasFrame.height - m_decalHeight * 4) >> 1);
-    m_decalCanvas.width = m_decalWidth * 4;
-    m_decalCanvas.height = m_decalHeight * 4;
+    LayOutDecalCanvas();
 }
 
 s32 PaintShop::AnchorDistance() const {
@@ -339,8 +362,8 @@ bool PaintShop::PickDecalSlot() {
     if (m_decalDragActive || m_decalSlotChanged || (m_input.buttons & INPUT_PICK) == 0) {
         return false;
     }
-    for (u8 i = 0; i < DECAL_SLOTS; ++i) {
-        if (!m_car->HasMaterial(i) || !IsCursorInRect(m_decalSlotRects[i])) {
+    for (u8 i = 0; i < m_car->PanelCount(); ++i) {
+        if (!m_car->HasMaterial(i) || !IsCursorInRect(DecalSlotRect(i))) {
             continue;
         }
         Transfer(INPUT_PICK);
@@ -496,14 +519,12 @@ void PaintShop::PaintBrush() {
     }
     const PaintSprite &cursor = *m_paintCursor;
     if (m_brushSize == 0) {
-        SetPixel4Bit((cursor.originX - m_decalCanvas.x) >> 2,
-                     (m_decalCanvas.y + m_decalCanvas.height - cursor.originY) >> 2,
-                     m_decalColor);
+        SetPixel4Bit(ScreenToTexelX(cursor.originX), ScreenToTexelY(cursor.originY), m_decalColor);
     } else if (m_paintToolIcons[PAINT_TOOL_BRUSH]->style == 0) {
         FillCircle4Bit(
             cursor.originX, cursor.originY, m_brushSizeRects[m_brushSize].width >> 1, true);
     } else {
-        s32 half = m_brushSizeRects[m_brushSize].width * 2;
+        s32 half = m_brushSizeRects[m_brushSize].width * m_decalZoom / 2;
         FillRect4Bit(cursor.originX - half,
                      cursor.originY - half,
                      cursor.originX + half,
@@ -549,7 +570,7 @@ void PaintShop::PaintOval() {
     // The radius of a circle is taken before the style is tested again.
     s32 radius = 0;
     if (style == OVAL_STYLE_FILLED_CIRCLE || style == OVAL_STYLE_OUTLINED_CIRCLE) {
-        radius = AnchorDistance() >> 2;
+        radius = AnchorDistance() / m_decalZoom;
     }
     s32 x = m_paintCursor->originX;
     s32 y = m_paintCursor->originY;

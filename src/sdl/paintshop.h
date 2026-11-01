@@ -307,6 +307,10 @@ private:
     // decaleditor.c of the console.
     void SelectDecalSlot(s32 slot);
     bool HasOppositePanel(int slot) const;
+    PaintRect DecalSlotRect(int slot) const;
+    void LayOutDecalCanvas();
+    ControllerPak DecalPak(const DecalCar &car) const;
+    std::optional<std::vector<u8>> ReadDecalNote(const DecalCar &car) const;
     s32 AnchorDistance() const;
     void ProcessColorEditorDialog();
     void UpdateCursorFromInput();
@@ -463,6 +467,7 @@ private:
     const u8 *m_decalMask = nullptr;
     int m_decalPaletteMaterial = 0;
     u8 m_decalWidth = 0;
+    int m_decalZoom = 4;
     u8 m_decalHeight = 0;
     u8 m_dashColorA = 0;
     u8 m_dashColorB = 0;

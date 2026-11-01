@@ -846,8 +846,14 @@ void PaintShop::EmitScaledTextureRect(s32 x, s32 y, s32 width, s32 height) {
     DecalTexture texture = m_car->Texture(m_decalSlot);
     std::vector<u8> rgba;
     rgba.reserve(static_cast<std::size_t>(texture.width * texture.height * 4));
+    const auto panel = m_car->ImagePanels() ? m_car->PanelPixels(m_decalSlot) : std::vector<u8>{};
     for (s32 row = texture.height - 1; row >= 0; --row) {
         for (s32 column = 0; column < texture.width; ++column) {
+            if (!panel.empty()) {
+                const auto pixel = static_cast<std::size_t>(row * texture.width + column) * 4;
+                rgba.insert(rgba.end(), panel.begin() + pixel, panel.begin() + pixel + 4);
+                continue;
+            }
             u8 texel = ReadPixel4Bit(m_car->Texels(m_decalSlot), column, row);
             auto color = PaletteRgba(m_car->PaletteColor(m_decalSlot, texel));
             rgba.insert(rgba.end(), color.begin(), color.end());
@@ -1054,7 +1060,11 @@ bool PaintShop::LoadTextureFromRom(PaintSprite &sprite) {
 
 void PaintShop::RenderDecalPreview3D() {
     // The car turns in front of a still camera.
-    if (m_decalSlotChanged) {
+    if (m_car->ImagePanels()) {
+        m_frameForward = {0.0f, 1.0f, 0.0f};
+        m_frameUp = {0.0f, 0.0f, 1.0f};
+        m_decalSlotChanged = 0;
+    } else if (m_decalSlotChanged) {
         PaintVector from = m_panelViewDirections[m_previousDecalSlot];
         PaintVector to = m_panelViewDirections[m_decalSlot];
         if (m_consoleFrame) {
@@ -1178,6 +1188,10 @@ void PaintShop::SelectDecalTexels(int slot) {
 
 void PaintShop::SetUpPaintShopCar() {
     m_car = DecalCar::Load(m_carDirectory);
+    if (m_car && !m_car->HasMaterial(m_decalSlot)) {
+        m_decalSlot = CAR_MATERIAL_PAINT;
+    }
+    m_previousDecalSlot = m_decalSlot;
     m_preview.reset();
     m_previewDirty = true;
     m_framePosition = {0.0f, 0.0f, 0.0f};
@@ -1354,12 +1368,7 @@ bool PaintShop::InitPaintShop() {
     m_decalSlotHasMirror = HasOppositePanel(m_decalSlot);
     m_decalPaletteMaterial = m_decalSlot;
     LayOutPaintShopControls();
-    m_decalCanvas.width = m_decalWidth * 4;
-    m_decalCanvas.height = m_decalHeight * 4;
-    m_decalCanvas.x =
-        m_decalCanvasFrame.x + ((m_decalCanvasFrame.width - m_decalCanvas.width) >> 1);
-    m_decalCanvas.y =
-        m_decalCanvasFrame.y + ((m_decalCanvasFrame.height - m_decalCanvas.height) >> 1);
+    LayOutDecalCanvas();
     m_initialized = true;
     m_controllerPakState = 0;
     m_screen.FadeIn();
@@ -1395,20 +1404,45 @@ void PaintShop::DrawPaintShop() {
     m_text.align = TextStyle::Align::Center;
     m_text.shadow = false;
     DrawText("%ryPAINT SHOP", 160, TITLE_Y);
-    for (std::size_t i = 0; i < DECAL_SLOTS; ++i) {
-        if (!m_car->HasMaterial(static_cast<int>(i))) {
-            DrawSpriteTinted(*m_decalSlotIcons[i], 0x30, 0x30, 0x30);
-        } else if (i == m_decalSlot) {
-            DrawSpriteTinted(*m_decalSlotIcons[i], 0x20, 0xC8, 0xFF);
-        } else {
-            DrawSpriteTinted(*m_decalSlotIcons[i], 0x20, 0x10, 0xFF);
+    if (m_car->ImagePanels()) {
+        m_text.size = 12;
+        DrawText("%wwTEXTURES", 80, 50);
+        m_text.size = 10;
+        for (int panel = 0; panel < m_car->PanelCount(); ++panel) {
+            const auto rect = DecalSlotRect(panel);
+            const bool selected = panel == m_decalSlot;
+            DrawRectBorder(rect.x,
+                           rect.y,
+                           rect.width,
+                           rect.height,
+                           2,
+                           0,
+                           selected ? 1 : 0,
+                           selected ? 0x20 : 0x40,
+                           selected ? 0xc8 : 0x40,
+                           selected ? 0xff : 0x60);
+            DrawText("%ww" + std::to_string(panel + 1),
+                     (rect.x + rect.width / 2) / 2,
+                     (rect.y + 17) / 2);
         }
-    }
-    if (m_car->HasMaterial(8)) {
-        DrawSpriteTinted(*m_panel8Overlay, 0xFF, 0xFF, 0xFF);
-    }
-    if (m_car->HasMaterial(9)) {
-        DrawSpriteTinted(*m_panel9Overlay, 0xC0, 0, 0);
+        const auto panel = m_car->Texture(m_decalSlot);
+        DrawText("%ww" + std::to_string(panel.width) + "x" + std::to_string(panel.height), 80, 131);
+    } else {
+        for (std::size_t i = 0; i < DECAL_SLOTS; ++i) {
+            if (!m_car->HasMaterial(static_cast<int>(i))) {
+                DrawSpriteTinted(*m_decalSlotIcons[i], 0x30, 0x30, 0x30);
+            } else if (i == m_decalSlot) {
+                DrawSpriteTinted(*m_decalSlotIcons[i], 0x20, 0xC8, 0xFF);
+            } else {
+                DrawSpriteTinted(*m_decalSlotIcons[i], 0x20, 0x10, 0xFF);
+            }
+        }
+        if (m_car->HasMaterial(8)) {
+            DrawSpriteTinted(*m_panel8Overlay, 0xFF, 0xFF, 0xFF);
+        }
+        if (m_car->HasMaterial(9)) {
+            DrawSpriteTinted(*m_panel9Overlay, 0xC0, 0, 0);
+        }
     }
     DrawFilledRectHiRes(m_decalCanvasFrame.x,
                         m_decalCanvasFrame.y,
@@ -1536,9 +1570,8 @@ void PaintShop::HandlePaintShopB() {
     }
     if (IsCursorInRect(m_decalCanvas) && !m_paintToolStarted && !m_decalDragActive) {
         // The rows of the decal run from the bottom up.
-        m_decalColor =
-            GetPixel4Bit((m_paintCursor->originX - m_decalCanvas.x) >> 2,
-                         ((m_decalCanvas.y + m_decalCanvas.height) - m_paintCursor->originY) >> 2);
+        m_decalColor = GetPixel4Bit(ScreenToTexelX(m_paintCursor->originX),
+                                    ScreenToTexelY(m_paintCursor->originY));
         m_eyedropperActive = 1;
     } else if (m_paintToolStarted || m_decalDragActive) {
         Transfer(INPUT_B);
@@ -1898,7 +1931,7 @@ void PaintShop::ProcessFillClearMenu() {
         case CLEAR_ALL_DECALS | CLEAR_TO_BODY_COLOR:
             m_savedDecalSlot = m_decalSlot;
             // The palette and the button of the slot are not switched with its texels.
-            for (int i = 0; i < DECAL_SLOTS; ++i) {
+            for (int i = 0; i < m_car->PanelCount(); ++i) {
                 if (!m_car->HasMaterial(i)) {
                     continue;
                 }
@@ -2104,7 +2137,7 @@ void PaintShop::TransferDecal(DecalCar &car, u8 operation) {
         (m_pakDecalIndex == SLOT_LEFT_DOOR || m_pakDecalIndex == SLOT_RIGHT_DOOR)) {
         ++height;
     }
-    m_pakChunkSize = (width * height) >> 1;
+    m_pakChunkSize = ((width + 1) / 2) * height;
     auto offset = static_cast<std::size_t>(m_pakFileOffset);
     auto size = static_cast<std::size_t>(m_pakChunkSize);
     u8 *texels = car.Texels(m_pakDecalIndex);
@@ -2137,6 +2170,10 @@ void PaintShop::LoadDecalPalette(DecalCar &car, std::size_t offset) {
         car.SetPaletteColor(
             CAR_MATERIAL_PAINT, entry, static_cast<u16>(m_pakNote[at] << 8 | m_pakNote[at + 1]));
     }
+    if (car.ImagePanels()) {
+        m_previewDirty = true;
+        return;
+    }
     // The lights take the first two colours of the paint.
     for (int material : {CAR_MATERIAL_HEADLIGHTS, CAR_MATERIAL_REAR_LIGHTS}) {
         car.SetPaletteColor(material, 0, car.PaletteColor(CAR_MATERIAL_PAINT, 0));
@@ -2145,15 +2182,31 @@ void PaintShop::LoadDecalPalette(DecalCar &car, std::size_t offset) {
     m_previewDirty = true;
 }
 
+ControllerPak PaintShop::DecalPak(const DecalCar &car) const {
+    return car.DecalNote() == "TOP GEAR DECALS" ?
+               m_pak :
+               m_pak.Subdirectory(std::filesystem::path("custom-decals") /
+                                  car.Directory().filename());
+}
+
+std::optional<std::vector<u8>> PaintShop::ReadDecalNote(const DecalCar &car) const {
+    auto note = DecalPak(car).ReadNote(car.DecalNote());
+    if (!note && car.DecalNote() == "COASTLINE MT") {
+        note = m_pak.ReadNote(car.DecalNote());
+    }
+    return note;
+}
+
 bool PaintShop::LoadDecalsQuietly(DecalCar &car) {
-    auto note = m_pak.ReadNote(car.DecalNote());
-    if (!note) {
+    auto note = ReadDecalNote(car);
+    if (!note || !car.ValidNote(*note)) {
         return false;
     }
     m_pakNote = std::move(*note);
     m_pakError = 0;
-    m_pakFileOffset = 0;
-    for (m_pakDecalIndex = 0; m_pakDecalIndex < DECAL_SLOTS && m_pakError == 0; ++m_pakDecalIndex) {
+    m_pakFileOffset = static_cast<s32>(car.NoteHeader().size());
+    for (m_pakDecalIndex = 0; m_pakDecalIndex < car.PanelCount() && m_pakError == 0;
+         ++m_pakDecalIndex) {
         TransferDecal(car, PAINT_TOOL_LOAD);
     }
     auto offset = static_cast<std::size_t>(m_pakFileOffset);
@@ -2178,6 +2231,7 @@ void PaintShop::DrawPakButtons(s32 buttonY, u32 okTextX, u32 cancelTextX, s32 ok
 }
 
 s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect, bool &done) {
+    const auto pak = DecalPak(car);
     if (!m_pakDialogActive) {
         m_pakDialogActive = 1;
         m_pakError = 0;
@@ -2266,15 +2320,20 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
         break;
     }
     case PAK_STATE_FIND_FILE: {
-        m_pakFileOffset = 0;
+        m_pakFileOffset = static_cast<s32>(car.NoteHeader().size());
         m_pakChunkSize = 0;
         m_pakDecalIndex = 0;
         m_pakFileNeedsCreate = 0;
         m_pakWaitFrames = 0;
-        auto note = m_pak.ReadNote(car.DecalNote());
+        auto note = ReadDecalNote(car);
         if (note) {
             m_pakNote = std::move(*note);
             if (operation == PAINT_TOOL_LOAD) {
+                if (!car.ValidNote(m_pakNote)) {
+                    m_pakError = PAK_ERROR_TRANSFER;
+                    m_pakDialogState = PAK_STATE_FINISH;
+                    break;
+                }
                 y = inCarSelect == 1 ? 0xDB : 0xC5;
                 DrawPakProgressBox(
                     y, GameString("n64.paintShop.loadingDecals"), 0x72, (y + 30) >> 1);
@@ -2286,7 +2345,7 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
         } else if (operation == PAINT_TOOL_LOAD) {
             m_pakError = PFS_ERR_INVALID;
             m_pakDialogState = PAK_STATE_FINISH;
-        } else if (m_pak.FreeBytes() < DECAL_FILE_SIZE) {
+        } else if (pak.FreeBytes() < DECAL_FILE_SIZE) {
             m_pakError = PFS_DATA_FULL;
             m_pakDialogState = PAK_STATE_FINISH;
         } else {
@@ -2315,14 +2374,18 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
         }
         if (m_pakFileNeedsCreate) {
             m_pakFileNeedsCreate = 0;
-            if (m_pak.Notes().size() >= PAK_NOTES) {
+            if (pak.Notes().size() >= PAK_NOTES) {
                 m_pakError = PFS_DIR_FULL;
                 m_pakDialogState = PAK_STATE_FINISH;
                 break;
             }
             m_pakNote.assign(DECAL_FILE_SIZE, 0);
         }
-        if (m_pakDecalIndex < DECAL_SLOTS) {
+        if (operation == PAINT_TOOL_SAVE) {
+            const auto header = car.NoteHeader();
+            std::copy(header.begin(), header.end(), m_pakNote.begin());
+        }
+        if (m_pakDecalIndex < car.PanelCount()) {
             TransferDecal(car, operation);
             if (m_pakError) {
                 m_pakDialogState = PAK_STATE_FINISH;
@@ -2362,7 +2425,7 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
                 m_pakNote[offset + static_cast<std::size_t>(entry) * 2 + 1] =
                     static_cast<u8>(color);
             }
-            if (!m_pak.WriteNote(car.DecalNote(), m_pakNote)) {
+            if (!pak.WriteNote(car.DecalNote(), m_pakNote)) {
                 m_pakError = PFS_ERR_INCONSISTENT;
             }
         }

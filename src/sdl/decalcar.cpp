@@ -2,6 +2,7 @@
 
 #include <array>
 #include <fstream>
+#include <memory>
 
 #include <SDL3/SDL.h>
 
@@ -64,6 +65,16 @@ std::optional<DecalCar> DecalCar::Load(const std::filesystem::path &directory) {
         car.m_images[index].erase("bufferView");
         car.m_images[index].erase("mimeType");
         car.m_images[index]["uri"] = "image-" + std::to_string(index) + ".png";
+    }
+    const auto name = directory.filename();
+    if (name == "cupra" || name == "helmet" || name == "beach-ball") {
+        if (!car.LoadImagePanels()) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
+                         "Cannot prepare editable images in %s.",
+                         path.string().c_str());
+            return std::nullopt;
+        }
+        return car;
     }
     // Every texture and mask the paint shop reads lies inside the model.
     if (car.m_bytes.size() < DECAL_MASKS_AT + 4) {
@@ -129,7 +140,143 @@ std::optional<DecalCar> DecalCar::Load(const std::filesystem::path &directory) {
     return car;
 }
 
+bool DecalCar::LoadImagePanels() {
+    if (m_images.size() < 3 || m_images.size() > 20) {
+        return false;
+    }
+    m_imagePanels = true;
+    m_bytes.assign(1, 0);
+    // Entry zero tints the source image; the other entries apply ink colours.
+    constexpr std::array<u16, 16> colors{0xfffe,
+                                         0x4211,
+                                         0xffff,
+                                         0xf801,
+                                         0x7801,
+                                         0x07c1,
+                                         0x03c1,
+                                         0xffc1,
+                                         0x7bc1,
+                                         0x003f,
+                                         0x001f,
+                                         0xf83f,
+                                         0x781f,
+                                         0xfc01,
+                                         0x8201,
+                                         0x0001};
+    for (u16 color : colors) {
+        m_bytes.push_back(static_cast<u8>(color >> 8));
+        m_bytes.push_back(static_cast<u8>(color));
+    }
+    for (const auto &encoded : m_imageBytes) {
+        std::unique_ptr<SDL_Surface, decltype(&SDL_DestroySurface)> image(
+            SDL_LoadPNG_IO(SDL_IOFromConstMem(encoded.data(), encoded.size()), true),
+            SDL_DestroySurface);
+        if (!image || image->w <= 0 || image->h <= 0 || image->w > 80 || image->h > 125 ||
+            (image->w + 1) / 2 * image->h > 2048) {
+            return false;
+        }
+        std::unique_ptr<SDL_Surface, decltype(&SDL_DestroySurface)> rgba(
+            SDL_ConvertSurface(image.get(), SDL_PIXELFORMAT_RGBA32), SDL_DestroySurface);
+        if (!rgba) {
+            return false;
+        }
+        const auto width = static_cast<std::size_t>(image->w);
+        const auto height = static_cast<std::size_t>(image->h);
+        std::vector<u8> pixels(width * height * 4);
+        for (std::size_t row = 0; row < height; ++row) {
+            const auto *source = static_cast<const u8 *>(rgba->pixels) + row * rgba->pitch;
+            std::copy_n(source, width * 4, pixels.begin() + row * width * 4);
+        }
+        auto hash = [&](u8 value) { m_imageKey = (m_imageKey ^ value) * 16777619u; };
+        hash(static_cast<u8>(width));
+        hash(static_cast<u8>(height));
+        for (u8 value : pixels) {
+            hash(value);
+        }
+        m_basePixels.push_back(std::move(pixels));
+        m_imageTextures.push_back({m_bytes.size(), 1, image->w, image->h});
+        m_bytes.resize(m_bytes.size() + (width + 1) / 2 * height);
+    }
+    return m_bytes.size() + 7 <= 0x3e00;
+}
+
+bool DecalCar::ImagePanels() const {
+    return m_imagePanels;
+}
+
+int DecalCar::PanelCount() const {
+    return m_imagePanels ? static_cast<int>(m_imageTextures.size()) : DECAL_SLOTS;
+}
+
+std::vector<u8> DecalCar::PanelPixels(int panel) const {
+    if (!m_imagePanels || panel < 0 || panel >= PanelCount()) {
+        return {};
+    }
+    auto pixels = m_basePixels[static_cast<std::size_t>(panel)];
+    const auto texture = Texture(panel);
+    const auto tint = PaletteColor(panel, 0);
+    auto channel = [](u16 color, int shift) {
+        const auto value = static_cast<unsigned>(color >> shift & 31);
+        return static_cast<u8>(value << 3 | value >> 2);
+    };
+    for (int y = 0; y < texture.height; ++y) {
+        for (int x = 0; x < texture.width; ++x) {
+            const auto pair = m_bytes[texture.texels + PixelOffset(x, y, texture.width)];
+            const auto ink = static_cast<u8>((x & 1) ? pair & 15 : pair >> 4);
+            const auto color = PaletteColor(panel, ink);
+            const auto pixel = static_cast<std::size_t>(y * texture.width + x) * 4;
+            for (int component = 0; component < 3; ++component) {
+                const int shift = 11 - component * 5;
+                pixels[pixel + component] =
+                    ink == 0 ? static_cast<u8>(
+                                   (pixels[pixel + component] * channel(tint, shift) + 127) / 255) :
+                               channel(color, shift);
+            }
+            if (ink != 0) {
+                pixels[pixel + 3] = (color & 1) ? 255 : 0;
+            }
+        }
+    }
+    return pixels;
+}
+
+std::vector<u8> DecalCar::NoteHeader() const {
+    if (!m_imagePanels) {
+        return {};
+    }
+    return {'C',
+            'P',
+            'N',
+            1,
+            static_cast<u8>(m_imageKey >> 24),
+            static_cast<u8>(m_imageKey >> 16),
+            static_cast<u8>(m_imageKey >> 8),
+            static_cast<u8>(m_imageKey)};
+}
+
+bool DecalCar::ValidNote(std::span<const u8> note) const {
+    const auto header = NoteHeader();
+    std::size_t size = header.size();
+    if (m_imagePanels) {
+        size += PALETTE_BYTES;
+        for (const auto &texture : m_imageTextures) {
+            size += static_cast<std::size_t>((texture.width + 1) / 2 * texture.height);
+        }
+    }
+    return note.size() >= size && std::equal(header.begin(), header.end(), note.begin());
+}
+
+std::size_t DecalCar::PixelOffset(int x, int y, int width) const {
+    return static_cast<std::size_t>(m_imagePanels ? y * ((width + 1) / 2) + x / 2 :
+                                                    TexelOffset(x, y, width));
+}
+
 DecalTexture DecalCar::Texture(int material) const {
+    if (m_imagePanels) {
+        return material >= 0 && material < PanelCount() ?
+                   m_imageTextures[static_cast<std::size_t>(material)] :
+                   DecalTexture{};
+    }
     if (material < 0 || material >= CAR_MATERIALS) {
         return {};
     }
@@ -155,6 +302,11 @@ bool DecalCar::HasMaterial(int material) const {
 }
 
 std::string DecalCar::DecalNote() const {
+    if (m_imagePanels) {
+        return m_directory.filename() == "cupra"  ? "COASTLINE CP" :
+               m_directory.filename() == "helmet" ? "COASTLINE HE" :
+                                                    "COASTLINE BB";
+    }
     return m_directory.filename() == "milk-truck" ? "COASTLINE MT" : "TOP GEAR DECALS";
 }
 
@@ -163,6 +315,9 @@ const u8 *DecalCar::End() const {
 }
 
 const u8 *DecalCar::Mask(int slot) const {
+    if (m_imagePanels) {
+        return nullptr;
+    }
     std::size_t masks = Offset(m_bytes, DECAL_MASKS_AT);
     if (masks == 0 || masks + DECAL_SLOTS * 4 > m_bytes.size()) {
         return nullptr;
@@ -196,6 +351,14 @@ DecalCar::WriteImages(const std::filesystem::path &directory) const {
         const auto &image = m_images[index];
         auto uri = image.value("uri", std::string());
         auto to = directory / uri;
+        if (m_imagePanels) {
+            const auto texture = Texture(static_cast<int>(index));
+            if (!SaveRgba8Png(
+                    to, PanelPixels(static_cast<int>(index)), texture.width, texture.height)) {
+                return std::nullopt;
+            }
+            continue;
+        }
         int material = image.value("extras", nlohmann::ordered_json::object())
                            .value("coastlinePaint", nlohmann::ordered_json::object())
                            .value("material", -1);

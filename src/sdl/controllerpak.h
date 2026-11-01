@@ -72,6 +72,9 @@ public:
     /** @return The bytes of the pages no note takes, as osPfsFreeBlocks() counts them. */
     std::size_t FreeBytes() const;
 
+    /** Store independent notes beneath the Controller Pak directory without using its capacity. */
+    ControllerPak Subdirectory(const std::filesystem::path &directory) const;
+
 private:
     // The directory a note of the name is stored in.
     const std::filesystem::path &DirectoryOf(const std::string &name) const;

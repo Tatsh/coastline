@@ -1,3 +1,4 @@
+#include <cmath>
 #include <cstring>
 #include <utility>
 
@@ -37,15 +38,19 @@ s32 Midpoint(s32 a, s32 b) {
 } // namespace
 
 s32 PaintShop::ScreenToTexelX(s32 x) const {
-    return (x - m_decalCanvas.x) >> 2;
+    return m_decalZoom == 4 ?
+               (x - m_decalCanvas.x) >> 2 :
+               static_cast<s32>(std::floor(static_cast<float>(x - m_decalCanvas.x) / m_decalZoom));
 }
 
 s32 PaintShop::ScreenToTexelY(s32 y) const {
-    return (m_decalCanvas.y + m_decalCanvas.height - y) >> 2;
+    const auto row = m_decalCanvas.y + m_decalCanvas.height - y;
+    return m_decalZoom == 4 ? row >> 2 :
+                              static_cast<s32>(std::floor(static_cast<float>(row) / m_decalZoom));
 }
 
 u8 PaintShop::ReadPixel4Bit(const u8 *texels, s32 x, s32 y) const {
-    s32 offset = TexelOffset(x, y, m_decalWidth);
+    const auto offset = static_cast<s32>(m_car->PixelOffset(x, y, m_decalWidth));
     // A texel past the decal reads the bytes after it, as the console reads them, within the model.
     if (offset < 0 || texels + offset >= m_decalTexelsEnd) {
         return 0;
@@ -61,7 +66,7 @@ void PaintShop::SetPixel4Bit(s32 x, s32 y, u8 color) {
     if (x < 0 || x >= m_decalWidth || y < 0 || y >= m_decalHeight) {
         return;
     }
-    s32 offset = TexelOffset(x, y, m_decalWidth);
+    const auto offset = static_cast<s32>(m_car->PixelOffset(x, y, m_decalWidth));
     // The mask is a bit a texel, the first texel of a byte in its highest bit.
     if (m_decalMask != nullptr &&
         (m_decalMask[(x >> 3) + y * ((m_decalWidth + 7) >> 3)] & (1 << ((x ^ 7) & 7))) != 0) {
@@ -963,8 +968,8 @@ void PaintShop::DrawDashedCircle(s32 x, s32 y, s32 radius) {
 }
 
 void PaintShop::DrawDecalTextPreview(s32 x, s32 y) {
-    s32 left = x - ((m_decalTextWidth >> 1) << 2);
-    s32 bottom = y - (m_decalFont->height << 2);
+    s32 left = x - (m_decalTextWidth >> 1) * m_decalZoom;
+    s32 bottom = y - m_decalFont->height * m_decalZoom;
     s32 glyphIndex = 0;
     for (int i = 0; i < m_decalTextLength; ++i) {
         const PaintGlyph &glyph = m_decalGlyphs[static_cast<std::size_t>(m_decalTextGlyphs[i])];
@@ -977,11 +982,11 @@ void PaintShop::DrawDecalTextPreview(s32 x, s32 y) {
         }
         // The glyph is tested at its cell moved right, but drawn moved left. The test at the top
         // of the decal is unsigned.
-        s32 glyphLeft = left + (glyph.cellX << 2);
-        if (m_decalCanvas.x < glyphLeft + (glyph.width << 2) &&
+        s32 glyphLeft = left + glyph.cellX * m_decalZoom;
+        if (m_decalCanvas.x < glyphLeft + glyph.width * m_decalZoom &&
             glyphLeft < m_decalCanvas.x + m_decalCanvas.width &&
             static_cast<u32>(m_decalCanvas.y) <
-                static_cast<u32>(bottom + (m_decalFont->height << 2)) &&
+                static_cast<u32>(bottom + m_decalFont->height * m_decalZoom) &&
             bottom < m_decalCanvas.y + m_decalCanvas.height) {
             if (m_paintToolIcons[4]->style != 0) {
                 const auto &shadow = m_swatches[m_textShadowColor].color;
@@ -990,10 +995,10 @@ void PaintShop::DrawDecalTextPreview(s32 x, s32 y) {
                                        0,
                                        FONT_CELL,
                                        FONT_CELL,
-                                       left - (glyph.cellX << 2) + 4,
-                                       bottom + 4,
-                                       FONT_CELL * 4,
-                                       FONT_CELL * 4,
+                                       left - glyph.cellX * m_decalZoom + m_decalZoom,
+                                       bottom + m_decalZoom,
+                                       FONT_CELL * m_decalZoom,
+                                       FONT_CELL * m_decalZoom,
                                        shadow[0],
                                        shadow[1],
                                        shadow[2]);
@@ -1004,16 +1009,16 @@ void PaintShop::DrawDecalTextPreview(s32 x, s32 y) {
                                    0,
                                    FONT_CELL,
                                    FONT_CELL,
-                                   left - (glyph.cellX << 2),
+                                   left - glyph.cellX * m_decalZoom,
                                    bottom,
-                                   FONT_CELL * 4,
-                                   FONT_CELL * 4,
+                                   FONT_CELL * m_decalZoom,
+                                   FONT_CELL * m_decalZoom,
                                    color[0],
                                    color[1],
                                    color[2]);
         }
         if (i < m_decalTextLength - 1) {
-            left += GlyphAdvance(m_decalTextGlyphs[i], m_decalTextGlyphs[i + 1]) << 2;
+            left += GlyphAdvance(m_decalTextGlyphs[i], m_decalTextGlyphs[i + 1]) * m_decalZoom;
         }
     }
 }

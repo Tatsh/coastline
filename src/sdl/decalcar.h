@@ -11,6 +11,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <optional>
+#include <span>
 #include <string>
 #include <vector>
 
@@ -61,6 +62,18 @@ public:
     DecalTexture Texture(int material) const;
     bool HasMaterial(int material) const;
     std::string DecalNote() const;
+    /** Whether numbered image layers replace the original body-panel layout. */
+    bool ImagePanels() const;
+    /** Return the number of editable panels. */
+    int PanelCount() const;
+    /** Composite a numbered panel over its imported RGBA pixels. */
+    std::vector<u8> PanelPixels(int panel) const;
+    /** Identify the image layout and source pixels of a numbered-panel save. */
+    std::vector<u8> NoteHeader() const;
+    /** Validate the save header and complete image-layer payload before loading. */
+    bool ValidNote(std::span<const u8> note) const;
+    /** Locate a packed pixel in linear image layers or console body-panel rows. */
+    std::size_t PixelOffset(int x, int y, int width) const;
 
     /**
      * @param material The material, from 0 to CAR_MATERIALS - 1.
@@ -106,12 +119,16 @@ public:
 
 private:
     DecalCar() = default;
+    bool LoadImagePanels();
     std::filesystem::path m_directory;
     nlohmann::ordered_json m_images;
     std::vector<std::vector<std::uint8_t>> m_imageBytes;
     std::vector<DecalTexture> m_imageTextures;
     std::vector<bool> m_imageDecals;
     std::vector<u8> m_bytes;
+    bool m_imagePanels = false;
+    std::vector<std::vector<u8>> m_basePixels;
+    std::uint32_t m_imageKey = 2166136261u;
 };
 
 /**

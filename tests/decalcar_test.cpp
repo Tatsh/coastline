@@ -158,5 +158,117 @@ int main() {
         const std::vector<char> actual(std::istreambuf_iterator<char>(embedded), {});
         assert(actual == expected);
     }
+    const auto bonus = root / "cupra";
+    std::filesystem::create_directories(bonus);
+    auto generic = model->json;
+    generic["images"].push_back(generic["images"][0]);
+    for (auto &image : generic["images"]) {
+        image["uri"] = "base.png";
+    }
+    std::vector<std::uint8_t> source(24 * 10 * 4);
+    for (std::size_t pixel = 0; pixel < source.size() / 4; ++pixel) {
+        source[pixel * 4] = static_cast<std::uint8_t>(pixel);
+        source[pixel * 4 + 1] = static_cast<std::uint8_t>(255 - pixel);
+        source[pixel * 4 + 2] = 51;
+        source[pixel * 4 + 3] = static_cast<std::uint8_t>(pixel * 2);
+    }
+    assert(coastline::SaveRgba8Png(bonus / "base.png", source, 24, 10));
+    std::ofstream(bonus / "model.gltf") << generic.dump();
+    {
+        std::ofstream buffer(bonus / "mesh.bin", std::ios::binary);
+        buffer.write(reinterpret_cast<const char *>(model->buffer.data()), model->buffer.size());
+    }
+    auto layers = coastline::DecalCar::Load(bonus);
+    assert(layers && layers->ImagePanels() && layers->PanelCount() == 3);
+    assert(layers->PanelPixels(0) == source);
+    assert(layers->PanelPixels(1) == source);
+    assert(layers->PanelPixels(2) == source);
+    assert(layers->DecalNote() == "COASTLINE CP");
+    assert(!layers->HasMaterial(3) && layers->Mask(0) == nullptr);
+    auto note = layers->NoteHeader();
+    assert(!layers->ValidNote(note));
+    note.resize(note.size() + 32 + 3 * 120);
+    assert(layers->ValidNote(note));
+    note[7] ^= 1;
+    assert(!layers->ValidNote(note) && !layers->ValidNote({}));
+    const auto offset = layers->PixelOffset(23, 9, 24);
+    layers->Texels(1)[offset] = 0x06;
+    layers->SetPaletteColor(1, 6, 0xf801);
+    auto expected = source;
+    const auto pixel = (24 * 10 - 1) * 4;
+    expected[pixel] = 255;
+    expected[pixel + 1] = 0;
+    expected[pixel + 2] = 0;
+    expected[pixel + 3] = 255;
+    assert(layers->PanelPixels(1) == expected);
+    assert(layers->PanelPixels(0) == source && layers->PanelPixels(2) == source);
+    assert(layers->WriteImages(bonus / "painted"));
+    auto packedJson = generic;
+    auto packedBytes = model->buffer;
+    while (packedBytes.size() % 4 != 0) {
+        packedBytes.push_back(0);
+    }
+    std::ifstream image(bonus / "base.png", std::ios::binary);
+    const std::vector<std::uint8_t> png(std::istreambuf_iterator<char>(image), {});
+    const auto view = packedJson["bufferViews"].size();
+    packedJson["bufferViews"].push_back(
+        {{"buffer", 0}, {"byteOffset", packedBytes.size()}, {"byteLength", png.size()}});
+    packedBytes.insert(packedBytes.end(), png.begin(), png.end());
+    for (auto &image : packedJson["images"]) {
+        image.erase("uri");
+        image["bufferView"] = view;
+        image["mimeType"] = "image/png";
+    }
+    packedJson["buffers"][0].erase("uri");
+    packedJson["buffers"][0]["byteLength"] = packedBytes.size();
+    auto text = packedJson.dump();
+    while (text.size() % 4 != 0) {
+        text.push_back(' ');
+    }
+    while (packedBytes.size() % 4 != 0) {
+        packedBytes.push_back(0);
+    }
+    {
+        std::ofstream glb(bonus / "model.glb", std::ios::binary);
+        auto little = [&](std::uint32_t value) {
+            for (int shift = 0; shift < 32; shift += 8) {
+                glb.put(static_cast<char>(value >> shift));
+            }
+        };
+        little(0x46546c67);
+        little(2);
+        little(static_cast<std::uint32_t>(28 + text.size() + packedBytes.size()));
+        little(static_cast<std::uint32_t>(text.size()));
+        little(0x4e4f534a);
+        glb.write(text.data(), text.size());
+        little(static_cast<std::uint32_t>(packedBytes.size()));
+        little(0x004e4942);
+        glb.write(reinterpret_cast<const char *>(packedBytes.data()), packedBytes.size());
+    }
+    std::filesystem::remove(bonus / "model.gltf");
+    std::filesystem::remove(bonus / "mesh.bin");
+    std::filesystem::remove(bonus / "base.png");
+    auto packedLayers = coastline::DecalCar::Load(bonus);
+    assert(packedLayers && packedLayers->PanelPixels(0) == source);
+    assert(packedLayers->NoteHeader() == layers->NoteHeader());
+    packedLayers->Texels(1)[offset] = 0x06;
+    packedLayers->SetPaletteColor(1, 6, 0xf801);
+    assert(packedLayers->PanelPixels(1) == expected);
+    assert(packedLayers->WriteImages(bonus / "packed"));
+    for (int panel = 0; panel < layers->PanelCount(); ++panel) {
+        const auto file = "image-" + std::to_string(panel) + ".png";
+        std::ifstream separate(bonus / "painted" / file, std::ios::binary);
+        std::ifstream embedded(bonus / "packed" / file, std::ios::binary);
+        const std::vector<char> expected(std::istreambuf_iterator<char>(separate), {});
+        const std::vector<char> actual(std::istreambuf_iterator<char>(embedded), {});
+        assert(actual == expected);
+    }
+    layers->SetPaletteColor(2, 0, 0xf800);
+    auto tinted = source;
+    for (std::size_t pixel = 0; pixel < tinted.size() / 4; ++pixel) {
+        tinted[pixel * 4 + 1] = 0;
+        tinted[pixel * 4 + 2] = 0;
+    }
+    assert(layers->PanelPixels(2) == tinted);
     std::filesystem::remove_all(root);
 }
