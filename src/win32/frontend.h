@@ -1108,84 +1108,126 @@ public:
     static int OnBackToTimeAttack(MenuActionWidget *pItem);
 };
 
+/** Callbacks for starting a championship season and returning to the root menu. */
+/** New-season and return callbacks for the championship menu. */
 class ChampionshipSeasonUI {
 public:
     /**
      * Reset championship choices and open pre-race information for a new season.
      *
+     * @param pWidget The unused widget forwarded to pre-race setup, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10045aa0
      * @ghidraAddress BRGlide: 0x1003ef40
      */
     static int OnStartNewSeason(MenuWidget *pWidget);
 
     /**
+     * Destroy the active season menu, clear its cache, and return to the root screen.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046c90
      * @ghidraAddress BRGlide: 0x100400e0
      */
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** Text-entry and network-provider presentation callbacks for the connection menu. */
 class ConnectionUI {
 public:
     /**
+     * Begin text editing and toggle the primary caret when no menu text edit is active.
+     * @param pWidget A non-null borrowed widget with primary text storage.
+     * @return One, including when editing was already active.
      * @ghidraAddress BRD3D: 0x10042ac0
      * @ghidraAddress BRGlide: 0x1003c020
      */
     static int OnToggleTextEdit(MenuWidget *pWidget);
 
     /**
+     * Select the sprite for the current network service provider.
+     * @param pWidget The non-null borrowed provider-image widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10040930
      * @ghidraAddress BRGlide: 0x10039e70
      */
     static int UpdateServiceProviderImage(MenuWidget *pWidget);
 
     /**
+     * Refresh and measure the provider label, then process its text-input update.
+     * @param pWidget The non-null borrowed label widget with primary text storage.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003fc40
      * @ghidraAddress BRGlide: 0x10039180
      */
     static int UpdateServiceProviderLabel(MenuWidget *pWidget);
 };
 
+/** Text-entry and return callbacks for creating a network game. */
 class CreateGameMenuUI {
 public:
     /**
+     * Begin text editing and toggle the primary caret when no menu text edit is active.
+     * @param pWidget A non-null borrowed widget with primary text storage.
+     * @return One, including when editing was already active.
      * @ghidraAddress BRD3D: 0x10042b00
      * @ghidraAddress BRGlide: 0x1003c050
      */
     static int OnToggleTextEdit(MenuWidget *pWidget);
 
     /**
+     * Destroy game creation, restore session selection, and enable joining an existing session.
+     * Local non-lobby providers are disconnected and reinitialised for session discovery.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x100444c0
      * @ghidraAddress BRGlide: 0x1003da10
      */
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** State-update callbacks for the network game-creation screen. */
 class CreateGameUI {
 public:
     /**
      * Enable game creation after text has been entered.
      *
+     * @param pWidget A non-null borrowed name-entry widget with terminated primary text.
+     * @return One; empty text preserves the Continue widget's previous enabled state.
      * @ghidraAddress BRD3D: 0x1003f280
      * @ghidraAddress BRGlide: 0x100387c0
      */
     static int EnableContinueIfNameEntered(MenuWidget *pWidget);
 };
 
+/** Device-list and driver-selection callbacks for the Direct3D backend. */
 class D3DDeviceSelectUI {
 public:
     /**
+     * Draw and process the device list, updating the selected device on row activation.
+     * @param pWidget A non-null borrowed widget with the device list.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003ed10
      */
     static int UpdateDeviceSelection(MenuWidget *pWidget);
 
-    /** @ghidraAddress BRD3D: 0x1003ecb0 */
+    /**
+     * Resolve the selected row's device GUID, update config, and return to video options.
+     * Device-list payload and device lookup must be valid.
+     * @param pWidget A non-null active-screen widget, invalidated by the return transition.
+     * @return Zero to end the current widget update.
+     * @ghidraAddress BRD3D: 0x1003ecb0
+     */
     static int OnSetDriver(MenuWidget *pWidget);
 };
 
+/** Display-mode list and configuration callbacks for the video-options screen. */
 class DisplayModeSelectUI {
 public:
     /**
+     * Draw and process the mode list, updating the selected mode on row activation.
+     * @param pWidget A non-null borrowed widget with the display-mode list.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003edf0
      * @ghidraAddress BRGlide: 0x10038320
      */
@@ -1194,7 +1236,8 @@ public:
     /**
      * Apply the chosen display mode to the configuration and return to the video options.
      *
-     * @param pWidget The widget of the choice.
+     * @param pWidget A non-null active-screen widget, invalidated by the return transition.
+     * Selected list payload and display-mode references must be valid.
      * @return 0.
      * @ghidraAddress BRD3D: 0x1003ed40
      * @ghidraAddress BRGlide: 0x100382d0
@@ -1202,257 +1245,384 @@ public:
     static int OnSetMode(MenuWidget *pWidget);
 };
 
+/** Configuration, image, and label callbacks for PC graphics and force-feedback options. */
 class GameOptionsUI {
 public:
     /**
      * Draw the force feedback choice, displaying off when the device lacks support.
      *
+     * @param pWidget The non-null borrowed force-feedback image widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10040950
      * @ghidraAddress BRGlide: 0x10039e90
      */
     static int UpdateForceFeedbackImage(MenuWidget *pWidget);
 
     /**
+     * Cycle the force-feedback choice using mouse edges and update its config value.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10043590
      * @ghidraAddress BRGlide: 0x1003cae0
      */
     static int OnToggleForceFeedback(MenuWidget *pWidget);
 
     /**
+     * Cycle the skid-mark choice using mouse edges and update its config value.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100435f0
      * @ghidraAddress BRGlide: 0x1003cb40
      */
     static int OnToggleSkidMarks(MenuWidget *pWidget);
 
     /**
+     * Cycle the car-shadow choice using mouse edges and update its config value.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10043650
      * @ghidraAddress BRGlide: 0x1003cba0
      */
     static int OnToggleCarShadow(MenuWidget *pWidget);
 
     /**
+     * Cycle the specular-lighting choice using mouse edges and update its config value.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100436b0
      * @ghidraAddress BRGlide: 0x1003cc00
      */
     static int OnToggleSpecularLighting(MenuWidget *pWidget);
 
     /**
+     * Select the sprite for the current car-shadow choice.
+     * @param pWidget The non-null borrowed car-shadow image widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100409b0
      * @ghidraAddress BRGlide: 0x10039ef0
      */
     static int UpdateCarShadowImage(MenuWidget *pWidget);
 
     /**
+     * Select the sprite for the current specular-lighting choice.
+     * @param pWidget The non-null borrowed specular-lighting image widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100409d0
      * @ghidraAddress BRGlide: 0x10039f10
      */
     static int UpdateSpecularLightingImage(MenuWidget *pWidget);
 
     /**
+     * Select the sprite for the current skid-mark choice.
+     * @param pWidget The non-null borrowed skid-mark image widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10040990
      * @ghidraAddress BRGlide: 0x10039ed0
      */
     static int UpdateSkidMarksImage(MenuWidget *pWidget);
 
     /**
+     * Refresh and measure the car-shadow label, then process its text-input update.
+     * @param pWidget The non-null borrowed label widget with primary text storage.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003fda0
      * @ghidraAddress BRGlide: 0x100392e0
      */
     static int UpdateCarShadowLabel(MenuWidget *pWidget);
 
     /**
+     * Refresh and measure the skid-mark label, then process its text-input update.
+     * @param pWidget The non-null borrowed label widget with primary text storage.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003fd30
      * @ghidraAddress BRGlide: 0x10039270
      */
     static int UpdateSkidMarksLabel(MenuWidget *pWidget);
 
     /**
+     * Refresh and measure the specular-lighting label, then process its text-input update.
+     * @param pWidget The non-null borrowed label widget with primary text storage.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003fe10
      * @ghidraAddress BRGlide: 0x10039350
      */
     static int UpdateSpecularLightingLabel(MenuWidget *pWidget);
 
     /**
+     * Refresh the force-feedback label, displaying Off when feedback is unavailable.
+     * The primary font is measured and its text-input update is processed.
+     * @param pWidget The non-null borrowed label widget with primary text storage.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003fcb0
      * @ghidraAddress BRGlide: 0x100391f0
      */
     static int UpdateForceFeedbackLabel(MenuWidget *pWidget);
 
     /**
+     * Destroy the active game-options screen, clear its cache, and return to cached Options.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046710
      * @ghidraAddress BRGlide: 0x1003fb60
      */
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** Input-device selection, default bindings, and label callbacks for PC controls. */
 class InputOptionsUI {
 public:
     /**
+     * Reload default bindings when the selected device index is in 0..3.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One, including for an out-of-range device index.
      * @ghidraAddress BRD3D: 0x100406c0
      * @ghidraAddress BRGlide: 0x10039c00
      */
     static int OnRestoreDefaults(MenuWidget *pWidget);
 
     /**
+     * Cycle among device indices 0, 2, and 3 using mouse edges, then select and back up bindings.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10043400
      * @ghidraAddress BRGlide: 0x1003c950
      */
     static int OnCycleInputDevice(MenuWidget *pWidget);
 
     /**
+     * Select the sprite for the current input device.
+     * @param pWidget The non-null borrowed input-device image widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10041870
      * @ghidraAddress BRGlide: 0x1003add0
      */
     static int UpdateInputDeviceImage(MenuWidget *pWidget);
 
     /**
+     * Refresh and measure the input-device label, then process its text-input update.
+     * @param pWidget The non-null borrowed label widget with primary text storage.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003ffd0
      * @ghidraAddress BRGlide: 0x10039510
      */
     static int UpdateInputDeviceLabel(MenuWidget *pWidget);
 
     /**
+     * Destroy the active input-options screen, clear its cache, and return to cached Options.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x100465a0
      * @ghidraAddress BRGlide: 0x1003fa40
      */
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** Session-list and return callbacks for joining or creating a network game. */
 class JoinCreateGameUI {
 public:
     /**
+     * Draw and process the session list, updating the selected session on row activation.
+     * @param pWidget A non-null borrowed widget with the session list.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003eb90
      * @ghidraAddress BRGlide: 0x10038180
      */
     static int UpdateSessionSelection(MenuWidget *pWidget);
 
     /**
+     * Destroy session selection, clear join/create references, restore connection, and disconnect.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10044ae0
      * @ghidraAddress BRGlide: 0x1003e030
      */
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** Action selection, key capture, and binding-warning callbacks for PC input configuration. */
 class KeyConfigUI {
 public:
     /**
+     * Draw and process the action list, updating the selected action on row activation.
+     * @param pWidget A non-null borrowed widget with the action list.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003ec80
      * @ghidraAddress BRGlide: 0x100382a0
      */
     static int UpdateActionSelection(MenuWidget *pWidget);
 
     /**
+     * Refresh the binding label or capture prompt, measure it, and process its text-input update.
+     * Invalid device indices preserve prior label text.
+     * @param pWidget A non-null borrowed label widget with primary text storage.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100400e0
      * @ghidraAddress BRGlide: 0x10039620
      */
     static int UpdateBindingLabel(MenuWidget *pWidget);
 
     /**
+     * Update the duplicate-binding warning and highlight an affected selected action.
+     * The primary font is measured and its text-input update is processed.
+     * @param pWidget A non-null borrowed warning widget with primary text storage.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003f8d0
      * @ghidraAddress BRGlide: 0x10038e10
      */
     static int UpdateDuplicateBindingWarning(MenuWidget *pWidget);
 
     /**
+     * Poll keyboard, joystick, or mouse capture, update the selected binding, and detect
+     * duplicates.
+     * A pending release marker ends capture when no keyboard code is detected. Mouse captures
+     * first wait for all raw mouse buttons to be released.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One, including while capture is inactive or the selected device is invalid.
      * @ghidraAddress BRD3D: 0x10040450
      * @ghidraAddress BRGlide: 0x10039990
      */
     static int PollKeyCapture(MenuWidget *pWidget);
 
     /**
+     * Enable key capture, clear pending character input, and reset keyboard edge state if needed.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One, including when capture is already active.
      * @ghidraAddress BRD3D: 0x10040680
      * @ghidraAddress BRGlide: 0x10039bc0
      */
     static int BeginKeyCapture(MenuWidget *pWidget);
 
     /**
+     * Destroy key configuration, return to cached input options, and release the joystick device.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046560
      * @ghidraAddress BRGlide: 0x1003fa00
      */
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** Saved-file list selection callbacks. */
 class LoadFileListUI {
 public:
     /**
+     * Draw and process the save-slot list, updating the selected slot on row activation.
+     * @param pWidget A non-null borrowed widget with the save-slot list.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003eae0
      * @ghidraAddress BRGlide: 0x10038220
      */
     static int UpdateSlotSelection(MenuWidget *pWidget);
 };
 
+/** Championship save loading, continuation, and return callbacks. */
 class LoadSeasonUI {
 public:
     /**
      * Enable continuing after a championship slot has been opened.
+     * Otherwise disable the widget and select its fallback sprite and font style.
      *
+     * @param pWidget A non-null borrowed Continue widget whose enabled state is updated.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10041890
      * @ghidraAddress BRGlide: 0x1003adf0
      */
     static int UpdateContinueButtonState(MenuWidget *pWidget);
 
     /**
+     * Attempt to load the automatic season save and open pre-race information in championship mode.
+     * Install the return callback to the season-loading menu.
+     * @param pWidget The unused widget forwarded to pre-race setup, possibly null.
+     * @return One without reporting the automatic-load result.
      * @ghidraAddress BRD3D: 0x100450c0
      * @ghidraAddress BRGlide: 0x1003e610
      */
     static int OnLoadAutoSave(MenuWidget *pWidget);
 
     /**
+     * Open pre-race information for the loaded season and install the return callback to loading.
+     * @param pItem The unused widget forwarded to pre-race setup, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10045090
      * @ghidraAddress BRGlide: 0x1003e5e0
      */
     static int OnContinueSeason(MenuActionWidget *pItem);
 
     /**
+     * Destroy season loading, clear its selection and labels, and restore the cached season menu.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046e10
      * @ghidraAddress BRGlide: 0x10040260
      */
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** Saved time-attack selection, car setup, and return callbacks. */
 class LoadTimeAttackMenuUI {
 public:
     /**
      * Enable a time attack item after a saved slot has been selected.
+     * Otherwise disable the widget and select its fallback sprite and font style.
      *
+     * @param pWidget A non-null borrowed widget whose enabled state is updated.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100418f0
      * @ghidraAddress BRGlide: 0x1003ae50
      */
     static int UpdateItemEnabledState(MenuWidget *pWidget);
 
     /**
+     * Open car setup for the loaded time attack and install its return callback.
+     * @param pWidget The unused widget forwarded to ShowCarSetupScreen(), possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10046380
      * @ghidraAddress BRGlide: 0x1003f820
      */
     static int OnCarSetup(MenuWidget *pWidget);
 
     /**
+     * Load a numbered TimeAttack slot, restore its race selections and profile, and synchronise
+     * progress.
+     * @param pList The unused list pointer, possibly null.
+     * @param pnSlot A non-null readable slot index, normally 0..99, used in the saved filename.
+     * @return Zero when the loaded ghost reports an invalid track; one after restoring selections.
      * @ghidraAddress BRD3D: 0x10042880
      * @ghidraAddress BRGlide: 0x1003bde0
      */
     static int OnSlotSelected(MenuItemList *pList, int *pnSlot);
 
     /**
+     * Destroy ghost loading, clear its cache, and restore the cached Time Attack menu.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10044de0
      * @ghidraAddress BRGlide: 0x1003e330
      */
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** Root-menu callbacks for entering the credits sequence. */
 class MainMenuUI {
 public:
     /**
+     * Select the credits or cheat-enabled outro session and stop the front end for playback.
+     * @param pWidget A non-null borrowed widget of the active screen to stop.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10041970
      * @ghidraAddress BRGlide: 0x1003aed0
      */
     static int OnPlayCredits(MenuWidget *pWidget);
 };
 
+/** Modem-number entry, provider selection, and connection-screen return callbacks. */
 class ModemConnectionUI {
 public:
     /**
      * Select the modem provider and restore the cached join or create screen.
      *
+     * @param pWidget A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10043f50
      * @ghidraAddress BRGlide: 0x1003d4a0
      */
@@ -1461,375 +1631,564 @@ public:
     /**
      * Enable continuing after a modem number has been entered.
      *
+     * @param pWidget A non-null borrowed number-entry widget with terminated primary text.
+     * @return One; empty text preserves the Continue widget's previous enabled state.
      * @ghidraAddress BRD3D: 0x1003f020
      * @ghidraAddress BRGlide: 0x10038550
      */
     static int EnableContinueIfNumberEntered(MenuWidget *pWidget);
 
     /**
+     * Destroy modem entry, clear its references, and restore the cached connection screen.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10044b40
      * @ghidraAddress BRGlide: 0x1003e090
      */
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** Provider selection, hover animation, and return callbacks for multiplayer connections. */
 class MultiplayerConnectionUI {
 public:
     /**
+     * Select IPX and attempt to open the session join/create screen.
+     * @param pWidget The unused widget forwarded to ShowJoinCreateGameScreen(), possibly null.
+     * @return One without propagating the screen-opening result.
      * @ghidraAddress BRD3D: 0x10044010
      * @ghidraAddress BRGlide: 0x1003d560
      */
     static int OnSelectIpx(MenuWidget *pWidget);
 
     /**
+     * Select IPX and update the provider widget's hover and animation appearance.
+     * @param pWidget A non-null borrowed provider widget to validate.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10044030
      * @ghidraAddress BRGlide: 0x1003d580
      */
     static int UpdateIpxItem(MenuWidget *pWidget);
 
     /**
+     * Select TCP/IP and attempt to open the session join/create screen.
+     * @param pWidget The unused widget forwarded to ShowJoinCreateGameScreen(), possibly null.
+     * @return One without propagating the screen-opening result.
      * @ghidraAddress BRD3D: 0x10044050
      * @ghidraAddress BRGlide: 0x1003d5a0
      */
     static int OnSelectTcpIp(MenuWidget *pWidget);
 
     /**
+     * Select TCP/IP and update the provider widget's hover and animation appearance.
+     * @param pWidget A non-null borrowed provider widget to validate.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10044070
      * @ghidraAddress BRGlide: 0x1003d5c0
      */
     static int UpdateTcpIpItem(MenuWidget *pWidget);
 
     /**
+     * Select the modem provider and attempt to open the session join/create screen.
+     * @param pWidget The unused widget forwarded to ShowJoinCreateGameScreen(), possibly null.
+     * @return One without propagating the screen-opening result.
      * @ghidraAddress BRD3D: 0x10044090
      * @ghidraAddress BRGlide: 0x1003d5e0
      */
     static int OnSelectModem(MenuWidget *pWidget);
 
     /**
+     * Select the modem provider and update its widget's hover and animation appearance.
+     * @param pWidget A non-null borrowed provider widget to validate.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100440b0
      * @ghidraAddress BRGlide: 0x1003d600
      */
     static int UpdateModemItem(MenuWidget *pWidget);
 
     /**
+     * Destroy provider selection, clear its cache, and restore the cached multiplayer-name screen.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x100463c0
      * @ghidraAddress BRGlide: 0x1003f860
      */
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** Multiplayer race-setup callbacks using the shared session and cached connection screens. */
+/** Car-class selection and host/client exit callbacks for multiplayer setup. */
 class MultiplayerGameSetupUI {
 public:
     /**
      * Exit an active network game launched through a lobby.
      *
+     * @param pWidget A non-null borrowed widget of the active screen to stop before exit.
+     * @return One when application shutdown is not requested.
      * @ghidraAddress BRD3D: 0x100437d0
      * @ghidraAddress BRGlide: 0x1003cd20
      */
     static int OnEscape(MenuWidget *pWidget);
 
     /**
+     * Cycle car classes 0..4 using mouse edges and apply the selected car-group preset.
+     * An active DirectPlay interface also receives a selection notice.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x10044600
      * @ghidraAddress BRGlide: 0x1003db50
      */
     static int OnCycleCarClass(MenuWidget *pWidget);
 
     /**
+     * Return a client to session selection, disconnect, and restore provider discovery when needed.
+     * Lobby-launched sessions exit the application instead.
+     * @param pItem A non-null active-screen widget, invalidated by screen destruction or shutdown.
+     * @return Zero when control returns, ending the current widget update.
      * @ghidraAddress BRD3D: 0x10044970
      * @ghidraAddress BRGlide: 0x1003dec0
      */
     static int OnBackAsClient(MenuActionWidget *pItem);
 
     /**
+     * Return a host to game creation, disconnect, and restore provider discovery when needed.
+     * Lobby-launched sessions exit the application instead.
+     * @param pItem A non-null active-screen widget, invalidated by screen destruction or shutdown.
+     * @return Zero when control returns, ending the current widget update.
      * @ghidraAddress BRD3D: 0x10044a30
      * @ghidraAddress BRGlide: 0x1003df80
      */
     static int OnBackAsHost(MenuActionWidget *pItem);
 };
 
+/** Sprite-update callbacks for multiplayer car-group choices. */
 class MultiplayerSetupUI {
 public:
     /**
+     * Select the car-group sprite, using the default image for groups outside 1..4.
+     * @param pWidget A non-null borrowed car-group image widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003f5e0
      * @ghidraAddress BRGlide: 0x10038b20
      */
     static int UpdateCarGroupImage(MenuWidget *pWidget);
 
     /**
+     * Select the secondary car-group sprite, using -1 for groups outside 1..4.
+     * @param pWidget A non-null borrowed secondary-image widget.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003f680
      * @ghidraAddress BRGlide: 0x10038bc0
      */
     static int UpdateCarGroupSubImage(MenuWidget *pWidget);
 };
 
+/**
+ * Network car-setup callbacks for chat, player selection, readiness, and session transitions.
+ * Shared DirectPlay state and required menu references must be initialised before use.
+ */
 class NetworkCarSetupUI {
 public:
     /**
+     * Draw and process the chat list without storing a newly activated row index.
+     * @param pWidget A non-null borrowed widget with the chat list.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003ebc0
      * @ghidraAddress BRGlide: 0x100381b0
      */
     static int PollChatListSelection(MenuWidget *pWidget);
 
     /**
+     * Copy primary text into the shared chat buffer, send it, and clear both text buffers.
+     * @param pWidget A non-null borrowed entry widget with terminated primary text of at most
+     * 200 bytes, copied into the 201-byte chat buffer without a capacity check.
+     * @return One without propagating the chat-send result.
      * @ghidraAddress BRD3D: 0x1003f170
      * @ghidraAddress BRGlide: 0x100386b0
      */
     static int SendChatMessage(MenuWidget *pWidget);
 
     /**
+     * Send a removal request for the selected player unless the selection is the local player.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100437b0
      * @ghidraAddress BRGlide: 0x1003cd00
      */
     static int OnBootPlayer(MenuWidget *pWidget);
 
     /**
+     * Query session readiness and send a start request for a ready host or toggle client readiness.
+     * Missing peers and unready host selections produce chat feedback.
+     * Session-query and network-send failures are not propagated to the caller.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One, including when no session description is available.
      * @ghidraAddress BRD3D: 0x10043a00
      * @ghidraAddress BRGlide: 0x1003cf50
      */
     static int OnRefreshSessionDesc(MenuWidget *pWidget);
 
     /**
+     * Process network escape, lobby return, host readiness, or the pending race-start transition.
+     * Lobby-launched active streams exit the application; accepted race starts save menu choices.
+     * @param pWidget A non-null active-screen widget, potentially invalidated by a menu transition.
+     * @return Zero after a menu or race transition; one when continuing the current setup screen.
      * @ghidraAddress BRD3D: 0x10043810
      * @ghidraAddress BRGlide: 0x1003cd60
      */
     static int OnEscape(MenuWidget *pWidget);
 
     /**
+     * Process player-list selection and read the selected row's application data as its player ID.
+     * @param pWidget A non-null borrowed player-list widget with a valid selected row index.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003ebe0
      * @ghidraAddress BRGlide: 0x100381d0
      */
     static int UpdateSelectedPlayer(MenuWidget *pWidget);
 };
 
+/** Return callbacks that destroy the active Options screen and restore a cached destination. */
 class OptionsMenuUI {
 public:
     /**
+     * Destroy Options, clear its cache, and restore the root menu.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046520
      * @ghidraAddress BRGlide: 0x1003f9c0
      */
     static int OnBack(MenuActionWidget *pItem);
 
     /**
+     * Destroy Options, clear its cache, and restore cached car setup.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046bb0
      * @ghidraAddress BRGlide: 0x10040000
      */
     static int OnBackToCarSetup(MenuActionWidget *pItem);
 
     /**
+     * Destroy Options, clear its cache, and restore cached pre-race information.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046750
      * @ghidraAddress BRGlide: 0x1003fba0
      */
     static int OnBackToPreRaceInfo(MenuActionWidget *pItem);
 
     /**
+     * Destroy Options, clear its cache, and restore cached season progress.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046830
      * @ghidraAddress BRGlide: 0x1003fc80
      */
     static int OnBackToSeasonProgressInfo(MenuActionWidget *pItem);
 
     /**
+     * Destroy Options, clear its cache, and restore cached race-results information.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046910
      * @ghidraAddress BRGlide: 0x1003fd60
      */
     static int OnBackToRaceResultsInfo(MenuActionWidget *pItem);
 
     /**
+     * Destroy Options, clear its cache, and restore the cached race-results summary.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x100469f0
      * @ghidraAddress BRGlide: 0x1003fe40
      */
     static int OnBackToRaceResultsSummary(MenuActionWidget *pItem);
 
     /**
+     * Destroy Options, clear its cache, and restore cached race-results totals.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046ad0
      * @ghidraAddress BRGlide: 0x1003ff20
      */
     static int OnBackToRaceResultsTotals(MenuActionWidget *pItem);
 };
 
+/** Drawing callbacks for the overwrite-confirmation prompt. */
 class OverwritePromptUI {
 public:
     /**
+     * Draw a segmented prompt surround sized from the primary font's measured width.
+     * @param pWidget A non-null borrowed prompt widget with a nonnegative measured text width.
+     * @return One without propagating underlying sprite-blit results.
      * @ghidraAddress BRD3D: 0x1003e7a0
      * @ghidraAddress BRGlide: 0x10037dc0
      */
     static int DrawPromptBox(MenuWidget *pWidget);
 };
 
+/** Player-name editing, continuation, and root-menu return callbacks. */
 class PlayerNameEntryUI {
 public:
     /**
      * Enable continuing after a player name has been entered.
      *
+     * @param pWidget A non-null borrowed name-entry widget with terminated primary text.
+     * @return One; empty text preserves the Continue widget's previous enabled state.
      * @ghidraAddress BRD3D: 0x1003ef60
      * @ghidraAddress BRGlide: 0x10038490
      */
     static int EnableContinueIfNameEntered(MenuWidget *pWidget);
 
     /**
+     * Begin text editing and toggle the primary caret when no menu text edit is active.
+     * @param pWidget A non-null borrowed widget with primary text storage.
+     * @return One, including when editing was already active.
      * @ghidraAddress BRD3D: 0x10042a90
      * @ghidraAddress BRGlide: 0x1003bff0
      */
     static int OnToggleTextEdit(MenuWidget *pWidget);
 
     /**
+     * Destroy player-name entry, clear its references, and restore the root menu.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10043fc0
      * @ghidraAddress BRGlide: 0x1003d510
      */
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** Confirmation callbacks for abandoning a championship from pre-race information. */
+/** Confirmation callbacks for abandoning a championship season before a race. */
 class PreRaceExitSeasonConfirmUI {
 public:
     /**
+     * Destroy confirmation and cached pre-race screens, clear the pre-race cache and screen
+     * pointer, and restore the root menu.
+     * @param pWidget A non-null confirmation widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046f60
      * @ghidraAddress BRGlide: 0x100403b0
      */
     static int OnYes(MenuWidget *pWidget);
 
     /**
+     * Restore cached pre-race information without destroying the confirmation screen.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046fc0
      * @ghidraAddress BRGlide: 0x10040410
      */
     static int OnNo(MenuWidget *pWidget);
 };
 
+/** Championship pre-race records, options, saving, and exit-confirmation callbacks. */
 class PreRaceInfoUI {
 public:
     /**
+     * Refresh and measure the Back label according to championship and resume state.
+     * @param pWidget A non-null borrowed label widget with primary text storage.
+     * @return One.
      * @ghidraAddress BRD3D: 0x1003e840
      * @ghidraAddress BRGlide: 0x10037e60
      */
     static int UpdateBackButtonText(MenuWidget *pWidget);
 
     /**
+     * Open Options and install its return callback to pre-race information.
+     * @param pWidget The unused widget forwarded to ShowOptionsMenu(), possibly null.
+     * @return One without propagating the screen-opening result.
      * @ghidraAddress BRD3D: 0x10045780
      * @ghidraAddress BRGlide: 0x1003ec10
      */
     static int OnOptions(MenuWidget *pWidget);
 
     /**
+     * Open season saving and install its return callback to pre-race information.
+     * @param pWidget The unused widget forwarded to ShowSaveSeasonScreen(), possibly null.
+     * @return One without propagating the screen-opening result.
      * @ghidraAddress BRD3D: 0x100457a0
      * @ghidraAddress BRGlide: 0x1003ec30
      */
     static int OnSaveSeason(MenuWidget *pWidget);
 
     /**
+     * Destroy pre-race information, clear its references, and restore cached season loading.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046dc0
      * @ghidraAddress BRGlide: 0x10040210
      */
     static int OnBackToLoadSeason(MenuActionWidget *pItem);
 
     /**
+     * Destroy pre-race information, clear its references, and restore the cached season menu.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046d70
      * @ghidraAddress BRGlide: 0x100401c0
      */
     static int OnBackToChampionshipSeason(MenuActionWidget *pItem);
 
     /**
+     * Activate the previously built pre-race exit-confirmation screen.
+     * @param pItem The unused widget pointer, possibly null.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x10046f50
      * @ghidraAddress BRGlide: 0x100403a0
      */
     static int OnBack(MenuActionWidget *pItem);
 
     /**
+     * Draw the season's best race time for the saved round's track, or a placeholder when unloaded.
+     * @param pWidget A non-null borrowed label widget with primary text storage.
+     * @return One after formatting and drawing the time.
      * @ghidraAddress BRD3D: 0x10040c00
      * @ghidraAddress BRGlide: 0x1003a140
      */
     static int UpdateBestTimeLabel(MenuWidget *pWidget);
 
     /**
+     * Draw the season's best lap time for the saved round's track, or a placeholder when unloaded.
+     * @param pWidget A non-null borrowed label widget with primary text storage.
+     * @return One after formatting and drawing the time.
      * @ghidraAddress BRD3D: 0x10040d70
      * @ghidraAddress BRGlide: 0x1003a2b0
      */
     static int UpdateBestLapLabel(MenuWidget *pWidget);
 };
 
+/** Application-exit confirmation and root-menu return callbacks. */
 class QuitGameConfirmUI {
 public:
     /**
+     * Back up choices, save config, shut down the front end and DirectPlay, and exit the
+     * application.
+     * @param pWidget A non-null active-screen widget used during shutdown.
+     * @return Does not return after application shutdown; the native routine has an unreachable
+     * return of one.
      * @ghidraAddress BRD3D: 0x10043710
      * @ghidraAddress BRGlide: 0x1003cc60
      */
     static int OnConfirmQuit(MenuWidget *pWidget);
 
     /**
+     * Destroy quit confirmation, clear its cache, and restore the root menu.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x100464a0
      * @ghidraAddress BRGlide: 0x1003f940
      */
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** Lap selection, timing labels, and submenu callbacks for race-results information. */
 class RaceResultsInfoUI {
 public:
     /**
+     * Select the first lap's recorded time for results display.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100412c0
      * @ghidraAddress BRGlide: 0x1003a820
      */
     static int OnSelectLap1(MenuWidget *pWidget);
 
     /**
+     * Select the second lap's recorded time for results display.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100412d0
      * @ghidraAddress BRGlide: 0x1003a830
      */
     static int OnSelectLap2(MenuWidget *pWidget);
 
     /**
+     * Select the third lap's recorded time for results display.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100412e0
      * @ghidraAddress BRGlide: 0x1003a840
      */
     static int OnSelectLap3(MenuWidget *pWidget);
 
     /**
+     * Select the complete race time for results display.
+     * @param pWidget The unused widget pointer, possibly null.
+     * @return One.
      * @ghidraAddress BRD3D: 0x100412f0
      * @ghidraAddress BRGlide: 0x1003a850
      */
     static int OnSelectTotalTime(MenuWidget *pWidget);
 
     /**
+     * Open Options and install its return callback to race-results information.
+     * @param pItem The unused widget forwarded to ShowOptionsMenu(), possibly null.
+     * @return One without propagating the screen-opening result.
      * @ghidraAddress BRD3D: 0x10045800
      * @ghidraAddress BRGlide: 0x1003ec90
      */
     static int OnOpenOptions(MenuActionWidget *pItem);
 
     /**
+     * Open season saving and install its return callback to race-results information.
+     * @param pItem The unused widget forwarded to ShowSaveSeasonScreen(), possibly null.
+     * @return One without propagating the screen-opening result.
      * @ghidraAddress BRD3D: 0x10045820
      * @ghidraAddress BRGlide: 0x1003ecb0
      */
     static int OnOpenSaveSeason(MenuActionWidget *pItem);
 
     /**
+     * Format and draw the selected lap or complete race time using the primary font.
+     * @param pWidget A non-null borrowed label widget; the selected lap must be in 0..3.
+     * @return One after drawing a time or the missing-time placeholder.
      * @ghidraAddress BRD3D: 0x10040ee0
      * @ghidraAddress BRGlide: 0x1003a420
      */
     static int UpdateSelectedTimeLabel(MenuWidget *pWidget);
 };
 
+/** Submenu and return callbacks for the championship race-results summary. */
 class RaceResultsSummaryUI {
 public:
     /**
+     * Open Options and install its return callback to the results summary.
+     * @param pItem The unused widget forwarded to ShowOptionsMenu(), possibly null.
+     * @return One without propagating the screen-opening result.
      * @ghidraAddress BRD3D: 0x10045840
      * @ghidraAddress BRGlide: 0x1003ecd0
      */
     static int OnOpenOptions(MenuActionWidget *pItem);
 
     /**
+     * Open season saving and install its return callback to the results summary.
+     * @param pItem The unused widget forwarded to ShowSaveSeasonScreen(), possibly null.
+     * @return One without propagating the screen-opening result.
      * @ghidraAddress BRD3D: 0x10045860
      * @ghidraAddress BRGlide: 0x1003ecf0
      */
     static int OnOpenSaveSeason(MenuActionWidget *pItem);
 
     /**
+     * Destroy the results summary, clear its cache, and restore cached race-results information.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x100470a0
      * @ghidraAddress BRGlide: 0x100404f0
      */
     static int OnBack(MenuActionWidget *pItem);
 };
 
+/** Season points, progress labels, submenu callbacks, and continuation from results totals. */
 class RaceResultsTotalsUI {
 public:
     /**
      * Draw the total points of the race results.
      *
+     * @param pWidget A non-null borrowed label widget with primary text storage.
+     * @return One after formatting and drawing the numeric label.
      * @ghidraAddress BRD3D: 0x10041710
      * @ghidraAddress BRGlide: 0x1003ac70
      */
@@ -1838,6 +2197,8 @@ public:
     /**
      * Draw the number of completed rounds in the race results.
      *
+     * @param pWidget A non-null borrowed label widget with primary text storage.
+     * @return One after formatting and drawing the numeric label.
      * @ghidraAddress BRD3D: 0x10041670
      * @ghidraAddress BRGlide: 0x1003abd0
      */
@@ -1846,33 +2207,44 @@ public:
     /**
      * Draw the remaining points for the season stored in the resume state.
      *
+     * @param pWidget A non-null borrowed label widget with primary text storage.
+     * @return One after drawing the remaining points, clamped to zero when already sufficient.
      * @ghidraAddress BRD3D: 0x100417b0
      * @ghidraAddress BRGlide: 0x1003ad10
      */
     static int UpdatePointsNeededLabel(MenuWidget *pWidget);
 
     /**
+     * Destroy results totals, clear its cache, and restore the cached results summary.
+     * @param pItem A non-null active-screen widget, invalidated when its panels are destroyed.
+     * @return Zero to end the current widget update.
      * @ghidraAddress BRD3D: 0x100470e0
      * @ghidraAddress BRGlide: 0x10040530
      */
     static int OnBack(MenuActionWidget *pItem);
 
     /**
+     * Open Options and install its return callback to results totals.
+     * @param pItem The unused widget forwarded to ShowOptionsMenu(), possibly null.
+     * @return One without propagating the screen-opening result.
      * @ghidraAddress BRD3D: 0x10045880
      * @ghidraAddress BRGlide: 0x1003ed10
      */
     static int OnOpenOptions(MenuActionWidget *pItem);
 
     /**
+     * Open season saving and install its return callback to results totals.
+     * @param pItem The unused widget forwarded to ShowSaveSeasonScreen(), possibly null.
+     * @return One without propagating the screen-opening result.
      * @ghidraAddress BRD3D: 0x100458a0
      * @ghidraAddress BRGlide: 0x1003ed30
      */
     static int OnOpenSaveSeason(MenuActionWidget *pItem);
 
     /**
-     * Apply championship progress and switch from totals to the next championship screen.
+     * Restore championship settings and points from progress, then select the next screen.
      *
-     * @param pItem The action item on the totals screen.
+     * @param pItem A non-null totals-screen widget, invalidated when its panels are destroyed.
      * @return Zero.
      * @ghidraAddress BRD3D: 0x10047290
      * @ghidraAddress BRGlide: 0x100406e0
