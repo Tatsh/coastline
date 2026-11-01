@@ -96,6 +96,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Setup disables Back on the Done screen after a successful import.
 - Setup search results abbreviate the home directory as `~` in disc and ROM paths.
+- Gold coin placeholders sit above the menu stage with soft projected shadows.
+- Extra tracks without preview models show an empty stage, including Gamewin, with labels above.
 - Setup uses classic text-mode Windows Setup colours, retaining red invalid ROM fields. Search and
   import progress bars centre percentages with contrasting text across the filled and empty areas.
 - Zero BGM or SFX volume suspends the corresponding sequencing, decoding, and mixing, with

@@ -118,9 +118,7 @@ bool Menus::LoadTrackMenu(SceneRenderer &renderer, const std::filesystem::path &
         MenuItem item;
         item.name = extra.name;
         item.flags = extra.mirrored ? MENU_ITEM_MIRRORED_MODEL : 0;
-        if (extra.engine == 12) {
-            item.model = load.model;
-        }
+        item.emptyStage = true;
         auto gltf = assets / "tracks" / (std::string(extra.file) + ".gltf");
         auto glb = gltf;
         glb.replace_extension(".glb");

@@ -78,6 +78,7 @@ struct MenuItem {
     u32 flags = 0;                      /*!< The MENU_ITEM_ flags. */
     const RenderModel *model = nullptr; /*!< The model of the item, or none to show its name. */
     bool coin = false;                  /*!< Draw a gold coin placeholder instead of a model. */
+    bool emptyStage = false; /*!< Omit fallback stage text when no preview model exists. */
 };
 
 /** What a frame of a screen shows, the arguments of ProcessScreenState(). */

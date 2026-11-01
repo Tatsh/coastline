@@ -615,6 +615,27 @@ void MenuScreen::DrawCoin(SceneRenderer &renderer,
         float depth;
     };
     constexpr int SEGMENTS = 32;
+    const Matrix4 stage = MultiplyMatrices(projection, RotationX(STAGE_TILT));
+    FlatMaterial material;
+    material.combine = SHADE_COMBINE;
+    std::vector<FlatVertex> shadow;
+    shadow.reserve(SEGMENTS * 4);
+    const float shadowWidth = 6.0f + 27.0f * std::abs(std::cos(angle));
+    const float shadowDepth = 8.0f + 27.0f * std::abs(std::sin(angle));
+    const StageVertex center{{x + 8.0f, STAGE_Y, 12.0f}, {0, 0, 0, 112}};
+    auto edge = [&](float turn) {
+        return StageVertex{{center.position[0] + std::cos(turn) * shadowWidth,
+                            STAGE_Y,
+                            center.position[2] + std::sin(turn) * shadowDepth},
+                           {0, 0, 0, 0}};
+    };
+    for (int segment = 0; segment < SEGMENTS; ++segment) {
+        AddTriangle(shadow,
+                    center,
+                    edge(TWO_PI * segment / SEGMENTS),
+                    edge(TWO_PI * (segment + 1) / SEGMENTS));
+    }
+    renderer.DrawQuads(shadow, material, stage);
     std::vector<Triangle> triangles;
     const float sine = std::sin(angle);
     const float cosine = std::cos(angle);
@@ -642,7 +663,7 @@ void MenuScreen::DrawCoin(SceneRenderer &renderer,
         for (auto point : {a, b, c}) {
             point = rotate(point);
             point[0] += x;
-            point[1] += STAGE_Y;
+            point[1] += STAGE_Y + 27.0f;
             face.corners[index++] = {point, color};
             face.depth += point[1] * std::sin(STAGE_TILT) + point[2] * std::cos(STAGE_TILT);
         }
@@ -680,9 +701,7 @@ void MenuScreen::DrawCoin(SceneRenderer &renderer,
     for (const auto &face : triangles) {
         AddTriangle(corners, face.corners[0], face.corners[1], face.corners[2]);
     }
-    FlatMaterial material;
-    material.combine = SHADE_COMBINE;
-    renderer.DrawQuads(corners, material, MultiplyMatrices(projection, RotationX(STAGE_TILT)));
+    renderer.DrawQuads(corners, material, stage);
 }
 
 void MenuScreen::Draw(SceneRenderer &renderer, const MenuSetup &setup) const {
@@ -756,7 +775,6 @@ void MenuScreen::Draw(SceneRenderer &renderer, const MenuSetup &setup) const {
             renderer.DrawQuads(arrows, shaded, MultiplyMatrices(stage, place));
         }
 
-        // An item is its model turning on the stage, or its name when it has no model.
         auto drawItem = [&](int index, float offset, float angle) {
             const MenuItem &item = setup.items[static_cast<std::size_t>(index)];
             if (item.coin) {
@@ -768,7 +786,7 @@ void MenuScreen::Draw(SceneRenderer &renderer, const MenuSetup &setup) const {
                                                   angle,
                                                   (item.flags & MENU_ITEM_MIRRORED_MODEL) != 0));
                 renderer.DrawModel(*item.model, world, projection, s.lighting, std::nullopt, true);
-            } else {
+            } else if (!item.emptyStage) {
                 s.text->Draw(renderer,
                              "%ww" + item.name,
                              160 - static_cast<int>(offset * SCREEN_WIDTH / 6.0f),
