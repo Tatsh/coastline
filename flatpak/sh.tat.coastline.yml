@@ -23,6 +23,8 @@ modules:
       - '-Dwith-systemd-user-unit=false'
       - '-Dwith-util=false'
     name: 'gamemode'
+    post-install:
+      - 'install -Dm644 LICENSE.txt "${FLATPAK_DEST}/share/licenses/gamemode/LICENSE.txt"'
     sources:
       - commit: 'c54d6d4243b0dd0afcb49f2c9836d432da171a2b'
         tag: '1.8.2'
