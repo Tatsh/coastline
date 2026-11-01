@@ -23,8 +23,8 @@ class SceneRenderer;
 struct RaceCar {
     int car = 0;                         /*!< The car, an index of g_apszCarModelPrefixes. */
     std::array<std::uint8_t, 3> paint{}; /*!< The red, green, and blue the car is painted. */
-    /** A glTF document of the car of the cartridge whose images take the place of those of the
-     * asset pack, such as custom decals, or none. */
+    /** Path to a menu preview or custom-decal document supplying race images. An empty optional
+     * selects images from the race model. */
     std::optional<std::filesystem::path> images;
     /** Whether the car draws in its other look, with its highlighted parts reflecting the sky in
      * place of its textured parts, as Vehicle.otherLook of the console. */

@@ -211,6 +211,13 @@ public:
     RaceSetup ChosenRace() const;
 
     /**
+     * @param car The race-engine car index.
+     * @return The car's preview-document path for the selected region and asset pack, or an
+     * empty optional when the car is unavailable.
+     */
+    std::optional<std::filesystem::path> CarImages(int car) const;
+
+    /**
      * Go on from a race that Frame() started, as FinishRace() of the console goes on: to the
      * results screen, to the next season of the championship, or to the main menu.
      *

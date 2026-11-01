@@ -91,6 +91,12 @@ std::string FormatLapTime(f32 seconds) {
 
 } // namespace
 
+std::optional<std::filesystem::path> Menus::CarImages(int car) const {
+    const auto found =
+        std::ranges::find_if(m_cars, [car](const auto &entry) { return entry.engineCar == car; });
+    return found == m_cars.end() || !found->exists ? std::nullopt : std::optional(found->preview);
+}
+
 RaceSetup Menus::ChosenRace() const {
     RaceSetup setup;
     setup.gameMode = m_afterSeasonRace ? GAME_MODE_AFTER_SEASON : static_cast<int>(m_gameMode);

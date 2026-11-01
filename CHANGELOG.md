@@ -212,6 +212,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Race car images match regional selection previews, including AI, attract demos, and credits,
+  fixing Japanese Type ES paint. Custom decals take precedence, and Pure PC uses PC images;
+  race geometry and physics remain unchanged.
 - Explicit `--region` selects the regional intro for the current run over saved title preferences
   and locks Title screen in Options to the active region after fallback.
 - Options applies the final preset to settings captured before browsing, preventing intermediate

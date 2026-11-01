@@ -597,13 +597,23 @@ struct CarModels {
 };
 
 // A car in a colour: the car, an index of g_apszCarModelPrefixes, its red, green, and blue, 1 more
-// than the vehicle whose images come from another document, or 0 for the asset pack, and 1 for
+// than the first vehicle sharing an image document, or 0 for the asset pack, and 1 for
 // the other look.
 using CarKey = std::array<int, 6>;
 
 // The document of each car, read once for its parts, levels, and colours, by the car and the last
 // of its CarKey, or none for a car that does not load.
 using CarDocuments = std::map<std::array<int, 2>, std::shared_ptr<RenderDocument>>;
+
+int CarImageKey(const std::map<int, std::filesystem::path> &images,
+                const std::optional<std::filesystem::path> &source) {
+    if (!source) {
+        return 0;
+    }
+    const auto found =
+        std::ranges::find_if(images, [&](const auto &entry) { return entry.second == *source; });
+    return found == images.end() ? 0 : found->first + 1;
+}
 
 // LoadPaintDamageBitmaps(): the 64 by 64 intensities of each level of damage after the first, and
 // the car of the first vehicle, whose paint sets LoadCarPaintTextures() damages, or -1 for none.
@@ -1674,10 +1684,10 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
     Uint64 carsStart = SDL_GetTicks();
     for (std::size_t i = 0; i < cars.size(); ++i) {
         const RaceCar &vehicle = cars[i];
-        int custom = vehicle.images ? static_cast<int>(i) + 1 : 0;
         if (vehicle.images) {
             state->images[static_cast<int>(i)] = *vehicle.images;
         }
+        const int custom = CarImageKey(state->images, vehicle.images);
         if (vehicle.otherLook) {
             state->otherLook.insert(static_cast<int>(i));
         }
@@ -1714,14 +1724,21 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
                 continue;
             }
             const u8 *color = g_aRacerSlots[racer].GetColor();
-            CarKey key{cars[i].car, color[0], color[1], color[2], 0, 0};
+            CarKey key{cars[i].car,
+                       color[0],
+                       color[1],
+                       color[2],
+                       CarImageKey(state->images, cars[i].images),
+                       0};
             if (!state->cars.contains(key)) {
-                state->cars.try_emplace(
-                    key,
-                    LoadCarModels(
-                        CarDocument(
-                            renderer, state->documents, defaults, key, std::nullopt, state->damage),
-                        key));
+                state->cars.try_emplace(key,
+                                        LoadCarModels(CarDocument(renderer,
+                                                                  state->documents,
+                                                                  defaults,
+                                                                  key,
+                                                                  cars[i].images,
+                                                                  state->damage),
+                                                      key));
             }
         }
     }
@@ -2518,7 +2535,7 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
                color[0],
                color[1],
                color[2],
-               document ? vehicleIndex + 1 : 0,
+               CarImageKey(s.images, document),
                s.otherLook.contains(vehicleIndex)};
     auto found = s.cars.find(key);
     // A car that does not load is not tried again.

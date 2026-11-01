@@ -1395,8 +1395,10 @@ int main(int argc, char *argv[]) {
                     attractDemo.StartCredits(ending);
                     attractDemo.Credits().Start(release);
                     attractDemo.Step(false);
-                    const coastline::RaceCar car{
-                        attractDemo.Car(), attractDemo.Color(), std::nullopt};
+                    const coastline::RaceCar car{attractDemo.Car(),
+                                                 attractDemo.Color(),
+                                                 mainMenu ? mainMenu->CarImages(attractDemo.Car()) :
+                                                            std::nullopt};
                     raceView = coastline::RaceView::Load(
                         *sceneRenderer, assets, attractDemo.Track(), {&car, 1});
                     raceTime = 0.0f;
@@ -1772,7 +1774,10 @@ int main(int argc, char *argv[]) {
                                 attractDemo.Start();
                                 attractDemo.Step(false);
                                 const coastline::RaceCar demoCar{
-                                    attractDemo.Car(), attractDemo.Color(), std::nullopt};
+                                    attractDemo.Car(),
+                                    attractDemo.Color(),
+                                    mainMenu ? mainMenu->CarImages(attractDemo.Car()) :
+                                               std::nullopt};
                                 raceView = coastline::RaceView::Load(
                                     *sceneRenderer, assets, attractDemo.Track(), {&demoCar, 1});
                                 raceTime = 0.0f;
@@ -2006,9 +2011,14 @@ int main(int argc, char *argv[]) {
                             setup.autopilot = commands.autopilot;
                             raceSession.Start(setup, assets / "music", useCdMusic());
                             std::vector<coastline::RaceCar> cars = coastline::RaceCars();
+                            for (auto &car : cars) {
+                                car.images = mainMenu->CarImages(car.car);
+                            }
                             for (std::size_t i = 0; i < cars.size() && i < setup.cars.size(); ++i) {
                                 if (static_cast<int>(i) < setup.players) {
-                                    cars[i].images = setup.cars[i].images;
+                                    if (setup.cars[i].images) {
+                                        cars[i].images = setup.cars[i].images;
+                                    }
                                     cars[i].otherLook = setup.cars[i].otherLook;
                                 }
                             }
