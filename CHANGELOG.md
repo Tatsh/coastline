@@ -35,8 +35,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   and FXAA, with spinning gold coin placeholders. Changes save immediately and apply as Options
   closes, reinitialising resources when required. Failed saves display an error and revert the menu
   adjustment.
-- All available cars and tracks are selectable outside Championship, including PC Race and Bonus
-  tracks, their mirrors, and Gamewin. Extra track records use separate INI settings and preserve the
+- All available cars and drivable tracks are selectable outside Championship, including PC Race and
+  Bonus tracks and their mirrors. Extra track records use separate INI settings and preserve the
   native Controller Pak layout.
 - AppStream metadata for Linux software catalogues, with game details and asset import requirements.
 - GLB models with embedded buffers and PNG images, plus data URI buffers and images. Paint-shop
@@ -94,6 +94,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Gamewin is excluded from regular track selection and remains available for the after-season race.
 - Pure PC car previews use PC models and textures, including Type CE, and apply custom decals to
   the selected preview model. Command-line asset-pack selection also determines preview models.
 - Internal resolution offers explicit sizes from 320x240 through connected display modes, defaulting
@@ -103,7 +104,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Setup disables Back on the Done screen after a successful import.
 - Setup search results abbreviate the home directory as `~` in disc and ROM paths.
 - Gold coin placeholders sit above the menu stage with soft projected shadows.
-- Extra tracks without preview models show an empty stage, including Gamewin, with labels above.
+- Extra tracks without preview models show an empty stage with labels above.
 - Setup uses classic text-mode Windows Setup colours, retaining red invalid ROM fields. Search and
   import progress bars centre percentages with contrasting text across the filled and empty areas.
 - Zero BGM or SFX volume suspends the corresponding sequencing, decoding, and mixing, with

@@ -14,6 +14,7 @@ struct ExtraMenuTrack {
     std::string_view name;
     std::string_view file;
     bool mirrored;
+    bool selectable = true;
 };
 
 inline constexpr std::array<ExtraMenuTrack, 5> EXTRA_MENU_TRACKS{{
@@ -21,7 +22,7 @@ inline constexpr std::array<ExtraMenuTrack, 5> EXTRA_MENU_TRACKS{{
     {11, "Mirror Race Track", "race", true},
     {14, "Bonus Track", "bonus", false},
     {13, "Mirror Bonus Track", "bonus", true},
-    {12, "Gamewin", "gamewin", false},
+    {12, "Gamewin", "gamewin", false, false},
 }};
 
 inline constexpr int MENU_TRACK_COUNT = CONSOLE_TRACK_COUNT + EXTRA_MENU_TRACKS.size();

@@ -206,6 +206,10 @@ bool Menus::IsTrackUnlocked(int track) const {
     if (track < 0 || static_cast<std::size_t>(track) >= m_trackMenuItems.size()) {
         return false;
     }
+    if (track >= CONSOLE_TRACK_COUNT && track < MENU_TRACK_COUNT &&
+        !EXTRA_MENU_TRACKS[static_cast<std::size_t>(track - CONSOLE_TRACK_COUNT)].selectable) {
+        return false;
+    }
     if (m_gameMode == GameMode::Championship) {
         if (m_seasonFirstRace) {
             return track == m_selectedTrackId;
