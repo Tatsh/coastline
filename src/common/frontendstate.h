@@ -20,44 +20,64 @@ extern "C" {
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 /** Front-end choices and host paths for one active game session. */
 typedef struct SdlFrontEndState {
-    char configPath[4096];
-    char seasonPath[FRONT_END_SAVE_PATH_SIZE];
-    char timeAttackPath[FRONT_END_SAVE_PATH_SIZE];
-    int chosenCar;
-    int networkCarSetup;
-    int rootMenu;
-    int transmission;
-    int tires;
-    int suspension;
-    int car;
-    int laps;
-    int unlockedCars;
-    int unlockedTracks;
-    int handling;
-    int benchmark;
-    int networkPlay;
-    int frontEndEnabled;
+    char configPath[4096]; /*!< The null-terminated path of the active configuration file. */
+    char seasonPath[FRONT_END_SAVE_PATH_SIZE];     /*!< The path of the saved season file. */
+    char timeAttackPath[FRONT_END_SAVE_PATH_SIZE]; /*!< The path of the saved time-attack ghost. */
+    int chosenCar; /*!< The selected car index transferred from the front end into race setup. */
+    int networkCarSetup; /*!< Whether the network car setup screen is active. */
+    int rootMenu;        /*!< Whether the root front-end screen is active. */
+    int transmission;    /*!< The selected transmission mode. */
+    int tires;           /*!< The selected tyre option index. */
+    int suspension;      /*!< The selected suspension option index. */
+    int car;             /*!< The car option index displayed in car setup. */
+    int laps;            /*!< The configured race lap count. */
+    int unlockedCars;    /*!< The accumulated car unlock mask, one bit per car. */
+    int unlockedTracks;  /*!< The accumulated track unlock mask, one bit per track. */
+    int handling;        /*!< The selected handling option index. */
+    int benchmark;       /*!< Whether benchmark mode is requested. */
+    int networkPlay;     /*!< Whether the selected race uses network play. */
+    int frontEndEnabled; /*!< Whether PC front-end-dependent features are enabled. */
 } SdlFrontEndState;
 
-/** @return Front-end storage for the active engine runtime. */
+/**
+ * @pre An EngineRuntime is active.
+ * @return Front-end storage, valid until the runtime is destroyed.
+ */
 SdlFrontEndState *GetSdlFrontEndState(void);
 
+/** @copydoc SdlFrontEndState::configPath */
 #define g_szConfigFilePath (GetSdlFrontEndState()->configPath)
+/** @copydoc SdlFrontEndState::seasonPath */
 #define g_szSeasonSaveFileName (GetSdlFrontEndState()->seasonPath)
+/** @copydoc SdlFrontEndState::timeAttackPath */
 #define g_szTimeAttackSaveFileName (GetSdlFrontEndState()->timeAttackPath)
+/** @copydoc SdlFrontEndState::chosenCar */
 #define g_dwChosenCar (GetSdlFrontEndState()->chosenCar)
+/** @copydoc SdlFrontEndState::networkCarSetup */
 #define g_dwInNetworkCarSetup (GetSdlFrontEndState()->networkCarSetup)
+/** @copydoc SdlFrontEndState::rootMenu */
 #define g_dwFrontEndAtRootMenu (GetSdlFrontEndState()->rootMenu)
+/** @copydoc SdlFrontEndState::transmission */
 #define g_dwSelectedTransmission (GetSdlFrontEndState()->transmission)
+/** @copydoc SdlFrontEndState::tires */
 #define g_dwTireMenuIndex (GetSdlFrontEndState()->tires)
+/** @copydoc SdlFrontEndState::suspension */
 #define g_dwSuspensionMenuIndex (GetSdlFrontEndState()->suspension)
+/** @copydoc SdlFrontEndState::car */
 #define g_dwCarMenuIndex (GetSdlFrontEndState()->car)
+/** @copydoc SdlFrontEndState::laps */
 #define g_dwTotalLapsSetting (GetSdlFrontEndState()->laps)
+/** @copydoc SdlFrontEndState::unlockedCars */
 #define g_dwAccumUnlockedCarMask (GetSdlFrontEndState()->unlockedCars)
+/** @copydoc SdlFrontEndState::unlockedTracks */
 #define g_dwAccumUnlockedTrackMask (GetSdlFrontEndState()->unlockedTracks)
+/** @copydoc SdlFrontEndState::handling */
 #define g_dwHandlingTypeMenuIndex (GetSdlFrontEndState()->handling)
+/** @copydoc SdlFrontEndState::benchmark */
 #define g_dwRunBenchmark (GetSdlFrontEndState()->benchmark)
+/** @copydoc SdlFrontEndState::networkPlay */
 #define g_dwNetworkPlayMode (GetSdlFrontEndState()->networkPlay)
+/** @copydoc SdlFrontEndState::frontEndEnabled */
 #define g_dwNullStubEnable (GetSdlFrontEndState()->frontEndEnabled)
 #else
 /**

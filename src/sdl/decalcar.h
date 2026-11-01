@@ -2,9 +2,8 @@
 
 /**
  * @file
- * The model of a car of a cartridge as the paint shop of the Nintendo 64 release paints it: the
- * bytes of the model as the console loads it, built again from its glTF document in the import,
- * with the decals and the palettes painted in place.
+ * Editable car textures reconstructed from imported glTF or GLB assets. Console body materials
+ * use indexed texels and palettes; numbered panels composite indexed paint over imported RGBA.
  */
 
 #include <cstddef>
@@ -36,7 +35,7 @@ inline constexpr int CAR_MATERIAL_HEADLIGHTS = 10;
 /** The material whose palette is the rear lights. */
 inline constexpr int CAR_MATERIAL_REAR_LIGHTS = 11;
 
-/** A texture of the model: where its texels and its palette are in the bytes, and its size. */
+/** The byte offsets and dimensions of an indexed model texture or numbered paint layer. */
 struct DecalTexture {
     std::size_t texels = 0;  /*!< The offset of the 4-bit texels. */
     std::size_t palette = 0; /*!< The offset of the 16 colours, each a big-endian RGBA5551 half. */
@@ -44,73 +43,101 @@ struct DecalTexture {
     int height = 0;          /*!< The height in texels. */
 };
 
-/** The model of a car of a cartridge, painted in place. */
+/** Editable console body materials or numbered image layers for an imported car. */
 class DecalCar {
 public:
     /**
-     * Build the bytes of a car of the import again from its glTF document.
+     * Reconstruct editable textures from an imported car document and its images.
      *
      * @param directory The directory of the car, with model.gltf or model.glb.
-     * @return The car, or nothing with the reason logged.
+     * @return The car, or std::nullopt for reported loading or validation failures.
+     * @throws nlohmann::json::exception If editable image metadata has invalid fields or types.
      */
     static std::optional<DecalCar> Load(const std::filesystem::path &directory);
 
     /**
-     * @param material The material, from 0 to CAR_MATERIALS - 1.
-     * @return The texture of the material.
+     * @param material The console material or zero-based numbered image-panel index.
+     * @return Texture offsets and dimensions, or an empty texture for an invalid index.
      */
     DecalTexture Texture(int material) const;
+    /**
+     * @param material The body material or numbered image-panel index.
+     * @return Whether the material has non-empty indexed texels and a palette.
+     */
     bool HasMaterial(int material) const;
+    /** @return The Controller Pak note identifier associated with this car's decal format. */
     std::string DecalNote() const;
-    /** Whether numbered image layers replace the original body-panel layout. */
+    /** @return Whether numbered image layers replace the original body-panel layout. */
     bool ImagePanels() const;
-    /** Return the number of editable panels. */
+    /** @return The number of editable panels, including absent console body materials. */
     int PanelCount() const;
-    /** Composite a numbered panel over its imported RGBA pixels. */
+    /**
+     * Composite a numbered panel over its imported RGBA pixels.
+     *
+     * @param panel The zero-based numbered image-panel index.
+     * @return Top-down RGBA8 pixels, or an empty vector for a non-image or invalid panel.
+     */
     std::vector<u8> PanelPixels(int panel) const;
-    /** Identify the image layout and source pixels of a numbered-panel save. */
+    /** @return The versioned image-layout fingerprint, or an empty header for console decals. */
     std::vector<u8> NoteHeader() const;
-    /** Validate the save header and complete image-layer payload before loading. */
+    /**
+     * Validate the save header and complete image-layer payload before loading.
+     *
+     * @param note The saved note bytes.
+     * @return Whether image-layer data matches this model and is complete; true for console notes.
+     */
     bool ValidNote(std::span<const u8> note) const;
-    /** Locate a packed pixel in linear image layers or console body-panel rows. */
+    /**
+     * Locate a packed pixel in linear image layers or console body-panel rows.
+     *
+     * @param x The pixel column within the texture.
+     * @param y The pixel row within the texture.
+     * @param width The texture width, in pixels.
+     * @return The byte offset from the start of the panel's packed 4-bit texels.
+     */
     std::size_t PixelOffset(int x, int y, int width) const;
 
     /**
-     * @param material The material, from 0 to CAR_MATERIALS - 1.
-     * @return The texels of the texture of the material, in the order the console loads them.
+     * @param material The console material or zero-based numbered image-panel index.
+     * @return Mutable packed 4-bit texels, or null for an absent or invalid material.
+     * Console rows use TexelOffset(); numbered panels use linear rows through PixelOffset().
      */
     u8 *Texels(int material);
 
-    /** @return The end of the bytes of the model, past which no texel is read. */
+    /** @return One byte past the editable storage, valid until the car is destroyed. */
     const u8 *End() const;
 
     /**
-     * @param slot The decal, from 0 to DECAL_SLOTS - 1.
+     * @param slot The console decal, from 0 to DECAL_SLOTS - 1.
      * @return The mask of the decal, a bit a texel with a set bit protecting it, or null where
-     * every texel can be painted.
+     * every texel can be painted. Numbered image panels always return null.
      */
     const u8 *Mask(int slot) const;
 
     /**
-     * @param material The material, from 0 to CAR_MATERIALS - 1.
+     * @param material The console material or zero-based numbered image-panel index.
      * @param entry The colour, from 0 to 15.
-     * @return The RGBA5551 colour.
+     * @return The RGBA5551 colour, or zero for an absent material or invalid entry.
      */
     u16 PaletteColor(int material, int entry) const;
 
     /**
-     * @param material The material, from 0 to CAR_MATERIALS - 1.
+     * Replace one material palette entry without changing its indexed texels.
+     * Absent materials and invalid entries are ignored. Numbered panels share one palette.
+     *
+     * @param material The console material or zero-based numbered image-panel index.
      * @param entry The colour, from 0 to 15.
      * @param color The RGBA5551 colour.
      */
     void SetPaletteColor(int material, int entry, u16 color);
 
     /**
-     * Write the images of the car as they are painted, and a glTF document of those images, one
-     * for one with the images of the car of the import.
+     * Write painted images and an image-override glTF document in imported image order.
+     * Unpainted console images retain their original encoded bytes.
+     * Errors from the final document write are not checked.
      *
      * @param directory The directory to write the document and the images to.
-     * @return The document, or nothing with the reason logged.
+     * @return The document path, or std::nullopt when writing or decoding an image fails.
      */
     std::optional<std::filesystem::path> WriteImages(const std::filesystem::path &directory) const;
 

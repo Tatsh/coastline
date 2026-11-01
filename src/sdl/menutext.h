@@ -21,7 +21,11 @@ namespace coastline {
 /** How a string of the menus is drawn. */
 struct TextStyle {
     /** Where a string stands from its x. */
-    enum class Align { Left, Center, Right };
+    enum class Align {
+        Left,   /*!< Position the string's left edge at the requested x coordinate. */
+        Center, /*!< Centre the string at the requested x coordinate. */
+        Right   /*!< Position the string's right edge at the requested x coordinate. */
+    };
 
     int size = 10;             /*!< The height of the text, in pixels of the 320 by 240 screen. */
     Align align = Align::Left; /*!< Where the string stands from its x. */
@@ -67,8 +71,11 @@ public:
      */
     static std::unique_ptr<MenuText> Load(SceneRenderer &renderer,
                                           const std::filesystem::path &fonts);
+    /** Release font textures before the renderer's GPU device is destroyed. */
     ~MenuText();
+    /** Prevent copying GPU-backed font resources. */
     MenuText(const MenuText &) = delete;
+    /** Prevent assignment of GPU-backed font resources. */
     MenuText &operator=(const MenuText &) = delete;
 
     /**

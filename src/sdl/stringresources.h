@@ -47,10 +47,18 @@ char32_t NextCodePoint(std::string_view text, std::size_t &position);
  */
 class GameText {
 public:
-    /** Load strings under @p assets for @p language and register the active catalogue with SDL. */
+    /**
+     * Load strings and register the exclusive active catalogue with SDL.
+     *
+     * @param assets The prepared asset directory with strings/LANGUAGE.json and strings/en-us.json.
+     * @param language The requested language; missing keys use en-us strings.
+     */
     GameText(const std::filesystem::path &assets, std::string language);
+    /** Unregister the active catalogue and invalidate references to its strings. */
     ~GameText();
+    /** Prevent copying the registered catalogue. */
     GameText(const GameText &) = delete;
+    /** Prevent assignment of the registered catalogue. */
     GameText &operator=(const GameText &) = delete;
 
     /** @return The active text catalogue, or null outside its lifetime. */
@@ -63,9 +71,15 @@ public:
     bool Empty() const {
         return m_strings.empty();
     }
-    /** @return The string for @p key, or null when unavailable. */
+    /**
+     * @param key The catalogue key to query without logging a missing translation.
+     * @return The stored string, valid for the catalogue's lifetime, or null when unavailable.
+     */
     const std::string *Find(std::string_view key) const;
-    /** @return The string or @p key, logging a missing key once per catalogue. */
+    /**
+     * @param key The catalogue key, whose storage must outlast a returned fallback view.
+     * @return The stored string or @p key, logging a missing key once per catalogue.
+     */
     std::string_view Resolve(std::string_view key);
 
 private:

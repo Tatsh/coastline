@@ -28,9 +28,13 @@ void OpenRaceData(bool playSounds);
 /** Attract-demo rotation for one front end. One instance exists at a time. */
 class AttractDemo {
 public:
+    /** Register the exclusive attract-demo controller with the first recording selected next. */
     AttractDemo();
+    /** Unregister the controller after its active race has shut down. */
     ~AttractDemo();
+    /** Prevent copying the registered demo controller. */
     AttractDemo(const AttractDemo &) = delete;
+    /** Prevent assignment of the registered demo controller. */
     AttractDemo &operator=(const AttractDemo &) = delete;
 
     /** @return The active demo controller, or null outside its lifetime. */

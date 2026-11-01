@@ -48,8 +48,11 @@ public:
                                           const std::filesystem::path &defaults,
                                           int track,
                                           std::span<const RaceCar> cars);
+    /** Release race rendering resources before the renderer's GPU device is destroyed. */
     ~RaceView();
+    /** Prevent copying renderer-bound race resources. */
     RaceView(const RaceView &) = delete;
+    /** Prevent assignment of renderer-bound race resources. */
     RaceView &operator=(const RaceView &) = delete;
 
     /**

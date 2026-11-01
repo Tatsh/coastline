@@ -45,10 +45,10 @@ struct ScriptKey {
     int line;         /*!< The line of the script, from 1, for the message of an unknown key. */
 };
 
-/** A text typed at a frame, or a key of <backspace> or <enter>. */
+/** A text typed at a frame, or a key of `<backspace>` or `<enter>`. */
 struct ScriptTyping {
     int frame;        /*!< The frame of the typing, from 1. */
-    std::string text; /*!< The characters typed, or <backspace> or <enter>. */
+    std::string text; /*!< The characters typed, or `<backspace>` or `<enter>`. */
 };
 
 /** The input and the captures of a script of run-script. */

@@ -68,7 +68,11 @@ std::optional<std::filesystem::path> FindAssetData(const std::filesystem::path &
  */
 bool CreateGamePaths(const GamePaths &paths);
 
-/** Clear imported assets and asset caches, or all application data for a factory reset.
+/**
+ * Clear imported assets and asset caches, or all application data for a factory reset.
+ *
+ * @param paths Absolute, non-root application directories whose generated data is removed.
+ * @param factoryReset Whether to remove all four directories, including settings and saves.
  * @return An error message on failure, or std::nullopt on success.
  */
 std::optional<std::string> ResetGamePaths(const GamePaths &paths, bool factoryReset = false);

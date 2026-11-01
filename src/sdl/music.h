@@ -17,9 +17,17 @@ class N64Mixer;
 /** Mixer channels, XM storage, and synchronisation for one SDL audio session. */
 class N64MixerContext {
 public:
+    /**
+     * Register the sole mixer context. Another context must not already be active.
+     *
+     * @throws std::runtime_error If mutex creation or context registration fails.
+     */
     N64MixerContext();
+    /** Unregister the mixer after all audio players and locks have been destroyed. */
     ~N64MixerContext();
+    /** Prevent copying the registered mixer and its synchronisation resources. */
     N64MixerContext(const N64MixerContext &) = delete;
+    /** Prevent assignment of the registered mixer and its synchronisation resources. */
     N64MixerContext &operator=(const N64MixerContext &) = delete;
 
 private:
@@ -35,9 +43,13 @@ inline constexpr int N64_AUDIO_RATE = 21998;
  */
 class N64Audio {
 public:
+    /** Initialise channels in the active N64MixerContext, without opening an audio device. */
     N64Audio();
+    /** Destroy the playback stream before the mixer context is destroyed. */
     ~N64Audio();
+    /** Prevent copying the playback stream and module storage. */
     N64Audio(const N64Audio &) = delete;
+    /** Prevent assignment of the playback stream and module storage. */
     N64Audio &operator=(const N64Audio &) = delete;
 
     /**
@@ -50,7 +62,7 @@ public:
     /**
      * Load a module and start it from its first order.
      *
-     * @param module The XM module.
+     * @param module A valid imported XM module, copied into player storage before playback.
      */
     void Play(std::span<const std::uint8_t> module);
 
@@ -62,15 +74,24 @@ public:
 
     /** @return Whether the device resumed, and true without a device. */
     bool Resume();
-    /** Suspend the device when both user volume settings are zero. */
+    /**
+     * Suspend the device while paused or while both enabled audio categories are silent.
+     *
+     * @return Whether the required device transition succeeds, or true without a transition.
+     */
     bool UpdateVolumeProcessing();
-    /** Enable each category independently of transient fades and playback pauses. */
+    /**
+     * Enable each category independently of transient fades and playback pauses.
+     *
+     * @param music Whether to process music while its volume is nonzero.
+     * @param soundEffects Whether to process effects while their master volume is nonzero.
+     */
     void SetProcessingEnabled(bool music, bool soundEffects);
 
     /**
      * Scale the music of the modules, apart from the sound effects the player mixes with it.
      *
-     * @param gain The scale, 1 for the level of the console.
+     * @param gain The finite scale, clamped to 0 through 8, with 1 for the console level.
      */
     void SetMusicGain(float gain);
 
@@ -118,9 +139,13 @@ private:
  */
 class N64MixerLock {
 public:
+    /** Acquire the active mixer context's recursive mutex on the calling thread. */
     N64MixerLock();
+    /** Release the mutex on the thread that acquired this lock. */
     ~N64MixerLock();
+    /** Prevent copying a mutex acquisition. */
     N64MixerLock(const N64MixerLock &) = delete;
+    /** Prevent assignment of a mutex acquisition. */
     N64MixerLock &operator=(const N64MixerLock &) = delete;
 
 private:

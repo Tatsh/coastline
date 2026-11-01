@@ -25,9 +25,13 @@ struct EngineTexture {
 /** Decoded textures for one active race engine. One instance exists at a time. */
 class EngineTextures {
 public:
+    /** Register an empty texture collection for the sole active race engine. */
     EngineTextures();
+    /** Unregister the collection and release its decoded texels. */
     ~EngineTextures();
+    /** Copying is disabled because texture hooks address the active collection. */
     EngineTextures(const EngineTextures &) = delete;
+    /** Assignment is disabled because the active collection has a stable address. */
     EngineTextures &operator=(const EngineTextures &) = delete;
 
     /** @return The active texture collection, or null outside its lifetime. */
@@ -42,15 +46,15 @@ public:
         return m_reflections;
     }
 
-    /** Decode an indexed image and return its texture entry, from 1. */
+    /** @copydoc coastline::CreateEngineTexture */
     unsigned Create(const unsigned char *image,
                     const unsigned char *palette,
                     int width,
                     int height,
                     int lineBytes);
-    /** Replace an entry's texels with big-endian RGBA5551 colours. Invalid entries are ignored. */
+    /** @copydoc coastline::LoadEngineTexture */
     void Load(unsigned entry, const unsigned char *colors);
-    /** @return The texture, or null for an invalid entry. */
+    /** @copydoc coastline::FindEngineTexture */
     const EngineTexture *Find(unsigned entry) const;
     /** Discard decoded textures when the race engine shuts its texture subsystem down. */
     void Clear();
@@ -70,7 +74,7 @@ private:
  * @param width The width in texels.
  * @param height The height in texels.
  * @param lineBytes The bytes of a row of the image.
- * @return The entry of the texture, from 1.
+ * @return The texture entry, from 1, or zero without an active EngineTextures instance.
  */
 unsigned CreateEngineTexture(
     const unsigned char *image, const unsigned char *palette, int width, int height, int lineBytes);
@@ -98,14 +102,15 @@ int DecodeEngineTexture(void *destination,
  * Load the decoded colours of an image into a texture, as a command 0xdd of a display list loads
  * them.
  *
- * @param entry The entry of the texture.
+ * @param entry The texture entry, from 1. Invalid entries are ignored.
  * @param colors The colours of its texels, each a big-endian RGBA5551 half, row by row.
  */
 void LoadEngineTexture(unsigned entry, const unsigned char *colors);
 
 /**
  * @param entry The entry of a texture.
- * @return The texture, or null for an entry that was not created.
+ * @return The texture, or null for an invalid entry or without an active collection.
+ * The pointer remains valid until another texture is created or the collection is cleared.
  */
 const EngineTexture *FindEngineTexture(unsigned entry);
 

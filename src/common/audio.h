@@ -97,23 +97,33 @@ typedef struct {
     u32 loopLength; /*!< The bytes the channel goes back at the end, or 0 to stop. */
 } SoundEffectSample;
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/** The bytes from the menu music up to the heap at 0x80096400 on the console. */
+#define MENU_MUSIC_MODULE_SIZE 0x70800
 /**
- * The menu music, an XM module the game decompresses below the program, at a fixed address.
+ * Storage for the decompressed menu XM module.
  *
  * @ghidraAddress USA: 0x80025c00
  * @ghidraAddress EUR: 0x80025c00
  * @ghidraAddress JPN: 0x80025c00
  */
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-/* The bytes from the menu music up to the heap at 0x80096400 on the console. */
-#define MENU_MUSIC_MODULE_SIZE 0x70800
 extern u8 g_abMenuMusicModule[MENU_MUSIC_MODULE_SIZE];
 #else
+/**
+ * The fixed N64 memory address of the decompressed menu XM module.
+ *
+ * @ghidraAddress USA: 0x80025c00
+ * @ghidraAddress EUR: 0x80025c00
+ * @ghidraAddress JPN: 0x80025c00
+ */
 #define g_abMenuMusicModule ((u8 *)0x80025C00)
 #endif
 
+/** The ROM start of the compressed menu music, supplied by the link script. */
 extern u8 _menuMusicSegmentRomStart[];
+/** The ROM start of the menu scroll sound, supplied by the link script. */
 extern u8 _scrollSoundSegmentRomStart[];
+/** The ROM start of the menu selection sound, supplied by the link script. */
 extern u8 _selectSoundSegmentRomStart[];
 
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
@@ -194,6 +204,14 @@ extern f32 g_afNoteFrequencies[MUSIC_NOTES];
 extern s32 g_dwMusicPatternRow;
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+/** Silent bytes padded for a mixer block read before an SDL channel stops. */
+#define SILENCE_SAMPLE_BYTES 0x1000
+#else
+/** The byte capacity of the console's static silent sample. */
+#define SILENCE_SAMPLE_BYTES 4
+#endif
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * A silent sample that a channel at rest points at.
  *
@@ -201,13 +219,6 @@ extern s32 g_dwMusicPatternRow;
  * @ghidraAddress EUR: 0x802a71c8
  * @ghidraAddress JPN: 0x802a6c68
  */
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-/* A channel set going on the silence reads a block of the mixer past it before it stops. */
-#define SILENCE_SAMPLE_BYTES 0x1000
-#else
-#define SILENCE_SAMPLE_BYTES 4
-#endif
-#if TGR_PLATFORM != TGR_PLATFORM_SDL
 extern s8 g_SilenceSampleData[SILENCE_SAMPLE_BYTES];
 #endif
 
@@ -251,6 +262,8 @@ extern u32 g_dwSoundEffectMixOffset;
 extern OSMesgQueue g_AudioMsgQueue;
 
 /**
+ * Storage for the audio timer queue's two messages.
+ *
  * @ghidraAddress USA: 0x80374708
  * @ghidraAddress EUR: 0x80376c08
  * @ghidraAddress JPN: 0x80375878
@@ -296,6 +309,8 @@ extern XmSample *g_apInstrumentData[];
 extern u8 *g_apPatternData[];
 
 /**
+ * Per-channel XM notes and effects, indexed by music channel.
+ *
  * @ghidraAddress USA: 0x80378dd0
  * @ghidraAddress EUR: 0x8037b2d0
  * @ghidraAddress JPN: 0x80379f40
@@ -321,6 +336,8 @@ extern SoundEffectSample g_aSoundEffectSamples[SOUND_EFFECT_CHANNELS];
 extern s32 g_bMusicPlaybackEnabled;
 
 /**
+ * The active XM module's order position and row timing.
+ *
  * @ghidraAddress USA: 0x80378fa0
  * @ghidraAddress EUR: 0x8037b4a0
  * @ghidraAddress JPN: 0x8037a110
@@ -329,6 +346,8 @@ extern MusicPlayer g_MusicPlayer;
 #endif
 
 /**
+ * The console thread that sequences music and fills the audio ring.
+ *
  * @ghidraAddress USA: 0x80378fb8
  * @ghidraAddress EUR: 0x8037b4b8
  * @ghidraAddress JPN: 0x8037a128
@@ -341,6 +360,8 @@ extern OSThread g_AudioThread;
 #define AUDIO_THREAD_STACK_WORDS 0x80
 
 /**
+ * Stack storage for the audio mixing thread, in 64-bit words.
+ *
  * @ghidraAddress USA: 0x80379168
  * @ghidraAddress EUR: 0x8037b668
  * @ghidraAddress JPN: 0x8037a2d8
@@ -369,6 +390,8 @@ extern u64 g_aFreqScaleTable[MUSIC_OCTAVES][MUSIC_NOTES];
 extern s32 g_dwAudioMixBytes;
 
 /**
+ * The current DMA-derived ring position, in bytes, adjusted by the music lead distance.
+ *
  * @ghidraAddress USA: 0x80379934
  * @ghidraAddress EUR: 0x8037be34
  * @ghidraAddress JPN: 0x8037aaa4
@@ -518,6 +541,7 @@ void CheckSoundEffectLoopPoints(void);
  */
 void AudioMixingThreadMain(void *arg);
 
+#if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
  * Do nothing with a camera.
  *
@@ -526,7 +550,6 @@ void AudioMixingThreadMain(void *arg);
  * @ghidraAddress EUR: 0x8022cfa8
  * @ghidraAddress JPN: 0x8022c760
  */
-#if TGR_PLATFORM != TGR_PLATFORM_SDL
 void StubSoundUpdate(CameraFrame *camera);
 #else
 /**
@@ -554,42 +577,62 @@ void N64StartSoundChannelMuted(s16 channel, s8 *sample, u32 length, u32 loopLeng
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 /** XM playback storage and game volumes for one SDL audio context. */
 typedef struct {
-    s32 channelCount;
-    u8 bgmVolume;
-    u8 sfxVolume;
-    u8 sfxMasterVolume;
-    f32 noteFrequencies[MUSIC_NOTES];
-    s32 patternRow;
-    s8 silence[SILENCE_SAMPLE_BYTES];
-    s16 ring[AUDIO_RING_BYTES / sizeof(s16)];
-    XmSample *instruments[128];
-    u8 *patterns[256];
-    MusicChannel channels[MIXER_CHANNELS];
-    SoundEffectSample samples[SOUND_EFFECT_CHANNELS];
-    s32 playbackEnabled;
-    MusicPlayer player;
-    u64 frequencySteps[MUSIC_OCTAVES][MUSIC_NOTES];
+    s32 channelCount; /*!< The number of active music mixer channels, at most MIXER_CHANNELS. */
+    u8 bgmVolume; /*!< The BGM volume applied to module playback, with zero disabling processing. */
+    u8 sfxVolume; /*!< The transient effects level applied beneath the master volume. */
+    u8 sfxMasterVolume; /*!< The effects master volume, with zero disabling effects processing. */
+    f32 noteFrequencies[MUSIC_NOTES]; /*!< Base note frequencies used to build the pitch table. */
+    s32 patternRow;                   /*!< The current row within the active music pattern. */
+    s8 silence[SILENCE_SAMPLE_BYTES]; /*!< Zero-valued sample storage for inactive channels. */
+    s16 ring[AUDIO_RING_BYTES / sizeof(s16)]; /*!< The interleaved stereo PCM ring buffer. */
+    XmSample *instruments[128]; /*!< Decoded instrument headers and samples in moduleWork. */
+    u8 *patterns[256];          /*!< Pattern headers and packed rows in moduleWork. */
+    MusicChannel channels[MIXER_CHANNELS]; /*!< Per-channel XM note and effect playback state. */
+    SoundEffectSample samples[SOUND_EFFECT_CHANNELS]; /*!< Loaded effect sample descriptors. */
+    s32 playbackEnabled; /*!< Whether the XM player advances music playback. */
+    MusicPlayer player;  /*!< The current XM order, row timing, and pattern playback state. */
+    u64 frequencySteps[MUSIC_OCTAVES][MUSIC_NOTES]; /*!< 32.32 sample-position increments. */
+    /** Writable module decoding workspace, valid for this context. */
     u8 moduleWork[0x100000];
 } SdlMusicState;
 
-/** @return The XM playback storage of the active SDL audio context. */
+/**
+ * @pre An N64MixerContext is active.
+ * @return The XM playback storage, valid until the context is destroyed.
+ */
 SdlMusicState *GetSdlMusicState(void);
 
+/** @copydoc SdlMusicState::moduleWork */
 #define g_abMusicModuleWorkBuffer (GetSdlMusicState()->moduleWork)
+/** @copydoc SdlMusicState::channelCount */
 #define g_nAudioChannelCount (GetSdlMusicState()->channelCount)
+/** @copydoc SdlMusicState::bgmVolume */
 #define g_bBgmVolume (GetSdlMusicState()->bgmVolume)
+/** @copydoc SdlMusicState::sfxMasterVolume */
 #define g_bSfxMasterVolume (GetSdlMusicState()->sfxMasterVolume)
+/** @copydoc SdlMusicState::sfxVolume */
 #define g_bSfxVolume (GetSdlMusicState()->sfxVolume)
+/** @copydoc SdlMusicState::noteFrequencies */
 #define g_afNoteFrequencies (GetSdlMusicState()->noteFrequencies)
+/** @copydoc SdlMusicState::patternRow */
 #define g_dwMusicPatternRow (GetSdlMusicState()->patternRow)
+/** @copydoc SdlMusicState::silence */
 #define g_SilenceSampleData (GetSdlMusicState()->silence)
+/** @copydoc SdlMusicState::ring */
 #define g_AudioDmaBuffer (GetSdlMusicState()->ring)
+/** @copydoc SdlMusicState::instruments */
 #define g_apInstrumentData (GetSdlMusicState()->instruments)
+/** @copydoc SdlMusicState::patterns */
 #define g_apPatternData (GetSdlMusicState()->patterns)
+/** @copydoc SdlMusicState::channels */
 #define g_MusicChannelStates (GetSdlMusicState()->channels)
+/** @copydoc SdlMusicState::samples */
 #define g_aSoundEffectSamples (GetSdlMusicState()->samples)
+/** @copydoc SdlMusicState::playbackEnabled */
 #define g_bMusicPlaybackEnabled (GetSdlMusicState()->playbackEnabled)
+/** @copydoc SdlMusicState::player */
 #define g_MusicPlayer (GetSdlMusicState()->player)
+/** @copydoc SdlMusicState::frequencySteps */
 #define g_aFreqScaleTable (GetSdlMusicState()->frequencySteps)
 #endif
 

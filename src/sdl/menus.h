@@ -166,8 +166,11 @@ public:
                                        const std::filesystem::path &configPath,
                                        std::span<const std::filesystem::path> dataRoots = {},
                                        std::string_view assetPack = {});
+    /** Release front-end resources before the configuration and renderer are destroyed. */
     ~Menus();
+    /** Prevent copying active front-end resources and screen progress. */
     Menus(const Menus &) = delete;
+    /** Prevent assignment of active front-end resources and screen progress. */
     Menus &operator=(const Menus &) = delete;
 
     /** Show the main menu again, as the splash screens and the attract demo switch to it. */

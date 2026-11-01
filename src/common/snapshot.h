@@ -11,8 +11,10 @@
 #include "common/snapshotops.h"
 #include "common/vehicle.h"
 
-enum { FRAME_SNAPSHOT_COUNT = 5 };
+/** The capacity of the rotating race snapshot pool. */
+enum { FRAME_SNAPSHOT_COUNT = 5 /*!< Five slots for captured and currently rendered frames. */ };
 
+/** Captured race geometry, cameras, and particles for interpolation between simulation steps. */
 class FrameSnapshot {
 private:
     unsigned sequence;
@@ -25,28 +27,52 @@ private:
     [[maybe_unused]] unsigned char unreconstructed2e0ec[4]; /* +0x2e0ec */
 
 public:
+    /** @return The monotonically assigned capture sequence for this pool slot. */
     unsigned GetSequence() const {
         return sequence;
     }
+    /**
+     * Assign a capture sequence without modifying the stored race frame.
+     *
+     * @param value The capture sequence, or zero when the slot pool is initialised.
+     */
     void SetSequence(unsigned value) {
         sequence = value;
     }
+    /** @return The captured first vehicle's active camera; its camera pointer must be valid. */
     const CameraFrame &GetPrimaryCamera() const {
         return *vehicles[0].GetActiveCamera();
     }
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
+    /**
+     * @param index The vehicle index, from 0 through MAX_VEHICLES - 1.
+     * @return The captured vehicle, valid for this snapshot's lifetime and replaced by capture.
+     */
     const Vehicle &GetVehicle(int index) const {
         return vehicles[index];
     }
+    /** @return Mutable storage for MAX_VEHICLES captured vehicles, valid for this snapshot's
+     * lifetime.
+     */
     Vehicle *GetVehicles() {
         return vehicles;
     }
+    /** @return Captured particles, valid for this snapshot's lifetime and replaced by capture. */
     const ParticleSnapshot &GetParticles() const {
         return particles;
     }
 #endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
+    /** Capture active vehicles, racers, the primary viewport, and particles from the race. */
     void Capture();
+    /** Render the racing screen from this snapshot using the active renderer. */
     inline void RenderRacingScreen();
+    /**
+     * Interpolate vehicle poses and cameras while copying racers, viewport, and particles.
+     *
+     * @param from The earlier captured frame.
+     * @param to The later captured frame.
+     * @param share The interpolation fraction, from 0 for @p from through 1 for @p to.
+     */
     inline void
     InterpolateFrom(const FrameSnapshot &from, const FrameSnapshot &to, long double share);
 };
@@ -56,44 +82,72 @@ extern "C" {
 #endif
 
 /**
+ * The rotating snapshot pool, indexed by the current, previous, and blend slot selectors.
+ *
  * @ghidraAddress BRD3D: 0x1039b760
  * @ghidraAddress BRGlide: 0x10396f48
  */
 extern FrameSnapshot g_aFrameSnapshots[FRAME_SNAPSHOT_COUNT];
 /**
+ * Temporary output of interpolation between two captured race frames.
+ *
  * @ghidraAddress BRD3D: 0x10481c10
  * @ghidraAddress BRGlide: 0x1047d3f8
  */
 extern FrameSnapshot g_InterpolatedFrameSnapshot;
 
-/** @ghidraAddress BRD3D: 0x1039b728 */
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
+/** @return The active engine's slot-use flags, one per snapshot slot.
+ * @ghidraAddress BRD3D: 0x1039b728
+ */
 int (*GetSdlSnapshotUsage(void))[FRAME_SNAPSHOT_COUNT];
+/** Slot-use flags for the active SDL engine's snapshot pool. */
 #define g_abFrameSnapshotInUse (*GetSdlSnapshotUsage())
 #else
+/** Nonzero for each snapshot slot currently referenced by a renderer.
+ * @ghidraAddress BRD3D: 0x1039b728
+ */
 extern int g_abFrameSnapshotInUse[FRAME_SNAPSHOT_COUNT];
 #endif
-/** @ghidraAddress BRD3D: 0x104afd14 */
+/** The earlier snapshot selected for the current blend, or -1 before selection.
+ * @ghidraAddress BRD3D: 0x104afd14
+ */
 extern int g_dwFrameSnapshotBlendFromSlot;
-/** @ghidraAddress BRD3D: 0x1039b75c */
+/** The later snapshot slot selected for interpolation, or -1 before selection.
+ * @ghidraAddress BRD3D: 0x1039b75c
+ */
 extern int g_nLastInterpolatedSnapshot;
 
-/** @ghidraAddress BRD3D: 0x104afd04 */
+/** The most recent completed snapshot slot, or -1 before the first capture.
+ * @ghidraAddress BRD3D: 0x104afd04
+ */
 extern int g_dwFrameSnapshotCurrentSlot;
-/** @ghidraAddress BRD3D: 0x104afd18 */
+/** The completed snapshot slot preceding the current slot, or -1 before two captures.
+ * @ghidraAddress BRD3D: 0x104afd18
+ */
 extern int g_dwFrameSnapshotPreviousSlot;
-/** @ghidraAddress BRD3D: 0x1039b73c */
+/** Fractional interpolation progress retained from the previous rendered frame.
+ * @ghidraAddress BRD3D: 0x1039b73c
+ */
 extern float g_fFrameSnapshotBlendCarry;
-/** @ghidraAddress BRD3D: 0x104afd0c */
+/** The millisecond timer value of the previous interpolation update, or zero before the first.
+ * @ghidraAddress BRD3D: 0x104afd0c
+ */
 extern unsigned g_dwFrameSnapshotBlendStartTime;
 
 /**
+ * Initialise slot flags, sequence counters, and interpolation timers once per valid pool.
+ *
  * @ghidraAddress BRD3D: 0x10016910
  * @ghidraAddress BRGlide: 0x10013e80
  */
 void InitFrameSnapshotSlots(void);
 
 /**
+ * Select the oldest unused slot, advancing the current and previous completed slot selectors.
+ * At least one unused slot other than the current write slot must be available.
+ *
+ * @return The selected write slot, from 0 through FRAME_SNAPSHOT_COUNT - 1.
  * @ghidraAddress BRD3D: 0x100169b0
  * @ghidraAddress BRGlide: 0x10013f20
  */

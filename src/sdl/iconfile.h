@@ -28,6 +28,9 @@ struct IconSize {
     int height = 0;   /*!< The height in pixels. */
     int bitCount = 0; /*!< The bits per pixel of the image in the icon file. */
 
+    /** @return Whether width, height, and bit depth equal the corresponding values of the other
+     * size.
+     */
     bool operator==(const IconSize &) const = default;
 };
 

@@ -127,8 +127,11 @@ public:
      */
     static std::unique_ptr<MenuScreen> Load(SceneRenderer &renderer,
                                             const std::filesystem::path &release);
+    /** Release shared menu models, textures, and sounds before the renderer and mixer contexts. */
     ~MenuScreen();
+    /** Prevent copying shared menu rendering and audio resources. */
     MenuScreen(const MenuScreen &) = delete;
+    /** Prevent assignment of shared menu rendering and audio resources. */
     MenuScreen &operator=(const MenuScreen &) = delete;
 
     /**

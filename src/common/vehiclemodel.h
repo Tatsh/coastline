@@ -15,9 +15,9 @@
 
 /** How a car shows the revolutions of its engine. */
 enum {
-    TACHOMETER_NEEDLE,
-    TACHOMETER_BAR_DIMMED,
-    TACHOMETER_BAR_HIDDEN,
+    TACHOMETER_NEEDLE,     /*!< A rotating needle over the dashboard face. */
+    TACHOMETER_BAR_DIMMED, /*!< A segmented bar with unlit segments dimmed. */
+    TACHOMETER_BAR_HIDDEN, /*!< A segmented bar with unlit segments hidden. */
 };
 
 /* The detail of the model of a car. */
@@ -54,48 +54,49 @@ enum {
  */
 typedef struct VehicleModel {
 #if TGR_BOSS_RALLY
-    u8 abUnknown0[4]; /* +0x00 */
-    s32 textureEntries[30];
-    s32 textureEntryCount;
-    s32 rearLightTextureEntry;
-    s32 lightTextureEntries[4];
-    u8 abUnknown94[2]; /* +0x94 */
-    s8 rearWheelDrive;
-    s8 tableIndex;
-    f32 gearRatios[CAR_GEAR_RATIOS];
-    f32 torqueCurve[4];
-    f32 finalDrive;
-    Vec3f boxSize;
-    f32 boxCenterZ;
-    s8 gearCount;
-    s8 driveMode;
-    u8 abUnknownDa; /* +0xda */
-    u8 tachometer;
-    u8 abUnknownDc[8]; /* +0xdc */
-    s8 dashboardWidth;
-    s8 dashboardHeight;
-    s8 gearX;
-    s8 gearY;
-    s8 gearWidth;
-    s8 gearHeight;
+    u8 abUnknown0[4]; /*!< Unreconstructed bytes before captured texture entries. */ /* +0x00 */
+    s32 textureEntries[30];     /*!< Captured backend texture entries for this car. */
+    s32 textureEntryCount;      /*!< The number of recorded entries in textureEntries. */
+    s32 rearLightTextureEntry;  /*!< The rear-light texture entry replaced by a lighting variant. */
+    s32 lightTextureEntries[4]; /*!< Rear-light variants for braking and race lighting. */
+    u8 abUnknown94[2]; /*!< Unreconstructed bytes before the drive configuration. */ /* +0x94 */
+    s8 rearWheelDrive;               /*!< Whether the specification identifies rear-wheel drive. */
+    s8 tableIndex;                   /*!< The car class used by arcade record-time tables. */
+    f32 gearRatios[CAR_GEAR_RATIOS]; /*!< The ratio of each gear, starting with neutral. */
+    f32 torqueCurve[4];              /*!< Cubic engine torque coefficients, highest power first. */
+    f32 finalDrive;                  /*!< The final drive ratio. */
+    Vec3f boxSize;                   /*!< Collision-box dimensions in model units. */
+    f32 boxCenterZ;                  /*!< Collision-box centre height in model units. */
+    s8 gearCount;                    /*!< The number of forward gears. */
+    s8 driveMode; /*!< Rear-biased drive for 0, front drive for 1, or all-wheel drive otherwise. */
+    u8 abUnknownDa; /*!< An unreconstructed byte before the tachometer selector. */ /* +0xda */
+    u8 tachometer; /*!< The TACHOMETER_ presentation mode. */
+    u8 abUnknownDc[8]; /*!< Unreconstructed bytes before dashboard dimensions. */ /* +0xdc */
+    s8 dashboardWidth;  /*!< The width of the dashboard face in texels. */
+    s8 dashboardHeight; /*!< The height of the dashboard face in texels. */
+    s8 gearX;           /*!< The gear cell's x coordinate on the dashboard face, in pixels. */
+    s8 gearY;           /*!< The gear cell's y coordinate on the dashboard face, in pixels. */
+    s8 gearWidth;       /*!< The gear cell width in texels. */
+    s8 gearHeight;      /*!< The gear cell height in texels. */
+    /** Tachometer placement or segment count, selected by tachometer. */
     union {
-        s8 needleX;
-        s8 barSegments;
+        s8 needleX;     /*!< The needle pivot's x coordinate on the dashboard face, in pixels. */
+        s8 barSegments; /*!< The bar segment count, using the final palette colours. */
     };
-    s8 needleY;
-    f32 needleFullAngle;
-    f32 needleRestAngle;
-    u8 abUnknownF4[8]; /* +0xf4 */
-    s32 gearImageBytes;
-    u16 dashboardPalettes[2][256];
-    u8 dashboardImages[0x7b00];
-#endif /* TGR_BOSS_RALLY */
+    s8 needleY;          /*!< The needle pivot's y coordinate on the dashboard face, in pixels. */
+    f32 needleFullAngle; /*!< The needle angle at full tachometer scale, in radians. */
+    f32 needleRestAngle; /*!< The needle angle at rest, in radians. */
+    u8 abUnknownF4[8]; /*!< Unreconstructed bytes before the gear-image stride. */ /* +0xf4 */
+    s32 gearImageBytes;            /*!< The byte stride between consecutive decoded gear images. */
+    u16 dashboardPalettes[2][256]; /*!< Day and night RGBA5551 dashboard palettes. */
+    u8 dashboardImages[0x7b00];    /*!< Dashboard face and gear-cell image storage. */
+#endif                             /* TGR_BOSS_RALLY */
 
     u32 triangleCount; /*!< The triangles of the model, counted into the statistics of the frame. */
 #if TGR_BOSS_RALLY
-    TGR_PTR(void) unreconstructed4; /* +0x8004 */
-    u32 unreconstructed8;           /* +0x8008 */
-    TGR_PTR(void) unreconstructedC; /* +0x800c */
+    TGR_PTR(void) unreconstructed4; /*!< An unreconstructed pointer. */           /* +0x8004 */
+    u32 unreconstructed8; /*!< An unreconstructed word between model pointers. */ /* +0x8008 */
+    TGR_PTR(void) unreconstructedC; /*!< An unreconstructed pointer. */           /* +0x800c */
 #else
     u8 unreconstructed4[0x10 - 0x4]; /*!< Not read by the routines reconstructed so far. */
 #endif
@@ -219,6 +220,9 @@ void FixupVehicleModelPointers(VehicleModel *model);
 #if TGR_BOSS_RALLY
 
 /**
+ * Swap model fields, relocate geometry and texture pointers, and prepare backend car textures.
+ *
+ * @param model The writable car model loaded in file byte order.
  * @ghidraAddress BRD3D: 0x100370d0
  * @ghidraAddress BRGlide: 0x10030770
  */
@@ -227,6 +231,7 @@ void ByteSwapAndRelocateCarModel(VehicleModel *model);
 /**
  * Accept the vehicle model without checking cartridge metadata.
  *
+ * @return Always 1 for the PC release.
  * @ghidraAddress BRD3D: 0x1003557b
  * @ghidraAddress BRGlide: 0x1002ec2c
  */

@@ -19,58 +19,58 @@ enum RenderStateDirtyBit {
 };
 /** Image metadata shared by texture entries and temporary texture conversions. */
 struct TextureImageData {
-    int nOption1;           /*!< Initialized to 0 by image construction. */
-    unsigned char nOption2; /*!< Initialized to 3 by image construction. */
-    char abUnknown5[3];
-    int nWidth;
-    int nHeight;
-    int nPixelFormatId;
-    int nOption3; /*!< Initialized to 0 for direct images and 2 for captured texture scans. */
-    int nLargestLod;
-    int nLod;           /*!< The level of detail, as CalculateTextureDimensions() reads it. */
-    int nAspectRatio;   /*!< The aspect ratio, as CalculateTextureDimensions() reads it. */
-    int bClampS;        /*!< Whether texture binding clamps s. */
-    int bClampT;        /*!< Whether texture binding clamps t. */
-    int nOption4;       /*!< Initialized to 1 by image construction. */
-    int nOption5;       /*!< Initialized to 1 by image construction. */
-    unsigned dwOption6; /*!< Initialized to 0xc0000000 by image construction. */
-    int nOption7;       /*!< Initialized to 0 by image construction. */
+    int nOption1;           /*!< The Glide TMU selector; direct images can select the second TMU. */
+    unsigned char nOption2; /*!< The mipmap-level mask, initialised to both odd and even levels. */
+    char abUnknown5[3];     /*!< Unreconstructed bytes following the mipmap-level mask. */
+    int nWidth;             /*!< The texture width used during conversion, in texels. */
+    int nHeight;            /*!< The texture height used during conversion, in texels. */
+    int nPixelFormatId;     /*!< The selected backend pixel-format identifier. */
+    int nOption3;           /*!< The mipmap mode, disabled for direct images. */
+    int nLargestLod;        /*!< The final mipmap endpoint used with nLod to size the chain. */
+    int nLod;               /*!< The level of detail, as CalculateTextureDimensions() reads it. */
+    int nAspectRatio;       /*!< The aspect ratio, as CalculateTextureDimensions() reads it. */
+    int bClampS;            /*!< Whether texture binding clamps s. */
+    int bClampT;            /*!< Whether texture binding clamps t. */
+    int nOption4;           /*!< The minification filter, initialised to bilinear filtering. */
+    int nOption5;           /*!< The magnification filter, initialised to bilinear filtering. */
+    unsigned dwOption6;     /*!< Backend texture options, initialised to 0xc0000000. */
+    int nOption7;           /*!< An unreconstructed backend option, initialised to zero. */
 #if TGR_BRD3D
     unsigned nColorKey; /*!< The colour key of the texture, or 0 for none. */
 #endif
-    int nPixelBytes;
-    int nDecodedWidth;
-    int nDecodedHeight;
-    unsigned char *pImage;
-    const unsigned char *pPalette;
-    int bMirrorS;
-    int bMirrorT;
+    int nPixelBytes;       /*!< The byte capacity calculated for the selected pixel format. */
+    int nDecodedWidth;     /*!< The decoded image width, including required padding, in texels. */
+    int nDecodedHeight;    /*!< The decoded image height, including required padding, in texels. */
+    unsigned char *pImage; /*!< The source image bytes used during conversion. */
+    const unsigned char *pPalette; /*!< The source palette, or null for direct-colour images. */
+    int bMirrorS;   /*!< Whether conversion mirrors the source along its horizontal axis. */
+    int bMirrorT;   /*!< Whether conversion mirrors the source along its vertical axis. */
     int nTileIndex; /*!< The active tile of aTiles. */
-    int nTileLimit;
-    TexScanTile aTiles[TEX_SCAN_TILE_COUNT];
-    unsigned dwFlags;
-    int bColorCombine;     /*!< Whether texture matching compares the captured colors. */
+    int nTileLimit; /*!< The exclusive upper bound of tiles contributing mipmap levels. */
+    TexScanTile aTiles[TEX_SCAN_TILE_COUNT]; /*!< Captured RDP descriptors for each texture tile. */
+    unsigned dwFlags;  /*!< Texture-load category flags captured when the image is constructed. */
+    int bColorCombine; /*!< Whether texture matching compares the captured colours. */
     int bOwnsPaintBuffers; /*!< Whether paint buffer memory is released with this image. */
-    int nPaintGroup;
-    int nPaintSet;
-    int nDamageLevel; /*!< The level of damage, from 0 to 3. */
-    int bHasTintPixels;
+    int nPaintGroup;    /*!< The paint-image group used to obtain custom car colours and decals. */
+    int nPaintSet;      /*!< The paint set within nPaintGroup. */
+    int nDamageLevel;   /*!< The level of damage, from 0 to 3. */
+    int bHasTintPixels; /*!< Whether the paint rectangle includes colour-tinted pixels. */
     unsigned char *apPaintBuffers[4]; /*!< Pixel buffers for the four damage levels. */
-    unsigned nPaintPixelBytes;
-    unsigned char abEnvColor[4];
-    unsigned char abPrimColor[4];
-    unsigned nRowSwapMask;
-    int nDecodedBytes;
-    int nSourceWidth;
-    int nSourceHeight;
+    unsigned nPaintPixelBytes;        /*!< The capacity of each allocated paint buffer, in bytes. */
+    unsigned char abEnvColor[4];      /*!< Captured environment colour, in RGBA order. */
+    unsigned char abPrimColor[4];     /*!< Captured primitive colour, in RGBA order. */
+    unsigned nRowSwapMask; /*!< Row-index bits that select the RDP's four-byte row address swap. */
+    int nDecodedBytes;     /*!< The decoded pixel byte count before backend upload. */
+    int nSourceWidth;      /*!< The original image width before padding or scaling, in texels. */
+    int nSourceHeight;     /*!< The original image height before padding or scaling, in texels. */
 };
 
 /** A loaded texture, its image metadata and texture-coordinate scales. */
 struct TextureEntry {
-    int nTextureId; /*!< The entry of g_ppTextureIdTable of the texture. */
-    TextureImageData data;
-    float fTextureScaleS;
-    float fTextureScaleT;
+    int nTextureId;        /*!< The entry of g_ppTextureIdTable of the texture. */
+    TextureImageData data; /*!< Source, decoded-image, paint, and backend texture metadata. */
+    float fTextureScaleS;  /*!< The horizontal texture-coordinate multiplier for this entry. */
+    float fTextureScaleT;  /*!< The vertical texture-coordinate multiplier for this entry. */
 };
 
 /**
@@ -110,6 +110,9 @@ extern unsigned g_dwTextureEntryCount;
 extern TextureEntry *g_pTextureEntries;
 
 /**
+ * Append an uninitialised texture entry, expanding storage in blocks of 256 entries as needed.
+ *
+ * @return The new zero-based entry index. Existing entry pointers can be invalidated by growth.
  * @ghidraAddress BRD3D: 0x10024b60
  * @ghidraAddress BRGlide: 0x10027a10
  */

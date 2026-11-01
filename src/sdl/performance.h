@@ -24,7 +24,13 @@ inline constexpr int FRAME_RATE_STATES = 3;
 /** The state of F in g_bShowFpsCounter that shows the statistics beside the frame rate. */
 inline constexpr int FRAME_RATE_STATISTICS = 2;
 
-/** Match the active adapter to one provider device, rejecting absent and ambiguous identities. */
+/**
+ * Match the active adapter to one provider device, rejecting absent and ambiguous identities.
+ *
+ * @param active The active adapter identifier, compared exactly.
+ * @param devices The provider identifiers in device-index order.
+ * @return The unique matching index, or std::nullopt for an empty, absent, or duplicate identifier.
+ */
 inline std::optional<std::size_t> UniqueGpuIndex(std::string_view active,
                                                  std::span<const std::string> devices) {
     std::optional<std::size_t> result;
@@ -121,15 +127,29 @@ inline std::optional<std::uint64_t> SmapsGamePssBytes(std::string_view text,
 /** One-second timing averages and worst values since collection began. */
 class FrameTimings {
 public:
+    /** Completed sampling interval averages and extrema since the first recorded frame. */
     struct Snapshot {
+        /** Mean CPU work per frame in milliseconds, excluding presentation and pacing waits. */
         double workMs = 0.0;
+        /** Mean interval between frame timestamps in milliseconds, including waits. */
         double intervalMs = 0.0;
+        /** Frame intervals per second over the completed sampling interval. */
         double fps = 0.0;
+        /** Greatest recorded CPU work time in milliseconds since collection began. */
         double worstWorkMs = 0.0;
+        /** Greatest recorded interval in milliseconds since collection began. */
         double worstIntervalMs = 0.0;
+        /** Lowest completed sampling interval frame rate since collection began. */
         double worstFps = 0.0;
     };
 
+    /**
+     * Accumulate a frame and publish averages after at least one second of timestamp progress.
+     *
+     * @param workNanoseconds CPU work duration in nanoseconds, excluding presentation and pacing.
+     * @param now A monotonically increasing timestamp in nanoseconds from a consistent clock.
+     * @return Whether a new snapshot became available during this call.
+     */
     bool Record(std::uint64_t workNanoseconds, std::uint64_t now) {
         m_workTotal += static_cast<double>(workNanoseconds);
         ++m_workCount;
@@ -163,6 +183,10 @@ public:
         return true;
     }
 
+    /**
+     * @return The latest snapshot, absent until one second elapses. The reference remains valid
+     * for this collector's lifetime; Record() can replace its value.
+     */
     const std::optional<Snapshot> &Latest() const {
         return m_snapshot;
     }
@@ -182,10 +206,18 @@ private:
 /** Frame timings and system statistics, with GPU sampling on a separate thread. */
 class PerformanceStats {
 public:
-    /** Sample the active adapter only when its identity permits NVML. */
+    /**
+     * Sample the active adapter only when its identity permits NVML.
+     *
+     * @param gpuName The active adapter identifier for an exact NVML device match.
+     * @param allowNvml Whether the renderer permits NVML for the active adapter.
+     */
     PerformanceStats(std::string gpuName, bool allowNvml);
+    /** Stop GPU sampling and release provider resources before destruction completes. */
     ~PerformanceStats();
+    /** Prevent copying the collector's GPU sampling thread. */
     PerformanceStats(const PerformanceStats &) = delete;
+    /** Prevent assignment of the collector's GPU sampling thread. */
     PerformanceStats &operator=(const PerformanceStats &) = delete;
 
     /**

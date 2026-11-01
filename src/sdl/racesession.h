@@ -108,9 +108,13 @@ enum class RaceEnd {
 /** Race progress and results for one front end. */
 class RaceSession {
 public:
+    /** Prepare an inactive session without starting a race or music. */
     RaceSession() = default;
+    /** Release the session's race music reference before the race music context is destroyed. */
     ~RaceSession();
+    /** Prevent copying race progress and active engine resources. */
     RaceSession(const RaceSession &) = delete;
+    /** Prevent assignment of race progress and active engine resources. */
     RaceSession &operator=(const RaceSession &) = delete;
 
     /**

@@ -39,19 +39,35 @@ StringTable MergeStrings(StringTable fallback, const StringTable &language);
  */
 std::filesystem::path ReleaseDirectory(const std::filesystem::path &assets);
 
-/** @return The recorded region of a converted cartridge, or empty for invalid metadata. */
+/**
+ * @param release The converted cartridge directory with cartridge.ini.
+ * @return usa, eur, or jpn from recorded metadata, or empty for absent or invalid metadata.
+ */
 std::string CartridgeRegion(const std::filesystem::path &release);
 
-/** @return Regions available from imported default and regional packs across the data roots. */
+/**
+ * @param dataRoots The data directories searched for default and regional packs.
+ * @return Available regions without duplicates, sorted lexicographically.
+ */
 std::vector<std::string>
 AvailableCartridgeRegions(std::span<const std::filesystem::path> dataRoots);
 
-/** @return The requested title region, independent of language, or empty when unavailable. */
+/**
+ * @param choice regional, japanese, or international; another value is unavailable.
+ * @param currentRegion The active cartridge region, assumed available.
+ * @param available Other available cartridge regions.
+ * @return The requested region, independent of language, or std::nullopt when unavailable.
+ * International prefers the active USA or European region, then USA, then Europe.
+ */
 std::optional<std::string> TitleScreenRegion(std::string_view choice,
                                              std::string_view currentRegion,
                                              std::span<const std::string> available);
 
-/** @return Fonts for @p language, or the imported base fonts when unavailable. */
+/**
+ * @param assets The prepared asset directory.
+ * @param language ja for Japanese fonts, en-gb for European fonts, or another value for USA fonts.
+ * @return The selected fonts directory when fonts.json exists, or the imported base directory.
+ */
 std::filesystem::path FontDirectory(const std::filesystem::path &assets, std::string_view language);
 
 } // namespace coastline

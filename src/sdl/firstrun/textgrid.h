@@ -28,22 +28,22 @@ inline constexpr int CELL_HEIGHT = 16;
 
 /** The 16 colours of CGA, by their number. */
 enum class CgaColor : std::uint8_t {
-    Black,        /*!< #000000. */
-    Blue,         /*!< #0000AA. */
-    Green,        /*!< #00AA00. */
-    Cyan,         /*!< #00AAAA. */
-    Red,          /*!< #AA0000. */
-    Magenta,      /*!< #AA00AA. */
-    Brown,        /*!< #AA5500. */
-    LightGray,    /*!< #AAAAAA. */
-    DarkGray,     /*!< #555555. */
-    LightBlue,    /*!< #5555FF. */
-    LightGreen,   /*!< #55FF55. */
-    LightCyan,    /*!< #55FFFF. */
-    LightRed,     /*!< #FF5555. */
-    LightMagenta, /*!< #FF55FF. */
-    Yellow,       /*!< #FFFF55. */
-    White,        /*!< #FFFFFF. */
+    Black,        /*!< RGB `#000000`. */
+    Blue,         /*!< RGB `#0000AA`. */
+    Green,        /*!< RGB `#00AA00`. */
+    Cyan,         /*!< RGB `#00AAAA`. */
+    Red,          /*!< RGB `#AA0000`. */
+    Magenta,      /*!< RGB `#AA00AA`. */
+    Brown,        /*!< RGB `#AA5500`. */
+    LightGray,    /*!< RGB `#AAAAAA`. */
+    DarkGray,     /*!< RGB `#555555`. */
+    LightBlue,    /*!< RGB `#5555FF`. */
+    LightGreen,   /*!< RGB `#55FF55`. */
+    LightCyan,    /*!< RGB `#55FFFF`. */
+    LightRed,     /*!< RGB `#FF5555`. */
+    LightMagenta, /*!< RGB `#FF55FF`. */
+    Yellow,       /*!< RGB `#FFFF55`. */
+    White,        /*!< RGB `#FFFFFF`. */
 };
 
 /** The red, green, and blue of each colour of CGA, by its number. */
@@ -74,7 +74,7 @@ struct TextCell {
     std::uint8_t glyph = ' ';                  /*!< The character, in code page 437. */
     CgaColor foreground = CgaColor::LightGray; /*!< The colour of the character. */
     CgaColor background = CgaColor::Blue;      /*!< The colour behind the character. */
-    bool underline = false;
+    bool underline = false; /*!< Whether to draw an underline beneath this cell's glyph. */
 };
 
 /**

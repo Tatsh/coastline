@@ -38,6 +38,8 @@ inline constexpr std::string_view PAK_SETTINGS_NOTE = "TOP GEAR OPTIONS";
 class ControllerPak {
 public:
     /**
+     * Select note directories without creating or reading them.
+     *
      * @param directory The directory of the notes, created at the first write.
      * @param settingsDirectory The directory of PAK_SETTINGS_NOTE, or empty for the directory of
      * the other notes.
@@ -72,7 +74,12 @@ public:
     /** @return The bytes of the pages no note takes, as osPfsFreeBlocks() counts them. */
     std::size_t FreeBytes() const;
 
-    /** Store independent notes beneath the Controller Pak directory without using its capacity. */
+    /**
+     * Store independent notes beneath the Controller Pak directory without using its capacity.
+     *
+     * @param directory A relative child directory for notes excluded from the parent inventory.
+     * @return A pak whose notes and settings both use the child directory.
+     */
     ControllerPak Subdirectory(const std::filesystem::path &directory) const;
 
 private:

@@ -225,8 +225,11 @@ public:
     static std::shared_ptr<RenderDocument> Load(SceneRenderer &renderer,
                                                 const std::filesystem::path &path,
                                                 const ModelOptions &options = {});
+    /** Release shared document storage and GPU resources before the GPU device is destroyed. */
     ~RenderDocument();
+    /** Prevent copying uploaded document resources. */
     RenderDocument(const RenderDocument &) = delete;
+    /** Prevent assignment of uploaded document resources. */
     RenderDocument &operator=(const RenderDocument &) = delete;
 
 private:
@@ -262,8 +265,11 @@ public:
      */
     static std::unique_ptr<RenderModel> Load(std::shared_ptr<RenderDocument> document,
                                              const ModelOptions &options = {});
+    /** Release model resources and its shared document reference before GPU device destruction. */
     ~RenderModel();
+    /** Prevent copying model resources and animation progress. */
     RenderModel(const RenderModel &) = delete;
+    /** Prevent assignment of model resources and animation progress. */
     RenderModel &operator=(const RenderModel &) = delete;
 
     /** @return The animations of the vertices of the model. */
@@ -299,8 +305,11 @@ private:
 /** How far each vertex of a model is moved on the GPU, such as by the dents of a car. */
 class VertexDisplacement {
 public:
+    /** Release the displacement buffer before the GPU device is destroyed. */
     ~VertexDisplacement();
+    /** Prevent copying the GPU displacement buffer. */
     VertexDisplacement(const VertexDisplacement &) = delete;
+    /** Prevent assignment of the GPU displacement buffer. */
     VertexDisplacement &operator=(const VertexDisplacement &) = delete;
 
 private:
@@ -345,8 +354,11 @@ public:
                                                      std::span<const std::uint8_t> rgba,
                                                      bool linear,
                                                      bool repeat);
+    /** Release the texture, sampler, and upload storage before GPU device destruction. */
     ~RenderTexture();
+    /** Prevent copying texture allocation and upload resources. */
     RenderTexture(const RenderTexture &) = delete;
+    /** Prevent assignment of texture allocation and upload resources. */
     RenderTexture &operator=(const RenderTexture &) = delete;
 
     /** @return The width in texels. */
@@ -396,13 +408,25 @@ struct FlatVertex {
 /** Persistent quad slots, updated independently and drawn in a caller-specified order. */
 class RenderQuadBuffer {
 public:
-    /** @return A buffer for @p quads slots, or null with the allocation error logged. */
+    /**
+     * @param renderer The renderer whose device allocates the buffer.
+     * @param quads The maximum number of persistent quad slots.
+     * @return A buffer for @p quads slots, or null with the allocation error logged.
+     */
     static std::unique_ptr<RenderQuadBuffer> Create(SceneRenderer &renderer, std::size_t quads);
+    /** Release persistent quad storage before the GPU device is destroyed. */
     ~RenderQuadBuffer();
+    /** Prevent copying persistent quad GPU storage. */
     RenderQuadBuffer(const RenderQuadBuffer &) = delete;
+    /** Prevent assignment of persistent quad GPU storage. */
     RenderQuadBuffer &operator=(const RenderQuadBuffer &) = delete;
 
-    /** Replace @p slot with four corners before the frame is submitted. */
+    /**
+     * Replace one persistent quad before the frame is submitted.
+     *
+     * @param slot The zero-based slot below the capacity passed to Create().
+     * @param corners The quad vertices, clockwise from the top left, copied into buffer storage.
+     */
     void Update(std::uint32_t slot, std::span<const FlatVertex, 4> corners);
 
 private:
@@ -441,8 +465,11 @@ public:
      * @return The renderer, or nothing with the reason logged.
      */
     static std::unique_ptr<SceneRenderer> Create(GpuWindow &window, bool outputOverlay = false);
+    /** Release renderer resources before the associated window and GPU device are destroyed. */
     ~SceneRenderer();
+    /** Prevent copying pipelines, frame targets, and queued draws. */
     SceneRenderer(const SceneRenderer &) = delete;
+    /** Prevent assignment of pipelines, frame targets, and queued draws. */
     SceneRenderer &operator=(const SceneRenderer &) = delete;
 
     /** @return The window the renderer draws into. */
@@ -660,6 +687,12 @@ public:
     /**
      * Draw persistent slots in @p order, using the same material and depth rules as DrawQuads().
      * The buffer must remain valid until End().
+     *
+     * @param buffer Quad storage created with this renderer's device.
+     * @param order The zero-based slots in draw order, copied when this call records the draw.
+     * @param material The textures and combiner; textures must remain valid through submission.
+     * @param projection The matrix from corner coordinates into clip space.
+     * @param depthTest Whether nearer geometry hides quads, without writing depth.
      */
     void DrawBufferedQuads(RenderQuadBuffer &buffer,
                            std::span<const std::uint32_t> order,
@@ -677,7 +710,15 @@ public:
              const std::function<void(SDL_GPUCommandBuffer *, SDL_GPUTexture *, Uint32, Uint32)>
                  &overlay = {});
 
-    /** Record draws into a target without submitting the command buffer. */
+    /**
+     * Record draws into a target without submitting the command buffer.
+     *
+     * @param commands The acquired command buffer; the caller submits it after this call.
+     * @param target The colour target, compatible with GpuWindow::FrameFormat().
+     * @param width The positive target width in pixels.
+     * @param height The positive target height in pixels.
+     * @param clear Whether to clear the target to Begin()'s colour instead of preserving pixels.
+     */
     void RenderInto(SDL_GPUCommandBuffer *commands,
                     SDL_GPUTexture *target,
                     Uint32 width,

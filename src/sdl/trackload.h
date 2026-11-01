@@ -14,16 +14,24 @@ class ModelLoader;
 /** Model relocation, texture lookup, converted vertices, and dents for one race engine. */
 class EngineModels {
 public:
+    /** Register the exclusive race model loader before loading models or track textures. */
     EngineModels();
+    /** Unregister the loader and release model storage after race users have been destroyed. */
     ~EngineModels();
+    /** Prevent copying registered model storage and relocation tables. */
     EngineModels(const EngineModels &) = delete;
+    /** Prevent assignment of registered model storage and relocation tables. */
     EngineModels &operator=(const EngineModels &) = delete;
 
 private:
     std::unique_ptr<ModelLoader> m_loader;
 };
 
-/** Set the texture segment of the loaded track before relocating its textures. */
+/**
+ * Set the texture segment of the loaded track before relocating its textures.
+ *
+ * @param textures The borrowed segment base, valid until the track is unloaded or replaced.
+ */
 void SetTrackTextureSource(unsigned char *textures);
 
 /** @return The entries of the texture map LoadTrackTextureMap() read last. */

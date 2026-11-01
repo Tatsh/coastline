@@ -42,8 +42,11 @@ public:
     static std::unique_ptr<Intro> Load(SceneRenderer &renderer,
                                        const std::filesystem::path &release,
                                        std::string_view region = {});
+    /** Release splash-screen resources before their renderer is destroyed. */
     ~Intro();
+    /** Prevent copying renderer-bound splash-screen resources. */
     Intro(const Intro &) = delete;
+    /** Prevent assignment of renderer-bound splash-screen resources. */
     Intro &operator=(const Intro &) = delete;
 
     /** Start the splash screens again from the first logo, fading in. */
@@ -52,7 +55,7 @@ public:
     /**
      * Advance the splash screens by a frame.
      *
-     * @param seconds The time of the frame.
+     * @param seconds The nonnegative elapsed frame time, in seconds.
      * @param buttons The buttons held on the first controller.
      * @return Where the splash screens go, once they have faded out.
      */

@@ -10,10 +10,20 @@ extern "C" {
 /** Log the renderer build identity and also write to stdout under Wine. */
 void PrintWineBuildIdentification(void);
 
-/** Append an application diagnostic and also write to stdout under Wine. */
+/**
+ * Append an application diagnostic and also write to stdout under Wine.
+ *
+ * @param message The null-terminated diagnostic text.
+ */
 void PrintWineDiagnostic(const char *message);
 #else
+/** Omit the Windows renderer build diagnostic on other platforms. */
 #define PrintWineBuildIdentification()
+/**
+ * Omit a Windows renderer diagnostic on other platforms.
+ *
+ * @param message Not evaluated.
+ */
 #define PrintWineDiagnostic(message)
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
@@ -25,8 +35,15 @@ void DrawRaceBuildIdentification(void);
 #endif
 
 #else
+/** Omit build diagnostics when optional patches are disabled. */
 #define PrintWineBuildIdentification()
+/**
+ * Omit application diagnostics when optional patches are disabled.
+ *
+ * @param message Not evaluated.
+ */
 #define PrintWineDiagnostic(message)
+/** Omit the race build-identity overlay when optional patches are disabled. */
 #define DrawRaceBuildIdentification()
 #endif /* ENABLE_PATCHES */
 

@@ -8,19 +8,20 @@
 
 namespace coastline {
 
+/** The alias-table filename for logical paths and their physical backing files. */
 inline constexpr const char *ASSET_ALIASES_FILE = "asset-aliases.txt";
 
 /** A logical file backed by a physical file in the same pack or the default pack. */
 struct AssetFileAlias {
-    std::filesystem::path path;
-    std::filesystem::path target;
-    bool fromDefault = false;
+    std::filesystem::path path;   /*!< The logical path relative to its pack. */
+    std::filesystem::path target; /*!< The physical path relative to its backing pack. */
+    bool fromDefault = false;     /*!< Whether the backing file is in the default pack. */
 };
 
 /** The number and total byte size of files removed from freshly converted generated packs. */
 struct AssetStorageSavings {
-    std::uintmax_t files = 0;
-    std::uintmax_t bytes = 0;
+    std::uintmax_t files = 0; /*!< The number of redundant physical files removed. */
+    std::uintmax_t bytes = 0; /*!< The sum of the removed file sizes, in bytes. */
 };
 
 /**
@@ -39,7 +40,7 @@ DeduplicateAssetFiles(const std::filesystem::path &defaults);
  *
  * @param pack The physical pack directory.
  * @param defaults The physical default pack directory.
- * @return Aliases, an empty vector without a table, or an error for invalid metadata.
+ * @return Aliases, an empty vector without a table, or an error for unreadable or invalid metadata.
  */
 std::expected<std::vector<AssetFileAlias>, std::string>
 ReadAssetFileAliases(const std::filesystem::path &pack, const std::filesystem::path &defaults);

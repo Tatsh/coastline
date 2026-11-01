@@ -14,8 +14,9 @@ namespace coastline {
 
 /** The devices that drive one player. */
 struct PlayerDevices {
-    bool keyboard = false;               /*!< Whether the keyboard drives the player. */
-    std::vector<SDL_Gamepad *> gamepads; /*!< The gamepads that drive the player. */
+    bool keyboard = false; /*!< Whether the keyboard drives the player. */
+    /** Borrowed gamepads, valid until disconnection or InputBindings destruction. */
+    std::vector<SDL_Gamepad *> gamepads;
 };
 
 /**
@@ -24,11 +25,19 @@ struct PlayerDevices {
  */
 class InputBindings {
 public:
+    /** Open connected gamepads and register default controls for the active input context. */
     InputBindings();
-    /** Initialise the input owner with configured controls. */
+    /**
+     * Open connected gamepads and register configured controls for the active input context.
+     *
+     * @param config The initial keyboard, gamepad, and player-assignment settings.
+     */
     explicit InputBindings(const GameConfig &config);
+    /** Close gamepads and unregister this input context. */
     ~InputBindings();
+    /** Copying is disabled because SDL events address one active input context. */
     InputBindings(const InputBindings &) = delete;
+    /** Assignment is disabled because the active input context has a stable address. */
     InputBindings &operator=(const InputBindings &) = delete;
 
     /** @return The active input owner registered with SDL, or null outside its lifetime. */
@@ -43,19 +52,19 @@ public:
         return m_controls;
     }
 
-    /** Resolve devices for @p player using the configured assignments. */
+    /** @copydoc coastline::AssignedDevices */
     PlayerDevices AssignedDevices(std::size_t player, std::size_t players) const;
-    /** Replace the keys pressed by the script. */
+    /** @copydoc coastline::SetScriptedKeys */
     void SetScriptedKeys(std::vector<int> scancodes);
-    /** Read keyboard and scripted input, suppressing consumed shortcuts until release. */
+    /** @copydoc coastline::IsKeyDown */
     bool IsKeyDown(SDL_Scancode scancode);
-    /** Suppress @p scancode until release. */
+    /** @copydoc coastline::IgnoreKeyUntilReleased */
     void IgnoreKeyUntilReleased(SDL_Scancode scancode);
-    /** Replace the second controller sample read by the race. */
+    /** @copydoc coastline::SetSecondControllerState */
     void SetSecondControllerState(const ControllerState &state);
     /** @return The latest sample of the second controller. */
     ControllerState SecondControllerState() const;
-    /** Consume whole mouse-wheel units, preserving the fractional remainder. */
+    /** @copydoc coastline::TakeMouseWheel */
     int TakeMouseWheel();
     /** Discard accumulated mouse-wheel movement. */
     void ClearMouseWheel();
@@ -69,8 +78,8 @@ public:
     void HandleEvent(const SDL_Event &event);
 
     /**
-     * @param players The number of players the screen reads, 1 or 2. Every device of both players
-     * drives the first port of one player.
+     * @param players The number of players the screen reads, 1 or 2. In single-player mode,
+     * devices assigned to either player drive the first port.
      * @param race Whether a race reads the second port, through the race actions of the Controls
      * section for a gamepad and the keyboard bindings of the PC release for the keyboard.
      * @return The state of every port, read now. The second port is connected whenever a device
@@ -115,21 +124,21 @@ ControllerState ReadRacePad(const PlayerDevices &devices);
  * through the dead zone of ReadControl().
  *
  * @param axis The SDL axis value.
- * @return The stick value.
+ * @return The stick value from -80 to 80, rounded towards zero.
  */
 std::int8_t ScaleStickAxis(std::int16_t axis);
 
 /**
- * Hold keys down as if the player held them, in addition to the keyboard, for tests.
+ * Add simulated key presses alongside physical keyboard input, for tests.
  *
- * @param scancodes The SDL scancodes of the keys held, replacing those of the last call.
+ * @param scancodes The SDL scancodes to report as down, replacing the previous list.
  */
 void SetScriptedKeys(std::vector<int> scancodes);
 
 /**
  * @param scancode The key.
- * @return Whether the key is down on the keyboard or held by SetScriptedKeys(), and not ignored by
- * IgnoreKeyUntilReleased().
+ * @return Whether the key is down on the keyboard or reported by SetScriptedKeys(), and not
+ * ignored by IgnoreKeyUntilReleased(). Without active bindings, only physical input is read.
  */
 bool IsKeyDown(SDL_Scancode scancode);
 

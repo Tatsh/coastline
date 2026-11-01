@@ -40,7 +40,10 @@ public:
      * Run the instruction at the address of the hook, as if the hook were not there, or skip it
      * because the hook moved the program counter, as Return() does.
      */
-    enum class HookResult { Continue, Jumped };
+    enum class HookResult {
+        Continue, /*!< Execute the hooked instruction normally. */
+        Jumped    /*!< Skip the instruction after the hook changed the program counter. */
+    };
 
     /** A routine called before the instruction at the address it is set on. */
     using Hook = std::function<HookResult(MipsCpu &)>;
@@ -116,7 +119,7 @@ public:
      */
     void Jump(std::uint32_t address);
 
-    /** The fault that ended Run(), or an empty string. */
+    /** @return The fault that ended Run(), or empty text. Later faults replace the stored text. */
     const std::string &Fault() const {
         return m_fault;
     }
@@ -224,12 +227,12 @@ public:
     /** The ticks of Count added to those of the instructions, as time spent idle. */
     std::uint64_t idleTicks = 0;
 
-    /** The ticks of Count since power on, one for two instructions plus the idle time. */
+    /** @return Count ticks since power on, one for two instructions plus accumulated idle ticks. */
     std::uint64_t Ticks() const {
         return instructions / 2 + idleTicks;
     }
 
-    /** The value of Count, the low word of Ticks(). */
+    /** @return The value of Count, the low word of Ticks(). */
     std::uint32_t Count() const {
         return static_cast<std::uint32_t>(Ticks());
     }

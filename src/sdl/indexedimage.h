@@ -30,13 +30,19 @@ bool SaveIndexed4Png(const std::filesystem::path &path,
  * @param texels Receives the texels, two to a byte with the first in the high four bits, each row
  * starting on a byte.
  * @param palette Receives the 16 colours, each a big-endian RGBA5551 half.
- * @return Whether the image is indexed with at most 16 colours and its texels fill @p texels.
+ * @return Whether the image uses palette indices below 16 and its packed texels fill @p texels.
  */
 bool LoadIndexed4Png(const std::filesystem::path &path,
                      std::span<std::uint8_t> texels,
                      std::span<std::uint8_t, 32> palette);
 
-/** Read an encoded indexed PNG with the same texel and palette requirements as the file overload.
+/**
+ * Read an encoded indexed PNG with the same requirements as the file overload.
+ *
+ * @param bytes The encoded PNG image, borrowed for this call.
+ * @param texels Receives packed 4-bit texels, with each row starting on a byte.
+ * @param palette Receives 16 big-endian RGBA5551 colours.
+ * @return Whether the image uses palette indices below 16 and its packed texels fill @p texels.
  */
 bool LoadIndexed4Png(std::span<const std::uint8_t> bytes,
                      std::span<std::uint8_t> texels,

@@ -37,20 +37,28 @@ typedef struct {
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 /** Mixer channels and write position for one SDL audio context. */
 typedef struct {
-    u16 writePosition;
-    MixerChannel musicChannels[MIXER_CHANNELS];
-    u64 soundEffectSampleMask;
-    MixerChannel soundEffectChannels[SOUND_EFFECT_CHANNELS];
-    s32 soundEffectEchoOffset;
+    u16 writePosition; /*!< The byte offset of the next write within the stereo ring buffer. */
+    MixerChannel musicChannels[MIXER_CHANNELS]; /*!< The music mixer's sample channels. */
+    u64 soundEffectSampleMask; /*!< The mask that clears low bits during packed effect mixing. */
+    MixerChannel soundEffectChannels[SOUND_EFFECT_CHANNELS]; /*!< The sound effect channels. */
+    s32 soundEffectEchoOffset; /*!< The sample offset from channel zero to its echo, or zero. */
 } SdlMixerState;
 
-/** @return The mixer storage of the active SDL audio context. */
+/**
+ * @pre An N64MixerContext is active.
+ * @return The mixer storage, valid until the context is destroyed.
+ */
 SdlMixerState *GetSdlMixerState(void);
 
+/** @copydoc SdlMixerState::writePosition */
 #define g_wAudioBufferWritePos (GetSdlMixerState()->writePosition)
+/** @copydoc SdlMixerState::musicChannels */
 #define g_aMixerChannels (GetSdlMixerState()->musicChannels)
+/** @copydoc SdlMixerState::soundEffectSampleMask */
 #define g_qwSoundEffectSampleMask (GetSdlMixerState()->soundEffectSampleMask)
+/** @copydoc SdlMixerState::soundEffectChannels */
 #define g_aSoundEffectChannels (GetSdlMixerState()->soundEffectChannels)
+/** @copydoc SdlMixerState::soundEffectEchoOffset */
 #define g_dwSoundEffectEchoOffset (GetSdlMixerState()->soundEffectEchoOffset)
 #else
 /**

@@ -247,15 +247,34 @@ inline constexpr int CONTROL_FULL = 32768;
 /** Configured action sources, player devices, and stick dead zone for an input owner. */
 class ControlBindings {
 public:
-    /** Load configured assignments and preset defaults. */
+    /**
+     * Load configured assignments and preset defaults.
+     *
+     * @param config Settings with optional Controls assignments, preset, devices, and dead zone.
+     */
     explicit ControlBindings(const GameConfig &config);
-    /** Replace assignments from @p config. */
+    /**
+     * Replace assignments, logging and ignoring invalid sources.
+     * Preset defaults apply only to absent action keys.
+     *
+     * @param config Settings with optional Controls assignments, preset, devices, and dead zone.
+     */
     void Load(const GameConfig &config);
-    /** @return The configured device selector for @p player. */
+    /**
+     * @param player The player index, 0 or 1.
+     * @return The lowercase selector, defaulting to 'auto', valid until Load() or destruction.
+     */
     std::string_view PlayerDevice(std::size_t player) const;
-    /** @return Whether an axis drives @p action. */
+    /**
+     * @param action A valid action below CONTROL_ACTION_COUNT.
+     * @return Whether at least one configured source for the action is an axis.
+     */
     bool IsAnalog(ControlAction action) const;
-    /** @return The greatest magnitude of the sources of @p action. */
+    /**
+     * @param gamepad The gamepad to query; null produces zero through SDL input queries.
+     * @param action A valid action below CONTROL_ACTION_COUNT.
+     * @return The greatest source magnitude, from 0 to CONTROL_FULL, after dead-zone suppression.
+     */
     int Read(SDL_Gamepad *gamepad, ControlAction action) const;
 
 private:

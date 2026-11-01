@@ -132,8 +132,11 @@ public:
                                            std::optional<std::array<int, 6>> &textColors,
                                            ControllerPak pak,
                                            std::filesystem::path work);
+    /** Release paint previews and editing resources before the menu screen and GPU device. */
     ~PaintShop();
+    /** Prevent copying active editing and preview resources. */
     PaintShop(const PaintShop &) = delete;
+    /** Prevent assignment of active editing and preview resources. */
     PaintShop &operator=(const PaintShop &) = delete;
 
     /**

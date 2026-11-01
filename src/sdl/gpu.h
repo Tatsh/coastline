@@ -31,7 +31,14 @@ enum class PostAntialias {
     Fxaa, /*!< Fast approximate anti-aliasing blends along the edges it finds. */
 };
 
-enum class ScreenShader { None, ConsumerCrt, Pvm, ApertureGrille, PcCrt };
+/** Display simulation applied after the internal frame is scaled to the window. */
+enum class ScreenShader {
+    None,           /*!< Display the scaled frame without a CRT simulation. */
+    ConsumerCrt,    /*!< Simulate a consumer television with scanlines and a shadow mask. */
+    Pvm,            /*!< Simulate a professional video monitor. */
+    ApertureGrille, /*!< Simulate an aperture-grille television. */
+    PcCrt           /*!< Simulate a progressive PC monitor. */
+};
 
 /** The options of the window and the GPU device. */
 struct DisplayOptions {
@@ -104,8 +111,11 @@ public:
      */
     static std::unique_ptr<GpuWindow> Create(const char *title, const DisplayOptions &options);
 
+    /** Release presentation resources and the window after all device-dependent users. */
     ~GpuWindow();
+    /** Prevent copying the window and GPU device. */
     GpuWindow(const GpuWindow &) = delete;
+    /** Prevent assignment of the window and GPU device. */
     GpuWindow &operator=(const GpuWindow &) = delete;
 
     /** @return Whether menu backgrounds fill wide frames. */
@@ -123,13 +133,25 @@ public:
         return m_options.drawDistanceScale;
     }
 
+    /** @return Whether console particle textures, opacity, and skid-mark rules are selected. */
     bool N64Effects() const {
         return m_options.n64Effects;
     }
 
-    /** Apply camera, particle, frame-size, and post-processing settings between frames. */
+    /**
+     * Apply camera, particle, frame-size, post-processing, and pacing settings between frames.
+     *
+     * @param options The replacement live settings; window and adapter selection are unchanged.
+     * @return False if preparing newly enabled filters fails; allocated resources are not rolled
+     * back. Later presentation-mode and frame-resize failures are only logged.
+     */
     bool ApplyLiveOptions(const DisplayOptions &options);
-    /** Update sampling and texture filtering before rebuilding scene resources. */
+    /**
+     * Update sampling and texture filtering, then apply live settings.
+     *
+     * @param options The replacement renderer settings; rebuild scene resources after this call.
+     * @return The result of ApplyLiveOptions(); sampling settings change even on failure.
+     */
     bool ApplyRendererOptions(const DisplayOptions &options);
 
     /** @return The window. */
@@ -161,7 +183,11 @@ public:
     /** @return Whether the active adapter is identified as NVIDIA. */
     bool NvmlAllowed() const;
 
-    /** Set uncapped presentation while retaining the configured present mode. */
+    /**
+     * Set uncapped presentation while retaining the configured present mode.
+     *
+     * @param unlocked Whether to disable software pacing and request an uncapped present mode.
+     */
     void SetFramerateUnlocked(bool unlocked);
 
     /** @return Whether software and presentation pacing are disabled. */

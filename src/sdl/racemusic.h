@@ -11,9 +11,13 @@ class RaceMusic;
 /** Race music resources for one active audio session, destroyed before its shared menu player. */
 class RaceMusicContext {
 public:
+    /** Register the exclusive race music context before race music API calls. */
     RaceMusicContext();
+    /** Shut down active race music and unregister the context before SDL audio shutdown. */
     ~RaceMusicContext();
+    /** Prevent copying registered race music resources. */
     RaceMusicContext(const RaceMusicContext &) = delete;
+    /** Prevent assignment of registered race music resources. */
     RaceMusicContext &operator=(const RaceMusicContext &) = delete;
 
 private:
@@ -29,18 +33,40 @@ enum class RaceMusicSource {
 /** Front-end music with independent CD resources and the shared native XM player. */
 class FrontEndMusic {
 public:
+    /**
+     * Prepare front-end playback without starting music.
+     *
+     * @param audio The shared XM player, whose lifetime must exceed this music controller's.
+     * @param directory The directory with menu.xm and converted CD tracks.
+     * @param source The preferred menu music source, with XM fallback for unavailable CD audio.
+     */
     FrontEndMusic(N64Audio &audio, const std::filesystem::path &directory, RaceMusicSource source);
+    /** Stop shared XM playback and release independent CD resources. */
     ~FrontEndMusic();
+    /** Prevent copying playback control and CD resources. */
     FrontEndMusic(const FrontEndMusic &) = delete;
+    /** Prevent assignment of playback control and CD resources. */
     FrontEndMusic &operator=(const FrontEndMusic &) = delete;
 
-    /** Start menu music, or use XM with a warning when CD audio is unavailable. */
+    /**
+     * Start menu music, or use XM with a warning when CD audio is unavailable.
+     *
+     * @return Whether CD playback starts or the XM module can be read and submitted.
+     */
     bool Play();
     /** Stop front-end music before starting a race. */
     void Stop();
-    /** Apply the menu BGM volume to the CD stream. */
+    /**
+     * Apply the menu BGM volume to the CD stream.
+     *
+     * @param volume The console BGM volume, from 0 through 48, with 0 suspending CD processing.
+     */
     void SetVolume(unsigned char volume);
-    /** Stop the previous source before selecting menu music again. */
+    /**
+     * Stop the previous source before selecting menu music again.
+     *
+     * @param source The replacement preference; an unchanged source does not restart playback.
+     */
     void SetSource(RaceMusicSource source);
 
 private:

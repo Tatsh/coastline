@@ -9,16 +9,23 @@ extern "C" {
 
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 /**
+ * Submit a terminated display list through the selected render backend.
+ *
  * @ghidraAddress BRD3D: 0x10b501d0
  */
 extern void (*g_pfnRenderBackendSubmitDisplayList)(struct GbiCommand *pDisplayList);
 
 /**
+ * Replace one texture entry's device surface with another entry's surface.
+ *
  * @ghidraAddress BRD3D: 0x118aa0a4
  */
 extern void (*g_pfnAliasTextureEntrySurface)(int nEntry, int nSourceEntry);
 
 /**
+ * Create a backend texture from an N64 image, palette, dimensions, and tile options.
+ * The result is a texture-entry index, as returned by CreateTextureFromN64Image().
+ *
  * @ghidraAddress BRD3D: 0x118aa0ac
  * @ghidraAddress BRGlide: 0x118ed1c4
  */
@@ -39,6 +46,9 @@ extern unsigned (*g_pfnCreateTextureFromN64Image)(const unsigned char *image,
                                                   int option14);
 
 /**
+ * Decode an N64 image into caller-provided pixel storage and return its decoded byte count.
+ * Dimensions are in texels; lineBytes, size, and format describe the source RDP tile.
+ *
  * @ghidraAddress BRD3D: 0x118aa0a8
  * @ghidraAddress BRGlide: 0x118ed1c0
  */
@@ -167,6 +177,8 @@ extern unsigned g_dwVehicleEnvMapTextureId;
 extern unsigned g_dwFallbackEnvMapTextureId;
 
 /**
+ * The byte stride between adjacent converted alpha-ramp texels.
+ *
  * @ghidraAddress BRD3D: 0x11829318
  */
 extern int g_dwAlphaRampStripRowCount;
@@ -228,8 +240,16 @@ void CopyTileColumnScaled(int nTileIndex, int nSrcX, int nSrcY, int nSrcRow);
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 /** Renderer hooks and effect texture entries for one SDL race engine. */
 typedef struct {
+    /** Submit a terminated display list through the active renderer. */
     void (*submitDisplayList)(struct GbiCommand *displayList);
+    /** Alias entry to source; the default SDL hook does nothing. */
     void (*aliasTexture)(int entry, int source);
+    /**
+     * Create a texture entry from an N64 image and palette, returning its index.
+     * Dimensions are in texels; lineBytes, size, and format describe the source RDP tile.
+     * Remaining options describe mirroring, clamping, coordinate shifts, and row swapping.
+     * The default SDL hook accepts only 8-bit colour-indexed images, returning zero otherwise.
+     */
     unsigned (*createTexture)(const unsigned char *image,
                               const unsigned char *palette,
                               int width,
@@ -245,6 +265,11 @@ typedef struct {
                               int option12,
                               int option13,
                               int option14);
+    /**
+     * Decode an N64 image into caller-provided storage and return its decoded byte count.
+     * Dimensions are in texels; lineBytes, size, and format describe the source RDP tile.
+     * The default SDL hook returns zero for formats other than 8-bit colour-indexed images.
+     */
     int (*decodeTexture)(void *destination,
                          const unsigned char *image,
                          const unsigned char *palette,
@@ -253,44 +278,63 @@ typedef struct {
                          int lineBytes,
                          int size,
                          int format);
-    void (*initialize)(void);
-    void (*initializeTextures)(void);
-    void (*shutdown)(void);
-    void (*shutdownTextures)(void);
-    void (*updateFog)(void);
-    int forceTextureClone;
-    int disableCarShadow;
-    unsigned hudOverlay;
-    unsigned hudOverlayHalf;
-    unsigned particles;
-    unsigned tireTrail;
-    unsigned vehicleEnvironment;
-    unsigned fallbackEnvironment;
-    int alphaRampRows;
-    int precipitation[PRECIPITATION_TEXTURE_COUNT];
+    void (*initialize)(void);         /*!< Initialise the selected render backend. */
+    void (*initializeTextures)(void); /*!< Initialise its texture subsystem. */
+    void (*shutdown)(void);           /*!< Release the active render backend. */
+    void (*shutdownTextures)(void);   /*!< Release its texture subsystem. */
+    void (*updateFog)(void);          /*!< Apply the current race fog settings to the renderer. */
+    int forceTextureClone; /*!< Bypass texture metadata matching when creating a device texture. */
+    int disableCarShadow;  /*!< Suppress car shadow rendering when nonzero. */
+    unsigned hudOverlay;   /*!< The texture entry for the race HUD overlay. */
+    unsigned hudOverlayHalf; /*!< The half-scale HUD overlay entry, or hudOverlay when shared. */
+    unsigned particles;      /*!< The texture entry for race particle effects. */
+    unsigned tireTrail;      /*!< The texture entry for tyre trails. */
+    unsigned vehicleEnvironment;  /*!< The night-time vehicle reflection texture entry. */
+    unsigned fallbackEnvironment; /*!< The daytime vehicle reflection texture entry. */
+    int alphaRampRows; /*!< The byte stride between adjacent converted alpha-ramp texels. */
+    int precipitation[PRECIPITATION_TEXTURE_COUNT]; /*!< Texture entries for precipitation. */
 } SdlRenderBackendState;
 
 /** @return Renderer storage for the active SDL texture collection. */
 SdlRenderBackendState *GetSdlRenderBackendState(void);
 
+/** @copydoc SdlRenderBackendState::submitDisplayList */
 #define g_pfnRenderBackendSubmitDisplayList (GetSdlRenderBackendState()->submitDisplayList)
+/** @copydoc SdlRenderBackendState::aliasTexture */
 #define g_pfnAliasTextureEntrySurface (GetSdlRenderBackendState()->aliasTexture)
+/** @copydoc SdlRenderBackendState::createTexture */
 #define g_pfnCreateTextureFromN64Image (GetSdlRenderBackendState()->createTexture)
+/** @copydoc SdlRenderBackendState::decodeTexture */
 #define g_pfnDecodeN64TextureToPixelBuffer (GetSdlRenderBackendState()->decodeTexture)
+/** @copydoc SdlRenderBackendState::initialize */
 #define g_pfnRenderBackendInit (GetSdlRenderBackendState()->initialize)
+/** @copydoc SdlRenderBackendState::initializeTextures */
 #define g_pfnInitializeTextureSubsystem (GetSdlRenderBackendState()->initializeTextures)
+/** @copydoc SdlRenderBackendState::shutdown */
 #define g_pfnRenderBackendShutdown (GetSdlRenderBackendState()->shutdown)
+/** @copydoc SdlRenderBackendState::shutdownTextures */
 #define g_pfnShutdownTextureSubsystem (GetSdlRenderBackendState()->shutdownTextures)
+/** @copydoc SdlRenderBackendState::updateFog */
 #define g_pfnRenderBackendUpdateFog (GetSdlRenderBackendState()->updateFog)
+/** @copydoc SdlRenderBackendState::forceTextureClone */
 #define g_bForceTextureClone (GetSdlRenderBackendState()->forceTextureClone)
+/** @copydoc SdlRenderBackendState::disableCarShadow */
 #define g_bDisableCarShadow (GetSdlRenderBackendState()->disableCarShadow)
+/** @copydoc SdlRenderBackendState::hudOverlay */
 #define g_dwHudOverlayTextureId (GetSdlRenderBackendState()->hudOverlay)
+/** @copydoc SdlRenderBackendState::hudOverlayHalf */
 #define g_dwHudOverlayHalfTextureId (GetSdlRenderBackendState()->hudOverlayHalf)
+/** @copydoc SdlRenderBackendState::particles */
 #define g_dwParticleTextureId (GetSdlRenderBackendState()->particles)
+/** @copydoc SdlRenderBackendState::tireTrail */
 #define g_dwTireTrailTextureId (GetSdlRenderBackendState()->tireTrail)
+/** @copydoc SdlRenderBackendState::vehicleEnvironment */
 #define g_dwVehicleEnvMapTextureId (GetSdlRenderBackendState()->vehicleEnvironment)
+/** @copydoc SdlRenderBackendState::fallbackEnvironment */
 #define g_dwFallbackEnvMapTextureId (GetSdlRenderBackendState()->fallbackEnvironment)
+/** @copydoc SdlRenderBackendState::alphaRampRows */
 #define g_dwAlphaRampStripRowCount (GetSdlRenderBackendState()->alphaRampRows)
+/** @copydoc SdlRenderBackendState::precipitation */
 #define g_adwPrecipitationTextureIds (GetSdlRenderBackendState()->precipitation)
 #endif
 

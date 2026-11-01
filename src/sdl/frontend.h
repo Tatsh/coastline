@@ -20,13 +20,16 @@
 
 namespace coastline {
 
-/** A quarter turn, a half turn, and a whole turn, in the single precision of the console. */
+/** A quarter turn in radians, in the single precision of the console. */
 constexpr float HALF_PI = 1.570796371f;
+/** A half turn in radians, in the single precision of the console. */
 constexpr float PI = 3.141592741f;
+/** A whole turn in radians, in the single precision of the console. */
 constexpr float TWO_PI = 6.283185482f;
 
 /** The low-resolution screen of the console, in pixels. */
 constexpr float SCREEN_WIDTH = 320.0f;
+/** The height of the low-resolution console screen, in pixels. */
 constexpr float SCREEN_HEIGHT = 240.0f;
 
 /** The silence after each sound, for the mixer to read zeros past its end. */
@@ -48,20 +51,44 @@ constexpr std::uint32_t SfxVolume(std::uint32_t right, std::uint32_t left) {
     return (right << 16) + left;
 }
 
-/** The inputs of the colour combiner of the RDP, as gDPSetCombineLERP() takes them. */
+/** The previous cycle's result as an RDP colour-combiner input. */
 constexpr std::uint32_t COMBINED = 0;
+/** The first sampled texel as an RDP colour-combiner input. */
 constexpr std::uint32_t TEXEL0 = 1;
+/** The second sampled texel as an RDP colour-combiner input. */
 constexpr std::uint32_t TEXEL1 = 2;
+/** The primitive colour as an RDP colour-combiner input. */
 constexpr std::uint32_t PRIMITIVE = 3;
+/** The interpolated vertex colour as an RDP colour-combiner input. */
 constexpr std::uint32_t SHADE = 4;
+/** The environment colour as an RDP colour-combiner input. */
 constexpr std::uint32_t ENVIRONMENT = 5;
+/** The zero selector for the A and B RDP colour-combiner operands. */
 constexpr std::uint32_t ZERO_AB = 15;
+/** The zero selector for the D RDP colour-combiner operand. */
 constexpr std::uint32_t ZERO_D = 7;
+/** The zero selector for an RDP alpha-combiner operand. */
 constexpr std::uint32_t ZERO_ALPHA = 7;
 
 /**
  * The two words of gDPSetCombineLERP(), from the colour and alpha inputs of each cycle.
  *
+ * @param a0 The first cycle's colour operand A, masked to four bits.
+ * @param b0 The first cycle's colour operand B, masked to four bits.
+ * @param c0 The first cycle's colour multiplier C, masked to five bits.
+ * @param d0 The first cycle's colour addend D, masked to three bits.
+ * @param alphaA0 The first cycle's alpha operand A, masked to three bits.
+ * @param alphaB0 The first cycle's alpha operand B, masked to three bits.
+ * @param alphaC0 The first cycle's alpha multiplier C, masked to three bits.
+ * @param alphaD0 The first cycle's alpha addend D, masked to three bits.
+ * @param a1 The second cycle's colour operand A, masked to four bits.
+ * @param b1 The second cycle's colour operand B, masked to four bits.
+ * @param c1 The second cycle's colour multiplier C, masked to five bits.
+ * @param d1 The second cycle's colour addend D, masked to three bits.
+ * @param alphaA1 The second cycle's alpha operand A, masked to three bits.
+ * @param alphaB1 The second cycle's alpha operand B, masked to three bits.
+ * @param alphaC1 The second cycle's alpha multiplier C, masked to three bits.
+ * @param alphaD1 The second cycle's alpha addend D, masked to three bits.
  * @return The upper and the lower word of the combine command.
  */
 constexpr std::array<std::uint32_t, 2> CombineLerp(std::uint32_t a0,
@@ -87,16 +114,30 @@ constexpr std::array<std::uint32_t, 2> CombineLerp(std::uint32_t a0,
                 (alphaB1 & 7) << 3 | (alphaD1 & 7)};
 }
 
-/** @return A move by x, y, and z. */
+/**
+ * @param x The horizontal displacement in model units.
+ * @param y The vertical displacement in model units.
+ * @param z The depth displacement in model units.
+ * @return The translation matrix.
+ */
 Matrix4 Translation(float x, float y, float z);
 
-/** @return A scale by s on every axis. */
+/**
+ * @param s The scale multiplier applied equally to all three axes.
+ * @return The uniform scaling matrix.
+ */
 Matrix4 Scale(float s);
 
-/** @return A turn by an angle in radians about the x axis, as guRotateF() turns it. */
+/**
+ * @param angle The rotation in radians about the x axis, following guRotateF().
+ * @return The rotation matrix.
+ */
 Matrix4 RotationX(float angle);
 
-/** @return A turn by an angle in radians about the z axis, as guRotateF() turns it. */
+/**
+ * @param angle The rotation in radians about the z axis, following guRotateF().
+ * @return The rotation matrix.
+ */
 Matrix4 RotationZ(float angle);
 
 /**

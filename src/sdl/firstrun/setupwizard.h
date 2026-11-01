@@ -65,6 +65,7 @@ struct WizardServices {
         scanArchive;
     /** Import files on a separate thread and return a message on failure. */
     std::function<std::optional<std::string>(const WizardImport &, const WizardProgress &)> import;
+    /** Open an absolute UTF-8 URL in the default browser, or remain empty to disable links. */
     std::function<void(const std::string &)> openUrl;
     std::filesystem::path home;          /*!< The directory the file browser starts in at first. */
     std::filesystem::path lastDirectory; /*!< The directory last browsed, or empty. */
@@ -75,10 +76,15 @@ struct WizardServices {
 
 /** The images found during a directory search, indexed by detected release. */
 struct WizardSearchResult {
+    /** The first validated disc image, or empty until a disc is found. */
     std::filesystem::path disc;
+    /** The first validated ROM of each WizardCartridge region, or empty for absent regions. */
     std::array<std::filesystem::path, WIZARD_CARTRIDGES> roms;
+    /** The number of candidate paths processed, including paths skipped without validation. */
     std::size_t examined = 0;
+    /** The total candidate image and archive paths, assigned after traversal finishes. */
     std::size_t candidates = 0;
+    /** The search failure reason, or std::nullopt without a reported failure. */
     std::optional<std::string> failure;
 };
 
@@ -86,7 +92,14 @@ struct WizardSearchResult {
 using WizardSearchProgress =
     std::function<bool(const WizardSearchResult &, const std::string &, double)>;
 
-/** Search a directory recursively for validated disc and ROM images. */
+/**
+ * Search recursively, including hidden directories, for validated disc and ROM images.
+ *
+ * @param directory The root directory to traverse.
+ * @param services Required disc and ROM validators, plus an optional ZIP validator.
+ * @param progress Reports discoveries and validation progress; return false to cancel.
+ * @return Discoveries accumulated before completion, cancellation, or failure.
+ */
 WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
                                          const WizardServices &services,
                                          const WizardSearchProgress &progress);
@@ -223,13 +236,17 @@ char AcceleratorOf(const std::string &label);
 class SetupWizard {
 public:
     /**
+     * Create the initial setup screen without importing assets.
+     *
      * @param services The checks and the import of the files.
      */
     explicit SetupWizard(WizardServices services);
 
-    /** Cancel an import that runs and wait for it. */
+    /** Cancel active search or import work and wait for the worker thread. */
     ~SetupWizard();
+    /** Prevent copying active search and import threads. */
     SetupWizard(const SetupWizard &) = delete;
+    /** Prevent assignment of active search and import threads. */
     SetupWizard &operator=(const SetupWizard &) = delete;
 
     /**
