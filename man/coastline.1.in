@@ -67,9 +67,14 @@ Explicit ratios add bars where necessary.
 .TP
 .BI \-\-gpu-preset " PRESET"
 Select n64, br, ultra, worst, or low-power.
-N64 selects a 320x240 internal base, 4:3, and Consumer CRT.
+N64 selects a 320x240 internal base, 4:3, Consumer CRT,
+and N64 music and sound effects.
 BR selects a 640x480 internal base, 4:3, Pure PC textures, PC CRT,
-and PC CD music.
+and PC CD music and sound effects.
+Both use 1x draw distance and 100% field of view, with anti-aliasing,
+anisotropic filtering, post-process anti-aliasing, and upscaling off.
+BR uses bilinear texture filtering; N64 uses console texture filtering.
+Title screen, auto-save, and region for models and textures are preserved.
 An explicit aspect ratio can expand either base resolution.
 Ultra fills the screen at window resolution with 2x draw distance,
 100% field of view, 8x anti-aliasing, 16x anisotropic filtering,

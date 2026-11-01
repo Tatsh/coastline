@@ -229,7 +229,8 @@ int main() {
     assert(foundUnicode);
 
     auto presetConfig = GameConfig::Parse("[Game]\nLanguage=ja-jp\nRegion=jpn\nMusic=CD\n"
-                                          "SoundEffects=PC\n[Video]\nAspectRatio=21:9\n");
+                                          "TitleScreen=japanese\nAutoSave=1\nSoundEffects=PC\n"
+                                          "[Video]\nAspectRatio=21:9\n");
     GameSettings presets(presetConfig, roots);
     const auto preset = Find(presets, "Graphics preset:");
     assert(presets.Label(preset) == "Graphics preset: Custom");
@@ -241,11 +242,21 @@ int main() {
     assert(presetConfig.Get("Video", "TextureFilter") == "n64");
     assert(presetConfig.Get("Video", "ScreenShader") == "consumer-crt");
     assert(presetConfig.GetInteger("Video", "InternalWidth", 0) == 320);
+    assert(presetConfig.GetInteger("Video", "InternalHeight", 0) == 240);
+    assert(presetConfig.GetInteger("Video", "Antialias", 0) == 1);
+    assert(presetConfig.Get("Video", "AlphaToCoverage") == "0");
+    assert(presetConfig.Get("Video", "AnisotropicFiltering") == "0");
+    assert(presetConfig.Get("Video", "AntialiasPost") == "none");
+    assert(presetConfig.Get("Video", "ScaleFilter") == "nearest");
+    assert(presetConfig.Get("Video", "FieldOfView") == "1");
+    assert(presetConfig.Get("Video", "DrawDistance") == "1");
+    assert(presetConfig.Get("Game", "TitleScreen") == "japanese");
+    assert(presetConfig.Get("Game", "AutoSave") == "1");
     assert(presetConfig.GetInteger("Video", "FrameRateLimit", 0) == 30);
     assert(presetConfig.Get("Video", "AspectRatio") == "4:3");
     assert(presetConfig.Get("Game", "Region") == "jpn");
     assert(presetConfig.Get("Game", "Language") == "ja-jp");
-    assert(presetConfig.Get("Game", "Music") == "CD");
+    assert(presetConfig.Get("Game", "Music") == "XM");
     assert(presetConfig.Get("Game", "SoundEffects") == "N64");
     auto persistedPreset = GameConfig::Load(path);
     assert(persistedPreset.Get("Video", "AspectRatio") == "4:3");
@@ -264,6 +275,18 @@ int main() {
     assert(presetConfig.Get("Video", "AspectRatio") == "4:3");
     assert(presetConfig.Get("Game", "Music") == "CD");
     assert(presetConfig.Get("Game", "SoundEffects") == "PC");
+    assert(presetConfig.Get("Game", "Effects") == "PC");
+    assert(presetConfig.Get("Game", "Region") == "jpn");
+    assert(presetConfig.Get("Game", "TitleScreen") == "japanese");
+    assert(presetConfig.Get("Game", "AutoSave") == "1");
+    assert(presetConfig.Get("Video", "Antialias") == "1");
+    assert(presetConfig.Get("Video", "AlphaToCoverage") == "0");
+    assert(presetConfig.Get("Video", "AnisotropicFiltering") == "0");
+    assert(presetConfig.Get("Video", "TextureFilter") == "modern");
+    assert(presetConfig.Get("Video", "FieldOfView") == "1");
+    assert(presetConfig.Get("Video", "DrawDistance") == "1");
+    assert(presetConfig.Get("Video", "AntialiasPost") == "none");
+    assert(presetConfig.Get("Video", "ScaleFilter") == "nearest");
     assert(presets.AdjustAndSave(Find(presets, "Music:"), -1, path) ==
            GameSettings::Adjustment::Saved);
     assert(GameConfig::Load(path).Get("Game", "Music") == "XM");
@@ -352,7 +375,7 @@ int main() {
     assert(!locked.IsEnabled(Find(locked, "Internal resolution:")));
     assert(!locked.IsEnabled(Find(locked, "Screen shader:")));
     assert(!locked.IsEnabled(Find(locked, "Visual effects:")));
-    assert(locked.IsEnabled(Find(locked, "Music:")));
+    assert(!locked.IsEnabled(Find(locked, "Music:")));
     assert(locked.IsEnabled(Find(locked, "GPU preference:")));
     assert(locked.Label(lockedPreset) == "Graphics preset: N64");
     assert(locked.Label(lockedAspect) == "Aspect ratio: 21:9");
@@ -362,7 +385,7 @@ int main() {
     locked.SetOverrides(overrides);
     const auto lockedMusic = Find(locked, "Music:");
     assert(!locked.IsEnabled(lockedMusic));
-    assert(locked.Label(lockedMusic) == "Music: PC (CD)");
+    assert(locked.Label(lockedMusic) == "Music: PC");
     assert(!locked.Step(lockedMusic, 1));
     assert(!saved.Get("Game", "Music"));
     locked.SetOverrides(GameConfig{});

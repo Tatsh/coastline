@@ -126,14 +126,18 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- N64 and Boss Rally presets use their native texture filters with anti-aliasing, alpha-to-coverage,
+  upscaling, post-process anti-aliasing, and anisotropic filtering disabled. Both preserve title,
+  autosave, and region choices.
+- Music displays PC without a CD suffix.
 - Ultra fills the screen at native window resolution with 2x draw distance and no upscaling,
   post-process anti-aliasing, or screen shader. It preserves title, autosave, sound effects, music,
   models, textures, and asset-pack choices.
 - Setup remembers the disc image, all three ROM fields, and search directory across runs,
   including after cancellation.
 - N64 and Boss Rally presets select N64 and PC sound effects, respectively.
-- Boss Rally graphics presets select PC CD music for menus and races. `--gpu-preset br` applies
-  the music choice for the current run without saving it and locks Music in Options.
+- N64 and Boss Rally presets select N64 XM and PC CD music, respectively, for menus and races.
+  Their command-line presets apply music choices without saving them and lock Music in Options.
 - N64 and Boss Rally graphics presets select 4:3. Low power requests a lower-power GPU with
   a 640x480 internal base and a 60 FPS limit, separately from Worst's unfiltered minimum quality.
 - Ultra replaces High quality and `--gpu-preset best`; saved preset identifiers migrate from

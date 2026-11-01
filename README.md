@@ -384,14 +384,14 @@ Non-NVIDIA and unknown adapters omit NVML utilization statistics; game memory co
 The `[Video]` section of `BossRally.ini` sets up the display.
 
 Options offers persistent Graphics preset choices. Selecting a preset saves its settings in
-`BossRally.ini`; subsequent manual graphics adjustments select Custom. Boss Rally also selects
-PC (CD) music. Other presets preserve the music source. N64 and Boss Rally select their respective
-sound effects; language and region remain independent. N64 and Boss Rally select 4:3; Ultra fills
-the screen. Worst and Low power preserve the aspect ratio.
+`BossRally.ini`; subsequent manual graphics adjustments select Custom. N64 and Boss Rally select
+their respective music and sound effects; other presets preserve both audio choices. Language and
+region remain independent. N64 and Boss Rally select 4:3; Ultra fills the screen. Worst and Low
+power preserve the aspect ratio.
 
 | Preset     | Minimum internal resolution | Filtering and effects                                                               | Screen shader | Frame limit     |
 | ---------- | --------------------------- | ----------------------------------------------------------------------------------- | ------------- | --------------- |
-| N64        | 320x240                     | N64 filtering, console effects, original branding, and coverage anti-aliasing       | Consumer CRT  | 30 FPS          |
+| N64        | 320x240                     | N64 filtering, console effects, original branding, and no anti-aliasing             | Consumer CRT  | 30 FPS          |
 | Boss Rally | 640x480                     | Bilinear PC textures, PC effects, and Pure PC branding                              | PC CRT        | 60 FPS          |
 | Ultra      | Window size                 | Modern filtering, 8x anti-aliasing, 16x anisotropic filtering, and 2x draw distance | Off           | Display refresh |
 | Worst      | 320x240                     | Nearest textures and scaling, no anti-aliasing, and 1x draw distance                | Off           | 30 FPS          |
@@ -401,6 +401,11 @@ Preset changes apply after exiting Options. Asset-pack, renderer, or frame-limit
 the game at the logos; other preset adjustments apply during the black transition screen.
 `--gpu-preset n64` and `--gpu-preset br` select the corresponding look for one run without saving
 the preset. Explicit asset-pack and display arguments override the preset.
+
+N64 and Boss Rally use 100% field of view and 1x draw distance. Anti-aliasing, anisotropic
+filtering, post-process anti-aliasing, and upscaling are off. Boss Rally uses Modern texture
+filtering without mipmaps, matching the original bilinear filtering.
+Both presets preserve the title screen, auto-save, and region for models and textures.
 
 `--gpu-preset ultra` fills the screen at window resolution with 2x draw distance, 100% field of
 view, 8-sample anti-aliasing, alpha to coverage, 16-sample anisotropic filtering, modern texture

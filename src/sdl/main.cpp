@@ -1327,7 +1327,8 @@ int main(int argc, char *argv[]) {
                 coastline::RaceMusicContext raceMusic;
                 auto useCdMusic = [&]() {
                     return parser.present("--gpu-preset") == "br" ||
-                           config.Get("Game", "Music") == "CD";
+                           (parser.present("--gpu-preset") != "n64" &&
+                            config.Get("Game", "Music") == "CD");
                 };
                 coastline::FrontEndMusic menuMusic(audio,
                                                    assets / "music",

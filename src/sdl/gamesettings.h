@@ -13,7 +13,7 @@ namespace coastline {
 
 /**
  * Apply a graphics preset without changing language or region.
- * BR also selects PC CD music; other presets preserve the music source.
+ * N64 selects console music and BR selects PC CD music; other presets preserve the music source.
  * N64 and BR select N64 and PC sound effects, respectively.
  * N64 and BR select 4:3; Ultra fills the screen. Other presets preserve the aspect ratio.
  *

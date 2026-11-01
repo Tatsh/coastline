@@ -27,10 +27,8 @@ bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset) {
     if (n64 || br) {
         config.Set("Game", "AssetPack", n64 ? "default" : "boss");
         config.Set("Game", "SoundEffects", n64 ? "N64" : "PC");
+        config.Set("Game", "Music", n64 ? "XM" : "CD");
         config.Set("Video", "AspectRatio", "4:3");
-    }
-    if (br) {
-        config.Set("Game", "Music", "CD");
     }
     if (ultra) {
         config.Set("Video", "AspectRatio", "auto");
@@ -44,8 +42,8 @@ bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset) {
     config.Set("Video", "RenderScale", "1");
     config.Set("Video", "FieldOfView", "1");
     config.Set("Video", "DrawDistance", ultra ? "2" : "1");
-    config.Set("Video", "Antialias", ultra || n64 ? "8" : lowPower ? "2" : "1");
-    config.Set("Video", "AlphaToCoverage", ultra || n64 || lowPower ? "1" : "0");
+    config.Set("Video", "Antialias", ultra ? "8" : lowPower ? "2" : "1");
+    config.Set("Video", "AlphaToCoverage", ultra || lowPower ? "1" : "0");
     config.Set("Video", "AnisotropicFiltering", ultra ? "16" : lowPower ? "2" : "0");
     config.Set("Video", "TextureFilter", n64 ? "n64" : worst ? "nearest" : "modern");
     config.Set("Video", "AntialiasPost", "none");
@@ -106,7 +104,7 @@ GameSettings::GameSettings(GameConfig &config,
         region.choices.push_back({id, id == "jpn" ? "JPN" : id == "eur" ? "EUR" : "USA"});
     }
     m_options.push_back(std::move(region));
-    m_options.push_back({"Music", "Game", "Music", {{"XM", "N64"}, {"CD", "PC (CD)"}}});
+    m_options.push_back({"Music", "Game", "Music", {{"XM", "N64"}, {"CD", "PC"}}});
     m_options.push_back({"Sound effects", "Game", "SoundEffects", {{"PC", "PC"}, {"N64", "N64"}}});
     m_options.push_back({"Visual effects", "Game", "Effects", {{"PC", "PC"}, {"N64", "N64"}}});
     m_options.push_back({"Anti-aliasing",
