@@ -26,6 +26,26 @@ enum class RaceMusicSource {
     CdAudio, /*!< The FLAC files the import made of the CD audio of the PC release. */
 };
 
+/** Front-end music with independent CD resources and the shared native XM player. */
+class FrontEndMusic {
+public:
+    FrontEndMusic(N64Audio &audio, const std::filesystem::path &directory, RaceMusicSource source);
+    ~FrontEndMusic();
+    FrontEndMusic(const FrontEndMusic &) = delete;
+    FrontEndMusic &operator=(const FrontEndMusic &) = delete;
+
+    /** Start menu music, or use XM with a warning when CD audio is unavailable. */
+    bool Play();
+    /** Stop front-end music before starting a race. */
+    void Stop();
+    /** Apply the menu BGM volume to the CD stream. */
+    void SetVolume(unsigned char volume);
+
+private:
+    struct State;
+    std::unique_ptr<State> m_state;
+};
+
 /**
  * Add a user of the music of the races, as the PC release opens its music device. The first user
  * finds the tracks and opens the playback device, when the game plays music.

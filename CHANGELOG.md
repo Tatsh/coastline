@@ -83,6 +83,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- PC CD music selection includes menu track 2, with BGM volume control for menus and races. Missing
+  CD audio falls back to XM with a warning. Native N64 XM music remains the default.
 - Sparse `eur` and `jpn` packs store regional differences, layered between base assets and the
   selected pack. Region selection is independent of language and fonts. `--region` selects a region
   for one run; saved `Game.Region` defaults to the imported base. Strict layout validation requires
@@ -97,6 +99,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Music playback respects saved BGM volume before starting and `PlayMusic=0` in menus and races,
+  while sound effects remain independent.
+- F12 advances N64 music modules, and restarting a race preserves the manually selected module.
 - Fixed a crash when loading ghost frames from a path occupied by a directory.
 - Fixed a crash when pausing or resuming CD music without an available audio device.
 - Fixed inconsistent audio and crashes in sound-effect mixing after recreating the Nintendo 64 music

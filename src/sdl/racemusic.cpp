@@ -11,6 +11,7 @@
 #include <fstream>
 #include <iterator>
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include <FLAC/stream_decoder.h>
@@ -187,6 +188,8 @@ private:
     std::unique_ptr<N64Audio> m_modules;
     N64Audio *m_shared = nullptr;
     std::vector<std::uint8_t> m_module;
+    std::optional<int> m_moduleChoice;
+    int m_currentModule = 0;
     SDL_AudioStream *m_cdStream = nullptr;
     FlacTrack m_cdTrack;
     int m_cdPlaying = 0;
@@ -203,6 +206,8 @@ bool RaceMusic::Start(const std::filesystem::path &directory, RaceMusicSource so
     std::srand(GetHighResolutionTime());
     m_directory = directory;
     m_source = source;
+    m_moduleChoice.reset();
+    m_currentModule = 0;
     m_currentTrack = FIRST_MUSIC_TRACK;
     m_trackMin = FIRST_MUSIC_TRACK;
     m_trackMax = FIRST_MUSIC_TRACK - 1;
@@ -231,9 +236,9 @@ bool RaceMusic::Start(const std::filesystem::path &directory, RaceMusicSource so
     }
     m_active = m_trackMax >= m_trackMin;
     if (!m_active) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
-                    "%s has no music, and the races are silent.",
-                    directory.string().c_str());
+        SDL_LogWarn(
+            SDL_LOG_CATEGORY_AUDIO, "CD music is unavailable in %s.", directory.string().c_str());
+        Stop();
     }
     return m_active;
 }
@@ -299,20 +304,20 @@ bool RaceMusic::Play(int track) {
         m_cdSamples.clear();
         m_cdPlaying = track;
         SDL_Log("The race plays track %d of the CD.", track);
-        m_cdTrack.Open(CdTrackPath(track));
+        const bool opened = m_cdTrack.Open(CdTrackPath(track));
         if (m_cdStream != nullptr) {
             SDL_UnlockAudioStream(m_cdStream);
             // MCI plays a new track after a pause of the race, as when the race restarts.
             SDL_ResumeAudioStreamDevice(m_cdStream);
         }
-        return true;
+        return opened;
     }
     PlayModule(track);
     return true;
 }
 
 void RaceMusic::PlayModule(int track) {
-    int module = RaceModule(track);
+    int module = m_moduleChoice.value_or(RaceModule(track));
     std::ifstream file(m_directory / (std::string(USA_MUSIC_MODULES[module].name) + ".xm"),
                        std::ios::binary);
     if (!file) {
@@ -322,6 +327,7 @@ void RaceMusic::PlayModule(int track) {
         return;
     }
     m_module.assign(std::istreambuf_iterator<char>(file), {});
+    m_currentModule = module;
     SDL_Log("The race plays the music module %s.", USA_MUSIC_MODULES[module].name);
     Modules()->Play(m_module);
     Modules()->Resume();
@@ -408,7 +414,12 @@ bool RaceMusic::Step(int step) {
     if (g_dwPlayMusicMode == 0 || m_users == 0) {
         return true;
     }
-    m_currentTrack = std::clamp(CurrentTrack() + step, m_trackMin, m_trackMax);
+    if (m_source == RaceMusicSource::Modules) {
+        m_moduleChoice = std::clamp(m_currentModule + step, 0, RACE_MODULES);
+        m_currentTrack = MENU_MODULE_TRACK + *m_moduleChoice;
+    } else {
+        m_currentTrack = std::clamp(CurrentTrack() + step, m_trackMin, m_trackMax);
+    }
     return Play(m_currentTrack);
 }
 
@@ -421,6 +432,77 @@ std::size_t RaceMusic::Render(std::size_t frames) {
     }
     return static_cast<std::size_t>(
         std::ranges::count_if(samples, [](std::int16_t sample) { return sample != 0; }));
+}
+
+struct FrontEndMusic::State {
+    State(N64Audio &player, const std::filesystem::path &path, RaceMusicSource choice)
+        : audio(player), directory(path), source(choice) {
+    }
+
+    N64Audio &audio;
+    std::filesystem::path directory;
+    RaceMusicSource source;
+    RaceMusic cd;
+    bool cdStarted = false;
+    unsigned char volume = 48;
+    std::vector<std::uint8_t> module;
+};
+
+FrontEndMusic::FrontEndMusic(N64Audio &audio,
+                             const std::filesystem::path &directory,
+                             RaceMusicSource source)
+    : m_state(std::make_unique<State>(audio, directory, source)) {
+}
+
+FrontEndMusic::~FrontEndMusic() {
+    Stop();
+}
+
+bool FrontEndMusic::Play() {
+    State &state = *m_state;
+    if (state.source == RaceMusicSource::CdAudio) {
+        if (!state.cdStarted) {
+            state.cdStarted = state.cd.Start(state.directory, RaceMusicSource::CdAudio);
+        }
+        if (state.cdStarted) {
+            state.cd.SetVolume(state.volume);
+        }
+        if (state.cdStarted && state.cd.Play(FIRST_MUSIC_TRACK)) {
+            state.audio.Stop();
+            SDL_Log("The menus play track %d of the CD.", FIRST_MUSIC_TRACK);
+            return true;
+        }
+        state.cd.Shutdown();
+        state.cdStarted = false;
+        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "PC CD audio is unavailable; using N64 menu music.");
+    }
+    if (state.module.empty()) {
+        const auto path = state.directory / "menu.xm";
+        std::ifstream file(path, std::ios::binary);
+        if (!file) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "%s cannot be read.", path.string().c_str());
+            return false;
+        }
+        state.module.assign(std::istreambuf_iterator<char>(file), {});
+    }
+    SDL_Log("The menus play the music module menu.");
+    state.audio.Play(state.module);
+    state.audio.Resume();
+    return true;
+}
+
+void FrontEndMusic::Stop() {
+    State &state = *m_state;
+    state.cd.Shutdown();
+    state.cdStarted = false;
+    state.audio.Stop();
+}
+
+void FrontEndMusic::SetVolume(unsigned char volume) {
+    m_state->volume = volume;
+    if (m_state->cdStarted) {
+        m_state->cd.SetVolume(volume);
+    }
 }
 
 RaceMusicContext::RaceMusicContext() : m_music(std::make_unique<RaceMusic>()) {

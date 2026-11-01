@@ -33,6 +33,7 @@
 #include "common/inputpoll.h"
 #include "common/instantreplay.h"
 #include "common/pause.h"
+#include "common/settings.h"
 #include "config.h"
 #include "controllerpak.h"
 #include "controls.h"
@@ -374,23 +375,6 @@ std::optional<std::filesystem::path> ScreenshotPath(const std::filesystem::path 
                   time.second,
                   time.nanosecond / 1000000);
     return directory / name;
-}
-
-// The XM module of the asset pack for a module of the USA cartridge.
-std::optional<std::vector<std::uint8_t>> LoadMusicModule(const std::filesystem::path &assets,
-                                                         std::uint32_t offset) {
-    const auto *module =
-        std::ranges::find(coastline::USA_MUSIC_MODULES, offset, &coastline::UsaMusicModule::offset);
-    if (module == std::end(coastline::USA_MUSIC_MODULES)) {
-        return std::nullopt;
-    }
-    std::ifstream file(assets / "music" / (std::string(module->name) + ".xm"), std::ios::binary);
-    if (!file) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
-                    "The USA cartridge has not been imported, and the music is silent.");
-        return std::nullopt;
-    }
-    return std::vector<std::uint8_t>(std::istreambuf_iterator<char>(file), {});
 }
 
 // The keys of the default keyboard bindings of the PC release a press pushes down in a race.
@@ -1110,8 +1094,6 @@ int main(int argc, char *argv[]) {
                 "Game",
                 "XmMusicGain",
                 packSettings.value("xmMusicGain", coastline::DEFAULT_XM_MUSIC_GAIN));
-            const coastline::UsaMusicModule &menuModule = coastline::USA_MUSIC_MODULES[0];
-            auto music = LoadMusicModule(assets, menuModule.offset);
             SetWindowIcon(window->Window(), assets);
             coastline::N64MixerContext mixer;
             coastline::EngineRuntime engineRuntime;
@@ -1121,18 +1103,26 @@ int main(int argc, char *argv[]) {
             coastline::AttractDemo attractDemo;
             coastline::N64Audio audio;
             coastline::RaceMusicContext raceMusic;
-            bool playMusic = config.GetBoolean("Game", "PlayMusic", true) && audio.OpenDevice();
+            coastline::FrontEndMusic menuMusic(audio,
+                                               assets / "music",
+                                               config.Get("Game", "Music") == "CD" ?
+                                                   coastline::RaceMusicSource::CdAudio :
+                                                   coastline::RaceMusicSource::Modules);
+            const bool musicEnabled = config.GetBoolean("Game", "PlayMusic", true);
+            g_dwPlayMusicMode = musicEnabled ? 2 : 0;
+            const bool audioOpen =
+                (musicEnabled || config.GetBoolean("Game", "PlaySFX", true)) && audio.OpenDevice();
+            const bool playMusic = musicEnabled && audioOpen;
             const bool pauseOnFocusLoss = config.GetBoolean("Game", "PauseOnFocusLoss", true) &&
                                           !parser.is_subcommand_used(runScript);
             audio.SetMusicGain(musicGain);
-            coastline::ShareRaceMusicPlayer(playMusic ? &audio : nullptr);
+            coastline::ShareRaceMusicPlayer(audioOpen ? &audio : nullptr);
             auto playMenuMusic = [&]() {
-                if (music && playMusic) {
-                    SDL_Log("The menus play the music module %s.", menuModule.name);
-                    audio.Play(*music);
+                if (playMusic) {
+                    menuMusic.SetVolume(g_bBgmVolume);
+                    menuMusic.Play();
                 }
             };
-            playMenuMusic();
             const coastline::Script &commands = script.script;
             MouseState mouse;
             std::unique_ptr<coastline::SceneRenderer> sceneRenderer;
@@ -1228,6 +1218,7 @@ int main(int argc, char *argv[]) {
                     *sceneRenderer,
                     coastline::FontDirectory(assets, coastline::SelectedLanguage()));
             }
+            playMenuMusic();
             // The vertical sync V returns to, fifo when the settings choose it.
             const bool fifo = displayOptions.fifo;
             Uint64 lastTicks = SDL_GetTicksNS();
@@ -1627,6 +1618,7 @@ int main(int argc, char *argv[]) {
                             y += 16;
                         }
                     }
+                    menuMusic.SetVolume(g_bBgmVolume);
                     sceneRenderer->End(framePath ? &*framePath : nullptr);
                     // The credits play under the music of the menus.
                     if (startCreditsRace) {
@@ -1642,7 +1634,7 @@ int main(int argc, char *argv[]) {
                         // cars.
                         openRaceData();
                         SDL_Log("The music of the menus stops.");
-                        audio.Stop();
+                        menuMusic.Stop();
                         coastline::RaceSetup setup = mainMenu->ChosenRace();
                         setup.waitForStart = config.GetBoolean("Game", "WaitForStart", false);
                         setup.autopilot = commands.autopilot;

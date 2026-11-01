@@ -316,6 +316,12 @@ assets. The menu offers available titles and marks a saved title as missing if i
 absent. If the requested title cannot load, the game logs a warning and uses the selected
 model region's opening. Asset-pack overrides also apply to the chosen intro.
 
+The `Music` option selects native N64 XM modules or PC CD audio (`Music=XM` or `Music=CD` under
+`[Game]`). CD selection also plays the PC menu track in the front end. The BGM volume controls both
+sources. Missing CD audio falls back to XM with a warning. F12 advances the selected source's
+tracks; restarting a race retains a manually selected XM module.
+`PlayMusic=0` silences music in menus and races while sound effects remain independent.
+
 `--gpu auto|high-performance|low-power` overrides `GpuPreference` for one run. Automatic selection
 retains SDL's default preference for a dedicated GPU. Low-power selection prefers an
 integrated GPU when available. The log records the actual adapter, backend, driver, and preference.
