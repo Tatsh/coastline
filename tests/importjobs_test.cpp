@@ -76,19 +76,32 @@ void CheckCancellation() {
 
 void CheckFailures() {
     std::atomic<int> active{0};
+    std::atomic<bool> waiting{false};
+    bool throwCancellation = false;
     std::vector<ImportJob> jobs;
     jobs.emplace_back([&](const ImportProgress &progress) -> std::optional<std::string> {
         ++active;
+        waiting.store(true);
         while (progress("waiting", 0.0)) {
             std::this_thread::sleep_for(1ms);
         }
         --active;
-        return "Import cancelled.";
+        if (throwCancellation) {
+            throw std::runtime_error("Cancelled.");
+        }
+        return "Cancelled.";
     });
-    jobs.emplace_back([](const ImportProgress &) -> std::optional<std::string> {
+    jobs.emplace_back([&](const ImportProgress &) -> std::optional<std::string> {
+        while (!waiting.load()) {
+            std::this_thread::yield();
+        }
         throw std::runtime_error("Conversion failed.");
     });
     if (std::thread::hardware_concurrency() > 1) {
+        assert(RunImportJobs(jobs) == "Conversion failed.");
+        assert(active == 0);
+        waiting.store(false);
+        throwCancellation = true;
         assert(RunImportJobs(jobs) == "Conversion failed.");
         assert(active == 0);
     }

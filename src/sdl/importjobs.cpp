@@ -21,6 +21,7 @@ std::optional<std::string> RunImportJobs(std::span<const ImportJob> jobs,
     std::atomic<std::size_t> next{0};
     std::mutex progressMutex;
     std::vector<double> fractions(jobs.size());
+    std::vector<unsigned char> cancelled(jobs.size());
     std::vector<std::optional<std::string>> failures(jobs.size());
     auto worker = [&] {
         while (!stopped.load()) {
@@ -32,6 +33,7 @@ std::optional<std::string> RunImportJobs(std::span<const ImportJob> jobs,
             const ImportProgress report = [&](const std::string &step, double fraction) {
                 std::lock_guard lock(progressMutex);
                 if (stopped.load()) {
+                    cancelled[index] = 1;
                     return false;
                 }
                 if (std::isfinite(fraction)) {
@@ -41,6 +43,7 @@ std::optional<std::string> RunImportJobs(std::span<const ImportJob> jobs,
                 const double combined = std::accumulate(fractions.begin(), fractions.end(), 0.0) /
                                         static_cast<double>(jobs.size());
                 if (progress && !progress(step, combined)) {
+                    cancelled[index] = 1;
                     stopped.store(true);
                     return false;
                 }
@@ -55,6 +58,9 @@ std::optional<std::string> RunImportJobs(std::span<const ImportJob> jobs,
                 failures[index] = error.what();
             } catch (...) {
                 failures[index] = "Import task failed with an unknown exception.";
+            }
+            if (cancelled[index]) {
+                failures[index] = CANCELLED;
             }
             if (failures[index]) {
                 stopped.store(true);
