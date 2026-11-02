@@ -1937,21 +1937,28 @@ std::optional<std::string> ConvertSkyImages(const std::filesystem::path &dataDir
     }
     for (const auto &image : images) {
         auto lut = std::filesystem::path(image).replace_extension(".lut4");
-        std::ifstream texelFile(image, std::ios::binary);
-        std::vector<std::uint8_t> texels(std::istreambuf_iterator<char>(texelFile), {});
-        std::ifstream paletteFile(lut, std::ios::binary);
-        std::vector<std::uint8_t> palette(std::istreambuf_iterator<char>(paletteFile), {});
-        if (palette.size() != 32 || texels.empty() || texels.size() % (SKY_WIDTH / 2) != 0) {
+        auto texels = ReadWholeFile(image);
+        auto palette = ReadWholeFile(lut);
+        if (!texels || !palette || palette->size() != 32 || texels->empty() ||
+            texels->size() % (SKY_WIDTH / 2) != 0) {
             return fmt::format("{} and {} are not a sky image.", image.string(), lut.string());
         }
         auto png = std::filesystem::path(image).replace_extension(".png");
-        int height = static_cast<int>(texels.size() / (SKY_WIDTH / 2));
+        int height = static_cast<int>(texels->size() / (SKY_WIDTH / 2));
         if (!coastline::SaveIndexed4Png(
-                png, texels, std::span<const std::uint8_t, 32>(palette), SKY_WIDTH, height)) {
+                png, *texels, std::span<const std::uint8_t, 32>(*palette), SKY_WIDTH, height)) {
             return fmt::format("{} does not read back as {}.", png.string(), image.string());
         }
         std::filesystem::remove(image, error);
+        if (error) {
+            return fmt::format(
+                "Cannot remove converted sky image {}: {}.", image.string(), error.message());
+        }
         std::filesystem::remove(lut, error);
+        if (error) {
+            return fmt::format(
+                "Cannot remove converted sky palette {}: {}.", lut.string(), error.message());
+        }
     }
     return std::nullopt;
 }
@@ -1959,9 +1966,11 @@ std::optional<std::string> ConvertSkyImages(const std::filesystem::path &dataDir
 // The strings of BRString.dll as strings/en-us.json, by identifier, in place of the library.
 std::optional<std::string> ConvertStringLibrary(const std::filesystem::path &library,
                                                 const std::filesystem::path &dataDirectory) {
-    std::ifstream in(library, std::ios::binary);
-    std::vector<std::uint8_t> image(std::istreambuf_iterator<char>(in), {});
-    auto strings = coastline::ReadLibraryStrings(image);
+    auto image = ReadWholeFile(library);
+    if (!image) {
+        return fmt::format("{} cannot be read.", library.string());
+    }
+    auto strings = coastline::ReadLibraryStrings(*image);
     if (strings.empty()) {
         return fmt::format("Missing strings in {}.", library.string());
     }
@@ -1978,6 +1987,10 @@ std::optional<std::string> ConvertStringLibrary(const std::filesystem::path &lib
     }
     std::error_code error;
     std::filesystem::remove(library, error);
+    if (error) {
+        return fmt::format(
+            "Cannot remove converted string library {}: {}.", library.string(), error.message());
+    }
     return std::nullopt;
 }
 
