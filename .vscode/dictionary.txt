@@ -891,6 +891,7 @@ mupen
 musicdevice
 musicplayback
 mypy
+nasm
 ncpaint
 nearbycount
 neff

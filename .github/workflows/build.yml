@@ -153,11 +153,11 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y autoconf-archive cmake libasound2-dev libegl1-mesa-dev \
             libltdl-dev libwayland-dev libx11-dev libxcursor-dev libxext-dev libxfixes-dev \
-            libxi-dev libxkbcommon-dev libxrandr-dev libxss-dev libxtst-dev ninja-build \
+            libxi-dev libxkbcommon-dev libxrandr-dev libxss-dev libxtst-dev nasm ninja-build \
             pkg-config wayland-protocols
       - if: runner.os == 'macOS'
         name: 'Install the tools'
-        run: brew install librsvg ninja
+        run: brew install librsvg nasm ninja
       # The baseline of vcpkg-configuration.json pins the versions of the ports.
       # The workflow also builds tags, so the packages vcpkg builds are not cached.
       - name: 'Install vcpkg'
