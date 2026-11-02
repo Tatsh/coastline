@@ -375,16 +375,9 @@ void GpuWindow::UpdateFrameSize() {
         if (!m_options.fixedFrame) {
             SDL_GetWindowSizeInPixels(m_window.get(), &width, &height);
         }
-        width = static_cast<int>(static_cast<float>(width) * m_options.renderScale + 0.5f);
-        height = static_cast<int>(static_cast<float>(height) * m_options.renderScale + 0.5f);
-        // An aspect ratio of the settings keeps the largest frame of its shape in the window.
-        if (aspect > 0.0f && width > 0 && height > 0) {
-            if (static_cast<float>(width) > static_cast<float>(height) * aspect) {
-                width = static_cast<int>(static_cast<float>(height) * aspect + 0.5f);
-            } else {
-                height = static_cast<int>(static_cast<float>(width) / aspect + 0.5f);
-            }
-        }
+        const auto size = ScaleFrameResolution(width, height, m_options.renderScale, aspect);
+        width = size[0];
+        height = size[1];
     }
     auto wantedWidth = static_cast<Uint32>(std::clamp(width, 1, LARGEST));
     auto wantedHeight = static_cast<Uint32>(std::clamp(height, 1, LARGEST));

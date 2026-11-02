@@ -526,6 +526,15 @@ target_compile_options(notesafety_test PRIVATE -Wall -Wextra
 target_link_options(notesafety_test PRIVATE -fsanitize=address,undefined,float-cast-overflow)
 add_test(NAME notesafety COMMAND notesafety_test)
 
+add_executable(configsafety_test configsafety_test.cpp "${_src}/sdl/config.cpp")
+set_target_properties(configsafety_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(configsafety_test PRIVATE "${_src}/sdl")
+target_compile_options(configsafety_test PRIVATE -Wall -Wextra
+                           -fsanitize=address,undefined,float-cast-overflow)
+target_link_options(configsafety_test PRIVATE -fsanitize=address,undefined,float-cast-overflow)
+target_link_libraries(configsafety_test PRIVATE savefile_test_support)
+add_test(NAME configsafety COMMAND configsafety_test)
+
 foreach(_enabled IN ITEMS 0 1)
   add_executable(discordpresence_${_enabled}_test discordpresence_test.cpp
                    "${_src}/sdl/discordpresence.cpp")

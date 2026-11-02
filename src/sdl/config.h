@@ -18,7 +18,8 @@ namespace coastline {
 class GameConfig {
 public:
     /**
-     * Read @p path. A missing or unreadable file gives an empty configuration.
+     * Read @p path. A missing, unreadable, or malformed file gives an empty configuration.
+     * Invalid numeric display and audio settings are removed to restore their defaults.
      *
      * @param path The INI file.
      * @return The settings the file has.
@@ -34,11 +35,11 @@ public:
     static GameConfig Parse(std::string_view text);
 
     /**
-     * Write every setting to @p path.
-     * Existing files are truncated; a failed write can produce a partial configuration.
+     * Atomically replace @p path under a process lock.
+     * Failures before replacement preserve existing data.
      *
      * @param path The INI file.
-     * @return Whether opening and writing the stream succeeds.
+     * @return Whether writing, replacement, and synchronisation succeed.
      */
     bool Save(const std::filesystem::path &path) const;
 
@@ -71,7 +72,7 @@ public:
      * @param section The section name.
      * @param key The key name.
      * @param fallback The value for an absent or malformed key.
-     * @return The value as a number with a fraction.
+     * @return The finite parsed number, or @p fallback for invalid or non-finite input.
      */
     float GetFloat(std::string_view section, std::string_view key, float fallback) const;
 
@@ -93,6 +94,7 @@ public:
     void Set(std::string_view section, std::string_view key, std::string value);
 
 private:
+    void ResetInvalidSettings();
     struct CaseInsensitiveLess {
         using is_transparent = void;
         bool operator()(std::string_view left, std::string_view right) const;
@@ -119,5 +121,15 @@ std::optional<float> ParseAspectRatio(std::string_view text);
  * @return The expanded width and height, in pixels.
  */
 std::array<int, 2> ExpandInternalResolution(int width, int height, float aspect);
+
+/**
+ * Scale window dimensions and fit an aspect ratio before bounded integer conversion.
+ * @param width Window width in pixels; non-positive values become 1.
+ * @param height Window height in pixels; non-positive values become 1.
+ * @param scale Render scale, clamped to [0.25, 4]; non-finite values use 1.
+ * @param aspect Width divided by height; non-finite or non-positive values follow the window.
+ * @return Rounded dimensions in [1, 16384], without overflowing for extreme inputs.
+ */
+std::array<int, 2> ScaleFrameResolution(int width, int height, float scale, float aspect);
 
 } // namespace coastline

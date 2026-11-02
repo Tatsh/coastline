@@ -170,6 +170,7 @@ colorkeyenable
 combkey
 completionthreads
 configfile
+configsafety
 congrat
 consolesegment
 consolestrings

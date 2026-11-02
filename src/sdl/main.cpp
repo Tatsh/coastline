@@ -209,7 +209,7 @@ coastline::DisplayOptions DisplayOptionsFrom(const coastline::GameConfig &savedC
         options.scaleFilter = coastline::ScaleFilter::EdgeAdaptive;
     }
     const auto screenShader = config.Get("Video", "ScreenShader");
-    if (screenShader == "consumer-crt" || screenShader == "crt") {
+    if (screenShader == "consumer-crt") {
         options.screenShader = coastline::ScreenShader::ConsumerCrt;
     } else if (screenShader == "pvm") {
         options.screenShader = coastline::ScreenShader::Pvm;

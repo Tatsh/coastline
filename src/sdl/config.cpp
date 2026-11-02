@@ -5,9 +5,11 @@
 #include <charconv>
 #include <cmath>
 #include <fstream>
+#include <limits>
 #include <locale>
 #include <ranges>
 #include <sstream>
+#include <tuple>
 
 #include "savefile.h"
 
@@ -66,7 +68,7 @@ std::optional<float> ParseNumber(std::string_view text) {
     stream.imbue(std::locale::classic());
     float result = 0.0f;
     stream >> std::noskipws >> result;
-    if (stream.fail() || stream.peek() != std::char_traits<char>::eof()) {
+    if (stream.fail() || stream.peek() != std::char_traits<char>::eof() || !std::isfinite(result)) {
         return std::nullopt;
     }
     return result;
@@ -87,7 +89,63 @@ GameConfig GameConfig::Load(const std::filesystem::path &path) {
     if (!file) {
         return {};
     }
-    return Parse({reinterpret_cast<const char *>(file->data()), file->size()});
+    auto config = Parse({reinterpret_cast<const char *>(file->data()), file->size()});
+    config.ResetInvalidSettings();
+    return config;
+}
+
+void GameConfig::ResetInvalidSettings() {
+    const auto erase = [&](std::string_view section, std::string_view key) {
+        const auto found = m_sections.find(section);
+        if (found != m_sections.end()) {
+            const auto entry = found->second.find(key);
+            if (entry != found->second.end()) {
+                found->second.erase(entry);
+            }
+        }
+    };
+    const auto integer = [&](std::string_view key, long minimum, long maximum) {
+        if (Get("Video", key)) {
+            const auto value = GetInteger("Video", key, std::numeric_limits<long>::min());
+            if (value < minimum || value > maximum) {
+                erase("Video", key);
+            }
+        }
+    };
+    integer("Width", 1, 16384);
+    integer("Height", 1, 16384);
+    integer("RefreshRate", 0, std::numeric_limits<int>::max());
+    integer("FrameRateLimit", 0, std::numeric_limits<int>::max());
+    integer("InternalWidth", 0, 16384);
+    integer("InternalHeight", 0, 16384);
+    const auto width = GetInteger("Video", "InternalWidth", 0);
+    const auto height = GetInteger("Video", "InternalHeight", 0);
+    if ((width == 0) != (height == 0) || (width != 0 && (width < 320 || height < 240))) {
+        erase("Video", "InternalWidth");
+        erase("Video", "InternalHeight");
+    }
+    integer("AnisotropicFiltering", 0, 16);
+    if (Get("Video", "Antialias")) {
+        const auto samples = GetInteger("Video", "Antialias", 0);
+        if (samples != 1 && samples != 2 && samples != 4 && samples != 8) {
+            erase("Video", "Antialias");
+        }
+    }
+    for (const auto &[section, key, minimum, maximum] :
+         {std::tuple{"Video", "RenderScale", 0.25f, 4.0f},
+          {"Video", "FieldOfView", 0.25f, 2.0f},
+          {"Video", "DrawDistance", 1.0f, 4.0f},
+          {"Game", "XmMusicGain", 0.0f, 8.0f}}) {
+        if (Get(section, key)) {
+            const auto value = GetFloat(section, key, std::numeric_limits<float>::quiet_NaN());
+            if (!std::isfinite(value) || value < minimum || value > maximum) {
+                erase(section, key);
+            }
+        }
+    }
+    if (const auto aspect = Get("Video", "AspectRatio"); aspect && !ParseAspectRatio(*aspect)) {
+        erase("Video", "AspectRatio");
+    }
 }
 
 GameConfig GameConfig::Parse(std::string_view text) {
@@ -225,6 +283,21 @@ std::array<int, 2> ExpandInternalResolution(int width, int height, float aspect)
         }
     }
     return {width, height};
+}
+
+std::array<int, 2> ScaleFrameResolution(int width, int height, float scale, float aspect) {
+    const double factor = std::isfinite(scale) ? std::clamp(scale, 0.25f, 4.0f) : 1.0f;
+    double scaledWidth = std::floor(static_cast<double>(std::max(width, 1)) * factor + 0.5);
+    double scaledHeight = std::floor(static_cast<double>(std::max(height, 1)) * factor + 0.5);
+    if (std::isfinite(aspect) && aspect > 0.0f) {
+        if (scaledWidth > scaledHeight * static_cast<double>(aspect)) {
+            scaledWidth = std::floor(scaledHeight * static_cast<double>(aspect) + 0.5);
+        } else {
+            scaledHeight = std::floor(scaledWidth / static_cast<double>(aspect) + 0.5);
+        }
+    }
+    return {static_cast<int>(std::clamp(scaledWidth, 1.0, 16384.0)),
+            static_cast<int>(std::clamp(scaledHeight, 1.0, 16384.0))};
 }
 
 std::optional<float> ParseAspectRatio(std::string_view text) {
