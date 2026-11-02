@@ -12,9 +12,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Automatic speed units follow explicit `--region` (USA MPH, EUR/JPN KPH), otherwise system country
-  (GB/US MPH, others KPH, missing country MPH). Manual choices override automatic selection and
-  save immediately, including loaded configuration choices; older settings without a valid Units
-  preference use automatic selection.
+  (listed MPH countries and territories use MPH, others KPH, missing country MPH). Manual choices
+  override automatic selection and save immediately, including loaded configuration choices;
+  older settings without a valid Units preference use automatic selection.
 - A Window reflections option selects PC projection or original N64 angular mapping, with Auto
   following Visual effects. Changes apply as Options closes without reimporting assets; both modes
   use night-sky reflections in tunnels.
@@ -178,7 +178,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Each player's selected camera persists across races and game restarts, excluding automatic finish
   and replay camera changes.
 - Statistics use shorter RAM and VRAM labels.
-- SDL logs use action and status messages with race music filenames.
+- SDL logs start with the build revision, project URL, and ISO 8601 UTC build timestamp.
+  They abbreviate home paths as `~` in console and file output and use readable region, backend,
+  and unit labels. Action and status messages include race music filenames.
 - Successful automatic saves skip post-race save prompts, returning Championship to track selection
   and time attack to the main menu. Disabled or failed automatic saves retain manual prompts.
 - Timing statistics update once a second with average CPU work, frame interval, and FPS, retaining

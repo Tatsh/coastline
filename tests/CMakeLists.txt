@@ -287,6 +287,14 @@ coastline_dependency(
   URL https://github.com/fmtlib/fmt/releases/download/12.2.0/fmt-12.2.0.zip
   HASH a2f4a8d51178f954e4c339007f77edd76ba0cb2e36f87a48e5a5403d9be5878f
   OPTIONS FMT_INSTALL=OFF FMT_TEST=OFF FMT_DOC=OFF)
+add_executable(log_test log_test.cpp "${_src}/sdl/log.cpp")
+set_target_properties(log_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(log_test PRIVATE "${_src}/sdl")
+target_compile_options(log_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(log_test PRIVATE -fsanitize=address,undefined)
+target_link_libraries(log_test PRIVATE SDL3::SDL3 fmt::fmt)
+add_test(NAME log COMMAND log_test)
+
 add_executable(n64model_test n64model_test.cpp "${_src}/sdl/n64model.cpp")
 set_target_properties(n64model_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(n64model_test PRIVATE "${_src}/sdl")

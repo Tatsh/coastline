@@ -17,7 +17,6 @@ add_library(coastline_firstrun STATIC assetsearch.cpp filebrowser.cpp setupwizar
 target_include_directories(coastline_firstrun PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}"
                            PRIVATE "${CMAKE_CURRENT_BINARY_DIR}")
 target_compile_options(coastline_firstrun PRIVATE ${COASTLINE_WARNINGS})
-string(TIMESTAMP _build_timestamp "%Y-%m-%dT%H:%M:%SZ" UTC)
 target_compile_definitions(coastline_firstrun PRIVATE COASTLINE_VERSION="${CMAKE_PROJECT_VERSION}"
-                                                   COASTLINE_BUILD_TIMESTAMP="${_build_timestamp}")
+                                                   COASTLINE_BUILD_TIMESTAMP="${COASTLINE_BUILD_TIMESTAMP}")
 target_link_libraries(coastline_firstrun PUBLIC coastline_sdl Threads::Threads PRIVATE ZLIB::ZLIB)

@@ -328,8 +328,10 @@ autosave off. Preferences save independently of race progress. Failed automatic 
 warning on the results screen.
 
 Until Units is changed, `--region jpn` and `--region eur` select KPH, and `--region usa` selects
-MPH. Without an explicit region, system locales for GB and US use MPH and other country locales
-use KPH. If the locale has no country, MPH is the fallback. Changing Units records `Units=mph`
+MPH. Without an explicit region, system locales for MPH jurisdictions use MPH and other country
+locales use KPH. MPH country codes are AG, AI, AS, BS, BZ, DM, FK, FM, GB, GD, GG, GU, IM, IO, JE,
+KN, KY, LC, MH, MP, MS, PR, PW, SH, TC, US, VC, VG, and VI. Liberia defaults to KPH.
+If the locale has no country, MPH is the fallback. Changing Units records `Units=mph`
 or `Units=kph` under `[Game]` and overrides automatic selection on subsequent launches. Existing
 settings without a valid Units preference use automatic selection. Explicitly loading an options
 note saves its units as a manual choice. Set `Units=auto` to restore automatic selection.

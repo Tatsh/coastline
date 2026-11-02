@@ -56,9 +56,16 @@ int main() {
     }
     GameConfig units;
     assert(coastline::SpeedInMph(units, "", ""));
-    assert(coastline::SpeedInMph(units, "", "GB"));
-    assert(coastline::SpeedInMph(units, "", "US"));
-    for (const auto country : {"JP", "DE", "FR", "CA", "AU"}) {
+    for (const auto country :
+         {"AG", "AI", "AS", "BS", "BZ", "DM", "FK", "FM", "GB", "GD", "GG", "GU", "IM", "IO", "JE",
+          "KN", "KY", "LC", "MH", "MP", "MS", "PR", "PW", "SH", "TC", "US", "VC", "VG", "VI"}) {
+        assert(coastline::SpeedInMph(units, "", country));
+        assert(!coastline::SpeedInMph(units, "eur", country));
+        assert(!coastline::SpeedInMph(units, "jpn", country));
+        auto manual = GameConfig::Parse("[Game]\nUnits=kph\n");
+        assert(!coastline::SpeedInMph(manual, "", country));
+    }
+    for (const auto country : {"JP", "DE", "FR", "CA", "AU", "IE", "BM", "GI", "LR", "ZZ"}) {
         assert(!coastline::SpeedInMph(units, "", country));
     }
     assert(!coastline::SpeedInMph(units, "jpn", "US"));

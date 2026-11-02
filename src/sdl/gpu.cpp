@@ -181,7 +181,15 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
     if (result->m_frame == nullptr) {
         return nullptr;
     }
-    SDL_Log("Using %s GPU backend.", SDL_GetGPUDeviceDriver(result->m_device.get()));
+    const char *backend = SDL_GetGPUDeviceDriver(result->m_device.get());
+    if (std::strcmp(backend, "vulkan") == 0) {
+        backend = "Vulkan";
+    } else if (std::strcmp(backend, "metal") == 0) {
+        backend = "Metal";
+    } else if (std::strcmp(backend, "direct3d12") == 0 || std::strcmp(backend, "d3d12") == 0) {
+        backend = "Direct3D12";
+    }
+    SDL_Log("Using %s GPU backend.", backend);
     const auto identity = SDL_GetGPUDeviceProperties(result->m_device.get());
     SDL_Log("Using GPU adapter %s with preference %s.",
             result->DeviceName().c_str(),
@@ -325,7 +333,7 @@ bool GpuWindow::CreateFrame(Uint32 width, Uint32 height) {
     m_antialiased = antialiased;
     m_frameWidth = width;
     m_frameHeight = height;
-    SDL_Log("Rendering %ux%u frames.", width, height);
+    SDL_Log("Rendering at resolution %ux%u.", width, height);
     return true;
 }
 

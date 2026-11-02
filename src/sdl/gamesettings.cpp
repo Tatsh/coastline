@@ -26,7 +26,10 @@ bool SpeedInMph(const GameConfig &config, std::string_view region, std::string_v
     if (region == "usa") {
         return true;
     }
-    return country.empty() || country == "GB" || country == "US";
+    constexpr std::array<std::string_view, 29> MPH_COUNTRIES{
+        "AG", "AI", "AS", "BS", "BZ", "DM", "FK", "FM", "GB", "GD", "GG", "GU", "IM", "IO", "JE",
+        "KN", "KY", "LC", "MH", "MP", "MS", "PR", "PW", "SH", "TC", "US", "VC", "VG", "VI"};
+    return country.empty() || std::ranges::find(MPH_COUNTRIES, country) != MPH_COUNTRIES.end();
 }
 
 bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset) {

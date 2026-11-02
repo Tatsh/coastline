@@ -134,15 +134,17 @@ std::string DescribeDevices(const PlayerDevices &devices) {
         text += name != nullptr ? name : "a gamepad";
     }
     if (devices.keyboard) {
-        text += text.empty() ? "keyboard" : ", keyboard";
+        text += text.empty() ? "the keyboard" : ", the keyboard";
     }
-    return text.empty() ? "none" : text;
+    return text.empty() ? "no input devices" : text;
 }
 
 void LogPlayerDevices() {
-    SDL_Log("Using player 1 devices %s; player 2 devices %s.",
-            DescribeDevices(AssignedDevices(0, 2)).c_str(),
-            DescribeDevices(AssignedDevices(1, 2)).c_str());
+    for (int player = 0; player < 2; ++player) {
+        SDL_Log("Using %s for player %d.",
+                DescribeDevices(AssignedDevices(player, 2)).c_str(),
+                player + 1);
+    }
 }
 
 } // namespace

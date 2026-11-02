@@ -88,7 +88,7 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
     }
     SDL_free(locales);
     menus->m_options.speedInMph = SpeedInMph(config, unitsRegion, country);
-    SDL_Log("Using speed units %s.", menus->m_options.speedInMph ? "mph" : "kph");
+    SDL_Log("Using speed unit %s.", menus->m_options.speedInMph ? "MPH" : "KPH");
     std::vector<std::array<int, 2>> displayResolutions;
     int displayCount = 0;
     SDL_DisplayID *displays = SDL_GetDisplays(&displayCount);

@@ -80,6 +80,19 @@ namespace {
 
 constexpr const char *APPLICATION = "coastline";
 
+const char *RegionName(const std::string &region) {
+    if (region == "usa") {
+        return "USA";
+    }
+    if (region == "jpn") {
+        return "Japan";
+    }
+    if (region == "eur") {
+        return "Europe";
+    }
+    return region.c_str();
+}
+
 struct SdlSession {
     bool ready = false;
     explicit SdlSession(SDL_InitFlags flags) : ready(SDL_Init(flags)) {
@@ -747,10 +760,11 @@ void SetWindowIcon(SDL_Window *window, const std::filesystem::path &pack) {
     }
     int count = 0;
     SDL_free(SDL_GetSurfaceImages(icon.get(), &count));
-    SDL_Log("Using %dx%d icon, %d sizes, from %s.",
+    SDL_Log("Using %dx%d icon, %d %s, from %s.",
             icon->w,
             icon->h,
             count,
+            count == 1 ? "size" : "sizes",
             (pack / "icon").string().c_str());
 }
 
@@ -1075,7 +1089,15 @@ int main(int argc, char *argv[]) {
     if (!gameLog.IsOpen()) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Cannot open log file.");
     }
-    SDL_Log("Coastline %s", COASTLINE_VERSION);
+    std::string revision = COASTLINE_GIT_SHA;
+    if (revision.empty()) {
+        revision = "v" COASTLINE_VERSION;
+    } else if (!revision.starts_with('v')) {
+        revision.resize(std::min<std::size_t>(7, revision.size()));
+    }
+    SDL_Log("Coastline %s (https://github.com/Tatsh/coastline), built %s.",
+            revision.c_str(),
+            COASTLINE_BUILD_TIMESTAMP);
     SDL_Log("Using configuration directory %s.", paths->config.string().c_str());
     SDL_Log("Reading settings from %s.", configPath.string().c_str());
     SDL_Log("Using data directory %s.", paths->data.string().c_str());
@@ -1272,8 +1294,8 @@ int main(int argc, char *argv[]) {
                          coastline::PackDirectory(assetData, region, paths->data))) != region)) {
                     SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
                                 "Region %s is unavailable; using %s.",
-                                region.c_str(),
-                                baseRegion.c_str());
+                                RegionName(region),
+                                RegionName(baseRegion));
                     region = baseRegion;
                 }
                 const std::string regionPack = region == baseRegion ? "" : region;
@@ -1295,7 +1317,8 @@ int main(int argc, char *argv[]) {
                 }
                 const std::filesystem::path assets = *packAssets;
                 SDL_Log("Using asset pack %s (%s).", pack.c_str(), assets.string().c_str());
-                SDL_Log("Using region %s with base %s.", region.c_str(), baseRegion.c_str());
+                SDL_Log(
+                    "Using region %s with base %s.", RegionName(region), RegionName(baseRegion));
                 coastline::GameText gameText(
                     assets,
                     parser.present("--language")
@@ -1439,12 +1462,10 @@ int main(int argc, char *argv[]) {
                         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
                                     "Title screen %s is unavailable; using region %s.",
                                     titleChoice.c_str(),
-                                    currentTitleRegion.c_str());
+                                    RegionName(currentTitleRegion));
                         intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
                     } else {
-                        SDL_Log("Using title screen %s from region %s.",
-                                titleChoice.c_str(),
-                                titleRegion->c_str());
+                        SDL_Log("Using title screen from region %s.", RegionName(*titleRegion));
                     }
                     mainMenu = coastline::Menus::Load(*sceneRenderer,
                                                       frontEndRelease,

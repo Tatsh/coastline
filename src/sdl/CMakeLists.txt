@@ -270,6 +270,7 @@ if(WIN32)
   target_link_libraries(coastline_sdl PUBLIC dxgi psapi shell32)
 endif()
 
+string(TIMESTAMP COASTLINE_BUILD_TIMESTAMP "%Y-%m-%dT%H:%M:%SZ" UTC)
 if(NOT COASTLINE_INSTALL_ASSETS)
   add_subdirectory(firstrun)
 endif()
@@ -277,6 +278,7 @@ endif()
 add_executable(${CMAKE_PROJECT_NAME} main.cpp)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
                            COASTLINE_VERSION="${CMAKE_PROJECT_VERSION}"
+                           COASTLINE_BUILD_TIMESTAMP="${COASTLINE_BUILD_TIMESTAMP}"
                            COASTLINE_SETUP_WIZARD=$<NOT:$<BOOL:${COASTLINE_INSTALL_ASSETS}>>)
 file(RELATIVE_PATH _relative_data "${CMAKE_INSTALL_FULL_BINDIR}"
      "${CMAKE_INSTALL_FULL_DATADIR}/coastline")

@@ -2,8 +2,22 @@
 
 #include <filesystem>
 #include <memory>
+#include <string>
+#include <string_view>
 
 namespace coastline {
+
+/**
+ * Abbreviate home-directory paths in a log message without changing similarly prefixed paths.
+ * Windows drive and UNC paths accept either separator and match ASCII letters without case
+ * sensitivity.
+ *
+ * @param message The formatted message, possibly including several paths.
+ * @param home The absolute home directory, with or without a trailing separator. Empty and
+ * single-character directories disable abbreviation.
+ * @return The message with recognised home-directory prefixes replaced by tildes.
+ */
+std::string AbbreviateLogPaths(std::string_view message, std::string_view home);
 
 /**
  * Forward SDL messages to a file and the previous callback until destruction.
