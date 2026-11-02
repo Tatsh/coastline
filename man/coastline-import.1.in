@@ -23,7 +23,7 @@ Original game files must be supplied by the user.
 .TP
 .BI \-\-cd " DISC"
 Read a Boss Rally CUE sheet, ISO, Mode 1 BIN, numbered track file, CloneCD,
-DiscJuggler CDI, Alcohol MDS, Nero NRG, or BlindWrite 4/5/6 image.
+DiscJuggler CDI, Alcohol MDS, Nero NRG, BlindWrite 4/5/6, or unencrypted ISZ image.
 A directory can be the root of a mounted physical disc or a copy of its files.
 Directory sources import data without CD audio.
 A BIN image uses a matching adjacent CUE sheet when available.
@@ -38,6 +38,10 @@ NRG supports disc-at-once and track-at-once metadata with 32-bit or 64-bit offse
 CDI supports versions 2, 3, and 3.5, multiple sessions, and stored pregaps.
 BlindWrite 5/6 supports split files, UTF-16 filenames, and stored pregaps.
 BlindWrite 4 uses BWT metadata and BWI data files; BWS subchannels are optional.
+ISZ supports zero-filled, uncompressed, zlib, and bzip2 chunks, split segments,
+and checksums.
+Decoded images use temporary storage until import finishes.
+Raw-sector ISZ payloads use BIN track discovery for CD audio.
 P-Q and P-W subchannel bytes are discarded during conversion.
 Track files referenced by a CUE sheet must remain available.
 .TP

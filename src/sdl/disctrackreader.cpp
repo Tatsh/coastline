@@ -6,7 +6,8 @@
 namespace coastline {
 
 DiscTrackReader::DiscTrackReader(const CueTrack &track)
-    : m_extents(track.extents), m_count(track.sectorCount), m_stride(track.sectorSize) {
+    : m_storage(track.storage), m_extents(track.extents), m_count(track.sectorCount),
+      m_stride(track.sectorSize) {
     if (m_stride < 2048 || m_stride > 2448 || m_count == 0) {
         return;
     }

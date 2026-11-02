@@ -498,8 +498,18 @@ void TestDiscDirectory(const std::filesystem::path &root) {
 }
 
 void TestDiscContainers(const std::filesystem::path &root) {
-    for (const auto *extension :
-         {".MDS", ".MDF", ".NRG", ".CDI", ".B5T", ".B5I", ".B6T", ".B6I", ".BWT", ".BWI", ".BWS"}) {
+    for (const auto *extension : {".MDS",
+                                  ".MDF",
+                                  ".NRG",
+                                  ".CDI",
+                                  ".B5T",
+                                  ".B5I",
+                                  ".B6T",
+                                  ".B6I",
+                                  ".BWT",
+                                  ".BWI",
+                                  ".BWS",
+                                  ".ISZ"}) {
         const auto directory = root / "containers";
         std::filesystem::create_directory(directory);
         const auto disc = directory / (std::string("disc") + extension);

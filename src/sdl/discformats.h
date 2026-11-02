@@ -7,7 +7,7 @@
 namespace coastline {
 
 /** Disc images, track metadata, and companion files accepted by the importer. */
-inline constexpr std::array<std::string_view, 17> DISC_IMAGE_EXTENSIONS{".b5i",
+inline constexpr std::array<std::string_view, 18> DISC_IMAGE_EXTENSIONS{".b5i",
                                                                         ".b5t",
                                                                         ".b6i",
                                                                         ".b6t",
@@ -20,6 +20,7 @@ inline constexpr std::array<std::string_view, 17> DISC_IMAGE_EXTENSIONS{".b5i",
                                                                         ".cue",
                                                                         ".img",
                                                                         ".iso",
+                                                                        ".isz",
                                                                         ".mdf",
                                                                         ".mds",
                                                                         ".nrg",

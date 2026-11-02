@@ -31,6 +31,7 @@ public:
     bool Read(std::uint64_t sector, std::uint32_t count, std::span<std::uint8_t> output);
 
 private:
+    std::shared_ptr<const void> m_storage;
     std::vector<DiscTrackExtent> m_extents;
     std::uint64_t m_count = 0;
     std::uint32_t m_stride = 0;

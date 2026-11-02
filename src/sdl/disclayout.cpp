@@ -13,6 +13,7 @@
 
 #include <fmt/format.h>
 
+#include "isz.h"
 #include "sha1.h"
 
 namespace coastline {
@@ -1389,9 +1390,22 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
     return tracks;
 }
 
-std::expected<std::vector<CueTrack>, std::string>
-ReadDiscTracks(const std::filesystem::path &disc) {
+std::expected<std::vector<CueTrack>, std::string> ReadDiscTracks(const std::filesystem::path &disc,
+                                                                 const ImportProgress &progress) {
     const auto extension = Lowercase(disc.extension().string());
+    if (extension == ".isz") {
+        auto decoded = DecodeIsz(disc, progress);
+        if (!decoded) {
+            return std::unexpected(decoded.error());
+        }
+        auto tracks = ReadDiscTracks(decoded->file);
+        if (tracks) {
+            for (auto &track : *tracks) {
+                track.storage = decoded->storage;
+            }
+        }
+        return tracks;
+    }
     if (extension == ".bwt" || extension == ".bwi" || extension == ".bws") {
         auto metadata = disc;
         metadata.replace_extension(".bwt");

@@ -2519,7 +2519,8 @@ std::optional<std::string> MissingDiscFiles(const DiscContents &contents) {
     return std::nullopt;
 }
 
-std::expected<DiscContents, std::string> ReadDiscContents(const std::filesystem::path &disc) {
+std::expected<DiscContents, std::string> ReadDiscContents(const std::filesystem::path &disc,
+                                                          const ImportProgress &progress = {}) {
     std::error_code error;
     if (std::filesystem::is_directory(disc, error)) {
         DiscContents contents;
@@ -2572,7 +2573,7 @@ std::expected<DiscContents, std::string> ReadDiscContents(const std::filesystem:
         std::ranges::sort(contents.entries, {}, &IsoEntry::path);
         return contents;
     }
-    auto layout = ReadDiscTracks(disc);
+    auto layout = ReadDiscTracks(disc, progress);
     if (!layout) {
         return std::unexpected(layout.error());
     }
@@ -2619,11 +2620,23 @@ std::expected<RomRelease, std::string> IdentifyRomFile(const std::filesystem::pa
 
 std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &disc,
                                                    const std::filesystem::path &dataDirectory,
-                                                   const ImportProgress &progress) {
-    auto contents = ReadDiscContents(disc);
+                                                   const ImportProgress &onProgress) {
+    const double decodeShare = Lowercase(disc.extension().string()) == ".isz" ? 0.1 : 0.0;
+    const ImportProgress decodeProgress = onProgress ?
+                                              [&](const std::string &step, double fraction) {
+                                                  return onProgress(step, decodeShare * fraction);
+                                              } :
+                                              ImportProgress{};
+    auto contents = ReadDiscContents(disc, decodeProgress);
     if (!contents) {
         return std::unexpected(contents.error());
     }
+    const ImportProgress progress =
+        onProgress ?
+            [&](const std::string &step, double fraction) {
+                return onProgress(step, decodeShare + (1.0 - decodeShare) * fraction);
+            } :
+            ImportProgress{};
     if (auto failure = MissingDiscFiles(*contents)) {
         return std::unexpected(*failure);
     }

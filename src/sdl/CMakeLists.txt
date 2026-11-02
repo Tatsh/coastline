@@ -27,6 +27,7 @@ else()
 endif()
 
 include("${CMAKE_SOURCE_DIR}/cmake/dependencies.cmake")
+include("${CMAKE_SOURCE_DIR}/cmake/bzip2.cmake")
 # The pinned releases are the versions of the vcpkg baseline.
 coastline_dependency(
   SDL3
@@ -213,6 +214,7 @@ add_library(
   gpu.cpp
   importer.cpp
   disclayout.cpp
+  isz.cpp
   disctrackreader.cpp
   importversion.cpp
   indexedimage.cpp
@@ -264,7 +266,7 @@ target_include_directories(coastline_sdl PRIVATE "${CMAKE_SOURCE_DIR}/src"
 add_dependencies(coastline_sdl coastline_shaders coastline_manifests coastline_icon)
 # The headers of the menus declare their readers of JSON, and the game includes them.
 target_link_libraries(coastline_sdl PUBLIC nlohmann_json::nlohmann_json
-                                    PRIVATE FLAC::FLAC fmt::fmt ZLIB::ZLIB)
+                                    PRIVATE FLAC::FLAC fmt::fmt ZLIB::ZLIB BZip2::BZip2)
 # A reconstructed routine retains the parameters of the original, used or not.
 set_source_files_properties("${CMAKE_SOURCE_DIR}/src/common/audio.c" effecttextures.cpp
                             PROPERTIES COMPILE_OPTIONS "${COASTLINE_NO_UNUSED_PARAMETER}")

@@ -79,6 +79,7 @@ blendop
 blez
 blindwrite
 blit
+blocksort
 bnel
 bnez
 bodyforces
@@ -106,6 +107,7 @@ buildinfo
 buildsystems
 bumpr
 bzero
+bzlib
 camerachange
 camerachase
 cameracollision
@@ -194,6 +196,7 @@ cplext
 cppreference
 cptex
 craftctl
+crctable
 createdibsection
 createmesgqueue
 createplayerorgroup
@@ -1048,6 +1051,7 @@ rallyoutro
 ralt
 ramarray
 ramreadformat
+randtable
 ranlib
 raydone
 rctrl

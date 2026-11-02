@@ -4,6 +4,7 @@
 #include <expected>
 #include <filesystem>
 #include <functional>
+#include <memory>
 #include <optional>
 #include <span>
 #include <string>
@@ -98,6 +99,8 @@ struct CueTrack {
         extents{}; /*!< Optional ordered parts replacing file/firstSector. */
     /** User-data offset in bytes within each stored sector; absent selects the Mode 1 layout. */
     std::optional<std::uint32_t> dataOffset{};
+    /** Shared lifetime of decoded temporary storage, or empty for original source files. */
+    std::shared_ptr<const void> storage{};
 };
 
 /**
@@ -115,8 +118,9 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
  * Boss.ico moves to icon/coastline.ico, beside a PNG image of each of its sizes.
  *
  * @param disc A mounted disc directory, CUE sheet, ISO, BIN, numbered Track NN.bin file, CloneCD,
- * DiscJuggler CDI, Nero NRG, Alcohol MDS, or BlindWrite 4/5/6 image. Adjacent CUE metadata precedes
- * known-dump and discovered BIN layouts. Uncertain audio layouts import data only.
+ * DiscJuggler CDI, Nero NRG, Alcohol MDS, BlindWrite 4/5/6, or unencrypted ISZ image.
+ * Adjacent CUE metadata precedes known-dump and discovered BIN layouts.
+ * Uncertain audio layouts import data only.
  * @param dataDirectory The directory of the pack to write, assets/default of the data directory.
  * @param progress Called as each file and track is written, or empty.
  * @return The number of files written, or a message, also when @p progress cancels the import.

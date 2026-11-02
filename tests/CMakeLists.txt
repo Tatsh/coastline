@@ -339,6 +339,7 @@ coastline_dependency(
   HASH a2f4a8d51178f954e4c339007f77edd76ba0cb2e36f87a48e5a5403d9be5878f
   OPTIONS FMT_INSTALL=OFF FMT_TEST=OFF FMT_DOC=OFF)
 add_executable(disclayout_test disclayout_test.cpp "${_src}/sdl/disclayout.cpp"
+                              "${_src}/sdl/isz.cpp"
                               "${_src}/sdl/disctrackreader.cpp"
                               "${CMAKE_SOURCE_DIR}/tools/common/sha1.cpp")
 set_target_properties(disclayout_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
@@ -346,8 +347,17 @@ target_include_directories(disclayout_test PRIVATE "${_src}/sdl"
                                                 "${CMAKE_SOURCE_DIR}/tools/common")
 target_compile_options(disclayout_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
 target_link_options(disclayout_test PRIVATE -fsanitize=address,undefined)
-target_link_libraries(disclayout_test PRIVATE fmt::fmt)
+include("${CMAKE_SOURCE_DIR}/cmake/bzip2.cmake")
+target_link_libraries(disclayout_test PRIVATE fmt::fmt BZip2::BZip2 ZLIB::ZLIB)
 add_test(NAME disclayout COMMAND disclayout_test)
+
+add_executable(isz_test isz_test.cpp "${_src}/sdl/isz.cpp" "${_src}/sdl/disctrackreader.cpp")
+set_target_properties(isz_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(isz_test PRIVATE "${_src}/sdl")
+target_compile_options(isz_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(isz_test PRIVATE -fsanitize=address,undefined)
+target_link_libraries(isz_test PRIVATE fmt::fmt BZip2::BZip2 ZLIB::ZLIB)
+add_test(NAME isz COMMAND isz_test)
 
 add_executable(log_test log_test.cpp "${_src}/sdl/log.cpp")
 set_target_properties(log_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)

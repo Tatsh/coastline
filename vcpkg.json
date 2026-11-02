@@ -20,6 +20,7 @@
       "dependencies": [
         "argparse",
         "boost-pfr",
+        "bzip2",
         "drlibs",
         "fmt",
         {

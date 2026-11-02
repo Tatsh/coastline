@@ -398,6 +398,7 @@
         dependencies: [
           'argparse',
           'boost-pfr',
+          'bzip2',
           'drlibs',
           'fmt',
           { features: ['tools'], host: true, name: 'glslang' },

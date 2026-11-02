@@ -621,6 +621,9 @@ interleaved subchannels. Selecting `.b5i` or `.b6i` resolves the matching metada
 BlindWrite 4 uses `.bwt` metadata with `.bwi` data files. It supports separate track files and
 stored pregaps; `.bws` subchannels are optional. Selecting `.bwi` or `.bws` resolves matching
 `.bwt` metadata. Filenames resolve as UTF-8 or Windows-1252.
+Unencrypted ISZ images support zero-filled, uncompressed, zlib, and bzip2 chunks, split segments,
+and checksums. Decoding uses temporary storage until import finishes. ISO payloads provide data;
+raw-sector payloads also use BIN track discovery for CD music.
 
 The `--cd` option also accepts a directory, including a mounted physical disc or a copy of its
 files. Select the disc root with `BossRally.pod` directly inside it. In setup, enter its path or
