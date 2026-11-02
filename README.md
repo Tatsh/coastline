@@ -236,7 +236,8 @@ Down, Left, Right, Left, Right, L, and R on the first controller to unlock GAMEW
 selection for the current game session. GAMEWIN is an unfinished cutscene course with incomplete
 collision.
 
-F8 toggles the free camera during logos, menus, races, and attract demos, including paused races.
+F8 toggles the free camera throughout the application, including setup, movies, menus, logos,
+and paused or running races. Flat screens become panels viewed in perspective while moving.
 Move with W, A, S, and D, rise with E, descend with Q, and look with the mouse. Two-finger vertical
 scrolling or the mouse wheel moves forward and backward. Shift increases movement speed.
 Free camera temporarily uses maximum draw distance without changing saved settings.

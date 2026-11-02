@@ -13,6 +13,7 @@
 
 #include "assetimport.h"
 #include "filebrowser.h"
+#include "freecamera.h"
 #include "importer.h"
 #include "scenerenderer.h"
 #include "setupwizard.h"
@@ -206,8 +207,34 @@ SetupRun RunSetupWizard(GpuWindow &window,
     bool scriptMouseDown = false;
     std::optional<std::array<int, 2>> scriptMouse;
     bool quit = false;
+    bool freeCamera = false;
+    bool cameraEscapeHeld = false;
+    FreeCamera camera;
+    Uint64 lastCameraFrame = start;
+    auto cameraKey = [&](SDL_Keycode key) {
+        if (key == SDLK_F8) {
+            freeCamera = !freeCamera;
+            if (freeCamera) {
+                camera.Reset();
+            }
+        } else if (key == SDLK_ESCAPE && freeCamera) {
+            freeCamera = false;
+            cameraEscapeHeld = true;
+        } else {
+            return false;
+        }
+        SDL_SetWindowRelativeMouseMode(sdlWindow, freeCamera);
+        if (freeCamera) {
+            SDL_StopTextInput(sdlWindow);
+        } else {
+            SDL_StartTextInput(sdlWindow);
+        }
+        return true;
+    };
     for (int frame = 1; !quit; ++frame) {
         const Uint64 now = SDL_GetTicksNS();
+        std::array<float, 2> cameraMouse{};
+        float cameraScroll = 0;
         const std::uint64_t milliseconds =
             fixedTime ? static_cast<std::uint64_t>(frame) * 1000 / 60 : now / 1000000;
         int windowWidth = 1;
@@ -246,6 +273,9 @@ SetupRun RunSetupWizard(GpuWindow &window,
                 if (window.SetFullscreen(fullscreen)) {
                     config.Set("Video", "Fullscreen", fullscreen ? "1" : "0");
                 }
+                return;
+            }
+            if (freeCamera) {
                 return;
             }
             WizardEvent event;
@@ -300,11 +330,22 @@ SetupRun RunSetupWizard(GpuWindow &window,
                 quit = true;
                 break;
             case SDL_EVENT_KEY_DOWN:
+                if (sdlEvent.key.key == SDLK_ESCAPE && cameraEscapeHeld) {
+                    break;
+                }
+                if (!sdlEvent.key.repeat && cameraKey(sdlEvent.key.key)) {
+                    break;
+                }
                 keyDown(sdlEvent.key.key, sdlEvent.key.mod);
+                break;
+            case SDL_EVENT_KEY_UP:
+                if (sdlEvent.key.key == SDLK_ESCAPE) {
+                    cameraEscapeHeld = false;
+                }
                 break;
             case SDL_EVENT_TEXT_INPUT:
                 // Alt and a letter is an accelerator, not text.
-                if ((SDL_GetModState() & SDL_KMOD_ALT) == 0) {
+                if (!freeCamera && (SDL_GetModState() & SDL_KMOD_ALT) == 0) {
                     WizardEvent event;
                     event.type = WizardEvent::Type::Text;
                     event.text = sdlEvent.text.text;
@@ -314,14 +355,17 @@ SetupRun RunSetupWizard(GpuWindow &window,
                 break;
             case SDL_EVENT_MOUSE_BUTTON_DOWN:
             case SDL_EVENT_MOUSE_BUTTON_UP:
-                if (script.mouseMoves.empty() && sdlEvent.button.button == SDL_BUTTON_LEFT) {
+                if (!freeCamera && script.mouseMoves.empty() &&
+                    sdlEvent.button.button == SDL_BUTTON_LEFT) {
                     wizard.Handle(mouseEvent(sdlEvent.button.down ? WizardEvent::Type::MouseDown :
                                                                     WizardEvent::Type::MouseUp,
                                              gridPoint(sdlEvent.button.x, sdlEvent.button.y)));
                 }
                 break;
             case SDL_EVENT_MOUSE_MOTION:
-                if (script.mouseMoves.empty()) {
+                cameraMouse[0] += sdlEvent.motion.xrel;
+                cameraMouse[1] += sdlEvent.motion.yrel;
+                if (!freeCamera && script.mouseMoves.empty()) {
                     wizard.Handle(mouseEvent(WizardEvent::Type::MouseMove,
                                              gridPoint(sdlEvent.motion.x, sdlEvent.motion.y)));
                 }
@@ -332,7 +376,10 @@ SetupRun RunSetupWizard(GpuWindow &window,
                 }
                 break;
             case SDL_EVENT_MOUSE_WHEEL:
-                if (script.mouseMoves.empty()) {
+                cameraScroll += sdlEvent.wheel.direction == SDL_MOUSEWHEEL_FLIPPED ?
+                                    -sdlEvent.wheel.y :
+                                    sdlEvent.wheel.y;
+                if (!freeCamera && script.mouseMoves.empty()) {
                     WizardEvent event =
                         mouseEvent(WizardEvent::Type::Wheel,
                                    gridPoint(sdlEvent.wheel.mouse_x, sdlEvent.wheel.mouse_y));
@@ -360,12 +407,14 @@ SetupRun RunSetupWizard(GpuWindow &window,
         }
         for (std::size_t i = 0; i < script.keys.size() && i < scriptKeys.size(); ++i) {
             if (script.keys[i].frame == frame) {
-                keyDown(SDL_GetKeyFromScancode(scriptKeys[i], SDL_KMOD_NONE, false),
-                        static_cast<SDL_Keymod>(scriptMod));
+                const auto code = SDL_GetKeyFromScancode(scriptKeys[i], SDL_KMOD_NONE, false);
+                if (!cameraKey(code)) {
+                    keyDown(code, static_cast<SDL_Keymod>(scriptMod));
+                }
             }
         }
         for (const ScriptTyping &typed : script.typing) {
-            if (typed.frame != frame) {
+            if (typed.frame != frame || freeCamera) {
                 continue;
             }
             WizardEvent event;
@@ -381,7 +430,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
             wizard.Handle(event);
         }
         // A move of the script places the mouse on the 320 by 240 screen, spread over the grid.
-        if (!script.mouseMoves.empty()) {
+        if (!freeCamera && !script.mouseMoves.empty()) {
             std::optional<std::array<int, 2>> at;
             bool down = false;
             for (const ScriptMouse &move : script.mouseMoves) {
@@ -404,6 +453,37 @@ SetupRun RunSetupWizard(GpuWindow &window,
             }
         }
 
+        if (freeCamera) {
+            int count = 0;
+            const auto *keys = SDL_GetKeyboardState(&count);
+            auto down = [&](SDL_Scancode key) {
+                bool held = key < count && keys[key];
+                for (std::size_t i = 0; i < script.keys.size() && i < scriptKeys.size(); ++i) {
+                    const auto &press = script.keys[i];
+                    held |= scriptKeys[i] == key && frame >= press.frame &&
+                            frame - press.frame < press.frames;
+                }
+                return held;
+            };
+            auto axis = [&](SDL_Scancode positive, SDL_Scancode negative) {
+                return static_cast<float>(down(positive)) - static_cast<float>(down(negative));
+            };
+            const float speed = down(SDL_SCANCODE_LSHIFT) || down(SDL_SCANCODE_RSHIFT) ? 800 : 200;
+            const float seconds =
+                fixedTime ? 1.0f / 60 :
+                            std::min(static_cast<float>(now - lastCameraFrame) / 1e9f, 0.1f);
+            camera.Move(seconds,
+                        {axis(SDL_SCANCODE_W, SDL_SCANCODE_S) * speed,
+                         axis(SDL_SCANCODE_D, SDL_SCANCODE_A) * speed,
+                         axis(SDL_SCANCODE_E, SDL_SCANCODE_Q) * speed},
+                        {-cameraMouse[0] * 0.003f, -cameraMouse[1] * 0.003f});
+            if (cameraScroll != 0) {
+                camera.Move(0.1f, {cameraScroll * 300, 0, 0}, {});
+            }
+        }
+        lastCameraFrame = now;
+        renderer.SetFrontendCamera(freeCamera ? std::optional<Matrix4>(camera.View()) :
+                                                std::nullopt);
         wizard.Update();
         if (wizard.End() != WizardEnd::Running) {
             run.finished = wizard.End() == WizardEnd::Finished;
@@ -421,7 +501,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
         renderer.Begin({0.0f, 0.0f, 0.0f, 1.0f});
         TextGrid grid;
         wizard.Draw(grid, fixedTime ? frame / 60.0 : static_cast<double>(now - start) / 1e9);
-        font->Draw(renderer, grid, pointer);
+        font->Draw(renderer, grid, freeCamera ? std::nullopt : pointer);
         std::optional<std::filesystem::path> capture;
         if (std::ranges::contains(script.screenshots, frame) ||
             (script.screenshotEvery > 0 && frame % script.screenshotEvery == 0)) {
@@ -446,6 +526,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
             nextFrame = after;
         }
     }
+    SDL_SetWindowRelativeMouseMode(sdlWindow, false);
     auto savePath = [&](const std::string &key, const std::string &text) {
         std::string stored = text;
         if ((portable || (run.finished && wizard.Portable())) && !text.empty()) {

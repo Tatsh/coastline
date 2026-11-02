@@ -36,6 +36,37 @@ Matrix4 MultiplyMatrices(const Matrix4 &a, const Matrix4 &b) {
 
 namespace {
 
+Matrix4
+PanelProjection(const Matrix4 &projection, const std::optional<Matrix4> &camera, float aspect) {
+    if (!camera || projection[3] != 0 || projection[7] != 0 || projection[11] != 0 ||
+        projection[15] != 1) {
+        return projection;
+    }
+    // At the normal eye position, the panel preserves orthographic screen positions.
+    constexpr float DISTANCE = 290;
+    constexpr float NEAR_PLANE = 1;
+    constexpr float FAR_PLANE = 100000;
+    Matrix4 plane{DISTANCE * aspect, 0, 0, 0, 0, DISTANCE, 0, 0, 0, 0, 0, 0, 0, 0, -DISTANCE, 1};
+    Matrix4 perspective{1 / aspect,
+                        0,
+                        0,
+                        0,
+                        0,
+                        1,
+                        0,
+                        0,
+                        0,
+                        0,
+                        -FAR_PLANE / (FAR_PLANE - NEAR_PLANE),
+                        -1,
+                        0,
+                        0,
+                        -NEAR_PLANE * FAR_PLANE / (FAR_PLANE - NEAR_PLANE),
+                        0};
+    return MultiplyMatrices(perspective,
+                            MultiplyMatrices(*camera, MultiplyMatrices(plane, projection)));
+}
+
 // The transform of a node of glTF, from its matrix, or its translation, rotation, and scale.
 Matrix4 NodeMatrix(const nlohmann::json &node) {
     if (node.contains("matrix")) {
@@ -2105,8 +2136,15 @@ void SceneRenderer::DrawQuads(std::span<const FlatVertex> corners,
     for (const FlatVertex &corner : corners) {
         m_state->flat.push_back(ConvertFlatVertex(corner));
     }
-    m_state->draws.emplace_back(QuadDraw{
-        first / 4 * 6, corners.size() / 4, material, projection, depthTest, m_state->Current()});
+    const float aspect = static_cast<float>(m_state->window->FrameWidth()) /
+                         std::max(m_state->window->FrameHeight(), 1u);
+    m_state->draws.emplace_back(
+        QuadDraw{first / 4 * 6,
+                 corners.size() / 4,
+                 material,
+                 PanelProjection(projection, m_state->frontendCamera, aspect),
+                 depthTest,
+                 m_state->Current()});
 }
 
 void SceneRenderer::DrawBufferedQuads(RenderQuadBuffer &buffer,
@@ -2124,8 +2162,16 @@ void SceneRenderer::DrawBufferedQuads(RenderQuadBuffer &buffer,
             m_state->quadOrder.push_back(slot * 4 + corner);
         }
     }
-    m_state->draws.emplace_back(QuadDraw{
-        first, order.size(), material, projection, depthTest, m_state->Current(), &buffer});
+    const float aspect = static_cast<float>(m_state->window->FrameWidth()) /
+                         std::max(m_state->window->FrameHeight(), 1u);
+    m_state->draws.emplace_back(
+        QuadDraw{first,
+                 order.size(),
+                 material,
+                 PanelProjection(projection, m_state->frontendCamera, aspect),
+                 depthTest,
+                 m_state->Current(),
+                 &buffer});
 }
 
 void SceneRenderer::End(const std::filesystem::path *capture,
