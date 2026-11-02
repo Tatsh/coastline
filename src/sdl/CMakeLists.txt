@@ -213,6 +213,7 @@ add_library(
   gpu.cpp
   importer.cpp
   disclayout.cpp
+  disctrackreader.cpp
   importversion.cpp
   indexedimage.cpp
   input.cpp

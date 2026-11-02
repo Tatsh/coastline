@@ -601,14 +601,18 @@ The data comes from a Boss Rally disc image and a Top Gear Rally cartridge image
 checks the cartridge against the SHA-1 of each release, and converts the CD audio of a CUE sheet
 to FLAC. An ISO image has no CD audio. The import writes converted packs under `assets` in the
 data directory, and exits. The `import` subcommand takes the disc with `--cd`, a CUE sheet (`.cue`),
-an ISO image (`.iso`), a BIN image (`.bin`), or CloneCD metadata (`.ccd` with its `.img`), and a ROM
+an ISO image (`.iso`), a BIN image (`.bin`), CloneCD metadata (`.ccd` with its `.img`), Alcohol
+metadata (`.mds` with its `.mdf` files), or a Nero image (`.nrg`), and a ROM
 image with each `--rom`. A BIN first uses an adjacent CUE sheet with the same basename, ignoring
 case, or another adjacent sheet referencing the BIN. Without a CUE sheet, its whole-file SHA-1
 selects the track offsets of a verified dump when available. Otherwise, sector sync and headers
 locate the data boundary, checked against the ISO volume size, and runs of digital silence
 identify audio pregaps. Audio discovery requires all 12 music tracks and sufficient track lengths;
 uncertain layouts import data only. A complete set of `Track NN.bin` files also imports without a
-CUE sheet. CloneCD uses its track metadata; `.sub` data is not required.
+CUE sheet. CloneCD uses its track metadata; `.sub` data is not required. Nero supports both
+32-bit and 64-bit track metadata, recorded disc-at-once or track-at-once. Alcohol supports split
+image files and UTF-16 filenames. Both formats preserve track boundaries and exclude pregaps;
+interleaved subchannel bytes are discarded during conversion.
 
 The `--cd` option also accepts a directory, including a mounted physical disc or a copy of its
 files. Select the disc root with `BossRally.pod` directly inside it. In setup, enter its path or

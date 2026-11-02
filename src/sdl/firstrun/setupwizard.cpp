@@ -8,6 +8,8 @@
 #include <string_view>
 #include <system_error>
 
+#include "../discformats.h"
+
 namespace coastline {
 
 namespace {
@@ -36,7 +38,6 @@ constexpr std::uint64_t DOUBLE_CLICK_MILLISECONDS = 500;
 constexpr std::uint64_t TYPING_MILLISECONDS = 1000;
 constexpr int WHEEL_ROWS = 3;
 
-constexpr std::array<std::string_view, 5> DISC_EXTENSIONS{".bin", ".ccd", ".cue", ".img", ".iso"};
 constexpr std::array<std::string_view, 3> CARTRIDGE_EXTENSIONS{".n64", ".v64", ".z64"};
 
 constexpr std::array<WizardControlId, WIZARD_CARTRIDGES> TEXT_IDS{
@@ -412,7 +413,7 @@ std::vector<WizardControl> SetupWizard::BrowserControls() const {
     filter.width = 44;
     filter.value = m_browser->allFiles ? "All files (*.*)" :
                    m_browser->target == WizardControlId::DiscText ?
-                                         "Disc images (*.bin, *.ccd, *.cue, *.img, *.iso)" :
+                                         "Disc images (BIN/CUE, ISO, CloneCD, MDS, NRG)" :
                                          "ROM images (*.z64, *.n64, *.v64)";
     if (!directory) {
         controls.push_back(filter);
@@ -586,7 +587,7 @@ void SetupWizard::Validate(WizardControlId id, bool force) {
     }
     int index = CartridgeIndex(id);
     if (index < 0) {
-        if (!directory && !std::ranges::contains(DISC_EXTENSIONS, LowercaseExtension(path))) {
+        if (!directory && !IsDiscImageExtension(LowercaseExtension(path))) {
             field.reason = "Not a disc image or directory";
             return;
         }
@@ -632,7 +633,7 @@ void SetupWizard::ChangeDirectory(const std::filesystem::path &directory) {
     std::span<const std::string_view> extensions;
     if (!m_browser->allFiles) {
         extensions = m_browser->target == WizardControlId::DiscText ?
-                         std::span<const std::string_view>(DISC_EXTENSIONS) :
+                         std::span<const std::string_view>(DISC_IMAGE_EXTENSIONS) :
                          std::span<const std::string_view>(CARTRIDGE_EXTENSIONS);
     }
     auto entries = ListBrowserDirectory(

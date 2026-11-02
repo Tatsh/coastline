@@ -3,6 +3,7 @@
 #include <cctype>
 #include <system_error>
 
+#include "../discformats.h"
 #include "setupwizard.h"
 
 namespace coastline {
@@ -14,8 +15,7 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
     auto report = [&](const std::string &step, double fraction) {
         return !progress || progress(result, step, fraction);
     };
-    constexpr std::array<std::string_view, 9> extensions{
-        ".cue", ".ccd", ".img", ".iso", ".z64", ".n64", ".v64", ".bin", ".zip"};
+    constexpr std::array<std::string_view, 4> extensions{".z64", ".n64", ".v64", ".zip"};
     std::vector<std::filesystem::path> candidates;
     std::error_code error;
     std::filesystem::recursive_directory_iterator entry(
@@ -30,7 +30,8 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
             return result;
         }
         if (entry->is_regular_file(error)) {
-            if (std::ranges::contains(extensions, LowercaseExtension(entry->path()))) {
+            const auto extension = LowercaseExtension(entry->path());
+            if (IsDiscImageExtension(extension) || std::ranges::contains(extensions, extension)) {
                 candidates.push_back(entry->path());
             } else if (LowercaseExtension(entry->path()) == ".pod") {
                 std::string filename = entry->path().filename().string();
@@ -50,7 +51,9 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
     }
     auto rank = [](const std::filesystem::path &path) {
         auto extension = LowercaseExtension(path);
-        return extension == ".cue" || extension == ".ccd" ? 0 : extension == ".iso" ? 1 : 2;
+        return extension == ".cue" || extension == ".ccd" || extension == ".mds" ? 0 :
+               extension == ".iso" || extension == ".nrg"                        ? 1 :
+                                                                                   2;
     };
     std::ranges::sort(candidates, [&](const auto &left, const auto &right) {
         return std::pair(rank(left), left) < std::pair(rank(right), right);
@@ -85,14 +88,13 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
             if (result.disc.empty() && !services.checkDisc(path)) {
                 result.disc = path;
             }
-        } else if (extension == ".cue" || extension == ".iso" || extension == ".bin" ||
-                   extension == ".ccd" || extension == ".img") {
+        } else if (IsDiscImageExtension(extension)) {
             if (result.disc.empty() && !services.checkDisc(path)) {
                 result.disc = path;
             }
         }
-        if (extension != ".zip" && extension != ".cue" && extension != ".iso" &&
-            extension != ".ccd" && extension != ".img" && result.disc != path) {
+        if (extension != ".zip" && (extension == ".bin" || !IsDiscImageExtension(extension)) &&
+            result.disc != path) {
             const auto size = std::filesystem::file_size(path, error);
             if (!error && size <= 32 * 1024 * 1024) {
                 if (auto release = services.identifyCartridge(path)) {

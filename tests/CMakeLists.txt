@@ -339,6 +339,7 @@ coastline_dependency(
   HASH a2f4a8d51178f954e4c339007f77edd76ba0cb2e36f87a48e5a5403d9be5878f
   OPTIONS FMT_INSTALL=OFF FMT_TEST=OFF FMT_DOC=OFF)
 add_executable(disclayout_test disclayout_test.cpp "${_src}/sdl/disclayout.cpp"
+                              "${_src}/sdl/disctrackreader.cpp"
                               "${CMAKE_SOURCE_DIR}/tools/common/sha1.cpp")
 set_target_properties(disclayout_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(disclayout_test PRIVATE "${_src}/sdl"

@@ -497,6 +497,28 @@ void TestDiscDirectory(const std::filesystem::path &root) {
     std::filesystem::remove_all(root / "disc");
 }
 
+void TestDiscContainers(const std::filesystem::path &root) {
+    for (const auto *extension : {".MDS", ".MDF", ".NRG"}) {
+        const auto directory = root / "containers";
+        std::filesystem::create_directory(directory);
+        const auto disc = directory / (std::string("disc") + extension);
+        std::ofstream(disc).put('x');
+        auto services = Services(root);
+        services.disc = disc;
+        services.roms[0] = root / "usa.z64";
+        SetupWizard wizard(std::move(services));
+        Check(Enabled(wizard, Next), "Container disc images must pass to disc validation.");
+        Click(wizard, DiscBrowse);
+        Check(std::ranges::any_of(
+                  wizard.BrowserEntries(),
+                  [&](const auto &entry) { return entry.name == disc.filename().string(); }),
+              "Disc browsing must list container image extensions.");
+        const auto found = SearchWizardDirectory(directory, Services(root), {});
+        Check(found.disc == disc, "Recursive search must recognise container images.");
+        std::filesystem::remove_all(directory);
+    }
+}
+
 int main() {
     auto root = std::filesystem::temp_directory_path() /
                 ("coastline-firstrun-" +
@@ -524,6 +546,7 @@ int main() {
         TestReimport(root);
         TestEditing(root);
         TestBrowser(root);
+        TestDiscContainers(root);
         TestSearch(root);
         TestImportFailureAndCancel(root);
         Check(EncodeUtf8(DecodeUtf8("é 日本")) == "é 日本", "UTF-8 paths must round-trip.");

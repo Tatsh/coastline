@@ -5,8 +5,10 @@
 #include <cctype>
 #include <charconv>
 #include <fstream>
+#include <limits>
 #include <map>
 #include <sstream>
+#include <tuple>
 
 #include <fmt/format.h>
 
@@ -17,6 +19,220 @@ namespace {
 constexpr std::uint32_t RAW_SECTOR = 2352;
 constexpr std::uint32_t DATA_SECTOR = 2048;
 constexpr std::uint32_t FRAMES_PER_SECOND = 75;
+
+using Bytes = std::span<const std::uint8_t>;
+
+std::uint64_t Big(Bytes bytes, std::size_t offset, std::size_t size) {
+    std::uint64_t value = 0;
+    for (std::size_t index = 0; index < size; ++index) {
+        value = (value << 8) | bytes[offset + index];
+    }
+    return value;
+}
+
+std::uint64_t Little(Bytes bytes, std::size_t offset, std::size_t size) {
+    std::uint64_t value = 0;
+    for (std::size_t index = 0; index < size; ++index) {
+        value |= static_cast<std::uint64_t>(bytes[offset + index]) << (index * 8);
+    }
+    return value;
+}
+
+bool Range(Bytes bytes, std::uint64_t offset, std::uint64_t count) {
+    return offset <= bytes.size() && count <= bytes.size() - offset;
+}
+
+std::optional<std::vector<std::uint8_t>>
+ReadMetadata(std::ifstream &file, std::uint64_t offset, std::uint64_t count) {
+    constexpr std::uint64_t LIMIT = 16 * 1024 * 1024;
+    if (count > LIMIT ||
+        offset > static_cast<std::uint64_t>(std::numeric_limits<std::streamoff>::max())) {
+        return std::nullopt;
+    }
+    std::vector<std::uint8_t> result(static_cast<std::size_t>(count));
+    file.seekg(static_cast<std::streamoff>(offset));
+    if (!file.read(reinterpret_cast<char *>(result.data()), static_cast<std::streamsize>(count))) {
+        return std::nullopt;
+    }
+    return result;
+}
+
+bool NrgMode(CueTrack &track, unsigned mode) {
+    switch (mode) {
+    case 0:
+    case 2:
+        track.sectorSize = DATA_SECTOR;
+        track.dataOffset = 0;
+        break;
+    case 3:
+        track.sectorSize = 2336;
+        track.dataOffset = 8;
+        break;
+    case 5:
+    case 15:
+        track.sectorSize = mode == 5 ? RAW_SECTOR : RAW_SECTOR + 96;
+        track.dataOffset = 16;
+        break;
+    case 6:
+    case 17:
+        track.sectorSize = mode == 6 ? RAW_SECTOR : RAW_SECTOR + 96;
+        track.dataOffset = 24;
+        break;
+    case 7:
+    case 16:
+        track.audio = true;
+        track.sectorSize = mode == 7 ? RAW_SECTOR : RAW_SECTOR + 96;
+        break;
+    default:
+        return false;
+    }
+    return true;
+}
+
+bool DisjointExtents(const std::vector<CueTrack> &tracks) {
+    std::vector<std::tuple<std::filesystem::path, std::uint64_t, std::uint64_t>> intervals;
+    for (const auto &track : tracks) {
+        for (const auto &extent : track.extents) {
+            std::error_code error;
+            const auto file = std::filesystem::weakly_canonical(extent.file, error);
+            if (error || track.sectorSize == 0 || extent.sectorCount == 0 ||
+                extent.sectorCount > (UINT64_MAX - extent.byteOffset) / track.sectorSize) {
+                return false;
+            }
+            intervals.emplace_back(
+                file, extent.byteOffset, extent.byteOffset + extent.sectorCount * track.sectorSize);
+        }
+    }
+    std::ranges::sort(intervals);
+    for (std::size_t index = 1; index < intervals.size(); ++index) {
+        if (std::get<0>(intervals[index - 1]) == std::get<0>(intervals[index]) &&
+            std::get<2>(intervals[index - 1]) > std::get<1>(intervals[index])) {
+            return false;
+        }
+    }
+    return true;
+}
+
+std::expected<std::vector<CueTrack>, std::string> NrgTracks(const std::filesystem::path &image) {
+    const auto invalid = std::unexpected(std::string("Invalid or unsupported Nero NRG metadata."));
+    std::error_code error;
+    const auto size = std::filesystem::file_size(image, error);
+    if (error || size < 12) {
+        return invalid;
+    }
+    std::ifstream file(image, std::ios::binary);
+    const auto trailer = ReadMetadata(file, size - 12, 12);
+    if (!trailer) {
+        return invalid;
+    }
+    const auto signature = [&](std::size_t offset, std::string_view text) {
+        return std::ranges::equal(Bytes(*trailer).subspan(offset, 4), text);
+    };
+    const bool wide = signature(0, "NER5");
+    if (!wide && !signature(4, "NERO")) {
+        return invalid;
+    }
+    const auto offset = Big(*trailer, wide ? 4 : 8, wide ? 8 : 4);
+    const std::uint64_t end = size - (wide ? 12 : 8);
+    if (offset >= end) {
+        return invalid;
+    }
+    const auto metadata = ReadMetadata(file, offset, end - offset);
+    if (!metadata) {
+        return invalid;
+    }
+    std::vector<CueTrack> tracks;
+    std::optional<std::vector<CueTrack>> dao;
+    std::optional<std::vector<CueTrack>> tao;
+    auto finishSession = [&](std::optional<std::uint64_t> expected) {
+        auto &session = dao ? dao : tao;
+        if (!session || (expected && *expected != session->size()) ||
+            session->size() > 99 - tracks.size()) {
+            return false;
+        }
+        for (auto &track : *session) {
+            if (track.number != 0 && track.number != static_cast<int>(tracks.size() + 1)) {
+                return false;
+            }
+            track.number = static_cast<int>(tracks.size() + 1);
+            tracks.push_back(std::move(track));
+        }
+        dao.reset();
+        tao.reset();
+        return true;
+    };
+    std::size_t cursor = 0;
+    while (Range(*metadata, cursor, 8)) {
+        const std::string_view id(reinterpret_cast<const char *>(metadata->data() + cursor), 4);
+        const auto length = Big(*metadata, cursor + 4, 4);
+        cursor += 8;
+        if (!Range(*metadata, cursor, length)) {
+            return invalid;
+        }
+        const auto body = Bytes(*metadata).subspan(cursor, static_cast<std::size_t>(length));
+        cursor += static_cast<std::size_t>(length);
+        if (id == "END!") {
+            if (length != 0 || cursor != metadata->size() ||
+                ((dao || tao) && !finishSession(std::nullopt)) || tracks.empty() ||
+                !DisjointExtents(tracks)) {
+                return invalid;
+            }
+            return tracks;
+        }
+        if (id == "SINF") {
+            if (length != 4 || !finishSession(Big(body, 0, 4))) {
+                return invalid;
+            }
+            continue;
+        }
+        const bool isDao = id == "DAOI" || id == "DAOX";
+        const bool isTao = id == "ETNF" || id == "ETN2";
+        if (!isDao && !isTao) {
+            continue;
+        }
+        const bool large = id == "DAOX" || id == "ETN2";
+        const std::size_t word = large ? 8 : 4;
+        const std::size_t header = isDao ? 22 : 0;
+        const std::size_t record = isDao ? 18 + word * 3 : large ? 32 : 20;
+        if (length < header || (length - header) % record != 0) {
+            return invalid;
+        }
+        const auto count = (length - header) / record;
+        if (count == 0 || count > 99 ||
+            (isDao && (body[20] == 0 || body[21] > 99 || body[21] < body[20] ||
+                       body[21] - body[20] + 1 != static_cast<int>(count)))) {
+            return invalid;
+        }
+        std::vector<CueTrack> session;
+        for (std::size_t index = 0; index < count; ++index) {
+            const auto entry = body.subspan(header + index * record, record);
+            CueTrack track;
+            track.file = image;
+            track.number = isDao ? body[20] + static_cast<int>(index) : 0;
+            const auto mode = isDao ? entry[14] : Big(entry, word * 2, 4);
+            if (!NrgMode(track, static_cast<unsigned>(mode)) ||
+                (isDao && Big(entry, 12, 2) != track.sectorSize)) {
+                return invalid;
+            }
+            const auto start = Big(entry, isDao ? 18 + word : 0, word);
+            const auto stop = Big(entry, isDao ? 18 + word * 2 : word, word);
+            const auto bytes = isDao ? (stop >= start ? stop - start : 0) : stop;
+            if (bytes == 0 || bytes % track.sectorSize != 0 || start > offset ||
+                bytes > offset - start || (isDao && Big(entry, 18, word) > start)) {
+                return invalid;
+            }
+            track.sectorCount = bytes / track.sectorSize;
+            track.extents.push_back({image, start, track.sectorCount});
+            session.push_back(std::move(track));
+        }
+        auto &destination = isDao ? dao : tao;
+        if (destination) {
+            return invalid;
+        }
+        destination = std::move(session);
+    }
+    return invalid;
+}
 
 std::string Lowercase(std::string value) {
     std::ranges::transform(
@@ -40,6 +256,202 @@ std::filesystem::path AdjacentFile(const std::filesystem::path &file) {
         }
     }
     return file;
+}
+
+std::optional<std::filesystem::path> MdsFilename(Bytes metadata,
+                                                 std::uint64_t offset,
+                                                 bool wide,
+                                                 const std::filesystem::path &descriptor) {
+    std::u8string text;
+    if (wide) {
+        std::u16string decoded;
+        bool terminated = false;
+        for (std::size_t index = 0; index < 2048; ++index) {
+            if (!Range(metadata, offset + index * 2, 2)) {
+                return std::nullopt;
+            }
+            const auto value = static_cast<char16_t>(Little(metadata, offset + index * 2, 2));
+            if (value == 0) {
+                terminated = true;
+                break;
+            }
+            decoded.push_back(value);
+        }
+        if (!terminated || decoded.empty()) {
+            return std::nullopt;
+        }
+        for (std::size_t index = 0; index < decoded.size(); ++index) {
+            if (decoded[index] >= 0xd800 && decoded[index] <= 0xdbff) {
+                if (++index >= decoded.size() || decoded[index] < 0xdc00 ||
+                    decoded[index] > 0xdfff) {
+                    return std::nullopt;
+                }
+            } else if (decoded[index] >= 0xdc00 && decoded[index] <= 0xdfff) {
+                return std::nullopt;
+            }
+        }
+        try {
+            text = std::filesystem::path(decoded).generic_u8string();
+        } catch (const std::filesystem::filesystem_error &) {
+            return std::nullopt;
+        }
+    } else {
+        bool terminated = false;
+        for (std::size_t index = 0; index < 4096; ++index) {
+            if (!Range(metadata, offset + index, 1)) {
+                return std::nullopt;
+            }
+            const auto value = metadata[offset + index];
+            if (value == 0) {
+                terminated = true;
+                break;
+            }
+            text.push_back(static_cast<char8_t>(value));
+        }
+        if (!terminated || text.empty()) {
+            return std::nullopt;
+        }
+    }
+    std::ranges::replace(text, u8'\\', u8'/');
+    std::filesystem::path filename;
+    try {
+        filename = std::filesystem::path(text);
+    } catch (const std::filesystem::filesystem_error &) {
+        return std::nullopt;
+    }
+    if (filename.filename().u8string().starts_with(u8"*.")) {
+        auto image = descriptor;
+        image.replace_extension(filename.extension());
+        return AdjacentFile(image);
+    }
+    auto image = AdjacentFile(descriptor.parent_path() / filename);
+    std::error_code error;
+    if (!std::filesystem::is_regular_file(image, error)) {
+        image = AdjacentFile(descriptor.parent_path() / filename.filename());
+    }
+    return image;
+}
+
+std::expected<std::vector<CueTrack>, std::string>
+MdsTracks(const std::filesystem::path &descriptor) {
+    const auto invalid =
+        std::unexpected(std::string("Invalid or unsupported Alcohol MDS metadata."));
+    std::error_code error;
+    const auto size = std::filesystem::file_size(descriptor, error);
+    std::ifstream file(descriptor, std::ios::binary);
+    const auto bytes = error ? std::nullopt : ReadMetadata(file, 0, size);
+    if (!bytes || bytes->size() < 88 ||
+        !std::ranges::equal(Bytes(*bytes).first(16), std::string_view("MEDIA DESCRIPTOR")) ||
+        (*bytes)[16] != 1 || Little(*bytes, 18, 2) > 2) {
+        return invalid;
+    }
+    const auto sessions = Little(*bytes, 20, 2);
+    const auto sessionOffset = Little(*bytes, 80, 4);
+    if (sessions == 0 || sessions > 99 || !Range(*bytes, sessionOffset, sessions * 24)) {
+        return invalid;
+    }
+    std::vector<CueTrack> tracks;
+    for (std::size_t session = 0; session < sessions; ++session) {
+        const auto header = Bytes(*bytes).subspan(sessionOffset + session * 24, 24);
+        const auto blocks = header[10];
+        const auto first = Little(header, 12, 2);
+        const auto last = Little(header, 14, 2);
+        const auto blockOffset = Little(header, 20, 4);
+        if (Little(header, 8, 2) != session + 1 || first != tracks.size() + 1 || last < first ||
+            last > 99 || blocks < last - first + 1 ||
+            !Range(*bytes, blockOffset, static_cast<std::uint64_t>(blocks) * 80)) {
+            return invalid;
+        }
+        for (unsigned index = 0; index < blocks; ++index) {
+            const auto entry = Bytes(*bytes).subspan(blockOffset + index * 80, 80);
+            if (entry[4] >= 0xa0 && entry[4] <= 0xa2) {
+                continue;
+            }
+            CueTrack track;
+            track.number = entry[4];
+            track.sectorSize = static_cast<std::uint32_t>(Little(entry, 16, 2));
+            track.audio = (entry[0] & 7) == 1;
+            const auto extra = Little(entry, 12, 4);
+            const auto files = Little(entry, 48, 4);
+            const auto footer = Little(entry, 52, 4);
+            if (track.number != static_cast<int>(tracks.size() + 1) ||
+                static_cast<std::uint64_t>(track.number) > last || files == 0 || files > 99 ||
+                !Range(*bytes, footer, files * 16) || !Range(*bytes, extra, 8) || extra == 0 ||
+                (entry[1] != 0 && entry[1] != 8)) {
+                return invalid;
+            }
+            const auto subchannel = entry[1] == 8 ? 96u : 0u;
+            if (track.sectorSize < subchannel) {
+                return invalid;
+            }
+            const auto mainSize = track.sectorSize - subchannel;
+            const auto mode = entry[0] & 7;
+            if (track.audio) {
+                if (mainSize != RAW_SECTOR) {
+                    return invalid;
+                }
+            } else if (mode == 2) {
+                if (mainSize != DATA_SECTOR && mainSize != RAW_SECTOR) {
+                    return invalid;
+                }
+                track.dataOffset = mainSize == RAW_SECTOR ? 16 : 0;
+            } else if (mode == 0 || mode == 3 || mode == 4 || mode == 7) {
+                if (mainSize != DATA_SECTOR && mainSize != 2336 && mainSize != RAW_SECTOR) {
+                    return invalid;
+                }
+                track.dataOffset = mainSize == RAW_SECTOR ? 24 : mainSize == 2336 ? 8 : 0;
+            } else {
+                return invalid;
+            }
+            track.sectorCount = Little(*bytes, extra + 4, 4);
+            if (track.sectorCount == 0) {
+                return invalid;
+            }
+            auto remaining = track.sectorCount;
+            auto offset = Little(entry, 40, 8);
+            std::vector<std::filesystem::path> seen;
+            for (std::size_t part = 0; part < files; ++part) {
+                const auto info = Bytes(*bytes).subspan(footer + part * 16, 16);
+                const auto wide = Little(info, 4, 4);
+                const auto filename =
+                    wide > 1 ? std::nullopt :
+                               MdsFilename(*bytes, Little(info, 0, 4), wide != 0, descriptor);
+                if (!filename || std::ranges::find(seen, *filename) != seen.end()) {
+                    return invalid;
+                }
+                seen.push_back(*filename);
+                const auto fileSize = std::filesystem::file_size(*filename, error);
+                if (error) {
+                    return std::unexpected("Missing MDS data file " + filename->string() + ".");
+                }
+                if (offset >= fileSize) {
+                    offset -= fileSize;
+                    continue;
+                }
+                const auto available = (fileSize - offset) / track.sectorSize;
+                const auto count = std::min(remaining, available);
+                if (count != 0) {
+                    track.extents.push_back({*filename, offset, count});
+                    remaining -= count;
+                }
+                if (remaining != 0 && (fileSize - offset) % track.sectorSize != 0) {
+                    return invalid;
+                }
+                offset = 0;
+            }
+            if (remaining != 0 || track.extents.empty()) {
+                return invalid;
+            }
+            track.file = track.extents.front().file;
+            tracks.push_back(std::move(track));
+        }
+        if (tracks.size() != last) {
+            return invalid;
+        }
+    }
+    return DisjointExtents(tracks) ?
+               std::expected<std::vector<CueTrack>, std::string>(std::move(tracks)) :
+               invalid;
 }
 
 std::expected<std::vector<CueTrack>, std::string>
@@ -404,6 +816,14 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
 std::expected<std::vector<CueTrack>, std::string>
 ReadDiscTracks(const std::filesystem::path &disc) {
     const auto extension = Lowercase(disc.extension().string());
+    if (extension == ".nrg") {
+        return NrgTracks(disc);
+    }
+    if (extension == ".mds" || extension == ".mdf") {
+        auto metadata = disc;
+        metadata.replace_extension(".mds");
+        return MdsTracks(AdjacentFile(metadata));
+    }
     if (extension == ".cue") {
         return ParseCueSheet(disc);
     }

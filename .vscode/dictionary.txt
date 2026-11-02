@@ -217,6 +217,8 @@ dacrate
 daddu
 damagetexture
 damnit
+daoi
+daox
 darin
 dasharray
 dashboardtextures
@@ -310,6 +312,7 @@ diref
 disasm
 discl
 disclayout
+disctrackreader
 displaylist
 displaylistdata
 displaylistops
@@ -442,6 +445,7 @@ errck
 errorabort
 esac
 esbenp
+etnf
 exceptasm
 excmask
 exhaustpos

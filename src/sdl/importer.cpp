@@ -34,6 +34,7 @@
 #include "common/rle.h"
 #include "common/weather.h"
 #include "disclayout.h"
+#include "disctrackreader.h"
 #include "importjobs.h"
 #include "sdl/consolestrings.h"
 #include "sdl/ghostfile.h"
@@ -161,28 +162,34 @@ std::uint32_t Little32(const std::uint8_t *bytes) {
 // Reads the user data of the sectors of a data track, raw or cooked.
 class SectorReader {
 public:
-    SectorReader(std::ifstream &file, std::uint32_t sectorSize, std::uint64_t firstSector)
-        : m_file(file), m_sectorSize(sectorSize), m_firstSector(firstSector),
-          m_dataOffset(sectorSize == RAW_SECTOR ? 16 : 0) {
+    explicit SectorReader(const CueTrack &track)
+        : m_file(track), m_sectorSize(track.sectorSize),
+          m_dataOffset(track.dataOffset.value_or(track.sectorSize >= RAW_SECTOR ? 16 : 0)) {
     }
 
     bool Read(std::uint64_t sector, std::uint32_t count, std::vector<std::uint8_t> &out) {
+        if (count > 32768 || m_sectorSize < DATA_SECTOR ||
+            m_dataOffset > m_sectorSize - DATA_SECTOR) {
+            return false;
+        }
+        m_raw.resize(static_cast<std::size_t>(count) * m_sectorSize);
+        if (!m_file.Read(sector, count, m_raw)) {
+            return false;
+        }
         out.resize(static_cast<std::size_t>(count) * DATA_SECTOR);
         for (std::uint32_t i = 0; i < count; ++i) {
-            m_file.seekg(static_cast<std::streamoff>((m_firstSector + sector + i) * m_sectorSize +
-                                                     m_dataOffset));
-            if (!m_file.read(reinterpret_cast<char *>(out.data() + i * DATA_SECTOR), DATA_SECTOR)) {
-                return false;
-            }
+            std::copy_n(m_raw.data() + static_cast<std::size_t>(i) * m_sectorSize + m_dataOffset,
+                        DATA_SECTOR,
+                        out.data() + static_cast<std::size_t>(i) * DATA_SECTOR);
         }
         return true;
     }
 
 private:
-    std::ifstream &m_file;
+    DiscTrackReader m_file;
     std::uint32_t m_sectorSize;
-    std::uint64_t m_firstSector;
     std::uint32_t m_dataOffset;
+    std::vector<std::uint8_t> m_raw;
 };
 
 struct IsoEntry {
@@ -232,7 +239,7 @@ bool ListDirectory(SectorReader &reader,
         return false;
     }
     std::vector<std::uint8_t> data;
-    if (!reader.Read(extent, (size + DATA_SECTOR - 1) / DATA_SECTOR, data)) {
+    if (!reader.Read(extent, size / DATA_SECTOR + (size % DATA_SECTOR != 0), data)) {
         return false;
     }
     std::size_t offset = 0;
@@ -1980,10 +1987,13 @@ struct EncoderDeleter {
     }
 };
 
-std::optional<std::string> EncodeAudioTrack(std::ifstream &file,
-                                            const CueTrack &track,
+std::optional<std::string> EncodeAudioTrack(const CueTrack &track,
                                             const std::filesystem::path &destination,
                                             const ImportProgress &progress) {
+    if (track.sectorSize != RAW_SECTOR && track.sectorSize != RAW_SECTOR + 96) {
+        return "Unsupported CD audio sector size.";
+    }
+    DiscTrackReader file(track);
     std::unique_ptr<FLAC__StreamEncoder, EncoderDeleter> encoder(FLAC__stream_encoder_new());
     if (!encoder) {
         return "The FLAC encoder cannot be created.";
@@ -2002,24 +2012,25 @@ std::optional<std::string> EncodeAudioTrack(std::ifstream &file,
         return fmt::format("{} cannot be written.", destination.string());
     }
     constexpr std::uint64_t CHUNK_SECTORS = 75;
-    std::vector<std::uint8_t> raw(CHUNK_SECTORS * RAW_SECTOR);
+    std::vector<std::uint8_t> raw(CHUNK_SECTORS * track.sectorSize);
     std::vector<FLAC__int32> samples(CHUNK_SECTORS * SAMPLES_PER_SECTOR * 2);
     const auto step = "music/" + destination.filename().string();
-    file.seekg(static_cast<std::streamoff>(track.firstSector * RAW_SECTOR));
     for (std::uint64_t done = 0; done < track.sectorCount; done += CHUNK_SECTORS) {
         if (progress &&
             !progress(step, static_cast<double>(done) / static_cast<double>(track.sectorCount))) {
             return "Import cancelled.";
         }
         std::uint64_t count = std::min(CHUNK_SECTORS, track.sectorCount - done);
-        if (!file.read(reinterpret_cast<char *>(raw.data()),
-                       static_cast<std::streamsize>(count * RAW_SECTOR))) {
+        if (!file.Read(done,
+                       static_cast<std::uint32_t>(count),
+                       std::span(raw).first(count * track.sectorSize))) {
             return fmt::format("Track {} is cut short in the image.", track.number);
         }
         // CD audio is 16-bit little-endian stereo.
         std::size_t values = count * RAW_SECTOR / 2;
         for (std::size_t i = 0; i < values; ++i) {
-            samples[i] = static_cast<std::int16_t>(raw[i * 2] | (raw[i * 2 + 1] << 8));
+            const auto offset = (i * 2 / RAW_SECTOR) * track.sectorSize + i * 2 % RAW_SECTOR;
+            samples[i] = static_cast<std::int16_t>(raw[offset] | (raw[offset + 1] << 8));
         }
         if (!FLAC__stream_encoder_process_interleaved(
                 encoder.get(), samples.data(), static_cast<unsigned>(values / 2))) {
@@ -2569,11 +2580,7 @@ std::expected<DiscContents, std::string> ReadDiscContents(const std::filesystem:
     if (data == tracks.end()) {
         return std::unexpected("Missing disc data track.");
     }
-    std::ifstream dataFile(data->file, std::ios::binary);
-    if (!dataFile) {
-        return std::unexpected(fmt::format("{} cannot be read.", data->file.string()));
-    }
-    SectorReader reader(dataFile, data->sectorSize, data->firstSector);
+    SectorReader reader(*data);
     auto entries = ListIso(reader);
     if (!entries) {
         return std::unexpected(entries.error());
@@ -2621,14 +2628,7 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
     }
     const std::vector<CueTrack> &tracks = contents->tracks;
     const std::vector<IsoEntry> &entries = contents->entries;
-    std::ifstream dataFile;
-    if (!contents->data.file.empty()) {
-        dataFile.open(contents->data.file, std::ios::binary);
-    }
-    if (!contents->data.file.empty() && !dataFile) {
-        return std::unexpected(fmt::format("{} cannot be read.", contents->data.file.string()));
-    }
-    SectorReader reader(dataFile, contents->data.sectorSize, contents->data.firstSector);
+    SectorReader reader(contents->data);
     std::size_t audioCount = std::ranges::count(tracks, true, &CueTrack::audio);
     // The five conversions after the files count as a step each.
     constexpr std::size_t CONVERSIONS = 5;
@@ -2707,8 +2707,7 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         }
         audioJobs.emplace_back([&, track](const ImportProgress &audioProgress) {
             const auto name = fmt::format("track{:02}.flac", track.number);
-            std::ifstream audio(track.file, std::ios::binary);
-            return EncodeAudioTrack(audio, track, dataDirectory / "music" / name, audioProgress);
+            return EncodeAudioTrack(track, dataDirectory / "music" / name, audioProgress);
         });
     }
     if (auto failure = RunImportJobs(audioJobs, [&](const std::string &step, double fraction) {

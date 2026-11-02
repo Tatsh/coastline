@@ -79,7 +79,14 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
                                                  const std::filesystem::path &dataDirectory,
                                                  const ImportProgress &progress = {});
 
-/** One track of a CUE sheet, with its extent in sectors of 2,352 bytes in the image file. */
+/** A contiguous part of a disc track, excluding its pregap. */
+struct DiscTrackExtent {
+    std::filesystem::path file;    /*!< Image file supplying the sectors. */
+    std::uint64_t byteOffset = 0;  /*!< Start of the part in bytes. */
+    std::uint64_t sectorCount = 0; /*!< Number of stored sectors in the part. */
+};
+
+/** One disc track with stored sector sizes and logical track boundaries. */
 struct CueTrack {
     int number = 0;                /*!< The track number. */
     bool audio = false;            /*!< Whether the track is CD audio. */
@@ -87,6 +94,10 @@ struct CueTrack {
     std::filesystem::path file;    /*!< The image file of the track. */
     std::uint64_t firstSector = 0; /*!< The sector of INDEX 01. */
     std::uint64_t sectorCount = 0; /*!< The sectors up to the next track or the end of the file. */
+    std::vector<DiscTrackExtent>
+        extents{}; /*!< Optional ordered parts replacing file/firstSector. */
+    /** User-data offset in bytes within each stored sector; absent selects the Mode 1 layout. */
+    std::optional<std::uint32_t> dataOffset{};
 };
 
 /**
@@ -103,10 +114,9 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
  * as music/trackNN.flac. An ISO image or mounted disc directory provides only data files. The icon
  * Boss.ico moves to icon/coastline.ico, beside a PNG image of each of its sizes.
  *
- * @param disc A mounted disc directory, CUE sheet, ISO, BIN, numbered Track NN.bin file, or CloneCD
- * image. Adjacent CUE metadata precedes known-dump and discovered BIN layouts. Uncertain audio
- * layouts import data
- * only.
+ * @param disc A mounted disc directory, CUE sheet, ISO, BIN, numbered Track NN.bin file, CloneCD,
+ * Nero NRG, or Alcohol MDS image. Adjacent CUE metadata precedes known-dump and discovered BIN
+ * layouts. Uncertain audio layouts import data only.
  * @param dataDirectory The directory of the pack to write, assets/default of the data directory.
  * @param progress Called as each file and track is written, or empty.
  * @return The number of files written, or a message, also when @p progress cancels the import.
