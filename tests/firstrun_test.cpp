@@ -121,6 +121,9 @@ void TestCombinations(const std::filesystem::path &root) {
             Wait(wizard);
             Check(wizard.Screen() == WizardScreen::Done, "A successful import must show Done.");
             Check(!Enabled(wizard, Back), "A successful import must disable Back.");
+            Key(wizard, WizardKey::Up);
+            Key(wizard, WizardKey::Down);
+            Check(wizard.Focus() == Finish, "Done navigation must skip disabled Back.");
             Key(wizard, WizardKey::Escape);
             Check(wizard.Screen() == WizardScreen::Done,
                   "Escape must not return to file selection after a successful import.");
@@ -224,6 +227,10 @@ void TestReimport(const std::filesystem::path &root) {
     const auto controls = wizard.Controls();
     Check(controls.size() == 2 && Enabled(wizard, Next) && Enabled(wizard, Quit),
           "Re-import must offer only Start setup and Quit.");
+    Key(wizard, WizardKey::Down);
+    Check(wizard.Focus() == Quit, "Down must select Quit on the re-import screen.");
+    Key(wizard, WizardKey::Up);
+    Check(wizard.Focus() == Next, "Up must select Start setup on the re-import screen.");
     TextGrid grid;
     wizard.Draw(grid, 0);
     std::string text;
@@ -334,11 +341,20 @@ void TestBrowser(const std::filesystem::path &root) {
     Type(wizard, "~");
     Check(Enabled(wizard, StartSearch), "A home directory must resolve tilde.");
     Click(wizard, SearchBrowse);
+    Key(wizard, WizardKey::End);
+    Key(wizard, WizardKey::Down);
+    Check(wizard.Focus() == BrowserOk, "Down must enter folder-browser buttons.");
+    Key(wizard, WizardKey::Up);
+    Check(wizard.Focus() == BrowserList, "Up must return to the folder list.");
     Click(wizard, BrowserOk);
     Check(!wizard.BrowserOpen() && Enabled(wizard, StartSearch),
           "The folder browser must select its current directory.");
     Click(wizard, Back);
     Key(wizard, WizardKey::Escape);
+    Key(wizard, WizardKey::Down);
+    Check(wizard.Focus() == MessageNo, "Down must select No in the quit dialog.");
+    Key(wizard, WizardKey::Up);
+    Check(wizard.Focus() == MessageYes, "Up must select Yes in the quit dialog.");
     Click(wizard, MessageNo);
     Check(wizard.End() == WizardEnd::Running, "No must return from the quit prompt.");
 }
@@ -373,9 +389,22 @@ void TestSearch(const std::filesystem::path &root) {
     wizard.Handle(search);
     Check(wizard.Screen() == WizardScreen::SearchDirectory, "Alt+S must open asset search.");
     Set(wizard, SearchText, "~");
+    Key(wizard, WizardKey::Down);
+    Check(wizard.Focus() == Back, "Down must enter directory-search buttons.");
+    Key(wizard, WizardKey::Up);
+    Check(wizard.Focus() == SearchText || wizard.Focus() == SearchBrowse ||
+              wizard.Focus() == SearchClear,
+          "Up must return to the search-path row.");
     Click(wizard, StartSearch);
+    Key(wizard, WizardKey::Up);
+    Key(wizard, WizardKey::Down);
+    Check(wizard.Focus() == Cancel, "Active search navigation must skip disabled Back.");
     Wait(wizard);
     Check(wizard.MessageLines().empty(), "A complete search must not warn.");
+    Key(wizard, WizardKey::Down);
+    Check(wizard.Focus() == RetrySearch, "Down must select Search again after search completes.");
+    Key(wizard, WizardKey::Up);
+    Check(wizard.Focus() == UseFound, "Up must select Use found files after search completes.");
     Click(wizard, UseFound);
     Check(Enabled(wizard, Next), "A complete search must populate valid setup fields.");
     Check(wizard.Text(DiscText) == Utf8FromPath(std::filesystem::path("~") / "Alpha" / "disc.cue"),
@@ -388,6 +417,10 @@ void TestSearch(const std::filesystem::path &root) {
     Click(wizard, StartSearch);
     Wait(wizard);
     Check(!wizard.MessageLines().empty(), "A partial search must offer another directory.");
+    Key(wizard, WizardKey::Down);
+    Check(wizard.Focus() == MessageNo, "Down must select No after a partial search.");
+    Key(wizard, WizardKey::Up);
+    Check(wizard.Focus() == MessageYes, "Up must select Yes after a partial search.");
     Click(wizard, MessageNo);
     Check(wizard.Focus() == DiscText && !Enabled(wizard, Next),
           "ROM-only results must focus the missing disc and remove previous disc paths.");
@@ -435,12 +468,18 @@ void TestImportFailureAndCancel(const std::filesystem::path &root) {
         Set(wizard, Rom1Text, "~/usa.z64");
         Click(wizard, Next);
         if (cancel) {
+            Key(wizard, WizardKey::Up);
+            Key(wizard, WizardKey::Down);
+            Check(wizard.Focus() == Cancel, "Active import navigation must skip disabled Back.");
             Key(wizard, WizardKey::Escape);
         }
         Wait(wizard);
         Check(wizard.Screen() == (cancel ? WizardScreen::Files : WizardScreen::Import),
               "Cancel must return to Files, and failure must retain Import.");
         if (!cancel) {
+            Key(wizard, WizardKey::Up);
+            Key(wizard, WizardKey::Down);
+            Check(wizard.Focus() == Back, "Failed import navigation must skip disabled Cancel.");
             Click(wizard, Back);
             Check(Enabled(wizard, Next), "Back must permit correction and retry.");
         }
@@ -476,6 +515,25 @@ void TestRowNavigation(const std::filesystem::path &root) {
           "Down must enter the browser buttons.");
     Key(wizard, WizardKey::Up);
     Check(wizard.Focus() == BrowserFilter, "Up must return to the browser filter.");
+
+    const auto directory = root / "navigation";
+    const auto removed = directory / "removed";
+    std::filesystem::create_directories(removed);
+    auto services = Services(root);
+    services.disc = directory / "disc.iso";
+    SetupWizard unavailable(std::move(services));
+    Click(unavailable, DiscBrowse);
+    Type(unavailable, "removed");
+    std::filesystem::remove(removed);
+    Key(unavailable, WizardKey::Enter);
+    Check(Enabled(unavailable, MessageOk), "An unavailable browser directory must display OK.");
+    Key(unavailable, WizardKey::Down);
+    Key(unavailable, WizardKey::Up);
+    Check(unavailable.Focus() == MessageOk, "Error-dialog navigation must retain its OK button.");
+    Key(unavailable, WizardKey::Enter);
+    Check(unavailable.MessageLines().empty() && unavailable.BrowserOpen(),
+          "OK must return to the browser after a directory error.");
+    std::filesystem::remove(directory);
 }
 
 void TestDiscDirectory(const std::filesystem::path &root) {
