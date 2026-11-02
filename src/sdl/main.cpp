@@ -1240,7 +1240,14 @@ int main(int argc, char *argv[]) {
         return !setupQuit;
     };
     {
+#ifdef SDL_PLATFORM_MACOS
+        SDL_SetHint(SDL_HINT_VIDEO_MAC_FULLSCREEN_SPACES, "0");
+        SDL_SetHint(SDL_HINT_VIDEO_MAC_FULLSCREEN_MENU_VISIBILITY, "0");
+#endif
         SdlSession sdl(SDL_INIT_VIDEO | SDL_INIT_GAMEPAD);
+        if (sdl.ready) {
+            SDL_HideCursor();
+        }
         coastline::GameModeSession gameMode(sdl.ready &&
                                             config.GetBoolean("Game", "GameMode", true));
         if (sdl.ready && !SDL_InitSubSystem(SDL_INIT_AUDIO)) {
@@ -1935,15 +1942,6 @@ int main(int argc, char *argv[]) {
                                     SDL_StartTextInput(window->Window());
                                 } else {
                                     SDL_StopTextInput(window->Window());
-                                }
-                            }
-                            // A screen that draws a cursor for the mouse hides the cursor of the
-                            // system.
-                            if (mainMenu->DrawsPointer() == SDL_CursorVisible()) {
-                                if (mainMenu->DrawsPointer()) {
-                                    SDL_HideCursor();
-                                } else {
-                                    SDL_ShowCursor();
                                 }
                             }
                             if (end == coastline::MenusEnd::Quit) {

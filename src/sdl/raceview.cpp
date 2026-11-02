@@ -1755,8 +1755,9 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
             }
         }
     }
-    SDL_Log("Loaded %zu race cars in %llu ms.",
+    SDL_Log("Loaded %zu race %s in %llu ms.",
             state->cars.size(),
+            state->cars.size() == 1 ? "car" : "cars",
             static_cast<unsigned long long>(SDL_GetTicks() - carsStart));
     // The skies of the track in cargfx, as the import converted them.
     auto skyImage = [&](const SkyTextureFiles *files) {

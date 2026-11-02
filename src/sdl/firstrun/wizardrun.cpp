@@ -443,7 +443,6 @@ SetupRun RunSetupWizard(GpuWindow &window,
     }
     config.Set("SetupWizard", "SearchDirectory", wizard.Text(WizardControlId::SearchText));
     SDL_StopTextInput(sdlWindow);
-    SDL_ShowCursor();
     return run;
 }
 

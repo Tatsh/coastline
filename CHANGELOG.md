@@ -133,6 +133,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- macOS fullscreen uses a whole-display borderless window without a separate Space or visible
+  menu bar.
+- The system cursor remains hidden; setup and Paint Shop retain their custom pointers.
 - New installations default PC sound effects to 4/10. Automatic volume follows the sound source
   (N64 10/10, PC 4/10); manual volume persists across source changes and restarts. Existing
   Controller Pak volumes migrate as manual choices when no SFX volume preference is recorded.
@@ -225,6 +228,13 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Patched builds reject truncated season-save trailers before applying saved progress.
+- Patched builds handle shadow-pool exhaustion, incomplete shadow display lists, invalid sound
+  sets and force frames, and audio allocation failures without invalid memory access or partial
+  event registration.
+- Patched PC builds avoid undefined numeric conversions and sector overflow, and handle zero fog
+  divisors while preserving original conversion results and fog saturation.
+- Windows installers consistently use Coastline branding and `UninstallCoastline.exe`.
 - BGM and SFX volume controls are no longer incorrectly locked by imported menu flags.
 - Menu shutdown and rebuilding silence mixer channels before releasing samples, preventing a
   use-after-free.
