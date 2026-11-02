@@ -79,6 +79,15 @@ play. The config-only setting `GameMode=0` under `[Game]` in `BossRally.ini` dis
 the default is `1`. Internal game restarts preserve the registration. Other platforms ignore the
 setting. GameMode is not requested by import or Controller Pak commands.
 
+Discord Rich Presence is optional. Build with `-DCOASTLINE_DISCORD=ON` and
+`-DCOASTLINE_DISCORD_APPLICATION_ID=YOUR_APPLICATION_ID`. CI enables support; its application ID
+defaults to empty until an ID is supplied. Empty IDs disable IPC and its worker thread.
+Presence reports the intro, attract demos, menus, racing, and credits through the local Discord
+client. Communication runs asynchronously, retries missing clients, and coalesces updates at
+15-second intervals. Import and Controller Pak commands do not start presence.
+Flatpak permits native and Flatpak Discord sockets. Strict Snap confinement can prevent access to
+Discord IPC; presence remains inactive when the socket is inaccessible.
+
 ```shell
 VCPKG_ROOT=/path/to/vcpkg cmake --workflow --preset sdl
 ```

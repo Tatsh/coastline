@@ -153,12 +153,12 @@ jobs:
       - if: runner.os == 'Linux'
         name: 'Configure and compile'
         run: |
-          cmake --preset sdl -DCMAKE_BUILD_TYPE="$BUILD_TYPE"
+          cmake --preset sdl -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCOASTLINE_DISCORD=ON
           cmake --build --preset sdl -- -k 0
       - if: runner.os == 'macOS'
         name: 'Configure and compile'
         run: |
-          cmake --preset sdl -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
+          cmake --preset sdl -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCOASTLINE_DISCORD=ON \
             -DCMAKE_OSX_ARCHITECTURES="$ARCHITECTURE" -DVCPKG_TARGET_TRIPLET="$TRIPLET"
           cmake --build --preset sdl -- -k 0
         env:
@@ -174,7 +174,8 @@ jobs:
           Import-Module "$studio\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
           Enter-VsDevShell -VsInstallPath $studio -SkipAutomaticLocation `
             -DevCmdArguments "-arch=$env:ARCHITECTURE -host_arch=$env:ARCHITECTURE"
-          cmake --preset sdl -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -DCOASTLINE_PORTABLE=OFF
+          cmake --preset sdl -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -DCOASTLINE_PORTABLE=OFF `
+            -DCOASTLINE_DISCORD=ON
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake --build --preset sdl -- -k 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }

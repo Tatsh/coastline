@@ -48,6 +48,7 @@
 #if COASTLINE_SETUP_WIZARD
 #include "firstrun/wizardrun.h"
 #endif
+#include "discordpresence.h"
 #include "frontend.h"
 #include "gamemode.h"
 #include "gamesettings.h"
@@ -1419,6 +1420,9 @@ int main(int argc, char *argv[]) {
                 // The screen of the front end that shows.
                 enum class FrontEnd { Intro, AttractDemo, MainMenu, Race, Credits };
                 FrontEnd frontEnd = FrontEnd::Intro;
+                coastline::DiscordPresence discord(COASTLINE_DISCORD_APPLICATION_ID);
+                auto presenceScreen = frontEnd;
+                discord.Update("Watching the intro");
                 // The races run a 30th of a second a step, from the assets of the pack.
                 constexpr float RACE_STEP = 1.0f / 30.0f;
                 std::unique_ptr<coastline::RaceView> raceView;
@@ -1572,6 +1576,26 @@ int main(int argc, char *argv[]) {
                     bool focusLost = false;
                     std::array<float, 2> cameraMouse{};
                     SDL_Event event;
+                    if (frontEnd != presenceScreen) {
+                        switch (frontEnd) {
+                        case FrontEnd::Intro:
+                            discord.Update("Watching the intro");
+                            break;
+                        case FrontEnd::AttractDemo:
+                            discord.Update("Watching an attract demo");
+                            break;
+                        case FrontEnd::MainMenu:
+                            discord.Update("In the menus");
+                            break;
+                        case FrontEnd::Race:
+                            discord.Update("Racing");
+                            break;
+                        case FrontEnd::Credits:
+                            discord.Update("Watching the credits");
+                            break;
+                        }
+                        presenceScreen = frontEnd;
+                    }
                     while (SDL_PollEvent(&event)) {
                         if (event.type == SDL_EVENT_MOUSE_MOTION) {
                             cameraMouse[0] += event.motion.xrel;

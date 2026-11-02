@@ -526,6 +526,21 @@ target_compile_options(notesafety_test PRIVATE -Wall -Wextra
 target_link_options(notesafety_test PRIVATE -fsanitize=address,undefined,float-cast-overflow)
 add_test(NAME notesafety COMMAND notesafety_test)
 
+foreach(_enabled IN ITEMS 0 1)
+  add_executable(discordpresence_${_enabled}_test discordpresence_test.cpp
+                   "${_src}/sdl/discordpresence.cpp")
+  set_target_properties(discordpresence_${_enabled}_test PROPERTIES CXX_STANDARD 23
+                          CXX_STANDARD_REQUIRED YES)
+  target_include_directories(discordpresence_${_enabled}_test PRIVATE "${_src}/sdl")
+  target_compile_definitions(discordpresence_${_enabled}_test PRIVATE COASTLINE_DISCORD=${_enabled})
+  target_compile_options(discordpresence_${_enabled}_test PRIVATE -Wall -Wextra
+                            -fsanitize=address,undefined)
+  target_link_options(discordpresence_${_enabled}_test PRIVATE -fsanitize=address,undefined)
+  target_link_libraries(discordpresence_${_enabled}_test PRIVATE nlohmann_json::nlohmann_json)
+  add_test(NAME discordpresence_${_enabled} COMMAND discordpresence_${_enabled}_test)
+endforeach()
+set_tests_properties(discordpresence_0 discordpresence_1 PROPERTIES RUN_SERIAL TRUE TIMEOUT 60)
+
 # The test of zlib inflates the assets extracted from a ROM, so it runs only when they are given.
 set(TGR_TEST_ASSETS
     ""

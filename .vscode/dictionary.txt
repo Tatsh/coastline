@@ -317,6 +317,8 @@ diref
 disasm
 discl
 disclayout
+discordapp
+discordpresence
 disctrackreader
 displaylist
 displaylistdata
@@ -885,6 +887,7 @@ nonewplayers
 nonexclusive
 nonmatching
 nonusbackslash
+nonzero
 noone
 noplayers
 noreorder
@@ -1284,6 +1287,7 @@ stickx
 stickyfocus
 stkptr
 strequal
+strgreater
 stringresources
 strlwr
 strmiids

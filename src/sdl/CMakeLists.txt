@@ -5,6 +5,16 @@ if(NOT TGR_ENABLE_PATCHES)
 endif()
 enable_language(CXX)
 include("${CMAKE_SOURCE_DIR}/cmake/install-assets.cmake")
+option(COASTLINE_DISCORD "Enable optional local Discord Rich Presence." OFF)
+set(COASTLINE_DISCORD_APPLICATION_ID "" CACHE STRING "Discord application ID; empty disables presence.")
+if(NOT COASTLINE_DISCORD_APPLICATION_ID STREQUAL "")
+  string(LENGTH "${COASTLINE_DISCORD_APPLICATION_ID}" _discord_id_length)
+  if(NOT COASTLINE_DISCORD_APPLICATION_ID MATCHES "^[1-9][0-9]*$"
+     OR _discord_id_length GREATER 20
+     OR (_discord_id_length EQUAL 20 AND COASTLINE_DISCORD_APPLICATION_ID STRGREATER "18446744073709551615"))
+    message(FATAL_ERROR "COASTLINE_DISCORD_APPLICATION_ID must be a nonzero unsigned 64-bit decimal ID.")
+  endif()
+endif()
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 if(MSVC)
@@ -206,6 +216,7 @@ add_library(
   enginetextures.cpp
   frontend.cpp
   gamemode.cpp
+  discordpresence.cpp
   gamesettings.cpp
   flactrack.cpp
   ghostfile.cpp
@@ -269,6 +280,7 @@ add_dependencies(coastline_sdl coastline_shaders coastline_manifests coastline_i
 # The headers of the menus declare their readers of JSON, and the game includes them.
 target_link_libraries(coastline_sdl PUBLIC nlohmann_json::nlohmann_json
                                     PRIVATE FLAC::FLAC fmt::fmt ZLIB::ZLIB BZip2::BZip2)
+target_compile_definitions(coastline_sdl PRIVATE COASTLINE_DISCORD=$<BOOL:${COASTLINE_DISCORD}>)
 # A reconstructed routine retains the parameters of the original, used or not.
 set_source_files_properties("${CMAKE_SOURCE_DIR}/src/common/audio.c" effecttextures.cpp
                             PROPERTIES COMPILE_OPTIONS "${COASTLINE_NO_UNUSED_PARAMETER}")
@@ -305,6 +317,7 @@ endif()
 add_executable(${CMAKE_PROJECT_NAME} main.cpp)
 target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
                            COASTLINE_VERSION="${CMAKE_PROJECT_VERSION}"
+                           COASTLINE_DISCORD_APPLICATION_ID="${COASTLINE_DISCORD_APPLICATION_ID}"
                            COASTLINE_BUILD_TIMESTAMP="${COASTLINE_BUILD_TIMESTAMP}"
                            COASTLINE_SETUP_WIZARD=$<NOT:$<BOOL:${COASTLINE_INSTALL_ASSETS}>>)
 file(RELATIVE_PATH _relative_data "${CMAKE_INSTALL_FULL_BINDIR}"
