@@ -772,6 +772,38 @@ void CheckCloneCd(const std::filesystem::path &root) {
     assert(!coastline::ReadDiscTracks(root / "clone.ccd"));
 }
 
+void CheckPdi(const std::filesystem::path &root) {
+    auto data = DataTrack();
+    data[16 * SECTOR + 16 + 87] = 32;
+    for (unsigned track = 0; track < 12; ++track) {
+        data.insert(data.end(), 150 * SECTOR, 0);
+        data.insert(data.end(), 300 * SECTOR, static_cast<std::uint8_t>(track + 1));
+    }
+    std::vector<std::uint8_t> container(304);
+    std::copy_n("TTAFMPVOBCDIMG", 14, container.begin());
+    container[14] = 1;
+    container.insert(container.end(), data.begin(), data.end());
+    const auto image = root / "audio.PDI";
+    Write(image, container);
+    auto tracks = coastline::ReadDiscTracks(image);
+    assert(tracks && tracks->size() == 13);
+    assert(!tracks->front().audio && tracks->front().sectorCount == 32);
+    for (std::size_t index = 1; index < tracks->size(); ++index) {
+        assert((*tracks)[index].audio && (*tracks)[index].sectorCount == 300);
+        std::vector<std::uint8_t> wanted(300 * SECTOR, static_cast<std::uint8_t>(index));
+        CheckSectors((*tracks)[index], wanted);
+    }
+    const auto decoded = tracks->front().file;
+    auto reader = std::make_unique<coastline::DiscTrackReader>(tracks->front());
+    tracks->clear();
+    assert(std::filesystem::exists(decoded));
+    std::vector<std::uint8_t> first(SECTOR);
+    assert(reader->Read(0, 1, first));
+    assert(std::ranges::equal(first, std::span(data).first(SECTOR)));
+    reader.reset();
+    assert(!std::filesystem::exists(decoded.parent_path()));
+}
+
 void CheckNumbered(const std::filesystem::path &root) {
     Write(root / "Track 01.bin", DataTrack());
     for (int i = 2; i <= 13; ++i) {
@@ -801,6 +833,7 @@ int main(int argc, char **argv) {
     std::filesystem::create_directories(root);
     CheckDiscovery(root);
     CheckCloneCd(root);
+    CheckPdi(root);
     CheckNumbered(root);
     CheckNrg(root);
     CheckMds(root);

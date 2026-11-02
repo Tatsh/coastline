@@ -2621,7 +2621,8 @@ std::expected<RomRelease, std::string> IdentifyRomFile(const std::filesystem::pa
 std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &disc,
                                                    const std::filesystem::path &dataDirectory,
                                                    const ImportProgress &onProgress) {
-    const double decodeShare = Lowercase(disc.extension().string()) == ".isz" ? 0.1 : 0.0;
+    const auto extension = Lowercase(disc.extension().string());
+    const double decodeShare = extension == ".isz" || extension == ".pdi" ? 0.1 : 0.0;
     const ImportProgress decodeProgress = onProgress ?
                                               [&](const std::string &step, double fraction) {
                                                   return onProgress(step, decodeShare * fraction);

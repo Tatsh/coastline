@@ -23,7 +23,7 @@ Original game files must be supplied by the user.
 .TP
 .BI \-\-cd " DISC"
 Read a Boss Rally CUE sheet, ISO, Mode 1 BIN, numbered track file, CloneCD,
-DiscJuggler CDI, Alcohol MDS, Nero NRG, BlindWrite 4/5/6, or unencrypted ISZ image.
+DiscJuggler CDI, Alcohol MDS, Nero NRG, BlindWrite 4/5/6, PDI, or unencrypted ISZ image.
 A directory can be the root of a mounted physical disc or a copy of its files.
 Directory sources import data without CD audio.
 A BIN image uses a matching adjacent CUE sheet when available.
@@ -42,6 +42,8 @@ ISZ supports zero-filled, uncompressed, zlib, and bzip2 chunks, split segments,
 and checksums.
 Decoded images use temporary storage until import finishes.
 Raw-sector ISZ payloads use BIN track discovery for CD audio.
+Pinnacle InstantCopy PDI supports cooked data, raw data and audio, scrambled data,
+and interleaved subchannels. Raw PDI payloads use BIN track discovery for CD audio.
 P-Q and P-W subchannel bytes are discarded during conversion.
 Track files referenced by a CUE sheet must remain available.
 .TP

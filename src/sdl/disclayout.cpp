@@ -14,6 +14,7 @@
 #include <fmt/format.h>
 
 #include "isz.h"
+#include "pdi.h"
 #include "sha1.h"
 
 namespace coastline {
@@ -1393,8 +1394,8 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
 std::expected<std::vector<CueTrack>, std::string> ReadDiscTracks(const std::filesystem::path &disc,
                                                                  const ImportProgress &progress) {
     const auto extension = Lowercase(disc.extension().string());
-    if (extension == ".isz") {
-        auto decoded = DecodeIsz(disc, progress);
+    if (extension == ".isz" || extension == ".pdi") {
+        auto decoded = extension == ".isz" ? DecodeIsz(disc, progress) : DecodePdi(disc, progress);
         if (!decoded) {
             return std::unexpected(decoded.error());
         }

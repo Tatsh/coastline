@@ -2,8 +2,6 @@
 
 #include <algorithm>
 #include <array>
-#include <atomic>
-#include <chrono>
 #include <fstream>
 #include <limits>
 
@@ -115,18 +113,6 @@ std::filesystem::path PartPath(const std::filesystem::path &image, std::size_t i
     }
     return result;
 }
-
-struct TemporaryDisc {
-    std::filesystem::path directory;
-
-    explicit TemporaryDisc(std::filesystem::path path) : directory(std::move(path)) {
-    }
-
-    ~TemporaryDisc() {
-        std::error_code error;
-        std::filesystem::remove_all(directory, error);
-    }
-};
 
 struct Block {
     unsigned method;
@@ -345,12 +331,9 @@ std::expected<DecodedDisc, std::string> DecodeIsz(const std::filesystem::path &i
                            pointers > data || count * pointerSize > data - pointers))) {
         return invalid;
     }
-    std::error_code error;
-    const auto parent = std::filesystem::temp_directory_path(error);
-    const auto space =
-        error ? std::filesystem::space_info{} : std::filesystem::space(parent, error);
-    if (error || space.available < total) {
-        return std::unexpected(std::string("Insufficient temporary storage for decoded disc."));
+    auto temporary = CreateDecodedDisc(sectorSize != 2048, total);
+    if (!temporary) {
+        return std::unexpected(temporary.error());
     }
     if (progress && !progress("Reading ISZ metadata", 0.0)) {
         return std::unexpected(std::string(CANCELLED));
@@ -454,25 +437,7 @@ std::expected<DecodedDisc, std::string> DecodeIsz(const std::filesystem::path &i
     if (parts[0].offset < metadataEnd || parts[0].offset < data) {
         return invalid;
     }
-    static std::atomic<std::uint64_t> sequence{0};
-    std::shared_ptr<TemporaryDisc> storage;
-    for (unsigned attempt = 0; attempt < 128; ++attempt) {
-        const auto ticks = std::chrono::steady_clock::now().time_since_epoch().count();
-        const auto directory = parent / fmt::format("coastline-disc-{}-{}", ticks, sequence++);
-        if (std::filesystem::create_directory(directory, error)) {
-            storage = std::make_shared<TemporaryDisc>(directory);
-            std::filesystem::permissions(directory, std::filesystem::perms::owner_all, error);
-            break;
-        }
-        if (error) {
-            break;
-        }
-    }
-    if (!storage || error) {
-        return std::unexpected(std::string("Cannot create temporary disc storage."));
-    }
-    DecodedDisc decoded{storage->directory / (sectorSize == 2048 ? "disc.iso" : "disc.bin"),
-                        storage};
+    auto decoded = std::move(*temporary);
     std::ofstream output(decoded.file, std::ios::binary);
     if (!output) {
         return std::unexpected(std::string("Cannot create decoded disc image."));

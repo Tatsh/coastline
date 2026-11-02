@@ -1,15 +1,8 @@
 #pragma once
 
-#include "importer.h"
+#include "decodeddisc.h"
 
 namespace coastline {
-
-/** A decoded disc image whose temporary files remain available through shared storage. */
-struct DecodedDisc {
-    std::filesystem::path file; /*!< Headerless ISO or raw-sector BIN image. */
-    /** Attempts to delete temporary files when the final shared storage reference is released. */
-    std::shared_ptr<const void> storage;
-};
 
 /**
  * Decode an unencrypted ISZ image, including split segments, to temporary storage.

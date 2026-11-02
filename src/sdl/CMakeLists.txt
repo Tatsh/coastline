@@ -215,6 +215,8 @@ add_library(
   importer.cpp
   disclayout.cpp
   isz.cpp
+  pdi.cpp
+  decodeddisc.cpp
   disctrackreader.cpp
   importversion.cpp
   indexedimage.cpp

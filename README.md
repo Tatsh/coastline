@@ -624,6 +624,8 @@ stored pregaps; `.bws` subchannels are optional. Selecting `.bwi` or `.bws` reso
 Unencrypted ISZ images support zero-filled, uncompressed, zlib, and bzip2 chunks, split segments,
 and checksums. Decoding uses temporary storage until import finishes. ISO payloads provide data;
 raw-sector payloads also use BIN track discovery for CD music.
+Pinnacle InstantCopy PDI images support cooked data or raw data and audio, including scrambled data
+and interleaved subchannels. PDI decoding requires temporary disk space for the headerless image.
 
 The `--cd` option also accepts a directory, including a mounted physical disc or a copy of its
 files. Select the disc root with `BossRally.pod` directly inside it. In setup, enter its path or

@@ -509,7 +509,8 @@ void TestDiscContainers(const std::filesystem::path &root) {
                                   ".BWT",
                                   ".BWI",
                                   ".BWS",
-                                  ".ISZ"}) {
+                                  ".ISZ",
+                                  ".PDI"}) {
         const auto directory = root / "containers";
         std::filesystem::create_directory(directory);
         const auto disc = directory / (std::string("disc") + extension);

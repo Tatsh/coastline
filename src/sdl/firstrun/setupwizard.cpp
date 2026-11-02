@@ -411,11 +411,12 @@ std::vector<WizardControl> SetupWizard::BrowserControls() const {
     filter.column = CONTENT_COLUMN + LabelWidth(filter.label) + 1;
     filter.row = FILTER_ROW;
     filter.width = 44;
-    filter.value = m_browser->allFiles ? "All files (*.*)" :
+    filter.value = m_browser->allFiles ?
+                       "All files (*.*)" :
                    m_browser->target == WizardControlId::DiscText ?
-                                         "Disc images (BIN/CUE, ISO, ISZ, CloneCD, CDI, MDS, NRG, "
-                                         "BlindWrite)" :
-                                         "ROM images (*.z64, *.n64, *.v64)";
+                       "Disc images (BIN/CUE, ISO, ISZ, PDI, CloneCD, CDI, MDS, NRG, "
+                       "BlindWrite)" :
+                       "ROM images (*.z64, *.n64, *.v64)";
     if (!directory) {
         controls.push_back(filter);
     }

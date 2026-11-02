@@ -340,6 +340,8 @@ coastline_dependency(
   OPTIONS FMT_INSTALL=OFF FMT_TEST=OFF FMT_DOC=OFF)
 add_executable(disclayout_test disclayout_test.cpp "${_src}/sdl/disclayout.cpp"
                               "${_src}/sdl/isz.cpp"
+                              "${_src}/sdl/pdi.cpp"
+                              "${_src}/sdl/decodeddisc.cpp"
                               "${_src}/sdl/disctrackreader.cpp"
                               "${CMAKE_SOURCE_DIR}/tools/common/sha1.cpp")
 set_target_properties(disclayout_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
@@ -351,13 +353,22 @@ include("${CMAKE_SOURCE_DIR}/cmake/bzip2.cmake")
 target_link_libraries(disclayout_test PRIVATE fmt::fmt BZip2::BZip2 ZLIB::ZLIB)
 add_test(NAME disclayout COMMAND disclayout_test)
 
-add_executable(isz_test isz_test.cpp "${_src}/sdl/isz.cpp" "${_src}/sdl/disctrackreader.cpp")
+add_executable(isz_test isz_test.cpp "${_src}/sdl/isz.cpp" "${_src}/sdl/decodeddisc.cpp"
+                        "${_src}/sdl/disctrackreader.cpp")
 set_target_properties(isz_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(isz_test PRIVATE "${_src}/sdl")
 target_compile_options(isz_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
 target_link_options(isz_test PRIVATE -fsanitize=address,undefined)
 target_link_libraries(isz_test PRIVATE fmt::fmt BZip2::BZip2 ZLIB::ZLIB)
 add_test(NAME isz COMMAND isz_test)
+
+add_executable(pdi_test pdi_test.cpp "${_src}/sdl/pdi.cpp" "${_src}/sdl/decodeddisc.cpp")
+set_target_properties(pdi_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(pdi_test PRIVATE "${_src}/sdl")
+target_compile_options(pdi_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(pdi_test PRIVATE -fsanitize=address,undefined)
+target_link_libraries(pdi_test PRIVATE fmt::fmt)
+add_test(NAME pdi COMMAND pdi_test)
 
 add_executable(log_test log_test.cpp "${_src}/sdl/log.cpp")
 set_target_properties(log_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
