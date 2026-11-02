@@ -119,6 +119,8 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
 std::optional<std::string> CurateAssetPacks(const std::filesystem::path &defaults) {
     Write(defaults / "pack.json", "{\"version\":1}");
     Write(defaults.parent_path() / "boss" / "original.png", "unbranded");
+    Write(defaults.parent_path() / "boss" / "pack.json",
+          R"({"intro":[{"file":"intro/legal.png","type":"image"}],"version":1})");
     return std::nullopt;
 }
 
@@ -200,6 +202,7 @@ int main() {
     assert(DefaultPackUsable(DefaultAssets(data)));
     auto files = Snapshot(data);
     assert(files.at("assets/custom/model.glb") == "custom model");
+    assert(nlohmann::json::parse(files.at("assets/boss/pack.json")).at("intro").size() == 1);
     assert(files.at("assets/default/music/menu.xm") == "usa");
     assert(!std::filesystem::exists(DefaultAssets(data) / "empty"));
     constexpr auto writes = std::filesystem::perms::owner_write |

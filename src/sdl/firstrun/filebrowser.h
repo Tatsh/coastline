@@ -12,6 +12,8 @@
 #include <string_view>
 #include <vector>
 
+#include "../paths.h"
+
 namespace coastline {
 
 /** An entry of a listing of the file browser. */
@@ -54,12 +56,6 @@ ListBrowserDirectory(const std::filesystem::path &directory,
  * @return The expanded native path; '~user' and embedded tildes are unchanged.
  */
 std::filesystem::path ResolveUserPath(std::string_view text, const std::filesystem::path &home);
-
-/**
- * @param path A path.
- * @return The path in UTF-8, with native directory separators.
- */
-std::string Utf8FromPath(const std::filesystem::path &path);
 
 /**
  * @param text A path in UTF-8.

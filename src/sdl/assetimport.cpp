@@ -181,8 +181,14 @@ std::optional<std::string> WriteMetadata(const std::filesystem::path &defaults, 
     if (error) {
         return "Cannot create the Boss Rally pack. " + error.message();
     }
+    std::ifstream bossInput(boss / "pack.json");
+    auto bossMetadata = nlohmann::ordered_json::parse(bossInput, nullptr, false);
+    bossInput.close();
+    if (!bossMetadata.is_object()) {
+        bossMetadata = {{"version", PACK_SETTINGS_VERSION}};
+    }
     std::ofstream bossSettings(boss / "pack.json", std::ios::binary | std::ios::trunc);
-    bossSettings << nlohmann::ordered_json{{"version", PACK_SETTINGS_VERSION}}.dump(2) << '\n';
+    bossSettings << bossMetadata.dump(2) << '\n';
     bossSettings.close();
     return bossSettings ? std::nullopt :
                           std::optional<std::string>("Cannot record the Boss Rally pack metadata.");

@@ -167,7 +167,12 @@ std::optional<std::string> CurateAssetPacks(const std::filesystem::path &default
     }
     std::error_code error;
     if (std::filesystem::is_directory(boss, error)) {
-        return WriteJson(boss / "pack.json", {{"version", PACK_SETTINGS_VERSION}}, 2);
+        return WriteJson(boss / "pack.json",
+                         {{"intro",
+                           {{{"file", "intro/brally.mkv"}, {"type", "video"}},
+                            {{"duration", 2.0}, {"file", "intro/legal.png"}, {"type", "image"}}}},
+                          {"version", PACK_SETTINGS_VERSION}},
+                         2);
     }
     return std::nullopt;
 }

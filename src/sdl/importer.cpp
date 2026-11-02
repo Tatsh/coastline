@@ -45,6 +45,7 @@
 #include "sdl/n64model.h"
 #include "sdl/stringresources.h"
 #include "sha1.h"
+#include "videoconvert.h"
 
 namespace coastline {
 
@@ -314,14 +315,14 @@ std::string Lowercase(std::string text) {
     return text;
 }
 
-// The files of the disc the game opens, and the icon of the window. The video, the installers,
-// DirectX, the programs, and the pictures of the menus and the loading screen of the Windows
-// release, which the front end of the Nintendo 64 release replaces, are not copied.
+// Installers, DirectX, and executable programs are excluded from imported assets.
 bool IsGameData(const std::filesystem::path &path) {
     static constexpr std::array<std::string_view, 5> directories{
         "cargfx", "cars", "paint", "sfx", "tracks"};
     // The text of the game is in the string resources of BRString.dll.
-    static constexpr std::array<std::string_view, 7> files{"boss.ico",
+    static constexpr std::array<std::string_view, 9> files{"boss.ico",
+                                                           "brally.avi",
+                                                           "splash.img",
                                                            "bossrally.pod",
                                                            "brstring.dll",
                                                            "rallycredits.dat",
@@ -2671,7 +2672,7 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
     SectorReader reader(contents->data);
     std::size_t audioCount = std::ranges::count(tracks, true, &CueTrack::audio);
     // The five conversions after the files count as a step each.
-    constexpr std::size_t CONVERSIONS = 5;
+    constexpr std::size_t CONVERSIONS = 6;
     double steps = static_cast<double>(entries.size() + CONVERSIONS + audioCount);
     std::size_t written = 0;
     std::size_t done = 0;
@@ -2684,13 +2685,19 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
             return cancelled;
         }
         ++done;
+        auto outputPath = entry.path;
+        const auto rootName = Lowercase(entry.path.filename().string());
+        if (entry.path.parent_path().empty() &&
+            (rootName == "brally.avi" || rootName == "splash.img")) {
+            outputPath = rootName;
+        }
         if (entry.source.empty()) {
-            if (auto failure = CopyIsoFile(reader, entry, dataDirectory / entry.path)) {
+            if (auto failure = CopyIsoFile(reader, entry, dataDirectory / outputPath)) {
                 return std::unexpected(*failure);
             }
         } else {
             std::error_code error;
-            const auto destination = dataDirectory / entry.path;
+            const auto destination = dataDirectory / outputPath;
             std::filesystem::create_directories(destination.parent_path(), error);
             if (!error) {
                 std::filesystem::copy_file(entry.source,
@@ -2724,7 +2731,7 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         ++written;
     }
     using Conversion = std::optional<std::string> (*)(const std::filesystem::path &);
-    const std::array<std::pair<const char *, Conversion>, CONVERSIONS> conversions{{
+    const std::array<std::pair<const char *, Conversion>, CONVERSIONS - 1> conversions{{
         {"Converting the skies", ConvertSkyImages},
         {"Converting BossRally.pod", ConvertPodArchive},
         {"Converting the ghost recordings", ConvertGhostRecordings},
@@ -2741,6 +2748,13 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         }
     }
     std::vector<ImportJob> audioJobs;
+    if (auto failure =
+            ConvertIntroMedia(dataDirectory, [&](const std::string &step, double fraction) {
+                return !progress || progress(step, (static_cast<double>(done) + fraction) / steps);
+            })) {
+        return std::unexpected(*failure);
+    }
+    ++done;
     for (const auto &track : tracks) {
         if (!track.audio) {
             continue;

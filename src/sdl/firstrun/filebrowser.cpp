@@ -25,12 +25,6 @@ void SortByName(std::vector<BrowserEntry> &entries) {
 
 } // namespace
 
-std::string Utf8FromPath(const std::filesystem::path &path) {
-    auto native = path;
-    std::u8string text = native.make_preferred().u8string();
-    return {text.begin(), text.end()};
-}
-
 std::filesystem::path PathFromUtf8(std::string_view text) {
     return std::filesystem::path(std::u8string(text.begin(), text.end())).make_preferred();
 }

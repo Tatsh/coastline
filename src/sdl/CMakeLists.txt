@@ -6,6 +6,7 @@ endif()
 enable_language(CXX)
 include("${CMAKE_SOURCE_DIR}/cmake/install-assets.cmake")
 option(COASTLINE_DISCORD "Enable optional local Discord Rich Presence." OFF)
+option(COASTLINE_VIDEO "Enable optional libav intro movie decoding." ON)
 set(COASTLINE_DISCORD_APPLICATION_ID "" CACHE STRING "Discord application ID; empty disables presence.")
 if(NOT COASTLINE_DISCORD_APPLICATION_ID STREQUAL "")
   string(LENGTH "${COASTLINE_DISCORD_APPLICATION_ID}" _discord_id_length)
@@ -234,6 +235,9 @@ add_library(
   indexedimage.cpp
   input.cpp
   intro.cpp
+  introsequence.cpp
+  videoplayer.cpp
+  videoconvert.cpp
   language.cpp
   log.cpp
   mainmenu.cpp
@@ -282,6 +286,27 @@ add_dependencies(coastline_sdl coastline_shaders coastline_manifests coastline_i
 target_link_libraries(coastline_sdl PUBLIC nlohmann_json::nlohmann_json
                                     PRIVATE FLAC::FLAC fmt::fmt ZLIB::ZLIB BZip2::BZip2)
 target_compile_definitions(coastline_sdl PRIVATE COASTLINE_DISCORD=$<BOOL:${COASTLINE_DISCORD}>)
+set(_coastline_video OFF)
+if(COASTLINE_VIDEO)
+  find_package(FFMPEG QUIET)
+  find_package(PkgConfig QUIET)
+  if(NOT FFMPEG_FOUND AND PkgConfig_FOUND)
+    pkg_check_modules(COASTLINE_AV QUIET IMPORTED_TARGET
+      libavformat libavcodec libavutil libswscale libswresample)
+  endif()
+  if(FFMPEG_FOUND)
+    target_include_directories(coastline_sdl PRIVATE ${FFMPEG_INCLUDE_DIRS})
+    target_link_directories(coastline_sdl PRIVATE ${FFMPEG_LIBRARY_DIRS})
+    target_link_libraries(coastline_sdl PRIVATE ${FFMPEG_LIBRARIES})
+    set(_coastline_video ON)
+  elseif(TARGET PkgConfig::COASTLINE_AV)
+    target_link_libraries(coastline_sdl PRIVATE PkgConfig::COASTLINE_AV)
+    set(_coastline_video ON)
+  else()
+    message(STATUS "libav is unavailable; intro movies will be skipped.")
+  endif()
+endif()
+target_compile_definitions(coastline_sdl PRIVATE COASTLINE_VIDEO=$<BOOL:${_coastline_video}>)
 # A reconstructed routine retains the parameters of the original, used or not.
 set_source_files_properties("${CMAKE_SOURCE_DIR}/src/common/audio.c" effecttextures.cpp
                             PROPERTIES COMPILE_OPTIONS "${COASTLINE_NO_UNUSED_PARAMETER}")

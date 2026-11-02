@@ -1,0 +1,239 @@
+#include "videoconvert.h"
+
+#include <array>
+#include <fstream>
+#include <memory>
+#include <vector>
+
+#include <SDL3/SDL.h>
+
+#include "paths.h"
+
+namespace coastline {
+
+namespace {
+
+using Process = std::unique_ptr<SDL_Process, decltype(&SDL_DestroyProcess)>;
+
+bool Run(const std::vector<std::string> &arguments, const ImportProgress &progress) {
+    std::vector<const char *> argv;
+    for (const auto &argument : arguments) {
+        argv.push_back(argument.c_str());
+    }
+    argv.push_back(nullptr);
+    const auto properties = SDL_CreateProperties();
+    SDL_SetPointerProperty(properties, SDL_PROP_PROCESS_CREATE_ARGS_POINTER, argv.data());
+    SDL_SetNumberProperty(properties, SDL_PROP_PROCESS_CREATE_STDIN_NUMBER, SDL_PROCESS_STDIO_NULL);
+    SDL_SetNumberProperty(
+        properties, SDL_PROP_PROCESS_CREATE_STDOUT_NUMBER, SDL_PROCESS_STDIO_NULL);
+    SDL_SetNumberProperty(
+        properties, SDL_PROP_PROCESS_CREATE_STDERR_NUMBER, SDL_PROCESS_STDIO_NULL);
+    Process process(SDL_CreateProcessWithProperties(properties), SDL_DestroyProcess);
+    SDL_DestroyProperties(properties);
+    if (!process) {
+        return false;
+    }
+    int result = -1;
+    const auto start = SDL_GetTicks();
+    while (!SDL_WaitProcess(process.get(), false, &result)) {
+        if (SDL_GetTicks() - start > 600000 ||
+            (progress && !progress("Converting the intro movie", 0.5))) {
+            SDL_KillProcess(process.get(), true);
+            SDL_WaitProcess(process.get(), true, &result);
+            return false;
+        }
+        SDL_Delay(50);
+    }
+    return result == 0;
+}
+
+struct TemporaryTools {
+    std::filesystem::path path;
+    ~TemporaryTools() {
+        std::error_code error;
+        std::filesystem::remove_all(path, error);
+    }
+};
+
+std::optional<std::string> ConvertLegalImage(const std::filesystem::path &directory) {
+    std::ifstream file(directory / "splash.img", std::ios::binary);
+    if (!file) {
+        return std::nullopt;
+    }
+    std::array<unsigned char, 12> header{};
+    file.read(reinterpret_cast<char *>(header.data()), header.size());
+    auto word = [&](int offset) {
+        return static_cast<std::uint32_t>(header[offset]) |
+               static_cast<std::uint32_t>(header[offset + 1]) << 8 |
+               static_cast<std::uint32_t>(header[offset + 2]) << 16 |
+               static_cast<std::uint32_t>(header[offset + 3]) << 24;
+    };
+    const auto width = word(0);
+    const auto height = word(4);
+    if (!file || width == 0 || height == 0 || width > 4096 || height > 4096 || word(8) != 0x1555) {
+        return "Invalid Boss Rally legal image.";
+    }
+    std::vector<unsigned char> pixels(static_cast<std::size_t>(width) * height * 4);
+    for (std::size_t i = 0; i < pixels.size(); i += 4) {
+        const int low = file.get();
+        const int high = file.get();
+        if (low < 0 || high < 0) {
+            return "Truncated Boss Rally legal image.";
+        }
+        const auto color = static_cast<unsigned>(low | high << 8);
+        auto channel = [&](int shift) {
+            const auto value = (color >> shift) & 31;
+            return static_cast<unsigned char>((value << 3) | (value >> 2));
+        };
+        pixels[i] = channel(10);
+        pixels[i + 1] = channel(5);
+        pixels[i + 2] = channel(0);
+        pixels[i + 3] = 255;
+    }
+    using Surface = std::unique_ptr<SDL_Surface, decltype(&SDL_DestroySurface)>;
+    Surface image(
+        SDL_CreateSurfaceFrom(width, height, SDL_PIXELFORMAT_RGBA32, pixels.data(), width * 4),
+        SDL_DestroySurface);
+    if (!image || !SDL_SavePNG(image.get(), Utf8FromPath(directory / "intro/legal.png").c_str())) {
+        return "Cannot convert Boss Rally legal image.";
+    }
+    return std::nullopt;
+}
+
+} // namespace
+
+std::optional<std::string> ConvertIntroMedia(const std::filesystem::path &directory,
+                                             const ImportProgress &progress) {
+    std::error_code error;
+    std::filesystem::create_directories(directory / "intro", error);
+    if (error) {
+        return "Cannot create intro media directory.";
+    }
+    if (auto failure = ConvertLegalImage(directory)) {
+        return failure;
+    }
+    const auto source = directory / "brally.avi";
+    if (!std::filesystem::is_regular_file(source, error)) {
+        return std::nullopt;
+    }
+    TemporaryTools tools;
+    std::string executable = "ffmpeg";
+    if (progress && !progress("Converting the intro movie", 0)) {
+        return "Import cancelled.";
+    }
+    if (!Run({executable, "-version"}, {})) {
+#if defined(_WIN32) || defined(__APPLE__)
+        const ImportProgress toolProgress = [&](const std::string &, double) {
+            return !progress || progress("Preparing temporary FFmpeg", 0.1);
+        };
+        tools.path = directory / (".intro-tools-" + std::to_string(SDL_GetTicksNS()));
+        if (!std::filesystem::create_directory(tools.path, error) || error) {
+            return "Cannot create temporary FFmpeg directory.";
+        }
+        const auto archive = Utf8FromPath(tools.path / "ffmpeg.zip");
+#ifdef _WIN32
+        const char *url = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip";
+#elif defined(__aarch64__) || defined(__arm64__)
+        const char *url = "https://www.osxexperts.net/ffmpeg902arm.zip";
+#else
+        const char *url = "https://evermeet.cx/ffmpeg/getrelease/zip";
+#endif
+        if (!Run({"curl",
+                  "--fail",
+                  "--location",
+                  "--proto",
+                  "=https",
+                  "--proto-redir",
+                  "=https",
+                  "--connect-timeout",
+                  "30",
+                  "--max-time",
+                  "300",
+                  "--output",
+                  archive,
+                  url},
+                 toolProgress)) {
+            return "Cannot download temporary FFmpeg. Install FFmpeg in PATH and retry.";
+        }
+#ifdef _WIN32
+        const std::vector<std::string> unpack{
+            "tar", "-xf", archive, "-C", Utf8FromPath(tools.path)};
+#else
+        const std::vector<std::string> unpack{
+            "/usr/bin/ditto", "-x", "-k", archive, Utf8FromPath(tools.path)};
+#endif
+        if (!Run(unpack, toolProgress)) {
+            return "Cannot unpack temporary FFmpeg.";
+        }
+        const std::filesystem::recursive_directory_iterator end;
+        for (std::filesystem::recursive_directory_iterator item(tools.path, error);
+             !error && item != end;
+             item.increment(error)) {
+            if (item->path().filename() == "ffmpeg" || item->path().filename() == "ffmpeg.exe") {
+                executable = Utf8FromPath(item->path());
+                std::filesystem::permissions(item->path(),
+                                             std::filesystem::perms::owner_exec,
+                                             std::filesystem::perm_options::add,
+                                             error);
+                break;
+            }
+        }
+        if (executable == "ffmpeg") {
+            return "Temporary FFmpeg executable is missing.";
+        }
+#else
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
+                    "FFmpeg is unavailable; skipping optional intro movie conversion.");
+        std::filesystem::remove(source, error);
+        return std::nullopt;
+#endif
+    }
+    if (progress && !progress("Converting the intro movie", 0.25)) {
+        return "Import cancelled.";
+    }
+    const auto output = directory / "intro/brally.mkv";
+    if (!Run({executable,
+              "-nostdin",
+              "-y",
+              "-v",
+              "error",
+              "-i",
+              Utf8FromPath(source),
+              "-map",
+              "0:v:0",
+              "-map",
+              "0:a:0?",
+              "-c:v",
+              "libvpx-vp9",
+              "-crf",
+              "18",
+              "-b:v",
+              "0",
+              "-deadline",
+              "good",
+              "-cpu-used",
+              "4",
+              "-threads",
+              "2",
+              "-pix_fmt",
+              "yuv420p",
+              "-c:a",
+              "pcm_s16le",
+              "-ar",
+              "48000",
+              "-ac",
+              "2",
+              Utf8FromPath(output)},
+             progress)) {
+        return "Cannot convert intro movie. Check FFmpeg VP9 support or import cancellation.";
+    }
+    if (!std::filesystem::is_regular_file(output, error) ||
+        std::filesystem::file_size(output, error) == 0 || error) {
+        return "The converted intro movie is empty.";
+    }
+    std::filesystem::remove(source, error);
+    std::filesystem::remove(directory / "splash.img", error);
+    return std::nullopt;
+}
+
+} // namespace coastline

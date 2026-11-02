@@ -42,6 +42,25 @@
     ],
     modules: [
       {
+        // Intro playback links libav. Import uses the separate FFmpeg program for Indeo to VP9.
+        buildsystem: 'autotools',
+        'config-opts': [
+          '--disable-debug',
+          '--disable-doc',
+          '--disable-ffplay',
+          '--disable-ffprobe',
+          '--disable-static',
+          '--enable-libvpx',
+          '--enable-shared',
+        ],
+        name: 'ffmpeg',
+        sources: [{
+          sha256: 'de668509caf9e35e3cd162473441fdb29538c6d96ed080292b3cf9e6fc5d558f',
+          type: 'archive',
+          url: 'https://ffmpeg.org/releases/ffmpeg-7.1.5.tar.xz',
+        }],
+      },
+      {
         buildsystem: 'meson',
         cleanup: ['/include', '/lib/pkgconfig', '/lib/libgamemodeauto*'],
         'config-opts': [
@@ -142,9 +161,14 @@
           'autoconf-archive',
           'git',
           'libasound2-dev',
+          'libavcodec-dev',
+          'libavformat-dev',
+          'libavutil-dev',
           'libdecor-0-dev',
           'libegl1-mesa-dev',
           'libpulse-dev',
+          'libswresample-dev',
+          'libswscale-dev',
           'libwayland-dev',
           'libx11-dev',
           'libxcursor-dev',
@@ -177,6 +201,7 @@
         source: '.',
         // SDL and GameMode load these runtime libraries dynamically.
         'stage-packages': [
+          'ffmpeg',
           'libasound2t64',
           'libdecor-0-0',
           'libgamemode0',
@@ -408,6 +433,16 @@
       { host: true, name: 'zlib' },
     ],
     features+: {
+      video: {
+        dependencies: [
+          {
+            'default-features': false,
+            features: ['avcodec', 'avformat', 'swresample', 'swscale'],
+            name: 'ffmpeg',
+          },
+        ],
+        description: 'Decode optional asset-pack intro movies with libav.',
+      },
       sdl: {
         dependencies: [
           'argparse',

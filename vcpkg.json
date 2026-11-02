@@ -16,6 +16,16 @@
   "description": "Reconstructed source of the Nintendo 64 game Top Gear Rally.",
   "documentation": "https://coastline.readthedocs.org",
   "features": {
+    "video": {
+      "dependencies": [
+        {
+          "default-features": false,
+          "features": ["avcodec", "avformat", "swresample", "swscale"],
+          "name": "ffmpeg"
+        }
+      ],
+      "description": "Decode optional asset-pack intro movies with libav."
+    },
     "sdl": {
       "dependencies": [
         "argparse",

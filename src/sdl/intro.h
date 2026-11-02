@@ -11,6 +11,8 @@
 #include <memory>
 #include <string_view>
 
+#include <nlohmann/json.hpp>
+
 namespace coastline {
 
 class SceneRenderer;
@@ -37,11 +39,15 @@ public:
      * @param renderer The renderer that draws them.
      * @param release The selected cartridge directory, n64/base of the prepared assets.
      * @param region The chosen title region, or empty to read converted metadata.
+     * @param assets The prepared asset root for pack-defined sequences, or empty.
+     * @param settings The merged asset-pack settings, or an empty object.
      * @return The splash screens, or nothing with the reason logged.
      */
     static std::unique_ptr<Intro> Load(SceneRenderer &renderer,
                                        const std::filesystem::path &release,
-                                       std::string_view region = {});
+                                       std::string_view region = {},
+                                       const std::filesystem::path &assets = {},
+                                       const nlohmann::json &settings = nlohmann::json::object());
     /** Release splash-screen resources before their renderer is destroyed. */
     ~Intro();
     /** Prevent copying renderer-bound splash-screen resources. */
@@ -67,6 +73,9 @@ public:
      * @param renderer The renderer of the frame, between Begin() and End().
      */
     void Draw(SceneRenderer &renderer) const;
+
+    /** @return Whether a pack movie currently replaces menu music. */
+    bool PlayingVideo() const;
 
 private:
     struct State;

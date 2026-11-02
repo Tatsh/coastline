@@ -11,6 +11,16 @@
 
 namespace coastline {
 
+/**
+ * @param path A native filesystem path.
+ * @return The path in UTF-8, with native directory separators.
+ */
+inline std::string Utf8FromPath(const std::filesystem::path &path) {
+    auto native = path;
+    const auto text = native.make_preferred().u8string();
+    return {text.begin(), text.end()};
+}
+
 /** The directories the game reads and writes, each ending in the application directory. */
 struct GamePaths {
     std::filesystem::path config; /*!< BossRally.ini and the bindings of the controls. */

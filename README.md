@@ -820,6 +820,34 @@ A pack may have a `pack.json` of settings. Each key of the selected pack replace
 
 `version` is the version of the file, 1. `xmMusicGain` is the gain of the music of the XM modules.
 
+A pack can replace regional splash screens with an ordered `intro` array. Pure PC uses the
+converted Boss Rally movie, followed by its legal image, then the main menu. Other packs retain
+regional splash screens when `intro` is absent. An empty array opens the menu immediately.
+
+```json
+{
+  "intro": [
+    { "file": "intro/brally.mkv", "type": "video" },
+    { "duration": 2, "file": "intro/legal.png", "type": "image" }
+  ],
+  "version": 1
+}
+```
+
+Each entry has a `type` (`image`, `video`, or `model`) and a `file` relative to prepared assets.
+Image and model entries have a positive `duration` in seconds (default 2, maximum 3600).
+Video entries play to their end unless a positive `duration` limits playback.
+`skippable` defaults to true; a skip button advances to the next entry. Static model entries
+accept `scale` in (0, 1000] (default 0.03125) and `depth` in [-100000, -1) (default -50).
+Missing media and unsupported videos are skipped.
+
+`COASTLINE_VIDEO=ON` detects optional libav decoding libraries; `OFF` excludes movie playback.
+With vcpkg, select manifest features `sdl;video` to build the libraries. The importer invokes
+external FFmpeg to convert the original Indeo movie to VP9 with PCM audio in Matroska. Linux uses
+FFmpeg from `PATH`. Windows and macOS use `PATH` first, otherwise download a temporary FFmpeg copy
+for the import and delete the tool afterwards. Windows uses Gyan builds; Apple Silicon uses
+OSXExperts, and Intel macOS uses Evermeet. Conversion does not require platform Indeo codecs.
+
 ### Command line
 
 `coastline --help` lists the options and the subcommands, and `coastline SUBCOMMAND --help` lists

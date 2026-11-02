@@ -15,6 +15,7 @@
 #include "common/audiomix.h"
 #include "frontend.h"
 #include "gpu.h"
+#include "introsequence.h"
 #include "language.h"
 #include "menuscreen.h"
 #include "menutext.h"
@@ -79,6 +80,7 @@ struct LogoSounds {
 } // namespace
 
 struct Intro::State {
+    std::unique_ptr<IntroSequence> sequence;
     std::unique_ptr<RenderModel> firstLogo;
     std::unique_ptr<RenderModel> producerLogo;
     std::unique_ptr<RenderModel> developerLogo;
@@ -228,8 +230,17 @@ Intro::~Intro() = default;
 
 std::unique_ptr<Intro> Intro::Load(SceneRenderer &renderer,
                                    const std::filesystem::path &release,
-                                   std::string_view selectedRegion) {
+                                   std::string_view selectedRegion,
+                                   const std::filesystem::path &assets,
+                                   const nlohmann::json &settings) {
     auto state = std::make_unique<State>();
+    if (settings.contains("intro")) {
+        state->sequence = IntroSequence::Load(renderer, assets, settings.at("intro"));
+        if (state->sequence) {
+            return std::unique_ptr<Intro>(new Intro(std::move(state)));
+        }
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Invalid asset-pack intro sequence.");
+    }
     const auto region =
         selectedRegion.empty() ? CartridgeRegion(release) : std::string(selectedRegion);
     state->usa = region == "usa";
@@ -293,6 +304,10 @@ std::unique_ptr<Intro> Intro::Load(SceneRenderer &renderer,
 
 void Intro::Restart() {
     State &s = *m_state;
+    if (s.sequence) {
+        s.sequence->Restart();
+        return;
+    }
     s.fade = {};
     s.fade.SetTarget(1.0f, FADE_TIME);
     s.sfxFade = {.level = 1.0f, .target = 1.0f};
@@ -313,6 +328,9 @@ void Intro::Restart() {
 
 IntroEnd Intro::Update(float seconds, const IntroButtons &buttons) {
     State &s = *m_state;
+    if (s.sequence) {
+        return s.sequence->Update(seconds, buttons.skip) ? IntroEnd::Running : IntroEnd::MainMenu;
+    }
     s.buildDate = buttons.buildDate;
     s.fade.Update(seconds);
     s.sfxFade.Update(seconds);
@@ -381,6 +399,10 @@ IntroEnd Intro::Update(float seconds, const IntroButtons &buttons) {
 
 void Intro::Draw(SceneRenderer &renderer) const {
     const State &s = *m_state;
+    if (s.sequence) {
+        s.sequence->Draw();
+        return;
+    }
     GpuWindow &window = renderer.Window();
     float aspect = static_cast<float>(window.FrameWidth()) /
                    static_cast<float>(std::max<Uint32>(window.FrameHeight(), 1));
@@ -564,6 +586,10 @@ void Intro::Draw(SceneRenderer &renderer) const {
     }
 
     s.fade.Draw(renderer);
+}
+
+bool Intro::PlayingVideo() const {
+    return m_state->sequence && m_state->sequence->PlayingVideo();
 }
 
 } // namespace coastline

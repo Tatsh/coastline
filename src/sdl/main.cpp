@@ -1693,18 +1693,21 @@ int main(int argc, char *argv[]) {
                             intro =
                                 coastline::Intro::Load(*sceneRenderer,
                                                        coastline::ReleaseDirectory(*titleAssets),
-                                                       *titleRegion);
+                                                       *titleRegion,
+                                                       assets,
+                                                       packSettings);
                         }
                     } else if (titleRegion) {
-                        intro =
-                            coastline::Intro::Load(*sceneRenderer, frontEndRelease, *titleRegion);
+                        intro = coastline::Intro::Load(
+                            *sceneRenderer, frontEndRelease, *titleRegion, assets, packSettings);
                     }
                     if (!intro) {
                         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
                                     "Title screen %s is unavailable; using region %s.",
                                     titleChoice.c_str(),
                                     RegionName(currentTitleRegion));
-                        intro = coastline::Intro::Load(*sceneRenderer, frontEndRelease);
+                        intro = coastline::Intro::Load(
+                            *sceneRenderer, frontEndRelease, {}, assets, packSettings);
                     } else {
                         SDL_Log("Using title screen from region %s.", RegionName(*titleRegion));
                     }
@@ -1735,7 +1738,10 @@ int main(int argc, char *argv[]) {
                         *sceneRenderer,
                         coastline::FontDirectory(assets, coastline::SelectedLanguage()));
                 }
-                playMenuMusic();
+                bool introMovie = intro && intro->PlayingVideo();
+                if (!introMovie) {
+                    playMenuMusic();
+                }
                 // The vertical sync V returns to, fifo when the settings choose it.
                 const bool fifo = displayOptions.fifo;
                 Uint64 lastTicks = SDL_GetTicksNS();
@@ -2111,6 +2117,7 @@ int main(int argc, char *argv[]) {
                                 std::nullopt);
                         freeCameraToggleWasDown = cameraToggle;
                         const bool escape = coastline::IsKeyDown(SDL_SCANCODE_ESCAPE);
+                        const bool skipMovie = intro->PlayingVideo() && escape && !escapeWasDown;
                         const bool canExit =
                             frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::AttractDemo ||
                             (frontEnd == FrontEnd::MainMenu && mainMenu && mainMenu->IsMainMenu());
@@ -2159,9 +2166,19 @@ int main(int argc, char *argv[]) {
                             const bool *keys = SDL_GetKeyboardState(nullptr);
                             bool shiftI =
                                 keys[SDL_SCANCODE_I] && (SDL_GetModState() & SDL_KMOD_SHIFT) != 0;
-                            coastline::IntroButtons buttons{
-                                (pressed & CHOOSE) != 0, (held & C_BUTTONS) == C_BUTTONS || shiftI};
+                            coastline::IntroButtons buttons{(pressed & CHOOSE) != 0 || skipMovie,
+                                                            (held & C_BUTTONS) == C_BUTTONS ||
+                                                                shiftI};
                             coastline::IntroEnd end = intro->Update(seconds, buttons);
+                            const bool movie = intro->PlayingVideo();
+                            if (movie != introMovie) {
+                                introMovie = movie;
+                                if (movie) {
+                                    menuMusic.Stop();
+                                } else {
+                                    playMenuMusic();
+                                }
+                            }
                             if (end == coastline::IntroEnd::MainMenu && mainMenu) {
                                 mainMenu->Restart();
                                 frontEnd = FrontEnd::MainMenu;
