@@ -6,6 +6,10 @@
 #include <cstdint>
 #include <cstdlib>
 #include <new>
+#ifdef ENABLE_PATCHES
+#include <limits>
+#include <stdexcept>
+#endif
 
 #include "ear/registry.h"
 
@@ -19,8 +23,19 @@ public:
     }
 
     static CPlex *Create(CPlex *&head, unsigned max, std::size_t elementSize) {
+#ifdef ENABLE_PATCHES
+        if (elementSize == 0 ||
+            max > ((std::numeric_limits<std::size_t>::max)() - sizeof(CPlex)) / elementSize) {
+            throw std::bad_array_new_length();
+        }
+#endif
         auto *plex =
             static_cast<CPlex *>(MfcAllocateWithNewHandler(sizeof(CPlex) + max * elementSize));
+#ifdef ENABLE_PATCHES
+        if (plex == nullptr) {
+            throw std::bad_alloc();
+        }
+#endif
         plex->next = head;
         head = plex;
         return plex;
@@ -73,6 +88,11 @@ struct MapState {
     int blockSize;
 
     void InitHashTable(UINT hashSize, BOOL allocate) {
+#ifdef ENABLE_PATCHES
+        if (hashSize == 0) {
+            throw std::invalid_argument("Hash table size must be positive.");
+        }
+#endif
         delete[] hashTable;
         hashTable = nullptr;
         if (allocate) {
@@ -94,6 +114,11 @@ struct MapState {
 
     template <typename Key>
     Association *Find(Key key) const {
+#ifdef ENABLE_PATCHES
+        if (hashTableSize == 0) {
+            return nullptr;
+        }
+#endif
         if (hashTable == nullptr) {
             return nullptr;
         }
@@ -117,9 +142,19 @@ struct MapState {
             InitHashTable(hashTableSize, TRUE);
         }
         if (freeAssociations == nullptr) {
+#ifdef ENABLE_PATCHES
+            if (blockSize <= 0) {
+                throw std::invalid_argument("Association block size must be positive.");
+            }
+#endif
             CPlex *block = CPlex::Create(blocks, blockSize, sizeof(Association));
+#ifdef ENABLE_PATCHES
+            for (int i = blockSize - 1; i >= 0; i--) {
+                auto *free = static_cast<Association *>(block->Data()) + i;
+#else
             auto *free = static_cast<Association *>(block->Data()) + blockSize - 1;
             for (int i = blockSize - 1; i >= 0; i--, free--) {
+#endif
                 free->next = freeAssociations;
                 freeAssociations = free;
             }
@@ -269,6 +304,14 @@ POSITION CMapWordToPtr::GetStartPosition() const {
 }
 
 void CMapWordToPtr::GetNextAssoc(POSITION &position, WORD &key, void *&value) const {
+#ifdef ENABLE_PATCHES
+    if (position == nullptr || hashTable == nullptr || hashTableSize == 0) {
+        position = nullptr;
+        key = 0;
+        value = nullptr;
+        return;
+    }
+#endif
     auto *association = reinterpret_cast<Association *>(position);
     if (position == BEFORE_START_POSITION) {
         for (UINT bucket = 0; bucket < hashTableSize; bucket++) {
@@ -277,6 +320,14 @@ void CMapWordToPtr::GetNextAssoc(POSITION &position, WORD &key, void *&value) co
             }
         }
     }
+#ifdef ENABLE_PATCHES
+    if (association == nullptr) {
+        position = nullptr;
+        key = 0;
+        value = nullptr;
+        return;
+    }
+#endif
     Association *following = association->next;
     if (following == nullptr) {
         for (UINT bucket = HashKey(association->key) % hashTableSize + 1; bucket < hashTableSize;
@@ -422,9 +473,19 @@ template <typename Node>
 Node *
 NewNode(Node *&freeNodes, CPlex *&blocks, int blockSize, int &count, Node *previous, Node *next) {
     if (freeNodes == nullptr) {
+#ifdef ENABLE_PATCHES
+        if (blockSize <= 0) {
+            throw std::invalid_argument("Node block size must be positive.");
+        }
+#endif
         CPlex *block = CPlex::Create(blocks, blockSize, sizeof(Node));
+#ifdef ENABLE_PATCHES
+        for (int i = blockSize - 1; i >= 0; i--) {
+            auto *free = static_cast<Node *>(block->Data()) + i;
+#else
         auto *free = static_cast<Node *>(block->Data()) + blockSize - 1;
         for (int i = blockSize - 1; i >= 0; i--, free--) {
+#endif
             free->next = freeNodes;
             freeNodes = free;
         }

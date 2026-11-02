@@ -1,5 +1,6 @@
 #include "common/driving.h"
 
+#include "common/analyzer.h"
 #include "common/camera.h"
 #include "common/frametime.h"
 #include "common/game.h"
@@ -506,7 +507,7 @@ HoldAiToRoute(Vehicle *vehicle, f32 sideOffset, f32 halfWidth, f32 forwardSpeed)
         }
         along = Vec3fDot(velocity, &VEHICLE_GET(vehicle, TrackForward));
         /* The original computes the speed across the route and overwrites it unread. */
-        across = Vec3fDot(velocity, &VEHICLE_GET(vehicle, TrackSide));
+        COASTLINE_MATCHING_STORE across = Vec3fDot(velocity, &VEHICLE_GET(vehicle, TrackSide));
         upward = Vec3fDot(velocity, &VEHICLE_GET(vehicle, TrackUp));
         across = -(sideOffset * hold);
         Vec3fScale(velocity, &VEHICLE_GET(vehicle, TrackForward), along);

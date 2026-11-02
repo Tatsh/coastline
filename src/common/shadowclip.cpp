@@ -18,6 +18,11 @@ ShadowClipVertex *
 LerpShadowClipVertex(const ShadowClipVertex *first, const ShadowClipVertex *second, f32 fraction) {
     ShadowClipVertex *result = g_pShadowClipVertexFreeList;
 
+#ifdef ENABLE_PATCHES
+    if (result == nullptr) {
+        return nullptr;
+    }
+#endif
     if (result != nullptr) {
         g_pShadowClipVertexFreeList = result->pNext;
     }
@@ -55,6 +60,11 @@ static inline ShadowClipVertex *AllocateProjectedShadowVertex(const ConvertedMod
                                                               ShadowClipVertex *next) {
     ShadowClipVertex *result = g_pShadowClipVertexFreeList;
 
+#ifdef ENABLE_PATCHES
+    if (result == nullptr) {
+        return nullptr;
+    }
+#endif
     if (result != nullptr) {
         g_pShadowClipVertexFreeList = result->pNext;
     }
@@ -74,9 +84,27 @@ void ProjectClippedShadowTriangle(const TrackInstance *instance,
                                   const ConvertedModelVertex *c,
                                   const f32 vehicleMatrix[4][4]) {
     ShadowClipVertex *last = AllocateProjectedShadowVertex(c, nullptr);
+#ifdef ENABLE_PATCHES
+    if (last == nullptr) {
+        return;
+    }
+#endif
     ShadowClipVertex *middle = AllocateProjectedShadowVertex(b, last);
+#ifdef ENABLE_PATCHES
+    if (middle == nullptr) {
+        RecycleShadowClipVertex(last);
+        return;
+    }
+#endif
     ShadowClipPolygon polygon = {AllocateProjectedShadowVertex(a, middle), 3};
 
+#ifdef ENABLE_PATCHES
+    if (polygon.pHead == nullptr) {
+        RecycleShadowClipVertex(middle);
+        RecycleShadowClipVertex(last);
+        return;
+    }
+#endif
     last->pNext = polygon.pHead;
     ClipShadowPolygon(&polygon, ShadowTextureDistanceLeft);
     if (polygon.nCount >= 2) {

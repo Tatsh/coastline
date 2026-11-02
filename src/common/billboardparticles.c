@@ -141,9 +141,10 @@ void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue) {
         if (!(rawY > lowerEdge) || clip[1] >= edge) {
             continue;
         }
-        heightPixels = (long double)span * size;
 #ifdef ENABLE_PATCHES
         heightPixels = (long double)view->height * (8.0L / 3.0L) * size;
+#else
+        heightPixels = (long double)span * size;
 #endif
         halfWidth = (s32)(s64)(heightPixels * 0.75f);
         if (halfWidth <= 0) {

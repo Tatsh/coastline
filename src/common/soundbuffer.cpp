@@ -832,9 +832,13 @@ bool LoadSoundSet(int nSet) {
             }
         }
     } else {
+#ifdef ENABLE_PATCHES
+        return false;
+#else
         // The original reads the files of another set through a pointer it does not set, and
         // the pointer is null here.
         ppszFiles = nullptr;
+#endif
     }
     for (int nSample = 1; nSample < g_dwLoadedSoundSampleCount - 1; nSample++) {
         for (int i = 0; i < SOUND_CHANNEL_COUNT; i++) {

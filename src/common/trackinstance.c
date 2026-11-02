@@ -100,6 +100,11 @@ static inline s32 ShadowListHasRoom(DisplayListCommand *out) {
 }
 
 static inline s32 UnusedShadowLoad(DisplayListCommand *out, DisplayListCommand *lastLoadEnd) {
+#ifdef ENABLE_PATCHES
+    if (lastLoadEnd == NULL) {
+        return FALSE;
+    }
+#endif
 #if TGR_BOSS_RALLY
     if (g_bDisableCarShadow) {
         return FALSE;
@@ -173,6 +178,15 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred) {
     u32 w0;
     u8 bits;
 
+#ifdef ENABLE_PATCHES
+    if (displayList == NULL || gDisplayListPtr == NULL) {
+        return;
+    }
+    if (out == NULL || vertex == NULL || g_pShadowDisplayListStart == NULL ||
+        g_pShadowVertexStart == NULL) {
+        vehicles = 0;
+    }
+#endif
     if (vehicles == 0 ||
         g_pActiveCamera == &VEHICLE_GET(g_pActiveCameraVehicle, Cameras)[VEHICLE_CAMERA_MIRROR] ||
         (instance->flags & TRACK_INSTANCE_NO_SHADOW)

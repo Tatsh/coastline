@@ -2,6 +2,7 @@
 
 #include <PR/gbi.h>
 
+#include "common/analyzer.h"
 #include "common/displaylistptr.h"
 #include "common/fade.h"
 #include "common/render.h"
@@ -112,10 +113,10 @@ void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor
 #if TGR_BOSS_RALLY
     /* The scissor is doubled at the high resolution and not read again. */
     if (g_dwScreenScaleShift) {
-        x = COORD_DOUBLE(x);
-        y = COORD_DOUBLE(y);
-        width = COORD_DOUBLE(width);
-        height = COORD_DOUBLE(height);
+        COASTLINE_MATCHING_STORE x = COORD_DOUBLE(x);
+        COASTLINE_MATCHING_STORE y = COORD_DOUBLE(y);
+        COASTLINE_MATCHING_STORE width = COORD_DOUBLE(width);
+        COASTLINE_MATCHING_STORE height = COORD_DOUBLE(height);
     }
 #endif /* TGR_BOSS_RALLY */
     g_dwViewportMirrored = FALSE;

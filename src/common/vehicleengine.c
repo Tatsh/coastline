@@ -1,3 +1,4 @@
+#include "common/analyzer.h"
 #include "common/game.h"
 #include "common/input.h"
 #include "common/mathutil.h"
@@ -170,7 +171,7 @@ static inline void SteerByStick(Vehicle *vehicle, f32 stick) {
     if (340.0f < kph) {
         kph = 340.0f;
     }
-    kph = kph - 140.0f;
+    COASTLINE_MATCHING_STORE kph = kph - 140.0f;
 #if TGR_BOSS_RALLY
     switch (VEHICLE_GET(vehicle, SteeringMode)) {
     case 0:

@@ -462,6 +462,7 @@ filewrite
 finalrom
 finetune
 firstrun
+fistp
 fixedh
 flactrack
 flathub
@@ -876,6 +877,7 @@ ntdll
 ntrj
 ntrp
 numericdata
+numericguards
 numl
 numlight
 numlights
@@ -1087,6 +1089,7 @@ rtti
 runscript
 runtimebuffers
 rxsize
+safetyguards
 samplecount
 sampleraddressmode
 samplermipmapmode

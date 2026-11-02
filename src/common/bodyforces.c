@@ -917,6 +917,10 @@ void SumBodyForces(RigidBody *body) {
         case RIGID_BODY_FORCE_BODY:
             Mtx3x3MulVec3f(&vector, body->orientation, &force->vector);
             break;
+#ifdef ENABLE_PATCHES
+        default:
+            continue;
+#endif
         }
         body->force.x = vector.x + body->force.x;
         body->force.y = vector.y + body->force.y;
@@ -945,6 +949,11 @@ void SumWheelForces(RigidBody *body, RigidBody *wheel) {
 #endif
 
     for (force = wheel->forces; force != NULL; force = force->next) {
+#ifdef ENABLE_PATCHES
+        if (force->frame != RIGID_BODY_FORCE_WORLD && force->frame != RIGID_BODY_FORCE_BODY) {
+            continue;
+        }
+#endif
         if (force->frame == RIGID_BODY_FORCE_WORLD) {
             Mtx4fInverseRotate(&local, body->orientation, &force->vector);
         }

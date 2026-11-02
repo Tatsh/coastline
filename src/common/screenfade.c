@@ -1,3 +1,4 @@
+#include "common/analyzer.h"
 #include "common/fade.h"
 #include "common/fadecommands.h"
 #include "common/screen.h"
@@ -68,7 +69,7 @@ void ApplyScreenFade(void) {
     if (g_dwFadeRectLeft) {
 #if TGR_BOSS_RALLY
         /* The covered edge of the other framebuffer is read and then discarded. */
-        left = g_adwFadeRectLeftPerBuffer[g_dwFrameBufferIndex ^ 1];
+        COASTLINE_MATCHING_STORE left = g_adwFadeRectLeftPerBuffer[g_dwFrameBufferIndex ^ 1];
         left = 0;
         right = g_dwFadeRectLeft;
 #else

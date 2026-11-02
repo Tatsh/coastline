@@ -47,7 +47,7 @@ typedef long double (*ShadowClipDistance)(const ConvertedModelVertex *vertex);
  * @param first The vertex at fraction 0.
  * @param second The vertex at fraction 1.
  * @param fraction The weight of the second vertex.
- * @return The allocated node.
+ * @return The allocated node, or null on pool exhaustion with patches enabled.
  * @ghidraAddress BRD3D: 0x10010b00
  * @ghidraAddress BRGlide: 0x1000e060
  */
@@ -56,6 +56,7 @@ LerpShadowClipVertex(const ShadowClipVertex *first, const ShadowClipVertex *seco
 
 /**
  * Clip a circular polygon against a signed texture-boundary distance.
+ * With patches enabled, pool exhaustion discards the polygon and recycles its nodes.
  *
  * @param polygon The circular polygon to modify.
  * @param distance The signed distance callback.

@@ -1,3 +1,4 @@
+#include "common/analyzer.h"
 #include "common/game.h"
 #include "common/profile.h"
 #include "common/race.h"
@@ -43,10 +44,11 @@ void RestoreRaceResultsFromSlots(void) {
             profile->seasonPlaces[profile->season][profile->round] = g_adwSavedResultPositions[i];
             profile = VEHICLE_GET(&(g_aVehicles[i]), Profile);
             profile->seasonTimes[profile->season][profile->round] = g_afSavedResultTimes[i];
-            profile = VEHICLE_GET(&(g_aVehicles[i]), Profile);
 #if TGR_BOSS_RALLY
+            COASTLINE_MATCHING_STORE profile = VEHICLE_GET(&(g_aVehicles[i]), Profile);
             NullStub();
 #else
+            profile = VEHICLE_GET(&(g_aVehicles[i]), Profile);
             osSyncPrintf("points = %d\n", profile->seasonPoints[profile->season]);
 #endif
         }

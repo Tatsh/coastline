@@ -1,5 +1,6 @@
 #include <PR/gbi.h>
 
+#include "common/analyzer.h"
 #include "common/displaylistptr.h"
 #include "common/render.h"
 #include "common/screen.h"
@@ -106,8 +107,8 @@ void RenderTextToDisplayList(const char *text) {
         glyphBytes = SMALL_FONT_ATLAS_GLYPH_BYTES;
 #elif TGR_BOSS_RALLY
         padding = 1;
-        offsets = g_adwHudFont2GlyphOffsets;
-        glyphTextures = g_adwSmallFontGlyphTexturesA;
+        COASTLINE_MATCHING_STORE offsets = g_adwHudFont2GlyphOffsets;
+        COASTLINE_MATCHING_STORE glyphTextures = g_adwSmallFontGlyphTexturesA;
 #else
         padding = SMALL_FONT_PADDING;
         offsets = g_adwSmallFontGlyphOffsets;
@@ -127,8 +128,8 @@ void RenderTextToDisplayList(const char *text) {
         glyphBytes = LARGE_FONT_ATLAS_GLYPH_BYTES;
 #elif TGR_BOSS_RALLY
         padding = 1;
-        offsets = g_adwHudFont0GlyphOffsets;
-        glyphTextures = g_adwLargeFontGlyphTexturesA;
+        COASTLINE_MATCHING_STORE offsets = g_adwHudFont0GlyphOffsets;
+        COASTLINE_MATCHING_STORE glyphTextures = g_adwLargeFontGlyphTexturesA;
 #else
         padding = LARGE_FONT_PADDING;
         offsets = g_adwLargeFontGlyphOffsets;

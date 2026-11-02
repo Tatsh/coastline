@@ -32,6 +32,30 @@ function(coastline_add_test name)
   add_test(NAME ${name} COMMAND ${name}_test ${${name}_TEST_ARGS})
 endfunction()
 
+add_executable(numericguards_test numericguards_test.cpp)
+set_target_properties(numericguards_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(numericguards_test PRIVATE "${_src}" "${_src}/libultra/include")
+target_compile_options(
+  numericguards_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL -UTGR_BOSS_RALLY
+                            -DTGR_BOSS_RALLY=1 -ffunction-sections -fdata-sections
+                            -fsanitize=address,undefined,float-cast-overflow,float-divide-by-zero
+                            -fno-sanitize-recover=all)
+target_compile_definitions(numericguards_test PRIVATE ENABLE_PATCHES=1)
+target_link_options(numericguards_test PRIVATE -Wl,--gc-sections
+                      -fsanitize=address,undefined,float-cast-overflow,float-divide-by-zero)
+add_test(NAME numericguards COMMAND numericguards_test)
+
+add_executable(safetyguards_test safetyguards_test.cpp)
+set_target_properties(safetyguards_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(safetyguards_test PRIVATE "${_src}" "${_src}/libultra/include")
+target_compile_definitions(safetyguards_test PRIVATE ENABLE_PATCHES=1 __stdcall=)
+target_compile_options(
+  safetyguards_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL -UTGR_BOSS_RALLY
+                           -DTGR_BOSS_RALLY=1 -ffunction-sections -fdata-sections
+                           -fsanitize=address,undefined -fno-sanitize-recover=all)
+target_link_options(safetyguards_test PRIVATE -Wl,--gc-sections -fsanitize=address,undefined)
+add_test(NAME safetyguards COMMAND safetyguards_test)
+
 coastline_add_test(audio)
 coastline_add_test(camera ${_vecmath} ${_gu} "${_src}/common/libultra/gu/lookat.c"
                    "${_src}/common/libultra/gu/perspective.c" "${_src}/common/camerarender.c")

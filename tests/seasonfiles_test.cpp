@@ -97,6 +97,18 @@ int main() {
            g_LoadedSeasonSettings.suspension == 3 && g_LoadedSeasonSettings.car == 4 &&
            g_LoadedSeasonSettings.handling == 5);
 
+    const auto truncated = saved.size() - sizeof(SeasonSaveSettings) - SEASON_SAVE_SLOT_NAME_SIZE;
+    for (std::size_t size : {truncated, truncated + 4, saved.size() - 1}) {
+        std::filesystem::resize_file(g_szSeasonSaveFileName, size);
+        const auto before = profile;
+        assert(!LoadSeasonSaveFile(SEASON_LOAD_FILE, false));
+        assert(std::memcmp(&profile, &before, sizeof(profile)) == 0);
+        assert(std::strcmp(g_szSeasonSaveSlotName, "Saved season") == 0);
+        std::ofstream file(g_szSeasonSaveFileName, std::ios::binary | std::ios::trunc);
+        file.write(reinterpret_cast<const char *>(slot.data()), slot.size());
+        assert(file.good());
+    }
+
     g_aVehicles[0].SetProfile(nullptr);
     std::strcpy(g_szSeasonSaveFileName, "missing-profile.brf");
     assert(!SaveSeasonSaveFile());

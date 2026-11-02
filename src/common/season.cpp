@@ -272,6 +272,30 @@ bool RestoreSeasonProgressState(void) {
 }
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
+#ifdef ENABLE_PATCHES
+static inline bool ReadSeasonSaveTrailer(FILE *pFile) {
+    if (fseek(pFile, 0, SEEK_END) != 0) {
+        return false;
+    }
+    const long size = ftell(pFile);
+    const long trailerSize = sizeof(SeasonSaveSettings) + SEASON_SAVE_SLOT_NAME_SIZE;
+    const long minimumSize =
+        sizeof(g_szSeasonSaveMagic) + sizeof(u32) + sizeof(g_abSaveFileReadBuffer) + trailerSize;
+    if (size < minimumSize || fseek(pFile, size - trailerSize, SEEK_SET) != 0) {
+        return false;
+    }
+    SeasonSaveSettings settings;
+    char label[SEASON_SAVE_SLOT_NAME_SIZE];
+    if (fread(&settings, 1, sizeof(settings), pFile) != sizeof(settings) ||
+        fread(label, 1, sizeof(label), pFile) != sizeof(label)) {
+        return false;
+    }
+    g_LoadedSeasonSettings = settings;
+    memcpy(g_szSeasonSaveSlotName, label, sizeof(label));
+    memcpy(g_szSecondarySeasonSaveSlotName, label, sizeof(label));
+    return true;
+}
+#else
 static inline void ReadSeasonSaveTrailer(FILE *pFile) {
     fseek(pFile, 0, SEEK_END);
     long nSettingsOffset = ftell(pFile) - sizeof(SeasonSaveSettings) - SEASON_SAVE_SLOT_NAME_SIZE;
@@ -290,6 +314,7 @@ static inline void ReadSeasonSaveTrailer(FILE *pFile) {
            g_szSeasonSaveSlotName,
            sizeof(g_szSecondarySeasonSaveSlotName));
 }
+#endif
 
 static inline void ApplySeasonProfilePreservingOtherPlayer(void) {
     PlayerProfile *pOtherProfile =
@@ -332,15 +357,29 @@ bool LoadSeasonSaveFile(int nMode, bool bAllowFailure) {
         }
     }
     if (nMode == SEASON_LOAD_FILE) {
+#ifdef ENABLE_PATCHES
+        if (!ReadSeasonSaveTrailer(pFile)) {
+            fclose(pFile);
+            return bAllowFailure;
+        }
+#endif
         if (!ResetSeasonSaveBuffers()) {
+#ifdef ENABLE_PATCHES
+            fclose(pFile);
+#endif
             return false;
         }
         if (!g_pPrimarySeasonSave || !g_pSecondarySeasonSave) {
+#ifdef ENABLE_PATCHES
+            fclose(pFile);
+#endif
             return false;
         }
         memcpy(g_pPrimarySeasonSave, g_abSaveFileReadBuffer, sizeof(*g_pPrimarySeasonSave));
         memcpy(g_pSecondarySeasonSave, g_abSaveFileReadBuffer, sizeof(*g_pSecondarySeasonSave));
+#ifndef ENABLE_PATCHES
         ReadSeasonSaveTrailer(pFile);
+#endif
 #ifdef ENABLE_PATCHES
         if (IsSeasonSlotFile()) {
             RecordSeasonSlot();

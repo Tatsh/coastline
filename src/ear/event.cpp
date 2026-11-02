@@ -378,6 +378,14 @@ uint32_t __stdcall EAR_DLL_MixEvent(const EarEventParams *params) {
         // The original does not check the allocation of the twin.
         ScheduledEarEvent *twin =
             twinStorage ? new (twinStorage) ScheduledEarEvent(*event) : nullptr;
+#ifdef ENABLE_PATCHES
+        if (twin == nullptr) {
+            channel->events.RemoveKey(event->notificationEvent);
+            SetEarLastError(0x10);
+            g_bPlaybackUpdateLocked = 0;
+            goto fail;
+        }
+#endif
         twin->notificationEvent = GenerateEarObjectHandle();
         twin->twinEventHandle = event->notificationEvent;
         event->twinEventHandle = twin->notificationEvent;

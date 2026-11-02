@@ -7,6 +7,10 @@
 #include "common/vehicleaccess.h"
 #include "common/weather.h"
 
+#if TGR_BOSS_RALLY && defined(ENABLE_PATCHES)
+#include <math.h>
+#endif
+
 #if TGR_BOSS_RALLY
 #include "common/gbicommand.h"
 #endif
@@ -192,7 +196,15 @@ f32 ComputeFogFactorAtPoint(Vec3f *point) {
     }
     Vec3fTransformByMatrix(clip, point, g_afViewProjMatrix);
     depth = clip[2];
-    depth /= clip[3];
+#if TGR_BOSS_RALLY && defined(ENABLE_PATCHES)
+    if (clip[3] == 0.0f) {
+        if (!(depth > 0.0f || depth < 0.0f)) {
+            return 0.0f;
+        }
+        depth = copysignf(INFINITY, depth) * copysignf(1.0f, clip[3]);
+    } else
+#endif
+        depth /= clip[3];
 #if TGR_BOSS_RALLY
     fog = ((long double)depth * (f32)g_dwFogFactorScale + (f32)g_dwFogFactorOffset) *
           (f32)(1.0 / 255.0);

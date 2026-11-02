@@ -244,13 +244,26 @@ s32 CollectTrianglesInBox(RigidBody *body, f32 box[4][4]) {
     return found;
 }
 
-#if TGR_BOSS_RALLY
+#if TGR_BOSS_RALLY && defined(ENABLE_PATCHES)
+static s32 GridCoordinate(f32 value) {
+    /* x87 FISTP returns the integer indefinite on invalid input, with a zero low word. */
+    if (!(value >= -9223372036854775808.0f && value < 9223372036854775808.0f)) {
+        return 0;
+    }
+    return (s32)(s64)value;
+}
+
+#define GRID_COORDINATE(v) GridCoordinate(v)
+#define GRID_SECTOR(x, y)                                                                          \
+    ((s32)((u32)(GRID_COORDINATE(y) / 32) * 64u + (u32)(GRID_COORDINATE(x) / 32)))
+#elif TGR_BOSS_RALLY
 /* The original converts through 64 bits, so NaN and the infinities give the cell of 0. */
 #define GRID_COORDINATE(v) ((s32)(s64)(v))
+#define GRID_SECTOR(x, y) (GRID_COORDINATE(y) / 32 * 64 + GRID_COORDINATE(x) / 32)
 #else
 #define GRID_COORDINATE(v) ((s32)(v))
-#endif
 #define GRID_SECTOR(x, y) (GRID_COORDINATE(y) / 32 * 64 + GRID_COORDINATE(x) / 32)
+#endif
 
 #define ABS(x) ((x) < 0.0f ? -(x) : (x))
 #define COMPONENT(v, axis) ((&(v)->x)[axis])
