@@ -74,8 +74,8 @@
         builddir: true,
         'config-opts': [
           '-DCMAKE_BUILD_TYPE=Release',
-          // Shared package installations use platform directories instead of adjacent files.
-          '-DCOASTLINE_PORTABLE=OFF',
+          // Portable lookup uses platform directories until adjacent files are created.
+          '-DCOASTLINE_PORTABLE=ON',
           '-DCOASTLINE_DISCORD=ON',
           '-DTGR_ENABLE_PATCHES=ON',
           '-DTGR_PLATFORM=sdl',
@@ -163,8 +163,8 @@
         'cmake-parameters': [
           '-DCMAKE_BUILD_TYPE=Release',
           '-DCMAKE_INSTALL_PREFIX=/usr',
-          // Snap installs executable files in a read-only shared directory.
-          '-DCOASTLINE_PORTABLE=OFF',
+          // Portable lookup uses platform directories until adjacent files are created.
+          '-DCOASTLINE_PORTABLE=ON',
           '-DCOASTLINE_DISCORD=ON',
           '-DTGR_ENABLE_PATCHES=ON',
           '-DTGR_PLATFORM=sdl',

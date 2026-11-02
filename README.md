@@ -174,18 +174,45 @@ directories. Windows uses `Coastline` in the roaming and local application data 
 The first release uses version 1 of the imported asset formats. Pre-release installations require
 `coastline --factory-reset`; settings and data are not migrated.
 
-Portable file lookup defaults to enabled outside macOS and installed-asset builds.
-An existing `BossRally.ini` beside the executable
-overrides the platform configuration file. An adjacent `assets` directory independently selects
-portable data, with `state`, `cache`, and `screenshots` directories beside the executable. Missing
-adjacent files use the platform directories. Portable assets precede system assets, and importing
-updates the portable data directory when selected. A portable location that cannot be written
-produces an error instead of falling back. Moving the executable and its portable directories
-together preserves setup paths stored relative to the executable.
+Portable file lookup defaults to enabled, except in installed-asset builds, and is enabled in CI
+packages. Coastline checks for `BossRally.ini` and `assets` beside the executable, then in
+`CoastlineData` under the launch working directory, then in the working directory itself.
+Configuration and assets are selected independently. On macOS, adjacent files
+reside in `CoastlineData` beside `Coastline.app`, outside the bundle. AppImages use `CoastlineData`
+beside the original AppImage, rather than its temporary mount. Local assets precede system assets.
+Cache and state reside under the local asset root, or the local configuration root when assets use
+platform data.
+Absent local files use platform directories; unwritable selected locations produce an error.
 
-Configure with `-DCOASTLINE_PORTABLE=OFF` to remove adjacent-file lookup for distribution packages
-and shared installations. Flatpak, snap, macOS bundles, installed-asset builds, and Windows
-installer builds disable portable lookup.
+Setup opens with separate directory-search and manual-path choices. Its portable-installation
+checkbox is unchecked for new installations. Selecting it imports assets and saves settings beside
+the application distribution, with local cache and state directories. Explicit `--config` or
+`--data-dir` overrides disable this checkbox. Moving a portable installation preserves setup paths
+stored relative to its directory. Configure with `-DCOASTLINE_PORTABLE=OFF` to disable portable
+lookup and installation.
+
+Use `--portable` (`-P`) or `COASTLINE_PORTABLE=1` to force adjacent storage without existing files.
+`COASTLINE_PORTABLE=0` disables automatic local lookup, and `--portable` overrides the environment
+setting. The environment also accepts `true`/`false`, `yes`/`no`, and `on`/`off`, ignoring case.
+Explicit `--config` and `--data-dir` paths take precedence for configuration and assets; cache and
+state remain local when portable mode is forced.
+
+Distributions with a `bin` directory use the complete package directory for portable storage.
+Windows ZIP packages include `Coastline.lnk` beside `bin`, with a relative target of
+`bin\coastline.exe`. Move the complete directory to relocate a portable installation.
+
+Use `coastline migrate-portable [DIRECTORY]` to move portable assets, settings, saves, screenshots,
+and state into normal platform directories. `DIRECTORY` can be `CoastlineData` or its parent.
+Omit `DIRECTORY` to use automatic portable lookup.
+Add `--copy` to preserve the portable installation. Existing destination entries are never
+overwritten, and copying failures preserve the source. Cache is regenerated. After copying, use
+`COASTLINE_PORTABLE=0` to select platform storage while portable files remain adjacent.
+
+Use `coastline make-portable [--copy] [DIRECTORY]` to export normal platform assets, settings,
+saves, screenshots, and state. The default destination is `CoastlineData` in the launch working
+directory. The executable is not copied or modified and may be installed in a read-only directory.
+Without `--copy`, source data is removed after copying succeeds. Move the exported directory beside
+an AppImage or macOS bundle, or launch another portable-enabled build from the data directory.
 
 On macOS the install is the application bundle `Coastline.app`, signed without an identity, with
 every library the game links that macOS does not provide inside it. The build workflow uploads it

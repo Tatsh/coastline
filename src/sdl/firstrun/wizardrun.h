@@ -21,7 +21,9 @@ namespace coastline {
 /** How a run of the setup wizard ended. */
 struct SetupRun {
     bool finished = false; /*!< Whether the data was imported and Finish was pressed. */
-    bool failed = true;    /*!< Whether the renderer or font could not be created. */
+    /** Whether renderer, font, or portable-configuration setup failed. */
+    bool failed = true;
+    bool portable = false; /*!< Whether setup switched to fully local storage. */
     int frames = 0;        /*!< The frames the wizard drew, for the frames of a script after it. */
 };
 
@@ -33,7 +35,7 @@ struct SetupRun {
  * SetupWizard section of @p config and updated on exit, including cancellation.
  *
  * @param window The window of the game.
- * @param paths The directories of the game.
+ * @param paths The directories of the game, updated after a successful portable installation.
  * @param config The settings of the game.
  * @param script The run-script input, or an empty script. Scripted key presses, text input, and
  * mouse movements operate wizard controls. Mouse coordinates on the 320 by 240 screen scale to
@@ -42,15 +44,17 @@ struct SetupRun {
  * @param captures The directory the frames of the script are saved to.
  * @param fixedTime Whether each frame steps the blink of the cursor by a 60th of a second.
  * @param reimportReason Why existing assets require another import, or empty for first-run setup.
+ * @param portableDirectory Portable destination, or empty to disable the installation checkbox.
  * @return How the wizard ended.
  */
 SetupRun RunSetupWizard(GpuWindow &window,
-                        const GamePaths &paths,
+                        GamePaths &paths,
                         GameConfig &config,
                         const Script &script,
                         std::span<const SDL_Scancode> scriptKeys,
                         const std::filesystem::path &captures,
                         bool fixedTime,
-                        const std::string &reimportReason = {});
+                        const std::string &reimportReason = {},
+                        const std::filesystem::path &portableDirectory = {});
 
 } // namespace coastline

@@ -51,6 +51,55 @@ bool Enabled(const SetupWizard &wizard, WizardControlId id) {
     return control != controls.end() && control->enabled;
 }
 
+void OpenSearch(SetupWizard &wizard) {
+    if (wizard.Screen() == WizardScreen::Files) {
+        Click(wizard, Back);
+    }
+    Click(wizard, SearchAssets);
+}
+
+WizardServices Services(const std::filesystem::path &root);
+void Wait(SetupWizard &wizard);
+
+void TestSourceSelection(const std::filesystem::path &root) {
+    auto services = Services(root);
+    services.portableAvailable = true;
+    services.disc = root / "disc.iso";
+    services.roms[0] = root / "usa.z64";
+    std::optional<WizardImport> imported;
+    services.import = [&](const WizardImport &files, const auto &) {
+        imported = files;
+        return std::optional<std::string>{};
+    };
+    SetupWizard wizard(services);
+    Check(wizard.Screen() == WizardScreen::SourceSelection && wizard.Focus() == SearchAssets,
+          "Setup must open with the directory search selected.");
+    Check(!wizard.Portable() && Enabled(wizard, Portable),
+          "Portable installation must be available and unchecked by default.");
+    Key(wizard, WizardKey::Down);
+    Check(wizard.Focus() == SpecifyPaths, "Down must select manual paths.");
+    Key(wizard, WizardKey::Enter);
+    Check(wizard.Screen() == WizardScreen::Files, "Manual paths must open the file fields.");
+    Click(wizard, Back);
+    Check(wizard.Screen() == WizardScreen::SourceSelection,
+          "Back must return to the source selection page.");
+    Click(wizard, Portable);
+    Check(wizard.Portable(), "Click must enable portable installation.");
+    Key(wizard, WizardKey::Space);
+    Check(!wizard.Portable(), "Space must toggle the portable checkbox.");
+    Key(wizard, WizardKey::Enter);
+    Check(wizard.Portable(), "Enter must toggle the portable checkbox without starting import.");
+    Click(wizard, SearchAssets);
+    Check(wizard.Screen() == WizardScreen::SearchDirectory && wizard.Portable(),
+          "Search must open its own page and preserve portable selection.");
+    Click(wizard, Back);
+    Click(wizard, SpecifyPaths);
+    Click(wizard, Next);
+    Wait(wizard);
+    Check(imported && imported->portable && wizard.Screen() == WizardScreen::Done,
+          "The selected storage mode must be delivered to the importer.");
+}
+
 void Set(SetupWizard &wizard, WizardControlId id, const std::string &text) {
     Click(wizard, id);
     Key(wizard, WizardKey::SelectAll);
@@ -107,6 +156,7 @@ void TestCombinations(const std::filesystem::path &root) {
                 return std::optional<std::string>{};
             };
             SetupWizard wizard(std::move(services));
+            Click(wizard, SpecifyPaths);
             Type(wizard, Utf8FromPath(root / "disc.iso"));
             Check(!Enabled(wizard, Next), "A disc without ROM images must disable Next.");
             std::array<bool, 3> selected{};
@@ -143,6 +193,7 @@ void TestCombinations(const std::filesystem::path &root) {
         return std::optional<std::string>{};
     };
     SetupWizard duplicate(std::move(services));
+    Click(duplicate, SpecifyPaths);
     Type(duplicate, "~/disc.iso");
     Set(duplicate, Rom1Text, "~/usa.z64");
     Set(duplicate, Rom3Text, "~/usa.z64");
@@ -157,18 +208,21 @@ void TestRestoredPaths(const std::filesystem::path &root) {
     services.roms = {"~/jpn.n64", "", "~/usa.z64"};
     services.searchDirectory = root / ".hidden";
     SetupWizard wizard(services);
+    Click(wizard, SpecifyPaths);
     Check(wizard.Text(DiscText) == "~/disc.iso", "Restore the entered disc path.");
     Check(wizard.Text(Rom1Text) == "~/jpn.n64" && wizard.Text(Rom2Text).empty() &&
               wizard.Text(Rom3Text) == "~/usa.z64",
           "Restore ROM slots without changing their order or filling empty slots.");
     Check(Enabled(wizard, Next), "Validate restored images before enabling Next.");
-    Click(wizard, SearchAssets);
+    Click(wizard, Back);
+    OpenSearch(wizard);
     Check(wizard.Text(SearchText) == Utf8FromPath(services.searchDirectory),
           "Restore the search directory instead of the Downloads default.");
     Check(Enabled(wizard, StartSearch), "Validate the restored search directory.");
 
     services.roms[2] = "~/missing.z64";
     SetupWizard missing(services);
+    Click(missing, SpecifyPaths);
     Check(!Enabled(missing, Next) && missing.Reason(Rom3Text) == "Invalid ROM image.",
           "A missing restored ROM must disable Next and display its validation error.");
     Click(missing, Rom3Clear);
@@ -242,8 +296,8 @@ void TestReimport(const std::filesystem::path &root) {
     Check(text.find(services.reimportReason) != std::string::npos,
           "Re-import must explain why setup is required.");
     Key(wizard, WizardKey::Enter);
-    Check(wizard.Screen() == WizardScreen::Files && wizard.End() == WizardEnd::Running,
-          "Start setup must open game-file selection.");
+    Check(wizard.Screen() == WizardScreen::SourceSelection && wizard.End() == WizardEnd::Running,
+          "Start setup must open source selection.");
     Check(!Enabled(wizard, Next) && imports == 0,
           "Starting setup must not replace assets before valid files are selected.");
     SetupWizard quit(services);
@@ -258,6 +312,7 @@ void TestReimport(const std::filesystem::path &root) {
 
 void TestEditing(const std::filesystem::path &root) {
     SetupWizard wizard(Services(root));
+    Click(wizard, SpecifyPaths);
     Type(wizard, "~/disc.iso");
     Set(wizard, Rom2Text, "~/eur.v64");
     Check(Enabled(wizard, Next), "Disc and one ROM must enable Next.");
@@ -330,12 +385,14 @@ void TestBrowser(const std::filesystem::path &root) {
     auto folders = ListBrowserDirectory(root, extensions, true);
     Check(folders && folders->size() == 3, "Directory selection must exclude files.");
     SetupWizard wizard(Services(root));
+    Click(wizard, SpecifyPaths);
     Click(wizard, DiscBrowse);
     Type(wizard, "disc.iso");
     Key(wizard, WizardKey::Enter);
     Check(!wizard.BrowserOpen() && wizard.Reason(DiscText).empty(),
           "Choosing a file must validate the path.");
-    Click(wizard, SearchAssets);
+    Click(wizard, Back);
+    OpenSearch(wizard);
     Click(wizard, SearchClear);
     Check(!Enabled(wizard, StartSearch), "An empty directory must disable searching.");
     Type(wizard, "~");
@@ -412,7 +469,7 @@ void TestSearch(const std::filesystem::path &root) {
     for (auto id : {Rom1Text, Rom2Text, Rom3Text}) {
         Check(wizard.Text(id).starts_with("~"), "Found ROM paths must abbreviate home.");
     }
-    Click(wizard, SearchAssets);
+    OpenSearch(wizard);
     Set(wizard, SearchText, "~/zeta");
     Click(wizard, StartSearch);
     Wait(wizard);
@@ -424,14 +481,14 @@ void TestSearch(const std::filesystem::path &root) {
     Click(wizard, MessageNo);
     Check(wizard.Focus() == DiscText && !Enabled(wizard, Next),
           "ROM-only results must focus the missing disc and remove previous disc paths.");
-    Click(wizard, SearchAssets);
+    OpenSearch(wizard);
     Set(wizard, SearchText, "~/Alpha");
     Click(wizard, StartSearch);
     Wait(wizard);
     Click(wizard, MessageNo);
     Check(wizard.Focus() == Rom1Text && !Enabled(wizard, Next),
           "Disc-only results must focus a ROM slot and remove previous ROM paths.");
-    Click(wizard, SearchAssets);
+    OpenSearch(wizard);
     Click(wizard, StartSearch);
     Wait(wizard);
     Click(wizard, MessageYes);
@@ -443,7 +500,7 @@ void TestSearch(const std::filesystem::path &root) {
     Wait(wizard);
     Click(wizard, MessageNo);
     Check(Enabled(wizard, Next), "A partial search with disc and one ROM must permit import.");
-    Click(wizard, SearchAssets);
+    OpenSearch(wizard);
     Set(wizard, SearchText, "~");
     Click(wizard, StartSearch);
     Key(wizard, WizardKey::Escape);
@@ -464,6 +521,7 @@ void TestImportFailureAndCancel(const std::filesystem::path &root) {
             return std::optional<std::string>("Import failed");
         };
         SetupWizard wizard(std::move(services));
+        Click(wizard, SpecifyPaths);
         Type(wizard, "~/disc.iso");
         Set(wizard, Rom1Text, "~/usa.z64");
         Click(wizard, Next);
@@ -489,6 +547,7 @@ void TestImportFailureAndCancel(const std::filesystem::path &root) {
 
 void TestRowNavigation(const std::filesystem::path &root) {
     SetupWizard wizard(Services(root));
+    Click(wizard, SpecifyPaths);
     Key(wizard, WizardKey::Down);
     Check(wizard.Focus() == Rom1Text, "Down must move from the disc to the first ROM row.");
     Key(wizard, WizardKey::Down);
@@ -496,9 +555,9 @@ void TestRowNavigation(const std::filesystem::path &root) {
     Key(wizard, WizardKey::Down);
     Check(wizard.Focus() == Rom3Text, "Down must move to the third ROM row.");
     Key(wizard, WizardKey::Down);
-    Check(wizard.Focus() == SearchAssets, "Down must enter the bottom button row.");
+    Check(wizard.Focus() == Back, "Down must enter the bottom button row.");
     Key(wizard, WizardKey::Up);
-    Check(wizard.Focus() == Rom3Text, "Up must return from buttons to the text fields.");
+    Check(wizard.Focus() == Rom3Browse, "Up must return to the nearest control in the ROM row.");
     for (int attempt = 0; attempt < 30 && wizard.Focus() != DiscBrowse; ++attempt) {
         Key(wizard, WizardKey::Tab);
     }
@@ -522,6 +581,7 @@ void TestRowNavigation(const std::filesystem::path &root) {
     auto services = Services(root);
     services.disc = directory / "disc.iso";
     SetupWizard unavailable(std::move(services));
+    Click(unavailable, SpecifyPaths);
     Click(unavailable, DiscBrowse);
     Type(unavailable, "removed");
     std::filesystem::remove(removed);
@@ -543,6 +603,7 @@ void TestDiscDirectory(const std::filesystem::path &root) {
     services.disc = root / "disc";
     services.roms[0] = root / "usa.z64";
     SetupWizard wizard(std::move(services));
+    Click(wizard, SpecifyPaths);
     Check(Enabled(wizard, Next), "A disc directory and ROM must enable Next.");
     Click(wizard, DiscBrowse);
     Check(Enabled(wizard, BrowserUseDirectory), "Disc browsing must offer directory selection.");
@@ -577,6 +638,7 @@ void TestDiscContainers(const std::filesystem::path &root) {
         services.disc = disc;
         services.roms[0] = root / "usa.z64";
         SetupWizard wizard(std::move(services));
+        Click(wizard, SpecifyPaths);
         Check(Enabled(wizard, Next), "Container disc images must pass to disc validation.");
         Click(wizard, DiscBrowse);
         Check(std::ranges::any_of(
@@ -608,6 +670,7 @@ int main() {
                                  ".hidden/sub/usa.z64"}) {
             std::ofstream(root / name).put('x');
         }
+        TestSourceSelection(root);
         TestCombinations(root);
         TestRowNavigation(root);
         TestDiscDirectory(root);

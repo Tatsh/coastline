@@ -45,6 +45,7 @@
 #include "controls.h"
 #include "ear/sdlmixer.h"
 #include "enginetextures.h"
+#include "savefile.h"
 #if COASTLINE_SETUP_WIZARD
 #include "firstrun/wizardrun.h"
 #endif
@@ -828,6 +829,11 @@ int main(int argc, char *argv[]) {
     RaiseOpenFileLimit();
     argparse::ArgumentParser parser(APPLICATION, COASTLINE_VERSION);
     parser.add_description("Top Gear Rally and Boss Rally in one stand-alone game.");
+    if (coastline::PortablePathsEnabled()) {
+        parser.add_argument("--portable", "-P")
+            .help("Store assets, settings, cache, and state beside the application.")
+            .flag();
+    }
 #if COASTLINE_SETUP_WIZARD
     parser.add_argument("--reset")
         .help("Reset imported assets and asset caches; preserve saves, decals, settings, and mods.")
@@ -965,6 +971,36 @@ int main(int argc, char *argv[]) {
               "starting.");
     parser.add_subparser(runScript);
 
+    argparse::ArgumentParser migratePortable(
+        "migrate-portable", "", argparse::default_arguments::help);
+    migratePortable.add_description(
+        "Move portable assets, settings, saves, and state to normal platform directories. "
+        "Existing destination entries are never overwritten. Cache is regenerated.");
+    migratePortable.add_argument("--copy")
+        .help("Copy data and preserve the portable installation.")
+        .flag();
+    migratePortable.add_argument("directory")
+        .nargs(argparse::nargs_pattern::optional)
+        .default_value(std::string())
+        .action(RequiredArgumentValue("directory"))
+        .help("CoastlineData or its parent directory; omit to search beside the app and in the "
+              "launch directory.");
+    parser.add_subparser(migratePortable);
+
+    argparse::ArgumentParser makePortable("make-portable", "", argparse::default_arguments::help);
+    makePortable.add_description(
+        "Export normal platform assets, settings, saves, and state as a portable data directory. "
+        "The executable is not copied. Existing destination entries are never overwritten.");
+    makePortable.add_argument("--copy")
+        .help("Copy data and preserve the non-portable installation.")
+        .flag();
+    makePortable.add_argument("directory")
+        .nargs(argparse::nargs_pattern::optional)
+        .default_value(std::string())
+        .action(RequiredArgumentValue("directory"))
+        .help("Destination directory; defaults to CoastlineData in the launch directory.");
+    parser.add_subparser(makePortable);
+
     try {
         parser.parse_args(argc, argv);
         for (const char *option : {"--width", "--height"}) {
@@ -984,7 +1020,7 @@ int main(int argc, char *argv[]) {
     } catch (const std::exception &error) {
         std::cerr << error.what() << '\n';
         for (const argparse::ArgumentParser *command :
-             {&import, &importPak, &exportPak, &runScript}) {
+             {&import, &importPak, &exportPak, &runScript, &migratePortable, &makePortable}) {
             if (parser.is_subcommand_used(*command)) {
                 std::cerr << *command;
                 return EXIT_FAILURE;
@@ -1029,12 +1065,130 @@ int main(int argc, char *argv[]) {
     const char *base = SDL_GetBasePath();
     const std::string_view baseText = base ? base : "";
     const std::filesystem::path executable(std::u8string(baseText.begin(), baseText.end()));
-    auto portable = coastline::ResolvePortablePaths(*paths, executable);
+    std::filesystem::path appImage;
+#ifdef __linux__
+    if (const char *image = std::getenv("APPIMAGE")) {
+        const std::string_view text(image);
+        appImage = std::filesystem::path(std::u8string(text.begin(), text.end()));
+    }
+#endif
+    const auto portableRoot = coastline::PortableRoot(executable, appImage);
+    if (parser.is_subcommand_used(makePortable)) {
+        if (parser.is_used("--config") || parser.is_used("--data-dir")) {
+            std::cerr << "Portable export requires default platform paths.\n";
+            return EXIT_FAILURE;
+        }
+        const auto directory = makePortable.get<std::string>("directory");
+        std::error_code error;
+        const auto destination =
+            std::filesystem::absolute(directory.empty() ? std::filesystem::path("CoastlineData") :
+                                                          std::filesystem::path(directory),
+                                      error);
+        if (error) {
+            std::cerr << "Cannot resolve portable export directory.\n";
+            return EXIT_FAILURE;
+        }
+        const bool copy = makePortable.get<bool>("--copy");
+        if (const auto failure = coastline::MakePortablePaths(*paths, destination, copy)) {
+            std::cerr << *failure << '\n';
+            return EXIT_FAILURE;
+        }
+        std::cout << (copy ? "Copied" : "Moved") << " platform data to " << destination.string()
+                  << ".\n";
+        return EXIT_SUCCESS;
+    }
+    if (parser.is_subcommand_used(migratePortable)) {
+        if (!coastline::PortablePathsEnabled() || parser.is_used("--config") ||
+            parser.is_used("--data-dir")) {
+            std::cerr << "Migration requires portable support and default platform paths.\n";
+            return EXIT_FAILURE;
+        }
+        const auto directory = migratePortable.get<std::string>("directory");
+        std::error_code error;
+        const auto launch = std::filesystem::current_path(error);
+        auto root = directory.empty() ? portableRoot : std::filesystem::absolute(directory, error);
+        if (error) {
+            std::cerr << "Cannot resolve portable migration directory.\n";
+            return EXIT_FAILURE;
+        }
+        if (std::filesystem::is_directory(root / "CoastlineData", error)) {
+            root /= "CoastlineData";
+        }
+        auto working = directory.empty() ? launch : std::filesystem::path{};
+        if (!working.empty() && std::filesystem::is_directory(working / "CoastlineData", error)) {
+            working /= "CoastlineData";
+        }
+        const auto source = coastline::ResolvePortablePaths(*paths, root, working);
+        if (!source) {
+            std::cerr << source.error() << '\n';
+            return EXIT_FAILURE;
+        }
+        const bool copy = migratePortable.get<bool>("--copy");
+        if (const auto failure = coastline::MigratePortablePaths(*source, *paths, copy)) {
+            std::cerr << *failure << '\n';
+            return EXIT_FAILURE;
+        }
+        std::cout << (copy ? "Copied" : "Moved") << " portable data to platform directories.\n"
+                  << "Use COASTLINE_PORTABLE=0 to select platform storage on the next launch.\n";
+        return EXIT_SUCCESS;
+    }
+    bool forcePortable = coastline::PortablePathsEnabled() && parser.get<bool>("--portable");
+    bool disablePortable = false;
+    if (const char *value = std::getenv("COASTLINE_PORTABLE"); value && *value && !forcePortable) {
+        if (std::string_view(value) == "1" || SDL_strcasecmp(value, "true") == 0 ||
+            SDL_strcasecmp(value, "yes") == 0 || SDL_strcasecmp(value, "on") == 0) {
+            forcePortable = true;
+        } else if (std::string_view(value) == "0" || SDL_strcasecmp(value, "false") == 0 ||
+                   SDL_strcasecmp(value, "no") == 0 || SDL_strcasecmp(value, "off") == 0) {
+            disablePortable = true;
+        } else {
+            std::cerr << "Invalid COASTLINE_PORTABLE value. Use 1 or 0.\n";
+            return EXIT_FAILURE;
+        }
+    }
+    if (forcePortable && !coastline::PortablePathsEnabled()) {
+        std::cerr << "Portable mode is unavailable in this build.\n";
+        return EXIT_FAILURE;
+    }
+    if (forcePortable) {
+        std::error_code error;
+        if (!portableRoot.is_absolute()) {
+            std::cerr << "Cannot resolve portable directory.\n";
+            return EXIT_FAILURE;
+        }
+        std::filesystem::create_directories(portableRoot / "assets", error);
+        if (error) {
+            std::cerr << "Cannot create portable assets directory. " << error.message() << '\n';
+            return EXIT_FAILURE;
+        }
+    }
+    std::error_code workingError;
+    const auto workingDirectory = std::filesystem::current_path(workingError);
+    auto portable = disablePortable ?
+                        std::expected<coastline::GamePaths, std::string>(*paths) :
+                        coastline::ResolvePortablePaths(*paths,
+                                                        portableRoot,
+                                                        forcePortable || workingError ?
+                                                            std::filesystem::path{} :
+                                                            workingDirectory);
     if (!portable) {
         std::cerr << portable.error() << '\n';
         return EXIT_FAILURE;
     }
     paths = *portable;
+    if (forcePortable) {
+        paths->config = portableRoot;
+        paths->portableConfig = true;
+        const auto ini = portableRoot / "BossRally.ini";
+        auto settings = coastline::SaveFile::Open(ini);
+        std::error_code error;
+        const bool exists = std::filesystem::exists(ini, error);
+        if (!settings || error || (exists && !std::filesystem::is_regular_file(ini, error)) ||
+            (!exists && !settings->Write({}))) {
+            std::cerr << "Cannot initialize portable settings.\n";
+            return EXIT_FAILURE;
+        }
+    }
     if (paths->config.empty() || paths->data.empty() || paths->state.empty() ||
         paths->cache.empty()) {
         std::cerr << "The home directory is not known, and the game cannot find its files.\n";
@@ -1130,8 +1284,8 @@ int main(int argc, char *argv[]) {
         SDL_SetLogPriorities(SDL_LOG_PRIORITY_WARN);
         SDL_SetLogPriority(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO);
     }
-    coastline::GameLog gameLog(paths->state / "game.log");
-    if (!gameLog.IsOpen()) {
+    auto gameLog = std::make_unique<coastline::GameLog>(paths->state / "game.log");
+    if (!gameLog->IsOpen()) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Cannot open log file.");
     }
     std::string revision = COASTLINE_GIT_SHA;
@@ -1170,7 +1324,7 @@ int main(int argc, char *argv[]) {
                                 std::vector<std::filesystem::path>{} :
                                 coastline::SystemDataDirectories(executable);
     const auto foundData = coastline::FindAssetData(paths->data, systemData);
-    const auto assetData = foundData.value_or(paths->data);
+    auto assetData = foundData.value_or(paths->data);
     const bool showWizard = !foundData;
     std::string reimportReason;
     if (showWizard) {
@@ -1207,7 +1361,7 @@ int main(int argc, char *argv[]) {
     // 60th of a second a frame, for the same frames on every machine.
     const bool savesFrames =
         !script.script.screenshots.empty() || script.script.screenshotEvery > 0;
-    const std::filesystem::path scriptFrames = paths->data / "screenshots";
+    std::filesystem::path scriptFrames = paths->data / "screenshots";
     if (savesFrames) {
         std::error_code error;
         std::filesystem::create_directories(scriptFrames, error);
@@ -1267,14 +1421,25 @@ int main(int argc, char *argv[]) {
     auto setUp = [&]([[maybe_unused]] coastline::GpuWindow &window) {
 #if COASTLINE_SETUP_WIZARD
         if (showWizard) {
-            coastline::SetupRun run = coastline::RunSetupWizard(window,
-                                                                *paths,
-                                                                config,
-                                                                script.script,
-                                                                script.keys,
-                                                                scriptFrames,
-                                                                savesFrames,
-                                                                reimportReason);
+            coastline::SetupRun run = coastline::RunSetupWizard(
+                window,
+                *paths,
+                config,
+                script.script,
+                script.keys,
+                scriptFrames,
+                savesFrames,
+                reimportReason,
+                disablePortable || parser.is_used("--config") || parser.is_used("--data-dir") ?
+                    std::filesystem::path{} :
+                    portableRoot);
+            if (run.portable) {
+                configPath = paths->config / "BossRally.ini";
+                assetData = paths->data;
+                scriptFrames = paths->data / "screenshots";
+                gameLog.reset();
+                gameLog = std::make_unique<coastline::GameLog>(paths->state / "game.log");
+            }
             firstFrame = run.frames + 1;
             setupQuit = !run.finished;
             setupFailed = run.failed;

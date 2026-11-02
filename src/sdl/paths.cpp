@@ -9,8 +9,11 @@
 #include <set>
 #include <string>
 #include <system_error>
+#include <utility>
 
 #include "assetstorage.h"
+#include "config.h"
+#include "controllerpak.h"
 #include "importversion.h"
 
 #ifndef COASTLINE_SYSTEM_DATA_DIR
@@ -32,6 +35,35 @@ namespace coastline {
 namespace {
 
 constexpr const char *LAYER_STAMP = ".layer-stamp";
+
+void CopyPortableEntry(const std::filesystem::path &from,
+                       const std::filesystem::path &to,
+                       std::error_code &error) {
+    const auto status = std::filesystem::symlink_status(from, error);
+    if (error) {
+        return;
+    }
+    if (std::filesystem::is_symlink(status)) {
+        std::filesystem::copy_symlink(from, to, error);
+    } else if (std::filesystem::is_directory(status)) {
+        if (!std::filesystem::create_directory(to, error)) {
+            if (!error) {
+                error = std::make_error_code(std::errc::file_exists);
+            }
+            return;
+        }
+        std::filesystem::directory_iterator entry(from, error);
+        for (; !error && entry != std::filesystem::directory_iterator(); entry.increment(error)) {
+            CopyPortableEntry(entry->path(), to / entry->path().filename(), error);
+        }
+        if (!error) {
+            // Imported directories are read-only; protect the copy only after writing its children.
+            std::filesystem::permissions(to, status.permissions(), error);
+        }
+    } else {
+        std::filesystem::copy_file(from, to, error);
+    }
+}
 
 std::optional<std::filesystem::path> AbsoluteVariable(const EnvironmentReader &environment,
                                                       const char *name) {
@@ -353,19 +385,61 @@ std::optional<GamePaths> ResolveGamePaths(const std::string &application) {
 #endif
 }
 
+bool PortablePathsEnabled() {
+    return COASTLINE_PORTABLE != 0;
+}
+
+std::filesystem::path PortableRoot(const std::filesystem::path &executable,
+                                   const std::filesystem::path &appImage) {
+    if (appImage.is_absolute()) {
+        return appImage.parent_path() / "CoastlineData";
+    }
+    for (auto directory = executable.lexically_normal(); !directory.empty();) {
+        if (directory.filename() == "Contents" && directory.parent_path().extension() == ".app") {
+            return directory.parent_path().parent_path() / "CoastlineData";
+        }
+        const auto parent = directory.parent_path();
+        if (parent == directory) {
+            break;
+        }
+        directory = parent;
+    }
+    auto directory = executable.lexically_normal();
+    if (directory.filename().empty()) {
+        directory = directory.parent_path();
+    }
+    return directory.filename() == "bin" ? directory.parent_path() : executable;
+}
+
 std::expected<GamePaths, std::string>
-ResolvePortablePaths(const GamePaths &fallback, const std::filesystem::path &executable) {
+ResolvePortablePaths(const GamePaths &fallback,
+                     const std::filesystem::path &executable,
+                     const std::filesystem::path &workingDirectory) {
     GamePaths paths = fallback;
 #if COASTLINE_PORTABLE
-    if (executable.empty()) {
-        return paths;
+    for (const auto &directory :
+         {executable, workingDirectory / "CoastlineData", workingDirectory}) {
+        if (directory.empty() || !directory.is_absolute()) {
+            continue;
+        }
+        std::error_code error;
+        if (!paths.portableConfig &&
+            std::filesystem::is_regular_file(directory / "BossRally.ini", error)) {
+            paths.config = directory;
+            paths.portableConfig = true;
+        }
+        if (!paths.portableData && std::filesystem::is_directory(directory / "assets", error)) {
+            paths.data = directory;
+            paths.portableData = true;
+        }
     }
-    std::error_code error;
-    paths.portableConfig = std::filesystem::is_regular_file(executable / "BossRally.ini", error);
-    paths.portableData = std::filesystem::is_directory(executable / "assets", error);
     if (!paths.portableConfig && !paths.portableData) {
         return paths;
     }
+    const auto local = paths.portableData ? paths.data : paths.config;
+    paths.state = local / "state";
+    paths.cache = local / "cache";
+    std::error_code error;
     constexpr auto writeBits = std::filesystem::perms::owner_write |
                                std::filesystem::perms::group_write |
                                std::filesystem::perms::others_write;
@@ -373,33 +447,35 @@ ResolvePortablePaths(const GamePaths &fallback, const std::filesystem::path &exe
         const auto permissions = std::filesystem::status(path, error).permissions();
         return !error && (permissions & writeBits) != std::filesystem::perms::none;
     };
-    if (!writable(executable) ||
-        (paths.portableConfig && !writable(executable / "BossRally.ini")) ||
-        (paths.portableData && !writable(executable / "assets"))) {
-        return std::unexpected("Portable files cannot be written in " + executable.string() + ".");
-    }
-    const auto probe =
-        executable / (".coastline-write-check-" +
-                      std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
-    if (!std::filesystem::create_directory(probe, error)) {
-        return std::unexpected("Cannot write portable directory " + executable.string() + ". " +
-                               error.message());
-    }
-    std::filesystem::remove(probe, error);
-    if (paths.portableConfig && !std::ofstream(executable / "BossRally.ini", std::ios::app)) {
-        return std::unexpected("Portable configuration cannot be written in " +
-                               executable.string() + ".");
-    }
+    std::set<std::filesystem::path> directories{local};
     if (paths.portableConfig) {
-        paths.config = executable;
+        directories.insert(paths.config);
     }
-    if (paths.portableData) {
-        paths.data = executable;
-        paths.state = executable / "state";
-        paths.cache = executable / "cache";
+    for (const auto &directory : directories) {
+        if (!writable(directory) ||
+            (paths.portableConfig && directory == paths.config &&
+             !writable(directory / "BossRally.ini")) ||
+            (paths.portableData && directory == paths.data && !writable(directory / "assets"))) {
+            return std::unexpected("Portable files cannot be written in " + directory.string() +
+                                   ".");
+        }
+        const auto probe =
+            directory /
+            (".coastline-write-check-" +
+             std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+        if (!std::filesystem::create_directory(probe, error)) {
+            return std::unexpected("Cannot write portable directory " + directory.string() + ". " +
+                                   error.message());
+        }
+        std::filesystem::remove(probe, error);
+    }
+    if (paths.portableConfig && !std::ofstream(paths.config / "BossRally.ini", std::ios::app)) {
+        return std::unexpected("Portable configuration cannot be written in " +
+                               paths.config.string() + ".");
     }
 #else
     (void)executable;
+    (void)workingDirectory;
 #endif
     return paths;
 }
@@ -451,6 +527,195 @@ bool CreateGamePaths(const GamePaths &paths) {
         }
     }
     return true;
+}
+
+std::optional<std::string>
+MigratePortablePaths(const GamePaths &source, const GamePaths &destination, bool copyOnly) {
+    if (!source.portableConfig && !source.portableData) {
+        return "No portable installation found.";
+    }
+    using Entry = std::pair<std::filesystem::path, std::filesystem::path>;
+    std::vector<Entry> entries;
+    if (source.portableConfig) {
+        entries.emplace_back(source.config / "BossRally.ini", destination.config / "BossRally.ini");
+    }
+    if (source.portableData) {
+        for (const auto *entry : {"assets", "screenshots", "ghost-frames.bin"}) {
+            entries.emplace_back(source.data / entry, destination.data / entry);
+        }
+    }
+    entries.emplace_back(source.state, destination.state);
+    std::error_code error;
+    std::set<std::filesystem::path> pakDirectories;
+    if (source.portableConfig) {
+        pakDirectories.insert(source.config / "controller-pak");
+    }
+    if (source.portableData) {
+        pakDirectories.insert(source.data / "controller-pak");
+    }
+    for (const auto &directory : pakDirectories) {
+        std::filesystem::directory_iterator entry(directory, error);
+        if (error == std::errc::no_such_file_or_directory) {
+            error.clear();
+            continue;
+        }
+        for (; !error && entry != std::filesystem::directory_iterator(); entry.increment(error)) {
+            const auto name = entry->path().filename();
+            if (name.extension() != ".lock") {
+                const auto &root =
+                    name == PAK_SETTINGS_NOTE ? destination.config : destination.data;
+                entries.emplace_back(entry->path(), root / "controller-pak" / name);
+            }
+        }
+        if (error) {
+            return "Cannot inspect Controller Pak data. " + error.message();
+        }
+    }
+    auto nested = [](const std::filesystem::path &child, const std::filesystem::path &parent) {
+        auto component = child.begin();
+        for (const auto &part : parent) {
+            if (component == child.end()) {
+                return false;
+            }
+#ifdef _WIN32
+            if (CompareStringOrdinal(component->c_str(), -1, part.c_str(), -1, TRUE) !=
+                CSTR_EQUAL) {
+                return false;
+            }
+#else
+            if (*component != part) {
+                return false;
+            }
+#endif
+            ++component;
+        }
+        return true;
+    };
+    std::vector<std::filesystem::path> roots{source.state, source.cache};
+    if (source.portableConfig) {
+        roots.push_back(source.config);
+    }
+    if (source.portableData) {
+        roots.push_back(source.data);
+    }
+    for (const auto &from : roots) {
+        for (const auto &to :
+             {destination.config, destination.data, destination.state, destination.cache}) {
+            const auto origin = std::filesystem::weakly_canonical(from, error);
+            if (error || !origin.is_absolute() || origin == origin.root_path()) {
+                return "Cannot resolve portable migration source.";
+            }
+            const auto target = std::filesystem::weakly_canonical(to, error);
+            if (error || !target.is_absolute() || target == target.root_path() ||
+                nested(origin, target) || nested(target, origin)) {
+                return "Portable and platform directories must not overlap.";
+            }
+        }
+    }
+    std::vector<Entry> existing;
+    std::set<std::filesystem::path> destinations;
+    for (const auto &[from, to] : entries) {
+        const auto status = std::filesystem::symlink_status(from, error);
+        if (error == std::errc::no_such_file_or_directory) {
+            error.clear();
+            continue;
+        }
+        if (error) {
+            return "Cannot inspect portable data. " + error.message();
+        }
+        if (status.type() == std::filesystem::file_type::not_found) {
+            continue;
+        }
+        if (!destinations.insert(to).second) {
+            return "Multiple source files have the same destination. " + to.string();
+        }
+        const auto target = std::filesystem::symlink_status(to, error);
+        if (error && error != std::errc::no_such_file_or_directory) {
+            return "Cannot inspect migration destination. " + error.message();
+        }
+        error.clear();
+        if (target.type() != std::filesystem::file_type::not_found) {
+            return "Migration destination " + to.string() + " already exists.";
+        }
+        existing.emplace_back(from, to);
+    }
+    std::vector<std::filesystem::path> copied;
+    auto rollback = [&] {
+        for (const auto &path : copied) {
+            std::error_code cleanup;
+            RemoveAssetTree(path, cleanup);
+        }
+    };
+    for (const auto &[from, to] : existing) {
+        std::filesystem::create_directories(to.parent_path(), error);
+        if (!error) {
+            copied.push_back(to);
+            CopyPortableEntry(from, to, error);
+        }
+        if (error) {
+            const auto message = "Cannot copy portable data. " + error.message();
+            rollback();
+            return message;
+        }
+    }
+    const auto ini = destination.config / "BossRally.ini";
+    if (source.portableConfig && std::filesystem::is_regular_file(ini, error)) {
+        auto config = GameConfig::Load(ini);
+        for (const auto *key : {"LastDirectory",
+                                "DiscImage",
+                                "RomImage1",
+                                "RomImage2",
+                                "RomImage3",
+                                "SearchDirectory"}) {
+            if (const auto value = config.Get("SetupWizard", key); value && !value->empty()) {
+                const auto path =
+                    std::filesystem::path(std::u8string(value->begin(), value->end()));
+                if (path.is_relative() && *path.begin() != "~") {
+                    const auto absolute = (source.config / path).lexically_normal().u8string();
+                    config.Set("SetupWizard", key, std::string(absolute.begin(), absolute.end()));
+                }
+            }
+        }
+        if (!config.Save(ini)) {
+            rollback();
+            return "Cannot save migrated settings.";
+        }
+    }
+    if (copyOnly) {
+        return std::nullopt;
+    }
+    for (const auto &[from, to] : existing) {
+        (void)to;
+        RemoveAssetTree(from, error);
+        if (error) {
+            return "Data copied, but cannot remove portable source. " + error.message();
+        }
+    }
+    for (const auto &directory : pakDirectories) {
+        RemoveAssetTree(directory, error);
+        if (error) {
+            return "Data copied, but cannot remove Controller Pak source. " + error.message();
+        }
+    }
+    RemoveAssetTree(source.cache, error);
+    return error ?
+               std::optional("Data copied, but cannot remove portable cache. " + error.message()) :
+               std::nullopt;
+}
+
+std::optional<std::string>
+MakePortablePaths(const GamePaths &source, const std::filesystem::path &directory, bool copyOnly) {
+    std::error_code error;
+    if (!std::filesystem::is_regular_file(source.config / "BossRally.ini", error) ||
+        !std::filesystem::is_directory(source.data / "assets", error)) {
+        return "No non-portable installation found.";
+    }
+    auto selected = source;
+    selected.portableConfig = true;
+    selected.portableData = true;
+    const GamePaths destination{
+        directory, directory, directory / "state", directory / "cache", true, true};
+    return MigratePortablePaths(selected, destination, copyOnly);
 }
 
 std::vector<std::filesystem::path> SystemDataDirectories(const std::filesystem::path &executable) {

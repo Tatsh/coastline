@@ -17,6 +17,7 @@
 #include <string_view>
 #include <vector>
 
+#include "assetstorage.h"
 #include "config.h"
 #include "consolestrings.h"
 #include "controller.h"
@@ -678,6 +679,77 @@ void CheckAssetData() {
     std::filesystem::remove_all(root);
 }
 
+void CheckPortableMigration() {
+    const auto root = std::filesystem::temp_directory_path() / "coastline-portable-migration-test";
+    std::filesystem::remove_all(root);
+    const auto local = root / "portable";
+    const coastline::GamePaths source{local, local, local / "state", local / "cache", true, true};
+    const coastline::GamePaths target{
+        root / "config", root / "data", root / "state", root / "cache"};
+    WriteText(local / "BossRally.ini", "[SetupWizard]\nDiscImage=inputs/disc.iso\n");
+    WriteText(local / "assets/default/model.bin", "model");
+    WriteText(local / "controller-pak/save", "save");
+    WriteText(local / "controller-pak/TOP GEAR OPTIONS", "settings note");
+    WriteText(local / "screenshots/frame.png", "image");
+    WriteText(local / "state/progress", "progress");
+    WriteText(local / "cache/derived", "cache");
+    WriteText(local / "unrelated.txt", "unrelated");
+    std::filesystem::permissions(local / "assets/default/model.bin",
+                                 std::filesystem::perms::owner_read);
+    std::filesystem::permissions(local / "assets/default",
+                                 std::filesystem::perms::owner_read |
+                                     std::filesystem::perms::owner_exec);
+    Check(!coastline::MigratePortablePaths(source, target, true),
+          "portable copy succeeds with read-only assets");
+    Check(ReadText(target.data / "assets/default/model.bin") == "model" &&
+              ReadText(target.data / "controller-pak/save") == "save" &&
+              ReadText(target.config / "controller-pak/TOP GEAR OPTIONS") == "settings note" &&
+              ReadText(target.data / "screenshots/frame.png") == "image" &&
+              ReadText(target.state / "progress") == "progress" &&
+              ReadText(local / "controller-pak/save") == "save" &&
+              ReadText(local / "cache/derived") == "cache" &&
+              !std::filesystem::exists(target.cache / "derived"),
+          "copy preserves portable data and copies persistent data without derived cache");
+    const auto migrated = coastline::GameConfig::Load(target.config / "BossRally.ini");
+    Check(migrated.Get("SetupWizard", "DiscImage") == (local / "inputs/disc.iso").string(),
+          "migrated setup paths preserve their original source location");
+    Check(coastline::MigratePortablePaths(source, target).has_value() &&
+              ReadText(local / "controller-pak/save") == "save",
+          "existing destination data refuses migration without deleting portable sources");
+    Check(coastline::MigratePortablePaths(source, source).has_value(),
+          "overlapping migration directories are rejected");
+    std::error_code error;
+    for (const auto &path : {target.config, target.data, target.state}) {
+        coastline::RemoveAssetTree(path, error);
+    }
+    Check(!coastline::MigratePortablePaths(source, target), "portable move succeeds");
+    Check(!std::filesystem::exists(local / "assets") &&
+              !std::filesystem::exists(local / "BossRally.ini") &&
+              !std::filesystem::exists(local / "state") &&
+              !std::filesystem::exists(local / "cache") &&
+              ReadText(local / "unrelated.txt") == "unrelated" &&
+              ReadText(target.data / "controller-pak/save") == "save",
+          "move removes portable data and preserves unrelated distribution files");
+    const auto exported = root / "export/CoastlineData";
+    Check(!coastline::MakePortablePaths(target, exported, true),
+          "platform data exports to a portable directory without moving the executable");
+    Check(ReadText(exported / "assets/default/model.bin") == "model" &&
+              ReadText(exported / "controller-pak/save") == "save" &&
+              ReadText(exported / "controller-pak/TOP GEAR OPTIONS") == "settings note" &&
+              ReadText(target.data / "controller-pak/save") == "save" &&
+              std::filesystem::is_regular_file(exported / "BossRally.ini"),
+          "portable export copies assets, saves, and settings while preserving platform data");
+    Check(coastline::MakePortablePaths(target, exported).has_value(),
+          "portable export refuses an existing destination");
+    coastline::RemoveAssetTree(exported, error);
+    Check(!coastline::MakePortablePaths(target, exported) &&
+              !std::filesystem::exists(target.data / "assets") &&
+              !std::filesystem::exists(target.config / "BossRally.ini") &&
+              ReadText(exported / "controller-pak/save") == "save",
+          "portable move exports persistent data and removes platform sources after success");
+    coastline::RemoveAssetTree(root, error);
+}
+
 void CheckPortablePaths() {
     const auto root = std::filesystem::temp_directory_path() / "coastline-portable-paths-test";
     std::filesystem::remove_all(root);
@@ -686,6 +758,20 @@ void CheckPortablePaths() {
         root / "config", root / "data", root / "state", root / "cache"};
     std::filesystem::create_directories(executable);
     const auto home = root / "home";
+    Check(coastline::PortableRoot(executable) == executable,
+          "ordinary portable files reside beside the executable");
+    Check(coastline::PortableRoot(root / "package/bin/") == root / "package",
+          "packaged executables use the complete distribution directory for portable storage");
+    Check(coastline::PortableRoot(root / "Coastline.app/Contents/Resources") ==
+                  root / "CoastlineData" &&
+              coastline::PortableRoot(root / "Coastline.app/Contents/MacOS") ==
+                  root / "CoastlineData",
+          "macOS portable files reside outside the application bundle");
+    Check(coastline::PortableRoot(root / "mount/usr/bin", root / "Downloads/Coastline.AppImage") ==
+              root / "Downloads/CoastlineData",
+          "AppImage portable files reside beside the original image rather than its mount");
+    Check(coastline::PortableRoot(executable, "relative.AppImage") == executable,
+          "relative AppImage environment paths do not redirect portable storage");
     const auto stored =
         coastline::StorePortablePath(executable / "inputs/usa.z64", executable, home);
     Check(stored == "inputs/usa.z64", "portable input paths are stored relative to the executable");
@@ -707,8 +793,30 @@ void CheckPortablePaths() {
     paths = coastline::ResolvePortablePaths(fallback, executable);
 #if !defined(COASTLINE_PORTABLE) || COASTLINE_PORTABLE
     Check(paths && paths->portableConfig && paths->config == executable &&
-              paths->data == fallback.data && paths->cache == fallback.cache,
-          "adjacent configuration wins without changing absent portable data");
+              paths->data == fallback.data && paths->cache == executable / "cache" &&
+              paths->state == executable / "state",
+          "adjacent configuration selects local cache and state");
+    const auto working = root / "working";
+    std::filesystem::create_directories(working / "assets");
+    WriteText(working / "BossRally.ini", "[Game]\n");
+    paths = coastline::ResolvePortablePaths(fallback, root / "empty", working);
+    Check(paths && paths->config == working && paths->data == working &&
+              paths->state == working / "state" && paths->cache == working / "cache",
+          "working-directory assets and settings select fully local storage");
+    paths = coastline::ResolvePortablePaths(fallback, root / "empty", working.parent_path());
+    Check(paths && !paths->portableConfig && !paths->portableData,
+          "unrelated launch directories do not select sibling portable installations");
+    const auto exported = root / "exported/CoastlineData";
+    WriteText(exported / "BossRally.ini", "[Game]\n");
+    std::filesystem::create_directories(exported / "assets");
+    paths = coastline::ResolvePortablePaths(fallback, root / "empty", exported.parent_path());
+    Check(paths && paths->config == exported && paths->data == exported &&
+              paths->state == exported / "state" && paths->cache == exported / "cache",
+          "exported CoastlineData is selected from its parent launch directory");
+    paths = coastline::ResolvePortablePaths(fallback, executable, working);
+    Check(paths && paths->config == executable && paths->data == working &&
+              paths->state == working / "state" && paths->cache == working / "cache",
+          "executable settings take precedence while assets fall back to the working directory");
     std::filesystem::remove(executable / "BossRally.ini");
     std::filesystem::create_directories(executable / "assets");
     paths = coastline::ResolvePortablePaths(fallback, executable);
@@ -748,6 +856,7 @@ void CheckPortablePaths() {
 } // namespace
 
 int main() {
+    CheckPortableMigration();
     CheckPortablePaths();
     const std::array<int, 10> nativeTracks{0, 1, 2, 3, 4, 6, 7, 8, 9, 10};
     std::set<int> engineTracks;

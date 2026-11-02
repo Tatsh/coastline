@@ -92,13 +92,14 @@ std::optional<WizardKey> KeyOf(SDL_Keycode key) {
 } // namespace
 
 SetupRun RunSetupWizard(GpuWindow &window,
-                        const GamePaths &paths,
+                        GamePaths &paths,
                         GameConfig &config,
                         const Script &script,
                         std::span<const SDL_Scancode> scriptKeys,
                         const std::filesystem::path &captures,
                         bool fixedTime,
-                        const std::string &reimportReason) {
+                        const std::string &reimportReason,
+                        const std::filesystem::path &portableDirectory) {
     SetupRun run;
     std::unique_ptr<SceneRenderer> sceneRenderer = SceneRenderer::Create(window);
     if (!sceneRenderer) {
@@ -164,18 +165,27 @@ SetupRun RunSetupWizard(GpuWindow &window,
                 progress);
         };
     const std::filesystem::path data = paths.data;
-    services.import = [data](const WizardImport &files, const WizardProgress &progress) {
-        return ImportFiles(data, files, progress);
+    const bool portable = paths.portableConfig || paths.portableData;
+    const bool fullyPortable =
+        paths.portableConfig && paths.portableData && paths.config == paths.data;
+    const auto restoredRoot = paths.portableConfig ? paths.config : paths.data;
+    const auto portableRoot = paths.portableData   ? paths.data :
+                              paths.portableConfig ? paths.config :
+                                                     portableDirectory;
+    services.import = [data, portableRoot](const WizardImport &files,
+                                           const WizardProgress &progress) {
+        return ImportFiles(files.portable ? portableRoot : data, files, progress);
     };
     if (const char *home = SDL_GetUserFolder(SDL_FOLDER_HOME)) {
         services.home = PathFromUtf8(home);
     }
-    const bool portable = paths.portableConfig || paths.portableData;
-    const auto portableRoot = paths.portableConfig ? paths.config : paths.data;
+    services.portable = fullyPortable && !portableDirectory.empty();
+    services.portableAvailable =
+        PortablePathsEnabled() && !fullyPortable && !portableDirectory.empty();
     const auto homeDirectory = services.home;
     auto restorePath = [&](const std::string &key) {
         auto path = PathFromUtf8(config.Get("SetupWizard", key).value_or(""));
-        return portable ? RestorePortablePath(path, portableRoot, homeDirectory) : path;
+        return portable ? RestorePortablePath(path, restoredRoot, homeDirectory) : path;
     };
     services.lastDirectory = restorePath("LastDirectory");
     services.disc = restorePath("DiscImage");
@@ -438,9 +448,11 @@ SetupRun RunSetupWizard(GpuWindow &window,
     }
     auto savePath = [&](const std::string &key, const std::string &text) {
         std::string stored = text;
-        if (portable && !text.empty()) {
-            stored = Utf8FromPath(StorePortablePath(
-                ResolveUserPath(text, homeDirectory), portableRoot, homeDirectory));
+        if ((portable || (run.finished && wizard.Portable())) && !text.empty()) {
+            stored = Utf8FromPath(
+                StorePortablePath(ResolveUserPath(text, homeDirectory),
+                                  run.finished && wizard.Portable() ? portableRoot : restoredRoot,
+                                  homeDirectory));
         }
         config.Set("SetupWizard", key, stored);
     };
@@ -454,6 +466,18 @@ SetupRun RunSetupWizard(GpuWindow &window,
         savePath("RomImage" + std::to_string(i + 1), wizard.Text(romFields[i]));
     }
     savePath("SearchDirectory", wizard.Text(WizardControlId::SearchText));
+    if (run.finished && wizard.Portable()) {
+        GamePaths selected{
+            portableRoot, portableRoot, portableRoot / "state", portableRoot / "cache", true, true};
+        if (!CreateGamePaths(selected) || !config.Save(portableRoot / "BossRally.ini")) {
+            SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot save the portable installation.");
+            run.finished = false;
+            run.failed = true;
+        } else {
+            paths = std::move(selected);
+            run.portable = true;
+        }
+    }
     SDL_StopTextInput(sdlWindow);
     return run;
 }

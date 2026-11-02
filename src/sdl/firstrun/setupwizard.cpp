@@ -7,6 +7,7 @@
 #include <mutex>
 #include <string_view>
 #include <system_error>
+#include <tuple>
 
 #include "../discformats.h"
 
@@ -211,6 +212,10 @@ WizardEnd SetupWizard::End() const {
     return m_end;
 }
 
+bool SetupWizard::Portable() const {
+    return m_services.portable;
+}
+
 bool SetupWizard::BrowserOpen() const {
     return m_browser.has_value();
 }
@@ -299,6 +304,7 @@ bool SetupWizard::NextEnabled() const {
     case WizardScreen::SearchDirectory:
         return m_directory.valid;
     case WizardScreen::Search:
+    case WizardScreen::SourceSelection:
     case WizardScreen::Import:
     case WizardScreen::Done:
         return false;
@@ -308,6 +314,26 @@ bool SetupWizard::NextEnabled() const {
 
 std::vector<WizardControl> SetupWizard::ScreenControls() const {
     std::vector<WizardControl> controls;
+    if (m_screen == WizardScreen::SourceSelection) {
+        for (const auto &[id, label, row] :
+             {std::tuple{WizardControlId::SearchAssets, "&Search directory for assets ...", 8},
+              {WizardControlId::SpecifyPaths, "Specify &paths ...", 11}}) {
+            auto button = MakeButton(id, label, 0, DIALOG_ROW + row);
+            button.column = DIALOG_COLUMN + (DIALOG_WIDTH - button.width) / 2;
+            controls.push_back(button);
+        }
+        WizardControl portable;
+        portable.id = WizardControlId::Portable;
+        portable.kind = WizardControl::Kind::CheckBox;
+        portable.column = CONTENT_COLUMN;
+        portable.row = DIALOG_ROW + 15;
+        portable.width = DIALOG_WIDTH - 6;
+        portable.label = "P&ortable installation (assets and settings beside the app)";
+        portable.checked = m_services.portable;
+        portable.enabled = m_services.portableAvailable;
+        controls.push_back(portable);
+        return controls;
+    }
     if (m_screen == WizardScreen::Reimport) {
         controls.push_back(MakeButton(WizardControlId::Next, "&Start setup", 0, BUTTON_ROW));
         controls.push_back(MakeButton(WizardControlId::Quit, "&Quit", 0, BUTTON_ROW));
@@ -349,16 +375,14 @@ std::vector<WizardControl> SetupWizard::ScreenControls() const {
             MakeButton(WizardControlId::SearchClear, "Clear", CLEAR_COLUMN, DIALOG_ROW + 6));
         break;
     case WizardScreen::Reimport:
+    case WizardScreen::SourceSelection:
     case WizardScreen::Search:
     case WizardScreen::Import:
     case WizardScreen::Done:
         break;
     }
     std::size_t first = controls.size();
-    if (m_screen == WizardScreen::Files) {
-        controls.push_back(MakeButton(
-            WizardControlId::SearchAssets, "&Search directory for assets ...", 0, BUTTON_ROW));
-    } else {
+    {
         WizardControl back = MakeButton(WizardControlId::Back, "&Back", 0, BUTTON_ROW);
         back.enabled = (m_screen != WizardScreen::Import || m_importFailure.has_value()) &&
                        m_screen != WizardScreen::Search && m_screen != WizardScreen::Done;
@@ -707,6 +731,7 @@ void SetupWizard::SetSelection(int selected) {
 
 void SetupWizard::StartImport() {
     WizardImport files;
+    files.portable = Portable();
     files.disc = ResolveUserPath(EncodeUtf8(m_disc.text), m_services.home);
     std::array<std::filesystem::path, WIZARD_CARTRIDGES> images;
     for (const auto &field : m_cartridges) {
@@ -865,6 +890,14 @@ void SetupWizard::Update() {
 
 void SetupWizard::Activate(WizardControlId id) {
     switch (id) {
+    case WizardControlId::SpecifyPaths:
+        SetScreen(WizardScreen::Files);
+        break;
+    case WizardControlId::Portable:
+        if (m_services.portableAvailable) {
+            m_services.portable = !m_services.portable;
+        }
+        break;
     case WizardControlId::DiscBrowse:
         OpenBrowser(WizardControlId::DiscText);
         break;
@@ -907,7 +940,7 @@ void SetupWizard::Activate(WizardControlId id) {
         break;
     case WizardControlId::Next:
         if (NextEnabled()) {
-            SetScreen(m_screen == WizardScreen::Reimport ? WizardScreen::Files :
+            SetScreen(m_screen == WizardScreen::Reimport ? WizardScreen::SourceSelection :
                                                            WizardScreen::Import);
         }
         break;
@@ -915,8 +948,9 @@ void SetupWizard::Activate(WizardControlId id) {
         m_end = WizardEnd::Quit;
         break;
     case WizardControlId::Back:
-        if (m_screen == WizardScreen::SearchDirectory ||
-            (m_screen == WizardScreen::Import && m_importFailure)) {
+        if (m_screen == WizardScreen::SearchDirectory || m_screen == WizardScreen::Files) {
+            SetScreen(WizardScreen::SourceSelection);
+        } else if (m_screen == WizardScreen::Import && m_importFailure) {
             m_importFailure.reset();
             SetScreen(WizardScreen::Files);
         }
@@ -996,7 +1030,7 @@ void SetupWizard::Escape() {
         m_browser.reset();
     } else if (m_screen == WizardScreen::Reimport) {
         m_end = WizardEnd::Quit;
-    } else if (m_screen == WizardScreen::Files) {
+    } else if (m_screen == WizardScreen::SourceSelection) {
         ShowMessage({"Quit?", "The game cannot start without its data."}, true);
     } else if ((m_screen == WizardScreen::Import && !m_importFailure) ||
                (m_screen == WizardScreen::Search && !m_searchComplete)) {
@@ -1350,7 +1384,8 @@ void SetupWizard::Handle(const WizardEvent &event) {
         Escape();
         return;
     case WizardKey::Enter:
-        if (control && kind == WizardControl::Kind::Button) {
+        if (control &&
+            (kind == WizardControl::Kind::Button || kind == WizardControl::Kind::CheckBox)) {
             Activate(control->id);
         } else {
             PressDefault();
@@ -1576,6 +1611,16 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
     const bool screenOnTop = !m_browser && !m_message;
     std::string status = " <Tab=Next Field>  <Alt+Letter=Choose>  <Enter=Next>  <Esc=Back>";
     switch (m_screen) {
+    case WizardScreen::SourceSelection:
+        dialog("Step 1 of 3: Find game files");
+        writeLines(DIALOG_ROW + 2,
+                   "Choose how to find your Boss Rally disc source and Top Gear Rally ROM images.",
+                   White);
+        writeLines(DIALOG_ROW + 5,
+                   "Search a folder automatically, or enter the file paths yourself.",
+                   LightGray);
+        status = " <Up/Down=Choose>  <Enter=Open>  <Space=Toggle>  <Esc=Quit>";
+        break;
     case WizardScreen::Reimport: {
         dialog("Import required");
         int row = writeLines(DIALOG_ROW + 2, m_services.reimportReason, White);
@@ -1592,7 +1637,7 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
         writeLines(DIALOG_ROW + 2,
                    "Required: Boss Rally disc image/directory and at least one ROM.",
                    LightGray);
-        status = " <Tab=Next Field>  <Alt+Letter=Choose>  <Enter=Next>  <Esc=Quit>";
+        status = " <Tab=Next Field>  <Alt+Letter=Choose>  <Enter=Next>  <Esc=Back>";
         break;
     case WizardScreen::SearchDirectory:
         dialog("Search directory for assets");

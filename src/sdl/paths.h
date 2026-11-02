@@ -17,19 +17,36 @@ struct GamePaths {
     std::filesystem::path data;   /*!< The game data copied from the disc and the cartridges. */
     std::filesystem::path state;  /*!< game.log and the saved games. */
     std::filesystem::path cache;  /*!< Data derived from the game data, safe to delete. */
-    bool portableConfig = false;  /*!< Whether configuration resides beside the executable. */
-    bool portableData = false;    /*!< Whether data resides beside the executable. */
+    bool portableConfig = false;  /*!< Whether configuration uses a local portable directory. */
+    bool portableData = false;    /*!< Whether data uses a local portable directory. */
 };
+
+/** @return Whether this build supports adjacent portable configuration and assets. */
+bool PortablePathsEnabled();
+
+/**
+ * Locate portable files beside an application bundle, AppImage, or ordinary executable.
+ * @param executable Absolute base directory reported by SDL.
+ * @param appImage Absolute AppImage filename, or empty for other distributions.
+ * @return CoastlineData beside a bundle or AppImage, the distribution root above bin,
+ * or @p executable for other layouts.
+ */
+std::filesystem::path PortableRoot(const std::filesystem::path &executable,
+                                   const std::filesystem::path &appImage = {});
 
 /**
  * Prefer adjacent configuration and assets independently when portable lookup is enabled.
  *
  * @param fallback Platform directories used for absent adjacent files.
- * @param executable Absolute directory of the executable.
+ * @param executable Absolute portable directory of the application distribution.
+ * @param workingDirectory Launch directory checked after the distribution, including its
+ * CoastlineData child, or empty to omit it.
  * @return Selected directories, or an error when an adjacent location cannot be written.
  */
-std::expected<GamePaths, std::string> ResolvePortablePaths(const GamePaths &fallback,
-                                                           const std::filesystem::path &executable);
+std::expected<GamePaths, std::string>
+ResolvePortablePaths(const GamePaths &fallback,
+                     const std::filesystem::path &executable,
+                     const std::filesystem::path &workingDirectory = {});
 
 /**
  * Store an input path relative to the portable directory, using '~' for external home paths.
@@ -104,6 +121,31 @@ std::optional<std::filesystem::path> FindAssetData(const std::filesystem::path &
  * @return Whether every directory exists afterwards.
  */
 bool CreateGamePaths(const GamePaths &paths);
+
+/**
+ * Move portable assets, settings, saves, screenshots, and state to platform directories.
+ * Derived cache is not copied and is removed only when moving the installation.
+ * Existing destination entries are never overwritten.
+ * @param source Selected portable directories; unrelated neighbouring files are preserved.
+ * @param destination Normal platform directories, outside the portable source trees.
+ * @param copyOnly Whether to preserve the portable installation after copying.
+ * @return An error on failure, or an empty optional on success.
+ * Copy failures preserve source data; cleanup failures preserve the completed destination.
+ */
+std::optional<std::string>
+MigratePortablePaths(const GamePaths &source, const GamePaths &destination, bool copyOnly = false);
+
+/**
+ * Export platform data as a portable installation, without copying the executable.
+ * Existing destination entries are never overwritten. Derived cache is regenerated.
+ * @param source Normal platform directories with imported assets and BossRally.ini.
+ * @param directory Absolute destination directory for assets, settings, and state.
+ * @param copyOnly Whether to preserve platform data after copying.
+ * @return An error on failure, or an empty optional on success.
+ */
+std::optional<std::string> MakePortablePaths(const GamePaths &source,
+                                             const std::filesystem::path &directory,
+                                             bool copyOnly = false);
 
 /**
  * Clear imported assets and asset caches, or all application data for a factory reset.

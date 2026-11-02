@@ -45,6 +45,7 @@ std::optional<WizardCartridge> BaseCartridge(const std::array<bool, WIZARD_CARTR
 /** The files an import of the wizard reads. */
 struct WizardImport {
     std::filesystem::path disc; /*!< The disc image or mounted disc directory. */
+    bool portable = false;      /*!< Whether to install beside the application distribution. */
     /** The ROM images by release, with the base of the default pack first. */
     std::vector<std::pair<WizardCartridge, std::filesystem::path>> cartridges;
 };
@@ -73,10 +74,12 @@ struct WizardServices {
     /** Previously entered ROM paths in their original slots, including empty slots. */
     std::array<std::filesystem::path, WIZARD_CARTRIDGES> roms;
     std::filesystem::path
-        searchDirectory;        /*!< The previously entered search directory, or empty. */
-    std::string buildRevision;  /*!< A version tag or short source revision. */
-    std::string buildDate;      /*!< The ISO 8601 UTC timestamp of the build. */
-    std::string reimportReason; /*!< Why existing assets need another import, or empty. */
+        searchDirectory;            /*!< The previously entered search directory, or empty. */
+    std::string buildRevision;      /*!< A version tag or short source revision. */
+    std::string buildDate;          /*!< The ISO 8601 UTC timestamp of the build. */
+    std::string reimportReason;     /*!< Why existing assets need another import, or empty. */
+    bool portableAvailable = false; /*!< Whether a portable installation can be selected. */
+    bool portable = false;          /*!< Whether a portable installation is selected. */
 };
 
 /** The images found during a directory search, indexed by detected release. */
@@ -158,6 +161,7 @@ struct WizardEvent {
 /** A screen of the wizard, in order. */
 enum class WizardScreen {
     Reimport,        /*!< Explain incompatible assets and offer setup or quit. */
+    SourceSelection, /*!< Choose directory search or manual paths and optional portable storage. */
     Files,           /*!< The disc and three interchangeable ROM paths. */
     SearchDirectory, /*!< The directory to search. */
     Search,          /*!< Search progress and discovered images. */
@@ -187,6 +191,8 @@ enum class WizardControlId {
     Rom2Clear,           /*!< Clear the second ROM path. */
     Rom3Clear,           /*!< Clear the third ROM path. */
     SearchAssets,        /*!< Open the directory search. */
+    SpecifyPaths,        /*!< Open manual disc and ROM path entry. */
+    Portable,            /*!< Store imported assets and settings beside the distribution. */
     SearchText,          /*!< The directory path. */
     SearchBrowse,        /*!< Browse for a directory. */
     SearchClear,         /*!< Clear the directory path. */
@@ -278,6 +284,9 @@ public:
 
     /** @return How the wizard ended, or WizardEnd::Running. */
     WizardEnd End() const;
+
+    /** @return Whether the import targets portable storage. */
+    bool Portable() const;
 
     /** @return The controls of the dialog on top: the message, the browser, or the screen. */
     std::vector<WizardControl> Controls() const;
@@ -388,7 +397,7 @@ private:
     std::array<bool, WIZARD_CARTRIDGES> Detected() const;
 
     WizardServices m_services;
-    WizardScreen m_screen = WizardScreen::Files;
+    WizardScreen m_screen = WizardScreen::SourceSelection;
     WizardEnd m_end = WizardEnd::Running;
     TextField m_disc;
     std::array<TextField, WIZARD_CARTRIDGES> m_cartridges;

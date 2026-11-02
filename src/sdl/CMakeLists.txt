@@ -302,7 +302,7 @@ if(WIN32)
 endif()
 
 string(TIMESTAMP COASTLINE_BUILD_TIMESTAMP "%Y-%m-%dT%H:%M:%SZ" UTC)
-if(APPLE OR COASTLINE_INSTALL_ASSETS)
+if(COASTLINE_INSTALL_ASSETS)
   set(_portable_default OFF)
 else()
   set(_portable_default ON)

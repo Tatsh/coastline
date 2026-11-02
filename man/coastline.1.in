@@ -17,6 +17,12 @@ Matching Options entries are disabled while an override controls them.
 Unique prefixes are accepted for choice values; ambiguous prefixes are rejected.
 .SH OPTIONS
 .TP
+.BR \-P ", " \-\-portable
+Store assets, configuration, cache, and state beside the application, even without
+existing local files. macOS bundles and AppImages use CoastlineData beside the
+bundle or original AppImage.
+Explicit \-\-config and \-\-data-dir paths override their respective locations.
+.TP
 .BR \-h ", " \-\-help
 Print usage and exit.
 .TP
@@ -119,6 +125,21 @@ Confirm either reset without prompting.
 .\}
 .SH COMMANDS
 .TP
+.BI "make-portable " "[\-\-copy] [DIRECTORY]"
+Export normal platform assets, settings, saves, screenshots, and state as a portable
+data directory. DIRECTORY defaults to CoastlineData in the launch working directory.
+The executable is not copied or modified and may reside in a read-only directory.
+Existing destination entries are never overwritten. Cache is regenerated.
+Without \-\-copy, remove source data after copying succeeds.
+.TP
+.BI "migrate-portable " "[\-\-copy] [DIRECTORY]"
+Move portable assets, settings, saves, screenshots, and state to normal platform
+directories. DIRECTORY accepts CoastlineData or its parent directory.
+Omit DIRECTORY to search adjacent storage and the launch directory.
+Existing destination entries are never overwritten. Cache is regenerated.
+With \-\-copy, preserve portable files. Use COASTLINE_PORTABLE=0 on subsequent
+launches to select platform storage while portable files remain adjacent.
+.TP
 .B import
 Convert disc and ROM assets.
 See
@@ -168,6 +189,13 @@ Import and Controller Pak commands do not request GameMode.
 System assets are searched before user assets, including the installation's
 share/coastline and /usr/share/coastline on Unix systems.
 .SH ENVIRONMENT
+.TP
+.B COASTLINE_PORTABLE
+Set to 1 to force portable storage or 0 to disable automatic local lookup.
+The values true/false, yes/no, and on/off also work, ignoring case.
+\-\-portable takes precedence. Without the environment variable, adjacent files and
+the launch working directory are searched automatically when portable support
+is enabled.
 .TP
 .BR XDG_CONFIG_HOME ", " XDG_DATA_HOME ", " XDG_STATE_HOME ", " XDG_CACHE_HOME
 Override corresponding Unix base directories.
