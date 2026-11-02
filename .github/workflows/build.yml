@@ -374,8 +374,8 @@ jobs:
           if-no-files-found: 'error'
           name: 'br-${{ matrix.renderer }}-${{ matrix.build-type }}'
           path: 'coastline-*.zip'
-  # On a tag, every package goes to the draft release of the tag. The Release workflow publishes
-  # the draft once every workflow of the commit succeeds.
+  # On a tag, Release PC packages go to the draft. Debug and N64 artifacts remain on the CI run.
+  # The Release workflow publishes the draft once every workflow of the commit succeeds.
   release:
     if: "github.ref_type == 'tag'"
     name: 'Attach to the release'
@@ -390,7 +390,8 @@ jobs:
         with:
           merge-multiple: true
           path: 'packages'
-          pattern: '{coastline,br}-*'
+          pattern: >-
+            {coastline-{linux,windows,macos,appimage}-*-Release,br-*-Release,coastline-{flatpak,snap}-*}
       - name: 'List the packages'
         run: |
           find packages -maxdepth 1 -type f \( -name '*.AppImage' -o -name '*.dmg' -o -name '*.exe' \

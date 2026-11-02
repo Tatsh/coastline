@@ -97,24 +97,22 @@ jobs:
         name: 'Check that every package is attached'
         run: |
           required=()
-          for build in Debug Release; do
-            for platform in linux-x86_64 linux-arm64; do
-              required+=("coastline-${TAG}-${platform}-${build}.tar.gz")
-            done
-            for platform in windows-x64 windows-arm64; do
-              required+=("coastline-${TAG}-${platform}-${build}.zip")
-              required+=("coastline-${TAG}-${platform}-${build}-setup.exe")
-            done
-            for platform in macos-arm64 macos-x86_64; do
-              required+=("coastline-${TAG}-${platform}-${build}.dmg")
-            done
-            for library in brd3d brglide; do
-              required+=("coastline-${TAG}-${library}-${build}.zip")
-            done
+          for platform in linux-x86_64 linux-arm64; do
+            required+=("coastline-${TAG}-${platform}-Release.tar.gz")
+          done
+          for platform in windows-x64 windows-arm64; do
+            required+=("coastline-${TAG}-${platform}-Release.zip")
+            required+=("coastline-${TAG}-${platform}-Release-setup.exe")
+          done
+          for platform in macos-arm64 macos-x86_64; do
+            required+=("coastline-${TAG}-${platform}-Release.dmg")
+          done
+          for library in brd3d brglide; do
+            required+=("coastline-${TAG}-${library}-Release.zip")
           done
           required+=(
-            "Coastline-${TAG}-aarch64.AppImage"
-            "Coastline-${TAG}-x86_64.AppImage"
+            "Coastline-${TAG}-linux-arm64-Release.AppImage"
+            "Coastline-${TAG}-linux-x86_64-Release.AppImage"
             "coastline_${TAG}_amd64.snap"
             "coastline_${TAG}_arm64.snap"
             "sh.tat.coastline-${TAG}-aarch64.flatpak"
@@ -133,6 +131,13 @@ jobs:
             echo "::error::${missing} packages are missing, and ${TAG} stays a draft."
             exit 1
           fi
+          for name in "${attached[@]}"; do
+            if ! printf '%s\n' "${required[@]}" | grep -Fxq "$name"; then
+              echo "::error::${TAG} has an unexpected asset ${name}." \
+                'Only Release PC packages are allowed.'
+              exit 1
+            fi
+          done
       - env:
           TAG: '${{ steps.guard.outputs.tag }}'
         if: "steps.check.outputs.ready == 'true'"
