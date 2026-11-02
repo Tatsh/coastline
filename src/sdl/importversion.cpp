@@ -55,7 +55,7 @@ std::vector<ImportSource> StaleImports(const std::filesystem::path &defaults) {
         std::error_code error;
         bool imported = record.Get(SECTION, info.key).has_value() ||
                         std::filesystem::is_directory(defaults / info.directory, error);
-        if (imported && record.GetInteger(SECTION, info.key, 0) < info.version) {
+        if (imported && record.GetInteger(SECTION, info.key, 0) != info.version) {
             stale.push_back(info.source);
         }
     }

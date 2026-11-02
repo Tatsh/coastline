@@ -12,14 +12,14 @@ namespace coastline {
  * other files ImportDisc() converts, n64model.cpp included. Increase it with every change to the
  * output of the conversion, so that the game warns about data imported before the change.
  */
-inline constexpr int DISC_CONVERTER_VERSION = 3;
+inline constexpr int DISC_CONVERTER_VERSION = 1;
 
 /**
  * The version of the conversion of a Top Gear Rally cartridge: the models, the images, the music,
  * and the other files ImportRom() converts, n64model.cpp included. Increase it with every change
  * to the output of the conversion, so that the game warns about data imported before the change.
  */
-inline constexpr int CARTRIDGE_CONVERTER_VERSION = 4;
+inline constexpr int CARTRIDGE_CONVERTER_VERSION = 1;
 
 /** A source of the data of the default pack. */
 enum class ImportSource {
@@ -40,11 +40,11 @@ enum class ImportSource {
 bool RecordImport(const std::filesystem::path &defaults, ImportSource source);
 
 /**
- * The sources of the default pack imported with an older version of their conversion than the
- * current one. Legacy source directories without version records also require a new import.
+ * The sources of the default pack imported with a conversion version different from the current
+ * one. Source directories without version records also require a new import.
  *
  * @param defaults The directory of the default pack.
- * @return The old sources, in the order of ImportSource.
+ * @return The incompatible sources, in the order of ImportSource.
  */
 std::vector<ImportSource> StaleImports(const std::filesystem::path &defaults);
 

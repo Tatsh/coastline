@@ -79,6 +79,11 @@
 namespace {
 
 constexpr const char *APPLICATION = "coastline";
+#if defined(SDL_PLATFORM_MACOS) || defined(SDL_PLATFORM_WINDOWS)
+constexpr const char *STORAGE_APPLICATION = "Coastline";
+#else
+constexpr const char *STORAGE_APPLICATION = APPLICATION;
+#endif
 
 const char *RegionName(const std::string &region) {
     if (region == "usa") {
@@ -990,7 +995,7 @@ int main(int argc, char *argv[]) {
         SDL_SetMainReady();
         return ImportFromCommandLine(import, data);
     }
-    auto paths = coastline::ResolveGamePaths(APPLICATION);
+    auto paths = coastline::ResolveGamePaths(STORAGE_APPLICATION);
     if (!paths) {
         paths = coastline::GamePaths{};
     }

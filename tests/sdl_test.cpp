@@ -182,6 +182,10 @@ void CheckImportVersions() {
               "[Import]\nDisc=0\nUsa=" + cartridge + "\nEur=" + cartridge + "\n");
     Check(coastline::StaleImports(defaults) == std::vector{ImportSource::Disc},
           "an older version is old");
+    WriteText(defaults / "import.ini", "[Import]\nDisc=3\nUsa=4\nEur=" + cartridge + "\n");
+    Check(coastline::StaleImports(defaults) == std::vector{ImportSource::Disc, ImportSource::Usa},
+          "pre-release versions require a new import");
+    Check(coastline::RecordImport(defaults, ImportSource::Usa), "the cartridge record is updated");
     Check(coastline::RecordImport(defaults, ImportSource::Disc), "the record is updated");
     Check(coastline::StaleImports(defaults).empty(), "every source is current");
     Check(!coastline::DefaultPackUsable(defaults), "version records alone are insufficient");

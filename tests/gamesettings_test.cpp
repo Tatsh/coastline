@@ -426,12 +426,6 @@ int main() {
     assert(browsing.AdjustAndSave(browsingPreset, 1, path) == GameSettings::Adjustment::Saved);
     assert(GameConfig::Load(path).Get("Game", "Music") == "CD");
 
-    auto legacyConfig = GameConfig::Parse("[Video]\nGraphicsPreset=best\nAntialias=4\n");
-    GameSettings legacy(legacyConfig, roots);
-    assert(legacy.Label(Find(legacy, "Preset:")) == "Preset: Ultra");
-    assert(legacyConfig.Get("Video", "GraphicsPreset") == "ultra");
-    assert(legacyConfig.GetInteger("Video", "Antialias", 0) == 4);
-
     GameConfig saved;
     saved.Set("Video", "AspectRatio", "auto");
     GameSettings locked(saved, roots);

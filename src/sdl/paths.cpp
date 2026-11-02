@@ -465,7 +465,7 @@ std::vector<std::filesystem::path> SystemDataDirectories(const std::filesystem::
         directories.emplace_back(COASTLINE_SYSTEM_DATA_DIR);
     }
 #ifdef __APPLE__
-    directories.emplace_back("/Library/Application Support/coastline");
+    directories.emplace_back("/Library/Application Support/Coastline");
 #endif
 #ifndef _WIN32
     directories.emplace_back("/usr/local/share/coastline");

@@ -159,8 +159,11 @@ the X11 extensions (Xcursor, Xfixes, Xi, Xrandr, Xss, Xtst), and autoconf-archiv
 
 The game reads `BossRally.ini` from `~/.config/coastline`, its data from `~/.local/share/coastline`,
 and writes `game.log` to `~/.local/state/coastline`. The XDG Base Directory variables move these
-directories. Windows uses the roaming and local application data folders, and macOS uses
-Application Support, Caches, and Logs in the library of the user.
+directories. Windows uses `Coastline` in the roaming and local application data folders. macOS uses
+`Coastline` in Application Support, Caches, and Logs in the library of the user.
+
+The first release uses version 1 of the imported asset formats. Pre-release installations require
+`coastline --factory-reset`; settings and data are not migrated.
 
 Portable file lookup defaults to enabled outside macOS and installed-asset builds.
 An existing `BossRally.ini` beside the executable
@@ -181,7 +184,7 @@ as a disk image. `open` passes the options of the command line after `--args` to
 started by `open` runs in `/`, where a relative path does not resolve. Give absolute paths.
 `-W` waits for the import to finish, and `-n` starts a new instance, as `open` brings a running
 game forward without passing it the options. The output does not appear in the terminal, and
-`game.log` in `~/Library/Logs/coastline` records the result.
+`game.log` in `~/Library/Logs/Coastline` records the result.
 
 ```shell
 open -n -W Coastline.app --args import --cd "$PWD/Boss Rally.cue" --rom "$PWD/usa.z64"
@@ -568,10 +571,10 @@ the user cache. Encrypted, corrupt, oversized, and unsupported archive entries a
 
 Before user assets, the game searches the installation data directory, including relocated
 `bin/../share/coastline`, `/usr/local/share/coastline`, and `/usr/share/coastline` on Unix.
-macOS also searches bundle resources and `/Library/Application Support/coastline`. MSYS2 and
+macOS also searches bundle resources and `/Library/Application Support/Coastline`. MSYS2 and
 Windows use the data directory relative to the executable and the configured installation prefix.
 The fallback is the user's data directory, such as `~/.local/share/coastline` on Linux or
-`~/Library/Application Support/coastline/data` on macOS. Every data root uses `assets/default`
+`~/Library/Application Support/Coastline/data` on macOS. Every data root uses `assets/default`
 and sibling asset packs. System packs take priority; a user mod can layer over system defaults
 in the user cache. Configurations, saves, screenshots, and cache remain in user directories.
 `--data-dir` explicitly selects a data root and bypasses system asset lookup.

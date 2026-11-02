@@ -82,9 +82,6 @@ GameSettings::GameSettings(GameConfig &config,
                            std::span<const std::filesystem::path> dataRoots,
                            std::span<const std::array<int, 2>> displayResolutions)
     : m_config(config) {
-    if (config.Get("Video", "GraphicsPreset") == "best") {
-        config.Set("Video", "GraphicsPreset", "ultra");
-    }
     std::set<std::string> packs{"default"};
     const auto availableRegions = AvailableCartridgeRegions(dataRoots);
     std::set<std::string> regions(availableRegions.begin(), availableRegions.end());

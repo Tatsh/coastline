@@ -148,6 +148,10 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Windows and macOS storage directories use `Coastline` casing without automatic migration.
+- Disc and cartridge import formats start at version 1 and reject mismatched versions, including
+  pre-release formats. Pre-release installations require `coastline --factory-reset`; settings and
+  data are not migrated.
 - Options transitions display `Reinitializing game...` without a redundant restart sentence.
 - macOS fullscreen uses a whole-display borderless window without a separate Space or visible
   menu bar.
@@ -182,7 +186,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   Their command-line presets apply music choices without saving them and lock Music in Options.
 - N64 and Boss Rally graphics presets select 4:3. Low power requests a lower-power GPU with
   a 640x480 internal base and a 60 FPS limit, separately from Worst's unfiltered minimum quality.
-- Ultra replaces High quality; saved preset identifiers migrate from `best` to `ultra`.
+- Ultra replaces High quality without rewriting older saved preset identifiers.
   Command-line choice values accept unique prefixes.
 - Options displays active command-line overrides and locks their settings for the current run.
 - Full performance statistics use a larger font without changing the legacy FPS counter.
