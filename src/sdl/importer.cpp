@@ -1990,7 +1990,8 @@ struct EncoderDeleter {
 std::optional<std::string> EncodeAudioTrack(const CueTrack &track,
                                             const std::filesystem::path &destination,
                                             const ImportProgress &progress) {
-    if (track.sectorSize != RAW_SECTOR && track.sectorSize != RAW_SECTOR + 96) {
+    if (track.sectorSize != RAW_SECTOR && track.sectorSize != RAW_SECTOR + 16 &&
+        track.sectorSize != RAW_SECTOR + 96) {
         return "Unsupported CD audio sector size.";
     }
     DiscTrackReader file(track);

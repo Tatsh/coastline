@@ -1281,6 +1281,7 @@ stringresources
 strlwr
 strmiids
 strupr
+subchannels
 subu
 sunweth
 superbuild

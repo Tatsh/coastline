@@ -90,6 +90,155 @@ void CheckSectors(const coastline::CueTrack &track, std::span<const std::uint8_t
     assert(reader.Read(track.sectorCount, 0, {}));
 }
 
+std::size_t Append(std::vector<std::uint8_t> &bytes, std::size_t count) {
+    const auto offset = bytes.size();
+    bytes.resize(offset + count);
+    return offset;
+}
+
+void CdiHeader(std::vector<std::uint8_t> &bytes) {
+    constexpr std::array<std::uint8_t, 12> SIGNATURE{
+        0xff, 0xff, 0, 0, 1, 0, 0, 0, 0xff, 0xff, 0xff, 0xff};
+    const auto offset = Append(bytes, 53);
+    std::copy(SIGNATURE.begin(), SIGNATURE.end(), bytes.begin() + offset);
+    bytes[offset + 15] = 2;
+    bytes[offset + 16] = 5;
+    Tag(bytes, offset + 17, "x.cdi");
+    bytes[offset + 28 + 5] = 2;
+    bytes[offset + 39 + 5] = 0x80;
+    bytes[offset + 46 + 5] = 0x98;
+}
+
+void CheckCdi(const std::filesystem::path &root) {
+    for (const bool modern : {false, true}) {
+        for (const std::uint32_t version : {0x80000004u, 0x80000005u, 0x80000006u}) {
+            if (modern && version != 0x80000006) {
+                continue;
+            }
+            for (const std::size_t stride : {2048, 2352, 2368, 2448}) {
+                for (const bool extended : {false, true}) {
+                    const auto data = StoredData(stride);
+                    const auto audioStride = stride == 2048 ? SECTOR : stride;
+                    const std::vector<std::uint8_t> audio(audioStride * 3, 0x42);
+                    std::vector<std::uint8_t> image(stride * 2);
+                    image.insert(image.end(), data.begin(), data.end());
+                    image.resize(image.size() + audioStride);
+                    image.insert(image.end(), audio.begin(), audio.end());
+                    const auto metadata = image.size();
+                    const unsigned sessions = extended ? 2 : 1;
+                    Number(image, Append(image, modern ? 1 : 2), sessions, modern ? 1 : 2, true);
+                    std::array<std::size_t, 2> indices{}, text{}, fixed{};
+                    for (unsigned session = 0; session < sessions; ++session) {
+                        const unsigned count = sessions == 2 ? 1 : 2;
+                        const auto section = Append(image, modern ? 15 : 2);
+                        Number(image, section + (modern ? 1 : 0), count, modern ? 1 : 2, true);
+                        for (unsigned index = 0; index < count; ++index) {
+                            const unsigned track = sessions == 2 ? session : index;
+                            if (modern) {
+                                CdiHeader(image);
+                            } else {
+                                const auto prefix = Append(image, extended ? 12 : 4);
+                                Number(image, prefix, extended, 4, true);
+                                constexpr std::array<std::uint8_t, 10> MARK{
+                                    0, 0, 1, 0, 0, 0, 0xff, 0xff, 0xff, 0xff};
+                                for (unsigned marker = 0; marker < 2; ++marker) {
+                                    const auto position = Append(image, MARK.size());
+                                    std::copy(MARK.begin(), MARK.end(), image.begin() + position);
+                                }
+                                Append(image, 4);
+                                image.push_back(5);
+                                Tag(image, Append(image, 5), "x.cdi");
+                                Append(image, 19);
+                                Number(image, Append(image, 4), extended ? 0x80000000 : 0, 4, true);
+                                if (extended) {
+                                    Append(image, 8);
+                                }
+                            }
+                            indices[track] = Append(image, 10);
+                            Number(image, indices[track], 2, 2, true);
+                            Number(image, indices[track] + 2, track == 0 ? 2 : 1, 4, true);
+                            Number(image, indices[track] + 6, track == 0 ? 32 : 3, 4, true);
+                            text[track] = Append(image, 4);
+                            Number(image, text[track], modern ? 1 : 0, 4, true);
+                            if (modern) {
+                                image.push_back(3);
+                                Tag(image, Append(image, 3), "abc");
+                                Append(image, 17);
+                            }
+                            fixed[track] = Append(image, modern ? 174 : 75);
+                            Number(image, fixed[track] + 2, track == 0 ? 1 : 0, 4, true);
+                            Number(image, fixed[track] + 10, session, 4, true);
+                            Number(image, fixed[track] + 14, extended ? index : track, 4, true);
+                            Number(image, fixed[track] + 22, track == 0 ? 34 : 4, 4, true);
+                            Number(image, fixed[track] + 51, track == 0 ? 34 : 4, 4, true);
+                            const auto size = track == 0 ? stride : audioStride;
+                            Number(image,
+                                   fixed[track] + 42,
+                                   size == 2048 ? 0 :
+                                   size == 2352 ? 2 :
+                                   size == 2368 ? 3 :
+                                                  4,
+                                   4,
+                                   true);
+                            if (!modern && version != 0x80000004) {
+                                Append(image, 5);
+                                Number(image, Append(image, 4), extended ? UINT32_MAX : 0, 4, true);
+                                if (extended) {
+                                    Append(image, 78);
+                                }
+                            }
+                        }
+                        if (!modern) {
+                            Append(image, version == 0x80000004 ? 12 : 13);
+                        }
+                    }
+                    if (modern) {
+                        Append(image, 15);
+                        CdiHeader(image);
+                        const auto disc = Append(image, 47);
+                        Number(image, disc + 43, version, 4, true);
+                    } else {
+                        Number(image, Append(image, 4), version, 4, true);
+                    }
+                    const auto pointer = Append(image, 4);
+                    Number(image,
+                           pointer,
+                           version == 0x80000006 ? image.size() - metadata : metadata,
+                           4,
+                           true);
+                    const auto path = root / "test.cdi";
+                    Write(path, image);
+                    const auto tracks = coastline::ReadDiscTracks(path);
+                    assert(tracks && tracks->size() == 2);
+                    assert(!tracks->front().audio && tracks->back().audio);
+                    CheckSectors(tracks->front(), data);
+                    CheckSectors(tracks->back(), audio);
+                    for (const auto position :
+                         {indices[0], text[0], fixed[0] + 22, fixed[0] + 42, pointer}) {
+                        auto broken = image;
+                        Number(broken, position, UINT32_MAX, 4, true);
+                        Write(path, broken);
+                        assert(!coastline::ReadDiscTracks(path));
+                    }
+                    const auto end = modern ? image.size() - 8 : fixed[1] + 75;
+                    for (std::size_t cut = metadata; cut < end; cut += 7) {
+                        auto truncated = std::vector(image.begin(), image.begin() + cut);
+                        const auto footer = Append(truncated, 8);
+                        Number(truncated, footer, version, 4, true);
+                        Number(truncated,
+                               footer + 4,
+                               version == 0x80000006 ? truncated.size() - metadata : metadata,
+                               4,
+                               true);
+                        Write(path, truncated);
+                        assert(!coastline::ReadDiscTracks(path));
+                    }
+                }
+            }
+        }
+    }
+}
+
 void CheckNrg(const std::filesystem::path &root) {
     for (const bool wide : {false, true}) {
         for (const bool dao : {false, true}) {
@@ -403,6 +552,7 @@ int main(int argc, char **argv) {
     CheckNumbered(root);
     CheckNrg(root);
     CheckMds(root);
+    CheckCdi(root);
     if (argc == 2) {
         const auto cue = coastline::ParseCueSheet(argv[1]);
         assert(cue && !cue->empty());

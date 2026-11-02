@@ -23,17 +23,20 @@ Original game files must be supplied by the user.
 .TP
 .BI \-\-cd " DISC"
 Read a Boss Rally CUE sheet, ISO, Mode 1 BIN, numbered track file, CloneCD,
-Alcohol MDS, or Nero NRG image.
+DiscJuggler CDI, Alcohol MDS, or Nero NRG image.
 A directory can be the root of a mounted physical disc or a copy of its files.
 Directory sources import data without CD audio.
 A BIN image uses a matching adjacent CUE sheet when available.
 Without a CUE sheet, known whole-file SHA-1 digests select verified track offsets.
 Other BIN images use sector headers and audio pregaps to discover a layout.
 Uncertain layouts and ISO images import data without CD audio.
-Numbered Track NN.bin sets, CloneCD .ccd/.img, Alcohol .mds/.mdf, and Nero .nrg files
+Numbered Track NN.bin sets, CloneCD .ccd/.img, DiscJuggler .cdi,
+Alcohol .mds/.mdf, and Nero .nrg files
 also provide audio tracks.
 MDS supports split files and UTF-16 filenames.
 NRG supports disc-at-once and track-at-once metadata with 32-bit or 64-bit offsets.
+CDI supports versions 2, 3, and 3.5, multiple sessions, and stored pregaps.
+P-Q and P-W subchannel bytes are discarded during conversion.
 Track files referenced by a CUE sheet must remain available.
 .TP
 .BI \-\-rom " ROM"

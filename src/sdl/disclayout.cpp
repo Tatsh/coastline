@@ -113,6 +113,255 @@ bool DisjointExtents(const std::vector<CueTrack> &tracks) {
     return true;
 }
 
+class MetadataCursor {
+public:
+    explicit MetadataCursor(Bytes bytes) : m_bytes(bytes) {
+    }
+
+    Bytes Take(std::uint64_t count) {
+        if (count > m_bytes.size()) {
+            m_valid = false;
+            m_bytes = {};
+            return {};
+        }
+        const auto result = m_bytes.first(static_cast<std::size_t>(count));
+        m_bytes = m_bytes.subspan(static_cast<std::size_t>(count));
+        return result;
+    }
+
+    std::uint64_t Number(std::size_t size) {
+        const auto bytes = Take(size);
+        return bytes.size() == size ? Little(bytes, 0, size) : 0;
+    }
+
+    bool Valid() const {
+        return m_valid;
+    }
+
+    std::size_t Remaining() const {
+        return m_bytes.size();
+    }
+
+private:
+    Bytes m_bytes;
+    bool m_valid = true;
+};
+
+bool CdiText(MetadataCursor &cursor) {
+    const auto blocks = cursor.Number(4);
+    if (blocks > cursor.Remaining() / 18) {
+        return false;
+    }
+    for (std::uint64_t block = 0; block < blocks; ++block) {
+        for (unsigned field = 0; field < 18; ++field) {
+            const auto length = cursor.Number(1);
+            cursor.Take(length);
+        }
+    }
+    return cursor.Valid();
+}
+
+std::optional<unsigned> CdiHeader(MetadataCursor &cursor) {
+    constexpr std::array<std::uint8_t, 12> SIGNATURE{
+        0xff, 0xff, 0, 0, 1, 0, 0, 0, 0xff, 0xff, 0xff, 0xff};
+    const auto header = cursor.Take(17);
+    if (header.size() != 17 || !std::ranges::equal(header.first(12), SIGNATURE)) {
+        return std::nullopt;
+    }
+    cursor.Take(header[16]);
+    const auto rest = cursor.Take(31);
+    if (rest.size() != 31 || Little(rest, 29, 2) != 0x98 || header[15] > 99) {
+        return std::nullopt;
+    }
+    return header[15];
+}
+
+bool CdiTrack(MetadataCursor &cursor,
+              const std::filesystem::path &image,
+              unsigned session,
+              unsigned sessionTrack,
+              std::uint64_t dataEnd,
+              std::uint64_t &dataPosition,
+              std::vector<CueTrack> &tracks,
+              bool modern,
+              bool version2) {
+    if (modern) {
+        if (!CdiHeader(cursor)) {
+            return false;
+        }
+    } else {
+        if (cursor.Number(4) != 0) {
+            cursor.Take(8);
+        }
+        constexpr std::array<std::uint8_t, 10> SIGNATURE{0, 0, 1, 0, 0, 0, 0xff, 0xff, 0xff, 0xff};
+        const auto markers = cursor.Take(20);
+        if (markers.size() != 20 || !std::ranges::equal(markers.first(10), SIGNATURE) ||
+            !std::ranges::equal(markers.last(10), SIGNATURE)) {
+            return false;
+        }
+        cursor.Take(4);
+        const auto nameLength = cursor.Number(1);
+        cursor.Take(nameLength);
+        cursor.Take(19);
+        if (cursor.Number(4) == 0x80000000) {
+            cursor.Take(8);
+        }
+    }
+    const auto indices = cursor.Number(2);
+    if (indices < 2 || indices > 100 || indices > cursor.Remaining() / 4) {
+        return false;
+    }
+    const auto pregap = cursor.Number(4);
+    std::uint64_t total = pregap;
+    for (std::uint64_t index = 1; index < indices; ++index) {
+        total += cursor.Number(4);
+    }
+    if (total <= pregap || total > UINT32_MAX || !CdiText(cursor)) {
+        return false;
+    }
+    const auto fixed = cursor.Take(modern ? 174 : 75);
+    if (fixed.size() < 75 || Little(fixed, 10, 4) != session ||
+        (Little(fixed, 14, 4) != tracks.size() && Little(fixed, 14, 4) != sessionTrack) ||
+        Little(fixed, 22, 4) != total) {
+        return false;
+    }
+    const auto mode = Little(fixed, 2, 4);
+    const auto readMode = Little(fixed, 42, 4);
+    if (mode > 2 || readMode > 4 || (readMode == 0 && mode != 1) || (readMode == 1 && mode != 2)) {
+        return false;
+    }
+    CueTrack track;
+    track.file = image;
+    track.number = static_cast<int>(tracks.size() + 1);
+    track.audio = mode == 0;
+    constexpr std::array<std::uint32_t, 5> STRIDES{2048, 2336, 2352, 2368, 2448};
+    track.sectorSize = STRIDES[readMode];
+    track.dataOffset = readMode == 0 ? 0 : readMode == 1 ? 8 : mode == 2 ? 24 : 16;
+    track.sectorCount = total - pregap;
+    if (dataPosition > dataEnd || total > (dataEnd - dataPosition) / track.sectorSize) {
+        return false;
+    }
+    track.extents.push_back({image, dataPosition + pregap * track.sectorSize, track.sectorCount});
+    dataPosition += total * track.sectorSize;
+    if (!modern && !version2) {
+        cursor.Take(5);
+        if (cursor.Number(4) == UINT32_MAX) {
+            cursor.Take(78);
+        }
+    }
+    if (!cursor.Valid()) {
+        return false;
+    }
+    tracks.push_back(std::move(track));
+    return true;
+}
+
+std::optional<std::vector<CueTrack>> CdiLayout(Bytes metadata,
+                                               const std::filesystem::path &image,
+                                               std::uint64_t dataEnd,
+                                               std::uint64_t version,
+                                               bool modern) {
+    MetadataCursor cursor(metadata);
+    const auto sessions = cursor.Number(modern ? 1 : 2);
+    if (sessions == 0 || sessions > 99) {
+        return std::nullopt;
+    }
+    std::vector<CueTrack> tracks;
+    std::uint64_t dataPosition = 0;
+    for (unsigned session = 0; session < sessions; ++session) {
+        std::uint64_t count = 0;
+        if (modern) {
+            const auto header = cursor.Take(15);
+            if (header.size() != 15 || header[0] != 0) {
+                return std::nullopt;
+            }
+            count = header[1];
+        } else {
+            count = cursor.Number(2);
+        }
+        if (count == 0 || count > 99 - tracks.size()) {
+            return std::nullopt;
+        }
+        for (std::uint64_t index = 0; index < count; ++index) {
+            if (!CdiTrack(cursor,
+                          image,
+                          session,
+                          static_cast<unsigned>(index),
+                          dataEnd,
+                          dataPosition,
+                          tracks,
+                          modern,
+                          version == 0x80000004)) {
+                return std::nullopt;
+            }
+        }
+        if (!modern) {
+            cursor.Take(version == 0x80000004 ? 12 : 13);
+        }
+    }
+    if (modern) {
+        const auto endSession = cursor.Take(15);
+        if (endSession.size() != 15 || endSession[1] != 0 || !CdiHeader(cursor)) {
+            return std::nullopt;
+        }
+        cursor.Take(4);
+        const auto volumeLength = cursor.Number(1);
+        cursor.Take(volumeLength);
+        cursor.Take(26);
+        const auto textLength = cursor.Number(4);
+        cursor.Take(textLength);
+        cursor.Take(8);
+        if (cursor.Number(4) != version || cursor.Remaining() != 4) {
+            return std::nullopt;
+        }
+    }
+    return cursor.Valid() && DisjointExtents(tracks) ? std::optional(std::move(tracks)) :
+                                                       std::nullopt;
+}
+
+std::expected<std::vector<CueTrack>, std::string> CdiTracks(const std::filesystem::path &image) {
+    const auto invalid =
+        std::unexpected(std::string("Invalid or unsupported DiscJuggler CDI metadata."));
+    std::error_code error;
+    const auto size = std::filesystem::file_size(image, error);
+    if (error || size < 8) {
+        return invalid;
+    }
+    std::ifstream file(image, std::ios::binary);
+    const auto trailer = ReadMetadata(file, size - 8, 8);
+    if (!trailer) {
+        return invalid;
+    }
+    const auto version = Little(*trailer, 0, 4);
+    const auto pointer = Little(*trailer, 4, 4);
+    if (version < 0x80000004 || version > 0x80000006 || pointer == 0 || pointer > size) {
+        return invalid;
+    }
+    const auto offset = version == 0x80000006 ? size - pointer : pointer;
+    if (offset >= size - 8) {
+        return invalid;
+    }
+    const auto metadata = ReadMetadata(file, offset, size - offset);
+    if (!metadata) {
+        return invalid;
+    }
+    if (version == 0x80000006) {
+        if (Range(*metadata, 16, 17) && (*metadata)[16] == 0xff && (*metadata)[17] == 0xff) {
+            const auto flagOffset = std::size_t{52} + (*metadata)[32];
+            if (Range(*metadata, flagOffset, 4) && Little(*metadata, flagOffset, 4) == 0x80000000) {
+                auto tracks = CdiLayout(*metadata, image, offset, version, true);
+                return tracks ?
+                           std::expected<std::vector<CueTrack>, std::string>(std::move(*tracks)) :
+                           invalid;
+            }
+        }
+    }
+    if (auto tracks = CdiLayout(*metadata, image, offset, version, false)) {
+        return std::move(*tracks);
+    }
+    return invalid;
+}
+
 std::expected<std::vector<CueTrack>, std::string> NrgTracks(const std::filesystem::path &image) {
     const auto invalid = std::unexpected(std::string("Invalid or unsupported Nero NRG metadata."));
     std::error_code error;
@@ -816,6 +1065,9 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
 std::expected<std::vector<CueTrack>, std::string>
 ReadDiscTracks(const std::filesystem::path &disc) {
     const auto extension = Lowercase(disc.extension().string());
+    if (extension == ".cdi") {
+        return CdiTracks(disc);
+    }
     if (extension == ".nrg") {
         return NrgTracks(disc);
     }
