@@ -1,11 +1,17 @@
 [Desktop Entry]
+Version=1.5
 Type=Application
 Name=Coastline
 GenericName=Rally racing game
 Comment=Top Gear Rally and Boss Rally in one stand-alone game
 Exec=coastline
+TryExec=coastline
 Icon=sh.tat.coastline
 StartupWMClass=sh.tat.coastline
+StartupNotify=true
 Terminal=false
-Categories=Game;ActionGame;
+Categories=Game;SportsGame;
 Keywords=rally;racing;driving;
+X-Developer=Tatsh
+X-Website=https://github.com/Tatsh/coastline
+X-License=MIT

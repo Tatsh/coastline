@@ -196,8 +196,16 @@ jobs:
         name: 'Package'
         run: |
           codesign --verify --deep --strict staging/Coastline.app
-          hdiutil create -volname Coastline -srcfolder staging/Coastline.app -ov -format UDZO \
+          mkdir dmg-root
+          ditto staging/Coastline.app dmg-root/Coastline.app
+          ln -s /Applications dmg-root/Applications
+          hdiutil create -volname Coastline -srcfolder dmg-root -ov -format UDZO \
             "$PACKAGE.dmg"
+          hdiutil attach -readonly -nobrowse -mountpoint dmg-check "$PACKAGE.dmg"
+          test -d dmg-check/Coastline.app
+          test "$(readlink dmg-check/Applications)" = /Applications
+          codesign --verify --deep --strict dmg-check/Coastline.app
+          hdiutil detach dmg-check
       - if: runner.os == 'Windows'
         name: 'Verify installed runtime'
         run: |

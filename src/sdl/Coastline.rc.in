@@ -1,1 +1,41 @@
+#include <windows.h>
+
 1 ICON "@CMAKE_CURRENT_SOURCE_DIR@/Coastline.ico"
+
+1 VERSIONINFO
+FILEVERSION @CMAKE_PROJECT_VERSION_MAJOR@,
+            @CMAKE_PROJECT_VERSION_MINOR@,
+            @CMAKE_PROJECT_VERSION_PATCH@,0
+PRODUCTVERSION @CMAKE_PROJECT_VERSION_MAJOR@,
+               @CMAKE_PROJECT_VERSION_MINOR@,
+               @CMAKE_PROJECT_VERSION_PATCH@,0
+FILEFLAGSMASK VS_FFI_FILEFLAGSMASK
+#ifdef _DEBUG
+FILEFLAGS VS_FF_DEBUG
+#else
+FILEFLAGS 0
+#endif
+FILEOS VOS_NT_WINDOWS32
+FILETYPE VFT_APP
+FILESUBTYPE 0
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "Comments", "https://github.com/Tatsh/coastline\0"
+            VALUE "CompanyName", "Tatsh\0"
+            VALUE "FileDescription", "Coastline rally racing game\0"
+            VALUE "FileVersion", "@COASTLINE_RESOURCE_VERSION@\0"
+            VALUE "InternalName", "coastline\0"
+            VALUE "LegalCopyright", "Copyright (c) 2026 coastline authors. MIT License.\0"
+            VALUE "OriginalFilename", "coastline.exe\0"
+            VALUE "ProductName", "Coastline\0"
+            VALUE "ProductVersion", "@COASTLINE_RESOURCE_VERSION@\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x0409, 1200
+    END
+END

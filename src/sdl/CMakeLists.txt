@@ -318,6 +318,11 @@ target_link_libraries(coastline_common PRIVATE ${COASTLINE_COMMON_LIBULTRA_LIBRA
                                                $<LINK_ONLY:coastline_sdl> SDL3::SDL3)
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,coastline_common>")
 
+set(COASTLINE_RESOURCE_VERSION "${CMAKE_PROJECT_VERSION}")
+if(_tgr_git_sha)
+  string(APPEND COASTLINE_RESOURCE_VERSION " (${_tgr_git_sha})")
+endif()
+
 if(APPLE)
   set_target_properties(
     ${CMAKE_PROJECT_NAME}
