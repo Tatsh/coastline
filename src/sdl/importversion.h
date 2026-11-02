@@ -51,6 +51,8 @@ std::vector<ImportSource> StaleImports(const std::filesystem::path &defaults);
 /**
  * Check whether import.ini records the disc and at least one cartridge at current conversion
  * versions, the regional layout is current, and every recorded file exists at its imported size.
+ * Require a complete inventory with a matching record count and SHA-1 digest.
+ * Required converted POD metadata and attract recordings must be available.
  *
  * @param defaults The directory of the default pack.
  * @return Whether the default pack is usable.
@@ -58,7 +60,8 @@ std::vector<ImportSource> StaleImports(const std::filesystem::path &defaults);
 bool DefaultPackUsable(const std::filesystem::path &defaults);
 
 /**
- * Record the relative path and size of every generated file after a successful import.
+ * Atomically record the relative path and size of every generated file after a successful import.
+ * A versioned header records the file count and SHA-1 of the complete inventory body.
  *
  * @param defaults The directory of the default pack.
  * @return Whether the inventory was written.

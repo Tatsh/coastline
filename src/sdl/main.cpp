@@ -893,13 +893,14 @@ int main(int argc, char *argv[]) {
         .flag();
 
     argparse::ArgumentParser import("import", "", argparse::default_arguments::help);
-    import.add_description("Import a Boss Rally disc image and every supplied Top Gear Rally ROM "
+    import.add_description("Import a Boss Rally disc source and every supplied Top Gear Rally ROM "
                            "image as one batch, replacing generated packs and preserving mod "
                            "packs. Both --cd and at least one --rom are required.");
     import.add_argument("--cd")
         .action(RequiredArgumentValue("--cd"))
-        .metavar("FILE")
-        .help("copy Boss Rally data and music from BIN, CUE, ISO, or CloneCD images");
+        .metavar("DISC")
+        .help("copy Boss Rally data from a disc image or mounted disc directory; "
+              "BIN, CUE, and CloneCD images can also provide CD music");
     import.add_argument("--rom")
         .action(RequiredArgumentValue("--rom"))
         .metavar("ROM")

@@ -4,11 +4,15 @@
 #include <array>
 #include <fstream>
 #include <iomanip>
+#include <set>
+#include <sstream>
 #include <string_view>
 #include <system_error>
 
 #include "assetstorage.h"
 #include "config.h"
+#include "savefile.h"
+#include "sha1.h"
 
 namespace coastline {
 
@@ -94,6 +98,7 @@ bool DefaultPackUsable(const std::filesystem::path &defaults) {
         }
     }
     bool segment = false;
+    std::set<std::filesystem::path> logical;
     std::error_code error;
     segment = std::filesystem::is_regular_file(defaults / "n64/base/segment.bin", error);
     for (const char *pack : {"default", "boss", "eur", "jpn"}) {
@@ -102,6 +107,9 @@ bool DefaultPackUsable(const std::filesystem::path &defaults) {
             return false;
         }
         if (std::string_view(pack) == "default") {
+            for (const auto &alias : *aliases) {
+                logical.insert(alias.path);
+            }
             segment = segment || std::ranges::any_of(*aliases, [](const AssetFileAlias &alias) {
                           return alias.path == "n64/base/segment.bin";
                       });
@@ -110,24 +118,58 @@ bool DefaultPackUsable(const std::filesystem::path &defaults) {
     if (!segment || !std::filesystem::is_directory(defaults / "cars", error)) {
         return false;
     }
-    std::ifstream files(defaults / "import-files.txt", std::ios::binary);
+    auto inventory = ReadSaveFile(defaults / "import-files.txt", 16 * 1024 * 1024);
+    if (!inventory) {
+        return false;
+    }
+    std::istringstream files(std::string(inventory->begin(), inventory->end()));
+    std::string magic;
+    std::size_t expectedCount = 0;
+    std::string expectedDigest;
+    if (!(files >> magic >> expectedCount >> expectedDigest) || magic != "Coastline-Import-1" ||
+        expectedCount == 0 || expectedDigest.size() != 40 || files.get() != '\n') {
+        return false;
+    }
+    const auto body = files.tellg();
+    if (Tools::Common::sha1Hex(files) != expectedDigest) {
+        return false;
+    }
+    files.clear();
+    files.seekg(body);
     std::size_t count = 0;
+    std::set<std::filesystem::path> recorded;
     std::string relative;
     std::uintmax_t size = 0;
     while (files >> size >> std::quoted(relative)) {
         if (relative.empty()) {
             files >> std::ws;
-            return files.eof() && count > 0;
+            if (!files.eof() || size != 0 || count != expectedCount) {
+                return false;
+            }
+            for (const auto *required : {"BossRally/pod.json",
+                                         "RallyIntro1.json",
+                                         "RallyIntro2.json",
+                                         "RallyCredits.json",
+                                         "RallyOutro.json"}) {
+                if (!logical.contains(required)) {
+                    return false;
+                }
+            }
+            return true;
         }
         const std::filesystem::path path(std::u8string(relative.begin(), relative.end()));
-        if (path.is_absolute() || path != path.lexically_normal() ||
-            (path.begin() != path.end() && *path.begin() == "..")) {
+        if (path.has_root_path() || path != path.lexically_normal() ||
+            std::ranges::any_of(path, [](const auto &part) { return part == ".."; }) ||
+            relative.find('\0') != std::string::npos || !recorded.insert(path).second) {
             return false;
         }
         std::error_code error;
         if (!std::filesystem::is_regular_file(defaults.parent_path() / path, error) ||
             std::filesystem::file_size(defaults.parent_path() / path, error) != size || error) {
             return false;
+        }
+        if (path.begin() != path.end() && *path.begin() == "default" && size > 0) {
+            logical.insert(path.lexically_relative("default"));
         }
         ++count;
     }
@@ -138,7 +180,11 @@ bool RecordImportFiles(const std::filesystem::path &defaults) {
     const auto manifest = defaults / "import-files.txt";
     std::error_code error;
     std::filesystem::remove(manifest, error);
-    std::ofstream files(manifest, std::ios::binary | std::ios::trunc);
+    if (error) {
+        return false;
+    }
+    std::ostringstream files;
+    std::size_t count = 0;
     for (const char *pack : {"default", "boss", "eur", "jpn"}) {
         const auto directory = defaults.parent_path() / pack;
         if (!std::filesystem::is_directory(directory, error)) {
@@ -146,23 +192,33 @@ bool RecordImportFiles(const std::filesystem::path &defaults) {
         }
         std::filesystem::recursive_directory_iterator entry(directory, error), end;
         while (!error && entry != end) {
-            if (entry->is_regular_file(error) && entry->path() != manifest) {
+            if (entry->is_regular_file(error) && entry->path() != manifest &&
+                entry->path() != defaults / "import-files.txt.lock") {
                 const auto relative =
                     entry->path().lexically_relative(defaults.parent_path()).u8string();
                 const std::string text(relative.begin(), relative.end());
                 files << entry->file_size(error) << ' ' << std::quoted(text) << '\n';
+                ++count;
             }
             entry.increment(error);
         }
         if (error) {
-            files.close();
-            std::filesystem::remove(manifest, error);
             return false;
         }
     }
     files << "0 \"\"\n";
-    files.close();
-    return static_cast<bool>(files);
+    if (!files || count == 0) {
+        return false;
+    }
+    const auto body = files.str();
+    std::istringstream input(body);
+    auto digest = Tools::Common::sha1Hex(input);
+    if (!digest) {
+        return false;
+    }
+    const auto complete =
+        "Coastline-Import-1 " + std::to_string(count) + " " + *digest + "\n" + body;
+    return WriteSaveFile(manifest, complete);
 }
 
 std::string ReimportMessage(std::span<const ImportSource> sources) {

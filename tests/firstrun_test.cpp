@@ -448,6 +448,55 @@ void TestImportFailureAndCancel(const std::filesystem::path &root) {
 }
 } // namespace
 
+void TestRowNavigation(const std::filesystem::path &root) {
+    SetupWizard wizard(Services(root));
+    Key(wizard, WizardKey::Down);
+    Check(wizard.Focus() == Rom1Text, "Down must move from the disc to the first ROM row.");
+    Key(wizard, WizardKey::Down);
+    Check(wizard.Focus() == Rom2Text, "Down must move to the second ROM row.");
+    Key(wizard, WizardKey::Down);
+    Check(wizard.Focus() == Rom3Text, "Down must move to the third ROM row.");
+    Key(wizard, WizardKey::Down);
+    Check(wizard.Focus() == SearchAssets, "Down must enter the bottom button row.");
+    Key(wizard, WizardKey::Up);
+    Check(wizard.Focus() == Rom3Text, "Up must return from buttons to the text fields.");
+    for (int attempt = 0; attempt < 30 && wizard.Focus() != DiscBrowse; ++attempt) {
+        Key(wizard, WizardKey::Tab);
+    }
+    Check(wizard.Focus() == DiscBrowse, "Tab must focus the disc browse button.");
+    Key(wizard, WizardKey::Down);
+    Check(wizard.Focus() == Rom1Browse, "Vertical movement must preserve the browse column.");
+    Click(wizard, DiscBrowse);
+    Key(wizard, WizardKey::End);
+    Key(wizard, WizardKey::Down);
+    Check(wizard.Focus() == BrowserFilter, "Down must exit the final directory entry.");
+    Key(wizard, WizardKey::Down);
+    Check(wizard.Focus() == BrowserOk || wizard.Focus() == BrowserUseDirectory ||
+              wizard.Focus() == BrowserCancel,
+          "Down must enter the browser buttons.");
+    Key(wizard, WizardKey::Up);
+    Check(wizard.Focus() == BrowserFilter, "Up must return to the browser filter.");
+}
+
+void TestDiscDirectory(const std::filesystem::path &root) {
+    std::filesystem::create_directories(root / "disc");
+    std::ofstream(root / "disc" / "BossRally.pod").put('x');
+    auto services = Services(root);
+    services.disc = root / "disc";
+    services.roms[0] = root / "usa.z64";
+    SetupWizard wizard(std::move(services));
+    Check(Enabled(wizard, Next), "A disc directory and ROM must enable Next.");
+    Click(wizard, DiscBrowse);
+    Check(Enabled(wizard, BrowserUseDirectory), "Disc browsing must offer directory selection.");
+    Click(wizard, BrowserUseDirectory);
+    Check(Enabled(wizard, Next), "Selecting the current disc directory must preserve validation.");
+    auto found = SearchWizardDirectory(root / "disc", Services(root), {});
+    Check(found.disc == root / "disc", "Asset search must recognise a mounted disc directory.");
+    Set(wizard, DiscText, Utf8FromPath(root / "Alpha"));
+    Check(!Enabled(wizard, Next), "An unrelated directory must not enable Next.");
+    std::filesystem::remove_all(root / "disc");
+}
+
 int main() {
     auto root = std::filesystem::temp_directory_path() /
                 ("coastline-firstrun-" +
@@ -468,6 +517,8 @@ int main() {
             std::ofstream(root / name).put('x');
         }
         TestCombinations(root);
+        TestRowNavigation(root);
+        TestDiscDirectory(root);
         TestRestoredPaths(root);
         TestRepositoryLink(root);
         TestReimport(root);

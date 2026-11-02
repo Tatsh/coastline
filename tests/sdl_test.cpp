@@ -209,6 +209,13 @@ void CheckImportInventory() {
     const auto defaults = root / "default";
     std::filesystem::remove_all(root);
     WriteText(defaults / "cars" / "model.gltf", "model");
+    for (const auto *file : {"BossRally/pod.json",
+                             "RallyIntro1.json",
+                             "RallyIntro2.json",
+                             "RallyCredits.json",
+                             "RallyOutro.json"}) {
+        WriteText(defaults / file, "{}");
+    }
     WriteText(defaults / "n64" / "base" / "segment.bin", "segment");
     WriteText(defaults / "n64/base/cartridge.ini", "[Cartridge]\nRegion=eur\n");
     WriteText(defaults / "import.ini", "[Import]\nLayout=1\nBaseRegion=eur\n");
@@ -217,6 +224,18 @@ void CheckImportInventory() {
     Check(!coastline::DefaultPackUsable(defaults), "an unfinished import must be refused");
     Check(coastline::RecordImportFiles(defaults), "record imported files");
     Check(coastline::DefaultPackUsable(defaults), "a complete import must be usable");
+    const auto inventory = ReadText(defaults / "import-files.txt");
+    WriteText(defaults / "import-files.txt", inventory.substr(0, inventory.size() - 5));
+    Check(!coastline::DefaultPackUsable(defaults), "a truncated inventory must be refused");
+    auto modified = inventory;
+    modified[modified.find('\n') + 1] = '9';
+    WriteText(defaults / "import-files.txt", modified);
+    Check(!coastline::DefaultPackUsable(defaults), "an altered inventory must be refused");
+    modified = inventory;
+    modified[modified.find(' ') + 1] = '9';
+    WriteText(defaults / "import-files.txt", modified);
+    Check(!coastline::DefaultPackUsable(defaults), "an incorrect file count must be refused");
+    WriteText(defaults / "import-files.txt", inventory);
     const auto originalRecord = ReadText(defaults / "import.ini");
     auto record = coastline::GameConfig::Load(defaults / "import.ini");
     record.Set("Import", "Layout", "0");
@@ -235,6 +254,12 @@ void CheckImportInventory() {
     WriteText(defaults / "import.ini", originalRecord);
     coastline::RecordImportFiles(defaults);
     Check(coastline::DefaultPackUsable(defaults), "restored metadata is usable");
+    std::filesystem::remove(defaults / "RallyIntro1.json");
+    coastline::RecordImportFiles(defaults);
+    Check(!coastline::DefaultPackUsable(defaults),
+          "a complete inventory without a required converted recording must be refused");
+    WriteText(defaults / "RallyIntro1.json", "{}");
+    coastline::RecordImportFiles(defaults);
     WriteText(defaults / "cars" / "model.gltf", "truncated");
     Check(!coastline::DefaultPackUsable(defaults), "a changed file size must be refused");
     WriteText(defaults / "cars" / "model.gltf", "model");
@@ -620,6 +645,13 @@ void CheckAssetData() {
     auto make = [](const std::filesystem::path &data) {
         const auto assets = coastline::DefaultAssets(data);
         WriteText(assets / "cars" / "model.gltf", "model");
+        for (const auto *file : {"BossRally/pod.json",
+                                 "RallyIntro1.json",
+                                 "RallyIntro2.json",
+                                 "RallyCredits.json",
+                                 "RallyOutro.json"}) {
+            WriteText(assets / file, "{}");
+        }
         WriteText(assets / "n64" / "base" / "segment.bin", "segment");
         WriteText(assets / "n64/base/cartridge.ini", "[Cartridge]\nRegion=eur\n");
         WriteText(assets / "import.ini", "[Import]\nLayout=1\nBaseRegion=eur\n");
@@ -802,13 +834,21 @@ int main() {
 
     auto config = coastline::GameConfig::Parse("; comment\r\n[Video]\r\nDriver=D3D\r\n"
                                                "Width = 1920\r\n\r\n[game]\r\nPlayMusic=0\r\n"
-                                               "PlaySFX=yes\r\nbroken\r\nWidth=wide\r\n");
+                                               "PlaySFX=yes\r\nWidth=wide\r\n");
     Check(config.Get("video", "DRIVER") == "D3D", "names compare without case");
     Check(config.GetInteger("Video", "Width", 0) == 1920, "values are trimmed");
     Check(!config.GetBoolean("Game", "PlayMusic", true), "0 is false");
     Check(config.GetBoolean("Game", "PlaySFX", false), "yes is true");
     Check(config.GetInteger("Game", "Width", 7) == 7, "a malformed number gives the fallback");
-    Check(!config.Get("Game", "broken"), "a line without = is skipped");
+    Check(!coastline::GameConfig::Parse("[Video]\nWidth=1920\nbroken\n").Get("Video", "Width"),
+          "malformed configuration resets every value");
+    Check(!coastline::GameConfig::Parse("[Video\nWidth=1920\n").Get("Video", "Width"),
+          "a truncated section header resets configuration");
+    Check(!coastline::GameConfig::Parse("[Video]\nWidth=1920\nX=\xc0\x80\n").Get("Video", "Width"),
+          "invalid UTF-8 resets configuration");
+    Check(coastline::GameConfig::Parse("[Paths]\nSource=é 日本 😀\n").Get("Paths", "Source") ==
+              "é 日本 😀",
+          "valid UTF-8 paths remain unchanged");
     config.Set("Video", "driver", "SDL");
     Check(config.Get("Video", "Driver") == "SDL", "Set replaces the key of any case");
 

@@ -100,11 +100,12 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
 
 /**
  * Copy the files of the Boss Rally disc the game opens to @p dataDirectory, and its CD audio tracks
- * as music/trackNN.flac. An ISO image has no audio tracks, and only the files are copied. The icon
+ * as music/trackNN.flac. An ISO image or mounted disc directory provides only data files. The icon
  * Boss.ico moves to icon/coastline.ico, beside a PNG image of each of its sizes.
  *
- * @param disc A CUE sheet, ISO, BIN, numbered Track NN.bin file, or CloneCD image. Adjacent CUE
- * metadata precedes known-dump and discovered BIN layouts. Uncertain audio layouts import data
+ * @param disc A mounted disc directory, CUE sheet, ISO, BIN, numbered Track NN.bin file, or CloneCD
+ * image. Adjacent CUE metadata precedes known-dump and discovered BIN layouts. Uncertain audio
+ * layouts import data
  * only.
  * @param dataDirectory The directory of the pack to write, assets/default of the data directory.
  * @param progress Called as each file and track is written, or empty.
@@ -115,10 +116,9 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
                                                    const ImportProgress &progress);
 
 /**
- * Check that a disc image is one ImportDisc() reads and that its data track has the files of Boss
- * Rally, without copying them.
+ * Check that a disc image or directory provides Boss Rally files without copying them.
  *
- * @param disc A CUE sheet, ISO, BIN, numbered Track NN.bin file, or CloneCD image.
+ * @param disc A mounted disc directory, CUE sheet, ISO, BIN, numbered track file, or CloneCD image.
  * @return Why the disc cannot be imported, or nothing.
  */
 std::optional<std::string> CheckDisc(const std::filesystem::path &disc);

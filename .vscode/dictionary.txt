@@ -460,6 +460,11 @@ fehdrau
 fenv
 ffreestanding
 ffunction
+fileflags
+fileflagsmask
+fileos
+filesubtype
+fileversion
 filewrite
 finalrom
 finetune
@@ -591,6 +596,7 @@ iconutil
 icsum
 idok
 idxgi
+ifdef
 ilse
 imaadpcmstream
 imaadpcmwaveformat
@@ -826,6 +832,7 @@ monitr
 monkeyboy
 motorstartbuf
 motorstopbuf
+mountpoint
 mousinpt
 mpal
 mpmodem
@@ -858,6 +865,7 @@ nicolle
 nlohmann
 noadv
 noat
+nobrowse
 noffstik
 noias
 noload
@@ -902,7 +910,6 @@ outfun
 overlappedwindow
 pacboy
 packedvalue
-paintable
 paintshop
 painttex
 pakmenu
@@ -983,6 +990,7 @@ primarybuffer
 primarysurface
 primitivetype
 probetlb
+productversion
 profileinit
 psapi
 psdk
@@ -1045,6 +1053,7 @@ rdploadsync
 rdppipesync
 rdptilesync
 rdram
+readlink
 rearload
 rearsliding
 reartex
@@ -1421,6 +1430,7 @@ vehiclevisibility
 vehprofile
 vendored
 venv
+versioninfo
 vertexelementformat
 vertexinputrate
 viblack

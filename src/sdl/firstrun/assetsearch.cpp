@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <array>
+#include <cctype>
 #include <system_error>
 
 #include "setupwizard.h"
@@ -28,9 +29,18 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
         if (!report("Looking in " + Utf8FromPath(entry->path().parent_path()), 0.0)) {
             return result;
         }
-        if (entry->is_regular_file(error) &&
-            std::ranges::contains(extensions, LowercaseExtension(entry->path()))) {
-            candidates.push_back(entry->path());
+        if (entry->is_regular_file(error)) {
+            if (std::ranges::contains(extensions, LowercaseExtension(entry->path()))) {
+                candidates.push_back(entry->path());
+            } else if (LowercaseExtension(entry->path()) == ".pod") {
+                std::string filename = entry->path().filename().string();
+                std::ranges::transform(filename, filename.begin(), [](unsigned char c) {
+                    return static_cast<char>(std::tolower(c));
+                });
+                if (filename == "bossrally.pod") {
+                    candidates.push_back(entry->path().parent_path());
+                }
+            }
         }
         entry.increment(error);
         if (error) {
@@ -70,6 +80,10 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
                             (static_cast<double>(result.examined) + part) /
                                 static_cast<double>(std::max<std::size_t>(result.candidates, 1)));
                     });
+            }
+        } else if (std::filesystem::is_directory(path, error)) {
+            if (result.disc.empty() && !services.checkDisc(path)) {
+                result.disc = path;
             }
         } else if (extension == ".cue" || extension == ".iso" || extension == ".bin" ||
                    extension == ".ccd" || extension == ".img") {

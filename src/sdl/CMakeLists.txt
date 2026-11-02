@@ -246,6 +246,7 @@ add_library(
   runscript.cpp
   runtimebuffers.cpp
   scenerenderer.cpp
+  savefile.cpp
   session.cpp
   stringresources.cpp
   trackload.cpp

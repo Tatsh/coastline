@@ -92,6 +92,13 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         return std::unexpected("Cancelled.");
     }
     Write(defaults / "cars" / "model.dat", "disc");
+    for (const auto *file : {"BossRally/pod.json",
+                             "RallyIntro1.json",
+                             "RallyIntro2.json",
+                             "RallyCredits.json",
+                             "RallyOutro.json"}) {
+        Write(defaults / file, "{}");
+    }
     std::filesystem::create_directories(defaults / "empty" / "nested");
     return 1;
 }

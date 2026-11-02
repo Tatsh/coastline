@@ -8,6 +8,7 @@
 #include <system_error>
 
 #include "common/rle.h"
+#include "savefile.h"
 
 namespace coastline {
 
@@ -141,27 +142,14 @@ std::optional<std::vector<u8>> GhostFramesFor(std::span<const u8> file,
 bool SaveGhostFrames(const std::filesystem::path &path,
                      std::span<const u8> recording,
                      std::span<const u8> frames) {
-    std::error_code error;
-    std::filesystem::create_directories(path.parent_path(), error);
     auto file = PackGhostFrames(recording, frames);
-    std::ofstream out(path, std::ios::binary | std::ios::trunc);
-    out.write(reinterpret_cast<const char *>(file.data()),
-              static_cast<std::streamsize>(file.size()));
-    return static_cast<bool>(out);
+    return WriteSaveFile(path, file);
 }
 
 std::optional<std::vector<u8>> LoadGhostFrames(const std::filesystem::path &path,
                                                std::span<const u8> recording) {
-    std::error_code error;
-    if (!std::filesystem::is_regular_file(path, error)) {
-        return std::nullopt;
-    }
-    std::ifstream in(path, std::ios::binary);
-    if (!in) {
-        return std::nullopt;
-    }
-    std::vector<u8> file((std::istreambuf_iterator<char>(in)), std::istreambuf_iterator<char>());
-    return GhostFramesFor(file, recording);
+    const auto file = ReadSaveFile(path, 64 * 1024 * 1024);
+    return file ? GhostFramesFor(*file, recording) : std::nullopt;
 }
 
 } // namespace coastline

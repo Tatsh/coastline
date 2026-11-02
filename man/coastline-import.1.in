@@ -10,8 +10,8 @@ coastline-import \- convert game disc and ROM assets for Coastline
 .I ROM
 .RI [ "\-\-rom ROM" ...]
 .SH DESCRIPTION
-Import a Boss Rally disc image together with at least one supported Top Gear
-Rally ROM.
+Import a Boss Rally disc image or mounted disc directory with at least one
+supported Top Gear Rally ROM.
 Both the disc and a ROM are required.
 ROM images are identified by SHA-1 after normalising their byte order.
 USA, European, and Japanese releases can be imported in one batch.
@@ -23,6 +23,8 @@ Original game files must be supplied by the user.
 .TP
 .BI \-\-cd " DISC"
 Read a Boss Rally CUE sheet, ISO, Mode 1 BIN, numbered track file, or CloneCD image.
+A directory can be the root of a mounted physical disc or a copy of its files.
+Directory sources import data without CD audio.
 A BIN image uses a matching adjacent CUE sheet when available.
 Without a CUE sheet, known whole-file SHA-1 digests select verified track offsets.
 Other BIN images use sector headers and audio pregaps to discover a layout.

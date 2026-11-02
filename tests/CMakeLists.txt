@@ -463,6 +463,23 @@ target_compile_options(mipscpu_test PRIVATE -Wall -Wextra -ffp-contract=off
 target_link_options(mipscpu_test PRIVATE -fsanitize=address,undefined)
 add_test(NAME mipscpu COMMAND mipscpu_test)
 
+add_library(savefile_test_support STATIC "${_src}/sdl/savefile.cpp"
+             "${CMAKE_SOURCE_DIR}/tools/common/sha1.cpp")
+set_target_properties(savefile_test_support PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(savefile_test_support PUBLIC "${_src}/sdl"
+                            "${CMAKE_SOURCE_DIR}/tools/common")
+target_compile_options(savefile_test_support PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(savefile_test_support INTERFACE -fsanitize=address,undefined)
+foreach(_target IN ITEMS sdl_test sdl_paths_fixed_test gamesettings_test assetimport_test
+                          assetstorage_test ghostnote_test)
+  target_link_libraries(${_target} PRIVATE savefile_test_support)
+endforeach()
+add_executable(savefile_test savefile_test.cpp)
+set_target_properties(savefile_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_compile_options(savefile_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_libraries(savefile_test PRIVATE savefile_test_support)
+add_test(NAME savefile COMMAND savefile_test)
+
 # The test of zlib inflates the assets extracted from a ROM, so it runs only when they are given.
 set(TGR_TEST_ASSETS
     ""

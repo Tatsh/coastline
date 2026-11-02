@@ -9,9 +9,44 @@
 #include <ranges>
 #include <sstream>
 
+#include "savefile.h"
+
 namespace coastline {
 
 namespace {
+
+bool ValidUtf8(std::string_view text) {
+    for (std::size_t at = 0; at < text.size();) {
+        const auto first = static_cast<unsigned char>(text[at++]);
+        if (first < 0x80) {
+            if (first == 0 || (first < 0x20 && first != '\t' && first != '\r' && first != '\n')) {
+                return false;
+            }
+            continue;
+        }
+        const int following = first >= 0xc2 && first <= 0xdf ? 1 :
+                              first >= 0xe0 && first <= 0xef ? 2 :
+                              first >= 0xf0 && first <= 0xf4 ? 3 :
+                                                               0;
+        if (following == 0 || static_cast<std::size_t>(following) > text.size() - at) {
+            return false;
+        }
+        std::uint32_t point = first & (0x3fu >> following);
+        for (int count = 0; count < following; ++count) {
+            const auto byte = static_cast<unsigned char>(text[at++]);
+            if ((byte & 0xc0) != 0x80) {
+                return false;
+            }
+            point = point << 6 | (byte & 0x3f);
+        }
+        if ((following == 1 && point < 0x80) || (following == 2 && point < 0x800) ||
+            (following == 3 && point < 0x10000) || point > 0x10ffff ||
+            (point >= 0xd800 && point <= 0xdfff)) {
+            return false;
+        }
+    }
+    return true;
+}
 
 std::string_view Trim(std::string_view text) {
     auto isSpace = [](unsigned char c) { return std::isspace(c) != 0; };
@@ -48,17 +83,21 @@ bool GameConfig::CaseInsensitiveLess::operator()(std::string_view left,
 }
 
 GameConfig GameConfig::Load(const std::filesystem::path &path) {
-    std::ifstream file(path, std::ios::binary);
+    const auto file = ReadSaveFile(path, 16 * 1024 * 1024);
     if (!file) {
         return {};
     }
-    std::ostringstream text;
-    text << file.rdbuf();
-    return Parse(text.str());
+    return Parse({reinterpret_cast<const char *>(file->data()), file->size()});
 }
 
 GameConfig GameConfig::Parse(std::string_view text) {
     GameConfig config;
+    if (!ValidUtf8(text)) {
+        return {};
+    }
+    if (text.starts_with("\xef\xbb\xbf")) {
+        text.remove_prefix(3);
+    }
     std::string section;
     for (auto range : text | std::views::split('\n')) {
         auto line = Trim(std::string_view(range.begin(), range.end()));
@@ -67,13 +106,23 @@ GameConfig GameConfig::Parse(std::string_view text) {
         }
         if (line.front() == '[') {
             auto end = line.find(']');
+            if (end == std::string_view::npos) {
+                return {};
+            }
+            const auto tail = Trim(line.substr(end + 1));
+            if (!tail.empty() && tail.front() != ';' && tail.front() != '#') {
+                return {};
+            }
             section = std::string(Trim(
                 line.substr(1, end == std::string_view::npos ? std::string_view::npos : end - 1)));
             continue;
         }
         auto equals = line.find('=');
         if (equals == std::string_view::npos) {
-            continue;
+            return {};
+        }
+        if (Trim(line.substr(0, equals)).empty()) {
+            return {};
         }
         config.Set(
             section, Trim(line.substr(0, equals)), std::string(Trim(line.substr(equals + 1))));
@@ -82,10 +131,7 @@ GameConfig GameConfig::Parse(std::string_view text) {
 }
 
 bool GameConfig::Save(const std::filesystem::path &path) const {
-    std::ofstream file(path, std::ios::binary | std::ios::trunc);
-    if (!file) {
-        return false;
-    }
+    std::ostringstream file;
     bool first = true;
     for (const auto &[name, values] : m_sections) {
         if (!first) {
@@ -97,7 +143,7 @@ bool GameConfig::Save(const std::filesystem::path &path) const {
             file << key << '=' << value << "\r\n";
         }
     }
-    return static_cast<bool>(file);
+    return WriteSaveFile(path, file.str());
 }
 
 std::optional<std::string> GameConfig::Get(std::string_view section, std::string_view key) const {

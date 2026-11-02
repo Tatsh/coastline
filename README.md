@@ -611,6 +611,16 @@ identify audio pregaps. Audio discovery requires all 12 music tracks and suffici
 uncertain layouts import data only. A complete set of `Track NN.bin` files also imports without a
 CUE sheet. CloneCD uses its track metadata; `.sub` data is not required.
 
+The `--cd` option also accepts a directory, including a mounted physical disc or a copy of its
+files. Select the disc root with `BossRally.pod` directly inside it. In setup, enter its path or
+browse into the disc and select **Use this directory**. Recursive asset search also detects disc
+directories. Mounted directories provide data files without CD audio; use CUE/BIN for CD music.
+
+Import validates required disc files before conversion and publishes generated packs after every
+conversion succeeds. A completed inventory records file sizes, a file count, and an inventory
+checksum. Startup rejects incomplete inventories and missing or truncated imported files, and
+offers re-import or quit before loading game assets.
+
 Supply the disc and every ROM image in the same command. A successful import replaces generated
 packs (`default`, `boss`, `eur`, and `jpn`) and preserves mod packs. Failed or cancelled conversions
 preserve the previous assets. USA is the base when supplied; otherwise the first ROM is the base.

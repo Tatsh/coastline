@@ -327,7 +327,7 @@ std::vector<WizardControl> SetupWizard::ScreenControls() const {
     };
     switch (m_screen) {
     case WizardScreen::Files:
-        textBox(WizardControlId::DiscText, "Boss Rally &disc image:", DIALOG_ROW + 5);
+        textBox(WizardControlId::DiscText, "Boss Rally &disc image or directory:", DIALOG_ROW + 5);
         controls.push_back(
             MakeButton(WizardControlId::DiscBrowse, "&Browse...", BROWSE_COLUMN, DIALOG_ROW + 5));
         controls.push_back(
@@ -420,6 +420,10 @@ std::vector<WizardControl> SetupWizard::BrowserControls() const {
     std::size_t first = controls.size();
     controls.push_back(MakeButton(
         WizardControlId::BrowserOk, directory ? "&Use this directory" : "&OK", 0, BUTTON_ROW));
+    if (m_browser->target == WizardControlId::DiscText) {
+        controls.push_back(
+            MakeButton(WizardControlId::BrowserUseDirectory, "&Use this directory", 0, BUTTON_ROW));
+    }
     controls.push_back(MakeButton(WizardControlId::BrowserCancel, "&Cancel", 0, BUTTON_ROW));
     CentreButtons(controls, first);
     return controls;
@@ -482,6 +486,35 @@ void SetupWizard::MoveFocus(bool backward) {
     focus = enabled[static_cast<std::size_t>(index)].id;
 }
 
+void SetupWizard::MoveFocusRow(bool upward) {
+    const auto controls = Controls();
+    const auto current = std::ranges::find(
+        controls, Focus(), [](const auto &control) { return std::optional(control.id); });
+    if (current == controls.end()) {
+        FocusFirst();
+        return;
+    }
+    const WizardControl *next = nullptr;
+    for (const auto &candidate : controls) {
+        if (!candidate.enabled ||
+            (upward ? candidate.row >= current->row : candidate.row <= current->row)) {
+            continue;
+        }
+        if (!next || std::abs(candidate.row - current->row) < std::abs(next->row - current->row) ||
+            (candidate.row == next->row && std::abs(candidate.column - current->column) <
+                                               std::abs(next->column - current->column))) {
+            next = &candidate;
+        }
+    }
+    if (next) {
+        FocusSlot() = next->id;
+    } else if (std::ranges::none_of(controls, [&](const auto &candidate) {
+                   return candidate.enabled && candidate.row != current->row;
+               })) {
+        MoveFocus(upward);
+    }
+}
+
 void SetupWizard::SetScreen(WizardScreen screen) {
     m_screen = screen;
     if (screen == WizardScreen::Files) {
@@ -526,8 +559,11 @@ void SetupWizard::Validate(WizardControlId id, bool force) {
         field.reason = !field.text.empty() && !field.valid ? "Directory not found." : "";
         return;
     }
-    const bool exists = !field.text.empty() && std::filesystem::is_regular_file(path, error);
-    std::uintmax_t size = exists ? std::filesystem::file_size(path, error) : 0;
+    const bool directory =
+        id == WizardControlId::DiscText && std::filesystem::is_directory(path, error);
+    const bool exists =
+        !field.text.empty() && (directory || std::filesystem::is_regular_file(path, error));
+    std::uintmax_t size = exists && !directory ? std::filesystem::file_size(path, error) : 0;
     auto time =
         exists ? std::filesystem::last_write_time(path, error) : std::filesystem::file_time_type{};
     if (!force && field.checkedOnce && field.checked == field.text && field.size == size &&
@@ -550,8 +586,8 @@ void SetupWizard::Validate(WizardControlId id, bool force) {
     }
     int index = CartridgeIndex(id);
     if (index < 0) {
-        if (!std::ranges::contains(DISC_EXTENSIONS, LowercaseExtension(path))) {
-            field.reason = "Not a disc image (.bin, .ccd, .cue, .img, or .iso)";
+        if (!directory && !std::ranges::contains(DISC_EXTENSIONS, LowercaseExtension(path))) {
+            field.reason = "Not a disc image or directory";
             return;
         }
         if (auto failure = m_services.checkDisc(path)) {
@@ -634,8 +670,8 @@ void SetupWizard::OpenSelected() {
 }
 
 void SetupWizard::ChooseDirectory() {
-    SetText(WizardControlId::SearchText, m_browser->directory);
-    m_screenFocus = WizardControlId::SearchText;
+    SetText(m_browser->target, m_browser->directory);
+    m_screenFocus = m_browser->target;
     m_browser.reset();
 }
 
@@ -899,6 +935,9 @@ void SetupWizard::Activate(WizardControlId id) {
         break;
     case WizardControlId::BrowserCancel:
         m_browser.reset();
+        break;
+    case WizardControlId::BrowserUseDirectory:
+        ChooseDirectory();
         break;
     case WizardControlId::BrowserFilter:
         m_browser->allFiles = !m_browser->allFiles;
@@ -1293,6 +1332,17 @@ void SetupWizard::Handle(const WizardEvent &event) {
     case WizardKey::Tab:
         MoveFocus(event.shift);
         return;
+    case WizardKey::Up:
+    case WizardKey::Down:
+        if (control && kind == WizardControl::Kind::List && m_browser &&
+            ((event.key == WizardKey::Up && m_browser->selected > 0) ||
+             (event.key == WizardKey::Down &&
+              m_browser->selected + 1 < static_cast<int>(m_browser->entries.size())))) {
+            HandleListKey(event.key);
+        } else {
+            MoveFocusRow(event.key == WizardKey::Up);
+        }
+        return;
     case WizardKey::Escape:
         Escape();
         return;
@@ -1375,6 +1425,7 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
         }
         case WizardControl::Kind::TextBox: {
             const TextField &field = Field(control.id);
+            std::error_code directoryError;
             CgaColor labelColor = control.bad ? LightRed : LightGray;
             WriteLabel(
                 grid, control.column, control.row - 1, control.label, labelColor, Blue, White);
@@ -1419,11 +1470,14 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
                     LightGray,
                     Blue);
             } else if (control.id == WizardControlId::DiscText && field.valid &&
-                       LowercaseExtension(
-                           ResolveUserPath(EncodeUtf8(field.text), m_services.home)) == ".iso") {
+                       (LowercaseExtension(
+                            ResolveUserPath(EncodeUtf8(field.text), m_services.home)) == ".iso" ||
+                        std::filesystem::is_directory(
+                            ResolveUserPath(EncodeUtf8(field.text), m_services.home),
+                            directoryError))) {
                 grid.WriteUtf8(control.column,
                                control.row + 1,
-                               "ISO images do not include PC music.",
+                               "ISO images and directories omit CD music.",
                                LightGray,
                                Blue);
             }
@@ -1523,7 +1577,7 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
         dialog("Import required");
         int row = writeLines(DIALOG_ROW + 2, m_services.reimportReason, White);
         row = writeLines(row + 1,
-                         "Start setup to select your Boss Rally BIN/CUE/ISO and at least one "
+                         "Start setup to select your Boss Rally disc source and at least one "
                          "Top Gear Rally ROM image.",
                          LightGray);
         writeLines(row + 1, "You can also quit and run setup later.", LightGray);
@@ -1533,7 +1587,7 @@ void SetupWizard::Draw(TextGrid &grid, double seconds) const {
     case WizardScreen::Files:
         dialog("Step 1 of 3: Game files");
         writeLines(DIALOG_ROW + 2,
-                   "Required: Boss Rally BIN/CUE/ISO and at least one N64 ROM image.",
+                   "Required: Boss Rally disc image/directory and at least one ROM.",
                    LightGray);
         status = " <Tab=Next Field>  <Alt+Letter=Choose>  <Enter=Next>  <Esc=Quit>";
         break;

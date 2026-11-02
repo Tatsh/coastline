@@ -235,7 +235,7 @@ std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
                                              std::span<const std::filesystem::path> roms,
                                              const ImportProgress &progress) {
     if (disc.empty() || roms.empty()) {
-        return "Import requires a Boss Rally disc image and at least one Top Gear Rally ROM "
+        return "Import requires a Boss Rally disc source and at least one Top Gear Rally ROM "
                "image. Use coastline import --cd DISC --rom ROM.";
     }
     if (auto failure = CheckDisc(disc)) {
@@ -344,6 +344,13 @@ std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
         }
         if (auto failure = WriteMetadata(defaults, inputs.front().release)) {
             return failure;
+        }
+        for (const auto &entry :
+             std::filesystem::recursive_directory_iterator(defaults.parent_path())) {
+            const auto filename = entry.path().filename();
+            if (filename == "import.ini.lock" || filename == "cartridge.ini.lock") {
+                std::filesystem::remove(entry.path());
+            }
         }
         auto storage = DeduplicateAssetFiles(defaults);
         if (!storage) {

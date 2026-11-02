@@ -188,6 +188,7 @@ struct IsoEntry {
     std::filesystem::path path;
     std::uint32_t extent = 0;
     std::uint32_t size = 0;
+    std::filesystem::path source;
 };
 
 std::string DecodeName(const std::uint8_t *name, std::size_t length, bool joliet) {
@@ -259,7 +260,7 @@ bool ListDirectory(SectorReader &reader,
                     return false;
                 }
             } else {
-                entries.push_back({path, childExtent, childSize});
+                entries.push_back({path, childExtent, childSize, {}});
             }
         }
         offset += length;
@@ -2404,7 +2405,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
                                         FrontEndModelToGltf,
                                         std::filesystem::path(model).replace_extension(".gltf"),
                                         model.parent_path() / (stem + "-mesh.bin"))) {
-            SDL_Log("%s", failure->c_str());
+            return std::unexpected(*failure);
         }
     }
     std::error_code error;
@@ -2445,7 +2446,113 @@ struct DiscContents {
     std::vector<IsoEntry> entries;
 };
 
+std::optional<std::string> MissingDiscFiles(const DiscContents &contents) {
+    const auto present = [&](const std::filesystem::path &path) {
+        return std::ranges::any_of(contents.entries, [&](const IsoEntry &entry) {
+            return Lowercase(entry.path.generic_string()) == path.generic_string();
+        });
+    };
+    for (const auto *file : {"bossrally.pod",
+                             "brstring.dll",
+                             "rallycredits.dat",
+                             "rallyintro1.dat",
+                             "rallyintro2.dat",
+                             "rallyoutro.dat"}) {
+        if (!present(file)) {
+            return fmt::format("Incomplete Boss Rally disc source. Missing {}.", file);
+        }
+    }
+    for (const auto *car : {"bb",
+                            "ce",
+                            "cu",
+                            "es",
+                            "hm",
+                            "ip",
+                            "ld",
+                            "m3",
+                            "mn",
+                            "mt",
+                            "ns",
+                            "pj",
+                            "ps",
+                            "rs",
+                            "sp",
+                            "tr"}) {
+        const auto path = std::filesystem::path("cars") / (std::string(car) + ".rca");
+        if (!present(path)) {
+            return fmt::format("Incomplete Boss Rally disc source. Missing {}.", path.string());
+        }
+    }
+    for (const auto *track :
+         {"amazon", "bonus", "coast", "desert", "gamewin", "mine", "mountain", "race"}) {
+        const auto path = std::filesystem::path("tracks") / (std::string(track) + ".trk");
+        if (!present(path)) {
+            return fmt::format("Incomplete Boss Rally disc source. Missing {}.", path.string());
+        }
+    }
+    for (const auto *directory : {"cargfx", "paint", "sfx"}) {
+        if (std::ranges::none_of(contents.entries, [&](const IsoEntry &entry) {
+                return Lowercase(entry.path.begin()->string()) == directory;
+            })) {
+            return fmt::format("Incomplete Boss Rally disc source. Missing {} files.", directory);
+        }
+    }
+    return std::nullopt;
+}
+
 std::expected<DiscContents, std::string> ReadDiscContents(const std::filesystem::path &disc) {
+    std::error_code error;
+    if (std::filesystem::is_directory(disc, error)) {
+        DiscContents contents;
+        std::filesystem::recursive_directory_iterator entry(disc, error), end;
+        while (!error && entry != end) {
+            const auto path = entry->path().lexically_relative(disc);
+            if (entry->is_symlink(error)) {
+                entry.disable_recursion_pending();
+            } else if (entry->is_directory(error)) {
+                if (entry.depth() >= 8 || !IsGameData(path / "_")) {
+                    entry.disable_recursion_pending();
+                }
+            } else if (entry->is_regular_file(error) && IsGameData(path)) {
+                std::filesystem::path destination;
+                for (const auto &part : path) {
+                    if (destination.empty()) {
+                        const auto first = Lowercase(part.string());
+                        destination = first == "paint" ? "Paint" : first;
+                    } else {
+                        destination /= part;
+                    }
+                }
+                for (const auto *root : {"BossRally.pod",
+                                         "Boss.ico",
+                                         "BRString.dll",
+                                         "RallyCredits.dat",
+                                         "RallyIntro1.dat",
+                                         "RallyIntro2.dat",
+                                         "RallyOutro.dat"}) {
+                    if (destination == Lowercase(root)) {
+                        destination = root;
+                        break;
+                    }
+                }
+                contents.entries.push_back({destination, 0, 0, entry->path()});
+            }
+            if (!error) {
+                entry.increment(error);
+            }
+        }
+        if (error) {
+            return std::unexpected(
+                fmt::format("{} cannot be read: {}.", disc.string(), error.message()));
+        }
+        if (std::ranges::none_of(contents.entries, [](const IsoEntry &entry) {
+                return Lowercase(entry.path.filename().string()) == "bossrally.pod";
+            })) {
+            return std::unexpected("The directory is missing BossRally.pod.");
+        }
+        std::ranges::sort(contents.entries, {}, &IsoEntry::path);
+        return contents;
+    }
     auto layout = ReadDiscTracks(disc);
     if (!layout) {
         return std::unexpected(layout.error());
@@ -2481,7 +2588,7 @@ std::optional<std::string> CheckDisc(const std::filesystem::path &disc) {
     if (!contents) {
         return contents.error();
     }
-    return std::nullopt;
+    return MissingDiscFiles(*contents);
 }
 
 std::expected<RomRelease, std::string> IdentifyRomFile(const std::filesystem::path &image) {
@@ -2502,10 +2609,16 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
     if (!contents) {
         return std::unexpected(contents.error());
     }
+    if (auto failure = MissingDiscFiles(*contents)) {
+        return std::unexpected(*failure);
+    }
     const std::vector<CueTrack> &tracks = contents->tracks;
     const std::vector<IsoEntry> &entries = contents->entries;
-    std::ifstream dataFile(contents->data.file, std::ios::binary);
-    if (!dataFile) {
+    std::ifstream dataFile;
+    if (!contents->data.file.empty()) {
+        dataFile.open(contents->data.file, std::ios::binary);
+    }
+    if (!contents->data.file.empty() && !dataFile) {
         return std::unexpected(fmt::format("{} cannot be read.", contents->data.file.string()));
     }
     SectorReader reader(dataFile, contents->data.sectorSize, contents->data.firstSector);
@@ -2524,8 +2637,30 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
             return cancelled;
         }
         ++done;
-        if (auto failure = CopyIsoFile(reader, entry, dataDirectory / entry.path)) {
-            return std::unexpected(*failure);
+        if (entry.source.empty()) {
+            if (auto failure = CopyIsoFile(reader, entry, dataDirectory / entry.path)) {
+                return std::unexpected(*failure);
+            }
+        } else {
+            std::error_code error;
+            const auto destination = dataDirectory / entry.path;
+            std::filesystem::create_directories(destination.parent_path(), error);
+            if (!error) {
+                std::filesystem::copy_file(entry.source,
+                                           destination,
+                                           std::filesystem::copy_options::overwrite_existing,
+                                           error);
+            }
+            if (!error) {
+                std::filesystem::permissions(destination,
+                                             std::filesystem::perms::owner_write,
+                                             std::filesystem::perm_options::add,
+                                             error);
+            }
+            if (error) {
+                return std::unexpected(
+                    fmt::format("Cannot copy {}: {}.", entry.source.string(), error.message()));
+            }
         }
         std::string name = Lowercase(entry.path.filename().string());
         std::optional<std::string> failure;
@@ -2572,6 +2707,17 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
             return std::unexpected(*failure);
         }
         ++written;
+    }
+    for (const auto *file : {"BossRally/pod.json",
+                             "RallyIntro1.json",
+                             "RallyIntro2.json",
+                             "RallyCredits.json",
+                             "RallyOutro.json"}) {
+        std::error_code error;
+        if (!std::filesystem::is_regular_file(dataDirectory / file, error) ||
+            std::filesystem::file_size(dataDirectory / file, error) == 0 || error) {
+            return std::unexpected(fmt::format("Incomplete disc conversion. Missing {}.", file));
+        }
     }
     if (progress) {
         progress("done", 1.0);

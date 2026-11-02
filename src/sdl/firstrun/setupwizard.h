@@ -44,7 +44,7 @@ std::optional<WizardCartridge> BaseCartridge(const std::array<bool, WIZARD_CARTR
 
 /** The files an import of the wizard reads. */
 struct WizardImport {
-    std::filesystem::path disc; /*!< The CUE sheet, ISO image, or BIN image of the disc. */
+    std::filesystem::path disc; /*!< The disc image or mounted disc directory. */
     /** The ROM images by release, with the base of the default pack first. */
     std::vector<std::pair<WizardCartridge, std::filesystem::path>> cartridges;
 };
@@ -174,37 +174,38 @@ enum class WizardEnd {
 
 /** A control of a screen or a dialog of the wizard. */
 enum class WizardControlId {
-    DiscText,      /*!< The path of the disc image. */
-    DiscBrowse,    /*!< Browse for the disc image. */
-    DiscClear,     /*!< Clear the disc path. */
-    Rom1Text,      /*!< The first ROM path. */
-    Rom2Text,      /*!< The second ROM path. */
-    Rom3Text,      /*!< The third ROM path. */
-    Rom1Browse,    /*!< Browse for the first ROM image. */
-    Rom2Browse,    /*!< Browse for the second ROM image. */
-    Rom3Browse,    /*!< Browse for the third ROM image. */
-    Rom1Clear,     /*!< Clear the first ROM path. */
-    Rom2Clear,     /*!< Clear the second ROM path. */
-    Rom3Clear,     /*!< Clear the third ROM path. */
-    SearchAssets,  /*!< Open the directory search. */
-    SearchText,    /*!< The directory path. */
-    SearchBrowse,  /*!< Browse for a directory. */
-    SearchClear,   /*!< Clear the directory path. */
-    StartSearch,   /*!< Start searching. */
-    RetrySearch,   /*!< Search another directory. */
-    UseFound,      /*!< Return to the setup fields. */
-    Back,          /*!< The previous screen. */
-    Next,          /*!< The next screen. */
-    Quit,          /*!< Quit without importing assets. */
-    Cancel,        /*!< Cancel the import. */
-    Finish,        /*!< Start the game. */
-    BrowserList,   /*!< The entries of the directory of the file browser. */
-    BrowserFilter, /*!< The kinds of file the browser lists. */
-    BrowserOk,     /*!< Open or choose the entry of the browser. */
-    BrowserCancel, /*!< Close the browser. */
-    MessageOk,     /*!< Close a message. */
-    MessageYes,    /*!< Quit the wizard. */
-    MessageNo,     /*!< Do not quit the wizard. */
+    DiscText,            /*!< The path of the disc image. */
+    DiscBrowse,          /*!< Browse for the disc image. */
+    DiscClear,           /*!< Clear the disc path. */
+    Rom1Text,            /*!< The first ROM path. */
+    Rom2Text,            /*!< The second ROM path. */
+    Rom3Text,            /*!< The third ROM path. */
+    Rom1Browse,          /*!< Browse for the first ROM image. */
+    Rom2Browse,          /*!< Browse for the second ROM image. */
+    Rom3Browse,          /*!< Browse for the third ROM image. */
+    Rom1Clear,           /*!< Clear the first ROM path. */
+    Rom2Clear,           /*!< Clear the second ROM path. */
+    Rom3Clear,           /*!< Clear the third ROM path. */
+    SearchAssets,        /*!< Open the directory search. */
+    SearchText,          /*!< The directory path. */
+    SearchBrowse,        /*!< Browse for a directory. */
+    SearchClear,         /*!< Clear the directory path. */
+    StartSearch,         /*!< Start searching. */
+    RetrySearch,         /*!< Search another directory. */
+    UseFound,            /*!< Return to the setup fields. */
+    Back,                /*!< The previous screen. */
+    Next,                /*!< The next screen. */
+    Quit,                /*!< Quit without importing assets. */
+    Cancel,              /*!< Cancel the import. */
+    Finish,              /*!< Start the game. */
+    BrowserList,         /*!< The entries of the directory of the file browser. */
+    BrowserFilter,       /*!< The kinds of file the browser lists. */
+    BrowserOk,           /*!< Open or choose the entry of the browser. */
+    BrowserUseDirectory, /*!< Choose the current directory as the disc source. */
+    BrowserCancel,       /*!< Close the browser. */
+    MessageOk,           /*!< Close a message. */
+    MessageYes,          /*!< Quit the wizard. */
+    MessageNo,           /*!< Do not quit the wizard. */
 };
 
 /** A control positioned on the grid. */
@@ -360,6 +361,7 @@ private:
     std::optional<WizardControlId> &FocusSlot();
     void FocusFirst();
     void MoveFocus(bool backward);
+    void MoveFocusRow(bool upward);
     void Activate(WizardControlId id);
     void PressDefault();
     void Escape();

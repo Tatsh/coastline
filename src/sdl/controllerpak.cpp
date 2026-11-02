@@ -9,6 +9,8 @@
 #include <SDL3/SDL.h>
 #include <fmt/format.h>
 
+#include "savefile.h"
+
 namespace coastline {
 
 namespace {
@@ -106,8 +108,7 @@ std::optional<std::string> DecodeName(const std::uint8_t *name) {
 }
 
 std::vector<std::uint8_t> ReadFile(const std::filesystem::path &file) {
-    std::ifstream stream(file, std::ios::binary);
-    return std::vector<std::uint8_t>(std::istreambuf_iterator<char>(stream), {});
+    return ReadSaveFile(file, FOUR_PAK_IMAGE_BYTES).value_or(std::vector<std::uint8_t>());
 }
 
 } // namespace
@@ -125,41 +126,24 @@ const std::filesystem::path &ControllerPak::DirectoryOf(const std::string &name)
 }
 
 std::optional<std::vector<std::uint8_t>> ControllerPak::ReadNote(const std::string &name) const {
-    std::ifstream file(DirectoryOf(name) / name, std::ios::binary);
-    if (!file) {
-        return std::nullopt;
-    }
-    return std::vector<std::uint8_t>(std::istreambuf_iterator<char>(file), {});
+    return ReadSaveFile(DirectoryOf(name) / name, PAK_IMAGE_BYTES);
 }
 
 bool ControllerPak::WriteNote(const std::string &name, std::span<const std::uint8_t> bytes) const {
-    std::error_code error;
-    const std::filesystem::path &directory = DirectoryOf(name);
-    std::filesystem::create_directories(directory, error);
-    // The note is written beside its place and moved there, and a failed write loses no note.
-    auto written = directory / (name + ".new");
-    {
-        std::ofstream file(written, std::ios::binary | std::ios::trunc);
-        file.write(reinterpret_cast<const char *>(bytes.data()),
-                   static_cast<std::streamsize>(bytes.size()));
-        if (!file) {
-            return false;
-        }
-    }
-    std::filesystem::rename(written, directory / name, error);
-    return !error;
+    return bytes.size() <= PAK_IMAGE_BYTES && WriteSaveFile(DirectoryOf(name) / name, bytes);
 }
 
 bool ControllerPak::DeleteNote(const std::string &name) const {
-    std::error_code error;
-    return std::filesystem::remove(DirectoryOf(name) / name, error);
+    auto save = SaveFile::Open(DirectoryOf(name) / name);
+    return save && save->Remove();
 }
 
 std::vector<PakNote> ControllerPak::Notes() const {
     std::vector<PakNote> notes;
     std::error_code error;
     for (const auto &entry : std::filesystem::directory_iterator(m_directory, error)) {
-        if (entry.is_regular_file(error) && entry.path().extension() != ".new" &&
+        if (entry.is_regular_file(error) && entry.path().extension() != ".lock" &&
+            !entry.path().filename().string().starts_with(".coastline-save-") &&
             DirectoryOf(entry.path().filename().string()) == m_directory) {
             notes.push_back({entry.path().filename().string(),
                              static_cast<std::size_t>(entry.file_size(error))});
@@ -247,16 +231,17 @@ ExportPakImage(const ControllerPak &pak, const std::filesystem::path &file, PakR
                 image.begin() + static_cast<std::ptrdiff_t>(INODE_BACKUP_PAGE * PAK_PAGE_BYTES));
 
     // The other paks of an image of four are retained.
-    std::vector<std::uint8_t> written = ReadFile(file);
+    auto save = SaveFile::Open(file);
+    if (!save) {
+        return fmt::format("{} cannot be locked.", file.string());
+    }
+    auto written = save->Read(FOUR_PAK_IMAGE_BYTES).value_or(std::vector<std::uint8_t>());
     if (written.size() == FOUR_PAK_IMAGE_BYTES) {
         std::ranges::copy(image, written.begin());
     } else {
         written = std::move(image);
     }
-    std::ofstream stream(file, std::ios::binary | std::ios::trunc);
-    stream.write(reinterpret_cast<const char *>(written.data()),
-                 static_cast<std::streamsize>(written.size()));
-    if (!stream) {
+    if (!save->Write(written)) {
         return fmt::format("{} cannot be written.", file.string());
     }
     SDL_Log("Exported %zu notes to %s.", entry, file.string().c_str());
