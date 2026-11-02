@@ -109,6 +109,106 @@ void CdiHeader(std::vector<std::uint8_t> &bytes) {
     bytes[offset + 46 + 5] = 0x98;
 }
 
+void CheckBlindWrite4(const std::filesystem::path &root) {
+    for (const unsigned adjustment : {0, 150, 151}) {
+        for (const bool separate : {false, true}) {
+            const auto data = DataTrack();
+            const std::vector<std::uint8_t> audio(3 * SECTOR, 0x42);
+            const auto prefix = adjustment == 0 ? 150 * SECTOR : 0;
+            const auto correction = adjustment > 150 ? SECTOR : 0;
+            std::vector<std::uint8_t> image(prefix, 0xcc);
+            image.insert(image.end(), data.begin(), data.end());
+            const auto audioOffset = separate ? 0 : image.size();
+            if (!separate) {
+                image.resize(image.size() + prefix, 0xdd);
+                image.insert(image.end(), audio.begin(), audio.end());
+            }
+            const auto filename = std::filesystem::path(u8"image-\u00e9.BWI");
+            Write(root / filename, image);
+            std::vector<std::uint8_t> audioFile(prefix, 0xdd);
+            audioFile.insert(audioFile.end(), audio.begin(), audio.end());
+            Write(root / "audio.bwi", audioFile);
+            std::vector<std::uint8_t> metadata(31);
+            Tag(metadata, 0, "BLINDWRITE TOC FILE");
+            Number(metadata, 19, 2, 4, true);
+            auto text = [&](std::string_view value) {
+                const auto field = Append(metadata, 4 + value.size());
+                Number(metadata, field, value.size(), 4, true);
+                Tag(metadata, field + 4, value);
+            };
+            text("BOSS RALLY");
+            text("WINDOWS");
+            text("metadata comment");
+            Number(metadata, Append(metadata, 4), 3, 4, true);
+            text(separate ? "Z:\\old\\image-\xe9.bwi" : "Z:\\old\\image-\xc3\xa9.bwi");
+            text("disc.bws");
+            Append(metadata, 4);
+            metadata.push_back(3);
+            Append(metadata, 3);
+            auto track = [&](unsigned number) {
+                text(number == 2 && separate ? "audio.bwi" : "");
+                const auto entry = Append(metadata, 59);
+                Number(metadata, entry, (number == 2 ? audioOffset : 0) + correction, 4, true);
+                metadata[entry + 13] = separate && number == 2 ? 2 : 1;
+                metadata[entry + 17] = number == 1 ? 1 : 0;
+                metadata[entry + 19] = static_cast<std::uint8_t>(number);
+                Number(metadata, entry + 28, adjustment, 4, true);
+                const unsigned start = number == 2 ? separate ? 1000 : 182 : 0;
+                Number(metadata, entry + 38, start + (number == 1 ? 32 : 3), 4, true);
+                Number(metadata, entry + 43, static_cast<std::uint32_t>(start - 150), 4, true);
+                Number(metadata, entry + 47, start, 4, true);
+                for (unsigned field = 0; field < 15; ++field) {
+                    text(field == 0 ? "track description" : "");
+                }
+                return entry;
+            };
+            track(2);
+            const auto first = track(1);
+            text("");
+            const auto lead = Append(metadata, 59);
+            metadata[lead + 19] = 0xa0;
+            for (unsigned field = 0; field < 15; ++field) {
+                text("");
+            }
+            const auto descriptor = root / "disc.bwt";
+            Write(descriptor, metadata);
+            for (const auto *source : {"disc.bwt", "disc.bwi", "disc.bws"}) {
+                const auto tracks = coastline::ReadDiscTracks(root / source);
+                assert(tracks && tracks->size() == 2);
+                assert(tracks->front().sectorCount == 32 && !tracks->front().audio);
+                assert((*tracks)[1].sectorCount == 3 && (*tracks)[1].audio);
+                CheckSectors(tracks->front(), data);
+                CheckSectors((*tracks)[1], audio);
+            }
+            auto invalid = [&](std::size_t offset, std::uint64_t value, std::size_t width) {
+                auto broken = metadata;
+                Number(broken, offset, value, width, true);
+                Write(descriptor, broken);
+                assert(!coastline::ReadDiscTracks(descriptor));
+            };
+            invalid(0, 0, 1);
+            invalid(31, UINT32_MAX, 4);
+            invalid(first + 17, 3, 1);
+            invalid(first + 19, 2, 1);
+            invalid(first + 38, 0, 4);
+            invalid(first + 28, UINT32_MAX, 4);
+            invalid(first + 0, UINT32_MAX, 4);
+            invalid(first + 47, UINT32_MAX, 4);
+            invalid(first + 43, INT32_MAX, 4);
+            invalid(first + 59, UINT32_MAX, 4);
+            for (std::size_t length = 0; length < metadata.size(); ++length) {
+                Write(descriptor, std::span(metadata).first(length));
+                assert(!coastline::ReadDiscTracks(descriptor));
+            }
+            Write(descriptor, metadata);
+            std::filesystem::resize_file(root / filename, image.size() - 1);
+            assert(!coastline::ReadDiscTracks(descriptor));
+            std::filesystem::remove(root / filename);
+            assert(!coastline::ReadDiscTracks(descriptor));
+        }
+    }
+}
+
 void CheckBlindWrite(const std::filesystem::path &root) {
     for (const auto *extension : {".b5t", ".b6t"}) {
         for (const std::size_t stride : {2048, 2352, 2368, 2448}) {
@@ -706,6 +806,7 @@ int main(int argc, char **argv) {
     CheckMds(root);
     CheckCdi(root);
     CheckBlindWrite(root);
+    CheckBlindWrite4(root);
     if (argc == 2) {
         const auto cue = coastline::ParseCueSheet(argv[1]);
         assert(cue && !cue->empty());

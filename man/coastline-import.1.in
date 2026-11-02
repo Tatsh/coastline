@@ -23,7 +23,7 @@ Original game files must be supplied by the user.
 .TP
 .BI \-\-cd " DISC"
 Read a Boss Rally CUE sheet, ISO, Mode 1 BIN, numbered track file, CloneCD,
-DiscJuggler CDI, Alcohol MDS, Nero NRG, or BlindWrite 5/6 image.
+DiscJuggler CDI, Alcohol MDS, Nero NRG, or BlindWrite 4/5/6 image.
 A directory can be the root of a mounted physical disc or a copy of its files.
 Directory sources import data without CD audio.
 A BIN image uses a matching adjacent CUE sheet when available.
@@ -31,12 +31,13 @@ Without a CUE sheet, known whole-file SHA-1 digests select verified track offset
 Other BIN images use sector headers and audio pregaps to discover a layout.
 Uncertain layouts and ISO images import data without CD audio.
 Numbered Track NN.bin sets, CloneCD .ccd/.img, DiscJuggler .cdi,
-Alcohol .mds/.mdf, Nero .nrg, and BlindWrite .b5t/.b6t/.b5i/.b6i files
+Alcohol .mds/.mdf, Nero .nrg, and BlindWrite .bwt/.bwi/.bws/.b5t/.b6t/.b5i/.b6i files
 also provide audio tracks.
 MDS supports split files and UTF-16 filenames.
 NRG supports disc-at-once and track-at-once metadata with 32-bit or 64-bit offsets.
 CDI supports versions 2, 3, and 3.5, multiple sessions, and stored pregaps.
-BlindWrite supports split files, UTF-16 filenames, and stored pregaps.
+BlindWrite 5/6 supports split files, UTF-16 filenames, and stored pregaps.
+BlindWrite 4 uses BWT metadata and BWI data files; BWS subchannels are optional.
 P-Q and P-W subchannel bytes are discarded during conversion.
 Track files referenced by a CUE sheet must remain available.
 .TP

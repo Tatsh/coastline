@@ -583,6 +583,145 @@ std::optional<std::filesystem::path> MdsFilename(Bytes metadata,
 }
 
 std::expected<std::vector<CueTrack>, std::string>
+BlindWrite4Tracks(const std::filesystem::path &descriptor) {
+    const auto invalid =
+        std::unexpected(std::string("Invalid or unsupported BlindWrite 4 metadata."));
+    std::error_code error;
+    const auto size = std::filesystem::file_size(descriptor, error);
+    std::ifstream file(descriptor, std::ios::binary);
+    const auto bytes = error ? std::nullopt : ReadMetadata(file, 0, size);
+    if (!bytes || bytes->size() < 19 ||
+        !std::ranges::equal(Bytes(*bytes).first(19), std::string_view("BLINDWRITE TOC FILE"))) {
+        return invalid;
+    }
+    MetadataCursor cursor(Bytes(*bytes).subspan(19));
+    auto text = [&] {
+        const auto length = cursor.Number(4);
+        return cursor.Take(length);
+    };
+    auto filename = [&](Bytes name) -> std::optional<std::filesystem::path> {
+        if (name.empty() || name.size() > 4095) {
+            return std::nullopt;
+        }
+        std::vector<std::uint8_t> terminated(name.begin(), name.end());
+        terminated.push_back(0);
+        const auto utf8 = MdsFilename(terminated, 0, false, descriptor);
+        if (utf8 && std::filesystem::is_regular_file(*utf8, error)) {
+            return utf8;
+        }
+        constexpr std::array<char16_t, 32> WINDOWS_1252{
+            0x20ac, 0x0081, 0x201a, 0x0192, 0x201e, 0x2026, 0x2020, 0x2021, 0x02c6, 0x2030, 0x0160,
+            0x2039, 0x0152, 0x008d, 0x017d, 0x008f, 0x0090, 0x2018, 0x2019, 0x201c, 0x201d, 0x2022,
+            0x2013, 0x2014, 0x02dc, 0x2122, 0x0161, 0x203a, 0x0153, 0x009d, 0x017e, 0x0178};
+        std::vector<std::uint8_t> wide;
+        for (const auto value : name) {
+            const auto character = value >= 0x80 && value <= 0x9f ? WINDOWS_1252[value - 0x80] :
+                                                                    static_cast<char16_t>(value);
+            wide.push_back(static_cast<std::uint8_t>(character));
+            wide.push_back(static_cast<std::uint8_t>(character >> 8));
+        }
+        wide.resize(wide.size() + 2);
+        const auto ansi = MdsFilename(wide, 0, true, descriptor);
+        if (ansi && std::filesystem::is_regular_file(*ansi, error)) {
+            return ansi;
+        }
+        return utf8;
+    };
+    cursor.Take(12);
+    for (unsigned index = 0; index < 3; ++index) {
+        text();
+    }
+    const auto count = cursor.Number(4);
+    const auto image = filename(text());
+    text();
+    cursor.Take(4);
+    const auto extra = cursor.Number(1);
+    cursor.Take(extra);
+    if (!cursor.Valid() || count == 0 || count > 396 || count > cursor.Remaining() / 123) {
+        return invalid;
+    }
+    struct Entry {
+        CueTrack track;
+        unsigned session;
+        std::int64_t first;
+        std::uint64_t end;
+    };
+    std::vector<Entry> entries;
+    for (std::uint64_t index = 0; index < count; ++index) {
+        const auto name = text();
+        const auto fields = cursor.Take(59);
+        if (fields.size() != 59) {
+            return invalid;
+        }
+        for (unsigned field = 0; field < 15; ++field) {
+            text();
+        }
+        if (!cursor.Valid()) {
+            return invalid;
+        }
+        const auto number = fields[19];
+        if (number >= 0xa0) {
+            continue;
+        }
+        const auto start =
+            std::bit_cast<std::int32_t>(static_cast<std::uint32_t>(Little(fields, 47, 4)));
+        const auto pregap =
+            std::bit_cast<std::int32_t>(static_cast<std::uint32_t>(Little(fields, 43, 4)));
+        const auto end = Little(fields, 38, 4);
+        const auto adjustment = static_cast<std::int64_t>(Little(fields, 28, 4));
+        const auto offset =
+            static_cast<std::int64_t>(Little(fields, 0, 4)) + (150 - adjustment) * RAW_SECTOR;
+        const auto mode = fields[17];
+        if (number == 0 || number > 99 || fields[13] == 0 || fields[13] > 99 || mode > 2 ||
+            start < 0 || pregap > start || end <= static_cast<std::uint64_t>(start) || offset < 0) {
+            return invalid;
+        }
+        auto path = filename(name);
+        if (!path || !std::filesystem::is_regular_file(*path, error)) {
+            path = image;
+        }
+        if (!path) {
+            return std::unexpected(std::string("Missing BlindWrite 4 data file."));
+        }
+        const auto fileSize = std::filesystem::file_size(*path, error);
+        const auto position = static_cast<std::uint64_t>(offset);
+        const auto sectors = end - static_cast<std::uint64_t>(start);
+        if (error || position > fileSize || sectors > (fileSize - position) / RAW_SECTOR) {
+            return invalid;
+        }
+        CueTrack track;
+        track.number = number;
+        track.file = *path;
+        track.audio = mode == 0;
+        track.sectorSize = RAW_SECTOR;
+        track.dataOffset = mode == 2 ? 24 : 16;
+        track.sectorCount = sectors;
+        track.extents.push_back({*path, position, sectors});
+        entries.push_back({std::move(track), fields[13], start, end});
+    }
+    if (!cursor.Valid() || cursor.Remaining() != 0 || entries.empty()) {
+        return invalid;
+    }
+    std::ranges::sort(entries, {}, [](const Entry &entry) { return entry.track.number; });
+    std::vector<CueTrack> tracks;
+    unsigned session = 1;
+    std::uint64_t previousEnd = 0;
+    for (auto &entry : entries) {
+        if (entry.track.number != static_cast<int>(tracks.size() + 1) || entry.session < session ||
+            entry.session > session + 1 || static_cast<std::uint64_t>(entry.first) < previousEnd ||
+            (tracks.empty() && entry.session != 1)) {
+            return invalid;
+        }
+        session = entry.session;
+        previousEnd = entry.end;
+        tracks.push_back(std::move(entry.track));
+    }
+    return DisjointExtents(tracks) ?
+               std::expected<std::vector<CueTrack>, std::string>(std::move(tracks)) :
+               invalid;
+}
+
+std::expected<std::vector<CueTrack>, std::string>
 BlindWriteTracks(const std::filesystem::path &descriptor) {
     const auto invalid =
         std::unexpected(std::string("Invalid or unsupported BlindWrite 5/6 metadata."));
@@ -1253,6 +1392,11 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
 std::expected<std::vector<CueTrack>, std::string>
 ReadDiscTracks(const std::filesystem::path &disc) {
     const auto extension = Lowercase(disc.extension().string());
+    if (extension == ".bwt" || extension == ".bwi" || extension == ".bws") {
+        auto metadata = disc;
+        metadata.replace_extension(".bwt");
+        return BlindWrite4Tracks(AdjacentFile(metadata));
+    }
     if (extension == ".b5t" || extension == ".b6t" || extension == ".b5i" || extension == ".b6i") {
         auto metadata = disc;
         metadata.replace_extension(extension == ".b5t" || extension == ".b5i" ? ".b5t" : ".b6t");

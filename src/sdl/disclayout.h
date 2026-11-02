@@ -6,7 +6,7 @@ namespace coastline {
 
 /**
  * Resolve tracks from CUE, ISO, BIN, numbered track files, CloneCD, DiscJuggler CDI, Nero NRG,
- * Alcohol MDS, or BlindWrite 5/6.
+ * Alcohol MDS, or BlindWrite 4/5/6.
  *
  * @param disc Disc image or metadata file. Adjacent CUE sheets precede BIN layout discovery.
  * @return Track extents, or a message when metadata is unreadable or a data track cannot be
