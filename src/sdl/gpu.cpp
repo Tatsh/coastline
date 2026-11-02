@@ -7,6 +7,7 @@
 #include <cstring>
 #include <span>
 
+#include "appicon.h"
 #include "config.h"
 
 #ifdef _WIN32
@@ -130,6 +131,18 @@ std::unique_ptr<GpuWindow> GpuWindow::Create(const char *title, const DisplayOpt
         SDL_LogError(SDL_LOG_CATEGORY_VIDEO, "Cannot create window: %s", SDL_GetError());
         return nullptr;
     }
+#ifndef SDL_PLATFORM_MACOS
+    auto *icon =
+        SDL_LoadPNG_IO(SDL_IOFromConstMem(COASTLINE_ICON_PNG, sizeof(COASTLINE_ICON_PNG)), true);
+    if (icon) {
+        if (!SDL_SetWindowIcon(result->m_window.get(), icon)) {
+            SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "Cannot set window icon: %s", SDL_GetError());
+        }
+        SDL_DestroySurface(icon);
+    } else {
+        SDL_LogWarn(SDL_LOG_CATEGORY_VIDEO, "Cannot load window icon: %s", SDL_GetError());
+    }
+#endif
     // The window is never smaller than the 320 by 240 of the screen of the console.
     SDL_SetWindowMinimumSize(result->m_window.get(), 320, 240);
     if (options.fullscreen) {

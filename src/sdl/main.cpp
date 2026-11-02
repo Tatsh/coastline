@@ -1734,7 +1734,7 @@ int main(int argc, char *argv[]) {
                         if (frameRateText) {
                             DrawOverlayLine(*sceneRenderer,
                                             *frameRateText,
-                                            reboot ? "Reinitializing game... Restarts the game." :
+                                            reboot ? "Reinitializing game..." :
                                                      "Applying settings...",
                                             220,
                                             320,

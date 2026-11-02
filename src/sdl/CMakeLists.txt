@@ -79,7 +79,7 @@ endif()
 
 # The code of the PC release takes char as signed, as MSVC does, which Linux on ARM does not.
 if(NOT MSVC)
-  add_compile_options(-fsigned-char)
+  add_compile_options("$<$<COMPILE_LANGUAGE:C,CXX,OBJCXX>:-fsigned-char>")
 endif()
 
 # EAR, the sound engine of the PC release, on SDL audio.
@@ -174,6 +174,16 @@ add_custom_command(
 list(APPEND _manifest_headers "${_header}")
 add_custom_target(coastline_manifests DEPENDS ${_manifest_headers})
 
+set(_icon_png "${CMAKE_CURRENT_SOURCE_DIR}/sh.tat.coastline.png")
+set(_icon_header "${CMAKE_CURRENT_BINARY_DIR}/appicon.h")
+add_custom_command(
+  OUTPUT "${_icon_header}"
+  COMMAND "${CMAKE_COMMAND}" -DINPUT=${_icon_png} -DOUTPUT=${_icon_header}
+          -DNAME=COASTLINE_ICON_PNG -P "${CMAKE_SOURCE_DIR}/cmake/embed.cmake"
+  DEPENDS "${_icon_png}" "${CMAKE_SOURCE_DIR}/cmake/embed.cmake"
+  VERBATIM)
+add_custom_target(coastline_icon DEPENDS "${_icon_header}")
+
 # The SHA-1 and the asset chains of the host tools read the cartridge images. The music player of
 # the Nintendo 64 release is shared C.
 add_library(
@@ -247,7 +257,7 @@ target_include_directories(coastline_sdl PRIVATE "${CMAKE_SOURCE_DIR}/src"
                                                  "${CMAKE_SOURCE_DIR}/src/libultra/include"
                                                  "${CMAKE_SOURCE_DIR}/tools/common"
                                                  "${CMAKE_CURRENT_BINARY_DIR}")
-add_dependencies(coastline_sdl coastline_shaders coastline_manifests)
+add_dependencies(coastline_sdl coastline_shaders coastline_manifests coastline_icon)
 # The headers of the menus declare their readers of JSON, and the game includes them.
 target_link_libraries(coastline_sdl PUBLIC nlohmann_json::nlohmann_json
                                     PRIVATE FLAC::FLAC fmt::fmt ZLIB::ZLIB)
@@ -294,7 +304,8 @@ file(RELATIVE_PATH _relative_data "${CMAKE_INSTALL_FULL_BINDIR}"
 target_compile_definitions(coastline_sdl PRIVATE
                            COASTLINE_SYSTEM_DATA_DIR="${CMAKE_INSTALL_FULL_DATADIR}/coastline"
                            COASTLINE_RELATIVE_DATA_DIR="${_relative_data}")
-target_compile_options(${CMAKE_PROJECT_NAME} PRIVATE ${COASTLINE_WARNINGS})
+target_compile_options(${CMAKE_PROJECT_NAME}
+                       PRIVATE "$<$<COMPILE_LANGUAGE:C,CXX>:${COASTLINE_WARNINGS}>")
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_sdl argparse::argparse)
 if(NOT COASTLINE_INSTALL_ASSETS)
   target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_firstrun)
@@ -343,6 +354,11 @@ if(APPLE)
   endif()
 endif()
 if(WIN32)
+  enable_language(RC)
+  configure_file(Coastline.rc.in "${CMAKE_CURRENT_BINARY_DIR}/Coastline.rc" @ONLY)
+  set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/Coastline.rc"
+                              PROPERTIES OBJECT_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/Coastline.ico")
+  target_sources(${CMAKE_PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/Coastline.rc")
   set(_runtime_dependency_set RUNTIME_DEPENDENCY_SET coastline_runtime)
 endif()
 install(TARGETS ${CMAKE_PROJECT_NAME} ${_runtime_dependency_set}
@@ -379,6 +395,8 @@ if(NOT WIN32 AND NOT APPLE)
   install(FILES sh.tat.coastline.metainfo.xml DESTINATION "${CMAKE_INSTALL_DATADIR}/metainfo")
   install(FILES sh.tat.coastline.svg
           DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps")
+  install(FILES sh.tat.coastline.png
+          DESTINATION "${CMAKE_INSTALL_DATADIR}/icons/hicolor/256x256/apps")
 endif()
 install(FILES "${CMAKE_SOURCE_DIR}/LICENSE.txt" "${CMAKE_SOURCE_DIR}/README.md"
         DESTINATION "${CMAKE_INSTALL_DOCDIR}")
@@ -405,6 +423,8 @@ if(WIN32)
   set(CPACK_GENERATOR NSIS)
   set(CPACK_NSIS_DEFINES "RequestExecutionLevel user")
   set(CPACK_NSIS_DISPLAY_NAME "Coastline")
+  set(CPACK_NSIS_MUI_ICON "${CMAKE_CURRENT_SOURCE_DIR}/Coastline.ico")
+  set(CPACK_NSIS_MUI_UNIICON "${CMAKE_CURRENT_SOURCE_DIR}/Coastline.ico")
   set(CPACK_NSIS_INSTALLED_ICON_NAME "${CMAKE_INSTALL_BINDIR}\\\\${CMAKE_PROJECT_NAME}.exe")
   set(CPACK_NSIS_INSTALL_ROOT "$LOCALAPPDATA\\\\Programs")
   set(CPACK_NSIS_MANIFEST_DPI_AWARE ON)

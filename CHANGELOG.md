@@ -11,6 +11,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Embedded Windows executable, installer, and uninstaller icons, with a bundled setup-window icon
+  available before asset import and matching Linux PNG and launcher icons.
 - Time Attack can race input-only ghosts imported from Controller Pak notes without a frame sidecar.
 - Portable configuration and asset lookup beside the executable, with relative setup paths and
   portable state, cache, and screenshots. `COASTLINE_PORTABLE=OFF` disables lookup for shared installs;
@@ -146,6 +148,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Options transitions display `Reinitializing game...` without a redundant restart sentence.
 - macOS fullscreen uses a whole-display borderless window without a separate Space or visible
   menu bar.
 - The system cursor remains hidden; setup and Paint Shop retain their custom pointers.
