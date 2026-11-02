@@ -7,8 +7,20 @@
 namespace coastline {
 
 /** Disc images, track metadata, and companion files accepted by the importer. */
-inline constexpr std::array<std::string_view, 10> DISC_IMAGE_EXTENSIONS{
-    ".bin", ".ccd", ".cdi", ".cue", ".img", ".iso", ".mdf", ".mds", ".nrg", ".sub"};
+inline constexpr std::array<std::string_view, 14> DISC_IMAGE_EXTENSIONS{".b5i",
+                                                                        ".b5t",
+                                                                        ".b6i",
+                                                                        ".b6t",
+                                                                        ".bin",
+                                                                        ".ccd",
+                                                                        ".cdi",
+                                                                        ".cue",
+                                                                        ".img",
+                                                                        ".iso",
+                                                                        ".mdf",
+                                                                        ".mds",
+                                                                        ".nrg",
+                                                                        ".sub"};
 
 /**
  * Check a lower-case filename extension, including its initial dot.

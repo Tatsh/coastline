@@ -109,6 +109,158 @@ void CdiHeader(std::vector<std::uint8_t> &bytes) {
     bytes[offset + 46 + 5] = 0x98;
 }
 
+void CheckBlindWrite(const std::filesystem::path &root) {
+    for (const auto *extension : {".b5t", ".b6t"}) {
+        for (const std::size_t stride : {2048, 2352, 2368, 2448}) {
+            for (const bool separateSession : {false, true}) {
+                const auto source = StoredData(stride);
+                const auto audioStride = stride == 2048 ? SECTOR : stride;
+                std::vector<std::uint8_t> part1(37 + 2 * stride, 0xcc);
+                part1.insert(part1.end(), source.begin(), source.begin() + 16 * stride);
+                std::vector<std::uint8_t> part2(19, 0xdd);
+                part2.insert(part2.end(), source.begin() + 16 * stride, source.end());
+                const auto audioOffset = part2.size();
+                const std::vector<std::uint8_t> audio(3 * audioStride, 0x42);
+                part2.resize(part2.size() + audioStride, 0xee);
+                part2.insert(part2.end(), audio.begin(), audio.end());
+                const auto firstFile = std::filesystem::path(u8"track-\u65e5\u672c.b00");
+                const auto secondFile = std::filesystem::path(u8"track-\u00e9.b01");
+                Write(root / firstFile, part1);
+                Write(root / secondFile, part2);
+                std::vector<std::uint8_t> data(8);
+                Number(data, 0, 3, 4, true);
+                auto block = [&](const std::filesystem::path &filename,
+                                 std::uint32_t offset,
+                                 int first,
+                                 unsigned count,
+                                 std::size_t sectorSize,
+                                 bool isAudio) {
+                    const auto text = filename.u16string();
+                    const auto entry = Append(data, 52 + text.size() * 2 + 4);
+                    Number(data, entry, isAudio ? 0x8000 : 0, 4, true);
+                    Number(data, entry + 4, count * sectorSize, 4, true);
+                    Number(data, entry + 24, offset, 4, true);
+                    Number(data, entry + 40, static_cast<std::uint32_t>(first), 4, true);
+                    Number(data, entry + 44, count, 4, true);
+                    Number(data, entry + 48, text.size() * 2, 4, true);
+                    for (std::size_t index = 0; index < text.size(); ++index) {
+                        Number(data, entry + 52 + index * 2, text[index], 2, true);
+                    }
+                    return entry;
+                };
+                const int audioStart = separateSession ? 100 : 32;
+                block(secondFile, 19, 16, 16, stride, false);
+                block(secondFile,
+                      static_cast<std::uint32_t>(audioOffset),
+                      audioStart,
+                      4,
+                      audioStride,
+                      true);
+                const auto firstBlock = block(firstFile, 37, -2, 18, stride, false);
+                std::vector<std::uint8_t> layout;
+                auto session = [&](unsigned number, int first, int end, unsigned track) {
+                    const auto entry = Append(layout, 16);
+                    Number(layout, entry, number, 2, true);
+                    layout[entry + 2] = separateSession ? 2 : 3;
+                    Number(layout, entry + 4, static_cast<std::uint32_t>(first), 4, true);
+                    Number(layout, entry + 8, end, 4, true);
+                    Number(layout, entry + 12, track, 2, true);
+                    Number(layout, entry + 14, separateSession ? track : 2, 2, true);
+                    const auto lead = Append(layout, 64);
+                    layout[lead + 12] = 0xa0;
+                };
+                auto track = [&](unsigned number, unsigned mode, int first, unsigned count) {
+                    const auto entry = Append(layout, 72);
+                    layout[entry] = static_cast<std::uint8_t>(mode);
+                    layout[entry + 12] = static_cast<std::uint8_t>(number);
+                    Number(layout, entry + 22, number == 1 ? 2 : 1, 4, true);
+                    Number(layout, entry + 42, static_cast<std::uint32_t>(first), 4, true);
+                    Number(layout, entry + 46, count, 4, true);
+                    Number(layout, entry + 58, separateSession ? number : 1, 4, true);
+                    return entry;
+                };
+                session(1, -2, separateSession ? 32 : 36, 1);
+                const auto firstTrack = track(1, 2, -2, 34);
+                if (separateSession) {
+                    session(2, 100, 104, 2);
+                }
+                track(2, 1, audioStart, 4);
+                std::vector<std::uint8_t> metadata(260);
+                Tag(metadata, 0, "BWT5 STREAM SIGN");
+                Number(metadata, 48, 8, 2, true);
+                Number(metadata, 50, separateSession ? 2 : 1, 2, true);
+                Number(metadata, 240, 3, 4, true);
+                Number(metadata, 244, 4, 4, true);
+                Number(metadata, 16 + 80, 5, 2, true);
+                Number(metadata, 16 + 82, 6, 2, true);
+                Number(metadata, 16 + 84, 7, 2, true);
+                Number(metadata, 16 + 86, 8, 2, true);
+                Number(metadata, 248, data.size(), 4, true);
+                Number(metadata, 252, layout.size(), 4, true);
+                Number(metadata, 256, 9, 4, true);
+                Append(metadata, 3 + 4 + 5 + 6 + 7 + 8);
+                const auto dataOffset = metadata.size();
+                metadata.insert(metadata.end(), data.begin(), data.end());
+                const auto layoutOffset = metadata.size();
+                metadata.insert(metadata.end(), layout.begin(), layout.end());
+                Append(metadata, 9);
+                const auto footer = Append(metadata, 20);
+                Number(metadata, footer, metadata.size(), 4, true);
+                Tag(metadata, footer + 4, "BWT5 STREAM FOOT");
+                const auto descriptor = root / (std::string("blind") + extension);
+                Write(descriptor, metadata);
+                const auto tracks = coastline::ReadDiscTracks(descriptor);
+                assert(tracks && tracks->size() == 2);
+                assert(tracks->front().sectorCount == 32 && tracks->front().extents.size() == 2);
+                assert(tracks->front().dataOffset == (stride == 2048 ? 0 : 16));
+                assert((*tracks)[1].audio && (*tracks)[1].sectorCount == 3);
+                CheckSectors(tracks->front(), source);
+                CheckSectors((*tracks)[1], audio);
+                auto companion = root / "blind.b5i";
+                if (std::string_view(extension) == ".b6t") {
+                    companion.replace_extension(".b6i");
+                }
+                std::filesystem::copy_file(
+                    root / firstFile, companion, std::filesystem::copy_options::overwrite_existing);
+                assert(coastline::ReadDiscTracks(companion));
+                auto invalid = [&](std::size_t offset, std::uint64_t value, std::size_t width) {
+                    auto broken = metadata;
+                    Number(broken, offset, value, width, true);
+                    Write(descriptor, broken);
+                    assert(!coastline::ReadDiscTracks(descriptor));
+                };
+                invalid(0, 0, 1);
+                invalid(50, 0, 2);
+                invalid(240, UINT32_MAX, 4);
+                invalid(248, UINT32_MAX, 4);
+                invalid(dataOffset, UINT32_MAX, 4);
+                invalid(dataOffset + firstBlock + 44, UINT32_MAX, 4);
+                invalid(dataOffset + firstBlock + 40, 1, 4);
+                invalid(dataOffset + firstBlock + 40, static_cast<std::uint32_t>(-3), 4);
+                invalid(dataOffset + firstBlock + 4, 18 * stride - 1, 4);
+                invalid(dataOffset + firstBlock, 0x8000, 4);
+                invalid(dataOffset + firstBlock + 24, UINT32_MAX, 4);
+                invalid(dataOffset + firstBlock + 48, 4095, 4);
+                invalid(dataOffset + firstBlock + 52, 0xd800, 2);
+                invalid(layoutOffset + firstTrack + 22, 34, 4);
+                invalid(layoutOffset + firstTrack + 46, UINT32_MAX, 4);
+                invalid(layoutOffset + firstTrack + 58, 9, 4);
+                invalid(layoutOffset + firstTrack, 7, 1);
+                invalid(footer + 4, 0, 1);
+                for (std::size_t size = 0; size < metadata.size(); ++size) {
+                    Write(descriptor, std::span(metadata).first(size));
+                    assert(!coastline::ReadDiscTracks(descriptor));
+                }
+                Write(descriptor, metadata);
+                std::filesystem::resize_file(root / firstFile, part1.size() - 1);
+                assert(!coastline::ReadDiscTracks(descriptor));
+                std::filesystem::remove(root / firstFile);
+                assert(!coastline::ReadDiscTracks(descriptor));
+            }
+        }
+    }
+}
+
 void CheckCdi(const std::filesystem::path &root) {
     for (const bool modern : {false, true}) {
         for (const std::uint32_t version : {0x80000004u, 0x80000005u, 0x80000006u}) {
@@ -553,6 +705,7 @@ int main(int argc, char **argv) {
     CheckNrg(root);
     CheckMds(root);
     CheckCdi(root);
+    CheckBlindWrite(root);
     if (argc == 2) {
         const auto cue = coastline::ParseCueSheet(argv[1]);
         assert(cue && !cue->empty());

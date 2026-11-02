@@ -900,7 +900,8 @@ int main(int argc, char *argv[]) {
         .action(RequiredArgumentValue("--cd"))
         .metavar("DISC")
         .help("copy Boss Rally data from a disc image or mounted disc directory; "
-              "BIN, CUE, CloneCD, CDI, MDS, and NRG images can also provide CD music");
+              "BIN, CUE, CloneCD, CDI, MDS, NRG, and BlindWrite 5/6 images can also provide CD "
+              "music");
     import.add_argument("--rom")
         .action(RequiredArgumentValue("--rom"))
         .metavar("ROM")

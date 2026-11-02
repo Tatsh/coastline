@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cctype>
 #include <charconv>
 #include <fstream>
@@ -582,6 +583,193 @@ std::optional<std::filesystem::path> MdsFilename(Bytes metadata,
 }
 
 std::expected<std::vector<CueTrack>, std::string>
+BlindWriteTracks(const std::filesystem::path &descriptor) {
+    const auto invalid =
+        std::unexpected(std::string("Invalid or unsupported BlindWrite 5/6 metadata."));
+    std::error_code error;
+    const auto size = std::filesystem::file_size(descriptor, error);
+    std::ifstream file(descriptor, std::ios::binary);
+    const auto bytes = error ? std::nullopt : ReadMetadata(file, 0, size);
+    if (!bytes || bytes->size() < 280 ||
+        !std::ranges::equal(Bytes(*bytes).first(16), std::string_view("BWT5 STREAM SIGN"))) {
+        return invalid;
+    }
+    const auto disc = Bytes(*bytes).subspan(16, 112);
+    const auto medium = Little(disc, 32, 2);
+    const auto sessions = Little(disc, 34, 2);
+    if (sessions == 0 || sessions > 99 ||
+        (medium != 8 && medium != 9 && medium != 10 && medium != 16)) {
+        return invalid;
+    }
+    const auto lengths = Bytes(*bytes).subspan(240, 20);
+    MetadataCursor cursor(Bytes(*bytes).subspan(260));
+    cursor.Take(Little(lengths, 0, 4) + Little(lengths, 4, 4) + Little(disc, 80, 2) +
+                Little(disc, 82, 2) + Little(disc, 84, 2) + Little(disc, 88, 4) +
+                Little(disc, 104, 4) + Little(disc, medium == 16 ? 108 : 86, medium == 16 ? 4 : 2));
+    MetadataCursor data(cursor.Take(Little(lengths, 8, 4)));
+    MetadataCursor layout(cursor.Take(Little(lengths, 12, 4)));
+    cursor.Take(Little(lengths, 16, 4));
+    cursor.Take(4);
+    const auto footer = cursor.Take(16);
+    if (!cursor.Valid() || cursor.Remaining() != 0 ||
+        !std::ranges::equal(footer, std::string_view("BWT5 STREAM FOOT"))) {
+        return invalid;
+    }
+    struct Block {
+        std::filesystem::path file;
+        std::int64_t first;
+        std::int64_t end;
+        std::uint64_t offset;
+        std::uint32_t stride;
+        bool audio;
+    };
+    const auto signedNumber = [](Bytes entry, std::size_t offset) -> std::int64_t {
+        return std::bit_cast<std::int32_t>(static_cast<std::uint32_t>(Little(entry, offset, 4)));
+    };
+    std::vector<Block> blocks;
+    const auto count = data.Number(4);
+    const auto driveLength = data.Number(4);
+    data.Take(driveLength);
+    if (count == 0 || count > data.Remaining() / 58) {
+        return invalid;
+    }
+    for (std::uint64_t index = 0; index < count; ++index) {
+        const auto entry = data.Take(52);
+        if (entry.size() != 52) {
+            return invalid;
+        }
+        const auto filenameLength = Little(entry, 48, 4);
+        if (filenameLength == 0 || filenameLength > 4094 || filenameLength % 2 != 0) {
+            return invalid;
+        }
+        const auto filename = data.Take(filenameLength);
+        std::vector<std::uint8_t> terminated(filename.begin(), filename.end());
+        terminated.resize(terminated.size() + 2);
+        const auto path = MdsFilename(terminated, 0, true, descriptor);
+        data.Take(4);
+        const auto sectors = signedNumber(entry, 44);
+        const auto length = Little(entry, 4, 4);
+        if (!data.Valid() || !path || sectors <= 0 || length == 0 || length % sectors != 0) {
+            return invalid;
+        }
+        const auto stride = length / sectors;
+        if (stride != 2048 && stride != 2336 && stride != 2352 && stride != 2368 &&
+            stride != 2448) {
+            return invalid;
+        }
+        const auto offset = Little(entry, 24, 4);
+        const auto fileSize = std::filesystem::file_size(*path, error);
+        if (error) {
+            return std::unexpected("Missing BlindWrite data file " + path->string() + ".");
+        }
+        if (offset > fileSize || length > fileSize - offset) {
+            return invalid;
+        }
+        const auto first = signedNumber(entry, 40);
+        blocks.push_back({*path,
+                          first,
+                          first + sectors,
+                          offset,
+                          static_cast<std::uint32_t>(stride),
+                          (Little(entry, 0, 4) & 0x8000) != 0});
+    }
+    if (!data.Valid() || data.Remaining() != 0) {
+        return invalid;
+    }
+    std::ranges::sort(blocks, {}, &Block::first);
+    for (std::size_t index = 1; index < blocks.size(); ++index) {
+        if (blocks[index - 1].end > blocks[index].first) {
+            return invalid;
+        }
+    }
+    std::vector<CueTrack> tracks;
+    std::int64_t previousEnd = INT32_MIN;
+    for (std::uint64_t session = 1; session <= sessions; ++session) {
+        const auto header = layout.Take(16);
+        if (header.size() != 16) {
+            return invalid;
+        }
+        const auto first = Little(header, 12, 2);
+        const auto last = Little(header, 14, 2);
+        const auto sessionStart = signedNumber(header, 4);
+        const auto sessionEnd = signedNumber(header, 8);
+        if (Little(header, 0, 2) != session || first != tracks.size() + 1 || last < first ||
+            last > 99 || header[2] < last - first + 1 || sessionEnd <= sessionStart ||
+            sessionStart < previousEnd) {
+            return invalid;
+        }
+        previousEnd = sessionEnd;
+        auto trackEnd = sessionStart;
+        for (unsigned index = 0; index < header[2]; ++index) {
+            const auto entry = layout.Take(64);
+            if (entry.size() != 64) {
+                return invalid;
+            }
+            const auto mode = entry[0];
+            if (mode == 0) {
+                continue;
+            }
+            if (mode != 6) {
+                layout.Take(8);
+            }
+            const auto pregap = Little(entry, 22, 4);
+            const auto start = signedNumber(entry, 42);
+            const auto length = signedNumber(entry, 46);
+            const auto end = start + length;
+            if (mode > 6 || !layout.Valid() || entry[12] != tracks.size() + 1 || entry[12] > last ||
+                Little(entry, 58, 4) != session || length <= 0 ||
+                pregap >= static_cast<std::uint64_t>(length) || start < trackEnd ||
+                start < sessionStart || end > sessionEnd) {
+                return invalid;
+            }
+            trackEnd = end;
+            CueTrack track;
+            track.number = entry[12];
+            track.audio = mode == 1;
+            track.sectorCount = static_cast<std::uint64_t>(length) - pregap;
+            auto position = start + static_cast<std::int64_t>(pregap);
+            for (const auto &block : blocks) {
+                if (position < block.first || position >= block.end) {
+                    continue;
+                }
+                if ((!track.extents.empty() && track.sectorSize != block.stride) ||
+                    block.audio != track.audio) {
+                    return invalid;
+                }
+                track.sectorSize = block.stride;
+                const auto next = std::min(end, block.end);
+                track.extents.push_back(
+                    {block.file,
+                     block.offset +
+                         static_cast<std::uint64_t>(position - block.first) * block.stride,
+                     static_cast<std::uint64_t>(next - position)});
+                position = next;
+                if (position == end) {
+                    break;
+                }
+            }
+            if (position != end || track.extents.empty() ||
+                (track.audio && track.sectorSize < RAW_SECTOR) ||
+                (!track.audio && mode == 2 && track.sectorSize == 2336)) {
+                return invalid;
+            }
+            track.file = track.extents.front().file;
+            track.dataOffset = track.sectorSize == 2048 ? 0 :
+                               track.sectorSize == 2336 ? 8 :
+                               mode == 2 || mode == 6   ? 16 :
+                                                          24;
+            tracks.push_back(std::move(track));
+        }
+        if (tracks.size() != last) {
+            return invalid;
+        }
+    }
+    return layout.Valid() && layout.Remaining() == 0 && DisjointExtents(tracks) ?
+               std::expected<std::vector<CueTrack>, std::string>(std::move(tracks)) :
+               invalid;
+}
+
+std::expected<std::vector<CueTrack>, std::string>
 MdsTracks(const std::filesystem::path &descriptor) {
     const auto invalid =
         std::unexpected(std::string("Invalid or unsupported Alcohol MDS metadata."));
@@ -1065,6 +1253,11 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
 std::expected<std::vector<CueTrack>, std::string>
 ReadDiscTracks(const std::filesystem::path &disc) {
     const auto extension = Lowercase(disc.extension().string());
+    if (extension == ".b5t" || extension == ".b6t" || extension == ".b5i" || extension == ".b6i") {
+        auto metadata = disc;
+        metadata.replace_extension(extension == ".b5t" || extension == ".b5i" ? ".b5t" : ".b6t");
+        return BlindWriteTracks(AdjacentFile(metadata));
+    }
     if (extension == ".cdi") {
         return CdiTracks(disc);
     }
