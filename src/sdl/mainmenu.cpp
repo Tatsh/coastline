@@ -74,9 +74,9 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
     menus->m_pak =
         ControllerPak(saves / "controller-pak", configPath.parent_path() / "controller-pak");
     menus->m_ghostFramesFile = saves / "ghost-frames.bin";
-    menus->LoadPakData();
     menus->m_config = &config;
     menus->m_configPath = configPath;
+    menus->LoadPakData();
     std::string country;
     int localeCount = 0;
     SDL_Locale **locales = SDL_GetPreferredLocales(&localeCount);

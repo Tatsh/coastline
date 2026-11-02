@@ -146,6 +146,12 @@ public:
     std::array<int, 2> CameraChoices() const {
         return m_cameraChoices;
     }
+    /**
+     * @return Whether the pause menu changed SFX volume during the current race, even if restored.
+     */
+    bool SfxVolumeAdjusted() const {
+        return m_sfxVolumeAdjusted;
+    }
 
 private:
     void StopMusic();
@@ -158,6 +164,8 @@ private:
     bool m_waitForStart = false;
     bool m_autopilot = false;
     bool m_soundHeld = false;
+    unsigned m_previousSfxVolume = 0;
+    bool m_sfxVolumeAdjusted = false;
 };
 
 /**

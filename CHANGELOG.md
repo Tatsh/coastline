@@ -133,6 +133,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- New installations default PC sound effects to 4/10. Automatic volume follows the sound source
+  (N64 10/10, PC 4/10); manual volume persists across source changes and restarts. Existing
+  Controller Pak volumes migrate as manual choices when no SFX volume preference is recorded.
 - Enter or keypad Enter exits instant replay. Escape or Enter skips Gamewin to the next season.
 - Gamewin uses the previous Championship track's N64 XM music, matching console behaviour;
   PC CD music selection remains unchanged.
@@ -220,6 +223,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- BGM and SFX volume controls are no longer incorrectly locked by imported menu flags.
+- Menu shutdown and rebuilding silence mixer channels before releasing samples, preventing a
+  use-after-free.
 - Race car images match regional selection previews, including AI, attract demos, and credits,
   fixing Japanese Type ES paint. Custom decals take precedence, and Pure PC uses PC images;
   race geometry and physics remain unchanged.

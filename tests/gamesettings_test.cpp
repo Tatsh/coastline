@@ -31,6 +31,29 @@ void File(const std::filesystem::path &path, const char *text) {
 int main() {
     using coastline::GameConfig;
     using coastline::GameSettings;
+    GameConfig volume;
+    assert(coastline::SoundEffectsVolume(volume, false) == 4);
+    assert(coastline::SoundEffectsVolume(volume, true) == 10);
+    assert(!volume.Get("Game", "SfxVolume"));
+    volume.Set("Game", "SfxVolume", "auto");
+    assert(coastline::ApplyGraphicsPreset(volume, "n64"));
+    assert(coastline::SoundEffectsVolume(volume, volume.Get("Game", "SoundEffects") == "N64") ==
+           10);
+    assert(coastline::ApplyGraphicsPreset(volume, "br"));
+    assert(coastline::SoundEffectsVolume(volume, volume.Get("Game", "SoundEffects") == "N64") == 4);
+    for (const auto level : {"0", "4", "7", "10"}) {
+        volume.Set("Game", "SfxVolume", level);
+        for (const auto preset : {"n64", "br", "ultra", "low-power", "worst"}) {
+            assert(coastline::ApplyGraphicsPreset(volume, preset));
+            assert(coastline::SoundEffectsVolume(volume, false) == std::stoi(level));
+            assert(coastline::SoundEffectsVolume(volume, true) == std::stoi(level));
+        }
+    }
+    for (const auto invalid : {"auto", "-1", "11", "broken", "999999999999999999999999"}) {
+        volume.Set("Game", "SfxVolume", invalid);
+        assert(coastline::SoundEffectsVolume(volume, false) == 4);
+        assert(coastline::SoundEffectsVolume(volume, true) == 10);
+    }
     GameConfig units;
     assert(coastline::SpeedInMph(units, "", ""));
     assert(coastline::SpeedInMph(units, "", "GB"));

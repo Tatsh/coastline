@@ -152,13 +152,18 @@ RaceSetup Menus::ChosenRace() const {
     return setup;
 }
 
-void Menus::FinishRace(RaceEnd end, const RaceResults &results) {
+void Menus::FinishRace(RaceEnd end, const RaceResults &results, bool sfxVolumeAdjusted) {
     // The race played at the levels of the race engine, and the levels its pause menu changed are
     // saved with the options.
     auto [musicLevel, sfxLevel] = RaceVolumeLevels();
     int music = MenuVolumeLevel(musicLevel, m_options.musicVolume);
     int sfx = MenuVolumeLevel(sfxLevel, m_options.sfxVolume);
-    if (music != m_options.musicVolume || sfx != m_options.sfxVolume) {
+    const bool sfxChanged = sfx != m_options.sfxVolume;
+    if (sfxChanged || sfxVolumeAdjusted) {
+        m_options.sfxVolume = sfx;
+        RememberSfxVolume();
+    }
+    if (music != m_options.musicVolume || sfxChanged) {
         m_options.musicVolume = music;
         m_options.sfxVolume = sfx;
         if (!SaveOptionsNote(0)) {

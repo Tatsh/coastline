@@ -213,7 +213,9 @@ struct MenuScreen::State {
 MenuScreen::MenuScreen(std::unique_ptr<State> state) : m_state(std::move(state)) {
 }
 
-MenuScreen::~MenuScreen() = default;
+MenuScreen::~MenuScreen() {
+    SilenceSounds();
+}
 
 std::unique_ptr<MenuScreen> MenuScreen::Load(SceneRenderer &renderer,
                                              const std::filesystem::path &release) {
@@ -477,10 +479,12 @@ void MenuScreen::DrawFade(SceneRenderer &renderer) const {
 
 void MenuScreen::SilenceSounds() {
     N64MixerLock lock;
+    g_dwSoundEffectEchoOffset = 0;
     for (auto &channel : g_aSoundEffectChannels) {
         channel.volume = 0;
         channel.mixVolume = 0;
         channel.step = 0;
+        channel.sample = g_SilenceSampleData;
     }
 }
 

@@ -1837,7 +1837,9 @@ int main(int argc, char *argv[]) {
                                 raceView.reset();
                                 frontEnd = FrontEnd::MainMenu;
                                 if (end != coastline::RaceEnd::Credits) {
-                                    mainMenu->FinishRace(end, raceSession.Results());
+                                    mainMenu->FinishRace(end,
+                                                         raceSession.Results(),
+                                                         raceSession.SfxVolumeAdjusted());
                                 } else {
                                     playMenuMusic();
                                     if (startCredits(true)) {

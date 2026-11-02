@@ -359,8 +359,12 @@ tracks; restarting a race retains a manually selected XM module.
 `PlayMusic=0` silences music in menus and races while sound effects remain independent.
 
 `Sound effects` selects PC or N64 samples (`SoundEffects=PC` or `SoundEffects=N64` under
-`[Game]`, with PC as the default). Changing samples reinitialises the game after Options closes
-and returns to the logos. Race sounds use the selected pack's converted WAV files. N64 samples
+`[Game]`, with PC as the default). New installs use volume 4/10 for PC or 10/10 for N64 until the
+SFX volume is adjusted. A manual volume persists across sample changes and restarts as `SfxVolume=0`
+through `SfxVolume=10` under `[Game]`; `SfxVolume=auto` restores the source-dependent default.
+Existing Controller Pak volumes migrate when no SfxVolume preference is recorded.
+Changing samples reinitialises the game after Options closes and returns to the logos. Race sounds
+use the selected pack's converted WAV files. N64 samples
 retain their duration and match the RMS level
 of their PC counterparts, limited to 98% peak amplitude. Missing N64 samples fall back to PC
 with a warning; PC taunts are silent in N64 mode. Menu navigation and adjustments use their

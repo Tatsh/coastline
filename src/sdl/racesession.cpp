@@ -162,6 +162,8 @@ void RaceSession::Start(const RaceSetup &setup, const std::filesystem::path &mus
     // ApplyAudioVolumeSettings() and the speedometer read the options of the menus.
     g_GlobalRallyConfig.dwMusicVolume = setup.musicVolume;
     g_GlobalRallyConfig.dwSfxVolume = setup.sfxVolume;
+    m_previousSfxVolume = g_GlobalRallyConfig.dwSfxVolume;
+    m_sfxVolumeAdjusted = false;
     g_bSpeedUnitsMph = setup.speedInMph ? 1 : 0;
     InitGameAndShowMenus();
     // The PC release races one player, and a championship of the PC release takes its track and
@@ -236,6 +238,10 @@ RaceEnd RaceSession::Step() {
     }
     bool loading = !g_dwRaceInitialized;
     CallCurrentGameMode();
+    if (g_GlobalRallyConfig.dwSfxVolume != m_previousSfxVolume) {
+        m_sfxVolumeAdjusted = true;
+        m_previousSfxVolume = g_GlobalRallyConfig.dwSfxVolume;
+    }
     // The PC release lays out the views with each frame it draws, and the race lays them out at
     // its load before it knows how many players race. The SDL game lays them out again once the
     // race has loaded.

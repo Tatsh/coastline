@@ -263,9 +263,18 @@ void Menus::LoadPakData() {
         ReadProfile(m_secondProfile, *season);
     }
     auto options = m_pak.ReadNote(OPTIONS_NOTE);
-    if (options && options->size() >= OPTIONS_HALF_SIZE + EQUIPMENT_SIZE) {
+    const bool savedOptions = options && options->size() >= OPTIONS_HALF_SIZE + EQUIPMENT_SIZE;
+    if (savedOptions) {
         ReadOptions(m_options, *options);
         SetEquipment(m_profile, *options, OPTIONS_HALF_SIZE);
+    }
+    if (m_config) {
+        // Existing Controller Pak volumes predate the automatic source-dependent default.
+        if (!m_config->Get("Game", "SfxVolume")) {
+            RememberSfxVolume(!savedOptions);
+        }
+        m_options.sfxVolume =
+            SoundEffectsVolume(*m_config, m_config->Get("Game", "SoundEffects") == "N64");
     }
     ApplyVolumeSettings();
 }
@@ -276,6 +285,21 @@ void Menus::ApplyVolumeSettings() const {
         std::clamp(m_options.musicVolume, 0, MAX_VOLUME_LEVEL))];
     g_bSfxMasterVolume = SFX_VOLUME_LEVELS[static_cast<std::size_t>(
         std::clamp(m_options.sfxVolume, 0, MAX_VOLUME_LEVEL))];
+}
+
+bool Menus::RememberSfxVolume(bool automatic) {
+    if (!m_config) {
+        return true;
+    }
+    const auto original = *m_config;
+    m_config->Set("Game", "SfxVolume", automatic ? "auto" : std::to_string(m_options.sfxVolume));
+    m_gameSettingsSaveError = !m_config->Save(m_configPath);
+    if (m_gameSettingsSaveError) {
+        *m_config = original;
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot save SFX volume.");
+        return false;
+    }
+    return true;
 }
 
 bool Menus::RememberSpeedUnits() {
@@ -424,6 +448,7 @@ bool Menus::ProcessPakDataScreen(SceneRenderer &renderer, int dataType) {
         }
         ReadOptions(m_options, *m_pakNote);
         RememberSpeedUnits();
+        RememberSfxVolume();
         SetEquipment(ProfileOf(player), *m_pakNote, OPTIONS_HALF_SIZE);
         m_pakDataStep = PAK_DATA_STEP_DONE;
         break;
@@ -617,7 +642,12 @@ void Menus::ProcessOptionsMenu(SceneRenderer &renderer, float seconds, const Men
         if (m_optionsMenuSelection == OPTIONS_ITEM_BGM) {
             step(m_options.musicVolume, result == MenuResult::Up ? 1 : -1);
         } else if (m_optionsMenuSelection == OPTIONS_ITEM_SFX) {
+            const int original = m_options.sfxVolume;
             step(m_options.sfxVolume, result == MenuResult::Up ? 1 : -1);
+            if (!RememberSfxVolume()) {
+                m_options.sfxVolume = original;
+                ApplyVolumeSettings();
+            }
         } else if (m_optionsMenuSelection == OPTIONS_ITEM_UNITS) {
             ToggleSpeedUnits();
         }
@@ -915,6 +945,7 @@ bool Menus::LoadSaveLoadNote(int player) {
         }
         ReadOptions(m_options, note);
         RememberSpeedUnits();
+        RememberSfxVolume();
         SetEquipment(ProfileOf(player), note, OPTIONS_HALF_SIZE);
         ApplyVolumeSettings();
         m_saveLoadStep = SAVE_LOAD_STEP_DONE;

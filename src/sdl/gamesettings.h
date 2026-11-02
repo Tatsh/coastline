@@ -38,6 +38,15 @@ bool ApplyGraphicsPreset(GameConfig &config, std::string_view preset);
  */
 bool SpeedInMph(const GameConfig &config, std::string_view region, std::string_view country);
 
+/**
+ * Resolve SFX volume from a manual preference or the selected sample source.
+ *
+ * @param config Saved settings. Game.SfxVolume accepts 0 through 10; other values are automatic.
+ * @param n64 Whether N64 sound effects are selected.
+ * @return The manual volume, or 10 for N64 samples and 4 for PC samples.
+ */
+int SoundEffectsVolume(const GameConfig &config, bool n64);
+
 /** Persistent game choices for the options menu. */
 class GameSettings {
 public:

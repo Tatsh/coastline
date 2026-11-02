@@ -11,6 +11,10 @@
 
 namespace coastline {
 
+int SoundEffectsVolume(const GameConfig &config, bool n64) {
+    return config.GetIndex("Game", "SfxVolume", 11, n64 ? 10 : 4);
+}
+
 bool SpeedInMph(const GameConfig &config, std::string_view region, std::string_view country) {
     const auto units = config.Get("Game", "Units");
     if (units == "mph" || units == "kph") {

@@ -44,7 +44,7 @@ constexpr u32 MENU_ITEM_MIRRORED_MODEL = 0x10;
 constexpr u32 MENU_ITEM_FIRST_PLAYER = 0x20;
 
 /** The flag of an item that cannot be chosen, without a reason shown. */
-constexpr u32 MENU_ITEM_LOCKED = 0x40;
+constexpr u32 MENU_ITEM_LOCKED = 0x80000000;
 
 /** The presses of a controller that act on a menu, each true on the frame it starts. */
 struct MenuButtons {

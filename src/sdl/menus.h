@@ -61,7 +61,7 @@ struct MenuProfile {
 /** The settings of the options menu, as OptionSettings of the console. */
 struct MenuOptions {
     int musicVolume = 10;   /*!< The level of the music, from 0 for silence to 10. */
-    int sfxVolume = 10;     /*!< The level of the sound effects, from 0 for silence to 10. */
+    int sfxVolume = 4;      /*!< The level of the sound effects, from 0 for silence to 10. */
     bool speedInMph = true; /*!< Whether speeds show in miles an hour rather than kilometres. */
 };
 
@@ -225,8 +225,10 @@ public:
      *
      * @param end How the race ended.
      * @param results The results of the race, read when it ended with RaceEnd::Results.
+     * @param sfxVolumeAdjusted Whether the pause menu changed SFX volume during the race,
+     * even if later restored to its initial level.
      */
-    void FinishRace(RaceEnd end, const RaceResults &results);
+    void FinishRace(RaceEnd end, const RaceResults &results, bool sfxVolumeAdjusted = false);
 
     /** Show the options menu again after the race of the credits it started. */
     void FinishCredits();
@@ -247,6 +249,12 @@ public:
      * @param overrides Per-run settings that are never written to the user's INI file.
      */
     void SetOptionOverrides(GameConfig overrides) {
+        if (m_config) {
+            const auto source = overrides.Get("Game", "SoundEffects")
+                                    .value_or(m_config->Get("Game", "SoundEffects").value_or("PC"));
+            m_options.sfxVolume = SoundEffectsVolume(*m_config, source == "N64");
+            ApplyVolumeSettings();
+        }
         if (m_gameSettings) {
             m_gameSettings->SetOverrides(std::move(overrides));
         }
@@ -350,6 +358,7 @@ private:
     void LoadPakData();
     void ApplyVolumeSettings() const;
     bool RememberSpeedUnits();
+    bool RememberSfxVolume(bool automatic = false);
     void ToggleSpeedUnits();
     bool SaveOptionsNote(int player) const;
     bool SaveSeasonNote(const MenuProfile &profile) const;
