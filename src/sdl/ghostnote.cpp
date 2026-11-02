@@ -7,6 +7,7 @@
 #include <iterator>
 #include <system_error>
 
+#include "common/ghost.h"
 #include "common/rle.h"
 #include "savefile.h"
 
@@ -75,6 +76,10 @@ bool SwapBlockLengths(std::span<u8> packed, bool fromConsole) {
 } // namespace
 
 std::optional<std::vector<u8>> PackGhostNote(std::span<const u8> recording) {
+    if (recording.size() < 10 || recording.size() > GHOST_RECORDING_CAPACITY ||
+        (recording.size() - 8) % GHOST_CHANNELS != 0) {
+        return std::nullopt;
+    }
     // The scan reads a byte past the end of the recording.
     std::vector<u8> padded(recording.begin(), recording.end());
     padded.resize(padded.size() + GHOST_CHANNELS);
@@ -91,6 +96,9 @@ std::optional<std::vector<u8>> PackGhostNote(std::span<const u8> recording) {
 }
 
 std::optional<std::vector<u8>> UnpackGhostNote(std::span<const u8> note) {
+    if (note.size() != GHOST_NOTE_SIZE) {
+        return std::nullopt;
+    }
     std::vector<u8> compressed(note.begin(), note.end());
     if (!SwapBlockLengths(compressed, true)) {
         return std::nullopt;
@@ -119,7 +127,8 @@ std::vector<u8> PackGhostFrames(std::span<const u8> recording, std::span<const u
 
 std::optional<std::vector<u8>> GhostFramesFor(std::span<const u8> file,
                                               std::span<const u8> recording) {
-    if (file.size() < FRAMES_MAGIC.size() ||
+    if (recording.size() < 10 || recording.size() > GHOST_RECORDING_CAPACITY ||
+        (recording.size() - 8) % GHOST_CHANNELS != 0 || file.size() < FRAMES_MAGIC.size() ||
         !std::equal(FRAMES_MAGIC.begin(), FRAMES_MAGIC.end(), file.begin())) {
         return std::nullopt;
     }
@@ -133,7 +142,8 @@ std::optional<std::vector<u8>> GhostFramesFor(std::span<const u8> file,
     at += *recordingSize;
     auto framesSize = GetLittle32(file, at);
     at += 4;
-    if (!framesSize || *framesSize != file.size() - at) {
+    if (!framesSize || *framesSize != file.size() - at || *framesSize % GHOST_FRAME_SIZE != 0 ||
+        *framesSize / GHOST_FRAME_SIZE > GHOST_MAX_FRAMES) {
         return std::nullopt;
     }
     return std::vector<u8>(file.begin() + static_cast<std::ptrdiff_t>(at), file.end());
@@ -142,14 +152,23 @@ std::optional<std::vector<u8>> GhostFramesFor(std::span<const u8> file,
 bool SaveGhostFrames(const std::filesystem::path &path,
                      std::span<const u8> recording,
                      std::span<const u8> frames) {
+    if (recording.size() < 10 || recording.size() > GHOST_RECORDING_CAPACITY ||
+        (recording.size() - 8) % GHOST_CHANNELS != 0 || frames.size() % GHOST_FRAME_SIZE != 0 ||
+        frames.size() / GHOST_FRAME_SIZE > GHOST_MAX_FRAMES) {
+        return false;
+    }
     auto file = PackGhostFrames(recording, frames);
-    return WriteSaveFile(path, file);
+    return WriteVerifiedSaveFile(path, file);
 }
 
 std::optional<std::vector<u8>> LoadGhostFrames(const std::filesystem::path &path,
                                                std::span<const u8> recording) {
-    const auto file = ReadSaveFile(path, 64 * 1024 * 1024);
-    return file ? GhostFramesFor(*file, recording) : std::nullopt;
+    std::optional<std::vector<u8>> frames;
+    ReadVerifiedSaveFile(path, 64 * 1024 * 1024, true, [&](std::span<const u8> file) {
+        frames = GhostFramesFor(file, recording);
+        return frames.has_value();
+    });
+    return frames;
 }
 
 } // namespace coastline

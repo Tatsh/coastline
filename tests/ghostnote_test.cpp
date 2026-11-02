@@ -89,6 +89,8 @@ void TestLargeAndBrokenNotes() {
     Check(!coastline::UnpackGhostNote(broken), "a length past the end does not unpack");
     std::vector<u8> empty(coastline::GHOST_NOTE_SIZE, 0);
     Check(!coastline::UnpackGhostNote(empty), "a note with empty channels does not unpack");
+    Check(!coastline::UnpackGhostNote({}), "an empty note is rejected before decompression");
+    Check(!coastline::PackGhostNote({}), "an empty recording does not pack");
 }
 
 void TestFrames() {
@@ -119,6 +121,13 @@ void TestFrames() {
     Check(coastline::SaveGhostFrames(path, recording, frames), "the frames are saved");
     auto loaded = coastline::LoadGhostFrames(path, recording);
     Check(loaded && *loaded == frames, "the saved frames load with their recording");
+    Check(!coastline::LoadGhostFrames(path, other), "stale poses for another recording reset");
+    Check(!std::filesystem::exists(path), "stale poses are removed");
+    Check(coastline::SaveGhostFrames(path, recording, frames), "the frames can be restored");
+    const std::vector<u8> partial{1, 2, 3};
+    Check(!coastline::SaveGhostFrames(path, recording, partial), "partial frames cannot be saved");
+    Check(!coastline::GhostFramesFor(coastline::PackGhostFrames(recording, partial), recording),
+          "partial frames are rejected on read");
     std::filesystem::remove_all(directory);
 }
 

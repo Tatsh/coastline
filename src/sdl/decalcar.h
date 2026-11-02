@@ -81,10 +81,10 @@ public:
     /** @return The versioned image-layout fingerprint, or an empty header for console decals. */
     std::vector<u8> NoteHeader() const;
     /**
-     * Validate the save header and complete image-layer payload before loading.
+     * Validate the save header, complete panel payloads, and palette before loading.
      *
      * @param note The saved note bytes.
-     * @return Whether image-layer data matches this model and is complete; true for console notes.
+     * @return Whether saved data matches this model and includes every editable panel and palette.
      */
     bool ValidNote(std::span<const u8> note) const;
     /**

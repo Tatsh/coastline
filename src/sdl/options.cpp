@@ -14,6 +14,7 @@
 #include "language.h"
 #include "menus.h"
 #include "menutext.h"
+#include "notesafety.h"
 #include "stringresources.h"
 #include "volumelevels.h"
 
@@ -62,9 +63,7 @@ constexpr std::size_t SEASON_NOTE_SIZE = 0x200;
 constexpr std::size_t OPTIONS_NOTE_SIZE = 0x100;
 constexpr std::size_t OPTIONS_HALF_SIZE = 0x80;
 
-// The bytes of the profile of a player in the note of a season, and of the equipment of a car in
-// the note of the options: handling, gearbox, tyres, suspension, and button layout.
-constexpr std::size_t PROFILE_SIZE = 0x128;
+// The equipment of the car, in handling, gearbox, tyre, suspension, and button-layout order.
 constexpr std::size_t EQUIPMENT_SIZE = 5 * 4;
 
 // The data ProcessPakDataScreen() loads or saves.
@@ -135,12 +134,12 @@ enum SaveLoadStep {
 };
 
 // The notes are in the byte order of the console.
-u32 Get32(const std::vector<u8> &bytes, std::size_t at) {
+u32 Get32(std::span<const u8> bytes, std::size_t at) {
     return static_cast<u32>(bytes[at]) << 24 | static_cast<u32>(bytes[at + 1]) << 16 |
            static_cast<u32>(bytes[at + 2]) << 8 | bytes[at + 3];
 }
 
-u16 Get16(const std::vector<u8> &bytes, std::size_t at) {
+u16 Get16(std::span<const u8> bytes, std::size_t at) {
     return static_cast<u16>(bytes[at] << 8 | bytes[at + 1]);
 }
 
@@ -258,22 +257,18 @@ bool Menus::LoadOptionsItems(SceneRenderer &renderer, const std::filesystem::pat
 
 void Menus::LoadPakData() {
     // The quiet loads of the season and of the configuration as the console boots.
-    auto season = m_pak.ReadNote(SEASON_NOTE);
+    auto season = ReadSavedNote(SEASON_NOTE);
     if (season && SeasonNoteIsValid(*season)) {
         ReadProfile(m_profile, *season);
         ReadProfile(m_secondProfile, *season);
     }
-    auto options = m_pak.ReadNote(OPTIONS_NOTE);
+    auto options = ReadSavedNote(OPTIONS_NOTE);
     const bool savedOptions = options && options->size() >= OPTIONS_HALF_SIZE + EQUIPMENT_SIZE;
     if (savedOptions) {
         ReadOptions(m_options, *options);
         SetEquipment(m_profile, *options, OPTIONS_HALF_SIZE);
     }
     if (m_config) {
-        // Existing Controller Pak volumes predate the automatic source-dependent default.
-        if (!m_config->Get("Game", "SfxVolume")) {
-            RememberSfxVolume(!savedOptions);
-        }
         m_options.sfxVolume =
             SoundEffectsVolume(*m_config, m_config->Get("Game", "SoundEffects") == "N64");
     }
@@ -337,7 +332,7 @@ bool Menus::SaveOptionsNote(int player) const {
 }
 
 bool Menus::SaveSeasonNote(const MenuProfile &profile) const {
-    auto note = m_pak.ReadNote(SEASON_NOTE).value_or(std::vector<u8>());
+    auto note = ReadSavedNote(SEASON_NOTE).value_or(std::vector<u8>());
     note.resize(SEASON_NOTE_SIZE);
     WriteProfile(note, profile);
     return m_pak.WriteNote(SEASON_NOTE, note);
@@ -414,9 +409,9 @@ bool Menus::ProcessPakDataScreen(SceneRenderer &renderer, int dataType) {
         break;
 
     case PAK_DATA_STEP_FIND:
-        m_pakNote = m_pak.ReadNote(dataType == PAK_DATA_LOAD_SEASON ? SEASON_NOTE :
-                                   dataType == PAK_DATA_LOAD_GHOST  ? GHOST_NOTE :
-                                                                      OPTIONS_NOTE);
+        m_pakNote = ReadSavedNote(dataType == PAK_DATA_LOAD_SEASON ? SEASON_NOTE :
+                                  dataType == PAK_DATA_LOAD_GHOST  ? GHOST_NOTE :
+                                                                     OPTIONS_NOTE);
         if (m_pakNote) {
             m_pakDataStep =
                 dataType == PAK_DATA_SAVE_CONFIGURATION ? PAK_DATA_STEP_SAVE : PAK_DATA_STEP_LOAD;
@@ -854,8 +849,36 @@ void Menus::DrawConfirmOverwrite() {
     draw.DrawTexturedSprite(*draw.m_buttonB, 0x135, buttonY);
 }
 
-bool Menus::SeasonNoteIsValid(const std::vector<u8> &note) const {
-    if (note.size() < PROFILE_SIZE) {
+std::optional<std::vector<u8>> Menus::ReadSavedNote(const std::string &name) const {
+    const NoteEquipmentCounts counts{m_handlingOptions.size(),
+                                     m_transmissionOptions.size(),
+                                     m_tiresOptions.size(),
+                                     m_suspensionOptions.size(),
+                                     m_controllerLayoutPictures.size()};
+    return m_pak.ReadNote(name, [&](std::span<const u8> note) {
+        if (name == SEASON_NOTE) {
+            return SeasonNoteIsValid(note);
+        }
+        if (name == OPTIONS_NOTE) {
+            return ValidOptionsNote(note, counts);
+        }
+        if (name == GHOST_NOTE) {
+            const auto recording = UnpackGhostNote(note);
+            return recording &&
+                   ValidGhostRecording(
+                       *recording, static_cast<std::size_t>(m_numTracks), m_cars.size(), counts);
+        }
+        return false;
+    });
+}
+
+bool Menus::SeasonNoteIsValid(std::span<const u8> note) const {
+    const NoteEquipmentCounts counts{m_handlingOptions.size(),
+                                     m_transmissionOptions.size(),
+                                     m_tiresOptions.size(),
+                                     m_suspensionOptions.size(),
+                                     m_controllerLayoutPictures.size()};
+    if (!ValidSeasonNoteValues(note, counts)) {
         return false;
     }
     // A note edited or damaged outside the game could name a season or a race past the
@@ -864,7 +887,7 @@ bool Menus::SeasonNoteIsValid(const std::vector<u8> &note) const {
     int round = note[0x05];
     auto unlocks = static_cast<unsigned>(Get16(note, 0xCC));
     unsigned cars = 0;
-    for (std::size_t car = 0; car < m_cars.size(); ++car) {
+    for (std::size_t car = 0; car < m_cars.size() && car < 32; ++car) {
         if (m_cars[car].championship) {
             cars |= 1u << car;
         }
@@ -902,10 +925,14 @@ bool Menus::ReadSeasonNote(const std::vector<u8> &note, int player, bool otherRe
 
 bool Menus::ReadGhostNote(const std::vector<u8> &note) {
     auto recording = UnpackGhostNote(note);
-    // A recording written elsewhere may have any track and car.
-    if (!recording || recording->size() < RECORDING_HEADER_SIZE + 2 ||
-        (recording->size() - RECORDING_HEADER_SIZE) % 2 != 0 || (*recording)[0] >= m_numTracks ||
-        static_cast<std::size_t>((*recording)[1]) >= m_cars.size()) {
+    const NoteEquipmentCounts counts{m_handlingOptions.size(),
+                                     m_transmissionOptions.size(),
+                                     m_tiresOptions.size(),
+                                     m_suspensionOptions.size(),
+                                     m_controllerLayoutPictures.size()};
+    if (!recording ||
+        !ValidGhostRecording(
+            *recording, static_cast<std::size_t>(m_numTracks), m_cars.size(), counts)) {
         return false;
     }
     m_ghostFrames = LoadGhostFrames(m_ghostFramesFile, *recording).value_or(std::vector<u8>());
@@ -1084,7 +1111,7 @@ void Menus::ProcessDataSaveLoadMenu(SceneRenderer &renderer,
         break;
 
     case SAVE_LOAD_STEP_FIND:
-        m_pakNote = m_pak.ReadNote(noteName);
+        m_pakNote = ReadSavedNote(noteName);
         if (m_pakNote) {
             if (load) {
                 m_saveLoadStep = SAVE_LOAD_STEP_LOAD;

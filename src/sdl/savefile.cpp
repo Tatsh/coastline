@@ -1,6 +1,7 @@
 #include "savefile.h"
 
 #include <algorithm>
+#include <array>
 #include <atomic>
 #include <cerrno>
 #include <chrono>
@@ -10,6 +11,8 @@
 #include <string>
 #include <system_error>
 #include <utility>
+
+#include "sha1.h"
 
 #ifdef _WIN32
 #ifndef NOMINMAX
@@ -25,6 +28,9 @@
 
 namespace coastline {
 namespace {
+
+constexpr std::array<std::uint8_t, 8> SAVE_SIGNATURE{'C', 'o', 'a', 's', 't', 'S', 'V', '1'};
+constexpr std::size_t SAVE_HEADER_BYTES = SAVE_SIGNATURE.size() + 8 + 40;
 
 std::filesystem::path Parent(const std::filesystem::path &path) {
     return path.has_parent_path() ? path.parent_path() : std::filesystem::path(".");
@@ -262,6 +268,69 @@ bool WriteSaveFile(const std::filesystem::path &path, std::span<const std::uint8
 
 bool WriteSaveFile(const std::filesystem::path &path, std::string_view text) {
     return WriteSaveFile(path, {reinterpret_cast<const std::uint8_t *>(text.data()), text.size()});
+}
+
+std::optional<std::vector<std::uint8_t>>
+ReadVerifiedSaveFile(const std::filesystem::path &path,
+                     std::size_t limit,
+                     bool resetInvalid,
+                     const SavePayloadValidator &validate) {
+    if (limit > std::numeric_limits<std::size_t>::max() - SAVE_HEADER_BYTES) {
+        return std::nullopt;
+    }
+    auto save = SaveFile::Open(path);
+    if (!save) {
+        return std::nullopt;
+    }
+    auto file = save->Read(limit + SAVE_HEADER_BYTES);
+    if (!file) {
+        std::error_code error;
+        const auto size = std::filesystem::file_size(path, error);
+        if (resetInvalid && !error && size > limit + SAVE_HEADER_BYTES) {
+            save->Remove();
+        }
+        return std::nullopt;
+    }
+    bool valid =
+        file->size() >= SAVE_HEADER_BYTES &&
+        std::ranges::equal(SAVE_SIGNATURE,
+                           std::span<const std::uint8_t>(*file).first(SAVE_SIGNATURE.size()));
+    if (valid) {
+        std::uint64_t length = 0;
+        for (std::size_t index = 0; index < 8; ++index) {
+            length |= static_cast<std::uint64_t>((*file)[SAVE_SIGNATURE.size() + index])
+                      << (index * 8);
+        }
+        const auto payload = std::span<const std::uint8_t>(*file).subspan(SAVE_HEADER_BYTES);
+        const std::string_view checksum(
+            reinterpret_cast<const char *>(file->data() + SAVE_SIGNATURE.size() + 8), 40);
+        valid = length == payload.size() && Tools::Common::sha1Hex(payload) == checksum &&
+                (!validate || validate(payload));
+    }
+    if (!valid) {
+        if (resetInvalid) {
+            save->Remove();
+        }
+        return std::nullopt;
+    }
+    file->erase(file->begin(), file->begin() + static_cast<std::ptrdiff_t>(SAVE_HEADER_BYTES));
+    return file;
+}
+
+bool WriteVerifiedSaveFile(const std::filesystem::path &path, std::span<const std::uint8_t> bytes) {
+    if (bytes.size() > std::numeric_limits<std::size_t>::max() - SAVE_HEADER_BYTES) {
+        return false;
+    }
+    std::vector<std::uint8_t> file(SAVE_SIGNATURE.begin(), SAVE_SIGNATURE.end());
+    file.reserve(SAVE_HEADER_BYTES + bytes.size());
+    for (std::size_t index = 0; index < 8; ++index) {
+        file.push_back(
+            static_cast<std::uint8_t>(static_cast<std::uint64_t>(bytes.size()) >> (index * 8)));
+    }
+    const auto checksum = Tools::Common::sha1Hex(bytes);
+    file.insert(file.end(), checksum.begin(), checksum.end());
+    file.insert(file.end(), bytes.begin(), bytes.end());
+    return WriteSaveFile(path, file);
 }
 
 } // namespace coastline

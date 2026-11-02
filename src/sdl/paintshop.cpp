@@ -2201,11 +2201,8 @@ ControllerPak PaintShop::DecalPak(const DecalCar &car) const {
 }
 
 std::optional<std::vector<u8>> PaintShop::ReadDecalNote(const DecalCar &car) const {
-    auto note = DecalPak(car).ReadNote(car.DecalNote());
-    if (!note && car.DecalNote() == "COASTLINE MT") {
-        note = m_pak.ReadNote(car.DecalNote());
-    }
-    return note;
+    return DecalPak(car).ReadNote(car.DecalNote(),
+                                  [&](std::span<const u8> note) { return car.ValidNote(note); });
 }
 
 bool PaintShop::LoadDecalsQuietly(DecalCar &car) {

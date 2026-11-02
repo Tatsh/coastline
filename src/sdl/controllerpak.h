@@ -3,7 +3,8 @@
 /**
  * @file
  * The Controller Pak of the first controller of the console as a directory of the game, a file for
- * each note, named after the note.
+ * each note, named after the note. Internal files include a verified integrity header; native
+ * Controller Pak images retain their original format during import and export.
  */
 
 #include <cstddef>
@@ -13,6 +14,8 @@
 #include <span>
 #include <string>
 #include <vector>
+
+#include "savefile.h"
 
 namespace coastline {
 
@@ -48,22 +51,26 @@ public:
                            std::filesystem::path settingsDirectory = {});
 
     /**
-     * @param name The name of the note.
-     * @return The bytes of the note, or nothing when the pak does not have it.
+     * Validate the note's integrity header and checksum, attempting to delete corrupt saves.
+     *
+     * @param name An ASCII note filename without path separators or reserved metadata names.
+     * @param validate Optional semantic validator; rejection attempts deletion under the note lock.
+     * @return Native note bytes, or an empty optional when missing, unreadable, or rejected.
      */
-    std::optional<std::vector<std::uint8_t>> ReadNote(const std::string &name) const;
+    std::optional<std::vector<std::uint8_t>>
+    ReadNote(const std::string &name, const SavePayloadValidator &validate = {}) const;
 
     /**
-     * Write a note whole, creating it when the pak does not have it.
+     * Atomically write a complete note with its integrity header and checksum.
      *
-     * @param name The name of the note.
-     * @param bytes The bytes of the note.
+     * @param name An ASCII note filename without path separators or reserved metadata names.
+     * @param bytes Non-empty native note bytes, at most PAK_IMAGE_BYTES.
      * @return Whether the note was written.
      */
     bool WriteNote(const std::string &name, std::span<const std::uint8_t> bytes) const;
 
     /**
-     * @param name The name of the note.
+     * @param name An ASCII note filename without path separators or reserved metadata names.
      * @return Whether the note was deleted.
      */
     bool DeleteNote(const std::string &name) const;

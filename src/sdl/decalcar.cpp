@@ -256,11 +256,21 @@ std::vector<u8> DecalCar::NoteHeader() const {
 
 bool DecalCar::ValidNote(std::span<const u8> note) const {
     const auto header = NoteHeader();
-    std::size_t size = header.size();
-    if (m_imagePanels) {
-        size += PALETTE_BYTES;
-        for (const auto &texture : m_imageTextures) {
-            size += static_cast<std::size_t>((texture.width + 1) / 2 * texture.height);
+    std::size_t size = header.size() + PALETTE_BYTES;
+    const bool console = DecalNote() == "TOP GEAR DECALS";
+    for (int panel = 0; panel < PanelCount(); ++panel) {
+        if (!HasMaterial(panel)) {
+            continue;
+        }
+        const auto texture = Texture(panel);
+        const auto width = static_cast<std::size_t>(texture.width);
+        auto height = static_cast<std::size_t>(texture.height);
+        if (console && panel < 2) {
+            ++height;
+        }
+        size += ((width + 1) / 2) * height;
+        if (size > note.size()) {
+            return false;
         }
     }
     return note.size() >= size && std::equal(header.begin(), header.end(), note.begin());

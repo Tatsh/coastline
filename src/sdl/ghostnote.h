@@ -35,7 +35,7 @@ inline constexpr std::size_t GHOST_RECORDING_CAPACITY = 0xDE5C;
  * the length of each channel first in the byte order of the console. The rest of the note is zero.
  *
  * @param recording The recording, its header included.
- * @return The note, or nothing when the recording does not fit in it.
+ * @return The note, or an empty optional when the recording has an invalid length or does not fit.
  */
 std::optional<std::vector<u8>> PackGhostNote(std::span<const u8> recording);
 
@@ -43,8 +43,8 @@ std::optional<std::vector<u8>> PackGhostNote(std::span<const u8> recording);
  * Expand the note of a ghost car into its recording.
  *
  * @param note The note.
- * @return The recording, its header included, or nothing for a note whose channel lengths pass its
- * end or whose recording is shorter than 2 bytes or longer than GHOST_RECORDING_CAPACITY.
+ * @return The recording, including its header, or an empty optional for an incorrectly sized note,
+ * channel lengths past the note's end, or a recording outside [2, GHOST_RECORDING_CAPACITY] bytes.
  */
 std::optional<std::vector<u8>> UnpackGhostNote(std::span<const u8> note);
 
@@ -63,18 +63,19 @@ std::vector<u8> PackGhostFrames(std::span<const u8> recording, std::span<const u
  *
  * @param file The file.
  * @param recording The recording of the console.
- * @return The frames, or nothing when the file is broken or was stored with another recording.
+ * @return Complete compact frames, or an empty optional for malformed lengths, excessive frame
+ * counts, broken files, or data stored with another recording.
  */
 std::optional<std::vector<u8>> GhostFramesFor(std::span<const u8> file,
                                               std::span<const u8> recording);
 
 /**
- * Write the file of PackGhostFrames(), creating its directory.
+ * Atomically write the payload of PackGhostFrames() with a verified integrity header.
  *
  * @param path The file.
  * @param recording The recording of the console.
  * @param frames The frames, GHOST_FRAME_SIZE bytes each.
- * @return Whether the file was written.
+ * @return Whether the buffers have valid lengths and the file was written.
  */
 bool SaveGhostFrames(const std::filesystem::path &path,
                      std::span<const u8> recording,
@@ -85,7 +86,9 @@ bool SaveGhostFrames(const std::filesystem::path &path,
  *
  * @param path The file.
  * @param recording The recording of the console.
- * @return The result of GhostFramesFor(), or nothing when the file cannot be read.
+ * @return The result of GhostFramesFor(), or an empty optional when the file cannot be read.
+ * Invalid checksums, malformed payloads, and frames for another recording trigger an attempt to
+ * delete the sidecar under its lock.
  */
 std::optional<std::vector<u8>> LoadGhostFrames(const std::filesystem::path &path,
                                                std::span<const u8> recording);

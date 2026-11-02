@@ -882,6 +882,7 @@ noserviceprovider
 nostartfiles
 nostdinc
 nostdlib
+notesafety
 notlobbied
 notloggedin
 nsis

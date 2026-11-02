@@ -76,6 +76,27 @@ int main() {
     }
     auto car = coastline::DecalCar::Load(root);
     assert(car && car->Texture(2).width == 16);
+    assert(!car->ValidNote({}));
+    assert(!car->ValidNote(std::vector<u8>(32)));
+    assert(car->ValidNote(std::vector<u8>(0x3e00)));
+    const auto milkDirectory = root / "milk-truck";
+    std::filesystem::create_directories(milkDirectory);
+    std::filesystem::copy_file(root / "model.gltf", milkDirectory / "model.gltf");
+    std::filesystem::copy_file(root / "mesh.bin", milkDirectory / "mesh.bin");
+    for (const auto &image : model->images) {
+        std::filesystem::copy_file(root / image.uri, milkDirectory / image.uri);
+    }
+    const auto milk = coastline::DecalCar::Load(milkDirectory);
+    assert(milk && milk->DecalNote() == "COASTLINE MT");
+    std::size_t milkBytes = 32;
+    for (int panel = 0; panel < milk->PanelCount(); ++panel) {
+        if (milk->HasMaterial(panel)) {
+            const auto texture = milk->Texture(panel);
+            milkBytes += static_cast<std::size_t>((texture.width + 1) / 2 * texture.height);
+        }
+    }
+    assert(milk->ValidNote(std::vector<u8>(milkBytes)));
+    assert(!milk->ValidNote(std::vector<u8>(milkBytes - 1)));
     car->Texels(0)[0] = 0xab;
     car->SetPaletteColor(2, 0, 0xf801);
     assert(car->WriteImages(root / "painted"));

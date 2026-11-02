@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cctype>
 #include <fstream>
 #include <iterator>
 #include <string_view>
@@ -26,6 +27,20 @@ constexpr std::size_t IMAGE_PAGES = PAK_IMAGE_BYTES / PAK_PAGE_BYTES;
 
 // mupen64plus stores the paks of the four controllers in one file.
 constexpr std::size_t FOUR_PAK_IMAGE_BYTES = 4 * PAK_IMAGE_BYTES;
+
+bool ValidNoteName(std::string_view name) {
+    if (name.empty() || name.back() == '.' || name.back() == ' ' ||
+        std::ranges::any_of(name, [](unsigned char value) {
+            return value < 0x20 || value >= 0x7f || value == '/' || value == '\\' || value == ':';
+        })) {
+        return false;
+    }
+    std::string lower(name);
+    std::ranges::transform(lower, lower.begin(), [](unsigned char value) {
+        return static_cast<char>(std::tolower(value));
+    });
+    return !lower.ends_with(".lock") && !lower.starts_with(".coastline-save-");
+}
 
 // The places of the identity block and its copies on page 0, and its size.
 constexpr std::array<std::size_t, 4> IDENTITY_BLOCKS{0x20, 0x60, 0x80, 0xC0};
@@ -125,15 +140,26 @@ const std::filesystem::path &ControllerPak::DirectoryOf(const std::string &name)
     return name == PAK_SETTINGS_NOTE ? m_settingsDirectory : m_directory;
 }
 
-std::optional<std::vector<std::uint8_t>> ControllerPak::ReadNote(const std::string &name) const {
-    return ReadSaveFile(DirectoryOf(name) / name, PAK_IMAGE_BYTES);
+std::optional<std::vector<std::uint8_t>>
+ControllerPak::ReadNote(const std::string &name, const SavePayloadValidator &validate) const {
+    if (!ValidNoteName(name)) {
+        return std::nullopt;
+    }
+    return ReadVerifiedSaveFile(
+        DirectoryOf(name) / name, PAK_IMAGE_BYTES, true, [&](std::span<const std::uint8_t> bytes) {
+            return !bytes.empty() && (!validate || validate(bytes));
+        });
 }
 
 bool ControllerPak::WriteNote(const std::string &name, std::span<const std::uint8_t> bytes) const {
-    return bytes.size() <= PAK_IMAGE_BYTES && WriteSaveFile(DirectoryOf(name) / name, bytes);
+    return ValidNoteName(name) && !bytes.empty() && bytes.size() <= PAK_IMAGE_BYTES &&
+           WriteVerifiedSaveFile(DirectoryOf(name) / name, bytes);
 }
 
 bool ControllerPak::DeleteNote(const std::string &name) const {
+    if (!ValidNoteName(name)) {
+        return false;
+    }
     auto save = SaveFile::Open(DirectoryOf(name) / name);
     return save && save->Remove();
 }
@@ -145,17 +171,23 @@ std::vector<PakNote> ControllerPak::Notes() const {
         if (entry.is_regular_file(error) && entry.path().extension() != ".lock" &&
             !entry.path().filename().string().starts_with(".coastline-save-") &&
             DirectoryOf(entry.path().filename().string()) == m_directory) {
-            notes.push_back({entry.path().filename().string(),
-                             static_cast<std::size_t>(entry.file_size(error))});
+            const auto name = entry.path().filename().string();
+            if (!ValidNoteName(name)) {
+                continue;
+            }
+            if (const auto bytes = ReadVerifiedSaveFile(entry.path(), PAK_IMAGE_BYTES, false);
+                bytes && !bytes->empty()) {
+                notes.push_back({name, bytes->size()});
+            }
         }
     }
     // The settings note counts against the room of the pak like the others.
     if (m_settingsDirectory != m_directory) {
         auto settings = m_settingsDirectory / PAK_SETTINGS_NOTE;
         if (std::filesystem::is_regular_file(settings, error)) {
-            notes.push_back(
-                {std::string(PAK_SETTINGS_NOTE),
-                 static_cast<std::size_t>(std::filesystem::file_size(settings, error))});
+            if (const auto bytes = ReadNote(std::string(PAK_SETTINGS_NOTE))) {
+                notes.push_back({std::string(PAK_SETTINGS_NOTE), bytes->size()});
+            }
         }
     }
     std::ranges::sort(notes, {}, &PakNote::name);

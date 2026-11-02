@@ -367,8 +367,8 @@ Paint Shop supports Milk Truck, Cupra, Helmet, and Beach Ball. Cupra, Helmet, an
 numbered texture buttons in place of body-panel buttons. Tall textures shrink to fit the canvas.
 Painting preserves the imported image beneath the decal; clearing the decal restores the image
 with the current body tint. Bonus-car decals save beneath `controller-pak/custom-decals` in the
-save directory, independently of the console Controller Pak capacity. Existing Milk Truck notes
-remain readable, and original console decal notes retain their format.
+save directory, independently of the console Controller Pak capacity. Console decal notes retain
+their native format when imported from or exported to a Controller Pak image.
 
 The `Title screen` option selects the Japanese or international opening independently of language
 and regional models and textures. `[Game] TitleScreen` accepts `regional` (default), `japanese`,
@@ -391,7 +391,6 @@ tracks; restarting a race retains a manually selected XM module.
 `[Game]`, with PC as the default). New installs use volume 4/10 for PC or 10/10 for N64 until the
 SFX volume is adjusted. A manual volume persists across sample changes and restarts as `SfxVolume=0`
 through `SfxVolume=10` under `[Game]`; `SfxVolume=auto` restores the source-dependent default.
-Existing Controller Pak volumes migrate when no SfxVolume preference is recorded.
 Changing samples reinitialises the game after Options closes and returns to the logos. Race sounds
 use the selected pack's converted WAV files. N64 samples
 retain their duration and match the RMS level
@@ -642,6 +641,10 @@ of the data directory (`~/.local/share/coastline/controller-pak`), with the fram
 car in `ghost-frames.bin` beside it. The note of the options menu, `TOP GEAR OPTIONS`, is a setting
 and is stored in `controller-pak` of the configuration directory
 (`~/.config/coastline/controller-pak`), and the pak counts it with the other notes.
+Internal note files and ghost-pose sidecars have a versioned integrity header, payload length, and
+checksum. Header and payload are replaced atomically under a process lock. Loading a damaged save
+attempts to remove the invalid file and uses defaults. Controller Pak capacity counts native note
+bytes, excluding the integrity header. Prerelease save formats are not migrated.
 `export-pak` writes them to a Controller Pak image (`.mpk`) for a console or an emulator, with the
 codes of the release `--release` chooses: `usa` (the default), `eur`, or `jpn`. Each release
 reads only the notes with its own codes.

@@ -5,6 +5,7 @@
 #include <array>
 #include <cmath>
 #include <cstdio>
+#include <limits>
 #include <string>
 
 #include <SDL3/SDL.h>
@@ -16,6 +17,7 @@
 #include "frontend.h"
 #include "menus.h"
 #include "menutext.h"
+#include "notesafety.h"
 #include "volumelevels.h"
 
 namespace coastline {
@@ -658,14 +660,28 @@ void Menus::LoadExtraTrackRecords() {
     if (!m_config) {
         return;
     }
+    bool reset = false;
     for (int track = CONSOLE_TRACK_COUNT; track < MENU_TRACK_COUNT; ++track) {
         const auto key = "Track" + std::to_string(EngineTrackForMenu(track));
-        auto read = [this, &key](const char *kind) {
-            const float value = m_config->GetFloat("Records", key + kind, 0.0f);
-            return std::isfinite(value) && value > 0.0f ? value : 0.0f;
+        auto read = [this, &key, &reset](const char *kind) {
+            const auto field = key + kind;
+            if (!m_config->Get("Records", field)) {
+                return 0.0f;
+            }
+            const float value =
+                m_config->GetFloat("Records", field, std::numeric_limits<float>::quiet_NaN());
+            if (ValidSavedRaceTime(value)) {
+                return value;
+            }
+            m_config->Set("Records", field, "0");
+            reset = true;
+            return 0.0f;
         };
         m_profile.lapRecords[static_cast<std::size_t>(track)] = read("Lap");
         m_profile.raceRecords[static_cast<std::size_t>(track)] = read("Race");
+    }
+    if (reset && !m_config->Save(m_configPath)) {
+        SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "Cannot reset invalid track records.");
     }
 }
 

@@ -5,6 +5,7 @@
 #include <csignal>
 #include <filesystem>
 #include <fstream>
+#include <limits>
 #include <string>
 #include <sys/wait.h>
 #include <thread>
@@ -37,15 +38,60 @@ void Await(const std::filesystem::path &path) {
     assert(std::filesystem::exists(path));
 }
 
+void CheckVerified(const std::filesystem::path &root) {
+    using namespace coastline;
+    const auto path = root / "verified.dat";
+    const std::vector<std::uint8_t> payload{0, 1, 2, 3, 255};
+    assert(WriteVerifiedSaveFile(path, payload));
+    assert(ReadVerifiedSaveFile(path, payload.size()) == payload);
+    const auto original = ReadSaveFile(path, 1024);
+    assert(original && original->size() > payload.size());
+    for (std::size_t index = 0; index < original->size(); ++index) {
+        auto damaged = *original;
+        damaged[index] ^= 1;
+        assert(WriteSaveFile(path, damaged));
+        assert(!ReadVerifiedSaveFile(path, payload.size()));
+        assert(!std::filesystem::exists(path));
+    }
+    for (std::size_t size = 0; size < original->size(); ++size) {
+        assert(WriteSaveFile(path, std::span<const std::uint8_t>(*original).first(size)));
+        assert(!ReadVerifiedSaveFile(path, payload.size()));
+        assert(!std::filesystem::exists(path));
+    }
+    assert(WriteVerifiedSaveFile(path, payload));
+    assert(!ReadVerifiedSaveFile(path, payload.size() - 1));
+    assert(!std::filesystem::exists(path));
+    assert(WriteVerifiedSaveFile(path, {}));
+    const auto empty = ReadVerifiedSaveFile(path, 0);
+    assert(empty && empty->empty());
+    assert(!ReadVerifiedSaveFile(path, std::numeric_limits<std::size_t>::max()));
+    assert(std::filesystem::exists(path));
+    assert(WriteVerifiedSaveFile(path, payload));
+    assert(!ReadVerifiedSaveFile(
+        path, payload.size(), true, [](std::span<const std::uint8_t>) { return false; }));
+    assert(!std::filesystem::exists(path));
+    assert(WriteSaveFile(path, "unrelated file"));
+    assert(!ReadVerifiedSaveFile(path, 1024, false));
+    assert(Read(path) == "unrelated file");
+}
+
 } // namespace
 
 int main(int argc, char **argv) {
     using namespace coastline;
     if (argc == 3) {
         const std::filesystem::path path(argv[2]);
-        if (std::string_view(argv[1]) == "write") {
+        if (std::string_view(argv[1]) == "write" || std::string_view(argv[1]) == "verified-write") {
             for (int iteration = 0; iteration < 30; ++iteration) {
-                assert(WriteSaveFile(path, std::string(256 * 1024, iteration % 2 ? 'a' : 'b')));
+                const std::string text(256 * 1024, iteration % 2 ? 'a' : 'b');
+                if (std::string_view(argv[1]) == "verified-write") {
+                    assert(WriteVerifiedSaveFile(
+                        path,
+                        std::span(reinterpret_cast<const std::uint8_t *>(text.data()),
+                                  text.size())));
+                } else {
+                    assert(WriteSaveFile(path, text));
+                }
             }
             return 0;
         }
@@ -59,6 +105,7 @@ int main(int argc, char **argv) {
     const auto root = std::filesystem::temp_directory_path() / "coastline-savefile-test";
     std::filesystem::remove_all(root);
     const auto path = root / "save.dat";
+    CheckVerified(root);
     assert(WriteSaveFile(path, "first"));
     assert(Read(path) == "first");
     assert(!ReadSaveFile(path, 4));
@@ -79,6 +126,16 @@ int main(int argc, char **argv) {
     while (waitpid(writer, &status, WNOHANG) == 0) {
         const auto text = Read(path);
         assert(text == std::string(256 * 1024, 'a') || text == std::string(256 * 1024, 'b'));
+    }
+    assert(WIFEXITED(status) && WEXITSTATUS(status) == 0);
+
+    const std::vector<std::uint8_t> first(256 * 1024, 'a');
+    const std::vector<std::uint8_t> second(256 * 1024, 'b');
+    assert(WriteVerifiedSaveFile(path, first));
+    const auto verifiedWriter = Spawn(argv[0], path, "verified-write");
+    while (waitpid(verifiedWriter, &status, WNOHANG) == 0) {
+        const auto bytes = ReadVerifiedSaveFile(path, first.size());
+        assert(bytes && (*bytes == first || *bytes == second));
     }
     assert(WIFEXITED(status) && WEXITSTATUS(status) == 0);
 

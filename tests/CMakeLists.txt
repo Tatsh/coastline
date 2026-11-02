@@ -488,6 +488,22 @@ target_compile_options(savefile_test PRIVATE -Wall -Wextra -fsanitize=address,un
 target_link_libraries(savefile_test PRIVATE savefile_test_support)
 add_test(NAME savefile COMMAND savefile_test)
 
+add_executable(controllerpak_test controllerpak_test.cpp "${_src}/sdl/controllerpak.cpp")
+set_target_properties(controllerpak_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_link_libraries(controllerpak_test PRIVATE savefile_test_support SDL3::SDL3 fmt::fmt)
+target_compile_options(controllerpak_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(controllerpak_test PRIVATE -fsanitize=address,undefined)
+add_test(NAME controllerpak COMMAND controllerpak_test)
+
+add_executable(notesafety_test notesafety_test.cpp "${_src}/sdl/notesafety.cpp")
+set_target_properties(notesafety_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(notesafety_test PRIVATE "${_src}/sdl" "${_src}"
+                              "${_src}/libultra/include")
+target_compile_options(notesafety_test PRIVATE -Wall -Wextra
+    -fsanitize=address,undefined,float-cast-overflow -fno-sanitize-recover=all)
+target_link_options(notesafety_test PRIVATE -fsanitize=address,undefined,float-cast-overflow)
+add_test(NAME notesafety COMMAND notesafety_test)
+
 # The test of zlib inflates the assets extracted from a ROM, so it runs only when they are given.
 set(TGR_TEST_ASSETS
     ""
