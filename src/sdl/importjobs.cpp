@@ -64,7 +64,7 @@ std::optional<std::string> RunImportJobs(std::span<const ImportJob> jobs,
     const auto count =
         std::min(jobs.size(),
                  static_cast<std::size_t>(std::clamp(std::thread::hardware_concurrency(), 1u, 4u)));
-    std::vector<std::jthread> workers;
+    std::vector<std::thread> workers;
     std::optional<std::string> launchFailure;
     try {
         workers.reserve(count);
@@ -75,7 +75,9 @@ std::optional<std::string> RunImportJobs(std::span<const ImportJob> jobs,
         stopped.store(true);
         launchFailure = error.what();
     }
-    workers.clear();
+    for (auto &thread : workers) {
+        thread.join();
+    }
     if (launchFailure) {
         return launchFailure;
     }
