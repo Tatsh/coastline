@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <functional>
+#include <iterator>
 #include <set>
 #include <string>
 #include <system_error>
@@ -14,6 +15,9 @@
 
 #ifndef COASTLINE_SYSTEM_DATA_DIR
 #define COASTLINE_SYSTEM_DATA_DIR ""
+#endif
+#ifndef COASTLINE_PORTABLE
+#define COASTLINE_PORTABLE 1
 #endif
 #ifndef COASTLINE_RELATIVE_DATA_DIR
 #define COASTLINE_RELATIVE_DATA_DIR "../share/coastline"
@@ -349,6 +353,95 @@ std::optional<GamePaths> ResolveGamePaths(const std::string &application) {
 #endif
 }
 
+std::expected<GamePaths, std::string>
+ResolvePortablePaths(const GamePaths &fallback, const std::filesystem::path &executable) {
+    GamePaths paths = fallback;
+#if COASTLINE_PORTABLE
+    if (executable.empty()) {
+        return paths;
+    }
+    std::error_code error;
+    paths.portableConfig = std::filesystem::is_regular_file(executable / "BossRally.ini", error);
+    paths.portableData = std::filesystem::is_directory(executable / "assets", error);
+    if (!paths.portableConfig && !paths.portableData) {
+        return paths;
+    }
+    constexpr auto writeBits = std::filesystem::perms::owner_write |
+                               std::filesystem::perms::group_write |
+                               std::filesystem::perms::others_write;
+    auto writable = [&](const std::filesystem::path &path) {
+        const auto permissions = std::filesystem::status(path, error).permissions();
+        return !error && (permissions & writeBits) != std::filesystem::perms::none;
+    };
+    if (!writable(executable) ||
+        (paths.portableConfig && !writable(executable / "BossRally.ini")) ||
+        (paths.portableData && !writable(executable / "assets"))) {
+        return std::unexpected("Portable files cannot be written in " + executable.string() + ".");
+    }
+    const auto probe =
+        executable / (".coastline-write-check-" +
+                      std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    if (!std::filesystem::create_directory(probe, error)) {
+        return std::unexpected("Cannot write portable directory " + executable.string() + ". " +
+                               error.message());
+    }
+    std::filesystem::remove(probe, error);
+    if (paths.portableConfig && !std::ofstream(executable / "BossRally.ini", std::ios::app)) {
+        return std::unexpected("Portable configuration cannot be written in " +
+                               executable.string() + ".");
+    }
+    if (paths.portableConfig) {
+        paths.config = executable;
+    }
+    if (paths.portableData) {
+        paths.data = executable;
+        paths.state = executable / "state";
+        paths.cache = executable / "cache";
+    }
+#else
+    (void)executable;
+#endif
+    return paths;
+}
+
+std::filesystem::path StorePortablePath(const std::filesystem::path &path,
+                                        const std::filesystem::path &root,
+                                        const std::filesystem::path &home) {
+    if (path.empty() || path.is_relative()) {
+        return path;
+    }
+    const auto relative = path.lexically_normal().lexically_relative(root.lexically_normal());
+    if (!relative.empty() && *relative.begin() != "..") {
+        return relative;
+    }
+    if (!home.empty()) {
+        const auto fromHome = path.lexically_normal().lexically_relative(home.lexically_normal());
+        if (!fromHome.empty() && *fromHome.begin() != "..") {
+            return std::filesystem::path("~") / fromHome;
+        }
+    }
+    return relative.empty() ? path : relative;
+}
+
+std::filesystem::path RestorePortablePath(const std::filesystem::path &path,
+                                          const std::filesystem::path &root,
+                                          const std::filesystem::path &home) {
+    if (path.empty() || path.is_absolute()) {
+        return path;
+    }
+    if (*path.begin() == "~") {
+        if (home.empty()) {
+            return path;
+        }
+        auto rebuilt = home;
+        for (auto component = std::next(path.begin()); component != path.end(); ++component) {
+            rebuilt /= *component;
+        }
+        return rebuilt.lexically_normal();
+    }
+    return (root / path).lexically_normal();
+}
+
 bool CreateGamePaths(const GamePaths &paths) {
     for (const auto *path : {&paths.config, &paths.data, &paths.state, &paths.cache}) {
         std::error_code error;
@@ -403,7 +496,21 @@ std::optional<std::string> ResetGamePaths(const GamePaths &paths, bool factoryRe
     }
     std::vector<std::filesystem::path> directories;
     if (factoryReset) {
-        directories = {paths.config, paths.data, paths.state, paths.cache};
+        if (paths.portableConfig) {
+            directories = {paths.config / "BossRally.ini", paths.config / "controller-pak"};
+        } else {
+            directories.push_back(paths.config);
+        }
+        if (paths.portableData) {
+            for (const auto *entry :
+                 {"assets", "controller-pak", "screenshots", "ghost-frames.bin"}) {
+                directories.push_back(paths.data / entry);
+            }
+        } else {
+            directories.push_back(paths.data);
+        }
+        directories.push_back(paths.state);
+        directories.push_back(paths.cache);
     } else {
         for (const auto *pack : {"default", "boss", "eur", "jpn"}) {
             directories.push_back(paths.data / "assets" / pack);

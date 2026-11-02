@@ -308,6 +308,7 @@ directx
 diref
 disasm
 discl
+disclayout
 displaylist
 displaylistdata
 displaylistops
@@ -522,6 +523,7 @@ gfxtask
 ghidra
 ghnd
 ghostfile
+ghostinput
 ghostnote
 glabel
 glist
@@ -974,6 +976,7 @@ precipitationupdate
 preempt
 preferlowpower
 pregap
+pregaps
 prenmi
 primarybuffer
 primarysurface
@@ -1476,6 +1479,7 @@ worktrees
 worley
 wrapu
 wrapv
+writable
 writeback
 writebackdcache
 writebackdcacheall
@@ -1509,11 +1513,13 @@ xooooooo
 xoooooooo
 xprintf
 xrandr
+xrel
 xstdio
 xtst
 xvkfyrszlt
 yarnrc
 yieldthread
+yrel
 yscale
 zbuffer
 zbufferbitdepth

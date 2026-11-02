@@ -70,6 +70,8 @@ struct RaceSetup {
     bool speedInMph = true;
     /** The header of the recording of the ghost car of a time attack, as the console writes it. */
     std::array<u8, 8> ghostHeader{};
+    /** Console controller recording, including its header, for ghosts without recorded poses. */
+    std::vector<u8> ghostRecording;
     /** The frames of the race engine the ghost car of a time attack plays, or none for no ghost. */
     std::vector<u8> ghostFrames;
 };
@@ -159,6 +161,7 @@ private:
     void HoldSoundUntilShown();
 
     RaceResults m_results;
+    std::vector<u8> m_consoleGhostRecording;
     std::array<int, 2> m_cameraChoices{-1, -1};
     bool m_musicStarted = false;
     bool m_waitForStart = false;

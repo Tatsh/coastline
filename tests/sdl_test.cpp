@@ -642,9 +642,77 @@ void CheckAssetData() {
     std::filesystem::remove_all(root);
 }
 
+void CheckPortablePaths() {
+    const auto root = std::filesystem::temp_directory_path() / "coastline-portable-paths-test";
+    std::filesystem::remove_all(root);
+    const auto executable = root / "portable";
+    const coastline::GamePaths fallback{
+        root / "config", root / "data", root / "state", root / "cache"};
+    std::filesystem::create_directories(executable);
+    const auto home = root / "home";
+    const auto stored =
+        coastline::StorePortablePath(executable / "inputs/usa.z64", executable, home);
+    Check(stored == "inputs/usa.z64", "portable input paths are stored relative to the executable");
+    Check(coastline::RestorePortablePath(stored, root / "moved", home) ==
+              root / "moved/inputs/usa.z64",
+          "portable input paths follow a relocated executable");
+    const auto downloads = coastline::StorePortablePath(home / "Downloads", executable, home);
+    Check(downloads == "~/Downloads" &&
+              coastline::RestorePortablePath(downloads, root / "moved", home) == home / "Downloads",
+          "external home paths retain home shorthand across portable moves");
+    Check(coastline::RestorePortablePath({}, executable, home).empty(),
+          "empty portable paths remain empty");
+    Check(coastline::RestorePortablePath(root / "external", executable, home) == root / "external",
+          "absolute legacy paths remain usable");
+    auto paths = coastline::ResolvePortablePaths(fallback, executable);
+    Check(paths && paths->config == fallback.config && paths->data == fallback.data,
+          "absent adjacent files use platform directories");
+    WriteText(executable / "BossRally.ini", "[Game]\n");
+    paths = coastline::ResolvePortablePaths(fallback, executable);
+#if !defined(COASTLINE_PORTABLE) || COASTLINE_PORTABLE
+    Check(paths && paths->portableConfig && paths->config == executable &&
+              paths->data == fallback.data && paths->cache == fallback.cache,
+          "adjacent configuration wins without changing absent portable data");
+    std::filesystem::remove(executable / "BossRally.ini");
+    std::filesystem::create_directories(executable / "assets");
+    paths = coastline::ResolvePortablePaths(fallback, executable);
+    Check(paths && !paths->portableConfig && paths->config == fallback.config &&
+              paths->portableData && paths->data == executable &&
+              paths->state == executable / "state" && paths->cache == executable / "cache",
+          "adjacent assets select portable data with platform configuration fallback");
+    WriteText(executable / "BossRally.ini", "[Game]\n");
+    WriteText(executable / "coastline", "executable");
+    WriteText(executable / "unrelated.txt", "preserved");
+    WriteText(executable / "assets/default/test", "asset");
+    paths = coastline::ResolvePortablePaths(fallback, executable);
+    Check(paths && paths->portableConfig && paths->portableData,
+          "adjacent configuration and data are selected together");
+    Check(paths && !coastline::ResetGamePaths(*paths, true), "portable factory reset succeeds");
+    Check(ReadText(executable / "coastline") == "executable" &&
+              ReadText(executable / "unrelated.txt") == "preserved" &&
+              !std::filesystem::exists(executable / "assets") &&
+              !std::filesystem::exists(executable / "BossRally.ini"),
+          "portable factory reset preserves executable and unrelated files");
+    WriteText(executable / "BossRally.ini", "[Game]\n");
+    std::filesystem::permissions(executable / "BossRally.ini", std::filesystem::perms::owner_read);
+    Check(!coastline::ResolvePortablePaths(fallback, executable),
+          "read-only adjacent configuration fails without platform fallback");
+    std::filesystem::permissions(executable / "BossRally.ini", std::filesystem::perms::owner_all);
+#else
+    std::filesystem::create_directories(executable / "assets");
+    paths = coastline::ResolvePortablePaths(fallback, executable);
+    Check(paths && !paths->portableConfig && !paths->portableData &&
+              paths->config == fallback.config && paths->data == fallback.data &&
+              paths->state == fallback.state && paths->cache == fallback.cache,
+          "disabled portable builds ignore all adjacent files");
+#endif
+    std::filesystem::remove_all(root);
+}
+
 } // namespace
 
 int main() {
+    CheckPortablePaths();
     const std::array<int, 10> nativeTracks{0, 1, 2, 3, 4, 6, 7, 8, 9, 10};
     std::set<int> engineTracks;
     for (int track = 0; track < coastline::MENU_TRACK_COUNT; ++track) {

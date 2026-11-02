@@ -62,6 +62,7 @@ parts:
     cmake-parameters:
       - '-DCMAKE_BUILD_TYPE=Release'
       - '-DCMAKE_INSTALL_PREFIX=/usr'
+      - '-DCOASTLINE_PORTABLE=OFF'
       - '-DTGR_ENABLE_PATCHES=ON'
       - '-DTGR_PLATFORM=sdl'
     override-pull: |

@@ -13,8 +13,8 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
     auto report = [&](const std::string &step, double fraction) {
         return !progress || progress(result, step, fraction);
     };
-    constexpr std::array<std::string_view, 7> extensions{
-        ".cue", ".iso", ".z64", ".n64", ".v64", ".bin", ".zip"};
+    constexpr std::array<std::string_view, 9> extensions{
+        ".cue", ".ccd", ".img", ".iso", ".z64", ".n64", ".v64", ".bin", ".zip"};
     std::vector<std::filesystem::path> candidates;
     std::error_code error;
     std::filesystem::recursive_directory_iterator entry(
@@ -40,7 +40,7 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
     }
     auto rank = [](const std::filesystem::path &path) {
         auto extension = LowercaseExtension(path);
-        return extension == ".cue" ? 0 : extension == ".iso" ? 1 : 2;
+        return extension == ".cue" || extension == ".ccd" ? 0 : extension == ".iso" ? 1 : 2;
     };
     std::ranges::sort(candidates, [&](const auto &left, const auto &right) {
         return std::pair(rank(left), left) < std::pair(rank(right), right);
@@ -71,13 +71,14 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
                                 static_cast<double>(std::max<std::size_t>(result.candidates, 1)));
                     });
             }
-        } else if (extension == ".cue" || extension == ".iso" || extension == ".bin") {
+        } else if (extension == ".cue" || extension == ".iso" || extension == ".bin" ||
+                   extension == ".ccd" || extension == ".img") {
             if (result.disc.empty() && !services.checkDisc(path)) {
                 result.disc = path;
             }
         }
         if (extension != ".zip" && extension != ".cue" && extension != ".iso" &&
-            result.disc != path) {
+            extension != ".ccd" && extension != ".img" && result.disc != path) {
             const auto size = std::filesystem::file_size(path, error);
             if (!error && size <= 32 * 1024 * 1024) {
                 if (auto release = services.identifyCartridge(path)) {

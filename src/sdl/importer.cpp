@@ -33,6 +33,7 @@
 #include "common/rigidbody.h"
 #include "common/rle.h"
 #include "common/weather.h"
+#include "disclayout.h"
 #include "sdl/consolestrings.h"
 #include "sdl/ghostfile.h"
 #include "sdl/gltfdocument.h"
@@ -49,7 +50,6 @@ namespace {
 
 constexpr std::uint32_t RAW_SECTOR = 2352;
 constexpr std::uint32_t DATA_SECTOR = 2048;
-constexpr std::uint32_t FRAMES_PER_SECOND = 75;
 constexpr std::uint32_t SAMPLES_PER_SECTOR = RAW_SECTOR / 4;
 
 struct Release {
@@ -2024,20 +2024,6 @@ std::optional<std::string> EncodeAudioTrack(std::ifstream &file,
     return std::nullopt;
 }
 
-std::optional<std::uint64_t> ParseMsf(const std::string &text) {
-    unsigned minutes = 0;
-    unsigned seconds = 0;
-    unsigned frames = 0;
-    char colon1 = 0;
-    char colon2 = 0;
-    std::istringstream stream(text);
-    if (!(stream >> minutes >> colon1 >> seconds >> colon2 >> frames) || colon1 != ':' ||
-        colon2 != ':') {
-        return std::nullopt;
-    }
-    return (static_cast<std::uint64_t>(minutes) * 60 + seconds) * FRAMES_PER_SECOND + frames;
-}
-
 // The steps a second of the race of the PC release. It plays a frame of a ghost each step.
 constexpr double GHOST_STEPS_PER_SECOND = 30.0;
 // A move between two steps of a demo longer than this is a cut of its camera to another part of
@@ -2450,76 +2436,6 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     return release;
 }
 
-std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::filesystem::path &cue) {
-    std::ifstream file(cue);
-    if (!file) {
-        return std::unexpected(fmt::format("{} cannot be read.", cue.string()));
-    }
-    std::vector<CueTrack> tracks;
-    std::vector<std::uint64_t> nextStarts;
-    std::filesystem::path current;
-    std::string line;
-    while (std::getline(file, line)) {
-        std::istringstream stream(line);
-        std::string command;
-        stream >> command;
-        if (command == "FILE") {
-            auto open = line.find('"');
-            auto close = line.rfind('"');
-            if (open == std::string::npos || close <= open) {
-                return std::unexpected("Missing quoted filename in CUE FILE line.");
-            }
-            current = cue.parent_path() / line.substr(open + 1, close - open - 1);
-        } else if (command == "TRACK") {
-            CueTrack track;
-            std::string mode;
-            stream >> track.number >> mode;
-            track.file = current;
-            track.audio = mode == "AUDIO";
-            track.sectorSize = mode.ends_with("/2048") ? DATA_SECTOR : RAW_SECTOR;
-            tracks.push_back(track);
-            nextStarts.push_back(UINT64_MAX);
-        } else if (command == "INDEX" && !tracks.empty()) {
-            int index = 0;
-            std::string msf;
-            stream >> index >> msf;
-            auto sector = ParseMsf(msf);
-            if (!sector) {
-                return std::unexpected(fmt::format("The index {} cannot be read.", msf));
-            }
-            if (index == 1) {
-                tracks.back().firstSector = *sector;
-            }
-            // The previous track ends where this one's first index starts.
-            if (nextStarts.back() == UINT64_MAX || index == 0) {
-                nextStarts.back() = std::min(nextStarts.back(), *sector);
-            }
-        }
-    }
-    if (tracks.empty()) {
-        return std::unexpected("The CUE sheet lists no tracks.");
-    }
-    for (std::size_t i = 0; i < tracks.size(); ++i) {
-        std::uint64_t end = 0;
-        if (i + 1 < tracks.size() && tracks[i + 1].file == tracks[i].file) {
-            end = nextStarts[i + 1];
-        } else {
-            std::error_code error;
-            auto bytes = std::filesystem::file_size(tracks[i].file, error);
-            if (error) {
-                return std::unexpected(fmt::format("{} cannot be read.", tracks[i].file.string()));
-            }
-            end = bytes / tracks[i].sectorSize;
-        }
-        if (end < tracks[i].firstSector) {
-            return std::unexpected(
-                fmt::format("Track {} ends before it starts.", tracks[i].number));
-        }
-        tracks[i].sectorCount = end - tracks[i].firstSector;
-    }
-    return tracks;
-}
-
 namespace {
 
 // The tracks of a disc image, its data track, and the files of the game on the data track.
@@ -2530,62 +2446,11 @@ struct DiscContents {
 };
 
 std::expected<DiscContents, std::string> ReadDiscContents(const std::filesystem::path &disc) {
-    std::vector<CueTrack> tracks;
-    const std::string extension = Lowercase(disc.extension().string());
-    if (extension == ".img" || extension == ".ccd") {
-        return std::unexpected(
-            fmt::format("{} cannot be imported yet. The import reads a CUE "
-                        "sheet (.cue), an ISO image (.iso), or a BIN image (.bin).",
-                        disc.string()));
+    auto layout = ReadDiscTracks(disc);
+    if (!layout) {
+        return std::unexpected(layout.error());
     }
-    if (extension == ".bin") {
-        // A matching CUE sheet supplies audio boundaries absent from a raw image.
-        std::error_code error;
-        std::filesystem::directory_iterator entry(
-            disc.parent_path().empty() ? "." : disc.parent_path(), error),
-            end;
-        while (!error && entry != end) {
-            if (Lowercase(entry->path().extension().string()) == ".cue") {
-                auto parsed = ParseCueSheet(entry->path());
-                if (parsed && std::ranges::any_of(*parsed, [&](const CueTrack &track) {
-                        std::error_code sameError;
-                        return !track.audio &&
-                               std::filesystem::equivalent(track.file, disc, sameError);
-                    })) {
-                    return ReadDiscContents(entry->path());
-                }
-            }
-            entry.increment(error);
-        }
-        // Probe the volume descriptor in cooked and raw Mode 1 layouts, with or without a pregap.
-        std::ifstream image(disc, std::ios::binary);
-        for (auto sectorSize : {RAW_SECTOR, DATA_SECTOR}) {
-            for (std::uint64_t first : {0u, 150u}) {
-                image.clear();
-                SectorReader probe(image, sectorSize, first);
-                std::vector<std::uint8_t> descriptor;
-                if (probe.Read(16, 1, descriptor) && descriptor[0] == 1 &&
-                    std::string_view(reinterpret_cast<char *>(&descriptor[1]), 5) == "CD001") {
-                    tracks.push_back({1, false, sectorSize, disc, first, 0});
-                    break;
-                }
-            }
-            if (!tracks.empty()) {
-                break;
-            }
-        }
-        if (tracks.empty()) {
-            return std::unexpected("Missing readable ISO 9660 data track in BIN image.");
-        }
-    } else if (extension == ".cue") {
-        auto parsed = ParseCueSheet(disc);
-        if (!parsed) {
-            return std::unexpected(parsed.error());
-        }
-        tracks = std::move(*parsed);
-    } else {
-        tracks.push_back({1, false, DATA_SECTOR, disc, 0, 0});
-    }
+    auto tracks = std::move(*layout);
     auto data = std::ranges::find(tracks, false, &CueTrack::audio);
     if (data == tracks.end()) {
         return std::unexpected("Missing disc data track.");

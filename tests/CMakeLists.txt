@@ -56,6 +56,17 @@ target_compile_options(
 target_link_options(safetyguards_test PRIVATE -Wl,--gc-sections -fsanitize=address,undefined)
 add_test(NAME safetyguards COMMAND safetyguards_test)
 
+add_executable(ghostinput_test ghostinput_test.cpp)
+set_target_properties(ghostinput_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(ghostinput_test PRIVATE "${_src}" "${_src}/libultra/include")
+target_compile_definitions(ghostinput_test PRIVATE ENABLE_PATCHES=1 __stdcall=)
+target_compile_options(
+  ghostinput_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL -UTGR_BOSS_RALLY
+                         -DTGR_BOSS_RALLY=1 -ffunction-sections -fdata-sections
+                         -fsanitize=address,undefined -fno-sanitize-recover=all)
+target_link_options(ghostinput_test PRIVATE -Wl,--gc-sections -fsanitize=address,undefined)
+add_test(NAME ghostinput COMMAND ghostinput_test)
+
 coastline_add_test(audio)
 coastline_add_test(camera ${_vecmath} ${_gu} "${_src}/common/libultra/gu/lookat.c"
                    "${_src}/common/libultra/gu/perspective.c" "${_src}/common/camerarender.c")
@@ -222,6 +233,15 @@ target_include_directories(sdl_test PRIVATE "${_src}/sdl")
 target_compile_options(sdl_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
 target_link_options(sdl_test PRIVATE -fsanitize=address,undefined)
 add_test(NAME sdl COMMAND sdl_test)
+get_target_property(_sdl_test_sources sdl_test SOURCES)
+add_executable(sdl_paths_fixed_test ${_sdl_test_sources})
+set_target_properties(sdl_paths_fixed_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(sdl_paths_fixed_test PRIVATE "${_src}/sdl")
+target_compile_definitions(sdl_paths_fixed_test PRIVATE COASTLINE_PORTABLE=0)
+target_compile_options(sdl_paths_fixed_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(sdl_paths_fixed_test PRIVATE -fsanitize=address,undefined)
+add_test(NAME sdl_paths_fixed COMMAND sdl_paths_fixed_test)
+set_tests_properties(sdl sdl_paths_fixed PROPERTIES RESOURCE_LOCK coastline-sdl-test)
 
 include("${CMAKE_SOURCE_DIR}/cmake/dependencies.cmake")
 coastline_dependency(
@@ -311,6 +331,16 @@ coastline_dependency(
   URL https://github.com/fmtlib/fmt/releases/download/12.2.0/fmt-12.2.0.zip
   HASH a2f4a8d51178f954e4c339007f77edd76ba0cb2e36f87a48e5a5403d9be5878f
   OPTIONS FMT_INSTALL=OFF FMT_TEST=OFF FMT_DOC=OFF)
+add_executable(disclayout_test disclayout_test.cpp "${_src}/sdl/disclayout.cpp"
+                              "${CMAKE_SOURCE_DIR}/tools/common/sha1.cpp")
+set_target_properties(disclayout_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(disclayout_test PRIVATE "${_src}/sdl"
+                                                "${CMAKE_SOURCE_DIR}/tools/common")
+target_compile_options(disclayout_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(disclayout_test PRIVATE -fsanitize=address,undefined)
+target_link_libraries(disclayout_test PRIVATE fmt::fmt)
+add_test(NAME disclayout COMMAND disclayout_test)
+
 add_executable(log_test log_test.cpp "${_src}/sdl/log.cpp")
 set_target_properties(log_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(log_test PRIVATE "${_src}/sdl")

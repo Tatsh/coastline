@@ -1596,6 +1596,17 @@ bool PaintShop::Frame(SceneRenderer &renderer, float seconds, const PaintShopInp
         return true;
     }
     m_screen.UpdateFade(seconds);
+    if (input.undo && !DialogShows() && !m_paintShopExiting) {
+        m_decalDragActive = 0;
+        m_paintToolStarted = 0;
+        m_showPreview3D = 1;
+        m_paletteEnabled = 1;
+        m_decalTextLength = 0;
+        m_decalTextWidth = 0;
+        UndoDecalEdit();
+        m_typedText.clear();
+        m_input.buttons = 0;
+    }
     DrawPaintShop();
     if (m_showPreview3D) {
         RenderDecalPreview3D();

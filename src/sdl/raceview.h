@@ -67,6 +67,24 @@ public:
     void Draw(SceneRenderer &renderer, float share) const;
 
     /**
+     * Toggle a free camera initialised from the first viewport without changing race cameras.
+     * Enabling requires an active camera in the first viewport.
+     */
+    void ToggleFreeCamera();
+    /** @return Whether the free camera replaces the first viewport and hides the HUD. */
+    bool FreeCameraEnabled() const;
+    /**
+     * Move the free camera independently of simulation time, including while paused.
+     *
+     * @param seconds Frame duration in seconds, clamped to [0, 0.1].
+     * @param movement Forward, rightward, and upward motion in world units per second.
+     * @param rotation Yaw and pitch changes in radians for this frame.
+     */
+    void MoveFreeCamera(float seconds,
+                        const std::array<float, 3> &movement,
+                        const std::array<float, 2> &rotation);
+
+    /**
      * @return The colour the frame clears to: the fog of the race in a single view, and black
      * around the views of a split screen.
      */

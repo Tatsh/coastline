@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "assetimport.h"
+#include "filebrowser.h"
 #include "importer.h"
 #include "scenerenderer.h"
 #include "setupwizard.h"
@@ -169,16 +170,19 @@ SetupRun RunSetupWizard(GpuWindow &window,
     if (const char *home = SDL_GetUserFolder(SDL_FOLDER_HOME)) {
         services.home = PathFromUtf8(home);
     }
-    if (auto last = config.Get("SetupWizard", "LastDirectory")) {
-        services.lastDirectory = PathFromUtf8(*last);
-    }
-    services.disc = PathFromUtf8(config.Get("SetupWizard", "DiscImage").value_or(""));
+    const bool portable = paths.portableConfig || paths.portableData;
+    const auto portableRoot = paths.portableConfig ? paths.config : paths.data;
+    const auto homeDirectory = services.home;
+    auto restorePath = [&](const std::string &key) {
+        auto path = PathFromUtf8(config.Get("SetupWizard", key).value_or(""));
+        return portable ? RestorePortablePath(path, portableRoot, homeDirectory) : path;
+    };
+    services.lastDirectory = restorePath("LastDirectory");
+    services.disc = restorePath("DiscImage");
     for (std::size_t i = 0; i < services.roms.size(); ++i) {
-        services.roms[i] = PathFromUtf8(
-            config.Get("SetupWizard", "RomImage" + std::to_string(i + 1)).value_or(""));
+        services.roms[i] = restorePath("RomImage" + std::to_string(i + 1));
     }
-    services.searchDirectory =
-        PathFromUtf8(config.Get("SetupWizard", "SearchDirectory").value_or(""));
+    services.searchDirectory = restorePath("SearchDirectory");
     SetupWizard wizard(std::move(services));
     run.failed = false;
     SDL_Log(reimportReason.empty() ? "Missing game data; starting setup." :
@@ -432,16 +436,24 @@ SetupRun RunSetupWizard(GpuWindow &window,
             nextFrame = after;
         }
     }
+    auto savePath = [&](const std::string &key, const std::string &text) {
+        std::string stored = text;
+        if (portable && !text.empty()) {
+            stored = Utf8FromPath(StorePortablePath(
+                ResolveUserPath(text, homeDirectory), portableRoot, homeDirectory));
+        }
+        config.Set("SetupWizard", key, stored);
+    };
     if (!wizard.LastDirectory().empty()) {
-        config.Set("SetupWizard", "LastDirectory", Utf8FromPath(wizard.LastDirectory()));
+        savePath("LastDirectory", Utf8FromPath(wizard.LastDirectory()));
     }
-    config.Set("SetupWizard", "DiscImage", wizard.Text(WizardControlId::DiscText));
+    savePath("DiscImage", wizard.Text(WizardControlId::DiscText));
     constexpr std::array romFields{
         WizardControlId::Rom1Text, WizardControlId::Rom2Text, WizardControlId::Rom3Text};
     for (std::size_t i = 0; i < romFields.size(); ++i) {
-        config.Set("SetupWizard", "RomImage" + std::to_string(i + 1), wizard.Text(romFields[i]));
+        savePath("RomImage" + std::to_string(i + 1), wizard.Text(romFields[i]));
     }
-    config.Set("SetupWizard", "SearchDirectory", wizard.Text(WizardControlId::SearchText));
+    savePath("SearchDirectory", wizard.Text(WizardControlId::SearchText));
     SDL_StopTextInput(sdlWindow);
     return run;
 }

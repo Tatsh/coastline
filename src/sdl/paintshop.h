@@ -58,6 +58,8 @@ struct PaintShopInput {
     bool enter = false; /*!< Whether Return or keypad Enter is down, A in a dialog. */
     /** Whether Escape is down, B in a dialog and on the keyboard of the text tool. */
     bool escape = false;
+    /** Whether Ctrl+Z was pressed this frame to undo an edit outside a dialog. */
+    bool undo = false;
     /**
      * The characters typed on a keyboard this frame in UTF-8, with Backspace as `'\b'` and Enter
      * as `'\r'`, in the order typed.

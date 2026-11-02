@@ -202,6 +202,7 @@ add_library(
   gltfdocument.cpp
   gpu.cpp
   importer.cpp
+  disclayout.cpp
   importversion.cpp
   indexedimage.cpp
   input.cpp
@@ -271,6 +272,14 @@ if(WIN32)
 endif()
 
 string(TIMESTAMP COASTLINE_BUILD_TIMESTAMP "%Y-%m-%dT%H:%M:%SZ" UTC)
+if(APPLE OR COASTLINE_INSTALL_ASSETS)
+  set(_portable_default OFF)
+else()
+  set(_portable_default ON)
+endif()
+option(COASTLINE_PORTABLE "Prefer writable configuration and assets beside the executable."
+       ${_portable_default})
+target_compile_definitions(coastline_sdl PRIVATE COASTLINE_PORTABLE=$<BOOL:${COASTLINE_PORTABLE}>)
 if(NOT COASTLINE_INSTALL_ASSETS)
   add_subdirectory(firstrun)
 endif()

@@ -105,11 +105,12 @@ typedef f32 EngineReal;
 #define ABS_OF(x) ((x) < 0.0f ? -(x) : (x))
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
-/* A car a player steers with a controller: not a computer's car, the autopilot, the ghost, or the
- * recording of a demo. */
+/* Live controller input and console ghost input share console handling. */
 static s32 IsSteeredByPlayer(Vehicle *vehicle) {
     return VEHICLE_GET(vehicle, Driver) == PlayerVehicleControllerCallback &&
-           VEHICLE_GET(vehicle, Index) < (s32)g_dwNumLocalPlayers &&
+           (VEHICLE_GET(vehicle, Index) < (s32)g_dwNumLocalPlayers ||
+            (g_dwGameMode == GAME_MODE_TIME_ATTACK &&
+             VEHICLE_GET(vehicle, Input)->playbackLimit > RECORDING_HEADER_SIZE)) &&
            g_dwGameMode != GAME_MODE_DEMO && g_dwGameMode != GAME_MODE_AFTER_SEASON;
 }
 
@@ -360,6 +361,10 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle) {
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
     /* The stick and the keys of a player steer by the handling, as on the console. */
+    if (g_dwGameMode == GAME_MODE_TIME_ATTACK && input->playbackBuffer &&
+        input->playbackLimit > RECORDING_HEADER_SIZE) {
+        analogueThrottle = 0;
+    }
     if (IsSteeredByPlayer(vehicle)) {
         SteerByStick(vehicle, stick);
     } else if (IsVehicleControlAnalogue(0) || IsVehicleControlAnalogue(1)) {

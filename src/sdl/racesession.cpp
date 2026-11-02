@@ -111,7 +111,10 @@ void RestoreCameraChoice(Vehicle &vehicle, int camera) {
 void LoadGhostCar(const RaceSetup &setup) {
     std::size_t bytes = std::min(setup.ghostFrames.size(),
                                  static_cast<std::size_t>(GHOST_MAX_FRAMES) * GHOST_FRAME_SIZE);
-    if (bytes < GHOST_FRAME_SIZE) {
+    const bool console = setup.ghostRecording.size() > RECORDING_HEADER_SIZE &&
+                         setup.ghostRecording.size() <= RECORDING_CAPACITY &&
+                         (setup.ghostRecording.size() - RECORDING_HEADER_SIZE) % 2 == 0;
+    if (bytes < GHOST_FRAME_SIZE && !console) {
         std::memset(&g_GhostRecordingInfo, 0xff, sizeof(g_GhostRecordingInfo));
         SetGhostFrameCountFromSize(0);
         return;
@@ -121,7 +124,9 @@ void LoadGhostCar(const RaceSetup &setup) {
     g_GhostRecordingInfo.weather = static_cast<s8>(setup.weather);
     g_GhostRecordingInfo.reserved[0] = 0;
     g_GhostRecordingInfo.reserved[1] = 0;
-    std::memcpy(GetGhostPlaybackKeyframeBuffer(), setup.ghostFrames.data(), bytes);
+    if (bytes != 0) {
+        std::memcpy(GetGhostPlaybackKeyframeBuffer(), setup.ghostFrames.data(), bytes);
+    }
     SetGhostFrameCountFromSize(static_cast<unsigned>(bytes));
 }
 
@@ -129,6 +134,15 @@ void LoadGhostCar(const RaceSetup &setup) {
 
 void RaceSession::Start(const RaceSetup &setup, const std::filesystem::path &music, bool cdAudio) {
     m_cameraChoices.fill(-1);
+    m_consoleGhostRecording.clear();
+    if (setup.gameMode == GAME_MODE_TIME_ATTACK && setup.ghostFrames.empty() &&
+        setup.ghostRecording.size() > RECORDING_HEADER_SIZE &&
+        setup.ghostRecording.size() <= RECORDING_CAPACITY &&
+        (setup.ghostRecording.size() - RECORDING_HEADER_SIZE) % 2 == 0) {
+        m_consoleGhostRecording = setup.ghostRecording;
+        m_consoleGhostRecording[0] = static_cast<u8>(setup.track);
+        m_consoleGhostRecording[7] = static_cast<u8>(setup.weather);
+    }
     // The choices of the front end of the PC release that InitGameAndShowMenus() reads.
     g_dwGameMode = setup.gameMode;
     g_dwRaceSessionType = RACE_SESSION_ATTRACT;
@@ -249,6 +263,13 @@ RaceEnd RaceSession::Step() {
         StartLowResFrame(g_aViewportRects);
     }
     if (loading && g_dwRaceInitialized && !gInstantReplayActive) {
+        if (!m_consoleGhostRecording.empty() && g_dwNumActiveVehicles > 1) {
+            SetGhostFrameCountFromSize(0);
+            auto *input = g_aVehicles[1].GetInput();
+            input->playbackBuffer = m_consoleGhostRecording.data();
+            input->playbackPosition = RECORDING_HEADER_SIZE;
+            input->playbackLimit = static_cast<s32>(m_consoleGhostRecording.size());
+        }
         for (std::size_t player = 0; player < m_cameraChoices.size(); ++player) {
             if (m_cameraChoices[player] >= 0 &&
                 player < static_cast<std::size_t>(g_dwNumLocalPlayers)) {

@@ -11,6 +11,19 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+- Time Attack can race input-only ghosts imported from Controller Pak notes without a frame sidecar.
+- Portable configuration and asset lookup beside the executable, with relative setup paths and
+  portable state, cache, and screenshots. `COASTLINE_PORTABLE=OFF` disables lookup for shared installs;
+  platform directories remain the fallback when adjacent files are absent.
+- Disc import supports CUE-less BIN audio through verified SHA-1 layouts or conservative track
+  discovery, complete numbered BIN track sets, and CloneCD metadata with its IMG file. Adjacent
+  CUE lookup accepts case-insensitive matching basenames or sheets referencing the BIN; uncertain
+  audio layouts import data only.
+- F8 or gamepad Back toggles a free camera during running or paused races, with keyboard, mouse,
+  and gamepad movement, captured driving input, and hidden HUD for screenshots.
+- A main-menu controller sequence (Up, Up, Down, Down, Left, Right, Left, Right, L, and R) unlocks
+  GAMEWIN track selection for the session. The unfinished course has incomplete collision.
+- Ctrl+Z undoes the last Paint Shop edit outside dialogs.
 - Automatic speed units follow explicit `--region` (USA MPH, EUR/JPN KPH), otherwise system country
   (listed MPH countries and territories use MPH, others KPH, missing country MPH). Manual choices
   override automatic selection and save immediately, including loaded configuration choices;
@@ -113,9 +126,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   gamepads and the keyboard to controller ports without configuration, and installs with
   `cmake --install`.
 - `coastline import --cd` copies game data from a Boss Rally CUE sheet, ISO image, or Mode 1 BIN
-  image and converts CD audio to FLAC. BIN import prefers a matching adjacent CUE sheet; standalone
-  BIN import copies data without CD audio. `coastline import --rom` copies a Top Gear Rally
-  cartridge image after checking its SHA-1. Import with explicit `--data-dir` avoids writes to user
+  image and converts CD audio to FLAC. BIN import prefers a matching adjacent CUE sheet.
+  `coastline import --rom` copies a Top Gear Rally cartridge image after checking its SHA-1.
+  Import with explicit `--data-dir` avoids writes to user
   configuration and logs.
 - The SDL game plays the music of the Nintendo 64 release with the console's player and mixers.
 - Quality of life changes in the Windows libraries built with `TGR_ENABLE_PATCHES`:
@@ -193,7 +206,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Setup displays the repository URL, revision or version, and ISO 8601 UTC build date and time in
   its footer. The URL is underlined on hover and opens the default browser when clicked. The Done
   screen no longer advertises Escape as Back.
-- Gamewin is excluded from regular track selection and remains available for the after-season race.
+- Gamewin is excluded from regular track selection until unlocked by the cheat and remains
+  available for the after-season race.
 - Pure PC car previews use PC models and textures, including Type CE, and apply custom decals to
   the selected preview model. Command-line asset-pack selection also determines preview models.
 - Internal resolution offers explicit sizes from 320x240 through connected display modes, defaulting

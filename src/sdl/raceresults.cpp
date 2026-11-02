@@ -147,7 +147,14 @@ RaceSetup Menus::ChosenRace() const {
         m_ghostRecordingSize > static_cast<int>(RECORDING_HEADER_SIZE) &&
         m_ghostRecording[0] == m_selectedTrackId) {
         std::copy_n(m_ghostRecording.begin(), setup.ghostHeader.size(), setup.ghostHeader.begin());
+        const auto car = static_cast<std::size_t>(setup.ghostHeader[1]);
+        if (car >= m_cars.size()) {
+            return setup;
+        }
+        setup.ghostHeader[1] = static_cast<u8>(m_cars[car].engineCar);
         setup.ghostFrames = m_ghostFrames;
+        setup.ghostRecording.assign(m_ghostRecording.begin(),
+                                    m_ghostRecording.begin() + m_ghostRecordingSize);
     }
     return setup;
 }

@@ -305,10 +305,14 @@ void TranslateControllerInput(PlayerInputState *state) {
             }
         }
     } else if (state->playbackBuffer != NULL) {
-#if TGR_BOSS_RALLY
+#if TGR_BOSS_RALLY && TGR_PLATFORM != TGR_PLATFORM_SDL
         /* The playback buffer is read and nothing is played back. */
 #else
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+        if (state->playbackPosition >= 0 && state->playbackPosition < state->playbackLimit - 1) {
+#else
         if (state->playbackPosition < state->playbackLimit) {
+#endif
             state->steeringInput = state->playbackBuffer[state->playbackPosition];
             state->buttons = (state->buttons & ~INPUT_RECORDED_ACTIONS) |
                              (state->playbackBuffer[state->playbackPosition + 1] << 16);

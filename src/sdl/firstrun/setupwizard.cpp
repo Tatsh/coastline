@@ -36,7 +36,7 @@ constexpr std::uint64_t DOUBLE_CLICK_MILLISECONDS = 500;
 constexpr std::uint64_t TYPING_MILLISECONDS = 1000;
 constexpr int WHEEL_ROWS = 3;
 
-constexpr std::array<std::string_view, 3> DISC_EXTENSIONS{".bin", ".cue", ".iso"};
+constexpr std::array<std::string_view, 5> DISC_EXTENSIONS{".bin", ".ccd", ".cue", ".img", ".iso"};
 constexpr std::array<std::string_view, 3> CARTRIDGE_EXTENSIONS{".n64", ".v64", ".z64"};
 
 constexpr std::array<WizardControlId, WIZARD_CARTRIDGES> TEXT_IDS{
@@ -412,7 +412,7 @@ std::vector<WizardControl> SetupWizard::BrowserControls() const {
     filter.width = 44;
     filter.value = m_browser->allFiles ? "All files (*.*)" :
                    m_browser->target == WizardControlId::DiscText ?
-                                         "Disc images (*.bin, *.cue, *.iso)" :
+                                         "Disc images (*.bin, *.ccd, *.cue, *.img, *.iso)" :
                                          "ROM images (*.z64, *.n64, *.v64)";
     if (!directory) {
         controls.push_back(filter);
@@ -551,7 +551,7 @@ void SetupWizard::Validate(WizardControlId id, bool force) {
     int index = CartridgeIndex(id);
     if (index < 0) {
         if (!std::ranges::contains(DISC_EXTENSIONS, LowercaseExtension(path))) {
-            field.reason = "Not a disc image (.bin, .cue, or .iso)";
+            field.reason = "Not a disc image (.bin, .ccd, .cue, .img, or .iso)";
             return;
         }
         if (auto failure = m_services.checkDisc(path)) {

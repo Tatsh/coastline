@@ -1,5 +1,6 @@
 #pragma once
 
+#include <expected>
 #include <filesystem>
 #include <functional>
 #include <optional>
@@ -16,7 +17,43 @@ struct GamePaths {
     std::filesystem::path data;   /*!< The game data copied from the disc and the cartridges. */
     std::filesystem::path state;  /*!< game.log and the saved games. */
     std::filesystem::path cache;  /*!< Data derived from the game data, safe to delete. */
+    bool portableConfig = false;  /*!< Whether configuration resides beside the executable. */
+    bool portableData = false;    /*!< Whether data resides beside the executable. */
 };
+
+/**
+ * Prefer adjacent configuration and assets independently when portable lookup is enabled.
+ *
+ * @param fallback Platform directories used for absent adjacent files.
+ * @param executable Absolute directory of the executable.
+ * @return Selected directories, or an error when an adjacent location cannot be written.
+ */
+std::expected<GamePaths, std::string> ResolvePortablePaths(const GamePaths &fallback,
+                                                           const std::filesystem::path &executable);
+
+/**
+ * Store an input path relative to the portable directory, using '~' for external home paths.
+ *
+ * @param path Input path; empty and relative paths remain unchanged.
+ * @param root Portable directory rebuilt from the executable location on startup.
+ * @param home Home directory, or empty to disable home shorthand.
+ * @return Relative path, home shorthand, or the original path when no relative path exists.
+ */
+std::filesystem::path StorePortablePath(const std::filesystem::path &path,
+                                        const std::filesystem::path &root,
+                                        const std::filesystem::path &home);
+
+/**
+ * Rebuild a stored portable input path at its current executable or home location.
+ *
+ * @param path Stored path, possibly relative or starting with a '~' component.
+ * @param root Current portable directory.
+ * @param home Current home directory, or empty to preserve home shorthand.
+ * @return Rebuilt path, with absolute input paths preserved.
+ */
+std::filesystem::path RestorePortablePath(const std::filesystem::path &path,
+                                          const std::filesystem::path &root,
+                                          const std::filesystem::path &home);
 
 /** Reads an environment variable, or nothing when it is unset or empty. */
 using EnvironmentReader = std::function<std::optional<std::string>(const char *name)>;

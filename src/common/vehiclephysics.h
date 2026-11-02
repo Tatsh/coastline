@@ -9,6 +9,9 @@
 #include "common/instantreplay.h"
 #include "common/racephases.h"
 #include "common/rallyconfig.h"
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "common/recordingformat.h"
+#endif
 #include "common/settings.h"
 #include "common/vehicleaccess.h"
 #endif
@@ -56,7 +59,11 @@ static inline s32 IsVehicleSteeringSpeedSensitive(void) {
 static inline void UpdateVehicleReplayPose(Vehicle *vehicle) {
     if (gInstantReplayActive ||
         (g_dwGameMode == GAME_MODE_TIME_ATTACK && VEHICLE_GET(vehicle, Index) == 1 &&
-         VEHICLE_GET(vehicle, Input)->playbackBuffer)) {
+         VEHICLE_GET(vehicle, Input)->playbackBuffer
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+         && VEHICLE_GET(vehicle, Input)->playbackLimit <= RECORDING_HEADER_SIZE
+#endif
+         )) {
         ApplyGhostKeyframeForVehicle(vehicle);
         UpdateVehicleWheelTransforms(vehicle);
     } else if (g_dwGameMode == GAME_MODE_DEMO && VEHICLE_GET(vehicle, Index) == 0 &&
@@ -72,7 +79,11 @@ static inline void UpdateVehicleReplayPose(Vehicle *vehicle) {
 static inline s32 ShouldStepVehiclePhysics(Vehicle *vehicle) {
     if (gInstantReplayActive ||
         (g_dwGameMode == GAME_MODE_TIME_ATTACK && VEHICLE_GET(vehicle, Index) == 1 &&
-         VEHICLE_GET(vehicle, Input)->playbackBuffer) ||
+         VEHICLE_GET(vehicle, Input)->playbackBuffer
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+         && VEHICLE_GET(vehicle, Input)->playbackLimit <= RECORDING_HEADER_SIZE
+#endif
+         ) ||
         (g_dwGameMode == GAME_MODE_DEMO && VEHICLE_GET(vehicle, Index) == 0 &&
          VEHICLE_GET(vehicle, Input)->playbackBuffer)) {
         return 0;

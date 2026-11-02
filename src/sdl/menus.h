@@ -422,6 +422,9 @@ private:
     int m_mainMenuInitState = 0;
     int m_mainMenuSelection = 0;
     int m_mainMenuEntrySource = 0;
+    std::size_t m_gamewinCheatProgress = 0;
+    std::uint16_t m_gamewinCheatHeld = 0;
+    bool m_gamewinUnlocked = false;
 
     std::vector<MenuItem> m_playerCountItems;
     int m_playerCountSelectState = 0;

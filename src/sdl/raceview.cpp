@@ -641,6 +641,9 @@ struct SkidMarkBuffer {
 } // namespace
 
 struct RaceView::State {
+    std::optional<CameraFrame> freeCamera;
+    float freeYaw = 0.0f;
+    float freePitch = 0.0f;
     bool n64Effects = false;
     std::filesystem::path defaults;
     std::unique_ptr<RenderModel> track;
@@ -2117,6 +2120,48 @@ void DrawRearViewMirrorFrame(SceneRenderer &renderer, const MirrorPlace &place) 
 
 } // namespace
 
+bool RaceView::FreeCameraEnabled() const {
+    return m_state->freeCamera.has_value();
+}
+
+void RaceView::ToggleFreeCamera() {
+    State &s = *m_state;
+    if (s.freeCamera) {
+        s.freeCamera.reset();
+        return;
+    }
+    const auto *camera = g_aVehicles[g_aViewportRects[0].vehicleIndex].GetActiveCamera();
+    if (camera == nullptr) {
+        return;
+    }
+    s.freeCamera = *camera;
+    s.freeYaw = std::atan2(camera->forward.y, camera->forward.x);
+    s.freePitch = std::atan2(camera->forward.z, std::hypot(camera->forward.x, camera->forward.y));
+}
+
+void RaceView::MoveFreeCamera(float seconds,
+                              const std::array<float, 3> &movement,
+                              const std::array<float, 2> &rotation) {
+    State &s = *m_state;
+    if (!s.freeCamera) {
+        return;
+    }
+    auto &camera = *s.freeCamera;
+    s.freeYaw = std::remainder(s.freeYaw + rotation[0], 6.2831853f);
+    s.freePitch = std::clamp(s.freePitch + rotation[1], -1.55f, 1.55f);
+    const float yawCos = std::cos(s.freeYaw);
+    const float yawSin = std::sin(s.freeYaw);
+    const float pitchCos = std::cos(s.freePitch);
+    const float pitchSin = std::sin(s.freePitch);
+    camera.forward = {pitchCos * yawCos, pitchCos * yawSin, pitchSin};
+    camera.side = {yawSin, -yawCos, 0.0f};
+    camera.up = {-pitchSin * yawCos, -pitchSin * yawSin, pitchCos};
+    const float elapsed = std::clamp(seconds, 0.0f, 0.1f);
+    camera.position.x += elapsed * (movement[0] * camera.forward.x + movement[1] * camera.side.x);
+    camera.position.y += elapsed * (movement[0] * camera.forward.y + movement[1] * camera.side.y);
+    camera.position.z += elapsed * (movement[0] * camera.forward.z + movement[2]);
+}
+
 std::array<float, 4> RaceView::ClearColor() const {
     // ClearScreen() blacks out the screen around the views of a split screen.
     if (ViewCount() > 1) {
@@ -2171,7 +2216,8 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
         int cameraIndex = g_aViewportRects[index].vehicleIndex;
         Vehicle &vehicle = vehicles[cameraIndex];
         Vehicle &live = g_aVehicles[cameraIndex];
-        if (vehicle.GetActiveCamera() != &vehicle.GetCameras()[VEHICLE_CAMERA_BUMPER] ||
+        if (s.freeCamera ||
+            vehicle.GetActiveCamera() != &vehicle.GetCameras()[VEHICLE_CAMERA_BUMPER] ||
             g_dwNumViewports != 1 || !g_dwRearViewMirrorMode) {
             continue;
         }
@@ -2191,7 +2237,9 @@ void RaceView::Draw(SceneRenderer &renderer, float share) const {
     renderer.SetViewport(std::nullopt);
     renderer.SetFog(std::nullopt);
 
-    DrawRaceHud(renderer, *s.text, s.hudTextures, hud, s.hudScratch);
+    if (!s.freeCamera) {
+        DrawRaceHud(renderer, *s.text, s.hudTextures, hud, s.hudScratch);
+    }
 
     // The help of the attract demo, from the corner of the canvas of the HUD, under the fade. The
     // console shows nothing over its demo.
@@ -2247,6 +2295,9 @@ void RaceView::DrawView(SceneRenderer &renderer,
     const Vehicle &vehicle = vehicles[cameraIndex];
     const Vehicle &first = vehicles[0];
     const CameraFrame *camera = vehicle.GetActiveCamera();
+    if (index == 0 && s.freeCamera) {
+        camera = &*s.freeCamera;
+    }
     if (camera == nullptr) {
         return;
     }

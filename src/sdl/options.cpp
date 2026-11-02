@@ -9,6 +9,7 @@
 
 #include <SDL3/SDL.h>
 
+#include "common/recordingformat.h"
 #include "ghostnote.h"
 #include "language.h"
 #include "menus.h"
@@ -902,15 +903,14 @@ bool Menus::ReadSeasonNote(const std::vector<u8> &note, int player, bool otherRe
 bool Menus::ReadGhostNote(const std::vector<u8> &note) {
     auto recording = UnpackGhostNote(note);
     // A recording written elsewhere may have any track and car.
-    if (!recording || (*recording)[0] >= m_numTracks ||
+    if (!recording || recording->size() < RECORDING_HEADER_SIZE + 2 ||
+        (recording->size() - RECORDING_HEADER_SIZE) % 2 != 0 || (*recording)[0] >= m_numTracks ||
         static_cast<std::size_t>((*recording)[1]) >= m_cars.size()) {
         return false;
     }
-    // The race engine plays the ghost car from the frames it recorded with the recording. A ghost
-    // recorded on the console has none, and its car does not race.
     m_ghostFrames = LoadGhostFrames(m_ghostFramesFile, *recording).value_or(std::vector<u8>());
     if (m_ghostFrames.empty()) {
-        SDL_Log("Ghost frames unavailable; disabling ghost car.");
+        SDL_Log("Playing console ghost controller input.");
     }
     m_ghostRecordingSize = static_cast<int>(recording->size());
     recording->resize(GHOST_RECORDING_CAPACITY);

@@ -2,6 +2,9 @@
 
 #include "common/game.h"
 #include "common/input.h"
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#include "common/recordingformat.h"
+#endif
 #include "common/rumble.h"
 
 #if TGR_BOSS_RALLY
@@ -53,8 +56,14 @@ void UpdateControllerState(void) {
 
     ReadControllers();
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
-    /* The second player of the SDL game has the second pad. */
-    for (i = 0; i < (g_dwNumLocalPlayers > 1 ? 2 : 1); i++) {
+    /* Console ghosts replay controller actions through the second input slot. */
+    for (i = 0; i < (g_dwNumLocalPlayers > 1 ||
+                             (g_dwGameMode == GAME_MODE_TIME_ATTACK &&
+                              g_aPlayerInputState[1].playbackBuffer != NULL &&
+                              g_aPlayerInputState[1].playbackLimit > RECORDING_HEADER_SIZE) ?
+                         2 :
+                         1);
+         i++) {
 #elif TGR_BOSS_RALLY
     for (i = 0; i < 1; i++) {
 #else

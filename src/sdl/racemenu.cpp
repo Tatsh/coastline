@@ -297,7 +297,8 @@ bool Menus::IsTrackUnlocked(int track) const {
         return false;
     }
     if (track >= CONSOLE_TRACK_COUNT && track < MENU_TRACK_COUNT &&
-        !EXTRA_MENU_TRACKS[static_cast<std::size_t>(track - CONSOLE_TRACK_COUNT)].selectable) {
+        !EXTRA_MENU_TRACKS[static_cast<std::size_t>(track - CONSOLE_TRACK_COUNT)].selectable &&
+        !m_gamewinUnlocked) {
         return false;
     }
     if (m_gameMode == GameMode::Championship) {

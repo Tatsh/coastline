@@ -4,6 +4,7 @@
 
 #include "assetpack.h"
 #include "common/audio.h"
+#include "controller.h"
 #include "menus.h"
 
 namespace coastline {
@@ -128,6 +129,28 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
 }
 
 void Menus::ProcessMainMenu(SceneRenderer &renderer, float seconds, const MenuButtons &first) {
+    constexpr std::array<std::uint16_t, 10> code{BUTTON_D_UP,
+                                                 BUTTON_D_UP,
+                                                 BUTTON_D_DOWN,
+                                                 BUTTON_D_DOWN,
+                                                 BUTTON_D_LEFT,
+                                                 BUTTON_D_RIGHT,
+                                                 BUTTON_D_LEFT,
+                                                 BUTTON_D_RIGHT,
+                                                 BUTTON_L,
+                                                 BUTTON_R};
+    const auto pressed = static_cast<std::uint16_t>(first.heldButtons & ~m_gamewinCheatHeld);
+    m_gamewinCheatHeld = first.heldButtons;
+    if (pressed != 0) {
+        m_gamewinCheatProgress = pressed == code[m_gamewinCheatProgress] ?
+                                     m_gamewinCheatProgress + 1 :
+                                     (pressed == code.front() ? 1 : 0);
+        if (m_gamewinCheatProgress == code.size()) {
+            m_gamewinCheatProgress = 0;
+            m_gamewinUnlocked = true;
+            SDL_Log("Unlocking GAMEWIN track selection.");
+        }
+    }
     if (m_mainMenuInitState <= 0) {
         m_numLocalPlayers = 2;
         m_screen->Reset();

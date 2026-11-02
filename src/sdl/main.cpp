@@ -894,8 +894,7 @@ int main(int argc, char *argv[]) {
     import.add_argument("--cd")
         .action(RequiredArgumentValue("--cd"))
         .metavar("FILE")
-        .help(
-            "copy the game data and music from a Boss Rally CUE sheet (.cue) or ISO image (.iso)");
+        .help("copy Boss Rally data and music from BIN, CUE, ISO, or CloneCD images");
     import.add_argument("--rom")
         .action(RequiredArgumentValue("--rom"))
         .metavar("ROM")
@@ -993,6 +992,20 @@ int main(int argc, char *argv[]) {
     }
     auto paths = coastline::ResolveGamePaths(APPLICATION);
     if (!paths) {
+        paths = coastline::GamePaths{};
+    }
+    SDL_SetMainReady();
+    const char *base = SDL_GetBasePath();
+    const std::string_view baseText = base ? base : "";
+    const std::filesystem::path executable(std::u8string(baseText.begin(), baseText.end()));
+    auto portable = coastline::ResolvePortablePaths(*paths, executable);
+    if (!portable) {
+        std::cerr << portable.error() << '\n';
+        return EXIT_FAILURE;
+    }
+    paths = *portable;
+    if (paths->config.empty() || paths->data.empty() || paths->state.empty() ||
+        paths->cache.empty()) {
         std::cerr << "The home directory is not known, and the game cannot find its files.\n";
         return EXIT_FAILURE;
     }
@@ -1000,6 +1013,7 @@ int main(int argc, char *argv[]) {
     if (auto dataDirectory = parser.present("--data-dir")) {
         std::error_code error;
         paths->data = std::filesystem::absolute(*dataDirectory, error).make_preferred();
+        paths->portableData = false;
         if (error) {
             std::cerr << "The data directory cannot be resolved.\n";
             return EXIT_FAILURE;
@@ -1121,11 +1135,9 @@ int main(int argc, char *argv[]) {
     }
     // Without usable data, the game starts the setup wizard. A script starts the wizard only when
     // scripted key presses, text input, or mouse movements can operate its controls.
-    const char *base = SDL_GetBasePath();
-    const auto systemData = parser.is_used("--data-dir") ?
+    const auto systemData = (parser.is_used("--data-dir") || paths->portableData) ?
                                 std::vector<std::filesystem::path>{} :
-                                coastline::SystemDataDirectories(
-                                    base ? std::filesystem::path(base) : std::filesystem::path{});
+                                coastline::SystemDataDirectories(executable);
     const auto foundData = coastline::FindAssetData(paths->data, systemData);
     const auto assetData = foundData.value_or(paths->data);
     const bool showWizard = !foundData;
@@ -1524,6 +1536,8 @@ int main(int argc, char *argv[]) {
                 bool running = true;
                 bool printScreenWasDown = false;
                 bool escapeWasDown = false;
+                bool freeCameraToggleWasDown = false;
+                bool undoPaintWasDown = false;
                 float exitEscapeSeconds = 0.0f;
                 coastline::MenusEnd settingsTransition = coastline::MenusEnd::Running;
                 Uint64 settingsShownAt = 0;
@@ -1546,9 +1560,19 @@ int main(int argc, char *argv[]) {
                     // Enter as control characters.
                     std::string typed;
                     bool printScreen = false;
+                    bool undoPaint = false;
                     bool focusLost = false;
+                    std::array<float, 2> cameraMouse{};
                     SDL_Event event;
                     while (SDL_PollEvent(&event)) {
+                        if (event.type == SDL_EVENT_MOUSE_MOTION) {
+                            cameraMouse[0] += event.motion.xrel;
+                            cameraMouse[1] += event.motion.yrel;
+                        }
+                        if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat &&
+                            event.key.key == SDLK_Z && (event.key.mod & SDL_KMOD_CTRL) != 0) {
+                            undoPaint = true;
+                        }
                         if (event.type == SDL_EVENT_WINDOW_FOCUS_LOST) {
                             focusLost = true;
                         }
@@ -1677,6 +1701,15 @@ int main(int argc, char *argv[]) {
                         }
                     }
                     coastline::SetScriptedKeys(std::move(scriptedKeys));
+                    const bool undoPaintDown = coastline::IsKeyDown(SDL_SCANCODE_Z) &&
+                                               (coastline::IsKeyDown(SDL_SCANCODE_LCTRL) ||
+                                                coastline::IsKeyDown(SDL_SCANCODE_RCTRL));
+                    undoPaint |= undoPaintDown && !undoPaintWasDown;
+                    undoPaintWasDown = undoPaintDown;
+                    if (undoPaint && frontEnd != FrontEnd::Race) {
+                        coastline::IgnoreKeyUntilReleased(SDL_SCANCODE_Z);
+                        ports[0].buttons &= ~coastline::BUTTON_Z;
+                    }
                     bool printScreenDown = coastline::IsKeyDown(SDL_SCANCODE_PRINTSCREEN) ||
                                            coastline::IsKeyDown(SDL_SCANCODE_F9);
                     printScreen = printScreen || (printScreenDown && !printScreenWasDown);
@@ -1742,6 +1775,63 @@ int main(int argc, char *argv[]) {
                                 1.0f / 60.0f :
                                 std::min(static_cast<float>(now - lastTicks) / 1e9f, 0.1f);
                         lastTicks = now;
+                        const auto devices = coastline::AssignedDevices(0, 1);
+                        bool cameraToggle = coastline::IsKeyDown(SDL_SCANCODE_F8);
+                        for (auto *gamepad : devices.gamepads) {
+                            cameraToggle |= SDL_GetGamepadButton(gamepad, SDL_GAMEPAD_BUTTON_BACK);
+                        }
+                        if (frontEnd == FrontEnd::Race && raceView) {
+                            if (cameraToggle && !freeCameraToggleWasDown) {
+                                raceView->ToggleFreeCamera();
+                                SDL_SetWindowRelativeMouseMode(window->Window(),
+                                                               raceView->FreeCameraEnabled());
+                            }
+                            const bool captured = raceView->FreeCameraEnabled();
+                            coastline::SetRaceControlsCaptured(captured);
+                            if (captured) {
+                                coastline::SetSecondControllerState({});
+                                auto keyAxis = [](SDL_Scancode positive, SDL_Scancode negative) {
+                                    return static_cast<float>(coastline::IsKeyDown(positive)) -
+                                           static_cast<float>(coastline::IsKeyDown(negative));
+                                };
+                                std::array<float, 3> movement{
+                                    keyAxis(SDL_SCANCODE_W, SDL_SCANCODE_S),
+                                    keyAxis(SDL_SCANCODE_D, SDL_SCANCODE_A),
+                                    keyAxis(SDL_SCANCODE_E, SDL_SCANCODE_Q)};
+                                std::array<float, 2> rotation{-cameraMouse[0] * 0.003f,
+                                                              -cameraMouse[1] * 0.003f};
+                                bool fast = coastline::IsKeyDown(SDL_SCANCODE_LSHIFT) ||
+                                            coastline::IsKeyDown(SDL_SCANCODE_RSHIFT);
+                                for (auto *gamepad : devices.gamepads) {
+                                    auto axis = [gamepad](SDL_GamepadAxis which) {
+                                        float value =
+                                            static_cast<float>(SDL_GetGamepadAxis(gamepad, which)) /
+                                            32768.0f;
+                                        return value > -0.15f && value < 0.15f ? 0.0f : value;
+                                    };
+                                    movement[0] -= axis(SDL_GAMEPAD_AXIS_LEFTY);
+                                    movement[1] += axis(SDL_GAMEPAD_AXIS_LEFTX);
+                                    movement[2] +=
+                                        static_cast<float>(SDL_GetGamepadButton(
+                                            gamepad, SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER)) -
+                                        static_cast<float>(SDL_GetGamepadButton(
+                                            gamepad, SDL_GAMEPAD_BUTTON_LEFT_SHOULDER));
+                                    rotation[0] -= axis(SDL_GAMEPAD_AXIS_RIGHTX) * seconds * 2.0f;
+                                    rotation[1] -= axis(SDL_GAMEPAD_AXIS_RIGHTY) * seconds * 2.0f;
+                                    fast |= SDL_GetGamepadButton(gamepad,
+                                                                 SDL_GAMEPAD_BUTTON_LEFT_STICK);
+                                }
+                                for (auto &value : movement) {
+                                    value =
+                                        std::clamp(value, -1.0f, 1.0f) * (fast ? 800.0f : 200.0f);
+                                }
+                                raceView->MoveFreeCamera(seconds, movement, rotation);
+                            }
+                        } else {
+                            coastline::SetRaceControlsCaptured(false);
+                            SDL_SetWindowRelativeMouseMode(window->Window(), false);
+                        }
+                        freeCameraToggleWasDown = cameraToggle;
                         const bool escape = coastline::IsKeyDown(SDL_SCANCODE_ESCAPE);
                         const bool canExit =
                             frontEnd == FrontEnd::Intro || frontEnd == FrontEnd::AttractDemo ||
@@ -1929,6 +2019,7 @@ int main(int argc, char *argv[]) {
                             };
                             coastline::PaintShopInput pointer = PaintShopInputOf(ports[0], mouse);
                             pointer.text = std::move(typed);
+                            pointer.undo = undoPaint;
                             coastline::MenusEnd end =
                                 mainMenu->Frame(*sceneRenderer,
                                                 seconds,

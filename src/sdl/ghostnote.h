@@ -8,8 +8,9 @@
  * The console records the input of the player: a header of the track, the car, and the setup, and
  * then the steering and the actions of each step of the race, two bytes a step. It plays the ghost
  * car by driving it with the input again. The race engine of the PC release records the pose of the
- * car at each step instead, and the SDL game records both in a time attack. The note includes only
- * the input, and the frames are stored beside the pak with the input they belong to.
+ * car at each step instead, and the SDL game records both in a time attack. Notes include only
+ * input. SDL recordings retain their poses beside the pak; console recordings drive the race
+ * engine with their recorded input when poses are absent.
  */
 
 #include <cstddef>

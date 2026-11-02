@@ -1,5 +1,6 @@
 #include "sha1.h"
 
+#include <algorithm>
 #include <array>
 #include <bit>
 #include <cstdio>
@@ -75,6 +76,38 @@ std::string sha1Hex(std::span<const std::uint8_t> data) {
     for (std::size_t block = 0; block < blocks; ++block) {
         processBlock(state, std::span(tail).subspan(block * kBlockSize, kBlockSize));
     }
+    std::string hex;
+    for (const auto word : state) {
+        char digits[9];
+        std::snprintf(digits, sizeof(digits), "%08x", static_cast<unsigned>(word));
+        hex += digits;
+    }
+    return hex;
+}
+
+std::optional<std::string> sha1Hex(std::istream &data) {
+    std::array<std::uint32_t, 5> state{0x67452301, 0xefcdab89, 0x98badcfe, 0x10325476, 0xc3d2e1f0};
+    std::array<std::uint8_t, kBlockSize> block{};
+    std::uint64_t size = 0;
+    while (data.read(reinterpret_cast<char *>(block.data()), block.size())) {
+        processBlock(state, block);
+        size += block.size();
+    }
+    if (data.bad() || !data.eof()) {
+        return std::nullopt;
+    }
+    const auto rest = static_cast<std::size_t>(data.gcount());
+    size += rest;
+    block[rest] = 0x80;
+    std::fill(block.begin() + static_cast<std::ptrdiff_t>(rest + 1), block.end(), 0);
+    if (rest >= kBlockSize - 8) {
+        processBlock(state, block);
+        block.fill(0);
+    }
+    for (std::size_t i = 0; i < 8; ++i) {
+        block[kBlockSize - 1 - i] = static_cast<std::uint8_t>((size * 8) >> (8 * i));
+    }
+    processBlock(state, block);
     std::string hex;
     for (const auto word : state) {
         char digits[9];

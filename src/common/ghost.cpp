@@ -368,7 +368,14 @@ void AdvanceGhostRecordFrame(void) {
     }
     const bool singleRecording =
         g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_DEMO;
-    const int count = singleRecording ? 1 : GHOST_RECORDING_COUNT;
+    int count = singleRecording ? 1 : GHOST_RECORDING_COUNT;
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+    if (g_dwGameMode == GAME_MODE_TIME_ATTACK &&
+        g_aVehicles[1].GetInput()->playbackBuffer != nullptr &&
+        g_aVehicles[1].GetInput()->playbackLimit > RECORDING_HEADER_SIZE) {
+        count = GHOST_RECORDING_COUNT;
+    }
+#endif
     for (int i = 0; i < count; ++i) {
         if (static_cast<int>(g_adwGhostFrameCount[i]) < GHOST_MAX_FRAMES) {
             ++g_adwGhostFrameCount[i];

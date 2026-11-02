@@ -103,8 +103,9 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
  * as music/trackNN.flac. An ISO image has no audio tracks, and only the files are copied. The icon
  * Boss.ico moves to icon/coastline.ico, beside a PNG image of each of its sizes.
  *
- * @param disc A CUE sheet, ISO image, or BIN image. A BIN uses a matching adjacent CUE sheet when
- * available, or imports its Mode 1 data track without CD audio. CloneCD images are refused.
+ * @param disc A CUE sheet, ISO, BIN, numbered Track NN.bin file, or CloneCD image. Adjacent CUE
+ * metadata precedes known-dump and discovered BIN layouts. Uncertain audio layouts import data
+ * only.
  * @param dataDirectory The directory of the pack to write, assets/default of the data directory.
  * @param progress Called as each file and track is written, or empty.
  * @return The number of files written, or a message, also when @p progress cancels the import.
@@ -117,7 +118,7 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
  * Check that a disc image is one ImportDisc() reads and that its data track has the files of Boss
  * Rally, without copying them.
  *
- * @param disc A CUE sheet, ISO image, or BIN image.
+ * @param disc A CUE sheet, ISO, BIN, numbered Track NN.bin file, or CloneCD image.
  * @return Why the disc cannot be imported, or nothing.
  */
 std::optional<std::string> CheckDisc(const std::filesystem::path &disc);

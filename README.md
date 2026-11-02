@@ -162,6 +162,19 @@ and writes `game.log` to `~/.local/state/coastline`. The XDG Base Directory vari
 directories. Windows uses the roaming and local application data folders, and macOS uses
 Application Support, Caches, and Logs in the library of the user.
 
+Portable file lookup defaults to enabled outside macOS and installed-asset builds.
+An existing `BossRally.ini` beside the executable
+overrides the platform configuration file. An adjacent `assets` directory independently selects
+portable data, with `state`, `cache`, and `screenshots` directories beside the executable. Missing
+adjacent files use the platform directories. Portable assets precede system assets, and importing
+updates the portable data directory when selected. A portable location that cannot be written
+produces an error instead of falling back. Moving the executable and its portable directories
+together preserves setup paths stored relative to the executable.
+
+Configure with `-DCOASTLINE_PORTABLE=OFF` to remove adjacent-file lookup for distribution packages
+and shared installations. Flatpak, snap, macOS bundles, installed-asset builds, and Windows
+installer builds disable portable lookup.
+
 On macOS the install is the application bundle `Coastline.app`, signed without an identity, with
 every library the game links that macOS does not provide inside it. The build workflow uploads it
 as a disk image. `open` passes the options of the command line after `--args` to the game. A game
@@ -175,6 +188,17 @@ open -n -W Coastline.app --args import --cd "$PWD/Boss Rally.cue" --rom "$PWD/us
 ```
 
 ### Controls
+
+Ctrl+Z undoes the last paint-shop edit outside a dialog. In the main menu, press Up, Up, Down,
+Down, Left, Right, Left, Right, L, and R on the first controller to unlock GAMEWIN in track
+selection for the current game session. GAMEWIN is an unfinished cutscene course with incomplete
+collision.
+
+F8 toggles the free camera during a race, paused or running. Move with W, A, S, and D, rise with E,
+descend with Q, and look with the mouse. Shift increases movement speed. On a gamepad, Back toggles
+the camera, the left stick moves, the right stick looks, the shoulder buttons descend and rise,
+and pressing the left stick increases speed. Driving input is captured while the camera is
+active, and Escape still pauses or resumes the race. The HUD disappears for screenshots.
 
 The `Controls` section of `BossRally.ini` maps the gamepad. `Preset` chooses one of the presets below,
 and a key of an action present in the section replaces the binding of the preset for that action.
@@ -575,9 +599,14 @@ The data comes from a Boss Rally disc image and a Top Gear Rally cartridge image
 checks the cartridge against the SHA-1 of each release, and converts the CD audio of a CUE sheet
 to FLAC. An ISO image has no CD audio. The import writes converted packs under `assets` in the
 data directory, and exits. The `import` subcommand takes the disc with `--cd`, a CUE sheet (`.cue`),
-an ISO image (`.iso`), or a BIN image (`.bin`), and a ROM image with each `--rom`. A BIN uses a
-matching adjacent CUE sheet when available. Without a CUE sheet, the Mode 1 data track is imported
-without CD audio. CloneCD images (`.img` or `.ccd`) cannot be imported yet.
+an ISO image (`.iso`), a BIN image (`.bin`), or CloneCD metadata (`.ccd` with its `.img`), and a ROM
+image with each `--rom`. A BIN first uses an adjacent CUE sheet with the same basename, ignoring
+case, or another adjacent sheet referencing the BIN. Without a CUE sheet, its whole-file SHA-1
+selects the track offsets of a verified dump when available. Otherwise, sector sync and headers
+locate the data boundary, checked against the ISO volume size, and runs of digital silence
+identify audio pregaps. Audio discovery requires all 12 music tracks and sufficient track lengths;
+uncertain layouts import data only. A complete set of `Track NN.bin` files also imports without a
+CUE sheet. CloneCD uses its track metadata; `.sub` data is not required.
 
 Supply the disc and every ROM image in the same command. A successful import replaces generated
 packs (`default`, `boss`, `eur`, and `jpn`) and preserves mod packs. Failed or cancelled conversions
