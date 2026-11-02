@@ -257,8 +257,8 @@ int main() {
                                           "TitleScreen=japanese\nAutoSave=1\nSoundEffects=PC\n"
                                           "[Video]\nAspectRatio=21:9\n");
     GameSettings presets(presetConfig, roots);
-    const auto preset = Find(presets, "Graphics preset:");
-    assert(presets.Label(preset) == "Graphics preset: Custom");
+    const auto preset = Find(presets, "Preset:");
+    assert(presets.Label(preset) == "Preset: Custom");
     assert(presets.AdjustAndSave(preset, 1, path) == GameSettings::Adjustment::Saved);
     assert(presetConfig.Get("Video", "GraphicsPreset") == "n64");
     assert(presetConfig.Get("Game", "AssetPack") == "default");
@@ -287,7 +287,7 @@ int main() {
     auto persistedPreset = GameConfig::Load(path);
     assert(persistedPreset.Get("Video", "AspectRatio") == "4:3");
     GameSettings restoredPreset(persistedPreset, roots);
-    assert(restoredPreset.Label(preset) == "Graphics preset: N64");
+    assert(restoredPreset.Label(preset) == "Preset: N64");
     assert(presets.RequiresRestart(preset));
     presets.FinishPresetSelection();
     presetConfig.Set("Video", "AspectRatio", "21:9");
@@ -371,16 +371,16 @@ int main() {
     assert(presets.RequiresRestart(preset));
     assert(presets.RequiresRestart(Find(presets, "GPU preference:")));
     assert(presets.Step(Find(presets, "Screen shader:"), 1));
-    assert(presets.Label(preset) == "Graphics preset: Custom");
+    assert(presets.Label(preset) == "Preset: Custom");
     assert(presets.AdjustAndSave(preset, 1, directory) == GameSettings::Adjustment::SaveFailed);
-    assert(presets.Label(preset) == "Graphics preset: Custom");
+    assert(presets.Label(preset) == "Preset: Custom");
     assert(presetConfig.Get("Game", "AssetPack") == "boss");
     assert(!coastline::ApplyGraphicsPreset(presetConfig, "unknown"));
 
     auto browsingConfig = GameConfig::Parse("[Game]\nMusic=XM\nSoundEffects=N64\n"
                                             "AssetPack=custom\n[Video]\nGraphicsPreset=custom\n");
     GameSettings browsing(browsingConfig, roots);
-    const auto browsingPreset = Find(browsing, "Graphics preset:");
+    const auto browsingPreset = Find(browsing, "Preset:");
     for (int selection = 0; selection < 3; ++selection) {
         assert(browsing.AdjustAndSave(browsingPreset, 1, path) == GameSettings::Adjustment::Saved);
     }
@@ -398,7 +398,7 @@ int main() {
 
     auto legacyConfig = GameConfig::Parse("[Video]\nGraphicsPreset=best\nAntialias=4\n");
     GameSettings legacy(legacyConfig, roots);
-    assert(legacy.Label(Find(legacy, "Graphics preset:")) == "Graphics preset: Ultra");
+    assert(legacy.Label(Find(legacy, "Preset:")) == "Preset: Ultra");
     assert(legacyConfig.Get("Video", "GraphicsPreset") == "ultra");
     assert(legacyConfig.GetInteger("Video", "Antialias", 0) == 4);
 
@@ -406,7 +406,7 @@ int main() {
     saved.Set("Video", "AspectRatio", "auto");
     GameSettings locked(saved, roots);
     const auto lockedAspect = Find(locked, "Aspect ratio:");
-    const auto lockedPreset = Find(locked, "Graphics preset:");
+    const auto lockedPreset = Find(locked, "Preset:");
     const auto lockedAntialias = Find(locked, "Anti-aliasing:");
     GameConfig overrides;
     overrides.Set("Video", "AspectRatio", "4:3");
@@ -428,7 +428,7 @@ int main() {
     assert(!locked.IsEnabled(Find(locked, "Visual effects:")));
     assert(!locked.IsEnabled(Find(locked, "Music:")));
     assert(locked.IsEnabled(Find(locked, "GPU preference:")));
-    assert(locked.Label(lockedPreset) == "Graphics preset: N64");
+    assert(locked.Label(lockedPreset) == "Preset: N64");
     assert(locked.Label(lockedAspect) == "Aspect ratio: 21:9");
     assert(!locked.Step(lockedPreset, 1));
     assert(!saved.Get("Video", "GraphicsPreset"));

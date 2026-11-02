@@ -397,7 +397,7 @@ Non-NVIDIA and unknown adapters omit NVML utilization statistics; game memory co
 
 The `[Video]` section of `BossRally.ini` sets up the display.
 
-Options offers persistent Graphics preset choices. Selecting a preset saves its settings in
+Options offers persistent Preset choices. Selecting a preset saves its settings in
 `BossRally.ini`; subsequent manual graphics adjustments select Custom. N64 and Boss Rally select
 their respective music and sound effects; other presets preserve both audio choices. Language and
 region remain independent. N64 and Boss Rally select 4:3; Ultra fills the screen. Worst and Low

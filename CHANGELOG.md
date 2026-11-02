@@ -133,6 +133,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Options labels Graphics preset as Preset and places GPU preference immediately before Preset.
 - Successful imports remove empty subdirectories and make generated packs read-only, preserving
   existing read and execute permissions and custom mods. Reset, reimport, and cache removal handle
   protected trees; failed imports restore original pack permissions.

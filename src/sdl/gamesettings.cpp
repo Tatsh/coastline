@@ -239,7 +239,12 @@ GameSettings::GameSettings(GameConfig &config,
                           {"16:9", "16:9"},
                           {"21:9", "21:9"},
                           {"32:9", "32:9"}}});
-    m_options.push_back({"Graphics preset",
+    m_options.push_back(
+        {"GPU preference",
+         "Video",
+         "GpuPreference",
+         {{"auto", "Auto"}, {"high-performance", "High performance"}, {"low-power", "Low power"}}});
+    m_options.push_back({"Preset",
                          "Video",
                          "GraphicsPreset",
                          {{"custom", "Custom"},
@@ -248,11 +253,6 @@ GameSettings::GameSettings(GameConfig &config,
                           {"ultra", "Ultra"},
                           {"worst", "Worst"},
                           {"low-power", "Low power"}}});
-    m_options.push_back(
-        {"GPU preference",
-         "Video",
-         "GpuPreference",
-         {{"auto", "Auto"}, {"high-performance", "High performance"}, {"low-power", "Low power"}}});
     for (auto &option : m_options) {
         if (option.key == "Music" || option.key == "Effects" || option.key == "WindowReflections" ||
             option.key == "FieldOfView" || option.key == "DrawDistance" ||
