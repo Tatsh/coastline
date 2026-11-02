@@ -1,9 +1,11 @@
+#include <algorithm>
 #include <array>
 #include <cassert>
 #include <cstdio>
 #include <fstream>
 #include <iterator>
 #include <map>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <vector>
@@ -18,6 +20,7 @@ namespace {
 using namespace coastline;
 
 std::vector<RomRelease> converted;
+std::mutex convertedMutex;
 std::optional<RomRelease> failConversion;
 constexpr std::array<const char *, 3> REGIONS{"usa", "jpn", "eur"};
 
@@ -67,7 +70,10 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &pa
                                                  const ImportProgress &progress) {
     auto release = IdentifyRomFile(path);
     assert(release);
-    converted.push_back(*release);
+    {
+        std::lock_guard lock(convertedMutex);
+        converted.push_back(*release);
+    }
     if (failConversion == *release) {
         return std::unexpected("Conversion failed.");
     }
@@ -137,10 +143,16 @@ int main() {
 
     failConversion = RomRelease::Jpn;
     failure = ImportAssetImages(data, "disc.iso", roms);
-    assert(failure && Snapshot(data) == original);
-    assert((converted == std::vector{RomRelease::Usa, RomRelease::Jpn}));
+    assert(failure == "Conversion failed." && Snapshot(data) == original);
+    assert(std::ranges::contains(converted, RomRelease::Jpn));
     CheckNoStagingDirectory(data);
     failConversion.reset();
+    converted.clear();
+    failure = ImportAssetImages(data, "disc.iso", roms, [](const std::string &step, double) {
+        return step != "Converting the ROM image";
+    });
+    assert(failure && Snapshot(data) == original);
+    CheckNoStagingDirectory(data);
     converted.clear();
     failure = ImportAssetImages(data, "disc.iso", roms, [](const std::string &step, double) {
         return step != "Installing the asset packs";
@@ -174,6 +186,7 @@ int main() {
         std::fprintf(stderr, "Import failed: %s\n", failure->c_str());
     }
     assert(!failure && previous == 1.0);
+    std::ranges::sort(converted);
     assert((converted == std::vector{RomRelease::Usa, RomRelease::Jpn}));
     assert(DefaultPackUsable(DefaultAssets(data)));
     auto files = Snapshot(data);
@@ -225,6 +238,7 @@ int main() {
     const std::array<std::filesystem::path, 2> nonUsa{"jpn.rom", "eur.rom"};
     converted.clear();
     failure = ImportAssetImages(data, "disc.iso", nonUsa);
+    std::ranges::sort(converted);
     assert(!failure && (converted == std::vector{RomRelease::Jpn, RomRelease::Eur}));
     files = Snapshot(data);
     assert(files.at("assets/default/music/menu.xm") == "jpn");

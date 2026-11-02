@@ -15,6 +15,7 @@
 #include "assetpack.h"
 #include "assetstorage.h"
 #include "config.h"
+#include "importjobs.h"
 #include "importversion.h"
 #include "paths.h"
 
@@ -279,23 +280,35 @@ std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
             return importedDisc.error();
         }
         done += DISC_SHARE;
+        std::vector<ImportJob> romJobs;
+        for (const auto &input : inputs) {
+            romJobs.emplace_back(
+                [&, input](const ImportProgress &romProgress) -> std::optional<std::string> {
+                    const auto region = REGIONS[static_cast<std::size_t>(input.release)];
+                    const auto candidate = DefaultAssets((*stage)->path / "candidates" / region);
+                    std::filesystem::create_directories(candidate.parent_path());
+                    std::filesystem::copy(
+                        pristine, candidate, std::filesystem::copy_options::recursive);
+                    auto imported = ImportRom(input.path, candidate, romProgress);
+                    if (!imported) {
+                        return imported.error();
+                    }
+                    if (*imported != input.release) {
+                        return "ROM image differs from the validated input.";
+                    }
+                    return std::nullopt;
+                });
+        }
+        if (auto failure = RunImportJobs(romJobs, [&](const std::string &step, double fraction) {
+                return report(step, (done + fraction * static_cast<double>(inputs.size())) / total);
+            })) {
+            return failure;
+        }
         for (std::size_t index = 0; index < inputs.size(); ++index) {
             const auto &input = inputs[index];
             const auto region = REGIONS[static_cast<std::size_t>(input.release)];
             const auto workspace = (*stage)->path / "candidates" / region;
             const auto candidate = DefaultAssets(workspace);
-            std::filesystem::create_directories(candidate.parent_path());
-            std::filesystem::copy(pristine, candidate, std::filesystem::copy_options::recursive);
-            auto imported =
-                ImportRom(input.path, candidate, [&](const std::string &step, double fraction) {
-                    return report(step, (done + fraction) / total);
-                });
-            if (!imported) {
-                return imported.error();
-            }
-            if (*imported != input.release) {
-                return "ROM image differs from the validated input.";
-            }
             if (auto failure = CurateAssetPacks(candidate)) {
                 return failure;
             }

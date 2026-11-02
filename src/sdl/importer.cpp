@@ -34,6 +34,7 @@
 #include "common/rle.h"
 #include "common/weather.h"
 #include "disclayout.h"
+#include "importjobs.h"
 #include "sdl/consolestrings.h"
 #include "sdl/ghostfile.h"
 #include "sdl/gltfdocument.h"
@@ -1981,7 +1982,8 @@ struct EncoderDeleter {
 
 std::optional<std::string> EncodeAudioTrack(std::ifstream &file,
                                             const CueTrack &track,
-                                            const std::filesystem::path &destination) {
+                                            const std::filesystem::path &destination,
+                                            const ImportProgress &progress) {
     std::unique_ptr<FLAC__StreamEncoder, EncoderDeleter> encoder(FLAC__stream_encoder_new());
     if (!encoder) {
         return "The FLAC encoder cannot be created.";
@@ -2002,8 +2004,13 @@ std::optional<std::string> EncodeAudioTrack(std::ifstream &file,
     constexpr std::uint64_t CHUNK_SECTORS = 75;
     std::vector<std::uint8_t> raw(CHUNK_SECTORS * RAW_SECTOR);
     std::vector<FLAC__int32> samples(CHUNK_SECTORS * SAMPLES_PER_SECTOR * 2);
+    const auto step = "music/" + destination.filename().string();
     file.seekg(static_cast<std::streamoff>(track.firstSector * RAW_SECTOR));
     for (std::uint64_t done = 0; done < track.sectorCount; done += CHUNK_SECTORS) {
+        if (progress &&
+            !progress(step, static_cast<double>(done) / static_cast<double>(track.sectorCount))) {
+            return "Import cancelled.";
+        }
         std::uint64_t count = std::min(CHUNK_SECTORS, track.sectorCount - done);
         if (!file.read(reinterpret_cast<char *>(raw.data()),
                        static_cast<std::streamsize>(count * RAW_SECTOR))) {
@@ -2693,21 +2700,26 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
             return std::unexpected(*failure);
         }
     }
+    std::vector<ImportJob> audioJobs;
     for (const auto &track : tracks) {
         if (!track.audio) {
             continue;
         }
-        auto name = fmt::format("track{:02}.flac", track.number);
-        if (!report("music/" + name)) {
-            return cancelled;
-        }
-        ++done;
-        std::ifstream audio(track.file, std::ios::binary);
-        if (auto failure = EncodeAudioTrack(audio, track, dataDirectory / "music" / name)) {
-            return std::unexpected(*failure);
-        }
-        ++written;
+        audioJobs.emplace_back([&, track](const ImportProgress &audioProgress) {
+            const auto name = fmt::format("track{:02}.flac", track.number);
+            std::ifstream audio(track.file, std::ios::binary);
+            return EncodeAudioTrack(audio, track, dataDirectory / "music" / name, audioProgress);
+        });
     }
+    if (auto failure = RunImportJobs(audioJobs, [&](const std::string &step, double fraction) {
+            return !progress || progress(step,
+                                         (static_cast<double>(done) +
+                                          fraction * static_cast<double>(audioCount)) /
+                                             steps);
+        })) {
+        return std::unexpected(*failure);
+    }
+    written += audioCount;
     for (const auto *file : {"BossRally/pod.json",
                              "RallyIntro1.json",
                              "RallyIntro2.json",
@@ -2719,8 +2731,8 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
             return std::unexpected(fmt::format("Incomplete disc conversion. Missing {}.", file));
         }
     }
-    if (progress) {
-        progress("done", 1.0);
+    if (progress && !progress("done", 1.0)) {
+        return cancelled;
     }
     return written;
 }

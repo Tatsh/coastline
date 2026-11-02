@@ -601,6 +601,7 @@ ilse
 imaadpcmstream
 imaadpcmwaveformat
 immp
+importjobs
 importversion
 imref
 incsrc

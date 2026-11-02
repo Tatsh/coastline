@@ -621,6 +621,10 @@ conversion succeeds. A completed inventory records file sizes, a file count, and
 checksum. Startup rejects incomplete inventories and missing or truncated imported files, and
 offers re-import or quit before loading game assets.
 
+CD audio encoding and independent regional ROM conversions use up to four worker threads, limited
+by available CPU concurrency. Cancellation stops pending work and waits for active conversions
+before discarding staging files.
+
 Supply the disc and every ROM image in the same command. A successful import replaces generated
 packs (`default`, `boss`, `eur`, and `jpn`) and preserves mod packs. Failed or cancelled conversions
 preserve the previous assets. USA is the base when supplied; otherwise the first ROM is the base.

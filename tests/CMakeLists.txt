@@ -391,6 +391,7 @@ target_link_options(gltfdocument_test PRIVATE -fsanitize=address,undefined)
 add_test(NAME gltfdocument COMMAND gltfdocument_test)
 
 add_executable(assetimport_test assetimport_test.cpp "${_src}/sdl/assetimport.cpp"
+                              "${_src}/sdl/importjobs.cpp"
                               "${_src}/sdl/importversion.cpp" "${_src}/sdl/config.cpp"
                               "${_src}/sdl/assetstorage.cpp")
 set_target_properties(assetimport_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
@@ -399,6 +400,13 @@ target_link_libraries(assetimport_test PRIVATE nlohmann_json::nlohmann_json)
 target_compile_options(assetimport_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
 target_link_options(assetimport_test PRIVATE -fsanitize=address,undefined)
 add_test(NAME assetimport COMMAND assetimport_test)
+
+add_executable(importjobs_test importjobs_test.cpp "${_src}/sdl/importjobs.cpp")
+set_target_properties(importjobs_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(importjobs_test PRIVATE "${_src}/sdl")
+target_compile_options(importjobs_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(importjobs_test PRIVATE -fsanitize=address,undefined)
+add_test(NAME importjobs COMMAND importjobs_test)
 
 add_executable(assetstorage_test assetstorage_test.cpp "${_src}/sdl/assetstorage.cpp"
                                "${_src}/sdl/paths.cpp" "${_src}/sdl/importversion.cpp"

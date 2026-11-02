@@ -230,6 +230,7 @@ add_library(
   options.cpp
   paintshop.cpp
   iconfile.cpp
+  importjobs.cpp
   paths.cpp
   performance.cpp
   playerselect.cpp
