@@ -215,11 +215,14 @@ void RemoveUnchangedFiles(const std::filesystem::path &candidate,
             entry.file_size() != std::filesystem::file_size(base)) {
             continue;
         }
-        std::ifstream first(entry.path(), std::ios::binary), second(base, std::ios::binary);
-        const std::string bytes(std::istreambuf_iterator<char>(first), {});
-        const std::string original(std::istreambuf_iterator<char>(second), {});
-        if (first.is_open() && second.is_open() && !first.bad() && !second.bad() &&
-            bytes == original) {
+        const bool unchanged = [&] {
+            std::ifstream first(entry.path(), std::ios::binary), second(base, std::ios::binary);
+            const std::string bytes(std::istreambuf_iterator<char>(first), {});
+            const std::string original(std::istreambuf_iterator<char>(second), {});
+            return first.is_open() && second.is_open() && !first.bad() && !second.bad() &&
+                   bytes == original;
+        }();
+        if (unchanged) {
             std::filesystem::remove(entry.path());
         }
     }

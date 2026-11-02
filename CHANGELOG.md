@@ -228,6 +228,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Windows multi-region imports close file handles before removing unchanged regional assets,
+  avoiding sharing violations.
 - Windows ZIP and NSIS packages include required runtime libraries, including FLAC, fmt, zlib,
   and their transitive dependencies.
 - Patched builds reject truncated season-save trailers before applying saved progress.
