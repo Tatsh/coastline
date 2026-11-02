@@ -477,7 +477,7 @@ void Menus::SeasonRecordsPreDraw(SceneRenderer &renderer) {
         int top = HEIGHT * 7 / 16;
         int width = WIDTH * 5 / 8;
         int height = HEIGHT * 5 / 8;
-        Matrix4 camera = StageCamera(aspect, EYE, x, top, width, height);
+        Matrix4 camera = StageCamera(aspect, EYE, x, top, width, height, renderer.FrontendCamera());
         DrawCarStage(renderer, camera, true);
         DrawStageCar(renderer,
                      camera,

@@ -70,7 +70,11 @@ std::array<float, 2> ScreenExtent(float aspect) {
     return {std::min(ASPECT_4_3 / aspect, 1.0f), std::min(aspect / ASPECT_4_3, 1.0f)};
 }
 
-Matrix4 MenuProjection(float aspect, float nearPlane, float farPlane) {
+Matrix4 MenuProjection(float aspect,
+                       float nearPlane,
+                       float farPlane,
+                       const std::optional<Matrix4> &camera) {
+    farPlane *= camera ? 4.0f : 1.0f;
     constexpr float ASPECT_4_3 = 1.3333334f;
     auto [across, down] = ScreenExtent(aspect);
     float focal = 1.0f / std::tan(SCREEN_FOV * PI / 360.0f);
@@ -91,8 +95,10 @@ Matrix4 MenuProjection(float aspect, float nearPlane, float farPlane) {
                        0,
                        -nearPlane * farPlane / range,
                        0};
-    return MultiplyMatrices(projection,
-                            Translation(-MENU_CENTER_X, -MENU_CENTER_Y, -MENU_DISTANCE));
+    return MultiplyMatrices(
+        projection,
+        MultiplyMatrices(camera.value_or(IDENTITY_MATRIX),
+                         Translation(-MENU_CENTER_X, -MENU_CENTER_Y, -MENU_DISTANCE)));
 }
 
 Matrix4 FlatProjection(float aspect) {
@@ -122,8 +128,13 @@ Matrix4 ScreenModelAt(float x, float y, float z, float angle, float scale) {
     return MultiplyMatrices(place, CONSOLE_SPACE);
 }
 
-Matrix4
-StageCamera(float aspect, const std::array<float, 3> &eye, int x, int y, int width, int height) {
+Matrix4 StageCamera(float aspect,
+                    const std::array<float, 3> &eye,
+                    int x,
+                    int y,
+                    int width,
+                    int height,
+                    const std::optional<Matrix4> &camera) {
     // The field of view of the camera of the console, its near plane, and its far plane, a fifth
     // of the projection scale of 400.
     constexpr float CAMERA_FOV = 0.5235987901687622f;
@@ -165,6 +176,7 @@ StageCamera(float aspect, const std::array<float, 3> &eye, int x, int y, int wid
     float h = static_cast<float>(height);
     float fovy = CAMERA_FOV * ASPECT_4_3 * (h / w);
     float focal = 1.0f / std::tan(fovy * 0.5f);
+    const float farPlane = CAMERA_FAR * (camera ? 4.0f : 1.0f);
     Matrix4 projection{focal / (w / h),
                        0,
                        0,
@@ -175,11 +187,11 @@ StageCamera(float aspect, const std::array<float, 3> &eye, int x, int y, int wid
                        0,
                        0,
                        0,
-                       CAMERA_FAR / (CAMERA_NEAR - CAMERA_FAR),
+                       farPlane / (CAMERA_NEAR - farPlane),
                        -1,
                        0,
                        0,
-                       CAMERA_NEAR * CAMERA_FAR / (CAMERA_NEAR - CAMERA_FAR),
+                       CAMERA_NEAR * farPlane / (CAMERA_NEAR - farPlane),
                        0};
     auto [across, down] = ScreenExtent(aspect);
     float left = (static_cast<float>(x) / SCREEN_WIDTH * 2.0f - 1.0f) * across;
@@ -202,7 +214,9 @@ StageCamera(float aspect, const std::array<float, 3> &eye, int x, int y, int wid
                      (top + bottom) / 2.0f,
                      0,
                      1};
-    return MultiplyMatrices(viewport, MultiplyMatrices(projection, view));
+    return MultiplyMatrices(
+        viewport,
+        MultiplyMatrices(projection, MultiplyMatrices(camera.value_or(IDENTITY_MATRIX), view)));
 }
 
 Matrix4 StageFrameAt(float x, float y, float angle) {

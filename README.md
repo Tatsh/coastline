@@ -236,11 +236,15 @@ Down, Left, Right, Left, Right, L, and R on the first controller to unlock GAMEW
 selection for the current game session. GAMEWIN is an unfinished cutscene course with incomplete
 collision.
 
-F8 toggles the free camera during a race, paused or running. Move with W, A, S, and D, rise with E,
-descend with Q, and look with the mouse. Shift increases movement speed. On a gamepad, Back toggles
-the camera, the left stick moves, the right stick looks, the shoulder buttons descend and rise,
+F8 toggles the free camera during logos, menus, races, and attract demos, including paused races.
+Move with W, A, S, and D, rise with E, descend with Q, and look with the mouse. Two-finger vertical
+scrolling or the mouse wheel moves forward and backward. Shift increases movement speed.
+Free camera temporarily uses maximum draw distance without changing saved settings.
+Escape exits free camera without pausing or navigating back; F8 also toggles the mode off.
+On a gamepad, Back toggles the camera, the left stick moves, the right stick looks,
+the shoulder buttons descend and rise,
 and pressing the left stick increases speed. Driving input is captured while the camera is
-active, and Escape still pauses or resumes the race. The HUD disappears for screenshots.
+active. The HUD disappears for screenshots.
 
 The `Controls` section of `BossRally.ini` maps the gamepad. `Preset` chooses one of the presets below,
 and a key of an action present in the section replaces the binding of the preset for that action.

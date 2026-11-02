@@ -477,6 +477,11 @@ public:
     /** @return The window the renderer draws into. */
     GpuWindow &Window();
 
+    /** @param view Optional eye-space free-camera transform for menus and logos. */
+    void SetFrontendCamera(std::optional<Matrix4> view);
+    /** @return The menu and logo camera override, or no override during normal rendering. */
+    const std::optional<Matrix4> &FrontendCamera() const;
+
     /**
      * Start a frame, cleared to a colour.
      *

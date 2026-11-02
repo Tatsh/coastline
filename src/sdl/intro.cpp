@@ -384,7 +384,7 @@ void Intro::Draw(SceneRenderer &renderer) const {
     GpuWindow &window = renderer.Window();
     float aspect = static_cast<float>(window.FrameWidth()) /
                    static_cast<float>(std::max<Uint32>(window.FrameHeight(), 1));
-    Matrix4 projection = MenuProjection(aspect, SPLASH_NEAR, SPLASH_FAR);
+    Matrix4 projection = MenuProjection(aspect, SPLASH_NEAR, SPLASH_FAR, renderer.FrontendCamera());
     Matrix4 flat = FlatProjection(aspect);
 
     // The captions fade in as a logo lands and out as it leaves.

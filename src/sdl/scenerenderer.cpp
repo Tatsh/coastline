@@ -971,6 +971,7 @@ struct RenderQuadBuffer::State {
 };
 
 struct SceneRenderer::State {
+    std::optional<Matrix4> frontendCamera;
     bool outputOverlay = false;
     // The time of the frame the animated textures show, in milliseconds.
     std::uint32_t textureTime = 0;
@@ -1840,6 +1841,14 @@ SceneRenderer::~SceneRenderer() = default;
 
 GpuWindow &SceneRenderer::Window() {
     return *m_state->window;
+}
+
+void SceneRenderer::SetFrontendCamera(std::optional<Matrix4> view) {
+    m_state->frontendCamera = std::move(view);
+}
+
+const std::optional<Matrix4> &SceneRenderer::FrontendCamera() const {
+    return m_state->frontendCamera;
 }
 
 std::unique_ptr<SceneRenderer> SceneRenderer::Create(GpuWindow &window, bool outputOverlay) {

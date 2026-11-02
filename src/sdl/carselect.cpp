@@ -760,7 +760,7 @@ void Menus::DrawPlayerStage(SceneRenderer &renderer, int player, int y, int heig
                    static_cast<float>(std::max<Uint32>(window.FrameHeight(), 1));
     std::array<float, 3> eye = m_numLocalPlayers == 2 ? std::array<float, 3>{15.0f, 15.0f, 7.5f} :
                                                         std::array<float, 3>{10.0f, 10.0f, 5.0f};
-    Matrix4 camera = StageCamera(aspect, eye, 0, y, WIDTH, height);
+    Matrix4 camera = StageCamera(aspect, eye, 0, y, WIDTH, height, renderer.FrontendCamera());
     SDL_Rect scissor = FrameRect(
         window.FrameWidth(), window.FrameHeight(), 0, y, WIDTH, std::min(height, HEIGHT - y));
     DrawCarStage(renderer, camera, choice.state == CAR_SELECT_READY);

@@ -157,9 +157,13 @@ std::array<float, 2> ScreenExtent(float aspect);
  * @param aspect The width of the frame over its height.
  * @param nearPlane The nearest distance drawn.
  * @param farPlane The farthest distance drawn.
+ * @param camera Optional eye-space camera override; extends draw distance to the maximum.
  * @return The camera and its projection.
  */
-Matrix4 MenuProjection(float aspect, float nearPlane, float farPlane);
+Matrix4 MenuProjection(float aspect,
+                       float nearPlane,
+                       float farPlane,
+                       const std::optional<Matrix4> &camera = std::nullopt);
 
 /**
  * @param aspect The width of the frame over its height.
@@ -192,10 +196,16 @@ Matrix4 ScreenModelAt(float x, float y, float z, float angle, float scale);
  * @param y The top of the viewport.
  * @param width The width of the viewport.
  * @param height The height of the viewport.
+ * @param camera Optional eye-space camera override; extends draw distance to the maximum.
  * @return The camera and its projection, to a depth from 0 to 1.
  */
-Matrix4
-StageCamera(float aspect, const std::array<float, 3> &eye, int x, int y, int width, int height);
+Matrix4 StageCamera(float aspect,
+                    const std::array<float, 3> &eye,
+                    int x,
+                    int y,
+                    int width,
+                    int height,
+                    const std::optional<Matrix4> &camera = std::nullopt);
 
 /**
  * The frame of a car on a stage of the menus in the space of the console, facing an angle about z,

@@ -719,7 +719,7 @@ void MenuScreen::Draw(SceneRenderer &renderer, const MenuSetup &setup) const {
     float aspect = static_cast<float>(window.FrameWidth()) /
                    static_cast<float>(std::max<Uint32>(window.FrameHeight(), 1));
     Matrix4 flat = FlatProjection(aspect);
-    Matrix4 projection = MenuProjection(aspect, MENU_NEAR, MENU_FAR);
+    Matrix4 projection = MenuProjection(aspect, MENU_NEAR, MENU_FAR, renderer.FrontendCamera());
 
     DrawBackground(renderer, setup.top, setup.bottom);
     FlatMaterial plain;

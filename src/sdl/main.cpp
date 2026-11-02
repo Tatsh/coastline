@@ -54,6 +54,7 @@
 #include "firstrun/wizardrun.h"
 #endif
 #include "discordpresence.h"
+#include "freecamera.h"
 #include "frontend.h"
 #include "gamemode.h"
 #include "gamesettings.h"
@@ -1758,6 +1759,8 @@ int main(int argc, char *argv[]) {
                 bool printScreenWasDown = false;
                 bool escapeWasDown = false;
                 bool freeCameraToggleWasDown = false;
+                bool freeCameraEnabled = false;
+                coastline::FreeCamera frontendCamera;
                 bool undoPaintWasDown = false;
                 float exitEscapeSeconds = 0.0f;
                 coastline::MenusEnd settingsTransition = coastline::MenusEnd::Running;
@@ -1784,6 +1787,7 @@ int main(int argc, char *argv[]) {
                     bool undoPaint = false;
                     bool focusLost = false;
                     std::array<float, 2> cameraMouse{};
+                    float cameraScroll = 0.0f;
                     SDL_Event event;
                     if (frontEnd != presenceScreen) {
                         switch (frontEnd) {
@@ -1809,6 +1813,11 @@ int main(int argc, char *argv[]) {
                         if (event.type == SDL_EVENT_MOUSE_MOTION) {
                             cameraMouse[0] += event.motion.xrel;
                             cameraMouse[1] += event.motion.yrel;
+                        }
+                        if (event.type == SDL_EVENT_MOUSE_WHEEL) {
+                            cameraScroll += event.wheel.direction == SDL_MOUSEWHEEL_FLIPPED ?
+                                                -event.wheel.y :
+                                                event.wheel.y;
                         }
                         if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat &&
                             event.key.key == SDLK_Z && (event.key.mod & SDL_KMOD_CTRL) != 0) {
@@ -2021,57 +2030,85 @@ int main(int argc, char *argv[]) {
                         for (auto *gamepad : devices.gamepads) {
                             cameraToggle |= SDL_GetGamepadButton(gamepad, SDL_GAMEPAD_BUTTON_BACK);
                         }
-                        if (frontEnd == FrontEnd::Race && raceView) {
-                            if (cameraToggle && !freeCameraToggleWasDown) {
-                                raceView->ToggleFreeCamera();
-                                SDL_SetWindowRelativeMouseMode(window->Window(),
-                                                               raceView->FreeCameraEnabled());
+                        if (cameraToggle && !freeCameraToggleWasDown) {
+                            freeCameraEnabled = !freeCameraEnabled;
+                            if (freeCameraEnabled) {
+                                frontendCamera.Reset();
                             }
-                            const bool captured = raceView->FreeCameraEnabled();
-                            coastline::SetRaceControlsCaptured(captured);
-                            if (captured) {
-                                coastline::SetSecondControllerState({});
-                                auto keyAxis = [](SDL_Scancode positive, SDL_Scancode negative) {
-                                    return static_cast<float>(coastline::IsKeyDown(positive)) -
-                                           static_cast<float>(coastline::IsKeyDown(negative));
-                                };
-                                std::array<float, 3> movement{
-                                    keyAxis(SDL_SCANCODE_W, SDL_SCANCODE_S),
-                                    keyAxis(SDL_SCANCODE_D, SDL_SCANCODE_A),
-                                    keyAxis(SDL_SCANCODE_E, SDL_SCANCODE_Q)};
-                                std::array<float, 2> rotation{-cameraMouse[0] * 0.003f,
-                                                              -cameraMouse[1] * 0.003f};
-                                bool fast = coastline::IsKeyDown(SDL_SCANCODE_LSHIFT) ||
-                                            coastline::IsKeyDown(SDL_SCANCODE_RSHIFT);
-                                for (auto *gamepad : devices.gamepads) {
-                                    auto axis = [gamepad](SDL_GamepadAxis which) {
-                                        float value =
-                                            static_cast<float>(SDL_GetGamepadAxis(gamepad, which)) /
-                                            32768.0f;
-                                        return value > -0.15f && value < 0.15f ? 0.0f : value;
-                                    };
-                                    movement[0] -= axis(SDL_GAMEPAD_AXIS_LEFTY);
-                                    movement[1] += axis(SDL_GAMEPAD_AXIS_LEFTX);
-                                    movement[2] +=
-                                        static_cast<float>(SDL_GetGamepadButton(
-                                            gamepad, SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER)) -
-                                        static_cast<float>(SDL_GetGamepadButton(
-                                            gamepad, SDL_GAMEPAD_BUTTON_LEFT_SHOULDER));
-                                    rotation[0] -= axis(SDL_GAMEPAD_AXIS_RIGHTX) * seconds * 2.0f;
-                                    rotation[1] -= axis(SDL_GAMEPAD_AXIS_RIGHTY) * seconds * 2.0f;
-                                    fast |= SDL_GetGamepadButton(gamepad,
-                                                                 SDL_GAMEPAD_BUTTON_LEFT_STICK);
-                                }
-                                for (auto &value : movement) {
-                                    value =
-                                        std::clamp(value, -1.0f, 1.0f) * (fast ? 800.0f : 200.0f);
-                                }
-                                raceView->MoveFreeCamera(seconds, movement, rotation);
-                            }
-                        } else {
-                            coastline::SetRaceControlsCaptured(false);
-                            SDL_SetWindowRelativeMouseMode(window->Window(), false);
                         }
+                        if (freeCameraEnabled && coastline::IsKeyDown(SDL_SCANCODE_ESCAPE)) {
+                            freeCameraEnabled = false;
+                            coastline::IgnoreKeyUntilReleased(SDL_SCANCODE_ESCAPE);
+                            for (auto &port : ports) {
+                                port.buttons &= ~coastline::BUTTON_B;
+                            }
+                            exitEscapeSeconds = 0.0f;
+                        }
+                        const bool raceCamera = raceShows && raceView;
+                        if (raceCamera && raceView->FreeCameraEnabled() != freeCameraEnabled) {
+                            raceView->ToggleFreeCamera();
+                        }
+                        SDL_SetWindowRelativeMouseMode(window->Window(), freeCameraEnabled);
+                        coastline::SetRaceControlsCaptured(freeCameraEnabled && raceCamera);
+                        if (freeCameraEnabled) {
+                            coastline::SetSecondControllerState({});
+                            auto keyAxis = [](SDL_Scancode positive, SDL_Scancode negative) {
+                                return static_cast<float>(coastline::IsKeyDown(positive)) -
+                                       static_cast<float>(coastline::IsKeyDown(negative));
+                            };
+                            std::array<float, 3> movement{keyAxis(SDL_SCANCODE_W, SDL_SCANCODE_S),
+                                                          keyAxis(SDL_SCANCODE_D, SDL_SCANCODE_A),
+                                                          keyAxis(SDL_SCANCODE_E, SDL_SCANCODE_Q)};
+                            std::array<float, 2> rotation{-cameraMouse[0] * 0.003f,
+                                                          -cameraMouse[1] * 0.003f};
+                            bool fast = coastline::IsKeyDown(SDL_SCANCODE_LSHIFT) ||
+                                        coastline::IsKeyDown(SDL_SCANCODE_RSHIFT);
+                            for (auto *gamepad : devices.gamepads) {
+                                auto axis = [gamepad](SDL_GamepadAxis which) {
+                                    float value =
+                                        static_cast<float>(SDL_GetGamepadAxis(gamepad, which)) /
+                                        32768.0f;
+                                    return value > -0.15f && value < 0.15f ? 0.0f : value;
+                                };
+                                movement[0] -= axis(SDL_GAMEPAD_AXIS_LEFTY);
+                                movement[1] += axis(SDL_GAMEPAD_AXIS_LEFTX);
+                                movement[2] += static_cast<float>(SDL_GetGamepadButton(
+                                                   gamepad, SDL_GAMEPAD_BUTTON_RIGHT_SHOULDER)) -
+                                               static_cast<float>(SDL_GetGamepadButton(
+                                                   gamepad, SDL_GAMEPAD_BUTTON_LEFT_SHOULDER));
+                                rotation[0] -= axis(SDL_GAMEPAD_AXIS_RIGHTX) * seconds * 2.0f;
+                                rotation[1] -= axis(SDL_GAMEPAD_AXIS_RIGHTY) * seconds * 2.0f;
+                                fast |=
+                                    SDL_GetGamepadButton(gamepad, SDL_GAMEPAD_BUTTON_LEFT_STICK);
+                            }
+                            for (auto &value : movement) {
+                                value = std::clamp(value, -1.0f, 1.0f) * (fast ? 800.0f : 200.0f);
+                            }
+                            auto moveCamera = [&](float elapsed,
+                                                  const std::array<float, 3> &travel,
+                                                  const std::array<float, 2> &turn) {
+                                if (raceCamera) {
+                                    raceView->MoveFreeCamera(elapsed, travel, turn);
+                                } else {
+                                    frontendCamera.Move(elapsed, travel, turn);
+                                }
+                            };
+                            moveCamera(seconds, movement, rotation);
+                            if (cameraScroll != 0.0f) {
+                                moveCamera(0.1f, {cameraScroll * 300.0f, 0.0f, 0.0f}, {});
+                            }
+                            if (frontEnd != FrontEnd::Race) {
+                                for (auto &port : ports) {
+                                    port.buttons &= coastline::BUTTON_B;
+                                    port.stickX = 0;
+                                    port.stickY = 0;
+                                }
+                            }
+                        }
+                        sceneRenderer->SetFrontendCamera(
+                            freeCameraEnabled ?
+                                std::optional<coastline::Matrix4>(frontendCamera.View()) :
+                                std::nullopt);
                         freeCameraToggleWasDown = cameraToggle;
                         const bool escape = coastline::IsKeyDown(SDL_SCANCODE_ESCAPE);
                         const bool canExit =
@@ -2237,6 +2274,9 @@ int main(int argc, char *argv[]) {
                             intro->Draw(*sceneRenderer);
                         } else if (frontEnd == FrontEnd::AttractDemo ||
                                    frontEnd == FrontEnd::Race || frontEnd == FrontEnd::Credits) {
+                            if (raceView->FreeCameraEnabled() != freeCameraEnabled) {
+                                raceView->ToggleFreeCamera();
+                            }
                             sceneRenderer->Begin(raceView->ClearColor());
                             // The frame is raceTime into the step after the last snapshot.
                             raceView->Draw(*sceneRenderer, raceTime / RACE_STEP);
@@ -2253,14 +2293,16 @@ int main(int argc, char *argv[]) {
                                     .choose = (down & CHOOSE) != 0,
                                     .start = (down & coastline::BUTTON_START) != 0,
                                     .back = (down & coastline::BUTTON_B) != 0,
-                                    .held = now != 0,
+                                    .held = now != 0 || freeCameraEnabled,
                                     .cDown = (down & coastline::BUTTON_C_DOWN) != 0,
                                     .heldButtons = port.buttons,
                                     .stickY = port.stickY};
                             };
-                            coastline::PaintShopInput pointer = PaintShopInputOf(ports[0], mouse);
-                            pointer.text = std::move(typed);
-                            pointer.undo = undoPaint;
+                            coastline::PaintShopInput pointer =
+                                freeCameraEnabled ? coastline::PaintShopInput{} :
+                                                    PaintShopInputOf(ports[0], mouse);
+                            pointer.text = freeCameraEnabled ? std::string{} : std::move(typed);
+                            pointer.undo = !freeCameraEnabled && undoPaint;
                             coastline::MenusEnd end =
                                 mainMenu->Frame(*sceneRenderer,
                                                 seconds,

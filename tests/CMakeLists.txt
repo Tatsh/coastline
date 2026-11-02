@@ -231,6 +231,13 @@ target_compile_options(ptr32memory_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TG
 target_link_options(ptr32memory_test PRIVATE -fsanitize=address,undefined)
 add_test(NAME ptr32memory COMMAND ptr32memory_test)
 
+add_executable(freecamera_test freecamera_test.cpp "${_src}/sdl/freecamera.cpp")
+set_target_properties(freecamera_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(freecamera_test PRIVATE "${_src}/sdl")
+target_compile_options(freecamera_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(freecamera_test PRIVATE -fsanitize=address,undefined)
+add_test(NAME freecamera COMMAND freecamera_test)
+
 add_executable(
   sdl_test sdl_test.cpp "${_src}/sdl/config.cpp" "${_src}/sdl/paths.cpp" "${_src}/sdl/assetstorage.cpp" "${_src}/sdl/iconfile.cpp"
            "${_src}/sdl/importversion.cpp" "${_src}/sdl/language.cpp" "${_src}/sdl/consolestrings.cpp"

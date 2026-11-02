@@ -370,7 +370,13 @@ constexpr std::array<std::uint32_t, 2> FILL_COMBINE = CombineLerp(ZERO_AB,
 // The camera of the preview: the camera of the race with a frame of 320 by 200, its field of view
 // and its far plane those of SetupCameraMatrix(), squeezed into a viewport of the 320 by 240
 // screen centred at 4:3 in the frame.
-Matrix4 PreviewCamera(float aspect, const PaintVector &eye, int x, int y, int width, int height) {
+Matrix4 PreviewCamera(float aspect,
+                      const PaintVector &eye,
+                      int x,
+                      int y,
+                      int width,
+                      int height,
+                      const std::optional<Matrix4> &camera) {
     constexpr float CAMERA_FOV = 0.5235987901687622f;
     constexpr float ASPECT_4_3 = 1.3333334f;
     constexpr float CAMERA_NEAR = 2.4f;
@@ -406,6 +412,7 @@ Matrix4 PreviewCamera(float aspect, const PaintVector &eye, int x, int y, int wi
                  1};
     float fovy = CAMERA_FOV * ASPECT_4_3 * (FRAME_HEIGHT / FRAME_WIDTH);
     float focal = 1.0f / std::tan(fovy * 0.5f);
+    const float farPlane = CAMERA_FAR * (camera ? 4.0f : 1.0f);
     Matrix4 projection{focal / (FRAME_WIDTH / FRAME_HEIGHT),
                        0,
                        0,
@@ -416,11 +423,11 @@ Matrix4 PreviewCamera(float aspect, const PaintVector &eye, int x, int y, int wi
                        0,
                        0,
                        0,
-                       CAMERA_FAR / (CAMERA_NEAR - CAMERA_FAR),
+                       farPlane / (CAMERA_NEAR - farPlane),
                        -1,
                        0,
                        0,
-                       CAMERA_NEAR * CAMERA_FAR / (CAMERA_NEAR - CAMERA_FAR),
+                       CAMERA_NEAR * farPlane / (CAMERA_NEAR - farPlane),
                        0};
     auto [across, down] = ScreenExtent(aspect);
     float left = (static_cast<float>(x) / SCREEN_WIDTH * 2.0f - 1.0f) * across;
@@ -443,7 +450,9 @@ Matrix4 PreviewCamera(float aspect, const PaintVector &eye, int x, int y, int wi
                      (top + bottom) / 2.0f,
                      0,
                      1};
-    return MultiplyMatrices(viewport, MultiplyMatrices(projection, view));
+    return MultiplyMatrices(
+        viewport,
+        MultiplyMatrices(projection, MultiplyMatrices(camera.value_or(IDENTITY_MATRIX), view)));
 }
 
 void Normalize(PaintVector &v) {
@@ -1147,7 +1156,13 @@ void PaintShop::RenderDecalPreview3D() {
     GpuWindow &window = m_renderer->Window();
     float aspect = static_cast<float>(window.FrameWidth()) /
                    static_cast<float>(std::max<Uint32>(window.FrameHeight(), 1));
-    Matrix4 camera = PreviewCamera(aspect, m_cameraPosition, 0, top, halfWidth - 4, halfHeight - 3);
+    Matrix4 camera = PreviewCamera(aspect,
+                                   m_cameraPosition,
+                                   0,
+                                   top,
+                                   halfWidth - 4,
+                                   halfHeight - 3,
+                                   m_renderer->FrontendCamera());
     SDL_Rect scissor =
         FrameRect(window.FrameWidth(), window.FrameHeight(), 0, top, halfWidth - 4, halfHeight - 3);
     Matrix4 frame{m_frameForward.x,

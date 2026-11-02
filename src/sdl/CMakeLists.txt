@@ -215,6 +215,7 @@ add_library(
   effecttextures.cpp
   enginetextures.cpp
   frontend.cpp
+  freecamera.cpp
   gamemode.cpp
   discordpresence.cpp
   gamesettings.cpp

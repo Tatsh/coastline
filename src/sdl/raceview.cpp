@@ -2324,7 +2324,8 @@ void RaceView::DrawView(SceneRenderer &renderer,
     float fov = (split ? camera->fov * 0.7f : camera->fov) * ASPECT_4_3 *
                 static_cast<float>(screen.height) / static_cast<float>(std::max(screen.width, 1));
     fov = RaceFieldOfView(fov, aspect, window.FieldOfViewScale());
-    const float drawDistance = CAMERA_FAR * window.DrawDistanceScale();
+    const float distanceScale = s.freeCamera ? 4.0f : window.DrawDistanceScale();
+    const float drawDistance = CAMERA_FAR * distanceScale;
     float farPlane = split ? drawDistance * 0.65f : drawDistance;
     float frustumFar = farPlane;
     if (mirror) {
@@ -2378,7 +2379,7 @@ void RaceView::DrawView(SceneRenderer &renderer,
     }
     // RenderTrackGeometry(): the first pass draws the opaque instances in view.
     ViewInstances instances = VisibleInstances(
-        *camera, fov, frustumFar, frame, vehicles, cameraIndex, window.DrawDistanceScale() > 1.0f);
+        *camera, fov, frustumFar, frame, vehicles, cameraIndex, distanceScale > 1.0f);
     std::vector<CarShadow> shadows =
         ShadowsOf(s.shadowTexture.get(), vehicles, cameraIndex, instances.mask);
     const Lighting trackLighting = TrackLighting(vehicle);
