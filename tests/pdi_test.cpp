@@ -93,6 +93,7 @@ void Check(const std::filesystem::path &file, std::size_t stride, bool scramble,
         return true;
     });
     assert(decoded && previous == 1.0);
+    assert((decoded->sources == std::vector{file}));
     assert(decoded->file.extension() == (stride == 2048 ? ".iso" : ".bin"));
     assert(Read(decoded->file) == fixture.wanted);
     const auto directory = decoded->file.parent_path();

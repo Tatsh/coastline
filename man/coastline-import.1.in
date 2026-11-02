@@ -51,6 +51,15 @@ Track files referenced by a CUE sheet must remain available.
 Read a Top Gear Rally ROM image.
 Repeat for each release to include.
 .TP
+.BI \-\-depfile " FILE"
+Write GCC-style source dependencies after a successful import.
+Requires \-\-depfile-target.
+Dependencies include metadata, split image segments, ROMs, and searched source directories.
+.TP
+.BI \-\-depfile-target " TARGET"
+Specify the build output for \-\-depfile.
+Requires \-\-depfile.
+.TP
 .BR \-h ", " \-\-help
 Print subcommand usage and exit.
 .PP

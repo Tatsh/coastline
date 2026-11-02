@@ -2519,11 +2519,16 @@ std::optional<std::string> MissingDiscFiles(const DiscContents &contents) {
     return std::nullopt;
 }
 
-std::expected<DiscContents, std::string> ReadDiscContents(const std::filesystem::path &disc,
-                                                          const ImportProgress &progress = {}) {
+std::expected<DiscContents, std::string>
+ReadDiscContents(const std::filesystem::path &disc,
+                 const ImportProgress &progress = {},
+                 std::vector<std::filesystem::path> *sources = nullptr) {
     std::error_code error;
     if (std::filesystem::is_directory(disc, error)) {
         DiscContents contents;
+        if (sources) {
+            sources->push_back(disc);
+        }
         std::filesystem::recursive_directory_iterator entry(disc, error), end;
         while (!error && entry != end) {
             const auto path = entry->path().lexically_relative(disc);
@@ -2532,6 +2537,8 @@ std::expected<DiscContents, std::string> ReadDiscContents(const std::filesystem:
             } else if (entry->is_directory(error)) {
                 if (entry.depth() >= 8 || !IsGameData(path / "_")) {
                     entry.disable_recursion_pending();
+                } else if (sources) {
+                    sources->push_back(entry->path());
                 }
             } else if (entry->is_regular_file(error) && IsGameData(path)) {
                 std::filesystem::path destination;
@@ -2556,6 +2563,9 @@ std::expected<DiscContents, std::string> ReadDiscContents(const std::filesystem:
                     }
                 }
                 contents.entries.push_back({destination, 0, 0, entry->path()});
+                if (sources) {
+                    sources->push_back(entry->path());
+                }
             }
             if (!error) {
                 entry.increment(error);
@@ -2573,7 +2583,7 @@ std::expected<DiscContents, std::string> ReadDiscContents(const std::filesystem:
         std::ranges::sort(contents.entries, {}, &IsoEntry::path);
         return contents;
     }
-    auto layout = ReadDiscTracks(disc, progress);
+    auto layout = ReadDiscTracks(disc, progress, sources);
     if (!layout) {
         return std::unexpected(layout.error());
     }
@@ -2620,7 +2630,8 @@ std::expected<RomRelease, std::string> IdentifyRomFile(const std::filesystem::pa
 
 std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &disc,
                                                    const std::filesystem::path &dataDirectory,
-                                                   const ImportProgress &onProgress) {
+                                                   const ImportProgress &onProgress,
+                                                   std::vector<std::filesystem::path> *sources) {
     const auto extension = Lowercase(disc.extension().string());
     const double decodeShare = extension == ".isz" || extension == ".pdi" ? 0.1 : 0.0;
     const ImportProgress decodeProgress = onProgress ?
@@ -2628,7 +2639,8 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
                                                   return onProgress(step, decodeShare * fraction);
                                               } :
                                               ImportProgress{};
-    auto contents = ReadDiscContents(disc, decodeProgress);
+    std::vector<std::filesystem::path> inputs;
+    auto contents = ReadDiscContents(disc, decodeProgress, sources ? &inputs : nullptr);
     if (!contents) {
         return std::unexpected(contents.error());
     }
@@ -2747,6 +2759,9 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
     }
     if (progress && !progress("done", 1.0)) {
         return cancelled;
+    }
+    if (sources) {
+        *sources = std::move(inputs);
     }
     return written;
 }

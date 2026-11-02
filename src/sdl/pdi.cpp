@@ -114,6 +114,7 @@ std::expected<DecodedDisc, std::string> DecodePdi(const std::filesystem::path &i
     if (!decoded) {
         return std::unexpected(decoded.error());
     }
+    decoded->sources.push_back(image);
     std::ofstream output(decoded->file, std::ios::binary);
     if (!output) {
         return std::unexpected(std::string("Cannot create decoded disc image."));

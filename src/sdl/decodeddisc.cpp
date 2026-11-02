@@ -45,7 +45,7 @@ std::expected<DecodedDisc, std::string> CreateDecodedDisc(bool raw, std::uint64_
     if (!storage || error) {
         return std::unexpected(std::string("Cannot create temporary disc storage."));
     }
-    return DecodedDisc{storage->directory / (raw ? "disc.bin" : "disc.iso"), storage};
+    return DecodedDisc{storage->directory / (raw ? "disc.bin" : "disc.iso"), storage, {}};
 }
 
 } // namespace coastline

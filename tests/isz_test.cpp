@@ -162,6 +162,8 @@ void Check(const std::filesystem::path &root,
         return true;
     });
     assert(decoded && previous == 1.0 && Read(decoded->file) == wanted);
+    assert(decoded->sources ==
+           (split ? std::vector{image, root / "image.i01"} : std::vector{image}));
     if (split) {
         for (const auto *suffix : {".part01.isz", ".part001.isz", ".ISZ"}) {
             const auto variant = root / (std::string("variant") + suffix);
@@ -174,6 +176,7 @@ void Check(const std::filesystem::path &root,
                 root / "image.i01", next, std::filesystem::copy_options::overwrite_existing);
             const auto alternate = coastline::DecodeIsz(variant);
             assert(alternate && Read(alternate->file) == wanted);
+            assert((alternate->sources == std::vector{variant, next}));
         }
     }
     const auto temporary = decoded->file;

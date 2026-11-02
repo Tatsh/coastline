@@ -273,6 +273,7 @@ decodeddisc
 decomp
 decompressobj
 denumret
+depfile
 depthbuffer
 desrttr
 desrttrk

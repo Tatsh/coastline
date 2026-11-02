@@ -780,6 +780,7 @@ int ImportFromCommandLine(const argparse::ArgumentParser &import,
     for (const auto &rom : import.get<std::vector<std::string>>("--rom")) {
         roms.emplace_back(rom);
     }
+    std::vector<std::filesystem::path> sources;
     auto failure = coastline::ImportAssetImages(
         data,
         import.present("--cd").value_or(""),
@@ -787,7 +788,13 @@ int ImportFromCommandLine(const argparse::ArgumentParser &import,
         [](const std::string &step, double fraction) {
             SDL_Log("[%3d%%] %s", static_cast<int>(fraction * 100), step.c_str());
             return true;
-        });
+        },
+        import.is_used("--depfile") ? &sources : nullptr);
+    if (!failure && import.is_used("--depfile")) {
+        failure = coastline::WriteImportDependencies(import.get<std::string>("--depfile"),
+                                                     import.get<std::string>("--depfile-target"),
+                                                     sources);
+    }
     if (failure) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", failure->c_str());
     }
@@ -909,6 +916,15 @@ int main(int argc, char *argv[]) {
         .metavar("ROM")
         .help("copy a Top Gear Rally cartridge image, checked by SHA-1; repeat for each release")
         .append();
+    import.add_argument("--depfile")
+        .action(RequiredArgumentValue("--depfile"))
+        .metavar("FILE")
+        .help("Write GCC-style source dependencies after a successful import; requires "
+              "--depfile-target.");
+    import.add_argument("--depfile-target")
+        .action(RequiredArgumentValue("--depfile-target"))
+        .metavar("TARGET")
+        .help("Build output for --depfile; requires --depfile.");
     parser.add_subparser(import);
 
     argparse::ArgumentParser importPak("import-pak", "", argparse::default_arguments::help);
@@ -977,9 +993,15 @@ int main(int argc, char *argv[]) {
         std::cerr << parser;
         return EXIT_FAILURE;
     }
-    if (parser.is_subcommand_used(import) && !import.is_used("--cd") && !import.is_used("--rom")) {
-        std::cerr << "import requires --cd, --rom, or both.\n" << import;
-        return EXIT_FAILURE;
+    if (parser.is_subcommand_used(import)) {
+        if (!import.is_used("--cd") || !import.is_used("--rom")) {
+            std::cerr << "import requires --cd and at least one --rom.\n" << import;
+            return EXIT_FAILURE;
+        }
+        if (import.is_used("--depfile") != import.is_used("--depfile-target")) {
+            std::cerr << "import requires --depfile and --depfile-target together.\n" << import;
+            return EXIT_FAILURE;
+        }
     }
 
     if (parser.is_subcommand_used(import) && parser.is_used("--data-dir")

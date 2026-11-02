@@ -9,6 +9,8 @@ struct DecodedDisc {
     std::filesystem::path file; /*!< Headerless ISO or raw-sector BIN image. */
     /** Attempts to delete temporary files when the final shared storage reference is released. */
     std::shared_ptr<const void> storage;
+    /** Original container segments, excluding temporary files. */
+    std::vector<std::filesystem::path> sources;
 };
 
 /**

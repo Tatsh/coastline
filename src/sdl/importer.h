@@ -118,16 +118,19 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
  * Boss.ico moves to icon/coastline.ico, beside a PNG image of each of its sizes.
  *
  * @param disc A mounted disc directory, CUE sheet, ISO, BIN, numbered Track NN.bin file, CloneCD,
- * DiscJuggler CDI, Nero NRG, Alcohol MDS, BlindWrite 4/5/6, or unencrypted ISZ image.
+ * DiscJuggler CDI, Nero NRG, Alcohol MDS, BlindWrite 4/5/6, PDI, or unencrypted ISZ image.
  * Adjacent CUE metadata precedes known-dump and discovered BIN layouts.
  * Uncertain audio layouts import data only.
  * @param dataDirectory The directory of the pack to write, assets/default of the data directory.
  * @param progress Called as each file and track is written, or empty.
+ * @param sources Receives original input files and searched directories on success, or null.
  * @return The number of files written, or a message, also when @p progress cancels the import.
  */
-std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &disc,
-                                                   const std::filesystem::path &dataDirectory,
-                                                   const ImportProgress &progress);
+std::expected<std::size_t, std::string>
+ImportDisc(const std::filesystem::path &disc,
+           const std::filesystem::path &dataDirectory,
+           const ImportProgress &progress,
+           std::vector<std::filesystem::path> *sources = nullptr);
 
 /**
  * Check that a disc image or directory provides Boss Rally files without copying them.

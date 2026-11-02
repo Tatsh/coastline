@@ -18,6 +18,7 @@
 #include "importjobs.h"
 #include "importversion.h"
 #include "paths.h"
+#include "savefile.h"
 
 namespace coastline {
 
@@ -234,13 +235,11 @@ void RemoveUnchangedFiles(const std::filesystem::path &candidate,
 std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
                                              const std::filesystem::path &disc,
                                              std::span<const std::filesystem::path> roms,
-                                             const ImportProgress &progress) {
+                                             const ImportProgress &progress,
+                                             std::vector<std::filesystem::path> *sources) {
     if (disc.empty() || roms.empty()) {
         return "Import requires a Boss Rally disc source and at least one Top Gear Rally ROM "
                "image. Use coastline import --cd DISC --rom ROM.";
-    }
-    if (auto failure = CheckDisc(disc)) {
-        return failure;
     }
     std::vector<RomInput> inputs;
     std::set<RomRelease> releases;
@@ -272,10 +271,14 @@ std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
     };
     try {
         const auto pristine = (*stage)->path / "disc";
-        auto importedDisc =
-            ImportDisc(disc, pristine, [&](const std::string &step, double fraction) {
+        std::vector<std::filesystem::path> discSources;
+        auto importedDisc = ImportDisc(
+            disc,
+            pristine,
+            [&](const std::string &step, double fraction) {
                 return report(step, fraction * DISC_SHARE / total);
-            });
+            },
+            sources ? &discSources : nullptr);
         if (!importedDisc) {
             return importedDisc.error();
         }
@@ -375,10 +378,72 @@ std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
         if (!report("Installing the asset packs", 1.0)) {
             return "Import cancelled.";
         }
-        return (*stage)->Install(data);
+        if (auto failure = (*stage)->Install(data)) {
+            return failure;
+        }
+        if (sources) {
+            discSources.insert(discSources.end(), roms.begin(), roms.end());
+            *sources = std::move(discSources);
+        }
+        return std::nullopt;
     } catch (const std::filesystem::filesystem_error &error) {
         return "Cannot prepare regional asset packs. " + std::string(error.what());
     }
+}
+
+std::optional<std::string> WriteImportDependencies(const std::filesystem::path &file,
+                                                   const std::filesystem::path &target,
+                                                   std::span<const std::filesystem::path> sources) {
+    auto escape = [](const std::filesystem::path &path) -> std::optional<std::string> {
+        if (path.empty()) {
+            return std::nullopt;
+        }
+        std::error_code error;
+        const auto absolute =
+            std::filesystem::absolute(path, error).lexically_normal().generic_u8string();
+        if (error) {
+            return std::nullopt;
+        }
+        std::string escaped;
+        for (const auto character : absolute) {
+            if (character == u8'\n' || character == u8'\r' || character == u8'\t'
+#ifndef _WIN32
+                || character == u8'\\'
+#endif
+            ) {
+                return std::nullopt;
+            }
+            if (character == u8' ' || character == u8'#') {
+                escaped += '\\';
+            } else if (character == u8'$') {
+                escaped += '$';
+            }
+            escaped += static_cast<char>(character);
+        }
+        return escaped;
+    };
+    const auto output = escape(target);
+    if (!output) {
+        return "Cannot represent the import target in a dependency file.";
+    }
+    std::set<std::string> dependencies;
+    for (const auto &source : sources) {
+        auto dependency = escape(source);
+        if (!dependency) {
+            return "Cannot represent an import source in a dependency file.";
+        }
+        dependencies.insert(std::move(*dependency));
+    }
+    std::string text = *output + ':';
+    for (const auto &dependency : dependencies) {
+        text += ' ';
+        text += dependency;
+    }
+    text += '\n';
+    if (!WriteSaveFile(file, text)) {
+        return "Cannot write the import dependency file.";
+    }
+    return std::nullopt;
 }
 
 } // namespace coastline

@@ -438,6 +438,9 @@ std::expected<DecodedDisc, std::string> DecodeIsz(const std::filesystem::path &i
         return invalid;
     }
     auto decoded = std::move(*temporary);
+    for (const auto &part : parts) {
+        decoded.sources.push_back(part.path);
+    }
     std::ofstream output(decoded.file, std::ios::binary);
     if (!output) {
         return std::unexpected(std::string("Cannot create decoded disc image."));

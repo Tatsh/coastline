@@ -1391,8 +1391,12 @@ std::expected<std::vector<CueTrack>, std::string> ParseCueSheet(const std::files
     return tracks;
 }
 
-std::expected<std::vector<CueTrack>, std::string> ReadDiscTracks(const std::filesystem::path &disc,
-                                                                 const ImportProgress &progress) {
+namespace {
+std::expected<std::vector<CueTrack>, std::string>
+ReadDiscLayout(const std::filesystem::path &disc,
+               const ImportProgress &progress,
+               std::vector<std::filesystem::path> &sources) {
+    sources.push_back(disc);
     const auto extension = Lowercase(disc.extension().string());
     if (extension == ".isz" || extension == ".pdi") {
         auto decoded = extension == ".isz" ? DecodeIsz(disc, progress) : DecodePdi(disc, progress);
@@ -1400,6 +1404,7 @@ std::expected<std::vector<CueTrack>, std::string> ReadDiscTracks(const std::file
             return std::unexpected(decoded.error());
         }
         auto tracks = ReadDiscTracks(decoded->file);
+        sources = decoded->sources;
         if (tracks) {
             for (auto &track : *tracks) {
                 track.storage = decoded->storage;
@@ -1410,12 +1415,16 @@ std::expected<std::vector<CueTrack>, std::string> ReadDiscTracks(const std::file
     if (extension == ".bwt" || extension == ".bwi" || extension == ".bws") {
         auto metadata = disc;
         metadata.replace_extension(".bwt");
-        return BlindWrite4Tracks(AdjacentFile(metadata));
+        metadata = AdjacentFile(metadata);
+        sources.push_back(metadata);
+        return BlindWrite4Tracks(metadata);
     }
     if (extension == ".b5t" || extension == ".b6t" || extension == ".b5i" || extension == ".b6i") {
         auto metadata = disc;
         metadata.replace_extension(extension == ".b5t" || extension == ".b5i" ? ".b5t" : ".b6t");
-        return BlindWriteTracks(AdjacentFile(metadata));
+        metadata = AdjacentFile(metadata);
+        sources.push_back(metadata);
+        return BlindWriteTracks(metadata);
     }
     if (extension == ".cdi") {
         return CdiTracks(disc);
@@ -1426,7 +1435,9 @@ std::expected<std::vector<CueTrack>, std::string> ReadDiscTracks(const std::file
     if (extension == ".mds" || extension == ".mdf") {
         auto metadata = disc;
         metadata.replace_extension(".mds");
-        return MdsTracks(AdjacentFile(metadata));
+        metadata = AdjacentFile(metadata);
+        sources.push_back(metadata);
+        return MdsTracks(metadata);
     }
     if (extension == ".cue") {
         return ParseCueSheet(disc);
@@ -1434,7 +1445,9 @@ std::expected<std::vector<CueTrack>, std::string> ReadDiscTracks(const std::file
     if (extension == ".ccd" || extension == ".img" || extension == ".sub") {
         auto metadata = disc;
         metadata.replace_extension(".ccd");
-        return CloneCdTracks(AdjacentFile(metadata));
+        metadata = AdjacentFile(metadata);
+        sources.push_back(metadata);
+        return CloneCdTracks(metadata);
     }
     if (extension == ".iso") {
         const auto data = ProbeDataTrack(disc);
@@ -1451,10 +1464,12 @@ std::expected<std::vector<CueTrack>, std::string> ReadDiscTracks(const std::file
     sameStem = AdjacentFile(sameStem);
     std::error_code error;
     if (std::filesystem::is_regular_file(sameStem, error)) {
+        sources.push_back(sameStem);
         return ParseCueSheet(sameStem);
     }
     const auto parent =
         disc.parent_path().empty() ? std::filesystem::path(".") : disc.parent_path();
+    sources.push_back(parent);
     std::filesystem::directory_iterator entry(parent, error), end;
     for (; !error && entry != end; entry.increment(error)) {
         if (Lowercase(entry->path().extension().string()) == ".cue") {
@@ -1463,6 +1478,7 @@ std::expected<std::vector<CueTrack>, std::string> ReadDiscTracks(const std::file
                     std::error_code sameError;
                     return !track.audio && std::filesystem::equivalent(track.file, disc, sameError);
                 })) {
+                sources.push_back(entry->path());
                 return parsed;
             }
         }
@@ -1486,6 +1502,29 @@ std::expected<std::vector<CueTrack>, std::string> ReadDiscTracks(const std::file
         return *tracks;
     }
     return std::vector<CueTrack>{*data};
+}
+} // namespace
+
+std::expected<std::vector<CueTrack>, std::string>
+ReadDiscTracks(const std::filesystem::path &disc,
+               const ImportProgress &progress,
+               std::vector<std::filesystem::path> *sources) {
+    std::vector<std::filesystem::path> inputs;
+    auto tracks = ReadDiscLayout(disc, progress, inputs);
+    if (tracks && sources) {
+        for (const auto &track : *tracks) {
+            if (!track.storage) {
+                inputs.push_back(track.file);
+                for (const auto &extent : track.extents) {
+                    inputs.push_back(extent.file);
+                }
+            }
+        }
+        std::ranges::sort(inputs);
+        inputs.erase(std::unique(inputs.begin(), inputs.end()), inputs.end());
+        *sources = std::move(inputs);
+    }
+    return tracks;
 }
 
 } // namespace coastline

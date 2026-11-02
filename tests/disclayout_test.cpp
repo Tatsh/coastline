@@ -90,6 +90,24 @@ void CheckSectors(const coastline::CueTrack &track, std::span<const std::uint8_t
     assert(reader.Read(track.sectorCount, 0, {}));
 }
 
+auto TrackedLayout(const std::filesystem::path &path) {
+    std::vector<std::filesystem::path> sources{"unchanged"};
+    auto tracks = coastline::ReadDiscTracks(path, {}, &sources);
+    assert(tracks && std::ranges::contains(sources, path));
+    assert(std::ranges::is_sorted(sources));
+    assert(std::ranges::adjacent_find(sources) == sources.end());
+    for (const auto &track : *tracks) {
+        assert(std::ranges::contains(sources, track.file) == !static_cast<bool>(track.storage));
+        for (const auto &extent : track.extents) {
+            assert(std::ranges::contains(sources, extent.file));
+        }
+    }
+    const auto unchanged = sources;
+    assert(!coastline::ReadDiscTracks(path.parent_path() / "missing.cue", {}, &sources));
+    assert(sources == unchanged);
+    return tracks;
+}
+
 std::size_t Append(std::vector<std::uint8_t> &bytes, std::size_t count) {
     const auto offset = bytes.size();
     bytes.resize(offset + count);
@@ -173,7 +191,7 @@ void CheckBlindWrite4(const std::filesystem::path &root) {
             const auto descriptor = root / "disc.bwt";
             Write(descriptor, metadata);
             for (const auto *source : {"disc.bwt", "disc.bwi", "disc.bws"}) {
-                const auto tracks = coastline::ReadDiscTracks(root / source);
+                const auto tracks = TrackedLayout(root / source);
                 assert(tracks && tracks->size() == 2);
                 assert(tracks->front().sectorCount == 32 && !tracks->front().audio);
                 assert((*tracks)[1].sectorCount == 3 && (*tracks)[1].audio);
@@ -309,7 +327,7 @@ void CheckBlindWrite(const std::filesystem::path &root) {
                 Tag(metadata, footer + 4, "BWT5 STREAM FOOT");
                 const auto descriptor = root / (std::string("blind") + extension);
                 Write(descriptor, metadata);
-                const auto tracks = coastline::ReadDiscTracks(descriptor);
+                const auto tracks = TrackedLayout(descriptor);
                 assert(tracks && tracks->size() == 2);
                 assert(tracks->front().sectorCount == 32 && tracks->front().extents.size() == 2);
                 assert(tracks->front().dataOffset == (stride == 2048 ? 0 : 16));
@@ -668,7 +686,7 @@ void CheckMds(const std::filesystem::path &root) {
                 const auto path = root / "test.mds";
                 Write(path, metadata);
                 for (const auto &input : {path, root / "TEST.MDF"}) {
-                    const auto tracks = coastline::ReadDiscTracks(input);
+                    const auto tracks = TrackedLayout(input);
                     assert(tracks && tracks->size() == 2);
                     assert(tracks->front().extents.size() == (split ? 2 : 1));
                     assert(!tracks->front().audio && tracks->back().audio);
@@ -761,7 +779,7 @@ void CheckCloneCd(const std::filesystem::path &root) {
          "[CloneCD]\nVersion=3\n[TRACK 1]\nMODE=1\nINDEX 1=0\n"
          "[TRACK 2]\nMODE=0\nINDEX 0=32\nINDEX 1=182\n");
     for (const auto *name : {"clone.ccd", "CLONE.IMG", "clone.sub"}) {
-        auto tracks = coastline::ReadDiscTracks(root / name);
+        auto tracks = TrackedLayout(root / name);
         assert(tracks && tracks->size() == 2);
         assert(tracks->front().sectorCount == 32 && !tracks->front().audio);
         assert((*tracks)[1].firstSector == 182 && (*tracks)[1].sectorCount == 300);
@@ -785,7 +803,7 @@ void CheckPdi(const std::filesystem::path &root) {
     container.insert(container.end(), data.begin(), data.end());
     const auto image = root / "audio.PDI";
     Write(image, container);
-    auto tracks = coastline::ReadDiscTracks(image);
+    auto tracks = TrackedLayout(image);
     assert(tracks && tracks->size() == 13);
     assert(!tracks->front().audio && tracks->front().sectorCount == 32);
     for (std::size_t index = 1; index < tracks->size(); ++index) {

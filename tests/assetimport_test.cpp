@@ -91,9 +91,13 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &pa
     return release;
 }
 
-std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &,
+std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &disc,
                                                    const std::filesystem::path &defaults,
-                                                   const ImportProgress &progress) {
+                                                   const ImportProgress &progress,
+                                                   std::vector<std::filesystem::path> *sources) {
+    if (auto failure = CheckDisc(disc)) {
+        return std::unexpected(*failure);
+    }
     if (progress && !progress("Converting the disc", 0.5)) {
         return std::unexpected("Cancelled.");
     }
@@ -106,6 +110,9 @@ std::expected<std::size_t, std::string> ImportDisc(const std::filesystem::path &
         Write(defaults / file, "{}");
     }
     std::filesystem::create_directories(defaults / "empty" / "nested");
+    if (sources) {
+        *sources = {disc, "disc companion.bin"};
+    }
     return 1;
 }
 
@@ -128,12 +135,14 @@ int main() {
     Write(data / "assets" / "custom" / "model.glb", "custom model");
     const auto original = Snapshot(data);
     const std::array<std::filesystem::path, 2> roms{"jpn.rom", "usa.rom"};
+    std::vector<std::filesystem::path> sources{"unchanged"};
     auto failure = ImportAssetImages(data, {}, roms);
     assert(failure && converted.empty() && Snapshot(data) == original);
     failure = ImportAssetImages(data, "disc.iso", {});
     assert(failure && converted.empty() && Snapshot(data) == original);
-    failure = ImportAssetImages(data, "bad.iso", roms);
+    failure = ImportAssetImages(data, "bad.iso", roms, {}, &sources);
     assert(failure && converted.empty() && Snapshot(data) == original);
+    assert((sources == std::vector<std::filesystem::path>{"unchanged"}));
     const std::array<std::filesystem::path, 1> invalid{"bad.rom"};
     failure = ImportAssetImages(data, "disc.iso", invalid);
     assert(failure && converted.empty() && Snapshot(data) == original);
@@ -237,7 +246,7 @@ int main() {
 
     const std::array<std::filesystem::path, 2> nonUsa{"jpn.rom", "eur.rom"};
     converted.clear();
-    failure = ImportAssetImages(data, "disc.iso", nonUsa);
+    failure = ImportAssetImages(data, "disc.iso", nonUsa, {}, &sources);
     std::ranges::sort(converted);
     assert(!failure && (converted == std::vector{RomRelease::Jpn, RomRelease::Eur}));
     files = Snapshot(data);
@@ -248,6 +257,21 @@ int main() {
     assert(!std::filesystem::exists(data / "assets" / "jpn"));
     assert(files.at("assets/custom/model.glb") == "custom model");
     assert(DefaultPackUsable(DefaultAssets(data)));
+    assert((sources == std::vector<std::filesystem::path>{
+                           "disc.iso", "disc companion.bin", "jpn.rom", "eur.rom"}));
+    const auto dependency = data / "sources.d";
+    const auto target = data / "output";
+    const std::vector<std::filesystem::path> special{
+        data / "a b#$.iso", data / "日本.iso", data / "a b#$.iso"};
+    assert(!WriteImportDependencies(dependency, target, special));
+    std::ifstream dependencyFile(dependency);
+    const std::string dependencyText(std::istreambuf_iterator<char>(dependencyFile), {});
+    const auto prefix = data.generic_string();
+    assert(dependencyText ==
+           prefix + "/output: " + prefix + "/a\\ b\\#$$.iso " + prefix + "/日本.iso\n");
+    assert(WriteImportDependencies(
+        dependency, target, std::vector<std::filesystem::path>{"invalid\npath"}));
+    assert(WriteImportDependencies(dependency, {}, special));
     CheckNoStagingDirectory(data);
     std::error_code cleanupError;
     RemoveAssetTree(data, cleanupError);
