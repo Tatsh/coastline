@@ -209,10 +209,13 @@ overwritten, and copying failures preserve the source. Cache is regenerated. Aft
 `COASTLINE_PORTABLE=0` to select platform storage while portable files remain adjacent.
 
 Use `coastline make-portable [--copy] [DIRECTORY]` to export normal platform assets, settings,
-saves, screenshots, and state. The default destination is `CoastlineData` in the launch working
-directory. The executable is not copied or modified and may be installed in a read-only directory.
-Without `--copy`, source data is removed after copying succeeds. Move the exported directory beside
-an AppImage or macOS bundle, or launch another portable-enabled build from the data directory.
+saves, screenshots, and state. Windows and macOS create `CoastlinePortable` in the launch working
+directory by default. Windows exports the installed `bin`, library, and share directories with data
+at the package root. macOS exports the application bundle with an adjacent `CoastlineData` directory.
+Source program files are copied and preserved. Linux exports data only, defaulting to
+`CoastlineData` in the working directory. The executable may reside in a read-only installation.
+Without `--copy`, source data is removed after publishing the completed export. Move Linux exports
+beside an AppImage, or launch another portable-enabled build from the exported data directory.
 
 On macOS the install is the application bundle `Coastline.app`, signed without an identity, with
 every library the game links that macOS does not provide inside it. The build workflow uploads it

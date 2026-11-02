@@ -529,8 +529,13 @@ bool CreateGamePaths(const GamePaths &paths) {
     return true;
 }
 
+namespace {
+
 std::optional<std::string>
-MigratePortablePaths(const GamePaths &source, const GamePaths &destination, bool copyOnly) {
+TransferGamePaths(const GamePaths &source,
+                  const GamePaths &destination,
+                  bool copyOnly,
+                  const std::function<std::optional<std::string>()> &publish = {}) {
     if (!source.portableConfig && !source.portableData) {
         return "No portable installation found.";
     }
@@ -681,6 +686,12 @@ MigratePortablePaths(const GamePaths &source, const GamePaths &destination, bool
             return "Cannot save migrated settings.";
         }
     }
+    if (publish) {
+        if (const auto failure = publish()) {
+            rollback();
+            return failure;
+        }
+    }
     if (copyOnly) {
         return std::nullopt;
     }
@@ -703,6 +714,13 @@ MigratePortablePaths(const GamePaths &source, const GamePaths &destination, bool
                std::nullopt;
 }
 
+} // namespace
+
+std::optional<std::string>
+MigratePortablePaths(const GamePaths &source, const GamePaths &destination, bool copyOnly) {
+    return TransferGamePaths(source, destination, copyOnly);
+}
+
 std::optional<std::string>
 MakePortablePaths(const GamePaths &source, const std::filesystem::path &directory, bool copyOnly) {
     std::error_code error;
@@ -716,6 +734,118 @@ MakePortablePaths(const GamePaths &source, const std::filesystem::path &director
     const GamePaths destination{
         directory, directory, directory / "state", directory / "cache", true, true};
     return MigratePortablePaths(selected, destination, copyOnly);
+}
+
+std::optional<std::string> MakePortableDistribution(const GamePaths &source,
+                                                    const std::filesystem::path &executable,
+                                                    const std::filesystem::path &directory,
+                                                    bool copyOnly) {
+    std::error_code error;
+    auto destinationAbsent = [&] {
+        const auto status = std::filesystem::symlink_status(directory, error);
+        if (error == std::errc::no_such_file_or_directory) {
+            error.clear();
+            return true;
+        }
+        return !error && status.type() == std::filesystem::file_type::not_found;
+    };
+    if (!directory.is_absolute() || directory == directory.root_path() || !destinationAbsent()) {
+        return "Portable distribution destination must be a new absolute directory.";
+    }
+    if (!std::filesystem::is_regular_file(source.config / "BossRally.ini", error) ||
+        !std::filesystem::is_directory(source.data / "assets", error)) {
+        return "No non-portable installation found.";
+    }
+    std::filesystem::path bundle;
+    for (auto parent = executable.lexically_normal(); !parent.empty();) {
+        if (parent.extension() == ".app") {
+            bundle = parent;
+            break;
+        }
+        const auto next = parent.parent_path();
+        if (next == parent) {
+            break;
+        }
+        parent = next;
+    }
+    std::vector<std::filesystem::path> programs;
+    if (!bundle.empty()) {
+        programs.push_back(bundle);
+    } else {
+        const auto root = PortableRoot(executable);
+        if (!std::filesystem::is_directory(root / "bin", error)) {
+            return "Cannot locate the installed bin directory.";
+        }
+        for (const auto *entry : {"bin",
+                                  "lib",
+                                  "libexec",
+                                  "share",
+                                  "Coastline.lnk",
+                                  "LICENSE",
+                                  "LICENSE.txt",
+                                  "README.md"}) {
+            if (std::filesystem::exists(root / entry, error)) {
+                programs.push_back(root / entry);
+            }
+            if (error) {
+                return "Cannot inspect installed program files. " + error.message();
+            }
+        }
+    }
+    for (const auto &program : programs) {
+        auto parent = directory;
+        while (!parent.empty()) {
+            if (std::filesystem::equivalent(program, parent, error)) {
+                return "Portable distribution destination must be outside installed program files.";
+            }
+            const auto next = parent.parent_path();
+            if (next == parent) {
+                break;
+            }
+            parent = next;
+        }
+    }
+    error.clear();
+    std::filesystem::create_directories(directory.parent_path(), error);
+    if (error) {
+        return "Cannot create portable distribution parent. " + error.message();
+    }
+    const auto staging =
+        directory.parent_path() /
+        (".coastline-portable-" +
+         std::to_string(std::chrono::steady_clock::now().time_since_epoch().count()));
+    if (!std::filesystem::create_directory(staging, error)) {
+        return "Cannot create portable distribution staging directory. " + error.message();
+    }
+    auto cleanup = [&] {
+        std::error_code failure;
+        RemoveAssetTree(staging, failure);
+    };
+    for (const auto &program : programs) {
+        CopyPortableEntry(program, staging / program.filename(), error);
+        if (error) {
+            const auto failure = "Cannot copy installed program files. " + error.message();
+            cleanup();
+            return failure;
+        }
+    }
+    const auto data = bundle.empty() ? staging : staging / "CoastlineData";
+    const GamePaths destination{data, data, data / "state", data / "cache", true, true};
+    auto selected = source;
+    selected.portableConfig = true;
+    selected.portableData = true;
+    const auto failure =
+        TransferGamePaths(selected, destination, copyOnly, [&]() -> std::optional<std::string> {
+            if (!destinationAbsent()) {
+                return "Portable distribution destination already exists.";
+            }
+            std::filesystem::rename(staging, directory, error);
+            return error ?
+                       std::optional("Cannot publish portable distribution. " + error.message()) :
+                       std::nullopt;
+        });
+    cleanup();
+    return failure;
 }
 
 std::vector<std::filesystem::path> SystemDataDirectories(const std::filesystem::path &executable) {

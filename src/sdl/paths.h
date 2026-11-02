@@ -148,6 +148,21 @@ std::optional<std::string> MakePortablePaths(const GamePaths &source,
                                              bool copyOnly = false);
 
 /**
+ * Export installed program files and platform data into a complete portable distribution.
+ * Bundles use CoastlineData beside the copied bundle; bin packages store data at their root.
+ * Source program files are preserved. Data is removed only after publishing the completed copy.
+ * @param source Normal platform directories with imported assets and BossRally.ini.
+ * @param executable Absolute SDL base directory within an installed bundle or bin directory.
+ * @param directory New absolute parent directory for the complete portable distribution.
+ * @param copyOnly Whether to preserve platform data after copying.
+ * @return An error on failure, or an empty optional on success.
+ */
+std::optional<std::string> MakePortableDistribution(const GamePaths &source,
+                                                    const std::filesystem::path &executable,
+                                                    const std::filesystem::path &directory,
+                                                    bool copyOnly = false);
+
+/**
  * Clear imported assets and asset caches, or all application data for a factory reset.
  *
  * @param paths Absolute, non-root application directories whose generated data is removed.

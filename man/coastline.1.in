@@ -127,10 +127,14 @@ Confirm either reset without prompting.
 .TP
 .BI "make-portable " "[\-\-copy] [DIRECTORY]"
 Export normal platform assets, settings, saves, screenshots, and state as a portable
-data directory. DIRECTORY defaults to CoastlineData in the launch working directory.
-The executable is not copied or modified and may reside in a read-only directory.
+directory. On Windows and macOS, DIRECTORY defaults to CoastlinePortable in the
+launch working directory and includes copied program files. Windows exports the
+bin, library, and share directories, with data at the package root. macOS exports
+the application bundle and an adjacent CoastlineData directory.
+Linux exports data only and defaults to CoastlineData in the working directory.
+Source program files are preserved and may reside in a read-only installation.
 Existing destination entries are never overwritten. Cache is regenerated.
-Without \-\-copy, remove source data after copying succeeds.
+Without \-\-copy, remove source data after publishing the completed export.
 .TP
 .BI "migrate-portable " "[\-\-copy] [DIRECTORY]"
 Move portable assets, settings, saves, screenshots, and state to normal platform

@@ -988,9 +988,17 @@ int main(int argc, char *argv[]) {
     parser.add_subparser(migratePortable);
 
     argparse::ArgumentParser makePortable("make-portable", "", argparse::default_arguments::help);
+#if defined(_WIN32) || defined(__APPLE__)
+    constexpr const char *PORTABLE_EXPORT_DIRECTORY = "CoastlinePortable";
+    makePortable.add_description(
+        "Export installed program files and normal platform data as a complete portable "
+        "distribution. Source program files are preserved.");
+#else
+    constexpr const char *PORTABLE_EXPORT_DIRECTORY = "CoastlineData";
     makePortable.add_description(
         "Export normal platform assets, settings, saves, and state as a portable data directory. "
         "The executable is not copied. Existing destination entries are never overwritten.");
+#endif
     makePortable.add_argument("--copy")
         .help("Copy data and preserve the non-portable installation.")
         .flag();
@@ -998,7 +1006,8 @@ int main(int argc, char *argv[]) {
         .nargs(argparse::nargs_pattern::optional)
         .default_value(std::string())
         .action(RequiredArgumentValue("directory"))
-        .help("Destination directory; defaults to CoastlineData in the launch directory.");
+        .help(std::string("Destination directory; defaults to ") + PORTABLE_EXPORT_DIRECTORY +
+              " in the launch directory.");
     parser.add_subparser(makePortable);
 
     try {
@@ -1080,16 +1089,22 @@ int main(int argc, char *argv[]) {
         }
         const auto directory = makePortable.get<std::string>("directory");
         std::error_code error;
-        const auto destination =
-            std::filesystem::absolute(directory.empty() ? std::filesystem::path("CoastlineData") :
-                                                          std::filesystem::path(directory),
-                                      error);
+        const auto destination = std::filesystem::absolute(
+            directory.empty() ? std::filesystem::path(PORTABLE_EXPORT_DIRECTORY) :
+                                std::filesystem::path(directory),
+            error);
         if (error) {
             std::cerr << "Cannot resolve portable export directory.\n";
             return EXIT_FAILURE;
         }
         const bool copy = makePortable.get<bool>("--copy");
-        if (const auto failure = coastline::MakePortablePaths(*paths, destination, copy)) {
+        const auto failure =
+#if defined(_WIN32) || defined(__APPLE__)
+            coastline::MakePortableDistribution(*paths, executable, destination, copy);
+#else
+            coastline::MakePortablePaths(*paths, destination, copy);
+#endif
+        if (failure) {
             std::cerr << *failure << '\n';
             return EXIT_FAILURE;
         }

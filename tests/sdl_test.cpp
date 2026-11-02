@@ -730,6 +730,45 @@ void CheckPortableMigration() {
               ReadText(local / "unrelated.txt") == "unrelated" &&
               ReadText(target.data / "controller-pak/save") == "save",
           "move removes portable data and preserves unrelated distribution files");
+    const auto installed = root / "installed";
+    WriteText(installed / "bin/coastline.exe", "program");
+    WriteText(installed / "share/doc/coastline/LICENSE", "license");
+    WriteText(installed / "Coastline.lnk", "relative shortcut");
+    const auto windows = root / "WindowsPortable";
+    Check(!coastline::MakePortableDistribution(target, installed / "bin", windows, true),
+          "Windows export copies the installed hierarchy and persistent data");
+    Check(ReadText(windows / "bin/coastline.exe") == "program" &&
+              ReadText(windows / "share/doc/coastline/LICENSE") == "license" &&
+              ReadText(windows / "Coastline.lnk") == "relative shortcut" &&
+              ReadText(windows / "controller-pak/TOP GEAR OPTIONS") == "settings note" &&
+              ReadText(windows / "assets/default/model.bin") == "model" &&
+              std::filesystem::is_regular_file(windows / "BossRally.ini") &&
+              ReadText(target.data / "controller-pak/save") == "save",
+          "Windows portable distribution is complete and copy mode preserves platform data");
+    Check(
+        coastline::MakePortableDistribution(target, installed / "bin", windows).has_value() &&
+            coastline::MakePortableDistribution(target, installed / "bin", installed / "bin/nested")
+                .has_value(),
+        "distribution exports refuse existing destinations and recursion into program files");
+    const auto dangling = root / "existing-link";
+    std::filesystem::create_directory_symlink(root / "missing", dangling, error);
+    if (!error) {
+        Check(
+            coastline::MakePortableDistribution(target, installed / "bin", dangling).has_value() &&
+                std::filesystem::is_symlink(dangling),
+            "distribution exports preserve existing dangling destination links");
+    }
+    error.clear();
+    const auto bundle = root / "Installed/Coastline.app";
+    WriteText(bundle / "Contents/MacOS/Coastline", "mac program");
+    WriteText(bundle / "Contents/Resources/icon.icns", "icon");
+    const auto mac = root / "MacPortable";
+    Check(!coastline::MakePortableDistribution(target, bundle / "Contents/Resources", mac, true),
+          "macOS export copies a bundle and adjacent portable data");
+    Check(ReadText(mac / "Coastline.app/Contents/MacOS/Coastline") == "mac program" &&
+              ReadText(mac / "CoastlineData/assets/default/model.bin") == "model" &&
+              std::filesystem::is_regular_file(mac / "CoastlineData/BossRally.ini"),
+          "macOS portable data resides outside the copied application bundle");
     const auto exported = root / "export/CoastlineData";
     Check(!coastline::MakePortablePaths(target, exported, true),
           "platform data exports to a portable directory without moving the executable");
@@ -747,6 +786,14 @@ void CheckPortableMigration() {
               !std::filesystem::exists(target.config / "BossRally.ini") &&
               ReadText(exported / "controller-pak/save") == "save",
           "portable move exports persistent data and removes platform sources after success");
+    const coastline::GamePaths exportedPaths{
+        exported, exported, exported / "state", exported / "cache"};
+    const auto moved = root / "MovedPortable";
+    Check(!coastline::MakePortableDistribution(exportedPaths, bundle / "Contents/MacOS", moved) &&
+              !std::filesystem::exists(exported / "assets") &&
+              ReadText(moved / "CoastlineData/controller-pak/save") == "save" &&
+              ReadText(bundle / "Contents/MacOS/Coastline") == "mac program",
+          "distribution move publishes data before removal and preserves source program files");
     coastline::RemoveAssetTree(root, error);
 }
 
