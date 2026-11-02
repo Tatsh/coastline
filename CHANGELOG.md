@@ -133,6 +133,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
+- Enter or keypad Enter exits instant replay. Escape or Enter skips Gamewin to the next season.
+- Gamewin uses the previous Championship track's N64 XM music, matching console behaviour;
+  PC CD music selection remains unchanged.
 - Options labels Graphics preset as Preset and places GPU preference immediately before Preset.
 - Successful imports remove empty subdirectories and make generated packs read-only, preserving
   existing read and execute permissions and custom mods. Reset, reimport, and cache removal handle

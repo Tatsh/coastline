@@ -50,6 +50,9 @@ constexpr int JOYSTICK_AXIS_MAX = 128;
 constexpr int DIK_F5 = 0x3f;
 constexpr int DIK_F11 = 0x57;
 constexpr int DIK_F12 = 0x58;
+constexpr int DIK_ESCAPE = 0x01;
+constexpr int DIK_RETURN = 0x1c;
+constexpr int DIK_NUMPADENTER = 0x9c;
 // The range of each sensitivity of the mouse, by the steering mode of the first vehicle.
 constexpr int MOUSE_AXIS_RANGES[8] = {803, 618, 475, 366, 281, 216, 166, 128};
 // The force feedback of the PC release, in ten-thousandths, and its durations in microseconds.
@@ -620,7 +623,12 @@ unsigned RaceInput::ReadButtonMask(int *pnSteering, int *pnAcceleration) {
         return m_platform.buttonMask;
     }
 #endif /* ENABLE_PATCHES */
-    if (IsPressed(15)) {
+    const bool enterPressed = IsPressedEdge(previousKeys[DIK_RETURN], keys[DIK_RETURN]) ||
+                              IsPressedEdge(previousKeys[DIK_NUMPADENTER], keys[DIK_NUMPADENTER]);
+    const bool skipCutscene =
+        g_dwGameMode == GAME_MODE_AFTER_SEASON &&
+        (enterPressed || IsPressedEdge(previousKeys[DIK_ESCAPE], keys[DIK_ESCAPE]));
+    if (IsPressed(15) || (gInstantReplayActive && enterPressed) || skipCutscene) {
         m_platform.paused = 1;
         m_platform.buttonMask = 0x4000;
         return m_platform.buttonMask;

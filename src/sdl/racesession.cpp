@@ -181,11 +181,11 @@ void RaceSession::Start(const RaceSetup &setup, const std::filesystem::path &mus
     if (setup.gameMode == GAME_MODE_TIME_ATTACK) {
         LoadGhostCar(setup);
     }
-    m_musicStarted =
-        StartRaceMusic(music, cdAudio ? RaceMusicSource::CdAudio : RaceMusicSource::Modules);
+    m_musicStarted = StartRaceMusic(
+        music, cdAudio ? RaceMusicSource::CdAudio : RaceMusicSource::Modules, setup.musicTrack);
     if (!m_musicStarted && cdAudio) {
         SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "PC CD audio unavailable; using N64 race music.");
-        m_musicStarted = StartRaceMusic(music, RaceMusicSource::Modules);
+        m_musicStarted = StartRaceMusic(music, RaceMusicSource::Modules, setup.musicTrack);
     }
     m_waitForStart = setup.waitForStart;
     g_bRaceStartsItself = !setup.waitForStart;

@@ -42,9 +42,11 @@ struct RacePlayerSetup {
 
 /** What a race is, in the terms of the race engine. */
 struct RaceSetup {
-    int gameMode = 0;                      /*!< The mode, a GAME_MODE_ value. */
-    int players = 1;                       /*!< The number of local players. */
-    int track = 2;                         /*!< The track, an index of g_apszTrackFilenames. */
+    int gameMode = 0; /*!< The mode, a GAME_MODE_ value. */
+    int players = 1;  /*!< The number of local players. */
+    int track = 2;    /*!< The track, an index of g_apszTrackFilenames. */
+    /** The engine track selecting XM music, or -1 to use the race track. */
+    int musicTrack = -1;
     int weather = 0;                       /*!< The weather, a WEATHER_ value. */
     int laps = 3;                          /*!< The laps of an arcade race. */
     std::array<RacePlayerSetup, 2> cars{}; /*!< The car of each player. */

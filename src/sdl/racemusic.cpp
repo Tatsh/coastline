@@ -45,10 +45,8 @@ constexpr const char *RACE_MUSIC_PROPERTY = "coastline.race-music";
 
 // The module of a track of the music. g_adwTrackMusicRom of the console gives each track of the
 // races the module of its place, race1 to race5, and each mirrored track that of its original. The
-// race after a season has a sound sample there rather than a module, and takes the module of the
-// track of the music in turn.
-int RaceModule(int track) {
-    int race = static_cast<int>(g_dwSelectedTrackId);
+// race after a season retains the selected championship track and its module.
+int RaceModule(int track, int race) {
     if (race >= TRACK_MIRROR_DESERT && race < TRACK_MIRROR_DESERT + RACE_MODULES) {
         race -= TRACK_MIRRORED;
     }
@@ -70,7 +68,7 @@ public:
             SDL_GetPointerProperty(SDL_GetGlobalProperties(), RACE_MUSIC_PROPERTY, nullptr));
     }
 
-    bool Start(const std::filesystem::path &directory, RaceMusicSource source);
+    bool Start(const std::filesystem::path &directory, RaceMusicSource source, int musicTrack);
     void Stop();
     void Shutdown();
     bool IsPlaying() const {
@@ -112,6 +110,7 @@ private:
     int m_trackMax = 0;
     int m_users = 0;
     std::filesystem::path m_directory;
+    int m_musicTrack = -1;
     RaceMusicSource m_source = RaceMusicSource::Modules;
     bool m_active = false;
     std::unique_ptr<N64Audio> m_modules;
@@ -128,7 +127,9 @@ private:
     bool m_cdDevicePaused = true;
 };
 
-bool RaceMusic::Start(const std::filesystem::path &directory, RaceMusicSource source) {
+bool RaceMusic::Start(const std::filesystem::path &directory,
+                      RaceMusicSource source,
+                      int musicTrack) {
     if (!g_dwPlayMusicMode) {
         return true;
     }
@@ -137,6 +138,7 @@ bool RaceMusic::Start(const std::filesystem::path &directory, RaceMusicSource so
     }
     std::srand(GetHighResolutionTime());
     m_directory = directory;
+    m_musicTrack = musicTrack;
     m_source = source;
     m_moduleChoice.reset();
     m_currentModule = 0;
@@ -251,7 +253,8 @@ bool RaceMusic::Play(int track) {
 }
 
 void RaceMusic::PlayModule(int track) {
-    int module = m_moduleChoice.value_or(RaceModule(track));
+    int module = m_moduleChoice.value_or(
+        RaceModule(track, m_musicTrack < 0 ? static_cast<int>(g_dwSelectedTrackId) : m_musicTrack));
     const auto path = m_directory / (std::string(USA_MUSIC_MODULES[module].name) + ".xm");
     std::ifstream file(path, std::ios::binary);
     if (!file) {
@@ -421,7 +424,7 @@ bool FrontEndMusic::Play() {
     State &state = *m_state;
     if (state.source == RaceMusicSource::CdAudio) {
         if (!state.cdStarted) {
-            state.cdStarted = state.cd.Start(state.directory, RaceMusicSource::CdAudio);
+            state.cdStarted = state.cd.Start(state.directory, RaceMusicSource::CdAudio, -1);
         }
         if (state.cdStarted) {
             state.cd.SetVolume(state.volume);
@@ -482,9 +485,11 @@ RaceMusicContext::~RaceMusicContext() {
     SDL_ClearProperty(SDL_GetGlobalProperties(), RACE_MUSIC_PROPERTY);
 }
 
-bool StartRaceMusic(const std::filesystem::path &directory, RaceMusicSource source) {
+bool StartRaceMusic(const std::filesystem::path &directory,
+                    RaceMusicSource source,
+                    int musicTrack) {
     auto *music = RaceMusic::Active();
-    return music && music->Start(directory, source);
+    return music && music->Start(directory, source, musicTrack);
 }
 
 void StopRaceMusic() {

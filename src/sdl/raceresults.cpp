@@ -45,7 +45,6 @@ constexpr int HEIGHT = 240;
 // Mirrored console tracks follow their unmirrored counterparts in the menu.
 constexpr int MIRRORED_TRACKS = 5;
 
-// Gamewin is the engine track used after completing a season.
 constexpr int PC_AFTER_SEASON_TRACK = 12;
 
 // The seasons of the championship, and the unlocks of the strip mine and of the cars.
@@ -102,6 +101,10 @@ RaceSetup Menus::ChosenRace() const {
     setup.gameMode = m_afterSeasonRace ? GAME_MODE_AFTER_SEASON : static_cast<int>(m_gameMode);
     setup.players = m_numLocalPlayers;
     setup.track = m_afterSeasonRace ? PC_AFTER_SEASON_TRACK : EngineTrackForMenu(m_selectedTrackId);
+    // The console selects Gamewin music from the last championship track.
+    if (m_afterSeasonRace) {
+        setup.musicTrack = EngineTrackForMenu(m_selectedTrackId);
+    }
     setup.weather = RaceWeather(m_gameMode, m_selectedTrackId, m_currentWeather);
     // InitRace() of the console races three laps but in arcade.
     setup.laps = m_gameMode == GameMode::Arcade ? m_totalLaps : 3;

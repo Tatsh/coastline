@@ -80,9 +80,13 @@ private:
  *
  * @param directory The directory of the music files.
  * @param source Where the music comes from.
+ * @param musicTrack The engine track selecting XM music, or -1 for the current race track.
+ * PC CD selection ignores this parameter.
  * @return Whether the music can play.
  */
-bool StartRaceMusic(const std::filesystem::path &directory, RaceMusicSource source);
+bool StartRaceMusic(const std::filesystem::path &directory,
+                    RaceMusicSource source,
+                    int musicTrack = -1);
 
 /**
  * Drop a user of the music of the races. The last user stops the music of the CD and closes its
