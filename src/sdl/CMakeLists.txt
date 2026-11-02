@@ -380,6 +380,10 @@ if(APPLE)
   endif()
 endif()
 if(WIN32)
+  set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES
+                        WIN32_EXECUTABLE "$<NOT:$<CONFIG:Debug>>")
+  target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE "$<$<CONFIG:Debug>:SDL_MAIN_HANDLED>")
+  target_sources(${CMAKE_PROJECT_NAME} PRIVATE windowsconsole.cpp)
   enable_language(RC)
   configure_file(Coastline.rc.in "${CMAKE_CURRENT_BINARY_DIR}/Coastline.rc" @ONLY)
   set_source_files_properties("${CMAKE_CURRENT_BINARY_DIR}/Coastline.rc"

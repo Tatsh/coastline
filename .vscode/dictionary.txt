@@ -55,6 +55,12 @@ atexit
 attachedonly
 audiomix
 autobrief
+autoinstall
+autotools
+avcodec
+averror
+avformat
+avmedia
 badvaddr
 balign
 bbrwd
@@ -159,6 +165,7 @@ clipintersectionall
 clockfields
 coasttr
 coasttrk
+codecpar
 codepoints
 codesign
 colc
@@ -455,6 +462,7 @@ errorabort
 esac
 esbenp
 etnf
+evermeet
 exceptasm
 excmask
 exhaustpos
@@ -471,6 +479,8 @@ fcntl
 fdata
 fehdrau
 fenv
+ffplay
+ffprobe
 ffreestanding
 ffunction
 fileflags
@@ -508,6 +518,7 @@ framestatistics
 frametime
 frametimer
 freeable
+freecamera
 frontenddata
 frontendscreens
 frontwheel
@@ -619,6 +630,7 @@ importjobs
 importversion
 imref
 incsrc
+indeo
 indexedimage
 infblock
 infcodes
@@ -631,6 +643,7 @@ inputlost
 inputtranslate
 instantreplay
 intr
+introsequence
 inttypes
 inval
 invaldcache
@@ -690,6 +703,10 @@ lfirst
 lgui
 lhandle
 libasound
+libav
+libavcodec
+libavformat
+libavutil
 libc
 libdecor
 libdragon
@@ -707,8 +724,11 @@ libnvidia
 libpulse
 librsvg
 libsonnet
+libswresample
+libswscale
 libultra
 libunwind
+libvpx
 libwayland
 libx
 libxcursor
@@ -1303,6 +1323,8 @@ surfacelost
 swapchain
 swapchaincomposition
 swlibs
+swresample
+swscale
 swwwwfgdafch
 syms
 synchapi
@@ -1455,6 +1477,8 @@ versioninfo
 vertexelementformat
 vertexinputrate
 viblack
+videoconvert
+videoplayer
 vigetcurrcontext
 vigetcurrframebuf
 viint
@@ -1494,6 +1518,7 @@ wheeldl
 wheelpos
 wheelrender
 windowposchanging
+windowsconsole
 windres
 winecfg
 winedbg

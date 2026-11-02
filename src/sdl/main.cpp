@@ -19,12 +19,16 @@
 #include <vector>
 
 #include <argparse/argparse.hpp>
+#if !defined(_WIN32)
 #define SDL_MAIN_HANDLED
+#endif
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
 #if !defined(_WIN32)
 #include <sys/resource.h>
+#else
+#include "windowsconsole.h"
 #endif
 
 #include "assetimport.h"
@@ -826,6 +830,9 @@ int PakFromCommandLine(const argparse::ArgumentParser &command,
 } // namespace
 
 int main(int argc, char *argv[]) {
+#ifdef _WIN32
+    coastline::AttachParentConsole();
+#endif
     RaiseOpenFileLimit();
     argparse::ArgumentParser parser(APPLICATION, COASTLINE_VERSION);
     parser.add_description("Top Gear Rally and Boss Rally in one stand-alone game.");
