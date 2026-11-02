@@ -2,6 +2,10 @@
 
 #include "common/mathutil.h"
 
+#if defined(ENABLE_PATCHES) && TGR_PLATFORM == TGR_PLATFORM_SDL
+#include <math.h>
+#endif
+
 #if TGR_BOSS_RALLY
 /**
  * @ghidraAddress USA: 0x8028bd98
@@ -132,6 +136,11 @@ void MarkVisibleEdge(f32 x0, f32 y0, f32 x1, f32 y1) {
 }
 
 s32 IsCellVisible(s32 col, s32 row) {
+#if defined(ENABLE_PATCHES) && TGR_PLATFORM == TGR_PLATFORM_SDL
+    if (row < 0 || row >= VISIBLE_GRID_SIZE || col < 0 || col >= VISIBLE_GRID_SIZE) {
+        return FALSE;
+    }
+#endif
     return row >= g_dwVisibleGridMinRow && row <= g_dwVisibleGridMaxRow &&
            col >= g_adwVisibleGridRowMinCol[row] && col <= g_adwVisibleGridRowMaxCol[row];
 }
@@ -143,6 +152,23 @@ s32 IsPointVisible(f32 x, f32 y) {
 void BuildVisibleGrid(void) {
     s32 i, col, first, last;
 
+#if defined(ENABLE_PATCHES) && TGR_PLATFORM == TGR_PLATFORM_SDL
+    for (i = 0; i < FRUSTUM_POINTS; i++) {
+        if (!isfinite(g_avFrustumPoints[i].x) || !isfinite(g_avFrustumPoints[i].y) ||
+            fabsf(g_avFrustumPoints[i].x) > VISIBLE_GRID_SIZE * CELL_SIZE * 16 ||
+            fabsf(g_avFrustumPoints[i].y) > VISIBLE_GRID_SIZE * CELL_SIZE * 16) {
+            /* Invalid camera geometry requires conservative visibility for all track cells. */
+            g_dwVisibleGridMinCol = g_dwVisibleGridMinRow = 0;
+            g_dwVisibleGridMaxCol = g_dwVisibleGridMaxRow = VISIBLE_GRID_SIZE - 1;
+            for (col = 0; col < VISIBLE_GRID_SIZE; col++) {
+                g_adwVisibleGridRowMinCol[col] = g_adwVisibleGridColMinRow[col] = 0;
+                g_adwVisibleGridRowMaxCol[col] = g_adwVisibleGridColMaxRow[col] =
+                    VISIBLE_GRID_SIZE - 1;
+            }
+            return;
+        }
+    }
+#endif
     g_dwVisibleGridMaxCol = 0;
     g_dwVisibleGridMaxRow = 0;
     g_dwVisibleGridMinCol = VISIBLE_GRID_SIZE - 1;

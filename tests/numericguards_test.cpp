@@ -4,6 +4,7 @@
 #include <initializer_list>
 
 #include "common/fog.c"
+#include "common/mathutil.c"
 #include "common/tricache.c"
 
 const unsigned char g_abPtr32Anchor[1] = {};
@@ -42,6 +43,7 @@ int main() {
                            9223372036854775808.0f,
                            -18446744073709551616.0f};
     for (f32 value : invalid) {
+        assert(FloatToInt(value) == 0);
         s16 slot = BuildTrackTriangleCache(value, 40.0f);
         assert(g_awTriCacheSectorId[slot] == 64);
         assert(BuildTrackTriangleCache(0.0f, 40.0f) == slot);
@@ -49,6 +51,10 @@ int main() {
         assert(g_awTriCacheSectorId[slot] == 1);
         assert(BuildTrackTriangleCache(40.0f, 0.0f) == slot);
     }
+    assert(FloatToInt(1.9f) == 1);
+    assert(FloatToInt(-1.9f) == -1);
+    assert(FloatToInt(2147483648.0f) == (-2147483647 - 1));
+    assert(FloatToInt(-9223372036854775808.0f) == 0);
     assert(GRID_SECTOR(0.0f, 2147483520.0f) == -256);
     assert(GRID_SECTOR(0.0f, -2147483648.0f) == 0);
     assert(GRID_SECTOR(40.0f, 40.0f) == 65);

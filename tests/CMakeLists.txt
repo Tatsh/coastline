@@ -187,6 +187,13 @@ coastline_add_test(vehiclerender ${_vecmath} ${_gu} "${_src}/common/headlight.c"
 # The test keeps the light matrices as it sets them through its own version of this routine.
 target_link_options(vehiclerender_test PRIVATE -Wl,--wrap=NormalizeLightMatrix)
 coastline_add_test(visgrid "${_src}/common/visgrid.c" "${_src}/common/mathutil.c")
+coastline_add_test(visgrid_patched "${_src}/common/visgrid.c" "${_src}/common/mathutil.c")
+target_compile_options(visgrid_patched_test PRIVATE -UTGR_PLATFORM
+  -DTGR_PLATFORM=TGR_PLATFORM_SDL -fsanitize=float-cast-overflow,float-divide-by-zero
+  -fno-sanitize-recover=all)
+target_compile_definitions(visgrid_patched_test PRIVATE ENABLE_PATCHES=1)
+target_link_options(visgrid_patched_test PRIVATE
+  -fsanitize=float-cast-overflow,float-divide-by-zero)
 coastline_add_test(weather ${_common} "${_src}/common/lightning.c" "${_src}/common/raininit.c")
 
 # The libultra C library, renamed apart from the host's.
