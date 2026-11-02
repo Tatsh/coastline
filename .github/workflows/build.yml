@@ -199,6 +199,18 @@ jobs:
           hdiutil create -volname Coastline -srcfolder staging/Coastline.app -ov -format UDZO \
             "$PACKAGE.dmg"
       - if: runner.os == 'Windows'
+        name: 'Verify installed runtime'
+        run: |
+          $originalPath = $env:PATH
+          try {
+            $env:PATH = "$env:SystemRoot\System32;$env:SystemRoot"
+            & .\staging\bin\coastline.exe --help
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          } finally {
+            $env:PATH = $originalPath
+          }
+        shell: pwsh
+      - if: runner.os == 'Windows'
         name: 'Package'
         run: Compress-Archive -Path staging\* -DestinationPath "$env:PACKAGE.zip"
         shell: pwsh

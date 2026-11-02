@@ -333,8 +333,13 @@ if(APPLE)
     set_target_properties(${CMAKE_PROJECT_NAME} PROPERTIES MACOSX_BUNDLE_ICON_FILE Coastline.icns)
   endif()
 endif()
-install(TARGETS ${CMAKE_PROJECT_NAME} RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+if(WIN32)
+  set(_runtime_dependency_set RUNTIME_DEPENDENCY_SET coastline_runtime)
+endif()
+install(TARGETS ${CMAKE_PROJECT_NAME} ${_runtime_dependency_set}
+        RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
         BUNDLE DESTINATION .)
+include("${CMAKE_SOURCE_DIR}/cmake/windows-runtime.cmake")
 coastline_install_assets(${CMAKE_PROJECT_NAME})
 if(APPLE)
   # Every library the game links that macOS does not provide is copied into the bundle, and the

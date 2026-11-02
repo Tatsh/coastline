@@ -228,6 +228,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
+- Windows ZIP and NSIS packages include required runtime libraries, including FLAC, fmt, zlib,
+  and their transitive dependencies.
 - Patched builds reject truncated season-save trailers before applying saved progress.
 - Patched builds handle shadow-pool exhaustion, incomplete shadow display lists, invalid sound
   sets and force frames, and audio allocation failures without invalid memory access or partial
