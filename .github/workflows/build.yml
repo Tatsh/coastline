@@ -23,6 +23,10 @@ jobs:
           fi
           printf 'version=%s\n' "$version" >> "$GITHUB_OUTPUT"
   n64:
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
     name: 'Nintendo 64 (${{ matrix.region }}, ${{ matrix.build-type }})'
     needs: 'version'
     runs-on: ubuntu-latest
@@ -73,6 +77,11 @@ jobs:
         env:
           TGR_REGION: '${{ matrix.region }}'
           VERSION: '${{ needs.version.outputs.version }}'
+      - name: 'Attest the archives'
+        if: github.event_name != 'pull_request'
+        uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
+        with:
+          subject-path: 'artifacts/**/*.a'
       - name: 'Upload the archives'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
@@ -80,6 +89,10 @@ jobs:
           name: 'tgr-${{ matrix.region }}-${{ matrix.build-type }}'
           path: 'artifacts/**/*.a'
   sdl:
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
     name: 'SDL (${{ matrix.platform.name }}, ${{ matrix.build-type }})'
     needs: 'version'
     runs-on: '${{ matrix.platform.os }}'
@@ -154,13 +167,13 @@ jobs:
         name: 'Configure and compile'
         run: |
           cmake --preset sdl -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCOASTLINE_PORTABLE=ON \
-            -DCOASTLINE_DISCORD=ON
+            -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video'
           cmake --build --preset sdl -- -k 0
       - if: runner.os == 'macOS'
         name: 'Configure and compile'
         run: |
           cmake --preset sdl -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCOASTLINE_PORTABLE=ON \
-            -DCOASTLINE_DISCORD=ON \
+            -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video' \
             -DCMAKE_OSX_ARCHITECTURES="$ARCHITECTURE" -DVCPKG_TARGET_TRIPLET="$TRIPLET"
           cmake --build --preset sdl -- -k 0
         env:
@@ -177,7 +190,7 @@ jobs:
           Enter-VsDevShell -VsInstallPath $studio -SkipAutomaticLocation `
             -DevCmdArguments "-arch=$env:ARCHITECTURE -host_arch=$env:ARCHITECTURE"
           cmake --preset sdl -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -DCOASTLINE_PORTABLE=ON `
-            -DCOASTLINE_DISCORD=ON
+            -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           cmake --build --preset sdl -- -k 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
@@ -255,6 +268,15 @@ jobs:
             -D "CPACK_PACKAGE_FILE_NAME=$env:PACKAGE-setup"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         shell: pwsh
+      - name: 'Attest the game packages'
+        if: github.event_name != 'pull_request'
+        uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
+        with:
+          subject-path: |
+            coastline-*.dmg
+            coastline-*.exe
+            coastline-*.tar.gz
+            coastline-*.zip
       - name: 'Upload the game'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
@@ -287,6 +309,11 @@ jobs:
           LDAI_OUTPUT: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-${{ matrix.build-type }}.AppImage'
           LINUXDEPLOY_OUTPUT_VERSION: '${{ needs.version.outputs.version }}'
           LINUXDEPLOY_SHA256: '${{ matrix.platform.linuxdeploy-sha256 }}'
+      - if: runner.os == 'Linux' && github.event_name != 'pull_request'
+        name: 'Attest the AppImage'
+        uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
+        with:
+          subject-path: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-${{ matrix.build-type }}.AppImage'
       - if: runner.os == 'Linux'
         name: 'Upload the AppImage'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
@@ -295,8 +322,12 @@ jobs:
           name: 'coastline-appimage-${{ matrix.platform.architecture }}-${{ matrix.build-type }}'
           path: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-${{ matrix.build-type }}.AppImage'
   flatpak:
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
     container:
-      image: 'ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08'
+      image: 'ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08@sha256:c91a88269eee8fcdd73ecf43064232fbebe27411f926f63f38bdf70c51f2ceae'
       options: '--privileged'
     name: 'Flatpak (${{ matrix.arch }})'
     needs: 'version'
@@ -321,7 +352,16 @@ jobs:
           bundle: 'sh.tat.coastline-${{ needs.version.outputs.version }}-${{ matrix.arch }}.flatpak'
           cache: false
           manifest-path: 'sh.tat.coastline.yml'
+      - name: 'Attest the Flatpak'
+        if: github.event_name != 'pull_request'
+        uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
+        with:
+          subject-path: 'sh.tat.coastline-${{ needs.version.outputs.version }}-${{ matrix.arch }}.flatpak'
   snap:
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
     name: 'Snap (${{ matrix.name }})'
     needs: 'version'
     runs-on: '${{ matrix.os }}'
@@ -350,6 +390,11 @@ jobs:
           ARCH: '${{ matrix.name }}'
           SNAP_FILE: '${{ steps.snap.outputs.snap }}'
           VERSION: '${{ needs.version.outputs.version }}'
+      - name: 'Attest the snap'
+        if: github.event_name != 'pull_request'
+        uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
+        with:
+          subject-path: '${{ env.SNAP_FILE }}'
       - name: 'Upload the snap'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
@@ -357,6 +402,10 @@ jobs:
           name: 'coastline-snap-${{ matrix.name }}'
           path: '${{ env.SNAP_FILE }}'
   win:
+    permissions:
+      attestations: write
+      contents: read
+      id-token: write
     name: 'Windows (${{ matrix.renderer }}, ${{ matrix.build-type }})'
     needs: 'version'
     runs-on: windows-latest
@@ -410,6 +459,11 @@ jobs:
           TGR_RENDERER: '${{ matrix.renderer }}'
           VERSION: '${{ needs.version.outputs.version }}'
         shell: 'msys2 {0}'
+      - name: 'Attest the binaries'
+        if: github.event_name != 'pull_request'
+        uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
+        with:
+          subject-path: 'coastline-*.zip'
       - name: 'Upload the binaries'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
@@ -440,7 +494,7 @@ jobs:
             -o -name '*.flatpak' -o -name '*.snap' -o -name '*.tar.gz' -o -name '*.zip' \) \
             | sort > packages.txt
           cat packages.txt
-      - uses: 'actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6'
+      - uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
         with:
           subject-path: |
             packages/*.AppImage

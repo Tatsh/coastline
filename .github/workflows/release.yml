@@ -56,7 +56,7 @@ jobs:
         name: 'Check that every workflow succeeded'
         run: |
           ready=true
-          for workflow in Build Prettier Spelling Tests clang-format markdownlint; do
+          for workflow in Build CodeQL Prettier Spelling Tests clang-format markdownlint; do
             run=$(gh run list --workflow "$workflow" --commit "$HEAD_SHA" \
               --json status,conclusion --jq '.[0]')
             if [[ -z "$run" || "$run" == 'null' ]]; then
@@ -147,5 +147,5 @@ name: 'Release'
 'on':
   workflow_run:
     types: ['completed']
-    workflows: ['Build', 'Prettier', 'Spelling', 'Tests', 'clang-format', 'markdownlint']
+    workflows: ['Build', 'CodeQL', 'Prettier', 'Spelling', 'Tests', 'clang-format', 'markdownlint']
 permissions: {}

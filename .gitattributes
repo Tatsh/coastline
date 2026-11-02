@@ -1,5 +1,6 @@
 * text=auto eol=lf
 *.lock binary
+/.github/workflows/actions.lock text diff merge
 /.yarn/**/*.cjs binary
 /3rdparty/** -text linguist-vendored
 /asm/** linguist-generated

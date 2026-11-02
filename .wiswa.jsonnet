@@ -5,7 +5,12 @@
   version: '0.0.0',
   description: 'Reconstructed source of the Nintendo 64 game Top Gear Rally.',
   keywords: ['decompilation', 'game', 'nintendo 64', 'reverse engineering', 'top gear rally'],
+  // CodeQL uses a manual SDL build and an Actions analysis job in the custom workflow.
   want_codeql: false,
+  github+: {
+    codeql+: { languages: ['c-cpp', 'actions'] },
+    workflows+: { release_gate_workflows+: ['CodeQL'] },
+  },
   want_tests: false,
   want_winget: false,
   want_snap: true,
@@ -13,7 +18,7 @@
   publishing+: {
     flathub: 'sh.tat.coastline',
   },
-  flatpak_image: 'ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08',
+  flatpak_image: 'ghcr.io/flathub-infra/flatpak-github-actions:freedesktop-25.08@sha256:c91a88269eee8fcdd73ecf43064232fbebe27411f926f63f38bdf70c51f2ceae',
   flatpak+: {
     // Import reads the user's disc and ROM images from home or removable storage. Controllers
     // require access to input devices.
