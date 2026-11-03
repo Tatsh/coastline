@@ -3,11 +3,11 @@
 #include "common/camera.h"
 #include "common/game.h"
 #include "common/input.h"
+#include "common/seasons.h"
 #include "common/track.h"
 #include "common/trackselect.h"
 #include "common/vecmath.h"
 #include "common/vehicle.h"
-#include "common/vehiclechoice.h"
 #include "common/weather.h"
 #include "racemenu.h"
 
@@ -15,10 +15,36 @@
 #define SAVED_PROFILES 2
 
 void ChooseVehicleCar(Vehicle *vehicle) {
-    s32 car;
+    s32 car, season;
+    s16 unlocks;
 
-    if (ChooseVehicleCarId(vehicle, &car) != CAR_CHOICE_UNCHANGED) {
-        vehicle->carModel = car;
+    season = g_aVehicles[0].profile->season;
+    if (season > 3) {
+        season = 3;
+    }
+    if (vehicle->index >= g_nNumLocalPlayersSigned) {
+        if (g_dwGameMode == GAME_MODE_ARCADE) {
+            vehicle->carModel = g_aVehicles[0].carModel;
+            return;
+        }
+        unlocks = g_SeasonTable[season].unlocks;
+        for (car = 0; car < 16; car++) {
+            if (unlocks & 1) {
+                break;
+            }
+            unlocks >>= 1;
+        }
+        if (car == 16) {
+            car = 5;
+        }
+        if (vehicle->index > g_nNumLocalPlayersSigned) {
+            vehicle->carModel = car;
+        } else {
+            vehicle->carModel = g_SeasonTable[g_aVehicles[0].profile->season]
+                                    .cars[vehicle->index - g_nNumLocalPlayersSigned];
+        }
+    } else if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP) {
+        vehicle->carModel = g_SeasonTable[g_aVehicles[0].profile->season].cars[0];
     }
 }
 
