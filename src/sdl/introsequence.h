@@ -51,7 +51,8 @@ public:
     /** Draw the current entry, preserving image and movie aspect ratios. */
     void Draw() const;
     /**
-     * Draw movie or timed-image progress across the bottom of an output overlay.
+     * Draw movie or timed-image progress along the bottom of the output area, fitted to the
+     * requested aspect ratio.
      * @param renderer The overlay renderer, between Begin() and RenderInto().
      * @param width Output width in pixels.
      * @param height Output height in pixels; the bar is two pixels high.

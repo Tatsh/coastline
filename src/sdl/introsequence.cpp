@@ -224,17 +224,29 @@ void IntroSequence::DrawProgress(SceneRenderer &renderer, float width, float hei
         return;
     }
     const float progress = static_cast<float>(std::clamp(s.time / duration, 0.0, 1.0));
+    float barWidth = width;
+    float barHeight = height;
+    const double aspect = renderer.Window().AspectRatio();
+    if (aspect > 0) {
+        if (width > height * aspect) {
+            barWidth = std::clamp(static_cast<float>(std::lround(height * aspect)), 1.0f, width);
+        } else {
+            barHeight = std::clamp(static_cast<float>(std::lround(width / aspect)), 1.0f, height);
+        }
+    }
+    const float left = std::floor((width - barWidth) / 2);
+    const float bottom = std::floor((height - barHeight) / 2) + barHeight;
     const Matrix4 projection{2 / width, 0, 0, 0, 0, -2 / height, 0, 0, 0, 0, 1, 0, -1, 1, 0, 1};
     const auto rectangle = [&](float right, const auto &upper, const auto &lower) {
-        const std::array<FlatVertex, 4> corners{{{0, height - 2, 0, 0, upper},
-                                                 {right, height - 2, 0, 0, upper},
-                                                 {right, height, 0, 0, lower},
-                                                 {0, height, 0, 0, lower}}};
+        const std::array<FlatVertex, 4> corners{{{left, bottom - 2, 0, 0, upper},
+                                                 {right, bottom - 2, 0, 0, upper},
+                                                 {right, bottom, 0, 0, lower},
+                                                 {left, bottom, 0, 0, lower}}};
         renderer.DrawQuads(corners, FlatMaterial{}, projection);
     };
     const std::array<std::uint8_t, 4> dark{24, 8, 0, 220};
-    rectangle(width, dark, dark);
-    rectangle(width * progress, s.progressTop, s.progressBottom);
+    rectangle(left + barWidth, dark, dark);
+    rectangle(left + barWidth * progress, s.progressTop, s.progressBottom);
 }
 
 bool IntroSequence::ShowsProgress() const {

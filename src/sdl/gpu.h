@@ -191,6 +191,11 @@ public:
     /** @return Whether the active adapter is identified as NVIDIA. */
     bool NvmlAllowed() const;
 
+    /** @return The requested output aspect ratio, or zero to fill the window. */
+    float AspectRatio() const {
+        return m_options.aspectRatio;
+    }
+
     /**
      * Set uncapped presentation while retaining the configured present mode.
      *
