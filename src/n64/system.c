@@ -115,12 +115,16 @@ void ClearDepthBuffer(void) {
     gDPPipeSync(gDisplayListPtr++);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
     gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-    gDPSetColorImage(gDisplayListPtr++,
-                     G_IM_FMT_RGBA,
-                     G_IM_SIZ_16b,
-                     g_dwScreenWidth << g_dwScreenScaleShift,
-                     TO_RSP_ADDRESS(g_aDepthBuffer));
-    gDPSetFillColor(gDisplayListPtr++, FARTHEST_DEPTHS);
+    {
+        u32 *command = (u32 *)gDisplayListPtr++;
+        command[0] = 0xff100000 | (((g_dwScreenWidth << g_dwScreenScaleShift) - 1) & 0xfff);
+        command[1] = TO_RSP_ADDRESS(g_aDepthBuffer);
+    }
+    {
+        u32 *command = (u32 *)gDisplayListPtr++;
+        command[0] = 0xf7000000;
+        command[1] = FARTHEST_DEPTHS;
+    }
     gDPFillRectangle(gDisplayListPtr++,
                      0,
                      0,
@@ -138,12 +142,16 @@ void ClearZBufferRect(s32 x, s32 y, s32 width, s32 height) {
     gDPPipeSync(gDisplayListPtr++);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
     gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-    gDPSetColorImage(gDisplayListPtr++,
-                     G_IM_FMT_RGBA,
-                     G_IM_SIZ_16b,
-                     g_dwScreenWidth << g_dwScreenScaleShift,
-                     TO_RSP_ADDRESS(g_aDepthBuffer));
-    gDPSetFillColor(gDisplayListPtr++, FARTHEST_DEPTHS);
+    {
+        u32 *command = (u32 *)gDisplayListPtr++;
+        command[0] = 0xff100000 | (((g_dwScreenWidth << g_dwScreenScaleShift) - 1) & 0xfff);
+        command[1] = TO_RSP_ADDRESS(g_aDepthBuffer);
+    }
+    {
+        u32 *command = (u32 *)gDisplayListPtr++;
+        command[0] = 0xf7000000;
+        command[1] = FARTHEST_DEPTHS;
+    }
     /* The bottom edge is taken from x, not y. */
     gDPFillRectangle(gDisplayListPtr++, x, y, x + width - 1, x + height - 1);
     gDPPipeSync(gDisplayListPtr++);
