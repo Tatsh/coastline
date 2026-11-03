@@ -215,20 +215,19 @@ void BuildFrequencyScaleTable(void) {
 
 void CheckMusicLoopPoints(void) {
     s32 i;
-    s8 *end;
-    XmSample *sample;
+    size_t end;
     s32 instrument;
 
     for (i = 0; i < g_nAudioChannelCount; i++) {
         instrument = g_MusicChannelStates[i].instrument;
         if (instrument != 0) {
-            sample = g_apInstrumentData[instrument - 1];
-            end = (s8 *)sample + sample->length + sizeof(XmSample);
-            if (end < g_aMixerChannels[i].sample) {
-                if (sample->type == XM_SAMPLE_NO_LOOP) {
+            end = (size_t)g_apInstrumentData[instrument - 1] +
+                  g_apInstrumentData[instrument - 1]->length + sizeof(XmSample);
+            if (end < (size_t)g_aMixerChannels[i].sample) {
+                if (g_apInstrumentData[instrument - 1]->type == XM_SAMPLE_NO_LOOP) {
                     g_aMixerChannels[i].step = 0;
                 } else {
-                    g_aMixerChannels[i].sample -= sample->loopLength;
+                    g_aMixerChannels[i].sample -= g_apInstrumentData[instrument - 1]->loopLength;
                 }
             }
         }
