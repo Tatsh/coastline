@@ -60,6 +60,7 @@
         ],
         name: 'ffmpeg',
         sources: [{
+          'mirror-urls': ['https://distfiles.gentoo.org/distfiles/54/ffmpeg-7.1.5.tar.xz'],
           sha256: 'de668509caf9e35e3cd162473441fdb29538c6d96ed080292b3cf9e6fc5d558f',
           type: 'archive',
           url: 'https://ffmpeg.org/releases/ffmpeg-7.1.5.tar.xz',
