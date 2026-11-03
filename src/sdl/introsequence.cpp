@@ -32,6 +32,11 @@ struct IntroSequence::State {
     std::vector<Entry> entries;
     std::size_t index = 0;
     double time = 0;
+    bool paused = false;
+    double seekSeconds = 2;
+    bool progressBar = true;
+    std::array<std::uint8_t, 4> progressTop{255, 245, 0, 255};
+    std::array<std::uint8_t, 4> progressBottom{190, 0, 0, 255};
     std::unique_ptr<RenderTexture> image;
     std::unique_ptr<RenderModel> model;
     std::unique_ptr<VideoPlayer> video;
@@ -41,6 +46,7 @@ struct IntroSequence::State {
         model.reset();
         video.reset();
         time = 0;
+        paused = false;
         while (index < entries.size()) {
             const auto &entry = entries[index];
             if (entry.type == "image") {
@@ -68,12 +74,30 @@ IntroSequence::~IntroSequence() = default;
 
 std::unique_ptr<IntroSequence> IntroSequence::Load(SceneRenderer &renderer,
                                                    const std::filesystem::path &assets,
-                                                   const nlohmann::json &entries) {
+                                                   const nlohmann::json &entries,
+                                                   const nlohmann::json &settings) {
     if (!entries.is_array() || entries.size() > 64) {
         return nullptr;
     }
     auto state = std::make_unique<State>(renderer);
     try {
+        const auto controls = settings.value("videoControls", nlohmann::json::object());
+        state->seekSeconds = controls.value("seekSeconds", 2.0);
+        state->progressBar = controls.value("progressBar", true);
+        if (!std::isfinite(state->seekSeconds) || state->seekSeconds <= 0 ||
+            state->seekSeconds > 3600) {
+            return nullptr;
+        }
+        const auto colors = [&](const char *key, auto &color) {
+            if (controls.contains(key)) {
+                const auto rgb = controls.at(key).get<std::array<int, 3>>();
+                for (std::size_t index = 0; index < rgb.size(); ++index) {
+                    color[index] = static_cast<std::uint8_t>(std::clamp(rgb[index], 0, 255));
+                }
+            }
+        };
+        colors("progressTop", state->progressTop);
+        colors("progressBottom", state->progressBottom);
         for (const auto &value : entries) {
             State::Entry entry;
             entry.type = value.at("type").get<std::string>();
@@ -112,7 +136,7 @@ bool IntroSequence::Update(float seconds, bool skip) {
     if (s.index >= s.entries.size()) {
         return false;
     }
-    if (std::isfinite(seconds)) {
+    if (!s.paused && std::isfinite(seconds)) {
         s.time += std::clamp(seconds, 0.0f, 0.25f);
     }
     const auto &entry = s.entries[s.index];
@@ -122,11 +146,29 @@ bool IntroSequence::Update(float seconds, bool skip) {
                         g_dwPlayMusicMode ? static_cast<float>(g_bBgmVolume) /
                                                 g_adwBgmVolumeLevels[VOLUME_LEVEL_COUNT - 1] :
                                             0.0f);
-    if ((skip && entry.skippable) || !playing || (entry.duration > 0 && s.time >= entry.duration)) {
+    if ((skip && entry.skippable) || (!s.paused && !playing) ||
+        (!s.paused && entry.duration > 0 && s.time >= entry.duration)) {
         ++s.index;
         s.Open();
     }
     return s.index < s.entries.size();
+}
+
+void IntroSequence::ControlVideo(bool pause, int seek, bool restart) {
+    auto &s = *m_state;
+    if (!s.video) {
+        return;
+    }
+    if (pause) {
+        s.paused = !s.paused;
+        s.video->SetPaused(s.paused);
+    }
+    if (restart || seek != 0) {
+        const double target = restart ? 0 : s.time + (seek < 0 ? -s.seekSeconds : s.seekSeconds);
+        if (const auto time = s.video->Seek(target)) {
+            s.time = *time;
+        }
+    }
 }
 
 void IntroSequence::Draw() const {
@@ -138,6 +180,33 @@ void IntroSequence::Draw() const {
         const int height = std::min(240, static_cast<int>(320 / aspect));
         MenuScreen::DrawTexture(
             s.renderer, *image, (320 - width) / 2, (240 - height) / 2, width, height);
+        if (s.video) {
+            const auto rectangle = [&](float left,
+                                       float top,
+                                       float right,
+                                       float bottom,
+                                       const auto &upper,
+                                       const auto &lower) {
+                const std::array<FlatVertex, 4> corners{{{left * 2, top * 2, 0, 0, upper},
+                                                         {right * 2, top * 2, 0, 0, upper},
+                                                         {right * 2, bottom * 2, 0, 0, lower},
+                                                         {left * 2, bottom * 2, 0, 0, lower}}};
+                s.renderer.DrawQuads(corners, FlatMaterial{}, MenuScreen::FlatFor(s.renderer));
+            };
+            if (s.progressBar) {
+                const double duration = s.video->Duration();
+                const float progress =
+                    duration > 0 ? static_cast<float>(std::clamp(s.time / duration, 0.0, 1.0)) : 0;
+                const std::array<std::uint8_t, 4> dark{24, 8, 0, 220};
+                rectangle(7, 230, 313, 238, dark, dark);
+                rectangle(8, 231, 8 + 304 * progress, 237, s.progressTop, s.progressBottom);
+            }
+            if (s.paused) {
+                const std::array<std::uint8_t, 4> white{255, 255, 255, 255};
+                rectangle(149, 106, 157, 134, white, white);
+                rectangle(163, 106, 171, 134, white, white);
+            }
+        }
     } else if (s.model) {
         const auto &entry = s.entries[s.index];
         const auto &window = s.renderer.Window();

@@ -325,6 +325,7 @@ target_compile_options(coastline_sdl PRIVATE ${COASTLINE_WARNINGS})
 target_link_libraries(coastline_sdl PUBLIC SDL3::SDL3 coastline_ear)
 if(WIN32)
   target_link_libraries(coastline_sdl PUBLIC dxgi psapi shell32)
+  target_link_libraries(coastline_sdl PRIVATE bcrypt)
 endif()
 
 string(TIMESTAMP COASTLINE_BUILD_TIMESTAMP "%Y-%m-%dT%H:%M:%SZ" UTC)

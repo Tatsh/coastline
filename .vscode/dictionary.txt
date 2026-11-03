@@ -61,6 +61,7 @@ avcodec
 averror
 avformat
 avmedia
+avseek
 badvaddr
 balign
 bbrwd

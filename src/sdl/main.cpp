@@ -1490,6 +1490,7 @@ int main(int argc, char *argv[]) {
                        "Coastline", DisplayOptionsFrom(config, parser, savesFrames, showWizard));
                    window && setUp(*window)) {
             bool reinitialize = false;
+            bool restartKeysWereDown = false;
             do {
                 reinitialize = false;
                 const coastline::DisplayOptions displayOptions =
@@ -1649,6 +1650,28 @@ int main(int argc, char *argv[]) {
                 };
                 float raceTime = 0.0f;
                 bool leaveDemo = false;
+                const bool menuAttractDemo = packSettings.contains("mainMenuAttractDemo") &&
+                                             packSettings.at("mainMenuAttractDemo").is_boolean() &&
+                                             packSettings.at("mainMenuAttractDemo").get<bool>();
+                const auto startAttractDemo = [&]() {
+                    openRaceData();
+                    attractDemo.Start();
+                    attractDemo.Step(false);
+                    const coastline::RaceCar car{attractDemo.Car(),
+                                                 attractDemo.Color(),
+                                                 mainMenu ? mainMenu->CarImages(attractDemo.Car()) :
+                                                            std::nullopt};
+                    raceView = coastline::RaceView::Load(
+                        *sceneRenderer, assets, attractDemo.Track(), {&car, 1});
+                    raceTime = 0;
+                    leaveDemo = false;
+                    if (raceView) {
+                        frontEnd = FrontEnd::AttractDemo;
+                    } else {
+                        frontEnd = FrontEnd::Intro;
+                        intro->Restart();
+                    }
+                };
                 // The first step of the race of the credits loads the race and with it the track
                 // and the car of the recording. The ending credits scroll, and go on to the next
                 // season.
@@ -1719,7 +1742,8 @@ int main(int argc, char *argv[]) {
                                                       configPath,
                                                       std::array{assetData, paths->data},
                                                       pack,
-                                                      parser.present("--region").value_or(""));
+                                                      parser.present("--region").value_or(""),
+                                                      packSettings);
                     if (mainMenu) {
                         auto overrides = CommandLineOverrides(parser);
                         if (overrides.Get("Game", "AssetPack")) {
@@ -1764,6 +1788,7 @@ int main(int argc, char *argv[]) {
                 bool running = true;
                 bool printScreenWasDown = false;
                 bool escapeWasDown = false;
+                std::array<bool, 3> videoKeysWereDown{};
                 bool freeCameraToggleWasDown = false;
                 bool freeCameraEnabled = false;
                 coastline::FreeCamera frontendCamera;
@@ -1984,6 +2009,25 @@ int main(int argc, char *argv[]) {
                         framePath = ScreenshotPath(paths->data / "screenshots");
                     }
                     window->UpdateFrameSize();
+                    const bool restartKeysDown = coastline::IsKeyDown(SDL_SCANCODE_R) &&
+                                                 (coastline::IsKeyDown(SDL_SCANCODE_LCTRL) ||
+                                                  coastline::IsKeyDown(SDL_SCANCODE_RCTRL)) &&
+                                                 (coastline::IsKeyDown(SDL_SCANCODE_LSHIFT) ||
+                                                  coastline::IsKeyDown(SDL_SCANCODE_RSHIFT));
+                    const bool restartPressed = restartKeysDown && !restartKeysWereDown;
+                    restartKeysWereDown = restartKeysDown;
+                    if (restartPressed) {
+                        SDL_Log("Restarting the game.");
+                        if (frontEnd == FrontEnd::Race || frontEnd == FrontEnd::AttractDemo ||
+                            frontEnd == FrontEnd::Credits) {
+                            raceSession.Abandon();
+                        }
+                        SDL_StopTextInput(window->Window());
+                        SDL_SetWindowRelativeMouseMode(window->Window(), false);
+                        firstFrame = frame + 1;
+                        reinitialize = true;
+                        break;
+                    }
                     if (intro && settingsTransition != coastline::MenusEnd::Running) {
                         const bool reboot = settingsTransition == coastline::MenusEnd::Reinitialize;
                         sceneRenderer->Begin({0.0f, 0.0f, 0.0f, 1.0f});
@@ -2165,6 +2209,22 @@ int main(int argc, char *argv[]) {
                             coastline::IntroButtons buttons{(pressed & CHOOSE) != 0 || skipMovie,
                                                             (held & C_BUTTONS) == C_BUTTONS ||
                                                                 shiftI};
+                            const std::array videoKeys{coastline::IsKeyDown(SDL_SCANCODE_SPACE),
+                                                       coastline::IsKeyDown(SDL_SCANCODE_LEFT),
+                                                       coastline::IsKeyDown(SDL_SCANCODE_RIGHT)};
+                            if (intro->PlayingVideo()) {
+                                buttons.pauseVideo = videoKeys[0] && !videoKeysWereDown[0];
+                                const bool left = videoKeys[1] && !videoKeysWereDown[1];
+                                const bool right = videoKeys[2] && !videoKeysWereDown[2];
+                                buttons.restartVideo =
+                                    left && (coastline::IsKeyDown(SDL_SCANCODE_LSHIFT) ||
+                                             coastline::IsKeyDown(SDL_SCANCODE_RSHIFT));
+                                buttons.seekVideo = left ? -1 : (right ? 1 : 0);
+                                if (buttons.pauseVideo || left || right) {
+                                    buttons.skip = false;
+                                }
+                            }
+                            videoKeysWereDown = videoKeys;
                             coastline::IntroEnd end = intro->Update(seconds, buttons);
                             const bool movie = intro->PlayingVideo();
                             if (movie != introMovie) {
@@ -2178,25 +2238,9 @@ int main(int argc, char *argv[]) {
                             if (end == coastline::IntroEnd::MainMenu && mainMenu) {
                                 mainMenu->Restart();
                                 frontEnd = FrontEnd::MainMenu;
+                                pressed = secondPressed = 0;
                             } else if (end != coastline::IntroEnd::Running) {
-                                openRaceData();
-                                // The first step loads the race and with it the track and the car.
-                                attractDemo.Start();
-                                attractDemo.Step(false);
-                                const coastline::RaceCar demoCar{
-                                    attractDemo.Car(),
-                                    attractDemo.Color(),
-                                    mainMenu ? mainMenu->CarImages(attractDemo.Car()) :
-                                               std::nullopt};
-                                raceView = coastline::RaceView::Load(
-                                    *sceneRenderer, assets, attractDemo.Track(), {&demoCar, 1});
-                                raceTime = 0.0f;
-                                leaveDemo = false;
-                                if (raceView) {
-                                    frontEnd = FrontEnd::AttractDemo;
-                                } else {
-                                    intro->Restart();
-                                }
+                                startAttractDemo();
                             }
                         } else if (frontEnd == FrontEnd::AttractDemo) {
                             // A press of A, Start, or Z leaves the demo for the main menu.
@@ -2210,9 +2254,10 @@ int main(int argc, char *argv[]) {
                             }
                             if (!demoRunning) {
                                 raceView.reset();
-                                if (attractDemo.Interrupted() && mainMenu) {
+                                if (mainMenu && (attractDemo.Interrupted() || menuAttractDemo)) {
                                     mainMenu->Restart();
                                     frontEnd = FrontEnd::MainMenu;
+                                    pressed = secondPressed = 0;
                                 } else {
                                     intro->Restart();
                                     frontEnd = FrontEnd::Intro;
@@ -2336,6 +2381,8 @@ int main(int argc, char *argv[]) {
                             } else if (end == coastline::MenusEnd::Splash) {
                                 intro->Restart();
                                 frontEnd = FrontEnd::Intro;
+                            } else if (end == coastline::MenusEnd::AttractDemo) {
+                                startAttractDemo();
                             }
                             startRace = end == coastline::MenusEnd::Race;
                             startCreditsRace = end == coastline::MenusEnd::Credits;

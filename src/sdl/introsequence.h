@@ -18,11 +18,13 @@ public:
      * @param assets The prepared, layered asset directory.
      * @param entries Up to 64 entry objects with required type and file settings and optional
      * duration, skippable, scale, and depth settings.
+     * @param settings Asset-pack settings, including optional videoControls preferences.
      * @return The sequence, or null for an invalid definition.
      */
     static std::unique_ptr<IntroSequence> Load(SceneRenderer &renderer,
                                                const std::filesystem::path &assets,
-                                               const nlohmann::json &entries);
+                                               const nlohmann::json &entries,
+                                               const nlohmann::json &settings);
     /** Release current sequence resources before renderer destruction. */
     ~IntroSequence();
     /** Prevent copying renderer-bound resources. */
@@ -39,6 +41,13 @@ public:
      * @return Whether an entry remains active.
      */
     bool Update(float seconds, bool skip);
+    /**
+     * Control the current movie without affecting image or model entries.
+     * @param pause Whether to toggle pause.
+     * @param seek Seek direction, negative for backward and positive for forward.
+     * @param restart Whether to restart the movie, taking precedence over seeking.
+     */
+    void ControlVideo(bool pause, int seek, bool restart);
     /** Draw the current entry, preserving image and movie aspect ratios. */
     void Draw() const;
     /** @return Whether current movie audio replaces menu music. */

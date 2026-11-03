@@ -161,6 +161,8 @@ public:
      * before another starts. The title picture is not cleared.
      */
     void Reset();
+    /** @return Whether inactivity initiated the current screen exit. Reset clears the result. */
+    bool TimedOut() const;
 
     /**
      * Run a frame of a screen and draw it, as ProcessScreenState() of the console.

@@ -186,6 +186,7 @@ struct MenuScreen::State {
     float angle = START_ANGLE;
     float slide = 0.0f;
     float idleTime = 0.0f;
+    bool timedOut = false;
     bool chosen = false;
 
     void FadeOut() {
@@ -299,9 +300,14 @@ std::optional<std::vector<MenuItem>> MenuScreen::LoadItems(SceneRenderer &render
 }
 
 void MenuScreen::Reset() {
+    m_state->timedOut = false;
     idleTimeout = 0.0f;
     postDraw = nullptr;
     preDraw = nullptr;
+}
+
+bool MenuScreen::TimedOut() const {
+    return m_state->timedOut;
 }
 
 void MenuScreen::SetPendingSelection(int item) {
@@ -500,6 +506,7 @@ MenuResult MenuScreen::Process(SceneRenderer &renderer,
         s.angle = START_ANGLE;
         s.slide = 0.0f;
         s.idleTime = 0.0f;
+        s.timedOut = false;
         s.pending = -1;
         s.chosen = false;
         s.initialized = true;
@@ -604,6 +611,7 @@ MenuScreen::Update(float seconds, std::span<const MenuButtons> players, const Me
     if (idleTimeout != 0.0f && result == MenuResult::None) {
         s.idleTime += seconds;
         if (idleTimeout <= s.idleTime && !s.fade.FadingOut()) {
+            s.timedOut = true;
             s.chosen = false;
             s.FadeOut();
         }

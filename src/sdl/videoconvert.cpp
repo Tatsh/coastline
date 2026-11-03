@@ -3,15 +3,82 @@
 #include <array>
 #include <fstream>
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include <SDL3/SDL.h>
+
+#ifdef _WIN32
+#include <bcrypt.h>
+#include <windows.h>
+#elif defined(__APPLE__)
+#include <CommonCrypto/CommonDigest.h>
+#endif
 
 #include "paths.h"
 
 namespace coastline {
 
 namespace {
+
+#if defined(_WIN32) || defined(__APPLE__)
+bool VerifySha256(const std::filesystem::path &path, std::string_view expected) {
+    std::ifstream file(path, std::ios::binary);
+    if (!file) {
+        return false;
+    }
+#ifdef _WIN32
+    BCRYPT_ALG_HANDLE algorithm = nullptr;
+    if (BCryptOpenAlgorithmProvider(&algorithm, BCRYPT_SHA256_ALGORITHM, nullptr, 0) < 0) {
+        return false;
+    }
+    const auto closeAlgorithm = [](void *handle) { BCryptCloseAlgorithmProvider(handle, 0); };
+    const std::unique_ptr<void, decltype(closeAlgorithm)> provider(algorithm, closeAlgorithm);
+    BCRYPT_HASH_HANDLE handle = nullptr;
+    if (BCryptCreateHash(algorithm, &handle, nullptr, 0, nullptr, 0, 0) < 0) {
+        return false;
+    }
+    const std::unique_ptr<void, decltype(&BCryptDestroyHash)> hash(handle, BCryptDestroyHash);
+#else
+    CC_SHA256_CTX hash;
+    if (!CC_SHA256_Init(&hash)) {
+        return false;
+    }
+#endif
+    std::array<unsigned char, 65536> buffer{};
+    while (file.read(reinterpret_cast<char *>(buffer.data()), buffer.size()) || file.gcount() > 0) {
+#ifdef _WIN32
+        if (BCryptHashData(handle, buffer.data(), static_cast<ULONG>(file.gcount()), 0) < 0) {
+            return false;
+        }
+#else
+        if (!CC_SHA256_Update(&hash, buffer.data(), static_cast<CC_LONG>(file.gcount()))) {
+            return false;
+        }
+#endif
+    }
+    if (!file.eof()) {
+        return false;
+    }
+    std::array<unsigned char, 32> digest{};
+#ifdef _WIN32
+    if (BCryptFinishHash(handle, digest.data(), static_cast<ULONG>(digest.size()), 0) < 0) {
+        return false;
+    }
+#else
+    if (!CC_SHA256_Final(digest.data(), &hash)) {
+        return false;
+    }
+#endif
+    constexpr char HEX[] = "0123456789abcdef";
+    std::string actual;
+    for (const auto byte : digest) {
+        actual += HEX[byte >> 4];
+        actual += HEX[byte & 15];
+    }
+    return actual == expected;
+}
+#endif
 
 using Process = std::unique_ptr<SDL_Process, decltype(&SDL_DestroyProcess)>;
 
@@ -132,11 +199,15 @@ std::optional<std::string> ConvertIntroMedia(const std::filesystem::path &direct
         }
         const auto archive = Utf8FromPath(tools.path / "ffmpeg.zip");
 #ifdef _WIN32
-        const char *url = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip";
+        const char *url = "https://github.com/GyanD/codexffmpeg/releases/download/9.0.2/"
+                          "ffmpeg-9.0.2-essentials_build.zip";
+        const char *checksum = "60f467265b1e312373dbcd92200c2618a74850f98d3d078e94296bb3fa2047ba";
 #elif defined(__aarch64__) || defined(__arm64__)
         const char *url = "https://www.osxexperts.net/ffmpeg902arm.zip";
+        const char *checksum = "07e00300593799005b060c03a99fe648b1edda0f30c36b0c1adafe8e3247e586";
 #else
-        const char *url = "https://evermeet.cx/ffmpeg/getrelease/zip";
+        const char *url = "https://evermeet.cx/ffmpeg/ffmpeg-9.0.2.zip";
+        const char *checksum = "4acc0be580f9b2788029eb7bd4d645ff87968911b0a62aeeb3940d42d54558d5";
 #endif
         if (!Run({"curl",
                   "--fail",
@@ -154,6 +225,9 @@ std::optional<std::string> ConvertIntroMedia(const std::filesystem::path &direct
                   url},
                  toolProgress)) {
             return "Cannot download temporary FFmpeg. Install FFmpeg in PATH and retry.";
+        }
+        if (!VerifySha256(tools.path / "ffmpeg.zip", checksum)) {
+            return "Temporary FFmpeg checksum does not match. Install FFmpeg in PATH and retry.";
         }
 #ifdef _WIN32
         const std::vector<std::string> unpack{

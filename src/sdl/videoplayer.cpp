@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <cstdint>
+#include <limits>
 #include <vector>
 
 #include <SDL3/SDL.h>
@@ -39,8 +40,24 @@ struct VideoPlayer::State {
     bool eof = false;
     bool drained = false;
     double frameTime = 0;
+    double seekTime = 0;
+    bool paused = false;
     std::vector<std::uint8_t> rgba;
     std::vector<float> samples;
+
+    void UploadFrame() {
+        if (!paused) {
+            texture->Update(rgba);
+            return;
+        }
+        auto grey = rgba;
+        for (std::size_t index = 0; index < grey.size(); index += 4) {
+            const auto shade = static_cast<std::uint8_t>(
+                (77 * grey[index] + 150 * grey[index + 1] + 29 * grey[index + 2]) / 512);
+            grey[index] = grey[index + 1] = grey[index + 2] = shade;
+        }
+        texture->Update(grey);
+    }
 
     ~State() {
         SDL_DestroyAudioStream(stream);
@@ -92,7 +109,16 @@ struct VideoPlayer::State {
                                           const_cast<const std::uint8_t **>(decoded->extended_data),
                                           decoded->nb_samples);
             if (count > 0) {
-                SDL_PutAudioStreamData(stream, samples.data(), count * 2 * sizeof(float));
+                const auto *track = format->streams[audioIndex];
+                const auto timestamp = decoded->best_effort_timestamp;
+                const auto start = track->start_time == AV_NOPTS_VALUE ? 0 : track->start_time;
+                const double time = timestamp == AV_NOPTS_VALUE ?
+                                        seekTime :
+                                        (timestamp - start) * av_q2d(track->time_base);
+                const int skip = static_cast<int>(std::clamp(
+                    std::ceil((seekTime - time) * 48000), 0.0, static_cast<double>(count)));
+                SDL_PutAudioStreamData(
+                    stream, samples.data() + skip * 2, (count - skip) * 2 * sizeof(float));
             }
             av_frame_unref(decoded);
         }
@@ -196,7 +222,7 @@ bool VideoPlayer::Update(double seconds, float volume) {
             int stride[] = {s.texture->Width() * 4};
             sws_scale(
                 s.scale, s.frame->data, s.frame->linesize, 0, s.frame->height, destination, stride);
-            s.texture->Update(s.rgba);
+            s.UploadFrame();
             av_frame_unref(s.frame);
             s.pending = false;
         }
@@ -242,6 +268,83 @@ bool VideoPlayer::Update(double seconds, float volume) {
     (void)seconds;
     (void)volume;
     return false;
+#endif
+}
+
+std::optional<double> VideoPlayer::Seek(double seconds) {
+#if COASTLINE_VIDEO
+    if (!std::isfinite(seconds)) {
+        return std::nullopt;
+    }
+    auto &s = *m_state;
+    const double duration = Duration();
+    seconds = std::clamp(
+        seconds, 0.0, duration > 0 ? std::clamp(duration - 0.05, 0.0, 86400.0) : 86400.0);
+    const auto *track = s.format->streams[s.videoIndex];
+    const auto start = track->start_time == AV_NOPTS_VALUE ? 0 : track->start_time;
+    const auto offset = av_rescale_q(
+        static_cast<std::int64_t>(seconds * AV_TIME_BASE), AV_TIME_BASE_Q, track->time_base);
+    if (offset < 0 || start > std::numeric_limits<std::int64_t>::max() - offset) {
+        return std::nullopt;
+    }
+    const auto timestamp = start + offset;
+    if (av_seek_frame(s.format, s.videoIndex, timestamp, AVSEEK_FLAG_BACKWARD) < 0) {
+        return std::nullopt;
+    }
+    avcodec_flush_buffers(s.video);
+    if (s.audio) {
+        avcodec_flush_buffers(s.audio);
+    }
+    if (s.resample) {
+        swr_close(s.resample);
+        if (swr_init(s.resample) < 0) {
+            swr_free(&s.resample);
+            avcodec_free_context(&s.audio);
+        }
+    }
+    if (s.stream) {
+        SDL_ClearAudioStream(s.stream);
+    }
+    av_packet_unref(s.packet);
+    av_frame_unref(s.frame);
+    s.pending = s.eof = s.drained = false;
+    s.seekTime = seconds;
+    return seconds;
+#else
+    (void)seconds;
+    return std::nullopt;
+#endif
+}
+
+void VideoPlayer::SetPaused(bool paused) {
+#if COASTLINE_VIDEO
+    auto &s = *m_state;
+    s.paused = paused;
+    s.UploadFrame();
+    if (s.stream) {
+        if (paused) {
+            SDL_PauseAudioStreamDevice(s.stream);
+        } else {
+            SDL_ResumeAudioStreamDevice(s.stream);
+        }
+    }
+#else
+    (void)paused;
+#endif
+}
+
+double VideoPlayer::Duration() const {
+#if COASTLINE_VIDEO
+    const auto &s = *m_state;
+    if (s.format->duration != AV_NOPTS_VALUE && s.format->duration > 0) {
+        return static_cast<double>(s.format->duration) / AV_TIME_BASE;
+    }
+    const auto *track = s.format->streams[s.videoIndex];
+    return track->duration != AV_NOPTS_VALUE && track->duration > 0 ?
+               track->duration * av_q2d(track->time_base) :
+               0;
+#else
+    return 0;
 #endif
 }
 

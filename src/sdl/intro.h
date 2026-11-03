@@ -19,8 +19,11 @@ class SceneRenderer;
 
 /** The buttons of the first controller that act on the splash screens. */
 struct IntroButtons {
-    bool skip = false;      /*!< A, Start, or Z, which skip to the title and then leave it. */
-    bool buildDate = false; /*!< Every C button together, which shows the date of the build. */
+    bool skip = false;       /*!< A, Start, or Z, which skip to the title and then leave it. */
+    bool buildDate = false;  /*!< Every C button together, which shows the date of the build. */
+    bool pauseVideo = false; /*!< Toggle movie playback pause. */
+    int seekVideo = 0; /*!< Movie seek direction, negative for backward and positive for forward. */
+    bool restartVideo = false; /*!< Seek the current movie to its beginning. */
 };
 
 /** Where the splash screens go once they fade out. */

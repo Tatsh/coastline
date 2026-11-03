@@ -171,6 +171,15 @@ std::optional<std::string> CurateAssetPacks(const std::filesystem::path &default
                          {{"intro",
                            {{{"file", "intro/brally.mkv"}, {"type", "video"}},
                             {{"duration", 2.0}, {"file", "intro/legal.png"}, {"type", "image"}}}},
+                          {"introOnce", true},
+                          {"mainMenuAttractDemo", true},
+                          {"mainMenuIdleSeconds", 90},
+                          {"mainMenuTitle", "BOSS RALLY"},
+                          {"videoControls",
+                           {{"progressBar", true},
+                            {"progressBottom", {190, 0, 0}},
+                            {"progressTop", {255, 245, 0}},
+                            {"seekSeconds", 2}}},
                           {"version", PACK_SETTINGS_VERSION}},
                          2);
     }

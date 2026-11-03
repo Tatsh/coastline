@@ -1,4 +1,5 @@
 #include <array>
+#include <cmath>
 
 #include <SDL3/SDL.h>
 
@@ -28,9 +29,6 @@ constexpr std::array<const char *, 7> MAIN_MENU_STEMS{
 constexpr int ENTRY_FROM_CHAMPIONSHIP = 1;
 constexpr int ENTRY_FROM_TIME_ATTACK = 2;
 
-// How long the main menu waits for a press before it exits to the splash screens.
-constexpr float MAIN_MENU_IDLE_TIMEOUT = 20.0f;
-
 // The channels of the module of the menus are 16, and those of the modules of the races are 6.
 constexpr int MENU_AUDIO_CHANNELS = 8;
 
@@ -44,7 +42,8 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
                                    const std::filesystem::path &configPath,
                                    std::span<const std::filesystem::path> dataRoots,
                                    std::string_view assetPack,
-                                   std::string_view unitsRegion) {
+                                   std::string_view unitsRegion,
+                                   const nlohmann::json &packSettings) {
     auto screen = MenuScreen::Load(renderer, release);
     if (!screen) {
         return nullptr;
@@ -54,6 +53,16 @@ std::unique_ptr<Menus> Menus::Load(SceneRenderer &renderer,
         return nullptr;
     }
     std::unique_ptr<Menus> menus(new Menus(std::move(screen)));
+    try {
+        menus->m_mainMenuTitle = packSettings.value("mainMenuTitle", "TOP GEAR RALLY");
+        const float idle = packSettings.value("mainMenuIdleSeconds", 20.0f);
+        if (std::isfinite(idle)) {
+            menus->m_mainMenuIdleTimeout = std::clamp(idle, 0.0f, 3600.0f);
+        }
+        menus->m_mainMenuAttractDemo = packSettings.value("mainMenuAttractDemo", false);
+    } catch (const nlohmann::json::exception &) {
+        SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION, "Invalid asset-pack menu settings.");
+    }
     menus->m_mainMenuItems = std::move(*main);
     const std::string activePack = assetPack.empty() ?
                                        config.Get("Game", "AssetPack").value_or("default") :
@@ -159,7 +168,7 @@ void Menus::ProcessMainMenu(SceneRenderer &renderer, float seconds, const MenuBu
             m_playMenuMusic();
         }
         m_screen->titleImage = MenuTitleImage{&m_screen->MainMenuTitle(), 25, 14, 280, 32};
-        m_screen->idleTimeout = MAIN_MENU_IDLE_TIMEOUT;
+        m_screen->idleTimeout = m_mainMenuIdleTimeout;
 
         // Return to the item of the mode that led back here.
         if (m_mainMenuEntrySource == ENTRY_FROM_CHAMPIONSHIP) {
@@ -177,7 +186,7 @@ void Menus::ProcessMainMenu(SceneRenderer &renderer, float seconds, const MenuBu
     MenuResult result = m_screen->Process(renderer,
                                           seconds,
                                           {&first, 1},
-                                          {.title = "TOP GEAR RALLY",
+                                          {.title = m_mainMenuTitle,
                                            .items = m_mainMenuItems,
                                            .selection = &m_mainMenuSelection,
                                            .isSelectable = {},
@@ -216,7 +225,8 @@ void Menus::ProcessMainMenu(SceneRenderer &renderer, float seconds, const MenuBu
         }
         m_mainMenuInitState = -1;
     } else if (result == MenuResult::Cancelled) {
-        m_end = MenusEnd::Splash;
+        m_end = m_mainMenuAttractDemo && m_screen->TimedOut() ? MenusEnd::AttractDemo :
+                                                                MenusEnd::Splash;
         m_mainMenuInitState = 0;
     }
 }

@@ -17,6 +17,8 @@
 #include <utility>
 #include <vector>
 
+#include <nlohmann/json.hpp>
+
 #include "config.h"
 #include "frontend.h"
 #include "gamesettings.h"
@@ -127,6 +129,7 @@ enum class MenusEnd {
     Running,       /*!< A menu screen is still showing. */
     Quit,          /*!< Two Escape presses request an application exit. */
     Splash,        /*!< The player went back from the main menu, or it timed out. */
+    AttractDemo,   /*!< The asset pack starts a demonstration after main-menu inactivity. */
     Race,          /*!< The race of Menus::ChosenRace() starts. */
     Credits,       /*!< The race of the credits of the options menu starts. */
     ApplySettings, /*!< Apply pending settings after the options fade out. */
@@ -158,17 +161,20 @@ public:
      * @param dataRoots The imported data roots for available packs and cartridge regions.
      * @param assetPack The active pack, or empty to use the configured pack.
      * @param unitsRegion The explicit CLI region for automatic units, or empty to use locale.
+     * @param packSettings Asset-pack menu heading, idle timeout, and attract-demo preferences.
      * @return The menus, or nothing with the reason logged.
      */
-    static std::unique_ptr<Menus> Load(SceneRenderer &renderer,
-                                       const std::filesystem::path &release,
-                                       const std::filesystem::path &saves,
-                                       const std::filesystem::path &cache,
-                                       GameConfig &config,
-                                       const std::filesystem::path &configPath,
-                                       std::span<const std::filesystem::path> dataRoots = {},
-                                       std::string_view assetPack = {},
-                                       std::string_view unitsRegion = {});
+    static std::unique_ptr<Menus>
+    Load(SceneRenderer &renderer,
+         const std::filesystem::path &release,
+         const std::filesystem::path &saves,
+         const std::filesystem::path &cache,
+         GameConfig &config,
+         const std::filesystem::path &configPath,
+         std::span<const std::filesystem::path> dataRoots = {},
+         std::string_view assetPack = {},
+         std::string_view unitsRegion = {},
+         const nlohmann::json &packSettings = nlohmann::json::object());
     /** Release front-end resources before the configuration and renderer are destroyed. */
     ~Menus();
     /** Prevent copying active front-end resources and screen progress. */
@@ -420,6 +426,9 @@ private:
 
     std::function<void()> m_playMenuMusic;
     std::vector<MenuItem> m_mainMenuItems;
+    std::string m_mainMenuTitle = "TOP GEAR RALLY";
+    float m_mainMenuIdleTimeout = 20;
+    bool m_mainMenuAttractDemo = false;
     int m_mainMenuInitState = 0;
     int m_mainMenuSelection = 0;
     int m_mainMenuEntrySource = 0;

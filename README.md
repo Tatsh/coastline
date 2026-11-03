@@ -247,6 +247,8 @@ the shoulder buttons descend and rise,
 and pressing the left stick increases speed. Menu, driving, and text input remain active.
 The mouse controls the camera while free camera is enabled. The HUD disappears for screenshots.
 
+Ctrl+Shift+R restarts the game from its intro without confirmation.
+
 The `Controls` section of `BossRally.ini` maps the gamepad. `Preset` chooses one of the presets below,
 and a key of an action present in the section replaces the binding of the preset for that action.
 A value lists SDL gamepad names separated by commas (`a`, `b`, `x`, `y`, `back`, `start`,
@@ -830,7 +832,17 @@ regional splash screens when `intro` is absent. An empty array opens the menu im
     { "file": "intro/brally.mkv", "type": "video" },
     { "duration": 2, "file": "intro/legal.png", "type": "image" }
   ],
-  "version": 1
+  "introOnce": true,
+  "mainMenuAttractDemo": true,
+  "mainMenuIdleSeconds": 90,
+  "mainMenuTitle": "BOSS RALLY",
+  "version": 1,
+  "videoControls": {
+    "progressBar": true,
+    "progressBottom": [190, 0, 0],
+    "progressTop": [255, 245, 0],
+    "seekSeconds": 2
+  }
 }
 ```
 
@@ -841,12 +853,26 @@ Video entries play to their end unless a positive `duration` limits playback.
 accept `scale` in (0, 1000] (default 0.03125) and `depth` in [-100000, -1) (default -50).
 Missing media and unsupported videos are skipped.
 
+During a movie, Left and Right seek backward and forward by `videoControls.seekSeconds`
+(default 2, positive and at most 3600).
+Space pauses or resumes playback. A paused movie is dimmed to greyscale with a central pause symbol.
+Shift+Left restarts the current movie. `videoControls.progressBar` enables the bottom progress bar
+(default true). `progressTop` and `progressBottom` specify its RGB gradient, yellow to red by default.
+
+`introOnce` plays the sequence once per game restart (default false). `mainMenuTitle` replaces the
+main-menu heading (default `TOP GEAR RALLY`). `mainMenuIdleSeconds` sets its inactivity timeout from
+0 through 3600 seconds, with 0 disabling the timeout (default 20). `mainMenuAttractDemo` starts a
+demonstration directly after the timeout (default false), returning to the menu afterwards.
+Pure PC uses the settings above. N64 packs return to the title sequence after 20 seconds; an attract
+demo can follow from the title sequence.
+
 `COASTLINE_VIDEO=ON` detects optional libav decoding libraries; `OFF` excludes movie playback.
 With vcpkg, select manifest features `sdl;video` to build the libraries. The importer invokes
 external FFmpeg to convert the original Indeo movie to VP9 with PCM audio in Matroska. Linux uses
 FFmpeg from `PATH`. Windows and macOS use `PATH` first, otherwise download a temporary FFmpeg copy
 for the import and delete the tool afterwards. Windows uses Gyan builds; Apple Silicon uses
 OSXExperts, and Intel macOS uses Evermeet. Conversion does not require platform Indeo codecs.
+Downloaded tools use FFmpeg 9.0.2 from versioned URLs and pinned archive SHA-256 checksums.
 
 ### Command line
 

@@ -81,6 +81,8 @@ struct LogoSounds {
 
 struct Intro::State {
     std::unique_ptr<IntroSequence> sequence;
+    bool sequenceOnce = false;
+    bool sequencePlayed = false;
     std::unique_ptr<RenderModel> firstLogo;
     std::unique_ptr<RenderModel> producerLogo;
     std::unique_ptr<RenderModel> developerLogo;
@@ -235,7 +237,10 @@ std::unique_ptr<Intro> Intro::Load(SceneRenderer &renderer,
                                    const nlohmann::json &settings) {
     auto state = std::make_unique<State>();
     if (settings.contains("intro")) {
-        state->sequence = IntroSequence::Load(renderer, assets, settings.at("intro"));
+        state->sequence = IntroSequence::Load(renderer, assets, settings.at("intro"), settings);
+        state->sequenceOnce = settings.contains("introOnce") &&
+                              settings.at("introOnce").is_boolean() &&
+                              settings.at("introOnce").get<bool>();
         if (state->sequence) {
             return std::unique_ptr<Intro>(new Intro(std::move(state)));
         }
@@ -305,7 +310,9 @@ std::unique_ptr<Intro> Intro::Load(SceneRenderer &renderer,
 void Intro::Restart() {
     State &s = *m_state;
     if (s.sequence) {
-        s.sequence->Restart();
+        if (!s.sequenceOnce || !s.sequencePlayed) {
+            s.sequence->Restart();
+        }
         return;
     }
     s.fade = {};
@@ -329,7 +336,15 @@ void Intro::Restart() {
 IntroEnd Intro::Update(float seconds, const IntroButtons &buttons) {
     State &s = *m_state;
     if (s.sequence) {
-        return s.sequence->Update(seconds, buttons.skip) ? IntroEnd::Running : IntroEnd::MainMenu;
+        if (s.sequenceOnce && s.sequencePlayed) {
+            return IntroEnd::MainMenu;
+        }
+        s.sequence->ControlVideo(buttons.pauseVideo, buttons.seekVideo, buttons.restartVideo);
+        if (s.sequence->Update(seconds, buttons.skip)) {
+            return IntroEnd::Running;
+        }
+        s.sequencePlayed = true;
+        return IntroEnd::MainMenu;
     }
     s.buildDate = buttons.buildDate;
     s.fade.Update(seconds);
