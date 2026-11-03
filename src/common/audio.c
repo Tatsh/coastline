@@ -505,7 +505,12 @@ void ResetMusicPlaybackState(void) {
 
     g_bMusicPlaybackEnabled = FALSE;
     for (i = 0; i < g_nAudioChannelCount; i++) {
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+        /* The original mixer stores the silence address as a 32-bit word. */
+        g_aMixerChannels[i].sample = (s8 *)(u32)g_SilenceSampleData;
+#else
         g_aMixerChannels[i].sample = g_SilenceSampleData;
+#endif
         g_aMixerChannels[i].step = 0;
         g_aMixerChannels[i].volume = 0;
         g_MusicChannelStates[i].instrument = 0;
