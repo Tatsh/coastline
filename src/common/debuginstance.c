@@ -16,40 +16,35 @@ static s32 g_nDebugInstanceCycleStep;
 
 void StepDebugHiddenInstance(void) {
     s32 i;
-    s32 step = g_nDebugInstanceCycleStep;
-    s32 instanceCount;
-    s32 visibleCount;
 
-    if (step == 0) {
-        return;
-    }
-    instanceCount = g_LoadedTrack.instanceCount;
-    visibleCount = g_nOpaqueVisibleInstanceCount;
-    for (;;) {
+    if (g_nDebugInstanceCycleStep != 0) {
+        for (;;) {
 #if TGR_BOSS_RALLY
-        g_nDebugHiddenInstanceIndex = (s32)((u32)g_nDebugHiddenInstanceIndex + (u32)step);
+            g_nDebugHiddenInstanceIndex =
+                (s32)((u32)g_nDebugHiddenInstanceIndex + (u32)g_nDebugInstanceCycleStep);
 #else
-        g_nDebugHiddenInstanceIndex += step;
+            g_nDebugHiddenInstanceIndex += g_nDebugInstanceCycleStep;
 #endif
-        if (g_nDebugHiddenInstanceIndex >= instanceCount) {
-            g_nDebugHiddenInstanceIndex = 0;
-        }
-        if (g_nDebugHiddenInstanceIndex < 0) {
+            if (g_nDebugHiddenInstanceIndex >= g_LoadedTrack.instanceCount) {
+                g_nDebugHiddenInstanceIndex = 0;
+            }
+            if (g_nDebugHiddenInstanceIndex < 0) {
 #if TGR_BOSS_RALLY
-            g_nDebugHiddenInstanceIndex = (s32)((u32)instanceCount - 1);
+                g_nDebugHiddenInstanceIndex = (s32)((u32)g_LoadedTrack.instanceCount - 1);
 #else
-            g_nDebugHiddenInstanceIndex = instanceCount - 1;
+                g_nDebugHiddenInstanceIndex = g_LoadedTrack.instanceCount - 1;
 #endif
-        }
-        if (g_nDebugHiddenInstanceIndex == 0) {
-            break;
-        }
-        for (i = 0; i < visibleCount; i++) {
-            if (g_awVisibleInstanceList[i] == g_nDebugHiddenInstanceIndex) {
-                goto found;
+            }
+            if (g_nDebugHiddenInstanceIndex == 0) {
+                break;
+            }
+            for (i = 0; i < g_nOpaqueVisibleInstanceCount; i++) {
+                if (g_nDebugHiddenInstanceIndex == g_awVisibleInstanceList[i]) {
+                    goto found;
+                }
             }
         }
+    found:
+        g_nDebugInstanceCycleStep = 0;
     }
-found:
-    g_nDebugInstanceCycleStep = 0;
 }
