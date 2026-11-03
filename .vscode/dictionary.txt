@@ -1008,6 +1008,7 @@ pigetcmdq
 pimgr
 pini
 pipebusy
+pipefail
 pipx
 pirawdma
 pirawread
