@@ -283,37 +283,40 @@ void UnusedFrameTimingStub(void) {
 #define CHUNK_SPAN(size) (((size) + 5) & ~1)
 
 u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
-    u8 *out = dst;
-    u8 *buffer;
     u32 compressedSize;
     u32 decompressedSize;
     u32 remaining;
-    u32 half;
-    u32 chunkSize;
     uLong outputSize;
-    u32 start;
+    u32 half;
     s32 first;
+    u32 chunkSize;
+    u8 *buffer;
+    u32 start;
 
     if (job != NULL && job->dst != NULL) {
         romOffset = job->romOffset;
-        out = job->dst;
-        compressedSize = job->compressedSize;
+        dst = job->dst;
         remaining = job->remaining;
+        compressedSize = job->compressedSize;
         decompressedSize = job->decompressedSize;
         buffer = job->buffer;
         half = job->bufferHalf;
-        first = FALSE;
         g_dwDmaChunkSize = job->pendingChunkSize;
+        first = FALSE;
     } else {
         DmaRead(&g_dwDmaChunkSize, romOffset, sizeof(g_dwDmaChunkSize));
         compressedSize = g_dwDmaChunkSize;
         remaining = g_dwDmaChunkSize;
         romOffset += ASSET_HEADER_WORD;
         DmaRead(&g_dwDmaChunkSize, romOffset, sizeof(g_dwDmaChunkSize));
-        decompressedSize = g_dwDmaChunkSize;
         romOffset += ASSET_HEADER_WORD;
+        decompressedSize = g_dwDmaChunkSize;
         remaining -= 2 * ASSET_HEADER_WORD;
-        buffer = job != NULL ? job->buffer : g_aDmaWorkBuffers;
+        if (job != NULL) {
+            buffer = job->buffer;
+        } else {
+            buffer = g_aDmaWorkBuffers;
+        }
         half = 0;
         first = TRUE;
         g_dwDmaChunkSize = 0;
@@ -323,7 +326,7 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
     /* While one half of the buffer is read, the chunk in the other is decompressed. */
     for (;;) {
         chunkSize = g_dwDmaChunkSize;
-        if (CHUNK_SPAN(g_dwDmaChunkSize) < remaining) {
+        if ((u32)((s32)(g_dwDmaChunkSize + 5) & ~1) < remaining) {
             if (romOffset & 1) {
                 romOffset++;
             }
@@ -351,13 +354,12 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
                 g_pInflateHeapBase = g_aInflateHeapBuffer;
                 g_pInflateHeapEnd = &g_aInflateHeapBuffer[INFLATE_HEAP_SIZE];
             }
-            uncompress(out, &outputSize, &buffer[half], chunkSize);
+            uncompress(dst, &outputSize, &buffer[half], chunkSize);
             if (job != NULL) {
-                g_pInflateHeapEnd = NULL;
-                g_pInflateHeapBase = NULL;
+                g_pInflateHeapBase = g_pInflateHeapEnd = NULL;
             }
             remaining -= CHUNK_SPAN(chunkSize);
-            out += outputSize;
+            dst = (u8 *)dst + outputSize;
             if (remaining == 0) {
                 break;
             }
@@ -374,7 +376,7 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
     if (job != NULL) {
         job->romOffset = romOffset;
         job->remaining = remaining;
-        job->dst = out;
+        job->dst = dst;
         job->compressedSize = compressedSize;
         job->bufferHalf = half;
         job->decompressedSize = decompressedSize;
