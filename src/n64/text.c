@@ -575,7 +575,10 @@ void SetTextGradientColorsFromBytes(const u8 *color, const u8 *color2) {
 }
 
 void DrawHudLabelAtFraction(const char *text, f32 x, f32 y, s32 unused) {
+    s32 height = g_dwScreenHeight;
+    f32 floatHeight = height;
+
     DrawText(text,
              (s32)((f32)g_dwScreenWidth * x * 0.0009267578134f) + 8,
-             g_dwScreenHeight - (s32)((f32)g_dwScreenHeight * y * 0.001214843825f) - 9);
+             height - (s32)(y * floatHeight * 0.001214843825f) - 9);
 }

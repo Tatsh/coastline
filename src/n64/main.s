@@ -18,9 +18,12 @@ ramMain:
     lui        $t0, %hi(_bss_start)
     lui        $t1, %hi(_bss_size)
     addiu      $t0, $t0, %lo(_bss_start)
-    /* The original has the size of its BSS as a constant, with ori; addiu pairs with %lo for any
-     * size the link gives. */
+#ifdef ENABLE_PATCHES
+    /* Pair addiu with %lo when patches change the BSS size. */
     addiu      $t1, $t1, %lo(_bss_size)
+#else
+    ori        $t1, $t1, %lo(_bss_size)
+#endif
 .Lclear:
     addi       $t1, $t1, -0x8
     sw         $zero, 0x0($t0)

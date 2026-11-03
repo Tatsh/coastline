@@ -1,23 +1,6 @@
 #include "common/mathutil.h"
 
-#ifdef __mips__
-/*
- * The original is hand-written, with the move from the FPU in the delay slot of the return, which
- * a compiled body does not reproduce.
- */
-__asm__(".set push\n"
-        ".set noreorder\n"
-        ".text\n"
-        ".balign 4\n"
-        ".globl FloatToInt\n"
-        ".type FloatToInt, @function\n"
-        "FloatToInt:\n"
-        "    trunc.w.s $f12, $f12\n"
-        "    jr $ra\n"
-        "    mfc1 $v0, $f12\n"
-        ".size FloatToInt, . - FloatToInt\n"
-        ".set pop\n");
-#else
+#if TGR_PLATFORM != TGR_PLATFORM_N64 || (!defined(__mips__) && !defined(__sgi))
 s32 FloatToInt(float value) {
 #if TGR_BOSS_RALLY
 #if defined(ENABLE_PATCHES) && TGR_PLATFORM == TGR_PLATFORM_SDL
@@ -32,4 +15,4 @@ s32 FloatToInt(float value) {
     return (s32)value;
 #endif
 }
-#endif /* __mips__ */
+#endif

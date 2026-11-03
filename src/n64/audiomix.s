@@ -64,6 +64,17 @@ MemFill64Aligned:
 
     .balign 16
 
+/* The return delay slot moves the truncated value out of the FPU. */
+    .globl FloatToInt
+    .type FloatToInt, @function
+FloatToInt:
+    trunc.w.s  $f12, $f12
+    jr         $ra
+    mfc1       $v0, $f12
+    .size FloatToInt, . - FloatToInt
+
+    .balign 16
+
 /*
  * Mix a1 bytes of output from six channels into the ring buffer at a0, from its write position.
  * Channels 0, 2 and 4 of the mixer state feed the left samples, and channels 1, 3 and 5 the right

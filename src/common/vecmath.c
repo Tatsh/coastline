@@ -145,12 +145,21 @@ f32 Powf(f32 base, f32 exponent) {
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
 void Vec3fCross(Vec3f *out, Vec3f *a, Vec3f *b) {
+#if TGR_BOSS_RALLY
     f32 ax = a->x, ay = a->y, az = a->z;
     f32 bx = b->x, by = b->y, bz = b->z;
 
     out->z = VEC3F_INTERMEDIATE(ax) * by - VEC3F_INTERMEDIATE(bx) * ay;
     out->y = VEC3F_INTERMEDIATE(az) * bx - VEC3F_INTERMEDIATE(bz) * ax;
     out->x = VEC3F_INTERMEDIATE(ay) * bz - VEC3F_INTERMEDIATE(by) * az;
+#else
+    f32 z = a->x * b->y - b->x * a->y;
+    f32 y = a->z * b->x - b->z * a->x;
+
+    out->x = a->y * b->z - b->y * a->z;
+    out->y = y;
+    out->z = z;
+#endif
 }
 
 #if TGR_BOSS_RALLY

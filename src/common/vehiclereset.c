@@ -166,6 +166,9 @@ void SetVehicleVelocity(Vehicle *vehicle, f32 x, f32 y, f32 z) {
     VEHICLE_GET(vehicle, Body).stepStates[0].velocity.x = x;
     VEHICLE_GET(vehicle, Body).stepStates[0].velocity.y = y;
     VEHICLE_GET(vehicle, Body).stepStates[0].velocity.z = z;
+#if !TGR_BOSS_RALLY
+    placed = &VEHICLE_GET(vehicle, PlacedVelocity);
+#endif
     placed->x = x;
     placed->y = y;
     placed->z = z;

@@ -4,18 +4,25 @@
 
 void ExtractVehicleBaseColor(Vehicle *vehicle, VehicleModel *model) {
     ModelTexture *texture = &model->textures[model->materialTextures[VEHICLE_MATERIAL_PAINT]];
-    u16 *palette = texture->palette;
+#if TGR_BOSS_RALLY
     s32 color;
+#endif
     s32 red;
     s32 green;
     s32 blue;
 
-    if (palette != NULL && MODEL_TEXTURE_FORMAT(texture) == TEXTURE_FORMAT_CI4) {
+    if (texture->palette != NULL && MODEL_TEXTURE_FORMAT(texture) == TEXTURE_FORMAT_CI4) {
         /* Each 5-bit component widens to 8 bits, with its top bits repeated below. */
-        color = palette[0];
+#if TGR_BOSS_RALLY
+        color = texture->palette[0];
         red = ((color >> 13) & 7) | ((color >> 8) & 0xF8);
         green = ((color >> 8) & 7) | ((color >> 3) & 0xF8);
         blue = ((color >> 3) & 7) | ((color << 2) & 0xF8);
+#else
+        red = ((texture->palette[0] >> 8) & 0xF8) | ((texture->palette[0] >> 13) & 7);
+        green = ((texture->palette[0] >> 3) & 0xF8) | ((texture->palette[0] >> 8) & 7);
+        blue = ((texture->palette[0] << 2) & 0xF8) | ((texture->palette[0] >> 3) & 7);
+#endif
 #if TGR_BOSS_RALLY
         vehicle->SetVehiclePaintColorRgb(red, green, blue);
 #else
