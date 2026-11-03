@@ -10,7 +10,7 @@ extern "C" {
 
 typedef struct {
     int32_t anChannels[SOUND_CHANNEL_COUNT];
-    int32_t anUnknown3c[3]; /* +0x3c */
+    double dFrequencyScale;
 } SoundBankRow;
 
 /**

@@ -19,7 +19,6 @@ typedef union {
 
 typedef struct {
     SoundChannelSlot channelBuffers[SOUND_CHANNEL_COUNT];
-    char abUnknown3c[4]; /* +0x3c */
     double dFrequencyScale;
 } SoundSample;
 
