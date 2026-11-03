@@ -386,7 +386,6 @@ private:
     short nScrollDownImage;
     short nBackgroundImage;
     short nScrollThumbImage;
-    [[maybe_unused]] char abUnknown1a93a[2]; /* +0x1a93a */
     RECT rcBounds;
     RECT rcScrollUp;
     RECT rcScrollDown;
@@ -3175,7 +3174,6 @@ class MenuPanel {
     int (*pfnUpdate)(void);
     int nFlags;
     unsigned short wWidgetCount;
-    [[maybe_unused]] char abUnknown16[2];           /* +0x16 */
     MenuWidget *apWidgets[MENU_PANEL_WIDGET_COUNT]; /*!< The items of the panel. */
     float fX;
     float fY;
@@ -3413,8 +3411,7 @@ private:
     /** Whether each panel of apPanels runs its items. */
     int anPanelActive[MENU_SCREEN_PANEL_COUNT];
     unsigned short wPanelResetWidgetIndex;
-    [[maybe_unused]] char abUnknownBE[2]; /* +0xbe */
-    SaveFileList *apFiles[2];             /*!< The two lists of saved files of the screen. */
+    SaveFileList *apFiles[2]; /*!< The two lists of saved files of the screen. */
 };
 
 #ifdef __cplusplus
