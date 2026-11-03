@@ -81,6 +81,8 @@ parts:
       - 'libasound2t64'
       - 'libdecor-0-0'
       - 'libgamemode0'
+      - 'libglu1-mesa'
+      - 'libglut3.12'
       - 'libpulse0'
       - 'libwayland-client0'
       - 'libwayland-cursor0'

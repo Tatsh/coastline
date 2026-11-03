@@ -210,6 +210,9 @@
           'libasound2t64',
           'libdecor-0-0',
           'libgamemode0',
+          // FFmpeg's libcaca GL plugin also needs GLU and GLUT.
+          'libglu1-mesa',
+          'libglut3.12',
           'libpulse0',
           'libwayland-client0',
           'libwayland-cursor0',
