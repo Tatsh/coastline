@@ -36,3 +36,25 @@ ramMain:
     jr         $t2
     addiu      $sp, $sp, %lo(g_abBootStackTop)
     .size ramMain, . - ramMain
+
+#if TGR_REGION != TGR_REGION_US
+/* Europe and Japan retain an unreachable return after three padding NOPs. */
+    .globl GameModeMainLoop
+    .type GameModeMainLoop, @function
+GameModeMainLoop:
+    addiu      $sp, $sp, -0x18
+    sw         $ra, 0x14($sp)
+.Lgame_mode_loop:
+    jal        CallCurrentGameMode
+    nop
+    b          .Lgame_mode_loop
+    nop
+    .rept 3
+    nop
+    .endr
+    lw         $ra, 0x14($sp)
+    addiu      $sp, $sp, 0x18
+    jr         $ra
+    nop
+    .size GameModeMainLoop, . - GameModeMainLoop
+#endif

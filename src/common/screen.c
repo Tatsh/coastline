@@ -44,6 +44,7 @@ void CallCurrentGameMode(void) {
     g_pfnCurrentScreen();
 }
 
+#if TGR_PLATFORM != TGR_PLATFORM_N64 || TGR_REGION == TGR_REGION_US
 void GameModeMainLoop(void) {
 #if TGR_PLATFORM == TGR_PLATFORM_N64
     for (;;) {
@@ -51,6 +52,7 @@ void GameModeMainLoop(void) {
     }
 #endif
 }
+#endif
 
 void StubUpdateCallback(void) {
 }

@@ -54,5 +54,6 @@ add_library(coastline_n64 STATIC ${_n64_sources})
 target_link_libraries(coastline_n64 PRIVATE coastline_options)
 
 # The entry point, which the link script places first.
+set_source_files_properties(main.s PROPERTIES COMPILE_FLAGS "-x assembler-with-cpp")
 add_library(coastline_main OBJECT main.s)
 target_link_libraries(coastline_main PRIVATE coastline_options)

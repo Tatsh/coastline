@@ -449,6 +449,7 @@ enddl
 endforeach
 endfunction
 endlabel
+endr
 endwhile
 enginetextures
 engsound
@@ -705,6 +706,7 @@ leointerrupt
 lerping
 lerps
 lfirst
+lgame
 lgui
 lhandle
 libasound
@@ -1122,6 +1124,7 @@ renderinit
 rendermode
 rendertile
 renicing
+rept
 reques
 resetglobalintmask
 resf
