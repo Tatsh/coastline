@@ -16,30 +16,60 @@ typedef f32 ParticleReal;
 #endif
 
 void UpdateExhaustParticles(void) {
+#if !TGR_BOSS_RALLY
+    u16 *link;
+    s32 index;
+    s32 next;
+    f32 share;
+    f32 grow;
+
+    grow = 0.3f * g_fFrameDeltaTime;
+    link = &g_wExhaustParticleListHead;
+    index = *link;
+    while (index != 0) {
+        next = g_aParticlePool[index].next;
+        g_aParticlePool[index].size += grow;
+        share =
+            (f32)(s32)(g_aParticlePool[index].fade * g_aParticlePool[index].alpha) * PARTICLE_SHARE;
+        g_aParticlePool[index].position.x =
+            (g_vWindVelocity.x + g_aParticlePool[index].velocity.x * share * g_fFrameDeltaTime) +
+            g_aParticlePool[index].position.x;
+        g_aParticlePool[index].position.y =
+            (g_vWindVelocity.y + g_aParticlePool[index].velocity.y * share * g_fFrameDeltaTime) +
+            g_aParticlePool[index].position.y;
+        g_aParticlePool[index].position.z =
+            (g_vWindVelocity.z +
+             (g_aParticlePool[index].velocity.z * share + 0.8f) * g_fFrameDeltaTime) +
+            g_aParticlePool[index].position.z;
+        g_aParticlePool[index].fade =
+            (s32)(5.7375f / (g_aParticlePool[index].size * g_aParticlePool[index].size));
+        if (share < PARTICLE_MIN_SHARE) {
+            *link = g_aParticlePool[index].next;
+            g_aParticlePool[index].next = g_wParticleFreeListHead;
+            g_wParticleFreeListHead = index;
+        } else {
+            link = &g_aParticlePool[index].next;
+        }
+        index = next;
+    }
+#else
     Particle *particle;
     u16 *link;
     s32 index;
     u16 next;
-#if TGR_BOSS_RALLY
     /* Preserve x87 rounding before float stores, including subnormal results. */
     volatile ParticleReal growth, size;
-#endif
     f32 grow, step;
     ParticleReal share;
 
-#if TGR_BOSS_RALLY
     growth = (ParticleReal)0.3f * g_fFrameDeltaTime;
     grow = growth;
-#else
-    grow = 0.3f * g_fFrameDeltaTime;
-#endif
     link = &g_wExhaustParticleListHead;
     for (index = *link; index != 0; index = next) {
         particle = &g_aParticlePool[index];
         step = g_fFrameDeltaTime;
         next = particle->next;
         share = (ParticleReal)(particle->alpha * particle->fade) * PARTICLE_SHARE;
-#if TGR_BOSS_RALLY
         size = (ParticleReal)grow + particle->size;
         particle->size = size;
         particle->position.x =
@@ -50,13 +80,6 @@ void UpdateExhaustParticles(void) {
                                g_vWindVelocity.z + particle->position.z;
         particle->fade =
             (s64)((ParticleReal)5.7375007f / ((ParticleReal)particle->size * particle->size));
-#else
-        particle->size += grow;
-        particle->position.x += g_vWindVelocity.x + particle->velocity.x * share * step;
-        particle->position.y += g_vWindVelocity.y + particle->velocity.y * share * step;
-        particle->position.z += g_vWindVelocity.z + (particle->velocity.z * share + 0.8f) * step;
-        particle->fade = (s32)(5.7375f / (particle->size * particle->size));
-#endif /* TGR_BOSS_RALLY */
         if (share < PARTICLE_MIN_SHARE) {
             *link = particle->next;
             particle->next = g_wParticleFreeListHead;
@@ -65,6 +88,7 @@ void UpdateExhaustParticles(void) {
             link = &particle->next;
         }
     }
+#endif
 }
 
 void UpdateTireSmoke(void) {
