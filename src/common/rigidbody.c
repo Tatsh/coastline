@@ -169,10 +169,13 @@ void ApplyRigidBodyImpulse(RigidBodyState *state, RigidBody *body, f32 dt) {
 }
 
 void QuaternionToMatrix(f32 out[4][4], RigidBodyState *state) {
+#if TGR_BOSS_RALLY
     Quaternion *q = &state->orientation;
+#endif
     f32 ww, xx, yy, zz;
     f32 xy2, wz2, xz2, wy2, yz2, wx2;
 
+#if TGR_BOSS_RALLY
     ww = q->w * q->w;
     xx = q->x * q->x;
     yy = q->y * q->y;
@@ -183,7 +186,6 @@ void QuaternionToMatrix(f32 out[4][4], RigidBodyState *state) {
     wy2 = q->y * (q->w + q->w);
     yz2 = q->z * (q->y + q->y);
     wx2 = q->x * (q->w + q->w);
-#if TGR_BOSS_RALLY
     /* The libraries round the squares and ww - xx, but not the other sums or three products. */
     out[0][0] = (long double)ww + xx - yy - zz;
     out[0][1] = (long double)q->z * (q->w + q->w) + xy2;
@@ -198,23 +200,38 @@ void QuaternionToMatrix(f32 out[4][4], RigidBodyState *state) {
     out[2][0] = xz2 + wy2;
     out[2][2] = (long double)(ww - xx) - yy + zz;
 #else
+    ww = state->orientation.w * state->orientation.w;
+    xx = state->orientation.x * state->orientation.x;
+    yy = state->orientation.y * state->orientation.y;
+    zz = state->orientation.z * state->orientation.z;
+    xy2 = state->orientation.y * (state->orientation.x * 2.0f);
+    wz2 = state->orientation.z * (state->orientation.w * 2.0f);
+    xz2 = state->orientation.z * (state->orientation.x * 2.0f);
+    wy2 = state->orientation.y * (state->orientation.w * 2.0f);
+    yz2 = state->orientation.z * (state->orientation.y * 2.0f);
+    wx2 = state->orientation.x * (state->orientation.w * 2.0f);
     out[0][0] = ww + xx - yy - zz;
     out[0][1] = xy2 + wz2;
-    out[0][3] = 0.0f;
     out[0][2] = xz2 - wy2;
+    out[0][3] = 0.0f;
     out[1][0] = xy2 - wz2;
     out[1][1] = ww - xx + yy - zz;
-    out[1][3] = 0.0f;
     out[1][2] = yz2 + wx2;
-    out[2][3] = 0.0f;
-    out[2][1] = yz2 - wx2;
+    out[1][3] = 0.0f;
     out[2][0] = xz2 + wy2;
+    out[2][1] = yz2 - wx2;
     out[2][2] = ww - xx - yy + zz;
+    out[2][3] = 0.0f;
 #endif
     out[3][0] = state->position.x;
     out[3][1] = state->position.y;
+#if TGR_BOSS_RALLY
     out[3][3] = 1.0f;
+#endif
     out[3][2] = state->position.z;
+#if !TGR_BOSS_RALLY
+    out[3][3] = 1.0f;
+#endif
     StubPhysics2(out);
 }
 
