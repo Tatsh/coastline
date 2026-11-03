@@ -1789,6 +1789,7 @@ int main(int argc, char *argv[]) {
                 bool printScreenWasDown = false;
                 bool escapeWasDown = false;
                 std::array<bool, 3> videoKeysWereDown{};
+                std::array<float, 2> videoSeekRepeatSeconds{};
                 bool freeCameraToggleWasDown = false;
                 bool freeCameraEnabled = false;
                 coastline::FreeCamera frontendCamera;
@@ -2130,7 +2131,7 @@ int main(int argc, char *argv[]) {
                                     SDL_GetGamepadButton(gamepad, SDL_GAMEPAD_BUTTON_LEFT_STICK);
                             }
                             const float speed =
-                                raceCamera ? (fast ? 400.0f : 100.0f) : (fast ? 80.0f : 20.0f);
+                                (raceCamera ? 100.0f : 20.0f) * (fast ? 10.0f : 1.0f);
                             for (auto &value : movement) {
                                 value = std::clamp(value, -1.0f, 1.0f) * speed;
                             }
@@ -2145,10 +2146,7 @@ int main(int argc, char *argv[]) {
                             };
                             moveCamera(seconds, movement, rotation);
                             if (cameraScroll != 0.0f) {
-                                moveCamera(
-                                    0.1f,
-                                    {cameraScroll * (raceCamera ? 150.0f : 30.0f), 0.0f, 0.0f},
-                                    {});
+                                moveCamera(0.1f, {cameraScroll * speed * 1.5f, 0.0f, 0.0f}, {});
                             }
                         }
                         sceneRenderer->SetFrontendCamera(
@@ -2214,15 +2212,35 @@ int main(int argc, char *argv[]) {
                                                        coastline::IsKeyDown(SDL_SCANCODE_RIGHT)};
                             if (intro->PlayingVideo()) {
                                 buttons.pauseVideo = videoKeys[0] && !videoKeysWereDown[0];
-                                const bool left = videoKeys[1] && !videoKeysWereDown[1];
-                                const bool right = videoKeys[2] && !videoKeysWereDown[2];
+                                const auto repeatSeek = [&](std::size_t direction) {
+                                    auto &remaining = videoSeekRepeatSeconds[direction];
+                                    if (!videoKeys[direction + 1]) {
+                                        remaining = 0;
+                                        return false;
+                                    }
+                                    if (!videoKeysWereDown[direction + 1]) {
+                                        remaining = 0.35f;
+                                        return true;
+                                    }
+                                    remaining -= seconds;
+                                    if (remaining <= 0) {
+                                        remaining += 0.15f;
+                                        return true;
+                                    }
+                                    return false;
+                                };
+                                const bool left = repeatSeek(0);
+                                const bool right = repeatSeek(1);
+                                const bool shift = coastline::IsKeyDown(SDL_SCANCODE_LSHIFT) ||
+                                                   coastline::IsKeyDown(SDL_SCANCODE_RSHIFT);
                                 buttons.restartVideo =
-                                    left && (coastline::IsKeyDown(SDL_SCANCODE_LSHIFT) ||
-                                             coastline::IsKeyDown(SDL_SCANCODE_RSHIFT));
-                                buttons.seekVideo = left ? -1 : (right ? 1 : 0);
+                                    videoKeys[1] && !videoKeysWereDown[1] && shift;
+                                buttons.seekVideo = left && !shift ? -1 : (right ? 1 : 0);
                                 if (buttons.pauseVideo || left || right) {
                                     buttons.skip = false;
                                 }
+                            } else {
+                                videoSeekRepeatSeconds.fill(0);
                             }
                             videoKeysWereDown = videoKeys;
                             coastline::IntroEnd end = intro->Update(seconds, buttons);

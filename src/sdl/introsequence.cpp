@@ -197,9 +197,19 @@ void IntroSequence::Draw() const {
                 const double duration = s.video->Duration();
                 const float progress =
                     duration > 0 ? static_cast<float>(std::clamp(s.time / duration, 0.0, 1.0)) : 0;
+                const auto &window = s.renderer.Window();
+                const float frameHeight =
+                    static_cast<float>(std::max<Uint32>(window.FrameHeight(), 1));
+                const auto extent =
+                    ScreenExtent(static_cast<float>(window.FrameWidth()) / frameHeight);
+                const float left = 160 - 160 / extent[0];
+                const float barWidth = 320 / extent[0];
+                const float bottom = 120 + 120 / extent[1];
+                const float top = bottom - 480 / (frameHeight * extent[1]);
                 const std::array<std::uint8_t, 4> dark{24, 8, 0, 220};
-                rectangle(7, 230, 313, 238, dark, dark);
-                rectangle(8, 231, 8 + 304 * progress, 237, s.progressTop, s.progressBottom);
+                rectangle(left, top, left + barWidth, bottom, dark, dark);
+                rectangle(
+                    left, top, left + barWidth * progress, bottom, s.progressTop, s.progressBottom);
             }
             if (s.paused) {
                 const std::array<std::uint8_t, 4> white{255, 255, 255, 255};

@@ -460,7 +460,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
             auto axis = [&](SDL_Scancode positive, SDL_Scancode negative) {
                 return static_cast<float>(down(positive)) - static_cast<float>(down(negative));
             };
-            const float speed = down(SDL_SCANCODE_LSHIFT) || down(SDL_SCANCODE_RSHIFT) ? 80 : 20;
+            const float speed = down(SDL_SCANCODE_LSHIFT) || down(SDL_SCANCODE_RSHIFT) ? 200 : 20;
             const float seconds =
                 fixedTime ? 1.0f / 60 :
                             std::min(static_cast<float>(now - lastCameraFrame) / 1e9f, 0.1f);
@@ -470,7 +470,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
                          axis(SDL_SCANCODE_E, SDL_SCANCODE_Q) * speed},
                         {-cameraMouse[0] * 0.003f, -cameraMouse[1] * 0.003f});
             if (cameraScroll != 0) {
-                camera.Move(0.1f, {cameraScroll * 30, 0, 0}, {});
+                camera.Move(0.1f, {cameraScroll * speed * 1.5f, 0, 0}, {});
             }
         }
         lastCameraFrame = now;

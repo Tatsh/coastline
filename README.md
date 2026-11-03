@@ -830,7 +830,7 @@ regional splash screens when `intro` is absent. An empty array opens the menu im
 {
   "intro": [
     { "file": "intro/brally.mkv", "type": "video" },
-    { "duration": 2, "file": "intro/legal.png", "type": "image" }
+    { "duration": 4, "file": "intro/legal.png", "type": "image" }
   ],
   "introOnce": true,
   "mainMenuAttractDemo": true,

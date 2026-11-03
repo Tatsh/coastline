@@ -170,7 +170,7 @@ std::optional<std::string> CurateAssetPacks(const std::filesystem::path &default
         return WriteJson(boss / "pack.json",
                          {{"intro",
                            {{{"file", "intro/brally.mkv"}, {"type", "video"}},
-                            {{"duration", 2.0}, {"file", "intro/legal.png"}, {"type", "image"}}}},
+                            {{"duration", 4.0}, {"file", "intro/legal.png"}, {"type", "image"}}}},
                           {"introOnce", true},
                           {"mainMenuAttractDemo", true},
                           {"mainMenuIdleSeconds", 90},
