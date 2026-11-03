@@ -446,6 +446,48 @@ void InitVehiclePhysics(Vehicle *vehicle) {
 #define SPRAY_VERTEX_ALPHA 0xFF
 
 void ResetVehicleEffects(Vehicle *vehicle) {
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    s32 i;
+    s32 k;
+    Vtx *vertex;
+    s16(*velocity)[3];
+
+    VEHICLE_GET(vehicle, SprayFramesLeft)[0] = VEHICLE_GET(vehicle, Index) * SPRAY_FRAMES_STEP;
+    VEHICLE_GET(vehicle, SprayFramesLeft)
+    [1] = VEHICLE_GET(vehicle, SprayFramesLeft)[0] + SPRAY_FRAMES_SPREAD;
+    VEHICLE_GET(vehicle, SprayFramesLeft)
+    [2] = VEHICLE_GET(vehicle, SprayFramesLeft)[1] + SPRAY_FRAMES_SPREAD;
+    VEHICLE_GET(vehicle, SprayFramesLeft)
+    [3] = VEHICLE_GET(vehicle, SprayFramesLeft)[2] + SPRAY_FRAMES_SPREAD;
+    for (k = 0; k < VEHICLE_WHEELS; k++) {
+        VEHICLE_GET(vehicle, SpraySurfaces)[k] = TRACK_SURFACE_START;
+        VEHICLE_GET(vehicle, SprayAdvanced)[k] = 0;
+        VEHICLE_GET(vehicle, SprayFramesLeft)[k] = 0.0f;
+        VEHICLE_GET(vehicle, SmokeTimers)[k] = SMOKE_TIMER_STEP * k;
+        VEHICLE_GET(vehicle, SprayPhases)[k] = 0.0f;
+    }
+    for (velocity = &VEHICLE_GET(vehicle, SprayVelocities)[0][0][0],
+        vertex = &VEHICLE_GET(vehicle, SprayVertices)[0][0][0],
+        i = 0;
+         i < VEHICLE_WHEELS * SPRAY_SEGMENTS * SPRAY_SEGMENT_VERTICES;
+         velocity++, i++, vertex++) {
+        (*velocity)[0] = (*velocity)[1] = (*velocity)[2] = 0;
+        vertex->v.ob[0] = 0;
+        vertex->v.ob[1] = 0;
+        vertex->v.ob[2] = 0;
+        vertex->v.cn[0] = 0;
+        if (i & 1) {
+            vertex->v.cn[1] = 0;
+        } else {
+            vertex->v.cn[1] = 0;
+        }
+        vertex->v.cn[2] = 0;
+        vertex->v.cn[3] = SPRAY_VERTEX_ALPHA;
+    }
+    for (i = 0; i < VEHICLE_WHEELS * SPRAY_SEGMENTS; i++) {
+        vehicle->spraySegmentSurfaceList[i] = TRACK_SURFACE_START;
+    }
+#else
 #if TGR_BOSS_RALLY
     ConvertedModelVertex *vertex;
 #else
@@ -515,6 +557,7 @@ void ResetVehicleEffects(Vehicle *vehicle) {
     for (i = 0; i < VEHICLE_WHEELS * SPRAY_SEGMENTS; i++) {
         surface[i] = TRACK_SURFACE_START;
     }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 }
 
 #define RESPAWN_FALL_DEPTH 10.0f

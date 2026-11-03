@@ -271,9 +271,13 @@ struct Vehicle {
     s16 sprayVelocities[VEHICLE_WHEELS][SPRAY_SEGMENTS][SPRAY_SEGMENT_VERTICES]
                        [3]; /*!< How far the vertices of each spray move a second, in 127ths of a
                                  unit. */
-    s16 spraySegmentSurfaces[VEHICLE_WHEELS][SPRAY_SEGMENTS]; /*!< The surface each segment was
-                                                                   thrown from, or -1 when it was
-                                                                   thrown from none. */
+    union {
+        s16 spraySegmentSurfaces[VEHICLE_WHEELS][SPRAY_SEGMENTS]; /*!< The surface each segment was
+                                                                       thrown from, or -1 when it
+                                                                       was thrown from none. */
+        s16 spraySegmentSurfaceList[VEHICLE_WHEELS * SPRAY_SEGMENTS]; /*!< The same surfaces in
+                                                                            storage order. */
+    };
     Vec3f sprayOrigin; /*!< The point the spray vertices are relative to, put at the vehicle by
                             SetVehiclePosition(). */
     Mtx sprayMtx;      /*!< The matrix of the spray, the identity until it is set. */
