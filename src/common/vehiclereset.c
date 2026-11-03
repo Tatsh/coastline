@@ -177,8 +177,10 @@ void SetVehicleVelocity(Vehicle *vehicle, f32 x, f32 y, f32 z) {
 void ResetVehicleState(Vehicle *vehicle) {
 #if TGR_BOSS_RALLY
     const VehicleModel *spec = VEHICLE_GET(vehicle, Model);
+#define RESET_SPEC (*spec)
 #else
-    const CarPhysicsSpec *spec = &g_aCarPhysicsSpecs[vehicle->carModel];
+    s32 kind;
+#define RESET_SPEC g_aCarPhysicsSpecs[kind]
 #endif
 
     /* The frames of the vehicle and its cameras, all but camera 4, and of its wheels. */
@@ -206,25 +208,29 @@ void ResetVehicleState(Vehicle *vehicle) {
     VEHICLE_SET(vehicle, PointIndex, 0);
     VEHICLE_SET(vehicle, PreviousCamera, NULL);
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    kind = vehicle->carModel;
+#endif
     memcpy(VEHICLE_GET(vehicle, GearRatios),
-           spec->gearRatios,
+           RESET_SPEC.gearRatios,
            sizeof(VEHICLE_GET(vehicle, GearRatios)));
-    VEHICLE_GET(vehicle, TorqueCurve)[0] = spec->torqueCurve[0];
-    VEHICLE_GET(vehicle, TorqueCurve)[1] = spec->torqueCurve[1];
-    VEHICLE_GET(vehicle, TorqueCurve)[2] = spec->torqueCurve[2];
-    VEHICLE_GET(vehicle, TorqueCurve)[3] = spec->torqueCurve[3];
-    VEHICLE_SET(vehicle, FinalDrive, spec->finalDrive);
-    VEHICLE_SET(vehicle, GearCount, spec->gearCount);
+    VEHICLE_GET(vehicle, TorqueCurve)[0] = RESET_SPEC.torqueCurve[0];
+    VEHICLE_GET(vehicle, TorqueCurve)[1] = RESET_SPEC.torqueCurve[1];
+    VEHICLE_GET(vehicle, TorqueCurve)[2] = RESET_SPEC.torqueCurve[2];
+    VEHICLE_GET(vehicle, TorqueCurve)[3] = RESET_SPEC.torqueCurve[3];
+    VEHICLE_SET(vehicle, FinalDrive, RESET_SPEC.finalDrive);
+    VEHICLE_SET(vehicle, GearCount, RESET_SPEC.gearCount);
     VEHICLE_SET(vehicle, Transmission, VEHICLE_GET(vehicle, ChosenTransmission));
-    VEHICLE_SET(vehicle, RearWheelDrive, spec->rearWheelDrive);
-    VEHICLE_GET(vehicle, Body).boxSize.x = spec->boxSize.x;
-    VEHICLE_GET(vehicle, Body).boxSize.y = spec->boxSize.y;
-    VEHICLE_GET(vehicle, Body).boxSize.z = spec->boxSize.z;
-    VEHICLE_GET(vehicle, Body).boxCenterZ = spec->boxCenterZ;
-    VEHICLE_SET(vehicle, TableIndex, spec->tableIndex);
+    VEHICLE_SET(vehicle, RearWheelDrive, RESET_SPEC.rearWheelDrive);
+    VEHICLE_GET(vehicle, Body).boxSize.x = RESET_SPEC.boxSize.x;
+    VEHICLE_GET(vehicle, Body).boxSize.y = RESET_SPEC.boxSize.y;
+    VEHICLE_GET(vehicle, Body).boxSize.z = RESET_SPEC.boxSize.z;
+    VEHICLE_GET(vehicle, Body).boxCenterZ = RESET_SPEC.boxCenterZ;
+    VEHICLE_SET(vehicle, TableIndex, RESET_SPEC.tableIndex);
 #if TGR_BOSS_RALLY
     VEHICLE_SET(vehicle, Model, NULL);
 #endif
+#undef RESET_SPEC
 }
 
 /* Set the state of the body of a wheel at rest at a place under the vehicle. The statements share
