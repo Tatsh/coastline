@@ -2055,9 +2055,7 @@ int main(int argc, char *argv[]) {
                             raceView->ToggleFreeCamera();
                         }
                         SDL_SetWindowRelativeMouseMode(window->Window(), freeCameraEnabled);
-                        coastline::SetRaceControlsCaptured(freeCameraEnabled && raceCamera);
                         if (freeCameraEnabled) {
-                            coastline::SetSecondControllerState({});
                             auto keyAxis = [](SDL_Scancode positive, SDL_Scancode negative) {
                                 return static_cast<float>(coastline::IsKeyDown(positive)) -
                                        static_cast<float>(coastline::IsKeyDown(negative));
@@ -2087,8 +2085,10 @@ int main(int argc, char *argv[]) {
                                 fast |=
                                     SDL_GetGamepadButton(gamepad, SDL_GAMEPAD_BUTTON_LEFT_STICK);
                             }
+                            const float speed =
+                                raceCamera ? (fast ? 400.0f : 100.0f) : (fast ? 80.0f : 20.0f);
                             for (auto &value : movement) {
-                                value = std::clamp(value, -1.0f, 1.0f) * (fast ? 800.0f : 200.0f);
+                                value = std::clamp(value, -1.0f, 1.0f) * speed;
                             }
                             auto moveCamera = [&](float elapsed,
                                                   const std::array<float, 3> &travel,
@@ -2101,14 +2101,10 @@ int main(int argc, char *argv[]) {
                             };
                             moveCamera(seconds, movement, rotation);
                             if (cameraScroll != 0.0f) {
-                                moveCamera(0.1f, {cameraScroll * 300.0f, 0.0f, 0.0f}, {});
-                            }
-                            if (frontEnd != FrontEnd::Race) {
-                                for (auto &port : ports) {
-                                    port.buttons &= coastline::BUTTON_B;
-                                    port.stickX = 0;
-                                    port.stickY = 0;
-                                }
+                                moveCamera(
+                                    0.1f,
+                                    {cameraScroll * (raceCamera ? 150.0f : 30.0f), 0.0f, 0.0f},
+                                    {});
                             }
                         }
                         sceneRenderer->SetFrontendCamera(
@@ -2318,8 +2314,8 @@ int main(int argc, char *argv[]) {
                             coastline::PaintShopInput pointer =
                                 freeCameraEnabled ? coastline::PaintShopInput{} :
                                                     PaintShopInputOf(ports[0], mouse);
-                            pointer.text = freeCameraEnabled ? std::string{} : std::move(typed);
-                            pointer.undo = !freeCameraEnabled && undoPaint;
+                            pointer.text = std::move(typed);
+                            pointer.undo = undoPaint;
                             coastline::MenusEnd end =
                                 mainMenu->Frame(*sceneRenderer,
                                                 seconds,

@@ -224,11 +224,6 @@ SetupRun RunSetupWizard(GpuWindow &window,
             return false;
         }
         SDL_SetWindowRelativeMouseMode(sdlWindow, freeCamera);
-        if (freeCamera) {
-            SDL_StopTextInput(sdlWindow);
-        } else {
-            SDL_StartTextInput(sdlWindow);
-        }
         return true;
     };
     for (int frame = 1; !quit; ++frame) {
@@ -273,9 +268,6 @@ SetupRun RunSetupWizard(GpuWindow &window,
                 if (window.SetFullscreen(fullscreen)) {
                     config.Set("Video", "Fullscreen", fullscreen ? "1" : "0");
                 }
-                return;
-            }
-            if (freeCamera) {
                 return;
             }
             WizardEvent event;
@@ -345,7 +337,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
                 break;
             case SDL_EVENT_TEXT_INPUT:
                 // Alt and a letter is an accelerator, not text.
-                if (!freeCamera && (SDL_GetModState() & SDL_KMOD_ALT) == 0) {
+                if ((SDL_GetModState() & SDL_KMOD_ALT) == 0) {
                     WizardEvent event;
                     event.type = WizardEvent::Type::Text;
                     event.text = sdlEvent.text.text;
@@ -414,7 +406,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
             }
         }
         for (const ScriptTyping &typed : script.typing) {
-            if (typed.frame != frame || freeCamera) {
+            if (typed.frame != frame) {
                 continue;
             }
             WizardEvent event;
@@ -468,7 +460,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
             auto axis = [&](SDL_Scancode positive, SDL_Scancode negative) {
                 return static_cast<float>(down(positive)) - static_cast<float>(down(negative));
             };
-            const float speed = down(SDL_SCANCODE_LSHIFT) || down(SDL_SCANCODE_RSHIFT) ? 800 : 200;
+            const float speed = down(SDL_SCANCODE_LSHIFT) || down(SDL_SCANCODE_RSHIFT) ? 80 : 20;
             const float seconds =
                 fixedTime ? 1.0f / 60 :
                             std::min(static_cast<float>(now - lastCameraFrame) / 1e9f, 0.1f);
@@ -478,7 +470,7 @@ SetupRun RunSetupWizard(GpuWindow &window,
                          axis(SDL_SCANCODE_E, SDL_SCANCODE_Q) * speed},
                         {-cameraMouse[0] * 0.003f, -cameraMouse[1] * 0.003f});
             if (cameraScroll != 0) {
-                camera.Move(0.1f, {cameraScroll * 300, 0, 0}, {});
+                camera.Move(0.1f, {cameraScroll * 30, 0, 0}, {});
             }
         }
         lastCameraFrame = now;

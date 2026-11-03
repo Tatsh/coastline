@@ -321,7 +321,6 @@ public:
     }
 
     unsigned ReadButtonMask(int *steering, int *acceleration);
-    bool controlsCaptured = false;
     void ResetMouse();
     int InitializeJoystick();
     void ReleaseJoystick();
@@ -633,12 +632,6 @@ unsigned RaceInput::ReadButtonMask(int *pnSteering, int *pnAcceleration) {
         m_platform.paused = 1;
         m_platform.buttonMask = 0x4000;
         return m_platform.buttonMask;
-    }
-    if (controlsCaptured) {
-        *pnSteering = 0;
-        *pnAcceleration = 0;
-        m_platform.buttonMask = 0;
-        return 0;
     }
 #ifdef ENABLE_PATCHES
     // Until the start binding begins a race, every other binding but the pause is ignored.
@@ -992,9 +985,6 @@ void RaceInput::StartJolt() {
 ControllerState ReadRacePad(const PlayerDevices &devices) {
     ControllerState state;
     state.connected = true;
-    if (RaceInput::Get().controlsCaptured) {
-        return state;
-    }
     const InputBinding *keys = g_GlobalRallyConfig.aInputBindingsKeyboard;
     auto isDown = [&](ControlAction action, int binding) {
         if (devices.keyboard && IsBindingKeyDown(keys[binding])) {
@@ -1025,10 +1015,6 @@ ControllerState ReadRacePad(const PlayerDevices &devices) {
     }
     state.stickX = static_cast<std::int8_t>(std::clamp(steering, -STICK_RANGE, STICK_RANGE));
     return state;
-}
-
-void SetRaceControlsCaptured(bool captured) {
-    RaceInput::Get().controlsCaptured = captured;
 }
 
 } // namespace coastline

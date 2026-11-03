@@ -6,13 +6,6 @@ namespace coastline {
 
 class RaceInput;
 
-/**
- * Capture driving controls for the free camera while retaining the race pause binding.
- *
- * @param captured Whether driving input is suppressed.
- */
-void SetRaceControlsCaptured(bool captured);
-
 /** Input history and haptic resources for one active input configuration. */
 class RaceInputContext {
 public:

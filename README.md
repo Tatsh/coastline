@@ -240,12 +240,12 @@ F8 toggles the free camera throughout the application, including setup, movies, 
 and paused or running races. Flat screens become panels viewed in perspective while moving.
 Move with W, A, S, and D, rise with E, descend with Q, and look with the mouse. Two-finger vertical
 scrolling or the mouse wheel moves forward and backward. Shift increases movement speed.
-Free camera temporarily uses maximum draw distance without changing saved settings.
+Free camera draws the whole track without distance fog or changes to saved settings.
 Escape exits free camera without pausing or navigating back; F8 also toggles the mode off.
 On a gamepad, Back toggles the camera, the left stick moves, the right stick looks,
 the shoulder buttons descend and rise,
-and pressing the left stick increases speed. Driving input is captured while the camera is
-active. The HUD disappears for screenshots.
+and pressing the left stick increases speed. Menu, driving, and text input remain active.
+The mouse controls the camera while free camera is enabled. The HUD disappears for screenshots.
 
 The `Controls` section of `BossRally.ini` maps the gamepad. `Preset` chooses one of the presets below,
 and a key of an action present in the section replaces the binding of the preset for that action.

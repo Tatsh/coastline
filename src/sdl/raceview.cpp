@@ -1868,6 +1868,37 @@ struct ViewInstances {
 // ahead of the camera, as many as 4.
 constexpr std::size_t SHADOW_VEHICLES = 4;
 
+ViewInstances WholeTrackInstances(const CameraFrame &camera, Vehicle *vehicles) {
+    ViewInstances view;
+    view.mask.assign(static_cast<std::size_t>(g_LoadedTrack.instanceCount), 0);
+    for (int index = 0; index < g_LoadedTrack.instanceCount; ++index) {
+        if ((g_LoadedTrack.instances[index].flags & TRACK_INSTANCE_TRANSLUCENT) != 0) {
+            view.translucent.push_back(index);
+        } else {
+            view.opaque.push_back(index);
+        }
+    }
+    std::stable_sort(view.translucent.begin(), view.translucent.end(), [&](int a, int b) {
+        const auto depth = [&](int index) {
+            const auto &position = g_LoadedTrack.instances[index].rows[3].vector;
+            return (position.x - camera.position.x) * camera.forward.x +
+                   (position.y - camera.position.y) * camera.forward.y +
+                   (position.z - camera.position.z) * camera.forward.z;
+        };
+        return depth(a) > depth(b);
+    });
+    for (int index = 0; index < g_dwNumActiveVehicles; ++index) {
+        g_adwVehicleVisible[index] = 1;
+        g_adwVehicleInViewRange[index] = 1;
+        if (vehicles[index].GetDriver() != nullptr &&
+            static_cast<std::size_t>(index) < SHADOW_VEHICLES) {
+            vehicles[index].MarkNearbyInstanceShadows(
+                view.mask.data(), static_cast<u8>(1u << (static_cast<unsigned>(index) & 31)));
+        }
+    }
+    return view;
+}
+
 // RenderRaceView() casts a ray down from the camera, and the groups the instances under it hide are
 // not drawn. RenderRaceScene() checks which vehicles the camera sees with CheckVehicleVisibility().
 // BuildVisibleInstanceList() lists the instances of the cells of the grid the frustum of the camera
@@ -2324,13 +2355,21 @@ void RaceView::DrawView(SceneRenderer &renderer,
     float fov = (split ? camera->fov * 0.7f : camera->fov) * ASPECT_4_3 *
                 static_cast<float>(screen.height) / static_cast<float>(std::max(screen.width, 1));
     fov = RaceFieldOfView(fov, aspect, window.FieldOfViewScale());
-    const float distanceScale = s.freeCamera ? 4.0f : window.DrawDistanceScale();
+    const bool freeCamera = camera == (s.freeCamera ? &*s.freeCamera : nullptr);
+    const float distanceScale = window.DrawDistanceScale();
     const float drawDistance = CAMERA_FAR * distanceScale;
     float farPlane = split ? drawDistance * 0.65f : drawDistance;
     float frustumFar = farPlane;
     if (mirror) {
         farPlane = drawDistance * 0.3f;
         frustumFar = drawDistance * 0.2f;
+    }
+    if (freeCamera) {
+        const auto centre = s.track->Centre();
+        // Radius() is the largest bounding-box half extent, rather than a sphere radius.
+        farPlane = std::hypot(camera->position.x, camera->position.y, camera->position.z) +
+                   std::hypot(centre[0], centre[1], centre[2]) +
+                   std::sqrt(3.0f) * s.track->Radius() + CAMERA_FAR;
     }
     Matrix4 viewProjection = CameraMatrix(*camera, fov, farPlane, aspect);
     // SetViewport() mirrors the view across on a mirrored track, where the steering turns the
@@ -2352,7 +2391,7 @@ void RaceView::DrawView(SceneRenderer &renderer,
     renderer.SetHiddenInstanceFlags(HiddenInstanceFlags(first));
     // UpdateD3DFogRenderState(): the fog of the weather, farther on a clear night.
     renderer.SetFog(std::nullopt);
-    if (g_dwWeatherActive) {
+    if (g_dwWeatherActive && !freeCamera) {
         renderer.SetFog(Fog{{static_cast<float>(g_bFogR) / 255.0f,
                              static_cast<float>(g_bFogG) / 255.0f,
                              static_cast<float>(g_bFogB) / 255.0f},
@@ -2378,8 +2417,11 @@ void RaceView::DrawView(SceneRenderer &renderer,
         renderer.DrawModel(*s.sky, place, viewProjection, lighting, std::nullopt, false);
     }
     // RenderTrackGeometry(): the first pass draws the opaque instances in view.
-    ViewInstances instances = VisibleInstances(
-        *camera, fov, frustumFar, frame, vehicles, cameraIndex, distanceScale > 1.0f);
+    ViewInstances instances =
+        freeCamera ?
+            WholeTrackInstances(*camera, vehicles) :
+            VisibleInstances(
+                *camera, fov, frustumFar, frame, vehicles, cameraIndex, distanceScale > 1.0f);
     std::vector<CarShadow> shadows =
         ShadowsOf(s.shadowTexture.get(), vehicles, cameraIndex, instances.mask);
     const Lighting trackLighting = TrackLighting(vehicle);
