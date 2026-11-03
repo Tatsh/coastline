@@ -194,6 +194,7 @@ controllerread
 controllerscreen
 controllerscreenitems
 convertedvertex
+copytree
 cosf
 counselor
 counterclockwise
@@ -658,7 +659,6 @@ iobusy
 iomessage
 isdvd
 isrc
-iterdir
 ivec
 iwyu
 jalr
@@ -1141,6 +1141,7 @@ ripgreprc
 rledecompress
 rmask
 rmonspin
+rmtree
 rodata
 rombuilder
 routeposition
@@ -1223,6 +1224,7 @@ shgfp
 shiftl
 shiftt
 showmaximized
+shutil
 sideb
 sidegrip
 sidet
