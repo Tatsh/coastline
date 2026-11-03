@@ -151,7 +151,8 @@ void InitGameAndShowMenus(void) {
 
     /* The cartridge holds a ghost recording. The size the game sets afterwards marks the buffer
      * as holding no recording yet. */
-    g_dwGhostRecordingSize = DmaReadAssetSize(ROM_GHOST_RECORDING);
+    /* IDO assigns the original registers when this ROM address is signed. */
+    g_dwGhostRecordingSize = DmaReadAssetSize((s32)_ghostRecordingSegmentRomStart);
     DecompressFromRom(g_abGhostRecording, ROM_GHOST_RECORDING, NULL);
     g_dwGhostRecordingSize = 8;
 #endif /* TGR_BOSS_RALLY */
