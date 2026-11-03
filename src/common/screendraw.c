@@ -240,9 +240,21 @@ void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height) {
 #if TGR_PLATFORM == TGR_PLATFORM_N64
     gDPPipeSync(gDisplayListPtr++);
     /* With the alpha of the fog at 255, the blend retains the colour of the frame buffer. */
-    gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_FOG_BLEND_C1, RENDER_MODE_FOG_BLEND_C2);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-    gDPSetFogColor(gDisplayListPtr++, 0, 0, 0, 0xFF);
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xb900031d;
+        command->words.w1 = 0x55004240;
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xba001402;
+        command->words.w1 = 0;
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf8000000;
+        command->words.w1 = 0xff;
+    }
     gDPFillRectangle(gDisplayListPtr++, x, y, COORD_ADD(x, width), COORD_ADD(y, 1));
     gDPFillRectangle(gDisplayListPtr++,
                      x,
