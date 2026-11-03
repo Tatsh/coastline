@@ -23,6 +23,7 @@ alphablendenable
 alphadither
 alsa
 ambientsound
+analyzer
 anchorfile
 andi
 apfn
@@ -438,6 +439,7 @@ eepromread
 eepromwrite
 effectdata
 effecttextures
+elif
 emptycallback
 emulatedclock
 encryptionfailed
@@ -656,6 +658,7 @@ iobusy
 iomessage
 isdvd
 isrc
+iterdir
 ivec
 iwyu
 jalr
@@ -908,6 +911,7 @@ noat
 nobrowse
 noffstik
 noias
+nojekyll
 noload
 nolod
 nonewplayers
