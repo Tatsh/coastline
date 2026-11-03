@@ -307,7 +307,11 @@ extern CreditLine g_aCreditScrollLines[];
  * @ghidraAddress EUR: 0x80272170
  * @ghidraAddress JPN: 0x80271c20
  */
+#if defined(__mips__) || defined(__sgi)
 extern const char *g_pFirstCreditLineText;
+#else
+#define g_pFirstCreditLineText (g_aCreditScrollLines[0].text)
+#endif
 #endif
 
 /**
