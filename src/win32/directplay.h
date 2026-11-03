@@ -869,7 +869,6 @@ struct NetPeerSlot {
     int dwStatus;
     int nCar;
     unsigned char color[3];
-    char abUnknown37; /* +0x37 */
     unsigned adwSnapshotTypes[8];
     KeyframeState aSnapshots[8];
     unsigned nSnapshotCount;
@@ -1575,7 +1574,6 @@ struct NetPlayerSlot {
     unsigned char bStatusOptionA;
     unsigned char bStatusOptionB;
     unsigned char bStatusOptionC;
-    char abUnknown37; /* +0x37 */
     unsigned adwSnapshotTypes[8];
     KeyframeState aSnapshots[8];
     int nCurrentSnapshot;
