@@ -76,8 +76,7 @@ typedef struct {
         u8 needleX;     /*!< The x on the face the needle turns about, in pixels. */
         u8 barSegments; /*!< The segments of a bar, the last colors of the palette. */
     }; /*!< The needle or the bar of the tachometer, by its kind. */
-    u8 needleY;                        /*!< The y on the face the needle turns about, in pixels. */
-    u8 unreconstructed31[0x34 - 0x31]; /*!< Padding before needleFullAngle. */
+    u8 needleY;          /*!< The y on the face the needle turns about, in pixels. */
     f32 needleFullAngle; /*!< The angle of the needle at 8000 revolutions a minute, in radians. */
     f32 needleRestAngle; /*!< The angle of the needle at rest, in radians. */
     s32 driveType;       /*!< The wheels driven, as the index of their name. */
@@ -277,8 +276,6 @@ struct Vehicle {
                                                                    thrown from none. */
     Vec3f sprayOrigin; /*!< The point the spray vertices are relative to, put at the vehicle by
                             SetVehiclePosition(). */
-    u8 unreconstructed1D84[0x1D88 - 0x1D84]; /*!< Padding before the 8-byte alignment of
-                                                  sprayMtx. */
     Mtx sprayMtx;      /*!< The matrix of the spray, the identity until it is set. */
     s32 inTunnel;      /*!< Whether the placed model under the vehicle is a tunnel, darkening the
                             vehicle. */
@@ -323,19 +320,17 @@ struct Vehicle {
     s32 otherLook; /*!< Whether the car is drawn in its other look, without its textured parts or
                         the reflection of the sky. A button switches it once an unlock allows
                         it. */
-    s32 wrongWayFrames; /*!< The frames the vehicle has faced against the track. */
-    u8 gridX;           /*!< The x of the cell of the 32-unit grid of the track the vehicle is
-                             in. */
-    u8 gridY;           /*!< The y of the cell of the 32-unit grid of the track the vehicle is
-                             in. */
-    u8 unreconstructed2072[0x2074 - 0x2072]; /*!< Padding before input. */
-    PlayerInputState *input;                 /*!< The input that drives the vehicle. */
-    VehicleModel *model;           /*!< The model of the car, in a slot of g_aVehicleModels. */
+    s32 wrongWayFrames;      /*!< The frames the vehicle has faced against the track. */
+    u8 gridX;                /*!< The x of the cell of the 32-unit grid of the track the vehicle is
+                                  in. */
+    u8 gridY;                /*!< The y of the cell of the 32-unit grid of the track the vehicle is
+                                  in. */
+    PlayerInputState *input; /*!< The input that drives the vehicle. */
+    VehicleModel *model;     /*!< The model of the car, in a slot of g_aVehicleModels. */
     s16 dents[VEHICLE_DENT_SIDES]; /*!< How deeply each of eight sides around the car has been
                                         dented; up to 0x100 it dents more. */
     s16 dentJitter; /*!< A small offset, from -4 to 3, that changes with each dent to vary the
                          dents. */
-    u8 unreconstructed208E[0x2090 - 0x208E]; /*!< Padding to the end of the vehicle. */
 };
 
 /**

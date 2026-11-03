@@ -39,10 +39,8 @@ typedef struct {
                                                  the winner. */
 #if TGR_BOSS_RALLY
     u16 seasonRacePoints[SEASONS][SEASON_RACES]; /*!< The points scored in each race. */
-    u8 unreconstructed4E[0x50 - 0x4E];           /*!< Padding before seasonTimes. */
 #else
-    u16 seasonPoints[SEASONS];         /*!< The points scored in each season. */
-    u8 unreconstructed2A[0x2C - 0x2A]; /*!< Padding before seasonTimes. */
+    u16 seasonPoints[SEASONS]; /*!< The points scored in each season. */
 #endif
     f32 seasonTimes[SEASONS][SEASON_RACES]; /*!< The time of each race of each season, in
                                                  seconds. */
@@ -57,7 +55,6 @@ typedef struct {
                                above them. */
     u16 unlockedTracks;   /*!< The unlocked tracks, a bit for each. */
     u16 unlockedWeathers; /*!< The weathers the championship has raced in, a bit for each. */
-    u8 unreconstructedD2[0xD4 - 0xD2]; /*!< Padding before handling. */
     s32 handling;         /*!< The handling option the player chose last, the steering mode of
                                the vehicle from 0. */
     s32 transmission;     /*!< The gearbox option the player chose last, nonzero for the

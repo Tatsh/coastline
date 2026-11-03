@@ -228,7 +228,6 @@ typedef struct {
     TGR_PTR(TGR_PTR(TrackSection)) sections; /*!< Every section, for a search. */
     s32 sectionCount;                        /*!< The number of sections. */
     u8 fogColor[3]; /*!< The colour of the fog of the track, red, green, and blue from 0 to 255. */
-    u8 unreconstructed83[0x84 - 0x83]; /*!< Not yet reconstructed. */
     TGR_PTR(Vec3f) cameraPoints; /*!< The points the trackside camera of a replay may stand at. */
     s32 cameraPointCount;        /*!< The number of cameraPoints. */
     TGR_PTR(u16)
