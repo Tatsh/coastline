@@ -151,6 +151,11 @@ bool Menus::LoadTrackMenu(SceneRenderer &renderer,
         item.name = extra.name;
         item.flags = extra.mirrored ? MENU_ITEM_MIRRORED_MODEL : 0;
         item.coin = true;
+        if (extra.file == "race" || extra.file == "bonus") {
+            item.model = m_screen->LoadModel(
+                renderer, assets / "tracks" / (std::string(extra.file) + "-menu.gltf"));
+            item.coin = !item.model;
+        }
         auto gltf = assets / "tracks" / (std::string(extra.file) + ".gltf");
         auto glb = gltf;
         glb.replace_extension(".glb");

@@ -564,6 +564,7 @@ glsl
 glslang
 gltf
 gltfdocument
+gltfpack
 gmem
 gnoias
 gouraud
@@ -826,6 +827,8 @@ menuscreen
 menusurface
 menutext
 mesg
+meshopt
+meshoptimizer
 metainfo
 meyerhofer
 mfhi
@@ -1394,6 +1397,7 @@ trackinstance
 trackload
 trackmenudata
 trackmenuitem
+trackpreview
 trackrender
 trackside
 trackskidmarks

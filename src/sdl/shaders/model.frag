@@ -115,7 +115,7 @@ void main() {
     vec4 shade = inColor;
     if (flags.y > 0.5) {
         float diffuse = max(dot(normalize(inNormal), lightDirection.xyz), 0.0);
-        shade = vec4(min(ambient.rgb + directional.rgb * diffuse, vec3(1.0)), inColor.a);
+        shade = vec4(min(ambient.rgb + directional.rgb * diffuse, vec3(1.0)) * inColor.rgb, inColor.a);
     }
     vec4 color = t0 * shade;
     if (flags.w > 0.5) {

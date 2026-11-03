@@ -41,6 +41,7 @@
           "name": "glslang"
         },
         "libflac",
+        "meshoptimizer",
         "nlohmann-json",
         {
           "default-features": false,

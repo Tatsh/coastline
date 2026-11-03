@@ -44,6 +44,7 @@
 #include "sdl/n64attract.h"
 #include "sdl/n64model.h"
 #include "sdl/stringresources.h"
+#include "sdl/trackpreview.h"
 #include "sha1.h"
 #include "videoconvert.h"
 
@@ -1784,6 +1785,28 @@ std::optional<std::string> ConvertTracks(const std::filesystem::path &dataDirect
                                         std::filesystem::path(track).replace_extension(".bin"),
                                         true)) {
             return failure;
+        }
+        if (track.stem() == "race" || track.stem() == "bonus") {
+            const auto source = ReadWholeFile(track);
+            if (!source) {
+                return fmt::format("Cannot read {} for its menu preview.", track.string());
+            }
+            auto full = TrackToGltf(*source, track.stem().string() + ".bin");
+            if (!full) {
+                return full.error();
+            }
+            const auto stem = track.stem().string() + "-menu";
+            auto preview = TrackPreviewToGltf(*full, stem + ".bin");
+            if (!preview) {
+                return fmt::format(
+                    "Cannot generate {} preview: {}", track.stem().string(), preview.error());
+            }
+            std::ofstream json(track.parent_path() / (stem + ".gltf"), std::ios::trunc);
+            json << preview->json.dump(1) << '\n';
+            json.close();
+            if (!json || !WriteBytes(track.parent_path() / (stem + ".bin"), preview->buffer)) {
+                return fmt::format("Cannot write {} preview.", track.stem().string());
+            }
         }
     }
     return std::nullopt;

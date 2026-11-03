@@ -155,7 +155,8 @@ sudo snap connect coastline:removable-media
 Without vcpkg, each library and tool comes from a pinned release that is downloaded and built with
 the game. The `USE_SYSTEM_<NAME>` options take each from the system instead, with nothing
 downloaded: `USE_SYSTEM_SDL3`, `USE_SYSTEM_ARGPARSE`, `USE_SYSTEM_FMT`, `USE_SYSTEM_FLAC`,
-`USE_SYSTEM_NLOHMANN_JSON`, `USE_SYSTEM_ZLIB`, `USE_SYSTEM_GLSLANG`, and `USE_SYSTEM_SPIRV_CROSS`.
+`USE_SYSTEM_MESHOPTIMIZER`, `USE_SYSTEM_NLOHMANN_JSON`, `USE_SYSTEM_ZLIB`, `USE_SYSTEM_GLSLANG`,
+and `USE_SYSTEM_SPIRV_CROSS`.
 A cross build takes glslang and SPIRV-Cross from the system or vcpkg, as it cannot run the tools it
 builds.
 
@@ -642,6 +643,10 @@ specified INI file.
 
 Cancel stops the import and returns to the first step. Setup replaces the generated packs
 `default`, `boss`, `eur`, and `jpn`, preserving mod packs and saved games.
+
+Import generates simplified menu models for Race Track and Bonus Track, shared with their mirrors,
+as `tracks/race-menu.gltf` and `tracks/bonus-menu.gltf`. Re-import older packs to generate menu models.
+The conversion closes convex planar openings and adds sides beneath exposed terrain edges.
 
 The data comes from a Boss Rally disc image and a Top Gear Rally cartridge image. The import
 checks the cartridge against the SHA-1 of each release, and converts the CD audio of a CUE sheet

@@ -63,6 +63,7 @@ coastline_dependency(
   URL https://github.com/fmtlib/fmt/releases/download/12.2.0/fmt-12.2.0.zip
   HASH a2f4a8d51178f954e4c339007f77edd76ba0cb2e36f87a48e5a5403d9be5878f
   OPTIONS FMT_INSTALL=OFF FMT_TEST=OFF FMT_DOC=OFF)
+include("${CMAKE_SOURCE_DIR}/cmake/meshoptimizer.cmake")
 coastline_dependency(
   FLAC
   PACKAGE FLAC
@@ -248,6 +249,7 @@ add_library(
   music.cpp
   n64attract.cpp
   n64model.cpp
+  trackpreview.cpp
   options.cpp
   paintshop.cpp
   iconfile.cpp
@@ -284,7 +286,8 @@ target_include_directories(coastline_sdl PRIVATE "${CMAKE_SOURCE_DIR}/src"
 add_dependencies(coastline_sdl coastline_shaders coastline_manifests coastline_icon)
 # The headers of the menus declare their readers of JSON, and the game includes them.
 target_link_libraries(coastline_sdl PUBLIC nlohmann_json::nlohmann_json
-                                    PRIVATE FLAC::FLAC fmt::fmt ZLIB::ZLIB BZip2::BZip2)
+                                    PRIVATE FLAC::FLAC fmt::fmt ZLIB::ZLIB BZip2::BZip2
+                                            meshoptimizer::meshoptimizer)
 target_compile_definitions(coastline_sdl PRIVATE COASTLINE_DISCORD=$<BOOL:${COASTLINE_DISCORD}>)
 set(_coastline_video OFF)
 if(COASTLINE_VIDEO)

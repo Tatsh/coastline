@@ -393,6 +393,15 @@ target_link_options(n64model_test PRIVATE -fsanitize=address,undefined)
 target_link_libraries(n64model_test PRIVATE nlohmann_json::nlohmann_json fmt::fmt)
 add_test(NAME n64model COMMAND n64model_test)
 
+include("${CMAKE_SOURCE_DIR}/cmake/meshoptimizer.cmake")
+add_executable(trackpreview_test trackpreview_test.cpp "${_src}/sdl/trackpreview.cpp")
+set_target_properties(trackpreview_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
+target_include_directories(trackpreview_test PRIVATE "${_src}/sdl")
+target_compile_options(trackpreview_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
+target_link_options(trackpreview_test PRIVATE -fsanitize=address,undefined)
+target_link_libraries(trackpreview_test PRIVATE nlohmann_json::nlohmann_json meshoptimizer::meshoptimizer)
+add_test(NAME trackpreview COMMAND trackpreview_test)
+
 add_executable(decalcar_test decalcar_test.cpp "${_src}/sdl/decalcar.cpp"
   "${_src}/sdl/gltfdocument.cpp" "${_src}/sdl/indexedimage.cpp" "${_src}/sdl/n64model.cpp")
 set_target_properties(decalcar_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)

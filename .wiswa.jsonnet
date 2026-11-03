@@ -457,6 +457,7 @@
           'fmt',
           { features: ['tools'], host: true, name: 'glslang' },
           'libflac',
+          'meshoptimizer',
           'nlohmann-json',
           { 'default-features': false, features: ['vulkan'], name: 'sdl3' },
           {
