@@ -68,21 +68,19 @@ void DrawSpriteAtOrigin(Sprite *sprite, u16 *palette) {
 #else
 void DrawSpriteAtOrigin(Sprite *sprite) {
 #endif
-    u32 total, stripBytes, offset;
-    s32 strips, top, stripDrawHeight, i;
+    u32 total, stripBytes;
+    s32 strips, stripDrawHeight, i;
 
-    top = 0;
     SPRITE_STRIP_BYTES(sprite, total, stripBytes);
     strips = sprite->height / sprite->stripHeight;
     stripDrawHeight = sprite->drawHeight / strips;
-    for (i = 1, offset = stripBytes; i <= strips;
-         i++, offset += stripBytes, top += stripDrawHeight) {
+    for (i = 1; i <= strips; i++) {
         DrawSpriteStrip(sprite,
-                        WITH_PALETTE(sprite->pixels + total - offset, palette),
+                        WITH_PALETTE(sprite->pixels + total - stripBytes * i, palette),
                         sprite->width,
                         sprite->stripHeight,
                         sprite->originX,
-                        sprite->originY + top,
+                        sprite->originY + stripDrawHeight * (i - 1),
                         sprite->drawWidth,
                         stripDrawHeight,
                         0,
