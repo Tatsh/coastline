@@ -84,15 +84,20 @@ typedef struct {
 #if TGR_BOSS_RALLY
     u32 textureFlags;
 #else
-    unsigned mirrorS : 1;  /*!< Whether the texture repeats mirrored in s. */
-    unsigned mirrorT : 1;  /*!< Whether the texture repeats mirrored in t. */
-    unsigned clampS : 1;   /*!< Whether the texture clamps in s rather than wrapping. */
-    unsigned clampT : 1;   /*!< Whether the texture clamps in t rather than wrapping. */
-    unsigned format : 4;   /*!< The format, a TEXTURE_FORMAT_* value. */
-    unsigned : 3;          /*!< Bits not yet reconstructed. */
-    unsigned animated : 1; /*!< Whether source points to the frames of an animated texture. */
-    unsigned : 2;          /*!< Bits not yet reconstructed. */
-    unsigned size : 18;    /*!< The length of the texels in bytes. */
+    union {
+        struct {
+            unsigned mirrorS : 1;  /*!< Whether the texture repeats mirrored in s. */
+            unsigned mirrorT : 1;  /*!< Whether the texture repeats mirrored in t. */
+            unsigned clampS : 1;   /*!< Whether the texture clamps in s rather than wrapping. */
+            unsigned clampT : 1;   /*!< Whether the texture clamps in t rather than wrapping. */
+            unsigned format : 4;   /*!< The format, a TEXTURE_FORMAT_* value. */
+            unsigned : 3;          /*!< Bits not yet reconstructed. */
+            unsigned animated : 1; /*!< Whether source points to animated texture frames. */
+            unsigned : 2;          /*!< Bits not yet reconstructed. */
+            unsigned size : 18;    /*!< The length of the texels in bytes. */
+        };
+        u8 formatByte; /*!< The packed flags and format at the first descriptor byte. */
+    };
 #endif /* TGR_BOSS_RALLY */
 } ModelTexture;
 
