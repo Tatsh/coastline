@@ -3,6 +3,13 @@
 #include "common/screen.h"
 #include "common/timing.h"
 
+#if !TGR_BOSS_RALLY && (defined(__mips__) || defined(__sgi))
+/* IDO schedules the stores correctly when this datum is defined here. The assembly supplies the
+ * original address at link time. */
+#pragma weak g_dwTimingFrameElapsed
+u64 g_dwTimingFrameElapsed = 0;
+#endif
+
 #if TGR_BOSS_RALLY
 /**
  * Reset at the start of the frame.
