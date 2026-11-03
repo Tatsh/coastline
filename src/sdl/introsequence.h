@@ -50,6 +50,15 @@ public:
     void ControlVideo(bool pause, int seek, bool restart);
     /** Draw the current entry, preserving image and movie aspect ratios. */
     void Draw() const;
+    /**
+     * Draw movie or timed-image progress across the bottom of an output overlay.
+     * @param renderer The overlay renderer, between Begin() and RenderInto().
+     * @param width Output width in pixels.
+     * @param height Output height in pixels; the bar is two pixels high.
+     */
+    void DrawProgress(SceneRenderer &renderer, float width, float height) const;
+    /** @return Whether the active movie or timed image has a progress bar enabled. */
+    bool ShowsProgress() const;
     /** @return Whether current movie audio replaces menu music. */
     bool PlayingVideo() const;
 

@@ -2423,7 +2423,8 @@ int main(int argc, char *argv[]) {
                             }
                         }
                         coastline::GpuWindow::OutputOverlay outputOverlay;
-                        if (performanceStats && frameRateText) {
+                        if ((frontEnd == FrontEnd::Intro && intro->ShowsProgress()) ||
+                            (performanceStats && frameRateText)) {
                             if (!outputRenderer) {
                                 outputRenderer = coastline::SceneRenderer::Create(*window, true);
                             }
@@ -2433,29 +2434,36 @@ int main(int argc, char *argv[]) {
                                                     Uint32 width,
                                                     Uint32 height) {
                                     outputRenderer->Begin({0, 0, 0, 0});
-                                    float scale = SDL_GetWindowDisplayScale(window->Window());
-                                    if (!std::isfinite(scale) || scale <= 0.0f) {
-                                        scale = 1.0f;
+                                    if (frontEnd == FrontEnd::Intro) {
+                                        intro->DrawProgress(*outputRenderer,
+                                                            static_cast<float>(width),
+                                                            static_cast<float>(height));
                                     }
-                                    const std::array<float, 2> size{
-                                        static_cast<float>(width) / scale,
-                                        static_cast<float>(height) / scale};
-                                    // Reserve lap-counter space above the first statistics
-                                    // baseline.
-                                    int y = std::max(
-                                        80, static_cast<int>(std::ceil(size[1] / 12.0f)) + 20);
-                                    for (const auto &line :
-                                         performanceStats->Lines(window->GpuMemoryBytes())) {
-                                        DrawOverlayLine(*outputRenderer,
-                                                        *frameRateText,
-                                                        line.c_str(),
-                                                        y,
-                                                        16,
-                                                        coastline::TextStyle::Align::Left,
-                                                        true,
-                                                        size,
-                                                        20);
-                                        y += 22;
+                                    if (performanceStats && frameRateText) {
+                                        float scale = SDL_GetWindowDisplayScale(window->Window());
+                                        if (!std::isfinite(scale) || scale <= 0.0f) {
+                                            scale = 1.0f;
+                                        }
+                                        const std::array<float, 2> size{
+                                            static_cast<float>(width) / scale,
+                                            static_cast<float>(height) / scale};
+                                        // Reserve lap-counter space above the first statistics
+                                        // baseline.
+                                        int y = std::max(
+                                            80, static_cast<int>(std::ceil(size[1] / 12.0f)) + 20);
+                                        for (const auto &line :
+                                             performanceStats->Lines(window->GpuMemoryBytes())) {
+                                            DrawOverlayLine(*outputRenderer,
+                                                            *frameRateText,
+                                                            line.c_str(),
+                                                            y,
+                                                            16,
+                                                            coastline::TextStyle::Align::Left,
+                                                            true,
+                                                            size,
+                                                            20);
+                                            y += 22;
+                                        }
                                     }
                                     outputRenderer->RenderInto(gpuCommands, target, width, height);
                                 };

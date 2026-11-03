@@ -76,6 +76,15 @@ public:
      * @param renderer The renderer of the frame, between Begin() and End().
      */
     void Draw(SceneRenderer &renderer) const;
+    /**
+     * Draw pack-sequence progress after screen filters, or omit it for regional splash screens.
+     * @param renderer The overlay renderer, between Begin() and RenderInto().
+     * @param width Output width in pixels.
+     * @param height Output height in pixels.
+     */
+    void DrawProgress(SceneRenderer &renderer, float width, float height) const;
+    /** @return Whether the current pack-sequence entry displays progress. */
+    bool ShowsProgress() const;
 
     /** @return Whether a pack movie currently replaces menu music. */
     bool PlayingVideo() const;

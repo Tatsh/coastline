@@ -603,6 +603,16 @@ void Intro::Draw(SceneRenderer &renderer) const {
     s.fade.Draw(renderer);
 }
 
+void Intro::DrawProgress(SceneRenderer &renderer, float width, float height) const {
+    if (m_state->sequence) {
+        m_state->sequence->DrawProgress(renderer, width, height);
+    }
+}
+
+bool Intro::ShowsProgress() const {
+    return m_state->sequence && m_state->sequence->ShowsProgress();
+}
+
 bool Intro::PlayingVideo() const {
     return m_state->sequence && m_state->sequence->PlayingVideo();
 }

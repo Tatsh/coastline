@@ -193,24 +193,6 @@ void IntroSequence::Draw() const {
                                                          {left * 2, bottom * 2, 0, 0, lower}}};
                 s.renderer.DrawQuads(corners, FlatMaterial{}, MenuScreen::FlatFor(s.renderer));
             };
-            if (s.progressBar) {
-                const double duration = s.video->Duration();
-                const float progress =
-                    duration > 0 ? static_cast<float>(std::clamp(s.time / duration, 0.0, 1.0)) : 0;
-                const auto &window = s.renderer.Window();
-                const float frameHeight =
-                    static_cast<float>(std::max<Uint32>(window.FrameHeight(), 1));
-                const auto extent =
-                    ScreenExtent(static_cast<float>(window.FrameWidth()) / frameHeight);
-                const float left = 160 - 160 / extent[0];
-                const float barWidth = 320 / extent[0];
-                const float bottom = 120 + 120 / extent[1];
-                const float top = bottom - 480 / (frameHeight * extent[1]);
-                const std::array<std::uint8_t, 4> dark{24, 8, 0, 220};
-                rectangle(left, top, left + barWidth, bottom, dark, dark);
-                rectangle(
-                    left, top, left + barWidth * progress, bottom, s.progressTop, s.progressBottom);
-            }
             if (s.paused) {
                 const std::array<std::uint8_t, 4> white{255, 255, 255, 255};
                 rectangle(149, 106, 157, 134, white, white);
@@ -230,6 +212,35 @@ void IntroSequence::Draw() const {
                              std::nullopt,
                              true);
     }
+}
+
+void IntroSequence::DrawProgress(SceneRenderer &renderer, float width, float height) const {
+    const auto &s = *m_state;
+    if (!ShowsProgress() || width <= 0 || height <= 0) {
+        return;
+    }
+    const double duration = s.video ? s.video->Duration() : s.entries[s.index].duration;
+    if (duration <= 0) {
+        return;
+    }
+    const float progress = static_cast<float>(std::clamp(s.time / duration, 0.0, 1.0));
+    const Matrix4 projection{2 / width, 0, 0, 0, 0, -2 / height, 0, 0, 0, 0, 1, 0, -1, 1, 0, 1};
+    const auto rectangle = [&](float right, const auto &upper, const auto &lower) {
+        const std::array<FlatVertex, 4> corners{{{0, height - 2, 0, 0, upper},
+                                                 {right, height - 2, 0, 0, upper},
+                                                 {right, height, 0, 0, lower},
+                                                 {0, height, 0, 0, lower}}};
+        renderer.DrawQuads(corners, FlatMaterial{}, projection);
+    };
+    const std::array<std::uint8_t, 4> dark{24, 8, 0, 220};
+    rectangle(width, dark, dark);
+    rectangle(width * progress, s.progressTop, s.progressBottom);
+}
+
+bool IntroSequence::ShowsProgress() const {
+    const auto &s = *m_state;
+    return s.progressBar && s.index < s.entries.size() &&
+           ((s.video && s.video->Duration() > 0) || (s.image && s.entries[s.index].duration > 0));
 }
 
 bool IntroSequence::PlayingVideo() const {
