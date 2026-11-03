@@ -64,14 +64,28 @@ void InitVehicleColor(Vehicle *vehicle) {
 }
 
 void InitPlayerVehicleSlot(Vehicle *vehicle) {
-    PlayerProfile *profile;
+    s32 i;
 
     BindPlayerInputToVehicle(vehicle);
     vehicle->index = vehicle - g_aVehicles;
     if (vehicle->index < SAVED_PROFILES) {
-        profile = &g_aSeasonSaveBuffers[vehicle->index];
-        vehicle->profile = profile;
-        InitPlayerProfileDefaults(profile, g_dwNumTracks);
+        vehicle->profile = &g_aSeasonSaveBuffers[vehicle->index];
+        vehicle->profile->championshipFlags = 0;
+        vehicle->profile->season = 0;
+        vehicle->profile->seasonPoints[0] = 0;
+        vehicle->profile->round = 0;
+        vehicle->profile->unlocks = 0x102;
+        vehicle->profile->unlockedTracks = 4;
+        vehicle->profile->unlockedWeathers = 1;
+        vehicle->profile->transmission = 1;
+        vehicle->profile->handling = 0;
+        vehicle->profile->suspension = 1;
+        vehicle->profile->tires = 2;
+        vehicle->profile->controllerLayout = 0;
+        for (i = 0; i < g_dwNumTracks; i++) {
+            vehicle->profile->lapRecords[i] = 0.0f;
+            vehicle->profile->raceRecords[i] = 0.0f;
+        }
     } else {
         vehicle->profile = NULL;
     }
