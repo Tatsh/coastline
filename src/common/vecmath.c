@@ -477,24 +477,41 @@ f32 Vec2fLength(Vec2f *v) {
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 void Vec3fRotateAroundAxis(Vec3f *v, f32 angle, Vec3f *axis) {
-    f32 s = sinf(angle);
-    f32 c = cosf(angle);
-    f32 t = 1.0f - c;
-    f32 vx = v->x, vy = v->y, vz = v->z;
-    f32 x = axis->x, y = axis->y, z = axis->z;
-    f32 tx = t * x;
-    f32 txy = tx * y;
-    f32 sz = s * z;
-    f32 txz = tx * z;
-    f32 sy = s * y;
-    f32 ty = t * y;
-    f32 tyz = ty * z;
-    f32 sx = s * x;
+    f32 s;
+    f32 c;
+    f32 t;
+    f32 x;
+    f32 y;
+    f32 z;
+    f32 kx;
+    f32 ky;
+    f32 kz;
+    f32 txy;
+    f32 txz;
+    f32 tyz;
+    f32 sx;
+    f32 sy;
+    f32 sz;
 
     /* The rotation matrix about the axis by the formula of Rodrigues. */
-    v->x = (tx * x + c) * vx + (txy + sz) * vy + (txz - sy) * vz;
-    v->y = (txy - sz) * vx + (t * y * y + c) * vy + (tyz + sx) * vz;
-    v->z = (sy + txz) * vx + (tyz - sx) * vy + (t * z * z + c) * vz;
+    s = sinf(angle);
+    c = cosf(angle);
+    t = 1.0f - c;
+    x = v->x;
+    y = v->y;
+    z = v->z;
+    kx = axis->x;
+    ky = axis->y;
+    kz = axis->z;
+    txz = t * kx * kz;
+    txy = t * kx * ky;
+    tyz = t * ky * kz;
+    sx = s * kx;
+    sy = s * ky;
+    sz = s * kz;
+    v->x = (t * kx * kx + c) * x + y * (txy + sz) + z * (txz - sy);
+    v->y = (txy - sz) * x + y * (t * ky * ky + c) + z * (tyz + sx);
+    v->z = (sy + txz) * x + y * (tyz - sx) + z * (t * kz * kz + c);
 }
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 
