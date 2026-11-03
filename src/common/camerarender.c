@@ -83,11 +83,10 @@ f32 g_fFrustumFovAngle;
 #endif
 
 #if TGR_BOSS_RALLY
-#define COPY_PROJECTION_MATRIX()                                                                   \
-    {                                                                                              \
-        g_pProjectionMtx = (f32(*)[4])AllocDisplayListBlock();                                     \
-        CopyMatrix4x4(g_afViewProjMatrix, g_pProjectionMtx);                                       \
-    }
+static inline void CopyProjectionMatrix(void) {
+    g_pProjectionMtx = (f32(*)[4])AllocDisplayListBlock();
+    CopyMatrix4x4(g_afViewProjMatrix, g_pProjectionMtx);
+}
 #endif /* TGR_BOSS_RALLY */
 
 /* The share of the way from the camera to each corner of the far rectangle the frustum keeps. */
@@ -185,7 +184,7 @@ void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width,
                    1.0f);
     guMtxCatF(g_ViewLookAtMtx, g_afPerspectiveMatrix, g_afViewProjMatrix);
 #if TGR_BOSS_RALLY
-    COPY_PROJECTION_MATRIX();
+    CopyProjectionMatrix();
 #else
     g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();
     guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);
@@ -203,7 +202,7 @@ void SetupProjectionMatrix(f32 width, f32 height) {
     guMtxCatF(g_ViewLookAtMtx, g_afScratchMatrix, g_afViewProjMatrix);
     gSPPerspNormalize(gDisplayListPtr++, g_wPerspNorm);
 #if TGR_BOSS_RALLY
-    COPY_PROJECTION_MATRIX();
+    CopyProjectionMatrix();
 #else
     g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();
     guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);
@@ -250,7 +249,7 @@ void SetupMenuProjection(f32 width, f32 height) {
 #endif /* TGR_BOSS_RALLY */
     gSPPerspNormalize(gDisplayListPtr++, g_wPerspNorm);
 #if TGR_BOSS_RALLY
-    COPY_PROJECTION_MATRIX();
+    CopyProjectionMatrix();
 #else
     g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();
     guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);
