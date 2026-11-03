@@ -88,12 +88,6 @@ f32 g_fFrustumFovAngle;
         g_pProjectionMtx = (f32(*)[4])AllocDisplayListBlock();                                     \
         CopyMatrix4x4(g_afViewProjMatrix, g_pProjectionMtx);                                       \
     }
-#else
-#define COPY_PROJECTION_MATRIX()                                                                   \
-    {                                                                                              \
-        g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();                                         \
-        guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);                                            \
-    }
 #endif /* TGR_BOSS_RALLY */
 
 /* The share of the way from the camera to each corner of the far rectangle the frustum keeps. */
@@ -190,7 +184,12 @@ void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width,
                    g_fCameraFarDistance,
                    1.0f);
     guMtxCatF(g_ViewLookAtMtx, g_afPerspectiveMatrix, g_afViewProjMatrix);
+#if TGR_BOSS_RALLY
     COPY_PROJECTION_MATRIX();
+#else
+    g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();
+    guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);
+#endif
 }
 
 /* Look at a point of a flat screen from in front of it, with y up. */
@@ -203,7 +202,12 @@ void SetupProjectionMatrix(f32 width, f32 height) {
         g_afScratchMatrix, &g_wPerspNorm, SCREEN_FOV, ASPECT_4_3, SCREEN_NEAR, SCREEN_FAR, 1.0f);
     guMtxCatF(g_ViewLookAtMtx, g_afScratchMatrix, g_afViewProjMatrix);
     gSPPerspNormalize(gDisplayListPtr++, g_wPerspNorm);
+#if TGR_BOSS_RALLY
     COPY_PROJECTION_MATRIX();
+#else
+    g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();
+    guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);
+#endif
     gSPMatrix(gDisplayListPtr++,
               TO_RSP_ADDRESS(g_pProjectionMtx),
               G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -245,7 +249,12 @@ void SetupMenuProjection(f32 width, f32 height) {
     guMtxCatF(g_ViewLookAtMtx, g_afPerspectiveMatrix, g_afViewProjMatrix);
 #endif /* TGR_BOSS_RALLY */
     gSPPerspNormalize(gDisplayListPtr++, g_wPerspNorm);
+#if TGR_BOSS_RALLY
     COPY_PROJECTION_MATRIX();
+#else
+    g_pProjectionMtx = (Mtx *)AllocDisplayListBlock();
+    guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);
+#endif
     gSPMatrix(gDisplayListPtr++,
               TO_RSP_ADDRESS(g_pProjectionMtx),
               G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
