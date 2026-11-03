@@ -27,6 +27,7 @@ endif()
 # The warnings of every library of the game, and the warning a reconstructed routine with unused
 # parameters turns off.
 if(MSVC)
+  add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
   set(COASTLINE_WARNINGS /W4 /utf-8)
   set(COASTLINE_NO_UNUSED_PARAMETER /wd4100)
 else()

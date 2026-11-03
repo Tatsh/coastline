@@ -9,8 +9,11 @@
 #include <SDL3/SDL.h>
 
 #ifdef _WIN32
-#include <bcrypt.h>
 #include <windows.h>
+#endif
+
+#ifdef _WIN32
+#include <bcrypt.h>
 #elif defined(__APPLE__)
 #include <CommonCrypto/CommonDigest.h>
 #endif
