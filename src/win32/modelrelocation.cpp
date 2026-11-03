@@ -195,7 +195,6 @@ void RelocateModelPointers(Model *model) {
             SwapModelValue(model->parts[i].displayList);
             RelocateModelPointer(model->parts[i].displayList);
             SwapModelValue(model->parts[i].flags);
-            SwapModelValue(model->parts[i].wUnknown6);
             SwapModelValue(model->parts[i].position.x);
             SwapModelValue(model->parts[i].position.y);
             SwapModelValue(model->parts[i].position.z);

@@ -27,10 +27,7 @@ typedef struct {
 #else
     TGR_PTR(Gfx) displayList; /*!< The display list that draws the part, or NULL. */
 #endif
-    u16 flags; /*!< The MODEL_PART_ flags. */
-#if TGR_BOSS_RALLY
-    u16 wUnknown6; /* +0x06 */
-#endif
+    u16 flags;      /*!< The MODEL_PART_ flags. */
     Vec3f position; /*!< Where the part is drawn, relative to the model. */
 } ModelPart;
 

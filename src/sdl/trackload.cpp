@@ -723,7 +723,6 @@ void RelocateModelPointers(Model *model) {
         if (model->parts[i].displayList.Raw() != 0) {
             coastline::SwapAndRelocatePointer(model->parts[i].displayList);
             coastline::SwapValue(model->parts[i].flags);
-            coastline::SwapValue(model->parts[i].wUnknown6);
             coastline::SwapValue(model->parts[i].position.x);
             coastline::SwapValue(model->parts[i].position.y);
             coastline::SwapValue(model->parts[i].position.z);
