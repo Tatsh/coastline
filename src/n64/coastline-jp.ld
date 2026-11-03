@@ -51,6 +51,8 @@ SECTIONS
     }
 }
 
+g_pFirstCreditLineText = g_aCreditScrollLines + 12;
+
 /* The assets the game reads from the cartridge by their segment symbols. */
 _ghostRecordingSegmentRomStart = 0xADB30;
 _creditsRecordingSegmentRomStart = 0xAFEE0;

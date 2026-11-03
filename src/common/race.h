@@ -299,6 +299,17 @@ extern RaceCaption g_aCreditCaptions[];
  */
 extern CreditLine g_aCreditScrollLines[];
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+/**
+ * The first scrolling credit line's text pointer.
+ *
+ * @ghidraAddress USA: 0x802701a0
+ * @ghidraAddress EUR: 0x80272170
+ * @ghidraAddress JPN: 0x80271c20
+ */
+extern const char *g_pFirstCreditLineText;
+#endif
+
 /**
  * Whether leaving the race starts its instant replay.
  *

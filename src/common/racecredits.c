@@ -57,15 +57,16 @@ void ScrollTextUp(void) {
 
 #if TGR_BOSS_RALLY
 void DrawScrollingText(const ViewportRect *viewport) {
+    s32 i;
 #else
 void DrawScrollingText(void) {
-    const ViewportRect *viewport = &g_aViewportRects[0];
+    CreditLine *line;
 #endif
-    s32 i;
 
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
     SetTextStyleNormal();
     SetTextAlignCenter();
+#if TGR_BOSS_RALLY
     SetScissorRect(viewport->x, viewport->y, viewport->width, viewport->height);
     for (i = 0; g_aCreditScrollLines[i].text != NULL; i++) {
         if (g_aCreditScrollLines[i].y >= -0x4F &&
@@ -74,4 +75,20 @@ void DrawScrollingText(void) {
             DrawText(g_aCreditScrollLines[i].text, CREDIT_SCREEN_CENTER, g_aCreditScrollLines[i].y);
         }
     }
+#else
+    SetScissorRect(g_aViewportRects[0].x,
+                   g_aViewportRects[0].y,
+                   g_aViewportRects[0].width,
+                   g_aViewportRects[0].height);
+    if (g_pFirstCreditLineText != NULL) {
+        line = g_aCreditScrollLines;
+        do {
+            if (line->y >= -0x4F && line->y < CREDIT_SCREEN_BOTTOM) {
+                SetTextSize(line->size);
+                DrawText(line->text, CREDIT_SCREEN_CENTER, line->y);
+            }
+            line++;
+        } while (line->text != NULL);
+    }
+#endif
 }
