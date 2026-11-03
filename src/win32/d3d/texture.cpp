@@ -18,7 +18,7 @@
 namespace {
 // @ghidraAddress BRD3D: 0x100a6230
 TexturePixelFormat g_aTexturePixelFormats[TEXTURE_PIXEL_FORMAT_COUNT] = {
-    {2, 0, {}, {}}, {3, 0, {}, {}}, {4, 0, {}, {}}, {0xb, 0, {}, {}}, {0xc, 0, {}, {}}};
+    {2, 0, {}}, {3, 0, {}}, {4, 0, {}}, {0xb, 0, {}}, {0xc, 0, {}}};
 } // namespace
 
 DDPIXELFORMAT *LookupPixelFormatById(int nId) {

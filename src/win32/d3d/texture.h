@@ -23,7 +23,6 @@ extern "C" {
 struct TexturePixelFormat {
     int nId;                     /*!< The identifier the game requests the format by. */
     unsigned short wMaxBitCount; /*!< The most bits a pixel may have during the enumeration. */
-    char abUnknown6[2];          /* +0x06 */
     DDPIXELFORMAT ddpf; /*!< The format of the device, filled when the formats are enumerated. */
 };
 

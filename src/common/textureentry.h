@@ -21,7 +21,6 @@ enum RenderStateDirtyBit {
 struct TextureImageData {
     int nOption1;           /*!< The Glide TMU selector; direct images can select the second TMU. */
     unsigned char nOption2; /*!< The mipmap-level mask, initialised to both odd and even levels. */
-    char abUnknown5[3];     /*!< Unreconstructed bytes following the mipmap-level mask. */
     int nWidth;             /*!< The texture width used during conversion, in texels. */
     int nHeight;            /*!< The texture height used during conversion, in texels. */
     int nPixelFormatId;     /*!< The selected backend pixel-format identifier. */
