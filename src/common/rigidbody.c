@@ -417,14 +417,16 @@ void ApplyAllForcesToBody(RigidBody *body) {
 #endif /* !TGR_BOSS_RALLY */
 
 void InitRigidBody(RigidBody *body) {
+    s32 i, j;
 #if !TGR_BOSS_RALLY
-    f32 boxShare;
-    f32 xx;
+    f32 depth;
+    f32 share;
+    Vec3f squares;
+    Vec3f *takenAddress;
 #else
     long double xx;
-#endif
     f32 yy, zz;
-    s32 i, j;
+#endif
 
     body->unreconstructed0 = 0;
     body->wheels[0] = NULL;
@@ -445,29 +447,39 @@ void InitRigidBody(RigidBody *body) {
         }
     }
 
+#if TGR_BOSS_RALLY
     if (body->kind == RIGID_BODY_BOX || body->kind == RIGID_BODY_BOX_1) {
         zz = body->size.z * body->size.z;
         yy = body->size.y * body->size.y;
-#if TGR_BOSS_RALLY
         /* The libraries scale each sum by the mass before the share. Only the square of x stays
          * on the x87 stack unrounded. */
         xx = BODY_PRODUCT(body->size.x, body->size.x);
         body->inertia[0][0] = (f32)((BODY_INTERMEDIATE(zz) + yy) * body->mass * BOX_INERTIA_SHARE);
         body->inertia[1][1] = (f32)((xx + zz) * body->mass * BOX_INERTIA_SHARE);
         body->inertia[2][2] = (f32)((xx + yy) * body->mass * BOX_INERTIA_SHARE);
-#else
-        boxShare = BOX_INERTIA_SHARE * body->mass;
-        body->inertia[0][0] = (zz + yy) * boxShare;
-        xx = body->size.x * body->size.x;
-        body->inertia[1][1] = (zz + xx) * boxShare;
-        body->inertia[2][2] = (yy + xx) * boxShare;
-#endif
-#if TGR_BOSS_RALLY
         NullStub2(body->inertia);
-#else
-        StubPhysics1(body->inertia);
-#endif
     }
+#else
+    /* The initial value and address-taking preserve the original register and stack layout. */
+    share = body->size.z;
+    switch (body->kind) {
+    case RIGID_BODY_BOX:
+    case RIGID_BODY_BOX_1:
+        depth = body->size.z * body->size.z;
+        squares.z = body->size.y * body->size.y;
+        share = BOX_INERTIA_SHARE;
+        share *= body->mass;
+        body->inertia[0][0] = (depth + squares.z) * share;
+        squares.x = body->size.x;
+        squares.x = squares.x * squares.x;
+        body->inertia[1][1] = (depth + squares.x) * share;
+        body->inertia[2][2] = (squares.z + squares.x) * share;
+        takenAddress = &squares;
+        (void)takenAddress;
+        StubPhysics1(body->inertia);
+        break;
+    }
+#endif
     if (body->kind != RIGID_BODY_NO_ROTATION) {
         body->inverseInertia[0][0] = 1.0f / body->inertia[0][0];
         body->inverseInertia[1][1] = 1.0f / body->inertia[1][1];
