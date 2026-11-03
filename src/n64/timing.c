@@ -41,14 +41,16 @@
 #define SHOWN_FRAME (g_dwTimingFrame ^ 1)
 
 void AddTimingMarker(s32 bar, s32 red, s32 green, s32 blue, s32 alpha) {
-    TimingMarker *marker =
-        &g_aTimingMarkers[g_dwTimingFrame][bar][g_aTimingMarkerCounts[g_dwTimingFrame][bar]];
-    u32 color = ((red << 8) & 0xF800) | ((green << 3) & 0x07C0) | ((blue >> 2) & 0x003E) |
-                ((alpha >> 7) & 0x0001);
+    TimingMarker *marker;
+    u32 color;
 
+    marker = &g_aTimingMarkers[g_dwTimingFrame][bar][g_aTimingMarkerCounts[g_dwTimingFrame][bar]];
+    color = ((red << 8) & 0xF800) | ((green << 3) & 0x07C0) | ((blue >> 2) & 0x003E) |
+            ((alpha >> 7) & 0x0001);
     g_aTimingMarkerCounts[g_dwTimingFrame][bar]++;
-    marker[1].color = (color << 16) | color;
-    marker[0].time = osGetCount() - g_dwTimingFrameStart;
+    color |= color << 16;
+    marker[1].color = color;
+    marker[0].time = osGetCount() - g_dwTimingFrameElapsed;
 }
 
 void DrawTimingBars(void) {

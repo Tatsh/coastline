@@ -56,7 +56,7 @@ extern s32 g_aTimingMarkerCounts[2][TIMING_BARS];
 extern s32 g_dwTimingFrame;
 
 /**
- * The timer count at the start of the frame.
+ * The low word of the timer count at the start of the frame.
  *
  * @ghidraAddress USA: 0x8028bdac
  * @ghidraAddress EUR: 0x8028e50c
@@ -68,7 +68,7 @@ extern u32 g_dwTimingFrameStart;
 
 #if !TGR_BOSS_RALLY
 /**
- * Reset at the start of the frame.
+ * The full timer count at the start of the frame.
  *
  * @ghidraAddress USA: 0x8028bda8
  * @ghidraAddress EUR: 0x8028e508
@@ -76,7 +76,7 @@ extern u32 g_dwTimingFrameStart;
  * @ghidraAddress BRD3D: 0x1067d57c
  * @ghidraAddress BRGlide: 0x105b9724
  */
-extern u32 g_dwTimingFrameElapsed;
+extern u64 g_dwTimingFrameElapsed;
 #endif /* !TGR_BOSS_RALLY */
 
 /**

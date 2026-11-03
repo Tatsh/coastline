@@ -33,8 +33,12 @@ void BeginTimingFrame(void) {
         AddTimingMarker(bar, 0xFF, 0, 0xFF, 0x7F);
     }
     g_dwTimingFrame ^= 1;
+#if TGR_BOSS_RALLY
     g_dwTimingFrameStart = osGetCount();
     g_dwTimingFrameElapsed = 0;
+#else
+    g_dwTimingFrameElapsed = osGetCount();
+#endif
     for (bar = 0; bar < TIMING_BARS; bar++) {
         g_aTimingMarkerCounts[g_dwTimingFrame][bar] = 0;
         g_aTimingMarkers[g_dwTimingFrame][bar][0].time = 0;

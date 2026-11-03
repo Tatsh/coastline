@@ -10,7 +10,8 @@
 TimingMarker g_aTimingMarkers[2][TIMING_BARS][TIMING_MARKERS];
 s32 g_aTimingMarkerCounts[2][TIMING_BARS];
 s32 g_dwTimingFrame, g_dwTimingBarScaleHold;
-u32 g_dwTimingFrameStart, g_dwTimingFrameElapsed, g_dwTimingBarScale;
+u64 g_dwTimingFrameElapsed;
+u32 g_dwTimingBarScale;
 u32 g_dwTimingBarsRenderMode0, g_dwTimingBarsRenderMode1;
 Gfx *gDisplayListPtr;
 s32 g_dwScreenWidth = 320, g_dwScreenHeight = 240, g_dwScreenScaleShift, g_dwFrameBufferIndex;
@@ -29,7 +30,7 @@ int main(void) {
     /* Frame 0 runs: one blue part of 1.5 frames on bar 0, then the frame ends. */
     now = 1000;
     BeginTimingFrame();
-    assert(g_dwTimingFrame == 1 && g_dwTimingFrameStart == 1000);
+    assert(g_dwTimingFrame == 1 && g_dwTimingFrameElapsed == 1000);
     now = 1000 + 1171875;
     AddTimingMarker(0, 0, 0, 0xFF, 0xFF);
     assert(g_aTimingMarkers[1][0][1].color == 0x003F003F);
