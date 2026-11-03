@@ -51,6 +51,10 @@ void EmitTireSpray(Vehicle *vehicle) {
     SprayReal random;
     s32 sheltered, holding, throwing, surface, wheel;
 
+#ifdef ENABLE_PATCHES
+    scale = 0.0f;
+    Vec3fClear(&velocity);
+#endif
     sheltered = FALSE;
     if (vehicle->groundInstanceCount &&
         (g_LoadedTrack.instances[vehicle->groundInstances[0]].flags & TRACK_INSTANCE_SHELTER)) {

@@ -948,6 +948,9 @@ void SumWheelForces(RigidBody *body, RigidBody *wheel) {
     f32 torque[3];
 #endif
 
+#ifdef ENABLE_PATCHES
+    local.x = local.y = local.z = 0.0f;
+#endif
     for (force = wheel->forces; force != NULL; force = force->next) {
 #ifdef ENABLE_PATCHES
         if (force->frame != RIGID_BODY_FORCE_WORLD && force->frame != RIGID_BODY_FORCE_BODY) {

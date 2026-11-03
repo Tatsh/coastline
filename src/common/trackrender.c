@@ -341,6 +341,10 @@ void RenderTrackGeometry(s32 deferred) {
     u32 identity;
     s32 clear, deferredLast, opaqueCount, matrixLoaded, i, index;
 
+#ifdef ENABLE_PATCHES
+    deferredLast = -1;
+    opaqueCount = 0;
+#endif
     clear = !g_dwNightMode && !g_dwRainMode;
     matrixLoaded = FALSE;
     if (!deferred) {
