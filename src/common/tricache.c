@@ -387,6 +387,7 @@ s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
 
 s16 BuildTrackTriangleCache(f32 x, f32 y) {
     TrackTriangle *triangle;
+    TrackSurface *t0, *t1, *t2;
     TrackGridCursor cursor;
 #if TGR_BOSS_RALLY
     long double e1[3], e2[3];
@@ -428,12 +429,12 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
     if (cell != 0) {
         while ((index = NextGridCellTriangle(&cursor)) != 0) {
             /* The original reads the track arrays and the corners afresh for each one. */
-            triangle->vertices[0] =
-                &g_LoadedTrack.vertices[g_LoadedTrack.surfaces[index].vertices[0]];
-            triangle->vertices[1] =
-                &g_LoadedTrack.vertices[g_LoadedTrack.surfaces[index].vertices[1]];
-            triangle->vertices[2] =
-                &g_LoadedTrack.vertices[g_LoadedTrack.surfaces[index].vertices[2]];
+            t0 = &g_LoadedTrack.surfaces[index];
+            triangle->vertices[0] = &g_LoadedTrack.vertices[t0->vertices[0]];
+            t1 = &g_LoadedTrack.surfaces[index];
+            triangle->vertices[1] = &g_LoadedTrack.vertices[t1->vertices[1]];
+            t2 = &g_LoadedTrack.surfaces[index];
+            triangle->vertices[2] = &g_LoadedTrack.vertices[t2->vertices[2]];
             triangle->index = index;
             triangle->surface = g_LoadedTrack.triangleFlags[index] & 7;
 #if TGR_BOSS_RALLY
