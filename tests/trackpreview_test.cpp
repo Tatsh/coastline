@@ -28,6 +28,14 @@ void Word(std::vector<std::uint8_t> &buffer, std::uint32_t value) {
     }
 }
 
+float Float(const std::vector<std::uint8_t> &buffer, std::size_t offset) {
+    std::uint32_t word = 0;
+    for (unsigned shift = 0; shift < 32; shift += 8) {
+        word |= static_cast<std::uint32_t>(buffer[offset + shift / 8]) << shift;
+    }
+    return std::bit_cast<float>(word);
+}
+
 coastline::GltfModel Model(const std::vector<Triangle> &triangles) {
     coastline::GltfModel model;
     for (const auto &triangle : triangles) {
@@ -82,6 +90,18 @@ void Grid() {
           "Exposed terrain edges must extend to the base.");
     Check(preview->json.at("accessors")[0].at("max")[0].get<float>() <= 1600.01f,
           "The miniature must fit the menu stage.");
+    Check(preview->json.at("accessors")[0].at("count").get<std::size_t>() ==
+              stats.at("triangles").get<std::size_t>() * 6,
+          "Every visible triangle must have a projected shadow triangle.");
+    for (std::size_t corner = 0; corner < 3; ++corner) {
+        for (std::size_t axis = 0; axis < 2; ++axis) {
+            Check(Float(preview->buffer, corner * 28 + axis * 4) ==
+                      Float(preview->buffer, (corner + 3) * 28 + axis * 4),
+                  "Shadow vertices must match the visible triangle outline.");
+        }
+        Check(Float(preview->buffer, (corner + 3) * 28 + 8) == 4.0f,
+              "Shadow vertices must rest on the menu stage.");
+    }
     Check(!preview->json.contains("images"),
           "A miniature must not require runtime texture generation.");
     auto repeated = coastline::TrackPreviewToGltf(source, "menu.bin");

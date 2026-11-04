@@ -21,6 +21,10 @@ namespace {
 using Point = std::array<float, 3>;
 using Key = std::array<long long, 3>;
 
+// The menu scales model units by 1/32; raise the miniature 12 stage units above its silhouette.
+constexpr float PREVIEW_LIFT = 384.0f;
+constexpr float SHADOW_HEIGHT = 4.0f;
+
 struct Vertex {
     Point position{};
     std::array<float, 3> color{1, 1, 1};
@@ -415,8 +419,8 @@ std::expected<GltfModel, std::string> TrackPreviewToGltf(const GltfModel &track,
             return std::unexpected("Track-preview simplification removed every triangle.");
         }
         GltfModel result;
-        const auto outputVertices = simplified.size();
-        for (std::size_t i = 0; i < outputVertices; i += 3) {
+        const auto outputVertices = simplified.size() * 2;
+        for (std::size_t i = 0; i < simplified.size(); i += 3) {
             const auto &a = vertices[simplified[i]].position;
             const auto &b = vertices[simplified[i + 1]].position;
             const auto &c = vertices[simplified[i + 2]].position;
@@ -427,7 +431,9 @@ std::expected<GltfModel, std::string> TrackPreviewToGltf(const GltfModel &track,
             }
             for (std::size_t corner = 0; corner < 3; ++corner) {
                 const auto &v = vertices[simplified[i + corner]];
-                for (const auto &values : {v.position, normal}) {
+                Point raised = v.position;
+                raised[2] += PREVIEW_LIFT;
+                for (const auto &values : {raised, normal}) {
                     for (float value : values) {
                         AppendWord(result.buffer, std::bit_cast<std::uint32_t>(value));
                     }
@@ -435,6 +441,19 @@ std::expected<GltfModel, std::string> TrackPreviewToGltf(const GltfModel &track,
                 for (float channel : v.color) {
                     result.buffer.push_back(static_cast<std::uint8_t>(
                         std::lround(std::clamp(channel, 0.0f, 1.0f) * 255)));
+                }
+                result.buffer.push_back(255);
+            }
+            for (std::size_t corner = 0; corner < 3; ++corner) {
+                const auto &v = vertices[simplified[i + corner]];
+                const Point shadow{v.position[0], v.position[1], SHADOW_HEIGHT};
+                for (const auto &values : {shadow, Point{0, 0, 1}}) {
+                    for (float value : values) {
+                        AppendWord(result.buffer, std::bit_cast<std::uint32_t>(value));
+                    }
+                }
+                for (int channel = 0; channel < 3; ++channel) {
+                    result.buffer.push_back(102);
                 }
                 result.buffer.push_back(255);
             }
@@ -470,6 +489,8 @@ std::expected<GltfModel, std::string> TrackPreviewToGltf(const GltfModel &track,
                 high[axis] = std::max(high[axis], vertices[index].position[axis]);
             }
         }
+        low[2] = SHADOW_HEIGHT;
+        high[2] += PREVIEW_LIFT;
         accessors[0]["min"] = low;
         accessors[0]["max"] = high;
         result.json = {
