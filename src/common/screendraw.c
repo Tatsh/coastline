@@ -3,6 +3,7 @@
 #include <PR/gbi.h>
 
 #include "common/analyzer.h"
+#include "common/coordinates.h"
 #include "common/displaylistptr.h"
 #include "common/fade.h"
 #include "common/render.h"
@@ -33,28 +34,15 @@ s32 g_dwViewportMirrored;
 
 #if TGR_BOSS_RALLY
 /* Screen coordinate operations retain the original 32-bit wrap. */
-#define COORD_ADD(a, b) ((s32)((u32)(a) + (u32)(b)))
-#define COORD_SUB(a, b) ((s32)((u32)(a) - (u32)(b)))
 #define COORD_NEGATE(value) ((s32)(0u - (u32)(value)))
 #define COORD_NEGATIVE_DOUBLE(value) ((s32)(0u - (u32)(value) * 2u))
 #define VIEWPORT_BASE_WIDTH g_dwConfigFramebufferWidth
 #define VIEWPORT_BASE_HEIGHT g_dwConfigFramebufferHeight
-#define COORD_DOUBLE(value) ((s32)((u32)(value) * 2u))
-#define COORD_SHIFT(value, shift) ((s32)((u32)(value) << ((u32)(shift) & 31u)))
-#define FILL_COLOR(red, green, blue)                                                               \
-    ((u32)(u16)GPACK_RGBA5551((u32)(red), (u32)(green), (u32)(blue), 1) * 0x10001u)
 #else
-#define COORD_ADD(a, b) ((a) + (b))
-#define COORD_SUB(a, b) ((a) - (b))
 #define COORD_NEGATE(value) (-(value))
 #define COORD_NEGATIVE_DOUBLE(value) ((value) * -2)
 #define VIEWPORT_BASE_WIDTH 320
 #define VIEWPORT_BASE_HEIGHT 240
-#define COORD_DOUBLE(value) ((value) * 2)
-#define COORD_SHIFT(value, shift) ((value) << (shift))
-/* A fill of the frame buffer with a colour of 8-bit components, as two pixels. */
-#define FILL_COLOR(red, green, blue)                                                               \
-    ((u16)GPACK_RGBA5551(red, green, blue, 1) | (u32)(u16)GPACK_RGBA5551(red, green, blue, 1) << 16)
 #endif /* TGR_BOSS_RALLY */
 
 /* A blend of the colour of the frame buffer and the colour drawn, by the alpha of the fog. */
@@ -65,6 +53,44 @@ s32 g_dwViewportMirrored;
 
 /* Half of the range of depths of a viewport. */
 #define VIEWPORT_HALF_DEPTH 0x1FF
+
+void SetScissorRect(s32 x, s32 y, s32 width, s32 height) {
+    if (x < g_dwFadeRectLeft) {
+        width = COORD_ADD(COORD_SUB(width, g_dwFadeRectLeft), x);
+        x = g_dwFadeRectLeft;
+    }
+    if (g_dwFadeRectRight < COORD_ADD(x, width)) {
+        width = COORD_SUB(g_dwFadeRectRight, x);
+    }
+    if (width < 0) {
+        width = 0;
+    }
+    if (y < g_dwFadeRectTop) {
+        height = COORD_ADD(COORD_SUB(height, g_dwFadeRectTop), y);
+        y = g_dwFadeRectTop;
+    }
+    if (g_dwFadeRectBottom < COORD_ADD(y, height)) {
+        height = COORD_SUB(g_dwFadeRectBottom, y);
+    }
+    if (height < 0) {
+        height = 0;
+    }
+    if (g_dwScreenScaleShift) {
+        x = COORD_DOUBLE(x);
+        y = COORD_DOUBLE(y);
+        width = COORD_DOUBLE(width);
+        height = COORD_DOUBLE(height);
+    }
+    gDPPipeSync(gDisplayListPtr++);
+#if TGR_BOSS_RALLY && defined(ENABLE_PATCHES)
+    gDisplayListWords(gDisplayListPtr++, GBI_OP_FULL_SCISSOR << 24, (u32)x);
+    gDisplayListWords(gDisplayListPtr++, (u32)y, (u32)COORD_ADD(x, width));
+    gDisplayListWords(gDisplayListPtr++, (u32)COORD_ADD(y, height), 0);
+#else
+    gDPSetScissor(
+        gDisplayListPtr++, G_SC_NON_INTERLACE, x, y, COORD_ADD(x, width), COORD_ADD(y, height));
+#endif
+}
 
 void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor) {
     g_dwViewportIndex = COORD_ADD(g_dwViewportIndex, 1) & (VIEWPORTS - 1);
@@ -139,124 +165,6 @@ void RestoreCurrentViewport(void) {
     gSPViewport(gDisplayListPtr++, &g_aViewports[g_dwViewportIndex]);
     g_dwViewportScaleZ = g_aViewports[g_dwViewportIndex].vp.vscale[2];
     g_dwViewportTransZ = g_aViewports[g_dwViewportIndex].vp.vtrans[2];
-}
-
-void ClearScreen(s32 red, s32 green, s32 blue) {
-#if !TGR_BOSS_RALLY
-    u16 color;
-    u32 *p;
-#endif
-
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-#if !TGR_BOSS_RALLY
-    p = (u32 *)gDisplayListPtr++;
-    p[0] = 0xba001402;
-    p[1] = G_CYC_FILL;
-#else
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
-#endif
-#if !TGR_BOSS_RALLY
-    color = GPACK_RGBA5551(red, green, blue, 1);
-    gDPSetFillColor(gDisplayListPtr++, color | color << 16);
-#else
-    gDPSetFillColor(gDisplayListPtr++, FILL_COLOR(red, green, blue));
-#endif
-    gDPFillRectangle(gDisplayListPtr++,
-                     0,
-                     0,
-                     COORD_SUB(COORD_SHIFT(g_dwScreenWidth, g_dwScreenScaleShift), 1),
-                     COORD_SUB(COORD_SHIFT(g_dwScreenHeight, g_dwScreenScaleShift), 1));
-    gDPPipeSync(gDisplayListPtr++);
-#if !TGR_BOSS_RALLY
-    {
-        u32 *q = (u32 *)gDisplayListPtr++;
-        q[0] = 0xba001402;
-        q[1] = G_CYC_1CYCLE;
-    }
-#else
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-#endif
-}
-
-void DrawFilledRect(s32 x, s32 y, s32 width, s32 height, s32 red, s32 green, s32 blue) {
-#if !TGR_BOSS_RALLY
-    u16 color;
-    u32 *p;
-#endif
-
-    if (g_dwScreenScaleShift) {
-        x = COORD_DOUBLE(x);
-        y = COORD_DOUBLE(y);
-        width = COORD_DOUBLE(width);
-        height = COORD_DOUBLE(height);
-    }
-#if !TGR_BOSS_RALLY
-    color = GPACK_RGBA5551(red, green, blue, 1);
-#endif
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
-#if !TGR_BOSS_RALLY
-    p = (u32 *)gDisplayListPtr++;
-    p[0] = 0xba001402;
-    p[1] = G_CYC_FILL;
-    gDPSetFillColor(gDisplayListPtr++, color | color << 16);
-#else
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
-    gDPSetFillColor(gDisplayListPtr++, FILL_COLOR(red, green, blue));
-#endif
-    /* The lower right corner is doubled a second time in the high resolution. */
-    gDPFillRectangle(gDisplayListPtr++,
-                     x,
-                     y,
-                     COORD_SUB(COORD_SHIFT(COORD_ADD(x, width), g_dwScreenScaleShift), 1),
-                     COORD_SUB(COORD_SHIFT(COORD_ADD(y, height), g_dwScreenScaleShift), 1));
-    gDPPipeSync(gDisplayListPtr++);
-#if !TGR_BOSS_RALLY
-    p = (u32 *)gDisplayListPtr++;
-    p[0] = 0xba001402;
-    p[1] = G_CYC_1CYCLE;
-#else
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-#endif
-}
-
-void SetScissorRect(s32 x, s32 y, s32 width, s32 height) {
-    if (x < g_dwFadeRectLeft) {
-        width = COORD_ADD(COORD_SUB(width, g_dwFadeRectLeft), x);
-        x = g_dwFadeRectLeft;
-    }
-    if (g_dwFadeRectRight < COORD_ADD(x, width)) {
-        width = COORD_SUB(g_dwFadeRectRight, x);
-    }
-    if (width < 0) {
-        width = 0;
-    }
-    if (y < g_dwFadeRectTop) {
-        height = COORD_ADD(COORD_SUB(height, g_dwFadeRectTop), y);
-        y = g_dwFadeRectTop;
-    }
-    if (g_dwFadeRectBottom < COORD_ADD(y, height)) {
-        height = COORD_SUB(g_dwFadeRectBottom, y);
-    }
-    if (height < 0) {
-        height = 0;
-    }
-    if (g_dwScreenScaleShift) {
-        x = COORD_DOUBLE(x);
-        y = COORD_DOUBLE(y);
-        width = COORD_DOUBLE(width);
-        height = COORD_DOUBLE(height);
-    }
-    gDPPipeSync(gDisplayListPtr++);
-#if TGR_BOSS_RALLY && defined(ENABLE_PATCHES)
-    gDisplayListWords(gDisplayListPtr++, GBI_OP_FULL_SCISSOR << 24, (u32)x);
-    gDisplayListWords(gDisplayListPtr++, (u32)y, (u32)COORD_ADD(x, width));
-    gDisplayListWords(gDisplayListPtr++, (u32)COORD_ADD(y, height), 0);
-#else
-    gDPSetScissor(
-        gDisplayListPtr++, G_SC_NON_INTERLACE, x, y, COORD_ADD(x, width), COORD_ADD(y, height));
-#endif
 }
 
 void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height) {

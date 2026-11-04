@@ -8,9 +8,7 @@ add_library(
   camerachange.c
   camerachase.c
   cameracollision.c
-  camerarender.c
   collisionstep.c
-  controllerread.c
   cubeclip.c
   dashboard.c
   debuginstance.c
@@ -20,7 +18,6 @@ add_library(
   fadeupdate.c
   fog.c
   frameclear.c
-  frameflush.c
   stats.c
   frametime.c
   game.c
@@ -78,7 +75,7 @@ add_library(
   routewalk.c
   savestate.c
   screen.c
-  screendraw.c
+  fill.c
   screenfade.c
   screenrect.c
   seasontrack.c
@@ -93,7 +90,6 @@ add_library(
   textrender.c
   textstyle.c
   texturebind.c
-  texturestream.c
   timingframe.c
   tiresmokespawn.c
   tirespray.c
@@ -141,8 +137,10 @@ else()
             assetnames.c
             buildinfo.c
             clockfields.c
+            camerarender.c
             combine.cpp
             configfile.cpp
+            controllerread.c
             convertedvertex.c
             creditdata.c
             damagetexture.cpp
@@ -159,6 +157,7 @@ else()
             framebuffer.c
             framebegin.c
             framefields.c
+            frameflush.c
             frametimer.cpp
             gameinit.cpp
             ghost.cpp
@@ -183,6 +182,7 @@ else()
             reflectiondata.c
             renderbackend.cpp
             runtimebuffers.c
+            screendraw.c
             season.cpp
             settings.c
             shadowclip.cpp
@@ -196,6 +196,7 @@ else()
             strings.c
             terrain.c
             texturesampling.c
+            texturestream.c
             textureworkspace.c
             timer.c
             trackanimation.cpp

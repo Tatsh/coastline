@@ -5,6 +5,12 @@
 /* clang-format off */
 #include "common/framebegin.c"
 #include "common/emptycallback.c"
+#include "common/screendraw.c"
+#include "n64/framebuffer.c"
+#include "common/texturestream.c"
+#include "common/controllerread.c"
+#include "common/frameflush.c"
+#include "common/camerarender.c"
 #include "common/displaylistops.c"
 /* clang-format on */
 

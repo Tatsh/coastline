@@ -69,6 +69,8 @@ void BeginDisplayList(ViewportRect *views, s32 highRes) {
 void BeginDisplayList(s32 highRes) {
     ViewportRect *views = g_aViewportRects;
 #endif
+    s32 x, width, height;
+
     if (highRes != g_dwScreenScaleShift) {
         g_dwDisplayModeChangeCountdown = 1;
         g_dwScreenScaleShift = highRes;
@@ -84,27 +86,32 @@ void BeginDisplayList(s32 highRes) {
     switch (g_dwNumViewports) {
     case 1:
 #if TGR_BOSS_RALLY
-        views[0].x = 0;
-        views[0].y = 0;
+        x = 0;
+        views[0].x = x;
+        views[0].y = x;
         views[0].width = g_dwConfigFramebufferWidth;
         views[0].height = g_dwConfigFramebufferHeight;
 #else
-        views[0].x = VIEWPORT_MARGIN;
-        views[0].y = VIEWPORT_MARGIN;
+        x = VIEWPORT_MARGIN;
+        views[0].x = x;
+        views[0].y = x;
         views[0].width = g_dwScreenWidth - 2 * VIEWPORT_MARGIN;
         views[0].height = g_dwScreenHeight - 2 * VIEWPORT_MARGIN;
 #endif /* TGR_BOSS_RALLY */
         break;
     case 2:
         /* The two views stop 88 pixels short of the right of the screen. */
-        views[1].x = VIEWPORT_MARGIN;
+        x = VIEWPORT_MARGIN;
+        views[1].x = x;
         views[1].y = (g_dwScreenHeight >> 1) + 1;
-        views[1].width = FRAME_SUB(g_dwScreenWidth, 96);
-        views[1].height = FRAME_SUB(g_dwScreenHeight >> 1, VIEWPORT_MARGIN);
-        views[0].x = VIEWPORT_MARGIN;
-        views[0].y = VIEWPORT_MARGIN;
-        views[0].width = FRAME_SUB(g_dwScreenWidth, 96);
-        views[0].height = FRAME_SUB(g_dwScreenHeight >> 1, VIEWPORT_MARGIN);
+        width = FRAME_SUB(g_dwScreenWidth, 96);
+        height = FRAME_SUB(g_dwScreenHeight >> 1, VIEWPORT_MARGIN);
+        views[1].height = height;
+        views[1].width = width;
+        views[0].x = x;
+        views[0].y = x;
+        views[0].width = width;
+        views[0].height = height;
         break;
     }
     ClearRenderStats();

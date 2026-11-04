@@ -8,7 +8,7 @@ set(_n64_sources
     debugtext.c
     decaldraw.c
     decaleditor.c
-    framebuffer.c
+    depth.c
     effects.c
     frame.c
     hud.c

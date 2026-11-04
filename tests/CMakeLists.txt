@@ -160,9 +160,11 @@ coastline_add_test(
   "${_src}/common/iomessage.c"
   "${_src}/common/screen.c"
   "${_src}/common/screendraw.c"
+  "${_src}/common/fill.c"
   "${_src}/common/texturebind.c"
   "${_src}/common/texturestream.c"
   "${_src}/common/util.c"
+  "${_src}/n64/depth.c"
   "${_src}/n64/framebuffer.c")
 # The test counts the calls the other units make to these through its own versions.
 target_link_options(
