@@ -64,7 +64,15 @@ void ApplyScreenFade(void) {
                   g_dwScreenWidth << g_dwScreenScaleShift,
                   g_dwScreenHeight << g_dwScreenScaleShift);
 #endif /* TGR_BOSS_RALLY */
+#if TGR_BOSS_RALLY
     gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0, 0, 0, 0);
+#else
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xFA00FFFF;
+        command->words.w1 = 0;
+    }
+#endif
 
     if (g_dwFadeRectLeft) {
 #if TGR_BOSS_RALLY
