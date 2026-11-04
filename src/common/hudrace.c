@@ -267,7 +267,7 @@ void DrawLapCounterHud(void) {
         DrawText(text, x, y);
         SetTextSize(PLACE_SUFFIX_TEXT_SIZE_SPLIT);
         DrawText(suffix,
-                 HUD_RACE_ADD(HUD_RACE_ADD(x, 2 * nudge / 3), HUD_RACE_ADD(width, 3)),
+                 HUD_RACE_ADD(HUD_RACE_ADD(x, 3), HUD_RACE_ADD(2 * nudge / 3, width)),
                  HUD_RACE_ADD(y, -10));
     }
     DisableTextShadow();

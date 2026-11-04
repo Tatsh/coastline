@@ -891,7 +891,8 @@ void ComputeDampingForces(RigidBody *body) {
 #endif
             damping = 0.0f;
         } else {
-            damping = velocity.z * body->damping;
+            damping = velocity.z;
+            damping *= body->damping;
         }
         force->vector.z = damping;
         force = force->next;
