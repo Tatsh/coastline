@@ -19,6 +19,32 @@
 
 void SortRacersByPosition(void) {
     RacerProgress entries[RACER_SLOTS];
+#if !TGR_BOSS_RALLY
+    s32 i;
+    s32 count;
+
+    count = 0;
+    for (i = 0; i < g_dwNumVehicles; i++) {
+        if (!(g_aRacerSlots[i].status & RACER_FINISHED)) {
+            entries[count].slot = i;
+            if (g_aRacerSlots[i].vehicle != NULL) {
+                entries[count++].progress = g_aRacerSlots[i].vehicle->distance;
+            } else {
+                entries[count++].progress = g_aRacerSlots[i].distance;
+            }
+        }
+    }
+    if (count != 0) {
+        QuickSort(entries, count, sizeof(RacerProgress), CompareRacerProgressAsc);
+    }
+    for (i = 0; i < count; i++) {
+        if (g_aRacerSlots[entries[i].slot].vehicle != NULL) {
+            g_aRacerSlots[entries[i].slot].vehicle->racePosition = g_dwNumVehicles - i - 1;
+        } else {
+            g_aRacerSlots[entries[i].slot].racePosition = g_dwNumVehicles - i - 1;
+        }
+    }
+#else
     RacerSlot *slot;
     s32 count = 0;
     s32 i;
@@ -57,4 +83,5 @@ void SortRacersByPosition(void) {
             RACER_SLOT_SET(slot, RacePosition, g_dwNumVehicles - i - 1);
         }
     }
+#endif
 }
