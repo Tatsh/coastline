@@ -62,9 +62,8 @@
 #define BOOT_ARGUMENTS_ADDRESS 0xFFB000
 #define BOOT_ARGUMENT_WORDS 16
 
-/* The two words the stacks are filled with, to show how deep they were used. */
-#define STACK_FILL_HI 0x5015A1DB
-#define STACK_FILL_LO 0xFED15C00
+/* The pattern written to each stack to show how deep it was used. */
+#define STACK_FILL_VALUE 0x5015A1DBFED15C00ULL
 
 /* The screen the boot sets up. */
 #define BOOT_SCREEN_WIDTH 320
@@ -374,39 +373,30 @@ void FaultThread(void *arg) {
 }
 
 void BootIdleThread(void *arg) {
-    u32 arguments[BOOT_ARGUMENT_WORDS];
-    s32 i;
     char *p;
-    char c;
+    u32 i;
+    u32 arguments[BOOT_ARGUMENT_WORDS];
 #if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
     u32 *clear;
 #endif
+    u64 *stackFill;
 
     for (i = 0; i < BOOT_ARGUMENT_WORDS; i++) {
         osPiRawReadIo(BOOT_ARGUMENTS_ADDRESS + i * sizeof(u32), &arguments[i]);
     }
 
-    /* The words are read as text, split at the spaces into g_apszBootArgv. */
     p = (char *)arguments;
-    if (*p != '\0') {
-        c = *p;
-        do {
-            while (c != '\0' && c == ' ') {
-                c = p[1];
-                *p++ = '\0';
-            }
-            if (c != '\0') {
-                /* There is no limit on the count. The original reads the count again to raise
-                 * it. */
-                g_apszBootArgv[g_dwBootArgc] = p;
-                g_dwBootArgc++;
-                c = *p;
-            }
-            while (c != '\0' && c != ' ') {
-                c = p[1];
-                p++;
-            }
-        } while (c != '\0');
+    while (*p != '\0') {
+        while (*p != '\0' && *p == ' ') {
+            *p++ = '\0';
+        }
+        if (*p != '\0') {
+            g_apszBootArgv[g_dwBootArgc] = p;
+            g_dwBootArgc++;
+        }
+        while (*p != '\0' && *p != ' ') {
+            p++;
+        }
     }
     g_ppszMainArgv = g_ppszBootArgv;
     g_pdwMainArgc = &g_dwBootArgc;
@@ -452,18 +442,16 @@ void BootIdleThread(void *arg) {
                    FAULT_THREAD_PRIORITY);
     osStartThread(&g_FaultThreadObj);
 
-    /* Fill the stacks with a pattern that shows how deep they were used. */
-    for (i = 0; i < MAIN_STACK_WORDS / 2; i++) {
-        g_adwMainThreadStack[i * 2] = STACK_FILL_HI;
-        g_adwMainThreadStack[i * 2 + 1] = STACK_FILL_LO;
+    for (i = 0, stackFill = (u64 *)g_adwMainThreadStack; i < MAIN_STACK_WORDS / 2;
+         i++, stackFill++) {
+        *stackFill = STACK_FILL_VALUE;
+    }
+    for (i = 0, stackFill = (u64 *)g_adwRspDoneThreadStack; i < THREAD_STACK_WORDS / 2;
+         i++, stackFill++) {
+        *stackFill = STACK_FILL_VALUE;
     }
     for (i = 0; i < THREAD_STACK_WORDS / 2; i++) {
-        g_adwRspDoneThreadStack[i * 2] = STACK_FILL_HI;
-        g_adwRspDoneThreadStack[i * 2 + 1] = STACK_FILL_LO;
-    }
-    for (i = 0; i < THREAD_STACK_WORDS / 2; i++) {
-        g_adwRdpDoneThreadStack[i * 2] = STACK_FILL_HI;
-        g_adwRdpDoneThreadStack[i * 2 + 1] = STACK_FILL_LO;
+        ((u64 *)g_adwRdpDoneThreadStack)[i] = STACK_FILL_VALUE;
     }
     osCreateThread(&g_MainGameThreadObj,
                    MAIN_THREAD_ID,
