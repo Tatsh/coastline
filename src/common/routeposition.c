@@ -8,7 +8,14 @@
 #endif
 
 void ComputeTrackPosition(Vehicle *vehicle) {
+#if !TGR_BOSS_RALLY
+    f32 length;
+#endif
     f32 span;
+#if !TGR_BOSS_RALLY
+    /* The original N64 frame reserves a scalar before its vector locals. */
+    f32 half;
+#endif
     Vec3f fromTangent;
     Vec3f toTangent;
     TrackSection *fromSection;
@@ -22,7 +29,9 @@ void ComputeTrackPosition(Vehicle *vehicle) {
     Vec3f toOffset;
     f32 fromAlong;
     f32 toAlong;
+#if TGR_BOSS_RALLY
     f32 length;
+#endif
     f32 t;
     f32 t2;
     f32 t3;
@@ -31,6 +40,9 @@ void ComputeTrackPosition(Vehicle *vehicle) {
     f32 negativeTwiceCube;
 #endif
 
+#if !TGR_BOSS_RALLY
+    (void)half;
+#endif
     /* Tangent storage first records route direction and vehicle offset for segment selection. */
     span = VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex)].distance -
            VEHICLE_GET(vehicle, Section)->points[VEHICLE_GET(vehicle, PointIndex) + 1].distance;
