@@ -750,6 +750,58 @@ void UpdateWheelHeights(RigidBody *body) {
 }
 
 void ComputeSpringForces(RigidBody *body) {
+#if !TGR_BOSS_RALLY
+    RigidBodyForce *force;
+    s32 i;
+    RigidBody *wheel;
+    s16 previous;
+    f32 depth;
+
+    force = body->forces;
+    for (i = 0; i < VEHICLE_WHEELS; i++) {
+        force->vector.x = force->vector.y = 0.0f;
+        switch (i) {
+        case 0:
+            wheel = body->wheels[0];
+            break;
+        case 1:
+            wheel = body->wheels[1];
+            break;
+        case 2:
+            wheel = body->wheels[2];
+            break;
+        default:
+            wheel = body->wheels[3];
+            break;
+        }
+        /* This read preserves the original contact-counter load order in IDO. */
+        if (wheel->contactFrames) {
+        }
+        previous = wheel->contactFrames;
+        depth = wheel->suspension;
+        if (wheel->contactFrames < 100) {
+            wheel->contactFrames++;
+        }
+        if (depth <= -0.4 + 0.0001) {
+            wheel->contactFrames = 0;
+            depth = -0.3;
+        }
+        if (0.0 < depth) {
+            depth = 0;
+        }
+        depth = depth - -0.3;
+        if (depth < 0.0f) {
+            depth = 0.0f;
+        }
+        depth *= (depth == 0.0f ? 0.0 : (depth > 0 ? 1.0 : -1.0)) * depth;
+        depth *= body->springRate;
+        force->vector.z = depth;
+        force = force->next;
+        if (wheel->contactFrames != 0 && previous == 0) {
+            body->landed = 0x80;
+        }
+    }
+#else
     RigidBodyForce *force = body->forces;
     RigidBody *wheel;
 #if TGR_BOSS_RALLY
@@ -818,6 +870,7 @@ void ComputeSpringForces(RigidBody *body) {
         }
         force = force->next;
     }
+#endif
 }
 
 void ComputeDampingForces(RigidBody *body) {
