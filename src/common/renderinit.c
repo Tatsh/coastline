@@ -33,19 +33,14 @@ u8 g_abRumblePakPresent[MAXCONTROLLERS];
 #define PRE_NMI_THREAD_ID 12
 #define EVENT_THREAD_PRIORITY 60
 
-static BOSS_RALLY_INLINE s32 IsPakController(OSContStatus *status, u8 pattern, s32 i) {
-    return ((pattern >> i) & 1) && !(status->CONT_ERRNO & CONT_NO_RESPONSE_ERROR) &&
-           (status->type & CONT_JOYPORT) && (status->status & CONT_CARD_ON);
-}
-
 void InitRenderingSubsystem(void) {
+    s32 i;
     OSMesgQueue queue;
 #if TGR_PLATFORM == TGR_PLATFORM_N64
     OSMesg message;
 #endif
     u8 pattern;
     s32 result;
-    s32 i;
 
     g_pDisplayListBase = g_aGfxDisplayListPool;
 #if TGR_PLATFORM == TGR_PLATFORM_N64
@@ -96,15 +91,24 @@ void InitRenderingSubsystem(void) {
 #endif
     for (i = 0; i < MAXCONTROLLERS; i++) {
         g_abRumblePakPresent[i] = FALSE;
-        if (!IsPakController(&g_aContStatus[i], pattern, i)) {
-            continue;
-        }
-        /* A pak that is not a Controller Pak may be a Rumble Pak. */
-        result = osPfsInit(&g_SiMesgQueue, &g_aContPfs[i], i);
-        if (result != 0 && (result == PFS_ERR_ID_FATAL || result == PFS_ERR_DEVICE) &&
-            osMotorInit(&g_SiMesgQueue, &g_aContPfs[i], i) == 0) {
-            g_abRumblePakPresent[i] = TRUE;
-            osMotorStop(&g_aContPfs[i]);
+        if (((pattern >> i) & 1) && !(g_aContStatus[i].CONT_ERRNO & CONT_NO_RESPONSE_ERROR) &&
+            (g_aContStatus[i].type & CONT_JOYPORT) && (g_aContStatus[i].status & CONT_CARD_ON)) {
+            /* A pak that is not a Controller Pak may be a Rumble Pak. */
+            result = osPfsInit(&g_SiMesgQueue, &g_aContPfs[i], i);
+            if (result != 0 && (result == PFS_ERR_ID_FATAL || result == PFS_ERR_DEVICE)) {
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && (TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP)
+                if (osMotorInit(&g_SiMesgQueue, &g_aContPfs[i], i) == 0) {
+                    g_abRumblePakPresent[i] = TRUE;
+                    osMotorStop(&g_aContPfs[i]);
+                }
+#else
+                if (osMotorInit(&g_SiMesgQueue, &g_aContPfs[i], i) != 0) {
+                    continue;
+                }
+                g_abRumblePakPresent[i] = TRUE;
+                osMotorStop(&g_aContPfs[i]);
+#endif
+            }
         }
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
