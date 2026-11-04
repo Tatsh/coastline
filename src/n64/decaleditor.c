@@ -918,12 +918,14 @@ void DrawDecalColorPalette(void) {
 #endif
 
 void ProcessBrushStyleMenu(void) {
+    /* The unused area preserves the original stack frame. */
+    char spare[28];
+    s32 buttonY, cancelX;
 #if SHOWS_STYLE_NAMES
     TwoStyleNames names;
 #endif
-    PlayerInputState *input;
-    s32 buttonY, cancelX, textY;
 
+    (void)spare;
 #if SHOWS_STYLE_NAMES
     /* The names are read from a copy on the stack. */
     names = *(TwoStyleNames *)g_apszBrushStyleNames;
@@ -983,17 +985,22 @@ void ProcessBrushStyleMenu(void) {
     DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
     SetTextSize(10);
     SetTextAlignLeft();
-    textY = (buttonY + 0x12) >> 1;
-    DrawText("%wwSELECT", (g_texButtonA.width + 0xDE) >> 1, textY);
-    DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, textY);
+    DrawText("%wwSELECT", (g_texButtonA.width + 0xDE) >> 1, (buttonY + 0x12) >> 1);
+    DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, (buttonY + 0x12) >> 1);
 
     UpdateStickRepeat(PaintShopInput());
-    input = PaintShopInput();
-    if (input->buttons & (INPUT_RIGHT | INPUT_LEFT)) {
-        TransferFlags(input, INPUT_RIGHT | INPUT_LEFT);
+    if (PaintShopInput()->buttons & (INPUT_RIGHT | INPUT_LEFT)) {
+        TransferFlags(PaintShopInput(), INPUT_RIGHT | INPUT_LEFT);
         g_bStyleMenuCursor ^= 1;
     }
-    CloseStyleMenu(&g_texPaintToolBrush);
+    if (PaintShopInput()->buttons & INPUT_A) {
+        TransferFlags(PaintShopInput(), INPUT_A);
+        g_texPaintToolBrush.style = g_bStyleMenuCursor;
+        g_bStyleMenuOpen = FALSE;
+    } else if (PaintShopInput()->buttons & INPUT_B) {
+        TransferFlags(PaintShopInput(), INPUT_B);
+        g_bStyleMenuOpen = FALSE;
+    }
 }
 
 void ProcessTextStyleMenu(void) {
