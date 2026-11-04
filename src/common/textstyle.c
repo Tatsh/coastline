@@ -96,6 +96,90 @@ void DrawText(const char *text, s32 x, s32 y) {
 }
 
 s32 MeasureTextWidth(const char *text, s32 size) {
+#if !TGR_BOSS_RALLY
+    s32 width;
+    s32 cell;
+    s32 padding;
+    s32 *offsets;
+    s32 c;
+    u8 glyph;
+    u8 next;
+    s32 escape;
+#if TGR_REGION == TGR_REGION_JP
+    s32 japanese;
+#endif
+
+    width = 0;
+#if TGR_REGION == TGR_REGION_JP
+    japanese = 0;
+#endif
+    escape = '%';
+    if (g_dwScreenScaleShift != 0) {
+        size <<= 1;
+    }
+    cell = LARGE_FONT_CELL;
+    if (size < SMALL_FONT_MAX_SIZE) {
+        cell = SMALL_FONT_CELL;
+        padding = SMALL_FONT_PADDING;
+        offsets = g_adwSmallFontGlyphOffsets;
+    } else {
+        padding = LARGE_FONT_PADDING;
+        offsets = g_adwLargeFontGlyphOffsets;
+    }
+    while (*text != 0) {
+        c = (u8)*text;
+#if TGR_REGION == TGR_REGION_JP
+        if ((c < '!' || c >= 0x80) && !japanese) {
+#else
+        if (c < '!' || c >= 0x80) {
+#endif
+            width += size * SPACE_ADVANCE / SIZE_UNITS;
+        } else {
+            if (escape == c && (next = text[1])) {
+                if (next == '%') {
+                    text++;
+#if TGR_REGION == TGR_REGION_JP
+                } else if (next == 'j') {
+                    text++;
+                    japanese = 1;
+                    goto next_character;
+                } else if (next == 'e') {
+                    text++;
+                    japanese = 0;
+                    goto next_character;
+#endif
+                } else if (next == 'i' || next == 'n') {
+                    text++;
+                    goto next_character;
+                } else if (text[2] != 0) {
+                    text += 2;
+                    goto next_character;
+                }
+            }
+#if TGR_REGION == TGR_REGION_JP
+            if (japanese) {
+                width += (cell * JAPANESE_ADVANCE / SIZE_UNITS - padding) * size / cell;
+            } else {
+#endif
+                glyph = g_abHudFontCharToGlyph[c - '!'];
+                width += (offsets[glyph + 1] - offsets[glyph] - padding + 1) * size / cell;
+#if TGR_REGION == TGR_REGION_JP
+            }
+#endif
+        }
+    next_character:
+        text++;
+    }
+#if TGR_REGION == TGR_REGION_JP
+    /* Keep cell live to preserve the Japan build's register allocation. */
+    if (cell) {
+    }
+#endif
+    if (g_dwScreenScaleShift != 0) {
+        width >>= 1;
+    }
+    return width;
+#else
     s32 width = 0;
     s32 cell, padding;
     s32 *offsets;
@@ -195,4 +279,5 @@ s32 MeasureTextWidth(const char *text, s32 size) {
         width >>= 1;
     }
     return width;
+#endif /* TGR_BOSS_RALLY */
 }
