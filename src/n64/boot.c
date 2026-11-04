@@ -41,6 +41,8 @@
 #define PAL_LAN1_YSCALE 0x378
 #define BOOT_CLEAR_START 0x800D4000
 #define BOOT_CLEAR_END 0x80200000
+/* The ROM treats the literal destination separately from g_LoadedTrack's symbol. */
+#define TRACK_LOAD_DESTINATION ((void *)0x80025C00)
 
 Model *DecompressModel(void *dst, u32 romOffset) {
     DecompressFromRom(dst, romOffset, NULL);
@@ -51,14 +53,16 @@ Model *DecompressModel(void *dst, u32 romOffset) {
 void LoadTrackGeometryFromRom(s32 track) {
     /* The messages stay where the debug display points until it shows them. */
     char tooBig[LOAD_MESSAGE_SIZE];
-    Vec3f axis;
+    union {
+        Vec3f vector;
+        f32 values[3];
+    } axis;
     s32 unrotated;
     f32 length;
     char tooManyInstances[LOAD_MESSAGE_SIZE + 4];
     char headerMismatch[LOAD_MESSAGE_SIZE];
-    TrackMenuItem *descriptor = &g_aTrackDescriptors[track];
 
-    g_LoadedTrack.size = DmaReadAssetSize(descriptor->trackRom);
+    g_LoadedTrack.size = DmaReadAssetSize(g_aTrackDescriptors[track].trackRom);
     osInvalDCache(&g_LoadedTrack, sizeof(g_LoadedTrack.size));
     if (g_LoadedTrack.size > TRACK_MAX_SIZE) {
         sprintf(tooBig, "Track %d too big (%d vs. %d)", track, g_LoadedTrack.size, TRACK_MAX_SIZE);
@@ -66,17 +70,23 @@ void LoadTrackGeometryFromRom(s32 track) {
     } else {
         osSyncPrintf("Loading track %d (%d / %d)\n", track, g_LoadedTrack.size, TRACK_MAX_SIZE);
     }
-    DecompressFromRom(&g_LoadedTrack, descriptor->trackRom, NULL);
-    osSyncPrintf("hmm = %04x %04x\n", g_awTrackDebugWords[0], g_awTrackDebugWords[4]);
-    osInvalDCache(&g_LoadedTrack, g_LoadedTrack.size);
-    DmaRead(g_abTrackSection1Header, descriptor->sectionARom, TRACK_SECTION_HEADER_SIZE);
-    DecompressFromRom(
-        g_abTrackSection1Data, descriptor->sectionARom + TRACK_SECTION_HEADER_SIZE, NULL);
-    DmaRead(g_abTrackSection2Header, descriptor->sectionBRom, TRACK_SECTION_HEADER_SIZE);
-    DecompressFromRom(
-        g_abTrackSection2Data, descriptor->sectionBRom + TRACK_SECTION_HEADER_SIZE, NULL);
-    g_dwCurrentTrackRomOffset = descriptor->trackRom;
-    g_dwTrackTextureRomOffset = DmaReadWord(descriptor->trackRom) + descriptor->trackRom;
+    DecompressFromRom(TRACK_LOAD_DESTINATION, g_aTrackDescriptors[track].trackRom, NULL);
+    /* The ROM loads these two words from independent absolute addresses. */
+    osSyncPrintf("hmm = %04x %04x\n", *(u16 *)0x80029560, *(u16 *)0x80029568);
+    osInvalDCache(TRACK_LOAD_DESTINATION, g_LoadedTrack.size);
+    DmaRead(
+        g_abTrackSection1Header, g_aTrackDescriptors[track].sectionARom, TRACK_SECTION_HEADER_SIZE);
+    DecompressFromRom(g_abTrackSection1Data,
+                      g_aTrackDescriptors[track].sectionARom + TRACK_SECTION_HEADER_SIZE,
+                      NULL);
+    DmaRead(
+        g_abTrackSection2Header, g_aTrackDescriptors[track].sectionBRom, TRACK_SECTION_HEADER_SIZE);
+    DecompressFromRom(g_abTrackSection2Data,
+                      g_aTrackDescriptors[track].sectionBRom + TRACK_SECTION_HEADER_SIZE,
+                      NULL);
+    g_dwCurrentTrackRomOffset = g_aTrackDescriptors[track].trackRom;
+    g_dwTrackTextureRomOffset =
+        g_aTrackDescriptors[track].trackRom + DmaReadWord(g_aTrackDescriptors[track].trackRom);
     g_dwStreamDmaPrevSegment = -1;
     g_dwStreamedSnowMode = -1;
 
@@ -84,22 +94,21 @@ void LoadTrackGeometryFromRom(s32 track) {
      * of the scale of each. */
     unrotated = 0;
     for (track = 0; track < g_LoadedTrack.instanceCount; track++) {
-        axis.x = 1.0f;
-        axis.y = 0.0f;
-        axis.z = 0.0f;
-        Mtx3x3TransformVec(&axis, &axis, g_LoadedTrack.instances[track].matrix);
-        length = Vec3fLength(&axis);
-        if (length == 0.0f) {
-            continue;
+        axis.values[0] = 1.0f;
+        axis.values[1] = 0.0f;
+        axis.values[2] = 0.0f;
+        Mtx3x3TransformVec(&axis.vector, &axis.vector, g_LoadedTrack.instances[track].matrix);
+        length = Vec3fLength(&axis.vector);
+        if (length != 0) {
+            length = 1.0f / length;
+            if (1.0f == g_LoadedTrack.instances[track].matrix[0][0] * length &&
+                1.0f == g_LoadedTrack.instances[track].matrix[1][1] * length &&
+                1.0f == g_LoadedTrack.instances[track].matrix[2][2] * length) {
+                unrotated++;
+                g_LoadedTrack.instances[track].flags |= TRACK_INSTANCE_UNROTATED;
+            }
+            g_LoadedTrack.instances[track].invScale = length;
         }
-        length = 1.0f / length;
-        if (g_LoadedTrack.instances[track].matrix[0][0] * length == 1.0f &&
-            g_LoadedTrack.instances[track].matrix[1][1] * length == 1.0f &&
-            g_LoadedTrack.instances[track].matrix[2][2] * length == 1.0f) {
-            g_LoadedTrack.instances[track].flags |= TRACK_INSTANCE_UNROTATED;
-            unrotated++;
-        }
-        g_LoadedTrack.instances[track].invScale = length;
     }
     osSyncPrintf("Scalars: %d/%d\n", unrotated, g_LoadedTrack.instanceCount);
     if (g_LoadedTrack.instanceCount > TRACK_MAX_INSTANCES) {

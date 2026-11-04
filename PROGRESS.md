@@ -38,6 +38,10 @@ The programs are `usa.z64`, `eur.z64`, `jpn.z64`, compiled
 by IDO 5.3. A routine counts by the result of the first
 program that has it.
 
+`LoadTrackGeometryFromRom` now matches in all three regions. `FaultThread` differs in the placement
+of its unreachable epilogue because the original compilation unit from `0x8021d070` through
+`0x8021e61f` is split across source files. Its executed instructions are unchanged.
+
 | Measure                                                                           | Count |
 | --------------------------------------------------------------------------------- | ----: |
 | Functions in the programs                                                         |   836 |
