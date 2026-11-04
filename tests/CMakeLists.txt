@@ -155,6 +155,7 @@ coastline_add_test(
   "${_src}/common/fog.c"
   "${_src}/common/framebegin.c"
   "${_src}/common/frameflush.c"
+  "${_src}/common/stats.c"
   "${_src}/common/frametime.c"
   "${_src}/common/iomessage.c"
   "${_src}/common/screen.c"

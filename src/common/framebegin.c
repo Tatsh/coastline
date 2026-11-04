@@ -63,12 +63,6 @@ s32 g_dwStatVerticesDrawn;
 s32 g_dwStatTrianglesDrawn;
 #endif /* TGR_BOSS_RALLY */
 
-void ClearRenderStats(void) {
-    g_dwStatUnused1 = g_dwStatUnused2 = g_dwStatUnused3 = 0;
-    g_dwStatPolygonsDrawn = g_dwStatVehicleTriangles = 0;
-    g_dwStatTrianglesDrawn = g_dwStatVerticesDrawn = g_dwStatUnused0 = 0;
-}
-
 #if TGR_BOSS_RALLY
 void BeginDisplayList(ViewportRect *views, s32 highRes) {
 #else

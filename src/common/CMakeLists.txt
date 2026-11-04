@@ -15,14 +15,13 @@ add_library(
   dashboard.c
   debuginstance.c
   driving.c
-  emptycallback.c
   exhaustspawn.c
   fade.c
   fadeupdate.c
   fog.c
-  framebegin.c
   frameclear.c
   frameflush.c
+  stats.c
   frametime.c
   game.c
   headlight.c
@@ -152,11 +151,13 @@ else()
             displaylistdata.c
             displaylistops.c
             effectdata.c
+            emptycallback.c
             emulatedclock.cpp
             fileio.c
             fontdata.c
             fpshud.c
             framebuffer.c
+            framebegin.c
             framefields.c
             frametimer.cpp
             gameinit.cpp

@@ -1,7 +1,12 @@
 #include "common/audio.h"
-#include "common/displaylistops.c"
 #include "common/system.h"
 #include "common/timing.h"
+
+/* clang-format off */
+#include "common/framebegin.c"
+#include "common/emptycallback.c"
+#include "common/displaylistops.c"
+/* clang-format on */
 
 #define VBLANK_COUNTER_MASK 15
 #define DUMMY_OS_MESG ((OSMesg)g_dwDummyOsMesg)
