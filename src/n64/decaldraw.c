@@ -242,42 +242,51 @@ void FloodFill4Bit(s32 x, s32 y) {
 }
 
 void StampTextOnDecal(s32 x, s32 y) {
-    DecalGlyph **glyphs;
+    /* IDO reserves this slot in the original stack frame. */
+    s32 unused;
+    s32 column;
+    s32 i;
+    s32 entry;
+    s32 kern;
 #ifdef ENABLE_PATCHES
-    /* A first character missing from the font is drawn with the first glyph. */
-    s32 penX, i, entry, glyphIndex = 0, column, firstColumn, lastColumn, texelX, texelY;
+    s32 glyphIndex = 0;
 #else
-    s32 penX, i, entry, glyphIndex, column, firstColumn, lastColumn, texelX, texelY;
+    s32 glyphIndex;
 #endif /* ENABLE_PATCHES */
-    u32 row;
+    s32 row;
+    s32 offset;
+    s32 firstColumn;
+    s32 lastColumn;
+    s32 penX;
+    s32 texelX;
 
     x = ScreenToTexelX(x) + 1;
     y = ScreenToTexelY(y);
     penX = x - (g_bDecalTextWidth >> 1);
-    for (i = 0, glyphs = g_apDecalTextGlyphs; i < g_bDecalTextLength; i++, glyphs++) {
-        /* A character missing from the font reuses the index of the glyph before, unset for the
-         * first, as in the original. */
+    for (i = 0; i < g_bDecalTextLength; i++) {
         for (entry = 0; entry < DECAL_GLYPHS; entry++) {
-            if ((*glyphs)->character == g_aDecalGlyphs[entry].character) {
+            if (g_apDecalTextGlyphs[i]->character == g_aDecalGlyphs[entry].character) {
                 glyphIndex = entry;
                 break;
             }
         }
-        firstColumn = (*glyphs)->cellX + glyphIndex * FONT_CELL;
-        lastColumn = (*glyphs)->width + firstColumn;
+        firstColumn = g_apDecalTextGlyphs[i]->cellX + glyphIndex * FONT_CELL;
+        lastColumn = g_apDecalTextGlyphs[i]->width + firstColumn;
 
-        /* The bounds are checked before the shadow is moved off by one texel. */
-        if (g_texPaintToolText.style) {
+        if (g_texPaintToolText.style != 0) {
             for (row = 0; row < g_texDecalFont.height; row++) {
                 for (column = firstColumn; column <= lastColumn; column++) {
                     texelX = column - firstColumn + penX;
-                    texelY = row + y;
-                    if (texelX < 0 || texelX >= g_bDecalWidth || texelY < 0 ||
-                        texelY >= g_bDecalHeight) {
-                        continue;
-                    }
-                    if (FontTexel(column, row) == FONT_INK) {
-                        SetPixel4Bit(texelX + 1, texelY - 1, g_bTextShadowColor);
+                    if (texelX >= 0 && texelX < g_bDecalWidth && row + y >= 0 &&
+                        row + y < g_bDecalHeight) {
+                        offset = (column >> 1) + row * (g_texDecalFont.width >> 1);
+                        if (column & 1) {
+                            if ((g_texDecalFont.pixels[offset] & 0xF) == FONT_INK) {
+                                SetPixel4Bit(texelX + 1, row + y - 1, g_bTextShadowColor);
+                            }
+                        } else if (g_texDecalFont.pixels[offset] >> 4 == FONT_INK) {
+                            SetPixel4Bit(texelX + 1, row + y - 1, g_bTextShadowColor);
+                        }
                     }
                 }
             }
@@ -285,19 +294,25 @@ void StampTextOnDecal(s32 x, s32 y) {
         for (row = 0; row < g_texDecalFont.height; row++) {
             for (column = firstColumn; column <= lastColumn; column++) {
                 texelX = column - firstColumn + penX;
-                texelY = row + y;
-                if (texelX < 0 || texelX >= g_bDecalWidth || texelY < 0 ||
-                    texelY >= g_bDecalHeight) {
-                    continue;
-                }
-                if (FontTexel(column, row) == FONT_INK) {
-                    SetPixel4Bit(texelX, texelY, g_bDecalColor);
+                if (texelX >= 0 && texelX < g_bDecalWidth && row + y >= 0 &&
+                    row + y < g_bDecalHeight) {
+                    offset = (column >> 1) + row * (g_texDecalFont.width >> 1);
+                    if (column & 1) {
+                        if ((g_texDecalFont.pixels[offset] & 0xF) == FONT_INK) {
+                            SetPixel4Bit(texelX, row + y, g_bDecalColor);
+                        }
+                    } else if (g_texDecalFont.pixels[offset] >> 4 == FONT_INK) {
+                        SetPixel4Bit(texelX, row + y, g_bDecalColor);
+                    }
                 }
             }
         }
 
         if (i < g_bDecalTextLength - 1) {
-            penX += GlyphAdvance(glyphs[0], glyphs[1]);
+            kern = g_apDecalTextGlyphs[i]->kernRight < g_apDecalTextGlyphs[i + 1]->kernLeft ?
+                       g_apDecalTextGlyphs[i]->kernRight :
+                       g_apDecalTextGlyphs[i + 1]->kernLeft;
+            penX += g_apDecalTextGlyphs[i]->width - kern + 2;
         }
     }
 }
