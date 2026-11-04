@@ -9,6 +9,7 @@
 TrackHeader g_LoadedTrack;
 TrackMenuItem g_aTrackDescriptors[2];
 s32 g_dwNumTracks = 2;
+char *g_apszBootArgv[288];
 int main(void) {
     static u16 starts[64 * 64 + 1];
     static u16 triangles[64 * 64 * 2];

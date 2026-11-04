@@ -718,20 +718,6 @@ extern s32 g_dwFaultState;
 extern char *g_apszBootArgv[];
 
 /**
- * @ghidraAddress USA: 0x8028b2ec
- * @ghidraAddress EUR: 0x8028d59c
- * @ghidraAddress JPN: 0x8028cfcc
- */
-extern s32 g_dwBootArgc;
-
-/**
- * @ghidraAddress USA: 0x8028b2f0
- * @ghidraAddress EUR: 0x8028d5a0
- * @ghidraAddress JPN: 0x8028cfd0
- */
-extern char **g_ppszBootArgv;
-
-/**
  * @ghidraAddress USA: 0x8026ff04
  * @ghidraAddress EUR: 0x80271ed4
  * @ghidraAddress JPN: 0x80271984

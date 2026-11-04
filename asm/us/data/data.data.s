@@ -31674,19 +31674,6 @@ dlabel g_aCarModels
     /* 8C2E8 8028B2E8 3FC00000 */ .word 0x3FC00000
 enddlabel g_aCarModels
 
-nonmatching g_dwBootArgc
-
-dlabel g_dwBootArgc
-    /* 8C2EC 8028B2EC 00000001 */ .word 0x00000001
-enddlabel g_dwBootArgc
-
-nonmatching g_ppszBootArgv
-
-.balign 8
-dlabel g_ppszBootArgv
-    /* 8C2F0 8028B2F0 80316450 */ .word g_apszBootArgv
-enddlabel g_ppszBootArgv
-
 nonmatching D_8028B2F4
 
 /* Automatically generated and unreferenced pad */

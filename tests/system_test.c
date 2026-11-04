@@ -6,6 +6,7 @@
 
 #include "system.c"
 
+char *g_apszBootArgv[288];
 OSIoMesg g_aIoMessagePool[32];
 s32 g_dwIoMessagePendingCount, g_dwIoMessagePoolIndex;
 OSMesgQueue g_DmaMessageQueue;

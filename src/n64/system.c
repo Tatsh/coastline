@@ -90,8 +90,6 @@
  * (the bits outside the mask kept) and the vertical scale of the half-height and full-height
  * modes. */
 #define PAL_VSTART_KEEP 0xFC00FC00
-#define PAL_VSTART_FIELD0 0x0039025B
-#define PAL_VSTART_FIELD1 0x003B025D
 #define PAL_HAF1_YSCALE 0x6F0
 #define PAL_LAN1_YSCALE 0x378
 
@@ -370,40 +368,46 @@ void FaultThread(void *arg) {
 }
 
 void BootIdleThread(void *arg) {
+    struct BootArgs {
+        s32 argc;
+        char **argv;
+    };
+    /**
+     * @ghidraAddress USA: 0x8028b2ec
+     * @ghidraAddress EUR: 0x8028d59c
+     * @ghidraAddress JPN: 0x8028cfcc
+     */
+    static struct BootArgs args = {1, g_apszBootArgv};
     char *p;
     u32 i;
     u32 arguments[BOOT_ARGUMENT_WORDS];
 #if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
-    u32 *clear;
+    s32 unused[2];
 #endif
     u64 *stackFill;
-    s32 *argc;
 
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+    (void)unused;
+#endif
     for (i = 0; i < BOOT_ARGUMENT_WORDS; i++) {
         osPiRawReadIo(BOOT_ARGUMENTS_ADDRESS + i * sizeof(u32), &arguments[i]);
     }
 
     p = (char *)arguments;
-    argc = &g_dwBootArgc;
     while (*p != '\0') {
         while (*p != '\0' && *p == ' ') {
             *p++ = '\0';
         }
         if (*p != '\0') {
-#if TGR_REGION == TGR_REGION_JP
-            g_apszBootArgv[g_dwBootArgc] = p;
-            g_dwBootArgc++;
-#else
-            g_apszBootArgv[*argc] = p;
-            (*argc)++;
-#endif
+            g_apszBootArgv[args.argc] = p;
+            args.argc++;
         }
         while (*p != '\0' && *p != ' ') {
             p++;
         }
     }
-    g_ppszMainArgv = g_ppszBootArgv;
-    g_pdwMainArgc = &g_dwBootArgc;
+    g_ppszMainArgv = args.argv;
+    g_pdwMainArgc = &args.argc;
 
     osCreateViManager(OS_PRIORITY_VIMGR);
     g_dwScreenWidth = BOOT_SCREEN_WIDTH;
@@ -412,15 +416,15 @@ void BootIdleThread(void *arg) {
     memcpy(&g_ViModePalHaf1, &osViModePalHaf1, sizeof(OSViMode));
     memcpy(&g_ViModePalLan1, &osViModePalLan1, sizeof(OSViMode));
     g_ViModePalHaf1.fldRegs[0].vStart =
-        (osViModePalHaf1.fldRegs[0].vStart & PAL_VSTART_KEEP) | PAL_VSTART_FIELD0;
+        (osViModePalHaf1.fldRegs[0].vStart & PAL_VSTART_KEEP) | 0x390000 | 0x25B;
     g_ViModePalHaf1.fldRegs[1].vStart =
-        (osViModePalHaf1.fldRegs[1].vStart & PAL_VSTART_KEEP) | PAL_VSTART_FIELD1;
+        (osViModePalHaf1.fldRegs[1].vStart & PAL_VSTART_KEEP) | 0x3B0000 | 0x25D;
     g_ViModePalHaf1.fldRegs[0].yScale = PAL_HAF1_YSCALE;
     g_ViModePalHaf1.fldRegs[1].yScale = PAL_HAF1_YSCALE;
     g_ViModePalLan1.fldRegs[0].vStart =
-        (osViModePalLan1.fldRegs[0].vStart & PAL_VSTART_KEEP) | PAL_VSTART_FIELD0;
+        (osViModePalLan1.fldRegs[0].vStart & PAL_VSTART_KEEP) | 0x390000 | 0x25B;
     g_ViModePalLan1.fldRegs[1].vStart =
-        (osViModePalLan1.fldRegs[1].vStart & PAL_VSTART_KEEP) | PAL_VSTART_FIELD1;
+        (osViModePalLan1.fldRegs[1].vStart & PAL_VSTART_KEEP) | 0x3B0000 | 0x25D;
     g_ViModePalLan1.fldRegs[0].yScale = PAL_LAN1_YSCALE;
     g_ViModePalLan1.fldRegs[1].yScale = PAL_LAN1_YSCALE;
 #endif /* TGR_REGION == TGR_REGION_EU */
@@ -432,8 +436,8 @@ void BootIdleThread(void *arg) {
     osViBlack(TRUE);
 #if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
     g_dwDisplayBlanked = TRUE;
-    for (clear = (u32 *)BOOT_CLEAR_START; clear < (u32 *)BOOT_CLEAR_END; clear++) {
-        *clear = 0;
+    for (i = BOOT_CLEAR_START / 4; i < BOOT_CLEAR_END / 4; i++) {
+        ((u32 *)0)[i] = 0;
     }
 #endif
     osCreatePiManager(OS_PRIORITY_PIMGR, &g_PiMgrCmdQueue, g_aPiMgrCmdMsgBuf, IO_MESSAGES);
@@ -441,7 +445,7 @@ void BootIdleThread(void *arg) {
     osCreateThread(&g_FaultThreadObj,
                    FAULT_THREAD_ID,
                    FaultThread,
-                   g_ppszBootArgv,
+                   args.argv,
                    &g_adwFaultThreadStack[FAULT_STACK_WORDS],
                    FAULT_THREAD_PRIORITY);
     osStartThread(&g_FaultThreadObj);
