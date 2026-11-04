@@ -27,7 +27,7 @@ python3 .wiswa-ci/progress/progress.py
 | Release       | Compiler | Routines | Matching | Registers only | Not matching | Unknown | Share |
 | ------------- | -------- | -------: | -------: | -------------: | -----------: | ------: | ----: |
 | `usa.z64`     | IDO 5.3  |      774 |      669 |              0 |          105 |       0 | 86.4% |
-| `eur.z64`     | IDO 5.3  |      792 |      684 |              0 |          107 |       1 | 86.4% |
+| `eur.z64`     | IDO 5.3  |      792 |      685 |              0 |          107 |       0 | 86.5% |
 | `jpn.z64`     | IDO 5.3  |      795 |      688 |              0 |          107 |       0 | 86.5% |
 | `BRD3D.dll`   | MSVC 6.0 |    1,573 |        0 |              0 |            0 |   1,573 |  0.0% |
 | `BRGlide.dll` | MSVC 6.0 |    1,441 |        0 |              0 |            0 |   1,441 |  0.0% |
