@@ -664,35 +664,18 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
     return 1;
 }
 
-f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
 #if TGR_BOSS_RALLY
+f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
     TrackTriangle *triangle;
     Vec3f down, start, origin, direction;
     Vec3f hit;
     f32 nearest;
     long double distance, facing;
     s32 slot, count, i;
-#else
-    Vec3f start, origin;
-    TrackTriangle *triangle;
-    f32 nearest, facing, distance;
-    s32 slot, i, count;
-    f32 normalDistance;
-    Vec3f direction;
-    char paddingBefore[8];
-    Vec3f down;
-    char paddingAfter[24];
-#endif
 
-#if TGR_BOSS_RALLY
     down.x = 0.0f;
     down.y = 0.0f;
     down.z = -1.0f;
-#else
-    (void)paddingBefore;
-    (void)paddingAfter;
-    down = g_vecNegUnitZ;
-#endif
     nearest = 100.0f;
     start.x = wheel->state.position.x;
     start.y = wheel->state.position.y;
@@ -701,56 +684,29 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
     Mtx3x3MulVec3f(&direction, body->orientation, &down);
     wheel->ground = NULL;
     slot = BuildTrackTriangleCache(origin.x, origin.y);
-#if TGR_BOSS_RALLY
     count = g_awTriCacheTriCount[slot];
     triangle = g_aTriCacheTriangles[slot];
-#else
-    triangle = g_aTriCacheTriangles[slot];
-    count = g_awTriCacheTriCount[slot];
-#endif
     for (i = 0; i < count; i++, triangle++) {
         distance = PlaneDistance(&triangle->normal, triangle->planeOffset, &origin);
         if (!(distance > -2.0) || !(distance < 2.0)) {
             continue;
         }
-#if TGR_BOSS_RALLY
         facing = Vec3fDot(&triangle->normal, &direction);
-#else
-        normalDistance = triangle->normal.x * direction.x + triangle->normal.y * direction.y;
-        facing = normalDistance + triangle->normal.z * direction.z;
-#endif
         if (!((facing < 0.0f ? -facing : facing) > 0.001)) {
             continue;
         }
-#if TGR_BOSS_RALLY
         distance =
             (f32)(-PlaneDistance(&triangle->normal, triangle->planeOffset, &origin) / facing);
         hit.x = FORCE_PRODUCT(direction.x, distance) + origin.x;
         hit.y = FORCE_PRODUCT(direction.y, distance) + origin.y;
         hit.z = FORCE_PRODUCT(direction.z, distance) + origin.z;
-#else
-        normalDistance = triangle->normal.x * origin.x + triangle->normal.y * origin.y +
-                         triangle->normal.z * origin.z;
-        distance = -(triangle->planeOffset + normalDistance) / facing;
-        /* The original stores the scaled direction before adding the origin to it. */
-        start.x = direction.x * distance;
-        start.y = direction.y * distance;
-        start.z = direction.z * distance;
-        start.x = start.x + origin.x;
-        start.y = start.y + origin.y;
-        start.z = start.z + origin.z;
-#endif /* TGR_BOSS_RALLY */
         if (!((f64)distance > -2.0) || !((f64)distance < 2.0) || !(distance < nearest)) {
             continue;
         }
         if (!((f64)triangle->normal.z > 0.2)) {
             continue;
         }
-#if TGR_BOSS_RALLY
         if (!IsPointInTrackTriangle(triangle, &hit)) {
-#else
-        if (!IsPointInTrackTriangle(triangle, &start)) {
-#endif
             continue;
         }
         wheel->ground = triangle;
@@ -763,6 +719,76 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
     }
     return nearest;
 }
+#else
+f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
+    /* Array-shaped vectors preserve the original IDO register allocation. */
+    typedef union {
+        Vec3f vector;
+        f32 values[3];
+    } WheelVector;
+    WheelVector mount;
+    WheelVector world;
+    TrackTriangle *triangle;
+    f32 best;
+    f32 facing;
+    f32 hitDistance;
+    f32 planeDistance;
+    s32 cell;
+    s32 i;
+    s32 count;
+    WheelVector direction;
+    f32 normalDistance;
+    s32 unused;
+    WheelVector down;
+    char pad[16];
+
+    (void)unused;
+    (void)pad;
+    down.vector = g_vecNegUnitZ;
+    best = 100.0f;
+    mount.values[0] = wheel->state.position.x;
+    mount.values[1] = wheel->state.position.y;
+    mount.values[2] = 0.0f;
+    Mtx4x4TransformPoint(&world.vector, body->orientation, &mount.vector);
+    Mtx3x3MulVec3f(&direction.vector, body->orientation, &down.vector);
+    wheel->ground = NULL;
+    cell = BuildTrackTriangleCache(world.values[0], world.values[1]);
+    triangle = g_aTriCacheTriangles[cell];
+    count = g_awTriCacheTriCount[cell];
+    for (i = 0; i < count; i++, triangle++) {
+        planeDistance = PlaneDistance(&triangle->normal, triangle->planeOffset, &world.vector);
+        if (planeDistance > -2.0 && planeDistance < 2.0) {
+            facing = triangle->normal.x * direction.values[0] +
+                     triangle->normal.y * direction.values[1] +
+                     triangle->normal.z * direction.values[2];
+            if ((facing < 0.0f ? -facing : facing) > 0.001) {
+                normalDistance = triangle->normal.x * world.values[0] +
+                                 triangle->normal.y * world.values[1] +
+                                 triangle->normal.z * world.values[2];
+                hitDistance = -(triangle->planeOffset + normalDistance) / facing;
+                mount.values[0] = direction.values[0] * hitDistance;
+                mount.values[1] = direction.values[1] * hitDistance;
+                mount.values[2] = direction.values[2] * hitDistance;
+                mount.values[0] = mount.values[0] + world.values[0];
+                mount.values[1] = mount.values[1] + world.values[1];
+                mount.values[2] = mount.values[2] + world.values[2];
+                if (hitDistance > -2.0 && hitDistance < 2.0 && hitDistance < best &&
+                    triangle->normal.z > 0.2 &&
+                    IsPointInTrackTriangle(triangle, &mount.vector) != 0) {
+                    wheel->ground = triangle;
+                    wheel->surface = triangle->surface;
+                    best = hitDistance;
+                    wheel->groundNormal.x = triangle->normal.x;
+                    wheel->groundNormal.y = triangle->normal.y;
+                    wheel->groundNormal.z = triangle->normal.z;
+                    wheel->groundOffset = triangle->planeOffset;
+                }
+            }
+        }
+    }
+    return best;
+}
+#endif /* TGR_BOSS_RALLY */
 
 /* The original picks the wheel by a switch without a default, and retains the last one otherwise.
  */
