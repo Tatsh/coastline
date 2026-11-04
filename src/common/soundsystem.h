@@ -66,7 +66,6 @@ extern unsigned char g_bSfxVolume;
 /** The settings of the buffer of a channel, as requested or as last applied. */
 struct SoundChannelState {
     int nSample;             /*!< The sample of the channel. */
-    char abUnknown04[4];     /* +0x04 */
     long long llFrequency;   /*!< The frequency, before the scale of the sample. */
     uint32_t dwReserved;     /*!< Cleared with the other settings and never read. */
     uint32_t dwStereoLevels; /*!< The levels of the two sides, as SetSoundBufferStereoLevels(). */
