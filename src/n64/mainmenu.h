@@ -43,27 +43,11 @@ extern Texture g_MainMenuTitleTextureDesc;
 extern s32 g_dwMainMenuEntrySource;
 
 /**
- * The state of the main menu: 0 before it starts, 1 while it runs, and -1 once it is left.
- *
- * @ghidraAddress USA: 0x80272384
- * @ghidraAddress EUR: 0x80274364
- * @ghidraAddress JPN: 0x80273e14
- */
-extern s32 g_dwMainMenuInitState;
-
-/**
  * @ghidraAddress USA: 0x80316380
  * @ghidraAddress EUR: 0x80318060
  * @ghidraAddress JPN: 0x80316c90
  */
 extern s32 g_dwMainMenuItemCount;
-
-/**
- * @ghidraAddress USA: 0x80316384
- * @ghidraAddress EUR: 0x80318064
- * @ghidraAddress JPN: 0x80316c94
- */
-extern s32 g_eMainMenuSelection;
 
 /**
  * Whether the track selection leads to the paint shop.
@@ -73,17 +57,6 @@ extern s32 g_eMainMenuSelection;
  * @ghidraAddress JPN: 0x80273afc
  */
 extern s32 g_dwIsPaintMode;
-
-#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
-/**
- * The presses of the right C button so far with L and R held on the main menu. The third unlocks
- * every car, track, and weather.
- *
- * @ghidraAddress EUR: 0x80274368
- * @ghidraAddress JPN: 0x80273e18
- */
-extern s32 g_dwUnlockAllCheatPressCount;
-#endif /* TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP */
 
 /**
  * Start the next race of the championship for one player.

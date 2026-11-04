@@ -4890,11 +4890,7 @@ dlabel g_dwMainMenuEntrySource
     /* 73380 80272380 00000000 */ .word 0x00000000
 enddlabel g_dwMainMenuEntrySource
 
-nonmatching g_dwMainMenuInitState
-
-dlabel g_dwMainMenuInitState
     /* 73384 80272384 00000000 */ .word 0x00000000
-enddlabel g_dwMainMenuInitState
 
 nonmatching D_80272388
 

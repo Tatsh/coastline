@@ -25,7 +25,7 @@ extern u32 g_dwNumLocalPlayers;
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
- * Signed view of the local-player count used by car selection.
+ * Signed view of the local-player count used by N64 menus.
  *
  * @ghidraAddress USA: 0x8026ff08
  * @ghidraAddress EUR: 0x80271ed8

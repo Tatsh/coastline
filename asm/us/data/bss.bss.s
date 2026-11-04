@@ -656,9 +656,6 @@ nonmatching g_dwMainMenuItemCount, 0x4
 dlabel g_dwMainMenuItemCount
     /* 80316380 */ .space 0x04
 
-nonmatching g_eMainMenuSelection, 0x4
-
-dlabel g_eMainMenuSelection
     /* 80316384 */ .space 0x04
 
 nonmatching D_80316388, 0x8

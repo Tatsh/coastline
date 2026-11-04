@@ -4959,19 +4959,11 @@ dlabel g_dwMainMenuEntrySource
     /* 75360 80274360 00000000 */ .word 0x00000000
 enddlabel g_dwMainMenuEntrySource
 
-nonmatching g_dwMainMenuInitState
-
-dlabel g_dwMainMenuInitState
     /* 75364 80274364 00000000 */ .word 0x00000000
-enddlabel g_dwMainMenuInitState
-
-nonmatching g_dwUnlockAllCheatPressCount
 
 .balign 8
-dlabel g_dwUnlockAllCheatPressCount
     /* 75368 80274368 00000000 */ .word 0x00000000
     /* 7536C 8027436C 00000000 */ .word 0x00000000
-enddlabel g_dwUnlockAllCheatPressCount
 
 nonmatching g_OnePlayerMenuItem
 
