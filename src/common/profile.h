@@ -16,15 +16,6 @@ extern "C" {
 #define SEASONS 6      /*!< The seasons of the championship. */
 #define SEASON_RACES 4 /*!< The most races of a season. */
 
-/** Track records include mirrored versions and the SDL bonus track at engine index 14. */
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#define PROFILE_RECORD_TRACKS 15
-#elif TGR_BOSS_RALLY
-#define PROFILE_RECORD_TRACKS 14
-#else
-#define PROFILE_RECORD_TRACKS 10
-#endif
-
 /**
  * The saved settings and progress of a player. Its fields join this structure as the routines that
  * use them are reconstructed.
@@ -44,13 +35,7 @@ typedef struct {
 #endif
     f32 seasonTimes[SEASONS][SEASON_RACES]; /*!< The time of each race of each season, in
                                                  seconds. */
-    f32 lapRecords[PROFILE_RECORD_TRACKS];  /*!< The best lap on each track, in seconds, or 0 when
-                                                 none was set. */
-#if TGR_BOSS_RALLY
-    u8 abUnknownE8[8]; /* +0xe8 */
-#else
-    u8 unreconstructedB4[0xCC - 0xB4]; /*!< Not read by the routines reconstructed so far. */
-#endif
+    f32 lapRecords[16];   /*!< The 16 best-lap record slots, in seconds, or 0 when unset. */
     u16 unlocks;          /*!< The unlocked cars, a bit for each from bit 0, and further unlocks
                                above them. */
     u16 unlockedTracks;   /*!< The unlocked tracks, a bit for each. */
@@ -64,13 +49,7 @@ typedef struct {
     s32 suspension;       /*!< The suspension option the player chose last, from 0 for the
                                softest springs. */
     s32 controllerLayout; /*!< The button layout the player chose on the controller screen. */
-    f32 raceRecords[PROFILE_RECORD_TRACKS]; /*!< The best race on each track, in seconds, or 0 when
-                                                 none was set. */
-#if TGR_BOSS_RALLY
-    u8 abUnknown144[8]; /* +0x144 */
-#else
-    u8 unreconstructed110[0x128 - 0x110]; /*!< Not read by the routines reconstructed so far. */
-#endif
+    f32 raceRecords[16];  /*!< The 16 best-race record slots, in seconds, or 0 when unset. */
 } PlayerProfile;
 
 /** Initialise profile options and clear records for the available tracks. */
