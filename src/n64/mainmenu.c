@@ -67,6 +67,8 @@ void StartTimeAttack(void) {
 #define UNLOCK_ALL_PRESSES 3
 
 void ProcessMainMenu(void) {
+    s32 *entrySource;
+
     if (g_dwMainMenuInitState <= 0) {
         g_dwMenuInputPlayerMask = -1;
         g_dwScreenPlayerIdx = -1;
@@ -87,12 +89,16 @@ void ProcessMainMenu(void) {
         g_fScreenIdleTimeout = 20.0f;
 
         /* Return to the item of the mode that led back here. */
-        if (g_dwMainMenuEntrySource == ENTRY_FROM_CHAMPIONSHIP) {
+        entrySource = &g_dwMainMenuEntrySource;
+        switch (*entrySource) {
+        case ENTRY_FROM_CHAMPIONSHIP:
             g_eMainMenuSelection = MAIN_MENU_CHAMPIONSHIP;
-        } else if (g_dwMainMenuEntrySource == ENTRY_FROM_TIME_ATTACK) {
+            break;
+        case ENTRY_FROM_TIME_ATTACK:
             g_eMainMenuSelection = MAIN_MENU_TIME_ATTACK;
+            break;
         }
-        g_dwMainMenuEntrySource = 0;
+        *entrySource = 0;
         if (g_dwMainMenuInitState == 0) {
             g_eMainMenuSelection = MAIN_MENU_CHAMPIONSHIP;
         }
