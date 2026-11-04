@@ -161,10 +161,15 @@ select_source:
             if (channel->AMBIENT_VOLUME == 0) {
                 /* A sound starts at half its volume. */
                 channel->AMBIENT_VOLUME =
-                    ((s32)(UpperVolume(volume, upper) + lower * (f32)volume) >> 1) &
+                    ((s32)((f32)((s32)((f32)volume * upper) << 16) + lower * volume) >> 1) &
                     VOLUME_HALVES_MASK;
             } else {
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+                channel->AMBIENT_VOLUME =
+                    (u32)((f32)((s32)((f32)volume * upper) << 16) + lower * volume);
+#else
                 channel->AMBIENT_VOLUME = PackVolume(volume, upper, lower);
+#endif
             }
 #endif /* TGR_BOSS_RALLY */
         }
