@@ -11,18 +11,30 @@
 #endif
 
 s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal) {
-#if !TGR_BOSS_RALLY
     s32 i;
+#if !TGR_BOSS_RALLY
     s32 diagonal[3];
     Vec3f point;
     f32 t;
+#else
+    s32 sign[3];
+    f32 sx, sy, sz, t;
+    long double ratio;
+    Vec3f point;
+#endif
 
     for (i = 0; i < 3; ++i) {
+#if TGR_BOSS_RALLY
+        if (DoesSegmentCrossUnitCube(&triangle[i], &triangle[(i + 1) % 3])) {
+#else
         /* The first-element address preserves IDO's pointer addition order. */
         if (DoesSegmentCrossUnitCube(&triangle[i], &triangle[0] + ((i + 1) % 3))) {
+#endif
             return 1;
         }
     }
+
+#if !TGR_BOSS_RALLY
     for (i = 0; i < 3; i++) {
         diagonal[i] = COMPONENT(normal, i) < 0.0f ? -1 : 1;
     }
@@ -36,17 +48,6 @@ s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal) {
     point.z = t * diagonal[2];
     return CountTriangleWinding(triangle, normal, &point);
 #else
-    s32 sign[3];
-    f32 sx, sy, sz, t;
-    long double ratio;
-    Vec3f point;
-    s32 edge, i;
-
-    for (edge = 0; edge < 3; edge++) {
-        if (DoesSegmentCrossUnitCube(&triangle[edge], &triangle[(edge + 1) % 3])) {
-            return 1;
-        }
-    }
     /* Where the diagonal of the cube nearest the normal meets the plane of the triangle. */
     for (i = 0; i < 3; i++) {
         sign[i] = CUBE_LESS(COMPONENT(normal, i), 0.0f) ? -1 : 1;
