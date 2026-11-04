@@ -574,8 +574,13 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
         if (g_dwCollisionContactType == 1) {
             moved = BounceOffPlane(body, &g_pCollisionTriangle->normal, resist, spin);
         } else {
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+            moved = ApplyCollisionImpulse(
+                body, &g_vCollisionContact.vector, &g_pCollisionTriangle->normal, resist, 0.0f);
+#else
             moved = ApplyCollisionImpulse(
                 body, &g_vCollisionContact, &g_pCollisionTriangle->normal, resist, 0.0f);
+#endif
         }
         if (moved) {
             hit = 1;

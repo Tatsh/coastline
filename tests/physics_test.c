@@ -23,8 +23,8 @@ f32 g_afSurfaceGrip[GRIP_WEATHERS][TRACK_SURFACES],
 Vec3f g_vecUnitX = {1, 0, 0}, g_vecUnitY = {0, 1, 0}, g_vecUnitZ = {0, 0, 1},
       g_vecNegUnitZ = {0, 0, -1};
 Vec3f g_vVehicleObbHalfExtents = {2.5f, 1.0f, 1.0f};
-Vec3f g_vCollisionContact, g_vCollisionPenetration;
-f32 g_fCollisionContactW;
+CollisionContactVector g_vCollisionContact;
+Vec3f g_vCollisionPenetration;
 u32 g_dwCurrentWeather;
 s32 g_dwGameMode;
 TrackHeader g_LoadedTrack;

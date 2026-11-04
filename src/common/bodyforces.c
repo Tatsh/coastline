@@ -60,6 +60,16 @@ void SelectVehiclePhysicsTables(s32 model) {
 #define CONTACT_ABS(a) ((a) < 0.0f ? -(a) : (a))
 #define COMPONENT(v, axis) ((&(v)->x)[axis])
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+#define CONTACT_X g_vCollisionContact.axis[0]
+#define CONTACT_Y g_vCollisionContact.axis[1]
+#define CONTACT_Z g_vCollisionContact.axis[2]
+#else
+#define CONTACT_X g_vCollisionContact.x
+#define CONTACT_Y g_vCollisionContact.y
+#define CONTACT_Z g_vCollisionContact.z
+#endif
+
 #define WHEEL_WEIGHT_SHARE (9.81f * 0.3f)
 #define MAX_SPIN_RATE 300.0f
 #define ABS(x) ((x) < 0.0f ? -(x) : (x))
@@ -294,8 +304,9 @@ void ComputeCollisionPenetration(
 #if TGR_BOSS_RALLY
         distance = Vec3fDot(normal, contact) - offset;
 #else
-        distance =
-            contact->z * normal->z + (normal->x * contact->x + normal->y * contact->y) - offset;
+        distance = (normal->x * COMPONENT(contact, 0) + normal->y * COMPONENT(contact, 1) +
+                    normal->z * COMPONENT(contact, 2)) -
+                   offset;
         g_vCollisionPenetration.x = normal->x * -distance;
         g_vCollisionPenetration.y = normal->y * -distance;
         g_vCollisionPenetration.z = normal->z * -distance;
@@ -320,43 +331,42 @@ void ComputeCollisionPenetration(
         }
         if (CONTACT_LESS(CONTACT_ABS(middle[0]), CONTACT_ABS(middle[1]))) {
             if (CONTACT_LESS(CONTACT_ABS(middle[0]), CONTACT_ABS(middle[2]))) {
-                g_vCollisionContact.y = g_vCollisionContact.z = 0.0f;
-                if (CONTACT_LESS(middle[0], 0.0f)) {
+                CONTACT_Y = CONTACT_Z = 0.0f;
+                if (CONTACT_LESS(middle[0], 0)) {
                     sign = -1;
                 } else {
                     sign = 1;
                 }
-                g_vCollisionContact.x = sign * 0.5f;
+                CONTACT_X = sign * 0.5f;
             } else {
                 goto third_axis;
             }
         } else if (CONTACT_LESS(CONTACT_ABS(middle[1]), CONTACT_ABS(middle[2]))) {
-            g_vCollisionContact.x = g_vCollisionContact.z = 0.0f;
-            if (CONTACT_LESS(middle[0], 0.0f)) {
+            CONTACT_X = CONTACT_Z = 0.0f;
+            if (CONTACT_LESS(middle[0], 0)) {
                 sign = -1;
             } else {
                 sign = 1;
             }
-            g_vCollisionContact.y = sign * 0.5f;
+            CONTACT_Y = sign * 0.5f;
         } else {
         third_axis:
-            g_vCollisionContact.x = g_vCollisionContact.y = 0.0f;
-            if (CONTACT_LESS(middle[0], 0.0f)) {
+            CONTACT_X = CONTACT_Y = 0.0f;
+            if (CONTACT_LESS(middle[0], 0)) {
                 sign = -1;
             } else {
                 sign = 1;
             }
-            g_vCollisionContact.z = sign * 0.5f;
+            CONTACT_Z = sign * 0.5f;
         }
 #if TGR_BOSS_RALLY
         distance = Vec3fDot(normal, &g_vCollisionContact) - offset;
 #else
-        distance = g_vCollisionContact.z * normal->z +
-                   (normal->x * g_vCollisionContact.x + normal->y * g_vCollisionContact.y) - offset;
+        distance = (normal->x * CONTACT_X + normal->y * CONTACT_Y + normal->z * CONTACT_Z) - offset;
 #endif
         /* The original scales x by the length and the width, and the word after the contact. */
-        g_vCollisionContact.x = g_vCollisionContact.x * body->boxSize.x;
-        g_vCollisionContact.x = g_vCollisionContact.x * body->boxSize.y;
+        CONTACT_X = CONTACT_X * body->boxSize.x;
+        CONTACT_X = CONTACT_X * body->boxSize.y;
         g_fCollisionContactW = g_fCollisionContactW * body->boxSize.z;
 #if !TGR_BOSS_RALLY
         g_vCollisionPenetration.x = normal->x * -distance;

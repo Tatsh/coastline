@@ -232,6 +232,20 @@ extern Vec3f g_vecNegUnitZ;
  */
 extern Vec3f g_vVehicleObbHalfExtents;
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+/** A contact plane with a vector view and its original four-component array view. */
+typedef union CollisionContactVector {
+    Vec3f vector; /*!< The three-dimensional contact point. */
+    struct {
+        f32 x; /*!< The horizontal component. */
+        f32 y; /*!< The vertical component. */
+        f32 z; /*!< The depth component. */
+        f32 w; /*!< The fourth component. */
+    };
+    f32 axis[4]; /*!< The contact plane as a four-component array. */
+} CollisionContactVector;
+#endif
+
 /**
  * Where the last collision with the track touched the body, in its frame.
  *
@@ -241,9 +255,12 @@ extern Vec3f g_vVehicleObbHalfExtents;
  * @ghidraAddress BRD3D: 0x11755490
  * @ghidraAddress BRGlide: 0x117787f0
  */
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+extern CollisionContactVector g_vCollisionContact;
+#else
 extern Vec3f g_vCollisionContact;
+#endif
 
-#if !TGR_BOSS_RALLY
 /**
  * The word after g_vCollisionContact, which ComputeCollisionPenetration() scales.
  *
@@ -251,6 +268,9 @@ extern Vec3f g_vCollisionContact;
  * @ghidraAddress EUR: 0x80380fb4
  * @ghidraAddress JPN: 0x8037fc24
  */
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+#define g_fCollisionContactW (g_vCollisionContact.axis[3])
+#elif !TGR_BOSS_RALLY
 extern f32 g_fCollisionContactW;
 #endif /* !TGR_BOSS_RALLY */
 
