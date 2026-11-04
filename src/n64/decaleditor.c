@@ -876,40 +876,6 @@ void DrawDecalColorPalette(void) {
                     HIGHLIGHT_BLUE);
 }
 
-/* Move the cursor of a menu of four styles with left and right, around the ends. */
-#define MoveStyleMenuCursor(input)                                                                 \
-    input = PaintShopInput();                                                                      \
-    if (input->buttons & INPUT_LEFT) {                                                             \
-        TransferFlags(input, INPUT_LEFT);                                                          \
-        if (g_bStyleMenuCursor == 0) {                                                             \
-            g_bStyleMenuCursor = 3;                                                                \
-        } else {                                                                                   \
-            g_bStyleMenuCursor--;                                                                  \
-        }                                                                                          \
-    } else if (input->buttons & INPUT_RIGHT) {                                                     \
-        TransferFlags(input, INPUT_RIGHT);                                                         \
-        if (g_bStyleMenuCursor == 3) {                                                             \
-            g_bStyleMenuCursor = 0;                                                                \
-        } else {                                                                                   \
-            g_bStyleMenuCursor++;                                                                  \
-        }                                                                                          \
-    }
-
-/* A sets the style of a tool to the cursor of its menu, and A or B closes the menu. */
-#define CloseStyleMenu(tool)                                                                       \
-    {                                                                                              \
-        PlayerInputState *input = PaintShopInput();                                                \
-                                                                                                   \
-        if (input->buttons & INPUT_A) {                                                            \
-            TransferFlags(input, INPUT_A);                                                         \
-            (tool)->style = g_bStyleMenuCursor;                                                    \
-            g_bStyleMenuOpen = FALSE;                                                              \
-        } else if (input->buttons & INPUT_B) {                                                     \
-            TransferFlags(input, INPUT_B);                                                         \
-            g_bStyleMenuOpen = FALSE;                                                              \
-        }                                                                                          \
-    }
-
 /* The Japanese style menus show no name of the chosen style. */
 #if TGR_REGION == TGR_REGION_JP
 #define SHOWS_STYLE_NAMES 0
@@ -1309,12 +1275,14 @@ void ProcessRectStyleMenu(void) {
 }
 
 void ProcessOvalStyleMenu(void) {
+    char spare[24];
+    s32 x, i, buttonY, cancelX;
 #if SHOWS_STYLE_NAMES
     FourStyleNames names;
 #endif
-    PlayerInputState *input;
-    Sprite *icon;
-    s32 buttonY, cancelX, textY, i, x;
+
+    (void)spare;
+    (void)x;
 
 #if SHOWS_STYLE_NAMES
     /* The names are read from a copy on the stack. */
@@ -1329,32 +1297,31 @@ void ProcessOvalStyleMenu(void) {
     DrawText("%rySELECT STYLE", 0xA0, 0x5B);
     if (g_bPaintToolStarted) {
         g_bStyleMenuCursor = g_texPaintToolOval.style;
-        for (i = 0, x = 0xC8; x < 0x158; i++, x += 0x48) {
-            g_apOvalStyleIcons[i]->originX = x;
+        for (i = 0; i * 72 + 200 < 344; i++) {
+            g_apOvalStyleIcons[i]->originX = i * 72 + 200;
             g_apOvalStyleIcons[i]->originY = 0xCB;
         }
         /* The circles follow the ellipses, each placed from the second ellipse whatever its
          * column. */
         for (i = 0; i < 2; i++) {
             g_apOvalStyleIcons[i + 2]->originX =
-                g_apOvalStyleIcons[i]->drawWidth + g_apOvalStyleIcons[1]->originX + i * 0x34;
+                g_apOvalStyleIcons[1]->originX + g_apOvalStyleIcons[i]->drawWidth + i * 0x34;
             g_apOvalStyleIcons[i + 2]->originY = 0xCB;
         }
         g_bPaintToolStarted = FALSE;
     }
     for (i = 0; i < 4; i++) {
-        icon = g_apOvalStyleIcons[i];
         if (i == g_bStyleMenuCursor) {
-            DrawSpriteRegion(icon,
-                             icon->originX,
-                             icon->originY,
-                             icon->drawWidth,
-                             icon->drawHeight,
+            DrawSpriteRegion(g_apOvalStyleIcons[i],
+                             g_apOvalStyleIcons[i]->originX,
+                             g_apOvalStyleIcons[i]->originY,
+                             g_apOvalStyleIcons[i]->drawWidth,
+                             g_apOvalStyleIcons[i]->drawHeight,
                              HIGHLIGHT_RED,
                              HIGHLIGHT_GREEN,
                              HIGHLIGHT_BLUE);
         } else {
-            DrawSpriteAtOrigin(WITH_PALETTE(icon, NULL));
+            DrawSpriteAtOrigin(WITH_PALETTE(g_apOvalStyleIcons[i], NULL));
         }
     }
 #if SHOWS_STYLE_NAMES
@@ -1367,15 +1334,35 @@ void ProcessOvalStyleMenu(void) {
 #endif
     SetTextSize(10);
     SetTextAlignLeft();
-    textY = (buttonY + 0x12) >> 1;
-    DrawText("%wwSELECT", (g_texButtonA.width + 0xDC) >> 1, textY);
-    DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, textY);
+    DrawText("%wwSELECT", (g_texButtonA.width + 0xDC) >> 1, (buttonY + 0x12) >> 1);
+    DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, (buttonY + 0x12) >> 1);
     DrawTexturedSprite(&g_texButtonA, 0xD6, buttonY);
     DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
 
     UpdateStickRepeat(PaintShopInput());
-    MoveStyleMenuCursor(input);
-    CloseStyleMenu(&g_texPaintToolOval);
+    if (PaintShopInput()->buttons & INPUT_LEFT) {
+        TransferFlags(PaintShopInput(), INPUT_LEFT);
+        if (g_bStyleMenuCursor == 0) {
+            g_bStyleMenuCursor = 3;
+        } else {
+            g_bStyleMenuCursor--;
+        }
+    } else if (PaintShopInput()->buttons & INPUT_RIGHT) {
+        TransferFlags(PaintShopInput(), INPUT_RIGHT);
+        if (g_bStyleMenuCursor == 3) {
+            g_bStyleMenuCursor = 0;
+        } else {
+            g_bStyleMenuCursor++;
+        }
+    }
+    if (PaintShopInput()->buttons & INPUT_A) {
+        TransferFlags(PaintShopInput(), INPUT_A);
+        g_texPaintToolOval.style = g_bStyleMenuCursor;
+        g_bStyleMenuOpen = FALSE;
+    } else if (PaintShopInput()->buttons & INPUT_B) {
+        TransferFlags(PaintShopInput(), INPUT_B);
+        g_bStyleMenuOpen = FALSE;
+    }
 }
 
 void ProcessPaintShopExitConfirm(void) {
