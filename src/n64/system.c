@@ -377,7 +377,6 @@ void BootIdleThread(void *arg) {
     u32 *clear;
 #endif
     u64 *stackFill;
-    char **argv;
     s32 *argc;
 
     for (i = 0; i < BOOT_ARGUMENT_WORDS; i++) {
@@ -385,7 +384,6 @@ void BootIdleThread(void *arg) {
     }
 
     p = (char *)arguments;
-    argv = g_apszBootArgv;
     argc = &g_dwBootArgc;
     while (*p != '\0') {
         while (*p != '\0' && *p == ' ') {
@@ -396,7 +394,7 @@ void BootIdleThread(void *arg) {
             g_apszBootArgv[g_dwBootArgc] = p;
             g_dwBootArgc++;
 #else
-            argv[*argc] = p;
+            g_apszBootArgv[*argc] = p;
             (*argc)++;
 #endif
         }
