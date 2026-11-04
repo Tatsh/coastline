@@ -141,7 +141,7 @@ void DrawRaceTimerHud(void) {
                           VEHICLE_GET(g_pActiveCameraVehicle, BestLapTime),
                           HUD_RACE_RIGHT,
                           HUD_RACE_ADD(y, below));
-        } else if (g_dwNumLocalPlayers == 1) {
+        } else if ((s32)g_dwNumLocalPlayers == 1) {
             DrawLabelWithTime("%15TIME LEFT",
                               "%ww",
                               VEHICLE_GET(g_pActiveCameraVehicle, TimeLeft),
