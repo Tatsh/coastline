@@ -716,8 +716,8 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
 #if TGR_BOSS_RALLY
         facing = Vec3fDot(&triangle->normal, &direction);
 #else
-        facing = triangle->normal.x * direction.x + triangle->normal.y * direction.y +
-                 triangle->normal.z * direction.z;
+        normalDistance = triangle->normal.x * direction.x + triangle->normal.y * direction.y;
+        facing = normalDistance + triangle->normal.z * direction.z;
 #endif
         if (!((facing < 0.0f ? -facing : facing) > 0.001)) {
             continue;
