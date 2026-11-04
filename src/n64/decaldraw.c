@@ -808,7 +808,9 @@ void DrawDecalCircleOutline(s32 x, s32 y, s32 radius) {
 }
 
 void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1) {
-    s32 diffX, diffY, dx, dy, stepX, stepY, startX, endX, startY, endY, x, y, error, phase;
+    s32 dx, dy, error, phase, x, y, startX, endX, startY, endY, stepX, stepY;
+    /* The unused local preserves the original frame layout. */
+    s32 unused;
     u8 color;
 
     phase = 0;
@@ -816,10 +818,8 @@ void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1) {
     startY = y0;
     endX = x1;
     endY = y1;
-    diffX = x1 - x0;
-    dx = diffX > 0 ? diffX : -diffX;
-    diffY = y1 - y0;
-    dy = diffY > 0 ? diffY : -diffY;
+    dx = x1 - x0 > 0 ? x1 - x0 : -(x1 - x0);
+    dy = y1 - y0 > 0 ? y1 - y0 : -(y1 - y0);
     AdvanceDashes();
     if ((dx >= dy && x1 < x0) || (dx < dy && y1 < y0)) {
         startX = x1;
@@ -830,13 +830,12 @@ void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1) {
     stepY = endY - startY < 0 ? -1 : 1;
     stepX = endX - startX < 0 ? -1 : 1;
 
-    /* The original sets the start here and again for the first loop. */
-    x = startX;
-
     /* Only the odd pixels along the line are drawn. */
-    error = 0;
     if (dx >= dy) {
-        for (x = startX, y = startY; x <= endX; x++) {
+        x = startX;
+        y = startY;
+        error = 0;
+        for (; x <= endX; x++) {
             if (error >= dx) {
                 error -= dx;
                 y += stepY;
@@ -849,7 +848,10 @@ void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1) {
             error += dy;
         }
     } else {
-        for (y = startY; y <= endY; y++) {
+        x = startX;
+        y = startY;
+        error = 0;
+        for (; y <= endY; y++) {
             if (error >= dy) {
                 error -= dy;
                 x += stepX;
@@ -862,11 +864,17 @@ void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1) {
             error += dx;
         }
     }
+    (void)unused;
 }
 
 void DrawDashedRectangle(s32 x0, s32 y0, s32 x1, s32 y1) {
-    s32 phase, x, y, swap;
+    s32 x;
+    u8 phase;
+    s32 y;
+    /* The unused bytes place the colour at its original stack offset. */
+    u8 unusedA, unusedB;
     u8 color;
+    s32 swap;
 
     phase = 0;
     AdvanceDashes();
@@ -886,28 +894,36 @@ void DrawDashedRectangle(s32 x0, s32 y0, s32 x1, s32 y1) {
         y0 = y1;
         y1 = swap;
     }
+    swap = y1 - 4;
     for (x = x0; x < x1 - 4; x += 4) {
-        phase = (phase + 1) & 1;
+        phase++;
+        phase &= 1;
         color = AlternateDashColor(phase);
         DrawFilledRectHiRes(x, y0, 4, 1, color, color, color);
     }
     for (y = y0; y < y1 - 4; y += 4) {
-        phase = (phase + 1) & 1;
+        phase++;
+        phase &= 1;
         color = AlternateDashColor(phase);
         DrawFilledRectHiRes(x1, y, 1, 4, color, color, color);
     }
-    DrawFilledRectHiRes(x1, y1 - 1, 1, 2, color, color, color);
+    swap = y1 - 1;
+    DrawFilledRectHiRes(x1, swap, 1, 2, color, color, color);
     for (x = x0; x < x1 - 4; x += 4) {
-        phase = (phase + 1) & 1;
+        phase++;
+        phase &= 1;
         color = AlternateDashColor(phase);
         DrawFilledRectHiRes(x, y1, 4, 1, color, color, color);
     }
     for (y = y0; y < y1 - 4; y += 4) {
-        phase = (phase + 1) & 1;
+        phase++;
+        phase &= 1;
         color = AlternateDashColor(phase);
         DrawFilledRectHiRes(x0, y, 1, 4, color, color, color);
     }
-    DrawFilledRectHiRes(x0, y1 - 1, 1, 2, color, color, color);
+    DrawFilledRectHiRes(x0, swap, 1, 2, color, color, color);
+    (void)unusedA;
+    (void)unusedB;
 }
 
 void DrawDashedRoundedRect(s32 x0, s32 y0, s32 x1, s32 y1) {
