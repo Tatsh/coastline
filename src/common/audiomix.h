@@ -21,7 +21,14 @@ extern "C" {
  * point position.
  */
 typedef struct {
-    s8 *sample;   /*!< The next sample, signed 8-bit, and the whole part of the position. */
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    union {
+        s8 *sample;                  /*!< The next signed 8-bit sample. */
+        unsigned long sampleAddress; /*!< The whole part of the 32.32 position. */
+    };
+#else
+    s8 *sample; /*!< The next sample, signed 8-bit, and the whole part of the position. */
+#endif
     u32 fraction; /*!< The fraction of the position past sample, the low half of the 32.32 value. */
     u64 step;     /*!< The 32.32 step added to the position before each sample, or 0 when silent. */
     s32 mixVolume; /*!< The volume the mixer multiplies each sample by. */

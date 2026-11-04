@@ -467,8 +467,8 @@ void UpdateMusicPlayback(void) {
 /* The SDL game starts and drives the mixers from its audio stream in src/sdl/music.cpp. */
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
 void InitAudioSystem(void *module, void *work) {
+    s32 i, j;
     u32 elapsed;
-    s32 frequency, i;
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
     g_nSoundEffectSampleMaskUpper = -65538;
@@ -476,8 +476,7 @@ void InitAudioSystem(void *module, void *work) {
 #else
     g_qwSoundEffectSampleMask = SOUND_EFFECT_SAMPLE_MASK;
 #endif
-    frequency = osAiSetFrequency(AUDIO_FREQUENCY);
-    osSyncPrintf("Real Frequency is = %d\n", frequency);
+    osSyncPrintf("Real Frequency is = %d\n", osAiSetFrequency(AUDIO_FREQUENCY));
     osCreateMesgQueue(&g_AudioMsgQueue, g_aAudioMsgBuf, 2);
     osSetTimer(&g_AudioTimer,
                AUDIO_TIMER_USEC * osClockRate / 1000000,
@@ -485,14 +484,22 @@ void InitAudioSystem(void *module, void *work) {
                &g_AudioMsgQueue,
                NULL);
     for (i = 0; i < g_nAudioChannelCount; i++) {
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+        g_aMixerChannels[i].sampleAddress = (unsigned long)g_AudioDmaBuffer;
+#else
         g_aMixerChannels[i].sample = (s8 *)g_AudioDmaBuffer;
+#endif
         g_aMixerChannels[i].step = 0;
         g_aMixerChannels[i].volume = MUSIC_CHANNEL_VOLUME;
     }
-    for (i = 0; i < SOUND_EFFECT_CHANNELS; i++) {
-        g_aSoundEffectChannels[i].sample = g_SilenceSampleData;
-        g_aSoundEffectChannels[i].step = 0;
-        g_aSoundEffectChannels[i].volume = SOUND_LEVELS_START;
+    for (j = 0; j < SOUND_EFFECT_CHANNELS; j++) {
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+        g_aSoundEffectChannels[j].sampleAddress = (unsigned long)g_SilenceSampleData;
+#else
+        g_aSoundEffectChannels[j].sample = g_SilenceSampleData;
+#endif
+        g_aSoundEffectChannels[j].step = 0;
+        g_aSoundEffectChannels[j].volume = SOUND_LEVELS_START;
     }
     g_wAudioBufferWritePos = 0;
 
