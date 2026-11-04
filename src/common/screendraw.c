@@ -202,11 +202,38 @@ void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height) {
 }
 
 void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height) {
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    /* The original local fixes IDO's stack slot layout. */
+    Gfx *g;
+#endif
     gDPPipeSync(gDisplayListPtr++);
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xb900031d;
+        command->words.w1 = 0x0f0a4000;
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xba001402;
+        command->words.w1 = 0x300000;
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf7000000;
+        command->words.w1 = 0x10001;
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf8000000;
+        command->words.w1 = 0xff;
+    }
+#else
     gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
     gDPSetFillColor(gDisplayListPtr++, FILL_COLOR(0, 0, 0));
     gDPSetFogColor(gDisplayListPtr++, 0, 0, 0, 0xFF);
+#endif
     gDPFillRectangle(
         gDisplayListPtr++, COORD_SUB(x, 1), COORD_SUB(y, 2), COORD_ADD(x, width), COORD_SUB(y, 1));
     gDPFillRectangle(gDisplayListPtr++,
@@ -214,17 +241,44 @@ void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height) {
                      COORD_ADD(y, height),
                      COORD_ADD(x, width),
                      COORD_ADD(COORD_ADD(y, height), 1));
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 =
+            (_SHIFTL(G_FILLRECT, 24, 8) | _SHIFTL(x - 1, 14, 10) | _SHIFTL(y + height, 2, 10));
+        command->words.w1 = (_SHIFTL(x - 2, 14, 10) | _SHIFTL(y - 1, 2, 10));
+    }
+#else
     gDPFillRectangle(
         gDisplayListPtr++, COORD_SUB(x, 2), COORD_SUB(y, 1), COORD_SUB(x, 1), COORD_ADD(y, height));
+#endif
     gDPFillRectangle(gDisplayListPtr++,
                      COORD_ADD(x, width),
                      COORD_SUB(y, 1),
                      COORD_ADD(COORD_ADD(x, width), 1),
                      COORD_ADD(y, height));
     gDPPipeSync(gDisplayListPtr++);
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xb900031d;
+        command->words.w1 = 0x55004240;
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xba001402;
+        command->words.w1 = 0;
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf8000000;
+        command->words.w1 = 0xff;
+    }
+#else
     gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_FOG_BLEND_C1, RENDER_MODE_FOG_BLEND_C2);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
     gDPSetFogColor(gDisplayListPtr++, 0, 0, 0, 0xFF);
+#endif
     gDPFillRectangle(gDisplayListPtr++, x, y, COORD_ADD(x, width), COORD_ADD(y, 1));
     gDPFillRectangle(gDisplayListPtr++,
                      x,
@@ -237,6 +291,32 @@ void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height) {
                      y,
                      COORD_ADD(x, width),
                      COORD_ADD(y, height));
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 =
+            (_SHIFTL(G_FILLRECT, 24, 8) | _SHIFTL(x + width + 3, 14, 10) | _SHIFTL(y - 2, 2, 10));
+        command->words.w1 = (_SHIFTL(x - 3, 14, 10) | _SHIFTL(y - 3, 2, 10));
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = (_SHIFTL(G_FILLRECT, 24, 8) | _SHIFTL(x + width + 3, 14, 10) |
+                             _SHIFTL(y + height + 3, 2, 10));
+        command->words.w1 = (_SHIFTL(x - 3, 14, 10) | _SHIFTL(y + height + 2, 2, 10));
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 =
+            (_SHIFTL(G_FILLRECT, 24, 8) | _SHIFTL(x - 2, 14, 10) | _SHIFTL(y + height + 3, 2, 10));
+        command->words.w1 = (_SHIFTL(x - 3, 14, 10) | _SHIFTL(y - 3, 2, 10));
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = (_SHIFTL(G_FILLRECT, 24, 8) | _SHIFTL(x + width + 3, 14, 10) |
+                             _SHIFTL(y + height + 3, 2, 10));
+        command->words.w1 = (_SHIFTL(x + width + 2, 14, 10) | _SHIFTL(y - 3, 2, 10));
+    }
+#else
     gDPFillRectangle(gDisplayListPtr++,
                      COORD_SUB(x, 3),
                      COORD_SUB(y, 3),
@@ -257,4 +337,5 @@ void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height) {
                      COORD_SUB(y, 3),
                      COORD_ADD(COORD_ADD(x, width), 3),
                      COORD_ADD(COORD_ADD(y, height), 3));
+#endif
 }
