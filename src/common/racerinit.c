@@ -29,6 +29,16 @@
     if ((weather) >= ARCADE_WEATHERS || (weather) < 0) {                                           \
         weather = 0;                                                                               \
     }
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && TGR_REGION == TGR_REGION_JP
+#define COPY_VECTOR3(destination, origin)                                                          \
+    {                                                                                              \
+        f32 *dst = (f32 *)(destination);                                                           \
+        f32 *src = (f32 *)(origin);                                                                \
+        dst[0] = src[0];                                                                           \
+        dst[1] = src[1];                                                                           \
+        dst[2] = src[2];                                                                           \
+    }
+#endif
 
 void InitRacerSlot(RacerSlot *slot) {
     s32 count;
@@ -81,9 +91,13 @@ void InitRacerSlot(RacerSlot *slot) {
             RACER_SLOT_SET(slot, Distance, (f32)(RACER_SLOT_GET(slot, Index) * RACER_SPACING));
         }
         FindTrackRoutePoint(g_LoadedTrack.rootSection, RACER_SLOT_GET(slot, Distance));
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && TGR_REGION == TGR_REGION_JP
+        COPY_VECTOR3(&RACER_SLOT_GET(slot, Position), &g_vTrackRoutePoint);
+#else
         RACER_SLOT_GET(slot, Position).x = g_vTrackRoutePoint.x;
         RACER_SLOT_GET(slot, Position).y = g_vTrackRoutePoint.y;
         RACER_SLOT_GET(slot, Position).z = g_vTrackRoutePoint.z;
+#endif
         RACER_SLOT_SET(slot, Section, g_pTrackRouteSection);
         RACER_SLOT_SET(slot, PointIndex, g_dwTrackRoutePointIndex);
         RACER_SLOT_SET(slot, MaxGate, RACER_SLOT_SET(slot, Gate, g_dwTrackRouteGates));
@@ -98,9 +112,13 @@ void InitRacerSlot(RacerSlot *slot) {
                      slot->gate,
                      (double)slot->distance);
 #endif /* TGR_BOSS_RALLY */
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && TGR_REGION == TGR_REGION_JP
+        COPY_VECTOR3(&RACER_SLOT_GET(slot, PreviousPosition), &RACER_SLOT_GET(slot, Position));
+#else
         RACER_SLOT_GET(slot, PreviousPosition).x = RACER_SLOT_GET(slot, Position).x;
         RACER_SLOT_GET(slot, PreviousPosition).y = RACER_SLOT_GET(slot, Position).y;
         RACER_SLOT_GET(slot, PreviousPosition).z = RACER_SLOT_GET(slot, Position).z;
+#endif
         RACER_SLOT_SET(slot, LapTime, 0.0f);
         RACER_SLOT_SET(slot, TotalTime, 0.0f);
         RACER_SLOT_SET(slot, BestLapTime, 0.0f);
