@@ -216,6 +216,57 @@ s32 g_bTrackCollisionFrameToggle;
 #endif
 
 s32 CollectTrianglesInBox(RigidBody *body, f32 box[4][4]) {
+#if !TGR_BOSS_RALLY
+    f32 vertices[9], normal[3], edge1[3], edge2[3];
+    TrackTriangle *triangle;
+    s32 slot, count, i, found;
+
+    found = 0;
+    slot = BuildTrackTriangleCache(body->orientation[3][0], body->orientation[3][1]);
+    count = g_awTriCacheTriCount[slot];
+    if (g_bTrackCollisionFrameToggle) {
+        triangle = &g_aTriCacheTriangles[slot][count - 1];
+        for (i = count - 1; i >= 0; i--, triangle--) {
+            Mtx4x4TransformPoint((Vec3f *)&vertices[0], box, triangle->vertices[0]);
+            Mtx4x4TransformPoint((Vec3f *)&vertices[3], box, triangle->vertices[1]);
+            Mtx4x4TransformPoint((Vec3f *)&vertices[6], box, triangle->vertices[2]);
+            edge1[0] = vertices[3] - vertices[0];
+            edge1[1] = vertices[4] - vertices[1];
+            edge1[2] = vertices[5] - vertices[2];
+            edge2[0] = vertices[6] - vertices[0];
+            edge2[1] = vertices[7] - vertices[1];
+            edge2[2] = vertices[8] - vertices[2];
+            normal[0] = edge1[1] * edge2[2] - edge1[2] * edge2[1];
+            normal[1] = edge1[2] * edge2[0] - edge1[0] * edge2[2];
+            normal[2] = edge1[0] * edge2[1] - edge1[1] * edge2[0];
+            if (IsTriangleInUnitCube((Vec3f *)vertices, (Vec3f *)normal)) {
+                PushCollisionTriangle(triangle);
+                found++;
+            }
+        }
+    } else {
+        triangle = g_aTriCacheTriangles[slot];
+        for (i = 0; i < count; i++, triangle++) {
+            Mtx4x4TransformPoint((Vec3f *)&vertices[0], box, triangle->vertices[0]);
+            Mtx4x4TransformPoint((Vec3f *)&vertices[3], box, triangle->vertices[1]);
+            Mtx4x4TransformPoint((Vec3f *)&vertices[6], box, triangle->vertices[2]);
+            edge1[0] = vertices[3] - vertices[0];
+            edge1[1] = vertices[4] - vertices[1];
+            edge1[2] = vertices[5] - vertices[2];
+            edge2[0] = vertices[6] - vertices[0];
+            edge2[1] = vertices[7] - vertices[1];
+            edge2[2] = vertices[8] - vertices[2];
+            normal[0] = edge1[1] * edge2[2] - edge1[2] * edge2[1];
+            normal[1] = edge1[2] * edge2[0] - edge1[0] * edge2[2];
+            normal[2] = edge1[0] * edge2[1] - edge1[1] * edge2[0];
+            if (IsTriangleInUnitCube((Vec3f *)vertices, (Vec3f *)normal)) {
+                PushCollisionTriangle(triangle);
+                found++;
+            }
+        }
+    }
+    return found;
+#else
     TrackTriangle *triangles;
     Vec3f corners[3], normal;
     s32 slot, count, i;
@@ -242,6 +293,7 @@ s32 CollectTrianglesInBox(RigidBody *body, f32 box[4][4]) {
         }
     }
     return found;
+#endif
 }
 
 #if TGR_BOSS_RALLY && defined(ENABLE_PATCHES)
