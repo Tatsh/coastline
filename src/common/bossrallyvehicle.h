@@ -176,12 +176,10 @@ private:
     s32 wrongWayFrames;
     u8 gridX;
     u8 gridY;
-    u8 abUnknown29be[2]; /* +0x29be */
     PlayerInputState *input;
     VehicleModel *model;
     s16 dents[VEHICLE_DENT_SIDES];
     s16 dentJitter;
-    u8 abUnknown29da[2]; /* +0x29da */
     s32 shadowCornerValid[4];
     u8 abUnknown29ec[4]; /* +0x29ec */
     ConvertedModelVertex shadowQuad[4];
