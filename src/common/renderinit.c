@@ -110,6 +110,13 @@ void InitRenderingSubsystem(void) {
 #endif
             }
         }
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && (TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP)
+        /* The original empty report checks change IDO's saved-register allocation. */
+        if (g_abRumblePakPresent[i]) {
+        }
+        if (!g_abRumblePakPresent[i]) {
+        }
+#endif
     }
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     g_hRenderMutex = CreateMutexA(NULL, FALSE, NULL);
