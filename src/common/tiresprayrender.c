@@ -160,20 +160,19 @@ void DrawTireSpray(void) {
                                      0);
             for (first = 0; first < (SPRAY_SEGMENTS - 2) * SPRAY_SEGMENT_VERTICES;
                  first += SPRAY_SEGMENT_VERTICES, velocities++) {
-                if (velocities[0][1][0] == 0 && velocities[0][1][1] == 0 &&
-                    velocities[0][1][2] == 0 && velocities[1][1][0] == 0 &&
-                    velocities[1][1][1] == 0 && velocities[1][1][2] == 0) {
-                    continue;
+                if (velocities[0][1][0] != 0 || velocities[0][1][1] != 0 ||
+                    velocities[0][1][2] != 0 || velocities[1][1][0] != 0 ||
+                    velocities[1][1][1] != 0 || velocities[1][1][2] != 0) {
+                    gSP2Triangles(gDisplayListPtr++,
+                                  first,
+                                  first + SPRAY_SEGMENT_VERTICES,
+                                  first + 1,
+                                  0,
+                                  first + 1,
+                                  first + SPRAY_SEGMENT_VERTICES,
+                                  first + SPRAY_SEGMENT_VERTICES + 1,
+                                  0);
                 }
-                gSP2Triangles(gDisplayListPtr++,
-                              first,
-                              first + SPRAY_SEGMENT_VERTICES,
-                              first + 1,
-                              0,
-                              first + 1,
-                              first + SPRAY_SEGMENT_VERTICES,
-                              first + SPRAY_SEGMENT_VERTICES + 1,
-                              0);
             }
         }
         gSPPopMatrix(gDisplayListPtr++, G_MTX_MODELVIEW);
