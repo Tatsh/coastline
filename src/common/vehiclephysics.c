@@ -47,8 +47,13 @@
 #define INPUT_FLY_LEVEL 0x10
 
 /* The share of the drive the rear wheels take with rear-wheel drive, and the front ones. */
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+#define REAR_DRIVE_SHARE 2
+#define FRONT_DRIVE_SHARE 0
+#else
 #define REAR_DRIVE_SHARE 2.0f
 #define FRONT_DRIVE_SHARE 0.0f
+#endif
 
 /* The drive of a front wheel below which the brakes act on the front wheels as well. */
 #define FRONT_BRAKE_DRIVE_LIMIT 1.0e-4f
@@ -110,11 +115,27 @@ inline void Vehicle::ApplyWheelSideGrip(RigidBody *body, f32 dt) {
 #endif /* TGR_BOSS_RALLY */
 
 void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+#define wheels (VEHICLE_GET(vehicle, Body).wheels)
+#else
     RigidBody **wheels = VEHICLE_GET(vehicle, Body).wheels;
+#endif
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    /* Preserve the original stack layout for IDO. */
+    s32 unusedBefore[4];
+#endif
     Vec3f step;
     Vec3f *velocity;
     f32 drive;
     s32 i;
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    Vec3f *side;
+    Vec3f *up;
+#endif
+
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    (void)unusedBefore;
+#endif
 
     if (VEHICLE_GET(vehicle, FlyMode)) {
         /* Fly along the vehicle and turn with the controls. */
@@ -132,8 +153,16 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
                            VEHICLE_GET(vehicle, Frame).position.x,
                            VEHICLE_GET(vehicle, Frame).position.y,
                            VEHICLE_GET(vehicle, Frame).position.z);
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+        SetVehicleVelocity(vehicle, 0, 0, 0);
+#else
         SetVehicleVelocity(vehicle, 0.0f, 0.0f, 0.0f);
+#endif
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+        SetVehicleTurnRate(vehicle, 0, 0, 0);
+#else
         SetVehicleTurnRate(vehicle, 0.0f, 0.0f, 0.0f);
+#endif
         VEHICLE_SET(vehicle, EngineRpm, 0.0f);
 #if TGR_BOSS_RALLY
         RotateVehicleByEuler(vehicle,
@@ -151,6 +180,15 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
             vehicle->rollInput * FLY_TURN_RATE * FLY_TURN_SCALE * g_fFrameDeltaTime);
 #endif /* TGR_BOSS_RALLY */
         if (VEHICLE_GET(vehicle, Input)->buttons & INPUT_FLY_LEVEL) {
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+            up = &VEHICLE_GET(vehicle, Frame).up;
+            side = &VEHICLE_GET(vehicle, Frame).side;
+            up->x = 0.0f;
+            up->y = 0.0f;
+            up->z = 1.0f;
+            Vec3fCross(side, up, &VEHICLE_GET(vehicle, Frame).forward);
+            Vec3fCross(up, &VEHICLE_GET(vehicle, Frame).forward, side);
+#else
             VEHICLE_GET(vehicle, Frame).up.x = 0.0f;
             VEHICLE_GET(vehicle, Frame).up.y = 0.0f;
             VEHICLE_GET(vehicle, Frame).up.z = 1.0f;
@@ -160,14 +198,30 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
             Vec3fCross(&VEHICLE_GET(vehicle, Frame).up,
                        &VEHICLE_GET(vehicle, Frame).forward,
                        &VEHICLE_GET(vehicle, Frame).side);
+#endif
             TransferFlags(VEHICLE_GET(vehicle, Input), INPUT_FLY_LEVEL);
         }
     } else {
         /* Put the vehicle on the ground, then drive and brake its wheels and step its physics. */
         VEHICLE_SET(vehicle, GroundHits, CAST_GROUND_RAY(vehicle));
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+        wheels[0]->steerAngle = wheels[1]->steerAngle = 0.0f;
+#else
         wheels[1]->steerAngle = 0.0f;
         wheels[0]->steerAngle = wheels[1]->steerAngle;
+#endif
         UpdateVehicleEngineAndGearbox(vehicle);
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+        wheels[2]->steerAngle = wheels[3]->steerAngle = VEHICLE_GET(vehicle, SteerAngle);
+        wheels[0]->drive = 0.0f;
+        wheels[1]->drive = 0.0f;
+        wheels[2]->drive = 0.0f;
+        wheels[3]->drive = 0.0f;
+        wheels[0]->brake = 0.0f;
+        wheels[1]->brake = 0.0f;
+        wheels[2]->brake = 0.0f;
+        wheels[3]->brake = 0.0f;
+#else
         wheels[3]->steerAngle = VEHICLE_GET(vehicle, SteerAngle);
         wheels[2]->steerAngle = VEHICLE_GET(vehicle, SteerAngle);
         for (i = 0; i < VEHICLE_WHEELS; i++) {
@@ -176,6 +230,7 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
         for (i = 0; i < VEHICLE_WHEELS; i++) {
             wheels[i]->brake = 0.0f;
         }
+#endif
         if (0.0f < VEHICLE_GET(vehicle, Throttle)) {
 #if TGR_BOSS_RALLY
             if (VEHICLE_GET(vehicle, Input)->buttons & INPUT_REVERSE_TOGGLE) {
@@ -270,6 +325,9 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
         }
     }
 }
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+#undef wheels
+#endif
 
 void UpdateVehicleWheelTransforms(Vehicle *vehicle) {
     s32 i;
