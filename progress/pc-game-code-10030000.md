@@ -1,6 +1,6 @@
 # PC port game code from 0x10030000 to 0x10040000
 
-0 of 299 routines match the original under MSVC 6.0.
+0 of 299 routines match the original under MSVC 5.0.
 
 Sorted by match (not matching first), then length, then reference count, then name.
 Signatures are the current Ghidra prototypes and are preliminary.

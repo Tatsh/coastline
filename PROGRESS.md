@@ -3,7 +3,7 @@
 Matching status of Top Gear Rally. A routine matches when the compiler of the original
 compiles its source to the words of the original, with the fields that relocations fill
 masked. The compiler is IDO 5.3 for the three Nintendo 64 releases (the game at `-O2`,
-libultra at `-O1`, `-O2`, or `-O3`) and MSVC 6.0 for the two PC libraries. Assembly
+libultra at `-O1`, `-O2`, or `-O3`) and MSVC 5.0 for the two PC libraries. Assembly
 sources are assembled and compared the same way. A routine whose words differ only in the
 numbers of registers is listed apart (🟡). It does not match, and
 its source still differs from the original. A routine the scan does not reach is unknown
@@ -15,7 +15,7 @@ cartridge). The N64 SDK (libultra) and the IPL3 boot code are counted.
 
 Run the matching scan under `.wiswa-ci/tools` for each release (`--region us`, `eu`, and
 `jp`), then regenerate the report with the Ghidra project open and the HTTP bridge running.
-The scan of the PC libraries with MSVC 6.0 does not exist yet, and their routines are
+The scan of the PC libraries with MSVC 5.0 does not exist yet, and their routines are
 unknown until it writes `matching-brd3d.json` and `matching-brglide.json`.
 
 ```shell
@@ -29,8 +29,8 @@ python3 .wiswa-ci/progress/progress.py
 | `usa.z64`     | IDO 5.3  |      774 |      679 |              0 |           95 |       0 | 87.7% |
 | `eur.z64`     | IDO 5.3  |      792 |      695 |              0 |           97 |       0 | 87.8% |
 | `jpn.z64`     | IDO 5.3  |      795 |      699 |              0 |           96 |       0 | 87.9% |
-| `BRD3D.dll`   | MSVC 6.0 |    1,573 |        0 |              0 |            0 |   1,573 |  0.0% |
-| `BRGlide.dll` | MSVC 6.0 |    1,441 |        0 |              0 |            0 |   1,441 |  0.0% |
+| `BRD3D.dll`   | MSVC 5.0 |    1,573 |        0 |              0 |            0 |   1,573 |  0.0% |
+| `BRGlide.dll` | MSVC 5.0 |    1,441 |        0 |              0 |            0 |   1,441 |  0.0% |
 
 ## Nintendo 64
 
@@ -59,7 +59,7 @@ program that has it.
 ## PC port
 
 The programs are `BRD3D.dll`, `BRGlide.dll`, compiled
-by MSVC 6.0. A routine counts by the result of the first
+by MSVC 5.0. A routine counts by the result of the first
 program that has it.
 
 | Measure                                                                                                                  | Count |
