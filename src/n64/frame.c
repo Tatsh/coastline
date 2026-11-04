@@ -1,31 +1,11 @@
 #include "common/audio.h"
-#include "common/driving.h"
+#include "common/displaylistops.c"
 #include "common/system.h"
 #include "common/timing.h"
 
 #define VBLANK_COUNTER_MASK 15
-#define JOLT_MAX_ONCE 2.5f
-#define JOLT_MAX 5.0f
-
-/* The message each thread waits for, a word that is never read as an address. */
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-#define DUMMY_OS_MESG ((OSMesg)(uintptr_t)g_dwDummyOsMesg)
-#else
 #define DUMMY_OS_MESG ((OSMesg)g_dwDummyOsMesg)
-#endif
 
-#if TGR_BOSS_RALLY
-/* Windows redirects the console hooks to its empty compatibility entry. */
-#define osCreateMesgQueue(...) NullStub()
-#define osSetEventMesg(...) NullStub()
-#define osViSetEvent(...) NullStub()
-#define AddTimingMarker(...) NullStub()
-#define RETRACE_INCREMENT(value) ((s32)((u32)(value) + 1u))
-#else
-#define RETRACE_INCREMENT(value) ((value) + 1)
-#endif /* TGR_BOSS_RALLY */
-
-#if TGR_PLATFORM == TGR_PLATFORM_N64
 void RspDoneThread(void *arg) {
     osCreateMesgQueue(&g_RspEventMsgQueue, g_aRspEventMsgBuf, 1);
     osSetEventMesg(OS_EVENT_SP, &g_RspEventMsgQueue, DUMMY_OS_MESG);
@@ -68,18 +48,6 @@ void ViRetraceThread(void *arg) {
     for (;;) {
         osRecvMesg(&g_ViRetracePollMesgQueue, NULL, OS_MESG_BLOCK);
         osSendMesg(&g_ViRetraceMesgQueue, DUMMY_OS_MESG, OS_MESG_BLOCK);
-        g_dwVblankCounter = RETRACE_INCREMENT(g_dwVblankCounter) & VBLANK_COUNTER_MASK;
-    }
-}
-#endif
-
-void AddVehicleJolt(s32 index, f32 amount) {
-    if (JOLT_MAX_ONCE < amount) {
-        amount = JOLT_MAX_ONCE;
-    }
-    /* The index of a computer's vehicle may pass the end of the array. */
-    g_afVehicleJolts[index] += amount;
-    if (JOLT_MAX < g_afVehicleJolts[index]) {
-        g_afVehicleJolts[index] = JOLT_MAX;
+        g_dwVblankCounter = (g_dwVblankCounter + 1) & VBLANK_COUNTER_MASK;
     }
 }

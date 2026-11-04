@@ -10,6 +10,7 @@ set(_n64_sources
     decaleditor.c
     framebuffer.c
     effects.c
+    frame.c
     hud.c
     input.c
     mainmenu.c

@@ -4,8 +4,8 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "common/completionthreads.c"
 #include "common/driving.c"
+#include "common/jolt.c"
 #include "common/playercontrol.c"
 
 TrackHeader g_LoadedTrack;

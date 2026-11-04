@@ -10,12 +10,10 @@ add_library(
   cameracollision.c
   camerarender.c
   collisionstep.c
-  completionthreads.c
   controllerread.c
   cubeclip.c
   dashboard.c
   debuginstance.c
-  displaylistops.c
   driving.c
   emptycallback.c
   exhaustspawn.c
@@ -36,6 +34,7 @@ add_library(
   hudtime.c
   inputtranslate.c
   iomessage.c
+  jolt.c
   laptime.c
   lastlapsnapshot.c
   lightning.c
@@ -151,6 +150,7 @@ else()
             dashboardtextures.c
             debugmessage.cpp
             displaylistdata.c
+            displaylistops.c
             effectdata.c
             emulatedclock.cpp
             fileio.c
