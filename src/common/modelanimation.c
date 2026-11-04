@@ -22,6 +22,7 @@ static inline s32 BlendKeyComponent(s32 from, s32 to, s32 blend) {
 #define BLEND_ONE 4096.0f
 #define BLEND_SHIFT 12
 
+#if TGR_BOSS_RALLY
 /* Set the vertices of an animation between two keys, at a share from 0 to 1 of the way. */
 static BOSS_RALLY_INLINE void
 BlendModelKeys(ModelAnimation *animation, ModelKeyframe *from, ModelKeyframe *to, f32 share) {
@@ -178,8 +179,10 @@ static BOSS_RALLY_INLINE void AdvanceForwardAnimation(ModelAnimation *animation)
     animation->startKey = 0;
     BlendModelAnimationAt(animation, time);
 }
+#endif /* TGR_BOSS_RALLY */
 
 void AdvanceModelAnimations(Model *model) {
+#if TGR_BOSS_RALLY
     ModelAnimation *animation;
     s32 count;
     s32 i;
@@ -196,4 +199,151 @@ void AdvanceModelAnimations(Model *model) {
             AdvanceForwardAnimation(animation);
         }
     }
+#else
+    s32 i;
+    s32 count;
+    ModelAnimation *animation;
+    f32 time;
+    f32 step;
+    f32 limit;
+    s32 key;
+    ModelKeyframe *from;
+    ModelKeyframe *to;
+    s16 *fromPositions;
+    s16 *toPositions;
+    s8 *fromNormals;
+    s8 *toNormals;
+    Vtx *vertices;
+    s32 searchCount;
+    s32 blend;
+    s32 vertexCount;
+    s32 flags;
+    s32 offset;
+
+    if (model->animations != NULL) {
+        /* This dead use gives IDO the ROM's register order for the animation index. */
+        flags = offset;
+        count = model->animations->count;
+        for (i = 0, offset = 0; i < count; i++, offset += 4) {
+            animation = *(ModelAnimation **)((u8 *)model->animations->entries + offset);
+            if (animation->flags & MODEL_ANIMATION_REVERSING) {
+                animation->time -= g_fFrameDeltaTime;
+                time = animation->time;
+                if (animation->startTime <= time) {
+                } else {
+                    goto back_to_start;
+                }
+                if (!(time < animation->endTime)) {
+                    continue;
+                }
+            search:
+                searchCount = animation->keyCount;
+                /* The empty test preserves the key-count lifetime in IDO. */
+                if (searchCount) {
+                }
+                vertexCount = animation->keyCount;
+                for (key = animation->startKey; key < vertexCount; key++) {
+                    if (time < animation->keys[key]->time) {
+                        break;
+                    }
+                }
+                to = animation->keys[key];
+                key--;
+                from = animation->keys[key];
+                time = (time - from->time) / (to->time - from->time);
+                key = 0;
+            blend:
+                blend = time * BLEND_ONE;
+                vertexCount = animation->vertexCount;
+                fromPositions = &from->positions[0][0];
+                toPositions = &to->positions[0][0];
+                fromNormals = (s8 *)(fromPositions + vertexCount * 3);
+                toNormals = (s8 *)(toPositions + vertexCount * 3);
+                vertices = animation->vertices;
+                for (key = 0; key < vertexCount; key++) {
+                    vertices[key].v.ob[0] =
+                        ((toPositions[0] - fromPositions[0]) * blend >> BLEND_SHIFT) +
+                        fromPositions[0];
+                    vertices[key].v.ob[1] =
+                        ((toPositions[1] - fromPositions[1]) * blend >> BLEND_SHIFT) +
+                        fromPositions[1];
+                    vertices[key].v.ob[2] =
+                        ((toPositions[2] - fromPositions[2]) * blend >> BLEND_SHIFT) +
+                        fromPositions[2];
+                    vertices[key].v.cn[0] =
+                        ((toNormals[0] - fromNormals[0]) * blend >> BLEND_SHIFT) + fromNormals[0];
+                    vertices[key].v.cn[1] =
+                        ((toNormals[1] - fromNormals[1]) * blend >> BLEND_SHIFT) + fromNormals[1];
+                    vertices[key].v.cn[2] =
+                        ((toNormals[2] - fromNormals[2]) * blend >> BLEND_SHIFT) + fromNormals[2];
+                    fromPositions += 3;
+                    toPositions += 3;
+                    fromNormals += 3;
+                    toNormals += 3;
+                }
+                continue;
+            back_to_start:
+                flags = animation->flags;
+                if (!(flags & MODEL_ANIMATION_REPEAT)) {
+                    continue;
+                }
+                animation->flags = flags & ~MODEL_ANIMATION_REVERSING;
+                animation->startKey = 0;
+                time = animation->startTime * 2 - time;
+                animation->time = time;
+                goto search;
+            } else {
+                animation->time += g_fFrameDeltaTime;
+                time = animation->time;
+                if (time < animation->startTime) {
+                    time = 0.0f;
+                    to = from = animation->keys[0];
+                    key = 0;
+                    goto blend;
+                }
+                if (time < animation->endTime) {
+                    if (animation->startTime <= time) {
+                        goto search;
+                    }
+                    continue;
+                }
+                if (animation->flags & MODEL_ANIMATION_REPEAT) {
+                    step = animation->endTime - animation->startTime;
+                    limit = animation->endTime + step;
+                    if (animation->flags & MODEL_ANIMATION_BOUNCE) {
+                        step = (animation->endTime - animation->startTime) * 2;
+                        limit = animation->endTime + step;
+                        while (limit < time) {
+                            time -= step;
+                        }
+                        step *= 0.5f;
+                        limit -= step;
+                        if (limit < time) {
+                            goto wrap;
+                        }
+                        animation->flags |= MODEL_ANIMATION_REVERSING;
+                        time = animation->endTime * 2 - time;
+                        animation->time = time;
+                    } else {
+                        step = animation->endTime - animation->startTime;
+                        limit = animation->endTime + step;
+                    wrap:
+                        while (limit < time) {
+                            time -= step;
+                        }
+                        time -= animation->endTime - animation->startTime;
+                        animation->time = time;
+                    }
+                    animation->startKey = 0;
+                    goto search;
+                } else {
+                    time = 0.0f;
+                    to = from = animation->keys[animation->keyCount - 1];
+                    key = 0;
+                    goto blend;
+                }
+            }
+        }
+    }
+#endif /* TGR_BOSS_RALLY */
 }
