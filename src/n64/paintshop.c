@@ -1529,6 +1529,7 @@ void ProcessMirrorFlipMenu(void) {
 
 void MirrorDecalToOppositePanel(void) {
     VehicleModel *model;
+    u8 *source;
     s32 x, y;
 
     if (!g_bDecalSlotHasMirror) {
@@ -1557,17 +1558,24 @@ void MirrorDecalToOppositePanel(void) {
     }
     g_bPreviousDecalSlot = g_bDecalSlot;
     model = g_pCurrentVehicleModelData;
-    s_pMirrorSource = model->textures[model->materialTextures[g_bPreviousDecalSlot]].image;
+    source = model->textures[model->materialTextures[g_bPreviousDecalSlot]].image;
     g_bDecalSlot = g_bMirrorTargetPanel;
     /* The size and the palette stay those of the source. Each pair of slots shares them. */
     g_pDecalTexels = model->textures[model->materialTextures[g_bDecalSlot]].image;
     g_pDecalMask = model->decalMasks[g_bDecalSlot];
     g_pDecalSlotIcon = g_apDecalSlotIcons[g_bDecalSlot];
+    s_pMirrorSource = source;
     SaveDecalUndo();
-    for (y = 0; y < g_bDecalHeight; y++) {
-        for (x = 0; x < g_bDecalWidth; x++) {
-            SetPixel4Bit(g_bDecalWidth - x - 1, y, ReadPixel4Bit(s_pMirrorSource, x, y));
-        }
+    y = 0;
+    if (g_bDecalHeight > 0) {
+        source = s_pMirrorSource;
+        do {
+            for (x = 0; x < g_bDecalWidth; x++) {
+                SetPixel4Bit(g_bDecalWidth - x - 1, y, ReadPixel4Bit(source, x, y));
+            }
+            y++;
+        } while (y < g_bDecalHeight);
+        s_pMirrorSource = source;
     }
     g_bDecalSlotChanged = TRUE;
     g_wScreenFrameCount = 0;
