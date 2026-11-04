@@ -158,7 +158,8 @@ u32 g_dwTimingFrameStart;
     (!g_dwKeepScreenBlanked && !g_dwScreenUnblankDelay && !g_dwPreNmiResetPending)
 
 #define DISPLAY_LIST_START()                                                                       \
-    (g_pDisplayListBase + g_dwFrameBufferIndex * DISPLAY_LIST_COMMANDS + DISPLAY_LIST_RESERVED)
+    (((DisplayListCommand(*)[DISPLAY_LIST_COMMANDS])g_pDisplayListBase)[g_dwFrameBufferIndex] +    \
+     DISPLAY_LIST_RESERVED)
 
 #if TGR_BOSS_RALLY
 /* Windows records these addresses in task metadata without reading microcode. */
@@ -196,7 +197,7 @@ void FlushDisplayList(void) {
     task->t.dram_stack_size = SP_DRAM_STACK_SIZE8;
 #if TGR_PLATFORM == TGR_PLATFORM_N64
     task->t.ucode_boot = g_aRspBootUcode;
-    task->t.ucode_boot_size = (g_aGspUcodeText - g_aRspBootUcode) * sizeof(u64);
+    task->t.ucode_boot_size = (u32)g_aGspUcodeText - (u32)g_aRspBootUcode;
     /* The original works out the start of the display list again for each use. */
     task->t.data_ptr = (u64 *)DISPLAY_LIST_START();
 #else
