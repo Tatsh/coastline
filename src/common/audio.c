@@ -454,7 +454,12 @@ void InitAudioSystem(void *module, void *work) {
     u32 elapsed;
     s32 frequency, i;
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    g_nSoundEffectSampleMaskUpper = -65538;
+    g_dwSoundEffectSampleMaskLower = 0xFFFEFFFEU;
+#else
     g_qwSoundEffectSampleMask = SOUND_EFFECT_SAMPLE_MASK;
+#endif
     frequency = osAiSetFrequency(AUDIO_FREQUENCY);
     osSyncPrintf("Real Frequency is = %d\n", frequency);
     osCreateMesgQueue(&g_AudioMsgQueue, g_aAudioMsgBuf, 2);

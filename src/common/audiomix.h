@@ -79,14 +79,28 @@ extern u16 g_wAudioBufferWritePos;
  */
 extern MixerChannel g_aMixerChannels[MIXER_CHANNELS];
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
- * The mask that clears the low bit of each 16-bit sample of the sound effect mixer.
+ * Upper word of the mask that clears low bits during packed sound effect mixing.
  *
  * @ghidraAddress USA: 0x802a4918
  * @ghidraAddress EUR: 0x802a70d8
  * @ghidraAddress JPN: 0x802a6b78
  */
+extern s32 g_nSoundEffectSampleMaskUpper;
+
+/**
+ * Lower word of the mask that clears low bits during packed sound effect mixing.
+ *
+ * @ghidraAddress USA: 0x802a491c
+ * @ghidraAddress EUR: 0x802a70dc
+ * @ghidraAddress JPN: 0x802a6b7c
+ */
+extern u32 g_dwSoundEffectSampleMaskLower;
+#else
+/** The mask that clears low bits during packed sound effect mixing. */
 extern u64 g_qwSoundEffectSampleMask;
+#endif
 
 /**
  * The channels of the sound effects, 8 bytes after the mask. The volume of each holds the levels of

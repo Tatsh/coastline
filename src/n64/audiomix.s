@@ -292,8 +292,8 @@ MixSoundEffectChannels:
     sw         $s4, 0x14($sp)
     sw         $s5, 0x18($sp)
     sw         $s6, 0x1C($sp)
-    lui        $t0, %hi(g_qwSoundEffectSampleMask)
-    addiu      $t0, $t0, %lo(g_qwSoundEffectSampleMask)
+    lui        $t0, %hi(g_nSoundEffectSampleMaskUpper)
+    addiu      $t0, $t0, %lo(g_nSoundEffectSampleMaskUpper)
     add        $a3, $a2, $a1
     addi       $v1, $a3, -0x4000
     bgtz       $v1, .LMixSoundEffectChannels_split

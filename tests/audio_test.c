@@ -8,7 +8,8 @@
 
 u16 g_wAudioBufferWritePos;
 MixerChannel g_aMixerChannels[MIXER_CHANNELS];
-u64 g_qwSoundEffectSampleMask;
+s32 g_nSoundEffectSampleMaskUpper;
+u32 g_dwSoundEffectSampleMaskLower;
 MixerChannel g_aSoundEffectChannels[SOUND_EFFECT_CHANNELS];
 s32 g_nAudioChannelCount, g_dwMusicPatternRow, g_dwAudioTickToggle, g_dwAiDmaPrevLength,
     g_bMusicPlaybackEnabled, g_dwAudioMixBytes, g_dwAiDmaCurrentLength, g_dwAudioChannelLoopIdx;
@@ -314,7 +315,8 @@ int main(void) {
 
     /* The start of the audio, then a pass of the mixing thread with eight music channels. */
     InitAudioSystem(module, work);
-    assert(g_qwSoundEffectSampleMask == 0xFFFEFFFEFFFEFFFEULL && timerCountdown == 625000 &&
+    assert(g_nSoundEffectSampleMaskUpper == -65538 &&
+           g_dwSoundEffectSampleMaskLower == 0xFFFEFFFEU && timerCountdown == 625000 &&
            timerInterval == 625000);
     assert(threadId == 7 && threadPriority == 0x7F && threadStack == g_aAudioThreadStack + 0x80);
     assert(g_aMixerChannels[1].sample == (s8 *)g_AudioDmaBuffer &&

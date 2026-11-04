@@ -62879,18 +62879,18 @@ dlabel g_aMixerChannels
     /* A5914 802A4914 00000000 */ .word 0x00000000
 enddlabel g_aMixerChannels
 
-nonmatching g_qwSoundEffectSampleMask
+nonmatching g_nSoundEffectSampleMaskUpper
 
 .balign 8
-dlabel g_qwSoundEffectSampleMask
+dlabel g_nSoundEffectSampleMaskUpper
     /* A5918 802A4918 FFFEFFFE */ .word 0xFFFEFFFE
-enddlabel g_qwSoundEffectSampleMask
+enddlabel g_nSoundEffectSampleMaskUpper
 
-nonmatching D_802A491C
+nonmatching g_dwSoundEffectSampleMaskLower
 
-dlabel D_802A491C
+dlabel g_dwSoundEffectSampleMaskLower
     /* A591C 802A491C FFFEFFFE */ .word 0xFFFEFFFE
-enddlabel D_802A491C
+enddlabel g_dwSoundEffectSampleMaskLower
 
 nonmatching g_aSoundEffectChannels
 
