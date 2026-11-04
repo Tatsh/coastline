@@ -36,6 +36,7 @@ s32 g_dwViewportMirrored;
 #define COORD_ADD(a, b) ((s32)((u32)(a) + (u32)(b)))
 #define COORD_SUB(a, b) ((s32)((u32)(a) - (u32)(b)))
 #define COORD_NEGATE(value) ((s32)(0u - (u32)(value)))
+#define COORD_NEGATIVE_DOUBLE(value) ((s32)(0u - (u32)(value) * 2u))
 #define VIEWPORT_BASE_WIDTH g_dwConfigFramebufferWidth
 #define VIEWPORT_BASE_HEIGHT g_dwConfigFramebufferHeight
 #define COORD_DOUBLE(value) ((s32)((u32)(value) * 2u))
@@ -46,6 +47,7 @@ s32 g_dwViewportMirrored;
 #define COORD_ADD(a, b) ((a) + (b))
 #define COORD_SUB(a, b) ((a) - (b))
 #define COORD_NEGATE(value) (-(value))
+#define COORD_NEGATIVE_DOUBLE(value) ((value) * -2)
 #define VIEWPORT_BASE_WIDTH 320
 #define VIEWPORT_BASE_HEIGHT 240
 #define COORD_DOUBLE(value) ((value) * 2)
@@ -78,7 +80,7 @@ void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor) {
     /* A negative width mirrors the view, and a mirrored track mirrors it again. */
     if (width < 0) {
         if (g_dwTrackMirrored) {
-            g_aViewports[g_dwViewportIndex].vp.vscale[0] = COORD_DOUBLE(COORD_NEGATE(width));
+            g_aViewports[g_dwViewportIndex].vp.vscale[0] = COORD_NEGATIVE_DOUBLE(width);
         } else {
             g_aViewports[g_dwViewportIndex].vp.vscale[0] = COORD_DOUBLE(width);
         }
@@ -86,7 +88,7 @@ void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor) {
         g_dwViewportMirrored = TRUE;
     } else {
         if (g_dwTrackMirrored) {
-            g_aViewports[g_dwViewportIndex].vp.vscale[0] = COORD_DOUBLE(COORD_NEGATE(width));
+            g_aViewports[g_dwViewportIndex].vp.vscale[0] = COORD_NEGATIVE_DOUBLE(width);
         } else {
             g_aViewports[g_dwViewportIndex].vp.vscale[0] = COORD_DOUBLE(width);
         }
