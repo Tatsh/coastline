@@ -54,6 +54,10 @@ void UpdateAmbientSoundChannel(void) {
     s32 volume;
     f32 upper;
     f32 lower;
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    /* Preserve the original stack frame layout for IDO. */
+    f32 unused[6];
+#endif
 
 #if TGR_BOSS_RALLY
     u32 levels;
@@ -61,6 +65,9 @@ void UpdateAmbientSoundChannel(void) {
     if (g_dwNumActiveVehicles == 0) {
         return;
     }
+#endif
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    (void)unused;
 #endif
     /* The first vehicle always has its racer. */
     if (RACER_SLOT_GET(VEHICLE_GET(&(g_aVehicles[0]), Racer), Status) & RACER_HELD) {
@@ -82,8 +89,8 @@ select_source:
         channel->AMBIENT_VOLUME = 0;
         channel->AMBIENT_MIX_VOLUME = 0;
         channel->AMBIENT_STEP = 0;
-    } else if (g_ClosestSoundSource.previousSource == g_ClosestSoundSource.source &&
-               g_ClosestSoundSource.previousListener == g_ClosestSoundSource.listener) {
+    } else if (g_ClosestSoundSource.source == g_ClosestSoundSource.previousSource &&
+               g_ClosestSoundSource.listener == g_ClosestSoundSource.previousListener) {
         if (FREQUENCY_NEGATIVE(g_ClosestSoundSource.frequency)) {
 #if TGR_BOSS_RALLY
             factor = ComputeDopplerFactor(&g_ClosestSoundSource.position,
@@ -150,7 +157,11 @@ select_source:
         if (VEHICLE_GET(&(g_aVehicles[g_aViewportRects[0].vehicleIndex]), CameraChanged) == 0 &&
             (g_dwNumViewports == 1 ||
              VEHICLE_GET(&(g_aVehicles[g_aViewportRects[1].vehicleIndex]), CameraChanged) == 0)) {
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+            channel->AMBIENT_STEP = (u64)((double)(frequency * (1.0f / SAMPLE_RATE)) * STEP_ONE);
+#else
             channel->AMBIENT_STEP = FrequencyStep(frequency);
+#endif
 #if TGR_BOSS_RALLY
             levels = PackVolume(volume, upper, lower);
             if (channel->AMBIENT_VOLUME == 0) {
@@ -160,7 +171,11 @@ select_source:
 #else
             if (channel->AMBIENT_VOLUME == 0) {
                 /* A sound starts at half its volume. */
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+                g_dwAmbientChannel3Volume =
+#else
                 channel->AMBIENT_VOLUME =
+#endif
                     ((s32)((f32)((s32)((f32)volume * upper) << 16) + lower * volume) >> 1) &
                     VOLUME_HALVES_MASK;
             } else {
@@ -181,7 +196,11 @@ select_source:
         g_ClosestSoundSource.previousListenerPosition.y = g_ClosestSoundSource.listener->position.y;
         g_ClosestSoundSource.previousListenerPosition.z = g_ClosestSoundSource.listener->position.z;
 #else
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+        listenerPosition = &((CameraFrame *)(*(s32 *)&g_ClosestSoundSource.listener))->position;
+#else
         listenerPosition = &g_ClosestSoundSource.listener->position;
+#endif
         g_ClosestSoundSource.previousListenerPosition.x = listenerPosition->x;
         g_ClosestSoundSource.previousListenerPosition.y = listenerPosition->y;
         g_ClosestSoundSource.previousListenerPosition.z = listenerPosition->z;

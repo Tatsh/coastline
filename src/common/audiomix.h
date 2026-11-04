@@ -119,6 +119,17 @@ extern u64 g_qwSoundEffectSampleMask;
  */
 extern MixerChannel g_aSoundEffectChannels[SOUND_EFFECT_CHANNELS];
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+/**
+ * The volume word of sound effect channel 3.
+ *
+ * @ghidraAddress USA: 0x802a497c
+ * @ghidraAddress EUR: 0x802a713c
+ * @ghidraAddress JPN: 0x802a6bdc
+ */
+extern s32 g_dwAmbientChannel3Volume;
+#endif
+
 /**
  * The distance back to the echo of sound effect channel 0, or 0 for none.
  *

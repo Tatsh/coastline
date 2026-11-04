@@ -63713,7 +63713,9 @@ dlabel g_aSoundEffectChannels
     /* A7BD0 802A6BD0 00000000 */ .word 0x00000000
     /* A7BD4 802A6BD4 00000000 */ .word 0x00000000
     /* A7BD8 802A6BD8 00000000 */ .word 0x00000000
+dlabel g_dwAmbientChannel3Volume
     /* A7BDC 802A6BDC 00000000 */ .word 0x00000000
+enddlabel g_dwAmbientChannel3Volume
     /* A7BE0 802A6BE0 00000000 */ .word 0x00000000
     /* A7BE4 802A6BE4 00000000 */ .word 0x00000000
     /* A7BE8 802A6BE8 00000000 */ .word 0x00000000

@@ -62902,7 +62902,9 @@ dlabel g_aSoundEffectChannels
     /* A5970 802A4970 00000000 */ .word 0x00000000
     /* A5974 802A4974 00000000 */ .word 0x00000000
     /* A5978 802A4978 00000000 */ .word 0x00000000
+dlabel g_dwAmbientChannel3Volume
     /* A597C 802A497C 00000000 */ .word 0x00000000
+enddlabel g_dwAmbientChannel3Volume
     /* A5980 802A4980 00000000 */ .word 0x00000000
     /* A5984 802A4984 00000000 */ .word 0x00000000
     /* A5988 802A4988 00000000 */ .word 0x00000000
