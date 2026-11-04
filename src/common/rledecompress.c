@@ -10,6 +10,56 @@
 #define RLE_BLOCK_HEADER 4
 
 s32 DecompressInterleavedRle(u8 *dst, s32 dstSize, u8 *packed, s32 channels) {
+#if !TGR_BOSS_RALLY
+    s32 out;
+    s32 used;
+    s32 channel;
+    s32 end;
+    s32 code;
+    s32 count;
+    s32 value; /* The unused local preserves IDO's stack frame. */
+    s32 length;
+    s8 *src;
+
+    out = 0;
+    used = 0;
+    channel = 0;
+    if (channels > 0) {
+        src = (s8 *)packed;
+        do {
+            out = 0;
+            memcpy(&length, src, RLE_BLOCK_HEADER);
+            used += RLE_BLOCK_HEADER;
+            channel++;
+            src += RLE_BLOCK_HEADER;
+            end = used + length;
+            while (used < end) {
+                code = *src;
+                used++;
+                src++;
+                if (code < 0) {
+                    for (count = -code; count != 0; count--) {
+                        dst[out] = *src;
+                        out += channels;
+                        used++;
+                        src++;
+                    }
+                } else {
+                    count = code + RLE_MIN_RUN;
+                    code = *src;
+                    used++;
+                    src++;
+                    for (; count != 0; count--) {
+                        dst[out] = code;
+                        out += channels;
+                    }
+                }
+            }
+            dst++;
+        } while (channel != channels);
+    }
+    return out;
+#else
     s32 end;
     s32 code;
     s32 out = 0;
@@ -48,4 +98,5 @@ s32 DecompressInterleavedRle(u8 *dst, s32 dstSize, u8 *packed, s32 channels) {
     }
     /* The size of the last channel only. */
     return out;
+#endif /* TGR_BOSS_RALLY */
 }
