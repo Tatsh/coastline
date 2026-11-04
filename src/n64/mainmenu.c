@@ -140,7 +140,7 @@ void ProcessMainMenu(void) {
             g_dwIsPaintMode = TRUE;
             g_dwNumLocalPlayers = 1;
             g_dwScreenPlayerIdx = g_dwMenuChoosingPlayer;
-            g_dwMenuInputPlayerMask = 1 << g_dwMenuChoosingPlayer;
+            g_dwMenuInputPlayerMask = 1 << g_dwScreenPlayerIdx;
             SetCurrentScreenCallback(ProcessCarSelectScreen);
             break;
         case MAIN_MENU_LOAD_SAVE:
