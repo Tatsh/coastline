@@ -235,128 +235,135 @@ void CheckMusicLoopPoints(void) {
 }
 
 u8 *ParseMusicPatternRow(u8 *row) {
-    MusicChannel *state;
-    MixerChannel *mixer = g_aMixerChannels;
-    XmSample *sample;
-    s8 flags, note, effect, parameter;
+    s32 i;
+    s8 flags;
+    s8 note;
     u8 instrument;
+    s8 effect;
+    s8 parameter;
+    u32 sampleIndex;
+    s32 unused;
+    MixerChannel *voice;
+    s32 n;
+    s32 unusedSlots[3];
+    u64 target;
 
-    for (state = g_MusicChannelStates; state < &g_MusicChannelStates[g_nAudioChannelCount];
-         state++, mixer++) {
-        flags = *row++;
+    /* These locals preserve the original player's stack layout under IDO. */
+    (void)sizeof(unused);
+    (void)sizeof(unusedSlots);
+    for (i = 0; i < g_nAudioChannelCount; i++) {
         note = 0;
+        effect = 0;
+        parameter = 0;
         instrument = 0;
+        flags = *row++;
         if (flags < 0) {
             if (flags & XM_PACKED_NOTE) {
-                state->note = *row;
-                note = *row++;
+                note = g_MusicChannelStates[i].note = *row++;
             }
             if (flags & XM_PACKED_INSTRUMENT) {
-                state->rowInstrument = *row;
-                instrument = *row++;
+                instrument = g_MusicChannelStates[i].rowInstrument = *row++;
             }
             if (flags & XM_PACKED_VOLUME) {
-                state->volume = *row++;
+                g_MusicChannelStates[i].volume = *row++;
             } else if (note != 0) {
-                state->volume = NOTE_VOLUME;
+                g_MusicChannelStates[i].volume = NOTE_VOLUME;
             }
             if (flags & XM_PACKED_EFFECT) {
-                state->effect = *row;
-                effect = *row++;
+                effect = g_MusicChannelStates[i].effect = *row++;
             } else {
                 effect = 0;
             }
             if (flags & XM_PACKED_PARAMETER) {
-                state->effectParameter = *row;
-                parameter = *row++;
+                parameter = g_MusicChannelStates[i].effectParameter = *row++;
             } else {
                 parameter = 0;
             }
         } else {
-            state->note = flags;
-            note = flags;
-            state->rowInstrument = row[0];
-            instrument = row[0];
-            state->volume = row[1];
-            state->effect = row[2];
-            effect = row[2];
-            state->effectParameter = row[3];
-            parameter = row[3];
-            row += 4;
+            note = g_MusicChannelStates[i].note = flags;
+            instrument = g_MusicChannelStates[i].rowInstrument = *row++;
+            g_MusicChannelStates[i].volume = *row++;
+            effect = g_MusicChannelStates[i].effect = *row++;
+            parameter = g_MusicChannelStates[i].effectParameter = *row++;
         }
         if (note != 0) {
-            state->note--;
+            g_MusicChannelStates[i].note--;
         }
-        if (instrument != 0 && state->volume == 0) {
-            state->volume = NOTE_VOLUME;
+        if (instrument != 0 && g_MusicChannelStates[i].volume == 0) {
+            g_MusicChannelStates[i].volume = NOTE_VOLUME;
         }
-        state->portamentoSpeed = 0;
-        state->volumeSlide = 0;
-        instrument = state->instrument;
-        state->arpeggioOn = FALSE;
+        g_MusicChannelStates[i].portamentoSpeed = 0;
+        g_MusicChannelStates[i].volumeSlide = 0;
+        sampleIndex = g_MusicChannelStates[i].instrument;
+        g_MusicChannelStates[i].arpeggioOn = FALSE;
 
         switch (effect) {
         case XM_EFFECT_ARPEGGIO:
             if (parameter != 0) {
-                state->arpeggio[1] = state->note + ((parameter >> 4) & 0xF);
-                state->arpeggio[2] = state->note + (parameter & 0xF);
-                state->arpeggioOn = TRUE;
-                state->arpeggio[0] = state->note;
+                n = g_MusicChannelStates[i].note & 0xff;
+                g_MusicChannelStates[i].arpeggio[1] = n + (u32)((parameter >> 4) & 0xf);
+                g_MusicChannelStates[i].arpeggio[2] = n + (u32)(parameter & 0xf);
+                g_MusicChannelStates[i].arpeggioOn = TRUE;
+                g_MusicChannelStates[i].arpeggio[0] = n;
             }
             break;
         case XM_EFFECT_PORTAMENTO_UP:
-            state->portamentoTarget = 0;
-            state->portamentoSpeed = state->effectParameter;
+            g_MusicChannelStates[i].portamentoSpeed = g_MusicChannelStates[i].effectParameter;
+            g_MusicChannelStates[i].portamentoTarget = 0;
             break;
         case XM_EFFECT_PORTAMENTO_DOWN:
-            state->portamentoSpeed = -state->effectParameter;
-            state->portamentoTarget = 0;
+            g_MusicChannelStates[i].portamentoSpeed = -g_MusicChannelStates[i].effectParameter;
+            g_MusicChannelStates[i].portamentoTarget = 0;
             break;
         case XM_EFFECT_TONE_PORTAMENTO:
-            /* Slide to the note rather than start it. */
-            if (instrument != 0) {
-                state->portamentoSpeed = state->effectParameter;
-                sample = g_apInstrumentData[instrument - 1];
+            if (sampleIndex != 0) {
+                g_MusicChannelStates[i].portamentoSpeed = g_MusicChannelStates[i].effectParameter;
                 note = 0;
-                state->portamentoTarget = NOTE_STEP(sample->relativeNote + state->note);
-                if (state->portamentoTarget < mixer->step) {
-                    state->portamentoSpeed = -state->portamentoSpeed;
+                n = g_MusicChannelStates[i].note +
+                    g_apInstrumentData[sampleIndex - 1]->relativeNote;
+                g_MusicChannelStates[i].portamentoTarget = target = NOTE_STEP(n);
+                if (g_aMixerChannels[i].step > target) {
+                    g_MusicChannelStates[i].portamentoSpeed =
+                        -g_MusicChannelStates[i].portamentoSpeed;
                 }
             }
             break;
         case XM_EFFECT_VIBRATO_VOLUME_SLIDE:
         case XM_EFFECT_VOLUME_SLIDE:
-            if (state->effectParameter & 0xF0) {
-                state->volumeSlide = (state->effectParameter >> 4) & 0xF;
+            if (g_MusicChannelStates[i].effectParameter & 0xf0) {
+                g_MusicChannelStates[i].volumeSlide =
+                    (g_MusicChannelStates[i].effectParameter >> 4) & 0xf;
             } else {
-                state->volumeSlide = -(state->effectParameter & 0xF);
+                g_MusicChannelStates[i].volumeSlide =
+                    -(g_MusicChannelStates[i].effectParameter & 0xf);
             }
             break;
         case XM_EFFECT_SET_VOLUME:
-            state->volume = parameter;
+            g_MusicChannelStates[i].volume = parameter;
             break;
         case XM_EFFECT_PATTERN_BREAK:
             g_MusicPlayer.rowsLeft = 0;
             break;
         case XM_EFFECT_SET_SPEED:
-            g_MusicPlayer.speed = state->effectParameter;
-            g_MusicPlayer.tick = state->effectParameter;
+            g_MusicPlayer.tick = g_MusicPlayer.speed =
+                g_MusicChannelStates[i].effectParameter & 0xff;
             break;
         }
 
         /* A note starts the sample of the instrument of the row from its beginning. */
         if (note != 0) {
-            instrument = state->rowInstrument;
-            state->arpeggio[3] = 0;
-            sample = g_apInstrumentData[instrument - 1];
-            mixer->fraction = 0;
-            state->instrument = instrument;
-            mixer->sample = (s8 *)(sample + 1);
-            mixer->step = NOTE_STEP(sample->relativeNote + state->note);
+            voice = &g_aMixerChannels[i];
+            g_MusicChannelStates[i].arpeggio[3] = 0;
+            voice->fraction = 0;
+            instrument = g_MusicChannelStates[i].instrument = g_MusicChannelStates[i].rowInstrument;
+            voice->sample = (s8 *)(g_apInstrumentData[instrument - 1] + 1);
+            n = g_MusicChannelStates[i].note + g_apInstrumentData[instrument - 1]->relativeNote;
+            sampleIndex = g_MusicChannelStates[i].instrument;
+            voice->step = NOTE_STEP(n);
         }
-        if (instrument != 0) {
-            sample = g_apInstrumentData[instrument - 1];
-            mixer->volume = (state->volume * sample->volume) >> 6;
+        if (sampleIndex != 0) {
+            g_aMixerChannels[i].volume =
+                (g_apInstrumentData[sampleIndex - 1]->volume * g_MusicChannelStates[i].volume) >> 6;
         }
     }
     return row;
