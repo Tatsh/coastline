@@ -373,6 +373,7 @@ void FaultThread(void *arg) {
 
 void BootIdleThread(void *arg) {
     char *p;
+    char **argv;
     u32 i;
     u32 arguments[BOOT_ARGUMENT_WORDS];
 #if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
@@ -385,12 +386,17 @@ void BootIdleThread(void *arg) {
     }
 
     p = (char *)arguments;
+    argv = g_apszBootArgv;
     while (*p != '\0') {
         while (*p != '\0' && *p == ' ') {
             *p++ = '\0';
         }
         if (*p != '\0') {
+#if TGR_REGION == TGR_REGION_JP
             g_apszBootArgv[g_dwBootArgc] = p;
+#else
+            argv[g_dwBootArgc] = p;
+#endif
             g_dwBootArgc++;
         }
         while (*p != '\0' && *p != ' ') {
