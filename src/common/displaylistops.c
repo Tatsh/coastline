@@ -96,12 +96,11 @@ done:
     return translucent;
 }
 
+#if TGR_BOSS_RALLY
 void ProcessTrackNodeDisplayList(TrackInstance *instance) {
     s32 snowTint;
 
-#if TGR_BOSS_RALLY
     g_bDisplayListSnowTint = FALSE;
-#endif
     snowTint = g_dwSelectedTrackId != TRACK_COASTLINE &&
                g_dwSelectedTrackId != TRACK_COASTLINE + TRACK_MIRRORED;
     if (!(instance->flags & TRACK_INSTANCE_TWO_SIDED)) {
@@ -111,36 +110,46 @@ void ProcessTrackNodeDisplayList(TrackInstance *instance) {
         instance->flags |= TRACK_INSTANCE_TRANSLUCENT;
     }
 }
+#endif /* TGR_BOSS_RALLY */
 
 void ProcessAllDisplayLists(void) {
-    Vehicle *vehicle;
-    s32 i, lod, k;
+    s32 snowTint, i, vehicleIndex, lod;
+
+    snowTint = (s32)g_dwSelectedTrackId != TRACK_COASTLINE &&
+               (s32)g_dwSelectedTrackId != TRACK_COASTLINE + TRACK_MIRRORED;
 #if TGR_PLATFORM == TGR_PLATFORM_N64
     for (i = 0; i < g_LoadedTrack.instanceCount; i++) {
-        ProcessTrackNodeDisplayList(&g_LoadedTrack.instances[i]);
+        if (!(g_LoadedTrack.instances[i].flags & TRACK_INSTANCE_TWO_SIDED)) {
+            g_bDisplayListSnowTint = snowTint;
+        }
+        if (ProcessDisplayList(g_LoadedTrack.instances[i].displayList, g_aaDlTrackRenderModes)) {
+            g_LoadedTrack.instances[i].flags |= TRACK_INSTANCE_TRANSLUCENT;
+        }
     }
 #else
     g_bDisplayListSnowTint = FALSE;
 #endif
     /* The models the vehicles share are patched for good. */
-    for (i = 0, vehicle = g_aVehicles; i < g_dwNumActiveVehicles; i++, vehicle++) {
+    for (vehicleIndex = 0; vehicleIndex < g_dwNumActiveVehicles; vehicleIndex++) {
+        Vehicle *vehicle = &g_aVehicles[vehicleIndex];
+
         for (lod = 0; lod < VEHICLE_LODS; lod++) {
             if (VEHICLE_GET(vehicle, GhostMode) == VEHICLE_GHOST) {
-                for (k = 0; k < VEHICLE_DISPLAY_LISTS; k++) {
-                    ProcessDisplayList(VEHICLE_GET(vehicle, Model)->displayLists[lod][k],
+                for (i = 0; i < VEHICLE_DISPLAY_LISTS; i++) {
+                    ProcessDisplayList(VEHICLE_GET(vehicle, Model)->displayLists[lod][i],
                                        g_aaDlGhostRenderModes);
                 }
-                for (k = 0; k < VEHICLE_WHEEL_DISPLAY_LISTS; k++) {
-                    ProcessDisplayList(VEHICLE_GET(vehicle, Model)->wheelDisplayLists[lod][k],
+                for (i = 0; i < VEHICLE_WHEEL_DISPLAY_LISTS; i++) {
+                    ProcessDisplayList(VEHICLE_GET(vehicle, Model)->wheelDisplayLists[lod][i],
                                        g_aaDlGhostWheelRenderModes);
                 }
             } else {
-                for (k = 0; k < VEHICLE_DISPLAY_LISTS; k++) {
-                    ProcessDisplayList(VEHICLE_GET(vehicle, Model)->displayLists[lod][k],
+                for (i = 0; i < VEHICLE_DISPLAY_LISTS; i++) {
+                    ProcessDisplayList(VEHICLE_GET(vehicle, Model)->displayLists[lod][i],
                                        g_aaDlTrackRenderModes);
                 }
-                for (k = 0; k < VEHICLE_WHEEL_DISPLAY_LISTS; k++) {
-                    ProcessDisplayList(VEHICLE_GET(vehicle, Model)->wheelDisplayLists[lod][k],
+                for (i = 0; i < VEHICLE_WHEEL_DISPLAY_LISTS; i++) {
+                    ProcessDisplayList(VEHICLE_GET(vehicle, Model)->wheelDisplayLists[lod][i],
                                        g_aaDlTrackRenderModes);
                 }
             }

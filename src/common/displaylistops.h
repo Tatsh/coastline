@@ -130,11 +130,13 @@ extern void (*g_pfnRenderBackendUpdateFog)(void);
  */
 void ProcessAllDisplayLists(void);
 
+#if TGR_BOSS_RALLY
 /**
  * @ghidraAddress BRD3D: 0x1003445a
  * @ghidraAddress BRGlide: 0x1002db0b
  */
 void ProcessTrackNodeDisplayList(TrackInstance *instance);
+#endif /* TGR_BOSS_RALLY */
 
 #ifdef __cplusplus
 }
