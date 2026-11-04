@@ -2586,9 +2586,9 @@ void PaintShop::TypeOnKeyboard() {
     // A keyboard of the computer types the keys of the font. A letter the font has only in capitals
     // types the capital, and a character the font lacks is dropped.
     auto keyOf = [&](unsigned char character) -> std::optional<u8> {
-        for (u8 i = 0; i < m_decalGlyphs.size(); ++i) {
+        for (std::size_t i = 0; i < m_decalGlyphs.size(); ++i) {
             if (i != KEY_BACKSPACE && i != KEY_ENTER && m_decalGlyphs[i].character == character) {
-                return i;
+                return static_cast<u8>(i);
             }
         }
         return std::nullopt;

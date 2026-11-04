@@ -362,13 +362,13 @@ bool PaintShop::PickDecalSlot() {
     if (m_decalDragActive || m_decalSlotChanged || (m_input.buttons & INPUT_PICK) == 0) {
         return false;
     }
-    for (u8 i = 0; i < m_car->PanelCount(); ++i) {
+    for (int i = 0; i < m_car->PanelCount(); ++i) {
         if (!m_car->HasMaterial(i) || !IsCursorInRect(DecalSlotRect(i))) {
             continue;
         }
         Transfer(INPUT_PICK);
         m_previousDecalSlot = m_decalSlot;
-        m_decalSlot = i;
+        m_decalSlot = static_cast<u8>(i);
         if (m_previousDecalSlot != m_decalSlot) {
             SelectDecalSlot(i);
         }
