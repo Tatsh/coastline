@@ -1228,11 +1228,14 @@ void ProcessTextStyleMenu(void) {
 }
 
 void ProcessRectStyleMenu(void) {
+    char spare[24];
+    s32 x, i, buttonY, cancelX;
 #if SHOWS_STYLE_NAMES
     FourStyleNames names;
 #endif
-    PlayerInputState *input;
-    s32 buttonY, cancelX, textY, i, x;
+
+    (void)spare;
+    (void)x;
 
 #if SHOWS_STYLE_NAMES
     /* The names are read from a copy on the stack. */
@@ -1247,13 +1250,13 @@ void ProcessRectStyleMenu(void) {
     SetTextStyleNormal();
     DrawText("%rySELECT STYLE", 0x9F, 0x5C);
     if (g_bPaintToolStarted) {
-        g_bPaintToolStarted = FALSE;
         g_bStyleMenuCursor = g_texPaintToolRect.style;
+        g_bPaintToolStarted = FALSE;
     }
-    for (i = 0, x = 0xAF; i < 4; i++, x += 0x4C) {
+    for (i = 0; i < 4; i++) {
         if (i == g_bStyleMenuCursor) {
             DrawSpriteRegion(g_apRectStyleIcons[i],
-                             x,
+                             i * 76 + 175,
                              0xCB,
                              g_apRectStyleIcons[i]->drawWidth,
                              g_apRectStyleIcons[i]->drawHeight,
@@ -1261,7 +1264,7 @@ void ProcessRectStyleMenu(void) {
                              HIGHLIGHT_GREEN,
                              HIGHLIGHT_BLUE);
         } else {
-            DrawTexturedSprite(g_apRectStyleIcons[i], x, 0xCB);
+            DrawTexturedSprite(g_apRectStyleIcons[i], i * 76 + 175, 0xCB);
         }
     }
 #if SHOWS_STYLE_NAMES
@@ -1274,15 +1277,35 @@ void ProcessRectStyleMenu(void) {
 #endif
     SetTextSize(10);
     SetTextAlignLeft();
-    textY = (buttonY + 0x12) >> 1;
-    DrawText("%wwSELECT", (g_texButtonA.width + 0xDB) >> 1, textY);
-    DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, textY);
+    DrawText("%wwSELECT", (g_texButtonA.width + 0xDB) >> 1, (buttonY + 0x12) >> 1);
+    DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, (buttonY + 0x12) >> 1);
     DrawTexturedSprite(&g_texButtonA, 0xD5, buttonY);
     DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
 
     UpdateStickRepeat(PaintShopInput());
-    MoveStyleMenuCursor(input);
-    CloseStyleMenu(&g_texPaintToolRect);
+    if (PaintShopInput()->buttons & INPUT_LEFT) {
+        TransferFlags(PaintShopInput(), INPUT_LEFT);
+        if (g_bStyleMenuCursor == 0) {
+            g_bStyleMenuCursor = 3;
+        } else {
+            g_bStyleMenuCursor--;
+        }
+    } else if (PaintShopInput()->buttons & INPUT_RIGHT) {
+        TransferFlags(PaintShopInput(), INPUT_RIGHT);
+        if (g_bStyleMenuCursor == 3) {
+            g_bStyleMenuCursor = 0;
+        } else {
+            g_bStyleMenuCursor++;
+        }
+    }
+    if (PaintShopInput()->buttons & INPUT_A) {
+        TransferFlags(PaintShopInput(), INPUT_A);
+        g_texPaintToolRect.style = g_bStyleMenuCursor;
+        g_bStyleMenuOpen = FALSE;
+    } else if (PaintShopInput()->buttons & INPUT_B) {
+        TransferFlags(PaintShopInput(), INPUT_B);
+        g_bStyleMenuOpen = FALSE;
+    }
 }
 
 void ProcessOvalStyleMenu(void) {
