@@ -62,12 +62,19 @@ void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *
     Vec3f hitPoint, offset;
     TrackTriangle *hit, *triangle, *end;
     f32 limit, distance, newLength, facing, t;
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    /* This unused array preserves the original stack frame. */
+    s32 unused[4];
+#endif
 #if TGR_BOSS_RALLY
     long double length, precise;
 #else
     f32 length;
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    (void)unused;
+#endif
     g_bVehicleTrackCollisionCorrected = FALSE;
     slots[0] =
         BuildTrackTriangleCache(VEHICLE_GET(vehicle, LookAt).x, VEHICLE_GET(vehicle, LookAt).y);
