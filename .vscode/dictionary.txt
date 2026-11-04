@@ -1161,6 +1161,7 @@ safetyguards
 samplecount
 sampleraddressmode
 samplermipmapmode
+sarif
 savd
 savestate
 sawkins
