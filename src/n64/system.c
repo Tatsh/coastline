@@ -372,6 +372,10 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
     return decompressedSize;
 }
 
+void WaitForVblankMessage(void) {
+    osRecvMesg(&g_ViRetraceMesgQueue, NULL, OS_MESG_BLOCK);
+}
+
 void StubFunction(s32 unused) {
 }
 

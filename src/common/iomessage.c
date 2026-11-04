@@ -60,10 +60,8 @@ void WaitForDmaMessages(void) {
     }
 }
 
-void WaitForVblankMessage(void) {
 #if TGR_BOSS_RALLY
+void WaitForVblankMessage(void) {
     osContInit(&g_ViRetraceMesgQueue, NULL, NULL);
-#else
-    osRecvMesg(&g_ViRetraceMesgQueue, NULL, OS_MESG_BLOCK);
-#endif
 }
+#endif /* TGR_BOSS_RALLY */
