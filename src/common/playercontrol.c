@@ -56,8 +56,6 @@ static inline f32 ReadVehicleControlAxis(f32 value, f32 offset, f32 scale, s32 n
  * that jolts the vehicle. */
 #define JOLT_GRAVITY 0.326666683f
 #define JOLT_THRESHOLD 0.025f
-#define JOLT_MAX_ONCE 2.5f
-#define JOLT_MAX 5.0f
 
 /* The drive after a season: how far ahead the route is read, the speed until the vehicle nears
  * the end, and where it brakes and stops. */
@@ -69,17 +67,6 @@ static inline f32 ReadVehicleControlAxis(f32 value, f32 offset, f32 scale, s32 n
 #define VICTORY_STOP_DISTANCE 168.4f
 #define VICTORY_STEER_SCALE 3.0f
 #define VICTORY_CENTERING 0.2f
-
-void AddVehicleJolt(s32 index, f32 amount) {
-    if (JOLT_MAX_ONCE < amount) {
-        amount = JOLT_MAX_ONCE;
-    }
-    /* The index of a computer's vehicle may pass the end of the array. */
-    g_afVehicleJolts[index] += amount;
-    if (JOLT_MAX < g_afVehicleJolts[index]) {
-        g_afVehicleJolts[index] = JOLT_MAX;
-    }
-}
 
 /* Whether a viewport follows the vehicle. */
 static BOSS_RALLY_INLINE s32 IsVehicleViewed(Vehicle *vehicle) {

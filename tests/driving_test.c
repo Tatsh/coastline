@@ -4,6 +4,7 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "common/completionthreads.c"
 #include "common/driving.c"
 #include "common/playercontrol.c"
 

@@ -261,20 +261,6 @@ void ClearFramebuffersLowRes(void) {
 #endif /* TGR_REGION == TGR_REGION_US */
 }
 
-#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
-void PreNmiResetHandlerThread(void *arg) {
-    osCreateMesgQueue(&g_PreNmiMesgQueue, g_aPreNmiMesgBuf, 1);
-    osSetEventMesg(OS_EVENT_PRENMI, &g_PreNmiMesgQueue, (OSMesg)g_dwDummyOsMesg);
-    for (;;) {
-        osRecvMesg(&g_PreNmiMesgQueue, NULL, OS_MESG_BLOCK);
-        g_bSfxMasterVolume = 0;
-        g_bBgmVolume = 0;
-        g_dwPreNmiResetPending = TRUE;
-        BlankDisplay();
-    }
-}
-#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
-
 void UnusedFrameTimingStub(void) {
 }
 
