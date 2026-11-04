@@ -42,6 +42,8 @@ void RdpDoneThread(void *arg) {
 }
 
 void ViRetraceThread(void *arg) {
+    static s32 g_dwVblankCounter = 0;
+
     osCreateMesgQueue(&g_ViRetracePollMesgQueue, g_ViRetracePollMesgBuf, 1);
     osViSetEvent(&g_ViRetracePollMesgQueue, (OSMesg)g_dwDummyOsMesg, 1);
     for (;;) {
