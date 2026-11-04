@@ -29,7 +29,7 @@ s32 IsCurrentScreen(ScreenCallback callback) {
 
 /* The serial interface, the Paks, and the screens the probe of the controllers runs. */
 s32 g_dwContReadPending;
-u8 g_bPakPort0Initialized, g_bControllerWarningType, g_abSavePakIdKnown[2];
+u8 g_bControllerWarningType, g_abSavePakIdKnown[2];
 u8 g_aabSavePakIds[2][32];
 s16 g_wSerialInterfaceIdle;
 OSMesgQueue g_SiMesgQueue;
@@ -39,7 +39,7 @@ ScreenCallback g_pfnCurrentScreen;
 static OSContPad sNextPads[MAX_PLAYERS];
 static s32 starts, receives, prints, pakMenuFrames, motorChannel = -1;
 static u8 plugged, warnings[4], warningCount;
-static s32 pakResults[MAXCONTROLLERS], enumerateResult;
+static s32 pakResults[MAXCONTROLLERS], pakInitCalls[MAXCONTROLLERS], enumerateResult;
 s32 osContStartReadData(OSMesgQueue *mq) {
     assert(mq == &g_SiMesgQueue && g_wSerialInterfaceIdle == 0);
     starts++;
@@ -63,6 +63,7 @@ s32 osPfsIsPlug(OSMesgQueue *queue, u8 *pattern) {
 }
 s32 osPfsInitPak(OSMesgQueue *queue, OSPfs *pfs, int channel) {
     assert(pfs == &g_aPakPfs[channel]);
+    pakInitCalls[channel]++;
     pfs->id[0] = 0xA0 + channel;
     pfs->id[31] = 0xB0 + channel;
     return pakResults[channel];
@@ -129,7 +130,8 @@ static void TestControllerPaks(void) {
     enumerateResult = 1;
     InitControllersAndPaks();
     assert(warningCount == 1 && warnings[0] == 0);
-    assert(g_bPakPort0Initialized && prints == 1 && gControllerPakState == PFS_ERR_ID_FATAL);
+    assert(pakInitCalls[0] == 1 && pakInitCalls[1] == 1 && prints == 1 &&
+           gControllerPakState == PFS_ERR_ID_FATAL);
     assert(g_abSavePakIdKnown[0] && g_aabSavePakIds[0][0] == 0xA0 &&
            g_aabSavePakIds[0][31] == 0xB0);
     assert(!g_abSavePakIdKnown[1] && g_aabSavePakIds[1][0] == 0 && motorChannel == 1);
@@ -143,7 +145,8 @@ static void TestControllerPaks(void) {
     warningCount = 0;
     motorChannel = -1;
     InitControllersAndPaks();
-    assert(prints == 1 && warningCount == 1 && warnings[0] == 1 && motorChannel == 0);
+    assert(pakInitCalls[0] == 1 && pakInitCalls[1] == 2 && prints == 1 && warningCount == 1 &&
+           warnings[0] == 1 && motorChannel == 0);
     assert(g_abSavePakIdKnown[1] && g_aabSavePakIds[1][0] == 0xA1 &&
            g_aabSavePakIds[1][31] == 0xB1);
 
