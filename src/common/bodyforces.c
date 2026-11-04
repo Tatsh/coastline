@@ -677,8 +677,8 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
     TrackTriangle *triangle;
     f32 nearest, facing, distance;
     s32 slot, i, count;
-    Vec3f direction;
     f32 normalDistance;
+    Vec3f direction;
     char paddingBefore[8];
     Vec3f down;
     char paddingAfter[24];
