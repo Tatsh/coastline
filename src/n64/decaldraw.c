@@ -303,14 +303,13 @@ void StampTextOnDecal(s32 x, s32 y) {
 }
 
 void DrawLine4Bit(s32 x0, s32 y0, s32 x1, s32 y1) {
-    s32 radius, dx, dy, stepX, stepY, x, y, error, swap;
+    s32 dx, dy, radius, x, y, stepX, stepY, error, swap;
 
+    x0 = ScreenToTexelX(x0), y0 = ScreenToTexelY(y0);
+    x1 = ScreenToTexelX(x1), y1 = ScreenToTexelY(y1);
     radius = g_aBrushSizeRects[g_bBrushSize].width >> 1;
-    ScreenToTexel(x0, y0);
-    ScreenToTexel(x1, y1);
     dx = x1 - x0 < 0 ? -(x1 - x0) : x1 - x0;
     dy = y1 - y0 < 0 ? -(y1 - y0) : y1 - y0;
-    stepY = 1;
     /* An exact diagonal drawn downwards is not swapped, and draws nothing. */
     if ((dy < dx && x1 < x0) || (dx < dy && y1 < y0)) {
         swap = x0;
@@ -320,19 +319,14 @@ void DrawLine4Bit(s32 x0, s32 y0, s32 x1, s32 y1) {
         y0 = y1;
         y1 = swap;
     }
-    stepX = 1;
-    if (y1 < y0) {
-        stepY = -1;
-    }
-    if (x1 < x0) {
-        stepX = -1;
-    }
-    /* The original sets the start here and again for the first loop. */
-    x = x0;
-    y = y0;
+    stepY = y1 < y0 ? -1 : 1;
+    stepX = x1 < x0 ? -1 : 1;
 
     if (dy < dx) {
-        for (x = x0, y = y0, error = 0; x <= x1; x++) {
+        x = x0;
+        y = y0;
+        error = 0;
+        for (; x <= x1; x++) {
             if (error >= dx) {
                 error -= dx;
                 y += stepY;
@@ -345,7 +339,10 @@ void DrawLine4Bit(s32 x0, s32 y0, s32 x1, s32 y1) {
             error += dy;
         }
     } else {
-        for (error = 0; y <= y1; y++) {
+        x = x0;
+        y = y0;
+        error = 0;
+        for (; y <= y1; y++) {
             if (error >= dy) {
                 error -= dy;
                 x += stepX;
