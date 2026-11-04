@@ -275,16 +275,30 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
 
 void ComputeCollisionPenetration(
     RigidBody *body, Vec3f *normal, f32 offset, Vec3f *contact, Vec3f triangle[3]) {
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    /* The original reserves these unused slots around the centroid array. */
+    s32 pad0;
+#endif
     f32 middle[3];
     f32 distance;
-    s32 i;
+    s32 i, sign;
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    volatile f32 scratch[3];
+#endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    (void)pad0;
+    (void)scratch;
+#endif
     if (g_dwCollisionContactType != 2) {
 #if TGR_BOSS_RALLY
         distance = Vec3fDot(normal, contact) - offset;
 #else
         distance =
             contact->z * normal->z + (normal->x * contact->x + normal->y * contact->y) - offset;
+        g_vCollisionPenetration.x = normal->x * -distance;
+        g_vCollisionPenetration.y = normal->y * -distance;
+        g_vCollisionPenetration.z = normal->z * -distance;
 #endif
     } else {
         /* The face of the box by the middle of the triangle, signed by its x as the original. */
@@ -298,30 +312,41 @@ void ComputeCollisionPenetration(
                          COMPONENT(&triangle[1], i)) *
                         0.3333333432674407958984375f;
 #else
-            middle[i] = COMPONENT(&triangle[2], i) +
-                        (COMPONENT(&triangle[0], i) + COMPONENT(&triangle[1], i));
+            middle[i] = COMPONENT(&triangle[0], i) + COMPONENT(&triangle[1], i) +
+                        COMPONENT(&triangle[2], i);
             /* The original stores the sum before dividing it. */
             middle[i] = middle[i] / 3.0f;
 #endif /* TGR_BOSS_RALLY */
         }
         if (CONTACT_LESS(CONTACT_ABS(middle[0]), CONTACT_ABS(middle[1]))) {
             if (CONTACT_LESS(CONTACT_ABS(middle[0]), CONTACT_ABS(middle[2]))) {
-                g_vCollisionContact.z = 0.0f;
-                g_vCollisionContact.y = g_vCollisionContact.z;
-                g_vCollisionContact.x = (f32)(CONTACT_LESS(middle[0], 0.0f) ? -1 : 1) * 0.5f;
+                g_vCollisionContact.y = g_vCollisionContact.z = 0.0f;
+                if (CONTACT_LESS(middle[0], 0.0f)) {
+                    sign = -1;
+                } else {
+                    sign = 1;
+                }
+                g_vCollisionContact.x = sign * 0.5f;
             } else {
-                g_vCollisionContact.y = 0.0f;
-                g_vCollisionContact.x = g_vCollisionContact.y;
-                g_vCollisionContact.z = (f32)(CONTACT_LESS(middle[0], 0.0f) ? -1 : 1) * 0.5f;
+                goto third_axis;
             }
         } else if (CONTACT_LESS(CONTACT_ABS(middle[1]), CONTACT_ABS(middle[2]))) {
-            g_vCollisionContact.z = 0.0f;
-            g_vCollisionContact.x = g_vCollisionContact.z;
-            g_vCollisionContact.y = (f32)(CONTACT_LESS(middle[0], 0.0f) ? -1 : 1) * 0.5f;
+            g_vCollisionContact.x = g_vCollisionContact.z = 0.0f;
+            if (CONTACT_LESS(middle[0], 0.0f)) {
+                sign = -1;
+            } else {
+                sign = 1;
+            }
+            g_vCollisionContact.y = sign * 0.5f;
         } else {
-            g_vCollisionContact.y = 0.0f;
-            g_vCollisionContact.x = g_vCollisionContact.y;
-            g_vCollisionContact.z = (f32)(CONTACT_LESS(middle[0], 0.0f) ? -1 : 1) * 0.5f;
+        third_axis:
+            g_vCollisionContact.x = g_vCollisionContact.y = 0.0f;
+            if (CONTACT_LESS(middle[0], 0.0f)) {
+                sign = -1;
+            } else {
+                sign = 1;
+            }
+            g_vCollisionContact.z = sign * 0.5f;
         }
 #if TGR_BOSS_RALLY
         distance = Vec3fDot(normal, &g_vCollisionContact) - offset;
@@ -333,10 +358,17 @@ void ComputeCollisionPenetration(
         g_vCollisionContact.x = g_vCollisionContact.x * body->boxSize.x;
         g_vCollisionContact.x = g_vCollisionContact.x * body->boxSize.y;
         g_fCollisionContactW = g_fCollisionContactW * body->boxSize.z;
+#if !TGR_BOSS_RALLY
+        g_vCollisionPenetration.x = normal->x * -distance;
+        g_vCollisionPenetration.y = normal->y * -distance;
+        g_vCollisionPenetration.z = normal->z * -distance;
+#endif
     }
+#if TGR_BOSS_RALLY
     g_vCollisionPenetration.x = normal->x * -distance;
     g_vCollisionPenetration.y = normal->y * -distance;
     g_vCollisionPenetration.z = normal->z * -distance;
+#endif
 }
 
 s32 ApplyCollisionImpulse(
