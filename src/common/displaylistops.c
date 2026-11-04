@@ -29,22 +29,24 @@ namespace {
 #define SNOW_ENV_COLOR 0x8C9CA800
 
 s32 ProcessDisplayList(DisplayListCommand *displayList, DisplayListCommand table[][4]) {
-    s32 clear, column, translucent, snowTint, row, i;
+    s32 clear, translucent, column, snowTint, i;
 
-    clear = !g_dwNightMode && !g_dwRainMode;
-    column = g_dwWeatherActive + !clear + 1;
     translucent = FALSE;
+    clear = !g_dwNightMode && !g_dwRainMode;
+    column = (s32)g_dwWeatherActive + !clear + 1;
     snowTint = FALSE;
     if (displayList != NULL) {
-        /* The original masks the opcode after the shift. */
-        for (; ((displayList->words.w0 >> 24) & 0xFF) != G_ENDDL; displayList++) {
+        for (;; displayList++) {
             switch ((displayList->words.w0 >> 24) & 0xFF) {
+            case G_ENDDL:
+                goto done;
             case G_SETOTHERMODE_L:
-                for (row = 0; row < RENDER_MODE_ROWS; row++) {
-                    if (displayList->words.w0 == table[row][0].words.w0 &&
-                        displayList->words.w1 == table[row][0].words.w1) {
-                        *displayList = table[row][column];
-                        if (row >= RENDER_MODE_TRANSLUCENT_ROW) {
+                for (i = 0; i < RENDER_MODE_ROWS; i++) {
+                    if (displayList->words.w0 == table[i][0].words.w0 &&
+                        displayList->words.w1 == table[i][0].words.w1) {
+                        displayList->words.w0 = table[i][column].words.w0;
+                        displayList->words.w1 = table[i][column].words.w1;
+                        if (i >= RENDER_MODE_TRANSLUCENT_ROW) {
                             translucent = TRUE;
                         }
                         break;
@@ -56,7 +58,8 @@ s32 ProcessDisplayList(DisplayListCommand *displayList, DisplayListCommand table
                     for (i = 0; i < ARRAY_COUNT(g_aDlClearCombinePatch); i++) {
                         if (displayList->words.w0 == g_aDlClearCombinePatch[i][0].words.w0 &&
                             displayList->words.w1 == g_aDlClearCombinePatch[i][0].words.w1) {
-                            *displayList = g_aDlClearCombinePatch[i][1];
+                            displayList->words.w0 = g_aDlClearCombinePatch[i][1].words.w0;
+                            displayList->words.w1 = g_aDlClearCombinePatch[i][1].words.w1;
                             break;
                         }
                     }
@@ -68,7 +71,11 @@ s32 ProcessDisplayList(DisplayListCommand *displayList, DisplayListCommand table
                             break;
                         }
                     }
-                    snowTint = i < ARRAY_COUNT(g_aDlSnowTintCombines);
+                    if (i < ARRAY_COUNT(g_aDlSnowTintCombines)) {
+                        snowTint = TRUE;
+                    } else {
+                        snowTint = FALSE;
+                    }
                 }
                 break;
             case G_SETPRIMCOLOR:
@@ -84,6 +91,7 @@ s32 ProcessDisplayList(DisplayListCommand *displayList, DisplayListCommand table
             }
         }
     }
+done:
     g_bDisplayListSnowTint = FALSE;
     return translucent;
 }
