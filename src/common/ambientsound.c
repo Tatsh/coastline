@@ -36,23 +36,24 @@
 #define TRACK_SOUND_CHANNEL 3
 #define VOLUME_HALVES_MASK 0x7FFF7FFF
 
-/* Whether the camera of a view changed this frame, which keeps the old pitch and volume. */
-static BOSS_RALLY_INLINE s32 IsAnyViewCameraChanged(void) {
-    return VEHICLE_GET(&(g_aVehicles[g_aViewportRects[0].vehicleIndex]), CameraChanged) ||
-           (g_dwNumViewports != 1 &&
-            VEHICLE_GET(&(g_aVehicles[g_aViewportRects[1].vehicleIndex]), CameraChanged));
-}
-
 void UpdateAmbientSoundChannel(void) {
+#if TGR_BOSS_RALLY
     AMBIENT_CHANNEL_STATE *channel = &AMBIENT_CHANNELS[TRACK_SOUND_CHANNEL];
+#else
+#define channel (&AMBIENT_CHANNELS[TRACK_SOUND_CHANNEL])
+#endif
+#if TGR_BOSS_RALLY
     SoundEffect *effect;
-    CameraFrame *listener;
+#else
+    Vec3f *listenerPosition;
+#endif
+#if TGR_BOSS_RALLY
     SoundReal factor;
+#endif
     f32 frequency;
+    s32 volume;
     f32 upper;
     f32 lower;
-    s32 volume;
-    s32 source;
 
 #if TGR_BOSS_RALLY
     u32 levels;
@@ -73,30 +74,32 @@ void UpdateAmbientSoundChannel(void) {
         g_dwChannel3PlayingSfxId = -1;
         g_ClosestSoundSource.previousSource = -1;
         g_ClosestSoundSource.playing = FALSE;
+        goto select_source;
     }
 
-    source = g_ClosestSoundSource.source;
-    if (source == -1) {
+select_source:
+    if (g_ClosestSoundSource.source == -1) {
         channel->AMBIENT_VOLUME = 0;
         channel->AMBIENT_MIX_VOLUME = 0;
         channel->AMBIENT_STEP = 0;
-        listener = g_ClosestSoundSource.listener;
-    } else if (g_ClosestSoundSource.previousSource != source ||
-               g_ClosestSoundSource.previousListener != g_ClosestSoundSource.listener) {
-        /* A new source fades the old one out first. */
-        g_ClosestSoundSource.playing = FALSE;
-        listener = g_ClosestSoundSource.listener;
-        channel->AMBIENT_VOLUME = ((u32)channel->AMBIENT_VOLUME >> 1) & VOLUME_HALVES_MASK;
-    } else {
+    } else if (g_ClosestSoundSource.previousSource == g_ClosestSoundSource.source &&
+               g_ClosestSoundSource.previousListener == g_ClosestSoundSource.listener) {
         if (FREQUENCY_NEGATIVE(g_ClosestSoundSource.frequency)) {
+#if TGR_BOSS_RALLY
             factor = ComputeDopplerFactor(&g_ClosestSoundSource.position,
                                           &g_ClosestSoundSource.position,
                                           &g_ClosestSoundSource.listener->position,
                                           &g_ClosestSoundSource.previousListenerPosition);
+#else
+            frequency = ComputeDopplerFactor(&g_ClosestSoundSource.position,
+                                             &g_ClosestSoundSource.position,
+                                             &g_ClosestSoundSource.listener->position,
+                                             &g_ClosestSoundSource.previousListenerPosition);
+#endif
 #if TGR_BOSS_RALLY
             frequency = -(factor * g_ClosestSoundSource.frequency);
 #else
-            frequency = -g_ClosestSoundSource.frequency * factor;
+            frequency = -g_ClosestSoundSource.frequency * frequency;
 #endif
             ComputeStereoPan(&g_ClosestSoundSource.position,
                              g_ClosestSoundSource.listener,
@@ -105,11 +108,19 @@ void UpdateAmbientSoundChannel(void) {
                              &volume,
                              TRUE);
         } else {
+#if TGR_BOSS_RALLY
             factor = ComputeDopplerFactor(&g_ClosestSoundSource.position,
                                           &g_ClosestSoundSource.previousPosition,
                                           &g_ClosestSoundSource.listener->position,
                                           &g_ClosestSoundSource.previousListenerPosition);
             frequency = g_ClosestSoundSource.frequency * factor;
+#else
+            frequency = ComputeDopplerFactor(&g_ClosestSoundSource.position,
+                                             &g_ClosestSoundSource.previousPosition,
+                                             &g_ClosestSoundSource.listener->position,
+                                             &g_ClosestSoundSource.previousListenerPosition);
+            frequency = g_ClosestSoundSource.frequency * frequency;
+#endif
             ComputeStereoPan(&g_ClosestSoundSource.position,
                              g_ClosestSoundSource.listener,
                              &upper,
@@ -117,14 +128,28 @@ void UpdateAmbientSoundChannel(void) {
                              &volume,
                              FALSE);
         }
+#if TGR_BOSS_RALLY
         volume = (s32)((u32)volume * (u32)g_ClosestSoundSource.volume) >> 8;
+#else
+        volume *= g_ClosestSoundSource.volume;
+        volume >>= 8;
+#endif
         if (!g_ClosestSoundSource.playing) {
             g_ClosestSoundSource.playing = TRUE;
+#if TGR_BOSS_RALLY
             effect = &g_aSoundEffects[g_ClosestSoundSource.sound];
             StartSoundChannelMuted(
                 TRACK_SOUND_CHANNEL, effect->sample, effect->length, effect->loopLength);
+#else
+            StartSoundChannelMuted(TRACK_SOUND_CHANNEL,
+                                   g_aSoundEffects[g_ClosestSoundSource.sound].sample,
+                                   g_aSoundEffects[g_ClosestSoundSource.sound].length,
+                                   g_aSoundEffects[g_ClosestSoundSource.sound].loopLength);
+#endif
         }
-        if (!IsAnyViewCameraChanged()) {
+        if (VEHICLE_GET(&(g_aVehicles[g_aViewportRects[0].vehicleIndex]), CameraChanged) == 0 &&
+            (g_dwNumViewports == 1 ||
+             VEHICLE_GET(&(g_aVehicles[g_aViewportRects[1].vehicleIndex]), CameraChanged) == 0)) {
             channel->AMBIENT_STEP = FrequencyStep(frequency);
 #if TGR_BOSS_RALLY
             levels = PackVolume(volume, upper, lower);
@@ -146,13 +171,30 @@ void UpdateAmbientSoundChannel(void) {
         g_ClosestSoundSource.previousPosition.x = g_ClosestSoundSource.position.x;
         g_ClosestSoundSource.previousPosition.y = g_ClosestSoundSource.position.y;
         g_ClosestSoundSource.previousPosition.z = g_ClosestSoundSource.position.z;
+#if TGR_BOSS_RALLY
         g_ClosestSoundSource.previousListenerPosition.x = g_ClosestSoundSource.listener->position.x;
         g_ClosestSoundSource.previousListenerPosition.y = g_ClosestSoundSource.listener->position.y;
         g_ClosestSoundSource.previousListenerPosition.z = g_ClosestSoundSource.listener->position.z;
-        source = g_ClosestSoundSource.source;
-        listener = g_ClosestSoundSource.listener;
+#else
+        listenerPosition = &g_ClosestSoundSource.listener->position;
+        g_ClosestSoundSource.previousListenerPosition.x = listenerPosition->x;
+        g_ClosestSoundSource.previousListenerPosition.y = listenerPosition->y;
+        g_ClosestSoundSource.previousListenerPosition.z = listenerPosition->z;
+#endif
+    } else {
+        /* A new source fades the old one out first. */
+        g_ClosestSoundSource.playing = FALSE;
+#if TGR_BOSS_RALLY
+        channel->AMBIENT_VOLUME = ((u32)channel->AMBIENT_VOLUME >> 1) & VOLUME_HALVES_MASK;
+#else
+        volume = channel->AMBIENT_VOLUME;
+        channel->AMBIENT_VOLUME = ((u32)volume >> 1) & VOLUME_HALVES_MASK;
+#endif
     }
-    g_ClosestSoundSource.previousSource = source;
-    g_ClosestSoundSource.previousListener = listener;
+    g_ClosestSoundSource.previousSource = g_ClosestSoundSource.source;
+    g_ClosestSoundSource.previousListener = g_ClosestSoundSource.listener;
     g_ClosestSoundSource.previousSound = g_ClosestSoundSource.sound;
 }
+#if !TGR_BOSS_RALLY
+#undef channel
+#endif
