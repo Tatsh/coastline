@@ -607,54 +607,44 @@ void SolveLinearSystem3x3(Vec3f *out, f32 a[3][3], Vec3f *b) {
                    inverse);
 }
 #else
-/* A cofactor sum of Cramer's rule over the column b and six products of the other columns. */
-static f32 CramerSum(f32 b0, f32 b1, f32 b2, f32 p0, f32 p1, f32 p2, f32 p3, f32 p4, f32 p5) {
-    return b2 * p5 + (-b0 * p0 + b0 * p1 + b1 * p2 - b1 * p3 - b2 * p4);
-}
-
 void SolveLinearSystem3x3(Vec3f *out, f32 a[3][3], Vec3f *b) {
+    f32 p0;
+    f32 p1;
+    f32 p2;
+    f32 p3;
+    f32 p4;
+    f32 p5;
     f32 inverse;
 
-    /* The original stores the determinant in the slot of its inverse before dividing. */
-    inverse = CramerSum(a[0][0],
-                        a[1][0],
-                        a[2][0],
-                        a[2][2] * a[1][1],
-                        a[2][1] * a[1][2],
-                        a[2][2] * a[0][1],
-                        a[2][1] * a[0][2],
-                        a[1][2] * a[0][1],
-                        a[1][1] * a[0][2]);
+    p0 = a[1][1] * a[2][2];
+    p1 = a[1][2] * a[2][1];
+    p2 = a[0][1] * a[2][2];
+    p3 = a[0][2] * a[2][1];
+    p4 = a[0][1] * a[1][2];
+    p5 = a[0][2] * a[1][1];
+    inverse =
+        -a[0][0] * p0 + a[0][0] * p1 + a[1][0] * p2 - a[1][0] * p3 - a[2][0] * p4 + a[2][0] * p5;
     inverse = 1.0f / inverse;
-    out->x = CramerSum(b->x,
-                       b->y,
-                       b->z,
-                       a[2][2] * a[1][1],
-                       a[2][1] * a[1][2],
-                       a[2][2] * a[0][1],
-                       a[2][1] * a[0][2],
-                       a[1][2] * a[0][1],
-                       a[1][1] * a[0][2]) *
+    out->x = (-(&b->x)[0] * p0 + (&b->x)[0] * p1 + (&b->x)[1] * p2 - (&b->x)[1] * p3 -
+              (&b->x)[2] * p4 + (&b->x)[2] * p5) *
              inverse;
-    out->y = -CramerSum(b->x,
-                        b->y,
-                        b->z,
-                        a[2][2] * a[1][0],
-                        a[2][0] * a[1][2],
-                        a[2][2] * a[0][0],
-                        a[2][0] * a[0][2],
-                        a[1][2] * a[0][0],
-                        a[1][0] * a[0][2]) *
+    p0 = a[1][0] * a[2][2];
+    p1 = a[1][2] * a[2][0];
+    p2 = a[0][0] * a[2][2];
+    p3 = a[0][2] * a[2][0];
+    p4 = a[0][0] * a[1][2];
+    p5 = a[0][2] * a[1][0];
+    out->y = -(-(&b->x)[0] * p0 + (&b->x)[0] * p1 + (&b->x)[1] * p2 - (&b->x)[1] * p3 -
+               (&b->x)[2] * p4 + (&b->x)[2] * p5) *
              inverse;
-    out->z = CramerSum(b->x,
-                       b->y,
-                       b->z,
-                       a[2][1] * a[1][0],
-                       a[2][0] * a[1][1],
-                       a[2][1] * a[0][0],
-                       a[2][0] * a[0][1],
-                       a[1][1] * a[0][0],
-                       a[1][0] * a[0][1]) *
+    p0 = a[1][0] * a[2][1];
+    p1 = a[1][1] * a[2][0];
+    p2 = a[0][0] * a[2][1];
+    p3 = a[0][1] * a[2][0];
+    p4 = a[0][0] * a[1][1];
+    p5 = a[0][1] * a[1][0];
+    out->z = (-(&b->x)[0] * p0 + (&b->x)[0] * p1 + (&b->x)[1] * p2 - (&b->x)[1] * p3 -
+              (&b->x)[2] * p4 + (&b->x)[2] * p5) *
              inverse;
 }
 #endif /* TGR_BOSS_RALLY */
