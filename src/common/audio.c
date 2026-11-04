@@ -611,6 +611,80 @@ void CheckSoundEffectLoopPoints(void) {
 }
 
 #if TGR_PLATFORM != TGR_PLATFORM_SDL
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+void AudioMixingThreadMain(void *arg) {
+    static s32 odd = 0;
+    static s32 readPos = 0;
+    static u32 sfxPos = 0;
+    static s32 bytes;
+    static s32 aiPos;
+    static s32 voice;
+    u32 length;
+    u16 save;
+    u32 effectBytes;
+    u32 low;
+    u32 high;
+
+    for (;;) {
+        odd ^= 1;
+        osRecvMesg(&g_AudioMsgQueue, NULL, OS_MESG_BLOCK);
+        for (voice = 0; voice < g_nAudioChannelCount; voice++) {
+            g_aMixerChannels[voice].mixVolume =
+                (u32)(g_aMixerChannels[voice].volume * g_bBgmVolume * g_bMusicVolume) >> 16;
+        }
+        for (voice = 0; voice < SOUND_EFFECT_CHANNELS; voice++) {
+            low = g_aSoundEffectChannels[voice].volume & 0xFFFF;
+            high = (u32)g_aSoundEffectChannels[voice].volume >> 16;
+            low = g_bSfxMasterVolume * low * g_bSfxVolume >> 16;
+            high = g_bSfxMasterVolume * high * g_bSfxVolume >> 16;
+            g_aSoundEffectChannels[voice].mixVolume = (high << 16) + low;
+        }
+        bytes = osAiGetStatus();
+        if (!(bytes & AI_STATUS_FIFO_FULL)) {
+            bytes = osAiSetNextBuffer(g_AudioDmaBuffer, AUDIO_RING_BYTES);
+        }
+        length = osAiGetLength();
+        aiPos = length - MUSIC_LEAD;
+        if (aiPos < 0) {
+            aiPos += AUDIO_RING_BYTES;
+        }
+        bytes = readPos - aiPos;
+        readPos = aiPos;
+        if (bytes < 0) {
+            bytes += AUDIO_RING_BYTES;
+        }
+        /* Empty checks preserve the original IDO control-flow graph. */
+        if (length > AUDIO_RING_BYTES) {
+        }
+        if (bytes > AUDIO_RING_BYTES) {
+        }
+        CheckMusicLoopPoints();
+        if (odd != 0 && g_bMusicPlaybackEnabled != 0) {
+            UpdateMusicPlayback();
+        }
+        save = g_wAudioBufferWritePos;
+        MixAudioSamples(g_AudioDmaBuffer, bytes);
+        for (voice = FIRST_PAIRED_CHANNEL; voice < g_nAudioChannelCount; voice += 2) {
+            g_wAudioBufferWritePos = save;
+            MixAudioStereoSamples(g_AudioDmaBuffer,
+                                  bytes,
+                                  voice * sizeof(MixerChannel) -
+                                      FIRST_PAIRED_CHANNEL * sizeof(MixerChannel));
+        }
+        effectBytes = (SOUND_EFFECT_LEAD - length) / 8 * 8 - sfxPos;
+        if (effectBytes > AUDIO_RING_BYTES) {
+            effectBytes -= AUDIO_RING_BYTES;
+        }
+        MixSoundEffectChannels(g_AudioDmaBuffer, effectBytes, sfxPos);
+        CheckSoundEffectLoopPoints();
+        sfxPos += effectBytes;
+        if (sfxPos > AUDIO_RING_BYTES) {
+            sfxPos -= AUDIO_RING_BYTES;
+        }
+        UpdateRumblePaks(0);
+    }
+}
+#else
 void AudioMixingThreadMain(void *arg) {
     MixerChannel *channel;
     u32 levels, length, bytes, offset;
@@ -695,4 +769,5 @@ void AudioMixingThreadMain(void *arg) {
     }
     /* The original ends with an epilogue that the endless loop never arrives at. */
 }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
 #endif /* TGR_PLATFORM != TGR_PLATFORM_SDL */

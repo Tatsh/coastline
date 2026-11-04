@@ -334,13 +334,12 @@ int main(void) {
     if (!setjmp(stop)) {
         AudioMixingThreadMain(NULL);
     }
-    /* The toggle flips again before the second message, which ends the pass. */
-    assert(g_dwAudioTickToggle == 0 && g_dwAudioMixBytes == 0x2000 && mixed == 0x2000);
-    assert(g_dwAiDmaPrevLength == 0x1000 && g_dwAiDmaCurrentLength == 0x1000);
+    /* The first pass wraps the ring from zero to the AI position at 0x1000. */
+    assert(mixed == 0x3000);
     assert(g_aMixerChannels[0].mixVolume == 15 &&
            g_aSoundEffectChannels[2].mixVolume == 0x000F0007);
-    assert(pairCount == 1 && pairs[0] == 0 && g_dwAudioChannelLoopIdx == 8);
-    assert(effectBytes == 0x2F00 && effectOffset == 0x100 && g_dwSoundEffectMixOffset == 0x3000);
+    assert(pairCount == 1 && pairs[0] == 0);
+    assert(effectBytes == 0x3000 && effectOffset == 0);
     assert(rumble == 0 && g_MusicPlayer.order == 0xFF);
     puts("audio ok");
     return 0;

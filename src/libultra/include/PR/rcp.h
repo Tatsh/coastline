@@ -159,12 +159,12 @@ extern "C" {
 #define AI_DACRATE_REG (AI_BASE_REG + 0x10)   /*!< The divider of the sample rate. */
 #define AI_BITRATE_REG (AI_BASE_REG + 0x14)   /*!< The divider of the bit rate. */
 
-#define AI_CONTROL_DMA_ON 0x01        /*!< Enable the audio DMA. */
-#define AI_STATUS_FIFO_FULL (1 << 31) /*!< Both buffers are queued. */
-#define AI_STATUS_DMA_BUSY (1 << 30)  /*!< A buffer is playing. */
-#define AI_MAX_BIT_RATE 16            /*!< The largest bit rate divider. */
-#define AI_MAX_DAC_RATE 16384         /*!< The largest sample rate divider. */
-#define AI_MIN_DAC_RATE 132           /*!< The smallest sample rate divider. */
+#define AI_CONTROL_DMA_ON 0x01         /*!< Enable the audio DMA. */
+#define AI_STATUS_FIFO_FULL (1U << 31) /*!< Both buffers are queued. */
+#define AI_STATUS_DMA_BUSY (1 << 30)   /*!< A buffer is playing. */
+#define AI_MAX_BIT_RATE 16             /*!< The largest bit rate divider. */
+#define AI_MAX_DAC_RATE 16384          /*!< The largest sample rate divider. */
+#define AI_MIN_DAC_RATE 132            /*!< The smallest sample rate divider. */
 
 /* Peripheral interface. */
 #define PI_BASE_REG 0x04600000                /*!< The base address of the PI registers. */
