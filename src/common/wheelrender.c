@@ -96,11 +96,17 @@ void RenderWheelModels(Vehicle *vehicle) {
         gSPForceMatrix(gDisplayListPtr++, WHEEL_MATRIX_ADDRESS(block));
         SetModelTextures();
         if (g_dwSnowMode) {
-            DrawModelDisplayList(
-                g_pCurrentVehicleModelData->wheelDisplayLists[0][VEHICLE_WHEEL_DL_SNOW]);
+            if (g_pCurrentVehicleModelData->wheelDisplayLists[0][VEHICLE_WHEEL_DL_SNOW] != NULL) {
+                gSPDisplayList(
+                    gDisplayListPtr++,
+                    g_pCurrentVehicleModelData->wheelDisplayLists[0][VEHICLE_WHEEL_DL_SNOW]);
+            }
         } else {
-            DrawModelDisplayList(
-                g_pCurrentVehicleModelData->wheelDisplayLists[0][VEHICLE_WHEEL_DL_NORMAL]);
+            if (g_pCurrentVehicleModelData->wheelDisplayLists[0][VEHICLE_WHEEL_DL_NORMAL] != NULL) {
+                gSPDisplayList(
+                    gDisplayListPtr++,
+                    g_pCurrentVehicleModelData->wheelDisplayLists[0][VEHICLE_WHEEL_DL_NORMAL]);
+            }
         }
         gSPPopMatrix(gDisplayListPtr++, G_MTX_MODELVIEW);
     }
