@@ -434,7 +434,7 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
         while ((index = NextGridCellTriangle(&cursor)) != 0) {
             /* The original reads the track arrays and the corners afresh for each one. */
 #if TGR_PLATFORM == TGR_PLATFORM_N64
-            t0 = (TrackSurface *)(g_LoadedTrack.surfaceBytes + index * sizeof(TrackSurface));
+            t0 = index + (TrackSurface *)g_LoadedTrack.surfaceBytes;
 #else
             t0 = &g_LoadedTrack.surfaces[index];
 #endif
@@ -444,7 +444,7 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
             triangle->vertices[0] = &g_LoadedTrack.vertices[t0->vertices[0]];
 #endif
 #if TGR_PLATFORM == TGR_PLATFORM_N64
-            t1 = (TrackSurface *)(g_LoadedTrack.surfaceBytes + index * sizeof(TrackSurface));
+            t1 = index + (TrackSurface *)g_LoadedTrack.surfaceBytes;
 #else
             t1 = &g_LoadedTrack.surfaces[index];
 #endif
@@ -454,7 +454,7 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
             triangle->vertices[1] = &g_LoadedTrack.vertices[t1->vertices[1]];
 #endif
 #if TGR_PLATFORM == TGR_PLATFORM_N64
-            t2 = (TrackSurface *)(g_LoadedTrack.surfaceBytes + index * sizeof(TrackSurface));
+            t2 = index + (TrackSurface *)g_LoadedTrack.surfaceBytes;
 #else
             t2 = &g_LoadedTrack.surfaces[index];
 #endif
@@ -463,8 +463,13 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
 #else
             triangle->vertices[2] = &g_LoadedTrack.vertices[t2->vertices[2]];
 #endif
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+            triangle->surface = g_LoadedTrack.triangleFlags[index] & 7;
+            triangle->index = index;
+#else
             triangle->index = index;
             triangle->surface = g_LoadedTrack.triangleFlags[index] & 7;
+#endif
 #if TGR_BOSS_RALLY
             e1[0] = (long double)triangle->vertices[1]->x - triangle->vertices[0]->x;
             e1[1] = (long double)triangle->vertices[1]->y - triangle->vertices[0]->y;
