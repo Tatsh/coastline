@@ -125,23 +125,22 @@ void DrawSpriteTinted(Sprite *sprite, u8 red, u8 green, u8 blue) {
 
 void DrawSpriteRegion(
     Sprite *sprite, s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, u8 blue) {
-    /* The original reserves stack for four bytes of locals it does not use. */
-    char unused[4];
-    u32 total, stripBytes, offset;
-    s32 strips, stripDrawHeight, row, i;
+    s32 stripDrawHeight;
+    u32 total;
+    u32 stripBytes;
+    s32 strips;
+    s32 i;
 
-    (void)unused;
     SPRITE_STRIP_BYTES(sprite, total, stripBytes);
     strips = sprite->height / sprite->stripHeight;
     stripDrawHeight = height / strips;
-    for (i = 1, offset = stripBytes, row = y; i <= strips;
-         i++, offset += stripBytes, row += stripDrawHeight) {
+    for (i = 1; i <= strips; i++) {
         DrawSpriteStrip(sprite,
-                        STRIP_PIXELS(sprite->pixels + total - offset),
+                        STRIP_PIXELS(sprite->pixels + total - stripBytes * i),
                         sprite->width,
                         sprite->stripHeight,
                         x,
-                        row,
+                        y + stripDrawHeight * (i - 1),
                         width,
                         stripDrawHeight,
                         red,
