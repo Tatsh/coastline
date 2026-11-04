@@ -11,6 +11,31 @@
 #endif
 
 s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal) {
+#if !TGR_BOSS_RALLY
+    s32 i;
+    s32 diagonal[3];
+    Vec3f point;
+    f32 t;
+
+    for (i = 0; i < 3; ++i) {
+        /* The first-element address preserves IDO's pointer addition order. */
+        if (DoesSegmentCrossUnitCube(&triangle[i], &triangle[0] + ((i + 1) % 3))) {
+            return 1;
+        }
+    }
+    for (i = 0; i < 3; i++) {
+        diagonal[i] = COMPONENT(normal, i) < 0.0f ? -1 : 1;
+    }
+    t = (normal->x * triangle[0].x + normal->y * triangle[0].y + normal->z * triangle[0].z) /
+        (normal->x * diagonal[0] + normal->y * diagonal[1] + normal->z * diagonal[2]);
+    if (!(((f64)t - -0.5) * ((f64)t - 0.5) <= 0.0)) {
+        return 0;
+    }
+    point.x = t * diagonal[0];
+    point.y = t * diagonal[1];
+    point.z = t * diagonal[2];
+    return CountTriangleWinding(triangle, normal, &point);
+#else
     s32 sign[3];
     f32 sx, sy, sz, t;
 #if TGR_BOSS_RALLY
@@ -49,6 +74,7 @@ s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal) {
         return CountTriangleWinding(triangle, normal, &point);
     }
     return 0;
+#endif /* TGR_BOSS_RALLY */
 }
 
 s32 IsTriangleInUnitCube(Vec3f triangle[3], Vec3f *normal) {
