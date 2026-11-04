@@ -376,15 +376,21 @@ void ResetMusicChannels(void) {
 }
 
 void UpdateMusicPlayback(void) {
-    MusicChannel *state;
-    MixerChannel *mixer = g_aMixerChannels;
-    XmSample *sample;
+    s32 i;
     u8 *pattern;
-    u8 instrument;
+    /* The original player tick reserves this otherwise unused stack slot. */
+    s32 unusedIndex;
     s64 period;
-    u64 step;
     s16 volume;
+    u32 instrument;
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    s64 step;
+#else
+    u64 step;
+#endif
+    u16 note;
 
+    (void)sizeof(unusedIndex);
     if (--g_MusicPlayer.tick == 0) {
         g_MusicPlayer.tick = g_MusicPlayer.speed;
         if (g_MusicPlayer.rowsLeft == 0) {
@@ -400,49 +406,52 @@ void UpdateMusicPlayback(void) {
         g_MusicPlayer.row = ParseMusicPatternRow(g_MusicPlayer.row);
     }
 
-    for (state = g_MusicChannelStates; state < &g_MusicChannelStates[g_nAudioChannelCount];
-         state++, mixer++) {
-        instrument = state->instrument;
-        if (state->arpeggioOn && instrument != 0 && mixer->step != 0) {
-            sample = g_apInstrumentData[instrument - 1];
-            mixer->step = NOTE_STEP(sample->relativeNote + state->arpeggio[state->arpeggio[3]]);
+    for (i = 0; i < g_nAudioChannelCount; i++) {
+        instrument = g_MusicChannelStates[i].instrument;
+        if (g_MusicChannelStates[i].arpeggioOn && instrument != 0 &&
+            g_aMixerChannels[i].step != 0) {
+            note = g_MusicChannelStates[i].arpeggio[g_MusicChannelStates[i].arpeggio[3]] +
+                   g_apInstrumentData[instrument - 1]->relativeNote;
+            g_aMixerChannels[i].step = NOTE_STEP(note);
             /* The original stores the step before it wraps the step. */
-            state->arpeggio[3]++;
-            state->arpeggio[3] &= 3;
+            g_MusicChannelStates[i].arpeggio[3]++;
+            g_MusicChannelStates[i].arpeggio[3] &= 3;
         }
 
         /* A portamento slides the period, which is inverse to the step, and stops at its target. */
-        if (state->portamentoSpeed != 0 && mixer->step != 0) {
-            period = (s64)(PERIOD_STEP_PRODUCT / mixer->step) - state->portamentoSpeed;
+        if (g_MusicChannelStates[i].portamentoSpeed != 0 && g_aMixerChannels[i].step != 0) {
+            period = PERIOD_STEP_PRODUCT / g_aMixerChannels[i].step;
+            period -= g_MusicChannelStates[i].portamentoSpeed;
             if (period < 1) {
                 period = 1;
             }
-            if (state->portamentoTarget != 0) {
+            if (g_MusicChannelStates[i].portamentoTarget != 0) {
                 step = PERIOD_STEP_PRODUCT / period;
-                if (state->portamentoSpeed < 0) {
-                    if (step < state->portamentoTarget) {
-                        step = state->portamentoTarget;
+                if (g_MusicChannelStates[i].portamentoSpeed < 0) {
+                    if (step < g_MusicChannelStates[i].portamentoTarget) {
+                        step = g_MusicChannelStates[i].portamentoTarget;
                     }
-                } else if (state->portamentoTarget < step) {
-                    step = state->portamentoTarget;
+                } else if (g_MusicChannelStates[i].portamentoTarget < step) {
+                    step = g_MusicChannelStates[i].portamentoTarget;
                 }
-                mixer->step = step;
+                g_aMixerChannels[i].step = step;
             } else {
-                mixer->step = PERIOD_STEP_PRODUCT / period;
+                g_aMixerChannels[i].step = PERIOD_STEP_PRODUCT / period;
             }
         }
 
-        if (state->volumeSlide != 0) {
-            volume = state->volumeSlide + state->volume;
+        if (g_MusicChannelStates[i].volumeSlide != 0) {
+            volume = g_MusicChannelStates[i].volume + g_MusicChannelStates[i].volumeSlide;
             if (volume < 0) {
                 volume = 0;
             } else if (volume > NOTE_VOLUME) {
                 volume = NOTE_VOLUME;
             }
-            state->volume = volume;
+            g_MusicChannelStates[i].volume = volume;
             if (instrument != 0) {
-                sample = g_apInstrumentData[instrument - 1];
-                mixer->volume = (state->volume * sample->volume) >> 6;
+                g_aMixerChannels[i].volume =
+                    (g_apInstrumentData[instrument - 1]->volume * g_MusicChannelStates[i].volume) >>
+                    6;
             }
         }
     }
