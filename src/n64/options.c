@@ -482,12 +482,18 @@ s32 LoadSaveDataFromEeprom(void) {
 }
 
 void SaveGameDataToEeprom(void) {
-    EepromSaveData *save = (EepromSaveData *)(g_pPakDataBuffer + 4);
-    s32 *equipment = save->equipment;
-    s32 size = ((u8 *)save - g_pPakDataBuffer + sizeof(EepromSaveData) + 7) & ~7;
-    u32 checksum;
-    u32 sum;
     s32 i;
+    EepromSaveData *save;
+    s32 size;
+    u32 sum;
+    s32 *equipment;
+    /* The unused local reserves the original stack slot. */
+    volatile s32 unused;
+    u32 checksum;
+
+    save = (EepromSaveData *)(g_pPakDataBuffer + 4);
+    equipment = save->equipment;
+    size = ((u8 *)save - g_pPakDataBuffer + sizeof(EepromSaveData) + 7) & ~7;
 
     g_wSerialInterfaceIdle = FALSE;
     if (osEepromProbe(&g_SiMesgQueue) &&
