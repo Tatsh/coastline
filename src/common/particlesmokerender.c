@@ -26,11 +26,75 @@
 void RenderTireSmoke(const ViewportRect *viewports) {
 #else
 void RenderTireSmoke(void) {
+    CameraFrame *camera;
 #endif
+#if TGR_BOSS_RALLY
     ConfigureParticleTexture();
+#else
+    /* Separate command blocks preserve IDO's word-store order. */
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xbb000001;
+        command->words.w1 = 0xffffffff;
+    }
+    gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);
+    gDPSetCombineLERP(gDisplayListPtr++,
+                      0,
+                      0,
+                      0,
+                      PRIMITIVE,
+                      TEXEL0,
+                      0,
+                      PRIMITIVE,
+                      0,
+                      0,
+                      0,
+                      0,
+                      PRIMITIVE,
+                      TEXEL0,
+                      0,
+                      PRIMITIVE,
+                      0);
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xfd900000;
+        command->words.w1 = (u32)g_aParticleTexture;
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf5900000;
+        command->words.w1 = 0x07018060;
+    }
+    gDPLoadSync(gDisplayListPtr++);
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf3000000;
+        command->words.w1 = 0x077ff100;
+    }
+    gDPPipeSync(gDisplayListPtr++);
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf5881000;
+        command->words.w1 = 0x00018060;
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf2000000;
+        command->words.w1 = 0x000fc0fc;
+    }
+    gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
+    gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE);
+#endif
 
     /* The view, then the axes of a puff to those of the screen, then the perspective. */
+#if TGR_BOSS_RALLY
     MtxInvert4x4(g_afMvpMatrix, (f32(*)[4])g_pActiveCamera);
+#else
+    camera = g_pActiveCamera;
+    MtxInvert4x4(g_afMvpMatrix, (f32(*)[4])camera);
+#endif
     g_afScratchMatrix[0][0] = 0.0f;
     g_afScratchMatrix[0][1] = 0.0f;
     g_afScratchMatrix[0][2] = -1.0f;
