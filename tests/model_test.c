@@ -1,11 +1,9 @@
-/* Test of src/n64/model.c and src/vehiclemodel.c: the stepping and blending of animations, the
- * remap of a display list, and the paint of a car. */
+/* Test animation stepping and blending, display-list relocation, and vehicle paint. */
 #include <assert.h>
 #include <math.h>
 #include <stdio.h>
 
 #include "common/vehiclemodel.c"
-#include "model.c"
 
 f32 g_fFrameDeltaTime;
 VehicleModel g_aVehicleModels[1];

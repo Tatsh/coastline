@@ -12,7 +12,6 @@ set(_n64_sources
     hud.c
     input.c
     mainmenu.c
-    model.c
     options.c
     paintshop.c
     pakmenu.c
