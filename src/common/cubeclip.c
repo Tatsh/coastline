@@ -38,9 +38,7 @@ s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal) {
 #else
     s32 sign[3];
     f32 sx, sy, sz, t;
-#if TGR_BOSS_RALLY
     long double ratio;
-#endif
     Vec3f point;
     s32 edge, i;
 
@@ -56,18 +54,12 @@ s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal) {
     sx = (f32)sign[0];
     sy = (f32)sign[1];
     sz = (f32)sign[2];
-#if TGR_BOSS_RALLY
     ratio =
         (CUBE_VALUE(normal->x) * triangle[0].x +
          (CUBE_VALUE(normal->y) * triangle[0].y + CUBE_VALUE(normal->z) * triangle[0].z)) /
         ((CUBE_VALUE(normal->x) * sx + CUBE_VALUE(normal->y) * sy) + CUBE_VALUE(normal->z) * sz);
     t = ratio;
     if (!((ratio - -0.5) * ((long double)t - 0.5) > 0.0)) {
-#else
-    t = (normal->x * triangle[0].x + normal->y * triangle[0].y + normal->z * triangle[0].z) /
-        (sz * normal->z + (normal->x * sx + normal->y * sy));
-    if (((f64)t - -0.5) * ((f64)t - 0.5) <= 0.0) {
-#endif /* TGR_BOSS_RALLY */
         point.x = sx * t;
         point.y = sy * t;
         point.z = sz * t;

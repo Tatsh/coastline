@@ -185,9 +185,6 @@ s32 MeasureTextWidth(const char *text, s32 size) {
     s32 *offsets;
     s32 c, next;
     s32 glyph;
-#if TGR_REGION == TGR_REGION_JP && !TGR_BOSS_RALLY
-    s32 japanese = FALSE;
-#endif
 
     if (g_dwScreenScaleShift) {
         size *= 2;
@@ -198,36 +195,16 @@ s32 MeasureTextWidth(const char *text, s32 size) {
 #endif
     ) {
         cell = SMALL_FONT_CELL;
-#if TGR_BOSS_RALLY
         padding = 1;
-#else
-        padding = SMALL_FONT_PADDING;
-#endif
-#if TGR_BOSS_RALLY
         offsets = g_adwHudFont2GlyphOffsets;
-#else
-        offsets = g_adwSmallFontGlyphOffsets;
-#endif
     } else {
         cell = LARGE_FONT_CELL;
-#if TGR_BOSS_RALLY
         padding = 1;
-#else
-        padding = LARGE_FONT_PADDING;
-#endif
-#if TGR_BOSS_RALLY
         offsets = g_adwHudFont0GlyphOffsets;
-#else
-        offsets = g_adwLargeFontGlyphOffsets;
-#endif
     }
     for (; *text != '\0'; text++) {
         c = (u8)*text;
-#if TGR_REGION == TGR_REGION_JP && !TGR_BOSS_RALLY
-        if ((c < '!' || c >= 0x80) && !japanese) {
-#else
         if (c < '!' || c >= 0x80) {
-#endif
             width += (size * SPACE_ADVANCE) / SIZE_UNITS;
             continue;
         }
@@ -235,17 +212,6 @@ s32 MeasureTextWidth(const char *text, s32 size) {
             next = text[1];
             if (next == '%') {
                 text++;
-#if TGR_REGION == TGR_REGION_JP && !TGR_BOSS_RALLY
-            } else if (next == 'j') {
-                /* %j starts Japanese text and %e ends it. */
-                text++;
-                japanese = TRUE;
-                continue;
-            } else if (next == 'e') {
-                text++;
-                japanese = FALSE;
-                continue;
-#endif /* TGR_REGION == TGR_REGION_JP && !TGR_BOSS_RALLY */
             } else if (next == 'i' || next == 'n') {
                 text++;
                 continue;
@@ -254,14 +220,6 @@ s32 MeasureTextWidth(const char *text, s32 size) {
                 continue;
             }
         }
-#if TGR_REGION == TGR_REGION_JP && !TGR_BOSS_RALLY
-        /* Every Japanese glyph has the same advance. */
-        if (japanese) {
-            width += ((cell * JAPANESE_ADVANCE / SIZE_UNITS - padding) * size) / cell;
-            continue;
-        }
-#endif
-#if TGR_BOSS_RALLY
         glyph = (s8)g_abHudFontCharToGlyph[c - '!'];
         if (glyph >= 28) {
             s32 *secondRow =
@@ -270,9 +228,6 @@ s32 MeasureTextWidth(const char *text, s32 size) {
             width += ((secondRow[glyph + 1] - secondRow[glyph]) * size) / cell;
             continue;
         }
-#else
-        glyph = g_abHudFontCharToGlyph[c - '!'];
-#endif /* TGR_BOSS_RALLY */
         width += ((offsets[glyph + 1] - offsets[glyph] - padding + 1) * size) / cell;
     }
     if (g_dwScreenScaleShift) {

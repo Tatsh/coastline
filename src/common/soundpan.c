@@ -86,19 +86,13 @@ void ComputeStereoPan(
     if (narrow) {
         projected *= PAN_NARROW;
     }
-#if TGR_BOSS_RALLY
     share = (projected + PAN_RANGE) * 0.05f;
-#else
-    share = (projected + PAN_RANGE) / (PAN_RANGE + PAN_RANGE);
-#endif
     rest = PAN_INTERMEDIATE(1.0f) - share;
-#if TGR_BOSS_RALLY
     /* Each bound passes an unordered value. */
     if (!(0.49f > share) && !(share > 0.51f) && !(0.49f > rest) && !(rest > 0.51f)) {
         share = 0.5f;
         rest = 0.5f;
     }
-#endif
     if (PAN_LESS(share, rest)) {
         share *= PAN_LOUD;
         rest += PAN_QUIET_RAISE * (1.0f - rest);

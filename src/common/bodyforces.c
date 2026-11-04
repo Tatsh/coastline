@@ -804,12 +804,7 @@ void ComputeSpringForces(RigidBody *body) {
 #else
     RigidBodyForce *force = body->forces;
     RigidBody *wheel;
-#if TGR_BOSS_RALLY
     long double extension, compression;
-#else
-    f64 extension;
-    f32 compression;
-#endif
     s16 previous;
     s32 i;
 
@@ -836,35 +831,18 @@ void ComputeSpringForces(RigidBody *body) {
         }
         /* A wheel hanging at full droop is off the ground. */
         extension = (f64)wheel->suspension;
-#if TGR_BOSS_RALLY
         if (!(extension > -0.3999000134110451)) {
-#else
-        if (extension <= -0.3999) {
-#endif
             wheel->contactFrames = 0;
             extension = (f64)-0.3f;
         }
         if (0.0 < extension) {
             extension = (f64)0.0f;
         }
-#if TGR_BOSS_RALLY
         compression = extension - -0.3f;
-#else
-        compression = (f32)(extension - -0.3);
-#endif
-#if TGR_BOSS_RALLY
         if (!(compression >= 0.0f)) {
-#else
-        if (compression < 0.0f) {
-#endif
             compression = 0.0f;
         }
-#if TGR_BOSS_RALLY
         force->vector.z = compression * compression * body->springRate;
-#else
-        force->vector.z =
-            (f32)((f64)compression * (SIGN(compression) * (f64)compression)) * body->springRate;
-#endif
         if (wheel->contactFrames && !previous) {
             body->landed = 0x80;
         }
