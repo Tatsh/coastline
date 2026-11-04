@@ -665,21 +665,32 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
 }
 
 f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
-    TrackTriangle *triangle;
-    Vec3f down, start, origin, direction, hit;
-    f32 nearest;
 #if TGR_BOSS_RALLY
+    TrackTriangle *triangle;
+    Vec3f down, start, origin, direction;
+    Vec3f hit;
+    f32 nearest;
     long double distance, facing;
-#else
-    f32 distance, facing;
-#endif
     s32 slot, count, i;
+#else
+    Vec3f start, origin;
+    TrackTriangle *triangle;
+    f32 nearest, facing, distance;
+    s32 slot, i, count;
+    Vec3f direction;
+    f32 normalDistance;
+    char paddingBefore[8];
+    Vec3f down;
+    char paddingAfter[24];
+#endif
 
 #if TGR_BOSS_RALLY
     down.x = 0.0f;
     down.y = 0.0f;
     down.z = -1.0f;
 #else
+    (void)paddingBefore;
+    (void)paddingAfter;
     down = g_vecNegUnitZ;
 #endif
     nearest = 100.0f;
@@ -690,8 +701,13 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
     Mtx3x3MulVec3f(&direction, body->orientation, &down);
     wheel->ground = NULL;
     slot = BuildTrackTriangleCache(origin.x, origin.y);
+#if TGR_BOSS_RALLY
     count = g_awTriCacheTriCount[slot];
     triangle = g_aTriCacheTriangles[slot];
+#else
+    triangle = g_aTriCacheTriangles[slot];
+    count = g_awTriCacheTriCount[slot];
+#endif
     for (i = 0; i < count; i++, triangle++) {
         distance = PlaneDistance(&triangle->normal, triangle->planeOffset, &origin);
         if (!(distance > -2.0) || !(distance < 2.0)) {
@@ -700,10 +716,10 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
 #if TGR_BOSS_RALLY
         facing = Vec3fDot(&triangle->normal, &direction);
 #else
-        facing = direction.z * triangle->normal.z +
-                 (triangle->normal.x * direction.x + triangle->normal.y * direction.y);
+        facing = triangle->normal.x * direction.x + triangle->normal.y * direction.y +
+                 triangle->normal.z * direction.z;
 #endif
-        if (!((facing < 0 ? -facing : facing) > 0.001)) {
+        if (!((facing < 0.0f ? -facing : facing) > 0.001)) {
             continue;
         }
 #if TGR_BOSS_RALLY
@@ -713,17 +729,16 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
         hit.y = FORCE_PRODUCT(direction.y, distance) + origin.y;
         hit.z = FORCE_PRODUCT(direction.z, distance) + origin.z;
 #else
-        distance = -(triangle->planeOffset +
-                     (origin.z * triangle->normal.z +
-                      (triangle->normal.x * origin.x + triangle->normal.y * origin.y))) /
-                   facing;
+        normalDistance = triangle->normal.x * origin.x + triangle->normal.y * origin.y +
+                         triangle->normal.z * origin.z;
+        distance = -(triangle->planeOffset + normalDistance) / facing;
         /* The original stores the scaled direction before adding the origin to it. */
-        hit.x = direction.x * distance;
-        hit.y = direction.y * distance;
-        hit.z = direction.z * distance;
-        hit.x = origin.x + hit.x;
-        hit.y = origin.y + hit.y;
-        hit.z = origin.z + hit.z;
+        start.x = direction.x * distance;
+        start.y = direction.y * distance;
+        start.z = direction.z * distance;
+        start.x = start.x + origin.x;
+        start.y = start.y + origin.y;
+        start.z = start.z + origin.z;
 #endif /* TGR_BOSS_RALLY */
         if (!((f64)distance > -2.0) || !((f64)distance < 2.0) || !(distance < nearest)) {
             continue;
@@ -731,7 +746,11 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
         if (!((f64)triangle->normal.z > 0.2)) {
             continue;
         }
+#if TGR_BOSS_RALLY
         if (!IsPointInTrackTriangle(triangle, &hit)) {
+#else
+        if (!IsPointInTrackTriangle(triangle, &start)) {
+#endif
             continue;
         }
         wheel->ground = triangle;
