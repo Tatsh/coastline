@@ -63328,6 +63328,8 @@ enddlabel g_awRumbleFramesLeft
 nonmatching g_wRaceScreenLoopExited
 
 dlabel g_wRaceScreenLoopExited
+    .globl g_RumbleProbeState
+    .set g_RumbleProbeState, g_wRaceScreenLoopExited
     /* A5C04 802A4C04 */ .short 0x0000
 enddlabel g_wRaceScreenLoopExited
 

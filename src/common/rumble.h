@@ -126,6 +126,25 @@ extern s16 g_awRumbleCounter[RUMBLE_CHANNELS];
  */
 extern s16 g_awRumbleFramesLeft[RUMBLE_CHANNELS];
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+/** The adjacent race-exit flag and Rumble Pak probe timer. */
+typedef struct {
+    /** Whether the race screen loop has exited. */
+    s16 raceScreenLoopExited;
+    /** The probe counter, following the flag's implicit alignment padding. */
+    u32 probeTimer;
+} RumbleProbeState;
+
+/**
+ * A shared view of the race-exit flag and probe timer in the original data layout.
+ *
+ * @ghidraAddress USA: 0x802a4c04
+ * @ghidraAddress EUR: 0x802a738c
+ * @ghidraAddress JPN: 0x802a6e2c
+ */
+extern RumbleProbeState g_RumbleProbeState;
+#endif
+
 /**
  * The frames until the next probe for Rumble Paks, modulo 64.
  *

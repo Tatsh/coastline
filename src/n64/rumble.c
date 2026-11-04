@@ -17,11 +17,13 @@
 
 void UpdateRumblePaks(s32 unused) {
     int i;
+    int j;
+    int k;
 
     /* Stop every motor outside a running race, and probe for each Pak again. */
     if (!IsCurrentScreen(ProcessRacingScreen) || g_dwGameMode == GAME_MODE_AFTER_SEASON ||
         g_wRaceScreenLoopExited || RESET_PENDING() || g_dwRacePauseState) {
-        for (i = 0; i < RUMBLE_CHANNELS; i++) {
+        for (i = 0; i != RUMBLE_CHANNELS; i++) {
             if (g_wSerialInterfaceIdle) {
                 g_awRumbleActive[i] = 0;
                 g_abRumblePakPresent[i] = FALSE;
@@ -34,42 +36,45 @@ void UpdateRumblePaks(s32 unused) {
     }
 
     /* Pulse each motor that is rumbling, unless its vehicle plays back a recording. */
-    if (g_wSerialInterfaceIdle && !g_wRaceScreenLoopExited && !RESET_PENDING() &&
-        !g_dwRacePauseState) {
-        for (i = 0; i < RUMBLE_CHANNELS; i++) {
-            if (!g_abRumblePakPresent[i] || !g_awRumbleActive[i]) {
-                continue;
-            }
-            if (g_aVehicles[i].input->playbackBuffer != NULL) {
-                continue;
-            }
-            if (g_awRumbleCounter[i] == 0) {
-                if (g_awRumbleMotorOn[i]) {
-                    g_awRumbleCounter[i] = g_awRumbleOffFrames[i];
-                    osMotorStop(&g_aContPfs[i]);
+#if TGR_REGION == TGR_REGION_US
+    if (g_wSerialInterfaceIdle != 0 && g_wRaceScreenLoopExited == 0 && g_dwRacePauseState == 0) {
+#else
+    if (g_wSerialInterfaceIdle != 0 && g_wRaceScreenLoopExited == 0 && RESET_PENDING() == 0 &&
+        g_dwRacePauseState == 0) {
+#endif
+        for (j = 0; j != RUMBLE_CHANNELS; j++) {
+            if (g_abRumblePakPresent[j] && g_awRumbleActive[j] &&
+                g_aVehicles[j].input->playbackBuffer == NULL) {
+                if (g_awRumbleCounter[j] == 0) {
+                    if (g_awRumbleMotorOn[j]) {
+                        g_awRumbleCounter[j] = g_awRumbleOffFrames[j];
+                        osMotorStop(&g_aContPfs[j]);
+                    } else {
+                        g_awRumbleCounter[j] = g_awRumbleOnFrames[j];
+                        osMotorStart(&g_aContPfs[j]);
+                    }
+                    g_awRumbleMotorOn[j] ^= 1;
                 } else {
-                    g_awRumbleCounter[i] = g_awRumbleOnFrames[i];
-                    osMotorStart(&g_aContPfs[i]);
+                    g_awRumbleCounter[j]--;
                 }
-                g_awRumbleMotorOn[i] ^= 1;
-            } else {
-                g_awRumbleCounter[i]--;
-            }
-            if (g_awRumbleFramesLeft[i] == 0) {
-                osMotorStop(&g_aContPfs[i]);
-                g_awRumbleMotorOn[i] = 0;
-                g_awRumbleCounter[i] = 0;
-                g_awRumbleActive[i] = 0;
-            } else {
-                g_awRumbleFramesLeft[i]--;
+                if (g_awRumbleFramesLeft[j] == 0) {
+                    osMotorStop(&g_aContPfs[j]);
+                    g_awRumbleMotorOn[j] = 0;
+                    g_awRumbleCounter[j] = 0;
+                    g_awRumbleActive[j] = 0;
+                } else {
+                    g_awRumbleFramesLeft[j]--;
+                }
             }
         }
     }
 
     /* Probe for Rumble Paks inserted since. */
-    g_dwRumbleProbeTimer = (g_dwRumbleProbeTimer + 1) % RUMBLE_PROBE_INTERVAL;
-    if (g_dwRumbleProbeTimer == 0 && g_wSerialInterfaceIdle) {
-        for (i = 0; i < RUMBLE_CHANNELS; i++) {
+    /* The counter follows the reset flag by one word; this preserves IDO's separate addresses. */
+    k = g_RumbleProbeState.probeTimer + 1;
+    g_dwRumbleProbeTimer = k = k & (RUMBLE_PROBE_INTERVAL - 1);
+    if (k == 0 && g_wSerialInterfaceIdle) {
+        for (i = 0; i != RUMBLE_CHANNELS; i++) {
             g_abRumblePakPresent[i] = FALSE;
             if (osMotorInit(&g_SiMesgQueue, &g_aContPfs[i], i) == 0) {
                 g_abRumblePakPresent[i] = TRUE;
