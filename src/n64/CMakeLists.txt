@@ -27,7 +27,7 @@ set(_n64_sources
     splash.c
     sprite.c
     system.c
-    boot.c
+    boot-object.c
     texrect.c
     text.c
     timing.c

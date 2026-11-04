@@ -1,6 +1,5 @@
 # The game code every release shares.
-add_library(
-  coastline_common STATIC
+set(_common_sources
   ambientsound.c
   assetdma.c
   billboardparticles.c
@@ -123,6 +122,12 @@ add_library(
   volumecontrols.c
   wheelrender.c
   wind.c)
+if(TGR_PLATFORM STREQUAL "n64")
+  list(REMOVE_ITEM _common_sources
+       modelrelocation.c
+       vehiclepaint.c)
+endif()
+add_library(coastline_common STATIC ${_common_sources})
 target_link_libraries(coastline_common PRIVATE coastline_options)
 
 if(TGR_PLATFORM STREQUAL "n64")
