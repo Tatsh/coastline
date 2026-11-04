@@ -174,7 +174,7 @@ void FlushDisplayList(void) {
 #if TGR_PLATFORM == TGR_PLATFORM_N64
     u16 *framebuffer;
     u32 *pairsOut, *pairsIn;
-    s32 pairs, i;
+    s32 pairs, i, multiplier;
 #endif
     s32 commands, count;
 
@@ -234,7 +234,8 @@ void FlushDisplayList(void) {
 #if TGR_PLATFORM == TGR_PLATFORM_N64
         if (g_bShowDepthBuffer) {
             /* The depth buffer is copied over the frame about to show, two depths at a time. */
-            pairs = ((g_dwScreenScaleShift ? 4 : 1) * g_dwScreenWidth * g_dwScreenHeight) >> 1;
+            multiplier = g_dwScreenScaleShift ? 4 : 1;
+            pairs = (multiplier * g_dwScreenWidth * g_dwScreenHeight) >> 1;
             pairsOut = (u32 *)g_apFramebuffers[g_dwFrameBufferIndex ^ 1];
             pairsIn = (u32 *)g_aDepthBuffer;
             for (i = 0; i < pairs; i++) {
