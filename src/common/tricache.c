@@ -334,12 +334,19 @@ s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
 #endif
     s32 axis, i1, i2;
     s32 inside = 0;
+    f32 normalX, normalOther;
 
     /* Drop the main axis of the normal, and solve for the triangle there. */
-    if (ABS(triangle->normal.y) < ABS(triangle->normal.x)) {
-        axis = ABS(triangle->normal.z) < ABS(triangle->normal.x) ? 0 : 2;
+    normalX = ABS(triangle->normal.x);
+    normalOther = ABS(triangle->normal.y);
+    if (normalOther < normalX) {
+        normalX = ABS(triangle->normal.x);
+        normalOther = ABS(triangle->normal.z);
+        axis = normalOther < normalX ? 0 : 2;
     } else {
-        axis = ABS(triangle->normal.z) < ABS(triangle->normal.y) ? 1 : 2;
+        normalX = ABS(triangle->normal.y);
+        normalOther = ABS(triangle->normal.z);
+        axis = normalOther < normalX ? 1 : 2;
     }
     i1 = (axis + 1) % 3;
     i2 = (axis + 2) % 3;
