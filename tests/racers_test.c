@@ -10,6 +10,8 @@
 #include "snapshot.c"
 
 TrackHeader g_LoadedTrack;
+/* Match the ROM linker's symbol for the first gate inside the loaded track. */
+__asm__(".globl g_aTrackGates\n.set g_aTrackGates, g_LoadedTrack+0x98");
 RacerSlot g_aRacerSlots[RACER_SLOTS];
 s32 g_dwNumVehicles, g_dwNumActiveVehicles;
 u32 g_dwNumLocalPlayers, g_dwCurrentWeather, g_dwSelectedTrackId;

@@ -17,18 +17,6 @@ TrackSection *g_pTrackRouteSection;
 #define CROSSES_GATE(gate, from, to)                                                               \
     TestLineSegmentIntersection(&(gate)->ends[1], &(gate)->ends[0], (Vec2f *)(from), (Vec2f *)(to))
 
-/* Count the gate after the ones counted if the segment crosses it, and a lap at the first. */
-#define COUNT_ROUTE_GATE(next, from, to)                                                           \
-    if (g_LoadedTrack.gateCount) {                                                                 \
-        next = (g_dwTrackRouteGates + 1) % g_LoadedTrack.gateCount;                                \
-        if (CROSSES_GATE(&g_LoadedTrack.gates[next], from, to)) {                                  \
-            g_dwTrackRouteGates++;                                                                 \
-            if (&g_LoadedTrack.gates[next] == g_LoadedTrack.gates) {                               \
-                g_dwTrackRouteLaps++;                                                              \
-            }                                                                                      \
-        }                                                                                          \
-    }
-
 /* Skip the alternate branches from a section on. */
 #define SKIP_ALTERNATE_SECTIONS(section)                                                           \
     while ((section) != NULL && ((section)->flags & TRACK_SECTION_ALTERNATE)) {                    \
@@ -42,7 +30,6 @@ void FindTrackRoutePoint(TrackSection *section, f32 distance) {
 #else
     f32 span;
 #endif
-    s32 next;
     s32 i;
 
     g_dwTrackRouteGates = 0;
@@ -61,15 +48,36 @@ void FindTrackRoutePoint(TrackSection *section, f32 distance) {
 #endif
             if (span < distance) {
                 distance -= span;
-                COUNT_ROUTE_GATE(
-                    next, &section->points[i].position, &section->points[i + 1].position);
+                if (g_LoadedTrack.gateCount) {
+                    s32 next = (g_dwTrackRouteGates + 1) % g_LoadedTrack.gateCount;
+
+                    if (CROSSES_GATE(&g_LoadedTrack.gates[next],
+                                     &section->points[i].position,
+                                     &section->points[i + 1].position)) {
+                        g_dwTrackRouteGates++;
+                        if (g_aTrackGates == &g_LoadedTrack.gates[next]) {
+                            g_dwTrackRouteLaps++;
+                        }
+                    }
+                }
                 continue;
             }
             Vec3fLerp(&g_vTrackRoutePoint,
                       &section->points[i + 1].position,
                       &section->points[i].position,
                       distance / span);
-            COUNT_ROUTE_GATE(next, &section->points[i].position, &g_vTrackRoutePoint);
+            if (g_LoadedTrack.gateCount) {
+                s32 next = (g_dwTrackRouteGates + 1) % g_LoadedTrack.gateCount;
+
+                if (CROSSES_GATE(&g_LoadedTrack.gates[next],
+                                 &section->points[i].position,
+                                 &g_vTrackRoutePoint)) {
+                    g_dwTrackRouteGates++;
+                    if (next == 0) {
+                        g_dwTrackRouteLaps++;
+                    }
+                }
+            }
             g_pTrackRouteSection = section;
             g_dwTrackRoutePointIndex = i;
             return;

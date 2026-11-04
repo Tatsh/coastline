@@ -254,6 +254,19 @@ typedef struct {
  */
 extern TrackHeader g_LoadedTrack;
 
+#if !TGR_BOSS_RALLY
+/**
+ * The first gate of the loaded track, addressed separately by the original code.
+ *
+ * @ghidraAddress USA: 0x80025c98
+ * @ghidraAddress EUR: 0x80025c98
+ * @ghidraAddress JPN: 0x80025c98
+ */
+extern TrackGate g_aTrackGates[TRACK_GATES];
+#else
+#define g_aTrackGates g_LoadedTrack.gates
+#endif
+
 /**
  * The placed models drawn this frame, by index.
  *

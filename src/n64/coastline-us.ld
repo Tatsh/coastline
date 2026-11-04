@@ -74,6 +74,7 @@ g_abMenuMusicModule = 0x80025C00;
 
 /* The loaded track, which shares the memory of the menu music module. */
 g_LoadedTrack = 0x80025C00;
+g_aTrackGates = g_LoadedTrack + 0x98;
 
 /* Two words of the loaded track its loading prints. */
 g_awTrackDebugWords = 0x80029560;
