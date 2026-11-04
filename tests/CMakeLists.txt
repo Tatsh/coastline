@@ -169,7 +169,7 @@ target_link_options(
 coastline_add_test(texrect "${_src}/n64/texrect.c")
 coastline_add_test(text "${_src}/n64/text.c" "${_src}/common/textrender.c" "${_src}/common/textstyle.c")
 coastline_add_test(timing "${_src}/n64/timing.c" "${_src}/common/timingframe.c")
-coastline_add_test(track ${_vecmath} ${_common} "${_src}/common/trackgrid.c" "${_src}/common/trackvalid.c")
+coastline_add_test(track ${_vecmath} "${_src}/common/trackgrid.c" "${_src}/n64/system.c")
 coastline_add_test(trackrender ${_vecmath} "${_src}/common/screenrect.c" "${_src}/common/shadowreset.c"
                    "${_src}/common/trackinstance.c" "${_src}/common/visiblecompare.c")
 coastline_add_test(vecmath ${_vecmath})

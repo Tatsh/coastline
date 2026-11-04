@@ -20,6 +20,7 @@
 #include "common/text.h"
 #include "common/timing.h"
 #include "common/track.h"
+#include "common/trackmenuitem.h"
 #include "common/trackrender.h"
 #include "common/trackselect.h"
 #include "common/util.h"
@@ -370,6 +371,10 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
         job->pendingChunkSize = g_dwDmaChunkSize;
     }
     return decompressedSize;
+}
+
+s32 IsTrackIndexValid(s32 track) {
+    return track < g_dwNumTracks && g_aTrackDescriptors[track].trackRomEnd != 0;
 }
 
 void WaitForVblankMessage(void) {

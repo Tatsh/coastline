@@ -23,9 +23,6 @@ u32 DmaReadWord(u32 romOffset) {
 }
 void DmaRead(void *dst, u32 romOffset, s32 size) {
 }
-u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
-    return 0;
-}
 void osInvalDCache(void *vaddr, s32 nbytes) {
 }
 void osSyncPrintf(const char *format, ...) {
