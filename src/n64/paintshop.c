@@ -1568,9 +1568,13 @@ void MirrorDecalToOppositePanel(void) {
     g_pDecalSlotIcon = g_apDecalSlotIcons[g_bDecalSlot];
     s_pMirrorSource = source;
     SaveDecalUndo();
+    /* IDO uses source locations to schedule independent global loads. */
+#line 50
     y = 0;
     if (g_bDecalHeight > 0) {
+#line 10000
         source = s_pMirrorSource;
+#line 100
         do {
             for (x = 0; x < g_bDecalWidth; x++) {
                 SetPixel4Bit(g_bDecalWidth - x - 1, y, ReadPixel4Bit(source, x, y));
@@ -1579,6 +1583,7 @@ void MirrorDecalToOppositePanel(void) {
         } while (y < g_bDecalHeight);
         s_pMirrorSource = source;
     }
+#line 1585
     g_bDecalSlotChanged = TRUE;
     g_wScreenFrameCount = 0;
     g_bPaintTool = g_bPreviousPaintTool;
