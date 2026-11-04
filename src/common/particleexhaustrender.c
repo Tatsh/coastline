@@ -9,7 +9,65 @@ void RenderExhaustAndTireSpray(const ViewportRect *viewports, const RacerSlot *s
 #else
 void RenderExhaustAndTireSpray(void) {
 #endif
+#if TGR_BOSS_RALLY
     ConfigureExhaustParticleTexture();
+#else
+    /* Separate command blocks preserve IDO's word-store order. */
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xbb000001;
+        command->words.w1 = 0xffffffff;
+    }
+    gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);
+    gDPSetCombineLERP(gDisplayListPtr++,
+                      0,
+                      0,
+                      0,
+                      PRIMITIVE,
+                      TEXEL0,
+                      0,
+                      PRIMITIVE,
+                      0,
+                      0,
+                      0,
+                      0,
+                      PRIMITIVE,
+                      TEXEL0,
+                      0,
+                      PRIMITIVE,
+                      0);
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xfd900000;
+        command->words.w1 = (u32)g_aParticleTexture;
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf5900000;
+        command->words.w1 = 0x07018060;
+    }
+    gDPLoadSync(gDisplayListPtr++);
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf3000000;
+        command->words.w1 = 0x077ff100;
+    }
+    gDPPipeSync(gDisplayListPtr++);
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf5881000;
+        command->words.w1 = 0x00018060;
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf2000000;
+        command->words.w1 = 0x000fc0fc;
+    }
+    gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
+    gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE);
+#endif
     gDPSetDepthSource(gDisplayListPtr++, G_ZS_PRIM);
     gDPSetColorDither(gDisplayListPtr++, G_CD_DISABLE);
     if (g_dwSnowMode) {
