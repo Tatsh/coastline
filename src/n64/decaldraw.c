@@ -422,11 +422,20 @@ void StrokeDecalRectangle(s32 x0, s32 y0, s32 x1, s32 y1) {
     FillTexels(x, y, x0, y0 - half, x1, y0 + half);
 }
 
-void FillDecalRoundRect(s32 x0, s32 y0, s32 x1, s32 y1) {
-    s32 swap, radius, i, j, error, a, b, x, y;
+void FillDecalRoundRect(s32 x0, s32 y0, s32 screenX1, s32 y1) {
+    s32 x1;
+    s32 swap;
+    s32 radius;
+    s32 y;
+    s32 x;
+    s32 i;
+    s32 j;
+    s32 end;
+    s32 start;
+    s32 error;
 
-    ScreenToTexel(x0, y0);
-    ScreenToTexel(x1, y1);
+    x0 = ScreenToTexelX(x0), y0 = ScreenToTexelY(y0);
+    x1 = ScreenToTexelX(screenX1), y1 = ScreenToTexelY(y1);
     if (x1 < x0) {
         SWAP(x0, x1, swap);
     }
@@ -434,36 +443,49 @@ void FillDecalRoundRect(s32 x0, s32 y0, s32 x1, s32 y1) {
         SWAP(y0, y1, swap);
     }
     radius = (x1 - x0 < y1 - y0 ? x1 - x0 : y1 - y0) >> 2;
-    FillTexels(x, y, x0, y0 + radius, x1, y1 - radius);
+    for (y = y0 + radius; y < y1 - radius; y++) {
+        for (x = x0; x < x1; x++) {
+            SetPixel4Bit(x, y, g_bDecalColor);
+        }
+    }
 
     x0 += radius;
-    x1 -= radius;
     y0 += radius;
+    x1 -= radius;
     y1 -= radius;
     /* The corners are stepped at twice the resolution and drawn on the even steps. Most rows are
      * drawn twice. */
     j = radius * 2;
     i = 0;
     error = -j;
-    if (j < 0) {
-        return;
-    }
-    do {
-        if ((i & 1) == 0) {
-            a = i >> 1;
-            b = j >> 1;
-            FillTexelRow(x, x0 - a, x1 + a, y0 - b);
-            FillTexelRow(x, x0 - b, x1 + b, y0 - a);
-            FillTexelRow(x, x0 - a, x1 + a, y1 + b);
-            FillTexelRow(x, x0 - b, x1 + b, y1 + a);
+    for (; i <= j;) {
+        if (!(i & 1)) {
+            start = x0 - (i >> 1);
+            end = (i >> 1) + x1;
+            for (x = start; x < end; x++) {
+                SetPixel4Bit(x, y0 - (j >> 1), g_bDecalColor);
+            }
+            start = x0 - (j >> 1);
+            end = (j >> 1) + x1;
+            for (x = start; x < end; x++) {
+                SetPixel4Bit(x, y0 - (i >> 1), g_bDecalColor);
+            }
+            start = x0 - (i >> 1);
+            end = (i >> 1) + x1;
+            for (x = start; x < end; x++) {
+                SetPixel4Bit(x, y1 + (j >> 1), g_bDecalColor);
+            }
+            start = x0 - (j >> 1);
+            end = (j >> 1) + x1;
+            for (x = start; x < end; x++) {
+                SetPixel4Bit(x, y1 + (i >> 1), g_bDecalColor);
+            }
         }
-        error += i;
-        i++;
+        error += i++;
         if (error >= 0) {
-            error -= j;
-            j--;
+            error -= j--;
         }
-    } while (j >= i);
+    }
 }
 
 void DrawDecalRoundedRectOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
