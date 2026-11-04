@@ -953,9 +953,10 @@ void SumBodyForces(RigidBody *body) {
             continue;
 #endif
         }
-        body->force.x = vector.x + body->force.x;
-        body->force.y = vector.y + body->force.y;
-        body->force.z = vector.z + body->force.z;
+        /* Indexed components preserve the original floating-point register order. */
+        COMPONENT(&body->force, 0) = COMPONENT(&body->force, 0) + COMPONENT(&vector, 0);
+        COMPONENT(&body->force, 1) = COMPONENT(&body->force, 1) + COMPONENT(&vector, 1);
+        COMPONENT(&body->force, 2) = COMPONENT(&body->force, 2) + COMPONENT(&vector, 2);
         if (body->kind != RIGID_BODY_NO_ROTATION) {
             Mtx3x3MulVec3f(&arm, body->orientation, &force->point);
             torque[0] = FORCE_PRODUCT(arm.y, vector.z) - FORCE_PRODUCT(vector.y, arm.z);
@@ -1001,9 +1002,10 @@ void SumWheelForces(RigidBody *body, RigidBody *wheel) {
         flat.y = local.y;
         flat.z = 0.0f;
         Mtx3x3MulVec3f(&along, body->orientation, &flat);
-        wheel->force.x = local.x + wheel->force.x;
-        wheel->force.y = local.y + wheel->force.y;
-        wheel->force.z = local.z + wheel->force.z;
+        /* Indexed components preserve the original floating-point register order. */
+        COMPONENT(&wheel->force, 0) = COMPONENT(&wheel->force, 0) + COMPONENT(&local, 0);
+        COMPONENT(&wheel->force, 1) = COMPONENT(&wheel->force, 1) + COMPONENT(&local, 1);
+        COMPONENT(&wheel->force, 2) = COMPONENT(&wheel->force, 2) + COMPONENT(&local, 2);
         if (wheel->contactFrames) {
             position.x = wheel->orientation[3][0];
             position.y = wheel->orientation[3][1];
