@@ -1245,16 +1245,20 @@ void EmitScaledTextureRect(
         height >>= 1;
     }
     /* The rows are read from the last upwards, as the decal is stored. */
-    gSPTextureRectangle(gDisplayListPtr++,
-                        x << 2,
-                        y << 2,
-                        (x + width) << 2,
-                        (y + height) << 2,
-                        G_TX_RENDERTILE,
-                        0,
-                        textureHeight << 5,
-                        (textureWidth << 10) / width,
-                        -(textureHeight << 10) / height);
+    /* IDO schedules the rectangle words correctly when emitted in a separate block. */
+    {
+        Gfx *rect = gDisplayListPtr++;
+
+        rect->words.w0 = _SHIFTL(G_TEXRECT, 24, 8) | _SHIFTL((x + width) << 2, 12, 12) |
+                         _SHIFTL((y + height) << 2, 0, 12);
+        rect->words.w1 =
+            _SHIFTL(G_TX_RENDERTILE, 24, 3) | _SHIFTL(x << 2, 12, 12) | _SHIFTL(y << 2, 0, 12);
+    }
+    gImmp1(gDisplayListPtr++, G_RDPHALF_1, _SHIFTL(0, 16, 16) | _SHIFTL(textureHeight << 5, 0, 16));
+    gImmp1(gDisplayListPtr++,
+           G_RDPHALF_2,
+           _SHIFTL((textureWidth << 10) / width, 16, 16) |
+               _SHIFTL(-(textureHeight << 10) / height, 0, 16));
     gDPPipeSync(gDisplayListPtr++);
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
 }
