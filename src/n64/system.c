@@ -520,6 +520,9 @@ void SetDebugMessage(const char *message) {
 
 void FaultThread(void *arg) {
     OSMesg message;
+#ifndef __GNUC__
+    static OSThread *g_pFaultedThread;
+#endif
 
     osSetEventMesg(OS_EVENT_FAULT, &g_FaultMsgQueue, (OSMesg)FAULT_MESSAGE);
     g_dwFaultState = 0;
