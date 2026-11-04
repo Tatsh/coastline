@@ -976,8 +976,10 @@ void DrawDashedRectangle(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 void DrawDashedRoundedRect(s32 x0, s32 y0, s32 x1, s32 y1) {
-    s32 radius, i, j, error, a, b, x, y, swap;
+    s32 swap, radius, x, y, i, j, error, a, unused;
     u8 phase, color;
+
+    (void)unused;
 
     phase = 0;
     AdvanceDashes();
@@ -993,22 +995,26 @@ void DrawDashedRoundedRect(s32 x0, s32 y0, s32 x1, s32 y1) {
     }
     radius = (x1 - x0 < y1 - y0 ? x1 - x0 : y1 - y0) >> 2;
     for (y = y0 + radius; y <= y1 - radius; y += 4) {
-        phase = (phase + 1) & 1;
+        phase++;
+        phase &= 1;
         color = AlternateDashColor(phase);
         DrawFilledRectHiRes(x0, y, 1, 4, color, color, color);
     }
     for (y = y0 + radius; y <= y1 - radius; y += 4) {
-        phase = (phase + 1) & 1;
+        phase++;
+        phase &= 1;
         color = AlternateDashColor(phase);
         DrawFilledRectHiRes(x1, y, 1, 4, color, color, color);
     }
     for (x = x0 + radius; x <= x1 - radius; x += 4) {
-        phase = (phase + 1) & 1;
+        phase++;
+        phase &= 1;
         color = AlternateDashColor(phase);
         DrawFilledRectHiRes(x, y0, 4, 1, color, color, color);
     }
     for (x = x0 + radius; x <= x1 - radius; x += 4) {
-        phase = (phase + 1) & 1;
+        phase++;
+        phase &= 1;
         color = AlternateDashColor(phase);
         DrawFilledRectHiRes(x, y1, 4, 1, color, color, color);
     }
@@ -1021,38 +1027,35 @@ void DrawDashedRoundedRect(s32 x0, s32 y0, s32 x1, s32 y1) {
     j = radius * 2;
     i = 0;
     error = -j;
-    if (j < 0) {
-        return;
-    }
-    do {
+    while (i <= j) {
         if ((i & 1) == 0) {
-            phase = (u8)(phase + 1) % DASH_PERIOD;
+            phase++;
+            phase %= DASH_PERIOD;
             color = DashColor(phase);
             a = i >> 1;
-            b = j >> 1;
             if ((x0 - a) & 1) {
-                DrawPixel(x0 - a, y0 - b, color);
+                DrawPixel(x0 - a, y0 - (j >> 1), color);
             }
             if ((x0 - a) & 1) {
-                DrawPixel(x0 - a, y1 + b, color);
+                DrawPixel(x0 - a, (j >> 1) + y1, color);
             }
-            if ((x1 + a) & 1) {
-                DrawPixel(x1 + a, y1 + b, color);
+            if ((a + x1) & 1) {
+                DrawPixel(a + x1, (j >> 1) + y1, color);
             }
-            if ((x1 + a) & 1) {
-                DrawPixel(x1 + a, y0 - b, color);
+            if ((a + x1) & 1) {
+                DrawPixel(a + x1, y0 - (j >> 1), color);
             }
-            if ((y1 + a) & 1) {
-                DrawPixel(x1 + b, y1 + a, color);
+            if ((a + y1) & 1) {
+                DrawPixel((j >> 1) + x1, a + y1, color);
             }
             if ((y0 - a) & 1) {
-                DrawPixel(x1 + b, y0 - a, color);
+                DrawPixel((j >> 1) + x1, y0 - a, color);
             }
             if ((y0 - a) & 1) {
-                DrawPixel(x0 - b, y0 - a, color);
+                DrawPixel(x0 - (j >> 1), y0 - a, color);
             }
-            if ((y1 + a) & 1) {
-                DrawPixel(x0 - b, y1 + a, color);
+            if ((a + y1) & 1) {
+                DrawPixel(x0 - (j >> 1), a + y1, color);
             }
         }
         error += i;
@@ -1061,7 +1064,7 @@ void DrawDashedRoundedRect(s32 x0, s32 y0, s32 x1, s32 y1) {
             error -= j;
             j--;
         }
-    } while (i <= j);
+    }
 }
 
 void DrawDashedEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
