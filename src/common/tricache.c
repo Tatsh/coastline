@@ -386,17 +386,7 @@ s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
 }
 
 s16 BuildTrackTriangleCache(f32 x, f32 y) {
-    TrackTriangle *triangle;
-    TrackSurface *t0, *t1, *t2;
-    TrackGridCursor cursor;
-#if TGR_BOSS_RALLY
-    long double e1[3], e2[3];
-#else
-    f32 e1[3], e2[3];
-#endif
-    u32 oldest, cell;
-    s16 sector;
-    s32 slot, count;
+    TrackSurface *t0;
 #ifdef ENABLE_PATCHES
     /* The first slot is replaced when every timestamp is at least 2^30. */
     s32 best = 0;
@@ -404,7 +394,21 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
     /* The slot remains unset when every timestamp is at least 2^30. */
     s32 best;
 #endif /* ENABLE_PATCHES */
+    u32 oldest;
+    u32 cell;
+    TrackSurface *t1;
+    TrackGridCursor cursor;
     u16 index;
+    s32 count;
+#if TGR_BOSS_RALLY
+    long double e1[3], e2[3];
+#else
+    f32 e1[3], e2[3];
+#endif
+    TrackSurface *t2;
+    TrackTriangle *triangle;
+    s16 sector;
+    s32 slot;
 
     g_dwTriCacheLruCounter++;
     sector = GRID_SECTOR(x, y);
@@ -421,20 +425,44 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
     }
     g_adwTriCacheLruStamp[best] = g_dwTriCacheLruCounter;
     g_awTriCacheSectorId[best] = sector;
-    triangle = g_aTriCacheTriangles[best];
     count = 0;
+    triangle = g_aTriCacheTriangles[best];
     cell = LookupTrackGridCell(x, y);
+    cursor.count = (cell >> 16) & 0xFFFF;
     cursor.start = cell;
-    cursor.count = cell >> 16;
     if (cell != 0) {
         while ((index = NextGridCellTriangle(&cursor)) != 0) {
             /* The original reads the track arrays and the corners afresh for each one. */
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+            t0 = (TrackSurface *)(g_LoadedTrack.surfaceBytes + index * sizeof(TrackSurface));
+#else
             t0 = &g_LoadedTrack.surfaces[index];
+#endif
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+            triangle->vertices[0] = (Vec3f *)g_LoadedTrack.vertexRows[t0->vertices[0]];
+#else
             triangle->vertices[0] = &g_LoadedTrack.vertices[t0->vertices[0]];
+#endif
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+            t1 = (TrackSurface *)(g_LoadedTrack.surfaceBytes + index * sizeof(TrackSurface));
+#else
             t1 = &g_LoadedTrack.surfaces[index];
+#endif
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+            triangle->vertices[1] = (Vec3f *)g_LoadedTrack.vertexRows[t1->vertices[1]];
+#else
             triangle->vertices[1] = &g_LoadedTrack.vertices[t1->vertices[1]];
+#endif
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+            t2 = (TrackSurface *)(g_LoadedTrack.surfaceBytes + index * sizeof(TrackSurface));
+#else
             t2 = &g_LoadedTrack.surfaces[index];
+#endif
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+            triangle->vertices[2] = (Vec3f *)g_LoadedTrack.vertexRows[t2->vertices[2]];
+#else
             triangle->vertices[2] = &g_LoadedTrack.vertices[t2->vertices[2]];
+#endif
             triangle->index = index;
             triangle->surface = g_LoadedTrack.triangleFlags[index] & 7;
 #if TGR_BOSS_RALLY
@@ -452,20 +480,24 @@ s16 BuildTrackTriangleCache(f32 x, f32 y) {
             e2[1] = triangle->vertices[2]->y - triangle->vertices[0]->y;
             e2[2] = triangle->vertices[2]->z - triangle->vertices[0]->z;
 #endif /* TGR_BOSS_RALLY */
-            triangle->normal.x = e1[1] * e2[2] - e2[1] * e1[2];
-            triangle->normal.y = e1[2] * e2[0] - e2[2] * e1[0];
-            triangle->normal.z = e1[0] * e2[1] - e2[0] * e1[1];
+            triangle->normal.x = e1[1] * e2[2] - e1[2] * e2[1];
+            triangle->normal.y = e1[2] * e2[0] - e1[0] * e2[2];
+            triangle->normal.z = e1[0] * e2[1] - e1[1] * e2[0];
             Vec3fNormalizeFast(&triangle->normal);
+            count++;
 #if TGR_BOSS_RALLY
             triangle->planeOffset = -((long double)triangle->vertices[0]->z * triangle->normal.z +
                                       ((long double)triangle->normal.x * triangle->vertices[0]->x +
                                        (long double)triangle->normal.y * triangle->vertices[0]->y));
+#elif TGR_PLATFORM == TGR_PLATFORM_N64
+            triangle->planeOffset = -(triangle->normal.x * triangle->vertices[0]->x +
+                                      triangle->normal.y * triangle->vertices[0]->y +
+                                      triangle->normal.z * triangle->vertices[0]->z);
 #else
             triangle->planeOffset = -(triangle->vertices[0]->z * triangle->normal.z +
                                       (triangle->normal.x * triangle->vertices[0]->x +
                                        triangle->normal.y * triangle->vertices[0]->y));
 #endif
-            count++;
             triangle++;
         }
     }

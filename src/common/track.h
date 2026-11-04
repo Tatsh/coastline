@@ -190,9 +190,23 @@ typedef struct {
     u32 size; /*!< The bytes of the track once decompressed, first written here by the loading. */
     s32 headerSize;   /*!< The size of this header, which must be #TRACK_HEADER_SIZE. */
     s32 surfaceCount; /*!< The number of triangle surfaces. */
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    union {
+        TrackSurface *surfaces; /*!< What each triangle belongs to, by its index. */
+        u8 *surfaceBytes;       /*!< The serialized eight-byte triangle records. */
+    };
+#else
     TGR_PTR(TrackSurface) surfaces; /*!< What each triangle belongs to, by its index. */
-    s32 vertexCount;                /*!< The number of triangle corners. */
-    TGR_PTR(Vec3f) vertices;        /*!< The corners of the triangles. */
+#endif
+    s32 vertexCount; /*!< The number of triangle corners. */
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    union {
+        Vec3f *vertices;      /*!< The corners of the triangles. */
+        f32 (*vertexRows)[3]; /*!< The coordinates of each corner. */
+    };
+#else
+    TGR_PTR(Vec3f) vertices; /*!< The corners of the triangles. */
+#endif
     s32 textureCount;               /*!< The number of textures. */
     TGR_PTR(ModelTexture) textures; /*!< The textures of the placed models. */
     TGR_PTR(u16)
