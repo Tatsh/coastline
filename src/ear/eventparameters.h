@@ -85,10 +85,10 @@ typedef struct [[gnu::packed]] EarEventParams {
     int32_t positionX;       /*!< The position across, from the listener. */
     int32_t positionY;       /*!< The position up, from the listener. */
     int32_t positionZ;       /*!< The position ahead, from the listener. */
-    /** The upper ends of the bands, in ten-thousandths of the maximum distance. */
-    uint16_t distanceBands[EAR_EVENT_DISTANCE_BAND_COUNT];
+    /** The boundaries of the bands, in ten-thousandths of the maximum distance. */
+    uint16_t distanceBands[EAR_EVENT_DISTANCE_BAND_COUNT + 1];
     /** Unrecovered parameter bytes at the original offset. */
-    uint8_t unknown7c[4]; /* +0x7c */
+    uint8_t unknown7e[2]; /* +0x7e */
 } EarEventParams;
 
 #endif /* COASTLINE_EAR_EVENTPARAMETERS_H */

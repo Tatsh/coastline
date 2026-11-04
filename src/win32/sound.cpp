@@ -105,39 +105,44 @@ bool InitializeMusicPlayback(void) {
     g_EarPlayParams.nTrack = 0;
     g_EarPlayParams.hEvent = 0;
     g_EarPlayParams.wChannel = nChannel;
-    g_EarPlayParams.awUnknown0e[0] = 1;
-    g_EarPlayParams.awUnknown0e[1] = 0;
-    g_EarPlayParams.awUnknown0e[2] = 10000;
-    g_EarPlayParams.adwUnknown14[0] = 10000;
-    g_EarPlayParams.adwUnknown14[1] = 0;
+    g_EarPlayParams.matrixHandle = 1;
+    g_EarPlayParams.minimumGain = 0;
+    g_EarPlayParams.maximumGain = 10000;
+    g_EarPlayParams.maximumDistance = 10000;
+    g_EarPlayParams.minimumDistance = 0;
     g_EarPlayParams.dwPlayFlags = 0;
-    g_EarPlayParams.adwUnknown20[0] = 0;
-    g_EarPlayParams.adwUnknown20[1] = 0;
-    g_EarPlayParams.awUnknown28[0] = 4;
-    g_EarPlayParams.awUnknown28[1] = 0;
-    g_EarPlayParams.adwUnknown2c[0] = 0;
-    g_EarPlayParams.adwUnknown2c[1] = 0;
-    g_EarPlayParams.adwUnknown2c[2] = 0;
-    g_EarPlayParams.adwUnknown2c[3] = 1;
-    g_EarPlayParams.awUnknown3c[0] = 0;
-    g_EarPlayParams.awUnknown3c[1] = 10000;
-    g_EarPlayParams.awUnknown3c[2] = 10000;
-    g_EarPlayParams.wPlaybackControl = 0;
-    g_EarPlayParams.awUnknown44[0] = 0;
-    g_EarPlayParams.awUnknown44[1] = 0;
-    g_EarPlayParams.dwUnknown48 = 0;
-    g_EarPlayParams.awUnknown4c[0] = 0;
-    g_EarPlayParams.awUnknown4c[1] = 0;
-    for (unsigned i = 0; i < 8; ++i) {
-        g_EarPlayParams.adwUnknown50[i] = i == 4 ? 4 : 0;
+    g_EarPlayParams.unknown20 = 0;
+    g_EarPlayParams.reservedControl = 0;
+    g_EarPlayParams.direction = 4;
+    g_EarPlayParams.startDelay = 0;
+    g_EarPlayParams.lifetime = 0;
+    g_EarPlayParams.activeTime = 0;
+    g_EarPlayParams.queueControl = 0;
+    g_EarPlayParams.environmentHandle = 1;
+    g_EarPlayParams.unknown3a = 0;
+    g_EarPlayParams.priority = 0;
+    g_EarPlayParams.frequencyScale = 10000;
+    g_EarPlayParams.baseFrequencyScale = 10000;
+    g_EarPlayParams.startPosition = 0;
+    g_EarPlayParams.limitDistance = 0;
+    g_EarPlayParams.unknown46 = 0;
+    g_EarPlayParams.unknown48 = 0;
+    g_EarPlayParams.pitchVariation = 0;
+    g_EarPlayParams.backendParameter = 0;
+    for (unsigned i = 0; i < 4; ++i) {
+        g_EarPlayParams.unknown50[i] = 0;
     }
-    g_EarPlayParams.awUnknown70[0] = 0;
-    g_EarPlayParams.awUnknown70[1] = 1000;
-    g_EarPlayParams.awUnknown70[2] = 2500;
-    g_EarPlayParams.awUnknown70[3] = 5000;
-    g_EarPlayParams.awUnknown70[4] = 7500;
-    g_EarPlayParams.awUnknown70[5] = 9000;
-    g_EarPlayParams.awUnknown70[6] = 10000;
+    g_EarPlayParams.distanceUnit = 4;
+    g_EarPlayParams.positionX = 0;
+    g_EarPlayParams.positionY = 0;
+    g_EarPlayParams.positionZ = 0;
+    g_EarPlayParams.distanceBands[0] = 0;
+    g_EarPlayParams.distanceBands[1] = 1000;
+    g_EarPlayParams.distanceBands[2] = 2500;
+    g_EarPlayParams.distanceBands[3] = 5000;
+    g_EarPlayParams.distanceBands[4] = 7500;
+    g_EarPlayParams.distanceBands[5] = 9000;
+    g_EarPlayParams.distanceBands[6] = 10000;
     /* The final two bytes retain callback changes. */
     g_nMusicTrackMin = g_pfnEarChangeChannelControl(nChannel, 0x10000020);
     g_nMusicTrackMax = g_pfnEarChangeChannelControl(g_dwEarMusicChannel, 0x10000040);
@@ -162,7 +167,7 @@ bool PlayEarMusicTrack(int nTrack) {
             g_pfnEarClearChannel(g_dwEarMusicChannel, 0);
             g_EarPlayParams.dwPlayFlags = 0x100;
             g_EarPlayParams.nTrack = nTrack;
-            g_EarPlayParams.wPlaybackControl = 0;
+            g_EarPlayParams.startPosition = 0;
             g_EarPlayParams.hEvent = g_pfnEarMixEvent(&g_EarPlayParams);
         }
     }

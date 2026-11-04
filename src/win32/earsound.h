@@ -6,7 +6,11 @@
  * Parameters with unknown types use integer arguments.
  */
 
+#include <cstddef>
+
 #include <windows.h>
+
+#include "ear/eventparameters.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -30,21 +34,44 @@ struct EarPlayParams {
     int nTrack;
     WPARAM hEvent;
     unsigned short wChannel;
-    unsigned short awUnknown0e[3]; /* +0x0e */
-    unsigned adwUnknown14[2];      /* +0x14 */
+    unsigned short matrixHandle;
+    unsigned short minimumGain;
+    unsigned short maximumGain;
+    unsigned maximumDistance;
+    unsigned minimumDistance;
     unsigned dwPlayFlags;
-    unsigned adwUnknown20[2];      /* +0x20 */
-    unsigned short awUnknown28[2]; /* +0x28 */
-    unsigned adwUnknown2c[4];      /* +0x2c */
-    unsigned short awUnknown3c[3]; /* +0x3c */
-    unsigned short wPlaybackControl;
-    unsigned short awUnknown44[2]; /* +0x44 */
-    unsigned dwUnknown48;          /* +0x48 */
-    unsigned short awUnknown4c[2]; /* +0x4c */
-    unsigned adwUnknown50[8];      /* +0x50 */
-    unsigned short awUnknown70[7]; /* +0x70 */
-    unsigned short wUnknown7e;     /* +0x7e */
+    unsigned unknown20; /* +0x20 */
+    unsigned reservedControl;
+    unsigned short direction;
+    unsigned short startDelay;
+    int lifetime;
+    int activeTime;
+    unsigned queueControl;
+    unsigned short environmentHandle;
+    unsigned short unknown3a; /* +0x3a */
+    unsigned short priority;
+    unsigned short frequencyScale;
+    unsigned short baseFrequencyScale;
+    unsigned short startPosition;
+    unsigned short limitDistance;
+    unsigned short unknown46; /* +0x46 */
+    unsigned unknown48;       /* +0x48 */
+    unsigned short pitchVariation;
+    unsigned short backendParameter;
+    unsigned unknown50[4]; /* +0x50 */
+    unsigned distanceUnit;
+    int positionX;
+    int positionY;
+    int positionZ;
+    unsigned short distanceBands[7];
+    unsigned short wUnknown7e; /* +0x7e */
 };
+
+static_assert(sizeof(EarPlayParams) == 0x80);
+static_assert(offsetof(EarPlayParams, environmentHandle) ==
+              offsetof(EarEventParams, environmentHandle));
+static_assert(offsetof(EarPlayParams, distanceBands) == offsetof(EarEventParams, distanceBands));
+static_assert(offsetof(EarPlayParams, wUnknown7e) == offsetof(EarEventParams, unknown7e));
 
 /** Mix an EAR event and return its event identifier. */
 typedef WPARAM(WINAPI *EarMixEventProc)(EarPlayParams *pParams);
