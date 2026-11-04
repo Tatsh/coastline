@@ -21,16 +21,13 @@ typedef Mtx *WheelMatrix;
 #define WHEEL_MATRIX_ADDRESS(matrix) ((u32)(matrix) + 0x80000000)
 #endif
 
-static inline WheelMatrix CopyWheelMatrix(f32 matrix[4][4]) {
 #if TGR_BOSS_RALLY
+static inline WheelMatrix CopyWheelMatrix(f32 matrix[4][4]) {
     WheelMatrix block = AllocDisplayListBlock()->matrix;
     CopyMatrix4x4(matrix, block);
-#else
-    WheelMatrix block = (Mtx *)AllocDisplayListBlock();
-    guMtxF2L(matrix, block);
-#endif
     return block;
 }
+#endif
 
 void RenderWheelModels(Vehicle *vehicle) {
     WheelMatrix block;
@@ -86,13 +83,25 @@ void RenderWheelModels(Vehicle *vehicle) {
         guScaleF(g_afScratchMatrix, 1.0f / 255.0f, 1.0f / 255.0f, 1.0f / 255.0f);
         guMtxCatF(
             g_afScratchMatrix, VEHICLE_GET(vehicle, WheelMatrices)[i], g_mtxVehicleModelScaled);
+#if TGR_BOSS_RALLY
         block = CopyWheelMatrix(g_mtxVehicleModelScaled);
+#else
+        block = (Mtx *)AllocDisplayListBlock();
+        do {
+        } while (0);
+        guMtxF2L(g_mtxVehicleModelScaled, block);
+#endif
         gSPMatrix(gDisplayListPtr++, block, G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
         guMtxCatF(g_mtxVehicleModelScaled, g_afViewProjMatrix, g_afMvpMatrix);
 #if !TGR_BOSS_RALLY
         NormalizeLightMatrix(g_afMvpMatrix);
 #endif
+#if TGR_BOSS_RALLY
         block = CopyWheelMatrix(g_afMvpMatrix);
+#else
+        block = (Mtx *)AllocDisplayListBlock();
+        guMtxF2L(g_afMvpMatrix, block);
+#endif
         gSPForceMatrix(gDisplayListPtr++, WHEEL_MATRIX_ADDRESS(block));
         SetModelTextures();
         if (g_dwSnowMode) {
