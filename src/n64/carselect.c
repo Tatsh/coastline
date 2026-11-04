@@ -97,8 +97,6 @@
 #define SELECTED_CAR(player) (g_aCarModels[g_aVehicles[player].selectedCar])
 
 void DrawProgressBar(s32 x, s32 y, s32 width, s32 height, f32 fraction) {
-    s32 right, bottom;
-
     gDPPipeSync(gDisplayListPtr++);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
     gDPSetRenderMode(gDisplayListPtr++, 0, 0);
@@ -122,17 +120,17 @@ void DrawProgressBar(s32 x, s32 y, s32 width, s32 height, f32 fraction) {
     /* The colours fill only the second of the two pixels of each word. */
     gDPSetFillColor(gDisplayListPtr++, BAR_FRAME_COLOR);
     gDPFillRectangle(gDisplayListPtr++, x, y, x + width, y + height);
+    x += 3;
+    y += 3;
+    width -= 6;
+    height -= 6;
     gDPPipeSync(gDisplayListPtr++);
     gDPSetFillColor(gDisplayListPtr++, BAR_BACK_COLOR);
-    x += 3;
-    width -= 6;
-    bottom = y + height - 3;
-    y += 3;
-    gDPFillRectangle(gDisplayListPtr++, x, y, x + width, bottom);
+    gDPFillRectangle(gDisplayListPtr++, x, y, x + width, y + height);
+    width = width * fraction;
     gDPPipeSync(gDisplayListPtr++);
     gDPSetFillColor(gDisplayListPtr++, BAR_FILL_COLOR);
-    right = x + (s32)((f32)width * fraction);
-    gDPFillRectangle(gDisplayListPtr++, x, y, right, bottom);
+    gDPFillRectangle(gDisplayListPtr++, x, y, x + width, y + height);
 }
 
 s32 IsCarUnlocked(s32 car) {
