@@ -116,7 +116,4 @@ void LoadVehicleModelFromRom(VehicleModel *model, s32 car) {
     DecompressFromRom(model, g_aCarModels[car].modelRom, NULL);
 }
 
-s32 IsVehicleModelValid(s32 car) {
-    return g_aCarModels[car].modelRomEnd != 0;
-}
 #endif /* TGR_BOSS_RALLY */
