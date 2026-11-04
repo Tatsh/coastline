@@ -92,6 +92,54 @@ void UpdateExhaustParticles(void) {
 }
 
 void UpdateTireSmoke(void) {
+#if !TGR_BOSS_RALLY
+    u16 *link;
+    s32 index;
+    s32 next;
+    s32 list;
+    f32 share;
+    f32 grow;
+
+    grow = 0.7f * g_fFrameDeltaTime;
+    for (list = 0; list < 2; list++) {
+        if (list != 0) {
+            link = &g_wTireSmokeListHead;
+            index = g_wTireSmokeListHead;
+        } else {
+            link = &g_wPavedTireSmokeListHead;
+            index = g_wPavedTireSmokeListHead;
+        }
+        while (index != 0) {
+            next = g_aParticlePool[index].next;
+            g_aParticlePool[index].size += grow;
+            share = (f32)(s32)(g_aParticlePool[index].fade * g_aParticlePool[index].alpha) *
+                    PARTICLE_SHARE;
+            g_aParticlePool[index].position.x =
+                (g_vWindVelocity.x +
+                 g_aParticlePool[index].velocity.x * share * g_fFrameDeltaTime) +
+                g_aParticlePool[index].position.x;
+            g_aParticlePool[index].position.y =
+                (g_vWindVelocity.y +
+                 g_aParticlePool[index].velocity.y * share * g_fFrameDeltaTime) +
+                g_aParticlePool[index].position.y;
+            g_aParticlePool[index].position.z =
+                (g_vWindVelocity.z +
+                 (g_aParticlePool[index].velocity.z * share + 0.8f) * g_fFrameDeltaTime) +
+                g_aParticlePool[index].position.z;
+            g_aParticlePool[index].velocity.z =
+                g_aParticlePool[index].velocity.z - g_fFrameDeltaTime * 19.62f;
+            g_aParticlePool[index].fade = (s32)(102.0f / g_aParticlePool[index].size);
+            if (share < PARTICLE_MIN_SHARE || g_aParticlePool[index].velocity.z < -30.0f) {
+                *link = g_aParticlePool[index].next;
+                g_aParticlePool[index].next = g_wParticleFreeListHead;
+                g_wParticleFreeListHead = index;
+            } else {
+                link = &g_aParticlePool[index].next;
+            }
+            index = next;
+        }
+    }
+#else
     Particle *particle;
     u16 *link;
     s32 index;
@@ -99,10 +147,8 @@ void UpdateTireSmoke(void) {
     s32 list;
     ParticleReal grow, share;
     f32 step, rise;
-#if TGR_BOSS_RALLY
     /* A stored fall prevents negating a NaN while folding the subtraction. */
     volatile ParticleReal fall;
-#endif
 
     grow = (ParticleReal)0.7f * g_fFrameDeltaTime;
     for (list = 0; list < 2; list++) {
@@ -120,7 +166,6 @@ void UpdateTireSmoke(void) {
             next = particle->next;
             share = (ParticleReal)(particle->alpha * particle->fade) * PARTICLE_SHARE;
             particle->size += grow;
-#if TGR_BOSS_RALLY
             particle->position.x =
                 particle->velocity.x * share * step + g_vWindVelocity.x + particle->position.x;
             particle->position.y =
@@ -130,13 +175,6 @@ void UpdateTireSmoke(void) {
             fall = (ParticleReal)step * 19.62f;
             particle->velocity.z = rise - fall;
             particle->fade = (s64)((ParticleReal)102.0f / particle->size);
-#else
-            particle->position.x += g_vWindVelocity.x + particle->velocity.x * share * step;
-            particle->position.y += g_vWindVelocity.y + particle->velocity.y * share * step;
-            particle->position.z += g_vWindVelocity.z + (rise * share + 0.8f) * step;
-            particle->velocity.z = rise - step * 19.62f;
-            particle->fade = (s32)(102.0f / particle->size);
-#endif /* TGR_BOSS_RALLY */
             if (share < PARTICLE_MIN_SHARE || PARTICLE_FALLING(particle->velocity.z)) {
                 *link = particle->next;
                 particle->next = g_wParticleFreeListHead;
@@ -146,4 +184,5 @@ void UpdateTireSmoke(void) {
             }
         }
     }
+#endif /* TGR_BOSS_RALLY */
 }
