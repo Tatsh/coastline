@@ -1175,45 +1175,68 @@ void DrawDashedEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
     } while (stepX >= stepY);
 }
 
-/* Draw a point of the dashed circle where it is odd along the arc and over the decal. */
-static inline void
-DrawDashedCirclePoint(s32 x, s32 y, s32 along, u8 color, s32 left, s32 top, s32 right, s32 bottom) {
-    if ((along & 1) && x >= left && x < right && y >= top && y < bottom) {
-        DrawPixel(x, y, color);
-    }
-}
-
 void DrawDashedCircle(s32 x, s32 y, s32 radius) {
-    s32 phase, i, j, error, a, b, left, top, right, bottom;
+    s32 phase;
     u8 color;
+    s32 j, i, left, top, right, bottom, px, error, py;
 
     /* The bounds of the decal are read once, before the dashes advance. */
     left = g_rcDecalCanvas.x;
     top = g_rcDecalCanvas.y;
-    right = left + g_rcDecalCanvas.width;
-    bottom = top + g_rcDecalCanvas.height;
+    right = g_rcDecalCanvas.x + g_rcDecalCanvas.width;
+    bottom = g_rcDecalCanvas.y + g_rcDecalCanvas.height;
     phase = 0;
-    AdvanceDashes();
-    i = 0;
-    j = radius * 2;
-    error = -j;
-    if (j < 0) {
-        return;
+    if ((++g_wScreenFrameCount & 7) == 0) {
+        SwapBytes(&g_bDashColorA, &g_bDashColorB);
     }
-    do {
+    j = radius * 2;
+    i = 0;
+    error = -j;
+    while (i <= j) {
         if ((i & 1) == 0) {
-            phase = (phase + 1) % DASH_PERIOD;
+            phase++;
+            phase %= DASH_PERIOD;
             color = DashColor(phase);
-            a = i >> 1;
-            b = j >> 1;
-            DrawDashedCirclePoint(x + a, y + b, x + a, color, left, top, right, bottom);
-            DrawDashedCirclePoint(x + a, y - b, x + a, color, left, top, right, bottom);
-            DrawDashedCirclePoint(x - a, y - b, x - a, color, left, top, right, bottom);
-            DrawDashedCirclePoint(x - a, y + b, x - a, color, left, top, right, bottom);
-            DrawDashedCirclePoint(x + b, y + a, y + a, color, left, top, right, bottom);
-            DrawDashedCirclePoint(x + b, y - a, y - a, color, left, top, right, bottom);
-            DrawDashedCirclePoint(x - b, y - a, y - a, color, left, top, right, bottom);
-            DrawDashedCirclePoint(x - b, y + a, y + a, color, left, top, right, bottom);
+            px = (i >> 1) + x;
+            py = (j >> 1) + y;
+            if ((px & 1) && px >= left && px < right && py >= top && py < bottom) {
+                DrawPixel(px, py, color);
+            }
+            px = (i >> 1) + x;
+            py = y - (j >> 1);
+            if ((px & 1) && px >= left && px < right && py >= top && py < bottom) {
+                DrawPixel(px, py, color);
+            }
+            px = x - (i >> 1);
+            py = y - (j >> 1);
+            if ((px & 1) && px >= left && px < right && py >= top && py < bottom) {
+                DrawPixel(px, py, color);
+            }
+            px = x - (i >> 1);
+            py = (j >> 1) + y;
+            if ((px & 1) && px >= left && px < right && py >= top && py < bottom) {
+                DrawPixel(px, py, color);
+            }
+            px = (j >> 1) + x;
+            py = (i >> 1) + y;
+            if ((py & 1) && px >= left && px < right && py >= top && py < bottom) {
+                DrawPixel(px, py, color);
+            }
+            px = (j >> 1) + x;
+            py = y - (i >> 1);
+            if ((py & 1) && px >= left && px < right && py >= top && py < bottom) {
+                DrawPixel(px, py, color);
+            }
+            px = x - (j >> 1);
+            py = y - (i >> 1);
+            if ((py & 1) && px >= left && px < right && py >= top && py < bottom) {
+                DrawPixel(px, py, color);
+            }
+            px = x - (j >> 1);
+            py = (i >> 1) + y;
+            if ((py & 1) && px >= left && px < right && py >= top && py < bottom) {
+                DrawPixel(px, py, color);
+            }
         }
         error += i;
         i++;
@@ -1221,7 +1244,7 @@ void DrawDashedCircle(s32 x, s32 y, s32 radius) {
             error -= j;
             j--;
         }
-    } while (i <= j);
+    }
 }
 
 void DrawDecalTextPreview(s32 x, s32 y) {
