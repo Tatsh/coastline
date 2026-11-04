@@ -136,7 +136,7 @@ void CopyTextureAndPaletteFromSegment(ModelTexture *textures, int count) {
             continue;
         }
         TextureAnimation *animation = texture.source.animation;
-        if (animation->frameCount != 2 || animation->frames[0].time != 0xffffffffu ||
+        if (animation->frameCount != 2 || animation->startTime != 0xffffffffu ||
             MODEL_TEXTURE_SIZE(&texture) == 0) {
             continue;
         }

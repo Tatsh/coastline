@@ -447,11 +447,11 @@ static void TestTrackTextures(void) {
     /* An animated texture streams the frame of the time, and a still one its palette once the
      * snow mode changes. */
     animation.header.frameCount = 3;
-    animation.frames[0].time = 0;
-    animation.frames[1].time = 100;
+    animation.header.startTime = 0;
+    animation.frames[0].time = 100;
     animation.frames[1].imageRom = 0x1000;
     animation.frames[1].paletteRom = 0x2000;
-    animation.frames[2].time = 200;
+    animation.frames[1].time = 200;
     textures[0].image = image;
     textures[0].palette = palette;
     textures[0].animated = 1;

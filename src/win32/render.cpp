@@ -304,13 +304,21 @@ void ByteSwapTextureVariantTable(TextureAnimation *pAnimation) {
     memcpy(&dwHeaderWord, pAnimation->unreconstructed4, sizeof(dwHeaderWord));
     dwHeaderWord = SwapDisplayListWord(dwHeaderWord);
     memcpy(pAnimation->unreconstructed4, &dwHeaderWord, sizeof(dwHeaderWord));
-    for (int nFrame = 0; nFrame < pAnimation->frameCount; nFrame++) {
-        pAnimation->frames[nFrame].time = SwapDisplayListWord(pAnimation->frames[nFrame].time);
+    pAnimation->startTime = SwapDisplayListWord(pAnimation->startTime);
+    if (pAnimation->frameCount == 0) {
+        return;
+    }
+    for (int nFrame = 0; nFrame < pAnimation->frameCount - 1; nFrame++) {
         pAnimation->frames[nFrame].imageRom =
             SwapDisplayListWord(pAnimation->frames[nFrame].imageRom);
         pAnimation->frames[nFrame].paletteRom =
             SwapDisplayListWord(pAnimation->frames[nFrame].paletteRom);
+        pAnimation->frames[nFrame].time = SwapDisplayListWord(pAnimation->frames[nFrame].time);
     }
+    pAnimation->frames[pAnimation->frameCount - 1].imageRom =
+        SwapDisplayListWord(pAnimation->frames[pAnimation->frameCount - 1].imageRom);
+    pAnimation->frames[pAnimation->frameCount - 1].paletteRom =
+        SwapDisplayListWord(pAnimation->frames[pAnimation->frameCount - 1].paletteRom);
 }
 
 void ByteSwapAndRelocateTextureDescriptor(ModelTexture *pTexture) {
@@ -331,7 +339,7 @@ void ByteSwapAndRelocateTextureDescriptor(ModelTexture *pTexture) {
             TextureAnimation *pAnimation = pTexture->source.animation;
             ByteSwapTextureVariantTable(pAnimation);
             // The sentinel suppresses image copying even when the selected image exists.
-            int nFrame = pAnimation->frameCount == 2 && pAnimation->frames[0].time == 0xffffffff;
+            int nFrame = pAnimation->frameCount == 2 && pAnimation->startTime == 0xffffffff;
             unsigned nImageOffset = pAnimation->frames[nFrame].imageRom;
             unsigned nPaletteOffset = pAnimation->frames[nFrame].paletteRom;
             unsigned nImageBytes = pTexture->textureFlags & 0x3ffff;
@@ -1397,7 +1405,7 @@ void UploadTrackTextureVariants(ModelTexture *pTextures, int nCount) {
             continue;
         }
         TextureAnimation *animation = texture.source.animation;
-        if (animation->frameCount == 2 && animation->frames[0].time == 0xffffffff) {
+        if (animation->frameCount == 2 && animation->startTime == 0xffffffff) {
             continue;
         }
         unsigned sourceEntry = 0;

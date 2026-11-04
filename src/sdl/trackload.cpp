@@ -449,11 +449,19 @@ void ByteSwapTextureVariantTable(TextureAnimation *pAnimation) {
     std::memcpy(&header, pAnimation->unreconstructed4, sizeof(header));
     header = coastline::SwapWord(header);
     std::memcpy(pAnimation->unreconstructed4, &header, sizeof(header));
-    for (int i = 0; i < pAnimation->frameCount; i++) {
-        pAnimation->frames[i].time = coastline::SwapWord(pAnimation->frames[i].time);
+    pAnimation->startTime = coastline::SwapWord(pAnimation->startTime);
+    if (pAnimation->frameCount == 0) {
+        return;
+    }
+    for (int i = 0; i < pAnimation->frameCount - 1; i++) {
         pAnimation->frames[i].imageRom = coastline::SwapWord(pAnimation->frames[i].imageRom);
         pAnimation->frames[i].paletteRom = coastline::SwapWord(pAnimation->frames[i].paletteRom);
+        pAnimation->frames[i].time = coastline::SwapWord(pAnimation->frames[i].time);
     }
+    pAnimation->frames[pAnimation->frameCount - 1].imageRom =
+        coastline::SwapWord(pAnimation->frames[pAnimation->frameCount - 1].imageRom);
+    pAnimation->frames[pAnimation->frameCount - 1].paletteRom =
+        coastline::SwapWord(pAnimation->frames[pAnimation->frameCount - 1].paletteRom);
 }
 
 void ByteSwapAndRelocateTextureDescriptor(ModelTexture *pTexture) {
@@ -478,7 +486,7 @@ void ByteSwapAndRelocateTextureDescriptor(ModelTexture *pTexture) {
         TextureAnimation *pAnimation = pTexture->source.animation;
         ByteSwapTextureVariantTable(pAnimation);
         // The sentinel suppresses image copying even when the selected image exists.
-        int frame = pAnimation->frameCount == 2 && pAnimation->frames[0].time == 0xffffffff;
+        int frame = pAnimation->frameCount == 2 && pAnimation->startTime == 0xffffffff;
         unsigned imageOffset = pAnimation->frames[frame].imageRom;
         unsigned paletteOffset = pAnimation->frames[frame].paletteRom;
         unsigned imageBytes = pTexture->textureFlags & 0x3ffff;
@@ -544,7 +552,7 @@ void CopyTextureAndPaletteFromSegment(ModelTexture *textures, int count) {
             continue;
         }
         TextureAnimation *animation = texture.source.animation;
-        if (animation->frameCount != 2 || animation->frames[0].time != 0xffffffffu ||
+        if (animation->frameCount != 2 || animation->startTime != 0xffffffffu ||
             MODEL_TEXTURE_SIZE(&texture) == 0) {
             continue;
         }

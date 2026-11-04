@@ -40,13 +40,12 @@ typedef struct {
 } CameraFrame;
 
 /**
- * A frame of an animated texture: the time it starts at, in milliseconds, and where its texels and
- * its palette are on the cartridge, from g_dwTrackTextureRomOffset, or -1 for none.
+ * A frame of an animated texture, with its ROM offsets and the time the next frame starts.
  */
 typedef struct {
-    u32 time;     /*!< The time the frame starts at, in milliseconds. */
     u32 imageRom; /*!< The texel offset, or packed entry indices after upload on Windows, or -1. */
     u32 paletteRom; /*!< The offset of the palette from g_dwTrackTextureRomOffset, or -1. */
+    u32 time;       /*!< The next frame's start time, in milliseconds. */
 } TextureAnimationFrame;
 
 /** The frames of an animated texture. Its fields join this structure as they are reconstructed. */
@@ -54,7 +53,8 @@ typedef struct {
     u8 unreconstructed0[0x2 - 0x0]; /*!< Bytes not yet reconstructed. */
     u16 frameCount;                 /*!< The number of frames. */
     u8 unreconstructed4[0x8 - 0x4]; /*!< Bytes not yet reconstructed. */
-    TextureAnimationFrame frames[]; /*!< The frames, in order of their start times. */
+    u32 startTime;                  /*!< The time of the first frame, or -1 for a day/night pair. */
+    TextureAnimationFrame frames[]; /*!< The frames and their transition times. */
 } TextureAnimation;
 
 /**

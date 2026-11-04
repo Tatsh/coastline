@@ -376,9 +376,10 @@ _Static_assert(offsetof(ModelTexture, source) == 0x8 && offsetof(ModelTexture, w
                    offsetof(ModelTexture, tileT1) == 0x14 && offsetof(ModelTexture, tileS1) == 0x16,
                "texturetile");
 _Static_assert(offsetof(TextureAnimation, frameCount) == 0x2 &&
-                   offsetof(TextureAnimation, frames) == 0x8 &&
+                   offsetof(TextureAnimation, startTime) == 0x8 &&
+                   offsetof(TextureAnimation, frames) == 0xC &&
                    sizeof(TextureAnimationFrame) == 0xC &&
-                   offsetof(TextureAnimationFrame, paletteRom) == 0x8,
+                   offsetof(TextureAnimationFrame, paletteRom) == 0x4,
                "textureanim");
 _Static_assert(offsetof(TrackHeader, textureCount) == 0x18 &&
                    offsetof(TrackHeader, textures) == 0x1C &&

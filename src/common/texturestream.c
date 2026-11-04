@@ -10,105 +10,107 @@
 #include "common/renderbackend.h"
 #endif
 
-#define TEXTURE_ROM_NONE ((u32) - 1)
+#define TEXTURE_ROM_NONE (-1)
 #define CI4_PALETTE_BYTES (16 * sizeof(u16))
 #define PALETTE_BYTES (256 * sizeof(u16))
 
 void StreamAnimatedTrackTextures(void) {
-    ModelTexture *texture;
+    s32 i;
     TextureAnimation *animation;
-#if TGR_PLATFORM == TGR_PLATFORM_N64
-    OSIoMesg *message;
-#endif
-    s32 snowTint, i, frame, frameCount;
-    u32 phase, imageRom, paletteRom;
+    s32 imageRom, paletteRom;
+    u32 period;
+    s32 frame, snowTint;
+    u32 phase;
 
     snowTint = g_dwSnowMode != 0 && g_dwSelectedTrackId != TRACK_COASTLINE &&
                g_dwSelectedTrackId != TRACK_MIRROR_COASTLINE;
     for (i = 0; i < g_LoadedTrack.textureCount; i++) {
-        texture = &g_LoadedTrack.textures[i];
-        if (texture->image == NULL) {
+        if (g_LoadedTrack.textures[i].image == NULL) {
             continue;
         }
-        if (!MODEL_TEXTURE_ANIMATED(texture)) {
-            if (g_dwSnowMode == (u32)g_dwStreamedSnowMode) {
-                continue;
-            }
-            paletteRom = (texture->source.paletteRomIndex & 0xFFF) << 5;
-        } else {
-            animation = texture->source.animation;
-            frameCount = animation->frameCount;
+        if (MODEL_TEXTURE_ANIMATED(&g_LoadedTrack.textures[i])) {
+            animation = g_LoadedTrack.textures[i].source.animation;
             /* The phase is taken from the time of the first frame onward, as if it were 0. */
-            phase = (u32)g_dwElapsedTimeMs %
-                    (animation->frames[frameCount - 1].time - animation->frames[0].time);
-            if (frameCount == 2 && animation->frames[0].time == TEXTURE_ROM_NONE) {
+            period = animation->frames[animation->frameCount - 2].time - animation->startTime;
+            phase = (u32)g_dwElapsedTimeMs - (u32)g_dwElapsedTimeMs / period * period;
+            if (animation->frameCount == 2 && animation->startTime == (u32)TEXTURE_ROM_NONE) {
 #if TGR_BOSS_RALLY
                 continue;
 #else
                 /* A texture of the snow, then the texture of the other weathers. */
-                if ((u32)g_dwStreamedSnowMode == g_dwSnowMode) {
-                    continue;
-                }
-                frame = g_dwSnowMode == 0;
-                imageRom = frame ? TEXTURE_ROM_NONE : animation->frames[frame].imageRom;
-                paletteRom = animation->frames[frame].paletteRom;
-#endif /* TGR_BOSS_RALLY */
-            } else {
-                if (g_dwRacePauseState
-#if TGR_BOSS_RALLY
-                    || gInstantReplayActive == 2
-#endif
-                ) {
-                    continue;
-                }
-                if (snowTint && MODEL_TEXTURE_FORMAT(texture) == TEXTURE_FORMAT_SNOW_STILL) {
-                    frame = 0;
-                } else {
-                    for (frame = 1; frame < frameCount; frame++) {
-                        if (phase < animation->frames[frame].time) {
-                            break;
-                        }
+                if (g_dwStreamedSnowMode != (s32)g_dwSnowMode) {
+                    frame = g_dwSnowMode == 0;
+                    if (g_dwSnowMode == 0) {
+                        imageRom = TEXTURE_ROM_NONE;
+                        goto palette;
                     }
-                    frame--;
+                    goto frame;
                 }
-                imageRom = animation->frames[frame].imageRom;
-                paletteRom = animation->frames[frame].paletteRom;
+                continue;
+#endif /* TGR_BOSS_RALLY */
             }
-            if (MODEL_TEXTURE_SIZE(texture) != 0 && imageRom != TEXTURE_ROM_NONE) {
+            if (g_dwRacePauseState
+#if TGR_BOSS_RALLY
+                || gInstantReplayActive == 2
+#endif
+            ) {
+                continue;
+            }
+            if (snowTint &&
+                MODEL_TEXTURE_FORMAT(&g_LoadedTrack.textures[i]) == TEXTURE_FORMAT_SNOW_STILL) {
+                frame = 1;
+            } else {
+                for (frame = 1; frame < animation->frameCount; frame++) {
+                    if (phase < animation->frames[frame - 1].time) {
+                        break;
+                    }
+                }
+            }
+            frame--;
+#if !TGR_BOSS_RALLY
+        frame:
+#endif
+            imageRom = animation->frames[frame].imageRom;
+#if !TGR_BOSS_RALLY
+        palette:
+#endif
+            paletteRom = animation->frames[frame].paletteRom;
+            if (MODEL_TEXTURE_SIZE(&g_LoadedTrack.textures[i]) != 0 &&
+                imageRom != TEXTURE_ROM_NONE) {
 #if TGR_BOSS_RALLY
                 g_pfnAliasTextureEntrySurface((imageRom >> 16) & 0xffffu, imageRom & 0xffffu);
-                texture = &g_LoadedTrack.textures[i];
 #else
-                message = AllocIoMessage();
-                texture = &g_LoadedTrack.textures[i];
-                osPiStartDma(message,
+                osPiStartDma(AllocIoMessage(),
                              OS_MESG_PRI_NORMAL,
                              OS_READ,
                              imageRom + g_dwTrackTextureRomOffset,
-                             texture->image,
-                             MODEL_TEXTURE_SIZE(texture),
+                             g_LoadedTrack.textures[i].image,
+                             MODEL_TEXTURE_SIZE(&g_LoadedTrack.textures[i]),
                              &g_DmaMessageQueue);
-                texture = &g_LoadedTrack.textures[i];
 #endif /* TGR_BOSS_RALLY */
             }
-        }
-        if (texture->palette != NULL && paletteRom != TEXTURE_ROM_NONE) {
+        load:
+            if (g_LoadedTrack.textures[i].palette != NULL && paletteRom != TEXTURE_ROM_NONE) {
 #if TGR_BOSS_RALLY
-            /* The transfer stub ignores the allocated message and transfer arguments. */
-            AllocIoMessage();
-            osContInit(NULL, NULL, NULL);
+                /* The transfer stub ignores the allocated message and transfer arguments. */
+                AllocIoMessage();
+                osContInit(NULL, NULL, NULL);
 #else
-            message = AllocIoMessage();
-            texture = &g_LoadedTrack.textures[i];
-            osPiStartDma(message,
-                         OS_MESG_PRI_NORMAL,
-                         OS_READ,
-                         paletteRom + g_dwTrackTextureRomOffset,
-                         texture->palette,
-                         MODEL_TEXTURE_FORMAT(texture) == TEXTURE_FORMAT_CI4 ? CI4_PALETTE_BYTES :
-                                                                               PALETTE_BYTES,
-                         &g_DmaMessageQueue);
+                osPiStartDma(AllocIoMessage(),
+                             OS_MESG_PRI_NORMAL,
+                             OS_READ,
+                             paletteRom + g_dwTrackTextureRomOffset,
+                             g_LoadedTrack.textures[i].palette,
+                             MODEL_TEXTURE_FORMAT(&g_LoadedTrack.textures[i]) ==
+                                     TEXTURE_FORMAT_CI4 ?
+                                 CI4_PALETTE_BYTES :
+                                 PALETTE_BYTES,
+                             &g_DmaMessageQueue);
 #endif /* TGR_BOSS_RALLY */
+            }
+        } else if (g_dwSnowMode != (u32)g_dwStreamedSnowMode) {
+            paletteRom = (g_LoadedTrack.textures[i].source.paletteRomIndex & 0xFFF) << 5;
+            goto load;
         }
     }
     g_dwStreamedSnowMode = g_dwSnowMode;
