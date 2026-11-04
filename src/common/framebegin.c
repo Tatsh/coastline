@@ -50,7 +50,14 @@ u32 g_dwTextureFilterMode;
 
 #define VIEWPORT_MARGIN 8
 #define DISPLAY_LIST_START()                                                                       \
-    (g_pDisplayListBase + g_dwFrameBufferIndex * DISPLAY_LIST_COMMANDS + DISPLAY_LIST_RESERVED)
+    (((DisplayListCommand(*)[DISPLAY_LIST_COMMANDS])g_pDisplayListBase)[g_dwFrameBufferIndex] +    \
+     DISPLAY_LIST_RESERVED)
+
+#if TGR_BOSS_RALLY
+#define FRAME_VIEWS views
+#else
+#define FRAME_VIEWS g_aViewportRects
+#endif
 
 #if TGR_BOSS_RALLY
 s32 g_dwStatUnused3;
@@ -67,11 +74,10 @@ s32 g_dwStatTrianglesDrawn;
 void BeginDisplayList(ViewportRect *views, s32 highRes) {
 #else
 void BeginDisplayList(s32 highRes) {
-    ViewportRect *views = g_aViewportRects;
 #endif
     s32 x, width, height;
 
-    if (highRes != g_dwScreenScaleShift) {
+    if (highRes - g_dwScreenScaleShift) {
         g_dwDisplayModeChangeCountdown = 1;
         g_dwScreenScaleShift = highRes;
     }
@@ -87,44 +93,49 @@ void BeginDisplayList(s32 highRes) {
     case 1:
 #if TGR_BOSS_RALLY
         x = 0;
-        views[0].x = x;
-        views[0].y = x;
-        views[0].width = g_dwConfigFramebufferWidth;
-        views[0].height = g_dwConfigFramebufferHeight;
+        FRAME_VIEWS[0].x = x;
+        FRAME_VIEWS[0].y = x;
+        FRAME_VIEWS[0].width = g_dwConfigFramebufferWidth;
+        FRAME_VIEWS[0].height = g_dwConfigFramebufferHeight;
 #else
         x = VIEWPORT_MARGIN;
-        views[0].x = x;
-        views[0].y = x;
-        views[0].width = g_dwScreenWidth - 2 * VIEWPORT_MARGIN;
-        views[0].height = g_dwScreenHeight - 2 * VIEWPORT_MARGIN;
+        FRAME_VIEWS[0].x = x;
+        FRAME_VIEWS[0].y = x;
+        FRAME_VIEWS[0].width = g_dwScreenWidth - 2 * VIEWPORT_MARGIN;
+        FRAME_VIEWS[0].height = g_dwScreenHeight - 2 * VIEWPORT_MARGIN;
 #endif /* TGR_BOSS_RALLY */
         break;
     case 2:
         /* The two views stop 88 pixels short of the right of the screen. */
         x = VIEWPORT_MARGIN;
-        views[1].x = x;
-        views[1].y = (g_dwScreenHeight >> 1) + 1;
+        FRAME_VIEWS[1].x = x;
+        FRAME_VIEWS[1].y = (g_dwScreenHeight >> 1) + 1;
         width = FRAME_SUB(g_dwScreenWidth, 96);
         height = FRAME_SUB(g_dwScreenHeight >> 1, VIEWPORT_MARGIN);
-        views[1].height = height;
-        views[1].width = width;
-        views[0].x = x;
-        views[0].y = x;
-        views[0].width = width;
-        views[0].height = height;
+        FRAME_VIEWS[1].height = height;
+        FRAME_VIEWS[1].width = width;
+        FRAME_VIEWS[0].x = x;
+        FRAME_VIEWS[0].y = x;
+        FRAME_VIEWS[0].width = width;
+        FRAME_VIEWS[0].height = height;
         break;
     }
     ClearRenderStats();
     ResetFrameBlocks();
 #if TGR_PLATFORM == TGR_PLATFORM_N64
-    if (g_dwDisplayModeChangeCountdown != 0 && g_dwDisplayModeChangeCountdown - 1 == 0) {
-        if (g_dwScreenScaleShift) {
-            /* The frame buffers of the high resolution end where the first of the low starts. */
-            g_apFramebuffers[0] = g_aFramebuffer0 - (g_aFramebuffer1 - g_aFramebuffer0) * 6;
-            g_apFramebuffers[1] = g_aFramebuffer0 - (g_aFramebuffer1 - g_aFramebuffer0) * 2;
-        } else {
-            g_apFramebuffers[0] = g_aFramebuffer0;
-            g_apFramebuffers[1] = g_aFramebuffer1;
+    if (g_dwDisplayModeChangeCountdown != 0) {
+        if (!(g_dwDisplayModeChangeCountdown - 1)) {
+            if (g_dwScreenScaleShift) {
+                /* The frame buffers of the high resolution end where the first of the low starts.
+                 */
+                g_apFramebuffers[0] = (u16 *)((u32)g_aFramebuffer0 -
+                                              ((u32)g_aFramebuffer1 - (u32)g_aFramebuffer0) * 6);
+                g_apFramebuffers[1] = (u16 *)((u32)g_aFramebuffer0 -
+                                              ((u32)g_aFramebuffer1 - (u32)g_aFramebuffer0) * 2);
+            } else {
+                g_apFramebuffers[0] = g_aFramebuffer0;
+                g_apFramebuffers[1] = g_aFramebuffer1;
+            }
         }
     }
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
@@ -169,10 +180,23 @@ void BeginDisplayList(s32 highRes) {
     gSPMatrix(gDisplayListPtr++,
               TO_RSP_ADDRESS(&g_mtxIdentity),
               G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xb6000000;
+        command->words.w1 = 0x1f3204;
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xb7000000;
+        command->words.w1 = 0x2000;
+    }
+#else
     gSPClearGeometryMode(gDisplayListPtr++,
                          G_SHADE | G_SHADING_SMOOTH | G_CULL_BOTH | G_FOG | G_LIGHTING |
                              G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR | G_LOD);
     gSPSetGeometryMode(gDisplayListPtr++, G_CULL_BACK);
+#endif
     if (g_bGbiClipping) {
         gSPSetGeometryMode(gDisplayListPtr++, G_CLIPPING);
     } else {
@@ -186,7 +210,11 @@ void BeginDisplayList(s32 highRes) {
                      G_IM_SIZ_16b,
                      g_dwScreenWidth << g_dwScreenScaleShift,
                      TO_RSP_ADDRESS(g_apFramebuffers[g_dwFrameBufferIndex]));
-    gDPSetDepthImage(gDisplayListPtr++, TO_RSP_ADDRESS(g_aDepthBuffer));
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xfe000000;
+        command->words.w1 = TO_RSP_ADDRESS(g_aDepthBuffer);
+    }
     osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
     osViSetSpecialFeatures(OS_VI_DIVOT_ON);
     osViSetSpecialFeatures(g_dwViGammaEnabled ? OS_VI_GAMMA_ON : OS_VI_GAMMA_OFF);
