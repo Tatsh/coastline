@@ -172,11 +172,13 @@ static u64 g_abRspUcodeData[1];
 void FlushDisplayList(void) {
     OSTask *task;
 #if TGR_PLATFORM == TGR_PLATFORM_N64
+    s32 pairs, commands, count, multiplier;
+    u32 *pairsIn, *pairsOut;
+    s32 i;
     u16 *framebuffer;
-    u32 *pairsOut, *pairsIn;
-    s32 pairs, i, multiplier;
-#endif
+#else
     s32 commands, count;
+#endif
 
     gDPFullSync(gDisplayListPtr++);
     gSPEndDisplayList(gDisplayListPtr++);
@@ -204,6 +206,11 @@ void FlushDisplayList(void) {
     task->t.data_ptr = DISPLAY_LIST_START();
 #endif
     task->t.data_size = (gDisplayListPtr - DISPLAY_LIST_START()) * sizeof(Gfx);
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && TGR_REGION != TGR_REGION_US
+    /* Preserve IDO's block boundary before the frame command count. */
+    do {
+    } while (0);
+#endif
     commands = gDisplayListPtr - DISPLAY_LIST_START();
     if (g_dwPeakDisplayListCommands < commands) {
         g_dwPeakDisplayListCommands = commands;
@@ -216,7 +223,11 @@ void FlushDisplayList(void) {
     if (g_dwPeakShadowVertexCount < count) {
         g_dwPeakShadowVertexCount = count;
     }
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && TGR_REGION == TGR_REGION_JP
+    g_dwDisplayListCommandCount = gDisplayListPtr - DISPLAY_LIST_START();
+#else
     g_dwDisplayListCommandCount = commands;
+#endif
     if (commands > DISPLAY_LIST_COMMANDS) {
         SetDebugMessage("HUGE GLIST ERROR");
     }
