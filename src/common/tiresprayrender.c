@@ -93,41 +93,51 @@ void DrawTireSpray(void) {
                       ((u32)GBI_OP_BIND_TEXTURE_ENTRY << 24) | (g_dwTireTrailTextureId & 0xffffff),
                       1);
 #else
-    gDPSetTextureImage(gDisplayListPtr++, G_IM_FMT_I, G_IM_SIZ_16b, 1, g_aTireSprayTexture);
-    gDPSetTile(gDisplayListPtr++,
-               G_IM_FMT_I,
-               G_IM_SIZ_16b,
-               0,
-               0,
-               G_TX_LOADTILE,
-               0,
-               G_TX_WRAP,
-               6,
-               G_TX_NOLOD,
-               G_TX_WRAP,
-               5,
-               G_TX_NOLOD);
+    /* Separate command blocks preserve IDO's word-store order. */
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xfd900000;
+        command->words.w1 = (u32)g_aTireSprayTexture;
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf5900000;
+        command->words.w1 = 0x07018050;
+    }
     gDPLoadSync(gDisplayListPtr++);
-    gDPLoadBlock(gDisplayListPtr++, G_TX_LOADTILE, 0, 0, 511, 0x400);
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf3000000;
+        command->words.w1 = 0x071ff400;
+    }
     gDPPipeSync(gDisplayListPtr++);
-    gDPSetTile(gDisplayListPtr++,
-               G_IM_FMT_I,
-               G_IM_SIZ_4b,
-               2,
-               0,
-               G_TX_RENDERTILE,
-               0,
-               G_TX_WRAP,
-               6,
-               G_TX_NOLOD,
-               G_TX_WRAP,
-               5,
-               G_TX_NOLOD);
-    gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, 31 << 2, 63 << 2);
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf5800400;
+        command->words.w1 = 0x00018050;
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf2000000;
+        command->words.w1 = 0x0007c0fc;
+    }
     /* The size is set again half a texel in, which replaces the first. */
 #endif /* TGR_BOSS_RALLY */
+#if TGR_BOSS_RALLY
     gDPSetTileSize(gDisplayListPtr++, G_TX_RENDERTILE, 2, 2, (31 << 2) + 2, (63 << 2) + 2);
     gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
+#else
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xf2002002;
+        command->words.w1 = 0x0007e0fe;
+    }
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = 0xbb000001;
+        command->words.w1 = 0xffffffff;
+    }
+#endif
 
     for (slotIndex = 0; slotIndex < g_dwNumVehicles; slotIndex++) {
 #if TGR_BOSS_RALLY
