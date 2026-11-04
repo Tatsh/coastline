@@ -27,6 +27,46 @@ typedef f32 PanReal;
 
 void ComputeStereoPan(
     Vec3f *source, CameraFrame *camera, f32 *upper, f32 *lower, s32 *volume, s32 narrow) {
+#if !TGR_BOSS_RALLY
+    union {
+        Vec3f value;
+        f32 coordinates[3];
+    } offset;
+    f32 share;
+    f32 rest;
+    f32 distance;
+    f32(*rows)[4];
+
+    Vec3fSubtract(&offset.value, source, &camera->position);
+    /* The first four rows of a camera frame are its 4 by 4 matrix. */
+    rows = (f32(*)[4])camera;
+    share = offset.coordinates[0] * rows[1][0] + offset.coordinates[1] * rows[1][1] +
+            offset.coordinates[2] * rows[1][2];
+    if (PAN_RANGE < share) {
+        share = PAN_RANGE;
+    } else if (share < -PAN_RANGE) {
+        share = -PAN_RANGE;
+    }
+    if (narrow != 0) {
+        share *= PAN_NARROW;
+    }
+    share = (share + PAN_RANGE) / (PAN_RANGE + PAN_RANGE);
+    rest = 1.0f - share;
+    if (share < rest) {
+        share *= PAN_LOUD;
+        rest += PAN_QUIET_RAISE * (1.0f - rest);
+    } else {
+        rest *= PAN_LOUD;
+        share += PAN_QUIET_RAISE * (1.0f - share);
+    }
+    *upper = share;
+    *lower = rest;
+    distance = Vec3fLength(&offset.value);
+    if (distance < SOUND_NEAREST) {
+        distance = SOUND_NEAREST;
+    }
+    *volume = (s32)(SOUND_VOLUME_SCALE / distance);
+#else
     Vec3f offset;
     f32 share;
     PanReal rest;
@@ -73,4 +113,5 @@ void ComputeStereoPan(
         distance = SOUND_NEAREST;
     }
     *volume = (s32)(PAN_INTERMEDIATE(SOUND_VOLUME_SCALE) / distance);
+#endif
 }
