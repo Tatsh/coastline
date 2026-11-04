@@ -96,6 +96,69 @@ static BOSS_RALLY_INLINE void ChooseReplayCamera(Vehicle *vehicle);
 
 /* The range test implies that a camera point was selected. */
 void ChooseReplayCamera(Vehicle *vehicle) {
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && TGR_REGION != TGR_REGION_US
+    static s32 replayCockpitNext;
+    f32 chosen[3];
+    s32 i;
+    Vec3f *point;
+    Vec3f *selected;
+    f32 best;
+    f32 dx;
+    f32 dz;
+    f32 distance;
+    f32 dy;
+
+    best = CAMERA_POINT_FAR;
+    /* The empty tests preserve the original register allocation under IDO. */
+    if (vehicle) {
+    }
+    if (i * 12) {
+    }
+    for (i = 0; i < g_LoadedTrack.cameraPointCount; i++) {
+        point = &g_LoadedTrack.cameraPoints[i];
+        dx = VEHICLE_GET(vehicle, Frame).position.x - point->x;
+        dy = VEHICLE_GET(vehicle, Frame).position.y - point->y;
+        dx *= dx;
+        dz = VEHICLE_GET(vehicle, Frame).position.z - point->z;
+        dy *= dy;
+        if (!(dz > CAMERA_POINT_MAX_DROP)) {
+            dz *= dz;
+            if ((distance = dx + dy + dz) < best) {
+                selected = &g_LoadedTrack.cameraPoints[i];
+                chosen[0] = selected->x;
+                chosen[1] = selected->y;
+                chosen[2] = selected->z;
+                best = distance;
+            }
+        }
+    }
+    if (best < CAMERA_POINT_RANGE_SQUARED) {
+        CameraFrame *trackside = &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE];
+
+        if (VEHICLE_GET(vehicle, ActiveCamera) != trackside ||
+            VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].position.x != chosen[0] ||
+            VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].position.y != chosen[1] ||
+            VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].position.z != chosen[2]) {
+            VEHICLE_SET(vehicle, CameraChanged, 1);
+        }
+        VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].position.x = chosen[0];
+        VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].position.y = chosen[1];
+        VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].position.z = chosen[2];
+        VEHICLE_SET(vehicle, ActiveCamera, trackside);
+    } else if (VEHICLE_GET(vehicle, ActiveCamera) ==
+               &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE]) {
+        VEHICLE_SET(vehicle, CameraChanged, 1);
+        if (replayCockpitNext || g_dwReplayCameraHoldTimer) {
+            VEHICLE_SET(
+                vehicle, ActiveCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT]);
+        } else {
+            VEHICLE_SET(
+                vehicle, ActiveCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE]);
+        }
+        replayCockpitNext = replayCockpitNext == 0;
+        g_dwReplayCameraSwitchTimer = REPLAY_VIEW_FRAMES;
+    }
+#else
     CameraFrame *trackside = &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE];
     Vec3f *point = g_LoadedTrack.cameraPoints;
 #ifdef ENABLE_PATCHES
@@ -155,6 +218,7 @@ void ChooseReplayCamera(Vehicle *vehicle) {
         g_dwReplayCameraSwitchTimer = REPLAY_VIEW_FRAMES;
         g_bReplayCockpitNext = !g_bReplayCockpitNext;
     }
+#endif
 }
 
 /* Choose the view a replay, a race of the computer, or a finished racer shows, and take the view a
