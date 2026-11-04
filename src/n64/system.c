@@ -45,11 +45,8 @@
 #define MODEL_OFFSET_LIMIT ((void *)0x7FFFFFFF)
 #define MODEL_BASE ((void *)base)
 
-/* The size of a chunk on the cartridge: its length word, then its bytes, padded to an even count.
- */
-#define CHUNK_SPAN(size) (((size) + 5) & ~1)
-
 u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
+    static u32 len;
     u32 compressedSize;
     u32 decompressedSize;
     u32 remaining;
@@ -68,16 +65,16 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
         decompressedSize = job->decompressedSize;
         buffer = job->buffer;
         half = job->bufferHalf;
-        g_dwDmaChunkSize = job->pendingChunkSize;
+        len = job->pendingChunkSize;
         first = FALSE;
     } else {
-        DmaRead(&g_dwDmaChunkSize, romOffset, sizeof(g_dwDmaChunkSize));
-        compressedSize = g_dwDmaChunkSize;
-        remaining = g_dwDmaChunkSize;
+        DmaRead(&len, romOffset, sizeof(len));
+        compressedSize = len;
+        remaining = len;
         romOffset += ASSET_HEADER_WORD;
-        DmaRead(&g_dwDmaChunkSize, romOffset, sizeof(g_dwDmaChunkSize));
+        DmaRead(&len, romOffset, sizeof(len));
         romOffset += ASSET_HEADER_WORD;
-        decompressedSize = g_dwDmaChunkSize;
+        decompressedSize = len;
         remaining -= 2 * ASSET_HEADER_WORD;
         if (job != NULL) {
             buffer = job->buffer;
@@ -86,18 +83,18 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
         }
         half = 0;
         first = TRUE;
-        g_dwDmaChunkSize = 0;
+        len = 0;
     }
     start = osGetCount();
 
     /* While one half of the buffer is read, the chunk in the other is decompressed. */
     for (;;) {
-        chunkSize = g_dwDmaChunkSize;
-        if ((u32)((s32)(g_dwDmaChunkSize + 5) & ~1) < remaining) {
+        chunkSize = len;
+        if (((s32)(len + 5) & ~1) < remaining) {
             if (romOffset & 1) {
                 romOffset++;
             }
-            DmaRead(&g_dwDmaChunkSize, romOffset, sizeof(g_dwDmaChunkSize));
+            DmaRead(&len, romOffset, sizeof(len));
             romOffset += ASSET_HEADER_WORD;
             osInvalDCache(&buffer[half], CHUNK_BUFFER_SIZE);
             osPiStartDma(AllocIoMessage(),
@@ -105,9 +102,9 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
                          OS_READ,
                          romOffset,
                          &buffer[half],
-                         (g_dwDmaChunkSize + 1) & ~1,
+                         (len + 1) & ~1,
                          &g_DmaMessageQueue);
-            romOffset += (g_dwDmaChunkSize + 1) & ~1;
+            romOffset += (s32)(len + 1) & ~1;
         } else {
             WaitForDmaMessages();
         }
@@ -119,14 +116,14 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
             outputSize = CHUNK_OUTPUT_SIZE;
             if (job != NULL) {
                 g_pInflateHeapBase = g_aInflateHeapBuffer;
-                g_pInflateHeapEnd = &g_aInflateHeapBuffer[INFLATE_HEAP_SIZE];
+                g_pInflateHeapEnd = INFLATE_HEAP_SIZE + (char *)g_pInflateHeapBase;
             }
             uncompress(dst, &outputSize, &buffer[half], chunkSize);
             if (job != NULL) {
                 g_pInflateHeapBase = g_pInflateHeapEnd = NULL;
             }
-            remaining -= CHUNK_SPAN(chunkSize);
             dst = (u8 *)dst + outputSize;
+            remaining -= (chunkSize + 5) & ~1;
             if (remaining == 0) {
                 break;
             }
@@ -142,13 +139,13 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
 
     if (job != NULL) {
         job->romOffset = romOffset;
-        job->remaining = remaining;
         job->dst = dst;
+        job->remaining = remaining;
         job->compressedSize = compressedSize;
-        job->bufferHalf = half;
         job->decompressedSize = decompressedSize;
+        job->bufferHalf = half;
         job->buffer = buffer;
-        job->pendingChunkSize = g_dwDmaChunkSize;
+        job->pendingChunkSize = len;
     }
     return decompressedSize;
 }
