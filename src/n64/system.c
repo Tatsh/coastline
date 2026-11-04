@@ -268,13 +268,11 @@ void LoadTrackGeometryFromRom(s32 track) {
     TrackMenuItem *descriptor = &g_aTrackDescriptors[track];
     /* The messages stay where the debug display points until it shows them. */
     char tooBig[LOAD_MESSAGE_SIZE];
-    char tooManyInstances[LOAD_MESSAGE_SIZE];
-    char headerMismatch[LOAD_MESSAGE_SIZE];
     Vec3f axis;
-    f32 length;
-    f32 scale;
     s32 unrotated;
-    s32 i;
+    f32 length;
+    char tooManyInstances[LOAD_MESSAGE_SIZE + 4];
+    char headerMismatch[LOAD_MESSAGE_SIZE];
 
     g_LoadedTrack.size = DmaReadAssetSize(descriptor->trackRom);
     osInvalDCache(&g_LoadedTrack, sizeof(g_LoadedTrack.size));
@@ -301,23 +299,22 @@ void LoadTrackGeometryFromRom(s32 track) {
     /* Mark the placed models whose matrix holds only a position and a scale, and store the inverse
      * of the scale of each. */
     unrotated = 0;
-    for (i = 0; i < g_LoadedTrack.instanceCount; i++) {
+    for (track = 0; track < g_LoadedTrack.instanceCount; track++) {
         axis.x = 1.0f;
         axis.y = 0.0f;
         axis.z = 0.0f;
-        Mtx3x3TransformVec(&axis, &axis, g_LoadedTrack.instances[i].matrix);
+        Mtx3x3TransformVec(&axis, &axis, g_LoadedTrack.instances[track].matrix);
         length = Vec3fLength(&axis);
-        if (length == 0.0f) {
-            continue;
+        if (length != 0.0f) {
+            length = 1.0f / length;
+            if (1.0f == g_LoadedTrack.instances[track].matrix[0][0] * length &&
+                1.0f == g_LoadedTrack.instances[track].matrix[1][1] * length &&
+                1.0f == g_LoadedTrack.instances[track].matrix[2][2] * length) {
+                unrotated++;
+                g_LoadedTrack.instances[track].flags |= TRACK_INSTANCE_UNROTATED;
+            }
+            g_LoadedTrack.instances[track].invScale = length;
         }
-        scale = 1.0f / length;
-        if (g_LoadedTrack.instances[i].matrix[0][0] * scale == 1.0f &&
-            g_LoadedTrack.instances[i].matrix[1][1] * scale == 1.0f &&
-            g_LoadedTrack.instances[i].matrix[2][2] * scale == 1.0f) {
-            g_LoadedTrack.instances[i].flags |= TRACK_INSTANCE_UNROTATED;
-            unrotated++;
-        }
-        g_LoadedTrack.instances[i].invScale = scale;
     }
     /* The format asks for two numbers and is given one. */
     osSyncPrintf("Scalars: %d/%d\n", unrotated);
