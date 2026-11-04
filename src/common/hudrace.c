@@ -77,8 +77,21 @@ void DrawRaceTimerHud(const ViewportRect *viewports) {
 #else
 void DrawRaceTimerHud(void) {
 #endif
-    s32 below = g_dwNumViewports == 1 ? 2 * TIME_TEXT_SIZE : 0;
-    s32 y = HUD_RACE_ADD(HUD_VIEWPORTS[g_dwCurrentSplitScreenIndex].y, 20);
+    s32 y;
+#if !TGR_BOSS_RALLY
+    Vehicle *car; /* The original frame keeps this unused slot. */
+#endif
+    s32 below;
+
+    if (g_dwNumViewports == 1) {
+        below = 30;
+    } else {
+        below = 0;
+    }
+#if !TGR_BOSS_RALLY
+    (void)car;
+#endif
+    y = HUD_RACE_ADD(HUD_VIEWPORTS[g_dwCurrentSplitScreenIndex].y, 20);
 
     SetTextStyleNormal();
     SetTextAlignRight();
