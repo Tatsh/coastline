@@ -558,9 +558,17 @@ s32 ApplyCollisionImpulse(
 }
 
 s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+#define velocity (&body->stepStates[1].velocity)
+#define angular (&body->stepStates[1].angularVelocity)
+#else
     Vec3f *velocity = &body->stepStates[1].velocity;
     Vec3f *angular = &body->stepStates[1].angularVelocity;
-    Vec3f impulse, pivot, scale, turn;
+#endif
+    Vec3f impulse, turn;
+#if TGR_PLATFORM != TGR_PLATFORM_N64
+    Vec3f pivot, scale;
+#endif
     f32 basis[4][4];
     f32 into, damping, speed;
 #if TGR_BOSS_RALLY
@@ -578,6 +586,12 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
         return 0;
     }
     bounce = FORCE_PRODUCT(into, 1.05f);
+#elif TGR_PLATFORM == TGR_PLATFORM_N64
+    into = normal->x * velocity->x + normal->y * velocity->y + normal->z * velocity->z;
+    if (0.0f <= into) {
+        return 0;
+    }
+    bounce = (f64)into * 1.05;
 #else
     into = velocity->z * normal->z + (normal->x * velocity->x + normal->y * velocity->y);
     if (0.0f <= into) {
@@ -630,9 +644,15 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
     }
 
     /* Damp the spin by its parts in a frame of the normal and two axes across it. */
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    impulse.x = normal->y;
+    impulse.y = normal->z;
+    impulse.z = normal->x;
+#else
     pivot.x = normal->y;
     pivot.y = normal->z;
     pivot.z = normal->x;
+#endif
 #if TGR_BOSS_RALLY
     tangent[0] = FORCE_PRODUCT(normal->y, pivot.z) - FORCE_PRODUCT(pivot.y, normal->z);
     tangent[1] = FORCE_PRODUCT(normal->z, pivot.x) - FORCE_PRODUCT(pivot.z, normal->x);
@@ -645,9 +665,15 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
     basis[2][1] = normal->z * tangent[0] - FORCE_PRODUCT(basis[1][2], normal->x);
     basis[2][2] = FORCE_PRODUCT(normal->x, basis[1][1]) - FORCE_PRODUCT(basis[1][0], normal->y);
 #else
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    basis[1][0] = normal->y * impulse.z - impulse.y * normal->z;
+    basis[1][1] = normal->z * impulse.x - impulse.z * normal->x;
+    basis[1][2] = normal->x * impulse.y - impulse.x * normal->y;
+#else
     basis[1][0] = normal->y * pivot.z - pivot.y * normal->z;
     basis[1][1] = normal->z * pivot.x - pivot.z * normal->x;
     basis[1][2] = normal->x * pivot.y - pivot.x * normal->y;
+#endif
     basis[2][0] = normal->y * basis[1][2] - basis[1][1] * normal->z;
     basis[2][1] = normal->z * basis[1][0] - basis[1][2] * normal->x;
     basis[2][2] = normal->x * basis[1][1] - basis[1][0] * normal->y;
@@ -655,14 +681,28 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
     basis[0][0] = normal->x;
     basis[0][1] = normal->y;
     basis[0][2] = normal->z;
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    Mtx3x3MulVec3f(&impulse, basis, normal);
+#else
     Mtx3x3MulVec3f(&scale, basis, normal);
+#endif
     Mtx3x3MulVec3f(&turn, basis, angular);
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    turn.x = turn.x * impulse.x;
+    turn.y = turn.y * impulse.y;
+    turn.z = turn.z * impulse.z;
+#else
     turn.x = turn.x * scale.x;
     turn.y = turn.y * scale.y;
     turn.z = turn.z * scale.z;
+#endif
     Mtx4fInverseRotate(angular, basis, &turn);
     return 1;
 }
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+#undef velocity
+#undef angular
+#endif
 
 #if TGR_BOSS_RALLY
 f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
