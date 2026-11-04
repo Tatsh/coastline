@@ -101,7 +101,7 @@ int main(void) {
     displayList[1].words.w1 = 0x900;
     displayList[2].words.w0 = (u32)G_ENDDL << 24;
     displayList[2].words.w1 = 0x100;
-    FixupDisplayListPointers(displayList, 0, 0x800, 0x5000);
+    FixupDisplayListPointers(displayList, NULL, (void *)0x800, (void *)0x5000);
     assert(displayList[0].words.w1 == 0x5100 && displayList[1].words.w1 == 0x900);
     assert(displayList[2].words.w1 == 0x100);
 

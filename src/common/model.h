@@ -214,7 +214,7 @@ Model *DecompressModel(void *dst, u32 source);
  * @ghidraAddress BRD3D: 0x10035060
  * @ghidraAddress BRGlide: 0x1002e711
  */
-void RemapPointer(u32 *pointer, u32 lo, u32 hi, u32 base);
+void RemapPointer(u32 *pointer, const void *lo, const void *hi, const void *base);
 
 /**
  * Remap the addresses of the vertices and textures of a display list, up to its end. The display
@@ -230,7 +230,7 @@ void RemapPointer(u32 *pointer, u32 lo, u32 hi, u32 base);
  * @ghidraAddress BRD3D: 0x10035089
  * @ghidraAddress BRGlide: 0x1002e73a
  */
-void FixupDisplayListPointers(Gfx *displayList, u32 lo, u32 hi, u32 base);
+void FixupDisplayListPointers(Gfx *displayList, const void *lo, const void *hi, const void *base);
 
 /**
  * Make every animation of a model repeat by turning back at its end.

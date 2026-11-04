@@ -59,11 +59,11 @@ s32 IsVehicleMaterialPalette(const void *palette) {
 
 /* Remap a pointer of a model loaded for the first slot to the slot of the model. */
 #define REMAP_MODEL_POINTER(pointer, model)                                                        \
-    RemapPointer((u32 *)(pointer), MODEL_SLOT_LO, MODEL_SLOT_HI, (u32)(model))
+    RemapPointer((u32 *)(pointer), MODEL_SLOT_LO, MODEL_SLOT_HI, (model))
 
 /* The addresses of the first slot of g_aVehicleModels, which the files of the cars hold. */
-#define MODEL_SLOT_LO ((u32)g_aVehicleModels)
-#define MODEL_SLOT_HI ((u32) & g_aVehicleModels[1])
+#define MODEL_SLOT_LO (g_aVehicleModels)
+#define MODEL_SLOT_HI (&g_aVehicleModels[1])
 
 void FixupVehicleModelPointers(VehicleModel *model) {
     s32 lod;
@@ -73,13 +73,13 @@ void FixupVehicleModelPointers(VehicleModel *model) {
         for (k = 0; k < VEHICLE_DISPLAY_LISTS; k++) {
             REMAP_MODEL_POINTER(&model->displayLists[lod][k], model);
             FixupDisplayListPointers(
-                model->displayLists[lod][k], MODEL_SLOT_LO, MODEL_SLOT_HI, (u32)model);
+                model->displayLists[lod][k], MODEL_SLOT_LO, MODEL_SLOT_HI, model);
         }
         for (k = 0; k < VEHICLE_WHEEL_DISPLAY_LISTS; k++) {
             if (model->wheelDisplayLists[lod][k] != NULL) {
                 REMAP_MODEL_POINTER(&model->wheelDisplayLists[lod][k], model);
                 FixupDisplayListPointers(
-                    model->wheelDisplayLists[lod][k], MODEL_SLOT_LO, MODEL_SLOT_HI, (u32)model);
+                    model->wheelDisplayLists[lod][k], MODEL_SLOT_LO, MODEL_SLOT_HI, model);
             }
         }
     }

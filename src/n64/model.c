@@ -3,7 +3,8 @@
 #include "common/system.h"
 
 /* The offsets a file holds are below this; the pointers they become are above it. */
-#define MODEL_OFFSET_LIMIT 0x7FFFFFFF
+#define MODEL_OFFSET_LIMIT ((void *)0x7FFFFFFF)
+#define MODEL_BASE ((void *)base)
 
 void RelocateModelPointers(Model *model) {
     u32 base = (u32)model;
@@ -12,27 +13,30 @@ void RelocateModelPointers(Model *model) {
 
     /* The fields of the file hold offsets from its start until they are remapped. */
     if (model->animations != NULL) {
-        RemapPointer((u32 *)&model->animations, 0, MODEL_OFFSET_LIMIT, base);
+        RemapPointer((u32 *)&model->animations, 0, MODEL_OFFSET_LIMIT, MODEL_BASE);
         for (i = 0; i < model->animations->count; i++) {
-            RemapPointer((u32 *)&model->animations->entries[i], 0, MODEL_OFFSET_LIMIT, base);
+            RemapPointer((u32 *)&model->animations->entries[i], 0, MODEL_OFFSET_LIMIT, MODEL_BASE);
             RemapPointer(
-                (u32 *)&model->animations->entries[i]->vertices, 0, MODEL_OFFSET_LIMIT, base);
+                (u32 *)&model->animations->entries[i]->vertices, 0, MODEL_OFFSET_LIMIT, MODEL_BASE);
             RemapPointer((u32 *)&model->animations->entries[i]->unreconstructed8,
                          0,
                          MODEL_OFFSET_LIMIT,
-                         base);
+                         MODEL_BASE);
             for (k = 0; k < model->animations->entries[i]->keyCount; k++) {
-                RemapPointer(
-                    (u32 *)&model->animations->entries[i]->keys[k], 0, MODEL_OFFSET_LIMIT, base);
+                RemapPointer((u32 *)&model->animations->entries[i]->keys[k],
+                             0,
+                             MODEL_OFFSET_LIMIT,
+                             MODEL_BASE);
             }
         }
     }
     for (i = 0; (u32)i < model->partCount; i++) {
-        RemapPointer((u32 *)&model->parts[i].displayList, 0, MODEL_OFFSET_LIMIT, base);
+        RemapPointer((u32 *)&model->parts[i].displayList, 0, MODEL_OFFSET_LIMIT, MODEL_BASE);
         /* An offset of 0 has become the model itself, and is walked as a display list. */
         if (model->parts[i].displayList != NULL) {
-            RemapPointer((u32 *)&model->parts[i].displayList, 0, MODEL_OFFSET_LIMIT, base);
-            FixupDisplayListPointers(model->parts[i].displayList, 0, MODEL_OFFSET_LIMIT, base);
+            RemapPointer((u32 *)&model->parts[i].displayList, 0, MODEL_OFFSET_LIMIT, MODEL_BASE);
+            FixupDisplayListPointers(
+                model->parts[i].displayList, 0, MODEL_OFFSET_LIMIT, MODEL_BASE);
         }
     }
 }

@@ -1,12 +1,18 @@
 #include "common/model.h"
 
-void RemapPointer(u32 *pointer, u32 lo, u32 hi, u32 base) {
-    if (*pointer >= lo && *pointer < hi) {
-        *pointer = *pointer - lo + base;
+#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#define MODEL_ADDRESS(pointer) ((u32)(uintptr_t)(pointer))
+#else
+#define MODEL_ADDRESS(pointer) ((u32)(pointer))
+#endif
+
+void RemapPointer(u32 *pointer, const void *lo, const void *hi, const void *base) {
+    if (*pointer >= MODEL_ADDRESS(lo) && *pointer < MODEL_ADDRESS(hi)) {
+        *pointer = *pointer - MODEL_ADDRESS(lo) + MODEL_ADDRESS(base);
     }
 }
 
-void FixupDisplayListPointers(Gfx *displayList, u32 lo, u32 hi, u32 base) {
+void FixupDisplayListPointers(Gfx *displayList, const void *lo, const void *hi, const void *base) {
     if (displayList == NULL) {
         return;
     }
