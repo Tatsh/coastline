@@ -932,6 +932,7 @@ s32 IsPointInsideTriangle(
 #endif
 
 s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2) {
+    f32 max, min;
 #if TGR_BOSS_RALLY
     long double side1, side3;
     f32 side2, side4;
@@ -940,20 +941,24 @@ s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2) {
 #endif
 
     /* The boxes of the two segments must overlap on each axis. */
-    if (INTERSECTION_LESS((p2->x < p1->x ? p1->x : p2->x),
-                          (INTERSECTION_LESS(q1->x, q2->x) ? q1->x : q2->x))) {
+    max = p2->x < p1->x ? p1->x : p2->x;
+    min = INTERSECTION_LESS(q1->x, q2->x) ? q1->x : q2->x;
+    if (INTERSECTION_LESS(max, min)) {
         return 0;
     }
-    if (INTERSECTION_LESS((q2->x < q1->x ? q1->x : q2->x),
-                          (INTERSECTION_LESS(p1->x, p2->x) ? p1->x : p2->x))) {
+    max = q2->x < q1->x ? q1->x : q2->x;
+    min = INTERSECTION_LESS(p1->x, p2->x) ? p1->x : p2->x;
+    if (INTERSECTION_LESS(max, min)) {
         return 0;
     }
-    if (INTERSECTION_LESS((p2->y < p1->y ? p1->y : p2->y),
-                          (INTERSECTION_LESS(q1->y, q2->y) ? q1->y : q2->y))) {
+    max = p2->y < p1->y ? p1->y : p2->y;
+    min = INTERSECTION_LESS(q1->y, q2->y) ? q1->y : q2->y;
+    if (INTERSECTION_LESS(max, min)) {
         return 0;
     }
-    if (INTERSECTION_LESS((q2->y < q1->y ? q1->y : q2->y),
-                          (INTERSECTION_LESS(p1->y, p2->y) ? p1->y : p2->y))) {
+    max = q2->y < q1->y ? q1->y : q2->y;
+    min = INTERSECTION_LESS(p1->y, p2->y) ? p1->y : p2->y;
+    if (INTERSECTION_LESS(max, min)) {
         return 0;
     }
 
