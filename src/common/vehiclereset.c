@@ -689,7 +689,6 @@ void Vehicle::SetupVehicleForRaceStart(void) {
 #else
 void SetupVehicleForRaceStart(Vehicle *vehicle) {
 #endif
-    TrackSection *root;
     f32 row;
     f32 column;
     f32 forwardX;
@@ -753,8 +752,17 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
 #endif /* TGR_BOSS_RALLY */
     VEHICLE_SET(vehicle, Distance, (row + 0.5f) * -GRID_ROW_SPACING);
     RESET_FREE(InitVehicleOrientationFromAngle)(vehicle, g_LoadedTrack.startHeading);
+#if TGR_BOSS_RALLY
     VEHICLE_GET(vehicle, PreviousPosition) = VEHICLE_GET(vehicle, Frame).position;
     VEHICLE_GET(vehicle, PreviousListenerPosition) = VEHICLE_GET(vehicle, Frame).position;
+#else
+    VEHICLE_GET(vehicle, PreviousPosition).x = VEHICLE_GET(vehicle, Frame).position.x;
+    VEHICLE_GET(vehicle, PreviousListenerPosition).x = VEHICLE_GET(vehicle, Frame).position.x;
+    VEHICLE_GET(vehicle, PreviousPosition).y = VEHICLE_GET(vehicle, Frame).position.y;
+    VEHICLE_GET(vehicle, PreviousListenerPosition).y = VEHICLE_GET(vehicle, Frame).position.y;
+    VEHICLE_GET(vehicle, PreviousPosition).z = VEHICLE_GET(vehicle, Frame).position.z;
+    VEHICLE_GET(vehicle, PreviousListenerPosition).z = VEHICLE_GET(vehicle, Frame).position.z;
+#endif
     RESET_FREE(InitCameraForVehicle)(vehicle);
     VEHICLE_SET(vehicle, ForcedForwardFrames, 0);
     VEHICLE_SET(vehicle, ForcedReverseFrames, 0);
@@ -762,8 +770,7 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
     VEHICLE_SET(vehicle, ForwardFrames, AI_START_GRACE);
     RESET_FREE(SetVehicleVelocity)(vehicle, 0.0f, 0.0f, 0.0f);
 
-    root = g_LoadedTrack.rootSection;
-    if (root != NULL) {
+    if (g_LoadedTrack.rootSection != NULL) {
         VEHICLE_SET(vehicle, LapTime, 0.0f);
         VEHICLE_SET(vehicle, TotalTime, 0.0f);
         VEHICLE_SET(vehicle, BestLapTime, 0.0f);
@@ -776,8 +783,13 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
                     SELECTED_SETUP_TRACK()
                         ->arcadeTimes[VEHICLE_GET(vehicle, TableIndex)][weather]
                         .startTime);
+#if TGR_BOSS_RALLY
         VEHICLE_SET(vehicle, PointIndex, 0);
+#endif
         VEHICLE_SET(vehicle, Section, g_LoadedTrack.rootSection);
+#if !TGR_BOSS_RALLY
+        VEHICLE_SET(vehicle, PointIndex, 0);
+#endif
         Vec3fDirection(&VEHICLE_GET(vehicle, TrackDirection),
                        &g_LoadedTrack.rootSection->points[0].position,
                        &g_LoadedTrack.rootSection->points[1].position);
@@ -787,9 +799,14 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
         VEHICLE_GET(vehicle, TrackDirection).x = 1.0f;
     }
 
+#if !TGR_BOSS_RALLY
+    VEHICLE_SET(vehicle, RacePosition, g_dwNumVehicles - VEHICLE_GET(vehicle, Index) - 1);
+#endif
     VEHICLE_SET(vehicle, Lap, 0);
     VEHICLE_SET(vehicle, BestLap, 0);
+#if TGR_BOSS_RALLY
     VEHICLE_SET(vehicle, RacePosition, g_dwNumVehicles - VEHICLE_GET(vehicle, Index) - 1);
+#endif
     VEHICLE_SET(vehicle, MaxGate, 0);
     /* The players and the vehicles of these modes start behind the first gate. */
     if (VEHICLE_GET(vehicle, Index) < (s32)g_dwNumLocalPlayers ||

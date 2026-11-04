@@ -26,9 +26,9 @@ python3 .wiswa-ci/progress/progress.py
 
 | Release       | Compiler | Routines | Matching | Registers only | Not matching | Unknown | Share |
 | ------------- | -------- | -------: | -------: | -------------: | -----------: | ------: | ----: |
-| `usa.z64`     | IDO 5.3  |      774 |      678 |              0 |           96 |       0 | 87.6% |
-| `eur.z64`     | IDO 5.3  |      792 |      694 |              0 |           98 |       0 | 87.6% |
-| `jpn.z64`     | IDO 5.3  |      795 |      697 |              0 |           98 |       0 | 87.7% |
+| `usa.z64`     | IDO 5.3  |      774 |      679 |              0 |           95 |       0 | 87.7% |
+| `eur.z64`     | IDO 5.3  |      792 |      695 |              0 |           97 |       0 | 87.8% |
+| `jpn.z64`     | IDO 5.3  |      795 |      698 |              0 |           97 |       0 | 87.8% |
 | `BRD3D.dll`   | MSVC 6.0 |    1,573 |        0 |              0 |            0 |   1,573 |  0.0% |
 | `BRGlide.dll` | MSVC 6.0 |    1,441 |        0 |              0 |            0 |   1,441 |  0.0% |
 
@@ -53,7 +53,7 @@ program that has it.
 
 | Component      | Routines | Matching | Registers only | Not matching | Unknown |  Share |
 | -------------- | -------: | -------: | -------------: | -----------: | ------: | -----: |
-| Game code      |      588 |      491 |              0 |           97 |       0 |  83.5% |
+| Game code      |      588 |      492 |              0 |           96 |       0 |  83.7% |
 | SDK (libultra) |      208 |      208 |              0 |            0 |       0 | 100.0% |
 
 ## PC port
@@ -87,7 +87,7 @@ block of the master program.
 | --------------------------------------------------------------------- | ----------- | -------------- | ------------------------- | -------: | -------: | -----: |
 | [n64-game-code-80200000.md](progress/n64-game-code-80200000.md)       | Nintendo 64 | Game code      | `0x80200000`-`0x80210000` |       45 |       37 |  82.2% |
 | [n64-game-code-80210000.md](progress/n64-game-code-80210000.md)       | Nintendo 64 | Game code      | `0x80210000`-`0x80220000` |      134 |      120 |  89.6% |
-| [n64-game-code-80220000.md](progress/n64-game-code-80220000.md)       | Nintendo 64 | Game code      | `0x80220000`-`0x80230000` |      169 |      152 |  89.9% |
+| [n64-game-code-80220000.md](progress/n64-game-code-80220000.md)       | Nintendo 64 | Game code      | `0x80220000`-`0x80230000` |      169 |      153 |  90.5% |
 | [n64-game-code-80230000.md](progress/n64-game-code-80230000.md)       | Nintendo 64 | Game code      | `0x80230000`-`0x80240000` |       45 |       27 |  60.0% |
 | [n64-game-code-80240000.md](progress/n64-game-code-80240000.md)       | Nintendo 64 | Game code      | `0x80240000`-`0x80250000` |       53 |       37 |  69.8% |
 | [n64-game-code-80250000.md](progress/n64-game-code-80250000.md)       | Nintendo 64 | Game code      | `0x80250000`-`0x80260000` |      140 |      116 |  82.9% |
