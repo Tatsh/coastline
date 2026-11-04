@@ -79,6 +79,49 @@ s32 IsTriangleInUnitCube(Vec3f triangle[3], Vec3f *normal) {
     return inside;
 }
 
+#if !TGR_BOSS_RALLY
+s32 CountTriangleWinding(Vec3f triangle[3], Vec3f *normal, Vec3f *point) {
+    f32 absoluteNormal[3];
+    s32 axis, xAxis, yAxis, i, count, direction;
+    Vec3f *start, *end;
+
+    for (i = 0; i < 3; i++) {
+        absoluteNormal[i] =
+            COMPONENT(normal, i) < 0.0f ? -COMPONENT(normal, i) : COMPONENT(normal, i);
+    }
+    axis = absoluteNormal[0] > absoluteNormal[2] ?
+               (absoluteNormal[0] > absoluteNormal[1] ? 0 : 1) :
+               1 + (absoluteNormal[1] > absoluteNormal[2] ? 0 : 1);
+    if (COMPONENT(normal, axis) < 0.0f) {
+        xAxis = (axis + 2) % 3;
+        yAxis = (axis + 1) % 3;
+    } else {
+        xAxis = (axis + 1) % 3;
+        yAxis = (axis + 2) % 3;
+    }
+    count = 0;
+    for (i = 0; i < 3; i++) {
+        start = &triangle[i];
+        end = &triangle[0] + ((i + 1) % 3);
+        direction = (COMPONENT(end, xAxis) > COMPONENT(point, xAxis)) -
+                    (COMPONENT(start, xAxis) > COMPONENT(point, xAxis));
+        if (direction) {
+            if ((COMPONENT(end, yAxis) > COMPONENT(point, yAxis)) -
+                (COMPONENT(start, yAxis) > COMPONENT(point, yAxis))) {
+                if (direction * (COMPONENT(point, xAxis) - COMPONENT(start, xAxis)) *
+                        (COMPONENT(end, yAxis) - COMPONENT(start, yAxis)) <=
+                    direction * (COMPONENT(point, yAxis) - COMPONENT(start, yAxis)) *
+                        (COMPONENT(end, xAxis) - COMPONENT(start, xAxis))) {
+                    count += direction;
+                }
+            } else if (COMPONENT(start, yAxis) <= COMPONENT(point, yAxis)) {
+                count += direction;
+            }
+        }
+    }
+    return count;
+}
+#else
 s32 CountTriangleWinding(Vec3f triangle[3], Vec3f *normal, Vec3f *point) {
     f32 n[3];
     f32 p0, p1, a0, a1, b0, b1;
@@ -127,6 +170,7 @@ s32 CountTriangleWinding(Vec3f triangle[3], Vec3f *normal, Vec3f *point) {
     }
     return winding;
 }
+#endif
 
 s32 DoesSegmentCrossUnitCube(Vec3f *start, Vec3f *end) {
     s32 i, j, k;
