@@ -165,7 +165,8 @@ coastline_add_test(
   "${_src}/common/texturestream.c"
   "${_src}/common/util.c"
   "${_src}/n64/depth.c"
-  "${_src}/n64/framebuffer.c")
+  "${_src}/n64/framebuffer.c"
+  "${_src}/n64/boot.c")
 # The test counts the calls the other units make to these through its own versions.
 target_link_options(
   system_test PRIVATE -Wl,--wrap=Vec2fDistance -Wl,--wrap=Vec3fNormalize
@@ -173,7 +174,7 @@ target_link_options(
 coastline_add_test(texrect "${_src}/n64/texrect.c")
 coastline_add_test(text "${_src}/n64/text.c" "${_src}/common/textrender.c" "${_src}/common/textstyle.c")
 coastline_add_test(timing "${_src}/n64/timing.c" "${_src}/common/timingframe.c")
-coastline_add_test(track ${_vecmath} "${_src}/common/trackgrid.c" "${_src}/n64/system.c")
+coastline_add_test(track ${_vecmath} "${_src}/common/trackgrid.c" "${_src}/n64/boot.c")
 coastline_add_test(trackrender ${_vecmath} "${_src}/common/screenrect.c" "${_src}/common/shadowreset.c"
                    "${_src}/common/trackinstance.c" "${_src}/common/visiblecompare.c")
 coastline_add_test(vecmath ${_vecmath})
