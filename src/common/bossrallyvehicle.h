@@ -65,11 +65,9 @@ private:
     s32 gear;
     f32 frontLoad;
     u8 frontSliding;
-    u8 abUnknownE79[3]; /* +0xe79 */
     f32 rearLoad;
     u8 rearSliding;
     s8 steerReturn;
-    u8 abUnknownE82[2]; /* +0xe82 */
     s32 skipDrive;
     s32 customDecals;
     PlayerProfile *profile;

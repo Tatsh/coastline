@@ -832,7 +832,6 @@ private:
     int bSlideY;
     signed char nSlideDirectionX;
     signed char nSlideDirectionY;
-    [[maybe_unused]] char abUnknown380e[2]; /* +0x380e */
     float fSlideTargetX;
     float fSlideTargetY;
     int bSliding;
@@ -844,7 +843,6 @@ private:
     [[maybe_unused]] char abUnknown3830[8]; /* +0x3830 */
     MenuItemList itemList;
     short nSpriteId;
-    [[maybe_unused]] char abUnknown1e20e[2]; /* +0x1e20e */
     const RECT *pImageRects;
 };
 
