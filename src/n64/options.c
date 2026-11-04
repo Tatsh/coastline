@@ -483,6 +483,7 @@ s32 LoadSaveDataFromEeprom(void) {
 
 void SaveGameDataToEeprom(void) {
     EepromSaveData *save = (EepromSaveData *)(g_pPakDataBuffer + 4);
+    s32 *equipment = save->equipment;
     s32 size = ((u8 *)save - g_pPakDataBuffer + sizeof(EepromSaveData) + 7) & ~7;
     u32 checksum;
     u32 sum;
@@ -510,7 +511,7 @@ void SaveGameDataToEeprom(void) {
                          size);
 #endif /* TGR_REGION == TGR_REGION_EU */
             memcpy(&save->profile, g_aVehicles[0].profile, sizeof(PlayerProfile));
-            GET_EQUIPMENT(save->equipment, g_aVehicles[1].profile);
+            GET_EQUIPMENT(equipment, g_aVehicles[1].profile);
             memcpy(&save->options, &g_OptionSettings, sizeof(OptionSettings));
         }
         save->profile.handling = g_aVehicles[0].profile->handling;
@@ -519,7 +520,7 @@ void SaveGameDataToEeprom(void) {
         save->profile.suspension = g_aVehicles[0].profile->suspension;
         save->profile.controllerLayout = g_aVehicles[0].profile->controllerLayout;
         memcpy(&save->options, &g_OptionSettings, sizeof(OptionSettings));
-        GET_EQUIPMENT(save->equipment, g_aVehicles[1].profile);
+        GET_EQUIPMENT(equipment, g_aVehicles[1].profile);
         checksum = EEPROM_CHECKSUM_SEED;
         for (i = 4; i < size; i++) {
             checksum += g_pPakDataBuffer[i];
