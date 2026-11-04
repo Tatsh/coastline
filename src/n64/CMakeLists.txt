@@ -29,7 +29,6 @@ set(_n64_sources
     texrect.c
     text.c
     timing.c
-    track.c
     vehicle.c
     vehiclerender.c
     vehiclesetup.c

@@ -1,35 +1,14 @@
-/* Test of the grid lookups of src/n64/track.c and the check of a track index. */
+/* Test the track grid lookups and track index check. */
 #include <assert.h>
 #include <stdio.h>
 
-#include "track.c"
+#include "common/track.h"
+#include "common/trackmenuitem.h"
+#include "common/trackselect.h"
 
 TrackHeader g_LoadedTrack;
 TrackMenuItem g_aTrackDescriptors[2];
 s32 g_dwNumTracks = 2;
-u8 g_abTrackSection1Header[TRACK_SECTION_HEADER_SIZE],
-    g_abTrackSection1Data[TRACK_SECTION_DATA_SIZE];
-u8 g_abTrackSection2Header[TRACK_SECTION_HEADER_SIZE],
-    g_abTrackSection2Data[TRACK_SECTION_DATA_SIZE];
-u32 g_dwCurrentTrackRomOffset, g_dwTrackTextureRomOffset;
-s32 g_dwStreamDmaPrevSegment, g_dwStreamedSnowMode;
-u16 g_awTrackDebugWords[5];
-
-u32 DmaReadAssetSize(u32 romOffset) {
-    return 0;
-}
-u32 DmaReadWord(u32 romOffset) {
-    return 0;
-}
-void DmaRead(void *dst, u32 romOffset, s32 size) {
-}
-void osInvalDCache(void *vaddr, s32 nbytes) {
-}
-void osSyncPrintf(const char *format, ...) {
-}
-void PrepareTrackSections(void) {
-}
-
 int main(void) {
     static u16 starts[64 * 64 + 1];
     static u16 triangles[64 * 64 * 2];
