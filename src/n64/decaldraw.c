@@ -774,37 +774,64 @@ void FillCircle4Bit(s32 x, s32 y, s32 radius, u8 fromScreen) {
 }
 
 void DrawDecalCircleOutline(s32 x, s32 y, s32 radius) {
-    s32 brush, i, j, error, a, b, run;
+    /* The unused local preserves the original frame layout. */
+    s32 unused;
+    s32 brush;
+    s32 centerX;
+    s32 centerY;
+    s32 circleY;
+    s32 circleX;
+    s32 error;
+    s32 run;
 
+    centerX = ScreenToTexelX(x), centerY = ScreenToTexelY(y);
     brush = g_aBrushSizeRects[g_bBrushSize].width;
-    x = ScreenToTexelX(x);
-    y = ScreenToTexelY(y);
-    j = (radius + (brush >> 1)) * 2;
-    i = 0;
-    error = -j;
-    if (j < 0) {
-        return;
-    }
-    do {
-        if ((i & 1) == 0) {
-            a = i >> 1;
-            b = j >> 1;
-            PaintBrushRun(run, x + a, y + b, 0, -1, brush);
-            PaintBrushRun(run, x + a, y - b, 0, 1, brush);
-            PaintBrushRun(run, x - a, y - b, 0, 1, brush);
-            PaintBrushRun(run, x - a, y + b, 0, -1, brush);
-            PaintBrushRun(run, x + b, y + a, -1, 0, brush);
-            PaintBrushRun(run, x + b, y - a, -1, 0, brush);
-            PaintBrushRun(run, x - b, y - a, 1, 0, brush);
-            PaintBrushRun(run, x - b, y + a, 1, 0, brush);
+    radius += brush >> 1;
+    circleY = radius * 2;
+    circleX = 0;
+    error = -circleY;
+    while (circleX <= circleY) {
+        if ((circleX & 1) == 0) {
+            for (run = 0; run < brush; run++) {
+                SetPixel4Bit(
+                    (circleX >> 1) + centerX, (circleY >> 1) + centerY - run, g_bDecalColor);
+            }
+            for (run = 0; run < brush; run++) {
+                SetPixel4Bit(
+                    (circleX >> 1) + centerX, centerY - (circleY >> 1) + run, g_bDecalColor);
+            }
+            for (run = 0; run < brush; run++) {
+                SetPixel4Bit(
+                    centerX - (circleX >> 1), centerY - (circleY >> 1) + run, g_bDecalColor);
+            }
+            for (run = 0; run < brush; run++) {
+                SetPixel4Bit(
+                    centerX - (circleX >> 1), (circleY >> 1) + centerY - run, g_bDecalColor);
+            }
+            for (run = 0; run < brush; run++) {
+                SetPixel4Bit(
+                    (circleY >> 1) + centerX - run, (circleX >> 1) + centerY, g_bDecalColor);
+            }
+            for (run = 0; run < brush; run++) {
+                SetPixel4Bit(
+                    (circleY >> 1) + centerX - run, centerY - (circleX >> 1), g_bDecalColor);
+            }
+            for (run = 0; run < brush; run++) {
+                SetPixel4Bit(
+                    centerX - (circleY >> 1) + run, centerY - (circleX >> 1), g_bDecalColor);
+            }
+            for (run = 0; run < brush; run++) {
+                SetPixel4Bit(
+                    centerX - (circleY >> 1) + run, (circleX >> 1) + centerY, g_bDecalColor);
+            }
         }
-        error += i;
-        i++;
+        error += circleX;
+        circleX++;
         if (error >= 0) {
-            error -= j;
-            j--;
+            error -= circleY;
+            circleY--;
         }
-    } while (i <= j);
+    }
 }
 
 void DrawDashedLine(s32 x0, s32 y0, s32 x1, s32 y1) {
