@@ -14,8 +14,101 @@
 /* The size of the length a channel starts with. */
 #define RLE_BLOCK_HEADER 4
 
-/* On the console the first comparison of the first channel is against an uninitialised byte, and
- * of each later channel against the byte read past the end of the last. */
+/* The console encoder reads past the last source byte when it flushes the final run. */
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels) {
+    s32 minRun;
+    s32 maxLiteral;
+    s32 out;
+    s32 position;
+    s32 previous;
+    s32 runStart;
+    s32 header;
+    s32 current;
+    s32 literalStart;
+    s32 channel;
+    s32 maxRun;
+    s32 blockLength;
+
+    minRun = channels * RLE_MIN_RUN;
+    maxRun = channels * RLE_MAX_RUN;
+    maxLiteral = channels << 7;
+    literalStart = 0;
+    runStart = 0;
+    position = 0;
+    out = 0;
+    header = 0;
+    previous = -256;
+    channel = 0;
+    blockLength = 0;
+    if (1) {
+        goto start;
+    }
+scan:
+    current = (s8)src[position];
+    if (!(current == previous && position - runStart <= maxRun &&
+          position - literalStart <= maxLiteral && position < srcSize)) {
+        if (position - runStart >= minRun) {
+            if (literalStart != runStart) {
+            flush:
+                if (out + 1 + (runStart - literalStart) / channels > dstSize) {
+                    return -1;
+                }
+                dst[out] = -(runStart - literalStart) / channels;
+                out++;
+                while (literalStart < runStart) {
+                    dst[out] = ((s8 *)src)[literalStart];
+                    out++;
+                    literalStart += channels;
+                }
+            }
+            if (runStart != position) {
+                if (out + 2 > dstSize) {
+                    return -1;
+                }
+                dst[out] = (position - runStart - minRun) / channels;
+                out++;
+                dst[out] = previous;
+                out++;
+            }
+            literalStart = position;
+            runStart = position;
+            if (position >= srcSize) {
+                blockLength = out - (header + RLE_BLOCK_HEADER);
+                memcpy(dst + header, &blockLength, sizeof(blockLength));
+                channel++;
+                src++;
+                if (channel >= channels) {
+                    return out;
+                }
+            newChannel:
+                if (out + sizeof(blockLength) > dstSize) {
+                    return -1;
+                }
+                header = out;
+                out += RLE_BLOCK_HEADER;
+                position = 0;
+                literalStart = 0;
+                runStart = 0;
+                previous = -256;
+            }
+        } else {
+            runStart = position;
+            if (position >= srcSize) {
+                goto flush;
+            }
+        }
+    } else if (position - literalStart > maxLiteral) {
+        runStart = position;
+        goto flush;
+    }
+    previous = current;
+    position += channels;
+    goto scan;
+start:
+    goto newChannel;
+}
+#else
 s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels) {
     s32 out = 0;
     s32 channel = 0;
@@ -127,3 +220,4 @@ s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels
     } while (channel < channels);
     return out;
 }
+#endif
