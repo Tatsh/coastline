@@ -326,18 +326,24 @@ static s32 GridCoordinate(f32 value) {
 #endif
 
 s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
-    f32 u0, v0, pu, pv, au, av, bu, bv, beta;
+    f32 normalX, normalOther;
+    s32 axis, i1, i2;
+    f32 pu, au, pv, av, bu, bv;
+    /* IDO reserves this unused local in the original stack frame. */
+    s32 unused;
 #if TGR_BOSS_RALLY
     long double alpha, quotient;
 #else
     f32 alpha, quotient;
 #endif
-    s32 axis, i1, i2;
-    s32 inside = 0;
-    f32 normalX, normalOther;
+    s32 inside;
+    f32 beta;
 
+    (void)unused;
     /* Drop the main axis of the normal, and solve for the triangle there. */
     normalX = ABS(triangle->normal.x);
+    /* The redundant zero affects IDO's floating-point register allocation. */
+    normalOther = 0.0f;
     normalOther = ABS(triangle->normal.y);
     if (normalOther < normalX) {
         normalX = ABS(triangle->normal.x);
@@ -350,14 +356,13 @@ s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
     }
     i1 = (axis + 1) % 3;
     i2 = (axis + 2) % 3;
-    u0 = COMPONENT(triangle->vertices[0], i1);
-    v0 = COMPONENT(triangle->vertices[0], i2);
-    pu = COMPONENT(point, i1) - u0;
-    pv = COMPONENT(point, i2) - v0;
-    au = COMPONENT(triangle->vertices[1], i1) - u0;
-    av = COMPONENT(triangle->vertices[1], i2) - v0;
-    bu = COMPONENT(triangle->vertices[2], i1) - u0;
-    bv = COMPONENT(triangle->vertices[2], i2) - v0;
+    pu = COMPONENT(point, i1) - COMPONENT(triangle->vertices[0], i1);
+    pv = COMPONENT(point, i2) - COMPONENT(triangle->vertices[0], i2);
+    inside = 0;
+    au = COMPONENT(triangle->vertices[1], i1) - COMPONENT(triangle->vertices[0], i1);
+    av = COMPONENT(triangle->vertices[1], i2) - COMPONENT(triangle->vertices[0], i2);
+    bu = COMPONENT(triangle->vertices[2], i1) - COMPONENT(triangle->vertices[0], i1);
+    bv = COMPONENT(triangle->vertices[2], i2) - COMPONENT(triangle->vertices[0], i2);
 #if TGR_BOSS_RALLY
     /* The libraries test equality through the flag an unordered comparison also sets. */
     if (!(au < 0.0f || au > 0.0f)) {
