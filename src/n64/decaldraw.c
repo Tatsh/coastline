@@ -738,34 +738,42 @@ void DrawDecalEllipseOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 void FillCircle4Bit(s32 x, s32 y, s32 radius, u8 fromScreen) {
-    s32 a, b, column, i, j, error;
+    s32 i, end, unused, start, a, b, error;
 
     if (fromScreen) {
-        x = ScreenToTexelX(x);
-        y = ScreenToTexelY(y);
+        x = ScreenToTexelX(x), y = ScreenToTexelY(y);
     }
-    i = 0;
-    j = radius * 2;
-    error = -j;
-    if (j < 0) {
-        return;
-    }
-    do {
-        if ((i & 1) == 0) {
-            a = i >> 1;
-            b = j >> 1;
-            FillTexelSpan(column, x - a, x + a, y + b);
-            FillTexelSpan(column, x - b, x + b, y + a);
-            FillTexelSpan(column, x - a, x + a, y - b);
-            FillTexelSpan(column, x - b, x + b, y - a);
+    b = radius * 2;
+    a = 0;
+    error = -b;
+    for (; a <= b;) {
+        if (!(a & 1)) {
+            start = x - (a >> 1);
+            end = x + (a >> 1);
+            for (i = start; i <= end; i++) {
+                SetPixel4Bit(i, y + (b >> 1), g_bDecalColor);
+            }
+            start = x - (b >> 1);
+            end = x + (b >> 1);
+            for (i = start; i <= end; i++) {
+                SetPixel4Bit(i, y + (a >> 1), g_bDecalColor);
+            }
+            start = x - (a >> 1);
+            end = x + (a >> 1);
+            for (i = start; i <= end; i++) {
+                SetPixel4Bit(i, y - (b >> 1), g_bDecalColor);
+            }
+            start = x - (b >> 1);
+            end = x + (b >> 1);
+            for (i = start; i <= end; i++) {
+                SetPixel4Bit(i, y - (a >> 1), g_bDecalColor);
+            }
         }
-        error += i;
-        i++;
+        error += a++;
         if (error >= 0) {
-            error -= j;
-            j--;
+            error -= b--;
         }
-    } while (i <= j);
+    }
 }
 
 void DrawDecalCircleOutline(s32 x, s32 y, s32 radius) {
