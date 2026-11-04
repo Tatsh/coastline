@@ -62,8 +62,8 @@ typedef struct {
     u32 romStart;    /*!< The cartridge address of the compressed sound. */
     u32 romEnd;      /*!< The cartridge address of the end of the compressed sound. */
     u32 length;      /*!< The samples of the decompressed sound, one byte each. */
-    s32 loopLength;  /*!< The samples a loop repeats, or -1 for the whole sound. */
-    s32 guardLength; /*!< The samples of the start copied after the end, or -1 for the whole
+    u32 loopLength;  /*!< The samples a loop repeats, or -1 for the whole sound. */
+    u32 guardLength; /*!< The samples of the start copied after the end, or -1 for the whole
                           sound. */
 } SoundEffect;
 

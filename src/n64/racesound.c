@@ -16,7 +16,11 @@
 #define TRACK_SOUND_CHANNEL 3
 
 /* The room the sound effects are loaded into. */
+#if TGR_REGION == TGR_REGION_JP
+#define SOUND_EFFECT_SPACE 0x29428
+#else
 #define SOUND_EFFECT_SPACE 0x29FE0
+#endif
 
 /* The volume halves both channels keep after packing. */
 #define VOLUME_HALVES_MASK 0x7FFF7FFF
@@ -25,54 +29,50 @@ void StubSoundUpdate(CameraFrame *camera) {
 }
 
 void LoadAllSoundEffects(void) {
-    SoundEffect *effect;
-    u8 *dest = g_aInflateHeapBuffer;
-    u32 used;
+    u32 base;
+    u32 pos;
+    SoundEffect *samples;
     s32 i;
-    s32 k;
+    u32 j;
 
-    for (i = 0, effect = g_aSoundEffects; i != SOUND_EFFECTS; i++, effect++) {
-        effect->length = DmaReadAssetSize(effect->romStart);
-        if (effect->loopLength == -1) {
-            effect->loopLength = effect->length;
+    base = (u32)g_aInflateHeapBuffer;
+    pos = base;
+    for (i = 0; i < SOUND_EFFECTS; i++) {
+        g_aSoundEffects[i].length = DmaReadAssetSize(g_aSoundEffects[i].romStart);
+        if (g_aSoundEffects[i].loopLength == -1) {
+            g_aSoundEffects[i].loopLength = g_aSoundEffects[i].length;
         }
-        if (effect->guardLength == -1) {
-            effect->guardLength = effect->length;
+        if (g_aSoundEffects[i].guardLength == -1) {
+            g_aSoundEffects[i].guardLength = g_aSoundEffects[i].length;
         }
-        if (&g_aInflateHeapBuffer[SOUND_EFFECT_SPACE] <
-            dest + effect->guardLength + effect->length) {
+        if (pos + g_aSoundEffects[i].length + g_aSoundEffects[i].guardLength >
+            base + SOUND_EFFECT_SPACE) {
             /* The sound is left pointing at the start of the room, and the room still advances. */
-            effect->sample = (s8 *)g_aInflateHeapBuffer;
+            g_aSoundEffects[i].sample = (s8 *)base;
             osSyncPrintf("ERROR: Sound buffer allocation overflow on car sound %d\n", i);
         } else {
-            effect->sample = (s8 *)dest;
-            DecompressFromRom(effect->sample, effect->romStart, NULL);
+            g_aSoundEffects[i].sample = (s8 *)pos;
+            DecompressFromRom((void *)pos, g_aSoundEffects[i].romStart, NULL);
             /* The start is copied after the end, so a loop can read past it. */
-            for (k = 0; (u32)k < (u32)effect->guardLength; k++) {
-                effect->sample[effect->length + k] = effect->sample[k];
+            for (j = 0; j < (u32)g_aSoundEffects[i].guardLength; j++) {
+                ((u8 *)g_aSoundEffects[i].sample)[j + g_aSoundEffects[i].length] =
+                    ((u8 *)g_aSoundEffects[i].sample)[j];
             }
         }
-        dest += effect->length + effect->guardLength;
+        pos += g_aSoundEffects[i].length + g_aSoundEffects[i].guardLength;
     }
-    used = dest - g_aInflateHeapBuffer;
-    osSyncPrintf("Car sound effect space used: %d/%d\n", used, SOUND_EFFECT_SPACE);
-    if (used > SOUND_EFFECT_SPACE) {
+    samples = g_aSoundEffects;
+    osSyncPrintf("Car sound effect space used: %d/%d\n", pos - base, SOUND_EFFECT_SPACE);
+    if (pos - base > SOUND_EFFECT_SPACE) {
         SetDebugMessage("Car sound effect overflow");
     }
-    StartSoundChannelMuted(0,
-                           g_aSoundEffects[SOUND_EFFECT_ENGINE].sample,
-                           g_aSoundEffects[SOUND_EFFECT_ENGINE].length,
-                           g_aSoundEffects[SOUND_EFFECT_ENGINE].loopLength);
-    if (g_dwNumActiveVehicles >= 2) {
-        StartSoundChannelMuted(CHANNELS_PER_VEHICLE,
-                               g_aSoundEffects[SOUND_EFFECT_ENGINE].sample,
-                               g_aSoundEffects[SOUND_EFFECT_ENGINE].length,
-                               g_aSoundEffects[SOUND_EFFECT_ENGINE].loopLength);
+    StartSoundChannelMuted(0, samples->sample, samples->length, samples->loopLength);
+    if (g_dwNumActiveVehicles > 1) {
+        StartSoundChannelMuted(
+            CHANNELS_PER_VEHICLE, samples->sample, samples->length, samples->loopLength);
     }
-    if (g_dwNumActiveVehicles >= 3) {
-        StartSoundChannelMuted(2 * CHANNELS_PER_VEHICLE,
-                               g_aSoundEffects[SOUND_EFFECT_ENGINE].sample,
-                               g_aSoundEffects[SOUND_EFFECT_ENGINE].length,
-                               g_aSoundEffects[SOUND_EFFECT_ENGINE].loopLength);
+    if (g_dwNumActiveVehicles > 2) {
+        StartSoundChannelMuted(
+            2 * CHANNELS_PER_VEHICLE, samples->sample, samples->length, samples->loopLength);
     }
 }
