@@ -634,7 +634,6 @@
           |||,
         },
       ],
-      workflow_file: 'pages.yml',
     },
   } },
 }
