@@ -304,7 +304,7 @@ void ProcessPaintShopScreen(void) {
     (void)stackPrefix;
     (void)stackSuffix;
     (void)x;
-    area = &g_rcDecalCanvasFrame;
+    area = &g_rcDecalCanvasFrame[0];
     done = 0;
     g_wSerialInterfaceIdle = 0;
     if ((unsigned char)g_bPaintShopInitialized == 0) {
@@ -442,8 +442,9 @@ void ProcessPaintShopScreen(void) {
             }
             g_apDecalSlotIcons[i]->style = 99;
         }
-        g_aPaintToolButtonRects[0].x = area->x;
-        g_aPaintToolButtonRects[0].y = g_rcDecalCanvasFrame.y + g_rcDecalCanvasFrame.height + 6;
+        g_aPaintToolButtonRects[0].x = g_rcDecalCanvasFrame[0].x;
+        g_aPaintToolButtonRects[0].y =
+            g_rcDecalCanvasFrame[0].height + g_rcDecalCanvasFrame[0].y + 6;
         g_aPaintToolButtonRects[0].width = 0x20;
         g_aPaintToolButtonRects[0].height = 0x5e;
         g_rcPaletteFrameLeft.x = g_aPaintToolButtonRects[0].width + g_aPaintToolButtonRects->x + 2;
@@ -545,7 +546,7 @@ void ProcessPaintShopScreen(void) {
             g_aDecalSwatches[i].rect.width = 0x10;
             g_aDecalSwatches[i].rect.height = 0xe;
             g_aDecalSwatches[i].rect.x = g_rcPaletteFrameRight.x + 4 + (i - 2) * 0x10;
-            g_aDecalSwatches[i].rect.y = g_rcPaletteFrameRight.y + 4;
+            g_aDecalSwatches[i].rect.y = g_rcDecalCanvasFrame[2].y + 4;
         }
         ConvertPaletteToRgb();
         for (r = 0; r < 5; r++) {
@@ -559,10 +560,10 @@ void ProcessPaintShopScreen(void) {
         }
         g_rcDecalCanvas.width = g_bDecalWidth * 4;
         g_rcDecalCanvas.height = g_bDecalHeight * 4;
-        dx = (g_rcDecalCanvasFrame.width - g_rcDecalCanvas.width) >> 1;
-        dy = (g_rcDecalCanvasFrame.height - g_rcDecalCanvas.height) >> 1;
-        g_rcDecalCanvas.x = g_rcDecalCanvasFrame.x + dx;
-        g_rcDecalCanvas.y = g_rcDecalCanvasFrame.y + dy;
+        dx = (g_rcDecalCanvasFrame[0].width - g_rcDecalCanvas.width) >> 1;
+        dy = (g_rcDecalCanvasFrame[0].height - g_rcDecalCanvas.height) >> 1;
+        g_rcDecalCanvas.x = g_rcDecalCanvasFrame[0].x + dx;
+        g_rcDecalCanvas.y = g_rcDecalCanvasFrame[0].y + dy;
         g_bPaintShopInitialized = 1;
         gControllerPakState = 0;
         SetFadeTarget(1.0f, 0.2f);

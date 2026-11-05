@@ -171,13 +171,13 @@ extern Sprite g_texDecalFont;
 extern Sprite g_texPaintShapeFilledCircle;
 
 /**
- * The area of the screen the decal is centered in.
+ * Three contiguous paint shop frames, starting with the area around the decal.
  *
  * @ghidraAddress USA: 0x8028d470
  * @ghidraAddress EUR: 0x8028fbd0
  * @ghidraAddress JPN: 0x8028f640
  */
-extern ScreenRect g_rcDecalCanvasFrame;
+extern ScreenRect g_rcDecalCanvasFrame[3];
 
 /**
  * The black area behind the two wide swatches of the palette.

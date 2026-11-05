@@ -114,9 +114,9 @@ static inline void SelectDecalSlot(s32 slot) {
     osSyncPrintf("decal_height = %d\n", g_bDecalHeight);
 #endif
     g_rcDecalCanvas.x =
-        g_rcDecalCanvasFrame.x + ((g_rcDecalCanvasFrame.width - g_bDecalWidth * 4) >> 1);
+        g_rcDecalCanvasFrame[0].x + ((g_rcDecalCanvasFrame[0].width - g_bDecalWidth * 4) >> 1);
     g_rcDecalCanvas.y =
-        g_rcDecalCanvasFrame.y + ((g_rcDecalCanvasFrame.height - g_bDecalHeight * 4) >> 1);
+        g_rcDecalCanvasFrame[0].y + ((g_rcDecalCanvasFrame[0].height - g_bDecalHeight * 4) >> 1);
     g_rcDecalCanvas.width = g_bDecalWidth * 4;
     g_rcDecalCanvas.height = g_bDecalHeight * 4;
 }
