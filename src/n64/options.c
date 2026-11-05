@@ -634,7 +634,6 @@ void ProcessDataSaveLoadMenu(void) {
     s32 i;
     s32 row;
     s32 height;
-    u8 cursor;
 #ifdef ENABLE_PATCHES
     /* A choice out of range opens no note. */
     u8 *noteName = NULL;
@@ -918,30 +917,28 @@ void ProcessDataSaveLoadMenu(void) {
         UpdateStickRepeat(CHOOSING_INPUT);
         if (CHOOSING_INPUT->buttons & INPUT_DOWN) {
             TransferFlags(CHOOSING_INPUT, INPUT_DOWN);
-            cursor = g_bSaveLoadMenuCursor;
             do {
-                cursor++;
-                if (items[cursor].text == NULL) {
-                    cursor = 0;
+                g_bSaveLoadMenuCursor++;
+                if (items[g_bSaveLoadMenuCursor].text == NULL) {
+                    g_bSaveLoadMenuCursor = 0;
                 }
-            } while (items[cursor].action == SAVE_LOAD_ROW_GAP ||
-                     items[cursor].action == SAVE_LOAD_ROW_SMALL_GAP ||
-                     items[cursor].action == SAVE_LOAD_ROW_HEADING);
-            g_bSaveLoadMenuCursor = cursor;
+            } while (items[g_bSaveLoadMenuCursor].action == SAVE_LOAD_ROW_GAP ||
+                     items[g_bSaveLoadMenuCursor].action == SAVE_LOAD_ROW_SMALL_GAP ||
+                     items[g_bSaveLoadMenuCursor].action == SAVE_LOAD_ROW_HEADING);
         } else if (CHOOSING_INPUT->buttons & INPUT_UP) {
             TransferFlags(CHOOSING_INPUT, INPUT_UP);
-            cursor = g_bSaveLoadMenuCursor;
-            do {
-                if (cursor == 0) {
-                    while (items[cursor].text != NULL) {
-                        cursor++;
-                    }
+        cursor_up:
+            if (g_bSaveLoadMenuCursor == 0) {
+                while (items[g_bSaveLoadMenuCursor].text != NULL) {
+                    g_bSaveLoadMenuCursor++;
                 }
-                cursor--;
-            } while (items[cursor].action == SAVE_LOAD_ROW_GAP ||
-                     items[cursor].action == SAVE_LOAD_ROW_SMALL_GAP ||
-                     items[cursor].action == SAVE_LOAD_ROW_HEADING);
-            g_bSaveLoadMenuCursor = cursor;
+            }
+            g_bSaveLoadMenuCursor--;
+            if (items[g_bSaveLoadMenuCursor].action == SAVE_LOAD_ROW_GAP ||
+                items[g_bSaveLoadMenuCursor].action == SAVE_LOAD_ROW_SMALL_GAP ||
+                items[g_bSaveLoadMenuCursor].action == SAVE_LOAD_ROW_HEADING) {
+                goto cursor_up;
+            }
         }
 #else
         if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {

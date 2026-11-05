@@ -31,8 +31,8 @@ unknown until it writes `matching-brd3d.json` and `matching-brglide.json`.
 | Release       | Compiler | Matching functions | Registers only | Not matching | Unknown |     Matching code bytes |
 | ------------- | -------- | -----------------: | -------------: | -----------: | ------: | ----------------------: |
 | `usa.z64`     | IDO 5.3  |    709/774 (91.6%) |              1 |           64 |       0 | 269,508/436,848 (61.7%) |
-| `eur.z64`     | IDO 5.3  |    725/792 (91.5%) |              1 |           66 |       0 | 266,376/444,904 (59.9%) |
-| `jpn.z64`     | IDO 5.3  |    729/795 (91.7%) |              1 |           65 |       0 | 266,712/443,596 (60.1%) |
+| `eur.z64`     | IDO 5.3  |    725/792 (91.5%) |              1 |           66 |       0 | 266,516/444,904 (59.9%) |
+| `jpn.z64`     | IDO 5.3  |    729/795 (91.7%) |              1 |           65 |       0 | 266,716/443,596 (60.1%) |
 | `BRD3D.dll`   | MSVC 5.0 |            Unknown |              0 |            0 |   1,573 |                 Unknown |
 | `BRGlide.dll` | MSVC 5.0 |            Unknown |              0 |            0 |   1,441 |                 Unknown |
 
