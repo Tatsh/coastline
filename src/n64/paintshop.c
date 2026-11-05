@@ -295,7 +295,10 @@ void ProcessPaintShopScreen(void) {
     int x;
     int y;
     Vec3f *v;
-    Vehicle *car;
+    union {
+        Vehicle *vehicle;
+        u8 *paletteStart;
+    } car;
     unsigned int n;
     int dx;
     int dy;
@@ -311,8 +314,8 @@ void ProcessPaintShopScreen(void) {
         g_bPaintShopPlayer = g_dwMenuChoosingPlayer;
         g_dwNumActiveVehicles = 1;
         InitVehicleColor(&g_aVehicles[g_bPaintShopPlayer]);
-        car = &g_aVehicles[g_bPaintShopPlayer];
-        car->driver = UpdatePhysicsStep;
+        car.vehicle = &g_aVehicles[g_bPaintShopPlayer];
+        car.vehicle->driver = UpdatePhysicsStep;
         n = g_bPaintShopPlayer;
         g_aVehicles[n].carModel = g_aVehicles[0].carModel;
         InstallVehicleModel(&g_aVehicles[n], n, g_aVehicles[n].carModel);
@@ -328,6 +331,10 @@ void ProcessPaintShopScreen(void) {
             p->z = 1.0f;
             p->y = p->x = 0.0f;
         }
+#if TGR_REGION == TGR_REGION_JP
+        /* Reuse the dead vehicle pointer storage to match the Japanese register allocation. */
+        car.paletteStart = _paintShopPaletteSegmentRomStart;
+#endif
         {
             Vec3f *p = &g_aVehicles[g_bPaintShopPlayer].frame.forward;
 
@@ -482,8 +489,8 @@ void ProcessPaintShopScreen(void) {
         }
 #if TGR_REGION == TGR_REGION_JP
         DmaRead(g_awPaintShopButtonPalette,
-                (u32)_paintShopPaletteSegmentRomStart,
-                _paintShopPaletteSegmentRomEnd - _paintShopPaletteSegmentRomStart);
+                (u32)car.paletteStart,
+                _paintShopPaletteSegmentRomEnd - car.paletteStart);
 #endif
         LoadTextureFromRom(&g_texPaintCursor);
         LoadTextureFromRom(&g_texPaintFillCursor);
