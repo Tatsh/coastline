@@ -122,6 +122,7 @@ set(_common_sources
 if(TGR_PLATFORM STREQUAL "n64")
   list(REMOVE_ITEM _common_sources
        modelrelocation.c
+       raceprogress.c
        racerun.c
        vehicleengine.c
        vehiclepaint.c

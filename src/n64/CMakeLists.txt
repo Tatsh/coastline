@@ -21,6 +21,7 @@ set(_n64_sources
     physics.c
     playerselect.c
     race.c
+    raceprogress.c
     racemenu.c
     racesound.c
     rumble.c
