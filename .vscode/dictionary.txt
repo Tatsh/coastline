@@ -26,6 +26,7 @@ ambientsound
 analyzer
 anchorfile
 andi
+anim
 apfn
 appdir
 appicon
@@ -177,7 +178,6 @@ colored
 colorformat
 colorkeyenable
 combkey
-completionthreads
 configfile
 configsafety
 congrat
@@ -281,6 +281,7 @@ declear
 decleared
 decodeddisc
 decomp
+decomp's
 decompressobj
 denumret
 depfile
@@ -440,7 +441,6 @@ eepromread
 eepromwrite
 effectdata
 effecttextures
-elif
 emptycallback
 emulatedclock
 encryptionfailed
@@ -961,10 +961,12 @@ outfun
 overlappedwindow
 pacboy
 packedvalue
+padbe
 paintshop
 painttex
 pakmenu
 paks
+paletted
 paletteentry
 paletteindexed
 palettized
@@ -1084,6 +1086,7 @@ racescreen
 racesession
 racesound
 racespecials
+racetick
 raceview
 raininit
 rallyconfig
@@ -1131,6 +1134,7 @@ resf
 respawn
 respawning
 restartfrom
+resynced
 rgbdither
 rgdw
 rgsz
@@ -1382,6 +1386,7 @@ texturescan
 texturestream
 textureworkspace
 tgmath
+tgrally
 thiscall
 timeattack
 timerintr
@@ -1491,6 +1496,7 @@ vehiclestatus
 vehicletrackpos
 vehiclevisibility
 vehprofile
+velfd
 vendored
 venv
 versioninfo
@@ -1555,6 +1561,7 @@ wizardrun
 wndclassa
 worktrees
 worley
+wpos
 wrapu
 wrapv
 writable
@@ -1577,6 +1584,7 @@ xchar
 xcpluscomm
 xcursor
 xexp
+xfac
 xfixes
 xfmf
 xfml
