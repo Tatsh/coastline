@@ -68,8 +68,16 @@
 #define KEY_FLASH_FRAMES 3
 
 /* The file of the decals on the controller pak, and its note name in the font of the pak. */
+#if TGR_REGION == TGR_REGION_JP
+#define DECAL_FILE_COMPANY 0x3238
+#define DECAL_FILE_GAME 0x4E54524A
+#elif TGR_REGION == TGR_REGION_EU
+#define DECAL_FILE_COMPANY 0x3746
+#define DECAL_FILE_GAME 0x4E545250
+#else
 #define DECAL_FILE_COMPANY 0x3544
 #define DECAL_FILE_GAME 0x4E475245
+#endif
 #define DECAL_FILE_SIZE 0x3E00
 
 /* The bytes of the decals at which the progress bar is full, and the width of the bar. */
@@ -1621,6 +1629,32 @@ void AllocateEditorBuffers(void) {
     LoadTextureFromRom(&g_texButtonB);
 }
 
+#ifdef __sgi
+void DrawFilledRectHiRes(s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, u8 blue) {
+    if (!g_dwScreenScaleShift) {
+        x >>= 1;
+        y >>= 1;
+        width >>= 1;
+        height >>= 1;
+    }
+    if (width < 2) {
+        width = 1;
+    }
+    if (height < 2) {
+        height = 1;
+    }
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_FILL);
+    gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+    gDPSetFillColor(gDisplayListPtr++,
+                    GPACK_RGBA5551(red, green, blue, 1) << 16 |
+                        GPACK_RGBA5551(red, green, blue, 1));
+    gDPFillRectangle(gDisplayListPtr++, x, y, x + width, y + height);
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
+}
+#endif
+
 s32 ProcessDecalSaveLoad(VehicleModel *m, u8 player, u8 operation, u8 inCarSelect, u8 *done) {
 #ifdef __sgi
     static u8 g_bPakDialogActive = 0;
@@ -1949,13 +1983,15 @@ s32 ProcessDecalSaveLoad(VehicleModel *m, u8 player, u8 operation, u8 inCarSelec
         top = 0xC5;
         ty = 0x71;
         if (inCarSelect == 1) {
-            ty = 0x7C;
             /* The unused test preserves IDO's register schedule. */
 #ifdef __sgi
-            if (ty)
-                ;
-#endif
+            /* clang-format off */
+            ty = 0x7C; if (ty); top = 0xDB;
+            /* clang-format on */
+#else
+            ty = 0x7C;
             top = 0xDB;
+#endif
         }
         DrawRectBorder(0xD4, top, 0xD8, 0x56, 3, 0, 0, 0x80, 0x80, 0x80);
 #if (TGR_REGION == TGR_REGION_EU)

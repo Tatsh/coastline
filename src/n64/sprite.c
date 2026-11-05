@@ -500,6 +500,7 @@ void DrawRectOutline(
     EndFill();
 }
 
+#ifndef __sgi
 void DrawFilledRectHiRes(s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, u8 blue) {
     if (!g_dwScreenScaleShift) {
         x >>= 1;
@@ -517,3 +518,4 @@ void DrawFilledRectHiRes(s32 x, s32 y, s32 width, s32 height, u8 red, u8 green, 
     gDPFillRectangle(gDisplayListPtr++, x, y, x + width, y + height);
     EndFill();
 }
+#endif
