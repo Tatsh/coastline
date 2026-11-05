@@ -123,6 +123,7 @@ if(TGR_PLATFORM STREQUAL "n64")
   list(REMOVE_ITEM _common_sources
        modelrelocation.c
        racerun.c
+       vehicleengine.c
        vehiclepaint.c
        vehiclesound.c)
   list(APPEND _common_sources ${CMAKE_SOURCE_DIR}/src/n64/racetick.c)

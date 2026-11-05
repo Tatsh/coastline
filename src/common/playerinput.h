@@ -111,7 +111,7 @@ void ConsumeInputFlags(PlayerInputState *state);
  * @ghidraAddress EUR: 0x80256ee0
  * @ghidraAddress JPN: 0x80256870
  */
-void TransferFlags(PlayerInputState *state, u32 mask);
+void TransferFlags(PlayerInputState *state, s32 mask);
 
 /**
  * Input state of every player.

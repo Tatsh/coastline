@@ -36,6 +36,7 @@ set(_n64_sources
     trackinstance.c
     trackrender.c
     vehicle.c
+    vehicleengine.c
     vehiclemodelrender.c
     vehiclerender.c
     vehiclesetup.c

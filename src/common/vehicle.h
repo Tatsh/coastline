@@ -158,7 +158,15 @@ struct Vehicle {
     f32 engineRpm;                   /*!< The revolutions of the engine a minute. */
     f32 gearRatios[CAR_GEAR_RATIOS]; /*!< The ratio of each gear, from the physics spec of the
                                           car. */
-    f32 torqueCurve[4];              /*!< The torque curve, from the physics spec of the car. */
+    union {
+        f32 torqueCurve[4]; /*!< The torque curve, from the physics spec of the car. */
+        struct {
+            f32 torqueCubic;     /*!< The coefficient of engine revolutions cubed. */
+            f32 torqueQuadratic; /*!< The coefficient of engine revolutions squared. */
+            f32 torqueLinear;    /*!< The coefficient of engine revolutions. */
+            f32 torqueConstant;  /*!< The constant coefficient of engine torque. */
+        };
+    };
     f32 finalDrive;          /*!< The ratio of the final drive, from the physics spec of the car. */
     s32 gearCount;           /*!< The number of forward gears, from the physics spec of the car. */
     s32 rearWheelDrive;      /*!< Whether the rear wheels alone are driven, from the physics spec
