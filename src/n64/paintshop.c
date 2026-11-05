@@ -442,7 +442,7 @@ void ProcessPaintShopScreen(void) {
             }
             g_apDecalSlotIcons[i]->style = 99;
         }
-        g_aPaintToolButtonRects[0].x = g_rcDecalCanvasFrame.x;
+        g_aPaintToolButtonRects[0].x = area->x;
         g_aPaintToolButtonRects[0].y = g_rcDecalCanvasFrame.y + g_rcDecalCanvasFrame.height + 6;
         g_aPaintToolButtonRects[0].width = 0x20;
         g_aPaintToolButtonRects[0].height = 0x5e;
