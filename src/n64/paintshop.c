@@ -303,7 +303,6 @@ void ProcessPaintShopScreen(void) {
 
     (void)stackPrefix;
     (void)stackSuffix;
-    (void)x;
     area = &g_rcDecalCanvasFrame[0];
     done = 0;
     g_wSerialInterfaceIdle = 0;
@@ -834,7 +833,8 @@ void ProcessPaintShopScreen(void) {
             i = g_texPaintCursor.originX;
             r = g_texPaintCursor.originY;
             i = (i - g_rcDecalCanvas.x) >> 2;
-            r = (g_rcDecalCanvas.y + g_rcDecalCanvas.height - r) >> 2;
+            x = g_rcDecalCanvas.y + g_rcDecalCanvas.height;
+            r = (x - r) >> 2;
             g_bDecalColor = GetPixel4Bit(i, r);
             g_bEyedropperActive = 1;
         } else if (g_bPaintToolStarted != 0 || g_bDecalDragActive != 0) {
