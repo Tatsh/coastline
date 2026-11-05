@@ -706,7 +706,6 @@ void ProcessDataSaveLoadMenu(void) {
                                               "LOAD OPTIONS",
                                               "SAVE OPTIONS"};
     s32 compressedSize;
-    s32 textY;
 #endif /* TGR_REGION == TGR_REGION_US */
     /* IDO places the menu state in function statics; the GCC build uses assembly-backed globals. */
 #if defined(__sgi) && TGR_REGION != TGR_REGION_JP
@@ -1333,7 +1332,11 @@ void ProcessDataSaveLoadMenu(void) {
                                                      g_pPakDataBuffer);
             if (gControllerPakState == 0) {
                 memcpy(equipment, g_pPakDataBuffer, sizeof(equipment));
-                SET_EQUIPMENT(g_dwMenuChoosingPlayer, equipment);
+                g_aVehicles[g_dwMenuChoosingPlayer].profile->handling = equipment[0];
+                g_aVehicles[g_dwMenuChoosingPlayer].profile->transmission = equipment[1];
+                g_aVehicles[g_dwMenuChoosingPlayer].profile->tires = equipment[2];
+                g_aVehicles[g_dwMenuChoosingPlayer].profile->suspension = equipment[3];
+                g_aVehicles[g_dwMenuChoosingPlayer].profile->controllerLayout = equipment[4];
                 PAK_LOG(("Done!\n"));
                 ApplyVolumeSettings();
                 g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;
@@ -1345,41 +1348,41 @@ void ProcessDataSaveLoadMenu(void) {
 
     case SAVE_LOAD_STEP_ALLOCATE:
         gControllerPakState = osPfsFreeBlocks(&g_aPakPfs[g_dwMenuChoosingPlayer], &freeBlocks);
-        if (gControllerPakState != 0) {
-            g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
-            break;
-        }
-        if (freeBlocks < noteSize) {
-            gControllerPakState = PFS_DATA_FULL;
-            g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
-            break;
-        }
-        if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON) {
-            PAK_LOG(("Allocating %d bytes for season data...\n", noteSize));
-        } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_GHOST) {
-            PAK_LOG(("Allocating %d bytes for ghost data...\n", noteSize));
-        } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS) {
-            PAK_LOG(("Allocating %d bytes for options...\n", noteSize));
-        }
-        gControllerPakState = osPfsAllocateFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
-                                                COMPANY_CODE,
-                                                GAME_CODE,
-                                                noteName,
-                                                extension,
-                                                noteSize,
-                                                &g_dwSaveLoadNoteIndex);
-        if (gControllerPakState == PFS_ERR_INCONSISTENT) {
-            osPfsChecker(&g_aPakPfs[g_dwMenuChoosingPlayer]);
-            gControllerPakState = osPfsAllocateFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
-                                                    COMPANY_CODE,
-                                                    GAME_CODE,
-                                                    noteName,
-                                                    extension,
-                                                    noteSize,
-                                                    &g_dwSaveLoadNoteIndex);
-        }
         if (gControllerPakState == 0) {
-            g_bSaveLoadStep = SAVE_LOAD_STEP_SAVE;
+            if (freeBlocks < noteSize) {
+                gControllerPakState = PFS_DATA_FULL;
+                g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
+            } else {
+                if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON) {
+                    PAK_LOG(("Allocating %d bytes for season data...\n", noteSize));
+                } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_GHOST) {
+                    PAK_LOG(("Allocating %d bytes for ghost data...\n", noteSize));
+                } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS) {
+                    PAK_LOG(("Allocating %d bytes for options...\n", noteSize));
+                }
+                gControllerPakState = osPfsAllocateFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
+                                                        COMPANY_CODE,
+                                                        GAME_CODE,
+                                                        noteName,
+                                                        extension,
+                                                        noteSize,
+                                                        &g_dwSaveLoadNoteIndex);
+                if (gControllerPakState == PFS_ERR_INCONSISTENT) {
+                    osPfsChecker(&g_aPakPfs[g_dwMenuChoosingPlayer]);
+                    gControllerPakState = osPfsAllocateFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
+                                                            COMPANY_CODE,
+                                                            GAME_CODE,
+                                                            noteName,
+                                                            extension,
+                                                            noteSize,
+                                                            &g_dwSaveLoadNoteIndex);
+                }
+                if (gControllerPakState == 0) {
+                    g_bSaveLoadStep = SAVE_LOAD_STEP_SAVE;
+                } else {
+                    g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
+                }
+            }
         } else {
             g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
         }
@@ -1387,7 +1390,14 @@ void ProcessDataSaveLoadMenu(void) {
 
     case SAVE_LOAD_STEP_CONFIRM_OVERWRITE:
         g_bSaveLoadInputEnabled = FALSE;
+#if TGR_REGION == TGR_REGION_US
+        top = 0xBF;
+        if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
+            top = 0xC9;
+        }
+#else
         top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xBF : 0xC9;
+#endif
         /* The buttons are placed by the width of the picture of A, not its height. */
         buttonY = top - g_texButtonA.width + 0x62;
         DRAW_MESSAGE_BOX(0xD5, top, 0xD6, 0x6A);
@@ -1400,15 +1410,13 @@ void ProcessDataSaveLoadMenu(void) {
 #else
         SetTextSize(13);
         SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
-        textY = (top + 0x1E) >> 1;
-        DrawText("OK TO OVERWRITE", 0x72, textY);
-        DrawText("SAVED DATA?", 0x72, textY + 0xE);
+        DrawText("OK TO OVERWRITE", 0x72, (top + 0x1E) >> 1);
+        DrawText("SAVED DATA?", 0x72, ((top + 0x1E) >> 1) + 0xE);
 #endif /* TGR_REGION == TGR_REGION_JP */
         SetTextSize(10);
-        textY = (buttonY + 0x12) >> 1;
-        DrawText("%wwOK", (u32)(g_texButtonA.width + 0xED) >> 1, textY);
+        DrawText("%wwOK", (u32)(g_texButtonA.width + 0xED) >> 1, (buttonY + 0x12) >> 1);
         /* CANCEL is placed by the height of the picture of B, unlike the other labels. */
-        DrawText("%wwCANCEL", (u32)(g_texButtonB.height + 0x13B) >> 1, textY);
+        DrawText("%wwCANCEL", (u32)(g_texButtonB.height + 0x13B) >> 1, (buttonY + 0x12) >> 1);
         DrawTexturedSprite(&g_texButtonA, 0xE7, buttonY);
         DrawTexturedSprite(&g_texButtonB, 0x135, buttonY);
         if (CHOOSING_INPUT->buttons & INPUT_A) {
@@ -1464,22 +1472,22 @@ void ProcessDataSaveLoadMenu(void) {
                                                  g_dwGhostRecordingSize,
                                                  GHOST_CHANNELS);
             PAK_LOG(("new size = %d\n", compressedSize));
-            if (compressedSize == -1) {
-                gControllerPakState = PAK_STATE_GHOST_TOO_LARGE;
-                g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
-                break;
-            }
-            PAK_LOG(("Saving ghost data to controller pak...\n"));
-            gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
-                                                     g_dwSaveLoadNoteIndex,
-                                                     PFS_WRITE,
-                                                     0,
-                                                     PAK_DATA_BUFFER_SIZE,
-                                                     g_pPakDataBuffer);
-            if (gControllerPakState == 0) {
-                PAK_LOG(("Done!\n"));
-                g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;
+            if (compressedSize != -1) {
+                PAK_LOG(("Saving ghost data to controller pak...\n"));
+                gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
+                                                         g_dwSaveLoadNoteIndex,
+                                                         PFS_WRITE,
+                                                         0,
+                                                         PAK_DATA_BUFFER_SIZE,
+                                                         g_pPakDataBuffer);
+                if (gControllerPakState == 0) {
+                    PAK_LOG(("Done!\n"));
+                    g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;
+                } else {
+                    g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
+                }
             } else {
+                gControllerPakState = PAK_STATE_GHOST_TOO_LARGE;
                 g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
             }
         } else if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_OPTIONS) {
@@ -1493,21 +1501,21 @@ void ProcessDataSaveLoadMenu(void) {
                                                      g_pPakDataBuffer);
             if (gControllerPakState != 0) {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
-                break;
-            }
-            GET_EQUIPMENT(equipment, g_aVehicles[g_dwMenuChoosingPlayer].profile);
-            memcpy(g_pPakDataBuffer, equipment, sizeof(equipment));
-            gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
-                                                     g_dwSaveLoadNoteIndex,
-                                                     PFS_WRITE,
-                                                     OPTIONS_HALF_SIZE,
-                                                     OPTIONS_HALF_SIZE,
-                                                     g_pPakDataBuffer);
-            if (gControllerPakState == 0) {
-                PAK_LOG(("Done!\n"));
-                g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;
             } else {
-                g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
+                GET_EQUIPMENT(equipment, g_aVehicles[g_dwMenuChoosingPlayer].profile);
+                memcpy(g_pPakDataBuffer, equipment, sizeof(equipment));
+                gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
+                                                         g_dwSaveLoadNoteIndex,
+                                                         PFS_WRITE,
+                                                         OPTIONS_HALF_SIZE,
+                                                         OPTIONS_HALF_SIZE,
+                                                         g_pPakDataBuffer);
+                if (gControllerPakState == 0) {
+                    PAK_LOG(("Done!\n"));
+                    g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;
+                } else {
+                    g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
+                }
             }
         }
         break;
@@ -1684,8 +1692,22 @@ void ProcessDataSaveLoadMenu(void) {
 #endif /* TGR_REGION != TGR_REGION_US */
             break;
         case PAK_STATE_RUMBLE_PAK:
-            DRAW_SWAP_FOR_CONTROLLER_PAK_MESSAGE(
-                0xAE, 0x67, 0x146 - g_texButtonA.width, "%wwOK", "%wwCANCEL");
+            buttonY = 0x146 - g_texButtonA.width;
+#if TGR_REGION == TGR_REGION_US
+            DRAW_MESSAGE_BOX(0x79, 0xAE, 0x18D, 0xA0);
+            DrawText("PLEASE REMOVE THE RUMBLE PAK", 0x44, 0x67);
+            DrawText("AND INSERT THE CONTROLLER PAK", 0x44, 0x74);
+            DrawText("INTO THE CONTROLLER.  PRESS", 0x44, 0x81);
+            DrawText("THE A BUTTON WHEN READY.", 0x44, 0x8E);
+            SetTextAlignLeft();
+            SetTextSize(10);
+            DrawText("%wwOK", (u32)(g_texButtonA.width + 0xE3) >> 1, (buttonY + 0x12) >> 1);
+            DrawText("%wwCANCEL", (u32)(g_texButtonB.width + 0x144) >> 1, (buttonY + 0x12) >> 1);
+            DrawTexturedSprite(&g_texButtonA, 0xDD, buttonY);
+            DrawTexturedSprite(&g_texButtonB, 0x13E, buttonY);
+#else
+            DRAW_SWAP_FOR_CONTROLLER_PAK_MESSAGE(0xAE, 0x67, buttonY, "%wwOK", "%wwCANCEL");
+#endif
             break;
         case PFS_DATA_FULL:
         case PFS_DIR_FULL:
@@ -1780,7 +1802,9 @@ void ProcessDataSaveLoadMenu(void) {
         SetTextAlignCenter();
         SetTextStyleNormal();
         SetTextSize(MESSAGE_TEXT_SIZE);
+#if TGR_REGION != TGR_REGION_US
         top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : 0xD9;
+#endif
 #if TGR_REGION == TGR_REGION_JP
         switch (SAVE_LOAD_ACTION) {
         case SAVE_LOAD_LOAD_SEASON:
@@ -1825,18 +1849,46 @@ void ProcessDataSaveLoadMenu(void) {
 #if TGR_REGION != TGR_REGION_US
         case SAVE_LOAD_LOAD_SEASON_GAME_PAK:
 #endif
+#if TGR_REGION == TGR_REGION_US
+            if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
+                top = 0xD9;
+            } else {
+                top = 0xCE;
+            }
+#endif
             DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywSEASON DATA", "%ywLOADED OK!");
+            break;
+        case SAVE_LOAD_LOAD_GHOST:
+#if TGR_REGION == TGR_REGION_US
+            if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
+                top = 0xD9;
+            } else {
+                top = 0xCE;
+            }
+#endif
+            DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywGHOST DATA", "%ywLOADED OK!");
             break;
         case SAVE_LOAD_SAVE_SEASON:
 #if TGR_REGION != TGR_REGION_US
         case SAVE_LOAD_SAVE_SEASON_GAME_PAK:
 #endif
+#if TGR_REGION == TGR_REGION_US
+            if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
+                top = 0xD9;
+            } else {
+                top = 0xCE;
+            }
+#endif
             DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywSEASON DATA", "%ywSAVED OK!");
             break;
-        case SAVE_LOAD_LOAD_GHOST:
-            DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywGHOST DATA", "%ywLOADED OK!");
-            break;
         case SAVE_LOAD_SAVE_GHOST:
+#if TGR_REGION == TGR_REGION_US
+            if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
+                top = 0xD9;
+            } else {
+                top = 0xCE;
+            }
+#endif
             DRAW_DONE_MESSAGE(0xD8, 0xD0, top, "%ywGHOST CAR DATA", "%ywSAVED OK!");
             break;
         case SAVE_LOAD_LOAD_OPTIONS:
@@ -2006,12 +2058,15 @@ void ProcessDataSaveLoadMenu(void) {
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
                 g_wSerialInterfaceIdle = TRUE;
                 SetCurrentScreenCallback(ProcessMainMenu);
-            } else if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_SEASON) {
-                g_wSerialInterfaceIdle = TRUE;
-                SetCurrentScreenCallback(ProcessTrackMenu);
-            } else if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_TIME_ATTACK) {
-                g_wSerialInterfaceIdle = TRUE;
-                SetCurrentScreenCallback(ProcessMainMenu);
+            } else {
+                entryMode = g_bSaveLoadEntryPoint;
+                if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_SEASON) {
+                    g_wSerialInterfaceIdle = TRUE;
+                    SetCurrentScreenCallback(ProcessTrackMenu);
+                } else if ((entryMode | 0) == SAVE_LOAD_FROM_TIME_ATTACK) {
+                    g_wSerialInterfaceIdle = TRUE;
+                    SetCurrentScreenCallback(ProcessMainMenu);
+                }
             }
         }
     }
