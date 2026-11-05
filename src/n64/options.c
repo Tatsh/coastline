@@ -619,6 +619,9 @@ void ProcessDataSaveLoadMenu(void) {
 #else
     /* The rows are set only when the menu opens; later frames read the pointer the stack slot
      * still has from the frame before. GCC places it in a register, so it is static there. */
+#if TGR_REGION == TGR_REGION_EU
+    s32 entryMode;
+#endif
 #ifdef __GNUC__
     static SaveLoadMenuItem *items;
 #else
@@ -758,9 +761,17 @@ void ProcessDataSaveLoadMenu(void) {
         g_bSaveLoadMenuCursor = 0;
         if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
             items = g_aLoadMenuItems;
+#if TGR_REGION == TGR_REGION_EU
+        } else if ((entryMode = g_bSaveLoadEntryPoint) == SAVE_LOAD_FROM_SEASON) {
+#else
         } else if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_SEASON) {
+#endif
             items = g_aSaveSeasonMenuItems;
+#if TGR_REGION == TGR_REGION_EU
+        } else if (entryMode == SAVE_LOAD_FROM_TIME_ATTACK) {
+#else
         } else if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_TIME_ATTACK) {
+#endif
             items = g_aSaveGhostMenuItems;
         }
         /* The cursor starts below a heading. */
