@@ -724,7 +724,7 @@ void ProcessDataSaveLoadMenu(void) {
     static u8 g_bSaveLoadFadeDelayFrames;
 #endif
 
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US && !defined(ENABLE_PATCHES)
     g_wSerialInterfaceIdle = FALSE;
 #endif
     if (!g_bSaveLoadMenuInitialized) {
@@ -787,7 +787,7 @@ void ProcessDataSaveLoadMenu(void) {
     }
 
     UpdateFrameTiming();
-#if TGR_REGION != TGR_REGION_US
+#if TGR_REGION != TGR_REGION_US || defined(ENABLE_PATCHES)
     g_wSerialInterfaceIdle = FALSE;
 #endif
     UpdateFadeTransitions();
@@ -2079,9 +2079,13 @@ void ProcessDataSaveLoadMenu(void) {
             }
         }
     }
+#ifdef ENABLE_PATCHES
+    g_wSerialInterfaceIdle = TRUE;
+#else
     /* This also clears the flag just set for the next screen, so the motors stay stopped until
      * another screen frees the serial interface. */
     g_wSerialInterfaceIdle = FALSE;
+#endif
 #endif /* TGR_REGION != TGR_REGION_US */
 }
 
