@@ -229,11 +229,6 @@
 #define BrVideoBlank BlankDisplay
 #define BrScreenBlank BlankDisplay
 #define BrDemoVarsLoad RestoreReplayKeyframeState
-#if TGR_REGION == TGR_REGION_JP
-#define BrEntLoadRecordPainted LoadAndActivateTrackWithPaintColor
-#else
-#define BrEntLoadRecordPainted InstallVehicleModelCopy
-#endif
 #define eur_D_8028DEC0 g_dwReplayKeyframeFrameCount
 #define eur_D_80272798 g_dwCheatFinishRacePending
 #define jpn_D_8028D8F0 g_dwReplayKeyframeFrameCount
