@@ -157,88 +157,91 @@ u8 ReadPixel4Bit(u8 *texels, s32 x, s32 y) {
 }
 
 void FloodFill4Bit(s32 x, s32 y) {
+    u8 old;
+    s32 dy, count, left, x1, x2;
     FillSpan stack[FILL_SPANS];
-    FillSpan *top;
-    s32 count, left, x1, x2, dy;
     u8 *mask, *texels;
-    u8 old, color;
 
     x = ScreenToTexelX(x);
     y = ScreenToTexelY(y);
     old = GetPixel4Bit(x, y);
-    if (g_bDecalColor == old) {
-        return;
-    }
-    stack[0].y = y;
-    stack[0].x1 = x;
-    stack[0].x2 = x;
-    stack[0].dy = 1;
-    stack[1].y = y + 1;
-    stack[1].x1 = x;
-    stack[1].x2 = x;
-    stack[1].dy = -1;
-    count = 2;
+    if (old != g_bDecalColor) {
+        stack[0].y = y;
+        stack[0].x1 = x;
+        stack[0].x2 = x;
+        stack[0].dy = 1;
+        stack[1].y = y + 1;
+        stack[1].x1 = x;
+        stack[1].x2 = x;
+        stack[1].dy = -1;
+        count = 2;
 
-    /* The fill runs in a copy with the mask off, and is copied back through the mask. */
-    mask = g_pDecalMask;
-    g_pDecalMask = NULL;
-    memcpy(g_pDecalScratchTexels, g_pDecalTexels, DECAL_BYTES);
-    texels = g_pDecalTexels;
-    g_pDecalTexels = g_pDecalScratchTexels;
+        /* The fill runs in a copy with the mask off, then passes through the mask. */
+        mask = g_pDecalMask;
+        g_pDecalMask = NULL;
+        memcpy(g_pDecalScratchTexels, g_pDecalTexels, DECAL_BYTES);
+        texels = g_pDecalTexels;
+        g_pDecalTexels = g_pDecalScratchTexels;
 
-    /* The pushes are not bounded, and more runs than the stack has room for overrun it. */
-    top = &stack[count];
-    do {
-        top--;
-        count--;
-        /* The original reads the direction by the count and the rest through the pointer. */
-        dy = stack[count].dy;
-        y = top->y + dy;
-        x1 = top->x1;
-        x2 = top->x2;
-        /* The scan to the left does not check the width. */
-        for (x = x1; x >= 0 && y >= 0 && y < g_bDecalHeight && GetPixel4Bit(x, y) == old; x--) {
-            SetPixel4Bit(x, y, g_bDecalColor);
-        }
-        if (x >= x1) {
-            goto skip;
-        }
-        left = x + 1;
-        if (left < x1) {
-            PushSpan(top, y, left, x1 - 1, -dy);
-            count++;
-        }
-        x = x1 + 1;
-        do {
-            for (; x < g_bDecalWidth && y >= 0 && y < g_bDecalHeight && GetPixel4Bit(x, y) == old;
-                 x++) {
-                SetPixel4Bit(x, y, g_bDecalColor);
+        /* The original does not bound individual pushes onto the stack. */
+        while (count > 0 && count < FILL_SPANS) {
+            dy = stack[--count].dy;
+            y = stack[count].y + dy;
+            x = x1 = stack[count].x1;
+            x2 = stack[count].x2;
+            /* The scan to the left does not check the width. */
+            while (x >= 0 && y >= 0 && y < g_bDecalHeight && GetPixel4Bit(x, y) == old) {
+                SetPixel4Bit(x--, y, g_bDecalColor);
             }
-            PushSpan(top, y, left, x - 1, dy);
-            count++;
-            if (x2 + 1 < x) {
-                PushSpan(top, y, x2 + 1, x - 1, -dy);
+            if (x >= x1) {
+                goto skip;
+            }
+            left = x + 1;
+            if (left < x1) {
+                stack[count].y = y;
+                stack[count].x1 = left;
+                stack[count].x2 = x1 - 1;
+                stack[count].dy = -dy;
                 count++;
             }
-        skip:
-            for (x++; x <= x2 && x < g_bDecalWidth && y >= 0 && y < g_bDecalHeight &&
-                      GetPixel4Bit(x, y) != old;
-                 x++) {
-            }
-            left = x;
-        } while (x <= x2);
-    } while (count > 0 && count < FILL_SPANS);
-
-    g_pDecalMask = mask;
-    for (y = 0; y < g_bDecalHeight; y++) {
-        for (x = 0; x < g_bDecalWidth; x++) {
-            color = GetPixel4Bit(x, y);
-            g_pDecalTexels = texels;
-            SetPixel4Bit(x, y, color);
-            g_pDecalTexels = g_pDecalScratchTexels;
+            x = x1 + 1;
+            do {
+                while (x < g_bDecalWidth && y >= 0 && y < g_bDecalHeight &&
+                       GetPixel4Bit(x, y) == old) {
+                    SetPixel4Bit(x++, y, g_bDecalColor);
+                }
+                stack[count].y = y;
+                stack[count].x1 = left;
+                stack[count].x2 = x - 1;
+                stack[count].dy = dy;
+                count++;
+                if (x > x2 + 1) {
+                    stack[count].y = y;
+                    stack[count].x1 = x2 + 1;
+                    stack[count].x2 = x - 1;
+                    stack[count].dy = -dy;
+                    count++;
+                }
+            skip:
+                for (x++; x <= x2 && x < g_bDecalWidth && y >= 0 && y < g_bDecalHeight &&
+                          GetPixel4Bit(x, y) != old;
+                     x++) {
+                }
+                left = x;
+            } while (x <= x2);
         }
+
+        g_pDecalMask = mask;
+        for (y = 0; y < g_bDecalHeight; y++) {
+            for (x = 0; x < g_bDecalWidth; x++) {
+                old = GetPixel4Bit(x, y);
+                g_pDecalTexels = texels;
+                SetPixel4Bit(x, y, old);
+                g_pDecalTexels = g_pDecalScratchTexels;
+            }
+        }
+        g_pDecalTexels = texels;
     }
-    g_pDecalTexels = texels;
 }
 
 void StampTextOnDecal(s32 x, s32 y) {
