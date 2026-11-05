@@ -165,11 +165,6 @@ void AnimateSplashModels(void) {
 #endif
 }
 
-/* Allocate a model on the heap and decompress it there. */
-static inline Model *LoadSplashModel(u32 romOffset) {
-    return DecompressModel(AllocHeapAligned(DmaReadAssetSize(romOffset)), romOffset);
-}
-
 /* Play a sound on a free sound effect channel at a volume, and return the channel or -1. */
 static s16 PlaySplashSound(s8 *sample, u32 length, s32 volume) {
     s16 channel = FindFreeSoundChannel();
@@ -483,22 +478,29 @@ void ProcessSplashScreens(void) {
         FadeMusicTo(1.0f, FADE_TIME);
         FadeSfxTo(1.0f, FADE_TIME);
         ResetHeap();
-        g_pSplashDeveloperLogo = LoadSplashModel(ROM_SPLASH_DEVELOPER_LOGO);
+        g_pSplashDeveloperLogo = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_DEVELOPER_LOGO));
+        DecompressModel(g_pSplashDeveloperLogo, ROM_SPLASH_DEVELOPER_LOGO);
 #if TGR_REGION == TGR_REGION_US
-        g_pSplashProducerLogo = LoadSplashModel(ROM_SPLASH_PRODUCER_LOGO);
+        g_pSplashProducerLogo = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_PRODUCER_LOGO));
+        DecompressModel(g_pSplashProducerLogo, ROM_SPLASH_PRODUCER_LOGO);
 #endif
-        g_pSplashFirstLogo = LoadSplashModel(ROM_SPLASH_FIRST_LOGO);
+        g_pSplashFirstLogo = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_FIRST_LOGO));
+        DecompressModel(g_pSplashFirstLogo, ROM_SPLASH_FIRST_LOGO);
 #if TGR_REGION == TGR_REGION_JP
         LoadAndDecompressAsset(&g_SplashTitleLogoTexture, AllocHeapAligned);
         DecompressFromRom(g_awSplashTitlePalette, ROM_SPLASH_TITLE_PALETTE, NULL);
 #else
-        g_pSplashTitleModelA = LoadSplashModel(ROM_SPLASH_TITLE_A);
+        g_pSplashTitleModelA = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_A));
+        DecompressModel(g_pSplashTitleModelA, ROM_SPLASH_TITLE_A);
         LoopModelAnimations(g_pSplashTitleModelA);
-        g_pSplashTitleModelB = LoadSplashModel(ROM_SPLASH_TITLE_B);
+        g_pSplashTitleModelB = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_B));
+        DecompressModel(g_pSplashTitleModelB, ROM_SPLASH_TITLE_B);
         LoopModelAnimations(g_pSplashTitleModelB);
-        g_pSplashTitleModelD = LoadSplashModel(ROM_SPLASH_TITLE_D);
+        g_pSplashTitleModelD = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_D));
+        DecompressModel(g_pSplashTitleModelD, ROM_SPLASH_TITLE_D);
         LoopModelAnimations(g_pSplashTitleModelD);
-        g_pSplashTitleModelC = LoadSplashModel(ROM_SPLASH_TITLE_C);
+        g_pSplashTitleModelC = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_C));
+        DecompressModel(g_pSplashTitleModelC, ROM_SPLASH_TITLE_C);
         LoopModelAnimations(g_pSplashTitleModelC);
 #endif /* TGR_REGION == TGR_REGION_JP */
 

@@ -66,7 +66,6 @@ static s32 fadingIn, fadingOut, fadeComplete, fadedToBlack;
 static ScreenCallback current, next;
 static s32 demoStarted, cleared, transfers, scissor[4], vbBlack, loads;
 static u32 heap[0x4000], heapUsed;
-static Model models[16];
 static u32 modelCount;
 static DisplayListBlock blocks[8];
 static u32 blockCount;
@@ -79,9 +78,9 @@ void LoopModelAnimations(Model *model) {
 }
 Model *DecompressModel(void *dst, u32 rom) {
     assert(dst != NULL);
-    /* The stub keeps the offset of the model on the cartridge in its part count. */
-    models[modelCount].partCount = rom;
-    return &models[modelCount++];
+    ((Model *)dst)->partCount = rom;
+    modelCount++;
+    return dst;
 }
 void *AllocHeapAligned(u32 size) {
     void *p = &heap[heapUsed];
