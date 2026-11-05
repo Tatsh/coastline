@@ -559,25 +559,78 @@ s32 ApplyCollisionImpulse(
 
 s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
 #if TGR_PLATFORM == TGR_PLATFORM_N64
-#define velocity (&body->stepStates[1].velocity)
-#define angular (&body->stepStates[1].angularVelocity)
+    f32 t[3], v[3], basis[4][4], into, damping;
+
+    into = normal->x * body->stepStates[1].velocity.x + normal->y * body->stepStates[1].velocity.y +
+           normal->z * body->stepStates[1].velocity.z;
+    if (into >= 0.0f) {
+        return 0;
+    }
+    t[0] = normal->x * (into * 1.05);
+    t[1] = normal->y * (into * 1.05);
+    t[2] = normal->z * (into * 1.05);
+    body->stepStates[1].velocity.x -= t[0];
+    body->stepStates[1].velocity.y -= t[1];
+    body->stepStates[1].velocity.z -= t[2];
+    if (body->framesSinceImpact < 10) {
+        damping = 0.9f;
+    } else {
+        damping = into < 0.0f ? -into : into;
+        if (damping > 27.0f) {
+            damping = 27.0f;
+        }
+        body->impactSpeed = damping;
+        if (body->impactSpeed < 10) {
+            body->impactSpeed = 0;
+        } else {
+            body->impactPoint.x = g_vCollisionContact.x;
+            body->impactPoint.y = g_vCollisionContact.y;
+            body->impactPoint.z = g_vCollisionContact.z;
+        }
+        body->impactVolume = body->impactVolume < (u8)(damping * 127.0f / 27.0f + 128.0f) ?
+                                 (u8)(damping * 127.0f / 27.0f + 128.0f) :
+                                 body->impactVolume;
+        damping = 0.9f;
+        body->stepStates[1].velocity.x *= damping;
+        body->stepStates[1].velocity.y *= damping;
+        body->stepStates[1].velocity.z *= damping;
+    }
+    if (damp) {
+        body->stepStates[1].velocity.x *= damping;
+        body->stepStates[1].velocity.y *= damping;
+        body->stepStates[1].velocity.z *= damping;
+    }
+    if (!spin) {
+        return 1;
+    }
+    t[0] = normal->y;
+    t[1] = normal->z;
+    t[2] = normal->x;
+    basis[1][0] = normal->y * t[2] - normal->z * t[1];
+    basis[1][1] = normal->z * t[0] - normal->x * t[2];
+    basis[1][2] = normal->x * t[1] - normal->y * t[0];
+    basis[2][0] = normal->y * basis[1][2] - normal->z * basis[1][1];
+    basis[2][1] = normal->z * basis[1][0] - normal->x * basis[1][2];
+    basis[2][2] = normal->x * basis[1][1] - normal->y * basis[1][0];
+    basis[0][0] = normal->x;
+    basis[0][1] = normal->y;
+    basis[0][2] = normal->z;
+    Mtx3x3MulVec3f((Vec3f *)t, basis, normal);
+    Mtx3x3MulVec3f((Vec3f *)v, basis, &body->stepStates[1].angularVelocity);
+    v[0] *= t[0];
+    v[1] *= t[1];
+    v[2] *= t[2];
+    Mtx4fInverseRotate(&body->stepStates[1].angularVelocity, basis, (Vec3f *)v);
+    return 1;
 #else
     Vec3f *velocity = &body->stepStates[1].velocity;
     Vec3f *angular = &body->stepStates[1].angularVelocity;
-#endif
     Vec3f impulse, turn;
-#if TGR_PLATFORM != TGR_PLATFORM_N64
     Vec3f pivot, scale;
-#endif
     f32 basis[4][4];
     f32 into, damping, speed;
-#if TGR_BOSS_RALLY
     long double bounce, rawInto, reflected[3], tangent[3];
-#else
-    f64 bounce;
-#endif
 
-#if TGR_BOSS_RALLY
     /* The libraries add the y product last here, unlike Vec3fDot. */
     rawInto = FORCE_PRODUCT(normal->x, velocity->x) + FORCE_PRODUCT(normal->z, velocity->z) +
               FORCE_PRODUCT(normal->y, velocity->y);
@@ -586,34 +639,15 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
         return 0;
     }
     bounce = FORCE_PRODUCT(into, 1.05f);
-#elif TGR_PLATFORM == TGR_PLATFORM_N64
-    into = normal->x * velocity->x + normal->y * velocity->y + normal->z * velocity->z;
-    if (0.0f <= into) {
-        return 0;
-    }
-    bounce = (f64)into * 1.05;
-#else
-    into = velocity->z * normal->z + (normal->x * velocity->x + normal->y * velocity->y);
-    if (0.0f <= into) {
-        return 0;
-    }
-    bounce = (f64)into * 1.05;
-#endif /* TGR_BOSS_RALLY */
     impulse.x = (f32)((f64)normal->x * bounce);
     impulse.y = (f32)((f64)normal->y * bounce);
     impulse.z = (f32)((f64)normal->z * bounce);
-#if TGR_BOSS_RALLY
     reflected[0] = (long double)velocity->x - impulse.x;
     reflected[1] = (long double)velocity->y - impulse.y;
     reflected[2] = (long double)velocity->z - impulse.z;
     velocity->x = reflected[0];
     velocity->y = reflected[1];
     velocity->z = reflected[2];
-#else
-    velocity->x = velocity->x - impulse.x;
-    velocity->y = velocity->y - impulse.y;
-    velocity->z = velocity->z - impulse.z;
-#endif /* TGR_BOSS_RALLY */
     if (body->framesSinceImpact < 10) {
         damping = 0.9f;
     } else {
@@ -624,15 +658,9 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
         RecordImpact(body, speed);
         RecordImpactVolume(body, speed);
         damping = 0.9f;
-#if TGR_BOSS_RALLY
         velocity->x = reflected[0] * damping;
         velocity->y = reflected[1] * damping;
         velocity->z = reflected[2] * damping;
-#else
-        velocity->x = velocity->x * damping;
-        velocity->y = velocity->y * damping;
-        velocity->z = velocity->z * damping;
-#endif
     }
     if (damp) {
         velocity->x = velocity->x * damping;
@@ -644,16 +672,9 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
     }
 
     /* Damp the spin by its parts in a frame of the normal and two axes across it. */
-#if TGR_PLATFORM == TGR_PLATFORM_N64
-    impulse.x = normal->y;
-    impulse.y = normal->z;
-    impulse.z = normal->x;
-#else
     pivot.x = normal->y;
     pivot.y = normal->z;
     pivot.z = normal->x;
-#endif
-#if TGR_BOSS_RALLY
     tangent[0] = FORCE_PRODUCT(normal->y, pivot.z) - FORCE_PRODUCT(pivot.y, normal->z);
     tangent[1] = FORCE_PRODUCT(normal->z, pivot.x) - FORCE_PRODUCT(pivot.z, normal->x);
     tangent[2] = FORCE_PRODUCT(normal->x, pivot.y) - FORCE_PRODUCT(pivot.x, normal->y);
@@ -664,45 +685,18 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
     basis[2][0] = normal->y * tangent[2] - tangent[1] * normal->z;
     basis[2][1] = normal->z * tangent[0] - FORCE_PRODUCT(basis[1][2], normal->x);
     basis[2][2] = FORCE_PRODUCT(normal->x, basis[1][1]) - FORCE_PRODUCT(basis[1][0], normal->y);
-#else
-#if TGR_PLATFORM == TGR_PLATFORM_N64
-    basis[1][0] = normal->y * impulse.z - impulse.y * normal->z;
-    basis[1][1] = normal->z * impulse.x - impulse.z * normal->x;
-    basis[1][2] = normal->x * impulse.y - impulse.x * normal->y;
-#else
-    basis[1][0] = normal->y * pivot.z - pivot.y * normal->z;
-    basis[1][1] = normal->z * pivot.x - pivot.z * normal->x;
-    basis[1][2] = normal->x * pivot.y - pivot.x * normal->y;
-#endif
-    basis[2][0] = normal->y * basis[1][2] - basis[1][1] * normal->z;
-    basis[2][1] = normal->z * basis[1][0] - basis[1][2] * normal->x;
-    basis[2][2] = normal->x * basis[1][1] - basis[1][0] * normal->y;
-#endif /* TGR_BOSS_RALLY */
     basis[0][0] = normal->x;
     basis[0][1] = normal->y;
     basis[0][2] = normal->z;
-#if TGR_PLATFORM == TGR_PLATFORM_N64
-    Mtx3x3MulVec3f(&impulse, basis, normal);
-#else
     Mtx3x3MulVec3f(&scale, basis, normal);
-#endif
     Mtx3x3MulVec3f(&turn, basis, angular);
-#if TGR_PLATFORM == TGR_PLATFORM_N64
-    turn.x = turn.x * impulse.x;
-    turn.y = turn.y * impulse.y;
-    turn.z = turn.z * impulse.z;
-#else
     turn.x = turn.x * scale.x;
     turn.y = turn.y * scale.y;
     turn.z = turn.z * scale.z;
-#endif
     Mtx4fInverseRotate(angular, basis, &turn);
     return 1;
-}
-#if TGR_PLATFORM == TGR_PLATFORM_N64
-#undef velocity
-#undef angular
 #endif
+}
 
 #if TGR_BOSS_RALLY
 f32 CastWheelRay(RigidBody *body, RigidBody *wheel) {
