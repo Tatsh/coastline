@@ -1,6 +1,7 @@
 /* Host check of the control flow of src/n64/pakmenu.c with the Pak and drawing stubbed. */
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "common/fade.h"
@@ -31,6 +32,9 @@ static Gfx list[64];
 static OSPfsState pak[PAK_NOTES];
 static u16 pakFiles = (1 << 2) | (1 << 5);
 static s32 faded = 1, deleted;
+static s32 selectedNote = -1, freePages = -1;
+static u8 deletedName;
+static s32 selectedColor;
 static ScreenCallback lastCallback;
 
 s32 osPfsIsPlug(OSMesgQueue *q, u8 *pattern) {
@@ -72,6 +76,7 @@ s32 osPfsFreeBlocks(OSPfs *pfs, s32 *bytes) {
 }
 s32 osPfsDeleteFile(OSPfs *pfs, u16 c, u32 g, u8 *n, u8 *e) {
     deleted++;
+    deletedName = n[0];
     return 0;
 }
 void bcopy(const void *s, void *d, size_t n) {
@@ -136,8 +141,15 @@ void SetTextStyleNormal(void) {
 void SetTextSize(s32 s) {
 }
 void SetTextCustomColors(s32 a, s32 b, s32 c, s32 d, s32 e, s32 f) {
+    selectedColor = a == 0x80 && b == 0xFF && c == 0x80;
 }
 void DrawText(const char *t, s32 x, s32 y) {
+    if (x == 0x52 && selectedColor) {
+        selectedNote = atoi(t);
+    }
+    if (x == 0xFA && y == 0xD3 && strncmp(t, "%yw", 3) == 0) {
+        freePages = atoi(t + 3);
+    }
 }
 void UpdateStickRepeat(PlayerInputState *s) {
 }
@@ -154,26 +166,33 @@ int main(void) {
     pak[2].file_size = 3 << 8;
     pak[2].game_name[0] = 0x1A;
     pak[5].file_size = 4 << 8;
+    pak[5].game_name[0] = 0x1B;
 
     ProcessPakMenuScreen();
     assert(g_bPakMenuState == PAK_MENU_BROWSE && g_bPakDirLoaded);
     assert(g_bPakFirstValidNote == 2 && g_bPakLastValidNote == 5 && g_bPakSelectedNote == 2);
+    assert(freePages == 100);
 
     in->buttons = INPUT_DOWN;
     ProcessPakMenuScreen();
     assert(g_bPakSelectedNote == 5);
+    assert(selectedNote == 3);
 
     in->buttons = INPUT_A;
     ProcessPakMenuScreen();
     assert(g_bPakMenuState == PAK_MENU_CONFIRM_DELETE);
+    assert(selectedNote == 6);
     in->buttons = INPUT_A;
     ProcessPakMenuScreen();
     assert(g_bPakMenuState == PAK_MENU_DELETE);
     in->buttons = 0;
     ProcessPakMenuScreen();
-    assert(deleted == 1 && g_bPakMenuState == PAK_MENU_BROWSE);
+    assert(deleted == 1 && deletedName == 0x1B && g_bPakMenuState == PAK_MENU_BROWSE);
     assert(g_bPakLastValidNote == 2 && g_bPakSelectedNote == 2 && g_dwPakNoteCount == 1);
-    assert(g_dwPakFreeBlocks == (104 << 8) && g_wSerialInterfaceIdle == 1);
+    assert(g_dwPakFreeBlocks == (104 << 8));
+    selectedNote = -1;
+    ProcessPakMenuScreen();
+    assert(selectedNote == 3 && freePages == 104 && g_wSerialInterfaceIdle == 1);
 
     /* A note of another game fails the start-up check. */
     pak[2].game_code = 0x4E475245;

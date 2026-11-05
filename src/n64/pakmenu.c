@@ -12,41 +12,6 @@
 #include "common/system.h"
 #include "common/text.h"
 
-/* The step of the fades of the menu. */
-#define PAK_MENU_FADE_STEP 0.2f
-
-/* The pages of a Controller Pak, and the bytes of a page. */
-#define PAK_PAGES 123
-#define PAK_PAGE_SHIFT 8
-
-/* The rows of the table of notes. */
-#define TABLE_TOP 0x3F
-#define TABLE_ROW 9
-
-/* The size of the text of the table, the columns of the names and the pages, the size of the text
- * of the dialogs, and the widths of the prompt to delete a note below 10 and from 10. */
-#if TGR_REGION == TGR_REGION_JP
-#define NOTE_TEXT_SIZE 11
-#define NOTE_NAME_X 0x5A
-#define NOTE_PAGES_X 0xF8
-#define DIALOG_TEXT_SIZE 14
-#define DELETE_WIDTH 0x15A
-#define DELETE_WIDE_WIDTH 0x166
-
-/* The first character of the notes the Japanese font draws. */
-#define FIRST_KANA 0x42
-#else
-#define NOTE_TEXT_SIZE 9
-#define NOTE_NAME_X 0x62
-#define NOTE_PAGES_X 0xF4
-#define DIALOG_TEXT_SIZE 12
-#define DELETE_WIDTH 0x128
-#define DELETE_WIDE_WIDTH 0x134
-#endif /* TGR_REGION == TGR_REGION_JP */
-
-/* The width of the screen the dialogs are centered in. */
-#define DIALOG_SCREEN_WIDTH 0x280
-
 u8 DecalCharToAscii(u8 c) {
     /* The original copies the whole table to the stack to read one character of it. */
     DecalCharMap map = g_szDecalCharMap;
@@ -57,156 +22,81 @@ u8 DecalCharToAscii(u8 c) {
     return ' ';
 }
 
-/* The note under the cursor is green on a white table, which is otherwise gray. */
-static void SetNoteColors(s32 note) {
-    if (g_dwPakNoteCount != 0 && note == g_bPakSelectedNote) {
-        SetTextCustomColors(0x80, 0xFF, 0x80, 0x00, 0xFF, 0x00);
-    } else {
-        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0x80, 0x80, 0x80);
-    }
-}
-
-/* Mount the Pak, repairing its identity if it is fatal, unless the controller holds a Rumble
- * Pak. Return FALSE for a Rumble Pak. */
-static s32 MountPak(void) {
-    gControllerPakState = osPfsInitPak(&g_SiMesgQueue, &g_aPakPfs[0], 0);
-    if (gControllerPakState != 0 && gControllerPakState == PFS_ERR_ID_FATAL) {
-        if (osMotorInit(&g_SiMesgQueue, &g_aContPfs[0], 0) == 0) {
-            return FALSE;
-        }
-        gControllerPakState = osPfsRepairId(&g_aPakPfs[0]);
-        if (gControllerPakState == 0) {
-            /* The result is discarded, and the state remains that of the repair. */
-            osPfsInitPak(&g_SiMesgQueue, &g_aPakPfs[0], 0);
-        }
-    }
-    return TRUE;
-}
-
-/* Whether a Pak call succeeded, or failed with an inconsistency the checker repairs. */
-static s32 PakCallSucceeded(void) {
-    if (gControllerPakState == 0) {
-        return TRUE;
-    }
-    return gControllerPakState == PFS_ERR_INCONSISTENT && osPfsChecker(&g_aPakPfs[0]) == 0;
-}
-
-static s32 IsNoteEmpty(s32 note) {
-    return (g_wPakEmptySlotMask & (1 << note)) != 0;
-}
-
-/* Draw the note in a row of the table: its name, its extension and its pages. */
-static void DrawNote(s32 note) {
-    OSPfsState *entry = &g_aPakDirEntries[note];
-    char name[20], text[16];
-    char *p;
-    u8 c;
-    s32 y = note * TABLE_ROW + TABLE_TOP;
-    s32 i;
-
-#if TGR_REGION == TGR_REGION_JP
-    s32 japanese = FALSE;
-    s32 wasJapanese;
-
-    /* Each run of kana is put between %j and %e, a dot in one is followed by a space, and a
-     * percent sign is doubled. */
-    p = name;
-    for (i = 0; i != 16;) {
-        wasJapanese = japanese;
-        if (entry->game_name[i] < FIRST_KANA) {
-            if (japanese) {
-                *p++ = '%';
-                *p++ = 'e';
-                japanese = FALSE;
-            }
-        } else if (!japanese) {
-            *p++ = '%';
-            *p++ = 'j';
-            japanese = TRUE;
-        }
-        c = DecalCharToAscii(entry->game_name[i]);
-        *p = c;
-        if (c == '\0') {
-            break;
-        }
-        i++;
-        p++;
-        if (c == '.' && wasJapanese) {
-            *p = ' ';
-            c = *p++;
-        }
-        if (c == '%') {
-            *p++ = '%';
-        }
-    }
-    c = DecalCharToAscii(entry->ext_name[0]);
-    if (c != '\0') {
-        if (japanese) {
-            *p++ = '%';
-            *p++ = 'e';
-        }
-        p[0] = ' ';
-        p[1] = '.';
-        p += 2;
-        if (entry->ext_name[0] >= FIRST_KANA) {
-            *p++ = '%';
-            *p++ = 'j';
-        }
-        *p++ = c;
-        *p = '\0';
-    } else {
-        *p = '\0';
-    }
-#else
-    for (p = name, i = 0; p != name + 16; i++) {
-        c = DecalCharToAscii(entry->game_name[i]);
-        *p = c;
-        if (c == '\0') {
-            break;
-        }
-        p++;
-    }
-    c = DecalCharToAscii(entry->ext_name[0]);
-    if (c != '\0') {
-        p[0] = ' ';
-        p[1] = '.';
-        p[2] = c;
-        p[3] = '\0';
-    } else {
-        p[0] = '\0';
-    }
-#endif /* TGR_REGION == TGR_REGION_JP */
-
-    SetTextAlignLeft();
-    SetNoteColors(note);
-    DrawText(name, NOTE_NAME_X, y);
-    sprintf(text, "%d", entry->file_size >> PAK_PAGE_SHIFT);
-    SetTextAlignRight();
-    DrawText(text, NOTE_PAGES_X, y);
-}
-
 void ProcessPakMenuScreen(void) {
-    u8 plugged;
-    char text[16], prompt[32];
-    s32 note, y, maxFiles;
-    s32 width, left, buttonY, okX, cancelX, labelY;
-    PlayerInputState *input;
-
-    g_wSerialInterfaceIdle = 0;
-    if (!g_bPakMenuInitialized) {
-        g_bPakMenuInitialized = TRUE;
-        g_bPakDirLoaded = FALSE;
+#ifdef __sgi
+    /* IDO needs function-local state to match; GCC reuses the ROM's fixed BSS slots. */
+    static u8 g_bPakDirLoaded;
+    static u8 g_bPakSelectedNote;
+    static u8 g_bPakFirstValidNote;
+    static u8 g_bPakLastValidNote;
+    static s32 g_dwPakNoteCount;
+    static s32 g_dwPakFreeBlocks;
+    static OSPfsState g_aPakDirEntries[PAK_NOTES];
+    static u8 g_bPakMenuState;
+#endif
+    int y;
+    int i;
+    int k;
+    int w;
+#ifdef __sgi
+    int x;
+#endif
 #if TGR_REGION != TGR_REGION_US
-        g_dwKeepScreenBlanked = TRUE;
+    int screenBlanked;
+#endif
+    int ox;
+#ifdef __sgi
+#if TGR_REGION == TGR_REGION_US
+    int framePaddingBeforeButtons[4];
+#else
+    int framePaddingBeforeButtons[3];
+#endif
+#endif
+    int by;
+    int ty;
+    int bx;
+#ifdef __sgi
+    int framePaddingAfterButtons[2];
+#endif
+    char c;
+    OSPfsState *st;
+    int maxFiles;
+    unsigned char pattern;
+    char num[11];
+#if TGR_REGION == TGR_REGION_JP
+    unsigned char name[128];
+    unsigned char *p;
+    int kana;
+    int was;
+    unsigned char ch;
+#else
+    unsigned char name[28];
+#endif
+#ifdef __sgi
+    int framePaddingAfterName;
+#if TGR_REGION == TGR_REGION_JP
+    int framePaddingJapanese;
+#endif
+#endif
+
+#if TGR_REGION != TGR_REGION_US
+    screenBlanked = 1;
+#endif
+    g_wSerialInterfaceIdle = 0;
+    if (g_bPakMenuInitialized == 0) {
+        g_bPakMenuInitialized = 1;
+        g_bPakDirLoaded = 0;
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+        g_dwKeepScreenBlanked = screenBlanked;
         BlankDisplay();
         StartHighResFrame();
         FlushDisplayList();
-        g_dwKeepScreenBlanked = FALSE;
+        g_dwKeepScreenBlanked = 0;
 #endif
-        osPfsIsPlug(&g_SiMesgQueue, &plugged);
-        if (!(plugged & 1)) {
+        osPfsIsPlug(&g_SiMesgQueue, &pattern);
+        if ((pattern & 1) == 0) {
             SetCurrentScreenCallback(MainMenuEntry);
-            g_bPakMenuInitialized = FALSE;
+            g_bPakMenuInitialized = 0;
             g_wSerialInterfaceIdle = 1;
             return;
         }
@@ -217,319 +107,449 @@ void ProcessPakMenuScreen(void) {
         LoadTextureFromRom(&g_texButtonB);
         LoadTextureFromRom(&g_texButtonBSmall);
         gControllerPakState = 0;
-        g_bPakMenuState = PAK_MENU_READ_DIRECTORY;
-        SetFadeTarget(1.0f, PAK_MENU_FADE_STEP);
-#if TGR_REGION != TGR_REGION_US
-        /* The flag is already clear. */
-        g_dwKeepScreenBlanked = FALSE;
+        g_bPakMenuState = 1;
+        SetFadeTarget(1.0f, 0.2f);
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+        g_dwKeepScreenBlanked = 0;
 #endif
     }
-
     UpdateFrameTiming();
     UpdateFadeTransitions();
     StartHighResFrame();
     SetupProjectionMatrix(g_dwScreenWidth, g_dwScreenHeight);
-    SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
+    SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, 1);
     ClearDepthBuffer();
     ClearScreen(0, 0, 0);
     DrawSpriteTinted(&g_texBackground, 0x50, 8, 0x80);
     DrawSpriteRegion(
         &g_texLogo, g_texLogo.originX + 0x18, g_texLogo.originY + 2, 0x208, 0x41, 0x80, 0x80, 0x80);
-
     SetTextAlignCenter();
     SetTextStyleNormal();
-    SetTextSize(0x16);
-    DrawText("%ryCONTROLLER PAK MENU", 0xA0, 0x20);
+    SetTextSize(22);
+    DrawText("%ryCONTROLLER PAK MENU", 0xa0, 0x20);
     SetTextAlignLeft();
-    SetTextSize(0xC);
+    SetTextSize(12);
     DrawText("%yw#", 0x48, 0x34);
 #if TGR_REGION == TGR_REGION_JP
     SetTextSize(13);
-    DrawText("%yw%jゲームノート", 0x74, 0x34);
+    DrawText("%yw%j\xB9(\xA6\xC4(\xC3", 0x74, 0x34);
     SetTextAlignRight();
-    DrawText("%yw%jページ", 0xFA, 0x34);
+    DrawText("%yw%j\xBD(\x9A", 0xfa, 0x34);
+    SetTextSize(11);
 #else
     DrawText("%ywGAME NOTE", 0x74, 0x34);
     SetTextAlignRight();
-    DrawText("%ywPAGES", 0xFA, 0x34);
-#endif /* TGR_REGION == TGR_REGION_JP */
-
-    /* The numbers of the notes, then the notes the directory holds. */
-    SetTextSize(NOTE_TEXT_SIZE);
-    y = TABLE_TOP;
-    for (note = 0; note < PAK_NOTES; note++) {
-        sprintf(text, "%d", note + 1);
-        SetNoteColors(note);
-        DrawText(text, 0x52, y);
-        y += TABLE_ROW;
+    DrawText("%ywPAGES", 0xfa, 0x34);
+    SetTextSize(9);
+#endif
+    y = 0x3f;
+    for (i = 0; i < 16; i++) {
+        sprintf(num, "%d", i + 1);
+        if (g_dwPakNoteCount != 0 && i == g_bPakSelectedNote) {
+            SetTextCustomColors(0x80, 0xff, 0x80, 0, 0xff, 0);
+        } else {
+            SetTextCustomColors(0xff, 0xff, 0xff, 0x80, 0x80, 0x80);
+        }
+        DrawText(num, 0x52, i * 9 + y);
     }
-    if (g_bPakDirLoaded && g_bPakMenuState != PAK_MENU_ERROR) {
-        for (note = 0; note < PAK_NOTES; note++) {
-            if (!IsNoteEmpty(note)) {
-                DrawNote(note);
+    if (g_bPakDirLoaded != 0 && g_bPakMenuState != 4) {
+        for (i = 0; i < 16; i++) {
+            if ((g_wPakEmptySlotMask & (1 << i)) == 0) {
+#if TGR_REGION == TGR_REGION_JP
+                kana = 0;
+                for (k = 0, p = name; k < 16; k++) {
+                    ch = g_aPakDirEntries[i].game_name[k];
+                    was = kana;
+                    if (ch < 0x42) {
+                        if (kana) {
+                            *p++ = '%';
+                            *p++ = 'e';
+                            kana = 0;
+                        }
+                    } else if (!kana) {
+                        *p++ = '%';
+                        *p++ = 'j';
+                        kana = 1;
+                    }
+                    c = DecalCharToAscii(ch);
+                    *p = c;
+                    if (c == 0) {
+                        break;
+                    }
+                    p++;
+                    if (p[-1] == '.' && was) {
+                        *p++ = ' ';
+                    }
+                    if (p[-1] == '%') {
+                        *p++ = '%';
+                    }
+                }
+                c = DecalCharToAscii(g_aPakDirEntries[i].ext_name[0]);
+                if (c != 0) {
+                    if (kana) {
+                        *p++ = '%';
+                        *p++ = 'e';
+                    }
+                    *p++ = ' ';
+                    *p++ = '.';
+                    if (g_aPakDirEntries[i].ext_name[0] >= 0x42) {
+                        *p++ = '%';
+                        *p++ = 'j';
+                    }
+                    *p++ = c;
+                    *p = 0;
+                } else {
+                    *p = 0;
+                }
+#else
+                for (k = 0; k < 16; k++) {
+                    name[k] = DecalCharToAscii(g_aPakDirEntries[i].game_name[k]);
+                    if (name[k] == 0) {
+                        break;
+                    }
+                }
+                c = DecalCharToAscii(g_aPakDirEntries[i].ext_name[0]);
+                if (c != 0) {
+                    name[k] = ' ';
+                    name[k + 1] = '.';
+                    name[k + 2] = c;
+                    name[k + 3] = 0;
+                } else {
+                    name[k] = 0;
+                }
+#endif
+                SetTextAlignLeft();
+                if (g_dwPakNoteCount != 0 && i == g_bPakSelectedNote) {
+                    SetTextCustomColors(0x80, 0xff, 0x80, 0, 0xff, 0);
+                } else {
+                    SetTextCustomColors(0xff, 0xff, 0xff, 0x80, 0x80, 0x80);
+                }
+#if TGR_REGION == TGR_REGION_JP
+                DrawText((char *)name, 0x5a, i * 9 + y);
+                sprintf(num, "%d", g_aPakDirEntries[i].file_size >> 8);
+                SetTextAlignRight();
+                DrawText(num, 0xf8, i * 9 + y);
+#else
+                DrawText((char *)name, 0x62, i * 9 + y);
+                sprintf(num, "%d", g_aPakDirEntries[i].file_size >> 8);
+                SetTextAlignRight();
+                DrawText(num, 0xf4, i * 9 + y);
+#endif
             }
         }
     }
-
-    input = &g_aPlayerInputState[0];
+#if TGR_REGION == TGR_REGION_JP
+    SetTextCustomColors(0xff, 0xff, 0xff, 0x80, 0x80, 0x80);
+#endif
     switch (g_bPakMenuState) {
-    case PAK_MENU_MOUNT:
-        if (!MountPak()) {
-            gControllerPakState = 0;
-            SetCurrentScreenCallback(MainMenuEntry);
-            g_wSerialInterfaceIdle = 1;
-            return;
+    case 0:
+        gControllerPakState = osPfsInitPak(&g_SiMesgQueue, &g_aPakPfs[0], 0);
+        if (gControllerPakState != 0 && gControllerPakState == 10) {
+            if (osMotorInit(&g_SiMesgQueue, &g_aContPfs[0], 0) == 0) {
+                gControllerPakState = 0;
+                SetCurrentScreenCallback(MainMenuEntry);
+                g_wSerialInterfaceIdle = 1;
+                return;
+            }
+            gControllerPakState = osPfsRepairId(&g_aPakPfs[0]);
+            if (gControllerPakState == 0) {
+                osPfsInitPak(&g_SiMesgQueue, &g_aPakPfs[0], 0);
+            }
         }
-        if (gControllerPakState != 0) {
-            g_bPakMenuState = PAK_MENU_ERROR;
-            break;
+        if (gControllerPakState == 0) {
+            bcopy(g_aPakPfs[0].id, g_aabSavePakIds[0], 0x20);
+            g_bPakMenuState = 1;
+        } else {
+            g_bPakMenuState = 4;
         }
-        bcopy(g_aPakPfs[0].id, g_aabSavePakIds[0], sizeof(g_aPakPfs[0].id));
-        g_bPakMenuState = PAK_MENU_READ_DIRECTORY;
         break;
-
-    case PAK_MENU_READ_DIRECTORY:
+    case 1:
         gControllerPakState = osPfsNumFiles(&g_aPakPfs[0], &maxFiles, &g_dwPakNoteCount);
-        if (!PakCallSucceeded()) {
-            g_bPakMenuState = PAK_MENU_ERROR;
-            break;
+        if (gControllerPakState != 0) {
+            if (gControllerPakState == 3) {
+                if (osPfsChecker(&g_aPakPfs[0]) != 0) {
+                    g_bPakMenuState = 4;
+                    break;
+                }
+            } else {
+                g_bPakMenuState = 4;
+                break;
+            }
         }
-        for (note = 0; note < PAK_NOTES; note++) {
-            if (osPfsFileState(&g_aPakPfs[0], note, &g_aPakDirEntries[note]) != 0) {
-                g_wPakEmptySlotMask |= 1 << note;
+#if TGR_REGION == TGR_REGION_JP
+        g_wPakEmptySlotMask = 0;
+#endif
+        for (i = 0; i < 16; i++) {
+            if (osPfsFileState(&g_aPakPfs[0], i, &g_aPakDirEntries[i]) != 0) {
+                g_wPakEmptySlotMask |= 1 << i;
             }
         }
         g_bPakFirstValidNote = 0;
-        for (note = 0; note < PAK_NOTES; note++) {
-            if (!IsNoteEmpty(note)) {
-                g_bPakFirstValidNote = note;
+        for (i = 0; i < 16; i++) {
+            if ((g_wPakEmptySlotMask & (1 << i)) == 0) {
+                g_bPakFirstValidNote = i;
                 break;
             }
         }
         g_bPakLastValidNote = 0;
-        for (note = 0; note < PAK_NOTES; note++) {
-            if (!IsNoteEmpty(note)) {
-                g_bPakLastValidNote = note;
+        /* The original reads this loop index, which affects IDO register allocation. */
+        if (i != 0) {
+        }
+        for (i = 0; i < 16; i++) {
+            if ((g_wPakEmptySlotMask & (1 << i)) == 0) {
+                g_bPakLastValidNote = i;
             }
         }
         gControllerPakState = osPfsFreeBlocks(&g_aPakPfs[0], &g_dwPakFreeBlocks);
-        if (!PakCallSucceeded()) {
-            g_bPakMenuState = PAK_MENU_ERROR;
-            break;
+        if (gControllerPakState != 0) {
+            if (gControllerPakState == 3) {
+                if (osPfsChecker(&g_aPakPfs[0]) != 0) {
+                    g_bPakMenuState = 4;
+                    break;
+                }
+            } else {
+                g_bPakMenuState = 4;
+                break;
+            }
         }
-        g_bPakDirLoaded = TRUE;
-        g_bPakMenuState = PAK_MENU_BROWSE;
+        g_bPakDirLoaded = 1;
+        g_bPakMenuState = 2;
         g_bPakSelectedNote = g_bPakFirstValidNote;
         break;
-
-    case PAK_MENU_BROWSE:
-        UpdateStickRepeat(input);
-        if (input->buttons & INPUT_UP) {
-            TransferFlags(input, INPUT_UP);
-            if (g_dwPakNoteCount != 0 && g_bPakFirstValidNote != g_bPakSelectedNote) {
-                do {
+    case 2:
+        UpdateStickRepeat(&g_aPlayerInputState[0]);
+        if (g_aPlayerInputState[0].buttons & 8) {
+            TransferFlags(&g_aPlayerInputState[0], 8);
+            if (g_dwPakNoteCount != 0 && g_bPakSelectedNote != g_bPakFirstValidNote) {
+                g_bPakSelectedNote--;
+                while ((g_wPakEmptySlotMask & (1 << g_bPakSelectedNote)) &&
+                       g_bPakSelectedNote != g_bPakFirstValidNote) {
                     g_bPakSelectedNote--;
-                } while (IsNoteEmpty(g_bPakSelectedNote) &&
-                         g_bPakSelectedNote != g_bPakFirstValidNote);
+                }
             }
-        } else if (input->buttons & INPUT_DOWN) {
-            TransferFlags(input, INPUT_DOWN);
-            if (g_dwPakNoteCount != 0 && g_bPakLastValidNote != g_bPakSelectedNote) {
-                do {
+        } else if (g_aPlayerInputState[0].buttons & 2) {
+            TransferFlags(&g_aPlayerInputState[0], 2);
+            if (g_dwPakNoteCount != 0 && g_bPakSelectedNote != g_bPakLastValidNote) {
+                g_bPakSelectedNote++;
+                while ((g_wPakEmptySlotMask & (1 << g_bPakSelectedNote)) &&
+                       g_bPakSelectedNote != g_bPakLastValidNote) {
                     g_bPakSelectedNote++;
-                } while (IsNoteEmpty(g_bPakSelectedNote) &&
-                         g_bPakSelectedNote != g_bPakLastValidNote);
+                }
             }
-        } else if (input->buttons & INPUT_A) {
-            TransferFlags(input, INPUT_A);
+        } else if (g_aPlayerInputState[0].buttons & 0x10) {
+            TransferFlags(&g_aPlayerInputState[0], 0x10);
             if (g_dwPakNoteCount != 0 && IsFadedToWhite()) {
-                g_bPakMenuState = PAK_MENU_CONFIRM_DELETE;
+                g_bPakMenuState = 3;
             }
-        } else if (input->buttons & INPUT_START) {
-            if (IsFadedToWhite()) {
-                TransferFlags(input, INPUT_START);
-                g_bPakMenuState = PAK_MENU_EXIT;
-            }
+        } else if ((g_aPlayerInputState[0].buttons & 0x4000) && IsFadedToWhite()) {
+            TransferFlags(&g_aPlayerInputState[0], 0x4000);
+            g_bPakMenuState = 7;
         }
         break;
-
-    case PAK_MENU_CONFIRM_DELETE:
-        width = g_bPakSelectedNote + 1 < 10 ? DELETE_WIDTH : DELETE_WIDE_WIDTH;
-        buttonY = 0x110 - g_texButtonA.height;
-        left = (DIALOG_SCREEN_WIDTH - width) >> 1;
-        DrawRectBorder(left, 0xC8, width, 0x50, 3, 0, 0, 0x80, 0x80, 0x80);
+    case 3:
+#if TGR_REGION == TGR_REGION_JP
+        if (g_bPakSelectedNote + 1 < 10) {
+            w = 0x15a;
+        } else {
+            w = 0x166;
+        }
+#else
+        if (g_bPakSelectedNote + 1 < 10) {
+            w = 0x128;
+        } else {
+            w = 0x134;
+        }
+#endif
+#if TGR_REGION == TGR_REGION_JP
+        ox = (0x280 - w) >> 1; /* dead: numbers the box's left edge ahead of by */
+#endif
+        by = 0x110 - g_texButtonA.height;
+        DrawRectBorder((0x280 - w) >> 1, 200, w, 0x50, 3, 0, 0, 0x80, 0x80, 0x80);
         SetTextAlignCenter();
         SetTextStyleNormal();
-        SetTextSize(DIALOG_TEXT_SIZE);
 #if TGR_REGION == TGR_REGION_JP
-        /* The question mark is the glyph of the code of %, so the format writes it as four. */
-        sprintf(prompt, "%%yw%%jゲームノートを消しますか%%%%%%e NO%d", g_bPakSelectedNote + 1);
+        SetTextSize(14);
+        sprintf((char *)name,
+                "%%yw%%j\xB9(\xA6\xC4(\xC3w\xE0"
+                "B6R1%%%%%%e NO%d",
+                g_bPakSelectedNote + 1);
 #else
-        sprintf(prompt, "%%ywDELETE GAME NOTE #%d?", g_bPakSelectedNote + 1);
+        SetTextSize(12);
+        sprintf((char *)name, "%%ywDELETE GAME NOTE #%d?", g_bPakSelectedNote + 1);
 #endif
-        DrawText(prompt, 0x9F, 0x73);
+        DrawText((char *)name, 0x9f, 0x73);
         SetTextAlignLeft();
-        SetTextSize(0xA);
-        okX = left + 0x38;
-        labelY = (buttonY + 0x12) >> 1;
-        DrawText("%wwOK", (u32)(okX + g_texButtonA.width + 7) >> 1, labelY);
-        cancelX = left + width - 0x9C;
-        DrawText("%wwCANCEL", (u32)(cancelX + g_texButtonB.width + 7) >> 1, labelY);
-        DrawTexturedSprite(&g_texButtonA, okX, buttonY);
-        DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
-        if (input->buttons & INPUT_A) {
-            TransferFlags(input, INPUT_A);
-            g_bPakMenuState = PAK_MENU_DELETE;
-        } else if (input->buttons & INPUT_B) {
-            TransferFlags(input, INPUT_B);
-            g_bPakMenuState = PAK_MENU_BROWSE;
+        SetTextSize(10);
+        ox = ((0x280 - w) >> 1) + 0x38;
+        bx = ((0x280 - w) >> 1) + w - 0x9c;
+        ty = (by + 0x12) >> 1;
+        DrawText("%wwOK", (ox + g_texButtonA.width + 7U) >> 1, ty);
+        DrawText("%wwCANCEL", (bx + g_texButtonB.width + 7U) >> 1, ty);
+        DrawTexturedSprite(&g_texButtonA, ox, by);
+        DrawTexturedSprite(&g_texButtonB, bx, by);
+        if (g_aPlayerInputState[0].buttons & 0x10) {
+            TransferFlags(&g_aPlayerInputState[0], 0x10);
+            g_bPakMenuState = 5;
+        } else if (g_aPlayerInputState[0].buttons & 0x20) {
+            TransferFlags(&g_aPlayerInputState[0], 0x20);
+            g_bPakMenuState = 2;
         }
         break;
-
-    case PAK_MENU_ERROR:
-        DrawRectBorder(0xB1, 0xCB, 0x11E, 0x4A, 3, 0, 0, 0x80, 0x80, 0x80);
+    case 4:
+        DrawRectBorder(0xb1, 0xcb, 0x11e, 0x4a, 3, 0, 0, 0x80, 0x80, 0x80);
         SetTextAlignCenter();
         SetTextStyleNormal();
-        SetTextSize(DIALOG_TEXT_SIZE);
 #if TGR_REGION == TGR_REGION_JP
-        DrawText("%jコントローラパックに", 0x9F, 0x75);
-        DrawText(" %jエラーが発生しました。", 0x9F, 0x83);
+        SetTextSize(14);
+        DrawText("%j\xC1\xCF\xC3\xC8(\x88\x8D\x8F\xA1"
+                 "D",
+                 0x9f,
+                 0x75);
+        DrawText(" %j\xB0\x88(9\xED\xEE"
+                 "B6B3&",
+                 0x9f,
+                 0x83);
 #else
-        DrawText("%ywCONTROLLER PAK ERROR", 0x9F, 0x75);
-        DrawText("%ywHAS BEEN DETECTED", 0x9F, 0x83);
+        SetTextSize(12);
+        DrawText("%ywCONTROLLER PAK ERROR", 0x9f, 0x75);
+        DrawText("%ywHAS BEEN DETECTED", 0x9f, 0x83);
 #endif
-        if (input->buttons & (INPUT_START | INPUT_A | INPUT_B)) {
-            TransferFlags(input, INPUT_START | INPUT_A | INPUT_B);
-            g_bPakMenuState = PAK_MENU_EXIT;
+        if (g_aPlayerInputState[0].buttons & 0x4030) {
+            TransferFlags(&g_aPlayerInputState[0], 0x4030);
+            g_bPakMenuState = 7;
         }
         g_dwPakFreeBlocks = 0;
-        maxFiles = PAK_NOTES;
-        (void)maxFiles;
+        maxFiles = 16;
         g_dwPakNoteCount = 0;
         break;
-
-    case PAK_MENU_DELETE: {
-        OSPfsState *entry = &g_aPakDirEntries[g_bPakSelectedNote];
-        u8 selected;
-
+    case 5:
+        st = &g_aPakDirEntries[g_bPakSelectedNote];
         gControllerPakState = osPfsDeleteFile(&g_aPakPfs[0],
-                                              entry->company_code,
-                                              entry->game_code,
-                                              (u8 *)entry->game_name,
-                                              (u8 *)entry->ext_name);
-        if (gControllerPakState != 0) {
-            g_bPakMenuState =
-                gControllerPakState == PFS_ERR_NEW_PACK ? PAK_MENU_NEW_PAK : PAK_MENU_ERROR;
-            break;
-        }
-        selected = g_bPakSelectedNote;
-        entry = &g_aPakDirEntries[selected];
-        g_wPakEmptySlotMask |= 1 << selected;
-        entry->game_name[0] = '\0';
-        entry->ext_name[0] = '\0';
-        g_dwPakFreeBlocks += entry->file_size;
-        entry->file_size = 0;
-        if (g_dwPakNoteCount > 0) {
-            g_dwPakNoteCount--;
-        }
-
-        /* Move the ends of the notes and the cursor off the deleted note. */
-        if (g_bPakLastValidNote == selected) {
-            do {
-                g_bPakLastValidNote--;
-            } while (IsNoteEmpty(g_bPakLastValidNote) && g_bPakLastValidNote != 0);
-            do {
-                g_bPakSelectedNote--;
-            } while (IsNoteEmpty(g_bPakSelectedNote) && g_bPakSelectedNote != 0);
-        } else {
-            if (g_bPakFirstValidNote == selected) {
-                do {
-                    g_bPakFirstValidNote++;
-                } while (IsNoteEmpty(g_bPakFirstValidNote) &&
-                         g_bPakFirstValidNote != g_bPakLastValidNote);
+                                              st->company_code,
+                                              st->game_code,
+                                              (u8 *)st->game_name,
+                                              (u8 *)st->ext_name);
+        if (gControllerPakState == 0) {
+            g_wPakEmptySlotMask |= 1 << g_bPakSelectedNote;
+            g_aPakDirEntries[g_bPakSelectedNote].game_name[0] = 0;
+            g_aPakDirEntries[g_bPakSelectedNote].ext_name[0] = 0;
+            g_dwPakFreeBlocks += g_aPakDirEntries[g_bPakSelectedNote].file_size;
+            g_aPakDirEntries[g_bPakSelectedNote].file_size = 0;
+            if (g_dwPakNoteCount > 0) {
+                g_dwPakNoteCount--;
             }
-            do {
+            if (g_bPakSelectedNote == g_bPakLastValidNote) {
+                g_bPakLastValidNote--;
+                while ((g_wPakEmptySlotMask & (1 << g_bPakLastValidNote)) &&
+                       g_bPakLastValidNote != 0) {
+                    g_bPakLastValidNote--;
+                }
+                g_bPakSelectedNote--;
+                while ((g_wPakEmptySlotMask & (1 << g_bPakSelectedNote)) &&
+                       g_bPakSelectedNote != 0) {
+                    g_bPakSelectedNote--;
+                }
+            } else {
+                if (g_bPakSelectedNote == g_bPakFirstValidNote) {
+                    g_bPakFirstValidNote++;
+                    while ((g_wPakEmptySlotMask & (1 << g_bPakFirstValidNote)) &&
+                           g_bPakFirstValidNote != g_bPakLastValidNote) {
+                        g_bPakFirstValidNote++;
+                    }
+                }
                 g_bPakSelectedNote++;
-            } while (IsNoteEmpty(g_bPakSelectedNote) && g_bPakSelectedNote != g_bPakLastValidNote);
+                while ((g_wPakEmptySlotMask & (1 << g_bPakSelectedNote)) &&
+                       g_bPakSelectedNote != g_bPakLastValidNote) {
+                    g_bPakSelectedNote++;
+                }
+                /* The original reads the boundary again after moving the cursor. */
+                if (g_bPakLastValidNote != 0) {
+                }
+            }
+            if (g_bPakLastValidNote != 0) {
+            }
+            g_bPakMenuState = 2;
+        } else if (gControllerPakState == 2) {
+            g_bPakMenuState = 6;
+        } else {
+            g_bPakMenuState = 4;
         }
-        g_bPakMenuState = PAK_MENU_BROWSE;
         break;
-    }
-
-    case PAK_MENU_NEW_PAK:
+    case 6:
         SetTextStyleNormal();
         SetTextAlignLeft();
 #if TGR_REGION == TGR_REGION_JP
-        DrawRectBorder(0x99, 0xB5, 0x14E, 0x89, 3, 0, 0, 0x80, 0x80, 0x80);
+        DrawRectBorder(0x99, 0xb5, 0x14e, 0x89, 3, 0, 0, 0x80, 0x80, 0x80);
         SetTextSize(14);
-        DrawText("%jあたらしいコントローラパックが", 0x54, 0x6A);
-        DrawText("%jさしこまれています。", 0x54, 0x77);
-        DrawText("%jこのコントローラパックを、", 0x54, 0x8A);
-        DrawText("%j使います。", 0x54, 0x97);
+        DrawText("%j038B@\xC1\xCF\xC3\xC8(\x88\x8D\x8F\xA1"
+                 "9",
+                 0x54,
+                 0x6a);
+        DrawText("%j2Bq6hc@6R&", 0x54, 0x77);
+        DrawText("%jqt\xC1\xCF\xC3\xC8(\x88\x8D\x8F\xA1w'", 0x54, 0x8a);
+        DrawText("%j\xDE@6R&", 0x54, 0x97);
 #else
 #if TGR_REGION == TGR_REGION_EU
-        DrawRectBorder(0xAF, 0xB5, 0x122, 0x89, 3, 0, 0, 0x80, 0x80, 0x80);
-        SetTextSize(0xC);
+        DrawRectBorder(0xaf, 0xb5, 0x122, 0x89, 3, 0, 0, 0x80, 0x80, 0x80);
+        SetTextSize(12);
 #else
-        SetTextSize(0xC);
-        DrawRectBorder(0xAF, 0xB5, 0x122, 0x89, 3, 0, 0, 0x80, 0x80, 0x80);
+        SetTextSize(12);
+        DrawRectBorder(0xaf, 0xb5, 0x122, 0x89, 3, 0, 0, 0x80, 0x80, 0x80);
 #endif
-        DrawText("%ywA NEW CONTROLLER PAK", 0x5F, 0x6A);
-        DrawText("%ywWAS INSERTED.", 0x5F, 0x77);
-        DrawText("%ywTHIS CONTROLLER PAK", 0x5F, 0x8A);
-        DrawText("%ywWILL BE USED.", 0x5F, 0x97);
-#endif /* TGR_REGION == TGR_REGION_JP */
-        if (input->buttons & (INPUT_Z | INPUT_A | INPUT_B)) {
-            TransferFlags(input, INPUT_Z | INPUT_A | INPUT_B);
-            g_bPakDirLoaded = FALSE;
+        DrawText("%ywA NEW CONTROLLER PAK", 0x5f, 0x6a);
+        DrawText("%ywWAS INSERTED.", 0x5f, 0x77);
+        DrawText("%ywTHIS CONTROLLER PAK", 0x5f, 0x8a);
+        DrawText("%ywWILL BE USED.", 0x5f, 0x97);
+#endif
+        if (g_aPlayerInputState[0].buttons & 0x8030) {
+            TransferFlags(&g_aPlayerInputState[0], 0x8030);
+            g_bPakDirLoaded = 0;
             gControllerPakState = 0;
-            g_bPakMenuState = PAK_MENU_MOUNT;
+            g_bPakMenuState = 0;
         }
         break;
-
-    case PAK_MENU_EXIT:
-        SetFadeTarget(0.0f, PAK_MENU_FADE_STEP);
-        g_bPakMenuState = PAK_MENU_FADING_OUT;
+    case 7:
+        SetFadeTarget(0.0f, 0.2f);
+        g_bPakMenuState = 8;
+        break;
+    case 8:
         break;
     }
-
-    /* The pages used and free, and the buttons. */
     SetTextAlignLeft();
-    SetTextSize(0xA);
-    DrawText("%ywPAGES USED:", 0x47, 0xD3);
-    sprintf(text, "%%yw%d", PAK_PAGES - (g_dwPakFreeBlocks >> PAK_PAGE_SHIFT));
-    DrawText(text, 0x85, 0xD3);
-    DrawText("%ywPAGES FREE:", 0xAC, 0xD3);
-    sprintf(text, "%%yw%d", g_dwPakFreeBlocks >> PAK_PAGE_SHIFT);
+    SetTextSize(10);
+    DrawText("%ywPAGES USED:", 0x47, 0xd3);
+    sprintf(num, "%%yw%d", 0x7b - (g_dwPakFreeBlocks >> 8));
+    DrawText(num, 0x85, 0xd3);
+    DrawText("%ywPAGES FREE:", 0xac, 0xd3);
+    sprintf(num, "%%yw%d", g_dwPakFreeBlocks >> 8);
     SetTextAlignRight();
-    DrawText(text, 0xFA, 0xD3);
-    DrawTexturedSprite(&g_texButtonA, 0xD6, 0x1C8 - g_texButtonA.height);
-    /* The original places the small B button by the height of the A button. */
-    DrawTexturedSprite(&g_texButtonBSmall, 0x158, 0x1C8 - g_texButtonA.height);
+    DrawText(num, 0xfa, 0xd3);
+    DrawTexturedSprite(&g_texButtonA, 0xd6, 0x1c8 - g_texButtonA.height);
+    DrawTexturedSprite(&g_texButtonBSmall, 0x158, 0x1c8 - g_texButtonA.height);
     SetTextAlignLeft();
-    DrawText("%wwSELECT", 0x7B, 0xE1);
-    DrawText("%wwEXIT", 0xBC, 0xE1);
-
+    DrawText("%wwSELECT", 0x7b, 0xe1);
+    DrawText("%wwEXIT", 0xbc, 0xe1);
     gDPPipeSync(gDisplayListPtr++);
     ApplyScreenFade();
     FlushDisplayList();
     if (IsFadedToBlack()) {
-        g_bPakMenuInitialized = FALSE;
+        g_bPakMenuInitialized = 0;
         gControllerPakState = 0;
         StartHighResFrame();
         ClearScreen(0, 0, 0);
         FlushDisplayList();
-#if TGR_REGION != TGR_REGION_US
-        g_dwKeepScreenBlanked = TRUE;
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+        g_dwKeepScreenBlanked = 1;
         BlankDisplay();
-#else
-        osViBlack(TRUE);
-#endif
         StartHighResFrame();
         ClearScreen(0, 0, 0);
         FlushDisplayList();
-#if TGR_REGION != TGR_REGION_US
-        g_dwKeepScreenBlanked = FALSE;
+        g_dwKeepScreenBlanked = 0;
+#else
+        osViBlack(1);
+        StartHighResFrame();
+        ClearScreen(0, 0, 0);
+        FlushDisplayList();
 #endif
         SetCurrentScreenCallback(MainMenuEntry);
     }
