@@ -165,6 +165,7 @@ void AnimateSplashModels(void) {
 #endif
 }
 
+#if TGR_REGION != TGR_REGION_US
 /* Play a sound on a free sound effect channel at a volume, and return the channel or -1. */
 static s16 PlaySplashSound(s8 *sample, u32 length, s32 volume) {
     s16 channel = FindFreeSoundChannel();
@@ -607,6 +608,442 @@ void ProcessSplashScreens(void) {
     FlushDisplayList();
     UpdateSplashExit();
 }
+
+#else
+void ProcessSplashScreens(void) {
+#ifdef __sgi
+    /* IDO allocates these in the original BSS; GCC uses the equivalent global addresses. */
+    static float g_fSplashTime;
+    static int g_dwSplashSoundALength;
+    static s8 *g_pSplashSoundA;
+    static int g_dwSplashSoundBLength;
+    static s8 *g_pSplashSoundB;
+    static int g_dwSplashFirstLogoVoice;
+    static int g_dwSplashFirstLogoSoundA;
+    static int g_bSplashFirstLogoSoundB;
+    static int g_dwSplashProducerVoice;
+    static int g_dwSplashProducerSoundA;
+    static int g_bSplashProducerSoundB;
+    static int g_dwSplashDeveloperVoice;
+    static int g_dwSplashDeveloperSoundA;
+    static int g_bSplashDeveloperSoundB;
+    static int g_bSplashSkipped;
+#endif
+    int i;
+    Mtx *mtx;
+
+    if (g_bSplashStarted == 0) {
+        SetFadeTarget(1.0f, 0.2f);
+        FadeMusicTo(1.0f, 0.2f);
+        FadeSfxTo(1.0f, 0.2f);
+        ResetHeap();
+        g_pSplashDeveloperLogo = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_DEVELOPER_LOGO));
+        DecompressModel(g_pSplashDeveloperLogo, ROM_SPLASH_DEVELOPER_LOGO);
+        g_pSplashProducerLogo = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_PRODUCER_LOGO));
+        DecompressModel(g_pSplashProducerLogo, ROM_SPLASH_PRODUCER_LOGO);
+        g_pSplashFirstLogo = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_FIRST_LOGO));
+        DecompressModel(g_pSplashFirstLogo, ROM_SPLASH_FIRST_LOGO);
+        g_pSplashTitleModelA = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_A));
+        DecompressModel(g_pSplashTitleModelA, ROM_SPLASH_TITLE_A);
+        LoopModelAnimations(g_pSplashTitleModelA);
+        g_pSplashTitleModelB = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_B));
+        DecompressModel(g_pSplashTitleModelB, ROM_SPLASH_TITLE_B);
+        LoopModelAnimations(g_pSplashTitleModelB);
+        g_pSplashTitleModelD = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_D));
+        DecompressModel(g_pSplashTitleModelD, ROM_SPLASH_TITLE_D);
+        LoopModelAnimations(g_pSplashTitleModelD);
+        g_pSplashTitleModelC = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_C));
+        DecompressModel(g_pSplashTitleModelC, ROM_SPLASH_TITLE_C);
+        LoopModelAnimations(g_pSplashTitleModelC);
+        g_dwSplashSoundALength = DmaReadAssetSize(ROM_SPLASH_SOUND_A);
+        g_pSplashSoundA = AllocHeapAligned(g_dwSplashSoundALength + 0x100);
+        DecompressFromRom(g_pSplashSoundA, ROM_SPLASH_SOUND_A, 0);
+        g_dwSplashSoundBLength = DmaReadAssetSize(ROM_SPLASH_SOUND_B);
+        g_pSplashSoundB = AllocHeapAligned(g_dwSplashSoundBLength + 0x100);
+        DecompressFromRom(g_pSplashSoundB, ROM_SPLASH_SOUND_B, 0);
+        for (i = 0; i != 0x100; i++) {
+            g_pSplashSoundA[g_dwSplashSoundALength + i] = 0;
+            g_pSplashSoundB[g_dwSplashSoundBLength + i] = 0;
+        }
+        g_bSplashFirstLogoSoundB = 0;
+        g_dwSplashFirstLogoSoundA = 0;
+        g_bSplashProducerSoundB = 0;
+        g_dwSplashProducerSoundA = 0;
+        g_bSplashDeveloperSoundB = 0;
+        g_dwSplashDeveloperSoundA = 0;
+        g_bSplashSkipped = 0;
+        g_bSplashStarted = 1;
+        g_fSplashTime = 0.0f;
+    }
+    UpdateFrameTiming();
+    UpdateFadeTransitions();
+    StartHighResFrame();
+    ClearDepthBuffer();
+    ClearScreen(0, 0, 0);
+    AddTimingMarker(0, 0, 0, 200, 0xFF);
+    if (IsFadingIn() == 0 || IsFadeComplete() != 0) {
+        g_fSplashTime += g_fFrameDeltaTime;
+    }
+    g_dwKeepCustomClipPlanes = 1;
+    g_fCameraNearScale = 10.0f;
+    g_fCameraFarDistance = 5000.0f;
+    SetupMenuProjection(g_dwScreenWidth, g_dwScreenHeight);
+    SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, 1);
+    gSPNumLights(gDisplayListPtr++, 1);
+    gSPLight(gDisplayListPtr++, &g_SplashDirectionalLight, 1);
+    gSPLight(gDisplayListPtr++, &g_SplashAmbientLight, 2);
+    gSPClipRatio(gDisplayListPtr++, 6);
+    gSPClipRatio(gDisplayListPtr++, 1);
+    mtx = (Mtx *)AllocDisplayListBlock();
+    guTranslateF(g_afMvpMatrix, g_dwScreenWidth / 2, g_dwScreenHeight / 2, 100.0f);
+    guMtxF2L(g_afMvpMatrix, mtx);
+    gSPMatrix(gDisplayListPtr++, mtx, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+
+    if (g_fSplashTime >= 0.0f) {
+        if (g_fSplashTime < 2.0f) {
+            if (g_fSplashTime > 0.35f && g_dwSplashFirstLogoSoundA == 0) {
+                short v1 = FindFreeSoundChannel();
+
+                if (v1 != -1) {
+                    InitSoundChannel(v1, g_pSplashSoundA, g_dwSplashSoundALength, 0);
+                    g_aSoundEffectChannels[v1].volume = 0x200020;
+                    g_aSoundEffectChannels[v1].step = 0x100000000;
+                }
+                g_dwSplashFirstLogoSoundA = 1;
+            }
+            if (g_fSplashTime > 0.5f && g_bSplashFirstLogoSoundB == 0) {
+                short v2 = FindFreeSoundChannel();
+
+                if (v2 != -1) {
+                    InitSoundChannel(v2, g_pSplashSoundB, g_dwSplashSoundBLength, 0);
+                    g_aSoundEffectChannels[v2].volume = 0x200020;
+                    g_aSoundEffectChannels[v2].step = 0x100000000;
+                }
+                g_bSplashFirstLogoSoundB = 1;
+            }
+            DrawModelAt(g_pSplashFirstLogo,
+                        -(2.0f - g_fSplashTime) * 32.0f,
+                        0.0f,
+                        -50.0f - (2.0f - g_fSplashTime) * 750.0f,
+                        g_fSplashTime * 1.5707964f * g_fSplashTime * g_fSplashTime * g_fSplashTime *
+                                0.0625f +
+                            -3.1415927f,
+                        0.03125f);
+        } else if (g_fSplashTime < 6.0f) {
+            DrawModelAt(g_pSplashFirstLogo,
+                        (g_fSplashTime > 3.5f ?
+                             (g_fSplashTime - 3.5f) * (g_fSplashTime - 3.5f) * 256.0f :
+                             0.0f),
+                        0.0f,
+                        -50.0f,
+                        -1.5707964f,
+                        0.03125f);
+            if (g_fSplashTime > 3.5f) {
+                if (g_dwSplashFirstLogoSoundA < 2) {
+                    g_dwSplashFirstLogoVoice = FindFreeSoundChannel();
+                    if (g_dwSplashFirstLogoVoice != -1) {
+                        InitSoundChannel(
+                            g_dwSplashFirstLogoVoice, g_pSplashSoundA, g_dwSplashSoundALength, 0);
+                        g_aSoundEffectChannels[g_dwSplashFirstLogoVoice].volume = 0x140014;
+                        g_aSoundEffectChannels[g_dwSplashFirstLogoVoice].step = 0x100000000;
+                    }
+                    g_dwSplashFirstLogoSoundA = 2;
+                } else {
+                    int v;
+
+                    v = (g_fSplashTime - 3.5f) * 32.0f;
+                    if (v > 20) {
+                        v = 20;
+                    }
+                    g_aSoundEffectChannels[g_dwSplashFirstLogoVoice].volume =
+                        ((20 - v) << 16) + v + 20;
+                }
+            }
+        }
+    }
+
+    if (g_fSplashTime >= 4.0f) {
+        int a;
+
+        if (g_fSplashTime < 6.0f) {
+            a = 200 - (int)((6.0f - g_fSplashTime) * 255.0 * 4.0);
+        } else {
+            a = g_fSplashTime > 7.5f ? 200 - (int)((g_fSplashTime - 7.5f) * 255.0 * 4.0) : 200;
+        }
+        if (a > 0) {
+            SetTextCustomColors(a, a, a, a, a, a);
+            SetTextStyleNormal();
+            SetTextSize(10);
+            SetTextAlignCenter();
+            DrawText("Produced by", 160, 70);
+        }
+        if (g_fSplashTime < 6.0f) {
+            if (g_fSplashTime > 4.35f && g_dwSplashProducerSoundA == 0) {
+                short v3 = FindFreeSoundChannel();
+
+                if (v3 != -1) {
+                    InitSoundChannel(v3, g_pSplashSoundA, g_dwSplashSoundALength, 0);
+                    g_aSoundEffectChannels[v3].volume = 0x200020;
+                    g_aSoundEffectChannels[v3].step = 0x100000000;
+                }
+                g_dwSplashProducerSoundA = 1;
+            }
+            if (g_fSplashTime > 4.5f && g_bSplashProducerSoundB == 0) {
+                short v4 = FindFreeSoundChannel();
+
+                if (v4 != -1) {
+                    InitSoundChannel(v4, g_pSplashSoundB, g_dwSplashSoundBLength, 0);
+                    g_aSoundEffectChannels[v4].volume = 0x200020;
+                    g_aSoundEffectChannels[v4].step = 0x100000000;
+                }
+                g_bSplashProducerSoundB = 1;
+            }
+            DrawModelAt(g_pSplashProducerLogo,
+                        -(6.0f - g_fSplashTime) * 32.0f,
+                        0.0f,
+                        -50.0f - (6.0f - g_fSplashTime) * 750.0f,
+                        (g_fSplashTime - 4.0f) * 1.5707964f * (g_fSplashTime - 4.0f) *
+                                (g_fSplashTime - 4.0f) * (g_fSplashTime - 4.0f) * 0.0625f +
+                            -3.1415927f,
+                        0.03125f);
+        } else if (g_fSplashTime < 10.0f) {
+            DrawModelAt(g_pSplashProducerLogo,
+                        (g_fSplashTime > 7.5f ?
+                             (g_fSplashTime - 7.5f) * (g_fSplashTime - 7.5f) * 256.0f :
+                             0.0f),
+                        0.0f,
+                        -50.0f,
+                        -1.5707964f,
+                        0.03125f);
+            if (g_fSplashTime > 7.5f) {
+                if (g_dwSplashProducerSoundA < 2) {
+                    g_dwSplashProducerVoice = FindFreeSoundChannel();
+                    if (g_dwSplashProducerVoice != -1) {
+                        InitSoundChannel(
+                            g_dwSplashProducerVoice, g_pSplashSoundA, g_dwSplashSoundALength, 0);
+                        g_aSoundEffectChannels[g_dwSplashProducerVoice].volume = 0x140014;
+                        g_aSoundEffectChannels[g_dwSplashProducerVoice].step = 0x100000000;
+                    }
+                    g_dwSplashProducerSoundA = 2;
+                } else {
+                    int v;
+
+                    v = (g_fSplashTime - 7.5f) * 32.0f;
+                    if (v > 20) {
+                        v = 20;
+                    }
+                    g_aSoundEffectChannels[g_dwSplashProducerVoice].volume =
+                        ((20 - v) << 16) + v + 20;
+                }
+            }
+        }
+    }
+
+    if (g_fSplashTime >= 8.0f) {
+        int a;
+
+        if (g_fSplashTime < 10.0f) {
+            a = 200 - (int)((10.0f - g_fSplashTime) * 255.0 * 4.0);
+        } else {
+            a = g_fSplashTime > 11.5f ? 200 - (int)((g_fSplashTime - 11.5f) * 255.0 * 4.0) : 200;
+        }
+        if (a > 0) {
+            SetTextCustomColors(a, a, a, a, a, a);
+            SetTextStyleNormal();
+            SetTextSize(10);
+            SetTextAlignCenter();
+            DrawText("Developed by", 160, 60);
+        }
+        if (g_fSplashTime < 10.0f) {
+            if (g_fSplashTime > 8.35f && g_dwSplashDeveloperSoundA == 0) {
+                short v5 = FindFreeSoundChannel();
+
+                if (v5 != -1) {
+                    InitSoundChannel(v5, g_pSplashSoundA, g_dwSplashSoundALength, 0);
+                    g_aSoundEffectChannels[v5].volume = 0x200020;
+                    g_aSoundEffectChannels[v5].step = 0x100000000;
+                }
+                g_dwSplashDeveloperSoundA = 1;
+            }
+            if (g_fSplashTime > 8.5f && g_bSplashDeveloperSoundB == 0) {
+                short v6 = FindFreeSoundChannel();
+
+                if (v6 != -1) {
+                    InitSoundChannel(v6, g_pSplashSoundB, g_dwSplashSoundBLength, 0);
+                    g_aSoundEffectChannels[v6].volume = 0x200020;
+                    g_aSoundEffectChannels[v6].step = 0x100000000;
+                }
+                g_bSplashDeveloperSoundB = 1;
+            }
+            DrawModelAt(g_pSplashDeveloperLogo,
+                        -(10.0f - g_fSplashTime) * 32.0f,
+                        0.0f,
+                        -50.0f - (10.0f - g_fSplashTime) * 750.0f,
+                        (g_fSplashTime - 8.0f) * 1.5707964f * (g_fSplashTime - 8.0f) *
+                                (g_fSplashTime - 8.0f) * (g_fSplashTime - 8.0f) * 0.0625f +
+                            -3.1415927f,
+                        0.03125f);
+        } else if (g_fSplashTime < 13.0f) {
+            DrawModelAt(g_pSplashDeveloperLogo,
+                        (g_fSplashTime > 11.5f ?
+                             (g_fSplashTime - 11.5f) * (g_fSplashTime - 11.5f) * 256.0f :
+                             0.0f),
+                        0.0f,
+                        -50.0f,
+                        -1.5707964f,
+                        0.03125f);
+            if (g_fSplashTime > 11.5f) {
+                if (g_dwSplashDeveloperSoundA < 2) {
+                    g_dwSplashDeveloperVoice = FindFreeSoundChannel();
+                    if (g_dwSplashDeveloperVoice != -1) {
+                        InitSoundChannel(
+                            g_dwSplashDeveloperVoice, g_pSplashSoundA, g_dwSplashSoundALength, 0);
+                        g_aSoundEffectChannels[g_dwSplashDeveloperVoice].volume = 0x140014;
+                        g_aSoundEffectChannels[g_dwSplashDeveloperVoice].step = 0x100000000;
+                    }
+                    g_dwSplashDeveloperSoundA = 2;
+                } else {
+                    int v;
+
+                    v = (g_fSplashTime - 11.5f) * 32.0f;
+                    if (v > 20) {
+                        v = 20;
+                    }
+                    g_aSoundEffectChannels[g_dwSplashDeveloperVoice].volume =
+                        ((20 - v) << 16) + v + 20;
+                }
+            }
+        }
+    }
+
+    if (g_fSplashTime > 12.0f) {
+        gSPNumLights(gDisplayListPtr++, 1);
+        gSPLight(gDisplayListPtr++, &g_MenuDirectionalLight, 1);
+        gSPLight(gDisplayListPtr++, &g_MenuAmbientLight, 2);
+        mtx = (Mtx *)AllocDisplayListBlock();
+        guRotateF(g_afMvpMatrix, 7.0f, 0.0f, 0.0f, 1.0f);
+        guMtxF2L(g_afMvpMatrix, mtx);
+        gSPMatrix(gDisplayListPtr++, mtx, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+        mtx = (Mtx *)AllocDisplayListBlock();
+        guRotateF(g_afMvpMatrix, -7.0f, 1.0f, 0.0f, 0.0f);
+        guMtxF2L(g_afMvpMatrix, mtx);
+        gSPMatrix(gDisplayListPtr++, mtx, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
+        g_dwDrawModelListNoZBuffer = 1;
+        if (g_fSplashTime > 15.0f) {
+            SetScissorRect(40, 100, 250, 50);
+        }
+        DrawModelAt(
+            g_pSplashTitleModelA,
+            0.0f,
+            0.0f,
+            (g_fSplashTime < 15.0f ? (sqrtf(3.0f) - sqrtf(g_fSplashTime - 12.0f)) * 300.0f : -0.0f),
+            sqrtf(g_fSplashTime - 12.0f) * 0.01f + -1.5707964f,
+            0.05f);
+        gSPPopMatrix(gDisplayListPtr++, 0);
+        SetScissorRect(0, 0, 320, 240);
+    }
+    if (g_fSplashTime > 13.0f) {
+        g_dwDrawModelListNoZBuffer = 1;
+        DrawModelAt(
+            g_pSplashTitleModelB,
+            0.0f,
+            0.0f,
+            (g_fSplashTime < 15.0f ? (sqrtf(2.0f) - sqrtf(g_fSplashTime - 13.0f)) * 500.0f : 0.0f),
+            -1.5707964f,
+            0.083333336f);
+    }
+    if (g_fSplashTime > 15.2f) {
+        DrawModelAt(g_pSplashTitleModelC,
+                    0.0f,
+                    0.0f,
+                    (g_fSplashTime < 16.2f ?
+                         (sqrtf(1.000001f) - sqrtf(g_fSplashTime - 15.2f)) * 500.0f :
+                         0.0f),
+                    -1.5707964f,
+                    0.083333336f);
+    }
+    if (g_fSplashTime > 15.0f) {
+        DrawModelAt(
+            g_pSplashTitleModelD,
+            0.0f,
+            0.0f,
+            (g_fSplashTime < 16.0f ? (sqrtf(1.0f) - sqrtf(g_fSplashTime - 15.0f)) * 500.0f : 0.0f),
+            -1.5707964f,
+            0.083333336f);
+    }
+    if (g_fSplashTime > 17.2f) {
+        int a;
+
+        a = (g_fSplashTime - 17.2f) * 255.0 * 4.0;
+        if (a > 200) {
+            a = 200;
+        }
+        SetTextCustomColors(a, a, a, a, a, a);
+        SetTextStyleNormal();
+        SetTextSize(10);
+        SetTextAlignCenter();
+        if ((g_aPlayerInputState[0].buttons & 0xF00) == 0xF00) {
+            DrawText(BUILD_DATE_TEXT, 160, 40);
+        }
+        SetTextSize(7);
+        DrawText("O 1997 Boss Game Studios, Inc.  All Rights Reserved.", 160, 190);
+        DrawText("Top Gear Rally is a trademark of Kemco.", 160, 197);
+        DrawText("Distributed by Midway Home Entertainment under license.", 160, 204);
+        DrawText("Midway is a trademark of Midway Games Inc.  Used by permission.", 160, 211);
+        DrawText("LICENSED BY NINTENDO", 160, 224);
+        SetTextSize(3);
+        DrawText("c", 78, 190);
+    }
+    gSPPopMatrix(gDisplayListPtr++, 0);
+    ApplyScreenFade();
+    if (g_dwHudDebugLevel >= 2) {
+        SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, 1);
+        DrawTimingBars();
+    }
+    SetNextScreenCallback(AnimateSplashModels);
+    FlushDisplayList();
+    if (IsFadingOut() != 0) {
+        if (IsFadeComplete() != 0) {
+            g_bSplashStarted = 0;
+            g_aSoundEffectChannels[0].volume = g_aSoundEffectChannels[0].step = 0;
+            g_aSoundEffectChannels[1].volume = g_aSoundEffectChannels[1].step = 0;
+            g_aSoundEffectChannels[2].volume = g_aSoundEffectChannels[2].step = 0;
+            g_aSoundEffectChannels[3].volume = g_aSoundEffectChannels[3].step = 0;
+            g_aSoundEffectChannels[4].volume = g_aSoundEffectChannels[4].step = 0;
+            ClearFramebuffersForWideMode();
+            if (g_bSplashSkipped != 0) {
+                SetCurrentScreenCallback(ProcessMainMenu);
+            } else {
+                StartAttractDemo();
+            }
+        }
+        return;
+    }
+    if (g_bSplashSkipped != 0 && g_fSplashTime > 19.2f) {
+        goto fade;
+    }
+    for (i = 0; i != 2; i++) {
+        if (g_aPlayerInputState[i].buttons & 0xC010) {
+            TransferFlags(&g_aPlayerInputState[i], 0xC010);
+            g_bSplashSkipped = 1;
+            if (g_bSplashFadingOut != 0) {
+                goto fade;
+            }
+            if (g_fSplashTime < 17.2f) {
+                g_fSplashTime = 17.2f;
+            } else if (g_fSplashTime > 19.2f) {
+                goto fade;
+            }
+        }
+    }
+    if (g_fSplashTime >= 24.2f) {
+    fade:
+        g_bSplashFadingOut = 1;
+        SetFadeTarget(0.0f, 0.2f);
+        FadeSfxTo(0.0f, 0.2f);
+    }
+}
+#endif
 
 void ProcessControllerCheck(void) {
 #if TGR_REGION != TGR_REGION_US
