@@ -19,7 +19,7 @@
 #include "sprite.h"
 
 /* Assets at fixed cartridge offsets. */
-#ifdef COASTLINE_SPLASH_ROM_POINTERS
+#ifdef COASTLINE_ROM_POINTERS
 extern char gRomSplashSoundA[];
 extern char gRomSplashSoundB[];
 extern char gRomSplashFirstLogo[];
@@ -73,7 +73,7 @@ extern char gRomSplashTitlePalette[];
 #define ROM_SPLASH_TITLE_A 0x1E09F0
 #define ROM_SPLASH_TITLE_B 0x1E3DB0
 #endif /* TGR_REGION == TGR_REGION_EU */
-#endif /* COASTLINE_SPLASH_ROM_POINTERS */
+#endif /* COASTLINE_ROM_POINTERS */
 
 /* The silence after each sound, so that the mixer reads zeros past its end. */
 #define SOUND_PADDING 0x100

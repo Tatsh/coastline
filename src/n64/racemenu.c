@@ -26,8 +26,15 @@
 #include "weatherselect.h"
 
 /* The sounds of moving the cursor and of choosing, on the cartridge. */
+#ifdef COASTLINE_ROM_POINTERS
+#define ROM_SCROLL_SOUND _scrollSoundSegmentRomStart
+#define ROM_SELECT_SOUND _selectSoundSegmentRomStart
+#define ROM_MODEL_SOURCE(offset) ((char *)(offset))
+#else
 #define ROM_SCROLL_SOUND ((u32)_scrollSoundSegmentRomStart)
 #define ROM_SELECT_SOUND ((u32)_selectSoundSegmentRomStart)
+#define ROM_MODEL_SOURCE(offset) (offset)
+#endif
 
 #if TGR_REGION == TGR_REGION_JP
 #define TRACK_MENU_TITLE "COURSE SELECT"
@@ -1019,8 +1026,9 @@ void LoadMenuItemModels(MenuItem **items, s32 *itemCount) {
         }
         if (i == *itemCount) {
             items[*itemCount]->model =
-                AllocHeapAligned(DmaReadAssetSize(items[*itemCount]->romStart));
-            DecompressModel(items[*itemCount]->model, items[*itemCount]->romStart);
+                AllocHeapAligned(DmaReadAssetSize(ROM_MODEL_SOURCE(items[*itemCount]->romStart)));
+            DecompressModel(items[*itemCount]->model,
+                            ROM_MODEL_SOURCE(items[*itemCount]->romStart));
         }
     }
 }

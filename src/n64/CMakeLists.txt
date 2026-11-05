@@ -65,7 +65,8 @@ if(TGR_IDO)
     set(_paintshop_source paintshop.c)
   endif()
   set_source_files_properties("${_splash_source}" PROPERTIES
-                            COMPILE_DEFINITIONS COASTLINE_SPLASH_ROM_POINTERS)
+                            COMPILE_DEFINITIONS COASTLINE_ROM_POINTERS)
+  set_source_files_properties(racemenu.c PROPERTIES COMPILE_DEFINITIONS COASTLINE_ROM_POINTERS)
   set_source_files_properties("${_paintshop_source}" PROPERTIES
                             COMPILE_DEFINITIONS COASTLINE_PAINTSHOP_COLOR_RETURN)
 endif()
