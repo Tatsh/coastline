@@ -140,6 +140,7 @@ cargfx
 carmodel
 carmt
 carphysics
+carsel
 carselect
 cartridgemanifest
 cartrominit
@@ -737,6 +738,7 @@ libsonnet
 libswresample
 libswscale
 libultra
+libultra's
 libunwind
 libvpx
 libwayland
@@ -815,6 +817,7 @@ materialcolor
 math
 mathutil
 maxcontrollers
+maxfbz
 maximizebox
 maxz
 mbcs
@@ -902,22 +905,24 @@ multisampled
 mupen
 musicdevice
 musicplayback
+muxs
 mypy
 nasm
 ncpaint
 nearbycount
 neff
 negu
+newcar
 ngre
 nicolle
 nlohmann
 noadv
 noat
 nobrowse
+nocrossrefs
 noffstik
 noias
 nojekyll
-noload
 nolod
 nonewplayers
 nonexclusive
@@ -1174,6 +1179,7 @@ scanlines
 scenerenderer
 scheduledevent
 schemafile
+scis
 screendraw
 screenfade
 screenrect
@@ -1389,6 +1395,7 @@ tgmath
 tgrally
 thiscall
 timeattack
+timefmt
 timerintr
 timingframe
 tiresmokespawn

@@ -30,14 +30,23 @@ SECTIONS
 
     . = 0x802ac400;
     _bss_start = .;
-    .bss (NOLOAD) : {
-        *(.bss .bss.*)
-        *(COMMON)
-        . = ALIGN(8);
+    /* The IDO car-select statics reuse the original car-select state area. */
+    OVERLAY 0x802ac400 : NOCROSSREFS {
+        .bss {
+            *(EXCLUDE_FILE (*carselect.c.obj) .bss .bss.*)
+            *(COMMON)
+            . = ALIGN(8);
+        }
+        .carselect_bss {
+            . = 0x80316248 - 0x802ac400;
+            *carselect.c.obj(.bss .bss.*)
+        }
     }
-    _bss_size = . - _bss_start;
+    _bss_size = SIZEOF(.bss);
     /* The game uses the memory after the BSS by address, so C may not add to the BSS. */
-    ASSERT(. <= 0x80382bb0, "The BSS grew past its original end.")
+    ASSERT(ADDR(.bss) + SIZEOF(.bss) <= 0x80382bb0, "The BSS grew past its original end.")
+    ASSERT(ADDR(.carselect_bss) + SIZEOF(.carselect_bss) <= 0x80316380,
+           "Car-select state exceeds its original BSS area.")
 
     /DISCARD/ : {
         *(.MIPS.abiflags)

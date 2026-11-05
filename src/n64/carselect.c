@@ -1,3 +1,16 @@
+/* The host test uses native struct layouts; the MIPS source keeps the original 32-bit layout. */
+#if defined(__mips__) || defined(__sgi)
+/* clang-format off */
+#include "n64/carselect-aliases.h"
+#include "n64/reference/carselect.c"
+/* clang-format on */
+
+void ProcessRaceResultsScreen(void) {
+    g_dwIsReviewMode = 1;
+    ProcessCarSelectScreen();
+    g_dwIsReviewMode = 0;
+}
+#else
 #include "carselect.h"
 
 #include <PR/gu.h>
@@ -1515,3 +1528,4 @@ void ProcessRaceResultsScreen(void) {
     ProcessCarSelectScreen();
     g_dwIsReviewMode = FALSE;
 }
+#endif

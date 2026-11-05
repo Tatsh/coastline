@@ -238,8 +238,4 @@
 #define eur_D_80272798 g_dwCheatFinishRacePending
 #define jpn_D_8028D8F0 g_dwReplayKeyframeFrameCount
 #define jpn_D_80272248 g_dwCheatFinishRacePending
-/* IDO needs local definitions to match, while the original data assembly supplies their address. */
-#pragma weak g_dwAirplaneInstance
-#pragma weak g_fStartLightsDrop
-
 #endif /* COASTLINE_RACETICK_ALIASES_H */
