@@ -2334,30 +2334,26 @@ s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarS
     return 0;
 }
 
-/* The columns two glyphs side by side overlap, the lesser of how far each may move to the other. */
-static inline s32 GlyphOverlap(DecalGlyph *previous, DecalGlyph *next) {
-    return previous->kernRight < next->kernLeft ? previous->kernRight : next->kernLeft;
-}
-
 void ProcessTextInputKeyboard(void) {
-    Sprite *highlight = &g_texKeyboardHighlight;
+    s32 spare; /* IDO reserves the original stack frame for this unused local. */
+    s32 x;
+    s32 y;
+    s32 i;
+    s32 kern;
     PlayerInputState *input;
-    DecalGlyph *key;
-    s32 i, x, y, width;
-    u8 length;
 
     g_bShowPreview3D = FALSE;
     g_bPaletteEnabled = FALSE;
     DrawSpriteTinted(&g_texKeyboardBackground, 0xE0, 0xE0, 0xE0);
-    if (highlight->style) {
-        highlight->style = FALSE;
+    if (g_texKeyboardHighlight.style != 0) {
+        g_texKeyboardHighlight.style = 0;
         if (g_wScreenFrameCount > 0) {
             g_wScreenFrameCount--;
         }
         if (g_wScreenFrameCount == 0) {
-            DrawSpriteTinted(highlight, 0x20, 0xC8, 0xFF);
+            DrawSpriteTinted(&g_texKeyboardHighlight, 0x20, 0xC8, 0xFF);
         } else {
-            DrawSpriteTinted(highlight, 0xFF, 0xEB, 0);
+            DrawSpriteTinted(&g_texKeyboardHighlight, 0xFF, 0xEB, 0);
         }
     }
     DrawSpriteAtOrigin(WITH_PALETTE(&g_texKeyboardPanel, NULL));
@@ -2367,72 +2363,70 @@ void ProcessTextInputKeyboard(void) {
     DrawRectOutline(x, y, 0xC8, 0x30, 2, 0xFF, 0xFF, 0xFF);
     if (IsCursorInButton(&g_texKeyboardBackground)) {
         for (i = 0; i < DECAL_GLYPHS; i++) {
-            key = &g_aDecalGlyphs[i];
-            if (IsCursorOnKeyboardKey(key)) {
+            if (IsCursorOnKeyboardKey(&g_aDecalGlyphs[i])) {
                 g_bKeyboardHoverKey = i;
-                highlight->style = TRUE;
-                highlight->originX = key->x;
-                highlight->originY = key->y;
+                g_texKeyboardHighlight.style = 1;
+                g_texKeyboardHighlight.originX = g_aDecalGlyphs[i].x;
+                g_texKeyboardHighlight.originY = g_aDecalGlyphs[i].y;
             }
-            if (!IsCursorInButton(highlight)) {
-                continue;
-            }
-            input = &g_aPlayerInputState[g_bPaintShopPlayer];
-            if (!(input->buttons & (INPUT_Z | INPUT_A))) {
-                continue;
-            }
-            TransferFlags(input, INPUT_Z | INPUT_A);
-            g_wScreenFrameCount = KEY_FLASH_FRAMES;
-            if (g_bKeyboardHoverKey == KEY_ENTER) {
-                if (g_bDecalTextLength > 0) {
-                    g_bPaintToolStarted = TRUE;
-                    g_bTextShadowPickerOpen = TRUE;
-                } else {
-                    g_bPaintToolStarted = FALSE;
-                    g_bDecalDragActive = FALSE;
-                }
-                g_bShowPreview3D = TRUE;
-                g_bPaletteEnabled = TRUE;
-            } else if (g_bKeyboardHoverKey == KEY_BACKSPACE) {
-                /* An empty text reads the word before the keys of the text. */
-                if (g_apDecalTextGlyphs[g_bDecalTextLength - 1] == NULL) {
-                    length = 0;
-                    g_bDecalTextLength = 0;
-                    g_bDecalTextWidth = 0;
-                } else {
-                    length = --g_bDecalTextLength;
-                    if (length == 0) {
-                        g_bDecalTextWidth -= g_apDecalTextGlyphs[0]->width;
+            if (IsCursorInButton(&g_texKeyboardHighlight) &&
+                ((input = &g_aPlayerInputState[g_bPaintShopPlayer])->buttons &
+                 (INPUT_Z | INPUT_A))) {
+                TransferFlags(input, INPUT_Z | INPUT_A);
+                g_wScreenFrameCount = KEY_FLASH_FRAMES;
+                if (g_bKeyboardHoverKey == KEY_ENTER) {
+                    if (g_bDecalTextLength > 0) {
+                        g_bPaintToolStarted = TRUE;
+                        g_bTextShadowPickerOpen = TRUE;
                     } else {
-                        g_bDecalTextWidth = g_bDecalTextWidth - g_apDecalTextGlyphs[length]->width +
-                                            GlyphOverlap(g_apDecalTextGlyphs[length - 1],
-                                                         g_apDecalTextGlyphs[length]) -
-                                            2;
+                        g_bPaintToolStarted = FALSE;
+                        g_bDecalDragActive = FALSE;
                     }
-                }
-                g_szDecalText[length] = '\0';
-                g_apDecalTextGlyphs[length] = NULL;
-            } else {
-                key = &g_aDecalGlyphs[g_bKeyboardHoverKey];
-                width = key->width + g_bDecalTextWidth;
-                if (width + 2 < g_bDecalWidth) {
-                    length = g_bDecalTextLength;
-                    g_szDecalText[length] = key->character;
-                    g_apDecalTextGlyphs[length] = key;
-                    if (length == 0) {
-                        g_bDecalTextWidth = width;
+                    g_bShowPreview3D = TRUE;
+                    g_bPaletteEnabled = TRUE;
+                } else if (g_bKeyboardHoverKey == KEY_BACKSPACE) {
+                    /* An empty text reads the word before the keys of the text. */
+                    if (g_apDecalTextGlyphs[g_bDecalTextLength - 1] != NULL) {
+                        g_bDecalTextLength--;
+                        if (g_bDecalTextLength == 0) {
+                            g_bDecalTextWidth -= g_apDecalTextGlyphs[g_bDecalTextLength]->width;
+                        } else {
+                            kern = g_apDecalTextGlyphs[g_bDecalTextLength - 1]->kernRight <
+                                           g_apDecalTextGlyphs[g_bDecalTextLength]->kernLeft ?
+                                       g_apDecalTextGlyphs[g_bDecalTextLength - 1]->kernRight :
+                                       g_apDecalTextGlyphs[g_bDecalTextLength]->kernLeft;
+                            g_bDecalTextWidth = g_bDecalTextWidth -
+                                                g_apDecalTextGlyphs[g_bDecalTextLength]->width +
+                                                kern - 2;
+                        }
                     } else {
-                        g_bDecalTextWidth = width -
-                                            GlyphOverlap(g_apDecalTextGlyphs[length - 1],
-                                                         g_apDecalTextGlyphs[length]) +
-                                            2;
+                        g_bDecalTextLength = 0;
+                        g_bDecalTextWidth = 0;
                     }
-                    length++;
-                    /* At the most characters, the terminator and the key go past the text. */
-                    g_szDecalText[length] = '\0';
-                    g_bDecalTextLength = length;
-                    if (length > DECAL_TEXT_LENGTH) {
-                        g_bDecalTextLength = DECAL_TEXT_LENGTH;
+                    g_szDecalText[g_bDecalTextLength] = 0;
+                    g_apDecalTextGlyphs[g_bDecalTextLength] = NULL;
+                } else {
+                    if (g_aDecalGlyphs[g_bKeyboardHoverKey].width + g_bDecalTextWidth + 2 <
+                        g_bDecalWidth) {
+                        g_szDecalText[g_bDecalTextLength] =
+                            g_aDecalGlyphs[g_bKeyboardHoverKey].character;
+                        g_apDecalTextGlyphs[g_bDecalTextLength] =
+                            &g_aDecalGlyphs[g_bKeyboardHoverKey];
+                        if (g_bDecalTextLength == 0) {
+                            g_bDecalTextWidth =
+                                g_aDecalGlyphs[g_bKeyboardHoverKey].width + g_bDecalTextWidth;
+                        } else {
+                            kern = g_apDecalTextGlyphs[g_bDecalTextLength - 1]->kernRight <
+                                           g_apDecalTextGlyphs[g_bDecalTextLength]->kernLeft ?
+                                       g_apDecalTextGlyphs[g_bDecalTextLength - 1]->kernRight :
+                                       g_apDecalTextGlyphs[g_bDecalTextLength]->kernLeft;
+                            g_bDecalTextWidth = g_aDecalGlyphs[g_bKeyboardHoverKey].width +
+                                                g_bDecalTextWidth - kern + 2;
+                        }
+                        g_szDecalText[++g_bDecalTextLength] = 0;
+                        if (g_bDecalTextLength > DECAL_TEXT_LENGTH) {
+                            g_bDecalTextLength = DECAL_TEXT_LENGTH;
+                        }
                     }
                 }
             }
