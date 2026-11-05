@@ -5,6 +5,7 @@
 
 #include "common/vehicledeform.c"
 #include "common/vehiclemodelrender.c"
+#include "n64/vehiclemodelrender.c"
 #include "vehiclerender.c"
 
 char *getenv(const char *name);
@@ -16,6 +17,10 @@ char *getenv(const char *name);
 
 Gfx *gDisplayListPtr;
 static Gfx gfx[2048];
+f32 g_fConstInv255_802a9ed4 = 1.0f / 255.0f;
+f32 g_fConst0p1_802a9ed8 = 0.1f;
+f32 g_fConst1em4_802a9edc = 0.0001f;
+f32 g_fConstInvPi_802a9ee0 = 1.0f / 3.14159265f;
 f32 g_afMvpMatrix[4][4], g_afScratchMatrix[4][4], g_afViewProjMatrix[4][4];
 u32 g_dwTextureFilterMode = 0x2000, g_dwColorDitherMode = 0x40;
 s32 g_dwTrackMirrored, g_dwViewportMirrored, g_dwNumViewports = 1;

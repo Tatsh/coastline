@@ -32,6 +32,7 @@ set(_n64_sources
     text.c
     timing.c
     vehicle.c
+    vehiclemodelrender.c
     vehiclerender.c
     vehiclesetup.c
     weather.c

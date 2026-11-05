@@ -18,6 +18,40 @@
 extern "C" {
 #endif
 
+#if !TGR_BOSS_RALLY
+/**
+ * Scale from byte model coordinates to world coordinates.
+ * @ghidraAddress USA: 0x802a9ed4
+ * @ghidraAddress EUR: 0x802abc24
+ * @ghidraAddress JPN: 0x802aaba4
+ */
+extern f32 g_fConstInv255_802a9ed4;
+
+/**
+ * The near detail blend threshold.
+ * @ghidraAddress USA: 0x802a9ed8
+ * @ghidraAddress EUR: 0x802abc28
+ * @ghidraAddress JPN: 0x802aaba8
+ */
+extern f32 g_fConst0p1_802a9ed8;
+
+/**
+ * The minimum light vector length.
+ * @ghidraAddress USA: 0x802a9edc
+ * @ghidraAddress EUR: 0x802abc2c
+ * @ghidraAddress JPN: 0x802aabac
+ */
+extern f32 g_fConst1em4_802a9edc;
+
+/**
+ * Convert an angular difference in radians to a proportion of pi.
+ * @ghidraAddress USA: 0x802a9ee0
+ * @ghidraAddress EUR: 0x802abc30
+ * @ghidraAddress JPN: 0x802aabb0
+ */
+extern f32 g_fConstInvPi_802a9ee0;
+#endif /* !TGR_BOSS_RALLY */
+
 /**
  * The model of the vehicle being drawn.
  *

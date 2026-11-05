@@ -211,6 +211,7 @@ static inline u32 DimLightPart(u8 part, f32 divisor) {
     return (u8)(u32)(part / divisor);
 }
 
+#if TGR_BOSS_RALLY
 void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     Vec3f toCamera, toVehicle, eye;
     TGR_PTR(DisplayListCommand) * displayLists;
@@ -897,3 +898,4 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
 #endif
     g_dwStatVehicleTriangles += g_pCurrentVehicleModelData->triangleCount;
 }
+#endif /* TGR_BOSS_RALLY */
