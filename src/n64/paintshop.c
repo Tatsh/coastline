@@ -840,8 +840,7 @@ void ProcessPaintShopScreen(void) {
             TransferFlags(&g_aPlayerInputState[g_bPaintShopPlayer], 0x20);
             g_bDecalDragActive = 0;
             g_bPaintToolStarted = 0;
-            g_bShowPreview3D = 1;
-            g_bPaletteEnabled = 1;
+            g_bPaletteEnabled = g_bShowPreview3D = 1;
             g_bDecalTextLength = 0;
             g_bDecalTextWidth = 0;
         }
