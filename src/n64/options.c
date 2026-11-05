@@ -680,6 +680,19 @@ void ProcessDataSaveLoadMenu(void) {
     s32 top;
     s32 buttonY;
     u8 plugged;
+    /* IDO places the menu state in function statics; the GCC build uses assembly-backed globals. */
+#if defined(__sgi) && TGR_REGION != TGR_REGION_JP
+#if TGR_REGION == TGR_REGION_US
+    static u8 g_bSaveLoadChoice = 0;
+#else
+    static u8 g_bSaveLoadMenuCursor = 0;
+#endif
+    static u8 g_bSaveLoadStep = 1;
+    static u8 g_bSaveLoadDataWasLoaded;
+    static u8 g_bSaveLoadInputEnabled;
+    static s32 g_dwSaveLoadNoteIndex;
+    static u8 g_bSaveLoadFadeDelayFrames;
+#endif
 
 #if TGR_REGION == TGR_REGION_US
     g_wSerialInterfaceIdle = FALSE;
