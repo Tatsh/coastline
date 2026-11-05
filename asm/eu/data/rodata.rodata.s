@@ -9281,18 +9281,18 @@ dlabel g_fConstNeg0p001_802aa000
     /* ACD50 802ABD50 BA83126F */ .float -0.001000000047
 enddlabel g_fConstNeg0p001_802aa000
 
-nonmatching g_fConst235p52_802aa004
+nonmatching g_fShadowLengthScale
 
-dlabel g_fConst235p52_802aa004
+dlabel g_fShadowLengthScale
     /* ACD54 802ABD54 436B851F */ .float 235.5200043
-enddlabel g_fConst235p52_802aa004
+enddlabel g_fShadowLengthScale
 
-nonmatching g_fConst161p28_802aa008
+nonmatching g_fShadowWidthScale
 
 .balign 8
-dlabel g_fConst161p28_802aa008
+dlabel g_fShadowWidthScale
     /* ACD58 802ABD58 432147AE */ .float 161.2799988
-enddlabel g_fConst161p28_802aa008
+enddlabel g_fShadowWidthScale
 
 nonmatching g_fConst0p0001_802aa00c
 

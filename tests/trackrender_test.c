@@ -78,6 +78,8 @@ u32 g_dwTrackOtherModeLBlend, g_dwTrackOtherModeLFlags;
 s32 g_nNearbyVehicleCount, g_anNearbyVehicleIdx[MAX_VEHICLES];
 f32 g_afNearbyVehicleDot[MAX_VEHICLES];
 Vec3f g_vVehicleVisibilityDelta, g_vTrackLightDirection, g_vShadowForward;
+const f32 g_fShadowLengthScale = 235.52f;
+const f32 g_fShadowWidthScale = 161.28f;
 f32 g_fViewMatrixMaxAbs;
 LookAt *g_pTrackLookAt;
 Lights1 g_aTrackLights[4];

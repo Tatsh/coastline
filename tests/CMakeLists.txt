@@ -176,7 +176,8 @@ coastline_add_test(text "${_src}/n64/text.c" "${_src}/common/textrender.c" "${_s
 coastline_add_test(timing "${_src}/n64/timing.c" "${_src}/common/timingframe.c")
 coastline_add_test(track ${_vecmath} "${_src}/common/trackgrid.c" "${_src}/n64/boot.c")
 coastline_add_test(trackrender ${_vecmath} "${_src}/common/screenrect.c" "${_src}/common/shadowreset.c"
-                   "${_src}/common/trackinstance.c" "${_src}/common/visiblecompare.c")
+                   "${_src}/n64/trackinstance.c" "${_src}/common/visiblecompare.c")
+target_compile_definitions(trackrender_test PRIVATE ENABLE_PATCHES=1)
 coastline_add_test(vecmath ${_vecmath})
 coastline_add_test(
   vehicle

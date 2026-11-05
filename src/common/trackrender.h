@@ -333,6 +333,24 @@ extern Vec3f g_vTrackLightDirection;
  */
 extern Vec3f g_vShadowForward;
 
+#if !TGR_BOSS_RALLY
+/**
+ * Scale of the vehicle shadow along its length.
+ * @ghidraAddress USA: 0x802aa004
+ * @ghidraAddress EUR: 0x802abd54
+ * @ghidraAddress JPN: 0x802aabe4
+ */
+extern const f32 g_fShadowLengthScale;
+
+/**
+ * Scale of the vehicle shadow across its width.
+ * @ghidraAddress USA: 0x802aa008
+ * @ghidraAddress EUR: 0x802abd58
+ * @ghidraAddress JPN: 0x802aabe8
+ */
+extern const f32 g_fShadowWidthScale;
+#endif
+
 #if TGR_BOSS_RALLY
 /**
  * Project a point and its radius to screen bounds outside the near-camera interval.

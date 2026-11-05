@@ -95,7 +95,6 @@ set(_common_sources
   tiresprayrender.c
   tracetrack.c
   trackgrid.c
-  trackinstance.c
   trackrender.c
   trackvalid.c
   tricache.c
@@ -139,6 +138,7 @@ else()
   target_sources(
     coastline_common
     PRIVATE ${CMAKE_SOURCE_DIR}/src/win32/sidegrip.c
+            ${CMAKE_SOURCE_DIR}/src/win32/trackinstance.c
             airplanestate.c
             assetfile.cpp
             assetnames.c
@@ -266,7 +266,6 @@ else()
     tiresprayemit.c
     tiresprayrender.c
     tracetrack.c
-    trackinstance.c
     trackrender.c
     vehiclechoice.c
     vehicledeform.c
@@ -284,6 +283,8 @@ else()
     volumecontrols.c
     wheelrender.c
     PROPERTIES LANGUAGE CXX)
+  set_source_files_properties(${CMAKE_SOURCE_DIR}/src/win32/trackinstance.c
+                              PROPERTIES LANGUAGE CXX)
   if(TGR_ENABLE_PATCHES)
     # The helpers of the quality of life changes, which only the patched libraries have.
     target_sources(coastline_common PRIVATE qualityoflife.c)
