@@ -394,47 +394,40 @@ void DrawScaledTexturedRect(Sprite *sprite,
                             u8 red,
                             u8 green,
                             u8 blue) {
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-    gDPSetTextureLOD(gDisplayListPtr++, G_TL_TILE);
-    gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);
-    gDPSetCombineLERP(gDisplayListPtr++,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE,
-                      0,
-                      0,
-                      0,
-                      TEXEL0,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE,
-                      0,
-                      0,
-                      0,
-                      TEXEL0);
-    gDPSetRenderMode(gDisplayListPtr++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-    /* The far edges are one texel past the inclusive ones the macro expects. */
-    gDPLoadTextureTile_4b(gDisplayListPtr++,
-                          sprite->pixels,
-                          G_IM_FMT_I,
-                          sprite->width,
-                          0,
-                          srcX,
-                          srcY,
-                          srcX + srcWidth,
-                          srcY + srcHeight,
-                          0,
-                          G_TX_CLAMP,
-                          G_TX_CLAMP,
-                          0,
-                          0,
-                          G_TX_NOLOD,
-                          G_TX_NOLOD);
-    gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
-    gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE);
+    s32 right = srcX + srcWidth;
+    s32 bottom = srcY + srcHeight;
+
+    gDisplayListWords(gDisplayListPtr++, 0xe7000000, 0);
+    gDisplayListWords(gDisplayListPtr++, 0xba001402, 0);
+    gDisplayListWords(gDisplayListPtr++, 0xba001001, 0);
+    gDisplayListWords(gDisplayListPtr++, 0xba000c02, g_dwTextureFilterMode);
+    gDisplayListWords(gDisplayListPtr++, 0xfcffffff, 0xfffdf2f9);
+    gDisplayListWords(gDisplayListPtr++, 0xb900031d, 0x504240);
+    gDisplayListWords(gDisplayListPtr++,
+                      0xfd880000 | _SHIFTL((sprite->width >> 1) - 1, 0, 12),
+                      (u32)sprite->pixels);
+    {
+        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+
+        _g->words.w0 = 0xf5880000 | _SHIFTL((((right - srcX + 1) >> 1) + 7) >> 3, 9, 9);
+        _g->words.w1 = 0x7080200;
+    }
+    gDisplayListWords(gDisplayListPtr++, 0xe6000000, 0);
+    gDisplayListWords(gDisplayListPtr++,
+                      0xf4000000 | _SHIFTL(srcX << 1, 12, 12) | _SHIFTL(srcY << 2, 0, 12),
+                      0x7000000 | _SHIFTL(right << 1, 12, 12) | _SHIFTL(bottom << 2, 0, 12));
+    gDisplayListWords(gDisplayListPtr++, 0xe7000000, 0);
+    {
+        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+
+        _g->words.w0 = 0xf5800000 | _SHIFTL((((right - srcX + 1) >> 1) + 7) >> 3, 9, 9);
+        _g->words.w1 = 0x80200;
+    }
+    gDisplayListWords(gDisplayListPtr++,
+                      0xf2000000 | _SHIFTL(srcX << 2, 12, 12) | _SHIFTL(srcY << 2, 0, 12),
+                      _SHIFTL(right << 2, 12, 12) | _SHIFTL(bottom << 2, 0, 12));
+    gDisplayListWords(gDisplayListPtr++, 0xba000e02, 0);
+    gDisplayListWords(gDisplayListPtr++, 0xba001301, 0);
     if (!g_dwScreenScaleShift) {
         x >>= 1;
         y >>= 1;
@@ -442,19 +435,25 @@ void DrawScaledTexturedRect(Sprite *sprite,
         height >>= 1;
     }
     gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, red, green, blue, 0xFF);
-    /* The first column drawn is the one before the source rectangle. */
-    gSPTextureRectangle(gDisplayListPtr++,
-                        x << 2,
-                        y << 2,
-                        (x + width) << 2,
-                        (y + height) << 2,
-                        G_TX_RENDERTILE,
-                        (srcX - 1) << 5,
-                        (srcY + srcHeight - 1) << 5,
-                        ((srcWidth << 10) - TEXEL_STEP) / width,
-                        (TEXEL_STEP - (srcHeight << 10)) / height);
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
+    {
+        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+
+        _g->words.w0 =
+            0xe4000000 | _SHIFTL((x + width) << 2, 12, 12) | _SHIFTL((y + height) << 2, 0, 12);
+        _g->words.w1 = _SHIFTL(x << 2, 12, 12) | _SHIFTL(y << 2, 0, 12);
+    }
+    {
+        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+
+        _g->words.w0 = _SHIFTL(G_RDPHALF_1, 24, 8);
+        _g->words.w1 = _SHIFTL((srcX - 1) << 5, 16, 16) | _SHIFTL((bottom - 1) << 5, 0, 16);
+    }
+    gImmp1(gDisplayListPtr++,
+           G_RDPHALF_2,
+           _SHIFTL(((srcWidth << 10) - 0x400) / width, 16, 16) |
+               _SHIFTL((1024 - srcHeight * 1024) / height, 0, 16));
+    gDisplayListWords(gDisplayListPtr++, 0xe7000000, 0);
+    gDisplayListWords(gDisplayListPtr++, 0xba001301, 0x80000);
 }
 
 /* Start filling rectangles in a colour, opaque. */
