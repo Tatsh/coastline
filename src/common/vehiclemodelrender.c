@@ -224,7 +224,11 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     f32 distance, divisor, length, nudgeX, nudgeZ;
 #endif
     u32 dirColor, ambientColor, reflection;
+#if TGR_BOSS_RALLY
     u8 ambient[3];
+#else
+    u8 colors[4];
+#endif
 #if !TGR_BOSS_RALLY
     u16 *palette;
     s32 closeRange, lit, i;
@@ -327,6 +331,40 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
     }
     g_anVehicleLod[VEHICLE_GET(vehicle, Index)] = lod;
 
+#if !TGR_BOSS_RALLY
+    if (g_dwNightMode != 0) {
+        divisor = distance / 10.0f;
+        if (divisor < 1.0f) {
+            divisor = 1.0f;
+        }
+        colors[0] = (u32)g_bDirLightR / divisor;
+        colors[1] = (u32)g_bDirLightG / divisor;
+        colors[2] = (u32)g_bDirLightB / divisor;
+        dirColor = colors[0] << 24 | colors[1] << 16 | colors[2] << 8;
+        colors[0] = g_bAmbientLightR;
+        colors[1] = g_bAmbientLightG;
+        colors[2] = g_bAmbientLightB;
+        ambientColor = colors[0] << 24 | colors[1] << 16 | colors[2] << 8;
+    } else if (inTunnel != 0) {
+        colors[0] = 0;
+        colors[1] = 0;
+        colors[2] = 0;
+        dirColor = colors[0] << 24 | colors[1] << 16 | colors[2] << 8;
+        colors[0] = (g_bAmbientLightR << 2) / 5;
+        colors[1] = (g_bAmbientLightG << 2) / 5;
+        colors[2] = (g_bAmbientLightB << 2) / 5;
+        ambientColor = colors[0] << 24 | colors[1] << 16 | colors[2] << 8;
+    } else {
+        colors[0] = g_bDirLightR;
+        colors[1] = g_bDirLightG;
+        colors[2] = g_bDirLightB;
+        dirColor = colors[0] << 24 | colors[1] << 16 | colors[2] << 8;
+        colors[0] = g_bAmbientLightR;
+        colors[1] = g_bAmbientLightG;
+        colors[2] = g_bAmbientLightB;
+        ambientColor = colors[0] << 24 | colors[1] << 16 | colors[2] << 8;
+    }
+#else
     /* The light of the sun dims with the distance at night, and is gone in a tunnel. The ambient
      * colour is also stored in a local that is never read again. */
     if (g_dwNightMode) {
@@ -359,6 +397,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset) {
         ambient[2] = g_bAmbientLightB;
         ambientColor = PackLightColor(ambient[0], ambient[1], ambient[2]);
     }
+#endif
     gSPMatrix(gDisplayListPtr++,
               g_apVehicleModelMatrix[VEHICLE_GET(vehicle, Index)],
               G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_PUSH);
