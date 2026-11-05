@@ -36,6 +36,9 @@ set(_n64_sources
     vehiclesetup.c
     weather.c
     weatherselect.c)
+if(TGR_REGION STREQUAL "eu" OR TGR_REGION STREQUAL "jp")
+  list(APPEND _n64_sources options-regional.c)
+endif()
 # These sources write the Japanese text in UTF-8. The Japanese release compiles copies with the text
 # in the glyph codes of its font.
 if(TGR_REGION STREQUAL "jp")

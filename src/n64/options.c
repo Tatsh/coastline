@@ -586,6 +586,7 @@ void SaveGameDataToEeprom(void) {
     }
 #endif /* TGR_REGION != TGR_REGION_US */
 
+#if TGR_REGION == TGR_REGION_US
 void ProcessDataSaveLoadMenu(void) {
 #if TGR_REGION == TGR_REGION_US
     s32 choice;
@@ -2084,6 +2085,8 @@ void ProcessDataSaveLoadMenu(void) {
 #endif /* TGR_REGION != TGR_REGION_US */
 }
 
+#endif /* TGR_REGION == TGR_REGION_US */
+
 void PreparePakDataScreen(void) {
     LoadTextureFromRom(&g_texButtonA);
     LoadTextureFromRom(&g_texButtonB);
@@ -2108,12 +2111,12 @@ s32 DrawRumblePakPrompt(s32 anyPlayer) {
     SetTextSize(12);
     DRAW_SWAP_FOR_RUMBLE_PAK_TEXT(0x6A);
 #else
-        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
-        DRAW_MESSAGE_BOX(0xAA, 0xCE, 0x12C, 0x64);
-        SetTextSize(14);
-        DrawText("%j振動パックを使うときは、", 0x5D, 0x77);
-        DrawText("%jコントローラパックと", 0x5D, 0x84);
-        DrawText("%j振動パックを交換して下さい。", 0x5D, 0x91);
+    SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
+    DRAW_MESSAGE_BOX(0xAA, 0xCE, 0x12C, 0x64);
+    SetTextSize(14);
+    DrawText("%j振動パックを使うときは、", 0x5D, 0x77);
+    DrawText("%jコントローラパックと", 0x5D, 0x84);
+    DrawText("%j振動パックを交換して下さい。", 0x5D, 0x91);
 #endif /* TGR_REGION == TGR_REGION_US */
     for (player = 0; player != 2; player++) {
         if (!anyPlayer && player != g_dwMenuChoosingPlayer) {
