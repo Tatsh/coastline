@@ -162,8 +162,7 @@ void FloodFill4Bit(s32 x, s32 y) {
     FillSpan stack[FILL_SPANS];
     u8 *mask, *texels;
 
-    x = ScreenToTexelX(x);
-    y = ScreenToTexelY(y);
+    x = ScreenToTexelX(x), y = ScreenToTexelY(y);
     old = GetPixel4Bit(x, y);
     if (old != g_bDecalColor) {
         stack[0].y = y;
@@ -173,8 +172,7 @@ void FloodFill4Bit(s32 x, s32 y) {
         stack[1].y = y + 1;
         stack[1].x1 = x;
         stack[1].x2 = x;
-        stack[1].dy = -1;
-        count = 2;
+        stack[1].dy = -1, count = 2;
 
         /* The fill runs in a copy with the mask off, then passes through the mask. */
         mask = g_pDecalMask;
