@@ -291,7 +291,7 @@ extern Vec3f s_aPanelViewDirections[DECAL_SLOTS];
  * @ghidraAddress EUR: 0x802903e0
  * @ghidraAddress JPN: 0x8028fe50
  */
-extern u8 g_bPaintShopInitialized;
+extern s8 g_bPaintShopInitialized;
 
 /**
  * The texels of the decal a mirror copies from.
