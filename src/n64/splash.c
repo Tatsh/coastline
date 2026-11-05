@@ -166,146 +166,271 @@ void AnimateSplashModels(void) {
 }
 
 #if TGR_REGION != TGR_REGION_US
-/* Play a sound on a free sound effect channel at a volume, and return the channel or -1. */
-static s16 PlaySplashSound(s8 *sample, u32 length, s32 volume) {
-    s16 channel = FindFreeSoundChannel();
-
-    if (channel != -1) {
-        InitSoundChannel(channel, sample, length, 0);
-        g_aSoundEffectChannels[channel].volume = volume;
-        g_aSoundEffectChannels[channel].step = SFX_STEP_ONE;
-    }
-    return channel;
-}
-
-/*
- * Fly a logo in with a spin from the distance and two sounds, hold it, then slide it off to the
- * right with a sound that pans after it.
- */
-static void
-UpdateSplashLogo(Model *logo, f32 start, f32 end, s32 *voice, s32 *soundA, s32 *soundB) {
-    f32 t = g_fSplashTime;
-    f32 left;
-    f32 since;
-    f32 x;
-    s32 pan;
-
-    if (t < start + LOGO_LANDED_TIME) {
-        if (t > start + LOGO_SOUND_A_TIME && !*soundA) {
-            PlaySplashSound(g_pSplashSoundA, g_dwSplashSoundALength, SFX_VOLUME(32, 32));
-            *soundA = 1;
-        }
-        if (g_fSplashTime > start + LOGO_SOUND_B_TIME && !*soundB) {
-            PlaySplashSound(g_pSplashSoundB, g_dwSplashSoundBLength, SFX_VOLUME(32, 32));
-            *soundB = 1;
-        }
-        t = g_fSplashTime;
-        left = start + LOGO_LANDED_TIME - t;
-        since = t - start;
-        DrawModelAt(logo,
-                    -left * 32.0f,
-                    0.0f,
-                    LOGO_DEPTH - left * 750.0f,
-                    since * HALF_PI * since * since * since * 0.0625f + -PI,
-                    LOGO_SCALE);
-        return;
-    }
-    if (t >= start + end) {
-        return;
-    }
-
-    if (t > start + LOGO_LEAVE_TIME) {
-        since = t - (start + LOGO_LEAVE_TIME);
-        x = since * since * 256.0f;
-    } else {
-        x = 0.0f;
-    }
-    DrawModelAt(logo, x, 0.0f, LOGO_DEPTH, -HALF_PI, LOGO_SCALE);
-
-    t = g_fSplashTime;
-    if (t > start + LOGO_LEAVE_TIME) {
-        if (*soundA < 2) {
-            /* The channel is stored first and read back from the voice at each use. */
-            *voice = FindFreeSoundChannel();
-            if (*voice != -1) {
-                InitSoundChannel(*voice, g_pSplashSoundA, g_dwSplashSoundALength, 0);
-                g_aSoundEffectChannels[*voice].volume = SFX_VOLUME(20, 20);
-                g_aSoundEffectChannels[*voice].step = SFX_STEP_ONE;
-            }
-            *soundA = 2;
-        } else {
-            pan = (s32)((t - (start + LOGO_LEAVE_TIME)) * 32.0f);
-            if (pan > 20) {
-                pan = 20;
-            }
-            /* With no free channel the original writes this just before the channels. */
-            g_aSoundEffectChannels[*voice].volume = SFX_VOLUME(20 - pan, 20 + pan);
-        }
-    }
-}
-
-/* Draw the caption over a logo, fading in as the logo lands and out as it leaves. */
-static void DrawSplashCaption(const char *text, f32 start, s32 y) {
-    f32 t = g_fSplashTime;
-    s32 alpha;
-
-    if (t < start + LOGO_LANDED_TIME) {
-        alpha = TEXT_ALPHA - (s32)((f64)(start + LOGO_LANDED_TIME - t) * 255.0 * TEXT_FADE_RATE);
-    } else if (t > start + LOGO_LEAVE_TIME) {
-        alpha = TEXT_ALPHA - (s32)((f64)(t - (start + LOGO_LEAVE_TIME)) * 255.0 * TEXT_FADE_RATE);
-    } else {
-        alpha = TEXT_ALPHA;
-    }
-    if (alpha > 0) {
-        SetTextCustomColors(alpha, alpha, alpha, alpha, alpha, alpha);
-        SetTextStyleNormal();
-        SetTextSize(10);
-        SetTextAlignCenter();
-        DrawText(text, 160, y);
-    }
-}
-
-/* The depth of a part of the title, which slows as it comes forward and rests at 0 by its end. */
-static inline f32 TitleDepth(f32 start, f32 end, f32 speed) {
-    if (g_fSplashTime < end) {
-        return (sqrtf(end - start) - sqrtf(g_fSplashTime - start)) * speed;
-    }
-    return 0.0f;
-}
-
-#if TGR_REGION == TGR_REGION_JP
-/* Draw the picture of the title with its palette, from black over its first second. */
-static void DrawSplashTitle(void) {
-    if (g_fSplashTime > TITLE_START) {
-        gDPPipeSync(gDisplayListPtr++);
-        gDPLoadTLUT_pal256(gDisplayListPtr++, g_awSplashTitlePalette);
-        DrawTexturedRect(&g_SplashTitleLogoTexture,
-                         60,
-                         36,
-                         200,
-                         150,
-                         0,
-                         0,
-                         0,
-                         0xFF,
-                         0xFF,
-                         0xFF,
-                         0xFF,
-                         0xFF,
-                         TEXRECT_BLEND_TEXTURE);
-        if (g_fSplashTime - TITLE_START < TITLE_FADE_TIME) {
-            DrawScreenFadeOverlay(g_fSplashTime - TITLE_START);
-        }
-    }
-}
+#if TGR_REGION == TGR_REGION_EU
+#define REGIONAL_TITLE_ASSET g_pSplashTitleModelA
+#define INTRO_LOGO_SCALE 0.03125f
 #else
-/* Draw the title, tilted, its parts coming forward one after another. */
-static void DrawSplashTitle(void) {
-    Mtx *mtx;
-    f32 z;
+#define REGIONAL_TITLE_ASSET g_awSplashTitlePalette
+#define INTRO_LOGO_SCALE 0.028125f
+#endif
 
-    if (g_fSplashTime > TITLE_START) {
-        gSPNumLights(gDisplayListPtr++, NUMLIGHTS_1);
+void ProcessSplashScreens(void) {
+#ifdef __sgi
+    /* IDO places local splash state at the original BSS addresses. */
+    static float g_fSplashTime;
+    static int g_dwSplashSoundALength;
+    static s8 *g_pSplashSoundA;
+    static int g_dwSplashSoundBLength;
+    static s8 *g_pSplashSoundB;
+    static int g_dwSplashFirstLogoVoice;
+    static int g_dwSplashFirstLogoSoundA;
+    static int g_bSplashFirstLogoSoundB;
+    static int g_dwSplashDeveloperVoice;
+    static int g_dwSplashDeveloperSoundA;
+    static int g_bSplashDeveloperSoundB;
+    static int g_bSplashSkipped;
+#endif
+    int i;
+    Mtx *mtx;
+
+    if (g_bSplashStarted == 0) {
+        g_dwKeepScreenBlanked = 1;
+        BlankDisplay();
+        StartHighResFrame();
+        FlushDisplayList();
+        SetFadeTarget(1.0f, 0.2f);
+        FadeMusicTo(1.0f, 0.2f);
+        FadeSfxTo(1.0f, 0.2f);
+        ResetHeap();
+#if (TGR_REGION == TGR_REGION_EU)
+        g_pSplashDeveloperLogo = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_DEVELOPER_LOGO));
+        DecompressModel(g_pSplashDeveloperLogo, ROM_SPLASH_DEVELOPER_LOGO);
+        g_pSplashFirstLogo = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_FIRST_LOGO));
+        DecompressModel(g_pSplashFirstLogo, ROM_SPLASH_FIRST_LOGO);
+        REGIONAL_TITLE_ASSET = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_A));
+        DecompressModel(REGIONAL_TITLE_ASSET, ROM_SPLASH_TITLE_A);
+        LoopModelAnimations(REGIONAL_TITLE_ASSET);
+        g_pSplashTitleModelB = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_B));
+        DecompressModel(g_pSplashTitleModelB, ROM_SPLASH_TITLE_B);
+        LoopModelAnimations(g_pSplashTitleModelB);
+        g_pSplashTitleModelD = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_D));
+        DecompressModel(g_pSplashTitleModelD, ROM_SPLASH_TITLE_D);
+        LoopModelAnimations(g_pSplashTitleModelD);
+        g_pSplashTitleModelC = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_C));
+        DecompressModel(g_pSplashTitleModelC, ROM_SPLASH_TITLE_C);
+        LoopModelAnimations(g_pSplashTitleModelC);
+#else
+        g_pSplashDeveloperLogo = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_DEVELOPER_LOGO));
+        DecompressModel(g_pSplashDeveloperLogo, ROM_SPLASH_DEVELOPER_LOGO);
+        g_pSplashFirstLogo = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_FIRST_LOGO));
+        DecompressModel(g_pSplashFirstLogo, ROM_SPLASH_FIRST_LOGO);
+        LoadAndDecompressAsset(&g_SplashTitleLogoTexture, AllocHeapAligned);
+        DecompressFromRom((unsigned char *)REGIONAL_TITLE_ASSET, ROM_SPLASH_TITLE_PALETTE, 0);
+#endif
+        g_dwSplashSoundALength = DmaReadAssetSize(ROM_SPLASH_SOUND_A);
+        g_pSplashSoundA = AllocHeapAligned(g_dwSplashSoundALength + 0x100);
+        DecompressFromRom(g_pSplashSoundA, ROM_SPLASH_SOUND_A, 0);
+        g_dwSplashSoundBLength = DmaReadAssetSize(ROM_SPLASH_SOUND_B);
+        g_pSplashSoundB = AllocHeapAligned(g_dwSplashSoundBLength + 0x100);
+        DecompressFromRom(g_pSplashSoundB, ROM_SPLASH_SOUND_B, 0);
+        for (i = 0; i != 0x100; i++) {
+            g_pSplashSoundA[g_dwSplashSoundALength + i] = 0;
+            g_pSplashSoundB[g_dwSplashSoundBLength + i] = 0;
+        }
+        g_bSplashFirstLogoSoundB = 0;
+        g_dwSplashFirstLogoSoundA = 0;
+        g_bSplashDeveloperSoundB = 0;
+        g_dwSplashDeveloperSoundA = 0;
+        g_bSplashSkipped = 0;
+        g_bSplashStarted = 1;
+        g_dwKeepScreenBlanked = 0;
+        g_fSplashTime = 0.0f;
+    }
+    UpdateFrameTiming();
+    UpdateFadeTransitions();
+    StartHighResFrame();
+    ClearScreen(0, 0, 0);
+    ClearDepthBuffer();
+    AddTimingMarker(0, 0, 0, 200, 0xFF);
+    if (IsFadingIn() == 0 || IsFadeComplete() != 0) {
+        g_fSplashTime += g_fFrameDeltaTime;
+    }
+    g_dwKeepCustomClipPlanes = 1;
+    g_fCameraNearScale = 10.0f;
+    g_fCameraFarDistance = 5000.0f;
+    SetupMenuProjection(g_dwScreenWidth, g_dwScreenHeight);
+    SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, 1);
+    gSPNumLights(gDisplayListPtr++, 1);
+    gSPLight(gDisplayListPtr++, &g_SplashDirectionalLight, 1);
+    gSPLight(gDisplayListPtr++, &g_SplashAmbientLight, 2);
+    gSPClipRatio(gDisplayListPtr++, 6);
+    gSPClipRatio(gDisplayListPtr++, 1);
+    mtx = (Mtx *)AllocDisplayListBlock();
+    guTranslateF(g_afMvpMatrix, g_dwScreenWidth / 2, g_dwScreenHeight / 2, 100.0f);
+    guMtxF2L(g_afMvpMatrix, mtx);
+    gSPMatrix(gDisplayListPtr++, mtx, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+
+    if (g_fSplashTime >= 0.0f) {
+        int a;
+
+        if (g_fSplashTime < 2.0f) {
+            a = 200 - (int)((2.0f - g_fSplashTime) * 255.0 * 4.0);
+        } else {
+            a = g_fSplashTime > 3.5f ? 200 - (int)((g_fSplashTime - 3.5f) * 255.0 * 4.0) : 200;
+        }
+        if (a > 0) {
+            SetTextCustomColors(a, a, a, a, a, a);
+            SetTextStyleNormal();
+            SetTextSize(10);
+            SetTextAlignCenter();
+            DrawText("Produced by", 160, 70);
+        }
+        if (g_fSplashTime < 2.0f) {
+            if (g_fSplashTime > 0.35f && g_dwSplashFirstLogoSoundA == 0) {
+                short v1 = FindFreeSoundChannel();
+
+                if (v1 != -1) {
+                    InitSoundChannel(v1, g_pSplashSoundA, g_dwSplashSoundALength, 0);
+                    g_aSoundEffectChannels[v1].volume = 0x200020;
+                    g_aSoundEffectChannels[v1].step = 0x100000000;
+                }
+                g_dwSplashFirstLogoSoundA = 1;
+            }
+            if (g_fSplashTime > 0.5f && g_bSplashFirstLogoSoundB == 0) {
+                short v2 = FindFreeSoundChannel();
+
+                if (v2 != -1) {
+                    InitSoundChannel(v2, g_pSplashSoundB, g_dwSplashSoundBLength, 0);
+                    g_aSoundEffectChannels[v2].volume = 0x200020;
+                    g_aSoundEffectChannels[v2].step = 0x100000000;
+                }
+                g_bSplashFirstLogoSoundB = 1;
+            }
+            DrawModelAt(g_pSplashFirstLogo,
+                        -(2.0f - g_fSplashTime) * 32.0f,
+                        0.0f,
+                        -50.0f - (2.0f - g_fSplashTime) * 750.0f,
+                        g_fSplashTime * 1.5707964f * g_fSplashTime * g_fSplashTime * g_fSplashTime *
+                                0.0625f +
+                            -3.1415927f,
+                        INTRO_LOGO_SCALE);
+        } else if (g_fSplashTime < 6.0f) {
+            DrawModelAt(g_pSplashFirstLogo,
+                        (g_fSplashTime > 3.5f ?
+                             (g_fSplashTime - 3.5f) * (g_fSplashTime - 3.5f) * 256.0f :
+                             0.0f),
+                        0.0f,
+                        -50.0f,
+                        -1.5707964f,
+                        INTRO_LOGO_SCALE);
+            if (g_fSplashTime > 3.5f) {
+                if (g_dwSplashFirstLogoSoundA < 2) {
+                    g_dwSplashFirstLogoVoice = FindFreeSoundChannel();
+                    if (g_dwSplashFirstLogoVoice != -1) {
+                        InitSoundChannel(
+                            g_dwSplashFirstLogoVoice, g_pSplashSoundA, g_dwSplashSoundALength, 0);
+                        g_aSoundEffectChannels[g_dwSplashFirstLogoVoice].volume = 0x140014;
+                        g_aSoundEffectChannels[g_dwSplashFirstLogoVoice].step = 0x100000000;
+                    }
+                    g_dwSplashFirstLogoSoundA = 2;
+                } else {
+                    int v;
+
+                    v = (g_fSplashTime - 3.5f) * 32.0f;
+                    if (v > 20) {
+                        v = 20;
+                    }
+                    g_aSoundEffectChannels[g_dwSplashFirstLogoVoice].volume =
+                        ((20 - v) << 16) + v + 20;
+                }
+            }
+        }
+    }
+
+    if (g_fSplashTime >= 4.0f) {
+        int a;
+
+        if (g_fSplashTime < 6.0f) {
+            a = 200 - (int)((6.0f - g_fSplashTime) * 255.0 * 4.0);
+        } else {
+            a = g_fSplashTime > 7.5f ? 200 - (int)((g_fSplashTime - 7.5f) * 255.0 * 4.0) : 200;
+        }
+        if (a > 0) {
+            SetTextCustomColors(a, a, a, a, a, a);
+            SetTextStyleNormal();
+            SetTextSize(10);
+            SetTextAlignCenter();
+            DrawText("Developed by", 160, 60);
+        }
+        if (g_fSplashTime < 6.0f) {
+            if (g_fSplashTime > 4.35f && g_dwSplashDeveloperSoundA == 0) {
+                short v3 = FindFreeSoundChannel();
+
+                if (v3 != -1) {
+                    InitSoundChannel(v3, g_pSplashSoundA, g_dwSplashSoundALength, 0);
+                    g_aSoundEffectChannels[v3].volume = 0x200020;
+                    g_aSoundEffectChannels[v3].step = 0x100000000;
+                }
+                g_dwSplashDeveloperSoundA = 1;
+            }
+            if (g_fSplashTime > 4.5f && g_bSplashDeveloperSoundB == 0) {
+                short v4 = FindFreeSoundChannel();
+
+                if (v4 != -1) {
+                    InitSoundChannel(v4, g_pSplashSoundB, g_dwSplashSoundBLength, 0);
+                    g_aSoundEffectChannels[v4].volume = 0x200020;
+                    g_aSoundEffectChannels[v4].step = 0x100000000;
+                }
+                g_bSplashDeveloperSoundB = 1;
+            }
+            DrawModelAt(g_pSplashDeveloperLogo,
+                        -(6.0f - g_fSplashTime) * 32.0f,
+                        0.0f,
+                        -50.0f - (6.0f - g_fSplashTime) * 750.0f,
+                        (g_fSplashTime - 4.0f) * 1.5707964f * (g_fSplashTime - 4.0f) *
+                                (g_fSplashTime - 4.0f) * (g_fSplashTime - 4.0f) * 0.0625f +
+                            -3.1415927f,
+                        INTRO_LOGO_SCALE);
+#if (TGR_REGION == TGR_REGION_EU)
+        } else if (g_fSplashTime < 9.0f) {
+#else
+        } else if (g_fSplashTime < 8.5f) {
+#endif
+            DrawModelAt(g_pSplashDeveloperLogo,
+                        (g_fSplashTime > 7.5f ?
+                             (g_fSplashTime - 7.5f) * (g_fSplashTime - 7.5f) * 256.0f :
+                             0.0f),
+                        0.0f,
+                        -50.0f,
+                        -1.5707964f,
+                        INTRO_LOGO_SCALE);
+            if (g_fSplashTime > 7.5f) {
+                if (g_dwSplashDeveloperSoundA < 2) {
+                    g_dwSplashDeveloperVoice = FindFreeSoundChannel();
+                    if (g_dwSplashDeveloperVoice != -1) {
+                        InitSoundChannel(
+                            g_dwSplashDeveloperVoice, g_pSplashSoundA, g_dwSplashSoundALength, 0);
+                        g_aSoundEffectChannels[g_dwSplashDeveloperVoice].volume = 0x140014;
+                        g_aSoundEffectChannels[g_dwSplashDeveloperVoice].step = 0x100000000;
+                    }
+                    g_dwSplashDeveloperSoundA = 2;
+                } else {
+                    int v;
+
+                    v = (g_fSplashTime - 7.5f) * 32.0f;
+                    if (v > 20) {
+                        v = 20;
+                    }
+                    g_aSoundEffectChannels[g_dwSplashDeveloperVoice].volume =
+                        ((20 - v) << 16) + v + 20;
+                }
+            }
+        }
+    }
+
+#if (TGR_REGION == TGR_REGION_EU)
+    if (g_fSplashTime > 8.0f) {
+        gSPNumLights(gDisplayListPtr++, 1);
         gSPLight(gDisplayListPtr++, &g_MenuDirectionalLight, 1);
         gSPLight(gDisplayListPtr++, &g_MenuAmbientLight, 2);
         mtx = (Mtx *)AllocDisplayListBlock();
@@ -317,288 +442,91 @@ static void DrawSplashTitle(void) {
         guMtxF2L(g_afMvpMatrix, mtx);
         gSPMatrix(gDisplayListPtr++, mtx, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_NOPUSH);
         g_dwDrawModelListNoZBuffer = 1;
-        if (g_fSplashTime > TITLE_A_END) {
+        if (g_fSplashTime > 11.0f) {
             SetScissorRect(40, 100, 250, 50);
         }
-        /* The original rests this part at negative zero. */
-        z = g_fSplashTime < TITLE_A_END ?
-                (sqrtf(TITLE_A_END - TITLE_START) - sqrtf(g_fSplashTime - TITLE_START)) * 300.0f :
-                -0.0f;
-        DrawModelAt(g_pSplashTitleModelA,
-                    0.0f,
-                    0.0f,
-                    z,
-                    sqrtf(g_fSplashTime - TITLE_START) * 0.01f + -HALF_PI,
-                    0.05f);
-        gSPPopMatrix(gDisplayListPtr++, G_MTX_MODELVIEW);
+        DrawModelAt(
+            REGIONAL_TITLE_ASSET,
+            0.0f,
+            0.0f,
+            (g_fSplashTime < 11.0f ? (sqrtf(3.0f) - sqrtf(g_fSplashTime - 8.0f)) * 300.0f : -0.0f),
+            sqrtf(g_fSplashTime - 8.0f) * 0.01f + -1.5707964f,
+            0.05f);
+        gSPPopMatrix(gDisplayListPtr++, 0);
         SetScissorRect(0, 0, 320, 240);
     }
-    if (g_fSplashTime > TITLE_B_START) {
+    if (g_fSplashTime > 9.0f) {
         g_dwDrawModelListNoZBuffer = 1;
-        DrawModelAt(g_pSplashTitleModelB,
-                    0.0f,
-                    0.0f,
-                    TitleDepth(TITLE_B_START, TITLE_B_END, 500.0f),
-                    -HALF_PI,
-                    1.0f / 12.0f);
+        DrawModelAt(
+            g_pSplashTitleModelB,
+            0.0f,
+            0.0f,
+            (g_fSplashTime < 11.0f ? (sqrtf(2.0f) - sqrtf(g_fSplashTime - 9.0f)) * 500.0f : 0.0f),
+            -1.5707964f,
+            0.083333336f);
     }
-    if (g_fSplashTime > TITLE_C_START) {
-        DrawModelAt(g_pSplashTitleModelC,
-                    0.0f,
-                    0.0f,
-                    TitleDepth(TITLE_C_START, TITLE_C_END, 500.0f),
-                    -HALF_PI,
-                    1.0f / 12.0f);
+    if (g_fSplashTime > 11.2f) {
+        DrawModelAt(
+            g_pSplashTitleModelC,
+            0.0f,
+            0.0f,
+            (g_fSplashTime < 12.2f ? (sqrtf(1.0f) - sqrtf(g_fSplashTime - 11.2f)) * 500.0f : 0.0f),
+            -1.5707964f,
+            0.083333336f);
     }
-    if (g_fSplashTime > TITLE_D_START) {
-        DrawModelAt(g_pSplashTitleModelD,
-                    0.0f,
-                    0.0f,
-                    TitleDepth(TITLE_D_START, TITLE_D_END, 500.0f),
-                    -HALF_PI,
-                    1.0f / 12.0f);
+    if (g_fSplashTime > 11.0f) {
+        DrawModelAt(
+            g_pSplashTitleModelD,
+            0.0f,
+            0.0f,
+            (g_fSplashTime < 12.0f ? (sqrtf(1.0f) - sqrtf(g_fSplashTime - 11.0f)) * 500.0f : 0.0f),
+            -1.5707964f,
+            0.083333336f);
     }
-}
-#endif /* TGR_REGION == TGR_REGION_JP */
-
-/* Fade in the copyright, and the date of the build while every C button is held. */
-static void DrawSplashCopyright(void) {
-    s32 alpha;
-
-    if (!(g_fSplashTime > COPYRIGHT_START)) {
-        return;
-    }
-    alpha = (s32)((f64)(g_fSplashTime - COPYRIGHT_START) * 255.0 * TEXT_FADE_RATE);
-    if (alpha > TEXT_ALPHA) {
-        alpha = TEXT_ALPHA;
-    }
-    SetTextCustomColors(alpha, alpha, alpha, alpha, alpha, alpha);
-    SetTextStyleNormal();
-    SetTextSize(10);
-    SetTextAlignCenter();
-#if TGR_REGION != TGR_REGION_US
-    if ((g_aPlayerInputState[0].buttons & BUILD_DATE_BUTTONS) == BUILD_DATE_BUTTONS) {
-        DrawText(BUILD_DATE_TEXT, 160, 40);
-    }
-    SetTextSize(7);
-    DrawText("O 1997 Boss Game Studios, Inc.  All Rights Reserved.", 160, 195);
-    DrawText("Top Gear Rally is a trademark of Kemco.", 160, 202);
-    DrawText("LICENSED BY NINTENDO", 160, 214);
-    SetTextSize(3);
-    DrawText("c", 78, 195);
+#define INTRO_LEGAL 12.95f
+#define INTRO_SKIP 14.95f
+#define INTRO_END 18.2f
 #else
-    if ((g_aPlayerInputState[0].buttons & BUILD_DATE_BUTTONS) == BUILD_DATE_BUTTONS) {
-        DrawText(BUILD_DATE_TEXT, 160, 40);
-    }
-    SetTextSize(7);
-    DrawText("O 1997 Boss Game Studios, Inc.  All Rights Reserved.", 160, 190);
-    DrawText("Top Gear Rally is a trademark of Kemco.", 160, 197);
-    DrawText("Distributed by Midway Home Entertainment under license.", 160, 204);
-    DrawText("Midway is a trademark of Midway Games Inc.  Used by permission.", 160, 211);
-    DrawText("LICENSED BY NINTENDO", 160, 224);
-    /* A small c inside the O of the first line makes the copyright sign. */
-    SetTextSize(3);
-    DrawText("c", 78, 190);
-#endif /* TGR_REGION != TGR_REGION_US */
-}
-
-/* Fade out on a skip or at the end, and leave for the main menu or the demo once faded. */
-static void UpdateSplashExit(void) {
-    PlayerInputState *input;
-    s32 i;
-
-    if (IsFadingOut()) {
-        if (IsFadeComplete()) {
-            g_bSplashStarted = 0;
-            for (i = 0; i < SPLASH_SFX_CHANNELS; i++) {
-                g_aSoundEffectChannels[i].step = 0;
-                g_aSoundEffectChannels[i].volume = 0;
-            }
-#if TGR_REGION != TGR_REGION_US
-            if (g_bSplashSkipped) {
-                ClearFramebuffersForWideMode();
-                SetCurrentScreenCallback(ProcessMainMenu);
-            } else {
-                BlankDisplay();
-                g_dwKeepScreenBlanked = TRUE;
-                ClearFramebuffersLowRes();
-                g_dwKeepScreenBlanked = FALSE;
-                StartAttractDemo();
-            }
-#else
-            ClearFramebuffersForWideMode();
-            if (g_bSplashSkipped) {
-                SetCurrentScreenCallback(ProcessMainMenu);
-            } else {
-                StartAttractDemo();
-            }
-#endif /* TGR_REGION != TGR_REGION_US */
-        }
-        return;
-    }
-
-    if (!g_bSplashSkipped || !(g_fSplashTime > SKIP_END_TIME)) {
-        for (input = g_aPlayerInputState; input != g_aPlayerInputState + MAX_PLAYERS; input++) {
-            if (input->buttons & SKIP_BUTTONS) {
-                TransferFlags(input, SKIP_BUTTONS);
-                g_bSplashSkipped = 1;
-                if (g_bSplashFadingOut) {
-                    break;
-                }
-                if (g_fSplashTime < SKIP_TIME) {
-                    g_fSplashTime = SKIP_TIME;
-                } else if (g_fSplashTime > SKIP_END_TIME) {
-                    break;
-                }
-            }
-        }
-        if (input == g_aPlayerInputState + MAX_PLAYERS && !(g_fSplashTime >= SPLASH_END_TIME)) {
-            return;
+#define INTRO_LEGAL 10.5f
+#define INTRO_SKIP 12.5f
+#define INTRO_END 16.8f
+    if (g_fSplashTime > 8.5f) {
+        gDPPipeSync(gDisplayListPtr++);
+        gDPSetTextureImage(gDisplayListPtr++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, REGIONAL_TITLE_ASSET);
+        gDPTileSync(gDisplayListPtr++);
+        gDPSetTile(gDisplayListPtr++, 0, 0, 0, 256, 7, 0, 0, 0, 0, 0, 0, 0);
+        gDPLoadSync(gDisplayListPtr++);
+        gDPLoadTLUTCmd(gDisplayListPtr++, 7, 255);
+        gDPPipeSync(gDisplayListPtr++);
+        DrawTexturedRect(
+            &g_SplashTitleLogoTexture, 60, 36, 200, 150, 0, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0);
+        if (g_fSplashTime - 8.5f < 1.0f) {
+            DrawScreenFadeOverlay(g_fSplashTime - 8.5f);
         }
     }
-    g_bSplashFadingOut = 1;
-#if TGR_REGION != TGR_REGION_US
-    osSyncPrintf("start fade out\n");
 #endif
-    SetFadeTarget(0.0f, FADE_TIME);
-    FadeSfxTo(0.0f, FADE_TIME);
-}
+    if (g_fSplashTime > INTRO_LEGAL) {
+        int a;
 
-void ProcessSplashScreens(void) {
-    Mtx *mtx;
-    s32 i;
-
-    if (!g_bSplashStarted) {
-#if TGR_REGION != TGR_REGION_US
-        g_dwKeepScreenBlanked = TRUE;
-        BlankDisplay();
-        StartHighResFrame();
-        FlushDisplayList();
-#endif
-        SetFadeTarget(1.0f, FADE_TIME);
-        FadeMusicTo(1.0f, FADE_TIME);
-        FadeSfxTo(1.0f, FADE_TIME);
-        ResetHeap();
-        g_pSplashDeveloperLogo = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_DEVELOPER_LOGO));
-        DecompressModel(g_pSplashDeveloperLogo, ROM_SPLASH_DEVELOPER_LOGO);
-#if TGR_REGION == TGR_REGION_US
-        g_pSplashProducerLogo = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_PRODUCER_LOGO));
-        DecompressModel(g_pSplashProducerLogo, ROM_SPLASH_PRODUCER_LOGO);
-#endif
-        g_pSplashFirstLogo = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_FIRST_LOGO));
-        DecompressModel(g_pSplashFirstLogo, ROM_SPLASH_FIRST_LOGO);
-#if TGR_REGION == TGR_REGION_JP
-        LoadAndDecompressAsset(&g_SplashTitleLogoTexture, AllocHeapAligned);
-        DecompressFromRom(g_awSplashTitlePalette, ROM_SPLASH_TITLE_PALETTE, NULL);
-#else
-        g_pSplashTitleModelA = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_A));
-        DecompressModel(g_pSplashTitleModelA, ROM_SPLASH_TITLE_A);
-        LoopModelAnimations(g_pSplashTitleModelA);
-        g_pSplashTitleModelB = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_B));
-        DecompressModel(g_pSplashTitleModelB, ROM_SPLASH_TITLE_B);
-        LoopModelAnimations(g_pSplashTitleModelB);
-        g_pSplashTitleModelD = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_D));
-        DecompressModel(g_pSplashTitleModelD, ROM_SPLASH_TITLE_D);
-        LoopModelAnimations(g_pSplashTitleModelD);
-        g_pSplashTitleModelC = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_TITLE_C));
-        DecompressModel(g_pSplashTitleModelC, ROM_SPLASH_TITLE_C);
-        LoopModelAnimations(g_pSplashTitleModelC);
-#endif /* TGR_REGION == TGR_REGION_JP */
-
-        g_dwSplashSoundALength = DmaReadAssetSize(ROM_SPLASH_SOUND_A);
-        g_pSplashSoundA = AllocHeapAligned(g_dwSplashSoundALength + SOUND_PADDING);
-        DecompressFromRom(g_pSplashSoundA, ROM_SPLASH_SOUND_A, NULL);
-        g_dwSplashSoundBLength = DmaReadAssetSize(ROM_SPLASH_SOUND_B);
-        g_pSplashSoundB = AllocHeapAligned(g_dwSplashSoundBLength + SOUND_PADDING);
-        DecompressFromRom(g_pSplashSoundB, ROM_SPLASH_SOUND_B, NULL);
-        for (i = 0; i < SOUND_PADDING; i++) {
-            g_pSplashSoundA[g_dwSplashSoundALength + i] = 0;
-            g_pSplashSoundB[g_dwSplashSoundBLength + i] = 0;
+        a = (g_fSplashTime - INTRO_LEGAL) * 255.0 * 4.0;
+        if (a > 200) {
+            a = 200;
         }
-
-        /* g_bSplashFadingOut keeps what an earlier showing left in it. */
-        g_bSplashFirstLogoSoundB = 0;
-        g_dwSplashFirstLogoSoundA = 0;
-#if TGR_REGION == TGR_REGION_US
-        g_bSplashProducerSoundB = 0;
-        g_dwSplashProducerSoundA = 0;
-#endif
-        g_bSplashDeveloperSoundB = 0;
-        g_dwSplashDeveloperSoundA = 0;
-        g_bSplashSkipped = 0;
-        g_bSplashStarted = 1;
-#if TGR_REGION != TGR_REGION_US
-        g_dwKeepScreenBlanked = FALSE;
-#endif
-        g_fSplashTime = 0.0f;
+        SetTextCustomColors(a, a, a, a, a, a);
+        SetTextStyleNormal();
+        SetTextSize(10);
+        SetTextAlignCenter();
+        if ((g_aPlayerInputState[0].buttons & 0xF00) == 0xF00) {
+            DrawText(BUILD_DATE_TEXT, 160, 40);
+        }
+        SetTextSize(7);
+        DrawText("O 1997 Boss Game Studios, Inc.  All Rights Reserved.", 160, 195);
+        DrawText("Top Gear Rally is a trademark of Kemco.", 160, 202);
+        DrawText("LICENSED BY NINTENDO", 160, 214);
+        SetTextSize(3);
+        DrawText("c", 78, 195);
     }
-
-    UpdateFrameTiming();
-    UpdateFadeTransitions();
-    StartHighResFrame();
-#if TGR_REGION != TGR_REGION_US
-    ClearScreen(0, 0, 0);
-    ClearDepthBuffer();
-#else
-    ClearDepthBuffer();
-    ClearScreen(0, 0, 0);
-#endif
-    AddTimingMarker(0, 0, 0, 200, 255);
-    if (!IsFadingIn() || IsFadeComplete()) {
-        g_fSplashTime += g_fFrameDeltaTime;
-    }
-
-    g_dwKeepCustomClipPlanes = 1;
-    g_fCameraNearScale = 10.0f;
-    g_fCameraFarDistance = 5000.0f;
-    SetupMenuProjection((f32)g_dwScreenWidth, (f32)g_dwScreenHeight);
-    SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, 1);
-    gSPNumLights(gDisplayListPtr++, NUMLIGHTS_1);
-    gSPLight(gDisplayListPtr++, &g_SplashDirectionalLight, 1);
-    gSPLight(gDisplayListPtr++, &g_SplashAmbientLight, 2);
-    gSPClipRatio(gDisplayListPtr++, FRUSTRATIO_6);
-    gSPClipRatio(gDisplayListPtr++, FRUSTRATIO_1);
-    mtx = (Mtx *)AllocDisplayListBlock();
-    guTranslateF(g_afMvpMatrix, (f32)(g_dwScreenWidth / 2), (f32)(g_dwScreenHeight / 2), 100.0f);
-    guMtxF2L(g_afMvpMatrix, mtx);
-    gSPMatrix(gDisplayListPtr++, mtx, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-
-    if (g_fSplashTime >= FIRST_LOGO_START) {
-#if TGR_REGION != TGR_REGION_US
-        /* The first logo of the later releases is the producer's. */
-        DrawSplashCaption("Produced by", FIRST_LOGO_START, 70);
-#endif
-        UpdateSplashLogo(g_pSplashFirstLogo,
-                         FIRST_LOGO_START,
-                         LOGO_END_TIME,
-                         &g_dwSplashFirstLogoVoice,
-                         &g_dwSplashFirstLogoSoundA,
-                         &g_bSplashFirstLogoSoundB);
-    }
-#if TGR_REGION == TGR_REGION_US
-    if (g_fSplashTime >= PRODUCER_LOGO_START) {
-        DrawSplashCaption("Produced by", PRODUCER_LOGO_START, 70);
-        UpdateSplashLogo(g_pSplashProducerLogo,
-                         PRODUCER_LOGO_START,
-                         LOGO_END_TIME,
-                         &g_dwSplashProducerVoice,
-                         &g_dwSplashProducerSoundA,
-                         &g_bSplashProducerSoundB);
-    }
-#endif /* TGR_REGION == TGR_REGION_US */
-    if (g_fSplashTime >= DEVELOPER_LOGO_START) {
-        DrawSplashCaption("Developed by", DEVELOPER_LOGO_START, 60);
-        UpdateSplashLogo(g_pSplashDeveloperLogo,
-                         DEVELOPER_LOGO_START,
-                         DEVELOPER_LOGO_END_TIME,
-                         &g_dwSplashDeveloperVoice,
-                         &g_dwSplashDeveloperSoundA,
-                         &g_bSplashDeveloperSoundB);
-    }
-    DrawSplashTitle();
-    DrawSplashCopyright();
-
-    gSPPopMatrix(gDisplayListPtr++, G_MTX_MODELVIEW);
+    gSPPopMatrix(gDisplayListPtr++, 0);
     ApplyScreenFade();
     if (g_dwHudDebugLevel >= 2) {
         SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, 1);
@@ -606,9 +534,59 @@ void ProcessSplashScreens(void) {
     }
     SetNextScreenCallback(AnimateSplashModels);
     FlushDisplayList();
-    UpdateSplashExit();
-}
+    if (IsFadingOut() != 0) {
+        if (IsFadeComplete() != 0) {
+            g_bSplashStarted = 0;
+            g_aSoundEffectChannels[0].volume = g_aSoundEffectChannels[0].step = 0;
+            g_aSoundEffectChannels[1].volume = g_aSoundEffectChannels[1].step = 0;
+            g_aSoundEffectChannels[2].volume = g_aSoundEffectChannels[2].step = 0;
+            g_aSoundEffectChannels[3].volume = g_aSoundEffectChannels[3].step = 0;
+            g_aSoundEffectChannels[4].volume = g_aSoundEffectChannels[4].step = 0;
+            if (g_bSplashSkipped != 0) {
+                ClearFramebuffersForWideMode();
+                SetCurrentScreenCallback(ProcessMainMenu);
+            } else {
+                BlankDisplay();
+                g_dwKeepScreenBlanked = 1;
+                ClearFramebuffersLowRes();
+                g_dwKeepScreenBlanked = 0;
+                StartAttractDemo();
+            }
+        }
+        return;
+    }
+    if (g_bSplashSkipped != 0 && g_fSplashTime > INTRO_SKIP) {
+        goto fade;
+    }
+    for (i = 0; i != 2; i++) {
+#if (TGR_REGION == TGR_REGION_EU)
+        if (g_aPlayerInputState[i].buttons & 0xC010) {
+            TransferFlags(&g_aPlayerInputState[i], 0xC010);
+#else
+        PlayerInputState *pad = &g_aPlayerInputState[i];
 
+        if (pad->buttons & 0xC010) {
+            TransferFlags(pad, 0xC010);
+#endif
+            g_bSplashSkipped = 1;
+            if (g_bSplashFadingOut != 0) {
+                goto fade;
+            }
+            if (g_fSplashTime < INTRO_LEGAL) {
+                g_fSplashTime = INTRO_LEGAL;
+            } else if (g_fSplashTime > INTRO_SKIP) {
+                goto fade;
+            }
+        }
+    }
+    if (g_fSplashTime >= INTRO_END) {
+    fade:
+        g_bSplashFadingOut = 1;
+        osSyncPrintf("start fade out\n");
+        SetFadeTarget(0.0f, 0.2f);
+        FadeSfxTo(0.0f, 0.2f);
+    }
+}
 #else
 void ProcessSplashScreens(void) {
 #ifdef __sgi
