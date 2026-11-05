@@ -146,13 +146,13 @@ enum {
 
 /* The original looks the profile of the vehicle up again for every field. */
 #define SET_EQUIPMENT(vehicle, equipment)                                                          \
-    do {                                                                                           \
+    {                                                                                              \
         g_aVehicles[vehicle].profile->handling = (equipment)[0];                                   \
         g_aVehicles[vehicle].profile->transmission = (equipment)[1];                               \
         g_aVehicles[vehicle].profile->tires = (equipment)[2];                                      \
         g_aVehicles[vehicle].profile->suspension = (equipment)[3];                                 \
         g_aVehicles[vehicle].profile->controllerLayout = (equipment)[4];                           \
-    } while (0)
+    }
 
 void ApplyVolumeSettings(void) {
     g_bBgmVolume = g_adwBgmVolumeLevels[g_OptionSettings.musicVolume];
@@ -2178,6 +2178,37 @@ missing:
 
 /* The original reads a byte of its stack that is never set, and other data types set no note. */
 s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
+#ifdef __sgi
+    static s32 g_dwPakDataNoteIndex;
+    static u8 g_bPakDataStep;
+    static u8 g_bPakDataWaitFrames;
+    /* Preserve the original unused locals to reproduce their stack slots. */
+    s32 unusedUpperSlot;
+#endif
+    s32 top;
+#ifdef __sgi
+    s32 unusedMiddleSlots[5];
+#endif
+    s32 buttonY;
+#ifdef __sgi
+    s32 unusedLowerSlot;
+#endif
+#ifdef ENABLE_PATCHES
+    /* Another data type opens no note, and the offset of the prompt adds nothing. */
+    u8 *noteName = NULL;
+#else
+    u8 *noteName;
+#endif /* ENABLE_PATCHES */
+    s32 freeBlocks;
+    u8 plugged;
+#ifdef ENABLE_PATCHES
+    u8 unsetOffset = 0;
+    s32 noteSize = 0;
+#else
+    u8 unsetOffset;
+    s32 noteSize;
+#endif /* ENABLE_PATCHES */
+    s32 equipment[EQUIPMENT_FIELDS];
     /* TOP GEAR SEASON, TOP GEAR GHOST and TOP GEAR OPTIONS in the font of the Controller Pak. */
     u8 seasonName[16] = {0x2D,
                          0x28,
@@ -2228,24 +2259,6 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
                                 0x27,
                                 0x2C};
     u8 extension[4] = {0};
-    PlayerProfile *other;
-#ifdef ENABLE_PATCHES
-    /* Another data type opens no note, and the offset of the prompt adds nothing. */
-    u8 *noteName = NULL;
-    s32 noteSize = 0;
-#else
-    u8 *noteName;
-    s32 noteSize;
-#endif /* ENABLE_PATCHES */
-    s32 equipment[EQUIPMENT_FIELDS];
-    s32 freeBlocks;
-    s32 top;
-    u8 plugged;
-#ifdef ENABLE_PATCHES
-    u8 unsetOffset = 0;
-#else
-    u8 unsetOffset;
-#endif /* ENABLE_PATCHES */
 
     g_wSerialInterfaceIdle = FALSE;
     if (!g_bSaveLoadMenuInitialized) {
@@ -2293,7 +2306,24 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         PAK_LOG(("\nInitializing controller pak...\n"));
         gControllerPakState = osPfsInitPak(
             &g_SiMesgQueue, &g_aPakPfs[g_dwMenuChoosingPlayer], g_dwMenuChoosingPlayer);
-        if (gControllerPakState == 0) {
+        if (gControllerPakState != 0) {
+            if (gControllerPakState == PFS_ERR_ID_FATAL) {
+                if (osMotorInit(&g_SiMesgQueue,
+                                &g_aContPfs[g_dwMenuChoosingPlayer],
+                                g_dwMenuChoosingPlayer) == 0) {
+                    osMotorStop(&g_aContPfs[g_dwMenuChoosingPlayer]);
+                    gControllerPakState = PAK_STATE_RUMBLE_PAK;
+                    g_bSaveLoadRumbleSwapPending = TRUE;
+                    g_bPakDataStep = PAK_DATA_STEP_ERROR;
+                } else {
+                    gControllerPakState = 0;
+                    g_bPakDataStep = PAK_DATA_STEP_REPAIR;
+                }
+            } else {
+                g_abRumblePakPresent[g_dwMenuChoosingPlayer] = FALSE;
+                g_bPakDataStep = PAK_DATA_STEP_ERROR;
+            }
+        } else if (gControllerPakState == 0) {
             g_abRumblePakPresent[g_dwMenuChoosingPlayer] = FALSE;
             if (!g_abSavePakIdKnown[g_dwMenuChoosingPlayer]) {
                 g_abSavePakIdKnown[g_dwMenuChoosingPlayer] = TRUE;
@@ -2311,21 +2341,6 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             } else {
                 g_bPakDataStep = PAK_DATA_STEP_FIND;
             }
-        } else if (gControllerPakState == PFS_ERR_ID_FATAL) {
-            if (osMotorInit(&g_SiMesgQueue,
-                            &g_aContPfs[g_dwMenuChoosingPlayer],
-                            g_dwMenuChoosingPlayer) == 0) {
-                osMotorStop(&g_aContPfs[g_dwMenuChoosingPlayer]);
-                gControllerPakState = PAK_STATE_RUMBLE_PAK;
-                g_bSaveLoadRumbleSwapPending = TRUE;
-                g_bPakDataStep = PAK_DATA_STEP_ERROR;
-            } else {
-                gControllerPakState = 0;
-                g_bPakDataStep = PAK_DATA_STEP_REPAIR;
-            }
-        } else {
-            g_abRumblePakPresent[g_dwMenuChoosingPlayer] = FALSE;
-            g_bPakDataStep = PAK_DATA_STEP_ERROR;
         }
         break;
 
@@ -2421,86 +2436,88 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
                                                      OPTIONS_HALF_SIZE,
                                                      g_pPakDataBuffer);
         }
-        if (gControllerPakState != 0) {
-            g_bPakDataStep = PAK_DATA_STEP_ERROR;
-            break;
-        }
-        if (dataType == PAK_DATA_LOAD_SEASON) {
-            /* Both players take the season, but the other player keeps the equipment of the car.
-             */
-            other = g_aVehicles[g_dwMenuChoosingPlayer ^ 1].profile;
-            GET_EQUIPMENT(equipment, other);
-            memcpy(g_aVehicles[0].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
-            memcpy(g_aVehicles[1].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
-            SET_EQUIPMENT(g_dwMenuChoosingPlayer ^ 1, equipment);
-            PAK_LOG(("Done!\n"));
-        } else if (dataType == PAK_DATA_LOAD_GHOST) {
-            PAK_LOG(("Extracting ghost data...\n"));
-            g_dwGhostRecordingSize = DecompressInterleavedRle(
-                g_abGhostRecording, GHOST_RECORDING_CAPACITY, g_pPakDataBuffer, GHOST_CHANNELS);
-            g_aVehicles[0].profile->unlockedTracks |= 1 << g_abGhostRecording[0];
-            g_aVehicles[0].profile->unlocks |= 1 << g_abGhostRecording[1];
-            PAK_LOG(("Done!\n"));
-        } else if (dataType == PAK_DATA_LOAD_CONFIGURATION) {
-            memcpy(&g_OptionSettings, g_pPakDataBuffer, sizeof(OptionSettings));
-            PAK_LOG(("Loading car equipment settings...\n"));
-            gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
-                                                     g_dwPakDataNoteIndex,
-                                                     PFS_READ,
-                                                     OPTIONS_HALF_SIZE,
-                                                     OPTIONS_HALF_SIZE,
-                                                     g_pPakDataBuffer);
-            if (gControllerPakState != 0) {
-                g_bPakDataStep = PAK_DATA_STEP_ERROR;
-            } else {
-                memcpy(equipment, g_pPakDataBuffer, sizeof(equipment));
-                SET_EQUIPMENT(g_dwMenuChoosingPlayer, equipment);
+        if (gControllerPakState == 0) {
+            if (dataType == PAK_DATA_LOAD_SEASON) {
+                /* Both players take the season, but the other player retains its car equipment. */
+                GET_EQUIPMENT(equipment, g_aVehicles[g_dwMenuChoosingPlayer ^ 1].profile);
+                memcpy(g_aVehicles[0].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
+                memcpy(g_aVehicles[1].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
+                SET_EQUIPMENT(g_dwMenuChoosingPlayer ^ 1, equipment);
                 PAK_LOG(("Done!\n"));
+            } else if (dataType == PAK_DATA_LOAD_GHOST) {
+                PAK_LOG(("Extracting ghost data...\n"));
+                g_dwGhostRecordingSize = DecompressInterleavedRle(
+                    g_abGhostRecording, GHOST_RECORDING_CAPACITY, g_pPakDataBuffer, GHOST_CHANNELS);
+                g_aVehicles[0].profile->unlockedTracks |= 1 << g_abGhostRecording[0];
+                g_aVehicles[0].profile->unlocks |= 1 << g_abGhostRecording[1];
+                PAK_LOG(("Done!\n"));
+            } else if (dataType == PAK_DATA_LOAD_CONFIGURATION) {
+                memcpy(&g_OptionSettings, g_pPakDataBuffer, sizeof(OptionSettings));
+                PAK_LOG(("Loading car equipment settings...\n"));
+                gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
+                                                         g_dwPakDataNoteIndex,
+                                                         PFS_READ,
+                                                         OPTIONS_HALF_SIZE,
+                                                         OPTIONS_HALF_SIZE,
+                                                         g_pPakDataBuffer);
+                if (gControllerPakState == 0) {
+                    memcpy(equipment, g_pPakDataBuffer, sizeof(equipment));
+                    SET_EQUIPMENT(g_dwMenuChoosingPlayer, equipment);
+                    PAK_LOG(("Done!\n"));
+                } else {
+                    g_bPakDataStep = PAK_DATA_STEP_ERROR;
+                }
             }
-        }
-        if (g_bPakDataStep == PAK_DATA_STEP_ERROR) {
-            break;
-        }
-        /* Only the configuration says it was loaded, unless the player must put the Rumble Pak
-         * back. */
-        if (dataType == PAK_DATA_LOAD_CONFIGURATION || g_bSaveLoadRumbleSwapPending) {
-            g_bPakDataStep = PAK_DATA_STEP_DONE;
+            if (g_bPakDataStep != PAK_DATA_STEP_ERROR) {
+                if (dataType == PAK_DATA_LOAD_CONFIGURATION) {
+                    g_bPakDataStep = PAK_DATA_STEP_DONE;
+                } else if (!g_bSaveLoadRumbleSwapPending) {
+                    g_bPakDataStep = PAK_DATA_STEP_FINISH;
+                } else {
+                    g_bPakDataStep = PAK_DATA_STEP_DONE;
+                }
+            }
         } else {
-            g_bPakDataStep = PAK_DATA_STEP_FINISH;
+            g_bPakDataStep = PAK_DATA_STEP_ERROR;
         }
         break;
 
     case PAK_DATA_STEP_ALLOCATE:
-        gControllerPakState = osPfsFreeBlocks(&g_aPakPfs[g_dwMenuChoosingPlayer], &freeBlocks);
-        if (gControllerPakState != 0) {
-            g_bPakDataStep = PAK_DATA_STEP_ERROR;
-            break;
-        }
-        if (freeBlocks < OPTIONS_NOTE_SIZE) {
-            gControllerPakState = PFS_DATA_FULL;
-            g_bPakDataStep = PAK_DATA_STEP_ERROR;
-            break;
-        }
-        PAK_LOG(("Allocating %d bytes for configuration...\n", OPTIONS_NOTE_SIZE));
-        gControllerPakState = osPfsAllocateFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
-                                                COMPANY_CODE,
-                                                GAME_CODE,
-                                                noteName,
-                                                extension,
-                                                OPTIONS_NOTE_SIZE,
-                                                &g_dwPakDataNoteIndex);
-        if (gControllerPakState == PFS_ERR_INCONSISTENT) {
-            osPfsChecker(&g_aPakPfs[g_dwMenuChoosingPlayer]);
-            gControllerPakState = osPfsAllocateFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
-                                                    COMPANY_CODE,
-                                                    GAME_CODE,
-                                                    noteName,
-                                                    extension,
-                                                    OPTIONS_NOTE_SIZE,
-                                                    &g_dwPakDataNoteIndex);
-        }
-        if (gControllerPakState == 0) {
-            g_bPakDataStep = PAK_DATA_STEP_SAVE;
+        noteSize = osPfsFreeBlocks(&g_aPakPfs[g_dwMenuChoosingPlayer], &freeBlocks);
+#if TGR_REGION == TGR_REGION_JP
+        gControllerPakState = noteSize;
+        if (noteSize == 0) {
+#else
+        if ((gControllerPakState = noteSize) == 0) {
+#endif
+            if (freeBlocks < OPTIONS_NOTE_SIZE) {
+                gControllerPakState = PFS_DATA_FULL;
+                g_bPakDataStep = PAK_DATA_STEP_ERROR;
+            } else {
+                PAK_LOG(("Allocating %d bytes for configuration...\n", OPTIONS_NOTE_SIZE));
+                gControllerPakState = osPfsAllocateFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
+                                                        COMPANY_CODE,
+                                                        GAME_CODE,
+                                                        noteName,
+                                                        extension,
+                                                        OPTIONS_NOTE_SIZE,
+                                                        &g_dwPakDataNoteIndex);
+                if (gControllerPakState == PFS_ERR_INCONSISTENT) {
+                    osPfsChecker(&g_aPakPfs[g_dwMenuChoosingPlayer]);
+                    gControllerPakState = osPfsAllocateFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
+                                                            COMPANY_CODE,
+                                                            GAME_CODE,
+                                                            noteName,
+                                                            extension,
+                                                            OPTIONS_NOTE_SIZE,
+                                                            &g_dwPakDataNoteIndex);
+                }
+                if (gControllerPakState == 0) {
+                    g_bPakDataStep = PAK_DATA_STEP_SAVE;
+                } else {
+                    g_bPakDataStep = PAK_DATA_STEP_ERROR;
+                }
+            }
         } else {
             g_bPakDataStep = PAK_DATA_STEP_ERROR;
         }
@@ -2517,21 +2534,21 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
                                                  g_pPakDataBuffer);
         if (gControllerPakState != 0) {
             g_bPakDataStep = PAK_DATA_STEP_ERROR;
-            break;
-        }
-        GET_EQUIPMENT(equipment, g_aVehicles[g_dwMenuChoosingPlayer].profile);
-        memcpy(g_pPakDataBuffer, equipment, sizeof(equipment));
-        gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
-                                                 g_dwPakDataNoteIndex,
-                                                 PFS_WRITE,
-                                                 OPTIONS_HALF_SIZE,
-                                                 OPTIONS_HALF_SIZE,
-                                                 g_pPakDataBuffer);
-        if (gControllerPakState == 0) {
-            PAK_LOG(("Done!\n"));
-            g_bPakDataStep = PAK_DATA_STEP_DONE;
         } else {
-            g_bPakDataStep = PAK_DATA_STEP_ERROR;
+            GET_EQUIPMENT(equipment, g_aVehicles[g_dwMenuChoosingPlayer].profile);
+            memcpy(g_pPakDataBuffer, equipment, sizeof(equipment));
+            gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
+                                                     g_dwPakDataNoteIndex,
+                                                     PFS_WRITE,
+                                                     OPTIONS_HALF_SIZE,
+                                                     OPTIONS_HALF_SIZE,
+                                                     g_pPakDataBuffer);
+            if (gControllerPakState == 0) {
+                PAK_LOG(("Done!\n"));
+                g_bPakDataStep = PAK_DATA_STEP_DONE;
+            } else {
+                g_bPakDataStep = PAK_DATA_STEP_ERROR;
+            }
         }
         break;
 
@@ -2561,8 +2578,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             }
             break;
         case PAK_STATE_RUMBLE_PAK: {
-            s32 buttonY = 0x13B - g_texButtonA.width;
-
+            buttonY = 0x13B - g_texButtonA.width;
             DRAW_MESSAGE_BOX(0xC8, 0xBD, 0xF0, 0x86);
             DrawText("%j振動パックと", 0x6C, 0x6E);
             DrawText("%jコントローラパックを", 0x6C, 0x7B);
@@ -2587,11 +2603,13 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             DRAW_SHORT_MESSAGE(0xBF, 0x102, 0x67, "%jコントローラにエラー", "%jが発生しました。");
             break;
         case PFS_ERR_INVALID:
+            DRAW_MESSAGE_BOX(0xAF, 0xD9, 0x122, 0x4A);
             if (dataType == PAK_DATA_SAVE_CONFIGURATION) {
-                DRAW_SHORT_MESSAGE(0xAF, 0x122, 0x5F, "%jコントローラパック", "%jが異常です。");
+                DrawText("%jコントローラパック", 0x5F, 0x7C);
+                DrawText("%jが異常です。", 0x5F, 0x8A);
             } else {
-                DRAW_SHORT_MESSAGE(
-                    0xAF, 0x122, 0x5F, "%jコントローラパックに", "%jデータがありません。");
+                DrawText("%jコントローラパックに", 0x5F, 0x7C);
+                DrawText("%jデータがありません。", 0x5F, 0x8A);
             }
             break;
         case PFS_ERR_NEW_PACK:
@@ -2619,8 +2637,18 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             }
             break;
         case PAK_STATE_RUMBLE_PAK:
-            DRAW_SWAP_FOR_CONTROLLER_PAK_MESSAGE(
-                0xB0, 0x68, 0x148 - g_texButtonA.width, "%wwOK", "%wwCANCEL");
+            buttonY = 0x148 - g_texButtonA.width;
+            DRAW_MESSAGE_BOX(0x79, 0xB0, 0x18D, 0xA0);
+            DrawText("PLEASE REMOVE THE RUMBLE PAK", 0x44, 0x68);
+            DrawText("AND INSERT THE CONTROLLER PAK", 0x44, 0x75);
+            DrawText("INTO THE CONTROLLER.  PRESS", 0x44, 0x82);
+            DrawText("THE A BUTTON WHEN READY.", 0x44, 0x8F);
+            SetTextAlignLeft();
+            SetTextSize(10);
+            DrawText("%wwOK", (g_texButtonA.width + 0xE3U) >> 1, (buttonY + 18) >> 1);
+            DrawText("%wwCANCEL", (g_texButtonB.width + 0x144U) >> 1, (buttonY + 18) >> 1);
+            DrawTexturedSprite(&g_texButtonA, 0xDD, buttonY);
+            DrawTexturedSprite(&g_texButtonB, 0x13E, buttonY);
             break;
         case PFS_DATA_FULL:
         case PFS_DIR_FULL:
@@ -2631,10 +2659,13 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             DRAW_SHORT_MESSAGE(0xBF, 0x102, 0x67, "CONTROLLER ERROR", "HAS BEEN DETECTED!");
             break;
         case PFS_ERR_INVALID:
+            DRAW_MESSAGE_BOX(0xAF, 0xD9, 0x122, 0x4A);
             if (dataType == PAK_DATA_SAVE_CONFIGURATION) {
-                DRAW_SHORT_MESSAGE(0xAF, 0x122, 0x5F, "CONTROLLER PAK ERROR", "HAS BEEN DETECTED!");
+                DrawText("CONTROLLER PAK ERROR", 0x5F, 0x7C);
+                DrawText("HAS BEEN DETECTED!", 0x5F, 0x8A);
             } else {
-                DRAW_SHORT_MESSAGE(0xAF, 0x122, 0x5F, "SAVED DATA NOT FOUND", "IN CONTROLLER PAK.");
+                DrawText("SAVED DATA NOT FOUND", 0x5F, 0x7C);
+                DrawText("IN CONTROLLER PAK.", 0x5F, 0x8A);
             }
             break;
         case PFS_ERR_NEW_PACK:
@@ -2674,30 +2705,36 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         SetTextAlignCenter();
         SetTextStyleNormal();
         SetTextSize(MESSAGE_TEXT_SIZE);
+        switch (dataType) {
+        case PAK_DATA_LOAD_SEASON:
+            if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
+                top = unsetOffset + 0xCB;
+            } else {
+                top = 0xCE;
+            }
 #if TGR_REGION == TGR_REGION_JP
-        /* The Japanese release reports a load in one line. */
-        if (dataType == PAK_DATA_LOAD_SEASON) {
-            top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : unsetOffset + 0xCB;
             DRAW_MESSAGE_BOX(0xE2, top, 0xBC, 0x4A);
             DrawText("%yw%jロード%e OK!", 0x9F, ((top + 0x20) >> 1) + 7);
-        } else if (dataType == PAK_DATA_LOAD_GHOST) {
-            top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : unsetOffset + 0xCB;
-            DRAW_MESSAGE_BOX(0xE2, top, 0xBC, 0x4A);
-            DrawText("%yw%jロード%e OK!", 0x9F, ((top + 0x20) >> 1) + 7);
-        }
 #else
-        if (dataType == PAK_DATA_LOAD_SEASON) {
-            top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : unsetOffset + 0xCB;
             DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywSEASON DATA", "%ywLOADED OK!");
-        } else if (dataType == PAK_DATA_LOAD_GHOST) {
-            top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : unsetOffset + 0xCB;
+#endif
+            break;
+        case PAK_DATA_LOAD_GHOST:
+            if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
+                top = unsetOffset + 0xCB;
+            } else {
+                top = 0xCE;
+            }
+#if TGR_REGION == TGR_REGION_JP
+            DRAW_MESSAGE_BOX(0xE2, top, 0xBC, 0x4A);
+            DrawText("%yw%jロード%e OK!", 0x9F, ((top + 0x20) >> 1) + 7);
+#else
             DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywGHOST DATA", "%ywLOADED OK!");
-        }
-#endif /* TGR_REGION == TGR_REGION_JP */
+#endif
+            break;
 #if TGR_REGION == TGR_REGION_US
-        /* The later releases do not report a loaded or saved configuration. */
-        else if (dataType == PAK_DATA_LOAD_CONFIGURATION ||
-                 dataType == PAK_DATA_SAVE_CONFIGURATION) {
+        case PAK_DATA_LOAD_CONFIGURATION:
+        case PAK_DATA_SAVE_CONFIGURATION:
             DRAW_MESSAGE_BOX(0xD8, 0xD9, 0xD0, 0x4A);
             DrawText("%ywCONFIGURATION", 0x9F, 0x7C);
             if (dataType == PAK_DATA_LOAD_CONFIGURATION) {
@@ -2705,8 +2742,9 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             } else {
                 DrawText("%ywSAVED OK!", 0x9F, 0x8A);
             }
+            break;
+#endif
         }
-#endif /* TGR_REGION == TGR_REGION_US */
         if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
             TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
             if (dataType == PAK_DATA_LOAD_CONFIGURATION) {
