@@ -1623,9 +1623,9 @@ void AllocateEditorBuffers(void) {
 
 s32 ProcessDecalSaveLoad(VehicleModel *m, u8 player, u8 operation, u8 inCarSelect, u8 *done) {
 #ifdef __sgi
-    static u8 g_bPakDialogActive;
-    static u8 g_bPakFileNeedsCreate;
-    static s32 g_dwPakFileOffset;
+    static u8 g_bPakDialogActive = 0;
+    static u8 g_bPakFileNeedsCreate = 0;
+    static s32 g_dwPakFileOffset = 0;
     static u8 g_bPakRumbleSwapped;
     static u8 g_bPakRetryNewPak;
     static s32 g_dwPakError;
