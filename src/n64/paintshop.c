@@ -1621,714 +1621,769 @@ void AllocateEditorBuffers(void) {
     LoadTextureFromRom(&g_texButtonB);
 }
 
-/* Draw the box of the progress of a transfer of the decals, with its empty bar. */
-static inline void DrawPakProgressBox(s32 y, const char *text, s32 textX, s32 textY) {
-    DrawDialogBox(0xD4, y, 0xD8, 0x56);
-#if TGR_REGION == TGR_REGION_EU
-    SetTextStyleNormal();
-    SetTextAlignLeft();
-#else
-    SetTextAlignLeft();
-    SetTextStyleNormal();
+s32 ProcessDecalSaveLoad(VehicleModel *m, u8 player, u8 operation, u8 inCarSelect, u8 *done) {
+#ifdef __sgi
+    static u8 g_bPakDialogActive;
+    static u8 g_bPakFileNeedsCreate;
+    static s32 g_dwPakFileOffset;
+    static u8 g_bPakRumbleSwapped;
+    static u8 g_bPakRetryNewPak;
+    static s32 g_dwPakError;
+    static s32 g_dwPakFileNo;
+    static s32 g_dwPakChunkSize;
+    static u8 g_bPakDialogState;
+    static u8 g_bPakDecalIndex;
+    static u8 g_bPakWaitFrames;
 #endif
-    SetTextSize(13);
-    SetPakTextColors(FALSE);
-    DrawText(text, textX, textY);
-    DrawSunkenFrame(0xE6, y + 0x34, 0xB4, 0x14);
-}
-
-/* Copy the texels of a decal loaded into the undo buffer that its mask does not protect. A texel
- * copies the whole byte it shares with its neighbour. */
-static inline void CopyUnmaskedTexels(u8 *texels, u8 *mask, s32 width, s32 height) {
-    s32 x, y, offset;
-
-    for (y = 0; y < height; y++) {
-        for (x = 0; x < width; x++) {
-            if (!(mask[y * ((width + 7) >> 3) + (x >> 3)] & (1 << ((x ^ 7) & 7)))) {
-                /* Odd rows swap the halves of each 64-bit word, as the texture memory reads them.
-                 */
-                offset = ((((y & 1) << 3) ^ x) >> 1) + y * (width >> 1);
-                texels[offset] = g_pDecalUndoBuffer[offset];
-            }
-        }
-    }
-}
-
-/* Move the next decal between the model and the file on the controller pak, through the undo
- * buffer when it loads. */
-static inline void TransferDecal(VehicleModel *model, OSPfs *pfs, u8 operation) {
-    ModelTexture *texture = &model->textures[model->materialTextures[g_bPakDecalIndex]];
-    s32 width = texture->width;
-    s32 height = texture->height;
-    u8 *mask;
-
-    /* The doors move one row more than they have. */
-    if (g_bPakDecalIndex == SLOT_LEFT_DOOR || g_bPakDecalIndex == SLOT_RIGHT_DOOR) {
-        height++;
-    }
-    if (operation == PAINT_TOOL_LOAD) {
-        g_dwPakChunkSize = (width * height) >> 1;
-        g_dwPakError = osPfsReadWriteFile(pfs,
-                                          g_dwPakFileNo,
-                                          PFS_READ,
-                                          g_dwPakFileOffset,
-                                          (width * height) >> 1,
-                                          g_pDecalUndoBuffer);
-    } else {
-        g_dwPakChunkSize = (width * height) >> 1;
-        g_dwPakError = osPfsReadWriteFile(pfs,
-                                          g_dwPakFileNo,
-                                          PFS_WRITE,
-                                          g_dwPakFileOffset,
-                                          (width * height) >> 1,
-                                          texture->image);
-    }
-    switch (g_dwPakError) {
-    case 0:
-        if (operation == PAINT_TOOL_LOAD) {
-#if TGR_REGION == TGR_REGION_US
-            osSyncPrintf("Loading decal %d...\n", g_bPakDecalIndex);
+#ifdef __sgi
+    ModelTexture *part;
 #endif
-            texture = &model->textures[model->materialTextures[g_bPakDecalIndex]];
-            mask = model->decalMasks[g_bPakDecalIndex];
-            if (mask == NULL) {
-                memcpy(texture->image, g_pDecalUndoBuffer, g_dwPakChunkSize);
-            } else {
-                CopyUnmaskedTexels(texture->image, mask, width, height);
-            }
-#if TGR_REGION == TGR_REGION_EU
-            /* The European release prints each loaded decal, a texel pair a line. */
-            {
-                s32 size = (texture->width * texture->height) >> 1;
-                s32 i;
-
-                if (g_bPakDecalIndex == 0) {
-                    osSyncPrintf("# Format SB BitSize 8 Rows 1 Columns 1\n");
-                }
-                for (i = 0; i < size; i++) {
-                    osSyncPrintf("%02x\n", texture->image[i]);
-                }
-            }
-#endif /* TGR_REGION == TGR_REGION_EU */
-        } else {
-            osSyncPrintf("Saving decal %d...\n", g_bPakDecalIndex);
-        }
-        g_dwPakFileOffset += g_dwPakChunkSize;
-        break;
-    case PFS_ERR_INCONSISTENT:
-        g_dwPakError = osPfsChecker(pfs);
-        if (g_dwPakError == PFS_ERR_NOPACK || g_dwPakError == PFS_ERR_CONTRFAIL ||
-            g_dwPakError == PFS_ERR_INCONSISTENT) {
-            g_bPakDecalIndex = 0;
-            g_dwPakFileOffset = 0;
-            g_dwPakChunkSize = 0;
-            g_bPakDialogState = PAK_STATE_FINISH;
-        } else {
-            /* The offset of the failed chunk was not advanced, so the retry starts a chunk back. */
-            g_bPakDecalIndex--;
-            g_dwPakFileOffset -= g_dwPakChunkSize;
-            g_dwPakError = 0;
-        }
-        break;
-    case PFS_ERR_INVALID:
-        g_dwPakError = PAK_ERROR_TRANSFER;
-        break;
-    }
-}
-
-/* Draw the labels and the pictures of the A and B buttons of a dialog of the controller pak. */
-static inline void DrawPakButtons(s32 buttonY, u32 okTextX, u32 cancelTextX, s32 okX, s32 cancelX) {
-    s32 textY;
-
-    SetTextSize(10);
-    textY = (buttonY + 0x12) >> 1;
-    DrawText("%wwOK", okTextX >> 1, textY);
-    DrawText("%wwCANCEL", cancelTextX >> 1, textY);
-    DrawTexturedSprite(&g_texButtonA, okX, buttonY);
-    DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
-}
-
-s32 ProcessDecalSaveLoad(VehicleModel *model, u8 player, u8 operation, u8 inCarSelect, u8 *done) {
-    /* TOP GEAR DECALS in the font of the controller pak. */
-    u8 noteName[16] = {0x2D,
-                       0x28,
-                       0x29,
-                       0x0F,
-                       0x20,
-                       0x1E,
-                       0x1A,
-                       0x2B,
-                       0x0F,
-                       0x1D,
-                       0x1E,
-                       0x1C,
-                       0x1A,
-                       0x25,
-                       0x2C,
-                       0x00};
-    u8 extName[4] = {0};
-    u8 pattern;
-    s32 freeBytes, buttonY, textY, y;
     OSPfs *pfs;
-    PlayerInputState *input;
-    u16 *palette;
+    unsigned char *tex;
+    int top;
+    unsigned char *mask;
+    int stride;
+    int half;
+    int ty;
+    int row;
+    int y;
+    int col;
+    int freeBytes;
+    int w;
+    int h;
+    unsigned short *pal;
+    int k;
+    int flip;
+    int n;
+    int x2;
+    int tx;
+    unsigned char pakBits;
+    unsigned char name[16] = {0x2D,
+                              0x28,
+                              0x29,
+                              0x0F,
+                              0x20,
+                              0x1E,
+                              0x1A,
+                              0x2B,
+                              0x0F,
+                              0x1D,
+                              0x1E,
+                              0x1C,
+                              0x1A,
+                              0x25,
+                              0x2C,
+                              0x00};
+    unsigned char ext[4] = {0, 0, 0, 0};
 
-    g_wSerialInterfaceIdle = FALSE;
-    if (!g_bPakDialogActive) {
-        g_bPakDialogActive = TRUE;
-        g_bPakRumbleSwapped = FALSE;
-        g_bPakRetryNewPak = FALSE;
+    g_wSerialInterfaceIdle = 0;
+    if (g_bPakDialogActive == 0) {
+        g_bPakDialogActive = 1;
+        g_bPakRumbleSwapped = 0;
+        g_bPakRetryNewPak = 0;
         g_dwPakError = 0;
         g_bPakDecalIndex = 0;
         g_dwPakFileOffset = 0;
         g_dwPakChunkSize = 0;
         g_bPakWaitFrames = 0;
-        g_bPakDialogState = inCarSelect == 1 ? PAK_STATE_FADE_OUT : PAK_STATE_CONFIRM;
+        if (inCarSelect == 1) {
+            g_bPakDialogState = 0;
+        } else {
+            g_bPakDialogState = 2;
+        }
     }
-    *done = FALSE;
+    *done = 0;
     switch (g_bPakDialogState) {
-    case PAK_STATE_FADE_OUT:
-        FadeSfxTo(0.0f, PAK_FADE_TIME);
-        FadeMusicTo(0.0f, PAK_FADE_TIME);
-        g_bPakDialogState = PAK_STATE_WAIT_FADE;
+    case 0:
+        FadeSfxTo(0.0f, 0.2f);
+        FadeMusicTo(0.0f, 0.2f);
+        g_bPakDialogState = 1;
         break;
-    case PAK_STATE_WAIT_FADE:
-        if (HasSfxFadeFinished() && g_bPakWaitFrames++ == PAK_FADE_WAIT_FRAMES) {
-            g_bPakDialogState = PAK_STATE_INIT_PAK;
+    case 1:
+        if (HasSfxFadeFinished() != 0 && g_bPakWaitFrames++ == 3) {
+            g_bPakDialogState = 3;
             g_bPakWaitFrames = 0;
         }
         break;
-    case PAK_STATE_CONFIRM:
-        /* The row of the buttons is placed by the width of the A button. */
-        buttonY = 0x110 - g_texButtonA.width;
-#if TGR_REGION == TGR_REGION_JP
-        DrawDialogBox(0xAA, 0xC8, 0x12C, 0x50);
+    case 2: /* load/save? */
+        y = 0x110 - g_texButtonA.width;
+#if (TGR_REGION == TGR_REGION_JP)
+        DrawRectBorder(0xAA, 200, 300, 0x50, 3, 0, 0, 0x80, 0x80, 0x80);
         SetTextAlignLeft();
         SetTextStyleNormal();
         SetTextSize(14);
-        SetPakTextColors(FALSE);
-        DrawText(operation == PAINT_TOOL_LOAD ? "%jデカールをロードしますか？" :
-                                                "%jデカールをセーブしますか？",
-                 0x5E,
-                 0x74);
-        DrawPakButtons(buttonY, g_texButtonA.width + 0xC0, g_texButtonB.width + 0x168, 0xBA, 0x162);
-#else
-        DrawDialogBox(0xDC, 0xC8, 0xC8, 0x50);
-        SetTextAlignLeft();
-        SetTextStyleNormal();
-        SetTextSize(14);
-        SetPakTextColors(FALSE);
-        DrawText(operation == PAINT_TOOL_LOAD ? "LOAD DECALS?" : "SAVE DECALS?", 0x77, 0x74);
-        DrawPakButtons(buttonY, g_texButtonA.width + 0xF2, g_texButtonB.width + 0x136, 0xEC, 0x130);
-#endif /* TGR_REGION == TGR_REGION_JP */
-        input = &g_aPlayerInputState[player];
-        if (input->buttons & INPUT_A) {
-            TransferFlags(input, INPUT_A);
-            g_bPakDialogState = PAK_STATE_FADE_OUT;
-        } else if (input->buttons & INPUT_B) {
-            TransferFlags(input, INPUT_B);
-            /* The dialog stays active and opens here again when it is next run. */
-            *done = TRUE;
-            g_bPaintTool = g_bPreviousPaintTool;
-            return 0;
-        }
-        break;
-    case PAK_STATE_INIT_PAK:
-        osPfsIsPlug(&g_SiMesgQueue, &pattern);
-        if (!(pattern & (1 << player))) {
-            g_dwPakError = PFS_ERR_NOPACK;
-            g_bPakDialogState = PAK_STATE_FINISH;
-            break;
-        }
-#if TGR_REGION != TGR_REGION_JP
-        osSyncPrintf("\nInitializing controller pak...\n");
-#endif
-        pfs = &g_aPakPfs[player];
-        g_dwPakError = osPfsInitPak(&g_SiMesgQueue, pfs, player);
-        if (g_dwPakError == 0) {
-            /* The rumble pak is cleared for the player of the menu rather than of the dialog. */
-            g_abRumblePakPresent[g_dwMenuChoosingPlayer] = FALSE;
-            if (!g_abSavePakIdKnown[player]) {
-                g_abSavePakIdKnown[player] = TRUE;
-                memcpy(g_aabSavePakIds[player], pfs->id, sizeof(pfs->id));
-                g_bPakDialogState = PAK_STATE_FIND_FILE;
-            } else if (bcmp(g_aabSavePakIds[player], pfs->id, sizeof(pfs->id))) {
-                memcpy(g_aabSavePakIds[player], pfs->id, sizeof(pfs->id));
-                g_bPakDialogState = PAK_STATE_NEW_PAK;
-            } else {
-                g_bPakDialogState = PAK_STATE_FIND_FILE;
-            }
-        } else if (g_dwPakError == PFS_ERR_ID_FATAL) {
-            /* A pak whose identity cannot be read may be a rumble pak. */
-            if (osMotorInit(&g_SiMesgQueue, &g_aContPfs[player], player) == 0) {
-                osMotorStop(&g_aContPfs[player]);
-                g_dwPakError = PAK_ERROR_RUMBLE_PAK;
-                g_bPakRumbleSwapped = TRUE;
-                g_bPakDialogState = PAK_STATE_REMOVE_RUMBLE_PAK;
-            } else {
-                g_abRumblePakPresent[g_dwMenuChoosingPlayer] = FALSE;
-                g_dwPakError = 0;
-                g_bPakDialogState = PAK_STATE_REPAIR_ID;
-            }
+        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
+        if (operation == PAINT_TOOL_LOAD) {
+            DrawText("%j\xBB\x81(\xA8w\xC8(\xCB"
+                     "B6R1%%",
+                     94,
+                     116);
         } else {
-            g_abRumblePakPresent[g_dwMenuChoosingPlayer] = FALSE;
-            g_bPakDialogState = PAK_STATE_FINISH;
+            DrawText("%j\xBB\x81(\xA8w\xB2(\xAC"
+                     "B6R1%%",
+                     94,
+                     116);
         }
-        break;
-    case PAK_STATE_REPAIR_ID:
-        g_dwPakError = osPfsRepairId(&g_aPakPfs[player]);
-        if (g_dwPakError) {
-            g_bPakDialogState = PAK_STATE_REMOVE_RUMBLE_PAK;
-        } else {
-            g_bPakDialogState = PAK_STATE_INIT_PAK;
-        }
-        break;
-    case PAK_STATE_CONFIRM_OVERWRITE:
-        buttonY = 0x11D - g_texButtonA.width;
-        DrawDialogBox(0xD6, 0xBB, 0xD4, 0x6A);
+        SetTextSize(10);
+        DrawText("%wwOK", (g_texButtonA.width + 0xC0U) >> 1, (y + 18) >> 1);
+        DrawText("%wwCANCEL", (g_texButtonB.width + 0x168U) >> 1, (y + 18) >> 1);
+        DrawTexturedSprite(&g_texButtonA, 0xBA, y);
+        DrawTexturedSprite(&g_texButtonB, 0x162, y);
+#else
+        DrawRectBorder(0xDC, 200, 200, 0x50, 3, 0, 0, 0x80, 0x80, 0x80);
         SetTextAlignLeft();
         SetTextStyleNormal();
-#if TGR_REGION == TGR_REGION_JP
-        SetPakTextColors(FALSE);
         SetTextSize(14);
-        DrawText("%j上書きしますか？", 0x79, 0x71);
-#else
-#if TGR_REGION == TGR_REGION_EU
-        SetPakTextColors(FALSE);
-        SetTextSize(13);
-#else
-        SetTextSize(13);
-        SetPakTextColors(FALSE);
+        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
+        if (operation == PAINT_TOOL_LOAD) {
+            DrawText("LOAD DECALS?", 119, 116);
+        } else {
+            DrawText("SAVE DECALS?", 119, 116);
+        }
+        SetTextSize(10);
+        DrawText("%wwOK", (g_texButtonA.width + 0xF2U) >> 1, (y + 18) >> 1);
+        DrawText("%wwCANCEL", (g_texButtonB.width + 0x136U) >> 1, (y + 18) >> 1);
+        DrawTexturedSprite(&g_texButtonA, 0xEC, y);
+        DrawTexturedSprite(&g_texButtonB, 0x130, y);
 #endif
-        DrawText("OK TO OVERWRITE", 0x72, 0x6C);
-        DrawText("SAVED DECALS?", 0x72, 0x7A);
-#endif /* TGR_REGION == TGR_REGION_JP */
-        /* The label of the B button is placed by its height. */
-        DrawPakButtons(
-            buttonY, g_texButtonA.width + 0xEE, g_texButtonB.height + 0x13A, 0xE8, 0x134);
-        input = &g_aPlayerInputState[player];
-        if (input->buttons & INPUT_A) {
-            TransferFlags(input, INPUT_A);
-            g_bPakDialogState = PAK_STATE_TRANSFER_DECALS;
-        } else if (input->buttons & INPUT_B) {
-            TransferFlags(input, INPUT_B);
-            /* The error is clear, so the dialog finishes as if the decals were saved. */
-            g_bPakDialogState = PAK_STATE_FINISH;
+        if (g_aPlayerInputState[player].buttons & 0x10) {
+            TransferFlags((&g_aPlayerInputState[player]), 0x10);
+            g_bPakDialogState = 0;
+        } else {
+            if (g_aPlayerInputState[player].buttons & 0x20) {
+                TransferFlags((&g_aPlayerInputState[player]), 0x20);
+                *done = 1;
+                g_bPaintTool = g_bPreviousPaintTool;
+                return 0;
+            }
         }
         break;
-    case PAK_STATE_FIND_FILE:
+    case 3: /* probe the pak */
+        osPfsIsPlug(&g_SiMesgQueue, &pakBits);
+        if ((pakBits & (1 << player)) == 0) {
+            g_dwPakError = 1;
+            g_bPakDialogState = 12;
+        } else {
+#if !(TGR_REGION == TGR_REGION_JP)
+            osSyncPrintf("\nInitializing controller pak...\n");
+#endif
+            g_dwPakError = osPfsInitPak(&g_SiMesgQueue, (&g_aPakPfs[player]), player);
+            if (g_dwPakError == 0) {
+                g_abRumblePakPresent[g_dwMenuChoosingPlayer] = 0;
+                if (g_abSavePakIdKnown[player] == 0) {
+                    g_abSavePakIdKnown[player] = 1;
+                    memcpy(g_aabSavePakIds[player], g_aPakPfs[player].id, 32);
+                    g_bPakDialogState = 6;
+                } else if (bcmp(g_aabSavePakIds[player], g_aPakPfs[player].id, 32) != 0) {
+                    memcpy(g_aabSavePakIds[player], g_aPakPfs[player].id, 32);
+                    g_bPakDialogState = 9;
+                } else {
+                    g_bPakDialogState = 6;
+                }
+            } else if (g_dwPakError == 10) {
+                if (osMotorInit(&g_SiMesgQueue, &g_aContPfs[player], player) == 0) {
+                    osMotorStop(&g_aContPfs[player]);
+                    g_dwPakError = 9999;
+                    g_bPakRumbleSwapped = 1;
+                    g_bPakDialogState = 10;
+                } else {
+                    g_abRumblePakPresent[g_dwMenuChoosingPlayer] = 0;
+                    g_dwPakError = 0;
+                    g_bPakDialogState = 4;
+                }
+            } else {
+                g_abRumblePakPresent[g_dwMenuChoosingPlayer] = 0;
+                g_bPakDialogState = 12;
+            }
+        }
+        break;
+    case 4:
+        g_dwPakError = osPfsRepairId((&g_aPakPfs[player]));
+        if (g_dwPakError != 0) {
+            g_bPakDialogState = 10;
+        } else {
+            g_bPakDialogState = 3;
+        }
+        break;
+    case 6: /* find the file */
         g_dwPakFileOffset = 0;
         g_dwPakChunkSize = 0;
         g_bPakDecalIndex = 0;
-        g_bPakFileNeedsCreate = FALSE;
-        pfs = &g_aPakPfs[player];
+        g_bPakFileNeedsCreate = 0;
+        pfs = (&g_aPakPfs[player]);
         g_bPakWaitFrames = 0;
-        g_dwPakError = osPfsFindFile(
-            pfs, DECAL_FILE_COMPANY, DECAL_FILE_GAME, noteName, extName, &g_dwPakFileNo);
+        g_dwPakError =
+            osPfsFindFile(pfs, DECAL_FILE_COMPANY, DECAL_FILE_GAME, name, ext, &g_dwPakFileNo);
         if (g_dwPakError == 0) {
             if (operation == PAINT_TOOL_LOAD) {
-#if TGR_REGION != TGR_REGION_US
-                /* The later releases set up the text of the box and draw none. */
-                SetTextAlignLeft();
-                SetTextStyleNormal();
-                SetTextSize(13);
-                SetPakTextColors(FALSE);
-#else
-                y = inCarSelect == 1 ? 0xDB : 0xC5;
-                DrawPakProgressBox(y, "LOADING DECALS...", 0x72, (y + 30) >> 1);
-#endif /* TGR_REGION != TGR_REGION_US */
-                g_bPakDialogState = PAK_STATE_TRANSFER_DECALS;
-            } else {
-                g_bPakDialogState = PAK_STATE_CONFIRM_OVERWRITE;
-            }
-        } else if (g_dwPakError == PFS_ERR_INVALID) {
-            if (operation == PAINT_TOOL_LOAD) {
-                g_bPakDialogState = PAK_STATE_FINISH;
-            } else if (osPfsFreeBlocks(pfs, &freeBytes)) {
-                /* Any error of the count of the free pages is reported as a failed controller. */
-                g_dwPakError = PFS_ERR_CONTRFAIL;
-                g_bPakDialogState = PAK_STATE_FINISH;
-            } else if (freeBytes < DECAL_FILE_SIZE) {
-                g_dwPakError = PFS_DATA_FULL;
-                g_bPakDialogState = PAK_STATE_FINISH;
-            } else {
-#if TGR_REGION != TGR_REGION_US
-                SetTextAlignLeft();
-                SetTextStyleNormal();
-                SetTextSize(13);
-                SetPakTextColors(FALSE);
-#else
-                DrawPakProgressBox(0xC5, "SAVING DECALS...", 0x73, 0x71);
+#if !(TGR_REGION == TGR_REGION_EU) && !(TGR_REGION == TGR_REGION_JP)
+                top = 0xC5;
+                if (inCarSelect == 1) {
+                    top = 0xDB;
+                }
+                DrawRectBorder(0xD4, top, 0xD8, 0x56, 3, 0, 0, 0x80, 0x80, 0x80);
+#elif (TGR_REGION == TGR_REGION_EU)
+                if (inCarSelect == 1) { /* the panel moved to state 7; the test stays */
+                }
 #endif
-                g_bPakFileNeedsCreate = TRUE;
-                g_bPakDialogState = PAK_STATE_TRANSFER_DECALS;
-                g_bPakWaitFrames = 0;
-            }
-        } else if (g_dwPakError == PFS_ERR_INCONSISTENT) {
-            g_dwPakError = osPfsChecker(pfs);
-            if (g_dwPakError) {
-                g_bPakDialogState = PAK_STATE_FINISH;
+                SetTextAlignLeft();
+                SetTextStyleNormal();
+                SetTextSize(13);
+                SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
+#if !(TGR_REGION == TGR_REGION_EU) && !(TGR_REGION == TGR_REGION_JP)
+                DrawText("LOADING DECALS...", 114, (top + 30) >> 1);
+                DrawRectBorder(0xE6, top + 0x34, 0xB4, 0x14, 1, 1, 1, 0x80, 0x80, 0x80);
+#endif
+                g_bPakDialogState = 7;
             } else {
-                g_bPakDialogState = PAK_STATE_FIND_FILE;
+                g_bPakDialogState = 5;
             }
-        } else if (g_dwPakError == PFS_ERR_NEW_PACK) {
-            g_bPakDialogState = PAK_STATE_INIT_PAK;
+        } else if (g_dwPakError == 5) {
+            if (operation == PAINT_TOOL_LOAD) {
+                g_bPakDialogState = 12;
+            } else if (osPfsFreeBlocks(pfs, &freeBytes) == 0) {
+                if (freeBytes < 0x3E00) {
+                    g_dwPakError = 7;
+                    g_bPakDialogState = 12;
+                } else {
+#if !(TGR_REGION == TGR_REGION_EU) && !(TGR_REGION == TGR_REGION_JP)
+                    DrawRectBorder(0xD4, 0xC5, 0xD8, 0x56, 3, 0, 0, 0x80, 0x80, 0x80);
+#endif
+                    SetTextAlignLeft();
+                    SetTextStyleNormal();
+                    SetTextSize(13);
+                    SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
+#if !(TGR_REGION == TGR_REGION_EU) && !(TGR_REGION == TGR_REGION_JP)
+                    DrawText("SAVING DECALS...", 115, 113);
+                    DrawRectBorder(0xE6, 0xF9, 0xB4, 0x14, 1, 1, 1, 0x80, 0x80, 0x80);
+#endif
+                    g_bPakFileNeedsCreate = 1;
+                    g_bPakDialogState = 7;
+                    g_bPakWaitFrames = 0;
+                }
+            } else {
+                g_dwPakError = 4;
+                g_bPakDialogState = 12;
+            }
+        } else if (g_dwPakError == 3) {
+            g_dwPakError = osPfsChecker(pfs);
+            if (g_dwPakError == 0) {
+                g_bPakDialogState = 6;
+            } else {
+                g_bPakDialogState = 12;
+            }
+        } else if (g_dwPakError == 2) {
+            g_bPakDialogState = 3;
             g_dwPakError = 0;
         } else {
-            g_bPakDialogState = PAK_STATE_FINISH;
+            g_bPakDialogState = 12;
         }
         break;
-    case PAK_STATE_TRANSFER_DECALS:
-        if (inCarSelect == 1) {
-            y = 0xDB;
-            textY = 0x7C;
-        } else {
-            y = 0xC5;
-            textY = 0x71;
+    case 5: /* overwrite? */
+#if (TGR_REGION == TGR_REGION_JP)
+        DrawRectBorder(0xD6, 0xBB, 0xD4, 0x6A, 3, 0, 0, 0x80, 0x80, 0x80);
+        SetTextAlignLeft();
+        SetTextStyleNormal();
+        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
+        SetTextSize(14);
+        DrawText("%j\xDA\xE4"
+                 "AB6R1%%",
+                 121,
+                 113);
+        y = 0x118 - g_texButtonA.width;
+#elif (TGR_REGION == TGR_REGION_EU)
+        DrawRectBorder(0xD6, 0xBB, 0xD4, 0x6A, 3, 0, 0, 0x80, 0x80, 0x80);
+        SetTextAlignLeft();
+        SetTextStyleNormal();
+        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
+        SetTextSize(13);
+        DrawText("OK TO OVERWRITE", 114, 108);
+        DrawText("SAVED DECALS?", 114, 122);
+        y = 0x11D - g_texButtonA.width;
+#else
+        y = 0x11D - g_texButtonA.width;
+        DrawRectBorder(0xD6, 0xBB, 0xD4, 0x6A, 3, 0, 0, 0x80, 0x80, 0x80);
+        SetTextAlignLeft();
+        SetTextStyleNormal();
+        SetTextSize(13);
+        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
+        DrawText("OK TO OVERWRITE", 114, 108);
+        DrawText("SAVED DECALS?", 114, 122);
+#endif
+        SetTextSize(10);
+        DrawText("%wwOK", (g_texButtonA.width + 0xEEU) >> 1, (y + 18) >> 1);
+        DrawText("%wwCANCEL", (g_texButtonB.height + 0x13AU) >> 1, (y + 18) >> 1);
+        DrawTexturedSprite(&g_texButtonA, 0xE8, y);
+        DrawTexturedSprite(&g_texButtonB, 0x134, y);
+        if (g_aPlayerInputState[player].buttons & 0x10) {
+            TransferFlags((&g_aPlayerInputState[player]), 0x10);
+            g_bPakDialogState = 7;
+        } else if (g_aPlayerInputState[player].buttons & 0x20) {
+            TransferFlags((&g_aPlayerInputState[player]), 0x20);
+            g_bPakDialogState = 12;
         }
-#if TGR_REGION == TGR_REGION_JP
-        /* The Japanese release centers the text in a box as wide as the load needs. */
+        break;
+    case 7: /* one decal a frame */
+#if (TGR_REGION == TGR_REGION_JP)
+        top = 0xC5;
+        ty = 0x71;
+        if (inCarSelect == 1) {
+            top = 0xDB;
+            ty = 0x7C;
+        }
         if (operation == PAINT_TOOL_LOAD) {
-            DrawDialogBox(0xC4, y, 0xF8, 0x56);
+            DrawRectBorder(0xC4, top, 0xF8, 0x56, 3, 0, 0, 0x80, 0x80, 0x80);
         } else {
-            DrawDialogBox(0xD4, y, 0xD8, 0x56);
+            DrawRectBorder(0xD4, top, 0xD8, 0x56, 3, 0, 0, 0x80, 0x80, 0x80);
         }
         SetTextStyleNormal();
         SetTextAlignCenter();
         SetTextSize(14);
-        SetPakTextColors(FALSE);
+        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
         if (operation == PAINT_TOOL_LOAD) {
-            DrawText("%jデカールロード中", g_dwScreenWidth / 2, textY);
+            DrawText("%j\xBB\x81(\xA8\xC8(\xCB\xE6", g_dwScreenWidth / 2, ty);
         } else {
-            DrawText("%jデカールセーブ中", g_dwScreenWidth / 2, textY);
+            DrawText("%j\xBB\x81(\xA8\xB2(\xAC\xE6", g_dwScreenWidth / 2, ty);
         }
-        DrawSunkenFrame(0xE6, y + 0x34, 0xB4, 0x14);
 #else
+        top = 0xC5;
+        ty = 0x71;
+        if (inCarSelect == 1) {
+            ty = 0x7C;
+            /* The unused test preserves IDO's register schedule. */
+#ifdef __sgi
+            if (ty)
+                ;
+#endif
+            top = 0xDB;
+        }
+        DrawRectBorder(0xD4, top, 0xD8, 0x56, 3, 0, 0, 0x80, 0x80, 0x80);
+#if (TGR_REGION == TGR_REGION_EU)
+        SetTextStyleNormal();
+        SetTextAlignLeft();
+#else
+        SetTextAlignLeft();
+        SetTextStyleNormal();
+#endif
+        SetTextSize(13);
+        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
+        tx = 114;
         if (operation == PAINT_TOOL_LOAD) {
-            DrawPakProgressBox(y, "LOADING DECALS...", 0x72, textY);
+            DrawText("LOADING DECALS...", tx, ty);
         } else {
-            DrawPakProgressBox(y, "SAVING DECALS...", 0x73, textY);
+            tx++;
+            DrawText("SAVING DECALS...", tx, ty);
         }
-#endif /* TGR_REGION == TGR_REGION_JP */
-        if (g_bPakWaitFrames++ < PAK_TRANSFER_DELAY_FRAMES) {
-            break;
-        }
-        if (g_bPakFileNeedsCreate) {
-            g_bPakFileNeedsCreate = FALSE;
-            pfs = &g_aPakPfs[player];
-            g_dwPakError = osPfsAllocateFile(pfs,
-                                             DECAL_FILE_COMPANY,
-                                             DECAL_FILE_GAME,
-                                             noteName,
-                                             extName,
-                                             DECAL_FILE_SIZE,
-                                             &g_dwPakFileNo);
-            switch (g_dwPakError) {
-            case PFS_ERR_INCONSISTENT:
-                g_dwPakError = osPfsChecker(pfs);
-                if (!g_dwPakError) {
-                    g_bPakDialogState = PAK_STATE_INIT_PAK;
-                    return 0;
+#endif
+        DrawRectBorder(0xE6, top + 0x34, 0xB4, 0x14, 1, 1, 1, 0x80, 0x80, 0x80);
+        if (g_bPakWaitFrames++ > 1) {
+            if (g_bPakFileNeedsCreate != 0) {
+                pfs = (&g_aPakPfs[player]);
+                g_bPakFileNeedsCreate = 0;
+                g_dwPakError = osPfsAllocateFile(
+                    pfs, DECAL_FILE_COMPANY, DECAL_FILE_GAME, name, ext, 0x3E00, &g_dwPakFileNo);
+                switch (g_dwPakError) {
+                case 3:
+                    g_dwPakError = osPfsChecker(pfs);
+                    if (g_dwPakError == 0) {
+                        g_bPakDialogState = 3;
+                        return 0;
+                    }
+                    g_bPakDialogState = 2;
+                    return g_dwPakError;
+                case 5:
+                case 9:
+                    g_dwPakError = 3;
+                    break;
+                case 2:
+                    g_bPakDialogState = 3;
+                    break;
+                case 0:
+                    break;
                 }
-                /* The dialog goes back to its confirmation with the error. */
-                g_bPakDialogState = PAK_STATE_CONFIRM;
-                return g_dwPakError;
-            case PFS_ERR_INVALID:
-            case PFS_ERR_EXIST:
-                g_dwPakError = PFS_ERR_INCONSISTENT;
-                break;
-            case PFS_ERR_NEW_PACK:
-                g_bPakDialogState = PAK_STATE_INIT_PAK;
-                break;
+                if (g_dwPakError != 0) {
+                    if (g_dwPakError == 2) {
+                        g_dwPakError = 0;
+                        g_bPakDialogState = 3;
+                        *done = 0;
+                        return 0;
+                    }
+                    g_bPakDialogState = 12;
+                    break;
+                }
             }
-            if (g_dwPakError) {
-                if (g_dwPakError == PFS_ERR_NEW_PACK) {
-                    g_dwPakError = 0;
-                    g_bPakDialogState = PAK_STATE_INIT_PAK;
-                    *done = FALSE;
-                    return 0;
+            if (g_bPakDecalIndex < 10) {
+                n = g_bPakDecalIndex;
+                w = m->textures[m->materialTextures[g_bPakDecalIndex]].width;
+                h = m->textures[m->materialTextures[g_bPakDecalIndex]].height;
+                pfs = (&g_aPakPfs[player]);
+                if (n == 0 || n == 1) {
+                    h++;
                 }
-                g_bPakDialogState = PAK_STATE_FINISH;
-                break;
-            }
-        }
-        if (g_bPakDecalIndex < DECAL_SLOTS) {
-            TransferDecal(model, &g_aPakPfs[player], operation);
-            if (g_dwPakError) {
-                if (g_dwPakError == PFS_ERR_NEW_PACK) {
-                    g_dwPakError = 0;
-                    g_bPakDialogState = PAK_STATE_NEW_PAK;
-                    g_bPakRetryNewPak = TRUE;
-                    *done = FALSE;
-                    return 0;
+                g_dwPakChunkSize = (int)(w * h) >> 1;
+                if (operation == PAINT_TOOL_LOAD) {
+                    g_dwPakError = osPfsReadWriteFile(pfs,
+                                                      g_dwPakFileNo,
+                                                      0,
+                                                      g_dwPakFileOffset,
+                                                      g_dwPakChunkSize,
+                                                      g_pDecalUndoBuffer);
+                } else {
+                    g_dwPakError = osPfsReadWriteFile(
+                        pfs,
+                        g_dwPakFileNo,
+                        1,
+                        g_dwPakFileOffset,
+                        g_dwPakChunkSize,
+                        m->textures[m->materialTextures[g_bPakDecalIndex]].image);
                 }
-                g_bPakDialogState = PAK_STATE_FINISH;
+                switch (g_dwPakError) {
+                case 0:
+                    if (operation == PAINT_TOOL_LOAD) {
+#if !(TGR_REGION == TGR_REGION_EU) && !(TGR_REGION == TGR_REGION_JP)
+                        osSyncPrintf("Loading decal %d...\n", g_bPakDecalIndex);
+#endif
+                        tex = m->textures[m->materialTextures[g_bPakDecalIndex]].image;
+                        mask = m->decalMasks[g_bPakDecalIndex];
+                        if (mask == 0) {
+                            memcpy(tex, g_pDecalUndoBuffer, g_dwPakChunkSize);
+                        } else {
+                            /* keep the pixels the mask marks, take the rest from the pak */
+                            for (row = 0; row < h; row++) {
+                                stride = (int)(w + 7) >> 3;
+                                half = (int)w >> 1;
+                                flip = (row & 1) << 3;
+                                for (col = 0; col < w; col++) {
+                                    x2 = ((int)col >> 3) + row * stride;
+                                    if ((mask[x2] & (1 << ((col ^ 7) & 7))) == 0) {
+                                        k = ((int)(flip ^ col) >> 1) + row * half;
+                                        tex[k] = g_pDecalUndoBuffer[k];
+                                    }
+                                }
+                            }
+                        }
+#if (TGR_REGION == TGR_REGION_EU)
+                        {
+                            /* dump the decal's bytes on the debug output, one a line */
+                            int i;
+                            int size;
+
+                            size = (m->textures[m->materialTextures[g_bPakDecalIndex]].width *
+                                    m->textures[m->materialTextures[g_bPakDecalIndex]].height) >>
+                                   1;
+                            if (g_bPakDecalIndex == 0) {
+                                osSyncPrintf("# Format SB BitSize 8 Rows 1 Columns 1\n");
+                            }
+                            for (i = 0; i < size; i++) {
+                                osSyncPrintf("%02x\n", tex[i]);
+                            }
+                        }
+#endif
+                    } else {
+                        osSyncPrintf("Saving decal %d...\n", g_bPakDecalIndex);
+                    }
+                    g_dwPakFileOffset += g_dwPakChunkSize;
+                    break;
+                case 5:
+                    g_dwPakError = 99999;
+                    break;
+                case 3:
+                    g_dwPakError = osPfsChecker(pfs);
+                    if (g_dwPakError == 1 || g_dwPakError == 4 || g_dwPakError == 3) {
+                        g_bPakDecalIndex = 0;
+                        g_dwPakFileOffset = 0;
+                        g_dwPakChunkSize = 0;
+                        g_bPakDialogState = 12;
+                    } else {
+                        g_bPakDecalIndex--;
+                        g_dwPakFileOffset -= g_dwPakChunkSize;
+                        g_dwPakError = 0;
+                    }
+                    break;
+                }
+                if (g_dwPakError != 0) {
+                    if (g_dwPakError == 2) {
+                        g_dwPakError = 0;
+                        g_bPakDialogState = 9;
+                        g_bPakRetryNewPak = 1;
+                        *done = 0;
+                        return 0;
+                    }
+                    g_bPakDialogState = 12;
+                } else {
+                    DrawFilledRectHiRes(
+                        0xE7, top + 0x35, g_dwPakFileOffset * 0xB2 / 0x3D00, 0x12, 0, 0, 0xC0);
+                    g_bPakDecalIndex++;
+                }
             } else {
-                DrawFilledRectHiRes(0xE7,
-                                    y + 0x35,
-                                    g_dwPakFileOffset * DECAL_PROGRESS_WIDTH / DECAL_PROGRESS_FULL,
-                                    0x12,
-                                    0,
-                                    0,
-                                    0xC0);
-                g_bPakDecalIndex++;
+                g_bPakDecalIndex = 0;
+                DrawFilledRectHiRes(0xE7, top + 0x35, 0xB2, 0x12, 0, 0, 0xC0);
+                g_bPakDialogState = 8;
             }
-        } else {
-            g_bPakDecalIndex = 0;
-            DrawFilledRectHiRes(0xE7, y + 0x35, DECAL_PROGRESS_WIDTH, 0x12, 0, 0, 0xC0);
-            g_bPakDialogState = PAK_STATE_TRANSFER_PALETTE;
         }
         break;
-    case PAK_STATE_TRANSFER_PALETTE:
-        pfs = &g_aPakPfs[player];
+    case 8: /* the palette */
         if (operation == PAINT_TOOL_LOAD) {
-#if TGR_REGION == TGR_REGION_US
+#if !(TGR_REGION == TGR_REGION_EU) && !(TGR_REGION == TGR_REGION_JP)
             osSyncPrintf("Loading color palette...\n");
 #endif
-            g_dwPakError = osPfsReadWriteFile(
-                pfs,
-                g_dwPakFileNo,
-                PFS_READ,
-                g_dwPakFileOffset,
-                DECAL_PALETTE_BYTES,
-                (u8 *)(u16 *)model->textures[model->materialTextures[VEHICLE_MATERIAL_PAINT]]
-                    .palette);
-            if (!g_dwPakError) {
-                /* The lights take the first two colors of the paint. */
-                palette = model->textures[model->materialTextures[VEHICLE_MATERIAL_PAINT]].palette;
-#if TGR_REGION == TGR_REGION_EU
-                /* The European release prints the loaded palette, a byte a line. */
+            pfs = (&g_aPakPfs[player]);
+            g_dwPakError =
+                osPfsReadWriteFile(pfs,
+                                   g_dwPakFileNo,
+                                   0,
+                                   g_dwPakFileOffset,
+                                   0x20,
+                                   (unsigned char *)m->textures[m->materialTextures[2]].palette);
+            if (g_dwPakError == 0) {
+                pal = m->textures[m->materialTextures[2]].palette;
+#if (TGR_REGION == TGR_REGION_EU)
                 {
-                    s32 i;
+                    /* dump the palette on the debug output, a byte a line */
+                    int i;
 
-                    for (i = 0; i < DECAL_PALETTE_BYTES; i += 2) {
-                        osSyncPrintf("%02x\n%02x\n", palette[i >> 1] >> 8, palette[i >> 1] & 0xFF);
+                    for (i = 0; i < 16; i++) {
+                        osSyncPrintf("%02x\n%02x\n", pal[i] >> 8, pal[i] & 0xFF);
                     }
                 }
-#endif /* TGR_REGION == TGR_REGION_EU */
-                model->textures[model->materialTextures[VEHICLE_MATERIAL_HEADLIGHTS]].palette[0] =
-                    palette[0];
-                model->textures[model->materialTextures[VEHICLE_MATERIAL_HEADLIGHTS]].palette[1] =
-                    palette[1];
-                model->textures[model->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]].palette[0] =
-                    palette[0];
-                model->textures[model->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]].palette[1] =
-                    palette[1];
-                if (!inCarSelect) {
+#endif
+                m->textures[m->materialTextures[VEHICLE_MATERIAL_HEADLIGHTS]].palette[0] = pal[0];
+                m->textures[m->materialTextures[VEHICLE_MATERIAL_HEADLIGHTS]].palette[1] = pal[1];
+                m->textures[m->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]].palette[0] = pal[0];
+                m->textures[m->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]].palette[1] = pal[1];
+                if (inCarSelect == 0) {
                     ConvertPaletteToRgb();
                     SaveDecalUndo();
                 }
             }
         } else {
-#if TGR_REGION != TGR_REGION_JP
+#if !(TGR_REGION == TGR_REGION_JP)
             osSyncPrintf("Saving color palette...\n");
 #endif
-            g_dwPakError = osPfsReadWriteFile(
-                pfs,
-                g_dwPakFileNo,
-                PFS_WRITE,
-                g_dwPakFileOffset,
-                DECAL_PALETTE_BYTES,
-                (u8 *)(u16 *)model->textures[model->materialTextures[VEHICLE_MATERIAL_PAINT]]
-                    .palette);
+            pfs = (&g_aPakPfs[player]);
+            g_dwPakError =
+                osPfsReadWriteFile(pfs,
+                                   g_dwPakFileNo,
+                                   1,
+                                   g_dwPakFileOffset,
+                                   0x20,
+                                   (unsigned char *)m->textures[m->materialTextures[2]].palette);
         }
-        if (g_dwPakError == 0) {
-#if TGR_REGION != TGR_REGION_JP
+        switch (g_dwPakError) {
+        case 0:
+#if !(TGR_REGION == TGR_REGION_JP)
             if (operation == PAINT_TOOL_LOAD) {
                 osSyncPrintf("Color palette loaded successfully!\n\n");
             } else {
                 osSyncPrintf("Color palette saved successfully!\n\n");
             }
 #endif
-            g_bPakDialogState = PAK_STATE_DONE;
-            if (!inCarSelect) {
+            g_bPakDialogState = 11;
+            if (inCarSelect == 0) {
                 g_bDecalEditCount = 0;
             }
-        } else if (g_dwPakError == PFS_ERR_INCONSISTENT) {
+            break;
+        case 3:
             g_dwPakError = osPfsChecker(pfs);
-            if (g_dwPakError == PFS_ERR_NOPACK || g_dwPakError == PFS_ERR_CONTRFAIL ||
-                g_dwPakError == PFS_ERR_INCONSISTENT) {
-                g_bPakDialogState = PAK_STATE_FINISH;
+            if (g_dwPakError == 1 || g_dwPakError == 4 || g_dwPakError == 3) {
+                g_bPakDialogState = 12;
             } else {
-                /* The size of the last chunk is that of the last decal, not of the palette. */
                 g_dwPakFileOffset -= g_dwPakChunkSize;
                 g_dwPakError = 0;
-                g_bPakDialogState = PAK_STATE_TRANSFER_PALETTE;
+                g_bPakDialogState = 8;
             }
+            break;
         }
-        if (!g_dwPakError) {
-            return 0;
-        }
-#if TGR_REGION != TGR_REGION_JP
-        osSyncPrintf("err_code = %d\n\n", g_dwPakError);
+        if (g_dwPakError != 0) {
+#if !(TGR_REGION == TGR_REGION_JP)
+            osSyncPrintf("err_code = %d\n\n", g_dwPakError);
 #endif
-        if (g_dwPakError == PFS_ERR_NEW_PACK) {
-            g_bPakDialogState = PAK_STATE_NEW_PAK;
-            g_bPakRetryNewPak = TRUE;
-            *done = FALSE;
-            g_dwPakError = 0;
-            return 0;
+            if (g_dwPakError == 2) {
+                g_bPakDialogState = 9;
+                g_bPakRetryNewPak = 1;
+                *done = 0;
+                g_dwPakError = 0;
+                return 0;
+            }
+            g_bPakDialogState = 12;
+            *done = 0;
         }
-        g_bPakDialogState = PAK_STATE_FINISH;
-        *done = FALSE;
         break;
-    case PAK_STATE_NEW_PAK:
-        y = inCarSelect == 1 ? 0xD3 : 0xAB;
+    case 9: /* a different pak */
+        top = 0xAB;
+        if (inCarSelect == 1) {
+            top = 0xD3;
+        }
         SetTextStyleNormal();
         SetTextAlignLeft();
-#if TGR_REGION == TGR_REGION_JP
+#if (TGR_REGION == TGR_REGION_JP)
         SetTextSize(14);
-        DrawDialogBox(0x99, y, 0x14E, 0x89);
-        SetPakTextColors(inCarSelect);
-        textY = (y + 0x20) >> 1;
-        DrawText("%jあたらしいコントローラパックが", 0x54, textY);
-        DrawText("%jさしこまれています。", 0x54, textY + 13);
-        DrawText("%jこのコントローラパックを、", 0x54, textY + 32);
-        DrawText("%j使います。", 0x54, textY + 45);
+        DrawRectBorder(0x99, top, 0x14E, 0x89, 3, 0, 0, 0x80, 0x80, 0x80);
 #else
         SetTextSize(12);
-        DrawDialogBox(0xAF, y, 0x122, 0x89);
-        SetPakTextColors(inCarSelect);
-        textY = (y + 0x20) >> 1;
-        DrawText("A NEW CONTROLLER PAK", 0x5F, textY);
-        DrawText("WAS INSERTED.", 0x5F, textY + 13);
-        DrawText("THIS CONTROLLER PAK", 0x5F, textY + 32);
-        DrawText("WILL BE USED.", 0x5F, textY + 45);
-#endif /* TGR_REGION == TGR_REGION_JP */
-        input = &g_aPlayerInputState[player];
-        if (input->buttons & PAK_DISMISS_BUTTONS) {
-            TransferFlags(input, PAK_DISMISS_BUTTONS);
-            if (g_bPakRetryNewPak) {
-                g_bPakRetryNewPak = FALSE;
-                g_bPakDialogState = PAK_STATE_INIT_PAK;
+        DrawRectBorder(0xAF, top, 0x122, 0x89, 3, 0, 0, 0x80, 0x80, 0x80);
+#endif
+        if (inCarSelect == 1) {
+            SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
+        } else {
+            SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
+        }
+#if (TGR_REGION == TGR_REGION_JP)
+        DrawText("%j038B@\xC1\xCF\xC3\xC8(\x88\x8D\x8F\xA1"
+                 "9",
+                 84,
+                 (top + 32) >> 1);
+        DrawText("%j2Bq6hc@6R&", 84, ((top + 32) >> 1) + 13);
+        DrawText("%jqt\xC1\xCF\xC3\xC8(\x88\x8D\x8F\xA1w'", 84, ((top + 32) >> 1) + 32);
+        DrawText("%j\xDE@6R&", 84, ((top + 32) >> 1) + 45);
+#else
+        DrawText("A NEW CONTROLLER PAK", 95, (top + 32) >> 1);
+        DrawText("WAS INSERTED.", 95, ((top + 32) >> 1) + 13);
+        DrawText("THIS CONTROLLER PAK", 95, ((top + 32) >> 1) + 32);
+        DrawText("WILL BE USED.", 95, ((top + 32) >> 1) + 45);
+#endif
+        if (g_aPlayerInputState[player].buttons & 0x8030) {
+            TransferFlags((&g_aPlayerInputState[player]), 0x8030);
+            if (g_bPakRetryNewPak != 0) {
+                g_bPakRetryNewPak = 0;
+                g_bPakDialogState = 3;
             } else {
-                g_bPakDialogState = PAK_STATE_FIND_FILE;
+                g_bPakDialogState = 6;
             }
         }
         break;
-    case PAK_STATE_REMOVE_RUMBLE_PAK:
+    case 10: /* a Rumble Pak is in the way, or an error */
         SetTextStyleNormal();
         SetTextAlignLeft();
-#if TGR_REGION == TGR_REGION_JP
+#if (TGR_REGION == TGR_REGION_JP)
         SetTextSize(14);
-        SetPakTextColors(inCarSelect);
-        if (g_dwPakError == PAK_ERROR_RUMBLE_PAK) {
-            y = inCarSelect == 1 ? 0xD5 : 0xAD;
-            buttonY = y - g_texButtonA.width + 0x7E;
-            DrawDialogBox(0xC8, y, 0xF0, 0x86);
-            textY = (y + 0x20) >> 1;
-            DrawText("%j振動パックと", 0x6C, textY);
-            DrawText("%jコントローラパックを", 0x6C, textY + 13);
-            DrawText("%j交換して下さい。", 0x6C, textY + 26);
-            DrawPakButtons(
-                buttonY, g_texButtonA.width + 0xDE, g_texButtonB.width + 0x14A, 0xD8, 0x144);
-        }
 #else
         SetTextSize(12);
-        SetPakTextColors(inCarSelect);
-        if (g_dwPakError == PAK_ERROR_RUMBLE_PAK) {
-            y = inCarSelect == 1 ? 0xC8 : 0xA0;
-            buttonY = y - g_texButtonA.width + 0x98;
-            DrawDialogBox(0x7A, y, 0x18C, 0xA0);
-            textY = (y + 0x20) >> 1;
-            DrawText("PLEASE REMOVE THE RUMBLE PAK", 0x45, textY);
-            DrawText("AND INSERT THE CONTROLLER PAK", 0x45, textY + 13);
-            DrawText("INTO CONTROLLER.  PRESS THE A", 0x45, textY + 26);
-            DrawText("BUTTON WHEN READY.", 0x45, textY + 39);
-            DrawPakButtons(
-                buttonY, g_texButtonA.width + 0xDE, g_texButtonB.width + 0x14A, 0xD8, 0x144);
+#endif
+        if (inCarSelect == 1) {
+            SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
+        } else {
+            SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
         }
-#endif /* TGR_REGION == TGR_REGION_JP */
-        input = &g_aPlayerInputState[player];
-        if (g_dwPakError != PAK_ERROR_RUMBLE_PAK) {
-            /* A pak that cannot be repaired shows nothing and waits for a button. */
-            if (input->buttons & PAK_DISMISS_BUTTONS) {
-                TransferFlags(input, PAK_DISMISS_BUTTONS);
-                g_bPakDialogState = PAK_STATE_FINISH;
-            }
-        } else if (input->buttons & INPUT_A) {
-            TransferFlags(input, INPUT_A);
-            g_dwPakError = 0;
-            g_bPakDialogState = PAK_STATE_INIT_PAK;
-        } else if (input->buttons & INPUT_B) {
-            TransferFlags(input, INPUT_B);
-            g_dwPakError = 0;
-            g_bPakDialogState = PAK_STATE_FINISH;
+        if (g_dwPakError == 9999) {
+#if (TGR_REGION == TGR_REGION_JP)
+            top = 0xAD;
             if (inCarSelect == 1) {
-                g_dwPakError = PAK_DIALOG_CANCELLED;
+                top = 0xD5;
+            }
+            y = top - g_texButtonA.width + 0x7E;
+            DrawRectBorder(200, top, 0xF0, 0x86, 3, 0, 0, 0x80, 0x80, 0x80);
+            DrawText("%j\xD2\xD3\x8D\x8F\xA1s", 108, (top + 32) >> 1);
+            DrawText("%j\xC1\xCF\xC3\xC8(\x88\x8D\x8F\xA1w", 108, ((top + 32) >> 1) + 13);
+            DrawText("%j\xD4\xD5"
+                     "Bc\xDB"
+                     "2@&",
+                     108,
+                     ((top + 32) >> 1) + 26);
+#else
+            top = 0xA0;
+            if (inCarSelect == 1) {
+                top = 200;
+            }
+            y = top - g_texButtonA.width + 0x98;
+            DrawRectBorder(0x7A, top, 0x18C, 0xA0, 3, 0, 0, 0x80, 0x80, 0x80);
+            DrawText("PLEASE REMOVE THE RUMBLE PAK", 69, (top + 32) >> 1);
+            DrawText("AND INSERT THE CONTROLLER PAK", 69, ((top + 32) >> 1) + 13);
+            DrawText("INTO CONTROLLER.  PRESS THE A", 69, ((top + 32) >> 1) + 26);
+            DrawText("BUTTON WHEN READY.", 69, ((top + 32) >> 1) + 39);
+#endif
+            SetTextSize(10);
+            DrawText("%wwOK", (g_texButtonA.width + 0xDEU) >> 1, (y + 18) >> 1);
+            DrawText("%wwCANCEL", (g_texButtonB.width + 0x14AU) >> 1, (y + 18) >> 1);
+            DrawTexturedSprite(&g_texButtonA, 0xD8, y);
+            DrawTexturedSprite(&g_texButtonB, 0x144, y);
+        }
+        if (g_dwPakError != 9999) {
+            if (g_aPlayerInputState[player].buttons & 0x8030) {
+                TransferFlags((&g_aPlayerInputState[player]), 0x8030);
+                g_bPakDialogState = 12;
+            }
+        } else if (g_aPlayerInputState[player].buttons & 0x10) {
+            TransferFlags((&g_aPlayerInputState[player]), 0x10);
+            g_dwPakError = 0;
+            g_bPakDialogState = 3;
+        } else if (g_aPlayerInputState[player].buttons & 0x20) {
+            TransferFlags((&g_aPlayerInputState[player]), 0x20);
+            g_dwPakError = 0;
+            g_bPakDialogState = 12;
+            if (inCarSelect == 1) {
+                g_dwPakError = 999;
             }
         }
         break;
-    case PAK_STATE_DONE:
+    case 11: /* put the Rumble Pak back */
         g_bPakDecalIndex = 0;
         g_dwPakFileOffset = 0;
         g_dwPakChunkSize = 0;
         g_bPakWaitFrames = 0;
-        if (!inCarSelect) {
-            g_bPakDialogState = PAK_STATE_FINISH;
-            break;
-        }
-        if (!g_bPakRumbleSwapped) {
-            g_bPakDialogState = PAK_STATE_FINISH;
-            break;
-        }
-#if TGR_REGION == TGR_REGION_JP
-        DrawDialogBox(0xAA, 0xE6, 0x12C, 0x64);
-        SetTextStyleNormal();
-        SetTextAlignLeft();
-        SetPakTextColors(TRUE);
-        SetTextSize(14);
-        DrawText("%j振動パックを使うときは、", 0x5D, 0x83);
-        DrawText("%jコントローラパックと", 0x5D, 0x90);
-        DrawText("%j振動パックを交換して下さい。", 0x5D, 0x9D);
+        if (inCarSelect == 0) {
+            g_bPakDialogState = 12;
+        } else if (g_bPakRumbleSwapped != 0) {
+#if (TGR_REGION == TGR_REGION_JP)
+            DrawRectBorder(0xAA, 0xE6, 300, 100, 3, 0, 0, 0x80, 0x80, 0x80);
+            SetTextStyleNormal();
+            SetTextAlignLeft();
+            SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
+            SetTextSize(14);
+            DrawText("%j\xD2\xD3\x8D\x8F\xA1w\xDEPsA5'", 93, 131);
+            DrawText("%j\xC1\xCF\xC3\xC8(\x88\x8D\x8F\xA1s", 93, 144);
+            DrawText("%j\xD2\xD3\x8D\x8F\xA1w\xD4\xD5"
+                     "Bc\xDB"
+                     "2@&",
+                     93,
+                     157);
 #else
-        DrawDialogBox(0x73, 0xCC, 0x19A, 0x98);
-        SetTextStyleNormal();
-        SetTextAlignLeft();
-#if TGR_REGION == TGR_REGION_EU
-        SetPakTextColors(TRUE);
-        SetTextSize(12);
+            DrawRectBorder(0x73, 0xCC, 0x19A, 0x98, 3, 0, 0, 0x80, 0x80, 0x80);
+            SetTextStyleNormal();
+            SetTextAlignLeft();
+#if (TGR_REGION == TGR_REGION_EU)
+            SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
+            SetTextSize(12);
 #else
-        SetTextSize(12);
-        SetPakTextColors(TRUE);
+            SetTextSize(12);
+            SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
 #endif
-        DrawText("IF THE RUMBLE PAK IS TO BE USED,", 0x41, 0x76);
-        DrawText("REMOVE THE CONTROLLER PAK AND", 0x41, 0x83);
-        DrawText("INSERT THE RUMBLE PAK INTO THE", 0x41, 0x90);
-        DrawText("CONTROLLER.  PRESS THE A BUTTON", 0x41, 0x9D);
-        DrawText("TO CONTINUE.", 0x41, 0xAA);
-#endif /* TGR_REGION == TGR_REGION_JP */
-        input = &g_aPlayerInputState[player];
-        if (input->buttons & (INPUT_Z | INPUT_A)) {
-            TransferFlags(input, INPUT_Z | INPUT_A);
-            g_bPakRumbleSwapped = FALSE;
-            g_dwPakError = 0;
-            if (osMotorInit(&g_SiMesgQueue, &g_aContPfs[player], player) == 0) {
-                g_abRumblePakPresent[player] = TRUE;
+            DrawText("IF THE RUMBLE PAK IS TO BE USED,", 65, 118);
+            DrawText("REMOVE THE CONTROLLER PAK AND", 65, 131);
+            DrawText("INSERT THE RUMBLE PAK INTO THE", 65, 144);
+            DrawText("CONTROLLER.  PRESS THE A BUTTON", 65, 157);
+            DrawText("TO CONTINUE.", 65, 170);
+#endif
+            if (g_aPlayerInputState[player].buttons & 0x8010) {
+                TransferFlags((&g_aPlayerInputState[player]), 0x8010);
+                g_bPakRumbleSwapped = 0;
+                g_dwPakError = 0;
+                if (osMotorInit(&g_SiMesgQueue, &g_aContPfs[player], player) == 0) {
+                    g_abRumblePakPresent[player] = 1;
+                }
+                g_bPakDialogState = 12;
             }
-            g_bPakDialogState = PAK_STATE_FINISH;
+        } else {
+            g_bPakDialogState = 12;
         }
         break;
-    case PAK_STATE_FINISH:
-        g_bPakDialogActive = FALSE;
-        FadeSfxTo(1.0f, PAK_FADE_TIME);
-        FadeMusicTo(1.0f, PAK_FADE_TIME);
-        g_wSerialInterfaceIdle = TRUE;
-        if (!g_dwPakError) {
-            *done = TRUE;
-            if (!inCarSelect) {
+    case 12: /* done */
+        g_bPakDialogActive = 0;
+        FadeSfxTo(1.0f, 0.2f);
+        FadeMusicTo(1.0f, 0.2f);
+        g_wSerialInterfaceIdle = 1;
+        if (g_dwPakError == 0) {
+            *done = 1;
+            if (inCarSelect == 0) {
                 g_bPaintTool = g_bPreviousPaintTool;
             }
             return 0;
         }
-        if (!inCarSelect) {
-            input = &g_aPlayerInputState[player];
-            if (input->buttons & PAK_DISMISS_BUTTONS) {
-                TransferFlags(input, PAK_DISMISS_BUTTONS);
-                g_bPaintTool = g_bPreviousPaintTool;
-            }
+        if (inCarSelect == 0 && (g_aPlayerInputState[player].buttons & 0x8030) != 0) {
+            TransferFlags((&g_aPlayerInputState[player]), 0x8030);
+            g_bPaintTool = g_bPreviousPaintTool;
         }
-        *done = FALSE;
+        *done = 0;
         return g_dwPakError;
     }
     return 0;
