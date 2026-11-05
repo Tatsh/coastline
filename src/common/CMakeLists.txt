@@ -79,7 +79,6 @@ set(_common_sources
   screenrect.c
   seasontrack.c
   shadowreset.c
-  sidegrip.c
   sky.c
   skystate.c
   soundeffect.c
@@ -139,7 +138,8 @@ else()
   # The game code and data of Boss Rally that the Windows libraries and the SDL game share.
   target_sources(
     coastline_common
-    PRIVATE airplanestate.c
+    PRIVATE ${CMAKE_SOURCE_DIR}/src/win32/sidegrip.c
+            airplanestate.c
             assetfile.cpp
             assetnames.c
             buildinfo.c

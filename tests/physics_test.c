@@ -6,7 +6,7 @@
 
 #include "common/bodyforces.c"
 #include "common/collisionstep.c"
-#include "common/sidegrip.c"
+#include "n64/sidegrip.c"
 #include "physics.c"
 
 /* The globals the file reads and writes. */

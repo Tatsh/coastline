@@ -23,6 +23,7 @@ set(_n64_sources
     racemenu.c
     racesound.c
     rumble.c
+    sidegrip.c
     snapshot.c
     splash.c
     sprite.c
