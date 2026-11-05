@@ -198,7 +198,11 @@ void DrawModelAt(Model *model, f32 x, f32 y, f32 z, f32 angle, f32 scale);
 #if TGR_BOSS_RALLY
 Model *DecompressModel(void *dst, const char *source);
 #else
+#ifdef COASTLINE_SPLASH_ROM_POINTERS
+Model *DecompressModel(void *dst, char *source);
+#else
 Model *DecompressModel(void *dst, u32 source);
+#endif
 #endif
 
 /**

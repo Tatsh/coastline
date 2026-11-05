@@ -45,7 +45,11 @@ u32 DmaReadWord(u32 romOffset);
  * @ghidraAddress BRD3D: 0x10034c88
  * @ghidraAddress BRGlide: 0x1002e339
  */
+#ifdef COASTLINE_SPLASH_ROM_POINTERS
+u32 DmaReadAssetSize(char *romOffset);
+#else
 u32 DmaReadAssetSize(u32 romOffset);
+#endif
 
 /** A decompression that runs over several calls of DecompressFromRom(), a step a call. */
 typedef struct {
@@ -98,7 +102,11 @@ void InitDmaRequest(DecompressJob *job, u8 *buffer);
  * @ghidraAddress BRD3D: 0x10035059
  * @ghidraAddress BRGlide: 0x1002e70a
  */
+#ifdef COASTLINE_SPLASH_ROM_POINTERS
+u32 DecompressFromRom(void *dst, char *romOffset, DecompressJob *job);
+#else
 u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job);
+#endif
 
 /**
  * The words the DMA reads sizes and chunk lengths into.
