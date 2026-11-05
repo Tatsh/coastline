@@ -38,7 +38,6 @@ u8 *g_pDecalTexels, *g_pDecalMask, *g_pDecalUndoBuffer, *s_pMirrorSource;
 u8 g_bPakDialogActive, g_bPakFileNeedsCreate, g_bPakRumbleSwapped, g_bPakRetryNewPak,
     g_bPakDialogState, g_bPakDecalIndex, g_bPakWaitFrames;
 s32 g_dwPakFileOffset, g_dwPakError, g_dwPakFileNo, g_dwPakChunkSize;
-PaletteSwatch g_aDecalSwatches[DECAL_SWATCHES];
 DecalGlyph g_aDecalGlyphs[DECAL_GLYPHS];
 DecalGlyph *g_apDecalTextGlyphs[DECAL_TEXT_LENGTH];
 char g_szDecalText[24];

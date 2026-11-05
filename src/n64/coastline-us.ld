@@ -30,16 +30,20 @@ SECTIONS
 
     . = 0x802ac400;
     _bss_start = .;
-    /* The IDO car-select statics reuse the original car-select state area. */
+    /* IDO statics reuse the original car-select and paint-shop state areas. */
     OVERLAY 0x802ac400 : NOCROSSREFS {
         .bss {
-            *(EXCLUDE_FILE (*carselect.c.obj *trackrender.c.obj) .bss .bss.*)
+            *(EXCLUDE_FILE (*carselect.c.obj *paintshop.c.obj *trackrender.c.obj) .bss .bss.*)
             *(COMMON)
             . = ALIGN(8);
         }
         .carselect_bss {
             . = 0x80316248 - 0x802ac400;
             *carselect.c.obj(.bss .bss.*)
+        }
+        .paintshop_bss {
+            . = 0x80369b80 - 0x802ac400;
+            *paintshop.c.obj(.bss .bss.*)
         }
         .trackrender_bss {
             . = g_fViewMatrixMaxAbs;
@@ -51,6 +55,10 @@ SECTIONS
     ASSERT(ADDR(.bss) + SIZEOF(.bss) <= 0x80382bb0, "The BSS grew past its original end.")
     ASSERT(ADDR(.carselect_bss) + SIZEOF(.carselect_bss) <= 0x80316380,
            "Car-select state exceeds its original BSS area.")
+    ASSERT(ADDR(.paintshop_bss) + SIZEOF(.paintshop_bss) <= 0x80369cc0,
+           "Paint-shop palette exceeds its original BSS area.")
+    ASSERT(g_aDecalSwatches == g_dwAnchorYInitialized + 8,
+           "Paint-shop palette moved outside its original BSS slot.")
     ASSERT(ADDR(.trackrender_bss) + SIZEOF(.trackrender_bss) <= g_dwInstanceHideFlags + 4,
            "Track-render state exceeds its original BSS area.")
 

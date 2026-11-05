@@ -3576,16 +3576,11 @@ nonmatching g_dwAnchorYInitialized, 0x4
 dlabel g_dwAnchorYInitialized
     /* 8036ACF0 */ .space 0x04
 
-nonmatching D_8036ACF4, 0x4
+nonmatching D_8036ACF4, 0x8
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8036ACF4
-    /* 8036ACF4 */ .space 0x04
-
-nonmatching g_aDecalSwatches, 0x4
-
-dlabel g_aDecalSwatches
-    /* 8036ACF8 */ .space 0x04
+    /* 8036ACF4 */ .space 0x08
 
 nonmatching D_8036ACFC, 0x14
 
