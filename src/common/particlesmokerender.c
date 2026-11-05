@@ -129,16 +129,16 @@ void RenderTireSmoke(void) {
                          GBL_c2(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1));
         gDPSetBlendColor(gDisplayListPtr++, 0, 0, 0, 0);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
-        switch (g_dwSelectedTrackId) {
-        case TRACK_MOUNTAIN:
-        case TRACK_MIRROR_MOUNTAIN:
-            RENDER_SMOKE_LIST(SMOKE_LIST_HEAD, 0x60, 0x54, 0x38);
-            RENDER_SMOKE_LIST(PAVED_SMOKE_LIST_HEAD, 0x60, 0x5C, 0x50);
-            break;
+        switch ((s32)g_dwSelectedTrackId) {
         case TRACK_JUNGLE:
         case TRACK_MIRROR_JUNGLE:
             RENDER_SMOKE_LIST(SMOKE_LIST_HEAD, 0x70, 0x58, 0x38);
             RENDER_SMOKE_LIST(PAVED_SMOKE_LIST_HEAD, 0x70, 0x68, 0x58);
+            break;
+        case TRACK_MOUNTAIN:
+        case TRACK_MIRROR_MOUNTAIN:
+            RENDER_SMOKE_LIST(SMOKE_LIST_HEAD, 0x60, 0x54, 0x38);
+            RENDER_SMOKE_LIST(PAVED_SMOKE_LIST_HEAD, 0x60, 0x5C, 0x50);
             break;
         default:
             RENDER_SMOKE_LIST(SMOKE_LIST_HEAD, 0xA0, 0x88, 0x60);
