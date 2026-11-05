@@ -33,7 +33,7 @@ SECTIONS
     /* The IDO car-select statics reuse the original car-select state area. */
     OVERLAY 0x802ac400 : NOCROSSREFS {
         .bss {
-            *(EXCLUDE_FILE (*carselect.c.obj) .bss .bss.*)
+            *(EXCLUDE_FILE (*carselect.c.obj *trackrender.c.obj) .bss .bss.*)
             *(COMMON)
             . = ALIGN(8);
         }
@@ -41,12 +41,18 @@ SECTIONS
             . = 0x80316248 - 0x802ac400;
             *carselect.c.obj(.bss .bss.*)
         }
+        .trackrender_bss {
+            . = g_fViewMatrixMaxAbs;
+            *trackrender.c.obj(.bss .bss.*)
+        }
     }
     _bss_size = SIZEOF(.bss);
     /* The game uses the memory after the BSS by address, so C may not add to the BSS. */
     ASSERT(ADDR(.bss) + SIZEOF(.bss) <= 0x80382bb0, "The BSS grew past its original end.")
     ASSERT(ADDR(.carselect_bss) + SIZEOF(.carselect_bss) <= 0x80316380,
            "Car-select state exceeds its original BSS area.")
+    ASSERT(ADDR(.trackrender_bss) + SIZEOF(.trackrender_bss) <= g_dwInstanceHideFlags + 4,
+           "Track-render state exceeds its original BSS area.")
 
     /DISCARD/ : {
         *(.MIPS.abiflags)

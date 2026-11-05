@@ -8,6 +8,12 @@
 #include <stdio.h>
 
 #include "common/trackrender.c"
+static f32 renderMatrices[4][4][4];
+#define g_afViewProjMatrix renderMatrices[0]
+#define g_afMvpMatrix renderMatrices[3]
+#include "n64/trackrender.c"
+#undef g_afMvpMatrix
+#undef g_afViewProjMatrix
 #include "common/visibleinstances.c"
 
 Gfx *gDisplayListPtr;
@@ -50,6 +56,7 @@ s32 g_dwNumVehicles, g_dwNumActiveVehicles;
 Vehicle g_aVehicles[MAX_VEHICLES];
 static PlayerInputState inputs[MAX_VEHICLES];
 static PlayerProfile profile;
+PlayerProfile *g_pActiveProfile;
 static VehicleModel model;
 u32 g_dwRandomSeed;
 
@@ -77,7 +84,7 @@ Lights1 g_aTrackLights[4];
 s32 g_nTrackLightBufferIndex = 3;
 
 /* The source display lists and vertices of the placed models. */
-static Gfx sourceList[16], plainList[1];
+static Gfx sourceList[16], plainList[1], wetList[1];
 static Vtx sourceVertices[64];
 
 /* Stubs of the routines the file calls, which record what they were given. */
@@ -203,6 +210,17 @@ static u32 Count(void) {
     return (u32)(gDisplayListPtr - gfx);
 }
 
+static int HasDisplayList(const Gfx *list) {
+    u32 index;
+
+    for (index = 0; index < Count(); index++) {
+        if (gfx[index].words.w0 == 0x06000000 && gfx[index].words.w1 == (u32)list) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
 static void Word(Gfx *list, u32 i, u32 w0, u32 w1) {
     if (list[i].words.w0 != w0 || list[i].words.w1 != w1) {
         fprintf(stderr,
@@ -242,6 +260,8 @@ int main(void) {
     s32 i;
 
     g_aVehicles[0].profile = &profile;
+    g_pActiveProfile = &profile;
+    Identity(renderMatrices[0]);
 
     g_LoadedTrack.instances = instances;
     g_LoadedTrack.gridInstances = gridInstances;
@@ -495,13 +515,14 @@ int main(void) {
     instances[4].displayList = plainList;
     instances[8].groups = 0x4;
     instances[9].flags = TRACK_INSTANCE_DARK_OR_WET;
+    instances[9].displayList = wetList;
     g_dwGameMode = GAME_MODE_ARCADE;
     g_nTrackLightBufferIndex = 3;
     Reset();
     blocksUsed = 0;
     conversions = 0;
     RenderTrackGeometry(FALSE);
-    assert(g_dwInstanceHideFlags == TRACK_INSTANCE_DARK_OR_WET && debugSteps == 1);
+    assert(!HasDisplayList(wetList) && debugSteps == 1);
     assert(fogs == 2 && viewports == 1);
     Word(gfx, 0, 0x01030040, (u32)&projection + 0x80000000);
     Word(gfx, 1, 0x01060040, (u32)&g_mtxIdentity + 0x80000000);
@@ -601,7 +622,7 @@ int main(void) {
     g_dwRainMode = 1;
     Reset();
     RenderTrackGeometry(FALSE);
-    assert(g_dwInstanceHideFlags == (TRACK_INSTANCE_ARCADE | TRACK_INSTANCE_CLEAR_SKY));
+    assert(HasDisplayList(wetList));
     assert(g_dwTrackOtherModeLBlend == 0xC8000000);
     Word(gfx, 30, 0xB7000000, 0x000B2005);
 

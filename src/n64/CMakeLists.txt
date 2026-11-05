@@ -31,6 +31,7 @@ set(_n64_sources
     texrect.c
     text.c
     timing.c
+    trackrender.c
     vehicle.c
     vehiclemodelrender.c
     vehiclerender.c

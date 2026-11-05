@@ -20,6 +20,15 @@ extern "C" {
 
 #if !TGR_BOSS_RALLY
 /**
+ * The profile used for the active season when selecting track instances.
+ *
+ * @ghidraAddress USA: 0x8031c5bc
+ * @ghidraAddress EUR: 0x8031eabc
+ * @ghidraAddress JPN: 0x8031d6ec
+ */
+extern PlayerProfile *g_pActiveProfile;
+
+/**
  * Whether shadows include triangles outside their texture and extend beyond their vehicle's
  * screen rectangle.
  *

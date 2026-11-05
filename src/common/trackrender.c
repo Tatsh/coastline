@@ -329,9 +329,6 @@ void RenderTrackGeometry(const ViewportRect *viewports,
                          s32 deferred,
                          const RacerSlot *slots,
                          Vehicle *vehicles) {
-#else
-void RenderTrackGeometry(s32 deferred) {
-#endif
     TrackInstance *instance;
 #if TGR_BOSS_RALLY
     f32(*block)[4];
@@ -593,3 +590,4 @@ void RenderTrackGeometry(s32 deferred) {
     TRACK_TIMING(0, 0, 0xB4, 0, 0xFF);
     g_nDeferredInstanceLastIdx = deferredLast;
 }
+#endif /* TGR_BOSS_RALLY */
