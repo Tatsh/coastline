@@ -283,60 +283,6 @@ static inline void SetScreenRect(ScreenRect *rect, s32 x, s32 y, s32 width, s32 
     rect->height = height;
 }
 
-/* Put the car of the player in the paint shop, facing the camera by the track. */
-static inline void SetUpPaintShopCar(void) {
-    CameraFrame *camera;
-    Vehicle *vehicle;
-
-    g_dwVehicleViewModeIndex = 0;
-    g_bPaintShopPlayer = g_dwMenuChoosingPlayer;
-    g_dwNumActiveVehicles = 1;
-    InitVehicleColor(&g_aVehicles[g_bPaintShopPlayer]);
-    g_aVehicles[g_bPaintShopPlayer].driver = UpdatePhysicsStep;
-    g_aVehicles[g_bPaintShopPlayer].carModel = g_aVehicles[0].carModel;
-    InstallVehicleModel(
-        &g_aVehicles[g_bPaintShopPlayer], g_bPaintShopPlayer, g_aVehicles[0].carModel);
-    vehicle = &g_aVehicles[g_bPaintShopPlayer];
-    g_pCurrentVehicleModelData = vehicle->model;
-    vehicle->frame.position.z = 0.0f;
-    vehicle->frame.position.y = 0.0f;
-    vehicle->frame.position.x = 0.0f;
-    g_aVehicles[g_bPaintShopPlayer].frame.up.z = 1.0f;
-    g_aVehicles[g_bPaintShopPlayer].frame.up.y = 0.0f;
-    g_aVehicles[g_bPaintShopPlayer].frame.up.x = 0.0f;
-    g_aVehicles[g_bPaintShopPlayer].frame.forward.y = 1.0f;
-    g_aVehicles[g_bPaintShopPlayer].frame.forward.x = 0.0f;
-    g_aVehicles[g_bPaintShopPlayer].frame.forward.z = 0.0f;
-    g_aVehicles[g_bPaintShopPlayer].frame.side.z = 0.0f;
-    g_aVehicles[g_bPaintShopPlayer].frame.side.y = 0.0f;
-    g_aVehicles[g_bPaintShopPlayer].frame.side.x = -1.0f;
-    vehicle = &g_aVehicles[g_bPaintShopPlayer];
-    camera = &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE];
-    if (vehicle->carModel == CAR_LOWERED_IN_PREVIEW) {
-        camera->position.x = 7.3f;
-        camera->position.y = 7.3f;
-        camera->position.z = 2.0f;
-    } else {
-        camera->position.x = 6.5f;
-        camera->position.y = 6.5f;
-        camera->position.z = 2.0f;
-    }
-    camera = &g_aVehicles[g_bPaintShopPlayer].cameras[VEHICLE_CAMERA_TRACKSIDE];
-    Vec3fNegate(&camera->forward, &camera->position);
-    Vec3fNormalize(&g_aVehicles[g_bPaintShopPlayer].cameras[VEHICLE_CAMERA_TRACKSIDE].forward);
-    camera = &g_aVehicles[g_bPaintShopPlayer].cameras[VEHICLE_CAMERA_TRACKSIDE];
-    camera->up.y = 0.0f;
-    camera->up.x = 0.0f;
-    camera->up.z = 1.0f;
-    camera = &g_aVehicles[g_bPaintShopPlayer].cameras[VEHICLE_CAMERA_TRACKSIDE];
-    Vec3fCross(&camera->side, &camera->up, &camera->forward);
-    camera = &g_aVehicles[g_bPaintShopPlayer].cameras[VEHICLE_CAMERA_TRACKSIDE];
-    Vec3fCross(&camera->up, &camera->forward, &camera->side);
-    vehicle = &g_aVehicles[g_bPaintShopPlayer];
-    vehicle->groundInstanceCount = 0;
-    vehicle->nearbyInstanceCount = 0;
-}
-
 /* Load the buttons of the decal slots and work out the rectangles that pick them. */
 static inline void LoadDecalSlotIcons(void) {
     Sprite *icon;
@@ -507,63 +453,6 @@ static inline void LayOutPaintShopControls(void) {
     }
 }
 
-/* Load and place everything of the paint shop on entering it. */
-static void InitPaintShop(void) {
-    VehicleModel *model;
-
-    SetUpPaintShopCar();
-    ResetHeap();
-#if TGR_REGION != TGR_REGION_JP
-    osSyncPrintf("\nAllocating %d bytes (x2) for decal buffers...\n\n", DECAL_BUFFER_SIZE);
-#endif
-    g_pDecalUndoBuffer = AllocHeapAligned(DECAL_BUFFER_SIZE);
-    /* The second buffer is not read again. */
-    g_pDecalScratchTexels = AllocHeapAligned(DECAL_BUFFER_SIZE);
-    LoadTextureFromRom(&g_texBackground);
-    LoadTextureFromRom(&g_texLogo);
-    LoadTextureFromRom(&g_texPaintWholeCar);
-    g_texPaintWholeCar.style = SPRITE_STYLE_TINTED;
-    LoadDecalSlotIcons();
-    LayOutPaintShopButtons();
-    LoadPaintToolIcons();
-#if TGR_REGION == TGR_REGION_JP
-    DmaRead(g_awPaintShopButtonPalette,
-            (u32)_paintShopPaletteSegmentRomStart,
-            _paintShopPaletteSegmentRomEnd - _paintShopPaletteSegmentRomStart);
-#endif
-    LoadTextureFromRom(&g_texPaintCursor);
-    LoadTextureFromRom(&g_texPaintFillCursor);
-    LoadTextureFromRom(&g_texPaintBrushCursor);
-    LoadTextureFromRom(&g_texPaintCrosshairCursor);
-    LoadTextureFromRom(&g_texPaintTextCursor);
-    LoadTextureFromRom(&g_texPaintEyedropperCursor);
-    LoadTextureFromRom(&g_texKeyboardPanel);
-    LoadTextureFromRom(&g_texKeyboardBackground);
-    LoadTextureFromRom(&g_texKeyboardHighlight);
-    LoadTextureFromRom(&g_texButtonA);
-    LoadTextureFromRom(&g_texButtonB);
-    LoadTextureFromRom(&g_texDecalFont);
-    g_texKeyboardBackground.originX = g_texKeyboardPanel.originX + 8;
-    g_texKeyboardBackground.originY = g_texKeyboardPanel.originY + 8;
-    g_texKeyboardBackground.drawWidth = g_texKeyboardPanel.drawWidth - 16;
-    g_texKeyboardBackground.drawHeight = g_texKeyboardPanel.drawHeight - 16;
-    LoadStyleIcons();
-    model = g_pCurrentVehicleModelData;
-    SelectDecalTexels(model, g_bDecalSlot);
-    g_pDecalPalette = model->textures[model->materialTextures[g_bDecalSlot]].palette;
-    g_pDecalSlotIcon = g_apDecalSlotIcons[g_bDecalSlot];
-    LayOutPaintShopControls();
-    g_rcDecalCanvas.width = g_bDecalWidth * 4;
-    g_rcDecalCanvas.height = g_bDecalHeight * 4;
-    g_rcDecalCanvas.x =
-        g_rcDecalCanvasFrame.x + ((g_rcDecalCanvasFrame.width - g_rcDecalCanvas.width) >> 1);
-    g_rcDecalCanvas.y =
-        g_rcDecalCanvasFrame.y + ((g_rcDecalCanvasFrame.height - g_rcDecalCanvas.height) >> 1);
-    g_bPaintShopInitialized = TRUE;
-    gControllerPakState = 0;
-    SetFadeTarget(1.0f, 0.2f);
-}
-
 /* Fill a rectangle of the screen. */
 static inline void FillScreenRect(ScreenRect *rect, u8 red, u8 green, u8 blue) {
     DrawFilledRectHiRes(rect->x, rect->y, rect->width, rect->height, red, green, blue);
@@ -590,60 +479,6 @@ static inline void DrawBrushSizes(Sprite *sizes, ScreenRect *chosen) {
                            0xFF,
                            0xCA,
                            0);
-}
-
-/* Draw the background, the decal slots, the decal, the palette, and the tool buttons. */
-static void DrawPaintShop(void) {
-    VehicleModel *model;
-    ScreenRect *chosen;
-    s32 i;
-
-    DrawSpriteTinted(&g_texBackground, 0x71, 0x0B, 0x40);
-    DrawSpriteAtOrigin(WITH_PALETTE(&g_texLogo, NULL));
-    SetTextSize(TITLE_SIZE);
-    SetTextAlignCenter();
-    SetTextStyleNormal();
-    DrawText("%ryPAINT SHOP", 160, TITLE_Y);
-    for (i = 0; i < DECAL_SLOTS; i++) {
-        if (i == g_bDecalSlot) {
-            DrawSpriteTinted(g_apDecalSlotIcons[i], 0x20, 0xC8, 0xFF);
-        } else {
-            DrawSpriteTinted(g_apDecalSlotIcons[i], 0x20, 0x10, 0xFF);
-        }
-    }
-    DrawSpriteTinted(&g_texPanel8Overlay, 0xFF, 0xFF, 0xFF);
-    DrawSpriteTinted(&g_texPanel9Overlay, 0xC0, 0, 0);
-    FillScreenRect(&g_rcDecalCanvasFrame, 0, 0, 0);
-    model = g_pCurrentVehicleModelData;
-    DrawTexturedTile(model->materialTextures[g_bDecalSlot], model->textures);
-    EmitScaledTextureRect(g_bDecalWidth,
-                          g_bDecalHeight,
-                          g_rcDecalCanvas.x,
-                          g_rcDecalCanvas.y,
-                          g_rcDecalCanvas.width,
-                          g_rcDecalCanvas.height);
-    DrawDecalColorPalette();
-    DrawPaintShopButton(&g_aPaintToolButtonRects[0], 0, 0, 0);
-    if (g_texPaintToolBrush.style == 0) {
-        DrawSpriteAtOrigin(WITH_PALETTE(&g_texBrushSizeRound, NULL));
-    } else {
-        DrawSpriteAtOrigin(WITH_PALETTE(&g_texBrushSizeSquare, NULL));
-    }
-    FillScreenRect(&g_aBrushSizeButtonRects[g_bBrushSize], 0, 0, 0);
-    chosen = &g_aBrushSizeButtonRects[g_bBrushSize];
-    if (g_texPaintToolBrush.style == 0) {
-        DrawBrushSizes(&g_texBrushSizeRound, chosen);
-    } else {
-        DrawBrushSizes(&g_texBrushSizeSquare, chosen);
-    }
-    for (i = PAINT_TOOL_BRUSH; i < PAINT_TOOLS; i++) {
-        if (i == g_bPaintTool) {
-            DrawPaintShopButton(&g_aPaintToolButtonRects[i], 0x20, 0xC8, 0xFF);
-        } else {
-            DrawPaintShopButton(&g_aPaintToolButtonRects[i], 0, 0, 0);
-        }
-        DrawSpriteAtOrigin(WITH_PALETTE(g_apPaintToolIcons[i], BUTTON_PALETTE));
-    }
 }
 
 /* Draw the cursor of the tool in use over the decal. */
@@ -720,55 +555,229 @@ static inline void RunPaintShopPakDialog(u8 operation, u8 *done) {
     }
 }
 
-/* Run the menu or the dialog of the tool in use while the cursor is off the decal. */
-static inline void RunPaintShopMenus(u8 *done) {
-    switch (g_bPaintTool) {
-    case PAINT_TOOL_MIRROR:
-        ProcessMirrorFlipMenu();
-        break;
-    case PAINT_TOOL_CLEAR:
-        ProcessFillClearMenu();
-        break;
-    case PAINT_TOOL_LOAD:
-        RunPaintShopPakDialog(PAINT_TOOL_LOAD, done);
-        break;
-    case PAINT_TOOL_SAVE:
-        RunPaintShopPakDialog(PAINT_TOOL_SAVE, done);
-        break;
-    case PAINT_TOOL_EXIT:
-        ProcessPaintShopExitConfirm();
-        break;
-    default:
-        if (g_bStyleMenuOpen) {
-            if (g_bPaintTool == PAINT_TOOL_BRUSH) {
-                ProcessBrushStyleMenu();
-            } else if (g_bPaintTool == PAINT_TOOL_TEXT) {
-                ProcessTextStyleMenu();
-            } else if (g_bPaintTool == PAINT_TOOL_RECTANGLE) {
-                ProcessRectStyleMenu();
-            } else if (g_bPaintTool == PAINT_TOOL_OVAL) {
-                ProcessOvalStyleMenu();
-            }
-        } else if (g_bColorEditorOpen) {
-            ProcessColorEditorDialog();
+void ProcessPaintShopScreen(void) {
+    CameraFrame *camera;
+    Vehicle *vehicle;
+    VehicleModel *model;
+    ScreenRect *chosen;
+    PlayerInputState *input;
+    s32 i;
+    u8 done = FALSE;
+
+    g_wSerialInterfaceIdle = FALSE;
+    if (!g_bPaintShopInitialized) {
+        g_dwVehicleViewModeIndex = 0;
+        g_bPaintShopPlayer = g_dwMenuChoosingPlayer;
+        g_dwNumActiveVehicles = 1;
+        InitVehicleColor(&g_aVehicles[g_bPaintShopPlayer]);
+        g_aVehicles[g_bPaintShopPlayer].driver = UpdatePhysicsStep;
+        g_aVehicles[g_bPaintShopPlayer].carModel = g_aVehicles[0].carModel;
+        InstallVehicleModel(
+            &g_aVehicles[g_bPaintShopPlayer], g_bPaintShopPlayer, g_aVehicles[0].carModel);
+        vehicle = &g_aVehicles[g_bPaintShopPlayer];
+        g_pCurrentVehicleModelData = vehicle->model;
+        vehicle->frame.position.z = 0.0f;
+        vehicle->frame.position.y = 0.0f;
+        vehicle->frame.position.x = 0.0f;
+        g_aVehicles[g_bPaintShopPlayer].frame.up.z = 1.0f;
+        g_aVehicles[g_bPaintShopPlayer].frame.up.y = 0.0f;
+        g_aVehicles[g_bPaintShopPlayer].frame.up.x = 0.0f;
+        g_aVehicles[g_bPaintShopPlayer].frame.forward.y = 1.0f;
+        g_aVehicles[g_bPaintShopPlayer].frame.forward.x = 0.0f;
+        g_aVehicles[g_bPaintShopPlayer].frame.forward.z = 0.0f;
+        g_aVehicles[g_bPaintShopPlayer].frame.side.z = 0.0f;
+        g_aVehicles[g_bPaintShopPlayer].frame.side.y = 0.0f;
+        g_aVehicles[g_bPaintShopPlayer].frame.side.x = -1.0f;
+        vehicle = &g_aVehicles[g_bPaintShopPlayer];
+        camera = &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE];
+        if (vehicle->carModel == CAR_LOWERED_IN_PREVIEW) {
+            camera->position.x = 7.3f;
+            camera->position.y = 7.3f;
+            camera->position.z = 2.0f;
         } else {
-            ProcessDecalEditorInput();
-            UpdateCursorFromInput();
-            DrawSpriteAtOrigin(WITH_PALETTE(&g_texPaintCursor, NULL));
+            camera->position.x = 6.5f;
+            camera->position.y = 6.5f;
+            camera->position.z = 2.0f;
         }
-        break;
+        camera = &g_aVehicles[g_bPaintShopPlayer].cameras[VEHICLE_CAMERA_TRACKSIDE];
+        Vec3fNegate(&camera->forward, &camera->position);
+        Vec3fNormalize(&g_aVehicles[g_bPaintShopPlayer].cameras[VEHICLE_CAMERA_TRACKSIDE].forward);
+        camera = &g_aVehicles[g_bPaintShopPlayer].cameras[VEHICLE_CAMERA_TRACKSIDE];
+        camera->up.y = 0.0f;
+        camera->up.x = 0.0f;
+        camera->up.z = 1.0f;
+        camera = &g_aVehicles[g_bPaintShopPlayer].cameras[VEHICLE_CAMERA_TRACKSIDE];
+        Vec3fCross(&camera->side, &camera->up, &camera->forward);
+        camera = &g_aVehicles[g_bPaintShopPlayer].cameras[VEHICLE_CAMERA_TRACKSIDE];
+        Vec3fCross(&camera->up, &camera->forward, &camera->side);
+        vehicle = &g_aVehicles[g_bPaintShopPlayer];
+        vehicle->groundInstanceCount = 0;
+        vehicle->nearbyInstanceCount = 0;
+        ResetHeap();
+#if TGR_REGION != TGR_REGION_JP
+        osSyncPrintf("\nAllocating %d bytes (x2) for decal buffers...\n\n", DECAL_BUFFER_SIZE);
+#endif
+        g_pDecalUndoBuffer = AllocHeapAligned(DECAL_BUFFER_SIZE);
+        /* The second buffer is not read again. */
+        g_pDecalScratchTexels = AllocHeapAligned(DECAL_BUFFER_SIZE);
+        LoadTextureFromRom(&g_texBackground);
+        LoadTextureFromRom(&g_texLogo);
+        LoadTextureFromRom(&g_texPaintWholeCar);
+        g_texPaintWholeCar.style = SPRITE_STYLE_TINTED;
+        LoadDecalSlotIcons();
+        LayOutPaintShopButtons();
+        LoadPaintToolIcons();
+#if TGR_REGION == TGR_REGION_JP
+        DmaRead(g_awPaintShopButtonPalette,
+                (u32)_paintShopPaletteSegmentRomStart,
+                _paintShopPaletteSegmentRomEnd - _paintShopPaletteSegmentRomStart);
+#endif
+        LoadTextureFromRom(&g_texPaintCursor);
+        LoadTextureFromRom(&g_texPaintFillCursor);
+        LoadTextureFromRom(&g_texPaintBrushCursor);
+        LoadTextureFromRom(&g_texPaintCrosshairCursor);
+        LoadTextureFromRom(&g_texPaintTextCursor);
+        LoadTextureFromRom(&g_texPaintEyedropperCursor);
+        LoadTextureFromRom(&g_texKeyboardPanel);
+        LoadTextureFromRom(&g_texKeyboardBackground);
+        LoadTextureFromRom(&g_texKeyboardHighlight);
+        LoadTextureFromRom(&g_texButtonA);
+        LoadTextureFromRom(&g_texButtonB);
+        LoadTextureFromRom(&g_texDecalFont);
+        g_texKeyboardBackground.originX = g_texKeyboardPanel.originX + 8;
+        g_texKeyboardBackground.originY = g_texKeyboardPanel.originY + 8;
+        g_texKeyboardBackground.drawWidth = g_texKeyboardPanel.drawWidth - 16;
+        g_texKeyboardBackground.drawHeight = g_texKeyboardPanel.drawHeight - 16;
+        LoadStyleIcons();
+        model = g_pCurrentVehicleModelData;
+        SelectDecalTexels(model, g_bDecalSlot);
+        g_pDecalPalette = model->textures[model->materialTextures[g_bDecalSlot]].palette;
+        g_pDecalSlotIcon = g_apDecalSlotIcons[g_bDecalSlot];
+        LayOutPaintShopControls();
+        g_rcDecalCanvas.width = g_bDecalWidth * 4;
+        g_rcDecalCanvas.height = g_bDecalHeight * 4;
+        g_rcDecalCanvas.x =
+            g_rcDecalCanvasFrame.x + ((g_rcDecalCanvasFrame.width - g_rcDecalCanvas.width) >> 1);
+        g_rcDecalCanvas.y =
+            g_rcDecalCanvasFrame.y + ((g_rcDecalCanvasFrame.height - g_rcDecalCanvas.height) >> 1);
+        g_bPaintShopInitialized = TRUE;
+        gControllerPakState = 0;
+        SetFadeTarget(1.0f, 0.2f);
     }
-}
-
-/* Pick the color under the cursor with B, or close the keyboard and the started tool. */
-static inline void HandlePaintShopB(void) {
-    PlayerInputState *input = &g_aPlayerInputState[g_bPaintShopPlayer];
-
+    UpdateFrameTiming();
+    UpdateFadeTransitions();
+    StartHighResFrame();
+    SetupProjectionMatrix(g_dwScreenWidth, g_dwScreenHeight);
+    SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
+    ClearDepthBuffer();
+    ClearScreen(0, 0, 0);
+    DrawSpriteTinted(&g_texBackground, 0x71, 0x0B, 0x40);
+    DrawSpriteAtOrigin(WITH_PALETTE(&g_texLogo, NULL));
+    SetTextSize(TITLE_SIZE);
+    SetTextAlignCenter();
+    SetTextStyleNormal();
+    DrawText("%ryPAINT SHOP", 160, TITLE_Y);
+    for (i = 0; i < DECAL_SLOTS; i++) {
+        if (i == g_bDecalSlot) {
+            DrawSpriteTinted(g_apDecalSlotIcons[i], 0x20, 0xC8, 0xFF);
+        } else {
+            DrawSpriteTinted(g_apDecalSlotIcons[i], 0x20, 0x10, 0xFF);
+        }
+    }
+    DrawSpriteTinted(&g_texPanel8Overlay, 0xFF, 0xFF, 0xFF);
+    DrawSpriteTinted(&g_texPanel9Overlay, 0xC0, 0, 0);
+    FillScreenRect(&g_rcDecalCanvasFrame, 0, 0, 0);
+    model = g_pCurrentVehicleModelData;
+    DrawTexturedTile(model->materialTextures[g_bDecalSlot], model->textures);
+    EmitScaledTextureRect(g_bDecalWidth,
+                          g_bDecalHeight,
+                          g_rcDecalCanvas.x,
+                          g_rcDecalCanvas.y,
+                          g_rcDecalCanvas.width,
+                          g_rcDecalCanvas.height);
+    DrawDecalColorPalette();
+    DrawPaintShopButton(&g_aPaintToolButtonRects[0], 0, 0, 0);
+    if (g_texPaintToolBrush.style == 0) {
+        DrawSpriteAtOrigin(WITH_PALETTE(&g_texBrushSizeRound, NULL));
+    } else {
+        DrawSpriteAtOrigin(WITH_PALETTE(&g_texBrushSizeSquare, NULL));
+    }
+    FillScreenRect(&g_aBrushSizeButtonRects[g_bBrushSize], 0, 0, 0);
+    chosen = &g_aBrushSizeButtonRects[g_bBrushSize];
+    if (g_texPaintToolBrush.style == 0) {
+        DrawBrushSizes(&g_texBrushSizeRound, chosen);
+    } else {
+        DrawBrushSizes(&g_texBrushSizeSquare, chosen);
+    }
+    for (i = PAINT_TOOL_BRUSH; i < PAINT_TOOLS; i++) {
+        if (i == g_bPaintTool) {
+            DrawPaintShopButton(&g_aPaintToolButtonRects[i], 0x20, 0xC8, 0xFF);
+        } else {
+            DrawPaintShopButton(&g_aPaintToolButtonRects[i], 0, 0, 0);
+        }
+        DrawSpriteAtOrigin(WITH_PALETTE(g_apPaintToolIcons[i], BUTTON_PALETTE));
+    }
+    if (g_bShowPreview3D) {
+        g_dwNightMode = 0;
+        SetupFog();
+        SetupWeatherLights();
+        RenderDecalPreview3D();
+        SetupProjectionMatrix(g_dwScreenWidth, g_dwScreenHeight);
+        SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
+    }
+    if (IsCursorInRect(&g_rcDecalCanvas)) {
+        ProcessDecalEditorInput();
+        UpdateCursorFromInput();
+        DrawToolCursor();
+    } else {
+        switch (g_bPaintTool) {
+        case PAINT_TOOL_MIRROR:
+            ProcessMirrorFlipMenu();
+            break;
+        case PAINT_TOOL_CLEAR:
+            ProcessFillClearMenu();
+            break;
+        case PAINT_TOOL_LOAD:
+            RunPaintShopPakDialog(PAINT_TOOL_LOAD, &done);
+            break;
+        case PAINT_TOOL_SAVE:
+            RunPaintShopPakDialog(PAINT_TOOL_SAVE, &done);
+            break;
+        case PAINT_TOOL_EXIT:
+            ProcessPaintShopExitConfirm();
+            break;
+        default:
+            if (g_bStyleMenuOpen) {
+                if (g_bPaintTool == PAINT_TOOL_BRUSH) {
+                    ProcessBrushStyleMenu();
+                } else if (g_bPaintTool == PAINT_TOOL_TEXT) {
+                    ProcessTextStyleMenu();
+                } else if (g_bPaintTool == PAINT_TOOL_RECTANGLE) {
+                    ProcessRectStyleMenu();
+                } else if (g_bPaintTool == PAINT_TOOL_OVAL) {
+                    ProcessOvalStyleMenu();
+                }
+            } else if (g_bColorEditorOpen) {
+                ProcessColorEditorDialog();
+            } else {
+                ProcessDecalEditorInput();
+                UpdateCursorFromInput();
+                DrawSpriteAtOrigin(WITH_PALETTE(&g_texPaintCursor, NULL));
+            }
+            break;
+        }
+    }
+    gDPPipeSync(gDisplayListPtr++);
+    ApplyScreenFade();
+    if (g_dwHudDebugLevel >= 2) {
+        SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
+        DrawTimingBars();
+    }
+    FlushDisplayList();
+    input = &g_aPlayerInputState[g_bPaintShopPlayer];
     if (!(input->buttons & INPUT_B)) {
         g_bEyedropperActive = FALSE;
-        return;
-    }
-    if (IsCursorInRect(&g_rcDecalCanvas) && !g_bPaintToolStarted && !g_bDecalDragActive) {
+    } else if (IsCursorInRect(&g_rcDecalCanvas) && !g_bPaintToolStarted && !g_bDecalDragActive) {
         /* The rows of the decal run from the bottom up. */
         g_bDecalColor = GetPixel4Bit(
             (g_texPaintCursor.originX - g_rcDecalCanvas.x) >> 2,
@@ -783,46 +792,6 @@ static inline void HandlePaintShopB(void) {
         g_bDecalTextLength = 0;
         g_bDecalTextWidth = 0;
     }
-}
-
-void ProcessPaintShopScreen(void) {
-    u8 done = FALSE;
-
-    g_wSerialInterfaceIdle = FALSE;
-    if (!g_bPaintShopInitialized) {
-        InitPaintShop();
-    }
-    UpdateFrameTiming();
-    UpdateFadeTransitions();
-    StartHighResFrame();
-    SetupProjectionMatrix(g_dwScreenWidth, g_dwScreenHeight);
-    SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
-    ClearDepthBuffer();
-    ClearScreen(0, 0, 0);
-    DrawPaintShop();
-    if (g_bShowPreview3D) {
-        g_dwNightMode = 0;
-        SetupFog();
-        SetupWeatherLights();
-        RenderDecalPreview3D();
-        SetupProjectionMatrix(g_dwScreenWidth, g_dwScreenHeight);
-        SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
-    }
-    if (IsCursorInRect(&g_rcDecalCanvas)) {
-        ProcessDecalEditorInput();
-        UpdateCursorFromInput();
-        DrawToolCursor();
-    } else {
-        RunPaintShopMenus(&done);
-    }
-    gDPPipeSync(gDisplayListPtr++);
-    ApplyScreenFade();
-    if (g_dwHudDebugLevel >= 2) {
-        SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
-        DrawTimingBars();
-    }
-    FlushDisplayList();
-    HandlePaintShopB();
     if (g_bPaintShopExiting && IsFadedToBlack()) {
         g_bPaintShopExiting = FALSE;
         StartHighResFrame();
