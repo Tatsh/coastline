@@ -587,6 +587,48 @@ void SaveGameDataToEeprom(void) {
 #endif /* TGR_REGION != TGR_REGION_US */
 
 void ProcessDataSaveLoadMenu(void) {
+#if TGR_REGION != TGR_REGION_US
+    /* The rows are set only when the menu opens; later frames read the pointer the stack slot
+     * still has from the frame before. GCC places it in a register, so it is static there. */
+#ifdef __GNUC__
+    static SaveLoadMenuItem *items;
+#else
+    SaveLoadMenuItem *items;
+#endif
+    SaveLoadMenuItem *item;
+    EepromSaveData *save;
+    s32 size;
+    u32 checksum;
+    s32 i;
+    s32 row;
+    s32 height;
+    u8 cursor;
+#endif /* TGR_REGION != TGR_REGION_US */
+    PlayerProfile *other;
+#ifdef ENABLE_PATCHES
+    /* A choice out of range opens no note. */
+    u8 *noteName = NULL;
+    s32 noteSize = 0;
+#else
+    u8 *noteName;
+    s32 noteSize;
+#endif /* ENABLE_PATCHES */
+    s32 equipment[EQUIPMENT_FIELDS];
+    s32 freeBlocks;
+    s32 compressedSize;
+#if TGR_REGION == TGR_REGION_US
+    s32 entryMode;
+#ifdef __sgi
+    s32 unusedD0;
+    s32 unusedCC;
+    s32 unusedC8;
+    s32 unusedC4;
+    s32 unusedC0;
+#endif
+    s32 choice;
+#endif
+    s32 textY;
+    u8 plugged;
     /* TOP GEAR SEASON, TOP GEAR GHOST and TOP GEAR OPTIONS in the font of the Controller Pak. */
     u8 seasonName[16] = {0x2D,
                          0x28,
@@ -644,42 +686,9 @@ void ProcessDataSaveLoadMenu(void) {
                                               "SAVE GHOST CAR DATA",
                                               "LOAD OPTIONS",
                                               "SAVE OPTIONS"};
-#else
-    /* The rows are set only when the menu opens; later frames read the pointer the stack slot
-     * still has from the frame before. GCC places it in a register, so it is static there. */
-#ifdef __GNUC__
-    static SaveLoadMenuItem *items;
-#else
-    SaveLoadMenuItem *items;
-#endif
-    SaveLoadMenuItem *item;
-    EepromSaveData *save;
-    s32 size;
-    u32 checksum;
-    s32 i;
-    s32 row;
-    s32 height;
-    u8 cursor;
 #endif /* TGR_REGION == TGR_REGION_US */
-    PlayerProfile *other;
-#ifdef ENABLE_PATCHES
-    /* A choice out of range opens no note. */
-    u8 *noteName = NULL;
-    s32 noteSize = 0;
-#else
-    u8 *noteName;
-    s32 noteSize;
-#endif /* ENABLE_PATCHES */
-    s32 equipment[EQUIPMENT_FIELDS];
-    s32 freeBlocks;
-    s32 compressedSize;
-#if TGR_REGION == TGR_REGION_US
-    s32 choice;
-#endif
-    s32 textY;
     s32 top;
     s32 buttonY;
-    u8 plugged;
     /* IDO places the menu state in function statics; the GCC build uses assembly-backed globals. */
 #if defined(__sgi) && TGR_REGION != TGR_REGION_JP
 #if TGR_REGION == TGR_REGION_US
@@ -721,9 +730,9 @@ void ProcessDataSaveLoadMenu(void) {
 #if TGR_REGION == TGR_REGION_US
         if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
             g_bSaveLoadChoice = SAVE_LOAD_LOAD_SEASON;
-        } else if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_SEASON) {
+        } else if ((entryMode = g_bSaveLoadEntryPoint) == SAVE_LOAD_FROM_SEASON) {
             g_bSaveLoadChoice = SAVE_LOAD_SAVE_SEASON;
-        } else if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_TIME_ATTACK) {
+        } else if (entryMode == SAVE_LOAD_FROM_TIME_ATTACK) {
             g_bSaveLoadChoice = SAVE_LOAD_SAVE_GHOST;
         }
 #else
