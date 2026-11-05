@@ -63,7 +63,7 @@ static inline s32 GetAtlasGlyphOffset(const s32 *first, const s32 *second, s32 g
 }
 #endif /* TGR_BOSS_RALLY && TGR_RENDERER == TGR_RENDERER_GLIDE */
 
-#if TGR_REGION != TGR_REGION_JP || TGR_BOSS_RALLY
+#if TGR_BOSS_RALLY
 void RenderTextToDisplayList(const char *text) {
     const u8 *s = (const u8 *)text;
     s32 size = g_nFontSize;
@@ -519,4 +519,4 @@ void RenderTextToDisplayList(const char *text) {
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
 }
-#endif /* TGR_REGION != TGR_REGION_JP || TGR_BOSS_RALLY */
+#endif /* TGR_BOSS_RALLY */

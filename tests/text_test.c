@@ -18,7 +18,12 @@ u8 g_abLargeFontGradient[8], g_abLargeFontShadowGradient[8], g_abSmallFontGradie
     g_abSmallFontShadowGradient[8], g_aLargeFontTexture[8], g_aSmallFontTexture[8];
 u8 g_abHudFontCharToGlyph[96];
 s32 g_adwLargeFontGlyphOffsets[64], g_adwSmallFontGlyphOffsets[64];
-s32 g_nTextDrawX, g_nTextDrawY, g_nFontSize;
+s32 g_textDrawPositionWords[2], g_nFontSize;
+/* The ROM stores both coordinates in one object. */
+__asm__(".globl g_nTextDrawX\n"
+        ".set g_nTextDrawX, g_textDrawPositionWords\n"
+        ".globl g_nTextDrawY\n"
+        ".set g_nTextDrawY, g_textDrawPositionWords+4");
 
 #define P(x) ((u32)(uintptr_t)(x))
 
