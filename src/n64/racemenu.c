@@ -888,7 +888,7 @@ s32 ProcessScreenState(const char *title,
                 return 2;
             }
         } else {
-            for (i = 0; i < g_dwNumLocalPlayers; i++) {
+            for (i = 0; i < (s32)g_dwNumLocalPlayers; i++) {
                 if (g_dwScreenPlayerIdx != -1 && ((1 << i) & g_dwMenuInputPlayerMask) == 0) {
                     continue;
                 }
