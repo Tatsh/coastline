@@ -13,14 +13,15 @@
 #define TINT_GREEN 0x58
 #define TINT_BLUE 0x58
 
-/* The bytes of texture memory a strip may load, half of it for a texture with a palette. */
-#define TMEM_BYTES 0x1000
-#define TMEM_BYTES_WITH_PALETTE 0x800
-
-/* The blending of a translucent rectangle over the picture. */
-#define RENDER_MODE_XLU_C1                                                                         \
-    (FORCE_BL | CVG_DST_FULL | IM_RD | GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA))
-#define RENDER_MODE_XLU_C2 GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA)
+#define TEXRECT_MAX(a, b) ((a) > (b) ? (a) : (b))
+#define TEXRECT_TXL2WORDS(texels, bytes) TEXRECT_MAX(1, ((texels) * (bytes) / 8))
+#define TEXRECT_TXL2WORDS_4B(texels) TEXRECT_MAX(1, ((texels) / 16))
+#define TEXRECT_CALC_DXT(width, bytes)                                                             \
+    (((1 << 11) + TEXRECT_TXL2WORDS(width, bytes) - 1) / (unsigned)TEXRECT_TXL2WORDS(width, bytes))
+#define TEXRECT_CALC_DXT_4B(width)                                                                 \
+    (((1 << 11) + TEXRECT_TXL2WORDS_4B(width) - 1) / (unsigned)TEXRECT_TXL2WORDS_4B(width))
+#define TEXRECT_COMBINE_WORDS(command, high, low)                                                  \
+    gDisplayListWords(command, 0xFC000000 | (high), low)
 
 void AllocAndDmaLoadAsset(Texture *texture, AssetAllocator alloc) {
     texture->pixels = alloc(texture->romEnd - texture->romStart);
@@ -32,310 +33,227 @@ void LoadAndDecompressAsset(Texture *texture, AssetAllocator alloc) {
     DecompressFromRom(texture->pixels, texture->romStart, NULL);
 }
 
-void DrawTexturedRect(Texture *texture,
-                      s32 x,
-                      s32 y,
-                      s32 width,
-                      s32 height,
-                      s32 primRed,
-                      s32 primGreen,
-                      s32 primBlue,
-                      s32 primAlpha,
-                      s32 envRed,
-                      s32 envGreen,
-                      s32 envBlue,
-                      s32 envAlpha,
-                      s32 blendMode) {
-    s32 scaleS, scaleT, maskS, maskT;
-    s32 texelsPerWord, rowBytes, rows, remaining, done, dsdx, dtdy, bottom, stripHeight;
+void DrawTexturedRect(Texture *img,
+                      int x,
+                      int y,
+                      int w,
+                      int h,
+                      int pr,
+                      int pg,
+                      int pb,
+                      int pa,
+                      int er,
+                      int eg,
+                      int eb,
+                      int ea,
+                      int mode) {
+    int bitsS;
+    int bitsT;
+    int maskS;
+    int maskT;
+#ifdef __sgi
+    /* IDO reserves this unused word in the original stack frame. */
+    int u0[1];
+#endif
+    int tpw;
+    int dsdx;
+    int dtdy;
+    int lines;
+    int left;
+    int line;
+    int row;
+    int step;
+    int yb;
 
-    if (width < 0) {
-        width = -width;
+    if (w < 0) {
+        w = -w;
     }
-    GetTextureScaleAndMask(texture->width, &scaleS, &maskS);
-    GetTextureScaleAndMask(texture->height, &scaleT, &maskT);
-
+    GetTextureScaleAndMask(img->width, &maskS, &bitsS);
+    GetTextureScaleAndMask(img->height, &maskT, &bitsT);
     gDPPipeSync(gDisplayListPtr++);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-    gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
-    gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);
-    switch (blendMode) {
-    case TEXRECT_BLEND_COLOR_THROUGH_TEXTURE:
-        gDPSetCombineLERP(gDisplayListPtr++,
-                          0,
-                          0,
-                          0,
-                          PRIMITIVE,
-                          0,
-                          0,
-                          0,
-                          TEXEL0,
-                          0,
-                          0,
-                          0,
-                          PRIMITIVE,
-                          0,
-                          0,
-                          0,
-                          TEXEL0);
-        gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, primRed, primGreen, primBlue, primAlpha);
-        gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_XLU_C1, RENDER_MODE_XLU_C2);
+    {
+        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+        _g->words.w0 = 0xbb000001;
+        _g->words.w1 = 0xffffffff;
+    }
+    gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 12, 2, g_dwTextureFilterMode);
+    switch (mode) {
+    case 1:
+        TEXRECT_COMBINE_WORDS(gDisplayListPtr++, 0xffffff, 0xfffdf2f9);
+        gDPSetPrimColor(gDisplayListPtr++, 0xff, 0xff, pr, pg, pb, pa);
+        gDPSetRenderMode(gDisplayListPtr++, 0x00504240, 0);
         break;
-    case TEXRECT_BLEND_TEXTURE_2:
-        /* The original repeats the default case here. */
-        gDPSetCombineLERP(
-            gDisplayListPtr++, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0);
-        gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_XLU_C1, RENDER_MODE_XLU_C2);
+    case 2:
+        TEXRECT_COMBINE_WORDS(gDisplayListPtr++, 0xffffff, 0xfffcf279);
+        gDPSetRenderMode(gDisplayListPtr++, 0x00504240, 0);
         break;
-    case TEXRECT_BLEND_SHADED:
-        gDPSetCombineLERP(gDisplayListPtr++,
-                          ENVIRONMENT,
-                          PRIMITIVE,
-                          TEXEL0,
-                          PRIMITIVE,
-                          0,
-                          0,
-                          0,
-                          TEXEL0,
-                          ENVIRONMENT,
-                          PRIMITIVE,
-                          TEXEL0,
-                          PRIMITIVE,
-                          0,
-                          0,
-                          0,
-                          TEXEL0);
-        gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, primRed, primGreen, primBlue, primAlpha);
-        gDPSetEnvColor(gDisplayListPtr++, envRed, envGreen, envBlue, envAlpha);
-        gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_XLU_C1, RENDER_MODE_XLU_C2);
+    case 3:
+        TEXRECT_COMBINE_WORDS(gDisplayListPtr++, 0x50fea1, 0x33fdf2f9);
+        gDPSetPrimColor(gDisplayListPtr++, 0xff, 0xff, pr, pg, pb, pa);
+        gDPSetEnvColor(gDisplayListPtr++, er, eg, eb, ea);
+        gDPSetRenderMode(gDisplayListPtr++, 0x00504240, 0);
         break;
-    case TEXRECT_BLEND_SHADED_OPAQUE:
-        gDPSetCombineLERP(gDisplayListPtr++,
-                          ENVIRONMENT,
-                          PRIMITIVE,
-                          TEXEL0,
-                          PRIMITIVE,
-                          TEXEL0,
-                          0,
-                          SHADE,
-                          0,
-                          ENVIRONMENT,
-                          PRIMITIVE,
-                          TEXEL0,
-                          PRIMITIVE,
-                          TEXEL0,
-                          0,
-                          SHADE,
-                          0);
-        gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, primRed, primGreen, primBlue, primAlpha);
-        gDPSetEnvColor(gDisplayListPtr++, envRed, envGreen, envBlue, envAlpha);
-        gDPSetRenderMode(gDisplayListPtr++,
-                         FORCE_BL | GBL_c1(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1),
-                         GBL_c2(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1));
+    case 4:
+        TEXRECT_COMBINE_WORDS(gDisplayListPtr++, 0x5098a1, 0x3331feff);
+        gDPSetPrimColor(gDisplayListPtr++, 0xff, 0xff, pr, pg, pb, pa);
+        gDPSetEnvColor(gDisplayListPtr++, er, eg, eb, ea);
+        gDPSetRenderMode(gDisplayListPtr++, 0x0f0a4000, 0);
         break;
+    case 0:
     default:
-        gDPSetCombineLERP(
-            gDisplayListPtr++, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0);
-        gDPSetRenderMode(gDisplayListPtr++, RENDER_MODE_XLU_C1, RENDER_MODE_XLU_C2);
+        TEXRECT_COMBINE_WORDS(gDisplayListPtr++, 0xffffff, 0xfffcf279);
+        gDPSetRenderMode(gDisplayListPtr++, 0x00504240, 0);
         break;
     }
-    gDPSetTextureLUT(gDisplayListPtr++, texture->format == G_IM_FMT_CI ? G_TT_RGBA16 : G_TT_NONE);
-    gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE);
-
-    if (g_dwScreenScaleShift) {
-        x *= 2;
-        y *= 2;
-        width *= 2;
-        height *= 2;
+    if (img->format == 2) {
+        gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 14, 2, 0x8000);
+    } else {
+        gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 14, 2, 0);
     }
-
-    switch (texture->size) {
-    case G_IM_SIZ_4b:
-        texelsPerWord = 16;
+    gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 19, 1, 0);
+    if (g_dwScreenScaleShift != 0) {
+        x <<= 1;
+        y <<= 1;
+        w <<= 1;
+        h <<= 1;
+    }
+    switch (img->size) {
+    case 0:
+        tpw = 16;
         break;
-    case G_IM_SIZ_8b:
-        texelsPerWord = 8;
+    case 1:
+        tpw = 8;
         break;
-    case G_IM_SIZ_16b:
-        texelsPerWord = 4;
+    case 2:
+        tpw = 4;
         break;
-    default:
 #ifdef ENABLE_PATCHES
-        /* A word holds two 32-bit texels. */
-        texelsPerWord = 2;
-#else
-        /* A 32-bit texture does not set the count of texels a word, as in the original. */
-#endif /* ENABLE_PATCHES */
+    default:
+        tpw = 2;
         break;
+#endif
     }
-    rowBytes = (texture->width + texelsPerWord - 1) / texelsPerWord * 8;
-    /* Each strip loads one row more than it draws, for the filter to blend with. */
-    rows = (texture->format == G_IM_FMT_CI ? TMEM_BYTES_WITH_PALETTE / rowBytes :
-                                             TMEM_BYTES / rowBytes) -
-           1;
-    dsdx = (texture->width << 10) / width;
-    dtdy = (texture->height << 10) / height;
-    /* The strips go up from the bottom of the rectangle, in 10.10 fixed point. */
-    bottom = ((y + height) << 2) << 8;
-    remaining = texture->height;
-    done = 0;
-
-    while (remaining != 0) {
-        if (remaining < rows) {
-            rows = remaining;
+    line = (img->width + tpw - 1) / tpw * 8;
+    if (img->format == 2) {
+        lines = 0x800 / line;
+    } else {
+        lines = 0x1000 / line;
+    }
+    left = img->height;
+    dsdx = (img->width << 10) / w;
+    dtdy = (img->height << 10) / h;
+    lines -= 1;
+    yb = ((y + h) << 2) << 8;
+    row = 0;
+    while (left != 0) {
+        if (left < lines) {
+            lines = left;
         }
-        remaining -= rows;
-        stripHeight = ((rows << 10) / dtdy) << 10;
-        bottom -= stripHeight;
-
-        switch (texture->size) {
-        case G_IM_SIZ_4b:
-            gDPSetTextureImage(gDisplayListPtr++,
-                               texture->format,
-                               G_IM_SIZ_16b,
-                               1,
-                               texture->pixels + rowBytes * done);
-            gDPSetTile(gDisplayListPtr++,
-                       texture->format,
-                       G_IM_SIZ_16b,
-                       0,
-                       0,
-                       G_TX_LOADTILE,
-                       0,
-                       G_TX_CLAMP,
-                       maskT,
-                       G_TX_NOLOD,
-                       G_TX_CLAMP,
-                       maskS,
-                       G_TX_NOLOD);
+        left -= lines;
+        step = ((lines << 10) / dtdy) << 10;
+        yb -= step;
+        switch (img->size) {
+        case 0:
+            gDPSetTextureImage(
+                gDisplayListPtr++, img->format, G_IM_SIZ_16b, 1, img->pixels + line * row);
+            gDPSetTile(
+                gDisplayListPtr++, img->format, G_IM_SIZ_16b, 0, 0, 7, 0, 2, bitsT, 0, 2, bitsS, 0);
             gDPLoadSync(gDisplayListPtr++);
             gDPLoadBlock(gDisplayListPtr++,
-                         G_TX_LOADTILE,
+                         7,
                          0,
                          0,
-                         ((texture->width * (rows + 1) + 3) >> 2) - 1,
-                         CALC_DXT_4b(texture->width));
+                         ((img->width * (lines + 1) + 3) >> 2) - 1,
+                         TEXRECT_CALC_DXT_4B(img->width));
             gDPPipeSync(gDisplayListPtr++);
             gDPSetTile(gDisplayListPtr++,
-                       texture->format,
-                       G_IM_SIZ_4b,
-                       ((texture->width >> 1) + 7) >> 3,
+                       img->format,
                        0,
-                       G_TX_RENDERTILE,
+                       ((img->width >> 1) + 7) >> 3,
                        0,
-                       G_TX_CLAMP,
-                       maskT,
-                       G_TX_NOLOD,
-                       G_TX_CLAMP,
-                       maskS,
-                       G_TX_NOLOD);
-            gDPSetTileSize(
-                gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, (texture->width - 1) << 2, rows << 2);
+                       0,
+                       0,
+                       2,
+                       bitsT,
+                       0,
+                       2,
+                       bitsS,
+                       0);
+            gDPSetTileSize(gDisplayListPtr++, 0, 0, 0, (img->width - 1) << 2, lines << 2);
             break;
-        case G_IM_SIZ_8b:
-            gDPSetTextureImage(gDisplayListPtr++,
-                               texture->format,
-                               G_IM_SIZ_16b,
-                               1,
-                               texture->pixels + rowBytes * done);
-            gDPSetTile(gDisplayListPtr++,
-                       texture->format,
-                       G_IM_SIZ_16b,
-                       0,
-                       0,
-                       G_TX_LOADTILE,
-                       0,
-                       G_TX_CLAMP,
-                       maskT,
-                       G_TX_NOLOD,
-                       G_TX_CLAMP,
-                       maskS,
-                       G_TX_NOLOD);
+        case 1:
+            gDPSetTextureImage(
+                gDisplayListPtr++, img->format, G_IM_SIZ_16b, 1, img->pixels + line * row);
+            gDPSetTile(
+                gDisplayListPtr++, img->format, G_IM_SIZ_16b, 0, 0, 7, 0, 2, bitsT, 0, 2, bitsS, 0);
             gDPLoadSync(gDisplayListPtr++);
             gDPLoadBlock(gDisplayListPtr++,
-                         G_TX_LOADTILE,
+                         7,
                          0,
                          0,
-                         ((texture->width * (rows + 1) + 1) >> 1) - 1,
-                         CALC_DXT(texture->width, 1));
+                         ((img->width * (lines + 1) + 1) >> 1) - 1,
+                         TEXRECT_CALC_DXT(img->width, 1));
             gDPPipeSync(gDisplayListPtr++);
             gDPSetTile(gDisplayListPtr++,
-                       texture->format,
-                       G_IM_SIZ_8b,
-                       (texture->width + 7) >> 3,
+                       img->format,
+                       1,
+                       (img->width + 7) >> 3,
                        0,
-                       G_TX_RENDERTILE,
                        0,
-                       G_TX_CLAMP,
-                       maskT,
-                       G_TX_NOLOD,
-                       G_TX_CLAMP,
-                       maskS,
-                       G_TX_NOLOD);
-            gDPSetTileSize(
-                gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, (texture->width - 1) << 2, rows << 2);
+                       0,
+                       2,
+                       bitsT,
+                       0,
+                       2,
+                       bitsS,
+                       0);
+            gDPSetTileSize(gDisplayListPtr++, 0, 0, 0, (img->width - 1) << 2, lines << 2);
             break;
-        case G_IM_SIZ_16b:
-            gDPSetTextureImage(gDisplayListPtr++,
-                               texture->format,
-                               G_IM_SIZ_16b,
-                               1,
-                               texture->pixels + rowBytes * done);
-            gDPSetTile(gDisplayListPtr++,
-                       texture->format,
-                       G_IM_SIZ_16b,
-                       0,
-                       0,
-                       G_TX_LOADTILE,
-                       0,
-                       G_TX_CLAMP,
-                       maskT,
-                       G_TX_NOLOD,
-                       G_TX_CLAMP,
-                       maskS,
-                       G_TX_NOLOD);
+        case 2:
+            gDPSetTextureImage(
+                gDisplayListPtr++, img->format, G_IM_SIZ_16b, 1, img->pixels + line * row);
+            gDPSetTile(
+                gDisplayListPtr++, img->format, G_IM_SIZ_16b, 0, 0, 7, 0, 2, bitsT, 0, 2, bitsS, 0);
             gDPLoadSync(gDisplayListPtr++);
             gDPLoadBlock(gDisplayListPtr++,
-                         G_TX_LOADTILE,
+                         7,
                          0,
                          0,
-                         texture->width * (rows + 1) - 1,
-                         CALC_DXT(texture->width, 2));
+                         img->width * (lines + 1) - 1,
+                         TEXRECT_CALC_DXT(img->width, 2));
             gDPPipeSync(gDisplayListPtr++);
             gDPSetTile(gDisplayListPtr++,
-                       texture->format,
-                       G_IM_SIZ_16b,
-                       ((texture->width * 2) + 7) >> 3,
+                       img->format,
+                       2,
+                       (img->width * 2 + 7) >> 3,
                        0,
-                       G_TX_RENDERTILE,
                        0,
-                       G_TX_CLAMP,
-                       maskT,
-                       G_TX_NOLOD,
-                       G_TX_CLAMP,
-                       maskS,
-                       G_TX_NOLOD);
-            gDPSetTileSize(
-                gDisplayListPtr++, G_TX_RENDERTILE, 0, 0, (texture->width - 1) << 2, rows << 2);
+                       0,
+                       2,
+                       bitsT,
+                       0,
+                       2,
+                       bitsS,
+                       0);
+            gDPSetTileSize(gDisplayListPtr++, 0, 0, 0, (img->width - 1) << 2, lines << 2);
             break;
         }
+        {
+            Gfx *_g = (Gfx *)(gDisplayListPtr++);
 
-        /* The strip starts from its last row and steps back up the texture. */
-        gSPTextureRectangle(gDisplayListPtr++,
-                            x << 2,
-                            bottom >> 8,
-                            (x + width) << 2,
-                            (bottom + stripHeight) >> 8,
-                            G_TX_RENDERTILE,
-                            0,
-                            (rows - 1) << 5,
-                            dsdx,
-                            -dtdy);
-        done += rows;
+            _g->words.w0 = (_SHIFTL(G_TEXRECT, 24, 8) | _SHIFTL((x + w) << 2, 12, 12) |
+                            _SHIFTL((yb + step) >> 8, 0, 12));
+            _g->words.w1 = (_SHIFTL(0, 24, 3) | _SHIFTL(x << 2, 12, 12) | _SHIFTL(yb >> 8, 0, 12));
+            gImmp1(gDisplayListPtr++,
+                   G_RDPHALF_1,
+                   (_SHIFTL(0, 16, 16) | _SHIFTL((lines - 1) << 5, 0, 16)));
+            gImmp1(gDisplayListPtr++, G_RDPHALF_2, (_SHIFTL(dsdx, 16, 16) | _SHIFTL(-dtdy, 0, 16)));
+        }
+        row += lines;
     }
-
     gDPPipeSync(gDisplayListPtr++);
-    gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
+    gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 19, 1, 0x80000);
 }
 
 void DrawRedIntensityRect(
