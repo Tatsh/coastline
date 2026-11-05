@@ -587,7 +587,36 @@ void SaveGameDataToEeprom(void) {
 #endif /* TGR_REGION != TGR_REGION_US */
 
 void ProcessDataSaveLoadMenu(void) {
-#if TGR_REGION != TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US
+    s32 choice;
+    s32 entryMode;
+    s32 top;
+#ifdef __sgi
+    s32 unusedD0;
+    s32 unusedCC;
+    s32 unusedC8;
+    s32 unusedC4;
+    s32 unusedC0;
+#endif
+    s32 buttonY;
+#ifdef __sgi
+    s32 unusedB8;
+#endif
+#ifdef ENABLE_PATCHES
+    /* A choice out of range opens no note. */
+    u8 *noteName = NULL;
+#else
+    u8 *noteName;
+#endif
+    s32 freeBlocks;
+    u8 plugged;
+#ifdef ENABLE_PATCHES
+    s32 noteSize = 0;
+#else
+    s32 noteSize;
+#endif
+    s32 equipment[EQUIPMENT_FIELDS];
+#else
     /* The rows are set only when the menu opens; later frames read the pointer the stack slot
      * still has from the frame before. GCC places it in a register, so it is static there. */
 #ifdef __GNUC__
@@ -603,8 +632,6 @@ void ProcessDataSaveLoadMenu(void) {
     s32 row;
     s32 height;
     u8 cursor;
-#endif /* TGR_REGION != TGR_REGION_US */
-    PlayerProfile *other;
 #ifdef ENABLE_PATCHES
     /* A choice out of range opens no note. */
     u8 *noteName = NULL;
@@ -616,19 +643,11 @@ void ProcessDataSaveLoadMenu(void) {
     s32 equipment[EQUIPMENT_FIELDS];
     s32 freeBlocks;
     s32 compressedSize;
-#if TGR_REGION == TGR_REGION_US
-    s32 entryMode;
-#ifdef __sgi
-    s32 unusedD0;
-    s32 unusedCC;
-    s32 unusedC8;
-    s32 unusedC4;
-    s32 unusedC0;
-#endif
-    s32 choice;
-#endif
     s32 textY;
     u8 plugged;
+    s32 top;
+    s32 buttonY;
+#endif /* TGR_REGION == TGR_REGION_US */
     /* TOP GEAR SEASON, TOP GEAR GHOST and TOP GEAR OPTIONS in the font of the Controller Pak. */
     u8 seasonName[16] = {0x2D,
                          0x28,
@@ -686,9 +705,9 @@ void ProcessDataSaveLoadMenu(void) {
                                               "SAVE GHOST CAR DATA",
                                               "LOAD OPTIONS",
                                               "SAVE OPTIONS"};
+    s32 compressedSize;
+    s32 textY;
 #endif /* TGR_REGION == TGR_REGION_US */
-    s32 top;
-    s32 buttonY;
     /* IDO places the menu state in function statics; the GCC build uses assembly-backed globals. */
 #if defined(__sgi) && TGR_REGION != TGR_REGION_JP
 #if TGR_REGION == TGR_REGION_US
@@ -859,10 +878,10 @@ void ProcessDataSaveLoadMenu(void) {
         } else {
             SetTextCustomColors(0x80, 0x80, 0x80, 0x84, 0x7C, 0x00);
         }
-        if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_SEASON) {
+        if ((entryMode = g_bSaveLoadEntryPoint) == SAVE_LOAD_FROM_SEASON) {
             DrawText("SAVE SEASON DATA?", 0x9E, 0x80);
             g_bSaveLoadChoice = SAVE_LOAD_SAVE_SEASON;
-        } else if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_TIME_ATTACK) {
+        } else if (entryMode == SAVE_LOAD_FROM_TIME_ATTACK) {
             DrawText("SAVE GHOST CAR DATA?", 0x9E, 0x80);
             g_bSaveLoadChoice = SAVE_LOAD_SAVE_GHOST;
         }
@@ -1131,7 +1150,25 @@ void ProcessDataSaveLoadMenu(void) {
         PAK_LOG(("\nInitializing controller pak...\n"));
         gControllerPakState = osPfsInitPak(
             &g_SiMesgQueue, &g_aPakPfs[g_dwMenuChoosingPlayer], g_dwMenuChoosingPlayer);
-        if (gControllerPakState == 0) {
+        if (gControllerPakState != 0) {
+            if (gControllerPakState == PFS_ERR_ID_FATAL) {
+                /* A Pak without a file system may be a Rumble Pak, which the player must swap. */
+                if (osMotorInit(&g_SiMesgQueue,
+                                &g_aContPfs[g_dwMenuChoosingPlayer],
+                                g_dwMenuChoosingPlayer) == 0) {
+                    osMotorStop(&g_aContPfs[g_dwMenuChoosingPlayer]);
+                    gControllerPakState = PAK_STATE_RUMBLE_PAK;
+                    g_bSaveLoadRumbleSwapPending = TRUE;
+                    g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
+                } else {
+                    gControllerPakState = 0;
+                    g_bSaveLoadStep = SAVE_LOAD_STEP_REPAIR;
+                }
+            } else {
+                g_abRumblePakPresent[g_dwMenuChoosingPlayer] = FALSE;
+                g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
+            }
+        } else if (gControllerPakState == 0) {
             g_abRumblePakPresent[g_dwMenuChoosingPlayer] = FALSE;
             if (!g_abSavePakIdKnown[g_dwMenuChoosingPlayer]) {
                 g_abSavePakIdKnown[g_dwMenuChoosingPlayer] = TRUE;
@@ -1149,22 +1186,6 @@ void ProcessDataSaveLoadMenu(void) {
             } else {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_FIND;
             }
-        } else if (gControllerPakState == PFS_ERR_ID_FATAL) {
-            /* A Pak without a file system may be a Rumble Pak, which the player must swap. */
-            if (osMotorInit(&g_SiMesgQueue,
-                            &g_aContPfs[g_dwMenuChoosingPlayer],
-                            g_dwMenuChoosingPlayer) == 0) {
-                osMotorStop(&g_aContPfs[g_dwMenuChoosingPlayer]);
-                gControllerPakState = PAK_STATE_RUMBLE_PAK;
-                g_bSaveLoadRumbleSwapPending = TRUE;
-                g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
-            } else {
-                gControllerPakState = 0;
-                g_bSaveLoadStep = SAVE_LOAD_STEP_REPAIR;
-            }
-        } else {
-            g_abRumblePakPresent[g_dwMenuChoosingPlayer] = FALSE;
-            g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
         }
         break;
 
@@ -1271,8 +1292,7 @@ void ProcessDataSaveLoadMenu(void) {
             /* Both players take the season, but the other player keeps the equipment of the car
              * when the main menu opened the menu. */
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
-                other = g_aVehicles[g_dwMenuChoosingPlayer ^ 1].profile;
-                GET_EQUIPMENT(equipment, other);
+                GET_EQUIPMENT(equipment, g_aVehicles[g_dwMenuChoosingPlayer ^ 1].profile);
             }
             memcpy(g_aVehicles[0].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
             memcpy(g_aVehicles[1].profile, g_pPakDataBuffer, sizeof(PlayerProfile));
@@ -1311,15 +1331,15 @@ void ProcessDataSaveLoadMenu(void) {
                                                      OPTIONS_HALF_SIZE,
                                                      OPTIONS_HALF_SIZE,
                                                      g_pPakDataBuffer);
-            if (gControllerPakState != 0) {
+            if (gControllerPakState == 0) {
+                memcpy(equipment, g_pPakDataBuffer, sizeof(equipment));
+                SET_EQUIPMENT(g_dwMenuChoosingPlayer, equipment);
+                PAK_LOG(("Done!\n"));
+                ApplyVolumeSettings();
+                g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;
+            } else {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_ERROR;
-                break;
             }
-            memcpy(equipment, g_pPakDataBuffer, sizeof(equipment));
-            SET_EQUIPMENT(g_dwMenuChoosingPlayer, equipment);
-            PAK_LOG(("Done!\n"));
-            ApplyVolumeSettings();
-            g_bSaveLoadStep = SAVE_LOAD_STEP_DONE;
         }
         break;
 
