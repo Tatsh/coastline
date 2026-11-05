@@ -365,7 +365,7 @@ void ResetGlyphCache(void);
  * @return The texture of the slot of the character, filled by the next LoadCachedGlyphTextures().
  * @ghidraAddress JPN: 0x8022f258
  */
-u8 *GetCachedGlyphTexture(u32 character);
+u8 *GetCachedGlyphTexture(s32 character);
 
 /**
  * Read the glyph of each character given a slot into the slot, unless the glyph is already there,

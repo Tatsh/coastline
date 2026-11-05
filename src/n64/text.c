@@ -6,6 +6,78 @@
 #include "common/replay.h"
 #include "common/system.h"
 
+/* The original text commands use different word expressions from the SDK macros. */
+#if TGR_REGION == TGR_REGION_JP
+#define TEXT_SHIFTL(v, s, siz) ((u32)(((u32)(v) & ((0x01 << (siz)) - 1)) << (s)))
+#define TEXT_DP_NO_PARAM(pkt, cmd)                                                                 \
+    {                                                                                              \
+        Gfx *_g = (Gfx *)(pkt);                                                                    \
+        _g->words.w0 = TEXT_SHIFTL(cmd, 24, 8);                                                    \
+        _g->words.w1 = 0;                                                                          \
+    }
+#define TEXT_SP_SET_OTHER_MODE(pkt, cmd, sft, len, data)                                           \
+    {                                                                                              \
+        Gfx *_g = (Gfx *)(pkt);                                                                    \
+        _g->words.w0 =                                                                             \
+            (TEXT_SHIFTL(cmd, 24, 8) | TEXT_SHIFTL(sft, 8, 8) | TEXT_SHIFTL(len, 0, 8));           \
+        _g->words.w1 = (unsigned int)(data);                                                       \
+    }
+#define TEXT_DP_SET_COMBINE(pkt, muxs0, muxs1)                                                     \
+    {                                                                                              \
+        Gfx *_g = (Gfx *)(pkt);                                                                    \
+        _g->words.w0 = TEXT_SHIFTL(0xFC, 24, 8) | TEXT_SHIFTL(muxs0, 0, 24);                       \
+        _g->words.w1 = (unsigned int)(muxs1);                                                      \
+    }
+#define TEXT_DP_SET_COLOR(pkt, c, d)                                                               \
+    {                                                                                              \
+        Gfx *_g = (Gfx *)(pkt);                                                                    \
+        _g->words.w0 = TEXT_SHIFTL(c, 24, 8);                                                      \
+        _g->words.w1 = (unsigned int)(d);                                                          \
+    }
+#define TEXT_DP_SET_PRIM_COLOR(pkt, m, l, r, g, b, a)                                              \
+    {                                                                                              \
+        Gfx *_g = (Gfx *)(pkt);                                                                    \
+        _g->words.w0 = (TEXT_SHIFTL(0xFA, 24, 8) | TEXT_SHIFTL(m, 8, 8) | TEXT_SHIFTL(l, 0, 8));   \
+        _g->words.w1 = (TEXT_SHIFTL(r, 24, 8) | TEXT_SHIFTL(g, 16, 8) | TEXT_SHIFTL(b, 8, 8) |     \
+                        TEXT_SHIFTL(a, 0, 8));                                                     \
+    }
+#define TEXT_DP_PIPE_SYNC(pkt) TEXT_DP_NO_PARAM(pkt, 0xE7)
+#define TEXT_DP_SET_TEXTURE_IMAGE(pkt, f, s, w, i)                                                 \
+    {                                                                                              \
+        Gfx *_g = (Gfx *)(pkt);                                                                    \
+        _g->words.w0 = TEXT_SHIFTL(0xFD, 24, 8) | TEXT_SHIFTL(f, 21, 3) | TEXT_SHIFTL(s, 19, 2) |  \
+                       TEXT_SHIFTL((w) - 1, 0, 12);                                                \
+        _g->words.w1 = (unsigned int)(i);                                                          \
+    }
+#define TEXT_DP_LOAD_SYNC(pkt) TEXT_DP_NO_PARAM(pkt, 0xE6)
+#define TEXT_DP_TILE_SYNC(pkt) TEXT_DP_NO_PARAM(pkt, 0xE8)
+#define TEXT_SP_TEXTURE(pkt, s, t, level, tile, on)                                                \
+    {                                                                                              \
+        Gfx *_g = (Gfx *)(pkt);                                                                    \
+        _g->words.w0 = (TEXT_SHIFTL(0xBB, 24, 8) | TEXT_SHIFTL((level), 11, 3) |                   \
+                        TEXT_SHIFTL((tile), 8, 3) | TEXT_SHIFTL((on), 0, 8));                      \
+        _g->words.w1 = (TEXT_SHIFTL((s), 16, 16) | TEXT_SHIFTL((t), 0, 16));                       \
+    }
+#define TEXT_DP_SET_CYCLE_TYPE(pkt, type) TEXT_SP_SET_OTHER_MODE(pkt, 0xBA, 20, 2, type)
+#define TEXT_DP_SET_RENDER_MODE(pkt, c0, c1) TEXT_SP_SET_OTHER_MODE(pkt, 0xB9, 3, 29, (c0) | (c1))
+#define TEXT_DP_SET_TEXTURE_FILTER(pkt, type) TEXT_SP_SET_OTHER_MODE(pkt, 0xBA, 12, 2, type)
+#define TEXT_DP_SET_TEXTURE_LUT(pkt, type) TEXT_SP_SET_OTHER_MODE(pkt, 0xBA, 14, 2, type)
+#define TEXT_DP_SET_ENV_COLOR(pkt, r, g, b, a)                                                     \
+    TEXT_DP_SET_COLOR(pkt,                                                                         \
+                      0xFB,                                                                        \
+                      (TEXT_SHIFTL(r, 24, 8) | TEXT_SHIFTL(g, 16, 8) | TEXT_SHIFTL(b, 8, 8) |      \
+                       TEXT_SHIFTL(a, 0, 8)))
+#define TEXT_DP_SET_TEXTURE_PERSP(pkt, type) TEXT_SP_SET_OTHER_MODE(pkt, 0xBA, 19, 1, type)
+#define TEXT_MIN(a, b) ((a) < (b) ? (a) : (b))
+#define TEXT_MAX(a, b) ((a) > (b) ? (a) : (b))
+#define TEXT_IMMEDIATE(pkt, c, p0)                                                                 \
+    {                                                                                              \
+        Gfx *_g = (Gfx *)(pkt);                                                                    \
+        _g->words.w0 = TEXT_SHIFTL(c, 24, 8);                                                      \
+        _g->words.w1 = (u32)(p0);                                                                  \
+    }
+#endif /* TGR_REGION == TGR_REGION_JP */
+
 /* Text smaller than this draws with the small font. */
 #define SMALL_FONT_MAX_SIZE 25
 
@@ -72,7 +144,7 @@ void ResetGlyphCache(void) {
     g_pGlyphCacheBuffer -= slotSize;
 }
 
-u8 *GetCachedGlyphTexture(u32 character) {
+u8 *GetCachedGlyphTexture(s32 character) {
     s32 slot = g_abGlyphCharToSlot[character];
 
     if (slot == 0) {
@@ -126,437 +198,545 @@ void LoadCachedGlyphTextures(void) {
 #endif /* TGR_REGION == TGR_REGION_JP */
 
 #if TGR_REGION == TGR_REGION_JP
-void RenderTextToDisplayList(const char *text) {
-    const u8 *s = (const u8 *)text;
-    s32 size = g_nFontSize;
-    s32 y = g_nTextDrawY - (size * ASCENT) / SIZE_UNITS;
-    s32 x = g_nTextDrawX;
-    s32 cell, padding, textureWidth, glyph, row, left, right, columns, width, dsdx, dtdy, offset;
-    s32 sStart, rowStep, line;
-    s32 lastLine = -1;
-    s32 lastColumns = -1;
-    s32 lastCell = -1;
-    s32 japanese = FALSE;
-    s32 smallFont;
-    s16 left4, top4, right4, bottom4;
-    s32 *offsets;
-    u8 *texture, *gradient, *shadowGradient;
-    u8 c;
-
-    if (g_dwScreenScaleShift) {
-        x *= 2;
-        y *= 2;
-        size *= 2;
+typedef struct {
+    s32 x;
+    s32 y;
+} TextDrawPosition;
+#define g_textDrawPosition (*(TextDrawPosition *)&g_nTextDrawX)
+void RenderTextToDisplayList(const char *s) {
+    int w;
+    int adv;
+    int uls;
+    int lrs;
+    int row;
+    int y;
+    int cell;
+    unsigned char *rampA;
+    unsigned char *rampB;
+    int dtdy;
+    int line;
+    int lastW;
+    int lastCell;
+    int lastLine;
+    int jp;
+    int c;
+    unsigned char n;
+    unsigned char g;
+    int pad;
+    int textureWidth;
+    unsigned char *tex;
+    int *tbl;
+    int small;
+    int x;
+    const unsigned char *p;
+    int size;
+    size = g_nFontSize;
+    x = g_textDrawPosition.x;
+    y = g_textDrawPosition.y;
+    lastW = -1;
+    lastCell = -1;
+    lastLine = -1;
+    jp = 0;
+    y -= (size * 30) / 40;
+    if (g_dwScreenScaleShift != 0) {
+        x <<= 1;
+        y <<= 1;
+        size <<= 1;
     }
-    smallFont = size < SMALL_FONT_MAX_SIZE;
-    if (smallFont) {
-        padding = SMALL_FONT_PADDING;
-        offsets = g_adwSmallFontGlyphOffsets;
-        textureWidth = SMALL_FONT_WIDTH;
-        texture = g_aSmallFontTexture;
-        gradient = g_abSmallFontGradient;
-        shadowGradient = g_abSmallFontShadowGradient;
-        cell = SMALL_FONT_CELL;
+    small = size < 25;
+    if (small) {
+        cell = 20;
+        pad = 4;
+        tbl = g_adwSmallFontGlyphOffsets;
+        textureWidth = 392;
+        tex = g_aSmallFontTexture;
+        rampA = g_abSmallFontGradient;
+        rampB = g_abSmallFontShadowGradient;
     } else {
-        padding = LARGE_FONT_PADDING;
-        offsets = g_adwLargeFontGlyphOffsets;
-        textureWidth = LARGE_FONT_WIDTH;
-        texture = g_aLargeFontTexture;
-        gradient = g_abLargeFontGradient;
-        shadowGradient = g_abLargeFontShadowGradient;
-        cell = LARGE_FONT_CELL;
+        cell = 40;
+        pad = 7;
+        tbl = g_adwLargeFontGlyphOffsets;
+        textureWidth = 704;
+        tex = g_aLargeFontTexture;
+        rampA = g_abLargeFontGradient;
+        rampB = g_abLargeFontShadowGradient;
     }
-    rowStep = ((cell << 10) - TEXEL_STEP) / size;
-
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_2CYCLE);
+    dtdy = ((cell << 10) - (1 << 10)) / size;
+    TEXT_DP_PIPE_SYNC(gDisplayListPtr++);
+    TEXT_DP_SET_CYCLE_TYPE(gDisplayListPtr++, 1 << 20);
     if (g_bTextShadowEnabled) {
-        gDPSetCombineLERP(gDisplayListPtr++,
-                          PRIMITIVE,
-                          ENVIRONMENT,
-                          TEXEL1,
-                          ENVIRONMENT,
-                          0,
-                          0,
-                          0,
-                          TEXEL0,
-                          COMBINED,
-                          TEXEL0,
-                          TEXEL1,
-                          0,
-                          0,
-                          0,
-                          0,
-                          TEXEL1);
+        TEXT_DP_SET_COMBINE(gDisplayListPtr++, 0x317E02, 0x51FEF3FA);
     } else {
-        gDPSetCombineLERP(gDisplayListPtr++,
-                          PRIMITIVE,
-                          ENVIRONMENT,
-                          TEXEL1,
-                          ENVIRONMENT,
-                          0,
-                          0,
-                          0,
-                          TEXEL0,
-                          COMBINED,
-                          0,
-                          TEXEL1,
-                          0,
-                          0,
-                          0,
-                          0,
-                          TEXEL1);
+        TEXT_DP_SET_COMBINE(gDisplayListPtr++, 0x317E02, 0x5FFEF3FA);
     }
-    gDPSetRenderMode(gDisplayListPtr++,
-                     FORCE_BL | CVG_DST_FULL | IM_RD |
-                         GBL_c1(G_BL_CLR_IN, G_BL_0, G_BL_CLR_IN, G_BL_1),
-                     GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
-    gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);
-    gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
-    gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE);
-    gDPSetTextureLOD(gDisplayListPtr++, G_TL_TILE);
-    gSPTexture(gDisplayListPtr++, 0xFFFF, 0xFFFF, 0, G_TX_RENDERTILE, G_ON);
-    gDPTileSync(gDisplayListPtr++);
-    gDPLoadSync(gDisplayListPtr++);
-    gDPPipeSync(gDisplayListPtr++);
-
-    gDPSetTile(gDisplayListPtr++,
-               G_IM_FMT_RGBA,
-               G_IM_SIZ_16b,
-               0,
-               GRADIENT_TMEM,
-               G_TX_LOADTILE,
-               0,
-               G_TX_WRAP,
-               0,
-               G_TX_NOLOD,
-               G_TX_WRAP,
-               0,
-               G_TX_NOLOD);
-    gDPSetTextureImage(gDisplayListPtr++,
-                       G_IM_FMT_RGBA,
-                       G_IM_SIZ_16b,
-                       1,
-                       g_bTextShadowEnabled ? shadowGradient : gradient);
-    gDPLoadBlock(gDisplayListPtr++, G_TX_LOADTILE, 0, 0, GRADIENT_LOAD_TEXELS - 1, 0);
-    gDPSetTile(gDisplayListPtr++,
-               G_IM_FMT_IA,
-               G_IM_SIZ_8b,
-               1,
-               GRADIENT_TMEM,
-               1,
-               0,
-               G_TX_CLAMP,
-               6,
-               G_TX_NOLOD,
-               G_TX_WRAP,
-               3,
-               G_TX_NOLOD);
-    gDPSetTileSize(gDisplayListPtr++, 1, 2, 2, 7 * 4 + 2, 39 * 4 + 2);
-
-    if (g_bTextCustomColorsEnabled) {
-        gDPSetEnvColor(gDisplayListPtr++,
-                       g_dwTextCustomColorR,
-                       g_dwTextCustomColorG,
-                       g_dwTextCustomColorB,
-                       0xFF);
-        gDPSetPrimColor(gDisplayListPtr++,
-                        0xFF,
-                        0xFF,
-                        g_dwTextCustomColor2R,
-                        g_dwTextCustomColor2G,
-                        g_dwTextCustomColor2B,
-                        0xFF);
+    TEXT_DP_SET_RENDER_MODE(
+        gDisplayListPtr++,
+        0x0c080000,
+        (((0x0040 | 0x0200) | 0x4000) | 0x0000) |
+            ((((((u32)0) << 28) | (((u32)0) << 24)) | (((u32)1) << 20)) | (((u32)0) << 16)));
+    TEXT_DP_SET_TEXTURE_FILTER(gDisplayListPtr++, g_dwTextureFilterMode);
+    TEXT_DP_SET_TEXTURE_LUT(gDisplayListPtr++, 0);
+    TEXT_DP_SET_TEXTURE_PERSP(gDisplayListPtr++, 0 << 19);
+    /* clang-format off */
+    {
+      Gfx *_g = (Gfx *)(gDisplayListPtr++); _g->words.w0 =
+          (((unsigned int)(((unsigned int)( 0xba) & ((0x01 << ( 8)) - 1)) << ( 24))) |
+           ((unsigned int)(((unsigned int)( 16) & ((0x01 << ( 8)) - 1)) << ( 8))) |
+           ((unsigned int)(((unsigned int)( 1) & ((0x01 << ( 8)) - 1)) << ( 0))) );
+      _g->words.w1 = (unsigned int)( 0);
+    }
+    /* clang-format on */
+    TEXT_SP_TEXTURE(gDisplayListPtr++, 0xffff, 0xffff, 0, 0, 1);
+    TEXT_DP_TILE_SYNC(gDisplayListPtr++);
+    TEXT_DP_LOAD_SYNC(gDisplayListPtr++);
+    TEXT_DP_PIPE_SYNC(gDisplayListPtr++);
+    {
+        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+        _g->words.w0 =
+            (((TEXT_SHIFTL(0xF5, 24, 8) | TEXT_SHIFTL(0, 21, 3)) | TEXT_SHIFTL(2, 19, 2)) |
+             TEXT_SHIFTL(0, 9, 9)) |
+            TEXT_SHIFTL(0x1B0, 0, 9);
+        _g->words.w1 =
+            ((((((TEXT_SHIFTL(7, 24, 3) | TEXT_SHIFTL(0, 20, 4)) | TEXT_SHIFTL(0, 18, 2)) |
+                TEXT_SHIFTL(0, 14, 4)) |
+               TEXT_SHIFTL(0, 10, 4)) |
+              TEXT_SHIFTL(0, 8, 2)) |
+             TEXT_SHIFTL(0, 4, 4)) |
+            TEXT_SHIFTL(0, 0, 4);
+    }
+    TEXT_DP_SET_TEXTURE_IMAGE(
+        gDisplayListPtr++, 0, 2, 1, (g_bTextShadowEnabled) ? (rampB) : (rampA));
+    {
+        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+        _g->words.w0 = (((unsigned int)((((unsigned int)0xf3) & ((0x01 << 8) - 1)) << 24)) |
+                        ((unsigned int)((((unsigned int)0) & ((0x01 << 12) - 1)) << 12))) |
+                       ((unsigned int)((((unsigned int)0) & ((0x01 << 12) - 1)) << 0));
+        _g->words.w1 =
+            (((unsigned int)((((unsigned int)7) & ((0x01 << 3) - 1)) << 24)) |
+             ((unsigned int)((((unsigned int)((319 < 2047) ? (319) : (2047))) & ((0x01 << 12) - 1))
+                             << 12))) |
+            ((unsigned int)((((unsigned int)0) & ((0x01 << 12) - 1)) << 0));
+    }
+    {
+        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+        _g->words.w0 = (((((unsigned int)((((unsigned int)0xf5) & ((0x01 << 8) - 1)) << 24)) |
+                          ((unsigned int)((((unsigned int)3) & ((0x01 << 3) - 1)) << 21))) |
+                         ((unsigned int)((((unsigned int)1) & ((0x01 << 2) - 1)) << 19))) |
+                        ((unsigned int)((((unsigned int)1) & ((0x01 << 9) - 1)) << 9))) |
+                       ((unsigned int)((((unsigned int)0x1B0) & ((0x01 << 9) - 1)) << 0));
+        _g->words.w1 = ((((((((unsigned int)((((unsigned int)1) & ((0x01 << 3) - 1)) << 24)) |
+                             ((unsigned int)((((unsigned int)0) & ((0x01 << 4) - 1)) << 20))) |
+                            ((unsigned int)((((unsigned int)2) & ((0x01 << 2) - 1)) << 18))) |
+                           ((unsigned int)((((unsigned int)6) & ((0x01 << 4) - 1)) << 14))) |
+                          ((unsigned int)((((unsigned int)0) & ((0x01 << 4) - 1)) << 10))) |
+                         ((unsigned int)((((unsigned int)0) & ((0x01 << 2) - 1)) << 8))) |
+                        ((unsigned int)((((unsigned int)3) & ((0x01 << 4) - 1)) << 4))) |
+                       ((unsigned int)((((unsigned int)0) & ((0x01 << 4) - 1)) << 0));
+    }
+    {
+        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+        _g->words.w0 = (((unsigned int)((((unsigned int)0xf2) & ((0x01 << 8) - 1)) << 24)) |
+                        ((unsigned int)((((unsigned int)2) & ((0x01 << 12) - 1)) << 12))) |
+                       ((unsigned int)((((unsigned int)2) & ((0x01 << 12) - 1)) << 0));
+        _g->words.w1 = (((unsigned int)((((unsigned int)1) & ((0x01 << 3) - 1)) << 24)) |
+                        ((unsigned int)((((unsigned int)0x1E) & ((0x01 << 12) - 1)) << 12))) |
+                       ((unsigned int)((((unsigned int)0x9E) & ((0x01 << 12) - 1)) << 0));
+    }
+    if (g_bTextCustomColorsEnabled != 0) {
+        TEXT_DP_SET_ENV_COLOR(gDisplayListPtr++,
+                              g_dwTextCustomColorR,
+                              g_dwTextCustomColorG,
+                              g_dwTextCustomColorB,
+                              0xff);
+        TEXT_DP_SET_PRIM_COLOR(gDisplayListPtr++,
+                               0xff,
+                               0xff,
+                               g_dwTextCustomColor2R,
+                               g_dwTextCustomColor2G,
+                               g_dwTextCustomColor2B,
+                               0xff);
     } else if (g_bTextStyleBold) {
-        gDPSetEnvColor(gDisplayListPtr++, 0xFF, 0x7F, 0x00, 0xFF);
-        gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0xFF, 0xFF, 0x7F, 0xFF);
+        TEXT_DP_SET_ENV_COLOR(gDisplayListPtr++, 0xff, 0x7f, 0, 0xff);
+        TEXT_DP_SET_PRIM_COLOR(gDisplayListPtr++, 0xff, 0xff, 0xff, 0xff, 0x7f, 0xff);
     } else {
-        gDPSetEnvColor(gDisplayListPtr++, 0xC8, 0x00, 0x00, 0xFF);
-        gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0xE6, 0xE6, 0x00, 0xFF);
+        TEXT_DP_SET_ENV_COLOR(gDisplayListPtr++, 0xc8, 0, 0, 0xff);
+        TEXT_DP_SET_PRIM_COLOR(gDisplayListPtr++, 0xff, 0xff, 0xe6, 0xe6, 0, 0xff);
+    }
+    p = (const unsigned char *)s;
+    while ((*p) != 0) {
+        c = *p;
+        if (c != ' ') {
+            if ((c == '%') && (n = p[1])) {
+                if (n == '%') {
+                    if (n) {
+                        ;
+                    }
+                    c = *(++p);
+                } else if (n == 'j') {
+                    jp = 1;
+                    if (small) {
+                        cell = 40;
+                        pad = 7;
+                        tbl = g_adwLargeFontGlyphOffsets;
+                        textureWidth = 704;
+                        tex = g_aLargeFontTexture;
+                        dtdy = ((cell << 10) - (1 << 10)) / size;
+                    }
+                    p++;
+                    goto next;
+                } else if (n == 'e') {
+                    jp = 0;
+                    if (small) {
+                        cell = 20;
+                        pad = 4;
+                        tbl = g_adwSmallFontGlyphOffsets;
+                        textureWidth = 392;
+                        tex = g_aSmallFontTexture;
+                        dtdy = ((cell << 10) - (1 << 10)) / size;
+                    }
+                    p++;
+                    goto next;
+                } else if (n == 'i') {
+                    p++;
+                    goto next;
+                } else if (n == 'n') {
+                    p++;
+                    goto next;
+                } else if (p[2] != 0) {
+                    TEXT_DP_PIPE_SYNC(gDisplayListPtr++);
+                    switch (p[1]) {
+                    case 'r':
+                        TEXT_DP_SET_PRIM_COLOR(gDisplayListPtr++, 0xff, 0xff, 0xbe, 0, 0, 0xff);
+                        break;
+
+                    case 'o':
+                        TEXT_DP_SET_PRIM_COLOR(gDisplayListPtr++, 0xff, 0xff, 0xcd, 0x5f, 0, 0xff);
+                        break;
+
+                    case 'O':
+                        TEXT_DP_SET_PRIM_COLOR(gDisplayListPtr++, 0xff, 0xff, 0xff, 0x78, 0, 0xff);
+                        break;
+
+                    case 'y':
+                        TEXT_DP_SET_PRIM_COLOR(gDisplayListPtr++, 0xff, 0xff, 0xff, 0xf5, 0, 0xff);
+                        break;
+
+                    case 'Y':
+                        TEXT_DP_SET_PRIM_COLOR(
+                            gDisplayListPtr++, 0xff, 0xff, 0xff, 0xfa, 0x80, 0xff);
+                        break;
+
+                    case 'g':
+                        TEXT_DP_SET_PRIM_COLOR(gDisplayListPtr++, 0xff, 0xff, 0, 0x96, 0, 0xff);
+                        break;
+
+                    case 'b':
+                        TEXT_DP_SET_PRIM_COLOR(gDisplayListPtr++, 0xff, 0xff, 0, 0, 0xc8, 0xff);
+                        break;
+
+                    case 'p':
+                        TEXT_DP_SET_PRIM_COLOR(gDisplayListPtr++, 0xff, 0xff, 0xc8, 0, 0xc8, 0xff);
+                        break;
+
+                    case '1':
+
+                    case 'w':
+                        TEXT_DP_SET_PRIM_COLOR(
+                            gDisplayListPtr++, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff);
+                        break;
+
+                    case '5':
+                        TEXT_DP_SET_PRIM_COLOR(
+                            gDisplayListPtr++, 0xff, 0xff, 0x80, 0x80, 0x80, 0xff);
+                        break;
+
+                    case '0':
+                        TEXT_DP_SET_PRIM_COLOR(gDisplayListPtr++, 0xff, 0xff, 0, 0, 0, 0xff);
+                        break;
+                    }
+
+                    switch (p[2]) {
+                    case 'r':
+                        TEXT_DP_SET_ENV_COLOR(gDisplayListPtr++, 0xc8, 0, 0, 0xff);
+                        break;
+
+                    case 'o':
+                        TEXT_DP_SET_ENV_COLOR(gDisplayListPtr++, 0xcd, 0x5f, 0, 0xff);
+                        break;
+
+                    case 'O':
+                        TEXT_DP_SET_ENV_COLOR(gDisplayListPtr++, 0xff, 0x78, 0, 0xff);
+                        break;
+
+                    case 'y':
+                        TEXT_DP_SET_ENV_COLOR(gDisplayListPtr++, 0xd2, 0xbe, 0, 0xff);
+                        break;
+
+                    case 'Y':
+                        TEXT_DP_SET_ENV_COLOR(gDisplayListPtr++, 0xd2, 0xc8, 0x69, 0xff);
+                        break;
+
+                    case 'g':
+                        TEXT_DP_SET_ENV_COLOR(gDisplayListPtr++, 0, 0x96, 0, 0xff);
+                        break;
+
+                    case 'b':
+                        TEXT_DP_SET_ENV_COLOR(gDisplayListPtr++, 0, 0, 0xc8, 0xff);
+                        break;
+
+                    case 'p':
+                        TEXT_DP_SET_ENV_COLOR(gDisplayListPtr++, 0xc8, 0, 0xc8, 0xff);
+                        break;
+
+                    case '1':
+
+                    case 'w':
+                        TEXT_DP_SET_ENV_COLOR(gDisplayListPtr++, 0xff, 0xff, 0xff, 0xff);
+                        break;
+
+                    case '5':
+                        TEXT_DP_SET_ENV_COLOR(gDisplayListPtr++, 0x80, 0x80, 0x80, 0xff);
+                        break;
+
+                    case '0':
+                        TEXT_DP_SET_ENV_COLOR(gDisplayListPtr++, 0, 0, 0, 0xff);
+                        break;
+                    }
+
+                    p += 2;
+                    goto next;
+                }
+            }
+            if (((c >= 0x21) && (c < 0x80)) || jp) {
+                if (jp) {
+                    g = (int)(*p);
+                    w = (cell * 36) / 40;
+                    adv = w - pad;
+                    {
+                        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+                        _g->words.w0 = ((TEXT_SHIFTL(0xFD, 24, 8) | TEXT_SHIFTL(3, 21, 3)) |
+                                        TEXT_SHIFTL(1, 19, 2)) |
+                                       TEXT_SHIFTL(36 - 1, 0, 12);
+                        _g->words.w1 = (unsigned int)GetCachedGlyphTexture(g);
+                    }
+                    line = ((w + 1) + 7) >> 3;
+                    if (lastLine != line) {
+                        {
+                            Gfx *_g = (Gfx *)(gDisplayListPtr++);
+                            _g->words.w0 = (((TEXT_SHIFTL(0xF5, 24, 8) | TEXT_SHIFTL(3, 21, 3)) |
+                                             TEXT_SHIFTL(1, 19, 2)) |
+                                            TEXT_SHIFTL(line, 9, 9)) |
+                                           TEXT_SHIFTL(0, 0, 9);
+                            _g->words.w1 = ((((((TEXT_SHIFTL(7, 24, 3) | TEXT_SHIFTL(0, 20, 4)) |
+                                                TEXT_SHIFTL(2, 18, 2)) |
+                                               TEXT_SHIFTL(6, 14, 4)) |
+                                              TEXT_SHIFTL(0, 10, 4)) |
+                                             TEXT_SHIFTL(2, 8, 2)) |
+                                            TEXT_SHIFTL(6, 4, 4)) |
+                                           TEXT_SHIFTL(0, 0, 4);
+                        }
+                        lastLine = line;
+                    }
+                    TEXT_DP_LOAD_SYNC(gDisplayListPtr++);
+                    {
+                        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+                        _g->words.w0 =
+                            (((unsigned int)((((unsigned int)0xf4) & ((0x01 << 8) - 1)) << 24)) |
+                             ((unsigned int)((((unsigned int)0) & ((0x01 << 12) - 1)) << 12))) |
+                            ((unsigned int)((((unsigned int)0) & ((0x01 << 12) - 1)) << 0));
+                        _g->words.w1 =
+                            (((unsigned int)((((unsigned int)7) & ((0x01 << 3) - 1)) << 24)) |
+                             ((unsigned int)((((unsigned int)(w << 2)) & ((0x01 << 12) - 1))
+                                             << 12))) |
+                            ((unsigned int)((((unsigned int)(cell << 2)) & ((0x01 << 12) - 1))
+                                            << 0));
+                    }
+                    {
+                        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+                        _g->words.w0 =
+                            (((((unsigned int)((((unsigned int)0xf5) & ((0x01 << 8) - 1)) << 24)) |
+                               ((unsigned int)((((unsigned int)3) & ((0x01 << 3) - 1)) << 21))) |
+                              ((unsigned int)((((unsigned int)1) & ((0x01 << 2) - 1)) << 19))) |
+                             ((unsigned int)((((unsigned int)(((w + 1) + 7) >> 3)) &
+                                              ((0x01 << 9) - 1))
+                                             << 9))) |
+                            ((unsigned int)((((unsigned int)0) & ((0x01 << 9) - 1)) << 0));
+                        _g->words.w1 =
+                            ((((((((unsigned int)((((unsigned int)0) & ((0x01 << 3) - 1)) << 24)) |
+                                  ((unsigned int)((((unsigned int)0) & ((0x01 << 4) - 1)) << 20))) |
+                                 ((unsigned int)((((unsigned int)2) & ((0x01 << 2) - 1)) << 18))) |
+                                ((unsigned int)((((unsigned int)6) & ((0x01 << 4) - 1)) << 14))) |
+                               ((unsigned int)((((unsigned int)0) & ((0x01 << 4) - 1)) << 10))) |
+                              ((unsigned int)((((unsigned int)2) & ((0x01 << 2) - 1)) << 8))) |
+                             ((unsigned int)((((unsigned int)6) & ((0x01 << 4) - 1)) << 4))) |
+                            ((unsigned int)((((unsigned int)0) & ((0x01 << 4) - 1)) << 0));
+                    }
+                } else {
+                    g = g_abHudFontCharToGlyph[c - 0x21];
+                    row = (g < 27) ? (cell) : (0);
+                    uls = tbl[g];
+                    w = (tbl[g + 1] - uls) + 1;
+                    lrs = uls + w;
+                    adv = w - pad;
+                    TEXT_DP_SET_TEXTURE_IMAGE(gDisplayListPtr++, 3, 1, textureWidth, tex);
+                    line = (((lrs - uls) + 1) + 7) >> 3;
+                    if (lastLine != line) {
+                        {
+                            Gfx *_g = (Gfx *)(gDisplayListPtr++);
+                            _g->words.w0 = (((TEXT_SHIFTL(0xF5, 24, 8) | TEXT_SHIFTL(3, 21, 3)) |
+                                             TEXT_SHIFTL(1, 19, 2)) |
+                                            TEXT_SHIFTL(line, 9, 9)) |
+                                           TEXT_SHIFTL(0, 0, 9);
+                            _g->words.w1 = ((((((TEXT_SHIFTL(7, 24, 3) | TEXT_SHIFTL(0, 20, 4)) |
+                                                TEXT_SHIFTL(2, 18, 2)) |
+                                               TEXT_SHIFTL(6, 14, 4)) |
+                                              TEXT_SHIFTL(0, 10, 4)) |
+                                             TEXT_SHIFTL(2, 8, 2)) |
+                                            TEXT_SHIFTL(6, 4, 4)) |
+                                           TEXT_SHIFTL(0, 0, 4);
+                        }
+                        lastLine = line;
+                    }
+                    TEXT_DP_LOAD_SYNC(gDisplayListPtr++);
+                    {
+                        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+                        _g->words.w0 =
+                            (((unsigned int)((((unsigned int)0xf4) & ((0x01 << 8) - 1)) << 24)) |
+                             ((unsigned int)((((unsigned int)(uls << 2)) & ((0x01 << 12) - 1))
+                                             << 12))) |
+                            ((unsigned int)((((unsigned int)(row << 2)) & ((0x01 << 12) - 1))
+                                            << 0));
+                        _g->words.w1 =
+                            (((unsigned int)((((unsigned int)7) & ((0x01 << 3) - 1)) << 24)) |
+                             ((unsigned int)((((unsigned int)(lrs << 2)) & ((0x01 << 12) - 1))
+                                             << 12))) |
+                            ((unsigned int)((((unsigned int)((row + cell) << 2)) &
+                                             ((0x01 << 12) - 1))
+                                            << 0));
+                    }
+                    {
+                        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+                        _g->words.w0 =
+                            (((((unsigned int)((((unsigned int)0xf5) & ((0x01 << 8) - 1)) << 24)) |
+                               ((unsigned int)((((unsigned int)3) & ((0x01 << 3) - 1)) << 21))) |
+                              ((unsigned int)((((unsigned int)1) & ((0x01 << 2) - 1)) << 19))) |
+                             ((unsigned int)((((unsigned int)(((w + 1) + 7) >> 3)) &
+                                              ((0x01 << 9) - 1))
+                                             << 9))) |
+                            ((unsigned int)((((unsigned int)0) & ((0x01 << 9) - 1)) << 0));
+                        _g->words.w1 =
+                            ((((((((unsigned int)((((unsigned int)0) & ((0x01 << 3) - 1)) << 24)) |
+                                  ((unsigned int)((((unsigned int)0) & ((0x01 << 4) - 1)) << 20))) |
+                                 ((unsigned int)((((unsigned int)2) & ((0x01 << 2) - 1)) << 18))) |
+                                ((unsigned int)((((unsigned int)6) & ((0x01 << 4) - 1)) << 14))) |
+                               ((unsigned int)((((unsigned int)0) & ((0x01 << 4) - 1)) << 10))) |
+                              ((unsigned int)((((unsigned int)2) & ((0x01 << 2) - 1)) << 8))) |
+                             ((unsigned int)((((unsigned int)6) & ((0x01 << 4) - 1)) << 4))) |
+                            ((unsigned int)((((unsigned int)0) & ((0x01 << 4) - 1)) << 0));
+                    }
+                }
+                if ((w != lastW) || (cell != lastCell)) {
+                    {
+                        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+                        _g->words.w0 =
+                            (((unsigned int)((((unsigned int)0xf2) & ((0x01 << 8) - 1)) << 24)) |
+                             ((unsigned int)((((unsigned int)2) & ((0x01 << 12) - 1)) << 12))) |
+                            ((unsigned int)((((unsigned int)2) & ((0x01 << 12) - 1)) << 0));
+                        _g->words.w1 =
+                            (((unsigned int)((((unsigned int)0) & ((0x01 << 3) - 1)) << 24)) |
+                             ((unsigned int)((((unsigned int)(((w - 1) << 2) + 2)) &
+                                              ((0x01 << 12) - 1))
+                                             << 12))) |
+                            ((unsigned int)((((unsigned int)(((cell - 1) << 2) + 2)) &
+                                             ((0x01 << 12) - 1))
+                                            << 0));
+                    }
+                    lastW = w;
+                    lastCell = cell;
+                }
+                lrs = (w * size) / cell;
+                if ((((x < 0) || ((x + lrs) > 320)) || (y < 0)) || ((y + size) > 240)) {
+                    {
+                        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+                        _g->words.w0 =
+                            (TEXT_SHIFTL(0xE4, 24, 8) |
+                             TEXT_SHIFTL((((s16)((x + lrs) << 2)) > 0) ? ((s16)((x + lrs) << 2)) :
+                                                                         (0),
+                                         12,
+                                         12)) |
+                            TEXT_SHIFTL((((s16)((y + size) << 2)) > 0) ? ((s16)((y + size) << 2)) :
+                                                                         (0),
+                                        0,
+                                        12);
+                        _g->words.w1 =
+                            (TEXT_SHIFTL(0, 24, 3) |
+                             TEXT_SHIFTL((((s16)(x << 2)) > 0) ? ((s16)(x << 2)) : (0), 12, 12)) |
+                            TEXT_SHIFTL((((s16)(y << 2)) > 0) ? ((s16)(y << 2)) : (0), 0, 12);
+                        TEXT_IMMEDIATE(
+                            gDisplayListPtr++,
+                            0xB4,
+                            (TEXT_SHIFTL(
+                                 ((16) -
+                                  (((s16)(x << 2) < 0) ?
+                                       (((s16)((w << 10) / (lrs)) < 0) ?
+                                            (TEXT_MAX(
+                                                (((s16)(x << 2) * (s16)((w << 10) / (lrs))) >> 7),
+                                                0)) :
+                                            (TEXT_MIN(
+                                                (((s16)(x << 2) * (s16)((w << 10) / (lrs))) >> 7),
+                                                0))) :
+                                       0)),
+                                 16,
+                                 16) |
+                             TEXT_SHIFTL(
+                                 ((((cell - 1) << 5) + 16) -
+                                  (((y << 2) < 0) ?
+                                       (((s16)(-dtdy) < 0) ?
+                                            (TEXT_MAX((((s16)(y << 2) * (s16)(-dtdy)) >> 7), 0)) :
+                                            (TEXT_MIN((((s16)(y << 2) * (s16)(-dtdy)) >> 7), 0))) :
+                                       0)),
+                                 0,
+                                 16)));
+                        TEXT_IMMEDIATE(gDisplayListPtr++,
+                                       0xB3,
+                                       (TEXT_SHIFTL(((w << 10) / (lrs)), 16, 16) |
+                                        TEXT_SHIFTL((-dtdy), 0, 16)));
+                    }
+                } else {
+                    {
+                        Gfx *_g = (Gfx *)(gDisplayListPtr++);
+                        _g->words.w0 =
+                            (TEXT_SHIFTL(0xE4, 24, 8) | TEXT_SHIFTL((x + lrs) << 2, 12, 12)) |
+                            TEXT_SHIFTL((y + size) << 2, 0, 12);
+                        _g->words.w1 = (TEXT_SHIFTL(0, 24, 3) | TEXT_SHIFTL(x << 2, 12, 12)) |
+                                       TEXT_SHIFTL(y << 2, 0, 12);
+                        {
+                            Gfx *_g = (Gfx *)(gDisplayListPtr++);
+                            _g->words.w0 = TEXT_SHIFTL(0xB4, 24, 8);
+                            _g->words.w1 =
+                                (unsigned int)(TEXT_SHIFTL(16, 16, 16) |
+                                               TEXT_SHIFTL(((cell - 1) << 5) + 16, 0, 16));
+                        };
+                        {
+                            Gfx *_g = (Gfx *)(gDisplayListPtr++);
+                            _g->words.w0 = TEXT_SHIFTL(0xB3, 24, 8);
+                            _g->words.w1 = (unsigned int)(TEXT_SHIFTL((w << 10) / lrs, 16, 16) |
+                                                          TEXT_SHIFTL(-dtdy, 0, 16));
+                        };
+                    }
+                }
+                x += (adv * size) / cell;
+            }
+        } else {
+            x += ((size * 12) / 40) + 1;
+        }
+    next:
+        p++;
     }
 
-    for (; *s != '\0'; s++) {
-        c = *s;
-        if (c == ' ') {
-            x += (size * SPACE_ADVANCE) / SIZE_UNITS + 1;
-            continue;
-        }
-        /*
-         * %j starts Japanese glyphs and %e ends them. Japanese glyphs draw at the large cell, so
-         * small text takes the large font while they last.
-         */
-        if (c == '%' && s[1] != '\0') {
-            if (s[1] == '%') {
-                s++;
-                c = *s;
-            } else if (s[1] == 'j') {
-                japanese = TRUE;
-                if (smallFont) {
-                    textureWidth = LARGE_FONT_WIDTH;
-                    texture = g_aLargeFontTexture;
-                    cell = LARGE_FONT_CELL;
-                    padding = LARGE_FONT_PADDING;
-                    offsets = g_adwLargeFontGlyphOffsets;
-                    rowStep = ((LARGE_FONT_CELL << 10) - TEXEL_STEP) / size;
-                }
-                s++;
-                continue;
-            } else if (s[1] == 'e') {
-                japanese = FALSE;
-                if (smallFont) {
-                    textureWidth = SMALL_FONT_WIDTH;
-                    texture = g_aSmallFontTexture;
-                    cell = SMALL_FONT_CELL;
-                    padding = SMALL_FONT_PADDING;
-                    offsets = g_adwSmallFontGlyphOffsets;
-                    rowStep = ((SMALL_FONT_CELL << 10) - TEXEL_STEP) / size;
-                }
-                s++;
-                continue;
-            } else if (s[1] == 'i' || s[1] == 'n') {
-                s++;
-                continue;
-            } else if (s[2] != '\0') {
-                gDPPipeSync(gDisplayListPtr++);
-                switch (s[1]) {
-                case 'r':
-                    gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0xBE, 0x00, 0x00, 0xFF);
-                    break;
-                case 'o':
-                    gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0xCD, 0x5F, 0x00, 0xFF);
-                    break;
-                case 'O':
-                    gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0xFF, 0x78, 0x00, 0xFF);
-                    break;
-                case 'y':
-                    gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0xFF, 0xF5, 0x00, 0xFF);
-                    break;
-                case 'Y':
-                    gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0xFF, 0xFA, 0x80, 0xFF);
-                    break;
-                case 'g':
-                    gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0x00, 0x96, 0x00, 0xFF);
-                    break;
-                case 'b':
-                    gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0x00, 0x00, 0xC8, 0xFF);
-                    break;
-                case 'p':
-                    gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0xC8, 0x00, 0xC8, 0xFF);
-                    break;
-                case 'w':
-                case '1':
-                    gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
-                    break;
-                case '5':
-                    gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0x80, 0x80, 0x80, 0xFF);
-                    break;
-                case '0':
-                    gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, 0x00, 0x00, 0x00, 0xFF);
-                    break;
-                }
-                switch (s[2]) {
-                case 'r':
-                    gDPSetEnvColor(gDisplayListPtr++, 0xC8, 0x00, 0x00, 0xFF);
-                    break;
-                case 'o':
-                    gDPSetEnvColor(gDisplayListPtr++, 0xCD, 0x5F, 0x00, 0xFF);
-                    break;
-                case 'O':
-                    gDPSetEnvColor(gDisplayListPtr++, 0xFF, 0x78, 0x00, 0xFF);
-                    break;
-                case 'y':
-                    gDPSetEnvColor(gDisplayListPtr++, 0xD2, 0xBE, 0x00, 0xFF);
-                    break;
-                case 'Y':
-                    gDPSetEnvColor(gDisplayListPtr++, 0xD2, 0xC8, 0x69, 0xFF);
-                    break;
-                case 'g':
-                    gDPSetEnvColor(gDisplayListPtr++, 0x00, 0x96, 0x00, 0xFF);
-                    break;
-                case 'b':
-                    gDPSetEnvColor(gDisplayListPtr++, 0x00, 0x00, 0xC8, 0xFF);
-                    break;
-                case 'p':
-                    gDPSetEnvColor(gDisplayListPtr++, 0xC8, 0x00, 0xC8, 0xFF);
-                    break;
-                case 'w':
-                case '1':
-                    gDPSetEnvColor(gDisplayListPtr++, 0xFF, 0xFF, 0xFF, 0xFF);
-                    break;
-                case '5':
-                    gDPSetEnvColor(gDisplayListPtr++, 0x80, 0x80, 0x80, 0xFF);
-                    break;
-                case '0':
-                    gDPSetEnvColor(gDisplayListPtr++, 0x00, 0x00, 0x00, 0xFF);
-                    break;
-                }
-                s += 2;
-                continue;
-            }
-        }
-        if ((c < '!' || c >= 0x80) && !japanese) {
-            continue;
-        }
-
-        /*
-         * Load the columns of the glyph, then sample them with the render tile. The load tile and
-         * the size of the render tile are set only when they change.
-         */
-        dtdy = -rowStep;
-        if (japanese) {
-            columns = cell * JAPANESE_ADVANCE / SIZE_UNITS;
-            line = (columns + 8) >> 3;
-            gDPSetTextureImage(gDisplayListPtr++,
-                               G_IM_FMT_IA,
-                               G_IM_SIZ_8b,
-                               JAPANESE_ADVANCE,
-                               GetCachedGlyphTexture(c));
-            if (line != lastLine) {
-                gDPSetTile(gDisplayListPtr++,
-                           G_IM_FMT_IA,
-                           G_IM_SIZ_8b,
-                           line,
-                           0,
-                           G_TX_LOADTILE,
-                           0,
-                           G_TX_CLAMP,
-                           6,
-                           G_TX_NOLOD,
-                           G_TX_CLAMP,
-                           6,
-                           G_TX_NOLOD);
-                lastLine = line;
-            }
-            gDPLoadSync(gDisplayListPtr++);
-            gDPLoadTile(gDisplayListPtr++, G_TX_LOADTILE, 0, 0, columns * 4, cell * 4);
-            gDPSetTile(gDisplayListPtr++,
-                       G_IM_FMT_IA,
-                       G_IM_SIZ_8b,
-                       line,
-                       0,
-                       G_TX_RENDERTILE,
-                       0,
-                       G_TX_CLAMP,
-                       6,
-                       G_TX_NOLOD,
-                       G_TX_CLAMP,
-                       6,
-                       G_TX_NOLOD);
-        } else {
-            glyph = g_abHudFontCharToGlyph[c - '!'];
-            row = glyph < FIRST_ROW_GLYPH ? cell : 0;
-            left = offsets[glyph];
-            columns = offsets[glyph + 1] - left + 1;
-            right = left + columns;
-            gDPSetTextureImage(gDisplayListPtr++, G_IM_FMT_IA, G_IM_SIZ_8b, textureWidth, texture);
-            /* The original takes the width of the load back out of its right edge. */
-            line = (right - left + 8) >> 3;
-            if (line != lastLine) {
-                gDPSetTile(gDisplayListPtr++,
-                           G_IM_FMT_IA,
-                           G_IM_SIZ_8b,
-                           line,
-                           0,
-                           G_TX_LOADTILE,
-                           0,
-                           G_TX_CLAMP,
-                           6,
-                           G_TX_NOLOD,
-                           G_TX_CLAMP,
-                           6,
-                           G_TX_NOLOD);
-                lastLine = line;
-            }
-            gDPLoadSync(gDisplayListPtr++);
-            gDPLoadTile(
-                gDisplayListPtr++, G_TX_LOADTILE, left * 4, row * 4, right * 4, (row + cell) * 4);
-            gDPSetTile(gDisplayListPtr++,
-                       G_IM_FMT_IA,
-                       G_IM_SIZ_8b,
-                       (columns + 8) >> 3,
-                       0,
-                       G_TX_RENDERTILE,
-                       0,
-                       G_TX_CLAMP,
-                       6,
-                       G_TX_NOLOD,
-                       G_TX_CLAMP,
-                       6,
-                       G_TX_NOLOD);
-        }
-        if (columns != lastColumns || cell != lastCell) {
-            gDPSetTileSize(gDisplayListPtr++,
-                           G_TX_RENDERTILE,
-                           2,
-                           2,
-                           (columns - 1) * 4 + 2,
-                           (cell - 1) * 4 + 2);
-            lastColumns = columns;
-            lastCell = cell;
-        }
-
-        /* The glyph is stored upside down, so t starts at its last row and steps back. */
-        if (x >= 0 && x + (columns * size) / cell <= SCREEN_WIDTH && y >= 0 &&
-            y + size <= SCREEN_HEIGHT) {
-            width = (columns * size) / cell;
-            gSPTextureRectangle(gDisplayListPtr++,
-                                x * 4,
-                                y * 4,
-                                (x + width) * 4,
-                                (y + size) * 4,
-                                G_TX_RENDERTILE,
-                                HALF_TEXEL,
-                                ((cell - 1) << 5) + HALF_TEXEL,
-                                (columns << 10) / width,
-                                dtdy);
-        } else {
-            /* A corner off the screen moves to its edge, and the texture start moves with it. */
-            width = (columns * size) / cell;
-            left4 = x * 4;
-            top4 = y * 4;
-            right4 = (x + width) * 4;
-            bottom4 = (y + size) * 4;
-            if (left4 < 0) {
-                dsdx = (columns << 10) / width;
-                if ((s16)dsdx < 0) {
-                    offset = (left4 * (s16)dsdx) >> 7;
-                    offset = offset > 0 ? offset : 0;
-                } else {
-                    offset = (left4 * (s16)dsdx) >> 7;
-                    offset = offset < 0 ? offset : 0;
-                }
-            } else {
-                dsdx = (columns << 10) / width;
-                offset = 0;
-            }
-            sStart = HALF_TEXEL - offset;
-            offset = 0;
-            /* The original tests the top edge before it is narrowed to 16 bits. */
-            if (y * 4 < 0) {
-                offset = (top4 * (s16)dtdy) >> 7;
-                if ((s16)dtdy < 0) {
-                    offset = offset > 0 ? offset : 0;
-                } else {
-                    offset = offset < 0 ? offset : 0;
-                }
-            }
-            gSPTextureRectangle(gDisplayListPtr++,
-                                left4 > 0 ? left4 : 0,
-                                top4 > 0 ? top4 : 0,
-                                right4 > 0 ? right4 : 0,
-                                bottom4 > 0 ? bottom4 : 0,
-                                G_TX_RENDERTILE,
-                                sStart,
-                                ((cell - 1) << 5) - offset + HALF_TEXEL,
-                                dsdx,
-                                dtdy);
-        }
-        x += ((columns - padding) * size) / cell;
-    }
-
-    gDPPipeSync(gDisplayListPtr++);
-    gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
-    gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
+    TEXT_DP_PIPE_SYNC(gDisplayListPtr++);
+    TEXT_DP_SET_TEXTURE_PERSP(gDisplayListPtr++, 1 << 19);
+    TEXT_DP_SET_CYCLE_TYPE(gDisplayListPtr++, 0 << 20);
 }
 #endif /* TGR_REGION == TGR_REGION_JP */
 
