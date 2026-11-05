@@ -17,9 +17,6 @@
 /* The buttons that pick and paint. */
 #define INPUT_PICK (INPUT_Z | INPUT_A)
 
-/* A second click within this many milliseconds is a double click. */
-#define DOUBLE_CLICK_MS 350
-
 /* How far the stick must be pushed to move the cursor or a bar of the color editor. */
 #define CURSOR_DEAD_ZONE 0.05f
 #define COLOR_DEAD_ZONE 0.1f
@@ -41,9 +38,6 @@
 #define DARK_SWATCH 1
 #define DARK_SWATCH_MAX 0x7F
 
-/* The key of the letter O. The cursor starts on it when the keyboard opens. */
-#define KEYBOARD_START_KEY 24
-
 /* The cell of the letter A in the font. The text menu shows its styles with it. */
 #define PREVIEW_GLYPH 10
 
@@ -51,9 +45,6 @@
 #define HIGHLIGHT_RED 0x20
 #define HIGHLIGHT_GREEN 0xC8
 #define HIGHLIGHT_BLUE 0xFF
-
-/* Whether a decal has a mirror image. */
-#define HAS_MIRROR(slot) ((slot) != 4 && (slot) != 5 && (slot) != 8 && (slot) != 9)
 
 #define PaintShopInput() (&g_aPlayerInputState[g_bPaintShopPlayer])
 
@@ -92,42 +83,6 @@ typedef struct {
     MaterialPalette(VEHICLE_MATERIAL_REAR_LIGHTS)[0] = g_pDecalPalette[0];                         \
     /* The second color of the rear lights is never set; the first is set again. */                \
     MaterialPalette(VEHICLE_MATERIAL_REAR_LIGHTS)[0] = g_pDecalPalette[0]
-
-/* The tools whose styles a double click opens. */
-#define HasStyleMenu(tool)                                                                         \
-    ((tool) == PAINT_TOOL_RECTANGLE || (tool) == PAINT_TOOL_OVAL || (tool) == PAINT_TOOL_BRUSH ||  \
-     (tool) == PAINT_TOOL_TEXT)
-
-/* Make a decal the one edited, and center it in its frame. */
-static inline void SelectDecalSlot(s32 slot) {
-    VehicleModel *model = g_pCurrentVehicleModelData;
-
-    g_bDecalSlotChanged = TRUE;
-    g_wScreenFrameCount = 0;
-    g_pDecalTexels = model->textures[model->materialTextures[slot]].image;
-    /* The mask is indexed by the slot as stored, a byte. */
-    g_pDecalMask = model->decalMasks[g_bDecalSlot];
-    g_bDecalWidth = model->textures[model->materialTextures[slot]].width;
-    g_bDecalHeight = model->textures[model->materialTextures[slot]].height;
-#if TGR_REGION != TGR_REGION_JP
-    osSyncPrintf("decal_width = %d\n", g_bDecalWidth);
-    osSyncPrintf("decal_height = %d\n", g_bDecalHeight);
-#endif
-    g_rcDecalCanvas.x =
-        g_rcDecalCanvasFrame[0].x + ((g_rcDecalCanvasFrame[0].width - g_bDecalWidth * 4) >> 1);
-    g_rcDecalCanvas.y =
-        g_rcDecalCanvasFrame[0].y + ((g_rcDecalCanvasFrame[0].height - g_bDecalHeight * 4) >> 1);
-    g_rcDecalCanvas.width = g_bDecalWidth * 4;
-    g_rcDecalCanvas.height = g_bDecalHeight * 4;
-}
-
-/* The distance from the first corner of a shape to the cursor. */
-static inline s32 AnchorDistance(void) {
-    s32 dx = g_texPaintCursor.originX - g_nPaintAnchorX;
-    s32 dy = g_texPaintCursor.originY - g_nPaintAnchorY;
-
-    return (s32)sqrtf((f32)(dx * dx + dy * dy));
-}
 
 void ProcessColorEditorDialog(void) {
     PlayerInputState *input;
@@ -393,395 +348,358 @@ void UpdateCursorFromInput(void) {
     }
 }
 
-/* A click on a decal makes it the one edited. Return whether a decal was clicked. */
-static inline s32 PickDecalSlot(void) {
-    s32 i;
+void ProcessDecalEditorInput(void) {
+    static int g_nPaintAnchorX; /* the drag anchor */
+    static int g_nPaintAnchorY;
+    static unsigned int g_dwLastClickTime; /* the last click, in milliseconds */
+    static int g_dwAnchorXInitialized;     /* the anchor has been set */
+    static int g_dwAnchorYInitialized;
+    int j;
+    int i;
+    int w;
+    int h;
+    int r;
+    unsigned int t;
+    /* Unused locals preserve the original IDO stack layout. */
+    int unusedFrameWord;
+    int x;
+    int y;
+    int unusedFrameWords[3];
+    char clicked;
 
-    if (g_bDecalDragActive || g_bDecalSlotChanged || !(PaintShopInput()->buttons & INPUT_PICK)) {
-        return FALSE;
+    /* clang-format off */
+    if (g_dwAnchorXInitialized != 0) { } else { g_dwAnchorXInitialized = 1; g_nPaintAnchorX = g_texPaintCursor.originX; }
+    /* clang-format on */
+    if (g_dwAnchorYInitialized == 0) {
+        g_dwAnchorYInitialized = 1;
+        g_nPaintAnchorY = g_texPaintCursor.originY;
     }
-    for (i = 0; i < DECAL_SLOTS; i++) {
-        if (!IsCursorInRect(&g_aDecalSlotRects[i])) {
-            continue;
-        }
-        TransferFlags(PaintShopInput(), INPUT_PICK);
-        g_bPreviousDecalSlot = g_bDecalSlot;
-        g_pDecalSlotIcon = g_apDecalSlotIcons[i];
-        g_bDecalSlot = i;
-        if (g_bPreviousDecalSlot != g_bDecalSlot) {
-            SelectDecalSlot(i);
-        }
-        g_bDecalSlotHasMirror = HAS_MIRROR(g_bDecalSlot);
-        return TRUE;
+    if (g_bPaintShopExiting != 0) {
+        return;
     }
-    return FALSE;
-}
-
-/* A click on the palette picks a color, and a second on the same color opens the color editor.
- * Return whether a color was clicked. */
-static inline s32 PickPaletteColor(void) {
-    u32 now;
-    s32 i, channel;
-
-    if (!IsCursorInRect(&g_rcPaletteFrameLeft) && !IsCursorInRect(&g_rcPaletteFrameRight)) {
-        return FALSE;
-    }
-    if (!g_bPaletteEnabled || !(PaintShopInput()->buttons & INPUT_PICK)) {
-        return FALSE;
-    }
-    for (i = 0; i < DECAL_SWATCHES; i++) {
-        if (!IsCursorInSwatch(&g_aDecalSwatches[i])) {
-            continue;
-        }
-        TransferFlags(PaintShopInput(), INPUT_PICK);
-        g_bSavedColor = g_bDecalColor;
-        g_bDecalColor = i;
-        if (i != g_bSavedColor) {
-            g_dwLastClickTime = GetTimeMilliseconds();
-        } else {
-            now = GetTimeMilliseconds();
-            if (now - g_dwLastClickTime < DOUBLE_CLICK_MS) {
-                for (channel = 0; channel < 3; channel++) {
-                    g_abSavedSwatchColor[channel] = g_aDecalSwatches[g_bDecalColor].color[channel];
+    if (g_bDecalDragActive == 0 && g_bDecalSlotChanged == 0 &&
+        (PaintShopInput()->buttons & INPUT_PICK)) {
+        for (i = 0; i < 10; i++) {
+            if (IsCursorInRect(&g_aDecalSlotRects[i])) {
+                TransferFlags(PaintShopInput(), 0x8010);
+                g_bPreviousDecalSlot = g_bDecalSlot;
+                g_pDecalSlotIcon = g_apDecalSlotIcons[i];
+                g_bDecalSlot = i;
+                if (g_bDecalSlot != g_bPreviousDecalSlot) {
+                    g_bDecalSlotChanged = 1;
+                    g_wScreenFrameCount = 0;
+                    g_pDecalTexels = g_pCurrentVehicleModelData
+                                         ->textures[g_pCurrentVehicleModelData->materialTextures[i]]
+                                         .image;
+                    g_pDecalMask = g_pCurrentVehicleModelData->decalMasks[g_bDecalSlot];
+                    g_bDecalWidth = g_pCurrentVehicleModelData
+                                        ->textures[g_pCurrentVehicleModelData->materialTextures[i]]
+                                        .width;
+                    g_bDecalHeight = g_pCurrentVehicleModelData
+                                         ->textures[g_pCurrentVehicleModelData->materialTextures[i]]
+                                         .height;
+#if !(TGR_REGION == TGR_REGION_JP)
+                    osSyncPrintf("decal_width = %d\n", g_bDecalWidth);
+                    osSyncPrintf("decal_height = %d\n", g_bDecalHeight);
+#endif
+                    w = (g_rcDecalCanvasFrame[0].width - g_bDecalWidth * 4) >> 1;
+                    h = (g_rcDecalCanvasFrame[0].height - g_bDecalHeight * 4) >> 1;
+                    g_rcDecalCanvas.x = g_rcDecalCanvasFrame[0].x + w;
+                    g_rcDecalCanvas.y = g_rcDecalCanvasFrame[0].y + h;
+                    g_rcDecalCanvas.width = g_bDecalWidth * 4;
+                    g_rcDecalCanvas.height = g_bDecalHeight * 4;
                 }
-                g_bColorEditorOpen = TRUE;
-            } else {
-                g_dwLastClickTime = now;
+                if (g_bDecalSlot == 4 || g_bDecalSlot == 5 || g_bDecalSlot == 8 ||
+                    g_bDecalSlot == 9) {
+                    g_bDecalSlotHasMirror = 0;
+                } else {
+                    g_bDecalSlotHasMirror = 1;
+                }
+                return;
             }
         }
-        return TRUE;
     }
-    return FALSE;
-}
-
-/* A click on a tool picks it, and a second on a tool with styles opens their menu. Return
- * whether a tool was clicked. */
-static inline s32 PickPaintTool(void) {
-    PlayerInputState *input;
-    u32 now;
-    s32 i, size;
-
-    if (g_bDecalDragActive) {
-        return FALSE;
-    }
-    for (i = 0; i < PAINT_TOOLS; i++) {
-        if (!IsCursorInRect(&g_aPaintToolButtonRects[i])) {
-            continue;
-        }
-        input = PaintShopInput();
-        if (!(input->buttons & INPUT_PICK)) {
-            continue;
-        }
-        TransferFlags(input, INPUT_PICK);
-        g_bPaintToolStarted = FALSE;
-        if (i != PAINT_TOOL_BRUSH_SIZE) {
-            g_bPreviousPaintTool = g_bPaintTool;
-            g_bPaintTool = i;
-            if (g_bPreviousPaintTool != g_bPaintTool) {
-                if (HasStyleMenu(g_bPaintTool)) {
+    if ((IsCursorInRect(&g_rcPaletteFrameLeft) || IsCursorInRect(&g_rcPaletteFrameRight)) &&
+        g_bPaletteEnabled != 0 && (PaintShopInput()->buttons & INPUT_PICK)) {
+        for (j = 0; j < 16; j++) {
+            if (IsCursorInSwatch(&g_aDecalSwatches[j])) {
+                TransferFlags(PaintShopInput(), 0x8010);
+                g_bSavedColor = g_bDecalColor;
+                g_bDecalColor = j;
+                if (g_bSavedColor != j) {
                     g_dwLastClickTime = GetTimeMilliseconds();
+                    return;
                 }
-            } else if (HasStyleMenu(g_bPaintTool)) {
-                now = GetTimeMilliseconds();
-                if (now - g_dwLastClickTime < DOUBLE_CLICK_MS) {
-                    g_bPaintToolStarted = TRUE;
-                    g_bStyleMenuOpen = TRUE;
-                    return TRUE;
+                t = GetTimeMilliseconds();
+                if (t - g_dwLastClickTime < 350) {
+                    for (j = 0; j < 3; j++) {
+                        g_abSavedSwatchColor[j] = g_aDecalSwatches[g_bDecalColor].color[j];
+                    }
+                    g_bColorEditorOpen = 1;
+                    return;
                 }
-                g_dwLastClickTime = now;
+                g_dwLastClickTime = t;
+                return;
             }
         }
-        switch (i) {
-        case PAINT_TOOL_BRUSH_SIZE:
-            for (size = 0; size < BRUSH_SIZES; size++) {
-                if (IsCursorInRect(&g_aBrushSizeButtonRects[size])) {
-                    g_bBrushSize = size;
-                    break;
-                }
-            }
-            break;
-        case PAINT_TOOL_MIRROR:
-            g_bPaintToolStarted = TRUE;
-            break;
-        case PAINT_TOOL_CLEAR:
-            g_texPaintToolClear.style = 0;
-            break;
-        case PAINT_TOOL_LOAD:
-        case PAINT_TOOL_SAVE:
-            /* Already clear. */
-            g_bPaintToolStarted = FALSE;
-            break;
-        case PAINT_TOOL_UNDO:
-            UndoDecalEdit();
-            g_bPaintTool = g_bPreviousPaintTool;
-            break;
-        }
-        return TRUE;
     }
-    return FALSE;
-}
-
-/* The text tool: a click on the decal opens the keyboard, the text typed then follows the cursor
- * and a second click paints it. */
-static inline void ProcessTextTool(void) {
-    PlayerInputState *input;
-    u8 clicked;
-
-    clicked = FALSE;
-    if (IsCursorInRect(&g_rcDecalCanvas) && !g_bDecalDragActive) {
-        input = PaintShopInput();
-        if (input->buttons & INPUT_PICK) {
-            TransferFlags(input, INPUT_PICK);
+    if (g_bDecalDragActive == 0) {
+        for (i = 0; i < 13; i++) {
+            if (IsCursorInRect(&g_aPaintToolButtonRects[i]) &&
+                (PaintShopInput()->buttons & INPUT_PICK)) {
+                TransferFlags(PaintShopInput(), 0x8010);
+                g_bPaintToolStarted = 0;
+                if (i != 0) {
+                    g_bPreviousPaintTool = g_bPaintTool;
+                    g_bPaintTool = i;
+                    if (g_bPaintTool != g_bPreviousPaintTool) {
+                        if (g_bPaintTool == 5 || g_bPaintTool == 6 || g_bPaintTool == 1 ||
+                            g_bPaintTool == 4) {
+                            g_dwLastClickTime = GetTimeMilliseconds();
+                        }
+                    } else if (g_bPaintTool == 5 || g_bPaintTool == 6 || g_bPaintTool == 1 ||
+                               g_bPaintTool == 4) {
+                        t = GetTimeMilliseconds();
+                        if (t - g_dwLastClickTime < 350) {
+                            g_bPaintToolStarted = 1;
+                            g_bStyleMenuOpen = 1;
+                            return;
+                        }
+                        g_dwLastClickTime = t;
+                    }
+                }
+                switch (i) {
+                case 0:
+                    for (j = 0; j < 5; j++) {
+                        if (IsCursorInRect(&g_aBrushSizeButtonRects[j])) {
+                            g_bBrushSize = j;
+                            return;
+                        }
+                    }
+                    return;
+                case 7:
+                    g_bPaintToolStarted = 1;
+                    return;
+                case 11:
+                    UndoDecalEdit();
+                    g_bPaintTool = g_bPreviousPaintTool;
+                    return;
+                case 8:
+                    g_texPaintToolClear.style = 0;
+                    return;
+                case 9:
+                case 10:
+                    g_bPaintToolStarted = 0;
+                    return;
+                case 12:
+                    return;
+                }
+                return;
+            }
+        }
+    }
+    if (g_bPaintTool == 4) {
+        clicked = 0;
+        if (IsCursorInRect(&g_rcDecalCanvas) && g_bDecalDragActive == 0 &&
+            (PaintShopInput()->buttons & INPUT_PICK)) {
+            TransferFlags(PaintShopInput(), 0x8010);
             g_nPaintAnchorX = g_texPaintCursor.originX;
             g_nPaintAnchorY = g_texPaintCursor.originY;
-            clicked = TRUE;
-            g_bDecalDragActive = TRUE;
+            clicked = 1;
+            g_bDecalDragActive = 1;
         }
-    }
-    if (g_bDecalDragActive && !g_bPaintToolStarted) {
-        if (clicked) {
-            g_texPaintCursor.originX =
-                g_aDecalGlyphs[KEYBOARD_START_KEY].x + (g_texKeyboardHighlight.drawWidth >> 1);
-            g_texPaintCursor.originY =
-                g_aDecalGlyphs[KEYBOARD_START_KEY].y + (g_texKeyboardHighlight.drawHeight >> 1);
-            g_wScreenFrameCount = 0;
-        }
-        ProcessTextInputKeyboard();
-        return;
-    }
-    if (g_bPaintToolStarted && !IsCursorInRect(&g_rcPaletteFrameLeft) &&
-        !IsCursorInRect(&g_rcPaletteFrameRight) && !(PaintShopInput()->buttons & INPUT_PICK)) {
-        if (g_bDecalTextLength > 0) {
-            if (g_bTextShadowPickerOpen) {
-                g_texPaintCursor.originX = g_nPaintAnchorX;
-                g_bTextShadowPickerOpen = FALSE;
-                g_texPaintCursor.originY = g_nPaintAnchorY;
+        if (g_bDecalDragActive != 0 && g_bPaintToolStarted == 0) {
+            if (clicked) {
+                g_texPaintCursor.originX =
+                    g_aDecalGlyphs[24].x + (g_texKeyboardHighlight.drawWidth >> 1);
+                g_texPaintCursor.originY =
+                    g_aDecalGlyphs[24].y + (g_texKeyboardHighlight.drawHeight >> 1);
+                g_wScreenFrameCount = 0;
             }
-            DrawDecalTextPreview(g_texPaintCursor.originX, g_texPaintCursor.originY + 1);
-        } else if (g_bDecalTextLength == 0) {
-            /* The length is unsigned and this second test cannot fail. */
-            g_bPaintToolStarted = FALSE;
-            g_bDecalDragActive = FALSE;
+            ProcessTextInputKeyboard();
+            return;
         }
-        return;
-    }
-    if (!g_bPaintToolStarted) {
-        return;
-    }
-    input = PaintShopInput();
-    if (!(input->buttons & INPUT_PICK)) {
-        return;
-    }
-    TransferFlags(input, INPUT_PICK);
-    SaveDecalUndo();
-    StampTextOnDecal(g_texPaintCursor.originX, g_texPaintCursor.originY + 1);
-    g_bDecalTextLength = 0;
-    g_bDecalTextWidth = 0;
-    g_bPaintToolStarted = FALSE;
-    g_bDecalDragActive = FALSE;
-}
-
-/* The brush paints while the button is pressed, on a copy for undo taken as the stroke starts. */
-static inline void PaintBrush(void) {
-    s32 half;
-
-    if (!g_bPaintToolStarted) {
-        SaveDecalUndo();
-        g_bPaintToolStarted = TRUE;
-    }
-    if (g_bBrushSize == 0) {
-        SetPixel4Bit((g_texPaintCursor.originX - g_rcDecalCanvas.x) >> 2,
-                     (g_rcDecalCanvas.y + g_rcDecalCanvas.height - g_texPaintCursor.originY) >> 2,
-                     g_bDecalColor);
-    } else if (g_texPaintToolBrush.style == 0) {
-        FillCircle4Bit(g_texPaintCursor.originX,
-                       g_texPaintCursor.originY,
-                       g_aBrushSizeRects[g_bBrushSize].width >> 1,
-                       TRUE);
-    } else {
-        half = g_aBrushSizeRects[g_bBrushSize].width * 2;
-        FillRect4Bit(g_texPaintCursor.originX - half,
-                     g_texPaintCursor.originY - half,
-                     g_texPaintCursor.originX + half,
-                     g_texPaintCursor.originY + half);
-    }
-}
-
-/* A shape tool takes its first corner at the first click and draws at the second. Return
- * whether it draws now. */
-static inline s32 StartShape(void) {
-    if (!g_bPaintToolStarted) {
-        g_nPaintAnchorX = g_texPaintCursor.originX;
-        g_nPaintAnchorY = g_texPaintCursor.originY;
-        g_bPaintToolStarted = TRUE;
-        return FALSE;
-    }
-    SaveDecalUndo();
-    return TRUE;
-}
-
-static inline void PaintRectangle(void) {
-    switch (g_texPaintToolRect.style) {
-    case RECT_STYLE_FILLED:
-        FillRect4Bit(
-            g_nPaintAnchorX, g_nPaintAnchorY, g_texPaintCursor.originX, g_texPaintCursor.originY);
-        break;
-    case RECT_STYLE_OUTLINED:
-        StrokeDecalRectangle(
-            g_nPaintAnchorX, g_nPaintAnchorY, g_texPaintCursor.originX, g_texPaintCursor.originY);
-        break;
-    case RECT_STYLE_FILLED_ROUND:
-        FillDecalRoundRect(
-            g_nPaintAnchorX, g_nPaintAnchorY, g_texPaintCursor.originX, g_texPaintCursor.originY);
-        break;
-    case RECT_STYLE_OUTLINED_ROUND:
-        DrawDecalRoundedRectOutline(
-            g_nPaintAnchorX, g_nPaintAnchorY, g_texPaintCursor.originX, g_texPaintCursor.originY);
-        break;
-    }
-}
-
-/* The style is read again after the radius is taken, as the original reads it. */
-static inline void PaintOval(void) {
-#ifdef ENABLE_PATCHES
-    s32 radius = 0;
-#else
-    s32 radius;
-#endif /* ENABLE_PATCHES */
-
-    /* The radius of a circle is taken before the style is tested again. */
-    if (g_texPaintToolOval.style == OVAL_STYLE_FILLED_CIRCLE ||
-        g_texPaintToolOval.style == OVAL_STYLE_OUTLINED_CIRCLE) {
-        radius = AnchorDistance() >> 2;
-    }
-    switch (g_texPaintToolOval.style) {
-    case OVAL_STYLE_FILLED_ELLIPSE:
-        DrawDecalFilledEllipse(
-            g_nPaintAnchorX, g_nPaintAnchorY, g_texPaintCursor.originX, g_texPaintCursor.originY);
-        break;
-    case OVAL_STYLE_OUTLINED_ELLIPSE:
-        DrawDecalEllipseOutline(
-            g_nPaintAnchorX, g_nPaintAnchorY, g_texPaintCursor.originX, g_texPaintCursor.originY);
-        break;
-    case OVAL_STYLE_FILLED_CIRCLE:
-        FillCircle4Bit(g_nPaintAnchorX, g_nPaintAnchorY, radius, TRUE);
-        break;
-    case OVAL_STYLE_OUTLINED_CIRCLE:
-        DrawDecalCircleOutline(g_nPaintAnchorX, g_nPaintAnchorY, radius);
-        break;
-    }
-}
-
-/* A press on the decal paints with the tool in use. Return whether the decal was pressed. */
-static inline s32 PaintWithTool(void) {
-    /* The text tool never arrives here, but the original tests for it again. */
-    if (g_bPaintTool == PAINT_TOOL_TEXT || !IsCursorInRect(&g_rcDecalCanvas) ||
-        !(PaintShopInput()->buttons & INPUT_PICK)) {
-        return FALSE;
-    }
-    switch (g_bPaintTool) {
-    case PAINT_TOOL_BRUSH:
-        PaintBrush();
-        return TRUE;
-    case PAINT_TOOL_FILL:
-        SaveDecalUndo();
-        FloodFill4Bit(g_texPaintCursor.originX, g_texPaintCursor.originY);
-        break;
-    case PAINT_TOOL_LINE:
-        if (StartShape()) {
-            DrawLine4Bit(g_nPaintAnchorX,
-                         g_nPaintAnchorY,
-                         g_texPaintCursor.originX,
-                         g_texPaintCursor.originY);
-            g_bPaintToolStarted = FALSE;
+        if (g_bPaintToolStarted != 0 && !IsCursorInRect(&g_rcPaletteFrameLeft) &&
+            !IsCursorInRect(&g_rcPaletteFrameRight) && !(PaintShopInput()->buttons & INPUT_PICK)) {
+            if (g_bDecalTextLength > 0) {
+                if (g_bTextShadowPickerOpen != 0) {
+                    g_texPaintCursor.originX = g_nPaintAnchorX;
+                    g_texPaintCursor.originY = g_nPaintAnchorY;
+                    g_bTextShadowPickerOpen = 0;
+                }
+                DrawDecalTextPreview(g_texPaintCursor.originX, g_texPaintCursor.originY + 1);
+                return;
+            }
+            if (g_bDecalTextLength == 0) {
+                g_bPaintToolStarted = 0;
+                g_bDecalDragActive = 0;
+            }
+            return;
         }
-        break;
-    case PAINT_TOOL_RECTANGLE:
-        if (StartShape()) {
-            PaintRectangle();
-            g_bPaintToolStarted = FALSE;
+        if (g_bPaintToolStarted != 0 && (PaintShopInput()->buttons & INPUT_PICK)) {
+            TransferFlags(PaintShopInput(), 0x8010);
+            SaveDecalUndo();
+            StampTextOnDecal(g_texPaintCursor.originX, g_texPaintCursor.originY + 1);
+            g_bDecalTextLength = 0;
+            g_bDecalTextWidth = 0;
+            g_bPaintToolStarted = 0;
+            g_bDecalDragActive = 0;
         }
-        break;
-    case PAINT_TOOL_OVAL:
-        if (StartShape()) {
-            PaintOval();
-            g_bPaintToolStarted = FALSE;
+    } else if (g_bPaintTool != 4 && IsCursorInRect(&g_rcDecalCanvas) &&
+               (PaintShopInput()->buttons & INPUT_PICK)) {
+        switch (g_bPaintTool) {
+        case 1:
+            if (g_bPaintToolStarted == 0) {
+                SaveDecalUndo();
+                g_bPaintToolStarted = 1;
+            }
+            i = g_bBrushSize;
+            if (i == 0) {
+                x = g_texPaintCursor.originX;
+                y = g_texPaintCursor.originY;
+                /* clang-format off */
+                x -= g_rcDecalCanvas.x;
+                x >>= 2; y = g_rcDecalCanvas.y + g_rcDecalCanvas.height - y; y >>= 2;
+                /* clang-format on */
+                SetPixel4Bit(x, y, g_bDecalColor);
+            } else if (g_texPaintToolBrush.style == 0) {
+                FillCircle4Bit(g_texPaintCursor.originX,
+                               g_texPaintCursor.originY,
+                               g_aBrushSizeRects[i].width >> 1,
+                               1);
+            } else {
+                r = g_aBrushSizeRects[i].width * 2;
+                FillRect4Bit(g_texPaintCursor.originX - r,
+                             g_texPaintCursor.originY - r,
+                             g_texPaintCursor.originX + r,
+                             g_texPaintCursor.originY + r);
+            }
+            return;
+        case 3:
+            if (g_bPaintToolStarted == 0) {
+                g_nPaintAnchorX = g_texPaintCursor.originX;
+                g_nPaintAnchorY = g_texPaintCursor.originY;
+                g_bPaintToolStarted = 1;
+            } else {
+                SaveDecalUndo();
+                DrawLine4Bit(g_nPaintAnchorX,
+                             g_nPaintAnchorY,
+                             g_texPaintCursor.originX,
+                             g_texPaintCursor.originY);
+                g_bPaintToolStarted = 0;
+            }
+            TransferFlags(PaintShopInput(), 0x8010);
+            return;
+        case 2:
+            SaveDecalUndo();
+            FloodFill4Bit(g_texPaintCursor.originX, g_texPaintCursor.originY);
+            TransferFlags(PaintShopInput(), 0x8010);
+            return;
+        case 5:
+            if (g_bPaintToolStarted == 0) {
+                g_nPaintAnchorX = g_texPaintCursor.originX;
+                g_nPaintAnchorY = g_texPaintCursor.originY;
+                g_bPaintToolStarted = 1;
+            } else {
+                SaveDecalUndo();
+                if (g_texPaintToolRect.style == 0) {
+                    FillRect4Bit(g_nPaintAnchorX,
+                                 g_nPaintAnchorY,
+                                 g_texPaintCursor.originX,
+                                 g_texPaintCursor.originY);
+                } else if (g_texPaintToolRect.style == 1) {
+                    StrokeDecalRectangle(g_nPaintAnchorX,
+                                         g_nPaintAnchorY,
+                                         g_texPaintCursor.originX,
+                                         g_texPaintCursor.originY);
+                } else if (g_texPaintToolRect.style == 2) {
+                    FillDecalRoundRect(g_nPaintAnchorX,
+                                       g_nPaintAnchorY,
+                                       g_texPaintCursor.originX,
+                                       g_texPaintCursor.originY);
+                } else if (g_texPaintToolRect.style == 3) {
+                    DrawDecalRoundedRectOutline(g_nPaintAnchorX,
+                                                g_nPaintAnchorY,
+                                                g_texPaintCursor.originX,
+                                                g_texPaintCursor.originY);
+                }
+                g_bPaintToolStarted = 0;
+            }
+            TransferFlags(PaintShopInput(), 0x8010);
+            return;
+        case 6:
+            if (0 == g_bPaintToolStarted) {
+                g_nPaintAnchorX = g_texPaintCursor.originX;
+                g_nPaintAnchorY = g_texPaintCursor.originY;
+                g_bPaintToolStarted = 1;
+            } else {
+                SaveDecalUndo();
+                if (g_texPaintToolOval.style == 2 || g_texPaintToolOval.style == 3) {
+                    x = g_texPaintCursor.originX - g_nPaintAnchorX;
+                    y = g_texPaintCursor.originY - g_nPaintAnchorY;
+                    r = sqrtf(x * x + y * y);
+                    r >>= 2;
+                }
+                if (g_texPaintToolOval.style == 0) {
+                    DrawDecalFilledEllipse(g_nPaintAnchorX,
+                                           g_nPaintAnchorY,
+                                           g_texPaintCursor.originX,
+                                           g_texPaintCursor.originY);
+                } else if (g_texPaintToolOval.style == 1) {
+                    DrawDecalEllipseOutline(g_nPaintAnchorX,
+                                            g_nPaintAnchorY,
+                                            g_texPaintCursor.originX,
+                                            g_texPaintCursor.originY);
+                } else if (g_texPaintToolOval.style == 2) {
+                    FillCircle4Bit(g_nPaintAnchorX, g_nPaintAnchorY, r, 1);
+                } else if (g_texPaintToolOval.style == 3) {
+                    DrawDecalCircleOutline(g_nPaintAnchorX, g_nPaintAnchorY, r);
+                }
+                g_bPaintToolStarted = 0;
+            }
+            TransferFlags(PaintShopInput(), 0x8010);
+            return;
         }
-        break;
-    default:
-        return TRUE;
-    }
-    TransferFlags(PaintShopInput(), INPUT_PICK);
-    return TRUE;
-}
-
-/* The dashed outline of a shape from its first corner to the cursor. */
-static inline void DrawShapeOutline(void) {
-    if (g_bPaintTool == PAINT_TOOL_TEXT || !g_bPaintToolStarted ||
-        !IsCursorInRect(&g_rcDecalCanvas) || (PaintShopInput()->buttons & INPUT_PICK)) {
-        return;
-    }
-    switch (g_bPaintTool) {
-    case PAINT_TOOL_BRUSH:
-        /* The stroke of the brush ends when the button is let go. */
-        g_bPaintToolStarted = FALSE;
-        break;
-    case PAINT_TOOL_LINE:
-        DrawDashedLine(
-            g_nPaintAnchorX, g_nPaintAnchorY, g_texPaintCursor.originX, g_texPaintCursor.originY);
-        break;
-    case PAINT_TOOL_RECTANGLE:
-        if (g_texPaintToolRect.style == RECT_STYLE_FILLED ||
-            g_texPaintToolRect.style == RECT_STYLE_OUTLINED) {
-            DrawDashedRectangle(g_nPaintAnchorX,
-                                g_nPaintAnchorY,
-                                g_texPaintCursor.originX,
-                                g_texPaintCursor.originY);
-        } else {
+    } else if (g_bPaintTool != 4 && g_bPaintToolStarted != 0 && IsCursorInRect(&g_rcDecalCanvas) &&
+               !(PaintShopInput()->buttons & INPUT_PICK)) {
+        switch (g_bPaintTool) {
+        case 1:
+            g_bPaintToolStarted = 0;
+            return;
+        case 3:
+            DrawDashedLine(g_nPaintAnchorX,
+                           g_nPaintAnchorY,
+                           g_texPaintCursor.originX,
+                           g_texPaintCursor.originY);
+            return;
+        case 5:
+            if (g_texPaintToolRect.style == 0 || g_texPaintToolRect.style == 1) {
+                DrawDashedRectangle(g_nPaintAnchorX,
+                                    g_nPaintAnchorY,
+                                    g_texPaintCursor.originX,
+                                    g_texPaintCursor.originY);
+                return;
+            }
             DrawDashedRoundedRect(g_nPaintAnchorX,
                                   g_nPaintAnchorY,
                                   g_texPaintCursor.originX,
                                   g_texPaintCursor.originY);
+            return;
+        case 6:
+            if (g_texPaintToolOval.style == 0 || g_texPaintToolOval.style == 1) {
+                DrawDashedEllipse(g_nPaintAnchorX,
+                                  g_nPaintAnchorY,
+                                  g_texPaintCursor.originX,
+                                  g_texPaintCursor.originY);
+                return;
+            }
+            x = g_texPaintCursor.originX - g_nPaintAnchorX;
+            y = g_texPaintCursor.originY - g_nPaintAnchorY;
+            r = sqrtf(x * x + y * y);
+            DrawDashedCircle(g_nPaintAnchorX, g_nPaintAnchorY, r);
+            return;
         }
-        break;
-    case PAINT_TOOL_OVAL:
-        if (g_texPaintToolOval.style == OVAL_STYLE_FILLED_ELLIPSE ||
-            g_texPaintToolOval.style == OVAL_STYLE_OUTLINED_ELLIPSE) {
-            DrawDashedEllipse(g_nPaintAnchorX,
-                              g_nPaintAnchorY,
-                              g_texPaintCursor.originX,
-                              g_texPaintCursor.originY);
-        } else {
-            /* In pixels of the screen, where the circle painted is in texels. */
-            DrawDashedCircle(g_nPaintAnchorX, g_nPaintAnchorY, AnchorDistance());
-        }
-        break;
     }
-}
-
-void ProcessDecalEditorInput(void) {
-    if (!g_dwAnchorXInitialized) {
-        g_dwAnchorXInitialized = TRUE;
-        g_nPaintAnchorX = g_texPaintCursor.originX;
-    }
-    if (!g_dwAnchorYInitialized) {
-        g_dwAnchorYInitialized = TRUE;
-        g_nPaintAnchorY = g_texPaintCursor.originY;
-    }
-    if (g_bPaintShopExiting) {
-        return;
-    }
-    if (PickDecalSlot() || PickPaletteColor() || PickPaintTool()) {
-        return;
-    }
-    if (g_bPaintTool == PAINT_TOOL_TEXT) {
-        ProcessTextTool();
-        return;
-    }
-    if (PaintWithTool()) {
-        return;
-    }
-    DrawShapeOutline();
 }
 
 s32 IsCursorInButton(Sprite *sprite) {

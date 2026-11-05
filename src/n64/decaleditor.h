@@ -621,47 +621,6 @@ extern const char *g_apszRectStyleNames[4];
 extern const char *g_apszOvalStyleNames[4];
 
 /**
- * The first corner of a shape, or where text was clicked.
- *
- * @ghidraAddress USA: 0x80369b80
- * @ghidraAddress EUR: 0x8036c080
- * @ghidraAddress JPN: 0x8036b018
- */
-extern s32 g_nPaintAnchorX;
-
-/**
- * @ghidraAddress USA: 0x80369b84
- * @ghidraAddress EUR: 0x8036c084
- * @ghidraAddress JPN: 0x8036b01c
- */
-extern s32 g_nPaintAnchorY;
-
-/**
- * When the last click was, in milliseconds.
- *
- * @ghidraAddress USA: 0x80369b88
- * @ghidraAddress EUR: 0x8036c088
- * @ghidraAddress JPN: 0x8036b020
- */
-extern u32 g_dwLastClickTime;
-
-/**
- * Set once the first corner is first taken from the cursor.
- *
- * @ghidraAddress USA: 0x80369b8c
- * @ghidraAddress EUR: 0x8036c08c
- * @ghidraAddress JPN: 0x8036b024
- */
-extern s32 g_dwAnchorXInitialized;
-
-/**
- * @ghidraAddress USA: 0x80369b90
- * @ghidraAddress EUR: 0x8036c090
- * @ghidraAddress JPN: 0x8036acf0
- */
-extern s32 g_dwAnchorYInitialized;
-
-/**
  * The palette of the decal as it is shown.
  *
  * @ghidraAddress USA: 0x80369b98

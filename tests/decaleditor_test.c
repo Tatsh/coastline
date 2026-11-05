@@ -45,8 +45,6 @@ const char *g_apszBrushStyleNames[2] = {"ROUND BRUSH", "SQUARE BRUSH"};
 const char *g_apszTextStyleNames[2] = {"NORMAL TEXT", "DROP-SHADOW TEXT"};
 const char *g_apszRectStyleNames[4] = {"A", "B", "C", "D"};
 const char *g_apszOvalStyleNames[4] = {"A", "B", "C", "D"};
-s32 g_nPaintAnchorX, g_nPaintAnchorY, g_dwAnchorXInitialized, g_dwAnchorYInitialized;
-u32 g_dwLastClickTime;
 PaletteSwatch g_aDecalSwatches[DECAL_SWATCHES];
 ScreenRect g_aPaintToolButtonRects[PAINT_TOOLS];
 u8 g_abSavedSwatchColor[3];
@@ -365,11 +363,11 @@ static void TestEditor(void) {
     model.decalMasks = masks;
     g_bDecalSlot = 2;
 
-    /* The anchor is taken from the cursor once. */
+    /* An idle frame initializes the private anchor state without starting an edit. */
     Point(5, 5);
     Press(0);
     ProcessDecalEditorInput();
-    assert(g_dwAnchorXInitialized && g_nPaintAnchorX == 5 && g_nPaintAnchorY == 5);
+    assert(!g_bPaintToolStarted && g_bDecalSlot == 2);
 
     /* A decal clicked becomes the one edited, centered in its frame. */
     Point(10 + 4 * 20 + 3, 12);
@@ -389,16 +387,16 @@ static void TestEditor(void) {
     Point(80 + 7 * 14 + 2, 405);
     Press(INPUT_A);
     ProcessDecalEditorInput();
-    assert(g_bDecalColor == 7 && g_bSavedColor == 3 && g_dwLastClickTime == 1000);
+    assert(g_bDecalColor == 7 && g_bSavedColor == 3);
     count = 1500000;
     Press(INPUT_A);
     ProcessDecalEditorInput();
-    assert(!g_bColorEditorOpen && g_dwLastClickTime == 1500);
+    assert(!g_bColorEditorOpen);
     count = 1800000;
     g_aDecalSwatches[7].color[1] = 0x55;
     Press(INPUT_A);
     ProcessDecalEditorInput();
-    assert(g_bColorEditorOpen && g_abSavedSwatchColor[1] == 0x55 && g_dwLastClickTime == 1500);
+    assert(g_bColorEditorOpen && g_abSavedSwatchColor[1] == 0x55);
     g_bColorEditorOpen = FALSE;
 
     /* A tool clicked twice opens the menu of its styles. */
@@ -407,7 +405,7 @@ static void TestEditor(void) {
     Press(INPUT_A);
     ProcessDecalEditorInput();
     assert(g_bPaintTool == PAINT_TOOL_RECTANGLE && g_bPreviousPaintTool == PAINT_TOOL_LINE);
-    assert(!g_bStyleMenuOpen && g_dwLastClickTime == 1800);
+    assert(!g_bStyleMenuOpen);
     count = 1900000;
     Press(INPUT_A);
     ProcessDecalEditorInput();
@@ -438,7 +436,7 @@ static void TestEditor(void) {
     Point(g_rcDecalCanvas.x + 1, g_rcDecalCanvas.y + 1);
     Press(INPUT_A);
     ProcessDecalEditorInput();
-    assert(g_bPaintToolStarted && g_nPaintAnchorX == g_rcDecalCanvas.x + 1);
+    assert(g_bPaintToolStarted);
     Point(g_rcDecalCanvas.x + 40, g_rcDecalCanvas.y + 1);
     Press(0);
     pixels = 0;
@@ -456,9 +454,19 @@ static void TestEditor(void) {
     Press(INPUT_A);
     ProcessDecalEditorInput();
     assert(keyboards == 1 && g_bDecalDragActive && g_texPaintCursor.originX == 323);
-    assert(g_texPaintCursor.originY == 218 && g_nPaintAnchorX == g_rcDecalCanvas.x + 40);
-    /* With nothing typed, the text tool ends. */
+    assert(g_texPaintCursor.originY == 218);
+    /* Leaving the shadow picker restores the click anchor after the keyboard moved the cursor. */
+    g_apDecalTextGlyphs[0] = &g_aDecalGlyphs[24];
+    g_aDecalGlyphs[24].character = 'O';
+    g_bDecalTextLength = 1;
+    g_bTextShadowPickerOpen = TRUE;
     g_bPaintToolStarted = TRUE;
+    Press(0);
+    ProcessDecalEditorInput();
+    assert(!g_bTextShadowPickerOpen && g_texPaintCursor.originX == g_rcDecalCanvas.x + 40);
+    assert(g_texPaintCursor.originY == g_rcDecalCanvas.y + 1);
+    /* With nothing typed, the text tool ends. */
+    g_bDecalTextLength = 0;
     Press(0);
     ProcessDecalEditorInput();
     assert(!g_bPaintToolStarted && !g_bDecalDragActive);
