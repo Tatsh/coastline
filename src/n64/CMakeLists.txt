@@ -5,6 +5,7 @@ set(_n64_sources
     camera.c
     carselect.c
     controllerscreen.c
+    dashboard.c
     debugtext.c
     decaldraw.c
     decaleditor.c

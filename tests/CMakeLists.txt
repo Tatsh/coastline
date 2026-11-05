@@ -95,7 +95,7 @@ coastline_add_test(fade ${_common} "${_src}/common/fadeupdate.c" "${_src}/common
                    "${_src}/common/headlightglare.c")
 coastline_add_test(
   hud
-  "${_src}/common/dashboard.c"
+  "${_src}/n64/dashboard.c"
   "${_src}/common/hudmessage.c"
   "${_src}/common/hudoverlay.c"
   "${_src}/common/hudrace.c"
