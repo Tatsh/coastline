@@ -1,7 +1,3 @@
-#ifdef __sgi
-#define COASTLINE_SPLASH_ROM_POINTERS
-#endif
-
 #include "common/splash.h"
 
 #include <PR/gu.h>
@@ -22,9 +18,35 @@
 #include "pakmenu.h"
 #include "sprite.h"
 
-#undef COASTLINE_SPLASH_ROM_POINTERS
-
 /* Assets at fixed cartridge offsets. */
+#ifdef __sgi
+extern char gRomSplashSoundA[];
+extern char gRomSplashSoundB[];
+extern char gRomSplashFirstLogo[];
+extern char gRomSplashDeveloperLogo[];
+extern char gRomSplashProducerLogo[];
+extern char gRomSplashTitleA[];
+extern char gRomSplashTitleB[];
+extern char gRomSplashTitleC[];
+extern char gRomSplashTitleD[];
+extern char gRomSplashTitlePalette[];
+
+#define ROM_SPLASH_SOUND_A gRomSplashSoundA
+#define ROM_SPLASH_SOUND_B gRomSplashSoundB
+#define ROM_SPLASH_FIRST_LOGO gRomSplashFirstLogo
+#define ROM_SPLASH_DEVELOPER_LOGO gRomSplashDeveloperLogo
+#if TGR_REGION == TGR_REGION_JP
+#define ROM_SPLASH_TITLE_PALETTE gRomSplashTitlePalette
+#else
+#define ROM_SPLASH_TITLE_A gRomSplashTitleA
+#define ROM_SPLASH_TITLE_B gRomSplashTitleB
+#define ROM_SPLASH_TITLE_C gRomSplashTitleC
+#define ROM_SPLASH_TITLE_D gRomSplashTitleD
+#endif
+#if TGR_REGION == TGR_REGION_US
+#define ROM_SPLASH_PRODUCER_LOGO gRomSplashProducerLogo
+#endif
+#else
 #if TGR_REGION == TGR_REGION_EU
 #define ROM_SPLASH_SOUND_A 0x1B4580
 #define ROM_SPLASH_SOUND_B 0x1B8500
@@ -51,44 +73,7 @@
 #define ROM_SPLASH_TITLE_A 0x1E09F0
 #define ROM_SPLASH_TITLE_B 0x1E3DB0
 #endif /* TGR_REGION == TGR_REGION_EU */
-
-#ifdef __sgi
-extern char gRomSplashSoundA[];
-extern char gRomSplashSoundB[];
-extern char gRomSplashFirstLogo[];
-extern char gRomSplashDeveloperLogo[];
-extern char gRomSplashProducerLogo[];
-extern char gRomSplashTitleA[];
-extern char gRomSplashTitleB[];
-extern char gRomSplashTitleC[];
-extern char gRomSplashTitleD[];
-extern char gRomSplashTitlePalette[];
-#undef ROM_SPLASH_SOUND_A
-#undef ROM_SPLASH_SOUND_B
-#undef ROM_SPLASH_FIRST_LOGO
-#undef ROM_SPLASH_DEVELOPER_LOGO
-#define ROM_SPLASH_SOUND_A gRomSplashSoundA
-#define ROM_SPLASH_SOUND_B gRomSplashSoundB
-#define ROM_SPLASH_FIRST_LOGO gRomSplashFirstLogo
-#define ROM_SPLASH_DEVELOPER_LOGO gRomSplashDeveloperLogo
-#if TGR_REGION == TGR_REGION_JP
-#undef ROM_SPLASH_TITLE_PALETTE
-#define ROM_SPLASH_TITLE_PALETTE gRomSplashTitlePalette
-#else
-#undef ROM_SPLASH_TITLE_A
-#undef ROM_SPLASH_TITLE_B
-#undef ROM_SPLASH_TITLE_C
-#undef ROM_SPLASH_TITLE_D
-#define ROM_SPLASH_TITLE_A gRomSplashTitleA
-#define ROM_SPLASH_TITLE_B gRomSplashTitleB
-#define ROM_SPLASH_TITLE_C gRomSplashTitleC
-#define ROM_SPLASH_TITLE_D gRomSplashTitleD
-#endif
-#if TGR_REGION == TGR_REGION_US
-#undef ROM_SPLASH_PRODUCER_LOGO
-#define ROM_SPLASH_PRODUCER_LOGO gRomSplashProducerLogo
-#endif
-#endif
+#endif /* __sgi */
 
 /* The silence after each sound, so that the mixer reads zeros past its end. */
 #define SOUND_PADDING 0x100
