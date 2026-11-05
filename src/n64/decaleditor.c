@@ -17,26 +17,18 @@
 /* The buttons that pick and paint. */
 #define INPUT_PICK (INPUT_Z | INPUT_A)
 
-/* How far the stick must be pushed to move the cursor or a bar of the color editor. */
+/* How far the stick must be pushed to move the cursor. */
 #define CURSOR_DEAD_ZONE 0.05f
-#define COLOR_DEAD_ZONE 0.1f
 
 /* The pixels the cursor moves for the whole push of the stick, slower over the decal. */
 #define CURSOR_SPEED 12.0f
 #define CURSOR_SPEED_FINE 6.0f
-
-/* The steps a bar of the color editor moves for the whole push of the stick. */
-#define COLOR_SPEED 10.0f
 
 /* Where the cursor may go. */
 #define CURSOR_MIN_X 0x1F
 #define CURSOR_MAX_X 0x261
 #define CURSOR_MIN_Y 0x16
 #define CURSOR_MAX_Y 0x1CA
-
-/* The second color of the palette is the first at half brightness, and runs to 127. */
-#define DARK_SWATCH 1
-#define DARK_SWATCH_MAX 0x7F
 
 /* The cell of the letter A in the font. The text menu shows its styles with it. */
 #define PREVIEW_GLYPH 10
@@ -50,23 +42,6 @@
 
 #define GetTimeMilliseconds() ((u32)((u64)osGetCount() * 1000000 / osClockRate / 1000))
 
-/* A color of the palette in RGBA 5551 from 8-bit channels, with the alpha of the old entry. */
-#define PackPaletteColor(old, red, green, blue)                                                    \
-    ((u16)(((old) & 1) | (((red) & 0xF8) << 8) | (((green) & 0xF8) << 3) | (((blue) & 0xF8) >> 2)))
-
-#define MaterialPalette(material)                                                                  \
-    (g_pCurrentVehicleModelData->textures[g_pCurrentVehicleModelData->materialTextures[material]]  \
-         .palette)
-
-/* The colours of the bars and the names of the channels, as the colour editor copies them. */
-typedef struct {
-    u8 color[3][3]; /*!< The red, green, and blue of the bar of each channel. */
-} ColorEditorBars;
-
-typedef struct {
-    const char *name[3]; /*!< The names of the red, green, and blue channels. */
-} ColorChannelNames;
-
 /* The names of the styles of a tool, as its menu copies them. */
 typedef struct {
     const char *name[2]; /*!< The name of each of the two styles. */
@@ -76,229 +51,282 @@ typedef struct {
     const char *name[4]; /*!< The name of each of the four styles. */
 } FourStyleNames;
 
-/* Copy the first two colors of the palette into the palettes of the lights of the car. */
-#define CopyLightPalettes()                                                                        \
-    MaterialPalette(VEHICLE_MATERIAL_HEADLIGHTS)[0] = g_pDecalPalette[0];                          \
-    MaterialPalette(VEHICLE_MATERIAL_HEADLIGHTS)[1] = g_pDecalPalette[1];                          \
-    MaterialPalette(VEHICLE_MATERIAL_REAR_LIGHTS)[0] = g_pDecalPalette[0];                         \
-    /* The second color of the rear lights is never set; the first is set again. */                \
-    MaterialPalette(VEHICLE_MATERIAL_REAR_LIGHTS)[0] = g_pDecalPalette[0]
-
 void ProcessColorEditorDialog(void) {
-    PlayerInputState *input;
-    PaletteSwatch *swatch;
-    ColorEditorBars bars;
-    ColorChannelNames names;
-    char text[40];
-    s32 cancelX, buttonY, step, channel, i, y, level;
-    u32 buttons;
+    unsigned int i;
+    int y;
+    int ty;
+    int v;
+    char **name;
+    float mag;
+    unsigned char *chan;
+#ifdef __sgi
+    /* IDO reserves these unused slots in the original stack frame. */
+    int paletteStackPad[3];
+#endif
+    int bx;
+    int yb;
+#ifdef __sgi
+    int inputStackPad[6];
+#endif
+    int step;
+    char buf[12];
+    unsigned char bar[3][3] = {{0xff, 0, 0}, {0, 0xff, 0}, {0, 0, 0xff}};
+    char *names[3] = {"R", "G", "B"};
+#ifdef __sgi
+    int modelStackPad[2];
+#endif
+    unsigned int ch;
 
-    /* The bars and the names are read from copies on the stack. */
-    bars = *(ColorEditorBars *)g_aabColorEditorBars;
-    names = *(ColorChannelNames *)g_apszColorChannelNames;
-    cancelX = 0x151 - g_texButtonB.width;
-    buttonY = 0x122 - g_texButtonA.height;
+    chan = &g_bColorEditorChannel;
+    bx = 0x151 - g_texButtonB.width;
     step = 0;
-    DrawRectBorder(0xAD, 0xB6, 0x126, 0x74, 3, 0, 0, 0x80, 0x80, 0x80);
-    swatch = &g_aDecalSwatches[g_bDecalColor];
-    DrawRectBorder(
-        0xBB, 0xC2, 0x3C, 0x3C, 1, 0, 1, swatch->color[0], swatch->color[1], swatch->color[2]);
-
-    /* The dark color fills a bar at 127; the others are shown at half. */
-    channel = g_bColorEditorChannel;
-    for (i = 0, y = 0xC2; i < 3; i++, y += 0x16) {
-        if (i == channel) {
-            DrawRectBorder(0x11D, y, 0x80, 0x10, 1, 0, 1, 0xB4, 0xB4, 0xB4);
+    yb = 0x122 - g_texButtonA.height;
+    DrawRectBorder(0xad, 0xb6, 0x126, 0x74, 3, 0, 0, 0x80, 0x80, 0x80);
+    DrawRectBorder(0xbb,
+                   0xc2,
+                   0x3c,
+                   0x3c,
+                   1,
+                   0,
+                   1,
+                   g_aDecalSwatches[g_bDecalColor].color[0],
+                   g_aDecalSwatches[g_bDecalColor].color[1],
+                   g_aDecalSwatches[g_bDecalColor].color[2]);
+    ch = g_bColorEditorChannel;
+    for (i = 0, y = 0xc2; (int)i < 3; i++, y += 0x16) {
+        if (i == ch) {
+            DrawRectBorder(0x11d, y, 0x80, 0x10, 1, 0, 1, 0xb4, 0xb4, 0xb4);
         } else {
-            DrawRectBorder(0x11D, y, 0x80, 0x10, 1, 1, 1, 0x80, 0x80, 0x80);
+            DrawRectBorder(0x11d, y, 0x80, 0x10, 1, 1, 1, 0x80, 0x80, 0x80);
         }
-        level = g_aDecalSwatches[g_bDecalColor].color[i];
-        if (level <= 0) {
-            continue;
-        }
-        if (g_bDecalColor == DARK_SWATCH) {
-            DrawFilledRectHiRes(
-                0x11D, y, level, 0x10, bars.color[i][0], bars.color[i][1], bars.color[i][2]);
-            if (i == channel) {
-                DrawRectBorder(0x11D,
-                               y,
-                               g_aDecalSwatches[g_bDecalColor].color[i],
-                               0x10,
-                               1,
-                               0,
-                               0,
-                               bars.color[i][0],
-                               bars.color[i][1],
-                               bars.color[i][2]);
-            }
-        } else {
-            DrawFilledRectHiRes(
-                0x11D, y, level >> 1, 0x10, bars.color[i][0], bars.color[i][1], bars.color[i][2]);
-            if (i == channel) {
-                DrawRectBorder(0x11D,
-                               y,
-                               g_aDecalSwatches[g_bDecalColor].color[i] >> 1,
-                               0x10,
-                               1,
-                               0,
-                               0,
-                               bars.color[i][0],
-                               bars.color[i][1],
-                               bars.color[i][2]);
+        if ((v = g_aDecalSwatches[g_bDecalColor].color[i]) > 0) {
+            if (g_bDecalColor == 1) {
+                DrawFilledRectHiRes(0x11d,
+                                    y,
+                                    g_aDecalSwatches[g_bDecalColor].color[i],
+                                    0x10,
+                                    bar[i][0],
+                                    bar[i][1],
+                                    bar[i][2]);
+                if (i == ch) {
+                    DrawRectBorder(0x11d,
+                                   y,
+                                   g_aDecalSwatches[g_bDecalColor].color[i],
+                                   0x10,
+                                   1,
+                                   0,
+                                   0,
+                                   bar[i][0],
+                                   bar[i][1],
+                                   bar[i][2]);
+                }
+            } else {
+                DrawFilledRectHiRes(0x11d,
+                                    y,
+                                    g_aDecalSwatches[g_bDecalColor].color[i] >> 1,
+                                    0x10,
+                                    bar[i][0],
+                                    bar[i][1],
+                                    bar[i][2]);
+                if (i == ch) {
+                    DrawRectBorder(0x11d,
+                                   y,
+                                   g_aDecalSwatches[g_bDecalColor].color[i] >> 1,
+                                   0x10,
+                                   1,
+                                   0,
+                                   0,
+                                   bar[i][0],
+                                   bar[i][1],
+                                   bar[i][2]);
+                }
             }
         }
     }
-
-    for (i = 0, y = 0x68; i < 3; i++, y += 11) {
+    for (i = 0, name = names, ty = 0x68; (int)i < 3; i++, name++, ty += 0xb) {
         if (i == g_bColorEditorChannel) {
-            SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0);
+            SetTextCustomColors(0xff, 0xff, 0xff, 0xff, 0xff, 0);
         } else {
-            SetTextCustomColors(0xC8, 0xC8, 0xC8, 0x80, 0x80, 0x80);
+            SetTextCustomColors(200, 200, 200, 0x80, 0x80, 0x80);
         }
         SetTextSize(11);
         SetTextAlignLeft();
-        DrawText(names.name[i], 0x83, y);
+        DrawText(*name, 0x83, ty);
         SetTextSize(10);
         SetTextAlignRight();
-        sprintf(text, "%d", g_aDecalSwatches[g_bDecalColor].color[i]);
-        DrawText(text, 0xE2, y);
+        sprintf(buf, "%d", g_aDecalSwatches[g_bDecalColor].color[i]);
+        DrawText(buf, 0xe2, ty);
     }
-
-    DrawTexturedSprite(&g_texButtonA, 0xE5, buttonY);
-    DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
+    DrawTexturedSprite(&g_texButtonA, 0xe5, yb);
+    DrawTexturedSprite(&g_texButtonB, bx, yb);
     SetTextAlignLeft();
     SetTextSize(10);
-    DrawText("%wwOK", (g_texButtonA.width + 0xEB) >> 1, (buttonY + 0x12) >> 1);
-    DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, (buttonY + 0x12) >> 1);
-
-    input = PaintShopInput();
-    CheckAnalogStickPositive(input, &input->repeatUp, &input->stickY, INPUT_UP);
-    input = PaintShopInput();
-    CheckAnalogStickNegative(input, &input->repeatDown, &input->stickY, INPUT_DOWN);
-    input = PaintShopInput();
-    if ((input->stickX < 0.0 ? -input->stickX : input->stickX) >= COLOR_DEAD_ZONE) {
-        step = (s32)(input->stickX * COLOR_SPEED);
-    } else if (input->buttons & INPUT_RIGHT) {
+    ty = (yb + 0x12) >> 1;
+    DrawText("%wwOK", ((unsigned int)g_texButtonA.width + 0xeb) >> 1, ty);
+    DrawText("%wwCANCEL", (bx + (unsigned int)g_texButtonB.width + 6) >> 1, ty);
+    CheckAnalogStickPositive(&g_aPlayerInputState[g_bPaintShopPlayer],
+                             &g_aPlayerInputState[g_bPaintShopPlayer].repeatUp,
+                             &g_aPlayerInputState[g_bPaintShopPlayer].stickY,
+                             8);
+    CheckAnalogStickNegative(&g_aPlayerInputState[g_bPaintShopPlayer],
+                             &g_aPlayerInputState[g_bPaintShopPlayer].repeatDown,
+                             &g_aPlayerInputState[g_bPaintShopPlayer].stickY,
+                             2);
+    mag = g_aPlayerInputState[g_bPaintShopPlayer].stickX < 0.0 ?
+              -g_aPlayerInputState[g_bPaintShopPlayer].stickX :
+              g_aPlayerInputState[g_bPaintShopPlayer].stickX;
+    if (mag >= 0.1f) {
+        step = g_aPlayerInputState[g_bPaintShopPlayer].stickX * 10.0f;
+    } else if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & 1) {
         step = 4;
-    } else if (input->buttons & INPUT_LEFT) {
+    } else if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & 4) {
         step = -4;
-    } else if (input->buttons & INPUT_C_RIGHT) {
+    } else if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & 0x200) {
         step = 1;
-    } else if (input->buttons & INPUT_C_LEFT) {
+    } else if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & 0x800) {
         step = -1;
     }
-    buttons = input->buttons;
-    if (buttons & (INPUT_DOWN | INPUT_C_DOWN)) {
-        TransferFlags(input, INPUT_DOWN | INPUT_C_DOWN);
+    if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & 0x402) {
+        TransferFlags(&g_aPlayerInputState[g_bPaintShopPlayer], 0x402);
         if (g_bColorEditorChannel == 2) {
-            g_bColorEditorChannel = 0;
+            *chan = 0;
         } else {
-            g_bColorEditorChannel++;
+            (*chan)++;
         }
-    } else if (buttons & (INPUT_UP | INPUT_C_UP)) {
-        TransferFlags(input, INPUT_UP | INPUT_C_UP);
+    } else if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & 0x108) {
+        TransferFlags(&g_aPlayerInputState[g_bPaintShopPlayer], 0x108);
         if (g_bColorEditorChannel == 0) {
-            g_bColorEditorChannel = 2;
+            *chan = 2;
         } else {
-            g_bColorEditorChannel--;
+            (*chan)--;
         }
     }
-
-    /* Each branch indexes the bar afresh. */
-    if (g_bDecalColor == DARK_SWATCH) {
-        level = g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] + step;
-        if (level < 0) {
+    if (g_bDecalColor == 1) {
+        v = g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] + step;
+        if (v < 0) {
             g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = 0;
-        } else if (level > DARK_SWATCH_MAX) {
-            g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = DARK_SWATCH_MAX;
+        } else if (v >= 0x80) {
+            g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = 0x7f;
         } else {
-            g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = level;
+            g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = v;
         }
     } else {
-        level = g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] + step;
-        if (level < 0) {
+        v = g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] + step;
+        if (v < 0) {
             g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = 0;
-        } else if (level > 0xFF) {
-            g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = 0xFF;
+        } else if (v >= 0x100) {
+            g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = 0xff;
         } else {
-            g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = level;
+            g_aDecalSwatches[g_bDecalColor].color[g_bColorEditorChannel] = v;
         }
     }
-
     if (step != 0) {
-        swatch = &g_aDecalSwatches[g_bDecalColor];
-        g_pDecalPalette[g_bDecalColor] = PackPaletteColor(
-            g_pDecalPalette[g_bDecalColor], swatch->color[0], swatch->color[1], swatch->color[2]);
-        /* The first two colors follow each other, the second at half the first. */
+        g_pDecalPalette[g_bDecalColor] = ((g_aDecalSwatches[g_bDecalColor].color[0] & 0xf8) << 8) |
+                                         ((g_aDecalSwatches[g_bDecalColor].color[1] & 0xf8) << 3) |
+                                         ((g_aDecalSwatches[g_bDecalColor].color[2] & 0xf8) >> 2) |
+                                         (g_pDecalPalette[g_bDecalColor] & 1);
         if (g_bDecalColor == 0) {
-            g_pDecalPalette[1] = PackPaletteColor(g_pDecalPalette[1],
-                                                  g_aDecalSwatches[0].color[0] >> 1,
-                                                  g_aDecalSwatches[0].color[1] >> 1,
-                                                  g_aDecalSwatches[0].color[2] >> 1);
+            g_pDecalPalette[1] = (((g_aDecalSwatches[0].color[0] >> 1) & 0xf8) << 8) |
+                                 (((g_aDecalSwatches[0].color[1] >> 1) & 0xf8) << 3) |
+                                 (((g_aDecalSwatches[0].color[2] >> 1) & 0xf8) >> 2) |
+                                 (g_pDecalPalette[1] & 1);
             for (i = 0; i < 3; i++) {
-                g_aDecalSwatches[1].color[i] = g_aDecalSwatches[0].color[i] == 0xFF ?
-                                                   DARK_SWATCH_MAX :
-                                                   g_aDecalSwatches[0].color[i] >> 1;
+                if (g_aDecalSwatches[0].color[i] == 0xff) {
+                    g_aDecalSwatches[1].color[i] = 0x7f;
+                } else {
+                    g_aDecalSwatches[1].color[i] = g_aDecalSwatches[0].color[i] >> 1;
+                }
             }
-        } else if (g_bDecalColor == DARK_SWATCH) {
-            g_pDecalPalette[0] = PackPaletteColor(g_pDecalPalette[0],
-                                                  g_aDecalSwatches[1].color[0] << 1,
-                                                  g_aDecalSwatches[1].color[1] << 1,
-                                                  g_aDecalSwatches[1].color[2] << 1);
+        } else if (g_bDecalColor == 1) {
+            g_pDecalPalette[0] = (((g_aDecalSwatches[1].color[0] << 1) & 0xf8) << 8) |
+                                 (((g_aDecalSwatches[1].color[1] << 1) & 0xf8) << 3) |
+                                 (((g_aDecalSwatches[1].color[2] << 1) & 0xf8) >> 2) |
+                                 (g_pDecalPalette[0] & 1);
             for (i = 0; i < 3; i++) {
-                g_aDecalSwatches[0].color[i] = g_aDecalSwatches[1].color[i] == DARK_SWATCH_MAX ?
-                                                   0xFF :
-                                                   g_aDecalSwatches[1].color[i] << 1;
+                if (g_aDecalSwatches[1].color[i] == 0x7f) {
+                    g_aDecalSwatches[0].color[i] = 0xff;
+                } else {
+                    g_aDecalSwatches[0].color[i] = g_aDecalSwatches[1].color[i] << 1;
+                }
             }
         }
-        if (g_bDecalColor == 0 || g_bDecalColor == DARK_SWATCH) {
-            CopyLightPalettes();
+        if (g_bDecalColor == 0 || g_bDecalColor == 1) {
+            g_pCurrentVehicleModelData
+                ->textures[g_pCurrentVehicleModelData
+                               ->materialTextures[VEHICLE_MATERIAL_HEADLIGHTS]]
+                .palette[0] = g_pDecalPalette[0];
+            g_pCurrentVehicleModelData
+                ->textures[g_pCurrentVehicleModelData
+                               ->materialTextures[VEHICLE_MATERIAL_HEADLIGHTS]]
+                .palette[1] = g_pDecalPalette[1];
+            g_pCurrentVehicleModelData
+                ->textures[g_pCurrentVehicleModelData
+                               ->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]]
+                .palette[0] = g_pDecalPalette[0];
+            g_pCurrentVehicleModelData
+                ->textures[g_pCurrentVehicleModelData
+                               ->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]]
+                .palette[0] = g_pDecalPalette[0];
         }
     }
-
-    input = PaintShopInput();
-    buttons = input->buttons;
-    if (buttons & INPUT_A) {
-        TransferFlags(input, INPUT_A);
+    if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & 0x10) {
+        TransferFlags(&g_aPlayerInputState[g_bPaintShopPlayer], 0x10);
         g_bColorEditorChannel = 0;
-        g_bColorEditorOpen = FALSE;
+        g_bColorEditorOpen = 0;
         g_bDecalEditCount++;
-    } else if (buttons & INPUT_B) {
-        TransferFlags(input, INPUT_B);
-        g_pDecalPalette[g_bDecalColor] = PackPaletteColor(g_pDecalPalette[g_bDecalColor],
-                                                          g_abSavedSwatchColor[0],
-                                                          g_abSavedSwatchColor[1],
-                                                          g_abSavedSwatchColor[2]);
+    } else if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & 0x20) {
+        TransferFlags(&g_aPlayerInputState[g_bPaintShopPlayer], 0x20);
+        g_pDecalPalette[g_bDecalColor] =
+            ((g_abSavedSwatchColor[0] & 0xf8) << 8) | ((g_abSavedSwatchColor[1] & 0xf8) << 3) |
+            ((g_abSavedSwatchColor[2] & 0xf8) >> 2) | (g_pDecalPalette[g_bDecalColor] & 1);
         for (i = 0; i < 3; i++) {
             g_aDecalSwatches[g_bDecalColor].color[i] = g_abSavedSwatchColor[i];
         }
-        /* The test is on the restored color, the value from the saved one. */
         if (g_bDecalColor == 0) {
-            g_pDecalPalette[1] = PackPaletteColor(g_pDecalPalette[1],
-                                                  g_abSavedSwatchColor[0] >> 1,
-                                                  g_abSavedSwatchColor[1] >> 1,
-                                                  g_abSavedSwatchColor[2] >> 1);
+            g_pDecalPalette[1] = (((g_abSavedSwatchColor[0] >> 1) & 0xf8) << 8) |
+                                 (((g_abSavedSwatchColor[1] >> 1) & 0xf8) << 3) |
+                                 (((g_abSavedSwatchColor[2] >> 1) & 0xf8) >> 2) |
+                                 (g_pDecalPalette[1] & 1);
             for (i = 0; i < 3; i++) {
-                g_aDecalSwatches[1].color[i] = g_aDecalSwatches[0].color[i] == 0xFF ?
-                                                   DARK_SWATCH_MAX :
-                                                   g_abSavedSwatchColor[i] >> 1;
+                if (g_aDecalSwatches[0].color[i] == 0xff) {
+                    g_aDecalSwatches[1].color[i] = 0x7f;
+                } else {
+                    g_aDecalSwatches[1].color[i] = g_abSavedSwatchColor[i] >> 1;
+                }
             }
-        } else if (g_bDecalColor == DARK_SWATCH) {
-            g_pDecalPalette[0] = PackPaletteColor(g_pDecalPalette[0],
-                                                  g_abSavedSwatchColor[0] << 1,
-                                                  g_abSavedSwatchColor[1] << 1,
-                                                  g_abSavedSwatchColor[2] << 1);
+        } else if (g_bDecalColor == 1) {
+            g_pDecalPalette[0] = (((g_abSavedSwatchColor[0] << 1) & 0xf8) << 8) |
+                                 (((g_abSavedSwatchColor[1] << 1) & 0xf8) << 3) |
+                                 (((g_abSavedSwatchColor[2] << 1) & 0xf8) >> 2) |
+                                 (g_pDecalPalette[0] & 1);
             for (i = 0; i < 3; i++) {
-                g_aDecalSwatches[0].color[i] = g_aDecalSwatches[1].color[i] == DARK_SWATCH_MAX ?
-                                                   0xFF :
-                                                   g_abSavedSwatchColor[i] << 1;
+                if (g_aDecalSwatches[1].color[i] == 0x7f) {
+                    g_aDecalSwatches[0].color[i] = 0xff;
+                } else {
+                    g_aDecalSwatches[0].color[i] = g_abSavedSwatchColor[i] << 1;
+                }
             }
         }
-        if (g_bDecalColor == 0 || g_bDecalColor == DARK_SWATCH) {
-            CopyLightPalettes();
+        if (g_bDecalColor == 0 || g_bDecalColor == 1) {
+            g_pCurrentVehicleModelData
+                ->textures[g_pCurrentVehicleModelData
+                               ->materialTextures[VEHICLE_MATERIAL_HEADLIGHTS]]
+                .palette[0] = g_pDecalPalette[0];
+            g_pCurrentVehicleModelData
+                ->textures[g_pCurrentVehicleModelData
+                               ->materialTextures[VEHICLE_MATERIAL_HEADLIGHTS]]
+                .palette[1] = g_pDecalPalette[1];
+            g_pCurrentVehicleModelData
+                ->textures[g_pCurrentVehicleModelData
+                               ->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]]
+                .palette[0] = g_pDecalPalette[0];
+            g_pCurrentVehicleModelData
+                ->textures[g_pCurrentVehicleModelData
+                               ->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]]
+                .palette[0] = g_pDecalPalette[0];
         }
         g_bColorEditorChannel = 0;
-        g_bColorEditorOpen = FALSE;
+        g_bColorEditorOpen = 0;
     }
 }
 
