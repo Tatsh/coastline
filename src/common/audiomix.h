@@ -32,7 +32,7 @@ typedef struct {
     u32 fraction; /*!< The fraction of the position past sample, the low half of the 32.32 value. */
     u64 step;     /*!< The 32.32 step added to the position before each sample, or 0 when silent. */
     s32 mixVolume; /*!< The volume the mixer multiplies each sample by. */
-    s32 volume;    /*!< The volume the game sets, which the mixing thread scales into mixVolume. */
+    u32 volume;    /*!< The packed levels the game sets, which the mixer scales into mixVolume. */
 } MixerChannel;
 
 /** The channels of the music mixer. */

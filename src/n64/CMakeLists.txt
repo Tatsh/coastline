@@ -39,6 +39,7 @@ set(_n64_sources
     vehiclemodelrender.c
     vehiclerender.c
     vehiclesetup.c
+    vehiclesound.c
     weather.c
     weatherselect.c)
 if(TGR_REGION STREQUAL "eu" OR TGR_REGION STREQUAL "jp")
