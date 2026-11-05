@@ -683,7 +683,12 @@ void InitPlayerVehicleSlot(Vehicle *vehicle);
  * @ghidraAddress EUR: 0x802273e0
  * @ghidraAddress JPN: 0x80226bd0
  */
+#if defined(COASTLINE_PAINTSHOP_COLOR_RETURN)
+/* The IDO paint-shop unit used an int declaration and discarded the return value. */
+int InitVehicleColor(Vehicle *vehicle);
+#else
 void InitVehicleColor(Vehicle *vehicle);
+#endif
 
 /**
  * Drive a vehicle by the input of its player for a frame.
