@@ -38,15 +38,9 @@
 /* The silence after each sound, in bytes. */
 #define SOUND_TAIL_BYTES 0x100
 
-/* The time a fade of a screen in or out takes, as its rate. */
-#define SCREEN_FADE_RATE 0.2f
-
 /* How long the round under way blinks in the records, and how long of that it shows yellow. */
 #define BLINK_PERIOD 0.75f
 #define BLINK_ON 0.4f
-
-/* How far the items slide before the model under the cursor changes to the next one. */
-#define SPIN_SWAP_SLIDE 0.75f
 
 /* The degrees of a radian. */
 #define RAD_TO_DEG 57.29577637f
@@ -74,16 +68,6 @@
         LoadVehicleModel(                                                                          \
             &g_aVehicleModelSlots[slot], slot, g_SeasonTable[(profile)->season].cars[slot], slot); \
         while (PollVehicleModelDma(&g_aVehicleModelSlots[slot]) != 0) {                            \
-        }                                                                                          \
-    }
-
-/* Play a sound of the screen on a free channel. */
-#define PLAY_SCREEN_SOUND(sample, length)                                                          \
-    {                                                                                              \
-        s16 channel = FindFreeSoundChannel();                                                      \
-                                                                                                   \
-        if (channel != -1) {                                                                       \
-            InitSoundChannel(channel, sample, length, 0);                                          \
         }                                                                                          \
     }
 
@@ -630,56 +614,6 @@ void SetScreenPendingSelection(s32 item) {
  * Load the textures and the sounds of the screens, and silence the end of each sound, counting
  * with i.
  */
-#define LOAD_SCREEN_ASSETS(i)                                                                      \
-    LoadAndDecompressAsset(&g_ArrowLeftTextureDesc, AllocHeapAligned);                             \
-    LoadAndDecompressAsset(&g_ArrowRightTextureDesc, AllocHeapAligned);                            \
-    LoadAndDecompressAsset(&g_BgTextureDesc, AllocHeapAligned);                                    \
-    g_dwScreenScrollSoundSize = DmaReadAssetSize(ROM_SCROLL_SOUND);                                \
-    g_pScreenScrollSoundBuf =                                                                      \
-        AllocHeapAligned(g_dwScreenScrollSoundSize + g_dwScreenScrollSoundSize);                   \
-    DecompressFromRom(g_pScreenScrollSoundBuf, ROM_SCROLL_SOUND, NULL);                            \
-    g_dwScreenSelectSoundSize = DmaReadAssetSize(ROM_SELECT_SOUND);                                \
-    g_pScreenSelectSoundBuf =                                                                      \
-        AllocHeapAligned(g_dwScreenSelectSoundSize + g_dwScreenSelectSoundSize);                   \
-    DecompressFromRom(g_pScreenSelectSoundBuf, ROM_SELECT_SOUND, NULL);                            \
-    for (i = 0; i < SOUND_TAIL_BYTES; i++) {                                                       \
-        g_pScreenScrollSoundBuf[g_dwScreenScrollSoundSize + i] = 0;                                \
-        g_pScreenSelectSoundBuf[g_dwScreenSelectSoundSize + i] = 0;                                \
-    }
-
-/*
- * Draw an item that slides with the cursor: its model turning, or its name. The item is an
- * expression the original indexes afresh after each call.
- */
-#define DRAW_SLIDING_ITEM(item, offset, text)                                                      \
-    if ((item)->model != NULL) {                                                                   \
-        AdvanceModelAnimations((item)->model);                                                     \
-        if ((item)->flags & MENU_ITEM_MIRRORED) {                                                  \
-            g_dwViewportMirrored = TRUE;                                                           \
-        }                                                                                          \
-        DrawRotatedModel((item)->model,                                                            \
-                         (f32)(g_dwScreenWidth / 2) - (offset) * (f32)g_dwScreenWidth / 6.0f,      \
-                         (f32)(g_dwScreenHeight * 6 / 16),                                         \
-                         0.0f,                                                                     \
-                         g_fScreenRotationAngle);                                                  \
-        g_dwViewportMirrored = FALSE;                                                              \
-    } else {                                                                                       \
-        sprintf(text, "%%ww%s", (item)->name);                                                     \
-        SetTextStyleNormal();                                                                      \
-        SetTextAlignCenter();                                                                      \
-        DrawText(text,                                                                             \
-                 g_dwScreenWidth / 2 - (s32)((offset) * (f32)g_dwScreenWidth / 6.0f),              \
-                 g_dwScreenHeight * 9 / 16);                                                       \
-    }
-
-/* Fade the screen and the sound effects out. */
-#define FADE_SCREEN_OUT()                                                                          \
-    SetFadeTarget(0.0f, SCREEN_FADE_RATE);                                                         \
-    FadeSfxTo(0.0f, SCREEN_FADE_RATE)
-
-/* The input of a player, which the original reads from the vehicle at every use. */
-#define PLAYER_INPUT(player) (g_aVehicles[player].input)
-
 s32 ProcessScreenState(const char *title,
                        s32 itemCount,
                        MenuItem **items,
@@ -691,43 +625,71 @@ s32 ProcessScreenState(const char *title,
                        s32 bottomRed,
                        s32 bottomGreen,
                        s32 bottomBlue) {
-    char text[112];
-    MenuItem *item;
-    Mtx *block;
-    f32 step, slide, ease;
-    s32 result, shown, other, player, i;
-    u32 buttons;
+#ifdef __sgi
+    /* IDO places local menu state at the original BSS addresses. */
+    static int g_nPrevScreenSelection;
+    static float g_fScreenSlideOffset;
+    static float g_fScreenRotationAngle;
+    static int g_bScreenItemChosen;
+    static s8 *g_pScreenScrollSoundBuf;
+    static int g_dwScreenScrollSoundSize;
+    static s8 *g_pScreenSelectSoundBuf;
+    static int g_dwScreenSelectSoundSize;
+    static float g_fScreenIdleTime;
+    static int g_nScreenCursor;
+#endif
+    float off;
+    int i;
+    int result;
 
     result = 0;
-    if (!g_bScreenStateInitFlag) {
-        SetFadeTarget(1.0f, SCREEN_FADE_RATE);
-        FadeMusicTo(1.0f, SCREEN_FADE_RATE);
-        FadeSfxTo(1.0f, SCREEN_FADE_RATE);
+    if (g_bScreenStateInitFlag == 0) {
+        SetFadeTarget(1.0f, 0.2f);
+        FadeMusicTo(1.0f, 0.2f);
+        FadeSfxTo(1.0f, 0.2f);
         g_nScreenCursor = *selection;
-        g_fScreenRotationAngle = 4.712388992f;
+        g_fScreenRotationAngle = 4.712389f;
         g_fScreenSlideOffset = 0.0f;
-        LOAD_SCREEN_ASSETS(i);
-        if (g_pMenuTitleImage != NULL) {
+        LoadAndDecompressAsset(&g_ArrowLeftTextureDesc, AllocHeapAligned);
+        LoadAndDecompressAsset(&g_ArrowRightTextureDesc, AllocHeapAligned);
+        LoadAndDecompressAsset(&g_BgTextureDesc, AllocHeapAligned);
+        g_dwScreenScrollSoundSize = DmaReadAssetSize(ROM_SCROLL_SOUND);
+        g_pScreenScrollSoundBuf =
+            AllocHeapAligned(g_dwScreenScrollSoundSize + g_dwScreenScrollSoundSize);
+        DecompressFromRom(g_pScreenScrollSoundBuf, ROM_SCROLL_SOUND, 0);
+        g_dwScreenSelectSoundSize = DmaReadAssetSize(ROM_SELECT_SOUND);
+        g_pScreenSelectSoundBuf =
+            AllocHeapAligned(g_dwScreenSelectSoundSize + g_dwScreenSelectSoundSize);
+        DecompressFromRom(g_pScreenSelectSoundBuf, ROM_SELECT_SOUND, 0);
+        for (i = 0; i != 0x100; i++) {
+            g_pScreenScrollSoundBuf[g_dwScreenScrollSoundSize + i] = 0;
+            g_pScreenSelectSoundBuf[g_dwScreenSelectSoundSize + i] = 0;
+        }
+        if (g_pMenuTitleImage != 0) {
             LoadAndDecompressAsset(g_pMenuTitleImage, AllocHeapAligned);
         }
         g_fScreenIdleTime = 0.0f;
         g_nScreenPendingSelection = -1;
-        g_bScreenStateInitFlag = TRUE;
+        g_bScreenStateInitFlag = 1;
     }
     if (g_nScreenPendingSelection >= 0) {
+        short v;
+
         g_nPrevScreenSelection = g_nScreenCursor;
         g_nScreenCursor = g_nScreenPendingSelection;
-        if (g_nScreenPendingSelection != g_nPrevScreenSelection) {
+        if (g_nScreenCursor != g_nPrevScreenSelection) {
             g_fScreenSlideOffset = -1.0f;
-            PLAY_SCREEN_SOUND(g_pScreenScrollSoundBuf, g_dwScreenScrollSoundSize);
+            v = FindFreeSoundChannel();
+            if (v != -1) {
+                InitSoundChannel(v, g_pScreenScrollSoundBuf, g_dwScreenScrollSoundSize, 0);
+            }
         }
         g_nScreenPendingSelection = -1;
     }
-
     UpdateFrameTiming();
     UpdateFadeTransitions();
     StartHighResFrame();
-    AddTimingMarker(0, 0, 0, 0xC8, 0xFF);
+    AddTimingMarker(0, 0, 0, 200, 0xFF);
     ClearDepthBuffer();
     DrawTexturedRect(&g_BgTextureDesc,
                      0,
@@ -742,36 +704,34 @@ s32 ProcessScreenState(const char *title,
                      bottomGreen,
                      bottomBlue,
                      0xFF,
-                     TEXRECT_BLEND_SHADED_OPAQUE);
-
-    /* The model under the cursor turns twice a second about, and the items slide to rest. */
-    step = g_fFrameDeltaTime + g_fFrameDeltaTime;
-    g_fScreenRotationAngle += step;
-    while (6.283185482f < g_fScreenRotationAngle) {
-        g_fScreenRotationAngle -= 6.283185482f;
+                     4);
+    g_fScreenRotationAngle += g_fFrameDeltaTime + g_fFrameDeltaTime;
+    while (g_fScreenRotationAngle > 6.2831855f) {
+        g_fScreenRotationAngle -= 6.2831855f;
     }
-    slide = g_fScreenSlideOffset;
-    if (slide < 0.0f) {
-        slide += step;
-        if (0.0f < slide) {
-            slide = 0.0f;
+    if (g_fScreenSlideOffset < 0.0f) {
+        g_fScreenSlideOffset += g_fFrameDeltaTime + g_fFrameDeltaTime;
+        if (g_fScreenSlideOffset > 0.0f) {
+            g_fScreenSlideOffset = 0.0f;
         }
-    } else if (0.0f < slide) {
-        slide -= step;
-        if (slide < 0.0f) {
-            slide = 0.0f;
+    } else if (g_fScreenSlideOffset > 0.0f) {
+        g_fScreenSlideOffset -= g_fFrameDeltaTime + g_fFrameDeltaTime;
+        if (g_fScreenSlideOffset < 0.0f) {
+            g_fScreenSlideOffset = 0.0f;
         }
     }
-    g_fScreenSlideOffset = slide;
-    ease = slide < 0.0f ? slide * slide * -5.0f : slide * slide * 5.0f;
-
-    SetupMenuProjection((f32)g_dwScreenWidth, (f32)g_dwScreenHeight);
-    SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
-    gSPNumLights(gDisplayListPtr++, NUMLIGHTS_1);
+    if (g_fScreenSlideOffset < 0.0f) {
+        off = g_fScreenSlideOffset * g_fScreenSlideOffset * -5.0f;
+    } else {
+        off = g_fScreenSlideOffset * g_fScreenSlideOffset * 5.0f;
+    }
+    SetupMenuProjection(g_dwScreenWidth, g_dwScreenHeight);
+    SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, 1);
+    gSPNumLights(gDisplayListPtr++, 1);
     gSPLight(gDisplayListPtr++, &g_MenuDirectionalLight, 1);
     gSPLight(gDisplayListPtr++, &g_MenuAmbientLight, 2);
-    gSPClipRatio(gDisplayListPtr++, FRUSTRATIO_6);
-    if (g_pMenuTitleImage != NULL) {
+    gSPClipRatio(gDisplayListPtr++, 6);
+    if (g_pMenuTitleImage != 0) {
         DrawTexturedRect(g_pMenuTitleImage,
                          g_dwMenuTitleImageX,
                          g_dwMenuTitleImageY,
@@ -785,207 +745,245 @@ s32 ProcessScreenState(const char *title,
                          0xFF,
                          0xFF,
                          0xFF,
-                         TEXRECT_BLEND_TEXTURE_2);
+                         2);
     }
-    SetTextSize(30);
-    SetTextAlignCenter();
-    sprintf(text, "%%ry%s", title);
-    DrawText(text, g_dwScreenWidth / 2, g_dwScreenHeight / 6 - 2);
+    {
+        char buf[80];
+        short v;
 
-    if (g_pfnScreenPreDrawCallback != NULL) {
-        g_pfnScreenPreDrawCallback();
-    } else {
-        block = (Mtx *)AllocDisplayListBlock();
-        guRotateF(g_afMvpMatrix, 12.0f, 1.0f, 0.0f, 0.0f);
-        guMtxF2L(g_afMvpMatrix, block);
-        gSPMatrix(gDisplayListPtr++, block, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
-        DrawMenuSpotlight();
-
-        /* The marker shows while there is another item to move to. */
-        other = g_nScreenCursor;
-        do {
-            other = (other + itemCount - 1) % itemCount;
-        } while (isSelectable != NULL && !isSelectable(other));
-        if (other != g_nScreenCursor) {
-            DrawMenuChoiceMarker();
-        }
-
-        item = items[g_nScreenCursor];
-        if (item->flags & MENU_ITEM_SPINNING) {
-            /* The model spins round as the items slide, changing halfway. */
-            if (SPIN_SWAP_SLIDE < g_fScreenSlideOffset || g_fScreenSlideOffset < -SPIN_SWAP_SLIDE) {
-                shown = g_nPrevScreenSelection;
-            } else {
-                shown = g_nScreenCursor;
-            }
-            AdvanceModelAnimations(items[shown]->model);
-            if (items[shown]->flags & MENU_ITEM_MIRRORED) {
-                g_dwViewportMirrored = TRUE;
-            }
-            DrawRotatedModel(items[shown]->model,
-                             (f32)(g_dwScreenWidth / 2),
-                             (f32)(g_dwScreenHeight * 6 / 16),
-                             0.0f,
-                             -1.570796371f - g_fScreenSlideOffset * 6.283185482f);
-            g_dwViewportMirrored = FALSE;
-            if (g_fScreenSlideOffset != 0.0f) {
-                goto popMatrix;
-            }
-        } else if (ease != 0.0f) {
-            /* The item slides in, and the one the cursor left slides out. */
-            DRAW_SLIDING_ITEM(items[g_nScreenCursor], ease, text);
-            DRAW_SLIDING_ITEM(
-                items[g_nPrevScreenSelection], (ease < 0.0f ? 5.0f : -5.0f) + ease, text);
-            goto popMatrix;
+        SetTextSize(30);
+        SetTextAlignCenter();
+        sprintf(buf, "%%ry%s", title);
+        DrawText(buf, g_dwScreenWidth / 2, g_dwScreenHeight / 6 - 2);
+        if (g_pfnScreenPreDrawCallback != 0) {
+            g_pfnScreenPreDrawCallback();
         } else {
-            SetTextStyleNormal();
-            SetTextAlignCenter();
-            item = items[g_nScreenCursor];
-            if (item->model != NULL) {
-                AdvanceModelAnimations(item->model);
-                if (items[g_nScreenCursor]->flags & MENU_ITEM_MIRRORED) {
-                    g_dwViewportMirrored = TRUE;
+            Mtx *mtx = (Mtx *)AllocDisplayListBlock();
+            int row;
+
+            guRotateF(g_afMvpMatrix, 12.0f, 1.0f, 0.0f, 0.0f);
+            guMtxF2L(g_afMvpMatrix, mtx);
+            gSPMatrix(gDisplayListPtr++, mtx, G_MTX_MODELVIEW | G_MTX_MUL | G_MTX_PUSH);
+            DrawMenuSpotlight();
+            row = g_nScreenCursor;
+            do {
+                row = (row + itemCount - 1) % itemCount;
+            } while (isSelectable != 0 && isSelectable(row) == 0);
+            if (row != g_nScreenCursor) {
+                DrawMenuChoiceMarker();
+            }
+            if (items[g_nScreenCursor]->flags & 4) {
+                int shown;
+
+                if (g_fScreenSlideOffset > 0.75f || g_fScreenSlideOffset < -0.75f) {
+                    shown = g_nPrevScreenSelection;
+                } else {
+                    shown = g_nScreenCursor;
                 }
-                DrawRotatedModel(items[g_nScreenCursor]->model,
-                                 (f32)(g_dwScreenWidth / 2),
-                                 (f32)(g_dwScreenHeight * 6 / 16),
+                AdvanceModelAnimations(items[shown]->model);
+                if (items[shown]->flags & 0x10) {
+                    g_dwViewportMirrored = 1;
+                }
+                DrawRotatedModel(items[shown]->model,
+                                 g_dwScreenWidth / 2,
+                                 (g_dwScreenHeight * 6) / 16,
                                  0.0f,
-                                 g_fScreenRotationAngle);
-                g_dwViewportMirrored = FALSE;
+                                 -1.5707964f - g_fScreenSlideOffset * 6.2831855f);
+                g_dwViewportMirrored = 0;
+                if (g_fScreenSlideOffset == 0) {
+                    goto label;
+                }
+            } else if (off != 0) {
+                if (items[g_nScreenCursor]->model != 0) {
+                    AdvanceModelAnimations(items[g_nScreenCursor]->model);
+                    if (items[g_nScreenCursor]->flags & 0x10) {
+                        g_dwViewportMirrored = 1;
+                    }
+                    DrawRotatedModel(items[g_nScreenCursor]->model,
+                                     g_dwScreenWidth / 2 - off * g_dwScreenWidth / 6.0f,
+                                     (g_dwScreenHeight * 6) / 16,
+                                     0.0f,
+                                     g_fScreenRotationAngle);
+                    g_dwViewportMirrored = 0;
+                } else {
+                    sprintf(buf, "%%ww%s", items[g_nScreenCursor]->name);
+                    SetTextStyleNormal();
+                    SetTextAlignCenter();
+                    DrawText(buf,
+                             g_dwScreenWidth / 2 - (int)(off * g_dwScreenWidth / 6.0f),
+                             (g_dwScreenHeight * 9) / 16);
+                }
+                if (items[g_nPrevScreenSelection]->model != 0) {
+                    AdvanceModelAnimations(items[g_nPrevScreenSelection]->model);
+                    if (items[g_nPrevScreenSelection]->flags & 0x10) {
+                        g_dwViewportMirrored = 1;
+                    }
+                    DrawRotatedModel(items[g_nPrevScreenSelection]->model,
+                                     g_dwScreenWidth / 2 - ((off < 0.0f ? 5.0f : -5.0f) + off) *
+                                                               g_dwScreenWidth / 6.0f,
+                                     (g_dwScreenHeight * 6) / 16,
+                                     0.0f,
+                                     g_fScreenRotationAngle);
+                    g_dwViewportMirrored = 0;
+                } else {
+                    sprintf(buf, "%%ww%s", items[g_nPrevScreenSelection]->name);
+                    SetTextStyleNormal();
+                    SetTextAlignCenter();
+                    DrawText(buf,
+                             g_dwScreenWidth / 2 - (int)(((off < 0.0f ? 5.0f : -5.0f) + off) *
+                                                         g_dwScreenWidth / 6.0f),
+                             (g_dwScreenHeight * 9) / 16);
+                }
             } else {
-                sprintf(text, "%%ww%s", item->name);
-                DrawText(text, g_dwScreenWidth / 2, g_dwScreenHeight * 9 / 16);
+                SetTextStyleNormal();
+                SetTextAlignCenter();
+                if (items[g_nScreenCursor]->model != 0) {
+                    AdvanceModelAnimations(items[g_nScreenCursor]->model);
+                    if (items[g_nScreenCursor]->flags & 0x10) {
+                        g_dwViewportMirrored = 1;
+                    }
+                    DrawRotatedModel(items[g_nScreenCursor]->model,
+                                     g_dwScreenWidth / 2,
+                                     (g_dwScreenHeight * 6) / 16,
+                                     0.0f,
+                                     g_fScreenRotationAngle);
+                    g_dwViewportMirrored = 0;
+                } else {
+                    sprintf(buf, "%%ww%s", items[g_nScreenCursor]->name);
+                    DrawText(buf, g_dwScreenWidth / 2, (g_dwScreenHeight * 9) / 16);
+                }
+            label:
+                SetTextSize(20);
+                sprintf(buf, "%%ry%s", items[g_nScreenCursor]->name);
+                DrawText(buf, g_dwScreenWidth / 2, (g_dwScreenHeight * 20) / 64);
+                if (g_pfnScreenPostDrawCallback != 0) {
+                    g_pfnScreenPostDrawCallback(g_nScreenCursor);
+                }
             }
+            gSPPopMatrix(gDisplayListPtr++, 0);
         }
-        SetTextSize(20);
-        sprintf(text, "%%ry%s", items[g_nScreenCursor]->name);
-        DrawText(text, g_dwScreenWidth / 2, g_dwScreenHeight * 20 / 64);
-        if (g_pfnScreenPostDrawCallback != NULL) {
-            g_pfnScreenPostDrawCallback(g_nScreenCursor);
+        DrawMenuFooterButtons();
+        ApplyScreenFade();
+        if (g_dwHudDebugLevel >= 2) {
+            SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, 1);
+            DrawTimingBars();
         }
-    popMatrix:
-        gSPPopMatrix(gDisplayListPtr++, G_MTX_MODELVIEW);
-    }
+        FlushDisplayList();
+        if (IsFadingOut() != 0) {
+            if (IsFadeComplete() != 0) {
+                int ch;
 
-    DrawMenuFooterButtons();
-    ApplyScreenFade();
-    if (g_dwHudDebugLevel >= 2) {
-        SetViewport(0, 0, g_dwScreenWidth, g_dwScreenHeight, TRUE);
-        DrawTimingBars();
-    }
-    FlushDisplayList();
-
-    if (IsFadingOut()) {
-        if (IsFadeComplete()) {
-            /* The screen is done: silence its sounds and leave. */
-            g_bScreenStateInitFlag = FALSE;
-            *selection = g_nScreenCursor;
-            ClearFramebuffersForWideMode();
-            for (i = 0; i < SOUND_EFFECT_CHANNELS; i++) {
-                g_aSoundEffectChannels[i].volume = 0;
-                g_aSoundEffectChannels[i].mixVolume = 0;
-                g_aSoundEffectChannels[i].step = 0;
-                g_aSoundEffectChannels[i].sample = g_SilenceSampleData;
-            }
-            return g_bScreenItemChosen ? MENU_RESULT_CHOSEN : MENU_RESULT_CANCELLED;
-        }
-    } else {
-        for (player = 0; player < (s32)g_dwNumLocalPlayers; player++) {
-            if (g_dwScreenPlayerIdx != -1 && !((1 << player) & g_dwMenuInputPlayerMask)) {
-                continue;
-            }
-            UpdateStickRepeat(PLAYER_INPUT(player));
-            buttons = PLAYER_INPUT(player)->buttons;
-            if (buttons != 0) {
-                g_fScreenIdleTime = 0.0f;
-            }
-            if (g_fScreenSlideOffset == 0.0f) {
-                /*
-                 * Left and right move the cursor past the items that may not be chosen, and the
-                 * presses of up and down are taken too. Right is not tried once left has moved.
-                 */
-                if (buttons & INPUT_LEFT) {
-                    TransferFlags(PLAYER_INPUT(player), INPUT_UP | INPUT_DOWN);
-                    PLAYER_INPUT(player)->buttons &= ~(INPUT_UP | INPUT_DOWN);
-                    g_nPrevScreenSelection = g_nScreenCursor;
-                    do {
-                        g_nScreenCursor = (g_nScreenCursor + itemCount - 1) % itemCount;
-                    } while (isSelectable != NULL && !isSelectable(g_nScreenCursor));
-                    if (g_nScreenCursor != g_nPrevScreenSelection) {
-                        g_fScreenSlideOffset = 1.0f;
-                        goto scrolled;
-                    }
-                }
-                if (PLAYER_INPUT(player)->buttons & INPUT_RIGHT) {
-                    TransferFlags(PLAYER_INPUT(player), INPUT_UP | INPUT_DOWN);
-                    PLAYER_INPUT(player)->buttons &= ~(INPUT_UP | INPUT_DOWN);
-                    g_nPrevScreenSelection = g_nScreenCursor;
-                    do {
-                        g_nScreenCursor = (g_nScreenCursor + 1) % itemCount;
-                    } while (isSelectable != NULL && !isSelectable(g_nScreenCursor));
-                    if (g_nScreenCursor != g_nPrevScreenSelection) {
-                        g_fScreenSlideOffset = -1.0f;
-                    scrolled:
-                        PLAY_SCREEN_SOUND(g_pScreenScrollSoundBuf, g_dwScreenScrollSoundSize);
-                    }
-                }
-                buttons = PLAYER_INPUT(player)->buttons;
-                if (items[g_nScreenCursor]->flags & MENU_ITEM_ADJUSTABLE) {
-                    if (buttons & INPUT_UP) {
-                        *selection = g_nScreenCursor;
-                        result = MENU_RESULT_UP;
-                        TransferFlags(PLAYER_INPUT(player), INPUT_UP);
-                        goto selected;
-                    }
-                    if (buttons & INPUT_DOWN) {
-                        *selection = g_nScreenCursor;
-                        result = MENU_RESULT_DOWN;
-                        TransferFlags(PLAYER_INPUT(player), INPUT_DOWN);
-                        goto selected;
-                    }
-                }
-                if (buttons & INPUT_B) {
-                    TransferFlags(PLAYER_INPUT(player), INPUT_B);
-                    g_bScreenItemChosen = FALSE;
-                    FADE_SCREEN_OUT();
-                    goto selected;
-                }
-            }
-            item = items[g_nScreenCursor];
-            if ((item->flags & MENU_ITEM_UNAVAILABLE) || (item->flags & MENU_ITEM_LOCKED) ||
-                !(buttons & (INPUT_A | INPUT_START | INPUT_Z))) {
-                continue;
-            }
-            TransferFlags(PLAYER_INPUT(player), INPUT_A | INPUT_START | INPUT_Z);
-            if (player != 0 && (items[g_nScreenCursor]->flags & MENU_ITEM_FIRST_PLAYER)) {
-                continue;
-            }
-            g_dwMenuChoosingPlayer = player;
-            if (items[g_nScreenCursor]->flags & MENU_ITEM_IMMEDIATE) {
+                g_bScreenStateInitFlag = 0;
                 *selection = g_nScreenCursor;
-                result = MENU_RESULT_CHOSEN;
-            } else {
-                g_bScreenItemChosen = TRUE;
-                FadeSfxTo(0.0f, SCREEN_FADE_RATE);
-                SetFadeTarget(0.0f, SCREEN_FADE_RATE);
+                ClearFramebuffersForWideMode();
+                for (ch = 0; ch < 6; ch++) {
+                    g_aSoundEffectChannels[ch].volume = 0;
+                    g_aSoundEffectChannels[ch].mixVolume = 0;
+                    g_aSoundEffectChannels[ch].step = 0;
+                    g_aSoundEffectChannels[ch].sample = g_SilenceSampleData;
+                }
+                if (g_bScreenItemChosen != 0) {
+                    return 1;
+                }
+                return 2;
             }
-        selected:
-            PLAY_SCREEN_SOUND(g_pScreenSelectSoundBuf, g_dwScreenSelectSoundSize);
+        } else {
+            for (i = 0; i < g_dwNumLocalPlayers; i++) {
+                if (g_dwScreenPlayerIdx != -1 && ((1 << i) & g_dwMenuInputPlayerMask) == 0) {
+                    continue;
+                }
+                UpdateStickRepeat(g_aVehicles[i].input);
+                if (g_aVehicles[i].input->buttons != 0) {
+                    g_fScreenIdleTime = 0.0f;
+                }
+                if (g_fScreenSlideOffset == 0) {
+                    if (g_aVehicles[i].input->buttons & 4) {
+                        TransferFlags(g_aVehicles[i].input, 10);
+                        g_aVehicles[i].input->buttons &= ~10;
+                        g_nPrevScreenSelection = g_nScreenCursor;
+                        do {
+                            g_nScreenCursor = (g_nScreenCursor + itemCount - 1) % itemCount;
+                        } while (isSelectable != 0 && isSelectable(g_nScreenCursor) == 0);
+                        if (g_nScreenCursor != g_nPrevScreenSelection) {
+                            g_fScreenSlideOffset = 1.0f;
+                            goto move;
+                        }
+                    }
+                    if (g_aVehicles[i].input->buttons & 1) {
+                        TransferFlags(g_aVehicles[i].input, 10);
+                        g_aVehicles[i].input->buttons &= ~10;
+                        g_nPrevScreenSelection = g_nScreenCursor;
+                        do {
+                            g_nScreenCursor = (g_nScreenCursor + 1) % itemCount;
+                        } while (isSelectable != 0 && isSelectable(g_nScreenCursor) == 0);
+                        if (g_nScreenCursor != g_nPrevScreenSelection) {
+                            g_fScreenSlideOffset = -1.0f;
+                        move:
+                            v = FindFreeSoundChannel();
+                            if (v != -1) {
+                                InitSoundChannel(
+                                    v, g_pScreenScrollSoundBuf, g_dwScreenScrollSoundSize, 0);
+                            }
+                        }
+                    }
+                    if (items[g_nScreenCursor]->flags & 1) {
+                        if (g_aVehicles[i].input->buttons & 8) {
+                            *selection = g_nScreenCursor;
+                            TransferFlags(g_aVehicles[i].input, 8);
+                            result = 3;
+                            goto choose;
+                        }
+                        if (g_aVehicles[i].input->buttons & 2) {
+                            *selection = g_nScreenCursor;
+                            TransferFlags(g_aVehicles[i].input, 2);
+                            result = 4;
+                            goto choose;
+                        }
+                    }
+                    if (g_aVehicles[i].input->buttons & 0x20) {
+                        TransferFlags(g_aVehicles[i].input, 0x20);
+                        g_bScreenItemChosen = 0;
+                        SetFadeTarget(0.0f, 0.2f);
+                        FadeSfxTo(0.0f, 0.2f);
+                        goto choose;
+                    }
+                }
+                if (!(items[g_nScreenCursor]->flags & 8) &&
+                    !(items[g_nScreenCursor]->flags & 0x40) &&
+                    (g_aVehicles[i].input->buttons & 0xC010)) {
+                    TransferFlags(g_aVehicles[i].input, 0xC010);
+                    if (i == 0 || !(items[g_nScreenCursor]->flags & 0x20)) {
+                        g_dwMenuChoosingPlayer = i;
+                        if ((items[g_nScreenCursor]->flags & 2) == 0) {
+                            g_bScreenItemChosen = 1;
+                            FadeSfxTo(0.0f, 0.2f);
+                            SetFadeTarget(0.0f, 0.2f);
+                        } else {
+                            *selection = g_nScreenCursor;
+                            result = 1;
+                        }
+                    choose:
+                        v = FindFreeSoundChannel();
+                        if (v != -1) {
+                            InitSoundChannel(
+                                v, g_pScreenSelectSoundBuf, g_dwScreenSelectSoundSize, 0);
+                        }
+                    }
+                }
+            }
         }
-    }
-
-    /* A screen left alone long enough leaves by itself. */
-    if (g_fScreenIdleTimeout != 0.0f && result == 0) {
-        g_fScreenIdleTime += g_fFrameDeltaTime;
-        if (g_fScreenIdleTimeout <= g_fScreenIdleTime && !IsFadingOut()) {
-            g_bScreenItemChosen = FALSE;
-            FADE_SCREEN_OUT();
+        if (g_fScreenIdleTimeout != 0 && result == 0) {
+            g_fScreenIdleTime = g_fScreenIdleTime + g_fFrameDeltaTime;
+            if (g_fScreenIdleTimeout <= g_fScreenIdleTime && IsFadingOut() == 0) {
+                g_bScreenItemChosen = 0;
+                SetFadeTarget(0.0f, 0.2f);
+                FadeSfxTo(0.0f, 0.2f);
+            }
         }
     }
     g_nScreenLastActiveIndex = g_nScreenCursor;
     return result;
 }
-
 void LoadMenuItemModels(MenuItem **items, s32 *itemCount) {
     s32 i;
 
