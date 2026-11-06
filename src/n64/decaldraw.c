@@ -714,102 +714,125 @@ void DrawDecalFilledEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 void DrawDecalEllipseOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
-    s32 brush, radiusX, radiusY, squareX, squareY, stepSquareX, stepSquareY, x, y, error, stepX;
-    s32 stepY, increment, swap, run;
+    s32 *squareAddress;
+    s32 radii[2];
+    s32 left;
+    s32 top;
+    s32 bottom;
+    s32 brush;
+    s32 x;
+    s32 y;
+    s32 error;
+    s32 run;
+    s32 increment;
+    s32 squareYStep;
+    s32 squareXStep;
+    struct {
+        s32 squareX;
+        s32 squareY;
+    } squares;
+    s32 stepY;
+    s32 stepX;
 
-    x0 = ScreenToTexelX(x0);
-    x1 = ScreenToTexelX(x1);
-    y0 = ScreenToTexelY(y0);
-    y1 = ScreenToTexelY(y1);
-    /* The corners are ordered by the sign of their difference here. */
+    /* clang-format off */
+    x0 = ScreenToTexelX(x0); y0 = ScreenToTexelY(y0);
+    x1 = ScreenToTexelX(x1); y1 = ScreenToTexelY(y1);
+    /* clang-format on */
     if (x1 - x0 < 0) {
-        swap = x0;
+        top = x0;
         x0 = x1;
-        x1 = swap;
+        x1 = top;
     }
     if (y1 - y0 < 0) {
-        swap = y0;
+        top = y0;
         y0 = y1;
-        y1 = swap;
+        y1 = top;
     }
     brush = g_aBrushSizeRects[g_bBrushSize].width;
-    radiusY = (y1 - y0 + brush) >> 1;
-    if (radiusY < 2) {
-        radiusY = 1;
-    }
-    radiusX = (x1 - x0 + brush) >> 1;
-    if (radiusX < 2) {
-        radiusX = 1;
-    }
-    /* The steps use their own copies of the squares, as in the original. */
-    squareY = stepSquareY = radiusY * radiusY;
-    squareX = stepSquareX = radiusX * radiusX;
-
-    /* The runs of the brush point into the ellipse. */
+    radii[1] = (y1 - y0 + brush) >> 1 >= 2 ? (y1 - y0 + brush) >> 1 : 1;
+    radii[0] = (x1 - x0 + brush) >> 1 >= 2 ? (x1 - x0 + brush) >> 1 : 1;
+    /* Taking the address preserves the square's stack storage under IDO. */
+    squareAddress = &squares.squareX;
+    squares.squareY = radii[1] * radii[1];
+    squareYStep = squares.squareY;
+    squares.squareX = radii[0] * radii[0];
+    squareXStep = squares.squareX;
+    y = radii[1] * 2;
     x = 0;
-    y = radiusY * 2;
-    error = -squareX * (radiusY * 2);
-    if (squareX * (radiusY * 2) >= 0) {
-        stepY = stepSquareX * (radiusY * 2);
-        stepX = 0;
-        increment = 0;
-        do {
-            if ((x & 1) == 0) {
-                PaintBrushRun(
-                    run, MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) + (y >> 1), 0, -1, brush);
-                PaintBrushRun(
-                    run, MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) - (y >> 1), 0, 1, brush);
-                PaintBrushRun(
-                    run, MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) - (y >> 1), 0, 1, brush);
-                PaintBrushRun(
-                    run, MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) + (y >> 1), 0, -1, brush);
+    error = -squares.squareX * y;
+    if (squareYStep * x <= squareXStep * y) {
+        for (stepX = squareXStep * y, stepY = 0, increment = 0;;) {
+            if (!(x & 1)) {
+                left = ((x0 + x1) >> 1) - (x >> 1);
+                top = ((y0 + y1) >> 1) - (y >> 1);
+                bottom = (y >> 1) + ((y0 + y1) >> 1);
+                for (run = 0; run < brush; run++) {
+                    SetPixel4Bit((x >> 1) + ((x0 + x1) >> 1), bottom - run, g_bDecalColor);
+                }
+                for (run = 0; run < brush; run++) {
+                    SetPixel4Bit((x >> 1) + ((x0 + x1) >> 1), top + run, g_bDecalColor);
+                }
+                for (run = 0; run < brush; run++) {
+                    SetPixel4Bit(left, top + run, g_bDecalColor);
+                }
+                for (run = 0; run < brush; run++) {
+                    SetPixel4Bit(left, bottom - run, g_bDecalColor);
+                }
             }
             error += increment;
-            stepX += stepSquareY;
+            stepY += squareYStep;
             x++;
-            increment += radiusY * radiusY;
+            increment += radii[1] * radii[1];
             error += increment;
             if (error > 0) {
-                error -= squareX * y;
+                error -= squares.squareX * y;
                 y--;
-                stepY -= stepSquareX;
-                error -= squareX * y;
+                stepX -= squareXStep;
+                error -= squares.squareX * y;
             }
-        } while (stepY >= stepX);
+            if (stepX < stepY) {
+                break;
+            }
+        }
     }
-
     y = 0;
-    x = radiusX * 2;
-    error = -squareY * x;
-    if (x * squareY < 0) {
-        return;
+    x = radii[0] * 2;
+    error = -squares.squareY * x;
+    if (squares.squareX * y <= x * squares.squareY) {
+        for (stepY = squareYStep * x, stepX = 0, increment = 0;;) {
+            if (!(y & 1)) {
+                left = ((x0 + x1) >> 1) - (x >> 1);
+                top = ((y0 + y1) >> 1) - (y >> 1);
+                bottom = (y >> 1) + ((y0 + y1) >> 1);
+                for (run = 0; run < brush; run++) {
+                    SetPixel4Bit((x >> 1) + ((x0 + x1) >> 1) - run, bottom, g_bDecalColor);
+                }
+                for (run = 0; run < brush; run++) {
+                    SetPixel4Bit((x >> 1) + ((x0 + x1) >> 1) - run, top, g_bDecalColor);
+                }
+                for (run = 0; run < brush; run++) {
+                    SetPixel4Bit(left + run, top, g_bDecalColor);
+                }
+                for (run = 0; run < brush; run++) {
+                    SetPixel4Bit(left + run, bottom, g_bDecalColor);
+                }
+            }
+            error += increment;
+            stepX += squareXStep;
+            y++;
+            increment += radii[0] * radii[0];
+            error += increment;
+            if (error > 0) {
+                error -= squares.squareY * x;
+                x--;
+                stepY -= squareYStep;
+                error -= squares.squareY * x;
+            }
+            if (stepY < stepX) {
+                break;
+            }
+        }
     }
-    stepX = stepSquareY * x;
-    stepY = 0;
-    increment = 0;
-    do {
-        if ((y & 1) == 0) {
-            PaintBrushRun(
-                run, MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) + (y >> 1), -1, 0, brush);
-            PaintBrushRun(
-                run, MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) - (y >> 1), -1, 0, brush);
-            PaintBrushRun(
-                run, MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) - (y >> 1), 1, 0, brush);
-            PaintBrushRun(
-                run, MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) + (y >> 1), 1, 0, brush);
-        }
-        error += increment;
-        stepY += stepSquareX;
-        y++;
-        increment += radiusX * radiusX;
-        error += increment;
-        if (error > 0) {
-            error -= squareY * x;
-            x--;
-            stepX -= stepSquareY;
-            error -= squareY * x;
-        }
-    } while (stepX >= stepY);
 }
 
 void FillCircle4Bit(s32 x, s32 y, s32 radius, u8 fromScreen) {
