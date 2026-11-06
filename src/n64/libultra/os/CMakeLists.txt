@@ -1,5 +1,5 @@
 # The operating system: threads, messages, interrupts and exceptions, timers, and the caches. The
-# messages and the debug output every release links are in src/common/libultra/os.
+# shared message routines and debug output are selected in src/common/libultra/os.
 add_library(
   coastline_libultra_os STATIC
           createmesgqueue.c

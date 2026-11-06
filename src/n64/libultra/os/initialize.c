@@ -1,5 +1,5 @@
-#include "common/libultra/io/siint.h"
 #include "common/libultra/os/osint.h"
+#include "n64/libultra/io/siint.h"
 
 u64 osClockRate = OS_CLOCK_RATE;
 s32 osViClock = VI_NTSC_CLOCK;

@@ -3,7 +3,7 @@
 
 /**
  * @file
- * The PIF RAM formats of the controller commands, the buffers the commands go through, and the
+ * The N64 PIF RAM formats of the controller commands, the buffers the commands go through, and the
  * internal routines of the controllers and the Controller Pak.
  */
 

@@ -1,4 +1,4 @@
-#include "common/libultra/io/controller.h"
+#include "n64/libultra/io/controller.h"
 
 s32 osPfsNumFiles(OSPfs *pfs, s32 *max_files, s32 *files_used) {
     int j;

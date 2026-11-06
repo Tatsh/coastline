@@ -1,4 +1,4 @@
-#include "common/libultra/io/controller.h"
+#include "n64/libultra/io/controller.h"
 
 s32 osPfsFreeBlocks(OSPfs *pfs, s32 *bytes_not_used) {
     int j;

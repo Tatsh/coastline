@@ -1,4 +1,4 @@
-#include "common/libultra/io/controller.h"
+#include "n64/libultra/io/controller.h"
 
 static s32 __osPfsDeclearPage(OSPfs *pfs,
                               __OSInode *inode,

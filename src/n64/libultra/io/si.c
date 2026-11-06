@@ -1,6 +1,6 @@
 #include <ultra64.h>
 
-#include "common/libultra/io/siint.h"
+#include "n64/libultra/io/siint.h"
 
 void __osSiCreateAccessQueue(void) {
     __osSiAccessQueueEnabled = 1;

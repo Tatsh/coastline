@@ -3,7 +3,7 @@
 
 /**
  * @file
- * The SI access queue and the raw SI routines.
+ * The N64 SI access queue and the raw SI routines.
  */
 
 #include <ultra64.h>

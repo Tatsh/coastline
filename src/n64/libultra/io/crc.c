@@ -1,4 +1,4 @@
-#include "common/libultra/io/controller.h"
+#include "n64/libultra/io/controller.h"
 
 u8 __osContAddressCrc(u16 addr) {
     u8 temp = 0;

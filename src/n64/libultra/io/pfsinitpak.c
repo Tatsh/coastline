@@ -1,5 +1,5 @@
-#include "common/libultra/io/controller.h"
-#include "common/libultra/io/siint.h"
+#include "n64/libultra/io/controller.h"
+#include "n64/libultra/io/siint.h"
 
 s32 osPfsInitPak(OSMesgQueue *queue, OSPfs *pfs, int channel) {
     int k;

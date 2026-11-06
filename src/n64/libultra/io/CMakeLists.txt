@@ -1,6 +1,5 @@
 # The input and output managers: audio, the cartridge and disk interfaces, the controllers and
-# their Paks, the serial interface, the signal processor, and video. The reading of the controllers
-# every release links is in src/common/libultra/io.
+# their Paks, the serial interface, the signal processor, and video.
 add_library(
   coastline_libultra_io STATIC
           ai.c
