@@ -2418,6 +2418,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         break;
 
     case PAK_DATA_STEP_LOAD:
+#if TGR_REGION != TGR_REGION_JP
         if (dataType == PAK_DATA_LOAD_SEASON) {
             PAK_LOG(("Loading season data...\n"));
         } else if (dataType == PAK_DATA_LOAD_GHOST) {
@@ -2425,6 +2426,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         } else if (dataType == PAK_DATA_LOAD_CONFIGURATION) {
             PAK_LOG(("Loading configuration...\n"));
         }
+#endif
         if (dataType != PAK_DATA_LOAD_CONFIGURATION) {
             gControllerPakState = osPfsReadWriteFile(&g_aPakPfs[g_dwMenuChoosingPlayer],
                                                      g_dwPakDataNoteIndex,
@@ -2487,13 +2489,8 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
         break;
 
     case PAK_DATA_STEP_ALLOCATE:
-        noteSize = osPfsFreeBlocks(&g_aPakPfs[g_dwMenuChoosingPlayer], &freeBlocks);
-#if TGR_REGION == TGR_REGION_JP
-        gControllerPakState = noteSize;
-        if (noteSize == 0) {
-#else
-        if ((gControllerPakState = noteSize) == 0) {
-#endif
+        if ((gControllerPakState =
+                 osPfsFreeBlocks(&g_aPakPfs[g_dwMenuChoosingPlayer], &freeBlocks)) == 0) {
             if (freeBlocks < OPTIONS_NOTE_SIZE) {
                 gControllerPakState = PFS_DATA_FULL;
                 g_bPakDataStep = PAK_DATA_STEP_ERROR;
