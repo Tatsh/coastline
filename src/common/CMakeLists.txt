@@ -121,6 +121,7 @@ set(_common_sources
   wind.c)
 if(TGR_PLATFORM STREQUAL "n64")
   list(REMOVE_ITEM _common_sources
+    vehicledeform.c
        modelrelocation.c
        raceprogress.c
        racerun.c

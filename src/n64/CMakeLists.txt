@@ -52,6 +52,7 @@ set(_n64_sources
     trackrender.c
     vehicle.c
     vehicleengine.c
+    vehicle-mesh-deform.c
     vehiclemodelrender.c
     vehiclerender.c
     vehiclesetup.c

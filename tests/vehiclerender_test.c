@@ -3,8 +3,8 @@
 #include <math.h>
 #include <stdio.h>
 
-#include "common/vehicledeform.c"
 #include "common/vehiclemodelrender.c"
+#include "n64/vehicle-mesh-deform.c"
 #include "n64/vehiclemodelrender.c"
 #include "vehiclerender.c"
 
@@ -148,7 +148,7 @@ static void CheckDeform(void) {
            vertices[0].v.ob[2] == 0xF);
     assert(vertices[1].v.ob[0] == 0x10 && vertices[1].v.ob[1] == 0x23);
     /* A side dented deeply enough dents no more. */
-    v->dents[0] = MAX_DENT;
+    v->dents[0] = 0x100;
     DeformVehicleMeshByImpact(v, &blow, 8);
     assert(vertices[0].v.ob[0] == 0xF8 && v->dentJitter == 1);
     /* A blow from behind, on side 4: the jitter -3 is moved up to -2, so x is -0x202 and y 0x11.
