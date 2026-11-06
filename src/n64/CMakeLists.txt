@@ -15,6 +15,7 @@ set(_n64_sources
     effects.c
     frame.c
     hud.c
+    impulse.c
     input.c
     inputtranslate.c
     mainmenu.c

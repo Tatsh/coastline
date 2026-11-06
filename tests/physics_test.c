@@ -9,6 +9,7 @@
 #include "n64/balance.c"
 #include "n64/collidevehicles.c"
 #include "n64/drivewheel.c"
+#include "n64/impulse.c"
 #include "n64/obb.c"
 #include "n64/sidegrip.c"
 #include "physics.c"
@@ -27,6 +28,7 @@ f32 g_afSurfaceGrip[GRIP_WEATHERS][TRACK_SURFACES],
 Vec3f g_vecUnitX = {1, 0, 0}, g_vecUnitY = {0, 1, 0}, g_vecUnitZ = {0, 0, 1},
       g_vecNegUnitZ = {0, 0, -1};
 Vec3f g_vVehicleObbHalfExtents = {2.5f, 1.0f, 1.0f};
+f32 g_fConst0p0001 = 0.0001f, g_fConst0p9_3 = 0.9f, g_fConst0p2 = 0.2f, g_fConst1p05 = 1.05f;
 CollisionContactVector g_vCollisionContact;
 Vec3f g_vCollisionPenetration;
 u32 g_dwCurrentWeather;

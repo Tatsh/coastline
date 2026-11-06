@@ -383,6 +383,7 @@ void ComputeCollisionPenetration(
 #endif
 }
 
+#if TGR_PLATFORM != TGR_PLATFORM_N64
 s32 ApplyCollisionImpulse(
     RigidBody *body, Vec3f *point, Vec3f *normal, s32 friction, f32 restitution) {
     Vec3f *velocity = &body->stepStates[1].velocity;
@@ -558,6 +559,7 @@ s32 ApplyCollisionImpulse(
 #endif /* TGR_BOSS_RALLY */
     return 1;
 }
+#endif /* TGR_PLATFORM != TGR_PLATFORM_N64 */
 
 s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin) {
 #if TGR_PLATFORM == TGR_PLATFORM_N64

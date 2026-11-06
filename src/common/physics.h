@@ -489,6 +489,44 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin);
  */
 s32 UnusedCollisionResponseStub(void *body, void *normal, void *damp);
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+/**
+ * The restitution threshold for recording a hard collision.
+ *
+ * @ghidraAddress USA: 0x802ab7f8
+ * @ghidraAddress EUR: 0x802ad4f0
+ * @ghidraAddress JPN: 0x802abf28
+ */
+extern f32 g_fConst0p0001;
+
+/**
+ * The velocity scale after a hard collision.
+ *
+ * @ghidraAddress USA: 0x802ab7fc
+ * @ghidraAddress EUR: 0x802ad4f4
+ * @ghidraAddress JPN: 0x802abf2c
+ */
+extern f32 g_fConst0p9_3;
+
+/**
+ * The fraction of tangential speed retained when friction applies.
+ *
+ * @ghidraAddress USA: 0x802ab800
+ * @ghidraAddress EUR: 0x802ad4f8
+ * @ghidraAddress JPN: 0x802abf30
+ */
+extern f32 g_fConst0p2;
+
+/**
+ * The fixed part of collision restitution.
+ *
+ * @ghidraAddress USA: 0x802ab804
+ * @ghidraAddress EUR: 0x802ad4fc
+ * @ghidraAddress JPN: 0x802abf34
+ */
+extern f32 g_fConst1p05;
+#endif
+
 /**
  * Give the next step of a body the impulse at a point of it, in its frame, that stops the point
  * moving into a surface, record a hard hit, and retain a part of the slide along the surface.
