@@ -30,6 +30,176 @@ typedef f32 SprayReal;
 #define SPRAY_VERTEX(head, vertex, coordinate, field) ((head)[vertex].v.ob[coordinate])
 #endif /* TGR_BOSS_RALLY */
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+void EmitTireSpray(Vehicle *vehicle) {
+    Vec3f thrown;
+    Vec3f velocity;
+    Vec3f position;
+    Vec3f *side;
+    f32 speedShare;
+    /* Unused slots preserve the original IDO stack layout. */
+    s32 unusedA[1];
+    f32 scale;
+    s32 unusedB[1];
+    s32 holding;
+    s32 unusedC[1];
+    s32 sheltered;
+    RigidBody *bodies[VEHICLE_WHEELS];
+    s32 unusedD[1];
+    f32 slip;
+    s32 unusedE[1];
+    f32 slide;
+    s32 wheel;
+    s32 surface;
+    f32 random;
+    s32 unusedF[1];
+
+    (void)unusedA;
+    (void)unusedB;
+    (void)unusedC;
+    (void)unusedD;
+    (void)unusedE;
+    (void)unusedF;
+    sheltered = 0;
+    if (vehicle->groundInstanceCount != 0 &&
+        (g_LoadedTrack.instances[vehicle->groundInstances[0]].flags & TRACK_INSTANCE_SHELTER)) {
+        sheltered = 1;
+    }
+    if (g_dwSnowMode == 0 || g_dwSelectedTrackId == TRACK_COASTLINE ||
+        g_dwSelectedTrackId == TRACK_MIRROR_COASTLINE) {
+        bodies[0] = &vehicle->wheelBodies[3];
+        bodies[1] = &vehicle->wheelBodies[1];
+        bodies[2] = &vehicle->wheelBodies[0];
+        bodies[3] = &vehicle->wheelBodies[2];
+        speedShare = (1.0f - 50.0f / (vehicle->speedKph + 50.0f)) * 3.0f;
+        slide = Vec3fDot(&vehicle->frame.forward, &vehicle->placedVelocity);
+        if (slide < 0) {
+            slip = -slide;
+        } else {
+            slip = slide;
+        }
+        side = &vehicle->frame.side;
+        for (wheel = 0; wheel < VEHICLE_WHEELS; wheel++) {
+            vehicle->sprayPhases[wheel] += g_fFrameDeltaTime * 4.0f;
+            if (vehicle->sprayPhases[wheel] > 0.75f) {
+                holding = 0;
+                if (vehicle->sprayPhases[wheel] >= 1.7f) {
+                    vehicle->sprayPhases[wheel] -= 1;
+                } else {
+                    vehicle->sprayPhases[wheel] = 0;
+                }
+                vehicle->sprayAdvanced[wheel] = 1;
+            } else {
+                holding = 1;
+                vehicle->sprayAdvanced[wheel] = 0;
+            }
+            if (bodies[wheel]->contactFrames != 0) {
+                vehicle->sprayFramesLeft[wheel] = SPRAY_FRAMES;
+                vehicle->spraySurfaces[wheel] = bodies[wheel]->surface;
+            } else if (vehicle->sprayFramesLeft[wheel] != 0.0f) {
+                vehicle->sprayFramesLeft[wheel] -= 1;
+            }
+            surface = vehicle->spraySurfaces[wheel];
+            if (vehicle->sprayFramesLeft[wheel] != 0.0f) {
+                if (holding) {
+                    scale = 1.5f;
+                    goto spread;
+                } else if (surface == TRACK_SURFACE_SLOW) {
+                    scale = 2.5f;
+                    goto spread;
+                } else if (surface == TRACK_SURFACE_PAVED && g_dwRainMode != 0 && !sheltered) {
+                    scale = 1.5f;
+                    if (!holding) {
+                        vehicle->sprayPhases[wheel] = 7.75f;
+                    }
+                } else {
+                    goto flat;
+                }
+            spread:
+                if (!holding) {
+                    Vec3fScale(&velocity, &vehicle->frame.up, scale);
+                    if (surface != TRACK_SURFACE_PAVED) {
+                        Vec3fMulAddInPlace(
+                            &velocity, side, wheel != 0 && wheel < 3 ? -scale : scale);
+                    }
+                    if (surface != TRACK_SURFACE_PAVED) {
+                        Vec3fScaleInPlace(&velocity, speedShare);
+                        Vec3fMulAddInPlace(&velocity, &vehicle->placedVelocity, 0.3f);
+                        Vec3fMulAddInPlace(
+                            &velocity, side, Vec3fDot(side, &vehicle->placedVelocity) * 0.5f);
+                    } else {
+                        slide = (1.0f - 25.0f / (2.24f * slip + 25.0f)) * 3.0f;
+                        Vec3fScaleInPlace(&velocity, slide);
+                        if (slide != 0.0f) {
+                            if (wheel >= 2) {
+                                velocity.z += velocity.z;
+                            }
+                            Vec3fMulAddInPlace(
+                                &velocity, side, Vec3fDot(side, &vehicle->placedVelocity) * 0.3f);
+                        }
+                    }
+                }
+                Vec3fMulAdd(
+                    &position, &vehicle->wheelFrames[wheel].position, &vehicle->frame.up, -0.25f);
+                if (surface != TRACK_SURFACE_PAVED || wheel < 2) {
+                    Vec3fMulAddInPlace(&position, side, wheel != 0 && wheel < 3 ? -0.15f : 0.15f);
+                }
+                thrown.x = position.x;
+                thrown.y = position.y;
+                thrown.z = position.z;
+                if (!holding) {
+                    if (Vec3fDistanceSquared(&position, &vehicle->sprayPositions[wheel]) <
+                        SCATTER_DISTANCE_SQUARED) {
+                        random = (f32)(s32)(AdvanceRng() & 0xffff) * RANDOM_SHARE;
+                        Vec3fLerp(
+                            &position, &vehicle->sprayPositions[wheel], &position, random * random);
+                    }
+                }
+                vehicle->sprayPositions[wheel].x = thrown.x;
+                vehicle->sprayPositions[wheel].y = thrown.y;
+                vehicle->sprayPositions[wheel].z = thrown.z;
+            } else {
+            flat:
+                Vec3fClear(&velocity);
+                position.x = vehicle->wheelFrames[wheel].position.x;
+                position.y = vehicle->wheelFrames[wheel].position.y;
+                position.z = vehicle->wheelFrames[wheel].position.z;
+            }
+            if (!holding) {
+                vehicle->sprayVelocities[wheel][0][1][0] = velocity.x * SPRAY_UNITS;
+                vehicle->sprayVelocities[wheel][0][1][1] = velocity.y * SPRAY_UNITS;
+                vehicle->sprayVelocities[wheel][0][1][2] = velocity.z * SPRAY_UNITS;
+                if (surface == TRACK_SURFACE_PAVED && g_dwRainMode != 0) {
+                    vehicle->sprayVelocities[wheel][0][0][2] = 0;
+                    vehicle->sprayVelocities[wheel][0][0][0] =
+                        vehicle->sprayVelocities[wheel][0][1][0];
+                    vehicle->sprayVelocities[wheel][0][0][1] =
+                        vehicle->sprayVelocities[wheel][0][1][1];
+                } else {
+                    vehicle->sprayVelocities[wheel][0][0][2] = 0;
+                    vehicle->sprayVelocities[wheel][0][0][0] =
+                        vehicle->sprayVelocities[wheel][0][1][0] >> 1;
+                    vehicle->sprayVelocities[wheel][0][0][1] =
+                        vehicle->sprayVelocities[wheel][0][1][1] >> 1;
+                }
+            }
+            vehicle->spraySegmentSurfaces[wheel][0] = surface;
+            vehicle->sprayVertices[wheel][0][1].v.ob[0] =
+                (position.x - vehicle->sprayOrigin.x) * SPRAY_UNITS;
+            vehicle->sprayVertices[wheel][0][1].v.ob[1] =
+                (position.y - vehicle->sprayOrigin.y) * SPRAY_UNITS;
+            vehicle->sprayVertices[wheel][0][1].v.ob[2] =
+                (position.z - vehicle->sprayOrigin.z) * SPRAY_UNITS;
+            vehicle->sprayVertices[wheel][0][0].v.ob[0] =
+                vehicle->sprayVertices[wheel][0][1].v.ob[0];
+            vehicle->sprayVertices[wheel][0][0].v.ob[1] =
+                vehicle->sprayVertices[wheel][0][1].v.ob[1];
+            vehicle->sprayVertices[wheel][0][0].v.ob[2] =
+                vehicle->sprayVertices[wheel][0][1].v.ob[2];
+        }
+    }
+}
+#else
 #if TGR_BOSS_RALLY
 void Vehicle::EmitTireSpray(void) {
     Vehicle *vehicle = this;
@@ -216,3 +386,4 @@ void EmitTireSpray(Vehicle *vehicle) {
         SPRAY_VERTEX(head, 0, 2, z) = SPRAY_VERTEX(head, 1, 2, z);
     }
 }
+#endif /* TGR_PLATFORM == TGR_PLATFORM_N64 */
