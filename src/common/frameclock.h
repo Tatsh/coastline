@@ -67,6 +67,19 @@ void ResetFrameTimer(void);
  */
 void ResetFrameTimerState(void);
 
+/**
+ * Get the time of the current frame tick.
+ * @return The time in milliseconds.
+ * @ghidraAddress BRD3D: 0x100750f0
+ * @ghidraAddress BRGlide: 0x1006e350
+ */
+u32 GetFrameTickCounter(void);
+
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/** Read the Windows frame clock before resetting the shared frame counters. */
+void SnapshotPlatformFrameTimerState(void);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

@@ -1,54 +1,8 @@
 #include "common/frameclock.h"
-
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include <windows.h>
-// The headers below need the types of windows.h.
-#include <mmsystem.h>
-
-#include "win32/frametimer.h"
-#endif
-
 #include "common/racepacing.h"
 #include "common/snapshot.h"
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "win32/timer.h"
-#endif
 
 namespace {
-
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-/**
- * The clock of the frames of a race.
- *
- * @ghidraAddress BRD3D: 0x106806b0
- * @ghidraAddress BRGlide: 0x105bc858
- */
-FrameTimer g_FrameTimer;
-
-/**
- * Whether the frequency of the performance counter was read for the frames.
- *
- * @ghidraAddress BRD3D: 0x118ab140
- * @ghidraAddress BRGlide: 0x118ee258
- */
-int g_bFrameTimerInitialized;
-
-/**
- * Whether the system has a performance counter for the frames.
- *
- * @ghidraAddress BRD3D: 0x118ab144
- * @ghidraAddress BRGlide: 0x118ee25c
- */
-int g_bFrameTimerHasPerfCounter;
-
-/**
- * The frequency of the performance counter for the frames.
- *
- * @ghidraAddress BRD3D: 0x118ab138
- * @ghidraAddress BRGlide: 0x118ee250
- */
-LARGE_INTEGER g_liFrameTimerFrequency;
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 /**
  * The time of the current tick, in milliseconds.
@@ -86,41 +40,9 @@ const unsigned g_adwFrameTickIncrements[TICKS_PER_PERIOD] = {33, 33, 34};
 
 int g_dwRaceFrameCounter;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-// The frames of a second.
-#define FRAMES_PER_SECOND 30
-// The milliseconds of a frame without the performance counter.
-#define FRAME_INTERVAL_MS 33
-
-FrameTimer *FrameTimer::InitializeFrameTimer() {
-    if (!g_bFrameTimerInitialized) {
-        g_bFrameTimerHasPerfCounter = QueryPerformanceFrequency(&g_liFrameTimerFrequency);
-        g_bFrameTimerInitialized = true;
-    }
-    if (g_bFrameTimerHasPerfCounter) {
-        liFrameInterval.QuadPart = g_liFrameTimerFrequency.QuadPart / FRAMES_PER_SECOND;
-    } else {
-        timeBeginPeriod(1);
-        dwFrameIntervalMs = FRAME_INTERVAL_MS;
-    }
-    SnapshotTimerState();
-    return this;
-}
-
-void FrameTimer::SnapshotTimerState() {
-    if (g_bFrameTimerHasPerfCounter) {
-        QueryPerformanceCounter(&liCurrentCount);
-        liNextInterval = liFrameInterval;
-    } else {
-        dwCurrentTimeMs = GetHighResolutionTime();
-        dwNextIntervalMs = dwFrameIntervalMs;
-    }
-}
-
-DWORD GetFrameTickCounter(void) {
+u32 GetFrameTickCounter(void) {
     return g_dwFrameTickTime;
 }
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void ResetFrameTimer(void) {
     unsigned dwNow = GetHighResolutionTime();
@@ -141,17 +63,9 @@ void AdvanceFrameTickCounter(void) {
 
 void ResetFrameTimerState(void) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-    g_FrameTimer.SnapshotTimerState();
+    SnapshotPlatformFrameTimerState();
 #endif
     g_dwRaceFrameCounter = -1;
     g_bFrameTimerReset = true;
     ResetFrameTimer();
 }
-
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-void EndHighResolutionTimerPeriod(void) {
-    if (!g_bFrameTimerHasPerfCounter) {
-        timeEndPeriod(1);
-    }
-}
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

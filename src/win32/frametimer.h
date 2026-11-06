@@ -45,15 +45,6 @@ extern "C" {
 #endif
 
 /**
- * Get the time of the current tick.
- *
- * @return The time in milliseconds.
- * @ghidraAddress BRD3D: 0x100750f0
- * @ghidraAddress BRGlide: 0x1006e350
- */
-DWORD GetFrameTickCounter(void);
-
-/**
  * End the period of the timer of one millisecond the frame timer began without the performance
  * counter.
  *

@@ -17,6 +17,7 @@ add_library(
   earsound.cpp
   frontend.cpp
   frontenddata.cpp
+  frametimer.cpp
   gamesession.cpp
   gamestate.cpp
   hudnetwork.cpp
