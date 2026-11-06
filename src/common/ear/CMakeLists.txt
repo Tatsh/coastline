@@ -27,8 +27,7 @@ add_library(
   version.c
   volume.c
   wavechunks.c
-  wavesample.cpp
-  window.c)
+  wavesample.cpp)
 target_include_directories(coastline_ear PUBLIC "${CMAKE_SOURCE_DIR}/src"
                                               "${CMAKE_SOURCE_DIR}/src/common")
 if(TGR_PLATFORM STREQUAL "sdl")

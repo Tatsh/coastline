@@ -9,7 +9,8 @@ add_library(
   exports.def
   file.cpp
   musicdevice.cpp
-  musicplayback.cpp)
+  musicplayback.cpp
+  window.c)
 target_include_directories(coastline_win32_ear PUBLIC "${CMAKE_SOURCE_DIR}/src")
 target_compile_options(coastline_win32_ear PRIVATE -Wall -Wextra -Wno-unused-parameter)
 target_link_libraries(coastline_win32_ear PRIVATE dxguid kernel32 ole32 user32 version winmm)
