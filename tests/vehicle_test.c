@@ -10,6 +10,7 @@
 #include "vehicle.c"
 
 TrackHeader g_LoadedTrack;
+TrackSection *g_pRootTrackSection;
 Vec3f g_vRayCeilingNormalInit = {0.0f, 0.0f, 1.0f};
 Vec3f g_vRayGroundNormalInit = {0.0f, 0.0f, 1.0f};
 Vehicle g_aVehicles[MAX_VEHICLES];
@@ -221,6 +222,7 @@ int main(void) {
     route.section.gridMaxX = route.section.gridMaxY = 63;
     sections[0] = &route.section;
     g_LoadedTrack.rootSection = &route.section;
+    g_pRootTrackSection = g_LoadedTrack.rootSection;
     g_LoadedTrack.sections = sections;
     g_LoadedTrack.sectionCount = 1;
     g_LoadedTrack.maxX = 2048.0f;

@@ -268,6 +268,17 @@ typedef struct {
  */
 extern TrackHeader g_LoadedTrack;
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+/**
+ * The starting route section, at its address within the loaded track.
+ *
+ * @ghidraAddress USA: 0x80025c70
+ * @ghidraAddress EUR: 0x80025c70
+ * @ghidraAddress JPN: 0x80025c70
+ */
+extern TrackSection *g_pRootTrackSection;
+#endif
+
 #if !TGR_BOSS_RALLY
 /**
  * The first gate of the loaded track, addressed separately by the original code.

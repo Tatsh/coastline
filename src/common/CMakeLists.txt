@@ -123,6 +123,7 @@ if(TGR_PLATFORM STREQUAL "n64")
   list(REMOVE_ITEM _common_sources
     vehicledeform.c
     sky.c
+    vehicletrackpos.c
        modelrelocation.c
        raceprogress.c
        racerun.c

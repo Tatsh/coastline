@@ -189,7 +189,7 @@ coastline_add_test(
   "${_src}/common/tricache.c"
   "${_src}/n64/ground-ray.c"
   "${_src}/common/vehicleengine.c"
-  "${_src}/common/vehicletrackpos.c")
+  "${_src}/n64/vehicle-track-position.c")
 coastline_add_test(vehiclerender ${_vecmath} ${_gu} "${_src}/common/headlight.c"
                    "${_src}/n64/headlight-beams.c"
                    "${_src}/common/vehiclevisibility.c" "${_src}/common/wheelrender.c")
