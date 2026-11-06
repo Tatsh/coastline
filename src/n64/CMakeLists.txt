@@ -14,6 +14,7 @@ set(_n64_sources
     frame.c
     hud.c
     input.c
+    inputtranslate.c
     mainmenu.c
     obb.c
     options.c

@@ -100,7 +100,7 @@ coastline_add_test(
   "${_src}/common/hudoverlay.c"
   "${_src}/common/hudrace.c"
   "${_src}/common/hudtime.c")
-coastline_add_test(input "${_src}/n64/input.c" "${_src}/common/controllerread.c" "${_src}/common/inputtranslate.c"
+coastline_add_test(input "${_src}/n64/input.c" "${_src}/common/controllerread.c" "${_src}/n64/inputtranslate.c"
                    "${_src}/common/playerinput.c")
 coastline_add_test(
   model

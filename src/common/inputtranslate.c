@@ -34,6 +34,7 @@
         (state)->buttons |= INPUT_BRAKE;                                                           \
     }
 
+#if TGR_PLATFORM != TGR_PLATFORM_N64
 #if TGR_BOSS_RALLY
 void PlayerInputState::TranslateControllerInput(void) {
     PlayerInputState *state = this;
@@ -355,6 +356,8 @@ void TranslateControllerInput(PlayerInputState *state) {
     ProcessInputCommandBuffer(state);
 #endif
 }
+
+#endif /* TGR_PLATFORM != TGR_PLATFORM_N64 */
 
 #if TGR_BOSS_RALLY
 void PlayerInputState::ConsumeInputFlags(void) {
