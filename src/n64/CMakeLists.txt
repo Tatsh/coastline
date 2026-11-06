@@ -2,6 +2,7 @@
 # assembly of the original into C.
 set(_n64_sources
     audiomix.s
+    balance.c
     billboard-particles.c
     camera.c
     carselect.c
@@ -32,8 +33,11 @@ set(_n64_sources
     playercontrol.c
     playerselect.c
     precipitation-update.c
+    precipitationrender.c
     race.c
     racer-slot-motion.c
+    racersharing.c
+    racetick.c
     raceprogress.c
     racemenu.c
     racesound.c
