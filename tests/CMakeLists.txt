@@ -144,7 +144,7 @@ coastline_add_test(racesound stubs/racesound.c ${_vecmath} ${_common} "${_src}/c
                    "${_src}/common/soundsource.c")
 coastline_add_test(replay "${_src}/common/rledecompress.c")
 coastline_add_test(rigidbody ${_common} "${_src}/common/rigidbody.c")
-coastline_add_test(sky ${_common} "${_src}/common/sky.c" "${_src}/common/skystate.c")
+coastline_add_test(sky ${_common} "${_src}/n64/sky.c" "${_src}/common/skystate.c")
 coastline_add_test(sort "${_src}/common/util.c")
 coastline_add_test(splash ${_common})
 coastline_add_test(sprite "${_src}/n64/sprite.c")

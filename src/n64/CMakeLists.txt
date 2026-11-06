@@ -39,6 +39,7 @@ set(_n64_sources
     racesound.c
     rumble.c
     sidegrip.c
+    sky.c
     snapshot.c
     splash.c
     sprite.c

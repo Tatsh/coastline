@@ -1,4 +1,4 @@
-/* Host check of RenderSkybox() in src/sky.c against the command words of the disassembly. */
+/* Host check of RenderSkybox() in src/n64/sky.c against the disassembled command words. */
 #include <assert.h>
 #include <stdio.h>
 
