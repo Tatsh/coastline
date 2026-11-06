@@ -7,10 +7,10 @@
 
 set(_src "${CMAKE_SOURCE_DIR}/src")
 set(_gu
-    "${_src}/common/libultra/gu/lookatref.c"
-    "${_src}/common/libultra/gu/lookathil.c"
+    "${_src}/n64/libultra/gu/lookatref.c"
+    "${_src}/n64/libultra/gu/lookathil.c"
     "${_src}/n64/libultra/gu/mtxcatf.c"
-    "${_src}/common/libultra/gu/mtxutil.c"
+    "${_src}/n64/libultra/gu/mtxutil.c"
     "${_src}/n64/libultra/gu/rotate.c"
     "${_src}/common/libultra/gu/scale.c"
     "${_src}/common/libultra/gu/translate.c"
@@ -71,7 +71,7 @@ add_test(NAME ghostinput COMMAND ghostinput_test)
 
 coastline_add_test(audio)
 coastline_add_test(camera ${_vecmath} ${_gu} "${_src}/n64/libultra/gu/lookat.c"
-                   "${_src}/common/libultra/gu/perspective.c" "${_src}/common/camerarender.c")
+                   "${_src}/n64/libultra/gu/perspective.c" "${_src}/common/camerarender.c")
 coastline_add_test(carselect stubs/carselect.c ${_vecmath} ${_gu} "${_src}/common/laptime.c")
 coastline_add_test(controllerscreen "${_src}/n64/controllerscreen.c")
 coastline_add_test(debugtext "${_src}/n64/debugtext.c" "${_src}/common/debuginstance.c")
@@ -217,7 +217,7 @@ coastline_add_test(
 set_source_files_properties("${_src}/n64/libultra/libc/sprintf.c" PROPERTIES COMPILE_DEFINITIONS
                                                                          sprintf=lu_sprintf)
 coastline_add_test(gu "${_src}/n64/libultra/gu/sinf.c" "${_src}/n64/libultra/gu/cosf.c"
-                   "${_src}/common/libultra/gu/mtxutil.c" "${_src}/n64/libultra/gu/rotate.c"
+                   "${_src}/n64/libultra/gu/mtxutil.c" "${_src}/n64/libultra/gu/rotate.c"
                    "${_src}/n64/libultra/gu/normalize.c")
 set_source_files_properties("${_src}/n64/libultra/gu/sinf.c" PROPERTIES COMPILE_DEFINITIONS sinf=gu_sinf)
 set_source_files_properties("${_src}/n64/libultra/gu/cosf.c" PROPERTIES COMPILE_DEFINITIONS cosf=gu_cosf)

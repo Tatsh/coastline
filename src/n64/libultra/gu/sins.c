@@ -1,4 +1,4 @@
-#include "common/libultra/gu/guint.h"
+#include "n64/libultra/gu/guint.h"
 
 s16 sins(u16 x) {
     s16 value;

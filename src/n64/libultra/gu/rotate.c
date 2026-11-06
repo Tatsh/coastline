@@ -1,4 +1,4 @@
-#include "common/libultra/gu/guint.h"
+#include "n64/libultra/gu/guint.h"
 
 void guRotateF(float mf[4][4], float a, float x, float y, float z) {
     /* IDO stores the radians in a degree on each call before it reads them back. */

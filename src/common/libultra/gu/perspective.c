@@ -1,13 +1,7 @@
-#if TGR_BOSS_RALLY
 #include <math.h>
 #include <stdio.h>
 
 #include <PR/gu.h>
-#else
-#include <ultra64.h>
-#endif
-
-#if TGR_BOSS_RALLY
 
 void guFrustumF(float mf[4][4],
                 float left,
@@ -43,57 +37,13 @@ void guFrustumF(float mf[4][4],
     mf[2][3] = -1.0f;
     mf[3][2] = -(((long double)far * near + (long double)far * near) / depth);
 }
-#endif /* TGR_BOSS_RALLY */
 
 void guPerspectiveF(
     float mf[4][4], u16 *perspNorm, float fovy, float aspect, float near, float far, float scale) {
-#if TGR_BOSS_RALLY
     long double halfHeight = tanl((long double)fovy * 0.008726646259971648) * near;
     float top = halfHeight;
     float right = halfHeight * aspect;
 
     guFrustumF(mf, -right, right, -top, top, near, far, scale);
     *perspNorm = 1;
-#else
-    float cot;
-    int i, j;
-
-    guMtxIdentF(mf);
-    fovy *= 3.1415926 / 180.0;
-    cot = cosf(fovy / 2) / sinf(fovy / 2);
-
-    mf[0][0] = cot / aspect;
-    mf[1][1] = cot;
-    mf[2][2] = (near + far) / (near - far);
-    mf[2][3] = -1.0f;
-    mf[3][2] = (2 * near * far) / (near - far);
-    mf[3][3] = 0.0f;
-
-    for (i = 0; i < 4; i++) {
-        for (j = 0; j < 4; j++) {
-            mf[i][j] *= scale;
-        }
-    }
-
-    if (perspNorm != NULL) {
-        if (near + far <= 2.0) {
-            *perspNorm = 0xFFFF;
-        } else {
-            *perspNorm = (u16)((2.0 * 65536.0) / (near + far));
-            if (*perspNorm <= 0) {
-                *perspNorm = 1;
-            }
-        }
-    }
-#endif /* TGR_BOSS_RALLY */
 }
-
-#if !TGR_BOSS_RALLY
-void guPerspective(
-    Mtx *m, u16 *perspNorm, float fovy, float aspect, float near, float far, float scale) {
-    float mf[4][4];
-
-    guPerspectiveF(mf, perspNorm, fovy, aspect, near, far, scale);
-    guMtxF2L(mf, m);
-}
-#endif

@@ -3,7 +3,7 @@
 
 /**
  * @file
- * The tables and constants of the trigonometric routines.
+ * The N64 tables and constants of the trigonometric routines.
  */
 
 #include <ultra64.h>
