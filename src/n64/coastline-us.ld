@@ -32,6 +32,10 @@ SECTIONS
     _bss_start = .;
     /* IDO statics reuse their original BSS areas. */
     OVERLAY 0x802ac400 : NOCROSSREFS {
+        .light_ramp_bss {
+            . = 0x8031b360 - 0x802ac400;
+            *fog.c.obj(.bss.light_ramp)
+        }
         .season_records_bss {
             . = 0x80315f38 - 0x802ac400;
             *racemenu.c.obj(.bss.season_records)

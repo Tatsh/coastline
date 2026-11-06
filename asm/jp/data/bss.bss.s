@@ -1457,25 +1457,7 @@ nonmatching D_8031C483, 0x5
 dlabel D_8031C483
     /* 8031C483 */ .space 0x05
 
-nonmatching g_adwLightRampColors, 0x4
-
-dlabel g_adwLightRampColors
-    /* 8031C488 */ .space 0x04
-
-nonmatching D_8031C48C, 0x4
-
-dlabel D_8031C48C
-    /* 8031C48C */ .space 0x04
-
-nonmatching D_8031C490, 0x4
-
-dlabel D_8031C490
-    /* 8031C490 */ .space 0x04
-
-nonmatching D_8031C494, 0x4
-
-dlabel D_8031C494
-    /* 8031C494 */ .space 0x04
+    /* 8031C488 */ .space 0x10
 
 nonmatching g_dwDmaChunkSize, 0x4
 

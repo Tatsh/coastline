@@ -1240,25 +1240,7 @@ nonmatching D_8031B35B, 0x5
 dlabel D_8031B35B
     /* 8031B35B */ .space 0x05
 
-nonmatching g_adwLightRampColors, 0x4
-
-dlabel g_adwLightRampColors
-    /* 8031B360 */ .space 0x04
-
-nonmatching D_8031B364, 0x4
-
-dlabel D_8031B364
-    /* 8031B364 */ .space 0x04
-
-nonmatching D_8031B368, 0x4
-
-dlabel D_8031B368
-    /* 8031B368 */ .space 0x04
-
-nonmatching D_8031B36C, 0x4
-
-dlabel D_8031B36C
-    /* 8031B36C */ .space 0x04
+    /* 8031B360 */ .space 0x10
 
 nonmatching g_aVehicleModelSlots, 0x50
 

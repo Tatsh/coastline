@@ -15,11 +15,21 @@
 #include "common/gbicommand.h"
 #endif
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && !defined(__sgi)
+u32 g_adwLightRampColors[4] __attribute__((section(".bss.light_ramp")));
+#else
+u32 g_adwLightRampColors[4];
+#endif
+
 /* The y past which the fog of the desert turns grey. */
 #define DESERT_HAZE_Y 1024.0f
 
 /* A colour of a light, as the microcode reads it. */
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+#define LIGHT_COLOR(red, green, blue) ((red) << 24 | (green) << 16 | (blue) << 8)
+#else
 #define LIGHT_COLOR(red, green, blue) ((u32)(red) << 24 | (u32)(green) << 16 | (u32)(blue) << 8)
+#endif
 
 #if TGR_BOSS_RALLY
 f32 g_afViewProjMatrix[4][4];
@@ -31,7 +41,6 @@ CameraFrame *g_pActiveCamera;
 u32 g_dwDirLightColor;
 u32 g_dwAmbientLightColor;
 f32 g_afLightDirection[3];
-u32 g_adwLightRampColors[4];
 u8 g_bDirLightR;
 u8 g_bDirLightG;
 u8 g_bDirLightB;
@@ -257,9 +266,15 @@ void SetupWeatherLights(void) {
         g_bDirLightR = 0xDD;
         g_bDirLightG = 0xEE;
         g_bDirLightB = 0xFF;
+#if TGR_REGION == TGR_REGION_JP
+        g_bAmbientLightR = 0x4C;
+        g_bAmbientLightG = 0x49;
+        g_bAmbientLightB = 0x46;
+#else
         g_bAmbientLightR = 0x3C;
         g_bAmbientLightG = 0x39;
         g_bAmbientLightB = 0x36;
+#endif
     } else if (g_dwWeatherActive) {
         /* The fog blends the lights of a clear day toward its colour by its intensity. */
         g_bDirLightR =
@@ -269,11 +284,11 @@ void SetupWeatherLights(void) {
         g_bDirLightB =
             (((g_bFogB + 204) >> 1) * g_bFogIntensity + (255 - g_bFogIntensity) * 204) / 255;
         g_bAmbientLightR =
-            (g_bFogR * 4 / 5 * g_bFogIntensity + (255 - g_bFogIntensity) * 102) / 255;
+            (((g_bFogR << 2) / 5) * g_bFogIntensity + (255 - g_bFogIntensity) * 102) / 255;
         g_bAmbientLightG =
-            (g_bFogG * 4 / 5 * g_bFogIntensity + (255 - g_bFogIntensity) * 102) / 255;
+            (((g_bFogG << 2) / 5) * g_bFogIntensity + (255 - g_bFogIntensity) * 102) / 255;
         g_bAmbientLightB =
-            (g_bFogB * 4 / 5 * g_bFogIntensity + (255 - g_bFogIntensity) * 119) / 255;
+            (((g_bFogB << 2) / 5) * g_bFogIntensity + (255 - g_bFogIntensity) * 119) / 255;
     } else {
         g_bDirLightR = 255;
         g_bDirLightG = 255;
@@ -283,30 +298,43 @@ void SetupWeatherLights(void) {
         g_bAmbientLightB = 119;
     }
     if (g_dwNightMode) {
-        g_abLightRampR[0] = g_abLightRampG[0] = g_abLightRampB[0] = 0x22;
-        g_abLightRampR[1] = g_abLightRampG[1] = g_abLightRampB[1] = 0x44;
-        g_abLightRampR[2] = g_abLightRampG[2] = g_abLightRampB[2] = 0x66;
-        g_abLightRampR[3] = g_abLightRampG[3] = g_abLightRampB[3] = 0xFF;
+        g_abLightRampR[0] = 0x22;
+        g_abLightRampG[0] = 0x22;
+        g_abLightRampB[0] = 0x22;
+        g_abLightRampR[1] = 0x44;
+        g_abLightRampG[1] = 0x44;
+        g_abLightRampB[1] = 0x44;
+        g_abLightRampR[2] = 0x66;
+        g_abLightRampG[2] = 0x66;
+        g_abLightRampB[2] = 0x66;
+        g_abLightRampR[3] = 0xFF;
+        g_abLightRampG[3] = 0xFF;
+        g_abLightRampB[3] = 0xFF;
     } else if (g_dwSnowMode) {
-        g_abLightRampR[0] = g_abLightRampG[0] = 0xD0;
+        g_abLightRampR[0] = 0xD0;
+        g_abLightRampG[0] = 0xD0;
         g_abLightRampB[0] = 0xF0;
-        g_abLightRampR[1] = g_abLightRampG[1] = 0xE0;
+        g_abLightRampR[1] = 0xE0;
+        g_abLightRampG[1] = 0xE0;
         g_abLightRampB[1] = 0xFF;
-        g_abLightRampR[2] = g_abLightRampG[2] = 0xF0;
+        g_abLightRampR[2] = 0xF0;
+        g_abLightRampG[2] = 0xF0;
         g_abLightRampB[2] = 0xFF;
-        g_abLightRampR[3] = g_abLightRampG[3] = g_abLightRampB[3] = 0xFF;
+        g_abLightRampR[3] = 0xFF;
+        g_abLightRampG[3] = 0xFF;
+        g_abLightRampB[3] = 0xFF;
     } else {
         g_abLightRampR[0] = g_bDirLightR >> 2;
-        g_abLightRampR[1] = g_bDirLightR >> 1;
-        g_abLightRampR[2] = (g_bDirLightR >> 1) + (g_bDirLightR >> 2);
-        g_abLightRampR[3] = g_bDirLightR;
         g_abLightRampG[0] = g_bDirLightG >> 2;
-        g_abLightRampG[1] = g_bDirLightG >> 1;
-        g_abLightRampG[2] = (g_bDirLightG >> 1) + (g_bDirLightG >> 2);
-        g_abLightRampG[3] = g_bDirLightG;
         g_abLightRampB[0] = g_bDirLightB >> 2;
+        g_abLightRampR[1] = g_bDirLightR >> 1;
+        g_abLightRampG[1] = g_bDirLightG >> 1;
         g_abLightRampB[1] = g_bDirLightB >> 1;
+        g_abLightRampR[2] = (g_bDirLightR >> 1) + (g_bDirLightR >> 2);
+        g_abLightRampG[2] = (g_bDirLightG >> 1) + (g_bDirLightG >> 2);
         g_abLightRampB[2] = (g_bDirLightB >> 1) + (g_bDirLightB >> 2);
+        g_abLightRampR[3] = g_bDirLightR;
+        g_abLightRampG[3] = g_bDirLightG;
         g_abLightRampB[3] = g_bDirLightB;
     }
     g_dwAmbientLightColor = LIGHT_COLOR(g_bAmbientLightR, g_bAmbientLightG, g_bAmbientLightB);

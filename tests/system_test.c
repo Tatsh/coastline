@@ -85,7 +85,7 @@ TrackHeader g_LoadedTrack;
 f32 g_afViewProjMatrix[4][4], g_afLightDirection[3];
 u8 g_bDirLightR, g_bDirLightG, g_bDirLightB, g_bAmbientLightR, g_bAmbientLightG, g_bAmbientLightB;
 u8 g_abLightRampR[4], g_abLightRampG[4], g_abLightRampB[4];
-u32 g_dwDirLightColor, g_dwAmbientLightColor, g_adwLightRampColors[4];
+u32 g_dwDirLightColor, g_dwAmbientLightColor;
 
 /* The patches of the display lists. */
 Gfx g_aDlClearCombinePatch[1][2], g_aDlSnowTintCombines[2];
