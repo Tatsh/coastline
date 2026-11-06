@@ -88,7 +88,7 @@ coastline_add_test(
   "${_src}/common/particlesmokerender.c"
   "${_src}/common/particleupdate.c"
   "${_src}/common/tiresmokespawn.c"
-  "${_src}/common/tirespray.c"
+  "${_src}/n64/tirespray.c"
   "${_src}/common/tiresprayrender.c"
   "${_src}/common/vehicleeffects.c")
 coastline_add_test(fade ${_common} "${_src}/common/fadeupdate.c" "${_src}/common/headlight.c"

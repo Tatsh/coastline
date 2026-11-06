@@ -35,6 +35,7 @@ set(_n64_sources
     boot-object.c
     texrect.c
     text.c
+    tirespray.c
     timing.c
     trackinstance.c
     trackrender.c

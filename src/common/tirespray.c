@@ -72,6 +72,7 @@ typedef f32 SprayMoveReal;
          (((velocity) * step) >> SPRAY_STEP_SHIFT) + (shift))
 #endif /* TGR_BOSS_RALLY */
 
+#if TGR_PLATFORM != TGR_PLATFORM_N64
 /** Set the colours of the two drawn vertices of the newest segment of a spray. */
 static inline void SetSprayColors(
     SprayMoveVertex *head, s32 red, s32 green, s32 blue, s32 farRed, s32 farGreen, s32 farBlue) {
@@ -290,6 +291,8 @@ void MoveTireSpray(void) {
     }
 }
 #endif
+
+#endif /* TGR_PLATFORM != TGR_PLATFORM_N64 */
 
 #if TGR_BOSS_RALLY
 void MoveTireSpray(void) {
