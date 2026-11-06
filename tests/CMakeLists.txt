@@ -81,7 +81,7 @@ coastline_add_test(driving ${_vecmath} ${_common} "${_src}/common/frameclear.c" 
 coastline_add_test(
   effects
   ${_vecmath}
-  "${_src}/common/billboardparticles.c"
+  "${_src}/n64/billboard-particles.c"
   "${_src}/common/exhaustspawn.c"
   "${_src}/common/particleexhaustrender.c"
   "${_src}/common/particleinit.c"

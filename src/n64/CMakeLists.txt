@@ -2,6 +2,7 @@
 # assembly of the original into C.
 set(_n64_sources
     audiomix.s
+    billboard-particles.c
     camera.c
     carselect.c
     collidevehicles.c

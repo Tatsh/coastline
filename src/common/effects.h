@@ -249,7 +249,7 @@ void RenderBillboardParticles(
  * @ghidraAddress EUR: 0x8023e644
  * @ghidraAddress JPN: 0x8023e144
  */
-void RenderBillboardParticles(u16 head, s32 red, s32 green, s32 blue);
+void RenderBillboardParticles(s32 head, s32 red, s32 green, s32 blue);
 #endif /* TGR_BOSS_RALLY */
 
 #if TGR_BOSS_RALLY
