@@ -974,6 +974,7 @@ overlappedwindow
 pacboy
 packedvalue
 padbe
+paintinput
 paintshop
 painttex
 pakmenu
@@ -1108,6 +1109,7 @@ rallyoutro
 ralt
 ramarray
 ramreadformat
+randnet
 randtable
 ranlib
 raydone
