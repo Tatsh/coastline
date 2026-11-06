@@ -32,6 +32,9 @@ else()
   add_subdirectory(n64/libultra)
 endif()
 add_subdirectory(common)
+if(TGR_PLATFORM STREQUAL "n64")
+  include(n64/libultra/common-sources.cmake)
+endif()
 
 # Every archive the build produces, for a target that builds all of them at once.
 set(COASTLINE_LIBRARIES coastline_main coastline_common ${COASTLINE_COMMON_LIBULTRA_LIBRARIES}
