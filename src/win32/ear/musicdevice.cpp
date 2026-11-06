@@ -1,4 +1,4 @@
-#include "ear/musicdevice.h"
+#include "musicdevice.h"
 
 #include <new>
 
