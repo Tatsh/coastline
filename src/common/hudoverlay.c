@@ -1,4 +1,5 @@
 #include "common/camera.h"
+#include "common/game.h"
 #include "common/hud.h"
 #include "common/render.h"
 #include "common/screendraw.h"
@@ -9,12 +10,9 @@
 #include <stdio.h>
 
 #include "common/configfile.h"
+#include "common/hudcanvas.h"
 #include "common/settings.h"
 #include "common/strings.h"
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "win32/directplay.h"
-#endif
-#include "common/hudcanvas.h"
 #else
 #include <PR/os_libc.h>
 

@@ -1,25 +1,22 @@
+#include <math.h>
+
 #include "common/camera.h"
 #include "common/cameraprojection.h"
+#include "common/combine.h"
 #include "common/game.h"
 #include "common/hud.h"
+#include "common/hudcanvas.h"
+#include "common/hudquad.h"
 #include "common/pause.h"
 #include "common/race.h"
 #include "common/render.h"
+#include "common/renderbackend.h"
 #include "common/screen.h"
 #include "common/settings.h"
 #include "common/util.h"
 #include "common/vecmath.h"
 #include "common/vehicleaccess.h"
 #include "common/weather.h"
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "win32/directplay.h"
-#endif
-#include <math.h>
-
-#include "common/combine.h"
-#include "common/hudcanvas.h"
-#include "common/hudquad.h"
-#include "common/renderbackend.h"
 
 #if defined(ENABLE_PATCHES)
 #define g_dwConfigFramebufferWidth GetHudCanvasWidth()

@@ -78,6 +78,16 @@ extern s32 g_dwGameMode;
  */
 extern s32 g_dwRaceSessionType;
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * Whether the local network player spectates without a car.
+ *
+ * @ghidraAddress BRD3D: 0x1022af1c
+ * @ghidraAddress BRGlide: 0x10226a4c
+ */
+extern int g_bNetSpectator;
+#endif
+
 /**
  * Set weather flags and, on N64, patch display lists to match.
  *

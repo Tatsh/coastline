@@ -478,12 +478,6 @@ struct NetworkJoinCredentials {
 };
 
 /**
- * @ghidraAddress BRD3D: 0x1022af1c
- * @ghidraAddress BRGlide: 0x10226a4c
- */
-extern int g_bNetSpectator;
-
-/**
  * @ghidraAddress BRD3D: 0x1003c260
  * @ghidraAddress BRGlide: 0x100358f0
  */

@@ -8,12 +8,9 @@
 #if TGR_BOSS_RALLY
 #include <stdio.h>
 
+#include "common/hudcanvas.h"
 #include "common/settings.h"
 #include "common/strings.h"
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "win32/directplay.h"
-#endif
-#include "common/hudcanvas.h"
 #else
 #include <PR/os_libc.h>
 #endif
