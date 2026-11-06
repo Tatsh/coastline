@@ -269,14 +269,6 @@ void RenderDecalPreview3D(void) {
     RenderVehicleModel(g_pActiveCameraVehicle, 0);
 }
 
-/* Point the decal globals at the texels, mask, and size of the texture of a decal slot. */
-static inline void SelectDecalTexels(VehicleModel *model, s32 slot) {
-    g_pDecalTexels = model->textures[model->materialTextures[slot]].image;
-    g_pDecalMask = model->decalMasks[slot];
-    g_bDecalWidth = model->textures[model->materialTextures[slot]].width;
-    g_bDecalHeight = model->textures[model->materialTextures[slot]].height;
-}
-
 /* Set a rectangle of the screen. */
 static inline void SetScreenRect(ScreenRect *rect, s32 x, s32 y, s32 width, s32 height) {
     rect->x = x;
@@ -1224,23 +1216,16 @@ static inline void DrawMenuButtons(s32 buttonY, s32 cancelX) {
     DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
 }
 
-/* Paint every texel of the decal selected, in the color painted with when the choice of the menu
- * is the one given, and in the color of the body otherwise. */
-static inline void ClearDecal(u8 coloredOption) {
-    s32 x, y;
-
-    for (y = 0; y < g_bDecalHeight; y++) {
-        for (x = 0; x < g_bDecalWidth; x++) {
-            if (g_texPaintToolClear.style == coloredOption) {
-                SetPixel4Bit(x, y, g_bDecalColor);
-            } else {
-                SetPixel4Bit(x, y, 0);
-            }
-        }
-    }
-}
-
 void ProcessFillClearMenu(void) {
+    s32 i;
+    u32 slotX, slotY, carX, carY;
+    s32 unusedOption;
+    s32 pixelY;
+    s32 slotIndex;
+    s32 unused[8];
+    s32 buttonY;
+    s32 cancelX;
+    s32 options[CLEAR_OPTIONS][4];
 #if TGR_REGION == TGR_REGION_JP
     /* The two lines of the Japanese text of each option. */
     const char *optionTexts[CLEAR_OPTIONS][2] = {
@@ -1253,70 +1238,61 @@ void ProcessFillClearMenu(void) {
     const char *scopeTexts[2] = {"CLEAR CURRENT DECAL", "CLEAR ALL DECALS"};
     const char *colorTexts[2] = {"TO SELECTED COLOR", "TO BODY COLOR"};
 #endif /* TGR_REGION == TGR_REGION_JP */
-    ScreenRect options[CLEAR_OPTIONS];
-    s32 buttonY = 0x160 - g_texButtonA.height;
-    s32 cancelX = 0x161 - g_texButtonB.width;
-    s32 i, x, slotX, slotY, carX, carY;
-    Sprite *slot;
-    Sprite *car;
-    PlayerInputState *input;
 
-    for (i = 0, x = 0xB9; x < 0x1D1; i++, x += 0x46) {
-        SetScreenRect(&options[i], x, 0xAC, 0x3C, 0x4E);
+    /* IDO reserves these unused locals in the original stack frame. */
+    (void)unusedOption;
+    (void)unused;
+    buttonY = 0x160 - g_texButtonA.height;
+    cancelX = 0x161 - g_texButtonB.width;
+    for (i = 0; i < CLEAR_OPTIONS; i++) {
+        options[i][0] = i * 0x46 + 0xB9;
+        options[i][2] = 0x3C;
+        options[i][3] = 0x4E;
+        options[i][1] = 0xAC;
     }
-    DrawDialogBox(0xA7, 0x78, 0x132, 0xF0);
+    DrawRectBorder(0xA7, 0x78, 0x132, 0xF0, 3, FALSE, 0, 0x80, 0x80, 0x80);
     for (i = 0; i < CLEAR_OPTIONS; i++) {
         if (i == g_texPaintToolClear.style) {
             DrawRectOutline(
-                options[i].x, options[i].y, options[i].width, options[i].height, 1, 0, 0xFF, 0xFF);
+                options[i][0], options[i][1], options[i][2], options[i][3], 1, 0, 0xFF, 0xFF);
         } else {
-            DrawRectOutline(options[i].x,
-                            options[i].y,
-                            options[i].width,
-                            options[i].height,
-                            1,
-                            0x20,
-                            0x20,
-                            0x20);
+            DrawRectOutline(
+                options[i][0], options[i][1], options[i][2], options[i][3], 1, 0x20, 0x20, 0x20);
         }
     }
-    /* The slot is shown at half its size, centred by half its size again. */
-    slot = g_apDecalSlotIcons[g_bDecalSlot];
-    car = &g_texPaintWholeCar;
-    slotX = (options[0].width - (slot->width >> 1)) >> 1;
-    slotY = (options[0].height - (slot->height >> 1)) >> 1;
-    carX = (options[2].width - car->width) >> 1;
-    carY = (options[2].height - car->height) >> 1;
-    DrawSpriteRegion(slot,
-                     options[0].x + slotX,
-                     options[0].y + slotY,
-                     slot->drawWidth >> 1,
-                     slot->drawHeight >> 1,
+    slotX = (options[0][2] - (g_apDecalSlotIcons[g_bDecalSlot]->width >> 1)) >> 1;
+    slotY = (options[0][3] - (g_apDecalSlotIcons[g_bDecalSlot]->height >> 1)) >> 1;
+    carX = (options[2][2] - g_texPaintWholeCar.width) >> 1;
+    carY = (options[2][3] - g_texPaintWholeCar.height) >> 1;
+    DrawSpriteRegion(g_apDecalSlotIcons[g_bDecalSlot],
+                     options[0][0] + slotX,
+                     options[0][1] + slotY,
+                     g_apDecalSlotIcons[g_bDecalSlot]->drawWidth >> 1,
+                     g_apDecalSlotIcons[g_bDecalSlot]->drawHeight >> 1,
                      g_aDecalSwatches[g_bDecalColor].color[0],
                      g_aDecalSwatches[g_bDecalColor].color[1],
                      g_aDecalSwatches[g_bDecalColor].color[2]);
-    DrawSpriteRegion(car,
-                     options[2].x + carX,
-                     options[2].y + carY,
-                     car->drawWidth,
-                     car->drawHeight,
+    DrawSpriteRegion(&g_texPaintWholeCar,
+                     options[2][0] + carX,
+                     options[2][1] + carY,
+                     g_texPaintWholeCar.drawWidth,
+                     g_texPaintWholeCar.drawHeight,
                      g_aDecalSwatches[g_bDecalColor].color[0],
                      g_aDecalSwatches[g_bDecalColor].color[1],
                      g_aDecalSwatches[g_bDecalColor].color[2]);
-    slot = g_apDecalSlotIcons[g_bDecalSlot];
-    DrawSpriteRegion(slot,
-                     options[1].x + slotX,
-                     options[1].y + slotY,
-                     slot->drawWidth >> 1,
-                     slot->drawHeight >> 1,
+    DrawSpriteRegion(g_apDecalSlotIcons[g_bDecalSlot],
+                     options[1][0] + slotX,
+                     options[1][1] + slotY,
+                     g_apDecalSlotIcons[g_bDecalSlot]->drawWidth >> 1,
+                     g_apDecalSlotIcons[g_bDecalSlot]->drawHeight >> 1,
                      g_aDecalSwatches[0].color[0],
                      g_aDecalSwatches[0].color[1],
                      g_aDecalSwatches[0].color[2]);
-    DrawSpriteRegion(car,
-                     options[3].x + carX,
-                     options[3].y + carY,
-                     car->drawWidth,
-                     car->drawHeight,
+    DrawSpriteRegion(&g_texPaintWholeCar,
+                     options[3][0] + carX,
+                     options[3][1] + carY,
+                     g_texPaintWholeCar.drawWidth,
+                     g_texPaintWholeCar.drawHeight,
                      g_aDecalSwatches[0].color[0],
                      g_aDecalSwatches[0].color[1],
                      g_aDecalSwatches[0].color[2]);
@@ -1324,57 +1300,105 @@ void ProcessFillClearMenu(void) {
     SetTextStyleNormal();
     SetTextSize(16);
     DrawText("%rySELECT OPTION", 0x9E, 0x4E);
-    DrawSunkenFrame(0xBA, options[0].y + options[0].height + 12, 0x10C, 0x3A);
+    DrawRectBorder(
+        0xBA, options[0][1] + options[0][3] + 12, 0x10C, 0x3A, 1, TRUE, 1, 0x80, 0x80, 0x80);
 #if TGR_REGION == TGR_REGION_JP
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
     SetTextSize(14);
     DrawText(optionTexts[g_texPaintToolClear.style][0], 0x9E, 0x8E);
     DrawText(optionTexts[g_texPaintToolClear.style][1], 0x9E, 0x9B);
 #else
+#if TGR_REGION == TGR_REGION_EU
+    SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
+    SetTextSize(11);
+#else
     SetTextSize(11);
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
+#endif
     DrawText(scopeTexts[g_texPaintToolClear.style >> 1], 0x9E, 0x8E);
     DrawText(colorTexts[g_texPaintToolClear.style & CLEAR_TO_BODY_COLOR], 0x9E, 0x9B);
 #endif /* TGR_REGION == TGR_REGION_JP */
-    DrawMenuButtons(buttonY, cancelX);
+    SetTextSize(10);
+    SetTextAlignLeft();
+    DrawText("%wwSELECT", (g_texButtonA.width + 0xD9) >> 1, (buttonY + 0x12) >> 1);
+    DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, (buttonY + 0x12) >> 1);
+    DrawTexturedSprite(&g_texButtonA, 0xD3, buttonY);
+    DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
     UpdateStickRepeat(&g_aPlayerInputState[g_bPaintShopPlayer]);
-    input = &g_aPlayerInputState[g_bPaintShopPlayer];
-    if (input->buttons & INPUT_LEFT) {
-        TransferFlags(input, INPUT_LEFT);
+    if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & INPUT_LEFT) {
+        TransferFlags(&g_aPlayerInputState[g_bPaintShopPlayer], INPUT_LEFT);
         if (g_texPaintToolClear.style == 0) {
             g_texPaintToolClear.style = CLEAR_OPTIONS - 1;
         } else {
             g_texPaintToolClear.style--;
         }
-    } else if (input->buttons & INPUT_RIGHT) {
-        TransferFlags(input, INPUT_RIGHT);
+    } else if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & INPUT_RIGHT) {
+        TransferFlags(&g_aPlayerInputState[g_bPaintShopPlayer], INPUT_RIGHT);
         if (g_texPaintToolClear.style == CLEAR_OPTIONS - 1) {
             g_texPaintToolClear.style = 0;
         } else {
             g_texPaintToolClear.style++;
         }
     }
-    input = &g_aPlayerInputState[g_bPaintShopPlayer];
-    if (input->buttons & INPUT_A) {
-        TransferFlags(input, INPUT_A);
+    if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & INPUT_A) {
+        TransferFlags(&g_aPlayerInputState[g_bPaintShopPlayer], INPUT_A);
         switch (g_texPaintToolClear.style) {
         case 0:
         case CLEAR_TO_BODY_COLOR:
             SaveDecalUndo();
-            ClearDecal(0);
+            for (pixelY = 0; pixelY < g_bDecalHeight; pixelY++) {
+                for (i = 0; i < g_bDecalWidth; i++) {
+                    if (g_texPaintToolClear.style == 0) {
+                        SetPixel4Bit(i, pixelY, g_bDecalColor);
+                    } else {
+                        SetPixel4Bit(i, pixelY, 0);
+                    }
+                }
+            }
             g_bPaintTool = g_bPreviousPaintTool;
             break;
         case CLEAR_ALL_DECALS:
         case CLEAR_ALL_DECALS | CLEAR_TO_BODY_COLOR:
             g_bSavedDecalSlot = g_bDecalSlot;
-            /* The palette and the button of the slot are not switched with its texels. */
-            for (i = 0; i < DECAL_SLOTS; i++) {
-                SelectDecalTexels(g_pCurrentVehicleModelData, i);
-                ClearDecal(CLEAR_ALL_DECALS);
+            for (slotIndex = 0; slotIndex < DECAL_SLOTS; slotIndex++) {
+                g_pDecalTexels =
+                    g_pCurrentVehicleModelData
+                        ->textures[g_pCurrentVehicleModelData->materialTextures[slotIndex]]
+                        .image;
+                g_pDecalMask = g_pCurrentVehicleModelData->decalMasks[slotIndex];
+                g_bDecalWidth =
+                    g_pCurrentVehicleModelData
+                        ->textures[g_pCurrentVehicleModelData->materialTextures[slotIndex]]
+                        .width;
+                g_bDecalHeight =
+                    g_pCurrentVehicleModelData
+                        ->textures[g_pCurrentVehicleModelData->materialTextures[slotIndex]]
+                        .height;
+                for (pixelY = 0; pixelY < g_bDecalHeight; pixelY++) {
+                    for (i = 0; i < g_bDecalWidth; i++) {
+                        if (g_texPaintToolClear.style == CLEAR_ALL_DECALS) {
+                            SetPixel4Bit(i, pixelY, g_bDecalColor);
+                        } else {
+                            SetPixel4Bit(i, pixelY, 0);
+                        }
+                    }
+                }
             }
             g_bDecalSlot = g_bSavedDecalSlot;
-            SelectDecalTexels(g_pCurrentVehicleModelData, g_bDecalSlot);
-            /* The undo buffer is saved after the clear. Undo cannot bring the decal back. */
+            g_pDecalTexels =
+                g_pCurrentVehicleModelData
+                    ->textures[g_pCurrentVehicleModelData->materialTextures[g_bDecalSlot]]
+                    .image;
+            g_pDecalMask = g_pCurrentVehicleModelData->decalMasks[g_bDecalSlot];
+            g_bDecalWidth =
+                g_pCurrentVehicleModelData
+                    ->textures[g_pCurrentVehicleModelData->materialTextures[g_bDecalSlot]]
+                    .width;
+            g_bDecalHeight =
+                g_pCurrentVehicleModelData
+                    ->textures[g_pCurrentVehicleModelData->materialTextures[g_bDecalSlot]]
+                    .height;
+            /* Undo cannot restore the decals after clearing every slot. */
             SaveDecalUndo();
             g_texPaintToolClear.style = 0;
             g_bPaintTool = g_bPreviousPaintTool;
@@ -1384,8 +1408,8 @@ void ProcessFillClearMenu(void) {
             g_bPaintTool = g_bPreviousPaintTool;
             break;
         }
-    } else if (input->buttons & INPUT_B) {
-        TransferFlags(input, INPUT_B);
+    } else if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & INPUT_B) {
+        TransferFlags(&g_aPlayerInputState[g_bPaintShopPlayer], INPUT_B);
         g_texPaintToolClear.style = 0;
         g_bPaintTool = g_bPreviousPaintTool;
     }
