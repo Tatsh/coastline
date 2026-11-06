@@ -42,9 +42,6 @@ static inline void WritePrecipitationRectangle(s32 left, s32 top, s32 width, s32
 #define WRITE_PRECIPITATION_TEXEL(dx, dy) (texel[(dy) * RAIN_STREAK_TEXTURE_SIDE + (dx)] = shade)
 #endif /* TGR_BOSS_RALLY */
 
-/* The scale from a particle position back to the units of the world. */
-#define PARTICLE_SCALE 6.10370189e-05f
-
 /* The streak a view's rain draws: where it starts, the steps it takes and how far each moves. */
 #define STREAK_CENTER 32.0f
 #define STREAK_START 28.0f
@@ -62,15 +59,13 @@ static inline void WritePrecipitationRectangle(s32 left, s32 top, s32 width, s32
 #endif
 #define RAIN_PARTICLE_SIZE 128.0f
 
-/* The closest a particle is drawn. */
-#define PARTICLE_NEAR 0.1f
-
 /* The center of the screen in 10.2 fixed point, and the span from it to an edge in x and y. */
 #define SCREEN_CENTER_X 640
 #define SCREEN_CENTER_Y 480
 #define SCREEN_HALF_WIDTH 640.0f
 #define SCREEN_HALF_HEIGHT 480.0f
 
+#if TGR_PLATFORM != TGR_PLATFORM_N64
 void RenderPrecipitationEffect(void) {
     Vec3f fall;
     s16 *particle;
@@ -430,3 +425,4 @@ void RenderPrecipitationEffect(void) {
     gDPPipeSync(gDisplayListPtr++);
     gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
 }
+#endif

@@ -139,6 +139,11 @@ extern s32 g_dwLightningFlashCounter;
 /** The side of the texture of the rain streaks, in texels. */
 #define RAIN_STREAK_TEXTURE_SIDE 64
 
+/** The scale from a particle position back to world units. */
+#define PARTICLE_SCALE 6.10370189e-05f
+/** The nearest distance at which a rain or snow particle is drawn. */
+#define PARTICLE_NEAR 0.1f
+
 #if TGR_BRD3D
 #define RAIN_STREAK_TEXTURE_BYTES_PER_TEXEL 4
 #else

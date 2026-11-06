@@ -5,9 +5,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "common/precipitationrender.c"
 #include "common/precipitationupdate.c"
 #include "common/wind.c"
+#include "n64/precipitationrender.c"
 #include "weather.c"
 
 Gfx *gDisplayListPtr;

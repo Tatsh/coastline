@@ -129,6 +129,7 @@ if(TGR_PLATFORM STREQUAL "n64")
        visibleinstances.c
        vehiclesound.c)
   list(APPEND _common_sources
+       ${CMAKE_SOURCE_DIR}/src/n64/precipitationrender.c
        ${CMAKE_SOURCE_DIR}/src/n64/racersharing.c
        ${CMAKE_SOURCE_DIR}/src/n64/racetick.c)
 endif()
