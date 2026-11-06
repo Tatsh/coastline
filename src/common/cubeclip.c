@@ -353,7 +353,20 @@ static inline s32 ComputeAabbCornerPlaneClipCode(Vec3f *v, s32 mask) {
     return code;
 }
 
+#if !TGR_BOSS_RALLY
+#define CUBE_PAIR(mask, result, value, positive, negative, limit)                                  \
+    if ((mask) & ((positive) | (negative))) {                                                      \
+        sum = (value);                                                                             \
+        if (((mask) & (positive)) && sum > (limit)) {                                              \
+            (result) |= (positive);                                                                \
+        } else if (((mask) & (negative)) && sum < -(limit)) {                                      \
+            (result) |= (negative);                                                                \
+        }                                                                                          \
+    }
+#endif
+
 s32 ClassifyTriangleInUnitCube(Vec3f triangle[3]) {
+#if TGR_BOSS_RALLY
     s32 shared = -1;
     s32 code, i;
 
@@ -390,4 +403,62 @@ s32 ClassifyTriangleInUnitCube(Vec3f triangle[3]) {
         return 0;
     }
     return -1;
+#else
+    f32(*vertices)[3] = (f32(*)[3])triangle;
+    s32 shared, i, code;
+    f32 sum;
+
+    shared = ~0;
+    for (i = 0; i < 3; i++) {
+        s32 faces;
+        f32 *vertex = vertices[i];
+
+        faces = 0;
+        CUBE_PAIR(~0, faces, vertex[0], 0x01, 0x02, .5)
+        CUBE_PAIR(~0, faces, vertex[1], 0x04, 0x08, .5)
+        CUBE_PAIR(~0, faces, vertex[2], 0x10, 0x20, .5)
+        if (faces == 0) {
+            return 1;
+        }
+        shared &= faces;
+    }
+    if (shared != 0) {
+        return 0;
+    }
+
+    shared = ~0;
+    for (i = 0; i < 3; i++) {
+        code = 0;
+        CUBE_PAIR(shared, code, vertices[i][0] + vertices[i][1], 0x001, 0x002, 1.0)
+        CUBE_PAIR(shared, code, vertices[i][0] - vertices[i][1], 0x004, 0x008, 1.0)
+        CUBE_PAIR(shared, code, vertices[i][0] + vertices[i][2], 0x010, 0x020, 1.0)
+        CUBE_PAIR(shared, code, vertices[i][0] - vertices[i][2], 0x040, 0x080, 1.0)
+        CUBE_PAIR(shared, code, vertices[i][1] + vertices[i][2], 0x100, 0x200, 1.0)
+        CUBE_PAIR(shared, code, vertices[i][1] - vertices[i][2], 0x400, 0x800, 1.0)
+        shared = code;
+        if (shared == 0) {
+            break;
+        }
+    }
+    if (shared != 0) {
+        return 0;
+    }
+
+    shared = ~0;
+    for (i = 0; i < 3; i++) {
+        code = 0;
+        CUBE_PAIR(shared, code, vertices[i][0] + vertices[i][1] + vertices[i][2], 0x01, 0x02, 1.5)
+        CUBE_PAIR(shared, code, vertices[i][0] + vertices[i][1] - vertices[i][2], 0x04, 0x08, 1.5)
+        CUBE_PAIR(shared, code, vertices[i][0] - vertices[i][1] + vertices[i][2], 0x10, 0x20, 1.5)
+        CUBE_PAIR(shared, code, vertices[i][0] - vertices[i][1] - vertices[i][2], 0x40, 0x80, 1.5)
+        shared = code;
+        if (shared == 0) {
+            break;
+        }
+    }
+    if (shared != 0) {
+        return 0;
+    }
+    return -1;
+#endif
 }
