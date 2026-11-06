@@ -177,6 +177,41 @@ extern int g_dwHandlingTypeMenuIndex;
 extern int g_dwInNetworkCarSetup;
 #endif /* TGR_PLATFORM == TGR_PLATFORM_SDL */
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * Copy the choices of the menus to adwMenuSelectionBackup of g_GlobalRallyConfig.
+ * @ghidraAddress BRD3D: 0x1003e310
+ * @ghidraAddress BRGlide: 0x10037920
+ */
+void BackupMenuSelections(void);
+
+/**
+ * Show an error of the game in a message box from its second character, and exit when the error is
+ * fatal. Codes above the error-table bound show nothing.
+ * @param nErrorCode The error code.
+ * @ghidraAddress BRD3D: 0x1003e260
+ * @ghidraAddress BRGlide: 0x100378c0
+ */
+void ShowErrorMessage(int nErrorCode);
+
+/**
+ * Restore menu choices, advance unavailable selections, and apply race settings.
+ * @ghidraAddress BRD3D: 0x1003e510
+ * @ghidraAddress BRGlide: 0x10037b20
+ */
+void ResolveRaceSelections(void);
+
+/**
+ * Reset menu selections, championship profiles, and result display values.
+ * @ghidraAddress BRD3D: 0x1003e680
+ * @ghidraAddress BRGlide: 0x10037c90
+ */
+void ResetMenuSelectionsToDefaults(void);
+
+/** Stop and shut down the active menu screen after a season transition. */
+void StopActiveFrontEndForSeasonTransition(void);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

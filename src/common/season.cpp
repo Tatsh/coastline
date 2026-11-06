@@ -19,9 +19,6 @@
 #include "common/settings.h"
 #include "common/trackselect.h"
 #include "common/weather.h"
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "win32/frontend.h"
-#endif
 
 void ProcessSeasonResults(void) {
     if (g_dwGameMode != GAME_MODE_CHAMPIONSHIP || !g_dwSavedResultsValid) {
@@ -266,8 +263,7 @@ bool RestoreSeasonProgressState(void) {
     if (g_SeasonResumeState.season < 4 && g_SeasonResumeState.year < 1) {
         g_dwSeasonFailed = true;
     }
-    g_pActiveMenuScreen->SetRunning(false);
-    g_pActiveMenuScreen->ShutdownFrontEnd(false);
+    StopActiveFrontEndForSeasonTransition();
     return false;
 }
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */

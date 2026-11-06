@@ -126,6 +126,12 @@ int g_dwChosenCar;
 int g_dwInNetworkCarSetup;
 
 MenuScreen *g_pActiveMenuScreen;
+
+void StopActiveFrontEndForSeasonTransition(void) {
+    g_pActiveMenuScreen->SetRunning(false);
+    g_pActiveMenuScreen->ShutdownFrontEnd(false);
+}
+
 void *g_pFrontEndScratchBuffer;
 MenuScreen *g_pRootMenuScreen;
 char g_szSeasonSaveFileName[MAX_PATH];

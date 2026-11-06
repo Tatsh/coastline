@@ -4386,14 +4386,6 @@ void CheckCheatCodeMatches(void);
 extern int g_dwSelectedSessionIndex;
 
 /**
- * Copy the choices of the menus to adwMenuSelectionBackup of g_GlobalRallyConfig.
- *
- * @ghidraAddress BRD3D: 0x1003e310
- * @ghidraAddress BRGlide: 0x10037920
- */
-void BackupMenuSelections(void);
-
-/**
  * The track of the CD the menus show, counted from the first music track.
  *
  * @ghidraAddress BRD3D: 0x10aa2a34
@@ -4487,16 +4479,6 @@ struct ErrorMessage {
 extern ErrorMessage g_ErrorMessageTable[ERROR_MESSAGE_COUNT];
 
 /**
- * Show an error of the game in a message box from its second character, and exit when the error is
- * fatal. A code above #ERROR_MESSAGE_COUNT shows nothing.
- *
- * @param nErrorCode The error.
- * @ghidraAddress BRD3D: 0x1003e260
- * @ghidraAddress BRGlide: 0x100378c0
- */
-void ShowErrorMessage(int nErrorCode);
-
-/**
  * Give a message of the main window to the front end.
  *
  * @param pUnused Not read.
@@ -4583,22 +4565,6 @@ extern int g_adwTransmissionMenuIndexToType[2];
  * @ghidraAddress BRGlide: 0x100387f0
  */
 unsigned IsTrackSelectable(int nTrack);
-
-/**
- * Restore menu choices, advance unavailable selections, and apply race settings.
- *
- * @ghidraAddress BRD3D: 0x1003e510
- * @ghidraAddress BRGlide: 0x10037b20
- */
-void ResolveRaceSelections(void);
-
-/**
- * Reset menu selections, championship profiles, and result display values.
- *
- * @ghidraAddress BRD3D: 0x1003e680
- * @ghidraAddress BRGlide: 0x10037c90
- */
-void ResetMenuSelectionsToDefaults(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10052f50
