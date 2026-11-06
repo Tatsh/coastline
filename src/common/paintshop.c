@@ -1,5 +1,6 @@
 #include "common/paintshop.h"
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,6 +14,15 @@
 #define CAR_PAINT_SET(option, left, right, top, bottom, name)                                      \
     {{NULL, NULL, NULL, NULL}, option, left, right, top, bottom, name}
 #define CAR_PAINT_SET_UNUSED CAR_PAINT_SET(-1, 0, 0, 0, 0, NULL)
+#define RGBA32_PIXEL_SIZE 4
+
+static size_t PaintBitmapByteSize(int width, int height) {
+    if (width <= 0 || height <= 0 ||
+        (size_t)width > SIZE_MAX / RGBA32_PIXEL_SIZE / (size_t)height) {
+        return 0;
+    }
+    return (size_t)width * (size_t)height * RGBA32_PIXEL_SIZE;
+}
 
 CarPaintTextureSet g_CarPaintTextureSets[CAR_PAINT_GROUP_COUNT][CAR_PAINT_SET_COUNT] = {
     {
@@ -524,14 +534,16 @@ void LoadCarPaintTextures(int group, int damageVariants) {
             continue;
         }
         for (int damage = 1; damage < CAR_PAINT_BITMAP_COUNT; damage++) {
-            unsigned allocationSize =
-                (unsigned)g_dwConvertedBitmapHeight * (unsigned)g_dwConvertedBitmapWidth * 4;
+            size_t allocationSize =
+                PaintBitmapByteSize(g_dwConvertedBitmapWidth, g_dwConvertedBitmapHeight);
+            if (allocationSize == 0) {
+                continue;
+            }
             unsigned char *destination = (unsigned char *)malloc(allocationSize);
             set->apBitmaps[damage] = destination;
             if (destination != NULL) {
                 const unsigned char *source = (const unsigned char *)set->apBitmaps[0];
-                unsigned bytes =
-                    (unsigned)g_dwConvertedBitmapHeight * (unsigned)g_dwConvertedBitmapWidth * 4;
+                size_t bytes = allocationSize;
                 while (bytes != 0) {
                     unsigned word;
                     memcpy(&word, source, 4);
@@ -643,9 +655,6 @@ int BlitPaintImageToPixels(const void *pImage,
 
 // The bits of a pixel of the bitmaps the paint shop reads.
 #define PAINT_BITMAP_BITS 24
-// The bytes of a pixel of RGBA 8888.
-#define RGBA32_PIXEL_SIZE 4
-
 void CopyBgr24ToRgba32Flipped(
     unsigned char *pDest, const unsigned char *pSrc, int nWidth, int nHeight, int nStride) {
     const unsigned char *pRow = pSrc + (nHeight - 1) * nStride;
@@ -670,11 +679,16 @@ void CopyBgr24ToRgba32Flipped(
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 void *ConvertBitmap24ToRgba32(const BITMAP *pBitmap) {
     unsigned char *pPixels;
+    size_t byteSize;
 
     if (pBitmap->bmBitsPixel != PAINT_BITMAP_BITS) {
         return nullptr;
     }
-    pPixels = malloc(pBitmap->bmHeight * pBitmap->bmWidth * RGBA32_PIXEL_SIZE);
+    byteSize = PaintBitmapByteSize(pBitmap->bmWidth, pBitmap->bmHeight);
+    if (byteSize == 0) {
+        return nullptr;
+    }
+    pPixels = malloc(byteSize);
     if (pPixels != nullptr) {
         CopyBgr24ToRgba32Flipped(
             pPixels, pBitmap->bmBits, pBitmap->bmWidth, pBitmap->bmHeight, pBitmap->bmWidthBytes);
@@ -696,7 +710,8 @@ void *LoadBitmapFromFile(const char *pszPath) {
     // An SDL surface stores its rows from the top down, and the copy walks them with a negative
     // stride from the top row.
     if (SDL_BITSPERPIXEL(surface->format) == PAINT_BITMAP_BITS) {
-        pPixels = (unsigned char *)malloc(surface->h * surface->w * RGBA32_PIXEL_SIZE);
+        size_t byteSize = PaintBitmapByteSize(surface->w, surface->h);
+        pPixels = byteSize == 0 ? nullptr : (unsigned char *)malloc(byteSize);
         if (pPixels != nullptr) {
             CopyBgr24ToRgba32Flipped(pPixels,
                                      (const unsigned char *)surface->pixels +
