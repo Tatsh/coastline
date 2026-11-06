@@ -149,7 +149,8 @@ def remove(region: str, routines: list[str], *, record: bool = True) -> None:
         source.write_text(replaced, encoding='utf-8')
   sources = asm / 'sources.cmake'
   kept = [line for line in sources.read_text(encoding='utf-8').splitlines()
-          if not line.strip().startswith('asm/') or (ROOT / line.strip().rstrip(')')).exists()]
+          if not line.strip().startswith('src/n64/asm/')
+          or (ROOT / line.strip().rstrip(')')).exists()]
   if not kept[-1].endswith(')'):
     kept[-1] += ')'
   sources.write_text('\n'.join(kept) + '\n', encoding='utf-8')

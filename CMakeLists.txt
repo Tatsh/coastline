@@ -8,6 +8,7 @@ option(TGR_ENABLE_PATCHES
        "Build the changes of this project to the game, such as the build date that names the \
 commit and the time of the build. Off builds the game as released."
        OFF)
+option(ENFORCE_MATCHING "Verify reconstructed Nintendo 64 code with IDO 5.3 during builds." OFF)
 set(TGR_VARIANTS
     ""
     CACHE STRING "Variants to build in one step, as a list of n64-us, n64-jp, n64-eu, win-d3d, \
@@ -21,6 +22,9 @@ set_property(CACHE TGR_PLATFORM PROPERTY STRINGS n64 win sdl)
 string(TOLOWER "${TGR_PLATFORM}" TGR_PLATFORM)
 if(NOT TGR_PLATFORM MATCHES "^(n64|win|sdl)$")
   message(FATAL_ERROR "TGR_PLATFORM must be n64, win, or sdl.")
+endif()
+if(ENFORCE_MATCHING AND NOT TGR_PLATFORM STREQUAL "n64" AND NOT TGR_VARIANTS)
+  message(FATAL_ERROR "ENFORCE_MATCHING requires a Nintendo 64 build.")
 endif()
 set(TGR_REGION
     "us"
@@ -183,5 +187,33 @@ if(NOT BUILD_DOCS_ONLY)
       coastline_layout PRIVATE "${CMAKE_SOURCE_DIR}/src" "${CMAKE_SOURCE_DIR}/src/n64"
                                "${CMAKE_SOURCE_DIR}/src/common/libultra/include"
                                "${CMAKE_SOURCE_DIR}/3rdparty/zlib-1.0.4")
+    if(ENFORCE_MATCHING)
+      find_package(Python3 REQUIRED COMPONENTS Interpreter)
+      set(_matching_ido_root "${CMAKE_SOURCE_DIR}/.wiswa-ci/ido/5.3")
+      if(DEFINED IDO_ROOT)
+        set(_matching_ido_root "${IDO_ROOT}")
+      elseif(DEFINED ENV{IDO_ROOT})
+        set(_matching_ido_root "$ENV{IDO_ROOT}")
+      endif()
+      if(NOT EXISTS "${_matching_ido_root}/cc")
+        message(FATAL_ERROR "ENFORCE_MATCHING needs IDO 5.3 at ${_matching_ido_root}.")
+      endif()
+      if(TGR_N64_GCC)
+        set(_matching_gcc "${TGR_N64_GCC}")
+      else()
+        set(_matching_gcc "${CMAKE_C_COMPILER}")
+      endif()
+      get_filename_component(_matching_bin "${_matching_gcc}" DIRECTORY)
+      get_filename_component(_matching_n64_root "${_matching_bin}" DIRECTORY)
+      add_custom_target(
+        verify_matching ALL
+        COMMAND
+          "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/check_matching.py" --region
+          "${TGR_REGION}" --ido-root "${_matching_ido_root}" --binutils-root
+          "${_matching_n64_root}" --encoder "${COASTLINE_TOOL_ENCODE_TEXT}"
+        DEPENDS archives coastline_tools
+        COMMENT "Verifying ${_tgr_region} ROM code against IDO 5.3"
+        VERBATIM)
+    endif()
   endif()
 endif()

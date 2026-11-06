@@ -6,13 +6,13 @@ options:
   base_path: ../..
   platform: n64
   compiler: IDO
-  asm_path: asm/us
+  asm_path: src/n64/asm/us
   src_path: .wiswa-ci/splat/src
   build_path: build/splat
   ld_script_path: .wiswa-ci/splat/coastline-us.ld
   symbol_addrs_path: [tools/splat/symbol_addrs.us.txt]
-  undefined_funcs_auto_path: asm/us/undefined_funcs.ld
-  undefined_syms_auto_path: asm/us/undefined_syms.ld
+  undefined_funcs_auto_path: src/n64/asm/us/undefined_funcs.ld
+  undefined_syms_auto_path: src/n64/asm/us/undefined_syms.ld
   asset_path: .wiswa-ci/splat/assets
   find_file_boundaries: False
   mips_abi_float_regs: numeric

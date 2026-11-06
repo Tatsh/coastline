@@ -11,7 +11,7 @@ default_install_hook_types:
   - 'pre-push'
   - 'post-checkout'
   - 'post-merge'
-exclude: '^(3rdparty|asm)/'
+exclude: '^3rdparty/|^src/n64/asm/'
 repos:
   - hooks:
       - exclude: "^docs/cppreference\\.tags$|^src/win32/glide/fontatlas\\.c$|yarn-\\d+.*\\.cjs$"

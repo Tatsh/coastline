@@ -32,7 +32,7 @@
       "man/**",
       ".claude/worktrees/**",
       "3rdparty/**",
-      "asm/**",
+      "src/n64/asm/**",
       "docs/*.tags",
       "progress/**",
       "src/sdl/cartridge/*.txt",

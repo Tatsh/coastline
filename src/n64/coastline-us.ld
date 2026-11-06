@@ -1,7 +1,7 @@
 /*
  * Link script of the USA release. The IPL3 copies one MiB from cartridge offset 0x1000 to
  * 0x80200000 and jumps there. ramMain() comes first. Routines not yet converted to C link from the
- * assembly under asm/us. The data follows the text. Every reference to the data is symbolic. Text
+ * assembly under src/n64/asm/us. The data follows the text. Every reference to the data is symbolic. Text
  * and data together must end before the first asset at cartridge offset 0xad400 (RAM 0x802ac400).
  * The BSS is pinned at its original address. The game refers to the BSS by absolute address, and
  * ramMain() clears the BSS through _bss_start and _bss_size.

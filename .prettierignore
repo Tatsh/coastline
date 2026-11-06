@@ -47,10 +47,10 @@
 /3rdparty/
 /CMakeUserPresets.json
 /HANDOFF.md
-/asm/
 /build/
 /dist/
 /session-recover.yaml
+/src/n64/asm/
 /vcpkg_installed/
 __pycache__/
 node_modules/

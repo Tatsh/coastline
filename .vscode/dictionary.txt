@@ -83,6 +83,8 @@ bilerp
 bilinearly
 billboardparticles
 bindir
+binutil
+binutils
 bitsperpixel
 bitspixel
 blendfactor
@@ -287,6 +289,7 @@ decleared
 decodeddisc
 decomp
 decompressobj
+denforce
 denumret
 depfile
 depthbuffer
@@ -1118,6 +1121,7 @@ rdploadsync
 rdppipesync
 rdptilesync
 rdram
+readelf
 readlink
 rearload
 rearsliding
@@ -1129,7 +1133,10 @@ refguid
 reflectiondata
 reflow
 regen
+regimm
 reginfo
+rela
+relocs
 renderbackend
 renderdefaults
 renderinit

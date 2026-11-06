@@ -396,7 +396,7 @@
       ignorePaths+: [
         '.claude/worktrees/**',
         '3rdparty/**',
-        'asm/**',
+        'src/n64/asm/**',
         'docs/*.tags',
         'progress/**',
         'src/sdl/cartridge/*.txt',
@@ -410,7 +410,7 @@
     },
   },
   pre_commit_config+: {
-    exclude: '^(3rdparty|asm)/',
+    exclude: '^3rdparty/|^src/n64/asm/',
     // The tag file of cppreference is an upstream file larger than the default limit, and so are
     // the font atlases of the Glide library as the bytes of the original.
     repos: [
@@ -430,10 +430,10 @@
   },
   gitattributes+: [
     '/3rdparty/** -text linguist-vendored',
-    '/asm/** linguist-generated',
+    '/src/n64/asm/** linguist-generated',
   ],
   // clang-format formats the Objective-C++ of the SDL game.
-  prettierignore+: ['*.mm', '/.claude/worktrees/', '/3rdparty/', '/asm/'],
+  prettierignore+: ['*.mm', '/.claude/worktrees/', '/3rdparty/', '/src/n64/asm/'],
   // The host tools under tools/ need these packages to build. The N64 build does not use vcpkg.
   vcpkg+: {
     dependencies: [

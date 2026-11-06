@@ -50,7 +50,7 @@ set(CMAKE_C_LINK_EXECUTABLE
 # or small data, C++ comments accepted, and the headers of the IDO distribution. The level of the
 # instruction set comes with the flags of each source.
 set(CMAKE_C_FLAGS_INIT
-    "-nostdinc -Dinline= -non_shared -G 0 -Xcpluscomm -Wab,-r4300_mul -I${IDO_ROOT}/../include -D_LANGUAGE_C -DF3DEX_GBI -D_MIPS_SZLONG=32 -D__sgi -DNDEBUG"
+    "-nostdinc -Dinline= -non_shared -G 0 -Xcpluscomm -Wab,-r4300_mul -I${CMAKE_CURRENT_LIST_DIR}/../tools/ido-include -D_LANGUAGE_C -DF3DEX_GBI -D_MIPS_SZLONG=32 -D__sgi -DNDEBUG"
 )
 set(CMAKE_ASM_FLAGS_INIT
     "-march=vr4300 -mtune=vr4300 -mabi=32 -mno-abicalls -fno-pic -ffreestanding -G0")

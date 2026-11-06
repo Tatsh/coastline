@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Regenerate the assembly of one release (us, jp, or eu, default us) after names change in Ghidra.
 # The Ghidra project must be open with the HTTP bridge on port GHIDRA_PORT (default 8090).
-# TGR_ROM is the cartridge image of the release. The routines asm/<region>/converted.txt records
+# TGR_ROM is the cartridge image. The routines src/n64/asm/<region>/converted.txt records
 # are removed again.
 set -euo pipefail
 region="${1:-us}"
@@ -29,10 +29,10 @@ EOF
 "${python}" -I "${root}/tools/splat/symbols.py" --region "${region}" "${exported}" \
   "${TGR_ROM:?Set TGR_ROM to the cartridge image of the release.}" \
   "${root}/tools/splat/symbol_addrs.${region}.txt"
-converted="$(cat "${root}/asm/${region}/converted.txt" 2> /dev/null || true)"
-rm -rf "${root}/asm/${region}"
-mkdir -p "${root}/asm/${region}"
-printf '%s\n' "${converted}" > "${root}/asm/${region}/converted.txt"
+converted="$(cat "${root}/src/n64/asm/${region}/converted.txt" 2> /dev/null || true)"
+rm -rf "${root}/src/n64/asm/${region}"
+mkdir -p "${root}/src/n64/asm/${region}"
+printf '%s\n' "${converted}" > "${root}/src/n64/asm/${region}/converted.txt"
 (cd "${root}/tools/splat" && "${root}/.sbclaude-venv/bin/splat" split "${region}.yaml" > /dev/null)
 rm -rf "${root}/include"
 "${python}" -I "${root}/tools/splat/postprocess.py" "${region}"
