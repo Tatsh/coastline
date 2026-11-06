@@ -125,7 +125,12 @@ z_streamp z;
             break;
           }
           else if ((e & 64) == 0)
+          {
+            if (t->next == (inflate_huft *)0x10001)
+              while (1)
+                ;
             e = (t = t->next + ((uInt)b & inflate_mask[e]))->exop;
+          }
           else
           {
             z->msg = (char*)"invalid distance code";
