@@ -1,4 +1,5 @@
-# The MCI music devices of EAR and the file of MFC they write with. The portable core in src/ear
+# The MCI music devices of EAR and the file of MFC they write with. The portable core in
+# src/common/ear
 # calls these routines and they call back into the core.
 add_library(coastline_win32_ear STATIC exports.def file.cpp musicdevice.cpp musicplayback.cpp)
 target_include_directories(coastline_win32_ear PUBLIC "${CMAKE_SOURCE_DIR}/src")

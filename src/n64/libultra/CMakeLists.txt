@@ -1,12 +1,6 @@
 # libultra as the game links it. Each directory of the SDK builds its own archive from its own list.
 # A routine joins its list when its body moves from the assembly of the original into C. The SDK's
 # file names are retained.
-if(NOT TGR_PLATFORM STREQUAL "n64")
-  # The PC port links only the routines every release shares, in src/common/libultra.
-  set(COASTLINE_LIBULTRA_LIBRARIES "" PARENT_SCOPE)
-  return()
-endif()
-
 add_library(coastline_libultra_options INTERFACE)
 target_link_libraries(coastline_libultra_options INTERFACE coastline_options)
 if(NOT TGR_IDO)

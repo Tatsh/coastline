@@ -15,22 +15,23 @@ if(NOT TGR_IDO)
   target_compile_options(coastline_options INTERFACE -Wall -Wextra -Wno-unused-parameter)
 endif()
 target_include_directories(coastline_options INTERFACE "${CMAKE_SOURCE_DIR}/src"
-                                                     "${CMAKE_SOURCE_DIR}/src/libultra/include")
+                                                     "${CMAKE_SOURCE_DIR}/src/common/libultra/include")
 
 if(TGR_PLATFORM STREQUAL "win")
+  target_include_directories(coastline_options INTERFACE "${CMAKE_SOURCE_DIR}/src/common")
   # The Windows port is C++, and this directory links its libraries, so the language is enabled
   # here.
   target_compile_options(coastline_options INTERFACE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>")
   enable_language(CXX)
-  add_subdirectory(ear)
+  add_subdirectory(common/ear)
   add_subdirectory(win32)
 else()
   # The Nintendo 64 releases find their headers in n64 as well as here.
   target_include_directories(coastline_options INTERFACE "${CMAKE_SOURCE_DIR}/src/n64")
   add_subdirectory(n64)
+  add_subdirectory(n64/libultra)
 endif()
 add_subdirectory(common)
-add_subdirectory(libultra)
 
 # Every archive the build produces, for a target that builds all of them at once.
 set(COASTLINE_LIBRARIES coastline_main coastline_common ${COASTLINE_COMMON_LIBULTRA_LIBRARIES}
@@ -73,7 +74,7 @@ if(TGR_PLATFORM STREQUAL "n64")
   target_include_directories(coastline_zlib PUBLIC "${_zlib}")
   # The game's changes to zlib use the game's state and libultra.
   target_include_directories(coastline_zlib PRIVATE "${CMAKE_SOURCE_DIR}/src"
-                                                    "${CMAKE_SOURCE_DIR}/src/libultra/include")
+                                                    "${CMAKE_SOURCE_DIR}/src/common/libultra/include")
   target_compile_options(coastline_zlib PRIVATE -w)
 else()
   # The PC libraries link the checksum of the vendored zlib 1.0.4 and not its inflate side.

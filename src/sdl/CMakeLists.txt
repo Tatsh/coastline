@@ -97,7 +97,7 @@ if(NOT MSVC)
 endif()
 
 # EAR, the sound engine of the PC release, on SDL audio.
-add_subdirectory("${CMAKE_SOURCE_DIR}/src/ear" "${CMAKE_BINARY_DIR}/src/ear")
+add_subdirectory("${CMAKE_SOURCE_DIR}/src/common/ear" "${CMAKE_BINARY_DIR}/src/common/ear")
 
 # The race engine of the PC release, shared with the Windows libraries. Its libraries take the
 # settings of src/CMakeLists.txt.
@@ -113,7 +113,8 @@ if(WIN32)
   target_compile_definitions(coastline_options INTERFACE _WIN32_WINNT=0x0601 WINVER=0x0601)
 endif()
 target_include_directories(coastline_options INTERFACE "${CMAKE_SOURCE_DIR}/src"
-                                                     "${CMAKE_SOURCE_DIR}/src/libultra/include")
+                                                     "${CMAKE_SOURCE_DIR}/src/common"
+                                                     "${CMAKE_SOURCE_DIR}/src/common/libultra/include")
 add_subdirectory("${CMAKE_SOURCE_DIR}/src/common" "${CMAKE_BINARY_DIR}/src/common")
 
 # The shaders are GLSL, compiled to SPIR-V for Vulkan and translated to MSL for Metal by the host
@@ -281,7 +282,7 @@ add_library(
   "${CMAKE_SOURCE_DIR}/tools/common/assetchain.cpp"
   "${CMAKE_SOURCE_DIR}/tools/common/sha1.cpp")
 target_include_directories(coastline_sdl PRIVATE "${CMAKE_SOURCE_DIR}/src"
-                                                 "${CMAKE_SOURCE_DIR}/src/libultra/include"
+                                                 "${CMAKE_SOURCE_DIR}/src/common/libultra/include"
                                                  "${CMAKE_SOURCE_DIR}/tools/common"
                                                  "${CMAKE_CURRENT_BINARY_DIR}")
 add_dependencies(coastline_sdl coastline_shaders coastline_manifests coastline_icon)

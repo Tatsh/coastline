@@ -14,14 +14,15 @@ set(_gu
     "${_src}/common/libultra/gu/rotate.c"
     "${_src}/common/libultra/gu/scale.c"
     "${_src}/common/libultra/gu/translate.c"
-    "${_src}/libultra/gu/normalize.c")
+    "${_src}/n64/libultra/gu/normalize.c")
 set(_common "${CMAKE_CURRENT_SOURCE_DIR}/stubs/common.c")
 set(_vecmath "${_src}/common/vecmath.c")
 
 # Add a test from NAME_test.c and the sources after it.
 function(coastline_add_test name)
   add_executable(${name}_test ${name}_test.c ${ARGN})
-  target_include_directories(${name}_test PRIVATE "${_src}" "${_src}/n64" "${_src}/libultra/include")
+  target_include_directories(${name}_test PRIVATE "${_src}" "${_src}/n64"
+                                                  "${_src}/common/libultra/include")
   # The routines a test does not reach are dropped, so they need no stubs.
   target_compile_options(${name}_test PRIVATE -w -fno-pie -fsanitize=address,undefined
                                               -ffunction-sections -fdata-sections)
@@ -34,7 +35,7 @@ endfunction()
 
 add_executable(numericguards_test numericguards_test.cpp)
 set_target_properties(numericguards_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
-target_include_directories(numericguards_test PRIVATE "${_src}" "${_src}/libultra/include")
+target_include_directories(numericguards_test PRIVATE "${_src}" "${_src}/common/libultra/include")
 target_compile_options(
   numericguards_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL -UTGR_BOSS_RALLY
                             -DTGR_BOSS_RALLY=1 -ffunction-sections -fdata-sections
@@ -47,7 +48,8 @@ add_test(NAME numericguards COMMAND numericguards_test)
 
 add_executable(safetyguards_test safetyguards_test.cpp)
 set_target_properties(safetyguards_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
-target_include_directories(safetyguards_test PRIVATE "${_src}" "${_src}/libultra/include")
+target_include_directories(safetyguards_test PRIVATE "${_src}" "${_src}/common"
+                                                      "${_src}/common/libultra/include")
 target_compile_definitions(safetyguards_test PRIVATE ENABLE_PATCHES=1 __stdcall=)
 target_compile_options(
   safetyguards_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL -UTGR_BOSS_RALLY
@@ -58,7 +60,7 @@ add_test(NAME safetyguards COMMAND safetyguards_test)
 
 add_executable(ghostinput_test ghostinput_test.cpp)
 set_target_properties(ghostinput_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
-target_include_directories(ghostinput_test PRIVATE "${_src}" "${_src}/libultra/include")
+target_include_directories(ghostinput_test PRIVATE "${_src}" "${_src}/common/libultra/include")
 target_compile_definitions(ghostinput_test PRIVATE ENABLE_PATCHES=1 __stdcall=)
 target_compile_options(
   ghostinput_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL -UTGR_BOSS_RALLY
@@ -208,24 +210,24 @@ coastline_add_test(weather ${_common} "${_src}/common/lightning.c" "${_src}/comm
 
 # The libultra C library, renamed apart from the host's.
 coastline_add_test(bcopy stubs/libc.c)
-coastline_add_test(llcvt "${_src}/libultra/libc/llcvt.c")
+coastline_add_test(llcvt "${_src}/n64/libultra/libc/llcvt.c")
 coastline_add_test(
-  printf "${_src}/libultra/libc/sprintf.c" "${_src}/libultra/libc/xprintf.c"
-  "${_src}/libultra/libc/xlitob.c" "${_src}/libultra/libc/xldtob.c")
-set_source_files_properties("${_src}/libultra/libc/sprintf.c" PROPERTIES COMPILE_DEFINITIONS
+  printf "${_src}/n64/libultra/libc/sprintf.c" "${_src}/n64/libultra/libc/xprintf.c"
+  "${_src}/n64/libultra/libc/xlitob.c" "${_src}/n64/libultra/libc/xldtob.c")
+set_source_files_properties("${_src}/n64/libultra/libc/sprintf.c" PROPERTIES COMPILE_DEFINITIONS
                                                                          sprintf=lu_sprintf)
-coastline_add_test(gu "${_src}/libultra/gu/sinf.c" "${_src}/libultra/gu/cosf.c"
+coastline_add_test(gu "${_src}/n64/libultra/gu/sinf.c" "${_src}/n64/libultra/gu/cosf.c"
                    "${_src}/common/libultra/gu/mtxutil.c" "${_src}/common/libultra/gu/rotate.c"
-                   "${_src}/libultra/gu/normalize.c")
-set_source_files_properties("${_src}/libultra/gu/sinf.c" PROPERTIES COMPILE_DEFINITIONS sinf=gu_sinf)
-set_source_files_properties("${_src}/libultra/gu/cosf.c" PROPERTIES COMPILE_DEFINITIONS cosf=gu_cosf)
+                   "${_src}/n64/libultra/gu/normalize.c")
+set_source_files_properties("${_src}/n64/libultra/gu/sinf.c" PROPERTIES COMPILE_DEFINITIONS sinf=gu_sinf)
+set_source_files_properties("${_src}/n64/libultra/gu/cosf.c" PROPERTIES COMPILE_DEFINITIONS cosf=gu_cosf)
 
 # The directories, the configuration file, and the icon import of the SDL game, which need neither
 # SDL nor a display.
 enable_language(CXX)
 add_executable(trackskidmarks_test trackskidmarks_test.cpp)
 set_target_properties(trackskidmarks_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
-target_include_directories(trackskidmarks_test PRIVATE "${_src}" "${_src}/libultra/include")
+target_include_directories(trackskidmarks_test PRIVATE "${_src}" "${_src}/common/libultra/include")
 target_compile_options(trackskidmarks_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL
                                                 -UTGR_BOSS_RALLY -DTGR_BOSS_RALLY=1
                                                 -ffunction-sections -fdata-sections
@@ -282,7 +284,7 @@ add_executable(sdlmixer_test sdlmixer_test.cpp "${_src}/sdl/music.cpp" "${_src}/
 set_target_properties(sdlmixer_test PROPERTIES C_STANDARD 23 C_STANDARD_REQUIRED YES
                                               CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(sdlmixer_test PRIVATE "${_src}" "${_src}/sdl"
-                                               "${_src}/libultra/include")
+                                               "${_src}/common/libultra/include")
 target_compile_options(sdlmixer_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL
                                            -UTGR_BOSS_RALLY -DTGR_BOSS_RALLY=1 -fsigned-char
                                            -Wall -Wextra -fsanitize=address,undefined)
@@ -320,7 +322,7 @@ set_tests_properties(flactrack PROPERTIES ENVIRONMENT "UBSAN_OPTIONS=halt_on_err
 add_executable(sdltextures_test sdltextures_test.cpp "${_src}/sdl/enginetextures.cpp")
 set_target_properties(sdltextures_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(sdltextures_test PRIVATE "${_src}" "${_src}/sdl"
-                                                  "${_src}/libultra/include")
+                                                  "${_src}/common/libultra/include")
 target_compile_options(sdltextures_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL
                                               -UTGR_BOSS_RALLY -DTGR_BOSS_RALLY=1
                                               -Wall -Wextra -fsanitize=address,undefined)
@@ -332,7 +334,7 @@ set_tests_properties(sdltextures PROPERTIES ENVIRONMENT "UBSAN_OPTIONS=halt_on_e
 add_executable(sdlruntime_test sdlruntime_test.cpp "${_src}/sdl/runtimebuffers.cpp")
 set_target_properties(sdlruntime_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(sdlruntime_test PRIVATE "${_src}" "${_src}/sdl"
-                                                 "${_src}/libultra/include")
+                                                 "${_src}/common/libultra/include")
 target_compile_options(sdlruntime_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL
                                              -UTGR_BOSS_RALLY -DTGR_BOSS_RALLY=1
                                              -Wall -Wextra -fsanitize=address,undefined)
@@ -416,7 +418,7 @@ add_executable(decalcar_test decalcar_test.cpp "${_src}/sdl/decalcar.cpp"
   "${_src}/sdl/gltfdocument.cpp" "${_src}/sdl/indexedimage.cpp" "${_src}/sdl/n64model.cpp")
 set_target_properties(decalcar_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(decalcar_test PRIVATE "${_src}" "${_src}/sdl"
-                                                "${_src}/libultra/include")
+                                                "${_src}/common/libultra/include")
 target_compile_options(decalcar_test PRIVATE -Wall -Wextra -fsanitize=address,undefined)
 target_link_options(decalcar_test PRIVATE -fsanitize=address,undefined)
 target_link_libraries(decalcar_test PRIVATE SDL3::SDL3 nlohmann_json::nlohmann_json fmt::fmt)
@@ -479,7 +481,7 @@ add_test(NAME firstrun COMMAND firstrun_test)
 find_package(ZLIB REQUIRED)
 add_executable(seasonfiles_test seasonfiles_test.cpp "${_src}/common/season.cpp")
 set_target_properties(seasonfiles_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
-target_include_directories(seasonfiles_test PRIVATE "${_src}" "${_src}/libultra/include")
+target_include_directories(seasonfiles_test PRIVATE "${_src}" "${_src}/common/libultra/include")
 target_compile_definitions(seasonfiles_test PRIVATE ENABLE_PATCHES=1)
 target_compile_options(
   seasonfiles_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL -UTGR_BOSS_RALLY
@@ -503,7 +505,7 @@ add_executable(ghostnote_test ghostnote_test.cpp "${_src}/sdl/ghostnote.cpp"
                               "${_src}/common/replay.c" "${_src}/common/rledecompress.c")
 set_target_properties(ghostnote_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(ghostnote_test PRIVATE "${_src}" "${_src}/sdl"
-                                                  "${_src}/libultra/include")
+                                                  "${_src}/common/libultra/include")
 target_compile_options(
   ghostnote_test PRIVATE -UTGR_PLATFORM -DTGR_PLATFORM=TGR_PLATFORM_SDL -UTGR_BOSS_RALLY
                          -DTGR_BOSS_RALLY=1 -fsanitize=address,undefined)
@@ -546,7 +548,7 @@ add_test(NAME controllerpak COMMAND controllerpak_test)
 add_executable(notesafety_test notesafety_test.cpp "${_src}/sdl/notesafety.cpp")
 set_target_properties(notesafety_test PROPERTIES CXX_STANDARD 23 CXX_STANDARD_REQUIRED YES)
 target_include_directories(notesafety_test PRIVATE "${_src}/sdl" "${_src}"
-                              "${_src}/libultra/include")
+                              "${_src}/common/libultra/include")
 target_compile_options(notesafety_test PRIVATE -Wall -Wextra
     -fsanitize=address,undefined,float-cast-overflow -fno-sanitize-recover=all)
 target_link_options(notesafety_test PRIVATE -fsanitize=address,undefined,float-cast-overflow)

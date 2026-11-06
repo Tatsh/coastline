@@ -147,10 +147,10 @@ else()
   # The game code and data of Boss Rally that the Windows libraries and the SDL game share.
   target_sources(
     coastline_common
-    PRIVATE ${CMAKE_SOURCE_DIR}/src/win32/camerasystem.cpp
-            ${CMAKE_SOURCE_DIR}/src/win32/dashboard.c
-            ${CMAKE_SOURCE_DIR}/src/win32/sidegrip.c
-            ${CMAKE_SOURCE_DIR}/src/win32/trackinstance.c
+    PRIVATE camerasystem.cpp
+            dashboard.c
+            sidegrip.c
+            trackinstance.c
             airplanestate.c
             assetfile.cpp
             assetnames.c
@@ -176,7 +176,7 @@ else()
             framebuffer.c
             framebegin.c
             framefields.c
-            ${CMAKE_SOURCE_DIR}/src/win32/frameflush.c
+            frameflush-pc.c
             frametimer.cpp
             gameinit.cpp
             ghost.cpp
@@ -294,8 +294,8 @@ else()
     volumecontrols.c
     wheelrender.c
     PROPERTIES LANGUAGE CXX)
-  set_source_files_properties(${CMAKE_SOURCE_DIR}/src/win32/dashboard.c
-                              ${CMAKE_SOURCE_DIR}/src/win32/trackinstance.c
+  set_source_files_properties(dashboard.c
+                              trackinstance.c
                               PROPERTIES LANGUAGE CXX)
   if(TGR_ENABLE_PATCHES)
     # The helpers of the quality of life changes, which only the patched libraries have.

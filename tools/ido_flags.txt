@@ -1,17 +1,17 @@
 # The IDO 5.3 flags each source of the USA cartridge was compiled with, for matching. Each line is
 # a glob of paths from the root of the tree and the flags. Alternatives separated by | are flags not
 # settled yet, and each is tried. The first line whose glob matches a path applies.
-src/libultra/libc/ll.c -O1 -mips3 -32
-src/libultra/libc/llcvt.c -O1 -mips3 -32
-src/libultra/libc/* -O3
-src/libultra/io/* -O1
+src/n64/libultra/libc/ll.c -O1 -mips3 -32
+src/n64/libultra/libc/llcvt.c -O1 -mips3 -32
+src/n64/libultra/libc/* -O3
+src/n64/libultra/io/* -O1
 src/common/libultra/os/syncprintf.c -O2
 src/common/libultra/os/* -O1
 src/common/libultra/io/* -O1
 src/common/libultra/gu/* -O3
-src/libultra/os/* -O1
-src/libultra/gu/* -O3
-src/libultra/* -O1 | -O2 | -O3 | -O2 -g3 | -O1 -mips1
+src/n64/libultra/os/* -O1
+src/n64/libultra/gu/* -O3
+src/n64/libultra/* -O1 | -O2 | -O3 | -O2 -g3 | -O1 -mips1
 3rdparty/zlib-1.0.4/* -O1 | -O2 | -O3
 src/n64/splash.c -O2 -DCOASTLINE_ROM_POINTERS
 src/n64/racemenu.c -O2 -DCOASTLINE_ROM_POINTERS
