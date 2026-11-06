@@ -73,6 +73,7 @@ s32 CompareRacerProgressAsc(const void *a, const void *b) {
     return 0;
 }
 
+#if TGR_PLATFORM != TGR_PLATFORM_N64
 /* Bring a distance along the route within half a lap. */
 static BOSS_RALLY_INLINE f32 WrapHalfLap(SharingReal rawDistance, f32 lapLength) {
     f32 distance = rawDistance;
@@ -350,3 +351,4 @@ void ManageAiRacerSlots(Vehicle *player) {
         }
     }
 }
+#endif

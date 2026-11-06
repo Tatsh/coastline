@@ -22,7 +22,11 @@ extern "C" {
  */
 s32 CompareRacerProgressAsc(const void *a, const void *b);
 
-/** Assign computer vehicles to racers near a player. */
+/** Assign computer vehicles to racers near a player.
+ * @ghidraAddress USA: 0x80229700
+ * @ghidraAddress EUR: 0x8022aa78
+ * @ghidraAddress JPN: 0x8022a230
+ */
 void ManageAiRacerSlots(Vehicle *player);
 
 #ifdef __cplusplus
