@@ -31,6 +31,8 @@ add_library(
   runtimebuffers.cpp
   shutdown.cpp
   sound.cpp
+  soundinput.cpp
+  soundoutput.cpp
   startup.cpp
   texturescan.cpp
   timer.c

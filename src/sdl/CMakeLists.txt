@@ -268,6 +268,8 @@ add_library(
   raceinput.cpp
   racemusic.cpp
   soundeffects.cpp
+  soundinput.cpp
+  soundoutput.cpp
   raceresults.cpp
   racesession.cpp
   raceview.cpp

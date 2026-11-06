@@ -1284,6 +1284,8 @@ soundbuffer
 soundchannel
 soundeffect
 soundeffects
+soundinput
+soundoutput
 soundpan
 soundptr
 soundsample

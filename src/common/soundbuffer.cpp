@@ -3,31 +3,21 @@
 #include <cstdlib>
 #include <cstring>
 
+#include "common/soundoutput.h"
+#include "common/soundsampleinput.h"
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
-// The headers below need the types of windows.h.
-#include <mmreg.h>
-#include <msacm.h>
-#include <objbase.h>
 
 #include "common/rallyconfig.h"
 #include "common/settings.h"
 #include "common/soundchannel.h"
-#include "win32/app.h"
-#include "win32/earsound.h"
-#include "win32/timer.h"
-#include "win32/wavread.h"
 #else
 #include <SDL3/SDL.h>
 
 #include "common/rallyconfig.h"
 #include "common/settings.h"
 #include "common/soundchannel.h"
-#include "ear/configuration.h"
-#include "ear/error.h"
-#include "ear/initialization.h"
-#include "ear/shutdown.h"
-#include "sdl/soundeffects.h"
 #endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
@@ -57,11 +47,6 @@ unsigned char g_bSfxVolume = 0xff;
 #endif
 
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
-namespace {
-// Whether EAR started for the sound effects, where the Windows libraries test DirectSound.
-bool g_bEarSoundStarted;
-} // namespace
-
 // The results and the levels of DirectSound the sound buffers report and set, in hundredths of a
 // decibel for the levels.
 #define DS_OK 0
@@ -69,8 +54,6 @@ bool g_bEarSoundStarted;
 #define DSBVOLUME_MIN -10000
 #define DSBVOLUME_MAX 0
 #define DSBPAN_CENTER 0
-// The key EAR is validated with, as the PC release passes it.
-#define EAR_VALIDATION_KEY 0x9be9c9
 #endif
 
 // The largest volume.
@@ -304,13 +287,9 @@ HRESULT PlaySoundBuffer(SoundBufferNode *pNode, int bLooping) {
     return RestartOrPlaySoundBuffer(pNode);
 }
 
-// Whether sound effects play through DirectSound.
+// Whether the sound output can play sound effects.
 static inline bool IsDirectSoundActive(void) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-    return g_bSoundEnabledIni && g_pDirectSound != nullptr && g_dwDirectSoundRefCount != 0;
-#else
-    return g_bSoundEnabledIni && g_bEarSoundStarted && g_dwDirectSoundRefCount != 0;
-#endif
+    return g_bSoundEnabledIni && IsPlatformSoundOutputActive() && g_dwDirectSoundRefCount != 0;
 }
 
 bool IsSoundChannelPlaying(int nChannel) {
@@ -621,50 +600,6 @@ bool PlayLoopedSoundVoiceWithStereo(int nSample, int nVoice, DWORD dwLevels) {
     return SetStereoAndPlaySoundChannel(nSample, nVoice * 2, dwLevels, true);
 }
 
-#if TGR_PLATFORM != TGR_PLATFORM_WIN
-// Read a wave file into the sample and the format of a node, as WaveLoadFile() of Windows does,
-// with the samples in a format the mixer plays.
-static inline int LoadWaveSamples(const char *pszPath, SoundBufferNode *pNode, int sample) {
-    SDL_AudioSpec spec;
-    Uint8 *pData = nullptr;
-    Uint32 dwBytes = 0;
-    if (!coastline::SoundEffects::LoadRaceWave(pszPath, sample, &spec, &pData, &dwBytes)) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "%s cannot be read: %s", pszPath, SDL_GetError());
-        return 1;
-    }
-    if (spec.format != SDL_AUDIO_U8 && spec.format != SDL_AUDIO_S16LE) {
-        SDL_AudioSpec target = {SDL_AUDIO_S16LE, spec.channels, spec.freq};
-        Uint8 *pConverted = nullptr;
-        int nConverted = 0;
-        bool bConverted = SDL_ConvertAudioSamples(
-            &spec, pData, static_cast<int>(dwBytes), &target, &pConverted, &nConverted);
-        SDL_free(pData);
-        if (!bConverted) {
-            SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO, "%s cannot be played: %s", pszPath, SDL_GetError());
-            return 1;
-        }
-        spec = target;
-        pData = pConverted;
-        dwBytes = static_cast<Uint32>(nConverted);
-    }
-    auto *pFormat = static_cast<EarWaveFormat *>(SDL_calloc(1, sizeof(EarWaveFormat)));
-    if (pFormat == nullptr) {
-        SDL_free(pData);
-        return 1;
-    }
-    pFormat->wFormatTag = 1;
-    pFormat->nChannels = static_cast<WORD>(spec.channels);
-    pFormat->nSamplesPerSec = static_cast<DWORD>(spec.freq);
-    pFormat->wBitsPerSample = static_cast<WORD>(SDL_AUDIO_BITSIZE(spec.format));
-    pFormat->nBlockAlign = static_cast<WORD>(spec.channels * pFormat->wBitsPerSample / 8);
-    pFormat->nAvgBytesPerSec = pFormat->nSamplesPerSec * pFormat->nBlockAlign;
-    pNode->pWaveFormat = pFormat;
-    pNode->pSampleData = pData;
-    pNode->dwSampleSize = dwBytes;
-    return 0;
-}
-#endif
-
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 SoundBufferNode *LoadAudioFile(const char *pszPath, int sample) {
 #else
@@ -673,7 +608,6 @@ SoundBufferNode *LoadAudioFile(const char *pszPath) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
     SoundBufferNode *pNode = static_cast<SoundBufferNode *>(
         GlobalLock(GlobalAlloc(GMEM_ZEROINIT, sizeof(SoundBufferNode))));
-    DWORD dwSamples;
 #else
     SoundBufferNode *pNode = static_cast<SoundBufferNode *>(SDL_calloc(1, sizeof(SoundBufferNode)));
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
@@ -687,14 +621,14 @@ SoundBufferNode *LoadAudioFile(const char *pszPath) {
     pNode->pBuffer = nullptr;
     pNode->bStickyFocus = false;
     strcpy(pNode->szPath, pszPath);
-    if (
+    if (LoadSoundBufferSample(pszPath,
+                              pNode,
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-        WaveLoadFile(
-            pszPath, &pNode->dwSampleSize, &dwSamples, &pNode->pWaveFormat, &pNode->pSampleData) !=
-            0 ||
+                              -1
 #else
-        LoadWaveSamples(pszPath, pNode, sample) != 0 ||
+                              sample
 #endif
+                              ) != 0 ||
         CreateDirectSoundBufferFromSample(pNode) != DS_OK ||
         AppendSoundBufferToList(&g_SoundBufferListHead, pNode) != 0) {
         ReleaseSoundBuffer(pNode);
@@ -719,11 +653,7 @@ SoundBufferNode *LoadAudioFile(const char *pszPath) {
 }
 
 bool MuteAllActiveSoundChannels(void) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-    if (!g_bSoundEnabledIni || g_pDirectSound == nullptr || g_dwDirectSoundRefCount == 0) {
-#else
-    if (!g_bSoundEnabledIni || !g_bEarSoundStarted || g_dwDirectSoundRefCount == 0) {
-#endif
+    if (!IsDirectSoundActive()) {
         return true;
     }
     for (SoundBufferNode *pNode : g_apSoundChannelBuffer) {
@@ -772,12 +702,7 @@ bool LoadSfxWaveVariants(int nEffect) {
     char szPath[SAMPLE_PATH_SIZE];
     bool bLoaded = true;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-    if (!g_bSoundEnabledIni || g_pDirectSound == nullptr || g_dwDirectSoundRefCount == 0 ||
-#else
-    if (!g_bSoundEnabledIni || !g_bEarSoundStarted || g_dwDirectSoundRefCount == 0 ||
-#endif
-        !g_SoundBankIndexTableA[0].anChannels[nChannel]) {
+    if (!IsDirectSoundActive() || !g_SoundBankIndexTableA[0].anChannels[nChannel]) {
         g_aSoundChannelBuffers[0].channelBuffers[nChannel].buffer = nullptr;
         g_SfxWaveVariantTable[nChannel].buffer = nullptr;
         g_LoopingSoundTable[nChannel].buffer = nullptr;
@@ -806,11 +731,7 @@ bool LoadSoundSet(int nSet) {
     char szPath[SAMPLE_PATH_SIZE];
     bool bLoaded = true;
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-    if (!g_bSoundEnabledIni || g_pDirectSound == nullptr || g_dwDirectSoundRefCount == 0) {
-#else
-    if (!g_bSoundEnabledIni || !g_bEarSoundStarted || g_dwDirectSoundRefCount == 0) {
-#endif
+    if (!IsDirectSoundActive()) {
         return true;
     }
     if (nSet == SOUND_SET_FRONT_END) {
@@ -865,11 +786,7 @@ bool LoadSoundSet(int nSet) {
 }
 
 bool ResetAudioSubsystem(void) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-    if (!g_bSoundEnabledIni || g_pDirectSound == nullptr || g_dwDirectSoundRefCount == 0) {
-#else
-    if (!g_bSoundEnabledIni || !g_bEarSoundStarted || g_dwDirectSoundRefCount == 0) {
-#endif
+    if (!IsDirectSoundActive()) {
         return true;
     }
     StopAllSoundBuffersInList(&g_SoundBufferListHead);
@@ -883,84 +800,13 @@ bool ResetAudioSubsystem(void) {
     return true;
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-// The wave format of the primary buffer.
-#define PRIMARY_SAMPLE_RATE 22050
-#define PRIMARY_CHANNEL_COUNT 2
-#define PRIMARY_BITS_PER_SAMPLE 16
-#endif
-
 bool InitializeDirectSound(void) {
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-    DWORD dwFormatSize;
-    DSBUFFERDESC desc;
-    HRESULT hResult;
-#endif
-
     if (!g_bSoundEnabledIni || ++g_dwDirectSoundRefCount != 1) {
         return true;
     }
     memset(g_apSoundChannelBuffer, 0, sizeof(g_apSoundChannelBuffer));
     ResetSoundBankTables();
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-    if (acmMetrics(nullptr, ACM_METRIC_MAX_SIZE_FORMAT, &dwFormatSize) != 0) {
-        return false;
-    }
-    g_pDirectSoundWaveFormat =
-        static_cast<WAVEFORMATEX *>(GlobalLock(GlobalAlloc(GMEM_ZEROINIT, dwFormatSize)));
-    if (g_pDirectSoundWaveFormat == nullptr) {
-        return false;
-    }
-    g_pDirectSoundWaveFormat->wFormatTag = WAVE_FORMAT_PCM;
-    g_pDirectSoundWaveFormat->nChannels = PRIMARY_CHANNEL_COUNT;
-    g_pDirectSoundWaveFormat->nSamplesPerSec = PRIMARY_SAMPLE_RATE;
-    g_pDirectSoundWaveFormat->nAvgBytesPerSec =
-        PRIMARY_SAMPLE_RATE * PRIMARY_CHANNEL_COUNT * PRIMARY_BITS_PER_SAMPLE / 8;
-    g_pDirectSoundWaveFormat->nBlockAlign = PRIMARY_CHANNEL_COUNT * PRIMARY_BITS_PER_SAMPLE / 8;
-    g_pDirectSoundWaveFormat->wBitsPerSample = PRIMARY_BITS_PER_SAMPLE;
-    g_pDirectSoundWaveFormat->cbSize = 0;
-
-    hResult = CoCreateInstance(CLSID_DirectSound,
-                               nullptr,
-                               CLSCTX_INPROC_SERVER,
-                               IID_IDirectSound,
-                               reinterpret_cast<void **>(&g_pDirectSound));
-    // A DirectSound that is created as null counts as a success.
-    if (FAILED(hResult) || g_pDirectSound == nullptr) {
-        return SUCCEEDED(hResult);
-    }
-    hResult = g_pDirectSound->Initialize(nullptr);
-    if (SUCCEEDED(hResult)) {
-        hResult = g_pDirectSound->SetCooperativeLevel(g_hMainWindow, DSSCL_PRIORITY);
-    }
-    if (SUCCEEDED(hResult)) {
-        memset(&desc, 0, sizeof(desc));
-        desc.dwSize = sizeof(desc);
-        desc.dwFlags = DSBCAPS_PRIMARYBUFFER;
-        hResult = g_pDirectSound->CreateSoundBuffer(&desc, &g_pDirectSoundPrimaryBuffer, nullptr);
-    }
-    if (SUCCEEDED(hResult)) {
-        hResult = g_pDirectSoundPrimaryBuffer->Play(0, 0, DSBPLAY_LOOPING);
-        if (SUCCEEDED(hResult)) {
-            return true;
-        }
-        g_pDirectSoundPrimaryBuffer->Release();
-        g_pDirectSoundPrimaryBuffer = nullptr;
-    }
-    g_pDirectSound->Release();
-    g_pDirectSound = nullptr;
-    return false;
-#else
-    // The mixer of EAR plays the buffers, and EAR mixes at the format of the primary buffer.
-    EAR_DLL_AAA_Validate(EAR_VALIDATION_KEY);
-    g_bEarSoundStarted = EAR_DLL_InitializeEar(0) != 0;
-    if (!g_bEarSoundStarted) {
-        SDL_LogWarn(SDL_LOG_CATEGORY_AUDIO,
-                    "The sound effects are silent. EAR did not start, error %u.",
-                    EAR_DLL_GetLastError());
-    }
-    return g_bEarSoundStarted;
-#endif
+    return InitializePlatformSoundOutput();
 }
 
 bool ShutdownDirectSound(void) {
@@ -968,26 +814,7 @@ bool ShutdownDirectSound(void) {
         return true;
     }
     ResetAudioSubsystem();
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-    if (g_pDirectSoundPrimaryBuffer != nullptr) {
-        g_pDirectSoundPrimaryBuffer->Stop();
-        g_pDirectSoundPrimaryBuffer->Release();
-        g_pDirectSoundPrimaryBuffer = nullptr;
-    }
-    if (g_pDirectSound != nullptr) {
-        g_pDirectSound->Release();
-        g_pDirectSound = nullptr;
-    }
-    if (g_pDirectSoundWaveFormat != nullptr) {
-        FreeLockedGlobalMemory(g_pDirectSoundWaveFormat);
-        g_pDirectSoundWaveFormat = nullptr;
-    }
-#else
-    if (g_bEarSoundStarted) {
-        EAR_DLL_ShutDownEar();
-        g_bEarSoundStarted = false;
-    }
-#endif
+    ShutdownPlatformSoundOutput();
     if (g_SoundBufferListHead.pSampleData != nullptr) {
         FreeLockedGlobalMemory(g_SoundBufferListHead.pSampleData);
         g_SoundBufferListHead.pSampleData = nullptr;
