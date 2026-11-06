@@ -65,6 +65,8 @@ enddlabel g_aRspBootUcode
 nonmatching g_aGspUcodeText
 
 .balign 8
+.globl g_aRspBootUcodeEnd
+g_aRspBootUcodeEnd:
 dlabel g_aGspUcodeText
     /* 71AA0 80270AA0 090005D6 */ .word 0x090005D6
     /* 71AA4 80270AA4 201D0110 */ .word 0x201D0110

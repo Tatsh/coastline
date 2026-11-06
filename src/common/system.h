@@ -978,6 +978,15 @@ extern u64 g_aRspBootUcode[];
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
 /**
+ * The end of the RSP boot microcode, at the start of the graphics microcode.
+ *
+ * @ghidraAddress USA: 0x8026ead0
+ * @ghidraAddress EUR: 0x80270aa0
+ * @ghidraAddress JPN: 0x80270550
+ */
+extern u64 g_aRspBootUcodeEnd[];
+
+/**
  * @ghidraAddress USA: 0x8026ead0
  * @ghidraAddress EUR: 0x80270aa0
  * @ghidraAddress JPN: 0x80270550
@@ -1006,7 +1015,7 @@ extern u64 g_abRspUcodeData[];
 extern u8 g_abRspDramStackBuffer[];
 
 /**
- * The buffer the RDP commands go to, and its end.
+ * The start and end of the buffer the RDP commands go to.
  *
  * @ghidraAddress USA: 0x8028a860
  * @ghidraAddress EUR: 0x8028ca60
@@ -1015,18 +1024,7 @@ extern u8 g_abRspDramStackBuffer[];
  * @ghidraAddress BRGlide: 0x100a9eb8
  */
 #if !TGR_BOSS_RALLY
-extern u64 *g_pRdpOutputBuffer;
-#endif
-
-/**
- * @ghidraAddress USA: 0x8028a864
- * @ghidraAddress EUR: 0x8028ca64
- * @ghidraAddress JPN: 0x8028c534
- * @ghidraAddress BRD3D: 0x100aa72c
- * @ghidraAddress BRGlide: 0x100a9ebc
- */
-#if !TGR_BOSS_RALLY
-extern u64 *g_pRdpOutputBufferEnd;
+extern u64 *g_pRdpOutputBuffer[2];
 #endif
 
 /**

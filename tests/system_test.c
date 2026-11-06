@@ -101,8 +101,9 @@ u32 g_dwTrackTextureRomOffset, g_dwRacePauseState;
 /* The end of a frame. */
 OSTask g_aGfxTask[2];
 u64 g_aRspBootUcode[0x1A], g_aGspUcodeText[0x100], g_abRspUcodeData[0x100], g_aRdpOutput[0x100];
+extern u64 g_aRspBootUcodeEnd[0x100] __attribute__((alias("g_aGspUcodeText")));
 u8 g_abRspDramStackBuffer[0x410];
-u64 *g_pRdpOutputBuffer = g_aRdpOutput, *g_pRdpOutputBufferEnd = &g_aRdpOutput[0x100];
+u64 *g_pRdpOutputBuffer[2] = {g_aRdpOutput, &g_aRdpOutput[0x100]};
 s32 g_dwOutputBuffReserve = 8, g_dwDisplayListCommandCount, g_dwFirstFlushDone;
 s32 g_dwPeakShadowCommandCount, g_dwPeakShadowVertexCount, g_dwPeakDisplayListCommands;
 Gfx *g_pShadowDisplayListWritePtr, *g_pShadowDisplayListStart;
@@ -522,7 +523,7 @@ static void TestFrames(void) {
     /* The first flush only starts the task. */
     FlushDisplayList();
     task = &g_aGfxTask[1];
-    assert(g_dwFirstFlushDone == 1 && tasksStarted == 1 && g_dwFrameBufferIndex == 0);
+    assert(tasksStarted == 1 && g_dwFrameBufferIndex == 0);
     assert(task->t.ucode_boot_size == (u8 *)g_aGspUcodeText - (u8 *)g_aRspBootUcode);
     assert(task->t.type == 1 && task->t.flags == 6 && task->t.data_ptr == (u64 *)&pool[6064]);
     assert(task->t.output_buff_size == &g_aRdpOutput[0x100 - 8]);

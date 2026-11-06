@@ -173,7 +173,7 @@ else()
             framebuffer.c
             framebegin.c
             framefields.c
-            frameflush.c
+            ${CMAKE_SOURCE_DIR}/src/win32/frameflush.c
             frametimer.cpp
             gameinit.cpp
             ghost.cpp
