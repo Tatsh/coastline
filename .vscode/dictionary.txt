@@ -122,6 +122,7 @@ camerachase
 cameracollision
 cameraprojection
 camerarender
+camerasystem
 camframe
 cammon
 campoints

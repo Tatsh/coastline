@@ -144,7 +144,8 @@ else()
   # The game code and data of Boss Rally that the Windows libraries and the SDL game share.
   target_sources(
     coastline_common
-    PRIVATE ${CMAKE_SOURCE_DIR}/src/win32/dashboard.c
+    PRIVATE ${CMAKE_SOURCE_DIR}/src/win32/camerasystem.cpp
+            ${CMAKE_SOURCE_DIR}/src/win32/dashboard.c
             ${CMAKE_SOURCE_DIR}/src/win32/sidegrip.c
             ${CMAKE_SOURCE_DIR}/src/win32/trackinstance.c
             airplanestate.c

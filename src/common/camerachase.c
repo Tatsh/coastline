@@ -259,37 +259,6 @@ void InitCameraForVehicle(Vehicle *vehicle) {
     VEHICLE_SET(vehicle, LookAhead, START_LOOK_AHEAD);
 }
 
-/* The smoothing of the chase camera. */
-#define CHASE_SPEED_FLOOR 2.5f
-#define CHASE_SPEED_MAX 31.4159279f
-#define CHASE_LAG_SCALE 0.3f
-#define CHASE_KEEP 0.95f
-#define CHASE_NEW 0.05f
-#define CHASE_PULL_SCALE 18.1818180f
-#define CHASE_LAG_NUMERATOR 0.15f
-#define CHASE_LAG_NUMERATOR_REPLAY 0.5f
-#define CHASE_THRESHOLD 0.07f
-#define CHASE_SPEED_COEFF 0.00954929646f
-
-/* How the pull of the track on the chase camera grows and decays. */
-#define PULL_MIN 0.02f
-#define PULL_MAX 0.055f
-#define PULL_STEP 0.01f
-#define PULL_DEFAULT 0.05f
-#define PULL_DECAY 0.005f
-
-/* The frames of the timers a collision in a replay starts. */
-#define REPLAY_HOLD_FRAMES 30
-#define REPLAY_SWITCH_FRAMES 60
-
-/* The cockpit camera looks along a point this far behind the vehicle, reversed. */
-#define COCKPIT_AIM_DISTANCE -20.0f
-#if TGR_BOSS_RALLY
-#define BUMPER_FORWARD 0.6f
-#else
-#define BUMPER_FORWARD 0.5f
-#endif
-
 /* The zoom of the trackside camera with its distance from the vehicle. */
 #define TRACKSIDE_NEAR 1.0f
 #define TRACKSIDE_FAR 101.0f
@@ -299,27 +268,6 @@ void InitCameraForVehicle(Vehicle *vehicle) {
 #define TRACKSIDE_BIAS 0.7f
 #define TRACKSIDE_MID 51.0f
 #define TRACKSIDE_DISTANCE_SCALE 0.004f
-
-#if TGR_BOSS_RALLY
-#define COCKPIT_POSITION(axis)                                                                     \
-    (((long double)model->cockpitUp * VEHICLE_GET(vehicle, Frame).up.axis +                        \
-      (long double)model->cockpitForward * VEHICLE_GET(vehicle, Frame).forward.axis) +             \
-     VEHICLE_GET(vehicle, Frame).position.axis)
-#define MIRROR_POSITION(axis)                                                                      \
-    (((long double)model->cockpitUp * VEHICLE_GET(vehicle, Frame).up.axis -                        \
-      ((long double)VEHICLE_GET(vehicle, Frame).forward.axis * model->mirrorForward) * -2.0f) +    \
-     VEHICLE_GET(vehicle, Frame).position.axis)
-#else
-#define COCKPIT_POSITION(axis)                                                                     \
-    (model->cockpitUp * VEHICLE_GET(vehicle, Frame).up.axis +                                      \
-     (VEHICLE_GET(vehicle, Frame).position.axis +                                                  \
-      VEHICLE_GET(vehicle, Frame).forward.axis * model->cockpitForward))
-#define MIRROR_POSITION(axis)                                                                      \
-    (model->cockpitUp * VEHICLE_GET(vehicle, Frame).up.axis +                                      \
-     (VEHICLE_GET(vehicle, Frame).position.axis +                                                  \
-      (VEHICLE_GET(vehicle, Frame).forward.axis * model->mirrorForward +                           \
-       VEHICLE_GET(vehicle, Frame).forward.axis * model->mirrorForward)))
-#endif /* TGR_BOSS_RALLY */
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64 && (TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU)
 void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera) {
@@ -355,239 +303,202 @@ void UpdateCameraViewBasisAndFov(Vehicle *vehicle, CameraFrame *camera) {
 }
 #endif /* TGR_PLATFORM_N64 && (TGR_REGION_JP || TGR_REGION_EU) */
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+#define CHASE_POSITION vehicle->cameras[VEHICLE_CAMERA_CHASE].position
+
 void UpdateCameraSystem(Vehicle *vehicle) {
     f32 previousCockpit[3];
-    Vec3f target;
-    VehicleModel *model;
-    f32 lagSource, lag, lagNumerator, pull;
-#if TGR_BOSS_RALLY
-    long double speed, chaseTerm, lagTerm, smoothedLag, adjusted, zoom;
+    f32 velocityLength;
+    f32 lag;
+    f32 numerator;
+    s32 unusedBeforeCockpit[3];
+    Vec3f previousChase;
+    s32 unusedAfterCockpit[2];
+    f32 speed;
+    CameraFrame *camera;
+    Vec3f *side;
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+    s32 unusedCamera[10];
+#else
+    Vec3f *up;
+    Vec3f *look;
+    s32 unusedCamera[10];
     f32 distance;
-#else
-    f32 speed, chaseTerm, lagTerm;
+    s32 unusedDistance[2];
+#endif
+
+    (void)unusedBeforeCockpit;
+    (void)unusedAfterCockpit;
+    (void)unusedCamera;
 #if TGR_REGION == TGR_REGION_US
-    f32 distance, zoom;
+    (void)unusedDistance;
 #endif
-#endif
-
-    /* The smoothed speed and lag of the chase camera. */
-    target.x = VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position.x;
-    target.y = VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position.y;
-    target.z = VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position.z;
-    speed = (f32)Vec3fLength(&VEHICLE_GET(vehicle, Body).state.angularVelocity);
-    lagSource = Vec3fLength(&VEHICLE_GET(vehicle, Body).state.velocity) * CHASE_LAG_SCALE;
-    lag = lagSource;
-    speed = speed > CHASE_SPEED_FLOOR ? speed - CHASE_SPEED_FLOOR : 0.0f;
-    if (CHASE_SPEED_MAX < speed) {
-        speed = CHASE_SPEED_MAX;
-    }
-    if (CHASE_SPEED_MAX < lagSource) {
-        lag = CHASE_SPEED_MAX;
-    }
-    if (VEHICLE_GET(vehicle, ChaseSpeed) < speed) {
-        VEHICLE_SET(vehicle, ChaseSpeed, speed);
+    previousChase.x = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.x;
+    previousChase.y = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.y;
+    previousChase.z = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.z;
+    speed = Vec3fLength(&vehicle->body.state.angularVelocity);
+    velocityLength = Vec3fLength(&vehicle->body.state.velocity);
+    lag = velocityLength * 0.3f;
+    if (speed > 2.5f) {
+        speed = speed - 2.5f;
     } else {
-#if TGR_BOSS_RALLY
-        VEHICLE_SET(vehicle,
-                    ChaseSpeed,
-                    (long double)VEHICLE_GET(vehicle, ChaseSpeed) * CHASE_KEEP + speed * CHASE_NEW);
-#else
-        vehicle->chaseSpeed = vehicle->chaseSpeed * CHASE_KEEP + speed * CHASE_NEW;
-#endif
+        speed = 0.0f;
     }
-#if TGR_BOSS_RALLY
-    smoothedLag =
-        (long double)VEHICLE_GET(vehicle, ChaseLag) * CHASE_KEEP + (long double)lag * CHASE_NEW;
-    VEHICLE_SET(vehicle, ChaseLag, (f32)smoothedLag);
-#else
-    vehicle->chaseLag = vehicle->chaseLag * CHASE_KEEP + lag * CHASE_NEW;
-#endif
-    pull = VEHICLE_GET(vehicle, CollisionPull);
-    VEHICLE_GET(vehicle, Cameras)
-    [VEHICLE_CAMERA_CHASE].position.x = VEHICLE_GET(vehicle, ChasePosition).x;
-    VEHICLE_GET(vehicle, Cameras)
-    [VEHICLE_CAMERA_CHASE].position.y = VEHICLE_GET(vehicle, ChasePosition).y;
-    VEHICLE_GET(vehicle, Cameras)
-    [VEHICLE_CAMERA_CHASE].position.z = VEHICLE_GET(vehicle, ChasePosition).z;
-#if TGR_BOSS_RALLY
-    VEHICLE_SET(vehicle, ChaseLag, smoothedLag * (1.0f - (long double)pull * CHASE_PULL_SCALE));
-#else
-    vehicle->chaseLag = vehicle->chaseLag * (1.0f - pull * CHASE_PULL_SCALE);
-#endif
-
-    lagNumerator = gInstantReplayActive ? CHASE_LAG_NUMERATOR_REPLAY : CHASE_LAG_NUMERATOR;
-#if TGR_BOSS_RALLY
-    chaseTerm = (long double)VEHICLE_GET(vehicle, ChaseSpeed) * CHASE_SPEED_COEFF;
-    lagTerm = ((long double)lagNumerator * 0.0318309888f) * VEHICLE_GET(vehicle, ChaseLag);
-#else
-    chaseTerm = vehicle->chaseSpeed * CHASE_SPEED_COEFF;
-    lagTerm = vehicle->chaseLag * (lagNumerator / CHASE_SPEED_MAX);
-#endif
-    if (CHASE_THRESHOLD < pull + (chaseTerm - lagTerm)) {
-        UpdateCameraChase(vehicle, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE], 0.0f);
+    if (speed > 31.415928f) {
+        speed = 31.415928f;
+    }
+    if (lag > 31.415928f) {
+        lag = 31.415928f;
+    }
+    if (vehicle->chaseSpeed < speed) {
+        vehicle->chaseSpeed = speed;
     } else {
+        vehicle->chaseSpeed = vehicle->chaseSpeed * 0.95f + speed * 0.05f;
+    }
+    vehicle->chaseLag = vehicle->chaseLag * 0.95f + lag * 0.05f;
+    vehicle->chaseLag = vehicle->chaseLag * (1.0f - vehicle->collisionPull * 18.181818f);
+    CHASE_POSITION.x = vehicle->chasePosition.x;
+    /* clang-format off */
+    CHASE_POSITION.y = vehicle->chasePosition.y; CHASE_POSITION.z = vehicle->chasePosition.z;
+    /* clang-format on */
+    numerator = gInstantReplayActive != 0 ? 0.5f : 0.15f;
+    if (vehicle->collisionPull +
+            (vehicle->chaseSpeed * 0.009549296f - vehicle->chaseLag * (numerator / 31.415928f)) >
+        0.07f) {
+        camera = &vehicle->cameras[VEHICLE_CAMERA_CHASE];
+        UpdateCameraChase(vehicle, camera, 0);
+    } else {
+        camera = &vehicle->cameras[VEHICLE_CAMERA_CHASE];
         UpdateCameraChase(vehicle,
-                          &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE],
-#if TGR_BOSS_RALLY
-                          lagTerm - (((long double)pull + chaseTerm) - CHASE_THRESHOLD));
-#else
-                          ((CHASE_THRESHOLD - pull) - chaseTerm) + lagTerm);
-#endif
+                          camera,
+                          0.07f - vehicle->collisionPull - vehicle->chaseSpeed * 0.009549296f +
+                              vehicle->chaseLag * (numerator / 31.415928f));
     }
     UpdateCameraLookAtTarget(vehicle);
-    VEHICLE_GET(vehicle, ChasePosition).x =
-        VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position.x;
-    VEHICLE_GET(vehicle, ChasePosition).y =
-        VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position.y;
-    VEHICLE_GET(vehicle, ChasePosition).z =
-        VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position.z;
-
-    /* Keep the chase camera out of the track, and pull it in harder while it hits. */
-    if (!VEHICLE_GET(vehicle, FlyMode)) {
-        ResolveVehicleTrackCollision(
-            vehicle, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE], &target);
-        if (g_bVehicleTrackCollisionCorrected) {
-            if (gInstantReplayActive) {
-                g_dwReplayCameraHoldTimer = REPLAY_HOLD_FRAMES;
-                if (VEHICLE_GET(vehicle, ActiveCamera) ==
-                    &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE]) {
-                    VEHICLE_SET(vehicle,
-                                ActiveCamera,
-                                &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT]);
-                    VEHICLE_SET(vehicle, CameraChanged, 2);
-                    g_dwReplayCameraSwitchTimer = REPLAY_SWITCH_FRAMES;
+    vehicle->chasePosition.x = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.x;
+    vehicle->chasePosition.y = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.y;
+    vehicle->chasePosition.z = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.z;
+    if (vehicle->flyMode == 0) {
+        ResolveVehicleTrackCollision(vehicle, camera, &previousChase);
+        if (g_bVehicleTrackCollisionCorrected != 0) {
+            if (gInstantReplayActive != 0) {
+                g_dwReplayCameraHoldTimer = 30;
+                if (camera == vehicle->activeCamera) {
+                    vehicle->activeCamera = &vehicle->cameras[VEHICLE_CAMERA_COCKPIT];
+                    vehicle->cameraChanged = 2;
+                    g_dwReplayCameraSwitchTimer = 60;
                 }
             }
-            if (VEHICLE_GET(vehicle, CollisionPull) < PULL_MIN) {
-                VEHICLE_SET(vehicle, CollisionPull, PULL_MIN);
+            if (vehicle->collisionPull < 0.02f) {
+                vehicle->collisionPull = 0.02f;
             } else {
-                VEHICLE_SET(
-                    vehicle, CollisionPull, VEHICLE_GET(vehicle, CollisionPull) + (PULL_STEP));
-                if (PULL_MAX < VEHICLE_GET(vehicle, CollisionPull)) {
-                    VEHICLE_SET(vehicle, CollisionPull, PULL_MAX);
+                vehicle->collisionPull = vehicle->collisionPull + 0.01f;
+                if (vehicle->collisionPull > 0.055f) {
+                    vehicle->collisionPull = 0.055f;
                 }
             }
-            /* Whichever way it went, the original then sets the default pull. */
-            VEHICLE_SET(vehicle, CollisionPull, PULL_DEFAULT);
+            vehicle->collisionPull = 0.05f;
         } else {
             if (g_dwReplayCameraHoldTimer != 0) {
                 g_dwReplayCameraHoldTimer--;
             }
-#if TGR_BOSS_RALLY
-            adjusted = (long double)VEHICLE_GET(vehicle, CollisionPull) - PULL_DECAY;
-            VEHICLE_SET(vehicle, CollisionPull, (f32)adjusted);
-            if (adjusted < 0.0f) {
-#else
-            vehicle->collisionPull -= PULL_DECAY;
+            vehicle->collisionPull = vehicle->collisionPull - 0.005f;
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
             if (vehicle->collisionPull < 0.0f) {
-#endif
-                VEHICLE_SET(vehicle, CollisionPull, 0.0f);
+                vehicle->collisionPull = .0f;
             }
+#else
+            if (vehicle->collisionPull < 0.0f) {
+                vehicle->collisionPull = 0.0f;
+            }
+#endif
         }
     }
-
-    ComputeCameraBasis(vehicle, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE]);
-
-    /* The cockpit camera sits at the eye of the driver and looks along the vehicle. */
-    previousCockpit[0] = VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].position.x;
-    previousCockpit[1] = VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].position.y;
-    previousCockpit[2] = VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].position.z;
+    ComputeCameraBasis(vehicle, camera);
+    previousCockpit[0] = vehicle->cameras[VEHICLE_CAMERA_COCKPIT].position.x;
+    previousCockpit[1] = vehicle->cameras[VEHICLE_CAMERA_COCKPIT].position.y;
+    previousCockpit[2] = vehicle->cameras[VEHICLE_CAMERA_COCKPIT].position.z;
     (void)previousCockpit;
-    if (VEHICLE_GET(vehicle, FlyMode)) {
-        memcpy(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT],
-               &VEHICLE_GET(vehicle, Frame),
-               sizeof(CameraFrame));
+    if (vehicle->flyMode != 0) {
+        memcpy(&vehicle->cameras[VEHICLE_CAMERA_COCKPIT], vehicle, sizeof(CameraFrame));
     } else {
-        model = VEHICLE_GET(vehicle, Model);
-        VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].position.x = COCKPIT_POSITION(x);
-        VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].position.y = COCKPIT_POSITION(y);
-        VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].position.z = COCKPIT_POSITION(z);
-        Vec3fMulAddInPlace(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].forward,
-                           &VEHICLE_GET(vehicle, Frame).forward,
-                           COCKPIT_AIM_DISTANCE);
-        Vec3fNegate(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].forward,
-                    &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].forward);
-        Vec3fNormalize(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].forward);
-        VEHICLE_GET(vehicle, Cameras)
-        [VEHICLE_CAMERA_COCKPIT].side = VEHICLE_GET(vehicle, Frame).side;
-        Vec3fCross(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].up,
-                   &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].forward,
-                   &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].side);
+        vehicle->cameras[VEHICLE_CAMERA_COCKPIT].position.x =
+            vehicle->model->cockpitUp * vehicle->frame.up.x +
+            (vehicle->frame.position.x + vehicle->frame.forward.x * vehicle->model->cockpitForward);
+        vehicle->cameras[VEHICLE_CAMERA_COCKPIT].position.y =
+            vehicle->model->cockpitUp * vehicle->frame.up.y +
+            (vehicle->frame.position.y + vehicle->frame.forward.y * vehicle->model->cockpitForward);
+        vehicle->cameras[VEHICLE_CAMERA_COCKPIT].position.z =
+            vehicle->model->cockpitUp * vehicle->frame.up.z +
+            (vehicle->frame.position.z + vehicle->frame.forward.z * vehicle->model->cockpitForward);
+        Vec3fMulAddInPlace(
+            &vehicle->cameras[VEHICLE_CAMERA_COCKPIT].forward, &vehicle->frame.forward, -20.0f);
+        Vec3fNegate(&vehicle->cameras[VEHICLE_CAMERA_COCKPIT].forward,
+                    &vehicle->cameras[VEHICLE_CAMERA_COCKPIT].forward);
+        Vec3fNormalize(&vehicle->cameras[VEHICLE_CAMERA_COCKPIT].forward);
+        side = &vehicle->cameras[VEHICLE_CAMERA_COCKPIT].side;
+        side->x = vehicle->frame.side.x;
+        side->y = vehicle->frame.side.y;
+        side->z = vehicle->frame.side.z;
+        Vec3fCross(&vehicle->cameras[VEHICLE_CAMERA_COCKPIT].up,
+                   &vehicle->cameras[VEHICLE_CAMERA_COCKPIT].forward,
+                   side);
     }
-
-    /* The bumper camera is the cockpit camera moved forward. */
-    memcpy(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_BUMPER],
-           &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT],
+    memcpy(&vehicle->cameras[VEHICLE_CAMERA_BUMPER],
+           &vehicle->cameras[VEHICLE_CAMERA_COCKPIT],
            sizeof(CameraFrame));
-    Vec3fMulAddInPlace(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_BUMPER].position,
-                       &VEHICLE_GET(vehicle, Frame).forward,
-                       BUMPER_FORWARD);
-
-    /* The trackside camera looks at the vehicle from where it stands, and zooms with distance. The
-     * European and Japanese releases call the routine that does the same. */
-#if TGR_PLATFORM == TGR_PLATFORM_N64 && (TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP)
-    UpdateCameraViewBasisAndFov(vehicle, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE]);
+    Vec3fMulAddInPlace(
+        &vehicle->cameras[VEHICLE_CAMERA_BUMPER].position, &vehicle->frame.forward, 0.5f);
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+    UpdateCameraViewBasisAndFov(vehicle, &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE]);
 #else
-    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].up.x = 0.0f;
-    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].up.y = 0.0f;
-    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].up.z = 1.0f;
-    Vec3fAdd(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].forward,
-             &VEHICLE_GET(vehicle, Frame).position,
-             &VEHICLE_GET(vehicle, Frame).up);
-    Vec3fSubtractInPlace(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].forward,
-                         &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].position);
-    distance = Vec3fLength(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].forward);
-    Vec3fDivideInPlace(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].forward, distance);
-    Vec3fCross(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].side,
-               &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].up,
-               &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].forward);
-    Vec3fCross(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].up,
-               &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].forward,
-               &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].side);
-#if TGR_BOSS_RALLY
-    if (!(TRACKSIDE_NEAR < distance)) {
-#else
-    if (distance <= TRACKSIDE_NEAR) {
-#endif
+    up = &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].up;
+    look = &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].forward;
+    up->x = 0.0f;
+    up->y = 0.0f;
+    up->z = 1.0f;
+    Vec3fAdd(look, &vehicle->frame.position, &vehicle->frame.up);
+    Vec3fSubtractInPlace(look, &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].position);
+    distance = Vec3fLength(look);
+    Vec3fDivideInPlace(look, distance);
+    Vec3fCross(&vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].side, up, look);
+    Vec3fCross(up, look, &vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].side);
+    if (distance <= 1.0f) {
         distance = 0.0f;
-    } else if (TRACKSIDE_FAR <= distance) {
-        distance = TRACKSIDE_FAR_DISTANCE;
+    } else if (distance >= 101.0f) {
+        distance = 100.0f;
     } else {
-        distance -= TRACKSIDE_NEAR;
+        distance = distance - 1.0f;
     }
-#if TGR_BOSS_RALLY
-    zoom =
-        cosl((f32)(((long double)distance - 1.0f) * TRACKSIDE_COS_SCALE)) * TRACKSIDE_COS_WEIGHT -
-        ((long double)TRACKSIDE_MID - distance) * -TRACKSIDE_DISTANCE_SCALE;
-    zoom -= -TRACKSIDE_BIAS;
-#else
-    zoom = (cosf((distance - 1.0f) * TRACKSIDE_COS_SCALE) * TRACKSIDE_COS_WEIGHT + TRACKSIDE_BIAS) +
-           (TRACKSIDE_MID - distance) * TRACKSIDE_DISTANCE_SCALE;
+    vehicle->cameras[VEHICLE_CAMERA_TRACKSIDE].fov =
+        ((cosf((distance - 1.0f) * 0.041887902f) * 0.1f + 0.7f) + (51.0f - distance) * 0.004f) *
+        g_fCameraFovRadians;
 #endif
-    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].fov = zoom * g_fCameraFovRadians;
-#endif /* TGR_PLATFORM_N64 && (TGR_REGION_EU || TGR_REGION_JP) */
-    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_BUMPER].fov = g_fCameraFovRadians;
-    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].fov = g_fCameraFovRadians;
-    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT].fov = g_fCameraFovRadians;
-    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_MIRROR].fov = g_fCameraFovRadians;
-
-    /* The mirror looks back from above and ahead of the driver. */
-    model = VEHICLE_GET(vehicle, Model);
-    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_MIRROR].position.x = MIRROR_POSITION(x);
-    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_MIRROR].position.y = MIRROR_POSITION(y);
-    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_MIRROR].position.z = MIRROR_POSITION(z);
-    VEHICLE_GET(vehicle, Cameras)
-    [VEHICLE_CAMERA_MIRROR].forward.x = -VEHICLE_GET(vehicle, Frame).forward.x;
-    VEHICLE_GET(vehicle, Cameras)
-    [VEHICLE_CAMERA_MIRROR].forward.y = -VEHICLE_GET(vehicle, Frame).forward.y;
-    VEHICLE_GET(vehicle, Cameras)
-    [VEHICLE_CAMERA_MIRROR].forward.z = -VEHICLE_GET(vehicle, Frame).forward.z;
-    VEHICLE_GET(vehicle, Cameras)
-    [VEHICLE_CAMERA_MIRROR].side.x = -VEHICLE_GET(vehicle, Frame).side.x;
-    VEHICLE_GET(vehicle, Cameras)
-    [VEHICLE_CAMERA_MIRROR].side.z = -VEHICLE_GET(vehicle, Frame).side.z;
-    VEHICLE_GET(vehicle, Cameras)
-    [VEHICLE_CAMERA_MIRROR].side.y = -VEHICLE_GET(vehicle, Frame).side.y;
-    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_MIRROR].up = VEHICLE_GET(vehicle, Frame).up;
-    VEHICLE_SET(vehicle, PreviousCamera, VEHICLE_GET(vehicle, ActiveCamera));
+    vehicle->cameras[VEHICLE_CAMERA_BUMPER].fov = g_fCameraFovRadians;
+    vehicle->cameras[VEHICLE_CAMERA_CHASE].fov = g_fCameraFovRadians;
+    vehicle->cameras[VEHICLE_CAMERA_COCKPIT].fov = g_fCameraFovRadians;
+    vehicle->cameras[VEHICLE_CAMERA_MIRROR].fov = g_fCameraFovRadians;
+    vehicle->cameras[VEHICLE_CAMERA_MIRROR].position.x =
+        vehicle->model->cockpitUp * vehicle->frame.up.x +
+        (vehicle->frame.position.x +
+         vehicle->frame.forward.x * vehicle->model->mirrorForward * 2.0f);
+    vehicle->cameras[VEHICLE_CAMERA_MIRROR].position.y =
+        vehicle->model->cockpitUp * vehicle->frame.up.y +
+        (vehicle->frame.position.y +
+         vehicle->frame.forward.y * vehicle->model->mirrorForward * 2.0f);
+    vehicle->cameras[VEHICLE_CAMERA_MIRROR].position.z =
+        vehicle->model->cockpitUp * vehicle->frame.up.z +
+        (vehicle->frame.position.z +
+         vehicle->frame.forward.z * vehicle->model->mirrorForward * 2.0f);
+    vehicle->cameras[VEHICLE_CAMERA_MIRROR].forward.x = -vehicle->frame.forward.x;
+    vehicle->cameras[VEHICLE_CAMERA_MIRROR].forward.y = -vehicle->frame.forward.y;
+    vehicle->cameras[VEHICLE_CAMERA_MIRROR].forward.z = -vehicle->frame.forward.z;
+    vehicle->cameras[VEHICLE_CAMERA_MIRROR].side.x = -vehicle->frame.side.x;
+    vehicle->cameras[VEHICLE_CAMERA_MIRROR].side.y = -vehicle->frame.side.y;
+    vehicle->cameras[VEHICLE_CAMERA_MIRROR].side.z = -vehicle->frame.side.z;
+    vehicle->cameras[VEHICLE_CAMERA_MIRROR].up.x = vehicle->frame.up.x;
+    vehicle->cameras[VEHICLE_CAMERA_MIRROR].up.y = vehicle->frame.up.y;
+    vehicle->cameras[VEHICLE_CAMERA_MIRROR].up.z = vehicle->frame.up.z;
+    vehicle->previousCamera = vehicle->activeCamera;
 }
+#endif
