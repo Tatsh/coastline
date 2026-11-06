@@ -106,6 +106,7 @@ SECTIONS
 g_pFirstCreditLineText = g_aCreditScrollLines + 12;
 g_nNumLocalPlayersSigned = g_dwNumLocalPlayers;
 g_OptionSettingsSfxLevel = g_OptionSettings + 4;
+g_MusicRestartOrder = g_MusicPlayer + 0x12;
 
 /* The assets the game reads from the cartridge by their segment symbols. */
 _ghostRecordingSegmentRomStart = 0xAF0F0;

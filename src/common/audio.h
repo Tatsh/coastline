@@ -343,6 +343,15 @@ extern s32 g_bMusicPlaybackEnabled;
  * @ghidraAddress JPN: 0x8037a110
  */
 extern MusicPlayer g_MusicPlayer;
+
+/**
+ * The restart order byte of the active XM module.
+ *
+ * @ghidraAddress USA: 0x80378fb2
+ * @ghidraAddress EUR: 0x8037b4b2
+ * @ghidraAddress JPN: 0x8037a122
+ */
+extern u8 g_MusicRestartOrder;
 #endif
 
 /**

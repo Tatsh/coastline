@@ -111,20 +111,35 @@
 #define ALIGN4(p) ((u8 *)(((size_t)(p) + 3) & ~(size_t)3))
 
 /* A little-endian word of the module, read a byte at a time. */
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && (defined(__mips__) || defined(__sgi)) &&                   \
+    !defined(ENABLE_PATCHES)
+#define READ_LE32(p) ((p)[0] + (p)[1] * 0x100 + (p)[2] * 0x10000 + (p)[3] * 0x1000000)
+#else
 #define READ_LE32(p) ((p)[0] + (p)[1] * 0x100 + (p)[2] * 0x10000 + (u32)(p)[3] * 0x1000000)
+#endif
+#define READ_LE16(p) ((p)[1] * 0x100 + (p)[0])
 
 /* The packed size of a pattern, after its header. */
-#define PATTERN_SIZE(p)                                                                            \
-    ((p)[XM_PATTERN_PACKED_SIZE] + (p)[XM_PATTERN_PACKED_SIZE + 1] * 0x100 + READ_LE32(p))
+#define PATTERN_SIZE(p) (READ_LE16(&(p)[XM_PATTERN_PACKED_SIZE]) + READ_LE32(p))
 
 void LoadMusicModule(u8 *module, u8 *work) {
-    u8 *start = work;
-    u8 *in, *sampleHeader, *src;
-    u32 i, j, size, length, patterns, instruments, sum;
+    u8 *src;
+    u32 i;
+    u8 *in;
+    u8 *sampleHeader;
+    u32 patterns;
+    u32 instruments;
+    u32 j;
 #if TGR_PLATFORM == TGR_PLATFORM_N64 && (defined(__mips__) || defined(__sgi))
     u32 header;
 #endif
+    s32 sum;
+    u8 type;
+    u32 length;
+    u8 *pattern;
+    u8 *start;
 
+    start = work;
     g_MusicPlayer.orders = work;
     g_MusicPlayer.songLength = module[XM_SONG_LENGTH];
     src = module + XM_ORDERS;
@@ -135,79 +150,80 @@ void LoadMusicModule(u8 *module, u8 *work) {
     }
     work = ALIGN4(work);
     osSyncPrintf("Length = %d\n", g_MusicPlayer.songLength);
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && (defined(__mips__) || defined(__sgi))
+    g_MusicRestartOrder = module[XM_RESTART];
+#else
     g_MusicPlayer.restartOrder = module[XM_RESTART];
+#endif
     osSyncPrintf("Restartfrom = %d\n", g_MusicPlayer.restartOrder);
     patterns = module[XM_PATTERNS];
     osSyncPrintf("%d Patterns found\n", patterns);
     instruments = module[XM_INSTRUMENTS];
     osSyncPrintf("%d Instruments found\n", instruments);
 
-    /* Each pattern is copied whole, its header with its packed rows. */
 #if TGR_PLATFORM == TGR_PLATFORM_N64 && (defined(__mips__) || defined(__sgi))
     /* The original reads the aligned header size as one word before byte swapping it. */
     header = *(u32 *)(module + XM_HEADER_SIZE);
-    in = module + XM_HEADER_SIZE +
-         (((header >> 24) & 0xFF) + ((header >> 16) & 0xFF) * 0x100 +
-          ((header >> 8) & 0xFF) * 0x10000 + ((header & 0xFF) << 24));
+    pattern = module + XM_HEADER_SIZE +
+              (((header >> 24) & 0xFF) + ((header >> 16) & 0xFF) * 0x100 +
+               ((header >> 8) & 0xFF) * 0x10000 + ((header & 0xFF) << 24));
 #else
-    in = module + READ_LE32(&module[XM_HEADER_SIZE]) + XM_HEADER_SIZE;
+    pattern = module + READ_LE32(&module[XM_HEADER_SIZE]) + XM_HEADER_SIZE;
 #endif
     for (i = 0; i < patterns; i++) {
         g_apPatternData[i] = work;
-        size = PATTERN_SIZE(in);
-        src = in;
-        for (j = 0; j < size; j++) {
+        length = PATTERN_SIZE(pattern);
+        src = pattern;
+        for (j = 0; j < length; j++) {
             *work++ = *src++;
         }
         /* The original reads the size again rather than reuse it. */
-        in += PATTERN_SIZE(in);
+        pattern = pattern + PATTERN_SIZE(pattern);
     }
+    in = pattern;
     work = ALIGN4(work);
-
-    /*
-     * The first sample of each instrument is kept: its header, its data decoded from the deltas of
-     * the module, and then silence, or the start of its loop again, for the mixer to run into.
-     */
     osSyncPrintf("Now doSamples");
     for (i = 0; i < instruments; i++) {
         osSyncPrintf(".");
         sampleHeader = in + READ_LE32(in);
-        if (in[XM_INSTRUMENT_SAMPLES] <= 0) {
-            g_apInstrumentData[i] = NULL;
-            in = sampleHeader;
-            continue;
-        }
-        length = READ_LE32(sampleHeader);
-        g_apInstrumentData[i] = (XmSample *)work;
-        for (j = 0; j < sizeof(XmSample); j++) {
-            *work++ = sampleHeader[j];
-        }
-        g_apInstrumentData[i]->length = READ_LE32(sampleHeader);
-        g_apInstrumentData[i]->loopLength = READ_LE32(&sampleHeader[XM_SAMPLE_LOOP_LENGTH]);
-        src = sampleHeader + sizeof(XmSample);
-        sum = 0;
-        for (j = 0; j < length; j++) {
-            sum += *src++;
-            *work++ = sum;
-        }
-        switch (sampleHeader[XM_SAMPLE_TYPE]) {
-        case XM_SAMPLE_NO_LOOP:
-            for (j = 0; j < SAMPLE_TAIL; j++) {
-                *work++ = 0;
-            }
-            break;
-        case XM_SAMPLE_FORWARD_LOOP:
-            src = work - READ_LE32(&sampleHeader[XM_SAMPLE_LOOP_LENGTH]);
-            for (j = 0; j < SAMPLE_TAIL; j++) {
+        if (in[XM_INSTRUMENT_SAMPLES] > 0) {
+            length = READ_LE32(sampleHeader);
+            g_apInstrumentData[i] = (XmSample *)work;
+            for (src = sampleHeader, j = 0; j < sizeof(XmSample); j++) {
                 *work++ = *src++;
             }
-            break;
-        default:
-            osSyncPrintf("WANKER fuck off no 16bit, no Ping fucking pong\n");
-            break;
+            g_apInstrumentData[i]->length = READ_LE32(sampleHeader);
+            g_apInstrumentData[i]->loopLength = READ_LE32(&sampleHeader[XM_SAMPLE_LOOP_LENGTH]);
+            src = sampleHeader + sizeof(XmSample);
+            sum = 0;
+            for (j = 0; j < length; j++) {
+                sum = *src++ + sum;
+                *work++ = sum;
+            }
+            type = sampleHeader[XM_SAMPLE_TYPE];
+            switch (type) {
+            case XM_SAMPLE_NO_LOOP:
+                /* IDO's unrolled stores require the single-line loop. */
+                /* clang-format off */
+                for (j = 0; j < SAMPLE_TAIL; j++) *work++ = 0;
+                /* clang-format on */
+                break;
+            case XM_SAMPLE_FORWARD_LOOP:
+                src = work - READ_LE32(&sampleHeader[XM_SAMPLE_LOOP_LENGTH]);
+                for (j = 0; j < SAMPLE_TAIL; j++) {
+                    *work++ = *src++;
+                }
+                break;
+            default:
+                osSyncPrintf("WANKER fuck off no 16bit, no Ping fucking pong\n");
+                break;
+            }
+            work = ALIGN4(work);
+            in = sampleHeader + length + sizeof(XmSample);
+        } else {
+            g_apInstrumentData[i] = NULL;
+            in = sampleHeader;
         }
-        work = ALIGN4(work);
-        in = sampleHeader + length + sizeof(XmSample);
     }
     osSyncPrintf("\n\nSample Space used = %d bytes\n", work - start);
 }
