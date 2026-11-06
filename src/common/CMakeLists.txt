@@ -217,7 +217,6 @@ else()
             texturesampling.c
             texturestream.c
             textureworkspace.c
-            timer.c
             trackanimation.cpp
             trackload.cpp
             trackmenudata.c

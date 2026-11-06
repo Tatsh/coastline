@@ -32,6 +32,7 @@ add_library(
   sound.cpp
   startup.cpp
   texturescan.cpp
+  timer.c
   tracktexture.cpp
   wavread.c)
 target_link_libraries(coastline_win32 PRIVATE coastline_options)

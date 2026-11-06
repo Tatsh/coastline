@@ -6,10 +6,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "win32/app.h"
-#endif
-
 PodArchive g_BossRallyPodArchive;
 
 namespace {

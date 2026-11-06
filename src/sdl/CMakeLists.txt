@@ -276,6 +276,7 @@ add_library(
   savefile.cpp
   session.cpp
   stringresources.cpp
+  timer.c
   trackload.cpp
   weatherselect.cpp
   "${CMAKE_SOURCE_DIR}/src/common/audio.c"

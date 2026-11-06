@@ -1,15 +1,10 @@
 #include <cstdio>
 
+#include "common/fatalerror.h"
 #include "common/fileio.h"
 #include "common/model.h"
 #include "common/podarchive.h"
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "win32/app.h"
-#include "win32/render.h"
-#else
-#include "common/fatalerror.h"
 #include "common/relocation.h"
-#endif
 
 void ReadEntireFile(void *buffer, const char *path, int size) {
     if (!CHK_FileExists(path)) {

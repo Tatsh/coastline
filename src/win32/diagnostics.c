@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "common/buildinfo.h"
+
 // DbgHelp requires Windows declarations first.
 // clang-format off
 #include <windows.h>
@@ -12,6 +14,29 @@
 // clang-format on
 
 #ifdef ENABLE_PATCHES
+static const char banner[] =
+    "github.com/Tatsh/coastline " COASTLINE_GIT_SHA " " __DATE__ " " __TIME__ "\n";
+
+void PrintWineDiagnostic(const char *message) {
+    DWORD savedError = GetLastError();
+    WriteApplicationDiagnostic(message);
+    HMODULE ntdll = GetModuleHandleA("ntdll.dll");
+    if (ntdll == nullptr || GetProcAddress(ntdll, "wine_get_version") == nullptr) {
+        SetLastError(savedError);
+        return;
+    }
+    HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (output != nullptr && output != INVALID_HANDLE_VALUE) {
+        DWORD written;
+        WriteFile(output, message, (DWORD)strlen(message), &written, nullptr);
+    }
+    SetLastError(savedError);
+}
+
+void PrintWineBuildIdentification(void) {
+    PrintWineDiagnostic(banner);
+}
+
 static LPTOP_LEVEL_EXCEPTION_FILTER previousFilter;
 static PVOID exceptionObserver;
 static LONG reportingCrash;

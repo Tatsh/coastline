@@ -1,7 +1,5 @@
 #include "common/buildinfo.h"
 
-#include <string.h>
-
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
 #else
@@ -11,39 +9,10 @@
 #include "common/hudcanvas.h"
 #include "common/settings.h"
 #include "common/text.h"
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "win32/diagnostics.h"
-#endif
-
 #ifdef ENABLE_PATCHES
 static const char projectUri[] = "github.com/Tatsh/coastline";
 static const char revision[] = COASTLINE_GIT_SHA;
 static const char buildDate[] = __DATE__ " " __TIME__;
-
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-static const char banner[] =
-    "github.com/Tatsh/coastline " COASTLINE_GIT_SHA " " __DATE__ " " __TIME__ "\n";
-
-void PrintWineDiagnostic(const char *message) {
-    DWORD savedError = GetLastError();
-    WriteApplicationDiagnostic(message);
-    HMODULE ntdll = GetModuleHandleA("ntdll.dll");
-    if (ntdll == nullptr || GetProcAddress(ntdll, "wine_get_version") == nullptr) {
-        SetLastError(savedError);
-        return;
-    }
-    HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
-    if (output != nullptr && output != INVALID_HANDLE_VALUE) {
-        DWORD written;
-        WriteFile(output, message, (DWORD)strlen(message), &written, nullptr);
-    }
-    SetLastError(savedError);
-}
-
-void PrintWineBuildIdentification(void) {
-    PrintWineDiagnostic(banner);
-}
-#endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
 
 void DrawRaceBuildIdentification(void) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
