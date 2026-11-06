@@ -338,75 +338,68 @@ void DrawColoredTexturedRect(u8 *texture,
                              s32 red,
                              s32 green,
                              s32 blue) {
-    s32 scaleS, scaleT, maskS, maskT;
-    s32 mirrored = FALSE;
+    s32 maskS;
+    s32 maskT;
+    s32 scaleS;
+    s32 scaleT;
+    s32 mirrored;
 
+    mirrored = FALSE;
     if (drawWidth < 0) {
         drawWidth = -drawWidth;
         mirrored = TRUE;
     }
     GetTextureScaleAndMask(width, &scaleS, &maskS);
     GetTextureScaleAndMask(height, &scaleT, &maskT);
-
     gDPPipeSync(gDisplayListPtr++);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-    gSPTexture(gDisplayListPtr++, scaleS, scaleT, 0, G_TX_RENDERTILE, G_ON);
-    gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);
-    gDPSetCombineLERP(gDisplayListPtr++,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE,
-                      0,
-                      0,
-                      0,
-                      TEXEL0,
-                      0,
-                      0,
-                      0,
-                      PRIMITIVE,
-                      0,
-                      0,
-                      0,
-                      TEXEL0);
-    gDPSetRenderMode(gDisplayListPtr++,
-                     FORCE_BL | CVG_DST_FULL | IM_RD |
-                         GBL_c1(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA),
-                     GBL_c2(G_BL_CLR_IN, G_BL_A_IN, G_BL_CLR_MEM, G_BL_1MA));
-    gDPLoadTextureBlock_4b(gDisplayListPtr++,
-                           texture,
-                           G_IM_FMT_I,
-                           width,
-                           height,
-                           0,
-                           G_TX_WRAP,
-                           G_TX_WRAP,
-                           maskS,
-                           maskT,
-                           G_TX_NOLOD,
-                           G_TX_NOLOD);
+    gSPTexture(gDisplayListPtr++, scaleS, scaleT, 0, 0, 1);
+    gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 12, 2, g_dwTextureFilterMode);
+    TEXRECT_COMBINE_WORDS(gDisplayListPtr++, 0xffffff, 0xfffdf2f9);
+    gDPSetRenderMode(gDisplayListPtr++, 0x504240, 0);
+    gDPSetTextureImage(gDisplayListPtr++, 4, G_IM_SIZ_16b, 1, texture);
+    gDPSetTile(gDisplayListPtr++, 4, G_IM_SIZ_16b, 0, 0, 7, 0, 0, maskT, 0, 0, maskS, 0);
+    gDPLoadSync(gDisplayListPtr++);
+    gDPLoadBlock(gDisplayListPtr++,
+                 7,
+                 0,
+                 0,
+                 ((width * height + 3) >> 2) - 1,
+                 ((1 << 11) + (width / 16 < 1 ? 1 : width / 16) - 1) /
+                     (width / 16 < 1 ? 1 : width / 16));
+    gDPPipeSync(gDisplayListPtr++);
+    gDPSetTile(gDisplayListPtr++, 4, 0, ((width >> 1) + 7) >> 3, 0, 0, 0, 0, maskT, 0, 0, maskS, 0);
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = _SHIFTL(G_SETTILESIZE, 24, 8) | _SHIFTL(0, 12, 12) | _SHIFTL(0, 0, 12);
+        command->words.w1 = _SHIFTL(0, 24, 3) | _SHIFTL((width - 1) << 2, 12, 12) |
+                            _SHIFTL((height - 1) << 2, 0, 12);
+    }
     gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
-    gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE);
-
+    gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 19, 1, 0);
     if (g_dwScreenScaleShift) {
-        x *= 2;
-        y *= 2;
-        drawWidth *= 2;
-        drawHeight *= 2;
+        x <<= 1;
+        y <<= 1;
+        drawWidth <<= 1;
+        drawHeight <<= 1;
     }
     gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, red, green, blue, 0xFF);
-    /* Start from the last row, and from the last column when mirrored, and step back. */
-    gSPTextureRectangle(gDisplayListPtr++,
-                        x << 2,
-                        y << 2,
-                        (x + drawWidth) << 2,
-                        (y + drawHeight) << 2,
-                        G_TX_RENDERTILE,
-                        mirrored ? (width - 1) << 5 : 0,
-                        (height - 1) << 5,
-                        mirrored ? (TEXEL_STEP - (width << 10)) / drawWidth :
-                                   ((width << 10) - TEXEL_STEP) / drawWidth,
-                        (TEXEL_STEP - (height << 10)) / drawHeight);
+    {
+        Gfx *command = gDisplayListPtr++;
+        command->words.w0 = _SHIFTL(G_TEXRECT, 24, 8) | _SHIFTL((x + drawWidth) << 2, 12, 12) |
+                            _SHIFTL((y + drawHeight) << 2, 0, 12);
+        command->words.w1 = _SHIFTL(0, 24, 3) | _SHIFTL(x << 2, 12, 12) | _SHIFTL(y << 2, 0, 12);
+    }
+    gImmp1(gDisplayListPtr++,
+           G_RDPHALF_1,
+           (_SHIFTL(mirrored ? (width - 1) << 5 : 0, 16, 16) | _SHIFTL((height - 1) << 5, 0, 16)));
+    gImmp1(gDisplayListPtr++,
+           G_RDPHALF_2,
+           (_SHIFTL(mirrored ? ((1 << 10) - (width << 10)) / drawWidth :
+                               ((width << 10) - (1 << 10)) / drawWidth,
+                    16,
+                    16) |
+            _SHIFTL(((1 << 10) - (height << 10)) / drawHeight, 0, 16)));
     gDPPipeSync(gDisplayListPtr++);
-    gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
+    gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 19, 1, 0x80000);
 }
