@@ -316,6 +316,7 @@ s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *
 }
 #endif /* TGR_PLATFORM != TGR_PLATFORM_N64 */
 
+#if TGR_PLATFORM != TGR_PLATFORM_N64
 /* Share collision speed before applying the impulse. */
 static inline void
 PushVehicle(RacerSlot *slot, RigidBodyState *state, Vec3f *shared, Vec3f *towards, Vec3f *normal) {
@@ -480,6 +481,7 @@ void CollideVehicles(void) {
         }
     }
 }
+#endif /* TGR_PLATFORM != TGR_PLATFORM_N64 */
 
 /* The steps of the collisions in a frame. */
 #define COLLISION_STEPS 4

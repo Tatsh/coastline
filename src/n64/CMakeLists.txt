@@ -4,6 +4,7 @@ set(_n64_sources
     audiomix.s
     camera.c
     carselect.c
+    collidevehicles.c
     controllerscreen.c
     dashboard.c
     debugtext.c
