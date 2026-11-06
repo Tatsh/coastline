@@ -998,16 +998,6 @@ int GetPlayerPingMs(int nSlot);
 extern int g_adwNetRaceOrder[NET_PEER_SLOT_COUNT];
 
 /**
- * Get an entry of the order of a network race.
- *
- * @param nIndex The index of the entry.
- * @return The entry.
- * @ghidraAddress BRD3D: 0x10005e40
- * @ghidraAddress BRGlide: 0x100061b0
- */
-int GetNetworkRaceOrderEntry(int nIndex);
-
-/**
  * The player of the session in a slot of a peer, read under the mutex of the slot.
  *
  * @param nSlot The slot.

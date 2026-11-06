@@ -17,6 +17,7 @@
 #include "common/instantreplay.h"
 #include "common/laps.h"
 #include "common/pause.h"
+#include "common/racers.h"
 #include "common/racesound.h"
 #include "common/rallyconfig.h"
 #include "common/settings.h"

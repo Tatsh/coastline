@@ -11,7 +11,6 @@
 #include "common/settings.h"
 #endif
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "win32/directplay.h"
 #define QuickSort qsort
 #else
 #include "common/util.h"

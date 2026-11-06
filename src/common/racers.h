@@ -119,6 +119,18 @@ void AdvanceAlongTrackRoute(TrackSection *section, s32 pointIndex, f32 fraction,
  */
 void UpdateRaceProgress(RacerSlot *slot);
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+/**
+ * Get an entry of the order of a network race.
+ *
+ * @param nIndex The index of the entry.
+ * @return The entry.
+ * @ghidraAddress BRD3D: 0x10005e40
+ * @ghidraAddress BRGlide: 0x100061b0
+ */
+int GetNetworkRaceOrderEntry(int nIndex);
+#endif
+
 #ifdef __cplusplus
 }
 #endif
