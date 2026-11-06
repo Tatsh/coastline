@@ -15,17 +15,17 @@
 #define SPRITE_DEPTH_8 8
 #define SPRITE_DEPTH_16 16
 
+/* IDO schedules the minimum row size differently when one is the first operand. */
+#define SPRITE_ROW_WORDS_4B(width) (1 > (width) / 16 ? 1 : (width) / 16)
+#define SPRITE_ROW_WORDS(width, bytes) (1 > (width) * (bytes) / 8 ? 1 : (width) * (bytes) / 8)
+#define SPRITE_DXT_4B(width)                                                                       \
+    (((1 << G_TX_DXT_FRAC) + SPRITE_ROW_WORDS_4B(width) - 1) / SPRITE_ROW_WORDS_4B(width))
+#define SPRITE_DXT(width, bytes)                                                                   \
+    (((1 << G_TX_DXT_FRAC) + SPRITE_ROW_WORDS(width, bytes) - 1) / SPRITE_ROW_WORDS(width, bytes))
+
 /* The texels of a strip for DrawSpriteStrip(), followed by no palette in the releases that take
  * one. */
 #define STRIP_PIXELS(pixels) WITH_PALETTE(pixels, NULL)
-
-/* The format DrawSpriteStrip() loads a strip in: the one chosen by the depth and the palette in
- * the releases with palettes, and the value given otherwise. */
-#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
-#define STRIP_FORMAT(value) format
-#else
-#define STRIP_FORMAT(value) (value)
-#endif
 
 /* The bytes of a sprite, and of each strip, into total and stripBytes. */
 #define SPRITE_STRIP_BYTES(sprite, total, stripBytes)                                              \
@@ -163,223 +163,181 @@ void DrawSpriteStrip(Sprite *sprite,
                      u8 red,
                      u8 green,
                      u8 blue) {
-    s32 mirrored = FALSE;
-    s32 scaleS, maskS, scaleT, maskT;
-#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
-#ifdef ENABLE_PATCHES
-    /* A depth the switch does not list is drawn without a palette. */
-    s32 format = G_IM_FMT_RGBA;
+    int maskBitsS;
+    int maskBitsT;
+    int scaleS;
+    int scaleT;
+    int mirrored;
+
+#if defined(ENABLE_PATCHES) && (TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP)
+    int format = G_IM_FMT_RGBA;
 #else
-    /* A depth the switch does not list leaves the format unset where the palette test reads
-     * it. */
-    s32 format;
-#endif /* ENABLE_PATCHES */
+    int format;
 #endif
 
+    mirrored = 0;
     if (drawWidth < 0) {
         drawWidth = -drawWidth;
-        mirrored = TRUE;
+        mirrored = 1;
     }
-    GetTextureScaleAndMask(width, &scaleS, &maskS);
-    GetTextureScaleAndMask(height, &scaleT, &maskT);
-
+    GetTextureScaleAndMask(width, &scaleS, &maskBitsS);
+    GetTextureScaleAndMask(height, &scaleT, &maskBitsT);
     gDPPipeSync(gDisplayListPtr++);
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
-    gSPTexture(gDisplayListPtr++, scaleS, scaleT, 0, G_TX_RENDERTILE, G_ON);
-    gDPSetTextureFilter(gDisplayListPtr++, g_dwTextureFilterMode);
+    gSPTexture(gDisplayListPtr++, scaleS, scaleT, 0, 0, 1);
+    gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 12, 2, g_dwTextureFilterMode);
     switch (sprite->bitsPerTexel) {
-    case SPRITE_DEPTH_4:
-#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
-        /* A strip with a palette is drawn opaque from palette indices. */
-        if (palette != NULL) {
-            format = G_IM_FMT_CI;
-            gDPSetCombineLERP(gDisplayListPtr++,
-                              0,
-                              0,
-                              0,
-                              TEXEL0,
-                              0,
-                              0,
-                              0,
-                              TEXEL0,
-                              0,
-                              0,
-                              0,
-                              TEXEL0,
-                              0,
-                              0,
-                              0,
-                              TEXEL0);
-            gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+    case 4:
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+        if (palette != 0) {
+            format = 2;
+            gDisplayListWords(gDisplayListPtr++, 0xfc000000 | 0xffffff, 0xfffcf279);
+            gDPSetRenderMode(gDisplayListPtr++, 0x0f0a4000, 0);
         } else {
-            format = G_IM_FMT_I;
-#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
+#endif
+            format = 4;
             if (sprite == &g_texBackground) {
-                gDPSetCombineLERP(gDisplayListPtr++,
-                                  PRIMITIVE,
-                                  ENVIRONMENT,
-                                  TEXEL0,
-                                  ENVIRONMENT,
-                                  TEXEL0,
-                                  0,
-                                  SHADE,
-                                  0,
-                                  PRIMITIVE,
-                                  ENVIRONMENT,
-                                  TEXEL0,
-                                  ENVIRONMENT,
-                                  TEXEL0,
-                                  0,
-                                  SHADE,
-                                  0);
-                gDPSetRenderMode(gDisplayListPtr++, G_RM_OPA_SURF, G_RM_OPA_SURF2);
+                gDisplayListWords(gDisplayListPtr++, 0xfc000000 | 0x309861, 0x5532ff7f);
+                gDPSetRenderMode(gDisplayListPtr++, 0x0f0a4000, 0);
             } else {
-                gDPSetCombineLERP(gDisplayListPtr++,
-                                  0,
-                                  0,
-                                  0,
-                                  PRIMITIVE,
-                                  0,
-                                  0,
-                                  0,
-                                  TEXEL0,
-                                  0,
-                                  0,
-                                  0,
-                                  PRIMITIVE,
-                                  0,
-                                  0,
-                                  0,
-                                  TEXEL0);
-                gDPSetRenderMode(gDisplayListPtr++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
+                gDisplayListWords(gDisplayListPtr++, 0xfc000000 | 0xffffff, 0xfffdf2f9);
+                gDPSetRenderMode(gDisplayListPtr++, 0x00504240, 0);
             }
-#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
         }
 #endif
-        gDPLoadTextureBlock_4b(gDisplayListPtr++,
-                               pixels,
-                               STRIP_FORMAT(G_IM_FMT_I),
-                               width,
-                               height,
-                               0,
-                               G_TX_WRAP,
-                               G_TX_WRAP,
-                               maskS,
-                               maskT,
-                               G_TX_NOLOD,
-                               G_TX_NOLOD);
+        gDPSetTextureImage(gDisplayListPtr++, format, 2, 1, pixels);
+        gDPSetTile(gDisplayListPtr++, format, 2, 0, 0, 7, 0, 0, maskBitsT, 0, 0, maskBitsS, 0);
+        gDPLoadSync(gDisplayListPtr++);
+        gDPLoadBlock(
+            gDisplayListPtr++, 7, 0, 0, ((width * height + 3) >> 2) - 1, SPRITE_DXT_4B(width));
+        gDPPipeSync(gDisplayListPtr++);
+        gDPSetTile(gDisplayListPtr++,
+                   format,
+                   0,
+                   ((width >> 1) + 7) >> 3,
+                   0,
+                   0,
+                   0,
+                   0,
+                   maskBitsT,
+                   0,
+                   0,
+                   maskBitsS,
+                   0);
+        {
+            Gfx *_g = (Gfx *)(gDisplayListPtr++);
+
+            _g->words.w0 = _SHIFTL(G_SETTILESIZE, 24, 8);
+            _g->words.w1 = _SHIFTL((width - 1) << 2, 12, 12) | _SHIFTL((height - 1) << 2, 0, 12);
+        }
         break;
-    case SPRITE_DEPTH_8:
-#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
-        format = G_IM_FMT_IA;
-#endif
-        if (sprite->style == SPRITE_STYLE_TINTED) {
-            gDPSetCombineLERP(gDisplayListPtr++,
-                              TEXEL0,
-                              0,
-                              PRIMITIVE,
-                              0,
-                              0,
-                              0,
-                              0,
-                              TEXEL0,
-                              TEXEL0,
-                              0,
-                              PRIMITIVE,
-                              0,
-                              0,
-                              0,
-                              0,
-                              TEXEL0);
+    case 8:
+        format = 3;
+        if (sprite->style == 'c') {
+            gDisplayListWords(gDisplayListPtr++, 0xfc000000 | 0x11fe23, 0xfffff3f9);
         } else {
-            gDPSetCombineLERP(gDisplayListPtr++,
-                              0,
-                              0,
-                              0,
-                              TEXEL0,
-                              0,
-                              0,
-                              0,
-                              TEXEL0,
-                              0,
-                              0,
-                              0,
-                              TEXEL0,
-                              0,
-                              0,
-                              0,
-                              TEXEL0);
+            gDisplayListWords(gDisplayListPtr++, 0xfc000000 | 0xffffff, 0xfffcf279);
         }
-        gDPSetRenderMode(gDisplayListPtr++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-        gDPLoadTextureBlock(gDisplayListPtr++,
-                            pixels,
-                            G_IM_FMT_IA,
-                            G_IM_SIZ_8b,
-                            width,
-                            height,
-                            0,
-                            G_TX_WRAP,
-                            G_TX_WRAP,
-                            maskS,
-                            maskT,
-                            G_TX_NOLOD,
-                            G_TX_NOLOD);
+        gDPSetRenderMode(gDisplayListPtr++, 0x00504240, 0);
+        gDPSetTextureImage(gDisplayListPtr++, format, 2, 1, pixels);
+        gDPSetTile(gDisplayListPtr++, format, 2, 0, 0, 7, 0, 0, maskBitsT, 0, 0, maskBitsS, 0);
+        gDPLoadSync(gDisplayListPtr++);
+        gDPLoadBlock(
+            gDisplayListPtr++, 7, 0, 0, ((width * height + 1) >> 1) - 1, SPRITE_DXT(width, 1));
+        gDPPipeSync(gDisplayListPtr++);
+        gDPSetTile(gDisplayListPtr++,
+                   format,
+                   1,
+                   (width * 1 + 7) >> 3,
+                   0,
+                   0,
+                   0,
+                   0,
+                   maskBitsT,
+                   0,
+                   0,
+                   maskBitsS,
+                   0);
+        {
+            Gfx *_g = (Gfx *)(gDisplayListPtr++);
+
+            _g->words.w0 = _SHIFTL(G_SETTILESIZE, 24, 8);
+            _g->words.w1 = _SHIFTL((width - 1) << 2, 12, 12) | _SHIFTL((height - 1) << 2, 0, 12);
+        }
         break;
-    case SPRITE_DEPTH_16:
-#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
-        format = sprite == &g_texLogo ? G_IM_FMT_IA : G_IM_FMT_RGBA;
-#endif
-        gDPSetCombineLERP(
-            gDisplayListPtr++, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0, 0, 0, 0, TEXEL0);
-        gDPSetRenderMode(gDisplayListPtr++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-        gDPLoadTextureBlock(gDisplayListPtr++,
-                            pixels,
-                            STRIP_FORMAT(sprite == &g_texLogo ? G_IM_FMT_IA : G_IM_FMT_RGBA),
-                            G_IM_SIZ_16b,
-                            width,
-                            height,
-                            0,
-                            G_TX_WRAP,
-                            G_TX_WRAP,
-                            maskS,
-                            maskT,
-                            G_TX_NOLOD,
-                            G_TX_NOLOD);
+    case 16:
+        if (sprite == &g_texLogo) {
+            format = 3;
+        } else {
+            format = 0;
+        }
+        gDisplayListWords(gDisplayListPtr++, 0xfc000000 | 0xffffff, 0xfffcf279);
+        gDPSetRenderMode(gDisplayListPtr++, 0x00504240, 0);
+        gDPSetTextureImage(gDisplayListPtr++, format, 2, 1, pixels);
+        gDPSetTile(gDisplayListPtr++, format, 2, 0, 0, 7, 0, 0, maskBitsT, 0, 0, maskBitsS, 0);
+        gDPLoadSync(gDisplayListPtr++);
+        gDPLoadBlock(gDisplayListPtr++, 7, 0, 0, width * height - 1, SPRITE_DXT(width, 2));
+        gDPPipeSync(gDisplayListPtr++);
+        gDPSetTile(gDisplayListPtr++,
+                   format,
+                   2,
+                   (width * 2 + 7) >> 3,
+                   0,
+                   0,
+                   0,
+                   0,
+                   maskBitsT,
+                   0,
+                   0,
+                   maskBitsS,
+                   0);
+        {
+            Gfx *_g = (Gfx *)(gDisplayListPtr++);
+
+            _g->words.w0 = _SHIFTL(G_SETTILESIZE, 24, 8);
+            _g->words.w1 = _SHIFTL((width - 1) << 2, 12, 12) | _SHIFTL((height - 1) << 2, 0, 12);
+        }
         break;
     }
-#if TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU
-    if (format == G_IM_FMT_CI) {
-        gDPLoadTLUT_pal16(gDisplayListPtr++, 0, palette);
-        gDPSetTextureLUT(gDisplayListPtr++, G_TT_RGBA16);
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+    if (format == 2) {
+        /* Load the sixteen colours of a 4-bit palette as RGBA16. */
+        gDPSetTextureImage(gDisplayListPtr++, 0, 2, 1, palette);
+        gDPTileSync(gDisplayListPtr++);
+        gDPSetTile(gDisplayListPtr++, 0, 0, 0, 0x100, 7, 0, 0, 0, 0, 0, 0, 0);
+        gDPLoadSync(gDisplayListPtr++);
+        gDPLoadTLUTCmd(gDisplayListPtr++, 7, 15);
+        gDPPipeSync(gDisplayListPtr++);
+        gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 14, 2, 0x8000);
     } else {
-        gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
+        gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 14, 2, 0);
     }
 #else
-    gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
-#endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
-    gDPSetTexturePersp(gDisplayListPtr++, G_TP_NONE);
-    if (!g_dwScreenScaleShift) {
+    gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 14, 2, 0);
+#endif
+    gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 19, 1, 0);
+    if (g_dwScreenScaleShift == 0) {
         x >>= 1;
         y >>= 1;
         drawWidth >>= 1;
         drawHeight >>= 1;
     }
-    gDPSetPrimColor(gDisplayListPtr++, 0xFF, 0xFF, red, green, blue, 0xFF);
-    gDPSetEnvColor(gDisplayListPtr++, 0, 0, 0, 0xFF);
-    /* The rows run from the bottom of the texture up. */
+    gDPSetPrimColor(gDisplayListPtr++, 0xff, 0xff, red, green, blue, 0xff);
+    gDPSetEnvColor(gDisplayListPtr++, 0, 0, 0, 0xff);
     gSPTextureRectangle(gDisplayListPtr++,
                         x << 2,
                         y << 2,
                         (x + drawWidth) << 2,
                         (y + drawHeight) << 2,
-                        G_TX_RENDERTILE,
+                        0,
                         mirrored ? (width - 1) << 5 : 0,
                         (height - 1) << 5,
                         mirrored ? (TEXEL_STEP - (width << 10)) / drawWidth :
                                    ((width << 10) - TEXEL_STEP) / drawWidth,
                         (TEXEL_STEP - (height << 10)) / drawHeight);
     gDPPipeSync(gDisplayListPtr++);
-    gDPSetTexturePersp(gDisplayListPtr++, G_TP_PERSP);
+    gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 19, 1, 0x80000);
 }
 
 void DrawScaledTexturedRect(Sprite *sprite,
