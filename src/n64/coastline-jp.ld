@@ -34,7 +34,7 @@ SECTIONS
     /* IDO statics reuse their original BSS areas. */
     OVERLAY 0x802acb30 : NOCROSSREFS {
         .bss {
-            *(EXCLUDE_FILE (*carselect.c.obj *decaleditor.c.obj *paintshop.c.obj
+            *(EXCLUDE_FILE (*carselect.c.obj *decaleditor.c.obj *paintshop.c.obj *racemenu.c.obj
                             *trackrender.c.obj *visibleinstances.c.obj) .bss .bss.*)
             *(COMMON)
             . = ALIGN(8);
@@ -42,6 +42,10 @@ SECTIONS
         .carselect_bss {
             . = 0x80316b58 - 0x802acb30;
             *carselect.c.obj(.bss .bss.*)
+        }
+        .racemenu_bss {
+            . = 0x80316898 - 0x802acb30;
+            *racemenu.c.obj(.bss .bss.*)
         }
         .paintshop_bss {
             . = 0x8036ace0 - 0x802acb30;
@@ -65,6 +69,8 @@ SECTIONS
     ASSERT(ADDR(.bss) + SIZEOF(.bss) <= 0x803837a0, "The BSS grew past its original end.")
     ASSERT(ADDR(.carselect_bss) + SIZEOF(.carselect_bss) <= 0x80316c90,
            "Car-select state exceeds its original BSS area.")
+    ASSERT(ADDR(.racemenu_bss) + SIZEOF(.racemenu_bss) <= 0x80316900,
+           "Track-menu state exceeds its original BSS area.")
     ASSERT(ADDR(.paintshop_bss) + SIZEOF(.paintshop_bss) <= 0x8036ae20,
            "Paint-shop palette exceeds its original BSS area.")
     ASSERT(ADDR(.decaleditor_bss) + SIZEOF(.decaleditor_bss) == g_nPaintAnchorX + 20,

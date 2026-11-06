@@ -30,9 +30,9 @@ unknown until it writes `matching-brd3d.json` and `matching-brglide.json`.
 
 | Release       | Compiler | Matching functions | Registers only | Not matching | Unknown |     Matching code bytes |
 | ------------- | -------- | -----------------: | -------------: | -----------: | ------: | ----------------------: |
-| `usa.z64`     | IDO 5.3  |    736/774 (95.1%) |              1 |           37 |       0 | 382,592/436,848 (87.6%) |
-| `eur.z64`     | IDO 5.3  |    753/792 (95.1%) |              1 |           38 |       0 | 391,940/444,904 (88.1%) |
-| `jpn.z64`     | IDO 5.3  |    757/795 (95.2%) |              1 |           37 |       0 | 390,240/443,596 (88.0%) |
+| `usa.z64`     | IDO 5.3  |    737/774 (95.2%) |              1 |           36 |       0 | 384,852/436,848 (88.1%) |
+| `eur.z64`     | IDO 5.3  |    754/792 (95.2%) |              1 |           37 |       0 | 394,200/444,904 (88.6%) |
+| `jpn.z64`     | IDO 5.3  |    758/795 (95.3%) |              1 |           36 |       0 | 392,484/443,596 (88.5%) |
 | `BRD3D.dll`   | MSVC 5.0 |            Unknown |              0 |            0 |   1,573 |                 Unknown |
 | `BRGlide.dll` | MSVC 5.0 |            Unknown |              0 |            0 |   1,441 |                 Unknown |
 
@@ -57,7 +57,7 @@ program that has it.
 
 | Component      | Matching functions | Registers only | Not matching | Unknown |     Matching code bytes |
 | -------------- | -----------------: | -------------: | -----------: | ------: | ----------------------: |
-| Game code      |    550/588 (93.5%) |              1 |           37 |       0 | 329,212/383,468 (85.9%) |
+| Game code      |    551/588 (93.7%) |              1 |           36 |       0 | 331,472/383,468 (86.4%) |
 | SDK (libultra) |   208/208 (100.0%) |              0 |            0 |       0 |  59,944/59,944 (100.0%) |
 
 ## PC port
@@ -89,7 +89,7 @@ block of the master program.
 
 | Part                                                                  | Group       | Component      | Range                     | Matching functions |    Matching code bytes |
 | --------------------------------------------------------------------- | ----------- | -------------- | ------------------------- | -----------------: | ---------------------: |
-| [n64-game-code-80200000.md](progress/n64-game-code-80200000.md)       | Nintendo 64 | Game code      | `0x80200000`-`0x80210000` |      42/45 (93.3%) |  64,336/69,384 (92.7%) |
+| [n64-game-code-80200000.md](progress/n64-game-code-80200000.md)       | Nintendo 64 | Game code      | `0x80200000`-`0x80210000` |      43/45 (95.6%) |  66,596/69,384 (96.0%) |
 | [n64-game-code-80210000.md](progress/n64-game-code-80210000.md)       | Nintendo 64 | Game code      | `0x80210000`-`0x80220000` |    128/134 (95.5%) |  57,096/63,676 (89.7%) |
 | [n64-game-code-80220000.md](progress/n64-game-code-80220000.md)       | Nintendo 64 | Game code      | `0x80220000`-`0x80230000` |    164/169 (97.0%) |  61,168/68,100 (89.8%) |
 | [n64-game-code-80230000.md](progress/n64-game-code-80230000.md)       | Nintendo 64 | Game code      | `0x80230000`-`0x80240000` |      37/45 (82.2%) |  48,684/59,820 (81.4%) |
