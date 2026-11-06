@@ -504,81 +504,143 @@ void FillDecalRoundRect(s32 x0, s32 y0, s32 screenX1, s32 y1) {
     }
 }
 
-void DrawDecalRoundedRectOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
-    s32 swap, half, quarter, radius, i, j, error, a, b, x, y, run;
+void DrawDecalRoundedRectOutline(int x0, int y0, int x1, int y1) {
+    int swap;
+    int halfBrush;
+    int unusedFrameSlot; /* Retains the original stack frame size. */
+    int x;
+    int y;
+    int radius;
+    int stepX;
+    int stepY;
+    int run;
+    int err;
 
     ScreenToTexel(x0, y0);
     ScreenToTexel(x1, y1);
     if (x1 < x0) {
-        SWAP(x0, x1, swap);
+        swap = x0;
+        x0 = x1;
+        x1 = swap;
     }
     if (y1 < y0) {
-        SWAP(y0, y1, swap);
+        swap = y0;
+        y0 = y1;
+        y1 = swap;
     }
-    half = g_aBrushSizeRects[g_bBrushSize].width >> 1;
-    quarter = half >> 1;
-    radius = ((x1 - x0 < y1 - y0 ? x1 - x0 : y1 - y0) >> 2) + quarter;
-    if (half == 0) {
-        FillTexelColumn(y, x0, y0 + radius, y1 - radius);
-        FillTexelColumn(y, x1, y0 + radius, y1 - radius);
-        FillTexelRow(x, x0 + radius, x1 - radius, y1);
-        FillTexelRow(x, x0 + radius, x1 - radius, y0);
+    halfBrush = g_aBrushSizeRects[g_bBrushSize].width >> 1;
+    radius = ((x1 - x0 < y1 - y0 ? x1 - x0 : y1 - y0) >> 2) + (halfBrush >> 1);
+    if (halfBrush == 0) {
+        for (y = y0 + radius; y < y1 - radius; y++) {
+            SetPixel4Bit(x0, y, g_bDecalColor);
+        }
+        for (y = y0 + radius; y < y1 - radius; y++) {
+            SetPixel4Bit(x1, y, g_bDecalColor);
+        }
+        for (x = x0 + radius; x < x1 - radius; x++) {
+            SetPixel4Bit(x, y1, g_bDecalColor);
+        }
+        for (x = x0 + radius; x < x1 - radius; x++) {
+            SetPixel4Bit(x, y0, g_bDecalColor);
+        }
     } else {
-        /* The thick edges extend one texel further than the thin ones. */
         for (y = y0 + radius; y <= y1 - radius; y++) {
-            FillTexelRow(x, x0 - half, x0 + half, y);
+            for (x = x0 - halfBrush; x < x0 + halfBrush; x++) {
+                SetPixel4Bit(x, y, g_bDecalColor);
+            }
         }
         for (y = y0 + radius; y <= y1 - radius; y++) {
-            FillTexelRow(x, x1 - half, x1 + half, y);
+            for (x = x1 - halfBrush; x < x1 + halfBrush; x++) {
+                SetPixel4Bit(x, y, g_bDecalColor);
+            }
         }
-        for (y = y1 - half; y < y1 + half; y++) {
+        for (y = y1 - halfBrush; y < y1 + halfBrush; y++) {
             for (x = x0 + radius; x <= x1 - radius; x++) {
                 SetPixel4Bit(x, y, g_bDecalColor);
             }
         }
-        for (y = y0 - half; y < y0 + half; y++) {
+        for (y = y0 - halfBrush; y < y0 + halfBrush; y++) {
             for (x = x0 + radius; x <= x1 - radius; x++) {
                 SetPixel4Bit(x, y, g_bDecalColor);
             }
         }
     }
-
     x0 += radius;
     x1 -= radius;
     y0 += radius;
     y1 -= radius;
-    /* The two largest brushes move the corners on the left and at y0 by a texel. */
-    if (g_bBrushSize >= 3) {
+    if (g_bBrushSize > 2) {
         x0--;
         y0--;
     }
-    radius += quarter;
-    j = radius * 2;
-    i = 0;
-    error = -j;
-    if (j < 0) {
-        return;
+    radius += halfBrush >> 1;
+    stepY = radius * 2;
+    stepX = 0;
+    err = -stepY;
+    for (; stepX <= stepY;) {
+        if (!(stepX & 1)) {
+            if (halfBrush == 0) {
+                SetPixel4Bit(x0 - (stepX >> 1), y0 - (stepY >> 1), g_bDecalColor);
+            } else {
+                for (run = 0; run < halfBrush * 2; run++) {
+                    SetPixel4Bit(x0 - (stepX >> 1), y0 - (stepY >> 1) + run, g_bDecalColor);
+                }
+            }
+            if (halfBrush == 0) {
+                SetPixel4Bit(x0 - (stepX >> 1), (stepY >> 1) + y1, g_bDecalColor);
+            } else {
+                for (run = 0; run < halfBrush * 2; run++) {
+                    SetPixel4Bit(x0 - (stepX >> 1), (stepY >> 1) + y1 - run, g_bDecalColor);
+                }
+            }
+            if (halfBrush == 0) {
+                SetPixel4Bit((stepX >> 1) + x1, (stepY >> 1) + y1, g_bDecalColor);
+            } else {
+                for (run = 0; run < halfBrush * 2; run++) {
+                    SetPixel4Bit((stepX >> 1) + x1, (stepY >> 1) + y1 - run, g_bDecalColor);
+                }
+            }
+            if (halfBrush == 0) {
+                SetPixel4Bit((stepX >> 1) + x1, y0 - (stepY >> 1), g_bDecalColor);
+            } else {
+                for (run = 0; run < halfBrush * 2; run++) {
+                    SetPixel4Bit((stepX >> 1) + x1, y0 - (stepY >> 1) + run, g_bDecalColor);
+                }
+            }
+            if (halfBrush == 0) {
+                SetPixel4Bit((stepY >> 1) + x1, (stepX >> 1) + y1, g_bDecalColor);
+            } else {
+                for (run = 0; run < halfBrush * 2; run++) {
+                    SetPixel4Bit((stepY >> 1) + x1 - run, (stepX >> 1) + y1, g_bDecalColor);
+                }
+            }
+            if (halfBrush == 0) {
+                SetPixel4Bit((stepY >> 1) + x1, y0 - (stepX >> 1), g_bDecalColor);
+            } else {
+                for (run = 0; run < halfBrush * 2; run++) {
+                    SetPixel4Bit((stepY >> 1) + x1 - run, y0 - (stepX >> 1), g_bDecalColor);
+                }
+            }
+            if (halfBrush == 0) {
+                SetPixel4Bit(x0 - (stepY >> 1), y0 - (stepX >> 1), g_bDecalColor);
+            } else {
+                for (run = 0; run < halfBrush * 2; run++) {
+                    SetPixel4Bit(x0 - (stepY >> 1) + run, y0 - (stepX >> 1), g_bDecalColor);
+                }
+            }
+            if (halfBrush == 0) {
+                SetPixel4Bit(x0 - (stepY >> 1), (stepX >> 1) + y1, g_bDecalColor);
+            } else {
+                for (run = 0; run < halfBrush * 2; run++) {
+                    SetPixel4Bit(x0 - (stepY >> 1) + run, (stepX >> 1) + y1, g_bDecalColor);
+                }
+            }
+        }
+        err += stepX++;
+        if (err >= 0) {
+            err -= stepY--;
+        }
     }
-    do {
-        if ((i & 1) == 0) {
-            a = i >> 1;
-            b = j >> 1;
-            PaintRun(run, x0 - a, y0 - b, 0, 1, half);
-            PaintRun(run, x0 - a, y1 + b, 0, -1, half);
-            PaintRun(run, x1 + a, y1 + b, 0, -1, half);
-            PaintRun(run, x1 + a, y0 - b, 0, 1, half);
-            PaintRun(run, x1 + b, y1 + a, -1, 0, half);
-            PaintRun(run, x1 + b, y0 - a, -1, 0, half);
-            PaintRun(run, x0 - b, y0 - a, 1, 0, half);
-            PaintRun(run, x0 - b, y1 + a, 1, 0, half);
-        }
-        error += i;
-        i++;
-        if (error >= 0) {
-            error -= j;
-            j--;
-        }
-    } while (j >= i);
 }
 
 void DrawDecalFilledEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
