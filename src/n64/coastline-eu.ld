@@ -31,10 +31,11 @@ SECTIONS
 
     . = 0x802ae0f0;
     _bss_start = .;
-    /* IDO statics reuse the original car-select, paint-shop, and decal-editor state areas. */
+    /* IDO statics reuse their original BSS areas. */
     OVERLAY 0x802ae0f0 : NOCROSSREFS {
         .bss {
-            *(EXCLUDE_FILE (*carselect.c.obj *decaleditor.c.obj *paintshop.c.obj *trackrender.c.obj) .bss .bss.*)
+            *(EXCLUDE_FILE (*carselect.c.obj *decaleditor.c.obj *paintshop.c.obj
+                            *trackrender.c.obj *visibleinstances.c.obj) .bss .bss.*)
             *(COMMON)
             . = ALIGN(8);
         }
@@ -54,6 +55,10 @@ SECTIONS
             . = g_fViewMatrixMaxAbs;
             *trackrender.c.obj(.bss .bss.*)
         }
+        .visibleinstances_bss {
+            . = g_nNearbyVehicleCount;
+            *visibleinstances.c.obj(.bss .bss.*)
+        }
     }
     _bss_size = SIZEOF(.bss);
     /* The game uses the memory after the BSS by address, so C may not add to the BSS. */
@@ -68,6 +73,8 @@ SECTIONS
            "Paint-shop palette moved outside its original BSS slot.")
     ASSERT(ADDR(.trackrender_bss) + SIZEOF(.trackrender_bss) <= g_dwInstanceHideFlags + 4,
            "Track-render state exceeds its original BSS area.")
+    ASSERT(ADDR(.visibleinstances_bss) + SIZEOF(.visibleinstances_bss) <= g_nNearbyVehicleCount + 4,
+           "Visible-instance state exceeds its original BSS area.")
 
     /DISCARD/ : {
         *(.MIPS.abiflags)

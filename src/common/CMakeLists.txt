@@ -126,6 +126,7 @@ if(TGR_PLATFORM STREQUAL "n64")
        racerun.c
        vehicleengine.c
        vehiclepaint.c
+       visibleinstances.c
        vehiclesound.c)
   list(APPEND _common_sources ${CMAKE_SOURCE_DIR}/src/n64/racetick.c)
 endif()
