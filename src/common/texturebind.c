@@ -19,94 +19,92 @@ void DrawTexturedTile(s32 index, ModelTexture *textures) {
 }
 #else
 
-/* The original sets the palette only for a 4-bit texture, and the others read it unset. */
 void DrawTexturedTile(s32 index, ModelTexture *textures) {
+    static s32 tile = 0;
+    static s32 base = 0;
     ModelTexture *texture;
+    s32 maskS;
+    s32 maskT;
+    s32 bitsS;
+    s32 bitsT;
+    s32 cms;
+    s32 cmt;
+    s32 width;
+    s32 height;
+    s32 format;
+    s32 size;
+    s32 tmem;
 #ifdef ENABLE_PATCHES
-    /* A texture of more than 4 bits takes palette 0. */
-    s32 width, height, scaleS, scaleT, maskS, maskT, cms, cmt, tmem, palette = 0, format, size,
-                                                                     tile;
+    s32 palette = 0;
 #else
-    s32 width, height, scaleS, scaleT, maskS, maskT, cms, cmt, tmem, palette, format, size, tile;
-#endif /* ENABLE_PATCHES */
+    s32 palette;
+#endif
+
+    /* The unused local preserves IDO's stack layout. */
+    (void)tmem;
 
     texture = &textures[index];
     width = texture->width;
-    GetTextureScaleAndMask(width, &scaleS, &maskS);
+    GetTextureScaleAndMask(width, &maskS, &bitsS);
     height = texture->height;
-    GetTextureScaleAndMask(height, &scaleT, &maskT);
-    cms = texture->clampS ? G_TX_CLAMP : G_TX_WRAP;
+    GetTextureScaleAndMask(height, &maskT, &bitsT);
+    cms = texture->clampS ? 2 : 0;
     if (texture->mirrorS) {
-        cms |= G_TX_MIRROR;
+        cms |= 1;
     }
-    cmt = texture->clampT ? G_TX_CLAMP : G_TX_WRAP;
+    cmt = texture->clampT ? 2 : 0;
     if (texture->mirrorT) {
-        cmt |= G_TX_MIRROR;
+        cmt |= 1;
     }
     gDPTileSync(gDisplayListPtr++);
-    gDPSetTextureImage(gDisplayListPtr++, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, texture->image);
-    tmem = g_dwTextureTmemAddress & 0x1FF;
-    gDPSetTile(gDisplayListPtr++,
-               G_IM_FMT_RGBA,
-               G_IM_SIZ_16b,
-               0,
-               tmem,
-               G_TX_LOADTILE,
-               0,
-               G_TX_WRAP,
-               maskT,
-               G_TX_NOLOD,
-               G_TX_WRAP,
-               maskS,
-               G_TX_NOLOD);
+    gDPSetTextureImage(gDisplayListPtr++, 0, 2, 1, texture->image);
+    gDPSetTile(gDisplayListPtr++, 0, 2, 0, base, 7, 0, 0, bitsT, 0, 0, bitsS, 0);
     gDPLoadSync(gDisplayListPtr++);
-    switch (texture->format) {
-    case TEXTURE_FORMAT_CI4:
-        gDPLoadBlock(gDisplayListPtr++, G_TX_LOADTILE, 0, 0, ((width * height + 3) >> 2) - 1, 0);
-        palette = TEXTURE_CI4_PALETTE;
+    if (texture->format == 1) {
+        gDPLoadBlock(gDisplayListPtr++, 7, 0, 0, ((width * height + 3) >> 2) - 1, 0);
+        palette = 15;
         gDPLoadSync(gDisplayListPtr++);
-        gDPLoadTLUT_pal16(gDisplayListPtr++, TEXTURE_CI4_PALETTE, texture->palette);
-        gDPSetTextureLUT(gDisplayListPtr++, G_TT_RGBA16);
-        format = G_IM_FMT_CI;
-        size = G_IM_SIZ_4b;
-        break;
-    case TEXTURE_FORMAT_I8:
-        cms = cmt = G_TX_CLAMP;
-        /* The sine is discarded. */
+        gDPSetTextureImage(gDisplayListPtr++, 0, 2, 1, texture->palette);
+        gDPTileSync(gDisplayListPtr++);
+        gDPSetTile(gDisplayListPtr++, 0, 0, 0, 0x1f0, 7, 0, 0, 0, 0, 0, 0, 0);
+        gDPLoadSync(gDisplayListPtr++);
+        gDPLoadTLUTCmd(gDisplayListPtr++, 7, 15);
+        gDPPipeSync(gDisplayListPtr++);
+        gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 14, 2, 0x8000);
+        format = 2;
+        size = 0;
+    } else if (texture->format == 4) {
+        cmt = cms = 2;
         sins(0);
-        gDPLoadBlock(gDisplayListPtr++, G_TX_LOADTILE, 0, 0, ((width * height + 1) >> 1) - 1, 0);
-        gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
-        tmem = g_dwTextureTmemAddress & 0x1FF;
-        format = G_IM_FMT_I;
-        size = G_IM_SIZ_8b;
-        break;
-    default:
-        gDPLoadBlock(gDisplayListPtr++, G_TX_LOADTILE, 0, 0, width * height - 1, 0);
-        gDPSetTextureLUT(gDisplayListPtr++, G_TT_NONE);
-        format = G_IM_FMT_RGBA;
-        size = G_IM_SIZ_16b;
-        break;
+        gDPLoadBlock(gDisplayListPtr++, 7, 0, 0, ((width * height + 1) >> 1) - 1, 0);
+        gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 14, 2, 0);
+        format = 4;
+        size = 1;
+    } else {
+        gDPLoadBlock(gDisplayListPtr++, 7, 0, 0, width * height - 1, 0);
+        gSPSetOtherMode(gDisplayListPtr++, G_SETOTHERMODE_H, 14, 2, 0);
+        format = 0;
+        size = 2;
     }
-    tile = g_dwTextureRenderTile;
     gDPSetTile(gDisplayListPtr++,
                format,
                size,
                (width * (4 << size) + 63) >> 6,
-               tmem,
+               base,
                tile,
                palette,
                cmt,
-               maskT,
-               G_TX_NOLOD,
+               bitsT,
+               0,
                cms,
-               maskS,
-               G_TX_NOLOD);
+               bitsS,
+               0);
     gDPSetTileSize(gDisplayListPtr++,
                    tile,
                    texture->tileS0 * 4 + 2,
                    texture->tileT0 * 4 + 2,
                    texture->tileS1 * 4 + 2,
                    texture->tileT1 * 4 + 2);
-    gSPTexture(gDisplayListPtr++, scaleS, scaleT, 0, tile, G_ON);
+    gSPTexture(gDisplayListPtr++, maskS, maskT, 0, tile, 1);
 }
 #endif /* TGR_BOSS_RALLY */
