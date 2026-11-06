@@ -115,11 +115,11 @@ jobs:
             | sha256sum -c
           tar -xf .wiswa-ci/ido-5.3.tar.gz -C .wiswa-ci/ido/5.3
           python3 -m venv .sbclaude-venv
-      - name: 'Build and verify ROM-matched code'
+      - name: 'Compile with IDO and verify ROM-matched code'
         run: |
           cmake --preset "n64-$TGR_REGION" -DENFORCE_MATCHING=ON \
             -DPython3_EXECUTABLE="$GITHUB_WORKSPACE/.sbclaude-venv/bin/python"
-          cmake --build --preset "n64-$TGR_REGION" -- -k 0
+          cmake --build --preset "n64-$TGR_REGION" --target verify_matching -- -k 0
         env:
           IDO_ROOT: '${{ github.workspace }}/.wiswa-ci/ido/5.3'
           N64_INST: '/opt/libdragon'
