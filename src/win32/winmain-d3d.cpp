@@ -16,6 +16,7 @@
 #include "common/laps.h"
 #include "common/pause.h"
 #include "common/rallyconfig.h"
+#include "common/renderinit.h"
 #include "common/settings.h"
 #include "common/strings.h"
 #include "common/timing.h"
@@ -27,7 +28,6 @@
 #include "win32/frametimer.h"
 #include "win32/frontend.h"
 #include "win32/render.h"
-#include "win32/renderinit.h"
 #include "win32/sound.h"
 
 HINSTANCE g_hAppInstance;

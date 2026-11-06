@@ -4,7 +4,7 @@
 #if TGR_BOSS_RALLY
 #include "common/screen.h"
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "win32/renderinit.h"
+#include "common/renderinit.h"
 #endif
 
 #pragma push_macro("errno")

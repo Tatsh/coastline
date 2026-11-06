@@ -6,12 +6,12 @@
 #include <new>
 
 #include "common/rallyconfig.h"
+#include "common/renderinit.h"
 #include "common/screen.h"
 #include "common/settings.h"
 #include "win32/app.h"
 #include "win32/d3d/texture.h"
 #include "win32/render.h"
-#include "win32/renderinit.h"
 
 namespace {
 /**

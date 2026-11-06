@@ -1,5 +1,6 @@
 #include "common/buildinfo.h"
 #include "common/rallyconfig.h"
+#include "common/renderinit.h"
 #include "win32/app.h"
 #if TGR_BRD3D
 #include "win32/d3d/renderer.h"
@@ -11,8 +12,9 @@
 #include "win32/directplay.h"
 #include "win32/input.h"
 #include "win32/render.h"
-#include "win32/renderinit.h"
 #include "win32/sound.h"
+
+HANDLE g_hRenderMutex;
 
 void ShutdownGameSession(void) {
     PrintWineDiagnostic("coastline: Shutting down race session.\n");
