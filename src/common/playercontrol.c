@@ -440,6 +440,7 @@ static BOSS_RALLY_INLINE void SwingJoltWeight(Vehicle *vehicle) {
     VEHICLE_GET(vehicle, JoltVelocity).z -= JOLT_GRAVITY;
 }
 
+#if TGR_PLATFORM != TGR_PLATFORM_N64
 void ProcessVehicleInputAndPhysics(Vehicle *vehicle) {
     if (g_dwTrackMirrored) {
         VEHICLE_GET(vehicle, Input)->steering = -VEHICLE_GET(vehicle, Input)->steering;
@@ -460,6 +461,7 @@ void ProcessVehicleInputAndPhysics(Vehicle *vehicle) {
 #endif
     RespawnVehicle(vehicle);
 }
+#endif /* TGR_PLATFORM != TGR_PLATFORM_N64 */
 
 #if !TGR_BOSS_RALLY
 void UpdatePhysicsStep(Vehicle *vehicle) {

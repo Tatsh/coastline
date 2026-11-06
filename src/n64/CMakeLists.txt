@@ -19,6 +19,7 @@ set(_n64_sources
     paintshop.c
     pakmenu.c
     physics.c
+    playercontrol.c
     playerselect.c
     race.c
     raceprogress.c
