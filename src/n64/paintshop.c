@@ -39,19 +39,11 @@ PaletteSwatch g_aDecalSwatches[DECAL_SWATCHES];
 #define SLOT_RIGHT_DOOR 1
 #define SLOT_LEFT_FRONT_FENDER 2
 #define SLOT_RIGHT_FRONT_FENDER 3
-#define SLOT_ROOF 5
 #define SLOT_LEFT_REAR_FENDER 6
 #define SLOT_RIGHT_REAR_FENDER 7
 
 /* The slots the texts of the mirror menu cover, the doors and the fenders among them. */
 #define MIRROR_TEXT_SLOTS 8
-
-/* The cars that sit higher and lower than the rest in the preview. */
-#define CAR_RAISED_IN_PREVIEW 1
-#define CAR_LOWERED_IN_PREVIEW 10
-
-/* The frames the preview takes to turn from one decal slot to the next. */
-#define PREVIEW_TURN_FRAMES 16
 
 /* The size of the button pictures of the tools. */
 #define TOOL_ICON_WIDTH 64
@@ -160,111 +152,137 @@ void LoadTextureFromRom(Sprite *sprite) {
     DecompressFromRom(sprite->pixels, sprite->romOffset, NULL);
 }
 
-/* Step a vector from one to another over the frames of the turn of the preview. */
-static inline void InterpolatePreviewAxis(Vec3f *out, Vec3f *from, Vec3f *to) {
-    f32 stepX = (to->x - from->x) / 16.0f;
-    f32 stepY = (to->y - from->y) / 16.0f;
-    f32 stepZ = (to->z - from->z) / 16.0f;
-
-    out->x = from->x + g_wScreenFrameCount * stepX;
-    out->y = from->y + g_wScreenFrameCount * stepY;
-    out->z = from->z + g_wScreenFrameCount * stepZ;
-}
-
-/* The up axis of the car that shows a decal slot, tilted for the roof. */
-static inline void SetPreviewUp(Vec3f *up, u8 slot) {
-    if (slot == SLOT_ROOF) {
-        up->x = 5.0f;
-        up->y = 5.0f;
-        up->z = 1.5f;
-    } else {
-        up->x = 0.0f;
-        up->y = 0.0f;
-        up->z = 1.0f;
-    }
-}
-
 void RenderDecalPreview3D(void) {
-    Vec3f fromUp = {0.0f, 0.0f, 0.0f};
-    Vec3f toUp = {0.0f, 0.0f, 0.0f};
-    Vec3f axis, side, to, from;
-    s32 halfHeight, halfWidth;
+    float from[3];
+    float to[3];
+    float dx;
+    float dy;
+    float dz;
+    float x1[4];
+    Vec3f side;
+    Vec3f zAxis;
+    float x2[1];
+    Vec3f *p;
+    Vec3f *q;
 
     g_pActiveCameraVehicle = &g_aVehicles[g_bPaintShopPlayer];
-    g_pActiveCamera = g_pActiveCameraVehicle->activeCamera =
-        &g_pActiveCameraVehicle->cameras[VEHICLE_CAMERA_TRACKSIDE];
-    /* The car turns in front of a still camera. */
-    if (g_bDecalSlotChanged) {
-        from.x = s_aPanelViewDirections[g_bPreviousDecalSlot].x;
-        from.y = s_aPanelViewDirections[g_bPreviousDecalSlot].y;
-        from.z = s_aPanelViewDirections[g_bPreviousDecalSlot].z;
-        to.x = s_aPanelViewDirections[g_bDecalSlot].x;
-        to.y = s_aPanelViewDirections[g_bDecalSlot].y;
-        to.z = s_aPanelViewDirections[g_bDecalSlot].z;
+    g_pActiveCamera = g_pActiveCameraVehicle->activeCamera = &g_pActiveCameraVehicle->cameras[3];
+    if (g_bDecalSlotChanged != 0) {
+        p = &s_aPanelViewDirections[g_bPreviousDecalSlot];
+        from[0] = p->x;
+        from[1] = p->y;
+        from[2] = p->z;
+        q = &s_aPanelViewDirections[g_bDecalSlot];
+        to[0] = q->x;
+        to[1] = q->y;
+        to[2] = q->z;
         g_wScreenFrameCount++;
-        Vec3fNormalize(&from);
-        Vec3fNormalize(&to);
-        if (Vec3fDot(&to, &from) < -0.9) {
-            /* Nearly opposite directions turn about the vertical through a side step. */
-            axis.x = 0.0f;
-            axis.y = 0.0f;
-            axis.z = 1.0f;
-            Vec3fCross(&side, &axis, &from);
-            if (g_wScreenFrameCount < PREVIEW_TURN_FRAMES / 2) {
-                Vec3fAddInPlace(&to, &side);
+        Vec3fNormalize((Vec3f *)from);
+        Vec3fNormalize((Vec3f *)to);
+        if (Vec3fDot((Vec3f *)to, (Vec3f *)from) < -0.9) {
+            zAxis.x = 0.0f;
+            zAxis.y = 0.0f;
+            zAxis.z = 1.0f;
+            Vec3fCross(&side, &zAxis, (Vec3f *)from);
+            if (g_wScreenFrameCount < 8) {
+                Vec3fAddInPlace((Vec3f *)to, &side);
             } else {
-                Vec3fAddInPlace(&from, &side);
+                Vec3fAddInPlace((Vec3f *)from, &side);
             }
         }
-        InterpolatePreviewAxis(&g_pActiveCameraVehicle->frame.forward, &from, &to);
-        Vec3fNormalize(&g_pActiveCameraVehicle->frame.forward);
-        SetPreviewUp(&toUp, g_bDecalSlot);
-        SetPreviewUp(&fromUp, g_bPreviousDecalSlot);
-        Vec3fNormalize(&fromUp);
-        Vec3fNormalize(&toUp);
-        InterpolatePreviewAxis(&g_pActiveCameraVehicle->frame.up, &fromUp, &toUp);
-        Vec3fNormalize(&g_pActiveCameraVehicle->frame.up);
-        if (g_wScreenFrameCount == PREVIEW_TURN_FRAMES) {
+        dx = (to[0] - from[0]) / 16;
+        dy = (to[1] - from[1]) / 16;
+        dz = (to[2] - from[2]) / 16;
+        ((Vec3f *)g_pActiveCameraVehicle->matrix[0])->x = g_wScreenFrameCount * dx + from[0];
+        ((Vec3f *)g_pActiveCameraVehicle->matrix[0])->y = g_wScreenFrameCount * dy + from[1];
+        ((Vec3f *)g_pActiveCameraVehicle->matrix[0])->z = g_wScreenFrameCount * dz + from[2];
+        Vec3fNormalize((Vec3f *)g_pActiveCameraVehicle->matrix[0]);
+        {
+            float upB[3] = {0.0f, 0.0f, 0.0f};
+            float upA[3] = {0.0f, 0.0f, 0.0f};
+
+            if (g_bDecalSlot == 5) {
+                upA[0] = 5.0f;
+                upA[1] = 5.0f;
+                upA[2] = 1.5f;
+            } else {
+                upA[0] = 0.0f;
+                upA[1] = 0.0f;
+                upA[2] = 1.0f;
+            }
+            if (g_bPreviousDecalSlot == 5) {
+                upB[0] = 5.0f;
+                upB[1] = 5.0f;
+                upB[2] = 1.5f;
+            } else {
+                upB[0] = 0.0f;
+                upB[1] = 0.0f;
+                upB[2] = 1.0f;
+            }
+            Vec3fNormalize((Vec3f *)upB);
+            Vec3fNormalize((Vec3f *)upA);
+            dx = (upA[0] - upB[0]) / 16;
+            dy = (upA[1] - upB[1]) / 16;
+            dz = (upA[2] - upB[2]) / 16;
+            ((Vec3f *)g_pActiveCameraVehicle->matrix[2])->x = g_wScreenFrameCount * dx + upB[0];
+            ((Vec3f *)g_pActiveCameraVehicle->matrix[2])->y = g_wScreenFrameCount * dy + upB[1];
+            ((Vec3f *)g_pActiveCameraVehicle->matrix[2])->z = g_wScreenFrameCount * dz + upB[2];
+        }
+        Vec3fNormalize((Vec3f *)g_pActiveCameraVehicle->matrix[2]);
+        if (g_wScreenFrameCount == 16) {
             g_wScreenFrameCount = 0;
-            g_bDecalSlotChanged = FALSE;
+            g_bDecalSlotChanged = 0;
         }
     } else {
-        g_pActiveCameraVehicle->frame.forward.x = s_aPanelViewDirections[g_bDecalSlot].x;
-        g_pActiveCameraVehicle->frame.forward.y = s_aPanelViewDirections[g_bDecalSlot].y;
-        g_pActiveCameraVehicle->frame.forward.z = s_aPanelViewDirections[g_bDecalSlot].z;
-        Vec3fNormalize(&g_pActiveCameraVehicle->frame.forward);
+        float x3[12];
+        Vec3f *s;
+        Vec3f *d;
+
+        d = (Vec3f *)g_pActiveCameraVehicle->matrix[0];
+        s = &s_aPanelViewDirections[g_bDecalSlot];
+        d->x = s->x;
+        d->y = s->y;
+        d->z = s->z;
+        Vec3fNormalize((Vec3f *)g_pActiveCameraVehicle->matrix[0]);
     }
-    Vec3fCross(&g_pActiveCameraVehicle->frame.side,
-               &g_pActiveCameraVehicle->frame.up,
-               &g_pActiveCameraVehicle->frame.forward);
-    Vec3fNormalize(&g_pActiveCameraVehicle->frame.side);
-    Vec3fCross(&g_pActiveCameraVehicle->frame.up,
-               &g_pActiveCameraVehicle->frame.forward,
-               &g_pActiveCameraVehicle->frame.side);
-    /* The heading is computed twice. */
+    Vec3fCross((Vec3f *)g_pActiveCameraVehicle->matrix[1],
+               (Vec3f *)g_pActiveCameraVehicle->matrix[2],
+               (Vec3f *)g_pActiveCameraVehicle->matrix[0]);
+    Vec3fNormalize((Vec3f *)g_pActiveCameraVehicle->matrix[1]);
+    Vec3fCross((Vec3f *)g_pActiveCameraVehicle->matrix[2],
+               (Vec3f *)g_pActiveCameraVehicle->matrix[0],
+               (Vec3f *)g_pActiveCameraVehicle->matrix[1]);
     g_pActiveCameraVehicle->cameraHeading =
         Atan2f(g_pActiveCamera->forward.x, g_pActiveCamera->forward.y);
     g_pActiveCameraVehicle->cameraHeading =
         Atan2f(g_pActiveCamera->forward.x, g_pActiveCamera->forward.y);
-    Vec3fScale(&g_pActiveCameraVehicle->frame.position, &g_pActiveCameraVehicle->frame.up, -0.65f);
+    Vec3fScale((Vec3f *)g_pActiveCameraVehicle->matrix[3],
+               (Vec3f *)g_pActiveCameraVehicle->matrix[2],
+               -0.65f);
     SetupCameraMatrix(
         g_pActiveCamera, g_fCameraFovRadians, g_fCameraProjectionScale * 0.2, 320.0f, 200.0f);
-    if (g_aVehicles[g_bPaintShopPlayer].carModel == CAR_RAISED_IN_PREVIEW) {
-        halfHeight = g_dwScreenHeight >> 1;
-        halfWidth = g_dwScreenWidth >> 1;
-        SetViewport(0, halfHeight - 3, halfWidth - 4, halfHeight - 3, TRUE);
-    } else if (g_aVehicles[g_bPaintShopPlayer].carModel == CAR_LOWERED_IN_PREVIEW) {
-        halfHeight = g_dwScreenHeight >> 1;
-        halfWidth = g_dwScreenWidth >> 1;
-        SetViewport(0, halfHeight + 2, halfWidth - 4, halfHeight - 3, TRUE);
+    if (g_aVehicles[g_bPaintShopPlayer].carModel == 1) {
+        SetViewport(0,
+                    (g_dwScreenHeight >> 1) - 3,
+                    (g_dwScreenWidth >> 1) - 4,
+                    (g_dwScreenHeight >> 1) - 3,
+                    1);
+    } else if (g_aVehicles[g_bPaintShopPlayer].carModel == 10) {
+        SetViewport(0,
+                    (g_dwScreenHeight >> 1) + 2,
+                    (g_dwScreenWidth >> 1) - 4,
+                    (g_dwScreenHeight >> 1) - 3,
+                    1);
     } else {
-        halfHeight = g_dwScreenHeight >> 1;
-        halfWidth = g_dwScreenWidth >> 1;
-        SetViewport(0, halfHeight - 6, halfWidth - 4, halfHeight - 3, TRUE);
+        SetViewport(0,
+                    (g_dwScreenHeight >> 1) - 6,
+                    (g_dwScreenWidth >> 1) - 4,
+                    (g_dwScreenHeight >> 1) - 3,
+                    1);
     }
     MarkVisibleCell(0, 0);
     TransformWheelPositions(g_bPaintShopPlayer);
-    g_bPaintShopPreviewActive = TRUE;
+    g_bPaintShopPreviewActive = 1;
     CheckVehicleVisibility(g_pActiveCameraVehicle);
     RenderVehicleModel(g_pActiveCameraVehicle, 0);
 }
