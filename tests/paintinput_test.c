@@ -104,6 +104,14 @@ int main(void) {
     UpdatePaintPeripheralInput(&input);
     assert(input.buttons == 0);
 
+    keyboardStatus = 0;
+    keyboardKey = 0x0E01;
+    UpdatePaintPeripheralInput(&input);
+    assert(IsPaintKeyboardShiftDown());
+    keyboardKey = 0;
+    UpdatePaintPeripheralInput(&input);
+    assert(!IsPaintKeyboardShiftDown());
+
     g_aContStatus[1].type = 0;
     g_aContStatus[2].type = CONT_RELATIVE;
     g_aContPadData[2].stick_x = -120;

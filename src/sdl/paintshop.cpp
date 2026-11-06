@@ -920,6 +920,7 @@ void PaintShop::TranslateInput(float seconds, const PaintShopInput &input, bool 
         m_consoleFrameTime = std::fmod(m_consoleFrameTime, CONSOLE_FRAME_SECONDS);
     }
     m_input.buttons = input.buttons;
+    m_constrainShape = input.constrain;
     // In a menu or a dialog of the console, Enter chooses as A does. The keyboard of the text tool
     // reads Enter from the typed text instead.
     if (dialog && input.enter) {

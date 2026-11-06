@@ -40,6 +40,17 @@ static const KeyboardGlyph s_keyboardGlyphs[] = {
 static u16 s_previousKeys[3] = {0xFFFF, 0xFFFF, 0xFFFF};
 static u8 s_previousPort = 0xFF;
 
+s32 IsPaintKeyboardShiftDown(void) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        if (s_previousKeys[i] == 0x0E01 || s_previousKeys[i] == 0x0E06) {
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
 static s32 ClampCursor(s32 value, s32 minimum, s32 maximum) {
     if (value < minimum) {
         return minimum;

@@ -76,7 +76,9 @@ coastline_add_test(carselect stubs/carselect.c ${_vecmath} ${_gu} "${_src}/commo
 coastline_add_test(controllerscreen "${_src}/n64/controllerscreen.c")
 coastline_add_test(debugtext "${_src}/n64/debugtext.c" "${_src}/common/debuginstance.c")
 coastline_add_test(decaldraw "${_src}/n64/decaldraw.c")
-coastline_add_test(decaleditor "${_src}/n64/decaleditor.c" "${_src}/n64/decaldraw.c")
+coastline_add_test(decaleditor "${_src}/n64/decaleditor.c" "${_src}/n64/decaldraw.c"
+                   "${_src}/common/paintshape.c")
+target_compile_definitions(decaleditor_test PRIVATE ENABLE_PATCHES=1)
 coastline_add_test(drawtexturedrect "${_src}/n64/texrect.c")
 coastline_add_test(driving ${_vecmath} ${_common} "${_src}/common/frameclear.c" "${_src}/common/routeposition.c"
                    "${_src}/common/tracetrack.c")
@@ -114,6 +116,7 @@ coastline_add_test(
 coastline_add_test(options "${_src}/common/volumecontrols.c")
 coastline_add_test(paintshop "${_src}/n64/paintshop.c")
 coastline_add_test(paintinput "${_src}/n64/paintinput.c")
+coastline_add_test(paintshape "${_src}/common/paintshape.c")
 coastline_add_test(pakmenu "${_src}/n64/pakmenu.c")
 coastline_add_test(physics ${_common} "${_src}/common/rigidbody.c" "${_src}/common/cubeclip.c"
                    "${_src}/common/tricache.c" "${_src}/n64/collision-triangles.c")

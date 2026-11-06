@@ -10,4 +10,7 @@
  */
 void UpdatePaintPeripheralInput(PlayerInputState *state);
 
+/** Whether either Shift key of the Randnet keyboard is down. */
+s32 IsPaintKeyboardShiftDown(void);
+
 #endif /* COASTLINE_N64_PAINTINPUT_H */

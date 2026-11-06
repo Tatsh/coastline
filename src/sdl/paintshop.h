@@ -60,6 +60,7 @@ struct PaintShopInput {
     bool escape = false;
     /** Whether Ctrl+Z was pressed this frame to undo an edit outside a dialog. */
     bool undo = false;
+    bool constrain = false; /*!< Whether Shift or controller Z constrains a shape. */
     /**
      * The characters typed on a keyboard this frame in UTF-8, with Backspace as `'\b'` and Enter
      * as `'\r'`, in the order typed.
@@ -317,6 +318,7 @@ private:
     ControllerPak DecalPak(const DecalCar &car) const;
     std::optional<std::vector<u8>> ReadDecalNote(const DecalCar &car) const;
     s32 AnchorDistance() const;
+    std::array<s32, 2> PaintEndpoint() const;
     void ProcessColorEditorDialog();
     void UpdateCursorFromInput();
     bool PickDecalSlot();
@@ -508,6 +510,7 @@ private:
     std::array<u8, 3> m_savedSwatchColor{};
     s32 m_paintAnchorX = 0;
     s32 m_paintAnchorY = 0;
+    bool m_constrainShape = false;
     u32 m_lastClickTime = 0;
     bool m_anchorXInitialized = false;
     bool m_anchorYInitialized = false;

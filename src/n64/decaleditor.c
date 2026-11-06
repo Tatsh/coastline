@@ -6,6 +6,10 @@
 
 #include "common/fade.h"
 #include "common/input.h"
+#ifdef ENABLE_PATCHES
+#include "common/paintshape.h"
+#include "n64/paintinput.h"
+#endif
 #include "common/render.h"
 #include "common/system.h"
 #include "common/text.h"
@@ -41,6 +45,13 @@
 #define PaintShopInput() (&g_aPlayerInputState[g_bPaintShopPlayer])
 
 #define GetTimeMilliseconds() ((u32)((u64)osGetCount() * 1000000 / osClockRate / 1000))
+
+#ifdef ENABLE_PATCHES
+static s32 PaintShapeModifierDown(void) {
+    return (PaintShopInput()->pad != NULL && (PaintShopInput()->pad->button & CONT_G)) ||
+           IsPaintKeyboardShiftDown();
+}
+#endif
 
 /* The names of the styles of a tool, as its menu copies them. */
 typedef struct {
@@ -392,6 +403,10 @@ void ProcessDecalEditorInput(void) {
     int unusedFrameWord TGR_MATCHING_UNUSED;
     int x;
     int y;
+#ifdef ENABLE_PATCHES
+    int originalX;
+    int originalY;
+#endif
     int unusedFrameWords[3] TGR_MATCHING_UNUSED;
     char clicked;
 
@@ -574,7 +589,14 @@ void ProcessDecalEditorInput(void) {
             g_bDecalDragActive = 0;
         }
     } else if (g_bPaintTool != 4 && IsCursorInRect(&g_rcDecalCanvas) &&
-               (PaintShopInput()->buttons & INPUT_PICK)) {
+               (PaintShopInput()->buttons & INPUT_PICK)
+#ifdef ENABLE_PATCHES
+               && (!(g_bPaintToolStarted &&
+                     (g_bPaintTool == PAINT_TOOL_LINE || g_bPaintTool == PAINT_TOOL_RECTANGLE ||
+                      g_bPaintTool == PAINT_TOOL_OVAL)) ||
+                   (PaintShopInput()->buttons & INPUT_A))
+#endif
+    ) {
         switch (g_bPaintTool) {
         case 1:
             if (g_bPaintToolStarted == 0) {
@@ -610,10 +632,27 @@ void ProcessDecalEditorInput(void) {
                 g_bPaintToolStarted = 1;
             } else {
                 SaveDecalUndo();
+#ifdef ENABLE_PATCHES
+                originalX = g_texPaintCursor.originX;
+                originalY = g_texPaintCursor.originY;
+                if (PaintShapeModifierDown()) {
+                    ConstrainPaintEndpoint(g_nPaintAnchorX,
+                                           g_nPaintAnchorY,
+                                           &g_texPaintCursor.originX,
+                                           &g_texPaintCursor.originY,
+                                           FALSE);
+                }
+#endif
                 DrawLine4Bit(g_nPaintAnchorX,
                              g_nPaintAnchorY,
                              g_texPaintCursor.originX,
                              g_texPaintCursor.originY);
+#ifdef ENABLE_PATCHES
+                if (PaintShapeModifierDown()) {
+                    g_texPaintCursor.originX = originalX;
+                    g_texPaintCursor.originY = originalY;
+                }
+#endif
                 g_bPaintToolStarted = 0;
             }
             TransferFlags(PaintShopInput(), 0x8010);
@@ -630,6 +669,17 @@ void ProcessDecalEditorInput(void) {
                 g_bPaintToolStarted = 1;
             } else {
                 SaveDecalUndo();
+#ifdef ENABLE_PATCHES
+                originalX = g_texPaintCursor.originX;
+                originalY = g_texPaintCursor.originY;
+                if (PaintShapeModifierDown()) {
+                    ConstrainPaintEndpoint(g_nPaintAnchorX,
+                                           g_nPaintAnchorY,
+                                           &g_texPaintCursor.originX,
+                                           &g_texPaintCursor.originY,
+                                           TRUE);
+                }
+#endif
                 if (g_texPaintToolRect.style == 0) {
                     FillRect4Bit(g_nPaintAnchorX,
                                  g_nPaintAnchorY,
@@ -651,6 +701,12 @@ void ProcessDecalEditorInput(void) {
                                                 g_texPaintCursor.originX,
                                                 g_texPaintCursor.originY);
                 }
+#ifdef ENABLE_PATCHES
+                if (PaintShapeModifierDown()) {
+                    g_texPaintCursor.originX = originalX;
+                    g_texPaintCursor.originY = originalY;
+                }
+#endif
                 g_bPaintToolStarted = 0;
             }
             TransferFlags(PaintShopInput(), 0x8010);
@@ -664,6 +720,17 @@ void ProcessDecalEditorInput(void) {
                 SaveDecalUndo();
 #ifdef ENABLE_PATCHES
                 r = 0;
+                originalX = g_texPaintCursor.originX;
+                originalY = g_texPaintCursor.originY;
+                if (PaintShapeModifierDown() &&
+                    (g_texPaintToolOval.style == OVAL_STYLE_FILLED_ELLIPSE ||
+                     g_texPaintToolOval.style == OVAL_STYLE_OUTLINED_ELLIPSE)) {
+                    ConstrainPaintEndpoint(g_nPaintAnchorX,
+                                           g_nPaintAnchorY,
+                                           &g_texPaintCursor.originX,
+                                           &g_texPaintCursor.originY,
+                                           TRUE);
+                }
 #endif
                 if (g_texPaintToolOval.style == 2 || g_texPaintToolOval.style == 3) {
                     x = g_texPaintCursor.originX - g_nPaintAnchorX;
@@ -686,13 +753,42 @@ void ProcessDecalEditorInput(void) {
                 } else if (g_texPaintToolOval.style == 3) {
                     DrawDecalCircleOutline(g_nPaintAnchorX, g_nPaintAnchorY, r);
                 }
+#ifdef ENABLE_PATCHES
+                if (PaintShapeModifierDown() &&
+                    (g_texPaintToolOval.style == OVAL_STYLE_FILLED_ELLIPSE ||
+                     g_texPaintToolOval.style == OVAL_STYLE_OUTLINED_ELLIPSE)) {
+                    g_texPaintCursor.originX = originalX;
+                    g_texPaintCursor.originY = originalY;
+                }
+#endif
                 g_bPaintToolStarted = 0;
             }
             TransferFlags(PaintShopInput(), 0x8010);
             return;
         }
     } else if (g_bPaintTool != 4 && g_bPaintToolStarted != 0 && IsCursorInRect(&g_rcDecalCanvas) &&
+#ifdef ENABLE_PATCHES
+               !(PaintShopInput()->buttons & INPUT_A)) {
+#else
                !(PaintShopInput()->buttons & INPUT_PICK)) {
+#endif
+#ifdef ENABLE_PATCHES
+        originalX = g_texPaintCursor.originX;
+        originalY = g_texPaintCursor.originY;
+        if (PaintShapeModifierDown() &&
+            (g_bPaintTool == PAINT_TOOL_LINE || g_bPaintTool == PAINT_TOOL_RECTANGLE ||
+             g_bPaintTool == PAINT_TOOL_OVAL)) {
+            if (g_bPaintTool != PAINT_TOOL_OVAL ||
+                g_texPaintToolOval.style == OVAL_STYLE_FILLED_ELLIPSE ||
+                g_texPaintToolOval.style == OVAL_STYLE_OUTLINED_ELLIPSE) {
+                ConstrainPaintEndpoint(g_nPaintAnchorX,
+                                       g_nPaintAnchorY,
+                                       &g_texPaintCursor.originX,
+                                       &g_texPaintCursor.originY,
+                                       g_bPaintTool != PAINT_TOOL_LINE);
+            }
+        }
+#endif
         switch (g_bPaintTool) {
         case 1:
             g_bPaintToolStarted = 0;
@@ -702,6 +798,12 @@ void ProcessDecalEditorInput(void) {
                            g_nPaintAnchorY,
                            g_texPaintCursor.originX,
                            g_texPaintCursor.originY);
+#ifdef ENABLE_PATCHES
+            if (PaintShapeModifierDown()) {
+                g_texPaintCursor.originX = originalX;
+                g_texPaintCursor.originY = originalY;
+            }
+#endif
             return;
         case 5:
             if (g_texPaintToolRect.style == 0 || g_texPaintToolRect.style == 1) {
@@ -709,12 +811,24 @@ void ProcessDecalEditorInput(void) {
                                     g_nPaintAnchorY,
                                     g_texPaintCursor.originX,
                                     g_texPaintCursor.originY);
+#ifdef ENABLE_PATCHES
+                if (PaintShapeModifierDown()) {
+                    g_texPaintCursor.originX = originalX;
+                    g_texPaintCursor.originY = originalY;
+                }
+#endif
                 return;
             }
             DrawDashedRoundedRect(g_nPaintAnchorX,
                                   g_nPaintAnchorY,
                                   g_texPaintCursor.originX,
                                   g_texPaintCursor.originY);
+#ifdef ENABLE_PATCHES
+            if (PaintShapeModifierDown()) {
+                g_texPaintCursor.originX = originalX;
+                g_texPaintCursor.originY = originalY;
+            }
+#endif
             return;
         case 6:
             if (g_texPaintToolOval.style == 0 || g_texPaintToolOval.style == 1) {
@@ -722,12 +836,24 @@ void ProcessDecalEditorInput(void) {
                                   g_nPaintAnchorY,
                                   g_texPaintCursor.originX,
                                   g_texPaintCursor.originY);
+#ifdef ENABLE_PATCHES
+                if (PaintShapeModifierDown()) {
+                    g_texPaintCursor.originX = originalX;
+                    g_texPaintCursor.originY = originalY;
+                }
+#endif
                 return;
             }
             x = g_texPaintCursor.originX - g_nPaintAnchorX;
             y = g_texPaintCursor.originY - g_nPaintAnchorY;
             r = sqrtf(x * x + y * y);
             DrawDashedCircle(g_nPaintAnchorX, g_nPaintAnchorY, r);
+#ifdef ENABLE_PATCHES
+            if (PaintShapeModifierDown()) {
+                g_texPaintCursor.originX = originalX;
+                g_texPaintCursor.originY = originalY;
+            }
+#endif
             return;
         }
     }

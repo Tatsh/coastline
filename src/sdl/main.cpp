@@ -703,6 +703,9 @@ coastline::PaintShopInput PaintShopInputOf(const coastline::ControllerState &por
     input.enter =
         coastline::IsKeyDown(SDL_SCANCODE_RETURN) || coastline::IsKeyDown(SDL_SCANCODE_KP_ENTER);
     input.escape = coastline::IsKeyDown(SDL_SCANCODE_ESCAPE);
+    input.constrain = (port.buttons & coastline::BUTTON_Z) != 0 ||
+                      coastline::IsKeyDown(SDL_SCANCODE_LSHIFT) ||
+                      coastline::IsKeyDown(SDL_SCANCODE_RSHIFT);
     if (!mouse.last || *mouse.last != mouse.at) {
         input.pointer = mouse.at;
     }

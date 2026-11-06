@@ -975,6 +975,7 @@ pacboy
 packedvalue
 padbe
 paintinput
+paintshape
 paintshop
 painttex
 pakmenu

@@ -119,6 +119,9 @@ set(_common_sources
   volumecontrols.c
   wheelrender.c
   wind.c)
+if(TGR_PLATFORM STREQUAL "sdl" OR (TGR_PLATFORM STREQUAL "n64" AND TGR_ENABLE_PATCHES))
+  list(APPEND _common_sources paintshape.c)
+endif()
 if(TGR_PLATFORM STREQUAL "n64")
   list(REMOVE_ITEM _common_sources
     vehicledeform.c

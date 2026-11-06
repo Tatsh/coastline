@@ -152,6 +152,11 @@ void ProcessTextInputKeyboard(void) {
 }
 
 static PlayerInputState *input = &g_aPlayerInputState[1];
+static OSContPad pad;
+
+s32 IsPaintKeyboardShiftDown(void) {
+    return FALSE;
+}
 
 static void Press(u32 buttons) {
     input->buttons = buttons;
@@ -336,6 +341,7 @@ static void TestCursor(void) {
 static void TestEditor(void) {
     s32 i;
 
+    input->pad = &pad;
     memset(texels, 0, sizeof(texels));
     for (i = 0; i < DECAL_SLOTS; i++) {
         g_aDecalSlotRects[i].x = 10 + i * 20;
@@ -470,6 +476,25 @@ static void TestEditor(void) {
     Press(0);
     ProcessDecalEditorInput();
     assert(!g_bPaintToolStarted && !g_bDecalDragActive);
+
+    g_bPaintTool = PAINT_TOOL_LINE;
+    Point(g_rcDecalCanvas.x + 5, g_rcDecalCanvas.y + 5);
+    Press(INPUT_A);
+    ProcessDecalEditorInput();
+    assert(g_bPaintToolStarted);
+    Point(g_rcDecalCanvas.x + 25, g_rcDecalCanvas.y + 13);
+    pad.button = CONT_G;
+    Press(INPUT_Z);
+    ProcessDecalEditorInput();
+    assert(g_bPaintToolStarted);
+    assert(g_texPaintCursor.originX == g_rcDecalCanvas.x + 25);
+    assert(g_texPaintCursor.originY == g_rcDecalCanvas.y + 13);
+    Press(INPUT_A);
+    ProcessDecalEditorInput();
+    assert(!g_bPaintToolStarted);
+    assert(g_texPaintCursor.originX == g_rcDecalCanvas.x + 25);
+    assert(g_texPaintCursor.originY == g_rcDecalCanvas.y + 13);
+    pad.button = 0;
 }
 
 static void TestMenus(void) {

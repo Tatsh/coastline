@@ -3,6 +3,7 @@
 #include <SDL3/SDL.h>
 
 #include "common/input.h"
+#include "common/paintshape.h"
 #include "menuscreen.h"
 #include "paintshop.h"
 #include "stringresources.h"
@@ -161,6 +162,19 @@ s32 PaintShop::AnchorDistance() const {
     s32 dx = m_paintCursor->originX - m_paintAnchorX;
     s32 dy = m_paintCursor->originY - m_paintAnchorY;
     return static_cast<s32>(std::sqrt(static_cast<f32>(dx * dx + dy * dy)));
+}
+
+std::array<s32, 2> PaintShop::PaintEndpoint() const {
+    s32 x = m_paintCursor->originX;
+    s32 y = m_paintCursor->originY;
+    if (m_constrainShape &&
+        (m_paintTool != PAINT_TOOL_OVAL ||
+         m_paintToolIcons[PAINT_TOOL_OVAL]->style == OVAL_STYLE_FILLED_ELLIPSE ||
+         m_paintToolIcons[PAINT_TOOL_OVAL]->style == OVAL_STYLE_OUTLINED_ELLIPSE)) {
+        ConstrainPaintEndpoint(
+            m_paintAnchorX, m_paintAnchorY, &x, &y, m_paintTool != PAINT_TOOL_LINE);
+    }
+    return {x, y};
 }
 
 void PaintShop::ProcessColorEditorDialog() {
@@ -545,8 +559,7 @@ bool PaintShop::StartShape() {
 }
 
 void PaintShop::PaintRectangle() {
-    s32 x = m_paintCursor->originX;
-    s32 y = m_paintCursor->originY;
+    auto [x, y] = PaintEndpoint();
     switch (m_paintToolIcons[PAINT_TOOL_RECTANGLE]->style) {
     case RECT_STYLE_FILLED:
         FillRect4Bit(m_paintAnchorX, m_paintAnchorY, x, y);
@@ -572,8 +585,7 @@ void PaintShop::PaintOval() {
     if (style == OVAL_STYLE_FILLED_CIRCLE || style == OVAL_STYLE_OUTLINED_CIRCLE) {
         radius = AnchorDistance() / m_decalZoom;
     }
-    s32 x = m_paintCursor->originX;
-    s32 y = m_paintCursor->originY;
+    auto [x, y] = PaintEndpoint();
     switch (style) {
     case OVAL_STYLE_FILLED_ELLIPSE:
         DrawDecalFilledEllipse(m_paintAnchorX, m_paintAnchorY, x, y);
@@ -595,7 +607,11 @@ void PaintShop::PaintOval() {
 bool PaintShop::PaintWithTool() {
     // The text tool never arrives here, but the console tests for it again.
     if (m_paintTool == PAINT_TOOL_TEXT || !IsCursorInRect(m_decalCanvas) ||
-        (m_input.buttons & INPUT_PICK) == 0) {
+        (m_input.buttons & INPUT_PICK) == 0 ||
+        (m_paintToolStarted &&
+         (m_paintTool == PAINT_TOOL_LINE || m_paintTool == PAINT_TOOL_RECTANGLE ||
+          m_paintTool == PAINT_TOOL_OVAL) &&
+         (m_input.buttons & INPUT_A) == 0)) {
         return false;
     }
     switch (m_paintTool) {
@@ -608,8 +624,8 @@ bool PaintShop::PaintWithTool() {
         break;
     case PAINT_TOOL_LINE:
         if (StartShape()) {
-            DrawLine4Bit(
-                m_paintAnchorX, m_paintAnchorY, m_paintCursor->originX, m_paintCursor->originY);
+            auto [x, y] = PaintEndpoint();
+            DrawLine4Bit(m_paintAnchorX, m_paintAnchorY, x, y);
             m_paintToolStarted = 0;
         }
         break;
@@ -635,11 +651,10 @@ bool PaintShop::PaintWithTool() {
 void PaintShop::DrawShapeOutline() {
     // The dashed outline of a shape from its first corner to the cursor.
     if (m_paintTool == PAINT_TOOL_TEXT || !m_paintToolStarted || !IsCursorInRect(m_decalCanvas) ||
-        (m_input.buttons & INPUT_PICK) != 0) {
+        (m_input.buttons & INPUT_A) != 0) {
         return;
     }
-    s32 x = m_paintCursor->originX;
-    s32 y = m_paintCursor->originY;
+    auto [x, y] = PaintEndpoint();
     switch (m_paintTool) {
     case PAINT_TOOL_BRUSH:
         // The stroke of the brush ends when the button is let go.
