@@ -211,6 +211,7 @@ s32 TipBalancedVehicle(RigidBody *body) {
 #define OBB_SUM4_YZ3 OBB_SUM4_YZ
 #endif /* TGR_BOSS_RALLY && TGR_RENDERER == TGR_RENDERER_GLIDE */
 
+#if TGR_PLATFORM != TGR_PLATFORM_N64
 s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *halfB) {
     f32 r[3][3];
     f32(*m)[3] = rotation;
@@ -313,6 +314,7 @@ s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *
                                     COLLISION_PRODUCT(by, r[2][0])));
     return overlap;
 }
+#endif /* TGR_PLATFORM != TGR_PLATFORM_N64 */
 
 /* Share collision speed before applying the impulse. */
 static inline void
