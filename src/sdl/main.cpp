@@ -24,9 +24,9 @@
 #endif
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
+#undef SDL_strcasecmp
 
 #if !defined(_WIN32)
-#include <strings.h>
 #include <sys/resource.h>
 #else
 #include "windowsconsole.h"

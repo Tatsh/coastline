@@ -7,10 +7,7 @@
 #include <vector>
 
 #include <SDL3/SDL.h>
-
-#if !defined(_WIN32)
-#include <strings.h>
-#endif
+#undef SDL_strcasecmp
 
 #include "config.h"
 #include "controls.h"
