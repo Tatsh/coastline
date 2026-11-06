@@ -33,6 +33,10 @@ SECTIONS
     _bss_start = .;
     /* IDO statics reuse their original BSS areas. */
     OVERLAY 0x802acb30 : NOCROSSREFS {
+        .season_records_bss {
+            . = 0x80316848 - 0x802acb30;
+            *racemenu.c.obj(.bss.season_records)
+        }
         .bss {
             *(EXCLUDE_FILE (*carselect.c.obj *decaleditor.c.obj *paintshop.c.obj *racemenu.c.obj
                             *trackrender.c.obj *visibleinstances.c.obj) .bss .bss.*)
@@ -69,6 +73,8 @@ SECTIONS
     ASSERT(ADDR(.bss) + SIZEOF(.bss) <= 0x803837a0, "The BSS grew past its original end.")
     ASSERT(ADDR(.carselect_bss) + SIZEOF(.carselect_bss) <= 0x80316c90,
            "Car-select state exceeds its original BSS area.")
+    ASSERT(ADDR(.season_records_bss) + SIZEOF(.season_records_bss) <= 0x80316898,
+           "Season-record text exceeds its original BSS area.")
     ASSERT(ADDR(.racemenu_bss) + SIZEOF(.racemenu_bss) <= 0x80316900,
            "Track-menu state exceeds its original BSS area.")
     ASSERT(ADDR(.paintshop_bss) + SIZEOF(.paintshop_bss) <= 0x8036ae20,

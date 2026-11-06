@@ -525,9 +525,6 @@ nonmatching g_szTrackSelectPointsTextBuf, 0x50
 dlabel g_szTrackSelectPointsTextBuf
     /* 80317BC8 */ .space 0x50
 
-nonmatching g_szTrackSelectRecordTextBuf, 0x50
-
-dlabel g_szTrackSelectRecordTextBuf
     /* 80317C18 */ .space 0x50
 
 nonmatching g_dwTrackMenuItemCount, 0x4

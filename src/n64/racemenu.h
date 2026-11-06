@@ -385,15 +385,6 @@ extern s32 g_bSeasonFirstRace;
 extern s32 g_dwContinueFromResults;
 
 /**
- * The time of the blink of the round under way in the records.
- *
- * @ghidraAddress USA: 0x80271d5c
- * @ghidraAddress EUR: 0x80273d3c
- * @ghidraAddress JPN: 0x802737fc
- */
-extern f32 g_fSeasonRecordsBlinkTime;
-
-/**
  * The text of the track menu and of its records.
  *
  * @ghidraAddress USA: 0x80315f98
@@ -408,13 +399,6 @@ extern char g_szTrackMenuTextBuf[];
  * @ghidraAddress JPN: 0x803167f8
  */
 extern char g_szTrackSelectPointsTextBuf[];
-
-/**
- * @ghidraAddress USA: 0x80315f38
- * @ghidraAddress EUR: 0x80317c18
- * @ghidraAddress JPN: 0x80316848
- */
-extern char g_szTrackSelectRecordTextBuf[];
 
 /**
  * The loads of the models of the cars the screens show: a slot for each player, and another for

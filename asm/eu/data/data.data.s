@@ -3821,11 +3821,7 @@ dlabel g_bTrackMenuPakScreen
     /* 74D38 80273D38 00000000 */ .word 0x00000000
 enddlabel g_bTrackMenuPakScreen
 
-nonmatching g_fSeasonRecordsBlinkTime
-
-dlabel g_fSeasonRecordsBlinkTime
     /* 74D3C 80273D3C 00000000 */ .float 0
-enddlabel g_fSeasonRecordsBlinkTime
 
 nonmatching g_dwTrackMenuInitState
 

@@ -195,112 +195,134 @@ void TrackMenuPostDraw(s32 item) {
 }
 
 void SeasonRecordsPreDrawCallback(void) {
-    Season *season;
-    s32 round, seasonIndex, flags, track, race, shift, y, i;
+    static float g_fSeasonRecordsBlinkTime = 0.0f;
+#ifdef __GNUC__
+    static char g_szTrackSelectRecordTextBuf[80] __attribute__((section(".bss.season_records")));
+#else
+    static char g_szTrackSelectRecordTextBuf[80];
+#endif
+    /* The unused buffer preserves IDO's stack frame. */
+    char unusedFrameBuffer[32];
+    int raceIndex;
+    int track;
+    int currentRace;
+    int seasonIndex;
+    unsigned int championshipFlags;
+    int shift;
+    int y;
 
-    g_fSeasonRecordsBlinkTime += g_fFrameDeltaTime;
-    while (BLINK_PERIOD < g_fSeasonRecordsBlinkTime) {
-        g_fSeasonRecordsBlinkTime -= BLINK_PERIOD;
+    y = 95;
+    for (g_fSeasonRecordsBlinkTime += g_fFrameDeltaTime; g_fSeasonRecordsBlinkTime > 0.75f;
+         g_fSeasonRecordsBlinkTime -= 0.75f) {
     }
-    round = g_aVehicles[0].profile->round;
+    currentRace = g_aVehicles[0].profile->round;
     seasonIndex = g_aVehicles[0].profile->season;
-    flags = g_aVehicles[0].profile->championshipFlags;
+    championshipFlags = g_aVehicles[0].profile->championshipFlags;
     SetTextStyleNormal();
     SetTextAlignCenter();
     SetTextSize(20);
-    season = &g_SeasonTable[seasonIndex];
-    sprintf(g_szTrackSelectRecordTextBuf, "%%ry%s:", season->subtitle);
+    sprintf(g_szTrackSelectRecordTextBuf, "%%ry%s:", (char *)g_SeasonTable[seasonIndex].subtitle);
     DrawText(g_szTrackSelectRecordTextBuf, g_dwScreenWidth / 2, g_dwScreenHeight * 20 / 64);
-
-    /* The columns move right when a name is of the longer, mirrored tracks. */
     shift = 0;
-    for (i = 0; i < season->raceCount; i++) {
-        if (season->races[i][0] < MIRRORED_TRACKS) {
-            if (flags & 1) {
+    for (raceIndex = 0; raceIndex < g_SeasonTable[seasonIndex].raceCount; raceIndex++) {
+        if (g_SeasonTable[seasonIndex].races[raceIndex][0] < 5) {
+            if (championshipFlags & 1) {
                 shift = g_dwScreenWidth * 3 / 64;
                 break;
             }
-        } else if (!(flags & 1)) {
+        } else if (!(championshipFlags & 1)) {
             shift = g_dwScreenWidth * 3 / 64;
             break;
         }
     }
-
     SetTextSize(8);
     SetTextAlignRight();
-    DrawText("Race Record", g_dwScreenWidth * 23 / 32 + shift, 86);
-    DrawText("Lap Record", g_dwScreenWidth * 28 / 32 + shift + 2, 86);
+    DrawText("Race Record", g_dwScreenWidth * 23 / 32 + shift, 0x56);
+    DrawText("Lap Record", g_dwScreenWidth * 28 / 32 + shift + 2, 0x56);
     SetTextSize(10);
-    y = 95;
-    for (race = 0; race < season->raceCount; race++, y += 10) {
-        track = season->races[race][0];
-        if (flags & 1) {
-            track = track < MIRRORED_TRACKS ? track + MIRRORED_TRACKS : track - MIRRORED_TRACKS;
+    for (raceIndex = 0; raceIndex < g_SeasonTable[seasonIndex].raceCount; raceIndex++) {
+        track = g_SeasonTable[seasonIndex].races[raceIndex][0];
+        if (championshipFlags & 1) {
+            if (track < 5) {
+                track += 5;
+            } else {
+                track -= 5;
+            }
         }
         SetTextAlignLeft();
-        if (race == round && g_fSeasonRecordsBlinkTime < BLINK_ON) {
+        if (raceIndex == currentRace && g_fSeasonRecordsBlinkTime < 0.4f) {
             SetTextCustomColors(0xFF, 0xF0, 0x50, 0xFF, 0xF0, 0x50);
         } else {
             SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
         }
-        sprintf(g_szTrackSelectRecordTextBuf, "Race %d", race + 1);
+        sprintf(g_szTrackSelectRecordTextBuf, "Race %d", raceIndex + 1);
         DrawText(g_szTrackSelectRecordTextBuf, g_dwScreenWidth * 4 / 32 - shift, y);
+#if TGR_REGION == TGR_REGION_JP
+        sprintf(g_szTrackSelectRecordTextBuf,
+                "%%j%c",
+                g_SeasonTable[seasonIndex].races[raceIndex][1] + 0x29);
+        SetTextSize(13);
+        DrawText(g_szTrackSelectRecordTextBuf, g_dwScreenWidth * 8 / 32 - shift + 4, y + 1);
+        SetTextSize(10);
+        DrawText(g_apTrackMenuItems[track]->name, g_dwScreenWidth * 8 / 32 - shift + 16, y);
+#else
         sprintf(g_szTrackSelectRecordTextBuf,
                 "%s/%s",
                 g_apTrackMenuItems[track]->name,
-                g_apWeatherMenuItems[season->races[race][1]]->name);
+                g_apWeatherMenuItems[g_SeasonTable[seasonIndex].races[raceIndex][1]]->name);
         DrawText(g_szTrackSelectRecordTextBuf, g_dwScreenWidth * 8 / 32 - shift + 4, y);
+#endif
         SetTextAlignRight();
-        if (g_aVehicles[0].profile->raceRecords[track] == 0.0f) {
-            sprintf(g_szTrackSelectRecordTextBuf, "--    ");
-        } else {
+        if (g_aVehicles[0].profile->raceRecords[track] != 0) {
             FormatLapTime(g_szTrackSelectRecordTextBuf, g_aVehicles[0].profile->raceRecords[track]);
+        } else {
+            sprintf(g_szTrackSelectRecordTextBuf, "--    ");
         }
         DrawText(g_szTrackSelectRecordTextBuf, g_dwScreenWidth * 23 / 32 + shift - 1, y);
-        if (g_aVehicles[0].profile->lapRecords[track] == 0.0f) {
-            sprintf(g_szTrackSelectRecordTextBuf, "--    ");
-        } else {
+        if (g_aVehicles[0].profile->lapRecords[track] != 0) {
             FormatLapTime(g_szTrackSelectRecordTextBuf, g_aVehicles[0].profile->lapRecords[track]);
+        } else {
+            sprintf(g_szTrackSelectRecordTextBuf, "--    ");
         }
         DrawText(g_szTrackSelectRecordTextBuf, g_dwScreenWidth * 28 / 32 + shift, y);
+        y += 10;
     }
-
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF);
     SetTextAlignCenter();
-    DrawText("Cars For", g_dwScreenWidth >> 1, 148);
-    DrawText("This Season:", g_dwScreenWidth >> 1, 158);
-
-    /* The two cars of the season, in clear weather, side by side. */
-    g_dwWeatherActive = FALSE;
-    g_dwNightMode = FALSE;
-    g_dwRainMode = FALSE;
-    g_dwSnowMode = FALSE;
+    y = 0x94;
+    DrawText("Cars For", g_dwScreenWidth >> 1, y);
+    y += 10;
+    DrawText("This Season:", g_dwScreenWidth >> 1, y);
+    g_dwWeatherActive = 0;
+    g_dwNightMode = 0;
+    g_dwSnowMode = 0;
+    g_dwRainMode = 0;
     SetupFog();
     SetupWeatherLights();
     g_aViewportRects[0].vehicleIndex = 0;
     g_aViewportRects[1].vehicleIndex = 1;
-    RenderCameraView(NULL,
-                     NULL,
+    RenderCameraView(0,
+                     0,
                      0,
                      0,
                      g_dwScreenHeight * 7 / 16,
                      g_dwScreenWidth * 5 / 8,
                      g_dwScreenHeight * 5 / 8,
                      0.0f,
-                     TRUE,
+                     1,
                      0,
                      0,
                      0.0f,
-                     1.570796371f);
-    RenderCameraView(NULL,
-                     NULL,
+                     1.5707964f);
+    RenderCameraView(0,
+                     0,
                      1,
                      g_dwScreenWidth * 3 / 8,
                      g_dwScreenHeight * 7 / 16,
                      g_dwScreenWidth * 5 / 8,
                      g_dwScreenHeight * 5 / 8,
                      0.0f,
-                     TRUE,
+                     1,
                      1,
                      1,
                      0.0f,
