@@ -56,15 +56,16 @@ static inline s32 FogTruncateToWord(long double value) {
 #endif /* TGR_BOSS_RALLY */
 
 void SetupFog(void) {
+    s32 intensity;
+#if TGR_BOSS_RALLY
     Vehicle *vehicle;
     f32 flash, haze, y;
-#if TGR_BOSS_RALLY
     long double level;
 #else
+    f32 blend;
     f32 fade;
-    f32 level;
+    f32 bright;
 #endif
-    s32 intensity;
 
     if (g_dwNightMode) {
         g_bFogR = g_bFogG = g_bFogB = 0;
@@ -94,19 +95,22 @@ void SetupFog(void) {
         g_bFogB = 0x70;
         g_bFogIntensity = 0x40;
         if (g_dwLightningFlashCounter > 0 && (g_dwLightningFlashCounter & 1)) {
+#if TGR_BOSS_RALLY
             /* A flash of lightning lights the fog, the more the nearer the bolt. */
             flash = 100.0f / (Vec2fDistance((Vec2f *)&g_pActiveCamera->position,
                                             (Vec2f *)g_avLightningBolt) +
                               100.0f);
-#if TGR_BOSS_RALLY
             g_bFogR = FogTruncateToWord((1.0L - flash) * g_bFogR + 240.0L * flash);
             g_bFogG = FogTruncateToWord((1.0L - flash) * g_bFogG + 248.0L * flash);
             g_bFogB = FogTruncateToWord((1.0L - flash) * g_bFogB + 255.0L * flash);
 #else
-            fade = 1.0f - flash;
-            g_bFogR = g_bFogR * fade + 240.0f * flash;
-            g_bFogG = g_bFogG * fade + 248.0f * flash;
-            g_bFogB = g_bFogB * fade + 255.0f * flash;
+            blend = 100.0f / (Vec2fDistance((Vec2f *)&g_pActiveCamera->position,
+                                            (Vec2f *)g_avLightningBolt) +
+                              100.0f);
+            fade = 1.0f - blend;
+            g_bFogR = g_bFogR * fade + 240.0f * blend;
+            g_bFogG = g_bFogG * fade + 248.0f * blend;
+            g_bFogB = g_bFogB * fade + 255.0f * blend;
 #endif /* TGR_BOSS_RALLY */
         }
         if (g_dwNumLocalPlayers == 2) {
@@ -118,45 +122,49 @@ void SetupFog(void) {
         }
     } else if (g_dwWeatherActive) {
         /* The intensity follows the height of the vehicle of the view within the track. */
-        vehicle = g_pActiveCameraVehicle;
 #if TGR_BOSS_RALLY
+        vehicle = g_pActiveCameraVehicle;
         level = ((long double)VEHICLE_GET(vehicle, Frame).position.z - g_LoadedTrack.minZ) /
                 ((long double)g_LoadedTrack.maxZ - g_LoadedTrack.minZ) * 255.0L;
         intensity = FogTruncateToWord(level);
 #else
-        level = (VEHICLE_GET(vehicle, Frame).position.z - g_LoadedTrack.minZ) /
-                (g_LoadedTrack.maxZ - g_LoadedTrack.minZ) * 255.0f;
-        intensity = (s32)level;
+        intensity = (VEHICLE_GET(g_pActiveCameraVehicle, Frame).position.z - g_LoadedTrack.minZ) /
+                    (g_LoadedTrack.maxZ - g_LoadedTrack.minZ) * 255.0f;
 #endif
         if (intensity < 0) {
             intensity = 0;
-        } else if (intensity >= 0x100) {
+        } else if (intensity > 255) {
             intensity = 0xFF;
         }
         if (g_dwSelectedTrackId == TRACK_DESERT) {
             /* Past a y of 1024, the fog of the desert turns grey by an amount with no limit. */
+#if TGR_BOSS_RALLY
             y = g_pActiveCamera->position.y;
             if (DESERT_HAZE_Y < y) {
-#if TGR_BOSS_RALLY
                 haze = ((long double)g_pActiveCamera->position.x * 0.00043945311f) *
                        (((long double)y - DESERT_HAZE_Y) * 0.00087890622f);
 #else
-                haze = (y - DESERT_HAZE_Y) * 0.00087890622f *
-                       (g_pActiveCamera->position.x * 0.00043945311f);
+            if (1024.0f < g_pActiveCamera->position.y) {
+                blend = ((g_pActiveCamera->position.y - 1024.0f) * 0.0008789062267169356f) *
+                        (g_pActiveCamera->position.x * 0.0004394531133584678f);
 #endif
             } else {
+#if TGR_BOSS_RALLY
                 haze = 0.0f;
+#else
+                blend = 0.0f;
+#endif
             }
 #if TGR_BOSS_RALLY
             g_bFogR = FogTruncateToWord((1.0L - haze) * g_LoadedTrack.fogColor[0] + 160.0L * haze);
             g_bFogG = FogTruncateToWord((1.0L - haze) * g_LoadedTrack.fogColor[1] + 160.0L * haze);
             g_bFogB = FogTruncateToWord((1.0L - haze) * g_LoadedTrack.fogColor[2] + 160.0L * haze);
 #else
-            fade = 1.0f - haze;
-            haze = 160.0f * haze;
-            g_bFogR = g_LoadedTrack.fogColor[0] * fade + haze;
-            g_bFogG = g_LoadedTrack.fogColor[1] * fade + haze;
-            g_bFogB = g_LoadedTrack.fogColor[2] * fade + haze;
+            fade = 1.0f - blend;
+            bright = 160.0f * blend;
+            g_bFogR = g_LoadedTrack.fogColor[0] * fade + bright;
+            g_bFogG = g_LoadedTrack.fogColor[1] * fade + bright;
+            g_bFogB = g_LoadedTrack.fogColor[2] * fade + bright;
 #endif /* TGR_BOSS_RALLY */
         } else {
             g_bFogR = g_LoadedTrack.fogColor[0];
@@ -180,8 +188,13 @@ void SetupFog(void) {
         g_dwFogMaxDistance = 1000;
     }
     g_dwFogFactorScale = 128000 / (g_dwFogMaxDistance - g_dwFogMinDistance);
+#if TGR_BOSS_RALLY
     g_dwFogFactorOffset =
         (500 - g_dwFogMinDistance) * 256 / (g_dwFogMaxDistance - g_dwFogMinDistance);
+#else
+    g_dwFogFactorOffset =
+        ((500 - g_dwFogMinDistance) << 8) / (g_dwFogMaxDistance - g_dwFogMinDistance);
+#endif
     gSPFogPosition(gDisplayListPtr++, g_dwFogMinDistance, g_dwFogMaxDistance);
     gDPSetFogColor(gDisplayListPtr++, g_bFogR, g_bFogG, g_bFogB, 0xFF);
 }
