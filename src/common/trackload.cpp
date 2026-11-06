@@ -5,17 +5,14 @@
 #include <cstring>
 
 #include "common/fileio.h"
+#include "common/hudassets.h"
 #include "common/physics.h"
 #include "common/relocation.h"
 #include "common/settings.h"
+#include "common/trackbackend.h"
 #include "common/trackmenuitem.h"
 #include "common/trackrelocation.h"
 #include "common/util.h"
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "win32/render.h"
-#elif TGR_PLATFORM == TGR_PLATFORM_SDL
-#include "sdl/trackload.h"
-#endif
 
 namespace {
 /**

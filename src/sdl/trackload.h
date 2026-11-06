@@ -5,6 +5,7 @@
 #include <span>
 #include <vector>
 
+#include "common/trackbackend.h"
 #include "common/vehiclemodel.h"
 
 namespace coastline {
@@ -26,13 +27,6 @@ public:
 private:
     std::unique_ptr<ModelLoader> m_loader;
 };
-
-/**
- * Set the texture segment of the loaded track before relocating its textures.
- *
- * @param textures The borrowed segment base, valid until the track is unloaded or replaced.
- */
-void SetTrackTextureSource(unsigned char *textures);
 
 /** @return The entries of the texture map LoadTrackTextureMap() read last. */
 int LoadedTextureMapEntries();

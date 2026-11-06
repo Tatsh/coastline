@@ -21,6 +21,7 @@
 #include "common/texturesampling.h"
 #include "common/textureupload.h"
 #include "common/track.h"
+#include "common/trackbackend.h"
 #include "common/trackskidmarks.h"
 #include "common/vecmath.h"
 #include "common/vehicleview.h"
@@ -558,28 +559,6 @@ unsigned CreateTextureFromN64ImageAutoLoadSize(const unsigned char *pImage,
                                                int nOption11,
                                                int nOption12,
                                                int nOption13);
-
-/**
- * @ghidraAddress BRD3D: 0x118aa0d8
- * @ghidraAddress BRGlide: 0x118ed1f0
- */
-extern unsigned char g_abDaySkyPalette[32];
-/**
- * @ghidraAddress BRD3D: 0x118ab0f8
- * @ghidraAddress BRGlide: 0x118ee210
- */
-extern unsigned char g_abNightSkyPalette[32];
-
-/**
- * @ghidraAddress BRD3D: 0x10073ac0
- * @ghidraAddress BRGlide: 0x1006c910
- */
-void CreateDaySkyTexture(void);
-/**
- * @ghidraAddress BRD3D: 0x10073b00
- * @ghidraAddress BRGlide: 0x1006c950
- */
-void CreateNightSkyTexture(void);
 
 /**
  * @ghidraAddress BRD3D: 0x10024ae0
