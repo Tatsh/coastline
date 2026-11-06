@@ -8,6 +8,10 @@
 
 #include <SDL3/SDL.h>
 
+#if !defined(_WIN32)
+#include <strings.h>
+#endif
+
 #include "config.h"
 #include "controls.h"
 #include "menus.h"

@@ -26,6 +26,7 @@
 #include <SDL3/SDL_main.h>
 
 #if !defined(_WIN32)
+#include <strings.h>
 #include <sys/resource.h>
 #else
 #include "windowsconsole.h"
