@@ -282,7 +282,6 @@ declear
 decleared
 decodeddisc
 decomp
-decomp's
 decompressobj
 denumret
 depfile
@@ -391,6 +390,7 @@ drawtexturedrect
 drenderstate
 drenderstatetype
 drirc
+drivewheel
 drlibs
 drytire
 dsbcaps
@@ -738,7 +738,6 @@ libsonnet
 libswresample
 libswscale
 libultra
-libultra's
 libunwind
 libvpx
 libwayland
@@ -1392,7 +1391,6 @@ texturescan
 texturestream
 textureworkspace
 tgmath
-tgrally
 thiscall
 timeattack
 timefmt

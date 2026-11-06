@@ -75,6 +75,7 @@ void SelectVehiclePhysicsTables(s32 model) {
 #define ABS(x) ((x) < 0.0f ? -(x) : (x))
 #define SIGN(x) ((x) == 0.0f ? 0.0 : (0.0f < (x) ? 1.0 : -1.0))
 
+#if TGR_BOSS_RALLY
 void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 dt) {
     Vec3f unitY, axle, forward, side, roll, velocity, push, local, weight;
 #if TGR_PLATFORM == TGR_PLATFORM_N64
@@ -282,6 +283,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
     }
 #endif /* TGR_BOSS_RALLY */
 }
+#endif /* TGR_BOSS_RALLY */
 
 void ComputeCollisionPenetration(
     RigidBody *body, Vec3f *normal, f32 offset, Vec3f *contact, Vec3f triangle[3]) {

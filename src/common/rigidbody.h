@@ -75,11 +75,14 @@ typedef struct RigidBody {
     Vec3f torque; /*!< The sum of the torques of a step, then the angular acceleration it gives. */
     RigidBodyState stepStates[2]; /*!< The states of the steps of the integration. */
     struct TrackTriangle *ground; /*!< The triangle of the track under a wheel, or NULL. */
-    u8 surface;         /*!< The surface of the ground triangle, a TRACK_SURFACE_ value. */
-    Vec3f groundNormal; /*!< The normal of the plane of the ground triangle. */
-    f32 groundOffset;   /*!< The offset of the plane of the ground triangle along its normal. */
-    s32 contactFrames;  /*!< The frames a wheel has touched the ground, up to 100, or 0 off the
-                             ground. */
+    u8 surface; /*!< The surface of the ground triangle, a TRACK_SURFACE_ value. */
+    union {
+        Vec3f groundNormal;            /*!< The normal of the plane of the ground triangle. */
+        f32 groundNormalComponents[3]; /*!< The normal components for indexed wheel physics. */
+    };
+    f32 groundOffset;  /*!< The offset of the plane of the ground triangle along its normal. */
+    s32 contactFrames; /*!< The frames a wheel has touched the ground, up to 100, or 0 off the
+                            ground. */
     f32 springRate; /*!< The rate of the suspension springs of the body of a vehicle, (4 times the
                          suspension stiffness plus 20) times 16000. */
     f32 damping;    /*!< The damping of the suspension of the body of a vehicle, -3000. */

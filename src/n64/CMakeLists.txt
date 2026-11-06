@@ -10,6 +10,7 @@ set(_n64_sources
     decaldraw.c
     decaleditor.c
     depth.c
+    drivewheel.c
     effects.c
     frame.c
     hud.c
