@@ -12,8 +12,8 @@ set(_gu
     "${_src}/n64/libultra/gu/mtxcatf.c"
     "${_src}/n64/libultra/gu/mtxutil.c"
     "${_src}/n64/libultra/gu/rotate.c"
-    "${_src}/common/libultra/gu/scale.c"
-    "${_src}/common/libultra/gu/translate.c"
+    "${_src}/n64/libultra/gu/scale.c"
+    "${_src}/n64/libultra/gu/translate.c"
     "${_src}/n64/libultra/gu/normalize.c")
 set(_common "${CMAKE_CURRENT_SOURCE_DIR}/stubs/common.c")
 set(_vecmath "${_src}/common/vecmath.c")
