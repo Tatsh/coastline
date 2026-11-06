@@ -62,6 +62,26 @@ extern u16 g_awTriCacheSectorId[TRI_CACHE_SLOTS];
  */
 extern u16 g_awTriCacheTriCount[TRI_CACHE_SLOTS];
 
+#if !TGR_BOSS_RALLY
+/**
+ * The initial ceiling normal for a vertical ray cast.
+ *
+ * @ghidraAddress USA: 0x8028b318
+ * @ghidraAddress EUR: 0x8028d5c8
+ * @ghidraAddress JPN: 0x8028cff8
+ */
+extern Vec3f g_vRayCeilingNormalInit;
+
+/**
+ * The initial ground normal for a vertical ray cast.
+ *
+ * @ghidraAddress USA: 0x8028b324
+ * @ghidraAddress EUR: 0x8028d5d4
+ * @ghidraAddress JPN: 0x8028d004
+ */
+extern Vec3f g_vRayGroundNormalInit;
+#endif
+
 /**
  * When each slot was last used.
  *

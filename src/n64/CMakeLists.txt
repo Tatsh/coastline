@@ -14,6 +14,7 @@ set(_n64_sources
     drivewheel.c
     effects.c
     frame.c
+    ground-ray.c
     hud.c
     impulse.c
     input.c

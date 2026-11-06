@@ -186,6 +186,7 @@ coastline_add_test(
   "${_src}/common/mathutil.c"
   "${_src}/common/trackgrid.c"
   "${_src}/common/tricache.c"
+  "${_src}/n64/ground-ray.c"
   "${_src}/common/vehicleengine.c"
   "${_src}/common/vehicletrackpos.c")
 coastline_add_test(vehiclerender ${_vecmath} ${_gu} "${_src}/common/headlight.c"

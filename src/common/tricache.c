@@ -18,15 +18,12 @@
 static u32 g_dwTriCacheLruCounter;
 #endif /* TGR_BOSS_RALLY */
 
+#if TGR_BOSS_RALLY
 #define RAY_HEADROOM 1.5f
 #define RAY_NEARBY_DISTANCE 5.0f
 #define RAY_CEILING_DEPTH -1.0f
 
-#if TGR_BOSS_RALLY
 #define RAY_LESS(a, b) (!((a) >= (b)))
-#else
-#define RAY_LESS(a, b) ((a) < (b))
-#endif
 
 s32 CastRayAgainstTrack(Vec3f *outPoint,
                         Vec3f *outNormal,
@@ -210,6 +207,7 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
     *nearbyCount = nearby;
     return groundHits;
 }
+#endif /* TGR_BOSS_RALLY */
 
 #if TGR_BOSS_RALLY
 s32 g_bTrackCollisionFrameToggle;

@@ -10,6 +10,8 @@
 #include "vehicle.c"
 
 TrackHeader g_LoadedTrack;
+Vec3f g_vRayCeilingNormalInit = {0.0f, 0.0f, 1.0f};
+Vec3f g_vRayGroundNormalInit = {0.0f, 0.0f, 1.0f};
 Vehicle g_aVehicles[MAX_VEHICLES];
 CarModel g_aCarModels[CAR_MODELS];
 CarPhysicsSpec g_aCarPhysicsSpecs[CAR_MODELS];
