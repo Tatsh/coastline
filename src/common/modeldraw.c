@@ -14,6 +14,7 @@
 s32 g_dwDrawModelListNoZBuffer;
 #endif /* TGR_BOSS_RALLY */
 
+#if TGR_PLATFORM != TGR_PLATFORM_N64
 void DrawModelList(Model *model, f32 m[4][4]) {
     ModelPart *part;
     LookAt *lookAt;
@@ -174,3 +175,4 @@ void DrawModelList(Model *model, f32 m[4][4]) {
     }
     gSPPopMatrix(gDisplayListPtr++, G_MTX_MODELVIEW);
 }
+#endif /* TGR_PLATFORM != TGR_PLATFORM_N64 */

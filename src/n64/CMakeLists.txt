@@ -16,6 +16,7 @@ set(_n64_sources
     input.c
     inputtranslate.c
     mainmenu.c
+    modeldraw.c
     obb.c
     options.c
     paintshop.c
