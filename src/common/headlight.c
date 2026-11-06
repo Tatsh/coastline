@@ -6,8 +6,10 @@
 #include "common/vehiclerender.h"
 #include "common/weather.h"
 
+#if TGR_BOSS_RALLY
 #define FAR_CLIP_RATIO 6
 #define HEADLIGHT_BEAM_TEXTURE 5
+#endif
 
 void ResetHeadlightGlare(void) {
     g_fHeadlightGlare = 0.0f;
@@ -16,6 +18,7 @@ void ResetHeadlightGlare(void) {
 #endif
 }
 
+#if TGR_BOSS_RALLY
 void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
     Vec3f toCamera, beam;
 #if TGR_BOSS_RALLY
@@ -141,3 +144,4 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
                       SHADE,
                       0);
 }
+#endif /* TGR_BOSS_RALLY */

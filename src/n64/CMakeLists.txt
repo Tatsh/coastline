@@ -16,6 +16,7 @@ set(_n64_sources
     effects.c
     frame.c
     ground-ray.c
+    headlight-beams.c
     hud.c
     impulse.c
     input.c

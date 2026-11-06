@@ -190,6 +190,7 @@ coastline_add_test(
   "${_src}/common/vehicleengine.c"
   "${_src}/common/vehicletrackpos.c")
 coastline_add_test(vehiclerender ${_vecmath} ${_gu} "${_src}/common/headlight.c"
+                   "${_src}/n64/headlight-beams.c"
                    "${_src}/common/vehiclevisibility.c" "${_src}/common/wheelrender.c")
 # The test keeps the light matrices as it sets them through its own version of this routine.
 target_link_options(vehiclerender_test PRIVATE -Wl,--wrap=NormalizeLightMatrix)
