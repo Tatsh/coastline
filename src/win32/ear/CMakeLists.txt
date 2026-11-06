@@ -1,7 +1,15 @@
 # The MCI music devices of EAR and the file of MFC they write with. The portable core in
 # src/common/ear
 # calls these routines and they call back into the core.
-add_library(coastline_win32_ear STATIC exports.def file.cpp musicdevice.cpp musicplayback.cpp)
+add_library(
+  coastline_win32_ear STATIC
+  backendversion.c
+  directsoundoutput.cpp
+  dllmain.c
+  exports.def
+  file.cpp
+  musicdevice.cpp
+  musicplayback.cpp)
 target_include_directories(coastline_win32_ear PUBLIC "${CMAKE_SOURCE_DIR}/src")
 target_compile_options(coastline_win32_ear PRIVATE -Wall -Wextra -Wno-unused-parameter)
 target_link_libraries(coastline_win32_ear PRIVATE dxguid kernel32 ole32 user32 version winmm)

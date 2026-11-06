@@ -98,6 +98,7 @@ endif()
 
 # EAR, the sound engine of the PC release, on SDL audio.
 add_subdirectory("${CMAKE_SOURCE_DIR}/src/common/ear" "${CMAKE_BINARY_DIR}/src/common/ear")
+target_sources(coastline_ear PRIVATE ear/audiooutput.cpp ear/backendversion.c)
 
 # The race engine of the PC release, shared with the Windows libraries. Its libraries take the
 # settings of src/CMakeLists.txt.
