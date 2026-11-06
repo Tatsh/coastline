@@ -1203,19 +1203,6 @@ void DrawRectBorder(s32 x,
     gDPSetCycleType(gDisplayListPtr++, G_CYC_1CYCLE);
 }
 
-/* Draw the labels and the pictures of the A and B buttons of a menu of a tool. */
-static inline void DrawMenuButtons(s32 buttonY, s32 cancelX) {
-    s32 textY;
-
-    SetTextSize(10);
-    SetTextAlignLeft();
-    textY = (buttonY + 0x12) >> 1;
-    DrawText("%wwSELECT", (g_texButtonA.width + 0xD9) >> 1, textY);
-    DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, textY);
-    DrawTexturedSprite(&g_texButtonA, 0xD3, buttonY);
-    DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
-}
-
 void ProcessFillClearMenu(void) {
     s32 i;
     u32 slotX, slotY, carX, carY;
@@ -1241,6 +1228,7 @@ void ProcessFillClearMenu(void) {
 
     /* IDO reserves these unused locals in the original stack frame. */
     (void)unusedOption;
+    /* IDO reserves this unused local in the original stack frame. */
     (void)unused;
     buttonY = 0x160 - g_texButtonA.height;
     cancelX = 0x161 - g_texButtonB.width;
@@ -1416,6 +1404,11 @@ void ProcessFillClearMenu(void) {
 }
 
 void ProcessMirrorFlipMenu(void) {
+    s32 i;
+    s32 unused[8];
+    s32 buttonY;
+    s32 cancelX;
+    s32 options[MIRROR_OPTIONS][4];
 #if TGR_REGION == TGR_REGION_JP
     /* The two lines of the Japanese text of each flip, and of each slot a decal mirrors from. */
     const char *flipTexts[2][2] = {
@@ -1449,26 +1442,25 @@ void ProcessMirrorFlipMenu(void) {
         {"MIRROR CURRENT DECAL TO", "THE LEFT REAR FENDER"},
     };
 #endif /* TGR_REGION == TGR_REGION_EU */
-    ScreenRect options[MIRROR_OPTIONS];
-    /* The row of the buttons is placed by the width of the A button. */
-    s32 buttonY = 0x155 - g_texButtonA.width;
-    s32 cancelX = 0x163 - g_texButtonB.width;
-    s32 i;
-    PlayerInputState *input;
 
+    (void)unused;
+    buttonY = 0x155 - g_texButtonA.width;
+    cancelX = 0x163 - g_texButtonB.width;
     if (g_bPaintToolStarted) {
         g_bStyleMenuCursor = g_texPaintToolMirror.style;
         g_bPaintToolStarted = FALSE;
     }
-    SetScreenRect(&options[0], 0xAB, 0xBF, 0x66, 0x2C);
+    options[0][2] = 0x66;
+    options[0][3] = 0x2C;
+    options[0][0] = 0xAB;
+    options[0][1] = 0xBF;
     for (i = 1; i < MIRROR_OPTIONS; i++) {
-        SetScreenRect(&options[i],
-                      options[0].x + options[0].width + 98 * i - 90,
-                      options[0].y,
-                      90,
-                      options[0].height);
+        options[i][2] = 0x5A;
+        options[i][3] = options[0][3];
+        options[i][0] = options[0][0] + options[0][2] + 8 + (i - 1) * (options[i][2] + 8);
+        options[i][1] = options[0][1];
     }
-    DrawDialogBox(0x99, 0x83, 0x14E, 0xDA);
+    DrawRectBorder(0x99, 0x83, 0x14E, 0xDA, 3, FALSE, 0, 0x80, 0x80, 0x80);
     SetTextSize(16);
     SetTextAlignCenter();
     SetTextStyleNormal();
@@ -1483,29 +1475,63 @@ void ProcessMirrorFlipMenu(void) {
     DrawText("%wwFLIP V", 0xD3, 0x6E);
     for (i = 0; i < MIRROR_OPTIONS; i++) {
         if (i == g_bStyleMenuCursor) {
-            DrawRectOutline(options[i].x,
-                            options[i].y,
-                            options[i].width,
-                            options[i].height,
-                            1,
-                            0x20,
-                            0xC8,
-                            0xFF);
+            DrawRectOutline(
+                options[i][0], options[i][1], options[i][2], options[i][3], 1, 0x20, 0xC8, 0xFF);
         } else {
-            DrawRectOutline(options[i].x,
-                            options[i].y,
-                            options[i].width,
-                            options[i].height,
-                            1,
-                            0x20,
-                            0x20,
-                            0x20);
+            DrawRectOutline(
+                options[i][0], options[i][1], options[i][2], options[i][3], 1, 0x20, 0x20, 0x20);
         }
     }
-    DrawSunkenFrame(0xAC, 0xF8, 0x128, 0x3A);
+    DrawRectBorder(0xAC, 0xF8, 0x128, 0x3A, 1, TRUE, 1, 0x80, 0x80, 0x80);
+#if TGR_REGION == TGR_REGION_JP
+    SetTextSize(14);
+#else
     SetTextSize(11);
+#endif
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
-    if (g_bStyleMenuCursor != MIRROR_OPTION_MIRROR) {
+    if (g_bStyleMenuCursor == MIRROR_OPTION_MIRROR) {
+        if (g_bDecalSlotHasMirror) {
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
+            DrawText(mirrorTexts[g_bDecalSlot][0], 0x9F, 0x87);
+            DrawText(mirrorTexts[g_bDecalSlot][1], 0x9F, 0x94);
+#else
+            switch (g_bDecalSlot) {
+            case SLOT_LEFT_DOOR:
+                DrawText("MIRROR CURRENT DECAL", 0x9F, 0x87);
+                DrawText("TO THE RIGHT DOOR", 0x9F, 0x94);
+                break;
+            case SLOT_RIGHT_DOOR:
+                DrawText("MIRROR CURRENT DECAL", 0x9F, 0x87);
+                DrawText("TO THE LEFT DOOR", 0x9F, 0x94);
+                break;
+            case SLOT_LEFT_FRONT_FENDER:
+                DrawText("MIRROR CURRENT DECAL TO", 0x9F, 0x87);
+                DrawText("THE RIGHT FRONT FENDER", 0x9F, 0x94);
+                break;
+            case SLOT_RIGHT_FRONT_FENDER:
+                DrawText("MIRROR CURRENT DECAL TO", 0x9F, 0x87);
+                DrawText("THE LEFT FRONT FENDER", 0x9F, 0x94);
+                break;
+            case SLOT_LEFT_REAR_FENDER:
+                DrawText("MIRROR CURRENT DECAL TO", 0x9F, 0x87);
+                DrawText("THE RIGHT REAR FENDER", 0x9F, 0x94);
+                break;
+            case SLOT_RIGHT_REAR_FENDER:
+                DrawText("MIRROR CURRENT DECAL TO", 0x9F, 0x87);
+                DrawText("THE LEFT REAR FENDER", 0x9F, 0x94);
+                break;
+            }
+#endif
+        } else {
+#if TGR_REGION == TGR_REGION_JP
+            DrawText("%jこのデカールは", 0x9F, 0x87);
+            DrawText(" %j他に使用できません。", 0x9F, 0x94);
+#else
+            DrawText("MIRROR IS NOT APPLICABLE", 0x9F, 0x87);
+            DrawText("TO THE CURRENT DECAL", 0x9F, 0x94);
+#endif
+        }
+    } else {
 #if TGR_REGION == TGR_REGION_JP
         DrawText(flipTexts[g_bStyleMenuCursor - 1][0], 0x9F, 0x87);
         DrawText(flipTexts[g_bStyleMenuCursor - 1][1], 0x9F, 0x94);
@@ -1513,68 +1539,31 @@ void ProcessMirrorFlipMenu(void) {
         DrawText(flipTexts[g_bStyleMenuCursor - 1], 0x9F, 0x87);
         DrawText(axisTexts[g_bStyleMenuCursor - 1], 0x9F, 0x94);
 #endif
-    } else if (!g_bDecalSlotHasMirror) {
-#if TGR_REGION == TGR_REGION_JP
-        DrawText("%jこのデカールは", 0x9F, 0x87);
-        DrawText(" %j他に使用できません。", 0x9F, 0x94);
-#else
-        DrawText("MIRROR IS NOT APPLICABLE", 0x9F, 0x87);
-        DrawText("TO THE CURRENT DECAL", 0x9F, 0x94);
-#endif
-    } else {
-#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP
-        DrawText(mirrorTexts[g_bDecalSlot][0], 0x9F, 0x87);
-        DrawText(mirrorTexts[g_bDecalSlot][1], 0x9F, 0x94);
-#else
-        switch (g_bDecalSlot) {
-        case SLOT_LEFT_DOOR:
-            DrawText("MIRROR CURRENT DECAL", 0x9F, 0x87);
-            DrawText("TO THE RIGHT DOOR", 0x9F, 0x94);
-            break;
-        case SLOT_RIGHT_DOOR:
-            DrawText("MIRROR CURRENT DECAL", 0x9F, 0x87);
-            DrawText("TO THE LEFT DOOR", 0x9F, 0x94);
-            break;
-        case SLOT_LEFT_FRONT_FENDER:
-            DrawText("MIRROR CURRENT DECAL TO", 0x9F, 0x87);
-            DrawText("THE RIGHT FRONT FENDER", 0x9F, 0x94);
-            break;
-        case SLOT_RIGHT_FRONT_FENDER:
-            DrawText("MIRROR CURRENT DECAL TO", 0x9F, 0x87);
-            DrawText("THE LEFT FRONT FENDER", 0x9F, 0x94);
-            break;
-        case SLOT_LEFT_REAR_FENDER:
-            DrawText("MIRROR CURRENT DECAL TO", 0x9F, 0x87);
-            DrawText("THE RIGHT REAR FENDER", 0x9F, 0x94);
-            break;
-        case SLOT_RIGHT_REAR_FENDER:
-            DrawText("MIRROR CURRENT DECAL TO", 0x9F, 0x87);
-            DrawText("THE LEFT REAR FENDER", 0x9F, 0x94);
-            break;
-        }
-#endif /* TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP */
     }
-    DrawMenuButtons(buttonY, cancelX);
+    SetTextSize(10);
+    SetTextAlignLeft();
+    DrawText("%wwSELECT", (g_texButtonA.width + 0xD9) >> 1, (buttonY + 0x12) >> 1);
+    DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, (buttonY + 0x12) >> 1);
+    DrawTexturedSprite(&g_texButtonA, 0xD3, buttonY);
+    DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
     UpdateStickRepeat(&g_aPlayerInputState[g_bPaintShopPlayer]);
-    input = &g_aPlayerInputState[g_bPaintShopPlayer];
-    if (input->buttons & INPUT_RIGHT) {
-        TransferFlags(input, INPUT_RIGHT);
+    if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & INPUT_RIGHT) {
+        TransferFlags(&g_aPlayerInputState[g_bPaintShopPlayer], INPUT_RIGHT);
         if (g_bStyleMenuCursor == MIRROR_OPTIONS - 1) {
             g_bStyleMenuCursor = 0;
         } else {
             g_bStyleMenuCursor++;
         }
-    } else if (input->buttons & INPUT_LEFT) {
-        TransferFlags(input, INPUT_LEFT);
+    } else if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & INPUT_LEFT) {
+        TransferFlags(&g_aPlayerInputState[g_bPaintShopPlayer], INPUT_LEFT);
         if (g_bStyleMenuCursor == 0) {
             g_bStyleMenuCursor = MIRROR_OPTIONS - 1;
         } else {
             g_bStyleMenuCursor--;
         }
     }
-    input = &g_aPlayerInputState[g_bPaintShopPlayer];
-    if (input->buttons & INPUT_A) {
-        TransferFlags(input, INPUT_A);
+    if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & INPUT_A) {
+        TransferFlags(&g_aPlayerInputState[g_bPaintShopPlayer], INPUT_A);
         g_texPaintToolMirror.style = g_bStyleMenuCursor;
         if (g_bStyleMenuCursor == MIRROR_OPTION_MIRROR) {
             if (g_bDecalSlotHasMirror) {
@@ -1583,8 +1572,8 @@ void ProcessMirrorFlipMenu(void) {
         } else {
             FlipDecalPixels();
         }
-    } else if (input->buttons & INPUT_B) {
-        TransferFlags(input, INPUT_B);
+    } else if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & INPUT_B) {
+        TransferFlags(&g_aPlayerInputState[g_bPaintShopPlayer], INPUT_B);
         g_texPaintToolMirror.style = 0;
         g_bStyleMenuOpen = FALSE;
         g_bPaintTool = g_bPreviousPaintTool;
