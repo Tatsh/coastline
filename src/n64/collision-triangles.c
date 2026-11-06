@@ -23,12 +23,15 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
     s32 r;
     f32 d;
     /* These unused locals preserve the original IDO frame layout. */
-    s32 unused;
+    s32 unused TGR_MATCHING_UNUSED;
     f32 dp[3];
-    s32 pad[2];
+    s32 pad[2] TGR_MATCHING_UNUSED;
 
     ret = 0;
     cnt = 0;
+#ifdef ENABLE_PATCHES
+    spin = 0;
+#endif
     for (node = g_pCollisionTriangleList; node != 0; node = node->next) {
         triangle = node->triangle;
         Mtx4x4TransformPoint((Vec3f *)&v[0], box, triangle->vertices[0]);

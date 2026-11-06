@@ -488,7 +488,7 @@ void SaveGameDataToEeprom(void) {
     u32 sum;
     s32 *equipment;
     /* The unused local reserves the original stack slot. */
-    volatile s32 unused;
+    volatile s32 unused TGR_MATCHING_UNUSED;
     u32 checksum;
 
     save = (EepromSaveData *)(g_pPakDataBuffer + 4);

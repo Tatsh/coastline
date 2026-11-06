@@ -13,16 +13,16 @@
 
 void ManageAiRacerSlots(Vehicle *player) {
     RacerProgress entries[RACER_SLOTS];
-    s32 framePaddingA[4];
+    s32 framePaddingA[4] TGR_MATCHING_UNUSED;
     f32 distance;
     Vehicle *freeVehicles[7];
-    s32 framePaddingB[2];
+    s32 framePaddingB[2] TGR_MATCHING_UNUSED;
     s32 kind;
     RacerSlot *slot;
     Vehicle *vehicle;
-    s32 framePaddingC;
+    s32 framePaddingC TGR_MATCHING_UNUSED;
     f32 lapLength;
-    s32 framePaddingD;
+    s32 framePaddingD TGR_MATCHING_UNUSED;
     s32 i;
     Vec3f left;
     Vec3f nextLeft;

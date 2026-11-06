@@ -46,7 +46,7 @@ void RenderDashboardGauges(void) {
         frame = 0;
     }
     key = g_pActiveCameraVehicle->carModel | g_dwNightMode << 8;
-    if (key != g_adwDashboardLoadedKey[g_dwCurrentSplitScreenIndex]) {
+    if (key != (u32)g_adwDashboardLoadedKey[g_dwCurrentSplitScreenIndex]) {
         g_aDashboardTextures[g_dwCurrentSplitScreenIndex].width =
             g_aCarModels[g_pActiveCameraVehicle->carModel].dashboardWidth;
         g_aDashboardTextures[g_dwCurrentSplitScreenIndex].height =
@@ -242,7 +242,7 @@ void RenderDashboardGauges(void) {
             if (g_aCarModels[g_pActiveCameraVehicle->carModel].tachometer == 1) {
                 for (; first < 0x100; first++) {
                     g_aawDashboardPalettes[g_dwCurrentSplitScreenIndex][first] =
-                        (g_awDashboardBarPalette[first] >> 3) & 0x18C6 | 1;
+                        ((g_awDashboardBarPalette[first] >> 3) & 0x18C6) | 1;
                 }
             } else {
                 for (; first < 0x100; first++) {

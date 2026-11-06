@@ -56,7 +56,7 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
         gDisplayListWords(gDisplayListPtr++, 0xba000602, g_dwColorDitherMode);
         if (vehicle != g_pActiveCameraVehicle) {
             /* This slot preserves the original IDO register allocation. */
-            s32 unused;
+            s32 unused TGR_MATCHING_UNUSED;
             Vec3f direction;
             Vec3f beam;
             f32 glare;

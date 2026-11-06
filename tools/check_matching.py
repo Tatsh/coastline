@@ -7,6 +7,7 @@ import hashlib
 import json
 import os
 import re
+import shlex
 import struct
 import subprocess
 import sys
@@ -23,6 +24,10 @@ ROM_SHA1 = {'us': 'bfc51f086ebdb78904dc24ad0c3a2d946e26d022',
 REGION_VALUES = {'us': 1, 'jp': 2, 'eu': 3}
 REGION = 'us'
 ENCODER: Path | None = None
+VERBOSE = False
+IDO_INVOCATIONS = 0
+ASSEMBLER_INVOCATIONS = 0
+LAST_COMPILE_ERROR = ''
 DEFINES = ['-DTGR_PLATFORM_N64=1', '-DTGR_PLATFORM_WIN=2', '-DTGR_PLATFORM=1', '-DTGR_REGION_US=1',
            '-DTGR_REGION_JP=2', '-DTGR_REGION_EU=3', '-DTGR_REGION=1', '-DTGR_RENDERER_D3D=1',
            '-DTGR_RENDERER_GLIDE=2', '-DTGR_RENDERER=0', '-D_LANGUAGE_C', '-DF3DEX_GBI',
@@ -158,6 +163,7 @@ def flag_sets(source: Path) -> list[list[str]]:
 
 
 def compile_ido(source: Path, flags: list[str], obj: Path) -> bool:
+    global IDO_INVOCATIONS, LAST_COMPILE_ERROR
     if not any(flag.startswith('-mips') for flag in flags):
         flags = ['-mips2', *flags]
     compiled = source
@@ -166,24 +172,31 @@ def compile_ido(source: Path, flags: list[str], obj: Path) -> bool:
         if ENCODER is None:
             raise RuntimeError('Japanese text requires --encoder.')
         subprocess.run([str(ENCODER), str(source), str(compiled)], check=True)
-    result = subprocess.run(
-        [str(IDO / 'cc'), '-c', '-nostdinc', '-non_shared', '-G', '0',
-         '-Xcpluscomm', *flags, '-Wab,-r4300_mul', f'-I{ROOT / "tools" / "ido-include"}',
-         f'-I{ROOT / "src"}', f'-I{ROOT / "src" / "n64"}',
-         f'-I{ROOT / "src" / "common" / "libultra" / "include"}',
-         f'-I{ROOT / "src" / "n64" / "libultra" / "include"}',
-         f'-I{ROOT / "3rdparty" / "zlib-1.0.4"}', f'-I{source.parent}', *DEFINES, '-o', str(obj),
-         str(compiled)], capture_output=True, text=True, check=False)
+    cmd = [str(IDO / 'cc'), '-c', '-nostdinc', '-non_shared', '-G', '0',
+           '-Xcpluscomm', *flags, '-Wab,-r4300_mul', f'-I{ROOT / "tools" / "ido-include"}',
+           f'-I{ROOT / "src"}', f'-I{ROOT / "src" / "n64"}',
+           f'-I{ROOT / "src" / "common" / "libultra" / "include"}',
+           f'-I{ROOT / "src" / "n64" / "libultra" / "include"}',
+           f'-I{ROOT / "3rdparty" / "zlib-1.0.4"}', f'-I{source.parent}', *DEFINES, '-o', str(obj),
+           str(compiled)]
+    if VERBOSE:
+        print('+ ' + shlex.join(cmd), file=sys.stderr, flush=True)
+    IDO_INVOCATIONS += 1
+    result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    LAST_COMPILE_ERROR = result.stderr
     return result.returncode == 0
 
 
 def assemble(source: Path, obj: Path) -> bool:
+    global ASSEMBLER_INVOCATIONS, LAST_COMPILE_ERROR
+    ASSEMBLER_INVOCATIONS += 1
     result = subprocess.run(
         [binutil('gcc'), '-c', '-march=vr4300', '-mabi=32', '-mno-abicalls', '-fno-pic',
          '-G0', f'-I{ROOT / "src" / "common" / "libultra" / "include"}', f'-I{ROOT / "src"}',
          *DEFINES, '-x', 'assembler-with-cpp', '-o', str(obj), str(source)],
         capture_output=True, text=True,
         check=False)
+    LAST_COMPILE_ERROR = result.stderr
     return result.returncode == 0
 
 
@@ -213,7 +226,7 @@ def candidates(obj: Path, table: dict[str, tuple[int, int]],
 
 
 def main() -> int:
-    global REGION, IDO, BIN, ENCODER
+    global REGION, IDO, BIN, ENCODER, VERBOSE
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--region', choices=sorted(ROMS), required=True)
     parser.add_argument('--baseline', type=Path)
@@ -221,8 +234,10 @@ def main() -> int:
     parser.add_argument('--encoder', type=Path, help='The encode-text executable for Japanese text.')
     parser.add_argument('--ido-root', type=Path, default=IDO)
     parser.add_argument('--binutils-root', type=Path, default=BIN.parent)
+    parser.add_argument('--verbose', action='store_true', help='Show each IDO compiler invocation.')
     args = parser.parse_args()
     REGION, IDO, BIN, ENCODER = args.region, args.ido_root, args.binutils_root / 'bin', args.encoder
+    VERBOSE = args.verbose
     DEFINES[DEFINES.index('-DTGR_REGION=1')] = f'-DTGR_REGION={REGION_VALUES[REGION]}'
     if not (IDO / 'cc').is_file():
         parser.error(f'IDO 5.3 compiler is missing at {IDO / "cc"}.')
@@ -281,7 +296,10 @@ def main() -> int:
                             if fingerprint not in digests:
                                 digests.append(fingerprint)
             if not compiled and expected is not None:
-                raise RuntimeError(f'{relative} does not compile with IDO 5.3.')
+                raise RuntimeError(f'{relative} does not compile with IDO 5.3.\n'
+                                   f'{LAST_COMPILE_ERROR}')
+    print(f'{IDO_INVOCATIONS} IDO compiler invocations; '
+          f'{ASSEMBLER_INVOCATIONS} assembler invocations.', file=sys.stderr)
     if expected is None:
         missing = seen - entries.keys()
         if missing:

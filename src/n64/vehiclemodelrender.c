@@ -51,7 +51,8 @@ void RenderVehicleModel(Vehicle *car, int lodBias) {
     int lod;
     int tunnel;
     float dist;
-    float reservedNearDistance; /* The original stack layout includes this unused slot. */
+    float reservedNearDistance
+        TGR_MATCHING_UNUSED; /* The original stack layout includes this unused slot. */
     void *hilite;
     LookAt *reflect;
     LookAt *look;
@@ -69,7 +70,8 @@ void RenderVehicleModel(Vehicle *car, int lodBias) {
     int cw;
     int ch;
     unsigned short *pal;
-    int reservedScratchWords[4]; /* The original stack layout includes these unused slots. */
+    int reservedScratchWords[4] TGR_MATCHING_UNUSED; /* The original stack layout includes these
+                                                        unused slots. */
     Vec3f toCam;
     float x;
     float y;

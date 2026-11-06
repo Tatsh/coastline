@@ -19,6 +19,12 @@
 /* The texels of a cell of the font. */
 #define FONT_CELL 16
 
+#ifdef ENABLE_PATCHES
+#define DECAL_FONT_HEIGHT ((s32)g_texDecalFont.height)
+#else
+#define DECAL_FONT_HEIGHT g_texDecalFont.height
+#endif
+
 /* The dashes repeat every 8 steps, 4 in each color. */
 #define DASH_PERIOD 8
 #define DASH_LENGTH 4
@@ -244,7 +250,7 @@ void FloodFill4Bit(s32 x, s32 y) {
 
 void StampTextOnDecal(s32 x, s32 y) {
     /* IDO reserves this slot in the original stack frame. */
-    s32 unused;
+    s32 unused TGR_MATCHING_UNUSED;
     s32 column;
     s32 i;
     s32 entry;
@@ -275,7 +281,7 @@ void StampTextOnDecal(s32 x, s32 y) {
         lastColumn = g_apDecalTextGlyphs[i]->width + firstColumn;
 
         if (g_texPaintToolText.style != 0) {
-            for (row = 0; row < g_texDecalFont.height; row++) {
+            for (row = 0; row < DECAL_FONT_HEIGHT; row++) {
                 for (column = firstColumn; column <= lastColumn; column++) {
                     texelX = column - firstColumn + penX;
                     if (texelX >= 0 && texelX < g_bDecalWidth && row + y >= 0 &&
@@ -292,7 +298,7 @@ void StampTextOnDecal(s32 x, s32 y) {
                 }
             }
         }
-        for (row = 0; row < g_texDecalFont.height; row++) {
+        for (row = 0; row < DECAL_FONT_HEIGHT; row++) {
             for (column = firstColumn; column <= lastColumn; column++) {
                 texelX = column - firstColumn + penX;
                 if (texelX >= 0 && texelX < g_bDecalWidth && row + y >= 0 &&
@@ -507,7 +513,7 @@ void FillDecalRoundRect(s32 x0, s32 y0, s32 screenX1, s32 y1) {
 void DrawDecalRoundedRectOutline(int x0, int y0, int x1, int y1) {
     int swap;
     int halfBrush;
-    int unusedFrameSlot; /* Retains the original stack frame size. */
+    int unusedFrameSlot TGR_MATCHING_UNUSED; /* Retains the original stack frame size. */
     int x;
     int y;
     int radius;
@@ -714,7 +720,7 @@ void DrawDecalFilledEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 void DrawDecalEllipseOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
-    s32 *squareAddress;
+    s32 *squareAddress TGR_MATCHING_UNUSED;
     s32 radii[2];
     s32 left;
     s32 top;
@@ -836,7 +842,7 @@ void DrawDecalEllipseOutline(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 void FillCircle4Bit(s32 x, s32 y, s32 radius, u8 fromScreen) {
-    s32 i, end, unused, start, a, b, error;
+    s32 i, end, unused TGR_MATCHING_UNUSED, start, a, b, error;
 
     if (fromScreen) {
         x = ScreenToTexelX(x), y = ScreenToTexelY(y);
@@ -876,7 +882,7 @@ void FillCircle4Bit(s32 x, s32 y, s32 radius, u8 fromScreen) {
 
 void DrawDecalCircleOutline(s32 x, s32 y, s32 radius) {
     /* The unused local preserves the original frame layout. */
-    s32 unused;
+    s32 unused TGR_MATCHING_UNUSED;
     s32 brush;
     s32 centerX;
     s32 centerY;

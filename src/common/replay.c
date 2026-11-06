@@ -41,6 +41,9 @@ s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels
     previous = -256;
     channel = 0;
     blockLength = 0;
+#ifdef ENABLE_PATCHES
+    current = 0;
+#endif
     if (1) {
         goto start;
     }
@@ -82,7 +85,11 @@ scan:
                     return out;
                 }
             newChannel:
+#ifdef ENABLE_PATCHES
+                if (out + RLE_BLOCK_HEADER > dstSize) {
+#else
                 if (out + sizeof(blockLength) > dstSize) {
+#endif
                     return -1;
                 }
                 header = out;

@@ -38,7 +38,7 @@ void RenderTrackInstance(int idx, int cars, int pass) {
     Vtx *vtx;
     unsigned char *fl;
     unsigned char f;
-    unsigned int w;
+    unsigned int w TGR_MATCHING_UNUSED;
     Gfx **gp;
     VehicleModel *model;
     float k;
@@ -190,11 +190,11 @@ void RenderTrackInstance(int idx, int cars, int pass) {
             float e;
             unsigned int src;
             unsigned char *cl;
-            float len2;
+            float len2 TGR_MATCHING_UNUSED;
             float vx;
             float vy;
             float vz;
-            float sz;
+            float sz TGR_MATCHING_UNUSED;
             float m00, m10, m20, m30, m01, m11, m21, m31;
 
             cl = clip;

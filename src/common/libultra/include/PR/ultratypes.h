@@ -38,6 +38,13 @@ typedef volatile long long vs64;  /*!< A volatile signed 64-bit integer. */
 typedef float f32;  /*!< A 32-bit floating-point number. */
 typedef double f64; /*!< A 64-bit floating-point number. */
 
+/** Mark a local retained for IDO matching without generating code for GCC. */
+#if defined(__GNUC__) && !defined(__sgi)
+#define TGR_MATCHING_UNUSED __attribute__((unused))
+#else
+#define TGR_MATCHING_UNUSED
+#endif
+
 #ifndef NULL
 #define NULL 0 /*!< The null pointer. */
 #endif

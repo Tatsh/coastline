@@ -67,6 +67,9 @@ void UpdateVehicleEngineAndGearbox(Vehicle *car) {
         }
         sp -= 140.0f;
         k = 1;
+#ifdef ENABLE_PATCHES
+        x = g_fSteerGain;
+#endif
         switch (car->steeringMode) {
         case 0:
             g_fSteerLock = 14.0f;

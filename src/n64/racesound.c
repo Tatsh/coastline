@@ -39,10 +39,10 @@ void LoadAllSoundEffects(void) {
     pos = base;
     for (i = 0; i < SOUND_EFFECTS; i++) {
         g_aSoundEffects[i].length = DmaReadAssetSize(g_aSoundEffects[i].romStart);
-        if (g_aSoundEffects[i].loopLength == -1) {
+        if (g_aSoundEffects[i].loopLength == (u32)-1) {
             g_aSoundEffects[i].loopLength = g_aSoundEffects[i].length;
         }
-        if (g_aSoundEffects[i].guardLength == -1) {
+        if (g_aSoundEffects[i].guardLength == (u32)-1) {
             g_aSoundEffects[i].guardLength = g_aSoundEffects[i].length;
         }
         if (pos + g_aSoundEffects[i].length + g_aSoundEffects[i].guardLength >

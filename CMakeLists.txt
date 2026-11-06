@@ -210,7 +210,7 @@ if(NOT BUILD_DOCS_ONLY)
         COMMAND
           "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/check_matching.py" --region
           "${TGR_REGION}" --ido-root "${_matching_ido_root}" --binutils-root
-          "${_matching_n64_root}" --encoder "${COASTLINE_TOOL_ENCODE_TEXT}"
+          "${_matching_n64_root}" --encoder "${COASTLINE_TOOL_ENCODE_TEXT}" --verbose
         DEPENDS coastline_tools
         COMMENT "Verifying ${_tgr_region} ROM code against IDO 5.3"
         VERBATIM)

@@ -9,7 +9,7 @@
 
 void RenderBillboardParticles(s32 head, s32 red, s32 green, s32 blue) {
     float clip[4];
-    Particle *unusedParticle;
+    Particle *unusedParticle TGR_MATCHING_UNUSED;
     int index;
     float inverse;
     float size;

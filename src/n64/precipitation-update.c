@@ -27,7 +27,7 @@ void UpdatePrecipitationParticles(void) {
     s16 sdy;
     s16 sdz;
     /* This unused slot preserves the original IDO frame layout. */
-    s32 u[3];
+    s32 u[3] TGR_MATCHING_UNUSED;
     f32 v[3];
 
     UpdateWindDirection();

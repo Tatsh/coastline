@@ -202,7 +202,7 @@ void SeasonRecordsPreDrawCallback(void) {
     static char g_szTrackSelectRecordTextBuf[80];
 #endif
     /* The unused buffer preserves IDO's stack frame. */
-    char unusedFrameBuffer[32];
+    char unusedFrameBuffer[32] TGR_MATCHING_UNUSED;
     int raceIndex;
     int track;
     int currentRace;
@@ -338,7 +338,7 @@ void ProcessTrackMenu(void) {
     static s32 menuChampionship;
     static char menuText[80];
     /* IDO reserves this unused buffer in the original stack frame. */
-    char unusedFrameBuffer[100];
+    char unusedFrameBuffer[100] TGR_MATCHING_UNUSED;
     MenuItem **selectedSlot;
     MenuItem *selectedItem;
 #ifdef ENABLE_PATCHES

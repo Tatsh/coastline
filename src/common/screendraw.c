@@ -204,7 +204,7 @@ void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height) {
 void DrawRdpBorderRect(s32 x, s32 y, s32 width, s32 height) {
 #if TGR_PLATFORM == TGR_PLATFORM_N64
     /* The original local fixes IDO's stack slot layout. */
-    Gfx *g;
+    Gfx *g TGR_MATCHING_UNUSED;
 #endif
     gDPPipeSync(gDisplayListPtr++);
 #if TGR_PLATFORM == TGR_PLATFORM_N64

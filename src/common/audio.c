@@ -420,7 +420,7 @@ void UpdateMusicPlayback(void) {
     s64 period;
     s16 volume;
     u32 instrument;
-#if TGR_PLATFORM == TGR_PLATFORM_N64
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && !defined(ENABLE_PATCHES)
     s64 step;
 #else
     u64 step;

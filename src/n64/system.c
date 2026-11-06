@@ -90,7 +90,7 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
     /* While one half of the buffer is read, the chunk in the other is decompressed. */
     for (;;) {
         chunkSize = len;
-        if (((s32)(len + 5) & ~1) < remaining) {
+        if ((u32)((s32)(len + 5) & ~1) < remaining) {
             if (romOffset & 1) {
                 romOffset++;
             }
@@ -116,7 +116,7 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
             outputSize = CHUNK_OUTPUT_SIZE;
             if (job != NULL) {
                 g_pInflateHeapBase = g_aInflateHeapBuffer;
-                g_pInflateHeapEnd = INFLATE_HEAP_SIZE + (char *)g_pInflateHeapBase;
+                g_pInflateHeapEnd = (u8 *)(INFLATE_HEAP_SIZE + (char *)g_pInflateHeapBase);
             }
             uncompress(dst, &outputSize, &buffer[half], chunkSize);
             if (job != NULL) {

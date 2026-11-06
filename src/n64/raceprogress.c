@@ -19,17 +19,17 @@ void UpdateRaceProgress(RacerSlot *slot) {
     Vehicle *c;
     char *lapMessage;
     /* These locals preserve the original stack layout under IDO. */
-    int stackPad74;
-    int stackPad70;
+    int stackPad74 TGR_MATCHING_UNUSED;
+    int stackPad70 TGR_MATCHING_UNUSED;
     int currentGate;
     int nextGate;
     float completedLapTime;
     float d;
-    int stackPad58;
+    int stackPad58 TGR_MATCHING_UNUSED;
     float paceGap;
-    int stackPad50;
+    int stackPad50 TGR_MATCHING_UNUSED;
     int i;
-    int stackPad48;
+    int stackPad48 TGR_MATCHING_UNUSED;
     short w;
 
     if (g_LoadedTrack.gateCount == 0) {

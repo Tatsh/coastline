@@ -53,17 +53,17 @@ void ProcessDataSaveLoadMenu(void) {
     int mode;
     int h;
     int newSize; /* Europe: the packed ghost's size; Japan: a panel's width */
-    int unusedCC;
-    int unusedC8;
-    int unusedC4;
-    int unusedC0;
+    int unusedCC TGR_MATCHING_UNUSED;
+    int unusedC8 TGR_MATCHING_UNUSED;
+    int unusedC4 TGR_MATCHING_UNUSED;
+    int unusedC0 TGR_MATCHING_UNUSED;
     int y;
     int menuY; /* the menu rows' y; y is the panels' */
     unsigned char *name;
     int freeBytes;
     unsigned char pakBits;
     SaveLoadMenuItem *items;
-    int unusedE4;
+    int unusedE4 TGR_MATCHING_UNUSED;
     int size;
     int opts[5];
     unsigned char nameSeason[16] = {0x2D,
@@ -115,11 +115,11 @@ void ProcessDataSaveLoadMenu(void) {
                                      0x27,
                                      0x2C};
     unsigned char ext[4] = {0, 0, 0, 0};
-    int u94; /* unused: the frame has it */
+    int u94 TGR_MATCHING_UNUSED; /* unused: the frame has it */
     int k;
     int *p2;
     unsigned char *data;
-    int u84[2]; /* unused: the frame has them */
+    int u84[2] TGR_MATCHING_UNUSED; /* unused: the frame has them */
     int len;
     int sum;
     int check;
@@ -186,6 +186,16 @@ void ProcessDataSaveLoadMenu(void) {
     static unsigned char skipEepromProbe; /* the EEPROM save was confirmed over good data */
     static unsigned char fadeDelayFrames; /* frames the fade has been done */
 
+#ifdef ENABLE_PATCHES
+    items = loadMenuItems;
+    if (g_bSaveLoadEntryPoint == 1) {
+        items = saveSeasonMenuItems;
+    } else if (g_bSaveLoadEntryPoint == 2) {
+        items = saveGhostMenuItems;
+    }
+    name = nameOptions;
+    size = 0x100;
+#endif
     if (g_bSaveLoadMenuInitialized == 0) {
         g_bSaveLoadMenuInitialized = 1;
         dataWasLoaded = 0;
@@ -486,7 +496,7 @@ void ProcessDataSaveLoadMenu(void) {
         } else {
             unsigned char *blk;
             int j;
-            int unused6C;
+            int unused6C TGR_MATCHING_UNUSED;
             int n;
             int s;
             int *p2;
@@ -1606,18 +1616,18 @@ void ProcessDataSaveLoadMenu(void) {
         if ((items[menuCursor].action == 0 || items[menuCursor].action == 6) &&
             dataWasLoaded != 0) {
             dataWasLoaded = 0;
-            SetCurrentScreenCallback((int)StartChampionshipRace);
+            SetCurrentScreenCallback(StartChampionshipRace);
         } else if (items[menuCursor].action == 2 && dataWasLoaded != 0) {
             dataWasLoaded = 0;
-            SetCurrentScreenCallback((int)StartTimeAttack);
+            SetCurrentScreenCallback(StartTimeAttack);
         } else {
             menuCursor = 0;
             if (g_bSaveLoadEntryPoint == 0) {
-                SetCurrentScreenCallback((int)ProcessMainMenu);
+                SetCurrentScreenCallback(ProcessMainMenu);
             } else if ((mode = g_bSaveLoadEntryPoint) == 1) {
-                SetCurrentScreenCallback((int)ProcessTrackMenu);
+                SetCurrentScreenCallback(ProcessTrackMenu);
             } else if ((mode | 0) == 2) {
-                SetCurrentScreenCallback((int)ProcessMainMenu);
+                SetCurrentScreenCallback(ProcessMainMenu);
             }
         }
     }

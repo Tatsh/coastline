@@ -28,6 +28,12 @@
 #else
 #define PHYSICAL_ADDRESS(pointer) ((int)((char *)(pointer) - 0x80000000))
 #endif
+/* The original reaches the MVP matrix through three adjacent matrices. */
+#ifdef ENABLE_PATCHES
+#define TRACK_MVP_MATRIX g_afMvpMatrix
+#else
+#define TRACK_MVP_MATRIX mm[3]
+#endif
 void RenderTrackGeometry(int deferred) {
     static float viewMatrixMaxAbs;
     static int instanceHideFlags;
@@ -47,7 +53,7 @@ void RenderTrackGeometry(int deferred) {
     Mtx *matrixBlock;
 #endif
     /* IDO retains this local in the original stack layout. */
-    int j;
+    int j TGR_MATCHING_UNUSED;
     Gfx *command;
 
     billboardMatrixLoaded = 0;
@@ -249,64 +255,64 @@ void RenderTrackGeometry(int deferred) {
                 s = instance->matrix[0][0] * (1.1 * viewMatrixMaxAbs) + 0.375;
             }
             s = 1.99975586f / s;
-            mm[3][3][0] =
+            TRACK_MVP_MATRIX[3][0] =
                 ((instance->matrix[3][0] * mm[0][0][0] + instance->matrix[3][1] * mm[0][1][0] +
                   instance->matrix[3][2] * mm[0][2][0]) +
                  instance->matrix[3][3] * mm[0][3][0]) *
                 s;
-            mm[3][3][1] =
+            TRACK_MVP_MATRIX[3][1] =
                 ((instance->matrix[3][0] * mm[0][0][1] + instance->matrix[3][1] * mm[0][1][1] +
                   instance->matrix[3][2] * mm[0][2][1]) +
                  instance->matrix[3][3] * mm[0][3][1]) *
                 s;
-            mm[3][3][2] =
+            TRACK_MVP_MATRIX[3][2] =
                 ((instance->matrix[3][0] * mm[0][0][2] + instance->matrix[3][1] * mm[0][1][2] +
                   instance->matrix[3][2] * mm[0][2][2]) +
                  instance->matrix[3][3] * mm[0][3][2]) *
                 s;
-            mm[3][3][3] =
+            TRACK_MVP_MATRIX[3][3] =
                 ((instance->matrix[3][0] * mm[0][0][3] + instance->matrix[3][1] * mm[0][1][3] +
                   instance->matrix[3][2] * mm[0][2][3]) +
                  instance->matrix[3][3] * mm[0][3][3]) *
                 s;
             s *= instance->matrix[0][0];
-            mm[3][0][0] = mm[0][0][0] * s;
-            mm[3][0][1] = mm[0][0][1] * s;
-            mm[3][0][2] = mm[0][0][2] * s;
-            mm[3][0][3] = mm[0][0][3] * s;
-            mm[3][1][0] = mm[0][1][0] * s;
-            mm[3][1][1] = mm[0][1][1] * s;
-            mm[3][1][2] = mm[0][1][2] * s;
-            mm[3][1][3] = mm[0][1][3] * s;
-            mm[3][2][0] = mm[0][2][0] * s;
-            mm[3][2][1] = mm[0][2][1] * s;
-            mm[3][2][2] = mm[0][2][2] * s;
-            mm[3][2][3] = mm[0][2][3] * s;
+            TRACK_MVP_MATRIX[0][0] = mm[0][0][0] * s;
+            TRACK_MVP_MATRIX[0][1] = mm[0][0][1] * s;
+            TRACK_MVP_MATRIX[0][2] = mm[0][0][2] * s;
+            TRACK_MVP_MATRIX[0][3] = mm[0][0][3] * s;
+            TRACK_MVP_MATRIX[1][0] = mm[0][1][0] * s;
+            TRACK_MVP_MATRIX[1][1] = mm[0][1][1] * s;
+            TRACK_MVP_MATRIX[1][2] = mm[0][1][2] * s;
+            TRACK_MVP_MATRIX[1][3] = mm[0][1][3] * s;
+            TRACK_MVP_MATRIX[2][0] = mm[0][2][0] * s;
+            TRACK_MVP_MATRIX[2][1] = mm[0][2][1] * s;
+            TRACK_MVP_MATRIX[2][2] = mm[0][2][2] * s;
+            TRACK_MVP_MATRIX[2][3] = mm[0][2][3] * s;
             matrixBlock = (Mtx *)AllocDisplayListBlock();
 
-            if (mm[3][3][0] >= .0f) {
-                hi = mm[3][3][0];
+            if (TRACK_MVP_MATRIX[3][0] >= .0f) {
+                hi = TRACK_MVP_MATRIX[3][0];
             }
-            if (mm[3][3][0] <= .0f) {
-                lo = mm[3][3][0];
+            if (TRACK_MVP_MATRIX[3][0] <= .0f) {
+                lo = TRACK_MVP_MATRIX[3][0];
             }
-            if (hi <= mm[3][3][1]) {
-                hi = mm[3][3][1];
+            if (hi <= TRACK_MVP_MATRIX[3][1]) {
+                hi = TRACK_MVP_MATRIX[3][1];
             }
-            if (mm[3][3][1] <= lo) {
-                lo = mm[3][3][1];
+            if (TRACK_MVP_MATRIX[3][1] <= lo) {
+                lo = TRACK_MVP_MATRIX[3][1];
             }
-            if (hi <= mm[3][3][2]) {
-                hi = mm[3][3][2];
+            if (hi <= TRACK_MVP_MATRIX[3][2]) {
+                hi = TRACK_MVP_MATRIX[3][2];
             }
-            if (mm[3][3][2] <= lo) {
-                lo = mm[3][3][2];
+            if (TRACK_MVP_MATRIX[3][2] <= lo) {
+                lo = TRACK_MVP_MATRIX[3][2];
             }
-            if (hi <= mm[3][3][3]) {
-                hi = mm[3][3][3];
+            if (hi <= TRACK_MVP_MATRIX[3][3]) {
+                hi = TRACK_MVP_MATRIX[3][3];
             }
-            if (mm[3][3][3] <= lo) {
-                lo = mm[3][3][3];
+            if (TRACK_MVP_MATRIX[3][3] <= lo) {
+                lo = TRACK_MVP_MATRIX[3][3];
             }
             if (32767.0 < hi || lo < -32767.0) {
 #if TGR_REGION != TGR_REGION_JP
@@ -376,22 +382,22 @@ void RenderTrackGeometry(int deferred) {
                 } else {
                     s = -32767.0f / lo;
                 }
-                mm[3][0][0] *= s;
-                mm[3][0][1] *= s;
-                mm[3][0][2] *= s;
-                mm[3][0][3] *= s;
-                mm[3][1][0] *= s;
-                mm[3][1][1] *= s;
-                mm[3][1][2] *= s;
-                mm[3][1][3] *= s;
-                mm[3][2][0] *= s;
-                mm[3][2][1] *= s;
-                mm[3][2][2] *= s;
-                mm[3][2][3] *= s;
-                mm[3][3][0] *= s;
-                mm[3][3][1] *= s;
-                mm[3][3][2] *= s;
-                mm[3][3][3] *= s;
+                TRACK_MVP_MATRIX[0][0] *= s;
+                TRACK_MVP_MATRIX[0][1] *= s;
+                TRACK_MVP_MATRIX[0][2] *= s;
+                TRACK_MVP_MATRIX[0][3] *= s;
+                TRACK_MVP_MATRIX[1][0] *= s;
+                TRACK_MVP_MATRIX[1][1] *= s;
+                TRACK_MVP_MATRIX[1][2] *= s;
+                TRACK_MVP_MATRIX[1][3] *= s;
+                TRACK_MVP_MATRIX[2][0] *= s;
+                TRACK_MVP_MATRIX[2][1] *= s;
+                TRACK_MVP_MATRIX[2][2] *= s;
+                TRACK_MVP_MATRIX[2][3] *= s;
+                TRACK_MVP_MATRIX[3][0] *= s;
+                TRACK_MVP_MATRIX[3][1] *= s;
+                TRACK_MVP_MATRIX[3][2] *= s;
+                TRACK_MVP_MATRIX[3][3] *= s;
             }
             guMtxF2L(g_afMvpMatrix, matrixBlock);
             APPEND_TRACK_COMMAND(0x039E0010, (int)matrixBlock);

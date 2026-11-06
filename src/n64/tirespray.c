@@ -24,8 +24,8 @@ void MoveTireSpray(void) {
     Vtx *upperVertex;
     Vehicle *vehicle;
     short *upperVelocity;
-    int unusedCounter;
-    int unusedWords[1];
+    int unusedCounter TGR_MATCHING_UNUSED;
+    int unusedWords[1] TGR_MATCHING_UNUSED;
     short fall;
     Mtx scaleMatrix;
 

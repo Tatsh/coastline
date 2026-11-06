@@ -158,10 +158,10 @@ void RenderDecalPreview3D(void) {
     float dx;
     float dy;
     float dz;
-    float x1[4];
+    float x1[4] TGR_MATCHING_UNUSED;
     Vec3f side;
     Vec3f zAxis;
-    float x2[1];
+    float x2[1] TGR_MATCHING_UNUSED;
     Vec3f *p;
     Vec3f *q;
 
@@ -234,7 +234,7 @@ void RenderDecalPreview3D(void) {
             g_bDecalSlotChanged = 0;
         }
     } else {
-        float x3[12];
+        float x3[12] TGR_MATCHING_UNUSED;
         Vec3f *s;
         Vec3f *d;
 
@@ -302,7 +302,7 @@ void ProcessPaintShopScreen(void) {
     int i;
     int k;
     int r;
-    int x;
+    int x TGR_MATCHING_UNUSED;
     int y;
     Vec3f *v;
     union {
@@ -1826,7 +1826,7 @@ s32 ProcessDecalSaveLoad(VehicleModel *m, u8 player, u8 operation, u8 inCarSelec
     int flip;
     int n;
     int x2;
-    int tx;
+    int tx TGR_MATCHING_UNUSED;
     unsigned char pakBits;
     unsigned char name[16] = {0x2D,
                               0x28,
@@ -2562,7 +2562,8 @@ s32 ProcessDecalSaveLoad(VehicleModel *m, u8 player, u8 operation, u8 inCarSelec
 }
 
 void ProcessTextInputKeyboard(void) {
-    s32 spare; /* IDO reserves the original stack frame for this unused local. */
+    s32 spare
+        TGR_MATCHING_UNUSED; /* IDO reserves the original stack frame for this unused local. */
     s32 x;
     s32 y;
     s32 i;

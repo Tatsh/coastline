@@ -23,7 +23,7 @@ void SpawnTireSmoke(Vehicle *vehicle) {
     f32 thrown[3];
 #if TGR_PLATFORM == TGR_PLATFORM_N64
     /* IDO reserves this unused array in the original stack frame. */
-    s32 unused[3];
+    s32 unused[3] TGR_MATCHING_UNUSED;
 #endif
     s32 wheel;
     f32 rate;

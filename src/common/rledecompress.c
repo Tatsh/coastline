@@ -17,7 +17,7 @@ s32 DecompressInterleavedRle(u8 *dst, s32 dstSize, u8 *packed, s32 channels) {
     s32 end;
     s32 code;
     s32 count;
-    s32 value; /* The unused local preserves IDO's stack frame. */
+    s32 value TGR_MATCHING_UNUSED; /* The unused local preserves IDO's stack frame. */
     s32 length;
     s8 *src;
 

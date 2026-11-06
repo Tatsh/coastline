@@ -27,7 +27,7 @@ void FlushDisplayList(void) {
     OSTask *t;
     int n;
     int m;
-    int v;
+    int v TGR_MATCHING_UNUSED;
     int mul;
     int *src;
     int *dst;

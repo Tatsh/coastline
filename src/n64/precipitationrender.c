@@ -9,7 +9,7 @@
 #include "common/weather.h"
 
 void RenderPrecipitationEffect(void) {
-    int unusedFrameWord;
+    int unusedFrameWord TGR_MATCHING_UNUSED;
     s16(*pt)[3];
     CameraFrame *camera;
     float sx;
@@ -30,11 +30,11 @@ void RenderPrecipitationEffect(void) {
     int hh;
     int px;
     int py;
-    u8 unusedShade;
+    u8 unusedShade TGR_MATCHING_UNUSED;
     float (*m)[4];
-    int unusedIndex;
-    int unusedRow;
-    int unusedColumn;
+    int unusedIndex TGR_MATCHING_UNUSED;
+    int unusedRow TGR_MATCHING_UNUSED;
+    int unusedColumn TGR_MATCHING_UNUSED;
 
     if (g_dwSnowMode == 0 && g_dwRainMode == 0) {
         return;
@@ -225,8 +225,8 @@ void RenderPrecipitationEffect(void) {
     }
     m = g_afMvpMatrix;
     for (k = 0; k < g_dwRainParticleCount; k++) {
-        int unusedX;
-        int unusedY;
+        int unusedX TGR_MATCHING_UNUSED;
+        int unusedY TGR_MATCHING_UNUSED;
         Gfx *g1;
         Gfx *g2;
         Gfx *g3;

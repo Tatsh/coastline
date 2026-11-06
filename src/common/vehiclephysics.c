@@ -126,7 +126,7 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
 #endif
     Vec3f step;
     Vec3f *velocity;
-    f32 drive;
+    f32 drive TGR_MATCHING_UNUSED;
     s32 i;
 #if TGR_PLATFORM == TGR_PLATFORM_N64
     Vec3f *side;

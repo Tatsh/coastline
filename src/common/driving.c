@@ -130,7 +130,7 @@ void UpdateAiVehicleBehavior(Vehicle *vehicle) {
     f32 length;
     AiReal rawLength;
 #if !TGR_BOSS_RALLY
-    int stackPaddingForRoute[2];
+    int stackPaddingForRoute[2] TGR_MATCHING_UNUSED;
 #endif
     f32 multiplier;
     Vec3f ahead;
@@ -139,7 +139,7 @@ void UpdateAiVehicleBehavior(Vehicle *vehicle) {
     f32 climb;
     Vehicle *other;
 #if !TGR_BOSS_RALLY
-    int stackPaddingForVelocity[8];
+    int stackPaddingForVelocity[8] TGR_MATCHING_UNUSED;
 #endif
     f32 relativeVelocity[3];
     s16 weather;

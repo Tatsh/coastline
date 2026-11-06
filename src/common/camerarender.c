@@ -77,9 +77,9 @@ f32 g_fFrustumFovAngle;
 
 /* The RSP takes physical addresses, which are the KSEG0 addresses less its base. */
 #if TGR_BOSS_RALLY
-#define TO_RSP_ADDRESS(p) (p)
+#define CAMERA_TO_RSP_ADDRESS(p) (p)
 #else
-#define TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
+#define CAMERA_TO_RSP_ADDRESS(p) ((u32)((u8 *)(p) - K0BASE))
 #endif
 
 #if TGR_BOSS_RALLY
@@ -208,7 +208,7 @@ void SetupProjectionMatrix(f32 width, f32 height) {
     guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);
 #endif
     gSPMatrix(gDisplayListPtr++,
-              TO_RSP_ADDRESS(g_pProjectionMtx),
+              CAMERA_TO_RSP_ADDRESS(g_pProjectionMtx),
               G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
 }
 
@@ -255,6 +255,6 @@ void SetupMenuProjection(f32 width, f32 height) {
     guMtxF2L(g_afViewProjMatrix, g_pProjectionMtx);
 #endif
     gSPMatrix(gDisplayListPtr++,
-              TO_RSP_ADDRESS(g_pProjectionMtx),
+              CAMERA_TO_RSP_ADDRESS(g_pProjectionMtx),
               G_MTX_PROJECTION | G_MTX_LOAD | G_MTX_NOPUSH);
 }

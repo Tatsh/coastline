@@ -389,10 +389,10 @@ void ProcessDecalEditorInput(void) {
     int r;
     unsigned int t;
     /* Unused locals preserve the original IDO stack layout. */
-    int unusedFrameWord;
+    int unusedFrameWord TGR_MATCHING_UNUSED;
     int x;
     int y;
-    int unusedFrameWords[3];
+    int unusedFrameWords[3] TGR_MATCHING_UNUSED;
     char clicked;
 
     /* clang-format off */
@@ -662,6 +662,9 @@ void ProcessDecalEditorInput(void) {
                 g_bPaintToolStarted = 1;
             } else {
                 SaveDecalUndo();
+#ifdef ENABLE_PATCHES
+                r = 0;
+#endif
                 if (g_texPaintToolOval.style == 2 || g_texPaintToolOval.style == 3) {
                     x = g_texPaintCursor.originX - g_nPaintAnchorX;
                     y = g_texPaintCursor.originY - g_nPaintAnchorY;

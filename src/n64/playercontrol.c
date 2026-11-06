@@ -22,12 +22,12 @@ void ProcessVehicleInputAndPhysics(Vehicle *vehicle) {
     Vec3f previousOffset;
     Vec3f predicted;
     Vec3f corner;
-    f32 best;
-    f32 dx;
-    f32 dz;
+    f32 best TGR_MATCHING_UNUSED;
+    f32 dx TGR_MATCHING_UNUSED;
+    f32 dz TGR_MATCHING_UNUSED;
     f32 length;
     f32 jolt;
-    s32 i;
+    s32 i TGR_MATCHING_UNUSED;
     f32 dy;
 #if TGR_REGION == TGR_REGION_US
     s32 unusedWord;
@@ -66,6 +66,9 @@ void ProcessVehicleInputAndPhysics(Vehicle *vehicle) {
             ChooseReplayCamera(vehicle);
 #else
             best = 16777216.0f;
+#ifdef ENABLE_PATCHES
+            chosen[0] = chosen[1] = chosen[2] = 0.0f;
+#endif
             for (i = 0; i < g_LoadedTrack.cameraPointCount; i++) {
                 point = &g_LoadedTrack.cameraPoints[i];
                 dx = vehicle->frame.position.x - point->x;

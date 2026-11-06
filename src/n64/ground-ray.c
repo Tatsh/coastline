@@ -25,24 +25,24 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
     f32 t;
     f32 denominator;
     /* These unused slots preserve the original IDO frame layout. */
-    s32 unusedWordA;
+    s32 unusedWordA TGR_MATCHING_UNUSED;
     Vec3f hit;
     Vec3f origin;
     f32 distance;
-    s32 unusedWordB;
+    s32 unusedWordB TGR_MATCHING_UNUSED;
     u16 ceilingInstance;
     u16 ceilingTriangle;
     TrackTriangle *triangle;
-    s32 unusedWordC;
+    s32 unusedWordC TGR_MATCHING_UNUSED;
     s32 neighborIndex;
     s32 slot;
     f32 x;
     f32 y;
     Vec3f ceilingNormal;
     Vec3f groundNormal;
-    s32 unusedWordsA[2];
+    s32 unusedWordsA[2] TGR_MATCHING_UNUSED;
     TrackTriangle *end;
-    s32 unusedWordsB[5];
+    s32 unusedWordsB[5] TGR_MATCHING_UNUSED;
 
     ceilingNormal = g_vRayCeilingNormalInit;
     groundNormal = g_vRayGroundNormalInit;

@@ -200,6 +200,13 @@ typedef struct {
     s32 y;
 } TextDrawPosition;
 #define g_textDrawPosition (*(TextDrawPosition *)&g_nTextDrawX)
+#ifdef ENABLE_PATCHES
+#define TEXT_DRAW_X g_nTextDrawX
+#define TEXT_DRAW_Y g_nTextDrawY
+#else
+#define TEXT_DRAW_X g_textDrawPosition.x
+#define TEXT_DRAW_Y g_textDrawPosition.y
+#endif
 
 #if TGR_REGION == TGR_REGION_JP
 void RenderTextToDisplayList(const char *s) {
@@ -230,8 +237,8 @@ void RenderTextToDisplayList(const char *s) {
     const unsigned char *p;
     int size;
     size = g_nFontSize;
-    x = g_textDrawPosition.x;
-    y = g_textDrawPosition.y;
+    x = TEXT_DRAW_X;
+    y = TEXT_DRAW_Y;
     lastW = -1;
     lastCell = -1;
     lastLine = -1;
@@ -751,7 +758,7 @@ void RenderTextToDisplayList(const char *s) {
     int c;
     int n;
     /* The unused word preserves IDO's original stack slot order. */
-    int frameWord;
+    int frameWord TGR_MATCHING_UNUSED;
     int u1;
     int pad;
     int *tbl;
@@ -764,8 +771,8 @@ void RenderTextToDisplayList(const char *s) {
     int row;
 
     size = g_nFontSize;
-    x = g_textDrawPosition.x;
-    y = g_textDrawPosition.y;
+    x = TEXT_DRAW_X;
+    y = TEXT_DRAW_Y;
     y -= size * 30 / 40;
     if (g_dwScreenScaleShift != 0) {
         x <<= 1;

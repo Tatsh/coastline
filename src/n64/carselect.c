@@ -1,6 +1,11 @@
 /* The host test uses native struct layouts; the MIPS source keeps the original 32-bit layout. */
 #if defined(__mips__) || defined(__sgi)
 /* clang-format off */
+#if defined(__GNUC__) && !defined(__sgi)
+#define TGR_MATCHING_UNUSED __attribute__((unused))
+#else
+#define TGR_MATCHING_UNUSED
+#endif
 #include "n64/carselect-aliases.h"
 #include "n64/race-internal.h"
 /* carselect.c -- the car-select screen
@@ -177,7 +182,7 @@ void RenderCameraView(N64Model *iconA, N64Model *iconB, int player, int x, int y
   if (slide != 0.0f) {
     if (iconB) {
       void *la;
-      int u0[9];
+      int u0[9] TGR_MATCHING_UNUSED;
 
       deg = spin * 57.295776f;
       la = AllocLightBlock();
@@ -350,7 +355,7 @@ void SetTextAlignLeft(void);
 void SetTextAlignRight(void);
 void SetTextCustomColors(int a, int b, int c, int d, int e, int f);
 void SetTextSize(int font);
-void DrawText(char *s, int x, int y);
+void DrawText(const char *s, int x, int y);
 void DrawProgressBar(int x, int y, int w, int h, float frac);
 void DrawMenuFooterButtons(void);
 void DrawPauseMenuButtons(void);
@@ -447,8 +452,8 @@ void ProcessCarSelectScreen(void)
 #if TGR_REGION_JPN
   static int D_80316248[2];       /* each player's car is to be repainted */
 #endif
-  static int D_80316250;
-  static int D_80316254;
+  static int D_80316250 TGR_MATCHING_UNUSED;
+  static int D_80316254 TGR_MATCHING_UNUSED;
   static int D_80316258[2];       /* each player's model slot (0-3; slot ^ 2 is the other) */
   static float D_80316260[2];     /* each player's car sliding in (-1..1, 0 at rest) */
   static float D_80316268[2];     /* each player's turntable angle */
@@ -468,7 +473,7 @@ void ProcessCarSelectScreen(void)
   static int D_803162BC;          /* for this player */
   static int D_803162C0;          /* the load's status */
   static unsigned char D_803162C4;  /* the load has finished */
-  static int D_803162C8[13];
+  static int D_803162C8[13] TGR_MATCHING_UNUSED;
   static int D_803162FC;          /* the season's round, race, state, the track and */
   static int D_80316300;          /* the difficulty when the results were entered */
   static int D_80316304;
@@ -479,7 +484,7 @@ void ProcessCarSelectScreen(void)
   static char D_80316318[80];
   int p;
   int n;
-  int i;
+  int i TGR_MATCHING_UNUSED;
   int k;
   int y;
   N64Car *car;
@@ -504,7 +509,7 @@ void ProcessCarSelectScreen(void)
   short v;
   N64PadRec *pad;
   float spin;
-  float dt;
+  float dt TGR_MATCHING_UNUSED;
 
   if (g_bCarSelectInitialized == 0) {
 #if TGR_REGION_JPN || TGR_REGION_EUR
@@ -936,7 +941,8 @@ void ProcessCarSelectScreen(void)
         SetTextSize(13);
         DrawText(D_80316318, g_dwScreenWidth * 3 / 16 - x, y + 1);
         SetTextSize(10);
-        DrawText(g_apTrackMenuItems[tr]->item.label, g_dwScreenWidth * 3 / 16 - x + 12, y);
+        DrawText((const char *)g_apTrackMenuItems[tr]->item.label,
+                 g_dwScreenWidth * 3 / 16 - x + 12, y);
 #else
         sprintf(D_80316318, "%s/%s", g_apTrackMenuItems[tr]->item.label,
                 g_apWeatherMenuItems[g_SeasonTable[round].races[p][1]]->label);

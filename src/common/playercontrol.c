@@ -96,11 +96,16 @@ void ChooseReplayCamera(Vehicle *vehicle) {
     f32 dy;
 
     best = CAMERA_POINT_FAR;
+#ifdef ENABLE_PATCHES
+    chosen[0] = chosen[1] = chosen[2] = 0.0f;
+#endif
     /* The empty tests preserve the original register allocation under IDO. */
+#ifndef ENABLE_PATCHES
     if (vehicle) {
     }
     if (i * 12) {
     }
+#endif
     for (i = 0; i < g_LoadedTrack.cameraPointCount; i++) {
         point = &g_LoadedTrack.cameraPoints[i];
         dx = VEHICLE_GET(vehicle, Frame).position.x - point->x;
@@ -210,7 +215,7 @@ void ChooseReplayCamera(Vehicle *vehicle) {
 
 /* Choose the view a replay, a race of the computer, or a finished racer shows, and take the view a
  * player selects. */
-static BOSS_RALLY_INLINE void ChooseVehicleView(Vehicle *vehicle) {
+static BOSS_RALLY_INLINE TGR_MATCHING_UNUSED void ChooseVehicleView(Vehicle *vehicle) {
     s32 choose = FALSE;
     s32 hold = FALSE;
 
@@ -262,7 +267,7 @@ static BOSS_RALLY_INLINE void ChooseVehicleView(Vehicle *vehicle) {
 }
 
 /* Read the steering, the stick and the buttons into the controls of a vehicle. */
-static BOSS_RALLY_INLINE void ReadVehicleControls(Vehicle *vehicle) {
+static BOSS_RALLY_INLINE TGR_MATCHING_UNUSED void ReadVehicleControls(Vehicle *vehicle) {
     f32 steering = VEHICLE_GET(vehicle, Input)->steering;
     f32 stickY;
     u32 buttons;
@@ -354,7 +359,7 @@ static BOSS_RALLY_INLINE void ReadVehicleControls(Vehicle *vehicle) {
 }
 
 /* Drive the vehicle of the race after a season along the middle of the route to a stop. */
-static BOSS_RALLY_INLINE void DriveAfterSeason(Vehicle *vehicle) {
+static BOSS_RALLY_INLINE TGR_MATCHING_UNUSED void DriveAfterSeason(Vehicle *vehicle) {
     Vec3f ahead;
     Vec3f velocity;
 
@@ -396,7 +401,7 @@ static BOSS_RALLY_INLINE void DriveAfterSeason(Vehicle *vehicle) {
 
 /* Swing the weight on the spring at the front left corner of a vehicle, and jolt the vehicle when
  * it swings hard. */
-static BOSS_RALLY_INLINE void SwingJoltWeight(Vehicle *vehicle) {
+static BOSS_RALLY_INLINE TGR_MATCHING_UNUSED void SwingJoltWeight(Vehicle *vehicle) {
     Vec3f corner;
     Vec3f predicted;
     Vec3f previousOffset;

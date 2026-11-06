@@ -11,15 +11,15 @@ s32 ApplyCollisionImpulse(RigidBody *b, Vec3f *pN, Vec3f *pDir, s32 flag, f32 re
     float tmp[3][3];
     float W[3][3];
     float vc[3];
-    float spare[2]; /* declared, never used: the frame holds it */
-    float x;        /* the dead NaN test's value */
+    float spare[2] TGR_MATCHING_UNUSED; /* declared, never used: the frame holds it */
+    float x;                            /* the dead NaN test's value */
     float J[3];
     float nb[3];
     float dw[3];
     float jm[3];
     float tt[3];
     float tn[3];
-    Vec3f zero; /* initialised, never used */
+    Vec3f zero TGR_MATCHING_UNUSED; /* initialised, never used */
     float dd;
     float r;
     int i;
@@ -91,8 +91,8 @@ s32 ApplyCollisionImpulse(RigidBody *b, Vec3f *pN, Vec3f *pDir, s32 flag, f32 re
     tt[2] = vc[2] - tn[2];
     if (flag) {
         x = tt[2] * rest;
-        if (x != x)
-            ;
+        if (x != x) {
+        }
         tt[0] = tt[0] * g_fConst0p2;
         tt[1] = tt[1] * g_fConst0p2;
         tt[2] = tt[2] * g_fConst0p2;

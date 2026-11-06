@@ -11,7 +11,7 @@
 s32 TipBalancedVehicle(RigidBody *body) {
     s32 count;
     RigidBody *wheel;
-    f32 *unusedNormal;
+    f32 *unusedNormal TGR_MATCHING_UNUSED;
     Vec3f points[2];
     f32 tilt;
     f32 nearest;
@@ -19,6 +19,9 @@ s32 TipBalancedVehicle(RigidBody *body) {
     QuaternionToMatrix(body->orientation, &body->stepStates[0]);
     nearest = 100.0f;
     count = 0;
+#ifdef ENABLE_PATCHES
+    wheel = body->wheels[0];
+#endif
     if (body->wheels[0]->contactFrames != 0) {
         count++;
         wheel = body->wheels[0];
