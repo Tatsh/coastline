@@ -131,7 +131,8 @@ if(TGR_PLATFORM STREQUAL "n64")
   list(APPEND _common_sources
        ${CMAKE_SOURCE_DIR}/src/n64/precipitationrender.c
        ${CMAKE_SOURCE_DIR}/src/n64/racersharing.c
-       ${CMAKE_SOURCE_DIR}/src/n64/racetick.c)
+       ${CMAKE_SOURCE_DIR}/src/n64/racetick.c
+       ${CMAKE_SOURCE_DIR}/src/n64/balance.c)
 endif()
 add_library(coastline_common STATIC ${_common_sources})
 target_link_libraries(coastline_common PRIVATE coastline_options)

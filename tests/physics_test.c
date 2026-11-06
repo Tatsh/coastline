@@ -6,6 +6,7 @@
 
 #include "common/bodyforces.c"
 #include "common/collisionstep.c"
+#include "n64/balance.c"
 #include "n64/sidegrip.c"
 #include "physics.c"
 

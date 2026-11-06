@@ -62,6 +62,7 @@ TrackTriangle *g_pCollisionTriangle;
 #define COLLISION_NEAREST(a, b) (!((a) < (b)))
 #endif
 
+#if TGR_PLATFORM != TGR_PLATFORM_N64
 /* The distance of a point from the ground of a wheel, either side of it. */
 static inline COLLISION_DISTANCE_TYPE GroundDistance(RigidBody *wheel, Vec3f *point) {
     if (COLLISION_LESS(PlaneDistance(&wheel->groundNormal, wheel->groundOffset, point), 0.0f)) {
@@ -173,6 +174,7 @@ s32 TipBalancedVehicle(RigidBody *body) {
     ComputeDeltaQuaternion(&body->stepStates[0]);
     return 1;
 }
+#endif
 
 #if TGR_BOSS_RALLY
 /* The x87 reduction order differs between face axes and each group of edge axes. */
