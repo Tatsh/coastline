@@ -13,6 +13,7 @@
 
 #include "common/assetnames.h"
 #include "common/ghost.h"
+#include "common/networkrace.h"
 #include "common/racephases.h"
 
 /** The DirectPlay object of the game and its local player. */
@@ -183,13 +184,6 @@ HRESULT SendNetworkRaceStateMessage(DirectPlayInfo *pInfo, DWORD dwState);
  */
 HRESULT SendNetworkMessage7(DirectPlayInfo *pInfo, DPID dpidPlayer);
 
-/**
- * Send message 6 of the game naming the local player, when there is one.
- *
- * @ghidraAddress BRD3D: 0x1003dae0
- * @ghidraAddress BRGlide: 0x10037180
- */
-void SendNetworkMessage6ToSession(void);
 #ifdef __cplusplus
 }
 #endif
@@ -705,21 +699,6 @@ bool RequestNetworkPause(void);
 extern int g_nNetUnpauseRequestTicks;
 
 /**
- * @ghidraAddress BRD3D: 0x10005090
- * @ghidraAddress BRGlide: 0x10005400
- */
-void TickNetworkUnpauseRequest(void);
-
-/**
- * Request the end of a pause from the other players of a network game, when no request waits.
- *
- * @return Always true.
- * @ghidraAddress BRD3D: 0x10004c20
- * @ghidraAddress BRGlide: 0x10004f90
- */
-bool RequestNetworkUnpause(void);
-
-/**
  * Whether the local player is ready to start a network race.
  *
  * @ghidraAddress BRD3D: 0x1022aaa8
@@ -751,14 +730,6 @@ extern int g_bNetReceiveEnabled;
  * @ghidraAddress BRGlide: 0x10006400
  */
 void EnableNetworkReceive(void);
-
-/**
- * Stop processing the messages received.
- *
- * @ghidraAddress BRD3D: 0x100060c0
- * @ghidraAddress BRGlide: 0x10006430
- */
-void DisableNetworkReceive(void);
 
 /**
  * The slot of the local player of a network game, -1 before one is assigned.
@@ -904,12 +875,6 @@ extern unsigned g_dwNetBestClockRoundTrip;
  * @ghidraAddress BRGlide: 0x10226628
  */
 extern char g_szSlotPlayerNameBuffer[0x400];
-
-/**
- * @ghidraAddress BRD3D: 0x106909d8
- * @ghidraAddress BRGlide: 0x105ccb80
- */
-extern int g_dwNetworkDataReceived;
 
 /**
  * @ghidraAddress BRD3D: 0x1022aef8
