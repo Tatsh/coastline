@@ -5,6 +5,7 @@ set(_n64_sources
     billboard-particles.c
     camera.c
     carselect.c
+    collision-triangles.c
     collidevehicles.c
     controllerscreen.c
     dashboard.c

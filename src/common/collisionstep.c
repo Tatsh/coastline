@@ -503,6 +503,7 @@ void CollideVehicles(void) {
 #define SORTS_CONTACTS() (g_dwGameMode == GAME_MODE_DEMO)
 #endif
 
+#if TGR_BOSS_RALLY
 s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
     CollisionTriangleNode *node;
     TrackTriangle *triangle;
@@ -636,6 +637,7 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
     }
     return hit;
 }
+#endif /* TGR_BOSS_RALLY */
 
 #if TGR_BOSS_RALLY
 void StepVehicleCollisions(Vehicle *vehicle, RigidBody *body) {

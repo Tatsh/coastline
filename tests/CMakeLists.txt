@@ -112,7 +112,8 @@ coastline_add_test(
 coastline_add_test(options "${_src}/common/volumecontrols.c")
 coastline_add_test(paintshop "${_src}/n64/paintshop.c")
 coastline_add_test(pakmenu "${_src}/n64/pakmenu.c")
-coastline_add_test(physics ${_common} "${_src}/common/rigidbody.c" "${_src}/common/cubeclip.c" "${_src}/common/tricache.c")
+coastline_add_test(physics ${_common} "${_src}/common/rigidbody.c" "${_src}/common/cubeclip.c"
+                   "${_src}/common/tricache.c" "${_src}/n64/collision-triangles.c")
 coastline_add_test(
   race
   stubs/race.c
