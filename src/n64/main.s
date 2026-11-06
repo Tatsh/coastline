@@ -38,7 +38,7 @@ ramMain:
     .size ramMain, . - ramMain
 
 #if TGR_REGION != TGR_REGION_US
-/* Europe and Japan retain an unreachable return after three padding NOPs. */
+/* Asia retains the unreachable return without the padding of Europe and Japan. */
     .globl GameModeMainLoop
     .type GameModeMainLoop, @function
 GameModeMainLoop:
@@ -49,9 +49,11 @@ GameModeMainLoop:
     nop
     b          .Lgame_mode_loop
     nop
+#if TGR_REGION != TGR_REGION_ASIA
     .rept 3
     nop
     .endr
+#endif
     lw         $ra, 0x14($sp)
     addiu      $sp, $sp, 0x18
     jr         $ra

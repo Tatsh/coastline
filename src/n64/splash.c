@@ -62,6 +62,15 @@ extern char gRomSplashTitlePalette[];
 #define ROM_SPLASH_FIRST_LOGO 0x1EEAF0
 #define ROM_SPLASH_DEVELOPER_LOGO 0x1EFB20
 #define ROM_SPLASH_TITLE_PALETTE 0x1F5EA0
+#elif TGR_REGION == TGR_REGION_ASIA
+#define ROM_SPLASH_SOUND_A 0x1B4F00
+#define ROM_SPLASH_SOUND_B 0x1B8E80
+#define ROM_SPLASH_FIRST_LOGO 0x1D9AF0
+#define ROM_SPLASH_DEVELOPER_LOGO 0x1DC530
+#define ROM_SPLASH_TITLE_A 0x1DF3E0
+#define ROM_SPLASH_TITLE_B 0x1E27A0
+#define ROM_SPLASH_TITLE_C 0x1E1530
+#define ROM_SPLASH_TITLE_D 0x1E0690
 #else
 #define ROM_SPLASH_SOUND_A 0x1B5440
 #define ROM_SPLASH_SOUND_B 0x1B93C0
@@ -92,6 +101,14 @@ extern char gRomSplashTitlePalette[];
 
 /* The sound effect channels the splash screens silence when they end. */
 #define SPLASH_SFX_CHANNELS 5
+
+#if TGR_REGION == TGR_REGION_ASIA
+#define LEGAL_TEXT_Y 190
+#define LEGAL_TRADEMARK_Y 197
+#else
+#define LEGAL_TEXT_Y 195
+#define LEGAL_TRADEMARK_Y 202
+#endif
 
 /* When each logo starts, in seconds. */
 #define FIRST_LOGO_START 0.0f
@@ -126,7 +143,7 @@ extern char gRomSplashTitlePalette[];
 
 /* When the parts of the title show, and when the copyright does. The European release, without
  * the first logo, shows them 4 earlier. */
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_ASIA
 #define TITLE_START 8.0f
 #define TITLE_A_END 11.0f
 #define TITLE_B_START 9.0f
@@ -179,6 +196,8 @@ extern char gRomSplashTitlePalette[];
 #define BUILD_DATE_TEXT "25Sep97 13:46:05"
 #elif TGR_REGION == TGR_REGION_JP
 #define BUILD_DATE_TEXT "16Oct97 11:22:44"
+#elif TGR_REGION == TGR_REGION_ASIA
+#define BUILD_DATE_TEXT "12Sep97 10:45:38"
 #else
 #define BUILD_DATE_TEXT "25Aug97 11:46:52"
 #endif
@@ -195,7 +214,7 @@ void AnimateSplashModels(void) {
 }
 
 #if TGR_REGION != TGR_REGION_US
-#if TGR_REGION == TGR_REGION_EU
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_ASIA
 #define REGIONAL_TITLE_ASSET g_pSplashTitleModelA
 #define INTRO_LOGO_SCALE 0.03125f
 #else
@@ -223,15 +242,17 @@ void ProcessSplashScreens(void) {
     Mtx *mtx;
 
     if (g_bSplashStarted == 0) {
+#if TGR_REGION != TGR_REGION_ASIA
         g_dwKeepScreenBlanked = 1;
-        BlankDisplay();
+        BLANK_SCREEN();
         StartHighResFrame();
         FlushDisplayList();
+#endif
         SetFadeTarget(1.0f, 0.2f);
         FadeMusicTo(1.0f, 0.2f);
         FadeSfxTo(1.0f, 0.2f);
         ResetHeap();
-#if (TGR_REGION == TGR_REGION_EU)
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_ASIA
         g_pSplashDeveloperLogo = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_DEVELOPER_LOGO));
         DecompressModel(g_pSplashDeveloperLogo, ROM_SPLASH_DEVELOPER_LOGO);
         g_pSplashFirstLogo = AllocHeapAligned(DmaReadAssetSize(ROM_SPLASH_FIRST_LOGO));
@@ -272,14 +293,21 @@ void ProcessSplashScreens(void) {
         g_dwSplashDeveloperSoundA = 0;
         g_bSplashSkipped = 0;
         g_bSplashStarted = 1;
+#if TGR_REGION != TGR_REGION_ASIA
         g_dwKeepScreenBlanked = 0;
+#endif
         g_fSplashTime = 0.0f;
     }
     UpdateFrameTiming();
     UpdateFadeTransitions();
     StartHighResFrame();
+#if TGR_REGION == TGR_REGION_ASIA
+    ClearDepthBuffer();
+    ClearScreen(0, 0, 0);
+#else
     ClearScreen(0, 0, 0);
     ClearDepthBuffer();
+#endif
     AddTimingMarker(0, 0, 0, 200, 0xFF);
     if (IsFadingIn() == 0 || IsFadeComplete() != 0) {
         g_fSplashTime += g_fFrameDeltaTime;
@@ -420,7 +448,7 @@ void ProcessSplashScreens(void) {
                                 (g_fSplashTime - 4.0f) * (g_fSplashTime - 4.0f) * 0.0625f +
                             -3.1415927f,
                         INTRO_LOGO_SCALE);
-#if (TGR_REGION == TGR_REGION_EU)
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_ASIA
         } else if (g_fSplashTime < 9.0f) {
 #else
         } else if (g_fSplashTime < 8.5f) {
@@ -457,7 +485,7 @@ void ProcessSplashScreens(void) {
         }
     }
 
-#if (TGR_REGION == TGR_REGION_EU)
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_ASIA
     if (g_fSplashTime > 8.0f) {
         gSPNumLights(gDisplayListPtr++, 1);
         gSPLight(gDisplayListPtr++, &g_MenuDirectionalLight, 1);
@@ -549,11 +577,11 @@ void ProcessSplashScreens(void) {
             DrawText(BUILD_DATE_TEXT, 160, 40);
         }
         SetTextSize(7);
-        DrawText("O 1997 Boss Game Studios, Inc.  All Rights Reserved.", 160, 195);
-        DrawText("Top Gear Rally is a trademark of Kemco.", 160, 202);
+        DrawText("O 1997 Boss Game Studios, Inc.  All Rights Reserved.", 160, LEGAL_TEXT_Y);
+        DrawText("Top Gear Rally is a trademark of Kemco.", 160, LEGAL_TRADEMARK_Y);
         DrawText("LICENSED BY NINTENDO", 160, 214);
         SetTextSize(3);
-        DrawText("c", 78, 195);
+        DrawText("c", 78, LEGAL_TEXT_Y);
     }
     gSPPopMatrix(gDisplayListPtr++, 0);
     ApplyScreenFade();
@@ -571,14 +599,21 @@ void ProcessSplashScreens(void) {
             g_aSoundEffectChannels[2].volume = g_aSoundEffectChannels[2].step = 0;
             g_aSoundEffectChannels[3].volume = g_aSoundEffectChannels[3].step = 0;
             g_aSoundEffectChannels[4].volume = g_aSoundEffectChannels[4].step = 0;
+#if TGR_REGION == TGR_REGION_ASIA
+            ClearFramebuffersForWideMode();
+#endif
             if (g_bSplashSkipped != 0) {
+#if TGR_REGION != TGR_REGION_ASIA
                 ClearFramebuffersForWideMode();
+#endif
                 SetCurrentScreenCallback(ProcessMainMenu);
             } else {
-                BlankDisplay();
+#if TGR_REGION != TGR_REGION_ASIA
+                BLANK_SCREEN();
                 g_dwKeepScreenBlanked = 1;
                 ClearFramebuffersLowRes();
                 g_dwKeepScreenBlanked = 0;
+#endif
                 StartAttractDemo();
             }
         }
@@ -588,7 +623,7 @@ void ProcessSplashScreens(void) {
         goto fade;
     }
     for (i = 0; i != 2; i++) {
-#if (TGR_REGION == TGR_REGION_EU)
+#if TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_ASIA
         if (g_aPlayerInputState[i].buttons & 0xC010) {
             TransferFlags(&g_aPlayerInputState[i], 0xC010);
 #else
@@ -611,7 +646,9 @@ void ProcessSplashScreens(void) {
     if (g_fSplashTime >= INTRO_END) {
     fade:
         g_bSplashFadingOut = 1;
+#if TGR_REGION != TGR_REGION_ASIA
         osSyncPrintf("start fade out\n");
+#endif
         SetFadeTarget(0.0f, 0.2f);
         FadeSfxTo(0.0f, 0.2f);
     }
@@ -1053,14 +1090,14 @@ void ProcessSplashScreens(void) {
 #endif
 
 void ProcessControllerCheck(void) {
-#if TGR_REGION != TGR_REGION_US
+#if TGR_REGION != TGR_REGION_US && TGR_REGION != TGR_REGION_ASIA
     /* The value of the flag comes from a variable, loaded in a register of its own. */
     u32 blanked = TRUE;
 
 #endif
     if (!g_bControllerCheckStarted) {
         g_bControllerCheckStarted = 1;
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
         ResetHeap();
         /* Show two black frames before the pictures load. */
         osViBlack(1);
@@ -1088,7 +1125,7 @@ void ProcessControllerCheck(void) {
         LoadTextureFromRom(&g_texButtonA);
         SetFadeTarget(1.0f, FADE_TIME);
         g_wScreenFrameCount = 0;
-#if TGR_REGION != TGR_REGION_US
+#if TGR_REGION != TGR_REGION_US && TGR_REGION != TGR_REGION_ASIA
         g_dwKeepScreenBlanked = FALSE;
 #endif
     }
@@ -1107,7 +1144,7 @@ void ProcessControllerCheck(void) {
     SetTextAlignCenter();
     SetTextSize(30);
     DrawText("%ryWARNING", 160, 41);
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
     SetTextSize(18);
     switch (g_bControllerWarningType) {
     case 0:

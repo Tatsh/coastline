@@ -559,6 +559,9 @@ void ProcessPakMenuScreen(void) {
 #if TGR_REGION == TGR_REGION_US
 #define UNUSED_ABOVE 6
 #define UNUSED_BELOW 10
+#elif TGR_REGION == TGR_REGION_ASIA
+#define UNUSED_ABOVE 6
+#define UNUSED_BELOW 10
 #elif TGR_REGION == TGR_REGION_EU
 #define UNUSED_ABOVE 1
 #define UNUSED_BELOW 9

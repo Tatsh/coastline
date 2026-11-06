@@ -27,6 +27,7 @@ enum class ImportSource {
     Usa,  /*!< The USA cartridge. */
     Jpn,  /*!< The Japanese cartridge. */
     Eur,  /*!< The European cartridge. */
+    Asia, /*!< The Asian cartridge. */
 };
 
 /**

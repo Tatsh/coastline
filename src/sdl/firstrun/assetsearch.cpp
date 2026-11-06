@@ -12,6 +12,12 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
                                          const WizardServices &services,
                                          const WizardSearchProgress &progress) {
     WizardSearchResult result;
+    auto selectCartridge = [&](WizardCartridge release, const std::filesystem::path &path) {
+        auto &found = result.roms[static_cast<std::size_t>(release)];
+        if (found.empty() || (services.preferCartridge && services.preferCartridge(path, found))) {
+            found = path;
+        }
+    };
     auto report = [&](const std::string &step, double fraction) {
         return !progress || progress(result, step, fraction);
     };
@@ -71,10 +77,7 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
                 services.scanArchive(
                     path,
                     [&](WizardCartridge release, const std::filesystem::path &cached) {
-                        auto &found = result.roms[static_cast<std::size_t>(release)];
-                        if (found.empty()) {
-                            found = cached;
-                        }
+                        selectCartridge(release, cached);
                         return report("Found ROM image in " + Utf8FromPath(path), fraction);
                     },
                     [&](const std::string &member, double part) {
@@ -98,10 +101,7 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
             const auto size = std::filesystem::file_size(path, error);
             if (!error && size <= 32 * 1024 * 1024) {
                 if (auto release = services.identifyCartridge(path)) {
-                    auto &found = result.roms[static_cast<std::size_t>(*release)];
-                    if (found.empty()) {
-                        found = path;
-                    }
+                    selectCartridge(*release, path);
                 }
             }
         }
@@ -110,10 +110,6 @@ WizardSearchResult SearchWizardDirectory(const std::filesystem::path &directory,
                     static_cast<double>(result.examined) /
                         static_cast<double>(std::max<std::size_t>(result.candidates, 1)))) {
             return result;
-        }
-        if (!result.disc.empty() &&
-            std::ranges::all_of(result.roms, [](const auto &rom) { return !rom.empty(); })) {
-            break;
         }
     }
     report("Search complete", 1.0);

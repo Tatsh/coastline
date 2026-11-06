@@ -24,6 +24,7 @@
 #include <zlib.h>
 
 #include "assetchain.h"
+#include "cartridge/asia.h"
 #include "cartridge/eu.h"
 #include "cartridge/jp.h"
 #include "cartridge/us.h"
@@ -63,18 +64,41 @@ struct Release {
     std::span<const unsigned char> manifest; // The assets, as tools/sdl/cartridgemanifest.py
                                              // writes them.
     const char *language;                    // The language of the text of the release.
+    std::size_t segmentSize;
 };
 
-const std::array<Release, 3> RELEASES{{
-    {RomRelease::Usa, "bfc51f086ebdb78904dc24ad0c3a2d946e26d022", "usa", CARTRIDGE_US, "en-us"},
-    {RomRelease::Jpn, "e0415b87c5a5b69ac581e79137406bdaa79b354a", "jpn", CARTRIDGE_JP, "ja"},
-    {RomRelease::Eur, "9fae5d98fe3464f00d59034690df90118646eb95", "eur", CARTRIDGE_EU, "en-gb"},
+const std::array<Release, 4> RELEASES{{
+    {RomRelease::Usa,
+     "bfc51f086ebdb78904dc24ad0c3a2d946e26d022",
+     "usa",
+     CARTRIDGE_US,
+     "en-us",
+     0xAC400},
+    {RomRelease::Jpn,
+     "e0415b87c5a5b69ac581e79137406bdaa79b354a",
+     "jpn",
+     CARTRIDGE_JP,
+     "ja",
+     0xACB30},
+    {RomRelease::Eur,
+     "9fae5d98fe3464f00d59034690df90118646eb95",
+     "eur",
+     CARTRIDGE_EU,
+     "en-gb",
+     0xAE0F0},
+    {RomRelease::Asia,
+     "7e36a98f6fafe3ff7e72d14e0fae16418458da47",
+     "asia",
+     CARTRIDGE_ASIA,
+     "en-us",
+     0xABEC0},
 }};
 
 // The main segment: its code and data at this offset of the cartridge, up to the end of its
 // read-only data.
 constexpr std::size_t SEGMENT_ROM = 0x1000;
-constexpr std::size_t SEGMENT_SIZE = 0xAC400;
+constexpr std::uint32_t ASIA_DATA_SHIFT = 0x4B0;
+constexpr std::uint32_t ASIA_TEXT_SHIFT = 0x540;
 
 bool WriteBytes(const std::filesystem::path &path, std::span<const std::uint8_t> bytes) {
     std::ofstream out(path, std::ios::binary | std::ios::trunc);
@@ -88,14 +112,15 @@ bool WriteBytes(const std::filesystem::path &path, std::span<const std::uint8_t>
 // and the bytes of padding must be zero.
 std::optional<std::string> ExtractCartridge(std::span<const std::uint8_t> rom,
                                             std::span<const unsigned char> manifest,
+                                            std::size_t segmentSize,
                                             const std::filesystem::path &directory,
                                             const ImportProgress &progress) {
-    if (rom.size() < SEGMENT_ROM + SEGMENT_SIZE) {
+    if (rom.size() < SEGMENT_ROM + segmentSize) {
         return "the image is too short";
     }
     std::error_code error;
     std::filesystem::create_directories(directory, error);
-    if (!WriteBytes(directory / "segment.bin", rom.subspan(SEGMENT_ROM, SEGMENT_SIZE))) {
+    if (!WriteBytes(directory / "segment.bin", rom.subspan(SEGMENT_ROM, segmentSize))) {
         return fmt::format("{} cannot be written", (directory / "segment.bin").string());
     }
     std::istringstream lines(std::string(manifest.begin(), manifest.end()));
@@ -695,6 +720,15 @@ constexpr FontAddresses USA_FONTS{0x8028FE00,
                                   0x802A1740,
                                   0x802A17A0,
                                   0x802A187C};
+constexpr FontAddresses ASIA_FONTS{USA_FONTS.largeAtlas - ASIA_DATA_SHIFT,
+                                   USA_FONTS.smallAtlas - ASIA_DATA_SHIFT,
+                                   USA_FONTS.largeGradient - ASIA_DATA_SHIFT,
+                                   USA_FONTS.largeShadowGradient - ASIA_DATA_SHIFT,
+                                   USA_FONTS.smallGradient - ASIA_DATA_SHIFT,
+                                   USA_FONTS.smallShadowGradient - ASIA_DATA_SHIFT,
+                                   USA_FONTS.charToGlyph - ASIA_DATA_SHIFT,
+                                   USA_FONTS.largeOffsets - ASIA_DATA_SHIFT,
+                                   USA_FONTS.smallOffsets - ASIA_DATA_SHIFT};
 constexpr FontAddresses EUR_FONTS{0x802925C0,
                                   0x802A01C0,
                                   0x8028E550,
@@ -728,9 +762,10 @@ std::optional<std::string> ConvertConsoleFonts(const std::filesystem::path &dest
     constexpr int GRADIENT_HEIGHT = 40;
     constexpr std::size_t OFFSETS = 55;
     constexpr std::size_t CHARACTERS = 96;
-    const FontAddresses &fonts = release == RomRelease::Usa ? USA_FONTS :
-                                 release == RomRelease::Eur ? EUR_FONTS :
-                                                              JPN_FONTS;
+    const FontAddresses &fonts = release == RomRelease::Usa  ? USA_FONTS :
+                                 release == RomRelease::Asia ? ASIA_FONTS :
+                                 release == RomRelease::Eur  ? EUR_FONTS :
+                                                               JPN_FONTS;
     auto segment = ReadWholeFile(destination / "segment.bin");
     if (!segment) {
         return fmt::format("{} cannot be read.", (destination / "segment.bin").string());
@@ -890,15 +925,20 @@ std::optional<std::string> WriteConsoleStrings(std::span<const std::uint8_t> rom
     std::string_view bytes(reinterpret_cast<const char *>(rom.data()), rom.size());
     nlohmann::ordered_json strings = nlohmann::ordered_json::object();
     for (const auto &message : CONSOLE_STRINGS) {
-        const auto &lines = release.release == RomRelease::Usa ? message.usa :
-                            release.release == RomRelease::Eur ? message.eur :
-                                                                 message.jpn;
+        const auto &lines =
+            release.release == RomRelease::Usa || release.release == RomRelease::Asia ?
+                message.usa :
+            release.release == RomRelease::Eur ? message.eur :
+                                                 message.jpn;
         if (lines.empty()) {
             continue;
         }
         std::string joined;
         for (std::size_t line = 0; line < lines.size(); ++line) {
-            auto address = lines[line];
+            auto address =
+                lines[line] - (release.release == RomRelease::Asia ?
+                                   (lines[line] < 0x802a7000 ? ASIA_DATA_SHIFT : ASIA_TEXT_SHIFT) :
+                                   0);
             std::size_t start = SEGMENT_ROM + (address - SEGMENT_BASE);
             auto end = start < bytes.size() ? bytes.find('\0', start) : std::string_view::npos;
             auto decoded = end == std::string_view::npos ?
@@ -915,13 +955,13 @@ std::optional<std::string> WriteConsoleStrings(std::span<const std::uint8_t> rom
         }
         strings[std::string(message.key)] = joined;
     }
-    if (release.release == RomRelease::Usa) {
+    if (release.release == RomRelease::Usa || release.release == RomRelease::Asia) {
         for (const auto &message : SAVE_FOLDER_STRINGS) {
             strings[std::string(message.key)] = message.text;
         }
     }
     const auto fallback = dataDirectory / "strings" / "en-us.json";
-    if (release.release != RomRelease::Usa) {
+    if (release.release != RomRelease::Usa && release.release != RomRelease::Asia) {
         auto base = strings;
         for (const auto &message : SAVE_FOLDER_STRINGS) {
             base[std::string(message.key)] = message.text;
@@ -949,6 +989,8 @@ struct LightAddresses {
 };
 
 constexpr LightAddresses USA_LIGHTS{0x80270820, 0x80271F88};
+constexpr LightAddresses ASIA_LIGHTS{USA_LIGHTS.splash - ASIA_DATA_SHIFT,
+                                     USA_LIGHTS.menu - ASIA_DATA_SHIFT};
 constexpr LightAddresses EUR_LIGHTS{0x80272800, 0x80273F68};
 constexpr LightAddresses JPN_LIGHTS{0x802722C8, 0x80273A28};
 
@@ -958,9 +1000,10 @@ std::optional<std::string> ConvertConsoleLights(const std::filesystem::path &des
                                                 RomRelease release) {
     constexpr std::uint32_t SEGMENT_BASE = 0x80200000;
     constexpr std::size_t AMBIENT_AND_DIRECTIONAL = 8 + 16;
-    const LightAddresses &lights = release == RomRelease::Usa ? USA_LIGHTS :
-                                   release == RomRelease::Eur ? EUR_LIGHTS :
-                                                                JPN_LIGHTS;
+    const LightAddresses &lights = release == RomRelease::Usa  ? USA_LIGHTS :
+                                   release == RomRelease::Asia ? ASIA_LIGHTS :
+                                   release == RomRelease::Eur  ? EUR_LIGHTS :
+                                                                 JPN_LIGHTS;
     auto segment = ReadWholeFile(destination / "segment.bin");
     if (!segment) {
         return fmt::format("{} cannot be read.", (destination / "segment.bin").string());
@@ -991,12 +1034,14 @@ std::uint32_t Big32(const std::uint8_t *bytes) {
 std::optional<std::string> ConvertConsoleEffects(const std::filesystem::path &destination,
                                                  std::span<const std::uint8_t> segment,
                                                  RomRelease release) {
-    const std::size_t particle = release == RomRelease::Usa ? 0xA3790 :
-                                 release == RomRelease::Eur ? 0xA5F50 :
-                                                              0xA59F0;
-    const std::size_t spray = release == RomRelease::Usa ? 0xA2978 :
-                              release == RomRelease::Eur ? 0xA5138 :
-                                                           0xA4BD8;
+    const std::size_t particle = release == RomRelease::Usa  ? 0xA3790 :
+                                 release == RomRelease::Asia ? 0xA3790 - ASIA_DATA_SHIFT :
+                                 release == RomRelease::Eur  ? 0xA5F50 :
+                                                               0xA59F0;
+    const std::size_t spray = release == RomRelease::Usa  ? 0xA2978 :
+                              release == RomRelease::Asia ? 0xA2978 - ASIA_DATA_SHIFT :
+                              release == RomRelease::Eur  ? 0xA5138 :
+                                                            0xA4BD8;
     const auto directory = destination / "effects";
     std::error_code error;
     std::filesystem::create_directories(directory, error);
@@ -1314,6 +1359,7 @@ VerticesJson(std::span<const std::uint8_t> segment, std::uint32_t address, std::
 // The addresses of the vertices of the choice marker of the menus, drawn by
 // g_aMenuChoiceMarkerDisplayList.
 constexpr std::uint32_t USA_MENU_CHOICE_MARKER = 0x80271E68;
+constexpr std::uint32_t ASIA_MENU_CHOICE_MARKER = USA_MENU_CHOICE_MARKER - ASIA_DATA_SHIFT;
 constexpr std::uint32_t EUR_MENU_CHOICE_MARKER = 0x80273E48;
 constexpr std::uint32_t JPN_MENU_CHOICE_MARKER = 0x80273908;
 
@@ -1325,9 +1371,10 @@ std::optional<std::string> WriteMenuChoiceMarker(const std::filesystem::path &de
     constexpr std::uint32_t SEGMENT_BASE = 0x80200000;
     constexpr std::size_t VERTICES = 12;
     constexpr std::size_t VERTEX = 16;
-    std::uint32_t address = release == RomRelease::Usa ? USA_MENU_CHOICE_MARKER :
-                            release == RomRelease::Eur ? EUR_MENU_CHOICE_MARKER :
-                                                         JPN_MENU_CHOICE_MARKER;
+    std::uint32_t address = release == RomRelease::Usa  ? USA_MENU_CHOICE_MARKER :
+                            release == RomRelease::Asia ? ASIA_MENU_CHOICE_MARKER :
+                            release == RomRelease::Eur  ? EUR_MENU_CHOICE_MARKER :
+                                                          JPN_MENU_CHOICE_MARKER;
     if (address - SEGMENT_BASE + VERTICES * VERTEX > segment.size()) {
         return std::string("The choice marker of the menus is outside the main segment.");
     }
@@ -1347,6 +1394,9 @@ struct CarStageAddresses {
     std::uint32_t reflectionTextures;
 };
 constexpr CarStageAddresses USA_CAR_STAGE{0x8028C430, 0x8028C550, 0x8028C308};
+constexpr CarStageAddresses ASIA_CAR_STAGE{USA_CAR_STAGE.choiceMarker - ASIA_DATA_SHIFT,
+                                           USA_CAR_STAGE.shadow - ASIA_DATA_SHIFT,
+                                           USA_CAR_STAGE.reflectionTextures - ASIA_DATA_SHIFT};
 constexpr CarStageAddresses EUR_CAR_STAGE{0x8028EB90, 0x8028ECB0, 0x8028EA68};
 constexpr CarStageAddresses JPN_CAR_STAGE{0x8028E5E0, 0x8028E700, 0x8028E4B8};
 
@@ -1369,9 +1419,10 @@ std::optional<std::string> WriteCarStage(const std::filesystem::path &destinatio
     constexpr int REFLECTION_HEIGHT = 128;
     constexpr std::size_t REFLECTION_BYTES = REFLECTION_WIDTH * REFLECTION_HEIGHT / 2;
     constexpr std::size_t PALETTE_BYTES = 32;
-    const CarStageAddresses &at = release == RomRelease::Usa ? USA_CAR_STAGE :
-                                  release == RomRelease::Eur ? EUR_CAR_STAGE :
-                                                               JPN_CAR_STAGE;
+    const CarStageAddresses &at = release == RomRelease::Usa  ? USA_CAR_STAGE :
+                                  release == RomRelease::Asia ? ASIA_CAR_STAGE :
+                                  release == RomRelease::Eur  ? EUR_CAR_STAGE :
+                                                                JPN_CAR_STAGE;
     auto inside = [&](std::uint32_t address, std::size_t size) {
         return address >= SEGMENT_BASE && address - SEGMENT_BASE + size <= segment.size();
     };
@@ -1436,6 +1487,19 @@ constexpr TrackMenuAddresses USA_TRACK_MENU{
     0x80272030,
     0x8027203C,
     {0x802720B4, 0x802720F0, 0x8027213C, 0x8027218C, 0x802721DC}};
+constexpr TrackMenuAddresses ASIA_TRACK_MENU{USA_TRACK_MENU.trackDescriptors - ASIA_DATA_SHIFT,
+                                             USA_TRACK_MENU.weatherMenuItems - ASIA_DATA_SHIFT,
+                                             USA_TRACK_MENU.numTracks - ASIA_DATA_SHIFT,
+                                             USA_TRACK_MENU.carCount - ASIA_DATA_SHIFT,
+                                             USA_TRACK_MENU.carModels - ASIA_DATA_SHIFT,
+                                             USA_TRACK_MENU.seasonTable - ASIA_DATA_SHIFT,
+                                             USA_TRACK_MENU.engineLayouts - ASIA_DATA_SHIFT,
+                                             USA_TRACK_MENU.driveTypes - ASIA_DATA_SHIFT,
+                                             {USA_TRACK_MENU.options[0] - ASIA_DATA_SHIFT,
+                                              USA_TRACK_MENU.options[1] - ASIA_DATA_SHIFT,
+                                              USA_TRACK_MENU.options[2] - ASIA_DATA_SHIFT,
+                                              USA_TRACK_MENU.options[3] - ASIA_DATA_SHIFT,
+                                              USA_TRACK_MENU.options[4] - ASIA_DATA_SHIFT}};
 constexpr TrackMenuAddresses EUR_TRACK_MENU{
     0x80272834,
     0x80274284,
@@ -1475,9 +1539,10 @@ std::optional<std::string> WriteMenus(const std::filesystem::path &destination,
     constexpr std::uint32_t CAR_MODEL = 0x60;
     constexpr std::uint32_t SEASON = 0x1C;
     constexpr std::uint32_t MENU_ITEM = 20;
-    const TrackMenuAddresses &at = release == RomRelease::Usa ? USA_TRACK_MENU :
-                                   release == RomRelease::Eur ? EUR_TRACK_MENU :
-                                                                JPN_TRACK_MENU;
+    const TrackMenuAddresses &at = release == RomRelease::Usa  ? USA_TRACK_MENU :
+                                   release == RomRelease::Asia ? ASIA_TRACK_MENU :
+                                   release == RomRelease::Eur  ? EUR_TRACK_MENU :
+                                                                 JPN_TRACK_MENU;
     auto inside = [&](std::uint32_t address, std::uint32_t size) {
         return address >= SEGMENT_BASE && address - SEGMENT_BASE + size <= segment.size();
     };
@@ -2218,7 +2283,8 @@ std::vector<std::uint8_t> DemoGhost(const N64Demo &demo, std::string_view slotNa
 std::optional<std::string> WriteAttractDemo(std::span<const std::uint8_t> rom,
                                             RomRelease release,
                                             const std::filesystem::path &destination) {
-    N64DemoRelease demoRelease = release == RomRelease::Usa ? N64DemoRelease::Usa :
+    N64DemoRelease demoRelease = release == RomRelease::Usa || release == RomRelease::Asia ?
+                                     N64DemoRelease::Usa :
                                  release == RomRelease::Eur ? N64DemoRelease::Eur :
                                                               N64DemoRelease::Jpn;
     auto demo = RecordN64AttractDemo(rom, demoRelease);
@@ -2301,7 +2367,8 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     }
     const Release &known = *std::ranges::find(RELEASES, *release, &Release::release);
     auto destination = dataDirectory / "n64" / known.directory;
-    if (auto failure = ExtractCartridge(*bytes, known.manifest, destination, progress)) {
+    if (auto failure =
+            ExtractCartridge(*bytes, known.manifest, known.segmentSize, destination, progress)) {
         return std::unexpected(
             fmt::format("{} cannot be imported ({}).", image.string(), *failure));
     }
@@ -2420,7 +2487,7 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
             return std::unexpected(*failure);
         }
     }
-    auto segment = std::span<const std::uint8_t>(*bytes).subspan(SEGMENT_ROM, SEGMENT_SIZE);
+    auto segment = std::span<const std::uint8_t>(*bytes).subspan(SEGMENT_ROM, known.segmentSize);
     if (auto failure = ConvertConsoleEffects(destination, segment, *release)) {
         return std::unexpected(*failure);
     }
@@ -2466,16 +2533,16 @@ std::expected<RomRelease, std::string> ImportRom(const std::filesystem::path &im
     }
     std::error_code error;
     if (!std::filesystem::exists(dataDirectory / "music" / "menu.xm")) {
-        constexpr std::array<std::uint32_t, 6> eurMusic{
-            0x0EB310, 0x1127A0, 0x12DBF0, 0x148DC0, 0x163CA0, 0x17EE50};
-        constexpr std::array<std::uint32_t, 6> jpnMusic{
-            0x102B50, 0x129FE0, 0x145430, 0x160600, 0x17B4E0, 0x196690};
         // The XM modules of the menus and of the tracks, as the music pack default.
         for (std::size_t i = 0; i < std::size(USA_MUSIC_MODULES); ++i) {
             const UsaMusicModule &entry = USA_MUSIC_MODULES[i];
-            auto offset = *release == RomRelease::Eur ? eurMusic[i] :
-                          *release == RomRelease::Jpn ? jpnMusic[i] :
-                                                        entry.offset;
+            const std::string name =
+                i == 0 ? "segments/menuMusic" : "music/track-" + std::to_string(i - 1);
+            const auto asset = std::ranges::find(assets, name, &ManifestAsset::name);
+            if (asset == assets.end()) {
+                return std::unexpected(fmt::format("{} is missing from the ROM manifest.", name));
+            }
+            const auto offset = asset->romStart;
             auto module = Tools::Common::decompress(std::span(*bytes).subspan(offset));
             if (!module) {
                 return std::unexpected(module.error().message);

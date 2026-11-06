@@ -36,10 +36,11 @@ struct Release {
 // BSS segment, mapped from RAM to the cartridge (RAM 0x80200000 is cartridge 0x1000), and the
 // first asset of every release, the ghost data, is read from exactly there. The digests are of the
 // big-endian images.
-constexpr std::array<Release, 3> kReleases{{
+constexpr std::array<Release, 4> kReleases{{
     {"NGRE", Region::Usa, 0xad400, "bfc51f086ebdb78904dc24ad0c3a2d946e26d022"},
     {"NTRJ", Region::Jpn, 0xadb30, "e0415b87c5a5b69ac581e79137406bdaa79b354a"},
     {"NTRP", Region::Eur, 0xaf0f0, "9fae5d98fe3464f00d59034690df90118646eb95"},
+    {"NGRX", Region::Asia, 0xacec0, "7e36a98f6fafe3ff7e72d14e0fae16418458da47"},
 }};
 
 std::unexpected<Error> invalid(std::string message) {
@@ -54,9 +55,12 @@ std::string_view regionName(Region region) {
         return "us";
     case Region::Jpn:
         return "jp";
-    default:
+    case Region::Eur:
         return "eu";
+    case Region::Asia:
+        return "asia";
     }
+    return "";
 }
 
 Rom::Rom(std::vector<std::uint8_t> bytes, Region region, std::uint32_t assetStart)

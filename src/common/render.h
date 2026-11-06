@@ -913,7 +913,7 @@ void BlankDisplay(void);
 void UnblankDisplay(void);
 #endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
 #define BLANK_SCREEN() osViBlack(TRUE)
 #else
 #define BLANK_SCREEN() BlankDisplay()

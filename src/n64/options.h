@@ -24,7 +24,7 @@ enum {
     OPTIONS_ITEM_SFX,        /*!< The volume of the sound effects. */
     OPTIONS_ITEM_UNITS,      /*!< The units of speed, miles or kilometres an hour. */
     OPTIONS_ITEM_CONTROLLER, /*!< Opens the controller configuration screen. */
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
     OPTIONS_ITEM_SAVE_CONFIGURATION, /*!< Saves the settings to a Controller Pak. */
     OPTIONS_ITEM_LOAD_CONFIGURATION, /*!< Loads the settings from a Controller Pak. */
 #endif

@@ -25,9 +25,9 @@ namespace coastline {
 namespace {
 
 constexpr std::array<std::string_view, 4> GENERATED_PACKS{"boss", "eur", "jpn", "default"};
-constexpr std::array<std::string_view, 3> REGIONS{"usa", "jpn", "eur"};
-constexpr std::array<ImportSource, 3> SOURCES{
-    ImportSource::Usa, ImportSource::Jpn, ImportSource::Eur};
+constexpr std::array<std::string_view, 4> REGIONS{"usa", "jpn", "eur", "asia"};
+constexpr std::array<ImportSource, 4> SOURCES{
+    ImportSource::Usa, ImportSource::Jpn, ImportSource::Eur, ImportSource::Asia};
 
 struct RomInput {
     std::filesystem::path path;
@@ -157,7 +157,9 @@ public:
 std::optional<std::string> WriteMetadata(const std::filesystem::path &defaults, RomRelease base) {
     auto record = GameConfig::Load(defaults / "import.ini");
     record.Set("Import", "Layout", "1");
-    record.Set("Import", "BaseRegion", std::string(REGIONS[static_cast<std::size_t>(base)]));
+    const auto baseRegion = base == RomRelease::Asia ? std::string_view("usa") :
+                                                       REGIONS[static_cast<std::size_t>(base)];
+    record.Set("Import", "BaseRegion", std::string(baseRegion));
     if (!record.Save(defaults / "import.ini")) {
         return "Cannot record the regional asset layout.";
     }
@@ -168,7 +170,7 @@ std::optional<std::string> WriteMetadata(const std::filesystem::path &defaults, 
     if (!settings.is_object()) {
         return "The imported pack metadata is invalid.";
     }
-    settings["baseRegion"] = REGIONS[static_cast<std::size_t>(base)];
+    settings["baseRegion"] = baseRegion;
     std::ofstream output(metadata, std::ios::binary | std::ios::trunc);
     output << settings.dump(2) << '\n';
     output.close();
@@ -198,13 +200,14 @@ void NormalizeCartridge(const std::filesystem::path &candidate,
                         std::string_view region,
                         const std::filesystem::path &fonts) {
     const auto source = candidate / "n64" / region;
+    const auto gameRegion = region == "asia" ? std::string_view("usa") : region;
     std::filesystem::create_directories(fonts);
     std::filesystem::copy(
-        source / "fonts", fonts / region, std::filesystem::copy_options::recursive);
+        source / "fonts", fonts / gameRegion, std::filesystem::copy_options::recursive);
     std::filesystem::remove_all(source / "fonts");
     std::filesystem::rename(source, candidate / "n64" / "base");
     GameConfig metadata;
-    metadata.Set("Cartridge", "Region", std::string(region));
+    metadata.Set("Cartridge", "Region", std::string(gameRegion));
     if (!metadata.Save(candidate / "n64" / "base" / "cartridge.ini")) {
         throw std::filesystem::filesystem_error("Cannot record the cartridge region",
                                                 candidate,
@@ -259,8 +262,12 @@ std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
         }
         inputs.push_back({rom, *release});
     }
+    if (releases.contains(RomRelease::Usa)) {
+        std::erase_if(inputs,
+                      [](const RomInput &input) { return input.release == RomRelease::Asia; });
+    }
     std::stable_partition(inputs.begin(), inputs.end(), [](const RomInput &input) {
-        return input.release == RomRelease::Usa;
+        return input.release == RomRelease::Usa || input.release == RomRelease::Asia;
     });
     auto stage = ImportStage::Create(data);
     if (!stage) {
@@ -335,8 +342,9 @@ std::optional<std::string> ImportAssetImages(const std::filesystem::path &data,
             if (index == 0) {
                 std::filesystem::create_directories(defaults.parent_path());
                 std::filesystem::rename(candidate, defaults);
-                std::filesystem::copy(
-                    fonts / region, fonts / "base", std::filesystem::copy_options::recursive);
+                std::filesystem::copy(fonts / (region == "asia" ? "usa" : region),
+                                      fonts / "base",
+                                      std::filesystem::copy_options::recursive);
             } else {
                 const auto strings = candidate / "strings";
                 if (std::filesystem::is_directory(strings)) {

@@ -135,7 +135,7 @@ std::optional<std::string> CurateAssetPacks(const std::filesystem::path &default
             cartridgePath.generic_string().starts_with("n64/usa/") &&
             !std::filesystem::is_directory(defaults / "n64" / "usa")) {
             const auto relative = cartridgePath.lexically_relative("n64/usa");
-            for (const char *region : {"eur", "jpn"}) {
+            for (const char *region : {"asia", "eur", "jpn"}) {
                 if (std::filesystem::is_directory(defaults / "n64" / region)) {
                     cartridgePath = std::filesystem::path("n64") / region / relative;
                     break;

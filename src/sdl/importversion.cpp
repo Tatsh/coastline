@@ -28,11 +28,12 @@ struct SourceInfo {
     int version;
 };
 
-constexpr std::array<SourceInfo, 4> SOURCES{{
+constexpr std::array<SourceInfo, 5> SOURCES{{
     {ImportSource::Disc, "Disc", "cars", "the disc", DISC_CONVERTER_VERSION},
     {ImportSource::Usa, "Usa", "n64/usa", "the USA cartridge", CARTRIDGE_CONVERTER_VERSION},
     {ImportSource::Jpn, "Jpn", "n64/jpn", "the Japanese cartridge", CARTRIDGE_CONVERTER_VERSION},
     {ImportSource::Eur, "Eur", "n64/eur", "the European cartridge", CARTRIDGE_CONVERTER_VERSION},
+    {ImportSource::Asia, "Asia", "n64/asia", "the Asian cartridge", CARTRIDGE_CONVERTER_VERSION},
 }};
 
 const SourceInfo &Info(ImportSource source) {
@@ -80,8 +81,9 @@ bool DefaultPackUsable(const std::filesystem::path &defaults) {
         const SourceInfo &info = Info(source);
         return record.GetInteger(SECTION, info.key, 0) == info.version;
     };
+    const auto selectedSource = static_cast<ImportSource>(selected - regions.begin() + 1);
     if (!current(ImportSource::Disc) ||
-        !current(static_cast<ImportSource>(selected - regions.begin() + 1))) {
+        !(current(selectedSource) || (base == "usa" && current(ImportSource::Asia)))) {
         return false;
     }
     for (const auto &source : SOURCES) {
@@ -89,7 +91,9 @@ bool DefaultPackUsable(const std::filesystem::path &defaults) {
             return false;
         }
         if (source.source != ImportSource::Disc && record.Get(SECTION, source.key)) {
-            const auto region = regions[static_cast<std::size_t>(source.source) - 1];
+            const auto region = source.source == ImportSource::Asia ?
+                                    std::string_view("usa") :
+                                    regions[static_cast<std::size_t>(source.source) - 1];
             if (region != base &&
                 GameConfig::Load(defaults.parent_path() / region / "n64/base/cartridge.ini")
                         .Get("Cartridge", "Region") != region) {

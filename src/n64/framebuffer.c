@@ -34,7 +34,7 @@ void UnblankDisplay(void) {
 #endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
 void ClearFramebuffersHighRes(void) {
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
     g_dwKeepScreenBlanked = TRUE;
     osViBlack(TRUE);
     StartHighResFrame();
@@ -67,7 +67,7 @@ void ClearFramebuffersHighRes(void) {
 }
 
 void ClearFramebuffersLowRes(void) {
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
     g_dwKeepScreenBlanked = TRUE;
     osViBlack(TRUE);
     StartLowResFrame();

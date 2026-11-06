@@ -11,9 +11,10 @@ commit and the time of the build. Off builds the game as released."
 option(ENFORCE_MATCHING "Verify reconstructed Nintendo 64 code with IDO 5.3 during builds." OFF)
 set(TGR_VARIANTS
     ""
-    CACHE STRING "Variants to build in one step, as a list of n64-us, n64-jp, n64-eu, win-d3d, \
-and win-glide, or all for the five. Empty builds the one variant TGR_PLATFORM, TGR_REGION, and \
-TGR_RENDERER select.")
+    CACHE STRING "Variants to build in one step, as a list of n64-us, n64-jp, n64-eu, n64-asia, \
+win-d3d, and win-glide, or all for the six. Empty builds the one variant selected by \
+TGR_PLATFORM, TGR_REGION, and \
+TGR_RENDERER.")
 set(TGR_PLATFORM
     "n64"
     CACHE STRING "Platform to build: n64 for the Nintendo 64 ROM, win for the Windows library, or \
@@ -28,13 +29,13 @@ if(ENFORCE_MATCHING AND NOT TGR_PLATFORM STREQUAL "n64" AND NOT TGR_VARIANTS)
 endif()
 set(TGR_REGION
     "us"
-    CACHE STRING "Nintendo 64 release to build: us for North America, jp for Japan, or eu for \
-Europe. The USA release is the naming master, and the other two include every change of their \
-release.")
-set_property(CACHE TGR_REGION PROPERTY STRINGS us jp eu)
+    CACHE STRING "Nintendo 64 release to build: us for North America, jp for Japan, eu for \
+Europe, or asia for Asia. The USA release is the naming master; other releases include their \
+region-specific changes.")
+set_property(CACHE TGR_REGION PROPERTY STRINGS us jp eu asia)
 string(TOLOWER "${TGR_REGION}" TGR_REGION)
-if(NOT TGR_REGION MATCHES "^(us|jp|eu)$")
-  message(FATAL_ERROR "TGR_REGION must be us, jp, or eu.")
+if(NOT TGR_REGION MATCHES "^(us|jp|eu|asia)$")
+  message(FATAL_ERROR "TGR_REGION must be us, jp, eu, or asia.")
 endif()
 set(TGR_RENDERER
     "d3d"
@@ -69,6 +70,7 @@ add_compile_definitions(
   TGR_REGION_US=1
   TGR_REGION_JP=2
   TGR_REGION_EU=3
+  TGR_REGION_ASIA=4
   TGR_REGION=TGR_REGION_${_tgr_region}
   TGR_RENDERER_D3D=1
   TGR_RENDERER_GLIDE=2

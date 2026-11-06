@@ -1454,7 +1454,7 @@ void ProcessPaintShopExitConfirm(void) {
     buttonY = 0x11D - g_texButtonA.width;
     cancelX = 0x169 - g_texButtonB.width;
     DrawRectBorder(0xBF, 0xBB, 0x102, 0x6A, 3, 0, 0, 0x80, 0x80, 0x80);
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
     SetTextSize(12);
     SetTextAlignLeft();
     SetTextStyleNormal();

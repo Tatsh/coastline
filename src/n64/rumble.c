@@ -9,7 +9,7 @@
 #define RUMBLE_PROBE_INTERVAL 64
 
 /* The European and Japanese releases also stop the motors while a reset is pending. */
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
 #define RESET_PENDING() 0
 #else
 #define RESET_PENDING() g_dwPreNmiResetPending
@@ -36,7 +36,7 @@ void UpdateRumblePaks(s32 unused) {
     }
 
     /* Pulse each motor that is rumbling, unless its vehicle plays back a recording. */
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
     if (g_wSerialInterfaceIdle != 0 && g_wRaceScreenLoopExited == 0 && g_dwRacePauseState == 0) {
 #else
     if (g_wSerialInterfaceIdle != 0 && g_wRaceScreenLoopExited == 0 && RESET_PENDING() == 0 &&

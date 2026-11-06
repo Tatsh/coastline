@@ -5,7 +5,7 @@
 
 include(ExternalProject)
 
-foreach(_region us jp eu)
+foreach(_region us jp eu asia)
   string(TOUPPER "${_region}" _upper)
   set(TGR_ROM_${_upper}
       ""
@@ -18,7 +18,7 @@ ${_region} variant as TGR_ROM. The TGR_ROM_${_upper} environment variable fills 
   endif()
 endforeach()
 
-set(_tgr_all_variants n64-us n64-jp n64-eu win-d3d win-glide)
+set(_tgr_all_variants n64-us n64-jp n64-eu n64-asia win-d3d win-glide)
 if(TGR_VARIANTS STREQUAL "all")
   set(TGR_VARIANTS ${_tgr_all_variants})
 endif()

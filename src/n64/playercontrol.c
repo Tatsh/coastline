@@ -9,7 +9,7 @@
 #include "common/vehiclereset.h"
 
 void ProcessVehicleInputAndPhysics(Vehicle *vehicle) {
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
     static s32 replayCockpitNext;
     f32 chosen[3];
     Vec3f *point;
@@ -29,11 +29,11 @@ void ProcessVehicleInputAndPhysics(Vehicle *vehicle) {
     f32 jolt;
     s32 i TGR_MATCHING_UNUSED;
     f32 dy;
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
     s32 unusedWord;
 #endif
 
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
     (void)unusedScan;
     (void)unusedWord;
 #endif
@@ -62,7 +62,7 @@ void ProcessVehicleInputAndPhysics(Vehicle *vehicle) {
                 (g_dwNumViewports >= 2 && vehicle->index == g_aViewportRects[1].vehicleIndex))) {
         if (g_dwReplayCameraSwitchTimer == 0) {
         chooseReplayCamera:
-#if TGR_REGION != TGR_REGION_US
+#if TGR_REGION != TGR_REGION_US && TGR_REGION != TGR_REGION_ASIA
             ChooseReplayCamera(vehicle);
 #else
             best = 16777216.0f;

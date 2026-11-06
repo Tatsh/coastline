@@ -418,6 +418,20 @@ void TestBrowser(const std::filesystem::path &root) {
 
 void TestSearch(const std::filesystem::path &root) {
     auto services = Services(root);
+    const auto mixed = root / "asia-preference";
+    std::filesystem::create_directory(mixed);
+    std::ofstream(mixed / "asia.z64").put('x');
+    std::ofstream(mixed / "usa.z64").put('x');
+    auto mixedServices = services;
+    mixedServices.identifyCartridge = [](const auto &path) -> std::optional<WizardCartridge> {
+        return path.stem() == "asia" || path.stem() == "usa" ? std::optional(WizardCartridge::Usa) :
+                                                               std::nullopt;
+    };
+    mixedServices.preferCartridge = [](const auto &candidate, const auto &current) {
+        return candidate.stem() == "usa" && current.stem() == "asia";
+    };
+    Check(SearchWizardDirectory(mixed, mixedServices, {}).roms[0] == mixed / "usa.z64",
+          "Search must prefer USA over an Asia ROM in the same slot.");
     bool sawDiscBeforeRom = false;
     bool sawAll = false;
     auto result =

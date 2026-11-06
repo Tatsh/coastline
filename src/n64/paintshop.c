@@ -62,16 +62,8 @@ PaletteSwatch g_aDecalSwatches[DECAL_SWATCHES];
 #define KEY_FLASH_FRAMES 3
 
 /* The file of the decals on the controller pak, and its note name in the font of the pak. */
-#if TGR_REGION == TGR_REGION_JP
-#define DECAL_FILE_COMPANY 0x3238
-#define DECAL_FILE_GAME 0x4E54524A
-#elif TGR_REGION == TGR_REGION_EU
-#define DECAL_FILE_COMPANY 0x3746
-#define DECAL_FILE_GAME 0x4E545250
-#else
-#define DECAL_FILE_COMPANY 0x3544
-#define DECAL_FILE_GAME 0x4E475245
-#endif
+#define DECAL_FILE_COMPANY COMPANY_CODE
+#define DECAL_FILE_GAME GAME_CODE
 #define DECAL_FILE_SIZE 0x3E00
 
 /* The bytes of the decals at which the progress bar is full, and the width of the bar. */

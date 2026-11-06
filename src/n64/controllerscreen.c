@@ -204,7 +204,7 @@ void ProcessControllerConfigScreen(void) {
                                BACKGROUND_BOTTOM)) {
     case MENU_RESULT_CHOSEN:
         g_aVehicles[g_dwScreenPlayerIdx].profile->controllerLayout = g_eControllerScreenSelection;
-#if TGR_REGION != TGR_REGION_US
+#if TGR_REGION != TGR_REGION_US && TGR_REGION != TGR_REGION_ASIA
         g_dwOptionsChangedNeedsSave = TRUE;
 #endif
         /* Either way, go back to the options. */

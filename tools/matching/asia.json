@@ -1,0 +1,5065 @@
+{
+  "functions": {
+    "0x80200000": {
+      "sources": {
+        "src/n64/main.s": ["f9863b16abe8dce89c5f8fec0db64b167c0aae663ff85ae1af84bac434cb929e"]
+      }
+    },
+    "0x80200050": {
+      "sources": {
+        "src/common/game.c": ["9d43625d61ceed1151367b69fe8976bb150f21f188d629a0f7c210d85ce34b0c"]
+      }
+    },
+    "0x80200108": {
+      "sources": {
+        "src/common/game.c": ["a21afc8b0cdd65789313439116ccc82af39a3938b9707c70ffc10e9c358e6e00"]
+      }
+    },
+    "0x80200128": {
+      "sources": {
+        "src/common/game.c": ["6bfe9aaa04ab818c0a7690952422e0c272c58295b392073a4bfb23cb9c7796f3"]
+      }
+    },
+    "0x80200154": {
+      "sources": {
+        "src/common/game.c": ["48b82e9026f151e39ca2ab12eb2dcb80011404833993b23545ea0e0b2667e882"]
+      }
+    },
+    "0x802001b4": {
+      "sources": {
+        "src/common/game.c": ["67af1c01a28133b53a7e278ef4f6d81e88d7e129a24389204cd6f864f5b7ac1d"]
+      }
+    },
+    "0x80200320": {
+      "sources": {
+        "src/n64/race.c": ["f671d4b26f30a0ac0d6291b3038758173dd62e0c374625886a0025e9350035dd"]
+      }
+    },
+    "0x8020037c": {
+      "sources": {
+        "src/common/startlights.c": [
+          "98f8fbdb11153720b57e2048c91dca9b8b69d0a815559b066502084b73797a4b"
+        ]
+      }
+    },
+    "0x802003e4": {
+      "sources": {
+        "src/common/startlights.c": [
+          "a74685fbd37e6832e19e8f466d7a9ce68e07444deb04fc1816eb04b212622c1d"
+        ]
+      }
+    },
+    "0x8020046c": {
+      "sources": {
+        "src/common/startlights.c": [
+          "79fccf215e06f3f19a94cdae884c80979579bb132cef89988b685d0406f7effe"
+        ]
+      }
+    },
+    "0x802005fc": {
+      "sources": {
+        "src/n64/race.c": ["6a7f440e96fb1665ba2d072e60b9dd5a2139fda7589b105114e85d8c46ecfd12"]
+      }
+    },
+    "0x80200634": {
+      "sources": {
+        "src/n64/race.c": ["75a9d66a05b0538a13ba35085ff994c347771becba6e5cf91565ca2dab284c11"]
+      }
+    },
+    "0x8020068c": {
+      "sources": {
+        "src/common/racecredits.c": [
+          "1c767fbf431960dc3dd04106ddeedc0c736aab3fb3291189a08c3e859a1ff9b5"
+        ]
+      }
+    },
+    "0x802006c8": {
+      "sources": {
+        "src/common/racecredits.c": [
+          "5ef479f292261baeab50345d7845d3d899a63d74390d4885a91d725b861cc9c3"
+        ]
+      }
+    },
+    "0x8020072c": {
+      "sources": {
+        "src/common/racecredits.c": [
+          "4064567de86aec5cde0214b44ff67d33eb71925f14b6d167462cb73b2cbb199e"
+        ]
+      }
+    },
+    "0x80200764": {
+      "sources": {
+        "src/common/racecredits.c": [
+          "2739c968e2e2f75a5db20332e8ae6d1a1fcbd9961f273c8f58cb753b9606ce5b"
+        ]
+      }
+    },
+    "0x8020082c": {
+      "sources": {
+        "src/n64/racetick.c": ["f52a7da2c6c9236901c0bc562b1fa4a31437eee7c250dee380b922146f44f46c"]
+      }
+    },
+    "0x80205fdc": {
+      "sources": {
+        "src/common/raceresults.c": [
+          "013de939d342ed85d173b223d557b9ea7ace31ae71175c97c3ba597fa6639d02"
+        ]
+      }
+    },
+    "0x802060dc": {
+      "sources": {
+        "src/common/raceresults.c": [
+          "e6b75a972889299b69fdc8d90c50a3b256cdf6bc400ed44b75694696d6e7be83"
+        ]
+      }
+    },
+    "0x80206304": {
+      "sources": {
+        "src/common/seasontrack.c": [
+          "cca9c1b734cd11cfffc7bd7064d11ae8852192cf019da08d76b87ebd6333c70d"
+        ]
+      }
+    },
+    "0x802063a4": {
+      "sources": {
+        "src/n64/race.c": ["345ebb8588e341cd6482b4753df69cf646ff2bf7ac0529c9a7fb6e0c938dbe03"]
+      }
+    },
+    "0x80206830": {
+      "sources": {
+        "src/n64/splash.c": ["2a06cb61044d208ff21a180b6b42b8dce30f5188116578fcfb0b15a9d2217f81"]
+      }
+    },
+    "0x8020686c": {
+      "sources": {
+        "src/n64/splash.c": ["702fa14125cb2df9547014012b23eef66de4417aa86e22727b5053f7e110b733"]
+      }
+    },
+    "0x80208100": {
+      "sources": {
+        "src/n64/splash.c": ["b6877d42b74e0e47bcb750c95c49b343648651292e60a81a85e9b46f5f13fb07"]
+      }
+    },
+    "0x80208490": {
+      "sources": {
+        "src/n64/racemenu.c": ["04a5c92b9b44d40e3be9b5d00f565c3d4c144d995f4a1ea3b1a8c6d3ef74c973"]
+      }
+    },
+    "0x80208560": {
+      "sources": {
+        "src/n64/racemenu.c": ["e306045f215a80ec2a6df36918fb406490e9e116ef6014f132c21e646ef31a89"]
+      }
+    },
+    "0x802085e8": {
+      "sources": {
+        "src/n64/racemenu.c": ["e55eddaee84f71e8c0d63084bac2d60ba306c9d6a394c0a28d80dddcafe40a33"]
+      }
+    },
+    "0x80208880": {
+      "sources": {
+        "src/n64/racemenu.c": ["79fec1e2ead412cdff96cc7332ca724ffc9436eb440503f0311a1303c2b548db"]
+      }
+    },
+    "0x80208fc4": {
+      "sources": {
+        "src/n64/racemenu.c": ["74b7c4cd2f3fba02638b08ed569905d05a2be7e185f23b0addc37a347d9f26e2"]
+      }
+    },
+    "0x80209900": {
+      "sources": {
+        "src/n64/modeldraw.c": ["3eafab80966862c519a984533e7ad598ebf88b68031c4d3e8c1605e7f279d995"]
+      }
+    },
+    "0x8020a0b4": {
+      "sources": {
+        "src/n64/racemenu.c": ["96d09482ad478aee7d2bd31e909d56b7b10121f8ac118fd562bdf73f735a942e"]
+      }
+    },
+    "0x8020a234": {
+      "sources": {
+        "src/n64/racemenu.c": ["50726d60e11b76442b1f5634e14fc67ec5d7cfc42a1771f9d30b163736e10242"]
+      }
+    },
+    "0x8020a3b0": {
+      "sources": {
+        "src/n64/racemenu.c": ["239c6b6401191c09f29e00360f46451c2318a6019862382ae3b7c7e0260db1b8"]
+      }
+    },
+    "0x8020a560": {
+      "sources": {
+        "src/n64/racemenu.c": ["dd7c313c4add918791b839196f33b5fba3a35ee3466da0e1a02ee39b03475bf0"]
+      }
+    },
+    "0x8020a670": {
+      "sources": {
+        "src/n64/racemenu.c": ["a6b9efe7d3020000a4b0f746254c9ee9f003c70303b03119c69435bd452249d3"]
+      }
+    },
+    "0x8020a7a8": {
+      "sources": {
+        "src/n64/racemenu.c": ["6bd81dc8f4b0b63d03b9985acb1f689fa85bf72b38eb38240173f1eda0d31e5e"]
+      }
+    },
+    "0x8020a8e0": {
+      "sources": {
+        "src/n64/racemenu.c": ["b87b14a939da6a1537030267f48da7105b174782162e6ef2dbcf609fd3eeb9e3"]
+      }
+    },
+    "0x8020a8ec": {
+      "sources": {
+        "src/n64/racemenu.c": ["84a3536785d3d3b8012cd7168ece74815a920b671513bc5e20edf434afa2c3de"]
+      }
+    },
+    "0x8020be0c": {
+      "sources": {
+        "src/n64/racemenu.c": ["6f1811028a99a57374867b70e915cb32436b24dc349a740cf5d6c42649a684f2"]
+      }
+    },
+    "0x8020bf98": {
+      "sources": {
+        "src/n64/racemenu.c": ["f7bc1ff7e1bdfd8c24b553c0b899cd3705f4a577d741ef9c0b71e063a7a02562"]
+      }
+    },
+    "0x8020bff0": {
+      "sources": {
+        "src/n64/carselect.c": ["6a59a014688630e9ab4b8c9224bda135e10b090fd97667ce9bf17e7f34a6b5ad"]
+      }
+    },
+    "0x8020c1fc": {
+      "sources": {
+        "src/n64/carselect.c": ["ba405d823cba80ecb954aec960f16d0b5ee7fa1672f8399d59ed45c9e7c92420"]
+      }
+    },
+    "0x8020c260": {
+      "sources": {
+        "src/n64/carselect.c": ["c9d0e9f0bc9833246b4e19974bd3132b573cee97411a3884d79095d9f0aed0c7"]
+      }
+    },
+    "0x8020cad4": {
+      "sources": {
+        "src/common/laptime.c": [
+          "90e9138307e8ac17b163f6452186313578b8a9d54f74439729ad628fc9121fd9"
+        ],
+        "src/n64/carselect.c": ["90e9138307e8ac17b163f6452186313578b8a9d54f74439729ad628fc9121fd9"]
+      }
+    },
+    "0x8020cb94": {
+      "sources": {
+        "src/n64/carselect.c": ["57cb686c220eababa536aba8bd04949bdad5107ea365086d1dd35df63fba5c0f"]
+      }
+    },
+    "0x80210adc": {
+      "sources": {
+        "src/n64/carselect.c": ["492883ca97cdf06f1dfbd8cbfcf1763e3e44676114f9055865103824e8ace497"]
+      }
+    },
+    "0x80210b10": {
+      "sources": {
+        "src/n64/weatherselect.c": [
+          "d2ac5a3ec44125bfe3861c360124a51abc1291296e52bf9406ecb184b746876d"
+        ]
+      }
+    },
+    "0x80210b58": {
+      "sources": {
+        "src/n64/weatherselect.c": [
+          "2c8853214635b79172050c9f0d8ecdf41b23e5d9e5ff2d891a746de06141c5e9"
+        ]
+      }
+    },
+    "0x80210ce0": {
+      "sources": {
+        "src/n64/mainmenu.c": ["efe53cddd3d4613dcbaa76e4d8c532598cff3bc925844895517c1998370ffa73"]
+      }
+    },
+    "0x80210d24": {
+      "sources": {
+        "src/n64/mainmenu.c": ["063c55d730a11cf1ed422c2b6cf518a56491eef9bb6deaeab8ada6539e4c6f2a"]
+      }
+    },
+    "0x80210d70": {
+      "sources": {
+        "src/n64/mainmenu.c": ["a7006e6588e85c66dedcd2c7390ddf8c643ecfdb8926f288fee9bf1c9c4d506a"]
+      }
+    },
+    "0x80211070": {
+      "sources": {
+        "src/n64/playerselect.c": [
+          "02000dfdc4cf360a4d8d72dfd1d9d66efa3ebea33ae3dc3696431814b3da450d"
+        ]
+      }
+    },
+    "0x80211270": {
+      "sources": {
+        "src/n64/playerselect.c": [
+          "70ef3c1b2e2371be6cbbaa6f0f5f1a42afa62d290d248bbafdc242a8624babd1"
+        ]
+      }
+    },
+    "0x802113d0": {
+      "sources": {
+        "src/common/volumecontrols.c": [
+          "7ece609fcb5cd63d12adb4b77cfd00d777168221978b0df2de61150c86644386"
+        ]
+      }
+    },
+    "0x8021140c": {
+      "sources": {
+        "src/common/volumecontrols.c": [
+          "22bee5dc1da98169584cc0e25cc72ab2f35167460897a090ab45e34380e23d07"
+        ]
+      }
+    },
+    "0x80211444": {
+      "sources": {
+        "src/n64/options.c": ["8368bf3d3dc4b6853950f49a2ea0606303e6a67cc2bfe6115d8629d59cd568c1"]
+      }
+    },
+    "0x80211488": {
+      "sources": {
+        "src/common/volumecontrols.c": [
+          "ddc504b11ef63086b6b614d5fdf2a8802ddb658c8f66594b758db2d70e44d6c9"
+        ]
+      }
+    },
+    "0x802114c4": {
+      "sources": {
+        "src/common/volumecontrols.c": [
+          "c11e9e60536a5819a4c15449855a59152e1d25a5eb742a6fae239a4adfeda4ad"
+        ]
+      }
+    },
+    "0x802114fc": {
+      "sources": {
+        "src/n64/options.c": ["edefd4930b585259843d7f21b7943090f8699f4ca5a55d7e9719186a5e4b86ba"]
+      }
+    },
+    "0x802115cc": {
+      "sources": {
+        "src/n64/options.c": ["d1552e494df4ae1a1a37c90561b87ba17959f3d6ea86447c7f0352616bd48e2f"]
+      }
+    },
+    "0x80211900": {
+      "sources": {
+        "src/n64/options.c": ["d9dce7923b7d11d3fd80dc6f4b1d24e85b0aa7bc329c0093968ceae31ad5962b"]
+      }
+    },
+    "0x80214598": {
+      "sources": {
+        "src/n64/options.c": ["2aebacaa0cc14cf34f742cff138cd6601a369f74f9669ca3ca2c07938aaca342"]
+      }
+    },
+    "0x802145e4": {
+      "sources": {
+        "src/n64/options.c": ["5ef332531879ea1a1f26920428985c402e3de862b369188a3c16df38b32103ca"]
+      }
+    },
+    "0x80214748": {
+      "sources": {
+        "src/n64/options.c": ["29a1975e4a8f9e9ffdc69622a3a36183ee9157fe0f33bfcabafa0d45ca8e4777"]
+      }
+    },
+    "0x8021480c": {
+      "sources": {
+        "src/n64/options.c": ["16914ce834ad5ec22a1827ce1fefb982947c818b4e50b402b3f6861d96a1a344"]
+      }
+    },
+    "0x80214968": {
+      "sources": {
+        "src/n64/options.c": ["1bc166c0a2c5d315d3589e21f6c9a1796bc827e65b47443d6dbc5db4bfe73ca6"]
+      }
+    },
+    "0x80216330": {
+      "sources": {
+        "src/n64/controllerscreen.c": [
+          "5bf615b70b88991c0a9a63f176dfb7f9f75f24fe84d1e380d61ac2f1036492c4"
+        ]
+      }
+    },
+    "0x80216c18": {
+      "sources": {
+        "src/n64/controllerscreen.c": [
+          "992f3212684bb869f704463ef67c18416a4b8ac9f5d8b18c4530874fd0e256c8"
+        ]
+      }
+    },
+    "0x80216e20": {
+      "sources": {
+        "src/common/iomessage.c": [
+          "120224cc94064ea370688cd9071144db7dcc0d59ee7126e91540f74e85a4ae55"
+        ]
+      }
+    },
+    "0x80216eac": {
+      "sources": {
+        "src/common/iomessage.c": [
+          "234f28dcf2250a6949d42f0fd52f715e171ed7ebc83ef0eef2c51c5129468cbb"
+        ]
+      }
+    },
+    "0x80216f08": {
+      "sources": {
+        "src/common/vblankquery.c": [
+          "a0dba5fb1b8c5428c0b1d119e8d0475255ee2e1b7537683e99e36a1c482a8783"
+        ]
+      }
+    },
+    "0x80216f18": {
+      "sources": {
+        "src/common/stats.c": ["d8c9a9efdb03364ca26b184203cd756703e4918f77324436057b2fed85452302"]
+      }
+    },
+    "0x80216f70": {
+      "sources": {
+        "src/common/vecmath.c": ["c5a753d7d9a7ab1b9c508a929f7cd9577e4313233104333c90913fde100f8e41"]
+      }
+    },
+    "0x80217004": {
+      "sources": {
+        "src/common/vecmath.c": ["fa3b021f69917e5f276925ccd7b5e02976d854e966a055939d861ac12e0cf0a8"]
+      }
+    },
+    "0x80217164": {
+      "sources": {
+        "src/common/util.c": ["a91aec6ea70220c5df2cc74442cc1ab831104cd778a5972fcbe091af1f50e5c8"]
+      }
+    },
+    "0x80217284": {
+      "sources": {
+        "src/common/texturebind.c": [
+          "390746c4021a0c79e2ee8a68793008b7b9f7592a6da6af645c1293fdd4b0cd59"
+        ]
+      }
+    },
+    "0x802177dc": {
+      "sources": {
+        "src/n64/depth.c": ["d2c0fb6d0215e786ea32057b963a7cc5ea771edce9a5320a94c44469303cde0b"]
+      }
+    },
+    "0x802177e4": {
+      "sources": {
+        "src/n64/depth.c": ["27153e19ea10b80c2bdc77c4291acf872a1f1fab9e696f5b1132d305cbb01655"]
+      }
+    },
+    "0x80217970": {
+      "sources": {
+        "src/n64/depth.c": ["564ed470ca1b8c26cade683294d01bbfbfb86f95a869fd1c46142d66ce8b9b5b"]
+      }
+    },
+    "0x80217b08": {
+      "sources": {
+        "src/common/fill.c": ["b73db1cd52799a6615f38d103b9687ead76c4adb9b4cf744d12a47a9dd210dfe"]
+      }
+    },
+    "0x80217c54": {
+      "sources": {
+        "src/common/fill.c": ["9d90805cb4e73a55ffc9a5944361c5f6a107628d41324717d322c6b8fbbda291"]
+      }
+    },
+    "0x80217df8": {
+      "sources": {
+        "src/common/fog.c": ["82ee63a66151687bd90cccaaaf0894f82062065ac4945e7e1dab926284901715"]
+      }
+    },
+    "0x802187dc": {
+      "sources": {
+        "src/common/fog.c": ["df495c6d2cdf02c8b03db3db802bf61d8e22135d7b55e85a85b534d68577cb79"]
+      }
+    },
+    "0x802188ac": {
+      "sources": {
+        "src/common/fog.c": ["3f5099c8b2360c2baa3188a16e0a41e2713833dc168ce1bf8df5e5f6655a2d41"]
+      }
+    },
+    "0x80218fc0": {
+      "sources": {
+        "src/common/framebegin.c": [
+          "174ac9a03099df3e71e89901ecce6d98360f18652bba1b4d11435a1e3f894e6a"
+        ],
+        "src/n64/frame.c": ["174ac9a03099df3e71e89901ecce6d98360f18652bba1b4d11435a1e3f894e6a"]
+      }
+    },
+    "0x8021956c": {
+      "sources": {
+        "src/common/framebegin.c": [
+          "0286d90362ffc834c1c3ea9a5a96f64ba94975173a30ffaf65ea62ffb7f65caa"
+        ],
+        "src/n64/frame.c": ["0286d90362ffc834c1c3ea9a5a96f64ba94975173a30ffaf65ea62ffb7f65caa"]
+      }
+    },
+    "0x8021958c": {
+      "sources": {
+        "src/common/framebegin.c": [
+          "4e68285645aa9461b0af1071038fd275385dab8bd9969668b4ac4a34bb3f2510"
+        ],
+        "src/n64/frame.c": ["4e68285645aa9461b0af1071038fd275385dab8bd9969668b4ac4a34bb3f2510"]
+      }
+    },
+    "0x802195ac": {
+      "sources": {
+        "src/common/emptycallback.c": [
+          "c586b5856448b6f1771c3408a44461d73bc63263908cacd0d01b0cfacbf30285"
+        ],
+        "src/n64/frame.c": ["c586b5856448b6f1771c3408a44461d73bc63263908cacd0d01b0cfacbf30285"]
+      }
+    },
+    "0x802195c8": {
+      "sources": {
+        "src/common/screendraw.c": [
+          "d5aa700f089eca163cefa6c9888df5f11ec1347e2ed72507dd996b69bd2b530c"
+        ],
+        "src/n64/frame.c": ["d5aa700f089eca163cefa6c9888df5f11ec1347e2ed72507dd996b69bd2b530c"]
+      }
+    },
+    "0x80219740": {
+      "sources": {
+        "src/common/screendraw.c": [
+          "d153affaef303f53866263f06b84296162a7ea6ceee36adb33644a137cee720c"
+        ],
+        "src/n64/frame.c": ["d153affaef303f53866263f06b84296162a7ea6ceee36adb33644a137cee720c"]
+      }
+    },
+    "0x80219940": {
+      "sources": {
+        "src/common/screendraw.c": [
+          "f2654c9acc9e795da5845bb811ce28c1db2acd6168fcd16d5ad5a5b3c1fe89de"
+        ],
+        "src/n64/frame.c": ["f2654c9acc9e795da5845bb811ce28c1db2acd6168fcd16d5ad5a5b3c1fe89de"]
+      }
+    },
+    "0x80219a54": {
+      "sources": {
+        "src/common/screendraw.c": [
+          "05bed34ff62cb7dbcff1001f3e5b3d1939f3a2628b2252a45022dae55ef4feeb"
+        ],
+        "src/n64/frame.c": ["05bed34ff62cb7dbcff1001f3e5b3d1939f3a2628b2252a45022dae55ef4feeb"]
+      }
+    },
+    "0x80219abc": {
+      "sources": {
+        "src/common/screendraw.c": [
+          "aa11c68d0bef49d8bff6ea777badc40c7106d34205fd64612fcfd29dcd7e7b82"
+        ],
+        "src/n64/frame.c": ["aa11c68d0bef49d8bff6ea777badc40c7106d34205fd64612fcfd29dcd7e7b82"]
+      }
+    },
+    "0x80219c48": {
+      "sources": {
+        "src/common/screendraw.c": [
+          "80961df0d97e6e87660bc7ac70eef27059be874c4fc07e780a00d9a013f6743e"
+        ],
+        "src/n64/frame.c": ["80961df0d97e6e87660bc7ac70eef27059be874c4fc07e780a00d9a013f6743e"]
+      }
+    },
+    "0x8021a018": {
+      "sources": {
+        "src/n64/frame.c": ["7da8ca4432d42bc6d1c585261deeb541a6b6eb399259989d4a20b83fcc8839aa"],
+        "src/n64/framebuffer.c": [
+          "7da8ca4432d42bc6d1c585261deeb541a6b6eb399259989d4a20b83fcc8839aa"
+        ]
+      }
+    },
+    "0x8021a090": {
+      "sources": {
+        "src/n64/frame.c": ["7da8ca4432d42bc6d1c585261deeb541a6b6eb399259989d4a20b83fcc8839aa"],
+        "src/n64/framebuffer.c": [
+          "7da8ca4432d42bc6d1c585261deeb541a6b6eb399259989d4a20b83fcc8839aa"
+        ]
+      }
+    },
+    "0x8021a108": {
+      "sources": {
+        "src/common/texturestream.c": [
+          "2deb4d6eb410462262fb72048d555aef4c834e05ed5524919917c0b9c03bfabc"
+        ],
+        "src/n64/frame.c": ["2deb4d6eb410462262fb72048d555aef4c834e05ed5524919917c0b9c03bfabc"]
+      }
+    },
+    "0x8021a470": {
+      "sources": {
+        "src/common/controllerread.c": [
+          "75804c7ebffe335c0d3dcff4f9bb915d8ae297ef727f156f636dba24ca8be54e"
+        ],
+        "src/n64/frame.c": ["75804c7ebffe335c0d3dcff4f9bb915d8ae297ef727f156f636dba24ca8be54e"]
+      }
+    },
+    "0x8021a4b4": {
+      "sources": {
+        "src/common/controllerread.c": [
+          "1a33ac05033fd1f45a0aa5f61c75fc8dc1045b5f7aad4ad68bc5bdc47181e75f"
+        ],
+        "src/n64/frame.c": ["1a33ac05033fd1f45a0aa5f61c75fc8dc1045b5f7aad4ad68bc5bdc47181e75f"]
+      }
+    },
+    "0x8021a504": {
+      "sources": {
+        "src/common/controllerread.c": [
+          "489e9c0f47202d57664b52c1788ae312be5a60790c041433b2fa12e7f0b9776d"
+        ],
+        "src/n64/frame.c": ["489e9c0f47202d57664b52c1788ae312be5a60790c041433b2fa12e7f0b9776d"]
+      }
+    },
+    "0x8021a558": {
+      "sources": {
+        "src/common/frameflush.c": [
+          "f7cbaf414f072cb636d2d422e48b11479bcca096784bc47dc65511d90e52ffe5"
+        ],
+        "src/n64/frame.c": ["f7cbaf414f072cb636d2d422e48b11479bcca096784bc47dc65511d90e52ffe5"]
+      }
+    },
+    "0x8021ac14": {
+      "sources": {
+        "src/common/camerarender.c": [
+          "70b6a7a0295506d6852cd912b76933aa1bbb9f12372cf15c070b1a6c47ab15fe"
+        ],
+        "src/n64/frame.c": ["70b6a7a0295506d6852cd912b76933aa1bbb9f12372cf15c070b1a6c47ab15fe"]
+      }
+    },
+    "0x8021ae48": {
+      "sources": {
+        "src/common/camerarender.c": [
+          "3d4335f59312341402b569ef3bb90353e448c8dac20f1d3434985d82564034e7"
+        ],
+        "src/n64/frame.c": ["3d4335f59312341402b569ef3bb90353e448c8dac20f1d3434985d82564034e7"]
+      }
+    },
+    "0x8021afa8": {
+      "sources": {
+        "src/common/camerarender.c": [
+          "ab08375e59c458f5631a21e4d5064dbf8585c9fd953bf4b6b5149c28c48627c6"
+        ],
+        "src/n64/frame.c": ["ab08375e59c458f5631a21e4d5064dbf8585c9fd953bf4b6b5149c28c48627c6"]
+      }
+    },
+    "0x8021b0f4": {
+      "sources": {
+        "src/common/camerarender.c": [
+          "508b0cfd5dd2ceeb0262f55d1f43d5e17bb6517b0e95b5a0a69d0c02d3445340"
+        ],
+        "src/n64/frame.c": ["508b0cfd5dd2ceeb0262f55d1f43d5e17bb6517b0e95b5a0a69d0c02d3445340"]
+      }
+    },
+    "0x8021b27c": {
+      "sources": {
+        "src/common/displaylistops.c": [
+          "173c9b157ff614e7173ceff540bfe1dfae3beedbdcdf3eba74565e4761d43da4"
+        ],
+        "src/n64/frame.c": ["173c9b157ff614e7173ceff540bfe1dfae3beedbdcdf3eba74565e4761d43da4"]
+      }
+    },
+    "0x8021b4cc": {
+      "sources": {
+        "src/common/displaylistops.c": [
+          "a26e3680a3e18d2f879459e4385810727bb62d37b8842c1834755a5dca8c210b"
+        ],
+        "src/n64/frame.c": ["a26e3680a3e18d2f879459e4385810727bb62d37b8842c1834755a5dca8c210b"]
+      }
+    },
+    "0x8021b72c": {
+      "sources": {
+        "src/n64/frame.c": ["5be63b95e2204d685267e13d1601b1f01e995bf951bafd3378679a08d0a28ca4"]
+      }
+    },
+    "0x8021b7f8": {
+      "sources": {
+        "src/n64/frame.c": ["95e74f899ab6deaabd5f1f7fe0b509aa459012a6169eb94cb8872af43c790db6"]
+      }
+    },
+    "0x8021b8b8": {
+      "sources": {
+        "src/n64/frame.c": ["16dbf4ca39b8c296fd33cf62da62edc8bfe7a1bd9b3f4c5ddd9ed1b649c0d0ec"]
+      }
+    },
+    "0x8021b978": {
+      "sources": {
+        "src/common/jolt.c": ["9fb3dc934b2d7a29dde7e81b13936feba29ec53d330d91214cf43dee118a3f79"]
+      }
+    },
+    "0x8021b9d8": {
+      "sources": {
+        "src/common/renderinit.c": [
+          "52e2c83ac15907fbbda37cef6197b61f8c2daf8620e47c67eb2403db4d4462f7"
+        ]
+      }
+    },
+    "0x8021bcd8": {
+      "sources": {
+        "src/n64/input.c": ["dc355ce6e6f0bef14dca9eaceb7e44be834675e2edb948b889c737068180c3d3"]
+      }
+    },
+    "0x8021bfbc": {
+      "sources": {
+        "src/common/frametime.c": [
+          "27d77cb864dda3b192123d78dacabe185eb67d541ac0aed0d5287d442cdb6b78"
+        ]
+      }
+    },
+    "0x8021c004": {
+      "sources": {
+        "src/common/frametime.c": [
+          "215d451f474c7993cd3c8daa20f171b0b0e18a91a8d03223f0b596de655aaa79"
+        ]
+      }
+    },
+    "0x8021c1f8": {
+      "sources": {
+        "src/n64/depth.c": ["d2c0fb6d0215e786ea32057b963a7cc5ea771edce9a5320a94c44469303cde0b"]
+      }
+    },
+    "0x8021c200": {
+      "sources": {
+        "src/common/screen.c": ["d2c0fb6d0215e786ea32057b963a7cc5ea771edce9a5320a94c44469303cde0b"]
+      }
+    },
+    "0x8021c208": {
+      "sources": {
+        "src/common/screen.c": ["b87b14a939da6a1537030267f48da7105b174782162e6ef2dbcf609fd3eeb9e3"]
+      }
+    },
+    "0x8021c214": {
+      "sources": {
+        "src/common/screen.c": ["b87b14a939da6a1537030267f48da7105b174782162e6ef2dbcf609fd3eeb9e3"]
+      }
+    },
+    "0x8021c220": {
+      "sources": {
+        "src/common/screen.c": ["1e1b67dae9693ccf84f5ad84f042a7bc295a18daf9696e26af70554ddec218f4"]
+      }
+    },
+    "0x8021c234": {
+      "sources": {
+        "src/common/screen.c": ["b87b14a939da6a1537030267f48da7105b174782162e6ef2dbcf609fd3eeb9e3"]
+      }
+    },
+    "0x8021c240": {
+      "sources": {
+        "src/common/screen.c": ["9702d88cd3ef7a1b09757b902e31fc016d68c526c0841f1cbfb01161eec57000"]
+      }
+    },
+    "0x8021c268": {
+      "sources": {
+        "src/n64/main.s": ["f25aede6a54fd6fd1e3605f8587cf5d93713bbe58098d9c76c4f394f848f1fd1"]
+      }
+    },
+    "0x8021c290": {
+      "sources": {
+        "src/common/screen.c": ["d2c0fb6d0215e786ea32057b963a7cc5ea771edce9a5320a94c44469303cde0b"]
+      }
+    },
+    "0x8021c298": {
+      "sources": {
+        "src/common/assetdma.c": [
+          "0e3c89ca752eeed5229eff9d06d76b6f0797170b59c333f1a017e015d94ffcfd"
+        ]
+      }
+    },
+    "0x8021c364": {
+      "sources": {
+        "src/common/assetdma.c": [
+          "612217cc8357c305f7d36e58ca89c2b7084fd264c159ab5bea23fd935a351bc5"
+        ]
+      }
+    },
+    "0x8021c398": {
+      "sources": {
+        "src/common/assetdma.c": [
+          "f00b10390ba0189243e94a6254e4c71bd2fb458d852fa266a16dcda940332780"
+        ]
+      }
+    },
+    "0x8021c3c8": {
+      "sources": {
+        "src/common/replay.c": ["b858beed08145306273fa80c766160a206aaac985cb5dd0db13d931ef668db70"]
+      }
+    },
+    "0x8021c69c": {
+      "sources": {
+        "src/common/rledecompress.c": [
+          "62934cd3da4d8e64644f8c958419483133b29f99e20b73cc766d656070fa5f50"
+        ]
+      }
+    },
+    "0x8021c874": {
+      "sources": {
+        "src/common/assetdma.c": [
+          "327a3295ade0696bcd98651483051076e530f6a8c9f295721a078645fc87bddc"
+        ]
+      }
+    },
+    "0x8021c880": {
+      "sources": {
+        "src/n64/system.c": ["3df93dfe6915d683e0be1ebf605d51a8b56a8384a477155988524b7b922f5580"]
+      }
+    },
+    "0x8021cbc0": {
+      "sources": {
+        "src/common/modelrelocation.c": [
+          "dddb1b10e2b938101e9e2d15130ce845189e03fb1e59de157102383e59e379a3"
+        ],
+        "src/n64/boot-object.c": [
+          "dddb1b10e2b938101e9e2d15130ce845189e03fb1e59de157102383e59e379a3"
+        ]
+      }
+    },
+    "0x8021cbe8": {
+      "sources": {
+        "src/common/modelrelocation.c": [
+          "724c4ba5d4e00a8fb300bfbdf412f20532cf20031bf6d541f1b2857caed6d606"
+        ],
+        "src/n64/boot-object.c": [
+          "724c4ba5d4e00a8fb300bfbdf412f20532cf20031bf6d541f1b2857caed6d606"
+        ]
+      }
+    },
+    "0x8021cc90": {
+      "sources": {
+        "src/common/materialcolor.c": [
+          "01f5e0a6bf2c839275b8cbd6a7a44a605fb126d65f66fbc2cbdef66945dc7a15"
+        ]
+      }
+    },
+    "0x8021cdf0": {
+      "sources": {
+        "src/common/vehiclepaint.c": [
+          "b2e01a8ff165549ac7035331954f99831610743e3237db92ac75bf30da04362d"
+        ],
+        "src/n64/boot-object.c": [
+          "b2e01a8ff165549ac7035331954f99831610743e3237db92ac75bf30da04362d"
+        ]
+      }
+    },
+    "0x8021ce7c": {
+      "sources": {
+        "src/common/vehiclemodel.c": [
+          "0d5cd4b05342897fc98de44babbb0870f23e761a46392455e9140caf97f7721f"
+        ]
+      }
+    },
+    "0x8021d084": {
+      "sources": {
+        "src/common/vehiclemodel.c": [
+          "0fb10cd86496ef552cf66c53c4a462e51d11e4de6fecb4a32139f17d8c48a207"
+        ]
+      }
+    },
+    "0x8021d134": {
+      "sources": {
+        "src/common/loadcar.c": ["eddec2e49d1c9371bb8d15048146cec87706b4de465e2317f273edd93d0f4a2c"]
+      }
+    },
+    "0x8021d208": {
+      "sources": {
+        "src/n64/system.c": ["87500bbfc06d711c7d04d52229f403d15d1b454170a4c968e5830576efbfda9e"]
+      }
+    },
+    "0x8021d22c": {
+      "sources": {
+        "src/common/modelanimationflags.c": [
+          "8d671aa73b95da4a54c4ec8cb233f3073241fbefa0fe278a806a6d4bcdce9ce8"
+        ]
+      }
+    },
+    "0x8021d330": {
+      "sources": {
+        "src/common/modelanimationflags.c": [
+          "ed5b5eba2374c4412f285ced6fc3b2cbb68a26fafa3e667f59ba02e8a1f73e55"
+        ]
+      }
+    },
+    "0x8021d354": {
+      "sources": {
+        "src/common/modelanimationflags.c": [
+          "8fc03c98630f1a9925b0bdea04a2be3c3fd69687a87b81aa3b24a3f3e70dcb45"
+        ]
+      }
+    },
+    "0x8021d378": {
+      "sources": {
+        "src/common/modelanimationflags.c": [
+          "68b1bf395c3a66a8a093c011a931d373b5d66c1c07720349728c9a9d745f513e"
+        ]
+      }
+    },
+    "0x8021d39c": {
+      "sources": {
+        "src/common/modelanimation.c": [
+          "f598ca0318d6b67f731dc742f8081413d5d5897896a1b2bb3e402528fd407f5a"
+        ]
+      }
+    },
+    "0x8021d784": {
+      "sources": {
+        "src/n64/system.c": ["e1b5186005a85579f7e3e05ac2c0b5d71dbe781db2a544e0fd35bc83938c922e"]
+      }
+    },
+    "0x8021d94c": {
+      "sources": {
+        "src/n64/system.c": ["459bd75a9585b93753fd0db28c21b988fe3411ce95a028e91cd55570c52f1d23"]
+      }
+    },
+    "0x8021d97c": {
+      "sources": {
+        "src/n64/boot-object.c": [
+          "e682620279d11f033ab935e6d0fe4d4ecfa6e4a062892da6ee4dc6132c144e17"
+        ],
+        "src/n64/boot.c": ["e682620279d11f033ab935e6d0fe4d4ecfa6e4a062892da6ee4dc6132c144e17"]
+      }
+    },
+    "0x8021d9ac": {
+      "sources": {
+        "src/n64/boot-object.c": [
+          "88dba264f089c21fb0cce0fa92e9ec0dc1e2790e55f3fb59a8b32621ac92b10f"
+        ],
+        "src/n64/boot.c": ["88dba264f089c21fb0cce0fa92e9ec0dc1e2790e55f3fb59a8b32621ac92b10f"]
+      }
+    },
+    "0x8021dcd0": {
+      "sources": {
+        "src/n64/boot-object.c": [
+          "bc9bb6567224a32ec1f091c1ee72cb8fad72b24ef62f56c1d9b7f0b49cd6427d"
+        ],
+        "src/n64/boot.c": ["bc9bb6567224a32ec1f091c1ee72cb8fad72b24ef62f56c1d9b7f0b49cd6427d"]
+      }
+    },
+    "0x8021dd10": {
+      "sources": {
+        "src/n64/boot-object.c": [
+          "fd4350bb3448cf1939a3f614a8fa9d2d79f6093333abfbc08a23a31f3bf0791d"
+        ],
+        "src/n64/boot.c": ["fd4350bb3448cf1939a3f614a8fa9d2d79f6093333abfbc08a23a31f3bf0791d"]
+      }
+    },
+    "0x8021dd3c": {
+      "sources": {
+        "src/n64/boot-object.c": [
+          "b0d71f43adb9fd15ff1c0e026923bd415223e987dd61610b73a4ccf4906d78e8"
+        ],
+        "src/n64/boot.c": ["b0d71f43adb9fd15ff1c0e026923bd415223e987dd61610b73a4ccf4906d78e8"]
+      }
+    },
+    "0x8021dd44": {
+      "sources": {
+        "src/n64/boot-object.c": [
+          "46719a9396e169d1508f1f4787163fea28862100031fb89d7522532648317558"
+        ],
+        "src/n64/boot.c": ["46719a9396e169d1508f1f4787163fea28862100031fb89d7522532648317558"]
+      }
+    },
+    "0x8021dd6c": {
+      "sources": {
+        "src/n64/boot-object.c": [
+          "1b5fbbd79e1f054863b7c1f9e0dd2795b6a9bae83c8110c60cf7c9be791a807d"
+        ]
+      }
+    },
+    "0x8021de18": {
+      "sources": {
+        "src/n64/boot-object.c": [
+          "8818d0fac5fc2ef1ae7cf4b56a935f2c8f0cdf21660bcc015fa5066c37de8fed"
+        ],
+        "src/n64/boot.c": ["8818d0fac5fc2ef1ae7cf4b56a935f2c8f0cdf21660bcc015fa5066c37de8fed"]
+      }
+    },
+    "0x8021e114": {
+      "sources": {
+        "src/n64/boot-object.c": [
+          "46986e8e2bd3d315feb151c9d4110594503639bb0ff331a40bc85b00bf90bb24"
+        ],
+        "src/n64/boot.c": ["46986e8e2bd3d315feb151c9d4110594503639bb0ff331a40bc85b00bf90bb24"]
+      }
+    },
+    "0x8021e170": {
+      "sources": {
+        "src/common/trackgrid.c": [
+          "7bdfb7d8b2f4bf1afd5578fffd5179a924ccde0b3f17dec4c806c006911f591f"
+        ]
+      }
+    },
+    "0x8021e32c": {
+      "sources": {
+        "src/common/trackgrid.c": [
+          "7bdfb7d8b2f4bf1afd5578fffd5179a924ccde0b3f17dec4c806c006911f591f"
+        ]
+      }
+    },
+    "0x8021e4e8": {
+      "sources": {
+        "src/common/trackgrid.c": [
+          "1db1d821b9919de84edb49f849ee156f98040504c696073613a77e63838b7003"
+        ]
+      }
+    },
+    "0x8021e55c": {
+      "sources": {
+        "src/common/trackgrid.c": [
+          "1db1d821b9919de84edb49f849ee156f98040504c696073613a77e63838b7003"
+        ]
+      }
+    },
+    "0x8021e5d0": {
+      "sources": {
+        "src/common/trackgrid.c": [
+          "bae8e96239bec33665eb4d64ada0b8cbfb10cbf6c7a3135b8a4e5c7abe0697dc"
+        ]
+      }
+    },
+    "0x8021e5d8": {
+      "sources": {
+        "src/common/trackgrid.c": [
+          "bae8e96239bec33665eb4d64ada0b8cbfb10cbf6c7a3135b8a4e5c7abe0697dc"
+        ]
+      }
+    },
+    "0x8021e5e0": {
+      "sources": {
+        "src/common/trackgrid.c": [
+          "2ba8e8f1018872f03a3c830cf0e3bccfa481f54d5f33eced089459e829347060"
+        ]
+      }
+    },
+    "0x8021e62c": {
+      "sources": {
+        "src/common/trackgrid.c": [
+          "2ba8e8f1018872f03a3c830cf0e3bccfa481f54d5f33eced089459e829347060"
+        ]
+      }
+    },
+    "0x8021e680": {
+      "sources": {
+        "src/common/vecmath.c": ["19ec5314816e28575f2b21d25b865ef81bc8afc8650e8d289995313bd9ba534e"]
+      }
+    },
+    "0x8021e6a0": {
+      "sources": {
+        "src/n64/vehicle-track-position.c": [
+          "3baec9e16c7f6ab54ce947d0dc00dcae582b61df591f376c71b50f3e40295ce4"
+        ]
+      }
+    },
+    "0x8021ebf8": {
+      "sources": {
+        "src/common/vehiclestatus.c": [
+          "6c51ca306989b679e96dbcc8f92840ea51233db13e96a36624c4cb56a4cb7160"
+        ]
+      }
+    },
+    "0x8021eca8": {
+      "sources": {
+        "src/common/vehiclestatus.c": [
+          "af5a4832af87e0e4c9bb0e8976444fcb01500c53ea800e79353599715b939ea1"
+        ]
+      }
+    },
+    "0x8021ed40": {
+      "sources": {
+        "src/common/vehiclestatus.c": [
+          "6b61af333e78cff76d9849a0850462b0170fc48d3cb499310ffd4f9b41ba9667"
+        ]
+      }
+    },
+    "0x8021ee28": {
+      "sources": {
+        "src/common/vehiclestatus.c": [
+          "9a8b08afb0f51af64a6dbf4082e1ddfb0759c585298e2122821ac369422fdec9"
+        ]
+      }
+    },
+    "0x8021eed0": {
+      "sources": {
+        "src/n64/ground-ray.c": ["7731e987cf872e9886bcac72c36946457016ba7b045ac6b4695733227eee8130"]
+      }
+    },
+    "0x8021f4e8": {
+      "sources": {
+        "src/common/vehiclephysics.c": [
+          "e95304afccc30703de50ee7179f04e1b0ab8f2065a298ff989ad4f943d798b15"
+        ]
+      }
+    },
+    "0x8021f954": {
+      "sources": {
+        "src/common/vehiclereset.c": [
+          "f2a114592a04c07f07757cc3f0f5e790bbad5c0e3a0fc04fa144ef41a69d2db5"
+        ]
+      }
+    },
+    "0x8021f9d0": {
+      "sources": {
+        "src/common/vehiclereset.c": [
+          "ce28178a298fe856509ee17de9d50887ca294e1bed16da38a87bdc73e24b9087"
+        ]
+      }
+    },
+    "0x8021fae0": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "4bdf99a53e6f3f329805ffc8fd89eaaa0ffaec2d805f141b27efc006aef12015"
+        ]
+      }
+    },
+    "0x8021fca0": {
+      "sources": {
+        "src/common/vehiclereset.c": [
+          "2fcec2126198dd9163523cbbaa0109c9c2b24e976349c8ef6a4e1a4143c20362"
+        ]
+      }
+    },
+    "0x8021fd18": {
+      "sources": {
+        "src/common/vehiclereset.c": [
+          "808a78be877f7fd0f413245aefa599ceb9747554a1e7aa7b2e42fed3b7384105"
+        ]
+      }
+    },
+    "0x8021fd6c": {
+      "sources": {
+        "src/common/vehiclereset.c": [
+          "2dead5eaf663c882990b95aec31432f1f90c016f7bdd2baf28d48d4a03c141dc"
+        ]
+      }
+    },
+    "0x8021fea8": {
+      "sources": {
+        "src/common/vehiclereset.c": [
+          "6b980a3784494243b812ca471ee728b7cfcfd7f740366e83b2fc10b9c0a19cb5"
+        ]
+      }
+    },
+    "0x8021fee8": {
+      "sources": {
+        "src/common/vehiclereset.c": [
+          "2ca4522286970bbfe871750bba0302d4ed4768433b985a9edc4a9fbebcf750b0"
+        ]
+      }
+    },
+    "0x8021ff40": {
+      "sources": {
+        "src/common/vehiclereset.c": [
+          "0a290a7c986b87f2694721580de6e4a331e2040dd017c9064fedae51a40603f0"
+        ]
+      }
+    },
+    "0x8021ff88": {
+      "sources": {
+        "src/n64/vehicle.c": ["5c6e6b4a6d946b1d3abf7f4fc8a5675fbf783bbc293e6069e335dd0cfd714966"]
+      }
+    },
+    "0x8021ffc4": {
+      "sources": {
+        "src/n64/vehicle.c": ["84179913275295a43381e5244e815769a4e8e52e96fffda2c6e5112bfbb53aca"]
+      }
+    },
+    "0x80220084": {
+      "sources": {
+        "src/n64/vehicle.c": ["0063a6372be27290a963bf84a21e89a1c3f2a06906fe69bf2bacc99b75753cd2"]
+      }
+    },
+    "0x80220094": {
+      "sources": {
+        "src/n64/vehicle.c": ["4fdd14b613cbebb3f5003d03402d28f5bf38133e40b34945023b1e14ebcf2901"]
+      }
+    },
+    "0x80220170": {
+      "sources": {
+        "src/common/vehiclereset.c": [
+          "63e4ec07a84556a70ce99ed5ca6d2083329e065b50b19e697a7bb7f6886e8a9f"
+        ]
+      }
+    },
+    "0x802202f4": {
+      "sources": {
+        "src/n64/vehicle.c": ["8fd57d5ddb77fad326288954ba1a46a2d8c48a2565e2c6b9978932269ebee8dd"]
+      }
+    },
+    "0x80220360": {
+      "sources": {
+        "src/common/cameracollision.c": [
+          "4308dac3186c8377a29cddd6ebe6ec24529972487a0a2d2408d7036036801ca4"
+        ]
+      }
+    },
+    "0x802207a8": {
+      "sources": {
+        "src/common/camerachase.c": [
+          "9f9d17874be2ed891f8f4b3761c982434ccfeb02c33c2ea1b17cc1dbf29f6441"
+        ]
+      }
+    },
+    "0x802209d4": {
+      "sources": {
+        "src/common/camerachase.c": [
+          "dcf0c63c5f8d6db8266c622da12b7bacaf8bcca89d0fca2135920372fbcb7d6f"
+        ]
+      }
+    },
+    "0x80220b44": {
+      "sources": {
+        "src/common/camerachase.c": [
+          "a47749cc8f328436154e3fd68471f90b375eb603302524718bb71dd30fe0a871"
+        ]
+      }
+    },
+    "0x80220c58": {
+      "sources": {
+        "src/common/camerachase.c": [
+          "1c2df1246eb4937ecd386986ad0dec36e0de4772383a0a283eae100b4fde1f12"
+        ]
+      }
+    },
+    "0x80220cc0": {
+      "sources": {
+        "src/common/camerachase.c": [
+          "7b2fd7538e7035646f31dd8e773993573738296f405210dd1bb5ed287ce8bb87"
+        ]
+      }
+    },
+    "0x802213b4": {
+      "sources": {
+        "src/common/camerachase.c": [
+          "1a0bbed66890f4fff284ed59b927c21f34acd3c9b01d9ac5e7737f04c50fb37a"
+        ]
+      }
+    },
+    "0x80221490": {
+      "sources": {
+        "src/n64/vehicle-physics-step.c": [
+          "c510eb9cebcb1b68a9d39774d0d86f920ededf5b1f8200a785b65eaae244c4e9"
+        ]
+      }
+    },
+    "0x8022195c": {
+      "sources": {
+        "src/common/vehiclephysics.c": [
+          "8a2b5aebc9dddb624a54dc544bb3ed60f06f9e3dc3fb96bad85caa38ce17e3ac"
+        ]
+      }
+    },
+    "0x80221ba0": {
+      "sources": {
+        "src/n64/vehicleengine.c": [
+          "2feb5a2df7027ef37b9ef298a4e4c856fe56ae937a2b80402fc5f9024d9c75a8"
+        ]
+      }
+    },
+    "0x802228a4": {
+      "sources": {
+        "src/common/vehiclereset.c": [
+          "9b5455265d27f4f7a1b6bdbbf7b72acd286f356105053d250f38202f1856fd3b"
+        ]
+      }
+    },
+    "0x80222fc0": {
+      "sources": {
+        "src/common/headlight.c": [
+          "91fc3bf47fbd92636f69c26c3ce60ecaf750eed9a0697c1ba02eeea6457f51b4"
+        ]
+      }
+    },
+    "0x80222fd0": {
+      "sources": {
+        "src/common/headlightglare.c": [
+          "66faa16222116b030c9e774224ee166d96c10f56a538d724dc1d204cd501b0f1"
+        ]
+      }
+    },
+    "0x802231d8": {
+      "sources": {
+        "src/common/fade.c": ["1df48fbc218556589fefd6b5b45c2f2b180df7af1be6684543274dc3907e0fd8"]
+      }
+    },
+    "0x802232a0": {
+      "sources": {
+        "src/common/fade.c": ["2eeade36eb5bc6694d93ac3f434f2f5dcf7bdb953a055181da0ba5a7e72a3a36"]
+      }
+    },
+    "0x80223320": {
+      "sources": {
+        "src/common/fade.c": ["2eeade36eb5bc6694d93ac3f434f2f5dcf7bdb953a055181da0ba5a7e72a3a36"]
+      }
+    },
+    "0x802233a0": {
+      "sources": {
+        "src/common/fade.c": ["8455589f980a8ac1691f59d121ab2b0417d9010d1b73efd7ee3fbc0854752f43"]
+      }
+    },
+    "0x802233d0": {
+      "sources": {
+        "src/common/fade.c": ["8b2ce71bf970d116e45cd90a6e6e0b88d1977dedc3d585675b6c38becace3bee"]
+      }
+    },
+    "0x802233ec": {
+      "sources": {
+        "src/common/fade.c": ["8b2ce71bf970d116e45cd90a6e6e0b88d1977dedc3d585675b6c38becace3bee"]
+      }
+    },
+    "0x80223408": {
+      "sources": {
+        "src/common/fade.c": ["95543ee4ee9ffb59627bcb99ff9fd71fe37e1f1dff880343d0914cd6a852740a"]
+      }
+    },
+    "0x8022344c": {
+      "sources": {
+        "src/common/fade.c": ["0b1dca628861fb5f6ae36b55917a0e8343de7264302f664bd66e3e6daa168f8b"]
+      }
+    },
+    "0x80223490": {
+      "sources": {
+        "src/common/fade.c": ["6d6ce4fe35d13055fd98452b1375e9f925a6fc576a5dab8095ad882ba95353ab"]
+      }
+    },
+    "0x802234d8": {
+      "sources": {
+        "src/common/fade.c": ["cdb3a6ef586a7fc75544d5ef17d65355733b11c8904018152902a56c8cd13657"]
+      }
+    },
+    "0x80223544": {
+      "sources": {
+        "src/common/fade.c": ["a946a31a13c894f050e5e364f1a5aa1f2e4b732695269633220452039209d92c"]
+      }
+    },
+    "0x802235b8": {
+      "sources": {
+        "src/common/fade.c": ["d2c0fb6d0215e786ea32057b963a7cc5ea771edce9a5320a94c44469303cde0b"]
+      }
+    },
+    "0x802235c0": {
+      "sources": {
+        "src/common/screenfade.c": [
+          "af08a4ac503489c17df2ca5e6e2114ac526a2c6c3f13aec6cfd1ba5b14837227"
+        ]
+      }
+    },
+    "0x80223930": {
+      "sources": {
+        "src/common/fade.c": ["fd3de2ebbfc690bd2f8b954d7b11274e91c885bd21d94054ff9b4b25b8faa8fa"]
+      }
+    },
+    "0x80223aa4": {
+      "sources": {
+        "src/common/fadeupdate.c": [
+          "225eda85e9ba15f3e98fedc3a45d7ee0199582494cfbbdb40903828bbc8737ae"
+        ]
+      }
+    },
+    "0x80223e30": {
+      "sources": {
+        "src/common/vecmath.c": ["fef48b5c7ab08a4739da157c6eee43ba8c96fd630d7d923a6b5b03d537daaaf4"]
+      }
+    },
+    "0x80223eec": {
+      "sources": {
+        "src/common/vecmath.c": ["356738287d41cac6706b3f98093476589b2912a4e89ca3999c15af1ebb9419a0"]
+      }
+    },
+    "0x80223f54": {
+      "sources": {
+        "src/common/vecmath.c": ["046bc27fb78cb53461eed729b45118f639c485addab00d599f24315ea96e075e"]
+      }
+    },
+    "0x80223f84": {
+      "sources": {
+        "src/common/vecmath.c": ["9ea290f86b7b56a22362cb3893121f3ecf8f88317b644aa05fd93f74f77889bd"]
+      }
+    },
+    "0x80223fac": {
+      "sources": {
+        "src/common/vecmath.c": ["b421dc58cd79b58e5e87eab07465cd57bac0f1c3b8fccb101a036132d69fa92a"]
+      }
+    },
+    "0x80223fd4": {
+      "sources": {
+        "src/common/vecmath.c": ["96960cdd8b10eba95a105e477952a147ef8c6db795d861e459cf412f0deda703"]
+      }
+    },
+    "0x80223ff8": {
+      "sources": {
+        "src/common/vecmath.c": ["cbc93c49742facddc85006d43f27531b43fe7379f7f1eb3e0413852d863a8ee7"]
+      }
+    },
+    "0x80224018": {
+      "sources": {
+        "src/common/vecmath.c": ["3f6c48ac22d729996aeb2865b7a0d2354f4834ba8de7377450bf3ac9a87ff68c"]
+      }
+    },
+    "0x8022404c": {
+      "sources": {
+        "src/common/vecmath.c": ["e43bf2e37f558bf147ce5320562c611fd712698df0381fa0e650a80bd5c5e495"]
+      }
+    },
+    "0x80224078": {
+      "sources": {
+        "src/common/vecmath.c": ["e54c45a518ca17fa35bcae03133d9584aee63d705c173f7e6a4ded8fcdf7fc09"]
+      }
+    },
+    "0x802240ac": {
+      "sources": {
+        "src/common/vecmath.c": ["2970ae51f95d123bbf51416090c5b61589a336637e99088874954d2011af6434"]
+      }
+    },
+    "0x802240e4": {
+      "sources": {
+        "src/common/vecmath.c": ["195313299a7c2508bcade1dcc47b3de635cc033ef1492cc3ff61b6a4cb14be08"]
+      }
+    },
+    "0x80224124": {
+      "sources": {
+        "src/common/vecmath.c": ["d389093039e1d910569f345607e12b4676dfe0f6f2e658feecccd3060cc0397f"]
+      }
+    },
+    "0x80224140": {
+      "sources": {
+        "src/common/vecmath.c": ["5d3a8d569dba425437df5c2fd4ff39d0c408957bb3e4e39664b01c01238c29dd"]
+      }
+    },
+    "0x8022420c": {
+      "sources": {
+        "src/common/vecmath.c": ["bc44d4275cf722a405e5a3bc1e41e44362db80ecf2c365e2f98ee8d14421c044"]
+      }
+    },
+    "0x802242b0": {
+      "sources": {
+        "src/common/vecmath.c": ["1eb9fdcbd41cbb94abcf6d82fbaee53629ac4947722d4a51ed33dc5186aef535"]
+      }
+    },
+    "0x80224358": {
+      "sources": {
+        "src/common/vecmath.c": ["83dbeab9909b61993a6cb7e60a1954538d32dba71f51d096fc1c9bb2b9d0627f"]
+      }
+    },
+    "0x8022438c": {
+      "sources": {
+        "src/common/vecmath.c": ["4c4be1bddc27265351cbcc2706cd9b175ad3fd6f19dd1f023bd68b6cb6a6d238"]
+      }
+    },
+    "0x802243c0": {
+      "sources": {
+        "src/common/vecmath.c": ["29093f7ee8e072d2bbffd17d5ba2d7f7200d365a57de3d1cd35175d243916bfa"]
+      }
+    },
+    "0x802243e4": {
+      "sources": {
+        "src/common/vecmath.c": ["62d6a713ee55c921ff09bb08cc7c4d76e2c881dbe8deb2146878420580013604"]
+      }
+    },
+    "0x80224418": {
+      "sources": {
+        "src/common/vecmath.c": ["a5a34004dbc67ab8c597242c2ba2b204750ffcc111daf95562be59d38aa45f78"]
+      }
+    },
+    "0x8022444c": {
+      "sources": {
+        "src/common/vecmath.c": ["f639cb42fabe130e1d4f9199f27d36edfe9d258e8b8f19ac9311e3e65c9d4045"]
+      }
+    },
+    "0x8022449c": {
+      "sources": {
+        "src/common/vecmath.c": ["60891b2d99bf7a0f3263e651e6db321f986a819303e7ae6405eaa464fff8ace3"]
+      }
+    },
+    "0x802244e0": {
+      "sources": {
+        "src/common/vecmath.c": ["f9c8565382d969385c8acde6ac92188d7d13cdb579a058719fe03f144cefac44"]
+      }
+    },
+    "0x80224524": {
+      "sources": {
+        "src/common/vecmath.c": ["3f9f78a01b1917e2dd593764ca6328133d54dbb0a3a36b32c76d7fcf33f03bf6"]
+      }
+    },
+    "0x8022456c": {
+      "sources": {
+        "src/common/vecmath.c": ["4062142dbdef3720f20df46f928efb1c2962a7766227be9be372d6ea1cb18fa1"]
+      }
+    },
+    "0x80224584": {
+      "sources": {
+        "src/common/vecmath.c": ["0cc1dfe1309360dd945ee66318f73e53fe1b2f56f9ffa2a4fa8401e1fe24f473"]
+      }
+    },
+    "0x802245c8": {
+      "sources": {
+        "src/common/vecmath.c": ["8deac166968149c02040c38c471deacf9dc54055302d82bf00906638f16bfb7b"]
+      }
+    },
+    "0x8022461c": {
+      "sources": {
+        "src/common/vecmath.c": ["603c3b5bb00ffb23316573780428a893e48c943f2c50e40b2fd1df60fb06fcb2"]
+      }
+    },
+    "0x80224658": {
+      "sources": {
+        "src/common/vecmath.c": ["f325fa99d9b2432a5573500bc401661fd90824df8f421eeccaec33ca0cf02c79"]
+      }
+    },
+    "0x80224698": {
+      "sources": {
+        "src/common/vecmath.c": ["143a7db4846cc7363bcac9186d48e1275321eb15e5604819f02b48e9f0317c38"]
+      }
+    },
+    "0x802246cc": {
+      "sources": {
+        "src/common/vecmath.c": ["512aa45e2c0dbdc0e32681ddca9c8aca1a8d1c3deaad70b11c8e5104e7429841"]
+      }
+    },
+    "0x80224850": {
+      "sources": {
+        "src/common/vecmath.c": ["a07d52a9b20911c508f126151538c0be7c7c14bc46ddc50bc4f239c4d475210d"]
+      }
+    },
+    "0x8022492c": {
+      "sources": {
+        "src/common/vecmath.c": ["5fabdb7ce4b423fcb5561715f5609fe4f8c1aeaae5a6d94047b1fd4c686a0e8f"]
+      }
+    },
+    "0x802249f8": {
+      "sources": {
+        "src/common/vecmath.c": ["c1a6975dfee061d576c458de9f064768e6d0f4b2cbc3c86cd2e1094a52d53eff"]
+      }
+    },
+    "0x80224ae0": {
+      "sources": {
+        "src/common/vecmath.c": ["bd40079607466e5165b9ff5679b36e51b1b7867af10f8c6d8775ebbf014abf5d"]
+      }
+    },
+    "0x80224b88": {
+      "sources": {
+        "src/common/vecmath.c": ["d12b116ea0867b46c0556481170debb78024f437176bd5f060464ef0fa01bf98"]
+      }
+    },
+    "0x80224c4c": {
+      "sources": {
+        "src/common/vecmath.c": ["338ef598fbab228ff76f7c80e1729001a078e15038420e675411f897a5b9d9f2"]
+      }
+    },
+    "0x80224cd0": {
+      "sources": {
+        "src/common/vecmath.c": ["d7aaf51fd26eb00bb031e8e42f5554da218c69ebe02147fc77742c815dd6c871"]
+      }
+    },
+    "0x80224e3c": {
+      "sources": {
+        "src/common/vecmath.c": ["a71a3cab565978e922f474f95fab09446ed3533441496d40969444dbc66b7df3"]
+      }
+    },
+    "0x80224ea0": {
+      "sources": {
+        "src/common/vecmath.c": ["f292c90610d42d4cb390375d5cb669a98d309a2c35262561cd10bbbe25f91833"]
+      }
+    },
+    "0x80224ec0": {
+      "sources": {
+        "src/common/vecmath.c": ["d10ffcf8a66a8f112734be79adc428c789937a92cdaa1d7d27476a101327112d"]
+      }
+    },
+    "0x802252bc": {
+      "sources": {
+        "src/common/vecmath.c": ["a8a3d69a4c844abf935ba012847514cc77d6fe195b306d744eb9611a5d9b5a43"]
+      }
+    },
+    "0x8022546c": {
+      "sources": {
+        "src/common/vecmath.c": ["2888b362edabd9ee9574f35fa9d8a24640995a41b1758cbff7a4a612dd45996f"]
+      }
+    },
+    "0x80225590": {
+      "sources": {
+        "src/common/vecmath.c": ["fd0cf0f0bc81ec10b547aa21100386fe1fa2fd00b1aa5be13c9410153f8e68ca"]
+      }
+    },
+    "0x802256b4": {
+      "sources": {
+        "src/common/vecmath.c": ["c41216395c0de8fd9f37d9b9e2e6e9eedd333a79767ffd95492d73684f4ec715"]
+      }
+    },
+    "0x8022596c": {
+      "sources": {
+        "src/common/vecmath.c": ["67d49764cec1a91d64c14dd2a4a1dd3464d53868a4fc7971529972284f8a91dd"]
+      }
+    },
+    "0x80225a28": {
+      "sources": {
+        "src/common/vecmath.c": ["b87b14a939da6a1537030267f48da7105b174782162e6ef2dbcf609fd3eeb9e3"]
+      }
+    },
+    "0x80225a34": {
+      "sources": {
+        "src/common/vecmath.c": ["36923e717dcbf71208b861a9ea4db597ac2acb2c1cc06fc44f6a9c37f0dc2635"]
+      }
+    },
+    "0x80225a80": {
+      "sources": {
+        "src/common/frameclear.c": [
+          "3f4f69e6c06af9e140c69b05a4bb6e0b93d67ae885b12d387d6587d97084a978"
+        ]
+      }
+    },
+    "0x80225ad8": {
+      "sources": {
+        "src/n64/vehiclesetup.c": [
+          "3c90364347d667797ecface1e219131e3a1272c51a6739bd294ff996f295314a"
+        ]
+      }
+    },
+    "0x80225bf0": {
+      "sources": {
+        "src/n64/vehiclesetup.c": [
+          "ef2ed2cf5280a68b5a6b15eea558f547ddaec9e42d853014f4cb1b99e21a809c"
+        ]
+      }
+    },
+    "0x80225c50": {
+      "sources": {
+        "src/n64/vehiclesetup.c": [
+          "5b2cb6d4fcaf866ffd6150c296804eba900f084ccf0fd08858ccb8fff5fb43cf"
+        ]
+      }
+    },
+    "0x80225d98": {
+      "sources": {
+        "src/common/vehiclereset.c": [
+          "1592a62de7470a0a28396b2d4b2e3d31bb9c28322f75f74bbaa5d614fba2c8f5"
+        ]
+      }
+    },
+    "0x80225fd8": {
+      "sources": {
+        "src/n64/playercontrol.c": [
+          "1479e97261cde1eae02a33086ed6041e5006350ee8976a14ecde65984a39b8ce"
+        ]
+      }
+    },
+    "0x802268cc": {
+      "sources": {
+        "src/common/playercontrol.c": [
+          "a21afc8b0cdd65789313439116ccc82af39a3938b9707c70ffc10e9c358e6e00"
+        ]
+      }
+    },
+    "0x802268ec": {
+      "sources": {
+        "src/common/tracetrack.c": [
+          "7f0929cdfef2b5dc967ef9e3630e85476751ecd1268aa2e3f28d5cae17ae5281"
+        ]
+      }
+    },
+    "0x80226d64": {
+      "sources": {
+        "src/common/routeposition.c": [
+          "7a7bdc0122239bb8c85c19b13d93ff572986ce1a4fa2b827caaf1cc9291ffa90"
+        ]
+      }
+    },
+    "0x8022717c": {
+      "sources": {
+        "src/common/driving.c": ["1e214cca4c143a5d2d7efe159e133d4600766d78b1906b142be8681846f08c53"]
+      }
+    },
+    "0x80228404": {
+      "sources": {
+        "src/common/driving.c": ["a21afc8b0cdd65789313439116ccc82af39a3938b9707c70ffc10e9c358e6e00"]
+      }
+    },
+    "0x80228424": {
+      "sources": {
+        "src/common/vehiclereset.c": [
+          "40df67218fe5c3b7a6302fd7a64d9056d02945cc1a6272fd00acb0909b2962cb"
+        ]
+      }
+    },
+    "0x8022858c": {
+      "sources": {
+        "src/common/vehiclereset.c": [
+          "91d96b4f42fa7dd8b32f5fc93bd0c1d9eab0aaea54ede85062ced027734efc7c"
+        ]
+      }
+    },
+    "0x802285bc": {
+      "sources": {
+        "src/common/vehiclereset.c": [
+          "cb954b44fd0d9f6bb01fce8f72cda0650a4ec5874ca93b9bb7cbd237d0f125b2"
+        ]
+      }
+    },
+    "0x80228994": {
+      "sources": {
+        "src/n64/vehiclesetup.c": [
+          "b0d71f43adb9fd15ff1c0e026923bd415223e987dd61610b73a4ccf4906d78e8"
+        ]
+      }
+    },
+    "0x8022899c": {
+      "sources": {
+        "src/common/routewalk.c": [
+          "452331dbfdad32791ee83485a748a808c2783f91ac7b61ea025641c83687c9f6"
+        ]
+      }
+    },
+    "0x80228c14": {
+      "sources": {
+        "src/common/routewalk.c": [
+          "1f1af05efb3461d27077406f494d5b54df86ee135f39e42e161446a46b8916b1"
+        ]
+      }
+    },
+    "0x80228d48": {
+      "sources": {
+        "src/common/racerinit.c": [
+          "fd60163ed0459c3a31c69b4af29cae30f56975e548c5d0d488290ee01d9fa1fd"
+        ]
+      }
+    },
+    "0x80229060": {
+      "sources": {
+        "src/common/racersharing.c": [
+          "f14cede961c914c3ee160f1a865e49c6a1a5eecfe5412ae124932f5ca745d300"
+        ]
+      }
+    },
+    "0x802290a0": {
+      "sources": {
+        "src/common/racers.c": ["46e691f214547097c377c55dfb0654f6016d1e7c214269e9f509940b915fadb1"]
+      }
+    },
+    "0x80229250": {
+      "sources": {
+        "src/n64/racersharing.c": [
+          "0b1caf4e082b7c5ddac8cfeb7a1de93dc50717faa169ea82d54fc0c40c768356"
+        ]
+      }
+    },
+    "0x80229c30": {
+      "sources": {
+        "src/n64/raceprogress.c": [
+          "9f09b260bf01b4e9ef01fc84cab7c80c03ce361e3a7ec9e8f59b2dfdb0cec4ba"
+        ]
+      }
+    },
+    "0x8022a91c": {
+      "sources": {
+        "src/common/savestate.c": [
+          "3a8d0825cc5b84ae6bbe51a28a82540350ca166a0b32773d9d8d9e1a819aba8f"
+        ]
+      }
+    },
+    "0x8022a9c0": {
+      "sources": {
+        "src/common/savestate.c": [
+          "33181fd3bee9828f0a6c95a25201d073b9ec4257515fd5dd1c66aea25e9f88e5"
+        ]
+      }
+    },
+    "0x8022aa28": {
+      "sources": {
+        "src/common/savestate.c": [
+          "567ba45acf8b6f96c21dc0595b9cec3b0fa8d5ba0aa4cd8fd4ba39163ae5c761"
+        ]
+      }
+    },
+    "0x8022aa58": {
+      "sources": {
+        "src/common/savestate.c": [
+          "c7195a481894db3523e2127019594e9800200f999eb4d6582d40ada4867b592c"
+        ]
+      }
+    },
+    "0x8022aa84": {
+      "sources": {
+        "src/common/savestate.c": [
+          "82d0af378e3ac9a2394c5c96b217ae38783e534cc2912cdbb9a26cf7a40f1093"
+        ]
+      }
+    },
+    "0x8022aab4": {
+      "sources": {
+        "src/common/savestate.c": [
+          "fe5d5b933e3cc576ab9e29f16888e05d26f300d555b8106ee8600ceb63a778de"
+        ]
+      }
+    },
+    "0x8022aae0": {
+      "sources": {
+        "src/common/lastlapsnapshot.c": [
+          "0f497ce36f969674e50d17f9f0fffb5013af43607314484bdf5d3d292202f8a0"
+        ]
+      }
+    },
+    "0x8022ac48": {
+      "sources": {
+        "src/common/soundsource.c": [
+          "2ca4e7b557b8602da538fe6d0d062067f672cd4ce75ef5e962cff2257a0eb0e9"
+        ]
+      }
+    },
+    "0x8022ad24": {
+      "sources": {
+        "src/common/soundpan.c": [
+          "8e38d4b11494d7bc5b2ffd1c36117971cea187467a92dfdf48a5bc44bf214676"
+        ]
+      }
+    },
+    "0x8022aec0": {
+      "sources": {
+        "src/common/soundeffect.c": [
+          "09dc56c3a58a1064e5ca017255b0feef5d119d6ceff6d7091a78bb3a850cc5a8"
+        ]
+      }
+    },
+    "0x8022af14": {
+      "sources": {
+        "src/common/soundeffect.c": [
+          "8cf65eeb938f7154993a32b6cbc089268d65de66b2729051105563398359008f"
+        ]
+      }
+    },
+    "0x8022af34": {
+      "sources": {
+        "src/common/soundeffect.c": [
+          "64b3f00baafe364d087bbd28f2c59775b574815e3002c364fc499f242f0b2ded"
+        ]
+      }
+    },
+    "0x8022af54": {
+      "sources": {
+        "src/common/soundsource.c": [
+          "e9301a67656c7ba58da567ff36b9f75ebbbb962230cea083aa63e99733629d22"
+        ]
+      }
+    },
+    "0x8022af78": {
+      "sources": {
+        "src/common/soundsource.c": [
+          "4ec42189658396305203469686674f20bfabaceb678f3cb6ed7236104db88c6e"
+        ]
+      }
+    },
+    "0x8022afe4": {
+      "sources": {
+        "src/common/soundsource.c": [
+          "61725d8e45432adcbc326235a887a330e399e378c8a9b78fe30c45b8af71a600"
+        ]
+      }
+    },
+    "0x8022b084": {
+      "sources": {
+        "src/common/ambientsound.c": [
+          "7c62898b85a83428fcf53c7cb2bdead07a82f9947d27163a0e0cc304b8ab8139"
+        ]
+      }
+    },
+    "0x8022b4a4": {
+      "sources": {
+        "src/common/soundsource.c": [
+          "f652f65a6a485969a967903256d81de9b9d01eed71c84925751eefe3e7467f93"
+        ]
+      }
+    },
+    "0x8022b560": {
+      "sources": {
+        "src/common/soundsource.c": [
+          "b19959e81d23bbe3fc6547aa7ee5a939740aac601e492020292ce5f3ba22d676"
+        ]
+      }
+    },
+    "0x8022b5e8": {
+      "sources": {
+        "src/n64/racesound.c": ["b0d71f43adb9fd15ff1c0e026923bd415223e987dd61610b73a4ccf4906d78e8"]
+      }
+    },
+    "0x8022b5f0": {
+      "sources": {
+        "src/n64/racesound.c": ["28805f5f6f6d754392fc3ff331bb1c2a9044d2fa297aeef540044bab09aec67c"]
+      }
+    },
+    "0x8022b7fc": {
+      "sources": {
+        "src/common/camerachange.c": [
+          "597a3756b568d1943edba799fd0d2f52c0ca95a2df705ada3c25122fb188a274"
+        ]
+      }
+    },
+    "0x8022b804": {
+      "sources": {
+        "src/n64/vehiclesound.c": [
+          "f6dac277d3dcfb94878df20b0bd60caa51bd6311e298529f27daea41417d8b4f"
+        ]
+      }
+    },
+    "0x8022c54c": {
+      "sources": {
+        "src/n64/racer-slot-motion.c": [
+          "abc5fb6bd9dd3e94d459ea7fbb936956dcda738fae3b0f380ed630c6eb25e4c5"
+        ]
+      }
+    },
+    "0x8022cad8": {
+      "sources": {
+        "src/common/racerstate.c": [
+          "d78d802e9c32b2c426d61389bcc7b795c5d4ce3f80d1a86435877a59e1a14ced"
+        ]
+      }
+    },
+    "0x8022cbe0": {
+      "sources": {
+        "src/common/visgrid.c": ["2958af6e7bc85c448d9629c902397f1debd57ec8efd3c7340beeacb35ed2d400"]
+      }
+    },
+    "0x8022cc54": {
+      "sources": {
+        "src/common/visgrid.c": ["fd2d0c3261fd1c0a47ed0d1608227034f66f1b366bc8e68ed78588d88333e133"]
+      }
+    },
+    "0x8022cf24": {
+      "sources": {
+        "src/common/visgrid.c": ["0c471cff3d74063d116a9205467c1f7646e43a43e29cfc0edc5d56e240345dfb"]
+      }
+    },
+    "0x8022cf8c": {
+      "sources": {
+        "src/common/visgrid.c": ["06c7848b17c9029dcac34953e6e7d24f9e0404414e518fc4b773fd54f7103902"]
+      }
+    },
+    "0x8022cfec": {
+      "sources": {
+        "src/common/visgrid.c": ["e5291735dcf35f0e44fef5a7f786d1312518f8510cfe64e4e5eb499ad0b2946e"]
+      }
+    },
+    "0x8022d330": {
+      "sources": {
+        "src/n64/timing.c": ["4ee258cb235dedc503a21c0def28946775b6bae26c51d3c03da2ec5dc6f4d9c7"]
+      }
+    },
+    "0x8022d3fc": {
+      "sources": {
+        "src/common/timingframe.c": [
+          "61a00a120464c31ceda2531a0f4cab5ac4d191e58310e79cc69c2caf7db60385"
+        ]
+      }
+    },
+    "0x8022d4cc": {
+      "sources": {
+        "src/n64/timing.c": ["8871506962398b4322740a0424d37ff9214ac25854d1c1a00ca67d6938ce4a2b"]
+      }
+    },
+    "0x8022e030": {
+      "sources": {
+        "src/n64/text.c": ["b044713f6921a5d4e9192f1b5c551b47b6f0ba548a6e1c61aa4a10c9871b5e00"]
+      }
+    },
+    "0x8022f01c": {
+      "sources": {
+        "src/n64/text.c": ["e100c82531767da0c319f7f787734fe048e52b4ebdbf6f6b2a80b2a57b41c218"]
+      }
+    },
+    "0x8022f02c": {
+      "sources": {
+        "src/common/textstyle.c": [
+          "e100c82531767da0c319f7f787734fe048e52b4ebdbf6f6b2a80b2a57b41c218"
+        ]
+      }
+    },
+    "0x8022f03c": {
+      "sources": {
+        "src/common/textstyle.c": [
+          "b38e343cfe94a06114cc4ed45f8c043cdc294785d54c3a7247c54c2f0561352b"
+        ]
+      }
+    },
+    "0x8022f048": {
+      "sources": {
+        "src/common/textstyle.c": [
+          "b38e343cfe94a06114cc4ed45f8c043cdc294785d54c3a7247c54c2f0561352b"
+        ]
+      }
+    },
+    "0x8022f054": {
+      "sources": {
+        "src/common/textstyle.c": [
+          "055290e7a146c756173a76895a09e7d25d80bdf6c15f7d80e0aaf65dd263f7f6"
+        ]
+      }
+    },
+    "0x8022f064": {
+      "sources": {
+        "src/common/textstyle.c": [
+          "b38e343cfe94a06114cc4ed45f8c043cdc294785d54c3a7247c54c2f0561352b"
+        ]
+      }
+    },
+    "0x8022f070": {
+      "sources": {
+        "src/common/textstyle.c": [
+          "e100c82531767da0c319f7f787734fe048e52b4ebdbf6f6b2a80b2a57b41c218"
+        ]
+      }
+    },
+    "0x8022f080": {
+      "sources": {
+        "src/common/textstyle.c": [
+          "fc571589520012882d6d583d81467c08027e01820ac74cedba7d30964e252a14"
+        ]
+      }
+    },
+    "0x8022f0c8": {
+      "sources": {
+        "src/n64/text.c": ["23cfc87abde21684ec274aa84fdeebcd40dba2aa5c85dc6d0083f28e2a98ca28"]
+      }
+    },
+    "0x8022f120": {
+      "sources": {
+        "src/common/textstyle.c": [
+          "b87b14a939da6a1537030267f48da7105b174782162e6ef2dbcf609fd3eeb9e3"
+        ]
+      }
+    },
+    "0x8022f12c": {
+      "sources": {
+        "src/common/textstyle.c": [
+          "66cdf4134c31d5cb4acd33f1bddea6b50f942356dd4b9dda0976e7f0f6739c4c"
+        ]
+      }
+    },
+    "0x8022f1e4": {
+      "sources": {
+        "src/n64/text.c": ["411b5d5533ac1e7945bec3899f2e1234af2fd691506ffb4d041d809bab383990"]
+      }
+    },
+    "0x8022f270": {
+      "sources": {
+        "src/common/textstyle.c": [
+          "dd38847f31ff86ba9debe6a5abb0657d5a49bf22d8ca1cfaafd1c637ceae6039"
+        ]
+      }
+    },
+    "0x8022f450": {
+      "sources": {
+        "src/common/skystate.c": [
+          "141a91c7ef93f0acf4775c5939a51b3cc3c5217a9c7239b1dfb77c62b22d07bc"
+        ]
+      }
+    },
+    "0x8022f4b8": {
+      "sources": {
+        "src/n64/sky.c": ["528b5657cec7d5b70fb5945dee626d25d5b04bdc5be6f9855a3af1e0077be033"]
+      }
+    },
+    "0x8022fa40": {
+      "sources": {
+        "src/n64/vehiclerender.c": [
+          "ec662f89dcccf8ca1c835453454730f87d4aea940ec57b9a8b6fd08c33fe1ad9"
+        ]
+      }
+    },
+    "0x8022fb04": {
+      "sources": {
+        "src/common/wheelrender.c": [
+          "1a0bf3b071b983a0c5c30384f1867ad06ea4bbe1060fab04c003903839b034a3"
+        ]
+      }
+    },
+    "0x8022ff24": {
+      "sources": {
+        "src/common/vehiclevisibility.c": [
+          "b16954713b40fbaed382792b3bed659fd3f65a1d68f4e9893895307f47bb48c9"
+        ]
+      }
+    },
+    "0x802300a4": {
+      "sources": {
+        "src/n64/vehiclemodelrender.c": [
+          "30389df8a536f60909b54112ed3f0efc2220269f5ec8fdaccb6221df3516ff69"
+        ]
+      }
+    },
+    "0x80232a24": {
+      "sources": {
+        "src/n64/headlight-beams.c": [
+          "0a1fa38dd0a9f875fa775b5e158a9e5138038c3cf06ae0590eeac2b69fdf282a"
+        ]
+      }
+    },
+    "0x80232fe4": {
+      "sources": {
+        "src/n64/vehiclerender.c": [
+          "8917d0948287751e7ba3c1a2da02c0fb9beb683b2563c3d02e1b7f5ec55e07ea"
+        ]
+      }
+    },
+    "0x802331b8": {
+      "sources": {
+        "src/n64/vehiclerender.c": [
+          "bb3a3cab2d0eb3c64d23cebe604d14f8af89c2c148bd12ef91d7865d9b03ce2b"
+        ]
+      }
+    },
+    "0x80233230": {
+      "sources": {
+        "src/n64/vehiclerender.c": [
+          "d1fb33942b4d66a5be72ca9a269e4a599a25db49caba4acd970d8bfad249bebe"
+        ]
+      }
+    },
+    "0x802333d0": {
+      "sources": {
+        "src/n64/vehicle-mesh-deform.c": [
+          "3a3625a369994c9b933a7561c1c0094a72ed0e847018d6fee98d696209c55a66"
+        ]
+      }
+    },
+    "0x80233960": {
+      "sources": {
+        "src/common/screenrect.c": [
+          "4c020118f2ef05d986e1ba611990c1a75d637f2df6220c7ebd9f7f1a3054fa5a"
+        ]
+      }
+    },
+    "0x80233b2c": {
+      "sources": {
+        "src/common/shadowreset.c": [
+          "4e55ccaa93b989b19bad261ad9bcfa952bd35954b1c9e75171b8f8ac8ace44aa"
+        ]
+      }
+    },
+    "0x80233ba0": {
+      "sources": {
+        "src/n64/trackinstance.c": [
+          "23f10e3fbf0b553283cf47e90fd72a3fb1e06cec9596460ae99fc71802b587e1"
+        ]
+      }
+    },
+    "0x80234b10": {
+      "sources": {
+        "src/common/visiblecompare.c": [
+          "22ab2d1e2e1a05454f6d86a4c080730a09dfd63b79ff886975fdbc7ea2e3b9fd"
+        ]
+      }
+    },
+    "0x80234b48": {
+      "sources": {
+        "src/n64/visibleinstances.c": [
+          "e502a1c9fb5e8df7d511b0479817b50ec5abf7c89c695276b74b13e80d20fed6"
+        ]
+      }
+    },
+    "0x802356fc": {
+      "sources": {
+        "src/n64/trackrender.c": [
+          "86819dc613c79d9345c5ee351bbc648a2ea978265a35b0fc275baae1d5266545"
+        ]
+      }
+    },
+    "0x802374d0": {
+      "sources": {
+        "src/n64/dashboard.c": ["06e923085268ac191465e712c1e0d2f61b99664e16c03b037ef6ff7980763394"]
+      }
+    },
+    "0x8023825c": {
+      "sources": {
+        "src/n64/hud.c": ["d2c0fb6d0215e786ea32057b963a7cc5ea771edce9a5320a94c44469303cde0b"]
+      }
+    },
+    "0x80238264": {
+      "sources": {
+        "src/common/hudtime.c": ["7e03e9a17a74e6e90a968e0cd6a0c0f21e842709c23a94dd08211f6fcf9316a9"]
+      }
+    },
+    "0x8023835c": {
+      "sources": {
+        "src/common/hudrace.c": ["dc8ba96c61c51d08582b528be0801693ddb9b146ef88f0c62fc1161172164385"]
+      }
+    },
+    "0x80238608": {
+      "sources": {
+        "src/common/hudrace.c": ["b8473b509cb38c236a1a416d81b4a4f0eb4a4895b1247965fd951b64177edff3"]
+      }
+    },
+    "0x80238924": {
+      "sources": {
+        "src/common/hudmessage.c": [
+          "720d409e7717503909411c933ff534e2568621678a83d375e7aaeec3e17e7914"
+        ]
+      }
+    },
+    "0x80238a80": {
+      "sources": {
+        "src/common/hudoverlay.c": [
+          "4d4a89d52a7db373ab59f10fbe8c9d3e152d52017db5e85dc6a143473eff41a8"
+        ]
+      }
+    },
+    "0x80238d70": {
+      "sources": {
+        "src/n64/texrect.c": ["d27c474142c217f0ae092ce07312235c9518d84e67cc3bde390b1c206f2a0609"]
+      }
+    },
+    "0x802392a0": {
+      "sources": {
+        "src/n64/texrect.c": ["6f9beb7ce74135ecad71a96e3b64a810e1afb85ce788c849771b12694135ded9"]
+      }
+    },
+    "0x80239840": {
+      "sources": {
+        "src/common/raininit.c": [
+          "8c9a8c8721c12e082724431bfa219c7c444e1cdd7d6fd23678f1472567bb3bc9"
+        ]
+      }
+    },
+    "0x802398d4": {
+      "sources": {
+        "src/common/wind.c": ["3fbee5957f49a8d53ab3465ea6d0d2cf45a600a74698721aeffcab23ab234a6e"]
+      }
+    },
+    "0x80239a78": {
+      "sources": {
+        "src/n64/weather.c": ["ba6a9da204fcf124996a186ef668ca0afd9a99d38d459fddf436fa18b51369d2"]
+      }
+    },
+    "0x80239c0c": {
+      "sources": {
+        "src/common/lightning.c": [
+          "d10eea4eae1623451cb270562b30a675c073bb5959b8fba70641727f47b07fa3"
+        ]
+      }
+    },
+    "0x80239d10": {
+      "sources": {
+        "src/n64/weather.c": ["d2c0fb6d0215e786ea32057b963a7cc5ea771edce9a5320a94c44469303cde0b"]
+      }
+    },
+    "0x80239d18": {
+      "sources": {
+        "src/n64/precipitation-update.c": [
+          "f6343c5180d982fe66f276f3750d5a4a702400e9c9a27157b547db8368847834"
+        ]
+      }
+    },
+    "0x8023a2d4": {
+      "sources": {
+        "src/n64/precipitationrender.c": [
+          "2b61783200d820340b4ff20e565db8f59a6df4ba27fc34d37a20e822af910bf2"
+        ]
+      }
+    },
+    "0x8023ac80": {
+      "sources": {
+        "src/n64/effects.c": ["fa60e5b78dce8bd1e833d41d1b9916e8bbb873fcb12064d0ac5d283299c48712"]
+      }
+    },
+    "0x8023acc8": {
+      "sources": {
+        "src/common/exhaustspawn.c": [
+          "047059eb452ef55d7dac3e4d58bd7291023f9a464ddbd6c1b2bf52e213a2e7ad"
+        ]
+      }
+    },
+    "0x8023af68": {
+      "sources": {
+        "src/common/tiresprayemit.c": [
+          "d7d19be46f97d0974d40e616eb217bec0e9d2dbee13e2c13f84dc1decc64ba30"
+        ]
+      }
+    },
+    "0x8023b6a0": {
+      "sources": {
+        "src/common/tiresprayrender.c": [
+          "beeae2ba01215fe8e85891e675ae87b20221ce0d26f175daccf6d96758e0c568"
+        ]
+      }
+    },
+    "0x8023bab0": {
+      "sources": {
+        "src/n64/tirespray.c": ["27aa90bb4ccbdf820bfeffc4ec4497dac4dd669c103db500ea4eecb68fd7e0a1"]
+      }
+    },
+    "0x8023c350": {
+      "sources": {
+        "src/common/tiresmokespawn.c": [
+          "fc581841657637efb101102c5a3d109eb1f422873b0461883d489ea180170d35"
+        ]
+      }
+    },
+    "0x8023c74c": {
+      "sources": {
+        "src/common/particleupdate.c": [
+          "e45ac27dac613dfe21db2431eb8bef70551a11067c0ad08b30de93f7f2c68bd1"
+        ]
+      }
+    },
+    "0x8023c8b0": {
+      "sources": {
+        "src/common/particleupdate.c": [
+          "71d64dfc624d0357d58ac2bdb97c14594dd4cd4f3e9680058cb722932af14227"
+        ]
+      }
+    },
+    "0x8023ca80": {
+      "sources": {
+        "src/common/particleinit.c": [
+          "276a7700e0c9a1877a5bcf34fb49063f3c12a48896447fb4289917ff10d86bff"
+        ]
+      }
+    },
+    "0x8023cb14": {
+      "sources": {
+        "src/common/vehicleeffects.c": [
+          "7fa39c261696a8e4ac8eac9b76acaa5107773e3ae8d343dd83c6b391129170fd"
+        ]
+      }
+    },
+    "0x8023cc84": {
+      "sources": {
+        "src/n64/billboard-particles.c": [
+          "c5f010bcec33d2f8e53e690c458fad1306446d41fea3cbdb2fba6d98b67159d1"
+        ]
+      }
+    },
+    "0x8023d264": {
+      "sources": {
+        "src/common/particlesmokerender.c": [
+          "9306854ff029287bbb3841055c5fa14c31d3da2e76e645cc6418dc48771bce9f"
+        ]
+      }
+    },
+    "0x8023d710": {
+      "sources": {
+        "src/common/particleexhaustrender.c": [
+          "e35e282662cd385eff22197f8a37c803b2e2310a36baa4040aa681f84766b056"
+        ]
+      }
+    },
+    "0x8023da50": {
+      "sources": {
+        "src/n64/texrect.c": ["80ec7b3137ba11647cac7827f0fba29314ed76c95e8978d686084c5a0e34c0d7"]
+      }
+    },
+    "0x8023da9c": {
+      "sources": {
+        "src/n64/texrect.c": ["212ae81cc917015882521ceeea421439efb1d5da8f8bf59e907c375b6b6e0d0f"]
+      }
+    },
+    "0x8023daec": {
+      "sources": {
+        "src/n64/texrect.c": ["126bdc3f0928e6e77efcf67e9dd40ad7243838a61746d26217c5d6fa0b566e6d"]
+      }
+    },
+    "0x8023e900": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/infblock.c": [
+          "ce18e730b6c4efcb4af31d6fa325ea0448a58ae82dd389e66a6cdac9d9610f93"
+        ]
+      }
+    },
+    "0x8023e9d4": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/infblock.c": [
+          "5bd014719fdf1262f4f74e5b3763f6a5ffb9b9529ac2cf319cbe5fda81d15437"
+        ]
+      }
+    },
+    "0x8023ea9c": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/infblock.c": [
+          "038121d0cafb438d3b2bd46063a5af312958d46191579f59d0e8bbd1734099c2"
+        ]
+      }
+    },
+    "0x8023fa28": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/infblock.c": [
+          "4c8786f70cdbe8b54d747570a738bc69cf33c3077064d1194208c08e10f4269c"
+        ]
+      }
+    },
+    "0x8023fa84": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/infblock.c": [
+          "ab1c34bac6f85a1f0d1df19b48a2304167b9f5b71cb49ae4631607317cf95b54"
+        ]
+      }
+    },
+    "0x8023fad0": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/inflate.c": [
+          "e984ddf81f880b5a8ad993d5cea9f59a2dfa3f69bee02cffe75d476d1ce71399"
+        ]
+      }
+    },
+    "0x8023fb40": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/inflate.c": [
+          "fa02ab422f6babd1307c622c11fb9ead39c87b64af8d04e30e27fe0265027df4"
+        ]
+      }
+    },
+    "0x8023fbc0": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/inflate.c": [
+          "985d356f72f72d878a53528eac1572c2f20daf5d6199dce5d7b0457ff685760b"
+        ]
+      }
+    },
+    "0x8023fd90": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/inflate.c": [
+          "de06749d0dc68c7ce4c416e1e2fcefc9abaf835f872b410f273890eaf0ad4d60"
+        ]
+      }
+    },
+    "0x8023fdbc": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/inflate.c": [
+          "1e05f83746522b816f2fd8974694a137d09046e8b9e2df4bdc16f8fb8f89b0c0"
+        ]
+      }
+    },
+    "0x80240360": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/inflate.c": [
+          "0facd5d96f4709f8a4964eafcebbb5514961ee8895348b7e3a58a6262c186825"
+        ]
+      }
+    },
+    "0x80240438": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/inflate.c": [
+          "f9c4569d315b0a2de757f93573b3f3ec6810312dc34b5ce2bc3e9adfe14c4ae0"
+        ]
+      }
+    },
+    "0x80240580": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/inftrees.c": [
+          "2dd3082952fb112034000c560044d9db3a9cb8a5629bb0e8c5d266ebe2888bdb"
+        ]
+      }
+    },
+    "0x80240c30": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/inftrees.c": [
+          "8a6d3ebac69484a773491dba9ea57e19ddffda760169f5678cfabd66516e065b"
+        ]
+      }
+    },
+    "0x80240cd0": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/inftrees.c": [
+          "4d7379b64d448df519998e5fee31393a8cb5e293700d55188760d0f1746e4da0"
+        ]
+      }
+    },
+    "0x80240e3c": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/inftrees.c": [
+          "84ced4dc00f50760ebb5f5d171fa6a5908c6c42dbd04841ad6b60b8f35139b5c"
+        ]
+      }
+    },
+    "0x80240e64": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/inftrees.c": [
+          "048a6de2b83c3fa0bd07ffd676dc3dd2c5a94687b1b23886ec0397337e947b1a"
+        ]
+      }
+    },
+    "0x8024105c": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/inftrees.c": [
+          "9be56607ef247be16e0c0967bfa443c22bf9aaf0735664724651879aa1142b24"
+        ]
+      }
+    },
+    "0x802410e0": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/infcodes.c": [
+          "d45d0aa4fc0bc9d9ecf22fb3ea78896576672fc08d94eb5c8c729a1396291d19"
+        ]
+      }
+    },
+    "0x80241150": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/infcodes.c": [
+          "af211702310702d31458ada09c3a390db454d3d6481b219ddd4233695c4d427f"
+        ]
+      }
+    },
+    "0x80241ad8": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/infcodes.c": [
+          "66d6ebb3baa26276595dcaa4217c6a4653d3a095484b046bcdbc6d531bbdf0d0"
+        ]
+      }
+    },
+    "0x80241b10": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/inffast.c": [
+          "81055eb29d4c31607359656926e6f87dd208640fea7a181c2eed9896bca7f625"
+        ]
+      }
+    },
+    "0x80241fe0": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/infutil.c": [
+          "cc2ed82228aba15c4851cec48fd080257fd453d35d47df480a5dcb4a22993949"
+        ]
+      }
+    },
+    "0x80242190": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/adler32.c": [
+          "ef1b5e67b3321cd830bdecb9cb4653c9990da0729c6fedb8492ff89c7b207ce0"
+        ]
+      }
+    },
+    "0x80242360": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/zutil.c": [
+          "5a37ca5ea6ed5c787f8f4e2b9884e60d22f3fe0001ed7028f497a16d3efb2e71"
+        ]
+      }
+    },
+    "0x8024236c": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/zutil.c": [
+          "00cff0ed2c0abeaf97e70f5283a740eff3790843ca6ecc07d199115d221a7119"
+        ]
+      }
+    },
+    "0x802423d0": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/zutil.c": [
+          "22a1e4a9087a9e4702b7decee5f2f9d3887aa177c140dfffe3338350976185e6"
+        ]
+      }
+    },
+    "0x802423e0": {
+      "sources": {
+        "3rdparty/zlib-1.0.4/uncompr.c": [
+          "a06452d76c14910349e7c8efd59333e82014f4f1035ab8206b6dc531609b37ce"
+        ]
+      }
+    },
+    "0x80242490": {
+      "sources": {
+        "src/common/heap.c": ["19cc8697ceae7e048f06c1a5076d6d6ab8be396294b6431f31c19a0906646f6c"]
+      }
+    },
+    "0x802424a4": {
+      "sources": {
+        "src/common/heap.c": ["ecb989712c2d2b05c3e440a6cf1eb084a850b418609c54208dcf6de04225075d"]
+      }
+    },
+    "0x802424b0": {
+      "sources": {
+        "src/common/heap.c": ["b87b14a939da6a1537030267f48da7105b174782162e6ef2dbcf609fd3eeb9e3"]
+      }
+    },
+    "0x802424bc": {
+      "sources": {
+        "src/common/heap.c": ["679b9bc3d815ce453659b2cd26eca0719179500b119fe2adc679f2eb6cf9ee3d"]
+      }
+    },
+    "0x8024253c": {
+      "sources": {
+        "src/common/heap.c": ["fad23debe0e0a23af0afdf92943635a9049a7c1bba7df0acffc87a4a2790b205"]
+      }
+    },
+    "0x802425cc": {
+      "sources": {
+        "src/common/heap.c": ["fad23debe0e0a23af0afdf92943635a9049a7c1bba7df0acffc87a4a2790b205"]
+      }
+    },
+    "0x80242660": {
+      "sources": {
+        "src/n64/paintshop.c": ["f7d1a4ac422085ab2f189df06004962009f828cac35beda23302498bb6985fb5"]
+      }
+    },
+    "0x8024272c": {
+      "sources": {
+        "src/n64/paintshop.c": ["931b1d4e2aa86020330036934617bbe302fdc9d298e180ef0f2a7121dbb9836c"]
+      }
+    },
+    "0x80242db0": {
+      "sources": {
+        "src/n64/paintshop.c": ["ec033fd24b778a7f54ceb8175baf63ee96fcf7a37e52e7dca2a1604ce496cf47"]
+      }
+    },
+    "0x802446f8": {
+      "sources": {
+        "src/n64/paintshop.c": ["8c94a8bc11d262d6384be05626b21e341d9e7d0575da748b054fe8b84a06ce54"]
+      }
+    },
+    "0x802447f8": {
+      "sources": {
+        "src/n64/paintshop.c": ["2aff35902338326ecc6361db7243c480216185aaadd60019420ba47044ab353f"]
+      }
+    },
+    "0x80244854": {
+      "sources": {
+        "src/n64/paintshop.c": ["4de58739213586378ebf54ab3b70afc781bc92609d008b0ac945b6ddb4df10eb"]
+      }
+    },
+    "0x802448d4": {
+      "sources": {
+        "src/n64/paintshop.c": ["28e304ecb6abebdefcd952963f63e4719e130c7927c20dbfca39609f6863dff3"]
+      }
+    },
+    "0x80244fc0": {
+      "sources": {
+        "src/n64/sprite.c": ["83a69e8feb731f2ae613e1960defbcb39f08ad802ede9e844957ccc61a2070da"]
+      }
+    },
+    "0x80245154": {
+      "sources": {
+        "src/n64/sprite.c": ["5b3de9703b4f3bb2b93979859b1a6e6704ea4dab945b6bc6fd5474f7041f9946"]
+      }
+    },
+    "0x802452e8": {
+      "sources": {
+        "src/n64/sprite.c": ["85766999a3ecd08c7dbf92db0828b7461c1ab95dc571675dfc8a2b5c313c2c5b"]
+      }
+    },
+    "0x8024549c": {
+      "sources": {
+        "src/n64/sprite.c": ["400417937b0753c5d3c263e756be47d0850f9340d91b35ccb37ff12b2190f2c6"]
+      }
+    },
+    "0x80245650": {
+      "sources": {
+        "src/n64/sprite.c": ["0eaf1e4124ea9a2cf9853a98b2ec073ee951a2f90c9aa34e5f68eb93068701a3"]
+      }
+    },
+    "0x80246140": {
+      "sources": {
+        "src/n64/sprite.c": ["f085174cf215ed341ffbf6521234c881f86383409d0d604fc4ff0a13894fd8b2"]
+      }
+    },
+    "0x802465d0": {
+      "sources": {
+        "src/n64/sprite.c": ["cfa749061a5656d3c0e245d99b3e6621e113a27a1635e14cfa3824a27d718325"]
+      }
+    },
+    "0x8024671c": {
+      "sources": {
+        "src/n64/sprite.c": ["d610f1f01df8523a9c31c53d94c9371cc672878e08be851d75d12fdcb47293dd"]
+      }
+    },
+    "0x80246960": {
+      "sources": {
+        "src/n64/paintshop.c": ["ff02d8efde9552f37ea421cbca6ff5f5b6089a03a778aa065109084b5977b78c"]
+      }
+    },
+    "0x80246ae0": {
+      "sources": {
+        "src/n64/paintshop.c": ["f30b2ca422ccf99e7bd10ea721d574c3eca341ff2f01c33b72242844f4261895"]
+      }
+    },
+    "0x8024765c": {
+      "sources": {
+        "src/n64/paintshop.c": ["163490be2d030d2ac107a3c4a0dfcb1c2b13a62a0cddc032717da7e8e0c17809"]
+      }
+    },
+    "0x80247f8c": {
+      "sources": {
+        "src/n64/paintshop.c": ["36e5a7d3fd04c9c059ca4f51c3a28bc9fe60dc2c245d6ece5f3d349a3f74aebf"]
+      }
+    },
+    "0x802486d0": {
+      "sources": {
+        "src/n64/paintshop.c": ["d8c322fb21c87d03c266320e732c7965be52f41fc1b5851d41a695393b27b596"]
+      }
+    },
+    "0x80248904": {
+      "sources": {
+        "src/n64/paintshop.c": ["1b326168fa06e2763c84ae1fd2546d3d5f55213b6b4ef74b634bef557ec6f62c"]
+      }
+    },
+    "0x80248a88": {
+      "sources": {
+        "src/n64/paintshop.c": ["208fe7a6a386417f846eb7d16a8ad2a946a682a91dc92fb0cb73b8aead8edd14"]
+      }
+    },
+    "0x80248ad8": {
+      "sources": {
+        "src/n64/paintshop.c": ["e4e50f70ec1a8bbf29c1b149680cfca41d6fa2b050effe6dc5ad47c7c9ac32d9"]
+      }
+    },
+    "0x8024a7c0": {
+      "sources": {
+        "src/n64/paintshop.c": ["86574bb9f8ae94cbeff4a260c969ff223d4f5938e01c4c627105927c6a46a4db"]
+      }
+    },
+    "0x8024ac94": {
+      "sources": {
+        "src/n64/decaleditor.c": [
+          "d2b19cdf360ece62c4c9665435e347d1ff3badd4e653eb85c31bb83edb4df4ca"
+        ]
+      }
+    },
+    "0x8024b9c8": {
+      "sources": {
+        "src/n64/decaleditor.c": [
+          "2301f3d5b5e4d735f2b8946a577009a5c4f48f73f83ef8ea75484618e0b3de14"
+        ]
+      }
+    },
+    "0x8024bcd4": {
+      "sources": {
+        "src/n64/decaleditor.c": [
+          "54f9c53613e0809fbfca2665dc212c1db501b4e429131fba2796fd2cbc670e3c"
+        ]
+      }
+    },
+    "0x8024cec4": {
+      "sources": {
+        "src/n64/decaleditor.c": [
+          "05bbef850c0a8d1b9c5bbe32510001303818bf3d24b811d6724b5afec4a84749"
+        ]
+      }
+    },
+    "0x8024cf40": {
+      "sources": {
+        "src/n64/decaleditor.c": [
+          "8148120d78934283292ec1e3d8cb52eefa417ba26af57c87c507d358e1f5585f"
+        ]
+      }
+    },
+    "0x8024cfac": {
+      "sources": {
+        "src/n64/decaleditor.c": [
+          "8148120d78934283292ec1e3d8cb52eefa417ba26af57c87c507d358e1f5585f"
+        ]
+      }
+    },
+    "0x8024d018": {
+      "sources": {
+        "src/n64/decaleditor.c": [
+          "eab845313484da81b4d44421fed84148d1cac8fe7c61d45871e657433d27674d"
+        ]
+      }
+    },
+    "0x8024d08c": {
+      "sources": {
+        "src/n64/decaleditor.c": [
+          "63c4221e32d6869923ff910a8d21c5ce482caef3f2a598a6a0a8489a98f6d6a4"
+        ]
+      }
+    },
+    "0x8024d208": {
+      "sources": {
+        "src/n64/decaleditor.c": [
+          "2329243b0a3624c522389f81527b46c85d146dd56041e9492977405272ac2c6f"
+        ]
+      }
+    },
+    "0x8024d328": {
+      "sources": {
+        "src/n64/decaldraw.c": ["b9da2b05a8baf51cdc4d9eab0e5deb63a893bd1dcb43e91ca7b6b89205afbe3c"]
+      }
+    },
+    "0x8024d394": {
+      "sources": {
+        "src/n64/decaldraw.c": ["a6895d96c0432d2c673aee063a60420d16a6a0949de75d5d5b0415da92650a94"]
+      }
+    },
+    "0x8024d3ec": {
+      "sources": {
+        "src/n64/decaleditor.c": [
+          "0070f59369f757f4a3eab27f10b326f753aa74c7af55853c0774e701dafe64a6"
+        ]
+      }
+    },
+    "0x8024d7f0": {
+      "sources": {
+        "src/n64/decaldraw.c": ["8591a9233269a2f67e5ccbd95c0ae5bd29a96f9db2d02dd998e4f3d890bd3298"]
+      }
+    },
+    "0x8024dc78": {
+      "sources": {
+        "src/n64/decaleditor.c": [
+          "2fcc78d47eb38b4c85df7dc9aed7e112921605554868984c5be3c536ab47702f"
+        ]
+      }
+    },
+    "0x8024e780": {
+      "sources": {
+        "src/n64/decaldraw.c": ["293813e0e5da1b02bee689b021af7c626e8c9ab2186f32cf80acaf48eff53908"]
+      }
+    },
+    "0x8024eb50": {
+      "sources": {
+        "src/n64/decaldraw.c": ["f9c78bf4828f6f51ddbf6fb6aac1996f39e1f772e48a83aa62bb13449d100a1e"]
+      }
+    },
+    "0x8024edac": {
+      "sources": {
+        "src/n64/decaldraw.c": ["5aa72dd9da45cacedcb3f9b12aeaec6bbce5f8fc182b5ed58bef0dd18ca74baf"]
+      }
+    },
+    "0x8024eeec": {
+      "sources": {
+        "src/n64/decaleditor.c": [
+          "09d7e2713a84258f3ea9711d8f76853ebc48137b27359f6e7aada042d972ae30"
+        ]
+      }
+    },
+    "0x8024f324": {
+      "sources": {
+        "src/n64/decaldraw.c": ["f5765cb050ffdbd065c0122f21af1648b82e6008cd976335ca5e34bf76314d27"]
+      }
+    },
+    "0x8024f41c": {
+      "sources": {
+        "src/n64/decaldraw.c": ["93c8764f9e335401602ca1c985b93a32f0e95b1b476902e156979238eb9ef1f0"]
+      }
+    },
+    "0x8024f718": {
+      "sources": {
+        "src/n64/decaldraw.c": ["733ae5127fb51960172f0d0c8c740b096d3e071f8dbec1b5a6ea27b1b7e47c7d"]
+      }
+    },
+    "0x8024fa08": {
+      "sources": {
+        "src/n64/decaldraw.c": ["81ea5da239f8495a2a767e506c18cdce9b00a38d91303a53656228eb5f99fc17"]
+      }
+    },
+    "0x802501e8": {
+      "sources": {
+        "src/n64/decaleditor.c": [
+          "fe4bc1844c5dc3d6a90f7ff077d55bbbdaf2cb924da7dd27a106c38adfbb57f9"
+        ]
+      }
+    },
+    "0x802506a8": {
+      "sources": {
+        "src/n64/decaldraw.c": ["5fa0600a0aa85444f429a9d6d6e0220b4dd59dc2a7052e0f4874e056318e91e1"]
+      }
+    },
+    "0x80250b1c": {
+      "sources": {
+        "src/n64/decaldraw.c": ["36c95a288c8eb61f5772a3148b3f326f5a2003df84007b05be2a5a36b9462e1d"]
+      }
+    },
+    "0x802510ec": {
+      "sources": {
+        "src/n64/decaldraw.c": ["dd8a589c3b701939e4d8f49c76b146b121a83730ce4ccd7430590659a087967a"]
+      }
+    },
+    "0x80251304": {
+      "sources": {
+        "src/n64/decaldraw.c": ["d3c9eb9827a72dfdaae716971eccd2e67320414984f6c133d283ed714a546e61"]
+      }
+    },
+    "0x802515a4": {
+      "sources": {
+        "src/n64/decaldraw.c": ["b08bc78517da06574dcc697da1fd44bf1c9fdab12b7470dc2e451e49cc2baae4"]
+      }
+    },
+    "0x80251824": {
+      "sources": {
+        "src/n64/decaldraw.c": ["c1d650c6e3352851bd26aff50ee522c16277e17f1225e80061d8712b2446e6dd"]
+      }
+    },
+    "0x80251ab8": {
+      "sources": {
+        "src/n64/decaldraw.c": ["bac3fdad6ca9e2cc4c0cdbb46ded26629cd785a567946db53c98861fbac6cc61"]
+      }
+    },
+    "0x80251f1c": {
+      "sources": {
+        "src/n64/decaldraw.c": ["0424ee1c09710562aa1384320f67943784c3edcf55210c9eedf4bd24559db6fa"]
+      }
+    },
+    "0x80252448": {
+      "sources": {
+        "src/n64/decaldraw.c": ["a7312b2bf2f7f27bfca369db4a9de4d303fef1d2aa55b9c4d3de198753047684"]
+      }
+    },
+    "0x802527ec": {
+      "sources": {
+        "src/n64/decaldraw.c": ["cfb5e95538126bd4afbd2c602f6d3e581bdfc2d8ae1a209e0b42b010d11fa38b"]
+      }
+    },
+    "0x80252aa0": {
+      "sources": {
+        "src/n64/decaldraw.c": ["97ee47ddb8f13be2810530f598e5c8e2e4587b63f7a6001611b17ae36b80f094"]
+      }
+    },
+    "0x80252ab4": {
+      "sources": {
+        "src/n64/decaldraw.c": ["b3740ba39c5d6f7af27cc95a6e01cfbf5da4eac548e5f2ac5459bce3c035c090"]
+      }
+    },
+    "0x80252d10": {
+      "sources": {
+        "src/n64/decaleditor.c": [
+          "52d3f2e5a9feb01400e5dab36c631ad041b6fb93a73b7ce178d733ab8a89bdbf"
+        ]
+      }
+    },
+    "0x80252f44": {
+      "sources": {
+        "src/n64/decaleditor.c": [
+          "0fa717f5e103e313c32072371532413f29cf6f648e40bbcc900fef9887e36cac"
+        ]
+      }
+    },
+    "0x80252fb0": {
+      "sources": {
+        "src/n64/pakmenu.c": ["2ca8947425e292f0bb8422313b6b55946acdc24a938fbd6556bc3bed2c4afee6"]
+      }
+    },
+    "0x8025302c": {
+      "sources": {
+        "src/n64/pakmenu.c": ["5877f474c030b7afea29d8732cc1151d57ee5863dd806e7441213397cddf4acf"]
+      }
+    },
+    "0x80254170": {
+      "sources": {
+        "src/n64/pakmenu.c": ["e7f30bae06c5a0bde495d3640b28d77648a3478f6b40264262fc59ed8986c228"]
+      }
+    },
+    "0x802543c0": {
+      "sources": {
+        "src/n64/debugtext.c": ["d2c0fb6d0215e786ea32057b963a7cc5ea771edce9a5320a94c44469303cde0b"]
+      }
+    },
+    "0x802543c8": {
+      "sources": {
+        "src/n64/debugtext.c": ["59b5bc7e6ab6d6dcc903352a27f02e48b4b590b1ce269325c4c54b17c735b5c9"]
+      }
+    },
+    "0x8025489c": {
+      "sources": {
+        "src/n64/debugtext.c": ["3baf2c5b87cef31e2632279f53976d0ac3c2452754eea058588d16dc10508584"]
+      }
+    },
+    "0x802548e0": {
+      "sources": {
+        "src/common/debuginstance.c": [
+          "9aa9991b6c5a1aabfd50233dcb65c9a8501fd2f3e0b95b43210b977192e491a6"
+        ]
+      }
+    },
+    "0x8025498c": {
+      "sources": {
+        "src/n64/debugtext.c": ["2df8d2ebf9cb9f1b831ed5d7f6973ea9b0cb3af23bb535211511cf3b63b1072e"]
+      }
+    },
+    "0x80254a7c": {
+      "sources": {
+        "src/n64/debugtext.c": ["d2c0fb6d0215e786ea32057b963a7cc5ea771edce9a5320a94c44469303cde0b"]
+      }
+    },
+    "0x80254a90": {
+      "sources": {
+        "src/n64/input.c": ["187dd9231d1b17527fc9995837d94cad5699044978a21f702661d8f7b8b32bc4"]
+      }
+    },
+    "0x80254aa8": {
+      "sources": {
+        "src/n64/input.c": ["e6e2f30f1cbd97d90d0413a249e8330eb728e9fc3ea8a84486a8db69a4542861"]
+      }
+    },
+    "0x80254ac0": {
+      "sources": {
+        "src/n64/input.c": ["c0cd7b078a993562e6643b3a31a5ceada26ff1edcc4128039c9cd1e540e14ec5"]
+      }
+    },
+    "0x80254ad8": {
+      "sources": {
+        "src/n64/input.c": ["acf7eabc59311fe22a7a385b84e90ce96eb57765ec8ca8a8d1acd60b4a07a388"]
+      }
+    },
+    "0x80254af0": {
+      "sources": {
+        "src/n64/input.c": ["87cbd7ef553a5cb8b7a83ed702c6963f252c11aa32847472758d0ba95dac028f"]
+      }
+    },
+    "0x80254b08": {
+      "sources": {
+        "src/n64/input.c": ["dc467eb3ca9b1556faf01f9412bad203850bd1a2b632a544c0a09a1b01ea1abc"]
+      }
+    },
+    "0x80254b20": {
+      "sources": {
+        "src/n64/input.c": ["1bfa3a1deffdc3b907ae4ca64a141dc2c77c20d3ac22152fe8b75abf3ffc682d"]
+      }
+    },
+    "0x80254b38": {
+      "sources": {
+        "src/n64/input.c": ["4194cbd59f6a04e8d6342d3bf60094a51dab01406eb10728c33b6275c3bff9ab"]
+      }
+    },
+    "0x80254b50": {
+      "sources": {
+        "src/n64/input.c": ["a1949201c3af074be6bd0fe305adac9049ea513658c9b35e0f6532da0cb8b912"]
+      }
+    },
+    "0x80254b68": {
+      "sources": {
+        "src/n64/input.c": ["187dd9231d1b17527fc9995837d94cad5699044978a21f702661d8f7b8b32bc4"]
+      }
+    },
+    "0x80254b80": {
+      "sources": {
+        "src/n64/input.c": ["187dd9231d1b17527fc9995837d94cad5699044978a21f702661d8f7b8b32bc4"]
+      }
+    },
+    "0x80254b98": {
+      "sources": {
+        "src/n64/input.c": ["380e6e5c8dde9e891bba3ec83812d439484a2c97fd205325eee53a575346ceb9"]
+      }
+    },
+    "0x80254c70": {
+      "sources": {
+        "src/n64/inputtranslate.c": [
+          "5106f4889704e81a00cfedbf221750a1b08507a66ce3ec2dd17e78eff440db3c"
+        ]
+      }
+    },
+    "0x80255460": {
+      "sources": {
+        "src/common/playerinput.c": [
+          "74a24d1808efb02b63519fd80276eca713342f421ba9e6014bc922f9d405cc33"
+        ]
+      }
+    },
+    "0x80255484": {
+      "sources": {
+        "src/common/playerinput.c": [
+          "f23964fe0a60f317574dccb8d2369e66de68188029447a6b28a2522d0880334d"
+        ]
+      }
+    },
+    "0x802554a4": {
+      "sources": {
+        "src/n64/input.c": ["38bb6a03a88c81b50496e3f8ee0975b3b775096be1283d2ef9bced2c24dcb41b"]
+      }
+    },
+    "0x80255568": {
+      "sources": {
+        "src/n64/input.c": ["8fccdca8b1f742a7390ae00619cc841dd6e94d084c33afec4b93abd0e4637989"]
+      }
+    },
+    "0x8025562c": {
+      "sources": {
+        "src/n64/input.c": ["b1567bf2e55138ab1afdb8c517da53f59efc633de1db5cb18baf111e692a38f3"]
+      }
+    },
+    "0x802556a4": {
+      "sources": {
+        "src/common/playerinput.c": [
+          "da41eb863449d91243a8470b0bbd49c5e7efba1b6761234046ec66f4b2d16600"
+        ]
+      }
+    },
+    "0x802556f0": {
+      "sources": {
+        "src/common/util.c": ["5a2f7ca8992d8f4e939d172f24c09efa10369e6ec90abb680b4d1154a0baed65"]
+      }
+    },
+    "0x802557a0": {
+      "sources": {
+        "src/common/util.c": ["43846cbf8deedd40d5980d2e88022a771cf81b43f1127b9cadfe9f8bdfb3cf4f"]
+      }
+    },
+    "0x802557f0": {
+      "sources": {
+        "src/common/util.c": ["37094abd1a191b6df4852bde025c0a37387701ec01703288448ac7f3d9d291a0"]
+      }
+    },
+    "0x80255820": {
+      "sources": {
+        "src/common/util.c": ["66be737a728fd7d677d94925de63f33ea8e59d1c0a071b40d9725a2cb2819d91"]
+      }
+    },
+    "0x8025589c": {
+      "sources": {
+        "src/common/util.c": ["199263742f31593870715f0f0152e0405c73c5792adf5c91855e52d2c6af9a7a"]
+      }
+    },
+    "0x80255928": {
+      "sources": {
+        "src/common/util.c": ["001e0f306738bd0cb7486fda5c7a57fb91377812de4a422ed0366a3106cfa4f5"]
+      }
+    },
+    "0x802559b4": {
+      "sources": {
+        "src/common/util.c": ["d56982d7b5306d8fc8908c60b6b00b916f40d0580defee8b43cbe0e447aa47f8"]
+      }
+    },
+    "0x802559d0": {
+      "sources": {
+        "src/common/util.c": ["1c05812541eb59dfbe1beab928d9941e605c8a11a3752ed5dfb070a938421999"]
+      }
+    },
+    "0x80255c2c": {
+      "sources": {
+        "src/common/util.c": ["46a7b5352d55cf5c56a35b6ee545c2dcd23de25613259f34a364d098602bedbb"]
+      }
+    },
+    "0x80255cf8": {
+      "sources": {
+        "src/common/util.c": ["309add9d30c8b4a681df785555c5dc32af8f536d14ab7bc092827ed8d1a52ca4"]
+      }
+    },
+    "0x80255d34": {
+      "sources": {
+        "src/common/util.c": ["99f6b95d916bb9045668809966f74a76b23f499f07c83ebe7c4f0bc326ce2cc5"]
+      }
+    },
+    "0x80255d78": {
+      "sources": {
+        "src/common/util.c": ["560fc0482055fca4156e71c64c31f810bf3354526b9bcde4d4820feb05926253"]
+      }
+    },
+    "0x80255dc0": {
+      "sources": {
+        "src/n64/audiomix.s": ["54de8ebd9ec19efd1af3cf95b7bad7574ce5d26fa936e9e5ff9793d93f36dcfb"]
+      }
+    },
+    "0x80255de0": {
+      "sources": {
+        "src/n64/audiomix.s": ["c5a96e2200b1c0d9ec82a9e4dc83b393efac52208011c69fd7d5fc755b6884e1"]
+      }
+    },
+    "0x80255e30": {
+      "sources": {
+        "src/n64/audiomix.s": ["4966586e18bec18f8cc6117d9c75660228083630796a6359e27f51b91892baaf"]
+      }
+    },
+    "0x80255e40": {
+      "sources": {
+        "src/n64/audiomix.s": ["e769d3049e9ff8435171752cab6edc80de99d80b29a1040f5088903ee83a69ba"]
+      }
+    },
+    "0x80255fec": {
+      "sources": {
+        "src/n64/audiomix.s": ["490019da69f468dd29d8b8f4ec7dadff4fd4351e9780c56cdee83b5f5e02eed1"]
+      }
+    },
+    "0x802560dc": {
+      "sources": {
+        "src/n64/audiomix.s": ["b5624b8d04f8e9538950d06a6cb0413f55e4301465b67a4091750c6b32dc3402"]
+      }
+    },
+    "0x80256270": {
+      "sources": {
+        "src/common/audio.c": ["954fb2793fa147e741a748c14d6f6590302471f3cbfe633395fdc062813b8159"]
+      }
+    },
+    "0x8025677c": {
+      "sources": {
+        "src/common/audio.c": ["e6e943a2776542507bb66f70aaadd8793aac957030a292529399a4d31411d929"]
+      }
+    },
+    "0x8025688c": {
+      "sources": {
+        "src/common/audio.c": ["e1fb50148443d8942182efb0cd2405ae9b07a18d7788a754aa0e5816e713d2e2"]
+      }
+    },
+    "0x8025693c": {
+      "sources": {
+        "src/common/audio.c": ["51dd1994dbc248ab413da84fe943dbdea4c0fffc5cbbdaa7bff472e37d250398"]
+      }
+    },
+    "0x80256cfc": {
+      "sources": {
+        "src/common/audio.c": ["e2c7174646c5d12d61dee093b5052eb74585f44254181499bb3e8694809a7727"]
+      }
+    },
+    "0x80256d6c": {
+      "sources": {
+        "src/common/audio.c": ["18951256bc0e67f0f034f4d13e16236ac65b6474c54590681e893f74d467da83"]
+      }
+    },
+    "0x80257114": {
+      "sources": {
+        "src/common/audio.c": ["65e5f3db8b3cea767f806d3e89c4c2fd9637a7d12cd2dfeff4a68c83895fe275"]
+      }
+    },
+    "0x80257444": {
+      "sources": {
+        "src/common/audio.c": ["88ff09d52d9c2a9b3d4fc0a01aba1e7f73ca01d1fff043b02da04692b106819c"]
+      }
+    },
+    "0x802574b4": {
+      "sources": {
+        "src/common/audio.c": ["14162626c4fa7675aefb3ea1d48cf48c28dbe76d52caefd1023b1a8c1d6093be"]
+      }
+    },
+    "0x80257544": {
+      "sources": {
+        "src/common/audio.c": ["c816ac84f4471714b50ac9ac4497bc81f44db68f5b398a407bd81d899816611b"]
+      }
+    },
+    "0x80257654": {
+      "sources": {
+        "src/common/audio.c": ["51d7b2538607b07ae62ec388c2c9ca728678687d9c08148740de7047f287236e"]
+      }
+    },
+    "0x802576c8": {
+      "sources": {
+        "src/common/audio.c": ["18983e3f79cae5c248f4424e727e06cc7b69300335f374f926a51b5c04fbf810"]
+      }
+    },
+    "0x80257734": {
+      "sources": {
+        "src/common/audio.c": ["4708bbed4e65adfa7852e41eb0728ee5e7ca070371afed093620441960f196b1"]
+      }
+    },
+    "0x80257794": {
+      "sources": {
+        "src/common/audio.c": ["8b382d1502af691ef34bad0ca5945b327a4220a76e59d0c60d9b4352acb028a6"]
+      }
+    },
+    "0x8025788c": {
+      "sources": {
+        "src/common/audio.c": ["7d70ce56aca597dda4619c8841ca71c9bdf2683c3a8fe239ce2cd848f3a5740f"]
+      }
+    },
+    "0x80257bc0": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "b0d71f43adb9fd15ff1c0e026923bd415223e987dd61610b73a4ccf4906d78e8"
+        ]
+      }
+    },
+    "0x80257bc8": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "b0d71f43adb9fd15ff1c0e026923bd415223e987dd61610b73a4ccf4906d78e8"
+        ]
+      }
+    },
+    "0x80257bd0": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "4201de84ae62e0577d780908f523c1a9cb99caeb5c0f591b22ea56c5e15c7cfe"
+        ]
+      }
+    },
+    "0x80257c8c": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "17420821fde8028b758bbe26e5f4417e3017197353615e1adc351df9a3bca089"
+        ]
+      }
+    },
+    "0x80257d1c": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "7ff74ba33b35ca2f657553d66dee5589832ad42f2491490afa64c4ead564f41e"
+        ]
+      }
+    },
+    "0x80257d98": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "271ffd05f586b07ed0b94c49f42b9b94356c45d12b5c95e3a34a3639576156e5"
+        ]
+      }
+    },
+    "0x80257e74": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "98baae49ba2f1280a4a875a662c427932bdd6e5e5aac4ccd357313d718d3f71d"
+        ]
+      }
+    },
+    "0x80257f2c": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "7eb04bcc3dee06f47de57cf0b4a605cdae7d935b11ac1e037ccb12d8de45b1b5"
+        ]
+      }
+    },
+    "0x80258080": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "d94386acb0f41d41a86c34c8d2e687265e7a713c9f379f926d6803ba0bddd25a"
+        ]
+      }
+    },
+    "0x802581d0": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "fe93cc5717ff23ffc3b0332ef124f69fa63850bea2954940f04f4863ea52f999"
+        ]
+      }
+    },
+    "0x80258210": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "0a687b054f4fb1b8d95b324446bb2078c1664ddf52148b22101a569d687fa2e6"
+        ]
+      }
+    },
+    "0x802582a8": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "8ab9666672aa4e16d618d70875ac6e0d03e7ecea7d301833bc4163335784e726"
+        ]
+      }
+    },
+    "0x80258338": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "47001df2e97c245d58a3b226b52cacc7e3286b37e91349b3555380a78447ec45"
+        ]
+      }
+    },
+    "0x80258408": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "ec90501537c63af17d20db60897e7fc60ce7dd8278f4398093a8b331064f31b7"
+        ]
+      }
+    },
+    "0x802584a0": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "8507d7ae32858bceb5298fae4937d54b5b35a8d0f8cb3717f87127b0fe4b0951"
+        ]
+      }
+    },
+    "0x80258544": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "67481441f9df9364b25d10e1a5f4705467c5896c691f0256adb3c085f5ce5688"
+        ]
+      }
+    },
+    "0x8025872c": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "785850ed8b4b1811948293ec9b0efdb5abfdca9b0457b8c32606a0bdaee6ac58"
+        ]
+      }
+    },
+    "0x80258774": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "484eca3a6842989bd2c1e35dcd736e404c53cdf133f025f18c44efae1d4f6eb2"
+        ]
+      }
+    },
+    "0x80258900": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "0fb0b0d9966fdfd3206a7edeb2ad1ff7cdff532bac93b940e36567247f404352"
+        ]
+      }
+    },
+    "0x80258954": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "27320a80c982cc5b4135753a4b24a596107b2798a7d7fb056a3f97f82491610e"
+        ]
+      }
+    },
+    "0x802589b4": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "12203293798ef009338fd4da87837ae006df1e08b40fb11f3317c56b76843966"
+        ]
+      }
+    },
+    "0x802589fc": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "aa0e5d308e05f5916740f84b342d29ec5d7f1d7fe043472547a1480713a12776"
+        ]
+      }
+    },
+    "0x80258a48": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "3ad2a1d1349adb58c9feec96485b195ac849dff8301a204bb220cdd1809d74fb"
+        ]
+      }
+    },
+    "0x80258ac0": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "771eaec1ca43dff87585ac4709c1d0454e78931cc1b2267a19be3584c59a4b72"
+        ]
+      }
+    },
+    "0x80258b24": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "da8c0612e36ec86b3c80aba02795d2d3d9d290c32063c970a1fe5376c6fe504d"
+        ]
+      }
+    },
+    "0x80258c38": {
+      "sources": {
+        "src/common/rigidbody.c": [
+          "af3ca072ff6c0fa2a2422f92dee19511ad2ef8798532c99d2d468d782beb7b0e"
+        ]
+      }
+    },
+    "0x80258ea0": {
+      "sources": {
+        "src/common/tricache.c": [
+          "a3bbecc45b79da5386b1c39f96cff34b598d2f3e4fb604bdab2cc33722f4de58"
+        ]
+      }
+    },
+    "0x8025900c": {
+      "sources": {
+        "src/common/bodyforces.c": [
+          "3d964ba7782bd3c469043893cd3921bd27f25d0fb4f589ecd7df5eb48876c338"
+        ]
+      }
+    },
+    "0x80259184": {
+      "sources": {
+        "src/common/bodyforces.c": [
+          "1cdacef3f11bb53e8a23eaaa28308967589460bc23cbc63f260cedb6289739ef"
+        ]
+      }
+    },
+    "0x8025935c": {
+      "sources": {
+        "src/common/bodyforces.c": [
+          "38956791327b494c66c33665943db7981dbe1734a872ec1a407d6dcb21bc68a1"
+        ]
+      }
+    },
+    "0x8025948c": {
+      "sources": {
+        "src/common/bodyforces.c": [
+          "82994fe4d8db9f91ec722d6e1125bc3449c51a153fb063530eb63e866ddffcd3"
+        ]
+      }
+    },
+    "0x80259568": {
+      "sources": {
+        "src/common/bodyforces.c": [
+          "a71ab8057955084981b3aa04733d0063444d7ce3ef0bf8e0347ed1a053f1f0cc"
+        ]
+      }
+    },
+    "0x8025966c": {
+      "sources": {
+        "src/common/bodyforces.c": [
+          "219fc85df195ac2c0bfbedd6f7d96d6634a3840d2c93da0bf3efb659133782e7"
+        ]
+      }
+    },
+    "0x80259768": {
+      "sources": {
+        "src/common/bodyforces.c": [
+          "e6175e70da86bbd0185af6be53559542c953bcab644a0d5f05fd2e87ddae1b1e"
+        ]
+      }
+    },
+    "0x80259864": {
+      "sources": {
+        "src/n64/sidegrip.c": ["d9c9c81ae06004e635c1d5cbc76d32411279ba062139385c14310735b4ac6e28"]
+      }
+    },
+    "0x8025a7ec": {
+      "sources": {
+        "src/n64/drivewheel.c": ["41b6853bb19e5b1b5afe06aa51821d13515ec71df5a06da5d72ca3087e7edf03"]
+      }
+    },
+    "0x8025af00": {
+      "sources": {
+        "src/common/tricache.c": [
+          "b5b77b87ff7c1d40769f39c25117312f858e4d40218361767efea34b5fbd86be"
+        ]
+      }
+    },
+    "0x8025b254": {
+      "sources": {
+        "src/common/bodyforces.c": [
+          "e8dbad4b4f3f534acaa500e68d37991aa4f535b881679cefff99314de9ac02b6"
+        ]
+      }
+    },
+    "0x8025b28c": {
+      "sources": {
+        "src/common/bodyforces.c": [
+          "a9cee40496e18e9d4554c9273d1baad6645399964c6ed8aefba1b28f55a285b8"
+        ]
+      }
+    },
+    "0x8025b6f4": {
+      "sources": {
+        "src/n64/physics.c": ["d5f0f8004593e03e513f45305b207996cfd4329e5ba6a3200c971ce96ac4736e"]
+      }
+    },
+    "0x8025b708": {
+      "sources": {
+        "src/n64/impulse.c": ["44ca2fa0fea2fc60bae285386f34eac8ac2e0995bc761c6c14d83a17a594c448"]
+      }
+    },
+    "0x8025bd9c": {
+      "sources": {
+        "src/common/tricache.c": [
+          "ff5122a65c0376bb9352650bfc9bcb852d1081199e4fd81ed349b831d8a144cf"
+        ]
+      }
+    },
+    "0x8025bdcc": {
+      "sources": {
+        "src/n64/physics.c": ["d3c6125ce8914a5c702041a8d62e67e25e879bed836f37df1b826e28ff57bde3"]
+      }
+    },
+    "0x8025be18": {
+      "sources": {
+        "src/common/cubeclip.c": [
+          "23cff96f03bbf7c4b508626e02727b53036218f57092f025b8a1a4deb72706a5"
+        ]
+      }
+    },
+    "0x8025c42c": {
+      "sources": {
+        "src/common/cubeclip.c": [
+          "b19ac63fecfe688f8d8cb0fb0c5551eb20707e74346e1ef910065add58302eee"
+        ]
+      }
+    },
+    "0x8025c748": {
+      "sources": {
+        "src/common/cubeclip.c": [
+          "64044202c60407e36df25dc5b900756bc91500a69323398330db05af147d2d46"
+        ]
+      }
+    },
+    "0x8025c978": {
+      "sources": {
+        "src/common/cubeclip.c": [
+          "477caa23859dc623bc0453ec0250b291df5a66bfceeb99f3fdf356bf51fcf84d"
+        ]
+      }
+    },
+    "0x8025cb68": {
+      "sources": {
+        "src/common/cubeclip.c": [
+          "4fce1f12d7d9a7110893cd293b1f459ee16ce7eb516f623a41416778b521897c"
+        ]
+      }
+    },
+    "0x8025cbb0": {
+      "sources": {
+        "src/common/tricache.c": [
+          "cd88f79c31b2b1e063a698e37de596778cb1498d388d6d6d5940589452a0b30b"
+        ]
+      }
+    },
+    "0x8025ceac": {
+      "sources": {
+        "src/n64/physics.c": ["2fda580a4d64e13d3f2f21d53eddd42131a4d550fbd3cd6b1d8474e14ed4943a"]
+      }
+    },
+    "0x8025ceb8": {
+      "sources": {
+        "src/n64/balance.c": ["d7477fd1857d3dd02541542dcf6ab0b64ecac8f77cf7a80b3490bcf9ba286306"]
+      }
+    },
+    "0x8025d808": {
+      "sources": {
+        "src/common/bodyforces.c": [
+          "450b407b8c955accfd3de9176a28754b0aa9119795c14962f1f490f8f7d22db9"
+        ]
+      }
+    },
+    "0x8025db1c": {
+      "sources": {
+        "src/n64/collision-triangles.c": [
+          "e69b21497e435da71566101ce3265efbd141d4977097764238786deeffa7b397"
+        ]
+      }
+    },
+    "0x8025e0ac": {
+      "sources": {
+        "src/common/collisionstep.c": [
+          "1d569d6fe424db7c6d398a851a9da7d9cf320f5821f30908a9971c8bb316e650"
+        ]
+      }
+    },
+    "0x8025e370": {
+      "sources": {
+        "src/common/bodyforces.c": [
+          "79877266a6f0c7d9c2951b23a3d85a8b6497a75d422a814fd32112fc264ecf4c"
+        ]
+      }
+    },
+    "0x8025e4bc": {
+      "sources": {
+        "src/common/bodyforces.c": [
+          "923e381a2e5c15edba9be50d9ffeb0e3b8176a6ad44a39fff05c65d4ea5522a7"
+        ]
+      }
+    },
+    "0x8025e7cc": {
+      "sources": {
+        "src/common/bodyforces.c": [
+          "8da03cb5935a017c6ca2576cc0c82f1661a9ff58dcdebd2b86ef1a3651a26532"
+        ]
+      }
+    },
+    "0x8025e90c": {
+      "sources": {
+        "src/common/bodyforces.c": [
+          "48ddec3c2d0494f0c79298e4bbe46cf05a78cbeb90d8524fe27dc050c034577a"
+        ]
+      }
+    },
+    "0x8025eac0": {
+      "sources": {
+        "src/common/bodyforces.c": [
+          "ca4f89f177a0d9a7657d1b30105fc18f1173b3b80467a38fb3d12d9613e5f9e9"
+        ]
+      }
+    },
+    "0x8025ebf4": {
+      "sources": {
+        "src/n64/physics.c": ["3ae8c3c7a35f25fd5b7551a12dbce7f3a65a03a93e3d4633b90f17c401e26307"]
+      }
+    },
+    "0x8025ecdc": {
+      "sources": {
+        "src/common/tricache.c": [
+          "9fe8d2d6c6e08f86c5094779ad58d7c17a67d5a80aac7c942a5e3e587c004c40"
+        ]
+      }
+    },
+    "0x8025f048": {
+      "sources": {
+        "src/n64/obb.c": ["f8f477d46f784260fc25e9f346af76354b57645362c916ac153deaeffbfe155f"]
+      }
+    },
+    "0x8025f934": {
+      "sources": {
+        "src/n64/collidevehicles.c": [
+          "9548e474bdff9839886a8b85e74f11544e927cf03b5e3d06c46a41e6230640eb"
+        ]
+      }
+    },
+    "0x8025ffe0": {
+      "sources": {
+        "src/n64/rumble.c": ["2aa4986258bb6df30639acb627e244f35587e6c00645e50af1cb783bf0e0ced9"]
+      }
+    },
+    "0x802602fc": {
+      "sources": {
+        "src/n64/rumble.c": ["d2c0fb6d0215e786ea32057b963a7cc5ea771edce9a5320a94c44469303cde0b"]
+      }
+    },
+    "0x80260310": {
+      "sources": {
+        "src/common/libultra/os/syncprintf.c": [
+          "c586b5856448b6f1771c3408a44461d73bc63263908cacd0d01b0cfacbf30285"
+        ]
+      }
+    },
+    "0x8026032c": {
+      "sources": {
+        "src/common/libultra/os/syncprintf.c": [
+          "c586b5856448b6f1771c3408a44461d73bc63263908cacd0d01b0cfacbf30285"
+        ]
+      }
+    },
+    "0x80260350": {
+      "sources": {
+        "src/common/libultra/gu/scale.c": [
+          "93421eaa1cc917722745e7d3e46dfb62fa9d1dee6d472f17481fedf124c562a3"
+        ],
+        "src/n64/libultra/gu/scale.c": [
+          "93421eaa1cc917722745e7d3e46dfb62fa9d1dee6d472f17481fedf124c562a3"
+        ]
+      }
+    },
+    "0x802603a4": {
+      "sources": {
+        "src/n64/libultra/gu/scale.c": [
+          "c06dd40007aafd7e93a81d97cd7a3ba6672411356d883d635506744c3ee8547f"
+        ]
+      }
+    },
+    "0x802603f0": {
+      "sources": {
+        "src/n64/libultra/gu/mtxcatf.c": [
+          "7da66248f311b3b30d390ffe1639e7fe7faab7e161f8414f08c320303a53c0f4"
+        ]
+      }
+    },
+    "0x80260490": {
+      "sources": {
+        "src/n64/libultra/gu/mtxcatf.c": [
+          "48779940a45f1f902e95a0262a8df512c037d7342bb524bdfb08e58043854f53"
+        ]
+      }
+    },
+    "0x80260600": {
+      "sources": {
+        "src/n64/libultra/io/viblack.c": [
+          "48135cdd84167d5d962bae9e86b1212faa450baab2a79f5e9b33c1eb02f9f7a0"
+        ]
+      }
+    },
+    "0x80260670": {
+      "sources": {
+        "src/n64/libultra/libc/string.c": [
+          "75cbf6809dabb0dc534c60e7c82a7b77dc8e82832b7bcec7057741a2f5ea579a"
+        ]
+      }
+    },
+    "0x8026069c": {
+      "sources": {
+        "src/n64/libultra/libc/string.c": [
+          "008df96052111a48681e29ac3aba32297ad5b4023e5e4dd906d9dfde5f29cd13"
+        ]
+      }
+    },
+    "0x802606c4": {
+      "sources": {
+        "src/n64/libultra/libc/string.c": [
+          "639932f623e8723c645b9ca0f864fd0b0adeb1065dcd2c4ba01e3e84e3baaf13"
+        ]
+      }
+    },
+    "0x80260710": {
+      "sources": {
+        "src/n64/libultra/gu/rotate.c": [
+          "545b4d061dcd1efa4fcd1b6efbf485f5b502e3ebc2b4fd4ea271f48db9dda27b"
+        ]
+      }
+    },
+    "0x802608a4": {
+      "sources": {
+        "src/n64/libultra/gu/rotate.c": [
+          "f6babdce66ee75c435b6b28aa41b37f6ed55d6bbf4519c1d800085a4a3274471"
+        ]
+      }
+    },
+    "0x80260900": {
+      "sources": {
+        "src/n64/libultra/libc/sprintf.c": [
+          "cc26c8a4e67eef8838d85af13c8ec0a9684650d3f94c038ebecc43b03fae2834"
+        ]
+      }
+    },
+    "0x80260924": {
+      "sources": {
+        "src/n64/libultra/libc/sprintf.c": [
+          "363a3b1c88e8c6342f884a55e8662959effae6fcc4d3fb91ea19578a9be602bb"
+        ]
+      }
+    },
+    "0x80260980": {
+      "sources": {
+        "src/common/libultra/gu/translate.c": [
+          "dd8dcba90951d2feef38e5624f19472b0afcc50952c238d16068f8d4e93bb367"
+        ],
+        "src/n64/libultra/gu/translate.c": [
+          "dd8dcba90951d2feef38e5624f19472b0afcc50952c238d16068f8d4e93bb367"
+        ]
+      }
+    },
+    "0x802609c8": {
+      "sources": {
+        "src/n64/libultra/gu/translate.c": [
+          "fea156601283116979e85265582e47eb0b32d05e3d860f0d49239c08fbae2e78"
+        ]
+      }
+    },
+    "0x80260a20": {
+      "sources": {
+        "src/n64/libultra/gu/mtxutil.c": [
+          "25ff72edb1ee967d8385d33a35ea07060d12ef6d3385511c9ee30b94cd00d629"
+        ]
+      }
+    },
+    "0x80260b20": {
+      "sources": {
+        "src/common/libultra/gu/mtxutil.c": [
+          "345043a678bf5443e6449ec907c7655432844f7bbc438f22524ea75efd80e12c"
+        ],
+        "src/n64/libultra/gu/mtxutil.c": [
+          "345043a678bf5443e6449ec907c7655432844f7bbc438f22524ea75efd80e12c"
+        ]
+      }
+    },
+    "0x80260ba8": {
+      "sources": {
+        "src/n64/libultra/gu/mtxutil.c": [
+          "0ca705013c3196c172e090aea5b1c5008e43a2408b027fe4d9d8192c54d65ccd"
+        ]
+      }
+    },
+    "0x80260bd8": {
+      "sources": {
+        "src/n64/libultra/gu/mtxutil.c": [
+          "a9bb7680a991f043e66cbec3209fa045d7d47367e27dc1afd2eae80b161eaa7b"
+        ]
+      }
+    },
+    "0x80260c90": {
+      "sources": {
+        "src/n64/libultra/gu/sqrtf.c": [
+          "3188de5c075d9c3068fed28ece2684d038a519b21317f94d6a2b13ec59f7e87d"
+        ]
+      }
+    },
+    "0x80260ca0": {
+      "sources": {
+        "src/n64/libultra/gu/lookatref.c": [
+          "49329dc0870b3d0f3740adb87d3560751b1530d1707a08cb3233dafe230a93eb"
+        ]
+      }
+    },
+    "0x802610e0": {
+      "sources": {
+        "src/n64/libultra/gu/lookatref.c": [
+          "1d263ba4c4efa4a589391e86cf368f258c57e3353a7ef964984e71fecaf75713"
+        ]
+      }
+    },
+    "0x80261160": {
+      "sources": {
+        "src/n64/libultra/gu/sinf.c": [
+          "f7d9b420e5589a25096e90bb773968f327b146da1c39b5521943141319f1e259"
+        ]
+      }
+    },
+    "0x80261320": {
+      "sources": {
+        "src/n64/libultra/gu/cosf.c": [
+          "a5ea509a98700245a999ca848c0b6ddd2a93a8cfffef7cbcd70cbf5f3488676a"
+        ]
+      }
+    },
+    "0x80261490": {
+      "sources": {
+        "src/n64/libultra/io/pfsisplug.c": [
+          "f97e13f7227f2e1f8bbe3fd7363b6eff5e312576fafecc229036922467122fc7"
+        ]
+      }
+    },
+    "0x80261630": {
+      "sources": {
+        "src/n64/libultra/io/pfsisplug.c": [
+          "8e3f9d28bdd4afaffedce99011430dafc9fd63be8de5a0adaafcc12c848a436e"
+        ]
+      }
+    },
+    "0x8026172c": {
+      "sources": {
+        "src/n64/libultra/io/pfsisplug.c": [
+          "afd1c36d7541095989a7567d003b9e5759d3afad3a0967d850b49a0e8749ca24"
+        ]
+      }
+    },
+    "0x80261800": {
+      "sources": {
+        "src/n64/libultra/io/pfsinitpak.c": [
+          "a61832028e5f433f1e4dfea6d8fbe4b580446fbbccf2f84e5b8068b5580b1536"
+        ]
+      }
+    },
+    "0x80261a70": {
+      "sources": {
+        "src/n64/libultra/io/motor.c": [
+          "a4c6f9947f7393baba476e8bc4569a7ecc31de2520fbb57b615809785bf697b4"
+        ]
+      }
+    },
+    "0x80261bd8": {
+      "sources": {
+        "src/n64/libultra/io/motor.c": [
+          "a57703a898789b71bd1af7de03352858344ed3722fee3d9b483badf49e891731"
+        ]
+      }
+    },
+    "0x80261d44": {
+      "sources": {
+        "src/n64/libultra/io/motor.c": [
+          "6234b514c62895970a90dadc86df240876a9a3ca515caa413f79fbec92b1ab03"
+        ]
+      }
+    },
+    "0x80261ec0": {
+      "sources": {
+        "src/n64/libultra/io/motor.c": [
+          "7bf68a0fb07bd7d0001a46881df245a4275421fdea0e253cf27a5316dadff6f8"
+        ]
+      }
+    },
+    "0x80262090": {
+      "sources": {
+        "src/n64/libultra/libc/bcmp.s": [
+          "1a6f313857626231772fe7a63f9c4c12b524c924aadbc2b4756fb7cd8aa199db"
+        ]
+      }
+    },
+    "0x802621b0": {
+      "sources": {
+        "src/n64/libultra/io/pfsrepairid.c": [
+          "76ff4c524c6634a9370f73da9a95f45255a7d60007f3cbee1a179e446de1bc9b"
+        ]
+      }
+    },
+    "0x80262410": {
+      "sources": {
+        "src/n64/libultra/io/pfsfindfile.c": [
+          "689c417040e822df081e3f3e9f21cf59a43db45571b5122fb827f87ce167070b"
+        ]
+      }
+    },
+    "0x802625d0": {
+      "sources": {
+        "src/n64/libultra/io/pfschecker.c": [
+          "cd3dd924b52627c8d3065469f8b7c6e1c070e5a9afee15d6081e23d28346ef04"
+        ]
+      }
+    },
+    "0x80262c94": {
+      "sources": {
+        "src/n64/libultra/io/pfschecker.c": [
+          "f9960040bee72af174297808c0e6bd7b57b5134938ad8ce4b17afc043a849450"
+        ]
+      }
+    },
+    "0x80262e48": {
+      "sources": {
+        "src/n64/libultra/io/pfschecker.c": [
+          "f9960040bee72af174297808c0e6bd7b57b5134938ad8ce4b17afc043a849450"
+        ]
+      }
+    },
+    "0x80263030": {
+      "sources": {
+        "src/n64/libultra/io/pfsreadwritefile.c": [
+          "8b850490f2642dcead55fe7a35d580c482cb694b4ce651c3f7694603cf4ac176"
+        ]
+      }
+    },
+    "0x8026312c": {
+      "sources": {
+        "src/n64/libultra/io/pfsreadwritefile.c": [
+          "ac46df5cb6a7456f125b5c6a5cbcd97d32e0a2ecec68a6444293632c62ab9475"
+        ]
+      }
+    },
+    "0x80263530": {
+      "sources": {
+        "src/n64/libultra/io/pfsfreeblocks.c": [
+          "c3dd8a2fcabe90044a0d76ab7bf34b302b7e85b158b6b926c7d98a5ffb764842"
+        ]
+      }
+    },
+    "0x80263680": {
+      "sources": {
+        "src/n64/libultra/io/pfsallocatefile.c": [
+          "2c51392559fb9a505e7dd57fcca473e57148811faee236a8848d253bd14a2bb9"
+        ]
+      }
+    },
+    "0x80263b04": {
+      "sources": {
+        "src/n64/libultra/io/pfsallocatefile.c": [
+          "da444596aa691ab10983ae8eadd7c40d878cbe6475905d6c2bd6e33069b5de37"
+        ]
+      }
+    },
+    "0x80263d68": {
+      "sources": {
+        "src/n64/libultra/io/pfsallocatefile.c": [
+          "da444596aa691ab10983ae8eadd7c40d878cbe6475905d6c2bd6e33069b5de37"
+        ]
+      }
+    },
+    "0x80263e30": {
+      "sources": {
+        "src/n64/libultra/os/recvmesg.c": [
+          "df07643d13a80e1b835cc2e55fa914ecdd56da119f5c92ca92a3225c256745e7"
+        ]
+      }
+    },
+    "0x80263f70": {
+      "sources": {
+        "src/n64/libultra/gu/sins.c": [
+          "034b6db8dbea0d25a3026d234687ea2762abdeac8282f59014d42e296d54a78a"
+        ]
+      }
+    },
+    "0x80263fe0": {
+      "sources": {
+        "src/n64/libultra/io/visetspecial.c": [
+          "80e61c2b29199a9f981af76ecc9dca3be8ed45fbc6af2636eadde7fe2f1e1c93"
+        ]
+      }
+    },
+    "0x802641a0": {
+      "sources": {
+        "src/n64/libultra/io/pidma.c": [
+          "9e34a36e60092f56c9f401ac3abfbf27bb33a1cfdb18842c3f4e4ec879615973"
+        ]
+      }
+    },
+    "0x802642b0": {
+      "sources": {
+        "src/n64/libultra/io/contreaddata.c": [
+          "3264d9ee154afbd0bef0b4faf07c6d507034ddc4ed140000d7edc23f7d864611"
+        ]
+      }
+    },
+    "0x80264374": {
+      "sources": {
+        "src/n64/libultra/io/contreaddata.c": [
+          "edc87adde00b6a153397b35103e2ab5e56f8d0b0c6a9f43d982bd4d366a6694c"
+        ]
+      }
+    },
+    "0x8026441c": {
+      "sources": {
+        "src/n64/libultra/io/contreaddata.c": [
+          "781708da7d4f1dec273f22559f2a13643f116b3375d627d9239552ea14b5eaf7"
+        ]
+      }
+    },
+    "0x80264510": {
+      "sources": {
+        "src/n64/libultra/os/writebackdcacheall.s": [
+          "ca766b17ca616198758491dc9c2bf1b139d36171550c594009a64dfaed0315d6"
+        ]
+      }
+    },
+    "0x80264540": {
+      "sources": {
+        "src/n64/libultra/os/getcount.s": [
+          "da2a5457aebcbd3543081553d7013b749526adf5e99f9239ec0b888978796817"
+        ]
+      }
+    },
+    "0x802645b0": {
+      "sources": {
+        "src/n64/libultra/io/visetmode.c": [
+          "b89bec3c633a84479640f22b294d646db29bbb22d9c1b639b381c36d2c1a29a6"
+        ]
+      }
+    },
+    "0x80264620": {
+      "sources": {
+        "src/n64/libultra/io/viswapbuf.c": [
+          "d3b0c0efe6378332fca233e3510fbc254703fe5fe444d7ac824f856c7ee1f133"
+        ]
+      }
+    },
+    "0x80264670": {
+      "sources": {
+        "src/n64/libultra/io/vigetcurrframebuf.c": [
+          "0bfe2a559b8b8f3f18eff2893277a51d281b6ad9d8623abee303d60eea1e167e"
+        ]
+      }
+    },
+    "0x802646b0": {
+      "sources": {
+        "src/n64/libultra/io/sptask.c": [
+          "6f3fe17e3b3029d54fa30a94ab1da53fa905337e0f4d6411bb9e0863100bd2d5"
+        ]
+      }
+    },
+    "0x802647cc": {
+      "sources": {
+        "src/n64/libultra/io/sptask.c": [
+          "f4abce13779e89448c52bbc84d0784226a8fab511ff8f99981c356e93e761839"
+        ]
+      }
+    },
+    "0x8026495c": {
+      "sources": {
+        "src/n64/libultra/io/sptask.c": [
+          "7c83fea1dea306b6d774866ad17c3d2cd47e51297bb1e2755736e47189a9e526"
+        ]
+      }
+    },
+    "0x802649a0": {
+      "sources": {
+        "src/n64/libultra/gu/lookat.c": [
+          "41df6a5718d483097c337b38e282e1a8a705d547702526db50c7b82f1c967bbd"
+        ]
+      }
+    },
+    "0x80264c58": {
+      "sources": {
+        "src/n64/libultra/gu/lookat.c": [
+          "c5cc7fee60e16e8210799078a6e5d7df0ff67655fe73f1c424c54c3744afa7c7"
+        ]
+      }
+    },
+    "0x80264cd0": {
+      "sources": {
+        "src/n64/libultra/gu/perspective.c": [
+          "9d22509b97e6d5e08729c7a46573e6140dd9f374130846b3ba12a5a8f6716e13"
+        ]
+      }
+    },
+    "0x80264f00": {
+      "sources": {
+        "src/n64/libultra/gu/perspective.c": [
+          "0a5d9599ad8b2806c364b51035bfcad2bbecdf0116dd5940503df07cc5f70bb0"
+        ]
+      }
+    },
+    "0x80264f60": {
+      "sources": {
+        "src/n64/libultra/os/createmesgqueue.c": [
+          "4f6db1bf2bba82bb1e0cecf8922463a1b8e67fb17a9a152c605a52103c7d3c2f"
+        ]
+      }
+    },
+    "0x80264f90": {
+      "sources": {
+        "src/n64/libultra/os/seteventmesg.c": [
+          "58039185d4b8bde69d19b26028d1fe5c28b168a0334e946e22f0a87818684182"
+        ]
+      }
+    },
+    "0x80265000": {
+      "sources": {
+        "src/n64/libultra/os/sendmesg.c": [
+          "af43f7e2aba4d67d431043ebbd25b74924aeda24f28db5dc83ab8b8449c7ce1c"
+        ]
+      }
+    },
+    "0x80265150": {
+      "sources": {
+        "src/n64/libultra/io/visetevent.c": [
+          "5e52b1a1b8f287856daf4bf541ca7733e3a5dce0a245a1775a73ba5cd5826a07"
+        ]
+      }
+    },
+    "0x802651c0": {
+      "sources": {
+        "src/n64/libultra/os/createthread.c": [
+          "2089df1ba991a12f9c4a75b5a9a12919876e2fe4cfad986a0c9e18449bbd87ff"
+        ]
+      }
+    },
+    "0x80265310": {
+      "sources": {
+        "src/n64/libultra/os/startthread.c": [
+          "dd0f37af2b8c8dec082ed8a4db2f7e493643530471b6ed4dd5fe35fdad2e73b6"
+        ]
+      }
+    },
+    "0x80265460": {
+      "sources": {
+        "src/n64/libultra/io/controller.c": [
+          "7799d8112a27daedeefc18ab15af1af141d3097a3875dac72b5ce0ac8d60521d"
+        ]
+      }
+    },
+    "0x80265658": {
+      "sources": {
+        "src/n64/libultra/io/controller.c": [
+          "afd1c36d7541095989a7567d003b9e5759d3afad3a0967d850b49a0e8749ca24"
+        ]
+      }
+    },
+    "0x80265728": {
+      "sources": {
+        "src/n64/libultra/io/controller.c": [
+          "4c57458d31bbc10d6be6afd0a1476982e679bff86274b908ebaf170e4334c662"
+        ]
+      }
+    },
+    "0x80265820": {
+      "sources": {
+        "src/n64/libultra/io/pfsinit.c": [
+          "a7507d7e57dd5c79f4dec52bd85c5c54754f9459b8dd09a039268af274f071aa"
+        ]
+      }
+    },
+    "0x802658e0": {
+      "sources": {
+        "src/n64/libultra/os/initialize.c": [
+          "ce0590c62e5638a2ef517b6d9237ce903e3d0716d9dabcf3d4d0f0973eabf7d5"
+        ]
+      }
+    },
+    "0x80265b70": {
+      "sources": {
+        "src/n64/libultra/libc/ll.c": [
+          "4cdc5d5f95119cc7da61e5042a78226894b209c2ae65375b4c219d3ceed686af"
+        ]
+      }
+    },
+    "0x80265b9c": {
+      "sources": {
+        "src/n64/libultra/libc/ll.c": [
+          "a800fb894c50a5564ca7dc21055e8645f2d3ec1ad636d18977d3248479aeb2a8"
+        ]
+      }
+    },
+    "0x80265bd8": {
+      "sources": {
+        "src/n64/libultra/libc/ll.c": [
+          "6fda939860f53b644a207cf8ed944fc62d35e44b77622658c29e2f522b04844a"
+        ]
+      }
+    },
+    "0x80265c14": {
+      "sources": {
+        "src/n64/libultra/libc/ll.c": [
+          "652f35c2f61683fd5dd421d95288b075958156a5621875eb37b458bd81bd1db8"
+        ]
+      }
+    },
+    "0x80265c40": {
+      "sources": {
+        "src/n64/libultra/libc/ll.c": [
+          "a800fb894c50a5564ca7dc21055e8645f2d3ec1ad636d18977d3248479aeb2a8"
+        ]
+      }
+    },
+    "0x80265c7c": {
+      "sources": {
+        "src/n64/libultra/libc/ll.c": [
+          "d91d6ccc5673d0713597c3d43910e7d006d0e639a6c06233f284395f0ab58880"
+        ]
+      }
+    },
+    "0x80265cd8": {
+      "sources": {
+        "src/n64/libultra/libc/ll.c": [
+          "075b95479b389a5c7780a07ae0803efbb8e66c331721c070e11fc68339de2dca"
+        ]
+      }
+    },
+    "0x80265d08": {
+      "sources": {
+        "src/n64/libultra/libc/ll.c": [
+          "5d3cc1dab2e1ff8273b977b17707b0bc60f1a3d5b64bb3e0b359230b367b119c"
+        ]
+      }
+    },
+    "0x80265d68": {
+      "sources": {
+        "src/n64/libultra/libc/ll.c": [
+          "02539a60a97028dc914bff445e52312e833454a6b39f5763930c5e20b8e6cf75"
+        ]
+      }
+    },
+    "0x80265e04": {
+      "sources": {
+        "src/n64/libultra/libc/ll.c": [
+          "63b27b0625e047e286a0e506a62ca97026a1a195395b8cb47bafc90e43547b0c"
+        ]
+      }
+    },
+    "0x80265e30": {
+      "sources": {
+        "src/n64/libultra/os/invaldcache.s": [
+          "837ce574835030b7eb5b45b114733112731a1b7de7fdaaf041d6987463e1ba79"
+        ]
+      }
+    },
+    "0x80265ee0": {
+      "sources": {
+        "src/n64/libultra/os/getcurrfaultedthread.c": [
+          "ecb989712c2d2b05c3e440a6cf1eb084a850b418609c54208dcf6de04225075d"
+        ]
+      }
+    },
+    "0x80265ef0": {
+      "sources": {
+        "src/n64/libultra/io/pirawread.c": [
+          "769b4b440f679948e82ab25e845c0a499b5a4dbab8b47a050a66f5e328533495"
+        ]
+      }
+    },
+    "0x80265f50": {
+      "sources": {
+        "src/n64/libultra/io/vimgr.c": [
+          "28ff5fd7763e26b7b709cb4392c684e961b430ad9f226069ae3dcf4956827e14"
+        ]
+      }
+    },
+    "0x802660d8": {
+      "sources": {
+        "src/n64/libultra/io/vimgr.c": [
+          "9f2f80efdb1c932c249c8ae354eb97c7809f014fa1fd2c4deb4d9cfa7261e723"
+        ]
+      }
+    },
+    "0x802662b0": {
+      "sources": {
+        "src/n64/libultra/io/pimgr.c": [
+          "4ecee0cf4bdbc343c0e8af9ccb61ac6df733afdeed5e47ece008e938d93e4c76"
+        ]
+      }
+    },
+    "0x80266440": {
+      "sources": {
+        "src/n64/libultra/os/setthreadpri.c": [
+          "4565225c07174652e382fdafeac021063cd62744301d0d823cff877ddd771e67"
+        ]
+      }
+    },
+    "0x80266520": {
+      "sources": {
+        "src/n64/libultra/libc/llcvt.c": [
+          "8508a36a1579eea7240b1ff1952513f89c82b7cfb539e70672778119bbd2ed1d"
+        ]
+      }
+    },
+    "0x8026653c": {
+      "sources": {
+        "src/n64/libultra/libc/llcvt.c": [
+          "10df2ebacd04b03f258ec5a5c9848838e055179393206ee1bd3baf2d6bfa7214"
+        ]
+      }
+    },
+    "0x80266558": {
+      "sources": {
+        "src/n64/libultra/libc/llcvt.c": [
+          "3308d6aa9c3169166db47549757538c6592a911952224e8e1b664e56344d246d"
+        ]
+      }
+    },
+    "0x802665f8": {
+      "sources": {
+        "src/n64/libultra/libc/llcvt.c": [
+          "4a55d09a4e05922e9ffcccd666c526c46fbd943c593027d67baf22298a09559d"
+        ]
+      }
+    },
+    "0x80266694": {
+      "sources": {
+        "src/n64/libultra/libc/llcvt.c": [
+          "32a7545850b00a82ae3b4ebab613c306353bfbf16240843ad36f7c7f0bc3ac3f"
+        ]
+      }
+    },
+    "0x802666ac": {
+      "sources": {
+        "src/n64/libultra/libc/llcvt.c": [
+          "b6afb1695656c93c5807ab89192620b0956881d63ecc51606b09b0e303b2ec22"
+        ]
+      }
+    },
+    "0x802666c4": {
+      "sources": {
+        "src/n64/libultra/libc/llcvt.c": [
+          "4bc0226be4ccfb00fbb764d13fe4b4c84e9323ca5787138540fdc699a11a41e0"
+        ]
+      }
+    },
+    "0x802666f8": {
+      "sources": {
+        "src/n64/libultra/libc/llcvt.c": [
+          "8968828b5db8b140f10d626de6a2e6ae1c4e2740f27442d1ae7724b132faf588"
+        ]
+      }
+    },
+    "0x80266730": {
+      "sources": {
+        "src/n64/libultra/gu/lookathil.c": [
+          "cf30d8e5b2a8e0b26e9b05cec34cc4cf32fb7cbed0b4ac1e18c233eb9baf6e6f"
+        ]
+      }
+    },
+    "0x80266e9c": {
+      "sources": {
+        "src/n64/libultra/gu/lookathil.c": [
+          "baf3b4f2f9ee6c5655fba2167f4f06af506290921aa71eabb110c93a2bc386c5"
+        ]
+      }
+    },
+    "0x80266f60": {
+      "sources": {
+        "src/n64/libultra/gu/mtxcatl.c": [
+          "9bf1f4d1b8d8169b240a5d0fdb0cd8bd49a49c80c2c19b97a57175d9698aa513"
+        ]
+      }
+    },
+    "0x80266fc0": {
+      "sources": {
+        "src/n64/libultra/gu/mtxcatl.c": [
+          "148e2f5b7c5b03f776d0480707f35c4c8e12bed9f0f7ab800f6eb6592a1dd91d"
+        ]
+      }
+    },
+    "0x80267020": {
+      "sources": {
+        "src/n64/libultra/libc/bcopy.s": [
+          "c9709f90a30ebe4d9345f1494d5dd00358114d61c6502e8060eafb5edd34f5aa"
+        ]
+      }
+    },
+    "0x80267330": {
+      "sources": {
+        "src/n64/libultra/io/pfsnumfiles.c": [
+          "0cf5209cc11693a6ac727a9ecbea79c6fefd58518088108e6ab7eab5ed239310"
+        ]
+      }
+    },
+    "0x80267480": {
+      "sources": {
+        "src/n64/libultra/io/pfsfilestate.c": [
+          "3125aae71a857c6edcd9510a2458a51709046891ffa12f722719d963c19d7397"
+        ]
+      }
+    },
+    "0x80267770": {
+      "sources": {
+        "src/n64/libultra/io/pfsdeletefile.c": [
+          "e1df8e99ed66316368163c5367ffb6cd960f01097ce0b0d9469e38227c8b69cb"
+        ]
+      }
+    },
+    "0x80267a50": {
+      "sources": {
+        "src/n64/libultra/io/pfsdeletefile.c": [
+          "c86748fc44851c9984ef678fc499599f2a42922afb52cb8b0f68552c862842fd"
+        ]
+      }
+    },
+    "0x80267c88": {
+      "sources": {
+        "src/n64/libultra/io/pfsdeletefile.c": [
+          "c86748fc44851c9984ef678fc499599f2a42922afb52cb8b0f68552c862842fd"
+        ]
+      }
+    },
+    "0x80267d80": {
+      "sources": {
+        "src/n64/libultra/io/ai.c": [
+          "c551854985c81f6e869d78009359ae59812f4618910f2ccb0f849f2b01d17692"
+        ]
+      }
+    },
+    "0x80267ee0": {
+      "sources": {
+        "src/n64/libultra/os/settimer.c": [
+          "83bc9bd83c5938cb35fa40a0d6aeb2a86613ba54bdde1831b3f53b1b4cb940dc"
+        ]
+      }
+    },
+    "0x80267fc0": {
+      "sources": {
+        "src/n64/libultra/io/ai.c": [
+          "eb5cbf0ebaa1edba48379ea2872372b19d502dfb9be5f62f3ef7e7118de29258"
+        ]
+      }
+    },
+    "0x80268070": {
+      "sources": {
+        "src/n64/libultra/io/ai.c": [
+          "7bfca4e7981fdc640c333a01a0b21e1791baaa9f86ef798e1ef5f011d5b24d2d"
+        ]
+      }
+    },
+    "0x80268080": {
+      "sources": {
+        "src/n64/libultra/io/ai.c": [
+          "d8e0c0e6a27feeb269397a7c9a1cec58e013b568c102c3785e62a9e92833fab5"
+        ]
+      }
+    },
+    "0x80268090": {
+      "sources": {
+        "src/n64/libultra/os/interrupt.s": [
+          "ddcff675c2005f65770512c80192e7cc304000410783832a6cae6a419c36d807"
+        ]
+      }
+    },
+    "0x802680b0": {
+      "sources": {
+        "src/n64/libultra/os/interrupt.s": [
+          "f17777990e5add2e994135927db2de62c07bf1b8ebebcf019449cd5f905c50b2"
+        ]
+      }
+    },
+    "0x802680d0": {
+      "sources": {
+        "src/n64/libultra/io/vi.c": [
+          "a91e2adc28d43114344bd171e400b71249a88b0ce89ab6741b2d3dbe6e920926"
+        ]
+      }
+    },
+    "0x80268210": {
+      "sources": {
+        "src/n64/libultra/gu/normalize.c": [
+          "d933554433fd00ae8a7b4d1b593d0e3c7561bedd7a0e2aaa3d62973654dedb9a"
+        ]
+      }
+    },
+    "0x802682a0": {
+      "sources": {
+        "src/n64/libultra/libc/xprintf.c": [
+          "f19434d4b0fe2af7e21536e334894708906601ac4a4a98e9d2f09070316077b9"
+        ]
+      }
+    },
+    "0x80268910": {
+      "sources": {
+        "src/n64/libultra/libc/xprintf.c": [
+          "7538ea2ec7ab5d8c64b1e57a3faec079f004388a5d4b92dc7001756a1d9c82cf"
+        ]
+      }
+    },
+    "0x80268f60": {
+      "sources": {
+        "src/n64/libultra/io/si.c": [
+          "66fd2802211ca44df733495053466b44320d8d6b9cf4837671f2b3219925a95d"
+        ]
+      }
+    },
+    "0x80268fb0": {
+      "sources": {
+        "src/n64/libultra/io/si.c": [
+          "60376487b704aeab6799b54b5609dffc25774dc09ce9e25cf5a9f224243ff0a7"
+        ]
+      }
+    },
+    "0x80268ff4": {
+      "sources": {
+        "src/n64/libultra/io/si.c": [
+          "228ae32ce9fd0e6ba8cda76a111c1882358591287e144b8d24512574d65ca025"
+        ]
+      }
+    },
+    "0x80269020": {
+      "sources": {
+        "src/n64/libultra/io/si.c": [
+          "b33ae03f6d1a0debb243e921b900bf4403d6543117a216663f917cc008f9184a"
+        ]
+      }
+    },
+    "0x802690d0": {
+      "sources": {
+        "src/n64/libultra/io/pfsgetstatus.c": [
+          "a743ce5967a1ef3f770ad88201bd7fff4c0be30c9a9b39c25d747a4918582bdc"
+        ]
+      }
+    },
+    "0x802691e0": {
+      "sources": {
+        "src/n64/libultra/io/contpfs.c": [
+          "ac2e23da2bf7cc59d32d18cdadd069f3aeecd11620308f35c78a04a872074fea"
+        ]
+      }
+    },
+    "0x8026923c": {
+      "sources": {
+        "src/n64/libultra/io/contpfs.c": [
+          "09f1b6fe36b77e1fc7af6451b52916ad078453372987e711f541770e85bbd8a2"
+        ]
+      }
+    },
+    "0x802692a4": {
+      "sources": {
+        "src/n64/libultra/io/contpfs.c": [
+          "50bdb692b4997c6d644e8811d3721969a981bc78038d11fe846753e64e5e2aec"
+        ]
+      }
+    },
+    "0x802696bc": {
+      "sources": {
+        "src/n64/libultra/io/contpfs.c": [
+          "a78c64a7713b5a0df684f109379c89e6353f27c0fccefa2b7d389554f152dfb7"
+        ]
+      }
+    },
+    "0x80269854": {
+      "sources": {
+        "src/n64/libultra/io/contpfs.c": [
+          "76ff4c524c6634a9370f73da9a95f45255a7d60007f3cbee1a179e446de1bc9b"
+        ]
+      }
+    },
+    "0x80269ab0": {
+      "sources": {
+        "src/n64/libultra/io/contpfs.c": [
+          "4c46a66fd7e7871bbf4c87f84f00c67adec3e77359c2caafb18455e4e9ba10a5"
+        ]
+      }
+    },
+    "0x80269bac": {
+      "sources": {
+        "src/n64/libultra/io/contpfs.c": [
+          "489436639b3767a2f4bc652ac0aa63bac32026b050ffac7e2b0aea3a9802b06d"
+        ]
+      }
+    },
+    "0x80269ecc": {
+      "sources": {
+        "src/n64/libultra/io/contpfs.c": [
+          "2048425dfe7fb6f5c0137986e6b34a474bb541a846dc16e829cf6fb361a58341"
+        ]
+      }
+    },
+    "0x80269f40": {
+      "sources": {
+        "src/n64/libultra/io/contramread.c": [
+          "a492140ff75c012d6b3f0c04c44b38177afd0fa4b36332a5904be47148566744"
+        ]
+      }
+    },
+    "0x8026a15c": {
+      "sources": {
+        "src/n64/libultra/io/contramread.c": [
+          "f07714e4e16ac54f14db9630b9e5828643c3715324f7c0b19a5d1e4131cbbd08"
+        ]
+      }
+    },
+    "0x8026a2d0": {
+      "sources": {
+        "src/n64/libultra/io/crc.c": [
+          "7c889a0be62afbb7b6614b90e878f7111934981b0e117b6ec559e429e0d9d249"
+        ]
+      }
+    },
+    "0x8026a380": {
+      "sources": {
+        "src/n64/libultra/io/crc.c": [
+          "073f7f27d7cb4e3090e39f2bc01f7dbfc9726cfbe04c8bf106e88aed8319943a"
+        ]
+      }
+    },
+    "0x8026a450": {
+      "sources": {
+        "src/n64/libultra/io/contramwrite.c": [
+          "31999dd08ea84ac4a598f1d0103ae839f5b7ae11e0ebfe19a38be9e8a9997344"
+        ]
+      }
+    },
+    "0x8026a654": {
+      "sources": {
+        "src/n64/libultra/io/contramwrite.c": [
+          "add97cbd2456e609e743d796566a9ef46249bfb3d9fda95ea90f0c50eeffbc3d"
+        ]
+      }
+    },
+    "0x8026a7d0": {
+      "sources": {
+        "src/n64/libultra/os/thread.c": [
+          "770bb66e24d8e058eab77fb07f639431f8958a558cac8ff65718813e86cdc592"
+        ]
+      }
+    },
+    "0x8026a810": {
+      "sources": {
+        "src/n64/libultra/os/exceptasm.s": [
+          "00338c399ba11ec76fecaba53be20cac1f5d10d7e077ce2419fcc004a8eb0984"
+        ]
+      }
+    },
+    "0x8026a820": {
+      "sources": {
+        "src/n64/libultra/os/exceptasm.s": [
+          "ac2c9477df808a6ece38501f9a9616b58586613ecd161e61150d9196320b449e"
+        ]
+      }
+    },
+    "0x8026ad54": {
+      "sources": {
+        "src/n64/libultra/os/exceptasm.s": [
+          "580c2f14111564c3f3d7b5691b59f3eb2eba58b2ba858a25191335f18ff4685a"
+        ]
+      }
+    },
+    "0x8026ae3c": {
+      "sources": {
+        "src/n64/libultra/os/exceptasm.s": [
+          "87138e4d9c07e367d12fff7ce5c166dd0cf40e51f0b6cfb7405d8a78b2c96028"
+        ]
+      }
+    },
+    "0x8026af3c": {
+      "sources": {
+        "src/n64/libultra/os/exceptasm.s": [
+          "c3b1fc4eb86ae9dfe36109cfe2e7088eae826f0885844453ef25b75269a2dc76"
+        ]
+      }
+    },
+    "0x8026af84": {
+      "sources": {
+        "src/n64/libultra/os/exceptasm.s": [
+          "733b9757ed40ca7ba0151b26e18212b5ca6ce80d9b7133d862d57db0cc7c004a"
+        ]
+      }
+    },
+    "0x8026af94": {
+      "sources": {
+        "src/n64/libultra/os/exceptasm.s": [
+          "105453346714ee0238ea77b6c6887b8454e2b1fbb2e64a4cc75dc87a734b786a"
+        ]
+      }
+    },
+    "0x8026b110": {
+      "sources": {
+        "src/n64/libultra/os/exceptasm.s": [
+          "eb153871c2ca6d0fb1e7df8f9464d6354c76b0edd1a389184288fb03ffe2b779"
+        ]
+      }
+    },
+    "0x8026b120": {
+      "sources": {
+        "src/n64/libultra/os/jammesg.c": [
+          "c607e4f699de74e7f9a66d18ed83b80e121014807cbf659cbade3eddf9930e23"
+        ]
+      }
+    },
+    "0x8026b270": {
+      "sources": {
+        "src/n64/libultra/io/pigetcmdq.c": [
+          "f534365b40d3aaccd7b4e4e8ebad96477d43c45d638addf71355197de713f425"
+        ]
+      }
+    },
+    "0x8026b2a0": {
+      "sources": {
+        "src/n64/libultra/os/virtualtophysical.c": [
+          "70359f88af6429c940a2863323e768375705ce32906901cc601c5b8c914919c1"
+        ]
+      }
+    },
+    "0x8026b320": {
+      "sources": {
+        "src/n64/libultra/os/writebackdcache.s": [
+          "9913f01c97a1b955b7472ccfc3f3acedf72128389e28c3163b83a51c01acc989"
+        ]
+      }
+    },
+    "0x8026b3a0": {
+      "sources": {
+        "src/n64/libultra/io/sp.c": [
+          "4ab5b310060a2ae4d3135bd35f78690e6fb834b1697b290a6c7444d688595010"
+        ]
+      }
+    },
+    "0x8026b3b0": {
+      "sources": {
+        "src/n64/libultra/io/sp.c": [
+          "78aedd769ea87d468049550b94956a07bbcc941fc76e332a31f02bea2ac63a49"
+        ]
+      }
+    },
+    "0x8026b3f0": {
+      "sources": {
+        "src/n64/libultra/io/sp.c": [
+          "757539abf35c2ac5395667c89872c8095f6a54c134d133d70afc2689df5ebed3"
+        ]
+      }
+    },
+    "0x8026b480": {
+      "sources": {
+        "src/n64/libultra/io/sp.c": [
+          "75099457a061cd882992a01f1ca26bed1effb2e48ed932fd5fbe64141b650524"
+        ]
+      }
+    },
+    "0x8026b4b0": {
+      "sources": {
+        "src/n64/libultra/os/gettime.c": [
+          "8cc0e570cd9cfb327b5424836687ee2ca0ae83716767fff44685907322c1adc0"
+        ]
+      }
+    },
+    "0x8026b540": {
+      "sources": {
+        "src/n64/libultra/os/setsr.s": [
+          "c458a0bc67f74a79c3f25340c065ffbace90f8e68a9802653b19c430e1de343f"
+        ]
+      }
+    },
+    "0x8026b550": {
+      "sources": {
+        "src/n64/libultra/os/setsr.s": [
+          "83a797d2aa9a1df76b136d2abc492ebaf889639dd762d8f84ebb9360f9e89806"
+        ]
+      }
+    },
+    "0x8026b560": {
+      "sources": {
+        "src/n64/libultra/os/setfpccsr.s": [
+          "b667a6de86d6e3db6a893162904fbe7c029e5b8df0dea69c6e025ffdde2ffa17"
+        ]
+      }
+    },
+    "0x8026b570": {
+      "sources": {
+        "src/n64/libultra/io/si.c": [
+          "b459a3d984e009ae317db76ac67939c9e7b06dbfa3eb827541fc3cd01e3041f9"
+        ]
+      }
+    },
+    "0x8026b5c0": {
+      "sources": {
+        "src/n64/libultra/io/si.c": [
+          "4d6b1b8fc377c6765d2774358e44218f00b88f9976abf8bf9f39f8bc9f5c60a7"
+        ]
+      }
+    },
+    "0x8026b610": {
+      "sources": {
+        "src/n64/libultra/os/invalicache.s": [
+          "22dd275b6105fedbdac9f9652f4aea0a54dba7ec6a67812fa6ae6715cef6bf61"
+        ]
+      }
+    },
+    "0x8026b690": {
+      "sources": {
+        "src/n64/libultra/os/maptlbrdb.s": [
+          "d9b2588e6f80db3cb9e45362c7a5bed639518f8a55ae062ebe851815851ca258"
+        ]
+      }
+    },
+    "0x8026b6f0": {
+      "sources": {
+        "src/n64/libultra/libc/bzero.s": [
+          "34d07aacbf16786342e34ed86bcc645bae537f4d58051c0931adfa65093d861d"
+        ]
+      }
+    },
+    "0x8026b790": {
+      "sources": {
+        "src/n64/libultra/os/timerintr.c": [
+          "71bd37f95cb05ce0c832ed028ec085923968dbb0769d1566cad5a9ab0f3dfb7f"
+        ]
+      }
+    },
+    "0x8026b81c": {
+      "sources": {
+        "src/n64/libultra/os/timerintr.c": [
+          "eb016f883b5e354f083430026e9a970a5aa801aa2cc21e3e38cb8f45cc90a18f"
+        ]
+      }
+    },
+    "0x8026b994": {
+      "sources": {
+        "src/n64/libultra/os/timerintr.c": [
+          "4413c68b3110a86b8e01754976f6da4592d9e4cb5bb5eaaa6b6f46c7bc784685"
+        ]
+      }
+    },
+    "0x8026ba08": {
+      "sources": {
+        "src/n64/libultra/os/timerintr.c": [
+          "ff890081f04ac19d6cf90911ee983ad3310f4a3e7a758b2a54c1269cfa0fb071"
+        ]
+      }
+    },
+    "0x8026bb90": {
+      "sources": {
+        "src/n64/libultra/os/getthreadpri.c": [
+          "800ba2b2be0f8c619f86434172dc081fb0beedb697ce3d7ea250ac6c374e6c88"
+        ]
+      }
+    },
+    "0x8026bbb0": {
+      "sources": {
+        "src/n64/libultra/io/vigetcurrcontext.c": [
+          "ecb989712c2d2b05c3e440a6cf1eb084a850b418609c54208dcf6de04225075d"
+        ]
+      }
+    },
+    "0x8026bbc0": {
+      "sources": {
+        "src/n64/libultra/io/viswapcontext.c": [
+          "c9b863c13c68c7ca9f2e272b9ed265787193eddce1e7d9fdb0fd2266e4aa1018"
+        ]
+      }
+    },
+    "0x8026bf20": {
+      "sources": {
+        "src/n64/libultra/io/cartrominit.c": [
+          "fbc0fa09bc6ec102bdcfbfb494730542099cf8ac8071cd79ecaaa0ca0bda4eb8"
+        ]
+      }
+    },
+    "0x8026c010": {
+      "sources": {
+        "src/n64/libultra/io/leodiskinit.c": [
+          "b654eccc3cbfcb65291335440cd1f744d9b8253473c7706283c47329be942532"
+        ]
+      }
+    },
+    "0x8026c110": {
+      "sources": {
+        "src/n64/libultra/io/piacs.c": [
+          "66fd2802211ca44df733495053466b44320d8d6b9cf4837671f2b3219925a95d"
+        ]
+      }
+    },
+    "0x8026c160": {
+      "sources": {
+        "src/n64/libultra/io/piacs.c": [
+          "60376487b704aeab6799b54b5609dffc25774dc09ce9e25cf5a9f224243ff0a7"
+        ]
+      }
+    },
+    "0x8026c1a4": {
+      "sources": {
+        "src/n64/libultra/io/piacs.c": [
+          "228ae32ce9fd0e6ba8cda76a111c1882358591287e144b8d24512574d65ca025"
+        ]
+      }
+    },
+    "0x8026c1d0": {
+      "sources": {
+        "src/n64/libultra/io/pirawdma.c": [
+          "9c60442f39b0907d2a846510bb9db364fe440f9c3868c12aefde8997f4903477"
+        ]
+      }
+    },
+    "0x8026c2b0": {
+      "sources": {
+        "src/n64/libultra/io/epirawdma.c": [
+          "d697ce70ebb184e0f84ec64f4072039a350046d2955677300580d1a94f2157d7"
+        ]
+      }
+    },
+    "0x8026c4e0": {
+      "sources": {
+        "src/n64/libultra/io/devmgr.c": [
+          "68db6e88528299e3b2063cfdd486a36b63e99593997ba8e5d41bcab2d6395638"
+        ]
+      }
+    },
+    "0x8026c970": {
+      "sources": {
+        "src/n64/libultra/io/ai.c": [
+          "9d1c57f3d2af33b034d83a75878f313e0f5269821e8ba78080fe3ad3cc5c19b8"
+        ]
+      }
+    },
+    "0x8026c9a0": {
+      "sources": {
+        "src/n64/libultra/libc/xlitob.c": [
+          "1ec7c8a8df97ac270e1e28a3608e9576ef8ae030063c0b4932b59441f6c4d33b"
+        ]
+      }
+    },
+    "0x8026cc40": {
+      "sources": {
+        "src/n64/libultra/libc/xldtob.c": [
+          "118ebf37c21f6fa15462fe0d8a4fdae674042f858b71cd7a1e1c8d021d9a54f6"
+        ]
+      }
+    },
+    "0x8026d1b0": {
+      "sources": {
+        "src/n64/libultra/libc/xldtob.c": [
+          "0b61abbcd7f1d54199fea2f06028b4af3a78dd60ac4f31785589d20e6b294036"
+        ]
+      }
+    },
+    "0x8026d700": {
+      "sources": {
+        "src/n64/libultra/io/si.c": [
+          "69a97be212d55e043d67169b02bc486d170b02e823484c458bc3800fb0571ab5"
+        ]
+      }
+    },
+    "0x8026d730": {
+      "sources": {
+        "src/n64/libultra/io/leointerrupt.c": [
+          "f3ba4cf3712cf5ea93650024ba75c504130a8435d02f7f09c8d68c12f93d51c1"
+        ]
+      }
+    },
+    "0x8026ddd4": {
+      "sources": {
+        "src/n64/libultra/io/leointerrupt.c": [
+          "f0882d4de4965e317d0cdbc6e651965490cd6359150329cf3befd4592ca109ce"
+        ]
+      }
+    },
+    "0x8026debc": {
+      "sources": {
+        "src/n64/libultra/io/leointerrupt.c": [
+          "f0882d4de4965e317d0cdbc6e651965490cd6359150329cf3befd4592ca109ce"
+        ]
+      }
+    },
+    "0x8026dfb0": {
+      "sources": {
+        "src/n64/libultra/os/setintmask.s": [
+          "bdb90f63a601d0f2605dfb4fd98074eaefd29fe6e4586aaa0397335ace626e56"
+        ]
+      }
+    },
+    "0x8026e050": {
+      "sources": {
+        "src/n64/libultra/os/destroythread.c": [
+          "1b28edfa39bdfba0aaef49d9cf7ad2e7c51818f1409799041a2c8d5712725437"
+        ]
+      }
+    },
+    "0x8026e150": {
+      "sources": {
+        "src/n64/libultra/os/probetlb.s": [
+          "af03f8923800ee1498c7b94b4f900c7e6317cac064c2ea63184ab688b8439b51"
+        ]
+      }
+    },
+    "0x8026e210": {
+      "sources": {
+        "src/n64/libultra/os/setcompare.s": [
+          "6000f5d415fb280062b3054af6a78366548713c544ed1e7fd34103a1534126d5"
+        ]
+      }
+    },
+    "0x8026e220": {
+      "sources": {
+        "src/n64/libultra/os/resetglobalintmask.c": [
+          "46d38c391b99a249ffe3c22d533e80fbe08ea077871d318e955d08bc3b40b569"
+        ]
+      }
+    },
+    "0x8026e280": {
+      "sources": {
+        "src/n64/libultra/io/epirawwrite.c": [
+          "4785a383cb4128553c27fb4695b325ec3db9cff029a10ccdca1a6234ece9f03f"
+        ]
+      }
+    },
+    "0x8026e2d0": {
+      "sources": {
+        "src/n64/libultra/io/epirawread.c": [
+          "c91f9b454e9537fd2b8cf68664633fe30ced5bd68459c003cdfd72e37caa54e1"
+        ]
+      }
+    },
+    "0x8026e320": {
+      "sources": {
+        "src/n64/libultra/os/setglobalintmask.c": [
+          "f825cd2ff12328d44c664a9dcebc57a48804948e6a5dc01faa79e4f572904189"
+        ]
+      }
+    },
+    "0x8026e370": {
+      "sources": {
+        "src/n64/libultra/os/yieldthread.c": [
+          "4bbbb9170acecbcea9d87c9a6ce4e8474819e71ee998428d6ebeeb04cd5ad667"
+        ]
+      }
+    },
+    "0x8026e3c0": {
+      "sources": {
+        "src/n64/libultra/libc/ldiv.c": [
+          "68e93c9cb0a65e3c1d71f32b90bef88f6de6cd8168a794513470d866c3a73215"
+        ]
+      }
+    },
+    "0x8026e4c0": {
+      "sources": {
+        "src/n64/libultra/libc/ldiv.c": [
+          "9f04259dad85bc8617ed0f0ad064078ddd48d985f9a2f63ef363e4344b8f62a2"
+        ]
+      }
+    }
+  },
+  "region": "asia",
+  "rom_sha1": "7e36a98f6fafe3ff7e72d14e0fae16418458da47"
+}

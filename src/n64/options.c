@@ -21,6 +21,8 @@
 #include "pakmenu.h"
 #include "sprite.h"
 
+#define OPTIONS_US_STYLE (TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA)
+
 /* The time the sounds and the screen take to fade, in seconds. */
 #define FADE_SECONDS 0.2f
 
@@ -58,7 +60,7 @@ enum {
     SAVE_LOAD_STEP_CHOOSE,     /*!< Choose what to load or save. */
     SAVE_LOAD_STEP_QUIET,      /*!< Start fading out the sound and the music. */
     SAVE_LOAD_STEP_WAIT_QUIET, /*!< Wait for the sound to fade out, then 4 more frames. */
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
     SAVE_LOAD_STEP_GAME_PAK,      /*!< Load or save the chosen data on the EEPROM. */
     SAVE_LOAD_STEP_ERASE,         /*!< Reset both players and write the defaults to the EEPROM. */
     SAVE_LOAD_STEP_CONFIRM_ERASE, /*!< Request confirmation to erase the EEPROM. */
@@ -138,7 +140,7 @@ enum {
 
 /* The choice of the save and load menu, which the other releases take from the row under the
  * cursor. */
-#if TGR_REGION == TGR_REGION_US
+#if OPTIONS_US_STYLE
 #define SAVE_LOAD_ACTION g_bSaveLoadChoice
 #else
 #define SAVE_LOAD_ACTION (items[g_bSaveLoadMenuCursor].action)
@@ -186,7 +188,7 @@ void OptionsMenuPostDraw(s32 item) {
     }
 }
 
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
 #define MARK_OPTIONS_CHANGED()
 #else
 #define MARK_OPTIONS_CHANGED() (g_dwOptionsChangedNeedsSave = TRUE)
@@ -233,7 +235,7 @@ void ProcessOptionsMenu(void) {
         g_dwMenuTitleImageHeight = 42;
 #endif /* TGR_REGION == TGR_REGION_JP */
         if (g_dwOptionsMenuState == 0) {
-#if TGR_REGION != TGR_REGION_US
+#if TGR_REGION != TGR_REGION_US && TGR_REGION != TGR_REGION_ASIA
             g_dwOptionsChangedNeedsSave = FALSE;
 #endif
             g_dwOptionsMenuSelection = OPTIONS_ITEM_BGM;
@@ -314,7 +316,7 @@ void ProcessOptionsMenu(void) {
             g_dwMenuInputPlayerMask = 1 << g_dwScreenPlayerIdx;
             SetCurrentScreenCallback(ProcessControllerConfigScreen);
             break;
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
         case OPTIONS_ITEM_SAVE_CONFIGURATION:
             g_bSaveConfigurationPending = TRUE;
             break;
@@ -331,7 +333,7 @@ void ProcessOptionsMenu(void) {
     case MENU_RESULT_CANCELLED:
         SetCurrentScreenCallback(ProcessMainMenu);
         g_dwOptionsMenuState = 0;
-#if TGR_REGION != TGR_REGION_US
+#if TGR_REGION != TGR_REGION_US && TGR_REGION != TGR_REGION_ASIA
         if (g_dwOptionsChangedNeedsSave) {
             SaveGameDataToEeprom();
         }
@@ -547,7 +549,7 @@ void SaveGameDataToEeprom(void) {
 }
 #endif /* TGR_REGION == TGR_REGION_JP || TGR_REGION == TGR_REGION_EU */
 
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
 /* The height of a row of the save and load menu. */
 #define SAVE_LOAD_ROW_HEIGHT(action)                                                               \
     ((action) == SAVE_LOAD_ROW_GAP ? 6 : (action) == SAVE_LOAD_ROW_SMALL_GAP ? 3 : 12)
@@ -586,9 +588,9 @@ void SaveGameDataToEeprom(void) {
     }
 #endif /* TGR_REGION != TGR_REGION_US */
 
-#if TGR_REGION == TGR_REGION_US
+#if OPTIONS_US_STYLE
 void ProcessDataSaveLoadMenu(void) {
-#if TGR_REGION == TGR_REGION_US
+#if OPTIONS_US_STYLE
     s32 choice;
     s32 entryMode;
     s32 top;
@@ -701,7 +703,7 @@ void ProcessDataSaveLoadMenu(void) {
                           0x27,
                           0x2C};
     u8 extension[4] = {0};
-#if TGR_REGION == TGR_REGION_US
+#if OPTIONS_US_STYLE
     const char *choices[SAVE_LOAD_CHOICES] = {"LOAD SEASON DATA",
                                               "SAVE SEASON DATA",
                                               "LOAD GHOST CAR DATA",
@@ -712,7 +714,7 @@ void ProcessDataSaveLoadMenu(void) {
 #endif /* TGR_REGION == TGR_REGION_US */
     /* IDO places the menu state in function statics; the GCC build uses assembly-backed globals. */
 #if defined(__sgi) && TGR_REGION != TGR_REGION_JP
-#if TGR_REGION == TGR_REGION_US
+#if OPTIONS_US_STYLE
     static u8 g_bSaveLoadChoice = 0;
 #else
     static u8 g_bSaveLoadMenuCursor = 0;
@@ -734,7 +736,7 @@ void ProcessDataSaveLoadMenu(void) {
         gControllerPakState = 0;
         g_bSaveLoadFadeDelayFrames = 0;
         ResetHeap();
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
         g_dwKeepScreenBlanked = TRUE;
 #endif
         BLANK_SCREEN();
@@ -748,7 +750,7 @@ void ProcessDataSaveLoadMenu(void) {
         LoadTextureFromRom(&g_texButtonA);
         LoadTextureFromRom(&g_texButtonB);
         g_pPakDataBuffer = AllocHeapAligned(PAK_DATA_BUFFER_SIZE);
-#if TGR_REGION == TGR_REGION_US
+#if OPTIONS_US_STYLE
         if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
             g_bSaveLoadChoice = SAVE_LOAD_LOAD_SEASON;
         } else if ((entryMode = g_bSaveLoadEntryPoint) == SAVE_LOAD_FROM_SEASON) {
@@ -781,7 +783,7 @@ void ProcessDataSaveLoadMenu(void) {
 #endif /* TGR_REGION == TGR_REGION_US */
         g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_IN;
         SetFadeTarget(1.0f, FADE_SECONDS);
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
         g_dwKeepScreenBlanked = FALSE;
 #endif
     }
@@ -826,7 +828,7 @@ void ProcessDataSaveLoadMenu(void) {
         DrawText("%ryDATA SAVE", 160, 41);
     }
 
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
     /* The rows are centred on the screen, the current one brighter, all dimmed while a message is
      * shown. */
     SetTextSize(13);
@@ -913,7 +915,7 @@ void ProcessDataSaveLoadMenu(void) {
 
     case SAVE_LOAD_STEP_CHOOSE:
         g_bSaveLoadInputEnabled = TRUE;
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
         /* The cursor wraps at both ends and passes over the headings and the gaps. */
         UpdateStickRepeat(CHOOSING_INPUT);
         if (CHOOSING_INPUT->buttons & INPUT_DOWN) {
@@ -978,7 +980,7 @@ void ProcessDataSaveLoadMenu(void) {
 
     case SAVE_LOAD_STEP_WAIT_QUIET:
         if (HasSfxFadeFinished() && g_bSaveLoadFadeDelayFrames++ == 4) {
-#if TGR_REGION == TGR_REGION_US
+#if OPTIONS_US_STYLE
             g_bSaveLoadStep = SAVE_LOAD_STEP_MOUNT;
             g_bSaveLoadFadeDelayFrames = 0;
 #else
@@ -996,7 +998,7 @@ void ProcessDataSaveLoadMenu(void) {
         }
         break;
 
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
     case SAVE_LOAD_STEP_GAME_PAK:
         g_bSaveLoadRumbleSwapPending = FALSE;
         if (!g_bSaveLoadSkipEepromProbe && !osEepromProbe(&g_SiMesgQueue)) {
@@ -1399,7 +1401,7 @@ void ProcessDataSaveLoadMenu(void) {
 
     case SAVE_LOAD_STEP_CONFIRM_OVERWRITE:
         g_bSaveLoadInputEnabled = FALSE;
-#if TGR_REGION == TGR_REGION_US
+#if OPTIONS_US_STYLE
         top = 0xBF;
         if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
             top = 0xC9;
@@ -1430,7 +1432,7 @@ void ProcessDataSaveLoadMenu(void) {
         DrawTexturedSprite(&g_texButtonB, 0x135, buttonY);
         if (CHOOSING_INPUT->buttons & INPUT_A) {
             TransferFlags(CHOOSING_INPUT, INPUT_A);
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
             /* The EEPROM step writes the data it already read. */
             if (SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON_GAME_PAK) {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_GAME_PAK;
@@ -1441,7 +1443,7 @@ void ProcessDataSaveLoadMenu(void) {
             g_bSaveLoadStep = SAVE_LOAD_STEP_SAVE;
         } else if (CHOOSING_INPUT->buttons & INPUT_B) {
             TransferFlags(CHOOSING_INPUT, INPUT_B);
-#if TGR_REGION == TGR_REGION_US
+#if OPTIONS_US_STYLE
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
                 FadeSfxTo(1.0f, FADE_SECONDS);
                 FadeMusicTo(1.0f, FADE_SECONDS);
@@ -1664,7 +1666,7 @@ void ProcessDataSaveLoadMenu(void) {
             break;
         case PFS_ERR_NOPACK:
         case PFS_ERR_DEVICE:
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
             DRAW_MESSAGE_BOX(0x50, 0xD8, 0x1E0, 0x4C);
             if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON_GAME_PAK ||
                 SAVE_LOAD_ACTION == SAVE_LOAD_SAVE_SEASON_GAME_PAK ||
@@ -1702,7 +1704,7 @@ void ProcessDataSaveLoadMenu(void) {
             break;
         case PAK_STATE_RUMBLE_PAK:
             buttonY = 0x146 - g_texButtonA.width;
-#if TGR_REGION == TGR_REGION_US
+#if OPTIONS_US_STYLE
             DRAW_MESSAGE_BOX(0x79, 0xAE, 0x18D, 0xA0);
             DrawText("PLEASE REMOVE THE RUMBLE PAK", 0x44, 0x67);
             DrawText("AND INSERT THE CONTROLLER PAK", 0x44, 0x74);
@@ -1740,7 +1742,7 @@ void ProcessDataSaveLoadMenu(void) {
             DRAW_SHORT_MESSAGE(0xBF, 0x102, 0x67, "CONTROLLER ERROR", "HAS BEEN DETECTED!");
             break;
         case PFS_ERR_INVALID:
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
             switch (SAVE_LOAD_ACTION) {
             case SAVE_LOAD_LOAD_SEASON:
             case SAVE_LOAD_LOAD_GHOST:
@@ -1811,7 +1813,7 @@ void ProcessDataSaveLoadMenu(void) {
         SetTextAlignCenter();
         SetTextStyleNormal();
         SetTextSize(MESSAGE_TEXT_SIZE);
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
         top = g_bSaveLoadEntryPoint != SAVE_LOAD_FROM_MAIN_MENU ? 0xCE : 0xD9;
 #endif
 #if TGR_REGION == TGR_REGION_JP
@@ -1855,10 +1857,10 @@ void ProcessDataSaveLoadMenu(void) {
 #else
         switch (SAVE_LOAD_ACTION) {
         case SAVE_LOAD_LOAD_SEASON:
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
         case SAVE_LOAD_LOAD_SEASON_GAME_PAK:
 #endif
-#if TGR_REGION == TGR_REGION_US
+#if OPTIONS_US_STYLE
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
                 top = 0xD9;
             } else {
@@ -1868,7 +1870,7 @@ void ProcessDataSaveLoadMenu(void) {
             DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywSEASON DATA", "%ywLOADED OK!");
             break;
         case SAVE_LOAD_LOAD_GHOST:
-#if TGR_REGION == TGR_REGION_US
+#if OPTIONS_US_STYLE
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
                 top = 0xD9;
             } else {
@@ -1878,10 +1880,10 @@ void ProcessDataSaveLoadMenu(void) {
             DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywGHOST DATA", "%ywLOADED OK!");
             break;
         case SAVE_LOAD_SAVE_SEASON:
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
         case SAVE_LOAD_SAVE_SEASON_GAME_PAK:
 #endif
-#if TGR_REGION == TGR_REGION_US
+#if OPTIONS_US_STYLE
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
                 top = 0xD9;
             } else {
@@ -1891,7 +1893,7 @@ void ProcessDataSaveLoadMenu(void) {
             DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywSEASON DATA", "%ywSAVED OK!");
             break;
         case SAVE_LOAD_SAVE_GHOST:
-#if TGR_REGION == TGR_REGION_US
+#if OPTIONS_US_STYLE
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
                 top = 0xD9;
             } else {
@@ -1901,20 +1903,20 @@ void ProcessDataSaveLoadMenu(void) {
             DRAW_DONE_MESSAGE(0xD8, 0xD0, top, "%ywGHOST CAR DATA", "%ywSAVED OK!");
             break;
         case SAVE_LOAD_LOAD_OPTIONS:
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
         case SAVE_LOAD_LOAD_OPTIONS_GAME_PAK:
 #endif
             DRAW_MESSAGE_BOX(0xC3, 0xE7, 0xFA, 0x2E);
             DrawText("%ywOPTIONS LOADED OK!", 0x9F, 0x83);
             break;
         case SAVE_LOAD_SAVE_OPTIONS:
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
         case SAVE_LOAD_SAVE_OPTIONS_GAME_PAK:
 #endif
             DRAW_MESSAGE_BOX(0xC3, 0xE7, 0xFA, 0x2E);
             DrawText("%ywOPTIONS SAVED OK!", 0x9F, 0x83);
             break;
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
         case SAVE_LOAD_ERASE_GAME_PAK:
             DRAW_MESSAGE_BOX(0xC3, 0xE7, 0xFA, 0x2E);
             DrawText("%ywDONE!", 0x9F, 0x83);
@@ -1927,7 +1929,7 @@ void ProcessDataSaveLoadMenu(void) {
 #endif /* TGR_REGION == TGR_REGION_JP */
         if (CHOOSING_INPUT->buttons & DISMISS_BUTTONS) {
             TransferFlags(CHOOSING_INPUT, DISMISS_BUTTONS);
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
             if (g_bSaveLoadRumbleSwapPending) {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_RUMBLE_PAK;
             } else {
@@ -1977,7 +1979,7 @@ void ProcessDataSaveLoadMenu(void) {
 #endif /* TGR_REGION == TGR_REGION_JP */
         if (CHOOSING_INPUT->buttons & INPUT_A) {
             TransferFlags(CHOOSING_INPUT, INPUT_A);
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
             if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON ||
                 SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_GHOST) {
                 g_bSaveLoadStep = SAVE_LOAD_STEP_FADE_OUT;
@@ -2032,7 +2034,7 @@ void ProcessDataSaveLoadMenu(void) {
         ClearScreen(0, 0, 0);
         FlushDisplayList();
         gControllerPakState = 0;
-#if TGR_REGION != TGR_REGION_US
+#if !OPTIONS_US_STYLE
         if ((SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON ||
              SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON_GAME_PAK) &&
             g_bSaveLoadDataWasLoaded) {
@@ -2056,30 +2058,40 @@ void ProcessDataSaveLoadMenu(void) {
 #else
         if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_SEASON && g_bSaveLoadDataWasLoaded) {
             g_bSaveLoadDataWasLoaded = FALSE;
+#if TGR_REGION == TGR_REGION_US
             g_wSerialInterfaceIdle = TRUE;
+#endif
             SetCurrentScreenCallback(StartChampionshipRace);
         } else if (SAVE_LOAD_ACTION == SAVE_LOAD_LOAD_GHOST && g_bSaveLoadDataWasLoaded) {
             g_bSaveLoadDataWasLoaded = FALSE;
+#if TGR_REGION == TGR_REGION_US
             g_wSerialInterfaceIdle = TRUE;
+#endif
             SetCurrentScreenCallback(StartTimeAttack);
         } else {
             g_bSaveLoadChoice = SAVE_LOAD_LOAD_SEASON;
             if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_MAIN_MENU) {
+#if TGR_REGION == TGR_REGION_US
                 g_wSerialInterfaceIdle = TRUE;
+#endif
                 SetCurrentScreenCallback(ProcessMainMenu);
             } else {
                 entryMode = g_bSaveLoadEntryPoint;
                 if (g_bSaveLoadEntryPoint == SAVE_LOAD_FROM_SEASON) {
+#if TGR_REGION == TGR_REGION_US
                     g_wSerialInterfaceIdle = TRUE;
+#endif
                     SetCurrentScreenCallback(ProcessTrackMenu);
                 } else if ((entryMode | 0) == SAVE_LOAD_FROM_TIME_ATTACK) {
+#if TGR_REGION == TGR_REGION_US
                     g_wSerialInterfaceIdle = TRUE;
+#endif
                     SetCurrentScreenCallback(ProcessMainMenu);
                 }
             }
         }
     }
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || TGR_REGION == TGR_REGION_ASIA
     g_wSerialInterfaceIdle = TRUE;
 #else
     /* This also clears the flag just set for the next screen, so the motors stay stopped until
@@ -2105,7 +2117,7 @@ s32 DrawRumblePakPrompt(s32 anyPlayer) {
 
     SetTextStyleNormal();
     SetTextAlignLeft();
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
     SetTextSize(12);
     SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0x00);
     DRAW_SWAP_FOR_RUMBLE_PAK_MESSAGE(0x73, 0xB4, 0x19A, 0x6A);
@@ -2362,7 +2374,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             g_bPakDataStep = PAK_DATA_STEP_FIND;
             break;
         }
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
         SET_MESSAGE_TEXT();
 #else
         SetTextStyleNormal();
@@ -2733,7 +2745,7 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
             DRAW_DONE_MESSAGE(0xE2, 0xBC, top, "%ywGHOST DATA", "%ywLOADED OK!");
 #endif
             break;
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
         case PAK_DATA_LOAD_CONFIGURATION:
         case PAK_DATA_SAVE_CONFIGURATION:
             DRAW_MESSAGE_BOX(0xD8, 0xD9, 0xD0, 0x4A);

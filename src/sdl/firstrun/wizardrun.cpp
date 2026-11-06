@@ -35,6 +35,8 @@ std::optional<WizardCartridge> WizardRelease(RomRelease release) {
         return WizardCartridge::Eur;
     case RomRelease::Jpn:
         return WizardCartridge::Jpn;
+    case RomRelease::Asia:
+        return WizardCartridge::Usa;
     }
     return std::nullopt;
 }
@@ -130,6 +132,11 @@ SetupRun RunSetupWizard(GpuWindow &window,
     };
     services.checkDisc = CheckDisc;
     services.identifyCartridge = IdentifyCartridge;
+    services.preferCartridge = [](const std::filesystem::path &candidate,
+                                  const std::filesystem::path &current) {
+        return IdentifyRomFile(candidate) == RomRelease::Usa &&
+               IdentifyRomFile(current) == RomRelease::Asia;
+    };
     services.scanArchive =
         [cache = paths.cache / "asset-search"](
             const std::filesystem::path &archive,
@@ -155,8 +162,11 @@ SetupRun RunSetupWizard(GpuWindow &window,
                         return true;
                     }
                     const auto output =
-                        cache / (std::string(CARTRIDGE_NAMES[static_cast<std::size_t>(*detected)]) +
-                                 ".z64");
+                        cache /
+                        (std::string(*release == RomRelease::Asia ?
+                                         "Asia" :
+                                         CARTRIDGE_NAMES[static_cast<std::size_t>(*detected)]) +
+                         ".z64");
                     std::ofstream file(output, std::ios::binary | std::ios::trunc);
                     file.write(reinterpret_cast<const char *>(bytes.data()),
                                static_cast<std::streamsize>(bytes.size()));

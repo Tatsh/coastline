@@ -14,9 +14,10 @@ namespace coastline {
 
 /** A Nintendo 64 release the game reads models, textures, and music from. */
 enum class RomRelease {
-    Usa, /*!< North America, NGRE. */
-    Jpn, /*!< Japan, NTRJ. */
-    Eur, /*!< Europe, NTRP. */
+    Usa,  /*!< North America, NGRE. */
+    Jpn,  /*!< Japan, NTRJ. */
+    Eur,  /*!< Europe, NTRP. */
+    Asia, /*!< Asia, NGRX. */
 };
 
 /**
@@ -68,7 +69,8 @@ inline constexpr UsaMusicModule USA_MUSIC_MODULES[] = {{0x0EBC00, "menu"},
 
 /**
  * Check a cartridge image and extract its main segment and its assets, inflated, to
- * n64/usa, n64/jpn, or n64/eur under @p dataDirectory. The cartridge also provides XM modules in
+ * n64/usa, n64/jpn, n64/eur, or n64/asia under @p dataDirectory. The cartridge also provides XM
+ * modules in
  * music when music/menu.xm does not exist.
  *
  * @param image The cartridge image.

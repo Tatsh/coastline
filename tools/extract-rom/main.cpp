@@ -26,7 +26,7 @@ int main(int argc, char *argv[]) {
     parser.add_argument("output_directory").help("Directory to write. It is created when missing.");
     parser.add_argument("--region")
         .metavar("REGION")
-        .choices("us", "jp", "eu")
+        .choices("us", "jp", "eu", "asia")
         .help("Fail unless the image is this release.");
     parser.add_argument("--debug").help("Enable debug logging.").flag();
     // argparse reports usage errors only by throwing.

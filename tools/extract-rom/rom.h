@@ -14,16 +14,17 @@ namespace Tools::ExtractRom {
 
 /** Release a cartridge image belongs to. */
 enum class Region {
-    Usa, /*!< North America, game code NGRE. */
-    Jpn, /*!< Japan, game code NTRJ. */
-    Eur, /*!< Europe, game code NTRP. */
+    Usa,  /*!< North America, game code NGRE. */
+    Jpn,  /*!< Japan, game code NTRJ. */
+    Eur,  /*!< Europe, game code NTRP. */
+    Asia, /*!< Asia, game code NGRX. */
 };
 
 /**
  * Short name of a region, the value TGR_REGION takes in CMake.
  *
  * @param region The region.
- * @return `us`, `jp`, or `eu`.
+ * @return `us`, `jp`, `eu`, or `asia`.
  */
 std::string_view regionName(Region region);
 

@@ -588,7 +588,7 @@ void RespawnVehicle(Vehicle *vehicle) {
     ResetVehicleEffects(vehicle);
 #endif
     InitVehiclePhysics(vehicle);
-#if TGR_BOSS_RALLY || TGR_REGION == TGR_REGION_US
+#if TGR_BOSS_RALLY || TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
     if (g_dwGameMode == GAME_MODE_TIME_ATTACK) {
 #else
     if (g_dwGameMode == GAME_MODE_TIME_ATTACK || g_dwGameMode == GAME_MODE_DEMO) {

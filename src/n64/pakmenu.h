@@ -26,6 +26,9 @@ extern "C" {
 #elif TGR_REGION == TGR_REGION_EU
 #define GAME_CODE 0x4E545250 /*!< The game code of the notes, "NTRP" in ASCII. */
 #define COMPANY_CODE 0x3746  /*!< The company code of the notes, "7F" in ASCII. */
+#elif TGR_REGION == TGR_REGION_ASIA
+#define GAME_CODE 0x4E475258 /*!< The game code of the notes, "NGRX" in ASCII. */
+#define COMPANY_CODE 0x3746  /*!< The company code of the notes, "7F" in ASCII. */
 #else
 #define GAME_CODE 0x4E54524A /*!< The game code of the notes, "NTRJ" in ASCII. */
 #define COMPANY_CODE 0x3238  /*!< The company code of the notes, "28" in ASCII. */

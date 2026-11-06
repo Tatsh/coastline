@@ -17,11 +17,12 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 IDO = Path(os.environ.get('IDO_ROOT', ROOT / '.wiswa-ci/ido/5.3'))
 BIN = Path(os.environ.get('N64_INST', ROOT / '.wiswa-ci/toolchains/n64/opt/libdragon')) / 'bin'
-ROMS = {'us': 'usa.z64', 'jp': 'jpn.z64', 'eu': 'eur.z64'}
+ROMS = {'us': 'usa.z64', 'jp': 'jpn.z64', 'eu': 'eur.z64', 'asia': 'asia.z64'}
 ROM_SHA1 = {'us': 'bfc51f086ebdb78904dc24ad0c3a2d946e26d022',
             'jp': 'e0415b87c5a5b69ac581e79137406bdaa79b354a',
-            'eu': '9fae5d98fe3464f00d59034690df90118646eb95'}
-REGION_VALUES = {'us': 1, 'jp': 2, 'eu': 3}
+            'eu': '9fae5d98fe3464f00d59034690df90118646eb95',
+            'asia': '7e36a98f6fafe3ff7e72d14e0fae16418458da47'}
+REGION_VALUES = {'us': 1, 'jp': 2, 'eu': 3, 'asia': 4}
 REGION = 'us'
 ENCODER: Path | None = None
 VERBOSE = False
@@ -29,7 +30,8 @@ IDO_INVOCATIONS = 0
 ASSEMBLER_INVOCATIONS = 0
 LAST_COMPILE_ERROR = ''
 DEFINES = ['-DTGR_PLATFORM_N64=1', '-DTGR_PLATFORM_WIN=2', '-DTGR_PLATFORM=1', '-DTGR_REGION_US=1',
-           '-DTGR_REGION_JP=2', '-DTGR_REGION_EU=3', '-DTGR_REGION=1', '-DTGR_RENDERER_D3D=1',
+           '-DTGR_REGION_JP=2', '-DTGR_REGION_EU=3', '-DTGR_REGION_ASIA=4', '-DTGR_REGION=1',
+           '-DTGR_RENDERER_D3D=1',
            '-DTGR_RENDERER_GLIDE=2', '-DTGR_RENDERER=0', '-D_LANGUAGE_C', '-DF3DEX_GBI',
            '-D_MIPS_SZLONG=32', '-D__sgi', '-DNDEBUG']
 MASKS = {'R_MIPS_26': 0xFC000000, 'R_MIPS_HI16': 0xFFFF0000, 'R_MIPS_LO16': 0xFFFF0000}
@@ -259,6 +261,7 @@ def main() -> int:
     by_address = sorted((address, name) for name, (address, _size) in table.items())
     entries: dict[str, dict] = {}
     seen: set[str] = set()
+    closest: dict[str, tuple[int, int, str]] = {}
     if expected is None:
         sources = sorted(p for p in (ROOT / 'src').rglob('*') if p.suffix in ('.c', '.s')
                          and 'platform' not in p.parts and 'asm' not in p.parts
@@ -289,7 +292,13 @@ def main() -> int:
                             entry = expected.get(key)
                             if entry and fingerprint in entry['sources'].get(relative, []):
                                 entries.setdefault(key, {'sources': {}})['sources'][relative] = True
-                    elif matches(words, masks, address, size, rom)[0] is True:
+                    else:
+                        status, matched = matches(words, masks, address, size, rom)
+                        for key in keys:
+                            if matched > closest.get(key, (0, 0, ''))[0]:
+                                closest[key] = (matched, size, relative)
+                        if status is not True:
+                            continue
                         for key in keys:
                             digests = entries.setdefault(key, {'sources': {}})['sources'].setdefault(
                                 relative, [])
@@ -301,8 +310,11 @@ def main() -> int:
     print(f'{IDO_INVOCATIONS} IDO compiler invocations; '
           f'{ASSEMBLER_INVOCATIONS} assembler invocations.', file=sys.stderr)
     if expected is None:
-        missing = seen - entries.keys()
+        missing = {f'0x{address:08x}' for address, _size in table.values()} - entries.keys()
         if missing:
+            for key in sorted(missing):
+                matched, size, source = closest.get(key, (0, 0, ''))
+                print(f'{key} in {source}: {matched}/{size} bytes match.', file=sys.stderr)
             print(f'{len(missing)} reconstructed routines do not match the ROM.', file=sys.stderr)
             return 1
         for entry in entries.values():

@@ -13,6 +13,10 @@
       "name": "n64-eu"
     },
     {
+      "configurePreset": "n64-asia",
+      "name": "n64-asia"
+    },
+    {
       "configurePreset": "win-d3d",
       "name": "win-d3d"
     },
@@ -91,6 +95,13 @@
       },
       "inherits": "n64",
       "name": "n64-eu"
+    },
+    {
+      "cacheVariables": {
+        "TGR_REGION": "asia"
+      },
+      "inherits": "n64",
+      "name": "n64-asia"
     },
     {
       "cacheVariables": {
@@ -178,6 +189,19 @@
         },
         {
           "name": "n64-eu",
+          "type": "build"
+        }
+      ]
+    },
+    {
+      "name": "n64-asia",
+      "steps": [
+        {
+          "name": "n64-asia",
+          "type": "configure"
+        },
+        {
+          "name": "n64-asia",
           "type": "build"
         }
       ]

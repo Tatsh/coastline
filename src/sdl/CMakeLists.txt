@@ -165,7 +165,7 @@ add_custom_target(coastline_shaders DEPENDS ${_shader_headers})
 
 # The manifests of the assets of each cartridge, embedded for the import.
 set(_manifest_headers)
-foreach(_release eu jp us)
+foreach(_release asia eu jp us)
   string(TOUPPER "${_release}" _name)
   set(_source "${CMAKE_CURRENT_SOURCE_DIR}/cartridge/${_release}.txt")
   set(_header "${CMAKE_CURRENT_BINARY_DIR}/cartridge/${_release}.h")

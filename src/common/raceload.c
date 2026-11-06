@@ -168,7 +168,7 @@ void InitRace(void) {
     NullStub();
     StartLowResFrame(g_aViewportRects);
 #else
-#if TGR_REGION == TGR_REGION_US
+#if TGR_REGION == TGR_REGION_US || TGR_REGION == TGR_REGION_ASIA
     osViBlack(TRUE);
     StartLowResFrame();
     FlushDisplayList();
@@ -450,7 +450,7 @@ void InitRace(void) {
     NullStub();
     ResetFrameTimerState();
 #endif /* TGR_BOSS_RALLY */
-#if TGR_REGION != TGR_REGION_US
+#if TGR_REGION != TGR_REGION_US && TGR_REGION != TGR_REGION_ASIA
     g_dwReplayKeyframeFrameCount = -1;
 #endif
 }
