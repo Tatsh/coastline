@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <fstream>
 
-#include "wavechunks.h"
+#include "ear/wavechunks.h"
 
 /** A file opened from a path, read through a stream, or a file in memory. */
 struct EarRiffFile {

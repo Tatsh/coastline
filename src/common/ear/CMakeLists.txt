@@ -46,7 +46,6 @@ if(TGR_PLATFORM STREQUAL "sdl")
   # The SDL game reads the wave files and mixes the buffers with SDL in place of the multimedia
   # I/O and DirectSound of Windows. The types shared with the PC release come from common/types.h,
   # and it includes the types of libultra.
-  target_sources(coastline_ear PRIVATE riff.cpp sdlmixer.cpp)
   target_include_directories(coastline_ear PUBLIC "${CMAKE_SOURCE_DIR}/src/common/libultra/include")
   target_link_libraries(coastline_ear PUBLIC SDL3::SDL3)
   # The calling convention of the exports exists only on 32-bit x86 Windows, as in common/types.h.
