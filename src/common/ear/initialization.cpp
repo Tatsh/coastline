@@ -7,8 +7,8 @@
 #include "channel.h"
 #include "configuration.h"
 #include "directionalmatrix.h"
+#include "ear/audiooutput.h"
 #include "ear/backend.h"
-#include "ear/directsoundoutput.h"
 #include "ear/registry.h"
 #include "ear/timer.h"
 #include "ear/window.h"
@@ -58,7 +58,7 @@ int __stdcall EAR_DLL_InitializeEar(std::uint32_t flags) {
         return 0;
     }
     InitializeSampleMemoryBudget();
-    g_bEarComponentsInitialized = InitializeDirectSoundOutput();
+    g_bEarComponentsInitialized = InitializeEarAudioOutput();
     if (!g_bEarComponentsInitialized) {
         return FailEarInitialization();
     }

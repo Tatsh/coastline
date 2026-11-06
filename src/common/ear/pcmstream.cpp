@@ -5,7 +5,7 @@
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <dsound.h>
 
-#include "ear/directsoundoutput.h"
+#include "ear/audiooutput.h"
 #else
 #include "ear/sdlmixer.h"
 #endif

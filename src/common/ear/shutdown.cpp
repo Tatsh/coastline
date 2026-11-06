@@ -2,7 +2,7 @@
 
 #include "channel.h"
 #include "directionalmatrix.h"
-#include "ear/directsoundoutput.h"
+#include "ear/audiooutput.h"
 #include "ear/timer.h"
 #include "environment.h"
 #include "error.h"
@@ -31,7 +31,7 @@ void __stdcall EAR_DLL_ShutDownEar(void) {
         ShutdownMusicDevicesAndRestoreMixer();
 #endif
     }
-    ShutdownDirectSoundOutput();
+    ShutdownEarAudioOutput();
     // The original clears the flags in a chain, each from the one cleared before it.
     g_bEarProcessAttached = 0;
     g_bPlaybackUpdateLocked = g_bEarProcessAttached;

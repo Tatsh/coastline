@@ -1,12 +1,13 @@
-#include "ear/directsoundoutput.h"
+#include "ear/audiooutput.h"
+
 #include "ear/error.h"
 #include "ear/sdlmixer.h"
 
-void ShutdownDirectSoundOutput() {
+void ShutdownEarAudioOutput() {
     EarCloseSdlMixer();
 }
 
-int InitializeDirectSoundOutput() {
+int InitializeEarAudioOutput() {
     // SDL has no cooperative level, and the output does not need the window of the game.
     if (!EarOpenSdlMixer()) {
         SetEarLastError(3);

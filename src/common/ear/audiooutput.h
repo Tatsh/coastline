@@ -1,5 +1,5 @@
-#ifndef COASTLINE_EAR_DIRECTSOUNDOUTPUT_H
-#define COASTLINE_EAR_DIRECTSOUNDOUTPUT_H
+#ifndef COASTLINE_EAR_AUDIOOUTPUT_H
+#define COASTLINE_EAR_AUDIOOUTPUT_H
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <cstdint>
@@ -38,7 +38,7 @@ private:
 
 /**
  * Allocated shared Windows output instance, or null before creation or after shutdown.
- * ShutdownDirectSoundOutput() deletes the instance and invalidates borrowed interfaces.
+ * ShutdownEarAudioOutput() deletes the instance and invalidates borrowed interfaces.
  * @ghidraAddress EAR: 0x1003b99c
  */
 extern EarDirectSoundOutput *g_pEarDirectSoundOutput;
@@ -52,16 +52,16 @@ extern "C" {
  * Release and clear the shared Windows output instance or close the SDL mixer.
  * @ghidraAddress EAR: 0x10010146
  */
-void ShutdownDirectSoundOutput(void);
+void ShutdownEarAudioOutput(void);
 /**
  * Create shared Windows output or open the SDL mixer; existing Windows output must be shut down.
  * @return One when an output interface is available; zero with EAR error 3 on initialisation
  * failure. Native Windows allocation failure is unchecked.
  * @ghidraAddress EAR: 0x1001018d
  */
-int InitializeDirectSoundOutput(void);
+int InitializeEarAudioOutput(void);
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* COASTLINE_EAR_DIRECTSOUNDOUTPUT_H */
+#endif /* COASTLINE_EAR_AUDIOOUTPUT_H */

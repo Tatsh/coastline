@@ -1,9 +1,8 @@
-#include "ear/directsoundoutput.h"
-
 #include <new>
 
 #include <objbase.h>
 
+#include "ear/audiooutput.h"
 #include "ear/error.h"
 #include "ear/mfc.h"
 #include "ear/window.h"
@@ -109,14 +108,14 @@ IDirectSound *EarDirectSoundOutput::GetDirectSoundInterface() {
     return device;
 }
 
-void ShutdownDirectSoundOutput() {
+void ShutdownEarAudioOutput() {
     if (g_pEarDirectSoundOutput) {
         delete g_pEarDirectSoundOutput;
         g_pEarDirectSoundOutput = nullptr;
     }
 }
 
-int InitializeDirectSoundOutput() {
+int InitializeEarAudioOutput() {
     void *storage = MfcAllocateWithNewHandler(sizeof(EarDirectSoundOutput));
     // Native allocation publishes null before the unchecked interface read.
     static_cast<EarDirectSoundOutput *volatile &>(g_pEarDirectSoundOutput) =
