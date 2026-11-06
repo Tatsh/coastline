@@ -23,6 +23,9 @@
 #include "common/ghost.h"
 #include "common/hud.h"
 #include "common/inputpoll.h"
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
+#include "common/networkrace.h"
+#endif
 #include "common/race.h"
 #include "common/racephases.h"
 #include "common/rallyconfig.h"
@@ -31,11 +34,6 @@
 #include "common/soundsystem.h"
 #include "common/vehicleaccess.h"
 #include "common/vehiclecount.h"
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
-#include "win32/directplay.h"
-#include "win32/input.h"
-#include "win32/sound.h"
-#endif
 #endif /* !TGR_BOSS_RALLY */
 
 #if TGR_BOSS_RALLY
