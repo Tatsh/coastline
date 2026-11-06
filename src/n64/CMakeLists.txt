@@ -54,6 +54,7 @@ set(_n64_sources
     vehicle.c
     vehicleengine.c
     vehicle-mesh-deform.c
+    vehicle-physics-step.c
     vehicle-track-position.c
     vehiclemodelrender.c
     vehiclerender.c

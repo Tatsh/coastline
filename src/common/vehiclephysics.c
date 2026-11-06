@@ -400,6 +400,7 @@ void TransformAllWheelMatrices(Vehicle *vehicle) {
     DROP_WHEELS(vehicle, -);
 }
 
+#if TGR_PLATFORM != TGR_PLATFORM_N64 || (!defined(__mips__) && !defined(__sgi))
 void SimulateVehiclePhysicsSubstep(Vehicle *vehicle) {
     RigidBody *body = &VEHICLE_GET(vehicle, Body);
     RigidBodyState *state = &body->state;
@@ -478,3 +479,4 @@ void SimulateVehiclePhysicsSubstep(Vehicle *vehicle) {
     UpdateVehicleWheelTransforms(vehicle);
     AddTimingMarker(0, 0, 0x80, 0, 0xFF);
 }
+#endif
