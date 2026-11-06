@@ -153,16 +153,8 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
                            VEHICLE_GET(vehicle, Frame).position.x,
                            VEHICLE_GET(vehicle, Frame).position.y,
                            VEHICLE_GET(vehicle, Frame).position.z);
-#if TGR_PLATFORM == TGR_PLATFORM_N64
-        SetVehicleVelocity(vehicle, 0, 0, 0);
-#else
         SetVehicleVelocity(vehicle, 0.0f, 0.0f, 0.0f);
-#endif
-#if TGR_PLATFORM == TGR_PLATFORM_N64
-        SetVehicleTurnRate(vehicle, 0, 0, 0);
-#else
         SetVehicleTurnRate(vehicle, 0.0f, 0.0f, 0.0f);
-#endif
         VEHICLE_SET(vehicle, EngineRpm, 0.0f);
 #if TGR_BOSS_RALLY
         RotateVehicleByEuler(vehicle,
@@ -266,9 +258,16 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
                 wheels[2]->drive = -vehicle->throttle * FRONT_DRIVE_SHARE;
                 wheels[3]->drive = -vehicle->throttle * FRONT_DRIVE_SHARE;
             } else {
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+                wheels[0]->drive = -vehicle->throttle;
+                wheels[1]->drive = -vehicle->throttle;
+                wheels[2]->drive = -vehicle->throttle;
+                wheels[3]->drive = -vehicle->throttle;
+#else
                 for (i = 0; i < VEHICLE_WHEELS; i++) {
                     wheels[i]->drive = -vehicle->throttle;
                 }
+#endif
             }
 #endif /* TGR_BOSS_RALLY */
         }
@@ -277,8 +276,13 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
             wheels[1]->brake = -VEHICLE_GET(vehicle, Brake);
             wheels[0]->drive = 0.0f;
             wheels[1]->drive = 0.0f;
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+            if ((wheels[2]->drive < 0.0f ? -wheels[2]->drive : wheels[2]->drive) <
+                FRONT_BRAKE_DRIVE_LIMIT) {
+#else
             drive = FRAME_LESS(wheels[2]->drive, 0.0f) ? -wheels[2]->drive : wheels[2]->drive;
             if (FRAME_LESS(drive, FRONT_BRAKE_DRIVE_LIMIT)) {
+#endif
                 wheels[2]->brake = -VEHICLE_GET(vehicle, Brake);
                 wheels[3]->brake = -VEHICLE_GET(vehicle, Brake);
             }
