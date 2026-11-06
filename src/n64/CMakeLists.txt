@@ -33,6 +33,7 @@ set(_n64_sources
     playerselect.c
     precipitation-update.c
     race.c
+    racer-slot-motion.c
     raceprogress.c
     racemenu.c
     racesound.c

@@ -45,6 +45,7 @@
         VEHICLE_GET(RACER_SLOT_GET(slot, Vehicle), Driver)(RACER_SLOT_GET(slot, Vehicle));         \
     }
 
+#if TGR_BOSS_RALLY
 void UpdateRacerSlotMotion(RacerSlot *slot) {
     Vehicle *pacer;
     TrackPoint *point;
@@ -177,3 +178,4 @@ void UpdateRacerSlotMotion(RacerSlot *slot) {
                       MOTION_INTERMEDIATE(1.0f) / g_fFrameDeltaTime);
     UpdateRaceProgress(slot);
 }
+#endif /* TGR_BOSS_RALLY */
