@@ -19,102 +19,108 @@
 /* The microseconds of a frame at 60 Hz. */
 #define FRAME_MICROSECONDS 16667
 
+#define DRAW_BITMAP_DOT(index)                                                                     \
+    if (rows[index]) {                                                                             \
+        dst[index] = dst[index + 1] = dst[index + 2] = dst[stride + index] =                       \
+            dst[stride + index + 2] = dst[stride + stride + index] =                               \
+                dst[stride + stride + index + 1] = dst[stride + stride + index + 2] =              \
+                    OUTLINE_COLOR;                                                                 \
+    }
+
 void DebugFrameStubA(void) {
 }
 
-/*
- * Each pixel of a glyph takes the 3 by 3 block of outline around it, and the centre of the block is
- * drawn a row later so that the outline of the next row cannot cover it.
- */
 void DrawBitmapTextToFramebuffer(const char *text) {
-    s32 stride = g_dwScreenWidth << g_dwScreenScaleShift;
-    s32 lineX = g_dwBitmapTextX;
-    s32 y = g_dwBitmapTextY;
-    u16 color = g_wBitmapTextColor;
-    s16 *dst = (s16 *)g_apFramebuffers[g_dwFrameBufferIndex ^ 1] + y * stride + lineX;
-    const u8 *p;
-    const s16 *rows;
     u8 c;
+    s32 stride;
+    s16 *dst;
+    s32 y;
+    u16 color;
     u8 glyph;
-    s32 row;
-    s32 column;
+    s32 x;
+    s16 *rows;
+    s32 i;
 
-    for (p = (const u8 *)text; (c = *p) != '\0'; p++) {
-        if (c >= ' ' && c < 0x7F) {
+    stride = g_dwScreenWidth << g_dwScreenScaleShift;
+    y = g_dwBitmapTextY;
+    x = g_dwBitmapTextX;
+    dst = (s16 *)g_apFramebuffers[g_dwFrameBufferIndex ^ 1];
+    dst += y * stride;
+    color = g_wBitmapTextColor;
+    dst += x;
+    for (; (c = *text); text++) {
+        if (c >= 0x20 && c < 0x7f) {
             if (c >= 'a' && c <= 'z') {
-                glyph = c - ('a' - 'A' + ' ');
-            } else {
-                /* The font keeps {|}~ in the places of the lower case letters. The second
-                 * comparison is always true here. */
-                if (c >= '{' && c < 0x7F) {
-                    c -= '{' - 'a';
-                }
-                glyph = c - ' ';
+                c -= 0x20;
+            } else if (c > 'z' && c < 0x7f) {
+                c -= 0x1a;
             }
+            glyph = c - 0x20;
         } else if (c == '\n') {
-            /* The column goes back to the margin, but the drawing carries on from where it was. */
-            lineX = TEXT_MARGIN << (g_dwScreenScaleShift * 2);
+            x = TEXT_MARGIN << (g_dwScreenScaleShift << 1);
             y += g_dwScreenScaleShift + NEWLINE_ROWS;
             dst += (g_dwScreenScaleShift + NEWLINE_ROWS) * stride;
             continue;
         } else {
             glyph = 0;
         }
-
         if (g_bBitmapTextNarrow) {
             rows = g_aBitmapFontNarrow[glyph][0];
-            for (row = 0; row <= BITMAP_FONT_ROWS; row++) {
-                if (row < BITMAP_FONT_ROWS) {
-                    for (column = 0; column < BITMAP_FONT_NARROW_COLUMNS; column++) {
-                        if (rows[column] != 0) {
-                            dst[column] = dst[column + 1] = dst[column + 2] = dst[stride + column] =
-                                dst[stride + column + 2] = dst[stride * 2 + column] =
-                                    dst[stride * 2 + column + 1] = dst[stride * 2 + column + 2] =
-                                        OUTLINE_COLOR;
-                        }
-                    }
+            for (i = 0; i != 8; i++, dst += stride, rows += 3) {
+                if (i < 7) {
+                    DRAW_BITMAP_DOT(0)
+                    DRAW_BITMAP_DOT(1)
+                    DRAW_BITMAP_DOT(2)
                 }
-                if (row != 0) {
-                    for (column = 0; column < BITMAP_FONT_NARROW_COLUMNS; column++) {
-                        if (rows[column - BITMAP_FONT_NARROW_COLUMNS] != 0) {
-                            dst[column + 1] = rows[column - BITMAP_FONT_NARROW_COLUMNS];
-                        }
+                if (i != 0) {
+                    rows -= 3;
+                    if (rows[0]) {
+                        dst[1] = rows[0];
                     }
+                    if (rows[1]) {
+                        dst[2] = rows[1];
+                    }
+                    if (rows[2]) {
+                        dst[3] = rows[2];
+                    }
+                    rows += 3;
                 }
-                dst += stride;
-                rows += BITMAP_FONT_NARROW_COLUMNS;
             }
-            dst -= stride * (BITMAP_FONT_ROWS + 1) - g_dwScreenScaleShift -
-                   (BITMAP_FONT_NARROW_COLUMNS + 1);
+            dst -= stride * 8 - g_dwScreenScaleShift - 4;
         } else {
             rows = g_aBitmapFontWide[glyph][0];
-            for (row = 0; row <= BITMAP_FONT_ROWS; row++) {
-                if (row < BITMAP_FONT_ROWS) {
-                    for (column = 0; column < BITMAP_FONT_WIDE_COLUMNS; column++) {
-                        if (rows[column] != 0) {
-                            dst[column] = dst[column + 1] = dst[column + 2] = dst[stride + column] =
-                                dst[stride + column + 2] = dst[stride * 2 + column] =
-                                    dst[stride * 2 + column + 1] = dst[stride * 2 + column + 2] =
-                                        OUTLINE_COLOR;
-                        }
-                    }
+            for (i = 0; i != 8; i++, dst += stride, rows += 5) {
+                if (i < 7) {
+                    DRAW_BITMAP_DOT(0)
+                    DRAW_BITMAP_DOT(1)
+                    DRAW_BITMAP_DOT(2)
+                    DRAW_BITMAP_DOT(3)
+                    DRAW_BITMAP_DOT(4)
                 }
-                if (row != 0) {
-                    for (column = 0; column < BITMAP_FONT_WIDE_COLUMNS; column++) {
-                        if (rows[column - BITMAP_FONT_WIDE_COLUMNS] != 0) {
-                            dst[column + 1] = color;
-                        }
+                if (i != 0) {
+                    rows -= 5;
+                    if (rows[0]) {
+                        dst[1] = color;
                     }
+                    if (rows[1]) {
+                        dst[2] = color;
+                    }
+                    if (rows[2]) {
+                        dst[3] = color;
+                    }
+                    if (rows[3]) {
+                        dst[4] = color;
+                    }
+                    if (rows[4]) {
+                        dst[5] = color;
+                    }
+                    rows += 5;
                 }
-                dst += stride;
-                rows += BITMAP_FONT_WIDE_COLUMNS;
             }
-            dst -= stride * (BITMAP_FONT_ROWS + 1) - g_dwScreenScaleShift -
-                   (BITMAP_FONT_WIDE_COLUMNS + 1);
+            dst -= stride * 8 - g_dwScreenScaleShift - 6;
         }
     }
-
-    g_dwBitmapTextX = lineX;
+    g_dwBitmapTextX = x;
     g_dwBitmapTextY = y;
 }
 
