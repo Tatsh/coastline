@@ -132,7 +132,7 @@ u32 DecompressFromRom(void *dst, u32 rom, DecompressJob *job) {
     job->remaining--;
     return 0;
 }
-void TransferFlags(PlayerInputState *s, u32 m) {
+void TransferFlags(PlayerInputState *s, s32 m) {
     transferred = m;
     s->buttons &= ~m;
 }

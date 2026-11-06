@@ -93,7 +93,7 @@ void SwapBytes(u8 *a, u8 *b) {
     *b = t;
 }
 
-void TransferFlags(PlayerInputState *state, u32 mask) {
+void TransferFlags(PlayerInputState *state, s32 mask) {
     state->buttons &= ~mask;
 }
 void UpdateStickRepeat(PlayerInputState *state) {

@@ -157,7 +157,7 @@ void SetScissorRect(s32 x, s32 y, s32 w, s32 h) {
     scissor[2] = w;
     scissor[3] = h;
 }
-void TransferFlags(PlayerInputState *state, u32 mask) {
+void TransferFlags(PlayerInputState *state, s32 mask) {
     state->buttons &= ~mask;
     transfers++;
 }

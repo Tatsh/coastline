@@ -113,7 +113,7 @@ s32 CastRayAgainstTrack(Vec3f *outPoint,
                         s32 *surface) {
     return 0;
 }
-void TransferFlags(PlayerInputState *state, u32 mask) {
+void TransferFlags(PlayerInputState *state, s32 mask) {
     state->buttons &= ~mask;
 }
 void PlayBeepSound(void) {

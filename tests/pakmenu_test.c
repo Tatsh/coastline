@@ -153,7 +153,7 @@ void DrawText(const char *t, s32 x, s32 y) {
 }
 void UpdateStickRepeat(PlayerInputState *s) {
 }
-void TransferFlags(PlayerInputState *s, u32 m) {
+void TransferFlags(PlayerInputState *s, s32 m) {
     s->buttons &= ~m;
 }
 

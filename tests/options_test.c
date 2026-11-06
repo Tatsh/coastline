@@ -159,7 +159,7 @@ void StartTimeAttack(void) {
 void StartCreditsRace(void) {
     credits++;
 }
-void TransferFlags(PlayerInputState *state, u32 mask) {
+void TransferFlags(PlayerInputState *state, s32 mask) {
     state->buttons &= ~mask;
 }
 void UpdateStickRepeat(PlayerInputState *state) {

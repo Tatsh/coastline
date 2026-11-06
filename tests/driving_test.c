@@ -32,7 +32,7 @@ Vec3f g_avTraceLeftLane[TRACE_DEPTH], g_avTraceLeftHalf[TRACE_DEPTH],
 Vec3f g_avTraceRightHalf[TRACE_DEPTH], g_avTraceRightLane[TRACE_DEPTH];
 Vec3f g_vTraceFarPoint, g_vTraceHalfwayPoint;
 
-void TransferFlags(PlayerInputState *state, u32 mask) {
+void TransferFlags(PlayerInputState *state, s32 mask) {
     state->buttons &= ~mask;
 }
 void PlaceTrackCamera(Vehicle *vehicle) {

@@ -89,7 +89,7 @@ s32 IsFadingOut(void) {
 s32 IsFadeComplete(void) {
     return fadeComplete;
 }
-void TransferFlags(PlayerInputState *input, u32 flags) {
+void TransferFlags(PlayerInputState *input, s32 flags) {
 }
 void UpdateStickRepeat(PlayerInputState *input) {
 }
