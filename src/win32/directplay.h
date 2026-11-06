@@ -246,14 +246,6 @@ void WriteTimestampToStream(NetStream *pStream);
 extern unsigned g_dwNetRaceStartFrame;
 
 /**
- * Mark the network race started when its start frame has arrived.
- *
- * @ghidraAddress BRD3D: 0x10006160
- * @ghidraAddress BRGlide: 0x100064d0
- */
-void CheckNetworkRaceStartTime(void);
-
-/**
  * Destroy the local player of DirectPlay, when there is one.
  *
  * @return The result of DestroyPlayer, or DP_OK without a player.
@@ -517,12 +509,6 @@ HRESULT UpdateNetworkSessionSettings(void);
 bool InitializeNetworkMutexes(int nReason);
 
 /**
- * @ghidraAddress BRD3D: 0x10005960
- * @ghidraAddress BRGlide: 0x10005cd0
- */
-bool ResetNetworkState(void);
-
-/**
  * Copy g_szSessionName into the settings of a session when it is longer than one character, and
  * clear whether the session is secure.
  *
@@ -724,29 +710,12 @@ bool SetNetworkReadyToStartFlag(void);
 extern int g_bNetReceiveEnabled;
 
 /**
- * Process the messages received.
- *
- * @ghidraAddress BRD3D: 0x10006090
- * @ghidraAddress BRGlide: 0x10006400
- */
-void EnableNetworkReceive(void);
-
-/**
  * The slot of the local player of a network game, -1 before one is assigned.
  *
  * @ghidraAddress BRD3D: 0x10094294
  * @ghidraAddress BRGlide: 0x1007b264
  */
 extern int g_dwLocalNetPlayerId;
-
-/**
- * Get the slot of the local player of a network game.
- *
- * @return The slot, or -1 before one is assigned.
- * @ghidraAddress BRD3D: 0x10005d30
- * @ghidraAddress BRGlide: 0x100060a0
- */
-int GetLocalPlayerIndex(void);
 
 /**
  * Send the request to pause of a network game.
@@ -921,12 +890,6 @@ int SendPlayerJoinPacket(DirectPlayInfo *pInfo,
                          const char *name,
                          unsigned char tag);
 
-/**
- * @ghidraAddress BRD3D: 0x10004a90
- * @ghidraAddress BRGlide: 0x10004e00
- */
-unsigned WaitForPlayerIdAssignment(void);
-
 /** The number of entries of g_aNetPeerSlots. */
 #define NET_PEER_SLOT_COUNT 16
 
@@ -937,12 +900,6 @@ unsigned WaitForPlayerIdAssignment(void);
  * @ghidraAddress BRGlide: 0x1021ce58
  */
 extern NetPeerSlot g_aNetPeerSlots[NET_PEER_SLOT_COUNT];
-
-/**
- * @ghidraAddress BRD3D: 0x10005ee0
- * @ghidraAddress BRGlide: 0x10006250
- */
-void CopyPlayerNameToSlotBuffer(int slotIndex, const char *name);
 
 /**
  * Get the time of the last round trip to the player of a slot, under the mutex of the slot.
@@ -993,15 +950,6 @@ int GetSlotStatusThreadSafe(int nSlot);
 int GetNormalizedSlotStatusFlags(int nSlot);
 
 /**
- * The number of players in the network session.
- *
- * @return The number, or 0xffff when the description of the session is not available.
- * @ghidraAddress BRD3D: 0x1000c670
- * @ghidraAddress BRGlide: 0x10009ba0
- */
-DWORD GetDirectPlaySessionPlayerCount(void);
-
-/**
  * Set the status of a slot of a peer under the mutex of the slot.
  *
  * @param nSlot The slot.
@@ -1028,12 +976,6 @@ extern char g_szNetStatusString[];
 extern int g_bNetStatusStringDirty;
 
 /**
- * @ghidraAddress BRD3D: 0x100060f0
- * @ghidraAddress BRGlide: 0x10006460
- */
-void ProcessPendingNetworkNotifications(void);
-
-/**
  * @ghidraAddress BRD3D: 0x10005de0
  * @ghidraAddress BRGlide: 0x10006150
  */
@@ -1041,18 +983,6 @@ unsigned ReadPlayerSlotColorRgb(int slotIndex,
                                 unsigned char *red,
                                 unsigned char *green,
                                 unsigned char *blue);
-
-/**
- * @ghidraAddress BRD3D: 0x1002f130
- * @ghidraAddress BRGlide: 0x1001c6a0
- */
-void AddNetworkPlayerSlot(int slotIndex);
-
-/**
- * @ghidraAddress BRD3D: 0x1002f230
- * @ghidraAddress BRGlide: 0x1001c7a0
- */
-void RemoveNetworkPlayerById(int slotIndex);
 
 /**
  * Set the line of status of network play under the mutex of the notices.
@@ -1097,24 +1027,6 @@ extern int g_anJoinedPlayerSlotStack[PLAYER_SLOT_STACK_SIZE];
  * @ghidraAddress BRGlide: 0x1021c904
  */
 extern int g_nJoinedPlayerStackTop;
-
-/**
- * Pop the slot of a player that joined, under the mutex of the stack.
- *
- * @return The slot, or -1 when the stack is empty.
- * @ghidraAddress BRD3D: 0x10005d40
- * @ghidraAddress BRGlide: 0x100060b0
- */
-int PopJoinedPlayerSlot(void);
-
-/**
- * Pop the slot of a player that departed, under the mutex of the stack.
- *
- * @return The slot, or -1 when the stack is empty.
- * @ghidraAddress BRD3D: 0x10005d90
- * @ghidraAddress BRGlide: 0x10006100
- */
-int PopDepartedPlayerSlot(void);
 
 /**
  * The mutex of the start of a network race.
