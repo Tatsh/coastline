@@ -1147,9 +1147,20 @@ void DrawDashedRoundedRect(s32 x0, s32 y0, s32 x1, s32 y1) {
 }
 
 void DrawDashedEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
-    s32 radiusX, radiusY, squareX, squareY, stepSquareX, stepSquareY, x, y, error, stepX, stepY;
-    s32 increment, phase, swap;
     u8 color;
+    s32 radiusY;
+    s32 radiusX;
+    s32 swap;
+    s32 centerX;
+    s32 centerY;
+    s32 x;
+    s32 y;
+    s32 error;
+    s32 squareY;
+    s32 squareX;
+    s32 stepSquareY;
+    s32 stepSquareX;
+    s32 phase;
 
     phase = 0;
     if (x1 - x0 < 0) {
@@ -1162,96 +1173,75 @@ void DrawDashedEllipse(s32 x0, s32 y0, s32 x1, s32 y1) {
         y0 = y1;
         y1 = swap;
     }
-    radiusY = (y1 - y0) >> 1;
-    if (radiusY < 2) {
-        radiusY = 1;
-    }
-    radiusX = (x1 - x0) >> 1;
-    if (radiusX < 2) {
-        radiusX = 1;
-    }
-    /* The steps use their own copies of the squares, as in the original. */
+    centerX = MIDPOINT(x0, x1);
+    centerY = MIDPOINT(y0, y1);
+    radiusY = (y1 - y0) >> 1 >= 2 ? (y1 - y0) >> 1 : 1;
+    radiusX = (x1 - x0) >> 1 >= 2 ? (x1 - x0) >> 1 : 1;
     squareY = stepSquareY = radiusY * radiusY;
     squareX = stepSquareX = radiusX * radiusX;
-
-    /* The points are drawn where X is odd in the first region and where Y is odd in the second. */
-    x = 0;
     y = radiusY * 2;
+    x = 0;
     error = -squareX * y;
     AdvanceDashes();
-    if (squareX * y >= 0) {
-        stepY = stepSquareX * y;
-        stepX = x * stepSquareY;
-        increment = squareY * x;
-        do {
-            if ((x & 1) == 0) {
-                phase = (phase + 1) % DASH_PERIOD;
-                color = DashColor(phase);
-                if ((MIDPOINT(x0, x1) + (x >> 1)) & 1) {
-                    DrawPixel(MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) + (y >> 1), color);
-                }
-                if ((MIDPOINT(x0, x1) + (x >> 1)) & 1) {
-                    DrawPixel(MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) - (y >> 1), color);
-                }
-                if ((MIDPOINT(x0, x1) - (x >> 1)) & 1) {
-                    DrawPixel(MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) - (y >> 1), color);
-                }
-                if ((MIDPOINT(x0, x1) - (x >> 1)) & 1) {
-                    DrawPixel(MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) + (y >> 1), color);
-                }
+    while (x * stepSquareY <= stepSquareX * y) {
+        if (!(x & 1)) {
+            phase++;
+            phase %= DASH_PERIOD;
+            color = DashColor(phase);
+            if (((x >> 1) + centerX) & 1) {
+                DrawPixel((x >> 1) + centerX, (y >> 1) + centerY, color);
             }
-            error += increment;
-            stepX += stepSquareY;
-            x++;
-            increment += radiusY * radiusY;
-            error += increment;
-            if (error > 0) {
-                error -= squareX * y;
-                y--;
-                stepY -= stepSquareX;
-                error -= squareX * y;
+            if (((x >> 1) + centerX) & 1) {
+                DrawPixel((x >> 1) + centerX, centerY - (y >> 1), color);
             }
-        } while (stepY >= stepX);
+            if ((centerX - (x >> 1)) & 1) {
+                DrawPixel(centerX - (x >> 1), centerY - (y >> 1), color);
+            }
+            if ((centerX - (x >> 1)) & 1) {
+                DrawPixel(centerX - (x >> 1), (y >> 1) + centerY, color);
+            }
+        }
+        error += squareY * x;
+        x++;
+        error += squareY * x;
+        if (error > 0) {
+            error -= squareX * y;
+            y--;
+            error -= squareX * y;
+        }
     }
-
     y = 0;
     x = radiusX * 2;
     error = -squareY * x;
-    if (x * squareY < 0) {
-        return;
+    if (squareX * y <= x * squareY) {
+        do {
+            if (!(y & 1)) {
+                phase++;
+                phase %= DASH_PERIOD;
+                color = DashColor(phase);
+                if (((y >> 1) + centerY) & 1) {
+                    DrawPixel((x >> 1) + centerX, (y >> 1) + centerY, color);
+                }
+                if ((centerY - (y >> 1)) & 1) {
+                    DrawPixel((x >> 1) + centerX, centerY - (y >> 1), color);
+                }
+                if ((centerY - (y >> 1)) & 1) {
+                    DrawPixel(centerX - (x >> 1), centerY - (y >> 1), color);
+                }
+                if (((y >> 1) + centerY) & 1) {
+                    DrawPixel(centerX - (x >> 1), (y >> 1) + centerY, color);
+                }
+            }
+            error += squareX * y;
+            y++;
+            error += squareX * y;
+            if (error > 0) {
+                error -= squareY * x;
+                x--;
+                error -= squareY * x;
+            }
+        } while (stepSquareX * y <= x * stepSquareY);
     }
-    stepY = 0;
-    increment = 0;
-    stepX = x * stepSquareY;
-    do {
-        if ((y & 1) == 0) {
-            phase = (phase + 1) % DASH_PERIOD;
-            color = DashColor(phase);
-            if ((MIDPOINT(y0, y1) + (y >> 1)) & 1) {
-                DrawPixel(MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) + (y >> 1), color);
-            }
-            if ((MIDPOINT(y0, y1) - (y >> 1)) & 1) {
-                DrawPixel(MIDPOINT(x0, x1) + (x >> 1), MIDPOINT(y0, y1) - (y >> 1), color);
-            }
-            if ((MIDPOINT(y0, y1) - (y >> 1)) & 1) {
-                DrawPixel(MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) - (y >> 1), color);
-            }
-            if ((MIDPOINT(y0, y1) + (y >> 1)) & 1) {
-                DrawPixel(MIDPOINT(x0, x1) - (x >> 1), MIDPOINT(y0, y1) + (y >> 1), color);
-            }
-        }
-        error += increment;
-        stepY += stepSquareX;
-        y++;
-        increment += radiusX * radiusX;
-        error += increment;
-        if (error > 0) {
-            error -= squareY * x;
-            x--;
-            stepX -= stepSquareY;
-            error -= squareY * x;
-        }
-    } while (stepX >= stepY);
 }
 
 void DrawDashedCircle(s32 x, s32 y, s32 radius) {
