@@ -71,6 +71,7 @@ namespace {
 #define NEGATE_DRIFT(value) (-(value))
 #endif /* TGR_BOSS_RALLY */
 
+#if TGR_BOSS_RALLY
 void UpdatePrecipitationParticles(void) {
     CameraFrame *camera;
     Vec3f eye, move;
@@ -227,3 +228,4 @@ void UpdatePrecipitationParticles(void) {
         }
     }
 }
+#endif /* TGR_BOSS_RALLY */

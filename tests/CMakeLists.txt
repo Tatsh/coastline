@@ -202,7 +202,8 @@ target_compile_options(visgrid_patched_test PRIVATE -UTGR_PLATFORM
 target_compile_definitions(visgrid_patched_test PRIVATE ENABLE_PATCHES=1)
 target_link_options(visgrid_patched_test PRIVATE
   -fsanitize=float-cast-overflow,float-divide-by-zero)
-coastline_add_test(weather ${_common} "${_src}/common/lightning.c" "${_src}/common/raininit.c")
+coastline_add_test(weather ${_common} "${_src}/common/lightning.c" "${_src}/common/raininit.c"
+                   "${_src}/n64/precipitation-update.c")
 
 # The libultra C library, renamed apart from the host's.
 coastline_add_test(bcopy stubs/libc.c)

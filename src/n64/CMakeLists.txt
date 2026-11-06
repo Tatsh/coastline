@@ -30,6 +30,7 @@ set(_n64_sources
     physics.c
     playercontrol.c
     playerselect.c
+    precipitation-update.c
     race.c
     raceprogress.c
     racemenu.c
