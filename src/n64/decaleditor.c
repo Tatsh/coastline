@@ -916,175 +916,174 @@ void ProcessBrushStyleMenu(void) {
 }
 
 void ProcessTextStyleMenu(void) {
-    PaletteSwatch swatches[DECAL_SWATCHES];
+    /* IDO reserves these unused slots in the original stack frame. */
+#ifdef __sgi
+    int styleStackPad[5];
+#endif
+    int cancelX;
+#ifdef __sgi
+    int menuStackPad[4];
+#endif
+    unsigned int swatchIndex;
+    int buttonY;
+    int textY;
+    char selectButtonX;
     ScreenRect choices[2];
+    PaletteSwatch swatches[16];
 #if SHOWS_STYLE_NAMES
-    TwoStyleNames names;
+    char *styleNames[2] = {"NORMAL TEXT", "DROP-SHADOW TEXT"};
 #endif
-    PlayerInputState *input;
-    PaletteSwatch *swatch;
-    s32 i, buttonY, cancelX, textY, selectX;
 
-#if SHOWS_STYLE_NAMES
-    /* The names are read from a copy on the stack. */
-    names = *(TwoStyleNames *)g_apszTextStyleNames;
-#endif
-    DrawRectBorder(0xB4, 0x82, 0x118, 0xD0, 3, 0, 0, 0x80, 0x80, 0x80);
+    DrawRectBorder(0xb4, 0x82, 0x118, 0xd0, 3, 0, 0, 0x80, 0x80, 0x80);
     SetTextSize(16);
     SetTextAlignCenter();
     SetTextStyleNormal();
-    DrawText("%rySELECT OPTION", 0x9F, 0x53);
-    if (g_bPaintToolStarted) {
+    DrawText("%rySELECT OPTION", 0x9f, 0x53);
+    if (g_bPaintToolStarted != 0) {
         g_bStyleMenuCursor = g_texPaintToolText.style;
         g_bSavedColor = g_bTextShadowColor;
-        g_bPaintToolStarted = FALSE;
-        g_bTextShadowPickerOpen = FALSE;
+        g_bPaintToolStarted = 0;
+        g_bTextShadowPickerOpen = 0;
     }
-    choices[0].x = 0xF0;
-    choices[0].y = 0xB8;
-    choices[0].width = 0x40;
-    choices[0].height = 0x40;
+    choices[0].x = 0xf0;
     choices[1].x = 0x150;
-    choices[1].y = 0xB8;
-    choices[1].width = 0x40;
-    choices[1].height = 0x40;
-    for (i = 0; i < 2; i++) {
-        /* The width is passed as the height too. */
-        if (i == g_bStyleMenuCursor) {
-            DrawRectOutline(choices[i].x,
-                            choices[i].y,
-                            choices[i].width,
-                            choices[i].width,
+    /* IDO schedules both stores correctly when they share a source line. */
+    choices[1].y = 0xb8, choices[0].y = 0xb8;
+    choices[0].width = choices[1].width = 0x40;
+    choices[0].height = choices[1].height = 0x40;
+    for (swatchIndex = 0; (int)swatchIndex < 2; swatchIndex++) {
+        if (swatchIndex == g_bStyleMenuCursor) {
+            DrawRectOutline(choices[swatchIndex].x,
+                            choices[swatchIndex].y,
+                            choices[swatchIndex].width,
+                            choices[swatchIndex].width,
                             1,
-                            HIGHLIGHT_RED,
-                            HIGHLIGHT_GREEN,
-                            HIGHLIGHT_BLUE);
+                            0x20,
+                            200,
+                            0xff);
         } else {
-            DrawRectOutline(choices[i].x,
-                            choices[i].y,
-                            choices[i].width,
-                            choices[i].width,
+            DrawRectOutline(choices[swatchIndex].x,
+                            choices[swatchIndex].y,
+                            choices[swatchIndex].width,
+                            choices[swatchIndex].width,
                             1,
                             0x20,
                             0x20,
                             0x20);
         }
     }
-    swatch = &g_aDecalSwatches[g_bDecalColor];
     DrawScaledTexturedRect(&g_texDecalFont,
-                           PREVIEW_GLYPH * 16,
+                           0xa0,
                            0,
-                           16,
-                           16,
+                           0x10,
+                           0x10,
                            choices[0].x + 7,
                            choices[0].y + 10,
                            0x30,
                            0x30,
-                           swatch->color[0],
-                           swatch->color[1],
-                           swatch->color[2]);
-    swatch = &g_aDecalSwatches[g_bTextShadowColor];
+                           g_aDecalSwatches[g_bDecalColor].color[0],
+                           g_aDecalSwatches[g_bDecalColor].color[1],
+                           g_aDecalSwatches[g_bDecalColor].color[2]);
     DrawScaledTexturedRect(&g_texDecalFont,
-                           PREVIEW_GLYPH * 16,
+                           0xa0,
                            0,
-                           16,
-                           16,
+                           0x10,
+                           0x10,
                            choices[1].x + 9,
                            choices[1].y + 12,
                            0x30,
                            0x30,
-                           swatch->color[0],
-                           swatch->color[1],
-                           swatch->color[2]);
-    swatch = &g_aDecalSwatches[g_bDecalColor];
+                           g_aDecalSwatches[g_bTextShadowColor].color[0],
+                           g_aDecalSwatches[g_bTextShadowColor].color[1],
+                           g_aDecalSwatches[g_bTextShadowColor].color[2]);
     DrawScaledTexturedRect(&g_texDecalFont,
-                           PREVIEW_GLYPH * 16,
+                           0xa0,
                            0,
-                           16,
-                           16,
+                           0x10,
+                           0x10,
                            choices[1].x + 5,
                            choices[1].y + 8,
                            0x30,
                            0x30,
-                           swatch->color[0],
-                           swatch->color[1],
-                           swatch->color[2]);
-
-    if (!g_bTextShadowPickerOpen) {
-#if SHOWS_STYLE_NAMES
-        DrawRectBorder(
-            0xC6, choices[0].height + choices[0].y + 0x11, 0xF4, 0x1E, 1, 1, 1, 0x80, 0x80, 0x80);
-#endif
+                           g_aDecalSwatches[g_bDecalColor].color[0],
+                           g_aDecalSwatches[g_bDecalColor].color[1],
+                           g_aDecalSwatches[g_bDecalColor].color[2]);
+    selectButtonX = 0xd6;
+    if (g_bTextShadowPickerOpen == 0) {
+#if !SHOWS_STYLE_NAMES
         SetTextSize(11);
-        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xF5, 0);
-#if SHOWS_STYLE_NAMES
+        SetTextCustomColors(0xff, 0xff, 0xff, 0xff, 0xf5, 0);
+#else
+        DrawRectBorder(
+            0xc6, choices[0].y + choices[0].height + 0x11, 0xf4, 0x1e, 1, 1, 1, 0x80, 0x80, 0x80);
+        SetTextSize(11);
+        SetTextCustomColors(0xff, 0xff, 0xff, 0xff, 0xf5, 0);
         DrawText(
-            names.name[g_bStyleMenuCursor], 0x9E, (choices[1].height + choices[0].y + 0x26) >> 1);
+            styleNames[g_bStyleMenuCursor], 0x9e, (choices[0].y + choices[1].height + 0x26) >> 1);
 #endif
         SetTextSize(10);
         SetTextAlignLeft();
-        /* The button A is placed by its width and the button B by its height. */
-        buttonY = 0x14A - g_texButtonA.width;
-        cancelX = 0x160 - g_texButtonB.height;
+        buttonY = 0x14a - g_texButtonA.width;
         textY = (buttonY + 0x12) >> 1;
-        DrawText("%wwSELECT", (g_texButtonA.width + 0xDC) >> 1, textY);
-        DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, textY);
-        DrawTexturedSprite(&g_texButtonA, 0xD6, buttonY);
+        cancelX = 0x160 - g_texButtonB.height;
+        DrawText("%wwSELECT", (selectButtonX + (unsigned int)g_texButtonA.width + 6) >> 1, textY);
+        DrawText("%wwCANCEL", (cancelX + (unsigned int)g_texButtonB.width + 6) >> 1, textY);
+        DrawTexturedSprite(&g_texButtonA, selectButtonX, buttonY);
         DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
         UpdateStickRepeat(PaintShopInput());
-        input = PaintShopInput();
-        if (input->buttons & (INPUT_RIGHT | INPUT_LEFT)) {
-            TransferFlags(input, INPUT_RIGHT | INPUT_LEFT);
+        if (PaintShopInput()->buttons & 5) {
+            TransferFlags(PaintShopInput(), 5);
             g_bStyleMenuCursor ^= 1;
         }
     } else {
-        DrawRectBorder(0xC6, 0x106, 0x116, 0x84, 2, 0, 0, 0x80, 0x80, 0x80);
+        DrawRectBorder(0xc6, 0x106, 0x116, 0x84, 2, 0, 0, 0x80, 0x80, 0x80);
         SetTextSize(12);
-        SetTextCustomColors(0xFF, 0xFF, 0xFF, 0xFF, 0xCA, 0);
+        SetTextCustomColors(0xff, 0xff, 0xff, 0xff, 0xca, 0);
         SetTextAlignCenter();
-        DrawText("SELECT SHADOW COLOR", 0xA7, 0x92);
-        /* Two rows of eight. */
-        for (i = 0; i < DECAL_SWATCHES; i++) {
-            swatches[i].rect.width = 0x14;
-            swatches[i].rect.height = 0x10;
-            swatches[i].rect.x = (i % 8) * 30 + 0xDE;
-            swatches[i].rect.y = (i >> 3) * 26 + 0x134;
-            DrawRectBorder(swatches[i].rect.x,
-                           swatches[i].rect.y,
+        DrawText("SELECT SHADOW COLOR", 0xa7, 0x92);
+        for (swatchIndex = 0; (int)swatchIndex < 16; swatchIndex++) {
+            swatches[swatchIndex].rect.width = 0x14;
+            swatches[swatchIndex].rect.height = 0x10;
+            swatches[swatchIndex].rect.x = ((int)swatchIndex % 8) * 0x1e + 0xde;
+            swatches[swatchIndex].rect.y = ((int)swatchIndex >> 3) * 0x1a + 0x134;
+            DrawRectBorder(swatches[swatchIndex].rect.x,
+                           swatches[swatchIndex].rect.y,
                            0x14,
                            0x10,
                            1,
                            0,
                            1,
-                           g_aDecalSwatches[i].color[0],
-                           g_aDecalSwatches[i].color[1],
-                           g_aDecalSwatches[i].color[2]);
+                           g_aDecalSwatches[swatchIndex].color[0],
+                           g_aDecalSwatches[swatchIndex].color[1],
+                           g_aDecalSwatches[swatchIndex].color[2]);
         }
-        swatch = &swatches[g_bTextShadowColor];
-        DrawRectOutline(swatch->rect.x - 3,
-                        swatch->rect.y - 3,
-                        swatch->rect.width + 6,
-                        swatch->rect.height + 6,
+        DrawRectOutline(swatches[g_bTextShadowColor].rect.x - 3,
+                        swatches[g_bTextShadowColor].rect.y - 3,
+                        swatches[g_bTextShadowColor].rect.width + 6,
+                        swatches[g_bTextShadowColor].rect.height + 6,
                         1,
-                        HIGHLIGHT_RED,
-                        HIGHLIGHT_GREEN,
-                        HIGHLIGHT_BLUE);
+                        0x20,
+                        200,
+                        0xff);
         buttonY = 0x182 - g_texButtonA.height;
-        cancelX = 0x16E - g_texButtonB.height;
-        /* The position of the button A is stored on the stack for its label. */
-        selectX = 0xE6;
-        DrawTexturedSprite(&g_texButtonA, selectX, buttonY);
-        DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
-        SetTextSize(10);
-        SetTextAlignLeft();
-        textY = (buttonY + 0x12) >> 1;
-        DrawText("%wwSELECT", (selectX + g_texButtonA.width + 6) >> 1, textY);
-        DrawText("%wwCANCEL", (cancelX + g_texButtonB.width + 6) >> 1, textY);
-
+        cancelX = 0x16e - g_texButtonB.height;
+        {
+#ifdef __sgi
+            int pickerStackPad[1];
+#endif
+            selectButtonX += 0x10;
+            DrawTexturedSprite(&g_texButtonA, selectButtonX, buttonY);
+            DrawTexturedSprite(&g_texButtonB, cancelX, buttonY);
+            SetTextSize(10);
+            SetTextAlignLeft();
+            textY = (buttonY + 0x12) >> 1;
+            DrawText(
+                "%wwSELECT", (selectButtonX + (unsigned int)g_texButtonA.width + 6) >> 1, textY);
+            DrawText("%wwCANCEL", (cancelX + (unsigned int)g_texButtonB.width + 6) >> 1, textY);
+        }
         UpdateStickRepeat(PaintShopInput());
-        input = PaintShopInput();
-        if (input->buttons & INPUT_LEFT) {
-            TransferFlags(input, INPUT_LEFT);
+        if (PaintShopInput()->buttons & 4) {
+            TransferFlags(PaintShopInput(), 4);
             if (g_bTextShadowColor == 0) {
                 g_bTextShadowColor = 7;
             } else if (g_bTextShadowColor == 8) {
@@ -1092,8 +1091,8 @@ void ProcessTextStyleMenu(void) {
             } else {
                 g_bTextShadowColor--;
             }
-        } else if (input->buttons & INPUT_RIGHT) {
-            TransferFlags(input, INPUT_RIGHT);
+        } else if (PaintShopInput()->buttons & 1) {
+            TransferFlags(PaintShopInput(), 1);
             if (g_bTextShadowColor == 7) {
                 g_bTextShadowColor = 0;
             } else if (g_bTextShadowColor == 15) {
@@ -1101,41 +1100,36 @@ void ProcessTextStyleMenu(void) {
             } else {
                 g_bTextShadowColor++;
             }
-        } else if (input->buttons & (INPUT_DOWN | INPUT_UP)) {
-            TransferFlags(input, INPUT_DOWN | INPUT_UP);
+        } else if (PaintShopInput()->buttons & 10) {
+            TransferFlags(PaintShopInput(), 10);
             if (g_bTextShadowColor < 8) {
                 g_bTextShadowColor += 8;
             } else {
                 g_bTextShadowColor -= 8;
             }
         }
-        input = PaintShopInput();
-        if (input->buttons & INPUT_A) {
-            TransferFlags(input, INPUT_A);
+        if (PaintShopInput()->buttons & 0x10) {
+            TransferFlags(PaintShopInput(), 0x10);
             g_texPaintToolText.style = g_bStyleMenuCursor;
-            g_bTextShadowPickerOpen = FALSE;
-            g_bStyleMenuOpen = FALSE;
-        } else if (input->buttons & INPUT_B) {
-            TransferFlags(input, INPUT_B);
+            g_bTextShadowPickerOpen = 0;
+            g_bStyleMenuOpen = 0;
+        } else if (PaintShopInput()->buttons & 0x20) {
+            TransferFlags(PaintShopInput(), 0x20);
             g_bTextShadowColor = g_bSavedColor;
-            g_bTextShadowPickerOpen = FALSE;
+            g_bTextShadowPickerOpen = 0;
         }
     }
-
-    /* A on the drop shadow opens its colors. A on normal text closes the menu without setting the
-     * style, and a drop shadow stays on. Past the colors, the buttons are already taken. */
-    input = PaintShopInput();
-    if (input->buttons & INPUT_A) {
-        TransferFlags(input, INPUT_A);
-        if (g_bStyleMenuCursor) {
-            g_bTextShadowPickerOpen = TRUE;
+    if (PaintShopInput()->buttons & 0x10) {
+        TransferFlags(PaintShopInput(), 0x10);
+        if (g_bStyleMenuCursor != 0) {
+            g_bTextShadowPickerOpen = 1;
         } else {
-            g_bStyleMenuOpen = FALSE;
+            g_bStyleMenuOpen = 0;
         }
-    } else if (input->buttons & INPUT_B) {
-        TransferFlags(input, INPUT_B);
-        g_bStyleMenuOpen = FALSE;
-        g_bTextShadowPickerOpen = FALSE;
+    } else if (PaintShopInput()->buttons & 0x20) {
+        TransferFlags(PaintShopInput(), 0x20);
+        g_bStyleMenuOpen = 0;
+        g_bTextShadowPickerOpen = 0;
     }
 }
 
