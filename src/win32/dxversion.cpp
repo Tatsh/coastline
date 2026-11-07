@@ -44,13 +44,17 @@ void GetDXVersion(unsigned *pdwVersion, unsigned *pdwPlatform) {
 
     osVersion.dwOSVersionInfoSize = sizeof(osVersion);
 #ifdef _MSC_VER
-#pragma warning(suppress : 4996)
+#pragma warning(push)
+#pragma warning(disable : 4996)
 #endif
     if (!GetVersionExA(&osVersion)) {
         *pdwVersion = 0;
         *pdwPlatform = 0;
         return;
     }
+#ifdef _MSC_VER
+#pragma warning(pop)
+#endif
     if (osVersion.dwPlatformId == VER_PLATFORM_WIN32_NT) {
         *pdwPlatform = VER_PLATFORM_WIN32_NT;
         if (osVersion.dwMajorVersion < 4) {

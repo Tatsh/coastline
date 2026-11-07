@@ -104,7 +104,7 @@ select_source:
                                              &g_ClosestSoundSource.previousListenerPosition);
 #endif
 #if TGR_BOSS_RALLY
-            frequency = -(factor * g_ClosestSoundSource.frequency);
+            frequency = (f32)(-(factor * g_ClosestSoundSource.frequency));
 #else
             frequency = -g_ClosestSoundSource.frequency * frequency;
 #endif
@@ -120,7 +120,7 @@ select_source:
                                           &g_ClosestSoundSource.previousPosition,
                                           &g_ClosestSoundSource.listener->position,
                                           &g_ClosestSoundSource.previousListenerPosition);
-            frequency = g_ClosestSoundSource.frequency * factor;
+            frequency = (f32)(g_ClosestSoundSource.frequency * factor);
 #else
             frequency = ComputeDopplerFactor(&g_ClosestSoundSource.position,
                                              &g_ClosestSoundSource.previousPosition,

@@ -377,7 +377,7 @@ void UpdateVehicleSounds(Vehicle *vehicle) {
     } else {
 #if TGR_BOSS_RALLY
         frequency = (long double)VEHICLE_GET(vehicle, DopplerFactor) * SAMPLE_RATE;
-        roundedFrequency = frequency;
+        roundedFrequency = (f32)frequency;
         if (EFFECT_MAX_FREQUENCY < frequency || !(roundedFrequency >= 0.0f)) {
             roundedFrequency = 0.0f;
         }

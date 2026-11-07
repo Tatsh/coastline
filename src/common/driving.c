@@ -347,7 +347,11 @@ void UpdateAiVehicleBehavior(Vehicle *vehicle) {
                             g_bAiNudgeRight = TRUE;
                             g_bAiNudgeLeft = FALSE;
                         }
+#if TGR_BOSS_RALLY
+                        steer = 0.1f;
+#else
                         steer = 0.1;
+#endif
                     } else if (velocitySign != 0 && velocitySign == forwardSign) {
                         if (velocitySign == 1 && index == 1) {
                             g_bAiNudgeRight = TRUE;

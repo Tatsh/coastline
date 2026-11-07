@@ -328,7 +328,7 @@ int g_dwForceFeedbackConstantForce = 10000;
 unsigned char g_abKeyboardState[KEYBOARD_KEY_COUNT];
 int g_adwKeyPressedEdge[KEYBOARD_KEY_COUNT];
 
-static inline bool IsButtonPressedEdge(unsigned char previous, unsigned char current) {
+static inline unsigned char IsButtonPressedEdge(unsigned char previous, unsigned char current) {
     return !(previous & 0x80) && (current & 0x80);
 }
 
