@@ -33,16 +33,16 @@ void UpdateWindDirection(void) {
     updatedAngle =
         ((long double)(s32)(AdvanceRng() & 0xFFFF) * RANDOM_TO_TWO - 1.0f) * g_fFrameDeltaTime +
         g_fWindAngle;
-    g_fWindAngle = updatedAngle;
+    g_fWindAngle = (f32)updatedAngle;
     if (updatedAngle >= WIND_TURN) {
-        g_fWindAngle = (long double)g_fWindAngle - WIND_TURN;
+        g_fWindAngle = (f32)((long double)g_fWindAngle - WIND_TURN);
     } else if (!(g_fWindAngle >= 0.0f)) {
-        g_fWindAngle = (long double)g_fWindAngle - -WIND_TURN;
+        g_fWindAngle = (f32)((long double)g_fWindAngle - -WIND_TURN);
     }
     updatedStrength =
         ((long double)(s32)(AdvanceRng() & 0xFFFF) * RANDOM_TO_TWO - 1.0f) * g_fFrameDeltaTime +
         g_fWindStrength;
-    g_fWindStrength = updatedStrength;
+    g_fWindStrength = (f32)updatedStrength;
     if (updatedStrength > WIND_STRENGTH_MAX) {
         g_fWindStrength = WIND_STRENGTH_MAX;
     } else if (!(g_fWindStrength >= WIND_STRENGTH_MIN)) {
@@ -51,8 +51,8 @@ void UpdateWindDirection(void) {
     g_vWindVelocity.z = 0.0f;
     cosine = WindCosine(g_fWindAngle);
     sine = WindSine(g_fWindAngle);
-    g_vWindVelocity.x = cosine * g_fWindStrength * g_fFrameDeltaTime;
-    g_vWindVelocity.y = sine * g_fWindStrength * g_fFrameDeltaTime;
+    g_vWindVelocity.x = (f32)(cosine * g_fWindStrength * g_fFrameDeltaTime);
+    g_vWindVelocity.y = (f32)(sine * g_fWindStrength * g_fFrameDeltaTime);
 #else
     g_fWindAngle += ((f32)(s32)(AdvanceRng() & 0xFFFF) * RANDOM_TO_TWO - 1.0f) * g_fFrameDeltaTime;
     if (g_fWindAngle >= WIND_TURN) {
