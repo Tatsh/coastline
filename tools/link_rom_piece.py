@@ -7,6 +7,7 @@ import hashlib
 import json
 import re
 import shutil
+import struct
 import subprocess
 import tempfile
 from pathlib import Path
@@ -33,6 +34,8 @@ def main() -> int:
   parser.add_argument('--rodata-bytes', type=lambda value: int(value, 0))
   parser.add_argument('--bss', help='First BSS symbol in the object.')
   parser.add_argument('--text-only', action='store_true')
+  parser.add_argument('--rodata-split', action='append', default=[], metavar='OFFSET:SYMBOL',
+                      help='Original symbol for a relocated read-only-data fragment.')
   parser.add_argument('--output', type=Path, required=True, help='Directory for verified sections.')
   args = parser.parse_args()
 
@@ -108,6 +111,17 @@ def main() -> int:
   sizes = {section[1:]: int(size, 16) for section, size in re.findall(
       r'\[\s*\d+\]\s+(\.(?:text|data|rodata|bss))\s+\S+\s+\S+\s+\S+\s+'
       r'([0-9A-Fa-f]+)\s', headers)}
+  splits = []
+  for spec in args.rodata_split:
+    offset_text, separator, name = spec.partition(':')
+    if not separator or not re.fullmatch(r'0x[0-9A-Fa-f]+', offset_text) or name not in symbols:
+      parser.error(f'Invalid read-only-data split: {spec}.')
+    split_offset = int(offset_text, 16)
+    if not 0 < split_offset < sizes.get('rodata', 0):
+      parser.error(f'Read-only-data split is outside the section: {spec}.')
+    splits.append((split_offset, symbols[name] - split_offset))
+  if splits and (not args.text_only or splits != sorted(set(splits))):
+    parser.error('Read-only-data splits require text-only output and unique ordered offsets.')
   for section in ('text', 'data', 'rodata', 'bss'):
     if bool(sizes.get(section, 0)) != (section in selected):
       parser.error(f'The {section} section and its original address must both be present.')
@@ -153,6 +167,34 @@ def main() -> int:
         parser.error(f'Linked {symbol} differs from its original address.')
 
     sections = {}
+    relocations = []
+    if splits:
+      relocation_text = subprocess.run([binutil('readelf'), '-rW', str(args.object)],
+                                       check=True, capture_output=True, text=True).stdout
+      in_text = False
+      highs = []
+      for line in relocation_text.splitlines():
+        if line.startswith('Relocation section'):
+          in_text = "'.rel.text'" in line
+        if not in_text:
+          continue
+        match = re.match(r'^([0-9A-Fa-f]+)\s+\S+\s+R_MIPS_(HI16|LO16)\s+\S+\s+\.rodata$',
+                         line)
+        if not match:
+          continue
+        offset, kind = int(match[1], 16), match[2]
+        if kind == 'HI16':
+          highs.append(offset)
+        elif highs:
+          relocations.append((highs.pop(), offset))
+        else:
+          parser.error('Read-only-data relocation has no matching high half.')
+      if highs or not relocations:
+        parser.error('Read-only-data split has unmatched or no relocations.')
+      raw_text = work / 'original-text.bin'
+      subprocess.run([binutil('objcopy'), '-O', 'binary', '--only-section=.text',
+                      str(args.object), str(raw_text)], check=True)
+      original_text = raw_text.read_bytes()
     written_addresses = dict(addresses)
     written_addresses['text'] += args.text_skip
     for section, address in written_addresses.items():
@@ -163,6 +205,20 @@ def main() -> int:
                       str(elf), str(path)], check=True)
       contents = path.read_bytes()
       if section == 'text':
+        if splits:
+          patched = bytearray(contents)
+          for high_offset, low_offset in relocations:
+            high = struct.unpack_from('>H', original_text, high_offset + 2)[0]
+            low = struct.unpack_from('>h', original_text, low_offset + 2)[0]
+            addend = (high << 16) + low
+            base = addresses['rodata']
+            for split_offset, split_base in splits:
+              if addend >= split_offset:
+                base = split_base
+            target = base + addend
+            struct.pack_into('>H', patched, high_offset + 2, ((target + 0x8000) >> 16) & 0xffff)
+            struct.pack_into('>H', patched, low_offset + 2, target & 0xffff)
+          contents = bytes(patched)
         contents = contents[args.text_skip:]
       length = trims.get(section)
       if length is not None:
