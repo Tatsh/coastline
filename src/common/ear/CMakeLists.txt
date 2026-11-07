@@ -32,7 +32,7 @@ target_include_directories(coastline_ear PUBLIC "${CMAKE_SOURCE_DIR}/src"
                                               "${CMAKE_SOURCE_DIR}/src/common")
 if(TGR_PLATFORM STREQUAL "sdl")
   target_compile_options(coastline_ear PRIVATE ${COASTLINE_WARNINGS} ${COASTLINE_NO_UNUSED_PARAMETER})
-elseif(NOT MSVC)
+else()
   target_compile_options(coastline_ear PRIVATE -Wall -Wextra -Wno-unused-parameter)
 endif()
 if(MSVC)

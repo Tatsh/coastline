@@ -12,15 +12,9 @@ add_library(
   musicplayback.cpp
   window.c)
 target_include_directories(coastline_win32_ear PUBLIC "${CMAKE_SOURCE_DIR}/src")
-if(NOT MSVC)
-  target_compile_options(coastline_win32_ear PRIVATE -Wall -Wextra -Wno-unused-parameter)
-endif()
+target_compile_options(coastline_win32_ear PRIVATE -Wall -Wextra -Wno-unused-parameter)
 target_link_libraries(coastline_win32_ear PRIVATE dxguid kernel32 ole32 user32 version winmm)
-if(MSVC)
-  target_compile_options(coastline_win32_ear PRIVATE "$<$<COMPILE_LANGUAGE:C>:/std:clatest>")
-else()
-  set_target_properties(coastline_win32_ear PROPERTIES C_STANDARD 23 C_STANDARD_REQUIRED YES)
-endif()
+set_target_properties(coastline_win32_ear PROPERTIES C_STANDARD 23 C_STANDARD_REQUIRED YES)
 target_link_libraries(coastline_ear PUBLIC coastline_win32_ear)
 target_link_libraries(coastline_win32_ear PUBLIC coastline_ear)
 

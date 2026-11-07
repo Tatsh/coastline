@@ -5,9 +5,6 @@
 set(_glide "${CMAKE_SOURCE_DIR}/3rdparty/glide-2f226f0f9225ce8ee83e6a4a7042981e719d19ee")
 set(_glide_def "${CMAKE_CURRENT_SOURCE_DIR}/glide2x.def")
 set(_glide_import "${CMAKE_CURRENT_BINARY_DIR}/libglide2x.a")
-if(MSVC)
-  find_program(CMAKE_DLLTOOL llvm-dlltool REQUIRED)
-endif()
 add_custom_command(
   OUTPUT "${_glide_import}"
   COMMAND "${CMAKE_DLLTOOL}" -m i386 -d "${_glide_def}" -l "${_glide_import}"

@@ -685,11 +685,7 @@ s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]);
  * @ghidraAddress BRGlide: 0x1006e5a0
  */
 #if TGR_BOSS_RALLY
-#if defined(_MSC_VER) && !defined(_WIN64)
-void __fastcall FinishFrameMatrix(f32 m[4][4]);
-#else
 void __thiscall FinishFrameMatrix(f32 m[4][4]);
-#endif
 #else
 void FinishFrameMatrix(f32 m[4][4]);
 #endif
