@@ -121,7 +121,7 @@ def main() -> int:
       if not separator or not re.fullmatch(r'0x[0-9A-Fa-f]+', offset_text) or name not in symbols:
         parser.error(f'Invalid {section} split: {spec}.')
       split_offset = int(offset_text, 16)
-      if not 0 < split_offset < sizes.get(section, 0):
+      if not 0 <= split_offset < sizes.get(section, 0):
         parser.error(f'{section} split is outside the section: {spec}.')
       entries.append((split_offset, symbols[name] - split_offset))
     if entries and (not args.text_only or entries != sorted(set(entries))):
