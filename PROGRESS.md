@@ -87,15 +87,14 @@ program that has it.
 Each part lists the routines of one component in a 64 KiB address
 block of the master program.
 
-| Part                                                                  | Group       | Component      | Range                     | Matching functions |    Matching code bytes |
-| --------------------------------------------------------------------- | ----------- | -------------- | ------------------------- | -----------------: | ---------------------: |
-| [n64-sdk-libultra-80260000.md](progress/n64-sdk-libultra-80260000.md) | Nintendo 64 | SDK (libultra) | `0x80260000`-`0x80270000` |   208/208 (100.0%) | 59,944/59,944 (100.0%) |
-| [pc-game-code-10000000.md](progress/pc-game-code-10000000.md)         | PC port     | Game code      | `0x10000000`-`0x10010000` |            Unknown |                Unknown |
-| [pc-game-code-10010000.md](progress/pc-game-code-10010000.md)         | PC port     | Game code      | `0x10010000`-`0x10020000` |            Unknown |                Unknown |
-| [pc-game-code-10020000.md](progress/pc-game-code-10020000.md)         | PC port     | Game code      | `0x10020000`-`0x10030000` |            Unknown |                Unknown |
-| [pc-game-code-10030000.md](progress/pc-game-code-10030000.md)         | PC port     | Game code      | `0x10030000`-`0x10040000` |            Unknown |                Unknown |
-| [pc-game-code-10040000.md](progress/pc-game-code-10040000.md)         | PC port     | Game code      | `0x10040000`-`0x10050000` |            Unknown |                Unknown |
-| [pc-game-code-10050000.md](progress/pc-game-code-10050000.md)         | PC port     | Game code      | `0x10050000`-`0x10060000` |            Unknown |                Unknown |
-| [pc-game-code-10060000.md](progress/pc-game-code-10060000.md)         | PC port     | Game code      | `0x10060000`-`0x10070000` |            Unknown |                Unknown |
-| [pc-game-code-10070000.md](progress/pc-game-code-10070000.md)         | PC port     | Game code      | `0x10070000`-`0x10080000` |            Unknown |                Unknown |
-| [pc-game-code-10080000.md](progress/pc-game-code-10080000.md)         | PC port     | Game code      | `0x10080000`-`0x10090000` |            Unknown |                Unknown |
+| Part                                                          | Group   | Component | Range                     | Matching functions | Matching code bytes |
+| ------------------------------------------------------------- | ------- | --------- | ------------------------- | -----------------: | ------------------: |
+| [pc-game-code-10000000.md](progress/pc-game-code-10000000.md) | PC port | Game code | `0x10000000`-`0x10010000` |            Unknown |             Unknown |
+| [pc-game-code-10010000.md](progress/pc-game-code-10010000.md) | PC port | Game code | `0x10010000`-`0x10020000` |            Unknown |             Unknown |
+| [pc-game-code-10020000.md](progress/pc-game-code-10020000.md) | PC port | Game code | `0x10020000`-`0x10030000` |            Unknown |             Unknown |
+| [pc-game-code-10030000.md](progress/pc-game-code-10030000.md) | PC port | Game code | `0x10030000`-`0x10040000` |            Unknown |             Unknown |
+| [pc-game-code-10040000.md](progress/pc-game-code-10040000.md) | PC port | Game code | `0x10040000`-`0x10050000` |            Unknown |             Unknown |
+| [pc-game-code-10050000.md](progress/pc-game-code-10050000.md) | PC port | Game code | `0x10050000`-`0x10060000` |            Unknown |             Unknown |
+| [pc-game-code-10060000.md](progress/pc-game-code-10060000.md) | PC port | Game code | `0x10060000`-`0x10070000` |            Unknown |             Unknown |
+| [pc-game-code-10070000.md](progress/pc-game-code-10070000.md) | PC port | Game code | `0x10070000`-`0x10080000` |            Unknown |             Unknown |
+| [pc-game-code-10080000.md](progress/pc-game-code-10080000.md) | PC port | Game code | `0x10080000`-`0x10090000` |            Unknown |             Unknown |
