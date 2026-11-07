@@ -298,6 +298,7 @@ else()
     vehiclevisibility.c
     visibleinstances.c
     volumecontrols.c
+    volumecontrols-sfx.c
     wheelrender.c
     PROPERTIES LANGUAGE CXX)
   set_source_files_properties(dashboard.c
