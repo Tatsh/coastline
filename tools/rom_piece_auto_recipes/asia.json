@@ -13,6 +13,22 @@
     ],
     "object": "../../../common/CMakeFiles/coastline_common.dir/rigidbody.c.obj"
   },
+  "BeginDisplayList": {
+    "args": [
+      "--text",
+      "BeginDisplayList",
+      "--text-skip",
+      "0x0",
+      "--text-bytes",
+      "0x5ac",
+      "--data",
+      "0x80280000",
+      "--rodata",
+      "0x802a0000",
+      "--text-only"
+    ],
+    "object": "frame.c.obj"
+  },
   "BootIdleThread": {
     "args": [
       "--text",
@@ -173,6 +189,22 @@
     ],
     "object": "vehiclerender.c.obj"
   },
+  "DrawRdpBorderRect": {
+    "args": [
+      "--text",
+      "DrawRdpBorderRect",
+      "--text-skip",
+      "0xc88",
+      "--text-bytes",
+      "0x3d0",
+      "--data",
+      "0x80280000",
+      "--rodata",
+      "0x802a0000",
+      "--text-only"
+    ],
+    "object": "frame.c.obj"
+  },
   "DrawSpeedAndHudOverlay": {
     "args": [
       "--text",
@@ -317,6 +349,38 @@
     ],
     "object": "physics.c.obj"
   },
+  "ProcessAllDisplayLists": {
+    "args": [
+      "--text",
+      "ProcessAllDisplayLists",
+      "--text-skip",
+      "0x250c",
+      "--text-bytes",
+      "0x260",
+      "--data",
+      "0x80280000",
+      "--rodata",
+      "0x802a0000",
+      "--text-only"
+    ],
+    "object": "frame.c.obj"
+  },
+  "ProcessDisplayList": {
+    "args": [
+      "--text",
+      "ProcessDisplayList",
+      "--text-skip",
+      "0x22bc",
+      "--text-bytes",
+      "0x250",
+      "--data",
+      "0x80280000",
+      "--rodata",
+      "0x802a0000",
+      "--text-only"
+    ],
+    "object": "frame.c.obj"
+  },
   "ProcessOptionsMenu": {
     "args": [
       "--text",
@@ -421,6 +485,22 @@
     ],
     "object": "frame.c.obj"
   },
+  "SetupFrustumCorners": {
+    "args": [
+      "--text",
+      "SetupFrustumCorners",
+      "--text-skip",
+      "0x1c54",
+      "--text-bytes",
+      "0x234",
+      "--data",
+      "0x80280000",
+      "--rodata",
+      "0x802a0000",
+      "--text-only"
+    ],
+    "object": "frame.c.obj"
+  },
   "SetupVehicleForRaceStart": {
     "args": [
       "--text",
@@ -450,6 +530,22 @@
       "--text-only"
     ],
     "object": "../../../common/CMakeFiles/coastline_common.dir/collisionstep.c.obj"
+  },
+  "StreamAnimatedTrackTextures": {
+    "args": [
+      "--text",
+      "StreamAnimatedTrackTextures",
+      "--text-skip",
+      "0x1148",
+      "--text-bytes",
+      "0x368",
+      "--data",
+      "0x80280000",
+      "--rodata",
+      "0x802a0000",
+      "--text-only"
+    ],
+    "object": "frame.c.obj"
   },
   "TipBalancedVehicle": {
     "args": [
@@ -515,6 +611,10 @@
     ],
     "object": "frame.c.obj"
   },
+  "_Genld": {
+    "args": ["--text", "_Ldtob", "--text-bytes", "0x570", "--rodata", "0x802ab610", "--text-only"],
+    "object": "../../libultra/libc/CMakeFiles/coastline_libultra_libc.dir/xldtob.c.obj"
+  },
   "_Ldtob": {
     "args": [
       "--text",
@@ -544,5 +644,33 @@
       "--text-only"
     ],
     "object": "../../libultra/libc/CMakeFiles/coastline_libultra_libc.dir/xprintf.c.obj"
+  },
+  "_Putfld": {
+    "args": ["--text", "_Printf", "--text-bytes", "0x670", "--rodata", "0x802ab460", "--text-only"],
+    "object": "../../libultra/libc/CMakeFiles/coastline_libultra_libc.dir/xprintf.c.obj"
+  },
+  "__osPfsGetNextPage": {
+    "args": ["--text", "osPfsReadWriteFile", "--text-bytes", "0xfc", "--text-only"],
+    "object": "../../libultra/io/CMakeFiles/coastline_libultra_io.dir/pfsreadwritefile.c.obj"
+  },
+  "huft_build": {
+    "args": [
+      "--text",
+      "inflate_trees_bits",
+      "--text-bytes",
+      "0x6b0",
+      "--rodata",
+      "0x802a0000",
+      "--text-only"
+    ],
+    "object": "../../../CMakeFiles/coastline_zlib.dir/__/3rdparty/zlib-1.0.4/inftrees.c.obj"
+  },
+  "proutSprintf": {
+    "args": ["--text", "sprintf", "--text-bytes", "0x24", "--text-only"],
+    "object": "../../libultra/libc/CMakeFiles/coastline_libultra_libc.dir/sprintf.c.obj"
+  },
+  "ramMain": {
+    "args": ["--text", "ramMain", "--text-bytes", "0x38", "--text-only"],
+    "object": "../coastline_main.dir/main.s.obj"
   }
 }

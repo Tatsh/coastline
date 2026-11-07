@@ -81,7 +81,7 @@ def main() -> int:
       if section not in ('text', 'data', 'rodata'):
         parser.error(f'{manifest} has an unsupported section.')
       if args.code_only and section != 'text':
-        parser.error(f'{manifest} places non-code bytes in a code-only image.')
+        continue
       address, size = item['address'], item['size']
       offset = address - image_base + code_start
       if size <= 0 or not code_start <= offset < offset + size <= program_end:

@@ -138,7 +138,7 @@ gRomSplashTitleC = 0x1E1530;
 gRomSplashTitleD = 0x1E0690;
 
 /* The original boot stack, inside the BSS. */
-g_abBootStackTop = 0x80316390;
+g_abBootStackTop = 0x80316380;
 
 /* The depth buffer, below the program. */
 g_aDepthBuffer = 0x80000400;

@@ -13,6 +13,22 @@
     ],
     "object": "../../../common/CMakeFiles/coastline_common.dir/rigidbody.c.obj"
   },
+  "BeginDisplayList": {
+    "args": [
+      "--text",
+      "BeginDisplayList",
+      "--text-skip",
+      "0x0",
+      "--text-bytes",
+      "0x5ac",
+      "--data",
+      "0x80280000",
+      "--rodata",
+      "0x802a0000",
+      "--text-only"
+    ],
+    "object": "frame.c.obj"
+  },
   "BootIdleThread": {
     "args": [
       "--text",
@@ -44,6 +60,18 @@
       "--text-only"
     ],
     "object": "../../../common/CMakeFiles/coastline_common.dir/bodyforces.c.obj"
+  },
+  "CastRayAgainstTrack": {
+    "args": [
+      "--text",
+      "CastRayAgainstTrack",
+      "--text-skip",
+      "0x8",
+      "--text-bytes",
+      "0x618",
+      "--text-only"
+    ],
+    "object": "ground-ray.c.obj"
   },
   "CastWheelRay": {
     "args": [
@@ -172,6 +200,22 @@
       "--text-only"
     ],
     "object": "vehiclerender.c.obj"
+  },
+  "DrawRdpBorderRect": {
+    "args": [
+      "--text",
+      "DrawRdpBorderRect",
+      "--text-skip",
+      "0xc88",
+      "--text-bytes",
+      "0x3d0",
+      "--data",
+      "0x80280000",
+      "--rodata",
+      "0x802a0000",
+      "--text-only"
+    ],
+    "object": "frame.c.obj"
   },
   "DrawSpeedAndHudOverlay": {
     "args": [
@@ -317,6 +361,38 @@
     ],
     "object": "physics.c.obj"
   },
+  "ProcessAllDisplayLists": {
+    "args": [
+      "--text",
+      "ProcessAllDisplayLists",
+      "--text-skip",
+      "0x250c",
+      "--text-bytes",
+      "0x260",
+      "--data",
+      "0x80280000",
+      "--rodata",
+      "0x802a0000",
+      "--text-only"
+    ],
+    "object": "frame.c.obj"
+  },
+  "ProcessDisplayList": {
+    "args": [
+      "--text",
+      "ProcessDisplayList",
+      "--text-skip",
+      "0x22bc",
+      "--text-bytes",
+      "0x250",
+      "--data",
+      "0x80280000",
+      "--rodata",
+      "0x802a0000",
+      "--text-only"
+    ],
+    "object": "frame.c.obj"
+  },
   "ProcessOptionsMenu": {
     "args": [
       "--text",
@@ -421,6 +497,22 @@
     ],
     "object": "frame.c.obj"
   },
+  "SetupFrustumCorners": {
+    "args": [
+      "--text",
+      "SetupFrustumCorners",
+      "--text-skip",
+      "0x1c54",
+      "--text-bytes",
+      "0x234",
+      "--data",
+      "0x80280000",
+      "--rodata",
+      "0x802a0000",
+      "--text-only"
+    ],
+    "object": "frame.c.obj"
+  },
   "SetupVehicleForRaceStart": {
     "args": [
       "--text",
@@ -450,6 +542,22 @@
       "--text-only"
     ],
     "object": "../../../common/CMakeFiles/coastline_common.dir/collisionstep.c.obj"
+  },
+  "StreamAnimatedTrackTextures": {
+    "args": [
+      "--text",
+      "StreamAnimatedTrackTextures",
+      "--text-skip",
+      "0x1148",
+      "--text-bytes",
+      "0x368",
+      "--data",
+      "0x80280000",
+      "--rodata",
+      "0x802a0000",
+      "--text-only"
+    ],
+    "object": "frame.c.obj"
   },
   "TipBalancedVehicle": {
     "args": [
@@ -485,6 +593,20 @@
     ],
     "object": "decaleditor.c.obj"
   },
+  "UpdateVehicleGridPosition": {
+    "args": [
+      "--text",
+      "UpdateVehicleGridPosition",
+      "--text-bytes",
+      "0xa8",
+      "--text-skip",
+      "0x230",
+      "--rodata",
+      "0x802a0000",
+      "--text-only"
+    ],
+    "object": "../../../common/CMakeFiles/coastline_vehiclestatus.dir/vehiclestatus.c.obj"
+  },
   "UpdateWheelHeights": {
     "args": [
       "--text",
@@ -515,6 +637,10 @@
     ],
     "object": "frame.c.obj"
   },
+  "_Genld": {
+    "args": ["--text", "_Ldtob", "--text-bytes", "0x570", "--rodata", "0x802abb50", "--text-only"],
+    "object": "../../libultra/libc/CMakeFiles/coastline_libultra_libc.dir/xldtob.c.obj"
+  },
   "_Ldtob": {
     "args": [
       "--text",
@@ -543,6 +669,10 @@
       "0x802ab980",
       "--text-only"
     ],
+    "object": "../../libultra/libc/CMakeFiles/coastline_libultra_libc.dir/xprintf.c.obj"
+  },
+  "_Putfld": {
+    "args": ["--text", "_Printf", "--text-bytes", "0x670", "--rodata", "0x802ab9a0", "--text-only"],
     "object": "../../libultra/libc/CMakeFiles/coastline_libultra_libc.dir/xprintf.c.obj"
   }
 }

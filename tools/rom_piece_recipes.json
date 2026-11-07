@@ -56,6 +56,44 @@
       ],
       "object": "decaleditor.c.obj"
     },
+    "fill_clear": {
+      "args": [
+        "--text",
+        "ProcessFillClearMenu",
+        "--text-skip",
+        "0x34e4",
+        "--text-bytes",
+        "0x930",
+        "--data",
+        "0x8028d7bc",
+        "--rodata",
+        "0x802aa0f0",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "paintshop.c.obj"
+    },
+    "mirror_flip": {
+      "args": [
+        "--text",
+        "ProcessMirrorFlipMenu",
+        "--text-skip",
+        "0x3e14",
+        "--text-bytes",
+        "0x744",
+        "--data",
+        "0x8028d7bc",
+        "--rodata",
+        "0x802aa0f0",
+        "--rodata-split",
+        "0x904:@0x802aa318",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "paintshop.c.obj"
+    },
     "oval_style": {
       "args": [
         "--text",
@@ -88,6 +126,26 @@
         "0x802aa0f0",
         "--rodata-split",
         "0x878:@0x802aa318",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "paintshop.c.obj"
+    },
+    "pak_error": {
+      "args": [
+        "--text",
+        "DrawPakErrorMessage",
+        "--text-skip",
+        "0x227c",
+        "--text-bytes",
+        "0x6ec",
+        "--data",
+        "0x0",
+        "--rodata",
+        "0x802aa0f0",
+        "--rodata-split",
+        "0x8d8:@0x802aa318",
         "--bss",
         "g_aDecalSwatches",
         "--text-only"
@@ -234,6 +292,42 @@
       ],
       "object": "decaleditor.c.obj"
     },
+    "fill_clear": {
+      "args": [
+        "--text",
+        "ProcessFillClearMenu",
+        "--text-skip",
+        "0x34f8",
+        "--text-bytes",
+        "0x930",
+        "--data",
+        "0x802903cc",
+        "--rodata",
+        "0x802ac380",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "paintshop.c.obj"
+    },
+    "mirror_flip": {
+      "args": [
+        "--text",
+        "ProcessMirrorFlipMenu",
+        "--text-skip",
+        "0x3e28",
+        "--text-bytes",
+        "0x678",
+        "--data",
+        "0x802903cc",
+        "--rodata",
+        "0x802ac380",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "paintshop.c.obj"
+    },
     "oval_style": {
       "args": [
         "--text",
@@ -241,7 +335,7 @@
         "--text-skip",
         "0x39d8",
         "--text-bytes",
-        "0x4c0",
+        "0x4c4",
         "--data",
         "0x80290468",
         "--rodata",
@@ -266,6 +360,26 @@
         "0x802ac380",
         "--rodata-split",
         "0x858:@0x802ac5a8",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "paintshop.c.obj"
+    },
+    "pak_error": {
+      "args": [
+        "--text",
+        "DrawPakErrorMessage",
+        "--text-skip",
+        "0x2290",
+        "--text-bytes",
+        "0x6ec",
+        "--data",
+        "0x0",
+        "--rodata",
+        "0x802ac380",
+        "--rodata-split",
+        "0x8b8:@0x802ac5a8",
         "--bss",
         "g_aDecalSwatches",
         "--text-only"
@@ -414,6 +528,42 @@
       ],
       "object": "encoded/decaleditor.c.obj"
     },
+    "fill_clear": {
+      "args": [
+        "--text",
+        "ProcessFillClearMenu",
+        "--text-skip",
+        "0x3530",
+        "--text-bytes",
+        "0x93c",
+        "--data",
+        "0x8028fe3c",
+        "--rodata",
+        "0x802ab210",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "encoded/paintshop.c.obj"
+    },
+    "mirror_flip": {
+      "args": [
+        "--text",
+        "ProcessMirrorFlipMenu",
+        "--text-skip",
+        "0x3e6c",
+        "--text-bytes",
+        "0x66c",
+        "--data",
+        "0x8028fe3c",
+        "--rodata",
+        "0x802ab210",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "encoded/paintshop.c.obj"
+    },
     "oval_style": {
       "args": [
         "--text",
@@ -446,6 +596,26 @@
         "0x802ab210",
         "--rodata-split",
         "0x520:@0x802ab330",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "encoded/paintshop.c.obj"
+    },
+    "pak_error": {
+      "args": [
+        "--text",
+        "DrawPakErrorMessage",
+        "--text-skip",
+        "0x2284",
+        "--text-bytes",
+        "0x730",
+        "--data",
+        "0x0",
+        "--rodata",
+        "0x802ab210",
+        "--rodata-split",
+        "0x580:@0x802ab330",
         "--bss",
         "g_aDecalSwatches",
         "--text-only"
@@ -592,6 +762,44 @@
       ],
       "object": "decaleditor.c.obj"
     },
+    "fill_clear": {
+      "args": [
+        "--text",
+        "ProcessFillClearMenu",
+        "--text-skip",
+        "0x34e4",
+        "--text-bytes",
+        "0x930",
+        "--data",
+        "0x8028dc6c",
+        "--rodata",
+        "0x802aa630",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "paintshop.c.obj"
+    },
+    "mirror_flip": {
+      "args": [
+        "--text",
+        "ProcessMirrorFlipMenu",
+        "--text-skip",
+        "0x3e14",
+        "--text-bytes",
+        "0x744",
+        "--data",
+        "0x8028dc6c",
+        "--rodata",
+        "0x802aa630",
+        "--rodata-split",
+        "0x904:@0x802aa858",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "paintshop.c.obj"
+    },
     "oval_style": {
       "args": [
         "--text",
@@ -624,6 +832,26 @@
         "0x802aa630",
         "--rodata-split",
         "0x878:@0x802aa858",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "paintshop.c.obj"
+    },
+    "pak_error": {
+      "args": [
+        "--text",
+        "DrawPakErrorMessage",
+        "--text-skip",
+        "0x227c",
+        "--text-bytes",
+        "0x6ec",
+        "--data",
+        "0x0",
+        "--rodata",
+        "0x802aa630",
+        "--rodata-split",
+        "0x8d8:@0x802aa858",
         "--bss",
         "g_aDecalSwatches",
         "--text-only"
