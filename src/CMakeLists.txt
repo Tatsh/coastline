@@ -203,6 +203,16 @@ else()
                                   PROPERTIES GENERATED TRUE EXTERNAL_OBJECT TRUE)
       target_sources(${CMAKE_PROJECT_NAME} PRIVATE "${_boot_relocation}" "${_boot_color}"
                                                  "${_boot_rest}")
+      set(_ground_ray "${CMAKE_CURRENT_BINARY_DIR}/ground-ray.slice.o")
+      add_custom_command(
+        OUTPUT "${_ground_ray}"
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/slice_elf_text.py"
+                "$<TARGET_OBJECTS:coastline_ground_ray>" 0x8 0x620 "${_ground_ray}"
+                --keep-other-sections
+        DEPENDS coastline_ground_ray "${CMAKE_SOURCE_DIR}/tools/slice_elf_text.py"
+        VERBATIM)
+      set_source_files_properties("${_ground_ray}" PROPERTIES GENERATED TRUE EXTERNAL_OBJECT TRUE)
+      target_sources(${CMAKE_PROJECT_NAME} PRIVATE "${_ground_ray}")
     endif()
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_asm "-Wl,--start-group"
                                                         ${_link_libraries} "-Wl,--end-group" gcc)
