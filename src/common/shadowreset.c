@@ -17,9 +17,9 @@ ConvertedModelVertex *g_pTrackQuadVertexWritePtr;
 #endif /* TGR_BOSS_RALLY */
 
 void ResetShadowBuffers(void) {
-    g_pShadowDisplayListWritePtr = g_pShadowDisplayListStart =
+    g_pShadowDisplayListStart = g_pShadowDisplayListWritePtr =
         g_aShadowDisplayLists[g_dwFrameBufferIndex];
-    g_pShadowVertexWritePtr = g_pShadowVertexStart = g_aShadowVertices[g_dwFrameBufferIndex];
+    g_pShadowVertexStart = g_pShadowVertexWritePtr = g_aShadowVertices[g_dwFrameBufferIndex];
 #if TGR_BOSS_RALLY
     g_pTrackQuadVertexWritePtr = g_pTrackQuadVertexStart =
         g_aTrackQuadVertices[g_dwFrameBufferIndex];
