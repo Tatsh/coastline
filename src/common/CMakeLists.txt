@@ -117,6 +117,7 @@ set(_common_sources
   visiblecompare.c
   visibleinstances.c
   volumecontrols.c
+  volumecontrols-sfx.c
   wheelrender.c
   wind.c)
 if(TGR_PLATFORM STREQUAL "sdl" OR (TGR_PLATFORM STREQUAL "n64" AND TGR_ENABLE_PATCHES))
@@ -136,6 +137,9 @@ if(TGR_PLATFORM STREQUAL "n64")
        vehiclesound.c)
 endif()
 if(TGR_IDO AND CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT TGR_ENABLE_PATCHES)
+  list(REMOVE_ITEM _common_sources volumecontrols.c volumecontrols-sfx.c)
+  coastline_add_ido_trimmed_object(coastline_volume_bgm volumecontrols.c 0x80 0x74 volume-bgm)
+  coastline_add_ido_trimmed_object(coastline_volume_sfx volumecontrols-sfx.c 0x80 0x74 volume-sfx)
   list(REMOVE_ITEM _common_sources laptime.c raceresults.c)
   coastline_add_ido_trimmed_object(coastline_raceresults raceresults.c 0x330 0x328 raceresults)
 endif()

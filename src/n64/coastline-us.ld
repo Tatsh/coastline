@@ -37,6 +37,13 @@ SECTIONS
         *libcoastline_n64.a:racemenu-draw.c.obj(.text .text.*)
         . = ALIGN(16);
         *libcoastline_n64.a:carselect.c.obj(.text .text.*)
+        *libcoastline_n64.a:weatherselect.c.obj(.text .text.*)
+        *libcoastline_n64.a:mainmenu.c.obj(.text .text.*)
+        *libcoastline_n64.a:playerselect.c.obj(.text .text.*)
+        *volume-bgm.trim.o(.text .text.*)
+        *options-volume.trim.o(.text .text.*)
+        *volume-sfx.trim.o(.text .text.*)
+        *libcoastline_n64.a:options.c.obj(.text .text.*)
         *(.text .text.*)
     }
     . = ALIGN(16);

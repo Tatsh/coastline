@@ -334,19 +334,21 @@
     },
     "0x802117a4": {
       "sources": {
-        "src/n64/options.c": ["8368bf3d3dc4b6853950f49a2ea0606303e6a67cc2bfe6115d8629d59cd568c1"]
+        "src/n64/options-volume.c": [
+          "8368bf3d3dc4b6853950f49a2ea0606303e6a67cc2bfe6115d8629d59cd568c1"
+        ]
       }
     },
     "0x802117e8": {
       "sources": {
-        "src/common/volumecontrols.c": [
+        "src/common/volumecontrols-sfx.c": [
           "ddc504b11ef63086b6b614d5fdf2a8802ddb658c8f66594b758db2d70e44d6c9"
         ]
       }
     },
     "0x80211824": {
       "sources": {
-        "src/common/volumecontrols.c": [
+        "src/common/volumecontrols-sfx.c": [
           "c11e9e60536a5819a4c15449855a59152e1d25a5eb742a6fae239a4adfeda4ad"
         ]
       }

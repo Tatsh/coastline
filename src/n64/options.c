@@ -156,11 +156,6 @@ enum {
         g_aVehicles[vehicle].profile->controllerLayout = (equipment)[4];                           \
     }
 
-void ApplyVolumeSettings(void) {
-    g_bBgmVolume = g_adwBgmVolumeLevels[g_OptionSettings.musicVolume];
-    g_bSfxMasterVolume = g_adwSfxVolumeLevels[g_OptionSettings.sfxVolume];
-}
-
 void OptionsMenuPostDraw(s32 item) {
 #if TGR_REGION != TGR_REGION_JP
     if (item < OPTIONS_ITEM_UNITS) {

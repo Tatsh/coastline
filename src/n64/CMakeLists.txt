@@ -27,6 +27,7 @@ set(_n64_sources
     modeldraw.c
     obb.c
     options.c
+    options-volume.c
     paintshop.c
     pakmenu.c
     physics.c
@@ -75,6 +76,8 @@ if(TGR_ENABLE_PATCHES)
   list(APPEND _n64_sources paintinput.c)
 endif()
 if(TGR_IDO AND CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT TGR_ENABLE_PATCHES)
+  list(REMOVE_ITEM _n64_sources options-volume.c)
+  coastline_add_ido_trimmed_object(coastline_options_volume options-volume.c 0x50 0x44 options-volume)
   list(REMOVE_ITEM _n64_sources modeldraw.c)
   coastline_add_ido_trimmed_object(coastline_modeldraw modeldraw.c 0x7c0 0x7b4 modeldraw)
   list(REMOVE_ITEM _n64_sources race-bgm.c)
