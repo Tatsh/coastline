@@ -21,7 +21,11 @@ u64 g_dwTimingFrameElapsed = 0;
  * @ghidraAddress BRD3D: 0x1067d57c
  * @ghidraAddress BRGlide: 0x105b9724
  */
+#if defined(_MSC_VER)
+static u32 g_dwTimingFrameElapsed;
+#else
 [[maybe_unused, gnu::used]] static u32 g_dwTimingFrameElapsed;
+#endif
 
 /* The libraries share the empty code of this routine with NullStub(), and still pass it the five
  * arguments. */

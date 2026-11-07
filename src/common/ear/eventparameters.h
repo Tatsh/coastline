@@ -45,7 +45,12 @@ enum EarEventQueueMode {
 };
 
 /** The parameters of an event, as the game passes them to MixEvent and MoveEvent. */
+#if defined(_MSC_VER)
+#pragma pack(push, 1)
+typedef struct EarEventParams {
+#else
 typedef struct [[gnu::packed]] EarEventParams {
+#endif
     uint16_t size;            /*!< The size of the parameters, 0x80. */
     uint16_t sourceType;      /*!< The type of the source in the low byte, its flags above. */
     const void *source;       /*!< The source of the samples. */
@@ -90,5 +95,8 @@ typedef struct [[gnu::packed]] EarEventParams {
     /** Unrecovered parameter bytes at the original offset. */
     uint8_t unknown7e[2]; /* +0x7e */
 } EarEventParams;
+#if defined(_MSC_VER)
+#pragma pack(pop)
+#endif
 
 #endif /* COASTLINE_EAR_EVENTPARAMETERS_H */

@@ -12,7 +12,7 @@
 #include "common/recordingformat.h"
 #include "common/rle.h"
 #include "common/vehicle.h"
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
+#if TGR_PLATFORM == TGR_PLATFORM_SDL || defined(_MSC_VER)
 #include "common/vehiclemodel.h"
 #endif
 
@@ -128,9 +128,8 @@ typedef struct {
 /**
  * Last-lap buffers share vehicle-model storage and descend through slots by local-player index.
  */
-#if TGR_PLATFORM == TGR_PLATFORM_SDL
-/* The symbols of the SDL game have no leading underscore on every system. A cast gives the storage
- * of g_aVehicleModels the type of the buffers. */
+#if TGR_PLATFORM == TGR_PLATFORM_SDL || defined(_MSC_VER)
+/* The SDL and MSVC builds use a cast to view vehicle-model storage as last-lap buffers. */
 #define g_aLastLapBuffers ((LastLapBuffer *)g_aVehicleModels)
 #elif TGR_BOSS_RALLY
 extern LastLapBuffer g_aLastLapBuffers[] __asm__("_g_aVehicleModels");

@@ -16,7 +16,11 @@
 
 /** @ghidraAddress BRD3D: 0x100a6cf0 */
 /* The original updates the game rate but draws only the renderer rate. */
+#if defined(_MSC_VER)
+static float g_fGameFrameRate = 30.0f;
+#else
 [[maybe_unused, gnu::used]] static float g_fGameFrameRate = 30.0f;
+#endif
 
 /** @ghidraAddress BRD3D: 0x100a6cf4 */
 static float g_fRenderFrameRate = 30.0f;
