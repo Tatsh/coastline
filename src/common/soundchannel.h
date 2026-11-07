@@ -6,6 +6,10 @@
  * The start of a sample on a sound effect channel.
  */
 
+#if TGR_BOSS_RALLY
+#include <stdbool.h>
+#endif
+
 #include "common/types.h"
 
 #ifdef __cplusplus

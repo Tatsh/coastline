@@ -3,7 +3,11 @@
 #include "ear/error.h"
 
 // @ghidraAddress EAR: 0x1003b7d0
+#if defined(_MSC_VER)
+static uint32_t g_dwEarReservedInitializationOption;
+#else
 [[maybe_unused, gnu::used]] static uint32_t g_dwEarReservedInitializationOption;
+#endif
 
 int __stdcall ValidateEarStereoSolution(uint32_t enabled) {
     if (enabled) {

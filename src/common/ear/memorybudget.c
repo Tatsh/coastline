@@ -1,5 +1,7 @@
 #include "memorybudget.h"
 
+#include <stdbool.h>
+
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 #include <windows.h>
 #else

@@ -1875,6 +1875,14 @@ void UpdateVehicleSpeedAndPhysics(Vehicle *vehicle);
  * @ghidraAddress BRGlide: 0x1005d050
  */
 void PlayerVehicleControllerCallback(Vehicle *vehicle);
+
+/**
+ * Player and computer vehicle paint colours, indexed by player or race slot, in RGB byte order.
+ *
+ * @ghidraAddress BRD3D: 0x100b37d0
+ * @ghidraAddress BRGlide: 0x100b2fd8
+ */
+extern u8 g_abPlayerColorsRgb[20][3];
 #ifdef __cplusplus
 }
 #endif
@@ -1888,11 +1896,3 @@ void PlayerVehicleControllerCallback(Vehicle *vehicle);
  */
 extern Vehicle g_aVehicles[MAX_VEHICLES];
 #endif
-
-/**
- * Player and computer vehicle paint colours, indexed by player or race slot, in RGB byte order.
- *
- * @ghidraAddress BRD3D: 0x100b37d0
- * @ghidraAddress BRGlide: 0x100b2fd8
- */
-extern u8 g_abPlayerColorsRgb[20][3];
