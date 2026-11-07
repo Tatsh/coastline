@@ -42,7 +42,7 @@ struct CompactGhostFrame {
     unsigned char abReserved[2];
 };
 
-static inline bool IsKeyframeFlagSet(float value) {
+static inline unsigned IsKeyframeFlagSet(float value) {
     return value > 0.0f || value < 0.0f;
 }
 

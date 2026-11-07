@@ -43,6 +43,9 @@ void GetDXVersion(unsigned *pdwVersion, unsigned *pdwPlatform) {
     DDSURFACEDESC desc;
 
     osVersion.dwOSVersionInfoSize = sizeof(osVersion);
+#ifdef _MSC_VER
+#pragma warning(suppress : 4996)
+#endif
     if (!GetVersionExA(&osVersion)) {
         *pdwVersion = 0;
         *pdwPlatform = 0;

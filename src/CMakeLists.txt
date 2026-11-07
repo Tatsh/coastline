@@ -16,7 +16,7 @@ add_library(coastline_options INTERFACE)
 # A reconstructed routine retains the parameters of the original, used or not. IDO takes the flags
 # of tools/ido_flags.txt alone.
 if(MSVC)
-  target_compile_options(coastline_options INTERFACE /W3 /wd4100 /wd4200)
+  target_compile_options(coastline_options INTERFACE /W3 /wd4100 /wd4200 /wd5030)
   target_compile_definitions(coastline_options INTERFACE _CRT_SECURE_NO_WARNINGS)
 elseif(NOT TGR_IDO)
   target_compile_options(coastline_options INTERFACE -Wall -Wextra -Wno-unused-parameter)

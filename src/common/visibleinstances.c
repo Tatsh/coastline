@@ -210,7 +210,7 @@ terminate:
     g_nVisibleCellIdxMid = -1;
 #if TGR_BOSS_RALLY
     farDistance = VIS_TRUNCATE((long double)gFrustumFar * (-1.0f / GRID_CELL_SIZE));
-    farDistance = (s32)(-3u - (u32)farDistance);
+    farDistance = (s32)(0u - 3u - (u32)farDistance);
     farDistance = (s32)((u32)farDistance * (u32)farDistance);
     if (gInstantReplayActive &&
         g_pActiveCamera ==
