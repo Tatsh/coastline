@@ -28,8 +28,8 @@ void SpawnTireSmoke(Vehicle *vehicle) {
     s32 wheel;
     f32 rate;
     RigidBody *bodies[VEHICLE_WHEELS];
-    RigidBody *body;
-    s32 index;
+    RigidBody *wheelBody;
+    s32 particleIndex;
     Particle *particle;
     f32 fade;
     f32 speed;
@@ -59,21 +59,21 @@ void SpawnTireSmoke(Vehicle *vehicle) {
             bodies[1] = &vehicle->wheelBodies[1];
             bodies[2] = &vehicle->wheelBodies[0];
             bodies[3] = &vehicle->wheelBodies[2];
-            body = bodies[wheel];
-            if (body->contactFrames == 0 ||
-                (body->surface != 1 && body->surface != 2 &&
-                 body->surface != (index = TRACK_SURFACE_PAVED)) ||
-                (index = g_wParticleFreeListHead) == 0) {
+            wheelBody = bodies[wheel];
+            if (wheelBody->contactFrames == 0 ||
+                (wheelBody->surface != 1 && wheelBody->surface != 2 &&
+                 wheelBody->surface != (particleIndex = TRACK_SURFACE_PAVED)) ||
+                (particleIndex = g_wParticleFreeListHead) == 0) {
                 continue;
             }
-            particle = &g_aParticlePool[index];
+            particle = &g_aParticlePool[particleIndex];
             g_wParticleFreeListHead = particle->next;
-            if (body->surface == TRACK_SURFACE_PAVED) {
+            if (wheelBody->surface == TRACK_SURFACE_PAVED) {
                 particle->next = g_wPavedTireSmokeListHead;
-                g_wPavedTireSmokeListHead = index;
+                g_wPavedTireSmokeListHead = particleIndex;
             } else {
                 particle->next = g_wTireSmokeListHead;
-                g_wTireSmokeListHead = index;
+                g_wTireSmokeListHead = particleIndex;
             }
 
             /* The front wheels throw their smoke out to the side, the rear ones up. */

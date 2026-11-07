@@ -35,16 +35,16 @@
     ((velocity) = SIGN_OF(damped) == SIGN_OF(velocity) ? (damped) : 0.0f)
 
 #if TGR_BOSS_RALLY
-inline void Vehicle::DriveRearWheel(RigidBody *body, RigidBody *wheel, f32 dt) {
-    DriveWheel(body, wheel, &rearLoad, &rearSliding, dt);
+inline void Vehicle::DriveRearWheel(RigidBody *chassis, RigidBody *wheel, f32 dt) {
+    DriveWheel(chassis, wheel, &rearLoad, &rearSliding, dt);
 }
 
-inline void Vehicle::DriveFrontWheel(RigidBody *body, RigidBody *wheel, f32 dt) {
-    DriveWheel(body, wheel, &frontLoad, &frontSliding, dt);
+inline void Vehicle::DriveFrontWheel(RigidBody *chassis, RigidBody *wheel, f32 dt) {
+    DriveWheel(chassis, wheel, &frontLoad, &frontSliding, dt);
 }
 
-inline void Vehicle::ApplyWheelSideGrip(RigidBody *body, f32 dt) {
-    ApplySideGrip(body, dt, &rearLoad, &frontLoad, &rearSliding, &frontSliding);
+inline void Vehicle::ApplyWheelSideGrip(RigidBody *chassis, f32 dt) {
+    ApplySideGrip(chassis, dt, &rearLoad, &frontLoad, &rearSliding, &frontSliding);
 }
 
 #define DRIVE_REAR_WHEEL(vehicle, body, wheel, dt) ((vehicle)->DriveRearWheel(body, wheel, dt))

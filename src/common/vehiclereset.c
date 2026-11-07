@@ -629,7 +629,7 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
     f32 sideX;
 #if TGR_BOSS_RALLY
     long double sideY;
-    s32 gridIndex;
+    s32 startGridIndex;
 #else
     f32 sideY;
 #endif
@@ -646,10 +646,10 @@ void SetupVehicleForRaceStart(Vehicle *vehicle) {
     } else {
         SET_MODEL_SLOT(vehicle, VEHICLE_GET(vehicle, Index));
 #if TGR_BOSS_RALLY
-        gridIndex =
+        startGridIndex =
             g_dwNetworkPlayMode ? VEHICLE_GET(vehicle, GridIndex) : VEHICLE_GET(vehicle, Index);
-        row = (f32)(gridIndex >> 1);
-        column = (f32)((gridIndex & 1) ^ 1);
+        row = (f32)(startGridIndex >> 1);
+        column = (f32)((startGridIndex & 1) ^ 1);
 #else
         row = (f32)(vehicle->index >> 1);
         column = (f32)((vehicle->index & 1) ^ 1);

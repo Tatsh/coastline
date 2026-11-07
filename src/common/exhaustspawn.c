@@ -12,7 +12,7 @@ void SpawnExhaustParticle(Vehicle *vehicle) {
 #endif
     Vec3f exhaust;
     f32 random;
-    s32 index;
+    s32 particleIndex;
     Particle *particle;
     f32 revs, size;
     s32 randomBits;
@@ -25,12 +25,12 @@ void SpawnExhaustParticle(Vehicle *vehicle) {
             vehicle->exhaustTimer;
     vehicle->exhaustTimer = (f32)timer;
     /* The spawn test uses the unrounded sum despite the timer store. */
-    if (timer > 0.25f && (index = g_wParticleFreeListHead) != 0) {
+    if (timer > 0.25f && (particleIndex = g_wParticleFreeListHead) != 0) {
 #else
     vehicle->exhaustTimer = vehicle->exhaustTimer +
                             g_fFrameDeltaTime * (1.0f + vehicle->engineRpm * 0.001f +
                                                  (f32)(randomBits & 0x1FFF) * (1.0f / 65536.0f));
-    if (vehicle->exhaustTimer > 0.25f && (index = g_wParticleFreeListHead) != 0) {
+    if (vehicle->exhaustTimer > 0.25f && (particleIndex = g_wParticleFreeListHead) != 0) {
 #endif /* TGR_BOSS_RALLY */
 #if TGR_BOSS_RALLY
         revs = (f32)((long double)vehicle->engineRpm * 0.001f);
@@ -38,10 +38,10 @@ void SpawnExhaustParticle(Vehicle *vehicle) {
         revs = vehicle->engineRpm * 0.001f;
 #endif
         vehicle->exhaustTimer = 0.0f;
-        particle = &g_aParticlePool[index];
+        particle = &g_aParticlePool[particleIndex];
         g_wParticleFreeListHead = particle->next;
         particle->next = g_wExhaustParticleListHead;
-        g_wExhaustParticleListHead = index;
+        g_wExhaustParticleListHead = particleIndex;
 #if TGR_BOSS_RALLY
         Vec3fScale(&particle->velocity, &vehicle->frame.forward, (f32)(-1.5L - revs));
 #else

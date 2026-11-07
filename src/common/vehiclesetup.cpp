@@ -66,8 +66,8 @@ void Vehicle::ComputeTrackPosition(void) {
     ::ComputeTrackPosition(this);
 }
 
-s32 Vehicle::TraceTrackSplineRecursive(s32 depth, s32 pointIndex, TrackSection *section) {
-    return ::TraceTrackSplineRecursive(this, depth, pointIndex, section);
+s32 Vehicle::TraceTrackSplineRecursive(s32 depth, s32 startPointIndex, TrackSection *trackSection) {
+    return ::TraceTrackSplineRecursive(this, depth, startPointIndex, trackSection);
 }
 
 void ApplyPlayerVehicleRespawnRequest(Vehicle *vehicle) {

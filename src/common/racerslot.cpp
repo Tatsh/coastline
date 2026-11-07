@@ -27,9 +27,9 @@ void RacerSlot::InitRacerSlot(void) {
 }
 
 void RacerSlot::FreeEnemyCarColorPanels(void) {
-    for (s32 index = 0; index < colorPanelCount; index++) {
-        free(colorPanels[index]);
-        colorPanels[index] = nullptr;
+    for (s32 panelIndex = 0; panelIndex < colorPanelCount; panelIndex++) {
+        free(colorPanels[panelIndex]);
+        colorPanels[panelIndex] = nullptr;
     }
     free(colorPanels);
     colorPanels = nullptr;

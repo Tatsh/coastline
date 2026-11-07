@@ -41,13 +41,13 @@ void PlayerInputState::TranslateControllerInput(void) {
 #else
 void TranslateControllerInput(PlayerInputState *state) {
 #endif
-    OSContPad *pad = state->pad;
+    OSContPad *controllerPad = state->pad;
     u32 pressed;
     s32 i;
 
-    if (pad->CONT_ERRNO != 0) {
-        state->controllerMissing = pad->CONT_ERRNO == CONT_NO_RESPONSE_ERROR;
-        pad->stick_x = 0;
+    if (controllerPad->CONT_ERRNO != 0) {
+        state->controllerMissing = controllerPad->CONT_ERRNO == CONT_NO_RESPONSE_ERROR;
+        controllerPad->stick_x = 0;
         state->pad->stick_y = 0;
         state->pad->button = 0;
     } else {
