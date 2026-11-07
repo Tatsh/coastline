@@ -27,7 +27,7 @@ jobs:
       attestations: write
       contents: read
       id-token: write
-    name: 'Nintendo 64 (${{ matrix.region }}, ${{ matrix.build-type }})'
+    name: 'Nintendo 64 (${{ matrix.region_name }}, ${{ matrix.build-type }})'
     needs: 'version'
     runs-on: ubuntu-latest
     strategy:
@@ -35,6 +35,15 @@ jobs:
       matrix:
         build-type: ['Debug', 'Release']
         region: ['us', 'jp', 'eu', 'asia']
+        include:
+          - region: 'us'
+            region_name: 'US ROM'
+          - region: 'jp'
+            region_name: 'Japan ROM'
+          - region: 'eu'
+            region_name: 'Europe ROM'
+          - region: 'asia'
+            region_name: 'Asia ROM'
     steps:
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:
@@ -89,12 +98,21 @@ jobs:
           name: 'tgr-${{ matrix.region }}-${{ matrix.build-type }}'
           path: 'artifacts/**/*.a'
   n64-matching:
-    name: 'Nintendo 64 matching (${{ matrix.region }})'
+    name: 'Nintendo 64 matching (${{ matrix.region_name }})'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         region: ['us', 'jp', 'eu', 'asia']
+        include:
+          - region: 'us'
+            region_name: 'US ROM'
+          - region: 'jp'
+            region_name: 'Japan ROM'
+          - region: 'eu'
+            region_name: 'Europe ROM'
+          - region: 'asia'
+            region_name: 'Asia ROM'
     steps:
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:
@@ -114,15 +132,7 @@ jobs:
           echo 'ab5c741561f80913d58c8b074771f23941a3edd312505a8ebed6d1dfeb65e506  .wiswa-ci/ido-5.3.tar.gz' \
             | sha256sum -c
           tar -xf .wiswa-ci/ido-5.3.tar.gz -C .wiswa-ci/ido/5.3
-      - name: 'Compile with IDO and verify ROM-matched code'
-        run: |
-          cmake --preset "n64-$TGR_REGION" -DENFORCE_MATCHING=ON
-          cmake --build --preset "n64-$TGR_REGION" --target verify_matching -- -k 0
-        env:
-          IDO_ROOT: '${{ github.workspace }}/.wiswa-ci/ido/5.3'
-          N64_INST: '/opt/libdragon'
-          TGR_REGION: '${{ matrix.region }}'
-      - name: 'Assemble and verify the IDO Release code image'
+      - name: 'Compile and verify the IDO Release code image'
         run: |
           cmake -S . -B ".wiswa-ci/build/ido-$TGR_REGION" -G Ninja \
             -DCMAKE_TOOLCHAIN_FILE=cmake/n64-ido-toolchain.cmake \

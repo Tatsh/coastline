@@ -607,10 +607,12 @@ int verify(Context &context) {
             ++missing;
         }
     }
-    std::cout << std::format("{}/{} ROM-matched routines verified for {}.\n",
+    const std::map<std::string, std::string> regionNames{
+        {"us", "US"}, {"jp", "Japan"}, {"eu", "Europe"}, {"asia", "Asia"}};
+    std::cout << std::format("{}/{} ROM-matched routines verified for {} ROM.\n",
                              entries.size(),
                              expected->size(),
-                             options.region);
+                             regionNames.at(options.region));
     return missing ? 1 : 0;
 }
 

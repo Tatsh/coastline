@@ -125,7 +125,7 @@ if(TGR_PLATFORM STREQUAL "n64" AND TGR_IDO AND CMAKE_BUILD_TYPE STREQUAL "Releas
       "${COASTLINE_TOOL_ASSEMBLE_CODE}" --source-root "${CMAKE_SOURCE_DIR}" --region
       "${TGR_REGION}" --build "${CMAKE_BINARY_DIR}" ${_rom_arguments} --output "${_rom}"
     DEPENDS archives coastline_tools
-    COMMENT "Assembling the matching ${TGR_REGION} ROM"
+    COMMENT "Assembling the matching ${_tgr_region_upper} ROM"
     VERBATIM)
 endif()
 
