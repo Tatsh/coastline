@@ -82,7 +82,6 @@ bilerp
 bilinearly
 billboardparticles
 bindir
-binutil
 binutils
 bitsperpixel
 bitspixel
@@ -1126,7 +1125,6 @@ rdploadsync
 rdppipesync
 rdptilesync
 rdram
-readelf
 readlink
 rearload
 rearsliding
@@ -1138,10 +1136,7 @@ refguid
 reflectiondata
 reflow
 regen
-regimm
 reginfo
-rela
-relocs
 renderbackend
 renderdefaults
 renderinit

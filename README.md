@@ -91,7 +91,8 @@ cmake --build .wiswa-ci/build/ido-us --target rom
 To regenerate a region's digest file from a verified ROM, run:
 
 ```shell
-.sbclaude-venv/bin/python tools/check_matching.py --region us --rom usa.z64 \
+.wiswa-ci/build/ido-us/tools/check-matching/check-matching --source-root . --region us \
+  --rom usa.z64 \
   > .wiswa-ci/us-matching.json
 ```
 

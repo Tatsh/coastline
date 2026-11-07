@@ -190,7 +190,6 @@ if(NOT BUILD_DOCS_ONLY)
                                "${CMAKE_SOURCE_DIR}/src/common/libultra/include"
                                "${CMAKE_SOURCE_DIR}/3rdparty/zlib-1.0.4")
     if(ENFORCE_MATCHING)
-      find_package(Python3 REQUIRED COMPONENTS Interpreter)
       set(_matching_ido_root "${CMAKE_SOURCE_DIR}/.wiswa-ci/ido/5.3")
       if(DEFINED IDO_ROOT)
         set(_matching_ido_root "${IDO_ROOT}")
@@ -210,7 +209,7 @@ if(NOT BUILD_DOCS_ONLY)
       add_custom_target(
         verify_matching ALL
         COMMAND
-          "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/check_matching.py" --region
+          "${COASTLINE_TOOL_CHECK_MATCHING}" --source-root "${CMAKE_SOURCE_DIR}" --region
           "${TGR_REGION}" --ido-root "${_matching_ido_root}" --binutils-root
           "${_matching_n64_root}" --encoder "${COASTLINE_TOOL_ENCODE_TEXT}" --verbose
         DEPENDS coastline_tools
