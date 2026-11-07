@@ -591,6 +591,30 @@ jobs:
           if-no-files-found: 'error'
           name: 'br-windows-Release'
           path: 'coastline-*.zip'
+  win-msvc:
+    name: 'Windows (Boss Rally, MSVC)'
+    runs-on: windows-2022
+    steps:
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          persist-credentials: false
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          repository: 'NovaRain/DXSDK_Collection'
+          ref: '61827822ad945fac5acb3123ab00c378654bfcd7'
+          path: 'dxsdk'
+          sparse-checkout: |
+            DXSDK_Aug2007/Include
+            DXSDK_Aug2007/Lib/x86
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - name: 'Configure'
+        run: >-
+          cmake -S . -B build/win-msvc -G 'Visual Studio 17 2022' -A Win32
+          '-DTGR_VARIANTS=win-d3d;win-glide' -DTGR_ENABLE_PATCHES=ON
+          "-DDXSDK_DIR=$env:GITHUB_WORKSPACE/dxsdk/DXSDK_Aug2007"
+      - name: 'Compile'
+        run: cmake --build build/win-msvc --config Release --parallel 4
   # On a tag, PC packages go to the draft. N64 artifacts remain on the CI run.
   # The Release workflow publishes the draft once every workflow of the commit succeeds.
   release:
