@@ -40,6 +40,8 @@ typedef int32_t LONG;        /*!< A signed 32-bit integer. */
 #define __stdcall
 #define __thiscall
 #define __fastcall
+#elif defined(_MSC_VER) && defined(_WIN64)
+#define __thiscall
 #endif
 #else
 #include <stddef.h>
