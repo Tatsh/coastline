@@ -46,7 +46,11 @@
 #define MODEL_BASE ((void *)base)
 
 u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
+#if defined(__GNUC__)
+    static u32 len __attribute__((section(".bss.decompress_len")));
+#else
     static u32 len;
+#endif
     u32 compressedSize;
     u32 decompressedSize;
     u32 remaining;

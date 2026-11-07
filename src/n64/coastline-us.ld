@@ -40,6 +40,10 @@ SECTIONS
             . = 0x80315f38 - 0x802ac400;
             *racemenu.c.obj(.bss.season_records)
         }
+        .decompress_len_bss {
+            . = 0x8031b348 - 0x802ac400;
+            *system.c.obj(.bss.decompress_len)
+        }
         .bss {
             *(EXCLUDE_FILE (*carselect.c.obj *decaleditor.c.obj *paintshop.c.obj *racemenu.c.obj
                             *trackrender.c.obj *visibleinstances.c.obj) .bss .bss.*)
@@ -116,6 +120,15 @@ _scrollSoundSegmentRomStart = 0x1BF480;
 _selectSoundSegmentRomStart = 0x1BFEC0;
 _startLightsSegmentRomStart = 0x1CB410;
 _startLightsSegmentRomEnd = 0x1D9CF0;
+gRomSplashSoundA = 0x1B5440;
+gRomSplashSoundB = 0x1B93C0;
+gRomSplashFirstLogo = 0x1DA030;
+gRomSplashProducerLogo = 0x1DBA40;
+gRomSplashDeveloperLogo = 0x1DCD70;
+gRomSplashTitleD = 0x1E1CA0;
+gRomSplashTitleC = 0x1E2B40;
+gRomSplashTitleA = 0x1E09F0;
+gRomSplashTitleB = 0x1E3DB0;
 
 /* The original boot stack, inside the BSS. */
 g_abBootStackTop = 0x803168D0;
