@@ -87,10 +87,11 @@ static BOSS_RALLY_INLINE void BlendModelAnimationAt(ModelAnimation *animation, f
     }
     to = animation->keys[k];
     from = animation->keys[k - 1];
-    BlendModelKeys(animation,
-                   from,
-                   to,
-                   (ANIMATION_HIGH(time) - from->time) / (ANIMATION_HIGH(to->time) - from->time));
+    BlendModelKeys(
+        animation,
+        from,
+        to,
+        (f32)((ANIMATION_HIGH(time) - from->time) / (ANIMATION_HIGH(to->time) - from->time)));
 }
 
 /* Run an animation backwards for a frame. */
@@ -111,7 +112,7 @@ static BOSS_RALLY_INLINE void AdvanceReversingAnimation(ModelAnimation *animatio
     /* Back at the start, it turns forwards again. */
     animation->flags &= ~MODEL_ANIMATION_REVERSING;
     animation->startKey = 0;
-    time = ANIMATION_HIGH(animation->startTime) * 2.0f - time;
+    time = (f32)(ANIMATION_HIGH(animation->startTime) * 2.0f - time);
     animation->time = time;
     BlendModelAnimationAt(animation, time);
 }
@@ -147,7 +148,7 @@ static BOSS_RALLY_INLINE void AdvanceForwardAnimation(ModelAnimation *animation)
     span = length;
     if (animation->flags & MODEL_ANIMATION_BOUNCE) {
         /* A turn back and forth takes twice the length. */
-        span = ANIMATION_LENGTH(animation, length) * 2.0f;
+        span = (f32)(ANIMATION_LENGTH(animation, length) * 2.0f);
         limit = animation->endTime + span;
         if (limit < time) {
             time -= span;
@@ -159,7 +160,7 @@ static BOSS_RALLY_INLINE void AdvanceForwardAnimation(ModelAnimation *animation)
         limit = limit - span;
         if (!(limit < time)) {
             animation->flags |= MODEL_ANIMATION_REVERSING;
-            time = ANIMATION_HIGH(animation->endTime) * 2.0f - time;
+            time = (f32)(ANIMATION_HIGH(animation->endTime) * 2.0f - time);
             animation->time = time;
             animation->startKey = 0;
             BlendModelAnimationAt(animation, time);
@@ -174,7 +175,7 @@ static BOSS_RALLY_INLINE void AdvanceForwardAnimation(ModelAnimation *animation)
             time -= span;
         }
     }
-    time = ANIMATION_HIGH(time) - ANIMATION_LENGTH(animation, length);
+    time = (f32)(ANIMATION_HIGH(time) - ANIMATION_LENGTH(animation, length));
     animation->time = time;
     animation->startKey = 0;
     BlendModelAnimationAt(animation, time);

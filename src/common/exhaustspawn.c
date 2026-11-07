@@ -23,7 +23,7 @@ void SpawnExhaustParticle(Vehicle *vehicle) {
     negativeRevs = (long double)vehicle->engineRpm * -0.001f;
     timer = (((long double)random * (1.0f / 65536.0f) - negativeRevs) - -1.0f) * g_fFrameDeltaTime +
             vehicle->exhaustTimer;
-    vehicle->exhaustTimer = timer;
+    vehicle->exhaustTimer = (f32)timer;
     /* The spawn test uses the unrounded sum despite the timer store. */
     if (timer > 0.25f && (index = g_wParticleFreeListHead) != 0) {
 #else
@@ -33,7 +33,7 @@ void SpawnExhaustParticle(Vehicle *vehicle) {
     if (vehicle->exhaustTimer > 0.25f && (index = g_wParticleFreeListHead) != 0) {
 #endif /* TGR_BOSS_RALLY */
 #if TGR_BOSS_RALLY
-        revs = (long double)vehicle->engineRpm * 0.001f;
+        revs = (f32)((long double)vehicle->engineRpm * 0.001f);
 #else
         revs = vehicle->engineRpm * 0.001f;
 #endif
@@ -62,9 +62,10 @@ void SpawnExhaustParticle(Vehicle *vehicle) {
 
 #if TGR_BOSS_RALLY
         rawSize = (long double)revs * 0.1f - -1.0f;
-        size = rawSize;
-        particle->size = rawSize * 0.15f;
-        particle->fade = (s64)((1.0L / (Vec3fLength(&vehicle->placedVelocity) + size)) * 255.0f);
+        size = (f32)rawSize;
+        particle->size = (f32)(rawSize * 0.15f);
+        particle->fade =
+            (u8)(s64)((1.0L / (Vec3fLength(&vehicle->placedVelocity) + size)) * 255.0f);
 #else
         revs *= 0.1f;
         size = 1.0f + revs;

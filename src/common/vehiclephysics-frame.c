@@ -103,9 +103,10 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
     if (VEHICLE_GET(vehicle, FlyMode)) {
         /* Fly along the vehicle and turn with the controls. */
 #if TGR_BOSS_RALLY
-        Vec3fScale(&step,
-                   &VEHICLE_GET(vehicle, Frame).forward,
-                   FRAME_PRODUCT(VEHICLE_GET(vehicle, Accelerator), g_fFrameDeltaTime) * FLY_SPEED);
+        Vec3fScale(
+            &step,
+            &VEHICLE_GET(vehicle, Frame).forward,
+            (f32)(FRAME_PRODUCT(VEHICLE_GET(vehicle, Accelerator), g_fFrameDeltaTime) * FLY_SPEED));
 #else
         Vec3fScale(&step,
                    &VEHICLE_GET(vehicle, Frame).forward,
@@ -120,13 +121,14 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
         SetVehicleTurnRate(vehicle, 0.0f, 0.0f, 0.0f);
         VEHICLE_SET(vehicle, EngineRpm, 0.0f);
 #if TGR_BOSS_RALLY
-        RotateVehicleByEuler(vehicle,
-                             FRAME_PRODUCT(VEHICLE_GET(vehicle, Steering), g_fFrameDeltaTime) *
-                                 1.256637096405029296875f,
-                             FRAME_PRODUCT(VEHICLE_GET(vehicle, PitchInput), g_fFrameDeltaTime) *
-                                 1.256637096405029296875f,
-                             FRAME_PRODUCT(VEHICLE_GET(vehicle, RollInput), g_fFrameDeltaTime) *
-                                 1.256637096405029296875f);
+        RotateVehicleByEuler(
+            vehicle,
+            (f32)(FRAME_PRODUCT(VEHICLE_GET(vehicle, Steering), g_fFrameDeltaTime) *
+                  1.256637096405029296875f),
+            (f32)(FRAME_PRODUCT(VEHICLE_GET(vehicle, PitchInput), g_fFrameDeltaTime) *
+                  1.256637096405029296875f),
+            (f32)(FRAME_PRODUCT(VEHICLE_GET(vehicle, RollInput), g_fFrameDeltaTime) *
+                  1.256637096405029296875f));
 #else
         RotateVehicleByEuler(
             vehicle,
@@ -270,10 +272,10 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle) {
 #if TGR_BOSS_RALLY
         VEHICLE_SET(vehicle,
                     SpeedKph,
-                    sqrtl((f32)(FRAME_PRODUCT(velocity->z, velocity->z) +
-                                (FRAME_PRODUCT(velocity->x, velocity->x) +
-                                 FRAME_PRODUCT(velocity->y, velocity->y)))) *
-                        SPEED_TO_DISPLAY);
+                    (f32)(sqrtl((f32)(FRAME_PRODUCT(velocity->z, velocity->z) +
+                                      (FRAME_PRODUCT(velocity->x, velocity->x) +
+                                       FRAME_PRODUCT(velocity->y, velocity->y)))) *
+                          SPEED_TO_DISPLAY));
 #else
         vehicle->speedKph = sqrtf(velocity->z * velocity->z +
                                   (velocity->x * velocity->x + velocity->y * velocity->y)) *
