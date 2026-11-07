@@ -77,9 +77,9 @@ void Vec3fCross(Vec3f *out, Vec3f *a, Vec3f *b) {
     f32 ax = a->x, ay = a->y, az = a->z;
     f32 bx = b->x, by = b->y, bz = b->z;
 
-    out->z = VEC3F_INTERMEDIATE(ax) * by - VEC3F_INTERMEDIATE(bx) * ay;
-    out->y = VEC3F_INTERMEDIATE(az) * bx - VEC3F_INTERMEDIATE(bz) * ax;
-    out->x = VEC3F_INTERMEDIATE(ay) * bz - VEC3F_INTERMEDIATE(by) * az;
+    out->z = (f32)(VEC3F_INTERMEDIATE(ax) * by - VEC3F_INTERMEDIATE(bx) * ay);
+    out->y = (f32)(VEC3F_INTERMEDIATE(az) * bx - VEC3F_INTERMEDIATE(bz) * ax);
+    out->x = (f32)(VEC3F_INTERMEDIATE(ay) * bz - VEC3F_INTERMEDIATE(by) * az);
 #else
     f32 z = a->x * b->y - b->x * a->y;
     f32 y = a->z * b->x - b->z * a->x;
@@ -152,9 +152,9 @@ void Vec3fScaleByInverse(Vec3f *out, Vec3f *v, f32 divisor) {
 void Vec3fDivideInPlace(Vec3f *v, f32 divisor) {
 #if TGR_BOSS_RALLY
     long double inverse = 1.0L / divisor;
-    v->x *= inverse;
-    v->y *= inverse;
-    v->z *= inverse;
+    v->x = (f32)(v->x * inverse);
+    v->y = (f32)(v->y * inverse);
+    v->z = (f32)(v->z * inverse);
 #else
     divisor = 1.0f / divisor;
     v->x *= divisor;
@@ -185,10 +185,10 @@ void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to) {
 #if TGR_BOSS_RALLY
     long double highDx = (long double)to->x - from->x;
     long double highDy = (long double)to->y - from->y;
-    f32 dx = highDx;
-    f32 dy = highDy;
-    f32 dz = (long double)to->z - from->z;
-    f32 square = highDx * dx + highDy * dy + (long double)dz * dz;
+    f32 dx = (f32)highDx;
+    f32 dy = (f32)highDy;
+    f32 dz = (f32)((long double)to->z - from->z);
+    f32 square = (f32)(highDx * dx + highDy * dy + (long double)dz * dz);
     long double length = sqrtl(square);
 
     if (length != 0.0L && !isnan(length)) {
@@ -201,9 +201,9 @@ void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to) {
     if (length != 0.0f) {
 #endif /* TGR_BOSS_RALLY */
         length = 1.0f / length;
-        out->x = dx * length;
-        out->y = dy * length;
-        out->z = dz * length;
+        out->x = (f32)(dx * length);
+        out->y = (f32)(dy * length);
+        out->z = (f32)(dz * length);
     } else {
         out->x = 0.0f;
         out->y = 0.0f;
@@ -230,14 +230,15 @@ void Vec3fNormalizeSafe(Vec3f *out, Vec3f *v) {
 
 void Vec3fNormalize(Vec3f *v) {
 #if TGR_BOSS_RALLY
-    f32 square = (long double)v->x * v->x + ((long double)v->y * v->y + (long double)v->z * v->z);
+    f32 square =
+        (f32)((long double)v->x * v->x + ((long double)v->y * v->y + (long double)v->z * v->z));
     long double length = sqrtl(square);
 
     if (length != 0.0L && !isnan(length)) {
         length = 1.0L / length;
-        v->x *= length;
-        v->y *= length;
-        v->z *= length;
+        v->x = (f32)(v->x * length);
+        v->y = (f32)(v->y * length);
+        v->z = (f32)(v->z * length);
     } else {
         v->x = 0.0f;
         v->y = 0.0f;
@@ -291,27 +292,27 @@ void Vec3fAddInPlace(Vec3f *v, Vec3f *b) {
 }
 
 void Vec3fLerp(Vec3f *out, Vec3f *a, Vec3f *b, f32 t) {
-    out->x = b->x + (VEC3F_INTERMEDIATE(a->x) - b->x) * t;
-    out->y = b->y + (VEC3F_INTERMEDIATE(a->y) - b->y) * t;
-    out->z = b->z + (VEC3F_INTERMEDIATE(a->z) - b->z) * t;
+    out->x = (f32)(b->x + (VEC3F_INTERMEDIATE(a->x) - b->x) * t);
+    out->y = (f32)(b->y + (VEC3F_INTERMEDIATE(a->y) - b->y) * t);
+    out->z = (f32)(b->z + (VEC3F_INTERMEDIATE(a->z) - b->z) * t);
 }
 
 void Vec3fMulAdd(Vec3f *out, Vec3f *a, Vec3f *b, f32 scale) {
-    out->x = VEC3F_INTERMEDIATE(b->x) * scale + a->x;
-    out->y = VEC3F_INTERMEDIATE(b->y) * scale + a->y;
-    out->z = VEC3F_INTERMEDIATE(b->z) * scale + a->z;
+    out->x = (f32)(VEC3F_INTERMEDIATE(b->x) * scale + a->x);
+    out->y = (f32)(VEC3F_INTERMEDIATE(b->y) * scale + a->y);
+    out->z = (f32)(VEC3F_INTERMEDIATE(b->z) * scale + a->z);
 }
 
 void Vec3fMulAddInPlace(Vec3f *v, Vec3f *b, f32 scale) {
-    v->x += VEC3F_INTERMEDIATE(b->x) * scale;
-    v->y += VEC3F_INTERMEDIATE(b->y) * scale;
-    v->z += VEC3F_INTERMEDIATE(b->z) * scale;
+    v->x = (f32)(v->x + VEC3F_INTERMEDIATE(b->x) * scale);
+    v->y = (f32)(v->y + VEC3F_INTERMEDIATE(b->y) * scale);
+    v->z = (f32)(v->z + VEC3F_INTERMEDIATE(b->z) * scale);
 }
 
 void Vec3fMidpoint(Vec3f *out, Vec3f *a, Vec3f *b) {
-    out->x = (VEC3F_INTERMEDIATE(b->x) + a->x) * 0.5f;
-    out->y = (VEC3F_INTERMEDIATE(b->y) + a->y) * 0.5f;
-    out->z = (VEC3F_INTERMEDIATE(b->z) + a->z) * 0.5f;
+    out->x = (f32)((VEC3F_INTERMEDIATE(b->x) + a->x) * 0.5f);
+    out->y = (f32)((VEC3F_INTERMEDIATE(b->y) + a->y) * 0.5f);
+    out->z = (f32)((VEC3F_INTERMEDIATE(b->z) + a->z) * 0.5f);
 }
 
 void Vec3fClear(Vec3f *v) {
@@ -324,8 +325,8 @@ void Vec3fClear(Vec3f *v) {
 long double Vec2fDistance(Vec2f *a, Vec2f *b) {
     long double dx = (long double)a->x - b->x;
     long double dy = (long double)a->y - b->y;
-    f32 roundedDx = dx;
-    f32 square = dx * roundedDx + dy * dy;
+    f32 roundedDx = (f32)dx;
+    f32 square = (f32)(dx * roundedDx + dy * dy);
 
     return sqrtl(square);
 }
@@ -343,9 +344,9 @@ long double Vec3fDistance(Vec3f *a, Vec3f *b) {
     long double dx = (long double)a->x - b->x;
     long double dy = (long double)a->y - b->y;
     long double dz = (long double)a->z - b->z;
-    f32 roundedDx = dx;
-    f32 roundedDy = dy;
-    f32 square = dx * roundedDx + dy * roundedDy + dz * dz;
+    f32 roundedDx = (f32)dx;
+    f32 roundedDy = (f32)dy;
+    f32 square = (f32)(dx * roundedDx + dy * roundedDy + dz * dz);
 
     return sqrtl(square);
 }
@@ -364,8 +365,8 @@ long double Vec3fDistanceSquared(Vec3f *a, Vec3f *b) {
     long double dx = (long double)a->x - b->x;
     long double dy = (long double)a->y - b->y;
     long double dz = (long double)a->z - b->z;
-    f32 roundedDx = dx;
-    f32 roundedDy = dy;
+    f32 roundedDx = (f32)dx;
+    f32 roundedDy = (f32)dy;
 
     return dx * roundedDx + dy * roundedDy + dz * dz;
 }
@@ -394,7 +395,7 @@ f32 Vec3fLength(Vec3f *v) {
 
 #if TGR_BOSS_RALLY
 long double Vec2fLength(Vec2f *v) {
-    f32 squared = (long double)v->y * v->y + (long double)v->x * v->x;
+    f32 squared = (f32)((long double)v->y * v->y + (long double)v->x * v->x);
     return sqrtl(squared);
 }
 #else
@@ -451,15 +452,18 @@ void Mtx4x4ProjectPoint(Vec3f *out, Vec3f *in, f32 m[4][4]) {
         1.0L / ((((long double)y * m[1][3] + (long double)x * m[0][3]) + (long double)z * m[2][3]) +
                 m[3][3]);
 
-    out->x = ((((long double)y * m[1][0] + (long double)x * m[0][0]) + (long double)z * m[2][0]) +
-              m[3][0]) *
-             inverseW;
-    out->y = ((((long double)y * m[1][1] + (long double)x * m[0][1]) + (long double)z * m[2][1]) +
-              m[3][1]) *
-             inverseW;
-    out->z = ((((long double)y * m[1][2] + (long double)x * m[0][2]) + (long double)z * m[2][2]) +
-              m[3][2]) *
-             inverseW;
+    out->x =
+        (f32)(((((long double)y * m[1][0] + (long double)x * m[0][0]) + (long double)z * m[2][0]) +
+               m[3][0]) *
+              inverseW);
+    out->y =
+        (f32)(((((long double)y * m[1][1] + (long double)x * m[0][1]) + (long double)z * m[2][1]) +
+               m[3][1]) *
+              inverseW);
+    out->z =
+        (f32)(((((long double)y * m[1][2] + (long double)x * m[0][2]) + (long double)z * m[2][2]) +
+               m[3][2]) *
+              inverseW);
 #else
     f32 inverseW = 1.0f / (x * m[0][3] + y * m[1][3] + z * m[2][3] + m[3][3]);
 
@@ -476,11 +480,11 @@ void Vec3fTransformByMatrix(f32 out[4], const Vec3f *in, f32 m[4][4]) {
     for (i = 0; i < 4; i++) {
 #if TGR_BOSS_RALLY
         if (i == 0) {
-            out[i] = ((long double)z * m[2][i] + (long double)x * m[0][i]) +
-                     (long double)y * m[1][i] + m[3][i];
+            out[i] = (f32)(((long double)z * m[2][i] + (long double)x * m[0][i]) +
+                           (long double)y * m[1][i] + m[3][i]);
         } else {
-            out[i] = ((long double)z * m[2][i] + (long double)y * m[1][i]) +
-                     (long double)x * m[0][i] + m[3][i];
+            out[i] = (f32)(((long double)z * m[2][i] + (long double)y * m[1][i]) +
+                           (long double)x * m[0][i] + m[3][i]);
         }
 #else
         out[i] = x * m[0][i] + y * m[1][i] + z * m[2][i] + m[3][i];
@@ -514,22 +518,28 @@ void Mtx4x4TransformNoTranslation(Vec3f *out, Vec3f *in, f32 m[4][4]) {
     long double inverseW = 1.0L / (((long double)y * m[1][3] + (long double)x * m[0][3]) +
                                    (long double)z * m[2][3] + m[3][3]);
 
-    out->x = (((long double)y * m[1][0] + (long double)z * m[2][0]) + (long double)x * m[0][0]) *
-             inverseW;
-    out->y = (((long double)y * m[1][1] + (long double)x * m[0][1]) + (long double)z * m[2][1]) *
-             inverseW;
-    out->z = (((long double)y * m[1][2] + (long double)x * m[0][2]) + (long double)z * m[2][2]) *
-             inverseW;
+    out->x =
+        (f32)((((long double)y * m[1][0] + (long double)z * m[2][0]) + (long double)x * m[0][0]) *
+              inverseW);
+    out->y =
+        (f32)((((long double)y * m[1][1] + (long double)x * m[0][1]) + (long double)z * m[2][1]) *
+              inverseW);
+    out->z =
+        (f32)((((long double)y * m[1][2] + (long double)x * m[0][2]) + (long double)z * m[2][2]) *
+              inverseW);
 #elif TGR_BOSS_RALLY
     long double inverseW = 1.0L / (((long double)y * m[1][3] + (long double)z * m[2][3]) +
                                    (long double)x * m[0][3] + m[3][3]);
 
-    out->x = (((long double)x * m[0][0] + (long double)z * m[2][0]) + (long double)y * m[1][0]) *
-             inverseW;
-    out->y = (((long double)y * m[1][1] + (long double)z * m[2][1]) + (long double)x * m[0][1]) *
-             inverseW;
-    out->z = (((long double)y * m[1][2] + (long double)z * m[2][2]) + (long double)x * m[0][2]) *
-             inverseW;
+    out->x =
+        (f32)((((long double)x * m[0][0] + (long double)z * m[2][0]) + (long double)y * m[1][0]) *
+              inverseW);
+    out->y =
+        (f32)((((long double)y * m[1][1] + (long double)z * m[2][1]) + (long double)x * m[0][1]) *
+              inverseW);
+    out->z =
+        (f32)((((long double)y * m[1][2] + (long double)z * m[2][2]) + (long double)x * m[0][2]) *
+              inverseW);
 #else
     f32 inverseW = 1.0f / (x * m[0][3] + y * m[1][3] + z * m[2][3] + m[3][3]);
 
@@ -563,7 +573,7 @@ void Mtx4x4Multiply(f32 out[4][4], f32 a[4][4], f32 b[4][4]) {
             for (i = 0; i < 4; i++) {
                 total += (long double)a[row][i] * b[i][column];
             }
-            product[row][column] = total;
+            product[row][column] = (f32)total;
 #else
             product[row][column] = 0.0f;
             for (i = 0; i < 4; i++) {
@@ -741,7 +751,7 @@ f32 Atan2f(f32 x, f32 y) {
     }
 
 #if TGR_BOSS_RALLY
-    squared = (long double)y * y + (long double)x * x;
+    squared = (f32)((long double)y * y + (long double)x * x);
     length = sqrtl((long double)squared);
 #else
     length = sqrtf(y * y + x * x);
@@ -749,7 +759,7 @@ f32 Atan2f(f32 x, f32 y) {
     if (ATAN_ZERO(length)) {
         return 0.0f;
     }
-    y /= length;
+    y = (f32)(y / length);
 
     /* Search for the angle whose sine is y, halving the step each time. */
     angle = EIGHTH_PI_F;
@@ -893,16 +903,16 @@ s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2) {
     /* Each segment must have the ends of the other on both sides of its line. */
     side1 = (INTERSECTION_REAL(q1->x) - p1->x) * (f32)(INTERSECTION_REAL(p2->y) - p1->y) -
             (INTERSECTION_REAL(p2->x) - p1->x) * (INTERSECTION_REAL(q1->y) - p1->y);
-    side2 = (INTERSECTION_REAL(q2->x) - p1->x) * (f32)(INTERSECTION_REAL(p2->y) - p1->y) -
-            (INTERSECTION_REAL(p2->x) - p1->x) * (INTERSECTION_REAL(q2->y) - p1->y);
+    side2 = (f32)((INTERSECTION_REAL(q2->x) - p1->x) * (f32)(INTERSECTION_REAL(p2->y) - p1->y) -
+                  (INTERSECTION_REAL(p2->x) - p1->x) * (INTERSECTION_REAL(q2->y) - p1->y));
     if (INTERSECTION_NONZERO(side1) && INTERSECTION_NONZERO(side2) &&
         INTERSECTION_REAL((f32)side1) * side2 > 0.0f) {
         return 0;
     }
     side3 = (INTERSECTION_REAL(p1->x) - q1->x) * (f32)(INTERSECTION_REAL(q2->y) - q1->y) -
             (INTERSECTION_REAL(q2->x) - q1->x) * (INTERSECTION_REAL(p1->y) - q1->y);
-    side4 = (INTERSECTION_REAL(p2->x) - q1->x) * (f32)(INTERSECTION_REAL(q2->y) - q1->y) -
-            (INTERSECTION_REAL(q2->x) - q1->x) * (INTERSECTION_REAL(p2->y) - q1->y);
+    side4 = (f32)((INTERSECTION_REAL(p2->x) - q1->x) * (f32)(INTERSECTION_REAL(q2->y) - q1->y) -
+                  (INTERSECTION_REAL(q2->x) - q1->x) * (INTERSECTION_REAL(p2->y) - q1->y));
     if (INTERSECTION_NONZERO(side3) && INTERSECTION_NONZERO(side4) &&
         INTERSECTION_REAL((f32)side3) * side4 > 0.0f) {
         return 0;
@@ -923,8 +933,8 @@ s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2) {
 
 s32 SegmentCrossesLine2D(const Vec3f *a, const Vec3f *b, const Vec3f *p, const Vec3f *q) {
 #if TGR_BOSS_RALLY
-    f32 dx = (long double)b->x - a->x;
-    f32 dy = (long double)b->y - a->y;
+    f32 dx = (f32)((long double)b->x - a->x);
+    f32 dy = (f32)((long double)b->y - a->y);
     long double side1 = ((long double)p->x - a->x) * dy - ((long double)p->y - a->y) * dx;
     long double side2 = ((long double)q->x - a->x) * dy - ((long double)q->y - a->y) * dx;
     long double difference;
