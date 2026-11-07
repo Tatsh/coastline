@@ -91,6 +91,7 @@ SECTIONS
         *vehicle-track-position.trim.o(.text .text.*)
         *vehiclestatus.trim.o(.text .text.*)
         *ground-ray.slice.o(.text .text.*)
+        *physics-update.trim.o(.text .text.*)
         *(.text .text.*)
     }
     . = ALIGN(16);
