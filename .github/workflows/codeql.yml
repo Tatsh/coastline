@@ -32,7 +32,7 @@ jobs:
             libxi-dev libxkbcommon-dev libxrandr-dev libxss-dev libxtst-dev ninja-build \
             pkg-config wayland-protocols
           git clone https://github.com/microsoft/vcpkg "$VCPKG_ROOT"
-          cmake --preset sdl -DCMAKE_BUILD_TYPE=Debug -DCOASTLINE_VIDEO=ON
+          cmake --preset sdl -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_VIDEO=ON
           cmake --build --preset sdl -- -k 0
         env:
           VCPKG_ROOT: '${{ github.workspace }}/.vcpkg'

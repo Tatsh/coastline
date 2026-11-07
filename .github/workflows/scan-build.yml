@@ -37,7 +37,7 @@ jobs:
             export STATIC_ANALYSIS_REAL_CC=clang STATIC_ANALYSIS_REAL_CXX=clang++
             export CC="$GITHUB_WORKSPACE/.wiswa-ci/scan-build-cc"
             export CXX="$GITHUB_WORKSPACE/.wiswa-ci/scan-build-cxx"
-            cmake --preset sdl -DCMAKE_BUILD_TYPE=Debug -DCOASTLINE_VIDEO=ON
+            cmake --preset sdl -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_VIDEO=ON
         name: Configure with compiler interception
         run: |-
           mkdir -p scan-build-report

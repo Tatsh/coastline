@@ -591,7 +591,7 @@
   github+: { workflows+: {
     scan_build+: {
       build_command: 'cmake --build --preset sdl --clean-first --parallel 2',
-      configure_command: 'cmake --preset sdl -DCMAKE_BUILD_TYPE=Debug -DCOASTLINE_VIDEO=ON',
+      configure_command: 'cmake --preset sdl -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_VIDEO=ON',
       documentation_steps: [
         {
           name: 'Install dependencies',

@@ -27,13 +27,12 @@ jobs:
       attestations: write
       contents: read
       id-token: write
-    name: 'Nintendo 64 (${{ matrix.region_name }}, ${{ matrix.build-type }})'
+    name: 'Nintendo 64 (${{ matrix.region_name }})'
     needs: 'version'
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        build-type: ['Debug', 'Release']
         region: ['us', 'jp', 'eu', 'asia']
         include:
           - region: 'us'
@@ -64,9 +63,8 @@ jobs:
           /opt/libdragon/bin/mips64-elf-gcc --version
           cmake --version
       - name: 'Configure'
-        run: cmake --preset "n64-$TGR_REGION" -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DTGR_ENABLE_PATCHES=ON
+        run: cmake --preset "n64-$TGR_REGION" -DCMAKE_BUILD_TYPE=Release -DTGR_ENABLE_PATCHES=ON
         env:
-          BUILD_TYPE: '${{ matrix.build-type }}'
           N64_INST: '/opt/libdragon'
           TGR_REGION: '${{ matrix.region }}'
       - name: 'Compile'
@@ -95,7 +93,7 @@ jobs:
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
-          name: 'tgr-${{ matrix.region }}-${{ matrix.build-type }}'
+          name: 'tgr-${{ matrix.region }}-Release'
           path: 'artifacts/**/*.a'
   n64-matching:
     name: 'Nintendo 64 matching (${{ matrix.region_name }})'
@@ -148,13 +146,12 @@ jobs:
       attestations: write
       contents: read
       id-token: write
-    name: 'SDL (${{ matrix.platform.name }}, ${{ matrix.build-type }})'
+    name: 'SDL (${{ matrix.platform.name }})'
     needs: 'version'
     runs-on: '${{ matrix.platform.os }}'
     strategy:
       fail-fast: false
       matrix:
-        build-type: ['Debug', 'Release']
         platform:
           # linuxdeploy builds the AppImage, and its checksum is that of the pinned release.
           - architecture: 'x86_64'
@@ -191,8 +188,8 @@ jobs:
             triplet: 'x64-osx'
     env:
       # Each package filename includes a version tag or the seven-character commit SHA.
-      PACKAGE: 'coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-${{ matrix.build-type }}'
-      BUILD_TYPE: '${{ matrix.build-type }}'
+      PACKAGE: 'coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-Release'
+      BUILD_TYPE: 'Release'
       MACOSX_DEPLOYMENT_TARGET: '10.15'
       VCPKG_KEEP_ENV_VARS: 'MACOSX_DEPLOYMENT_TARGET'
       VCPKG_ROOT: '${{ github.workspace }}/.vcpkg'
@@ -252,11 +249,8 @@ jobs:
         env:
           ARCHITECTURE: '${{ matrix.platform.architecture }}'
         shell: pwsh
-      # The debug build retains its symbols, and the release build is stripped.
       - name: 'Install'
-        run: |
-          if [ "$BUILD_TYPE" = 'Release' ]; then strip='--strip'; else strip=''; fi
-          cmake --install build/sdl --prefix staging $strip
+        run: cmake --install build/sdl --prefix staging --strip
         shell: bash
       # Each package keeps the permissions of the files, which an artifact loses: a tarball on
       # Linux, and on macOS a disk image, which also keeps the signature of the bundle.
@@ -336,7 +330,7 @@ jobs:
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
-          name: 'coastline-${{ matrix.platform.slug }}-${{ matrix.build-type }}'
+          name: 'coastline-${{ matrix.platform.slug }}-Release'
           path: |
             coastline-*.dmg
             coastline-*.exe
@@ -352,30 +346,24 @@ jobs:
             "https://github.com/linuxdeploy/linuxdeploy/releases/download/1-alpha-20251107-1/linuxdeploy-$arch.AppImage"
           echo "$LINUXDEPLOY_SHA256  linuxdeploy.AppImage" | sha256sum -c
           chmod +x linuxdeploy.AppImage
-          install_args=()
-          if [[ "$BUILD_TYPE" == Release ]]; then
-            install_args+=(--strip)
-          else
-            export NO_STRIP=1
-          fi
-          DESTDIR=AppDir cmake --install build/sdl --prefix /usr "${install_args[@]}"
+          DESTDIR=AppDir cmake --install build/sdl --prefix /usr --strip
           APPIMAGE_EXTRACT_AND_RUN=1 ./linuxdeploy.AppImage --appdir AppDir --output appimage
         env:
-          LDAI_OUTPUT: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-${{ matrix.build-type }}.AppImage'
+          LDAI_OUTPUT: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-Release.AppImage'
           LINUXDEPLOY_OUTPUT_VERSION: '${{ needs.version.outputs.version }}'
           LINUXDEPLOY_SHA256: '${{ matrix.platform.linuxdeploy-sha256 }}'
       - if: runner.os == 'Linux' && github.event_name != 'pull_request'
         name: 'Attest the AppImage'
         uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
         with:
-          subject-path: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-${{ matrix.build-type }}.AppImage'
+          subject-path: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-Release.AppImage'
       - if: runner.os == 'Linux'
         name: 'Upload the AppImage'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
-          name: 'coastline-appimage-${{ matrix.platform.architecture }}-${{ matrix.build-type }}'
-          path: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-${{ matrix.build-type }}.AppImage'
+          name: 'coastline-appimage-${{ matrix.platform.architecture }}-Release'
+          path: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-Release.AppImage'
   flatpak:
     permissions:
       attestations: write
@@ -461,13 +449,12 @@ jobs:
       attestations: write
       contents: read
       id-token: write
-    name: 'Windows (${{ matrix.renderer }}, ${{ matrix.build-type }})'
+    name: 'Windows (${{ matrix.renderer }})'
     needs: 'version'
     runs-on: windows-latest
     strategy:
       fail-fast: false
       matrix:
-        build-type: ['Debug', 'Release']
         renderer: ['d3d', 'glide']
     steps:
       # The compiler is the i686 mingw-w64 GCC of MSYS2's mingw32 system.
@@ -489,9 +476,8 @@ jobs:
           cmake --version
         shell: 'msys2 {0}'
       - name: 'Configure'
-        run: cmake --preset "win-$TGR_RENDERER" -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DTGR_ENABLE_PATCHES=ON
+        run: cmake --preset "win-$TGR_RENDERER" -DCMAKE_BUILD_TYPE=Release -DTGR_ENABLE_PATCHES=ON
         env:
-          BUILD_TYPE: '${{ matrix.build-type }}'
           TGR_RENDERER: '${{ matrix.renderer }}'
         shell: 'msys2 {0}'
       - name: 'Compile'
@@ -509,7 +495,7 @@ jobs:
           (cd staging && zip -9 "../coastline-$VERSION-$LIBRARY-$BUILD_TYPE.zip" ./*)
           unzip -l ./coastline-*.zip
         env:
-          BUILD_TYPE: '${{ matrix.build-type }}'
+          BUILD_TYPE: 'Release'
           LIBRARY: "${{ matrix.renderer == 'd3d' && 'brd3d' || 'brglide' }}"
           TGR_RENDERER: '${{ matrix.renderer }}'
           VERSION: '${{ needs.version.outputs.version }}'
@@ -523,9 +509,9 @@ jobs:
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
-          name: 'br-${{ matrix.renderer }}-${{ matrix.build-type }}'
+          name: 'br-${{ matrix.renderer }}-Release'
           path: 'coastline-*.zip'
-  # On a tag, Release PC packages go to the draft. Debug and N64 artifacts remain on the CI run.
+  # On a tag, PC packages go to the draft. N64 artifacts remain on the CI run.
   # The Release workflow publishes the draft once every workflow of the commit succeeds.
   release:
     if: "github.ref_type == 'tag'"
