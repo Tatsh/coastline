@@ -503,6 +503,7 @@ jobs:
           git clone https://github.com/microsoft/vcpkg .vcpkg
           cmake --preset sdl -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_PORTABLE=ON \
             -DCOASTLINE_VIDEO=OFF -DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic \
+            -DVCPKG_HOST_TRIPLET=x64-mingw-dynamic \
             -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
             -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++
           cmake --build --preset sdl -- -k 0
