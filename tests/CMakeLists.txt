@@ -113,7 +113,8 @@ coastline_add_test(
   "${_src}/common/modelanimationflags.c"
   "${_src}/common/modelrelocation.c"
   "${_src}/common/vehiclepaint.c")
-coastline_add_test(options "${_src}/common/volumecontrols.c")
+coastline_add_test(options "${_src}/common/volumecontrols.c"
+                   "${_src}/common/volumecontrols-sfx.c" "${_src}/n64/options-volume.c")
 coastline_add_test(paintshop "${_src}/n64/paintshop.c")
 coastline_add_test(paintinput "${_src}/n64/paintinput.c")
 coastline_add_test(paintshape "${_src}/common/paintshape.c")
@@ -136,8 +137,10 @@ coastline_add_test(
   "${_src}/common/racespecials.c"
   "${_src}/common/seasontrack.c"
   "${_src}/common/startlights.c")
+target_sources(race_test PRIVATE "${_src}/n64/race-demo.c" "${_src}/n64/race-bgm.c")
 coastline_add_test(qualityoflife "${_src}/common/qualityoflife.c")
 coastline_add_test(racemenu stubs/racemenu.c ${_vecmath} ${_gu} "${_src}/n64/modeldraw.c")
+target_sources(racemenu_test PRIVATE "${_src}/n64/racemenu-draw.c")
 coastline_add_test(
   racers
   ${_vecmath}

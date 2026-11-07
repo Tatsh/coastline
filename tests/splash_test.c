@@ -3,6 +3,7 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "splash-controller.c"
 #include "splash.c"
 
 /* The host's string.h clashes with libultra, so use the builtins. */
