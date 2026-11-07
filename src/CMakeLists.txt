@@ -8,6 +8,10 @@
 
 # The settings every library of the game shares. An interface library provides them without
 # compiling anything itself.
+if(TGR_PLATFORM STREQUAL "n64" AND NOT TGR_IDO)
+  # Keep the ROM's size optimisation after CMake's build-type flags.
+  add_compile_options($<$<COMPILE_LANGUAGE:C>:-Os>)
+endif()
 add_library(coastline_options INTERFACE)
 # A reconstructed routine retains the parameters of the original, used or not. IDO takes the flags
 # of tools/ido_flags.txt alone.
