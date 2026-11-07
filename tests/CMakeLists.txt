@@ -96,6 +96,9 @@ coastline_add_test(
   "${_src}/n64/tirespray.c"
   "${_src}/common/tiresprayrender.c"
   "${_src}/common/vehicleeffects.c")
+coastline_add_test(framebufferexpansion)
+target_compile_options(framebufferexpansion_test PRIVATE -UTGR_REGION -DTGR_REGION=TGR_REGION_JP)
+target_compile_definitions(framebufferexpansion_test PRIVATE ENABLE_PATCHES=1)
 coastline_add_test(fade ${_common} "${_src}/common/fadeupdate.c" "${_src}/common/headlight.c"
                    "${_src}/common/headlightglare.c")
 coastline_add_test(

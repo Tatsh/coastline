@@ -49,6 +49,19 @@ void ClearFramebuffersHighRes(void) {
     u32 *word;
     u32 *end;
 
+#ifdef ENABLE_PATCHES
+    if (osMemSize > 0x400000) {
+        g_dwKeepScreenBlanked = TRUE;
+        StartHighResFrame();
+        ClearScreen(0, 0, 0);
+        FlushDisplayList();
+        StartHighResFrame();
+        ClearScreen(0, 0, 0);
+        FlushDisplayList();
+        g_dwKeepScreenBlanked = FALSE;
+        return;
+    }
+#endif
     g_dwKeepScreenBlanked = TRUE;
     StartLowResFrame();
     ClearScreen(0, 0, 0);

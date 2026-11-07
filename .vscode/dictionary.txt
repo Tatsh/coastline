@@ -519,6 +519,7 @@ fpshud
 fract
 frag
 framebegin
+framebufferexpansion
 frameclear
 framefields
 frameflush
