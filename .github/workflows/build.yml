@@ -366,7 +366,10 @@ jobs:
           echo "$LINUXDEPLOY_SHA256  linuxdeploy.AppImage" | sha256sum -c
           chmod +x linuxdeploy.AppImage
           DESTDIR=AppDir cmake --install build/sdl --prefix /usr --strip
-          APPIMAGE_EXTRACT_AND_RUN=1 ./linuxdeploy.AppImage --appdir AppDir --output appimage
+          cp AppDir/usr/share/metainfo/sh.tat.coastline.metainfo.xml \
+            AppDir/usr/share/metainfo/sh.tat.coastline.appdata.xml
+          APPIMAGE_EXTRACT_AND_RUN=1 ./linuxdeploy.AppImage --appdir AppDir \
+            --desktop-file=AppDir/usr/share/applications/sh.tat.coastline.desktop --output appimage
         env:
           LDAI_OUTPUT: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-Release.AppImage'
           LINUXDEPLOY_OUTPUT_VERSION: '${{ needs.version.outputs.version }}'
