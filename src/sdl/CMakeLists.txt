@@ -28,7 +28,8 @@ endif()
 # parameters turns off.
 if(MSVC)
   add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
-  set(COASTLINE_WARNINGS /W4 /utf-8)
+  # Original binary layouts require zero-length arrays and anonymous unions.
+  set(COASTLINE_WARNINGS /W4 /utf-8 /wd4200 /wd4201)
   set(COASTLINE_NO_UNUSED_PARAMETER /wd4100)
 else()
   set(COASTLINE_WARNINGS -Wall -Wextra)
