@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import json
 import re
 import shutil
 import subprocess
@@ -117,6 +118,14 @@ def main() -> int:
     for section, contents in sections.items():
       (args.output / f'{section}.bin').write_bytes(contents)
       print(f'{section}: {len(contents)} exact bytes at {symbols[selected[section]]:#x}')
+    (args.output / 'piece.json').write_text(json.dumps({
+        'region': args.region,
+        'rom_sha1': ROM_SHA1[args.region],
+        'sections': {
+            section: {'address': symbols[selected[section]], 'size': len(contents)}
+            for section, contents in sections.items()
+        },
+    }, indent=2, sort_keys=True) + '\n')
   return 0
 
 
