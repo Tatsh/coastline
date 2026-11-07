@@ -218,47 +218,6 @@ void PlaceTrackCamera(Vehicle *vehicle) {
 #define START_CHASE_REPLAY_FORWARD 10.0f
 #define START_LOOK_AHEAD 2.0f
 
-void InitCameraForVehicle(Vehicle *vehicle) {
-    Vec3f position;
-    /* The original reserves stack for sixteen bytes of locals it does not use. */
-    f32 unused[4];
-
-    (void)unused;
-    if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
-        VEHICLE_SET(vehicle, ActiveCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE]);
-        VEHICLE_SET(vehicle, PreviousCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE]);
-    } else {
-        VEHICLE_SET(vehicle, ActiveCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT]);
-        VEHICLE_SET(
-            vehicle, PreviousCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT]);
-    }
-    Vec3fMulAdd(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position,
-                &VEHICLE_GET(vehicle, Frame).position,
-                &VEHICLE_GET(vehicle, Frame).up,
-                START_CHASE_HEIGHT);
-    if (gInstantReplayActive) {
-        Vec3fMulAddInPlace(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position,
-                           &VEHICLE_GET(vehicle, Frame).forward,
-                           START_CHASE_REPLAY_FORWARD);
-    }
-    Vec3fSubtractInPlace(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position,
-                         &VEHICLE_GET(vehicle, Frame).forward);
-    position.x = VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position.x;
-    position.y = VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position.y;
-    position.z = VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position.z;
-    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].position.x = position.x;
-    VEHICLE_GET(vehicle, ChasePosition).x = position.x;
-    VEHICLE_GET(vehicle, InitialChasePosition).x = position.x;
-    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].position.y = position.y;
-    VEHICLE_GET(vehicle, ChasePosition).y = position.y;
-    VEHICLE_GET(vehicle, InitialChasePosition).y = position.y;
-    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].position.z = position.z;
-    VEHICLE_GET(vehicle, ChasePosition).z = position.z;
-    VEHICLE_GET(vehicle, InitialChasePosition).z = position.z;
-    VEHICLE_SET(vehicle, CollisionPull, 0.0f);
-    VEHICLE_SET(vehicle, LookAhead, START_LOOK_AHEAD);
-}
-
 /* The zoom of the trackside camera with its distance from the vehicle. */
 #define TRACKSIDE_NEAR 1.0f
 #define TRACKSIDE_FAR 101.0f
@@ -502,3 +461,44 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     vehicle->previousCamera = vehicle->activeCamera;
 }
 #endif
+
+void InitCameraForVehicle(Vehicle *vehicle) {
+    Vec3f position;
+    /* The original reserves stack for sixteen bytes of locals it does not use. */
+    f32 unused[4];
+
+    (void)unused;
+    if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
+        VEHICLE_SET(vehicle, ActiveCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE]);
+        VEHICLE_SET(vehicle, PreviousCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE]);
+    } else {
+        VEHICLE_SET(vehicle, ActiveCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT]);
+        VEHICLE_SET(
+            vehicle, PreviousCamera, &VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_COCKPIT]);
+    }
+    Vec3fMulAdd(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position,
+                &VEHICLE_GET(vehicle, Frame).position,
+                &VEHICLE_GET(vehicle, Frame).up,
+                START_CHASE_HEIGHT);
+    if (gInstantReplayActive) {
+        Vec3fMulAddInPlace(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position,
+                           &VEHICLE_GET(vehicle, Frame).forward,
+                           START_CHASE_REPLAY_FORWARD);
+    }
+    Vec3fSubtractInPlace(&VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position,
+                         &VEHICLE_GET(vehicle, Frame).forward);
+    position.x = VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position.x;
+    position.y = VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position.y;
+    position.z = VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_CHASE].position.z;
+    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].position.x = position.x;
+    VEHICLE_GET(vehicle, ChasePosition).x = position.x;
+    VEHICLE_GET(vehicle, InitialChasePosition).x = position.x;
+    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].position.y = position.y;
+    VEHICLE_GET(vehicle, ChasePosition).y = position.y;
+    VEHICLE_GET(vehicle, InitialChasePosition).y = position.y;
+    VEHICLE_GET(vehicle, Cameras)[VEHICLE_CAMERA_TRACKSIDE].position.z = position.z;
+    VEHICLE_GET(vehicle, ChasePosition).z = position.z;
+    VEHICLE_GET(vehicle, InitialChasePosition).z = position.z;
+    VEHICLE_SET(vehicle, CollisionPull, 0.0f);
+    VEHICLE_SET(vehicle, LookAhead, START_LOOK_AHEAD);
+}
