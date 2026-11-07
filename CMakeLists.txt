@@ -132,7 +132,7 @@ if(BUILD_DOCS OR BUILD_DOCS_ONLY)
   set(DOXYGEN_GENERATE_TAGFILE "${CMAKE_BINARY_DIR}/html/${CMAKE_PROJECT_NAME}.tags")
   # The C and C++ libraries link to cppreference.com, the Win32 API to learn.microsoft.com, the
   # older DirectX APIs to the references of DirectX 7 and 8 that archive.org keeps, and the rest to
-  # the headers of Wine. tools/doxygen/win32_tags.py writes every tag file but that of cppreference.
+  # the headers of Wine. The tag files are checked in under docs/.
   set(DOXYGEN_TAGFILES
       "${CMAKE_SOURCE_DIR}/docs/cppreference.tags=https://en.cppreference.com/w/"
       "${CMAKE_SOURCE_DIR}/docs/cppreference-c.tags=https://en.cppreference.com/w/"

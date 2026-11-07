@@ -16,7 +16,6 @@ aiframes
 airplane
 airplanestate
 airplanetrigger
-alabel
 alloconload
 allplayers
 alphablendenable
@@ -24,7 +23,6 @@ alphadither
 alsa
 ambientsound
 analyzer
-anchorfile
 andi
 anim
 apfn
@@ -269,7 +267,6 @@ ddpcaps
 ddpf
 ddpixelformat
 ddraw
-ddref
 ddscaps
 ddscl
 ddsd
@@ -285,7 +282,6 @@ decaleditor
 declear
 decleared
 decodeddisc
-decomp
 decompressobj
 denforce
 denumret
@@ -331,7 +327,6 @@ directsound
 directsoundoutput
 directsoundstate
 directx
-diref
 disasm
 discl
 disclayout
@@ -382,7 +377,6 @@ dpname
 dpopen
 dpplayer
 dpreceive
-dpref
 dpright
 dpsend
 dpsession
@@ -412,7 +406,6 @@ dshade
 dsinf
 dsll
 dsra
-dsref
 dsrl
 dsscl
 dtable
@@ -453,17 +446,14 @@ emulatedclock
 encryptionfailed
 encryptionnotsupported
 enddl
-enddlabel
 endforeach
 endfunction
-endlabel
 endr
 endwhile
 enginetextures
 engsound
 entermenuloop
 entersizemove
-enumvalue
 enya
 epirawdma
 epirawread
@@ -491,7 +481,6 @@ fbrwd
 fcntl
 fdata
 fehdrau
-fenv
 ffplay
 ffprobe
 ffreestanding
@@ -568,10 +557,8 @@ ghnd
 ghostfile
 ghostinput
 ghostnote
-glabel
 glist
 globl
-glos
 glsl
 glslang
 gltf
@@ -584,7 +571,6 @@ gpack
 graphviz
 gridstarts
 grounddist
-guiddef
 guint
 gwords
 haccel
@@ -625,7 +611,6 @@ hudquad
 hudrace
 hudtime
 huft
-iasm
 iconerasebkgnd
 iconerror
 iconfile
@@ -642,7 +627,6 @@ imaadpcmwaveformat
 immp
 importjobs
 importversion
-imref
 incsrc
 indeo
 indexedimage
@@ -667,20 +651,17 @@ invsrcalpha
 iobusy
 iomessage
 isdvd
-isrc
 ivec
 iwyu
 jalr
 jammesg
 jinja
-jlabel
 joybus
 joyport
 joystk
 jpad
 jsonnet
 jsonschema
-jtbl
 kemco
 keybd
 kseg
@@ -915,7 +896,6 @@ muxs
 mypy
 nasm
 ncpaint
-ndlabel
 nearbycount
 neff
 negu
@@ -934,7 +914,6 @@ nojekyll
 nolod
 nonewplayers
 nonexclusive
-nonmatching
 nonusbackslash
 nonzero
 noone
@@ -964,7 +943,6 @@ oahwnd
 oatrue
 objcopy
 objcxx
-objdump
 obji
 offscreenplain
 oneline
@@ -986,7 +964,6 @@ paletteentry
 paletteindexed
 palettized
 pamxctrl
-parms
 parmsa
 particleexhaustrender
 particleinit
@@ -997,7 +974,6 @@ pathlib
 pcmstream
 pcmwaveformat
 penm
-permuter
 persp
 perspnorm
 pfil
@@ -1062,7 +1038,6 @@ probetlb
 productversion
 profileinit
 psapi
-psdk
 pulseaudio
 putfld
 pycache
@@ -1132,7 +1107,6 @@ reartex
 rearwheel
 rect
 recvmesg
-refguid
 reflectiondata
 reflow
 regen
@@ -1302,7 +1276,6 @@ spawnv
 specon
 specularenable
 speedgate
-spimdisasm
 spir
 spirv
 spkr
@@ -1329,19 +1302,12 @@ startlights
 startthread
 startupinfoa
 statm
-statuscode
 statusline
-stdalign
 stdarg
-stdatomic
-stdbit
 stdbool
-stdckdint
 stddef
 stdint
 stdlib
-stdmethod
-stdnoreturn
 steeradj
 steerangle
 steerarr
@@ -1369,7 +1335,6 @@ swresample
 swscale
 swwwwfgdafch
 syms
-synchapi
 syncprintf
 sysrq
 szlong
@@ -1404,7 +1369,6 @@ texturesampling
 texturescan
 texturestream
 textureworkspace
-tgmath
 thiscall
 timeattack
 timefmt
@@ -1484,7 +1448,6 @@ unmuting
 unrecovered
 unrotated
 unscii
-urlkey
 userabort
 utgr
 uvec
@@ -1545,14 +1508,12 @@ vretrace
 vsince
 vswhere
 vsync
-waitforsingleobject
 wasstilldrawing
 watr
 wavechunks
 waveformatex
 wavesample
 wavread
-wctype
 wdepthvalue
 weatherselect
 werror
@@ -1571,7 +1532,6 @@ wineserver
 winget
 winmain
 winmm
-winprog
 winver
 wiswa
 wiswa's
