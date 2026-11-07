@@ -134,19 +134,18 @@ jobs:
         with:
           build-mode: 'manual'
           languages: 'c-cpp'
-      - name: 'Build unpatched, patched, and Expansion Pak configurations'
+      - name: 'Build unpatched and patched configurations'
         run: |
-          for configuration in unpatched patched expansion; do
+          for configuration in unpatched patched; do
             case "$configuration" in
-              unpatched) patches=OFF; expansion=OFF ;;
-              patched) patches=ON; expansion=OFF ;;
-              expansion) patches=ON; expansion=ON ;;
+              unpatched) patches=OFF ;;
+              patched) patches=ON ;;
             esac
             build_dir=".wiswa-ci/build/codeql-n64-$TGR_REGION-$configuration"
             cmake -S . -B "$build_dir" -G Ninja \
               -DCMAKE_TOOLCHAIN_FILE=cmake/n64-toolchain.cmake \
               -DCMAKE_BUILD_TYPE=Release -DTGR_PLATFORM=n64 -DTGR_REGION="$TGR_REGION" \
-              -DTGR_ENABLE_PATCHES="$patches" -DEXPANSION_PAK_SUPPORT="$expansion"
+              -DTGR_ENABLE_PATCHES="$patches"
             cmake --build "$build_dir" -- -k 0
           done
         env:
