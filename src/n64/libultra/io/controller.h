@@ -156,7 +156,7 @@ typedef struct {
 
 /**
  * @ghidraAddress USA: 0x8037f3f0
- * @ghidraAddress Asia: 0x8037EEB0
+ * @ghidraAddress Asia: 0x8037EEA0
  * @ghidraAddress EUR: 0x80381330
  * @ghidraAddress JPN: 0x8037ffa0
  */
@@ -164,7 +164,7 @@ extern OSPifRam __osContPifRam;
 
 /**
  * @ghidraAddress USA: 0x8037f0b0
- * @ghidraAddress Asia: 0x8037EB70
+ * @ghidraAddress Asia: 0x8037EB60
  * @ghidraAddress EUR: 0x80380ff0
  * @ghidraAddress JPN: 0x8037fc60
  */
@@ -172,7 +172,7 @@ extern OSPifRam __osPfsPifRam;
 
 /**
  * @ghidraAddress USA: 0x8037f430
- * @ghidraAddress Asia: 0x8037EEF0
+ * @ghidraAddress Asia: 0x8037EEE0
  * @ghidraAddress EUR: 0x80381370
  * @ghidraAddress JPN: 0x8037ffe0
  */
@@ -180,7 +180,7 @@ extern u8 __osContLastCmd;
 
 /**
  * @ghidraAddress USA: 0x8037f431
- * @ghidraAddress Asia: 0x8037EEF1
+ * @ghidraAddress Asia: 0x8037EEE1
  * @ghidraAddress EUR: 0x80381371
  * @ghidraAddress JPN: 0x8037ffe1
  */
@@ -196,7 +196,7 @@ extern u32 __osContinitialized;
 
 /**
  * @ghidraAddress USA: 0x8037f458
- * @ghidraAddress Asia: 0x8037EF18
+ * @ghidraAddress Asia: 0x8037EF08
  * @ghidraAddress EUR: 0x80381398
  * @ghidraAddress JPN: 0x80380008
  */
@@ -204,7 +204,7 @@ extern OSMesgQueue __osEepromTimerQ;
 
 /**
  * @ghidraAddress USA: 0x8037f470
- * @ghidraAddress Asia: 0x8037EF30
+ * @ghidraAddress Asia: 0x8037EF20
  * @ghidraAddress EUR: 0x803813b0
  * @ghidraAddress JPN: 0x80380020
  */
@@ -212,7 +212,7 @@ extern OSMesg __osEepromTimerMsg;
 
 /**
  * @ghidraAddress USA: 0x8037f0f0
- * @ghidraAddress Asia: 0x8037EBB0
+ * @ghidraAddress Asia: 0x8037EBA0
  * @ghidraAddress EUR: 0x80381030
  * @ghidraAddress JPN: 0x8037fca0
  */
@@ -220,7 +220,7 @@ extern OSPifRam _MotorStopData[MAXCONTROLLERS];
 
 /**
  * @ghidraAddress USA: 0x8037f1f0
- * @ghidraAddress Asia: 0x8037ECB0
+ * @ghidraAddress Asia: 0x8037ECA0
  * @ghidraAddress EUR: 0x80381130
  * @ghidraAddress JPN: 0x8037fda0
  */
@@ -228,7 +228,7 @@ extern OSPifRam _MotorStartData[MAXCONTROLLERS];
 
 /**
  * @ghidraAddress USA: 0x8037f2f0
- * @ghidraAddress Asia: 0x8037EDB0
+ * @ghidraAddress Asia: 0x8037EDA0
  * @ghidraAddress EUR: 0x80381230
  * @ghidraAddress JPN: 0x8037fea0
  */
@@ -236,7 +236,7 @@ extern u8 _motorstopbuf[BLOCKSIZE];
 
 /**
  * @ghidraAddress USA: 0x8037f310
- * @ghidraAddress Asia: 0x8037EDD0
+ * @ghidraAddress Asia: 0x8037EDC0
  * @ghidraAddress EUR: 0x80381250
  * @ghidraAddress JPN: 0x8037fec0
  */

@@ -26,7 +26,7 @@ extern MenuItem *g_apPlayerCountMenuItems[];
 
 /**
  * @ghidraAddress USA: 0x80316390
- * @ghidraAddress Asia: 0x80315E50
+ * @ghidraAddress Asia: 0x80315E40
  * @ghidraAddress EUR: 0x80318070
  * @ghidraAddress JPN: 0x80316ca0
  */
@@ -34,7 +34,7 @@ extern s32 g_dwPlayerCountMenuItemCount;
 
 /**
  * @ghidraAddress USA: 0x80316394
- * @ghidraAddress Asia: 0x80315E54
+ * @ghidraAddress Asia: 0x80315E44
  * @ghidraAddress EUR: 0x80318074
  * @ghidraAddress JPN: 0x80316ca4
  */

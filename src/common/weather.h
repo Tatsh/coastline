@@ -295,7 +295,7 @@ extern u8 g_aParticleTexture[];
  * The positions of the rain particles of each view, in a cube around the camera that wraps.
  *
  * @ghidraAddress USA: 0x80361c40
- * @ghidraAddress Asia: 0x80361700
+ * @ghidraAddress Asia: 0x803616F0
  * @ghidraAddress EUR: 0x80364140
  * @ghidraAddress JPN: 0x80362db0
  * @ghidraAddress BRD3D: 0x104b2570
@@ -307,7 +307,7 @@ extern s16 g_awRainParticlePos[WEATHER_VIEWS][RAIN_PARTICLE_SLOTS][3];
  * The point ahead of the camera of each view last frame.
  *
  * @ghidraAddress USA: 0x803634b8
- * @ghidraAddress Asia: 0x80362F78
+ * @ghidraAddress Asia: 0x80362F68
  * @ghidraAddress EUR: 0x803659b8
  * @ghidraAddress JPN: 0x80364628
  * @ghidraAddress BRD3D: 0x104b0688
@@ -319,7 +319,7 @@ extern Vec3f g_avRainPrevCameraPos[WEATHER_VIEWS];
  * How far the wind moves things in a frame.
  *
  * @ghidraAddress USA: 0x803634d0
- * @ghidraAddress Asia: 0x80362F90
+ * @ghidraAddress Asia: 0x80362F80
  * @ghidraAddress EUR: 0x803659d0
  * @ghidraAddress JPN: 0x80364640
  * @ghidraAddress BRD3D: 0x104b2560
@@ -331,7 +331,7 @@ extern Vec3f g_vWindVelocity;
  * How far the rain of each view falls in a frame, against its camera.
  *
  * @ghidraAddress USA: 0x803634e0
- * @ghidraAddress Asia: 0x80362FA0
+ * @ghidraAddress Asia: 0x80362F90
  * @ghidraAddress EUR: 0x803659e0
  * @ghidraAddress JPN: 0x80364650
  * @ghidraAddress BRD3D: 0x104bbdf0
@@ -343,7 +343,7 @@ extern Vec3f g_avRainVelocity[WEATHER_VIEWS];
  * The points of the lightning bolt. The first is the point the lightning strikes.
  *
  * @ghidraAddress USA: 0x803634f8
- * @ghidraAddress Asia: 0x80362FB8
+ * @ghidraAddress Asia: 0x80362FA8
  * @ghidraAddress EUR: 0x803659f8
  * @ghidraAddress JPN: 0x80364668
  * @ghidraAddress BRD3D: 0x104b0378
@@ -355,7 +355,7 @@ extern Vec3f g_avLightningBolt[LIGHTNING_BOLT_POINTS];
  * The texture of the rain streaks of each view, drawn along the fall of the rain.
  *
  * @ghidraAddress USA: 0x80364a80
- * @ghidraAddress Asia: 0x80364540
+ * @ghidraAddress Asia: 0x80364530
  * @ghidraAddress EUR: 0x80366f80
  * @ghidraAddress JPN: 0x80365bf0
  * @ghidraAddress BRD3D: 0x104b3de8

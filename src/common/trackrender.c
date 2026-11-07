@@ -45,7 +45,7 @@ namespace {
      * The TRACK_INSTANCE_ flags of the placed models not drawn.
      *
      * @ghidraAddress USA: 0x8035d520
-     * @ghidraAddress Asia: 0x8035CFE0
+     * @ghidraAddress Asia: 0x8035CFD0
      * @ghidraAddress EUR: 0x8035fa20
      * @ghidraAddress JPN: 0x8035e690
      * @ghidraAddress BRD3D: 0x10363ff8
@@ -56,7 +56,7 @@ namespace {
      * The largest absolute value of the first three rows of g_afViewProjMatrix.
      *
      * @ghidraAddress USA: 0x8035d51c
-     * @ghidraAddress Asia: 0x8035CFDC
+     * @ghidraAddress Asia: 0x8035CFCC
      * @ghidraAddress EUR: 0x8035fa1c
      * @ghidraAddress JPN: 0x8035e68c
      * @ghidraAddress BRD3D: 0x10363fe8

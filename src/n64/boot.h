@@ -23,7 +23,7 @@ extern u8 _bss_size[];
  * Top of the stack ramMain() hands to OsBootEntry(), from the link script.
  *
  * @ghidraAddress USA: 0x803168d0
- * @ghidraAddress Asia: 0x80316390
+ * @ghidraAddress Asia: 0x80316380
  * @ghidraAddress EUR: 0x803185b0
  * @ghidraAddress JPN: 0x803171e0
  */

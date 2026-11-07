@@ -299,7 +299,7 @@ extern TrackGate g_aTrackGates[TRACK_GATES];
  * The placed models drawn this frame, by index.
  *
  * @ghidraAddress USA: 0x80352580
- * @ghidraAddress Asia: 0x80352040
+ * @ghidraAddress Asia: 0x80352030
  * @ghidraAddress EUR: 0x80354a80
  * @ghidraAddress JPN: 0x803536f0
  * @ghidraAddress BRD3D: 0x10362f28
@@ -464,7 +464,7 @@ void LoadTrackGeometryFromRom(s32 track);
 
 /**
  * @ghidraAddress USA: 0x80373eb0
- * @ghidraAddress Asia: 0x80373970
+ * @ghidraAddress Asia: 0x80373960
  * @ghidraAddress EUR: 0x803763b0
  * @ghidraAddress JPN: 0x80375020
  */
@@ -472,7 +472,7 @@ extern u8 g_abTrackSection1Header[TRACK_SECTION_HEADER_SIZE];
 
 /**
  * @ghidraAddress USA: 0x803736b0
- * @ghidraAddress Asia: 0x80373170
+ * @ghidraAddress Asia: 0x80373160
  * @ghidraAddress EUR: 0x80375bb0
  * @ghidraAddress JPN: 0x80374820
  */
@@ -480,7 +480,7 @@ extern u8 g_abTrackSection1Data[TRACK_SECTION_DATA_SIZE];
 
 /**
  * @ghidraAddress USA: 0x803746d0
- * @ghidraAddress Asia: 0x80374190
+ * @ghidraAddress Asia: 0x80374180
  * @ghidraAddress EUR: 0x80376bd0
  * @ghidraAddress JPN: 0x80375840
  */
@@ -488,7 +488,7 @@ extern u8 g_abTrackSection2Header[TRACK_SECTION_HEADER_SIZE];
 
 /**
  * @ghidraAddress USA: 0x80373ed0
- * @ghidraAddress Asia: 0x80373990
+ * @ghidraAddress Asia: 0x80373980
  * @ghidraAddress EUR: 0x803763d0
  * @ghidraAddress JPN: 0x80375040
  */

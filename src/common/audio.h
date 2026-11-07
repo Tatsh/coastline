@@ -270,7 +270,7 @@ extern u32 g_dwSoundEffectMixOffset;
  * The queue of the messages of the audio timer.
  *
  * @ghidraAddress USA: 0x803746f0
- * @ghidraAddress Asia: 0x803741B0
+ * @ghidraAddress Asia: 0x803741A0
  * @ghidraAddress EUR: 0x80376bf0
  * @ghidraAddress JPN: 0x80375860
  */
@@ -280,7 +280,7 @@ extern OSMesgQueue g_AudioMsgQueue;
  * Storage for the audio timer queue's two messages.
  *
  * @ghidraAddress USA: 0x80374708
- * @ghidraAddress Asia: 0x803741C8
+ * @ghidraAddress Asia: 0x803741B8
  * @ghidraAddress EUR: 0x80376c08
  * @ghidraAddress JPN: 0x80375878
  */
@@ -290,7 +290,7 @@ extern OSMesg g_aAudioMsgBuf[2];
  * The timer that wakes the mixing thread.
  *
  * @ghidraAddress USA: 0x80374710
- * @ghidraAddress Asia: 0x803741D0
+ * @ghidraAddress Asia: 0x803741C0
  * @ghidraAddress EUR: 0x80376c10
  * @ghidraAddress JPN: 0x80375880
  */
@@ -302,7 +302,7 @@ extern OSTimer g_AudioTimer;
  * The stereo ring buffer the audio interface plays.
  *
  * @ghidraAddress USA: 0x803747d0
- * @ghidraAddress Asia: 0x80374290
+ * @ghidraAddress Asia: 0x80374280
  * @ghidraAddress EUR: 0x80376cd0
  * @ghidraAddress JPN: 0x80375940
  */
@@ -312,7 +312,7 @@ extern s16 g_AudioDmaBuffer[AUDIO_RING_BYTES / sizeof(s16)];
  * The sample of each instrument, or NULL.
  *
  * @ghidraAddress USA: 0x803787d0
- * @ghidraAddress Asia: 0x80378290
+ * @ghidraAddress Asia: 0x80378280
  * @ghidraAddress EUR: 0x8037acd0
  * @ghidraAddress JPN: 0x80379940
  */
@@ -322,7 +322,7 @@ extern XmSample *g_apInstrumentData[];
  * Each pattern with its header.
  *
  * @ghidraAddress USA: 0x803789d0
- * @ghidraAddress Asia: 0x80378490
+ * @ghidraAddress Asia: 0x80378480
  * @ghidraAddress EUR: 0x8037aed0
  * @ghidraAddress JPN: 0x80379b40
  */
@@ -332,7 +332,7 @@ extern u8 *g_apPatternData[];
  * Per-channel XM notes and effects, indexed by music channel.
  *
  * @ghidraAddress USA: 0x80378dd0
- * @ghidraAddress Asia: 0x80378890
+ * @ghidraAddress Asia: 0x80378880
  * @ghidraAddress EUR: 0x8037b2d0
  * @ghidraAddress JPN: 0x80379f40
  */
@@ -342,7 +342,7 @@ extern MusicChannel g_MusicChannelStates[MIXER_CHANNELS];
  * The samples of the sound effect channels.
  *
  * @ghidraAddress USA: 0x80378f50
- * @ghidraAddress Asia: 0x80378A10
+ * @ghidraAddress Asia: 0x80378A00
  * @ghidraAddress EUR: 0x8037b450
  * @ghidraAddress JPN: 0x8037a0c0
  */
@@ -352,7 +352,7 @@ extern SoundEffectSample g_aSoundEffectSamples[SOUND_EFFECT_CHANNELS];
  * Whether the music plays.
  *
  * @ghidraAddress USA: 0x80378f98
- * @ghidraAddress Asia: 0x80378A58
+ * @ghidraAddress Asia: 0x80378A48
  * @ghidraAddress EUR: 0x8037b498
  * @ghidraAddress JPN: 0x8037a108
  */
@@ -362,7 +362,7 @@ extern s32 g_bMusicPlaybackEnabled;
  * The active XM module's order position and row timing.
  *
  * @ghidraAddress USA: 0x80378fa0
- * @ghidraAddress Asia: 0x80378A60
+ * @ghidraAddress Asia: 0x80378A50
  * @ghidraAddress EUR: 0x8037b4a0
  * @ghidraAddress JPN: 0x8037a110
  */
@@ -372,7 +372,7 @@ extern MusicPlayer g_MusicPlayer;
  * The restart order byte of the active XM module.
  *
  * @ghidraAddress USA: 0x80378fb2
- * @ghidraAddress Asia: 0x80378A72
+ * @ghidraAddress Asia: 0x80378A62
  * @ghidraAddress EUR: 0x8037b4b2
  * @ghidraAddress JPN: 0x8037a122
  */
@@ -383,7 +383,7 @@ extern u8 g_MusicRestartOrder;
  * The console thread that sequences music and fills the audio ring.
  *
  * @ghidraAddress USA: 0x80378fb8
- * @ghidraAddress Asia: 0x80378A78
+ * @ghidraAddress Asia: 0x80378A68
  * @ghidraAddress EUR: 0x8037b4b8
  * @ghidraAddress JPN: 0x8037a128
  */
@@ -398,7 +398,7 @@ extern OSThread g_AudioThread;
  * Stack storage for the audio mixing thread, in 64-bit words.
  *
  * @ghidraAddress USA: 0x80379168
- * @ghidraAddress Asia: 0x80378C28
+ * @ghidraAddress Asia: 0x80378C18
  * @ghidraAddress EUR: 0x8037b668
  * @ghidraAddress JPN: 0x8037a2d8
  */
@@ -408,7 +408,7 @@ extern u64 g_aAudioThreadStack[AUDIO_THREAD_STACK_WORDS];
  * The 32.32 step of each note of each octave.
  *
  * @ghidraAddress USA: 0x80379568
- * @ghidraAddress Asia: 0x80379028
+ * @ghidraAddress Asia: 0x80379018
  * @ghidraAddress EUR: 0x8037ba68
  * @ghidraAddress JPN: 0x8037a6d8
  */
@@ -421,7 +421,7 @@ extern u64 g_aFreqScaleTable[MUSIC_OCTAVES][MUSIC_NOTES];
  * The bytes the mixers mix this time.
  *
  * @ghidraAddress USA: 0x80379930
- * @ghidraAddress Asia: 0x803793F0
+ * @ghidraAddress Asia: 0x803793E0
  * @ghidraAddress EUR: 0x8037be30
  * @ghidraAddress JPN: 0x8037aaa0
  */
@@ -431,7 +431,7 @@ extern s32 g_dwAudioMixBytes;
  * The current DMA-derived ring position, in bytes, adjusted by the music lead distance.
  *
  * @ghidraAddress USA: 0x80379934
- * @ghidraAddress Asia: 0x803793F4
+ * @ghidraAddress Asia: 0x803793E4
  * @ghidraAddress EUR: 0x8037be34
  * @ghidraAddress JPN: 0x8037aaa4
  */
@@ -441,7 +441,7 @@ extern s32 g_dwAiDmaCurrentLength;
  * The channel the extra music mixers reached.
  *
  * @ghidraAddress USA: 0x80379938
- * @ghidraAddress Asia: 0x803793F8
+ * @ghidraAddress Asia: 0x803793E8
  * @ghidraAddress EUR: 0x8037be38
  * @ghidraAddress JPN: 0x8037aaa8
  */

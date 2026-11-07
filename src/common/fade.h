@@ -239,7 +239,7 @@ extern s32 g_dwFadeAutoReverse;
  * The edges of the wipe when each framebuffer was last drawn.
  *
  * @ghidraAddress USA: 0x8031b410
- * @ghidraAddress Asia: 0x8031AED0
+ * @ghidraAddress Asia: 0x8031AEC0
  * @ghidraAddress EUR: 0x8031d910
  * @ghidraAddress JPN: 0x8031c540
  * @ghidraAddress BRD3D: 0x105754f0
@@ -249,7 +249,7 @@ extern s32 g_adwFadeRectLeftPerBuffer[2];
 
 /**
  * @ghidraAddress USA: 0x8031b418
- * @ghidraAddress Asia: 0x8031AED8
+ * @ghidraAddress Asia: 0x8031AEC8
  * @ghidraAddress EUR: 0x8031d918
  * @ghidraAddress JPN: 0x8031c548
  * @ghidraAddress BRD3D: 0x105754e8

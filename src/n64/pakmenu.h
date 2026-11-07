@@ -131,7 +131,7 @@ extern u16 g_wPakEmptySlotMask;
 
 /**
  * @ghidraAddress USA: 0x8036a060
- * @ghidraAddress Asia: 0x80369B20
+ * @ghidraAddress Asia: 0x80369B10
  * @ghidraAddress EUR: 0x8036c560
  * @ghidraAddress JPN: 0x8036b1d0
  */
@@ -139,7 +139,7 @@ extern u8 g_bPakDirLoaded;
 
 /**
  * @ghidraAddress USA: 0x8036a061
- * @ghidraAddress Asia: 0x80369B21
+ * @ghidraAddress Asia: 0x80369B11
  * @ghidraAddress EUR: 0x8036c561
  * @ghidraAddress JPN: 0x8036b1d1
  */
@@ -147,7 +147,7 @@ extern u8 g_bPakSelectedNote;
 
 /**
  * @ghidraAddress USA: 0x8036a062
- * @ghidraAddress Asia: 0x80369B22
+ * @ghidraAddress Asia: 0x80369B12
  * @ghidraAddress EUR: 0x8036c562
  * @ghidraAddress JPN: 0x8036b1d2
  */
@@ -155,7 +155,7 @@ extern u8 g_bPakFirstValidNote;
 
 /**
  * @ghidraAddress USA: 0x8036a063
- * @ghidraAddress Asia: 0x80369B23
+ * @ghidraAddress Asia: 0x80369B13
  * @ghidraAddress EUR: 0x8036c563
  * @ghidraAddress JPN: 0x8036b1d3
  */
@@ -163,7 +163,7 @@ extern u8 g_bPakLastValidNote;
 
 /**
  * @ghidraAddress USA: 0x8036a064
- * @ghidraAddress Asia: 0x80369B24
+ * @ghidraAddress Asia: 0x80369B14
  * @ghidraAddress EUR: 0x8036c564
  * @ghidraAddress JPN: 0x8036b1d4
  */
@@ -173,7 +173,7 @@ extern s32 g_dwPakNoteCount;
  * The free space of the Pak in bytes.
  *
  * @ghidraAddress USA: 0x8036a068
- * @ghidraAddress Asia: 0x80369B28
+ * @ghidraAddress Asia: 0x80369B18
  * @ghidraAddress EUR: 0x8036c568
  * @ghidraAddress JPN: 0x8036b1d8
  */
@@ -183,7 +183,7 @@ extern s32 g_dwPakFreeBlocks;
  * The notes of the Pak the menu shows.
  *
  * @ghidraAddress USA: 0x8036a070
- * @ghidraAddress Asia: 0x80369B30
+ * @ghidraAddress Asia: 0x80369B20
  * @ghidraAddress EUR: 0x8036c570
  * @ghidraAddress JPN: 0x8036b1e0
  */
@@ -191,7 +191,7 @@ extern OSPfsState g_aPakDirEntries[PAK_NOTES];
 
 /**
  * @ghidraAddress USA: 0x8036a270
- * @ghidraAddress Asia: 0x80369D30
+ * @ghidraAddress Asia: 0x80369D20
  * @ghidraAddress EUR: 0x8036c770
  * @ghidraAddress JPN: 0x8036b3e0
  */
@@ -199,7 +199,7 @@ extern u8 g_bPakMenuState;
 
 /**
  * @ghidraAddress USA: 0x8036a278
- * @ghidraAddress Asia: 0x80369D38
+ * @ghidraAddress Asia: 0x80369D28
  * @ghidraAddress EUR: 0x8036c778
  * @ghidraAddress JPN: 0x8036b3e8
  */
@@ -209,7 +209,7 @@ extern s32 g_nPakFilesUsed;
  * The notes InitPakAndEnumerateFiles() reads.
  *
  * @ghidraAddress USA: 0x8036a280
- * @ghidraAddress Asia: 0x80369D40
+ * @ghidraAddress Asia: 0x80369D30
  * @ghidraAddress EUR: 0x8036c780
  * @ghidraAddress JPN: 0x8036b3f0
  */
@@ -219,7 +219,7 @@ extern OSPfsState g_aPakFileStates[PAK_NOTES];
  * The file system of the Pak of each controller.
  *
  * @ghidraAddress USA: 0x80369ec0
- * @ghidraAddress Asia: 0x80369980
+ * @ghidraAddress Asia: 0x80369970
  * @ghidraAddress EUR: 0x8036c3c0
  * @ghidraAddress JPN: 0x8036b030
  */
@@ -240,7 +240,7 @@ extern s32 gControllerPakState;
  * inserted.
  *
  * @ghidraAddress USA: 0x803163e0
- * @ghidraAddress Asia: 0x80315EA0
+ * @ghidraAddress Asia: 0x80315E90
  * @ghidraAddress EUR: 0x803180c0
  * @ghidraAddress JPN: 0x80316cf0
  */

@@ -22,7 +22,7 @@ extern u32 __osSiAccessQueueEnabled;
 
 /**
  * @ghidraAddress USA: 0x80381888
- * @ghidraAddress Asia: 0x80381348
+ * @ghidraAddress Asia: 0x80381338
  * @ghidraAddress EUR: 0x803837c8
  * @ghidraAddress JPN: 0x80382438
  */
@@ -30,7 +30,7 @@ extern OSMesgQueue __osSiAccessQueue;
 
 /**
  * @ghidraAddress USA: 0x80381880
- * @ghidraAddress Asia: 0x80381340
+ * @ghidraAddress Asia: 0x80381330
  * @ghidraAddress EUR: 0x803837c0
  * @ghidraAddress JPN: 0x80382430
  */

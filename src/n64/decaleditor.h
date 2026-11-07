@@ -684,7 +684,7 @@ extern const char *g_apszOvalStyleNames[4];
  * The palette of the decal as it is shown.
  *
  * @ghidraAddress USA: 0x80369b98
- * @ghidraAddress Asia: 0x80369658
+ * @ghidraAddress Asia: 0x80369648
  * @ghidraAddress EUR: 0x8036c098
  * @ghidraAddress JPN: 0x8036acf8
  */
@@ -694,7 +694,7 @@ extern PaletteSwatch g_aDecalSwatches[DECAL_SWATCHES];
  * The buttons of the tools.
  *
  * @ghidraAddress USA: 0x80369cd8
- * @ghidraAddress Asia: 0x80369798
+ * @ghidraAddress Asia: 0x80369788
  * @ghidraAddress EUR: 0x8036c1d8
  * @ghidraAddress JPN: 0x8036ae38
  */
@@ -704,7 +704,7 @@ extern ScreenRect g_aPaintToolButtonRects[PAINT_TOOLS];
  * The color the color editor restores when it is cancelled.
  *
  * @ghidraAddress USA: 0x80369da8
- * @ghidraAddress Asia: 0x80369868
+ * @ghidraAddress Asia: 0x80369858
  * @ghidraAddress EUR: 0x8036c2a8
  * @ghidraAddress JPN: 0x8036af08
  */
@@ -714,7 +714,7 @@ extern u8 g_abSavedSwatchColor[3];
  * The buttons of the decals.
  *
  * @ghidraAddress USA: 0x80369db0
- * @ghidraAddress Asia: 0x80369870
+ * @ghidraAddress Asia: 0x80369860
  * @ghidraAddress EUR: 0x8036c2b0
  * @ghidraAddress JPN: 0x8036af10
  */
@@ -724,7 +724,7 @@ extern ScreenRect g_aDecalSlotRects[DECAL_SLOTS];
  * The glyphs of the text to paint.
  *
  * @ghidraAddress USA: 0x80369e68
- * @ghidraAddress Asia: 0x80369928
+ * @ghidraAddress Asia: 0x80369918
  * @ghidraAddress EUR: 0x8036c368
  * @ghidraAddress JPN: 0x8036afc8
  */

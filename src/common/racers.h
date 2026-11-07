@@ -22,7 +22,7 @@ extern "C" {
  * The point the route walks last found.
  *
  * @ghidraAddress USA: 0x8031b750
- * @ghidraAddress Asia: 0x8031B210
+ * @ghidraAddress Asia: 0x8031B200
  * @ghidraAddress EUR: 0x8031dc50
  * @ghidraAddress JPN: 0x8031c880
  * @ghidraAddress BRD3D: 0x10af9b38

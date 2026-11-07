@@ -37,7 +37,7 @@ namespace {
      * The vehicles nearest the camera that cast shadows, nearest first.
      *
      * @ghidraAddress USA: 0x8035d4fc
-     * @ghidraAddress Asia: 0x8035CFBC
+     * @ghidraAddress Asia: 0x8035CFAC
      * @ghidraAddress EUR: 0x8035f9fc
      * @ghidraAddress JPN: 0x8035e66c
      * @ghidraAddress BRD3D: 0x102e5ed8

@@ -17,7 +17,7 @@ extern "C" {
  * The next free byte of the interface heap.
  *
  * @ghidraAddress USA: 0x80369b70
- * @ghidraAddress Asia: 0x80369630
+ * @ghidraAddress Asia: 0x80369620
  * @ghidraAddress EUR: 0x8036c070
  * @ghidraAddress JPN: 0x8036ace0
  * @ghidraAddress BRD3D: 0x106c7c38

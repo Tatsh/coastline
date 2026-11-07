@@ -182,7 +182,7 @@ extern SaveField g_aPausedClockFields[];
  * Where a pause keeps them.
  *
  * @ghidraAddress USA: 0x8034e570
- * @ghidraAddress Asia: 0x8034E030
+ * @ghidraAddress Asia: 0x8034E020
  * @ghidraAddress EUR: 0x80326800
  * @ghidraAddress JPN: 0x80325430
  * @ghidraAddress BRD3D: 0x10af9848

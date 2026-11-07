@@ -22,7 +22,7 @@ extern u32 __osPiAccessQueueEnabled;
 
 /**
  * @ghidraAddress USA: 0x803819e8
- * @ghidraAddress Asia: 0x803814A8
+ * @ghidraAddress Asia: 0x80381498
  * @ghidraAddress EUR: 0x80383968
  * @ghidraAddress JPN: 0x803825d8
  */
@@ -30,7 +30,7 @@ extern OSMesgQueue __osPiAccessQueue;
 
 /**
  * @ghidraAddress USA: 0x803819e0
- * @ghidraAddress Asia: 0x803814A0
+ * @ghidraAddress Asia: 0x80381490
  * @ghidraAddress EUR: 0x80383960
  * @ghidraAddress JPN: 0x803825d0
  */
@@ -62,7 +62,7 @@ extern OSPiHandle *__osPiTable;
 
 /**
  * @ghidraAddress USA: 0x803806b0
- * @ghidraAddress Asia: 0x80380170
+ * @ghidraAddress Asia: 0x80380160
  * @ghidraAddress EUR: 0x803825f0
  * @ghidraAddress JPN: 0x80381260
  */
@@ -70,7 +70,7 @@ extern OSThread piThread;
 
 /**
  * @ghidraAddress USA: 0x80380860
- * @ghidraAddress Asia: 0x80380320
+ * @ghidraAddress Asia: 0x80380310
  * @ghidraAddress EUR: 0x803827a0
  * @ghidraAddress JPN: 0x80381410
  */
@@ -78,7 +78,7 @@ extern u64 piThreadStack[0x1000 / sizeof(u64)];
 
 /**
  * @ghidraAddress USA: 0x80381860
- * @ghidraAddress Asia: 0x80381320
+ * @ghidraAddress Asia: 0x80381310
  * @ghidraAddress EUR: 0x803837a0
  * @ghidraAddress JPN: 0x80382410
  */
@@ -86,7 +86,7 @@ extern OSMesgQueue piEventQueue;
 
 /**
  * @ghidraAddress USA: 0x80381878
- * @ghidraAddress Asia: 0x80381338
+ * @ghidraAddress Asia: 0x80381328
  * @ghidraAddress EUR: 0x803837b8
  * @ghidraAddress JPN: 0x80382428
  */
@@ -94,7 +94,7 @@ extern OSMesg piEventBuf[1];
 
 /**
  * @ghidraAddress USA: 0x803818e0
- * @ghidraAddress Asia: 0x803813A0
+ * @ghidraAddress Asia: 0x80381390
  * @ghidraAddress EUR: 0x80383860
  * @ghidraAddress JPN: 0x803824d0
  */
@@ -102,7 +102,7 @@ extern OSPiHandle CartRomHandle;
 
 /**
  * @ghidraAddress USA: 0x80381960
- * @ghidraAddress Asia: 0x80381420
+ * @ghidraAddress Asia: 0x80381410
  * @ghidraAddress EUR: 0x803838e0
  * @ghidraAddress JPN: 0x80382550
  */
@@ -110,7 +110,7 @@ extern OSPiHandle LeoDiskHandle;
 
 /**
  * @ghidraAddress USA: 0x803819d4
- * @ghidraAddress Asia: 0x80381494
+ * @ghidraAddress Asia: 0x80381484
  * @ghidraAddress EUR: 0x80383954
  * @ghidraAddress JPN: 0x803825c4
  */

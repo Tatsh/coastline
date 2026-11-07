@@ -21,7 +21,7 @@ extern "C" {
  * The Pak handle of each controller.
  *
  * @ghidraAddress USA: 0x8031a3f8
- * @ghidraAddress Asia: 0x80319EB8
+ * @ghidraAddress Asia: 0x80319EA8
  * @ghidraAddress EUR: 0x8031c8f8
  * @ghidraAddress JPN: 0x8031b528
  */
@@ -44,7 +44,7 @@ extern OSMesgQueue g_SiMesgQueue;
  * reads the first #RUMBLE_CHANNELS.
  *
  * @ghidraAddress USA: 0x8031b1e8
- * @ghidraAddress Asia: 0x8031ACA8
+ * @ghidraAddress Asia: 0x8031AC98
  * @ghidraAddress EUR: 0x8031d6e8
  * @ghidraAddress JPN: 0x8031c318
  * @ghidraAddress BRD3D: 0x106c06a0

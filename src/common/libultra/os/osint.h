@@ -55,7 +55,7 @@ extern OSThread *__osRunningThread;
 
 /**
  * @ghidraAddress USA: 0x8037f370
- * @ghidraAddress Asia: 0x8037EE30
+ * @ghidraAddress Asia: 0x8037EE20
  * @ghidraAddress EUR: 0x803812b0
  * @ghidraAddress JPN: 0x8037ff20
  */
@@ -63,7 +63,7 @@ extern __OSEventState __osEventStateTab[];
 
 /**
  * @ghidraAddress USA: 0x803818a0
- * @ghidraAddress Asia: 0x80381360
+ * @ghidraAddress Asia: 0x80381350
  * @ghidraAddress EUR: 0x80383820
  * @ghidraAddress JPN: 0x80382490
  */
@@ -79,7 +79,7 @@ extern OSTimer *__osTimerList;
 
 /**
  * @ghidraAddress USA: 0x803818c0
- * @ghidraAddress Asia: 0x80381380
+ * @ghidraAddress Asia: 0x80381370
  * @ghidraAddress EUR: 0x80383840
  * @ghidraAddress JPN: 0x803824b0
  */
@@ -87,7 +87,7 @@ extern OSTime __osCurrentTime;
 
 /**
  * @ghidraAddress USA: 0x803818c8
- * @ghidraAddress Asia: 0x80381388
+ * @ghidraAddress Asia: 0x80381378
  * @ghidraAddress EUR: 0x80383848
  * @ghidraAddress JPN: 0x803824b8
  */
@@ -95,7 +95,7 @@ extern u32 __osBaseCounter;
 
 /**
  * @ghidraAddress USA: 0x803818cc
- * @ghidraAddress Asia: 0x8038138C
+ * @ghidraAddress Asia: 0x8038137C
  * @ghidraAddress EUR: 0x8038384c
  * @ghidraAddress JPN: 0x803824bc
  */
@@ -103,7 +103,7 @@ extern u32 __osViIntrCount;
 
 /**
  * @ghidraAddress USA: 0x803818d0
- * @ghidraAddress Asia: 0x80381390
+ * @ghidraAddress Asia: 0x80381380
  * @ghidraAddress EUR: 0x80383850
  * @ghidraAddress JPN: 0x803824c0
  */
@@ -159,7 +159,7 @@ extern u32 __OSGlobalIntMask;
 
 /**
  * @ghidraAddress USA: 0x8037f480
- * @ghidraAddress Asia: 0x8037EF40
+ * @ghidraAddress Asia: 0x8037EF30
  * @ghidraAddress EUR: 0x803813c0
  * @ghidraAddress JPN: 0x80380030
  */

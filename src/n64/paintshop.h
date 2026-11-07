@@ -366,7 +366,7 @@ extern s32 g_dwPakFileOffset;
  * The slot a mirror copies the decal to.
  *
  * @ghidraAddress USA: 0x80369dab
- * @ghidraAddress Asia: 0x8036986B
+ * @ghidraAddress Asia: 0x8036985B
  * @ghidraAddress EUR: 0x8036c2ab
  * @ghidraAddress JPN: 0x8036af0b
  */
@@ -376,7 +376,7 @@ extern u8 g_bMirrorTargetPanel;
  * Whether the rumble pak was swapped for the controller pak.
  *
  * @ghidraAddress USA: 0x80369e50
- * @ghidraAddress Asia: 0x80369910
+ * @ghidraAddress Asia: 0x80369900
  * @ghidraAddress EUR: 0x8036c350
  * @ghidraAddress JPN: 0x8036afb0
  */
@@ -384,7 +384,7 @@ extern u8 g_bPakRumbleSwapped;
 
 /**
  * @ghidraAddress USA: 0x80369e51
- * @ghidraAddress Asia: 0x80369911
+ * @ghidraAddress Asia: 0x80369901
  * @ghidraAddress EUR: 0x8036c351
  * @ghidraAddress JPN: 0x8036afb1
  */
@@ -392,7 +392,7 @@ extern u8 g_bPakRetryNewPak;
 
 /**
  * @ghidraAddress USA: 0x80369e54
- * @ghidraAddress Asia: 0x80369914
+ * @ghidraAddress Asia: 0x80369904
  * @ghidraAddress EUR: 0x8036c354
  * @ghidraAddress JPN: 0x8036afb4
  */
@@ -400,7 +400,7 @@ extern s32 g_dwPakError;
 
 /**
  * @ghidraAddress USA: 0x80369e58
- * @ghidraAddress Asia: 0x80369918
+ * @ghidraAddress Asia: 0x80369908
  * @ghidraAddress EUR: 0x8036c358
  * @ghidraAddress JPN: 0x8036afb8
  */
@@ -410,7 +410,7 @@ extern s32 g_dwPakFileNo;
  * The bytes of the chunk last moved.
  *
  * @ghidraAddress USA: 0x80369e5c
- * @ghidraAddress Asia: 0x8036991C
+ * @ghidraAddress Asia: 0x8036990C
  * @ghidraAddress EUR: 0x8036c35c
  * @ghidraAddress JPN: 0x8036afbc
  */
@@ -418,7 +418,7 @@ extern s32 g_dwPakChunkSize;
 
 /**
  * @ghidraAddress USA: 0x80369e60
- * @ghidraAddress Asia: 0x80369920
+ * @ghidraAddress Asia: 0x80369910
  * @ghidraAddress EUR: 0x8036c360
  * @ghidraAddress JPN: 0x8036afc0
  */
@@ -428,7 +428,7 @@ extern u8 g_bPakDialogState;
  * The decal being moved.
  *
  * @ghidraAddress USA: 0x80369e61
- * @ghidraAddress Asia: 0x80369921
+ * @ghidraAddress Asia: 0x80369911
  * @ghidraAddress EUR: 0x8036c361
  * @ghidraAddress JPN: 0x8036afc1
  */
@@ -436,7 +436,7 @@ extern u8 g_bPakDecalIndex;
 
 /**
  * @ghidraAddress USA: 0x80369e62
- * @ghidraAddress Asia: 0x80369922
+ * @ghidraAddress Asia: 0x80369912
  * @ghidraAddress EUR: 0x8036c362
  * @ghidraAddress JPN: 0x8036afc2
  */
@@ -446,7 +446,7 @@ extern u8 g_bPakWaitFrames;
  * The text typed.
  *
  * @ghidraAddress USA: 0x80369ea8
- * @ghidraAddress Asia: 0x80369968
+ * @ghidraAddress Asia: 0x80369958
  * @ghidraAddress EUR: 0x8036c3a8
  * @ghidraAddress JPN: 0x8036b008
  */

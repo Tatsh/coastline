@@ -86,7 +86,7 @@ extern OSDevMgr __osViDevMgr;
 
 /**
  * @ghidraAddress USA: 0x8037f490
- * @ghidraAddress Asia: 0x8037EF50
+ * @ghidraAddress Asia: 0x8037EF40
  * @ghidraAddress EUR: 0x803813d0
  * @ghidraAddress JPN: 0x80380040
  */
@@ -94,7 +94,7 @@ extern OSThread viThread;
 
 /**
  * @ghidraAddress USA: 0x8037f640
- * @ghidraAddress Asia: 0x8037F100
+ * @ghidraAddress Asia: 0x8037F0F0
  * @ghidraAddress EUR: 0x80381580
  * @ghidraAddress JPN: 0x803801f0
  */
@@ -102,7 +102,7 @@ extern u64 viThreadStack[0x1000 / sizeof(u64)];
 
 /**
  * @ghidraAddress USA: 0x80380640
- * @ghidraAddress Asia: 0x80380100
+ * @ghidraAddress Asia: 0x803800F0
  * @ghidraAddress EUR: 0x80382580
  * @ghidraAddress JPN: 0x803811f0
  */
@@ -110,7 +110,7 @@ extern OSMesgQueue viEventQueue;
 
 /**
  * @ghidraAddress USA: 0x80380658
- * @ghidraAddress Asia: 0x80380118
+ * @ghidraAddress Asia: 0x80380108
  * @ghidraAddress EUR: 0x80382598
  * @ghidraAddress JPN: 0x80381208
  */
@@ -118,7 +118,7 @@ extern OSMesg viEventBuf[5];
 
 /**
  * @ghidraAddress USA: 0x80380670
- * @ghidraAddress Asia: 0x80380130
+ * @ghidraAddress Asia: 0x80380120
  * @ghidraAddress EUR: 0x803825b0
  * @ghidraAddress JPN: 0x80381220
  */
@@ -126,7 +126,7 @@ extern OSIoMesg viRetraceMsg;
 
 /**
  * @ghidraAddress USA: 0x80380688
- * @ghidraAddress Asia: 0x80380148
+ * @ghidraAddress Asia: 0x80380138
  * @ghidraAddress EUR: 0x803825c8
  * @ghidraAddress JPN: 0x80381238
  */
@@ -136,7 +136,7 @@ extern OSIoMesg viCounterMsg;
  * Retraces remaining before viMgrMain() next sends the message of osViSetEvent().
  *
  * @ghidraAddress USA: 0x803806a0
- * @ghidraAddress Asia: 0x80380160
+ * @ghidraAddress Asia: 0x80380150
  * @ghidraAddress EUR: 0x803825e0
  * @ghidraAddress JPN: 0x80381250
  */

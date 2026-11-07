@@ -194,4278 +194,4258 @@ nonmatching g_pSplashFirstLogo, 0x4
 dlabel g_pSplashFirstLogo
     /* 80315940 */ .space 0x04
 
-nonmatching g_pSplashProducerLogo, 0x4
-
-dlabel g_pSplashProducerLogo
-    /* 80315944 */ .space 0x04
-
 nonmatching g_pSplashDeveloperLogo, 0x4
 
 dlabel g_pSplashDeveloperLogo
-    /* 80315948 */ .space 0x04
+    /* 80315944 */ .space 0x04
 
 nonmatching g_pSplashTitleModelA, 0x4
 
 dlabel g_pSplashTitleModelA
-    /* 8031594C */ .space 0x04
+    /* 80315948 */ .space 0x04
 
 nonmatching g_pSplashTitleModelB, 0x4
 
 dlabel g_pSplashTitleModelB
-    /* 80315950 */ .space 0x04
+    /* 8031594C */ .space 0x04
 
 nonmatching g_pSplashTitleModelD, 0x4
 
 dlabel g_pSplashTitleModelD
-    /* 80315954 */ .space 0x04
+    /* 80315950 */ .space 0x04
 
 nonmatching g_pSplashTitleModelC, 0x4
 
 dlabel g_pSplashTitleModelC
-    /* 80315958 */ .space 0x04
+    /* 80315954 */ .space 0x04
 
 nonmatching g_fSplashTime, 0x4
 
 dlabel g_fSplashTime
-    /* 8031595C */ .space 0x04
+    /* 80315958 */ .space 0x04
 
 nonmatching g_dwSplashSoundALength, 0x4
 
 dlabel g_dwSplashSoundALength
-    /* 80315960 */ .space 0x04
+    /* 8031595C */ .space 0x04
 
 nonmatching g_pSplashSoundA, 0x4
 
 dlabel g_pSplashSoundA
-    /* 80315964 */ .space 0x04
+    /* 80315960 */ .space 0x04
 
 nonmatching g_dwSplashSoundBLength, 0x4
 
 dlabel g_dwSplashSoundBLength
-    /* 80315968 */ .space 0x04
+    /* 80315964 */ .space 0x04
 
 nonmatching g_pSplashSoundB, 0x4
 
 dlabel g_pSplashSoundB
-    /* 8031596C */ .space 0x04
+    /* 80315968 */ .space 0x04
 
 nonmatching g_dwSplashFirstLogoVoice, 0x4
 
 dlabel g_dwSplashFirstLogoVoice
-    /* 80315970 */ .space 0x04
+    /* 8031596C */ .space 0x04
 
 nonmatching g_dwSplashFirstLogoSoundA, 0x4
 
 dlabel g_dwSplashFirstLogoSoundA
-    /* 80315974 */ .space 0x04
+    /* 80315970 */ .space 0x04
 
 nonmatching g_bSplashFirstLogoSoundB, 0x4
 
 dlabel g_bSplashFirstLogoSoundB
-    /* 80315978 */ .space 0x04
-
-nonmatching g_dwSplashProducerVoice, 0x4
-
-dlabel g_dwSplashProducerVoice
-    /* 8031597C */ .space 0x04
-
-nonmatching g_dwSplashProducerSoundA, 0x4
-
-dlabel g_dwSplashProducerSoundA
-    /* 80315980 */ .space 0x04
-
-nonmatching g_bSplashProducerSoundB, 0x4
-
-dlabel g_bSplashProducerSoundB
-    /* 80315984 */ .space 0x04
+    /* 80315974 */ .space 0x04
 
 nonmatching g_dwSplashDeveloperVoice, 0x4
 
 dlabel g_dwSplashDeveloperVoice
-    /* 80315988 */ .space 0x04
+    /* 80315978 */ .space 0x04
 
 nonmatching g_dwSplashDeveloperSoundA, 0x4
 
 dlabel g_dwSplashDeveloperSoundA
-    /* 8031598C */ .space 0x04
+    /* 8031597C */ .space 0x04
 
 nonmatching g_bSplashDeveloperSoundB, 0x4
 
 dlabel g_bSplashDeveloperSoundB
-    /* 80315990 */ .space 0x04
+    /* 80315980 */ .space 0x04
 
 nonmatching g_bSplashSkipped, 0x4
 
 dlabel g_bSplashSkipped
-    /* 80315994 */ .space 0x04
+    /* 80315984 */ .space 0x04
 
 nonmatching D_80315998, 0x8
 
 dlabel D_80315998
-    /* 80315998 */ .space 0x08
+    /* 80315988 */ .space 0x08
 
 nonmatching g_bSeasonFirstRace, 0x4
 
 dlabel g_bSeasonFirstRace
-    /* 803159A0 */ .space 0x04
+    /* 80315990 */ .space 0x04
 
 nonmatching D_803159A4, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_803159A4
-    /* 803159A4 */ .space 0x04
+    /* 80315994 */ .space 0x04
 
 nonmatching g_szTrackSelectPointsTextBuf, 0x40
 
 dlabel g_szTrackSelectPointsTextBuf
-    /* 803159A8 */ .space 0x40
+    /* 80315998 */ .space 0x40
 
 nonmatching D_803159E8, 0x10
 
 dlabel D_803159E8
-    /* 803159E8 */ .space 0x10
+    /* 803159D8 */ .space 0x10
 
 nonmatching g_szTrackSelectRecordTextBuf, 0x40
 
 dlabel g_szTrackSelectRecordTextBuf
-    /* 803159F8 */ .space 0x40
+    /* 803159E8 */ .space 0x40
 
 nonmatching D_80315A38, 0x4
 
 dlabel D_80315A38
-    /* 80315A38 */ .space 0x04
+    /* 80315A28 */ .space 0x04
 
 nonmatching D_80315A3C, 0x4
 
 dlabel D_80315A3C
-    /* 80315A3C */ .space 0x04
+    /* 80315A2C */ .space 0x04
 
 nonmatching D_80315A40, 0x8
 
 dlabel D_80315A40
-    /* 80315A40 */ .space 0x08
+    /* 80315A30 */ .space 0x08
 
 nonmatching g_dwTrackMenuItemCount, 0x4
 
 dlabel g_dwTrackMenuItemCount
-    /* 80315A48 */ .space 0x04
+    /* 80315A38 */ .space 0x04
 
 nonmatching g_dwTrackMenuSelection, 0x4
 
 dlabel g_dwTrackMenuSelection
-    /* 80315A4C */ .space 0x04
+    /* 80315A3C */ .space 0x04
 
 nonmatching g_bTrackMenuChampionship, 0x4
 
 dlabel g_bTrackMenuChampionship
-    /* 80315A50 */ .space 0x04
+    /* 80315A40 */ .space 0x04
 
 nonmatching D_80315A54, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80315A54
-    /* 80315A54 */ .space 0x04
+    /* 80315A44 */ .space 0x04
 
 nonmatching g_szTrackMenuTextBuf, 0x48
 
 dlabel g_szTrackMenuTextBuf
-    /* 80315A58 */ .space 0x48
+    /* 80315A48 */ .space 0x48
 
 nonmatching D_80315AA0, 0x10
 
 dlabel D_80315AA0
-    /* 80315AA0 */ .space 0x10
+    /* 80315A90 */ .space 0x10
 
 nonmatching g_aMenuSpotlightVertices, 0x2
 
 dlabel g_aMenuSpotlightVertices
-    /* 80315AB0 */ .space 0x02
+    /* 80315AA0 */ .space 0x02
 
 nonmatching g_wPhysicsReserved0, 0x2
 
 dlabel g_wPhysicsReserved0
-    /* 80315AB2 */ .space 0x02
+    /* 80315AA2 */ .space 0x02
 
 nonmatching g_wPhysicsReserved1, 0x2
 
 dlabel g_wPhysicsReserved1
-    /* 80315AB4 */ .space 0x02
+    /* 80315AA4 */ .space 0x02
 
 nonmatching D_80315AB6, 0x6
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80315AB6
-    /* 80315AB6 */ .space 0x06
+    /* 80315AA6 */ .space 0x06
 
 nonmatching g_bPhysicsReserved0, 0x1
 
 dlabel g_bPhysicsReserved0
-    /* 80315ABC */ .space 0x01
+    /* 80315AAC */ .space 0x01
 
 nonmatching g_bPhysicsReserved1, 0x1
 
 dlabel g_bPhysicsReserved1
-    /* 80315ABD */ .space 0x01
+    /* 80315AAD */ .space 0x01
 
 nonmatching g_bPhysicsReserved2, 0x1
 
 dlabel g_bPhysicsReserved2
-    /* 80315ABE */ .space 0x01
+    /* 80315AAE */ .space 0x01
 
 nonmatching g_bPhysicsReserved3, 0x1D1
 
 dlabel g_bPhysicsReserved3
-    /* 80315ABF */ .space 0x1D1
+    /* 80315AAF */ .space 0x1D1
 
 nonmatching D_80315C90, 0x10
 
 dlabel D_80315C90
-    /* 80315C90 */ .space 0x10
+    /* 80315C80 */ .space 0x10
 
 nonmatching g_MenuChoiceMarkerMtx, 0x30
 
 dlabel g_MenuChoiceMarkerMtx
-    /* 80315CA0 */ .space 0x30
+    /* 80315C90 */ .space 0x30
 
 nonmatching D_80315CD0, 0x4
 
 dlabel D_80315CD0
-    /* 80315CD0 */ .space 0x04
+    /* 80315CC0 */ .space 0x04
 
 nonmatching D_80315CD4, 0x4
 
 dlabel D_80315CD4
-    /* 80315CD4 */ .space 0x04
+    /* 80315CC4 */ .space 0x04
 
 nonmatching D_80315CD8, 0x4
 
 dlabel D_80315CD8
-    /* 80315CD8 */ .space 0x04
+    /* 80315CC8 */ .space 0x04
 
 nonmatching D_80315CDC, 0x4
 
 dlabel D_80315CDC
-    /* 80315CDC */ .space 0x04
+    /* 80315CCC */ .space 0x04
 
 nonmatching g_nPrevScreenSelection, 0x4
 
 dlabel g_nPrevScreenSelection
-    /* 80315CE0 */ .space 0x04
+    /* 80315CD0 */ .space 0x04
 
 nonmatching g_fScreenSlideOffset, 0x4
 
 dlabel g_fScreenSlideOffset
-    /* 80315CE4 */ .space 0x04
+    /* 80315CD4 */ .space 0x04
 
 nonmatching g_fScreenRotationAngle, 0x4
 
 dlabel g_fScreenRotationAngle
-    /* 80315CE8 */ .space 0x04
+    /* 80315CD8 */ .space 0x04
 
 nonmatching g_bScreenItemChosen, 0x4
 
 dlabel g_bScreenItemChosen
-    /* 80315CEC */ .space 0x04
+    /* 80315CDC */ .space 0x04
 
 nonmatching g_pScreenScrollSoundBuf, 0x4
 
 dlabel g_pScreenScrollSoundBuf
-    /* 80315CF0 */ .space 0x04
+    /* 80315CE0 */ .space 0x04
 
 nonmatching g_dwScreenScrollSoundSize, 0x4
 
 dlabel g_dwScreenScrollSoundSize
-    /* 80315CF4 */ .space 0x04
+    /* 80315CE4 */ .space 0x04
 
 nonmatching g_pScreenSelectSoundBuf, 0x4
 
 dlabel g_pScreenSelectSoundBuf
-    /* 80315CF8 */ .space 0x04
+    /* 80315CE8 */ .space 0x04
 
 nonmatching g_dwScreenSelectSoundSize, 0x4
 
 dlabel g_dwScreenSelectSoundSize
-    /* 80315CFC */ .space 0x04
+    /* 80315CEC */ .space 0x04
 
 nonmatching g_fScreenIdleTime, 0x4
 
 dlabel g_fScreenIdleTime
-    /* 80315D00 */ .space 0x04
+    /* 80315CF0 */ .space 0x04
 
 nonmatching g_nScreenCursor, 0x4
 
 dlabel g_nScreenCursor
-    /* 80315D04 */ .space 0x04
+    /* 80315CF4 */ .space 0x04
 
 nonmatching D_80315D08, 0x8
 
 dlabel D_80315D08
-    /* 80315D08 */ .space 0x08
+    /* 80315CF8 */ .space 0x08
 
 nonmatching g_dwCarSelectStartTime, 0x4
 
 dlabel g_dwCarSelectStartTime
-    /* 80315D10 */ .space 0x04
+    /* 80315D00 */ .space 0x04
 
 nonmatching D_80315D14, 0x4
 
 dlabel D_80315D14
-    /* 80315D14 */ .space 0x04
+    /* 80315D04 */ .space 0x04
 
 nonmatching g_adwCarSelectModelSlots, 0x4
 
 dlabel g_adwCarSelectModelSlots
-    /* 80315D18 */ .space 0x04
+    /* 80315D08 */ .space 0x04
 
 nonmatching g_dwModelSlot2, 0x4
 
 dlabel g_dwModelSlot2
-    /* 80315D1C */ .space 0x04
+    /* 80315D0C */ .space 0x04
 
 nonmatching g_afCarSelectSlide, 0x4
 
 dlabel g_afCarSelectSlide
-    /* 80315D20 */ .space 0x04
+    /* 80315D10 */ .space 0x04
 
 nonmatching D_80315D24, 0x4
 
 dlabel D_80315D24
-    /* 80315D24 */ .space 0x04
+    /* 80315D14 */ .space 0x04
 
 nonmatching g_afCarSelectAngle, 0x4
 
 dlabel g_afCarSelectAngle
-    /* 80315D28 */ .space 0x04
+    /* 80315D18 */ .space 0x04
 
 nonmatching g_flPhysicsReserved1, 0x4
 
 dlabel g_flPhysicsReserved1
-    /* 80315D2C */ .space 0x04
+    /* 80315D1C */ .space 0x04
 
 nonmatching g_aapCarSelectOptions, 0x4
 
 dlabel g_aapCarSelectOptions
-    /* 80315D30 */ .space 0x04
+    /* 80315D20 */ .space 0x04
 
 nonmatching D_80315D34, 0x4
 
 dlabel D_80315D34
-    /* 80315D34 */ .space 0x04
+    /* 80315D24 */ .space 0x04
 
 nonmatching g_anCarSelectCursor, 0x4
 
 dlabel g_anCarSelectCursor
-    /* 80315D38 */ .space 0x04
+    /* 80315D28 */ .space 0x04
 
 nonmatching D_80315D3C, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80315D3C
-    /* 80315D3C */ .space 0x04
+    /* 80315D2C */ .space 0x04
 
 nonmatching g_anCarSelectPrevCursor, 0x4
 
 dlabel g_anCarSelectPrevCursor
-    /* 80315D40 */ .space 0x04
+    /* 80315D30 */ .space 0x04
 
 nonmatching D_80315D44, 0x4
 
 dlabel D_80315D44
-    /* 80315D44 */ .space 0x04
+    /* 80315D34 */ .space 0x04
 
 nonmatching g_anCarSelectOptionCount, 0x4
 
 dlabel g_anCarSelectOptionCount
-    /* 80315D48 */ .space 0x04
+    /* 80315D38 */ .space 0x04
 
 nonmatching g_dwItemListCount2, 0x4
 
 dlabel g_dwItemListCount2
-    /* 80315D4C */ .space 0x04
+    /* 80315D3C */ .space 0x04
 
 nonmatching g_apszCarSelectCategory, 0x4
 
 dlabel g_apszCarSelectCategory
-    /* 80315D50 */ .space 0x04
+    /* 80315D40 */ .space 0x04
 
 nonmatching D_80315D54, 0x4
 
 dlabel D_80315D54
-    /* 80315D54 */ .space 0x04
+    /* 80315D44 */ .space 0x04
 
 nonmatching g_bCarSelectDone, 0x4
 
 dlabel g_bCarSelectDone
-    /* 80315D58 */ .space 0x04
+    /* 80315D48 */ .space 0x04
 
 nonmatching g_pScrollSoundBuf, 0x4
 
 dlabel g_pScrollSoundBuf
-    /* 80315D5C */ .space 0x04
+    /* 80315D4C */ .space 0x04
 
 nonmatching g_dwScrollSoundSize, 0x4
 
 dlabel g_dwScrollSoundSize
-    /* 80315D60 */ .space 0x04
+    /* 80315D50 */ .space 0x04
 
 nonmatching g_pSelectSoundBuf, 0x4
 
 dlabel g_pSelectSoundBuf
-    /* 80315D64 */ .space 0x04
+    /* 80315D54 */ .space 0x04
 
 nonmatching g_dwSelectSoundSize, 0x4
 
 dlabel g_dwSelectSoundSize
-    /* 80315D68 */ .space 0x04
+    /* 80315D58 */ .space 0x04
 
 nonmatching g_dwTitleRedrawFrames, 0x4
 
 dlabel g_dwTitleRedrawFrames
-    /* 80315D6C */ .space 0x04
+    /* 80315D5C */ .space 0x04
 
 nonmatching g_adwCarSelectState, 0x4
 
 dlabel g_adwCarSelectState
-    /* 80315D70 */ .space 0x04
+    /* 80315D60 */ .space 0x04
 
 nonmatching D_80315D74, 0x4
 
 dlabel D_80315D74
-    /* 80315D74 */ .space 0x04
+    /* 80315D64 */ .space 0x04
 
 nonmatching g_dwPakDialogActive, 0x4
 
 dlabel g_dwPakDialogActive
-    /* 80315D78 */ .space 0x04
+    /* 80315D68 */ .space 0x04
 
 nonmatching g_dwPakDialogPlayerIdx, 0x4
 
 dlabel g_dwPakDialogPlayerIdx
-    /* 80315D7C */ .space 0x04
+    /* 80315D6C */ .space 0x04
 
 nonmatching g_dwPakDialogResult, 0x4
 
 dlabel g_dwPakDialogResult
-    /* 80315D80 */ .space 0x04
+    /* 80315D70 */ .space 0x04
 
 nonmatching g_bPakDialogDone, 0x28
 
 dlabel g_bPakDialogDone
-    /* 80315D84 */ .space 0x28
+    /* 80315D74 */ .space 0x28
 
 nonmatching D_80315DAC, 0x4
 
 dlabel D_80315DAC
-    /* 80315DAC */ .space 0x04
+    /* 80315D9C */ .space 0x04
 
 nonmatching D_80315DB0, 0x4
 
 dlabel D_80315DB0
-    /* 80315DB0 */ .space 0x04
+    /* 80315DA0 */ .space 0x04
 
 nonmatching D_80315DB4, 0x4
 
 dlabel D_80315DB4
-    /* 80315DB4 */ .space 0x04
+    /* 80315DA4 */ .space 0x04
 
 nonmatching D_80315DB8, 0x4
 
 dlabel D_80315DB8
-    /* 80315DB8 */ .space 0x04
+    /* 80315DA8 */ .space 0x04
 
 nonmatching g_dwResultsSeason, 0x4
 
 dlabel g_dwResultsSeason
-    /* 80315DBC */ .space 0x04
+    /* 80315DAC */ .space 0x04
 
 nonmatching g_dwResultsRound, 0x4
 
 dlabel g_dwResultsRound
-    /* 80315DC0 */ .space 0x04
+    /* 80315DB0 */ .space 0x04
 
 nonmatching g_dwResultsChampionshipFlags, 0x4
 
 dlabel g_dwResultsChampionshipFlags
-    /* 80315DC4 */ .space 0x04
+    /* 80315DB4 */ .space 0x04
 
 nonmatching g_dwResultsTrack, 0x4
 
 dlabel g_dwResultsTrack
-    /* 80315DC8 */ .space 0x04
+    /* 80315DB8 */ .space 0x04
 
 nonmatching g_dwCarSelectWeather, 0x4
 
 dlabel g_dwCarSelectWeather
-    /* 80315DCC */ .space 0x04
+    /* 80315DBC */ .space 0x04
 
 nonmatching g_bSeasonResultsShown, 0x4
 
 dlabel g_bSeasonResultsShown
-    /* 80315DD0 */ .space 0x04
+    /* 80315DC0 */ .space 0x04
 
 nonmatching g_dwResultsPage, 0x4
 
 dlabel g_dwResultsPage
-    /* 80315DD4 */ .space 0x04
+    /* 80315DC4 */ .space 0x04
 
 nonmatching g_szResultsBuf, 0x48
 
 dlabel g_szResultsBuf
-    /* 80315DD8 */ .space 0x48
+    /* 80315DC8 */ .space 0x48
 
 nonmatching D_80315E20, 0x4
 
 dlabel D_80315E20
-    /* 80315E20 */ .space 0x04
+    /* 80315E10 */ .space 0x04
 
 nonmatching D_80315E24, 0xC
 
 dlabel D_80315E24
-    /* 80315E24 */ .space 0x0C
+    /* 80315E14 */ .space 0x0C
 
 nonmatching D_80315E38, 0x8
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80315E38
-    /* 80315E38 */ .space 0x08
+    /* 80315E28 */ .space 0x08
 
 nonmatching g_dwMainMenuItemCount, 0x4
 
 dlabel g_dwMainMenuItemCount
-    /* 80315E40 */ .space 0x04
+    /* 80315E30 */ .space 0x04
 
 nonmatching D_80315E44, 0xC
 
 dlabel D_80315E44
-    /* 80315E44 */ .space 0x0C
+    /* 80315E34 */ .space 0x0C
 
 nonmatching g_dwPlayerCountMenuItemCount, 0x4
 
 dlabel g_dwPlayerCountMenuItemCount
-    /* 80315E50 */ .space 0x04
+    /* 80315E40 */ .space 0x04
 
 nonmatching g_dwPlayerCountMenuSelection, 0x4
 
 dlabel g_dwPlayerCountMenuSelection
-    /* 80315E54 */ .space 0x04
+    /* 80315E44 */ .space 0x04
 
 nonmatching D_80315E58, 0x4
 
 dlabel D_80315E58
-    /* 80315E58 */ .space 0x04
+    /* 80315E48 */ .space 0x04
 
 nonmatching D_80315E5C, 0x4
 
 dlabel D_80315E5C
-    /* 80315E5C */ .space 0x04
+    /* 80315E4C */ .space 0x04
 
 nonmatching g_bLoadConfigurationPending, 0x4
 
 dlabel g_bLoadConfigurationPending
-    /* 80315E60 */ .space 0x04
+    /* 80315E50 */ .space 0x04
 
 nonmatching g_bSaveConfigurationPending, 0x4
 
 dlabel g_bSaveConfigurationPending
-    /* 80315E64 */ .space 0x04
+    /* 80315E54 */ .space 0x04
 
 nonmatching g_szBgmVolumeTextBuf, 0x8
 
 dlabel g_szBgmVolumeTextBuf
-    /* 80315E70 */ .space 0x08
+    /* 80315E60 */ .space 0x08
 
 nonmatching D_80315E78, 0x10
 
 dlabel D_80315E78
-    /* 80315E78 */ .space 0x10
+    /* 80315E68 */ .space 0x10
 
 nonmatching g_szSfxVolumeTextBuf, 0x8
 
 dlabel g_szSfxVolumeTextBuf
-    /* 80315E88 */ .space 0x08
+    /* 80315E78 */ .space 0x08
 
 nonmatching D_80315E90, 0x10
 
 dlabel D_80315E90
-    /* 80315E90 */ .space 0x10
+    /* 80315E80 */ .space 0x10
 
 nonmatching g_aabSavePakIds, 0x40
 
 dlabel g_aabSavePakIds
-    /* 80315EA0 */ .space 0x40
+    /* 80315E90 */ .space 0x40
 
 nonmatching g_abSavePakIdKnown, 0x2
 
 dlabel g_abSavePakIdKnown
-    /* 80315EE0 */ .space 0x02
+    /* 80315ED0 */ .space 0x02
 
 nonmatching g_bSaveLoadDataWasLoaded, 0x1
 
 dlabel g_bSaveLoadDataWasLoaded
-    /* 80315EE2 */ .space 0x01
+    /* 80315ED2 */ .space 0x01
 
 nonmatching g_bSaveLoadInputEnabled, 0x1
 
 dlabel g_bSaveLoadInputEnabled
-    /* 80315EE3 */ .space 0x01
+    /* 80315ED3 */ .space 0x01
 
 nonmatching g_dwSaveLoadNoteIndex, 0x4
 
 dlabel g_dwSaveLoadNoteIndex
-    /* 80315EE4 */ .space 0x04
+    /* 80315ED4 */ .space 0x04
 
 nonmatching g_bSaveLoadFadeDelayFrames, 0x4
 
 dlabel g_bSaveLoadFadeDelayFrames
-    /* 80315EE8 */ .space 0x04
+    /* 80315ED8 */ .space 0x04
 
 nonmatching g_dwPakDataNoteIndex, 0x4
 
 dlabel g_dwPakDataNoteIndex
-    /* 80315EEC */ .space 0x04
+    /* 80315EDC */ .space 0x04
 
 nonmatching g_bPakDataStep, 0x1
 
 dlabel g_bPakDataStep
-    /* 80315EF0 */ .space 0x01
+    /* 80315EE0 */ .space 0x01
 
 nonmatching g_bPakDataWaitFrames, 0x3
 
 dlabel g_bPakDataWaitFrames
-    /* 80315EF1 */ .space 0x03
+    /* 80315EE1 */ .space 0x03
 
 nonmatching D_80315EF4, 0xC
 
 dlabel D_80315EF4
-    /* 80315EF4 */ .space 0x0C
+    /* 80315EE4 */ .space 0x0C
 
 nonmatching D_80315F08, 0x8
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80315F08
-    /* 80315F08 */ .space 0x08
+    /* 80315EF8 */ .space 0x08
 
 nonmatching g_apszBootArgv, 0x470
 
 dlabel g_apszBootArgv
-    /* 80315F10 */ .space 0x470
+    /* 80315F00 */ .space 0x470
 
 nonmatching D_80316380, 0x10
 
 dlabel D_80316380
-    /* 80316380 */ .space 0x10
+    /* 80316370 */ .space 0x10
 
 nonmatching g_adwIdleThreadStack, 0x400
 
 dlabel g_adwIdleThreadStack
-    /* 80316390 */ .space 0x400
+    /* 80316380 */ .space 0x400
 
 nonmatching g_adwMainThreadStack, 0x2000
 
 dlabel g_adwMainThreadStack
-    /* 80316790 */ .space 0x2000
+    /* 80316780 */ .space 0x2000
 
 nonmatching g_aViewports, 0x1F0
 
 dlabel g_aViewports
-    /* 80318790 */ .space 0x1F0
+    /* 80318780 */ .space 0x1F0
 
 nonmatching D_80318980, 0x10
 
 dlabel D_80318980
-    /* 80318980 */ .space 0x10
+    /* 80318970 */ .space 0x10
 
 nonmatching g_adwRspDoneThreadStack, 0x800
 
 dlabel g_adwRspDoneThreadStack
-    /* 80318990 */ .space 0x800
+    /* 80318980 */ .space 0x800
 
 nonmatching g_adwRdpDoneThreadStack, 0x800
 
 dlabel g_adwRdpDoneThreadStack
-    /* 80319190 */ .space 0x800
+    /* 80319180 */ .space 0x800
 
 nonmatching g_PiMgrCmdQueue, 0x8
 
 dlabel g_PiMgrCmdQueue
-    /* 80319990 */ .space 0x08
+    /* 80319980 */ .space 0x08
 
 nonmatching D_80319998, 0x10
 
 dlabel D_80319998
-    /* 80319998 */ .space 0x10
+    /* 80319988 */ .space 0x10
 
 nonmatching g_aPiMgrCmdMsgBuf, 0x90
 
 dlabel g_aPiMgrCmdMsgBuf
-    /* 803199A8 */ .space 0x90
+    /* 80319998 */ .space 0x90
 
 nonmatching D_80319A38, 0x10
 
 dlabel D_80319A38
-    /* 80319A38 */ .space 0x10
+    /* 80319A28 */ .space 0x10
 
 nonmatching g_DmaMessageQueue, 0x8
 
 dlabel g_DmaMessageQueue
-    /* 80319A48 */ .space 0x08
+    /* 80319A38 */ .space 0x08
 
 nonmatching D_80319A50, 0x10
 
 dlabel D_80319A50
-    /* 80319A50 */ .space 0x10
+    /* 80319A40 */ .space 0x10
 
 nonmatching g_aDmaMsgBuf, 0x70
 
 dlabel g_aDmaMsgBuf
-    /* 80319A60 */ .space 0x70
+    /* 80319A50 */ .space 0x70
 
 nonmatching D_80319AD0, 0x10
 
 dlabel D_80319AD0
-    /* 80319AD0 */ .space 0x10
+    /* 80319AC0 */ .space 0x10
 
 nonmatching g_aIoMessagePool, 0x2F0
 
 dlabel g_aIoMessagePool
-    /* 80319AE0 */ .space 0x2F0
+    /* 80319AD0 */ .space 0x2F0
 
 nonmatching D_80319DD0, 0x10
 
 dlabel D_80319DD0
-    /* 80319DD0 */ .space 0x10
+    /* 80319DC0 */ .space 0x10
 
 nonmatching g_RspDoneMsgQueue, 0x8
 
 dlabel g_RspDoneMsgQueue
-    /* 80319DE0 */ .space 0x08
+    /* 80319DD0 */ .space 0x08
 
 nonmatching D_80319DE8, 0x10
 
 dlabel D_80319DE8
-    /* 80319DE8 */ .space 0x10
+    /* 80319DD8 */ .space 0x10
 
 nonmatching g_RspEventMsgQueue, 0x8
 
 dlabel g_RspEventMsgQueue
-    /* 80319DF8 */ .space 0x08
+    /* 80319DE8 */ .space 0x08
 
 nonmatching D_80319E00, 0x4
 
 dlabel D_80319E00
-    /* 80319E00 */ .space 0x04
+    /* 80319DF0 */ .space 0x04
 
 nonmatching D_80319E04, 0x4
 
 dlabel D_80319E04
-    /* 80319E04 */ .space 0x04
+    /* 80319DF4 */ .space 0x04
 
 nonmatching D_80319E08, 0x8
 
 dlabel D_80319E08
-    /* 80319E08 */ .space 0x08
+    /* 80319DF8 */ .space 0x08
 
 nonmatching g_aRspDoneMsgBuf, 0x4
 
 dlabel g_aRspDoneMsgBuf
-    /* 80319E10 */ .space 0x04
+    /* 80319E00 */ .space 0x04
 
 nonmatching g_aRspEventMsgBuf, 0x4
 
 dlabel g_aRspEventMsgBuf
-    /* 80319E14 */ .space 0x04
+    /* 80319E04 */ .space 0x04
 
 nonmatching g_RdpDoneMsgQueue, 0x8
 
 dlabel g_RdpDoneMsgQueue
-    /* 80319E18 */ .space 0x08
+    /* 80319E08 */ .space 0x08
 
 nonmatching D_80319E20, 0x10
 
 dlabel D_80319E20
-    /* 80319E20 */ .space 0x10
+    /* 80319E10 */ .space 0x10
 
 nonmatching g_RdpEventMsgQueue, 0x8
 
 dlabel g_RdpEventMsgQueue
-    /* 80319E30 */ .space 0x08
+    /* 80319E20 */ .space 0x08
 
 nonmatching D_80319E38, 0x4
 
 dlabel D_80319E38
-    /* 80319E38 */ .space 0x04
+    /* 80319E28 */ .space 0x04
 
 nonmatching D_80319E3C, 0x4
 
 dlabel D_80319E3C
-    /* 80319E3C */ .space 0x04
+    /* 80319E2C */ .space 0x04
 
 nonmatching D_80319E40, 0x8
 
 dlabel D_80319E40
-    /* 80319E40 */ .space 0x08
+    /* 80319E30 */ .space 0x08
 
 nonmatching g_aRdpDoneMsgBuf, 0x4
 
 dlabel g_aRdpDoneMsgBuf
-    /* 80319E48 */ .space 0x04
+    /* 80319E38 */ .space 0x04
 
 nonmatching g_aRdpEventMsgBuf, 0x4
 
 dlabel g_aRdpEventMsgBuf
-    /* 80319E4C */ .space 0x04
+    /* 80319E3C */ .space 0x04
 
 nonmatching g_ViRetraceMesgQueue, 0x8
 
 dlabel g_ViRetraceMesgQueue
-    /* 80319E50 */ .space 0x08
+    /* 80319E40 */ .space 0x08
 
 nonmatching D_80319E58, 0x8
 
 dlabel D_80319E58
-    /* 80319E58 */ .space 0x08
+    /* 80319E48 */ .space 0x08
 
 nonmatching D_80319E60, 0x8
 
 dlabel D_80319E60
-    /* 80319E60 */ .space 0x08
+    /* 80319E50 */ .space 0x08
 
 nonmatching g_ViRetraceMesgBuf, 0x8
 
 dlabel g_ViRetraceMesgBuf
-    /* 80319E68 */ .space 0x08
+    /* 80319E58 */ .space 0x08
 
 nonmatching g_ViRetracePollMesgQueue, 0x8
 
 dlabel g_ViRetracePollMesgQueue
-    /* 80319E70 */ .space 0x08
+    /* 80319E60 */ .space 0x08
 
 nonmatching D_80319E78, 0x4
 
 dlabel D_80319E78
-    /* 80319E78 */ .space 0x04
+    /* 80319E68 */ .space 0x04
 
 nonmatching D_80319E7C, 0x4
 
 dlabel D_80319E7C
-    /* 80319E7C */ .space 0x04
+    /* 80319E6C */ .space 0x04
 
 nonmatching D_80319E80, 0x8
 
 dlabel D_80319E80
-    /* 80319E80 */ .space 0x08
+    /* 80319E70 */ .space 0x08
 
 nonmatching g_ViRetracePollMesgBuf, 0x4
 
 dlabel g_ViRetracePollMesgBuf
-    /* 80319E88 */ .space 0x04
+    /* 80319E78 */ .space 0x04
 
 nonmatching g_dwDummyOsMesg, 0x4
 
 dlabel g_dwDummyOsMesg
-    /* 80319E8C */ .space 0x04
+    /* 80319E7C */ .space 0x04
 
 nonmatching g_aContStatus, 0x10
 
 dlabel g_aContStatus
-    /* 80319E90 */ .space 0x10
+    /* 80319E80 */ .space 0x10
 
 nonmatching g_aContPadData, 0x8
 
 dlabel g_aContPadData
-    /* 80319EA0 */ .space 0x08
+    /* 80319E90 */ .space 0x08
 
 nonmatching D_80319EA8, 0x10
 
 dlabel D_80319EA8
-    /* 80319EA8 */ .space 0x10
+    /* 80319E98 */ .space 0x10
 
 nonmatching g_aContPfs, 0x58
 
 dlabel g_aContPfs
-    /* 80319EB8 */ .space 0x58
+    /* 80319EA8 */ .space 0x58
 
 nonmatching D_80319F10, 0x138
 
 dlabel D_80319F10
-    /* 80319F10 */ .space 0x138
+    /* 80319F00 */ .space 0x138
 
 nonmatching D_8031A048, 0x10
 
 dlabel D_8031A048
-    /* 8031A048 */ .space 0x10
+    /* 8031A038 */ .space 0x10
 
 nonmatching g_abRspDramStackBuffer, 0x400
 
 dlabel g_abRspDramStackBuffer
-    /* 8031A058 */ .space 0x400
+    /* 8031A048 */ .space 0x400
 
 nonmatching D_8031A458, 0x10
 
 dlabel D_8031A458
-    /* 8031A458 */ .space 0x10
+    /* 8031A448 */ .space 0x10
 
 nonmatching g_aGfxTask, 0x70
 
 dlabel g_aGfxTask
-    /* 8031A468 */ .space 0x70
+    /* 8031A458 */ .space 0x70
 
 nonmatching D_8031A4D8, 0x10
 
 dlabel D_8031A4D8
-    /* 8031A4D8 */ .space 0x10
+    /* 8031A4C8 */ .space 0x10
 
 nonmatching g_apFramebuffers, 0x8
 
 dlabel g_apFramebuffers
-    /* 8031A4E8 */ .space 0x08
+    /* 8031A4D8 */ .space 0x08
 
 nonmatching D_8031A4F0, 0x10
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031A4F0
-    /* 8031A4F0 */ .space 0x10
+    /* 8031A4E0 */ .space 0x10
 
 nonmatching D_8031A500, 0x4
 
 dlabel D_8031A500
-    /* 8031A500 */ .space 0x04
+    /* 8031A4F0 */ .space 0x04
 
 nonmatching D_8031A504, 0x4
 
 dlabel D_8031A504
-    /* 8031A504 */ .space 0x04
+    /* 8031A4F4 */ .space 0x04
 
 nonmatching D_8031A508, 0x4
 
 dlabel D_8031A508
-    /* 8031A508 */ .space 0x04
+    /* 8031A4F8 */ .space 0x04
 
 nonmatching D_8031A50C, 0x4
 
 dlabel D_8031A50C
-    /* 8031A50C */ .space 0x04
+    /* 8031A4FC */ .space 0x04
 
 nonmatching g_afViewProjMatrix, 0x40
 
 dlabel g_afViewProjMatrix
-    /* 8031A510 */ .space 0x40
+    /* 8031A500 */ .space 0x40
 
 nonmatching g_afPerspectiveMatrix, 0x40
 
 dlabel g_afPerspectiveMatrix
-    /* 8031A550 */ .space 0x40
+    /* 8031A540 */ .space 0x40
 
 nonmatching g_ViewLookAtMtx, 0x40
 
 dlabel g_ViewLookAtMtx
-    /* 8031A590 */ .space 0x40
+    /* 8031A580 */ .space 0x40
 
 nonmatching g_afMvpMatrix, 0x40
 
 dlabel g_afMvpMatrix
-    /* 8031A5D0 */ .space 0x40
+    /* 8031A5C0 */ .space 0x40
 
 nonmatching g_afScratchMatrix, 0x40
 
 dlabel g_afScratchMatrix
-    /* 8031A610 */ .space 0x40
+    /* 8031A600 */ .space 0x40
 
 nonmatching D_8031A650, 0x30
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031A650
-    /* 8031A650 */ .space 0x30
+    /* 8031A640 */ .space 0x30
 
 nonmatching D_8031A680, 0x10
 
 dlabel D_8031A680
-    /* 8031A680 */ .space 0x10
+    /* 8031A670 */ .space 0x10
 
 nonmatching g_vFrustumHalfRight, 0x10
 
 dlabel g_vFrustumHalfRight
-    /* 8031A690 */ .space 0x10
+    /* 8031A680 */ .space 0x10
 
 nonmatching g_vFrustumHalfUp, 0x10
 
 dlabel g_vFrustumHalfUp
-    /* 8031A6A0 */ .space 0x10
+    /* 8031A690 */ .space 0x10
 
 nonmatching g_afFrustumCenter, 0x4
 
 dlabel g_afFrustumCenter
-    /* 8031A6B0 */ .space 0x04
+    /* 8031A6A0 */ .space 0x04
 
 nonmatching g_fFrustumCenterY, 0x4
 
 dlabel g_fFrustumCenterY
-    /* 8031A6B4 */ .space 0x04
+    /* 8031A6A4 */ .space 0x04
 
 nonmatching g_dwVehicleRpm, 0x4
 
 dlabel g_dwVehicleRpm
-    /* 8031A6B8 */ .space 0x04
+    /* 8031A6A8 */ .space 0x04
 
 nonmatching D_8031A6BC, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031A6BC
-    /* 8031A6BC */ .space 0x04
+    /* 8031A6AC */ .space 0x04
 
 nonmatching g_FaultThreadObj, 0x1B0
 
 dlabel g_FaultThreadObj
-    /* 8031A6C0 */ .space 0x1B0
+    /* 8031A6B0 */ .space 0x1B0
 
 nonmatching g_adwFaultThreadStack, 0x400
 
 dlabel g_adwFaultThreadStack
-    /* 8031A870 */ .space 0x400
+    /* 8031A860 */ .space 0x400
 
 nonmatching g_FaultMsgQueue, 0x8
 
 dlabel g_FaultMsgQueue
-    /* 8031AC70 */ .space 0x08
+    /* 8031AC60 */ .space 0x08
 
 nonmatching D_8031AC78, 0x4
 
 dlabel D_8031AC78
-    /* 8031AC78 */ .space 0x04
+    /* 8031AC68 */ .space 0x04
 
 nonmatching D_8031AC7C, 0x4
 
 dlabel D_8031AC7C
-    /* 8031AC7C */ .space 0x04
+    /* 8031AC6C */ .space 0x04
 
 nonmatching D_8031AC80, 0x8
 
 dlabel D_8031AC80
-    /* 8031AC80 */ .space 0x08
+    /* 8031AC70 */ .space 0x08
 
 nonmatching g_aFaultMsgBuf, 0x4
 
 dlabel g_aFaultMsgBuf
-    /* 8031AC88 */ .space 0x04
+    /* 8031AC78 */ .space 0x04
 
 nonmatching g_pFaultedThread, 0x4
 
 dlabel g_pFaultedThread
-    /* 8031AC8C */ .space 0x04
+    /* 8031AC7C */ .space 0x04
 
 nonmatching g_dwFaultState, 0x4
 
 dlabel g_dwFaultState
-    /* 8031AC90 */ .space 0x04
+    /* 8031AC80 */ .space 0x04
 
 nonmatching D_8031AC94, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031AC94
-    /* 8031AC94 */ .space 0x04
+    /* 8031AC84 */ .space 0x04
 
 nonmatching g_afVehicleJolts, 0x10
 
 dlabel g_afVehicleJolts
-    /* 8031AC98 */ .space 0x10
+    /* 8031AC88 */ .space 0x10
 
 nonmatching g_abRumblePakPresent, 0x2
 
 dlabel g_abRumblePakPresent
-    /* 8031ACA8 */ .space 0x02
+    /* 8031AC98 */ .space 0x02
 
 nonmatching D_8031ACAA, 0x2
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031ACAA
-    /* 8031ACAA */ .space 0x02
+    /* 8031AC9A */ .space 0x02
 
 nonmatching D_8031ACAC, 0x4
 
 dlabel D_8031ACAC
-    /* 8031ACAC */ .space 0x04
+    /* 8031AC9C */ .space 0x04
 
 nonmatching g_avFrustumPoints, 0xC
 
 dlabel g_avFrustumPoints
-    /* 8031ACB0 */ .space 0x0C
+    /* 8031ACA0 */ .space 0x0C
 
 nonmatching D_8031ACBC, 0x8
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031ACBC
-    /* 8031ACBC */ .space 0x08
+    /* 8031ACAC */ .space 0x08
 
 nonmatching D_8031ACC4, 0xC
 
 dlabel D_8031ACC4
-    /* 8031ACC4 */ .space 0x0C
+    /* 8031ACB4 */ .space 0x0C
 
 nonmatching D_8031ACD0, 0x18
 
 dlabel D_8031ACD0
-    /* 8031ACD0 */ .space 0x18
+    /* 8031ACC0 */ .space 0x18
 
 nonmatching D_8031ACE8, 0x4
 
 dlabel D_8031ACE8
-    /* 8031ACE8 */ .space 0x04
+    /* 8031ACD8 */ .space 0x04
 
 nonmatching g_afShadowFrustumFarCenter, 0xC
 
 dlabel g_afShadowFrustumFarCenter
-    /* 8031ACEC */ .space 0x0C
+    /* 8031ACDC */ .space 0x0C
 
 nonmatching g_adwVehicleModelSlotCars, 0x8
 
 dlabel g_adwVehicleModelSlotCars
-    /* 8031ACF8 */ .space 0x08
+    /* 8031ACE8 */ .space 0x08
 
 nonmatching D_8031AD00, 0x8
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031AD00
-    /* 8031AD00 */ .space 0x08
+    /* 8031ACF0 */ .space 0x08
 
 nonmatching g_awCameraRayHitInstances, 0x2
 
 dlabel g_awCameraRayHitInstances
-    /* 8031AD08 */ .space 0x02
+    /* 8031ACF8 */ .space 0x02
 
 nonmatching g_wInputStickRawY, 0x2
 
 dlabel g_wInputStickRawY
-    /* 8031AD0A */ .space 0x02
+    /* 8031ACFA */ .space 0x02
 
 nonmatching D_8031AD0C, 0x2C
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031AD0C
-    /* 8031AD0C */ .space 0x2C
+    /* 8031ACFC */ .space 0x2C
 
 nonmatching D_8031AD38, 0x10
 
 dlabel D_8031AD38
-    /* 8031AD38 */ .space 0x10
+    /* 8031AD28 */ .space 0x10
 
 nonmatching g_awCameraRayNearbyInstances, 0x30
 
 dlabel g_awCameraRayNearbyInstances
-    /* 8031AD48 */ .space 0x30
+    /* 8031AD38 */ .space 0x30
 
 nonmatching D_8031AD78, 0x4
 
 dlabel D_8031AD78
-    /* 8031AD78 */ .space 0x04
+    /* 8031AD68 */ .space 0x04
 
 nonmatching D_8031AD7C, 0x4
 
 dlabel D_8031AD7C
-    /* 8031AD7C */ .space 0x04
+    /* 8031AD6C */ .space 0x04
 
 nonmatching D_8031AD80, 0x8
 
 dlabel D_8031AD80
-    /* 8031AD80 */ .space 0x08
+    /* 8031AD70 */ .space 0x08
 
 nonmatching g_aViewportRects, 0x4
 
 dlabel g_aViewportRects
-    /* 8031AD88 */ .space 0x04
+    /* 8031AD78 */ .space 0x04
 
 nonmatching D_8031AD8C, 0x3C
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031AD8C
-    /* 8031AD8C */ .space 0x3C
+    /* 8031AD7C */ .space 0x3C
 
 nonmatching D_8031ADC8, 0x4
 
 dlabel D_8031ADC8
-    /* 8031ADC8 */ .space 0x04
+    /* 8031ADB8 */ .space 0x04
 
 nonmatching D_8031ADCC, 0x4
 
 dlabel D_8031ADCC
-    /* 8031ADCC */ .space 0x04
+    /* 8031ADBC */ .space 0x04
 
 nonmatching D_8031ADD0, 0x8
 
 dlabel D_8031ADD0
-    /* 8031ADD0 */ .space 0x08
+    /* 8031ADC0 */ .space 0x08
 
 nonmatching g_pfnCurrentScreen, 0x4
 
 dlabel g_pfnCurrentScreen
-    /* 8031ADD8 */ .space 0x04
+    /* 8031ADC8 */ .space 0x04
 
 nonmatching g_pfnNextScreen, 0x4
 
 dlabel g_pfnNextScreen
-    /* 8031ADDC */ .space 0x04
+    /* 8031ADCC */ .space 0x04
 
 nonmatching g_pfnSecondaryScreen, 0x4
 
 dlabel g_pfnSecondaryScreen
-    /* 8031ADE0 */ .space 0x04
+    /* 8031ADD0 */ .space 0x04
 
 nonmatching D_8031ADE4, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031ADE4
-    /* 8031ADE4 */ .space 0x04
+    /* 8031ADD4 */ .space 0x04
 
 nonmatching g_dwDmaAssetSizeBuffer, 0x4
 
 dlabel g_dwDmaAssetSizeBuffer
-    /* 8031ADE8 */ .space 0x04
+    /* 8031ADD8 */ .space 0x04
 
 nonmatching D_8031ADEC, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031ADEC
-    /* 8031ADEC */ .space 0x04
+    /* 8031ADDC */ .space 0x04
 
 nonmatching g_dwDmaReadWordBuffer, 0x4
 
 dlabel g_dwDmaReadWordBuffer
-    /* 8031ADF0 */ .space 0x04
+    /* 8031ADE0 */ .space 0x04
 
 nonmatching D_8031ADF4, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031ADF4
-    /* 8031ADF4 */ .space 0x04
+    /* 8031ADE4 */ .space 0x04
 
 nonmatching g_afLightDirection, 0x4
 
 dlabel g_afLightDirection
-    /* 8031ADF8 */ .space 0x04
+    /* 8031ADE8 */ .space 0x04
 
 nonmatching g_dwPadError0, 0x4
 
 dlabel g_dwPadError0
-    /* 8031ADFC */ .space 0x04
+    /* 8031ADEC */ .space 0x04
 
 nonmatching g_dwPadError1, 0x4
 
 dlabel g_dwPadError1
-    /* 8031AE00 */ .space 0x04
+    /* 8031ADF0 */ .space 0x04
 
 nonmatching D_8031AE04, 0x1
 
 dlabel D_8031AE04
-    /* 8031AE04 */ .space 0x01
+    /* 8031ADF4 */ .space 0x01
 
 nonmatching D_8031AE05, 0x1
 
 dlabel D_8031AE05
-    /* 8031AE05 */ .space 0x01
+    /* 8031ADF5 */ .space 0x01
 
 nonmatching D_8031AE06, 0x1
 
 dlabel D_8031AE06
-    /* 8031AE06 */ .space 0x01
+    /* 8031ADF6 */ .space 0x01
 
 nonmatching D_8031AE07, 0x1
 
 dlabel D_8031AE07
-    /* 8031AE07 */ .space 0x01
+    /* 8031ADF7 */ .space 0x01
 
 nonmatching g_dwDmaChunkSize, 0x4
 
 dlabel g_dwDmaChunkSize
-    /* 8031AE08 */ .space 0x04
+    /* 8031ADF8 */ .space 0x04
 
 nonmatching D_8031AE0C, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031AE0C
-    /* 8031AE0C */ .space 0x04
+    /* 8031ADFC */ .space 0x04
 
 nonmatching g_abLightRampR, 0x4
 
 dlabel g_abLightRampR
-    /* 8031AE10 */ .space 0x04
+    /* 8031AE00 */ .space 0x04
 
 nonmatching g_abLightRampG, 0x4
 
 dlabel g_abLightRampG
-    /* 8031AE14 */ .space 0x04
+    /* 8031AE04 */ .space 0x04
 
 nonmatching g_abLightRampB, 0x4
 
 dlabel g_abLightRampB
-    /* 8031AE18 */ .space 0x04
+    /* 8031AE08 */ .space 0x04
 
 nonmatching D_8031AE1C, 0x4
 
 dlabel D_8031AE1C
-    /* 8031AE1C */ .space 0x04
+    /* 8031AE0C */ .space 0x04
 
     .space 0x28
 
 nonmatching g_aVehicleModelSlots, 0x50
 
 dlabel g_aVehicleModelSlots
-    /* 8031AE30 */ .space 0x50
+    /* 8031AE20 */ .space 0x50
 
 nonmatching D_8031AE80, 0x18
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031AE80
-    /* 8031AE80 */ .space 0x18
+    /* 8031AE70 */ .space 0x18
 
 nonmatching D_8031AEC0, 0x8
 
 dlabel D_8031AEC0
-    /* 8031AEC0 */ .space 0x08
+    /* 8031AEB0 */ .space 0x08
 
 nonmatching D_8031AEC8, 0x8
 
 dlabel D_8031AEC8
-    /* 8031AEC8 */ .space 0x08
+    /* 8031AEB8 */ .space 0x08
 
 nonmatching g_adwFadeRectLeftPerBuffer, 0x8
 
 dlabel g_adwFadeRectLeftPerBuffer
-    /* 8031AED0 */ .space 0x08
+    /* 8031AEC0 */ .space 0x08
 
 nonmatching g_adwFadeRectRightPerBuffer, 0x8
 
 dlabel g_adwFadeRectRightPerBuffer
-    /* 8031AED8 */ .space 0x08
+    /* 8031AEC8 */ .space 0x08
 
 nonmatching g_abUnusedFrameBlock, 0xC
 
 dlabel g_abUnusedFrameBlock
-    /* 8031AEE0 */ .space 0x0C
+    /* 8031AED0 */ .space 0x0C
 
 nonmatching D_8031AEEC, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031AEEC
-    /* 8031AEEC */ .space 0x04
+    /* 8031AEDC */ .space 0x04
 
 nonmatching g_avBestLeftLane, 0x60
 
 dlabel g_avBestLeftLane
-    /* 8031AEF0 */ .space 0x60
+    /* 8031AEE0 */ .space 0x60
 
 nonmatching g_avBestCenterLine, 0x60
 
 dlabel g_avBestCenterLine
-    /* 8031AF50 */ .space 0x60
+    /* 8031AF40 */ .space 0x60
 
 nonmatching g_avBestRightLane, 0x60
 
 dlabel g_avBestRightLane
-    /* 8031AFB0 */ .space 0x60
+    /* 8031AFA0 */ .space 0x60
 
 nonmatching g_avTraceLeftLane, 0x60
 
 dlabel g_avTraceLeftLane
-    /* 8031B010 */ .space 0x60
+    /* 8031B000 */ .space 0x60
 
 nonmatching g_avTraceLeftHalf, 0x60
 
 dlabel g_avTraceLeftHalf
-    /* 8031B070 */ .space 0x60
+    /* 8031B060 */ .space 0x60
 
 nonmatching g_avTraceCenterLine, 0x60
 
 dlabel g_avTraceCenterLine
-    /* 8031B0D0 */ .space 0x60
+    /* 8031B0C0 */ .space 0x60
 
 nonmatching g_avTraceRightHalf, 0x60
 
 dlabel g_avTraceRightHalf
-    /* 8031B130 */ .space 0x60
+    /* 8031B120 */ .space 0x60
 
 nonmatching g_avTraceRightLane, 0x60
 
 dlabel g_avTraceRightLane
-    /* 8031B190 */ .space 0x60
+    /* 8031B180 */ .space 0x60
 
 nonmatching g_vTraceFarPoint, 0xC
 
 dlabel g_vTraceFarPoint
-    /* 8031B1F0 */ .space 0x0C
+    /* 8031B1E0 */ .space 0x0C
 
 nonmatching D_8031B1FC, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031B1FC
-    /* 8031B1FC */ .space 0x04
+    /* 8031B1EC */ .space 0x04
 
 nonmatching g_vTraceHalfwayPoint, 0xC
 
 dlabel g_vTraceHalfwayPoint
-    /* 8031B200 */ .space 0x0C
+    /* 8031B1F0 */ .space 0x0C
 
 nonmatching D_8031B20C, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031B20C
-    /* 8031B20C */ .space 0x04
+    /* 8031B1FC */ .space 0x04
 
 nonmatching g_vTrackRoutePoint, 0xC
 
 dlabel g_vTrackRoutePoint
-    /* 8031B210 */ .space 0x0C
+    /* 8031B200 */ .space 0x0C
 
 nonmatching D_8031B21C, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031B21C
-    /* 8031B21C */ .space 0x04
+    /* 8031B20C */ .space 0x04
 
 nonmatching g_aVehicles, 0x4
 
 dlabel g_aVehicles
-    /* 8031B220 */ .space 0x04
+    /* 8031B210 */ .space 0x04
 
 nonmatching g_dwCamTargetX_P1, 0x4
 
 dlabel g_dwCamTargetX_P1
-    /* 8031B224 */ .space 0x04
+    /* 8031B214 */ .space 0x04
 
 nonmatching g_dwCamTargetY_P1, 0x4
 
 dlabel g_dwCamTargetY_P1
-    /* 8031B228 */ .space 0x04
+    /* 8031B218 */ .space 0x04
 
 nonmatching D_8031B22C, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031B22C
-    /* 8031B22C */ .space 0x04
+    /* 8031B21C */ .space 0x04
 
 nonmatching g_dwCameraFov, 0x4
 
 dlabel g_dwCameraFov
-    /* 8031B230 */ .space 0x04
+    /* 8031B220 */ .space 0x04
 
 nonmatching g_flCameraNear, 0x4
 
 dlabel g_flCameraNear
-    /* 8031B234 */ .space 0x04
+    /* 8031B224 */ .space 0x04
 
 nonmatching g_dwCameraFar, 0x4
 
 dlabel g_dwCameraFar
-    /* 8031B238 */ .space 0x04
+    /* 8031B228 */ .space 0x04
 
 nonmatching D_8031B23C, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031B23C
-    /* 8031B23C */ .space 0x04
+    /* 8031B22C */ .space 0x04
 
 nonmatching g_dwCameraMode, 0x4
 
 dlabel g_dwCameraMode
-    /* 8031B240 */ .space 0x04
+    /* 8031B230 */ .space 0x04
 
 nonmatching g_dwCameraShake, 0x4
 
 dlabel g_dwCameraShake
-    /* 8031B244 */ .space 0x04
+    /* 8031B234 */ .space 0x04
 
 nonmatching g_flCameraAspect, 0x4
 
 dlabel g_flCameraAspect
-    /* 8031B248 */ .space 0x04
+    /* 8031B238 */ .space 0x04
 
 nonmatching D_8031B24C, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031B24C
-    /* 8031B24C */ .space 0x04
+    /* 8031B23C */ .space 0x04
 
 nonmatching g_dwCameraReserved0, 0x4
 
 dlabel g_dwCameraReserved0
-    /* 8031B250 */ .space 0x04
+    /* 8031B240 */ .space 0x04
 
 nonmatching g_dwCameraReserved1, 0x4
 
 dlabel g_dwCameraReserved1
-    /* 8031B254 */ .space 0x04
+    /* 8031B244 */ .space 0x04
 
 nonmatching g_dwCameraReserved2, 0x4
 
 dlabel g_dwCameraReserved2
-    /* 8031B258 */ .space 0x04
+    /* 8031B248 */ .space 0x04
 
 nonmatching D_8031B25C, 0xDE8
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031B25C
-    /* 8031B25C */ .space 0xDE8
+    /* 8031B24C */ .space 0xDE8
 
 nonmatching D_8031C044, 0x24
 
 dlabel D_8031C044
-    /* 8031C044 */ .space 0x24
+    /* 8031C034 */ .space 0x24
 
 nonmatching D_8031C068, 0x4
 
 dlabel D_8031C068
-    /* 8031C068 */ .space 0x04
+    /* 8031C058 */ .space 0x04
 
 nonmatching D_8031C06C, 0x4
 
 dlabel D_8031C06C
-    /* 8031C06C */ .space 0x04
+    /* 8031C05C */ .space 0x04
 
 nonmatching D_8031C070, 0x4
 
 dlabel D_8031C070
-    /* 8031C070 */ .space 0x04
+    /* 8031C060 */ .space 0x04
 
 nonmatching D_8031C074, 0x4
 
 dlabel D_8031C074
-    /* 8031C074 */ .space 0x04
+    /* 8031C064 */ .space 0x04
 
 nonmatching D_8031C078, 0x4
 
 dlabel D_8031C078
-    /* 8031C078 */ .space 0x04
+    /* 8031C068 */ .space 0x04
 
 nonmatching g_pActiveProfile, 0x4
 
 dlabel g_pActiveProfile
-    /* 8031C07C */ .space 0x04
+    /* 8031C06C */ .space 0x04
 
 nonmatching D_8031C080, 0x60
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031C080
-    /* 8031C080 */ .space 0x60
+    /* 8031C070 */ .space 0x60
 
 nonmatching D_8031C0E0, 0x18
 
 dlabel D_8031C0E0
-    /* 8031C0E0 */ .space 0x18
+    /* 8031C0D0 */ .space 0x18
 
 nonmatching g_pCollisionNormal, 0x64
 
 dlabel g_pCollisionNormal
-    /* 8031C0F8 */ .space 0x64
+    /* 8031C0E8 */ .space 0x64
 
 nonmatching D_8031C15C, 0x38
 
 dlabel D_8031C15C
-    /* 8031C15C */ .space 0x38
+    /* 8031C14C */ .space 0x38
 
 nonmatching D_8031C194, 0x4
 
 dlabel D_8031C194
-    /* 8031C194 */ .space 0x04
+    /* 8031C184 */ .space 0x04
 
 nonmatching g_aVehicles_LapCount, 0x4
 
 dlabel g_aVehicles_LapCount
-    /* 8031C198 */ .space 0x04
+    /* 8031C188 */ .space 0x04
 
 nonmatching D_8031C19C, 0x1C
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031C19C
-    /* 8031C19C */ .space 0x1C
+    /* 8031C18C */ .space 0x1C
 
 nonmatching g_aVehicles_BestLapTime, 0x4
 
 dlabel g_aVehicles_BestLapTime
-    /* 8031C1B8 */ .space 0x04
+    /* 8031C1A8 */ .space 0x04
 
 nonmatching g_aVehicles_BestLapIndex, 0x4
 
 dlabel g_aVehicles_BestLapIndex
-    /* 8031C1BC */ .space 0x04
+    /* 8031C1AC */ .space 0x04
 
 nonmatching g_aVehicles_RaceTime, 0x4
 
 dlabel g_aVehicles_RaceTime
-    /* 8031C1C0 */ .space 0x04
+    /* 8031C1B0 */ .space 0x04
 
 nonmatching g_dwPhysicsVelX, 0x4
 
 dlabel g_dwPhysicsVelX
-    /* 8031C1C4 */ .space 0x04
+    /* 8031C1B4 */ .space 0x04
 
 nonmatching D_8031C1C8, 0x4
 
 dlabel D_8031C1C8
-    /* 8031C1C8 */ .space 0x04
+    /* 8031C1B8 */ .space 0x04
 
 nonmatching g_aVehicles_RacePosition, 0x4
 
 dlabel g_aVehicles_RacePosition
-    /* 8031C1CC */ .space 0x04
+    /* 8031C1BC */ .space 0x04
 
 nonmatching D_8031C1D0, 0x60
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031C1D0
-    /* 8031C1D0 */ .space 0x60
+    /* 8031C1C0 */ .space 0x60
 
 nonmatching g_aVehicles_ParticleSystem, 0x4
 
 dlabel g_aVehicles_ParticleSystem
-    /* 8031C230 */ .space 0x04
+    /* 8031C220 */ .space 0x04
 
 nonmatching D_8031C234, 0xDD4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031C234
-    /* 8031C234 */ .space 0xDD4
+    /* 8031C224 */ .space 0xDD4
 
 nonmatching g_pVehicle0Field1DE8, 0x4
 
 dlabel g_pVehicle0Field1DE8
-    /* 8031D008 */ .space 0x04
+    /* 8031CFF8 */ .space 0x04
 
 nonmatching D_8031D00C, 0x48
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031D00C
-    /* 8031D00C */ .space 0x48
+    /* 8031CFFC */ .space 0x48
 
 nonmatching g_pDemoReplayData, 0x78
 
 dlabel g_pDemoReplayData
-    /* 8031D054 */ .space 0x78
+    /* 8031D044 */ .space 0x78
 
 nonmatching D_8031D0CC, 0x10
 
 dlabel D_8031D0CC
-    /* 8031D0CC */ .space 0x10
+    /* 8031D0BC */ .space 0x10
 
 nonmatching D_8031D0DC, 0x10
 
 dlabel D_8031D0DC
-    /* 8031D0DC */ .space 0x10
+    /* 8031D0CC */ .space 0x10
 
 nonmatching D_8031D0EC, 0x10
 
 dlabel D_8031D0EC
-    /* 8031D0EC */ .space 0x10
+    /* 8031D0DC */ .space 0x10
 
 nonmatching D_8031D0FC, 0x4
 
 dlabel D_8031D0FC
-    /* 8031D0FC */ .space 0x04
+    /* 8031D0EC */ .space 0x04
 
 nonmatching g_fLightUpY, 0x4
 
 dlabel g_fLightUpY
-    /* 8031D100 */ .space 0x04
+    /* 8031D0F0 */ .space 0x04
 
 nonmatching g_fLightUpZ, 0x4
 
 dlabel g_fLightUpZ
-    /* 8031D104 */ .space 0x04
+    /* 8031D0F4 */ .space 0x04
 
 nonmatching D_8031D108, 0x8
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031D108
-    /* 8031D108 */ .space 0x08
+    /* 8031D0F8 */ .space 0x08
 
 nonmatching g_fLightScaleY, 0x4
 
 dlabel g_fLightScaleY
-    /* 8031D110 */ .space 0x04
+    /* 8031D100 */ .space 0x04
 
 nonmatching g_fLightScaleZ, 0x4
 
 dlabel g_fLightScaleZ
-    /* 8031D114 */ .space 0x04
+    /* 8031D104 */ .space 0x04
 
 nonmatching D_8031D118, 0xC8
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031D118
-    /* 8031D118 */ .space 0xC8
+    /* 8031D108 */ .space 0xC8
 
 nonmatching g_awLapTimestamps, 0x30
 
 dlabel g_awLapTimestamps
-    /* 8031D1E0 */ .space 0x30
+    /* 8031D1D0 */ .space 0x30
 
 nonmatching D_8031D210, 0x54
 
 dlabel D_8031D210
-    /* 8031D210 */ .space 0x54
+    /* 8031D200 */ .space 0x54
 
 nonmatching g_dwWheelPosRearL, 0x4
 
 dlabel g_dwWheelPosRearL
-    /* 8031D264 */ .space 0x04
+    /* 8031D254 */ .space 0x04
 
 nonmatching D_8031D268, 0x4
 
 dlabel D_8031D268
-    /* 8031D268 */ .space 0x04
+    /* 8031D258 */ .space 0x04
 
 nonmatching D_8031D26C, 0x8
 
 dlabel D_8031D26C
-    /* 8031D26C */ .space 0x08
+    /* 8031D25C */ .space 0x08
 
 nonmatching D_8031D274, 0xC
 
 dlabel D_8031D274
-    /* 8031D274 */ .space 0x0C
+    /* 8031D264 */ .space 0x0C
 
 nonmatching g_bWheelOnGround0, 0x1
 
 dlabel g_bWheelOnGround0
-    /* 8031D280 */ .space 0x01
+    /* 8031D270 */ .space 0x01
 
 nonmatching g_bWheelOnGround1, 0x1
 
 dlabel g_bWheelOnGround1
-    /* 8031D281 */ .space 0x01
+    /* 8031D271 */ .space 0x01
 
 nonmatching g_bWheelOnGround2, 0x1
 
 dlabel g_bWheelOnGround2
-    /* 8031D282 */ .space 0x01
+    /* 8031D272 */ .space 0x01
 
 nonmatching g_bWheelOnGround3, 0x1
 
 dlabel g_bWheelOnGround3
-    /* 8031D283 */ .space 0x01
+    /* 8031D273 */ .space 0x01
 
 nonmatching D_8031D284, 0x4
 
 dlabel D_8031D284
-    /* 8031D284 */ .space 0x04
+    /* 8031D274 */ .space 0x04
 
 nonmatching g_dwSuspensionTravel0, 0x4
 
 dlabel g_dwSuspensionTravel0
-    /* 8031D288 */ .space 0x04
+    /* 8031D278 */ .space 0x04
 
 nonmatching D_8031D28C, 0xC
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031D28C
-    /* 8031D28C */ .space 0x0C
+    /* 8031D27C */ .space 0x0C
 
 nonmatching g_dwSuspensionTravel1, 0x4
 
 dlabel g_dwSuspensionTravel1
-    /* 8031D298 */ .space 0x04
+    /* 8031D288 */ .space 0x04
 
 nonmatching D_8031D29C, 0x14
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031D29C
-    /* 8031D29C */ .space 0x14
+    /* 8031D28C */ .space 0x14
 
 nonmatching g_flSteeringAngle, 0x4
 
 dlabel g_flSteeringAngle
-    /* 8031D2B0 */ .space 0x04
+    /* 8031D2A0 */ .space 0x04
 
 nonmatching g_dwSteeringLock, 0x4
 
 dlabel g_dwSteeringLock
-    /* 8031D2B4 */ .space 0x04
+    /* 8031D2A4 */ .space 0x04
 
 nonmatching g_dwThrottleInput, 0x4
 
 dlabel g_dwThrottleInput
-    /* 8031D2B8 */ .space 0x04
+    /* 8031D2A8 */ .space 0x04
 
 nonmatching D_8031D2BC, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031D2BC
-    /* 8031D2BC */ .space 0x04
+    /* 8031D2AC */ .space 0x04
 
 nonmatching g_dwBrakeInput, 0x4
 
 dlabel g_dwBrakeInput
-    /* 8031D2C0 */ .space 0x04
+    /* 8031D2B0 */ .space 0x04
 
 nonmatching g_flSpeedKmh, 0x4
 
 dlabel g_flSpeedKmh
-    /* 8031D2C4 */ .space 0x04
+    /* 8031D2B4 */ .space 0x04
 
 nonmatching g_dwGearCurrent, 0x4
 
 dlabel g_dwGearCurrent
-    /* 8031D2C8 */ .space 0x04
+    /* 8031D2B8 */ .space 0x04
 
 nonmatching D_8031D2CC, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031D2CC
-    /* 8031D2CC */ .space 0x04
+    /* 8031D2BC */ .space 0x04
 
 nonmatching g_dwRpmCurrent, 0x4
 
 dlabel g_dwRpmCurrent
-    /* 8031D2D0 */ .space 0x04
+    /* 8031D2C0 */ .space 0x04
 
 nonmatching g_dwRpmRedline, 0x4
 
 dlabel g_dwRpmRedline
-    /* 8031D2D4 */ .space 0x04
+    /* 8031D2C4 */ .space 0x04
 
 nonmatching g_flEngineTorque, 0x4
 
 dlabel g_flEngineTorque
-    /* 8031D2D8 */ .space 0x04
+    /* 8031D2C8 */ .space 0x04
 
 nonmatching D_8031D2DC, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031D2DC
-    /* 8031D2DC */ .space 0x04
+    /* 8031D2CC */ .space 0x04
 
 nonmatching g_dwDriveMode, 0x4
 
 dlabel g_dwDriveMode
-    /* 8031D2E0 */ .space 0x04
+    /* 8031D2D0 */ .space 0x04
 
 nonmatching g_dwTurboBoost, 0x4
 
 dlabel g_dwTurboBoost
-    /* 8031D2E4 */ .space 0x04
+    /* 8031D2D4 */ .space 0x04
 
 nonmatching g_dwVehicleFlags, 0x4
 
 dlabel g_dwVehicleFlags
-    /* 8031D2E8 */ .space 0x04
+    /* 8031D2D8 */ .space 0x04
 
 nonmatching D_8031D2EC, 0xE20
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031D2EC
-    /* 8031D2EC */ .space 0xE20
+    /* 8031D2DC */ .space 0xE20
 
 nonmatching g_aSeasonDataCopy, 0x4
 
 dlabel g_aSeasonDataCopy
-    /* 8031E10C */ .space 0x04
+    /* 8031E0FC */ .space 0x04
 
 nonmatching g_bHeadlight0, 0x4
 
 dlabel g_bHeadlight0
-    /* 8031E110 */ .space 0x04
+    /* 8031E100 */ .space 0x04
 
 nonmatching g_bHeadlight1, 0x4
 
 dlabel g_bHeadlight1
-    /* 8031E114 */ .space 0x04
+    /* 8031E104 */ .space 0x04
 
 nonmatching g_bBrakeLight, 0x4
 
 dlabel g_bBrakeLight
-    /* 8031E118 */ .space 0x04
+    /* 8031E108 */ .space 0x04
 
 nonmatching g_bReverseLight, 0x6C
 
 dlabel g_bReverseLight
-    /* 8031E11C */ .space 0x6C
+    /* 8031E10C */ .space 0x6C
 
 nonmatching g_bHornActive, 0xA0
 
 dlabel g_bHornActive
-    /* 8031E188 */ .space 0xA0
+    /* 8031E178 */ .space 0xA0
 
 nonmatching g_bSirenActive, 0xC
 
 dlabel g_bSirenActive
-    /* 8031E228 */ .space 0x0C
+    /* 8031E218 */ .space 0x0C
 
 nonmatching D_8031E234, 0x14
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031E234
-    /* 8031E234 */ .space 0x14
+    /* 8031E224 */ .space 0x14
 
 nonmatching g_dwHeadlightColor, 0x4
 
 dlabel g_dwHeadlightColor
-    /* 8031E248 */ .space 0x04
+    /* 8031E238 */ .space 0x04
 
 nonmatching g_dwTailLightColor, 0x4
 
 dlabel g_dwTailLightColor
-    /* 8031E24C */ .space 0x04
+    /* 8031E23C */ .space 0x04
 
 nonmatching g_dwLightIntensity, 0x4
 
 dlabel g_dwLightIntensity
-    /* 8031E250 */ .space 0x04
+    /* 8031E240 */ .space 0x04
 
 nonmatching D_8031E254, 0x8
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031E254
-    /* 8031E254 */ .space 0x08
+    /* 8031E244 */ .space 0x08
 
 nonmatching g_dwLightReserved1, 0x4
 
 dlabel g_dwLightReserved1
-    /* 8031E25C */ .space 0x04
+    /* 8031E24C */ .space 0x04
 
 nonmatching g_dwLightReserved2, 0x4
 
 dlabel g_dwLightReserved2
-    /* 8031E260 */ .space 0x04
+    /* 8031E250 */ .space 0x04
 
 nonmatching g_dwLightReserved3, 0x4
 
 dlabel g_dwLightReserved3
-    /* 8031E264 */ .space 0x04
+    /* 8031E254 */ .space 0x04
 
 nonmatching D_8031E268, 0x58
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031E268
-    /* 8031E268 */ .space 0x58
+    /* 8031E258 */ .space 0x58
 
 nonmatching g_aVehicles1_ParticleSystem, 0x4
 
 dlabel g_aVehicles1_ParticleSystem
-    /* 8031E2C0 */ .space 0x04
+    /* 8031E2B0 */ .space 0x04
 
 nonmatching D_8031E2C4, 0xDD4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031E2C4
-    /* 8031E2C4 */ .space 0xDD4
+    /* 8031E2B4 */ .space 0xDD4
 
 nonmatching g_aVehicles1_pActiveCamera, 0x4
 
 dlabel g_aVehicles1_pActiveCamera
-    /* 8031F098 */ .space 0x04
+    /* 8031F088 */ .space 0x04
 
 nonmatching D_8031F09C, 0xC0
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031F09C
-    /* 8031F09C */ .space 0xC0
+    /* 8031F08C */ .space 0xC0
 
 nonmatching D_8031F15C, 0x154
 
 dlabel D_8031F15C
-    /* 8031F15C */ .space 0x154
+    /* 8031F14C */ .space 0x154
 
 nonmatching g_dwVehicle1Field2000, 0x4
 
 dlabel g_dwVehicle1Field2000
-    /* 8031F2B0 */ .space 0x04
+    /* 8031F2A0 */ .space 0x04
 
 nonmatching D_8031F2B4, 0x40
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031F2B4
-    /* 8031F2B4 */ .space 0x40
+    /* 8031F2A4 */ .space 0x40
 
 nonmatching g_dwMenuSelection, 0x4
 
 dlabel g_dwMenuSelection
-    /* 8031F2F4 */ .space 0x04
+    /* 8031F2E4 */ .space 0x04
 
 nonmatching D_8031F2F8, 0x14
 
 dlabel D_8031F2F8
-    /* 8031F2F8 */ .space 0x14
+    /* 8031F2E8 */ .space 0x14
 
 nonmatching g_dwMenuScroll, 0x4
 
 dlabel g_dwMenuScroll
-    /* 8031F30C */ .space 0x04
+    /* 8031F2FC */ .space 0x04
 
 nonmatching g_bMenuVisible0, 0x1
 
 dlabel g_bMenuVisible0
-    /* 8031F310 */ .space 0x01
+    /* 8031F300 */ .space 0x01
 
 nonmatching g_bMenuVisible1, 0x1
 
 dlabel g_bMenuVisible1
-    /* 8031F311 */ .space 0x01
+    /* 8031F301 */ .space 0x01
 
 nonmatching g_bMenuVisible2, 0x1
 
 dlabel g_bMenuVisible2
-    /* 8031F312 */ .space 0x01
+    /* 8031F302 */ .space 0x01
 
 nonmatching g_bMenuVisible3, 0x11
 
 dlabel g_bMenuVisible3
-    /* 8031F313 */ .space 0x11
+    /* 8031F303 */ .space 0x11
 
 nonmatching g_dwInflateHeapSize, 0x4
 
 dlabel g_dwInflateHeapSize
-    /* 8031F324 */ .space 0x04
+    /* 8031F314 */ .space 0x04
 
 nonmatching g_dwMenuState, 0x4
 
 dlabel g_dwMenuState
-    /* 8031F328 */ .space 0x04
+    /* 8031F318 */ .space 0x04
 
 nonmatching D_8031F32C, 0x14
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031F32C
-    /* 8031F32C */ .space 0x14
+    /* 8031F31C */ .space 0x14
 
 nonmatching g_abParticleSystemScanRef, 0x780
 
 dlabel g_abParticleSystemScanRef
-    /* 8031F340 */ .space 0x780
+    /* 8031F330 */ .space 0x780
 
 nonmatching g_abParticleEffectsHiBase, 0x18F4
 
 dlabel g_abParticleEffectsHiBase
-    /* 8031FAC0 */ .space 0x18F4
+    /* 8031FAB0 */ .space 0x18F4
 
 nonmatching g_dwHudVisibility, 0x4
 
 dlabel g_dwHudVisibility
-    /* 803213B4 */ .space 0x04
+    /* 803213A4 */ .space 0x04
 
 nonmatching D_803213B8, 0x2098
 
 /* Automatically generated and unreferenced pad */
 dlabel D_803213B8
-    /* 803213B8 */ .space 0x2098
+    /* 803213A8 */ .space 0x2098
 
 nonmatching D_80323450, 0x10
 
 dlabel D_80323450
-    /* 80323450 */ .space 0x10
+    /* 80323440 */ .space 0x10
 
 nonmatching g_aRacerSlots, 0x960
 
 dlabel g_aRacerSlots
-    /* 80323460 */ .space 0x960
+    /* 80323450 */ .space 0x960
 
 nonmatching g_aSeasonSaveBuffers, 0x240
 
 dlabel g_aSeasonSaveBuffers
-    /* 80323DC0 */ .space 0x240
+    /* 80323DB0 */ .space 0x240
 
 nonmatching D_80324000, 0x10
 
 dlabel D_80324000
-    /* 80324000 */ .space 0x10
+    /* 80323FF0 */ .space 0x10
 
 nonmatching g_aInflateHeapBuffer, 0x186A0
 
 dlabel g_aInflateHeapBuffer
-    /* 80324010 */ .space 0x186A0
+    /* 80324000 */ .space 0x186A0
 
 nonmatching g_aInflateWindowBuffer, 0x11970
 
 dlabel g_aInflateWindowBuffer
-    /* 8033C6B0 */ .space 0x11970
+    /* 8033C6A0 */ .space 0x11970
 
 nonmatching D_8034E020, 0x10
 
 dlabel D_8034E020
-    /* 8034E020 */ .space 0x10
+    /* 8034E010 */ .space 0x10
 
 nonmatching g_abPausedClockState, 0x30
 
 dlabel g_abPausedClockState
-    /* 8034E030 */ .space 0x30
+    /* 8034E020 */ .space 0x30
 
 nonmatching D_8034E060, 0x10
 
 dlabel D_8034E060
-    /* 8034E060 */ .space 0x10
+    /* 8034E050 */ .space 0x10
 
 nonmatching g_adwVisibleGridRowMinCol, 0x100
 
 dlabel g_adwVisibleGridRowMinCol
-    /* 8034E070 */ .space 0x100
+    /* 8034E060 */ .space 0x100
 
 nonmatching g_adwVisibleGridRowMaxCol, 0x10
 
 dlabel g_adwVisibleGridRowMaxCol
-    /* 8034E170 */ .space 0x10
+    /* 8034E160 */ .space 0x10
 
 nonmatching g_aShadowSpanBuffer, 0xE0
 
 dlabel g_aShadowSpanBuffer
-    /* 8034E180 */ .space 0xE0
+    /* 8034E170 */ .space 0xE0
 
 nonmatching D_8034E260, 0x10
 
 dlabel D_8034E260
-    /* 8034E260 */ .space 0x10
+    /* 8034E250 */ .space 0x10
 
 nonmatching g_adwVisibleGridColMinRow, 0x100
 
 dlabel g_adwVisibleGridColMinRow
-    /* 8034E270 */ .space 0x100
+    /* 8034E260 */ .space 0x100
 
 nonmatching g_adwVisibleGridColMaxRow, 0xFC
 
 dlabel g_adwVisibleGridColMaxRow
-    /* 8034E370 */ .space 0xFC
+    /* 8034E360 */ .space 0xFC
 
 nonmatching g_dwRaceBestTime, 0x4
 
 dlabel g_dwRaceBestTime
-    /* 8034E46C */ .space 0x04
+    /* 8034E45C */ .space 0x04
 
 nonmatching g_aTimingMarkers, 0x1650
 
 dlabel g_aTimingMarkers
-    /* 8034E470 */ .space 0x1650
+    /* 8034E460 */ .space 0x1650
 
 nonmatching g_abVehicleModelHiBase, 0x19A0
 
 dlabel g_abVehicleModelHiBase
-    /* 8034FAC0 */ .space 0x19A0
+    /* 8034FAB0 */ .space 0x19A0
 
 nonmatching D_80351460, 0x10
 
 dlabel D_80351460
-    /* 80351460 */ .space 0x10
+    /* 80351450 */ .space 0x10
 
 nonmatching g_aTimingMarkerCounts, 0x18
 
 dlabel g_aTimingMarkerCounts
-    /* 80351470 */ .space 0x18
+    /* 80351460 */ .space 0x18
 
 nonmatching g_dwTimingBarScale, 0x4
 
 dlabel g_dwTimingBarScale
-    /* 80351488 */ .space 0x04
+    /* 80351478 */ .space 0x04
 
 nonmatching D_8035148C, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8035148C
-    /* 8035148C */ .space 0x04
+    /* 8035147C */ .space 0x04
 
 nonmatching g_nTextDrawX, 0x4
 
 dlabel g_nTextDrawX
-    /* 80351490 */ .space 0x04
+    /* 80351480 */ .space 0x04
 
 nonmatching g_nTextDrawY, 0x4
 
 dlabel g_nTextDrawY
-    /* 80351494 */ .space 0x04
+    /* 80351484 */ .space 0x04
 
 nonmatching g_nFontSize, 0x4
 
 dlabel g_nFontSize
-    /* 80351498 */ .space 0x04
+    /* 80351488 */ .space 0x04
 
 nonmatching D_8035149C, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8035149C
-    /* 8035149C */ .space 0x04
+    /* 8035148C */ .space 0x04
 
 nonmatching g_CarStageMtx, 0x30
 
 dlabel g_CarStageMtx
-    /* 803514A0 */ .space 0x30
+    /* 80351490 */ .space 0x30
 
 nonmatching D_803514D0, 0x10
 
 dlabel D_803514D0
-    /* 803514D0 */ .space 0x10
+    /* 803514C0 */ .space 0x10
 
 nonmatching g_aCarStageDiscVertices, 0x2
 
 dlabel g_aCarStageDiscVertices
-    /* 803514E0 */ .space 0x02
+    /* 803514D0 */ .space 0x02
 
 nonmatching g_wReplaySpeedY, 0x2
 
 dlabel g_wReplaySpeedY
-    /* 803514E2 */ .space 0x02
+    /* 803514D2 */ .space 0x02
 
 nonmatching g_wReplaySpeedZ, 0x2
 
 dlabel g_wReplaySpeedZ
-    /* 803514E4 */ .space 0x02
+    /* 803514D4 */ .space 0x02
 
 nonmatching D_803514E6, 0x6
 
 /* Automatically generated and unreferenced pad */
 dlabel D_803514E6
-    /* 803514E6 */ .space 0x06
+    /* 803514D6 */ .space 0x06
 
 nonmatching g_bReplayPlaying, 0x1
 
 dlabel g_bReplayPlaying
-    /* 803514EC */ .space 0x01
+    /* 803514DC */ .space 0x01
 
 nonmatching g_bReplayPaused, 0x1
 
 dlabel g_bReplayPaused
-    /* 803514ED */ .space 0x01
+    /* 803514DD */ .space 0x01
 
 nonmatching g_bReplayLoop, 0x1
 
 dlabel g_bReplayLoop
-    /* 803514EE */ .space 0x01
+    /* 803514DE */ .space 0x01
 
 nonmatching g_bReplayRecord, 0x1D1
 
 dlabel g_bReplayRecord
-    /* 803514EF */ .space 0x1D1
+    /* 803514DF */ .space 0x1D1
 
 nonmatching D_803516C0, 0x10
 
 dlabel D_803516C0
-    /* 803516C0 */ .space 0x10
+    /* 803516B0 */ .space 0x10
 
 nonmatching g_aVehicleLights, 0x50
 
 dlabel g_aVehicleLights
-    /* 803516D0 */ .space 0x50
+    /* 803516C0 */ .space 0x50
 
 nonmatching D_80351720, 0x10
 
 dlabel D_80351720
-    /* 80351720 */ .space 0x10
+    /* 80351710 */ .space 0x10
 
 nonmatching g_adwVehicleVisible, 0x4
 
 dlabel g_adwVehicleVisible
-    /* 80351730 */ .space 0x04
+    /* 80351720 */ .space 0x04
 
 nonmatching g_dwReplayEndFrame, 0x4
 
 dlabel g_dwReplayEndFrame
-    /* 80351734 */ .space 0x04
+    /* 80351724 */ .space 0x04
 
 nonmatching D_80351738, 0x8
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80351738
-    /* 80351738 */ .space 0x08
+    /* 80351728 */ .space 0x08
 
 nonmatching g_adwVehicleInViewRange, 0x10
 
 dlabel g_adwVehicleInViewRange
-    /* 80351740 */ .space 0x10
+    /* 80351730 */ .space 0x10
 
 nonmatching g_anVehicleLod, 0x10
 
 dlabel g_anVehicleLod
-    /* 80351750 */ .space 0x10
+    /* 80351740 */ .space 0x10
 
 nonmatching g_apVehicleModelMatrix, 0x10
 
 dlabel g_apVehicleModelMatrix
-    /* 80351760 */ .space 0x10
+    /* 80351750 */ .space 0x10
 
 nonmatching g_apVehicleLightMatrix, 0x10
 
 dlabel g_apVehicleLightMatrix
-    /* 80351770 */ .space 0x10
+    /* 80351760 */ .space 0x10
 
 nonmatching g_mtxVehicleModelScaled, 0x30
 
 dlabel g_mtxVehicleModelScaled
-    /* 80351780 */ .space 0x30
+    /* 80351770 */ .space 0x30
 
 nonmatching D_803517B0, 0x8
 
 dlabel D_803517B0
-    /* 803517B0 */ .space 0x08
+    /* 803517A0 */ .space 0x08
 
 nonmatching D_803517B8, 0x8
 
 dlabel D_803517B8
-    /* 803517B8 */ .space 0x08
+    /* 803517A8 */ .space 0x08
 
 nonmatching g_dwVehicleFogAlpha, 0x4
 
 dlabel g_dwVehicleFogAlpha
-    /* 803517C0 */ .space 0x04
+    /* 803517B0 */ .space 0x04
 
 nonmatching D_803517C4, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_803517C4
-    /* 803517C4 */ .space 0x04
+    /* 803517B4 */ .space 0x04
 
 nonmatching g_vecVehicleLightDir, 0x4
 
 dlabel g_vecVehicleLightDir
-    /* 803517C8 */ .space 0x04
+    /* 803517B8 */ .space 0x04
 
 nonmatching g_fVehicleLightDirY, 0x4
 
 dlabel g_fVehicleLightDirY
-    /* 803517CC */ .space 0x04
+    /* 803517BC */ .space 0x04
 
 nonmatching g_fVehicleLightDirZ, 0x4
 
 dlabel g_fVehicleLightDirZ
-    /* 803517D0 */ .space 0x04
+    /* 803517C0 */ .space 0x04
 
 nonmatching D_803517D4, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_803517D4
-    /* 803517D4 */ .space 0x04
+    /* 803517C4 */ .space 0x04
 
 nonmatching g_vecVehicleHiliteDir, 0x4
 
 dlabel g_vecVehicleHiliteDir
-    /* 803517D8 */ .space 0x04
+    /* 803517C8 */ .space 0x04
 
 nonmatching g_fVehicleLightDirBlendY, 0x4
 
 dlabel g_fVehicleLightDirBlendY
-    /* 803517DC */ .space 0x04
+    /* 803517CC */ .space 0x04
 
 nonmatching g_fVehicleLightDirBlendZ, 0x4
 
 dlabel g_fVehicleLightDirBlendZ
-    /* 803517E0 */ .space 0x04
+    /* 803517D0 */ .space 0x04
 
 nonmatching D_803517E4, 0x4C
 
 /* Automatically generated and unreferenced pad */
 dlabel D_803517E4
-    /* 803517E4 */ .space 0x4C
+    /* 803517D4 */ .space 0x4C
 
 nonmatching D_80351830, 0x10
 
 dlabel D_80351830
-    /* 80351830 */ .space 0x10
+    /* 80351820 */ .space 0x10
 
 nonmatching g_abInstanceVisibilityMask, 0x7F0
 
 dlabel g_abInstanceVisibilityMask
-    /* 80351840 */ .space 0x7F0
+    /* 80351830 */ .space 0x7F0
 
 nonmatching D_80352030, 0x10
 
 dlabel D_80352030
-    /* 80352030 */ .space 0x10
+    /* 80352020 */ .space 0x10
 
 nonmatching g_awVisibleInstanceList, 0x2
 
 dlabel g_awVisibleInstanceList
-    /* 80352040 */ .space 0x02
+    /* 80352030 */ .space 0x02
 
 nonmatching g_wSpeedometerDigit1, 0x2
 
 dlabel g_wSpeedometerDigit1
-    /* 80352042 */ .space 0x02
+    /* 80352032 */ .space 0x02
 
 nonmatching D_80352044, 0xFEC
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80352044
-    /* 80352044 */ .space 0xFEC
+    /* 80352034 */ .space 0xFEC
 
 nonmatching D_80353030, 0x10
 
 dlabel D_80353030
-    /* 80353030 */ .space 0x10
+    /* 80353020 */ .space 0x10
 
 nonmatching g_aShadowDisplayLists, 0x1F30
 
 dlabel g_aShadowDisplayLists
-    /* 80353040 */ .space 0x1F30
+    /* 80353030 */ .space 0x1F30
 
 nonmatching D_80354F70, 0x10
 
 dlabel D_80354F70
-    /* 80354F70 */ .space 0x10
+    /* 80354F60 */ .space 0x10
 
 nonmatching g_aShadowVertices, 0x7CF0
 
 dlabel g_aShadowVertices
-    /* 80354F80 */ .space 0x7CF0
+    /* 80354F70 */ .space 0x7CF0
 
 nonmatching D_8035CC70, 0x4
 
 dlabel D_8035CC70
-    /* 8035CC70 */ .space 0x04
+    /* 8035CC60 */ .space 0x04
 
 nonmatching D_8035CC74, 0xC
 
 dlabel D_8035CC74
-    /* 8035CC74 */ .space 0x0C
+    /* 8035CC64 */ .space 0x0C
 
 nonmatching g_vShadowForward, 0x4
 
 dlabel g_vShadowForward
-    /* 8035CC80 */ .space 0x04
+    /* 8035CC70 */ .space 0x04
 
 nonmatching D_8035CC84, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8035CC84
-    /* 8035CC84 */ .space 0x04
+    /* 8035CC74 */ .space 0x04
 
 nonmatching g_fTrackInstanceDirZ, 0x4
 
 dlabel g_fTrackInstanceDirZ
-    /* 8035CC88 */ .space 0x04
+    /* 8035CC78 */ .space 0x04
 
 nonmatching D_8035CC8C, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8035CC8C
-    /* 8035CC8C */ .space 0x04
+    /* 8035CC7C */ .space 0x04
 
 nonmatching g_aVisibleCellTuples, 0x1
 
 dlabel g_aVisibleCellTuples
-    /* 8035CC90 */ .space 0x01
+    /* 8035CC80 */ .space 0x01
 
 nonmatching g_bOpponentActive1, 0x1
 
 dlabel g_bOpponentActive1
-    /* 8035CC91 */ .space 0x01
+    /* 8035CC81 */ .space 0x01
 
 nonmatching g_wOpponentLap0, 0x2
 
 dlabel g_wOpponentLap0
-    /* 8035CC92 */ .space 0x02
+    /* 8035CC82 */ .space 0x02
 
 nonmatching g_bOpponentActive2, 0x1
 
 dlabel g_bOpponentActive2
-    /* 8035CC94 */ .space 0x01
+    /* 8035CC84 */ .space 0x01
 
 nonmatching g_bOpponentActive3, 0x1
 
 dlabel g_bOpponentActive3
-    /* 8035CC95 */ .space 0x01
+    /* 8035CC85 */ .space 0x01
 
 nonmatching g_wOpponentLap1, 0x2
 
 dlabel g_wOpponentLap1
-    /* 8035CC96 */ .space 0x02
+    /* 8035CC86 */ .space 0x02
 
 nonmatching g_bOpponentFinished0, 0x2
 
 dlabel g_bOpponentFinished0
-    /* 8035CC98 */ .space 0x02
+    /* 8035CC88 */ .space 0x02
 
 nonmatching g_wOpponentLap2, 0x2
 
 dlabel g_wOpponentLap2
-    /* 8035CC9A */ .space 0x02
+    /* 8035CC8A */ .space 0x02
 
 nonmatching D_8035CC9C, 0x2EC
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8035CC9C
-    /* 8035CC9C */ .space 0x2EC
+    /* 8035CC8C */ .space 0x2EC
 
 nonmatching D_8035CF88, 0xC
 
 dlabel D_8035CF88
-    /* 8035CF88 */ .space 0x0C
+    /* 8035CF78 */ .space 0x0C
 
 nonmatching g_dwOpponentSpeed0, 0x4
 
 dlabel g_dwOpponentSpeed0
-    /* 8035CF94 */ .space 0x04
+    /* 8035CF84 */ .space 0x04
 
 nonmatching g_afNearbyVehicleDot, 0x4
 
 dlabel g_afNearbyVehicleDot
-    /* 8035CF98 */ .space 0x04
+    /* 8035CF88 */ .space 0x04
 
 nonmatching D_8035CF9C, 0x8
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8035CF9C
-    /* 8035CF9C */ .space 0x08
+    /* 8035CF8C */ .space 0x08
 
 nonmatching g_dwOpponentRank0, 0x4
 
 dlabel g_dwOpponentRank0
-    /* 8035CFA4 */ .space 0x04
+    /* 8035CF94 */ .space 0x04
 
 nonmatching g_anNearbyVehicleIdx, 0x4
 
 dlabel g_anNearbyVehicleIdx
-    /* 8035CFA8 */ .space 0x04
+    /* 8035CF98 */ .space 0x04
 
 nonmatching g_dwOpponentRank2, 0x4
 
 dlabel g_dwOpponentRank2
-    /* 8035CFAC */ .space 0x04
+    /* 8035CF9C */ .space 0x04
 
 nonmatching g_dwOpponentRank3, 0x4
 
 dlabel g_dwOpponentRank3
-    /* 8035CFB0 */ .space 0x04
+    /* 8035CFA0 */ .space 0x04
 
 nonmatching D_8035CFB4, 0x8
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8035CFB4
-    /* 8035CFB4 */ .space 0x08
+    /* 8035CFA4 */ .space 0x08
 
 nonmatching g_nNearbyVehicleCount, 0x4
 
 dlabel g_nNearbyVehicleCount
-    /* 8035CFBC */ .space 0x04
+    /* 8035CFAC */ .space 0x04
 
 nonmatching g_vVehicleVisibilityDelta, 0xC
 
 dlabel g_vVehicleVisibilityDelta
-    /* 8035CFC0 */ .space 0x0C
+    /* 8035CFB0 */ .space 0x0C
 
 nonmatching D_8035CFCC, 0x4
 
 dlabel D_8035CFCC
-    /* 8035CFCC */ .space 0x04
+    /* 8035CFBC */ .space 0x04
 
 nonmatching g_vTrackLightDirection, 0x4
 
 dlabel g_vTrackLightDirection
-    /* 8035CFD0 */ .space 0x04
+    /* 8035CFC0 */ .space 0x04
 
 nonmatching g_fTrackLightDirY, 0x4
 
 dlabel g_fTrackLightDirY
-    /* 8035CFD4 */ .space 0x04
+    /* 8035CFC4 */ .space 0x04
 
 nonmatching g_fTrackLightDirZ, 0x4
 
 dlabel g_fTrackLightDirZ
-    /* 8035CFD8 */ .space 0x04
+    /* 8035CFC8 */ .space 0x04
 
 nonmatching g_fViewMatrixMaxAbs, 0x4
 
 dlabel g_fViewMatrixMaxAbs
-    /* 8035CFDC */ .space 0x04
+    /* 8035CFCC */ .space 0x04
 
 nonmatching g_dwInstanceHideFlags, 0x4
 
 dlabel g_dwInstanceHideFlags
-    /* 8035CFE0 */ .space 0x04
+    /* 8035CFD0 */ .space 0x04
 
 nonmatching D_8035CFE4, 0xC
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8035CFE4
-    /* 8035CFE4 */ .space 0x0C
+    /* 8035CFD4 */ .space 0x0C
 
 nonmatching g_aabDashboardPixels, 0xFF0
 
 dlabel g_aabDashboardPixels
-    /* 8035CFF0 */ .space 0xFF0
+    /* 8035CFE0 */ .space 0xFF0
 
 nonmatching D_8035DFE0, 0x1000
 
 dlabel D_8035DFE0
-    /* 8035DFE0 */ .space 0x1000
+    /* 8035DFD0 */ .space 0x1000
 
 nonmatching D_8035EFE0, 0x10
 
 dlabel D_8035EFE0
-    /* 8035EFE0 */ .space 0x10
+    /* 8035EFD0 */ .space 0x10
 
 nonmatching g_aabDashboardGearPixels, 0xFF0
 
 dlabel g_aabDashboardGearPixels
-    /* 8035EFF0 */ .space 0xFF0
+    /* 8035EFE0 */ .space 0xFF0
 
 nonmatching D_8035FFE0, 0x1000
 
 dlabel D_8035FFE0
-    /* 8035FFE0 */ .space 0x1000
+    /* 8035FFD0 */ .space 0x1000
 
 nonmatching D_80360FE0, 0x10
 
 dlabel D_80360FE0
-    /* 80360FE0 */ .space 0x10
+    /* 80360FD0 */ .space 0x10
 
 nonmatching g_aawDashboardPalettes, 0x3F0
 
 dlabel g_aawDashboardPalettes
-    /* 80360FF0 */ .space 0x3F0
+    /* 80360FE0 */ .space 0x3F0
 
 nonmatching D_803613E0, 0x10
 
 dlabel D_803613E0
-    /* 803613E0 */ .space 0x10
+    /* 803613D0 */ .space 0x10
 
 nonmatching g_awDashboardBarPalette, 0x1F0
 
 dlabel g_awDashboardBarPalette
-    /* 803613F0 */ .space 0x1F0
+    /* 803613E0 */ .space 0x1F0
 
 nonmatching D_803615E0, 0x10
 
 dlabel D_803615E0
-    /* 803615E0 */ .space 0x10
+    /* 803615D0 */ .space 0x10
 
 nonmatching g_aGaugeNeedleVerts, 0xF0
 
 dlabel g_aGaugeNeedleVerts
-    /* 803615F0 */ .space 0xF0
+    /* 803615E0 */ .space 0xF0
 
 nonmatching D_803616E0, 0x10
 
 dlabel D_803616E0
-    /* 803616E0 */ .space 0x10
+    /* 803616D0 */ .space 0x10
 
 nonmatching g_szHudSpeedTextBuf, 0x10
 
 dlabel g_szHudSpeedTextBuf
-    /* 803616F0 */ .space 0x10
+    /* 803616E0 */ .space 0x10
 
 nonmatching g_awRainParticlePos, 0x2
 
 dlabel g_awRainParticlePos
-    /* 80361700 */ .space 0x02
+    /* 803616F0 */ .space 0x02
 
 nonmatching D_80361702, 0x1866
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80361702
-    /* 80361702 */ .space 0x1866
+    /* 803616F2 */ .space 0x1866
 
 nonmatching D_80362F68, 0x10
 
 dlabel D_80362F68
-    /* 80362F68 */ .space 0x10
+    /* 80362F58 */ .space 0x10
 
 nonmatching g_avRainPrevCameraPos, 0x4
 
 dlabel g_avRainPrevCameraPos
-    /* 80362F78 */ .space 0x04
+    /* 80362F68 */ .space 0x04
 
 nonmatching D_80362F7C, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80362F7C
-    /* 80362F7C */ .space 0x04
+    /* 80362F6C */ .space 0x04
 
 nonmatching D_80362F80, 0x10
 
 dlabel D_80362F80
-    /* 80362F80 */ .space 0x10
+    /* 80362F70 */ .space 0x10
 
 nonmatching g_vWindVelocity, 0x4
 
 dlabel g_vWindVelocity
-    /* 80362F90 */ .space 0x04
+    /* 80362F80 */ .space 0x04
 
 nonmatching D_80362F94, 0xC
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80362F94
-    /* 80362F94 */ .space 0x0C
+    /* 80362F84 */ .space 0x0C
 
 nonmatching g_avRainVelocity, 0x8
 
 dlabel g_avRainVelocity
-    /* 80362FA0 */ .space 0x08
+    /* 80362F90 */ .space 0x08
 
 nonmatching D_80362FA8, 0x10
 
 dlabel D_80362FA8
-    /* 80362FA8 */ .space 0x10
+    /* 80362F98 */ .space 0x10
 
 nonmatching g_avLightningBolt, 0x4
 
 dlabel g_avLightningBolt
-    /* 80362FB8 */ .space 0x04
+    /* 80362FA8 */ .space 0x04
 
 nonmatching D_80362FBC, 0x1574
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80362FBC
-    /* 80362FBC */ .space 0x1574
+    /* 80362FAC */ .space 0x1574
 
 nonmatching D_80364530, 0x10
 
 dlabel D_80364530
-    /* 80364530 */ .space 0x10
+    /* 80364520 */ .space 0x10
 
 nonmatching g_abPrecipitationTextures, 0x1FF0
 
 dlabel g_abPrecipitationTextures
-    /* 80364540 */ .space 0x1FF0
+    /* 80364530 */ .space 0x1FF0
 
 nonmatching D_80366530, 0x10
 
 dlabel D_80366530
-    /* 80366530 */ .space 0x10
+    /* 80366520 */ .space 0x10
 
 nonmatching g_aParticlePool, 0x2000
 
 dlabel g_aParticlePool
-    /* 80366540 */ .space 0x2000
+    /* 80366530 */ .space 0x2000
 
 nonmatching g_afBillboardMatrix, 0x40
 
 dlabel g_afBillboardMatrix
-    /* 80368540 */ .space 0x40
+    /* 80368530 */ .space 0x40
 
 nonmatching g_pInflateHeapBase, 0x4
 
 dlabel g_pInflateHeapBase
-    /* 80368580 */ .space 0x04
+    /* 80368570 */ .space 0x04
 
 nonmatching g_pInflateHeapEnd, 0x4
 
 dlabel g_pInflateHeapEnd
-    /* 80368584 */ .space 0x04
+    /* 80368574 */ .space 0x04
 
 nonmatching g_inflateAllocator, 0x4
 
 dlabel g_inflateAllocator
-    /* 80368588 */ .space 0x04
+    /* 80368578 */ .space 0x04
 
 nonmatching g_pZlibAllocatorWindow, 0x4
 
 dlabel g_pZlibAllocatorWindow
-    /* 8036858C */ .space 0x04
+    /* 8036857C */ .space 0x04
 
 nonmatching fixed_mem, 0x1080
 
 dlabel fixed_mem
-    /* 80368590 */ .space 0x1080
+    /* 80368580 */ .space 0x1080
 
 nonmatching D_80369610, 0x4
 
 dlabel D_80369610
-    /* 80369610 */ .space 0x04
+    /* 80369600 */ .space 0x04
 
 nonmatching D_80369614, 0x4
 
 dlabel D_80369614
-    /* 80369614 */ .space 0x04
+    /* 80369604 */ .space 0x04
 
 nonmatching D_80369618, 0x4
 
 dlabel D_80369618
-    /* 80369618 */ .space 0x04
+    /* 80369608 */ .space 0x04
 
 nonmatching D_8036961C, 0x4
 
 dlabel D_8036961C
-    /* 8036961C */ .space 0x04
+    /* 8036960C */ .space 0x04
 
 nonmatching fixed_bl, 0x4
 
 dlabel fixed_bl
-    /* 80369620 */ .space 0x04
+    /* 80369610 */ .space 0x04
 
 nonmatching fixed_bd, 0x4
 
 dlabel fixed_bd
-    /* 80369624 */ .space 0x04
+    /* 80369614 */ .space 0x04
 
 nonmatching fixed_tl, 0x4
 
 dlabel fixed_tl
-    /* 80369628 */ .space 0x04
+    /* 80369618 */ .space 0x04
 
 nonmatching fixed_td, 0x4
 
 dlabel fixed_td
-    /* 8036962C */ .space 0x04
+    /* 8036961C */ .space 0x04
 
 nonmatching g_pHeapCurrent, 0x4
 
 dlabel g_pHeapCurrent
-    /* 80369630 */ .space 0x04
+    /* 80369620 */ .space 0x04
 
 nonmatching D_80369634, 0x4
 
 dlabel D_80369634
-    /* 80369634 */ .space 0x04
+    /* 80369624 */ .space 0x04
 
 nonmatching D_80369638, 0x4
 
 dlabel D_80369638
-    /* 80369638 */ .space 0x04
+    /* 80369628 */ .space 0x04
 
 nonmatching D_8036963C, 0x4
 
 dlabel D_8036963C
-    /* 8036963C */ .space 0x04
+    /* 8036962C */ .space 0x04
 
 nonmatching g_nPaintAnchorX, 0x4
 
 dlabel g_nPaintAnchorX
-    /* 80369640 */ .space 0x04
+    /* 80369630 */ .space 0x04
 
 nonmatching g_nPaintAnchorY, 0x4
 
 dlabel g_nPaintAnchorY
-    /* 80369644 */ .space 0x04
+    /* 80369634 */ .space 0x04
 
 nonmatching g_dwLastClickTime, 0x4
 
 dlabel g_dwLastClickTime
-    /* 80369648 */ .space 0x04
+    /* 80369638 */ .space 0x04
 
 nonmatching g_dwAnchorXInitialized, 0x4
 
 dlabel g_dwAnchorXInitialized
-    /* 8036964C */ .space 0x04
+    /* 8036963C */ .space 0x04
 
 nonmatching g_dwAnchorYInitialized, 0x4
 
 dlabel g_dwAnchorYInitialized
-    /* 80369650 */ .space 0x04
+    /* 80369640 */ .space 0x04
 
 nonmatching D_80369654, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80369654
-    /* 80369654 */ .space 0x04
+    /* 80369644 */ .space 0x04
 
 nonmatching g_aPaintToolButtonRects, 0x4
 
 dlabel g_aPaintToolButtonRects
-    /* 80369798 */ .space 0x04
+    /* 80369788 */ .space 0x04
 
 nonmatching D_8036979C, 0xBC
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8036979C
-    /* 8036979C */ .space 0xBC
+    /* 8036978C */ .space 0xBC
 
 nonmatching D_80369858, 0x3
 
 dlabel D_80369858
-    /* 80369858 */ .space 0x03
+    /* 80369848 */ .space 0x03
 
 nonmatching D_8036985B, 0x5
 
 dlabel D_8036985B
-    /* 8036985B */ .space 0x05
+    /* 8036984B */ .space 0x05
 
 nonmatching D_80369860, 0x8
 
 dlabel D_80369860
-    /* 80369860 */ .space 0x08
+    /* 80369850 */ .space 0x08
 
 nonmatching g_abSavedSwatchColor, 0x3
 
 dlabel g_abSavedSwatchColor
-    /* 80369868 */ .space 0x03
+    /* 80369858 */ .space 0x03
 
 nonmatching g_bMirrorTargetPanel, 0x5
 
 dlabel g_bMirrorTargetPanel
-    /* 8036986B */ .space 0x05
+    /* 8036985B */ .space 0x05
 
 nonmatching g_aDecalSlotRects, 0x90
 
 dlabel g_aDecalSlotRects
-    /* 80369870 */ .space 0x90
+    /* 80369860 */ .space 0x90
 
 nonmatching D_80369900, 0x4
 
 dlabel D_80369900
-    /* 80369900 */ .space 0x04
+    /* 803698F0 */ .space 0x04
 
 nonmatching D_80369904, 0x4
 
 dlabel D_80369904
-    /* 80369904 */ .space 0x04
+    /* 803698F4 */ .space 0x04
 
 nonmatching D_80369908, 0x4
 
 dlabel D_80369908
-    /* 80369908 */ .space 0x04
+    /* 803698F8 */ .space 0x04
 
 nonmatching D_8036990C, 0x4
 
 dlabel D_8036990C
-    /* 8036990C */ .space 0x04
+    /* 803698FC */ .space 0x04
 
 nonmatching g_bPakRumbleSwapped, 0x1
 
 dlabel g_bPakRumbleSwapped
-    /* 80369910 */ .space 0x01
+    /* 80369900 */ .space 0x01
 
 nonmatching g_bPakRetryNewPak, 0x1
 
 dlabel g_bPakRetryNewPak
-    /* 80369911 */ .space 0x01
+    /* 80369901 */ .space 0x01
 
 nonmatching D_80369912, 0x2
 
 dlabel D_80369912
-    /* 80369912 */ .space 0x02
+    /* 80369902 */ .space 0x02
 
 nonmatching g_dwPakError, 0x4
 
 dlabel g_dwPakError
-    /* 80369914 */ .space 0x04
+    /* 80369904 */ .space 0x04
 
 nonmatching g_dwPakFileNo, 0x4
 
 dlabel g_dwPakFileNo
-    /* 80369918 */ .space 0x04
+    /* 80369908 */ .space 0x04
 
 nonmatching g_dwPakChunkSize, 0x4
 
 dlabel g_dwPakChunkSize
-    /* 8036991C */ .space 0x04
+    /* 8036990C */ .space 0x04
 
 nonmatching g_bPakDialogState, 0x1
 
 dlabel g_bPakDialogState
-    /* 80369920 */ .space 0x01
+    /* 80369910 */ .space 0x01
 
 nonmatching g_bPakDecalIndex, 0x1
 
 dlabel g_bPakDecalIndex
-    /* 80369921 */ .space 0x01
+    /* 80369911 */ .space 0x01
 
 nonmatching g_bPakWaitFrames, 0x6
 
 dlabel g_bPakWaitFrames
-    /* 80369922 */ .space 0x06
+    /* 80369912 */ .space 0x06
 
 nonmatching g_apDecalTextGlyphs, 0x4
 
 dlabel g_apDecalTextGlyphs
-    /* 80369928 */ .space 0x04
+    /* 80369918 */ .space 0x04
 
 nonmatching D_8036992C, 0x2C
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8036992C
-    /* 8036992C */ .space 0x2C
+    /* 8036991C */ .space 0x2C
 
 nonmatching D_80369958, 0x10
 
 dlabel D_80369958
-    /* 80369958 */ .space 0x10
+    /* 80369948 */ .space 0x10
 
 nonmatching g_szDecalText, 0x8
 
 dlabel g_szDecalText
-    /* 80369968 */ .space 0x08
+    /* 80369958 */ .space 0x08
 
 nonmatching D_80369970, 0xC
 
 dlabel D_80369970
-    /* 80369970 */ .space 0x0C
+    /* 80369960 */ .space 0x0C
 
 nonmatching D_8036997C, 0x4
 
 dlabel D_8036997C
-    /* 8036997C */ .space 0x04
+    /* 8036996C */ .space 0x04
 
 nonmatching g_aPakPfs, 0x1A0
 
 dlabel g_aPakPfs
-    /* 80369980 */ .space 0x1A0
+    /* 80369970 */ .space 0x1A0
 
 nonmatching g_bPakDirLoaded, 0x1
 
 dlabel g_bPakDirLoaded
-    /* 80369B20 */ .space 0x01
+    /* 80369B10 */ .space 0x01
 
 nonmatching g_bPakSelectedNote, 0x1
 
 dlabel g_bPakSelectedNote
-    /* 80369B21 */ .space 0x01
+    /* 80369B11 */ .space 0x01
 
 nonmatching g_bPakFirstValidNote, 0x1
 
 dlabel g_bPakFirstValidNote
-    /* 80369B22 */ .space 0x01
+    /* 80369B12 */ .space 0x01
 
 nonmatching g_bPakLastValidNote, 0x1
 
 dlabel g_bPakLastValidNote
-    /* 80369B23 */ .space 0x01
+    /* 80369B13 */ .space 0x01
 
 nonmatching g_dwPakNoteCount, 0x4
 
 dlabel g_dwPakNoteCount
-    /* 80369B24 */ .space 0x04
+    /* 80369B14 */ .space 0x04
 
 nonmatching g_dwPakFreeBlocks, 0x4
 
 dlabel g_dwPakFreeBlocks
-    /* 80369B28 */ .space 0x04
+    /* 80369B18 */ .space 0x04
 
 nonmatching D_80369B2C, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80369B2C
-    /* 80369B2C */ .space 0x04
+    /* 80369B1C */ .space 0x04
 
 nonmatching g_aPakDirEntries, 0x20
 
 dlabel g_aPakDirEntries
-    /* 80369B30 */ .space 0x20
+    /* 80369B20 */ .space 0x20
 
 nonmatching g_aPakMenuDirEntry1, 0x1D0
 
 dlabel g_aPakMenuDirEntry1
-    /* 80369B50 */ .space 0x1D0
+    /* 80369B40 */ .space 0x1D0
 
 nonmatching D_80369D20, 0x8
 
 dlabel D_80369D20
-    /* 80369D20 */ .space 0x08
+    /* 80369D10 */ .space 0x08
 
 nonmatching D_80369D28, 0x8
 
 dlabel D_80369D28
-    /* 80369D28 */ .space 0x08
+    /* 80369D18 */ .space 0x08
 
 nonmatching g_bPakMenuState, 0x8
 
 dlabel g_bPakMenuState
-    /* 80369D30 */ .space 0x08
+    /* 80369D20 */ .space 0x08
 
 nonmatching g_nPakFilesUsed, 0x8
 
 dlabel g_nPakFilesUsed
-    /* 80369D38 */ .space 0x08
+    /* 80369D28 */ .space 0x08
 
 nonmatching g_aPakFileStates, 0x20
 
 dlabel g_aPakFileStates
-    /* 80369D40 */ .space 0x20
+    /* 80369D30 */ .space 0x20
 
 nonmatching g_aPakDirEntry1, 0x630
 
 dlabel g_aPakDirEntry1
-    /* 80369D60 */ .space 0x630
+    /* 80369D50 */ .space 0x630
 
 nonmatching D_8036A390, 0x4
 
 dlabel D_8036A390
-    /* 8036A390 */ .space 0x04
+    /* 8036A380 */ .space 0x04
 
 nonmatching D_8036A394, 0xC
 
 dlabel D_8036A394
-    /* 8036A394 */ .space 0x0C
+    /* 8036A384 */ .space 0x0C
 
 nonmatching g_aPlayerInputState, 0x4
 
 dlabel g_aPlayerInputState
-    /* 8036A3A0 */ .space 0x04
+    /* 8036A390 */ .space 0x04
 
 nonmatching D_8036A3A4, 0x11
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8036A3A4
-    /* 8036A3A4 */ .space 0x11
+    /* 8036A394 */ .space 0x11
 
 nonmatching D_8036A3B5, 0x3
 
 dlabel D_8036A3B5
-    /* 8036A3B5 */ .space 0x03
+    /* 8036A3A5 */ .space 0x03
 
 nonmatching g_pNetPlayBuffer, 0x4
 
 dlabel g_pNetPlayBuffer
-    /* 8036A3B8 */ .space 0x04
+    /* 8036A3A8 */ .space 0x04
 
 nonmatching D_8036A3BC, 0xC
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8036A3BC
-    /* 8036A3BC */ .space 0x0C
+    /* 8036A3AC */ .space 0x0C
 
 nonmatching g_bRequireControllerRecheck, 0x4
 
 dlabel g_bRequireControllerRecheck
-    /* 8036A3C8 */ .space 0x04
+    /* 8036A3B8 */ .space 0x04
 
 nonmatching D_8036A3CC, 0x124
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8036A3CC
-    /* 8036A3CC */ .space 0x124
+    /* 8036A3BC */ .space 0x124
 
 nonmatching D_8036A4F0, 0xC
 
 dlabel D_8036A4F0
-    /* 8036A4F0 */ .space 0x0C
+    /* 8036A4E0 */ .space 0x0C
 
 nonmatching g_dwNetPlayPort, 0x4
 
 dlabel g_dwNetPlayPort
-    /* 8036A4FC */ .space 0x04
+    /* 8036A4EC */ .space 0x04
 
 nonmatching D_8036A500, 0x11
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8036A500
-    /* 8036A500 */ .space 0x11
+    /* 8036A4F0 */ .space 0x11
 
 nonmatching D_8036A511, 0x13
 
 dlabel D_8036A511
-    /* 8036A511 */ .space 0x13
+    /* 8036A501 */ .space 0x13
 
 nonmatching g_dwNetPlayStatus, 0x4
 
 dlabel g_dwNetPlayStatus
-    /* 8036A524 */ .space 0x04
+    /* 8036A514 */ .space 0x04
 
 nonmatching D_8036A528, 0x120
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8036A528
-    /* 8036A528 */ .space 0x120
+    /* 8036A518 */ .space 0x120
 
 nonmatching D_8036A648, 0x4
 
 dlabel D_8036A648
-    /* 8036A648 */ .space 0x04
+    /* 8036A638 */ .space 0x04
 
 nonmatching D_8036A64C, 0x21
 
 dlabel D_8036A64C
-    /* 8036A64C */ .space 0x21
+    /* 8036A63C */ .space 0x21
 
 nonmatching D_8036A66D, 0x293
 
 dlabel D_8036A66D
-    /* 8036A66D */ .space 0x293
+    /* 8036A65D */ .space 0x293
 
 nonmatching D_8036A900, 0x10
 
 dlabel D_8036A900
-    /* 8036A900 */ .space 0x10
+    /* 8036A8F0 */ .space 0x10
 
 nonmatching g_aDisplayListBlocks, 0x8070
 
 dlabel g_aDisplayListBlocks
-    /* 8036A910 */ .space 0x8070
+    /* 8036A900 */ .space 0x8070
 
 nonmatching D_80372980, 0x10
 
 dlabel D_80372980
-    /* 80372980 */ .space 0x10
+    /* 80372970 */ .space 0x10
 
 nonmatching g_aHiliteBlocks, 0x290
 
 dlabel g_aHiliteBlocks
-    /* 80372990 */ .space 0x290
+    /* 80372980 */ .space 0x290
 
 nonmatching D_80372C20, 0x10
 
 dlabel D_80372C20
-    /* 80372C20 */ .space 0x10
+    /* 80372C10 */ .space 0x10
 
 nonmatching g_aLightBlocks, 0x530
 
 dlabel g_aLightBlocks
-    /* 80372C30 */ .space 0x530
+    /* 80372C20 */ .space 0x530
 
 nonmatching D_80373160, 0x10
 
 dlabel D_80373160
-    /* 80373160 */ .space 0x10
+    /* 80373150 */ .space 0x10
 
 nonmatching g_abTrackSection1Data, 0x7F0
 
 dlabel g_abTrackSection1Data
-    /* 80373170 */ .space 0x7F0
+    /* 80373160 */ .space 0x7F0
 
 nonmatching D_80373960, 0x10
 
 dlabel D_80373960
-    /* 80373960 */ .space 0x10
+    /* 80373950 */ .space 0x10
 
 nonmatching g_abTrackSection1Header, 0x10
 
 dlabel g_abTrackSection1Header
-    /* 80373970 */ .space 0x10
+    /* 80373960 */ .space 0x10
 
 nonmatching D_80373980, 0x10
 
 dlabel D_80373980
-    /* 80373980 */ .space 0x10
+    /* 80373970 */ .space 0x10
 
 nonmatching g_abTrackSection2Data, 0x7F0
 
 dlabel g_abTrackSection2Data
-    /* 80373990 */ .space 0x7F0
+    /* 80373980 */ .space 0x7F0
 
 nonmatching D_80374180, 0x10
 
 dlabel D_80374180
-    /* 80374180 */ .space 0x10
+    /* 80374170 */ .space 0x10
 
 nonmatching g_abTrackSection2Header, 0x10
 
 dlabel g_abTrackSection2Header
-    /* 80374190 */ .space 0x10
+    /* 80374180 */ .space 0x10
 
 nonmatching D_803741A0, 0x10
 
 dlabel D_803741A0
-    /* 803741A0 */ .space 0x10
+    /* 80374190 */ .space 0x10
 
 nonmatching g_AudioMsgQueue, 0x8
 
 dlabel g_AudioMsgQueue
-    /* 803741B0 */ .space 0x08
+    /* 803741A0 */ .space 0x08
 
 nonmatching D_803741B8, 0x8
 
 dlabel D_803741B8
-    /* 803741B8 */ .space 0x08
+    /* 803741A8 */ .space 0x08
 
 nonmatching D_803741C0, 0x8
 
 dlabel D_803741C0
-    /* 803741C0 */ .space 0x08
+    /* 803741B0 */ .space 0x08
 
 nonmatching g_aAudioMsgBuf, 0x8
 
 dlabel g_aAudioMsgBuf
-    /* 803741C8 */ .space 0x08
+    /* 803741B8 */ .space 0x08
 
 nonmatching g_AudioTimer, 0xB0
 
 dlabel g_AudioTimer
-    /* 803741D0 */ .space 0xB0
+    /* 803741C0 */ .space 0xB0
 
 nonmatching D_80374280, 0x10
 
 dlabel D_80374280
-    /* 80374280 */ .space 0x10
+    /* 80374270 */ .space 0x10
 
 nonmatching g_AudioDmaBuffer, 0x4000
 
 dlabel g_AudioDmaBuffer
-    /* 80374290 */ .space 0x4000
+    /* 80374280 */ .space 0x4000
 
 nonmatching g_apInstrumentData, 0x200
 
 dlabel g_apInstrumentData
-    /* 80378290 */ .space 0x200
+    /* 80378280 */ .space 0x200
 
 nonmatching g_apPatternData, 0x200
 
 dlabel g_apPatternData
-    /* 80378490 */ .space 0x200
+    /* 80378480 */ .space 0x200
 
 nonmatching D_80378690, 0x1F0
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80378690
-    /* 80378690 */ .space 0x1F0
+    /* 80378680 */ .space 0x1F0
 
 nonmatching D_80378880, 0x10
 
 dlabel D_80378880
-    /* 80378880 */ .space 0x10
+    /* 80378870 */ .space 0x10
 
 nonmatching g_MusicChannelStates, 0x180
 
 dlabel g_MusicChannelStates
-    /* 80378890 */ .space 0x180
+    /* 80378880 */ .space 0x180
 
 nonmatching g_aSoundEffectSamples, 0x48
 
 dlabel g_aSoundEffectSamples
-    /* 80378A10 */ .space 0x48
+    /* 80378A00 */ .space 0x48
 
 nonmatching g_bMusicPlaybackEnabled, 0x8
 
 dlabel g_bMusicPlaybackEnabled
-    /* 80378A58 */ .space 0x08
+    /* 80378A48 */ .space 0x08
 
 nonmatching g_MusicPlayer, 0x2
 
 dlabel g_MusicPlayer
-    /* 80378A60 */ .space 0x02
+    /* 80378A50 */ .space 0x02
 
 nonmatching D_80378A62, 0x6
 
 dlabel D_80378A62
-    /* 80378A62 */ .space 0x06
+    /* 80378A52 */ .space 0x06
 
 nonmatching D_80378A68, 0x8
 
 dlabel D_80378A68
-    /* 80378A68 */ .space 0x08
+    /* 80378A58 */ .space 0x08
 
 nonmatching D_80378A70, 0x8
 
 /* Automatically generated and unreferenced pad */
 dlabel D_80378A70
-    /* 80378A70 */ .space 0x08
+    /* 80378A60 */ .space 0x08
 
 nonmatching g_AudioThread, 0x1B0
 
 dlabel g_AudioThread
-    /* 80378A78 */ .space 0x1B0
+    /* 80378A68 */ .space 0x1B0
 
 nonmatching g_aAudioThreadStack, 0x3F0
 
 dlabel g_aAudioThreadStack
-    /* 80378C28 */ .space 0x3F0
+    /* 80378C18 */ .space 0x3F0
 
 nonmatching D_80379018, 0x10
 
 dlabel D_80379018
-    /* 80379018 */ .space 0x10
+    /* 80379008 */ .space 0x10
 
 nonmatching g_aFreqScaleTable, 0x3C0
 
 dlabel g_aFreqScaleTable
-    /* 80379028 */ .space 0x3C0
+    /* 80379018 */ .space 0x3C0
 
 nonmatching D_803793E8, 0x8
 
 dlabel D_803793E8
-    /* 803793E8 */ .space 0x08
+    /* 803793D8 */ .space 0x08
 
 nonmatching g_dwAudioMixBytes, 0x4
 
 dlabel g_dwAudioMixBytes
-    /* 803793F0 */ .space 0x04
+    /* 803793E0 */ .space 0x04
 
 nonmatching g_dwAiDmaCurrentLength, 0x4
 
 dlabel g_dwAiDmaCurrentLength
-    /* 803793F4 */ .space 0x04
+    /* 803793E4 */ .space 0x04
 
 nonmatching g_dwAudioChannelLoopIdx, 0x8
 
 dlabel g_dwAudioChannelLoopIdx
-    /* 803793F8 */ .space 0x08
+    /* 803793E8 */ .space 0x08
 
 nonmatching g_aCollisionTriangleNodes, 0x4
 
 dlabel g_aCollisionTriangleNodes
-    /* 80379400 */ .space 0x04
+    /* 803793F0 */ .space 0x04
 
 nonmatching g_nErrorReserved0, 0x4
 
 dlabel g_nErrorReserved0
-    /* 80379404 */ .space 0x04
+    /* 803793F4 */ .space 0x04
 
 nonmatching g_nErrorReserved1, 0x4
 
 dlabel g_nErrorReserved1
-    /* 80379408 */ .space 0x04
+    /* 803793F8 */ .space 0x04
 
 nonmatching g_nErrorReserved2, 0x4
 
 dlabel g_nErrorReserved2
-    /* 8037940C */ .space 0x04
+    /* 803793FC */ .space 0x04
 
 nonmatching g_nErrorReserved3, 0x4
 
 dlabel g_nErrorReserved3
-    /* 80379410 */ .space 0x04
+    /* 80379400 */ .space 0x04
 
 nonmatching g_nErrorReserved4, 0x4
 
 dlabel g_nErrorReserved4
-    /* 80379414 */ .space 0x04
+    /* 80379404 */ .space 0x04
 
 nonmatching g_nErrorReserved5, 0x4
 
 dlabel g_nErrorReserved5
-    /* 80379418 */ .space 0x04
+    /* 80379408 */ .space 0x04
 
 nonmatching g_nErrorReserved6, 0x4
 
 dlabel g_nErrorReserved6
-    /* 8037941C */ .space 0x04
+    /* 8037940C */ .space 0x04
 
 nonmatching g_nErrorReserved7, 0x4
 
 dlabel g_nErrorReserved7
-    /* 80379420 */ .space 0x04
+    /* 80379410 */ .space 0x04
 
 nonmatching g_nErrorReserved8, 0x4
 
 dlabel g_nErrorReserved8
-    /* 80379424 */ .space 0x04
+    /* 80379414 */ .space 0x04
 
 nonmatching g_nErrorReserved9, 0x4
 
 dlabel g_nErrorReserved9
-    /* 80379428 */ .space 0x04
+    /* 80379418 */ .space 0x04
 
 nonmatching g_nErrorReserved10, 0x4
 
 dlabel g_nErrorReserved10
-    /* 8037942C */ .space 0x04
+    /* 8037941C */ .space 0x04
 
 nonmatching g_nErrorReserved11, 0x4
 
 dlabel g_nErrorReserved11
-    /* 80379430 */ .space 0x04
+    /* 80379420 */ .space 0x04
 
 nonmatching g_nErrorReserved12, 0x4
 
 dlabel g_nErrorReserved12
-    /* 80379434 */ .space 0x04
+    /* 80379424 */ .space 0x04
 
 nonmatching g_nErrorReserved13, 0x4
 
 dlabel g_nErrorReserved13
-    /* 80379438 */ .space 0x04
+    /* 80379428 */ .space 0x04
 
 nonmatching g_nErrorReserved14, 0x5F4
 
 dlabel g_nErrorReserved14
-    /* 8037943C */ .space 0x5F4
+    /* 8037942C */ .space 0x5F4
 
 nonmatching D_80379A30, 0x10
 
 dlabel D_80379A30
-    /* 80379A30 */ .space 0x10
+    /* 80379A20 */ .space 0x10
 
 nonmatching g_aTriCacheTriangles, 0x4
 
 dlabel g_aTriCacheTriangles
-    /* 80379A40 */ .space 0x04
+    /* 80379A30 */ .space 0x04
 
 nonmatching g_nSysReserved1, 0x4
 
 dlabel g_nSysReserved1
-    /* 80379A44 */ .space 0x04
+    /* 80379A34 */ .space 0x04
 
 nonmatching g_nSysReserved2, 0x4
 
 dlabel g_nSysReserved2
-    /* 80379A48 */ .space 0x04
+    /* 80379A38 */ .space 0x04
 
 nonmatching g_nSysReserved3, 0x4
 
 dlabel g_nSysReserved3
-    /* 80379A4C */ .space 0x04
+    /* 80379A3C */ .space 0x04
 
 nonmatching g_nSysReserved4, 0x4
 
 dlabel g_nSysReserved4
-    /* 80379A50 */ .space 0x04
+    /* 80379A40 */ .space 0x04
 
 nonmatching g_nSysReserved5, 0x4
 
 dlabel g_nSysReserved5
-    /* 80379A54 */ .space 0x04
+    /* 80379A44 */ .space 0x04
 
 nonmatching g_nSysReserved6, 0x8
 
 dlabel g_nSysReserved6
-    /* 80379A58 */ .space 0x08
+    /* 80379A48 */ .space 0x08
 
 nonmatching g_nSysReserved7, 0x4
 
 dlabel g_nSysReserved7
-    /* 80379A60 */ .space 0x04
+    /* 80379A50 */ .space 0x04
 
 nonmatching g_nSysReserved8, 0x4
 
 dlabel g_nSysReserved8
-    /* 80379A64 */ .space 0x04
+    /* 80379A54 */ .space 0x04
 
 nonmatching g_nSysReserved9, 0x4
 
 dlabel g_nSysReserved9
-    /* 80379A68 */ .space 0x04
+    /* 80379A58 */ .space 0x04
 
 nonmatching g_nSysReserved10, 0x4
 
 dlabel g_nSysReserved10
-    /* 80379A6C */ .space 0x04
+    /* 80379A5C */ .space 0x04
 
 nonmatching g_nSysReserved11, 0x4
 
 dlabel g_nSysReserved11
-    /* 80379A70 */ .space 0x04
+    /* 80379A60 */ .space 0x04
 
 nonmatching g_nSysReserved12, 0x4
 
 dlabel g_nSysReserved12
-    /* 80379A74 */ .space 0x04
+    /* 80379A64 */ .space 0x04
 
 nonmatching g_nSysReserved13, 0x8
 
 dlabel g_nSysReserved13
-    /* 80379A78 */ .space 0x08
+    /* 80379A68 */ .space 0x08
 
 nonmatching g_nSysReserved14, 0x4
 
 dlabel g_nSysReserved14
-    /* 80379A80 */ .space 0x04
+    /* 80379A70 */ .space 0x04
 
 nonmatching g_nSysReserved15, 0x4
 
 dlabel g_nSysReserved15
-    /* 80379A84 */ .space 0x04
+    /* 80379A74 */ .space 0x04
 
 nonmatching g_nSysReserved16, 0x4
 
 dlabel g_nSysReserved16
-    /* 80379A88 */ .space 0x04
+    /* 80379A78 */ .space 0x04
 
 nonmatching g_nSysReserved17, 0x4
 
 dlabel g_nSysReserved17
-    /* 80379A8C */ .space 0x04
+    /* 80379A7C */ .space 0x04
 
 nonmatching g_nSysReserved18, 0x4
 
 dlabel g_nSysReserved18
-    /* 80379A90 */ .space 0x04
+    /* 80379A80 */ .space 0x04
 
 nonmatching g_nSysReserved19, 0x4
 
 dlabel g_nSysReserved19
-    /* 80379A94 */ .space 0x04
+    /* 80379A84 */ .space 0x04
 
 nonmatching g_nSysReserved20, 0x8
 
 dlabel g_nSysReserved20
-    /* 80379A98 */ .space 0x08
+    /* 80379A88 */ .space 0x08
 
 nonmatching g_nSysReserved21, 0x4
 
 dlabel g_nSysReserved21
-    /* 80379AA0 */ .space 0x04
+    /* 80379A90 */ .space 0x04
 
 nonmatching g_nSysReserved22, 0x4
 
 dlabel g_nSysReserved22
-    /* 80379AA4 */ .space 0x04
+    /* 80379A94 */ .space 0x04
 
 nonmatching g_nSysReserved23, 0x4
 
 dlabel g_nSysReserved23
-    /* 80379AA8 */ .space 0x04
+    /* 80379A98 */ .space 0x04
 
 nonmatching g_nSysReserved24, 0x4
 
 dlabel g_nSysReserved24
-    /* 80379AAC */ .space 0x04
+    /* 80379A9C */ .space 0x04
 
 nonmatching g_nSysReserved25, 0x4
 
 dlabel g_nSysReserved25
-    /* 80379AB0 */ .space 0x04
+    /* 80379AA0 */ .space 0x04
 
 nonmatching g_nSysReserved26, 0x4
 
 dlabel g_nSysReserved26
-    /* 80379AB4 */ .space 0x04
+    /* 80379AA4 */ .space 0x04
 
 nonmatching g_nSysReserved27, 0x8
 
 dlabel g_nSysReserved27
-    /* 80379AB8 */ .space 0x08
+    /* 80379AA8 */ .space 0x08
 
 nonmatching g_nSysReserved28, 0x4
 
 dlabel g_nSysReserved28
-    /* 80379AC0 */ .space 0x04
+    /* 80379AB0 */ .space 0x04
 
 nonmatching g_nSysReserved29, 0x4
 
 dlabel g_nSysReserved29
-    /* 80379AC4 */ .space 0x04
+    /* 80379AB4 */ .space 0x04
 
 nonmatching g_nSysReserved30, 0x4
 
 dlabel g_nSysReserved30
-    /* 80379AC8 */ .space 0x04
+    /* 80379AB8 */ .space 0x04
 
 nonmatching g_nSysReserved31, 0x4
 
 dlabel g_nSysReserved31
-    /* 80379ACC */ .space 0x04
+    /* 80379ABC */ .space 0x04
 
 nonmatching g_nSysReserved32, 0x4
 
 dlabel g_nSysReserved32
-    /* 80379AD0 */ .space 0x04
+    /* 80379AC0 */ .space 0x04
 
 nonmatching g_nSysReserved33, 0x4
 
 dlabel g_nSysReserved33
-    /* 80379AD4 */ .space 0x04
+    /* 80379AC4 */ .space 0x04
 
 nonmatching g_nSysReserved34, 0x8
 
 dlabel g_nSysReserved34
-    /* 80379AD8 */ .space 0x08
+    /* 80379AC8 */ .space 0x08
 
 nonmatching g_nSysReserved35, 0x4
 
 dlabel g_nSysReserved35
-    /* 80379AE0 */ .space 0x04
+    /* 80379AD0 */ .space 0x04
 
 nonmatching g_nSysReserved36, 0x4
 
 dlabel g_nSysReserved36
-    /* 80379AE4 */ .space 0x04
+    /* 80379AD4 */ .space 0x04
 
 nonmatching g_nSysReserved37, 0x4
 
 dlabel g_nSysReserved37
-    /* 80379AE8 */ .space 0x04
+    /* 80379AD8 */ .space 0x04
 
 nonmatching g_nSysReserved38, 0x4
 
 dlabel g_nSysReserved38
-    /* 80379AEC */ .space 0x04
+    /* 80379ADC */ .space 0x04
 
 nonmatching g_nSysReserved39, 0x4
 
 dlabel g_nSysReserved39
-    /* 80379AF0 */ .space 0x04
+    /* 80379AE0 */ .space 0x04
 
 nonmatching g_nSysReserved40, 0x4
 
 dlabel g_nSysReserved40
-    /* 80379AF4 */ .space 0x04
+    /* 80379AE4 */ .space 0x04
 
 nonmatching g_nSysReserved41, 0x28
 
 dlabel g_nSysReserved41
-    /* 80379AF8 */ .space 0x28
+    /* 80379AE8 */ .space 0x28
 
 nonmatching g_nAppReserved0, 0x4
 
 dlabel g_nAppReserved0
-    /* 80379B20 */ .space 0x04
+    /* 80379B10 */ .space 0x04
 
 nonmatching g_nAppReserved1, 0x4
 
 dlabel g_nAppReserved1
-    /* 80379B24 */ .space 0x04
+    /* 80379B14 */ .space 0x04
 
 nonmatching g_nAppReserved2, 0x4
 
 dlabel g_nAppReserved2
-    /* 80379B28 */ .space 0x04
+    /* 80379B18 */ .space 0x04
 
 nonmatching g_nAppReserved3, 0x4
 
 dlabel g_nAppReserved3
-    /* 80379B2C */ .space 0x04
+    /* 80379B1C */ .space 0x04
 
 nonmatching g_nAppReserved4, 0x4
 
 dlabel g_nAppReserved4
-    /* 80379B30 */ .space 0x04
+    /* 80379B20 */ .space 0x04
 
 nonmatching g_nAppReserved5, 0x4
 
 dlabel g_nAppReserved5
-    /* 80379B34 */ .space 0x04
+    /* 80379B24 */ .space 0x04
 
 nonmatching g_nAppReserved6, 0x8
 
 dlabel g_nAppReserved6
-    /* 80379B38 */ .space 0x08
+    /* 80379B28 */ .space 0x08
 
 nonmatching g_nAppReserved7, 0x4
 
 dlabel g_nAppReserved7
-    /* 80379B40 */ .space 0x04
+    /* 80379B30 */ .space 0x04
 
 nonmatching g_nAppReserved8, 0x4
 
 dlabel g_nAppReserved8
-    /* 80379B44 */ .space 0x04
+    /* 80379B34 */ .space 0x04
 
 nonmatching g_nAppReserved9, 0x4
 
 dlabel g_nAppReserved9
-    /* 80379B48 */ .space 0x04
+    /* 80379B38 */ .space 0x04
 
 nonmatching g_nAppReserved10, 0x4
 
 dlabel g_nAppReserved10
-    /* 80379B4C */ .space 0x04
+    /* 80379B3C */ .space 0x04
 
 nonmatching g_nAppReserved11, 0x4
 
 dlabel g_nAppReserved11
-    /* 80379B50 */ .space 0x04
+    /* 80379B40 */ .space 0x04
 
 nonmatching g_nAppReserved12, 0x4
 
 dlabel g_nAppReserved12
-    /* 80379B54 */ .space 0x04
+    /* 80379B44 */ .space 0x04
 
 nonmatching g_nAppReserved13, 0x8
 
 dlabel g_nAppReserved13
-    /* 80379B58 */ .space 0x08
+    /* 80379B48 */ .space 0x08
 
 nonmatching g_nAppReserved14, 0x4
 
 dlabel g_nAppReserved14
-    /* 80379B60 */ .space 0x04
+    /* 80379B50 */ .space 0x04
 
 nonmatching g_nAppReserved15, 0x119C
 
 dlabel g_nAppReserved15
-    /* 80379B64 */ .space 0x119C
+    /* 80379B54 */ .space 0x119C
 
 nonmatching g_dwGfxReserved0, 0x4
 
 dlabel g_dwGfxReserved0
-    /* 8037AD00 */ .space 0x04
+    /* 8037ACF0 */ .space 0x04
 
 nonmatching g_dwGfxReserved1, 0x4
 
 dlabel g_dwGfxReserved1
-    /* 8037AD04 */ .space 0x04
+    /* 8037ACF4 */ .space 0x04
 
 nonmatching g_dwGfxReserved2, 0x4
 
 dlabel g_dwGfxReserved2
-    /* 8037AD08 */ .space 0x04
+    /* 8037ACF8 */ .space 0x04
 
 nonmatching g_dwGfxReserved3, 0x4
 
 dlabel g_dwGfxReserved3
-    /* 8037AD0C */ .space 0x04
+    /* 8037ACFC */ .space 0x04
 
 nonmatching g_dwGfxReserved4, 0x4
 
 dlabel g_dwGfxReserved4
-    /* 8037AD10 */ .space 0x04
+    /* 8037AD00 */ .space 0x04
 
 nonmatching g_dwGfxReserved5, 0x4
 
 dlabel g_dwGfxReserved5
-    /* 8037AD14 */ .space 0x04
+    /* 8037AD04 */ .space 0x04
 
 nonmatching g_dwGfxReserved6, 0x4
 
 dlabel g_dwGfxReserved6
-    /* 8037AD18 */ .space 0x04
+    /* 8037AD08 */ .space 0x04
 
 nonmatching D_8037AD1C, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037AD1C
-    /* 8037AD1C */ .space 0x04
+    /* 8037AD0C */ .space 0x04
 
 nonmatching g_dwGfxReserved7, 0x4
 
 dlabel g_dwGfxReserved7
-    /* 8037AD20 */ .space 0x04
+    /* 8037AD10 */ .space 0x04
 
 nonmatching g_dwGfxReserved8, 0x4
 
 dlabel g_dwGfxReserved8
-    /* 8037AD24 */ .space 0x04
+    /* 8037AD14 */ .space 0x04
 
 nonmatching g_dwGfxReserved9, 0x4
 
 dlabel g_dwGfxReserved9
-    /* 8037AD28 */ .space 0x04
+    /* 8037AD18 */ .space 0x04
 
 nonmatching g_dwGfxReserved10, 0x4
 
 dlabel g_dwGfxReserved10
-    /* 8037AD2C */ .space 0x04
+    /* 8037AD1C */ .space 0x04
 
 nonmatching g_dwGfxReserved11, 0x4
 
 dlabel g_dwGfxReserved11
-    /* 8037AD30 */ .space 0x04
+    /* 8037AD20 */ .space 0x04
 
 nonmatching g_dwGfxReserved12, 0x4
 
 dlabel g_dwGfxReserved12
-    /* 8037AD34 */ .space 0x04
+    /* 8037AD24 */ .space 0x04
 
 nonmatching g_dwGfxReserved13, 0x4
 
 dlabel g_dwGfxReserved13
-    /* 8037AD38 */ .space 0x04
+    /* 8037AD28 */ .space 0x04
 
 nonmatching D_8037AD3C, 0x37F4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037AD3C
-    /* 8037AD3C */ .space 0x37F4
+    /* 8037AD2C */ .space 0x37F4
 
 nonmatching D_8037E530, 0x2
 
 dlabel D_8037E530
-    /* 8037E530 */ .space 0x02
+    /* 8037E520 */ .space 0x02
 
 nonmatching D_8037E532, 0x2
 
 dlabel D_8037E532
-    /* 8037E532 */ .space 0x02
+    /* 8037E522 */ .space 0x02
 
 nonmatching D_8037E534, 0x4
 
 dlabel D_8037E534
-    /* 8037E534 */ .space 0x04
+    /* 8037E524 */ .space 0x04
 
 nonmatching D_8037E538, 0x8
 
 dlabel D_8037E538
-    /* 8037E538 */ .space 0x08
+    /* 8037E528 */ .space 0x08
 
 nonmatching g_awTriCacheSectorId, 0x2
 
 dlabel g_awTriCacheSectorId
-    /* 8037E540 */ .space 0x02
+    /* 8037E530 */ .space 0x02
 
 nonmatching D_8037E542, 0x2
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037E542
-    /* 8037E542 */ .space 0x02
+    /* 8037E532 */ .space 0x02
 
 nonmatching D_8037E544, 0x4
 
 dlabel D_8037E544
-    /* 8037E544 */ .space 0x04
+    /* 8037E534 */ .space 0x04
 
 nonmatching g_awTriCacheTriCount, 0x2
 
 dlabel g_awTriCacheTriCount
-    /* 8037E548 */ .space 0x02
+    /* 8037E538 */ .space 0x02
 
 nonmatching D_8037E54A, 0x2
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037E54A
-    /* 8037E54A */ .space 0x02
+    /* 8037E53A */ .space 0x02
 
 nonmatching D_8037E54C, 0x4
 
 dlabel D_8037E54C
-    /* 8037E54C */ .space 0x04
+    /* 8037E53C */ .space 0x04
 
 nonmatching g_adwTriCacheLruStamp, 0x4
 
 dlabel g_adwTriCacheLruStamp
-    /* 8037E550 */ .space 0x04
+    /* 8037E540 */ .space 0x04
 
 nonmatching D_8037E554, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037E554
-    /* 8037E554 */ .space 0x04
+    /* 8037E544 */ .space 0x04
 
 nonmatching D_8037E558, 0x8
 
 dlabel D_8037E558
-    /* 8037E558 */ .space 0x08
+    /* 8037E548 */ .space 0x08
 
 nonmatching g_dwTriCacheLruCounter, 0x4
 
 dlabel g_dwTriCacheLruCounter
-    /* 8037E560 */ .space 0x04
+    /* 8037E550 */ .space 0x04
 
 nonmatching D_8037E564, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037E564
-    /* 8037E564 */ .space 0x04
+    /* 8037E554 */ .space 0x04
 
 nonmatching g_vCollisionContact, 0xC
 
 dlabel g_vCollisionContact
-    /* 8037E568 */ .space 0x0C
+    /* 8037E558 */ .space 0x0C
 
 nonmatching g_fCollisionContactW, 0x4
 
 dlabel g_fCollisionContactW
-    /* 8037E574 */ .space 0x04
+    /* 8037E564 */ .space 0x04
 
 nonmatching D_8037E578, 0x10
 
 dlabel D_8037E578
-    /* 8037E578 */ .space 0x10
+    /* 8037E568 */ .space 0x10
 
 nonmatching g_vCollisionPenetration, 0xC
 
 dlabel g_vCollisionPenetration
-    /* 8037E588 */ .space 0x0C
+    /* 8037E578 */ .space 0x0C
 
 nonmatching D_8037E594, 0x5BC
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037E594
-    /* 8037E594 */ .space 0x5BC
+    /* 8037E584 */ .space 0x5BC
 
 nonmatching D_8037EB50, 0x10
 
 dlabel D_8037EB50
-    /* 8037EB50 */ .space 0x10
+    /* 8037EB40 */ .space 0x10
 
 nonmatching g_fGuRotateDtor, 0x4
 
 dlabel g_fGuRotateDtor
-    /* 8037EB60 */ .space 0x04
+    /* 8037EB50 */ .space 0x04
 
 nonmatching D_8037EB64, 0xC
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037EB64
-    /* 8037EB64 */ .space 0x0C
+    /* 8037EB54 */ .space 0x0C
 
 nonmatching __osPfsPifRam, 0x1
 
 dlabel __osPfsPifRam
-    /* 8037EB70 */ .space 0x01
+    /* 8037EB60 */ .space 0x01
 
 nonmatching g_bPfsPifRamByte1, 0x1
 
 dlabel g_bPfsPifRamByte1
-    /* 8037EB71 */ .space 0x01
+    /* 8037EB61 */ .space 0x01
 
 nonmatching g_bPfsPifRamByte2, 0x2
 
 dlabel g_bPfsPifRamByte2
-    /* 8037EB72 */ .space 0x02
+    /* 8037EB62 */ .space 0x02
 
 nonmatching g_dwSysReserved1, 0x4
 
 dlabel g_dwSysReserved1
-    /* 8037EB74 */ .space 0x04
+    /* 8037EB64 */ .space 0x04
 
 nonmatching g_dwSysReserved2, 0x4
 
 dlabel g_dwSysReserved2
-    /* 8037EB78 */ .space 0x04
+    /* 8037EB68 */ .space 0x04
 
 nonmatching g_dwSysReserved3, 0x4
 
 dlabel g_dwSysReserved3
-    /* 8037EB7C */ .space 0x04
+    /* 8037EB6C */ .space 0x04
 
 nonmatching g_abPfsPifRamCmdData, 0x1
 
 dlabel g_abPfsPifRamCmdData
-    /* 8037EB80 */ .space 0x01
+    /* 8037EB70 */ .space 0x01
 
 nonmatching g_dwSysReserved4, 0x4
 
 dlabel g_dwSysReserved4
-    /* 8037EB81 */ .space 0x04
+    /* 8037EB71 */ .space 0x04
 
 nonmatching g_dwSysReserved5, 0x4
 
 dlabel g_dwSysReserved5
-    /* 8037EB85 */ .space 0x04
+    /* 8037EB75 */ .space 0x04
 
 nonmatching g_dwSysReserved6, 0x4
 
 dlabel g_dwSysReserved6
-    /* 8037EB89 */ .space 0x04
+    /* 8037EB79 */ .space 0x04
 
 nonmatching D_8037EB8D, 0xC
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037EB8D
-    /* 8037EB8D */ .space 0x0C
+    /* 8037EB7D */ .space 0x0C
 
 nonmatching g_bPfsPifRamEndMarker, 0x3
 
 dlabel g_bPfsPifRamEndMarker
-    /* 8037EB99 */ .space 0x03
+    /* 8037EB89 */ .space 0x03
 
 nonmatching D_8037EB9C, 0x4
 
 dlabel D_8037EB9C
-    /* 8037EB9C */ .space 0x04
+    /* 8037EB8C */ .space 0x04
 
 nonmatching D_8037EBA0, 0x10
 
 dlabel D_8037EBA0
-    /* 8037EBA0 */ .space 0x10
+    /* 8037EB90 */ .space 0x10
 
 nonmatching _MotorStopData, 0xF0
 
 dlabel _MotorStopData
-    /* 8037EBB0 */ .space 0xF0
+    /* 8037EBA0 */ .space 0xF0
 
 nonmatching D_8037ECA0, 0x10
 
 dlabel D_8037ECA0
-    /* 8037ECA0 */ .space 0x10
+    /* 8037EC90 */ .space 0x10
 
 nonmatching _MotorStartData, 0xF0
 
 dlabel _MotorStartData
-    /* 8037ECB0 */ .space 0xF0
+    /* 8037ECA0 */ .space 0xF0
 
 nonmatching D_8037EDA0, 0x10
 
 dlabel D_8037EDA0
-    /* 8037EDA0 */ .space 0x10
+    /* 8037ED90 */ .space 0x10
 
 nonmatching _motorstopbuf, 0x10
 
 dlabel _motorstopbuf
-    /* 8037EDB0 */ .space 0x10
+    /* 8037EDA0 */ .space 0x10
 
 nonmatching D_8037EDC0, 0x10
 
 dlabel D_8037EDC0
-    /* 8037EDC0 */ .space 0x10
+    /* 8037EDB0 */ .space 0x10
 
 nonmatching _motorstartbuf, 0x10
 
 dlabel _motorstartbuf
-    /* 8037EDD0 */ .space 0x10
+    /* 8037EDC0 */ .space 0x10
 
 nonmatching D_8037EDE0, 0x10
 
 dlabel D_8037EDE0
-    /* 8037EDE0 */ .space 0x10
+    /* 8037EDD0 */ .space 0x10
 
 nonmatching tmp_task, 0x10
 
 dlabel tmp_task
-    /* 8037EDF0 */ .space 0x10
+    /* 8037EDE0 */ .space 0x10
 
 nonmatching g_dwSysReserved8, 0x4
 
 dlabel g_dwSysReserved8
-    /* 8037EE00 */ .space 0x04
+    /* 8037EDF0 */ .space 0x04
 
 nonmatching D_8037EE04, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037EE04
-    /* 8037EE04 */ .space 0x04
+    /* 8037EDF4 */ .space 0x04
 
 nonmatching g_dwSysReserved9, 0x4
 
 dlabel g_dwSysReserved9
-    /* 8037EE08 */ .space 0x04
+    /* 8037EDF8 */ .space 0x04
 
 nonmatching D_8037EE0C, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037EE0C
-    /* 8037EE0C */ .space 0x04
+    /* 8037EDFC */ .space 0x04
 
 nonmatching g_dwSysReserved10, 0x4
 
 dlabel g_dwSysReserved10
-    /* 8037EE10 */ .space 0x04
+    /* 8037EE00 */ .space 0x04
 
 nonmatching D_8037EE14, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037EE14
-    /* 8037EE14 */ .space 0x04
+    /* 8037EE04 */ .space 0x04
 
 nonmatching g_dwSysReserved11, 0x4
 
 dlabel g_dwSysReserved11
-    /* 8037EE18 */ .space 0x04
+    /* 8037EE08 */ .space 0x04
 
 nonmatching g_dwSysReserved12, 0x4
 
 dlabel g_dwSysReserved12
-    /* 8037EE1C */ .space 0x04
+    /* 8037EE0C */ .space 0x04
 
 nonmatching g_dwSysReserved13, 0x4
 
 dlabel g_dwSysReserved13
-    /* 8037EE20 */ .space 0x04
+    /* 8037EE10 */ .space 0x04
 
 nonmatching D_8037EE24, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037EE24
-    /* 8037EE24 */ .space 0x04
+    /* 8037EE14 */ .space 0x04
 
 nonmatching g_dwSysReserved14, 0x4
 
 dlabel g_dwSysReserved14
-    /* 8037EE28 */ .space 0x04
+    /* 8037EE18 */ .space 0x04
 
 nonmatching D_8037EE2C, 0x4
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037EE2C
-    /* 8037EE2C */ .space 0x04
+    /* 8037EE1C */ .space 0x04
 
 nonmatching __osEventStateTab, 0x40
 
 dlabel __osEventStateTab
-    /* 8037EE30 */ .space 0x40
+    /* 8037EE20 */ .space 0x40
 
 nonmatching g_dwSysReserved15, 0x4
 
 dlabel g_dwSysReserved15
-    /* 8037EE70 */ .space 0x04
+    /* 8037EE60 */ .space 0x04
 
 nonmatching g_dwSysReserved16, 0x4
 
 dlabel g_dwSysReserved16
-    /* 8037EE74 */ .space 0x04
+    /* 8037EE64 */ .space 0x04
 
 nonmatching D_8037EE78, 0x28
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037EE78
-    /* 8037EE78 */ .space 0x28
+    /* 8037EE68 */ .space 0x28
 
 nonmatching D_8037EEA0, 0x10
 
 dlabel D_8037EEA0
-    /* 8037EEA0 */ .space 0x10
+    /* 8037EE90 */ .space 0x10
 
 nonmatching __osContPifRam, 0x4
 
 dlabel __osContPifRam
-    /* 8037EEB0 */ .space 0x04
+    /* 8037EEA0 */ .space 0x04
 
 nonmatching g_dwSysReserved17, 0x4
 
 dlabel g_dwSysReserved17
-    /* 8037EEB4 */ .space 0x04
+    /* 8037EEA4 */ .space 0x04
 
 nonmatching g_dwSysReserved18, 0x4
 
 dlabel g_dwSysReserved18
-    /* 8037EEB8 */ .space 0x04
+    /* 8037EEA8 */ .space 0x04
 
 nonmatching g_dwSysReserved19, 0x4
 
 dlabel g_dwSysReserved19
-    /* 8037EEBC */ .space 0x04
+    /* 8037EEAC */ .space 0x04
 
 nonmatching g_aContPifRam, 0x1C
 
 dlabel g_aContPifRam
-    /* 8037EEC0 */ .space 0x1C
+    /* 8037EEB0 */ .space 0x1C
 
 nonmatching D_8037EEDC, 0x4
 
 dlabel D_8037EEDC
-    /* 8037EEDC */ .space 0x04
+    /* 8037EECC */ .space 0x04
 
 nonmatching D_8037EEE0, 0x1
 
 dlabel D_8037EEE0
-    /* 8037EEE0 */ .space 0x01
+    /* 8037EED0 */ .space 0x01
 
 nonmatching D_8037EEE1, 0xF
 
 dlabel D_8037EEE1
-    /* 8037EEE1 */ .space 0x0F
+    /* 8037EED1 */ .space 0x0F
 
 nonmatching __osContLastCmd, 0x1
 
 dlabel __osContLastCmd
-    /* 8037EEF0 */ .space 0x01
+    /* 8037EEE0 */ .space 0x01
 
 nonmatching __osMaxControllers, 0x17
 
 dlabel __osMaxControllers
-    /* 8037EEF1 */ .space 0x17
+    /* 8037EEE1 */ .space 0x17
 
 nonmatching D_8037EF08, 0x10
 
 dlabel D_8037EF08
-    /* 8037EF08 */ .space 0x10
+    /* 8037EEF8 */ .space 0x10
 
 nonmatching __osEepromTimerQ, 0x8
 
 dlabel __osEepromTimerQ
-    /* 8037EF18 */ .space 0x08
+    /* 8037EF08 */ .space 0x08
 
 nonmatching D_8037EF20, 0x10
 
 dlabel D_8037EF20
-    /* 8037EF20 */ .space 0x10
+    /* 8037EF10 */ .space 0x10
 
 nonmatching __osEepromTimerMsg, 0x10
 
 dlabel __osEepromTimerMsg
-    /* 8037EF30 */ .space 0x10
+    /* 8037EF20 */ .space 0x10
 
 nonmatching __osFinalrom, 0x4
 
 dlabel __osFinalrom
-    /* 8037EF40 */ .space 0x04
+    /* 8037EF30 */ .space 0x04
 
 nonmatching D_8037EF44, 0xC
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8037EF44
-    /* 8037EF44 */ .space 0x0C
+    /* 8037EF34 */ .space 0x0C
 
 nonmatching siAccessBuf, 0x8
 
 dlabel siAccessBuf
-    /* 80381340 */ .space 0x08
+    /* 80381330 */ .space 0x08
 
 nonmatching __osSiAccessQueue, 0x8
 
 dlabel __osSiAccessQueue
-    /* 80381348 */ .space 0x08
+    /* 80381338 */ .space 0x08
 
 nonmatching D_80381350, 0x10
 
 dlabel D_80381350
-    /* 80381350 */ .space 0x10
+    /* 80381340 */ .space 0x10
 
 nonmatching piAccessBuf, 0x8
 
 dlabel piAccessBuf
-    /* 803814A0 */ .space 0x08
+    /* 80381490 */ .space 0x08
 
 nonmatching __osPiAccessQueue, 0x8
 
 dlabel __osPiAccessQueue
-    /* 803814A8 */ .space 0x08
+    /* 80381498 */ .space 0x08
 
 nonmatching D_803814B0, 0x10
 
 dlabel D_803814B0
-    /* 803814B0 */ .space 0x10
+    /* 803814A0 */ .space 0x10
 
 nonmatching __osThreadSave, 0x1A0
 
 dlabel __osThreadSave
-    /* 803814C0 */ .space 0x1A0
+    /* 803814B0 */ .space 0x1A0
 
 nonmatching D_80381660, 0x10
 
 dlabel D_80381660
-    /* 80381660 */ .space 0x10
+    /* 80381650 */ .space 0x10
 
 nonmatching leoDiskStack, 0x1000
 
 dlabel leoDiskStack
-    /* 80381670 */ .space 0x1000
+    /* 80381660 */ .space 0x1000

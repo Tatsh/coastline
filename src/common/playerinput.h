@@ -119,7 +119,7 @@ void TransferFlags(PlayerInputState *state, s32 mask);
  * Input state of every player.
  *
  * @ghidraAddress USA: 0x8036a8e0
- * @ghidraAddress Asia: 0x8036A3A0
+ * @ghidraAddress Asia: 0x8036A390
  * @ghidraAddress EUR: 0x8036cde0
  * @ghidraAddress JPN: 0x8036ba50
  * @ghidraAddress BRD3D: 0x106c6678
@@ -131,7 +131,7 @@ extern PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
  * Emulated controller pads for four ports, or every player slot on SDL.
  *
  * @ghidraAddress USA: 0x8031a3e0
- * @ghidraAddress Asia: 0x80319EA0
+ * @ghidraAddress Asia: 0x80319E90
  * @ghidraAddress EUR: 0x8031c8e0
  * @ghidraAddress JPN: 0x8031b510
  * @ghidraAddress BRD3D: 0x106c65a0

@@ -47,7 +47,7 @@ extern s32 g_dwMainMenuEntrySource;
 
 /**
  * @ghidraAddress USA: 0x80316380
- * @ghidraAddress Asia: 0x80315E40
+ * @ghidraAddress Asia: 0x80315E30
  * @ghidraAddress EUR: 0x80318060
  * @ghidraAddress JPN: 0x80316c90
  */

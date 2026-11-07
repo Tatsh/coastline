@@ -62,7 +62,7 @@ extern u16 g_aDepthBuffer[];
  * loaded into.
  *
  * @ghidraAddress USA: 0x80324550
- * @ghidraAddress Asia: 0x80324010
+ * @ghidraAddress Asia: 0x80324000
  * @ghidraAddress EUR: 0x80326a90
  * @ghidraAddress JPN: 0x803256c0
  */
@@ -73,7 +73,7 @@ extern u8 g_aInflateHeapBuffer[];
  * buffers.
  *
  * @ghidraAddress USA: 0x80368ac0
- * @ghidraAddress Asia: 0x80368580
+ * @ghidraAddress Asia: 0x80368570
  * @ghidraAddress EUR: 0x8036afc0
  * @ghidraAddress JPN: 0x80369c30
  */
@@ -81,7 +81,7 @@ extern u8 *g_pInflateHeapBase;
 
 /**
  * @ghidraAddress USA: 0x80368ac4
- * @ghidraAddress Asia: 0x80368584
+ * @ghidraAddress Asia: 0x80368574
  * @ghidraAddress EUR: 0x8036afc4
  * @ghidraAddress JPN: 0x80369c34
  */
@@ -91,7 +91,7 @@ extern u8 *g_pInflateHeapEnd;
  * The state of the allocator inflateInit2_() gives zlib.
  *
  * @ghidraAddress USA: 0x80368ac8
- * @ghidraAddress Asia: 0x80368588
+ * @ghidraAddress Asia: 0x80368578
  * @ghidraAddress EUR: 0x8036afc8
  * @ghidraAddress JPN: 0x80369c38
  */
@@ -172,7 +172,7 @@ extern u32 g_dwAlphaDitherMode;
  * The two frame buffers.
  *
  * @ghidraAddress USA: 0x8031aa28
- * @ghidraAddress Asia: 0x8031A4E8
+ * @ghidraAddress Asia: 0x8031A4D8
  * @ghidraAddress EUR: 0x8031cf28
  * @ghidraAddress JPN: 0x8031bb58
  */
@@ -311,7 +311,7 @@ void ResetFrameClock(void);
  * The messages of the DMA, which AllocIoMessage() hands out in turn.
  *
  * @ghidraAddress USA: 0x8031a020
- * @ghidraAddress Asia: 0x80319AE0
+ * @ghidraAddress Asia: 0x80319AD0
  * @ghidraAddress EUR: 0x8031c500
  * @ghidraAddress JPN: 0x8031b130
  * @ghidraAddress BRD3D: 0x106c29f0
@@ -351,7 +351,7 @@ extern s32 g_dwIoMessagePoolIndex;
  * The queue a finished DMA sends to.
  *
  * @ghidraAddress USA: 0x80319f88
- * @ghidraAddress Asia: 0x80319A48
+ * @ghidraAddress Asia: 0x80319A38
  * @ghidraAddress EUR: 0x8031c468
  * @ghidraAddress JPN: 0x8031b098
  * @ghidraAddress BRD3D: 0x106c64e0
@@ -361,7 +361,7 @@ extern OSMesgQueue g_DmaMessageQueue;
 
 /**
  * @ghidraAddress USA: 0x80319fa0
- * @ghidraAddress Asia: 0x80319A60
+ * @ghidraAddress Asia: 0x80319A50
  * @ghidraAddress EUR: 0x8031c480
  * @ghidraAddress JPN: 0x8031b0b0
  */
@@ -371,7 +371,7 @@ extern OSMesg g_aDmaMsgBuf[32];
  * The queue the RSP event reaches, and the queue the thread forwards it to.
  *
  * @ghidraAddress USA: 0x8031a338
- * @ghidraAddress Asia: 0x80319DF8
+ * @ghidraAddress Asia: 0x80319DE8
  * @ghidraAddress BRD3D: 0x106c65c0
  * @ghidraAddress BRGlide: 0x106ed650
  * @ghidraAddress EUR: 0x8031c818
@@ -383,7 +383,7 @@ extern OSMesgQueue g_RspEventMsgQueue;
 
 /**
  * @ghidraAddress USA: 0x8031a354
- * @ghidraAddress Asia: 0x80319E14
+ * @ghidraAddress Asia: 0x80319E04
  * @ghidraAddress BRD3D: 0x106c0940
  * @ghidraAddress BRGlide: 0x106e79d0
  * @ghidraAddress EUR: 0x8031c834
@@ -393,7 +393,7 @@ extern OSMesg g_aRspEventMsgBuf[1];
 
 /**
  * @ghidraAddress USA: 0x8031a320
- * @ghidraAddress Asia: 0x80319DE0
+ * @ghidraAddress Asia: 0x80319DD0
  * @ghidraAddress EUR: 0x8031c800
  * @ghidraAddress JPN: 0x8031b430
  * @ghidraAddress BRD3D: 0x106c33a0
@@ -403,7 +403,7 @@ extern OSMesgQueue g_RspDoneMsgQueue;
 
 /**
  * @ghidraAddress USA: 0x8031a350
- * @ghidraAddress Asia: 0x80319E10
+ * @ghidraAddress Asia: 0x80319E00
  * @ghidraAddress EUR: 0x8031c830
  * @ghidraAddress JPN: 0x8031b460
  */
@@ -413,7 +413,7 @@ extern OSMesg g_aRspDoneMsgBuf[1];
  * The queue the RDP event reaches, and the queue the thread forwards it to.
  *
  * @ghidraAddress USA: 0x8031a370
- * @ghidraAddress Asia: 0x80319E30
+ * @ghidraAddress Asia: 0x80319E20
  * @ghidraAddress BRD3D: 0x106c5ab8
  * @ghidraAddress BRGlide: 0x106ecb48
  * @ghidraAddress EUR: 0x8031c850
@@ -425,7 +425,7 @@ extern OSMesgQueue g_RdpEventMsgQueue;
 
 /**
  * @ghidraAddress USA: 0x8031a38c
- * @ghidraAddress Asia: 0x80319E4C
+ * @ghidraAddress Asia: 0x80319E3C
  * @ghidraAddress BRD3D: 0x106c32f8
  * @ghidraAddress BRGlide: 0x106ea388
  * @ghidraAddress EUR: 0x8031c86c
@@ -435,7 +435,7 @@ extern OSMesg g_aRdpEventMsgBuf[1];
 
 /**
  * @ghidraAddress USA: 0x8031a358
- * @ghidraAddress Asia: 0x80319E18
+ * @ghidraAddress Asia: 0x80319E08
  * @ghidraAddress EUR: 0x8031c838
  * @ghidraAddress JPN: 0x8031b468
  * @ghidraAddress BRD3D: 0x106c3380
@@ -445,7 +445,7 @@ extern OSMesgQueue g_RdpDoneMsgQueue;
 
 /**
  * @ghidraAddress USA: 0x8031a388
- * @ghidraAddress Asia: 0x80319E48
+ * @ghidraAddress Asia: 0x80319E38
  * @ghidraAddress EUR: 0x8031c868
  * @ghidraAddress JPN: 0x8031b498
  */
@@ -456,7 +456,7 @@ extern OSMesg g_aRdpDoneMsgBuf[1];
  * reaches.
  *
  * @ghidraAddress USA: 0x8031a3b0
- * @ghidraAddress Asia: 0x80319E70
+ * @ghidraAddress Asia: 0x80319E60
  * @ghidraAddress BRD3D: 0x106c5618
  * @ghidraAddress BRGlide: 0x106ec6a8
  * @ghidraAddress EUR: 0x8031c8b0
@@ -468,7 +468,7 @@ extern OSMesgQueue g_ViRetracePollMesgQueue;
 
 /**
  * @ghidraAddress USA: 0x8031a3c8
- * @ghidraAddress Asia: 0x80319E88
+ * @ghidraAddress Asia: 0x80319E78
  * @ghidraAddress BRD3D: 0x106c29a0
  * @ghidraAddress BRGlide: 0x106e9a30
  * @ghidraAddress EUR: 0x8031c8c8
@@ -478,7 +478,7 @@ extern OSMesg g_ViRetracePollMesgBuf[1];
 
 /**
  * @ghidraAddress USA: 0x8031a390
- * @ghidraAddress Asia: 0x80319E50
+ * @ghidraAddress Asia: 0x80319E40
  * @ghidraAddress BRD3D: 0x106c6540
  * @ghidraAddress BRGlide: 0x106ed5d0
  * @ghidraAddress EUR: 0x8031c890
@@ -488,7 +488,7 @@ extern OSMesgQueue g_ViRetraceMesgQueue;
 
 /**
  * @ghidraAddress USA: 0x8031a3a8
- * @ghidraAddress Asia: 0x80319E68
+ * @ghidraAddress Asia: 0x80319E58
  * @ghidraAddress EUR: 0x8031c8a8
  * @ghidraAddress JPN: 0x8031b4d8
  */
@@ -498,7 +498,7 @@ extern OSMesg g_ViRetraceMesgBuf[1];
  * The value the events send.
  *
  * @ghidraAddress USA: 0x8031a3cc
- * @ghidraAddress Asia: 0x80319E8C
+ * @ghidraAddress Asia: 0x80319E7C
  * @ghidraAddress BRD3D: 0x106c06a8
  * @ghidraAddress BRGlide: 0x106e7738
  * @ghidraAddress EUR: 0x8031c8cc
@@ -568,7 +568,7 @@ extern OSThread g_BootIdleThreadObj;
 
 /**
  * @ghidraAddress USA: 0x8031ac00
- * @ghidraAddress Asia: 0x8031A6C0
+ * @ghidraAddress Asia: 0x8031A6B0
  * @ghidraAddress EUR: 0x8031d100
  * @ghidraAddress JPN: 0x8031bd30
  */
@@ -584,7 +584,7 @@ extern OSThread g_FaultThreadObj;
  * The stacks of the threads.
  *
  * @ghidraAddress USA: 0x80318ed0
- * @ghidraAddress Asia: 0x80318990
+ * @ghidraAddress Asia: 0x80318980
  * @ghidraAddress EUR: 0x8031a9b0
  * @ghidraAddress JPN: 0x803195e0
  */
@@ -592,7 +592,7 @@ extern u32 g_adwRspDoneThreadStack[THREAD_STACK_WORDS];
 
 /**
  * @ghidraAddress USA: 0x803196d0
- * @ghidraAddress Asia: 0x80319190
+ * @ghidraAddress Asia: 0x80319180
  * @ghidraAddress EUR: 0x8031b1b0
  * @ghidraAddress JPN: 0x80319de0
  */
@@ -608,7 +608,7 @@ extern u32 g_adwPreNmiResetThreadStack[THREAD_STACK_WORDS];
 
 /**
  * @ghidraAddress USA: 0x80316cd0
- * @ghidraAddress Asia: 0x80316790
+ * @ghidraAddress Asia: 0x80316780
  * @ghidraAddress EUR: 0x803189b0
  * @ghidraAddress JPN: 0x803175e0
  */
@@ -616,7 +616,7 @@ extern u32 g_adwMainThreadStack[MAIN_STACK_WORDS];
 
 /**
  * @ghidraAddress USA: 0x803168d0
- * @ghidraAddress Asia: 0x80316390
+ * @ghidraAddress Asia: 0x80316380
  * @ghidraAddress EUR: 0x803185b0
  * @ghidraAddress JPN: 0x803171e0
  */
@@ -624,7 +624,7 @@ extern u32 g_adwIdleThreadStack[IDLE_STACK_WORDS];
 
 /**
  * @ghidraAddress USA: 0x8031adb0
- * @ghidraAddress Asia: 0x8031A870
+ * @ghidraAddress Asia: 0x8031A860
  * @ghidraAddress EUR: 0x8031d2b0
  * @ghidraAddress JPN: 0x8031bee0
  */
@@ -677,7 +677,7 @@ extern f32 g_fCountsPerMillisecond;
  * What the controllers reported at the start.
  *
  * @ghidraAddress USA: 0x8031a3d0
- * @ghidraAddress Asia: 0x80319E90
+ * @ghidraAddress Asia: 0x80319E80
  * @ghidraAddress EUR: 0x8031c8d0
  * @ghidraAddress JPN: 0x8031b500
  * @ghidraAddress BRD3D: 0x106c0928
@@ -731,7 +731,7 @@ extern s32 g_dwPrevElapsedTimeMs;
 
 /**
  * @ghidraAddress USA: 0x8031b348
- * @ghidraAddress Asia: 0x8031AE08
+ * @ghidraAddress Asia: 0x8031ADF8
  * @ghidraAddress EUR: 0x8031d868
  * @ghidraAddress JPN: 0x8031c498
  */
@@ -741,7 +741,7 @@ extern u32 g_dwDmaChunkSize;
  * The queue of the fault event and the thread that faulted.
  *
  * @ghidraAddress USA: 0x8031b1b0
- * @ghidraAddress Asia: 0x8031AC70
+ * @ghidraAddress Asia: 0x8031AC60
  * @ghidraAddress EUR: 0x8031d6b0
  * @ghidraAddress JPN: 0x8031c2e0
  */
@@ -749,7 +749,7 @@ extern OSMesgQueue g_FaultMsgQueue;
 
 /**
  * @ghidraAddress USA: 0x8031b1c8
- * @ghidraAddress Asia: 0x8031AC88
+ * @ghidraAddress Asia: 0x8031AC78
  * @ghidraAddress EUR: 0x8031d6c8
  * @ghidraAddress JPN: 0x8031c2f8
  */
@@ -757,7 +757,7 @@ extern OSMesg g_aFaultMsgBuf[1];
 
 /**
  * @ghidraAddress USA: 0x8031b1cc
- * @ghidraAddress Asia: 0x8031AC8C
+ * @ghidraAddress Asia: 0x8031AC7C
  * @ghidraAddress EUR: 0x8031d6cc
  * @ghidraAddress JPN: 0x8031c2fc
  */
@@ -767,7 +767,7 @@ extern OSThread *g_pFaultedThread;
  * Cleared once by the fault thread.
  *
  * @ghidraAddress USA: 0x8031b1d0
- * @ghidraAddress Asia: 0x8031AC90
+ * @ghidraAddress Asia: 0x8031AC80
  * @ghidraAddress EUR: 0x8031d6d0
  * @ghidraAddress JPN: 0x8031c300
  */
@@ -778,7 +778,7 @@ extern s32 g_dwFaultState;
  * argument vector and of the address of the count given to the threads.
  *
  * @ghidraAddress USA: 0x80316450
- * @ghidraAddress Asia: 0x80315F10
+ * @ghidraAddress Asia: 0x80315F00
  * @ghidraAddress EUR: 0x80318130
  * @ghidraAddress JPN: 0x80316d60
  */
@@ -804,7 +804,7 @@ extern s32 *g_pdwMainArgc;
  * The queue of the commands of the PI manager.
  *
  * @ghidraAddress USA: 0x80319ed0
- * @ghidraAddress Asia: 0x80319990
+ * @ghidraAddress Asia: 0x80319980
  * @ghidraAddress EUR: 0x8031c3b0
  * @ghidraAddress JPN: 0x8031ade0
  */
@@ -812,7 +812,7 @@ extern OSMesgQueue g_PiMgrCmdQueue;
 
 /**
  * @ghidraAddress USA: 0x80319ee8
- * @ghidraAddress Asia: 0x803199A8
+ * @ghidraAddress Asia: 0x80319998
  * @ghidraAddress EUR: 0x8031c3c8
  * @ghidraAddress JPN: 0x8031aff8
  */
@@ -1051,7 +1051,7 @@ extern "C"
  * The tasks of the RSP, one for each frame buffer.
  *
  * @ghidraAddress USA: 0x8031a9a8
- * @ghidraAddress Asia: 0x8031A468
+ * @ghidraAddress Asia: 0x8031A458
  * @ghidraAddress EUR: 0x8031cea8
  * @ghidraAddress JPN: 0x8031bad8
  * @ghidraAddress BRD3D: 0x106c1588
@@ -1103,7 +1103,7 @@ extern u64 g_abRspUcodeData[];
  * The memory of the matrix stack of the RSP, 16 bytes more than the stack to align it.
  *
  * @ghidraAddress USA: 0x8031a598
- * @ghidraAddress Asia: 0x8031A058
+ * @ghidraAddress Asia: 0x8031A048
  * @ghidraAddress EUR: 0x8031ca98
  * @ghidraAddress JPN: 0x8031b6c8
  * @ghidraAddress BRD3D: 0x106c2d00

@@ -262,7 +262,7 @@ extern u8 g_abPakDataNoteExtension[4];
  * Whether the options menu opens the screen that loads or saves the configuration.
  *
  * @ghidraAddress USA: 0x803163a0
- * @ghidraAddress Asia: 0x80315E60
+ * @ghidraAddress Asia: 0x80315E50
  * @ghidraAddress EUR: 0x80318080
  * @ghidraAddress JPN: 0x80316cb0
  */
@@ -270,7 +270,7 @@ extern s32 g_bLoadConfigurationPending;
 
 /**
  * @ghidraAddress USA: 0x803163a4
- * @ghidraAddress Asia: 0x80315E64
+ * @ghidraAddress Asia: 0x80315E54
  * @ghidraAddress EUR: 0x80318084
  * @ghidraAddress JPN: 0x80316cb4
  */
@@ -280,7 +280,7 @@ extern s32 g_bSaveConfigurationPending;
  * The names of the volume items.
  *
  * @ghidraAddress USA: 0x803163b0
- * @ghidraAddress Asia: 0x80315E70
+ * @ghidraAddress Asia: 0x80315E60
  * @ghidraAddress EUR: 0x80318090
  * @ghidraAddress JPN: 0x80316cc0
  */
@@ -288,7 +288,7 @@ extern char g_szBgmVolumeTextBuf[0x18];
 
 /**
  * @ghidraAddress USA: 0x803163c8
- * @ghidraAddress Asia: 0x80315E88
+ * @ghidraAddress Asia: 0x80315E78
  * @ghidraAddress EUR: 0x803180a8
  * @ghidraAddress JPN: 0x80316cd8
  */
@@ -298,7 +298,7 @@ extern char g_szSfxVolumeTextBuf[0x18];
  * Whether g_aabSavePakIds holds the identity of the Pak of each of the first two players.
  *
  * @ghidraAddress USA: 0x80316420
- * @ghidraAddress Asia: 0x80315EE0
+ * @ghidraAddress Asia: 0x80315ED0
  * @ghidraAddress EUR: 0x80318100
  * @ghidraAddress JPN: 0x80316d30
  */
@@ -308,7 +308,7 @@ extern u8 g_abSavePakIdKnown[2];
  * Whether the save and load menu loaded a season or a ghost car.
  *
  * @ghidraAddress USA: 0x80316422
- * @ghidraAddress Asia: 0x80315EE2
+ * @ghidraAddress Asia: 0x80315ED2
  * @ghidraAddress EUR: 0x8031810a
  * @ghidraAddress JPN: 0x80316d32
  */
@@ -329,7 +329,7 @@ extern u8 g_bSaveLoadSkipEepromProbe;
  * Whether the save and load menu takes the input of its choices.
  *
  * @ghidraAddress USA: 0x80316423
- * @ghidraAddress Asia: 0x80315EE3
+ * @ghidraAddress Asia: 0x80315ED3
  * @ghidraAddress EUR: 0x8031810b
  * @ghidraAddress JPN: 0x80316d33
  */
@@ -339,7 +339,7 @@ extern u8 g_bSaveLoadInputEnabled;
  * The note the save and load menu found or made.
  *
  * @ghidraAddress USA: 0x80316424
- * @ghidraAddress Asia: 0x80315EE4
+ * @ghidraAddress Asia: 0x80315ED4
  * @ghidraAddress EUR: 0x8031810c
  * @ghidraAddress JPN: 0x80316d34
  */
@@ -349,7 +349,7 @@ extern s32 g_dwSaveLoadNoteIndex;
  * The frames the save and load menu waited once the sounds faded out.
  *
  * @ghidraAddress USA: 0x80316428
- * @ghidraAddress Asia: 0x80315EE8
+ * @ghidraAddress Asia: 0x80315ED8
  * @ghidraAddress EUR: 0x80318111
  * @ghidraAddress JPN: 0x80316d39
  */
@@ -359,7 +359,7 @@ extern u8 g_bSaveLoadFadeDelayFrames;
  * The note the screen of the Controller Pak data found or made.
  *
  * @ghidraAddress USA: 0x8031642c
- * @ghidraAddress Asia: 0x80315EEC
+ * @ghidraAddress Asia: 0x80315EDC
  * @ghidraAddress EUR: 0x80318104
  * @ghidraAddress JPN: 0x80316d3c
  */
@@ -369,7 +369,7 @@ extern s32 g_dwPakDataNoteIndex;
  * The step of the screen of the Controller Pak data.
  *
  * @ghidraAddress USA: 0x80316430
- * @ghidraAddress Asia: 0x80315EF0
+ * @ghidraAddress Asia: 0x80315EE0
  * @ghidraAddress EUR: 0x80318108
  * @ghidraAddress JPN: 0x80316d40
  */
@@ -379,7 +379,7 @@ extern u8 g_bPakDataStep;
  * The frames the screen of the Controller Pak data waited once the sounds faded out.
  *
  * @ghidraAddress USA: 0x80316431
- * @ghidraAddress Asia: 0x80315EF1
+ * @ghidraAddress Asia: 0x80315EE1
  * @ghidraAddress EUR: 0x80318109
  * @ghidraAddress JPN: 0x80316d41
  */

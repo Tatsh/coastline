@@ -34,7 +34,7 @@ typedef struct {
 
 /**
  * @ghidraAddress USA: 0x80366a80
- * @ghidraAddress Asia: 0x80366540
+ * @ghidraAddress Asia: 0x80366530
  * @ghidraAddress EUR: 0x80368f80
  * @ghidraAddress JPN: 0x80367bf0
  * @ghidraAddress BRD3D: 0x10a99bb8
@@ -95,7 +95,7 @@ extern u16 g_wPavedTireSmokeListHead;
  * puffs take them.
  *
  * @ghidraAddress USA: 0x80368a80
- * @ghidraAddress Asia: 0x80368540
+ * @ghidraAddress Asia: 0x80368530
  * @ghidraAddress EUR: 0x8036af80
  * @ghidraAddress JPN: 0x80369bf0
  * @ghidraAddress BRD3D: 0x1039b6d0

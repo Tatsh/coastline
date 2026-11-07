@@ -36,7 +36,7 @@ segments:
     type: code
     start: 0x1000
     vram: 0x80200000
-    bss_size: 0xD67B0
+    bss_size: 0xD67A0
     subsegments:
       - [0x1000, hasm, entry]
       - [0x1050, asm, '01050']

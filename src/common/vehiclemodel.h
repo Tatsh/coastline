@@ -156,7 +156,7 @@ extern VehicleModel g_aVehicleModels[];
  * The car whose model each slot holds.
  *
  * @ghidraAddress USA: 0x8031b238
- * @ghidraAddress Asia: 0x8031ACF8
+ * @ghidraAddress Asia: 0x8031ACE8
  * @ghidraAddress EUR: 0x8031d738
  * @ghidraAddress JPN: 0x8031c368
  * @ghidraAddress BRD3D: 0x106c6558

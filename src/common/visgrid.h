@@ -27,7 +27,7 @@ extern "C" {
 
 /**
  * @ghidraAddress USA: 0x8031b1f0
- * @ghidraAddress Asia: 0x8031ACB0
+ * @ghidraAddress Asia: 0x8031ACA0
  * @ghidraAddress EUR: 0x8031d6f0
  * @ghidraAddress JPN: 0x8031c320
  * @ghidraAddress BRD3D: 0x106c3310
@@ -85,7 +85,7 @@ extern s32 g_dwVisibleGridMaxRow;
  * The first covered column of each row.
  *
  * @ghidraAddress USA: 0x8034e5b0
- * @ghidraAddress Asia: 0x8034E070
+ * @ghidraAddress Asia: 0x8034E060
  * @ghidraAddress EUR: 0x80350ab0
  * @ghidraAddress JPN: 0x8034eb30
  * @ghidraAddress BRD3D: 0x10a9bbd0
@@ -97,7 +97,7 @@ extern s32 g_adwVisibleGridRowMinCol[VISIBLE_GRID_SIZE];
  * The last covered column of each row.
  *
  * @ghidraAddress USA: 0x8034e6b0
- * @ghidraAddress Asia: 0x8034E170
+ * @ghidraAddress Asia: 0x8034E160
  * @ghidraAddress EUR: 0x80350bb0
  * @ghidraAddress JPN: 0x8034ec30
  * @ghidraAddress BRD3D: 0x10a9bcd0
@@ -109,7 +109,7 @@ extern s32 g_adwVisibleGridRowMaxCol[VISIBLE_GRID_SIZE];
  * The first covered row of each column.
  *
  * @ghidraAddress USA: 0x8034e7b0
- * @ghidraAddress Asia: 0x8034E270
+ * @ghidraAddress Asia: 0x8034E260
  * @ghidraAddress EUR: 0x80350cb0
  * @ghidraAddress JPN: 0x8034ed30
  * @ghidraAddress BRD3D: 0x10a9bdd0
@@ -121,7 +121,7 @@ extern s32 g_adwVisibleGridColMinRow[VISIBLE_GRID_SIZE];
  * The last covered row of each column.
  *
  * @ghidraAddress USA: 0x8034e8b0
- * @ghidraAddress Asia: 0x8034E370
+ * @ghidraAddress Asia: 0x8034E360
  * @ghidraAddress EUR: 0x80350db0
  * @ghidraAddress JPN: 0x8034ee30
  * @ghidraAddress BRD3D: 0x10a9bed0

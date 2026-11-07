@@ -80,7 +80,7 @@ extern Texture g_aDashboardGearTextures[DASHBOARD_VIEWS];
  * The palette the dashboard of each view draws with.
  *
  * @ghidraAddress USA: 0x80361530
- * @ghidraAddress Asia: 0x80360FF0
+ * @ghidraAddress Asia: 0x80360FE0
  * @ghidraAddress EUR: 0x80363a30
  * @ghidraAddress JPN: 0x803626a0
  */
@@ -90,7 +90,7 @@ extern u16 g_aawDashboardPalettes[DASHBOARD_VIEWS][DASHBOARD_PALETTE_COLORS];
  * The palette of the dashboard as loaded, which the segments of a bar take their colors from.
  *
  * @ghidraAddress USA: 0x80361930
- * @ghidraAddress Asia: 0x803613F0
+ * @ghidraAddress Asia: 0x803613E0
  * @ghidraAddress EUR: 0x80363e30
  * @ghidraAddress JPN: 0x80362aa0
  */
@@ -102,7 +102,7 @@ extern u16 g_awDashboardBarPalette[DASHBOARD_PALETTE_COLORS];
  * The needle of each view, for each frame buffer so a frame does not change one being drawn.
  *
  * @ghidraAddress USA: 0x80361b30
- * @ghidraAddress Asia: 0x803615F0
+ * @ghidraAddress Asia: 0x803615E0
  * @ghidraAddress EUR: 0x80364030
  * @ghidraAddress JPN: 0x80362ca0
  */
@@ -113,7 +113,7 @@ extern Vtx g_aGaugeNeedleVerts[2][DASHBOARD_VIEWS][4];
  * The text of the speed.
  *
  * @ghidraAddress USA: 0x80361c30
- * @ghidraAddress Asia: 0x803616F0
+ * @ghidraAddress Asia: 0x803616E0
  * @ghidraAddress EUR: 0x80364130
  * @ghidraAddress JPN: 0x80362da0
  * @ghidraAddress BRD3D: 0x104b0320

@@ -154,7 +154,7 @@ void ProcessControllerConfigScreen(void) {
     static s32 g_dwControllerScreenInitState = 0;
     /**
      * @ghidraAddress USA: 0x80316440
-     * @ghidraAddress Asia: 0x80315F00
+     * @ghidraAddress Asia: 0x80315EF0
      * @ghidraAddress EUR: 0x80318120
      * @ghidraAddress JPN: 0x80316d50
      */
@@ -162,7 +162,7 @@ void ProcessControllerConfigScreen(void) {
     /* The layout under the cursor. */
     /**
      * @ghidraAddress USA: 0x80316444
-     * @ghidraAddress Asia: 0x80315F04
+     * @ghidraAddress Asia: 0x80315EF4
      * @ghidraAddress EUR: 0x80318124
      * @ghidraAddress JPN: 0x80316d54
      */

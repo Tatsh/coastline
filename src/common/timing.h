@@ -28,7 +28,7 @@ typedef struct {
  * The markers of the two frames.
  *
  * @ghidraAddress USA: 0x8034e9b0
- * @ghidraAddress Asia: 0x8034E470
+ * @ghidraAddress Asia: 0x8034E460
  * @ghidraAddress EUR: 0x80350eb0
  * @ghidraAddress JPN: 0x8034ef30
  * @ghidraAddress BRD3D: 0x1067d580
@@ -38,7 +38,7 @@ extern TimingMarker g_aTimingMarkers[2][TIMING_BARS][TIMING_MARKERS];
 
 /**
  * @ghidraAddress USA: 0x803519b0
- * @ghidraAddress Asia: 0x80351470
+ * @ghidraAddress Asia: 0x80351460
  * @ghidraAddress EUR: 0x80353eb0
  * @ghidraAddress JPN: 0x80351f30
  * @ghidraAddress BRD3D: 0x1067d558
@@ -88,7 +88,7 @@ extern u64 g_dwTimingFrameElapsed;
  * The timer count the full length of the bars stands for.
  *
  * @ghidraAddress USA: 0x803519c8
- * @ghidraAddress Asia: 0x80351488
+ * @ghidraAddress Asia: 0x80351478
  * @ghidraAddress EUR: 0x80353ec8
  * @ghidraAddress JPN: 0x80351f48
  */

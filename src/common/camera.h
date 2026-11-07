@@ -81,7 +81,7 @@ extern s32 g_dwCameraRayHitCount;
  * The placed models of the ground below the active camera, the nearest first.
  *
  * @ghidraAddress USA: 0x8031b248
- * @ghidraAddress Asia: 0x8031AD08
+ * @ghidraAddress Asia: 0x8031ACF8
  * @ghidraAddress EUR: 0x8031d748
  * @ghidraAddress JPN: 0x8031c378
  * @ghidraAddress BRD3D: 0x106c6498
@@ -270,7 +270,7 @@ extern s32 g_dwCameraRayNearbyCount;
 
 /**
  * @ghidraAddress USA: 0x8031b288
- * @ghidraAddress Asia: 0x8031AD48
+ * @ghidraAddress Asia: 0x8031AD38
  * @ghidraAddress EUR: 0x8031d788
  * @ghidraAddress JPN: 0x8031c3b8
  */
@@ -280,7 +280,7 @@ extern u16 g_awCameraRayNearbyInstances[];
  * The middle of the far rectangle of the view.
  *
  * @ghidraAddress USA: 0x8031abf0
- * @ghidraAddress Asia: 0x8031A6B0
+ * @ghidraAddress Asia: 0x8031A6A0
  * @ghidraAddress EUR: 0x8031d0f0
  * @ghidraAddress JPN: 0x8031bd20
  * @ghidraAddress BRD3D: 0x106c2990
@@ -292,7 +292,7 @@ extern Vec3f g_afFrustumCenter;
  * Half the far rectangle of the view, across.
  *
  * @ghidraAddress USA: 0x8031abd0
- * @ghidraAddress Asia: 0x8031A690
+ * @ghidraAddress Asia: 0x8031A680
  * @ghidraAddress EUR: 0x8031d0d0
  * @ghidraAddress JPN: 0x8031bd00
  * @ghidraAddress BRD3D: 0x106c56f8
@@ -304,7 +304,7 @@ extern Vec3f g_vFrustumHalfRight;
  * Half the far rectangle of the view, up.
  *
  * @ghidraAddress USA: 0x8031abe0
- * @ghidraAddress Asia: 0x8031A6A0
+ * @ghidraAddress Asia: 0x8031A690
  * @ghidraAddress EUR: 0x8031d0e0
  * @ghidraAddress JPN: 0x8031bd10
  * @ghidraAddress BRD3D: 0x106c0690

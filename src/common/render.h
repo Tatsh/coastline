@@ -157,7 +157,7 @@ extern Mtx *g_pProjectionMtx;
  * A matrix the renderer builds before converting it.
  *
  * @ghidraAddress USA: 0x8031ab10
- * @ghidraAddress Asia: 0x8031A5D0
+ * @ghidraAddress Asia: 0x8031A5C0
  * @ghidraAddress EUR: 0x8031d010
  * @ghidraAddress JPN: 0x8031bc40
  * @ghidraAddress BRD3D: 0x106c0860
@@ -177,7 +177,7 @@ extern f32 g_afCameraRollMatrix[4][4];
  * The perspective of the current view.
  *
  * @ghidraAddress USA: 0x8031aa90
- * @ghidraAddress Asia: 0x8031A550
+ * @ghidraAddress Asia: 0x8031A540
  * @ghidraAddress EUR: 0x8031cf90
  * @ghidraAddress JPN: 0x8031bbc0
  * @ghidraAddress BRD3D: 0x106c0218
@@ -189,7 +189,7 @@ extern f32 g_afPerspectiveMatrix[4][4];
  * A matrix the renderer fills as an operand.
  *
  * @ghidraAddress USA: 0x8031ab50
- * @ghidraAddress Asia: 0x8031A610
+ * @ghidraAddress Asia: 0x8031A600
  * @ghidraAddress EUR: 0x8031d050
  * @ghidraAddress JPN: 0x8031bc80
  * @ghidraAddress BRD3D: 0x106c08a0
@@ -284,7 +284,7 @@ extern s32 g_dwNumViewports;
  * The rectangles of the views.
  *
  * @ghidraAddress USA: 0x8031b2c8
- * @ghidraAddress Asia: 0x8031AD88
+ * @ghidraAddress Asia: 0x8031AD78
  * @ghidraAddress EUR: 0x8031d7c8
  * @ghidraAddress JPN: 0x8031c3f8
  * @ghidraAddress BRD3D: 0x106c1628
@@ -336,7 +336,7 @@ extern s32 g_dwViewportTransZ;
  * The view and projection of the view being drawn.
  *
  * @ghidraAddress USA: 0x8031aa50
- * @ghidraAddress Asia: 0x8031A510
+ * @ghidraAddress Asia: 0x8031A500
  * @ghidraAddress EUR: 0x8031cf50
  * @ghidraAddress JPN: 0x8031bb80
  * @ghidraAddress BRD3D: 0x106c29a8
@@ -384,7 +384,7 @@ extern f32 g_fFrustumFovAngle;
  * The view of the current view, before its perspective.
  *
  * @ghidraAddress USA: 0x8031aad0
- * @ghidraAddress Asia: 0x8031A590
+ * @ghidraAddress Asia: 0x8031A580
  * @ghidraAddress EUR: 0x8031cfd0
  * @ghidraAddress JPN: 0x8031bc00
  * @ghidraAddress BRD3D: 0x106c58c0
@@ -500,7 +500,7 @@ extern Lights1 g_DefaultLights;
  * The direction of the light of the sun.
  *
  * @ghidraAddress USA: 0x8031b338
- * @ghidraAddress Asia: 0x8031ADF8
+ * @ghidraAddress Asia: 0x8031ADE8
  * @ghidraAddress EUR: 0x8031d828
  * @ghidraAddress JPN: 0x8031c458
  * @ghidraAddress BRD3D: 0x106c0670
@@ -512,7 +512,7 @@ extern f32 g_afLightDirection[3];
  * The colours of the light of the placed models lit by their light ramp, by its index.
  *
  * @ghidraAddress USA: 0x8031b360
- * @ghidraAddress Asia: 0x8031AE20
+ * @ghidraAddress Asia: 0x8031AE10
  * @ghidraAddress EUR: 0x8031d858
  * @ghidraAddress JPN: 0x8031c488
  * @ghidraAddress BRD3D: 0x106c0950
@@ -524,7 +524,7 @@ extern u32 g_adwLightRampColors[4];
  * Whether each vehicle is in the view being drawn.
  *
  * @ghidraAddress USA: 0x80351c70
- * @ghidraAddress Asia: 0x80351730
+ * @ghidraAddress Asia: 0x80351720
  * @ghidraAddress EUR: 0x80354170
  * @ghidraAddress JPN: 0x80352de0
  * @ghidraAddress BRD3D: 0x10277e60
@@ -759,7 +759,7 @@ extern s32 g_dwFogFactorScale;
  * The light ramps of the placed models, in parts, by the index of the ramp.
  *
  * @ghidraAddress USA: 0x8031b350
- * @ghidraAddress Asia: 0x8031AE10
+ * @ghidraAddress Asia: 0x8031AE00
  * @ghidraAddress EUR: 0x8031d848
  * @ghidraAddress JPN: 0x8031c478
  * @ghidraAddress BRD3D: 0x10690ff8
@@ -769,7 +769,7 @@ extern u8 g_abLightRampR[4];
 
 /**
  * @ghidraAddress USA: 0x8031b354
- * @ghidraAddress Asia: 0x8031AE14
+ * @ghidraAddress Asia: 0x8031AE04
  * @ghidraAddress EUR: 0x8031d84c
  * @ghidraAddress JPN: 0x8031c47c
  * @ghidraAddress BRD3D: 0x106c6494
@@ -779,7 +779,7 @@ extern u8 g_abLightRampG[4];
 
 /**
  * @ghidraAddress USA: 0x8031b358
- * @ghidraAddress Asia: 0x8031AE18
+ * @ghidraAddress Asia: 0x8031AE08
  * @ghidraAddress EUR: 0x8031d850
  * @ghidraAddress JPN: 0x8031c480
  * @ghidraAddress BRD3D: 0x106c3358
@@ -792,7 +792,7 @@ extern u8 g_abLightRampB[4];
 
 /**
  * @ghidraAddress USA: 0x80318cd0
- * @ghidraAddress Asia: 0x80318790
+ * @ghidraAddress Asia: 0x80318780
  * @ghidraAddress EUR: 0x8031c1b0
  * @ghidraAddress JPN: 0x8031adf8
  * @ghidraAddress BRD3D: 0x106c1788

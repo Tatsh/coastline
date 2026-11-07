@@ -71,7 +71,7 @@ extern s32 g_bCarSelectInitialized;
  * The time the screen started, in milliseconds.
  *
  * @ghidraAddress USA: 0x80316250
- * @ghidraAddress Asia: 0x80315D10
+ * @ghidraAddress Asia: 0x80315D00
  * @ghidraAddress EUR: 0x80317f30
  * @ghidraAddress JPN: 0x80316b68
  */
@@ -81,7 +81,7 @@ extern s32 g_dwCarSelectStartTime;
  * The slot of g_aVehicleModelSlots of the car each player sees.
  *
  * @ghidraAddress USA: 0x80316258
- * @ghidraAddress Asia: 0x80315D18
+ * @ghidraAddress Asia: 0x80315D08
  * @ghidraAddress EUR: 0x80317f38
  * @ghidraAddress JPN: 0x80316b70
  */
@@ -100,7 +100,7 @@ extern s32 g_adwCarSelectPaintPending[2];
  * How far the cars of each player slide on their stage, from 1 or -1 to 0 at rest.
  *
  * @ghidraAddress USA: 0x80316260
- * @ghidraAddress Asia: 0x80315D20
+ * @ghidraAddress Asia: 0x80315D10
  * @ghidraAddress EUR: 0x80317f40
  * @ghidraAddress JPN: 0x80316b78
  */
@@ -110,7 +110,7 @@ extern f32 g_afCarSelectSlide[2];
  * The turn of the stage of each player, in radians.
  *
  * @ghidraAddress USA: 0x80316268
- * @ghidraAddress Asia: 0x80315D28
+ * @ghidraAddress Asia: 0x80315D18
  * @ghidraAddress EUR: 0x80317f48
  * @ghidraAddress JPN: 0x80316b80
  */
@@ -120,7 +120,7 @@ extern f32 g_afCarSelectAngle[2];
  * The options each player chooses from.
  *
  * @ghidraAddress USA: 0x80316270
- * @ghidraAddress Asia: 0x80315D30
+ * @ghidraAddress Asia: 0x80315D20
  * @ghidraAddress EUR: 0x80317f50
  * @ghidraAddress JPN: 0x80316b88
  */
@@ -130,7 +130,7 @@ extern MenuItem **g_aapCarSelectOptions[2];
  * The option under the cursor of each player.
  *
  * @ghidraAddress USA: 0x80316278
- * @ghidraAddress Asia: 0x80315D38
+ * @ghidraAddress Asia: 0x80315D28
  * @ghidraAddress EUR: 0x80317f58
  * @ghidraAddress JPN: 0x80316b90
  */
@@ -140,7 +140,7 @@ extern s32 g_anCarSelectCursor[2];
  * The option each player's cursor left, which slides out.
  *
  * @ghidraAddress USA: 0x80316280
- * @ghidraAddress Asia: 0x80315D40
+ * @ghidraAddress Asia: 0x80315D30
  * @ghidraAddress EUR: 0x80317f60
  * @ghidraAddress JPN: 0x80316b98
  */
@@ -150,7 +150,7 @@ extern s32 g_anCarSelectPrevCursor[2];
  * The number of options each player chooses from.
  *
  * @ghidraAddress USA: 0x80316288
- * @ghidraAddress Asia: 0x80315D48
+ * @ghidraAddress Asia: 0x80315D38
  * @ghidraAddress EUR: 0x80317f68
  * @ghidraAddress JPN: 0x80316ba0
  */
@@ -160,7 +160,7 @@ extern s32 g_anCarSelectOptionCount[2];
  * The name of the option each player chooses.
  *
  * @ghidraAddress USA: 0x80316290
- * @ghidraAddress Asia: 0x80315D50
+ * @ghidraAddress Asia: 0x80315D40
  * @ghidraAddress EUR: 0x80317f70
  * @ghidraAddress JPN: 0x80316ba8
  */
@@ -170,7 +170,7 @@ extern const char *g_apszCarSelectCategory[2];
  * Whether every player chose, rather than one leaving.
  *
  * @ghidraAddress USA: 0x80316298
- * @ghidraAddress Asia: 0x80315D58
+ * @ghidraAddress Asia: 0x80315D48
  * @ghidraAddress EUR: 0x80317f78
  * @ghidraAddress JPN: 0x80316bb0
  */
@@ -180,7 +180,7 @@ extern s32 g_bCarSelectDone;
  * The sounds of moving the cursor and of choosing, and their lengths.
  *
  * @ghidraAddress USA: 0x8031629c
- * @ghidraAddress Asia: 0x80315D5C
+ * @ghidraAddress Asia: 0x80315D4C
  * @ghidraAddress EUR: 0x80317f7c
  * @ghidraAddress JPN: 0x80316bb4
  */
@@ -188,7 +188,7 @@ extern s8 *g_pScrollSoundBuf;
 
 /**
  * @ghidraAddress USA: 0x803162a0
- * @ghidraAddress Asia: 0x80315D60
+ * @ghidraAddress Asia: 0x80315D50
  * @ghidraAddress EUR: 0x80317f80
  * @ghidraAddress JPN: 0x80316bb8
  */
@@ -196,7 +196,7 @@ extern u32 g_dwScrollSoundSize;
 
 /**
  * @ghidraAddress USA: 0x803162a4
- * @ghidraAddress Asia: 0x80315D64
+ * @ghidraAddress Asia: 0x80315D54
  * @ghidraAddress EUR: 0x80317f84
  * @ghidraAddress JPN: 0x80316bbc
  */
@@ -204,7 +204,7 @@ extern s8 *g_pSelectSoundBuf;
 
 /**
  * @ghidraAddress USA: 0x803162a8
- * @ghidraAddress Asia: 0x80315D68
+ * @ghidraAddress Asia: 0x80315D58
  * @ghidraAddress EUR: 0x80317f88
  * @ghidraAddress JPN: 0x80316bc0
  */
@@ -214,7 +214,7 @@ extern u32 g_dwSelectSoundSize;
  * The frames the title is still drawn once the screen has faded in. It is set to 2 each frame.
  *
  * @ghidraAddress USA: 0x803162ac
- * @ghidraAddress Asia: 0x80315D6C
+ * @ghidraAddress Asia: 0x80315D5C
  * @ghidraAddress EUR: 0x80317f8c
  * @ghidraAddress JPN: 0x80316bc4
  */
@@ -224,7 +224,7 @@ extern s32 g_dwTitleRedrawFrames;
  * The step of each player, by the CAR_SELECT_ values.
  *
  * @ghidraAddress USA: 0x803162b0
- * @ghidraAddress Asia: 0x80315D70
+ * @ghidraAddress Asia: 0x80315D60
  * @ghidraAddress EUR: 0x80317f90
  * @ghidraAddress JPN: 0x80316bc8
  */
@@ -235,7 +235,7 @@ extern s32 g_adwCarSelectState[2];
  * result, and whether it is done.
  *
  * @ghidraAddress USA: 0x803162b8
- * @ghidraAddress Asia: 0x80315D78
+ * @ghidraAddress Asia: 0x80315D68
  * @ghidraAddress EUR: 0x80317f98
  * @ghidraAddress JPN: 0x80316bd0
  */
@@ -243,7 +243,7 @@ extern s32 g_dwPakDialogActive;
 
 /**
  * @ghidraAddress USA: 0x803162bc
- * @ghidraAddress Asia: 0x80315D7C
+ * @ghidraAddress Asia: 0x80315D6C
  * @ghidraAddress EUR: 0x80317f9c
  * @ghidraAddress JPN: 0x80316bd4
  */
@@ -251,7 +251,7 @@ extern s32 g_dwPakDialogPlayerIdx;
 
 /**
  * @ghidraAddress USA: 0x803162c0
- * @ghidraAddress Asia: 0x80315D80
+ * @ghidraAddress Asia: 0x80315D70
  * @ghidraAddress EUR: 0x80317fa0
  * @ghidraAddress JPN: 0x80316bd8
  */
@@ -259,7 +259,7 @@ extern s32 g_dwPakDialogResult;
 
 /**
  * @ghidraAddress USA: 0x803162c4
- * @ghidraAddress Asia: 0x80315D84
+ * @ghidraAddress Asia: 0x80315D74
  * @ghidraAddress EUR: 0x80317fa4
  * @ghidraAddress JPN: 0x80316bdc
  */
@@ -270,7 +270,7 @@ extern u8 g_bPakDialogDone;
  * of the race.
  *
  * @ghidraAddress USA: 0x803162fc
- * @ghidraAddress Asia: 0x80315DBC
+ * @ghidraAddress Asia: 0x80315DAC
  * @ghidraAddress EUR: 0x80317fdc
  * @ghidraAddress JPN: 0x80316c14
  */
@@ -278,7 +278,7 @@ extern s32 g_dwResultsSeason;
 
 /**
  * @ghidraAddress USA: 0x80316300
- * @ghidraAddress Asia: 0x80315DC0
+ * @ghidraAddress Asia: 0x80315DB0
  * @ghidraAddress EUR: 0x80317fe0
  * @ghidraAddress JPN: 0x80316c18
  */
@@ -286,7 +286,7 @@ extern s32 g_dwResultsRound;
 
 /**
  * @ghidraAddress USA: 0x80316304
- * @ghidraAddress Asia: 0x80315DC4
+ * @ghidraAddress Asia: 0x80315DB4
  * @ghidraAddress EUR: 0x80317fe4
  * @ghidraAddress JPN: 0x80316c1c
  */
@@ -294,7 +294,7 @@ extern s32 g_dwResultsChampionshipFlags;
 
 /**
  * @ghidraAddress USA: 0x80316308
- * @ghidraAddress Asia: 0x80315DC8
+ * @ghidraAddress Asia: 0x80315DB8
  * @ghidraAddress EUR: 0x80317fe8
  * @ghidraAddress JPN: 0x80316c20
  */
@@ -302,7 +302,7 @@ extern s32 g_dwResultsTrack;
 
 /**
  * @ghidraAddress USA: 0x8031630c
- * @ghidraAddress Asia: 0x80315DCC
+ * @ghidraAddress Asia: 0x80315DBC
  * @ghidraAddress EUR: 0x80317fec
  * @ghidraAddress JPN: 0x80316c24
  */
@@ -312,7 +312,7 @@ extern s32 g_dwCarSelectWeather;
  * Whether the season results were processed on this screen.
  *
  * @ghidraAddress USA: 0x80316310
- * @ghidraAddress Asia: 0x80315DD0
+ * @ghidraAddress Asia: 0x80315DC0
  * @ghidraAddress EUR: 0x80317ff0
  * @ghidraAddress JPN: 0x80316c28
  */
@@ -322,7 +322,7 @@ extern s32 g_bSeasonResultsShown;
  * The page of the results, by the RESULTS_PAGE_ values.
  *
  * @ghidraAddress USA: 0x80316314
- * @ghidraAddress Asia: 0x80315DD4
+ * @ghidraAddress Asia: 0x80315DC4
  * @ghidraAddress EUR: 0x80317ff4
  * @ghidraAddress JPN: 0x80316c2c
  */
@@ -332,7 +332,7 @@ extern s32 g_dwResultsPage;
  * The text of a line of the results.
  *
  * @ghidraAddress USA: 0x80316318
- * @ghidraAddress Asia: 0x80315DD8
+ * @ghidraAddress Asia: 0x80315DC8
  * @ghidraAddress EUR: 0x80317ff8
  * @ghidraAddress JPN: 0x80316c30
  */

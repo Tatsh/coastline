@@ -244,7 +244,7 @@ extern "C" {
  * The racers of the race.
  *
  * @ghidraAddress USA: 0x803239a0
- * @ghidraAddress Asia: 0x80323460
+ * @ghidraAddress Asia: 0x80323450
  * @ghidraAddress EUR: 0x80325ea0
  * @ghidraAddress JPN: 0x80324ad0
  * @ghidraAddress BRD3D: 0x10acd498

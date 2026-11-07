@@ -34,12 +34,12 @@ REGIONS = {
   'us': Release('usa.z64', 0x8026EA00, 0x802AC400, 0x80382BB0),
   'jp': Release('jpn.z64', 0x80270480, 0x802ACB30, 0x803837A0),
   'eu': Release('eur.z64', 0x802709D0, 0x802AE0F0, 0x80384B30),
-  'asia': Release('asia.z64', 0x8026E550, 0x802ABEC0, 0x80382670),
+  'asia': Release('asia.z64', 0x8026E550, 0x802ABEC0, 0x80382660),
 }
 
 
 def asia_data_address(address: int) -> int | None:
-  """Map named USA data to the Asia layout, omitting its removed Midway splash data."""
+  """Map named USA data to the Asia layout, omitting removed splash data."""
   if address < 0x8026EA00:
     return None
   if address < 0x802A730C:
@@ -48,7 +48,15 @@ def asia_data_address(address: int) -> int | None:
     return address - 0x528
   if address < 0x802A7414:
     return None
-  return address - 0x540
+  if address < 0x80315E84:
+    return address - 0x540
+  if address < 0x80315E88:
+    return None
+  if address < 0x80315EBC:
+    return address - 0x544
+  if address < 0x80315EC8:
+    return None
+  return address - 0x550
 
 
 def main() -> int:

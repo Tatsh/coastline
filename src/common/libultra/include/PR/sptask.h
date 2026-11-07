@@ -67,7 +67,7 @@ typedef union {
  * The physical copy of the last task osSpTaskLoad() loaded.
  *
  * @ghidraAddress USA: 0x8037f330
- * @ghidraAddress Asia: 0x8037EDF0
+ * @ghidraAddress Asia: 0x8037EDE0
  * @ghidraAddress EUR: 0x80381270
  * @ghidraAddress JPN: 0x8037fee0
  */

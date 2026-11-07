@@ -33,7 +33,7 @@ typedef struct TrackTriangle {
 
 /**
  * @ghidraAddress USA: 0x80379f80
- * @ghidraAddress Asia: 0x80379A40
+ * @ghidraAddress Asia: 0x80379A30
  * @ghidraAddress EUR: 0x8037c480
  * @ghidraAddress JPN: 0x8037b0f0
  * @ghidraAddress BRD3D: 0x11750338
@@ -45,7 +45,7 @@ extern TrackTriangle g_aTriCacheTriangles[TRI_CACHE_SLOTS][TRI_CACHE_TRIANGLES];
  * The cell each slot holds, as its row times 64 plus its column.
  *
  * @ghidraAddress USA: 0x8037ea80
- * @ghidraAddress Asia: 0x8037E540
+ * @ghidraAddress Asia: 0x8037E530
  * @ghidraAddress EUR: 0x80380f80
  * @ghidraAddress JPN: 0x8037fbf0
  * @ghidraAddress BRD3D: 0x117554d8
@@ -57,7 +57,7 @@ extern u16 g_awTriCacheSectorId[TRI_CACHE_SLOTS];
  * The triangles in each slot.
  *
  * @ghidraAddress USA: 0x8037ea88
- * @ghidraAddress Asia: 0x8037E548
+ * @ghidraAddress Asia: 0x8037E538
  * @ghidraAddress EUR: 0x80380f88
  * @ghidraAddress JPN: 0x8037fbf8
  * @ghidraAddress BRD3D: 0x117554a0
@@ -91,7 +91,7 @@ extern Vec3f g_vRayGroundNormalInit;
  * When each slot was last used.
  *
  * @ghidraAddress USA: 0x8037ea90
- * @ghidraAddress Asia: 0x8037E550
+ * @ghidraAddress Asia: 0x8037E540
  * @ghidraAddress EUR: 0x80380f90
  * @ghidraAddress JPN: 0x8037fc00
  * @ghidraAddress BRD3D: 0x117554c8
@@ -104,7 +104,7 @@ extern u32 g_adwTriCacheLruStamp[TRI_CACHE_SLOTS];
  * The count of the uses of the cache.
  *
  * @ghidraAddress USA: 0x8037eaa0
- * @ghidraAddress Asia: 0x8037E560
+ * @ghidraAddress Asia: 0x8037E550
  * @ghidraAddress EUR: 0x80380fa0
  * @ghidraAddress JPN: 0x8037fc10
  * @ghidraAddress BRD3D: 0x117554e0

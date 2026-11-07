@@ -23,14 +23,14 @@ void ProcessWeatherSelect(void) {
     static s32 g_dwWeatherSelectState = 0;
     /**
      * @ghidraAddress USA: 0x80316370
-     * @ghidraAddress Asia: 0x80315E30
+     * @ghidraAddress Asia: 0x80315E20
      * @ghidraAddress EUR: 0x80318050
      * @ghidraAddress JPN: 0x80316c80
      */
     static s32 g_dwWeatherMenuItemCount;
     /**
      * @ghidraAddress USA: 0x80316374
-     * @ghidraAddress Asia: 0x80315E34
+     * @ghidraAddress Asia: 0x80315E24
      * @ghidraAddress EUR: 0x80318054
      * @ghidraAddress JPN: 0x80316c84
      */

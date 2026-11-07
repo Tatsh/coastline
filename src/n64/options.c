@@ -206,14 +206,14 @@ void ProcessOptionsMenu(void) {
     static s32 g_dwOptionsMenuState = 0;
     /**
      * @ghidraAddress USA: 0x803163a8
-     * @ghidraAddress Asia: 0x80315E68
+     * @ghidraAddress Asia: 0x80315E58
      * @ghidraAddress EUR: 0x80318088
      * @ghidraAddress JPN: 0x80316cb8
      */
     static s32 g_dwOptionsMenuItemCount;
     /**
      * @ghidraAddress USA: 0x803163ac
-     * @ghidraAddress Asia: 0x80315E6C
+     * @ghidraAddress Asia: 0x80315E5C
      * @ghidraAddress EUR: 0x8031808c
      * @ghidraAddress JPN: 0x80316cbc
      */

@@ -78,7 +78,7 @@ SECTIONS
     }
     _bss_size = SIZEOF(.bss);
     /* The game uses the memory after the BSS by address, so C may not add to the BSS. */
-    ASSERT(ADDR(.bss) + SIZEOF(.bss) <= 0x80382670, "The BSS grew past its original end.")
+    ASSERT(ADDR(.bss) + SIZEOF(.bss) <= 0x80382660, "The BSS grew past its original end.")
     ASSERT(ADDR(.carselect_bss) + SIZEOF(.carselect_bss) <= 0x80315e40,
            "Car-select state exceeds its original BSS area.")
     ASSERT(ADDR(.season_records_bss) + SIZEOF(.season_records_bss) <= 0x80315a48,

@@ -112,7 +112,7 @@ typedef struct CollisionTriangleNode {
  * @ghidraAddress BRD3D: 0x11754e50
  * @ghidraAddress BRGlide: 0x117781b0
  * @ghidraAddress USA: 0x80379940
- * @ghidraAddress Asia: 0x80379400
+ * @ghidraAddress Asia: 0x803793F0
  * @ghidraAddress EUR: 0x8037be40
  * @ghidraAddress JPN: 0x8037aab0
  */
@@ -267,7 +267,7 @@ typedef union CollisionContactVector {
  * Where the last collision with the track touched the body, in its frame.
  *
  * @ghidraAddress USA: 0x8037eaa8
- * @ghidraAddress Asia: 0x8037E568
+ * @ghidraAddress Asia: 0x8037E558
  * @ghidraAddress EUR: 0x80380fa8
  * @ghidraAddress JPN: 0x8037fc18
  * @ghidraAddress BRD3D: 0x11755490
@@ -283,7 +283,7 @@ extern Vec3f g_vCollisionContact;
  * The word after g_vCollisionContact, which ComputeCollisionPenetration() scales.
  *
  * @ghidraAddress USA: 0x8037eab4
- * @ghidraAddress Asia: 0x8037E574
+ * @ghidraAddress Asia: 0x8037E564
  * @ghidraAddress EUR: 0x80380fb4
  * @ghidraAddress JPN: 0x8037fc24
  */
@@ -297,7 +297,7 @@ extern f32 g_fCollisionContactW;
  * How far the last collision put the body into the triangle.
  *
  * @ghidraAddress USA: 0x8037eac8
- * @ghidraAddress Asia: 0x8037E588
+ * @ghidraAddress Asia: 0x8037E578
  * @ghidraAddress EUR: 0x80380fc8
  * @ghidraAddress JPN: 0x8037fc38
  * @ghidraAddress BRD3D: 0x11754e40

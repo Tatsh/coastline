@@ -72,7 +72,7 @@ extern VehicleModel *g_pCurrentVehicleModelData;
  * The matrix of the vehicle being drawn, scaled to its model.
  *
  * @ghidraAddress USA: 0x80351cc0
- * @ghidraAddress Asia: 0x80351780
+ * @ghidraAddress Asia: 0x80351770
  * @ghidraAddress EUR: 0x803541c0
  * @ghidraAddress JPN: 0x80352e30
  * @ghidraAddress BRD3D: 0x10277d88
@@ -107,7 +107,7 @@ extern u32 g_dwVehicleOtherModeLFlags;
  * The alpha of the fog colour that fades a ghost vehicle.
  *
  * @ghidraAddress USA: 0x80351d00
- * @ghidraAddress Asia: 0x803517C0
+ * @ghidraAddress Asia: 0x803517B0
  * @ghidraAddress EUR: 0x80354200
  * @ghidraAddress JPN: 0x80352e70
  * @ghidraAddress BRD3D: 0x10277e14
@@ -119,7 +119,7 @@ extern s32 g_dwVehicleFogAlpha;
  * Whether each vehicle is drawn in the view being drawn.
  *
  * @ghidraAddress USA: 0x80351c80
- * @ghidraAddress Asia: 0x80351740
+ * @ghidraAddress Asia: 0x80351730
  * @ghidraAddress EUR: 0x80354180
  * @ghidraAddress JPN: 0x80352df0
  * @ghidraAddress BRD3D: 0x10277b68
@@ -131,7 +131,7 @@ extern s32 g_adwVehicleInViewRange[MAX_VEHICLES];
  * The level of detail each vehicle is drawn at.
  *
  * @ghidraAddress USA: 0x80351c90
- * @ghidraAddress Asia: 0x80351750
+ * @ghidraAddress Asia: 0x80351740
  * @ghidraAddress EUR: 0x80354190
  * @ghidraAddress JPN: 0x80352e00
  * @ghidraAddress BRD3D: 0x10277d38
@@ -142,7 +142,7 @@ extern s32 g_anVehicleLod[MAX_VEHICLES];
  * The matrix of each vehicle, scaled to its model.
  *
  * @ghidraAddress USA: 0x80351ca0
- * @ghidraAddress Asia: 0x80351760
+ * @ghidraAddress Asia: 0x80351750
  * @ghidraAddress EUR: 0x803541a0
  * @ghidraAddress JPN: 0x80352e10
  * @ghidraAddress BRD3D: 0x10277dc8
@@ -158,7 +158,7 @@ extern Mtx *g_apVehicleModelMatrix[MAX_VEHICLES];
  * The matrix of each vehicle with the view and projection, forced for its lighting.
  *
  * @ghidraAddress USA: 0x80351cb0
- * @ghidraAddress Asia: 0x80351770
+ * @ghidraAddress Asia: 0x80351760
  * @ghidraAddress EUR: 0x803541b0
  * @ghidraAddress JPN: 0x80352e20
  * @ghidraAddress BRD3D: 0x10277e18
@@ -174,7 +174,7 @@ extern Mtx *g_apVehicleLightMatrix[MAX_VEHICLES];
  * The lights of each vehicle at night or in the rain.
  *
  * @ghidraAddress USA: 0x80351c10
- * @ghidraAddress Asia: 0x803516D0
+ * @ghidraAddress Asia: 0x803516C0
  * @ghidraAddress EUR: 0x80354110
  * @ghidraAddress JPN: 0x80352d80
  * @ghidraAddress BRD3D: 0x10277bb8
@@ -185,7 +185,7 @@ extern Lights1 g_aVehicleLights[MAX_VEHICLES];
  * The direction of the light on the vehicle being drawn.
  *
  * @ghidraAddress USA: 0x80351d08
- * @ghidraAddress Asia: 0x803517C8
+ * @ghidraAddress Asia: 0x803517B8
  * @ghidraAddress EUR: 0x80354208
  * @ghidraAddress JPN: 0x80352e78
  * @ghidraAddress BRD3D: 0x10277ba8
@@ -196,7 +196,7 @@ extern Vec3f g_vecVehicleLightDir;
  * The direction of the specular highlight: halfway between the light and the camera.
  *
  * @ghidraAddress USA: 0x80351d18
- * @ghidraAddress Asia: 0x803517D8
+ * @ghidraAddress Asia: 0x803517C8
  * @ghidraAddress EUR: 0x80354218
  * @ghidraAddress JPN: 0x80352e88
  * @ghidraAddress BRD3D: 0x10277d78
@@ -282,7 +282,7 @@ extern s32 g_dwGameFrameCount;
  * The white disc of the stage of the cars of a menu: its centre and 30 points around it.
  *
  * @ghidraAddress USA: 0x80351a20
- * @ghidraAddress Asia: 0x803514E0
+ * @ghidraAddress Asia: 0x803514D0
  * @ghidraAddress EUR: 0x80353f20
  * @ghidraAddress JPN: 0x80352b90
  */
@@ -292,7 +292,7 @@ extern Vtx g_aCarStageDiscVertices[32];
  * The scale and the turn of the disc and the choice marker of the stage of the cars.
  *
  * @ghidraAddress USA: 0x803519e0
- * @ghidraAddress Asia: 0x803514A0
+ * @ghidraAddress Asia: 0x80351490
  * @ghidraAddress EUR: 0x80353ee0
  * @ghidraAddress JPN: 0x80352b50
  */

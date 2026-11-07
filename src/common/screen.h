@@ -53,7 +53,7 @@ extern s32 g_dwScreenHeight;
  * The routines of the screen: the current one, the next, and a second.
  *
  * @ghidraAddress USA: 0x8031b318
- * @ghidraAddress Asia: 0x8031ADD8
+ * @ghidraAddress Asia: 0x8031ADC8
  * @ghidraAddress EUR: 0x8031d818
  * @ghidraAddress JPN: 0x8031c448
  * @ghidraAddress BRD3D: 0x106c0964
@@ -63,7 +63,7 @@ extern ScreenCallback g_pfnCurrentScreen;
 
 /**
  * @ghidraAddress USA: 0x8031b31c
- * @ghidraAddress Asia: 0x8031ADDC
+ * @ghidraAddress Asia: 0x8031ADCC
  * @ghidraAddress EUR: 0x8031d81c
  * @ghidraAddress JPN: 0x8031c44c
  * @ghidraAddress BRD3D: 0x106c198c
@@ -73,7 +73,7 @@ extern ScreenCallback g_pfnNextScreen;
 
 /**
  * @ghidraAddress USA: 0x8031b320
- * @ghidraAddress Asia: 0x8031ADE0
+ * @ghidraAddress Asia: 0x8031ADD0
  * @ghidraAddress EUR: 0x8031d820
  * @ghidraAddress JPN: 0x8031c450
  * @ghidraAddress BRD3D: 0x106c1608

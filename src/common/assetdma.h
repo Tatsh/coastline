@@ -118,7 +118,7 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job);
  * The words the DMA reads sizes and chunk lengths into.
  *
  * @ghidraAddress USA: 0x8031b328
- * @ghidraAddress Asia: 0x8031ADE8
+ * @ghidraAddress Asia: 0x8031ADD8
  * @ghidraAddress EUR: 0x8031d838
  * @ghidraAddress JPN: 0x8031c468
  * @ghidraAddress BRD3D: 0x106c0938
@@ -128,7 +128,7 @@ extern u32 g_dwDmaAssetSizeBuffer;
 
 /**
  * @ghidraAddress USA: 0x8031b330
- * @ghidraAddress Asia: 0x8031ADF0
+ * @ghidraAddress Asia: 0x8031ADE0
  * @ghidraAddress EUR: 0x8031d840
  * @ghidraAddress JPN: 0x8031c470
  * @ghidraAddress BRD3D: 0x106c3300

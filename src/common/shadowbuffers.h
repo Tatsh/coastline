@@ -20,7 +20,7 @@ extern "C" {
 
 /**
  * @ghidraAddress USA: 0x80353580
- * @ghidraAddress Asia: 0x80353040
+ * @ghidraAddress Asia: 0x80353030
  * @ghidraAddress EUR: 0x80355a80
  * @ghidraAddress JPN: 0x803546f0
  * @ghidraAddress BRD3D: 0x103643c0
@@ -57,7 +57,7 @@ extern ConvertedModelVertex *g_pTrackQuadVertexWritePtr;
 #else
 /**
  * @ghidraAddress USA: 0x803554c0
- * @ghidraAddress Asia: 0x80354F80
+ * @ghidraAddress Asia: 0x80354F70
  * @ghidraAddress EUR: 0x803579c0
  * @ghidraAddress JPN: 0x80356630
  */

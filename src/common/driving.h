@@ -64,7 +64,7 @@ extern s32 g_bReplayCockpitNext;
  * The jolts each vehicle took, from 0 to 5.
  *
  * @ghidraAddress USA: 0x8031b1d8
- * @ghidraAddress Asia: 0x8031AC98
+ * @ghidraAddress Asia: 0x8031AC88
  * @ghidraAddress EUR: 0x8031d6d8
  * @ghidraAddress JPN: 0x8031c308
  * @ghidraAddress BRD3D: 0x106c5468
@@ -172,7 +172,7 @@ extern s32 g_bAiNudgeRight;
  * The lanes and the middle of the deepest straight line.
  *
  * @ghidraAddress USA: 0x8031b430
- * @ghidraAddress Asia: 0x8031AEF0
+ * @ghidraAddress Asia: 0x8031AEE0
  * @ghidraAddress EUR: 0x8031d930
  * @ghidraAddress JPN: 0x8031c560
  * @ghidraAddress BRD3D: 0x10af9658
@@ -181,7 +181,7 @@ extern Vec3f g_avBestLeftLane[TRACE_DEPTH];
 
 /**
  * @ghidraAddress USA: 0x8031b490
- * @ghidraAddress Asia: 0x8031AF50
+ * @ghidraAddress Asia: 0x8031AF40
  * @ghidraAddress EUR: 0x8031d990
  * @ghidraAddress JPN: 0x8031c5c0
  * @ghidraAddress BRD3D: 0x10af96c8
@@ -190,7 +190,7 @@ extern Vec3f g_avBestCenterLine[TRACE_DEPTH];
 
 /**
  * @ghidraAddress USA: 0x8031b4f0
- * @ghidraAddress Asia: 0x8031AFB0
+ * @ghidraAddress Asia: 0x8031AFA0
  * @ghidraAddress EUR: 0x8031d9f0
  * @ghidraAddress JPN: 0x8031c620
  * @ghidraAddress BRD3D: 0x10af95f8
@@ -202,7 +202,7 @@ extern Vec3f g_avBestRightLane[TRACE_DEPTH];
  * to the middle, and the middle.
  *
  * @ghidraAddress USA: 0x8031b550
- * @ghidraAddress Asia: 0x8031B010
+ * @ghidraAddress Asia: 0x8031B000
  * @ghidraAddress EUR: 0x8031da50
  * @ghidraAddress JPN: 0x8031c680
  * @ghidraAddress BRD3D: 0x10af9788
@@ -211,7 +211,7 @@ extern Vec3f g_avTraceLeftLane[TRACE_DEPTH];
 
 /**
  * @ghidraAddress USA: 0x8031b5b0
- * @ghidraAddress Asia: 0x8031B070
+ * @ghidraAddress Asia: 0x8031B060
  * @ghidraAddress EUR: 0x8031dab0
  * @ghidraAddress JPN: 0x8031c6e0
  * @ghidraAddress BRD3D: 0x10af9590
@@ -220,7 +220,7 @@ extern Vec3f g_avTraceLeftHalf[TRACE_DEPTH];
 
 /**
  * @ghidraAddress USA: 0x8031b610
- * @ghidraAddress Asia: 0x8031B0D0
+ * @ghidraAddress Asia: 0x8031B0C0
  * @ghidraAddress EUR: 0x8031db10
  * @ghidraAddress JPN: 0x8031c740
  * @ghidraAddress BRD3D: 0x10af9728
@@ -229,7 +229,7 @@ extern Vec3f g_avTraceCenterLine[TRACE_DEPTH];
 
 /**
  * @ghidraAddress USA: 0x8031b670
- * @ghidraAddress Asia: 0x8031B130
+ * @ghidraAddress Asia: 0x8031B120
  * @ghidraAddress EUR: 0x8031db70
  * @ghidraAddress JPN: 0x8031c7a0
  * @ghidraAddress BRD3D: 0x10af9530
@@ -238,7 +238,7 @@ extern Vec3f g_avTraceRightHalf[TRACE_DEPTH];
 
 /**
  * @ghidraAddress USA: 0x8031b6d0
- * @ghidraAddress Asia: 0x8031B190
+ * @ghidraAddress Asia: 0x8031B180
  * @ghidraAddress EUR: 0x8031dbd0
  * @ghidraAddress JPN: 0x8031c800
  * @ghidraAddress BRD3D: 0x10af97e8
@@ -250,7 +250,7 @@ extern Vec3f g_avTraceRightLane[TRACE_DEPTH];
  * The last point of the deepest line, and its point halfway.
  *
  * @ghidraAddress USA: 0x8031b730
- * @ghidraAddress Asia: 0x8031B1F0
+ * @ghidraAddress Asia: 0x8031B1E0
  * @ghidraAddress EUR: 0x8031dc30
  * @ghidraAddress JPN: 0x8031c860
  * @ghidraAddress BRD3D: 0x10af9b28
@@ -259,7 +259,7 @@ extern Vec3f g_vTraceFarPoint;
 
 /**
  * @ghidraAddress USA: 0x8031b740
- * @ghidraAddress Asia: 0x8031B200
+ * @ghidraAddress Asia: 0x8031B1F0
  * @ghidraAddress EUR: 0x8031dc40
  * @ghidraAddress JPN: 0x8031c870
  * @ghidraAddress BRD3D: 0x10acde98

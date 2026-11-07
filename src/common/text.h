@@ -251,7 +251,7 @@ extern s32 g_adwSmallFontGlyphOffsets[];
  * The left of the next text RenderTextToDisplayList() draws.
  *
  * @ghidraAddress USA: 0x803519d0
- * @ghidraAddress Asia: 0x80351490
+ * @ghidraAddress Asia: 0x80351480
  * @ghidraAddress EUR: 0x80353ed0
  * @ghidraAddress JPN: 0x80352b40
  * @ghidraAddress BRD3D: 0x104b0340
@@ -263,7 +263,7 @@ extern s32 g_nTextDrawX;
  * The baseline of the next text RenderTextToDisplayList() draws.
  *
  * @ghidraAddress USA: 0x803519d4
- * @ghidraAddress Asia: 0x80351494
+ * @ghidraAddress Asia: 0x80351484
  * @ghidraAddress EUR: 0x80353ed4
  * @ghidraAddress JPN: 0x80352b44
  * @ghidraAddress BRD3D: 0x104b0344
@@ -275,7 +275,7 @@ extern s32 g_nTextDrawY;
  * The height of text in pixels of the low-resolution screen.
  *
  * @ghidraAddress USA: 0x803519d8
- * @ghidraAddress Asia: 0x80351498
+ * @ghidraAddress Asia: 0x80351488
  * @ghidraAddress EUR: 0x80353ed8
  * @ghidraAddress JPN: 0x80352b48
  * @ghidraAddress BRD3D: 0x104b0348

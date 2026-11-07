@@ -157,7 +157,7 @@ extern f32 g_fScreenIdleTimeout;
 
 /**
  * @ghidraAddress USA: 0x80316240
- * @ghidraAddress Asia: 0x80315D00
+ * @ghidraAddress Asia: 0x80315CF0
  * @ghidraAddress EUR: 0x80317f20
  * @ghidraAddress JPN: 0x80316b50
  */
@@ -177,7 +177,7 @@ extern s32 g_bScreenStateInitFlag;
  * The item under the cursor of the screen.
  *
  * @ghidraAddress USA: 0x80316244
- * @ghidraAddress Asia: 0x80315D04
+ * @ghidraAddress Asia: 0x80315CF4
  * @ghidraAddress EUR: 0x80317f24
  * @ghidraAddress JPN: 0x80316b54
  */
@@ -187,7 +187,7 @@ extern s32 g_nScreenCursor;
  * The item the cursor left.
  *
  * @ghidraAddress USA: 0x80316220
- * @ghidraAddress Asia: 0x80315CE0
+ * @ghidraAddress Asia: 0x80315CD0
  * @ghidraAddress EUR: 0x80317f00
  * @ghidraAddress JPN: 0x80316b30
  */
@@ -218,7 +218,7 @@ extern s32 g_nScreenPendingSelection;
  * the model turning under the cursor.
  *
  * @ghidraAddress USA: 0x80316224
- * @ghidraAddress Asia: 0x80315CE4
+ * @ghidraAddress Asia: 0x80315CD4
  * @ghidraAddress EUR: 0x80317f04
  * @ghidraAddress JPN: 0x80316b34
  */
@@ -226,7 +226,7 @@ extern f32 g_fScreenSlideOffset;
 
 /**
  * @ghidraAddress USA: 0x80316228
- * @ghidraAddress Asia: 0x80315CE8
+ * @ghidraAddress Asia: 0x80315CD8
  * @ghidraAddress EUR: 0x80317f08
  * @ghidraAddress JPN: 0x80316b38
  */
@@ -236,7 +236,7 @@ extern f32 g_fScreenRotationAngle;
  * Whether the screen fades out because an item was chosen.
  *
  * @ghidraAddress USA: 0x8031622c
- * @ghidraAddress Asia: 0x80315CEC
+ * @ghidraAddress Asia: 0x80315CDC
  * @ghidraAddress EUR: 0x80317f0c
  * @ghidraAddress JPN: 0x80316b3c
  */
@@ -246,7 +246,7 @@ extern s32 g_bScreenItemChosen;
  * The sounds of moving the cursor and of choosing, and their lengths.
  *
  * @ghidraAddress USA: 0x80316230
- * @ghidraAddress Asia: 0x80315CF0
+ * @ghidraAddress Asia: 0x80315CE0
  * @ghidraAddress EUR: 0x80317f10
  * @ghidraAddress JPN: 0x80316b40
  */
@@ -254,7 +254,7 @@ extern s8 *g_pScreenScrollSoundBuf;
 
 /**
  * @ghidraAddress USA: 0x80316234
- * @ghidraAddress Asia: 0x80315CF4
+ * @ghidraAddress Asia: 0x80315CE4
  * @ghidraAddress EUR: 0x80317f14
  * @ghidraAddress JPN: 0x80316b44
  */
@@ -262,7 +262,7 @@ extern u32 g_dwScreenScrollSoundSize;
 
 /**
  * @ghidraAddress USA: 0x80316238
- * @ghidraAddress Asia: 0x80315CF8
+ * @ghidraAddress Asia: 0x80315CE8
  * @ghidraAddress EUR: 0x80317f18
  * @ghidraAddress JPN: 0x80316b48
  */
@@ -270,7 +270,7 @@ extern s8 *g_pScreenSelectSoundBuf;
 
 /**
  * @ghidraAddress USA: 0x8031623c
- * @ghidraAddress Asia: 0x80315CFC
+ * @ghidraAddress Asia: 0x80315CEC
  * @ghidraAddress EUR: 0x80317f1c
  * @ghidraAddress JPN: 0x80316b4c
  */
@@ -318,7 +318,7 @@ extern s32 g_bMenuSpotlightBuilt;
  * The vertices of the beam of the spotlight, its source first.
  *
  * @ghidraAddress USA: 0x80315ff0
- * @ghidraAddress Asia: 0x80315AB0
+ * @ghidraAddress Asia: 0x80315AA0
  * @ghidraAddress EUR: 0x80317cd0
  * @ghidraAddress JPN: 0x80316900
  */
@@ -347,7 +347,7 @@ extern Gfx g_aMenuChoiceMarkerDisplayList[];
 
 /**
  * @ghidraAddress USA: 0x803161e0
- * @ghidraAddress Asia: 0x80315CA0
+ * @ghidraAddress Asia: 0x80315C90
  * @ghidraAddress EUR: 0x80317ec0
  * @ghidraAddress JPN: 0x80316af0
  */
@@ -357,7 +357,7 @@ extern Mtx g_MenuChoiceMarkerMtx;
  * The number of items of the track menu.
  *
  * @ghidraAddress USA: 0x80315f88
- * @ghidraAddress Asia: 0x80315A48
+ * @ghidraAddress Asia: 0x80315A38
  * @ghidraAddress EUR: 0x80317c68
  * @ghidraAddress JPN: 0x80316898
  */
@@ -367,7 +367,7 @@ extern s32 g_dwTrackMenuItemCount;
  * The item of the track menu under the cursor.
  *
  * @ghidraAddress USA: 0x80315f8c
- * @ghidraAddress Asia: 0x80315A4C
+ * @ghidraAddress Asia: 0x80315A3C
  * @ghidraAddress EUR: 0x80317c6c
  * @ghidraAddress JPN: 0x8031689c
  */
@@ -377,7 +377,7 @@ extern s32 g_dwTrackMenuSelection;
  * Whether the track menu is of the championship; never read.
  *
  * @ghidraAddress USA: 0x80315f90
- * @ghidraAddress Asia: 0x80315A50
+ * @ghidraAddress Asia: 0x80315A40
  * @ghidraAddress EUR: 0x80317c70
  * @ghidraAddress JPN: 0x803168a0
  */
@@ -407,7 +407,7 @@ extern s32 g_bTrackMenuPakScreen;
  * Whether the next race of the season is its first after a load.
  *
  * @ghidraAddress USA: 0x80315ee0
- * @ghidraAddress Asia: 0x803159A0
+ * @ghidraAddress Asia: 0x80315990
  * @ghidraAddress EUR: 0x80317bc0
  * @ghidraAddress JPN: 0x803167f0
  */
@@ -427,7 +427,7 @@ extern s32 g_dwContinueFromResults;
  * The text of the track menu and of its records.
  *
  * @ghidraAddress USA: 0x80315f98
- * @ghidraAddress Asia: 0x80315A58
+ * @ghidraAddress Asia: 0x80315A48
  * @ghidraAddress EUR: 0x80317c78
  * @ghidraAddress JPN: 0x803168a8
  */
@@ -435,7 +435,7 @@ extern char g_szTrackMenuTextBuf[];
 
 /**
  * @ghidraAddress USA: 0x80315ee8
- * @ghidraAddress Asia: 0x803159A8
+ * @ghidraAddress Asia: 0x80315998
  * @ghidraAddress EUR: 0x80317bc8
  * @ghidraAddress JPN: 0x803167f8
  */
@@ -446,7 +446,7 @@ extern char g_szTrackSelectPointsTextBuf[];
  * each that its next car loads into.
  *
  * @ghidraAddress USA: 0x8031b370
- * @ghidraAddress Asia: 0x8031AE30
+ * @ghidraAddress Asia: 0x8031AE20
  * @ghidraAddress EUR: 0x8031d870
  * @ghidraAddress JPN: 0x8031c4a0
  */

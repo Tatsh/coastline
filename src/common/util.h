@@ -38,7 +38,7 @@ typedef struct {
  * allocation beyond it.
  *
  * @ghidraAddress USA: 0x8036ae50
- * @ghidraAddress Asia: 0x8036A910
+ * @ghidraAddress Asia: 0x8036A900
  * @ghidraAddress EUR: 0x8036d350
  * @ghidraAddress JPN: 0x8036bfc0
  * @ghidraAddress BRD3D: 0x10af9bc0
@@ -48,7 +48,7 @@ extern DisplayListBlock g_aDisplayListBlocks[2][FRAME_DISPLAY_LIST_BLOCKS + 1];
 
 /**
  * @ghidraAddress USA: 0x80372ed0
- * @ghidraAddress Asia: 0x80372990
+ * @ghidraAddress Asia: 0x80372980
  * @ghidraAddress EUR: 0x803753d0
  * @ghidraAddress JPN: 0x80374040
  * @ghidraAddress BRD3D: 0x10b02190
@@ -58,7 +58,7 @@ extern Hilite g_aHiliteBlocks[2][FRAME_HILITE_BLOCKS + 1];
 
 /**
  * @ghidraAddress USA: 0x80373170
- * @ghidraAddress Asia: 0x80372C30
+ * @ghidraAddress Asia: 0x80372C20
  * @ghidraAddress EUR: 0x80375670
  * @ghidraAddress JPN: 0x803742e0
  * @ghidraAddress BRD3D: 0x10b01c50
