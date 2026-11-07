@@ -33,7 +33,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build-type: ['Debug', 'Release', 'RelWithDebInfo', 'MinSizeRel']
+        build-type: ['Debug', 'Release']
         region: ['us', 'jp', 'eu', 'asia']
     steps:
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
