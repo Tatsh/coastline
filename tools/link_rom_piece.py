@@ -34,8 +34,10 @@ def main() -> int:
   parser.add_argument('--rodata-bytes', type=lambda value: int(value, 0))
   parser.add_argument('--bss', help='First BSS symbol in the object.')
   parser.add_argument('--text-only', action='store_true')
-  parser.add_argument('--rodata-split', action='append', default=[], metavar='OFFSET:SYMBOL',
-                      help='Original symbol for a relocated read-only-data fragment.')
+  for section in ('data', 'rodata', 'bss'):
+    parser.add_argument(f'--{section}-split', action='append', default=[],
+                        metavar='OFFSET:SYMBOL',
+                        help=f'Original symbol for a relocated {section} fragment.')
   parser.add_argument('--output', type=Path, required=True, help='Directory for verified sections.')
   args = parser.parse_args()
 
@@ -111,17 +113,20 @@ def main() -> int:
   sizes = {section[1:]: int(size, 16) for section, size in re.findall(
       r'\[\s*\d+\]\s+(\.(?:text|data|rodata|bss))\s+\S+\s+\S+\s+\S+\s+'
       r'([0-9A-Fa-f]+)\s', headers)}
-  splits = []
-  for spec in args.rodata_split:
-    offset_text, separator, name = spec.partition(':')
-    if not separator or not re.fullmatch(r'0x[0-9A-Fa-f]+', offset_text) or name not in symbols:
-      parser.error(f'Invalid read-only-data split: {spec}.')
-    split_offset = int(offset_text, 16)
-    if not 0 < split_offset < sizes.get('rodata', 0):
-      parser.error(f'Read-only-data split is outside the section: {spec}.')
-    splits.append((split_offset, symbols[name] - split_offset))
-  if splits and (not args.text_only or splits != sorted(set(splits))):
-    parser.error('Read-only-data splits require text-only output and unique ordered offsets.')
+  splits = {}
+  for section in ('data', 'rodata', 'bss'):
+    entries = []
+    for spec in getattr(args, f'{section}_split'):
+      offset_text, separator, name = spec.partition(':')
+      if not separator or not re.fullmatch(r'0x[0-9A-Fa-f]+', offset_text) or name not in symbols:
+        parser.error(f'Invalid {section} split: {spec}.')
+      split_offset = int(offset_text, 16)
+      if not 0 < split_offset < sizes.get(section, 0):
+        parser.error(f'{section} split is outside the section: {spec}.')
+      entries.append((split_offset, symbols[name] - split_offset))
+    if entries and (not args.text_only or entries != sorted(set(entries))):
+      parser.error(f'{section} splits require text-only output and unique ordered offsets.')
+    splits[section] = entries
   for section in ('text', 'data', 'rodata', 'bss'):
     if bool(sizes.get(section, 0)) != (section in selected):
       parser.error(f'The {section} section and its original address must both be present.')
@@ -168,29 +173,37 @@ def main() -> int:
 
     sections = {}
     relocations = []
-    if splits:
+    internal_calls = []
+    if any(splits.values()) or args.text_only:
       relocation_text = subprocess.run([binutil('readelf'), '-rW', str(args.object)],
                                        check=True, capture_output=True, text=True).stdout
       in_text = False
-      highs = []
+      highs = {section: [] for section in splits}
       for line in relocation_text.splitlines():
         if line.startswith('Relocation section'):
           in_text = "'.rel.text'" in line
         if not in_text:
           continue
-        match = re.match(r'^([0-9A-Fa-f]+)\s+\S+\s+R_MIPS_(HI16|LO16)\s+\S+\s+\.rodata$',
-                         line)
+        call = re.match(r'^([0-9A-Fa-f]+)\s+\S+\s+R_MIPS_26\s+\S+\s+(\S+)$', line)
+        if call and args.text_only and call[2] in defined and defined[call[2]][1] in 'Tt' \
+            and call[2] in symbols:
+          internal_calls.append((int(call[1], 16), call[2]))
+        match = re.match(r'^([0-9A-Fa-f]+)\s+\S+\s+R_MIPS_(HI16|LO16)\s+\S+\s+'
+                         r'\.(data|rodata|bss)$', line)
         if not match:
           continue
-        offset, kind = int(match[1], 16), match[2]
+        offset, kind, section = int(match[1], 16), match[2], match[3]
+        if not splits[section]:
+          continue
         if kind == 'HI16':
-          highs.append(offset)
-        elif highs:
-          relocations.append((highs.pop(), offset))
+          highs[section].append(offset)
+        elif highs[section]:
+          relocations.append((section, highs[section].pop(), offset))
         else:
-          parser.error('Read-only-data relocation has no matching high half.')
-      if highs or not relocations:
-        parser.error('Read-only-data split has unmatched or no relocations.')
+          parser.error(f'{section} relocation has no matching high half.')
+      if any(highs.values()) or not relocations:
+        if any(splits.values()):
+          parser.error('Section split has unmatched or no relocations.')
       raw_text = work / 'original-text.bin'
       subprocess.run([binutil('objcopy'), '-O', 'binary', '--only-section=.text',
                       str(args.object), str(raw_text)], check=True)
@@ -205,19 +218,24 @@ def main() -> int:
                       str(elf), str(path)], check=True)
       contents = path.read_bytes()
       if section == 'text':
-        if splits:
+        if any(splits.values()) or internal_calls:
           patched = bytearray(contents)
-          for high_offset, low_offset in relocations:
+          for relocated_section, high_offset, low_offset in relocations:
             high = struct.unpack_from('>H', original_text, high_offset + 2)[0]
             low = struct.unpack_from('>h', original_text, low_offset + 2)[0]
             addend = (high << 16) + low
-            base = addresses['rodata']
-            for split_offset, split_base in splits:
+            base = addresses[relocated_section]
+            for split_offset, split_base in splits[relocated_section]:
               if addend >= split_offset:
                 base = split_base
             target = base + addend
             struct.pack_into('>H', patched, high_offset + 2, ((target + 0x8000) >> 16) & 0xffff)
             struct.pack_into('>H', patched, low_offset + 2, target & 0xffff)
+          for call_offset, name in internal_calls:
+            instruction = struct.unpack_from('>I', original_text, call_offset)[0]
+            target = symbols[name] + ((instruction & 0x03ffffff) << 2)
+            struct.pack_into('>I', patched, call_offset,
+                             (instruction & 0xfc000000) | ((target >> 2) & 0x03ffffff))
           contents = bytes(patched)
         contents = contents[args.text_skip:]
       length = trims.get(section)
