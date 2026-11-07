@@ -20,6 +20,11 @@ else()
     "${coastline_bzip2_SOURCE_DIR}/compress.c"
     "${coastline_bzip2_SOURCE_DIR}/decompress.c"
     "${coastline_bzip2_SOURCE_DIR}/bzlib.c")
+  if(MSVC)
+    target_compile_options(coastline_bzip2 PRIVATE /w)
+  else()
+    target_compile_options(coastline_bzip2 PRIVATE -w)
+  endif()
   target_include_directories(coastline_bzip2 SYSTEM PUBLIC "${coastline_bzip2_SOURCE_DIR}")
   set_target_properties(coastline_bzip2 PROPERTIES POSITION_INDEPENDENT_CODE ON)
   add_library(BZip2::BZip2 ALIAS coastline_bzip2)

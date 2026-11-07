@@ -48,6 +48,7 @@
     modules: [
       {
         // Intro playback links libav. Import uses the separate FFmpeg program for Indeo to VP9.
+        'build-options': { cflags: '-w', cxxflags: '-w' },
         buildsystem: 'autotools',
         'config-opts': [
           '--disable-debug',

@@ -5,6 +5,30 @@
 
 include(FetchContent)
 
+function(_coastline_silence_directory directory)
+  get_property(_targets DIRECTORY "${directory}" PROPERTY BUILDSYSTEM_TARGETS)
+  foreach(_target IN LISTS _targets)
+    get_target_property(_type ${_target} TYPE)
+    if(NOT _type STREQUAL "INTERFACE_LIBRARY" AND NOT _type STREQUAL "UTILITY")
+      if(MSVC)
+        target_compile_options(${_target} PRIVATE /w)
+      else()
+        target_compile_options(${_target} PRIVATE -w)
+      endif()
+    endif()
+  endforeach()
+  get_property(_subdirectories DIRECTORY "${directory}" PROPERTY SUBDIRECTORIES)
+  foreach(_subdirectory IN LISTS _subdirectories)
+    _coastline_silence_directory("${_subdirectory}")
+  endforeach()
+endfunction()
+
+function(_coastline_fetch_silently content)
+  FetchContent_MakeAvailable(${content})
+  string(TOLOWER "${content}" _name)
+  _coastline_silence_directory("${${_name}_BINARY_DIR}")
+endfunction()
+
 # Sets each <variable>=<value> of a list as a cache variable, the options of a pinned release.
 function(_coastline_set_release_options)
   foreach(_option IN LISTS ARGN)
@@ -40,7 +64,7 @@ function(coastline_dependency name)
   _coastline_set_release_options(${_dependency_OPTIONS})
   FetchContent_Declare(${_dependency_PACKAGE} URL "${_dependency_URL}" URL_HASH
                                                   "SHA256=${_dependency_HASH}" SYSTEM)
-  FetchContent_MakeAvailable(${_dependency_PACKAGE})
+  _coastline_fetch_silently(${_dependency_PACKAGE})
   message(STATUS "${_dependency_PACKAGE} comes from the pinned release ${_dependency_URL}.")
 endfunction()
 
@@ -71,7 +95,7 @@ function(coastline_tool name variable)
   _coastline_set_release_options(${_tool_OPTIONS})
   string(TOLOWER "${name}" _content)
   FetchContent_Declare(${_content} URL "${_tool_URL}" URL_HASH "SHA256=${_tool_HASH}" SYSTEM)
-  FetchContent_MakeAvailable(${_content})
+  _coastline_fetch_silently(${_content})
   set(${variable}
       ${_tool_TARGET}
       PARENT_SCOPE)

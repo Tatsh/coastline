@@ -155,6 +155,7 @@ cdmixer
 cdrom
 centered
 centimeters
+cflags
 channelmix
 chatbar
 chdrive
@@ -228,6 +229,7 @@ cullmode
 cupra
 curwd
 cxicon
+cxxflags
 cxxlibs
 cycletype
 cyicon
@@ -591,6 +593,7 @@ hinstance
 histk
 hkcu
 hklm
+hlsl
 hmenu
 hmixer
 hmixerobj
@@ -1101,6 +1104,7 @@ rdppipesync
 rdptilesync
 rdram
 readlink
+readwrite
 rearload
 rearsliding
 reartex

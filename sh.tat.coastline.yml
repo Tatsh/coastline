@@ -22,7 +22,10 @@ finish-args:
   - '--socket=pulseaudio'
   - '--socket=wayland'
 modules:
-  - buildsystem: 'autotools'
+  - build-options:
+      cflags: '-w'
+      cxxflags: '-w'
+    buildsystem: 'autotools'
     config-opts:
       - '--disable-debug'
       - '--disable-doc'
