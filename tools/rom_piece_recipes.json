@@ -74,6 +74,22 @@
       ],
       "object": "raceprogress.c.obj"
     },
+    "timing_bars": {
+      "args": [
+        "--text",
+        "DrawTimingBars",
+        "--text-skip",
+        "0xcc",
+        "--text-bytes",
+        "0xb5c",
+        "--data",
+        "0x8028b900",
+        "--bss",
+        "0x80351478",
+        "--text-only"
+      ],
+      "object": "timing.c.obj"
+    },
     "vehicle_engine": {
       "args": [
         "--text",
@@ -163,6 +179,22 @@
         "--text-only"
       ],
       "object": "raceprogress.c.obj"
+    },
+    "timing_bars": {
+      "args": [
+        "--text",
+        "DrawTimingBars",
+        "--text-skip",
+        "0xcc",
+        "--text-bytes",
+        "0xb5c",
+        "--data",
+        "0x8028e510",
+        "--bss",
+        "0x80353ec8",
+        "--text-only"
+      ],
+      "object": "timing.c.obj"
     },
     "vehicle_engine": {
       "args": [
@@ -256,6 +288,22 @@
       ],
       "object": "raceprogress.c.obj"
     },
+    "timing_bars": {
+      "args": [
+        "--text",
+        "DrawTimingBars",
+        "--text-skip",
+        "0xcc",
+        "--text-bytes",
+        "0xb5c",
+        "--data",
+        "0x8028df40",
+        "--bss",
+        "0x80351f48",
+        "--text-only"
+      ],
+      "object": "timing.c.obj"
+    },
     "vehicle_engine": {
       "args": [
         "--text",
@@ -345,6 +393,22 @@
         "--text-only"
       ],
       "object": "raceprogress.c.obj"
+    },
+    "timing_bars": {
+      "args": [
+        "--text",
+        "DrawTimingBars",
+        "--text-skip",
+        "0xcc",
+        "--text-bytes",
+        "0xb5c",
+        "--data",
+        "0x8028bdb0",
+        "--bss",
+        "0x803519c8",
+        "--text-only"
+      ],
+      "object": "timing.c.obj"
     },
     "vehicle_engine": {
       "args": [
