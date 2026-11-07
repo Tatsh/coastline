@@ -374,15 +374,23 @@ target_compile_definitions(coastline_sdl PRIVATE
                            COASTLINE_RELATIVE_DATA_DIR="${_relative_data}")
 target_compile_options(${CMAKE_PROJECT_NAME}
                        PRIVATE "$<$<COMPILE_LANGUAGE:C,CXX>:${COASTLINE_WARNINGS}>")
-target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_sdl argparse::argparse)
+if(APPLE AND NOT COASTLINE_INSTALL_ASSETS)
+  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE argparse::argparse)
+else()
+  target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_sdl argparse::argparse)
+endif()
 if(NOT COASTLINE_INSTALL_ASSETS)
   target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_firstrun)
 endif()
 # The race engine calls the routines of the platform in coastline_sdl, and of SDL where the Windows
 # libraries call Windows. The game links every routine of the engine, called or not, and a routine
 # the engine calls that the game lacks fails the link.
-target_link_libraries(coastline_common PRIVATE ${COASTLINE_COMMON_LIBULTRA_LIBRARIES}
-                                               $<LINK_ONLY:coastline_sdl> SDL3::SDL3)
+if(APPLE)
+  target_link_libraries(coastline_common PRIVATE ${COASTLINE_COMMON_LIBULTRA_LIBRARIES} SDL3::SDL3)
+else()
+  target_link_libraries(coastline_common PRIVATE ${COASTLINE_COMMON_LIBULTRA_LIBRARIES}
+                                                 $<LINK_ONLY:coastline_sdl> SDL3::SDL3)
+endif()
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,coastline_common>")
 
 set(COASTLINE_RESOURCE_VERSION "${CMAKE_PROJECT_VERSION}")
