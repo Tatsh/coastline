@@ -99,7 +99,7 @@ Review the result before replacing `tools/matching/us.json`. Pass `--encoder` wi
 `encode-text` tool for the Japanese ROM.
 
 The host tools under `tools/` are built with the host compiler during the configure step. They
-need argparse, spdlog, and zlib, from vcpkg, the system, or a pinned download.
+need argparse, nlohmann JSON, spdlog, and zlib, from vcpkg, the system, or a pinned download.
 
 ## SDL game
 

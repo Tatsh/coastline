@@ -29,7 +29,12 @@ FetchContent_Declare(
   URL https://github.com/gabime/spdlog/archive/refs/tags/v1.17.0.tar.gz
   URL_HASH SHA256=d8862955c6d74e5846b3f580b1605d2428b11d97a410d86e2fb13e857cd3a744
   FIND_PACKAGE_ARGS CONFIG)
-FetchContent_MakeAvailable(argparse spdlog)
+FetchContent_Declare(
+  nlohmann_json
+  URL https://github.com/nlohmann/json/archive/refs/tags/v3.12.0.tar.gz
+  URL_HASH SHA256=4b92eb0c06d10683f7447ce9406cb97cd4b453be18d7279320f7b2f025c10187
+  FIND_PACKAGE_ARGS CONFIG)
+FetchContent_MakeAvailable(argparse spdlog nlohmann_json)
 find_package(ZLIB REQUIRED)
 
 # Reports whether a dependency came from vcpkg, the system, or a download. location is a path
@@ -50,7 +55,7 @@ function(coastline_tools_report_source dependency location)
   message(STATUS "${dependency} comes from ${_source}.")
 endfunction()
 
-foreach(_package argparse spdlog)
+foreach(_package argparse spdlog nlohmann_json)
   set(_location "")
   if(${_package}_FOUND)
     set(_location "${${_package}_DIR}")
@@ -61,6 +66,7 @@ list(GET ZLIB_INCLUDE_DIRS 0 _zlib_location)
 coastline_tools_report_source(zlib "${_zlib_location}")
 
 add_subdirectory(common)
+add_subdirectory(assemble-code-image)
 add_subdirectory(build-rom)
 add_subdirectory(encode-text)
 add_subdirectory(extract-rom)

@@ -29,6 +29,8 @@ endif()
 
 set(COASTLINE_TOOLS_DIR "${CMAKE_BINARY_DIR}/tools")
 set(COASTLINE_TOOL_BUILD_ROM "${COASTLINE_TOOLS_DIR}/build-rom/build-rom")
+set(COASTLINE_TOOL_ASSEMBLE_CODE
+    "${COASTLINE_TOOLS_DIR}/assemble-code-image/assemble-code-image")
 set(COASTLINE_TOOL_ENCODE_TEXT "${COASTLINE_TOOLS_DIR}/encode-text/encode-text")
 set(COASTLINE_TOOL_EXTRACT_ROM "${COASTLINE_TOOLS_DIR}/extract-rom/extract-rom")
 
@@ -52,6 +54,6 @@ add_custom_target(
   coastline_tools
   COMMAND "${CMAKE_COMMAND}" --build "${COASTLINE_TOOLS_DIR}"
   BYPRODUCTS "${COASTLINE_TOOL_BUILD_ROM}" "${COASTLINE_TOOL_ENCODE_TEXT}"
-             "${COASTLINE_TOOL_EXTRACT_ROM}"
+             "${COASTLINE_TOOL_EXTRACT_ROM}" "${COASTLINE_TOOL_ASSEMBLE_CODE}"
   COMMENT "Building the host tools"
   VERBATIM)

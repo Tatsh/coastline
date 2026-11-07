@@ -3,6 +3,7 @@
     "code_end": 456016,
     "code_start": 4096,
     "rom_size": 8388608,
+    "sha1": "7e36a98f6fafe3ff7e72d14e0fae16418458da47",
     "sha256": "3a41dae49c852cf8e42e764d84bd746524a4a9b2b4c78a3bdced46d2223f3077",
     "vram": 2149580800
   },
@@ -10,6 +11,7 @@
     "code_end": 465360,
     "code_start": 4096,
     "rom_size": 8388608,
+    "sha1": "9fae5d98fe3464f00d59034690df90118646eb95",
     "sha256": "cde3d2c5a1407faa1697cb9744bbc65f9e53be2c59e3607271724807c08a0fed",
     "vram": 2149580800
   },
@@ -17,6 +19,7 @@
     "code_end": 464000,
     "code_start": 4096,
     "rom_size": 8388608,
+    "sha1": "e0415b87c5a5b69ac581e79137406bdaa79b354a",
     "sha256": "e533ab46dca84d20de2cc701d511443ae568aca844411235aff59254c71a4504",
     "vram": 2149580800
   },
@@ -24,6 +27,7 @@
     "code_end": 457216,
     "code_start": 4096,
     "rom_size": 8388608,
+    "sha1": "bfc51f086ebdb78904dc24ad0c3a2d946e26d022",
     "sha256": "8a5b30d262082531f1fc7e47e1834c5b2fa6433f85fd675147cb389985e3f1cf",
     "vram": 2149580800
   }
