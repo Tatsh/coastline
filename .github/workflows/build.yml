@@ -482,7 +482,7 @@ jobs:
       - uses: 'msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e'
         with:
           install: 'git zip'
-          msystem: 'mingw64'
+          msystem: 'ucrt64'
           pacboy: >-
             cmake:p
             ninja:p
@@ -499,7 +499,7 @@ jobs:
         name: 'Restore vcpkg binaries'
         uses: 'actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830'
         with:
-          key: "vcpkg-${{ runner.os }}-windows-x64-mingw-${{ hashFiles('vcpkg.json') }}"
+          key: "vcpkg-${{ runner.os }}-windows-x64-ucrt-${{ hashFiles('vcpkg.json') }}"
           path: '.wiswa-ci/vcpkg-cache'
       - name: 'Configure and compile'
         run: |
@@ -517,7 +517,7 @@ jobs:
         name: 'Save vcpkg binaries'
         uses: 'actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830'
         with:
-          key: "vcpkg-${{ runner.os }}-windows-x64-mingw-${{ hashFiles('vcpkg.json') }}"
+          key: "vcpkg-${{ runner.os }}-windows-x64-ucrt-${{ hashFiles('vcpkg.json') }}"
           path: '.wiswa-ci/vcpkg-cache'
       - name: 'Package'
         run: |
