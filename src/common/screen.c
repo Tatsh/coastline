@@ -17,11 +17,7 @@ void NullStub(void) {
 
 /* @ghidraAddress BRD3D: 0x10034c2d */
 /* @ghidraAddress BRGlide: 0x1002e2de */
-#if defined(_MSC_VER)
-static void StubUnusedCallback(void) {
-#else
 [[maybe_unused]] static void StubUnusedCallback(void) {
-#endif
 }
 #endif /* TGR_BOSS_RALLY */
 

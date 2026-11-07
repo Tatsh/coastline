@@ -142,7 +142,6 @@ int PodArchive::GetPodIndexByName(const char *pszPath) {
 
     if (nIndex == -1) {
         FatalErrorWithMessage("GetNumForName: %s not found!", pszPath);
-        return -1;
     }
     return nIndex;
 }
