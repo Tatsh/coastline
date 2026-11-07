@@ -76,7 +76,7 @@ void FadeMusicTo(float target, float seconds) {
 
 #if !TGR_BOSS_RALLY
 s32 HasSfxFadeFinished(void) {
-    return g_fSfxFadeTarget == g_fSfxFadeCurrent;
+    return g_fSfxFadeCurrent == g_fSfxFadeTarget;
 }
 
 void SetSfxFadeLevelImmediate(float level) {
@@ -101,7 +101,7 @@ s32 IsFadingOut(void) {
 }
 
 s32 IsFadeComplete(void) {
-    return FADE_EQUAL(g_fFadeTarget, g_fFadeLevel) && !g_dwFadeAutoReverse;
+    return FADE_EQUAL(g_fFadeLevel, g_fFadeTarget) && !g_dwFadeAutoReverse;
 }
 
 s32 IsFadedToBlack(void) {

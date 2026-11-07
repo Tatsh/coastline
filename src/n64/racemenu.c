@@ -295,8 +295,8 @@ void SeasonRecordsPreDrawCallback(void) {
     DrawText("This Season:", g_dwScreenWidth >> 1, y);
     g_dwWeatherActive = 0;
     g_dwNightMode = 0;
-    g_dwSnowMode = 0;
     g_dwRainMode = 0;
+    g_dwSnowMode = 0;
     SetupFog();
     SetupWeatherLights();
     g_aViewportRects[0].vehicleIndex = 0;
@@ -572,7 +572,7 @@ void ProcessTrackMenu(void) {
 }
 
 void DrawRotatedModel(Model *model, f32 x, f32 y, f32 z, f32 angle) {
-    if (g_dwViewportMirrored != g_dwTrackMirrored) {
+    if (g_dwTrackMirrored != g_dwViewportMirrored) {
         guRotateF(g_afMvpMatrix, -angle * RAD_TO_DEG, 0.0f, 0.0f, 1.0f);
         guScaleF(g_afScratchMatrix, -STAGE_MODEL_SCALE, STAGE_MODEL_SCALE, STAGE_MODEL_SCALE);
     } else {
@@ -588,7 +588,7 @@ void DrawRotatedModel(Model *model, f32 x, f32 y, f32 z, f32 angle) {
 }
 
 void DrawModelAt(Model *model, f32 x, f32 y, f32 z, f32 angle, f32 scale) {
-    if (g_dwViewportMirrored != g_dwTrackMirrored) {
+    if (g_dwTrackMirrored != g_dwViewportMirrored) {
         guRotateF(g_afMvpMatrix, -angle * RAD_TO_DEG, 0.0f, 0.0f, 1.0f);
         guScaleF(g_afScratchMatrix, -scale, scale, scale);
     } else {

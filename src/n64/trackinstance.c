@@ -119,7 +119,7 @@ void RenderTrackInstance(int idx, int cars, int pass) {
             g_->words.w0 = 0xFA001700;
             g_->words.w1 = 0xFF0000FF;
         }
-        if (pass != 0 && g_dwRainMode == 0 && g_dwNightMode == 0) {
+        if (pass != 0 && g_dwNightMode == 0 && g_dwRainMode == 0) {
             {
                 Gfx *g_ = gDisplayListPtr++;
 
