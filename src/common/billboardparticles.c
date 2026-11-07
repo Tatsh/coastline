@@ -65,34 +65,34 @@ void RenderBillboardParticles(
             continue;
         }
         rawInverse = 1.0L / clip[3];
-        inverse = rawInverse;
+        inverse = (f32)rawInverse;
         rawDepth = rawInverse * clip[2];
-        clip[2] = rawDepth;
+        clip[2] = (f32)rawDepth;
         if (rawDepth >= 1.0f || !(clip[2] > -0.3f)) {
             continue;
         }
-        clip[0] = (long double)inverse * clip[0];
+        clip[0] = (f32)((long double)inverse * clip[0]);
         rawSize = (long double)particle->size * inverse * 4.0f;
-        size = rawSize;
+        size = (f32)rawSize;
 #ifdef ENABLE_PATCHES
         /* Preserve the 4:3 puff size against viewport height, rather than ultrawide width. */
         rawEdge = rawSize * view->height / view->width + 1.0L;
 #else
         rawEdge = rawSize - -1.0f;
 #endif
-        edge = rawEdge;
+        edge = (f32)rawEdge;
         volatile long double negativeEdge = -rawEdge;
-        f32 lowerEdge = negativeEdge;
+        f32 lowerEdge = (f32)negativeEdge;
         if (!(clip[0] > lowerEdge) || clip[0] >= edge) {
             continue;
         }
         rawY = (long double)inverse * clip[1];
-        clip[1] = rawY;
+        clip[1] = (f32)rawY;
 #ifdef ENABLE_PATCHES
         rawEdge = rawSize * (4.0L / 3.0L) + 1.0L;
-        edge = rawEdge;
+        edge = (f32)rawEdge;
         negativeEdge = -rawEdge;
-        lowerEdge = negativeEdge;
+        lowerEdge = (f32)negativeEdge;
 #endif
         if (!(rawY > lowerEdge) || clip[1] >= edge) {
             continue;
