@@ -393,6 +393,9 @@
   // agents are copies of the tree with their own build output, and .wiswa-ci holds scratch builds
   // too large for markdownlint to walk.
   package_json+: {
+    prettier+: {
+      reorderKeys:: null,
+    },
     cspell+: {
       ignorePaths+: [
         '.claude/worktrees/**',
