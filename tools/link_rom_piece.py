@@ -11,6 +11,8 @@ import subprocess
 import tempfile
 from pathlib import Path
 
+import yaml
+
 from check_matching import ROM_SHA1, binutil
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -42,12 +44,40 @@ def main() -> int:
           (ROOT / 'tools' / 'splat' / f'symbol_addrs.{args.region}.txt').read_text(),
           re.M)
   }
+  linker_script = (ROOT / 'src' / 'n64' / f'coastline-{args.region}.ld').read_text()
+  aliases = dict(re.findall(r'^([A-Za-z_]\w*)\s*=\s*([^;]+);', linker_script, re.M))
+  assembly = (ROOT / 'src' / 'n64' / 'asm' / args.region / 'data' / 'data.data.s').read_text()
+  aliases.update(re.findall(r'^\s*\.set\s+([A-Za-z_]\w*),\s*([A-Za-z_]\w*)\s*$',
+                            assembly, re.M))
+  config = yaml.safe_load((ROOT / 'tools' / 'splat' / f'{args.region}.yaml').read_text())
+  main_segment = next(segment for segment in config['segments'] if segment.get('name') == 'main')
+  symbols['_bss_start'] = next(part['vram'] for part in main_segment['subsegments']
+                               if isinstance(part, dict) and part['type'] == 'bss')
+  symbols['_bss_size'] = main_segment['bss_size']
+
+  def resolve(name: str, visited: frozenset[str] = frozenset()) -> int | None:
+    if name in symbols:
+      return symbols[name]
+    if name in visited or name not in aliases:
+      return None
+    match = re.fullmatch(r'([A-Za-z_]\w*|0x[0-9A-Fa-f]+|\d+)'
+                         r'(?:\s*\+\s*(0x[0-9A-Fa-f]+|\d+))?', aliases[name].strip())
+    if not match:
+      return None
+    base, delta = match.groups()
+    value = (int(base, 0) if base[0].isdigit() else resolve(base, visited | {name}))
+    if value is None:
+      return None
+    symbols[name] = value + (int(delta, 0) if delta else 0)
+    return symbols[name]
+
   undefined = [line.split()[-1] for line in subprocess.run(
       [binutil('nm'), '-u', str(args.object)], check=True, capture_output=True,
       text=True).stdout.splitlines()]
   selected = {section: symbol for section in ('text', 'data', 'rodata', 'bss')
               if (symbol := getattr(args, section))}
-  missing = sorted(set([*selected.values(), *undefined]) - symbols.keys())
+  missing = sorted(name for name in set([*selected.values(), *undefined])
+                   if resolve(name) is None)
   if missing:
     parser.error(f'Missing original addresses: {", ".join(missing)}.')
   headers = subprocess.run([binutil('readelf'), '-SW', str(args.object)], check=True,
