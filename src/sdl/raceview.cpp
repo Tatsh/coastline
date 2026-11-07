@@ -2506,13 +2506,13 @@ void RaceView::DrawView(SceneRenderer &renderer,
     // The beams of the other vehicles glare the view.
     HeadlightGlare glare;
     if (g_dwNightMode || g_dwRainMode) {
-        for (int index = 0; index < g_dwNumActiveVehicles; ++index) {
-            const Vehicle &car = vehicles[index];
-            if (!g_adwVehicleVisible[index] || car.GetGhostMode() == VEHICLE_GHOST ||
-                (index == cameraIndex && camera == &cameras[VEHICLE_CAMERA_BUMPER])) {
+        for (int vehicleIndex = 0; vehicleIndex < g_dwNumActiveVehicles; ++vehicleIndex) {
+            const Vehicle &car = vehicles[vehicleIndex];
+            if (!g_adwVehicleVisible[vehicleIndex] || car.GetGhostMode() == VEHICLE_GHOST ||
+                (vehicleIndex == cameraIndex && camera == &cameras[VEHICLE_CAMERA_BUMPER])) {
                 continue;
             }
-            if (index != cameraIndex) {
+            if (vehicleIndex != cameraIndex) {
                 AddHeadlightGlare(glare, car, *camera);
             }
             const auto &color = car.GetColor();
@@ -2520,8 +2520,8 @@ void RaceView::DrawView(SceneRenderer &renderer,
                        color[0],
                        color[1],
                        color[2],
-                       s.images.contains(index) ? index + 1 : 0,
-                       s.otherLook.contains(index)};
+                       s.images.contains(vehicleIndex) ? vehicleIndex + 1 : 0,
+                       s.otherLook.contains(vehicleIndex)};
             auto found = s.cars.find(key);
             if (found != s.cars.end() && found->second.beams) {
                 renderer.DrawModel(*found->second.beams,
@@ -2543,8 +2543,8 @@ void RaceView::DrawView(SceneRenderer &renderer,
                     *camera,
                     viewProjection,
                     s.n64Effects);
-        for (int index = 0; index < g_dwNumActiveVehicles; ++index) {
-            DrawTireSpray(renderer, *s.sprayTexture, vehicles[index], viewProjection);
+        for (int vehicleIndex = 0; vehicleIndex < g_dwNumActiveVehicles; ++vehicleIndex) {
+            DrawTireSpray(renderer, *s.sprayTexture, vehicles[vehicleIndex], viewProjection);
         }
     }
     // RenderPrecipitationEffect() in the rain and the snow, in the view and not in its mirror, and

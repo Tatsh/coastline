@@ -167,7 +167,6 @@ bool DefaultPackUsable(const std::filesystem::path &defaults) {
             relative.find('\0') != std::string::npos || !recorded.insert(path).second) {
             return false;
         }
-        std::error_code error;
         if (!std::filesystem::is_regular_file(defaults.parent_path() / path, error) ||
             std::filesystem::file_size(defaults.parent_path() / path, error) != size || error) {
             return false;
