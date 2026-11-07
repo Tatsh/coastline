@@ -243,14 +243,16 @@ void UpdatePaintPeripheralInput(PlayerInputState *state) {
         s_previousPort = keyboardPort;
     }
     for (i = 0; i < 3; i++) {
-        if (keys[i] != 0) {
-            ApplyKeyboardKey(state, keys[i], !KeyWasDown(keys[i]));
-        }
         controlDown |= keys[i] == RANDNET_KEY_CONTROL;
         shiftDown |= keys[i] == 0x0E01 || keys[i] == 0x0E06;
         zDown |= keys[i] == RANDNET_KEY_Z;
     }
-    if (controlDown && zDown) {
+    for (i = 0; i < 3; i++) {
+        if (keys[i] != 0 && !(controlDown && keys[i] == RANDNET_KEY_Z)) {
+            ApplyKeyboardKey(state, keys[i], !KeyWasDown(keys[i]));
+        }
+    }
+    if (controlDown && zDown && !KeyWasDown(RANDNET_KEY_Z)) {
         state->buttons |= shiftDown ? INPUT_L | INPUT_R : INPUT_L;
     }
     for (i = 0; i < 3; i++) {
