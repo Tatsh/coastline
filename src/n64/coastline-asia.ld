@@ -70,7 +70,7 @@ SECTIONS
         }
         .bss {
             *(EXCLUDE_FILE (*carselect.c.obj *decaleditor.c.obj *paintshop.c.obj *racemenu.c.obj
-                            *trackrender.c.obj *visibleinstances.c.obj) .bss .bss.*)
+                            *racemenu-draw.c.obj *trackrender.c.obj *visibleinstances.c.obj) .bss .bss.*)
             *(COMMON)
             . = ALIGN(8);
         }
@@ -81,6 +81,10 @@ SECTIONS
         .racemenu_bss {
             . = 0x80315a48 - 0x802abec0;
             *racemenu.c.obj(.bss .bss.*)
+        }
+        .screen_bss {
+            . = 0x80315cd0 - 0x802abec0;
+            *racemenu-draw.c.obj(.bss .bss.*)
         }
         .paintshop_bss {
             . = 0x80369630 - 0x802abec0;
