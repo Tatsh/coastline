@@ -387,13 +387,13 @@ s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
 
 s16 BuildTrackTriangleCache(f32 x, f32 y) {
     TrackSurface *t0;
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     /* The first slot is replaced when every timestamp is at least 2^30. */
     s32 best = 0;
 #else
     /* The slot remains unset when every timestamp is at least 2^30. */
     s32 best;
-#endif /* ENABLE_PATCHES */
+#endif
     u32 oldest;
     u32 cell;
     TrackSurface *t1;

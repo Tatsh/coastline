@@ -20,11 +20,11 @@ s32 g_dwStartLightsAnimation;
 /* The original saves the frame time only when the lights are held. A step that holds the lights
  * restores an uninitialised value. */
 void AnimateStartLights(void) {
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     f32 delta = 0.0f;
 #else
     f32 delta;
-#endif /* ENABLE_PATCHES */
+#endif
 
     if (g_dwStartLightsAnimation == 0) {
         return;

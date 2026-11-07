@@ -19,7 +19,7 @@ s32 TipBalancedVehicle(RigidBody *body) {
     QuaternionToMatrix(body->orientation, &body->stepStates[0]);
     nearest = 100.0f;
     count = 0;
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     wheel = body->wheels[0];
 #endif
     if (body->wheels[0]->contactFrames != 0) {
