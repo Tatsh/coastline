@@ -104,7 +104,7 @@ def main() -> int:
     else:
       addresses[section] = None
   missing = sorted([value for section, value in selected.items() if addresses[section] is None] +
-                   [name for name in undefined if resolve(name) is None])
+                   [name for name in undefined if resolve(name) is None and not args.text_only])
   if missing:
     parser.error(f'Missing original addresses: {", ".join(missing)}.')
   if re.fullmatch(r'0x[0-9A-Fa-f]+', args.text):
@@ -155,7 +155,7 @@ def main() -> int:
     command = [binutil('ld'), '-T', str(script), '-e', args.text]
     for section, address in addresses.items():
       command.append(f'--defsym={section.upper()}_START={address:#x}')
-    command.extend(f'--defsym={name}={symbols[name]:#x}' for name in undefined)
+    command.extend(f'--defsym={name}={symbols.get(name, 0):#x}' for name in undefined)
     subprocess.run([*command, '-o', str(elf), str(args.object)], check=True)
     linked_symbols = {
         name: int(address, 16)
