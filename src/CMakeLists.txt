@@ -101,9 +101,15 @@ if(TGR_IDO)
   foreach(_library ${COASTLINE_LIBRARIES})
     coastline_apply_ido_flags(${_library})
   endforeach()
+  if(TARGET coastline_race_bgm)
+    coastline_apply_ido_flags(coastline_race_bgm)
+  endif()
 endif()
 
 add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES})
+if(TARGET coastline_race_bgm)
+  add_dependencies(archives coastline_race_bgm)
+endif()
 if(TARGET coastline_ear)
   add_dependencies(archives coastline_ear)
 endif()
@@ -139,6 +145,18 @@ else()
     set(_link_libraries ${COASTLINE_LIBRARIES})
     list(REMOVE_ITEM _link_libraries coastline_main coastline_asm)
     add_executable(${CMAKE_PROJECT_NAME} $<TARGET_OBJECTS:coastline_main>)
+    if(TARGET coastline_race_bgm)
+      find_package(Python3 REQUIRED COMPONENTS Interpreter)
+      set(_trimmed_bgm "${CMAKE_CURRENT_BINARY_DIR}/race-bgm.trim.o")
+      add_custom_command(
+        OUTPUT "${_trimmed_bgm}"
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/trim_elf_text.py"
+                "$<TARGET_OBJECTS:coastline_race_bgm>" 0x60 0x5c "${_trimmed_bgm}"
+        DEPENDS coastline_race_bgm "${CMAKE_SOURCE_DIR}/tools/trim_elf_text.py"
+        VERBATIM)
+      set_source_files_properties("${_trimmed_bgm}" PROPERTIES GENERATED TRUE EXTERNAL_OBJECT TRUE)
+      target_sources(${CMAKE_PROJECT_NAME} PRIVATE "${_trimmed_bgm}")
+    endif()
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_asm "-Wl,--start-group"
                                                         ${_link_libraries} "-Wl,--end-group" gcc)
     set(_link_scripts "${_link_script}" ${COASTLINE_ASM_SYMBOLS})

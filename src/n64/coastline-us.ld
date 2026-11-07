@@ -12,10 +12,16 @@ ENTRY(ramMain)
 SECTIONS
 {
     . = 0x80200000;
-    .text : {
+    .text : SUBALIGN(4) {
         *main.s.o*(.text .text.*)
         . = 0x50;
         *game.c.obj(.text .text.*)
+        *race-bgm.trim.o(.text .text.*)
+        *race-bgm.c.obj(.text .text.*)
+        *startlights.c.obj(.text .text.*)
+        *race-demo.c.obj(.text .text.*)
+        *racecredits.c.obj(.text .text.*)
+        *racetick.c.obj(.text .text.*)
         *(.text .text.*)
     }
     . = ALIGN(16);

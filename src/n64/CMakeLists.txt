@@ -35,6 +35,8 @@ set(_n64_sources
     precipitation-update.c
     precipitationrender.c
     race.c
+    race-bgm.c
+    race-demo.c
     racer-slot-motion.c
     racersharing.c
     racetick.c
@@ -69,6 +71,11 @@ set(_n64_sources
     weatherselect.c)
 if(TGR_ENABLE_PATCHES)
   list(APPEND _n64_sources paintinput.c)
+endif()
+if(TGR_IDO AND CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT TGR_ENABLE_PATCHES)
+  list(REMOVE_ITEM _n64_sources race-bgm.c)
+  add_library(coastline_race_bgm OBJECT race-bgm.c)
+  target_link_libraries(coastline_race_bgm PRIVATE coastline_options)
 endif()
 if(TGR_REGION STREQUAL "eu" OR TGR_REGION STREQUAL "jp")
   list(APPEND _n64_sources options-regional.c)

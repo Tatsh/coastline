@@ -42,28 +42,6 @@
 #include "options.h"
 #include "racemenu.h"
 
-void LoadAndPlayTrackBgm(void) {
-    ResetMusicPlaybackState();
-    DecompressFromRom(g_abMenuMusicModule, g_adwTrackMusicRom[g_dwSelectedTrackId], NULL);
-    InitMusicPlayback(g_abMenuMusicModule, g_abMusicModuleWorkBuffer);
-}
-
-void StartAttractDemo(void) {
-    g_dwGameMode = GAME_MODE_DEMO;
-    g_dwRaceSessionType = RACE_SESSION_ATTRACT;
-    SetCurrentScreenCallback(ProcessRacingScreen);
-}
-
-void StartCreditsRace(void) {
-    g_dwGameMode = GAME_MODE_DEMO;
-    if (g_dwMultiplayerMode) {
-        g_dwRaceSessionType = RACE_SESSION_SCROLLING_CREDITS;
-    } else {
-        g_dwRaceSessionType = RACE_SESSION_CREDIT_CAPTIONS;
-    }
-    SetCurrentScreenCallback(ProcessRacingScreen);
-}
-
 /* Add a line of the bonus of a finished championship, after a blank line when others precede it. */
 #define ADD_BONUS_LINE(line)                                                                       \
     {                                                                                              \

@@ -32,7 +32,7 @@
     },
     "0x80200320": {
       "sources": {
-        "src/n64/race.c": ["f671d4b26f30a0ac0d6291b3038758173dd62e0c374625886a0025e9350035dd"]
+        "src/n64/race-bgm.c": ["f671d4b26f30a0ac0d6291b3038758173dd62e0c374625886a0025e9350035dd"]
       }
     },
     "0x8020037c": {
@@ -58,12 +58,12 @@
     },
     "0x802005fc": {
       "sources": {
-        "src/n64/race.c": ["6a7f440e96fb1665ba2d072e60b9dd5a2139fda7589b105114e85d8c46ecfd12"]
+        "src/n64/race-demo.c": ["6a7f440e96fb1665ba2d072e60b9dd5a2139fda7589b105114e85d8c46ecfd12"]
       }
     },
     "0x80200634": {
       "sources": {
-        "src/n64/race.c": ["75a9d66a05b0538a13ba35085ff994c347771becba6e5cf91565ca2dab284c11"]
+        "src/n64/race-demo.c": ["75a9d66a05b0538a13ba35085ff994c347771becba6e5cf91565ca2dab284c11"]
       }
     },
     "0x8020068c": {
