@@ -114,10 +114,13 @@ void ProcessTrackNodeDisplayList(TrackInstance *instance) {
 #endif /* TGR_BOSS_RALLY */
 
 void ProcessAllDisplayLists(void) {
+#if TGR_PLATFORM == TGR_PLATFORM_N64
+    s32 snowTint, i, vehicleIndex, lod;
+#else
     s32 i, vehicleIndex, lod;
+#endif
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64
-    s32 snowTint;
     snowTint = (s32)g_dwSelectedTrackId != TRACK_COASTLINE &&
                (s32)g_dwSelectedTrackId != TRACK_COASTLINE + TRACK_MIRRORED;
     for (i = 0; i < g_LoadedTrack.instanceCount; i++) {
