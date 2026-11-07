@@ -226,7 +226,7 @@ void FlushDisplayList(void) {
 #else
     task->t.data_ptr = DISPLAY_LIST_START();
 #endif
-    task->t.data_size = (gDisplayListPtr - DISPLAY_LIST_START()) * sizeof(Gfx);
+    task->t.data_size = (u32)((gDisplayListPtr - DISPLAY_LIST_START()) * sizeof(Gfx));
 #if TGR_PLATFORM == TGR_PLATFORM_N64 && TGR_REGION != TGR_REGION_US
     /* Preserve IDO's block boundary before the frame command count. */
     do {

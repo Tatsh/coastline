@@ -1166,7 +1166,7 @@ struct SceneRenderer::State {
         info.vertex_input_state.vertex_buffer_descriptions = &binding;
         info.vertex_input_state.num_vertex_buffers = 1;
         info.vertex_input_state.vertex_attributes = attributes.data();
-        info.vertex_input_state.num_vertex_attributes = attributes.size();
+        info.vertex_input_state.num_vertex_attributes = static_cast<Uint32>(attributes.size());
         info.primitive_type = SDL_GPU_PRIMITIVETYPE_TRIANGLELIST;
         info.rasterizer_state.fill_mode = SDL_GPU_FILLMODE_FILL;
         info.rasterizer_state.cull_mode =

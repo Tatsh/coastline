@@ -28,7 +28,8 @@ inline constexpr std::array<ExtraMenuTrack, 5> EXTRA_MENU_TRACKS{{
 }};
 
 /** The number of track entries before menu actions, including unavailable entries. */
-inline constexpr int MENU_TRACK_COUNT = CONSOLE_TRACK_COUNT + EXTRA_MENU_TRACKS.size();
+inline constexpr int MENU_TRACK_COUNT =
+    CONSOLE_TRACK_COUNT + static_cast<int>(EXTRA_MENU_TRACKS.size());
 
 /**
  * @param track The zero-based track-selection index.
