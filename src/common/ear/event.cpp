@@ -319,12 +319,12 @@ uint32_t __stdcall EAR_DLL_MixEvent(const EarEventParams *params) {
     event->dopplerEnabled = (copy.flags & EAR_EVENT_DOPPLER) != 0;
     event->frequencyScaleOverrideEnabled = (copy.flags & EAR_EVENT_FREQUENCY_SCALE) != 0;
     if (event->frequencyScaleOverrideEnabled) {
-        event->frequencyScale =
-            static_cast<long double>(copy.frequencyScale) * g_earMixEventAttenuationScale;
+        event->frequencyScale = static_cast<double>(static_cast<long double>(copy.frequencyScale) *
+                                                    g_earMixEventAttenuationScale);
     }
     if (copy.flags & EAR_EVENT_BASE_FREQUENCY) {
-        event->baseFrequencyScale =
-            static_cast<long double>(copy.baseFrequencyScale) * g_earMixEventAttenuationScale;
+        event->baseFrequencyScale = static_cast<double>(
+            static_cast<long double>(copy.baseFrequencyScale) * g_earMixEventAttenuationScale);
     }
     if (copy.flags & EAR_EVENT_PITCH_VARIATION) {
         if (!copy.pitchVariation) {
@@ -332,21 +332,22 @@ uint32_t __stdcall EAR_DLL_MixEvent(const EarEventParams *params) {
         }
         int pitch =
             std::rand() % (copy.pitchVariation * 2) + (EAR_EVENT_UNIT_PITCH - copy.pitchVariation);
-        event->baseFrequencyScale = static_cast<long double>(pitch) * g_earMixEventAttenuationScale;
+        event->baseFrequencyScale =
+            static_cast<double>(static_cast<long double>(pitch) * g_earMixEventAttenuationScale);
     }
     if (copy.flags & EAR_EVENT_BACKEND_PARAMETER) {
         if (copy.backendParameter == EAR_EVENT_NEGATIVE_BACKEND_PARAMETER) {
             event->backendParameter = -1;
         } else {
-            event->backendParameter =
-                static_cast<long double>(copy.backendParameter) * g_earMixEventAttenuationScale;
+            event->backendParameter = static_cast<double>(
+                static_cast<long double>(copy.backendParameter) * g_earMixEventAttenuationScale);
         }
     } else {
         event->backendParameter = 0;
     }
     if (copy.flags & EAR_EVENT_START_POSITION) {
-        event->startPosition =
-            static_cast<long double>(copy.startPosition) * g_earMixEventAttenuationScale;
+        event->startPosition = static_cast<double>(static_cast<long double>(copy.startPosition) *
+                                                   g_earMixEventAttenuationScale);
     }
     event->lifetimeCountdownSuppressed = (copy.flags & EAR_EVENT_SUPPRESS_LIFETIME) != 0;
     if (sourceType == EAR_EVENT_RESERVED_CONTROL_SOURCE) {
@@ -547,14 +548,14 @@ uint32_t __stdcall EAR_DLL_MoveEvent(const EarEventParams *params) {
         int pitch =
             std::rand() % (copy.pitchVariation * 2) + (EAR_EVENT_UNIT_PITCH - copy.pitchVariation);
         event->baseFrequencyScale =
-            static_cast<long double>(pitch) * g_earMoveEventAttenuationScale;
+            static_cast<double>(static_cast<long double>(pitch) * g_earMoveEventAttenuationScale);
     }
     if (copy.flags & EAR_EVENT_BACKEND_PARAMETER) {
         if (copy.backendParameter == EAR_EVENT_NEGATIVE_BACKEND_PARAMETER) {
             event->backendParameter = -1;
         } else {
-            event->backendParameter =
-                static_cast<long double>(copy.backendParameter) * g_earMoveEventAttenuationScale;
+            event->backendParameter = static_cast<double>(
+                static_cast<long double>(copy.backendParameter) * g_earMoveEventAttenuationScale);
         }
     } else {
         event->backendParameter = 0;
@@ -582,8 +583,8 @@ uint32_t __stdcall EAR_DLL_MoveEvent(const EarEventParams *params) {
     }
     event->frequencyScaleOverrideEnabled = (copy.flags & EAR_EVENT_FREQUENCY_SCALE) != 0;
     if (event->frequencyScaleOverrideEnabled) {
-        event->frequencyScale =
-            static_cast<long double>(copy.frequencyScale) * g_earMoveEventAttenuationScale;
+        event->frequencyScale = static_cast<double>(static_cast<long double>(copy.frequencyScale) *
+                                                    g_earMoveEventAttenuationScale);
     }
     event->dopplerEnabled = (copy.flags & EAR_EVENT_DOPPLER) != 0;
     event->distance = distance;
