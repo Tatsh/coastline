@@ -60,6 +60,8 @@ struct PaintShopInput {
     bool escape = false;
     /** Whether Ctrl+Z was pressed this frame to undo an edit outside a dialog. */
     bool undo = false;
+    /** Whether Ctrl+Shift+Z was pressed this frame to redo an edit outside a dialog. */
+    bool redo = false;
     bool constrain = false; /*!< Whether Shift or controller Z constrains a shape. */
     /**
      * The characters typed on a keyboard this frame in UTF-8, with Backspace as `'\b'` and Enter
@@ -290,6 +292,7 @@ private:
     void ResetPaintShopState();
     void SaveDecalUndo();
     void UndoDecalEdit();
+    void RedoDecalEdit();
     void DrawDialogBox(s32 x, s32 y, s32 width, s32 height);
     void DrawSunkenFrame(s32 x, s32 y, s32 width, s32 height);
     void SetPakTextColors(u8 inCarSelect);
@@ -468,6 +471,10 @@ private:
     std::array<int, 16> m_decalTextGlyphs{};
     std::string m_decalText;
     std::vector<u8> m_undoBuffer;
+    std::vector<std::vector<u8>> m_undoHistory;
+    std::vector<std::vector<u8>> m_redoHistory;
+    std::optional<std::vector<u8>> m_colorEditorSnapshot;
+    std::vector<u8> m_savedEditableData;
     std::vector<u8> m_scratchTexels;
     u8 *m_decalTexels = nullptr;
     const u8 *m_decalTexelsEnd = nullptr;
@@ -487,10 +494,8 @@ private:
     u8 m_decalSlot = 0;
     u8 m_previousDecalSlot = 0;
     u8 m_savedDecalSlot = 0;
-    u8 m_undoDecalSlot = 0;
     u8 m_decalTextLength = 0;
     u8 m_decalTextWidth = 0;
-    u8 m_decalEditCount = 0;
     u8 m_styleMenuCursor = 0;
     u8 m_paintToolStarted = 0;
     u8 m_decalDragActive = 0;
@@ -504,7 +509,6 @@ private:
     u8 m_colorEditorChannel = 0;
     u8 m_keyboardHoverKey = 0;
     u8 m_showPreview3D = 0;
-    u8 m_undoAvailable = 0;
     u8 m_eyedropperActive = 0;
     u8 m_mirrorTargetPanel = 0;
     std::array<u8, 3> m_savedSwatchColor{};

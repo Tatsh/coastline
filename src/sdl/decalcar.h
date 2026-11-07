@@ -107,6 +107,17 @@ public:
     /** @return One byte past the editable storage, valid until the car is destroyed. */
     const u8 *End() const;
 
+    /** @return A copy of all editable texels and palettes for paint history. */
+    std::vector<u8> CopyEditableData() const;
+
+    /**
+     * Restore editable texels and palettes without invalidating texture pointers.
+     *
+     * @param data A snapshot from CopyEditableData() for this car.
+     * @return Whether the snapshot has the expected size and was restored.
+     */
+    bool RestoreEditableData(std::span<const u8> data);
+
     /**
      * @param slot The console decal, from 0 to DECAL_SLOTS - 1.
      * @return The mask of the decal, a bit a texel with a set bit protecting it, or null where

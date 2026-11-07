@@ -76,6 +76,16 @@ int main() {
     }
     auto car = coastline::DecalCar::Load(root);
     assert(car && car->Texture(2).width == 16);
+    const auto snapshot = car->CopyEditableData();
+    auto *originalTexels = car->Texels(0);
+    const auto originalColor = car->PaletteColor(2, 0);
+    originalTexels[0] = 0xab;
+    car->SetPaletteColor(2, 0, 0xf801);
+    assert(!car->RestoreEditableData(std::span<const u8>(snapshot).first(1)));
+    assert(car->RestoreEditableData(snapshot));
+    assert(car->Texels(0) == originalTexels);
+    assert(originalTexels[0] == snapshot[car->Texture(0).texels]);
+    assert(car->PaletteColor(2, 0) == originalColor);
     assert(!car->ValidNote({}));
     assert(!car->ValidNote(std::vector<u8>(32)));
     assert(car->ValidNote(std::vector<u8>(0x3e00)));

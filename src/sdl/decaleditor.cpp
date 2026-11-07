@@ -308,7 +308,11 @@ void PaintShop::ProcessColorEditorDialog() {
         Transfer(INPUT_A);
         m_colorEditorChannel = 0;
         m_colorEditorOpen = 0;
-        ++m_decalEditCount;
+        if (m_colorEditorSnapshot && *m_colorEditorSnapshot != m_car->CopyEditableData()) {
+            m_undoHistory.push_back(std::move(*m_colorEditorSnapshot));
+            m_redoHistory.clear();
+        }
+        m_colorEditorSnapshot.reset();
     } else if ((buttons & INPUT_B) != 0) {
         Transfer(INPUT_B);
         const auto &saved = m_savedSwatchColor;
@@ -340,6 +344,7 @@ void PaintShop::ProcessColorEditorDialog() {
         }
         m_colorEditorChannel = 0;
         m_colorEditorOpen = 0;
+        m_colorEditorSnapshot.reset();
     }
 }
 
@@ -412,6 +417,7 @@ bool PaintShop::PickPaletteColor() {
             m_lastClickTime = now;
         } else if (now - m_lastClickTime < DOUBLE_CLICK_MS) {
             m_savedSwatchColor = m_swatches[m_decalColor].color;
+            m_colorEditorSnapshot = m_car->CopyEditableData();
             m_colorEditorOpen = 1;
         } else {
             m_lastClickTime = now;
@@ -1166,8 +1172,7 @@ void PaintShop::ProcessPaintShopExitConfirm() {
     if (m_paintShopExiting) {
         return;
     }
-    // The unsigned count is tested as signed.
-    if (static_cast<s8>(m_decalEditCount) <= 0) {
+    if (m_car->CopyEditableData() == m_savedEditableData) {
         m_paintShopExiting = 1;
         m_screen.FadeOut();
         return;

@@ -1,5 +1,6 @@
 #include "decalcar.h"
 
+#include <algorithm>
 #include <array>
 #include <fstream>
 #include <memory>
@@ -322,6 +323,18 @@ std::string DecalCar::DecalNote() const {
 
 const u8 *DecalCar::End() const {
     return m_bytes.data() + m_bytes.size();
+}
+
+std::vector<u8> DecalCar::CopyEditableData() const {
+    return m_bytes;
+}
+
+bool DecalCar::RestoreEditableData(std::span<const u8> data) {
+    if (data.size() != m_bytes.size()) {
+        return false;
+    }
+    std::copy(data.begin(), data.end(), m_bytes.begin());
+    return true;
 }
 
 const u8 *DecalCar::Mask(int slot) const {

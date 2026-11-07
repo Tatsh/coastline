@@ -1388,6 +1388,7 @@ bool PaintShop::InitPaintShop() {
     m_initialized = true;
     m_controllerPakState = 0;
     m_screen.FadeIn();
+    m_savedEditableData = m_car->CopyEditableData();
     return loaded;
 }
 
@@ -1612,14 +1613,18 @@ bool PaintShop::Frame(SceneRenderer &renderer, float seconds, const PaintShopInp
         return true;
     }
     m_screen.UpdateFade(seconds);
-    if (input.undo && !DialogShows() && !m_paintShopExiting) {
+    if ((input.undo || input.redo) && !DialogShows() && !m_paintShopExiting) {
         m_decalDragActive = 0;
         m_paintToolStarted = 0;
         m_showPreview3D = 1;
         m_paletteEnabled = 1;
         m_decalTextLength = 0;
         m_decalTextWidth = 0;
-        UndoDecalEdit();
+        if (input.redo) {
+            RedoDecalEdit();
+        } else {
+            UndoDecalEdit();
+        }
         m_typedText.clear();
         m_input.buttons = 0;
     }
@@ -1669,7 +1674,9 @@ void PaintShop::ResetPaintShopState() {
     m_paintCursor->originY = CURSOR_START_Y;
     m_decalSlot = DEFAULT_DECAL_SLOT;
     m_previousDecalSlot = m_decalSlot;
-    m_undoDecalSlot = m_decalSlot;
+    m_undoHistory.clear();
+    m_redoHistory.clear();
+    m_colorEditorSnapshot.reset();
     m_brushSize = DEFAULT_BRUSH_SIZE;
     m_savedColor = 0;
     m_decalColor = DEFAULT_DECAL_COLOR;
@@ -1678,7 +1685,6 @@ void PaintShop::ResetPaintShopState() {
     m_screenFrameCount = 0;
     m_paintToolIcons[PAINT_TOOL_RECTANGLE]->style = 0;
     m_paintToolIcons[PAINT_TOOL_OVAL]->style = 0;
-    m_decalEditCount = 0;
     m_paintToolStarted = 0;
     m_decalDragActive = 0;
     m_paletteEnabled = 1;
@@ -1686,33 +1692,39 @@ void PaintShop::ResetPaintShopState() {
     m_decalSlotChanged = 0;
     m_colorEditorOpen = 0;
     m_showPreview3D = 1;
-    m_undoAvailable = 0;
     m_styleMenuOpen = 0;
     m_textShadowPickerOpen = 0;
     m_eyedropperActive = 0;
 }
 
 void PaintShop::SaveDecalUndo() {
+    m_undoHistory.push_back(m_car->CopyEditableData());
+    m_redoHistory.clear();
     std::memcpy(m_undoBuffer.data(),
                 m_decalTexels,
                 std::min<std::size_t>(DECAL_BUFFER_SIZE,
                                       static_cast<std::size_t>(m_decalTexelsEnd - m_decalTexels)));
-    m_undoDecalSlot = m_decalSlot;
-    ++m_decalEditCount;
-    m_undoAvailable = 1;
 }
 
 void PaintShop::UndoDecalEdit() {
-    if (!m_undoAvailable) {
+    if (m_undoHistory.empty()) {
         return;
     }
-    u8 *texels = m_car->Texels(m_undoDecalSlot);
-    std::memcpy(
-        texels,
-        m_undoBuffer.data(),
-        std::min<std::size_t>(DECAL_BUFFER_SIZE, static_cast<std::size_t>(m_car->End() - texels)));
-    --m_decalEditCount;
-    m_undoAvailable = 0;
+    m_redoHistory.push_back(m_car->CopyEditableData());
+    m_car->RestoreEditableData(m_undoHistory.back());
+    m_undoHistory.pop_back();
+    ConvertPaletteToRgb();
+    m_previewDirty = true;
+}
+
+void PaintShop::RedoDecalEdit() {
+    if (m_redoHistory.empty()) {
+        return;
+    }
+    m_undoHistory.push_back(m_car->CopyEditableData());
+    m_car->RestoreEditableData(m_redoHistory.back());
+    m_redoHistory.pop_back();
+    ConvertPaletteToRgb();
     m_previewDirty = true;
 }
 
@@ -1956,6 +1968,7 @@ void PaintShop::ProcessFillClearMenu() {
             break;
         case CLEAR_ALL_DECALS:
         case CLEAR_ALL_DECALS | CLEAR_TO_BODY_COLOR:
+            SaveDecalUndo();
             m_savedDecalSlot = m_decalSlot;
             // The palette and the button of the slot are not switched with its texels.
             for (int i = 0; i < m_car->PanelCount(); ++i) {
@@ -1967,8 +1980,6 @@ void PaintShop::ProcessFillClearMenu() {
             }
             m_decalSlot = m_savedDecalSlot;
             SelectDecalTexels(m_decalSlot);
-            // The undo buffer is saved after the clear. Undo cannot bring the decal back.
-            SaveDecalUndo();
             clear.style = 0;
             m_paintTool = m_previousPaintTool;
             break;
@@ -2381,6 +2392,9 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
         break;
     }
     case PAK_STATE_TRANSFER_DECALS:
+        if (operation == PAINT_TOOL_LOAD && m_pakDecalIndex == 0 && !inCarSelect) {
+            SaveDecalUndo();
+        }
         if (inCarSelect == 1) {
             y = 0xDB;
             textY = 0x7C;
@@ -2438,7 +2452,6 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
             LoadDecalPalette(car, offset);
             if (!inCarSelect) {
                 ConvertPaletteToRgb();
-                SaveDecalUndo();
             }
         } else {
             SDL_Log("Saving color palette.");
@@ -2458,7 +2471,7 @@ s32 PaintShop::ProcessDecalSaveLoad(DecalCar &car, u8 operation, u8 inCarSelect,
                                                    "Saved color palette.");
             m_pakDialogState = PAK_STATE_DONE;
             if (!inCarSelect) {
-                m_decalEditCount = 0;
+                m_savedEditableData = m_car->CopyEditableData();
             }
             return 0;
         }

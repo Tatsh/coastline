@@ -8,6 +8,7 @@
 - Verify the Asian release's reconstructed code against its ROM during matching builds.
 - Constrain paint shop lines and shapes with Shift or controller Z in SDL and patched N64 builds.
 - Support the Nintendo 64 Mouse and Randnet keyboard in the patched Nintendo 64 paint shop.
+- Undo and redo SDL paint shop edits with Ctrl+Z and Ctrl+Shift+Z, without a fixed history limit.
 
 ### Fixed
 

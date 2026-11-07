@@ -1797,7 +1797,7 @@ int main(int argc, char *argv[]) {
                 bool freeCameraToggleWasDown = false;
                 bool freeCameraEnabled = false;
                 coastline::FreeCamera frontendCamera;
-                bool undoPaintWasDown = false;
+                bool historyPaintWasDown = false;
                 float exitEscapeSeconds = 0.0f;
                 coastline::MenusEnd settingsTransition = coastline::MenusEnd::Running;
                 Uint64 settingsShownAt = 0;
@@ -1821,6 +1821,7 @@ int main(int argc, char *argv[]) {
                     std::string typed;
                     bool printScreen = false;
                     bool undoPaint = false;
+                    bool redoPaint = false;
                     bool focusLost = false;
                     std::array<float, 2> cameraMouse{};
                     float cameraScroll = 0.0f;
@@ -1857,7 +1858,11 @@ int main(int argc, char *argv[]) {
                         }
                         if (event.type == SDL_EVENT_KEY_DOWN && !event.key.repeat &&
                             event.key.key == SDLK_Z && (event.key.mod & SDL_KMOD_CTRL) != 0) {
-                            undoPaint = true;
+                            if ((event.key.mod & SDL_KMOD_SHIFT) != 0) {
+                                redoPaint = true;
+                            } else {
+                                undoPaint = true;
+                            }
                         }
                         if (event.type == SDL_EVENT_WINDOW_FOCUS_LOST) {
                             focusLost = true;
@@ -1987,12 +1992,19 @@ int main(int argc, char *argv[]) {
                         }
                     }
                     coastline::SetScriptedKeys(std::move(scriptedKeys));
-                    const bool undoPaintDown = coastline::IsKeyDown(SDL_SCANCODE_Z) &&
-                                               (coastline::IsKeyDown(SDL_SCANCODE_LCTRL) ||
-                                                coastline::IsKeyDown(SDL_SCANCODE_RCTRL));
-                    undoPaint |= undoPaintDown && !undoPaintWasDown;
-                    undoPaintWasDown = undoPaintDown;
-                    if (undoPaint && frontEnd != FrontEnd::Race) {
+                    const bool historyPaintDown = coastline::IsKeyDown(SDL_SCANCODE_Z) &&
+                                                  (coastline::IsKeyDown(SDL_SCANCODE_LCTRL) ||
+                                                   coastline::IsKeyDown(SDL_SCANCODE_RCTRL));
+                    if (historyPaintDown && !historyPaintWasDown) {
+                        if (coastline::IsKeyDown(SDL_SCANCODE_LSHIFT) ||
+                            coastline::IsKeyDown(SDL_SCANCODE_RSHIFT)) {
+                            redoPaint = true;
+                        } else {
+                            undoPaint = true;
+                        }
+                    }
+                    historyPaintWasDown = historyPaintDown;
+                    if ((undoPaint || redoPaint) && frontEnd != FrontEnd::Race) {
                         coastline::IgnoreKeyUntilReleased(SDL_SCANCODE_Z);
                         ports[0].buttons &= ~coastline::BUTTON_Z;
                     }
@@ -2383,6 +2395,7 @@ int main(int argc, char *argv[]) {
                                                     PaintShopInputOf(ports[0], mouse);
                             pointer.text = std::move(typed);
                             pointer.undo = undoPaint;
+                            pointer.redo = redoPaint;
                             coastline::MenusEnd end =
                                 mainMenu->Frame(*sceneRenderer,
                                                 seconds,
