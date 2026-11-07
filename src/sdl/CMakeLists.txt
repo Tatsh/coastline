@@ -326,6 +326,10 @@ target_compile_definitions(coastline_sdl PRIVATE COASTLINE_VIDEO=$<BOOL:${_coast
 # A reconstructed routine retains the parameters of the original, used or not.
 set_source_files_properties("${CMAKE_SOURCE_DIR}/src/common/audio.c" effecttextures.cpp
                             PROPERTIES COMPILE_OPTIONS "${COASTLINE_NO_UNUSED_PARAMETER}")
+if(MSVC)
+  set_property(SOURCE "${CMAKE_SOURCE_DIR}/src/common/audio.c" APPEND PROPERTY COMPILE_OPTIONS
+               /wd4244)
+endif()
 # The interpreter rounds each operation of the floating-point unit of the console on its own. MSVC
 # does not contract operations without /fp:contract.
 if(NOT MSVC)

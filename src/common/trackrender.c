@@ -96,7 +96,11 @@ namespace {
      * @ghidraAddress JPN: 0x8028e934
      * @ghidraAddress BRD3D: 0x102e54b4
      */
+#if defined(_MSC_VER)
+    [[maybe_unused]] s32 g_nTrackTransparentStartIdxFar;
+#else
     [[maybe_unused, gnu::used]] s32 g_nTrackTransparentStartIdxFar;
+#endif
     /**
      * Set to 0x1000 with g_nTrackTransparentStartIdx, and never read.
      *
@@ -106,7 +110,11 @@ namespace {
      * @ghidraAddress JPN: 0x8028e92c
      * @ghidraAddress BRD3D: 0x102e5ed4
      */
+#if defined(_MSC_VER)
+    [[maybe_unused]] s32 g_nTrackTransparentStartIdxNear;
+#else
     [[maybe_unused, gnu::used]] s32 g_nTrackTransparentStartIdxNear;
+#endif
 } // namespace
 
 #if TGR_PLATFORM == TGR_PLATFORM_SDL

@@ -62,7 +62,7 @@ float Amplitude(LONG attenuation) {
 void MixLocked(std::int16_t *samples, int frames) {
     std::size_t count = static_cast<std::size_t>(frames) * EAR_MIX_CHANNELS;
     if (!g_mixer.enabled) {
-        std::fill_n(samples, count, 0);
+        std::fill_n(samples, count, std::int16_t{0});
         return;
     }
     g_mixer.mix.assign(count, 0.0f);

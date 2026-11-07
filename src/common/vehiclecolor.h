@@ -52,11 +52,11 @@ static inline void SetMaterialPaletteColors(VehicleModel *model, s32 red, s32 gr
         palette = texture->palette;
         if (palette != NULL && GetMaterialTextureFormat(texture) == TEXTURE_FORMAT_CI4) {
             /* Each store preserves bit 0 from the material's indexed entry in native byte order. */
-            palette[0] = PackMaterialPaletteColor((palette[i] & 1) | (red << 11) | (green << 6) |
-                                                  (blue << 1));
+            palette[0] = PackMaterialPaletteColor(
+                (u16)((palette[i] & 1) | (red << 11) | (green << 6) | (blue << 1)));
             /* The second entry is a darker shade. */
-            palette[1] = PackMaterialPaletteColor((palette[i] & 1) | ((red & 0x1E) << 10) |
-                                                  ((green & 0x1E) << 5) | (blue & 0x1E));
+            palette[1] = PackMaterialPaletteColor((u16)((palette[i] & 1) | ((red & 0x1E) << 10) |
+                                                        ((green & 0x1E) << 5) | (blue & 0x1E)));
         }
     }
 }
