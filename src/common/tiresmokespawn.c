@@ -36,8 +36,8 @@ void SpawnTireSmoke(Vehicle *vehicle) {
 
     if (vehicle->body.skidding != 0 && (speed = vehicle->speedKph) > 40.0f) {
 #if TGR_BOSS_RALLY
-        rate = (long double)g_fFrameDeltaTime * 0.5f -
-               (long double)vehicle->speedKph * -0.00066006600f;
+        rate = (f32)((long double)g_fFrameDeltaTime * 0.5f -
+                     (long double)vehicle->speedKph * -0.00066006600f);
 #else
         rate = g_fFrameDeltaTime * 0.5f + speed * 0.00066006600f;
 #endif
@@ -45,7 +45,7 @@ void SpawnTireSmoke(Vehicle *vehicle) {
 #if TGR_BOSS_RALLY
             timer =
                 ((long double)vehicle->body.skidding * 0.03f) * rate + vehicle->smokeTimers[wheel];
-            vehicle->smokeTimers[wheel] = timer;
+            vehicle->smokeTimers[wheel] = (f32)timer;
             /* Compare the unrounded sum after storing the timer. */
             if (!(timer > 0.75f)) {
 #else
@@ -85,7 +85,7 @@ void SpawnTireSmoke(Vehicle *vehicle) {
             }
             Vec3fSubtractInPlace(&particle->velocity, &vehicle->frame.forward);
 #if TGR_BOSS_RALLY
-            fade = 1.0L - 50.0f / ((long double)vehicle->speedKph - -50.0f);
+            fade = (f32)(1.0L - 50.0f / ((long double)vehicle->speedKph - -50.0f));
 #else
             fade = 1.0f - 50.0f / (vehicle->speedKph + 50.0f);
 #endif
@@ -96,7 +96,7 @@ void SpawnTireSmoke(Vehicle *vehicle) {
                           &vehicle->frame.forward);
 #if TGR_BOSS_RALLY
             groundOffset = (long double)vehicle->groundDistance * -0.5f;
-            particle->position.z = (long double)particle->position.z - groundOffset;
+            particle->position.z = (f32)((long double)particle->position.z - groundOffset);
 #else
             particle->position.z += vehicle->groundDistance * 0.5f;
 #endif
@@ -121,7 +121,7 @@ void SpawnTireSmoke(Vehicle *vehicle) {
             particle->size = 0.4f;
             particle->fade = 25;
 #if TGR_BOSS_RALLY
-            particle->alpha = (s64)(16.0L - (long double)fade * -167.3f);
+            particle->alpha = (u8)(s64)(16.0L - (long double)fade * -167.3f);
 #else
             particle->alpha = (s32)(239.0f * fade * 0.7f + 16.0f);
 #endif

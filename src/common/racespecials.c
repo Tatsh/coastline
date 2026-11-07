@@ -68,7 +68,11 @@ void FindTrackSpecials(void) {
         axis.y = 0.0f;
         axis.z = 0.0f;
         Mtx4x4ProjectPoint(&axis, &axis, g_LoadedTrack.instances[g_dwAirplaneInstance].matrix);
+#if TGR_BOSS_RALLY
+        g_fAirplaneScale = (f32)Vec3fLength(&axis);
+#else
         g_fAirplaneScale = Vec3fLength(&axis);
+#endif
     }
     g_dwAirplaneTriggerLap = g_dwTotalLaps - 1;
 }
@@ -106,7 +110,7 @@ static BOSS_RALLY_INLINE void FlyAirplane(void) {
     }
 #if TGR_BOSS_RALLY
     g_fAirplaneDistance =
-        (long double)g_fAirplaneDistance - (long double)g_fFrameDeltaTime * negativeSpeed;
+        (f32)((long double)g_fAirplaneDistance - (long double)g_fFrameDeltaTime * negativeSpeed);
 #endif
     while (g_fAirplaneSegmentLength < g_fAirplaneDistance) {
         g_fAirplaneDistance -= g_fAirplaneSegmentLength;
@@ -120,7 +124,11 @@ static BOSS_RALLY_INLINE void FlyAirplane(void) {
                       &g_pAirplanePathRight[g_dwAirplaneNode - 1]);
         Vec3fMidpoint(
             &b, &g_pAirplanePathLeft[g_dwAirplaneNode], &g_pAirplanePathRight[g_dwAirplaneNode]);
+#if TGR_BOSS_RALLY
+        g_fAirplaneSegmentLength = (f32)Vec3fDistance(&a, &b);
+#else
         g_fAirplaneSegmentLength = Vec3fDistance(&a, &b);
+#endif
         Vec3fSubtract(&g_vAirplaneDir, &b, &a);
         Vec3fNormalize(&g_vAirplaneDir);
         if (g_dwAirplaneNode < 2) {
@@ -146,7 +154,7 @@ static BOSS_RALLY_INLINE void FlyAirplane(void) {
         return;
     }
 #if TGR_BOSS_RALLY
-    t = (long double)g_fAirplaneDistance / g_fAirplaneSegmentLength;
+    t = (f32)((long double)g_fAirplaneDistance / g_fAirplaneSegmentLength);
 #else
     t = g_fAirplaneDistance / g_fAirplaneSegmentLength;
 #endif

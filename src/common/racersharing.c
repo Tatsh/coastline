@@ -76,12 +76,12 @@ s32 CompareRacerProgressAsc(const void *a, const void *b) {
 #if TGR_PLATFORM != TGR_PLATFORM_N64
 /* Bring a distance along the route within half a lap. */
 static BOSS_RALLY_INLINE f32 WrapHalfLap(SharingReal rawDistance, f32 lapLength) {
-    f32 distance = rawDistance;
+    f32 distance = (f32)rawDistance;
 
     if (SHARING_INTERMEDIATE(lapLength) * 0.5f < rawDistance) {
-        distance = SHARING_INTERMEDIATE(distance) - lapLength;
+        distance = (f32)(SHARING_INTERMEDIATE(distance) - lapLength);
     } else if (distance < SHARING_INTERMEDIATE(lapLength) * -0.5f) {
-        distance = SHARING_INTERMEDIATE(distance) + lapLength;
+        distance = (f32)(SHARING_INTERMEDIATE(distance) + lapLength);
     }
     return distance;
 }
@@ -109,9 +109,9 @@ static BOSS_RALLY_INLINE f32 RacerSharingKey(RacerSlot *slot, Vehicle *player, f
                                  VEHICLE_GET(player, DistanceLaps)) *
                 lapLength;
         gap = WrapHalfLap(rawGap, lapLength);
-        return Vec3fDistance(&VEHICLE_GET(player, Frame).position,
-                             &VEHICLE_GET(vehicle, Frame).position) +
-               SHARING_INTERMEDIATE(gap) * gap;
+        return (f32)(Vec3fDistance(&VEHICLE_GET(player, Frame).position,
+                                   &VEHICLE_GET(vehicle, Frame).position) +
+                     SHARING_INTERMEDIATE(gap) * gap);
     }
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP &&
         RACER_SLOT_GET(slot, Index) >= (s32)g_dwNumLocalPlayers &&
@@ -123,8 +123,9 @@ static BOSS_RALLY_INLINE f32 RacerSharingKey(RacerSlot *slot, Vehicle *player, f
                  lapLength +
              (SHARING_INTERMEDIATE(VEHICLE_GET(player, Distance)) - RACER_SLOT_GET(slot, Distance));
     gap = WrapHalfLap(rawGap, lapLength);
-    return Vec3fDistance(&VEHICLE_GET(player, Frame).position, &RACER_SLOT_GET(slot, Position)) +
-           SHARING_INTERMEDIATE(gap) * gap;
+    return (
+        f32)(Vec3fDistance(&VEHICLE_GET(player, Frame).position, &RACER_SLOT_GET(slot, Position)) +
+             SHARING_INTERMEDIATE(gap) * gap);
 }
 
 /* Transfer the vehicle's progress to its racer before detaching the vehicle. */
