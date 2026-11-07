@@ -129,11 +129,9 @@ jobs:
           cmake -S . -B ".wiswa-ci/build/ido-$TGR_REGION" -G Ninja \
             -DCMAKE_TOOLCHAIN_FILE=cmake/n64-ido-toolchain.cmake \
             -DCMAKE_BUILD_TYPE=Release -DTGR_PLATFORM=n64 -DTGR_REGION="$TGR_REGION" \
-            -DTGR_ENABLE_PATCHES=OFF -DIDO_ROOT="$IDO_ROOT"
-          cmake --build ".wiswa-ci/build/ido-$TGR_REGION" --target archives --parallel 4
-          .sbclaude-venv/bin/python tools/assemble_code_image.py --region "$TGR_REGION" \
-            --build ".wiswa-ci/build/ido-$TGR_REGION" \
-            --output ".wiswa-ci/build/ido-$TGR_REGION/code-only.z64"
+            -DTGR_ENABLE_PATCHES=OFF -DIDO_ROOT="$IDO_ROOT" \
+            -DPython3_EXECUTABLE="$GITHUB_WORKSPACE/.sbclaude-venv/bin/python"
+          cmake --build ".wiswa-ci/build/ido-$TGR_REGION" --target rom --parallel 4
         env:
           IDO_ROOT: '${{ github.workspace }}/.wiswa-ci/ido/5.3'
           N64_INST: '/opt/libdragon'

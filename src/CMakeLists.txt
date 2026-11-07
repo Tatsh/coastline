@@ -107,6 +107,29 @@ if(TARGET coastline_ear)
   add_dependencies(archives coastline_ear)
 endif()
 
+if(TGR_PLATFORM STREQUAL "n64" AND TGR_IDO AND CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT
+                                                       TGR_ENABLE_PATCHES)
+  find_package(Python3 REQUIRED COMPONENTS Interpreter)
+  set(COASTLINE_REFERENCE_ROM
+      ""
+      CACHE FILEPATH "Original regional ROM to supply the assets and header to the matching build.")
+  set(_rom_arguments)
+  if(COASTLINE_REFERENCE_ROM)
+    list(APPEND _rom_arguments --reference "${COASTLINE_REFERENCE_ROM}")
+    set(_rom "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}-${TGR_REGION}.z64")
+  else()
+    set(_rom "${CMAKE_BINARY_DIR}/${CMAKE_PROJECT_NAME}-${TGR_REGION}-code-only.z64")
+  endif()
+  add_custom_target(
+    rom
+    COMMAND
+      "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/assemble_code_image.py" --region
+      "${TGR_REGION}" --build "${CMAKE_BINARY_DIR}" ${_rom_arguments} --output "${_rom}"
+    DEPENDS archives
+    COMMENT "Assembling the matching ${TGR_REGION} ROM"
+    VERBATIM)
+endif()
+
 if(TGR_PLATFORM STREQUAL "win")
   if(TGR_RENDERER STREQUAL "d3d")
     set(_library BRD3D)

@@ -74,6 +74,20 @@ This needs IDO 5.3 at `IDO_ROOT` and the libdragon cross toolchain at `N64_INST`
 compares instruction digests against `tools/matching/{us,asia,jp,eu}.json`, generated from verified
 original ROM images. CI runs it in a separate job for each region, without storing ROM images.
 `tools/ido_flags.txt` records alternative IDO flags where the first build choice does not match.
+An IDO Release build with patches disabled also provides a `rom` target. It assembles the compiled
+objects into `coastline-<region>-code-only.z64`, with non-code bytes set to zero, and checks the
+regional SHA-256. Set `COASTLINE_REFERENCE_ROM` to a verified original ROM when configuring to
+produce `coastline-<region>.z64` with the original header and assets. That output must match the
+original ROM's SHA-1. For example:
+
+```shell
+cmake -S . -B .wiswa-ci/build/ido-us -G Ninja \
+  -DCMAKE_TOOLCHAIN_FILE=cmake/n64-ido-toolchain.cmake -DTGR_REGION=us \
+  -DCMAKE_BUILD_TYPE=Release -DTGR_ENABLE_PATCHES=OFF \
+  -DCOASTLINE_REFERENCE_ROM=/path/to/usa.z64
+cmake --build .wiswa-ci/build/ido-us --target rom
+```
+
 To regenerate a region's digest file from a verified ROM, run:
 
 ```shell
