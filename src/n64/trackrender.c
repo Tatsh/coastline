@@ -29,7 +29,7 @@
 #define PHYSICAL_ADDRESS(pointer) ((int)((char *)(pointer) - 0x80000000))
 #endif
 /* The original reaches the MVP matrix through three adjacent matrices. */
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
 #define TRACK_MVP_MATRIX g_afMvpMatrix
 #else
 #define TRACK_MVP_MATRIX mm[3]

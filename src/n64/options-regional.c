@@ -186,7 +186,7 @@ void ProcessDataSaveLoadMenu(void) {
     static unsigned char skipEepromProbe; /* the EEPROM save was confirmed over good data */
     static unsigned char fadeDelayFrames; /* frames the fade has been done */
 
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     items = loadMenuItems;
     if (g_bSaveLoadEntryPoint == 1) {
         items = saveSeasonMenuItems;

@@ -127,21 +127,21 @@ s32 ProcessPakDataScreen(s32 dataType, u8 quiet) {
 #ifdef __sgi
     s32 unusedLowerSlot;
 #endif
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     /* Another data type opens no note, and the offset of the prompt adds nothing. */
     u8 *noteName = NULL;
 #else
     u8 *noteName;
-#endif /* ENABLE_PATCHES */
+#endif
     s32 freeBlocks;
     u8 plugged;
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     u8 unsetOffset = 0;
     s32 noteSize = 0;
 #else
     u8 unsetOffset;
     s32 noteSize;
-#endif /* ENABLE_PATCHES */
+#endif
     s32 equipment[EQUIPMENT_FIELDS];
     /* TOP GEAR SEASON, TOP GEAR GHOST and TOP GEAR OPTIONS in the font of the Controller Pak. */
     u8 seasonName[16] = {0x2D,

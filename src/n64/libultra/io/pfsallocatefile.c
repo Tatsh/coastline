@@ -17,12 +17,12 @@ s32 osPfsAllocateFile(OSPfs *pfs,
                       u8 *ext_name,
                       int file_size_in_bytes,
                       s32 *file_no) {
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     /* A search of no bank then fails as inconsistent. */
     int start_page = -1;
 #else
     int start_page;
-#endif /* ENABLE_PATCHES */
+#endif
     int decleared;
     int last_page;
     int old_last_page = 0;

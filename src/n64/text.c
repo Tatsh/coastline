@@ -200,7 +200,7 @@ typedef struct {
     s32 y;
 } TextDrawPosition;
 #define g_textDrawPosition (*(TextDrawPosition *)&g_nTextDrawX)
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
 #define TEXT_DRAW_X g_nTextDrawX
 #define TEXT_DRAW_Y g_nTextDrawY
 #else

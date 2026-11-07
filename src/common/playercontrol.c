@@ -96,11 +96,11 @@ void ChooseReplayCamera(Vehicle *vehicle) {
     f32 dy;
 
     best = CAMERA_POINT_FAR;
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     chosen[0] = chosen[1] = chosen[2] = 0.0f;
 #endif
     /* The empty tests preserve the original register allocation under IDO. */
-#ifndef ENABLE_PATCHES
+#if !defined(ENABLE_PATCHES) && defined(__sgi)
     if (vehicle) {
     }
     if (i * 12) {

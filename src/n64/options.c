@@ -222,12 +222,10 @@ s32 LoadSaveDataFromEeprom(void) {
     s32 i;
     EepromSaveData *save = (EepromSaveData *)(g_pPakDataBuffer + 4);
     u32 sum;
-#ifdef ENABLE_PATCHES
-    /* The unused local of the original is dropped. */
-#else
+#if !defined(ENABLE_PATCHES) && defined(__sgi)
     /* An unused local of the original, which the layout of its stack requires. */
     s32 unused;
-#endif /* ENABLE_PATCHES */
+#endif
     s32 size = ((u8 *)save - g_pPakDataBuffer + sizeof(EepromSaveData) + 7) & ~7;
     u32 checksum;
 
@@ -385,7 +383,7 @@ void ProcessDataSaveLoadMenu(void) {
 #ifdef __sgi
     s32 unusedB8;
 #endif
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     /* A choice out of range opens no note. */
     u8 *noteName = NULL;
 #else
@@ -393,7 +391,7 @@ void ProcessDataSaveLoadMenu(void) {
 #endif
     s32 freeBlocks;
     u8 plugged;
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     s32 noteSize = 0;
 #else
     s32 noteSize;
@@ -417,14 +415,14 @@ void ProcessDataSaveLoadMenu(void) {
     s32 i;
     s32 row;
     s32 height;
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     /* A choice out of range opens no note. */
     u8 *noteName = NULL;
     s32 noteSize = 0;
 #else
     u8 *noteName;
     s32 noteSize;
-#endif /* ENABLE_PATCHES */
+#endif
     s32 equipment[EQUIPMENT_FIELDS];
     s32 freeBlocks;
     s32 compressedSize;

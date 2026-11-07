@@ -169,7 +169,8 @@ void DrawSpriteStrip(Sprite *sprite,
     int scaleT;
     int mirrored;
 
-#if defined(ENABLE_PATCHES) && (TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP)
+#if (defined(ENABLE_PATCHES) || !defined(__sgi)) &&                                                \
+    (TGR_REGION == TGR_REGION_EU || TGR_REGION == TGR_REGION_JP)
     int format = G_IM_FMT_RGBA;
 #else
     int format;

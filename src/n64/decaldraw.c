@@ -19,7 +19,7 @@
 /* The texels of a cell of the font. */
 #define FONT_CELL 16
 
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
 #define DECAL_FONT_HEIGHT ((s32)g_texDecalFont.height)
 #else
 #define DECAL_FONT_HEIGHT g_texDecalFont.height
@@ -255,11 +255,11 @@ void StampTextOnDecal(s32 x, s32 y) {
     s32 i;
     s32 entry;
     s32 kern;
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     s32 glyphIndex = 0;
 #else
     s32 glyphIndex;
-#endif /* ENABLE_PATCHES */
+#endif
     s32 row;
     s32 offset;
     s32 firstColumn;
@@ -1012,12 +1012,12 @@ void DrawDashedRectangle(s32 x0, s32 y0, s32 x1, s32 y1) {
 
     phase = 0;
     AdvanceDashes();
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     /* With no dash drawn, the corners take the colour of the first phase. */
     color = AlternateDashColor(phase);
 #else
     /* With no dash drawn, the corners read the unset colour, as the original does. */
-#endif /* ENABLE_PATCHES */
+#endif
     if (x1 < x0) {
         swap = x0;
         x0 = x1;
@@ -1323,12 +1323,12 @@ void DrawDashedCircle(s32 x, s32 y, s32 radius) {
 }
 
 void DrawDecalTextPreview(s32 x, s32 y) {
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     /* A first character missing from the font is drawn with the first glyph. */
     s32 i, entry, glyphIndex = 0, left, bottom, glyphLeft, advance;
 #else
     s32 i, entry, glyphIndex, left, bottom, glyphLeft, advance;
-#endif /* ENABLE_PATCHES */
+#endif
 
     left = x - ((g_bDecalTextWidth >> 1) << 2);
     bottom = y - (g_texDecalFont.height << 2);

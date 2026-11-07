@@ -81,7 +81,7 @@ void ProcessPakMenuScreen(void) {
 
 #if TGR_REGION != TGR_REGION_US
     screenBlanked = 1;
-#if TGR_REGION == TGR_REGION_ASIA && defined(ENABLE_PATCHES)
+#if TGR_REGION == TGR_REGION_ASIA && (defined(ENABLE_PATCHES) || !defined(__sgi))
     (void)screenBlanked;
 #endif
 #endif
