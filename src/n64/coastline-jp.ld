@@ -22,7 +22,16 @@ SECTIONS
         *startlights.c.obj(.text .text.*)
         *race-demo.c.obj(.text .text.*)
         *racecredits.c.obj(.text .text.*)
+        *racetick.trim.o(.text .text.*)
         *racetick.c.obj(.text .text.*)
+        *raceresults.trim.o(.text .text.*)
+        *raceresults.c.obj(.text .text.*)
+        *seasontrack.c.obj(.text .text.*)
+        *race.trim.o(.text .text.*)
+        *libcoastline_n64.a:race.c.obj(.text .text.*)
+        . = ALIGN(16);
+        *splash.c.obj(.text .text.*)
+        *splash-controller.c.obj(.text .text.*)
         *(.text .text.*)
     }
     . = ALIGN(16);

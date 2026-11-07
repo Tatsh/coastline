@@ -48,6 +48,7 @@ set(_n64_sources
     sky.c
     snapshot.c
     splash.c
+    splash-controller.c
     sprite.c
     system.c
     boot-object.c
@@ -74,8 +75,12 @@ if(TGR_ENABLE_PATCHES)
 endif()
 if(TGR_IDO AND CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT TGR_ENABLE_PATCHES)
   list(REMOVE_ITEM _n64_sources race-bgm.c)
-  add_library(coastline_race_bgm OBJECT race-bgm.c)
-  target_link_libraries(coastline_race_bgm PRIVATE coastline_options)
+  coastline_add_ido_trimmed_object(coastline_race_bgm race-bgm.c 0x60 0x5c race-bgm)
+  if(TGR_REGION STREQUAL "jp")
+    list(REMOVE_ITEM _n64_sources racetick.c race.c)
+    coastline_add_ido_trimmed_object(coastline_racetick racetick.c 0x5a60 0x5a54 racetick)
+    coastline_add_ido_trimmed_object(coastline_race race.c 0x460 0x458 race)
+  endif()
 endif()
 if(TGR_REGION STREQUAL "eu" OR TGR_REGION STREQUAL "jp")
   list(APPEND _n64_sources options-regional.c)
@@ -84,7 +89,7 @@ endif()
 # in the glyph codes of its font.
 if(TGR_REGION STREQUAL "jp")
   foreach(_source carselect.c decaleditor.c options.c pakmenu.c paintshop.c playerselect.c splash.c
-                  text.c)
+                  splash-controller.c text.c)
     set(_encoded "${CMAKE_CURRENT_BINARY_DIR}/encoded/${_source}")
     add_custom_command(
       OUTPUT "${_encoded}"

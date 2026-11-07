@@ -137,7 +137,9 @@
     },
     "0x80208100": {
       "sources": {
-        "src/n64/splash.c": ["b6877d42b74e0e47bcb750c95c49b343648651292e60a81a85e9b46f5f13fb07"]
+        "src/n64/splash-controller.c": [
+          "b6877d42b74e0e47bcb750c95c49b343648651292e60a81a85e9b46f5f13fb07"
+        ]
       }
     },
     "0x80208490": {

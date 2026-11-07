@@ -21,6 +21,17 @@ endif()
 target_include_directories(coastline_options INTERFACE "${CMAKE_SOURCE_DIR}/src"
                                                      "${CMAKE_SOURCE_DIR}/src/common/libultra/include")
 
+function(coastline_add_ido_trimmed_object target source original_size new_size output_name)
+  add_library(${target} OBJECT ${source})
+  target_link_libraries(${target} PRIVATE coastline_options)
+  set_target_properties(
+    ${target}
+    PROPERTIES COASTLINE_TRIM_ORIGINAL_SIZE "${original_size}"
+               COASTLINE_TRIM_NEW_SIZE "${new_size}"
+               COASTLINE_TRIM_OUTPUT "${output_name}")
+  set_property(GLOBAL APPEND PROPERTY COASTLINE_TRIMMED_OBJECTS ${target})
+endfunction()
+
 if(TGR_PLATFORM STREQUAL "win")
   target_include_directories(coastline_options INTERFACE "${CMAKE_SOURCE_DIR}/src/common")
   # The Windows port is C++, and this directory links its libraries, so the language is enabled
@@ -39,6 +50,7 @@ add_subdirectory(common)
 if(TGR_PLATFORM STREQUAL "n64")
   include(n64/libultra/common-sources.cmake)
 endif()
+get_property(_trimmed_objects GLOBAL PROPERTY COASTLINE_TRIMMED_OBJECTS)
 
 # Every archive the build produces, for a target that builds all of them at once.
 set(COASTLINE_LIBRARIES coastline_main coastline_common ${COASTLINE_COMMON_LIBULTRA_LIBRARIES}
@@ -101,15 +113,12 @@ if(TGR_IDO)
   foreach(_library ${COASTLINE_LIBRARIES})
     coastline_apply_ido_flags(${_library})
   endforeach()
-  if(TARGET coastline_race_bgm)
-    coastline_apply_ido_flags(coastline_race_bgm)
-  endif()
+  foreach(_object IN LISTS _trimmed_objects)
+    coastline_apply_ido_flags(${_object})
+  endforeach()
 endif()
 
-add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES})
-if(TARGET coastline_race_bgm)
-  add_dependencies(archives coastline_race_bgm)
-endif()
+add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES} ${_trimmed_objects})
 if(TARGET coastline_ear)
   add_dependencies(archives coastline_ear)
 endif()
@@ -145,17 +154,22 @@ else()
     set(_link_libraries ${COASTLINE_LIBRARIES})
     list(REMOVE_ITEM _link_libraries coastline_main coastline_asm)
     add_executable(${CMAKE_PROJECT_NAME} $<TARGET_OBJECTS:coastline_main>)
-    if(TARGET coastline_race_bgm)
+    if(_trimmed_objects)
       find_package(Python3 REQUIRED COMPONENTS Interpreter)
-      set(_trimmed_bgm "${CMAKE_CURRENT_BINARY_DIR}/race-bgm.trim.o")
-      add_custom_command(
-        OUTPUT "${_trimmed_bgm}"
-        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/trim_elf_text.py"
-                "$<TARGET_OBJECTS:coastline_race_bgm>" 0x60 0x5c "${_trimmed_bgm}"
-        DEPENDS coastline_race_bgm "${CMAKE_SOURCE_DIR}/tools/trim_elf_text.py"
-        VERBATIM)
-      set_source_files_properties("${_trimmed_bgm}" PROPERTIES GENERATED TRUE EXTERNAL_OBJECT TRUE)
-      target_sources(${CMAKE_PROJECT_NAME} PRIVATE "${_trimmed_bgm}")
+      foreach(_object IN LISTS _trimmed_objects)
+        get_target_property(_original_size ${_object} COASTLINE_TRIM_ORIGINAL_SIZE)
+        get_target_property(_new_size ${_object} COASTLINE_TRIM_NEW_SIZE)
+        get_target_property(_output_name ${_object} COASTLINE_TRIM_OUTPUT)
+        set(_trimmed "${CMAKE_CURRENT_BINARY_DIR}/${_output_name}.trim.o")
+        add_custom_command(
+          OUTPUT "${_trimmed}"
+          COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/trim_elf_text.py"
+                  "$<TARGET_OBJECTS:${_object}>" "${_original_size}" "${_new_size}" "${_trimmed}"
+          DEPENDS ${_object} "${CMAKE_SOURCE_DIR}/tools/trim_elf_text.py"
+          VERBATIM)
+        set_source_files_properties("${_trimmed}" PROPERTIES GENERATED TRUE EXTERNAL_OBJECT TRUE)
+        target_sources(${CMAKE_PROJECT_NAME} PRIVATE "${_trimmed}")
+      endforeach()
     endif()
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_asm "-Wl,--start-group"
                                                         ${_link_libraries} "-Wl,--end-group" gcc)
