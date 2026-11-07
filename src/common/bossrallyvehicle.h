@@ -427,8 +427,8 @@ public:
      * @param bit The bits ORed into each referenced instance's mask byte.
      */
     void MarkNearbyInstanceShadows(u8 *mask, u8 bit) const {
-        for (s32 index = 0; index < nearbyInstanceCount; ++index) {
-            mask[nearbyInstances[index]] |= bit;
+        for (s32 nearbyIndex = 0; nearbyIndex < nearbyInstanceCount; ++nearbyIndex) {
+            mask[nearbyInstances[nearbyIndex]] |= bit;
         }
     }
     /**
