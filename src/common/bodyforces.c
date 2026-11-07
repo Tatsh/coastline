@@ -113,12 +113,12 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
     highForward[0] = FORCE_PRODUCT(axle.y, normal->z) - FORCE_PRODUCT(normal->y, axle.z);
     highForward[1] = FORCE_PRODUCT(axle.z, normal->x) - FORCE_PRODUCT(normal->z, axle.x);
     highForward[2] = FORCE_PRODUCT(axle.x, normal->y) - FORCE_PRODUCT(normal->x, axle.y);
-    forward.x = highForward[0];
-    forward.y = highForward[1];
-    forward.z = highForward[2];
-    side.x = normal->y * highForward[2] - highForward[1] * normal->z;
-    side.y = normal->z * highForward[0] - FORCE_PRODUCT(forward.z, normal->x);
-    side.z = FORCE_PRODUCT(normal->x, forward.y) - FORCE_PRODUCT(forward.x, normal->y);
+    forward.x = (f32)highForward[0];
+    forward.y = (f32)highForward[1];
+    forward.z = (f32)highForward[2];
+    side.x = (f32)(normal->y * highForward[2] - highForward[1] * normal->z);
+    side.y = (f32)(normal->z * highForward[0] - FORCE_PRODUCT(forward.z, normal->x));
+    side.z = (f32)(FORCE_PRODUCT(normal->x, forward.y) - FORCE_PRODUCT(forward.x, normal->y));
 #else
     forward.x = axle.y * normal->z - normal->y * axle.z;
     forward.y = axle.z * normal->x - normal->z * axle.x;
@@ -133,9 +133,9 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
     roll.y = forward.y * c;
     roll.z = forward.z * c;
 #if TGR_BOSS_RALLY
-    roll.x = FORCE_PRODUCT(side.x, s) + roll.x;
-    roll.y = FORCE_PRODUCT(side.y, s) + roll.y;
-    roll.z = FORCE_PRODUCT(side.z, s) + roll.z;
+    roll.x = (f32)(FORCE_PRODUCT(side.x, s) + roll.x);
+    roll.y = (f32)(FORCE_PRODUCT(side.y, s) + roll.y);
+    roll.z = (f32)(FORCE_PRODUCT(side.z, s) + roll.z);
 #else
     /* The original also turns the slide direction with the wheel and never reads it. */
     slide.x = forward.x * -s;
@@ -161,14 +161,14 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
         body->wheels[1]->contactFrames && body->wheels[3]->contactFrames) {
         GetWheelWorldVelocity(&velocity, body, wheel);
 #if TGR_BOSS_RALLY
-        rollSpeed = (FORCE_PRODUCT(velocity.x, roll.x) + FORCE_PRODUCT(velocity.y, roll.y)) +
-                    FORCE_PRODUCT(roll.z, velocity.z);
+        rollSpeed = (f32)((FORCE_PRODUCT(velocity.x, roll.x) + FORCE_PRODUCT(velocity.y, roll.y)) +
+                          FORCE_PRODUCT(roll.z, velocity.z));
         highWeight = ((long double)body->mass - FORCE_PRODUCT(wheel->mass, -4.0f)) *
                      2.943000316619873046875f;
         /* The original also stores the weight on the wheel and never reads it. */
         weight.x = 0.0f;
         weight.y = 0.0f;
-        weight.z = highWeight;
+        weight.z = (f32)highWeight;
         (void)weight;
         pressure = normal->z * highWeight;
 #else
@@ -188,7 +188,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
         grip = pressure * 3.0f;
 #endif
 #if TGR_BOSS_RALLY
-        *load = *load + FORCE_PRODUCT(force, 0.5f);
+        *load = (f32)(*load + FORCE_PRODUCT(force, 0.5f));
 #else
         *load = *load + force / 2.0f;
 #endif
@@ -198,15 +198,15 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
             if (weather >= GRIP_WEATHERS || weather < 0) {
                 weather = 0;
             }
-            force = FORCE_PRODUCT(g_pWheelSteeringTable[body->tireType][weather][wheel->surface],
-                                  force);
+            force = (f32)FORCE_PRODUCT(
+                g_pWheelSteeringTable[body->tireType][weather][wheel->surface], force);
 #else
             force = (f32)((f64)force * 0.9);
 #endif /* TGR_BOSS_RALLY */
         }
 #if TGR_BOSS_RALLY
         if (ABS(grip) < ABS(force)) {
-            force = (ABS(grip / force) * force) * 0.1f;
+            force = (f32)((ABS(grip / force) * force) * 0.1f);
         }
 #else
         if (ABS(grip) < ABS(force)) {
