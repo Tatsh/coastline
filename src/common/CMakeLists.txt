@@ -102,6 +102,7 @@ set(_common_sources
   util.c
   vblankquery.c
   vecmath.c
+  vecmath-frame.c
   vecmath-light.c
   vehiclechoice.c
   vehicledeform.c
@@ -140,6 +141,14 @@ if(TGR_PLATFORM STREQUAL "n64")
        vehiclesound.c)
 endif()
 if(TGR_IDO AND CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT TGR_ENABLE_PATCHES)
+  list(REMOVE_ITEM _common_sources vehiclemodel.c loadcar.c modelanimation.c vehiclestatus.c)
+  coastline_add_ido_trimmed_object(coastline_vehiclemodel vehiclemodel.c 0x2c0 0x2b8
+                                  vehiclemodel)
+  coastline_add_ido_trimmed_object(coastline_loadcar loadcar.c 0xe0 0xd4 loadcar)
+  coastline_add_ido_trimmed_object(coastline_modelanimation modelanimation.c 0x3f0 0x3e8
+                                  modelanimation)
+  coastline_add_ido_trimmed_object(coastline_vehiclestatus vehiclestatus.c 0x2e0 0x2d8
+                                  vehiclestatus)
   list(REMOVE_ITEM _common_sources replay.c rledecompress.c)
   coastline_add_ido_trimmed_object(coastline_replay replay.c 0x2e0 0x2d4 replay)
   coastline_add_ido_trimmed_object(coastline_rledecompress rledecompress.c 0x1e0 0x1d8

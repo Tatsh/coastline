@@ -70,6 +70,7 @@ set(_n64_sources
     vehicle-physics-step.c
     vehicle-track-position.c
     vehiclemodelrender.c
+    vehiclemodel-valid.c
     vehiclerender.c
     vehiclesetup.c
     vehiclesound.c
@@ -80,6 +81,16 @@ if(TGR_ENABLE_PATCHES)
   list(APPEND _n64_sources paintinput.c)
 endif()
 if(TGR_IDO AND CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT TGR_ENABLE_PATCHES)
+  list(REMOVE_ITEM _n64_sources system.c vehiclemodel-valid.c vehicle-track-position.c)
+  coastline_add_ido_trimmed_object(coastline_system system.c 0x200 0x1f8 system)
+  coastline_add_ido_trimmed_object(coastline_vehiclemodel_valid vehiclemodel-valid.c 0x30 0x24
+                                  vehiclemodel-valid)
+  coastline_add_ido_trimmed_object(coastline_vehicle_track_position vehicle-track-position.c 0x560
+                                  0x558 vehicle-track-position)
+  list(REMOVE_ITEM _n64_sources boot-object.c)
+  add_library(coastline_boot_object OBJECT boot-object.c)
+  target_link_libraries(coastline_boot_object PRIVATE coastline_options)
+  set_property(GLOBAL APPEND PROPERTY COASTLINE_SLICED_OBJECTS coastline_boot_object)
   list(REMOVE_ITEM _n64_sources depth-stub.c)
   coastline_add_ido_trimmed_object(coastline_depth_stub depth-stub.c 0x10 0x8 depth-stub)
   list(REMOVE_ITEM _n64_sources input-init.c)

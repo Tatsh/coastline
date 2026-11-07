@@ -35,10 +35,6 @@
 #define MODEL_OFFSET_LIMIT ((void *)0x7FFFFFFF)
 #define MODEL_BASE ((void *)base)
 
-s32 IsVehicleModelValid(s32 car) {
-    return g_aCarModels[car].modelRomEnd != 0;
-}
-
 void RelocateModelPointers(Model *model) {
     u32 base = (u32)model;
     s32 i;

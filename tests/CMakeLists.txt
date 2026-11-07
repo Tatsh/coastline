@@ -16,7 +16,8 @@ set(_gu
     "${_src}/n64/libultra/gu/translate.c"
     "${_src}/n64/libultra/gu/normalize.c")
 set(_common "${CMAKE_CURRENT_SOURCE_DIR}/stubs/common.c")
-set(_vecmath "${_src}/common/vecmath.c" "${_src}/common/vecmath-light.c")
+set(_vecmath "${_src}/common/vecmath.c" "${_src}/common/vecmath-frame.c"
+             "${_src}/common/vecmath-light.c")
 
 # Add a test from NAME_test.c and the sources after it.
 function(coastline_add_test name)

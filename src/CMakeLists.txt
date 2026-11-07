@@ -51,6 +51,7 @@ if(TGR_PLATFORM STREQUAL "n64")
   include(n64/libultra/common-sources.cmake)
 endif()
 get_property(_trimmed_objects GLOBAL PROPERTY COASTLINE_TRIMMED_OBJECTS)
+get_property(_sliced_objects GLOBAL PROPERTY COASTLINE_SLICED_OBJECTS)
 
 # Every archive the build produces, for a target that builds all of them at once.
 set(COASTLINE_LIBRARIES coastline_main coastline_common ${COASTLINE_COMMON_LIBULTRA_LIBRARIES}
@@ -116,9 +117,12 @@ if(TGR_IDO)
   foreach(_object IN LISTS _trimmed_objects)
     coastline_apply_ido_flags(${_object})
   endforeach()
+  foreach(_object IN LISTS _sliced_objects)
+    coastline_apply_ido_flags(${_object})
+  endforeach()
 endif()
 
-add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES} ${_trimmed_objects})
+add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES} ${_trimmed_objects} ${_sliced_objects})
 if(TARGET coastline_ear)
   add_dependencies(archives coastline_ear)
 endif()
@@ -154,8 +158,10 @@ else()
     set(_link_libraries ${COASTLINE_LIBRARIES})
     list(REMOVE_ITEM _link_libraries coastline_main coastline_asm)
     add_executable(${CMAKE_PROJECT_NAME} $<TARGET_OBJECTS:coastline_main>)
-    if(_trimmed_objects)
+    if(_trimmed_objects OR _sliced_objects)
       find_package(Python3 REQUIRED COMPONENTS Interpreter)
+    endif()
+    if(_trimmed_objects)
       foreach(_object IN LISTS _trimmed_objects)
         get_target_property(_original_size ${_object} COASTLINE_TRIM_ORIGINAL_SIZE)
         get_target_property(_new_size ${_object} COASTLINE_TRIM_NEW_SIZE)
@@ -170,6 +176,33 @@ else()
         set_source_files_properties("${_trimmed}" PROPERTIES GENERATED TRUE EXTERNAL_OBJECT TRUE)
         target_sources(${CMAKE_PROJECT_NAME} PRIVATE "${_trimmed}")
       endforeach()
+    endif()
+    if(_sliced_objects)
+      if(TGR_REGION STREQUAL "eu")
+        set(_boot_text_end 0xa50)
+      elseif(TGR_REGION STREQUAL "jp")
+        set(_boot_text_end 0x970)
+      else()
+        set(_boot_text_end 0x950)
+      endif()
+      set(_boot_relocation "${CMAKE_CURRENT_BINARY_DIR}/boot-relocation.slice.o")
+      set(_boot_color "${CMAKE_CURRENT_BINARY_DIR}/boot-color.slice.o")
+      set(_boot_rest "${CMAKE_CURRENT_BINARY_DIR}/boot-rest.slice.o")
+      add_custom_command(
+        OUTPUT "${_boot_relocation}" "${_boot_color}" "${_boot_rest}"
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/slice_elf_text.py"
+                "$<TARGET_OBJECTS:coastline_boot_object>" 0 0xd0 "${_boot_relocation}"
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/slice_elf_text.py"
+                "$<TARGET_OBJECTS:coastline_boot_object>" 0xd0 0x15c "${_boot_color}"
+        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/slice_elf_text.py"
+                "$<TARGET_OBJECTS:coastline_boot_object>" 0x15c "${_boot_text_end}" "${_boot_rest}"
+                --keep-other-sections
+        DEPENDS coastline_boot_object "${CMAKE_SOURCE_DIR}/tools/slice_elf_text.py"
+        VERBATIM)
+      set_source_files_properties("${_boot_relocation}" "${_boot_color}" "${_boot_rest}"
+                                  PROPERTIES GENERATED TRUE EXTERNAL_OBJECT TRUE)
+      target_sources(${CMAKE_PROJECT_NAME} PRIVATE "${_boot_relocation}" "${_boot_color}"
+                                                 "${_boot_rest}")
     endif()
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_asm "-Wl,--start-group"
                                                         ${_link_libraries} "-Wl,--end-group" gcc)

@@ -1255,6 +1255,7 @@ shgfp
 shiftl
 shiftt
 showmaximized
+shstrtab
 shutil
 sideb
 sidegrip
@@ -1361,6 +1362,7 @@ strgreater
 stringresources
 strlwr
 strmiids
+strtab
 strupr
 subalign
 subchannels
@@ -1376,6 +1378,7 @@ swresample
 swscale
 swwwwfgdafch
 syms
+symtab
 synchapi
 syncprintf
 sysrq

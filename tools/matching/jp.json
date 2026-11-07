@@ -926,7 +926,9 @@
     },
     "0x8021e188": {
       "sources": {
-        "src/n64/system.c": ["87500bbfc06d711c7d04d52229f403d15d1b454170a4c968e5830576efbfda9e"]
+        "src/n64/vehiclemodel-valid.c": [
+          "87500bbfc06d711c7d04d52229f403d15d1b454170a4c968e5830576efbfda9e"
+        ]
       }
     },
     "0x8021e1ac": {
@@ -1103,7 +1105,9 @@
     },
     "0x8021f620": {
       "sources": {
-        "src/common/vecmath.c": ["19ec5314816e28575f2b21d25b865ef81bc8afc8650e8d289995313bd9ba534e"]
+        "src/common/vecmath-frame.c": [
+          "19ec5314816e28575f2b21d25b865ef81bc8afc8650e8d289995313bd9ba534e"
+        ]
       }
     },
     "0x8021f640": {
