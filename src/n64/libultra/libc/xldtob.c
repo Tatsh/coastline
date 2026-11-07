@@ -229,7 +229,9 @@ void _Ldtob(_Pft *px, char code) {
                 }
                 p += 8;
                 for (j = 8; lo > 0 && --j >= 0;) {
-                    ldiv_t qr = ldiv(lo, 10);
+                    ldiv_t qr;
+
+                    qr = ldiv(lo, 10);
 
                     *--p = qr.rem + '0';
                     lo = qr.quot;
