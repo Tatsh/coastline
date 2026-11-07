@@ -81,6 +81,8 @@ SECTIONS
         }
     }
     _bss_size = SIZEOF(.bss);
+    ASSERT(g_aRacerSlots == g_aVehicles + 4 * 0x2090,
+           "Racer slots must follow the vehicle array.")
     /* The game uses the memory after the BSS by address, so C may not add to the BSS. */
     ASSERT(ADDR(.bss) + SIZEOF(.bss) <= 0x80382bb0, "The BSS grew past its original end.")
     ASSERT(ADDR(.carselect_bss) + SIZEOF(.carselect_bss) <= 0x80316380,

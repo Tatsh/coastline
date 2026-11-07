@@ -1600,6 +1600,9 @@ nonmatching D_8031B21C, 0x4
 dlabel D_8031B21C
     /* 8031B20C */ .space 0x04
 
+/* Four vehicles need 0x8240 bytes before the racer slots. */
+.space 0x28
+
 nonmatching g_aVehicles, 0x4
 
 dlabel g_aVehicles
@@ -2521,11 +2524,11 @@ nonmatching g_fVehicleLightDirBlendZ, 0x4
 dlabel g_fVehicleLightDirBlendZ
     /* 803517D0 */ .space 0x04
 
-nonmatching D_803517E4, 0x4C
+nonmatching D_803517E4, 0x24
 
 /* Automatically generated and unreferenced pad */
 dlabel D_803517E4
-    /* 803517D4 */ .space 0x4C
+    /* 803517D4 */ .space 0x24
 
 nonmatching D_80351830, 0x10
 
