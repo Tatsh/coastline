@@ -48,7 +48,7 @@ jobs:
           VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/.wiswa-ci/vcpkg-cache,readwrite'
           VCPKG_ROOT: '${{ github.workspace }}/.vcpkg'
       - if: >-
-          matrix.language == 'c-cpp' && github.event_name == 'push' &&
+          !cancelled() && matrix.language == 'c-cpp' && github.event_name == 'push' &&
           github.ref == 'refs/heads/master' && steps.vcpkg-cache.outputs.cache-hit != 'true'
         name: 'Save vcpkg binaries'
         uses: 'actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830'
