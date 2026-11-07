@@ -12,7 +12,7 @@ src/common/libultra/gu/* -O3
 src/n64/libultra/os/* -O1
 src/n64/libultra/gu/* -O3
 src/n64/libultra/* -O1 | -O2 | -O3 | -O2 -g3 | -O1 -mips1
-3rdparty/zlib-1.0.4/* -O1 | -O2 | -O3
+3rdparty/zlib-1.0.4/* -O2
 src/n64/splash.c -O2 -DCOASTLINE_ROM_POINTERS
 src/n64/racemenu.c -O2 -DCOASTLINE_ROM_POINTERS
 src/n64/paintshop.c -O2 -DCOASTLINE_PAINTSHOP_COLOR_RETURN
