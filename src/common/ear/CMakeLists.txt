@@ -47,8 +47,8 @@ if(TGR_PLATFORM STREQUAL "sdl")
   # and it includes the types of libultra.
   target_include_directories(coastline_ear PUBLIC "${CMAKE_SOURCE_DIR}/src/common/libultra/include")
   target_link_libraries(coastline_ear PUBLIC SDL3::SDL3)
-  # The calling convention of the exports exists only on 32-bit x86 Windows, as in common/types.h.
-  if(NOT (WIN32 AND CMAKE_SIZEOF_VOID_P EQUAL 4))
+  # Windows compilers provide calling-convention keywords on both 32-bit and 64-bit targets.
+  if(NOT WIN32)
     target_compile_definitions(coastline_ear PUBLIC __stdcall=)
   endif()
 endif()

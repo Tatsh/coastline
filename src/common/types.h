@@ -35,7 +35,7 @@ typedef unsigned int UINT;   /*!< An unsigned integer. */
 typedef int32_t LONG;        /*!< A signed 32-bit integer. */
 
 /* The calling conventions of 32-bit x86 do not exist on other processors. */
-#if !defined(_WIN32) || defined(_WIN64)
+#if !defined(_WIN32)
 #define __cdecl
 #define __stdcall
 #define __thiscall
