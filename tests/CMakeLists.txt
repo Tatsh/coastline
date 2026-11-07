@@ -16,7 +16,7 @@ set(_gu
     "${_src}/n64/libultra/gu/translate.c"
     "${_src}/n64/libultra/gu/normalize.c")
 set(_common "${CMAKE_CURRENT_SOURCE_DIR}/stubs/common.c")
-set(_vecmath "${_src}/common/vecmath.c")
+set(_vecmath "${_src}/common/vecmath.c" "${_src}/common/vecmath-light.c")
 
 # Add a test from NAME_test.c and the sources after it.
 function(coastline_add_test name)
@@ -104,7 +104,8 @@ coastline_add_test(
   "${_src}/common/hudoverlay.c"
   "${_src}/common/hudrace.c"
   "${_src}/common/hudtime.c")
-coastline_add_test(input "${_src}/n64/input.c" "${_src}/common/controllerread.c" "${_src}/n64/inputtranslate.c"
+coastline_add_test(input "${_src}/n64/input.c" "${_src}/n64/input-init.c"
+                   "${_src}/common/controllerread.c" "${_src}/n64/inputtranslate.c"
                    "${_src}/common/playerinput.c")
 coastline_add_test(
   model
@@ -169,6 +170,7 @@ coastline_add_test(
   "${_src}/common/frametime.c"
   "${_src}/common/iomessage.c"
   "${_src}/common/screen.c"
+  "${_src}/common/screen-stub.c"
   "${_src}/common/screendraw.c"
   "${_src}/common/fill.c"
   "${_src}/common/texturebind.c"

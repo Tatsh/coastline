@@ -70,6 +70,3 @@ void ClearZBufferRect(s32 x, s32 y, s32 width, s32 height) {
                      g_dwScreenWidth << g_dwScreenScaleShift,
                      TO_RSP_ADDRESS(g_apFramebuffers[g_dwFrameBufferIndex]));
 }
-
-void UnusedFrameTimingStub(void) {
-}

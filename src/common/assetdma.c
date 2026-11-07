@@ -44,11 +44,6 @@ u32 DmaReadWord(u32 romOffset) {
     return g_dwDmaReadWordBuffer;
 }
 
-void InitDmaRequest(DecompressJob *job, u8 *buffer) {
-    job->dst = NULL;
-    job->buffer = buffer;
-}
-
 #if TGR_BOSS_RALLY
 u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job) {
     return 0;

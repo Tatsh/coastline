@@ -53,6 +53,3 @@ void GameModeMainLoop(void) {
 #endif
 }
 #endif
-
-void StubUpdateCallback(void) {
-}

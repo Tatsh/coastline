@@ -445,12 +445,16 @@
     },
     "0x80217420": {
       "sources": {
-        "src/common/vecmath.c": ["c5a753d7d9a7ab1b9c508a929f7cd9577e4313233104333c90913fde100f8e41"]
+        "src/common/vecmath-light.c": [
+          "c5a753d7d9a7ab1b9c508a929f7cd9577e4313233104333c90913fde100f8e41"
+        ]
       }
     },
     "0x802174b4": {
       "sources": {
-        "src/common/vecmath.c": ["fa3b021f69917e5f276925ccd7b5e02976d854e966a055939d861ac12e0cf0a8"]
+        "src/common/vecmath-light.c": [
+          "fa3b021f69917e5f276925ccd7b5e02976d854e966a055939d861ac12e0cf0a8"
+        ]
       }
     },
     "0x80217614": {
@@ -720,7 +724,7 @@
     },
     "0x8021c188": {
       "sources": {
-        "src/n64/input.c": ["dc355ce6e6f0bef14dca9eaceb7e44be834675e2edb948b889c737068180c3d3"]
+        "src/n64/input-init.c": ["dc355ce6e6f0bef14dca9eaceb7e44be834675e2edb948b889c737068180c3d3"]
       }
     },
     "0x8021c46c": {
@@ -739,7 +743,7 @@
     },
     "0x8021c6a8": {
       "sources": {
-        "src/n64/depth.c": ["d2c0fb6d0215e786ea32057b963a7cc5ea771edce9a5320a94c44469303cde0b"]
+        "src/n64/depth-stub.c": ["d2c0fb6d0215e786ea32057b963a7cc5ea771edce9a5320a94c44469303cde0b"]
       }
     },
     "0x8021c6b0": {
@@ -779,7 +783,9 @@
     },
     "0x8021c740": {
       "sources": {
-        "src/common/screen.c": ["d2c0fb6d0215e786ea32057b963a7cc5ea771edce9a5320a94c44469303cde0b"]
+        "src/common/screen-stub.c": [
+          "d2c0fb6d0215e786ea32057b963a7cc5ea771edce9a5320a94c44469303cde0b"
+        ]
       }
     },
     "0x8021c748": {
@@ -817,14 +823,14 @@
     },
     "0x8021cd24": {
       "sources": {
-        "src/common/assetdma.c": [
+        "src/common/assetdma-init.c": [
           "327a3295ade0696bcd98651483051076e530f6a8c9f295721a078645fc87bddc"
         ]
       }
     },
     "0x8021cd30": {
       "sources": {
-        "src/n64/system.c": ["3df93dfe6915d683e0be1ebf605d51a8b56a8384a477155988524b7b922f5580"]
+        "src/n64/decompress.c": ["3df93dfe6915d683e0be1ebf605d51a8b56a8384a477155988524b7b922f5580"]
       }
     },
     "0x8021d070": {

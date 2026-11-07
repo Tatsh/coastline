@@ -13,7 +13,9 @@ set(_n64_sources
     debugtext.c
     decaldraw.c
     decaleditor.c
+    decompress.c
     depth.c
+    depth-stub.c
     drivewheel.c
     effects.c
     frame.c
@@ -22,6 +24,7 @@ set(_n64_sources
     hud.c
     impulse.c
     input.c
+    input-init.c
     inputtranslate.c
     mainmenu.c
     modeldraw.c
@@ -77,6 +80,20 @@ if(TGR_ENABLE_PATCHES)
   list(APPEND _n64_sources paintinput.c)
 endif()
 if(TGR_IDO AND CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT TGR_ENABLE_PATCHES)
+  list(REMOVE_ITEM _n64_sources depth-stub.c)
+  coastline_add_ido_trimmed_object(coastline_depth_stub depth-stub.c 0x10 0x8 depth-stub)
+  list(REMOVE_ITEM _n64_sources input-init.c)
+  coastline_add_ido_trimmed_object(coastline_input_init input-init.c 0x2f0 0x2e4 input-init)
+  list(REMOVE_ITEM _n64_sources depth.c)
+  coastline_add_ido_trimmed_object(coastline_depth depth.c 0x330 0x32c depth)
+  list(REMOVE_ITEM _n64_sources frame.c)
+  if(TGR_REGION STREQUAL "eu")
+    coastline_add_ido_trimmed_object(coastline_frame frame.c 0x2b80 0x2b78 frame)
+  elseif(TGR_REGION STREQUAL "jp")
+    coastline_add_ido_trimmed_object(coastline_frame frame.c 0x2b00 0x2af8 frame)
+  else()
+    coastline_add_ido_trimmed_object(coastline_frame frame.c 0x29c0 0x29b8 frame)
+  endif()
   list(REMOVE_ITEM _n64_sources options-volume.c)
   coastline_add_ido_trimmed_object(coastline_options_volume options-volume.c 0x50 0x44 options-volume)
   list(REMOVE_ITEM _n64_sources modeldraw.c)

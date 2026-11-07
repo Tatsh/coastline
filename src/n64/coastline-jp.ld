@@ -55,6 +55,28 @@ SECTIONS
         *libcoastline_common.a:iomessage.c.obj(.text .text.*)
         *vblankquery.trim.o(.text .text.*)
         *stats.trim.o(.text .text.*)
+        *vecmath-light.trim.o(.text .text.*)
+        *texturebind.trim.o(.text .text.*)
+        *depth.trim.o(.text .text.*)
+        *libcoastline_n64.a:depth.c.obj(.text .text.*)
+        *libcoastline_common.a:fill.c.obj(.text .text.*)
+        *fog.trim.o(.text .text.*)
+        *libcoastline_common.a:fog.c.obj(.text .text.*)
+        *frame.trim.o(.text .text.*)
+        *libcoastline_n64.a:frame.c.obj(.text .text.*)
+        *libcoastline_common.a:jolt.c.obj(.text .text.*)
+        *renderinit.trim.o(.text .text.*)
+        *input-init.trim.o(.text .text.*)
+        *frametime.trim.o(.text .text.*)
+        *depth-stub.trim.o(.text .text.*)
+        *screen.trim.o(.text .text.*)
+        *game-mode-main-loop.s.obj(.text .text.*)
+        *screen-stub.trim.o(.text .text.*)
+        *libcoastline_common.a:assetdma.c.obj(.text .text.*)
+        *replay.trim.o(.text .text.*)
+        *rledecompress.trim.o(.text .text.*)
+        *assetdma-init.trim.o(.text .text.*)
+        *libcoastline_n64.a:decompress.c.obj(.text .text.*)
         *(.text .text.*)
     }
     . = ALIGN(16);
@@ -75,6 +97,7 @@ SECTIONS
     OVERLAY 0x802acb30 : NOCROSSREFS {
         .light_ramp_bss {
             . = 0x8031c488 - 0x802acb30;
+            *fog.trim.o(.bss.light_ramp)
             *fog.c.obj(.bss.light_ramp)
         }
         .season_records_bss {
@@ -83,7 +106,7 @@ SECTIONS
         }
         .decompress_len_bss {
             . = 0x8031c498 - 0x802acb30;
-            *system.c.obj(.bss.decompress_len)
+            *decompress.c.obj(.bss.decompress_len)
         }
         .bss {
             *(EXCLUDE_FILE (*carselect.c.obj *decaleditor.c.obj *paintshop.c.obj *racemenu.c.obj

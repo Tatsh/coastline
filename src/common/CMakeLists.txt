@@ -2,6 +2,7 @@
 set(_common_sources
   ambientsound.c
   assetdma.c
+  assetdma-init.c
   billboardparticles.c
   bodyforces.c
   camerachange.c
@@ -73,6 +74,7 @@ set(_common_sources
   routewalk.c
   savestate.c
   screen.c
+  screen-stub.c
   fill.c
   screenfade.c
   screenrect.c
@@ -100,6 +102,7 @@ set(_common_sources
   util.c
   vblankquery.c
   vecmath.c
+  vecmath-light.c
   vehiclechoice.c
   vehicledeform.c
   vehicleeffects.c
@@ -137,10 +140,35 @@ if(TGR_PLATFORM STREQUAL "n64")
        vehiclesound.c)
 endif()
 if(TGR_IDO AND CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT TGR_ENABLE_PATCHES)
+  list(REMOVE_ITEM _common_sources replay.c rledecompress.c)
+  coastline_add_ido_trimmed_object(coastline_replay replay.c 0x2e0 0x2d4 replay)
+  coastline_add_ido_trimmed_object(coastline_rledecompress rledecompress.c 0x1e0 0x1d8
+                                  rledecompress)
+  list(REMOVE_ITEM _common_sources assetdma-init.c)
+  coastline_add_ido_trimmed_object(coastline_assetdma_init assetdma-init.c 0x10 0xc
+                                  assetdma-init)
+  list(REMOVE_ITEM _common_sources screen-stub.c)
+  coastline_add_ido_trimmed_object(coastline_screen_stub screen-stub.c 0x10 0x8 screen-stub)
+  if(NOT TGR_REGION STREQUAL "us")
+    list(REMOVE_ITEM _common_sources screen.c)
+    coastline_add_ido_trimmed_object(coastline_screen screen.c 0x70 0x68 screen)
+  endif()
+  list(REMOVE_ITEM _common_sources frametime.c)
+  coastline_add_ido_trimmed_object(coastline_frametime frametime.c 0x240 0x23c frametime)
   list(REMOVE_ITEM _common_sources iomessage.c vblankquery.c stats.c)
   coastline_add_ido_trimmed_object(coastline_iomessage iomessage.c 0xf0 0xe8 iomessage)
   coastline_add_ido_trimmed_object(coastline_vblankquery vblankquery.c 0x10 0x10 vblankquery)
   coastline_add_ido_trimmed_object(coastline_stats stats.c 0x60 0x58 stats)
+  list(REMOVE_ITEM _common_sources vecmath-light.c texturebind.c)
+  coastline_add_ido_trimmed_object(coastline_vecmath_light vecmath-light.c 0x200 0x1f4
+                                  vecmath-light)
+  coastline_add_ido_trimmed_object(coastline_texturebind texturebind.c 0x680 0x678 texturebind)
+  list(REMOVE_ITEM _common_sources fog.c)
+  coastline_add_ido_trimmed_object(coastline_fog fog.c 0x11d0 0x11c8 fog)
+  if(TGR_REGION STREQUAL "eu" OR TGR_REGION STREQUAL "jp")
+    list(REMOVE_ITEM _common_sources renderinit.c)
+    coastline_add_ido_trimmed_object(coastline_renderinit renderinit.c 0x320 0x314 renderinit)
+  endif()
   list(REMOVE_ITEM _common_sources volumecontrols.c volumecontrols-sfx.c)
   coastline_add_ido_trimmed_object(coastline_volume_bgm volumecontrols.c 0x80 0x74 volume-bgm)
   coastline_add_ido_trimmed_object(coastline_volume_sfx volumecontrols-sfx.c 0x80 0x74 volume-sfx)
