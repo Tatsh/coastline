@@ -211,6 +211,61 @@ jobs:
         with:
           category: '/language:c-cpp/win'
           sarif_file: '${{ runner.temp }}/codeql-sarif'
+  analyze-win-msvc:
+    name: 'Analyze Boss Rally (MSVC)'
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    runs-on: windows-2022
+    steps:
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          persist-credentials: false
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          repository: 'NovaRain/DXSDK_Collection'
+          ref: '61827822ad945fac5acb3123ab00c378654bfcd7'
+          path: 'dxsdk'
+          sparse-checkout: |
+            DXSDK_Aug2007/Include
+            DXSDK_Aug2007/Lib/x86
+          sparse-checkout-cone-mode: false
+          persist-credentials: false
+      - name: 'Install the resource compiler'
+        run: |
+          & C:\msys64\usr\bin\bash.exe -lc 'pacman -Sy --noconfirm mingw-w64-i686-binutils'
+          Add-Content -Path $env:GITHUB_PATH -Value 'C:\msys64\mingw32\bin'
+      - name: 'Initialize CodeQL'
+        uses: 'github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        with:
+          build-mode: 'manual'
+          languages: 'c-cpp'
+      - name: 'Build patched and unpatched configurations'
+        run: |
+          foreach ($patches in @('OFF', 'ON')) {
+            $buildDir = ".wiswa-ci/build/codeql-win-msvc-$patches"
+            cmake -S . -B $buildDir -G 'Visual Studio 17 2022' -A Win32 `
+              '-DTGR_VARIANTS=win-d3d;win-glide' "-DTGR_ENABLE_PATCHES=$patches" `
+              "-DDXSDK_DIR=$env:GITHUB_WORKSPACE/dxsdk/DXSDK_Aug2007"
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+            cmake --build $buildDir --config Release --parallel 4
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+      - name: 'Analyze'
+        uses: 'github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        with:
+          category: '/language:c-cpp/win-msvc'
+          output: '${{ runner.temp }}/codeql-sarif'
+          upload: false
+      - name: Restrict native findings to project sources
+        run: python .github/scripts/static-analysis.py --sarif "$env:RUNNER_TEMP/codeql-sarif"
+        shell: pwsh
+      - name: 'Upload CodeQL results'
+        uses: 'github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        with:
+          category: '/language:c-cpp/win-msvc'
+          sarif_file: '${{ runner.temp }}/codeql-sarif'
 name: 'CodeQL'
 'on':
   pull_request:
