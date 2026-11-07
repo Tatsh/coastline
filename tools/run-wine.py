@@ -75,7 +75,7 @@ def _replace_binary(source: Path, destination: Path) -> None:
         temporary_path.unlink(missing_ok=True)
 
 
-def _initialise_prefix(
+def _initialize_prefix(
     options: _Options, prefix: Path, installation: Path, environment: dict[str, str]
 ) -> None:
     """
@@ -313,7 +313,7 @@ def _run(options: _Options) -> None:
         raise ValueError(message)
     wine = str(Path(wine).resolve())
     environment = dict(os.environ, WINEPREFIX=str(prefix))
-    _initialise_prefix(options, prefix, installation, environment)
+    _initialize_prefix(options, prefix, installation, environment)
 
     def run(*command: str) -> None:
         sp.run([wine, *command], env=environment, cwd=installation, check=True)
