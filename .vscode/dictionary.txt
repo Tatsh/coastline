@@ -275,6 +275,7 @@ ddsd
 ddsdm
 ddsurfacedesc
 ddutil
+ddxsdk
 debuginstance
 debugmessage
 debugtext
@@ -371,9 +372,11 @@ dpenumplayers
 dpenumsessions
 dperr
 dpesc
+dplay
 dplayx
 dplconnection
 dpleft
+dplobby
 dpmsg
 dpname
 dpopen
@@ -423,6 +426,7 @@ dxgi
 dxguid
 dxil
 dxmedia
+dxsdk
 dxsetup
 dxversion
 dzlib
@@ -910,6 +914,7 @@ nlohmann
 noadv
 noat
 nobrowse
+noconfirm
 nocrossrefs
 noffstik
 noias
@@ -955,6 +960,7 @@ outfun
 overlappedwindow
 pacboy
 packedvalue
+pacman
 padbe
 paintinput
 paintshape

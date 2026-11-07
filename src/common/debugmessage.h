@@ -38,7 +38,11 @@ extern const char *g_pszDebugMessage;
  * @ghidraAddress BRD3D: 0x10035ba7
  * @ghidraAddress BRGlide: 0x1002f258
  */
+#if defined(_MSC_VER) && !defined(__cplusplus)
+__declspec(noreturn) void ShowDebugMessageFatalError(int unused);
+#else
 [[noreturn]] void ShowDebugMessageFatalError(int unused);
+#endif
 #endif /* TGR_BOSS_RALLY */
 
 #ifdef __cplusplus

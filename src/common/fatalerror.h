@@ -11,7 +11,11 @@ extern "C" {
  * @ghidraAddress BRD3D: 0x10008cf0
  * @ghidraAddress BRGlide: 0x10008ef0
  */
+#if defined(_MSC_VER) && !defined(__cplusplus)
+__declspec(noreturn) void ShowFatalErrorScreen(const char *pszMessage);
+#else
 [[noreturn]] void ShowFatalErrorScreen(const char *pszMessage);
+#endif
 
 #ifdef __cplusplus
 }

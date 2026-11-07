@@ -32,7 +32,11 @@ static u64 *g_pRdpOutputBufferEnd = (u64 *)0x803c8000;
  * @ghidraAddress BRD3D: 0x106c1170
  * @ghidraAddress BRGlide: 0x106e8200
  */
+#if defined(_MSC_VER)
+static s32 g_dwDisplayListCommandCount;
+#else
 [[maybe_unused, gnu::used]] static s32 g_dwDisplayListCommandCount;
+#endif
 /**
  * Whether a frame has been sent to the RSP.
  *
@@ -64,7 +68,11 @@ static u32 g_dwFlushDuration;
  * @ghidraAddress BRD3D: 0x106c1620
  * @ghidraAddress BRGlide: 0x106e86b0
  */
+#if defined(_MSC_VER)
+static u32 g_dwFlushInterval;
+#else
 [[maybe_unused, gnu::used]] static u32 g_dwFlushInterval;
+#endif
 /**
  * @ghidraAddress USA: 0x8028aae4
  * @ghidraAddress Asia: 0x8028A634
@@ -82,7 +90,11 @@ static u32 g_dwFlushStartTime;
  * @ghidraAddress BRD3D: 0x106c56e4
  * @ghidraAddress BRGlide: 0x106ec774
  */
+#if defined(_MSC_VER)
+static u32 g_dwLastFlushValue;
+#else
 [[maybe_unused, gnu::used]] static u32 g_dwLastFlushValue;
+#endif
 /**
  * @ghidraAddress USA: 0x8028ab7c
  * @ghidraAddress Asia: 0x8028A6CC
