@@ -1,5 +1,6 @@
 #include "common/tricache.h"
 
+#include "common/analyzer.h"
 #include "common/physics.h"
 #include "common/rigidbody.h"
 #include "common/track.h"
@@ -342,7 +343,7 @@ s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point) {
     /* Drop the main axis of the normal, and solve for the triangle there. */
     normalX = ABS(triangle->normal.x);
     /* The redundant zero affects IDO's floating-point register allocation. */
-    normalOther = 0.0f;
+    COASTLINE_MATCHING_STORE normalOther = 0.0f;
     normalOther = ABS(triangle->normal.y);
     if (normalOther < normalX) {
         normalX = ABS(triangle->normal.x);

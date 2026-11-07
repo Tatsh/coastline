@@ -1,3 +1,4 @@
+#include "common/analyzer.h"
 #include "common/effects.h"
 #include "common/frametime.h"
 
@@ -36,8 +37,7 @@ void SpawnTireSmoke(Vehicle *vehicle) {
 
     if (vehicle->body.skidding != 0 && (speed = vehicle->speedKph) > 40.0f) {
 #if TGR_BOSS_RALLY
-        rate = (f32)((long double)g_fFrameDeltaTime * 0.5f -
-                     (long double)vehicle->speedKph * -0.00066006600f);
+        rate = (f32)((long double)g_fFrameDeltaTime * 0.5f - (long double)speed * -0.00066006600f);
 #else
         rate = g_fFrameDeltaTime * 0.5f + speed * 0.00066006600f;
 #endif
@@ -60,10 +60,11 @@ void SpawnTireSmoke(Vehicle *vehicle) {
             bodies[2] = &vehicle->wheelBodies[0];
             bodies[3] = &vehicle->wheelBodies[2];
             wheelBody = bodies[wheel];
-            if (wheelBody->contactFrames == 0 ||
-                (wheelBody->surface != 1 && wheelBody->surface != 2 &&
-                 wheelBody->surface != (particleIndex = TRACK_SURFACE_PAVED)) ||
-                (particleIndex = g_wParticleFreeListHead) == 0) {
+            COASTLINE_MATCHING_STORE if (wheelBody->contactFrames == 0 ||
+                                         (wheelBody->surface != 1 && wheelBody->surface != 2 &&
+                                          wheelBody->surface !=
+                                              (particleIndex = TRACK_SURFACE_PAVED)) ||
+                                         (particleIndex = g_wParticleFreeListHead) == 0) {
                 continue;
             }
             particle = &g_aParticlePool[particleIndex];

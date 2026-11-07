@@ -2,6 +2,8 @@
 
 #include <stddef.h>
 
+#include "common/analyzer.h"
+
 #if TGR_PLATFORM == TGR_PLATFORM_SDL
 #include "common/syncprintf.h"
 
@@ -283,8 +285,8 @@ u8 *ParseMusicPatternRow(u8 *row) {
     (void)sizeof(unusedSlots);
     for (i = 0; i < g_nAudioChannelCount; i++) {
         note = 0;
-        effect = 0;
-        parameter = 0;
+        COASTLINE_MATCHING_STORE effect = 0;
+        COASTLINE_MATCHING_STORE parameter = 0;
         instrument = 0;
         flags = *row++;
         if (flags < 0) {
