@@ -284,7 +284,15 @@ void ProcessColorEditorDialog(void) {
         TransferFlags(&g_aPlayerInputState[g_bPaintShopPlayer], 0x10);
         g_bColorEditorChannel = 0;
         g_bColorEditorOpen = 0;
+#ifdef ENABLE_PATCHES
+        if (g_aDecalSwatches[g_bDecalColor].color[0] == g_abSavedSwatchColor[0] &&
+            g_aDecalSwatches[g_bDecalColor].color[1] == g_abSavedSwatchColor[1] &&
+            g_aDecalSwatches[g_bDecalColor].color[2] == g_abSavedSwatchColor[2]) {
+            CancelDecalPaletteUndo();
+        }
+#else
         g_bDecalEditCount++;
+#endif
     } else if (g_aPlayerInputState[g_bPaintShopPlayer].buttons & 0x20) {
         TransferFlags(&g_aPlayerInputState[g_bPaintShopPlayer], 0x20);
         g_pDecalPalette[g_bDecalColor] =
@@ -338,6 +346,9 @@ void ProcessColorEditorDialog(void) {
         }
         g_bColorEditorChannel = 0;
         g_bColorEditorOpen = 0;
+#ifdef ENABLE_PATCHES
+        CancelDecalPaletteUndo();
+#endif
     }
 }
 
@@ -420,6 +431,18 @@ void ProcessDecalEditorInput(void) {
     if (g_bPaintShopExiting != 0) {
         return;
     }
+#ifdef ENABLE_PATCHES
+    if ((PaintShopInput()->buttons & (INPUT_L | INPUT_R)) == (INPUT_L | INPUT_R)) {
+        TransferFlags(PaintShopInput(), INPUT_L | INPUT_R);
+        RedoDecalEdit();
+        return;
+    }
+    if (PaintShopInput()->buttons & INPUT_L) {
+        TransferFlags(PaintShopInput(), INPUT_L);
+        UndoDecalEdit();
+        return;
+    }
+#endif
     if (g_bDecalDragActive == 0 && g_bDecalSlotChanged == 0 &&
         (PaintShopInput()->buttons & INPUT_PICK)) {
         for (i = 0; i < 10; i++) {
@@ -478,6 +501,9 @@ void ProcessDecalEditorInput(void) {
                     for (j = 0; j < 3; j++) {
                         g_abSavedSwatchColor[j] = g_aDecalSwatches[g_bDecalColor].color[j];
                     }
+#ifdef ENABLE_PATCHES
+                    SaveDecalPaletteUndo();
+#endif
                     g_bColorEditorOpen = 1;
                     return;
                 }

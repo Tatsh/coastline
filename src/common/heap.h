@@ -48,6 +48,13 @@ void ResetHeap(void);
  */
 u8 *GetHeapCurrentAddress(void);
 
+#ifdef ENABLE_PATCHES
+/** Return bytes available after the next interface allocation is aligned.
+ * @return Available bytes in the interface heap.
+ */
+u32 GetHeapAvailable(void);
+#endif
+
 /**
  * Free everything after an address GetHeapCurrentAddress() returned.
  *

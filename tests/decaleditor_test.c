@@ -65,7 +65,8 @@ static u8 texels[0x800], *masks[12];
 static u16 palette[16];
 static Sprite icons[4];
 static u32 count;
-static s32 fades, saves, undoCalls, keyboards, pixels, lastBorderWidth;
+static s32 fades, saves, undoCalls, redoCalls, paletteSaves, paletteCancels, keyboards, pixels;
+static s32 lastBorderWidth;
 static f32 fadeTarget;
 
 u32 osGetCount(void) {
@@ -146,6 +147,17 @@ void SaveDecalUndo(void) {
 }
 void UndoDecalEdit(void) {
     undoCalls++;
+}
+void RedoDecalEdit(void) {
+    redoCalls++;
+}
+void SaveDecalPaletteUndo(void) {
+    paletteSaves++;
+    g_bDecalEditCount = 1;
+}
+void CancelDecalPaletteUndo(void) {
+    paletteCancels++;
+    g_bDecalEditCount = 0;
 }
 void ProcessTextInputKeyboard(void) {
     keyboards++;
@@ -297,9 +309,12 @@ static void TestColorEditor(void) {
     g_bColorEditorOpen = TRUE;
     g_bColorEditorChannel = 2;
     g_bDecalEditCount = 0;
+    g_aDecalSwatches[0].color[0] = 0x11;
+    SaveDecalPaletteUndo();
     Press(INPUT_A);
     ProcessColorEditorDialog();
-    assert(!g_bColorEditorOpen && g_bColorEditorChannel == 0 && g_bDecalEditCount == 1);
+    assert(!g_bColorEditorOpen && g_bColorEditorChannel == 0 && g_bDecalEditCount == 1 &&
+           paletteSaves == 1 && paletteCancels == 1);
     assert(input->heldButtons == INPUT_A && input->buttons == 0);
 }
 
@@ -495,6 +510,13 @@ static void TestEditor(void) {
     assert(g_texPaintCursor.originX == g_rcDecalCanvas.x + 25);
     assert(g_texPaintCursor.originY == g_rcDecalCanvas.y + 13);
     pad.button = 0;
+
+    Press(INPUT_L);
+    ProcessDecalEditorInput();
+    assert(undoCalls == 2);
+    Press(INPUT_L | INPUT_R);
+    ProcessDecalEditorInput();
+    assert(redoCalls == 1);
 }
 
 static void TestMenus(void) {

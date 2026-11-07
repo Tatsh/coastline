@@ -21,6 +21,9 @@
 #include "decaldraw.h"
 #include "options.h"
 #include "pakmenu.h"
+#ifdef ENABLE_PATCHES
+#include "paintundo.h"
+#endif
 #include "racemenu.h"
 
 PaletteSwatch g_aDecalSwatches[DECAL_SWATCHES];
@@ -305,6 +308,9 @@ void ProcessPaintShopScreen(void) {
     int dx;
     int dy;
     ScreenRect *area;
+#ifdef ENABLE_PATCHES
+    u32 historyBytes;
+#endif
 
     (void)stackPrefix;
     (void)stackSuffix;
@@ -572,6 +578,13 @@ void ProcessPaintShopScreen(void) {
         dy = (g_rcDecalCanvasFrame[0].height - g_rcDecalCanvas.height) >> 1;
         g_rcDecalCanvas.x = g_rcDecalCanvasFrame[0].x + dx;
         g_rcDecalCanvas.y = g_rcDecalCanvasFrame[0].y + dy;
+#ifdef ENABLE_PATCHES
+        historyBytes = GetHeapAvailable();
+        InitPaintUndo(AllocHeapAligned(historyBytes),
+                      historyBytes,
+                      g_pCurrentVehicleModelData,
+                      g_pDecalPalette);
+#endif
         g_bPaintShopInitialized = 1;
         gControllerPakState = 0;
         SetFadeTarget(1.0f, 0.2f);
@@ -898,6 +911,9 @@ void ResetPaintShopState(void) {
     g_bColorEditorOpen = FALSE;
     g_bShowPreview3D = TRUE;
     g_bUndoAvailable = FALSE;
+#ifdef ENABLE_PATCHES
+    ResetPaintUndo();
+#endif
     g_bStyleMenuOpen = FALSE;
     g_bTextShadowPickerOpen = FALSE;
     g_bEyedropperActive = FALSE;
@@ -906,11 +922,57 @@ void ResetPaintShopState(void) {
 void SaveDecalUndo(void) {
     memcpy(g_pDecalUndoBuffer, g_pDecalTexels, DECAL_BUFFER_SIZE);
     g_bUndoDecalSlot = g_bDecalSlot;
+#ifdef ENABLE_PATCHES
+    RecordPaintUndoSlot(g_bDecalSlot);
+    g_bDecalEditCount = PaintUndoIsDirty();
+    g_bUndoAvailable = PaintUndoCanUndo();
+#else
     g_bDecalEditCount++;
     g_bUndoAvailable = TRUE;
+#endif
 }
 
+#ifdef ENABLE_PATCHES
+void SaveAllDecalUndo(void) {
+    RecordPaintUndoAll();
+    g_bDecalEditCount = PaintUndoIsDirty();
+    g_bUndoAvailable = PaintUndoCanUndo();
+}
+
+void SaveDecalPaletteUndo(void) {
+    RecordPaintUndoPalette();
+    g_bDecalEditCount = PaintUndoIsDirty();
+    g_bUndoAvailable = PaintUndoCanUndo();
+}
+
+void CancelDecalPaletteUndo(void) {
+    CancelPaintUndoPalette();
+    g_bDecalEditCount = PaintUndoIsDirty();
+    g_bUndoAvailable = PaintUndoCanUndo();
+}
+
+static void RefreshUndoPalette(void) {
+    ModelTexture *headlights =
+        &g_pCurrentVehicleModelData
+             ->textures[g_pCurrentVehicleModelData->materialTextures[VEHICLE_MATERIAL_HEADLIGHTS]];
+    ModelTexture *rearLights =
+        &g_pCurrentVehicleModelData
+             ->textures[g_pCurrentVehicleModelData->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]];
+
+    ConvertPaletteToRgb();
+    headlights->palette[0] = rearLights->palette[0] = g_pDecalPalette[0];
+    headlights->palette[1] = rearLights->palette[1] = g_pDecalPalette[1];
+}
+#endif
+
 void UndoDecalEdit(void) {
+#ifdef ENABLE_PATCHES
+    if (UndoPaintChange() == PAINT_UNDO_PALETTE) {
+        RefreshUndoPalette();
+    }
+    g_bDecalEditCount = PaintUndoIsDirty();
+    g_bUndoAvailable = PaintUndoCanUndo();
+#else
     if (g_bUndoAvailable) {
         memcpy(g_pCurrentVehicleModelData
                    ->textures[g_pCurrentVehicleModelData->materialTextures[g_bUndoDecalSlot]]
@@ -920,7 +982,18 @@ void UndoDecalEdit(void) {
         g_bDecalEditCount--;
         g_bUndoAvailable = FALSE;
     }
+#endif
 }
+
+#ifdef ENABLE_PATCHES
+void RedoDecalEdit(void) {
+    if (RedoPaintChange() == PAINT_UNDO_PALETTE) {
+        RefreshUndoPalette();
+    }
+    g_bDecalEditCount = PaintUndoIsDirty();
+    g_bUndoAvailable = PaintUndoCanUndo();
+}
+#endif
 
 #if TGR_REGION == TGR_REGION_JP
 void DrawPakErrorMessage(s32 error, u8 operation, u8 inCarSelect) {
@@ -1430,6 +1503,9 @@ void ProcessFillClearMenu(void) {
             break;
         case CLEAR_ALL_DECALS:
         case CLEAR_ALL_DECALS | CLEAR_TO_BODY_COLOR:
+#ifdef ENABLE_PATCHES
+            SaveAllDecalUndo();
+#endif
             g_bSavedDecalSlot = g_bDecalSlot;
             for (slotIndex = 0; slotIndex < DECAL_SLOTS; slotIndex++) {
                 g_pDecalTexels =
@@ -1469,8 +1545,10 @@ void ProcessFillClearMenu(void) {
                 g_pCurrentVehicleModelData
                     ->textures[g_pCurrentVehicleModelData->materialTextures[g_bDecalSlot]]
                     .height;
+#ifndef ENABLE_PATCHES
             /* Undo cannot restore the decals after clearing every slot. */
             SaveDecalUndo();
+#endif
             g_texPaintToolClear.style = 0;
             g_bPaintTool = g_bPreviousPaintTool;
             break;
@@ -2317,7 +2395,9 @@ s32 ProcessDecalSaveLoad(VehicleModel *m, u8 player, u8 operation, u8 inCarSelec
                 m->textures[m->materialTextures[VEHICLE_MATERIAL_REAR_LIGHTS]].palette[1] = pal[1];
                 if (inCarSelect == 0) {
                     ConvertPaletteToRgb();
+#ifndef ENABLE_PATCHES
                     SaveDecalUndo();
+#endif
                 }
             }
         } else {
@@ -2344,6 +2424,14 @@ s32 ProcessDecalSaveLoad(VehicleModel *m, u8 player, u8 operation, u8 inCarSelec
 #endif
             g_bPakDialogState = 11;
             if (inCarSelect == 0) {
+#ifdef ENABLE_PATCHES
+                if (operation == PAINT_TOOL_LOAD) {
+                    ResetPaintUndo();
+                } else {
+                    MarkPaintUndoSaved();
+                }
+                g_bUndoAvailable = PaintUndoCanUndo();
+#endif
                 g_bDecalEditCount = 0;
             }
             break;

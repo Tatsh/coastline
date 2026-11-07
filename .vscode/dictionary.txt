@@ -966,6 +966,7 @@ paintinput
 paintshape
 paintshop
 painttex
+paintundo
 pakmenu
 paks
 paletted

@@ -17,6 +17,7 @@ DecalGlyph g_aDecalGlyphs[DECAL_GLYPHS];
 u8 g_bPaintTool, g_bDecalDragActive, g_bPaintToolStarted, g_bDecalTextLength;
 
 static u16 keyboardKey;
+static u16 keyboardKey2, keyboardKey3;
 static u8 keyboardStatus;
 static s32 keyboardReads;
 
@@ -44,6 +45,10 @@ s32 __osSiRawStartDma(s32 direction, void *buffer) {
     } else {
         bytes[5] = keyboardKey >> 8;
         bytes[6] = keyboardKey;
+        bytes[7] = keyboardKey2 >> 8;
+        bytes[8] = keyboardKey2;
+        bytes[9] = keyboardKey3 >> 8;
+        bytes[10] = keyboardKey3;
         bytes[11] = keyboardStatus;
         keyboardReads++;
     }
@@ -111,6 +116,20 @@ int main(void) {
     keyboardKey = 0;
     UpdatePaintPeripheralInput(&input);
     assert(!IsPaintKeyboardShiftDown());
+
+    g_bPaintTool = PAINT_TOOL_BRUSH;
+    g_bDecalDragActive = 0;
+    input.buttons = 0;
+    keyboardKey = 0x1107;
+    keyboardKey2 = 0x0D08;
+    UpdatePaintPeripheralInput(&input);
+    assert(input.buttons == INPUT_L);
+    input.buttons = 0;
+    keyboardKey3 = 0x0E01;
+    UpdatePaintPeripheralInput(&input);
+    assert(input.buttons == (INPUT_L | INPUT_R));
+    keyboardKey2 = keyboardKey3 = 0;
+    input.buttons = 0;
 
     g_aContStatus[1].type = 0;
     g_aContStatus[2].type = CONT_RELATIVE;

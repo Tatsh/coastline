@@ -78,7 +78,7 @@ set(_n64_sources
     weather.c
     weatherselect.c)
 if(TGR_ENABLE_PATCHES)
-  list(APPEND _n64_sources paintinput.c)
+  list(APPEND _n64_sources paintinput.c paintundo.c)
 endif()
 if(TGR_REGION STREQUAL "eu" OR TGR_REGION STREQUAL "jp")
   list(APPEND _n64_sources options-regional.c)

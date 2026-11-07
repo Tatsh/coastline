@@ -14,6 +14,8 @@
 #define RANDNET_KEYBOARD_TYPE 0x0200
 #define RANDNET_READ_KEYS 0x13
 #define RANDNET_POWER_LED 0x04
+#define RANDNET_KEY_CONTROL 0x1107
+#define RANDNET_KEY_Z 0x0D08
 #define PAINT_CURSOR_MIN_X 0x1F
 #define PAINT_CURSOR_MAX_X 0x261
 #define PAINT_CURSOR_MIN_Y 0x16
@@ -198,6 +200,9 @@ void UpdatePaintPeripheralInput(PlayerInputState *state) {
     s32 keyboardPort = -1;
     u16 keys[3];
     s32 i;
+    s32 controlDown = FALSE;
+    s32 shiftDown = FALSE;
+    s32 zDown = FALSE;
 
     for (port = 0; port < MAXCONTROLLERS; port++) {
         if (g_aContStatus[port].CONT_ERRNO != 0) {
@@ -241,6 +246,12 @@ void UpdatePaintPeripheralInput(PlayerInputState *state) {
         if (keys[i] != 0) {
             ApplyKeyboardKey(state, keys[i], !KeyWasDown(keys[i]));
         }
+        controlDown |= keys[i] == RANDNET_KEY_CONTROL;
+        shiftDown |= keys[i] == 0x0E01 || keys[i] == 0x0E06;
+        zDown |= keys[i] == RANDNET_KEY_Z;
+    }
+    if (controlDown && zDown) {
+        state->buttons |= shiftDown ? INPUT_L | INPUT_R : INPUT_L;
     }
     for (i = 0; i < 3; i++) {
         s_previousKeys[i] = keys[i];

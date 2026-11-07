@@ -750,6 +750,20 @@ void SaveDecalUndo(void);
  */
 void UndoDecalEdit(void);
 
+#ifdef ENABLE_PATCHES
+/** Reapply the most recently undone paint edit. */
+void RedoDecalEdit(void);
+
+/** Record every decal before a whole-car edit. */
+void SaveAllDecalUndo(void);
+
+/** Record the paint palette before editing it. */
+void SaveDecalPaletteUndo(void);
+
+/** Discard the palette entry when the colour editor is cancelled. */
+void CancelDecalPaletteUndo(void);
+#endif
+
 /**
  * Run one frame of the keyboard of the text tool.
  *

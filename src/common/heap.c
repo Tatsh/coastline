@@ -23,6 +23,14 @@ u8 *GetHeapCurrentAddress(void) {
     return g_pHeapCurrent;
 }
 
+#ifdef ENABLE_PATCHES
+u32 GetHeapAvailable(void) {
+    u8 *next = (u8 *)(((u32)g_pHeapCurrent + 7) & ~7);
+
+    return next < HEAP_END ? HEAP_END - next : 0;
+}
+#endif
+
 void SetHeapCurrentAddress(u8 *address) {
     g_pHeapCurrent = address;
 }
