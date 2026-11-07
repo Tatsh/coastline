@@ -56,6 +56,7 @@ def main() -> int:
   assembly = (ROOT / 'src' / 'n64' / 'asm' / args.region / 'data' / 'data.data.s').read_text()
   aliases.update(re.findall(r'^\s*\.set\s+([A-Za-z_]\w*),\s*([A-Za-z_]\w*)\s*$',
                             assembly, re.M))
+  aliases.update(re.findall(r'^([A-Za-z_]\w*):\ndlabel ([A-Za-z_]\w*)$', assembly, re.M))
   for name, address in re.findall(
       r'^dlabel ([A-Za-z_]\w*)\n\s*/\*\s*[0-9A-Fa-f]+\s+([0-9A-Fa-f]{8})\s', assembly, re.M):
     symbols.setdefault(name, int(address, 16))
