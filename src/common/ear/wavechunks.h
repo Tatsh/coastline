@@ -34,6 +34,11 @@ typedef struct EarRiffChunk {
 } EarRiffChunk;
 
 /** The format chunk of a wave file, laid out as the WAVEFORMATEX of Windows. */
+#if defined(_MSC_VER)
+#pragma pack(push, 1)
+#pragma warning(push)
+#pragma warning(disable : 5030)
+#endif
 typedef struct [[gnu::packed]] EarWaveFormat {
     WORD wFormatTag;       /*!< The format of the samples. */
     WORD nChannels;        /*!< The channels. */
@@ -49,6 +54,14 @@ typedef struct [[gnu::packed]] EarImaAdpcmWaveFormat {
     EarWaveFormat wfx;     /*!< The common members of the format. */
     WORD wSamplesPerBlock; /*!< The frames of a block. */
 } EarImaAdpcmWaveFormat;
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#pragma pack(pop)
+#endif
+#ifdef __cplusplus
+static_assert(sizeof(EarWaveFormat) == 18);
+static_assert(sizeof(EarImaAdpcmWaveFormat) == 20);
+#endif
 
 /** A wave file open for reading, from a path or from memory. */
 typedef struct EarRiffFile EarRiffFile;
