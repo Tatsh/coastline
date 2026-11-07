@@ -1,6 +1,8 @@
-#include "common/vehiclecolor.h"
 #if TGR_BOSS_RALLY
+#include "common/vehiclecolor.h"
 #include "common/vehiclecount.h"
+#else
+#include "common/vehiclemodel.h"
 #endif
 
 #if !TGR_BOSS_RALLY
