@@ -16,6 +16,7 @@
 
 ### Fixed
 
+- Align the speedometer needle with its dashboard in 640×480 Nintendo 64 races.
 - Read packed WAV format headers at their correct size in Windows SDL builds.
 - Reject oversized paint shop bitmaps before allocating or copying pixels.
 - Protect Controller Pak access from Rumble Pak updates in patched USA Nintendo 64 builds.

@@ -41,8 +41,13 @@ s32 g_dwViewportMirrored;
 #else
 #define COORD_NEGATE(value) (-(value))
 #define COORD_NEGATIVE_DOUBLE(value) ((value) * -2)
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && defined(ENABLE_PATCHES) && defined(EXPANSION_PAK_SUPPORT)
+#define VIEWPORT_BASE_WIDTH (g_dwScreenWidth << g_dwScreenScaleShift)
+#define VIEWPORT_BASE_HEIGHT (g_dwScreenHeight << g_dwScreenScaleShift)
+#else
 #define VIEWPORT_BASE_WIDTH 320
 #define VIEWPORT_BASE_HEIGHT 240
+#endif
 #endif /* TGR_BOSS_RALLY */
 
 /* A blend of the colour of the frame buffer and the colour drawn, by the alpha of the fog. */
