@@ -1,18 +1,30 @@
 {
   "asia": {
+    "code_end": 456016,
+    "code_start": 4096,
     "rom_size": 8388608,
-    "sha256": "3a41dae49c852cf8e42e764d84bd746524a4a9b2b4c78a3bdced46d2223f3077"
+    "sha256": "3a41dae49c852cf8e42e764d84bd746524a4a9b2b4c78a3bdced46d2223f3077",
+    "vram": 2149580800
   },
   "eu": {
+    "code_end": 465360,
+    "code_start": 4096,
     "rom_size": 8388608,
-    "sha256": "cde3d2c5a1407faa1697cb9744bbc65f9e53be2c59e3607271724807c08a0fed"
+    "sha256": "cde3d2c5a1407faa1697cb9744bbc65f9e53be2c59e3607271724807c08a0fed",
+    "vram": 2149580800
   },
   "jp": {
+    "code_end": 464000,
+    "code_start": 4096,
     "rom_size": 8388608,
-    "sha256": "e533ab46dca84d20de2cc701d511443ae568aca844411235aff59254c71a4504"
+    "sha256": "e533ab46dca84d20de2cc701d511443ae568aca844411235aff59254c71a4504",
+    "vram": 2149580800
   },
   "us": {
+    "code_end": 457216,
+    "code_start": 4096,
     "rom_size": 8388608,
-    "sha256": "8a5b30d262082531f1fc7e47e1834c5b2fa6433f85fd675147cb389985e3f1cf"
+    "sha256": "8a5b30d262082531f1fc7e47e1834c5b2fa6433f85fd675147cb389985e3f1cf",
+    "vram": 2149580800
   }
 }
