@@ -67,7 +67,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *car) {
         }
         sp -= 140.0f;
         k = 1;
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
         x = g_fSteerGain;
 #endif
         switch (car->steeringMode) {

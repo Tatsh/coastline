@@ -66,7 +66,7 @@ void ProcessVehicleInputAndPhysics(Vehicle *vehicle) {
             ChooseReplayCamera(vehicle);
 #else
             best = 16777216.0f;
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
             chosen[0] = chosen[1] = chosen[2] = 0.0f;
 #endif
             for (i = 0; i < g_LoadedTrack.cameraPointCount; i++) {

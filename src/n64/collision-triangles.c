@@ -29,7 +29,7 @@ s32 CollideBodyWithTriangles(RigidBody *body, f32 box[4][4]) {
 
     ret = 0;
     cnt = 0;
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     spin = 0;
 #endif
     for (node = g_pCollisionTriangleList; node != 0; node = node->next) {

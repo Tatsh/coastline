@@ -744,8 +744,10 @@ void ProcessDecalEditorInput(void) {
                 g_bPaintToolStarted = 1;
             } else {
                 SaveDecalUndo();
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
                 r = 0;
+#endif
+#ifdef ENABLE_PATCHES
                 originalX = g_texPaintCursor.originX;
                 originalY = g_texPaintCursor.originY;
                 if (PaintShapeModifierDown() &&

@@ -81,20 +81,20 @@ void ValidateChampionshipProgress(void) {
         g_aVehicles[0].profile->round = 0;
         g_aVehicles[0].profile->seasonPoints[g_aVehicles[0].profile->season] = 0;
     }
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     /* An unsigned season and round are never negative. */
     if (g_aVehicles[0].profile->season >= SEASONS) {
 #else
     if (g_aVehicles[0].profile->season < 0 || g_aVehicles[0].profile->season >= SEASONS) {
-#endif /* ENABLE_PATCHES */
+#endif
         goto resetSeason;
     }
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     if (g_aVehicles[0].profile->round >= g_SeasonTable[g_aVehicles[0].profile->season].raceCount) {
 #else
     if (g_aVehicles[0].profile->round < 0 ||
         g_aVehicles[0].profile->round >= g_SeasonTable[g_aVehicles[0].profile->season].raceCount) {
-#endif /* ENABLE_PATCHES */
+#endif
         goto resetRound;
     }
 }
@@ -308,7 +308,7 @@ void ProcessTrackMenu(void) {
     char unusedFrameBuffer[100] TGR_MATCHING_UNUSED;
     MenuItem **selectedSlot;
     MenuItem *selectedItem;
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     const char *selectedName = NULL;
     int selectedIndex = -1;
 #else
@@ -529,7 +529,7 @@ void ProcessTrackMenu(void) {
         menuInitialized = 0;
         break;
     }
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     if (selectedIndex >= 0) {
 #else
     if (g_dwGameMode == GAME_MODE_CHAMPIONSHIP || g_dwGameMode == GAME_MODE_ARCADE) {

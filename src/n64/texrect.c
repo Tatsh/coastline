@@ -128,7 +128,7 @@ void DrawTexturedRect(Texture *img,
     case 2:
         tpw = 4;
         break;
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(__sgi)
     default:
         tpw = 2;
         break;
