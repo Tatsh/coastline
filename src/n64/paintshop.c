@@ -76,6 +76,9 @@ PaletteSwatch g_aDecalSwatches[DECAL_SWATCHES];
 /* The bytes of the palette of the paint saved after the decals. */
 #define DECAL_PALETTE_BYTES 0x20
 
+/* The depth buffer and both 640x480 frame buffers end at this Expansion Pak offset. */
+#define PAINT_HISTORY_EXPANSION_OFFSET 0x5C2000
+
 /* The size and the baseline of the title, and the palette of the pictures of the tool buttons. */
 #if TGR_REGION == TGR_REGION_JP
 #define TITLE_SIZE 30
@@ -579,11 +582,19 @@ void ProcessPaintShopScreen(void) {
         g_rcDecalCanvas.x = g_rcDecalCanvasFrame[0].x + dx;
         g_rcDecalCanvas.y = g_rcDecalCanvasFrame[0].y + dy;
 #ifdef ENABLE_PATCHES
-        historyBytes = GetHeapAvailable();
-        InitPaintUndo(AllocHeapAligned(historyBytes),
-                      historyBytes,
-                      g_pCurrentVehicleModelData,
-                      g_pDecalPalette);
+        if (osMemSize > PAINT_HISTORY_EXPANSION_OFFSET) {
+            historyBytes = osMemSize - PAINT_HISTORY_EXPANSION_OFFSET;
+            InitPaintUndo((u8 *)(0x80000000 + PAINT_HISTORY_EXPANSION_OFFSET),
+                          historyBytes,
+                          g_pCurrentVehicleModelData,
+                          g_pDecalPalette);
+        } else {
+            historyBytes = GetHeapAvailable();
+            InitPaintUndo(AllocHeapAligned(historyBytes),
+                          historyBytes,
+                          g_pCurrentVehicleModelData,
+                          g_pDecalPalette);
+        }
 #endif
         g_bPaintShopInitialized = 1;
         gControllerPakState = 0;

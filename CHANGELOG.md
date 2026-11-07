@@ -9,7 +9,8 @@
 - Constrain paint shop lines and shapes with Shift or controller Z in SDL and patched N64 builds.
 - Support the Nintendo 64 Mouse and Randnet keyboard in the patched Nintendo 64 paint shop.
 - Undo and redo SDL paint shop edits with Ctrl+Z and Ctrl+Shift+Z, without a fixed history limit.
-- Undo and redo patched Nintendo 64 paint shop edits with controller L/L+R or Randnet keyboard shortcuts.
+- Undo and redo patched Nintendo 64 paint shop edits with controller L/L+R or Randnet keyboard
+  shortcuts, using Expansion Pak memory for deeper history when available.
 - Render patched Nintendo 64 screens at 640×480 when an Expansion Pak is present.
 
 ### Fixed

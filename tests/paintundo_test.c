@@ -9,6 +9,7 @@ static ModelTexture textures[DECAL_SLOTS];
 static u8 pixels[DECAL_SLOTS][64];
 static u16 palette[16];
 static u8 memory[1024];
+static u8 expandedMemory[0x240000];
 
 static void Init(void) {
     s32 i;
@@ -66,6 +67,17 @@ int main(void) {
     pixels[2][0] = 5;
     assert(RedoPaintChange() == -1);
     assert(UndoPaintChange() == PAINT_UNDO_SLOT && pixels[2][0] == 12);
+
+    InitPaintUndo(expandedMemory, sizeof(expandedMemory), &model, palette);
+    for (i = 0; i < 4096; i++) {
+        RecordPaintUndoSlot(0);
+        pixels[0][0] = (u8)(i + 1);
+    }
+    for (i = 4095; i >= 0; i--) {
+        assert(UndoPaintChange() == PAINT_UNDO_SLOT);
+        assert(pixels[0][0] == (i ? (u8)i : 10));
+    }
+    assert(!PaintUndoCanUndo());
 
     InitPaintUndo(memory, 80, &model, palette);
     for (i = 0; i < 200; i++) {
