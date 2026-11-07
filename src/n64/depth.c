@@ -27,7 +27,7 @@ void ClearDepthBuffer(void) {
     {
         u32 *command = (u32 *)gDisplayListPtr++;
         command[0] = 0xff100000 | (((g_dwScreenWidth << g_dwScreenScaleShift) - 1) & 0xfff);
-        command[1] = TO_RSP_ADDRESS(g_aDepthBuffer);
+        command[1] = TO_RSP_ADDRESS(N64_ACTIVE_DEPTH_BUFFER);
     }
     {
         u32 *command = (u32 *)gDisplayListPtr++;
@@ -54,7 +54,7 @@ void ClearZBufferRect(s32 x, s32 y, s32 width, s32 height) {
     {
         u32 *command = (u32 *)gDisplayListPtr++;
         command[0] = 0xff100000 | (((g_dwScreenWidth << g_dwScreenScaleShift) - 1) & 0xfff);
-        command[1] = TO_RSP_ADDRESS(g_aDepthBuffer);
+        command[1] = TO_RSP_ADDRESS(N64_ACTIVE_DEPTH_BUFFER);
     }
     {
         u32 *command = (u32 *)gDisplayListPtr++;

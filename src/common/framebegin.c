@@ -127,12 +127,27 @@ void BeginDisplayList(s32 highRes) {
     if (g_dwDisplayModeChangeCountdown != 0) {
         if (!(g_dwDisplayModeChangeCountdown - 1)) {
             if (g_dwScreenScaleShift) {
-                /* The frame buffers of the high resolution end where the first of the low starts.
-                 */
-                g_apFramebuffers[0] = (u16 *)((u32)g_aFramebuffer0 -
-                                              ((u32)g_aFramebuffer1 - (u32)g_aFramebuffer0) * 6);
-                g_apFramebuffers[1] = (u16 *)((u32)g_aFramebuffer0 -
-                                              ((u32)g_aFramebuffer1 - (u32)g_aFramebuffer0) * 2);
+#ifdef ENABLE_PATCHES
+                if (osMemSize > 0x400000) {
+                    /* Expansion memory avoids the track data below the program. */
+                    g_apFramebuffers[0] =
+                        N64_ACTIVE_DEPTH_BUFFER + (g_dwScreenWidth * g_dwScreenHeight << 2);
+                    g_apFramebuffers[1] =
+                        g_apFramebuffers[0] + (g_dwScreenWidth * g_dwScreenHeight << 2);
+                } else {
+#endif
+                    /* The frame buffers of the high resolution end where the first of the low
+                     * starts.
+                     */
+                    g_apFramebuffers[0] =
+                        (u16 *)((u32)g_aFramebuffer0 -
+                                ((u32)g_aFramebuffer1 - (u32)g_aFramebuffer0) * 6);
+                    g_apFramebuffers[1] =
+                        (u16 *)((u32)g_aFramebuffer0 -
+                                ((u32)g_aFramebuffer1 - (u32)g_aFramebuffer0) * 2);
+#ifdef ENABLE_PATCHES
+                }
+#endif
             } else {
                 g_apFramebuffers[0] = g_aFramebuffer0;
                 g_apFramebuffers[1] = g_aFramebuffer1;
@@ -214,7 +229,7 @@ void BeginDisplayList(s32 highRes) {
     {
         Gfx *command = gDisplayListPtr++;
         command->words.w0 = 0xfe000000;
-        command->words.w1 = TO_RSP_ADDRESS(g_aDepthBuffer);
+        command->words.w1 = TO_RSP_ADDRESS(N64_ACTIVE_DEPTH_BUFFER);
     }
     osViSetSpecialFeatures(OS_VI_DITHER_FILTER_ON);
     osViSetSpecialFeatures(OS_VI_DIVOT_ON);

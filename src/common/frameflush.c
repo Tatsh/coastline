@@ -85,7 +85,7 @@ void FlushDisplayList(void) {
             mul = g_dwScreenScaleShift != 0 ? 4 : 1; \
             n = mul * g_dwScreenWidth * g_dwScreenHeight >> 1;
             /* clang-format on */
-            src = (int *)g_aDepthBuffer;
+            src = (int *)N64_ACTIVE_DEPTH_BUFFER;
             dst = (int *)g_apFramebuffers[g_dwFrameBufferIndex ^ 1];
             for (i = 0; i < n; i++) {
                 dst[i] = src[i];

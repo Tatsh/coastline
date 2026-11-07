@@ -57,6 +57,14 @@ extern u16 g_aFramebuffer1[];
  */
 extern u16 g_aDepthBuffer[];
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && defined(ENABLE_PATCHES)
+/** The active depth buffer, placed in Expansion Pak memory for high-resolution frames. */
+#define N64_ACTIVE_DEPTH_BUFFER                                                                    \
+    ((g_dwScreenScaleShift && osMemSize > 0x400000) ? (u16 *)0x80400000 : g_aDepthBuffer)
+#else
+#define N64_ACTIVE_DEPTH_BUFFER g_aDepthBuffer
+#endif
+
 /**
  * The room the heap of zlib takes while the game loads, and that the sound effects of a race are
  * loaded into.
