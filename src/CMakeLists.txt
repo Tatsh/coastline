@@ -13,10 +13,10 @@ if(TGR_PLATFORM STREQUAL "n64" AND NOT TGR_IDO)
   add_compile_options($<$<COMPILE_LANGUAGE:C>:-Os>)
 endif()
 add_library(coastline_options INTERFACE)
-# A reconstructed routine retains the parameters of the original, used or not. IDO takes the flags
-# of tools/ido_flags.txt alone.
+# Reconstructed routines retain unused parameters and narrow intermediates to original field widths.
+# IDO takes the flags of tools/ido_flags.txt alone.
 if(MSVC)
-  target_compile_options(coastline_options INTERFACE /W3 /wd4100 /wd4200 /wd5030)
+  target_compile_options(coastline_options INTERFACE /W3 /wd4100 /wd4200 /wd4244 /wd5030)
   target_compile_definitions(coastline_options INTERFACE _CRT_SECURE_NO_WARNINGS)
 elseif(NOT TGR_IDO)
   target_compile_options(coastline_options INTERFACE -Wall -Wextra -Wno-unused-parameter)

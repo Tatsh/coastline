@@ -107,6 +107,10 @@ target_sources(coastline_ear PRIVATE ear/audiooutput.cpp ear/backendversion.c ea
 add_library(coastline_options INTERFACE)
 target_compile_options(coastline_options INTERFACE ${COASTLINE_WARNINGS}
                                                    ${COASTLINE_NO_UNUSED_PARAMETER})
+if(MSVC)
+  # Reconstructed arithmetic narrows intermediates to the original field widths.
+  target_compile_options(coastline_options INTERFACE /wd4244)
+endif()
 # MSVC compiles the C sources marked as C++ with the /TP CMake gives it.
 if(NOT MSVC)
   target_compile_options(coastline_options INTERFACE "$<$<COMPILE_LANGUAGE:CXX>:-x;c++>")
