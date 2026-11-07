@@ -62,7 +62,11 @@ namespace {
      * @ghidraAddress BRD3D: 0x10363fe8
      * @ghidraAddress BRGlide: 0x1035f7d0
      */
+#if defined(_MSC_VER)
+    [[maybe_unused]] f32 g_fViewMatrixMaxAbs;
+#else
     [[maybe_unused, gnu::used]] f32 g_fViewMatrixMaxAbs;
+#endif
     /**
      * The last translucent model left for the second pass, or -1.
      *

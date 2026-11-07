@@ -19,7 +19,11 @@ namespace {
  * @ghidraAddress BRD3D: 0x106c56ec
  * @ghidraAddress BRGlide: 0x106ec77c
  */
+#if defined(_MSC_VER)
+[[maybe_unused]] unsigned g_dwTrackDataRelocationDelta;
+#else
 [[maybe_unused, gnu::used]] unsigned g_dwTrackDataRelocationDelta;
+#endif
 } // namespace
 
 static inline bool IsUnitTrackScale(long double value) {

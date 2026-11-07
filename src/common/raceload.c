@@ -76,7 +76,11 @@ namespace {
      * @ghidraAddress BRD3D: 0x106806e0
      * @ghidraAddress BRGlide: 0x105bc888
      */
+#if defined(_MSC_VER)
+    [[maybe_unused]] s32 g_dwRaceCaptionLast;
+#else
     [[maybe_unused, gnu::used]] s32 g_dwRaceCaptionLast;
+#endif
 }
 
 inline void Vehicle::ConfigureRaceControls(bool localPlayer) {
