@@ -1159,14 +1159,14 @@
     },
     "0x80221104": {
       "sources": {
-        "src/common/vehiclereset.c": [
+        "src/common/vehicleposition.c": [
           "f2a114592a04c07f07757cc3f0f5e790bbad5c0e3a0fc04fa144ef41a69d2db5"
         ]
       }
     },
     "0x80221180": {
       "sources": {
-        "src/common/vehiclereset.c": [
+        "src/common/vehicleposition.c": [
           "ce28178a298fe856509ee17de9d50887ca294e1bed16da38a87bdc73e24b9087"
         ]
       }

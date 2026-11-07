@@ -92,6 +92,7 @@ SECTIONS
         *vehiclestatus.trim.o(.text .text.*)
         *ground-ray.slice.o(.text .text.*)
         *physics-update.trim.o(.text .text.*)
+        *vehicleposition.trim.o(.text .text.*)
         *(.text .text.*)
     }
     . = ALIGN(16);

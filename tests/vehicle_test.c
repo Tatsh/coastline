@@ -4,7 +4,9 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "common/vehiclephysics-frame.c"
 #include "common/vehiclephysics.c"
+#include "common/vehicleposition.c"
 #include "common/vehiclereset.c"
 #include "common/vehiclestatus.c"
 #include "vehicle.c"

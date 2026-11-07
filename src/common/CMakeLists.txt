@@ -113,6 +113,7 @@ set(_common_sources
   vehiclepaint.c
   vehiclephysics.c
   vehiclephysics-frame.c
+  vehicleposition.c
   vehiclereset.c
   vehiclesound.c
   vehiclestatus.c
@@ -153,6 +154,9 @@ if(TGR_IDO AND CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT TGR_ENABLE_PATCHES)
   list(REMOVE_ITEM _common_sources vehiclephysics-frame.c)
   coastline_add_ido_trimmed_object(coastline_vehiclephysics_frame vehiclephysics-frame.c 0x470
                                   0x46c physics-update)
+  list(REMOVE_ITEM _common_sources vehicleposition.c)
+  coastline_add_ido_trimmed_object(coastline_vehicleposition vehicleposition.c 0x190 0x18c
+                                  vehicleposition)
   list(REMOVE_ITEM _common_sources replay.c rledecompress.c)
   coastline_add_ido_trimmed_object(coastline_replay replay.c 0x2e0 0x2d4 replay)
   coastline_add_ido_trimmed_object(coastline_rledecompress rledecompress.c 0x1e0 0x1d8
@@ -336,6 +340,7 @@ else()
     vehiclepaint.c
     vehiclephysics.c
     vehiclephysics-frame.c
+    vehicleposition.c
     vehiclereset.c
     vehiclesound.c
     vehiclestatus.c
