@@ -4,6 +4,7 @@
 
 #include "common/input.h"
 #include "common/rumble.h"
+#include "common/screen.h"
 #include "common/system.h"
 #include "n64/decaleditor.h"
 #include "n64/libultra/io/controller.h"
@@ -49,6 +50,12 @@ s32 IsPaintKeyboardShiftDown(void) {
         }
     }
     return FALSE;
+}
+
+void UpdatePaintPeripheralInputForPlayer(s32 player) {
+    if (player == g_bPaintShopPlayer && IsCurrentScreen(ProcessPaintShopScreen)) {
+        UpdatePaintPeripheralInput(&g_aPlayerInputState[player]);
+    }
 }
 
 static s32 ClampCursor(s32 value, s32 minimum, s32 maximum) {

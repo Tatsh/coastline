@@ -6,12 +6,6 @@
 #include "common/recordingformat.h"
 #endif
 #include "common/rumble.h"
-#if TGR_PLATFORM == TGR_PLATFORM_N64 && defined(ENABLE_PATCHES)
-#include "common/screen.h"
-#include "n64/decaleditor.h"
-#include "n64/paintinput.h"
-#include "n64/paintshop.h"
-#endif
 
 #if TGR_BOSS_RALLY
 namespace {
@@ -82,9 +76,7 @@ void UpdateControllerState(void) {
 #else
         TranslateControllerInput(&g_aPlayerInputState[i]);
 #if TGR_PLATFORM == TGR_PLATFORM_N64 && defined(ENABLE_PATCHES)
-        if (i == g_bPaintShopPlayer && IsCurrentScreen(ProcessPaintShopScreen)) {
-            UpdatePaintPeripheralInput(&g_aPlayerInputState[i]);
-        }
+        UpdatePaintPeripheralInputForPlayer(i);
 #endif
         ConsumeInputFlags(&g_aPlayerInputState[i]);
 #endif
