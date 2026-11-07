@@ -3,6 +3,8 @@
 
 #include <cstdint>
 
+#pragma pack(push, 1)
+
 class EarEnvironment;
 class EarEnvironmentRegistration;
 
@@ -87,7 +89,7 @@ extern int32_t g_bDefaultEnvironmentRegistered;
  * Direct setters store values without validation. Reserved properties have unidentified meanings.
  * Borrowed environment pointers become invalid after replacement or shutdown.
  */
-class [[gnu::packed]] EarEnvironment {
+class EarEnvironment {
 public:
     /**
      * Store the first reserved registration dword.
@@ -211,7 +213,7 @@ private:
  * Packed 0x40-byte environment registration copied by EAR_DLL_RegisterEnvironment().
  * Initialisation assigns defaults; public fields can be adjusted before registration.
  */
-class [[gnu::packed]] EarEnvironmentRegistration {
+class EarEnvironmentRegistration {
 public:
     /**
      * Set default environment properties, clear reserved bytes, and request handle 1.
@@ -261,5 +263,7 @@ public:
      */
     std::uint32_t requestedHandle;
 };
+
+#pragma pack(pop)
 
 #endif /* COASTLINE_EAR_ENVIRONMENT_H */

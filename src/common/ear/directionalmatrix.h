@@ -3,11 +3,13 @@
 
 #include <stdint.h>
 
+#pragma pack(push, 1)
+
 /** The number of entries of a directional matrix. */
 #define EAR_DIRECTIONAL_MATRIX_ENTRY_COUNT 0x80
 
 /** The pan and the gain of one direction of a directional matrix. */
-typedef struct [[gnu::packed]] EarDirectionalMatrixEntry {
+typedef struct EarDirectionalMatrixEntry {
 #ifdef __cplusplus
     /**
      * Set the pan and the gain of the entry.
@@ -27,7 +29,7 @@ typedef struct [[gnu::packed]] EarDirectionalMatrixEntry {
 
 #ifdef __cplusplus
 /** A directional matrix, the pan and the gain of each direction of an event. */
-class [[gnu::packed]] EarPresetTable {
+class EarPresetTable {
 public:
     /**
      * Initialise all 128 directional entries to zero pan and zero gain, with mode zero.
@@ -189,5 +191,7 @@ int __stdcall RegisterBuiltinDirectionalMatrix64(void);
 #ifdef __cplusplus
 }
 #endif
+
+#pragma pack(pop)
 
 #endif /* COASTLINE_EAR_DIRECTIONALMATRIX_H */

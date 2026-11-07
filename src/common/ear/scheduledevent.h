@@ -12,6 +12,8 @@
 #include "event.h"
 #include "playback.h"
 
+#pragma pack(push, 1)
+
 class EarChannel;
 class EarPlayback;
 
@@ -28,7 +30,7 @@ union EarEventSource {
  * Playback methods require successful construction and an allocated playback implementation.
  * A twin event borrows source storage from its original event.
  */
-class [[gnu::packed]] ScheduledEarEvent {
+class ScheduledEarEvent {
 public:
     /**
      * Allocate playback for the source type and initialise scheduling defaults.
@@ -250,5 +252,7 @@ private:
     std::uint16_t priority;
     std::uint16_t notificationEvent;
 };
+
+#pragma pack(pop)
 
 #endif /* COASTLINE_EAR_SCHEDULEDEVENT_H */
