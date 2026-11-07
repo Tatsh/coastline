@@ -34,6 +34,7 @@ namespace {
      * The step of the countdown of the start lights.
      *
      * @ghidraAddress USA: 0x802f7ef4
+     * @ghidraAddress Asia: 0x802F79B4
      * @ghidraAddress EUR: 0x802f9be8
      * @ghidraAddress JPN: 0x802f8628
      * @ghidraAddress BRD3D: 0x106909cc

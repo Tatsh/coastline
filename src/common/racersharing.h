@@ -15,6 +15,7 @@ extern "C" {
 
 /** Order racer sort keys from least to greatest.
  * @ghidraAddress USA: 0x80229510
+ * @ghidraAddress Asia: 0x80229060
  * @ghidraAddress EUR: 0x8022a888
  * @ghidraAddress JPN: 0x8022a040
  * @ghidraAddress BRD3D: 0x10066620
@@ -24,6 +25,7 @@ s32 CompareRacerProgressAsc(const void *a, const void *b);
 
 /** Assign computer vehicles to racers near a player.
  * @ghidraAddress USA: 0x80229700
+ * @ghidraAddress Asia: 0x80229250
  * @ghidraAddress EUR: 0x8022aa78
  * @ghidraAddress JPN: 0x8022a230
  */

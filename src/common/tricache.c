@@ -10,6 +10,7 @@
  * The count of the uses of the cache.
  *
  * @ghidraAddress USA: 0x8037eaa0
+ * @ghidraAddress Asia: 0x8037E560
  * @ghidraAddress EUR: 0x80380fa0
  * @ghidraAddress JPN: 0x8037fc10
  * @ghidraAddress BRD3D: 0x117554e0

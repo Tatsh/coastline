@@ -16,6 +16,7 @@ extern "C" {
  * The racers in the race.
  *
  * @ghidraAddress USA: 0x8028b7f0
+ * @ghidraAddress Asia: 0x8028B340
  * @ghidraAddress EUR: 0x8028daa0
  * @ghidraAddress JPN: 0x8028d4d0
  * @ghidraAddress BRD3D: 0x100b36f8
@@ -27,6 +28,7 @@ extern s32 g_dwNumVehicles;
  * The vehicles of g_aVehicles the race uses.
  *
  * @ghidraAddress USA: 0x8028b7f4
+ * @ghidraAddress Asia: 0x8028B344
  * @ghidraAddress EUR: 0x8028daa4
  * @ghidraAddress JPN: 0x8028d4d4
  * @ghidraAddress BRD3D: 0x100b36fc

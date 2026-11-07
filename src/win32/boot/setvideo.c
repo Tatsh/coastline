@@ -286,7 +286,7 @@ int WINAPI WinMain(HINSTANCE instance,
     strcpy(g_szIniFilePath, g_szInstallDir);
     strcat(g_szIniFilePath, "BossRally.ini");
     if (commandLine && strlen(commandLine)) {
-        g_bReconfigureDisplay = strstr(commandLine, "+d") != nullptr;
+        g_bReconfigureDisplay = strstr(commandLine, "+d") != NULL;
     }
     if (!CHK_FileExists("BossRally.vdb")) {
         sprintf(buffer, "Error: file %s is missing.", "BossRally.vdb");

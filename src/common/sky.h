@@ -19,6 +19,7 @@ extern "C" {
  * Whether the sky is left undrawn.
  *
  * @ghidraAddress USA: 0x8028aa5c
+ * @ghidraAddress Asia: 0x8028A5AC
  * @ghidraAddress EUR: 0x8028cc64
  * @ghidraAddress JPN: 0x8028c734
  * @ghidraAddress BRD3D: 0x106c6608
@@ -32,6 +33,7 @@ extern s32 g_dwSkyboxDisabled;
  *
  * @return Non-zero when the sky is a fill of the fog colour.
  * @ghidraAddress USA: 0x8022f900
+ * @ghidraAddress Asia: 0x8022F450
  * @ghidraAddress EUR: 0x80230e10
  * @ghidraAddress JPN: 0x80230c10
  * @ghidraAddress BRD3D: 0x10018070
@@ -53,6 +55,7 @@ void RenderSkybox(const ViewportRect *viewports);
  * Draw the sky of the current view, and set the clipping ratio for the frame.
  *
  * @ghidraAddress USA: 0x8022f968
+ * @ghidraAddress Asia: 0x8022F4B8
  * @ghidraAddress EUR: 0x80230e78
  * @ghidraAddress JPN: 0x80230c78
  */

@@ -4,6 +4,7 @@ void guRotateF(float mf[4][4], float a, float x, float y, float z) {
     /* IDO stores the radians in a degree on each call before it reads them back. */
     /**
      * @ghidraAddress USA: 0x8037f0a0
+     * @ghidraAddress Asia: 0x8037EB60
      * @ghidraAddress EUR: 0x80380fe0
      * @ghidraAddress JPN: 0x8037fc50
      */

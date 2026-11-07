@@ -97,6 +97,7 @@ extern "C" {
  *
  * @param state The input of the player.
  * @ghidraAddress USA: 0x80255934
+ * @ghidraAddress Asia: 0x80255484
  * @ghidraAddress EUR: 0x80256f04
  * @ghidraAddress JPN: 0x80256894
  */
@@ -108,6 +109,7 @@ void ConsumeInputFlags(PlayerInputState *state);
  * @param state The input of the player.
  * @param mask The buttons to move.
  * @ghidraAddress USA: 0x80255910
+ * @ghidraAddress Asia: 0x80255460
  * @ghidraAddress EUR: 0x80256ee0
  * @ghidraAddress JPN: 0x80256870
  */
@@ -117,6 +119,7 @@ void TransferFlags(PlayerInputState *state, s32 mask);
  * Input state of every player.
  *
  * @ghidraAddress USA: 0x8036a8e0
+ * @ghidraAddress Asia: 0x8036A3A0
  * @ghidraAddress EUR: 0x8036cde0
  * @ghidraAddress JPN: 0x8036ba50
  * @ghidraAddress BRD3D: 0x106c6678
@@ -128,6 +131,7 @@ extern PlayerInputState g_aPlayerInputState[MAX_PLAYERS];
  * Emulated controller pads for four ports, or every player slot on SDL.
  *
  * @ghidraAddress USA: 0x8031a3e0
+ * @ghidraAddress Asia: 0x80319EA0
  * @ghidraAddress EUR: 0x8031c8e0
  * @ghidraAddress JPN: 0x8031b510
  * @ghidraAddress BRD3D: 0x106c65a0
@@ -144,6 +148,7 @@ extern OSContPad g_aContPadData[MAXCONTROLLERS];
  *
  * @param state The input to reset.
  * @ghidraAddress USA: 0x80255b54
+ * @ghidraAddress Asia: 0x802556A4
  * @ghidraAddress EUR: 0x80257124
  * @ghidraAddress JPN: 0x80256ab4
  */

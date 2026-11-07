@@ -17,6 +17,7 @@
 void UpdateAllVehicleEffects(void) {
     /**
      * @ghidraAddress USA: 0x8028c840
+     * @ghidraAddress Asia: 0x8028C390
      * @ghidraAddress EUR: 0x8028efa0
      * @ghidraAddress JPN: 0x8028e9f0
      * @ghidraAddress BRD3D: 0x10a9bbb8

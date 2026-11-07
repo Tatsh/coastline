@@ -33,6 +33,7 @@ typedef struct TrackTriangle {
 
 /**
  * @ghidraAddress USA: 0x80379f80
+ * @ghidraAddress Asia: 0x80379A40
  * @ghidraAddress EUR: 0x8037c480
  * @ghidraAddress JPN: 0x8037b0f0
  * @ghidraAddress BRD3D: 0x11750338
@@ -44,6 +45,7 @@ extern TrackTriangle g_aTriCacheTriangles[TRI_CACHE_SLOTS][TRI_CACHE_TRIANGLES];
  * The cell each slot holds, as its row times 64 plus its column.
  *
  * @ghidraAddress USA: 0x8037ea80
+ * @ghidraAddress Asia: 0x8037E540
  * @ghidraAddress EUR: 0x80380f80
  * @ghidraAddress JPN: 0x8037fbf0
  * @ghidraAddress BRD3D: 0x117554d8
@@ -55,6 +57,7 @@ extern u16 g_awTriCacheSectorId[TRI_CACHE_SLOTS];
  * The triangles in each slot.
  *
  * @ghidraAddress USA: 0x8037ea88
+ * @ghidraAddress Asia: 0x8037E548
  * @ghidraAddress EUR: 0x80380f88
  * @ghidraAddress JPN: 0x8037fbf8
  * @ghidraAddress BRD3D: 0x117554a0
@@ -67,6 +70,7 @@ extern u16 g_awTriCacheTriCount[TRI_CACHE_SLOTS];
  * The initial ceiling normal for a vertical ray cast.
  *
  * @ghidraAddress USA: 0x8028b318
+ * @ghidraAddress Asia: 0x8028AE68
  * @ghidraAddress EUR: 0x8028d5c8
  * @ghidraAddress JPN: 0x8028cff8
  */
@@ -76,6 +80,7 @@ extern Vec3f g_vRayCeilingNormalInit;
  * The initial ground normal for a vertical ray cast.
  *
  * @ghidraAddress USA: 0x8028b324
+ * @ghidraAddress Asia: 0x8028AE74
  * @ghidraAddress EUR: 0x8028d5d4
  * @ghidraAddress JPN: 0x8028d004
  */
@@ -86,6 +91,7 @@ extern Vec3f g_vRayGroundNormalInit;
  * When each slot was last used.
  *
  * @ghidraAddress USA: 0x8037ea90
+ * @ghidraAddress Asia: 0x8037E550
  * @ghidraAddress EUR: 0x80380f90
  * @ghidraAddress JPN: 0x8037fc00
  * @ghidraAddress BRD3D: 0x117554c8
@@ -98,6 +104,7 @@ extern u32 g_adwTriCacheLruStamp[TRI_CACHE_SLOTS];
  * The count of the uses of the cache.
  *
  * @ghidraAddress USA: 0x8037eaa0
+ * @ghidraAddress Asia: 0x8037E560
  * @ghidraAddress EUR: 0x80380fa0
  * @ghidraAddress JPN: 0x8037fc10
  * @ghidraAddress BRD3D: 0x117554e0
@@ -113,6 +120,7 @@ extern u32 g_dwTriCacheLruCounter;
  * @param y The Y coordinate of the point.
  * @return Whether a slot held it.
  * @ghidraAddress USA: 0x8025f0a4
+ * @ghidraAddress Asia: 0x8025EBF4
  * @ghidraAddress EUR: 0x80260580
  * @ghidraAddress JPN: 0x80260030
  */
@@ -126,6 +134,7 @@ s32 InvalidateTriCacheSectorAt(f32 x, f32 y);
  * @param y The Y coordinate of the point.
  * @return The slot that holds them.
  * @ghidraAddress USA: 0x8025f18c
+ * @ghidraAddress Asia: 0x8025ECDC
  * @ghidraAddress EUR: 0x80260668
  * @ghidraAddress JPN: 0x80260118
  * @ghidraAddress BRD3D: 0x1006f720

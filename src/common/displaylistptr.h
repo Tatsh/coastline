@@ -18,6 +18,7 @@ extern "C" {
  * The next command of the display list.
  *
  * @ghidraAddress USA: 0x8028a858
+ * @ghidraAddress Asia: 0x8028A3A8
  * @ghidraAddress EUR: 0x8028ca58
  * @ghidraAddress JPN: 0x8028c528
  * @ghidraAddress BRD3D: 0x106c0680

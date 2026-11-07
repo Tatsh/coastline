@@ -15,6 +15,7 @@ import struct
 from pathlib import Path
 from typing import NamedTuple
 
+ROOT = Path(__file__).resolve().parent.parent.parent
 LINE = re.compile(r'(\S+) = 0x([0-9A-F]+);(.*)')
 FUNCTION = re.compile(r'type:func size:0x([0-9A-F]+)')
 IMAGE_BASE = 0x80200000
@@ -33,7 +34,21 @@ REGIONS = {
   'us': Release('usa.z64', 0x8026EA00, 0x802AC400, 0x80382BB0),
   'jp': Release('jpn.z64', 0x80270480, 0x802ACB30, 0x803837A0),
   'eu': Release('eur.z64', 0x802709D0, 0x802AE0F0, 0x80384B30),
+  'asia': Release('asia.z64', 0x8026E550, 0x802ABEC0, 0x80382670),
 }
+
+
+def asia_data_address(address: int) -> int | None:
+  """Map named USA data to the Asia layout, omitting its removed Midway splash data."""
+  if address < 0x8026EA00:
+    return None
+  if address < 0x802A730C:
+    return address - 0x4B0
+  if address in (0x802A7384, 0x802A739C):
+    return address - 0x528
+  if address < 0x802A7414:
+    return None
+  return address - 0x540
 
 
 def main() -> int:
@@ -46,7 +61,17 @@ def main() -> int:
   release = REGIONS[args.region]
   data = (release.data_start, release.bss_start)
   rom = args.rom.read_bytes()
-  entries = [LINE.match(line) for line in args.exported.read_text(encoding='utf-8').splitlines()]
+  lines = args.exported.read_text(encoding='utf-8').splitlines()
+  if args.region == 'asia':
+    lines = [line for line in lines if FUNCTION.search(line)]
+    for line in (ROOT / 'tools/splat/symbol_addrs.us.txt').read_text().splitlines():
+      match = LINE.match(line)
+      if not match:
+        continue
+      mapped = asia_data_address(int(match.group(2), 16))
+      if mapped is not None:
+        lines.append(f'{match.group(1)} = 0x{mapped:08X};{match.group(3)}')
+  entries = [LINE.match(line) for line in lines]
   routines = sorted((int(match.group(2), 16), int(match.group(2), 16) + int(size.group(1), 16))
                     for match in entries if match and (size := FUNCTION.search(match.group(3))))
   starts = [start for start, _ in routines]

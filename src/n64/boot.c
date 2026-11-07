@@ -169,6 +169,7 @@ void BootIdleThread(void *arg) {
     };
     /**
      * @ghidraAddress USA: 0x8028b2ec
+     * @ghidraAddress Asia: 0x8028AE3C
      * @ghidraAddress EUR: 0x8028d59c
      * @ghidraAddress JPN: 0x8028cfcc
      */

@@ -72,6 +72,7 @@ SdlMixerState *GetSdlMixerState(void);
  * The write position in the stereo ring buffer of the music mixers.
  *
  * @ghidraAddress USA: 0x802a4790
+ * @ghidraAddress Asia: 0x802A42E0
  * @ghidraAddress EUR: 0x802a6f50
  * @ghidraAddress JPN: 0x802a69f0
  */
@@ -81,6 +82,7 @@ extern u16 g_wAudioBufferWritePos;
  * The channels of the music mixers, 8 bytes after the write position.
  *
  * @ghidraAddress USA: 0x802a4798
+ * @ghidraAddress Asia: 0x802A42E8
  * @ghidraAddress EUR: 0x802a6f58
  * @ghidraAddress JPN: 0x802a69f8
  */
@@ -91,6 +93,7 @@ extern MixerChannel g_aMixerChannels[MIXER_CHANNELS];
  * Upper word of the mask that clears low bits during packed sound effect mixing.
  *
  * @ghidraAddress USA: 0x802a4918
+ * @ghidraAddress Asia: 0x802A4468
  * @ghidraAddress EUR: 0x802a70d8
  * @ghidraAddress JPN: 0x802a6b78
  */
@@ -100,6 +103,7 @@ extern s32 g_nSoundEffectSampleMaskUpper;
  * Lower word of the mask that clears low bits during packed sound effect mixing.
  *
  * @ghidraAddress USA: 0x802a491c
+ * @ghidraAddress Asia: 0x802A446C
  * @ghidraAddress EUR: 0x802a70dc
  * @ghidraAddress JPN: 0x802a6b7c
  */
@@ -114,6 +118,7 @@ extern u64 g_qwSoundEffectSampleMask;
  * the right and the left in its upper and lower halves.
  *
  * @ghidraAddress USA: 0x802a4920
+ * @ghidraAddress Asia: 0x802A4470
  * @ghidraAddress EUR: 0x802a70e0
  * @ghidraAddress JPN: 0x802a6b80
  */
@@ -124,6 +129,7 @@ extern MixerChannel g_aSoundEffectChannels[SOUND_EFFECT_CHANNELS];
  * The volume word of sound effect channel 3.
  *
  * @ghidraAddress USA: 0x802a497c
+ * @ghidraAddress Asia: 0x802A44CC
  * @ghidraAddress EUR: 0x802a713c
  * @ghidraAddress JPN: 0x802a6bdc
  */
@@ -134,6 +140,7 @@ extern s32 g_dwAmbientChannel3Volume;
  * The distance back to the echo of sound effect channel 0, or 0 for none.
  *
  * @ghidraAddress USA: 0x802a49b0
+ * @ghidraAddress Asia: 0x802A4500
  * @ghidraAddress EUR: 0x802a7170
  * @ghidraAddress JPN: 0x802a6c10
  */
@@ -146,6 +153,7 @@ extern s32 g_dwSoundEffectEchoOffset;
  * @param dst The destination.
  * @param src The source.
  * @ghidraAddress USA: 0x80256270
+ * @ghidraAddress Asia: 0x80255DC0
  * @ghidraAddress EUR: 0x80257840
  * @ghidraAddress JPN: 0x802571d0
  */
@@ -159,6 +167,7 @@ void CopyVec4(void *dst, const void *src);
  * @param value The value of each word. A value of -1 sets every bit, and a positive value leaves
  * the upper halfword of each word clear.
  * @ghidraAddress USA: 0x80256290
+ * @ghidraAddress Asia: 0x80255DE0
  * @ghidraAddress EUR: 0x80257860
  * @ghidraAddress JPN: 0x802571f0
  */
@@ -170,6 +179,7 @@ void MemFill64Aligned(void *dst, u32 size, s32 value);
  * @param ring The start of the ring buffer.
  * @param bytes The count of bytes to mix from the write position.
  * @ghidraAddress USA: 0x802562f0
+ * @ghidraAddress Asia: 0x80255E40
  * @ghidraAddress EUR: 0x802578c0
  * @ghidraAddress JPN: 0x80257250
  */
@@ -182,6 +192,7 @@ void MixAudioSamples(s16 *ring, u32 bytes);
  * @param bytes The count of bytes to mix from the write position.
  * @param pairOffset Offset of the pair's records from those of the first extra pair.
  * @ghidraAddress USA: 0x8025649c
+ * @ghidraAddress Asia: 0x80255FEC
  * @ghidraAddress EUR: 0x80257a6c
  * @ghidraAddress JPN: 0x802573fc
  */
@@ -194,6 +205,7 @@ void MixAudioStereoSamples(s16 *ring, u32 bytes, u32 pairOffset);
  * @param bytes The count of bytes to mix.
  * @param offset The offset in bytes into the ring buffer to start at.
  * @ghidraAddress USA: 0x8025658c
+ * @ghidraAddress Asia: 0x802560DC
  * @ghidraAddress EUR: 0x80257b5c
  * @ghidraAddress JPN: 0x802574ec
  */

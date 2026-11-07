@@ -41,6 +41,7 @@ enum {
  * The track chosen for the next race.
  *
  * @ghidraAddress USA: 0x8028b940
+ * @ghidraAddress Asia: 0x8028B490
  * @ghidraAddress EUR: 0x8028dbf0
  * @ghidraAddress JPN: 0x8028d620
  * @ghidraAddress BRD3D: 0x100b380c
@@ -52,6 +53,7 @@ extern u32 g_dwSelectedTrackId;
  * The number of tracks.
  *
  * @ghidraAddress USA: 0x8028ae04
+ * @ghidraAddress Asia: 0x8028A954
  * @ghidraAddress EUR: 0x8028d0b4
  * @ghidraAddress JPN: 0x8028cae4
  */
@@ -63,6 +65,7 @@ extern s32 g_dwNumTracks;
  * @param track The index of the track.
  * @return Whether the track has data on N64, or 1 on Windows.
  * @ghidraAddress USA: 0x8021e180
+ * @ghidraAddress Asia: 0x8021DCD0
  * @ghidraAddress EUR: 0x8021f380
  * @ghidraAddress JPN: 0x8021ec50
  * @ghidraAddress BRD3D: 0x10035b87

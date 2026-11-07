@@ -90,7 +90,7 @@ def remove(region: str, routines: list[str], *, record: bool = True) -> None:
   A datum is given as NAME:SIZE (the size in bytes, decimal or 0x hex) and is removed from the data
   and BSS files. Anything else is a routine.
   """
-  asm = ROOT / 'asm' / region
+  asm = ROOT / 'src/n64/asm' / region
   data = [entry for entry in routines if ':' in entry]
   routines_only = [entry for entry in routines if ':' not in entry]
   data_sources = sorted((asm / 'data').glob('*.s'))
@@ -163,7 +163,7 @@ def remove(region: str, routines: list[str], *, record: bool = True) -> None:
 
 def main() -> int:
   parser = argparse.ArgumentParser(description=__doc__.strip().splitlines()[0])
-  parser.add_argument('region', choices=('us', 'jp', 'eu'), help='release to edit')
+  parser.add_argument('region', choices=('us', 'jp', 'eu', 'asia'), help='release to edit')
   parser.add_argument('routines', nargs='+',
                       help='names of the routines to remove, and data as NAME:SIZE')
   args = parser.parse_args()

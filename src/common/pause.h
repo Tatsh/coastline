@@ -29,6 +29,7 @@ enum {
  * Whether the race is paused.
  *
  * @ghidraAddress USA: 0x8026ff10
+ * @ghidraAddress Asia: 0x8026FA60
  * @ghidraAddress EUR: 0x80271ee0
  * @ghidraAddress JPN: 0x80271990
  * @ghidraAddress BRD3D: 0x106909b4
@@ -40,6 +41,7 @@ extern u32 g_dwRacePauseState;
  * The item of the pause menu, by the PAUSE_ values.
  *
  * @ghidraAddress USA: 0x8026ff14
+ * @ghidraAddress Asia: 0x8026FA64
  * @ghidraAddress EUR: 0x80271ee4
  * @ghidraAddress JPN: 0x80271994
  * @ghidraAddress BRD3D: 0x10680734

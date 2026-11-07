@@ -17,6 +17,7 @@ extern "C" {
  * @param channels The number of interleaved channels.
  * @return The size of the compressed data, or -1 when it does not fit in dst.
  * @ghidraAddress USA: 0x8021c878
+ * @ghidraAddress Asia: 0x8021C3C8
  * @ghidraAddress EUR: 0x8021da78
  * @ghidraAddress JPN: 0x8021d348
  * @ghidraAddress BRD3D: 0x10034cc5
@@ -33,6 +34,7 @@ s32 CompressRleChannels(u8 *dst, s32 dstSize, u8 *src, s32 srcSize, s32 channels
  * @param channels The number of interleaved channels.
  * @return The final channel's expanded byte count multiplied by the number of channels.
  * @ghidraAddress USA: 0x8021cb4c
+ * @ghidraAddress Asia: 0x8021C69C
  * @ghidraAddress EUR: 0x8021dd4c
  * @ghidraAddress JPN: 0x8021d61c
  * @ghidraAddress BRD3D: 0x10034f08

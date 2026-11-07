@@ -121,6 +121,7 @@ typedef struct RigidBody {
  *
  * @param data The inertia of the body, ignored.
  * @ghidraAddress USA: 0x80258070
+ * @ghidraAddress Asia: 0x80257BC0
  * @ghidraAddress EUR: 0x80259640
  * @ghidraAddress JPN: 0x80258fd0
  */
@@ -132,6 +133,7 @@ void StubPhysics1(void *data);
  * @param m The matrix.
  * @param q Receives the quaternion.
  * @ghidraAddress USA: 0x8021ff90
+ * @ghidraAddress Asia: 0x8021FAE0
  * @ghidraAddress EUR: 0x80221290
  * @ghidraAddress JPN: 0x80220a80
  * @ghidraAddress BRD3D: 0x100765e0
@@ -144,6 +146,7 @@ void MatrixToQuaternion(f32 m[4][4], Quaternion *q);
  *
  * @param data The matrix just built, ignored.
  * @ghidraAddress USA: 0x80258078
+ * @ghidraAddress Asia: 0x80257BC8
  * @ghidraAddress EUR: 0x80259648
  * @ghidraAddress JPN: 0x80258fd8
  * @ghidraAddress BRD3D: 0x10008b80
@@ -158,6 +161,7 @@ void StubPhysics2(void *data);
  * @param a The left factor.
  * @param b The right factor.
  * @ghidraAddress USA: 0x80258080
+ * @ghidraAddress Asia: 0x80257BD0
  * @ghidraAddress EUR: 0x80259650
  * @ghidraAddress JPN: 0x80258fe0
  * @ghidraAddress BRD3D: 0x10074090
@@ -170,6 +174,7 @@ void QuaternionMultiply(Quaternion *out, Quaternion *a, Quaternion *b);
  *
  * @param q The quaternion, normalised in place.
  * @ghidraAddress USA: 0x8025813c
+ * @ghidraAddress Asia: 0x80257C8C
  * @ghidraAddress EUR: 0x8025970c
  * @ghidraAddress JPN: 0x8025909c
  * @ghidraAddress BRD3D: 0x100741b0
@@ -182,6 +187,7 @@ void QuaternionNormalize(Quaternion *q);
  *
  * @param v The non-zero vector, normalised in place.
  * @ghidraAddress USA: 0x802581cc
+ * @ghidraAddress Asia: 0x80257D1C
  * @ghidraAddress EUR: 0x8025979c
  * @ghidraAddress JPN: 0x8025912c
  * @ghidraAddress BRD3D: 0x10074250
@@ -195,6 +201,7 @@ void Vec3fNormalizeFast(Vec3f *v);
  *
  * @param state The state whose spin is set.
  * @ghidraAddress USA: 0x80258248
+ * @ghidraAddress Asia: 0x80257D98
  * @ghidraAddress EUR: 0x80259818
  * @ghidraAddress JPN: 0x802591a8
  * @ghidraAddress BRD3D: 0x100742d0
@@ -209,6 +216,7 @@ void ComputeDeltaQuaternion(RigidBodyState *state);
  * @param body The body whose force and torque are added.
  * @param dt The time over which they act.
  * @ghidraAddress USA: 0x80258324
+ * @ghidraAddress Asia: 0x80257E74
  * @ghidraAddress EUR: 0x802598f4
  * @ghidraAddress JPN: 0x80259284
  * @ghidraAddress BRD3D: 0x100743a0
@@ -222,6 +230,7 @@ void ApplyRigidBodyImpulse(RigidBodyState *state, RigidBody *body, f32 dt);
  * @param out Receives the matrix.
  * @param state The state.
  * @ghidraAddress USA: 0x802583dc
+ * @ghidraAddress Asia: 0x80257F2C
  * @ghidraAddress EUR: 0x802599ac
  * @ghidraAddress JPN: 0x8025933c
  * @ghidraAddress BRD3D: 0x10074450
@@ -236,6 +245,7 @@ void QuaternionToMatrix(f32 out[4][4], RigidBodyState *state);
  * @param in The state to advance.
  * @param dt The time to advance by.
  * @ghidraAddress USA: 0x80258530
+ * @ghidraAddress Asia: 0x80258080
  * @ghidraAddress EUR: 0x80259b00
  * @ghidraAddress JPN: 0x80259490
  * @ghidraAddress BRD3D: 0x100745f0
@@ -255,6 +265,7 @@ void IntegrateRigidBodyState(RigidBodyState *out, RigidBodyState *in, f32 dt);
  * @param pointZ The z of the point.
  * @param frame The frame of the vector, RIGID_BODY_FORCE_WORLD or RIGID_BODY_FORCE_BODY.
  * @ghidraAddress USA: 0x80258680
+ * @ghidraAddress Asia: 0x802581D0
  * @ghidraAddress EUR: 0x80259c50
  * @ghidraAddress JPN: 0x802595e0
  * @ghidraAddress BRD3D: 0x100746e0
@@ -271,6 +282,7 @@ void SetRigidBodyForce(
  * @param m The matrix.
  * @param v The vector in the world.
  * @ghidraAddress USA: 0x802586c0
+ * @ghidraAddress Asia: 0x80258210
  * @ghidraAddress EUR: 0x80259c90
  * @ghidraAddress JPN: 0x80259620
  * @ghidraAddress BRD3D: 0x10074720
@@ -285,6 +297,7 @@ void Mtx4fInverseRotate(Vec3f *out, f32 m[4][4], Vec3f *v);
  * @param m The matrix.
  * @param v The vector in the frame of the matrix.
  * @ghidraAddress USA: 0x80258758
+ * @ghidraAddress Asia: 0x802582A8
  * @ghidraAddress EUR: 0x80259d28
  * @ghidraAddress JPN: 0x802596b8
  * @ghidraAddress BRD3D: 0x10074770
@@ -299,6 +312,7 @@ void Mtx3x3MulVec3f(Vec3f *out, f32 m[4][4], Vec3f *v);
  * @param m The matrix.
  * @param v The point.
  * @ghidraAddress USA: 0x802587e8
+ * @ghidraAddress Asia: 0x80258338
  * @ghidraAddress EUR: 0x80259db8
  * @ghidraAddress JPN: 0x80259748
  * @ghidraAddress BRD3D: 0x100747c0
@@ -313,6 +327,7 @@ void Mtx4x4TransformPoint(Vec3f *out, f32 m[4][4], Vec3f *v);
  * @param m The matrix.
  * @param v The vector.
  * @ghidraAddress USA: 0x802588b8
+ * @ghidraAddress Asia: 0x80258408
  * @ghidraAddress EUR: 0x80259e88
  * @ghidraAddress JPN: 0x80259818
  * @ghidraAddress BRD3D: 0x10074830
@@ -325,6 +340,7 @@ void Mtx3fMulVec3f(Vec3f *out, f32 m[3][3], Vec3f *v);
  *
  * @param body The body whose sums become its accelerations.
  * @ghidraAddress USA: 0x80258950
+ * @ghidraAddress Asia: 0x802584A0
  * @ghidraAddress EUR: 0x80259f20
  * @ghidraAddress JPN: 0x802598b0
  */
@@ -336,6 +352,7 @@ void ComputeRigidBodyAcceleration(RigidBody *body);
  * @param body The body.
  * @param force The force to add.
  * @ghidraAddress USA: 0x802589f4
+ * @ghidraAddress Asia: 0x80258544
  * @ghidraAddress EUR: 0x80259fc4
  * @ghidraAddress JPN: 0x80259954
  */
@@ -347,6 +364,7 @@ void ApplySingleForceWithDebug(RigidBody *body, RigidBodyForce *force);
  *
  * @param body The body.
  * @ghidraAddress USA: 0x80258bdc
+ * @ghidraAddress Asia: 0x8025872C
  * @ghidraAddress EUR: 0x8025a1ac
  * @ghidraAddress JPN: 0x80259b3c
  */
@@ -357,6 +375,7 @@ void ApplyAllForcesToBody(RigidBody *body);
  *
  * @param body The body, with its kind, size, and mass already set.
  * @ghidraAddress USA: 0x80258c24
+ * @ghidraAddress Asia: 0x80258774
  * @ghidraAddress EUR: 0x8025a1f4
  * @ghidraAddress JPN: 0x80259b84
  * @ghidraAddress BRD3D: 0x10074870
@@ -370,6 +389,7 @@ void InitRigidBody(RigidBody *body);
  * @param out Receives the matrix.
  * @param v The vector.
  * @ghidraAddress USA: 0x80258db0
+ * @ghidraAddress Asia: 0x80258900
  * @ghidraAddress EUR: 0x8025a380
  * @ghidraAddress JPN: 0x80259d10
  * @ghidraAddress BRD3D: 0x100749d0
@@ -384,6 +404,7 @@ void BuildSkewSymmetricMatrix(f32 out[3][3], Vec3f *v);
  * @param copy Receives the rotation.
  * @param m The matrix.
  * @ghidraAddress USA: 0x80258e04
+ * @ghidraAddress Asia: 0x80258954
  * @ghidraAddress EUR: 0x8025a3d4
  * @ghidraAddress JPN: 0x80259d64
  * @ghidraAddress BRD3D: 0x10074a10
@@ -397,6 +418,7 @@ void TransposeCopyMatrix3x3(f32 transpose[3][3], f32 copy[3][3], f32 m[4][4]);
  * @param out Receives the transpose.
  * @param m The matrix.
  * @ghidraAddress USA: 0x80258e64
+ * @ghidraAddress Asia: 0x802589B4
  * @ghidraAddress EUR: 0x8025a434
  * @ghidraAddress JPN: 0x80259dc4
  * @ghidraAddress BRD3D: 0x10074a50
@@ -410,6 +432,7 @@ void Transpose4x4Into3x3(f32 out[3][3], f32 m[4][4]);
  * @param out Receives the rotation.
  * @param m The matrix.
  * @ghidraAddress USA: 0x80258eac
+ * @ghidraAddress Asia: 0x802589FC
  * @ghidraAddress EUR: 0x8025a47c
  * @ghidraAddress JPN: 0x80259e0c
  * @ghidraAddress BRD3D: 0x10074a90
@@ -424,6 +447,7 @@ void CopyMatrix4x4To3x3(f32 out[3][3], f32 m[4][4]);
  * @param a The left factor.
  * @param b The right factor.
  * @ghidraAddress USA: 0x80258ef8
+ * @ghidraAddress Asia: 0x80258A48
  * @ghidraAddress EUR: 0x8025a4c8
  * @ghidraAddress JPN: 0x80259e58
  * @ghidraAddress BRD3D: 0x10074ac0
@@ -438,6 +462,7 @@ void Mtx3fMultiply(f32 out[3][3], f32 a[3][3], f32 b[3][3]);
  * @param a The matrix subtracted from.
  * @param b The matrix subtracted.
  * @ghidraAddress USA: 0x80258f70
+ * @ghidraAddress Asia: 0x80258AC0
  * @ghidraAddress EUR: 0x8025a540
  * @ghidraAddress JPN: 0x80259ed0
  * @ghidraAddress BRD3D: 0x10074b20
@@ -452,6 +477,7 @@ void SubtractMatrix3x3(f32 out[3][3], f32 a[3][3], f32 b[3][3]);
  * @param out Receives the inverse.
  * @param scale The factors the columns of the inverted rotation are scaled by.
  * @ghidraAddress USA: 0x80258fd4
+ * @ghidraAddress Asia: 0x80258B24
  * @ghidraAddress EUR: 0x8025a5a4
  * @ghidraAddress JPN: 0x80259f34
  * @ghidraAddress BRD3D: 0x10074b70
@@ -466,6 +492,7 @@ void MtxBuildScaledInverse(f32 m[4][4], f32 out[4][4], Vec3f *scale);
  * @param a The coefficients.
  * @param b The constants.
  * @ghidraAddress USA: 0x802590e8
+ * @ghidraAddress Asia: 0x80258C38
  * @ghidraAddress EUR: 0x8025a6b8
  * @ghidraAddress JPN: 0x8025a048
  * @ghidraAddress BRD3D: 0x10074c10

@@ -27,6 +27,7 @@ extern "C" {
  * The first quarter of a sine wave in s1.15 fixed point.
  *
  * @ghidraAddress USA: 0x802a4c10
+ * @ghidraAddress Asia: 0x802A4760
  * @ghidraAddress EUR: 0x802a73a0
  * @ghidraAddress JPN: 0x802a6e40
  */
@@ -36,6 +37,7 @@ extern const s16 sintable[0x400];
  * The coefficients of the sine polynomial of sinf().
  *
  * @ghidraAddress USA: 0x802ab8a0
+ * @ghidraAddress Asia: 0x802AB360
  * @ghidraAddress EUR: 0x802ad590
  * @ghidraAddress JPN: 0x802abfd0
  */
@@ -43,6 +45,7 @@ extern const double g_adSinfP[5];
 
 /**
  * @ghidraAddress USA: 0x802ab8c8
+ * @ghidraAddress Asia: 0x802AB388
  * @ghidraAddress EUR: 0x802ad5b8
  * @ghidraAddress JPN: 0x802abff8
  */
@@ -50,6 +53,7 @@ extern const double g_dSinfRpi;
 
 /**
  * @ghidraAddress USA: 0x802ab8d0
+ * @ghidraAddress Asia: 0x802AB390
  * @ghidraAddress EUR: 0x802ad5c0
  * @ghidraAddress JPN: 0x802ac000
  */
@@ -57,6 +61,7 @@ extern const double g_dSinfPio2Hi;
 
 /**
  * @ghidraAddress USA: 0x802ab8d8
+ * @ghidraAddress Asia: 0x802AB398
  * @ghidraAddress EUR: 0x802ad5c8
  * @ghidraAddress JPN: 0x802ac008
  */
@@ -64,6 +69,7 @@ extern const double g_dSinfPio2Lo;
 
 /**
  * @ghidraAddress USA: 0x802ab8e0
+ * @ghidraAddress Asia: 0x802AB3A0
  * @ghidraAddress EUR: 0x802ad5d0
  * @ghidraAddress JPN: 0x802ac010
  */
@@ -73,6 +79,7 @@ extern const float g_fSinfZero;
  * The coefficients of the sine polynomial of cosf().
  *
  * @ghidraAddress USA: 0x802ab8f0
+ * @ghidraAddress Asia: 0x802AB3B0
  * @ghidraAddress EUR: 0x802ad5e0
  * @ghidraAddress JPN: 0x802ac020
  */
@@ -80,6 +87,7 @@ extern const double g_adCosfP[5];
 
 /**
  * @ghidraAddress USA: 0x802ab918
+ * @ghidraAddress Asia: 0x802AB3D8
  * @ghidraAddress EUR: 0x802ad608
  * @ghidraAddress JPN: 0x802ac048
  */
@@ -87,6 +95,7 @@ extern const double g_dCosfRpi;
 
 /**
  * @ghidraAddress USA: 0x802ab920
+ * @ghidraAddress Asia: 0x802AB3E0
  * @ghidraAddress EUR: 0x802ad610
  * @ghidraAddress JPN: 0x802ac050
  */
@@ -94,6 +103,7 @@ extern const double g_dCosfPio2Hi;
 
 /**
  * @ghidraAddress USA: 0x802ab928
+ * @ghidraAddress Asia: 0x802AB3E8
  * @ghidraAddress EUR: 0x802ad618
  * @ghidraAddress JPN: 0x802ac058
  */
@@ -101,6 +111,7 @@ extern const double g_dCosfPio2Lo;
 
 /**
  * @ghidraAddress USA: 0x802ab930
+ * @ghidraAddress Asia: 0x802AB3F0
  * @ghidraAddress EUR: 0x802ad620
  * @ghidraAddress JPN: 0x802ac060
  */
@@ -108,6 +119,7 @@ extern const float g_fCosfZero;
 
 /**
  * @ghidraAddress USA: 0x802aba80
+ * @ghidraAddress Asia: 0x802AB540
  * @ghidraAddress EUR: 0x802ad770
  * @ghidraAddress JPN: 0x802ac1b0
  */

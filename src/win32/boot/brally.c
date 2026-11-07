@@ -41,14 +41,14 @@ static int LoadRendererDll(const char *path) {
 #else
     g_pfnRallyMain = (RallyMainProc)GetProcAddress(g_hRendererDll, "RallyMain");
 #endif /* ENABLE_PATCHES */
-    return g_pfnRallyMain != nullptr;
+    return g_pfnRallyMain != NULL;
 }
 
 // @ghidraAddress BRally: 0x004017e0
 static BOOL UnloadRendererDll(void) {
     if (g_hRendererDll) {
         BOOL result = FreeLibrary(g_hRendererDll);
-        g_hRendererDll = nullptr;
+        g_hRendererDll = NULL;
         return result;
     }
     return TRUE;
@@ -66,7 +66,7 @@ static void AppendSpawnArgument(const char *argument) {
     char *destination = g_szSpawnArgBuffer + g_dwSpawnArgBufferUsed;
     strcpy(destination, argument);
     g_apszSpawnArgv[g_dwSpawnArgCount++] = destination;
-    g_apszSpawnArgv[g_dwSpawnArgCount] = nullptr;
+    g_apszSpawnArgv[g_dwSpawnArgCount] = NULL;
     g_dwSpawnArgBufferUsed += strlen(argument) + 1;
 }
 

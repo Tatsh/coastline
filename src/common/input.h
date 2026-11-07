@@ -63,6 +63,7 @@ typedef struct {
  * The cheats, ending with a NULL sequence.
  *
  * @ghidraAddress USA: 0x8028df48
+ * @ghidraAddress Asia: 0x8028DA98
  * @ghidraAddress EUR: 0x80290704
  * @ghidraAddress JPN: 0x802901a4
  */
@@ -72,6 +73,7 @@ extern CheatCode g_aCheatCodes[];
  * Whether each frame shows the depth buffer, at the start of memory, in place of the picture.
  *
  * @ghidraAddress USA: 0x8028aa94
+ * @ghidraAddress Asia: 0x8028A5E4
  * @ghidraAddress EUR: 0x8028cc9c
  * @ghidraAddress JPN: 0x8028c76c
  */
@@ -79,6 +81,7 @@ extern s32 g_bShowDepthBuffer;
 
 /**
  * @ghidraAddress USA: 0x8026ff20
+ * @ghidraAddress Asia: 0x8026FA70
  * @ghidraAddress EUR: 0x80271ef0
  * @ghidraAddress JPN: 0x802719a0
  */
@@ -88,6 +91,7 @@ extern s32 g_dwMultiplayerMode;
  * Whether textures are filtered.
  *
  * @ghidraAddress USA: 0x8028aa68
+ * @ghidraAddress Asia: 0x8028A5B8
  * @ghidraAddress EUR: 0x8028cc70
  * @ghidraAddress JPN: 0x8028c740
  * @ghidraAddress BRD3D: 0x100aa890
@@ -99,6 +103,7 @@ extern s32 g_bBilinearFiltering;
  * Toggle the view of memory.
  *
  * @ghidraAddress USA: 0x80254f40
+ * @ghidraAddress Asia: 0x80254A90
  * @ghidraAddress EUR: 0x802564e0
  * @ghidraAddress JPN: 0x80255e70
  */
@@ -126,6 +131,7 @@ void CheatFinishRace(void);
  * Unlock the first five tracks.
  *
  * @ghidraAddress USA: 0x80254f58
+ * @ghidraAddress Asia: 0x80254AA8
  * @ghidraAddress EUR: 0x80256528
  * @ghidraAddress JPN: 0x80255eb8
  */
@@ -135,6 +141,7 @@ void CheatUnlockTracks0To4(void);
  * Unlock the first nine cars.
  *
  * @ghidraAddress USA: 0x80254f70
+ * @ghidraAddress Asia: 0x80254AC0
  * @ghidraAddress EUR: 0x80256540
  * @ghidraAddress JPN: 0x80255ed0
  */
@@ -144,6 +151,7 @@ void CheatUnlockCars0To8(void);
  * Set bit 9 of the unlocks of the profile.
  *
  * @ghidraAddress USA: 0x80254f88
+ * @ghidraAddress Asia: 0x80254AD8
  * @ghidraAddress EUR: 0x80256558
  * @ghidraAddress JPN: 0x80255ee8
  */
@@ -153,6 +161,7 @@ void CheatSetUnlockBit200(void);
  * Set bit 12 of the unlocks of the profile.
  *
  * @ghidraAddress USA: 0x80254fa0
+ * @ghidraAddress Asia: 0x80254AF0
  * @ghidraAddress EUR: 0x80256570
  * @ghidraAddress JPN: 0x80255f00
  */
@@ -162,6 +171,7 @@ void CheatSetUnlockBit1000(void);
  * Set bit 11 of the unlocks of the profile.
  *
  * @ghidraAddress USA: 0x80254fb8
+ * @ghidraAddress Asia: 0x80254B08
  * @ghidraAddress EUR: 0x80256588
  * @ghidraAddress JPN: 0x80255f18
  */
@@ -171,6 +181,7 @@ void CheatSetUnlockBit800(void);
  * Set bit 10 of the unlocks of the profile.
  *
  * @ghidraAddress USA: 0x80254fd0
+ * @ghidraAddress Asia: 0x80254B20
  * @ghidraAddress EUR: 0x802565a0
  * @ghidraAddress JPN: 0x80255f30
  */
@@ -180,6 +191,7 @@ void CheatSetUnlockBit400(void);
  * Unlock tracks 5 to 9.
  *
  * @ghidraAddress USA: 0x80254fe8
+ * @ghidraAddress Asia: 0x80254B38
  * @ghidraAddress EUR: 0x802565b8
  * @ghidraAddress JPN: 0x80255f48
  */
@@ -189,6 +201,7 @@ void CheatUnlockTracks5To9(void);
  * Set bit 15 of the unlocks of the profile.
  *
  * @ghidraAddress USA: 0x80255000
+ * @ghidraAddress Asia: 0x80254B50
  * @ghidraAddress EUR: 0x802565d0
  * @ghidraAddress JPN: 0x80255f60
  */
@@ -196,6 +209,7 @@ void CheatSetUnlockBit8000(void);
 
 /**
  * @ghidraAddress USA: 0x80255018
+ * @ghidraAddress Asia: 0x80254B68
  * @ghidraAddress EUR: 0x802565e8
  * @ghidraAddress JPN: 0x80255f78
  */
@@ -203,6 +217,7 @@ void CheatToggleMultiplayerMode(void);
 
 /**
  * @ghidraAddress USA: 0x80255030
+ * @ghidraAddress Asia: 0x80254B80
  * @ghidraAddress EUR: 0x80256600
  * @ghidraAddress JPN: 0x80255f90
  */
@@ -213,6 +228,7 @@ void CheatToggleBilinearFilter(void);
  *
  * @param state The input of the player.
  * @ghidraAddress USA: 0x80255048
+ * @ghidraAddress Asia: 0x80254B98
  * @ghidraAddress EUR: 0x80256618
  * @ghidraAddress JPN: 0x80255fa8
  */
@@ -225,6 +241,7 @@ void ProcessInputCommandBuffer(PlayerInputState *state);
  *
  * @param state The input of the player.
  * @ghidraAddress USA: 0x80255120
+ * @ghidraAddress Asia: 0x80254C70
  * @ghidraAddress EUR: 0x802566f0
  * @ghidraAddress JPN: 0x80256080
  */
@@ -240,6 +257,7 @@ void TranslateControllerInput(PlayerInputState *state);
  * @param axis The position of the axis, from -1 to 1.
  * @param button The direction to press.
  * @ghidraAddress USA: 0x80255954
+ * @ghidraAddress Asia: 0x802554A4
  * @ghidraAddress EUR: 0x80256f24
  * @ghidraAddress JPN: 0x802568b4
  */
@@ -253,6 +271,7 @@ void CheckAnalogStickPositive(PlayerInputState *state, s32 *timer, f32 *axis, u3
  * @param axis The position of the axis, from -1 to 1.
  * @param button The direction to press.
  * @ghidraAddress USA: 0x80255a18
+ * @ghidraAddress Asia: 0x80255568
  * @ghidraAddress EUR: 0x80256fe8
  * @ghidraAddress JPN: 0x80256978
  */
@@ -263,6 +282,7 @@ void CheckAnalogStickNegative(PlayerInputState *state, s32 *timer, f32 *axis, u3
  *
  * @param state The input of the player.
  * @ghidraAddress USA: 0x80255adc
+ * @ghidraAddress Asia: 0x8025562C
  * @ghidraAddress EUR: 0x802570ac
  * @ghidraAddress JPN: 0x80256a3c
  */
@@ -273,6 +293,7 @@ void UpdateStickRepeat(PlayerInputState *state);
  * Whether a read of the controllers is started and not yet received.
  *
  * @ghidraAddress USA: 0x8028ab6c
+ * @ghidraAddress Asia: 0x8028A6BC
  * @ghidraAddress EUR: 0x8028ce18
  * @ghidraAddress JPN: 0x8028c848
  * @ghidraAddress BRD3D: 0x106c56e8
@@ -285,6 +306,7 @@ extern s32 g_dwContReadPending;
  * Whether InitControllersAndPaks() has mounted the Controller Pak of the first controller.
  *
  * @ghidraAddress USA: 0x8028adf0
+ * @ghidraAddress Asia: 0x8028A940
  * @ghidraAddress EUR: 0x8028d0a0
  * @ghidraAddress JPN: 0x8028cad0
  */
@@ -294,6 +316,7 @@ extern u8 g_bPakPort0Initialized;
  * Start a read of the controllers, unless one is already pending.
  *
  * @ghidraAddress USA: 0x8021a920
+ * @ghidraAddress Asia: 0x8021A470
  * @ghidraAddress EUR: 0x8021ba38
  * @ghidraAddress JPN: 0x8021b314
  * @ghidraAddress BRD3D: 0x10033780
@@ -305,6 +328,7 @@ void StartControllerRead(void);
  * Wait for a read of the controllers, starting one if none is pending, and fill the pads.
  *
  * @ghidraAddress USA: 0x8021a964
+ * @ghidraAddress Asia: 0x8021A4B4
  * @ghidraAddress EUR: 0x8021ba7c
  * @ghidraAddress JPN: 0x8021b358
  * @ghidraAddress BRD3D: 0x100337ae
@@ -316,6 +340,7 @@ void ReadControllers(void);
  * Read the controllers and turn their state into the input of the players.
  *
  * @ghidraAddress USA: 0x8021a9b4
+ * @ghidraAddress Asia: 0x8021A504
  * @ghidraAddress EUR: 0x8021bacc
  * @ghidraAddress JPN: 0x8021b3a8
  * @ghidraAddress BRD3D: 0x100337e9
@@ -329,6 +354,7 @@ void UpdateControllerState(void);
  * The Windows routine returns without probing controllers.
  *
  * @ghidraAddress USA: 0x8021c188
+ * @ghidraAddress Asia: 0x8021BCD8
  * @ghidraAddress EUR: 0x8021d37c
  * @ghidraAddress JPN: 0x8021cc4c
  * @ghidraAddress BRD3D: 0x10034a85

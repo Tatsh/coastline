@@ -5,6 +5,7 @@
  * The DMA started and not yet waited for.
  *
  * @ghidraAddress USA: 0x80272d44
+ * @ghidraAddress Asia: 0x80272894
  * @ghidraAddress EUR: 0x80274f44
  * @ghidraAddress JPN: 0x80274a14
  * @ghidraAddress BRD3D: 0x106c65dc
@@ -15,6 +16,7 @@ static s32 g_dwIoMessagePendingCount;
  * The message of g_aIoMessagePool last handed out.
  *
  * @ghidraAddress USA: 0x80272d40
+ * @ghidraAddress Asia: 0x80272890
  * @ghidraAddress EUR: 0x80274f40
  * @ghidraAddress JPN: 0x80274a10
  * @ghidraAddress BRD3D: 0x106c65d8

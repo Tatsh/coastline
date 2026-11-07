@@ -26,6 +26,7 @@ namespace {
      * Whether every vehicle is drawn in its other look, as Vehicle.otherLook draws one.
      *
      * @ghidraAddress USA: 0x8028ddc8
+     * @ghidraAddress Asia: 0x8028D918
      * @ghidraAddress EUR: 0x80290568
      * @ghidraAddress JPN: 0x80290008
      * @ghidraAddress BRD3D: 0x10277b1c
@@ -35,6 +36,7 @@ namespace {
      * The least detailed level the vehicles are drawn at, from 0.
      *
      * @ghidraAddress USA: 0x8028aa9c
+     * @ghidraAddress Asia: 0x8028A5EC
      * @ghidraAddress EUR: 0x8028cca4
      * @ghidraAddress JPN: 0x8028c774
      * @ghidraAddress BRD3D: 0x106c6630
@@ -42,6 +44,7 @@ namespace {
     s32 g_dwVehicleLodBias;
     /**
      * @ghidraAddress USA: 0x8028c304
+     * @ghidraAddress Asia: 0x8028BE54
      * @ghidraAddress EUR: 0x8028ea64
      * @ghidraAddress JPN: 0x8028e4b4
      * @ghidraAddress BRD3D: 0x10277e58

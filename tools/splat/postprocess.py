@@ -114,9 +114,31 @@ def symbolize(data_sources: list[Path], text_sources: list[Path], image: tuple[i
 
 def main() -> int:
   parser = argparse.ArgumentParser(description=__doc__.strip().splitlines()[0])
-  parser.add_argument('region', choices=('us', 'jp', 'eu'), help='release to finish')
+  parser.add_argument('region', choices=tuple(REGIONS), help='release to finish')
   args = parser.parse_args()
-  asm = ROOT / 'asm' / args.region
+  asm = ROOT / 'src/n64/asm' / args.region
+  if args.region == 'asia':
+    data_file = asm / 'data' / 'data.data.s'
+    data = data_file.read_text(encoding='utf-8')
+    aliases = (
+      ('\ndlabel g_aGspUcodeText\n',
+       '\n.balign 8\n.globl g_aRspBootUcodeEnd\ng_aRspBootUcodeEnd:\n'
+       'dlabel g_aGspUcodeText\n'),
+      ('    /* A54CC 802A44CC 00000000 */ .word 0x00000000\n',
+       'dlabel g_dwAmbientChannel3Volume\n'
+       '    /* A54CC 802A44CC 00000000 */ .word 0x00000000\n'
+       'enddlabel g_dwAmbientChannel3Volume\n'),
+      ('\ndlabel g_wRaceScreenLoopExited\n',
+       '\ndlabel g_wRaceScreenLoopExited\n'
+       '    .globl g_RumbleProbeState\n'
+       '    .set g_RumbleProbeState, g_wRaceScreenLoopExited\n'),
+    )
+    for marker, replacement in aliases:
+      if replacement not in data:
+        if data.count(marker) != 1:
+          raise SystemExit(f'Asia data alias marker missing: {marker.strip()}')
+        data = data.replace(marker, replacement, 1)
+    data_file.write_text(data, encoding='utf-8')
   text_sources = sorted(asm.glob('[0-9A-F]*.s'))
   data_sources = [asm / 'data' / name for name in ('data.data.s', 'rodata.rodata.s')]
   sources = text_sources + data_sources + [asm / 'data' / 'bss.bss.s']
@@ -165,7 +187,9 @@ def align_data(data_sources: list[Path]) -> int:
       if LABEL_LINE.match(line) and line.lstrip().startswith('dlabel'):
         address = next((ADDRESS.search(after) for after in lines[index + 1:index + 4]
                         if ADDRESS.search(after)), None)
-        if address and int(address.group(1), 16) % 8 == 0 and out[-1:] != ['.balign 8']:
+        alias = out[-2:] == ['.globl g_aRspBootUcodeEnd', 'g_aRspBootUcodeEnd:']
+        if (address and int(address.group(1), 16) % 8 == 0 and not alias
+            and out[-1:] != ['.balign 8']):
           out.append('.balign 8')
           aligned += 1
       out.append(line)

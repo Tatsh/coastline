@@ -16,6 +16,7 @@ extern "C" {
  * Whether an instant replay is playing. The PC libraries also compare it with 2.
  *
  * @ghidraAddress USA: 0x80270788
+ * @ghidraAddress Asia: 0x802702D8
  * @ghidraAddress EUR: 0x80272758
  * @ghidraAddress JPN: 0x80272208
  * @ghidraAddress BRD3D: 0x106909e0

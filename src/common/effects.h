@@ -34,6 +34,7 @@ typedef struct {
 
 /**
  * @ghidraAddress USA: 0x80366a80
+ * @ghidraAddress Asia: 0x80366540
  * @ghidraAddress EUR: 0x80368f80
  * @ghidraAddress JPN: 0x80367bf0
  * @ghidraAddress BRD3D: 0x10a99bb8
@@ -45,6 +46,7 @@ extern Particle g_aParticlePool[PARTICLES];
  * The list of the free puffs of the pool.
  *
  * @ghidraAddress USA: 0x8028c830
+ * @ghidraAddress Asia: 0x8028C380
  * @ghidraAddress EUR: 0x8028ef90
  * @ghidraAddress JPN: 0x8028e9e0
  * @ghidraAddress BRD3D: 0x10a99ba8
@@ -56,6 +58,7 @@ extern u16 g_wParticleFreeListHead;
  * The list of the exhaust.
  *
  * @ghidraAddress USA: 0x8028c834
+ * @ghidraAddress Asia: 0x8028C384
  * @ghidraAddress EUR: 0x8028ef94
  * @ghidraAddress JPN: 0x8028e9e4
  * @ghidraAddress BRD3D: 0x10a99bb0
@@ -67,6 +70,7 @@ extern u16 g_wExhaustParticleListHead;
  * The list of the tyre smoke off the paved road.
  *
  * @ghidraAddress USA: 0x8028c838
+ * @ghidraAddress Asia: 0x8028C388
  * @ghidraAddress EUR: 0x8028ef98
  * @ghidraAddress JPN: 0x8028e9e8
  * @ghidraAddress BRD3D: 0x10a99bac
@@ -78,6 +82,7 @@ extern u16 g_wTireSmokeListHead;
  * The list of the tyre smoke on the paved road.
  *
  * @ghidraAddress USA: 0x8028c83c
+ * @ghidraAddress Asia: 0x8028C38C
  * @ghidraAddress EUR: 0x8028ef9c
  * @ghidraAddress JPN: 0x8028e9ec
  * @ghidraAddress BRD3D: 0x10a99bb4
@@ -90,6 +95,7 @@ extern u16 g_wPavedTireSmokeListHead;
  * puffs take them.
  *
  * @ghidraAddress USA: 0x80368a80
+ * @ghidraAddress Asia: 0x80368540
  * @ghidraAddress EUR: 0x8036af80
  * @ghidraAddress JPN: 0x80369bf0
  * @ghidraAddress BRD3D: 0x1039b6d0
@@ -101,6 +107,7 @@ extern f32 g_afBillboardMatrix[4][4];
  * The texture of the spray, 32 by 64 texels of 4-bit intensity.
  *
  * @ghidraAddress USA: 0x802a2978
+ * @ghidraAddress Asia: 0x802A24C8
  * @ghidraAddress EUR: 0x802a5138
  * @ghidraAddress JPN: 0x802a4bd8
  */
@@ -113,6 +120,7 @@ extern u8 g_aTireSprayTexture[];
  * @param w The w it is divided by.
  * @return The depth in the units of the depth buffer.
  * @ghidraAddress USA: 0x8023b130
+ * @ghidraAddress Asia: 0x8023AC80
  * @ghidraAddress EUR: 0x8023c640
  * @ghidraAddress JPN: 0x8023c140
  */
@@ -125,6 +133,7 @@ s32 ComputeScreenDepthZ(f32 z, f32 w);
  *
  * @param vehicle The vehicle whose exhaust puffs.
  * @ghidraAddress USA: 0x8023b178
+ * @ghidraAddress Asia: 0x8023ACC8
  * @ghidraAddress EUR: 0x8023c688
  * @ghidraAddress JPN: 0x8023c188
  */
@@ -138,6 +147,7 @@ void SpawnExhaustParticle(Vehicle *vehicle);
  *
  * @param vehicle The vehicle whose wheels throw the spray.
  * @ghidraAddress USA: 0x8023b418
+ * @ghidraAddress Asia: 0x8023AF68
  * @ghidraAddress EUR: 0x8023c928
  * @ghidraAddress JPN: 0x8023c428
  */
@@ -159,6 +169,7 @@ void DrawTireSpray(const RacerSlot *slots);
  * it there.
  *
  * @ghidraAddress USA: 0x8023bb50
+ * @ghidraAddress Asia: 0x8023B6A0
  * @ghidraAddress EUR: 0x8023d060
  * @ghidraAddress JPN: 0x8023cb60
  */
@@ -172,6 +183,7 @@ void DrawTireSpray(void);
  *
  * @param vehicle The vehicle whose wheels smoke.
  * @ghidraAddress USA: 0x8023c800
+ * @ghidraAddress Asia: 0x8023C350
  * @ghidraAddress EUR: 0x8023dd10
  * @ghidraAddress JPN: 0x8023d810
  */
@@ -182,6 +194,7 @@ void SpawnTireSmoke(Vehicle *vehicle);
  * Drift, grow, and fade the exhaust, and free the puffs that have faded.
  *
  * @ghidraAddress USA: 0x8023cbfc
+ * @ghidraAddress Asia: 0x8023C74C
  * @ghidraAddress EUR: 0x8023e10c
  * @ghidraAddress JPN: 0x8023dc0c
  * @ghidraAddress BRD3D: 0x1003a200
@@ -193,6 +206,7 @@ void UpdateExhaustParticles(void);
  * Drift, grow, and fade the tyre smoke, and free the puffs that have faded or fall too fast.
  *
  * @ghidraAddress USA: 0x8023cd60
+ * @ghidraAddress Asia: 0x8023C8B0
  * @ghidraAddress EUR: 0x8023e270
  * @ghidraAddress JPN: 0x8023dd70
  * @ghidraAddress BRD3D: 0x1003a340
@@ -204,6 +218,7 @@ void UpdateTireSmoke(void);
  * Free every puff of the pool and stop the exhaust of the vehicles.
  *
  * @ghidraAddress USA: 0x8023cf30
+ * @ghidraAddress Asia: 0x8023CA80
  * @ghidraAddress EUR: 0x8023e440
  * @ghidraAddress JPN: 0x8023df40
  * @ghidraAddress BRD3D: 0x1003a4d0
@@ -216,6 +231,7 @@ void InitParticleSystem(void);
  * the dry, and the spray in all.
  *
  * @ghidraAddress USA: 0x8023cfc4
+ * @ghidraAddress Asia: 0x8023CB14
  * @ghidraAddress EUR: 0x8023e4d4
  * @ghidraAddress JPN: 0x8023dfd4
  * @ghidraAddress BRD3D: 0x1003a530
@@ -246,6 +262,7 @@ void RenderBillboardParticles(
  * @param green The green of the colour.
  * @param blue The blue of the colour.
  * @ghidraAddress USA: 0x8023d134
+ * @ghidraAddress Asia: 0x8023CC84
  * @ghidraAddress EUR: 0x8023e644
  * @ghidraAddress JPN: 0x8023e144
  */
@@ -267,6 +284,7 @@ void RenderTireSmoke(const ViewportRect *viewports);
  * track, except at night.
  *
  * @ghidraAddress USA: 0x8023d714
+ * @ghidraAddress Asia: 0x8023D264
  * @ghidraAddress EUR: 0x8023ec24
  * @ghidraAddress JPN: 0x8023e724
  */
@@ -288,6 +306,7 @@ void RenderExhaustAndTireSpray(const ViewportRect *viewports, const RacerSlot *s
  * Draw the exhaust in the snow with the matrix RenderTireSmoke() set, then the spray.
  *
  * @ghidraAddress USA: 0x8023dbc0
+ * @ghidraAddress Asia: 0x8023D710
  * @ghidraAddress EUR: 0x8023f0d0
  * @ghidraAddress JPN: 0x8023ebd0
  */

@@ -24,6 +24,7 @@ extern "C" {
  * The recorded input of the ghost. A Controller Pak or the cartridge fills it.
  *
  * @ghidraAddress USA: 0x80307f00
+ * @ghidraAddress Asia: 0x803079C0
  * @ghidraAddress EUR: 0x80309bf0
  * @ghidraAddress JPN: 0x80308630
  */
@@ -33,6 +34,7 @@ extern u8 g_abGhostRecording[];
  * The bytes of g_abGhostRecording in use.
  *
  * @ghidraAddress USA: 0x80270784
+ * @ghidraAddress Asia: 0x802702D4
  * @ghidraAddress EUR: 0x80272754
  * @ghidraAddress JPN: 0x80272204
  */
@@ -71,6 +73,7 @@ extern u8 g_aabInputRecordings[][0xF000];
  * The player whose recording the instant replay plays, and the length of that recording.
  *
  * @ghidraAddress USA: 0x80315e3c
+ * @ghidraAddress Asia: 0x803158FC
  * @ghidraAddress EUR: 0x80317b2c
  * @ghidraAddress JPN: 0x8031656c
  * @ghidraAddress BRD3D: 0x106909c8
@@ -81,6 +84,7 @@ extern s32 g_dwBestReplayLength;
 
 /**
  * @ghidraAddress USA: 0x80315e40
+ * @ghidraAddress Asia: 0x80315900
  * @ghidraAddress EUR: 0x80317b30
  * @ghidraAddress JPN: 0x80316570
  * @ghidraAddress BRD3D: 0x10680668
@@ -93,6 +97,7 @@ extern s32 g_dwBestReplayPlayer;
  * The recordings the instant replay gives each local player, and their lengths.
  *
  * @ghidraAddress USA: 0x80315e48
+ * @ghidraAddress Asia: 0x80315908
  * @ghidraAddress EUR: 0x80317b38
  * @ghidraAddress JPN: 0x80316578
  */
@@ -100,6 +105,7 @@ extern u8 *g_apReplayGhostPtrs[];
 
 /**
  * @ghidraAddress USA: 0x80315e58
+ * @ghidraAddress Asia: 0x80315918
  * @ghidraAddress EUR: 0x80317b48
  * @ghidraAddress JPN: 0x80316588
  */
@@ -150,6 +156,7 @@ typedef struct {
  * more.
  *
  * @ghidraAddress USA: 0x8028bb0c
+ * @ghidraAddress Asia: 0x8028B65C
  * @ghidraAddress EUR: 0x8028ddc0
  * @ghidraAddress JPN: 0x8028d7f0
  * @ghidraAddress BRD3D: 0x100b39b0
@@ -160,6 +167,7 @@ extern SaveField g_aRaceSnapshotFields[];
  * The random seed and the clocks a pause keeps.
  *
  * @ghidraAddress USA: 0x8028bbc4
+ * @ghidraAddress Asia: 0x8028B714
  * @ghidraAddress EUR: 0x8028de78
  * @ghidraAddress JPN: 0x8028d8a8
  * @ghidraAddress BRD3D: 0x100b3a68
@@ -174,6 +182,7 @@ extern SaveField g_aPausedClockFields[];
  * Where a pause keeps them.
  *
  * @ghidraAddress USA: 0x8034e570
+ * @ghidraAddress Asia: 0x8034E030
  * @ghidraAddress EUR: 0x80326800
  * @ghidraAddress JPN: 0x80325430
  * @ghidraAddress BRD3D: 0x10af9848
@@ -214,6 +223,7 @@ s32 DeserializeSaveData(SaveField *fields, u8 *buffer, s32 offset);
  * @param buffer The buffer.
  * @param capacity The bytes the buffer holds.
  * @ghidraAddress USA: 0x8022adcc
+ * @ghidraAddress Asia: 0x8022A91C
  * @ghidraAddress BRD3D: 0x10067880
  * @ghidraAddress BRGlide: 0x100608f0
  */
@@ -225,6 +235,7 @@ void SerializeSaveData(SaveField *fields, u8 *buffer, s32 capacity);
  * @param fields The list of variables.
  * @param buffer The buffer.
  * @ghidraAddress USA: 0x8022ae70
+ * @ghidraAddress Asia: 0x8022A9C0
  * @ghidraAddress BRD3D: 0x10067900
  * @ghidraAddress BRGlide: 0x10060970
  */
@@ -239,6 +250,7 @@ void DeserializeSaveData(SaveField *fields, u8 *buffer);
  *
  * @param buffer The buffer of the last lap.
  * @ghidraAddress USA: 0x8022aed8
+ * @ghidraAddress Asia: 0x8022AA28
  * @ghidraAddress EUR: 0x8022c274
  * @ghidraAddress JPN: 0x8022ba2c
  * @ghidraAddress BRD3D: 0x10067940
@@ -251,6 +263,7 @@ void SaveRaceSnapshot(LastLapBuffer *buffer);
  *
  * @param buffer The buffer of the last lap holding the snapshot.
  * @ghidraAddress USA: 0x8022af08
+ * @ghidraAddress Asia: 0x8022AA58
  * @ghidraAddress EUR: 0x8022c2ac
  * @ghidraAddress JPN: 0x8022ba64
  * @ghidraAddress BRD3D: 0x10067960
@@ -265,6 +278,7 @@ void RestoreRaceSnapshot(LastLapBuffer *buffer);
  *
  * @param vehicle The vehicle that reached the lap.
  * @ghidraAddress USA: 0x8022af90
+ * @ghidraAddress Asia: 0x8022AAE0
  * @ghidraAddress EUR: 0x8022c4a0
  * @ghidraAddress JPN: 0x8022bc58
  */

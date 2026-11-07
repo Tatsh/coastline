@@ -25,6 +25,7 @@ typedef struct {
 
 /**
  * @ghidraAddress USA: 0x802723d0
+ * @ghidraAddress Asia: 0x80271F20
  * @ghidraAddress EUR: 0x802743b0
  * @ghidraAddress JPN: 0x80273e60
  */
@@ -35,6 +36,7 @@ extern OptionSettings g_OptionSettings;
  * The volume of the music and of the effects at each level.
  *
  * @ghidraAddress USA: 0x80272488
+ * @ghidraAddress Asia: 0x80271FD8
  * @ghidraAddress EUR: 0x80274438
  * @ghidraAddress JPN: 0x80273ee8
  */
@@ -42,6 +44,7 @@ extern s32 g_adwBgmVolumeLevels[VOLUME_LEVELS];
 
 /**
  * @ghidraAddress USA: 0x802724b4
+ * @ghidraAddress Asia: 0x80272004
  * @ghidraAddress EUR: 0x80274464
  * @ghidraAddress JPN: 0x80273f14
  */
@@ -52,6 +55,7 @@ extern s32 g_adwSfxVolumeLevels[VOLUME_LEVELS];
  * Apply the music and effect volumes of the options.
  *
  * @ghidraAddress USA: 0x802118b4
+ * @ghidraAddress Asia: 0x80211444
  * @ghidraAddress EUR: 0x802117a4
  * @ghidraAddress JPN: 0x80211694
  */

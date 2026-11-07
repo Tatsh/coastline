@@ -21,14 +21,14 @@ void PrintWineDiagnostic(const char *message) {
     DWORD savedError = GetLastError();
     WriteApplicationDiagnostic(message);
     HMODULE ntdll = GetModuleHandleA("ntdll.dll");
-    if (ntdll == nullptr || GetProcAddress(ntdll, "wine_get_version") == nullptr) {
+    if (ntdll == NULL || GetProcAddress(ntdll, "wine_get_version") == NULL) {
         SetLastError(savedError);
         return;
     }
     HANDLE output = GetStdHandle(STD_OUTPUT_HANDLE);
-    if (output != nullptr && output != INVALID_HANDLE_VALUE) {
+    if (output != NULL && output != INVALID_HANDLE_VALUE) {
         DWORD written;
-        WriteFile(output, message, (DWORD)strlen(message), &written, nullptr);
+        WriteFile(output, message, (DWORD)strlen(message), &written, NULL);
     }
     SetLastError(savedError);
 }
@@ -55,7 +55,7 @@ typedef BOOL(WINAPI *WriteDumpProc)(HANDLE,
 static WriteDumpProc writeDump;
 
 static void SetDiagnosticPath(char *path, const char *file) {
-    DWORD length = GetModuleFileNameA(nullptr, path, MAX_PATH);
+    DWORD length = GetModuleFileNameA(NULL, path, MAX_PATH);
     if (!length || length >= MAX_PATH) {
         path[0] = '\0';
         return;
@@ -187,10 +187,10 @@ static LONG WINAPI ReportApplicationCrash(EXCEPTION_POINTERS *exception) {
         HANDLE dump = CreateFileA(dumpPath,
                                   GENERIC_WRITE,
                                   FILE_SHARE_READ,
-                                  nullptr,
+                                  NULL,
                                   CREATE_ALWAYS,
                                   FILE_ATTRIBUTE_NORMAL,
-                                  nullptr);
+                                  NULL);
         if (dump != INVALID_HANDLE_VALUE) {
             MINIDUMP_EXCEPTION_INFORMATION info = {GetCurrentThreadId(), exception, FALSE};
             BOOL result = writeDump(GetCurrentProcess(),
@@ -198,8 +198,8 @@ static LONG WINAPI ReportApplicationCrash(EXCEPTION_POINTERS *exception) {
                                     dump,
                                     MiniDumpNormal,
                                     &info,
-                                    nullptr,
-                                    nullptr);
+                                    NULL,
+                                    NULL);
             CloseHandle(dump);
             WriteApplicationDiagnostic(result ? "Crash minidump written.\n" :
                                                 "Crash minidump failed.\n");
@@ -218,10 +218,10 @@ void WriteApplicationDiagnostic(const char *message) {
     HANDLE log = CreateFileA(logPath,
                              FILE_APPEND_DATA,
                              FILE_SHARE_READ | FILE_SHARE_WRITE,
-                             nullptr,
+                             NULL,
                              OPEN_ALWAYS,
                              FILE_ATTRIBUTE_NORMAL | FILE_FLAG_WRITE_THROUGH,
-                             nullptr);
+                             NULL);
     if (log != INVALID_HANDLE_VALUE) {
         char prefix[96];
         SYSTEMTIME time;
@@ -239,8 +239,8 @@ void WriteApplicationDiagnostic(const char *message) {
                               time.wMilliseconds,
                               GetCurrentProcessId(),
                               GetCurrentThreadId());
-        WriteFile(log, prefix, length, &written, nullptr);
-        WriteFile(log, message, (DWORD)strlen(message), &written, nullptr);
+        WriteFile(log, prefix, length, &written, NULL);
+        WriteFile(log, message, (DWORD)strlen(message), &written, NULL);
         CloseHandle(log);
     }
     SetLastError(savedError);
@@ -256,10 +256,10 @@ void InitializeApplicationDiagnostics(void) {
     HANDLE log = CreateFileA(logPath,
                              GENERIC_WRITE,
                              FILE_SHARE_READ | FILE_SHARE_WRITE,
-                             nullptr,
+                             NULL,
                              CREATE_ALWAYS,
                              FILE_ATTRIBUTE_NORMAL,
-                             nullptr);
+                             NULL);
     if (log != INVALID_HANDLE_VALUE) {
         CloseHandle(log);
     }
@@ -284,13 +284,13 @@ void ShutdownApplicationDiagnostics(void) {
     SetUnhandledExceptionFilter(previousFilter);
     if (exceptionObserver) {
         RemoveVectoredExceptionHandler(exceptionObserver);
-        exceptionObserver = nullptr;
+        exceptionObserver = NULL;
     }
     if (debugLibrary) {
         FreeLibrary(debugLibrary);
-        debugLibrary = nullptr;
+        debugLibrary = NULL;
     }
-    writeDump = nullptr;
+    writeDump = NULL;
     initialized = false;
 }
 #endif /* ENABLE_PATCHES */

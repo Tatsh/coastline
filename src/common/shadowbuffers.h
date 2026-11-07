@@ -20,6 +20,7 @@ extern "C" {
 
 /**
  * @ghidraAddress USA: 0x80353580
+ * @ghidraAddress Asia: 0x80353040
  * @ghidraAddress EUR: 0x80355a80
  * @ghidraAddress JPN: 0x803546f0
  * @ghidraAddress BRD3D: 0x103643c0
@@ -56,6 +57,7 @@ extern ConvertedModelVertex *g_pTrackQuadVertexWritePtr;
 #else
 /**
  * @ghidraAddress USA: 0x803554c0
+ * @ghidraAddress Asia: 0x80354F80
  * @ghidraAddress EUR: 0x803579c0
  * @ghidraAddress JPN: 0x80356630
  */
@@ -66,6 +68,7 @@ extern Vtx g_aShadowVertices[2][SHADOW_VERTICES];
  * Start the display lists and vertices of the shadows of the frame.
  *
  * @ghidraAddress USA: 0x80233fdc
+ * @ghidraAddress Asia: 0x80233B2C
  * @ghidraAddress EUR: 0x802354ec
  * @ghidraAddress JPN: 0x802352ec
  * @ghidraAddress BRD3D: 0x1000f5c0
@@ -77,6 +80,7 @@ void ResetShadowBuffers(void);
  * The next command of the shadows, and their first this frame.
  *
  * @ghidraAddress USA: 0x8028c75c
+ * @ghidraAddress Asia: 0x8028C2AC
  * @ghidraAddress EUR: 0x8028eebc
  * @ghidraAddress JPN: 0x8028e90c
  * @ghidraAddress BRD3D: 0x10363ff0
@@ -86,6 +90,7 @@ extern DisplayListCommand *g_pShadowDisplayListWritePtr;
 
 /**
  * @ghidraAddress USA: 0x8028c760
+ * @ghidraAddress Asia: 0x8028C2B0
  * @ghidraAddress EUR: 0x8028eec0
  * @ghidraAddress JPN: 0x8028e910
  * @ghidraAddress BRD3D: 0x102e5ec8
@@ -97,6 +102,7 @@ extern DisplayListCommand *g_pShadowDisplayListStart;
  * The next vertex of the shadows, and their first this frame.
  *
  * @ghidraAddress USA: 0x8028c764
+ * @ghidraAddress Asia: 0x8028C2B4
  * @ghidraAddress EUR: 0x8028eec4
  * @ghidraAddress JPN: 0x8028e914
  * @ghidraAddress BRD3D: 0x10364304
@@ -110,6 +116,7 @@ extern Vtx *g_pShadowVertexWritePtr;
 
 /**
  * @ghidraAddress USA: 0x8028c768
+ * @ghidraAddress Asia: 0x8028C2B8
  * @ghidraAddress EUR: 0x8028eec8
  * @ghidraAddress JPN: 0x8028e918
  * @ghidraAddress BRD3D: 0x103643bc

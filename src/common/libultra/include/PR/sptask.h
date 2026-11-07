@@ -67,6 +67,7 @@ typedef union {
  * The physical copy of the last task osSpTaskLoad() loaded.
  *
  * @ghidraAddress USA: 0x8037f330
+ * @ghidraAddress Asia: 0x8037EDF0
  * @ghidraAddress EUR: 0x80381270
  * @ghidraAddress JPN: 0x8037fee0
  */
@@ -74,6 +75,7 @@ extern OSTask tmp_task;
 
 /**
  * @ghidraAddress USA: 0x80264b60
+ * @ghidraAddress Asia: 0x802646B0
  * @ghidraAddress EUR: 0x802662f0
  * @ghidraAddress JPN: 0x80265df0
  */
@@ -85,6 +87,7 @@ OSTask *_VirtualToPhysicalTask(OSTask *intp);
  *
  * @param tp The task, with virtual addresses. Its OS_TASK_YIELDED flag is cleared.
  * @ghidraAddress USA: 0x80264c7c
+ * @ghidraAddress Asia: 0x802647CC
  * @ghidraAddress EUR: 0x8026640c
  * @ghidraAddress JPN: 0x80265f0c
  */
@@ -95,6 +98,7 @@ void osSpTaskLoad(OSTask *tp);
  *
  * @param tp The task loaded, not read.
  * @ghidraAddress USA: 0x80264e0c
+ * @ghidraAddress Asia: 0x8026495C
  * @ghidraAddress EUR: 0x8026659c
  * @ghidraAddress JPN: 0x8026609c
  */
@@ -102,6 +106,7 @@ void osSpTaskStartGo(OSTask *tp);
 
 /**
  * @ghidraAddress USA: 0x8026b850
+ * @ghidraAddress Asia: 0x8026B3A0
  * @ghidraAddress EUR: 0x8026d820
  * @ghidraAddress JPN: 0x8026d2d0
  */
@@ -109,6 +114,7 @@ void __osSpSetStatus(u32 data);
 
 /**
  * @ghidraAddress USA: 0x8026b860
+ * @ghidraAddress Asia: 0x8026B3B0
  * @ghidraAddress EUR: 0x8026d830
  * @ghidraAddress JPN: 0x8026d2e0
  */
@@ -116,6 +122,7 @@ s32 __osSpSetPc(u32 pc);
 
 /**
  * @ghidraAddress USA: 0x8026b8a0
+ * @ghidraAddress Asia: 0x8026B3F0
  * @ghidraAddress EUR: 0x8026d870
  * @ghidraAddress JPN: 0x8026d320
  */
@@ -123,6 +130,7 @@ s32 __osSpRawStartDma(s32 direction, u32 devAddr, void *dramAddr, u32 size);
 
 /**
  * @ghidraAddress USA: 0x8026b930
+ * @ghidraAddress Asia: 0x8026B480
  * @ghidraAddress EUR: 0x8026d900
  * @ghidraAddress JPN: 0x8026d3b0
  */

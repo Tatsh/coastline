@@ -34,6 +34,7 @@ namespace {
      * The player whose recording the instant replay plays, and the length of that recording.
      *
      * @ghidraAddress USA: 0x80315e3c
+     * @ghidraAddress Asia: 0x803158FC
      * @ghidraAddress EUR: 0x80317b2c
      * @ghidraAddress JPN: 0x8031656c
      * @ghidraAddress BRD3D: 0x106909c8

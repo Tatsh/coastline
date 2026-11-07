@@ -14,6 +14,7 @@ extern "C" {
  * @param width The width of the screen; the fixed projection does not read it.
  * @param height The height of the screen; the fixed projection does not read it.
  * @ghidraAddress USA: 0x8021b458
+ * @ghidraAddress Asia: 0x8021AFA8
  * @ghidraAddress EUR: 0x8021c594
  * @ghidraAddress BRD3D: 0x10033f7e
  * @ghidraAddress BRGlide: 0x1002d62f
@@ -28,6 +29,7 @@ void SetupProjectionMatrix(f32 width, f32 height);
  * @param width The width of the screen; N64 does not read it.
  * @param height The height of the screen; N64 does not read it.
  * @ghidraAddress USA: 0x8021b5a4
+ * @ghidraAddress Asia: 0x8021B0F4
  * @ghidraAddress EUR: 0x8021c6e0
  * @ghidraAddress BRD3D: 0x1003407d
  * @ghidraAddress BRGlide: 0x1002d72e
@@ -40,6 +42,7 @@ void SetupMenuProjection(f32 width, f32 height);
  * instead of its defaults. It clears this.
  *
  * @ghidraAddress USA: 0x8028a868
+ * @ghidraAddress Asia: 0x8028A3B8
  * @ghidraAddress EUR: 0x8028ca68
  * @ghidraAddress JPN: 0x8028c538
  */
@@ -49,6 +52,7 @@ extern s32 g_dwKeepCustomClipPlanes;
  * The near plane of perspective cameras.
  *
  * @ghidraAddress USA: 0x8028a86c
+ * @ghidraAddress Asia: 0x8028A3BC
  * @ghidraAddress EUR: 0x8028ca6c
  * @ghidraAddress BRD3D: 0x106c3360
  * @ghidraAddress BRGlide: 0x106ea3f0
@@ -60,6 +64,7 @@ extern f32 g_fCameraNearScale;
  * The far plane of perspective cameras.
  *
  * @ghidraAddress USA: 0x8028a870
+ * @ghidraAddress Asia: 0x8028A3C0
  * @ghidraAddress EUR: 0x8028ca70
  * @ghidraAddress BRD3D: 0x106c5ab4
  * @ghidraAddress BRGlide: 0x106ecb44

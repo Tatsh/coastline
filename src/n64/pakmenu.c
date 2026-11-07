@@ -581,6 +581,7 @@ s32 InitPakAndEnumerateFiles(void) {
      * The notes found empty.
      *
      * @ghidraAddress USA: 0x8028dda0
+     * @ghidraAddress Asia: 0x8028D8F0
      * @ghidraAddress EUR: 0x80290540
      * @ghidraAddress JPN: 0x8028ffe4
      */

@@ -66,7 +66,7 @@ static inline void GetExpectedDirectSoundVersion(DWORD *versionMS, DWORD *versio
 // Read the next component of a version string, or 0 when the string has no more components.
 static uint16_t ReadVersionComponent(char *text, const char *delimiters) {
     const char *token = strtok(text, delimiters);
-    return token != nullptr ? (uint16_t)atoi(token) : 0;
+    return token != NULL ? (uint16_t)atoi(token) : 0;
 }
 #endif
 
@@ -94,14 +94,14 @@ int __stdcall QueryDirectSoundProductVersion(void) {
         char *text = productVersionValue;
 #ifdef ENABLE_PATCHES
         uint16_t major = ReadVersionComponent(text, delimiters);
-        uint16_t minor = ReadVersionComponent(nullptr, delimiters);
-        uint16_t build = ReadVersionComponent(nullptr, delimiters);
-        uint16_t revision = ReadVersionComponent(nullptr, delimiters);
+        uint16_t minor = ReadVersionComponent(NULL, delimiters);
+        uint16_t build = ReadVersionComponent(NULL, delimiters);
+        uint16_t revision = ReadVersionComponent(NULL, delimiters);
 #else
         uint16_t major = (uint16_t)(atoi(strtok(text, delimiters)));
-        uint16_t minor = (uint16_t)(atoi(strtok(nullptr, delimiters)));
-        uint16_t build = (uint16_t)(atoi(strtok(nullptr, delimiters)));
-        uint16_t revision = (uint16_t)(atoi(strtok(nullptr, delimiters)));
+        uint16_t minor = (uint16_t)(atoi(strtok(NULL, delimiters)));
+        uint16_t build = (uint16_t)(atoi(strtok(NULL, delimiters)));
+        uint16_t revision = (uint16_t)(atoi(strtok(NULL, delimiters)));
 #endif
         uint16_t expectedMajor = (uint16_t)(expectedMS >> 16);
         uint16_t expectedMinor = (uint16_t)expectedMS;

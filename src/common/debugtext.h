@@ -27,6 +27,7 @@ extern "C" {
  * The wide font. A pixel is drawn in the text colour where its entry is not zero.
  *
  * @ghidraAddress USA: 0x8028dfc0
+ * @ghidraAddress Asia: 0x8028DB10
  * @ghidraAddress EUR: 0x80290780
  * @ghidraAddress JPN: 0x80290220
  */
@@ -36,6 +37,7 @@ extern s16 g_aBitmapFontWide[BITMAP_FONT_GLYPHS][BITMAP_FONT_ROWS][BITMAP_FONT_W
  * The narrow font. Each entry not zero is the colour of its pixel.
  *
  * @ghidraAddress USA: 0x8028f2a0
+ * @ghidraAddress Asia: 0x8028EDF0
  * @ghidraAddress EUR: 0x80291a60
  * @ghidraAddress JPN: 0x80291500
  */
@@ -45,6 +47,7 @@ extern s16 g_aBitmapFontNarrow[BITMAP_FONT_GLYPHS][BITMAP_FONT_ROWS][BITMAP_FONT
  * The column where the bitmap text starts its line.
  *
  * @ghidraAddress USA: 0x8028ddd0
+ * @ghidraAddress Asia: 0x8028D920
  * @ghidraAddress EUR: 0x80290570
  * @ghidraAddress JPN: 0x80290010
  */
@@ -54,6 +57,7 @@ extern s32 g_dwBitmapTextX;
  * The row where the bitmap text starts.
  *
  * @ghidraAddress USA: 0x8028ddd4
+ * @ghidraAddress Asia: 0x8028D924
  * @ghidraAddress EUR: 0x80290574
  * @ghidraAddress JPN: 0x80290014
  */
@@ -63,6 +67,7 @@ extern s32 g_dwBitmapTextY;
  * Whether the bitmap text uses the narrow font.
  *
  * @ghidraAddress USA: 0x8028ddd8
+ * @ghidraAddress Asia: 0x8028D928
  * @ghidraAddress EUR: 0x80290578
  * @ghidraAddress JPN: 0x80290018
  */
@@ -72,6 +77,7 @@ extern s32 g_bBitmapTextNarrow;
  * The colour of the wide font.
  *
  * @ghidraAddress USA: 0x8028dddc
+ * @ghidraAddress Asia: 0x8028D92C
  * @ghidraAddress EUR: 0x8029057c
  * @ghidraAddress JPN: 0x8029001c
  */
@@ -82,6 +88,7 @@ extern u16 g_wBitmapTextColor;
  * The step StepDebugHiddenInstance() takes through the placed models, or 0 to stay.
  *
  * @ghidraAddress USA: 0x8028dde0
+ * @ghidraAddress Asia: 0x8028D930
  * @ghidraAddress EUR: 0x80290580
  * @ghidraAddress JPN: 0x80290020
  * @ghidraAddress BRD3D: 0x10277b20
@@ -94,6 +101,7 @@ extern s32 g_nDebugInstanceCycleStep;
  * A per-frame debug hook with an empty body.
  *
  * @ghidraAddress USA: 0x80254870
+ * @ghidraAddress Asia: 0x802543C0
  * @ghidraAddress EUR: 0x80255e10
  * @ghidraAddress JPN: 0x802557a0
  */
@@ -105,6 +113,7 @@ void DebugFrameStubA(void);
  *
  * @param text The text, terminated by a null character.
  * @ghidraAddress USA: 0x80254878
+ * @ghidraAddress Asia: 0x802543C8
  * @ghidraAddress EUR: 0x80255e18
  * @ghidraAddress JPN: 0x802557a8
  */
@@ -114,6 +123,7 @@ void DrawBitmapTextToFramebuffer(const char *text);
  * Start the bitmap text at the top left in white, in the wide font.
  *
  * @ghidraAddress USA: 0x80254d4c
+ * @ghidraAddress Asia: 0x8025489C
  * @ghidraAddress EUR: 0x802562ec
  * @ghidraAddress JPN: 0x80255c7c
  */
@@ -124,6 +134,7 @@ void InitBitmapText(void);
  * first, then stop stepping.
  *
  * @ghidraAddress USA: 0x80254d90
+ * @ghidraAddress Asia: 0x802548E0
  * @ghidraAddress EUR: 0x80256330
  * @ghidraAddress JPN: 0x80255cc0
  * @ghidraAddress BRD3D: 0x1000ba70
@@ -135,6 +146,7 @@ void StepDebugHiddenInstance(void);
  * Start the debug statistics of a frame.
  *
  * @ghidraAddress USA: 0x80254e3c
+ * @ghidraAddress Asia: 0x8025498C
  * @ghidraAddress EUR: 0x802563dc
  * @ghidraAddress JPN: 0x80255d6c
  */
@@ -144,6 +156,7 @@ void BeginDebugStats(void);
  * A per-frame debug hook with an empty body.
  *
  * @ghidraAddress USA: 0x80254f2c
+ * @ghidraAddress Asia: 0x80254A7C
  * @ghidraAddress EUR: 0x802564cc
  * @ghidraAddress JPN: 0x80255e5c
  */

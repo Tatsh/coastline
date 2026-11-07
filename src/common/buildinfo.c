@@ -20,7 +20,7 @@ void DrawRaceBuildIdentification(void) {
         return;
     }
 #else
-    if (!SDL_GetKeyboardState(nullptr)[SDL_SCANCODE_B]) {
+    if (!SDL_GetKeyboardState(NULL)[SDL_SCANCODE_B]) {
         return;
     }
 #endif

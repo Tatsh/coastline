@@ -48,6 +48,7 @@ extern "C" {
  * The color of each player's vehicle, as red, green and blue.
  *
  * @ghidraAddress USA: 0x8028b904
+ * @ghidraAddress Asia: 0x8028B454
  * @ghidraAddress EUR: 0x8028dbb4
  * @ghidraAddress JPN: 0x8028d5e4
  */
@@ -94,6 +95,7 @@ typedef struct {
 
 /**
  * @ghidraAddress USA: 0x8028ae0c
+ * @ghidraAddress Asia: 0x8028A95C
  * @ghidraAddress EUR: 0x8028d0bc
  * @ghidraAddress JPN: 0x8028caec
  */
@@ -103,6 +105,7 @@ extern CarModel g_aCarModels[CAR_MODELS];
  * The number of cars in g_aCarModels.
  *
  * @ghidraAddress USA: 0x8028ae08
+ * @ghidraAddress Asia: 0x8028A958
  * @ghidraAddress EUR: 0x8028d0b8
  * @ghidraAddress JPN: 0x8028cae8
  */
@@ -110,6 +113,7 @@ extern s32 g_dwCarCount;
 
 /**
  * @ghidraAddress USA: 0x8028b330
+ * @ghidraAddress Asia: 0x8028AE80
  * @ghidraAddress EUR: 0x8028d5e0
  * @ghidraAddress JPN: 0x8028d010
  */
@@ -347,6 +351,7 @@ struct Vehicle {
 
 /**
  * @ghidraAddress USA: 0x8031b760
+ * @ghidraAddress Asia: 0x8031B220
  * @ghidraAddress EUR: 0x8031dc60
  * @ghidraAddress JPN: 0x8031c890
  */
@@ -358,6 +363,7 @@ extern Vehicle g_aVehicles[MAX_VEHICLES];
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8021f998
+ * @ghidraAddress Asia: 0x8021F4E8
  * @ghidraAddress EUR: 0x80220c98
  * @ghidraAddress JPN: 0x80220488
  */
@@ -371,6 +377,7 @@ void UpdateVehiclePhysicsFrame(Vehicle *vehicle);
  * @param y The y of the position.
  * @param z The z of the position.
  * @ghidraAddress USA: 0x8021fe04
+ * @ghidraAddress Asia: 0x8021F954
  * @ghidraAddress EUR: 0x80221104
  * @ghidraAddress JPN: 0x802208f4
  */
@@ -382,6 +389,7 @@ void SetVehiclePosition(Vehicle *vehicle, f32 x, f32 y, f32 z);
  * @param vehicle The vehicle.
  * @param angle The angle from the x axis, in radians.
  * @ghidraAddress USA: 0x8021fe80
+ * @ghidraAddress Asia: 0x8021F9D0
  * @ghidraAddress EUR: 0x80221180
  * @ghidraAddress JPN: 0x80220970
  */
@@ -393,6 +401,7 @@ void InitVehicleOrientationFromAngle(Vehicle *vehicle, f32 angle);
  * @param vehicle The vehicle.
  * @param m The matrix, whose rows are the axes and the position.
  * @ghidraAddress USA: 0x80220150
+ * @ghidraAddress Asia: 0x8021FCA0
  * @ghidraAddress EUR: 0x80221450
  * @ghidraAddress JPN: 0x80220c40
  */
@@ -406,6 +415,7 @@ void SetVehicleFrameMatrix(Vehicle *vehicle, f32 (*m)[4]);
  * @param y The y of the velocity.
  * @param z The z of the velocity.
  * @ghidraAddress USA: 0x802201c8
+ * @ghidraAddress Asia: 0x8021FD18
  * @ghidraAddress EUR: 0x802214c8
  * @ghidraAddress JPN: 0x80220cb8
  */
@@ -419,6 +429,7 @@ void SetVehicleVelocity(Vehicle *vehicle, f32 x, f32 y, f32 z);
  * @param pitch The angle about the sideways axis, in radians.
  * @param roll The angle about the forward axis, in radians.
  * @ghidraAddress USA: 0x8022021c
+ * @ghidraAddress Asia: 0x8021FD6C
  * @ghidraAddress EUR: 0x8022151c
  * @ghidraAddress JPN: 0x80220d0c
  */
@@ -432,6 +443,7 @@ void RotateVehicleByEuler(Vehicle *vehicle, f32 yaw, f32 pitch, f32 roll);
  * @param y The angular velocity about the y axis.
  * @param z The angular velocity about the z axis.
  * @ghidraAddress USA: 0x80220358
+ * @ghidraAddress Asia: 0x8021FEA8
  * @ghidraAddress EUR: 0x80221658
  * @ghidraAddress JPN: 0x80220e48
  */
@@ -443,6 +455,7 @@ void SetVehicleTurnRate(Vehicle *vehicle, f32 x, f32 y, f32 z);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80220398
+ * @ghidraAddress Asia: 0x8021FEE8
  * @ghidraAddress EUR: 0x80221698
  * @ghidraAddress JPN: 0x80220e88
  */
@@ -454,6 +467,7 @@ void InitVehicleColorAndPhysics(Vehicle *vehicle);
  * @param vehicle The vehicle.
  * @param slot The slot of g_aVehicleModels.
  * @ghidraAddress USA: 0x802203f0
+ * @ghidraAddress Asia: 0x8021FF40
  * @ghidraAddress EUR: 0x802216f0
  * @ghidraAddress JPN: 0x80220ea8
  */
@@ -467,6 +481,7 @@ void SetVehicleModelSlot(Vehicle *vehicle, s32 slot);
  * @param slot The slot of g_aVehicleModels.
  * @param car The index of the car in g_aCarModels.
  * @ghidraAddress USA: 0x80220438
+ * @ghidraAddress Asia: 0x8021FF88
  * @ghidraAddress EUR: 0x80221738
  * @ghidraAddress JPN: 0x80220ef0
  */
@@ -505,6 +520,7 @@ void LoadAndActivateTrackWithPaintColor(Vehicle *vehicle, s32 slot, s32 car);
  * @param car The index of the car in g_aCarModels.
  * @param buffer The index of the buffer.
  * @ghidraAddress USA: 0x80220474
+ * @ghidraAddress Asia: 0x8021FFC4
  * @ghidraAddress EUR: 0x802217b0
  * @ghidraAddress JPN: 0x80220fa8
  */
@@ -516,6 +532,7 @@ void LoadVehicleModel(VehicleModelLoad *load, s32 slot, s32 car, s32 buffer);
  * @param load The load.
  * @return Whether no compressed bytes are left to read.
  * @ghidraAddress USA: 0x80220534
+ * @ghidraAddress Asia: 0x80220084
  * @ghidraAddress EUR: 0x80221870
  * @ghidraAddress JPN: 0x80221068
  */
@@ -528,6 +545,7 @@ s32 IsVehicleModelLoaded(VehicleModelLoad *load);
  * @param load The load.
  * @return The compressed bytes left to read.
  * @ghidraAddress USA: 0x80220544
+ * @ghidraAddress Asia: 0x80220094
  * @ghidraAddress EUR: 0x80221880
  * @ghidraAddress JPN: 0x80221078
  */
@@ -538,6 +556,7 @@ u32 PollVehicleModelDma(VehicleModelLoad *load);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80220620
+ * @ghidraAddress Asia: 0x80220170
  * @ghidraAddress EUR: 0x8022195c
  * @ghidraAddress JPN: 0x80221154
  */
@@ -548,6 +567,7 @@ void ResetVehicleState(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x802207a4
+ * @ghidraAddress Asia: 0x802202F4
  * @ghidraAddress EUR: 0x80221ae0
  * @ghidraAddress JPN: 0x802212d8
  */
@@ -559,6 +579,7 @@ void BindPlayerInputToVehicle(Vehicle *vehicle);
  * @param car The index of the car in g_aCarModels.
  * @return Whether its model has an offset on the cartridge.
  * @ghidraAddress USA: 0x8021d6b8
+ * @ghidraAddress Asia: 0x8021D208
  * @ghidraAddress EUR: 0x8021e8b8
  * @ghidraAddress JPN: 0x8021e188
  */
@@ -572,6 +593,7 @@ s32 IsVehicleModelValid(s32 car);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80225f88
+ * @ghidraAddress Asia: 0x80225AD8
  * @ghidraAddress EUR: 0x802272c8
  * @ghidraAddress JPN: 0x80226ab8
  */
@@ -582,6 +604,7 @@ void ChooseVehicleCar(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x802288b4
+ * @ghidraAddress Asia: 0x80228404
  * @ghidraAddress EUR: 0x80229c2c
  * @ghidraAddress JPN: 0x80229408
  */
@@ -593,6 +616,7 @@ void DriveAiVehicle(Vehicle *vehicle);
  * and the angle each unit of the stick steers, in degrees.
  *
  * @ghidraAddress USA: 0x8028b720
+ * @ghidraAddress Asia: 0x8028B270
  * @ghidraAddress EUR: 0x8028d9d0
  * @ghidraAddress JPN: 0x8028d400
  */
@@ -600,6 +624,7 @@ extern f32 g_fSteerLock;
 
 /**
  * @ghidraAddress USA: 0x8028b724
+ * @ghidraAddress Asia: 0x8028B274
  * @ghidraAddress EUR: 0x8028d9d4
  * @ghidraAddress JPN: 0x8028d404
  */
@@ -607,6 +632,7 @@ extern f32 g_fSteerRate;
 
 /**
  * @ghidraAddress USA: 0x8028b728
+ * @ghidraAddress Asia: 0x8028B278
  * @ghidraAddress EUR: 0x8028d9d8
  * @ghidraAddress JPN: 0x8028d408
  */
@@ -614,6 +640,7 @@ extern f32 g_fSteerGain;
 
 /**
  * @ghidraAddress USA: 0x8028b72c
+ * @ghidraAddress Asia: 0x8028B27C
  * @ghidraAddress EUR: 0x8028d9dc
  * @ghidraAddress JPN: 0x8028d40c
  */
@@ -623,6 +650,7 @@ extern f32 g_fSteerLockLoss;
  * How much the speed halves the gain, which the modes leave at 0.
  *
  * @ghidraAddress USA: 0x8028b730
+ * @ghidraAddress Asia: 0x8028B280
  * @ghidraAddress EUR: 0x8028d9e0
  * @ghidraAddress JPN: 0x8028d410
  */
@@ -635,6 +663,7 @@ extern s16 g_wSteerGainSpeedShare;
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80221940
+ * @ghidraAddress Asia: 0x80221490
  * @ghidraAddress EUR: 0x80222c80
  * @ghidraAddress JPN: 0x80222470
  */
@@ -646,6 +675,7 @@ void SimulateVehiclePhysicsSubstep(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80221e0c
+ * @ghidraAddress Asia: 0x8022195C
  * @ghidraAddress EUR: 0x8022314c
  * @ghidraAddress JPN: 0x8022293c
  */
@@ -657,6 +687,7 @@ void TransformAllWheelMatrices(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80222050
+ * @ghidraAddress Asia: 0x80221BA0
  * @ghidraAddress EUR: 0x80223390
  * @ghidraAddress JPN: 0x80222b80
  */
@@ -668,6 +699,7 @@ void UpdateVehicleEngineAndGearbox(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80222d54
+ * @ghidraAddress Asia: 0x802228A4
  * @ghidraAddress EUR: 0x80224094
  * @ghidraAddress JPN: 0x80223884
  */
@@ -678,6 +710,7 @@ void InitVehiclePhysics(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80226100
+ * @ghidraAddress Asia: 0x80225C50
  * @ghidraAddress EUR: 0x80227440
  * @ghidraAddress JPN: 0x80226c30
  */
@@ -688,6 +721,7 @@ void InitPlayerVehicleSlot(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x802260a0
+ * @ghidraAddress Asia: 0x80225BF0
  * @ghidraAddress EUR: 0x802273e0
  * @ghidraAddress JPN: 0x80226bd0
  */
@@ -703,6 +737,7 @@ void InitVehicleColor(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80226d7c
+ * @ghidraAddress Asia: 0x802268CC
  * @ghidraAddress EUR: 0x802280e0
  * @ghidraAddress JPN: 0x802278d0
  */
@@ -714,6 +749,7 @@ void UpdatePhysicsStep(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80226248
+ * @ghidraAddress Asia: 0x80225D98
  * @ghidraAddress EUR: 0x80227588
  * @ghidraAddress JPN: 0x80226d78
  */
@@ -724,6 +760,7 @@ void RespawnVehicle(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x802288d4
+ * @ghidraAddress Asia: 0x80228424
  * @ghidraAddress EUR: 0x80229c4c
  * @ghidraAddress JPN: 0x80229428
  */
@@ -734,6 +771,7 @@ void ResetVehicleEffects(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80228a3c
+ * @ghidraAddress Asia: 0x8022858C
  * @ghidraAddress EUR: 0x80229db4
  * @ghidraAddress JPN: 0x80229590
  */
@@ -744,6 +782,7 @@ void ClearVehicleDamageState(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80228a6c
+ * @ghidraAddress Asia: 0x802285BC
  * @ghidraAddress EUR: 0x80229de4
  * @ghidraAddress JPN: 0x802295c0
  */
@@ -754,6 +793,7 @@ void SetupVehicleForRaceStart(Vehicle *vehicle);
  *
  * @param unused Not read.
  * @ghidraAddress USA: 0x80228e44
+ * @ghidraAddress Asia: 0x80228994
  * @ghidraAddress EUR: 0x8022a1bc
  * @ghidraAddress JPN: 0x80229998
  */
@@ -765,6 +805,7 @@ void UnusedRaceStartStub(s32 unused);
  *
  * @param player The vehicle of the player.
  * @ghidraAddress USA: 0x80229700
+ * @ghidraAddress Asia: 0x80229250
  * @ghidraAddress EUR: 0x8022aa78
  * @ghidraAddress JPN: 0x8022a230
  */
@@ -776,6 +817,7 @@ void ManageAiRacerSlots(Vehicle *player);
  *
  * @param slot The slot of g_aRacerSlots.
  * @ghidraAddress USA: 0x8022c9fc
+ * @ghidraAddress Asia: 0x8022C54C
  * @ghidraAddress EUR: 0x8022df0c
  * @ghidraAddress JPN: 0x8022d6c4
  */

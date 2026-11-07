@@ -141,6 +141,7 @@ typedef struct {
  * The projection of the current view.
  *
  * @ghidraAddress USA: 0x8028a878
+ * @ghidraAddress Asia: 0x8028A3C8
  * @ghidraAddress EUR: 0x8028ca78
  * @ghidraAddress JPN: 0x8028c548
  * @ghidraAddress BRD3D: 0x106c32d0
@@ -156,6 +157,7 @@ extern Mtx *g_pProjectionMtx;
  * A matrix the renderer builds before converting it.
  *
  * @ghidraAddress USA: 0x8031ab10
+ * @ghidraAddress Asia: 0x8031A5D0
  * @ghidraAddress EUR: 0x8031d010
  * @ghidraAddress JPN: 0x8031bc40
  * @ghidraAddress BRD3D: 0x106c0860
@@ -175,6 +177,7 @@ extern f32 g_afCameraRollMatrix[4][4];
  * The perspective of the current view.
  *
  * @ghidraAddress USA: 0x8031aa90
+ * @ghidraAddress Asia: 0x8031A550
  * @ghidraAddress EUR: 0x8031cf90
  * @ghidraAddress JPN: 0x8031bbc0
  * @ghidraAddress BRD3D: 0x106c0218
@@ -186,6 +189,7 @@ extern f32 g_afPerspectiveMatrix[4][4];
  * A matrix the renderer fills as an operand.
  *
  * @ghidraAddress USA: 0x8031ab50
+ * @ghidraAddress Asia: 0x8031A610
  * @ghidraAddress EUR: 0x8031d050
  * @ghidraAddress JPN: 0x8031bc80
  * @ghidraAddress BRD3D: 0x106c08a0
@@ -197,6 +201,7 @@ extern f32 g_afScratchMatrix[4][4];
  * The texture filter of the other modes.
  *
  * @ghidraAddress USA: 0x8028a898
+ * @ghidraAddress Asia: 0x8028A3E8
  * @ghidraAddress EUR: 0x8028ca9c
  * @ghidraAddress JPN: 0x8028c56c
  * @ghidraAddress BRD3D: 0x106c0258
@@ -208,6 +213,7 @@ extern u32 g_dwTextureFilterMode;
  * Whether the track is drawn mirrored.
  *
  * @ghidraAddress USA: 0x8028a8ac
+ * @ghidraAddress Asia: 0x8028A3FC
  * @ghidraAddress EUR: 0x8028cab0
  * @ghidraAddress JPN: 0x8028c580
  * @ghidraAddress BRD3D: 0x106c3364
@@ -219,6 +225,7 @@ extern s32 g_dwTrackMirrored;
  * Whether the current view is mirrored.
  *
  * @ghidraAddress USA: 0x8028a8a8
+ * @ghidraAddress Asia: 0x8028A3F8
  * @ghidraAddress EUR: 0x8028caac
  * @ghidraAddress JPN: 0x8028c57c
  * @ghidraAddress BRD3D: 0x106c1174
@@ -230,6 +237,7 @@ extern s32 g_dwViewportMirrored;
  * The camera of the view being drawn.
  *
  * @ghidraAddress USA: 0x8028aaf4
+ * @ghidraAddress Asia: 0x8028A644
  * @ghidraAddress EUR: 0x8028ccfc
  * @ghidraAddress JPN: 0x8028c7cc
  * @ghidraAddress BRD3D: 0x106c6490
@@ -241,6 +249,7 @@ extern CameraFrame *g_pActiveCamera;
  * The field of view of the cameras, in radians.
  *
  * @ghidraAddress USA: 0x8028aac0
+ * @ghidraAddress Asia: 0x8028A610
  * @ghidraAddress EUR: 0x8028ccc8
  * @ghidraAddress JPN: 0x8028c798
  * @ghidraAddress BRD3D: 0x100aa8ac
@@ -253,6 +262,7 @@ extern f32 g_fCameraFovRadians;
  * it.
  *
  * @ghidraAddress USA: 0x8028aac8
+ * @ghidraAddress Asia: 0x8028A618
  * @ghidraAddress EUR: 0x8028ccd0
  * @ghidraAddress JPN: 0x8028c7a0
  */
@@ -262,6 +272,7 @@ extern f32 g_fCameraProjectionScale;
  * The views on the screen, one for each player.
  *
  * @ghidraAddress USA: 0x8028ab0c
+ * @ghidraAddress Asia: 0x8028A65C
  * @ghidraAddress EUR: 0x8028cd14
  * @ghidraAddress JPN: 0x8028c7e4
  * @ghidraAddress BRD3D: 0x100aa8b4
@@ -273,6 +284,7 @@ extern s32 g_dwNumViewports;
  * The rectangles of the views.
  *
  * @ghidraAddress USA: 0x8031b2c8
+ * @ghidraAddress Asia: 0x8031AD88
  * @ghidraAddress EUR: 0x8031d7c8
  * @ghidraAddress JPN: 0x8031c3f8
  * @ghidraAddress BRD3D: 0x106c1628
@@ -288,6 +300,7 @@ extern ViewportRect g_aViewportRects[];
  * The view being drawn.
  *
  * @ghidraAddress USA: 0x8028aaec
+ * @ghidraAddress Asia: 0x8028A63C
  * @ghidraAddress EUR: 0x8028ccf4
  * @ghidraAddress JPN: 0x8028c7c4
  * @ghidraAddress BRD3D: 0x106c5708
@@ -299,6 +312,7 @@ extern s32 g_dwCurrentSplitScreenIndex;
  * The depth scale of the viewport SetViewport() last set.
  *
  * @ghidraAddress USA: 0x8028ab64
+ * @ghidraAddress Asia: 0x8028A6B4
  * @ghidraAddress EUR: 0x8028cd6c
  * @ghidraAddress JPN: 0x8028c83c
  * @ghidraAddress BRD3D: 0x106c62d8
@@ -310,6 +324,7 @@ extern s32 g_dwViewportScaleZ;
  * The depth offset of the viewport SetViewport() last set.
  *
  * @ghidraAddress USA: 0x8028ab68
+ * @ghidraAddress Asia: 0x8028A6B8
  * @ghidraAddress EUR: 0x8028cd70
  * @ghidraAddress JPN: 0x8028c840
  * @ghidraAddress BRD3D: 0x106c65b8
@@ -321,6 +336,7 @@ extern s32 g_dwViewportTransZ;
  * The view and projection of the view being drawn.
  *
  * @ghidraAddress USA: 0x8031aa50
+ * @ghidraAddress Asia: 0x8031A510
  * @ghidraAddress EUR: 0x8031cf50
  * @ghidraAddress JPN: 0x8031bb80
  * @ghidraAddress BRD3D: 0x106c29a8
@@ -332,6 +348,7 @@ extern f32 g_afViewProjMatrix[4][4];
  * The normalisation of the perspective of the projection.
  *
  * @ghidraAddress USA: 0x8028a874
+ * @ghidraAddress Asia: 0x8028A3C4
  * @ghidraAddress EUR: 0x8028ca74
  * @ghidraAddress JPN: 0x8028c544
  * @ghidraAddress BRD3D: 0x106c067c
@@ -343,6 +360,7 @@ extern u16 g_wPerspNorm;
  * The distance of the far plane of the cameras.
  *
  * @ghidraAddress USA: 0x8028aacc
+ * @ghidraAddress Asia: 0x8028A61C
  * @ghidraAddress EUR: 0x8028ccd4
  * @ghidraAddress JPN: 0x8028c7a4
  * @ghidraAddress BRD3D: 0x106c0210
@@ -354,6 +372,7 @@ extern f32 gFrustumFar;
  * The angle SetupFrustumCorners() was last given.
  *
  * @ghidraAddress USA: 0x8028aac4
+ * @ghidraAddress Asia: 0x8028A614
  * @ghidraAddress EUR: 0x8028cccc
  * @ghidraAddress JPN: 0x8028c79c
  * @ghidraAddress BRD3D: 0x106c53c0
@@ -365,6 +384,7 @@ extern f32 g_fFrustumFovAngle;
  * The view of the current view, before its perspective.
  *
  * @ghidraAddress USA: 0x8031aad0
+ * @ghidraAddress Asia: 0x8031A590
  * @ghidraAddress EUR: 0x8031cfd0
  * @ghidraAddress JPN: 0x8031bc00
  * @ghidraAddress BRD3D: 0x106c58c0
@@ -374,6 +394,7 @@ extern f32 g_ViewLookAtMtx[4][4];
 
 /**
  * @ghidraAddress USA: 0x8028a8c0
+ * @ghidraAddress Asia: 0x8028A410
  * @ghidraAddress EUR: 0x8028cac8
  * @ghidraAddress JPN: 0x8028c598
  * @ghidraAddress BRD3D: 0x100aa730
@@ -389,6 +410,7 @@ extern Mtx g_mtxIdentity;
  * The vertices, triangles, and polygons drawn this frame.
  *
  * @ghidraAddress USA: 0x8028aa08
+ * @ghidraAddress Asia: 0x8028A558
  * @ghidraAddress EUR: 0x8028cc10
  * @ghidraAddress JPN: 0x8028c6e0
  * @ghidraAddress BRD3D: 0x106c06a4
@@ -398,6 +420,7 @@ extern s32 g_dwStatVerticesDrawn;
 
 /**
  * @ghidraAddress USA: 0x8028aa10
+ * @ghidraAddress Asia: 0x8028A560
  * @ghidraAddress EUR: 0x8028cc18
  * @ghidraAddress JPN: 0x8028c6e8
  * @ghidraAddress BRD3D: 0x106c069c
@@ -407,6 +430,7 @@ extern s32 g_dwStatTrianglesDrawn;
 
 /**
  * @ghidraAddress USA: 0x8028aa38
+ * @ghidraAddress Asia: 0x8028A588
  * @ghidraAddress EUR: 0x8028cc40
  * @ghidraAddress JPN: 0x8028c710
  * @ghidraAddress BRD3D: 0x106c1610
@@ -418,6 +442,7 @@ extern s32 g_dwStatPolygonsDrawn;
  * Whether the level of detail of the textures of the track is on.
  *
  * @ghidraAddress USA: 0x8028aa44
+ * @ghidraAddress Asia: 0x8028A594
  * @ghidraAddress EUR: 0x8028cc4c
  * @ghidraAddress JPN: 0x8028c71c
  * @ghidraAddress BRD3D: 0x100aa87c
@@ -429,6 +454,7 @@ extern s32 g_bTrackTextureLod;
  * Whether the track is drawn with smooth shading.
  *
  * @ghidraAddress USA: 0x8028aa48
+ * @ghidraAddress Asia: 0x8028A598
  * @ghidraAddress EUR: 0x8028cc50
  * @ghidraAddress JPN: 0x8028c720
  * @ghidraAddress BRD3D: 0x100aa880
@@ -440,6 +466,7 @@ extern s32 g_bSmoothShading;
  * The colour of the light of the sun and of the ambient light.
  *
  * @ghidraAddress USA: 0x8028ab58
+ * @ghidraAddress Asia: 0x8028A6A8
  * @ghidraAddress EUR: 0x8028cd60
  * @ghidraAddress JPN: 0x8028c830
  * @ghidraAddress BRD3D: 0x106c5ab0
@@ -449,6 +476,7 @@ extern u32 g_dwDirLightColor;
 
 /**
  * @ghidraAddress USA: 0x8028ab5c
+ * @ghidraAddress Asia: 0x8028A6AC
  * @ghidraAddress EUR: 0x8028cd64
  * @ghidraAddress JPN: 0x8028c834
  * @ghidraAddress BRD3D: 0x106c29e8
@@ -460,6 +488,7 @@ extern u32 g_dwAmbientLightColor;
  * The lights the vehicles and the track start from.
  *
  * @ghidraAddress USA: 0x8028a9f0
+ * @ghidraAddress Asia: 0x8028A540
  * @ghidraAddress EUR: 0x8028cbf8
  * @ghidraAddress JPN: 0x8028c6c8
  * @ghidraAddress BRD3D: 0x100aa860
@@ -471,6 +500,7 @@ extern Lights1 g_DefaultLights;
  * The direction of the light of the sun.
  *
  * @ghidraAddress USA: 0x8031b338
+ * @ghidraAddress Asia: 0x8031ADF8
  * @ghidraAddress EUR: 0x8031d828
  * @ghidraAddress JPN: 0x8031c458
  * @ghidraAddress BRD3D: 0x106c0670
@@ -482,6 +512,7 @@ extern f32 g_afLightDirection[3];
  * The colours of the light of the placed models lit by their light ramp, by its index.
  *
  * @ghidraAddress USA: 0x8031b360
+ * @ghidraAddress Asia: 0x8031AE20
  * @ghidraAddress EUR: 0x8031d858
  * @ghidraAddress JPN: 0x8031c488
  * @ghidraAddress BRD3D: 0x106c0950
@@ -493,6 +524,7 @@ extern u32 g_adwLightRampColors[4];
  * Whether each vehicle is in the view being drawn.
  *
  * @ghidraAddress USA: 0x80351c70
+ * @ghidraAddress Asia: 0x80351730
  * @ghidraAddress EUR: 0x80354170
  * @ghidraAddress JPN: 0x80352de0
  * @ghidraAddress BRD3D: 0x10277e60
@@ -504,6 +536,7 @@ extern s32 g_adwVehicleVisible[];
  * The display lists that set each clipping ratio, from 1.
  *
  * @ghidraAddress USA: 0x8028a900
+ * @ghidraAddress Asia: 0x8028A450
  * @ghidraAddress EUR: 0x8028cb08
  * @ghidraAddress JPN: 0x8028c5d8
  * @ghidraAddress BRD3D: 0x100aa770
@@ -519,6 +552,7 @@ extern Gfx g_aClipRatioDisplayLists[CLIP_RATIOS][5];
  * The colour of the light of the sun, in parts.
  *
  * @ghidraAddress USA: 0x8028ab40
+ * @ghidraAddress Asia: 0x8028A690
  * @ghidraAddress EUR: 0x8028cd48
  * @ghidraAddress JPN: 0x8028c818
  * @ghidraAddress BRD3D: 0x106c1580
@@ -528,6 +562,7 @@ extern u8 g_bDirLightR;
 
 /**
  * @ghidraAddress USA: 0x8028ab44
+ * @ghidraAddress Asia: 0x8028A694
  * @ghidraAddress EUR: 0x8028cd4c
  * @ghidraAddress JPN: 0x8028c81c
  * @ghidraAddress BRD3D: 0x106c335c
@@ -537,6 +572,7 @@ extern u8 g_bDirLightG;
 
 /**
  * @ghidraAddress USA: 0x8028ab48
+ * @ghidraAddress Asia: 0x8028A698
  * @ghidraAddress EUR: 0x8028cd50
  * @ghidraAddress JPN: 0x8028c820
  * @ghidraAddress BRD3D: 0x106c0968
@@ -548,6 +584,7 @@ extern u8 g_bDirLightB;
  * The colour of the ambient light, in parts.
  *
  * @ghidraAddress USA: 0x8028ab4c
+ * @ghidraAddress Asia: 0x8028A69C
  * @ghidraAddress EUR: 0x8028cd54
  * @ghidraAddress JPN: 0x8028c824
  * @ghidraAddress BRD3D: 0x10690bf0
@@ -557,6 +594,7 @@ extern u8 g_bAmbientLightR;
 
 /**
  * @ghidraAddress USA: 0x8028ab50
+ * @ghidraAddress Asia: 0x8028A6A0
  * @ghidraAddress EUR: 0x8028cd58
  * @ghidraAddress JPN: 0x8028c828
  * @ghidraAddress BRD3D: 0x106c0960
@@ -566,6 +604,7 @@ extern u8 g_bAmbientLightG;
 
 /**
  * @ghidraAddress USA: 0x8028ab54
+ * @ghidraAddress Asia: 0x8028A6A4
  * @ghidraAddress EUR: 0x8028cd5c
  * @ghidraAddress JPN: 0x8028c82c
  * @ghidraAddress BRD3D: 0x106c65bc
@@ -578,6 +617,7 @@ extern u8 g_bAmbientLightB;
  * The least detailed level the vehicles are drawn at, from 0.
  *
  * @ghidraAddress USA: 0x8028aa9c
+ * @ghidraAddress Asia: 0x8028A5EC
  * @ghidraAddress EUR: 0x8028cca4
  * @ghidraAddress JPN: 0x8028c774
  */
@@ -588,6 +628,7 @@ extern s32 g_dwVehicleLodBias;
  * Whether the car of the camera is drawn from its cockpit and mirror cameras too.
  *
  * @ghidraAddress USA: 0x8028aa70
+ * @ghidraAddress Asia: 0x8028A5C0
  * @ghidraAddress EUR: 0x8028cc78
  * @ghidraAddress JPN: 0x8028c748
  * @ghidraAddress BRD3D: 0x106c6614
@@ -599,6 +640,7 @@ extern s32 g_dwVehicleCullingDisabled;
  * The triangles of the vehicles drawn this frame.
  *
  * @ghidraAddress USA: 0x8028aa3c
+ * @ghidraAddress Asia: 0x8028A58C
  * @ghidraAddress EUR: 0x8028cc44
  * @ghidraAddress JPN: 0x8028c714
  * @ghidraAddress BRD3D: 0x106c161c
@@ -610,6 +652,7 @@ extern s32 g_dwStatVehicleTriangles;
  * Counts of a frame that ClearRenderStats() clears. No routine reads them.
  *
  * @ghidraAddress USA: 0x8028aa0c
+ * @ghidraAddress Asia: 0x8028A55C
  * @ghidraAddress EUR: 0x8028cc14
  * @ghidraAddress JPN: 0x8028c6e4
  * @ghidraAddress BRD3D: 0x106c33b8
@@ -619,6 +662,7 @@ extern s32 g_dwStatUnused0;
 
 /**
  * @ghidraAddress USA: 0x8028aa2c
+ * @ghidraAddress Asia: 0x8028A57C
  * @ghidraAddress EUR: 0x8028cc34
  * @ghidraAddress JPN: 0x8028c704
  * @ghidraAddress BRD3D: 0x106c1178
@@ -628,6 +672,7 @@ extern s32 g_dwStatUnused1;
 
 /**
  * @ghidraAddress USA: 0x8028aa30
+ * @ghidraAddress Asia: 0x8028A580
  * @ghidraAddress EUR: 0x8028cc38
  * @ghidraAddress JPN: 0x8028c708
  * @ghidraAddress BRD3D: 0x106c56dc
@@ -637,6 +682,7 @@ extern s32 g_dwStatUnused2;
 
 /**
  * @ghidraAddress USA: 0x8028aa34
+ * @ghidraAddress Asia: 0x8028A584
  * @ghidraAddress EUR: 0x8028cc3c
  * @ghidraAddress JPN: 0x8028c70c
  * @ghidraAddress BRD3D: 0x106c32cc
@@ -648,6 +694,7 @@ extern s32 g_dwStatUnused3;
  * The address in the texture memory DrawTexturedTile() loads to.
  *
  * @ghidraAddress USA: 0x8028ab1c
+ * @ghidraAddress Asia: 0x8028A66C
  * @ghidraAddress EUR: 0x8028cd24
  * @ghidraAddress JPN: 0x8028c7f4
  */
@@ -657,6 +704,7 @@ extern u32 g_dwTextureTmemAddress;
  * The tile DrawTexturedTile() sets up to draw with.
  *
  * @ghidraAddress USA: 0x8028ab18
+ * @ghidraAddress Asia: 0x8028A668
  * @ghidraAddress EUR: 0x8028cd20
  * @ghidraAddress JPN: 0x8028c7f0
  */
@@ -666,6 +714,7 @@ extern u32 g_dwTextureRenderTile;
  * The depths the fog starts and ends at, from 0 at the near plane to 1000 at the far.
  *
  * @ghidraAddress USA: 0x8028ab30
+ * @ghidraAddress Asia: 0x8028A680
  * @ghidraAddress EUR: 0x8028cd38
  * @ghidraAddress JPN: 0x8028c808
  * @ghidraAddress BRD3D: 0x106c3398
@@ -675,6 +724,7 @@ extern s32 g_dwFogMinDistance;
 
 /**
  * @ghidraAddress USA: 0x8028ab34
+ * @ghidraAddress Asia: 0x8028A684
  * @ghidraAddress EUR: 0x8028cd3c
  * @ghidraAddress JPN: 0x8028c80c
  * @ghidraAddress BRD3D: 0x106c64d8
@@ -687,6 +737,7 @@ extern s32 g_dwFogMaxDistance;
  * microcode does.
  *
  * @ghidraAddress USA: 0x8028ab38
+ * @ghidraAddress Asia: 0x8028A688
  * @ghidraAddress EUR: 0x8028cd40
  * @ghidraAddress JPN: 0x8028c810
  * @ghidraAddress BRD3D: 0x106c1618
@@ -696,6 +747,7 @@ extern s32 g_dwFogFactorOffset;
 
 /**
  * @ghidraAddress USA: 0x8028ab3c
+ * @ghidraAddress Asia: 0x8028A68C
  * @ghidraAddress EUR: 0x8028cd44
  * @ghidraAddress JPN: 0x8028c814
  * @ghidraAddress BRD3D: 0x106c2cf4
@@ -707,6 +759,7 @@ extern s32 g_dwFogFactorScale;
  * The light ramps of the placed models, in parts, by the index of the ramp.
  *
  * @ghidraAddress USA: 0x8031b350
+ * @ghidraAddress Asia: 0x8031AE10
  * @ghidraAddress EUR: 0x8031d848
  * @ghidraAddress JPN: 0x8031c478
  * @ghidraAddress BRD3D: 0x10690ff8
@@ -716,6 +769,7 @@ extern u8 g_abLightRampR[4];
 
 /**
  * @ghidraAddress USA: 0x8031b354
+ * @ghidraAddress Asia: 0x8031AE14
  * @ghidraAddress EUR: 0x8031d84c
  * @ghidraAddress JPN: 0x8031c47c
  * @ghidraAddress BRD3D: 0x106c6494
@@ -725,6 +779,7 @@ extern u8 g_abLightRampG[4];
 
 /**
  * @ghidraAddress USA: 0x8031b358
+ * @ghidraAddress Asia: 0x8031AE18
  * @ghidraAddress EUR: 0x8031d850
  * @ghidraAddress JPN: 0x8031c480
  * @ghidraAddress BRD3D: 0x106c3358
@@ -737,6 +792,7 @@ extern u8 g_abLightRampB[4];
 
 /**
  * @ghidraAddress USA: 0x80318cd0
+ * @ghidraAddress Asia: 0x80318790
  * @ghidraAddress EUR: 0x8031c1b0
  * @ghidraAddress JPN: 0x8031adf8
  * @ghidraAddress BRD3D: 0x106c1788
@@ -748,6 +804,7 @@ extern Vp g_aViewports[VIEWPORTS];
  * The viewport set last.
  *
  * @ghidraAddress USA: 0x8028ab60
+ * @ghidraAddress Asia: 0x8028A6B0
  * @ghidraAddress EUR: 0x8028cd68
  * @ghidraAddress JPN: 0x8028c838
  * @ghidraAddress BRD3D: 0x106c6654
@@ -760,6 +817,7 @@ extern s32 g_dwViewportIndex;
  * The display list of g_aClipRatioDisplayLists a frame starts with.
  *
  * @ghidraAddress USA: 0x8028a8a4
+ * @ghidraAddress Asia: 0x8028A3F4
  * @ghidraAddress EUR: 0x8028caa8
  * @ghidraAddress JPN: 0x8028c578
  * @ghidraAddress BRD3D: 0x106c65fc
@@ -772,6 +830,7 @@ extern s32 g_dwClipRatioIndex;
  * Whether the microcode clips the triangles.
  *
  * @ghidraAddress USA: 0x8028aa50
+ * @ghidraAddress Asia: 0x8028A5A0
  * @ghidraAddress EUR: 0x8028cc58
  * @ghidraAddress JPN: 0x8028c728
  * @ghidraAddress BRD3D: 0x100aa884
@@ -783,6 +842,7 @@ extern s32 g_bGbiClipping;
  * Clear the counts of the vertices, triangles, and polygons drawn in a frame.
  *
  * @ghidraAddress USA: 0x802173c8
+ * @ghidraAddress Asia: 0x80216F18
  * @ghidraAddress EUR: 0x802183e8
  * @ghidraAddress JPN: 0x80217d38
  * @ghidraAddress BRD3D: 0x10031227
@@ -794,6 +854,7 @@ void ClearRenderStats(void);
  * Blank the screen and clear both frame buffers in the low resolution.
  *
  * @ghidraAddress USA: 0x8021a540
+ * @ghidraAddress Asia: 0x8021A090
  * @ghidraAddress EUR: 0x8021b630
  * @ghidraAddress JPN: 0x8021af0c
  * @ghidraAddress BRD3D: 0x10033493
@@ -807,6 +868,7 @@ void ClearFramebuffersLowRes(void);
  *
  * @param m The matrix.
  * @ghidraAddress USA: 0x802174b4
+ * @ghidraAddress Asia: 0x80217004
  * @ghidraAddress EUR: 0x802184d4
  * @ghidraAddress JPN: 0x80217e24
  * @ghidraAddress BRD3D: 0x10031342
@@ -820,6 +882,7 @@ void NormalizeLightMatrix(f32 m[4][4]);
  * @param index The index of the texture.
  * @param textures The textures of the model.
  * @ghidraAddress USA: 0x80217734
+ * @ghidraAddress Asia: 0x80217284
  * @ghidraAddress EUR: 0x80218754
  * @ghidraAddress JPN: 0x802180a4
  * @ghidraAddress BRD3D: 0x10031481
@@ -833,6 +896,7 @@ void DrawTexturedTile(s32 index, ModelTexture *textures);
  * @param point The point.
  * @return The fog, from 0 to 1, or 0 when there is no weather.
  * @ghidraAddress USA: 0x80218c8c
+ * @ghidraAddress Asia: 0x802187DC
  * @ghidraAddress EUR: 0x80219cac
  * @ghidraAddress JPN: 0x802195fc
  * @ghidraAddress BRD3D: 0x10031d3f
@@ -846,6 +910,7 @@ f32 ComputeFogFactorAtPoint(Vec3f *point);
  * @param m The matrix.
  * @return The largest absolute value of its first 12 elements.
  * @ghidraAddress USA: 0x80217420
+ * @ghidraAddress Asia: 0x80216F70
  * @ghidraAddress EUR: 0x80218440
  * @ghidraAddress JPN: 0x80217d90
  * @ghidraAddress BRD3D: 0x100312a7
@@ -857,6 +922,7 @@ f32 GetMaxAbsValue12(f32 m[4][4]);
  * Set the direction and the colours of the lights, and the light ramps, for the weather.
  *
  * @ghidraAddress USA: 0x80218d5c
+ * @ghidraAddress Asia: 0x802188AC
  * @ghidraAddress EUR: 0x80219d7c
  * @ghidraAddress JPN: 0x802196cc
  * @ghidraAddress BRD3D: 0x10031dcf
@@ -869,6 +935,7 @@ void SetupWeatherLights(void);
  * display list.
  *
  * @ghidraAddress USA: 0x802182a8
+ * @ghidraAddress Asia: 0x80217DF8
  * @ghidraAddress EUR: 0x802192c8
  * @ghidraAddress JPN: 0x80218c18
  * @ghidraAddress BRD3D: 0x10031866
@@ -880,6 +947,7 @@ void SetupFog(void);
  * Do nothing.
  *
  * @ghidraAddress USA: 0x80217c8c
+ * @ghidraAddress Asia: 0x802177DC
  * @ghidraAddress EUR: 0x80218cac
  * @ghidraAddress JPN: 0x802185fc
  */
@@ -923,6 +991,7 @@ void UnblankDisplay(void);
  * Black out the screen and clear both frame buffers in the high resolution.
  *
  * @ghidraAddress USA: 0x8021a4c8
+ * @ghidraAddress Asia: 0x8021A018
  * @ghidraAddress EUR: 0x8021b5b0
  * @ghidraAddress JPN: 0x8021ae8c
  * @ghidraAddress BRD3D: 0x1003348e
@@ -935,6 +1004,7 @@ void ClearFramebuffersHighRes(void);
  * from cartridge; Windows aliases uploaded texture entries.
  *
  * @ghidraAddress USA: 0x8021a5b8
+ * @ghidraAddress Asia: 0x8021A108
  * @ghidraAddress EUR: 0x8021b6d0
  * @ghidraAddress JPN: 0x8021afac
  * @ghidraAddress BRD3D: 0x10033498

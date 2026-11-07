@@ -112,6 +112,7 @@ typedef struct CollisionTriangleNode {
  * @ghidraAddress BRD3D: 0x11754e50
  * @ghidraAddress BRGlide: 0x117781b0
  * @ghidraAddress USA: 0x80379940
+ * @ghidraAddress Asia: 0x80379400
  * @ghidraAddress EUR: 0x8037be40
  * @ghidraAddress JPN: 0x8037aab0
  */
@@ -123,6 +124,7 @@ extern CollisionTriangleNode g_aCollisionTriangleNodes[COLLISION_TRIANGLE_NODES]
  * @ghidraAddress BRD3D: 0x11754e38
  * @ghidraAddress BRGlide: 0x11778198
  * @ghidraAddress USA: 0x802a4a20
+ * @ghidraAddress Asia: 0x802A4570
  * @ghidraAddress EUR: 0x802a71e0
  * @ghidraAddress JPN: 0x802a6c80
  */
@@ -134,6 +136,7 @@ extern CollisionTriangleNode *g_pCollisionTriangleList;
  * @ghidraAddress BRD3D: 0x117554e4
  * @ghidraAddress BRGlide: 0x11778844
  * @ghidraAddress USA: 0x802a4a24
+ * @ghidraAddress Asia: 0x802A4574
  * @ghidraAddress EUR: 0x802a71e4
  * @ghidraAddress JPN: 0x802a6c84
  */
@@ -145,6 +148,7 @@ extern CollisionTriangleNode *g_pNextCollisionTriangleNode;
  * the box nearest the triangle, otherwise at the corner of the box.
  *
  * @ghidraAddress USA: 0x802a4a28
+ * @ghidraAddress Asia: 0x802A4578
  * @ghidraAddress EUR: 0x802a71e8
  * @ghidraAddress JPN: 0x802a6c88
  */
@@ -155,6 +159,7 @@ extern s32 g_dwCollisionContactType;
  * The triangle of the last collision.
  *
  * @ghidraAddress USA: 0x802a4a2c
+ * @ghidraAddress Asia: 0x802A457C
  * @ghidraAddress EUR: 0x802a71ec
  * @ghidraAddress JPN: 0x802a6c8c
  * @ghidraAddress BRD3D: 0x11754e3c
@@ -166,6 +171,7 @@ extern TrackTriangle *g_pCollisionTriangle;
  * Whether the triangles of the cache are collected from the last.
  *
  * @ghidraAddress USA: 0x802a4a30
+ * @ghidraAddress Asia: 0x802A4580
  * @ghidraAddress EUR: 0x802a71f0
  * @ghidraAddress JPN: 0x802a6c90
  * @ghidraAddress BRD3D: 0x117554e8
@@ -178,6 +184,7 @@ extern s32 g_bTrackCollisionFrameToggle;
  * load above which they hold no less.
  *
  * @ghidraAddress USA: 0x802a4a38
+ * @ghidraAddress Asia: 0x802A4588
  * @ghidraAddress EUR: 0x802a71f8
  * @ghidraAddress JPN: 0x802a6c98
  */
@@ -185,6 +192,7 @@ extern f32 g_afSurfaceGrip[GRIP_WEATHERS][TRACK_SURFACES];
 
 /**
  * @ghidraAddress USA: 0x802a4a98
+ * @ghidraAddress Asia: 0x802A45E8
  * @ghidraAddress EUR: 0x802a7258
  * @ghidraAddress JPN: 0x802a6cf8
  */
@@ -192,6 +200,7 @@ extern f32 g_afSurfaceMaxLoad[GRIP_WEATHERS][TRACK_SURFACES];
 
 /**
  * @ghidraAddress USA: 0x802a4af8
+ * @ghidraAddress Asia: 0x802A4648
  * @ghidraAddress EUR: 0x802a72b8
  * @ghidraAddress JPN: 0x802a6d58
  * @ghidraAddress BRD3D: 0x100b5970
@@ -199,11 +208,16 @@ extern f32 g_afSurfaceMaxLoad[GRIP_WEATHERS][TRACK_SURFACES];
  */
 extern f32 g_afSurfaceSlipLoad[GRIP_WEATHERS][TRACK_SURFACES];
 
-/** The axes. @ghidraAddress USA: 0x802a4b58 */
+/**
+ * The axes.
+ * @ghidraAddress USA: 0x802a4b58
+ * @ghidraAddress Asia: 0x802A46A8
+ */
 extern Vec3f g_vecUnitX;
 
 /**
  * @ghidraAddress USA: 0x802a4b64
+ * @ghidraAddress Asia: 0x802A46B4
  * @ghidraAddress EUR: 0x802a7324
  * @ghidraAddress JPN: 0x802a6dc4
  */
@@ -211,6 +225,7 @@ extern Vec3f g_vecUnitY;
 
 /**
  * @ghidraAddress USA: 0x802a4b70
+ * @ghidraAddress Asia: 0x802A46C0
  * @ghidraAddress EUR: 0x802a7330
  * @ghidraAddress JPN: 0x802a6dd0
  */
@@ -218,6 +233,7 @@ extern Vec3f g_vecUnitZ;
 
 /**
  * @ghidraAddress USA: 0x802a4b94
+ * @ghidraAddress Asia: 0x802A46E4
  * @ghidraAddress EUR: 0x802a7354
  * @ghidraAddress JPN: 0x802a6df4
  */
@@ -227,6 +243,7 @@ extern Vec3f g_vecNegUnitZ;
  * The half extents of the box two vehicles collide by.
  *
  * @ghidraAddress USA: 0x802a4ba0
+ * @ghidraAddress Asia: 0x802A46F0
  * @ghidraAddress EUR: 0x802a7360
  * @ghidraAddress JPN: 0x802a6e00
  */
@@ -250,6 +267,7 @@ typedef union CollisionContactVector {
  * Where the last collision with the track touched the body, in its frame.
  *
  * @ghidraAddress USA: 0x8037eaa8
+ * @ghidraAddress Asia: 0x8037E568
  * @ghidraAddress EUR: 0x80380fa8
  * @ghidraAddress JPN: 0x8037fc18
  * @ghidraAddress BRD3D: 0x11755490
@@ -265,6 +283,7 @@ extern Vec3f g_vCollisionContact;
  * The word after g_vCollisionContact, which ComputeCollisionPenetration() scales.
  *
  * @ghidraAddress USA: 0x8037eab4
+ * @ghidraAddress Asia: 0x8037E574
  * @ghidraAddress EUR: 0x80380fb4
  * @ghidraAddress JPN: 0x8037fc24
  */
@@ -278,6 +297,7 @@ extern f32 g_fCollisionContactW;
  * How far the last collision put the body into the triangle.
  *
  * @ghidraAddress USA: 0x8037eac8
+ * @ghidraAddress Asia: 0x8037E588
  * @ghidraAddress EUR: 0x80380fc8
  * @ghidraAddress JPN: 0x8037fc38
  * @ghidraAddress BRD3D: 0x11754e40
@@ -291,6 +311,7 @@ extern Vec3f g_vCollisionPenetration;
  * @ghidraAddress BRD3D: 0x1006ae20
  * @ghidraAddress BRGlide: 0x10063dd0
  * @ghidraAddress USA: 0x80259350
+ * @ghidraAddress Asia: 0x80258EA0
  * @ghidraAddress EUR: 0x8025a920
  * @ghidraAddress JPN: 0x8025a2b0
  */
@@ -301,6 +322,7 @@ void ResetCollisionCaches(void);
  *
  * @param body The body whose forces are summed.
  * @ghidraAddress USA: 0x802594bc
+ * @ghidraAddress Asia: 0x8025900C
  * @ghidraAddress EUR: 0x8025aa8c
  * @ghidraAddress JPN: 0x8025a41c
  * @ghidraAddress BRD3D: 0x1006aeb0
@@ -315,6 +337,7 @@ void SumBodyForces(RigidBody *body);
  * @param body The body of the vehicle.
  * @param wheel The wheel whose forces are summed.
  * @ghidraAddress USA: 0x80259634
+ * @ghidraAddress Asia: 0x80259184
  * @ghidraAddress EUR: 0x8025ac04
  * @ghidraAddress JPN: 0x8025a594
  * @ghidraAddress BRD3D: 0x1006aff0
@@ -328,6 +351,7 @@ void SumWheelForces(RigidBody *body, RigidBody *wheel);
  *
  * @param body The body of the vehicle.
  * @ghidraAddress USA: 0x8025980c
+ * @ghidraAddress Asia: 0x8025935C
  * @ghidraAddress EUR: 0x8025addc
  * @ghidraAddress JPN: 0x8025a76c
  * @ghidraAddress BRD3D: 0x1006b170
@@ -340,6 +364,7 @@ void ComputeVehicleAccelerations(RigidBody *body);
  *
  * @param body The body of the vehicle.
  * @ghidraAddress USA: 0x8025993c
+ * @ghidraAddress Asia: 0x8025948C
  * @ghidraAddress EUR: 0x8025af0c
  * @ghidraAddress JPN: 0x8025a89c
  * @ghidraAddress BRD3D: 0x1006b260
@@ -355,6 +380,7 @@ void ComputeVehicleForces(RigidBody *body);
  * @param body The body of the vehicle.
  * @param wheel The wheel the point lies over.
  * @ghidraAddress USA: 0x80259a18
+ * @ghidraAddress Asia: 0x80259568
  * @ghidraAddress EUR: 0x8025afe8
  * @ghidraAddress JPN: 0x8025a978
  * @ghidraAddress BRD3D: 0x1006b340
@@ -369,6 +395,7 @@ void ComputeWheelLocalVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel);
  * @param body The body of the vehicle.
  * @param wheel The wheel at whose position the velocity is taken.
  * @ghidraAddress USA: 0x80259b1c
+ * @ghidraAddress Asia: 0x8025966C
  * @ghidraAddress EUR: 0x8025b0ec
  * @ghidraAddress JPN: 0x8025aa7c
  * @ghidraAddress BRD3D: 0x1006b430
@@ -383,6 +410,7 @@ void GetWheelWorldVelocity(Vec3f *out, RigidBody *body, RigidBody *wheel);
  * @param body The body.
  * @param point The point, in the frame of the body.
  * @ghidraAddress USA: 0x80259c18
+ * @ghidraAddress Asia: 0x80259768
  * @ghidraAddress EUR: 0x8025b1e8
  * @ghidraAddress JPN: 0x8025ab78
  * @ghidraAddress BRD3D: 0x1006b510
@@ -401,6 +429,7 @@ void GetBodyPointVelocity(Vec3f *out, RigidBody *body, Vec3f *point);
  * @param rearSliding Whether the rear tyres slid, updated for the next step.
  * @param frontSliding Whether the front tyres slid, updated for the next step.
  * @ghidraAddress USA: 0x80259d14
+ * @ghidraAddress Asia: 0x80259864
  * @ghidraAddress EUR: 0x8025b2e4
  * @ghidraAddress JPN: 0x8025ac74
  * @ghidraAddress BRD3D: 0x1006b5f0
@@ -419,6 +448,7 @@ void ApplySideGrip(
  * @param sliding Whether its tyres slid, selecting sliding traction.
  * @param dt The time of the step.
  * @ghidraAddress USA: 0x8025ac9c
+ * @ghidraAddress Asia: 0x8025A7EC
  * @ghidraAddress EUR: 0x8025c280
  * @ghidraAddress JPN: 0x8025bc10
  * @ghidraAddress BRD3D: 0x1006c1f0
@@ -433,6 +463,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
  * @param point The point, on the plane of the triangle.
  * @return 1 when the point lies within the triangle, otherwise 0.
  * @ghidraAddress USA: 0x8025b3b0
+ * @ghidraAddress Asia: 0x8025AF00
  * @ghidraAddress EUR: 0x8025c994
  * @ghidraAddress JPN: 0x8025c324
  * @ghidraAddress BRD3D: 0x1006c740
@@ -448,6 +479,7 @@ s16 IsPointInTrackTriangle(TrackTriangle *triangle, Vec3f *point);
  * @param point The point.
  * @return The signed distance, positive on the side the normal points to.
  * @ghidraAddress USA: 0x8025b704
+ * @ghidraAddress Asia: 0x8025B254
  * @ghidraAddress EUR: 0x8025cce8
  * @ghidraAddress JPN: 0x8025c678
  * @ghidraAddress BRD3D: 0x1006c9a0
@@ -469,6 +501,7 @@ f32 PlaneDistance(Vec3f *normal, f32 offset, Vec3f *point);
  * @param spin Whether the spin is damped.
  * @return Whether the body moved into the plane.
  * @ghidraAddress USA: 0x8025b73c
+ * @ghidraAddress Asia: 0x8025B28C
  * @ghidraAddress EUR: 0x8025cd20
  * @ghidraAddress JPN: 0x8025c6b0
  * @ghidraAddress BRD3D: 0x1006c9d0
@@ -484,6 +517,7 @@ s32 BounceOffPlane(RigidBody *body, Vec3f *normal, s32 damp, s32 spin);
  * @param damp A flag this routine ignores.
  * @return Always 1.
  * @ghidraAddress USA: 0x8025bba4
+ * @ghidraAddress Asia: 0x8025B6F4
  * @ghidraAddress EUR: 0x8025d188
  * @ghidraAddress JPN: 0x8025cb18
  */
@@ -494,6 +528,7 @@ s32 UnusedCollisionResponseStub(void *body, void *normal, void *damp);
  * The restitution threshold for recording a hard collision.
  *
  * @ghidraAddress USA: 0x802ab7f8
+ * @ghidraAddress Asia: 0x802AB2B8
  * @ghidraAddress EUR: 0x802ad4f0
  * @ghidraAddress JPN: 0x802abf28
  */
@@ -503,6 +538,7 @@ extern f32 g_fConst0p0001;
  * The velocity scale after a hard collision.
  *
  * @ghidraAddress USA: 0x802ab7fc
+ * @ghidraAddress Asia: 0x802AB2BC
  * @ghidraAddress EUR: 0x802ad4f4
  * @ghidraAddress JPN: 0x802abf2c
  */
@@ -512,6 +548,7 @@ extern f32 g_fConst0p9_3;
  * The fraction of tangential speed retained when friction applies.
  *
  * @ghidraAddress USA: 0x802ab800
+ * @ghidraAddress Asia: 0x802AB2C0
  * @ghidraAddress EUR: 0x802ad4f8
  * @ghidraAddress JPN: 0x802abf30
  */
@@ -521,6 +558,7 @@ extern f32 g_fConst0p2;
  * The fixed part of collision restitution.
  *
  * @ghidraAddress USA: 0x802ab804
+ * @ghidraAddress Asia: 0x802AB2C4
  * @ghidraAddress EUR: 0x802ad4fc
  * @ghidraAddress JPN: 0x802abf34
  */
@@ -538,6 +576,7 @@ extern f32 g_fConst1p05;
  * @param restitution How much the point bounces, more than the 1.05 it always does.
  * @return Whether the point moved into the surface.
  * @ghidraAddress USA: 0x8025bbb8
+ * @ghidraAddress Asia: 0x8025B708
  * @ghidraAddress EUR: 0x8025d19c
  * @ghidraAddress JPN: 0x8025cb2c
  * @ghidraAddress BRD3D: 0x1006ccd0
@@ -551,6 +590,7 @@ s32 ApplyCollisionImpulse(
  *
  * @param triangle The triangle to add.
  * @ghidraAddress USA: 0x8025c24c
+ * @ghidraAddress Asia: 0x8025BD9C
  * @ghidraAddress EUR: 0x8025d830
  * @ghidraAddress JPN: 0x8025d1c0
  * @ghidraAddress BRD3D: 0x1006d280
@@ -562,6 +602,7 @@ void PushCollisionTriangle(TrackTriangle *triangle);
  * Print the length of the list on the debug output.
  *
  * @ghidraAddress USA: 0x8025c27c
+ * @ghidraAddress Asia: 0x8025BDCC
  * @ghidraAddress EUR: 0x8025d860
  * @ghidraAddress JPN: 0x8025d1f0
  */
@@ -587,6 +628,7 @@ s32 ComputeAabbCornerPlaneClipCode(Vec3f *v, s32 mask);
  * @return 1 when a corner is inside the cube, 0 when the triangle is wholly outside it, and -1
  * when it is not yet known.
  * @ghidraAddress USA: 0x8025c2c8
+ * @ghidraAddress Asia: 0x8025BE18
  * @ghidraAddress EUR: 0x8025d8ac
  * @ghidraAddress JPN: 0x8025d23c
  * @ghidraAddress BRD3D: 0x1006d2b0
@@ -603,6 +645,7 @@ s32 ClassifyTriangleInUnitCube(Vec3f triangle[3]);
  * @param point The point, on the plane of the triangle.
  * @return The winding number, 0 for a point outside the triangle.
  * @ghidraAddress USA: 0x8025c8dc
+ * @ghidraAddress Asia: 0x8025C42C
  * @ghidraAddress EUR: 0x8025dec0
  * @ghidraAddress JPN: 0x8025d850
  * @ghidraAddress BRD3D: 0x1006d660
@@ -617,6 +660,7 @@ s32 CountTriangleWinding(Vec3f triangle[3], Vec3f *normal, Vec3f *point);
  * @param end The other end of the segment.
  * @return 1 when the segment passes through the cube, otherwise 0.
  * @ghidraAddress USA: 0x8025cbf8
+ * @ghidraAddress Asia: 0x8025C748
  * @ghidraAddress EUR: 0x8025e1dc
  * @ghidraAddress JPN: 0x8025db6c
  * @ghidraAddress BRD3D: 0x1006d850
@@ -631,6 +675,7 @@ s32 DoesSegmentCrossUnitCube(Vec3f *start, Vec3f *end);
  * @param normal The normal of the triangle.
  * @return Nonzero when they cross, otherwise 0.
  * @ghidraAddress USA: 0x8025ce28
+ * @ghidraAddress Asia: 0x8025C978
  * @ghidraAddress EUR: 0x8025e40c
  * @ghidraAddress JPN: 0x8025dd9c
  * @ghidraAddress BRD3D: 0x1006d9a0
@@ -645,6 +690,7 @@ s32 DoesTriangleCrossUnitCube(Vec3f triangle[3], Vec3f *normal);
  * @param normal The normal of the triangle.
  * @return Nonzero when the triangle crosses the cube, otherwise 0.
  * @ghidraAddress USA: 0x8025d018
+ * @ghidraAddress Asia: 0x8025CB68
  * @ghidraAddress EUR: 0x8025e5fc
  * @ghidraAddress JPN: 0x8025df8c
  * @ghidraAddress BRD3D: 0x1006daf0
@@ -659,6 +705,7 @@ s32 IsTriangleInUnitCube(Vec3f triangle[3], Vec3f *normal);
  * @param box The matrix that takes the track into the unit cube of the box.
  * @return The triangles listed.
  * @ghidraAddress USA: 0x8025d060
+ * @ghidraAddress Asia: 0x8025CBB0
  * @ghidraAddress EUR: 0x8025e644
  * @ghidraAddress JPN: 0x8025dfd4
  * @ghidraAddress BRD3D: 0x1006db20
@@ -672,6 +719,7 @@ s32 CollectTrianglesInBox(RigidBody *body, f32 box[4][4]);
  * @param body A body this routine ignores.
  * @return Always 0.
  * @ghidraAddress USA: 0x8025d35c
+ * @ghidraAddress Asia: 0x8025CEAC
  * @ghidraAddress EUR: 0x8025e940
  * @ghidraAddress JPN: 0x8025e2d0
  */
@@ -684,6 +732,7 @@ s32 UnusedTrackCollisionStub(void *body);
  * @param body The body of the vehicle.
  * @return Whether it was rolled.
  * @ghidraAddress USA: 0x8025d368
+ * @ghidraAddress Asia: 0x8025CEB8
  * @ghidraAddress BRD3D: 0x1006ddc0
  * @ghidraAddress BRGlide: 0x10066d70
  * @ghidraAddress EUR: 0x8025e94c
@@ -700,6 +749,7 @@ s32 TipBalancedVehicle(RigidBody *body);
  * @param contact The corner or the face of the box in the unit cube.
  * @param triangle The corners of the triangle in the unit cube.
  * @ghidraAddress USA: 0x8025dcb8
+ * @ghidraAddress Asia: 0x8025D808
  * @ghidraAddress EUR: 0x8025f29c
  * @ghidraAddress JPN: 0x8025ec2c
  * @ghidraAddress BRD3D: 0x1006e4c0
@@ -716,6 +766,7 @@ void ComputeCollisionPenetration(
  * @param box The matrix that takes the track into the unit cube of the box.
  * @return Whether it hit one.
  * @ghidraAddress USA: 0x8025dfcc
+ * @ghidraAddress Asia: 0x8025DB1C
  * @ghidraAddress EUR: 0x8025f5b0
  * @ghidraAddress JPN: 0x8025ef40
  * @ghidraAddress BRD3D: 0x1006e760
@@ -740,6 +791,7 @@ void StepVehicleCollisions(Vehicle *vehicle, RigidBody *body);
  *
  * @param body The body of the vehicle.
  * @ghidraAddress USA: 0x8025e55c
+ * @ghidraAddress Asia: 0x8025E0AC
  * @ghidraAddress EUR: 0x8025fa38
  * @ghidraAddress JPN: 0x8025f4e8
  */
@@ -751,6 +803,7 @@ void StepVehicleCollisions(RigidBody *body);
  * @param body The body of the vehicle.
  * @param force The force to set.
  * @ghidraAddress USA: 0x8025e820
+ * @ghidraAddress Asia: 0x8025E370
  * @ghidraAddress EUR: 0x8025fcfc
  * @ghidraAddress JPN: 0x8025f7ac
  * @ghidraAddress BRD3D: 0x1006ef80
@@ -765,6 +818,7 @@ void ComputeDragForce(RigidBody *body, RigidBodyForce *force);
  * @param wheel The wheel, whose ground, surface, and plane are set to those found.
  * @return How far below the body the ground is, or 100 when there is none.
  * @ghidraAddress USA: 0x8025e96c
+ * @ghidraAddress Asia: 0x8025E4BC
  * @ghidraAddress EUR: 0x8025fe48
  * @ghidraAddress JPN: 0x8025f8f8
  * @ghidraAddress BRD3D: 0x1006f0c0
@@ -777,6 +831,7 @@ f32 CastWheelRay(RigidBody *body, RigidBody *wheel);
  *
  * @param body The body of the vehicle.
  * @ghidraAddress USA: 0x8025ec7c
+ * @ghidraAddress Asia: 0x8025E7CC
  * @ghidraAddress EUR: 0x80260158
  * @ghidraAddress JPN: 0x8025fc08
  * @ghidraAddress BRD3D: 0x1006f4a0
@@ -789,6 +844,7 @@ void UpdateWheelHeights(RigidBody *body);
  *
  * @param body The body of the vehicle.
  * @ghidraAddress USA: 0x8025edbc
+ * @ghidraAddress Asia: 0x8025E90C
  * @ghidraAddress EUR: 0x80260298
  * @ghidraAddress JPN: 0x8025fd48
  * @ghidraAddress BRD3D: 0x1006f540
@@ -801,6 +857,7 @@ void ComputeSpringForces(RigidBody *body);
  *
  * @param body The body of the vehicle.
  * @ghidraAddress USA: 0x8025ef70
+ * @ghidraAddress Asia: 0x8025EAC0
  * @ghidraAddress EUR: 0x8026044c
  * @ghidraAddress JPN: 0x8025fefc
  * @ghidraAddress BRD3D: 0x1006f650
@@ -818,6 +875,7 @@ void ComputeDampingForces(RigidBody *body);
  * @param halfB The half extents of the second box.
  * @return 1 when the boxes overlap, otherwise 0.
  * @ghidraAddress USA: 0x8025f4f8
+ * @ghidraAddress Asia: 0x8025F048
  * @ghidraAddress EUR: 0x802609d4
  * @ghidraAddress JPN: 0x80260484
  * @ghidraAddress BRD3D: 0x1006f950
@@ -830,6 +888,7 @@ s32 TestObbIntersection(f32 rotation[3][3], Vec3f *offset, Vec3f *halfA, Vec3f *
  * between them and pushing them apart. It stops at the first pair whose boxes do not meet.
  *
  * @ghidraAddress USA: 0x8025fde4
+ * @ghidraAddress Asia: 0x8025F934
  * @ghidraAddress BRD3D: 0x1006ffd0
  * @ghidraAddress BRGlide: 0x10068f80
  * @ghidraAddress EUR: 0x802612c0

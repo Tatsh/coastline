@@ -14,6 +14,7 @@ namespace {
      * Whether the rain particles have their first positions.
      *
      * @ghidraAddress USA: 0x8028c824
+     * @ghidraAddress Asia: 0x8028C374
      * @ghidraAddress EUR: 0x8028ef84
      * @ghidraAddress JPN: 0x8028e9d4
      * @ghidraAddress BRD3D: 0x104bbe14
@@ -24,6 +25,7 @@ namespace {
      * The speed of the camera of the last view through the rain, limited.
      *
      * @ghidraAddress USA: 0x8028c810
+     * @ghidraAddress Asia: 0x8028C360
      * @ghidraAddress EUR: 0x8028ef70
      * @ghidraAddress JPN: 0x8028e9c0
      * @ghidraAddress BRD3D: 0x104bbde8
@@ -34,6 +36,7 @@ namespace {
      * The share of its movement the camera of the last view passes on to the rain.
      *
      * @ghidraAddress USA: 0x8028c814
+     * @ghidraAddress Asia: 0x8028C364
      * @ghidraAddress EUR: 0x8028ef74
      * @ghidraAddress JPN: 0x8028e9c4
      * @ghidraAddress BRD3D: 0x104b1f00

@@ -144,6 +144,7 @@ extern "C" {
  * The models of the cars the vehicles drive, in slots. The link script places them.
  *
  * @ghidraAddress USA: 0x803c8000
+ * @ghidraAddress Asia: 0x803C8000
  * @ghidraAddress EUR: 0x803c8000
  * @ghidraAddress JPN: 0x803c8000
  * @ghidraAddress BRD3D: 0x100c12a0
@@ -155,6 +156,7 @@ extern VehicleModel g_aVehicleModels[];
  * The car whose model each slot holds.
  *
  * @ghidraAddress USA: 0x8031b238
+ * @ghidraAddress Asia: 0x8031ACF8
  * @ghidraAddress EUR: 0x8031d738
  * @ghidraAddress JPN: 0x8031c368
  * @ghidraAddress BRD3D: 0x106c6558
@@ -170,6 +172,7 @@ extern s32 g_adwVehicleModelSlotCars[];
  * @param source A decompressed N64 model to copy, or NULL to load the asset. Windows treats a
  * non-null source as fatal.
  * @ghidraAddress USA: 0x8021d5e4
+ * @ghidraAddress Asia: 0x8021D134
  * @ghidraAddress EUR: 0x8021e7e4
  * @ghidraAddress JPN: 0x8021e0b4
  * @ghidraAddress BRD3D: 0x10035520
@@ -183,6 +186,7 @@ void LoadCar(s32 slot, s32 car, void *source);
  * @param model Where to decompress it.
  * @param car The index of the car in g_aCarModels.
  * @ghidraAddress USA: 0x8021d534
+ * @ghidraAddress Asia: 0x8021D084
  * @ghidraAddress EUR: 0x8021e734
  * @ghidraAddress JPN: 0x8021e004
  * @ghidraAddress BRD3D: 0x10037740
@@ -198,6 +202,7 @@ void LoadVehicleModelFromRom(VehicleModel *model, s32 car);
  * @param green The green of the colour, from 0 to 31.
  * @param blue The blue of the colour, from 0 to 31.
  * @ghidraAddress USA: 0x8021d140
+ * @ghidraAddress Asia: 0x8021CC90
  * @ghidraAddress EUR: 0x8021e340
  * @ghidraAddress JPN: 0x8021dc10
  * @ghidraAddress BRD3D: 0x100350ee
@@ -210,6 +215,7 @@ void SetMaterialColor(VehicleModel *model, s32 red, s32 green, s32 blue);
  *
  * @param model The model.
  * @ghidraAddress USA: 0x8021d32c
+ * @ghidraAddress Asia: 0x8021CE7C
  * @ghidraAddress EUR: 0x8021e52c
  * @ghidraAddress JPN: 0x8021ddfc
  * @ghidraAddress BRD3D: 0x1003551b

@@ -10,6 +10,7 @@
 
 /**
  * @ghidraAddress USA: 0x8026d0f0
+ * @ghidraAddress Asia: 0x8026CC40
  * @ghidraAddress EUR: 0x8026f0c0
  * @ghidraAddress JPN: 0x8026eb70
  */

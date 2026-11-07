@@ -9,13 +9,13 @@ int WaveOpenFile(const char *pszPath, HMMIO *phmmio, WAVEFORMATEX **ppFormat, MM
     WORD wExtraSize;
     int nError;
 
-    *ppFormat = nullptr;
-    hmmio = mmioOpenA((LPSTR)pszPath, nullptr, MMIO_ALLOCBUF | MMIO_READ);
-    if (hmmio == nullptr) {
+    *ppFormat = NULL;
+    hmmio = mmioOpenA((LPSTR)pszPath, NULL, MMIO_ALLOCBUF | MMIO_READ);
+    if (hmmio == NULL) {
         nError = WAVE_ERROR_CANNOT_OPEN;
         goto error;
     }
-    nError = (int)mmioDescend(hmmio, pckRiff, nullptr, 0);
+    nError = (int)mmioDescend(hmmio, pckRiff, NULL, 0);
     if (nError != 0) {
         goto error;
     }
@@ -44,7 +44,7 @@ int WaveOpenFile(const char *pszPath, HMMIO *phmmio, WAVEFORMATEX **ppFormat, MM
         goto error;
     }
     *ppFormat = (WAVEFORMATEX *)GlobalAlloc(GMEM_FIXED, sizeof(WAVEFORMATEX) + wExtraSize);
-    if (*ppFormat == nullptr) {
+    if (*ppFormat == NULL) {
         nError = WAVE_ERROR_MEMORY;
         goto error;
     }
@@ -63,13 +63,13 @@ int WaveOpenFile(const char *pszPath, HMMIO *phmmio, WAVEFORMATEX **ppFormat, MM
     return nError;
 
 error:
-    if (*ppFormat != nullptr) {
+    if (*ppFormat != NULL) {
         GlobalFree(*ppFormat);
-        *ppFormat = nullptr;
+        *ppFormat = NULL;
     }
-    if (hmmio != nullptr) {
+    if (hmmio != NULL) {
         mmioClose(hmmio, 0);
-        hmmio = nullptr;
+        hmmio = NULL;
     }
     *phmmio = hmmio;
     return nError;
@@ -133,8 +133,8 @@ int WaveLoadFile(const char *pszPath,
     DWORD dwActualRead;
     int nError;
 
-    *ppData = nullptr;
-    *ppFormat = nullptr;
+    *ppData = NULL;
+    *ppFormat = NULL;
     *pdwSize = 0;
     nError = WaveOpenFile(pszPath, &hmmio, ppFormat, &ckRiff);
     if (nError != 0) {
@@ -145,7 +145,7 @@ int WaveLoadFile(const char *pszPath,
         goto error;
     }
     *ppData = (void *)GlobalAlloc(GMEM_FIXED, ckData.cksize);
-    if (*ppData == nullptr) {
+    if (*ppData == NULL) {
         nError = WAVE_ERROR_MEMORY;
         goto error;
     }
@@ -157,17 +157,17 @@ int WaveLoadFile(const char *pszPath,
     goto close;
 
 error:
-    if (*ppData != nullptr) {
+    if (*ppData != NULL) {
         GlobalFree(*ppData);
-        *ppData = nullptr;
+        *ppData = NULL;
     }
-    if (*ppFormat != nullptr) {
+    if (*ppFormat != NULL) {
         GlobalFree(*ppFormat);
-        *ppFormat = nullptr;
+        *ppFormat = NULL;
     }
 
 close:
-    if (hmmio != nullptr) {
+    if (hmmio != NULL) {
         mmioClose(hmmio, 0);
     }
     return nError;

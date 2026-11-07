@@ -48,6 +48,7 @@
 namespace {
     /**
      * @ghidraAddress USA: 0x8028aafc
+     * @ghidraAddress Asia: 0x8028A64C
      * @ghidraAddress EUR: 0x8028cd04
      * @ghidraAddress JPN: 0x8028c7d4
      * @ghidraAddress BRD3D: 0x106c56f0
@@ -56,6 +57,7 @@ namespace {
     s32 g_dwCameraRayGroundSurface;
     /**
      * @ghidraAddress USA: 0x8028ab04
+     * @ghidraAddress Asia: 0x8028A654
      * @ghidraAddress EUR: 0x8028cd0c
      * @ghidraAddress JPN: 0x8028c7dc
      * @ghidraAddress BRD3D: 0x10690a34
@@ -66,6 +68,7 @@ namespace {
      * What CastRayAgainstTrack() found below the camera of the view being drawn.
      *
      * @ghidraAddress USA: 0x8028aaf8
+     * @ghidraAddress Asia: 0x8028A648
      * @ghidraAddress EUR: 0x8028cd00
      * @ghidraAddress JPN: 0x8028c7d0
      * @ghidraAddress BRD3D: 0x106c01fc

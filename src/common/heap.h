@@ -17,6 +17,7 @@ extern "C" {
  * The next free byte of the interface heap.
  *
  * @ghidraAddress USA: 0x80369b70
+ * @ghidraAddress Asia: 0x80369630
  * @ghidraAddress EUR: 0x8036c070
  * @ghidraAddress JPN: 0x8036ace0
  * @ghidraAddress BRD3D: 0x106c7c38
@@ -28,6 +29,7 @@ extern u8 *g_pHeapCurrent;
  * Empty the heap.
  *
  * @ghidraAddress USA: 0x80242940
+ * @ghidraAddress Asia: 0x80242490
  * @ghidraAddress EUR: 0x80243e50
  * @ghidraAddress JPN: 0x80243950
  * @ghidraAddress BRD3D: 0x10036020
@@ -40,6 +42,7 @@ void ResetHeap(void);
  *
  * @return The next free byte.
  * @ghidraAddress USA: 0x80242954
+ * @ghidraAddress Asia: 0x802424A4
  * @ghidraAddress EUR: 0x80243e64
  * @ghidraAddress JPN: 0x80243964
  */
@@ -50,6 +53,7 @@ u8 *GetHeapCurrentAddress(void);
  *
  * @param address The new next free byte.
  * @ghidraAddress USA: 0x80242960
+ * @ghidraAddress Asia: 0x802424B0
  * @ghidraAddress EUR: 0x80243e70
  * @ghidraAddress JPN: 0x80243970
  */
@@ -62,6 +66,7 @@ void SetHeapCurrentAddress(u8 *address);
  * @param size The size in bytes.
  * @return The start of the allocation.
  * @ghidraAddress USA: 0x8024296c
+ * @ghidraAddress Asia: 0x802424BC
  * @ghidraAddress EUR: 0x80243e7c
  * @ghidraAddress JPN: 0x8024397c
  */
@@ -71,6 +76,7 @@ void *AllocHeapAligned(u32 size);
  * Blank the display and clear the frame buffers in the wide display mode.
  *
  * @ghidraAddress USA: 0x802429ec
+ * @ghidraAddress Asia: 0x8024253C
  * @ghidraAddress EUR: 0x80243efc
  * @ghidraAddress JPN: 0x802439fc
  */
@@ -80,6 +86,7 @@ void ClearFramebuffersForWideMode(void);
  * Blank the display and clear the frame buffers in the normal display mode.
  *
  * @ghidraAddress USA: 0x80242a7c
+ * @ghidraAddress Asia: 0x802425CC
  * @ghidraAddress EUR: 0x80243f88
  * @ghidraAddress JPN: 0x80243a88
  */

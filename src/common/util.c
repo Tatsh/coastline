@@ -15,6 +15,7 @@
  * The blocks the current frame has allocated.
  *
  * @ghidraAddress USA: 0x8028dfb0
+ * @ghidraAddress Asia: 0x8028DB00
  * @ghidraAddress EUR: 0x80290770
  * @ghidraAddress JPN: 0x80290210
  * @ghidraAddress BRD3D: 0x10b01c40
@@ -23,6 +24,7 @@
 static s32 g_dwDisplayListBlockCount;
 /**
  * @ghidraAddress USA: 0x8028dfb4
+ * @ghidraAddress Asia: 0x8028DB04
  * @ghidraAddress EUR: 0x80290774
  * @ghidraAddress JPN: 0x80290214
  * @ghidraAddress BRD3D: 0x10b01c48
@@ -31,6 +33,7 @@ static s32 g_dwDisplayListBlockCount;
 static s32 g_dwHiliteBlockCount;
 /**
  * @ghidraAddress USA: 0x8028dfb8
+ * @ghidraAddress Asia: 0x8028DB08
  * @ghidraAddress EUR: 0x80290778
  * @ghidraAddress JPN: 0x80290218
  * @ghidraAddress BRD3D: 0x10b01c44

@@ -33,21 +33,29 @@ part of the program.
 
 ## Building
 
-Each release is a variant: `n64-us`, `n64-jp`, and `n64-eu` for the Nintendo 64 releases, and
-`win-d3d` and `win-glide` for the two Windows libraries. A workflow preset configures and builds
+Each release is a variant: `n64-us`, `n64-asia`, `n64-jp`, and `n64-eu` for the Nintendo 64
+releases, and `win-d3d` and `win-glide` for the two Windows libraries. A workflow preset builds
 one variant. The cartridge image of the release is read from the `TGR_ROM` environment variable,
 and its assets are extracted into the build directory on every build. The image is checked
 against the SHA-1 of the unmodified release before anything is read from it.
+
+| Nintendo 64 release | ROM SHA-1                                  |
+| ------------------- | ------------------------------------------ |
+| USA                 | `bfc51f086ebdb78904dc24ad0c3a2d946e26d022` |
+| Asia                | `7e36a98f6fafe3ff7e72d14e0fae16418458da47` |
+| Europe              | `9fae5d98fe3464f00d59034690df90118646eb95` |
+| Japan               | `e0415b87c5a5b69ac581e79137406bdaa79b354a` |
 
 ```shell
 TGR_ROM=/path/to/usa.z64 cmake --workflow --preset n64-us
 ```
 
 The `all` preset builds every variant in one step. Each Nintendo 64 variant takes its image from
-`TGR_ROM_US`, `TGR_ROM_JP`, or `TGR_ROM_EU`.
+`TGR_ROM_US`, `TGR_ROM_ASIA`, `TGR_ROM_JP`, or `TGR_ROM_EU`.
 
 ```shell
-TGR_ROM_US=usa.z64 TGR_ROM_JP=jpn.z64 TGR_ROM_EU=eur.z64 cmake --workflow --preset all
+TGR_ROM_US=usa.z64 TGR_ROM_ASIA=asia.z64 TGR_ROM_JP=jpn.z64 TGR_ROM_EU=eur.z64 \
+  cmake --workflow --preset all
 ```
 
 The Nintendo 64 compiler is libdragon's GCC, found through `N64_INST`, and no other part of
@@ -63,7 +71,7 @@ A routine is removed from the assembly of a release when its C body compiles for
 
 Set `-DENFORCE_MATCHING=ON` on an N64 build to verify the reconstructed code during every build.
 This needs IDO 5.3 at `IDO_ROOT` and the libdragon cross toolchain at `N64_INST`. The verifier
-compares instruction digests against `tools/matching/{us,jp,eu}.json`, generated from verified
+compares instruction digests against `tools/matching/{us,asia,jp,eu}.json`, generated from verified
 original ROM images. CI runs it in a separate job for each region, without storing ROM images.
 `tools/ido_flags.txt` records alternative IDO flags where the first build choice does not match.
 To regenerate a region's digest file from a verified ROM, run:
@@ -673,7 +681,9 @@ a ROM image with each `--rom`. A BIN first uses an adjacent CUE sheet with the s
 case, or another adjacent sheet referencing the BIN. Without a CUE sheet, its whole-file SHA-1
 selects the track offsets of a verified dump when available. Otherwise, sector sync and headers
 locate the data boundary, checked against the ISO volume size, and runs of digital silence
-identify audio pregaps. Audio discovery requires all 12 music tracks and sufficient track lengths;
+identify audio pregaps. The verified 13-track Boss Rally BIN has SHA-1
+`391609a19eaa44cf470c0b8b2110122381a87f25`; its CUE sheet is identified by track layout,
+without a CUE SHA-1. Audio discovery requires all 12 music tracks and sufficient track lengths;
 uncertain layouts import data only. A complete set of `Track NN.bin` files also imports without a
 CUE sheet. CloneCD uses its track metadata; `.sub` data is not required. Nero supports both
 32-bit and 64-bit track metadata, recorded disc-at-once or track-at-once. Alcohol supports split

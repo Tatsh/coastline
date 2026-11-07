@@ -38,7 +38,7 @@ BOOL __stdcall EAR_DLL_AssignHwnd(HWND window) {
     }
     if (!IsWindow(g_hEarNotifyWindow)) {
         SetEarLastError(0x21);
-        g_hEarNotifyWindow = nullptr;
+        g_hEarNotifyWindow = NULL;
     }
     return IsWindow(g_hEarNotifyWindow);
 }

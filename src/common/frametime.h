@@ -16,6 +16,7 @@ extern "C" {
  * The time the last frame took, in seconds.
  *
  * @ghidraAddress USA: 0x8028aad8
+ * @ghidraAddress Asia: 0x8028A628
  * @ghidraAddress EUR: 0x8028cce0
  * @ghidraAddress JPN: 0x8028c7b0
  * @ghidraAddress BRD3D: 0x106c2cfc

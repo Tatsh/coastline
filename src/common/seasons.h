@@ -30,6 +30,7 @@ typedef struct {
 
 /**
  * @ghidraAddress USA: 0x8028b944
+ * @ghidraAddress Asia: 0x8028B494
  * @ghidraAddress EUR: 0x8028dbf4
  * @ghidraAddress JPN: 0x8028d624
  * @ghidraAddress BRD3D: 0x100b3810

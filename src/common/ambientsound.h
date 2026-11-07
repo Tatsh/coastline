@@ -9,6 +9,7 @@ extern "C" {
  * Play the nearest sound of the track on its channel, panned and pitched for the camera.
  *
  * @ghidraAddress USA: 0x8022b534
+ * @ghidraAddress Asia: 0x8022B084
  * @ghidraAddress EUR: 0x8022ca44
  * @ghidraAddress JPN: 0x8022c1fc
  * @ghidraAddress BRD3D: 0x10067ed0

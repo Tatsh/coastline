@@ -33,6 +33,7 @@ extern "C" {
  * three rows are translucent.
  * @return 1 if a translucent render mode was found, 0 otherwise.
  * @ghidraAddress USA: 0x8021b72c
+ * @ghidraAddress Asia: 0x8021B27C
  * @ghidraAddress EUR: 0x8021c868
  * @ghidraAddress JPN: 0x8021c138
  * @ghidraAddress BRD3D: 0x100341b3
@@ -48,6 +49,7 @@ s32 ProcessDisplayList(DisplayListCommand *displayList, DisplayListCommand table
  * The colour combine replaced in clear weather and its replacement.
  *
  * @ghidraAddress USA: 0x8028ab88
+ * @ghidraAddress Asia: 0x8028A6D8
  * @ghidraAddress EUR: 0x8028ce38
  * @ghidraAddress JPN: 0x8028c868
  * @ghidraAddress BRD3D: 0x100aa8b8
@@ -59,6 +61,7 @@ extern DisplayListCommand g_aDlClearCombinePatch[1][2];
  * The colour combines that the snow tints.
  *
  * @ghidraAddress USA: 0x8028ab98
+ * @ghidraAddress Asia: 0x8028A6E8
  * @ghidraAddress EUR: 0x8028ce48
  * @ghidraAddress JPN: 0x8028c878
  * @ghidraAddress BRD3D: 0x100aa8c8
@@ -70,6 +73,7 @@ extern DisplayListCommand g_aDlSnowTintCombines[2];
  * The render modes of the track and of the vehicles.
  *
  * @ghidraAddress USA: 0x8028aba8
+ * @ghidraAddress Asia: 0x8028A6F8
  * @ghidraAddress EUR: 0x8028ce58
  * @ghidraAddress JPN: 0x8028c888
  * @ghidraAddress BRD3D: 0x100aa8d8
@@ -81,6 +85,7 @@ extern DisplayListCommand g_aaDlTrackRenderModes[RENDER_MODE_ROWS][4];
  * The render modes of the body of a ghost.
  *
  * @ghidraAddress USA: 0x8028ac68
+ * @ghidraAddress Asia: 0x8028A7B8
  * @ghidraAddress EUR: 0x8028cf18
  * @ghidraAddress JPN: 0x8028c948
  * @ghidraAddress BRD3D: 0x100aa998
@@ -92,6 +97,7 @@ extern DisplayListCommand g_aaDlGhostRenderModes[RENDER_MODE_ROWS][4];
  * The render modes of the wheels of a ghost.
  *
  * @ghidraAddress USA: 0x8028ad28
+ * @ghidraAddress Asia: 0x8028A878
  * @ghidraAddress EUR: 0x8028cfd8
  * @ghidraAddress JPN: 0x8028ca08
  * @ghidraAddress BRD3D: 0x100aaa58
@@ -104,6 +110,7 @@ extern DisplayListCommand g_aaDlGhostWheelRenderModes[RENDER_MODE_ROWS][4];
  * Whether ProcessDisplayList() tints the colour combines of the snow. It clears this.
  *
  * @ghidraAddress USA: 0x8028ade8
+ * @ghidraAddress Asia: 0x8028A938
  * @ghidraAddress EUR: 0x8028d098
  * @ghidraAddress JPN: 0x8028cac8
  * @ghidraAddress BRD3D: 0x106c666c
@@ -123,6 +130,7 @@ extern void (*g_pfnRenderBackendUpdateFog)(void);
  * Patch the render modes of vehicle display lists and, on N64, track display lists.
  *
  * @ghidraAddress USA: 0x8021b97c
+ * @ghidraAddress Asia: 0x8021B4CC
  * @ghidraAddress EUR: 0x8021cab8
  * @ghidraAddress JPN: 0x8021c388
  * @ghidraAddress BRD3D: 0x100344d7

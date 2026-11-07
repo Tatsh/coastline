@@ -244,6 +244,7 @@ extern "C" {
  * The racers of the race.
  *
  * @ghidraAddress USA: 0x803239a0
+ * @ghidraAddress Asia: 0x80323460
  * @ghidraAddress EUR: 0x80325ea0
  * @ghidraAddress JPN: 0x80324ad0
  * @ghidraAddress BRD3D: 0x10acd498
@@ -257,6 +258,7 @@ extern RacerSlot g_aRacerSlots[RACER_SLOTS];
  *
  * @param slot The slot of g_aRacerSlots.
  * @ghidraAddress USA: 0x802291f8
+ * @ghidraAddress Asia: 0x80228D48
  * @ghidraAddress EUR: 0x8022a570
  * @ghidraAddress JPN: 0x80229d4c
  */
@@ -266,6 +268,7 @@ void InitRacerSlot(RacerSlot *slot);
  * Give each racer its place by distance, or read assigned vehicle positions from the network.
  *
  * @ghidraAddress USA: 0x80229550
+ * @ghidraAddress Asia: 0x802290A0
  * @ghidraAddress EUR: 0x8022a8c8
  * @ghidraAddress JPN: 0x8022a080
  * @ghidraAddress BRD3D: 0x10066510
@@ -279,6 +282,7 @@ void SortRacersByPosition(void);
  *
  * @param slot The slot of g_aRacerSlots.
  * @ghidraAddress USA: 0x8022cf88
+ * @ghidraAddress Asia: 0x8022CAD8
  * @ghidraAddress EUR: 0x8022e498
  * @ghidraAddress JPN: 0x8022dc50
  */

@@ -9,6 +9,7 @@
 #if TGR_BOSS_RALLY
 /**
  * @ghidraAddress USA: 0x8028bd98
+ * @ghidraAddress Asia: 0x8028B8E8
  * @ghidraAddress EUR: 0x8028e4f8
  * @ghidraAddress JPN: 0x8028df28
  * @ghidraAddress BRD3D: 0x10a9bbc0
@@ -19,6 +20,7 @@ static s32 g_dwVisibleGridMaxCol;
  * The bounds of the covered cells.
  *
  * @ghidraAddress USA: 0x8028bd90
+ * @ghidraAddress Asia: 0x8028B8E0
  * @ghidraAddress EUR: 0x8028e4f0
  * @ghidraAddress JPN: 0x8028df20
  * @ghidraAddress BRD3D: 0x10a9bbc8

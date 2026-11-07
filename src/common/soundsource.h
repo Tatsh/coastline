@@ -28,6 +28,7 @@ typedef struct {
  * The nearest sound of the track.
  *
  * @ghidraAddress USA: 0x8028b7a0
+ * @ghidraAddress Asia: 0x8028B2F0
  * @ghidraAddress EUR: 0x8028da50
  * @ghidraAddress JPN: 0x8028d480
  * @ghidraAddress BRD3D: 0x10af9b58
@@ -39,6 +40,7 @@ extern SoundSourceTracking g_ClosestSoundSource;
  * Forget the nearest sound of the track found the last frame.
  *
  * @ghidraAddress USA: 0x8022b404
+ * @ghidraAddress Asia: 0x8022AF54
  * @ghidraAddress EUR: 0x8022c914
  * @ghidraAddress JPN: 0x8022c0cc
  * @ghidraAddress BRD3D: 0x10067da0
@@ -50,6 +52,7 @@ void ResetSoundSourceTracking(void);
  * Stop the sounds of the track and forget their sources.
  *
  * @ghidraAddress USA: 0x8022b428
+ * @ghidraAddress Asia: 0x8022AF78
  * @ghidraAddress EUR: 0x8022c938
  * @ghidraAddress JPN: 0x8022c0f0
  * @ghidraAddress BRD3D: 0x10067dc0
@@ -64,6 +67,7 @@ void ResetAllSoundState(void);
  * @param position Its position.
  * @param camera The camera that hears it.
  * @ghidraAddress USA: 0x8022b954
+ * @ghidraAddress Asia: 0x8022B4A4
  * @ghidraAddress EUR: 0x8022ce64
  * @ghidraAddress JPN: 0x8022c61c
  * @ghidraAddress BRD3D: 0x10068180
@@ -78,6 +82,7 @@ void UpdateAirplaneSound(s32 instance, Vec3f *position, CameraFrame *camera);
  * @param position The position of the waterfall.
  * @param camera The camera that hears it.
  * @ghidraAddress USA: 0x8022ba10
+ * @ghidraAddress Asia: 0x8022B560
  * @ghidraAddress EUR: 0x8022cf20
  * @ghidraAddress JPN: 0x8022c6d8
  * @ghidraAddress BRD3D: 0x10068210
@@ -95,6 +100,7 @@ void UpdateWaterfallSound(s32 instance, Vec3f *position, CameraFrame *camera);
  * @param previousListener Where the listener was.
  * @return The factor.
  * @ghidraAddress USA: 0x8022b0f8
+ * @ghidraAddress Asia: 0x8022AC48
  * @ghidraAddress EUR: 0x8022c608
  * @ghidraAddress JPN: 0x8022bdc0
  * @ghidraAddress BRD3D: 0x10067ae0
@@ -120,6 +126,7 @@ ComputeDopplerFactor(Vec3f *source,
  * @param position The position of the source.
  * @param listener The camera that hears it.
  * @ghidraAddress USA: 0x8022b494
+ * @ghidraAddress Asia: 0x8022AFE4
  * @ghidraAddress EUR: 0x8022c9a4
  * @ghidraAddress JPN: 0x8022c15c
  * @ghidraAddress BRD3D: 0x10067e50

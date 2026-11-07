@@ -32,6 +32,7 @@ void ApplyScreenFade(void) {
     /* Two boot frames precede the normal three-frame clear. */
     /**
      * @ghidraAddress USA: 0x8028b788
+     * @ghidraAddress Asia: 0x8028B2D8
      * @ghidraAddress EUR: 0x8028da38
      * @ghidraAddress JPN: 0x8028d468
      * @ghidraAddress BRD3D: 0x100a81bc

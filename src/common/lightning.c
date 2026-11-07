@@ -8,6 +8,7 @@
  * The time since the last strike, in 343 units a second.
  *
  * @ghidraAddress USA: 0x8028c820
+ * @ghidraAddress Asia: 0x8028C370
  * @ghidraAddress EUR: 0x8028ef80
  * @ghidraAddress JPN: 0x8028e9d0
  * @ghidraAddress BRD3D: 0x104b255c

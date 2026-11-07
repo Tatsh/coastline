@@ -6,6 +6,7 @@
  * The step StepDebugHiddenInstance() takes through the placed models, or 0 to stay.
  *
  * @ghidraAddress USA: 0x8028dde0
+ * @ghidraAddress Asia: 0x8028D930
  * @ghidraAddress EUR: 0x80290580
  * @ghidraAddress JPN: 0x80290020
  * @ghidraAddress BRD3D: 0x10277b20

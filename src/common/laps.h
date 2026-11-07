@@ -16,6 +16,7 @@ extern "C" {
  * The laps of the race.
  *
  * @ghidraAddress USA: 0x8028b304
+ * @ghidraAddress Asia: 0x8028AE54
  * @ghidraAddress EUR: 0x8028d5b4
  * @ghidraAddress JPN: 0x8028cfe4
  * @ghidraAddress BRD3D: 0x100bd3e0

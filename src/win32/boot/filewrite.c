@@ -19,7 +19,7 @@ GameFile *CHK_FWriteOpen(const char *path, const char *mode) {
         OutputDebugStringA(message);
     }
     file->pFile = fopen(file->pszPath, mode);
-    if (file->pFile == nullptr) {
+    if (file->pFile == NULL) {
         sprintf(message, "CHK_FWriteOpen(): error creating file %s.\n", file->pszPath);
         OutputDebugStringA(message);
         exit(1);

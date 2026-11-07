@@ -22,6 +22,7 @@ extern "C" {
  * Whether the last call of ResolveVehicleTrackCollision() moved the camera.
  *
  * @ghidraAddress USA: 0x8028b710
+ * @ghidraAddress Asia: 0x8028B260
  * @ghidraAddress EUR: 0x8028d9c0
  * @ghidraAddress JPN: 0x8028d3f0
  * @ghidraAddress BRD3D: 0x100c129c
@@ -33,6 +34,7 @@ extern s32 g_bVehicleTrackCollisionCorrected;
  * The vehicle the view being drawn follows.
  *
  * @ghidraAddress USA: 0x8028aaf0
+ * @ghidraAddress Asia: 0x8028A640
  * @ghidraAddress EUR: 0x8028ccf8
  * @ghidraAddress JPN: 0x8028c7c8
  * @ghidraAddress BRD3D: 0x106c2cf8
@@ -44,6 +46,7 @@ extern Vehicle *g_pActiveCameraVehicle;
  * Counts down the frames after the chase camera hits the track in a replay.
  *
  * @ghidraAddress USA: 0x8028b7fc
+ * @ghidraAddress Asia: 0x8028B34C
  * @ghidraAddress EUR: 0x8028daac
  * @ghidraAddress JPN: 0x8028d4dc
  * @ghidraAddress BRD3D: 0x10af9bb4
@@ -53,6 +56,7 @@ extern s32 g_dwReplayCameraHoldTimer;
 
 /**
  * @ghidraAddress USA: 0x8028b7f8
+ * @ghidraAddress Asia: 0x8028B348
  * @ghidraAddress EUR: 0x8028daa8
  * @ghidraAddress JPN: 0x8028d4d8
  * @ghidraAddress BRD3D: 0x10af9bb0
@@ -65,6 +69,7 @@ extern s32 g_dwReplayCameraSwitchTimer;
  * checks that many of g_awCameraRayHitInstances.
  *
  * @ghidraAddress USA: 0x8028ab00
+ * @ghidraAddress Asia: 0x8028A650
  * @ghidraAddress EUR: 0x8028cd08
  * @ghidraAddress JPN: 0x8028c7d8
  * @ghidraAddress BRD3D: 0x106c1988
@@ -76,6 +81,7 @@ extern s32 g_dwCameraRayHitCount;
  * The placed models of the ground below the active camera, the nearest first.
  *
  * @ghidraAddress USA: 0x8031b248
+ * @ghidraAddress Asia: 0x8031AD08
  * @ghidraAddress EUR: 0x8031d748
  * @ghidraAddress JPN: 0x8031c378
  * @ghidraAddress BRD3D: 0x106c6498
@@ -96,6 +102,7 @@ extern "C" {
  * @param camera The camera to move.
  * @param target The point the second line starts from.
  * @ghidraAddress USA: 0x80220810
+ * @ghidraAddress Asia: 0x80220360
  * @ghidraAddress EUR: 0x80221b50
  * @ghidraAddress JPN: 0x80221340
  */
@@ -109,6 +116,7 @@ void ResolveVehicleTrackCollision(Vehicle *vehicle, CameraFrame *camera, Vec3f *
  * @param camera The chase camera.
  * @param share The share of the way to the direction behind, from 0 for none to 1 for all of it.
  * @ghidraAddress USA: 0x80220c58
+ * @ghidraAddress Asia: 0x802207A8
  * @ghidraAddress EUR: 0x80221f98
  * @ghidraAddress JPN: 0x80221788
  */
@@ -119,6 +127,7 @@ void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share);
  *
  * @param vehicle The vehicle whose look-at point to move.
  * @ghidraAddress USA: 0x80220e84
+ * @ghidraAddress Asia: 0x802209D4
  * @ghidraAddress EUR: 0x802221c4
  * @ghidraAddress JPN: 0x802219b4
  */
@@ -130,6 +139,7 @@ void UpdateCameraLookAtTarget(Vehicle *vehicle);
  * @param vehicle The vehicle whose look-at point to point at.
  * @param camera The camera whose axes to build.
  * @ghidraAddress USA: 0x80220ff4
+ * @ghidraAddress Asia: 0x80220B44
  * @ghidraAddress EUR: 0x80222334
  * @ghidraAddress JPN: 0x80221b24
  */
@@ -140,6 +150,7 @@ void ComputeCameraBasis(Vehicle *vehicle, CameraFrame *camera);
  *
  * @param vehicle The vehicle the camera watches.
  * @ghidraAddress USA: 0x80221108
+ * @ghidraAddress Asia: 0x80220C58
  * @ghidraAddress EUR: 0x80222448
  * @ghidraAddress JPN: 0x80221c38
  */
@@ -169,6 +180,7 @@ extern "C" {
  *
  * @param vehicle The vehicle whose cameras to update.
  * @ghidraAddress USA: 0x80221170
+ * @ghidraAddress Asia: 0x80220CC0
  * @ghidraAddress EUR: 0x80222600
  * @ghidraAddress JPN: 0x80221df0
  */
@@ -186,6 +198,7 @@ extern "C" {
  *
  * @param vehicle The vehicle whose cameras to set up.
  * @ghidraAddress USA: 0x80221864
+ * @ghidraAddress Asia: 0x802213B4
  * @ghidraAddress EUR: 0x80222ba4
  * @ghidraAddress JPN: 0x80222394
  */
@@ -204,6 +217,7 @@ void InitCameraForVehicle(Vehicle *vehicle);
  * @param width The width of the rectangle.
  * @param height The height of the rectangle.
  * @ghidraAddress USA: 0x8021b2f8
+ * @ghidraAddress Asia: 0x8021AE48
  * @ghidraAddress EUR: 0x8021c434
  * @ghidraAddress JPN: 0x8021bd04
  * @ghidraAddress BRD3D: 0x10033e83
@@ -216,6 +230,7 @@ void SetupCameraMatrix(CameraFrame *camera, f32 fov, f32 farDistance, f32 width,
  * large.
  *
  * @ghidraAddress USA: 0x8028aa54
+ * @ghidraAddress Asia: 0x8028A5A4
  * @ghidraAddress EUR: 0x8028cc5c
  * @ghidraAddress JPN: 0x8028c72c
  */
@@ -226,6 +241,7 @@ extern s32 g_dwRearViewMirrorMode;
  * What CastRayAgainstTrack() found below the camera of the view being drawn.
  *
  * @ghidraAddress USA: 0x8028aaf8
+ * @ghidraAddress Asia: 0x8028A648
  * @ghidraAddress EUR: 0x8028cd00
  * @ghidraAddress JPN: 0x8028c7d0
  */
@@ -235,6 +251,7 @@ extern f32 g_fCameraRayGroundDistance;
 #if !TGR_BOSS_RALLY
 /**
  * @ghidraAddress USA: 0x8028aafc
+ * @ghidraAddress Asia: 0x8028A64C
  * @ghidraAddress EUR: 0x8028cd04
  * @ghidraAddress JPN: 0x8028c7d4
  */
@@ -244,6 +261,7 @@ extern s32 g_dwCameraRayGroundSurface;
 #if !TGR_BOSS_RALLY
 /**
  * @ghidraAddress USA: 0x8028ab04
+ * @ghidraAddress Asia: 0x8028A654
  * @ghidraAddress EUR: 0x8028cd0c
  * @ghidraAddress JPN: 0x8028c7dc
  */
@@ -252,6 +270,7 @@ extern s32 g_dwCameraRayNearbyCount;
 
 /**
  * @ghidraAddress USA: 0x8031b288
+ * @ghidraAddress Asia: 0x8031AD48
  * @ghidraAddress EUR: 0x8031d788
  * @ghidraAddress JPN: 0x8031c3b8
  */
@@ -261,6 +280,7 @@ extern u16 g_awCameraRayNearbyInstances[];
  * The middle of the far rectangle of the view.
  *
  * @ghidraAddress USA: 0x8031abf0
+ * @ghidraAddress Asia: 0x8031A6B0
  * @ghidraAddress EUR: 0x8031d0f0
  * @ghidraAddress JPN: 0x8031bd20
  * @ghidraAddress BRD3D: 0x106c2990
@@ -272,6 +292,7 @@ extern Vec3f g_afFrustumCenter;
  * Half the far rectangle of the view, across.
  *
  * @ghidraAddress USA: 0x8031abd0
+ * @ghidraAddress Asia: 0x8031A690
  * @ghidraAddress EUR: 0x8031d0d0
  * @ghidraAddress JPN: 0x8031bd00
  * @ghidraAddress BRD3D: 0x106c56f8
@@ -283,6 +304,7 @@ extern Vec3f g_vFrustumHalfRight;
  * Half the far rectangle of the view, up.
  *
  * @ghidraAddress USA: 0x8031abe0
+ * @ghidraAddress Asia: 0x8031A6A0
  * @ghidraAddress EUR: 0x8031d0e0
  * @ghidraAddress JPN: 0x8031bd10
  * @ghidraAddress BRD3D: 0x106c0690
@@ -299,6 +321,7 @@ extern Vec3f g_vFrustumHalfUp;
  * @param width The width of the view.
  * @param height The height of the view.
  * @ghidraAddress USA: 0x8021b0c4
+ * @ghidraAddress Asia: 0x8021AC14
  * @ghidraAddress EUR: 0x8021c200
  * @ghidraAddress JPN: 0x8021bad0
  * @ghidraAddress BRD3D: 0x10033cb1

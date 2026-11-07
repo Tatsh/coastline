@@ -59,6 +59,7 @@ void InitPlayerProfileDefaults(PlayerProfile *profile, s32 trackCount);
  * The profiles of the two players a controller pak saves.
  *
  * @ghidraAddress USA: 0x80324300
+ * @ghidraAddress Asia: 0x80323DC0
  * @ghidraAddress EUR: 0x80326840
  * @ghidraAddress JPN: 0x80325470
  * @ghidraAddress BRD3D: 0x10af9890

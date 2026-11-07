@@ -18,6 +18,7 @@
  * The display list of g_aClipRatioDisplayLists a frame starts with.
  *
  * @ghidraAddress USA: 0x8028a8a4
+ * @ghidraAddress Asia: 0x8028A3F4
  * @ghidraAddress EUR: 0x8028caa8
  * @ghidraAddress JPN: 0x8028c578
  * @ghidraAddress BRD3D: 0x106c65fc

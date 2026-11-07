@@ -14,6 +14,7 @@ extern "C" {
  * @param romOffset The cartridge offset to copy from.
  * @param size The number of bytes to copy.
  * @ghidraAddress USA: 0x8021c748
+ * @ghidraAddress Asia: 0x8021C298
  * @ghidraAddress EUR: 0x8021d948
  * @ghidraAddress JPN: 0x8021d218
  * @ghidraAddress BRD3D: 0x100378a0
@@ -27,6 +28,7 @@ void DmaRead(void *dst, u32 romOffset, s32 size);
  * @param romOffset The cartridge offset of the word.
  * @return The word.
  * @ghidraAddress USA: 0x8021c848
+ * @ghidraAddress Asia: 0x8021C398
  * @ghidraAddress EUR: 0x8021da48
  * @ghidraAddress JPN: 0x8021d318
  * @ghidraAddress BRD3D: 0x10034ca8
@@ -40,6 +42,7 @@ u32 DmaReadWord(u32 romOffset);
  * @param romOffset The cartridge offset of the asset.
  * @return The size of the asset once decompressed, in bytes.
  * @ghidraAddress USA: 0x8021c814
+ * @ghidraAddress Asia: 0x8021C364
  * @ghidraAddress EUR: 0x8021da14
  * @ghidraAddress JPN: 0x8021d2e4
  * @ghidraAddress BRD3D: 0x10034c88
@@ -70,6 +73,7 @@ typedef struct {
  * The buffers that decompressions read their compressed data into.
  *
  * @ghidraAddress USA: 0x802f7f00
+ * @ghidraAddress Asia: 0x802F79C0
  * @ghidraAddress EUR: 0x802f9bf0
  * @ghidraAddress JPN: 0x802f8630
  */
@@ -81,6 +85,7 @@ extern u8 g_aDmaWorkBuffers[];
  * @param job The decompression to start.
  * @param buffer The memory to read the compressed data into.
  * @ghidraAddress USA: 0x8021cd24
+ * @ghidraAddress Asia: 0x8021C874
  * @ghidraAddress EUR: 0x8021df24
  * @ghidraAddress JPN: 0x8021d7f4
  * @ghidraAddress BRD3D: 0x10035041
@@ -97,6 +102,7 @@ void InitDmaRequest(DecompressJob *job, u8 *buffer);
  * NULL to decompress the asset whole.
  * @return The size of the asset once decompressed, or zero on Windows.
  * @ghidraAddress USA: 0x8021cd30
+ * @ghidraAddress Asia: 0x8021C880
  * @ghidraAddress EUR: 0x8021df30
  * @ghidraAddress JPN: 0x8021d800
  * @ghidraAddress BRD3D: 0x10035059
@@ -112,6 +118,7 @@ u32 DecompressFromRom(void *dst, u32 romOffset, DecompressJob *job);
  * The words the DMA reads sizes and chunk lengths into.
  *
  * @ghidraAddress USA: 0x8031b328
+ * @ghidraAddress Asia: 0x8031ADE8
  * @ghidraAddress EUR: 0x8031d838
  * @ghidraAddress JPN: 0x8031c468
  * @ghidraAddress BRD3D: 0x106c0938
@@ -121,6 +128,7 @@ extern u32 g_dwDmaAssetSizeBuffer;
 
 /**
  * @ghidraAddress USA: 0x8031b330
+ * @ghidraAddress Asia: 0x8031ADF0
  * @ghidraAddress EUR: 0x8031d840
  * @ghidraAddress JPN: 0x8031c470
  * @ghidraAddress BRD3D: 0x106c3300

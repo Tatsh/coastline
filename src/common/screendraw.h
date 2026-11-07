@@ -14,6 +14,7 @@ extern "C" {
  * @param green The green component, from 0 to 255.
  * @param blue The blue component, from 0 to 255.
  * @ghidraAddress USA: 0x80217fb8
+ * @ghidraAddress Asia: 0x80217B08
  * @ghidraAddress EUR: 0x80218fd8
  * @ghidraAddress JPN: 0x80218928
  * @ghidraAddress BRD3D: 0x100314e8
@@ -30,6 +31,7 @@ void ClearScreen(s32 red, s32 green, s32 blue);
  * @param height The height, in pixels.
  * @param setScissor Non-zero to set the scissor to the rectangle as well.
  * @ghidraAddress USA: 0x80219bf0
+ * @ghidraAddress Asia: 0x80219740
  * @ghidraAddress EUR: 0x8021ac10
  * @ghidraAddress JPN: 0x8021a568
  * @ghidraAddress BRD3D: 0x10032a42
@@ -46,6 +48,7 @@ void SetViewport(s32 x, s32 y, s32 width, s32 height, s32 setScissor);
  * @param height The height of the scissor.
  * @param setScissor Whether the scissor is set.
  * @ghidraAddress USA: 0x80219df0
+ * @ghidraAddress Asia: 0x80219940
  * @ghidraAddress EUR: 0x8021ae10
  * @ghidraAddress JPN: 0x8021a768
  * @ghidraAddress BRD3D: 0x10032c38
@@ -57,6 +60,7 @@ void SetupViewportAndScissor(s32 x, s32 y, s32 width, s32 height, s32 setScissor
  * Load the viewport of the view being drawn again.
  *
  * @ghidraAddress USA: 0x80219f04
+ * @ghidraAddress Asia: 0x80219A54
  * @ghidraAddress EUR: 0x8021af24
  * @ghidraAddress JPN: 0x8021a87c
  * @ghidraAddress BRD3D: 0x10032df2
@@ -72,6 +76,7 @@ void RestoreCurrentViewport(void);
  * @param width The width, in pixels.
  * @param height The height, in pixels.
  * @ghidraAddress USA: 0x80219a78
+ * @ghidraAddress Asia: 0x802195C8
  * @ghidraAddress EUR: 0x8021aa98
  * @ghidraAddress JPN: 0x8021a3f0
  * @ghidraAddress BRD3D: 0x1003289f
@@ -83,6 +88,7 @@ void SetScissorRect(s32 x, s32 y, s32 width, s32 height);
  * The shift from the size of the frame to the size of the frame buffer, 1 in high resolution.
  *
  * @ghidraAddress USA: 0x8028a850
+ * @ghidraAddress Asia: 0x8028A3A0
  * @ghidraAddress EUR: 0x8028ca50
  * @ghidraAddress JPN: 0x8028c520
  * @ghidraAddress BRD3D: 0x106c65e4
@@ -101,6 +107,7 @@ extern s32 g_dwScreenScaleShift;
  * @param green The green of the colour.
  * @param blue The blue of the colour.
  * @ghidraAddress USA: 0x80218104
+ * @ghidraAddress Asia: 0x80217C54
  * @ghidraAddress EUR: 0x80219124
  * @ghidraAddress JPN: 0x80218a74
  * @ghidraAddress BRD3D: 0x10031688
@@ -116,6 +123,7 @@ void DrawFilledRect(s32 x, s32 y, s32 width, s32 height, s32 red, s32 green, s32
  * @param width The width.
  * @param height The height.
  * @ghidraAddress USA: 0x80219f6c
+ * @ghidraAddress Asia: 0x80219ABC
  * @ghidraAddress EUR: 0x8021af8c
  * @ghidraAddress JPN: 0x8021a8e4
  * @ghidraAddress BRD3D: 0x10032e58
@@ -132,6 +140,7 @@ void DrawRdpOutlineRect(s32 x, s32 y, s32 width, s32 height);
  * @param width The width.
  * @param height The height.
  * @ghidraAddress USA: 0x8021a0f8
+ * @ghidraAddress Asia: 0x80219C48
  * @ghidraAddress EUR: 0x8021b118
  * @ghidraAddress JPN: 0x8021aa70
  * @ghidraAddress BRD3D: 0x10032e5d

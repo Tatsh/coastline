@@ -16,6 +16,7 @@ extern "C" {
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8022bcb4
+ * @ghidraAddress Asia: 0x8022B804
  * @ghidraAddress EUR: 0x8022d1c4
  * @ghidraAddress JPN: 0x8022c97c
  */

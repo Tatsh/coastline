@@ -22,6 +22,7 @@ extern "C" {
 /**
  * Scale from byte model coordinates to world coordinates.
  * @ghidraAddress USA: 0x802a9ed4
+ * @ghidraAddress Asia: 0x802A9994
  * @ghidraAddress EUR: 0x802abc24
  * @ghidraAddress JPN: 0x802aaba4
  */
@@ -30,6 +31,7 @@ extern f32 g_fConstInv255_802a9ed4;
 /**
  * The near detail blend threshold.
  * @ghidraAddress USA: 0x802a9ed8
+ * @ghidraAddress Asia: 0x802A9998
  * @ghidraAddress EUR: 0x802abc28
  * @ghidraAddress JPN: 0x802aaba8
  */
@@ -38,6 +40,7 @@ extern f32 g_fConst0p1_802a9ed8;
 /**
  * The minimum light vector length.
  * @ghidraAddress USA: 0x802a9edc
+ * @ghidraAddress Asia: 0x802A999C
  * @ghidraAddress EUR: 0x802abc2c
  * @ghidraAddress JPN: 0x802aabac
  */
@@ -46,6 +49,7 @@ extern f32 g_fConst1em4_802a9edc;
 /**
  * Convert an angular difference in radians to a proportion of pi.
  * @ghidraAddress USA: 0x802a9ee0
+ * @ghidraAddress Asia: 0x802A99A0
  * @ghidraAddress EUR: 0x802abc30
  * @ghidraAddress JPN: 0x802aabb0
  */
@@ -56,6 +60,7 @@ extern f32 g_fConstInvPi_802a9ee0;
  * The model of the vehicle being drawn.
  *
  * @ghidraAddress USA: 0x8028ab08
+ * @ghidraAddress Asia: 0x8028A658
  * @ghidraAddress EUR: 0x8028cd10
  * @ghidraAddress JPN: 0x8028c7e0
  * @ghidraAddress BRD3D: 0x106c3308
@@ -67,6 +72,7 @@ extern VehicleModel *g_pCurrentVehicleModelData;
  * The matrix of the vehicle being drawn, scaled to its model.
  *
  * @ghidraAddress USA: 0x80351cc0
+ * @ghidraAddress Asia: 0x80351780
  * @ghidraAddress EUR: 0x803541c0
  * @ghidraAddress JPN: 0x80352e30
  * @ghidraAddress BRD3D: 0x10277d88
@@ -78,6 +84,7 @@ extern f32 g_mtxVehicleModelScaled[4][4];
  * The blender part of the render mode of the vehicle being drawn, and its other flags.
  *
  * @ghidraAddress USA: 0x8028c300
+ * @ghidraAddress Asia: 0x8028BE50
  * @ghidraAddress EUR: 0x8028ea60
  * @ghidraAddress JPN: 0x8028e4b0
  * @ghidraAddress BRD3D: 0x10277e5c
@@ -88,6 +95,7 @@ extern u32 g_dwVehicleOtherModeLBlend;
 #if !TGR_BOSS_RALLY
 /**
  * @ghidraAddress USA: 0x8028c304
+ * @ghidraAddress Asia: 0x8028BE54
  * @ghidraAddress EUR: 0x8028ea64
  * @ghidraAddress JPN: 0x8028e4b4
  * @ghidraAddress BRD3D: 0x10277e58
@@ -99,6 +107,7 @@ extern u32 g_dwVehicleOtherModeLFlags;
  * The alpha of the fog colour that fades a ghost vehicle.
  *
  * @ghidraAddress USA: 0x80351d00
+ * @ghidraAddress Asia: 0x803517C0
  * @ghidraAddress EUR: 0x80354200
  * @ghidraAddress JPN: 0x80352e70
  * @ghidraAddress BRD3D: 0x10277e14
@@ -110,6 +119,7 @@ extern s32 g_dwVehicleFogAlpha;
  * Whether each vehicle is drawn in the view being drawn.
  *
  * @ghidraAddress USA: 0x80351c80
+ * @ghidraAddress Asia: 0x80351740
  * @ghidraAddress EUR: 0x80354180
  * @ghidraAddress JPN: 0x80352df0
  * @ghidraAddress BRD3D: 0x10277b68
@@ -121,6 +131,7 @@ extern s32 g_adwVehicleInViewRange[MAX_VEHICLES];
  * The level of detail each vehicle is drawn at.
  *
  * @ghidraAddress USA: 0x80351c90
+ * @ghidraAddress Asia: 0x80351750
  * @ghidraAddress EUR: 0x80354190
  * @ghidraAddress JPN: 0x80352e00
  * @ghidraAddress BRD3D: 0x10277d38
@@ -131,6 +142,7 @@ extern s32 g_anVehicleLod[MAX_VEHICLES];
  * The matrix of each vehicle, scaled to its model.
  *
  * @ghidraAddress USA: 0x80351ca0
+ * @ghidraAddress Asia: 0x80351760
  * @ghidraAddress EUR: 0x803541a0
  * @ghidraAddress JPN: 0x80352e10
  * @ghidraAddress BRD3D: 0x10277dc8
@@ -146,6 +158,7 @@ extern Mtx *g_apVehicleModelMatrix[MAX_VEHICLES];
  * The matrix of each vehicle with the view and projection, forced for its lighting.
  *
  * @ghidraAddress USA: 0x80351cb0
+ * @ghidraAddress Asia: 0x80351770
  * @ghidraAddress EUR: 0x803541b0
  * @ghidraAddress JPN: 0x80352e20
  * @ghidraAddress BRD3D: 0x10277e18
@@ -161,6 +174,7 @@ extern Mtx *g_apVehicleLightMatrix[MAX_VEHICLES];
  * The lights of each vehicle at night or in the rain.
  *
  * @ghidraAddress USA: 0x80351c10
+ * @ghidraAddress Asia: 0x803516D0
  * @ghidraAddress EUR: 0x80354110
  * @ghidraAddress JPN: 0x80352d80
  * @ghidraAddress BRD3D: 0x10277bb8
@@ -171,6 +185,7 @@ extern Lights1 g_aVehicleLights[MAX_VEHICLES];
  * The direction of the light on the vehicle being drawn.
  *
  * @ghidraAddress USA: 0x80351d08
+ * @ghidraAddress Asia: 0x803517C8
  * @ghidraAddress EUR: 0x80354208
  * @ghidraAddress JPN: 0x80352e78
  * @ghidraAddress BRD3D: 0x10277ba8
@@ -181,6 +196,7 @@ extern Vec3f g_vecVehicleLightDir;
  * The direction of the specular highlight: halfway between the light and the camera.
  *
  * @ghidraAddress USA: 0x80351d18
+ * @ghidraAddress Asia: 0x803517D8
  * @ghidraAddress EUR: 0x80354218
  * @ghidraAddress JPN: 0x80352e88
  * @ghidraAddress BRD3D: 0x10277d78
@@ -191,6 +207,7 @@ extern Vec3f g_vecVehicleHiliteDir;
  * The palette the textured parts of the cars share.
  *
  * @ghidraAddress USA: 0x8028c340
+ * @ghidraAddress Asia: 0x8028BE90
  * @ghidraAddress EUR: 0x8028eaa0
  * @ghidraAddress JPN: 0x8028e4f0
  * @ghidraAddress BRD3D: 0x100a64c8
@@ -203,6 +220,7 @@ extern u16 g_awVehicleShadePalette[16];
  * Whether every vehicle is drawn in its other look, as Vehicle.otherLook draws one.
  *
  * @ghidraAddress USA: 0x8028ddc8
+ * @ghidraAddress Asia: 0x8028D918
  * @ghidraAddress EUR: 0x80290568
  * @ghidraAddress JPN: 0x80290008
  * @ghidraAddress BRD3D: 0x10277b1c
@@ -214,6 +232,7 @@ extern s32 g_bForceVehicleAltVariant;
  * Whether the reflection of the sky takes its coordinates linearly from the normals.
  *
  * @ghidraAddress USA: 0x8028ddcc
+ * @ghidraAddress Asia: 0x8028D91C
  * @ghidraAddress EUR: 0x8029056c
  * @ghidraAddress JPN: 0x8029000c
  * @ghidraAddress BRD3D: 0x100a6380
@@ -225,6 +244,7 @@ extern s32 g_bVehicleEnvMapLinearTexGen;
  * Whether the paint shop shows a car, which has no specular highlight.
  *
  * @ghidraAddress USA: 0x8028c334
+ * @ghidraAddress Asia: 0x8028BE84
  * @ghidraAddress EUR: 0x8028ea94
  * @ghidraAddress JPN: 0x8028e4e4
  */
@@ -234,6 +254,7 @@ extern s32 g_bPaintShopPreviewActive;
  * The 64 by 64 texture of 4-bit intensities of the specular highlight, by day and by night.
  *
  * @ghidraAddress USA: 0x802a1968
+ * @ghidraAddress Asia: 0x802A14B8
  * @ghidraAddress EUR: 0x802a4128
  * @ghidraAddress JPN: 0x802a3bc8
  */
@@ -241,6 +262,7 @@ extern u8 g_aVehicleHighlightTexture[];
 
 /**
  * @ghidraAddress USA: 0x802a2170
+ * @ghidraAddress Asia: 0x802A1CC0
  * @ghidraAddress EUR: 0x802a4930
  * @ghidraAddress JPN: 0x802a43d0
  */
@@ -250,6 +272,7 @@ extern u8 g_aVehicleNightHighlightTexture[];
  * A count of frames; the fan of the speedometer needle is built while it is 0.
  *
  * @ghidraAddress USA: 0x8028c360
+ * @ghidraAddress Asia: 0x8028BEB0
  * @ghidraAddress EUR: 0x8028eac0
  * @ghidraAddress JPN: 0x8028e510
  */
@@ -259,6 +282,7 @@ extern s32 g_dwGameFrameCount;
  * The white disc of the stage of the cars of a menu: its centre and 30 points around it.
  *
  * @ghidraAddress USA: 0x80351a20
+ * @ghidraAddress Asia: 0x803514E0
  * @ghidraAddress EUR: 0x80353f20
  * @ghidraAddress JPN: 0x80352b90
  */
@@ -268,6 +292,7 @@ extern Vtx g_aCarStageDiscVertices[32];
  * The scale and the turn of the disc and the choice marker of the stage of the cars.
  *
  * @ghidraAddress USA: 0x803519e0
+ * @ghidraAddress Asia: 0x803514A0
  * @ghidraAddress EUR: 0x80353ee0
  * @ghidraAddress JPN: 0x80352b50
  */
@@ -277,6 +302,7 @@ extern Mtx g_CarStageMtx;
  * The disc of the stage of the cars, a fan of shaded triangles drawn without the depth buffer.
  *
  * @ghidraAddress USA: 0x8028c368
+ * @ghidraAddress Asia: 0x8028BEB8
  * @ghidraAddress EUR: 0x8028eac8
  * @ghidraAddress JPN: 0x8028e518
  */
@@ -287,6 +313,7 @@ extern Gfx g_aCarStageDiscDisplayList[];
  * shadow.
  *
  * @ghidraAddress USA: 0x8028c4f0
+ * @ghidraAddress Asia: 0x8028C040
  * @ghidraAddress EUR: 0x8028ec50
  * @ghidraAddress JPN: 0x8028e6a0
  */
@@ -296,6 +323,7 @@ extern Gfx g_aCarStageChoiceMarkerDisplayList[];
  * The shadow a car casts on the stage of a menu.
  *
  * @ghidraAddress USA: 0x8028c5d8
+ * @ghidraAddress Asia: 0x8028C128
  * @ghidraAddress EUR: 0x8028ed38
  * @ghidraAddress JPN: 0x8028e788
  */
@@ -307,6 +335,7 @@ extern Gfx g_aCarStageShadowDisplayList[];
  *
  * @param index The index of the vehicle in g_aVehicles.
  * @ghidraAddress USA: 0x8022fef0
+ * @ghidraAddress Asia: 0x8022FA40
  * @ghidraAddress EUR: 0x80231400
  * @ghidraAddress JPN: 0x80231200
  */
@@ -318,6 +347,7 @@ void TransformWheelPositions(s32 index);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8022ffb4
+ * @ghidraAddress Asia: 0x8022FB04
  * @ghidraAddress EUR: 0x802314c4
  * @ghidraAddress JPN: 0x802312c4
  * @ghidraAddress BRD3D: 0x1000c6e0
@@ -330,6 +360,7 @@ void RenderWheelModels(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x802303d4
+ * @ghidraAddress Asia: 0x8022FF24
  * @ghidraAddress EUR: 0x802318e4
  * @ghidraAddress JPN: 0x802316e4
  * @ghidraAddress BRD3D: 0x1000ca90
@@ -344,6 +375,7 @@ void CheckVehicleVisibility(Vehicle *vehicle);
  * @param vehicle The vehicle.
  * @param lodOffset How many levels of detail coarser it is drawn, up to the coarsest.
  * @ghidraAddress USA: 0x80230554
+ * @ghidraAddress Asia: 0x802300A4
  * @ghidraAddress EUR: 0x80231a64
  * @ghidraAddress JPN: 0x80231864
  * @ghidraAddress BRD3D: 0x1000cbe0
@@ -357,6 +389,7 @@ void RenderVehicleModel(Vehicle *vehicle, s32 lodOffset);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x80232ed4
+ * @ghidraAddress Asia: 0x80232A24
  * @ghidraAddress EUR: 0x802343e4
  * @ghidraAddress JPN: 0x802341e4
  * @ghidraAddress BRD3D: 0x1000e950
@@ -369,6 +402,7 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle);
  *
  * @param vehicle The vehicle, which is not used.
  * @ghidraAddress USA: 0x80233494
+ * @ghidraAddress Asia: 0x80232FE4
  * @ghidraAddress EUR: 0x802349a4
  * @ghidraAddress JPN: 0x802347a4
  */
@@ -379,6 +413,7 @@ void DrawCarStageDisc(Vehicle *vehicle);
  *
  * @param vehicle The vehicle, which is not used.
  * @ghidraAddress USA: 0x80233668
+ * @ghidraAddress Asia: 0x802331B8
  * @ghidraAddress EUR: 0x80234b78
  * @ghidraAddress JPN: 0x80234978
  */
@@ -389,6 +424,7 @@ void DrawCarStageChoiceMarker(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x802336e0
+ * @ghidraAddress Asia: 0x80233230
  * @ghidraAddress EUR: 0x80234bf0
  * @ghidraAddress JPN: 0x802349f0
  */

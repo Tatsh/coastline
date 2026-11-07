@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Regenerate the assembly of one release (us, jp, or eu, default us) after names change in Ghidra.
+# Regenerate one release's assembly after names change in Ghidra.
+# The release is us, jp, eu, or asia; the default is us.
 # The Ghidra project must be open with the HTTP bridge on port GHIDRA_PORT (default 8090).
 # TGR_ROM is the cartridge image. The routines src/n64/asm/<region>/converted.txt records
 # are removed again.

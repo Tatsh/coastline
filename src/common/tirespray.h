@@ -12,6 +12,7 @@ extern "C" {
  * segments by one when a wheel begins a new one, and fade the old.
  *
  * @ghidraAddress USA: 0x8023bf60
+ * @ghidraAddress Asia: 0x8023BAB0
  * @ghidraAddress EUR: 0x8023d470
  * @ghidraAddress JPN: 0x8023cf70
  * @ghidraAddress BRD3D: 0x100397c0

@@ -16,6 +16,7 @@ extern "C" {
  * Number of local players.
  *
  * @ghidraAddress USA: 0x8026ff08
+ * @ghidraAddress Asia: 0x8026FA58
  * @ghidraAddress EUR: 0x80271ed8
  * @ghidraAddress JPN: 0x80271988
  * @ghidraAddress BRD3D: 0x100b4050
@@ -28,6 +29,7 @@ extern u32 g_dwNumLocalPlayers;
  * Signed view of the local-player count used by N64 menus.
  *
  * @ghidraAddress USA: 0x8026ff08
+ * @ghidraAddress Asia: 0x8026FA58
  * @ghidraAddress EUR: 0x80271ed8
  * @ghidraAddress JPN: 0x80271988
  */
@@ -60,6 +62,7 @@ enum {
  * The mode of play the main menu chose.
  *
  * @ghidraAddress USA: 0x8026ff18
+ * @ghidraAddress Asia: 0x8026FA68
  * @ghidraAddress EUR: 0x80271ee8
  * @ghidraAddress JPN: 0x80271998
  * @ghidraAddress BRD3D: 0x100aa010
@@ -71,6 +74,7 @@ extern s32 g_dwGameMode;
  * The race the computer drives, by the RACE_SESSION_ values.
  *
  * @ghidraAddress USA: 0x8026ff1c
+ * @ghidraAddress Asia: 0x8026FA6C
  * @ghidraAddress EUR: 0x80271eec
  * @ghidraAddress JPN: 0x8027199c
  * @ghidraAddress BRD3D: 0x106805b8
@@ -93,6 +97,7 @@ extern int g_bNetSpectator;
  *
  * @param weather The weather, a `WEATHER_*` value.
  * @ghidraAddress USA: 0x80200050
+ * @ghidraAddress Asia: 0x80200050
  * @ghidraAddress EUR: 0x80200050
  * @ghidraAddress JPN: 0x80200050
  * @ghidraAddress BRD3D: 0x10069740
@@ -115,6 +120,7 @@ void SetWeatherAndRefreshVehicleMaterials(u32 weather);
  * The screen routine of the main menu.
  *
  * @ghidraAddress USA: 0x80200108
+ * @ghidraAddress Asia: 0x80200108
  * @ghidraAddress EUR: 0x80200108
  * @ghidraAddress JPN: 0x80200108
  */
@@ -125,6 +131,7 @@ void MainMenuEntry(void);
  *
  * @param players The number of local players.
  * @ghidraAddress USA: 0x80200128
+ * @ghidraAddress Asia: 0x80200128
  * @ghidraAddress EUR: 0x80200128
  * @ghidraAddress JPN: 0x80200128
  * @ghidraAddress BRD3D: 0x100697e0
@@ -136,6 +143,7 @@ void StartRaceWithPlayerCount(u32 players);
  * Reset the vehicle and the input of every player.
  *
  * @ghidraAddress USA: 0x80200154
+ * @ghidraAddress Asia: 0x80200154
  * @ghidraAddress EUR: 0x80200154
  * @ghidraAddress JPN: 0x80200154
  * @ghidraAddress BRD3D: 0x10069800
@@ -148,6 +156,7 @@ void ResetAllPlayers(void);
  * enter the main loop. The routine takes no parameter, and the argument of the thread is ignored.
  *
  * @ghidraAddress USA: 0x802001b4
+ * @ghidraAddress Asia: 0x802001B4
  * @ghidraAddress EUR: 0x802001b4
  * @ghidraAddress JPN: 0x802001b4
  * @ghidraAddress BRD3D: 0x10069840
@@ -159,6 +168,7 @@ void InitGameAndShowMenus(void);
  * Start the race the computer drives after the splash screens.
  *
  * @ghidraAddress USA: 0x802005fc
+ * @ghidraAddress Asia: 0x802005FC
  * @ghidraAddress EUR: 0x8020062c
  * @ghidraAddress JPN: 0x802005ec
  */
@@ -169,6 +179,7 @@ void StartAttractDemo(void);
  * scrolling credits in two-player mode and the captions otherwise.
  *
  * @ghidraAddress USA: 0x80200634
+ * @ghidraAddress Asia: 0x80200634
  * @ghidraAddress EUR: 0x80200664
  * @ghidraAddress JPN: 0x80200624
  */
@@ -178,6 +189,7 @@ void StartCreditsRace(void);
  * Start the race under the scrolling credits, after the last season of the championship.
  *
  * @ghidraAddress USA: 0x8020068c
+ * @ghidraAddress Asia: 0x8020068C
  * @ghidraAddress EUR: 0x802006bc
  * @ghidraAddress JPN: 0x8020067c
  * @ghidraAddress BRD3D: 0x1002c390

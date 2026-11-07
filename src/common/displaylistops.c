@@ -15,6 +15,7 @@ namespace {
      * Whether ProcessDisplayList() tints the colour combines of the snow. It clears this.
      *
      * @ghidraAddress USA: 0x8028ade8
+     * @ghidraAddress Asia: 0x8028A938
      * @ghidraAddress EUR: 0x8028d098
      * @ghidraAddress JPN: 0x8028cac8
      * @ghidraAddress BRD3D: 0x106c666c

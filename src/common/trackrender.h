@@ -23,6 +23,7 @@ extern "C" {
  * The profile used for the active season when selecting track instances.
  *
  * @ghidraAddress USA: 0x8031c5bc
+ * @ghidraAddress Asia: 0x8031C07C
  * @ghidraAddress EUR: 0x8031eabc
  * @ghidraAddress JPN: 0x8031d6ec
  */
@@ -33,6 +34,7 @@ extern PlayerProfile *g_pActiveProfile;
  * screen rectangle.
  *
  * @ghidraAddress USA: 0x8028aa60
+ * @ghidraAddress Asia: 0x8028A5B0
  * @ghidraAddress EUR: 0x8028cc68
  * @ghidraAddress JPN: 0x8028c738
  * @ghidraAddress BRD3D: 0x106c660c
@@ -55,6 +57,7 @@ typedef struct {
  * The cells in view, the nearest first, ending with a column of 0xFF.
  *
  * @ghidraAddress USA: 0x8035d1d0
+ * @ghidraAddress Asia: 0x8035CC90
  * @ghidraAddress EUR: 0x8035f6d0
  * @ghidraAddress JPN: 0x8035e340
  * @ghidraAddress BRD3D: 0x10364000
@@ -66,6 +69,7 @@ extern VisibleCell g_aVisibleCellTuples[VISIBLE_CELLS + 1];
  * Whether the cells in view were more than #VISIBLE_CELLS.
  *
  * @ghidraAddress USA: 0x8028c76c
+ * @ghidraAddress Asia: 0x8028C2BC
  * @ghidraAddress EUR: 0x8028eecc
  * @ghidraAddress JPN: 0x8028e91c
  * @ghidraAddress BRD3D: 0x102e5ed0
@@ -77,6 +81,7 @@ extern s32 g_bVisibleCellListOverflow;
  * The placed models in view this frame.
  *
  * @ghidraAddress USA: 0x8028c740
+ * @ghidraAddress Asia: 0x8028C290
  * @ghidraAddress EUR: 0x8028eea0
  * @ghidraAddress JPN: 0x8028e8f0
  * @ghidraAddress BRD3D: 0x103643a4
@@ -89,6 +94,7 @@ extern s32 g_nVisibleInstanceCount;
  * enough to cast its shadow on it.
  *
  * @ghidraAddress USA: 0x80351d80
+ * @ghidraAddress Asia: 0x80351840
  * @ghidraAddress EUR: 0x80354280
  * @ghidraAddress JPN: 0x80352ef0
  * @ghidraAddress BRD3D: 0x1038b4c0
@@ -101,6 +107,7 @@ extern u8 g_abInstanceVisibilityMask[];
  * than 1 or, in a replay from the trackside camera, 3, and within 3 cells of the far plane, or -1.
  *
  * @ghidraAddress USA: 0x8028c778
+ * @ghidraAddress Asia: 0x8028C2C8
  * @ghidraAddress EUR: 0x8028eed8
  * @ghidraAddress JPN: 0x8028e928
  * @ghidraAddress BRD3D: 0x10363fec
@@ -110,6 +117,7 @@ extern s32 g_nVisibleCellIdxNear;
 
 /**
  * @ghidraAddress USA: 0x8028c788
+ * @ghidraAddress Asia: 0x8028C2D8
  * @ghidraAddress EUR: 0x8028eee8
  * @ghidraAddress JPN: 0x8028e938
  * @ghidraAddress BRD3D: 0x102e5ec0
@@ -119,6 +127,7 @@ extern s32 g_nVisibleCellIdxMid;
 
 /**
  * @ghidraAddress USA: 0x8028c780
+ * @ghidraAddress Asia: 0x8028C2D0
  * @ghidraAddress EUR: 0x8028eee0
  * @ghidraAddress JPN: 0x8028e930
  * @ghidraAddress BRD3D: 0x102e5f24
@@ -132,6 +141,7 @@ extern s32 g_nVisibleCellIdxFar;
  * them without shadows, and 0x1000 until it is known.
  *
  * @ghidraAddress USA: 0x8028c78c
+ * @ghidraAddress Asia: 0x8028C2DC
  * @ghidraAddress EUR: 0x8028eeec
  * @ghidraAddress JPN: 0x8028e93c
  * @ghidraAddress BRD3D: 0x102e54b8
@@ -145,6 +155,7 @@ extern s32 g_nTrackTransparentStartIdx;
  * Set to 0x1000 with g_nTrackTransparentStartIdx, and never read.
  *
  * @ghidraAddress USA: 0x8028c77c
+ * @ghidraAddress Asia: 0x8028C2CC
  * @ghidraAddress EUR: 0x8028eedc
  * @ghidraAddress JPN: 0x8028e92c
  * @ghidraAddress BRD3D: 0x102e5ed4
@@ -156,6 +167,7 @@ extern s32 g_nTrackTransparentStartIdxNear;
 #if !TGR_BOSS_RALLY
 /**
  * @ghidraAddress USA: 0x8028c784
+ * @ghidraAddress Asia: 0x8028C2D4
  * @ghidraAddress EUR: 0x8028eee4
  * @ghidraAddress JPN: 0x8028e934
  * @ghidraAddress BRD3D: 0x102e54b4
@@ -169,6 +181,7 @@ extern s32 g_nTrackTransparentStartIdxFar;
  * The last translucent model left for the second pass, or -1.
  *
  * @ghidraAddress USA: 0x8028c748
+ * @ghidraAddress Asia: 0x8028C298
  * @ghidraAddress EUR: 0x8028eea8
  * @ghidraAddress JPN: 0x8028e8f8
  */
@@ -180,6 +193,7 @@ extern s32 g_nDeferredInstanceLastIdx;
  * The TRACK_INSTANCE_ flags of the placed models not drawn.
  *
  * @ghidraAddress USA: 0x8035d520
+ * @ghidraAddress Asia: 0x8035CFE0
  * @ghidraAddress EUR: 0x8035fa20
  * @ghidraAddress JPN: 0x8035e690
  */
@@ -190,6 +204,7 @@ extern u32 g_dwInstanceHideFlags;
  * The groups of placed models hidden from the camera.
  *
  * @ghidraAddress USA: 0x8028c770
+ * @ghidraAddress Asia: 0x8028C2C0
  * @ghidraAddress EUR: 0x8028eed0
  * @ghidraAddress JPN: 0x8028e920
  * @ghidraAddress BRD3D: 0x1039b6cc
@@ -202,6 +217,7 @@ extern u16 g_wActiveInstanceHideMask;
  * Whether g_nDebugHiddenInstanceIndex is left undrawn.
  *
  * @ghidraAddress USA: 0x8028c758
+ * @ghidraAddress Asia: 0x8028C2A8
  * @ghidraAddress EUR: 0x8028eeb8
  * @ghidraAddress JPN: 0x8028e908
  * @ghidraAddress BRD3D: 0x1039b6c4
@@ -214,6 +230,7 @@ extern s32 g_bDebugHideInstance;
  * The blender and the other bits of the render mode of the track.
  *
  * @ghidraAddress USA: 0x8028c74c
+ * @ghidraAddress Asia: 0x8028C29C
  * @ghidraAddress EUR: 0x8028eeac
  * @ghidraAddress JPN: 0x8028e8fc
  * @ghidraAddress BRD3D: 0x1036439c
@@ -223,6 +240,7 @@ extern u32 g_dwTrackOtherModeLBlend;
 
 /**
  * @ghidraAddress USA: 0x8028c750
+ * @ghidraAddress Asia: 0x8028C2A0
  * @ghidraAddress EUR: 0x8028eeb0
  * @ghidraAddress JPN: 0x8028e900
  * @ghidraAddress BRD3D: 0x103643a0
@@ -235,6 +253,7 @@ extern u32 g_dwTrackOtherModeLFlags;
  * The vehicles nearest the camera that cast shadows, nearest first.
  *
  * @ghidraAddress USA: 0x8035d4fc
+ * @ghidraAddress Asia: 0x8035CFBC
  * @ghidraAddress EUR: 0x8035f9fc
  * @ghidraAddress JPN: 0x8035e66c
  * @ghidraAddress BRD3D: 0x102e5ed8
@@ -244,6 +263,7 @@ extern s32 g_nNearbyVehicleCount;
 
 /**
  * @ghidraAddress USA: 0x8035d4e8
+ * @ghidraAddress Asia: 0x8035CFA8
  * @ghidraAddress EUR: 0x8035f9e8
  * @ghidraAddress JPN: 0x8035e658
  * @ghidraAddress BRD3D: 0x102e5ee0
@@ -254,6 +274,7 @@ extern s32 g_anNearbyVehicleIdx[MAX_VEHICLES];
  * How far ahead of the camera each one is.
  *
  * @ghidraAddress USA: 0x8035d4d8
+ * @ghidraAddress Asia: 0x8035CF98
  * @ghidraAddress EUR: 0x8035f9d8
  * @ghidraAddress JPN: 0x8035e648
  * @ghidraAddress BRD3D: 0x10363f28
@@ -264,6 +285,7 @@ extern f32 g_afNearbyVehicleDot[MAX_VEHICLES];
  * From the camera to a vehicle.
  *
  * @ghidraAddress USA: 0x8035d500
+ * @ghidraAddress Asia: 0x8035CFC0
  * @ghidraAddress EUR: 0x8035fa00
  * @ghidraAddress JPN: 0x8035e670
  * @ghidraAddress BRD3D: 0x102e54a8
@@ -275,6 +297,7 @@ extern Vec3f g_vVehicleVisibilityDelta;
  * The largest absolute value of the first three rows of g_afViewProjMatrix.
  *
  * @ghidraAddress USA: 0x8035d51c
+ * @ghidraAddress Asia: 0x8035CFDC
  * @ghidraAddress EUR: 0x8035fa1c
  * @ghidraAddress JPN: 0x8035e68c
  */
@@ -285,6 +308,7 @@ extern f32 g_fViewMatrixMaxAbs;
  * The look-at of the reflections of the track.
  *
  * @ghidraAddress USA: 0x8028c774
+ * @ghidraAddress Asia: 0x8028C2C4
  * @ghidraAddress EUR: 0x8028eed4
  * @ghidraAddress JPN: 0x8028e924
  * @ghidraAddress BRD3D: 0x103643b8
@@ -296,6 +320,7 @@ extern LookAt *g_pTrackLookAt;
  * The lights of the track, one of four in turn each frame.
  *
  * @ghidraAddress USA: 0x8028c640
+ * @ghidraAddress Asia: 0x8028C190
  * @ghidraAddress EUR: 0x8028eda0
  * @ghidraAddress JPN: 0x8028e7f0
  * @ghidraAddress BRD3D: 0x100a64e8
@@ -305,6 +330,7 @@ extern Lights1 g_aTrackLights[4];
 
 /**
  * @ghidraAddress USA: 0x8028c6a0
+ * @ghidraAddress Asia: 0x8028C1F0
  * @ghidraAddress EUR: 0x8028ee00
  * @ghidraAddress JPN: 0x8028e850
  * @ghidraAddress BRD3D: 0x10364388
@@ -316,6 +342,7 @@ extern s32 g_nTrackLightBufferIndex;
  * The direction of the light of the track.
  *
  * @ghidraAddress USA: 0x8035d510
+ * @ghidraAddress Asia: 0x8035CFD0
  * @ghidraAddress EUR: 0x8035fa10
  * @ghidraAddress JPN: 0x8035e680
  * @ghidraAddress BRD3D: 0x103643a8
@@ -326,6 +353,7 @@ extern Vec3f g_vTrackLightDirection;
  * The forward of the vehicle whose shadow is being cast, on the ground.
  *
  * @ghidraAddress USA: 0x8035d1c0
+ * @ghidraAddress Asia: 0x8035CC80
  * @ghidraAddress EUR: 0x8035f6c0
  * @ghidraAddress JPN: 0x8035e330
  * @ghidraAddress BRD3D: 0x10364390
@@ -337,6 +365,7 @@ extern Vec3f g_vShadowForward;
 /**
  * Scale of the vehicle shadow along its length.
  * @ghidraAddress USA: 0x802aa004
+ * @ghidraAddress Asia: 0x802A9AC4
  * @ghidraAddress EUR: 0x802abd54
  * @ghidraAddress JPN: 0x802aabe4
  */
@@ -345,6 +374,7 @@ extern const f32 g_fShadowLengthScale;
 /**
  * Scale of the vehicle shadow across its width.
  * @ghidraAddress USA: 0x802aa008
+ * @ghidraAddress Asia: 0x802A9AC8
  * @ghidraAddress EUR: 0x802abd58
  * @ghidraAddress JPN: 0x802aabe8
  */
@@ -374,6 +404,7 @@ void ProjectWorldToScreenRect(
  * @param low The left and the lower edge.
  * @param high The right and the upper edge.
  * @ghidraAddress USA: 0x80233e10
+ * @ghidraAddress Asia: 0x80233960
  * @ghidraAddress EUR: 0x80235320
  * @ghidraAddress JPN: 0x80235120
  */
@@ -404,6 +435,7 @@ void RenderTrackInstance(
  * @param vehicles A bit for each vehicle whose shadow falls on it.
  * @param deferred Whether to draw shadows as translucent in the second pass.
  * @ghidraAddress USA: 0x80234050
+ * @ghidraAddress Asia: 0x80233BA0
  * @ghidraAddress EUR: 0x80235560
  * @ghidraAddress JPN: 0x80235360
  */
@@ -417,6 +449,7 @@ void RenderTrackInstance(s32 index, s32 vehicles, s32 deferred);
  * @param b The second cell.
  * @return -1 when the first is nearer, 1 when the second is, or 0 when they are as near.
  * @ghidraAddress USA: 0x80234fc0
+ * @ghidraAddress Asia: 0x80234B10
  * @ghidraAddress EUR: 0x802364d0
  * @ghidraAddress JPN: 0x802362d0
  * @ghidraAddress BRD3D: 0x10010d90
@@ -443,6 +476,7 @@ void BuildVisibleInstanceList(const ViewportRect *viewports,
  * rectangle of the screen of the shadow of each vehicle.
  *
  * @ghidraAddress USA: 0x80234ff8
+ * @ghidraAddress Asia: 0x80234B48
  * @ghidraAddress EUR: 0x80236508
  * @ghidraAddress JPN: 0x80236308
  */
@@ -471,6 +505,7 @@ void RenderTrackGeometry(const ViewportRect *viewports,
  *
  * @param deferred Whether this is the second pass.
  * @ghidraAddress USA: 0x80235bac
+ * @ghidraAddress Asia: 0x802356FC
  * @ghidraAddress EUR: 0x802370bc
  * @ghidraAddress JPN: 0x80236ebc
  */

@@ -454,6 +454,7 @@ emulatedclock
 encryptionfailed
 encryptionnotsupported
 enddl
+enddlabel
 endforeach
 endfunction
 endlabel
@@ -915,6 +916,7 @@ muxs
 mypy
 nasm
 ncpaint
+ndlabel
 nearbycount
 neff
 negu

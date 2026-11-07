@@ -31,6 +31,7 @@ namespace {
      * screen rectangle.
      *
      * @ghidraAddress USA: 0x8028aa60
+     * @ghidraAddress Asia: 0x8028A5B0
      * @ghidraAddress EUR: 0x8028cc68
      * @ghidraAddress JPN: 0x8028c738
      * @ghidraAddress BRD3D: 0x106c660c

@@ -18,6 +18,7 @@ extern "C" {
  * @param volume The volume, 1024 over the distance, from at least 32.
  * @param narrow Whether to pan only a little.
  * @ghidraAddress USA: 0x8022b1d4
+ * @ghidraAddress Asia: 0x8022AD24
  * @ghidraAddress EUR: 0x8022c6e4
  * @ghidraAddress JPN: 0x8022be9c
  * @ghidraAddress BRD3D: 0x10067bc0

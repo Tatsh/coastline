@@ -15,6 +15,7 @@ u64 g_dwTimingFrameElapsed = 0;
  * Reset at the start of the frame.
  *
  * @ghidraAddress USA: 0x8028bda8
+ * @ghidraAddress Asia: 0x8028B8F8
  * @ghidraAddress EUR: 0x8028e508
  * @ghidraAddress JPN: 0x8028df38
  * @ghidraAddress BRD3D: 0x1067d57c

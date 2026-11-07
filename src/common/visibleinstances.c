@@ -27,6 +27,7 @@ namespace {
      * Whether the cells in view were more than #VISIBLE_CELLS.
      *
      * @ghidraAddress USA: 0x8028c76c
+     * @ghidraAddress Asia: 0x8028C2BC
      * @ghidraAddress EUR: 0x8028eecc
      * @ghidraAddress JPN: 0x8028e91c
      * @ghidraAddress BRD3D: 0x102e5ed0
@@ -36,6 +37,7 @@ namespace {
      * The vehicles nearest the camera that cast shadows, nearest first.
      *
      * @ghidraAddress USA: 0x8035d4fc
+     * @ghidraAddress Asia: 0x8035CFBC
      * @ghidraAddress EUR: 0x8035f9fc
      * @ghidraAddress JPN: 0x8035e66c
      * @ghidraAddress BRD3D: 0x102e5ed8

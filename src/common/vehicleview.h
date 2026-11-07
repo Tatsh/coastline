@@ -11,6 +11,7 @@ extern "C" {
  * The 32 by 128 textures of the reflection of the sky, of 4-bit colour indices, and their palettes.
  *
  * @ghidraAddress USA: 0x8028c308
+ * @ghidraAddress Asia: 0x8028BE58
  * @ghidraAddress EUR: 0x8028ea68
  * @ghidraAddress JPN: 0x8028e4b8
  * @ghidraAddress BRD3D: 0x100a6498
@@ -29,6 +30,7 @@ extern u8 *g_apVehicleReflectionTextures[4];
 
 /**
  * @ghidraAddress USA: 0x8028c318
+ * @ghidraAddress Asia: 0x8028BE68
  * @ghidraAddress EUR: 0x8028ea78
  * @ghidraAddress JPN: 0x8028e4c8
  */
@@ -38,6 +40,7 @@ extern u16 *g_apVehicleReflectionTluts[4];
  * The reflection of each view mode, in the open and in a tunnel.
  *
  * @ghidraAddress USA: 0x8028c32c
+ * @ghidraAddress Asia: 0x8028BE7C
  * @ghidraAddress EUR: 0x8028ea8c
  * @ghidraAddress JPN: 0x8028e4dc
  * @ghidraAddress BRD3D: 0x100a64b8
@@ -55,6 +58,7 @@ extern u8 g_abVehicleReflectionTexSelect[4][2];
  * Set to 0 by the track menu.
  *
  * @ghidraAddress USA: 0x8028c328
+ * @ghidraAddress Asia: 0x8028BE78
  * @ghidraAddress EUR: 0x8028ea88
  * @ghidraAddress JPN: 0x8028e4d8
  * @ghidraAddress BRD3D: 0x10277ea0

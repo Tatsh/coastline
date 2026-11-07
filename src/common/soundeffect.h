@@ -71,6 +71,7 @@ typedef struct {
  * The sound effects of a race.
  *
  * @ghidraAddress USA: 0x8028bc04
+ * @ghidraAddress Asia: 0x8028B754
  * @ghidraAddress EUR: 0x8028e36c
  * @ghidraAddress JPN: 0x8028dd9c
  * @ghidraAddress BRD3D: 0x100b3aa8
@@ -82,6 +83,7 @@ extern SoundEffect g_aSoundEffects[SOUND_EFFECTS];
  * Load the sound effects of a race and start their channels muted.
  *
  * @ghidraAddress USA: 0x8022baa0
+ * @ghidraAddress Asia: 0x8022B5F0
  * @ghidraAddress EUR: 0x8022cfb0
  * @ghidraAddress JPN: 0x8022c768
  * @ghidraAddress BRD3D: 0x100682a0
@@ -93,6 +95,7 @@ void LoadAllSoundEffects(void);
  * The sound effect channel 3 plays once, or -1.
  *
  * @ghidraAddress USA: 0x8028b7ec
+ * @ghidraAddress Asia: 0x8028B33C
  * @ghidraAddress EUR: 0x8028da9c
  * @ghidraAddress JPN: 0x8028d4cc
  * @ghidraAddress BRD3D: 0x10aa3470
@@ -105,6 +108,7 @@ extern s32 g_dwChannel3PlayingSfxId;
  *
  * @param sound The sound effect.
  * @ghidraAddress USA: 0x8022b370
+ * @ghidraAddress Asia: 0x8022AEC0
  * @ghidraAddress EUR: 0x8022c880
  * @ghidraAddress JPN: 0x8022c038
  * @ghidraAddress BRD3D: 0x10067d40
@@ -116,6 +120,7 @@ void PlaySoundEffect(s32 sound);
  * Play the beep of the countdown, and of the laps.
  *
  * @ghidraAddress USA: 0x8022b3c4
+ * @ghidraAddress Asia: 0x8022AF14
  * @ghidraAddress EUR: 0x8022c8d4
  * @ghidraAddress JPN: 0x8022c08c
  * @ghidraAddress BRD3D: 0x10067d80
@@ -127,6 +132,7 @@ void PlayBeepSound(void);
  * Play the sound of the start of the race.
  *
  * @ghidraAddress USA: 0x8022b3e4
+ * @ghidraAddress Asia: 0x8022AF34
  * @ghidraAddress EUR: 0x8022c8f4
  * @ghidraAddress JPN: 0x8022c0ac
  * @ghidraAddress BRD3D: 0x10067d90

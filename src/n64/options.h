@@ -68,6 +68,7 @@ typedef struct {
  * The items of the options menu, by the OPTIONS_ITEM_ values.
  *
  * @ghidraAddress USA: 0x802723dc
+ * @ghidraAddress Asia: 0x80271F2C
  * @ghidraAddress EUR: 0x802743bc
  * @ghidraAddress JPN: 0x80273e6c
  */
@@ -77,6 +78,7 @@ extern MenuItem g_aOptionsMenuItems[OPTIONS_ITEMS];
  * The items of the options menu, ending with NULL.
  *
  * @ghidraAddress USA: 0x80272468
+ * @ghidraAddress Asia: 0x80271FB8
  * @ghidraAddress EUR: 0x80274420
  * @ghidraAddress JPN: 0x80273ed0
  */
@@ -97,6 +99,7 @@ extern s32 g_dwOptionsChangedNeedsSave;
  * Whether the save and load menu, or the screen of the Controller Pak data, is set up.
  *
  * @ghidraAddress USA: 0x802724f8
+ * @ghidraAddress Asia: 0x80272048
  * @ghidraAddress EUR: 0x802744a8
  * @ghidraAddress JPN: 0x80273f58
  */
@@ -107,6 +110,7 @@ extern u8 g_bSaveLoadMenuInitialized;
  * afterwards.
  *
  * @ghidraAddress USA: 0x802724fc
+ * @ghidraAddress Asia: 0x8027204C
  * @ghidraAddress EUR: 0x802744ac
  * @ghidraAddress JPN: 0x80273f5c
  */
@@ -116,6 +120,7 @@ extern u8 g_bSaveLoadRumbleSwapPending;
  * The buffer the data is read into and written from.
  *
  * @ghidraAddress USA: 0x80272500
+ * @ghidraAddress Asia: 0x80272050
  * @ghidraAddress EUR: 0x802744b0
  * @ghidraAddress JPN: 0x80273f60
  */
@@ -126,6 +131,7 @@ extern u8 *g_pPakDataBuffer;
  * "TOP GEAR SEA", "TOP GEAR GHO" and "TOP GEAR OPTIONS".
  *
  * @ghidraAddress USA: 0x80272504
+ * @ghidraAddress Asia: 0x80272054
  * @ghidraAddress EUR: 0x802744b4
  * @ghidraAddress JPN: 0x80273f64
  */
@@ -133,6 +139,7 @@ extern u8 g_abSaveLoadSeasonNoteName[16];
 
 /**
  * @ghidraAddress USA: 0x80272514
+ * @ghidraAddress Asia: 0x80272064
  * @ghidraAddress EUR: 0x802744c4
  * @ghidraAddress JPN: 0x80273f74
  */
@@ -140,6 +147,7 @@ extern u8 g_abSaveLoadGhostNoteName[16];
 
 /**
  * @ghidraAddress USA: 0x80272524
+ * @ghidraAddress Asia: 0x80272074
  * @ghidraAddress EUR: 0x802744d4
  * @ghidraAddress JPN: 0x80273f84
  */
@@ -149,18 +157,24 @@ extern u8 g_abSaveLoadOptionsNoteName[16];
  * The extension of the notes, which is empty.
  *
  * @ghidraAddress USA: 0x80272534
+ * @ghidraAddress Asia: 0x80272084
  * @ghidraAddress EUR: 0x802744e4
  * @ghidraAddress JPN: 0x80273f94
  */
 extern u8 g_abSaveLoadNoteExtension[4];
 
-/** The names of the choices of the save and load menu. @ghidraAddress USA: 0x80272538 */
+/**
+ * The names of the choices of the save and load menu.
+ * @ghidraAddress USA: 0x80272538
+ * @ghidraAddress Asia: 0x80272088
+ */
 extern const char *g_apszSaveLoadChoices[SAVE_LOAD_CHOICES];
 
 /**
  * The choice of the save and load menu, by the SAVE_LOAD_ values.
  *
  * @ghidraAddress USA: 0x80272550
+ * @ghidraAddress Asia: 0x802720A0
  */
 extern u8 g_bSaveLoadChoice;
 
@@ -203,6 +217,7 @@ extern u8 g_bSaveLoadMenuCursor;
  * The step of the save and load menu.
  *
  * @ghidraAddress USA: 0x80272554
+ * @ghidraAddress Asia: 0x802720A4
  * @ghidraAddress EUR: 0x802745bc
  * @ghidraAddress JPN: 0x8027406c
  */
@@ -213,6 +228,7 @@ extern u8 g_bSaveLoadStep;
  * the configuration.
  *
  * @ghidraAddress USA: 0x80272558
+ * @ghidraAddress Asia: 0x802720A8
  * @ghidraAddress EUR: 0x802745c0
  * @ghidraAddress JPN: 0x80274070
  */
@@ -220,6 +236,7 @@ extern u8 g_abPakDataSeasonNoteName[16];
 
 /**
  * @ghidraAddress USA: 0x80272568
+ * @ghidraAddress Asia: 0x802720B8
  * @ghidraAddress EUR: 0x802745d0
  * @ghidraAddress JPN: 0x80274080
  */
@@ -227,6 +244,7 @@ extern u8 g_abPakDataGhostNoteName[16];
 
 /**
  * @ghidraAddress USA: 0x80272578
+ * @ghidraAddress Asia: 0x802720C8
  * @ghidraAddress EUR: 0x802745e0
  * @ghidraAddress JPN: 0x80274090
  */
@@ -234,6 +252,7 @@ extern u8 g_abPakDataConfigurationNoteName[16];
 
 /**
  * @ghidraAddress USA: 0x80272588
+ * @ghidraAddress Asia: 0x802720D8
  * @ghidraAddress EUR: 0x802745f0
  * @ghidraAddress JPN: 0x802740a0
  */
@@ -243,6 +262,7 @@ extern u8 g_abPakDataNoteExtension[4];
  * Whether the options menu opens the screen that loads or saves the configuration.
  *
  * @ghidraAddress USA: 0x803163a0
+ * @ghidraAddress Asia: 0x80315E60
  * @ghidraAddress EUR: 0x80318080
  * @ghidraAddress JPN: 0x80316cb0
  */
@@ -250,6 +270,7 @@ extern s32 g_bLoadConfigurationPending;
 
 /**
  * @ghidraAddress USA: 0x803163a4
+ * @ghidraAddress Asia: 0x80315E64
  * @ghidraAddress EUR: 0x80318084
  * @ghidraAddress JPN: 0x80316cb4
  */
@@ -259,6 +280,7 @@ extern s32 g_bSaveConfigurationPending;
  * The names of the volume items.
  *
  * @ghidraAddress USA: 0x803163b0
+ * @ghidraAddress Asia: 0x80315E70
  * @ghidraAddress EUR: 0x80318090
  * @ghidraAddress JPN: 0x80316cc0
  */
@@ -266,6 +288,7 @@ extern char g_szBgmVolumeTextBuf[0x18];
 
 /**
  * @ghidraAddress USA: 0x803163c8
+ * @ghidraAddress Asia: 0x80315E88
  * @ghidraAddress EUR: 0x803180a8
  * @ghidraAddress JPN: 0x80316cd8
  */
@@ -275,6 +298,7 @@ extern char g_szSfxVolumeTextBuf[0x18];
  * Whether g_aabSavePakIds holds the identity of the Pak of each of the first two players.
  *
  * @ghidraAddress USA: 0x80316420
+ * @ghidraAddress Asia: 0x80315EE0
  * @ghidraAddress EUR: 0x80318100
  * @ghidraAddress JPN: 0x80316d30
  */
@@ -284,6 +308,7 @@ extern u8 g_abSavePakIdKnown[2];
  * Whether the save and load menu loaded a season or a ghost car.
  *
  * @ghidraAddress USA: 0x80316422
+ * @ghidraAddress Asia: 0x80315EE2
  * @ghidraAddress EUR: 0x8031810a
  * @ghidraAddress JPN: 0x80316d32
  */
@@ -304,6 +329,7 @@ extern u8 g_bSaveLoadSkipEepromProbe;
  * Whether the save and load menu takes the input of its choices.
  *
  * @ghidraAddress USA: 0x80316423
+ * @ghidraAddress Asia: 0x80315EE3
  * @ghidraAddress EUR: 0x8031810b
  * @ghidraAddress JPN: 0x80316d33
  */
@@ -313,6 +339,7 @@ extern u8 g_bSaveLoadInputEnabled;
  * The note the save and load menu found or made.
  *
  * @ghidraAddress USA: 0x80316424
+ * @ghidraAddress Asia: 0x80315EE4
  * @ghidraAddress EUR: 0x8031810c
  * @ghidraAddress JPN: 0x80316d34
  */
@@ -322,6 +349,7 @@ extern s32 g_dwSaveLoadNoteIndex;
  * The frames the save and load menu waited once the sounds faded out.
  *
  * @ghidraAddress USA: 0x80316428
+ * @ghidraAddress Asia: 0x80315EE8
  * @ghidraAddress EUR: 0x80318111
  * @ghidraAddress JPN: 0x80316d39
  */
@@ -331,6 +359,7 @@ extern u8 g_bSaveLoadFadeDelayFrames;
  * The note the screen of the Controller Pak data found or made.
  *
  * @ghidraAddress USA: 0x8031642c
+ * @ghidraAddress Asia: 0x80315EEC
  * @ghidraAddress EUR: 0x80318104
  * @ghidraAddress JPN: 0x80316d3c
  */
@@ -340,6 +369,7 @@ extern s32 g_dwPakDataNoteIndex;
  * The step of the screen of the Controller Pak data.
  *
  * @ghidraAddress USA: 0x80316430
+ * @ghidraAddress Asia: 0x80315EF0
  * @ghidraAddress EUR: 0x80318108
  * @ghidraAddress JPN: 0x80316d40
  */
@@ -349,6 +379,7 @@ extern u8 g_bPakDataStep;
  * The frames the screen of the Controller Pak data waited once the sounds faded out.
  *
  * @ghidraAddress USA: 0x80316431
+ * @ghidraAddress Asia: 0x80315EF1
  * @ghidraAddress EUR: 0x80318109
  * @ghidraAddress JPN: 0x80316d41
  */
@@ -360,6 +391,7 @@ extern u8 g_bPakDataWaitFrames;
  *
  * @param item The selected item, by the OPTIONS_ITEM_ values.
  * @ghidraAddress USA: 0x8021196c
+ * @ghidraAddress Asia: 0x802114FC
  * @ghidraAddress EUR: 0x8021185c
  * @ghidraAddress JPN: 0x8021174c
  */
@@ -382,6 +414,7 @@ void SaveGameDataToEeprom(void);
  * @param anyPlayer Take A from either of the first two players rather than the choosing one.
  * @return Whether A was pressed.
  * @ghidraAddress USA: 0x80214a88
+ * @ghidraAddress Asia: 0x802145E4
  * @ghidraAddress EUR: 0x80215b54
  * @ghidraAddress JPN: 0x80215608
  */
@@ -392,6 +425,7 @@ s32 DrawRumblePakPrompt(s32 anyPlayer);
  *
  * @return Whether a controller lacks a Rumble Pak.
  * @ghidraAddress USA: 0x80214cb0
+ * @ghidraAddress Asia: 0x8021480C
  * @ghidraAddress EUR: 0x80215d7c
  * @ghidraAddress JPN: 0x80215808
  */

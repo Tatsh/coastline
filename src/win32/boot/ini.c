@@ -82,7 +82,7 @@ LauncherIniSectionIterator *FindFirstIniSection(LauncherIniFile *file) {
 
 LauncherIniSectionIterator *FindNextIniSection(LauncherIniSectionIterator *iterator) {
     if (!iterator || !iterator->file) {
-        return nullptr;
+        return NULL;
     }
     LauncherStringList *list = iterator->file->list;
     int index = (int)((unsigned)iterator->sectionIndex + 1u);
@@ -111,7 +111,7 @@ char *GetIniSectionName(LauncherIniSectionIterator *iterator) {
     if (iterator && iterator->file && iterator->sectionIndex != -1) {
         return iterator->file->list->lines[iterator->sectionIndex];
     }
-    return nullptr;
+    return NULL;
 }
 
 char *GetIniSectionHeaderByIndex(int index, LauncherIniFile *file) {
@@ -129,7 +129,7 @@ LauncherIniFile *SelectIniSection(LauncherIniSectionIterator *iterator) {
         iterator->file->currentLine = iterator->sectionIndex;
         return iterator->file;
     }
-    return nullptr;
+    return NULL;
 }
 
 char *GetNextIniSectionLine(LauncherIniFile *file) {
@@ -143,7 +143,7 @@ char *GetNextIniSectionLine(LauncherIniFile *file) {
         }
         file->currentLine = -1;
     }
-    return nullptr;
+    return NULL;
 }
 
 /**
@@ -210,7 +210,7 @@ static FILE *ReadNextListLine(char *buffer, int capacity, FILE *file) {
         if (!fgets(buffer, capacity, file)) {
             if (feof(file)) {
                 if (IsIncludeFileStackEmpty()) {
-                    return nullptr;
+                    return NULL;
                 }
                 fclose(file);
                 file = PopIncludeFile();
@@ -322,7 +322,7 @@ void FreeIniFile(LauncherIniFile *file) {
 char *GetIniSectionValue(LauncherIniSectionIterator *iterator, const char *key) {
     LauncherIniFile *file = SelectIniSection(iterator);
     if (!file) {
-        return nullptr;
+        return NULL;
     }
     char *line;
     while ((line = GetNextIniSectionLine(file))) {
@@ -345,5 +345,5 @@ char *GetIniSectionValue(LauncherIniSectionIterator *iterator, const char *key) 
             return separator + 1;
         }
     }
-    return nullptr;
+    return NULL;
 }

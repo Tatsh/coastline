@@ -43,7 +43,7 @@ GameFile *CHK_FReadOpen(const char *pszPath) {
         OutputFileMessage(szMessage);
     }
     pFile->pFile = fopen(pFile->pszPath, "rb");
-    if (pFile->pFile == nullptr) {
+    if (pFile->pFile == NULL) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         pErrorFile = fopen("c:\\RallyError.txt", "w");
         sprintf(szMessage, "CHK_FReadOpen(): error opening file %s.\n", pFile->pszPath);
@@ -108,7 +108,7 @@ char *FileReadLine(char *pszLine, int nSize, GameFile *pFile) {
         c = fgetc(pFile->pFile);
         if (c == EOF) {
             if (nCount == 0) {
-                return nullptr;
+                return NULL;
             }
             *pszLine = '\0';
             return pszLine + 1;
@@ -158,7 +158,7 @@ int CHK_FileExists(const char *pszPath) {
         OutputFileMessage(szMessage);
     }
     pFile = fopen(pszPath, "rb");
-    if (pFile == nullptr) {
+    if (pFile == NULL) {
         return false;
     }
     fclose(pFile);
@@ -170,10 +170,10 @@ void *CHK_AllocateMemory(size_t nSize, const char *szCaller) {
     void *pMemory;
 
     if (nSize == 0) {
-        return nullptr;
+        return NULL;
     }
     pMemory = malloc(nSize);
-    if (pMemory == nullptr) {
+    if (pMemory == NULL) {
         sprintf(szMessage, "CHK_AllocateMemory(): Out of memory: couldn't allocate %s\n", szCaller);
         OutputFileMessage(szMessage);
         exit(1);
@@ -187,9 +187,9 @@ void *CHK_ReAllocateMemory(void *pMemory, size_t nSize, const char *szCaller) {
 
     // Zero-size requests still call realloc().
     if (nSize == 0) {
-        return nullptr;
+        return NULL;
     }
-    if (pResizedMemory == nullptr) {
+    if (pResizedMemory == NULL) {
         sprintf(
             szMessage, "CHK_ReAllocateMemory(): Out of memory: couldn't reallocate %s\n", szCaller);
         OutputFileMessage(szMessage);

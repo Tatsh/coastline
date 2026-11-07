@@ -41,6 +41,10 @@ SECTIONS
             . = 0x80316848 - 0x802acb30;
             *racemenu.c.obj(.bss.season_records)
         }
+        .decompress_len_bss {
+            . = 0x8031c498 - 0x802acb30;
+            *system.c.obj(.bss.decompress_len)
+        }
         .bss {
             *(EXCLUDE_FILE (*carselect.c.obj *decaleditor.c.obj *paintshop.c.obj *racemenu.c.obj
                             *trackrender.c.obj *visibleinstances.c.obj) .bss .bss.*)
@@ -117,6 +121,11 @@ _scrollSoundSegmentRomStart = 0x1D5E00;
 _selectSoundSegmentRomStart = 0x1D6840;
 _startLightsSegmentRomStart = 0x1E0210;
 _startLightsSegmentRomEnd = 0x1EEAF0;
+gRomSplashSoundA = 0x1CBDC0;
+gRomSplashSoundB = 0x1CFD40;
+gRomSplashFirstLogo = 0x1EEAF0;
+gRomSplashDeveloperLogo = 0x1EFB20;
+gRomSplashTitlePalette = 0x1F5EA0;
 _cachedGlyphsSegmentRomStart = 0xDCF40;
 _paintShopPaletteSegmentRomStart = 0x1DC050;
 _paintShopPaletteSegmentRomEnd = 0x1DC070;

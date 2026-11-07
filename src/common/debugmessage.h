@@ -10,6 +10,7 @@ extern "C" {
  *
  * @param message The message to show.
  * @ghidraAddress USA: 0x8021e1f4
+ * @ghidraAddress Asia: 0x8021DD44
  * @ghidraAddress EUR: 0x8021f3f4
  * @ghidraAddress JPN: 0x8021ecc4
  * @ghidraAddress BRD3D: 0x10035bba
@@ -21,6 +22,7 @@ void SetDebugMessage(const char *message);
  * The message the debug display shows.
  *
  * @ghidraAddress USA: 0x8028a88c
+ * @ghidraAddress Asia: 0x8028A3DC
  * @ghidraAddress EUR: 0x8028ca90
  * @ghidraAddress JPN: 0x8028c560
  * @ghidraAddress BRD3D: 0x106c2cf0

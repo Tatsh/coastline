@@ -48,6 +48,7 @@ bool StartSoundChannelMuted(s16 channel, s32 sample, u32 length, u32 loopLength)
  * @param length The length of the sample, in bytes.
  * @param loopLength The length of the loop at the end of the sample in bytes, or 0 to play once.
  * @ghidraAddress USA: 0x80257b04
+ * @ghidraAddress Asia: 0x80257654
  * @ghidraAddress EUR: 0x802590d4
  * @ghidraAddress JPN: 0x80258a64
  */
@@ -62,6 +63,7 @@ void InitSoundChannel(s16 channel, s8 *sample, u32 length, u32 loopLength);
  * @param length The length of the sample, in bytes.
  * @param loopLength The length of the loop at the end of the sample in bytes, or 0 to play once.
  * @ghidraAddress USA: 0x80257b78
+ * @ghidraAddress Asia: 0x802576C8
  * @ghidraAddress EUR: 0x80259148
  * @ghidraAddress JPN: 0x80258ad8
  */

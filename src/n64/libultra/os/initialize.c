@@ -5,6 +5,7 @@ u64 osClockRate = OS_CLOCK_RATE;
 s32 osViClock = VI_NTSC_CLOCK;
 /**
  * @ghidraAddress USA: 0x802a614c
+ * @ghidraAddress Asia: 0x802A5C9C
  * @ghidraAddress EUR: 0x802a7c5c
  * @ghidraAddress JPN: 0x802a779c
  */

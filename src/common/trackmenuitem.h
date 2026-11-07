@@ -77,6 +77,7 @@ extern "C" {
  * The track descriptors.
  *
  * @ghidraAddress USA: 0x80270854
+ * @ghidraAddress Asia: 0x802703A4
  * @ghidraAddress EUR: 0x80272834
  * @ghidraAddress JPN: 0x802722f4
  * @ghidraAddress BRD3D: 0x100bbae8
@@ -88,6 +89,7 @@ extern TrackMenuItem g_aTrackDescriptors[];
  * The items of the track menu: the tracks, then the loads and resets.
  *
  * @ghidraAddress USA: 0x80271d1c
+ * @ghidraAddress Asia: 0x8027186C
  * @ghidraAddress EUR: 0x80273cfc
  * @ghidraAddress JPN: 0x802737bc
  * @ghidraAddress BRD3D: 0x100bd2a8

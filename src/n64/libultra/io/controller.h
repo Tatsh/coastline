@@ -156,6 +156,7 @@ typedef struct {
 
 /**
  * @ghidraAddress USA: 0x8037f3f0
+ * @ghidraAddress Asia: 0x8037EEB0
  * @ghidraAddress EUR: 0x80381330
  * @ghidraAddress JPN: 0x8037ffa0
  */
@@ -163,6 +164,7 @@ extern OSPifRam __osContPifRam;
 
 /**
  * @ghidraAddress USA: 0x8037f0b0
+ * @ghidraAddress Asia: 0x8037EB70
  * @ghidraAddress EUR: 0x80380ff0
  * @ghidraAddress JPN: 0x8037fc60
  */
@@ -170,6 +172,7 @@ extern OSPifRam __osPfsPifRam;
 
 /**
  * @ghidraAddress USA: 0x8037f430
+ * @ghidraAddress Asia: 0x8037EEF0
  * @ghidraAddress EUR: 0x80381370
  * @ghidraAddress JPN: 0x8037ffe0
  */
@@ -177,6 +180,7 @@ extern u8 __osContLastCmd;
 
 /**
  * @ghidraAddress USA: 0x8037f431
+ * @ghidraAddress Asia: 0x8037EEF1
  * @ghidraAddress EUR: 0x80381371
  * @ghidraAddress JPN: 0x8037ffe1
  */
@@ -184,6 +188,7 @@ extern u8 __osMaxControllers;
 
 /**
  * @ghidraAddress USA: 0x802a6130
+ * @ghidraAddress Asia: 0x802A5C80
  * @ghidraAddress EUR: 0x802a7c40
  * @ghidraAddress JPN: 0x802a7780
  */
@@ -191,6 +196,7 @@ extern u32 __osContinitialized;
 
 /**
  * @ghidraAddress USA: 0x8037f458
+ * @ghidraAddress Asia: 0x8037EF18
  * @ghidraAddress EUR: 0x80381398
  * @ghidraAddress JPN: 0x80380008
  */
@@ -198,6 +204,7 @@ extern OSMesgQueue __osEepromTimerQ;
 
 /**
  * @ghidraAddress USA: 0x8037f470
+ * @ghidraAddress Asia: 0x8037EF30
  * @ghidraAddress EUR: 0x803813b0
  * @ghidraAddress JPN: 0x80380020
  */
@@ -205,6 +212,7 @@ extern OSMesg __osEepromTimerMsg;
 
 /**
  * @ghidraAddress USA: 0x8037f0f0
+ * @ghidraAddress Asia: 0x8037EBB0
  * @ghidraAddress EUR: 0x80381030
  * @ghidraAddress JPN: 0x8037fca0
  */
@@ -212,6 +220,7 @@ extern OSPifRam _MotorStopData[MAXCONTROLLERS];
 
 /**
  * @ghidraAddress USA: 0x8037f1f0
+ * @ghidraAddress Asia: 0x8037ECB0
  * @ghidraAddress EUR: 0x80381130
  * @ghidraAddress JPN: 0x8037fda0
  */
@@ -219,6 +228,7 @@ extern OSPifRam _MotorStartData[MAXCONTROLLERS];
 
 /**
  * @ghidraAddress USA: 0x8037f2f0
+ * @ghidraAddress Asia: 0x8037EDB0
  * @ghidraAddress EUR: 0x80381230
  * @ghidraAddress JPN: 0x8037fea0
  */
@@ -226,6 +236,7 @@ extern u8 _motorstopbuf[BLOCKSIZE];
 
 /**
  * @ghidraAddress USA: 0x8037f310
+ * @ghidraAddress Asia: 0x8037EDD0
  * @ghidraAddress EUR: 0x80381250
  * @ghidraAddress JPN: 0x8037fec0
  */
@@ -233,6 +244,7 @@ extern u8 _motorstartbuf[BLOCKSIZE];
 
 /**
  * @ghidraAddress USA: 0x80265b08
+ * @ghidraAddress Asia: 0x80265658
  * @ghidraAddress EUR: 0x80267298
  * @ghidraAddress JPN: 0x80266d98
  */
@@ -240,6 +252,7 @@ void __osContGetInitData(u8 *pattern, OSContStatus *data);
 
 /**
  * @ghidraAddress USA: 0x80265bd8
+ * @ghidraAddress Asia: 0x80265728
  * @ghidraAddress EUR: 0x80267368
  * @ghidraAddress JPN: 0x80266e68
  */
@@ -247,6 +260,7 @@ void __osPackRequestData(u8 cmd);
 
 /**
  * @ghidraAddress USA: 0x802648cc
+ * @ghidraAddress Asia: 0x8026441C
  * @ghidraAddress EUR: 0x8026612c
  * @ghidraAddress JPN: 0x80265b5c
  */
@@ -254,6 +268,7 @@ void __osPackReadData(void);
 
 /**
  * @ghidraAddress USA: 0x8026a780
+ * @ghidraAddress Asia: 0x8026A2D0
  * @ghidraAddress EUR: 0x8026c5d0
  * @ghidraAddress JPN: 0x8026c080
  */
@@ -261,6 +276,7 @@ u8 __osContAddressCrc(u16 addr);
 
 /**
  * @ghidraAddress USA: 0x8026a830
+ * @ghidraAddress Asia: 0x8026A380
  * @ghidraAddress EUR: 0x8026c680
  * @ghidraAddress JPN: 0x8026c130
  */
@@ -268,6 +284,7 @@ u8 __osContDataCrc(u8 *data);
 
 /**
  * @ghidraAddress USA: 0x8026a3f0
+ * @ghidraAddress Asia: 0x80269F40
  * @ghidraAddress EUR: 0x8026c240
  * @ghidraAddress JPN: 0x8026bcf0
  */
@@ -275,6 +292,7 @@ s32 __osContRamRead(OSMesgQueue *mq, int channel, u16 address, u8 *buffer);
 
 /**
  * @ghidraAddress USA: 0x8026a60c
+ * @ghidraAddress Asia: 0x8026A15C
  * @ghidraAddress EUR: 0x8026c45c
  * @ghidraAddress JPN: 0x8026bf0c
  */
@@ -282,6 +300,7 @@ void __osPackRamReadData(int channel, u16 address);
 
 /**
  * @ghidraAddress USA: 0x8026a900
+ * @ghidraAddress Asia: 0x8026A450
  * @ghidraAddress EUR: 0x8026c750
  * @ghidraAddress JPN: 0x8026c200
  */
@@ -289,6 +308,7 @@ s32 __osContRamWrite(OSMesgQueue *mq, int channel, u16 address, u8 *buffer, int 
 
 /**
  * @ghidraAddress USA: 0x8026ab04
+ * @ghidraAddress Asia: 0x8026A654
  * @ghidraAddress EUR: 0x8026c954
  * @ghidraAddress JPN: 0x8026c404
  */
@@ -296,6 +316,7 @@ void __osPackRamWriteData(int channel, u16 address, u8 *buffer);
 
 /**
  * @ghidraAddress USA: 0x80269580
+ * @ghidraAddress Asia: 0x802690D0
  * @ghidraAddress EUR: 0x8026b3d0
  * @ghidraAddress JPN: 0x8026ae80
  */
@@ -303,6 +324,7 @@ s32 __osPfsGetStatus(OSMesgQueue *queue, int channel);
 
 /**
  * @ghidraAddress USA: 0x80261ae0
+ * @ghidraAddress Asia: 0x80261630
  * @ghidraAddress EUR: 0x80263260
  * @ghidraAddress JPN: 0x80262d00
  */
@@ -310,6 +332,7 @@ void __osPfsRequestData(u8 cmd);
 
 /**
  * @ghidraAddress USA: 0x80261bdc
+ * @ghidraAddress Asia: 0x8026172C
  * @ghidraAddress EUR: 0x8026335c
  * @ghidraAddress JPN: 0x80262dfc
  */
@@ -317,6 +340,7 @@ void __osPfsGetInitData(u8 *pattern, OSContStatus *data);
 
 /**
  * @ghidraAddress USA: 0x80269690
+ * @ghidraAddress Asia: 0x802691E0
  * @ghidraAddress EUR: 0x8026b4e0
  * @ghidraAddress JPN: 0x8026af90
  */
@@ -324,6 +348,7 @@ u16 __osSumcalc(u8 *ptr, int length);
 
 /**
  * @ghidraAddress USA: 0x802696ec
+ * @ghidraAddress Asia: 0x8026923C
  * @ghidraAddress EUR: 0x8026b53c
  * @ghidraAddress JPN: 0x8026afec
  */
@@ -331,6 +356,7 @@ s32 __osIdCheckSum(u16 *ptr, u16 *csum, u16 *icsum);
 
 /**
  * @ghidraAddress USA: 0x80269754
+ * @ghidraAddress Asia: 0x802692A4
  * @ghidraAddress EUR: 0x8026b5a4
  * @ghidraAddress JPN: 0x8026b054
  */
@@ -338,6 +364,7 @@ s32 __osRepairPackId(OSPfs *pfs, __OSPackId *badid, __OSPackId *newid);
 
 /**
  * @ghidraAddress USA: 0x80269b6c
+ * @ghidraAddress Asia: 0x802696BC
  * @ghidraAddress EUR: 0x8026b9bc
  * @ghidraAddress JPN: 0x8026b46c
  */
@@ -345,6 +372,7 @@ s32 __osCheckPackId(OSPfs *pfs, __OSPackId *temp);
 
 /**
  * @ghidraAddress USA: 0x80269d04
+ * @ghidraAddress Asia: 0x80269854
  * @ghidraAddress EUR: 0x8026bb54
  * @ghidraAddress JPN: 0x8026b604
  */
@@ -352,6 +380,7 @@ s32 __osGetId(OSPfs *pfs);
 
 /**
  * @ghidraAddress USA: 0x80269f60
+ * @ghidraAddress Asia: 0x80269AB0
  * @ghidraAddress EUR: 0x8026bdb0
  * @ghidraAddress JPN: 0x8026b860
  */
@@ -359,6 +388,7 @@ s32 __osCheckId(OSPfs *pfs);
 
 /**
  * @ghidraAddress USA: 0x8026a05c
+ * @ghidraAddress Asia: 0x80269BAC
  * @ghidraAddress EUR: 0x8026beac
  * @ghidraAddress JPN: 0x8026b95c
  */
@@ -366,6 +396,7 @@ s32 __osPfsRWInode(OSPfs *pfs, __OSInode *inode, u8 flag, u8 bank);
 
 /**
  * @ghidraAddress USA: 0x8026a37c
+ * @ghidraAddress Asia: 0x80269ECC
  * @ghidraAddress EUR: 0x8026c1cc
  * @ghidraAddress JPN: 0x8026bc7c
  */

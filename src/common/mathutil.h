@@ -19,6 +19,7 @@ extern "C" {
  * @return The truncated value. The patched SDL build returns the low 32 bits of the original
  * 64-bit conversion, or zero for out-of-range values, NaN, and infinity.
  * @ghidraAddress USA: 0x802562e0
+ * @ghidraAddress Asia: 0x80255E30
  * @ghidraAddress EUR: 0x802578b0
  * @ghidraAddress JPN: 0x80257240
  * @ghidraAddress BRD3D: 0x1002b920

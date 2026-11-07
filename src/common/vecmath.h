@@ -37,6 +37,7 @@ typedef struct {
 
 /**
  * @ghidraAddress USA: 0x8028b790
+ * @ghidraAddress Asia: 0x8028B2E0
  * @ghidraAddress EUR: 0x8028da40
  * @ghidraAddress JPN: 0x8028d470
  * @ghidraAddress BRD3D: 0x10a9bfd0
@@ -52,6 +53,7 @@ extern u32 g_dwRandomSeed;
  * @param exponent The power, at least 0.
  * @return The base raised to the exponent.
  * @ghidraAddress USA: 0x802242e0
+ * @ghidraAddress Asia: 0x80223E30
  * @ghidraAddress EUR: 0x80225620
  * @ghidraAddress JPN: 0x80224e10
  */
@@ -64,6 +66,7 @@ f32 Powf(f32 base, f32 exponent);
  * @param a The first vector.
  * @param b The second vector.
  * @ghidraAddress USA: 0x8022439c
+ * @ghidraAddress Asia: 0x80223EEC
  * @ghidraAddress EUR: 0x802256dc
  * @ghidraAddress JPN: 0x80224ecc
  * @ghidraAddress BRD3D: 0x1003ac30
@@ -78,6 +81,7 @@ void Vec3fCross(Vec3f *out, Vec3f *a, Vec3f *b);
  * @param b The second vector.
  * @return The dot product of the vectors.
  * @ghidraAddress USA: 0x80224404
+ * @ghidraAddress Asia: 0x80223F54
  * @ghidraAddress EUR: 0x80225744
  * @ghidraAddress JPN: 0x80224f34
  * @ghidraAddress BRD3D: 0x1003ac90
@@ -95,6 +99,7 @@ f32 Vec3fDot(const Vec3f *a, const Vec3f *b);
  * @param out The vector that receives -v.
  * @param v The vector negated.
  * @ghidraAddress USA: 0x80224434
+ * @ghidraAddress Asia: 0x80223F84
  * @ghidraAddress EUR: 0x80225774
  * @ghidraAddress JPN: 0x80224f64
  * @ghidraAddress BRD3D: 0x1003acc0
@@ -107,6 +112,7 @@ void Vec3fNegate(Vec3f *out, Vec3f *v);
  *
  * @param v The vector negated.
  * @ghidraAddress USA: 0x8022445c
+ * @ghidraAddress Asia: 0x80223FAC
  * @ghidraAddress EUR: 0x8022579c
  * @ghidraAddress JPN: 0x80224f8c
  */
@@ -119,6 +125,7 @@ void NegateVectorInPlace(Vec3f *v);
  * @param a The first vector.
  * @param b The second vector.
  * @ghidraAddress USA: 0x80224484
+ * @ghidraAddress Asia: 0x80223FD4
  * @ghidraAddress EUR: 0x802257c4
  * @ghidraAddress JPN: 0x80224fb4
  */
@@ -131,6 +138,7 @@ void Vec2fMul(Vec2f *out, Vec2f *a, Vec2f *b);
  * @param v The vector scaled.
  * @param scale The factor.
  * @ghidraAddress USA: 0x802244a8
+ * @ghidraAddress Asia: 0x80223FF8
  * @ghidraAddress EUR: 0x802257e8
  * @ghidraAddress JPN: 0x80224fd8
  */
@@ -143,6 +151,7 @@ void Vec2fScale(Vec2f *out, Vec2f *v, f32 scale);
  * @param a The first vector.
  * @param b The second vector.
  * @ghidraAddress USA: 0x802244c8
+ * @ghidraAddress Asia: 0x80224018
  * @ghidraAddress EUR: 0x80225808
  * @ghidraAddress JPN: 0x80224ff8
  */
@@ -155,6 +164,7 @@ void Vec3fComponentProduct(Vec3f *out, Vec3f *a, Vec3f *b);
  * @param v The vector scaled.
  * @param scale The factor.
  * @ghidraAddress USA: 0x802244fc
+ * @ghidraAddress Asia: 0x8022404C
  * @ghidraAddress EUR: 0x8022583c
  * @ghidraAddress JPN: 0x8022502c
  * @ghidraAddress BRD3D: 0x1003ace0
@@ -168,6 +178,7 @@ void Vec3fScale(Vec3f *out, Vec3f *v, f32 scale);
  * @param v The vector scaled.
  * @param scale The factor.
  * @ghidraAddress USA: 0x80224528
+ * @ghidraAddress Asia: 0x80224078
  * @ghidraAddress EUR: 0x80225868
  * @ghidraAddress JPN: 0x80225058
  * @ghidraAddress BRD3D: 0x1003ad10
@@ -182,6 +193,7 @@ void Vec3fScaleInPlace(Vec3f *v, f32 scale);
  * @param v The vector divided.
  * @param divisor The number the vector is divided by.
  * @ghidraAddress USA: 0x8022455c
+ * @ghidraAddress Asia: 0x802240AC
  * @ghidraAddress EUR: 0x8022589c
  * @ghidraAddress JPN: 0x8022508c
  * @ghidraAddress BRD3D: 0x1003ad40
@@ -195,6 +207,7 @@ void Vec3fScaleByInverse(Vec3f *out, Vec3f *v, f32 divisor);
  * @param v The vector divided.
  * @param divisor The number the vector is divided by.
  * @ghidraAddress USA: 0x80224594
+ * @ghidraAddress Asia: 0x802240E4
  * @ghidraAddress EUR: 0x802258d4
  * @ghidraAddress JPN: 0x802250c4
  * @ghidraAddress BRD3D: 0x1003ad70
@@ -208,6 +221,7 @@ void Vec3fDivideInPlace(Vec3f *v, f32 divisor);
  * @param out The vector that receives the copy.
  * @param v The vector copied.
  * @ghidraAddress USA: 0x802245d4
+ * @ghidraAddress Asia: 0x80224124
  * @ghidraAddress EUR: 0x80225914
  * @ghidraAddress JPN: 0x80225104
  * @ghidraAddress BRD3D: 0x10035c70
@@ -222,6 +236,7 @@ void Vec3fCopy(Vec3f *out, Vec3f *v);
  * @param from The point the direction starts at.
  * @param to The point the direction runs towards.
  * @ghidraAddress USA: 0x802245f0
+ * @ghidraAddress Asia: 0x80224140
  * @ghidraAddress EUR: 0x80225930
  * @ghidraAddress JPN: 0x80225120
  * @ghidraAddress BRD3D: 0x1003ada0
@@ -235,6 +250,7 @@ void Vec3fDirection(Vec3f *out, Vec3f *from, Vec3f *to);
  * @param out The vector that receives the unit vector.
  * @param v The vector normalised.
  * @ghidraAddress USA: 0x802246bc
+ * @ghidraAddress Asia: 0x8022420C
  * @ghidraAddress EUR: 0x802259fc
  * @ghidraAddress JPN: 0x802251ec
  */
@@ -246,6 +262,7 @@ void Vec3fNormalizeSafe(Vec3f *out, Vec3f *v);
  *
  * @param v The vector normalised in place.
  * @ghidraAddress USA: 0x80224760
+ * @ghidraAddress Asia: 0x802242B0
  * @ghidraAddress EUR: 0x80225aa0
  * @ghidraAddress JPN: 0x80225290
  * @ghidraAddress BRD3D: 0x1003ae50
@@ -260,6 +277,7 @@ void Vec3fNormalize(Vec3f *v);
  * @param a The vector subtracted from.
  * @param b The vector subtracted.
  * @ghidraAddress USA: 0x80224808
+ * @ghidraAddress Asia: 0x80224358
  * @ghidraAddress EUR: 0x80225b48
  * @ghidraAddress JPN: 0x80225338
  * @ghidraAddress BRD3D: 0x1003aee0
@@ -273,6 +291,7 @@ void Vec3fSubtract(Vec3f *out, const Vec3f *a, const Vec3f *b);
  * @param v The vector subtracted from, which receives v - b.
  * @param b The vector subtracted.
  * @ghidraAddress USA: 0x8022483c
+ * @ghidraAddress Asia: 0x8022438C
  * @ghidraAddress EUR: 0x80225b7c
  * @ghidraAddress JPN: 0x8022536c
  * @ghidraAddress BRD3D: 0x1003af10
@@ -287,6 +306,7 @@ void Vec3fSubtractInPlace(Vec3f *v, Vec3f *b);
  * @param a The first vector.
  * @param b The second vector.
  * @ghidraAddress USA: 0x80224870
+ * @ghidraAddress Asia: 0x802243C0
  * @ghidraAddress EUR: 0x80225bb0
  * @ghidraAddress JPN: 0x802253a0
  */
@@ -299,6 +319,7 @@ void Vec2fAdd(Vec2f *out, Vec2f *a, Vec2f *b);
  * @param a The first vector.
  * @param b The second vector.
  * @ghidraAddress USA: 0x80224894
+ * @ghidraAddress Asia: 0x802243E4
  * @ghidraAddress EUR: 0x80225bd4
  * @ghidraAddress JPN: 0x802253c4
  * @ghidraAddress BRD3D: 0x1003af40
@@ -312,6 +333,7 @@ void Vec3fAdd(Vec3f *out, Vec3f *a, Vec3f *b);
  * @param v The vector added to, which receives v + b.
  * @param b The vector added.
  * @ghidraAddress USA: 0x802248c8
+ * @ghidraAddress Asia: 0x80224418
  * @ghidraAddress EUR: 0x80225c08
  * @ghidraAddress JPN: 0x802253f8
  * @ghidraAddress BRD3D: 0x1003af70
@@ -327,6 +349,7 @@ void Vec3fAddInPlace(Vec3f *v, Vec3f *b);
  * @param b The point reached when t is 0.
  * @param t The share of the way from b to a.
  * @ghidraAddress USA: 0x802248fc
+ * @ghidraAddress Asia: 0x8022444C
  * @ghidraAddress EUR: 0x80225c3c
  * @ghidraAddress JPN: 0x8022542c
  * @ghidraAddress BRD3D: 0x1003afa0
@@ -342,6 +365,7 @@ void Vec3fLerp(Vec3f *out, Vec3f *a, Vec3f *b, f32 t);
  * @param b The vector scaled and added.
  * @param scale The factor for b.
  * @ghidraAddress USA: 0x8022494c
+ * @ghidraAddress Asia: 0x8022449C
  * @ghidraAddress EUR: 0x80225c8c
  * @ghidraAddress JPN: 0x8022547c
  * @ghidraAddress BRD3D: 0x1003afe0
@@ -356,6 +380,7 @@ void Vec3fMulAdd(Vec3f *out, Vec3f *a, Vec3f *b, f32 scale);
  * @param b The vector scaled and added.
  * @param scale The factor for b.
  * @ghidraAddress USA: 0x80224990
+ * @ghidraAddress Asia: 0x802244E0
  * @ghidraAddress EUR: 0x80225cd0
  * @ghidraAddress JPN: 0x802254c0
  * @ghidraAddress BRD3D: 0x1003b020
@@ -370,6 +395,7 @@ void Vec3fMulAddInPlace(Vec3f *v, Vec3f *b, f32 scale);
  * @param a The first point.
  * @param b The second point.
  * @ghidraAddress USA: 0x802249d4
+ * @ghidraAddress Asia: 0x80224524
  * @ghidraAddress EUR: 0x80225d14
  * @ghidraAddress JPN: 0x80225504
  * @ghidraAddress BRD3D: 0x1003b050
@@ -382,6 +408,7 @@ void Vec3fMidpoint(Vec3f *out, Vec3f *a, Vec3f *b);
  *
  * @param v The vector cleared.
  * @ghidraAddress USA: 0x80224a1c
+ * @ghidraAddress Asia: 0x8022456C
  * @ghidraAddress EUR: 0x80225d5c
  * @ghidraAddress JPN: 0x8022554c
  * @ghidraAddress BRD3D: 0x1003b090
@@ -396,6 +423,7 @@ void Vec3fClear(Vec3f *v);
  * @param b The second point.
  * @return The distance between the points.
  * @ghidraAddress USA: 0x80224a34
+ * @ghidraAddress Asia: 0x80224584
  * @ghidraAddress EUR: 0x80225d74
  * @ghidraAddress JPN: 0x80225564
  * @ghidraAddress BRD3D: 0x1003b0a0
@@ -423,6 +451,7 @@ long double Vec3fDistance(Vec3f *a, Vec3f *b);
  * @param b The second point.
  * @return The distance between the points.
  * @ghidraAddress USA: 0x80224a78
+ * @ghidraAddress Asia: 0x802245C8
  * @ghidraAddress EUR: 0x80225db8
  * @ghidraAddress JPN: 0x802255a8
  */
@@ -436,6 +465,7 @@ f32 Vec3fDistance(Vec3f *a, Vec3f *b);
  * @param b The second point.
  * @return The squared distance between the points.
  * @ghidraAddress USA: 0x80224acc
+ * @ghidraAddress Asia: 0x8022461C
  * @ghidraAddress EUR: 0x80225e0c
  * @ghidraAddress JPN: 0x802255fc
  * @ghidraAddress BRD3D: 0x1003b130
@@ -453,6 +483,7 @@ f32 Vec3fDistanceSquared(Vec3f *a, Vec3f *b);
  * @param v The vector measured.
  * @return The length of the vector.
  * @ghidraAddress USA: 0x80224b08
+ * @ghidraAddress Asia: 0x80224658
  * @ghidraAddress EUR: 0x80225e48
  * @ghidraAddress JPN: 0x80225638
  * @ghidraAddress BRD3D: 0x1003b170
@@ -470,6 +501,7 @@ f32 Vec3fLength(Vec3f *v);
  * @param v The vector measured.
  * @return The length of the vector.
  * @ghidraAddress USA: 0x80224b48
+ * @ghidraAddress Asia: 0x80224698
  * @ghidraAddress EUR: 0x80225e88
  * @ghidraAddress JPN: 0x80225678
  * @ghidraAddress BRD3D: 0x1003b1c0
@@ -488,6 +520,7 @@ f32 Vec2fLength(Vec2f *v);
  * @param angle The angle of the rotation, in radians.
  * @param axis The unit axis of the rotation.
  * @ghidraAddress USA: 0x80224b7c
+ * @ghidraAddress Asia: 0x802246CC
  * @ghidraAddress EUR: 0x80225ebc
  * @ghidraAddress JPN: 0x802256ac
  */
@@ -500,6 +533,7 @@ void Vec3fRotateAroundAxis(Vec3f *v, f32 angle, Vec3f *axis);
  * @param in The point transformed.
  * @param m The matrix, applied to a row vector with its translation in the last row.
  * @ghidraAddress USA: 0x80224d00
+ * @ghidraAddress Asia: 0x80224850
  * @ghidraAddress EUR: 0x80226040
  * @ghidraAddress JPN: 0x80225830
  * @ghidraAddress BRD3D: 0x1003b1f0
@@ -514,6 +548,7 @@ void Mtx4x4ProjectPoint(Vec3f *out, Vec3f *in, f32 m[4][4]);
  * @param in The point transformed.
  * @param m The matrix, applied to a row vector with its translation in the last row.
  * @ghidraAddress USA: 0x80224ddc
+ * @ghidraAddress Asia: 0x8022492C
  * @ghidraAddress EUR: 0x8022611c
  * @ghidraAddress JPN: 0x8022590c
  * @ghidraAddress BRD3D: 0x1003b2a0
@@ -528,6 +563,7 @@ void Vec3fTransformByMatrix(f32 out[4], const Vec3f *in, f32 m[4][4]);
  * @param in The x, y, and z of the point transformed.
  * @param m The matrix, applied to a row vector with its translation in the last row.
  * @ghidraAddress USA: 0x80224ea8
+ * @ghidraAddress Asia: 0x802249F8
  * @ghidraAddress EUR: 0x802261e8
  * @ghidraAddress JPN: 0x802259d8
  */
@@ -540,6 +576,7 @@ void Vec3sTransformToVec4f(f32 out[4], s16 in[3], f32 m[4][4]);
  * @param in The point transformed.
  * @param m The matrix, applied to a row vector with its translation in the last row.
  * @ghidraAddress USA: 0x80224f90
+ * @ghidraAddress Asia: 0x80224AE0
  * @ghidraAddress EUR: 0x802262d0
  * @ghidraAddress JPN: 0x80225ac0
  */
@@ -552,6 +589,7 @@ void ProjectVec3fToScreen(Vec2f *out, Vec3f *in, f32 m[4][4]);
  * @param in The direction transformed.
  * @param m The matrix, applied to a row vector.
  * @ghidraAddress USA: 0x80225038
+ * @ghidraAddress Asia: 0x80224B88
  * @ghidraAddress EUR: 0x80226378
  * @ghidraAddress JPN: 0x80225b68
  * @ghidraAddress BRD3D: 0x1003b340
@@ -566,6 +604,7 @@ void Mtx4x4TransformNoTranslation(Vec3f *out, Vec3f *in, f32 m[4][4]);
  * @param in The direction transformed.
  * @param m The matrix, applied to a row vector.
  * @ghidraAddress USA: 0x802250fc
+ * @ghidraAddress Asia: 0x80224C4C
  * @ghidraAddress EUR: 0x8022643c
  * @ghidraAddress JPN: 0x80225c2c
  * @ghidraAddress BRD3D: 0x1003b3f0
@@ -580,6 +619,7 @@ void Mtx3x3TransformVec(Vec3f *out, Vec3f *in, f32 m[4][4]);
  * @param a The matrix on the left.
  * @param b The matrix on the right.
  * @ghidraAddress USA: 0x80225180
+ * @ghidraAddress Asia: 0x80224CD0
  * @ghidraAddress EUR: 0x802264c0
  * @ghidraAddress JPN: 0x80225cb0
  * @ghidraAddress BRD3D: 0x1003b470
@@ -593,6 +633,7 @@ void Mtx4x4Multiply(f32 out[4][4], f32 a[4][4], f32 b[4][4]);
  * @param out The matrix that receives the transpose.
  * @param in The matrix transposed.
  * @ghidraAddress USA: 0x802252ec
+ * @ghidraAddress Asia: 0x80224E3C
  * @ghidraAddress EUR: 0x8022662c
  * @ghidraAddress JPN: 0x80225e1c
  */
@@ -604,6 +645,7 @@ void Mtx4fTranspose(f32 out[4][4], f32 in[4][4]);
  * @param out The matrix that receives the copy.
  * @param in The matrix copied.
  * @ghidraAddress USA: 0x80225350
+ * @ghidraAddress Asia: 0x80224EA0
  * @ghidraAddress EUR: 0x80226690
  * @ghidraAddress JPN: 0x80225e80
  * @ghidraAddress BRD3D: 0x100307a0
@@ -623,6 +665,7 @@ void CopyMatrix4x4(f32 out[4][4], f32 in[4][4]);
  * @param in The matrix inverted.
  * @return 1 once inverted. On the N64, 0 for a singular matrix.
  * @ghidraAddress USA: 0x80225370
+ * @ghidraAddress Asia: 0x80224EC0
  * @ghidraAddress EUR: 0x802266b0
  * @ghidraAddress JPN: 0x80225ea0
  * @ghidraAddress BRD3D: 0x1003b4f0
@@ -635,6 +678,7 @@ s32 MtxInvert4x4(f32 out[4][4], f32 in[4][4]);
  *
  * @param m The matrix completed in place.
  * @ghidraAddress USA: 0x8021eb30
+ * @ghidraAddress Asia: 0x8021E680
  * @ghidraAddress EUR: 0x8021fe30
  * @ghidraAddress JPN: 0x8021f620
  * @ghidraAddress BRD3D: 0x10075340
@@ -654,6 +698,7 @@ void FinishFrameMatrix(f32 m[4][4]);
  * @param y The y of the point.
  * @return The angle in radians, or 0 for the origin.
  * @ghidraAddress USA: 0x8022576c
+ * @ghidraAddress Asia: 0x802252BC
  * @ghidraAddress EUR: 0x80226aac
  * @ghidraAddress JPN: 0x8022629c
  * @ghidraAddress BRD3D: 0x1003b7b0
@@ -675,6 +720,7 @@ f32 Atan2f(f32 x, f32 y);
  * @param normal The normal of the triangle.
  * @return #TRUE if the point lies within the triangle, #FALSE otherwise.
  * @ghidraAddress USA: 0x8022591c
+ * @ghidraAddress Asia: 0x8022546C
  * @ghidraAddress EUR: 0x80226c5c
  * @ghidraAddress JPN: 0x8022644c
  * @ghidraAddress BRD3D: 0x1003b940
@@ -693,6 +739,7 @@ s32 PointInTriangle3D(Vec3f *point, Vec3f *v0, Vec3f *v1, Vec3f *v2, Vec3f *norm
  * @param tolerance The least value of the test against each edge for the point to pass it.
  * @return #TRUE if the point passes the test against every edge, #FALSE otherwise.
  * @ghidraAddress USA: 0x80225a40
+ * @ghidraAddress Asia: 0x80225590
  * @ghidraAddress EUR: 0x80226d80
  * @ghidraAddress JPN: 0x80226570
  */
@@ -708,6 +755,7 @@ s32 IsPointInsideTriangle(
  * @param q2 The second end of the second segment.
  * @return 0 if they do not, 2 if they lie along one line, and 1 if they cross.
  * @ghidraAddress USA: 0x80225b64
+ * @ghidraAddress Asia: 0x802256B4
  * @ghidraAddress EUR: 0x80226ea4
  * @ghidraAddress JPN: 0x80226694
  * @ghidraAddress BRD3D: 0x1003ba70
@@ -725,6 +773,7 @@ s32 TestLineSegmentIntersection(Vec2f *p1, Vec2f *p2, Vec2f *q1, Vec2f *q2);
  * @param q The second point tested.
  * @return 0 if they lie strictly on one side, 2 if both lie on the line, and 1 otherwise.
  * @ghidraAddress USA: 0x80225e1c
+ * @ghidraAddress Asia: 0x8022596C
  * @ghidraAddress EUR: 0x8022715c
  * @ghidraAddress JPN: 0x8022694c
  * @ghidraAddress BRD3D: 0x1003bc90
@@ -737,6 +786,7 @@ s32 SegmentCrossesLine2D(const Vec3f *a, const Vec3f *b, const Vec3f *p, const V
  *
  * @param seed The new seed.
  * @ghidraAddress USA: 0x80225ed8
+ * @ghidraAddress Asia: 0x80225A28
  * @ghidraAddress EUR: 0x80227218
  * @ghidraAddress JPN: 0x80226a08
  * @ghidraAddress BRD3D: 0x1003bd40
@@ -749,6 +799,7 @@ void SetRngSeed(u32 seed);
  *
  * @return The new seed, from 0 to 0x7ffffff.
  * @ghidraAddress USA: 0x80225ee4
+ * @ghidraAddress Asia: 0x80225A34
  * @ghidraAddress EUR: 0x80227224
  * @ghidraAddress JPN: 0x80226a14
  * @ghidraAddress BRD3D: 0x1003bd50

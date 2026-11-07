@@ -35,6 +35,7 @@ namespace {
      * Whether g_nDebugHiddenInstanceIndex is left undrawn.
      *
      * @ghidraAddress USA: 0x8028c758
+     * @ghidraAddress Asia: 0x8028C2A8
      * @ghidraAddress EUR: 0x8028eeb8
      * @ghidraAddress JPN: 0x8028e908
      * @ghidraAddress BRD3D: 0x1039b6c4
@@ -44,6 +45,7 @@ namespace {
      * The TRACK_INSTANCE_ flags of the placed models not drawn.
      *
      * @ghidraAddress USA: 0x8035d520
+     * @ghidraAddress Asia: 0x8035CFE0
      * @ghidraAddress EUR: 0x8035fa20
      * @ghidraAddress JPN: 0x8035e690
      * @ghidraAddress BRD3D: 0x10363ff8
@@ -54,6 +56,7 @@ namespace {
      * The largest absolute value of the first three rows of g_afViewProjMatrix.
      *
      * @ghidraAddress USA: 0x8035d51c
+     * @ghidraAddress Asia: 0x8035CFDC
      * @ghidraAddress EUR: 0x8035fa1c
      * @ghidraAddress JPN: 0x8035e68c
      * @ghidraAddress BRD3D: 0x10363fe8
@@ -64,6 +67,7 @@ namespace {
      * The last translucent model left for the second pass, or -1.
      *
      * @ghidraAddress USA: 0x8028c748
+     * @ghidraAddress Asia: 0x8028C298
      * @ghidraAddress EUR: 0x8028eea8
      * @ghidraAddress JPN: 0x8028e8f8
      * @ghidraAddress BRD3D: 0x1036438c
@@ -75,6 +79,7 @@ namespace {
      * them without shadows, and 0x1000 until it is known.
      *
      * @ghidraAddress USA: 0x8028c78c
+     * @ghidraAddress Asia: 0x8028C2DC
      * @ghidraAddress EUR: 0x8028eeec
      * @ghidraAddress JPN: 0x8028e93c
      * @ghidraAddress BRD3D: 0x102e54b8
@@ -82,6 +87,7 @@ namespace {
     s32 g_nTrackTransparentStartIdx;
     /**
      * @ghidraAddress USA: 0x8028c784
+     * @ghidraAddress Asia: 0x8028C2D4
      * @ghidraAddress EUR: 0x8028eee4
      * @ghidraAddress JPN: 0x8028e934
      * @ghidraAddress BRD3D: 0x102e54b4
@@ -91,6 +97,7 @@ namespace {
      * Set to 0x1000 with g_nTrackTransparentStartIdx, and never read.
      *
      * @ghidraAddress USA: 0x8028c77c
+     * @ghidraAddress Asia: 0x8028C2CC
      * @ghidraAddress EUR: 0x8028eedc
      * @ghidraAddress JPN: 0x8028e92c
      * @ghidraAddress BRD3D: 0x102e5ed4

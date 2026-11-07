@@ -12,6 +12,7 @@ extern "C" {
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8021f0a8
+ * @ghidraAddress Asia: 0x8021EBF8
  * @ghidraAddress EUR: 0x802203a8
  * @ghidraAddress JPN: 0x8021fb98
  */
@@ -23,6 +24,7 @@ void UpdateRaceTimers(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8021f158
+ * @ghidraAddress Asia: 0x8021ECA8
  * @ghidraAddress EUR: 0x80220458
  * @ghidraAddress JPN: 0x8021fc48
  */
@@ -33,6 +35,7 @@ void UpdateHudMessageTimers(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8021f1f0
+ * @ghidraAddress Asia: 0x8021ED40
  * @ghidraAddress EUR: 0x802204f0
  * @ghidraAddress JPN: 0x8021fce0
  */
@@ -43,6 +46,7 @@ void CheckWrongWayWarning(Vehicle *vehicle);
  *
  * @param vehicle The vehicle.
  * @ghidraAddress USA: 0x8021f2d8
+ * @ghidraAddress Asia: 0x8021EE28
  * @ghidraAddress EUR: 0x802205d8
  * @ghidraAddress JPN: 0x8021fdc8
  */

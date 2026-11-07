@@ -26,6 +26,7 @@ static u64 *g_pRdpOutputBufferEnd = (u64 *)0x803c8000;
  * The commands of the display list of the last frame.
  *
  * @ghidraAddress USA: 0x8028ab70
+ * @ghidraAddress Asia: 0x8028A6C0
  * @ghidraAddress EUR: 0x8028ce1c
  * @ghidraAddress JPN: 0x8028c84c
  * @ghidraAddress BRD3D: 0x106c1170
@@ -36,6 +37,7 @@ static u64 *g_pRdpOutputBufferEnd = (u64 *)0x803c8000;
  * Whether a frame has been sent to the RSP.
  *
  * @ghidraAddress USA: 0x8028ab80
+ * @ghidraAddress Asia: 0x8028A6D0
  * @ghidraAddress EUR: 0x8028ce2c
  * @ghidraAddress JPN: 0x8028c85c
  * @ghidraAddress BRD3D: 0x106c6664
@@ -47,6 +49,7 @@ static s32 g_dwFirstFlushDone;
  * the end of the last frame.
  *
  * @ghidraAddress USA: 0x8028aae8
+ * @ghidraAddress Asia: 0x8028A638
  * @ghidraAddress EUR: 0x8028ccf0
  * @ghidraAddress JPN: 0x8028c7c0
  * @ghidraAddress BRD3D: 0x106c020c
@@ -55,6 +58,7 @@ static s32 g_dwFirstFlushDone;
 static u32 g_dwFlushDuration;
 /**
  * @ghidraAddress USA: 0x8028aae0
+ * @ghidraAddress Asia: 0x8028A630
  * @ghidraAddress EUR: 0x8028cce8
  * @ghidraAddress JPN: 0x8028c7b8
  * @ghidraAddress BRD3D: 0x106c1620
@@ -63,6 +67,7 @@ static u32 g_dwFlushDuration;
 [[maybe_unused, gnu::used]] static u32 g_dwFlushInterval;
 /**
  * @ghidraAddress USA: 0x8028aae4
+ * @ghidraAddress Asia: 0x8028A634
  * @ghidraAddress EUR: 0x8028ccec
  * @ghidraAddress JPN: 0x8028c7bc
  * @ghidraAddress BRD3D: 0x106c0208
@@ -71,6 +76,7 @@ static u32 g_dwFlushDuration;
 static u32 g_dwFlushStartTime;
 /**
  * @ghidraAddress USA: 0x8028aa24
+ * @ghidraAddress Asia: 0x8028A574
  * @ghidraAddress EUR: 0x8028cc2c
  * @ghidraAddress JPN: 0x8028c6fc
  * @ghidraAddress BRD3D: 0x106c56e4
@@ -79,6 +85,7 @@ static u32 g_dwFlushStartTime;
 [[maybe_unused, gnu::used]] static u32 g_dwLastFlushValue;
 /**
  * @ghidraAddress USA: 0x8028ab7c
+ * @ghidraAddress Asia: 0x8028A6CC
  * @ghidraAddress EUR: 0x8028ce28
  * @ghidraAddress JPN: 0x8028c858
  * @ghidraAddress BRD3D: 0x106c6660
@@ -89,6 +96,7 @@ static s32 g_dwPeakDisplayListCommands;
  * The most commands of a shadow, vertices of a shadow, and commands of a frame seen.
  *
  * @ghidraAddress USA: 0x8028ab74
+ * @ghidraAddress Asia: 0x8028A6C4
  * @ghidraAddress EUR: 0x8028ce20
  * @ghidraAddress JPN: 0x8028c850
  * @ghidraAddress BRD3D: 0x106c6658
@@ -97,6 +105,7 @@ static s32 g_dwPeakDisplayListCommands;
 static s32 g_dwPeakShadowCommandCount;
 /**
  * @ghidraAddress USA: 0x8028ab78
+ * @ghidraAddress Asia: 0x8028A6C8
  * @ghidraAddress EUR: 0x8028ce24
  * @ghidraAddress JPN: 0x8028c854
  * @ghidraAddress BRD3D: 0x106c665c

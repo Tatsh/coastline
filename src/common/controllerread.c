@@ -19,6 +19,7 @@ namespace {
      * Whether a read of the controllers is started and not yet received.
      *
      * @ghidraAddress USA: 0x8028ab6c
+     * @ghidraAddress Asia: 0x8028A6BC
      * @ghidraAddress EUR: 0x8028ce18
      * @ghidraAddress JPN: 0x8028c848
      * @ghidraAddress BRD3D: 0x106c56e8

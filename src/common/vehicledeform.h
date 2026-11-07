@@ -30,6 +30,7 @@ extern s16 g_wVehicleDeformMaxDent;
  * @param direction The direction of the impact.
  * @param amount The strength of the impact.
  * @ghidraAddress USA: 0x80233880
+ * @ghidraAddress Asia: 0x802333D0
  * @ghidraAddress EUR: 0x80234d90
  * @ghidraAddress JPN: 0x80234b90
  */

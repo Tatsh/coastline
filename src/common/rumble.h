@@ -21,6 +21,7 @@ extern "C" {
  * The Pak handle of each controller.
  *
  * @ghidraAddress USA: 0x8031a3f8
+ * @ghidraAddress Asia: 0x80319EB8
  * @ghidraAddress EUR: 0x8031c8f8
  * @ghidraAddress JPN: 0x8031b528
  */
@@ -30,6 +31,7 @@ extern OSPfs g_aContPfs[MAXCONTROLLERS];
  * The queue of SI events.
  *
  * @ghidraAddress USA: 0x80272d48
+ * @ghidraAddress Asia: 0x80272898
  * @ghidraAddress EUR: 0x80274f48
  * @ghidraAddress JPN: 0x80274a18
  * @ghidraAddress BRD3D: 0x10691000
@@ -42,6 +44,7 @@ extern OSMesgQueue g_SiMesgQueue;
  * reads the first #RUMBLE_CHANNELS.
  *
  * @ghidraAddress USA: 0x8031b1e8
+ * @ghidraAddress Asia: 0x8031ACA8
  * @ghidraAddress EUR: 0x8031d6e8
  * @ghidraAddress JPN: 0x8031c318
  * @ghidraAddress BRD3D: 0x106c06a0
@@ -53,6 +56,7 @@ extern u8 g_abRumblePakPresent[MAXCONTROLLERS];
  * Whether the serial interface is free of Controller Pak transfers, so the motors may run.
  *
  * @ghidraAddress USA: 0x802a4be8
+ * @ghidraAddress Asia: 0x802A4738
  * @ghidraAddress EUR: 0x802a7370
  * @ghidraAddress JPN: 0x802a6e10
  * @ghidraAddress BRD3D: 0x100b5d90
@@ -64,6 +68,7 @@ extern s16 g_wSerialInterfaceIdle;
  * Whether each motor is pulsing.
  *
  * @ghidraAddress USA: 0x802a4bec
+ * @ghidraAddress Asia: 0x802A473C
  * @ghidraAddress EUR: 0x802a7374
  * @ghidraAddress JPN: 0x802a6e14
  * @ghidraAddress BRD3D: 0x11782ba8
@@ -75,6 +80,7 @@ extern s16 g_awRumbleActive[RUMBLE_CHANNELS];
  * Whether each motor is in the on half of its pulse.
  *
  * @ghidraAddress USA: 0x802a4bf0
+ * @ghidraAddress Asia: 0x802A4740
  * @ghidraAddress EUR: 0x802a7378
  * @ghidraAddress JPN: 0x802a6e18
  * @ghidraAddress BRD3D: 0x11782bac
@@ -86,6 +92,7 @@ extern s16 g_awRumbleMotorOn[RUMBLE_CHANNELS];
  * The frames each pulse stays on.
  *
  * @ghidraAddress USA: 0x802a4bf4
+ * @ghidraAddress Asia: 0x802A4744
  * @ghidraAddress EUR: 0x802a737c
  * @ghidraAddress JPN: 0x802a6e1c
  * @ghidraAddress BRD3D: 0x11782bb0
@@ -97,6 +104,7 @@ extern s16 g_awRumbleOnFrames[RUMBLE_CHANNELS];
  * The frames each pulse stays off.
  *
  * @ghidraAddress USA: 0x802a4bf8
+ * @ghidraAddress Asia: 0x802A4748
  * @ghidraAddress EUR: 0x802a7380
  * @ghidraAddress JPN: 0x802a6e20
  * @ghidraAddress BRD3D: 0x11782bb4
@@ -108,6 +116,7 @@ extern s16 g_awRumbleOffFrames[RUMBLE_CHANNELS];
  * The frames left in the current half of each pulse.
  *
  * @ghidraAddress USA: 0x802a4bfc
+ * @ghidraAddress Asia: 0x802A474C
  * @ghidraAddress EUR: 0x802a7384
  * @ghidraAddress JPN: 0x802a6e24
  * @ghidraAddress BRD3D: 0x11782bb8
@@ -119,6 +128,7 @@ extern s16 g_awRumbleCounter[RUMBLE_CHANNELS];
  * The frames left before each rumble ends.
  *
  * @ghidraAddress USA: 0x802a4c00
+ * @ghidraAddress Asia: 0x802A4750
  * @ghidraAddress EUR: 0x802a7388
  * @ghidraAddress JPN: 0x802a6e28
  * @ghidraAddress BRD3D: 0x11782bbc
@@ -139,6 +149,7 @@ typedef struct {
  * A shared view of the race-exit flag and probe timer in the original data layout.
  *
  * @ghidraAddress USA: 0x802a4c04
+ * @ghidraAddress Asia: 0x802A4754
  * @ghidraAddress EUR: 0x802a738c
  * @ghidraAddress JPN: 0x802a6e2c
  */
@@ -149,6 +160,7 @@ extern RumbleProbeState g_RumbleProbeState;
  * The frames until the next probe for Rumble Paks, modulo 64.
  *
  * @ghidraAddress USA: 0x802a4c08
+ * @ghidraAddress Asia: 0x802A4758
  * @ghidraAddress EUR: 0x802a7390
  * @ghidraAddress JPN: 0x802a6e30
  */
@@ -160,6 +172,7 @@ extern u32 g_dwRumbleProbeTimer;
  *
  * @param unused The routine never reads it. Its caller passes 0.
  * @ghidraAddress USA: 0x80260490
+ * @ghidraAddress Asia: 0x8025FFE0
  * @ghidraAddress EUR: 0x80261970
  * @ghidraAddress JPN: 0x80261420
  */
@@ -169,6 +182,7 @@ void UpdateRumblePaks(s32 unused);
  * Called before the Rumble Paks are first probed. It does nothing in the release.
  *
  * @ghidraAddress USA: 0x802607ac
+ * @ghidraAddress Asia: 0x802602FC
  * @ghidraAddress EUR: 0x80261cac
  * @ghidraAddress JPN: 0x8026175c
  */

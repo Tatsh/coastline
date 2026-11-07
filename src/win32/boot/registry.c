@@ -13,7 +13,7 @@ void ReadInstallDirectoryFromRegistry(void) {
         ERROR_SUCCESS) {
         DWORD bytes = sizeof(g_szInstallDir);
         LSTATUS result =
-            RegQueryValueExA(key, "Directory", nullptr, nullptr, (BYTE *)g_szInstallDir, &bytes);
+            RegQueryValueExA(key, "Directory", NULL, NULL, (BYTE *)g_szInstallDir, &bytes);
         RegCloseKey(key);
         if (result == ERROR_SUCCESS) {
 #ifdef ENABLE_PATCHES

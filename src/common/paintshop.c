@@ -682,14 +682,14 @@ void *ConvertBitmap24ToRgba32(const BITMAP *pBitmap) {
     size_t byteSize;
 
     if (pBitmap->bmBitsPixel != PAINT_BITMAP_BITS) {
-        return nullptr;
+        return NULL;
     }
     byteSize = PaintBitmapByteSize(pBitmap->bmWidth, pBitmap->bmHeight);
     if (byteSize == 0) {
-        return nullptr;
+        return NULL;
     }
     pPixels = malloc(byteSize);
-    if (pPixels != nullptr) {
+    if (pPixels != NULL) {
         CopyBgr24ToRgba32Flipped(
             pPixels, pBitmap->bmBits, pBitmap->bmWidth, pBitmap->bmHeight, pBitmap->bmWidthBytes);
         g_dwConvertedBitmapWidth = pBitmap->bmWidth;
@@ -702,17 +702,17 @@ void *ConvertBitmap24ToRgba32(const BITMAP *pBitmap) {
 #if TGR_PLATFORM != TGR_PLATFORM_WIN
 void *LoadBitmapFromFile(const char *pszPath) {
     SDL_Surface *surface = SDL_LoadBMP(pszPath);
-    unsigned char *pPixels = nullptr;
+    unsigned char *pPixels = NULL;
 
-    if (surface == nullptr) {
-        return nullptr;
+    if (surface == NULL) {
+        return NULL;
     }
     // An SDL surface stores its rows from the top down, and the copy walks them with a negative
     // stride from the top row.
     if (SDL_BITSPERPIXEL(surface->format) == PAINT_BITMAP_BITS) {
         size_t byteSize = PaintBitmapByteSize(surface->w, surface->h);
-        pPixels = byteSize == 0 ? nullptr : (unsigned char *)malloc(byteSize);
-        if (pPixels != nullptr) {
+        pPixels = byteSize == 0 ? NULL : (unsigned char *)malloc(byteSize);
+        if (pPixels != NULL) {
             CopyBgr24ToRgba32Flipped(pPixels,
                                      (const unsigned char *)surface->pixels +
                                          (surface->h - 1) * surface->pitch,
@@ -732,15 +732,14 @@ void *LoadBitmapFromFile(const char *pszPath) {
     BITMAP bm;
     void *pPixels;
 
-    hBitmap =
-        LoadImageA(nullptr, pszPath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
-    if (hBitmap == nullptr) {
-        return nullptr;
+    hBitmap = LoadImageA(NULL, pszPath, IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE | LR_CREATEDIBSECTION);
+    if (hBitmap == NULL) {
+        return NULL;
     }
     GetObjectA(hBitmap, sizeof(bm), &bm);
     if (bm.bmBitsPixel != PAINT_BITMAP_BITS) {
         // The bitmap is not deleted here, as in the original.
-        return nullptr;
+        return NULL;
     }
     pPixels = ConvertBitmap24ToRgba32(&bm);
     DeleteObject(hBitmap);
@@ -780,9 +779,9 @@ void LoadPaintDamageBitmaps(void) {
 
 // A bitmap from malloc() is freed and its pointer cleared.
 static inline void FreeBitmap(void **ppBitmap) {
-    if (*ppBitmap != nullptr) {
+    if (*ppBitmap != NULL) {
         free(*ppBitmap);
-        *ppBitmap = nullptr;
+        *ppBitmap = NULL;
     }
 }
 

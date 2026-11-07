@@ -1,0 +1,49 @@
+name: Top Gear Rally (Asia)
+sha1: 7e36a98f6fafe3ff7e72d14e0fae16418458da47
+options:
+  basename: coastline-asia
+  target_path: .wiswa-ci/roms/asia.z64
+  base_path: ../..
+  platform: n64
+  compiler: IDO
+  asm_path: src/n64/asm/asia
+  src_path: .wiswa-ci/splat/src
+  build_path: build/splat
+  ld_script_path: .wiswa-ci/splat/coastline-asia.ld
+  symbol_addrs_path: [tools/splat/symbol_addrs.asia.txt]
+  undefined_funcs_auto_path: src/n64/asm/asia/undefined_funcs.ld
+  undefined_syms_auto_path: src/n64/asm/asia/undefined_syms.ld
+  asset_path: .wiswa-ci/splat/assets
+  find_file_boundaries: False
+  mips_abi_float_regs: numeric
+  o_as_suffix: True
+  use_legacy_include_asm: False
+  migrate_rodata_to_functions: False
+  rodata_string_guesser_level: 2
+  data_string_guesser_level: 2
+  create_undefined_funcs_auto: True
+  create_undefined_syms_auto: True
+  disasm_unknown: True
+  gfx_ucode: f3dex
+segments:
+  - name: header
+    type: bin
+    start: 0x0
+  - name: boot
+    type: bin
+    start: 0x40
+  - name: main
+    type: code
+    start: 0x1000
+    vram: 0x80200000
+    bss_size: 0xD67B0
+    subsegments:
+      - [0x1000, hasm, entry]
+      - [0x1050, asm, '01050']
+      - [0x6F550, data, data]
+      - [0xA6FA4, rodata, rodata]
+      - { type: bss, vram: 0x802ABEC0, name: bss }
+  - name: assets
+    type: bin
+    start: 0xACEC0
+  - [0x800000]

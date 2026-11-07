@@ -2,6 +2,7 @@
 
 /**
  * @ghidraAddress USA: 0x80260db0
+ * @ghidraAddress Asia: 0x80260900
  * @ghidraAddress EUR: 0x80262240
  * @ghidraAddress JPN: 0x80261cf0
  */

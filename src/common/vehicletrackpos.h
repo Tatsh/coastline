@@ -15,6 +15,7 @@ extern "C" {
  * @param vehicle The vehicle.
  * @return 0 if no point is near enough, 1 otherwise.
  * @ghidraAddress USA: 0x8021eb50
+ * @ghidraAddress Asia: 0x8021E6A0
  * @ghidraAddress EUR: 0x8021fe50
  * @ghidraAddress JPN: 0x8021f640
  */
