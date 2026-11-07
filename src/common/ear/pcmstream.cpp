@@ -266,8 +266,10 @@ int PcmWaveStream::PreparePcmWaveStream(const void *source) {
     return 1;
 }
 
-int PcmWaveStream::InitializeEarPlayback(const void *source, int streaming, int looping) {
-    SetPlaybackStreamingAndLooping(streaming, looping);
+int PcmWaveStream::InitializeEarPlayback(const void *source,
+                                         int requestedStreaming,
+                                         int requestedLooping) {
+    SetPlaybackStreamingAndLooping(requestedStreaming, requestedLooping);
     if (!source) {
         SetEarLastError(0x0d);
         return 0;
@@ -672,8 +674,10 @@ fail:
 #endif
 }
 
-int MemoryWaveStream::InitializeEarPlayback(const void *source, int streaming, int looping) {
-    SetPlaybackStreamingAndLooping(streaming, looping);
+int MemoryWaveStream::InitializeEarPlayback(const void *source,
+                                            int requestedStreaming,
+                                            int requestedLooping) {
+    SetPlaybackStreamingAndLooping(requestedStreaming, requestedLooping);
     if (!source) {
         SetEarLastError(0x0d);
         return 0;
@@ -707,9 +711,11 @@ void SampleWavePlayback::CloseRegisteredEarPlayback() {
     EarPlayback::CloseRegisteredEarPlayback();
 }
 
-int SampleWavePlayback::InitializeEarPlayback(const void *source, int streaming, int looping) {
+int SampleWavePlayback::InitializeEarPlayback(const void *source,
+                                              int requestedStreaming,
+                                              int requestedLooping) {
     // The samples come from the preset, so the source and the streaming request are not read.
-    SetPlaybackStreamingAndLooping(0, looping);
+    SetPlaybackStreamingAndLooping(0, requestedLooping);
     SetPlaybackBaseFrequency(TruncatePlaybackInteger(
         static_cast<long double>(format.nSamplesPerSec) * GetPlaybackBaseFrequencyScale()));
     SetPlaybackHandle(AllocateEarEventId());

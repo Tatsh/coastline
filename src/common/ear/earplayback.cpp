@@ -266,8 +266,8 @@ void EarPlayback::SetEarPlaybackStartPosition(double position) {
     }
 }
 
-void EarPlayback::SetEarPlaybackNotification(std::uint32_t flags, std::uint16_t event) {
-    notificationFlags = flags;
+void EarPlayback::SetEarPlaybackNotification(std::uint32_t newFlags, std::uint16_t event) {
+    notificationFlags = newFlags;
     notificationEvent = event;
 }
 
@@ -325,7 +325,9 @@ void EarPlayback::ReleaseEarPlaybackResources() {
     CloseRegisteredEarPlayback();
 }
 
-int EarPlayback::InitializeEarPlayback(const void *source, int streaming, int looping) {
+int EarPlayback::InitializeEarPlayback(const void *source,
+                                       int requestedStreaming,
+                                       int requestedLooping) {
     return 1;
 }
 

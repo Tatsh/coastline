@@ -314,8 +314,10 @@ fail:
     return 0;
 }
 
-int ImaAdpcmWaveStream::InitializeEarPlayback(const void *source, int streaming, int looping) {
-    SetPlaybackStreamingAndLooping(streaming, looping);
+int ImaAdpcmWaveStream::InitializeEarPlayback(const void *source,
+                                              int requestedStreaming,
+                                              int requestedLooping) {
+    SetPlaybackStreamingAndLooping(requestedStreaming, requestedLooping);
     memorySource = (GetPlaybackSourceFlags() & 0x6000) == 0x2000;
     if (!source) {
         SetEarLastError(0x0d);
