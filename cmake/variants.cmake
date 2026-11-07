@@ -47,6 +47,7 @@ foreach(_variant ${TGR_VARIANTS})
     CMAKE_ARGS -DTGR_PLATFORM=${_platform} ${_choice_arg}
                -DTGR_ENABLE_PATCHES=${TGR_ENABLE_PATCHES}
                -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+               -DCMAKE_EXPORT_COMPILE_COMMANDS=${CMAKE_EXPORT_COMPILE_COMMANDS}
                -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/cmake/${_platform}-toolchain.cmake
     BUILD_ALWAYS ON
     INSTALL_COMMAND ""

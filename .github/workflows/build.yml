@@ -539,13 +539,9 @@ jobs:
       attestations: write
       contents: read
       id-token: write
-    name: 'Windows (${{ matrix.renderer }})'
+    name: 'Windows (Boss Rally)'
     needs: 'version'
     runs-on: windows-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        renderer: ['d3d', 'glide']
     steps:
       # The compiler is the i686 mingw-w64 GCC of MSYS2's mingw32 system.
       - uses: 'msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e'
@@ -566,28 +562,22 @@ jobs:
           cmake --version
         shell: 'msys2 {0}'
       - name: 'Configure'
-        run: cmake --preset "win-$TGR_RENDERER" -DCMAKE_BUILD_TYPE=Release -DTGR_ENABLE_PATCHES=ON
-        env:
-          TGR_RENDERER: '${{ matrix.renderer }}'
+        run: cmake --preset win-both -DTGR_ENABLE_PATCHES=ON
         shell: 'msys2 {0}'
       - name: 'Compile'
-        run: cmake --build --preset "win-$TGR_RENDERER" -- -k 0
-        env:
-          TGR_RENDERER: '${{ matrix.renderer }}'
+        run: cmake --build --preset win-both -- -k 0
         shell: 'msys2 {0}'
       # The renderer library, earpds.dll, and the launchers go side by side, as in the installed
       # game.
       - name: 'Package'
         run: |
           mkdir staging
-          cp "build/win-$TGR_RENDERER/src/"*.dll "build/win-$TGR_RENDERER/src/win32/ear/earpds.dll" \
-            "build/win-$TGR_RENDERER/src/win32/boot/"*.exe staging/
-          (cd staging && zip -9 "../coastline-$VERSION-$LIBRARY-$BUILD_TYPE.zip" ./*)
+          cp build/win-both/win-d3d/src/BRD3D.dll build/win-both/win-glide/src/BRGlide.dll \
+            build/win-both/win-d3d/src/win32/ear/earpds.dll \
+            build/win-both/win-d3d/src/win32/boot/*.exe staging/
+          (cd staging && zip -9 "../coastline-$VERSION-br-Release.zip" ./*)
           unzip -l ./coastline-*.zip
         env:
-          BUILD_TYPE: 'Release'
-          LIBRARY: "${{ matrix.renderer == 'd3d' && 'brd3d' || 'brglide' }}"
-          TGR_RENDERER: '${{ matrix.renderer }}'
           VERSION: '${{ needs.version.outputs.version }}'
         shell: 'msys2 {0}'
       - name: 'Attest the binaries'
@@ -599,7 +589,7 @@ jobs:
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
-          name: 'br-${{ matrix.renderer }}-Release'
+          name: 'br-windows-Release'
           path: 'coastline-*.zip'
   # On a tag, PC packages go to the draft. N64 artifacts remain on the CI run.
   # The Release workflow publishes the draft once every workflow of the commit succeeds.

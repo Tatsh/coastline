@@ -25,6 +25,10 @@
       "name": "win-glide"
     },
     {
+      "configurePreset": "win-both",
+      "name": "win-both"
+    },
+    {
       "configurePreset": "all",
       "name": "all"
     },
@@ -116,6 +120,14 @@
       },
       "inherits": "win",
       "name": "win-glide"
+    },
+    {
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "TGR_VARIANTS": "win-d3d;win-glide"
+      },
+      "inherits": "win",
+      "name": "win-both"
     },
     {
       "cacheVariables": {
@@ -228,6 +240,19 @@
         },
         {
           "name": "win-glide",
+          "type": "build"
+        }
+      ]
+    },
+    {
+      "name": "win-both",
+      "steps": [
+        {
+          "name": "win-both",
+          "type": "configure"
+        },
+        {
+          "name": "win-both",
           "type": "build"
         }
       ]

@@ -160,6 +160,57 @@ jobs:
         with:
           category: '/language:c-cpp/n64-${{ matrix.region }}'
           sarif_file: '${{ runner.temp }}/codeql-sarif'
+  analyze-win:
+    name: 'Analyze Boss Rally'
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    runs-on: windows-2022
+    steps:
+      - uses: 'msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e'
+        with:
+          install: 'git zip'
+          msystem: 'mingw32'
+          pacboy: >-
+            cmake:p
+            ninja:p
+            toolchain:p
+          update: true
+      - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
+        with:
+          persist-credentials: false
+      - name: 'Initialize CodeQL'
+        uses: 'github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        with:
+          build-mode: 'manual'
+          languages: 'c-cpp'
+      - name: 'Build patched and unpatched configurations'
+        run: |
+          for patches in OFF ON; do
+            build_dir=".wiswa-ci/build/codeql-win-$patches"
+            cmake -S . -B "$build_dir" -G Ninja \
+              -DCMAKE_TOOLCHAIN_FILE=cmake/win-toolchain.cmake \
+              -DCMAKE_BUILD_TYPE=Release -DTGR_PLATFORM=win \
+              -DTGR_VARIANTS='win-d3d;win-glide' \
+              -DTGR_ENABLE_PATCHES="$patches"
+            cmake --build "$build_dir" -- -k 0
+          done
+        shell: 'msys2 {0}'
+      - name: 'Analyze'
+        uses: 'github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        with:
+          category: '/language:c-cpp/win'
+          output: '${{ runner.temp }}/codeql-sarif'
+          upload: false
+      - name: Restrict native findings to project sources
+        run: python .github/scripts/static-analysis.py --sarif "$env:RUNNER_TEMP/codeql-sarif"
+        shell: pwsh
+      - name: 'Upload CodeQL results'
+        uses: 'github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
+        with:
+          category: '/language:c-cpp/win'
+          sarif_file: '${{ runner.temp }}/codeql-sarif'
 name: 'CodeQL'
 'on':
   pull_request:

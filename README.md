@@ -34,8 +34,9 @@ part of the program.
 ## Building
 
 Each release is a variant: `n64-us`, `n64-asia`, `n64-jp`, and `n64-eu` for the Nintendo 64
-releases, and `win-d3d` and `win-glide` for the two Windows libraries. A workflow preset builds
-one variant. The cartridge image of the release is read from the `TGR_ROM` environment variable,
+releases, and `win-d3d` and `win-glide` for the two Windows libraries. The `win-both` workflow
+builds both Windows libraries in one step. The cartridge image of an N64 release is read from the
+`TGR_ROM` environment variable,
 and its assets are extracted into the build directory on every build. The image is checked
 against the SHA-1 of the unmodified release before anything is read from it.
 
@@ -62,7 +63,7 @@ The Nintendo 64 compiler is libdragon's GCC, found through `N64_INST`, and no ot
 libdragon is used. The Windows compiler is an i686 mingw-w64 GCC, found through `MINGW_ROOT` or
 on the path. The Windows build is 32-bit only, and its `BRD3D.dll` and `BRGlide.dll` are meant
 as drop-in replacements for the files of the installed game. Every routine compiles into an
-archive. Windows builds link the selected renderer DLL as part of the default build.
+archive. The `win-both` build produces both renderer DLLs and their launchers.
 
 Each Nintendo 64 release builds a cartridge image, such as `coastline-us.z64` in the build
 directory, whenever `TGR_ROM` is set. Routines not yet reconstructed in C link from the assembly of
