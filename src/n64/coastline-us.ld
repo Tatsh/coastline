@@ -31,6 +31,12 @@ SECTIONS
         . = ALIGN(16);
         *splash.c.obj(.text .text.*)
         *splash-controller.c.obj(.text .text.*)
+        *libcoastline_n64.a:racemenu.c.obj(.text .text.*)
+        *modeldraw.trim.o(.text .text.*)
+        *libcoastline_n64.a:modeldraw.c.obj(.text .text.*)
+        *libcoastline_n64.a:racemenu-draw.c.obj(.text .text.*)
+        . = ALIGN(16);
+        *libcoastline_n64.a:carselect.c.obj(.text .text.*)
         *(.text .text.*)
     }
     . = ALIGN(16);

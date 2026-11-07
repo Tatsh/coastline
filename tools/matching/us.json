@@ -174,52 +174,72 @@
     },
     "0x8020a524": {
       "sources": {
-        "src/n64/racemenu.c": ["96d09482ad478aee7d2bd31e909d56b7b10121f8ac118fd562bdf73f735a942e"]
+        "src/n64/racemenu-draw.c": [
+          "96d09482ad478aee7d2bd31e909d56b7b10121f8ac118fd562bdf73f735a942e"
+        ]
       }
     },
     "0x8020a6a4": {
       "sources": {
-        "src/n64/racemenu.c": ["50726d60e11b76442b1f5634e14fc67ec5d7cfc42a1771f9d30b163736e10242"]
+        "src/n64/racemenu-draw.c": [
+          "50726d60e11b76442b1f5634e14fc67ec5d7cfc42a1771f9d30b163736e10242"
+        ]
       }
     },
     "0x8020a820": {
       "sources": {
-        "src/n64/racemenu.c": ["239c6b6401191c09f29e00360f46451c2318a6019862382ae3b7c7e0260db1b8"]
+        "src/n64/racemenu-draw.c": [
+          "239c6b6401191c09f29e00360f46451c2318a6019862382ae3b7c7e0260db1b8"
+        ]
       }
     },
     "0x8020a9d0": {
       "sources": {
-        "src/n64/racemenu.c": ["dd7c313c4add918791b839196f33b5fba3a35ee3466da0e1a02ee39b03475bf0"]
+        "src/n64/racemenu-draw.c": [
+          "dd7c313c4add918791b839196f33b5fba3a35ee3466da0e1a02ee39b03475bf0"
+        ]
       }
     },
     "0x8020aae0": {
       "sources": {
-        "src/n64/racemenu.c": ["a6b9efe7d3020000a4b0f746254c9ee9f003c70303b03119c69435bd452249d3"]
+        "src/n64/racemenu-draw.c": [
+          "a6b9efe7d3020000a4b0f746254c9ee9f003c70303b03119c69435bd452249d3"
+        ]
       }
     },
     "0x8020ac18": {
       "sources": {
-        "src/n64/racemenu.c": ["6bd81dc8f4b0b63d03b9985acb1f689fa85bf72b38eb38240173f1eda0d31e5e"]
+        "src/n64/racemenu-draw.c": [
+          "6bd81dc8f4b0b63d03b9985acb1f689fa85bf72b38eb38240173f1eda0d31e5e"
+        ]
       }
     },
     "0x8020ad50": {
       "sources": {
-        "src/n64/racemenu.c": ["b87b14a939da6a1537030267f48da7105b174782162e6ef2dbcf609fd3eeb9e3"]
+        "src/n64/racemenu-draw.c": [
+          "b87b14a939da6a1537030267f48da7105b174782162e6ef2dbcf609fd3eeb9e3"
+        ]
       }
     },
     "0x8020ad5c": {
       "sources": {
-        "src/n64/racemenu.c": ["84a3536785d3d3b8012cd7168ece74815a920b671513bc5e20edf434afa2c3de"]
+        "src/n64/racemenu-draw.c": [
+          "84a3536785d3d3b8012cd7168ece74815a920b671513bc5e20edf434afa2c3de"
+        ]
       }
     },
     "0x8020c27c": {
       "sources": {
-        "src/n64/racemenu.c": ["6f1811028a99a57374867b70e915cb32436b24dc349a740cf5d6c42649a684f2"]
+        "src/n64/racemenu-draw.c": [
+          "6f1811028a99a57374867b70e915cb32436b24dc349a740cf5d6c42649a684f2"
+        ]
       }
     },
     "0x8020c408": {
       "sources": {
-        "src/n64/racemenu.c": ["f7bc1ff7e1bdfd8c24b553c0b899cd3705f4a577d741ef9c0b71e063a7a02562"]
+        "src/n64/racemenu-draw.c": [
+          "f7bc1ff7e1bdfd8c24b553c0b899cd3705f4a577d741ef9c0b71e063a7a02562"
+        ]
       }
     },
     "0x8020c460": {

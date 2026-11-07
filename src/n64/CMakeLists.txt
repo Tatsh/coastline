@@ -42,6 +42,7 @@ set(_n64_sources
     racetick.c
     raceprogress.c
     racemenu.c
+    racemenu-draw.c
     racesound.c
     rumble.c
     sidegrip.c
@@ -74,6 +75,8 @@ if(TGR_ENABLE_PATCHES)
   list(APPEND _n64_sources paintinput.c)
 endif()
 if(TGR_IDO AND CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT TGR_ENABLE_PATCHES)
+  list(REMOVE_ITEM _n64_sources modeldraw.c)
+  coastline_add_ido_trimmed_object(coastline_modeldraw modeldraw.c 0x7c0 0x7b4 modeldraw)
   list(REMOVE_ITEM _n64_sources race-bgm.c)
   coastline_add_ido_trimmed_object(coastline_race_bgm race-bgm.c 0x60 0x5c race-bgm)
   if(TGR_REGION STREQUAL "jp")
@@ -110,7 +113,8 @@ if(TGR_IDO)
   endif()
   set_source_files_properties("${_splash_source}" PROPERTIES
                             COMPILE_DEFINITIONS COASTLINE_ROM_POINTERS)
-  set_source_files_properties(racemenu.c PROPERTIES COMPILE_DEFINITIONS COASTLINE_ROM_POINTERS)
+  set_source_files_properties(racemenu.c racemenu-draw.c PROPERTIES
+                              COMPILE_DEFINITIONS COASTLINE_ROM_POINTERS)
   set_source_files_properties("${_paintshop_source}" PROPERTIES
                             COMPILE_DEFINITIONS COASTLINE_PAINTSHOP_COLOR_RETURN)
 endif()
