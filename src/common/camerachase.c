@@ -61,9 +61,9 @@ void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share) {
     length = Vec3fLength(&offset);
     if (CHASE_NONZERO(length)) {
         if (g_dwNumViewports == 1) {
-            Vec3fScaleInPlace(&offset, CHASE_DISTANCE / length);
+            Vec3fScaleInPlace(&offset, (f32)(CHASE_DISTANCE / length));
         } else {
-            Vec3fScaleInPlace(&offset, CHASE_DISTANCE_SPLIT_SCREEN / length);
+            Vec3fScaleInPlace(&offset, (f32)(CHASE_DISTANCE_SPLIT_SCREEN / length));
         }
     }
 
@@ -79,7 +79,7 @@ void UpdateCameraChase(Vehicle *vehicle, CameraFrame *camera, f32 share) {
     }
     length = Vec3fLength(&camera->position);
     if (CHASE_NONZERO(length)) {
-        Vec3fScaleInPlace(&camera->position, CHASE_DISTANCE / length);
+        Vec3fScaleInPlace(&camera->position, (f32)(CHASE_DISTANCE / length));
     }
 
     Vec3fLerp(&camera->position, &camera->position, &offset, share);
@@ -115,7 +115,7 @@ void UpdateCameraLookAtTarget(Vehicle *vehicle) {
     VEHICLE_GET(vehicle, LookAt).x = VEHICLE_GET(vehicle, Frame).position.x;
     VEHICLE_GET(vehicle, LookAt).y = VEHICLE_GET(vehicle, Frame).position.y;
     VEHICLE_GET(vehicle, LookAt).z = VEHICLE_GET(vehicle, Frame).position.z + LOOK_AT_HEIGHT;
-    speed = Vec3fLength(&VEHICLE_GET(vehicle, Body).state.angularVelocity);
+    speed = (f32)Vec3fLength(&VEHICLE_GET(vehicle, Body).state.angularVelocity);
     if (g_dwGameMode == GAME_MODE_AFTER_SEASON) {
         return;
     }
@@ -140,7 +140,7 @@ void UpdateCameraLookAtTarget(Vehicle *vehicle) {
         vehicle->lookAhead += LOOK_AHEAD_STEP;
         if (target < vehicle->lookAhead) {
 #endif
-            VEHICLE_SET(vehicle, LookAhead, target);
+            VEHICLE_SET(vehicle, LookAhead, (f32)target);
         }
     } else if (CHASE_LESS(target, VEHICLE_GET(vehicle, LookAhead))) {
 #if TGR_BOSS_RALLY
@@ -151,7 +151,7 @@ void UpdateCameraLookAtTarget(Vehicle *vehicle) {
         vehicle->lookAhead -= LOOK_AHEAD_STEP;
         if (vehicle->lookAhead < target) {
 #endif
-            VEHICLE_SET(vehicle, LookAhead, target);
+            VEHICLE_SET(vehicle, LookAhead, (f32)target);
         }
     }
     Vec3fMulAddInPlace(&VEHICLE_GET(vehicle, LookAt),
@@ -167,12 +167,12 @@ void ComputeCameraBasis(Vehicle *vehicle, CameraFrame *camera) {
 
     (void)unused;
     Vec3fSubtract(&direction, &VEHICLE_GET(vehicle, LookAt), &camera->position);
-    length = Vec3fLength(&direction);
+    length = (f32)Vec3fLength(&direction);
 #if TGR_BOSS_RALLY
     if (CHASE_NONZERO(length)) {
         Vec3fScaleByInverse(&camera->forward, &direction, length);
     } else {
-        length = Vec3fLength(&camera->forward);
+        length = (f32)Vec3fLength(&camera->forward);
         if (!CHASE_NONZERO(length)) {
             camera->forward.x = VEHICLE_GET(vehicle, Frame).forward.x;
             camera->forward.y = VEHICLE_GET(vehicle, Frame).forward.y;
