@@ -307,7 +307,7 @@
   // One configure and build preset per variant, the all preset that builds every variant as a
   // superbuild, and a workflow for each that configures and builds in one command. The vcpkg
   // preset is retained for inheritance and hidden.
-  local variants = ['n64-' + region for region in ['us', 'jp', 'eu']] +
+  local variants = ['n64-' + region for region in ['us', 'jp', 'eu', 'asia']] +
                    ['win-' + renderer for renderer in ['d3d', 'glide']],
   cmake_presets+: {
     version: 6,
@@ -340,7 +340,7 @@
       },
     ] + [
       { cacheVariables: { TGR_REGION: region }, inherits: 'n64', name: 'n64-' + region }
-      for region in ['us', 'jp', 'eu']
+      for region in ['us', 'jp', 'eu', 'asia']
     ] + [
       { cacheVariables: { TGR_RENDERER: renderer }, inherits: 'win', name: 'win-' + renderer }
       for renderer in ['d3d', 'glide']
