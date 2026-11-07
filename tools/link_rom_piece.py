@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Link one IDO object at its original addresses and verify its ROM bytes."""
+"""Link one IDO object at its original addresses and optionally verify ROM bytes."""
 from __future__ import annotations
 
 import argparse
@@ -24,7 +24,7 @@ ROM_BASE = 0x1000
 def main() -> int:
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument('--region', choices=sorted(ROM_SHA1), required=True)
-  parser.add_argument('--rom', type=Path, required=True)
+  parser.add_argument('--rom', type=Path, help='Original ROM for byte verification.')
   parser.add_argument('--object', type=Path, required=True)
   parser.add_argument('--text', required=True, help='First text symbol in the object.')
   parser.add_argument('--text-skip', type=lambda value: int(value, 0), default=0)
@@ -41,8 +41,8 @@ def main() -> int:
   parser.add_argument('--output', type=Path, required=True, help='Directory for verified sections.')
   args = parser.parse_args()
 
-  rom = args.rom.read_bytes()
-  if hashlib.sha1(rom).hexdigest() != ROM_SHA1[args.region]:
+  rom = args.rom.read_bytes() if args.rom else None
+  if rom is not None and hashlib.sha1(rom).hexdigest() != ROM_SHA1[args.region]:
     parser.error('The ROM does not match the verified regional SHA-1.')
   symbols = {
       name: int(address, 16)
@@ -247,14 +247,17 @@ def main() -> int:
         if section != 'text' and any(contents[length:]):
           parser.error(f'Removed {section} bytes must be zero padding.')
         contents = contents[:length]
-      offset = address - IMAGE_BASE + ROM_BASE
-      expected = rom[offset:offset + len(contents)]
-      if not contents or contents != expected:
-        first = next((index for index, (actual, original) in enumerate(zip(contents, expected))
-                      if actual != original), 0)
-        parser.error(f'Linked {section} differs from the verified ROM at '
-                     f'{address + first:#x} ({contents[first:first + 4].hex()} versus '
-                     f'{expected[first:first + 4].hex()}).')
+      if not contents:
+        parser.error(f'Linked {section} is empty.')
+      if rom is not None:
+        offset = address - IMAGE_BASE + ROM_BASE
+        expected = rom[offset:offset + len(contents)]
+        if contents != expected:
+          first = next((index for index, (actual, original) in enumerate(zip(contents, expected))
+                        if actual != original), 0)
+          parser.error(f'Linked {section} differs from the verified ROM at '
+                       f'{address + first:#x} ({contents[first:first + 4].hex()} versus '
+                       f'{expected[first:first + 4].hex()}).')
       sections[section] = contents
 
     args.output.mkdir(parents=True, exist_ok=True)
@@ -264,7 +267,8 @@ def main() -> int:
         (args.output / f'{section}.bin').unlink(missing_ok=True)
     for section, contents in sections.items():
       (args.output / f'{section}.bin').write_bytes(contents)
-      print(f'{section}: {len(contents)} exact bytes at {written_addresses[section]:#x}')
+      kind = 'exact' if rom is not None else 'linked'
+      print(f'{section}: {len(contents)} {kind} bytes at {written_addresses[section]:#x}')
     (args.output / 'piece.json').write_text(json.dumps({
         'region': args.region,
         'rom_sha1': ROM_SHA1[args.region],

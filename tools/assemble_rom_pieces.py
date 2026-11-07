@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble verified IDO code with the original ROM's non-code assets."""
+"""Assemble IDO code with original or zeroed non-code ROM bytes."""
 from __future__ import annotations
 
 import argparse
@@ -18,15 +18,22 @@ ROOT = Path(__file__).resolve().parent.parent
 def main() -> int:
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument('--region', choices=sorted(ROM_SHA1), required=True)
-  parser.add_argument('--reference', type=Path, required=True)
+  parser.add_argument('--reference', type=Path)
+  parser.add_argument('--code-only', action='store_true')
   parser.add_argument('--pieces', type=Path, required=True)
   parser.add_argument('--output', type=Path, required=True)
   args = parser.parse_args()
 
-  reference = args.reference.read_bytes()
+  if not args.reference and not args.code_only:
+    parser.error('A reference ROM or code-only output is required.')
+  reference = args.reference.read_bytes() if args.reference else None
   expected_sha1 = ROM_SHA1[args.region]
-  if hashlib.sha1(reference).hexdigest() != expected_sha1:
+  if reference is not None and hashlib.sha1(reference).hexdigest() != expected_sha1:
     parser.error('The reference ROM does not match the verified regional SHA-1.')
+  baseline = json.loads((ROOT / 'tools' / 'matching' / 'code_image.json').read_text())[args.region]
+  rom_size = baseline['rom_size'] if args.code_only else len(reference)
+  if reference is not None and len(reference) != rom_size:
+    parser.error('The reference ROM size differs from the code-image baseline.')
   config = yaml.safe_load((ROOT / 'tools' / 'splat' / f'{args.region}.yaml').read_text())
   main_segment = next(segment for segment in config['segments'] if segment.get('name') == 'main')
   code_start = main_segment['start']
@@ -36,8 +43,13 @@ def main() -> int:
   bss_start = next(part['vram'] for part in main_segment['subsegments']
                    if isinstance(part, dict) and part['type'] == 'bss')
   program_end = bss_start - image_base + code_start
-  if not code_start < code_end < program_end <= len(reference):
+  if not code_start < code_end < program_end <= rom_size:
     parser.error('The regional program boundaries are invalid.')
+  if args.code_only and reference is not None:
+    expected_image = bytearray(rom_size)
+    expected_image[code_start:code_end] = reference[code_start:code_end]
+    if hashlib.sha256(expected_image).hexdigest() != baseline['sha256']:
+      parser.error('The reference ROM differs from the code-image baseline.')
 
   symbols = (ROOT / 'tools' / 'splat' / f'symbol_addrs.{args.region}.txt').read_text()
   functions = [(name, int(address, 16), int(size, 16)) for name, address, size in
@@ -49,12 +61,12 @@ def main() -> int:
     if size <= 0 or start < 0 or start + size > len(declared) or any(declared[start:start + size]):
       parser.error(f'Function {name} has an invalid or overlapping code range.')
     declared[start:start + size] = b'\1' * size
-  if any(value and not declared[index]
-         for index, value in enumerate(reference[code_start:code_end])):
+  if reference is not None and any(value and not declared[index]
+                                   for index, value in enumerate(reference[code_start:code_end])):
     parser.error('The function inventory omits nonzero code bytes.')
 
-  # shortcut: Use reference non-code bytes until extracted asset inputs feed this builder.
-  assembled = bytearray(reference)
+  # shortcut: Reference mode reuses non-code bytes until asset inputs feed this builder.
+  assembled = bytearray(rom_size) if args.code_only else bytearray(reference)
   assembled[code_start:code_end] = bytes(code_end - code_start)
   claimed = bytearray(program_end - code_start)
   code_claimed = bytearray(code_end - code_start)
@@ -68,6 +80,8 @@ def main() -> int:
     for section, item in piece['sections'].items():
       if section not in ('text', 'data', 'rodata'):
         parser.error(f'{manifest} has an unsupported section.')
+      if args.code_only and section != 'text':
+        parser.error(f'{manifest} places non-code bytes in a code-only image.')
       address, size = item['address'], item['size']
       offset = address - image_base + code_start
       if size <= 0 or not code_start <= offset < offset + size <= program_end:
@@ -79,7 +93,8 @@ def main() -> int:
       if any(claimed[start:start + size]):
         parser.error(f'{manifest} overlaps an earlier piece.')
       content = (manifest.parent / f'{section}.bin').read_bytes()
-      if len(content) != size or content != reference[offset:offset + size]:
+      if len(content) != size or (reference is not None and
+                                 content != reference[offset:offset + size]):
         parser.error(f'{manifest} differs from the verified ROM.')
       claimed[start:start + size] = b'\1' * size
       if section == 'text':
@@ -88,17 +103,21 @@ def main() -> int:
 
   missing = [(name, address) for name, address, size in functions
              if not all(code_claimed[address - image_base:address - image_base + size])]
-  print(f'{len(functions) - len(missing)}/{len(functions)} functions have exact linked code.')
+  status = 'exact linked' if reference is not None else 'linked'
+  print(f'{len(functions) - len(missing)}/{len(functions)} functions have {status} code.')
   print(f'{sum(code_claimed[index] for index, value in enumerate(declared) if value)}/'
-        f'{sum(declared)} function bytes have exact linked code.')
+        f'{sum(declared)} function bytes have {status} code.')
   if missing:
     print('Missing:', ', '.join(f'{name}@{address:#x}' for name, address in missing[:10]))
     return 1
-  if hashlib.sha1(assembled).hexdigest() != expected_sha1:
+  if args.code_only:
+    if hashlib.sha256(assembled).hexdigest() != baseline['sha256']:
+      parser.error('The assembled code image differs from the verified baseline.')
+  elif hashlib.sha1(assembled).hexdigest() != expected_sha1:
     parser.error('The assembled ROM differs from the verified original.')
   args.output.parent.mkdir(parents=True, exist_ok=True)
   args.output.write_bytes(assembled)
-  print(f'Wrote byte-exact ROM to {args.output}.')
+  print(f'Wrote byte-exact {"code image" if args.code_only else "ROM"} to {args.output}.')
   return 0
 
 

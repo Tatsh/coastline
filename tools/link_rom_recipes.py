@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify recorded IDO Release object pieces against a regional ROM."""
+"""Link recorded IDO Release object pieces, optionally verifying a regional ROM."""
 from __future__ import annotations
 
 import argparse
@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parent.parent
 def main() -> int:
   parser = argparse.ArgumentParser(description=__doc__)
   parser.add_argument('--region', choices=sorted(ROM_SHA1), required=True)
-  parser.add_argument('--rom', type=Path, required=True)
+  parser.add_argument('--rom', type=Path)
   parser.add_argument('--build', type=Path, required=True)
   parser.add_argument('--output', type=Path, required=True)
   args = parser.parse_args()
@@ -25,9 +25,11 @@ def main() -> int:
   objects = args.build / 'src/n64/CMakeFiles/coastline_n64.dir'
   for name, recipe in recipes[args.region].items():
     command = [sys.executable, str(ROOT / 'tools' / 'link_rom_piece.py'),
-               '--region', args.region, '--rom', str(args.rom),
+               '--region', args.region,
                '--object', str(objects / recipe['object']),
                '--output', str(args.output / name), *recipe['args']]
+    if args.rom:
+      command.extend(('--rom', str(args.rom)))
     subprocess.run(command, check=True)
   return 0
 
