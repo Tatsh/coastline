@@ -42,7 +42,6 @@ arrowdd
 arrowdu
 arrowud
 arrowuu
-asciz
 ashft
 assetchain
 assetdma
@@ -289,7 +288,6 @@ decleared
 decodeddisc
 decomp
 decompressobj
-defsym
 denforce
 denumret
 depfile
@@ -450,6 +448,7 @@ eepromread
 eepromwrite
 effectdata
 effecttextures
+elfobject
 emptycallback
 emulatedclock
 encryptionfailed
@@ -726,7 +725,6 @@ libavformat
 libavutil
 libc
 libcaca
-libcoastline
 libdecor
 libdragon
 libdragon's
@@ -1256,7 +1254,6 @@ shgfp
 shiftl
 shiftt
 showmaximized
-shstrtab
 shutil
 sideb
 sidegrip
@@ -1363,9 +1360,7 @@ strgreater
 stringresources
 strlwr
 strmiids
-strtab
 strupr
-subalign
 subchannels
 subu
 sunweth
@@ -1379,7 +1374,6 @@ swresample
 swscale
 swwwwfgdafch
 syms
-symtab
 synchapi
 syncprintf
 sysrq
@@ -1496,8 +1490,6 @@ unrecovered
 unrotated
 unscii
 urlkey
-urllib
-urlopen
 userabort
 utgr
 uvec

@@ -1,14 +1,11 @@
 #include <algorithm>
-#include <array>
 #include <cstdint>
 #include <filesystem>
 #include <format>
-#include <fstream>
 #include <iostream>
 #include <map>
 #include <regex>
 #include <set>
-#include <span>
 #include <stdexcept>
 #include <string>
 #include <utility>
@@ -17,6 +14,7 @@
 #include <argparse/argparse.hpp>
 #include <nlohmann/json.hpp>
 
+#include "elfobject.h"
 #include "fileio.h"
 #include "sha1.h"
 #include "sha256.h"
@@ -25,22 +23,6 @@ namespace {
 
 using Bytes = std::vector<std::uint8_t>;
 using Path = std::filesystem::path;
-
-struct ObjectCode {
-    Bytes text;
-    std::map<std::uint32_t, std::uint32_t> relocations;
-};
-
-std::uint16_t read16(std::span<const std::uint8_t> bytes, std::size_t offset) {
-    if (offset > bytes.size() || bytes.size() - offset < 2) {
-        throw std::runtime_error("The object has a truncated ELF field.");
-    }
-    return static_cast<std::uint16_t>(bytes[offset] << 8 | bytes[offset + 1]);
-}
-
-std::uint32_t read32(std::span<const std::uint8_t> bytes, std::size_t offset) {
-    return static_cast<std::uint32_t>(read16(bytes, offset)) << 16 | read16(bytes, offset + 2);
-}
 
 Bytes readBytes(const Path &path) {
     auto result = Tools::Common::readFile(path);
@@ -54,75 +36,6 @@ Bytes readBytes(const Path &path) {
 nlohmann::json readJson(const Path &path) {
     const auto bytes = readBytes(path);
     return nlohmann::json::parse(bytes.begin(), bytes.end());
-}
-
-std::string sectionName(std::span<const std::uint8_t> names, std::uint32_t offset) {
-    if (offset >= names.size()) {
-        throw std::runtime_error("The object has an invalid ELF section name.");
-    }
-    const auto end = std::find(names.begin() + offset, names.end(), 0);
-    if (end == names.end()) {
-        throw std::runtime_error("The object has an unterminated ELF section name.");
-    }
-    return {names.begin() + offset, end};
-}
-
-ObjectCode objectCode(const Path &path) {
-    const auto data = readBytes(path);
-    if (data.size() < 52 || data[0] != 0x7f || data[1] != 'E' || data[2] != 'L' || data[3] != 'F' ||
-        data[4] != 1 || data[5] != 2) {
-        throw std::runtime_error(
-            std::format("{} is not a big-endian ELF32 object.", path.string()));
-    }
-    const auto sectionOffset = read32(data, 32);
-    const auto sectionSize = read16(data, 46);
-    const auto sectionCount = read16(data, 48);
-    const auto nameIndex = read16(data, 50);
-    if (sectionSize < 40 || nameIndex >= sectionCount ||
-        static_cast<std::uint64_t>(sectionOffset) +
-                static_cast<std::uint64_t>(sectionSize) * sectionCount >
-            data.size()) {
-        throw std::runtime_error("The object has an invalid ELF section table.");
-    }
-    const auto section = [&](std::size_t index) {
-        return static_cast<std::size_t>(sectionOffset) + index * sectionSize;
-    };
-    const auto sectionData = [&](std::size_t index) -> std::span<const std::uint8_t> {
-        const auto header = section(index);
-        const auto offset = read32(data, header + 16);
-        const auto size = read32(data, header + 20);
-        if (static_cast<std::uint64_t>(offset) + size > data.size()) {
-            throw std::runtime_error("The object has a truncated ELF section.");
-        }
-        return std::span(data).subspan(offset, size);
-    };
-    const auto names = sectionData(nameIndex);
-    ObjectCode result;
-    for (std::size_t index = 0; index < sectionCount; ++index) {
-        const auto header = section(index);
-        const auto name = sectionName(names, read32(data, header));
-        if (name == ".text") {
-            const auto bytes = sectionData(index);
-            result.text.assign(bytes.begin(), bytes.end());
-        } else if (name == ".rel.text" || name == ".rela.text") {
-            const auto bytes = sectionData(index);
-            const std::size_t entrySize = name == ".rel.text" ? 8 : 12;
-            if (bytes.size() % entrySize != 0) {
-                throw std::runtime_error("The object has a truncated ELF relocation table.");
-            }
-            for (std::size_t offset = 0; offset < bytes.size(); offset += entrySize) {
-                const auto position = read32(bytes, offset);
-                const auto kind = read32(bytes, offset + 4) & 0xff;
-                if (kind == 4 || kind == 5 || kind == 6) {
-                    result.relocations[position] = kind == 4 ? 0xfc000000 : 0xffff0000;
-                }
-            }
-        }
-    }
-    if (result.text.empty()) {
-        throw std::runtime_error(std::format("{} has no .text section.", path.string()));
-    }
-    return result;
 }
 
 std::map<std::uint32_t, std::uint32_t> functionInventory(const Path &path) {
@@ -188,7 +101,7 @@ void assemble(const Path &sourceRoot,
     }
     Bytes image(imageSize);
     Bytes claimed(codeEnd - codeStart);
-    std::map<Path, ObjectCode> objects;
+    std::map<Path, Tools::Common::ElfObject> objects;
     const auto absoluteBuild = std::filesystem::weakly_canonical(build);
     for (const auto &[address, entry] : functions) {
         const auto expectedSize = inventory.find(address);
@@ -205,7 +118,7 @@ void assemble(const Path &sourceRoot,
         }
         const auto [object, inserted] = objects.try_emplace(objectPath);
         if (inserted) {
-            object->second = objectCode(objectPath);
+            object->second = Tools::Common::readElfObject(objectPath);
         }
         const auto &code = object->second.text;
         const auto &relocations = object->second.relocations;
@@ -236,7 +149,7 @@ void assemble(const Path &sourceRoot,
             if (bits & mask) {
                 throw std::runtime_error("A relocation overlaps an instruction.");
             }
-            const auto word = read32(data, position);
+            const auto word = Tools::Common::readBigEndian32(data, position);
             const auto restored = (word & mask) | bits;
             for (std::size_t index = 0; index < 4; ++index) {
                 data[position + index] = static_cast<std::uint8_t>(restored >> (24 - index * 8));
