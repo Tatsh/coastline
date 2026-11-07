@@ -1647,6 +1647,8 @@ nonmatching D_8031D86C, 0x4
 dlabel D_8031D86C
     /* 8031D86C */ .space 0x04
 
+    .space 0x20
+
 nonmatching g_aVehicleModelSlots, 0x38
 
 dlabel g_aVehicleModelSlots
@@ -1678,11 +1680,11 @@ nonmatching g_dwLightIntensity, 0x4
 dlabel g_dwLightIntensity
     /* 8031D8D0 */ .space 0x04
 
-nonmatching D_8031D8D4, 0x3C
+nonmatching D_8031D8D4, 0x1C
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031D8D4
-    /* 8031D8D4 */ .space 0x3C
+    /* 8031D8D4 */ .space 0x1C
 
 nonmatching g_adwFadeRectLeftPerBuffer, 0x8
 

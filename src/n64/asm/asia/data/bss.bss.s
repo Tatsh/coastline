@@ -1503,16 +1503,18 @@ nonmatching D_8031AE1C, 0x4
 dlabel D_8031AE1C
     /* 8031AE1C */ .space 0x04
 
+    .space 0x28
+
 nonmatching g_aVehicleModelSlots, 0x50
 
 dlabel g_aVehicleModelSlots
     /* 8031AE30 */ .space 0x50
 
-nonmatching D_8031AE80, 0x40
+nonmatching D_8031AE80, 0x18
 
 /* Automatically generated and unreferenced pad */
 dlabel D_8031AE80
-    /* 8031AE80 */ .space 0x40
+    /* 8031AE80 */ .space 0x18
 
 nonmatching D_8031AEC0, 0x8
 
