@@ -36,8 +36,8 @@ def main() -> int:
   parser.add_argument('--text-only', action='store_true')
   for section in ('data', 'rodata', 'bss'):
     parser.add_argument(f'--{section}-split', action='append', default=[],
-                        metavar='OFFSET:SYMBOL',
-                        help=f'Original symbol for a relocated {section} fragment.')
+                        metavar='OFFSET:SYMBOL|@BASE',
+                        help=f'Original symbol or base for a relocated {section} fragment.')
   parser.add_argument('--output', type=Path, required=True, help='Directory for verified sections.')
   args = parser.parse_args()
 
@@ -118,12 +118,15 @@ def main() -> int:
     entries = []
     for spec in getattr(args, f'{section}_split'):
       offset_text, separator, name = spec.partition(':')
-      if not separator or not re.fullmatch(r'0x[0-9A-Fa-f]+', offset_text) or name not in symbols:
+      base_address = re.fullmatch(r'@0x([0-9A-Fa-f]+)', name)
+      if not separator or not re.fullmatch(r'0x[0-9A-Fa-f]+', offset_text) or (
+          name not in symbols and base_address is None):
         parser.error(f'Invalid {section} split: {spec}.')
       split_offset = int(offset_text, 16)
       if not 0 <= split_offset < sizes.get(section, 0):
         parser.error(f'{section} split is outside the section: {spec}.')
-      entries.append((split_offset, symbols[name] - split_offset))
+      entries.append((split_offset, int(base_address[1], 16) if base_address else
+                      symbols[name] - split_offset))
     if entries and (not args.text_only or entries != sorted(set(entries))):
       parser.error(f'{section} splits require text-only output and unique ordered offsets.')
     splits[section] = entries
