@@ -70,7 +70,7 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
         Vec3fSubtract(&toCamera, &g_pActiveCamera->position, &toCamera);
 #if TGR_BOSS_RALLY
         rawDistance = Vec3fLength(&toCamera);
-        distance = rawDistance;
+        distance = (f32)rawDistance;
         if (rawDistance != 0.0L && rawDistance == rawDistance) {
 #else
         distance = Vec3fLength(&toCamera);
@@ -89,12 +89,13 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
                 /* The beam tilt multiplies the up axis by negative zero. */
                 Vec3fMulAddInPlace(&beam, &VEHICLE_GET(vehicle, Frame).up, -0.0f);
 #endif
-                along = Vec3fDot(&toCamera, &beam);
+                along = (f32)Vec3fDot(&toCamera, &beam);
 #if TGR_BOSS_RALLY
                 glare = -(Vec3fDot(&toCamera, &g_pActiveCamera->forward) * along);
                 if (0.95f < glare) {
-                    distance = (long double)distance * distance;
-                    g_fHeadlightGlare += 750.0f * (glare - 0.95f) / distance;
+                    distance = (f32)((long double)distance * distance);
+                    g_fHeadlightGlare =
+                        (f32)(g_fHeadlightGlare + 750.0f * (glare - 0.95f) / distance);
                 }
 #else
                 glare = -Vec3fDot(&toCamera, &g_pActiveCamera->forward) * along;
@@ -107,11 +108,12 @@ void RenderVehicleHeadlightBeams(Vehicle *vehicle) {
             if (Vec3fDot(&toCamera, &g_pActiveCamera->forward) > 0.95f) {
                 Vec3fScale(&beam, &VEHICLE_GET(vehicle, Frame).forward, 1.0f);
                 Vec3fMulAddInPlace(&beam, &VEHICLE_GET(vehicle, Frame).up, 0.0f);
-                along = Vec3fDot(&toCamera, &beam);
+                along = (f32)Vec3fDot(&toCamera, &beam);
                 glare = Vec3fDot(&toCamera, &g_pActiveCamera->forward) * along;
                 if (0.95f < glare) {
-                    g_fScreenFogPulse +=
-                        750.0f * (glare - 0.95f) / ((long double)distance * distance);
+                    g_fScreenFogPulse =
+                        (f32)(g_fScreenFogPulse +
+                              750.0f * (glare - 0.95f) / ((long double)distance * distance));
                 }
             }
 #endif /* TGR_BOSS_RALLY */
