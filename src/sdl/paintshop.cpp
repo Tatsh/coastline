@@ -1055,13 +1055,13 @@ bool PaintShop::LoadTextureFromRom(PaintSprite &sprite) {
     }
     if (sprite.pixels.size() != expected) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "Image %dx%dx%d requires %zu bytes; %s provides %zu bytes.",
+                     "Image %dx%dx%d requires %llu bytes; %s provides %llu bytes.",
                      sprite.width,
                      sprite.height,
                      sprite.bitsPerTexel,
-                     expected,
+                     static_cast<unsigned long long>(expected),
                      path.string().c_str(),
-                     sprite.pixels.size());
+                     static_cast<unsigned long long>(sprite.pixels.size()));
         sprite.pixels.clear();
         return false;
     }

@@ -413,8 +413,8 @@ DecalCar::WriteImages(const std::filesystem::path &directory) const {
         } else if (!LoadIndexed4Png(m_imageBytes[index], texels, palette)) {
             // The lights retain the texels of the import and take the colours of the model.
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "Cannot read image %zu in %s.",
-                         index,
+                         "Cannot read image %llu in %s.",
+                         static_cast<unsigned long long>(index),
                          m_directory.string().c_str());
             return std::nullopt;
         }

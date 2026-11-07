@@ -1226,8 +1226,8 @@ std::optional<std::string> ConvertConsoleTextures(const std::filesystem::path &d
         }
         if (layout == TEXEL_LAYOUTS.end() || count == 0 ||
             texels->size() != (count * static_cast<std::size_t>(bits) + 7) / 8) {
-            SDL_Log("Cannot convert %zu bytes of %s %d-bit texels, %dx%d, in %s to PNG.",
-                    texels->size(),
+            SDL_Log("Cannot convert %llu bytes of %s %d-bit texels, %dx%d, in %s to PNG.",
+                    static_cast<unsigned long long>(texels->size()),
                     FORMATS[format],
                     bits,
                     width,
@@ -1796,10 +1796,10 @@ std::optional<std::string> ConvertModel(const std::filesystem::path &car,
             return fmt::format("{} does not read back as {}.", gltfPath.string(), car.string());
         }
         const auto &coverage = model->json["extras"]["coastlineCoverage"];
-        SDL_Log("%s represents %zu of %zu triangles in glTF.",
+        SDL_Log("%s represents %llu of %llu triangles in glTF.",
                 gltfPath.filename().string().c_str(),
-                coverage["exactTriangles"].get<std::size_t>(),
-                coverage["triangles"].get<std::size_t>());
+                static_cast<unsigned long long>(coverage["exactTriangles"].get<std::size_t>()),
+                static_cast<unsigned long long>(coverage["triangles"].get<std::size_t>()));
     }
     if (!retainSource) {
         std::filesystem::remove(car, error);
@@ -2307,9 +2307,9 @@ std::optional<std::string> WriteAttractDemo(std::span<const std::uint8_t> rom,
     if (!reread || *reread != bytes) {
         return fmt::format("{} does not read back as the attract demo.", path.string());
     }
-    SDL_Log("Attract demo %s spans %zu console steps from %llu instructions.",
+    SDL_Log("Attract demo %s spans %llu console steps from %llu instructions.",
             destination.filename().string().c_str(),
-            demo->frames.size(),
+            static_cast<unsigned long long>(demo->frames.size()),
             static_cast<unsigned long long>(demo->instructions));
     return std::nullopt;
 }

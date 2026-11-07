@@ -106,9 +106,9 @@ public:
 ConvertedModelVertex *ModelLoader::AllocateVertices(int count) {
     if (count < 0 || static_cast<std::size_t>(count) > MODEL_VERTEX_POOL_SIZE - poolUsed) {
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                     "Converted vertex pool full (%zu of %zu).",
-                     poolUsed,
-                     MODEL_VERTEX_POOL_SIZE);
+                     "Converted vertex pool full (%llu of %llu).",
+                     static_cast<unsigned long long>(poolUsed),
+                     static_cast<unsigned long long>(MODEL_VERTEX_POOL_SIZE));
         return nullptr;
     }
     auto *first = static_cast<ConvertedModelVertex *>(pool.Data()) + poolUsed;

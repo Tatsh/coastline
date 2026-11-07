@@ -1758,8 +1758,8 @@ std::unique_ptr<RaceView> RaceView::Load(SceneRenderer &renderer,
             }
         }
     }
-    SDL_Log("Loaded %zu race %s in %llu ms.",
-            state->cars.size(),
+    SDL_Log("Loaded %llu race %s in %llu ms.",
+            static_cast<unsigned long long>(state->cars.size()),
             state->cars.size() == 1 ? "car" : "cars",
             static_cast<unsigned long long>(SDL_GetTicks() - carsStart));
     // The skies of the track in cargfx, as the import converted them.
@@ -2672,8 +2672,8 @@ void RaceView::DrawCar(SceneRenderer &renderer, const CarInView &view) const {
     }
     if (!models.levels[lod]) {
         SDL_LogWarn(SDL_LOG_CATEGORY_APPLICATION,
-                    "Loading detail level %zu for car %d during race.",
-                    lod,
+                    "Loading detail level %llu for car %d during race.",
+                    static_cast<unsigned long long>(lod),
                     key[0]);
         models.levels[lod] =
             LoadCarLevel(CarDocument(renderer, s.documents, s.defaults, key, document, s.damage),

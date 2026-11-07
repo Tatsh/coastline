@@ -274,7 +274,9 @@ ExportPakImage(const ControllerPak &pak, const std::filesystem::path &file, PakR
     if (!save->Write(written)) {
         return fmt::format("{} cannot be written.", file.string());
     }
-    SDL_Log("Exported %zu notes to %s.", entry, file.string().c_str());
+    SDL_Log("Exported %llu notes to %s.",
+            static_cast<unsigned long long>(entry),
+            file.string().c_str());
     return std::nullopt;
 }
 
@@ -307,8 +309,9 @@ std::optional<std::string> ImportPakImage(const ControllerPak &pak,
             return codes.game == game && codes.company == company;
         });
         if (!ours || !name || image[at + 0x0C] != 0) {
-            SDL_Log(
-                "Skipping note %zu in %s; game or release mismatch.", entry, file.string().c_str());
+            SDL_Log("Skipping note %llu in %s; game or release mismatch.",
+                    static_cast<unsigned long long>(entry),
+                    file.string().c_str());
             continue;
         }
         // The pages of the note in the order of the table. A chain longer than the pak loops.
@@ -335,7 +338,9 @@ std::optional<std::string> ImportPakImage(const ControllerPak &pak,
         if (!pak.WriteNote(*name, bytes)) {
             return fmt::format("The note {} cannot be written.", *name);
         }
-        SDL_Log("Imported note %s, %zu bytes.", name->c_str(), bytes.size());
+        SDL_Log("Imported note %s, %llu bytes.",
+                name->c_str(),
+                static_cast<unsigned long long>(bytes.size()));
         ++imported;
     }
     SDL_Log("Imported %d notes from %s.", imported, file.string().c_str());

@@ -824,8 +824,8 @@ struct DocumentData {
             SDL_DestroySurface(copy);
             if (!added) {
                 SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                             "Cannot paint image %zu in %s.",
-                             index,
+                             "Cannot paint image %llu in %s.",
+                             static_cast<unsigned long long>(index),
                              path.string().c_str());
                 set.Release(device);
                 return nullptr;
@@ -1377,8 +1377,8 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
                 nullptr;
         if (loaded == nullptr) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "Cannot read image %zu in %s: %s",
-                         index,
+                         "Cannot read image %llu in %s: %s",
+                         static_cast<unsigned long long>(index),
                          path.string().c_str(),
                          bytes ? SDL_GetError() : bytes.error().c_str());
             return nullptr;
@@ -1404,8 +1404,8 @@ std::shared_ptr<RenderDocument> RenderDocument::Load(SceneRenderer &renderer,
         SDL_DestroySurface(loaded);
         if (!added) {
             SDL_LogError(SDL_LOG_CATEGORY_APPLICATION,
-                         "Cannot decode image %zu in %s.",
-                         index,
+                         "Cannot decode image %llu in %s.",
+                         static_cast<unsigned long long>(index),
                          path.string().c_str());
             return nullptr;
         }
