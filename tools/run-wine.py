@@ -1,61 +1,71 @@
 #!/usr/bin/env python3
 """Prepare an isolated Boss Rally installation and start its Windows launcher."""
 
-import argparse
-import os
+from __future__ import annotations
+
+from dataclasses import dataclass
 from pathlib import Path
+import os
 import re
 import shutil
-import subprocess
-import sys
+import subprocess as sp
 import tempfile
 
+import click
+
+__all__ = ('main',)
 
 ROOT = Path(__file__).resolve().parents[1]
 INSTALL_DIRECTORY = r'C:\BossRally'
 INSTALL_KEY = r'HKLM\Software\SouthPeak Interactive\Boss Rally'
 
 
-def arguments():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--data', type=Path, default=Path.home() / 'Downloads/Boss_Rally_ISO/data',
-                        help='Extracted CD data directory.')
-    parser.add_argument('--prefix', type=Path, default=ROOT / '.wiswa-ci/wineprefix',
-                        help='Wine prefix, created when absent.')
-    parser.add_argument('--build-dir', type=Path, default=ROOT / 'build/win-d3d',
-                        help='CMake directory with the rebuilt DLL and launchers.')
-    parser.add_argument('--ear-dll', type=Path, default=ROOT / '.wiswa-ci/earpds-unpacked.dll',
-                        help='EAR sound DLL to copy beside the game as earpds.dll.')
-    parser.add_argument('--no-build', action='store_true',
-                        help='Copy the binaries in --build-dir without building them first.')
-    parser.add_argument('--stage-only', action='store_true',
-                        help='Copy files without Wine; configure the prefix on a later run.')
-    parser.add_argument('--no-launch', action='store_true',
-                        help='Prepare and configure the Wine prefix without starting the game.')
-    parser.add_argument('--desktop-size', default='800x600',
-                        help='Size of the Wine desktop window, such as 800x600.')
-    parser.add_argument('--wine', default=os.environ.get('WINE', 'wine'),
-                        help='Wine executable; inherited Wine architecture settings are preserved.')
-    parser.add_argument('--winecfg', default=os.environ.get('WINECFG', 'winecfg'),
-                        help='winecfg executable for initialising a fresh prefix.')
-    parser.add_argument('--wineserver', default=os.environ.get('WINESERVER', 'wineserver'),
-                        help='wineserver executable used to wait for prefix setup to finish.')
-    parser.add_argument('--configure-prefix', action='store_true',
-                        help='Open winecfg even when the prefix already exists.')
-    parser.add_argument('--debugger', action='store_true',
-                        help='Start BRally.exe under winedbg in this terminal. Type c to run it; '
-                        'at a fault, bt prints the backtrace.')
-    parser.add_argument('game_args', nargs=argparse.REMAINDER,
-                        help='Arguments after -- go to the game.')
-    return parser.parse_args()
+@dataclass(frozen=True)
+class _Options:
+    """Paths and switches for a Wine staging run."""
+
+    build_dir: Path
+    configure_prefix: bool
+    data: Path
+    debugger: bool
+    desktop_size: str
+    ear_dll: Path
+    game_args: tuple[str, ...]
+    no_build: bool
+    no_launch: bool
+    prefix: Path
+    stage_only: bool
+    wine: str
+    winecfg: str
+    wineserver: str
 
 
-def copy_file(source, destination):
+def _copy_file(source: Path, destination: Path) -> None:
+    """
+    Copy a source file if its timestamp differs from the installed copy.
+
+    Parameters
+    ----------
+    source : Path
+        File to copy.
+    destination : Path
+        Installed file.
+    """
     if not destination.exists() or source.stat().st_mtime_ns != destination.stat().st_mtime_ns:
         shutil.copy2(source, destination)
 
 
-def replace_binary(source, destination):
+def _replace_binary(source: Path, destination: Path) -> None:
+    """
+    Replace a binary after copying it into the installation directory.
+
+    Parameters
+    ----------
+    source : Path
+        Rebuilt binary.
+    destination : Path
+        Installed binary.
+    """
     with tempfile.NamedTemporaryFile(dir=destination.parent, delete=False) as temporary:
         temporary_path = Path(temporary.name)
     try:
@@ -65,36 +75,80 @@ def replace_binary(source, destination):
         temporary_path.unlink(missing_ok=True)
 
 
-def initialise_prefix(options, prefix, installation, environment):
+def _initialise_prefix(
+    options: _Options, prefix: Path, installation: Path, environment: dict[str, str]
+) -> None:
+    """
+    Configure a missing Wine prefix and wait for its registry files.
+
+    Parameters
+    ----------
+    options : _Options
+        Wine executable choices.
+    prefix : Path
+        Wine prefix directory.
+    installation : Path
+        Staged game directory.
+    environment : dict[str, str]
+        Environment with WINEPREFIX set.
+
+    Raises
+    ------
+    ValueError
+        A Wine executable is missing or prefix setup is incomplete.
+    """
     required = (prefix / 'system.reg', prefix / 'drive_c/windows/system32/kernel32.dll',
                 prefix / 'drive_c/windows/explorer.exe')
     if all(path.is_file() for path in required) and not options.configure_prefix:
         return
     winecfg = shutil.which(options.winecfg)
     if winecfg is None:
-        raise ValueError(f'winecfg executable {options.winecfg!r} was not found.')
+        message = f'winecfg executable {options.winecfg!r} was not found.'
+        raise ValueError(message)
     wineserver = shutil.which(options.wineserver)
     if wineserver is None:
-        raise ValueError(f'wineserver executable {options.wineserver!r} was not found.')
-    print('Opening winecfg. Close its window when prefix configuration is complete.', flush=True)
-    subprocess.run([str(Path(winecfg).resolve())], env=environment,
-                   cwd=installation, check=True)
-    print('Waiting for Wine prefix setup and registry writes to finish.', flush=True)
-    subprocess.run([wineserver, '-w'], env=environment, cwd=installation, check=True)
+        message = f'wineserver executable {options.wineserver!r} was not found.'
+        raise ValueError(message)
+    click.echo('Opening winecfg. Close its window when prefix configuration is complete.')
+    sp.run([str(Path(winecfg).resolve())], env=environment, cwd=installation, check=True)
+    click.echo('Waiting for Wine prefix setup and registry writes to finish.')
+    sp.run([str(Path(wineserver).resolve()), '-w'], env=environment, cwd=installation, check=True)
     missing = [str(path) for path in required if not path.is_file()]
     if missing:
-        raise ValueError('Wine prefix initialisation is incomplete:\n' + '\n'.join(missing))
+        message = 'Wine prefix initialisation is incomplete:\n' + '\n'.join(missing)
+        raise ValueError(message)
 
 
-def stage(options):
+# ruff: ignore[complex-structure,too-many-branches]
+def _stage(options: _Options) -> tuple[Path, Path]:
+    """
+    Stage CD data and rebuilt binaries into a Wine prefix.
+
+    Parameters
+    ----------
+    options : _Options
+        Source paths and build choices.
+
+    Returns
+    -------
+    tuple[Path, Path]
+        Prefix and installation directory.
+
+    Raises
+    ------
+    ValueError
+        Source data, rebuilt binaries, or the Wine prefix is invalid.
+    """
     data = options.data.expanduser().resolve()
     prefix = options.prefix.expanduser().resolve()
     build = options.build_dir.expanduser().resolve()
     if not (data / 'BossRally.pod').is_file():
-        raise ValueError(f'BossRally.pod is absent from {data}. Use --data with the extracted CD.')
+        message = f'BossRally.pod is absent from {data}. Use --data with the extracted CD.'
+        raise ValueError(message)
     for name in ('BRString.dll',):
         if not (data / name).is_file():
-            raise ValueError(f'{name} is absent from the extracted CD directory {data}.')
+            message = f'{name} is absent from the extracted CD directory {data}.'
+            raise ValueError(message)
     rebuilt = {
         'BRD3D.dll': build / 'src/BRD3D.dll',
         'BRally.exe': build / 'src/win32/boot/BRally.exe',
@@ -103,37 +157,46 @@ def stage(options):
     }
     cache = build / 'CMakeCache.txt'
     if not cache.is_file():
-        raise ValueError(f'{build} is not configured. Configure it with a win-* preset first.')
+        message = f'{build} is not configured. Configure it with a win-* preset first.'
+        raise ValueError(message)
     if re.search(r'^TGR_ENABLE_PATCHES:BOOL=ON$', cache.read_text(), re.MULTILINE) is None:
-        print(f'Warning: {build} is built without TGR_ENABLE_PATCHES, so the game writes no '
-              'coastline.log and no crash dump.', file=sys.stderr, flush=True)
+        click.echo(f'Warning: {build} is built without TGR_ENABLE_PATCHES, so the game writes no '
+                   'coastline.log and no crash dump.', err=True)
     if not options.no_build:
-        print(f'Building {build}.', flush=True)
-        subprocess.run(['cmake', '--build', str(build)], check=True)
+        click.echo(f'Building {build}.')
+        cmake = shutil.which('cmake')
+        if cmake is None:
+            message = 'cmake executable was not found.'
+            raise ValueError(message)
+        sp.run([str(Path(cmake).resolve()), '--build', str(build)], check=True)
     compiler_match = re.search(r'^CMAKE_CXX_COMPILER:[^=]+=(.+)$',
                                cache.read_text(), re.MULTILINE)
     if compiler_match is None:
-        raise ValueError(f'CMAKE_CXX_COMPILER is absent from {cache}.')
+        message = f'CMAKE_CXX_COMPILER is absent from {cache}.'
+        raise ValueError(message)
     compiler = Path(compiler_match.group(1))
     target = compiler.name.removesuffix('-g++')
     for name in ('libc++.dll', 'libunwind.dll'):
         runtime_path = compiler.parent.parent / target / 'bin' / name
         if not runtime_path.is_file():
-            raise ValueError(f'The build compiler could not locate {name}.')
+            message = f'The build compiler could not locate {name}.'
+            raise ValueError(message)
         rebuilt[name] = runtime_path
     missing = [str(path) for path in rebuilt.values() if not path.is_file()]
     if missing:
-        raise ValueError('Required binaries are absent:\n' + '\n'.join(missing)
-                         + '\nBuild BRD3D, coastline_brally, and coastline_bossrally first.'
-                         + '\nSelect the EAR sound DLL with --ear-dll.')
+        message = ('Required binaries are absent:\n' + '\n'.join(missing)
+                   + '\nBuild BRD3D, coastline_brally, and coastline_bossrally first.'
+                   + '\nSelect the EAR sound DLL with --ear-dll.')
+        raise ValueError(message)
     installation = prefix / 'drive_c/BossRally'
     if data == installation or data in installation.parents or installation in data.parents:
-        raise ValueError('The installation and extracted CD directories must be separate.')
+        message = 'The installation and extracted CD directories must be separate.'
+        raise ValueError(message)
     installation.mkdir(parents=True, exist_ok=True)
     for source in data.rglob('*'):
         relative = source.relative_to(data)
-        if any(part.lower() in ('msvcrt.dll', 'boot.exe', 'setvideo.exe', 'brally.exe',
-                               'bossrally.exe', 'brd3d.dll', 'brglide.dll', 'earpds.dll')
+        if any(part.lower() in {'msvcrt.dll', 'boot.exe', 'setvideo.exe', 'brally.exe',
+                                'bossrally.exe', 'brd3d.dll', 'brglide.dll', 'earpds.dll'}
                for part in relative.parts):
             continue
         destination = installation / relative
@@ -141,10 +204,10 @@ def stage(options):
             destination.mkdir(parents=True, exist_ok=True)
         elif source.is_file():
             destination.parent.mkdir(parents=True, exist_ok=True)
-            copy_file(source, destination)
+            _copy_file(source, destination)
     for name, source in rebuilt.items():
-        replace_binary(source, installation / name)
-        print(f'Copied {source} to {installation / name}', flush=True)
+        _replace_binary(source, installation / name)
+        click.echo(f'Copied {source} to {installation / name}')
     ini = installation / 'BossRally.ini'
     if not ini.exists():
         ini.write_text('[Video]\nDriver=D3D\n\n[Game]\nPlayMusic=0\nPlaySFX=1\n',
@@ -157,41 +220,112 @@ def stage(options):
         drive = devices / letter
         if drive.is_symlink():
             if drive.resolve() != target:
-                raise ValueError(f'{drive} already maps another directory. Choose another --prefix.')
+                message = f'{drive} already maps another directory. Choose another --prefix.'
+                raise ValueError(message)
         elif drive.exists():
-            raise ValueError(f'{drive} already exists. Choose another --prefix.')
+            message = f'{drive} already exists. Choose another --prefix.'
+            raise ValueError(message)
         else:
             drive.symlink_to(target, target_is_directory=True)
-    print(f'Prepared {installation}', flush=True)
+    click.echo(f'Prepared {installation}')
     return prefix, installation
 
 
-def main():
-    options = arguments()
+@click.command(help='Stage Boss Rally and launch it under Wine.')
+@click.option('--data', type=click.Path(path_type=Path),
+              default=Path.home() / 'Downloads/Boss_Rally_ISO/data',
+              help='Extracted CD data directory.')
+@click.option('--prefix', type=click.Path(path_type=Path), default=ROOT / '.wiswa-ci/wineprefix',
+              help='Wine prefix, created when absent.')
+@click.option('--build-dir', type=click.Path(path_type=Path), default=ROOT / 'build/win-d3d',
+              help='CMake directory with the rebuilt DLL and launchers.')
+@click.option('--ear-dll', type=click.Path(path_type=Path),
+              default=ROOT / '.wiswa-ci/earpds-unpacked.dll',
+              help='EAR sound DLL to copy beside the game as earpds.dll.')
+@click.option('--no-build', is_flag=True,
+              help='Copy the binaries in --build-dir without building them first.')
+@click.option('--stage-only', is_flag=True,
+              help='Copy files without Wine; configure the prefix on a later run.')
+@click.option('--no-launch', is_flag=True,
+              help='Prepare and configure the Wine prefix without starting the game.')
+@click.option('--desktop-size', default='800x600',
+              help='Size of the Wine desktop window, such as 800x600.')
+@click.option('--wine', default=lambda: os.environ.get('WINE', 'wine'),
+              help='Wine executable; inherited Wine architecture settings are preserved.')
+@click.option('--winecfg', default=lambda: os.environ.get('WINECFG', 'winecfg'),
+              help='winecfg executable for initialising a fresh prefix.')
+@click.option('--wineserver', default=lambda: os.environ.get('WINESERVER', 'wineserver'),
+              help='wineserver executable used to wait for prefix setup to finish.')
+@click.option('--configure-prefix', is_flag=True,
+              help='Open winecfg even when the prefix already exists.')
+@click.option('--debugger', is_flag=True,
+              help='Start BRally.exe under winedbg. Type c to run it; bt prints a backtrace.')
+@click.argument('game_args', nargs=-1, type=click.UNPROCESSED)
+def main(**values: object) -> None:
+    """
+    Stage Boss Rally and launch it under Wine.
+
+    Parameters
+    ----------
+    values : object
+        Options parsed by Click.
+
+    Raises
+    ------
+    click.BadParameter
+        The desktop size is invalid.
+    click.Abort
+        Staging or launching failed.
+    """
+    options = _Options(**values)
     if re.fullmatch(r'[1-9][0-9]{2,4}x[1-9][0-9]{2,4}', options.desktop_size) is None:
-        raise ValueError('--desktop-size must use WIDTHxHEIGHT, such as 800x600.')
-    prefix, installation = stage(options)
+        message = 'Use WIDTHxHEIGHT, such as 800x600.'
+        raise click.BadParameter(message, param_hint='--desktop-size')
+    try:
+        _run(options)
+    except (OSError, ValueError, sp.CalledProcessError) as error:
+        click.echo(f'Error: {error}', err=True)
+        raise click.Abort from error
+
+
+def _run(options: _Options) -> None:
+    """
+    Configure Wine and run the staged game.
+
+    Parameters
+    ----------
+    options : _Options
+        Staging and launch options.
+
+    Raises
+    ------
+    ValueError
+        The selected Wine executable is missing.
+    """
+    prefix, installation = _stage(options)
     if options.stage_only:
-        print('Files staged. Wine prefix initialisation and registry configuration are pending.')
-        return 0
+        click.echo('Files staged. Wine prefix initialisation and registry '
+                   'configuration are pending.')
+        return
     wine = shutil.which(options.wine)
     if wine is None:
-        raise ValueError(f'Wine executable {options.wine!r} was not found.')
+        message = f'Wine executable {options.wine!r} was not found.'
+        raise ValueError(message)
     wine = str(Path(wine).resolve())
     environment = dict(os.environ, WINEPREFIX=str(prefix))
-    initialise_prefix(options, prefix, installation, environment)
+    _initialise_prefix(options, prefix, installation, environment)
 
-    def run(*command):
-        subprocess.run([wine, *command], env=environment, cwd=installation, check=True)
+    def run(*command: str) -> None:
+        sp.run([wine, *command], env=environment, cwd=installation, check=True)
 
-    print('Configuring the Wine installation registry entry.', flush=True)
+    click.echo('Configuring the Wine installation registry entry.')
     run('reg', 'add', INSTALL_KEY, '/v', 'Directory', '/t', 'REG_SZ',
         '/d', INSTALL_DIRECTORY, '/f', '/reg:32')
     run('reg', 'add', r'HKCU\Software\Wine\Drives', '/v', 'd:', '/t', 'REG_SZ',
         '/d', 'cdrom', '/f')
     if options.no_launch:
-        print('Wine prefix configured. Run this script again to start the game.')
-        return 0
+        click.echo('Wine prefix configured. Run this script again to start the game.')
+        return
     game_args = options.game_args
     if game_args and game_args[0] == '--':
         game_args = game_args[1:]
@@ -201,19 +335,14 @@ def main():
             '/d', 'BossRally', '/f')
         run('reg', 'add', r'HKCU\Software\Wine\Explorer\Desktops', '/v', 'BossRally',
             '/t', 'REG_SZ', '/d', options.desktop_size, '/f')
-        print(f'Starting BRally.exe under winedbg in a {options.desktop_size} Wine desktop '
-              'window.', flush=True)
+        click.echo(f'Starting BRally.exe under winedbg in a {options.desktop_size} Wine desktop '
+                   'window.')
         run('winedbg', INSTALL_DIRECTORY + r'\BRally.exe', *game_args)
-        return 0
-    print(f'Starting BRally.exe in a {options.desktop_size} Wine desktop window.', flush=True)
+        return
+    click.echo(f'Starting BRally.exe in a {options.desktop_size} Wine desktop window.')
     run('explorer', f'/desktop=BossRally,{options.desktop_size}',
         INSTALL_DIRECTORY + r'\BRally.exe', *game_args)
-    return 0
 
 
 if __name__ == '__main__':
-    try:
-        sys.exit(main())
-    except (OSError, ValueError, subprocess.CalledProcessError) as error:
-        print(f'Error: {error}', file=sys.stderr)
-        sys.exit(1)
+    main()
