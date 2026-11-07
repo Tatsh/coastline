@@ -9,6 +9,11 @@ set(_runtime_directories
     "$<TARGET_FILE_DIR:FLAC::FLAC>"
     "$<TARGET_FILE_DIR:fmt::fmt>"
     "$<TARGET_FILE_DIR:ZLIB::ZLIB>")
+if(MINGW)
+  # The MinGW runtime DLLs sit beside the compiler rather than in the vcpkg install tree.
+  get_filename_component(_mingw_bin "${CMAKE_CXX_COMPILER}" DIRECTORY)
+  list(APPEND _runtime_directories "${_mingw_bin}")
+endif()
 if(VCPKG_INSTALLED_DIR AND VCPKG_TARGET_TRIPLET)
   list(APPEND _runtime_directories
        "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/$<$<CONFIG:Debug>:debug/>bin")
