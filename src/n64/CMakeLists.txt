@@ -27,6 +27,7 @@ set(_n64_sources
     modeldraw.c
     obb.c
     options.c
+    options-pak.c
     options-volume.c
     paintshop.c
     pakmenu.c
@@ -91,11 +92,30 @@ endif()
 if(TGR_REGION STREQUAL "eu" OR TGR_REGION STREQUAL "jp")
   list(APPEND _n64_sources options-regional.c)
 endif()
+if(TGR_IDO AND CMAKE_BUILD_TYPE STREQUAL "Release" AND NOT TGR_ENABLE_PATCHES)
+  if(TGR_REGION STREQUAL "asia" OR TGR_REGION STREQUAL "eu")
+    list(REMOVE_ITEM _n64_sources options.c)
+    if(TGR_REGION STREQUAL "asia")
+      coastline_add_ido_trimmed_object(coastline_options_trimmed options.c 0x30a0 0x309c options)
+    else()
+      coastline_add_ido_trimmed_object(coastline_options_trimmed options.c 0x9b0 0x9ac options)
+    endif()
+    if(TGR_REGION STREQUAL "asia")
+      list(REMOVE_ITEM _n64_sources options-pak.c)
+      coastline_add_ido_trimmed_object(coastline_options_pak_trimmed options-pak.c 0x1da0 0x1d98
+                                      options-pak)
+    endif()
+  elseif(TGR_REGION STREQUAL "jp")
+    list(REMOVE_ITEM _n64_sources options-regional.c)
+    coastline_add_ido_trimmed_object(coastline_options_regional_trimmed options-regional.c 0x3580
+                                    0x3574 options-regional)
+  endif()
+endif()
 # These sources write the Japanese text in UTF-8. The Japanese release compiles copies with the text
 # in the glyph codes of its font.
 if(TGR_REGION STREQUAL "jp")
-  foreach(_source carselect.c decaleditor.c options.c pakmenu.c paintshop.c playerselect.c splash.c
-                  splash-controller.c text.c)
+  foreach(_source carselect.c decaleditor.c options.c options-pak.c pakmenu.c paintshop.c
+                  playerselect.c splash.c splash-controller.c text.c)
     set(_encoded "${CMAKE_CURRENT_BINARY_DIR}/encoded/${_source}")
     add_custom_command(
       OUTPUT "${_encoded}"
@@ -105,6 +125,13 @@ if(TGR_REGION STREQUAL "jp")
       VERBATIM)
     list(TRANSFORM _n64_sources REPLACE "^${_source}$" "${_encoded}")
   endforeach()
+endif()
+if(TGR_REGION STREQUAL "jp" AND TGR_IDO AND CMAKE_BUILD_TYPE STREQUAL "Release"
+   AND NOT TGR_ENABLE_PATCHES)
+  set(_encoded_options "${CMAKE_CURRENT_BINARY_DIR}/encoded/options.c")
+  list(REMOVE_ITEM _n64_sources "${_encoded_options}")
+  coastline_add_ido_trimmed_object(coastline_options_trimmed "${_encoded_options}" 0x910 0x90c
+                                  options)
 endif()
 if(TGR_IDO)
   if(TGR_REGION STREQUAL "jp")

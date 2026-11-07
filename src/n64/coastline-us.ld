@@ -44,6 +44,13 @@ SECTIONS
         *options-volume.trim.o(.text .text.*)
         *volume-sfx.trim.o(.text .text.*)
         *libcoastline_n64.a:options.c.obj(.text .text.*)
+        *libcoastline_n64.a:options-pak.c.obj(.text .text.*)
+        . = ALIGN(16);
+        *libcoastline_n64.a:controllerscreen.c.obj(.text .text.*)
+        *iomessage.trim.o(.text .text.*)
+        *libcoastline_common.a:iomessage.c.obj(.text .text.*)
+        *vblankquery.trim.o(.text .text.*)
+        *stats.trim.o(.text .text.*)
         *(.text .text.*)
     }
     . = ALIGN(16);

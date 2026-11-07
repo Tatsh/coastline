@@ -3,6 +3,7 @@
 #include <assert.h>
 #include <stdio.h>
 
+#include "options-pak.c"
 #include "options.c"
 
 int strcmp(const char *a, const char *b);

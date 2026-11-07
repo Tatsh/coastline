@@ -382,27 +382,37 @@
     },
     "0x802155cc": {
       "sources": {
-        "src/n64/options.c": ["4777c81156b888c843840fa26647ec35375c306242016a1525d223db613c0f30"]
+        "src/n64/options-pak.c": [
+          "4777c81156b888c843840fa26647ec35375c306242016a1525d223db613c0f30"
+        ]
       }
     },
     "0x80215608": {
       "sources": {
-        "src/n64/options.c": ["b9fe7ffc062b841dd50c74af228112497cfeabb92948e55a6ed89665032cc9f1"]
+        "src/n64/options-pak.c": [
+          "b9fe7ffc062b841dd50c74af228112497cfeabb92948e55a6ed89665032cc9f1"
+        ]
       }
     },
     "0x80215744": {
       "sources": {
-        "src/n64/options.c": ["29a1975e4a8f9e9ffdc69622a3a36183ee9157fe0f33bfcabafa0d45ca8e4777"]
+        "src/n64/options-pak.c": [
+          "29a1975e4a8f9e9ffdc69622a3a36183ee9157fe0f33bfcabafa0d45ca8e4777"
+        ]
       }
     },
     "0x80215808": {
       "sources": {
-        "src/n64/options.c": ["16914ce834ad5ec22a1827ce1fefb982947c818b4e50b402b3f6861d96a1a344"]
+        "src/n64/options-pak.c": [
+          "16914ce834ad5ec22a1827ce1fefb982947c818b4e50b402b3f6861d96a1a344"
+        ]
       }
     },
     "0x80215964": {
       "sources": {
-        "src/n64/options.c": ["f988a995a491e2521c6e44951f36cf36c6f9624d3d7fa0d2b5f6402cbfb2bfdd"]
+        "src/n64/options-pak.c": [
+          "f988a995a491e2521c6e44951f36cf36c6f9624d3d7fa0d2b5f6402cbfb2bfdd"
+        ]
       }
     },
     "0x80217150": {
