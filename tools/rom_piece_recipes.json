@@ -1,0 +1,364 @@
+{
+  "asia": {
+    "color_dialog": {
+      "args": [
+        "--text",
+        "ProcessColorEditorDialog",
+        "--text-bytes",
+        "0xd34",
+        "--data",
+        "0x8028d818",
+        "--rodata",
+        "0x802aa958",
+        "--rodata-split",
+        "0x170:@0x802aab58",
+        "--bss",
+        "0x80369630",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
+    "decal_input": {
+      "args": [
+        "--text",
+        "ProcessDecalEditorInput",
+        "--text-skip",
+        "0x1040",
+        "--text-bytes",
+        "0x11f0",
+        "--data",
+        "0x8028d818",
+        "--rodata",
+        "0x802aa958",
+        "--rodata-split",
+        "0x17c:@0x802aab58",
+        "--bss",
+        "0x80369630",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
+    "paint_shop": {
+      "args": [
+        "--text",
+        "ProcessPaintShopScreen",
+        "--text-skip",
+        "0x758",
+        "--text-bytes",
+        "0x1948",
+        "--data",
+        "0x8028dbf0",
+        "--rodata",
+        "0x802aa0f0",
+        "--rodata-split",
+        "0x878:@0x802aa318",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "paintshop.c.obj"
+    },
+    "race_progress": {
+      "args": [
+        "--text",
+        "UpdateRaceProgress",
+        "--text-bytes",
+        "0xcec",
+        "--rodata",
+        "0x802a92a4",
+        "--rodata-split",
+        "0x148:@0x802a935c",
+        "--rodata-split",
+        "0x264:@0x802a9504",
+        "--text-only"
+      ],
+      "object": "raceprogress.c.obj"
+    },
+    "vehicle_engine": {
+      "args": [
+        "--text",
+        "UpdateVehicleEngineAndGearbox",
+        "--text-bytes",
+        "0xd04",
+        "--rodata",
+        "0x802a906c",
+        "--rodata-split",
+        "0x48:@0x802a9068",
+        "--text-only"
+      ],
+      "object": "vehicleengine.c.obj"
+    }
+  },
+  "eu": {
+    "color_dialog": {
+      "args": [
+        "--text",
+        "ProcessColorEditorDialog",
+        "--text-bytes",
+        "0xd34",
+        "--data",
+        "0x80290468",
+        "--rodata",
+        "0x802acbc8",
+        "--rodata-split",
+        "0x170:@0x802acda8",
+        "--bss",
+        "0x8036c080",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
+    "decal_input": {
+      "args": [
+        "--text",
+        "ProcessDecalEditorInput",
+        "--text-skip",
+        "0x1040",
+        "--text-bytes",
+        "0x11f0",
+        "--data",
+        "0x80290468",
+        "--rodata",
+        "0x802acbc8",
+        "--rodata-split",
+        "0x17c:@0x802acda8",
+        "--bss",
+        "0x8036c080",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
+    "paint_shop": {
+      "args": [
+        "--text",
+        "ProcessPaintShopScreen",
+        "--text-skip",
+        "0x758",
+        "--text-bytes",
+        "0x195c",
+        "--data",
+        "0x8028dbf0",
+        "--rodata",
+        "0x802ac380",
+        "--rodata-split",
+        "0x858:@0x802ac5a8",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "paintshop.c.obj"
+    },
+    "race_progress": {
+      "args": [
+        "--text",
+        "UpdateRaceProgress",
+        "--text-bytes",
+        "0xcec",
+        "--rodata",
+        "0x802ab524",
+        "--rodata-split",
+        "0x148:@0x802ab5dc",
+        "--rodata-split",
+        "0x264:@0x802ab78c",
+        "--text-only"
+      ],
+      "object": "raceprogress.c.obj"
+    },
+    "vehicle_engine": {
+      "args": [
+        "--text",
+        "UpdateVehicleEngineAndGearbox",
+        "--text-bytes",
+        "0xd04",
+        "--rodata",
+        "0x802ab2ec",
+        "--rodata-split",
+        "0x48:@0x802ab2e8",
+        "--text-only"
+      ],
+      "object": "vehicleengine.c.obj"
+    }
+  },
+  "jp": {
+    "color_dialog": {
+      "args": [
+        "--text",
+        "ProcessColorEditorDialog",
+        "--text-bytes",
+        "0xd34",
+        "--data",
+        "0x8028fee8",
+        "--rodata",
+        "0x802ab71c",
+        "--rodata-split",
+        "0x120:@0x802ab848",
+        "--bss",
+        "0x8036b018",
+        "--text-only"
+      ],
+      "object": "encoded/decaleditor.c.obj"
+    },
+    "decal_input": {
+      "args": [
+        "--text",
+        "ProcessDecalEditorInput",
+        "--text-skip",
+        "0x1040",
+        "--text-bytes",
+        "0x11d0",
+        "--data",
+        "0x8028fee8",
+        "--rodata",
+        "0x802ab848",
+        "--rodata-split",
+        "0x12c:@0x802ab848",
+        "--bss",
+        "0x8036b018",
+        "--bss-split",
+        "0x10:@0x8036ace0",
+        "--text-only"
+      ],
+      "object": "encoded/decaleditor.c.obj"
+    },
+    "paint_shop": {
+      "args": [
+        "--text",
+        "ProcessPaintShopScreen",
+        "--text-skip",
+        "0x738",
+        "--text-bytes",
+        "0x1970",
+        "--data",
+        "0x8028dbf0",
+        "--rodata",
+        "0x802ab210",
+        "--rodata-split",
+        "0x520:@0x802ab330",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "encoded/paintshop.c.obj"
+    },
+    "race_progress": {
+      "args": [
+        "--text",
+        "UpdateRaceProgress",
+        "--text-bytes",
+        "0xcec",
+        "--rodata",
+        "0x802aa4b4",
+        "--rodata-split",
+        "0x148:@0x802aa56c",
+        "--rodata-split",
+        "0x264:@0x802aa714",
+        "--text-only"
+      ],
+      "object": "raceprogress.c.obj"
+    },
+    "vehicle_engine": {
+      "args": [
+        "--text",
+        "UpdateVehicleEngineAndGearbox",
+        "--text-bytes",
+        "0xd04",
+        "--rodata",
+        "0x802aa2ac",
+        "--rodata-split",
+        "0x48:@0x802aa2a8",
+        "--text-only"
+      ],
+      "object": "vehicleengine.c.obj"
+    }
+  },
+  "us": {
+    "color_dialog": {
+      "args": [
+        "--text",
+        "ProcessColorEditorDialog",
+        "--text-bytes",
+        "0xd34",
+        "--data",
+        "0x8028dcc8",
+        "--rodata",
+        "0x802aae98",
+        "--rodata-split",
+        "0x170:@0x802ab098",
+        "--bss",
+        "0x80369b80",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
+    "decal_input": {
+      "args": [
+        "--text",
+        "ProcessDecalEditorInput",
+        "--text-skip",
+        "0x1040",
+        "--text-bytes",
+        "0x11f0",
+        "--data",
+        "0x8028dbf0",
+        "--rodata",
+        "0x802aae98",
+        "--rodata-split",
+        "0x17c:@0x802ab098",
+        "--bss",
+        "0x80369b80",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
+    "paint_shop": {
+      "args": [
+        "--text",
+        "ProcessPaintShopScreen",
+        "--text-skip",
+        "0x758",
+        "--text-bytes",
+        "0x1948",
+        "--data",
+        "0x8028dbf0",
+        "--rodata",
+        "0x802aa630",
+        "--rodata-split",
+        "0x878:@0x802aa858",
+        "--bss",
+        "g_aDecalSwatches",
+        "--text-only"
+      ],
+      "object": "paintshop.c.obj"
+    },
+    "race_progress": {
+      "args": [
+        "--text",
+        "UpdateRaceProgress",
+        "--text-bytes",
+        "0xcec",
+        "--rodata",
+        "0x802a97e4",
+        "--rodata-split",
+        "0x148:@0x802a989c",
+        "--rodata-split",
+        "0x264:@0x802a9a44",
+        "--text-only"
+      ],
+      "object": "raceprogress.c.obj"
+    },
+    "vehicle_engine": {
+      "args": [
+        "--text",
+        "UpdateVehicleEngineAndGearbox",
+        "--text-bytes",
+        "0xd04",
+        "--rodata",
+        "0x802a95ac",
+        "--rodata-split",
+        "0x48:@0x802a95a8",
+        "--text-only"
+      ],
+      "object": "vehicleengine.c.obj"
+    }
+  }
+}
