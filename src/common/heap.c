@@ -1,5 +1,7 @@
 #include "common/heap.h"
 
+#include <stddef.h>
+
 #if !TGR_BOSS_RALLY
 #include <PR/os.h>
 #include <PR/os_libc.h>
@@ -11,7 +13,7 @@ u8 *g_pHeapCurrent;
 #endif
 
 /* The interface heap lies below the program. */
-#define HEAP_START ((u8 *)0x80096400)
+#define HEAP_START ((u8 *)(size_t)0x80096400)
 #define HEAP_END ((u8 *)0x800D4000)
 
 void ResetHeap(void) {

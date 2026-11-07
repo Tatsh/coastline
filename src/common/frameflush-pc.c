@@ -19,9 +19,9 @@
 #if TGR_BOSS_RALLY
 /* The Windows task stubs retain these legacy RSP addresses without dereferencing them. */
 /* @ghidraAddress BRD3D: 0x100aa728 */
-static u64 *g_pRdpOutputBuffer = (u64 *)0x803b1000;
+static u64 *g_pRdpOutputBuffer = (u64 *)(size_t)0x803b1000;
 /* @ghidraAddress BRD3D: 0x100aa72c */
-static u64 *g_pRdpOutputBufferEnd = (u64 *)0x803c8000;
+static u64 *g_pRdpOutputBufferEnd = (u64 *)(size_t)0x803c8000;
 /**
  * The commands of the display list of the last frame.
  *

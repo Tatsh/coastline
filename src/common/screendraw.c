@@ -83,7 +83,7 @@ void SetScissorRect(s32 x, s32 y, s32 width, s32 height) {
     }
     gDPPipeSync(gDisplayListPtr++);
 #if TGR_BOSS_RALLY && defined(ENABLE_PATCHES)
-    gDisplayListWords(gDisplayListPtr++, GBI_OP_FULL_SCISSOR << 24, (u32)x);
+    gDisplayListWords(gDisplayListPtr++, (u32)GBI_OP_FULL_SCISSOR << 24, (u32)x);
     gDisplayListWords(gDisplayListPtr++, (u32)y, (u32)COORD_ADD(x, width));
     gDisplayListWords(gDisplayListPtr++, (u32)COORD_ADD(y, height), 0);
 #else

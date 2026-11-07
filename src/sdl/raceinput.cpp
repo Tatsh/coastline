@@ -543,7 +543,8 @@ unsigned char RaceInput::IsPressed(int binding) const {
     }
     for (unsigned short control : entry.awAlternateControls) {
         if ((control & 0xff00) == 0) {
-            result |= IsPressedEdge(previousKeys[control & 0xff], keys[control & 0xff]);
+            result |= static_cast<unsigned char>(
+                IsPressedEdge(previousKeys[control & 0xff], keys[control & 0xff]));
         }
     }
     return result;

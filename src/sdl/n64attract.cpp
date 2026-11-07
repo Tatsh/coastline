@@ -519,7 +519,8 @@ void Console::InstallLibultra() {
         thread.context.npc = thread.context.pc + 4;
         thread.context.gpr[MIPS_A0] = static_cast<std::int32_t>(cpu.Argument(3));
         thread.context.gpr[MIPS_SP] = static_cast<std::int32_t>(cpu.Argument(4));
-        thread.context.gpr[MIPS_RA] = static_cast<std::int32_t>(THREAD_EXIT);
+        thread.context.gpr[MIPS_RA] = static_cast<std::uint64_t>(
+            static_cast<std::int64_t>(static_cast<std::int32_t>(THREAD_EXIT)));
         thread.context.fcr31 = cpu.fcr31;
         if (Thread *existing = Find(thread.address)) {
             *existing = thread;

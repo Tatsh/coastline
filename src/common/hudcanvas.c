@@ -37,14 +37,14 @@ ViewportRect *BeginRaceHudCanvas(const ViewportRect *viewports) {
         canvasViews[index].height =
             GetHudCanvasY(viewports[index].y + viewports[index].height) - canvasViews[index].y;
     }
-    gDisplayListPtr->w0 = GBI_OP_HUD_CANVAS << 24;
+    gDisplayListPtr->w0 = (u32)GBI_OP_HUD_CANVAS << 24;
     gDisplayListPtr->w1 = ((unsigned)canvasWidth << 16) | (unsigned)canvasHeight;
     ++gDisplayListPtr;
     return canvasViews;
 }
 
 void EndRaceHudCanvas(void) {
-    gDisplayListPtr->w0 = GBI_OP_HUD_CANVAS << 24;
+    gDisplayListPtr->w0 = (u32)GBI_OP_HUD_CANVAS << 24;
     gDisplayListPtr->w1 = 0;
     ++gDisplayListPtr;
     canvasWidth = canvasHeight = 0;
