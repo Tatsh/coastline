@@ -7,6 +7,7 @@
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR mips)
 set(TGR_IDO ON)
+set(CMAKE_INSTALL_LIBDIR "lib" CACHE PATH "Library installation directory for IDO builds.")
 
 if(DEFINED ENV{IDO_ROOT})
   set(IDO_ROOT
