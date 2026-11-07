@@ -18,7 +18,6 @@ namespace {
 
 // The image of a pak: the identity on page 0, the table of the pages on page 1 and its copy on page
 // 2, the table of the notes on pages 3 and 4, and the pages of the notes after.
-constexpr std::size_t IDENTITY_PAGE = 0;
 constexpr std::size_t INODE_PAGE = 1;
 constexpr std::size_t INODE_BACKUP_PAGE = 2;
 constexpr std::size_t NOTE_TABLE_PAGE = 3;
@@ -44,7 +43,6 @@ bool ValidNoteName(std::string_view name) {
 
 // The places of the identity block and its copies on page 0, and its size.
 constexpr std::array<std::size_t, 4> IDENTITY_BLOCKS{0x20, 0x60, 0x80, 0xC0};
-constexpr std::size_t IDENTITY_SIZE = 0x20;
 
 // The entries of the table of the pages: a page that ends a note, and a free page.
 constexpr std::uint16_t INODE_LAST_PAGE = 0x0001;

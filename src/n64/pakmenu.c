@@ -81,6 +81,9 @@ void ProcessPakMenuScreen(void) {
 
 #if TGR_REGION != TGR_REGION_US
     screenBlanked = 1;
+#if TGR_REGION == TGR_REGION_ASIA && defined(ENABLE_PATCHES)
+    (void)screenBlanked;
+#endif
 #endif
     g_wSerialInterfaceIdle = 0;
     if (g_bPakMenuInitialized == 0) {

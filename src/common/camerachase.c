@@ -289,9 +289,7 @@ void UpdateCameraSystem(Vehicle *vehicle) {
     (void)unusedBeforeCockpit;
     (void)unusedAfterCockpit;
     (void)unusedCamera;
-#if TGR_REGION == TGR_REGION_US
     (void)unusedDistance;
-#endif
     previousChase.x = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.x;
     previousChase.y = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.y;
     previousChase.z = vehicle->cameras[VEHICLE_CAMERA_CHASE].position.z;

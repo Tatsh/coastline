@@ -167,7 +167,7 @@ private:
     bool m_waitForStart = false;
     bool m_autopilot = false;
     bool m_soundHeld = false;
-    unsigned m_previousSfxVolume = 0;
+    int m_previousSfxVolume = 0;
     bool m_sfxVolumeAdjusted = false;
 };
 

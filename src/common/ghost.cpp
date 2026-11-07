@@ -217,21 +217,25 @@ static inline u32 GhostChecksum(unsigned nSize, bool bIncludeTimes, const u8 *pF
     return adler32(dwChecksum, pFrames, nSize);
 }
 
+static inline void ReadGhostTrailerBytes(void *destination, size_t size, size_t count, FILE *file) {
+    [[maybe_unused]] const size_t read = fread(destination, size, count, file);
+}
+
 static inline void ReadGhostSaveTrailer(FILE *pFile) {
     fseek(pFile, 0, SEEK_END);
     long nSettingsOffset = ftell(pFile) - 24 - SEASON_SAVE_SLOT_NAME_SIZE;
     fseek(pFile, nSettingsOffset, SEEK_SET);
     // The original accepts short reads in the settings and slot label.
-    fread(&g_LoadedSeasonSettings.transmission, 4, 1, pFile);
-    fread(&g_LoadedSeasonSettings.tires, 4, 1, pFile);
-    fread(&g_LoadedSeasonSettings.suspension, 4, 1, pFile);
-    fread(&g_LoadedSeasonSettings.car, 4, 1, pFile);
-    fread(&g_LoadedSeasonSettings.handling, 4, 1, pFile);
-    fread(&g_dwLoadedGhostLapCount, 4, 1, pFile);
+    ReadGhostTrailerBytes(&g_LoadedSeasonSettings.transmission, 4, 1, pFile);
+    ReadGhostTrailerBytes(&g_LoadedSeasonSettings.tires, 4, 1, pFile);
+    ReadGhostTrailerBytes(&g_LoadedSeasonSettings.suspension, 4, 1, pFile);
+    ReadGhostTrailerBytes(&g_LoadedSeasonSettings.car, 4, 1, pFile);
+    ReadGhostTrailerBytes(&g_LoadedSeasonSettings.handling, 4, 1, pFile);
+    ReadGhostTrailerBytes(&g_dwLoadedGhostLapCount, 4, 1, pFile);
     fseek(pFile, 0, SEEK_END);
     long nLabelOffset = ftell(pFile) - SEASON_SAVE_SLOT_NAME_SIZE;
     fseek(pFile, nLabelOffset, SEEK_SET);
-    fread(g_szSeasonSaveSlotName, 1, sizeof(g_szSeasonSaveSlotName), pFile);
+    ReadGhostTrailerBytes(g_szSeasonSaveSlotName, 1, sizeof(g_szSeasonSaveSlotName), pFile);
     memcpy(g_szSecondarySeasonSaveSlotName,
            g_szSeasonSaveSlotName,
            sizeof(g_szSecondarySeasonSaveSlotName));

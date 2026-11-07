@@ -255,7 +255,6 @@ private:
     void Sample();
 
     std::span<const std::uint8_t> m_rom;
-    N64DemoRelease m_release;
     const DemoSymbols &m_symbols;
     MipsCpu m_cpu;
     std::vector<Thread> m_threads;
@@ -277,9 +276,9 @@ private:
 };
 
 Console::Console(std::span<const std::uint8_t> rom, N64DemoRelease release)
-    : m_rom(rom), m_release(release), m_symbols(release == N64DemoRelease::Usa ? USA_SYMBOLS :
-                                                release == N64DemoRelease::Eur ? EUR_SYMBOLS :
-                                                                                 JPN_SYMBOLS),
+    : m_rom(rom), m_symbols(release == N64DemoRelease::Usa ? USA_SYMBOLS :
+                            release == N64DemoRelease::Eur ? EUR_SYMBOLS :
+                                                             JPN_SYMBOLS),
       m_cpu(RAM_SIZE), m_retraceTicks(COUNT_RATE / (release == N64DemoRelease::Eur ? 50 : 60)) {
     m_cpu.SetRom(rom);
     std::size_t copy = std::min(BOOT_COPY_SIZE, rom.size() - BOOT_COPY_ROM);

@@ -48,7 +48,6 @@ constexpr unsigned char DOWN = 0x80;
 constexpr int JOYSTICK_AXIS_MAX = 128;
 // The scan codes of DirectInput the poll reads by name.
 constexpr int DIK_F5 = 0x3f;
-constexpr int DIK_F11 = 0x57;
 constexpr int DIK_F12 = 0x58;
 constexpr int DIK_ESCAPE = 0x01;
 constexpr int DIK_RETURN = 0x1c;

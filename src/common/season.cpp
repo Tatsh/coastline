@@ -207,6 +207,7 @@ void ApplyLoadedSeasonSettings(bool bUpdatePoints) {
     g_dwAccumUnlockedTrackMask |= g_SeasonProgress.unlockedTracks;
 }
 
+#if TGR_PLATFORM == TGR_PLATFORM_WIN
 static inline void ClearCurrentSeasonRecords(PlayerProfile *pProfile) {
     memset(pProfile->seasonPlaces[pProfile->season],
            0,
@@ -219,7 +220,6 @@ static inline void ClearCurrentSeasonRecords(PlayerProfile *pProfile) {
            sizeof(pProfile->seasonTimes[pProfile->season]));
 }
 
-#if TGR_PLATFORM == TGR_PLATFORM_WIN
 bool RestoreSeasonProgressState(void) {
     if (!g_SeasonResumeState.state) {
         memcpy(&g_LastRaceResultCopy, &g_SeasonResumeState, sizeof(g_LastRaceResultCopy));
