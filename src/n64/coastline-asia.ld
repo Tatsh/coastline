@@ -15,6 +15,8 @@ SECTIONS
     . = 0x80200000;
     .text : {
         *main.s.o*(.text .text.*)
+        . = 0x50;
+        *game.c.obj(.text .text.*)
         *(.text .text.*)
     }
     . = ALIGN(16);

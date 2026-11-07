@@ -740,7 +740,9 @@
     },
     "0x8021c268": {
       "sources": {
-        "src/n64/main.s": ["f25aede6a54fd6fd1e3605f8587cf5d93713bbe58098d9c76c4f394f848f1fd1"]
+        "src/n64/game-mode-main-loop.s": [
+          "f25aede6a54fd6fd1e3605f8587cf5d93713bbe58098d9c76c4f394f848f1fd1"
+        ]
       }
     },
     "0x8021c290": {
