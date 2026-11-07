@@ -32,6 +32,7 @@ def main() -> int:
   parser.add_argument('--rodata', help='First read-only data symbol in the object.')
   parser.add_argument('--rodata-bytes', type=lambda value: int(value, 0))
   parser.add_argument('--bss', help='First BSS symbol in the object.')
+  parser.add_argument('--text-only', action='store_true')
   parser.add_argument('--output', type=Path, required=True, help='Directory for verified sections.')
   args = parser.parse_args()
 
@@ -87,7 +88,7 @@ def main() -> int:
   }
   selected = {section: value for section in ('text', 'data', 'rodata', 'bss')
               if (value := getattr(args, section))}
-  types = {'text': 'Tt', 'data': 'Dd', 'rodata': 'Rr', 'bss': 'Bb'}
+  types = {'text': 'Tt', 'data': 'DdVv', 'rodata': 'Rr', 'bss': 'Bb'}
   addresses = {}
   for section, value in selected.items():
     if re.fullmatch(r'0x[0-9A-Fa-f]+', value):
@@ -143,7 +144,11 @@ def main() -> int:
     for section, address in addresses.items():
       if linked_symbols.get(f'__piece_{section}_start') != address:
         parser.error(f'Linked {section} is not at its original address.')
+    text_end = args.text_skip + (args.text_bytes or sizes['text'] - args.text_skip)
     for symbol in linked_symbols.keys() & symbols.keys():
+      if symbol in defined and defined[symbol][1] in 'Tt' and not (
+          args.text_skip <= defined[symbol][0] < text_end):
+        continue
       if linked_symbols[symbol] != symbols[symbol]:
         parser.error(f'Linked {symbol} differs from its original address.')
 
@@ -151,7 +156,7 @@ def main() -> int:
     written_addresses = dict(addresses)
     written_addresses['text'] += args.text_skip
     for section, address in written_addresses.items():
-      if section == 'bss':
+      if section == 'bss' or (args.text_only and section != 'text'):
         continue
       path = work / f'{section}.bin'
       subprocess.run([binutil('objcopy'), '-O', 'binary', f'--only-section=.{section}',
@@ -161,7 +166,7 @@ def main() -> int:
         contents = contents[args.text_skip:]
       length = trims.get(section)
       if length is not None:
-        if any(contents[length:]):
+        if section != 'text' and any(contents[length:]):
           parser.error(f'Removed {section} bytes must be zero padding.')
         contents = contents[:length]
       offset = address - IMAGE_BASE + ROM_BASE
