@@ -246,10 +246,6 @@ void SetupWeatherLights(void);
 void StartLowResFrame(void);
 #ifdef ENABLE_PATCHES
 extern unsigned int osMemSize;
-void StartHighResFrame(void);
-#define StartRaceFrame() (osMemSize > 0x400000 ? StartHighResFrame() : StartLowResFrame())
-#else
-#define StartRaceFrame() StartLowResFrame()
 #endif
 void SetScissorRect(int x, int y, int w, int h);
 void SetViewport(int x, int y, int w, int h, int scissor);
@@ -438,13 +434,13 @@ void ProcessRacingScreen(void)
   if (g_dwRaceInitialized == 0) {
     g_dwKeepScreenBlanked = 1;
     RACE_BLANK();
-    StartRaceFrame();
+    StartLowResFrame();
 #ifdef ENABLE_PATCHES
     if (osMemSize > 0x400000) ClearScreen(0, 0, 0);
 #endif
     FlushDisplayList();
     RACE_BLANK();
-    StartRaceFrame();
+    StartLowResFrame();
 #ifdef ENABLE_PATCHES
     if (osMemSize > 0x400000) ClearScreen(0, 0, 0);
 #endif
@@ -1127,7 +1123,7 @@ draw:
 #else
   UpdateFadeTransitions();
 #endif
-  StartRaceFrame();
+  StartLowResFrame();
   AddTimingMarker(0, 0, 0x82, 0, 0xFF);
   ResetShadowBuffers();
   ClearDepthBuffer();

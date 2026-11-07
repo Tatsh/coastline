@@ -78,6 +78,11 @@ void BeginDisplayList(s32 highRes) {
 #endif
     s32 x, width, height;
 
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && defined(ENABLE_PATCHES)
+    if (osMemSize > 0x400000) {
+        highRes = 1;
+    }
+#endif
     if (highRes - g_dwScreenScaleShift) {
         g_dwDisplayModeChangeCountdown = 1;
         g_dwScreenScaleShift = highRes;
