@@ -1,5 +1,23 @@
 {
   "asia": {
+    "brush_style": {
+      "args": [
+        "--text",
+        "ProcessBrushStyleMenu",
+        "--text-skip",
+        "0x2694",
+        "--text-bytes",
+        "0x404",
+        "--data",
+        "0x8028d818",
+        "--rodata",
+        "0x802aa974",
+        "--bss",
+        "0x80369630",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
     "color_dialog": {
       "args": [
         "--text",
@@ -32,6 +50,24 @@
         "0x802aa958",
         "--rodata-split",
         "0x17c:@0x802aab58",
+        "--bss",
+        "0x80369630",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
+    "oval_style": {
+      "args": [
+        "--text",
+        "ProcessOvalStyleMenu",
+        "--text-skip",
+        "0x39d8",
+        "--text-bytes",
+        "0x4c0",
+        "--data",
+        "0x8028d818",
+        "--rodata",
+        "0x802aaa0c",
         "--bss",
         "0x80369630",
         "--text-only"
@@ -74,6 +110,42 @@
       ],
       "object": "raceprogress.c.obj"
     },
+    "rect_style": {
+      "args": [
+        "--text",
+        "ProcessRectStyleMenu",
+        "--text-skip",
+        "0x35a0",
+        "--text-bytes",
+        "0x438",
+        "--data",
+        "0x8028d818",
+        "--rodata",
+        "0x802aa9d0",
+        "--bss",
+        "0x80369630",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
+    "text_style": {
+      "args": [
+        "--text",
+        "ProcessTextStyleMenu",
+        "--text-skip",
+        "0x2a98",
+        "--text-bytes",
+        "0xb08",
+        "--data",
+        "0x8028d824",
+        "--rodata",
+        "0x802aa974",
+        "--bss",
+        "0x80369630",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
     "timing_bars": {
       "args": [
         "--text",
@@ -106,6 +178,24 @@
     }
   },
   "eu": {
+    "brush_style": {
+      "args": [
+        "--text",
+        "ProcessBrushStyleMenu",
+        "--text-skip",
+        "0x2694",
+        "--text-bytes",
+        "0x404",
+        "--data",
+        "0x80290468",
+        "--rodata",
+        "0x802acbe4",
+        "--bss",
+        "0x8036c080",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
     "color_dialog": {
       "args": [
         "--text",
@@ -138,6 +228,24 @@
         "0x802acbc8",
         "--rodata-split",
         "0x17c:@0x802acda8",
+        "--bss",
+        "0x8036c080",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
+    "oval_style": {
+      "args": [
+        "--text",
+        "ProcessOvalStyleMenu",
+        "--text-skip",
+        "0x39d8",
+        "--text-bytes",
+        "0x4c0",
+        "--data",
+        "0x80290468",
+        "--rodata",
+        "0x802acc7c",
         "--bss",
         "0x8036c080",
         "--text-only"
@@ -180,6 +288,42 @@
       ],
       "object": "raceprogress.c.obj"
     },
+    "rect_style": {
+      "args": [
+        "--text",
+        "ProcessRectStyleMenu",
+        "--text-skip",
+        "0x35a0",
+        "--text-bytes",
+        "0x438",
+        "--data",
+        "0x80290468",
+        "--rodata",
+        "0x802acc40",
+        "--bss",
+        "0x8036c080",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
+    "text_style": {
+      "args": [
+        "--text",
+        "ProcessTextStyleMenu",
+        "--text-skip",
+        "0x2a98",
+        "--text-bytes",
+        "0xb08",
+        "--data",
+        "0x80290474",
+        "--rodata",
+        "0x802acbe4",
+        "--bss",
+        "0x8036c080",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
     "timing_bars": {
       "args": [
         "--text",
@@ -212,6 +356,24 @@
     }
   },
   "jp": {
+    "brush_style": {
+      "args": [
+        "--text",
+        "ProcessBrushStyleMenu",
+        "--text-skip",
+        "0x2674",
+        "--text-bytes",
+        "0x384",
+        "--data",
+        "0x8028fee8",
+        "--rodata",
+        "0x802ab71c",
+        "--bss",
+        "0x8036b018",
+        "--text-only"
+      ],
+      "object": "encoded/decaleditor.c.obj"
+    },
     "color_dialog": {
       "args": [
         "--text",
@@ -252,6 +414,24 @@
       ],
       "object": "encoded/decaleditor.c.obj"
     },
+    "oval_style": {
+      "args": [
+        "--text",
+        "ProcessOvalStyleMenu",
+        "--text-skip",
+        "0x3810",
+        "--text-bytes",
+        "0x438",
+        "--data",
+        "0x8028fee8",
+        "--rodata",
+        "0x802ab71c",
+        "--bss",
+        "0x8036b018",
+        "--text-only"
+      ],
+      "object": "encoded/decaleditor.c.obj"
+    },
     "paint_shop": {
       "args": [
         "--text",
@@ -288,6 +468,42 @@
       ],
       "object": "raceprogress.c.obj"
     },
+    "rect_style": {
+      "args": [
+        "--text",
+        "ProcessRectStyleMenu",
+        "--text-skip",
+        "0x3464",
+        "--text-bytes",
+        "0x3ac",
+        "--data",
+        "0x8028fee8",
+        "--rodata",
+        "0x802ab71c",
+        "--bss",
+        "0x8036b018",
+        "--text-only"
+      ],
+      "object": "encoded/decaleditor.c.obj"
+    },
+    "text_style": {
+      "args": [
+        "--text",
+        "ProcessTextStyleMenu",
+        "--text-skip",
+        "0x29f8",
+        "--text-bytes",
+        "0xa6c",
+        "--data",
+        "0x8028fee8",
+        "--rodata",
+        "0x802ab71c",
+        "--bss",
+        "0x8036b018",
+        "--text-only"
+      ],
+      "object": "encoded/decaleditor.c.obj"
+    },
     "timing_bars": {
       "args": [
         "--text",
@@ -320,6 +536,24 @@
     }
   },
   "us": {
+    "brush_style": {
+      "args": [
+        "--text",
+        "ProcessBrushStyleMenu",
+        "--text-skip",
+        "0x2694",
+        "--text-bytes",
+        "0x404",
+        "--data",
+        "0x8028dcc8",
+        "--rodata",
+        "0x802aaeb4",
+        "--bss",
+        "0x80369b80",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
     "color_dialog": {
       "args": [
         "--text",
@@ -352,6 +586,24 @@
         "0x802aae98",
         "--rodata-split",
         "0x17c:@0x802ab098",
+        "--bss",
+        "0x80369b80",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
+    "oval_style": {
+      "args": [
+        "--text",
+        "ProcessOvalStyleMenu",
+        "--text-skip",
+        "0x39d8",
+        "--text-bytes",
+        "0x4c0",
+        "--data",
+        "0x8028dcc8",
+        "--rodata",
+        "0x802aaf4c",
         "--bss",
         "0x80369b80",
         "--text-only"
@@ -393,6 +645,42 @@
         "--text-only"
       ],
       "object": "raceprogress.c.obj"
+    },
+    "rect_style": {
+      "args": [
+        "--text",
+        "ProcessRectStyleMenu",
+        "--text-skip",
+        "0x35a0",
+        "--text-bytes",
+        "0x438",
+        "--data",
+        "0x8028dcc8",
+        "--rodata",
+        "0x802aaf10",
+        "--bss",
+        "0x80369b80",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
+    },
+    "text_style": {
+      "args": [
+        "--text",
+        "ProcessTextStyleMenu",
+        "--text-skip",
+        "0x2a98",
+        "--text-bytes",
+        "0xb08",
+        "--data",
+        "0x8028dcd4",
+        "--rodata",
+        "0x802aaeb4",
+        "--bss",
+        "0x80369b80",
+        "--text-only"
+      ],
+      "object": "decaleditor.c.obj"
     },
     "timing_bars": {
       "args": [

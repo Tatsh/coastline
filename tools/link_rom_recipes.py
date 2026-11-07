@@ -22,8 +22,13 @@ def main() -> int:
   args = parser.parse_args()
 
   recipes = json.loads((ROOT / 'tools' / 'rom_piece_recipes.json').read_text())
+  regional = recipes[args.region]
+  automatic = json.loads((ROOT / 'tools' / 'rom_piece_auto_recipes' /
+                          f'{args.region}.json').read_text())
+  if regional.keys() & automatic.keys():
+    parser.error('Recorded ROM piece names overlap.')
   objects = args.build / 'src/n64/CMakeFiles/coastline_n64.dir'
-  for name, recipe in recipes[args.region].items():
+  for name, recipe in (regional | automatic).items():
     command = [sys.executable, str(ROOT / 'tools' / 'link_rom_piece.py'),
                '--region', args.region,
                '--object', str(objects / recipe['object']),

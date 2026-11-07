@@ -1,0 +1,548 @@
+{
+  "ApplySingleForceWithDebug": {
+    "args": [
+      "--text",
+      "ApplySingleForceWithDebug",
+      "--text-skip",
+      "0xb44",
+      "--text-bytes",
+      "0x1e8",
+      "--rodata",
+      "0x802ab090",
+      "--text-only"
+    ],
+    "object": "../../../common/CMakeFiles/coastline_common.dir/rigidbody.c.obj"
+  },
+  "BootIdleThread": {
+    "args": [
+      "--text",
+      "BootIdleThread",
+      "--text-skip",
+      "0x5f8",
+      "--text-bytes",
+      "0x2fc",
+      "--data",
+      "0x8028ae3c",
+      "--rodata",
+      "0x0",
+      "--bss",
+      "0x0",
+      "--text-only"
+    ],
+    "object": "boot-object.c.obj"
+  },
+  "BounceOffPlane": {
+    "args": [
+      "--text",
+      "BounceOffPlane",
+      "--text-skip",
+      "0x32c",
+      "--text-bytes",
+      "0x468",
+      "--rodata",
+      "0x802ab2a8",
+      "--text-only"
+    ],
+    "object": "../../../common/CMakeFiles/coastline_common.dir/bodyforces.c.obj"
+  },
+  "CastWheelRay": {
+    "args": [
+      "--text",
+      "CastWheelRay",
+      "--text-skip",
+      "0x794",
+      "--text-bytes",
+      "0x310",
+      "--rodata",
+      "0x802ab2e8",
+      "--text-only"
+    ],
+    "object": "../../../common/CMakeFiles/coastline_common.dir/bodyforces.c.obj"
+  },
+  "CheckAnalogStickNegative": {
+    "args": [
+      "--text",
+      "CheckAnalogStickNegative",
+      "--text-skip",
+      "0x2a4",
+      "--text-bytes",
+      "0xc4",
+      "--rodata",
+      "0x802aaed4",
+      "--text-only"
+    ],
+    "object": "input.c.obj"
+  },
+  "CheckAnalogStickPositive": {
+    "args": [
+      "--text",
+      "CheckAnalogStickPositive",
+      "--text-skip",
+      "0x1e0",
+      "--text-bytes",
+      "0xc4",
+      "--rodata",
+      "0x802aaed4",
+      "--text-only"
+    ],
+    "object": "input.c.obj"
+  },
+  "CollideBodyWithTriangles": {
+    "args": [
+      "--text",
+      "CollideBodyWithTriangles",
+      "--text-skip",
+      "0x0",
+      "--text-bytes",
+      "0x590",
+      "--rodata",
+      "0x802ab184",
+      "--rodata-split",
+      "0x68:@0x802ab270",
+      "--text-only"
+    ],
+    "object": "collision-triangles.c.obj"
+  },
+  "ComputeCollisionPenetration": {
+    "args": [
+      "--text",
+      "ComputeCollisionPenetration",
+      "--text-skip",
+      "0x18",
+      "--text-bytes",
+      "0x314",
+      "--rodata",
+      "0x0",
+      "--text-only"
+    ],
+    "object": "../../../common/CMakeFiles/coastline_common.dir/bodyforces.c.obj"
+  },
+  "ComputeDopplerFactor": {
+    "args": [
+      "--text",
+      "ComputeDopplerFactor",
+      "--text-skip",
+      "0x144",
+      "--text-bytes",
+      "0xdc",
+      "--rodata",
+      "0x802a9774",
+      "--text-only"
+    ],
+    "object": "../../../common/CMakeFiles/coastline_common.dir/soundsource.c.obj"
+  },
+  "ComputeSpringForces": {
+    "args": [
+      "--text",
+      "ComputeSpringForces",
+      "--text-skip",
+      "0xbe4",
+      "--text-bytes",
+      "0x1b4",
+      "--rodata",
+      "0x802ab2e8",
+      "--text-only"
+    ],
+    "object": "../../../common/CMakeFiles/coastline_common.dir/bodyforces.c.obj"
+  },
+  "DrawCarStageDisc": {
+    "args": [
+      "--text",
+      "DrawCarStageDisc",
+      "--text-skip",
+      "0xd4",
+      "--text-bytes",
+      "0x1d4",
+      "--rodata",
+      "0x802a99ac",
+      "--text-only"
+    ],
+    "object": "vehiclerender.c.obj"
+  },
+  "DrawCarStageShadow": {
+    "args": [
+      "--text",
+      "DrawCarStageShadow",
+      "--text-skip",
+      "0x320",
+      "--text-bytes",
+      "0x1a0",
+      "--rodata",
+      "0x802a99ac",
+      "--text-only"
+    ],
+    "object": "vehiclerender.c.obj"
+  },
+  "DrawSpeedAndHudOverlay": {
+    "args": [
+      "--text",
+      "DrawSpeedAndHudOverlay",
+      "--text-skip",
+      "0x0",
+      "--text-bytes",
+      "0x2e4",
+      "--rodata",
+      "0x802a9be4",
+      "--rodata-split",
+      "0x28:@0x802a9c00",
+      "--text-only"
+    ],
+    "object": "../../../common/CMakeFiles/coastline_common.dir/hudoverlay.c.obj"
+  },
+  "FaultThread": {
+    "args": [
+      "--text",
+      "FaultThread",
+      "--text-skip",
+      "0x54c",
+      "--text-bytes",
+      "0xac",
+      "--data",
+      "0x0",
+      "--rodata",
+      "0x802a8ea4",
+      "--bss",
+      "0x8031ac7c",
+      "--text-only"
+    ],
+    "object": "boot-object.c.obj"
+  },
+  "FlushDisplayList": {
+    "args": [
+      "--text",
+      "FlushDisplayList",
+      "--text-skip",
+      "0x1598",
+      "--text-bytes",
+      "0x6bc",
+      "--data",
+      "0x8028a6d0",
+      "--rodata",
+      "0x802a8dc4",
+      "--text-only"
+    ],
+    "object": "frame.c.obj"
+  },
+  "InitRigidBody": {
+    "args": [
+      "--text",
+      "InitRigidBody",
+      "--text-skip",
+      "0xd74",
+      "--text-bytes",
+      "0x18c",
+      "--rodata",
+      "0x802ab090",
+      "--text-only"
+    ],
+    "object": "../../../common/CMakeFiles/coastline_common.dir/rigidbody.c.obj"
+  },
+  "InitVehiclePhysics": {
+    "args": [
+      "--text",
+      "InitVehiclePhysics",
+      "--text-skip",
+      "0x3cc",
+      "--text-bytes",
+      "0x71c",
+      "--rodata",
+      "0x802a90ac",
+      "--text-only"
+    ],
+    "object": "../../../common/CMakeFiles/coastline_common.dir/vehiclereset.c.obj"
+  },
+  "LoadTrackGeometryFromRom": {
+    "args": [
+      "--text",
+      "LoadTrackGeometryFromRom",
+      "--text-skip",
+      "0x18c",
+      "--text-bytes",
+      "0x324",
+      "--data",
+      "0x0",
+      "--rodata",
+      "0x802a8ea4",
+      "--bss",
+      "0x0",
+      "--text-only"
+    ],
+    "object": "boot-object.c.obj"
+  },
+  "ManageAiRacerSlots": {
+    "args": [
+      "--text",
+      "ManageAiRacerSlots",
+      "--text-skip",
+      "0x0",
+      "--text-bytes",
+      "0x9e0",
+      "--rodata",
+      "0x802a91f8",
+      "--rodata-split",
+      "0xac:@0x802a96a8",
+      "--text-only"
+    ],
+    "object": "racersharing.c.obj"
+  },
+  "OptionsMenuPostDraw": {
+    "args": [
+      "--text",
+      "OptionsMenuPostDraw",
+      "--text-skip",
+      "0x0",
+      "--text-bytes",
+      "0xd0",
+      "--data",
+      "0x0",
+      "--rodata",
+      "0x802a7b7c",
+      "--bss",
+      "0x0",
+      "--text-only"
+    ],
+    "object": "options.c.obj"
+  },
+  "PrintCollisionTriangleCount": {
+    "args": [
+      "--text",
+      "PrintCollisionTriangleCount",
+      "--text-skip",
+      "0x34",
+      "--text-bytes",
+      "0x4c",
+      "--rodata",
+      "0x802ab110",
+      "--text-only"
+    ],
+    "object": "physics.c.obj"
+  },
+  "ProcessOptionsMenu": {
+    "args": [
+      "--text",
+      "ProcessOptionsMenu",
+      "--text-skip",
+      "0xd0",
+      "--text-bytes",
+      "0x334",
+      "--data",
+      "0x80272030",
+      "--rodata",
+      "0x802a7b7c",
+      "--rodata-split",
+      "0x8d4:@0x802a7308",
+      "--bss",
+      "0x80315e58",
+      "--text-only"
+    ],
+    "object": "options.c.obj"
+  },
+  "ProcessTrackMenu": {
+    "args": [
+      "--text",
+      "ProcessTrackMenu",
+      "--text-skip",
+      "0xb34",
+      "--text-bytes",
+      "0x93c",
+      "--data",
+      "0x0",
+      "--rodata",
+      "0x802a7174",
+      "--bss",
+      "0x80271860",
+      "--bss-split",
+      "0x54:@0x803159e4",
+      "--bss-split",
+      "0x60:@0x803159e8",
+      "--text-only"
+    ],
+    "object": "racemenu.c.obj"
+  },
+  "ResetVehicleEffects": {
+    "args": [
+      "--text",
+      "ResetVehicleEffects",
+      "--text-skip",
+      "0xae8",
+      "--text-bytes",
+      "0x168",
+      "--rodata",
+      "0x802a9714",
+      "--text-only"
+    ],
+    "object": "../../../common/CMakeFiles/coastline_common.dir/vehiclereset.c.obj"
+  },
+  "ResetVehicleState": {
+    "args": [
+      "--text",
+      "ResetVehicleState",
+      "--text-skip",
+      "0x248",
+      "--text-bytes",
+      "0x184",
+      "--rodata",
+      "0x802a8fc4",
+      "--text-only"
+    ],
+    "object": "../../../common/CMakeFiles/coastline_common.dir/vehiclereset.c.obj"
+  },
+  "SeasonRecordsPreDrawCallback": {
+    "args": [
+      "--text",
+      "SeasonRecordsPreDrawCallback",
+      "--text-skip",
+      "0x3f0",
+      "--text-bytes",
+      "0x744",
+      "--data",
+      "0x802718ac",
+      "--rodata",
+      "0x802a7174",
+      "--bss",
+      "0x803159e8",
+      "--text-only"
+    ],
+    "object": "racemenu.c.obj"
+  },
+  "SetupCameraMatrix": {
+    "args": [
+      "--text",
+      "SetupCameraMatrix",
+      "--text-skip",
+      "0x1e88",
+      "--text-bytes",
+      "0x160",
+      "--data",
+      "0x0",
+      "--rodata",
+      "0x802a8f84",
+      "--text-only"
+    ],
+    "object": "frame.c.obj"
+  },
+  "SetupVehicleForRaceStart": {
+    "args": [
+      "--text",
+      "SetupVehicleForRaceStart",
+      "--text-skip",
+      "0xf60",
+      "--text-bytes",
+      "0x3d8",
+      "--rodata",
+      "0x802a970c",
+      "--text-only"
+    ],
+    "object": "../../../common/CMakeFiles/coastline_common.dir/vehiclereset.c.obj"
+  },
+  "StepVehicleCollisions": {
+    "args": [
+      "--text",
+      "StepVehicleCollisions",
+      "--text-skip",
+      "0x20",
+      "--text-bytes",
+      "0x2c4",
+      "--rodata",
+      "0x802ab1e8",
+      "--rodata-split",
+      "0x24:@0x802ab2c0",
+      "--text-only"
+    ],
+    "object": "../../../common/CMakeFiles/coastline_common.dir/collisionstep.c.obj"
+  },
+  "TipBalancedVehicle": {
+    "args": [
+      "--text",
+      "TipBalancedVehicle",
+      "--text-skip",
+      "0x0",
+      "--text-bytes",
+      "0x950",
+      "--rodata",
+      "0x802ab144",
+      "--rodata-split",
+      "0x40:@0x802ab288",
+      "--text-only"
+    ],
+    "object": "balance.c.obj"
+  },
+  "UpdateCursorFromInput": {
+    "args": [
+      "--text",
+      "UpdateCursorFromInput",
+      "--text-skip",
+      "0xd34",
+      "--text-bytes",
+      "0x30c",
+      "--data",
+      "0x0",
+      "--rodata",
+      "0x802aab58",
+      "--bss",
+      "0x0",
+      "--text-only"
+    ],
+    "object": "decaleditor.c.obj"
+  },
+  "UpdateWheelHeights": {
+    "args": [
+      "--text",
+      "UpdateWheelHeights",
+      "--text-skip",
+      "0xaa4",
+      "--text-bytes",
+      "0x140",
+      "--rodata",
+      "0x802ab2e8",
+      "--text-only"
+    ],
+    "object": "../../../common/CMakeFiles/coastline_common.dir/bodyforces.c.obj"
+  },
+  "ViRetraceThread": {
+    "args": [
+      "--text",
+      "ViRetraceThread",
+      "--text-skip",
+      "0x28f8",
+      "--text-bytes",
+      "0xc0",
+      "--data",
+      "0x8028a938",
+      "--rodata",
+      "0x0",
+      "--text-only"
+    ],
+    "object": "frame.c.obj"
+  },
+  "_Ldtob": {
+    "args": [
+      "--text",
+      "_Ldtob",
+      "--text-skip",
+      "0x570",
+      "--text-bytes",
+      "0x54c",
+      "--rodata",
+      "0x802ab604",
+      "--rodata-split",
+      "0x10:@0x802ab608",
+      "--text-only"
+    ],
+    "object": "../../libultra/libc/CMakeFiles/coastline_libultra_libc.dir/xldtob.c.obj"
+  },
+  "_Printf": {
+    "args": [
+      "--text",
+      "_Printf",
+      "--text-skip",
+      "0x670",
+      "--text-bytes",
+      "0x648",
+      "--rodata",
+      "0x802ab440",
+      "--text-only"
+    ],
+    "object": "../../libultra/libc/CMakeFiles/coastline_libultra_libc.dir/xprintf.c.obj"
+  }
+}
