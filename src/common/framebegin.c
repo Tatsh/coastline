@@ -78,7 +78,7 @@ void BeginDisplayList(s32 highRes) {
 #endif
     s32 x, width, height;
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64 && defined(ENABLE_PATCHES)
+#if TGR_PLATFORM == TGR_PLATFORM_N64 && defined(ENABLE_PATCHES) && defined(EXPANSION_PAK_SUPPORT)
     if (osMemSize > 0x400000) {
         highRes = 1;
     }

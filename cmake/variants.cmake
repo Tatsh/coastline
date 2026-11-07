@@ -34,7 +34,8 @@ foreach(_variant ${TGR_VARIANTS})
   if(_platform STREQUAL "n64")
     string(TOUPPER "${_choice}" _upper)
     set(_choice_arg "-DTGR_REGION=${_choice}" "-DTGR_ROM=${TGR_ROM_${_upper}}"
-                    "-DENFORCE_MATCHING=${ENFORCE_MATCHING}")
+                    "-DENFORCE_MATCHING=${ENFORCE_MATCHING}"
+                    "-DEXPANSION_PAK_SUPPORT=${EXPANSION_PAK_SUPPORT}")
   else()
     set(_choice_arg "-DTGR_RENDERER=${_choice}")
   endif()

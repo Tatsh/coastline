@@ -299,6 +299,7 @@ devicearrival
 devicecaps
 deviceremovecomplete
 devmgr
+dexpansion
 dfiles
 dfrac
 dialog

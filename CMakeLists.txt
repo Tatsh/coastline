@@ -8,6 +8,7 @@ option(TGR_ENABLE_PATCHES
        "Build the changes of this project to the game, such as the build date that names the \
 commit and the time of the build. Off builds the game as released."
        OFF)
+option(EXPANSION_PAK_SUPPORT "Render Nintendo 64 races at 640x480 with an Expansion Pak." OFF)
 option(ENFORCE_MATCHING "Verify reconstructed Nintendo 64 code with IDO 5.3 during builds." OFF)
 set(TGR_VARIANTS
     ""
@@ -53,6 +54,13 @@ endif()
 if(TGR_VARIANTS)
   include(cmake/variants.cmake)
   return()
+endif()
+
+if(EXPANSION_PAK_SUPPORT)
+  if(NOT TGR_ENABLE_PATCHES OR NOT TGR_PLATFORM STREQUAL "n64")
+    message(FATAL_ERROR "EXPANSION_PAK_SUPPORT requires N64 and TGR_ENABLE_PATCHES=ON.")
+  endif()
+  add_compile_definitions(EXPANSION_PAK_SUPPORT=1)
 endif()
 
 # A routine that differs substantially between targets has one translation unit per target, and
