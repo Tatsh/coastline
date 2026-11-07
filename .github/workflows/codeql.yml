@@ -23,6 +23,16 @@ jobs:
           build-mode: '${{ matrix.build-mode }}'
           languages: '${{ matrix.language }}'
       - if: matrix.language == 'c-cpp'
+        name: 'Prepare the vcpkg binary cache'
+        run: mkdir -p .wiswa-ci/vcpkg-cache
+      - if: matrix.language == 'c-cpp' && github.ref_type != 'tag'
+        id: 'vcpkg-cache'
+        name: 'Restore vcpkg binaries'
+        uses: 'actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830'
+        with:
+          key: "vcpkg-${{ runner.os }}-linux-x86_64-${{ hashFiles('vcpkg.json') }}"
+          path: '.wiswa-ci/vcpkg-cache'
+      - if: matrix.language == 'c-cpp'
         name: 'Build the SDL game for analysis'
         run: |
           sudo apt-get update
@@ -35,7 +45,16 @@ jobs:
           cmake --preset sdl -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_VIDEO=ON
           cmake --build --preset sdl -- -k 0
         env:
+          VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/.wiswa-ci/vcpkg-cache,readwrite'
           VCPKG_ROOT: '${{ github.workspace }}/.vcpkg'
+      - if: >-
+          matrix.language == 'c-cpp' && github.event_name == 'push' &&
+          github.ref == 'refs/heads/master' && steps.vcpkg-cache.outputs.cache-hit != 'true'
+        name: 'Save vcpkg binaries'
+        uses: 'actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830'
+        with:
+          key: "vcpkg-${{ runner.os }}-linux-x86_64-${{ hashFiles('vcpkg.json') }}"
+          path: '.wiswa-ci/vcpkg-cache'
       - name: 'Analyze'
         uses: 'github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
         with:
