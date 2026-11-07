@@ -13,7 +13,6 @@
 #include "common/timing.h"
 #include "common/track.h"
 #include "common/trackrender.h"
-#include "common/trackshadow.h"
 #include "common/vehicle.h"
 #include "common/vehiclemodel.h"
 #include "common/weather.h"
