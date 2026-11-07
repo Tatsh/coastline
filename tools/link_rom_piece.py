@@ -94,7 +94,7 @@ def main() -> int:
   }
   selected = {section: value for section in ('text', 'data', 'rodata', 'bss')
               if (value := getattr(args, section))}
-  types = {'text': 'Tt', 'data': 'DdVv', 'rodata': 'Rr', 'bss': 'Bb'}
+  types = {'text': 'Tt', 'data': 'DdVv', 'rodata': 'Rr', 'bss': 'BbVv'}
   addresses = {}
   for section, value in selected.items():
     if re.fullmatch(r'0x[0-9A-Fa-f]+', value):
