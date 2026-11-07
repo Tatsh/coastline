@@ -21,17 +21,6 @@ endif()
 target_include_directories(coastline_options INTERFACE "${CMAKE_SOURCE_DIR}/src"
                                                      "${CMAKE_SOURCE_DIR}/src/common/libultra/include")
 
-function(coastline_add_ido_trimmed_object target source original_size new_size output_name)
-  add_library(${target} OBJECT ${source})
-  target_link_libraries(${target} PRIVATE coastline_options)
-  set_target_properties(
-    ${target}
-    PROPERTIES COASTLINE_TRIM_ORIGINAL_SIZE "${original_size}"
-               COASTLINE_TRIM_NEW_SIZE "${new_size}"
-               COASTLINE_TRIM_OUTPUT "${output_name}")
-  set_property(GLOBAL APPEND PROPERTY COASTLINE_TRIMMED_OBJECTS ${target})
-endfunction()
-
 if(TGR_PLATFORM STREQUAL "win")
   target_include_directories(coastline_options INTERFACE "${CMAKE_SOURCE_DIR}/src/common")
   # The Windows port is C++, and this directory links its libraries, so the language is enabled
@@ -50,9 +39,6 @@ add_subdirectory(common)
 if(TGR_PLATFORM STREQUAL "n64")
   include(n64/libultra/common-sources.cmake)
 endif()
-get_property(_trimmed_objects GLOBAL PROPERTY COASTLINE_TRIMMED_OBJECTS)
-get_property(_sliced_objects GLOBAL PROPERTY COASTLINE_SLICED_OBJECTS)
-
 # Every archive the build produces, for a target that builds all of them at once.
 set(COASTLINE_LIBRARIES coastline_main coastline_common ${COASTLINE_COMMON_LIBULTRA_LIBRARIES}
                         ${COASTLINE_LIBULTRA_LIBRARIES})
@@ -114,15 +100,9 @@ if(TGR_IDO)
   foreach(_library ${COASTLINE_LIBRARIES})
     coastline_apply_ido_flags(${_library})
   endforeach()
-  foreach(_object IN LISTS _trimmed_objects)
-    coastline_apply_ido_flags(${_object})
-  endforeach()
-  foreach(_object IN LISTS _sliced_objects)
-    coastline_apply_ido_flags(${_object})
-  endforeach()
 endif()
 
-add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES} ${_trimmed_objects} ${_sliced_objects})
+add_custom_target(archives DEPENDS ${COASTLINE_LIBRARIES})
 if(TARGET coastline_ear)
   add_dependencies(archives coastline_ear)
 endif()
@@ -147,7 +127,7 @@ if(TGR_PLATFORM STREQUAL "win")
     target_link_libraries(${_library} PRIVATE coastline_glide)
   endif()
 else()
-  if(COASTLINE_ASSETS_DIR AND COASTLINE_ASM_SYMBOLS)
+  if(NOT TGR_IDO AND COASTLINE_ASSETS_DIR AND COASTLINE_ASM_SYMBOLS)
     # The program is flattened into the bytes the IPL3 loads. build-rom puts the bytes after the
     # original header and IPL3, places the assets at their offsets, and writes the checksum.
     set(_link_script "${CMAKE_CURRENT_SOURCE_DIR}/n64/coastline-${TGR_REGION}.ld")
@@ -158,62 +138,6 @@ else()
     set(_link_libraries ${COASTLINE_LIBRARIES})
     list(REMOVE_ITEM _link_libraries coastline_main coastline_asm)
     add_executable(${CMAKE_PROJECT_NAME} $<TARGET_OBJECTS:coastline_main>)
-    if(_trimmed_objects OR _sliced_objects)
-      find_package(Python3 REQUIRED COMPONENTS Interpreter)
-    endif()
-    if(_trimmed_objects)
-      foreach(_object IN LISTS _trimmed_objects)
-        get_target_property(_original_size ${_object} COASTLINE_TRIM_ORIGINAL_SIZE)
-        get_target_property(_new_size ${_object} COASTLINE_TRIM_NEW_SIZE)
-        get_target_property(_output_name ${_object} COASTLINE_TRIM_OUTPUT)
-        set(_trimmed "${CMAKE_CURRENT_BINARY_DIR}/${_output_name}.trim.o")
-        add_custom_command(
-          OUTPUT "${_trimmed}"
-          COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/trim_elf_text.py"
-                  "$<TARGET_OBJECTS:${_object}>" "${_original_size}" "${_new_size}" "${_trimmed}"
-          DEPENDS ${_object} "${CMAKE_SOURCE_DIR}/tools/trim_elf_text.py"
-          VERBATIM)
-        set_source_files_properties("${_trimmed}" PROPERTIES GENERATED TRUE EXTERNAL_OBJECT TRUE)
-        target_sources(${CMAKE_PROJECT_NAME} PRIVATE "${_trimmed}")
-      endforeach()
-    endif()
-    if(_sliced_objects)
-      if(TGR_REGION STREQUAL "eu")
-        set(_boot_text_end 0xa50)
-      elseif(TGR_REGION STREQUAL "jp")
-        set(_boot_text_end 0x970)
-      else()
-        set(_boot_text_end 0x950)
-      endif()
-      set(_boot_relocation "${CMAKE_CURRENT_BINARY_DIR}/boot-relocation.slice.o")
-      set(_boot_color "${CMAKE_CURRENT_BINARY_DIR}/boot-color.slice.o")
-      set(_boot_rest "${CMAKE_CURRENT_BINARY_DIR}/boot-rest.slice.o")
-      add_custom_command(
-        OUTPUT "${_boot_relocation}" "${_boot_color}" "${_boot_rest}"
-        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/slice_elf_text.py"
-                "$<TARGET_OBJECTS:coastline_boot_object>" 0 0xd0 "${_boot_relocation}"
-        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/slice_elf_text.py"
-                "$<TARGET_OBJECTS:coastline_boot_object>" 0xd0 0x15c "${_boot_color}"
-        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/slice_elf_text.py"
-                "$<TARGET_OBJECTS:coastline_boot_object>" 0x15c "${_boot_text_end}" "${_boot_rest}"
-                --keep-other-sections
-        DEPENDS coastline_boot_object "${CMAKE_SOURCE_DIR}/tools/slice_elf_text.py"
-        VERBATIM)
-      set_source_files_properties("${_boot_relocation}" "${_boot_color}" "${_boot_rest}"
-                                  PROPERTIES GENERATED TRUE EXTERNAL_OBJECT TRUE)
-      target_sources(${CMAKE_PROJECT_NAME} PRIVATE "${_boot_relocation}" "${_boot_color}"
-                                                 "${_boot_rest}")
-      set(_ground_ray "${CMAKE_CURRENT_BINARY_DIR}/ground-ray.slice.o")
-      add_custom_command(
-        OUTPUT "${_ground_ray}"
-        COMMAND "${Python3_EXECUTABLE}" "${CMAKE_SOURCE_DIR}/tools/slice_elf_text.py"
-                "$<TARGET_OBJECTS:coastline_ground_ray>" 0x8 0x620 "${_ground_ray}"
-                --keep-other-sections
-        DEPENDS coastline_ground_ray "${CMAKE_SOURCE_DIR}/tools/slice_elf_text.py"
-        VERBATIM)
-      set_source_files_properties("${_ground_ray}" PROPERTIES GENERATED TRUE EXTERNAL_OBJECT TRUE)
-      target_sources(${CMAKE_PROJECT_NAME} PRIVATE "${_ground_ray}")
-    endif()
     target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE coastline_asm "-Wl,--start-group"
                                                         ${_link_libraries} "-Wl,--end-group" gcc)
     set(_link_scripts "${_link_script}" ${COASTLINE_ASM_SYMBOLS})
