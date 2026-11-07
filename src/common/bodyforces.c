@@ -245,7 +245,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
 #endif
     }
 #if TGR_BOSS_RALLY
-    wheel->spinRate = highSpin;
+    wheel->spinRate = (f32)highSpin;
     if (ABS(highSpin) > MAX_SPIN_RATE) {
         wheel->spinRate = highSpin > 0.0L ? MAX_SPIN_RATE : -MAX_SPIN_RATE;
     }
@@ -254,7 +254,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
     /* Turn the wheel by its spin, within a turn. */
 #if TGR_BOSS_RALLY
     highAngle = wheel->rollAngle - FORCE_PRODUCT(wheel->spinRate, 57.29577637f) * dt;
-    wheel->rollAngle = highAngle;
+    wheel->rollAngle = (f32)highAngle;
     if (!isfinite((double)highAngle) || !(wheel->rollAngle >= -36000.0) ||
         !(wheel->rollAngle < 36000.0)) {
         wheel->rollAngle = 0.0f;
@@ -263,7 +263,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
     if (wheel->rollAngle > 360.0) {
         do {
             highAngle = (long double)wheel->rollAngle - 360.0;
-            wheel->rollAngle = highAngle;
+            wheel->rollAngle = (f32)highAngle;
         } while (highAngle > 360.0);
     }
     if (wheel->rollAngle < 0.0) {
@@ -271,7 +271,7 @@ void DriveWheel(RigidBody *body, RigidBody *wheel, f32 *load, u8 *sliding, f32 d
         do {
             highAngle -= -360.0f;
         } while (highAngle < 0.0);
-        wheel->rollAngle = highAngle;
+        wheel->rollAngle = (f32)highAngle;
     }
 #else
     wheel->rollAngle = wheel->rollAngle - wheel->spinRate * 57.29577637f * dt;
@@ -317,13 +317,15 @@ void ComputeCollisionPenetration(
         /* The face of the box by the middle of the triangle, signed by its x as the original. */
         for (i = 0; i < 3; i++) {
 #if TGR_BRD3D
-            middle[i] = (((long double)COMPONENT(&triangle[0], i) + COMPONENT(&triangle[1], i)) +
-                         COMPONENT(&triangle[2], i)) *
-                        0.3333333432674407958984375f;
+            middle[i] =
+                (f32)((((long double)COMPONENT(&triangle[0], i) + COMPONENT(&triangle[1], i)) +
+                       COMPONENT(&triangle[2], i)) *
+                      0.3333333432674407958984375f);
 #elif TGR_BOSS_RALLY && TGR_RENDERER == TGR_RENDERER_GLIDE
-            middle[i] = (((long double)COMPONENT(&triangle[0], i) + COMPONENT(&triangle[2], i)) +
-                         COMPONENT(&triangle[1], i)) *
-                        0.3333333432674407958984375f;
+            middle[i] =
+                (f32)((((long double)COMPONENT(&triangle[0], i) + COMPONENT(&triangle[2], i)) +
+                       COMPONENT(&triangle[1], i)) *
+                      0.3333333432674407958984375f);
 #else
             middle[i] = COMPONENT(&triangle[0], i) + COMPONENT(&triangle[1], i) +
                         COMPONENT(&triangle[2], i);
