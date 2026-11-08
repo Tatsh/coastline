@@ -198,7 +198,7 @@ struct MapState {
 // The library of MSVC 6 allocates through malloc and calls the new handler until it succeeds,
 // and its operator delete is free, so EAR releases these blocks with operator delete.
 void *MfcAllocateWithNewHandler(std::size_t size) {
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(_MSC_VER) || _MSC_VER > 1200
     // Another library's operator delete need not be free, so the allocation pairs with operator
     // delete. The nothrow form calls the new handler the same way and gives nothing without one.
     return ::operator new(size, std::nothrow);
@@ -213,7 +213,7 @@ void *MfcAllocateWithNewHandler(std::size_t size) {
         }
         handler();
     }
-#endif /* ENABLE_PATCHES */
+#endif
 }
 
 CRuntimeClass *CObject::GetRuntimeClass() const {

@@ -32,23 +32,23 @@ EarDirectSoundOutput::EarDirectSoundOutput() : device(nullptr), primaryBuffer(nu
                          nullptr,
                          CLSCTX_INPROC_SERVER,
                          IID_IDirectSound,
-                         IID_PPV_ARGS_Helper(&device))) {
+                         IID_PPV_ARGS_Helper(&device)) != S_OK) {
         FailInitialization(6);
         return;
     }
     result = device->Initialize(nullptr);
-    if (result) {
+    if (result != S_OK) {
         FailInitialization(0x22);
         return;
     }
     result = device->SetCooperativeLevel(g_hEarNotifyWindow, DSSCL_EXCLUSIVE);
-    if (result) {
+    if (result != S_OK) {
         FailInitialization(0x22);
         return;
     }
     DSCAPS capabilities;
     capabilities.dwSize = sizeof(capabilities);
-    if (device->GetCaps(&capabilities)) {
+    if (device->GetCaps(&capabilities) != S_OK) {
         FailInitialization(0x22);
         return;
     }
@@ -67,16 +67,16 @@ EarDirectSoundOutput::EarDirectSoundOutput() : device(nullptr), primaryBuffer(nu
     description.dwSize = 20;
     description.dwFlags = DSBCAPS_PRIMARYBUFFER;
     result = device->CreateSoundBuffer(&description, &primaryBuffer, nullptr);
-    if (result) {
+    if (result != S_OK) {
         FailInitialization(0x22);
         return;
     }
     result = primaryBuffer->SetFormat(&format);
-    if (result) {
+    if (result != S_OK) {
         FailInitialization(8);
         return;
     }
-    if (primaryBuffer->GetFormat(&format, sizeof(format), nullptr)) {
+    if (primaryBuffer->GetFormat(&format, sizeof(format), nullptr) != S_OK) {
         FailInitialization(7);
         return;
     }
@@ -86,7 +86,7 @@ EarDirectSoundOutput::EarDirectSoundOutput() : device(nullptr), primaryBuffer(nu
         return;
     }
     result = primaryBuffer->Play(0, 0, DSBPLAY_LOOPING);
-    if (result) {
+    if (result != S_OK) {
         FailInitialization(0x14);
     }
 }

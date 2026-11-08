@@ -179,7 +179,11 @@ DWORD GetCdTrackCount(void) {
 
 int LoadCdTrackPositions(void) {
     MCI_STATUS_PARMS status;
+#if defined(_MSC_VER) && _MSC_VER <= 1200 && !defined(ENABLE_PATCHES)
     uint16_t track;
+#else
+    DWORD track;
+#endif
     if (!g_wCdAudioDeviceId) {
         return 0;
     }
@@ -191,6 +195,11 @@ int LoadCdTrackPositions(void) {
     mciSendCommandA(
         g_wCdAudioDeviceId, MCI_STATUS, MCI_STATUS_ITEM, reinterpret_cast<DWORD_PTR>(&status));
     g_dwCdTrackCount = static_cast<DWORD>(status.dwReturn);
+#if !defined(_MSC_VER) || _MSC_VER > 1200 || defined(ENABLE_PATCHES)
+    if (g_dwCdTrackCount == 0 || g_dwCdTrackCount > UINT16_MAX) {
+        return 0;
+    }
+#endif
     if (g_pCdTrackPositions) {
         EarCdTrackPosition *positions = g_pCdTrackPositions;
         ::operator delete(positions);

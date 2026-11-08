@@ -22,6 +22,8 @@
 
 ### Fixed
 
+- Bound Boss Rally file-error messages, release EAR allocations consistently, and validate CD track
+  counts on current Windows compilers.
 - Align the speedometer needle with its dashboard in 640×480 Nintendo 64 races.
 - Read packed WAV format headers at their correct size in Windows SDL builds.
 - Reject oversized paint shop bitmaps before allocating or copying pixels.

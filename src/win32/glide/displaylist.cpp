@@ -912,12 +912,21 @@ static inline void GenerateGlideTextureCoordinates(const ConvertedModelVertex &i
     } else {
         t = static_cast<float>(t);
     }
+#if defined(_MSC_VER) && _MSC_VER <= 1200 && !defined(ENABLE_PATCHES)
     source.fS = (s * static_cast<float>(g_dwTileSizeWidth) + GBI_TEXTURE_GEN_OFFSET -
                  static_cast<float>(g_dwTileSizeUls) * fEdgeScale) /
                 g_fTexCoordScaleS;
     source.fT = (t * static_cast<float>(g_dwTileSizeHeight) + GBI_TEXTURE_GEN_OFFSET -
                  static_cast<float>(g_dwTileSizeUlt) * fEdgeScale) /
                 g_fTexCoordScaleT;
+#else
+    source.fS = (s * static_cast<float>(g_dwTileSizeWidth) + GBI_TEXTURE_GEN_OFFSET -
+                 static_cast<long double>(g_dwTileSizeUls) * fEdgeScale) /
+                g_fTexCoordScaleS;
+    source.fT = (t * static_cast<float>(g_dwTileSizeHeight) + GBI_TEXTURE_GEN_OFFSET -
+                 static_cast<long double>(g_dwTileSizeUlt) * fEdgeScale) /
+                g_fTexCoordScaleT;
+#endif
 }
 
 // How a vertex handler colours its vertices.

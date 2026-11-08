@@ -46,19 +46,29 @@ GameFile *CHK_FReadOpen(const char *pszPath) {
     if (pFile->pFile == NULL) {
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
         pErrorFile = fopen("c:\\RallyError.txt", "w");
-        sprintf(szMessage, "CHK_FReadOpen(): error opening file %s.\n", pFile->pszPath);
-#ifdef ENABLE_PATCHES
-        fprintf(pErrorFile, "%s", szMessage);
-#else
+#if defined(_MSC_VER) && _MSC_VER <= 1200 && !defined(ENABLE_PATCHES)
         // The original passes the message to fprintf() as the format.
+        sprintf(szMessage, "CHK_FReadOpen(): error opening file %s.\n", pFile->pszPath);
         fprintf(pErrorFile, szMessage);
-#endif /* ENABLE_PATCHES */
-        OutputDebugStringA(szMessage);
         fclose(pErrorFile);
+#else
+        snprintf(szMessage,
+                 sizeof(szMessage),
+                 "CHK_FReadOpen(): error opening file %s.\n",
+                 pFile->pszPath);
+        if (pErrorFile != NULL) {
+            fputs(szMessage, pErrorFile);
+            fclose(pErrorFile);
+        }
+#endif
+        OutputDebugStringA(szMessage);
 #else
         // The log of the game takes the place of RallyError.txt at the root of drive C.
         (void)pErrorFile;
-        sprintf(szMessage, "CHK_FReadOpen(): error opening file %s.\n", pFile->pszPath);
+        snprintf(szMessage,
+                 sizeof(szMessage),
+                 "CHK_FReadOpen(): error opening file %s.\n",
+                 pFile->pszPath);
         SDL_LogError(SDL_LOG_CATEGORY_APPLICATION, "%s", szMessage);
 #endif /* TGR_PLATFORM == TGR_PLATFORM_WIN */
         exit(1);
