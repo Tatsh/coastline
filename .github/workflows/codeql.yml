@@ -28,7 +28,7 @@ jobs:
       - if: matrix.language == 'c-cpp' && github.ref_type != 'tag'
         id: 'vcpkg-cache'
         name: 'Restore vcpkg binaries'
-        uses: 'actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830'
+        uses: 'actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
         with:
           key: "vcpkg-${{ runner.os }}-linux-x86_64-${{ hashFiles('vcpkg.json') }}"
           path: '.wiswa-ci/vcpkg-cache'
@@ -51,7 +51,7 @@ jobs:
           !cancelled() && matrix.language == 'c-cpp' && github.event_name == 'push' &&
           github.ref == 'refs/heads/master' && steps.vcpkg-cache.outputs.cache-hit != 'true'
         name: 'Save vcpkg binaries'
-        uses: 'actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830'
+        uses: 'actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
         with:
           key: "vcpkg-${{ runner.os }}-linux-x86_64-${{ hashFiles('vcpkg.json') }}"
           path: '.wiswa-ci/vcpkg-cache'
@@ -103,7 +103,7 @@ jobs:
           persist-credentials: false
       - id: 'toolchain-cache'
         name: 'Restore N64 compiler download'
-        uses: 'actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830'
+        uses: 'actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
         with:
           key: 'codeql-n64-toolchain-fac8e6572493a664'
           path: '.wiswa-ci/gcc-toolchain-mips64-x86_64.deb'
@@ -125,7 +125,7 @@ jobs:
           github.ref == 'refs/heads/master' &&
           steps.toolchain-cache.outputs.cache-hit != 'true'
         name: 'Save N64 compiler download'
-        uses: 'actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830'
+        uses: 'actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9'
         with:
           key: 'codeql-n64-toolchain-fac8e6572493a664'
           path: '.wiswa-ci/gcc-toolchain-mips64-x86_64.deb'
