@@ -59,12 +59,12 @@ Section "Boss Rally" MainSection
   SetRegView 32
   SetShellVarContext all
   SetOutPath "$INSTDIR"
-  File "${BUILD}/src/BRD3D.dll"
-  File "${GLIDE_BUILD}/src/BRGlide.dll"
-  File "${BUILD}/src/win32/ear/earpds.dll"
-  File "${BUILD}/src/win32/boot/BRally.exe"
-  File "${BUILD}/src/win32/boot/BossRally.exe"
-  File "${BUILD}/src/win32/boot/SetVideo.exe"
+  File "${BRD3D_DLL}"
+  File "${BRGLIDE_DLL}"
+  File "${EARPDS_DLL}"
+  File "${BRALLY_EXE}"
+  File "${BOSSRALLY_EXE}"
+  File "${SETVIDEO_EXE}"
 
   ClearErrors
   CopyFiles /SILENT "$DiscPath\BossRally.pod" "$INSTDIR"

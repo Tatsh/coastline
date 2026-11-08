@@ -37,14 +37,39 @@ endforeach()
 add_dependencies(win-glide win-d3d)
 
 find_program(TGR_MAKENSIS makensis HINTS "C:/Program Files (x86)/NSIS" REQUIRED)
+if(CMAKE_HOST_WIN32)
+  set(_nsis_define /D)
+else()
+  set(_nsis_define -D)
+endif()
+if(MSVC)
+  set(_nsis_binary_config Release/)
+else()
+  set(_nsis_binary_config "")
+endif()
+file(TO_NATIVE_PATH "${CMAKE_BINARY_DIR}/win-d3d/src/${_nsis_binary_config}BRD3D.dll"
+     _nsis_brd3d)
+file(TO_NATIVE_PATH "${CMAKE_BINARY_DIR}/win-glide/src/${_nsis_binary_config}BRGlide.dll"
+     _nsis_brglide)
+file(TO_NATIVE_PATH "${CMAKE_BINARY_DIR}/win-d3d/src/win32/ear/${_nsis_binary_config}earpds.dll"
+     _nsis_earpds)
+foreach(_launcher BRally BossRally SetVideo)
+  file(TO_NATIVE_PATH
+       "${CMAKE_BINARY_DIR}/win-d3d/src/win32/boot/${_nsis_binary_config}${_launcher}.exe"
+       _nsis_${_launcher})
+endforeach()
 set(_boss_rally_installer "${CMAKE_BINARY_DIR}/BossRally-Setup.exe")
 add_custom_command(
   OUTPUT "${_boss_rally_installer}"
   COMMAND
     "${TGR_MAKENSIS}"
-    "-DOUTPUT=${_boss_rally_installer}"
-    "-DBUILD=${CMAKE_BINARY_DIR}/win-d3d"
-    "-DGLIDE_BUILD=${CMAKE_BINARY_DIR}/win-glide"
+    "${_nsis_define}OUTPUT=${_boss_rally_installer}"
+    "${_nsis_define}BRD3D_DLL=${_nsis_brd3d}"
+    "${_nsis_define}BRGLIDE_DLL=${_nsis_brglide}"
+    "${_nsis_define}EARPDS_DLL=${_nsis_earpds}"
+    "${_nsis_define}BRALLY_EXE=${_nsis_BRally}"
+    "${_nsis_define}BOSSRALLY_EXE=${_nsis_BossRally}"
+    "${_nsis_define}SETVIDEO_EXE=${_nsis_SetVideo}"
     "${CMAKE_SOURCE_DIR}/cmake/bossrally.nsi"
   DEPENDS win-glide "${CMAKE_SOURCE_DIR}/cmake/bossrally.nsi"
   VERBATIM)

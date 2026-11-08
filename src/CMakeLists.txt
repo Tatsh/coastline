@@ -206,6 +206,9 @@ if(TGR_PLATFORM STREQUAL "win")
   # libraries do.
   list(TRANSFORM _link_libraries REPLACE "^(coastline_win32.*)$" "$<LINK_LIBRARY:WHOLE_ARCHIVE,\\1>")
   add_library(${_library} SHARED $<TARGET_OBJECTS:coastline_main>)
+  if(TARGET earpds)
+    add_dependencies(${_library} earpds)
+  endif()
   set_target_properties(${_library} PROPERTIES PREFIX "")
   # The libraries call each other, so they are linked as one group.
   if(MSVC)
