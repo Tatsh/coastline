@@ -184,6 +184,11 @@ jobs:
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:
           persist-credentials: false
+      - name: 'Install NSIS'
+        run: |
+          if (-not (Test-Path 'C:\Program Files (x86)\NSIS\makensis.exe')) {
+            choco install nsis -y --no-progress
+          }
       - name: 'Initialize CodeQL'
         uses: 'github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
         with:
@@ -196,7 +201,7 @@ jobs:
             cmake -S . -B "$build_dir" -G Ninja \
               -DCMAKE_TOOLCHAIN_FILE=cmake/win-toolchain.cmake \
               -DCMAKE_BUILD_TYPE=Release -DTGR_PLATFORM=win \
-              -DTGR_VARIANTS='win-d3d;win-glide' \
+              -DTGR_VARIANTS=boss-rally \
               -DTGR_ENABLE_PATCHES="$patches"
             cmake --build "$build_dir" -- -k 0
           done
