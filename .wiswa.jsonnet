@@ -346,6 +346,7 @@
       {
         cacheVariables: {
           CMAKE_BUILD_TYPE: 'RelWithDebInfo',
+          CMAKE_POLICY_DEFAULT_CMP0174: 'NEW',
           CMAKE_TOOLCHAIN_FILE: '$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake',
           TGR_ENABLE_PATCHES: 'ON',
           TGR_PLATFORM: 'sdl',
