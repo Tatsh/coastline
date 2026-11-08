@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.25)
-project(coastline VERSION 0.0.0 LANGUAGES C ASM)
+project(coastline VERSION 0.0.0 LANGUAGES C)
+
+if(POLICY CMP0174)
+  cmake_policy(SET CMP0174 NEW)
+endif()
 
 if(POLICY CMP0207)
   cmake_policy(SET CMP0207 NEW)
@@ -56,6 +60,9 @@ if(TGR_VARIANTS)
 endif()
 if(TGR_PLATFORM STREQUAL "win" AND NOT TGR_INTERNAL_WIN_VARIANT)
   message(FATAL_ERROR "Use the boss-rally preset to build both Windows renderer libraries.")
+endif()
+if(TGR_PLATFORM STREQUAL "n64")
+  enable_language(ASM)
 endif()
 
 if(EXPANSION_PAK_SUPPORT)
