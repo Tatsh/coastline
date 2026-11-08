@@ -5,7 +5,6 @@ add_library(
   coastline_win32_ear STATIC
   backendversion.c
   directsoundoutput.cpp
-  dllmain.c
   exports.def
   file.cpp
   musicdevice.cpp
@@ -26,7 +25,7 @@ target_link_libraries(coastline_win32_ear PUBLIC coastline_ear)
 
 # earpds.dll, the audio engine the game loads beside its renderer library, with the exports the
 # game imports by their decorated names.
-add_library(earpds SHARED exports.def)
+add_library(earpds SHARED dllmain.c exports.def)
 set_target_properties(earpds PROPERTIES PREFIX "" LINKER_LANGUAGE CXX)
 target_link_libraries(
   earpds PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,coastline_ear>"
