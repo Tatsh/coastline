@@ -220,7 +220,9 @@ jobs:
             pkg-config wayland-protocols
       - if: runner.os == 'macOS'
         name: 'Install the tools'
-        run: brew install librsvg nasm ninja
+        run: |
+          brew install librsvg nasm
+          command -v ninja >/dev/null || brew install ninja
       # The baseline of vcpkg-configuration.json pins the versions of the ports.
       # The workflow also builds tags, so the packages vcpkg builds are not cached.
       - name: 'Install vcpkg'
