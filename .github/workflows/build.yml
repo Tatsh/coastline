@@ -191,7 +191,7 @@ jobs:
       PACKAGE: 'coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-Release'
       BUILD_TYPE: 'Release'
       MACOSX_DEPLOYMENT_TARGET: '10.15'
-      VCPKG_KEEP_ENV_VARS: 'MACOSX_DEPLOYMENT_TARGET'
+      VCPKG_KEEP_ENV_VARS: 'MACOSX_DEPLOYMENT_TARGET;NASMENV'
       VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/.wiswa-ci/vcpkg-cache,readwrite'
       VCPKG_ROOT: '${{ github.workspace }}/.vcpkg'
     steps:
