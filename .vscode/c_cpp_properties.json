@@ -2,7 +2,7 @@
   "configurations": [
     {
       "cStandard": "gnu89",
-      "compileCommands": "${workspaceFolder}/build/n64-us/compile_commands.json",
+      "compileCommands": "${workspaceFolder}/build/tgr-us/compile_commands.json",
       "compilerArgs": [
         "-G0",
         "-ffreestanding",
@@ -91,7 +91,7 @@
     },
     {
       "cStandard": "c23",
-      "compileCommands": "${workspaceFolder}/build/sdl/compile_commands.json",
+      "compileCommands": "${workspaceFolder}/build/coastline/compile_commands.json",
       "compilerPath": "/usr/bin/g++",
       "configurationProvider": "ms-vscode.cmake-tools",
       "cppStandard": "c++23",
@@ -112,9 +112,9 @@
         "TGR_RENDERER_SDL=3"
       ],
       "includePath": [
-        "${workspaceFolder}/build/sdl/src/sdl",
-        "${workspaceFolder}/build/sdl/src/sdl/generated",
-        "${workspaceFolder}/build/sdl/vcpkg_installed/x64-linux/include",
+        "${workspaceFolder}/build/coastline/src/sdl",
+        "${workspaceFolder}/build/coastline/src/sdl/generated",
+        "${workspaceFolder}/build/coastline/vcpkg_installed/x64-linux/include",
         "${workspaceFolder}/src",
         "${workspaceFolder}/src/libultra/include",
         "${workspaceFolder}/src/sdl",

@@ -29,7 +29,10 @@ jobs:
           sudo apt-get install -y ccache cmake ninja-build zlib1g-dev
           ccache --max-size=500M
       - name: 'Configure, build and test'
-        run: cmake --workflow --preset tests
+        run: |
+          cmake -S . -B build/tests -G Ninja -DTGR_TESTS=ON
+          cmake --build build/tests
+          ctest --test-dir build/tests --output-on-failure
       - if: >-
           !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/master' &&
           steps.test-build-cache.outputs.cache-hit != 'true'

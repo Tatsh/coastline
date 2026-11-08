@@ -237,7 +237,8 @@ def _stage(options: _Options) -> tuple[Path, Path]:
               help='Extracted CD data directory.')
 @click.option('--prefix', type=click.Path(path_type=Path), default=ROOT / '.wiswa-ci/wineprefix',
               help='Wine prefix, created when absent.')
-@click.option('--build-dir', type=click.Path(path_type=Path), default=ROOT / 'build/win-d3d',
+@click.option('--build-dir', type=click.Path(path_type=Path),
+              default=ROOT / 'build/boss-rally/win-d3d',
               help='CMake directory with the rebuilt DLL and launchers.')
 @click.option('--ear-dll', type=click.Path(path_type=Path),
               default=ROOT / '.wiswa-ci/earpds-unpacked.dll',

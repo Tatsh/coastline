@@ -122,7 +122,7 @@
     "url": "git+https://github.com/Tatsh/coastline.git"
   },
   "scripts": {
-    "build": "cmake --preset=default -DBUILD_DOCS=ON && cmake --build build",
+    "build": "cmake --preset coastline -DBUILD_DOCS=ON && cmake --build --preset coastline",
     "check-formatting": "clang-format --dry-run --Werror $(git ls-files 'src/*.c' 'src/*.cpp' 'src/*.h' 'src/*.mm' 'tests/*.c' 'tests/*.cpp' 'tools/*.cpp' 'tools/*.h') && prettier --check . && markdownlint-cli2 --config package.json --configPointer /markdownlint-cli2",
     "check-spelling": "cspell --no-progress .",
     "dict:update": "rm -f .vscode/dictionary.txt && cspell lint --no-progress --no-summary --unique --words-only | LC_ALL=C tr '[:upper:]' '[:lower:]' | LC_ALL=C sort -u > .vscode/dictionary.txt",

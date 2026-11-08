@@ -1,51 +1,26 @@
-# Builds every variant TGR_VARIANTS lists as a separate configure and build under
-# ${CMAKE_BINARY_DIR}/<variant>, from this source tree. Each variant is <platform>-<choice>, with
-# n64-us, n64-jp, and n64-eu for the Nintendo 64 releases and win-d3d and win-glide for the
-# Windows libraries. The word all selects the five.
+# Builds the Boss Rally renderer libraries in separate trees, and reuses renderer-independent
+# archives from the Direct3D build when linking the Glide library.
 
 include(ExternalProject)
 
-foreach(_region us jp eu asia)
-  string(TOUPPER "${_region}" _upper)
-  set(TGR_ROM_${_upper}
-      ""
-      CACHE FILEPATH "Original cartridge image of the ${_region} release, passed to the n64-\
-${_region} variant as TGR_ROM. The TGR_ROM_${_upper} environment variable fills an empty value.")
-  if(NOT TGR_ROM_${_upper} AND DEFINED ENV{TGR_ROM_${_upper}})
-    set(TGR_ROM_${_upper}
-        "$ENV{TGR_ROM_${_upper}}"
-        CACHE FILEPATH "Original cartridge image of the ${_region} release." FORCE)
-  endif()
-endforeach()
-
-set(_tgr_all_variants n64-us n64-jp n64-eu n64-asia win-d3d win-glide)
-if(TGR_VARIANTS STREQUAL "all")
-  set(TGR_VARIANTS ${_tgr_all_variants})
+if(NOT TGR_VARIANTS STREQUAL "boss-rally")
+  message(FATAL_ERROR "TGR_VARIANTS only accepts boss-rally. Use a regional preset for N64.")
 endif()
 
-foreach(_variant ${TGR_VARIANTS})
-  if(NOT _variant IN_LIST _tgr_all_variants)
-    message(FATAL_ERROR "TGR_VARIANTS has ${_variant}. Each entry must be one of "
-                        "${_tgr_all_variants}, or the list must be all.")
-  endif()
+foreach(_variant win-d3d win-glide)
   string(REGEX MATCH "^([a-z0-9]+)-([a-z0-9]+)$" _ "${_variant}")
   set(_platform "${CMAKE_MATCH_1}")
   set(_choice "${CMAKE_MATCH_2}")
-  if(_platform STREQUAL "n64")
-    string(TOUPPER "${_choice}" _upper)
-    set(_choice_arg "-DTGR_REGION=${_choice}" "-DTGR_ROM=${TGR_ROM_${_upper}}"
-                    "-DENFORCE_MATCHING=${ENFORCE_MATCHING}"
-                    "-DEXPANSION_PAK_SUPPORT=${EXPANSION_PAK_SUPPORT}")
-  else()
-    set(_choice_arg "-DTGR_RENDERER=${_choice}")
+  set(_choice_arg "-DTGR_RENDERER=${_choice}")
+  if(_choice STREQUAL "glide")
+    list(APPEND _choice_arg "-DTGR_SHARED_WIN_BUILD=${CMAKE_BINARY_DIR}/win-d3d")
   endif()
+  list(APPEND _choice_arg -DTGR_INTERNAL_WIN_VARIANT=ON)
   set(_toolchain_arg "-DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/cmake/${_platform}-toolchain.cmake")
   if(MSVC AND _platform STREQUAL "win")
     set(_toolchain_arg "")
     list(APPEND _choice_arg "-DDXSDK_DIR=${DXSDK_DIR}")
   endif()
-  # The sources change between builds of the superbuild, and the variant rebuilds every time. The
-  # default build of a variant produces its archives and extracts its assets.
   ExternalProject_Add(
     ${_variant}
     SOURCE_DIR "${CMAKE_SOURCE_DIR}"
@@ -59,3 +34,18 @@ foreach(_variant ${TGR_VARIANTS})
     INSTALL_COMMAND ""
     TEST_COMMAND "")
 endforeach()
+add_dependencies(win-glide win-d3d)
+
+find_program(TGR_MAKENSIS makensis HINTS "C:/Program Files (x86)/NSIS" REQUIRED)
+set(_boss_rally_installer "${CMAKE_BINARY_DIR}/BossRally-Setup.exe")
+add_custom_command(
+  OUTPUT "${_boss_rally_installer}"
+  COMMAND
+    "${TGR_MAKENSIS}"
+    "-DOUTPUT=${_boss_rally_installer}"
+    "-DBUILD=${CMAKE_BINARY_DIR}/win-d3d"
+    "-DGLIDE_BUILD=${CMAKE_BINARY_DIR}/win-glide"
+    "${CMAKE_SOURCE_DIR}/cmake/bossrally.nsi"
+  DEPENDS win-glide "${CMAKE_SOURCE_DIR}/cmake/bossrally.nsi"
+  VERBATIM)
+add_custom_target(boss-rally-installer ALL DEPENDS "${_boss_rally_installer}")

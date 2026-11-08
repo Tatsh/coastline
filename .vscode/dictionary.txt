@@ -302,6 +302,7 @@ devmgr
 dexpansion
 dfiles
 dfrac
+dglide
 dialog
 dialogs
 dicondition
@@ -475,6 +476,7 @@ etnf
 evermeet
 exceptasm
 excmask
+exedir
 exhaustpos
 exhaustspawn
 exitmenuloop
@@ -625,6 +627,7 @@ iconerror
 iconfile
 iconhand
 iconset
+iconstop
 iconutil
 icsum
 idok
@@ -648,7 +651,10 @@ initdialog
 inputdefaults
 inputlost
 inputtranslate
+insertmacro
 instantreplay
+instdir
+instfiles
 intr
 introsequence
 inttypes
@@ -1266,6 +1272,7 @@ slti
 sltu
 smokepos
 smoothstep
+smprograms
 snapcore
 snapcraft
 snapmodule
@@ -1538,6 +1545,7 @@ wextra
 wheeldl
 wheelpos
 wheelrender
+windir
 windowposchanging
 windowsconsole
 windres

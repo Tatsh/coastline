@@ -1,45 +1,11 @@
 {
   "buildPresets": [
-    {
-      "configurePreset": "n64-us",
-      "name": "n64-us"
-    },
-    {
-      "configurePreset": "n64-jp",
-      "name": "n64-jp"
-    },
-    {
-      "configurePreset": "n64-eu",
-      "name": "n64-eu"
-    },
-    {
-      "configurePreset": "n64-asia",
-      "name": "n64-asia"
-    },
-    {
-      "configurePreset": "win-d3d",
-      "name": "win-d3d"
-    },
-    {
-      "configurePreset": "win-glide",
-      "name": "win-glide"
-    },
-    {
-      "configurePreset": "win-both",
-      "name": "win-both"
-    },
-    {
-      "configurePreset": "all",
-      "name": "all"
-    },
-    {
-      "configurePreset": "tests",
-      "name": "tests"
-    },
-    {
-      "configurePreset": "sdl",
-      "name": "sdl"
-    }
+    { "configurePreset": "boss-rally", "name": "boss-rally" },
+    { "configurePreset": "coastline", "name": "coastline" },
+    { "configurePreset": "tgr-us", "name": "tgr-us" },
+    { "configurePreset": "tgr-jp", "name": "tgr-jp" },
+    { "configurePreset": "tgr-eu", "name": "tgr-eu" },
+    { "configurePreset": "tgr-asia", "name": "tgr-asia" }
   ],
   "configurePresets": [
     {
@@ -53,9 +19,7 @@
     },
     {
       "binaryDir": "${sourceDir}/build/${presetName}",
-      "cacheVariables": {
-        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
-      },
+      "cacheVariables": { "CMAKE_EXPORT_COMPILE_COMMANDS": "ON" },
       "generator": "Ninja",
       "hidden": true,
       "name": "base"
@@ -71,7 +35,7 @@
     },
     {
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_BUILD_TYPE": "Release",
         "CMAKE_TOOLCHAIN_FILE": "${sourceDir}/cmake/win-toolchain.cmake",
         "TGR_PLATFORM": "win"
       },
@@ -80,68 +44,9 @@
       "name": "win"
     },
     {
-      "cacheVariables": {
-        "TGR_REGION": "us"
-      },
-      "inherits": "n64",
-      "name": "n64-us"
-    },
-    {
-      "cacheVariables": {
-        "TGR_REGION": "jp"
-      },
-      "inherits": "n64",
-      "name": "n64-jp"
-    },
-    {
-      "cacheVariables": {
-        "TGR_REGION": "eu"
-      },
-      "inherits": "n64",
-      "name": "n64-eu"
-    },
-    {
-      "cacheVariables": {
-        "TGR_REGION": "asia"
-      },
-      "inherits": "n64",
-      "name": "n64-asia"
-    },
-    {
-      "cacheVariables": {
-        "TGR_RENDERER": "d3d"
-      },
+      "cacheVariables": { "TGR_VARIANTS": "boss-rally" },
       "inherits": "win",
-      "name": "win-d3d"
-    },
-    {
-      "cacheVariables": {
-        "TGR_RENDERER": "glide"
-      },
-      "inherits": "win",
-      "name": "win-glide"
-    },
-    {
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release",
-        "TGR_VARIANTS": "win-d3d;win-glide"
-      },
-      "inherits": "win",
-      "name": "win-both"
-    },
-    {
-      "cacheVariables": {
-        "TGR_VARIANTS": "all"
-      },
-      "inherits": "base",
-      "name": "all"
-    },
-    {
-      "cacheVariables": {
-        "TGR_TESTS": "ON"
-      },
-      "inherits": "base",
-      "name": "tests"
+      "name": "boss-rally"
     },
     {
       "cacheVariables": {
@@ -152,152 +57,55 @@
         "VCPKG_MANIFEST_FEATURES": "sdl"
       },
       "inherits": "base",
-      "name": "sdl"
-    }
-  ],
-  "testPresets": [
-    {
-      "configurePreset": "tests",
-      "name": "tests",
-      "output": {
-        "outputOnFailure": true
-      }
-    }
+      "name": "coastline"
+    },
+    { "cacheVariables": { "TGR_REGION": "us" }, "inherits": "n64", "name": "tgr-us" },
+    { "cacheVariables": { "TGR_REGION": "jp" }, "inherits": "n64", "name": "tgr-jp" },
+    { "cacheVariables": { "TGR_REGION": "eu" }, "inherits": "n64", "name": "tgr-eu" },
+    { "cacheVariables": { "TGR_REGION": "asia" }, "inherits": "n64", "name": "tgr-asia" }
   ],
   "version": 6,
   "workflowPresets": [
     {
-      "name": "n64-us",
+      "name": "boss-rally",
       "steps": [
-        {
-          "name": "n64-us",
-          "type": "configure"
-        },
-        {
-          "name": "n64-us",
-          "type": "build"
-        }
+        { "name": "boss-rally", "type": "configure" },
+        { "name": "boss-rally", "type": "build" }
       ]
     },
     {
-      "name": "n64-jp",
+      "name": "coastline",
       "steps": [
-        {
-          "name": "n64-jp",
-          "type": "configure"
-        },
-        {
-          "name": "n64-jp",
-          "type": "build"
-        }
+        { "name": "coastline", "type": "configure" },
+        { "name": "coastline", "type": "build" }
       ]
     },
     {
-      "name": "n64-eu",
+      "name": "tgr-us",
       "steps": [
-        {
-          "name": "n64-eu",
-          "type": "configure"
-        },
-        {
-          "name": "n64-eu",
-          "type": "build"
-        }
+        { "name": "tgr-us", "type": "configure" },
+        { "name": "tgr-us", "type": "build" }
       ]
     },
     {
-      "name": "n64-asia",
+      "name": "tgr-jp",
       "steps": [
-        {
-          "name": "n64-asia",
-          "type": "configure"
-        },
-        {
-          "name": "n64-asia",
-          "type": "build"
-        }
+        { "name": "tgr-jp", "type": "configure" },
+        { "name": "tgr-jp", "type": "build" }
       ]
     },
     {
-      "name": "win-d3d",
+      "name": "tgr-eu",
       "steps": [
-        {
-          "name": "win-d3d",
-          "type": "configure"
-        },
-        {
-          "name": "win-d3d",
-          "type": "build"
-        }
+        { "name": "tgr-eu", "type": "configure" },
+        { "name": "tgr-eu", "type": "build" }
       ]
     },
     {
-      "name": "win-glide",
+      "name": "tgr-asia",
       "steps": [
-        {
-          "name": "win-glide",
-          "type": "configure"
-        },
-        {
-          "name": "win-glide",
-          "type": "build"
-        }
-      ]
-    },
-    {
-      "name": "win-both",
-      "steps": [
-        {
-          "name": "win-both",
-          "type": "configure"
-        },
-        {
-          "name": "win-both",
-          "type": "build"
-        }
-      ]
-    },
-    {
-      "name": "all",
-      "steps": [
-        {
-          "name": "all",
-          "type": "configure"
-        },
-        {
-          "name": "all",
-          "type": "build"
-        }
-      ]
-    },
-    {
-      "name": "sdl",
-      "steps": [
-        {
-          "name": "sdl",
-          "type": "configure"
-        },
-        {
-          "name": "sdl",
-          "type": "build"
-        }
-      ]
-    },
-    {
-      "name": "tests",
-      "steps": [
-        {
-          "name": "tests",
-          "type": "configure"
-        },
-        {
-          "name": "tests",
-          "type": "build"
-        },
-        {
-          "name": "tests",
-          "type": "test"
-        }
+        { "name": "tgr-asia", "type": "configure" },
+        { "name": "tgr-asia", "type": "build" }
       ]
     }
   ]

@@ -10,12 +10,7 @@ commit and the time of the build. Off builds the game as released."
        OFF)
 option(EXPANSION_PAK_SUPPORT "Render the Nintendo 64 game at 640x480 with an Expansion Pak." OFF)
 option(ENFORCE_MATCHING "Verify reconstructed Nintendo 64 code with IDO 5.3 during builds." OFF)
-set(TGR_VARIANTS
-    ""
-    CACHE STRING "Variants to build in one step, as a list of n64-us, n64-jp, n64-eu, n64-asia, \
-win-d3d, and win-glide, or all for the six. Empty builds the one variant selected by \
-TGR_PLATFORM, TGR_REGION, and \
-TGR_RENDERER.")
+set(TGR_VARIANTS "" CACHE STRING "Internal superbuild selection for Boss Rally.")
 set(TGR_PLATFORM
     "n64"
     CACHE STRING "Platform to build: n64 for the Nintendo 64 ROM, win for the Windows library, or \
@@ -54,6 +49,9 @@ endif()
 if(TGR_VARIANTS)
   include(cmake/variants.cmake)
   return()
+endif()
+if(TGR_PLATFORM STREQUAL "win" AND NOT TGR_INTERNAL_WIN_VARIANT)
+  message(FATAL_ERROR "Use the boss-rally preset to build both Windows renderer libraries.")
 endif()
 
 if(EXPANSION_PAK_SUPPORT)

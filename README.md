@@ -33,11 +33,11 @@ part of the program.
 
 ## Building
 
-Each release is a variant: `n64-us`, `n64-asia`, `n64-jp`, and `n64-eu` for the Nintendo 64
-releases, and `win-d3d` and `win-glide` for the two Windows libraries. The `win-both` workflow
-builds both Windows libraries in one step. The cartridge image of an N64 release is read from the
-`TGR_ROM` environment variable,
-and its assets are extracted into the build directory on every build. The image is checked
+The build presets are `tgr-us`, `tgr-asia`, `tgr-jp`, and `tgr-eu` for the Nintendo 64
+releases, `boss-rally` for the PC game, and `coastline` for the SDL game. The `boss-rally` preset
+builds both Windows renderer libraries and an NSIS installer. The ROM image of an N64 release is
+read from the `TGR_ROM` environment variable, and its assets are extracted into the build directory
+on every build. The image is checked
 against the SHA-1 of the unmodified release before anything is read from it.
 
 | Nintendo 64 release | ROM SHA-1                                  |
@@ -48,22 +48,18 @@ against the SHA-1 of the unmodified release before anything is read from it.
 | Japan               | `e0415b87c5a5b69ac581e79137406bdaa79b354a` |
 
 ```shell
-TGR_ROM=/path/to/usa.z64 cmake --workflow --preset n64-us
-```
-
-The `all` preset builds every variant in one step. Each Nintendo 64 variant takes its image from
-`TGR_ROM_US`, `TGR_ROM_ASIA`, `TGR_ROM_JP`, or `TGR_ROM_EU`.
-
-```shell
-TGR_ROM_US=usa.z64 TGR_ROM_ASIA=asia.z64 TGR_ROM_JP=jpn.z64 TGR_ROM_EU=eur.z64 \
-  cmake --workflow --preset all
+TGR_ROM=/path/to/usa.z64 cmake --workflow --preset tgr-us
 ```
 
 The Nintendo 64 compiler is libdragon's GCC, found through `N64_INST`, and no other part of
 libdragon is used. The Windows compiler is an i686 mingw-w64 GCC, found through `MINGW_ROOT` or
 on the path. The Windows build is 32-bit only, and its `BRD3D.dll` and `BRGlide.dll` are meant
 as drop-in replacements for the files of the installed game. Every routine compiles into an
-archive. The `win-both` build produces both renderer DLLs and their launchers.
+archive. The `boss-rally` build produces both renderer DLLs, their launchers, and
+`build/boss-rally/BossRally-Setup.exe`. The installer asks for the original disc directory and
+copies its game data into the original `SouthPeak Interactive/Boss Rally` installation layout.
+Mount the disc image or use an extracted disc directory; the installer does not open image files.
+The uninstaller retains that game data, including saves and paint files.
 
 Each Nintendo 64 release builds a cartridge image, such as `coastline-us.z64` in the build
 directory, whenever `TGR_ROM` is set. Routines not yet reconstructed in C link from the assembly of
@@ -113,7 +109,7 @@ The `sdl` platform builds `coastline`, a stand-alone 64-bit game for every opera
 supports, from Windows 7 and macOS 10.15 on x86_64 and arm64. It draws through the GPU API of SDL
 (Vulkan, Metal, or Direct3D 12). It builds with GCC, Clang, MSVC of Visual Studio 2022, and MinGW.
 
-The `sdl` preset takes the libraries from vcpkg, found through `VCPKG_ROOT`.
+The `coastline` preset takes the libraries from vcpkg, found through `VCPKG_ROOT`.
 
 On Linux, Coastline requests Feral GameMode at startup when its client library and service are
 available, and releases the request on exit. Missing clients or failed requests do not prevent
@@ -131,11 +127,11 @@ Flatpak permits native and Flatpak Discord sockets. Strict Snap confinement can 
 Discord IPC; presence remains inactive when the socket is inaccessible.
 
 ```shell
-VCPKG_ROOT=/path/to/vcpkg cmake --workflow --preset sdl
+VCPKG_ROOT=/path/to/vcpkg cmake --workflow --preset coastline
 ```
 
 ```shell
-cmake --install build/sdl --prefix ~/.local
+cmake --install build/coastline --prefix ~/.local
 ```
 
 Installation includes four manual pages under `${CMAKE_INSTALL_MANDIR}/man1`. CMake inserts the
@@ -147,12 +143,12 @@ To build with assets for system installation, supply a Boss Rally disc image and
 Top Gear Rally ROM image. Multiple ROM paths use a semicolon-separated CMake list.
 
 ```shell
-cmake --preset sdl -DCOASTLINE_INSTALL_ASSETS=ON \
+cmake --preset coastline -DCOASTLINE_INSTALL_ASSETS=ON \
   -DCOASTLINE_DISC_IMAGE='/path/to/Boss Rally.cue' \
   '-DCOASTLINE_ROM_IMAGES=/path/to/usa.z64;/path/to/jpn.z64' \
   -DCMAKE_INSTALL_PREFIX=/usr
-cmake --build build/sdl
-DESTDIR=/path/to/package cmake --install build/sdl
+cmake --build build/coastline
+DESTDIR=/path/to/package cmake --install build/coastline
 ```
 
 The `coastline_assets` target imports images into the build directory using the import CLI.
@@ -167,8 +163,8 @@ With `COASTLINE_INSTALL_ASSETS=ON`, the setup wizard, `--reset`, `--factory-rese
 and `-y` are omitted. Missing or outdated assets produce an error requiring installation of usable data.
 Normal builds retain the wizard and reset options.
 
-On Windows, `cpack --config build/sdl/CPackConfig.cmake` builds an NSIS installer that installs the
-game for the current user, with shortcuts and an option to add it to `PATH`.
+On Windows, `cpack --config build/coastline/CPackConfig.cmake` builds an NSIS installer that
+installs the game for the current user, with shortcuts and an option to add it to `PATH`.
 
 A tag such as `v1.2.3` names the build: the game shows the tag in place of the commit, and the
 build workflow attaches every package to a draft release of the tag. The release workflow
@@ -203,7 +199,7 @@ A cross build takes glslang and SPIRV-Cross from the system or vcpkg, as it cann
 builds.
 
 ```shell
-cmake -S . -B build/sdl -G Ninja -DTGR_PLATFORM=sdl -DUSE_SYSTEM_SDL3=ON -DUSE_SYSTEM_ZLIB=ON
+cmake -S . -B build/coastline -G Ninja -DTGR_PLATFORM=sdl -DUSE_SYSTEM_SDL3=ON -DUSE_SYSTEM_ZLIB=ON
 ```
 
 On Linux, the build of SDL needs the development headers of ALSA, EGL, Wayland, xkbcommon, and
@@ -990,19 +986,21 @@ coastline --minimized run-script check.txt
 ## Testing
 
 The tests under `tests/` build the reconstructed C for the host with the host compiler and check
-it against the branches and command words of the disassembly. The `tests` workflow preset
-configures, builds, and runs them with CTest, with the address and undefined behaviour sanitizers.
+it against the branches and command words of the disassembly.
 
 ```shell
-cmake --workflow --preset tests
+cmake -S . -B build/tests -G Ninja -DTGR_TESTS=ON
+cmake --build build/tests
+ctest --test-dir build/tests --output-on-failure
 ```
 
 The test of zlib inflates the assets extracted from a cartridge image and compares them with the
 extractor's output. It runs only when `TGR_TEST_ASSETS` names the asset directory of a build.
 
 ```shell
-cmake --preset tests -DTGR_TEST_ASSETS="$PWD/build/n64-us/assets"
-cmake --build --preset tests && ctest --preset tests
+cmake -S . -B build/tests -G Ninja -DTGR_TESTS=ON \
+  -DTGR_TEST_ASSETS="$PWD/build/tgr-us/assets"
+cmake --build build/tests && ctest --test-dir build/tests --output-on-failure
 ```
 
 The offsets of the structures the assembly reads depend on the 32-bit pointers of the console, so

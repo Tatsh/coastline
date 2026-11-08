@@ -50,6 +50,10 @@ else()
   target_link_libraries(coastline_win32 PRIVATE coastline_glide)
 endif()
 
-add_subdirectory(ear)
+if(NOT TGR_SHARED_WIN_BUILD)
+  add_subdirectory(ear)
+endif()
 # The programs that start the game: Boot.exe, BRally.exe, BossRally.exe, and SetVideo.exe.
-add_subdirectory(boot)
+if(NOT TGR_SHARED_WIN_BUILD)
+  add_subdirectory(boot)
+endif()

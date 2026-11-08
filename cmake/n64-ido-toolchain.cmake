@@ -2,7 +2,7 @@
 # the assembler, the archiver, and the linker are those of the libdragon distribution, as in
 # n64-toolchain.cmake. Each source takes the flags tools/ido_flags.txt gives it (cmake/ido-flags.cmake).
 #
-#   cmake --preset n64-us -DCMAKE_TOOLCHAIN_FILE=cmake/n64-ido-toolchain.cmake -DIDO_ROOT=<ido 5.3>
+#   cmake --preset tgr-us -DCMAKE_TOOLCHAIN_FILE=cmake/n64-ido-toolchain.cmake -DIDO_ROOT=<ido 5.3>
 
 set(CMAKE_SYSTEM_NAME Generic)
 set(CMAKE_SYSTEM_PROCESSOR mips)

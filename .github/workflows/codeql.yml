@@ -42,8 +42,8 @@ jobs:
             libxi-dev libxkbcommon-dev libxrandr-dev libxss-dev libxtst-dev ninja-build \
             pkg-config wayland-protocols
           git clone https://github.com/microsoft/vcpkg "$VCPKG_ROOT"
-          cmake --preset sdl -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_VIDEO=ON
-          cmake --build --preset sdl -- -k 0
+          cmake --preset coastline -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_VIDEO=ON
+          cmake --build --preset coastline -- -k 0
         env:
           VCPKG_BINARY_SOURCES: 'clear;files,${{ github.workspace }}/.wiswa-ci/vcpkg-cache,readwrite'
           VCPKG_ROOT: '${{ github.workspace }}/.vcpkg'
@@ -240,6 +240,11 @@ jobs:
         run: |
           & C:\msys64\usr\bin\bash.exe -lc 'pacman -Sy --noconfirm mingw-w64-i686-binutils'
           Add-Content -Path $env:GITHUB_PATH -Value 'C:\msys64\mingw32\bin'
+      - name: 'Install NSIS'
+        run: |
+          if (-not (Test-Path 'C:\Program Files (x86)\NSIS\makensis.exe')) {
+            choco install nsis -y --no-progress
+          }
       - name: 'Initialize CodeQL'
         uses: 'github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370'
         with:
@@ -250,7 +255,7 @@ jobs:
           foreach ($patches in @('OFF', 'ON')) {
             $buildDir = ".wiswa-ci/build/codeql-win-msvc-$patches"
             cmake -S . -B $buildDir -G 'Visual Studio 17 2022' -A Win32 `
-              '-DTGR_VARIANTS=win-d3d;win-glide' "-DTGR_ENABLE_PATCHES=$patches" `
+              -DTGR_VARIANTS=boss-rally "-DTGR_ENABLE_PATCHES=$patches" `
               "-DDXSDK_DIR=$env:GITHUB_WORKSPACE/dxsdk/DXSDK_Aug2007"
             if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
             cmake --build $buildDir --config Release --parallel 4

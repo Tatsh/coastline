@@ -494,7 +494,7 @@
           cStandard: 'gnu89',
           compilerArgs: ['-G0', '-ffreestanding', '-fno-pic', '-mabi=32', '-march=vr4300', '-mno-abicalls'],
           compilerPath: 'mips64-libdragon-elf-gcc',
-          compileCommands: '${workspaceFolder}/build/n64-us/compile_commands.json',
+          compileCommands: '${workspaceFolder}/build/tgr-us/compile_commands.json',
           configurationProvider: 'ms-vscode.cmake-tools',
           defines: [
             'TGR_PLATFORM=1',
@@ -549,7 +549,7 @@
       ] + [
         {
           cStandard: 'c23',
-          compileCommands: '${workspaceFolder}/build/sdl/compile_commands.json',
+          compileCommands: '${workspaceFolder}/build/coastline/compile_commands.json',
           compilerPath: '/usr/bin/g++',
           configurationProvider: 'ms-vscode.cmake-tools',
           cppStandard: 'c++23',
@@ -570,9 +570,9 @@
             'TGR_RENDERER_SDL=3',
           ],
           includePath: [
-            '${workspaceFolder}/build/sdl/src/sdl',
-            '${workspaceFolder}/build/sdl/src/sdl/generated',
-            '${workspaceFolder}/build/sdl/vcpkg_installed/x64-linux/include',
+            '${workspaceFolder}/build/coastline/src/sdl',
+            '${workspaceFolder}/build/coastline/src/sdl/generated',
+            '${workspaceFolder}/build/coastline/vcpkg_installed/x64-linux/include',
             '${workspaceFolder}/src',
             '${workspaceFolder}/src/libultra/include',
             '${workspaceFolder}/src/sdl',
@@ -598,8 +598,8 @@
   want_scan_build: true,
   github+: { workflows+: {
     scan_build+: {
-      build_command: 'cmake --build --preset sdl --clean-first --parallel 2',
-      configure_command: 'cmake --preset sdl -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_VIDEO=ON',
+      build_command: 'cmake --build --preset coastline --clean-first --parallel 2',
+      configure_command: 'cmake --preset coastline -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_VIDEO=ON',
       documentation_steps: [
         {
           name: 'Install dependencies',

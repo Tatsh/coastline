@@ -63,12 +63,12 @@ jobs:
           /opt/libdragon/bin/mips64-elf-gcc --version
           cmake --version
       - name: 'Configure'
-        run: cmake --preset "n64-$TGR_REGION" -DCMAKE_BUILD_TYPE=Release -DTGR_ENABLE_PATCHES=ON
+        run: cmake --preset "tgr-$TGR_REGION" -DCMAKE_BUILD_TYPE=Release -DTGR_ENABLE_PATCHES=ON
         env:
           N64_INST: '/opt/libdragon'
           TGR_REGION: '${{ matrix.region }}'
       - name: 'Compile'
-        run: cmake --build --preset "n64-$TGR_REGION" -- -k 0
+        run: cmake --build --preset "tgr-$TGR_REGION" -- -k 0
         env:
           TGR_REGION: '${{ matrix.region }}'
       # Without a cartridge image the build links neither the program nor the cartridge, only the
@@ -76,11 +76,11 @@ jobs:
       - name: 'Version the archive filenames'
         run: |
           while IFS= read -r -d '' archive; do
-            relative="${archive#build/n64-"$TGR_REGION"/src/}"
+            relative="${archive#build/tgr-"$TGR_REGION"/src/}"
             destination="artifacts/${relative%.a}-$VERSION.a"
             mkdir -p "${destination%/*}"
             cp "$archive" "$destination"
-          done < <(find "build/n64-$TGR_REGION/src" -type f -name '*.a' -print0)
+          done < <(find "build/tgr-$TGR_REGION/src" -type f -name '*.a' -print0)
         env:
           TGR_REGION: '${{ matrix.region }}'
           VERSION: '${{ needs.version.outputs.version }}'
@@ -233,16 +233,16 @@ jobs:
       - if: runner.os == 'Linux'
         name: 'Configure and compile'
         run: |
-          cmake --preset sdl -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCOASTLINE_PORTABLE=ON \
+          cmake --preset coastline -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCOASTLINE_PORTABLE=ON \
             -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video'
-          cmake --build --preset sdl -- -k 0
+          cmake --build --preset coastline -- -k 0
       - if: runner.os == 'macOS'
         name: 'Configure and compile'
         run: |
-          cmake --preset sdl -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCOASTLINE_PORTABLE=ON \
+          cmake --preset coastline -DCMAKE_BUILD_TYPE="$BUILD_TYPE" -DCOASTLINE_PORTABLE=ON \
             -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video' \
             -DCMAKE_OSX_ARCHITECTURES="$ARCHITECTURE" -DVCPKG_TARGET_TRIPLET="$TRIPLET"
-          cmake --build --preset sdl -- -k 0
+          cmake --build --preset coastline -- -k 0
         env:
           ARCHITECTURE: '${{ matrix.platform.architecture }}'
           NASMENV: '!--pragma!macho build_version macos,10,15'
@@ -257,10 +257,10 @@ jobs:
           Import-Module "$studio\Common7\Tools\Microsoft.VisualStudio.DevShell.dll"
           Enter-VsDevShell -VsInstallPath $studio -SkipAutomaticLocation `
             -DevCmdArguments "-arch=$env:ARCHITECTURE -host_arch=$env:ARCHITECTURE"
-          cmake --preset sdl -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -DCOASTLINE_PORTABLE=ON `
+          cmake --preset coastline -DCMAKE_BUILD_TYPE="$env:BUILD_TYPE" -DCOASTLINE_PORTABLE=ON `
             -DCOASTLINE_DISCORD=ON '-DVCPKG_MANIFEST_FEATURES=sdl;video'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          cmake --build --preset sdl -- -k 0
+          cmake --build --preset coastline -- -k 0
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         env:
           ARCHITECTURE: '${{ matrix.platform.architecture }}'
@@ -274,7 +274,7 @@ jobs:
           key: "vcpkg-${{ runner.os }}-${{ matrix.platform.slug }}-${{ hashFiles('vcpkg.json') }}"
           path: '.wiswa-ci/vcpkg-cache'
       - name: 'Install'
-        run: cmake --install build/sdl --prefix staging --strip
+        run: cmake --install build/coastline --prefix staging --strip
         shell: bash
       # Each package keeps the permissions of the files, which an artifact loses: a tarball on
       # Linux, and on macOS a disk image, which also keeps the signature of the bundle.
@@ -337,7 +337,7 @@ jobs:
           $nsis = "${env:ProgramFiles(x86)}\NSIS"
           if (-not (Test-Path "$nsis\makensis.exe")) { choco install nsis -y --no-progress }
           $env:PATH = "$nsis;$env:PATH"
-          cpack --config build/sdl/CPackConfig.cmake -B . `
+          cpack --config build/coastline/CPackConfig.cmake -B . `
             -D "CPACK_PACKAGE_FILE_NAME=$env:PACKAGE-setup"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         shell: pwsh
@@ -370,7 +370,7 @@ jobs:
             "https://github.com/linuxdeploy/linuxdeploy/releases/download/1-alpha-20251107-1/linuxdeploy-$arch.AppImage"
           echo "$LINUXDEPLOY_SHA256  linuxdeploy.AppImage" | sha256sum -c
           chmod +x linuxdeploy.AppImage
-          DESTDIR=AppDir cmake --install build/sdl --prefix /usr --strip
+          DESTDIR=AppDir cmake --install build/coastline --prefix /usr --strip
           cp AppDir/usr/share/metainfo/sh.tat.coastline.metainfo.xml \
             AppDir/usr/share/metainfo/sh.tat.coastline.appdata.xml
           APPIMAGE_EXTRACT_AND_RUN=1 ./linuxdeploy.AppImage --appdir AppDir \
@@ -513,12 +513,12 @@ jobs:
       - name: 'Configure and compile'
         run: |
           git clone https://github.com/microsoft/vcpkg .vcpkg
-          cmake --preset sdl -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_PORTABLE=ON \
+          cmake --preset coastline -DCMAKE_BUILD_TYPE=Release -DCOASTLINE_PORTABLE=ON \
             -DCOASTLINE_VIDEO=OFF -DVCPKG_TARGET_TRIPLET=x64-mingw-dynamic \
             -DVCPKG_HOST_TRIPLET=x64-mingw-dynamic \
             -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc \
             -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++
-          cmake --build --preset sdl -- -k 0
+          cmake --build --preset coastline -- -k 0
         shell: 'msys2 {0}'
       - if: >-
           !cancelled() && github.event_name == 'push' && github.ref == 'refs/heads/master' &&
@@ -530,7 +530,7 @@ jobs:
           path: '.wiswa-ci/vcpkg-cache'
       - name: 'Package'
         run: |
-          cmake --install build/sdl --prefix staging --strip
+          cmake --install build/coastline --prefix staging --strip
           ./staging/bin/coastline.exe --help
           cd staging
           zip -r -9 "../$PACKAGE.zip" .
@@ -573,21 +573,29 @@ jobs:
           i686-w64-mingw32-gcc --version
           cmake --version
         shell: 'msys2 {0}'
+      - name: 'Install NSIS'
+        shell: pwsh
+        run: |
+          if (-not (Test-Path 'C:\Program Files (x86)\NSIS\makensis.exe')) {
+            choco install nsis -y --no-progress
+          }
       - name: 'Configure'
-        run: cmake --preset win-both -DTGR_ENABLE_PATCHES=ON
+        run: cmake --preset boss-rally -DTGR_ENABLE_PATCHES=ON
         shell: 'msys2 {0}'
       - name: 'Compile'
-        run: cmake --build --preset win-both -- -k 0
+        run: cmake --build --preset boss-rally -- -k 0
         shell: 'msys2 {0}'
       # The renderer library, earpds.dll, and the launchers go side by side, as in the installed
       # game.
       - name: 'Package'
         run: |
           mkdir staging
-          cp build/win-both/win-d3d/src/BRD3D.dll build/win-both/win-glide/src/BRGlide.dll \
-            build/win-both/win-d3d/src/win32/ear/earpds.dll \
-            build/win-both/win-d3d/src/win32/boot/*.exe staging/
+          cp build/boss-rally/win-d3d/src/BRD3D.dll \
+            build/boss-rally/win-glide/src/BRGlide.dll \
+            build/boss-rally/win-d3d/src/win32/ear/earpds.dll \
+            build/boss-rally/win-d3d/src/win32/boot/*.exe staging/
           (cd staging && zip -9 "../coastline-$VERSION-br-Release.zip" ./*)
+          cp build/boss-rally/BossRally-Setup.exe "coastline-$VERSION-br-Setup.exe"
           unzip -l ./coastline-*.zip
         env:
           VERSION: '${{ needs.version.outputs.version }}'
@@ -596,13 +604,17 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: 'actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8'
         with:
-          subject-path: 'coastline-*.zip'
+          subject-path: |
+            coastline-*.zip
+            coastline-*-br-Setup.exe
       - name: 'Upload the binaries'
         uses: 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         with:
           if-no-files-found: 'error'
           name: 'br-windows-Release'
-          path: 'coastline-*.zip'
+          path: |
+            coastline-*.zip
+            coastline-*-br-Setup.exe
   win-msvc:
     name: 'Windows (Boss Rally, MSVC)'
     runs-on: windows-2022
@@ -624,10 +636,15 @@ jobs:
         run: |
           & C:\msys64\usr\bin\bash.exe -lc 'pacman -Sy --noconfirm mingw-w64-i686-binutils'
           Add-Content -Path $env:GITHUB_PATH -Value 'C:\msys64\mingw32\bin'
+      - name: 'Install NSIS'
+        run: |
+          if (-not (Test-Path 'C:\Program Files (x86)\NSIS\makensis.exe')) {
+            choco install nsis -y --no-progress
+          }
       - name: 'Configure'
         run: >-
           cmake -S . -B build/win-msvc -G 'Visual Studio 17 2022' -A Win32
-          '-DTGR_VARIANTS=win-d3d;win-glide' -DTGR_ENABLE_PATCHES=ON
+          -DTGR_VARIANTS=boss-rally -DTGR_ENABLE_PATCHES=ON
           "-DDXSDK_DIR=$env:GITHUB_WORKSPACE/dxsdk/DXSDK_Aug2007"
       - name: 'Compile'
         run: cmake --build build/win-msvc --config Release --parallel 4

@@ -13,6 +13,12 @@
   shortcuts, using Expansion Pak memory for deeper history when available.
 - Render the whole patched Nintendo 64 game at 640×480 when an Expansion Pak is present and
   `EXPANSION_PAK_SUPPORT` is enabled.
+- Build a Boss Rally installer with both Windows renderer libraries that copies data from the
+  original disc during installation.
+
+### Changed
+
+- Use `boss-rally`, `coastline`, and `tgr-<region>` as the public CMake build presets.
 
 ### Fixed
 
