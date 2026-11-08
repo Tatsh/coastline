@@ -231,12 +231,12 @@ public:
 private:
     UINT file;
     BOOL closeOnDelete;
-#ifdef ENABLE_PATCHES
-    // The name keeps the layout of the class of MFC, and no routine reads it.
+#if defined(ENABLE_PATCHES) || !defined(_MSC_VER) || _MSC_VER > 1200
+    // The unused field preserves the MFC class layout.
     [[maybe_unused]] char *fileName;
 #else
     char *fileName;
-#endif /* ENABLE_PATCHES */
+#endif
 };
 #endif
 

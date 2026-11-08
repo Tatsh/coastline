@@ -212,12 +212,12 @@ void DrawLapCounterHud(void) {
                     HUD_RACE_ADD(VEHICLE_GET(g_pActiveCameraVehicle, Lap), 1),
                     g_dwTotalLaps);
         } else {
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || (TGR_BOSS_RALLY && (!defined(_MSC_VER) || _MSC_VER > 1200))
             sprintf(text, "%s", HUD_FINISHED);
 #else
             /* The original passes the text directly as a format string. */
             sprintf(text, HUD_FINISHED);
-#endif /* ENABLE_PATCHES */
+#endif
         }
         y = HUD_RACE_ADD(y, LAP_TEXT_SIZE);
         SetTextStyleNormal();

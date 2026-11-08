@@ -236,7 +236,7 @@ static BOSS_RALLY_INLINE void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f3
                     VEHICLE_SET(
                         other, SubMessage, PROGRESS_MESSAGE("%ryYou're way behind!", 0x123));
                 }
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || (TGR_BOSS_RALLY && (!defined(_MSC_VER) || _MSC_VER > 1200))
                 sprintf(VEHICLE_GET(other, MessageText) + strlen(VEHICLE_GET(other, MessageText)),
                         "%s",
                         PROGRESS_MESSAGE(" Behind", 0x124));
@@ -244,7 +244,7 @@ static BOSS_RALLY_INLINE void PassArcadeCheckpoint(RacerSlot *slot, s32 gate, f3
                 /* The original treats the localised suffix as a format string. */
                 sprintf(VEHICLE_GET(other, MessageText) + strlen(VEHICLE_GET(other, MessageText)),
                         PROGRESS_MESSAGE(" Behind", 0x124));
-#endif /* ENABLE_PATCHES */
+#endif
 #if TGR_PLATFORM == TGR_PLATFORM_N64
             } else {
                 sprintf(other->messageText + strlen(other->messageText), " Ahead");

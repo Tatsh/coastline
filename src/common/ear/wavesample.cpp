@@ -46,13 +46,14 @@ int EarWaveSample::ReadWaveSampleData(const void *source) {
 #else
     LONG memoryBytes;
 #endif
-#if defined(ENABLE_PATCHES) || TGR_PLATFORM != TGR_PLATFORM_WIN
-    // The SDL game frees the handle it closes, and a handle never assigned must not be closed.
+#if defined(ENABLE_PATCHES) || TGR_PLATFORM != TGR_PLATFORM_WIN || !defined(_MSC_VER) ||           \
+    _MSC_VER > 1200
+    // A rejected header must not close a handle that was never opened.
     EarWaveFile file = nullptr;
 #else
     // A header that is not of a wave file closes this handle before it is assigned.
     EarWaveFile file;
-#endif /* ENABLE_PATCHES */
+#endif
     if (sourceKind == EAR_WAVE_SAMPLE_SOURCE_MEMORY) {
         std::memmove(header, source, sizeof(header));
         if (std::memcmp(header, "RIFF", 4) || std::memcmp(header + 8, "WAVEfmt ", 8)) {
