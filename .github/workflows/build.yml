@@ -243,6 +243,7 @@ jobs:
           cmake --build --preset sdl -- -k 0
         env:
           ARCHITECTURE: '${{ matrix.platform.architecture }}'
+          NASMENV: '!--pragma!macho build_version macos,10,15'
           TRIPLET: '${{ matrix.platform.triplet }}'
       # Ninja finds MSVC in the environment the developer command prompt sets up for the
       # architecture of the runner.

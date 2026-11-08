@@ -904,6 +904,7 @@ musicplayback
 muxs
 mypy
 nasm
+nasmenv
 ncpaint
 nearbycount
 neff
