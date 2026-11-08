@@ -61,6 +61,9 @@ modules:
         tag: '1.8.2'
         type: 'git'
         url: 'https://github.com/FeralInteractive/gamemode.git'
+      - commands:
+          - 'sed -i "s/value: ''true''/value: true/g" meson_options.txt'
+        type: 'shell'
   - build-options:
       build-args:
         - '--share=network'

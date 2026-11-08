@@ -89,6 +89,10 @@
             type: 'git',
             url: 'https://github.com/FeralInteractive/gamemode.git',
           },
+          {
+            commands: ["sed -i \"s/value: 'true'/value: true/g\" meson_options.txt"],
+            type: 'shell',
+          },
         ],
       },
       {
