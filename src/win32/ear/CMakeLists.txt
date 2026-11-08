@@ -25,7 +25,14 @@ target_link_libraries(coastline_win32_ear PUBLIC coastline_ear)
 
 # earpds.dll, the audio engine the game loads beside its renderer library, with the exports the
 # game imports by their decorated names.
-add_library(earpds SHARED dllmain.c exports.def)
+set(_ear_exports "${CMAKE_CURRENT_SOURCE_DIR}/exports.def")
+if(MSVC)
+  file(READ "${_ear_exports}" _ear_exports_content)
+  string(REPLACE "=EAR_DLL_" "=_EAR_DLL_" _ear_exports_content "${_ear_exports_content}")
+  set(_ear_exports "${CMAKE_CURRENT_BINARY_DIR}/exports-msvc.def")
+  file(WRITE "${_ear_exports}" "${_ear_exports_content}")
+endif()
+add_library(earpds SHARED dllmain.c "${_ear_exports}")
 set_target_properties(earpds PROPERTIES PREFIX "" LINKER_LANGUAGE CXX)
 target_link_libraries(
   earpds PRIVATE "$<LINK_LIBRARY:WHOLE_ARCHIVE,coastline_ear>"
