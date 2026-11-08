@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <cstdlib>
 #include <new>
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(_MSC_VER) || _MSC_VER > 1200
 #include <limits>
 #include <stdexcept>
 #endif
@@ -23,7 +23,7 @@ public:
     }
 
     static CPlex *Create(CPlex *&head, unsigned max, std::size_t elementSize) {
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(_MSC_VER) || _MSC_VER > 1200
         if (elementSize == 0 ||
             max > ((std::numeric_limits<std::size_t>::max)() - sizeof(CPlex)) / elementSize) {
             throw std::bad_array_new_length();
@@ -31,7 +31,7 @@ public:
 #endif
         auto *plex =
             static_cast<CPlex *>(MfcAllocateWithNewHandler(sizeof(CPlex) + max * elementSize));
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(_MSC_VER) || _MSC_VER > 1200
         if (plex == nullptr) {
             throw std::bad_alloc();
         }
@@ -45,11 +45,11 @@ public:
         CPlex *plex = this;
         while (plex != nullptr) {
             CPlex *following = plex->next;
-#ifdef ENABLE_PATCHES
+#if defined(ENABLE_PATCHES) || !defined(_MSC_VER) || _MSC_VER > 1200
             ::operator delete(plex);
 #else
             std::free(plex);
-#endif /* ENABLE_PATCHES */
+#endif
             plex = following;
         }
     }
