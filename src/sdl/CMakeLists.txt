@@ -50,6 +50,19 @@ coastline_dependency(
   HASH 9c75cf16330322c217dedd2e0609f1124f1b54b8633e763467b4684d0f4334a3
   OPTIONS SDL_SHARED=OFF SDL_STATIC=ON SDL_TEST_LIBRARY=OFF SDL_EXAMPLES=OFF SDL_TESTS=OFF
           SDL_INSTALL=OFF)
+if(NOT USE_SYSTEM_SDL3 AND NOT VCPKG_TOOLCHAIN)
+  # Older Wayland scanners reject documentation attributes in SDL's pinned protocol XML.
+  FetchContent_GetProperties(SDL3 SOURCE_DIR _sdl_source)
+  foreach(_protocol IN ITEMS color-management-v1 wayland)
+    set(_xml_path "${_sdl_source}/wayland-protocols/${_protocol}.xml")
+    file(READ "${_xml_path}" _xml)
+    string(REGEX REPLACE " (deprecated-since=\"[0-9]+\"|frozen=\"true\")" "" _valid_xml
+                         "${_xml}")
+    if(NOT _valid_xml STREQUAL _xml)
+      file(WRITE "${_xml_path}" "${_valid_xml}")
+    endif()
+  endforeach()
+endif()
 coastline_dependency(
   ARGPARSE
   PACKAGE argparse

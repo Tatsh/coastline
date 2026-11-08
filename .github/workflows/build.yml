@@ -136,7 +136,9 @@ jobs:
             -DCMAKE_TOOLCHAIN_FILE=cmake/n64-ido-toolchain.cmake \
             -DCMAKE_BUILD_TYPE=Release -DTGR_PLATFORM=n64 -DTGR_REGION="$TGR_REGION" \
             -DTGR_ENABLE_PATCHES=OFF -DIDO_ROOT="$IDO_ROOT"
-          cmake --build ".wiswa-ci/build/ido-$TGR_REGION" --target rom --parallel 4
+          cmake --build ".wiswa-ci/build/ido-$TGR_REGION" --target rom --parallel 4 2>&1 \
+            | sed -e '/^uopt: Warning: ProcessRacingScreen: this procedure not optimized because it$/d' \
+                  -e '/^cc: Warning: -mips3 should not be used for ucode 32-bit compiles$/d'
         env:
           IDO_ROOT: '${{ github.workspace }}/.wiswa-ci/ido/5.3'
           N64_INST: '/opt/libdragon'
@@ -390,6 +392,8 @@ jobs:
           name: 'coastline-appimage-${{ matrix.platform.architecture }}-Release'
           path: 'Coastline-${{ needs.version.outputs.version }}-${{ matrix.platform.slug }}-Release.AppImage'
   flatpak:
+    env:
+      NODE_OPTIONS: '--no-deprecation'
     permissions:
       attestations: write
       contents: read
@@ -426,6 +430,9 @@ jobs:
         with:
           subject-path: 'sh.tat.coastline-${{ needs.version.outputs.version }}-${{ matrix.arch }}.flatpak'
   snap:
+    env:
+      NODE_OPTIONS: '--no-deprecation'
+      PYTHONWARNINGS: 'ignore:W:Warning:apt.package'
     permissions:
       attestations: write
       contents: read
@@ -490,7 +497,6 @@ jobs:
             cmake:p
             ninja:p
             toolchain:p
-          update: true
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:
           persist-credentials: false
@@ -559,7 +565,6 @@ jobs:
             ninja:p
             toolchain:p
           suppress-deprecation-warnings: 'msystem-mingw32'
-          update: true
       - uses: 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
         with:
           persist-credentials: false

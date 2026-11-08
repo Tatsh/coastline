@@ -1057,6 +1057,7 @@ pycache
 pyinstaller
 pylock
 pyproject
+pythonwarnings
 qbasic
 qnjbdpkwzh
 qualityoflife
@@ -1462,6 +1463,7 @@ unmuting
 unrecovered
 unrotated
 unscii
+uopt
 userabort
 utgr
 uvec
