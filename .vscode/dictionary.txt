@@ -993,6 +993,7 @@ pathlib
 pcmstream
 pcmwaveformat
 penm
+peripheralinput
 persp
 perspnorm
 pfil

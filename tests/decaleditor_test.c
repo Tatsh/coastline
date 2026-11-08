@@ -166,7 +166,7 @@ void ProcessTextInputKeyboard(void) {
 static PlayerInputState *input = &g_aPlayerInputState[1];
 static OSContPad pad;
 
-s32 IsPaintKeyboardShiftDown(void) {
+s32 IsRandnetShiftDown(void) {
     return FALSE;
 }
 

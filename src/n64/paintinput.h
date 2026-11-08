@@ -10,14 +10,4 @@
  */
 void UpdatePaintPeripheralInput(PlayerInputState *state);
 
-/**
- * Merge the Randnet keyboard's default PC controls into menus and races.
- *
- * @param state The first player's input.
- */
-void UpdateGameKeyboardInput(PlayerInputState *state);
-
-/** Whether either Shift key of the Randnet keyboard is down. */
-s32 IsPaintKeyboardShiftDown(void);
-
 #endif /* COASTLINE_N64_PAINTINPUT_H */

@@ -7,6 +7,7 @@
 #include "n64/decaleditor.h"
 #include "n64/libultra/io/controller.h"
 #include "n64/paintinput.h"
+#include "n64/peripheralinput.h"
 
 OSContStatus g_aContStatus[MAXCONTROLLERS];
 OSContPad g_aContPadData[MAXCONTROLLERS];
@@ -164,10 +165,10 @@ int main(void) {
     keyboardStatus = 0;
     keyboardKey = 0x0E01;
     UpdatePaintPeripheralInput(&input);
-    assert(IsPaintKeyboardShiftDown());
+    assert(IsRandnetShiftDown());
     keyboardKey = 0;
     UpdatePaintPeripheralInput(&input);
-    assert(!IsPaintKeyboardShiftDown());
+    assert(!IsRandnetShiftDown());
 
     g_bPaintTool = PAINT_TOOL_BRUSH;
     g_bDecalDragActive = 0;

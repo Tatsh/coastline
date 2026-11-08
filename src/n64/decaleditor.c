@@ -8,7 +8,7 @@
 #include "common/input.h"
 #ifdef ENABLE_PATCHES
 #include "common/paintshape.h"
-#include "n64/paintinput.h"
+#include "n64/peripheralinput.h"
 #endif
 #include "common/render.h"
 #include "common/system.h"
@@ -49,7 +49,7 @@
 #ifdef ENABLE_PATCHES
 static s32 PaintShapeModifierDown(void) {
     return (PaintShopInput()->pad != NULL && (PaintShopInput()->pad->button & CONT_G)) ||
-           IsPaintKeyboardShiftDown();
+           IsRandnetShiftDown();
 }
 #endif
 

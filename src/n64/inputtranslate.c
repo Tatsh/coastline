@@ -2,6 +2,9 @@
 #include "common/pause.h"
 #include "common/race.h"
 #include "common/screen.h"
+#ifdef ENABLE_PATCHES
+#include "n64/peripheralinput.h"
+#endif
 
 void TranslateControllerInput(PlayerInputState *state) {
     unsigned int buttons;

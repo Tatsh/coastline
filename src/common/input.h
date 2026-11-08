@@ -50,11 +50,6 @@ extern "C" {
 /** The actions a recording keeps, with the steering. */
 #define INPUT_RECORDED_ACTIONS 0x003F0000
 
-#if TGR_PLATFORM == TGR_PLATFORM_N64 && defined(ENABLE_PATCHES)
-/** Merge N64 keyboard and mouse input into the active player's input. */
-void UpdateN64PeripheralInputForPlayer(s32 player);
-#endif
-
 /** The button layouts of the controller screen. */
 #define CONTROLLER_LAYOUTS 5
 
