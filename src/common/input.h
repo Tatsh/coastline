@@ -51,8 +51,8 @@ extern "C" {
 #define INPUT_RECORDED_ACTIONS 0x003F0000
 
 #if TGR_PLATFORM == TGR_PLATFORM_N64 && defined(ENABLE_PATCHES)
-/** Merge paint peripherals into the active paint shop player's input. */
-void UpdatePaintPeripheralInputForPlayer(s32 player);
+/** Merge N64 keyboard and mouse input into the active player's input. */
+void UpdateN64PeripheralInputForPlayer(s32 player);
 #endif
 
 /** The button layouts of the controller screen. */

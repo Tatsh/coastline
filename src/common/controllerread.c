@@ -75,9 +75,6 @@ void UpdateControllerState(void) {
         g_aPlayerInputState[i].ConsumeInputFlags();
 #else
         TranslateControllerInput(&g_aPlayerInputState[i]);
-#if TGR_PLATFORM == TGR_PLATFORM_N64 && defined(ENABLE_PATCHES)
-        UpdatePaintPeripheralInputForPlayer(i);
-#endif
         ConsumeInputFlags(&g_aPlayerInputState[i]);
 #endif
     }

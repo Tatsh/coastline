@@ -204,6 +204,9 @@ void TranslateControllerInput(PlayerInputState *state) {
             break;
         }
     }
+#ifdef ENABLE_PATCHES
+    UpdateN64PeripheralInputForPlayer(state->playerIndex);
+#endif
     if (state->recordBuffers[0] != 0 || state->recordBuffers[1] != 0) {
         for (recorderIndex = 0; recorderIndex < 2; recorderIndex++) {
             if (state->recordBuffers[recorderIndex] != 0 &&

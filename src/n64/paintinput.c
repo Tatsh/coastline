@@ -3,6 +3,7 @@
 #include <PR/os.h>
 
 #include "common/input.h"
+#include "common/race.h"
 #include "common/rumble.h"
 #include "common/screen.h"
 #include "common/system.h"
@@ -16,6 +17,20 @@
 #define RANDNET_POWER_LED 0x04
 #define RANDNET_KEY_CONTROL 0x1107
 #define RANDNET_KEY_Z 0x0D08
+#define RANDNET_KEY_LEFT 0x0205
+#define RANDNET_KEY_RIGHT 0x0405
+#define RANDNET_KEY_UP 0x0204
+#define RANDNET_KEY_DOWN 0x0305
+#define RANDNET_KEY_ENTER 0x0D04
+#define RANDNET_KEY_ESCAPE 0x0A08
+#define RANDNET_KEY_SPACE 0x0602
+#define RANDNET_KEY_A 0x0D07
+#define RANDNET_KEY_LEFT_SHIFT 0x0E01
+#define RANDNET_KEY_RIGHT_SHIFT 0x0E06
+#define RANDNET_KEY_F1 0x0B01
+#define RANDNET_KEY_F2 0x0A01
+#define RANDNET_KEY_F3 0x0B08
+#define RANDNET_KEY_F4 0x0A07
 #define PAINT_CURSOR_MIN_X 0x1F
 #define PAINT_CURSOR_MAX_X 0x261
 #define PAINT_CURSOR_MIN_Y 0x16
@@ -40,23 +55,96 @@ static const KeyboardGlyph s_keyboardGlyphs[] = {
 };
 
 /* Nonzero initial values keep the patch's key history out of the ROM's BSS. */
-static u16 s_previousKeys[3] = {0xFFFF, 0xFFFF, 0xFFFF};
-static u8 s_previousPort = 0xFF;
+static u16 s_previousKeys[MAXCONTROLLERS][3] = {
+    {0xFFFF, 0xFFFF, 0xFFFF},
+    {0xFFFF, 0xFFFF, 0xFFFF},
+    {0xFFFF, 0xFFFF, 0xFFFF},
+    {0xFFFF, 0xFFFF, 0xFFFF},
+};
+static s32 s_statusPollFrames = 1;
 
 s32 IsPaintKeyboardShiftDown(void) {
+    s32 port;
     s32 i;
 
-    for (i = 0; i < 3; i++) {
-        if (s_previousKeys[i] == 0x0E01 || s_previousKeys[i] == 0x0E06) {
-            return TRUE;
+    for (port = 0; port < MAXCONTROLLERS; port++) {
+        for (i = 0; i < 3; i++) {
+            if (s_previousKeys[port][i] == RANDNET_KEY_LEFT_SHIFT ||
+                s_previousKeys[port][i] == RANDNET_KEY_RIGHT_SHIFT) {
+                return TRUE;
+            }
         }
     }
     return FALSE;
 }
 
-void UpdatePaintPeripheralInputForPlayer(s32 player) {
-    if (player == g_bPaintShopPlayer && IsCurrentScreen(ProcessPaintShopScreen)) {
-        UpdatePaintPeripheralInput(&g_aPlayerInputState[player]);
+static void RefreshPeripheralStatus(void) {
+    u64 packet[8];
+    u8 *bytes = (u8 *)packet;
+    s32 port;
+    s32 i;
+
+    for (i = 0; i < 8; i++) {
+        packet[i] = 0;
+    }
+    packet[7] = 1;
+    for (port = 0; port < MAXCONTROLLERS; port++) {
+        i = port * 8;
+        bytes[i] = CONT_CMD_NOP;
+        bytes[i + 1] = CONT_CMD_REQUEST_STATUS_TX;
+        bytes[i + 2] = CONT_CMD_REQUEST_STATUS_RX;
+        bytes[i + 3] = CONT_CMD_REQUEST_STATUS;
+        bytes[i + 4] = CONT_CMD_NOP;
+        bytes[i + 5] = CONT_CMD_NOP;
+        bytes[i + 6] = CONT_CMD_NOP;
+        bytes[i + 7] = CONT_CMD_NOP;
+    }
+    bytes[MAXCONTROLLERS * 8] = CONT_CMD_END;
+
+    g_wSerialInterfaceIdle = FALSE;
+    __osSiGetAccess();
+    if (__osSiRawStartDma(OS_WRITE, packet) == 0) {
+        osRecvMesg(&g_SiMesgQueue, NULL, OS_MESG_BLOCK);
+        if (__osSiRawStartDma(OS_READ, packet) == 0) {
+            osRecvMesg(&g_SiMesgQueue, NULL, OS_MESG_BLOCK);
+            for (port = 0; port < MAXCONTROLLERS; port++) {
+                i = port * 8;
+                g_aContStatus[port].CONT_ERRNO = (bytes[i + 2] & 0xC0) >> 4;
+                if (g_aContStatus[port].CONT_ERRNO == 0) {
+                    g_aContStatus[port].type = ((u16)bytes[i + 5] << 8) | bytes[i + 4];
+                    g_aContStatus[port].status = bytes[i + 6];
+                } else {
+                    g_aContStatus[port].type = 0;
+                }
+            }
+        }
+    }
+    __osContLastCmd = CONT_CMD_NOP;
+    __osSiRelAccess();
+    g_wSerialInterfaceIdle = TRUE;
+}
+
+void UpdateN64PeripheralInputForPlayer(s32 player) {
+    if (player == 0 && --s_statusPollFrames <= 0) {
+        RefreshPeripheralStatus();
+        s_statusPollFrames = 16;
+    }
+    if (IsCurrentScreen(ProcessPaintShopScreen)) {
+        if (player == g_bPaintShopPlayer) {
+            UpdatePaintPeripheralInput(&g_aPlayerInputState[player]);
+        }
+    } else {
+        if (g_aContStatus[player].CONT_ERRNO == 0 && g_aContStatus[player].type == CONT_RELATIVE) {
+            g_aPlayerInputState[player].buttons = 0;
+            g_aPlayerInputState[player].steeringInput = 0;
+            g_aPlayerInputState[player].stickX = 0.0f;
+            g_aPlayerInputState[player].stickY = 0.0f;
+            g_aPlayerInputState[player].steering = 0.0f;
+            g_aPlayerInputState[player].controllerMissing = TRUE;
+        }
+        if (player == 0) {
+            UpdateGameKeyboardInput(&g_aPlayerInputState[player]);
+        }
     }
 }
 
@@ -107,15 +195,115 @@ static s32 ReadKeyboard(s32 port, u16 keys[3]) {
     return ok;
 }
 
-static s32 KeyWasDown(u16 code) {
+static s32 KeyWasDown(s32 port, u16 code) {
     s32 i;
 
     for (i = 0; i < 3; i++) {
-        if (s_previousKeys[i] == code) {
+        if (s_previousKeys[port][i] == code) {
             return TRUE;
         }
     }
     return FALSE;
+}
+
+static void ClearPreviousKeys(s32 port) {
+    s32 i;
+
+    for (i = 0; i < 3; i++) {
+        s_previousKeys[port][i] = 0xFFFF;
+    }
+}
+
+static s32 KeyboardHasKey(const u16 keys[3], u16 code) {
+    return keys[0] == code || keys[1] == code || keys[2] == code;
+}
+
+void UpdateGameKeyboardInput(PlayerInputState *state) {
+    u16 keys[3];
+    s32 port;
+    s32 i;
+    s32 leftDown = FALSE;
+    s32 rightDown = FALSE;
+    s32 keyboardFound = FALSE;
+
+    for (port = 0; port < MAXCONTROLLERS; port++) {
+        if (g_aContStatus[port].CONT_ERRNO != 0 ||
+            g_aContStatus[port].type != RANDNET_KEYBOARD_TYPE || !ReadKeyboard(port, keys)) {
+            ClearPreviousKeys(port);
+            continue;
+        }
+        keyboardFound = TRUE;
+        leftDown |= KeyboardHasKey(keys, RANDNET_KEY_LEFT);
+        rightDown |= KeyboardHasKey(keys, RANDNET_KEY_RIGHT);
+        if (KeyboardHasKey(keys, RANDNET_KEY_LEFT)) {
+            state->buttons |= INPUT_LEFT;
+        }
+        if (KeyboardHasKey(keys, RANDNET_KEY_RIGHT)) {
+            state->buttons |= INPUT_RIGHT;
+        }
+        if (KeyboardHasKey(keys, RANDNET_KEY_UP)) {
+            state->buttons |= INPUT_UP;
+        }
+        if (KeyboardHasKey(keys, RANDNET_KEY_DOWN)) {
+            state->buttons |= INPUT_DOWN;
+        }
+        if (IsCurrentScreen(ProcessRacingScreen)) {
+            if (KeyboardHasKey(keys, RANDNET_KEY_ENTER) ||
+                KeyboardHasKey(keys, RANDNET_KEY_ESCAPE)) {
+                state->buttons |= INPUT_START;
+            }
+            if (KeyboardHasKey(keys, RANDNET_KEY_UP)) {
+                state->buttons |= INPUT_ACCELERATE;
+            }
+            if (KeyboardHasKey(keys, RANDNET_KEY_DOWN)) {
+                state->buttons |= INPUT_ACCELERATE | INPUT_REVERSE;
+            }
+            if (KeyboardHasKey(keys, RANDNET_KEY_CONTROL)) {
+                state->buttons |= INPUT_BRAKE;
+            }
+            if (KeyboardHasKey(keys, RANDNET_KEY_LEFT_SHIFT) ||
+                KeyboardHasKey(keys, RANDNET_KEY_RIGHT_SHIFT)) {
+                state->buttons |= INPUT_EBRAKE;
+            }
+            if (KeyboardHasKey(keys, RANDNET_KEY_A)) {
+                state->buttons |= INPUT_GEAR_DOWN;
+            }
+            if (KeyboardHasKey(keys, RANDNET_KEY_Z)) {
+                state->buttons |= INPUT_GEAR_UP;
+            }
+            if (KeyboardHasKey(keys, RANDNET_KEY_F1) && !KeyWasDown(port, RANDNET_KEY_F1)) {
+                state->buttons |= INPUT_VIEW_COCKPIT;
+            }
+            if (KeyboardHasKey(keys, RANDNET_KEY_F2) && !KeyWasDown(port, RANDNET_KEY_F2)) {
+                state->buttons |= INPUT_VIEW_TRACKSIDE;
+            }
+            if (KeyboardHasKey(keys, RANDNET_KEY_F3) && !KeyWasDown(port, RANDNET_KEY_F3)) {
+                state->buttons |= INPUT_VIEW_CHASE;
+            }
+            if (KeyboardHasKey(keys, RANDNET_KEY_F4) && !KeyWasDown(port, RANDNET_KEY_F4)) {
+                state->buttons |= INPUT_VIEW_BUMPER;
+            }
+        } else {
+            if (KeyboardHasKey(keys, RANDNET_KEY_ENTER)) {
+                state->buttons |= INPUT_A;
+            }
+            if (KeyboardHasKey(keys, RANDNET_KEY_ESCAPE)) {
+                state->buttons |= INPUT_B;
+            }
+            if (KeyboardHasKey(keys, RANDNET_KEY_SPACE)) {
+                state->buttons |= INPUT_START;
+            }
+        }
+        for (i = 0; i < 3; i++) {
+            s_previousKeys[port][i] = keys[i];
+        }
+    }
+    if (keyboardFound) {
+        state->controllerMissing = FALSE;
+    }
+    if (IsCurrentScreen(ProcessRacingScreen) && (leftDown || rightDown)) {
+        state->steeringInput = leftDown == rightDown ? 0 : leftDown ? -80 : 80;
+    }
 }
 
 static s32 KeyboardGlyphIndex(u16 code) {
@@ -197,15 +385,12 @@ static void ApplyKeyboardKey(PlayerInputState *state, u16 code, s32 fresh) {
 
 void UpdatePaintPeripheralInput(PlayerInputState *state) {
     s32 port;
-    s32 keyboardPort = -1;
     u16 keys[3];
     s32 i;
-    s32 controlDown = FALSE;
-    s32 shiftDown = FALSE;
-    s32 zDown = FALSE;
 
     for (port = 0; port < MAXCONTROLLERS; port++) {
         if (g_aContStatus[port].CONT_ERRNO != 0) {
+            ClearPreviousKeys(port);
             continue;
         }
         if (g_aContStatus[port].type == CONT_RELATIVE && g_aContPadData[port].CONT_ERRNO == 0) {
@@ -225,37 +410,33 @@ void UpdatePaintPeripheralInput(PlayerInputState *state) {
                 state->stickX = 0.0f;
                 state->stickY = 0.0f;
             }
-        } else if (g_aContStatus[port].type == RANDNET_KEYBOARD_TYPE) {
-            keyboardPort = port;
         }
-    }
-    if (keyboardPort < 0 || !ReadKeyboard(keyboardPort, keys)) {
-        s_previousPort = 0xFF;
+        if (g_aContStatus[port].type != RANDNET_KEYBOARD_TYPE || !ReadKeyboard(port, keys)) {
+            ClearPreviousKeys(port);
+            continue;
+        }
+        {
+            s32 controlDown = FALSE;
+            s32 shiftDown = FALSE;
+            s32 zDown = FALSE;
+
+            for (i = 0; i < 3; i++) {
+                controlDown |= keys[i] == RANDNET_KEY_CONTROL;
+                shiftDown |=
+                    keys[i] == RANDNET_KEY_LEFT_SHIFT || keys[i] == RANDNET_KEY_RIGHT_SHIFT;
+                zDown |= keys[i] == RANDNET_KEY_Z;
+            }
+            for (i = 0; i < 3; i++) {
+                if (keys[i] != 0 && !(controlDown && keys[i] == RANDNET_KEY_Z)) {
+                    ApplyKeyboardKey(state, keys[i], !KeyWasDown(port, keys[i]));
+                }
+            }
+            if (controlDown && zDown && !KeyWasDown(port, RANDNET_KEY_Z)) {
+                state->buttons |= shiftDown ? INPUT_L | INPUT_R : INPUT_L;
+            }
+        }
         for (i = 0; i < 3; i++) {
-            s_previousKeys[i] = 0xFFFF;
+            s_previousKeys[port][i] = keys[i];
         }
-        return;
-    }
-    if (s_previousPort != keyboardPort) {
-        for (i = 0; i < 3; i++) {
-            s_previousKeys[i] = 0xFFFF;
-        }
-        s_previousPort = keyboardPort;
-    }
-    for (i = 0; i < 3; i++) {
-        controlDown |= keys[i] == RANDNET_KEY_CONTROL;
-        shiftDown |= keys[i] == 0x0E01 || keys[i] == 0x0E06;
-        zDown |= keys[i] == RANDNET_KEY_Z;
-    }
-    for (i = 0; i < 3; i++) {
-        if (keys[i] != 0 && !(controlDown && keys[i] == RANDNET_KEY_Z)) {
-            ApplyKeyboardKey(state, keys[i], !KeyWasDown(keys[i]));
-        }
-    }
-    if (controlDown && zDown && !KeyWasDown(RANDNET_KEY_Z)) {
-        state->buttons |= shiftDown ? INPUT_L | INPUT_R : INPUT_L;
-    }
-    for (i = 0; i < 3; i++) {
-        s_previousKeys[i] = keys[i];
     }
 }

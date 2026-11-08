@@ -122,6 +122,7 @@ coastline_add_test(options "${_src}/common/volumecontrols.c"
                    "${_src}/common/volumecontrols-sfx.c" "${_src}/n64/options-volume.c")
 coastline_add_test(paintshop "${_src}/n64/paintshop.c")
 coastline_add_test(paintinput "${_src}/n64/paintinput.c")
+target_compile_definitions(paintinput_test PRIVATE ENABLE_PATCHES=1)
 coastline_add_test(paintundo "${_src}/n64/paintundo.c")
 target_compile_definitions(paintundo_test PRIVATE ENABLE_PATCHES=1)
 coastline_add_test(paintshape "${_src}/common/paintshape.c")
