@@ -309,11 +309,9 @@
     ],
     ReflowComments: true,
   },
-  // One configure and build preset per variant, the all preset that builds every variant as a
-  // superbuild, and a workflow for each that configures and builds in one command. The vcpkg
-  // preset is retained for inheritance and hidden.
-  local variants = ['n64-' + region for region in ['us', 'jp', 'eu', 'asia']] +
-                   ['win-' + renderer for renderer in ['d3d', 'glide']],
+  // The public presets follow the game names. The vcpkg preset remains hidden for inheritance.
+  local variants = ['boss-rally', 'coastline'] +
+                   ['tgr-' + region for region in ['us', 'jp', 'eu', 'asia']],
   cmake_presets+: {
     version: 6,
     configurePresets: [super.configurePresets[0] { hidden: true }] + [
@@ -335,7 +333,7 @@
       },
       {
         cacheVariables: {
-          CMAKE_BUILD_TYPE: 'Debug',
+          CMAKE_BUILD_TYPE: 'Release',
           CMAKE_TOOLCHAIN_FILE: '${sourceDir}/cmake/win-toolchain.cmake',
           TGR_PLATFORM: 'win',
         },
@@ -343,16 +341,7 @@
         inherits: 'base',
         name: 'win',
       },
-    ] + [
-      { cacheVariables: { TGR_REGION: region }, inherits: 'n64', name: 'n64-' + region }
-      for region in ['us', 'jp', 'eu', 'asia']
-    ] + [
-      { cacheVariables: { TGR_RENDERER: renderer }, inherits: 'win', name: 'win-' + renderer }
-      for renderer in ['d3d', 'glide']
-    ] + [
-      { cacheVariables: { TGR_VARIANTS: 'all' }, inherits: 'base', name: 'all' },
-      // The tests build for the host with the host compiler.
-      { cacheVariables: { TGR_TESTS: 'ON' }, inherits: 'base', name: 'tests' },
+      { cacheVariables: { TGR_VARIANTS: 'boss-rally' }, inherits: 'win', name: 'boss-rally' },
       // The stand-alone SDL game builds for the host, with its libraries from vcpkg.
       {
         cacheVariables: {
@@ -363,31 +352,22 @@
           VCPKG_MANIFEST_FEATURES: 'sdl',
         },
         inherits: 'base',
-        name: 'sdl',
+        name: 'coastline',
       },
+    ] + [
+      { cacheVariables: { TGR_REGION: region }, inherits: 'n64', name: 'tgr-' + region }
+      for region in ['us', 'jp', 'eu', 'asia']
     ],
     buildPresets: [
       { configurePreset: preset, name: preset }
-      for preset in variants + ['all', 'tests', 'sdl']
-    ],
-    testPresets: [
-      { configurePreset: 'tests', name: 'tests', output: { outputOnFailure: true } },
+      for preset in variants
     ],
     workflowPresets: [
       {
         name: preset,
         steps: [{ name: preset, type: 'configure' }, { name: preset, type: 'build' }],
       }
-      for preset in variants + ['all', 'sdl']
-    ] + [
-      {
-        name: 'tests',
-        steps: [
-          { name: 'tests', type: 'configure' },
-          { name: 'tests', type: 'build' },
-          { name: 'tests', type: 'test' },
-        ],
-      },
+      for preset in variants
     ],
   },
   // ROM images used for comparison.
@@ -521,7 +501,8 @@
           cStandard: 'c23',
           compilerArgs: ['-m32'],
           compilerPath: '/usr/lib/mingw64-toolchain/bin/x86_64-w64-mingw32-g++',
-          compileCommands: '${workspaceFolder}/build/win-' + renderer + '/compile_commands.json',
+          compileCommands: '${workspaceFolder}/build/boss-rally/win-' + renderer +
+                           '/compile_commands.json',
           configurationProvider: 'ms-vscode.cmake-tools',
           cppStandard: 'c++23',
           defines: [

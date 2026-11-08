@@ -35,7 +35,7 @@
     },
     {
       "cStandard": "c23",
-      "compileCommands": "${workspaceFolder}/build/win-d3d/compile_commands.json",
+      "compileCommands": "${workspaceFolder}/build/boss-rally/win-d3d/compile_commands.json",
       "compilerArgs": ["-m32"],
       "compilerPath": "/usr/lib/mingw64-toolchain/bin/x86_64-w64-mingw32-g++",
       "configurationProvider": "ms-vscode.cmake-tools",
@@ -63,7 +63,7 @@
     },
     {
       "cStandard": "c23",
-      "compileCommands": "${workspaceFolder}/build/win-glide/compile_commands.json",
+      "compileCommands": "${workspaceFolder}/build/boss-rally/win-glide/compile_commands.json",
       "compilerArgs": ["-m32"],
       "compilerPath": "/usr/lib/mingw64-toolchain/bin/x86_64-w64-mingw32-g++",
       "configurationProvider": "ms-vscode.cmake-tools",
