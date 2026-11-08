@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.25)
 project(coastline VERSION 0.0.0 LANGUAGES C ASM)
 
+if(POLICY CMP0207)
+  cmake_policy(SET CMP0207 NEW)
+endif()
+
 option(BUILD_DOCS "Build documentation alongside the sources." OFF)
 option(BUILD_DOCS_ONLY "Build documentation and nothing else." OFF)
 option(INSTALL_DOCS "Install documentation." OFF)
