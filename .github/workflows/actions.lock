@@ -11,7 +11,6 @@ workflows:
         - 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
         - 'flatpak/flatpak-github-actions@79327416609af08178ad73b352877e51450790b3'
         - 'msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e'
-        - 'snapcore/action-build@3bdaa03e1ba6bf59a65f84a751d943d549a54e79'
     '.github/workflows/clang-format.yml':
         - 'actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1'
     '.github/workflows/codeql.yml':
@@ -99,8 +98,3 @@ dependencies:
         commit: 'sha1-ec48f7c5447b3140e2b088413ae3a55687bccb6e'
         owner_id: 6759993
         repo_id: 213203501
-    'snapcore/action-build@3bdaa03e1ba6bf59a65f84a751d943d549a54e79':
-        ref: 'v1.3.0'
-        commit: 'sha1-3bdaa03e1ba6bf59a65f84a751d943d549a54e79'
-        owner_id: 19532717
-        repo_id: 861844373

@@ -430,9 +430,6 @@ jobs:
         with:
           subject-path: 'sh.tat.coastline-${{ needs.version.outputs.version }}-${{ matrix.arch }}.flatpak'
   snap:
-    env:
-      NODE_OPTIONS: '--no-deprecation'
-      PYTHONWARNINGS: 'ignore:W:Warning:apt.package'
     permissions:
       attestations: write
       contents: read
@@ -454,16 +451,45 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - id: 'snap'
-        uses: 'snapcore/action-build@3bdaa03e1ba6bf59a65f84a751d943d549a54e79'
+      - name: 'Build the snap'
+        run: |
+          if [[ ! -x /usr/bin/snap ]]; then
+            sudo apt-get update -q
+            sudo apt-get install -qy snapd
+          fi
+          if [[ "$(stat -c '%u:%g' /)" != '0:0' ]]; then
+            sudo chown root:root /
+          fi
+          sudo groupadd --force --system lxd
+          sudo usermod --append --groups lxd "$USER"
+          if [[ -x /snap/bin/lxd ]]; then
+            sudo snap refresh lxd || true
+          else
+            sudo snap install lxd
+          fi
+          sudo lxd init --auto
+          sudo iptables -P FORWARD ACCEPT
+          if [[ -x /snap/bin/snapcraft ]]; then
+            sudo snap refresh --channel stable --classic snapcraft
+          else
+            sudo snap install --channel stable --classic snapcraft
+          fi
+          sudo -u "$USER" -E snapcraft
+        env:
+          SNAPCRAFT_BUILD_ENVIRONMENT: 'lxd'
+          SNAPCRAFT_BUILD_INFO: '1'
+          SNAPCRAFT_IMAGE_INFO: >-
+            {"build_url":"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"}
       - name: 'Version the snap filename'
         run: |
+          shopt -s nullglob
+          snaps=(*.snap)
+          [[ ${#snaps[@]} -eq 1 ]]
           name="coastline_${VERSION}_${ARCH}.snap"
-          [[ "$SNAP_FILE" == "$name" ]] || mv "$SNAP_FILE" "$name"
+          [[ "${snaps[0]}" == "$name" ]] || mv -- "${snaps[0]}" "$name"
           echo "SNAP_FILE=$name" >> "$GITHUB_ENV"
         env:
           ARCH: '${{ matrix.name }}'
-          SNAP_FILE: '${{ steps.snap.outputs.snap }}'
           VERSION: '${{ needs.version.outputs.version }}'
       - name: 'Attest the snap'
         if: github.event_name != 'pull_request'

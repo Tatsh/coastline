@@ -302,7 +302,6 @@ devmgr
 dexpansion
 dfiles
 dfrac
-dglide
 dialog
 dialogs
 dicondition
@@ -947,6 +946,7 @@ nsis
 ntdll
 ntrj
 ntrp
+nullglob
 numericdata
 numericguards
 numl
@@ -1063,7 +1063,6 @@ pycache
 pyinstaller
 pylock
 pyproject
-pythonwarnings
 qbasic
 qnjbdpkwzh
 qualityoflife
@@ -1243,6 +1242,7 @@ shellformat
 shgfp
 shiftl
 shiftt
+shopt
 showmaximized
 shutil
 sideb
@@ -1273,7 +1273,6 @@ sltu
 smokepos
 smoothstep
 smprograms
-snapcore
 snapcraft
 snapmodule
 snapshotfields
@@ -1472,6 +1471,7 @@ unrotated
 unscii
 uopt
 userabort
+usermod
 utgr
 uvec
 vars
