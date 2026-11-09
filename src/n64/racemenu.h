@@ -167,6 +167,7 @@ extern s32 g_dwMenuTitleImageHeight;
  */
 extern f32 g_fScreenIdleTimeout;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80316240
  * @ghidraAddress Asia: 0x80315CF0
@@ -174,6 +175,7 @@ extern f32 g_fScreenIdleTimeout;
  * @ghidraAddress JPN: 0x80316b50
  */
 extern f32 g_fScreenIdleTime;
+/** @endcond */
 
 /**
  * Whether ProcessScreenState() has set up its screen.
@@ -236,6 +238,7 @@ extern s32 g_nScreenPendingSelection;
  */
 extern f32 g_fScreenSlideOffset;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80316228
  * @ghidraAddress Asia: 0x80315CD8
@@ -243,6 +246,7 @@ extern f32 g_fScreenSlideOffset;
  * @ghidraAddress JPN: 0x80316b38
  */
 extern f32 g_fScreenRotationAngle;
+/** @endcond */
 
 /**
  * Whether the screen fades out because an item was chosen.
@@ -264,6 +268,7 @@ extern s32 g_bScreenItemChosen;
  */
 extern s8 *g_pScreenScrollSoundBuf;
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80316234
  * @ghidraAddress Asia: 0x80315CE4
@@ -287,6 +292,7 @@ extern s8 *g_pScreenSelectSoundBuf;
  * @ghidraAddress JPN: 0x80316b4c
  */
 extern u32 g_dwScreenSelectSoundSize;
+/** @endcond */
 
 /**
  * The arrows of the buttons at the bottom of a screen.
@@ -359,6 +365,7 @@ extern Gfx g_aMenuSpotlightDisplayList[];
  */
 extern Gfx g_aMenuChoiceMarkerDisplayList[];
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x803161e0
  * @ghidraAddress Asia: 0x80315C90
@@ -366,6 +373,7 @@ extern Gfx g_aMenuChoiceMarkerDisplayList[];
  * @ghidraAddress JPN: 0x80316af0
  */
 extern Mtx g_MenuChoiceMarkerMtx;
+/** @endcond */
 
 /**
  * The number of items of the track menu.
@@ -447,6 +455,7 @@ extern s32 g_dwContinueFromResults;
  */
 extern char g_szTrackMenuTextBuf[];
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80315ee8
  * @ghidraAddress Asia: 0x80315998
@@ -454,6 +463,7 @@ extern char g_szTrackMenuTextBuf[];
  * @ghidraAddress JPN: 0x803167f8
  */
 extern char g_szTrackSelectPointsTextBuf[];
+/** @endcond */
 
 /**
  * The loads of the models of the cars the screens show: a slot for each player, and another for
