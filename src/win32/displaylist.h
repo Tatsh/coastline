@@ -490,12 +490,16 @@ extern "C" {
 #endif
 
 /**
+ * Convert the packed indices of a single-triangle command from doubled byte offsets to vertices.
+ *
  * @ghidraAddress BRD3D: 0x1002c190
  * @ghidraAddress BRGlide: 0x10019250
  */
 void HalveGbiTriangleVertexIndices(GbiCommand *pCommand);
 
 /**
+ * Convert both packed triangle index triples from doubled byte offsets to vertices.
+ *
  * @ghidraAddress BRD3D: 0x1002c1b0
  * @ghidraAddress BRGlide: 0x10019270
  */
@@ -784,6 +788,9 @@ extern float g_fDepthOffset;
 #endif /* TGR_BRD3D */
 
 /**
+ * Mark every homogeneous clip plane outside @p pVertex, including unordered coordinates.
+ *
+ * @return A bit mask of the failed plane tests, or zero for a vertex inside the view.
  * @ghidraAddress BRD3D: 0x10022dc0
  * @ghidraAddress BRGlide: 0x10022120
  */
@@ -844,36 +851,50 @@ struct GbiClipPolygon {
 };
 
 /**
+ * Clip a polygon to vertices with nonnegative homogeneous W.
+ *
  * @ghidraAddress BRD3D: 0x1001d810
  * @ghidraAddress BRGlide: 0x1001f0d0
  */
 void ClipPolygonPositiveWPlane(GbiClipPolygon *pPolygon);
 /**
+ * Clip a polygon against the left plane, where X is at least negative W.
+ *
  * @ghidraAddress BRD3D: 0x1001d9f0
  * @ghidraAddress BRGlide: 0x1001f2b0
  */
 void ClipPolygonLeftPlane(GbiClipPolygon *pPolygon);
 /**
+ * Clip a polygon against the right plane, where X is at most W.
+ *
  * @ghidraAddress BRD3D: 0x1001db30
  * @ghidraAddress BRGlide: 0x1001f3f0
  */
 void ClipPolygonRightPlane(GbiClipPolygon *pPolygon);
 /**
+ * Clip a polygon against the bottom plane, where Y is at least negative W.
+ *
  * @ghidraAddress BRD3D: 0x1001dc70
  * @ghidraAddress BRGlide: 0x1001f530
  */
 void ClipPolygonBottomPlane(GbiClipPolygon *pPolygon);
 /**
+ * Clip a polygon against the top plane, where Y is at most W.
+ *
  * @ghidraAddress BRD3D: 0x1001ddb0
  * @ghidraAddress BRGlide: 0x1001f670
  */
 void ClipPolygonTopPlane(GbiClipPolygon *pPolygon);
 /**
+ * Clip a polygon against the near plane, where Z is at least negative W.
+ *
  * @ghidraAddress BRD3D: 0x1001def0
  * @ghidraAddress BRGlide: 0x1001f7b0
  */
 void ClipPolygonNearZPlane(GbiClipPolygon *pPolygon);
 /**
+ * Clip a polygon against the far plane, where Z is at most W.
+ *
  * @ghidraAddress BRD3D: 0x1001e030
  * @ghidraAddress BRGlide: 0x1001f8f0
  */

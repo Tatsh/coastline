@@ -327,24 +327,34 @@ void AddVertexConversionCacheEntry(const Vtx *pSource,
 union ModelVertexData;
 
 /**
+ * Byte-swap the positions, flags, and texture coordinates of loaded Nintendo 64 vertices.
+ *
  * @ghidraAddress BRD3D: 0x1002bdd0
  * @ghidraAddress BRGlide: 0x10018e90
  */
 void ByteSwapVertexArray(Vtx *pVertices, int nCount);
 
 /**
+ * Convert Nintendo 64 vertex positions and texture coordinates to floats in the model data pool.
+ * Normal components are divided by 128.
+ *
+ * @return The first converted vertex in the pool.
  * @ghidraAddress BRD3D: 0x1002be30
  * @ghidraAddress BRGlide: 0x10018ef0
  */
 ConvertedModelVertex *ConvertVerticesToFloat(const Vtx *pVertices, int nCount);
 
 /**
+ * Reuse converted vertices for a previously seen source array, or convert and cache them.
+ *
  * @ghidraAddress BRD3D: 0x1002bd50
  * @ghidraAddress BRGlide: 0x10018e10
  */
 void ConvertN64VerticesCached(ModelVertexData *pVertices, int nCount);
 
 /**
+ * Relocate a display-list vertex command's source address and cache its converted vertices.
+ *
  * @ghidraAddress BRD3D: 0x1002c150
  * @ghidraAddress BRGlide: 0x10019210
  */
@@ -518,6 +528,8 @@ extern int g_dwMaxTexWidthLowQuality;
 extern int g_dwMaxTexHeightLowQuality;
 
 /**
+ * Select texture quality and maximum dimensions from available graphics memory.
+ *
  * @ghidraAddress BRD3D: 0x1002a5a0
  * @ghidraAddress BRGlide: 0x10029b10
  */
@@ -542,6 +554,9 @@ extern unsigned (*g_pfnCreateTextureFromN64ImageAutoLoadSize)(const unsigned cha
                                                               int);
 
 /**
+ * Calculate the image load size from @p nWidth and delegate texture creation to the renderer.
+ *
+ * @return The renderer's texture entry identifier.
  * @ghidraAddress BRD3D: 0x10028bf0
  * @ghidraAddress BRGlide: 0x10027f00
  */
@@ -561,6 +576,9 @@ unsigned CreateTextureFromN64ImageAutoLoadSize(const unsigned char *pImage,
                                                int nOption13);
 
 /**
+ * Duplicate a texture entry with both texture-coordinate scales halved.
+ *
+ * @return The new texture entry identifier.
  * @ghidraAddress BRD3D: 0x10024ae0
  */
 unsigned DuplicateTextureEntryHalfScale(unsigned nTexture);

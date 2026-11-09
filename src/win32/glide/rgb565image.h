@@ -23,20 +23,33 @@ typedef struct Rgb565Image {
     uint16_t colorKey; /*!< The pixel value treated as transparent. */
 } Rgb565Image;
 
-/** @ghidraAddress BRGlide: 0x10001130 */
+/** Allocate an RGB 565 image and an uninitialised pixel buffer.
+ * @return The image, or NULL when allocation fails.
+ * @ghidraAddress BRGlide: 0x10001130 */
 Rgb565Image *CreateRgb565Image(int width, int height);
 
-/** @ghidraAddress BRGlide: 0x10001190 */
+/** Free @p image and its pixel buffer, accepting NULL.
+ * @ghidraAddress BRGlide: 0x10001190 */
 void FreeRgb565Image(Rgb565Image *image);
 
-/** @ghidraAddress BRGlide: 0x100011c0 */
+/** Convert 24-bit BGR rows to RGB 565 while reversing their vertical order.
+ * @param destination Output pixels, with no row padding.
+ * @param source Input bitmap pixels.
+ * @param width Pixels per row.
+ * @param height Number of rows.
+ * @param sourceStride Bytes between source rows.
+ * @ghidraAddress BRGlide: 0x100011c0 */
 void ConvertBgr24ToRgb565FlipVertical(
     uint16_t *destination, const uint8_t *source, int width, int height, int sourceStride);
 
-/** @ghidraAddress BRGlide: 0x10001240 */
+/** Convert a 24-bit Windows bitmap to an RGB 565 image.
+ * @return The image, or NULL for another bit depth or failed allocation.
+ * @ghidraAddress BRGlide: 0x10001240 */
 Rgb565Image *CreateRgb565ImageFromBitmap(const BITMAP *bitmap);
 
-/** @ghidraAddress BRGlide: 0x10001290 */
+/** Load a bitmap resource or file at the requested dimensions and convert it to RGB 565.
+ * @return The image with a green colour key, or NULL when loading or conversion fails.
+ * @ghidraAddress BRGlide: 0x10001290 */
 Rgb565Image *LoadBitmapToRgb565Image(const char *name, int width, int height);
 
 /** The flag of BlitRgb565ImageRegion() that skips the pixels of the colour key of the source. */
@@ -61,7 +74,14 @@ void BlitRgb565ImageRegion(Rgb565Image *destination,
                            const RECT *rect,
                            DWORD flags);
 
-/** @ghidraAddress BRGlide: 0x100013f0 */
+/** Copy RGB 565 rows without clipping or interpreting colour keys.
+ * @param destination Output pixels.
+ * @param destinationStride Bytes between destination rows.
+ * @param width Pixels per row.
+ * @param height Number of rows.
+ * @param source Input pixels.
+ * @param sourceStride Bytes between source rows.
+ * @ghidraAddress BRGlide: 0x100013f0 */
 void CopyRgb565Rect(void *destination,
                     int destinationStride,
                     unsigned width,
@@ -69,7 +89,15 @@ void CopyRgb565Rect(void *destination,
                     const void *source,
                     int sourceStride);
 
-/** @ghidraAddress BRGlide: 0x10001440 */
+/** Copy RGB 565 rows, omitting source pixels equal to @p colorKey.
+ * @param destination Output pixels.
+ * @param destinationStride Bytes between destination rows.
+ * @param width Pixels per row.
+ * @param height Number of rows.
+ * @param source Input pixels.
+ * @param sourceStride Bytes between source rows.
+ * @param colorKey Source pixel value to omit.
+ * @ghidraAddress BRGlide: 0x10001440 */
 void CopyRgb565RectColorKeyed(uint16_t *destination,
                               int destinationStride,
                               int width,
@@ -78,7 +106,8 @@ void CopyRgb565RectColorKeyed(uint16_t *destination,
                               int sourceStride,
                               uint16_t colorKey);
 
-/** @ghidraAddress BRGlide: 0x100014a0 */
+/** Convert a Windows RGB colour to the image's RGB 565 transparency key.
+ * @ghidraAddress BRGlide: 0x100014a0 */
 void SetRgb565ImageColorKey(Rgb565Image *image, COLORREF color);
 
 /**
