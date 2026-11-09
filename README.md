@@ -52,7 +52,9 @@ TGR_ROM=/path/to/usa.z64 cmake --workflow --preset tgr-us
 ```
 
 The Nintendo 64 compiler is libdragon's GCC, found through `N64_INST`, and no other part of
-libdragon is used. The Windows compiler is an i686 mingw-w64 GCC, found through `MINGW_ROOT` or
+libdragon is used. Only `-Os` is supported for libdragon-GCC ROM builds. CMake applies `-Os` after
+build-type flags; changing the final optimisation level can exceed the ROM code area or cause
+runtime faults. The Windows compiler is an i686 mingw-w64 GCC, found through `MINGW_ROOT` or
 on the path. The Windows build is 32-bit only, and its `BRD3D.dll` and `BRGlide.dll` are meant
 as drop-in replacements for the files of the installed game. Every routine compiles into an
 archive. The `boss-rally` build produces both renderer DLLs, their launchers, and
