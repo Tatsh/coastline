@@ -10,7 +10,7 @@
 - Support the Nintendo 64 Mouse and Randnet keyboard in the patched Nintendo 64 paint shop.
 - Undo and redo SDL paint shop edits with Ctrl+Z and Ctrl+Shift+Z, without a fixed history limit.
 - Undo and redo patched Nintendo 64 paint shop edits with controller L/L+R or Randnet keyboard
-  shortcuts, using Expansion Pak memory for deeper history when available.
+  shortcuts.
 - Build a Boss Rally installer with both Windows renderer libraries that copies data from the
   original disc during installation.
 
