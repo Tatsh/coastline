@@ -53,6 +53,8 @@ extern DirectPlayInfo g_DirectPlayInfo;
 extern DirectPlayInfo *g_pDirectPlayInfo;
 
 /**
+ * The DirectPlay identifier of the player selected during network car setup.
+ *
  * @ghidraAddress BRD3D: 0x100ab3e0
  * @ghidraAddress BRGlide: 0x100aab80
  */
@@ -848,12 +850,16 @@ extern unsigned g_dwNetRaceStartTimeMs;
 LRESULT WINAPI HandleNetworkWindowMessage(HWND hWnd, UINT nMessage, WPARAM wParam, LPARAM lParam);
 
 /**
+ * The player list rectangle on the network car setup screen, in pixels.
+ *
  * @ghidraAddress BRD3D: 0x100ab408
  * @ghidraAddress BRGlide: 0x100aaba8
  */
 extern const RECT g_rcNetCarSetupPlayerList;
 
 /**
+ * Whether the network car setup screen has been shown.
+ *
  * @ghidraAddress BRD3D: 0x10aa2888
  * @ghidraAddress BRGlide: 0x10ac5be0
  */
@@ -1721,6 +1727,8 @@ int GetSessionSlotFlag(DPID dpidPlayer);
 #define WM_NETWORK_NOTICE 0x501
 
 /**
+ * The chat line being edited or sent from the network menu.
+ *
  * @ghidraAddress BRD3D: 0x10a9dd28
  * @ghidraAddress BRGlide: 0x10ac4db0
  */
@@ -1780,11 +1788,15 @@ HRESULT FormatNetworkChatLine(
     IDirectPlay3A *pDirectPlay, DPID dpidPlayer, const char *text, char **ppLine, bool bNotice);
 
 /**
+ * Whether the network data stream is active.
+ *
  * @ghidraAddress BRD3D: 0x10aa2894
  * @ghidraAddress BRGlide: 0x10ac5bec
  */
 extern int g_dwNetworkDataStreamActive;
 /**
+ * Whether the network menu has an escape request to process.
+ *
  * @ghidraAddress BRD3D: 0x10aa2890
  */
 extern int g_dwNetworkEscapePending;
