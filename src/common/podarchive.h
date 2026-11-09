@@ -39,6 +39,8 @@ struct PodEntry {
 class PodFileHelper {
 public:
     /**
+     * Initialise the archive helper without opening a file.
+     *
      * @ghidraAddress BRD3D: 0x10008b70
      * @ghidraAddress BRGlide: 0x10008d50
      */

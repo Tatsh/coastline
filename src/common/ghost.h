@@ -365,12 +365,17 @@ void BuildVehicleKeyframe(KeyframeState *pState, Vehicle *pVehicle);
 
 #if TGR_PLATFORM == TGR_PLATFORM_WIN
 /**
+ * Sample @p vehicle and send its keyframe as a local network state update.
+ *
  * @ghidraAddress BRD3D: 0x100609e0
  * @ghidraAddress BRGlide: 0x10059a50
  */
 void RecordVehicleKeyframe(Vehicle *vehicle);
 
 /**
+ * Apply an interpolated network keyframe to a remote vehicle unless the race is paused.
+ *
+ * @return Zero if interpolation has no frame, or one when applied or skipped.
  * @ghidraAddress BRD3D: 0x10060cc0
  * @ghidraAddress BRGlide: 0x10059d30
  */

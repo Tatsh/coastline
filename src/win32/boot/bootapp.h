@@ -6,9 +6,11 @@
 /** The Boss Rally disc launcher and its process lifecycle. */
 class CBootApp : public CWinApp {
 public:
-    /** @ghidraAddress Boot: 0x00401010 */
+    /** Initialise the launcher application.
+     * @ghidraAddress Boot: 0x00401010 */
     CBootApp();
-    /** @ghidraAddress Boot: 0x00401050 */
+    /** Release the launcher application.
+     * @ghidraAddress Boot: 0x00401050 */
     ~CBootApp() override;
 
 private:

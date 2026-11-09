@@ -2253,60 +2253,80 @@ public:
 class RaceSetupUI {
 public:
     /**
+     * Draw the selected lap count unless an empty ghost slot is showing.
+     *
      * @ghidraAddress BRD3D: 0x100408d0
      * @ghidraAddress BRGlide: 0x10039e10
      */
     static int UpdateLapCountLabel(MenuWidget *pWidget);
 
     /**
+     * Choose the track image from the selected championship round or track menu.
+     *
      * @ghidraAddress BRD3D: 0x10040730
      * @ghidraAddress BRGlide: 0x10039c70
      */
     static int UpdateTrackImage(MenuWidget *pWidget);
 
     /**
+     * Choose the weather image from the selected championship round or weather menu.
+     *
      * @ghidraAddress BRD3D: 0x100407e0
      * @ghidraAddress BRGlide: 0x10039d20
      */
     static int UpdateWeatherImage(MenuWidget *pWidget);
 
     /**
+     * Cycle through available tracks, including unlocked bonus tracks, and notify network peers.
+     *
      * @ghidraAddress BRD3D: 0x10042ee0
      * @ghidraAddress BRGlide: 0x1003c430
      */
     static int OnCycleTrack(MenuActionWidget *pItem);
 
     /**
+     * Cycle the lap count from 1 through 12 and notify network peers.
+     *
      * @ghidraAddress BRD3D: 0x100430b0
      * @ghidraAddress BRGlide: 0x1003c600
      */
     static int OnCycleLapCount(MenuActionWidget *pItem);
 
     /**
+     * Cycle the weather selection and notify network peers.
+     *
      * @ghidraAddress BRD3D: 0x10043180
      * @ghidraAddress BRGlide: 0x1003c6d0
      */
     static int OnCycleWeather(MenuActionWidget *pItem);
 
     /**
+     * Draw the selected track name, or the ghost-slot prompt when no ghost is selected.
+     *
      * @ghidraAddress BRD3D: 0x1003fa00
      * @ghidraAddress BRGlide: 0x10038f40
      */
     static int UpdateTrackNameLabel(MenuWidget *pWidget);
 
     /**
+     * Draw the selected weather, or the ghost-slot prompt when no ghost is selected.
+     *
      * @ghidraAddress BRD3D: 0x1003fe80
      * @ghidraAddress BRGlide: 0x100393c0
      */
     static int UpdateWeatherLabel(MenuWidget *pWidget);
 
     /**
+     * Return from race setup to the root menu.
+     *
      * @ghidraAddress BRD3D: 0x10046450
      * @ghidraAddress BRGlide: 0x1003f8f0
      */
     static int OnBack(MenuActionWidget *pItem);
 
     /**
+     * Return from race setup to the time attack menu.
+     *
      * @ghidraAddress BRD3D: 0x10044cb0
      * @ghidraAddress BRGlide: 0x1003e200
      */
@@ -2317,12 +2337,16 @@ public:
 class ResultsSummaryExitSeasonConfirmUI {
 public:
     /**
+     * Discard the cached results screens and return to the root menu.
+     *
      * @ghidraAddress BRD3D: 0x10046fd0
      * @ghidraAddress BRGlide: 0x10040420
      */
     static int OnYes(MenuWidget *pWidget);
 
     /**
+     * Return to race-result totals without closing the season.
+     *
      * @ghidraAddress BRD3D: 0x10047050
      * @ghidraAddress BRGlide: 0x100404a0
      */
@@ -2349,66 +2373,88 @@ public:
     static int OnSlotSelected(MenuItemList *pList, int *pnSlot);
 
     /**
+     * Update the selected save slot and notify its item during text entry.
+     *
      * @ghidraAddress BRD3D: 0x1003eb10
      * @ghidraAddress BRGlide: 0x10038100
      */
     static int UpdateSlotSelection(MenuWidget *pWidget);
 
     /**
+     * Save a named championship slot, or restore its previous label when naming is cancelled.
+     *
      * @ghidraAddress BRD3D: 0x10041df0
      * @ghidraAddress BRGlide: 0x1003b350
      */
     static int OnSlotNameEntered(MenuItemList *pList, int nStatus);
 
     /**
+     * Invoke the save menu's return callback and restore championship mode.
+     *
      * @ghidraAddress BRD3D: 0x100450f0
      * @ghidraAddress BRGlide: 0x1003e640
      */
     static int InvokeBackHandler(MenuWidget *pWidget);
 
     /**
+     * Enable the Continue item after a slot has been named.
+     *
      * @ghidraAddress BRD3D: 0x100418d0
      * @ghidraAddress BRGlide: 0x1003ae30
      */
     static int UpdateItemEnabledState(MenuWidget *pWidget);
 
     /**
+     * Return from the save menu to car setup.
+     *
      * @ghidraAddress BRD3D: 0x10046bf0
      * @ghidraAddress BRGlide: 0x10040040
      */
     static int OnBackToCarSetup(MenuActionWidget *pItem);
 
     /**
+     * Return from the save menu to pre-race information.
+     *
      * @ghidraAddress BRD3D: 0x10046790
      * @ghidraAddress BRGlide: 0x1003fbe0
      */
     static int OnBackToPreRaceInfo(MenuActionWidget *pItem);
 
     /**
+     * Return from the save menu to championship progress.
+     *
      * @ghidraAddress BRD3D: 0x10046870
      * @ghidraAddress BRGlide: 0x1003fcc0
      */
     static int OnBackToSeasonProgressInfo(MenuActionWidget *pItem);
 
     /**
+     * Return from the save menu to race results.
+     *
      * @ghidraAddress BRD3D: 0x10046eb0
      * @ghidraAddress BRGlide: 0x10040300
      */
     static int OnBack(MenuActionWidget *pItem);
 
     /**
+     * Return from the save menu to the race-result details.
+     *
      * @ghidraAddress BRD3D: 0x10046950
      * @ghidraAddress BRGlide: 0x1003fda0
      */
     static int OnBackToRaceResultsInfo(MenuActionWidget *pItem);
 
     /**
+     * Return from the save menu to the race-result summary.
+     *
      * @ghidraAddress BRD3D: 0x10046a30
      * @ghidraAddress BRGlide: 0x1003fe80
      */
     static int OnBackToRaceResultsSummary(MenuActionWidget *pItem);
 
     /**
+     * Return from the save menu to the race-result totals.
+     *
      * @ghidraAddress BRD3D: 0x10046b10
      * @ghidraAddress BRGlide: 0x1003ff60
      */
@@ -2427,18 +2473,24 @@ public:
     static int HandleTextEntry(MenuWidget *pWidget);
 
     /**
+     * Open overwrite confirmation for an existing ghost slot, or start naming an empty slot.
+     *
      * @ghidraAddress BRD3D: 0x10042740
      * @ghidraAddress BRGlide: 0x1003bca0
      */
     static int OnSlotSelected(MenuItemList *pList, int *pnSlot);
 
     /**
+     * Save the named ghost slot, or restore its old label when naming is cancelled.
+     *
      * @ghidraAddress BRD3D: 0x10042560
      * @ghidraAddress BRGlide: 0x1003bac0
      */
     static int OnSlotNameEntered(MenuItemList *pList, int status);
 
     /**
+     * Return from the ghost save menu to time attack.
+     *
      * @ghidraAddress BRD3D: 0x10044f00
      * @ghidraAddress BRGlide: 0x1003e450
      */
@@ -2449,6 +2501,8 @@ public:
 class SaveTimeAttackUI {
 public:
     /**
+     * Update the ghost save-slot selection using the championship slot-list handler.
+     *
      * @ghidraAddress BRD3D: 0x1003ec30
      * @ghidraAddress BRGlide: 0x10038250
      */
@@ -2459,18 +2513,24 @@ public:
 class SeasonCongratsUI {
 public:
     /**
+     * Advance the championship completion screen when input is detected.
+     *
      * @ghidraAddress BRD3D: 0x100471f0
      * @ghidraAddress BRGlide: 0x10040640
      */
     static int PollAnyKey(MenuWidget *pWidget);
 
     /**
+     * Select the primary completion banner from championship flags and season progress.
+     *
      * @ghidraAddress BRD3D: 0x1003f440
      * @ghidraAddress BRGlide: 0x10038980
      */
     static int UpdatePrimaryBannerImage(MenuWidget *pWidget);
 
     /**
+     * Select the secondary completion banner from championship flags and season progress.
+     *
      * @ghidraAddress BRD3D: 0x1003f540
      * @ghidraAddress BRGlide: 0x10038a80
      */
@@ -2481,12 +2541,16 @@ public:
 class SeasonFileUI {
 public:
     /**
+     * Draw the championship year as a one-based number.
+     *
      * @ghidraAddress BRD3D: 0x10040a50
      * @ghidraAddress BRGlide: 0x10039f90
      */
     static int UpdateYearLabel(MenuWidget *pWidget);
 
     /**
+     * Draw the championship round as a one-based number.
+     *
      * @ghidraAddress BRD3D: 0x10040ac0
      * @ghidraAddress BRGlide: 0x1003a000
      */
@@ -2513,30 +2577,40 @@ public:
     static int UpdatePointsNeededLabel(MenuWidget *pWidget);
 
     /**
+     * Open car setup for the current championship and configure its return action.
+     *
      * @ghidraAddress BRD3D: 0x10045050
      * @ghidraAddress BRGlide: 0x1003e5a0
      */
     static int OnCarSetup(MenuWidget *pWidget);
 
     /**
+     * Reset the saved championship round to the first round.
+     *
      * @ghidraAddress BRD3D: 0x10047340
      * @ghidraAddress BRGlide: 0x10040790
      */
     static int OnResetRound(MenuWidget *pWidget);
 
     /**
+     * Open options and configure the return action for championship progress.
+     *
      * @ghidraAddress BRD3D: 0x100457c0
      * @ghidraAddress BRGlide: 0x1003ec50
      */
     static int OnOptions(MenuWidget *pWidget);
 
     /**
+     * Open the championship save screen and configure its return action.
+     *
      * @ghidraAddress BRD3D: 0x100457e0
      * @ghidraAddress BRGlide: 0x1003ec70
      */
     static int OnSaveSeason(MenuWidget *pWidget);
 
     /**
+     * Return from championship progress to pre-race information.
+     *
      * @ghidraAddress BRD3D: 0x10047060
      * @ghidraAddress BRGlide: 0x100404b0
      */
@@ -2547,18 +2621,24 @@ public:
 class SeasonUI {
 public:
     /**
+     * Draw the points earned in the selected championship round.
+     *
      * @ghidraAddress BRD3D: 0x1003ea90
      * @ghidraAddress BRGlide: 0x100380b0
      */
     static int UpdateRoundPointsLabel(MenuWidget *pWidget);
 
     /**
+     * Draw the finishing place in the selected championship round.
+     *
      * @ghidraAddress BRD3D: 0x1003e8d0
      * @ghidraAddress BRGlide: 0x10037ef0
      */
     static int UpdateRoundPlaceLabel(MenuWidget *pWidget);
 
     /**
+     * Draw the selected championship class name when its text is available.
+     *
      * @ghidraAddress BRD3D: 0x10041300
      * @ghidraAddress BRGlide: 0x1003a860
      */
@@ -2585,6 +2665,8 @@ public:
 class TimeAttackMenuUI {
 public:
     /**
+     * Return from time attack to the root menu.
+     *
      * @ghidraAddress BRD3D: 0x10044c70
      * @ghidraAddress BRGlide: 0x1003e1c0
      */
@@ -2603,12 +2685,16 @@ public:
     static int UpdateTrackImage(MenuWidget *pWidget);
 
     /**
+     * Draw the ghost's best race time.
+     *
      * @ghidraAddress BRD3D: 0x10041040
      * @ghidraAddress BRGlide: 0x1003a580
      */
     static int UpdateRaceTimeLabel(MenuWidget *pWidget);
 
     /**
+     * Draw the ghost's best lap time.
+     *
      * @ghidraAddress BRD3D: 0x10041180
      * @ghidraAddress BRGlide: 0x1003a6d0
      */
@@ -2619,6 +2705,8 @@ public:
 class VideoOptionsUI {
 public:
     /**
+     * Return from video options to the options menu.
+     *
      * @ghidraAddress BRD3D: 0x100465e0
      * @ghidraAddress BRGlide: 0x1003fa80
      */
@@ -3202,12 +3290,17 @@ public:
     MenuPanel();
 
     /**
+     * Clamp the saved menu hover index to this panel's navigation range and select it.
+     *
+     * @return One.
      * @ghidraAddress BRD3D: 0x100484f0
      * @ghidraAddress BRGlide: 0x10041940
      */
     int RestoreSelection();
 
     /**
+     * Destroy the panel without deleting its widget pointers.
+     *
      * @ghidraAddress BRD3D: 0x100484e0
      * @ghidraAddress BRGlide: 0x10041930
      */
@@ -3317,6 +3410,8 @@ private:
 
 public:
     /**
+     * Return to the main menu from another front-end screen.
+     *
      * @ghidraAddress BRD3D: 0x10043fa0
      * @ghidraAddress BRGlide: 0x1003d4f0
      */

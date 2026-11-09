@@ -208,6 +208,8 @@ void CheatUnlockTracks5To9(void);
 void CheatSetUnlockBit8000(void);
 
 /**
+ * Toggle the multiplayer mode selected by the cheat sequence.
+ *
  * @ghidraAddress USA: 0x80255018
  * @ghidraAddress Asia: 0x80254B68
  * @ghidraAddress EUR: 0x802565e8
@@ -216,6 +218,8 @@ void CheatSetUnlockBit8000(void);
 void CheatToggleMultiplayerMode(void);
 
 /**
+ * Toggle bilinear texture filtering selected by the cheat sequence.
+ *
  * @ghidraAddress USA: 0x80255030
  * @ghidraAddress Asia: 0x80254B80
  * @ghidraAddress EUR: 0x80256600

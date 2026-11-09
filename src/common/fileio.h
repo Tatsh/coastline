@@ -18,6 +18,12 @@ extern "C" {
 #endif
 
 /**
+ * Read @p size bytes from @p path into @p buffer, or the entire file when size is negative.
+ * A missing file ends the game.
+ *
+ * @param buffer Destination with enough space for the requested data.
+ * @param path Source file path.
+ * @param size Bytes to read, or a negative value for the file's full length.
  * @ghidraAddress BRD3D: 0x100378b0
  * @ghidraAddress BRGlide: 0x10030f50
  */
@@ -53,6 +59,12 @@ extern int g_bVerboseFileTrace;
 void *CHK_AllocateMemory(size_t nSize, const char *szCaller);
 
 /**
+ * Resize an allocation, ending the process on failure for a nonzero size.
+ *
+ * @param pMemory Existing allocation, or NULL to allocate.
+ * @param nSize Requested size in bytes.
+ * @param szCaller Description written to the debugger on failure.
+ * @return Resized memory, or NULL when @p nSize is zero.
  * @ghidraAddress BRD3D: 0x100033f0
  * @ghidraAddress BRGlide: 0x10003760
  */

@@ -159,17 +159,29 @@ extern void *g_apPaintDamageBitmaps[PAINT_DAMAGE_BITMAP_COUNT];
 void ApplyPaintDamageOverlay(int damage, unsigned char *pixels, int width, int height);
 
 /**
+ * Multiply each pixel's RGB channels by the first channel of its mask pixel, preserving alpha.
+ *
+ * @param pixels RGBA pixels to update.
+ * @param width Image width in pixels.
+ * @param height Image height in pixels.
+ * @param mask RGBA mask pixels.
  * @ghidraAddress BRD3D: 0x10061210
  * @ghidraAddress BRGlide: 0x1005a280
  */
 void ModulateRgbaByMask(unsigned char *pixels, int width, int height, const unsigned char *mask);
 
 /**
+ * Whether additional car-paint damage variants are generated when paint textures load.
+ *
  * @ghidraAddress BRD3D: 0x100adfc8
  */
 extern int g_bCarPaintTexturesEnabled;
 
 /**
+ * Load one car group's paint bitmaps and optionally generate damage variants.
+ *
+ * @param group Index of the car-paint texture group.
+ * @param damageVariants Whether to generate damaged bitmaps when enabled.
  * @ghidraAddress BRD3D: 0x10061010
  * @ghidraAddress BRGlide: 0x1005a080
  */

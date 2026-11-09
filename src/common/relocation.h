@@ -16,12 +16,17 @@ extern "C" {
 #endif
 
 /**
+ * Byte-swap a display list through its end command and relocate texture and vertex pointers.
+ *
+ * @param pCommands The loaded display list, or NULL.
  * @ghidraAddress BRD3D: 0x1002bf80
  * @ghidraAddress BRGlide: 0x10019040
  */
 void ByteSwapAndRelocateDisplayList(GbiCommand *pCommands);
 
 /**
+ * The source table used when copying track texture images during relocation.
+ *
  * @ghidraAddress BRD3D: 0x10690bec
  * @ghidraAddress BRGlide: 0x106b7c7c
  */
@@ -30,18 +35,28 @@ extern unsigned char *g_pTrackTextureTable;
 #endif
 
 /**
+ * Byte-swap animation frame offsets and times in a loaded texture variant table.
+ *
+ * @param pAnimation The table, or NULL.
  * @ghidraAddress BRD3D: 0x1002bc90
  * @ghidraAddress BRGlide: 0x10018d50
  */
 void ByteSwapTextureVariantTable(TextureAnimation *pAnimation);
 
 /**
+ * Relocate a texture's image and palette pointers and byte-swap its dimensions and flags.
+ *
+ * @param pTexture The loaded texture descriptor.
  * @ghidraAddress BRD3D: 0x1002baa0
  * @ghidraAddress BRGlide: 0x10018b60
  */
 void ByteSwapAndRelocateTextureDescriptor(ModelTexture *pTexture);
 
 /**
+ * Apply texture descriptor relocation to @p nCount consecutive textures.
+ *
+ * @param pTextures The first loaded texture descriptor.
+ * @param nCount The number of descriptors.
  * @ghidraAddress BRD3D: 0x1002ba80
  * @ghidraAddress BRGlide: 0x10018b40
  */

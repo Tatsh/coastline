@@ -6,9 +6,11 @@
 /** The launcher dialog for installation and display setup. */
 class CBootDlg : public CDialog {
 public:
-    /** @ghidraAddress Boot: 0x00401860 */
+    /** Load the launcher icon and associate the dialog with @p parent.
+     * @ghidraAddress Boot: 0x00401860 */
     explicit CBootDlg(CWnd *parent = nullptr);
-    /** @ghidraAddress Boot: 0x00401510 */
+    /** Release the launcher dialog.
+     * @ghidraAddress Boot: 0x00401510 */
     ~CBootDlg() override;
 
 private:

@@ -102,6 +102,10 @@ public:
     void PollMouseDevice(HWND hWnd);
 
     /**
+     * Acquire the mouse while the game window is active and release it while another window is
+     * active. This has an effect only after a menu screen is built.
+     *
+     * @param hWnd Unused.
      * @ghidraAddress BRD3D: 0x10060750
      * @ghidraAddress BRGlide: 0x100597c0
      */
