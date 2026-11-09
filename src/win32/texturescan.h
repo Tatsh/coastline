@@ -297,56 +297,78 @@ void ScanGbiSetOtherModeH(GbiCommand *pCommand);
 void ScanGbiSetTile(GbiCommand *pCommand);
 
 /**
+ * Whether texture matching includes the captured primitive and environment colours.
+ *
  * @ghidraAddress BRD3D: 0x10575448
  * @ghidraAddress BRGlide: 0x106b7aac
  */
 extern int g_bTexScanColorCombine;
 /**
+ * Whether the current primitive colour was set by a display-list command.
+ *
  * @ghidraAddress BRD3D: 0x10575444
  * @ghidraAddress BRGlide: 0x106b7aa8
  */
 extern int g_bTexScanPrimColorSet;
 /**
+ * Whether the current environment colour was set by a display-list command.
+ *
  * @ghidraAddress BRD3D: 0x10575440
  * @ghidraAddress BRGlide: 0x106b7aa4
  */
 extern int g_bTexScanEnvColorSet;
 /**
+ * The red channel of the current primitive colour.
+ *
  * @ghidraAddress BRD3D: 0x10555400
  * @ghidraAddress BRGlide: 0x10697a68
  */
 extern unsigned char g_bTexScanPrimColorR;
 /**
+ * The green channel of the current primitive colour.
+ *
  * @ghidraAddress BRD3D: 0x10575410
  * @ghidraAddress BRGlide: 0x106b7a78
  */
 extern unsigned char g_bTexScanPrimColorG;
 /**
+ * The blue channel of the current primitive colour.
+ *
  * @ghidraAddress BRD3D: 0x105553d8
  * @ghidraAddress BRGlide: 0x10697a40
  */
 extern unsigned char g_bTexScanPrimColorB;
 /**
+ * The alpha channel of the current primitive colour.
+ *
  * @ghidraAddress BRD3D: 0x105551d0
  * @ghidraAddress BRGlide: 0x10661828
  */
 extern unsigned char g_bTexScanPrimColorA;
 /**
+ * The red channel of the current environment colour.
+ *
  * @ghidraAddress BRD3D: 0x104d51b0
  * @ghidraAddress BRGlide: 0x105e1800
  */
 extern unsigned char g_bTexScanEnvColorR;
 /**
+ * The green channel of the current environment colour.
+ *
  * @ghidraAddress BRD3D: 0x105551d4
  * @ghidraAddress BRGlide: 0x1066182c
  */
 extern unsigned char g_bTexScanEnvColorG;
 /**
+ * The blue channel of the current environment colour.
+ *
  * @ghidraAddress BRD3D: 0x104d51a8
  * @ghidraAddress BRGlide: 0x105e17f8
  */
 extern unsigned char g_bTexScanEnvColorB;
 /**
+ * The alpha channel of the current environment colour.
+ *
  * @ghidraAddress BRD3D: 0x104c51a0
  * @ghidraAddress BRGlide: 0x105d17e8
  */
@@ -381,6 +403,8 @@ int CreateTextureFromTmemShadow(unsigned char *pTmem);
 void PreprocessDisplayListTextures(GbiCommand *pCommand);
 
 /**
+ * The backend callback that scans a display list for texture loads.
+ *
  * @ghidraAddress BRD3D: 0x118aa0c4
  */
 extern void (*g_pfnPreprocessDisplayListTextures)(GbiCommand *pCommand);

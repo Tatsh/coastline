@@ -555,12 +555,16 @@ GbiCommand *HandleGbiMoveWord(GbiCommand *pCommand);
 extern float g_GbiMvpMatrix[4][4];
 
 /**
+ * The current projection matrix of the display-list interpreter.
+ *
  * @ghidraAddress BRD3D: 0x104bbec0
  * @ghidraAddress BRGlide: 0x105ccd00
  */
 extern float g_GbiProjectionMatrix[4][4];
 
 /**
+ * The stack of model-view matrices used by display-list matrix commands.
+ *
  * @ghidraAddress BRD3D: 0x104bbf10
  * @ghidraAddress BRGlide: 0x105ccd50
  */
@@ -729,36 +733,50 @@ struct GbiVertex {
 #endif /* TGR_BRD3D */
 
 /**
+ * The red channel of the first directional light.
+ *
  * @ghidraAddress BRD3D: 0x104c15d0
  * @ghidraAddress BRGlide: 0x105ce210
  */
 extern float g_fGbiLight0ColorR;
 /**
+ * The green channel of the first directional light.
+ *
  * @ghidraAddress BRD3D: 0x104c15d4
  * @ghidraAddress BRGlide: 0x105ce214
  */
 extern float g_fGbiLight0ColorG;
 /**
+ * The blue channel of the first directional light.
+ *
  * @ghidraAddress BRD3D: 0x104c15d8
  * @ghidraAddress BRGlide: 0x105ce218
  */
 extern float g_fGbiLight0ColorB;
 /**
+ * The direction of the first directional light.
+ *
  * @ghidraAddress BRD3D: 0x104c15dc
  * @ghidraAddress BRGlide: 0x105ce21c
  */
 extern Vec3f g_GbiLight0Direction;
 /**
+ * The red channel of the ambient light.
+ *
  * @ghidraAddress BRD3D: 0x104c15e8
  * @ghidraAddress BRGlide: 0x105ce228
  */
 extern float g_fGbiAmbientColorR;
 /**
+ * The green channel of the ambient light.
+ *
  * @ghidraAddress BRD3D: 0x104c15ec
  * @ghidraAddress BRGlide: 0x105ce22c
  */
 extern float g_fGbiAmbientColorG;
 /**
+ * The blue channel of the ambient light.
+ *
  * @ghidraAddress BRD3D: 0x104c15f0
  * @ghidraAddress BRGlide: 0x105ce230
  */
@@ -825,12 +843,16 @@ void TransformVertexToScreen(
 #define GBI_CLIP_VERTEX_POOL_SIZE 64
 
 /**
+ * The temporary vertices used while clipping display-list geometry.
+ *
  * @ghidraAddress BRD3D: 0x104c01a8
  * @ghidraAddress BRGlide: 0x105ccff0
  */
 extern GbiVertexSource g_aClipVertexPool[GBI_CLIP_VERTEX_POOL_SIZE];
 
 /**
+ * The first available clipping vertex in the pool, or NULL when the pool is full.
+ *
  * @ghidraAddress BRD3D: 0x104c0bbc
  * @ghidraAddress BRGlide: 0x105cda00
  */
