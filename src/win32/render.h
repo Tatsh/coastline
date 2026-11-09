@@ -35,6 +35,8 @@ struct TextureImageData;
 struct TexScanTile;
 
 /**
+ * The active backend callback that submits a display list for rendering.
+ *
  * @ghidraAddress BRD3D: 0x10b501d0
  */
 extern void (*g_pfnRenderBackendSubmitDisplayList)(GbiCommand *pDisplayList);
@@ -506,23 +508,33 @@ void LoadHudOverlayTexture(void);
 void LoadHudGlyphTextureSets(void);
 
 /**
+ * The available texture-memory threshold for high-resolution textures, in bytes.
+ *
  * @ghidraAddress BRD3D: 0x11829848
  * @ghidraAddress BRGlide: 0x1186c960
  */
 extern unsigned g_dwHiResTextureMemoryThreshold;
 /**
+ * The maximum high-quality texture width, in texels.
+ *
  * @ghidraAddress BRD3D: 0x100a7dfc
  */
 extern int g_dwMaxTexWidthHighQuality;
 /**
+ * The maximum high-quality texture height, in texels.
+ *
  * @ghidraAddress BRD3D: 0x100a7e00
  */
 extern int g_dwMaxTexHeightHighQuality;
 /**
+ * The maximum low-quality texture width, in texels.
+ *
  * @ghidraAddress BRD3D: 0x100a7e04
  */
 extern int g_dwMaxTexWidthLowQuality;
 /**
+ * The maximum low-quality texture height, in texels.
+ *
  * @ghidraAddress BRD3D: 0x100a7e08
  */
 extern int g_dwMaxTexHeightLowQuality;
@@ -536,6 +548,8 @@ extern int g_dwMaxTexHeightLowQuality;
 void SelectTextureQualityFromVideoMemory(void);
 
 /**
+ * The backend callback that creates an N64 image texture after calculating its load size.
+ *
  * @ghidraAddress BRD3D: 0x118aa0b0
  */
 extern unsigned (*g_pfnCreateTextureFromN64ImageAutoLoadSize)(const unsigned char *,
@@ -584,10 +598,14 @@ unsigned CreateTextureFromN64ImageAutoLoadSize(const unsigned char *pImage,
 unsigned DuplicateTextureEntryHalfScale(unsigned nTexture);
 
 /**
+ * The 16 white RGBA colours of the alpha ramp, with alpha increasing by 17.
+ *
  * @ghidraAddress BRD3D: 0x11829330
  */
 extern unsigned char g_abAlphaRampRgba[16][4];
 /**
+ * The alpha ramp converted to device pixel format.
+ *
  * @ghidraAddress BRD3D: 0x11829118
  */
 extern unsigned char g_abAlphaRampPixelStrip[64];
@@ -650,10 +668,12 @@ void ProcessTextureUploadQueueEntry(void);
  */
 void EnqueueTextureUploadEntry(int nEntry, TextureUploadData payload);
 
-/** @ghidraAddress BRD3D: 0x104d51c0 */
+/** The 4-by-4 intensity pixels of the current weather shade. @ghidraAddress BRD3D: 0x104d51c0 */
 extern unsigned char g_abWeatherShadeTexture[16];
 
 /**
+ * The device texture identifier of the current weather shade.
+ *
  * @ghidraAddress BRD3D: 0x105553e4
  * @ghidraAddress BRGlide: 0x10697a4c
  */
@@ -1013,14 +1033,20 @@ unsigned CreateTextureFromN64Image(const unsigned char *pImage,
 unsigned char *GetTextureEntryPixelsWithPaint(int nEntry, unsigned *pSize);
 
 /**
+ * The backend callback that creates a device texture from a model texture header.
+ *
  * @ghidraAddress BRD3D: 0x118aa0c8
  */
 extern decltype(&CreateDeviceTextureFromImageHeader) g_pfnCreateDeviceTextureFromImageHeader;
 /**
+ * The backend callback that clones a texture entry with replacement image data.
+ *
  * @ghidraAddress BRD3D: 0x118aa084
  */
 extern decltype(&CloneTextureEntryWithNewImageData) g_pfnCloneTextureEntryWithNewImageData;
 /**
+ * The backend callback that uploads the texture variants of a track.
+ *
  * @ghidraAddress BRD3D: 0x118aa0cc
  */
 extern decltype(&UploadTrackTextureVariants) g_pfnUploadTrackTextureVariants;

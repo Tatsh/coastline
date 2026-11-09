@@ -396,6 +396,8 @@ extern f32 g_fFrustumFovAngle;
 extern f32 g_ViewLookAtMtx[4][4];
 
 /**
+ * The identity matrix used for display-list transforms.
+ *
  * @ghidraAddress USA: 0x8028a8c0
  * @ghidraAddress Asia: 0x8028A410
  * @ghidraAddress EUR: 0x8028cac8
@@ -422,6 +424,8 @@ extern Mtx g_mtxIdentity;
 extern s32 g_dwStatVerticesDrawn;
 
 /**
+ * The triangles submitted during the current frame.
+ *
  * @ghidraAddress USA: 0x8028aa10
  * @ghidraAddress Asia: 0x8028A560
  * @ghidraAddress EUR: 0x8028cc18
@@ -432,6 +436,8 @@ extern s32 g_dwStatVerticesDrawn;
 extern s32 g_dwStatTrianglesDrawn;
 
 /**
+ * The polygons submitted during the current frame.
+ *
  * @ghidraAddress USA: 0x8028aa38
  * @ghidraAddress Asia: 0x8028A588
  * @ghidraAddress EUR: 0x8028cc40
@@ -478,6 +484,8 @@ extern s32 g_bSmoothShading;
 extern u32 g_dwDirLightColor;
 
 /**
+ * The packed colour of the ambient light.
+ *
  * @ghidraAddress USA: 0x8028ab5c
  * @ghidraAddress Asia: 0x8028A6AC
  * @ghidraAddress EUR: 0x8028cd64
@@ -564,6 +572,8 @@ extern Gfx g_aClipRatioDisplayLists[CLIP_RATIOS][5];
 extern u8 g_bDirLightR;
 
 /**
+ * The green channel of the directional light.
+ *
  * @ghidraAddress USA: 0x8028ab44
  * @ghidraAddress Asia: 0x8028A694
  * @ghidraAddress EUR: 0x8028cd4c
@@ -574,6 +584,8 @@ extern u8 g_bDirLightR;
 extern u8 g_bDirLightG;
 
 /**
+ * The blue channel of the directional light.
+ *
  * @ghidraAddress USA: 0x8028ab48
  * @ghidraAddress Asia: 0x8028A698
  * @ghidraAddress EUR: 0x8028cd50
@@ -596,6 +608,8 @@ extern u8 g_bDirLightB;
 extern u8 g_bAmbientLightR;
 
 /**
+ * The green channel of the ambient light.
+ *
  * @ghidraAddress USA: 0x8028ab50
  * @ghidraAddress Asia: 0x8028A6A0
  * @ghidraAddress EUR: 0x8028cd58
@@ -606,6 +620,8 @@ extern u8 g_bAmbientLightR;
 extern u8 g_bAmbientLightG;
 
 /**
+ * The blue channel of the ambient light.
+ *
  * @ghidraAddress USA: 0x8028ab54
  * @ghidraAddress Asia: 0x8028A6A4
  * @ghidraAddress EUR: 0x8028cd5c
@@ -651,6 +667,7 @@ extern s32 g_dwVehicleCullingDisabled;
  */
 extern s32 g_dwStatVehicleTriangles;
 
+/** @cond */
 /**
  * Counts of a frame that ClearRenderStats() clears. No routine reads them.
  *
@@ -692,6 +709,7 @@ extern s32 g_dwStatUnused2;
  * @ghidraAddress BRGlide: 0x106ea35c
  */
 extern s32 g_dwStatUnused3;
+/** @endcond */
 
 /**
  * The address in the texture memory DrawTexturedTile() loads to.
@@ -726,6 +744,8 @@ extern u32 g_dwTextureRenderTile;
 extern s32 g_dwFogMinDistance;
 
 /**
+ * The fog end depth, from 0 at the near plane to 1000 at the far plane.
+ *
  * @ghidraAddress USA: 0x8028ab34
  * @ghidraAddress Asia: 0x8028A684
  * @ghidraAddress EUR: 0x8028cd3c
@@ -749,6 +769,8 @@ extern s32 g_dwFogMaxDistance;
 extern s32 g_dwFogFactorOffset;
 
 /**
+ * The scale that maps depth to a fog value from 0 to 255.
+ *
  * @ghidraAddress USA: 0x8028ab3c
  * @ghidraAddress Asia: 0x8028A68C
  * @ghidraAddress EUR: 0x8028cd44
@@ -771,6 +793,8 @@ extern s32 g_dwFogFactorScale;
 extern u8 g_abLightRampR[4];
 
 /**
+ * The green channel of each placed-model light-ramp colour.
+ *
  * @ghidraAddress USA: 0x8031b354
  * @ghidraAddress Asia: 0x8031AE04
  * @ghidraAddress EUR: 0x8031d84c
@@ -781,6 +805,8 @@ extern u8 g_abLightRampR[4];
 extern u8 g_abLightRampG[4];
 
 /**
+ * The blue channel of each placed-model light-ramp colour.
+ *
  * @ghidraAddress USA: 0x8031b358
  * @ghidraAddress Asia: 0x8031AE08
  * @ghidraAddress EUR: 0x8031d850
@@ -793,6 +819,7 @@ extern u8 g_abLightRampB[4];
 /** The viewports. The display lists of the last frames may still use them. */
 #define VIEWPORTS 32
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x80318cd0
  * @ghidraAddress Asia: 0x80318780
@@ -802,6 +829,7 @@ extern u8 g_abLightRampB[4];
  * @ghidraAddress BRGlide: 0x106e8818
  */
 extern Vp g_aViewports[VIEWPORTS];
+/** @endcond */
 
 /**
  * The viewport set last.
