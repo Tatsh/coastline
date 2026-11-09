@@ -83,6 +83,8 @@ extern s32 g_dwBestReplayLength;
 #endif /* !TGR_BOSS_RALLY */
 
 /**
+ * The player whose recording the instant replay plays.
+ *
  * @ghidraAddress USA: 0x80315e40
  * @ghidraAddress Asia: 0x80315900
  * @ghidraAddress EUR: 0x80317b30
@@ -104,6 +106,8 @@ extern s32 g_dwBestReplayPlayer;
 extern u8 *g_apReplayGhostPtrs[];
 
 /**
+ * The lengths of the instant replay recordings of the local players, in bytes.
+ *
  * @ghidraAddress USA: 0x80315e58
  * @ghidraAddress Asia: 0x80315918
  * @ghidraAddress EUR: 0x80317b48
@@ -302,12 +306,16 @@ extern s32 g_dwReplayKeyframeFrameCount;
 extern SaveField g_aReplayKeyframeDescTable1[];
 
 /**
+ * The second group of variables restored from a demo keyframe.
+ *
  * @ghidraAddress EUR: 0x8028e22c
  * @ghidraAddress JPN: 0x8028dc5c
  */
 extern SaveField g_aReplayKeyframeDescTable2[];
 
 /**
+ * The third group of variables restored from a demo keyframe.
+ *
  * @ghidraAddress EUR: 0x8028dec4
  * @ghidraAddress JPN: 0x8028d8f4
  */

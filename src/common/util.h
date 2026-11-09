@@ -25,9 +25,9 @@ extern "C" {
 typedef struct {
 #if TGR_BOSS_RALLY
     union {
-        u64 commands[8];
-        f32 matrix[4][4];
-    };
+        u64 commands[8];  /*!< The commands, one 64-bit word each. */
+        f32 matrix[4][4]; /*!< The same storage as a matrix. */
+    }; /*!< The block as commands or a matrix. */
 #else
     u64 commands[8]; /*!< The commands, one 64-bit word each. */
 #endif
@@ -47,6 +47,8 @@ typedef struct {
 extern DisplayListBlock g_aDisplayListBlocks[2][FRAME_DISPLAY_LIST_BLOCKS + 1];
 
 /**
+ * The highlight blocks of the two frames and one spare block per frame.
+ *
  * @ghidraAddress USA: 0x80372ed0
  * @ghidraAddress Asia: 0x80372980
  * @ghidraAddress EUR: 0x803753d0
@@ -57,6 +59,8 @@ extern DisplayListBlock g_aDisplayListBlocks[2][FRAME_DISPLAY_LIST_BLOCKS + 1];
 extern Hilite g_aHiliteBlocks[2][FRAME_HILITE_BLOCKS + 1];
 
 /**
+ * The light blocks of the two frames and one spare block per frame.
+ *
  * @ghidraAddress USA: 0x80373170
  * @ghidraAddress Asia: 0x80372C20
  * @ghidraAddress EUR: 0x80375670
@@ -82,6 +86,8 @@ extern s32 g_dwDisplayListBlockCount;
 
 #if !TGR_BOSS_RALLY
 /**
+ * The highlight blocks allocated in the current frame.
+ *
  * @ghidraAddress USA: 0x8028dfb4
  * @ghidraAddress Asia: 0x8028DB04
  * @ghidraAddress EUR: 0x80290774
@@ -94,6 +100,8 @@ extern s32 g_dwHiliteBlockCount;
 
 #if !TGR_BOSS_RALLY
 /**
+ * The light blocks allocated in the current frame.
+ *
  * @ghidraAddress USA: 0x8028dfb8
  * @ghidraAddress Asia: 0x8028DB08
  * @ghidraAddress EUR: 0x80290778

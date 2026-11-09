@@ -12,6 +12,7 @@
 extern "C" {
 #endif
 
+/** @cond */
 /**
  * @ghidraAddress USA: 0x802a6280
  * @ghidraAddress Asia: 0x802A5DD0
@@ -35,6 +36,7 @@ extern OSMesgQueue __osSiAccessQueue;
  * @ghidraAddress JPN: 0x80382430
  */
 extern OSMesg siAccessBuf[1];
+/** @endcond */
 
 /**
  * @ghidraAddress USA: 0x80269410

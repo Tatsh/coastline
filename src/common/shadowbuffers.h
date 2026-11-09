@@ -21,6 +21,8 @@ extern "C" {
 #define SHADOW_VERTICES 1000
 
 /**
+ * The shadow display lists of the two frame buffers.
+ *
  * @ghidraAddress USA: 0x80353580
  * @ghidraAddress Asia: 0x80353030
  * @ghidraAddress EUR: 0x80355a80
@@ -32,6 +34,8 @@ extern DisplayListCommand g_aShadowDisplayLists[2][SHADOW_COMMANDS];
 
 #if TGR_BOSS_RALLY
 /**
+ * The shadow vertices of the two frame buffers.
+ *
  * @ghidraAddress BRD3D: 0x1038bcc0
  * @ghidraAddress BRGlide: 0x103874a8
  */
@@ -58,6 +62,8 @@ extern ConvertedModelVertex *g_pTrackQuadVertexStart;
 extern ConvertedModelVertex *g_pTrackQuadVertexWritePtr;
 #else
 /**
+ * The shadow vertices of the two frame buffers.
+ *
  * @ghidraAddress USA: 0x803554c0
  * @ghidraAddress Asia: 0x80354F70
  * @ghidraAddress EUR: 0x803579c0
@@ -91,6 +97,8 @@ void ResetShadowBuffers(void);
 extern DisplayListCommand *g_pShadowDisplayListWritePtr;
 
 /**
+ * The first command of the shadow display list of the current frame.
+ *
  * @ghidraAddress USA: 0x8028c760
  * @ghidraAddress Asia: 0x8028C2B0
  * @ghidraAddress EUR: 0x8028eec0
@@ -117,6 +125,8 @@ extern Vtx *g_pShadowVertexWritePtr;
 #endif
 
 /**
+ * The first shadow vertex of the current frame.
+ *
  * @ghidraAddress USA: 0x8028c768
  * @ghidraAddress Asia: 0x8028C2B8
  * @ghidraAddress EUR: 0x8028eec8

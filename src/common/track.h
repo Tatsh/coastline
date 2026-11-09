@@ -463,6 +463,8 @@ void LoadTrackGeometryFromRom(s32 track);
 #define TRACK_SECTION_DATA_SIZE 0x800
 
 /**
+ * The header of the first route section of the loaded track.
+ *
  * @ghidraAddress USA: 0x80373eb0
  * @ghidraAddress Asia: 0x80373960
  * @ghidraAddress EUR: 0x803763b0
@@ -471,6 +473,8 @@ void LoadTrackGeometryFromRom(s32 track);
 extern u8 g_abTrackSection1Header[TRACK_SECTION_HEADER_SIZE];
 
 /**
+ * The data of the first route section of the loaded track.
+ *
  * @ghidraAddress USA: 0x803736b0
  * @ghidraAddress Asia: 0x80373160
  * @ghidraAddress EUR: 0x80375bb0
@@ -479,6 +483,8 @@ extern u8 g_abTrackSection1Header[TRACK_SECTION_HEADER_SIZE];
 extern u8 g_abTrackSection1Data[TRACK_SECTION_DATA_SIZE];
 
 /**
+ * The header of the second route section of the loaded track.
+ *
  * @ghidraAddress USA: 0x803746d0
  * @ghidraAddress Asia: 0x80374180
  * @ghidraAddress EUR: 0x80376bd0
@@ -487,6 +493,8 @@ extern u8 g_abTrackSection1Data[TRACK_SECTION_DATA_SIZE];
 extern u8 g_abTrackSection2Header[TRACK_SECTION_HEADER_SIZE];
 
 /**
+ * The data of the second route section of the loaded track.
+ *
  * @ghidraAddress USA: 0x80373ed0
  * @ghidraAddress Asia: 0x80373980
  * @ghidraAddress EUR: 0x803763d0

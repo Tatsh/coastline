@@ -55,6 +55,8 @@ extern Vehicle *g_pActiveCameraVehicle;
 extern s32 g_dwReplayCameraHoldTimer;
 
 /**
+ * The frames until the replay changes its camera view again.
+ *
  * @ghidraAddress USA: 0x8028b7f8
  * @ghidraAddress Asia: 0x8028B348
  * @ghidraAddress EUR: 0x8028daa8
@@ -250,6 +252,8 @@ extern f32 g_fCameraRayGroundDistance;
 
 #if !TGR_BOSS_RALLY
 /**
+ * The surface of the track below the active camera found by the last ray cast.
+ *
  * @ghidraAddress USA: 0x8028aafc
  * @ghidraAddress Asia: 0x8028A64C
  * @ghidraAddress EUR: 0x8028cd04
@@ -260,6 +264,8 @@ extern s32 g_dwCameraRayGroundSurface;
 
 #if !TGR_BOSS_RALLY
 /**
+ * The nearby placed models found by the last camera ray cast.
+ *
  * @ghidraAddress USA: 0x8028ab04
  * @ghidraAddress Asia: 0x8028A654
  * @ghidraAddress EUR: 0x8028cd0c
@@ -269,6 +275,8 @@ extern s32 g_dwCameraRayNearbyCount;
 #endif /* !TGR_BOSS_RALLY */
 
 /**
+ * The indices of nearby placed models found by the last camera ray cast.
+ *
  * @ghidraAddress USA: 0x8031b288
  * @ghidraAddress Asia: 0x8031AD38
  * @ghidraAddress EUR: 0x8031d788

@@ -81,6 +81,7 @@ void _Litob(_Pft *px, char code);
  */
 void _Ldtob(_Pft *px, char code);
 
+/** @cond */
 /**
  * Padding for field widths.
  *
@@ -142,6 +143,7 @@ extern char g_szHexDigitsUpper[17];
  * @ghidraAddress JPN: 0x802ac230
  */
 extern const double g_adblPowersOfTen[9];
+/** @endcond */
 
 #ifdef __cplusplus
 }

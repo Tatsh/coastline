@@ -307,11 +307,13 @@ bool WritePlayerStatusPacket(NetStream *pStream,
  */
 bool WriteGameSettingsPacket(NetStream *pStream, unsigned char bPlayer);
 
+/** @cond */
 /**
  * @ghidraAddress BRD3D: 0x10221280
  * @ghidraAddress BRGlide: 0x1021cdb0
  */
 extern int g_bNetGameSettingUnk_10221280;
+/** @endcond */
 
 struct KeyframeState;
 
@@ -333,17 +335,23 @@ void DeserializeVehicleState(KeyframeState *pState, NetStream *pStream);
 unsigned SendLocalVehicleStateUpdate(KeyframeState *state);
 
 /**
+ * The last complete local vehicle state sent to the other players.
+ *
  * @ghidraAddress BRD3D: 0x10220cf0
  * @ghidraAddress BRGlide: 0x1021c820
  */
 extern KeyframeState g_LastSentKeyframe;
 /**
+ * The largest values accumulated for the seven keyframe fields before the next send.
+ *
  * @ghidraAddress BRD3D: 0x10220e60
  * @ghidraAddress BRGlide: 0x1021c990
  */
 extern float g_afKeyframeAccumMax[7];
 
 /**
+ * The number of local vehicle state updates since the network race started.
+ *
  * @ghidraAddress BRD3D: 0x10094298
  * @ghidraAddress BRGlide: 0x1007b268
  */
@@ -406,6 +414,8 @@ void DeserializeKeyframeDelta(KeyframeState *pState,
 #endif
 
 /**
+ * The clock time at which the network race countdown ends, in milliseconds.
+ *
  * @ghidraAddress BRD3D: 0x11828d14
  * @ghidraAddress BRGlide: 0x1184c074
  */
