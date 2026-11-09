@@ -95,6 +95,8 @@ extern s32 g_dwBestTraceDepth;
 extern TrackSection *g_pBestTraceSection;
 
 /**
+ * The point index in the section at the deepest end of the search.
+ *
  * @ghidraAddress USA: 0x8028b810
  * @ghidraAddress Asia: 0x8028B360
  * @ghidraAddress EUR: 0x8028dac0
@@ -160,6 +162,8 @@ extern s32 g_bTraceBlocked;
 extern s32 g_bAiNudgeLeft;
 
 /**
+ * Whether a computer's vehicle should ease to the right of where it steers.
+ *
  * @ghidraAddress USA: 0x8028b808
  * @ghidraAddress Asia: 0x8028B358
  * @ghidraAddress EUR: 0x8028dab8
@@ -180,6 +184,8 @@ extern s32 g_bAiNudgeRight;
 extern Vec3f g_avBestLeftLane[TRACE_DEPTH];
 
 /**
+ * The centre points of the deepest straight line found.
+ *
  * @ghidraAddress USA: 0x8031b490
  * @ghidraAddress Asia: 0x8031AF40
  * @ghidraAddress EUR: 0x8031d990
@@ -189,6 +195,8 @@ extern Vec3f g_avBestLeftLane[TRACE_DEPTH];
 extern Vec3f g_avBestCenterLine[TRACE_DEPTH];
 
 /**
+ * The right lane points of the deepest straight line found.
+ *
  * @ghidraAddress USA: 0x8031b4f0
  * @ghidraAddress Asia: 0x8031AFA0
  * @ghidraAddress EUR: 0x8031d9f0
@@ -210,6 +218,8 @@ extern Vec3f g_avBestRightLane[TRACE_DEPTH];
 extern Vec3f g_avTraceLeftLane[TRACE_DEPTH];
 
 /**
+ * The points halfway between the left lane and centre line of the search.
+ *
  * @ghidraAddress USA: 0x8031b5b0
  * @ghidraAddress Asia: 0x8031B060
  * @ghidraAddress EUR: 0x8031dab0
@@ -219,6 +229,8 @@ extern Vec3f g_avTraceLeftLane[TRACE_DEPTH];
 extern Vec3f g_avTraceLeftHalf[TRACE_DEPTH];
 
 /**
+ * The centre points of the line the search follows.
+ *
  * @ghidraAddress USA: 0x8031b610
  * @ghidraAddress Asia: 0x8031B0C0
  * @ghidraAddress EUR: 0x8031db10
@@ -228,6 +240,8 @@ extern Vec3f g_avTraceLeftHalf[TRACE_DEPTH];
 extern Vec3f g_avTraceCenterLine[TRACE_DEPTH];
 
 /**
+ * The points halfway between the right lane and centre line of the search.
+ *
  * @ghidraAddress USA: 0x8031b670
  * @ghidraAddress Asia: 0x8031B120
  * @ghidraAddress EUR: 0x8031db70
@@ -237,6 +251,8 @@ extern Vec3f g_avTraceCenterLine[TRACE_DEPTH];
 extern Vec3f g_avTraceRightHalf[TRACE_DEPTH];
 
 /**
+ * The right lane points of the line the search follows.
+ *
  * @ghidraAddress USA: 0x8031b6d0
  * @ghidraAddress Asia: 0x8031B180
  * @ghidraAddress EUR: 0x8031dbd0
@@ -258,6 +274,8 @@ extern Vec3f g_avTraceRightLane[TRACE_DEPTH];
 extern Vec3f g_vTraceFarPoint;
 
 /**
+ * The centre point halfway along the deepest straight line found.
+ *
  * @ghidraAddress USA: 0x8031b740
  * @ghidraAddress Asia: 0x8031B1F0
  * @ghidraAddress EUR: 0x8031dc40
